@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TOKEN GAME — $GAME</title>
+<meta name="description" content="The market is a game. This is the token that admits it. Stock-paired memecoin on Robinhood Chain via long.xyz.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050807;
+    --panel:#0b120e;
+    --line:#1c2b22;
+    --green:#3dff8b;
+    --green-dim:#1f8f52;
+    --magenta:#ff4dd8;
+    --amber:#ffd23d;
+    --text:#c9d8cf;
+    --text-dim:#7d8f85;
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+    --pixel:'Press Start 2P',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--text);font-family:var(--mono);
+    font-size:16px;line-height:1.65;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(61,255,139,.03) 0 1px, transparent 1px 3px);
+  }
+  a{color:var(--green);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+
+  /* ticker strip */
+  .strip{border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;background:var(--panel)}
+  .strip-inner{display:inline-block;padding:8px 0;font-size:12px;letter-spacing:.08em;color:var(--text-dim);animation:scroll 28s linear infinite}
+  .strip b{color:var(--green)}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  header{padding:96px 0 64px;text-align:center;position:relative}
+  .badge{display:inline-block;border:1px solid var(--line);background:var(--panel);color:var(--amber);
+    font-size:11px;letter-spacing:.15em;padding:6px 14px;margin-bottom:28px;text-transform:uppercase}
+  h1{font-family:var(--pixel);font-size:clamp(28px,6vw,56px);color:var(--green);
+    text-shadow:0 0 24px rgba(61,255,139,.35);line-height:1.3;margin-bottom:20px}
+  h1 .blink{animation:blink 1.1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .tag{font-size:clamp(15px,2.2vw,19px);color:var(--text);max-width:560px;margin:0 auto 40px}
+  .tag em{color:var(--magenta);font-style:normal}
+  .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btn{font-family:var(--pixel);font-size:12px;padding:16px 22px;border:2px solid var(--green);
+    color:var(--green);background:transparent;cursor:pointer;transition:all .15s}
+  .btn:hover{background:var(--green);color:var(--bg);text-decoration:none;box-shadow:0 0 30px rgba(61,255,139,.4)}
+  .btn.alt{border-color:var(--magenta);color:var(--magenta)}
+  .btn.alt:hover{background:var(--magenta);color:var(--bg);box-shadow:0 0 30px rgba(255,77,216,.4)}
+
+  .ca{margin:36px auto 0;max-width:640px;border:1px dashed var(--line);background:var(--panel);
+    padding:12px 16px;font-size:13px;color:var(--text-dim);display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .ca code{color:var(--amber);word-break:break-all}
+  .ca button{font-family:var(--mono);font-size:12px;background:none;border:1px solid var(--line);
+    color:var(--text-dim);padding:4px 10px;cursor:pointer}
+  .ca button:hover{color:var(--green);border-color:var(--green)}
+
+  section{padding:72px 0;border-top:1px solid var(--line)}
+  h2{font-family:var(--pixel);font-size:clamp(16px,3vw,24px);color:var(--green);margin-bottom:12px;line-height:1.5}
+  h2 .lvl{color:var(--magenta);display:block;font-size:11px;margin-bottom:10px;letter-spacing:.1em}
+  .lead{color:var(--text-dim);max-width:640px;margin-bottom:36px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .card{border:1px solid var(--line);background:var(--panel);padding:24px}
+  .card h3{font-family:var(--pixel);font-size:12px;color:var(--amber);margin-bottom:14px;line-height:1.6}
+  .card p{font-size:14px;color:var(--text)}
+  .card p+p{margin-top:10px}
+  .card .no{color:var(--magenta)}
+
+  ol.steps{list-style:none;counter-reset:s;max-width:680px}
+  ol.steps li{counter-increment:s;position:relative;padding:20px 20px 20px 78px;border:1px solid var(--line);
+    background:var(--panel);margin-bottom:12px}
+  ol.steps li::before{content:"0" counter(s);position:absolute;left:20px;top:22px;
+    font-family:var(--pixel);font-size:16px;color:var(--magenta)}
+  ol.steps b{color:var(--green)}
+  ol.steps li p{font-size:14px}
+  .small{font-size:12px;color:var(--text-dim)}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;max-width:680px}
+  td{padding:12px 14px;border:1px solid var(--line)}
+  td:first-child{color:var(--text-dim);width:44%}
+  td:last-child{color:var(--text)}
+
+  .warn{border:1px solid var(--amber);background:rgba(255,210,61,.05);padding:24px;max-width:760px;font-size:13px;color:var(--text-dim)}
+  .warn b{color:var(--amber)}
+
+  footer{border-top:1px solid var(--line);padding:48px 0;text-align:center;font-size:12px;color:var(--text-dim)}
+  footer .pixel{font-family:var(--pixel);font-size:11px;color:var(--green-dim);margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<div class="strip"><div class="strip-inner">
+  <span>$GAME / NVDA &nbsp;·&nbsp; ROBINHOOD CHAIN &nbsp;·&nbsp; <b>INSERT COIN</b> &nbsp;·&nbsp; NO UTILITY &nbsp;·&nbsp; NO ROADMAP &nbsp;·&nbsp; NO PROMISES &nbsp;·&nbsp; JUST THE GAME &nbsp;·&nbsp; </span>
+  <span>$GAME / NVDA &nbsp;·&nbsp; ROBINHOOD CHAIN &nbsp;·&nbsp; <b>INSERT COIN</b> &nbsp;·&nbsp; NO UTILITY &nbsp;·&nbsp; NO ROADMAP &nbsp;·&nbsp; NO PROMISES &nbsp;·&nbsp; JUST THE GAME &nbsp;·&nbsp; </span>
+</div></div>
+
+<header class="wrap">
+  <div class="badge">Launching on long.xyz · Robinhood Chain</div>
+  <h1>TOKEN GAME<span class="blink">_</span></h1>
+  <p class="tag">The market is a game. Every chart, every candle, every "utility" — all of it.
+    <em>$GAME</em> is the first token honest enough to say so.</p>
+  <div class="cta">
+    <!-- TODO: replace # with live long.xyz token page URL at launch -->
+    <a class="btn" href="#" rel="noopener">▶ PRESS START (BUY)</a>
+    <!-- TODO: replace with real X/Twitter handle URL -->
+    <a class="btn alt" href="#" rel="noopener">FOLLOW ON X</a>
+  </div>
+  <div class="ca">
+    <span>CONTRACT:</span>
+    <code id="ca-text">TBA — POSTED AT LAUNCH. TRUST NO OTHER ADDRESS.</code>
+    <button onclick="navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('ca-text').textContent)">COPY</button>
+  </div>
+</header>
+
+<section id="what">
+  <div class="wrap">
+    <h2><span class="lvl">LEVEL 01</span>WHAT IS THIS?</h2>
+    <p class="lead">A memecoin. That's it. But an unusually honest one.</p>
+    <div class="grid">
+      <div class="card">
+        <h3>THE JOKE</h3>
+        <p>Wall Street finally became a video game: stocks are tokens, tokens trade against stocks, and everyone's farming points. $GAME is the coin that breaks the fourth wall.</p>
+      </div>
+      <div class="card">
+        <h3>THE PAIR</h3>
+        <p>On long.xyz, tokens don't pair against ETH — they pair against <b style="color:var(--green)">tokenized stocks</b>. $GAME trades against the NVDA stock token. You're literally playing the market.</p>
+      </div>
+      <div class="card">
+        <h3>THE HONESTY</h3>
+        <p><span class="no">No</span> utility. <span class="no">No</span> roadmap. <span class="no">No</span> promises. <span class="no">No</span> claim on NVIDIA shares — the pair is liquidity, not ownership.</p>
+        <p>If someone tells you otherwise, they're playing you, not the game.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2><span class="lvl">LEVEL 02</span>HOW TO PLAY</h2>
+    <p class="lead">Robinhood Chain is new. Four steps and you're in.</p>
+    <ol class="steps">
+      <li><p><b>Get a wallet.</b> MetaMask or Robinhood Wallet. Add Robinhood Chain: chain ID <b>4663</b>, RPC <code>rpc.mainnet.chain.robinhood.com</code>.</p></li>
+      <li><p><b>Bridge ETH for gas.</b> There's no native chain token — ETH pays gas. Bridge via Arbitrum canonical bridge, Relay, Across, Stargate, or LiFi.</p></li>
+      <li><p><b>Open long.xyz.</b> Find $GAME by the official contract address posted here and on our X. <span class="small">Fakes will exist within minutes. Verify.</span></p></li>
+      <li><p><b>Press start.</b> Buy on the curve, or after graduation on the open pool. Only ever with money you can lose entirely.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="rules">
+  <div class="wrap">
+    <h2><span class="lvl">LEVEL 03</span>THE RULES</h2>
+    <p class="lead">Fixed at launch. No secret levels.</p>
+    <table>
+      <tr><td>Ticker</td><td>$GAME</td></tr>
+      <tr><td>Supply</td><td>1,000,000,000 (fixed, per launchpad standard)</td></tr>
+      <tr><td>Chain</td><td>Robinhood Chain (Arbitrum stack)</td></tr>
+      <tr><td>Pair</td><td>NVDA stock token via long.xyz</td></tr>
+      <tr><td>Team allocation</td><td>None pre-mined; creator buys on the curve like everyone else</td></tr>
+      <tr><td>Taxes</td><td>0 / 0</td></tr>
+      <tr><td>Utility</td><td>None. It's a game piece.</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="disclaimer">
+  <div class="wrap">
+    <h2><span class="lvl">GAME OVER SCREEN</span>READ BEFORE PLAYING</h2>
+    <div class="warn">
+      <p><b>$GAME is a memecoin with no intrinsic value and no expectation of financial return.</b>
+      It can and may go to zero. Holding $GAME gives you no ownership of, claim on, or rights in NVIDIA
+      or any other company — the stock pairing is a liquidity mechanism, nothing more. Memecoin prices are
+      extremely volatile; stock-token liquidity can thin out and prices can dislocate when equity markets are
+      closed. Nothing on this page is financial advice. Play with money you can afford to lose completely,
+      or don't play at all. Not available where prohibited by law.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="pixel">TOKEN GAME © 2026 — CONTINUE? 9…8…7…</div>
+  <p>long.xyz · Robinhood Chain · <a href="#">X / Twitter</a> · <a href="#">Telegram</a></p>
+</footer>
+
+</body>
+</html>
