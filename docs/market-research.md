@@ -34,6 +34,16 @@ Claims are labeled:
 - **[derived — recommendation]** Run the machine as a **public Hyperliquid vault** (or at minimum a published account address). "Verify, don't believe" is the strongest trust story available in this niche and differentiates us from every "AI trading" token that posts screenshots.
 - **[hypothesis]** The earnings-prediction engine (built in the separate harness) has positive expectancy. Nothing in this doc assumes it does; the public design must survive the engine losing money, because sometimes it will.
 
+### 3b. Mechanism v3 (2026-09-03 update): winnings buy back the coin
+
+Founder direction: the engine's profits **buy back the token**; the AI's objective is to accumulate as much supply as possible. Right → it buys more; wrong → the pool shrinks and it buys less. Bets are placed on Hyperliquid **stock perps** with sizable open interest.
+
+- **[verified]** Hyperliquid HIP-3 (live since Oct 2025) hosts permissionless perp markets for equities — NVDA, TSLA, S&P 500, gold, oil, pre-IPO names. RWA-perp open interest passed **$3.2B in June 2026** and later a record **$3.6B**; on peak days HIP-3 markets were ~48% of Hyperliquid volume. TradeXYZ (Hyperunit) deploys >90% of HIP-3 OI. NVDA-PERP is USDC-settled, tracks Nasdaq spot via oracle, trades 24/7. → Sizable, directional earnings bets on NVDA are feasible.
+- **[derived]** An "up or down after earnings" bet = holding a perp through the print. The engine must handle funding costs, the oracle's after-hours behavior around the release, and liquidation risk at whatever leverage it uses. A prediction being right on direction can still lose on sizing/leverage.
+- **[derived]** **Burn vs. hold decision.** "Accumulate" has three implementations: (a) buy and burn; (b) buy and provably lock forever ("the machine never sells"); (c) buy and hold freely. (c) makes the machine the largest holder with the power to dump — permanent FUD and a worse legal look. **Recommendation: (b)** — keeps the accumulation scoreboard ("the machine owns 4.2% of supply") while eliminating dump risk; (a) is the fallback if locking is impractical.
+- **[derived]** The genuinely novel asset is not "AI trading" (crowded) but the **scheduled public spectacle**: every earnings date is an event where the machine posts its call in advance, everyone watches the print, and the outcome visibly changes how much supply it can eat. Brand and content calendar should be built around the event, not the AI.
+- **[derived]** Legal posture moves from §4 posture 1 to posture 2 (value accrual to holders via buybacks). Accepted by founder direction; counsel review is now more important, not less.
+
 ## 4. Legal / structural red flags (read before launch)
 
 - **[derived — serious]** A token whose fees fund a managed trading pool moves away from "pure meme" toward **investment-contract territory** (pooled funds + profits from the efforts of others). Three postures, in increasing legal aggression:
@@ -80,6 +90,9 @@ Claims are labeled:
 - [MCG on X — how long.xyz works](https://x.com/MCGlive/status/2080088252661313595)
 - [WEEX — long.xyz NVDA 3x leverage pairing](https://www.weex.com/news/detail/longxyz-launches-nvda-3x-leverage-token-pairing-feature-s0445q0tmpa2nfyzbbdhhnhz)
 - [LuvKaizen — How to launch a token on Robinhood Chain (2026)](https://www.luvkaizen.com/blogs/how-to-launch-a-token-on-robinhood-chain)
+- [FinanceFeeds — Hyperliquid HIP-3 explained (open interest)](https://financefeeds.com/hyperliquid-hip-3-explained/)
+- [Stocktwits — Hyperliquid RWA perps record open interest](https://stocktwits.com/news-articles/markets/cryptocurrency/hyperliquid-rwa-perpetuals-record-open-interest-hype-price-spacex/cZmzFCfR7o6)
+- [Nansen — What is a stock perp (NVDA-PERP mechanics)](https://nansen.ai/post/how-to-trade-stock-perps-hyperliquid)
 - [Chainstack — Hyperliquid trading bots 2026 (API wallets, vaults)](https://chainstack.com/hyperliquid-trading-bots-2026/)
 - [HIPERWIRE — AI trading bots & agents on Hyperliquid](https://hiperwire.io/explainers/ai-trading-bots-agents-hyperliquid)
 - [Coin Bureau — Best memecoin launchpads 2026](https://coinbureau.com/analysis/best-memecoin-launchpads)
