@@ -1,30 +1,40 @@
-# Token Game ($GAME)
+# Priced Inu ($PRICEDIN)
 
-Self-aware memecoin launching on [long.xyz](https://app.long.xyz) (Robinhood Chain), paired against the NVDA stock token.
+> *nothing is priced in.*
 
-**Premise:** the market is a game — $GAME is the token that admits it. Radical honesty (no utility, no roadmap, no promises) is both the brand and the compliance posture.
+Memecoin on [long.xyz](https://app.long.xyz) (Robinhood Chain), paired against the NVDA stock token — with a flywheel: **69% of creator trading-fee revenue funds an AI prediction engine that trades earnings-call outcomes on Hyperliquid**, through a trade-only API wallet, with every bet publicly verifiable onchain.
+
+Brand: edgy, cinematic, receipts-driven. Tributes to prior cycles (inu dynasty, punk pixel art, 69) baked into the lore. The counterparty thesis — "everything is priced in" — is the meme we exist to dunk on.
 
 ## Repo contents
 
 | Path | What |
 |---|---|
-| `index.html` | Landing page — single file, no build step, deployable to GitHub Pages/Netlify/Vercel as-is |
-| `docs/market-research.md` | long.xyz mechanics, Robinhood Chain launchpad landscape, risks, strategy (claims labeled verified/derived/hypothesis) |
-| `docs/twitter-playbook.md` | X account setup, voice, launch thread, 3-week content plan |
+| `index.html` | Landing page — dark-chrome/mint Hyperliquid-edit aesthetic, flywheel explainer, transparency section, Robinhood Chain onboarding, hard-honest disclaimer. Single file, deployable as-is |
+| `docs/market-research.md` | v2 research: long.xyz mechanics + fee split, flywheel math, Hyperliquid vault/API facts, legal red flags, landscape (claims labeled verified/derived/hypothesis) |
+| `docs/twitter-playbook.md` | X setup, voice rules, content pillars, launch thread, 3-week cadence, video-format notes |
+
+## The flywheel
+
+trade $PRICEDIN → 1% pool fee → ~70% to creator → **69% of that** → machine's Hyperliquid pool → AI trades earnings calls → wins compound the pool (never distributed) → public vault = receipts culture.
+
+At ecosystem-standard fees the machine earns ≈0.48% of trading volume.
 
 ## Launch checklist
 
-- [ ] Verify in the long.xyz app: available stock pairs (NVDA assumed), creation fee, curve/graduation mechanics
-- [ ] Human creates X account (see playbook §1) and Telegram
-- [ ] Fill placeholders in `index.html`: buy link, X link, Telegram link, contract address (marked `TODO` / `TBA`)
-- [ ] Design PFP + banner (original arcade art — no borrowed IP)
-- [ ] Deploy landing page; set custom domain if desired
-- [ ] Dedicated deployer wallet; bridge ETH for gas (chain ID 4663)
-- [ ] Pre-launch teaser cadence (playbook §3)
-- [ ] T-0: launch token + post CA on site and X in the same minute; verify contract on Blockscout
+- [ ] **Legal review of the fee→AI-pool structure** (see research §4 — this is the big one)
+- [ ] Verify in long.xyz app: fee split (70/30 assumed), creator-fee claim mechanics, NVDA in pair list
+- [ ] Prediction engine ready (separate harness) + Hyperliquid **trade-only API wallet**; decide vault vs. published address
+- [ ] Human creates X account (playbook §1) + Telegram
+- [ ] Fill `index.html` placeholders: buy link, vault link, X/TG links, contract address
+- [ ] Original pixel-art PFP/banner (no borrowed IP); launch hype video (cleared audio — see playbook §8)
+- [ ] Deploy landing page; dedicated deployer wallet; bridge ETH (chain ID 4663)
+- [ ] Pre-launch cadence T-5→T-1 (playbook §4)
+- [ ] T-0: launch + post CA on site and X same minute; Blockscout verification + vault address within the hour
 
 ## Hard rules
 
-- Never imply $GAME confers ownership of NVIDIA or any equity.
-- Never promise returns or predict price.
-- The only official contract address lives on the site and the pinned X thread.
+- Never promise returns, post win-rates as marketing, or imply holders receive machine profits.
+- Never imply the NVDA pair confers NVIDIA ownership.
+- Machine losses get posted with the same energy as wins.
+- The only official CA lives on the site and the pinned thread.

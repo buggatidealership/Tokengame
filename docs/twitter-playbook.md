@@ -1,67 +1,80 @@
-# X / Twitter Playbook — Token Game ($GAME)
+# X / Twitter Playbook — Priced Inu ($PRICEDIN)
 
-> **Note:** Creating the account requires a human (phone verification, ToS). This doc is everything needed to set it up and run it. Once the account exists, drafts below can be posted as-is or tuned.
+> **Note:** account creation needs a human (phone verification, ToS). Everything else is here, ready to post.
 
 ## 1. Account setup
 
-- **Handle candidates (check availability, in order):** `@tokengame`, `@playtokengame`, `@tokengamecoin`, `@GAMEonHOOD`
-- **Name:** `TOKEN GAME ($GAME)` — add 🕹️ if it renders well
+- **Handle candidates (check in order):** `@pricedinu`, `@priced_inu`, `@nothingpricedin`, `@thepricedinu`
+- **Name:** `Priced Inu ($PRICEDIN)`
 - **Bio:**
-  > The market is a game. This is the token that admits it. $GAME / NVDA on Robinhood Chain via @longdotxyz. No utility. No promises. Insert coin. NFA.
-- **Pinned:** the launch thread (below). Before launch, pin the teaser.
-- **Link:** landing page URL
-- **Banner/PFP:** arcade CRT aesthetic matching the landing page (green-on-black pixel art, "INSERT COIN" motif). Keep it original — no Nintendo/arcade IP characters.
+  > nothing is priced in. 69% of fees feed an AI that trades earnings calls on @HyperliquidX. every bet public. $PRICEDIN / NVDA on @longdotxyz. NFA. can go to zero.
+- **Link:** landing page. **Pinned:** launch thread (below); teaser before launch.
+- **PFP/banner:** original pixel-art inu in a suit — punk-era pixel grammar, our own character (no actual CryptoPunks/known-dog IP). Banner: dark chrome + glowing mint, serif italic "nothing is priced in." matching the site.
 
 ## 2. Voice
 
-Self-aware, deadpan, honest. We never promise gains, never say "utility," never use rocket-to-the-moon sincerity — we parody it. The honesty *is* the brand and also the compliance posture. Every serious claim (contract address, links) gets posted twice and matches the site exactly.
+Edgy, cinematic, deadpan-confident — the energy of a hype-edit caption, not a press release. Short lines. Lowercase except tickers. The machine is a character: "the dog." We flex transparency, never returns.
 
-**Never post:** price predictions, "guaranteed," "next 100x," anything implying $GAME confers NVIDIA ownership, paid-shill copy that hides it's paid, replies bashing specific other communities.
+**Hard rules — never post:**
+- price predictions, return projections, "guaranteed," win-rate claims
+- anything implying holders receive machine profits (they don't — pool compounds)
+- anything implying the pair = NVIDIA ownership
+- "insider" framing or MNPI jokes that read as actual insider trading
+- lyrics from copyrighted songs (caption-style *references* to a vibe are fine; quoting lines is not)
 
-## 3. Pre-launch (T-5 → T-1 days)
+**Always:** losses get posted with the same energy as wins. Receipts culture is the moat.
 
-- T-5: Account live, 3–4 in-voice posts before any follow campaign so the profile doesn't look botted.
-- T-4: Teaser: `Wall Street became a video game and nobody said anything. Fine. We'll say it. 🕹️ soon.`
-- T-3: Engage (reply-guy mode) on @longdotxyz posts and big Robinhood Chain accounts — witty, no shilling.
-- T-2: Concept reveal: name + one-line premise + "pair reveal tomorrow."
-- T-1: Pair reveal + exact launch time (UTC), and the rule: **"The ONLY contract address will be posted here and on the site at launch. Anything earlier is fake."**
+## 3. Content pillars
 
-## 4. Launch thread (pin at T-0)
+1. **Receipts** — every machine bet: entry, thesis-in-one-line, vault link. Then the result, win or lose. `the dog longed $XYZ into earnings. printed. vault: <link>` / `the dog got smoked on $XYZ. tape's public. next call.`
+2. **Earnings-szn theater** — earnings calendar is our content calendar. Preview posts before big prints ("the dog is listening to $NVDA thursday"), live-react during calls.
+3. **Lore/tribute** — inu dynasty, punk pixel faith, 69, "priced in" as the eternal cope. Meme the phrase relentlessly: every news event → "priced in?" → the dog disagrees.
+4. **Transparency flexes** — vault balance updates, fee-flow updates (facts only, no projections).
 
-1/ The market is a game. Charts are the graphics. Candles are the animations. "Fundamentals" are the lore. $GAME is the first token honest enough to say it out loud. 🕹️
+## 4. Pre-launch (T-5 → T-1)
 
-2/ We launched on @longdotxyz — where tokens don't pair against ETH, they pair against tokenized stocks. $GAME trades against NVDA. You are literally playing the market.
+- T-5: account live; 3–4 voice posts before any follow push (avoid botted look).
+- T-4: teaser: `they said everything is priced in. we taught a dog to check.`
+- T-3: reply-guy mode on @longdotxyz, @HyperliquidX, Robinhood Chain accounts, fintwit earnings threads.
+- T-2: concept reveal: the flywheel in one image (site's 4-node loop).
+- T-1: pair reveal + exact launch time (UTC) + the rule: **only CA source is this account + the site. anything earlier is fake.**
 
-3/ The rules: 1B supply. 0/0 tax. No team pre-mine. No utility. No roadmap. No promises. It may go to zero. That's not a disclaimer, that's the game design.
+## 5. Launch thread (pin at T-0)
 
-4/ Holding $GAME gives you zero claim on NVIDIA. The pair is liquidity, not ownership. Anyone who tells you different is playing you, not the game.
+1/ nothing is priced in.
 
-5/ CA: `<contract address>` — the only official address. Verify on Blockscout. How to play (wallet, bridge, buy): <landing page link>
+they told you the market knows everything. so we pointed an AI at every earnings call on the tape and gave it a hyperliquid account. meet the dog. $PRICEDIN
 
-6/ Insert coin. ▶
+2/ the flywheel:
+you trade → 1% pool fee → 69% of creator fees feed the machine → the machine trades earnings on hyperliquid → wins compound the pool → the tape is public.
+no staking. no dashboard. one loop.
 
-## 5. Launch day (T-0)
+3/ launched on @longdotxyz — where tokens pair against tokenized stocks, not ETH. $PRICEDIN trades against NVDA. the dog trades earnings. the symmetry writes itself.
 
-- Post CA at the announced minute, simultaneously with the site update. Coordinated posts from any friendly accounts in the same minute (instant launches have no warm-up).
-- First 6 hours: reply to every non-bot mention. Quote-RT holder memes.
-- Post the Blockscout verification link within the hour.
-- Call out fake contracts immediately and repeatedly.
+4/ the rules: 1B supply. no pre-mine. winnings never distribute to holders — they compound the machine's pool. you hold a memecoin, not a fund share, and no piece of NVIDIA. it can go to zero. the machine can get liquidated. that's the game.
 
-## 6. Weeks 1–3 cadence
+5/ every bet the dog makes is onchain: <vault link>. verify, don't believe.
 
-Goal metric: holder retention and onchain activity, not impressions.
+6/ CA: `<contract address>` — the only official address. how to play (wallet, bridge, buy): <site link>
 
-- **Daily (2–4 posts):** one meme, one "state of the game" (holders, notable trades — facts only, no predictions), replies/QRTs.
-- **Recurring formats:**
-  - *Patch notes* — mock video-game changelog for market events: `PATCH 1.0.3: NVDA closed for the weekend. 24/7 players, mind the gap.`
-  - *Achievement unlocked* — milestone posts (holder counts, graduation).
-  - *NPC dialogue* — deadpan screenshots of sincere crypto discourse.
-- **Weekly:** one Spaces or thread with the long.xyz community; one honest recap including the down days (credibility compounds).
-- The market-hours gap (equities closed, chain open) is our recurring content goldmine — it's both a real risk to warn about and an endless meme.
+7/ earnings szn is eternal. the dog is listening. 🐕📞
 
-## 7. Growth tactics
+## 6. Launch day (T-0)
 
-- Ride the venue's narrative: Robinhood Chain / stock-paired memecoins get media coverage — be the quotable, self-aware voice in those threads.
-- Engage Artificial Inu / SPACEHOOD / BONER communities as fellow players, not rivals.
-- Meme contests paid in $GAME only after launch is stable — announced as gifts, not "rewards programs."
-- No engagement-bait giveaways requiring follows+RTs in week one; they attract bots that wreck the holder-quality metric.
+- CA posted at the announced minute, simultaneous with site update + friendly accounts (instant curves have no warm-up).
+- First 6 hours: reply to every non-bot mention; QRT holder memes.
+- Post Blockscout contract verification + vault address within the hour.
+- Hunt and flag fake CAs loudly.
+
+## 7. Weeks 1–3 cadence
+
+Goal metrics: holder retention + onchain activity through week 3, and vault-link clickthroughs — not impressions.
+
+- **Daily 2–4 posts:** one receipt/machine post, one meme, replies.
+- **Weekly:** earnings-week preview thread (which calls the dog is listening to); honest recap incl. losses; one Spaces with long.xyz/Hyperliquid community.
+- Machine milestones as *achievement unlocked* posts (pool size crossed X — factual, no projections).
+- No follow+RT giveaways in week 1 (bots wreck holder quality). Meme contests paid in $PRICEDIN later, framed as gifts.
+
+## 8. Video content
+
+The Hyperliquid-style hype edit format (film clips + glowing serif captions + one hard logo hit at the end) is our template for launch videos. Practical notes: commercial music (e.g. the Drake track in the reference edit) is unlicensed in that context — X can mute/strike it; either accept that risk knowingly or use trending-but-cleared audio. Keep captions original — vibe homage yes, lyric quotes no.
