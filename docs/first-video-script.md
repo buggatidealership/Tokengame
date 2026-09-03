@@ -28,3 +28,26 @@
 1. **Pre-call teaser (6s):** clock counting down to the real NVDA date, caption *the machine is listening.*
 2. **Post-call, win (8s):** lock tx hash → locked-supply counter ticking up → *it bought. it locked. it never sells.*
 3. **Post-call, loss (8s):** red candle → pool counter ticking down → *it bled. next call.* (post this one with the same production value — receipts culture only works if losses look as good as wins)
+
+---
+
+# Cut 2 — The Explainer (the release video)
+
+**Length:** 45–55s · **Format:** 1:1 (also 9:16) · This is the pinned release video: hype grammar, but it teaches the whole mechanism in under a minute. Same visual system as Cut 1 (dark chrome, grain, mint serif captions, mono data overlays). Original captions; cleared audio.
+
+| t | Visual | Caption / VO beat |
+|---|---|---|
+| 0–3 | Black → single mono line types: `every quarter, wall street holds a call.` | *every quarter.* |
+| 3–7 | Blurred earnings-call audio waveform, scrolling transcript fragments (generic, invented text) | *eight thousand analysts listen.* |
+| 7–11 | Waveform snaps into a clean mint pulse — the machine "wakes" | *now something else is listening.* |
+| 11–17 | Diagram build, step 1: token ⇄ NVDA stock token pool, 1% fee particle stream splitting 69/31 | *you trade $CALL. fees feed the machine — 69% stake, 31% brain.* |
+| 17–24 | Diagram step 2: the machine publishes a card: `CALL: NVDA — UP` with timestamp BEFORE the print | *before every earnings print, it publishes its call. in public. before.* |
+| 24–30 | Orderbook flicker → position opens on a stock-perp chart | *then it puts the pool on it. hyperliquid. stock perps. 24/7.* |
+| 30–37 | Split: green path → coins flow into a vault door + pool deepens / red path → pool counter ticks down | *right — it buys $CALL it can never sell, and deepens the pool. wrong — it bleeds.* |
+| 37–42 | Vault door seals; mono row of addresses scrolls: pool · trader · vault · ledger | *no promises. addresses.* |
+| 42–48 | Scoreboard mock: W–L, streak, % vaulted; countdown to next print ticking | *the tape decides. every quarter. forever.* |
+| 48–55 | Logo hit: THE CALL, chrome-mint bloom → site URL | *the machine makes the call.* |
+
+**End card fine print (small, static, 2s):** "memecoin. can go to zero. machine can lose the pool. not financial advice."
+
+**Production notes for a motion tool:** build as 6 scenes; reuse the diagram assets from the landing page (loop nodes) so page and video share a visual language; the "call card" prop (timestamped prediction card) is the single most important asset — it becomes the recurring template for every real quarterly call post.
