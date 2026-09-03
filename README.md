@@ -1,40 +1,51 @@
-# Priced Inu ($PRICEDIN)
+# The Call ($CALL)
 
-> *nothing is priced in.*
+> *the machine makes the call.*
 
-Memecoin on [long.xyz](https://app.long.xyz) (Robinhood Chain), paired against the NVDA stock token — with a flywheel: **69% of creator trading-fee revenue funds an AI prediction engine that trades earnings-call outcomes on Hyperliquid**, through a trade-only API wallet, with every bet publicly verifiable onchain.
+Memecoin on [long.xyz](https://app.long.xyz) (Robinhood Chain), paired against the NVDA stock token, with a flywheel built around a **quarterly public event**: an AI funded by trading fees publishes its earnings call, bets on Hyperliquid stock perps, and — if it profits — buys $CALL on market and burns it. Wrong, it bleeds. Everything onchain.
 
-Brand: edgy, cinematic, receipts-driven. Tributes to prior cycles (inu dynasty, punk pixel art, 69) baked into the lore. The counterparty thesis — "everything is priced in" — is the meme we exist to dunk on.
+Working name; the mechanism, page and playbook survive a rename.
+
+## The mechanism (final)
+
+1. Trade $CALL → 1% pool fee → ~70% to creator → **69% of creator fees → the pool** (USDC on Hyperliquid).
+2. The pool is the machine's capital. It allocates between trading stake, research/compute, and marketing — every allocation published with reasoning.
+3. Before each earnings print it publishes its call and takes a position on Hyperliquid stock perps via a trade-only API key. Public address.
+4. Realized profit → buy $CALL → burn. Losses shrink the pool. No profit, no burn.
+5. **Five laws:** profits-only buybacks · everything bought is burned, never sold · never trades $CALL for fees · everything public · disclosed marketing only.
+
+At ecosystem-standard fees the pool earns ≈0.48% of trading volume.
 
 ## Repo contents
 
 | Path | What |
 |---|---|
-| `index.html` | Landing page — dark-chrome/mint Hyperliquid-edit aesthetic, flywheel explainer, transparency section, Robinhood Chain onboarding, hard-honest disclaimer. Single file, deployable as-is |
-| `docs/market-research.md` | v2 research: long.xyz mechanics + fee split, flywheel math, Hyperliquid vault/API facts, legal red flags, landscape (claims labeled verified/derived/hypothesis) |
-| `docs/twitter-playbook.md` | X setup, voice rules, content pillars, launch thread, 3-week cadence, video-format notes |
+| `index.html` | Landing page — event card with countdown to the next NVDA print, scoreboard, 5-node loop, the five laws, transparency addresses, spec table, disclaimer. Single file, deployable as-is |
+| `docs/market-research.md` | Research: long.xyz mechanics + fee split, Hyperliquid stock-perp verification, flywheel math, legal red flags, landscape, kill criteria (claims labeled verified/derived/hypothesis) |
+| `docs/twitter-playbook.md` | X setup, voice, content pillars, launch thread, cadence to the first call |
+| `docs/first-video-script.md` | Shot-by-shot script for the launch video + three variants |
 
-## The flywheel
+## Open decisions
 
-trade $PRICEDIN → 1% pool fee → ~70% to creator → **69% of that** → machine's Hyperliquid pool → AI trades earnings calls → wins compound the pool (never distributed) → public vault = receipts culture.
-
-At ecosystem-standard fees the machine earns ≈0.48% of trading volume.
+- Cap on non-trading spend per quarter (research + marketing) — suggested 20% of pool; the machine's freedom needs a wall so the pool can't be marketed to zero.
+- Confirm NVDA print date (sources say Nov 17 / 18 / 25, 2026) → set the countdown target in `index.html`.
+- Name is a working name; rename is a find-and-replace.
 
 ## Launch checklist
 
-- [ ] **Legal review of the fee→AI-pool structure** (see research §4 — this is the big one)
-- [ ] Verify in long.xyz app: fee split (70/30 assumed), creator-fee claim mechanics, NVDA in pair list
-- [ ] Prediction engine ready (separate harness) + Hyperliquid **trade-only API wallet**; decide vault vs. published address
-- [ ] Human creates X account (playbook §1) + Telegram
-- [ ] Fill `index.html` placeholders: buy link, vault link, X/TG links, contract address
-- [ ] Original pixel-art PFP/banner (no borrowed IP); launch hype video (cleared audio — see playbook §8)
-- [ ] Deploy landing page; dedicated deployer wallet; bridge ETH (chain ID 4663)
-- [ ] Pre-launch cadence T-5→T-1 (playbook §4)
-- [ ] T-0: launch + post CA on site and X same minute; Blockscout verification + vault address within the hour
+- [ ] **Legal review of the fee→pool→buyback structure** (research §4) — before the first video, not after
+- [ ] Verify in long.xyz app: fee split (70/30 assumed), creator-fee claim/asset, NVDA in pair list
+- [ ] Prediction engine (separate harness) + Hyperliquid trade-only API wallet + fee→USDC→bridge pipeline; publish all addresses
+- [ ] Ledger page (allocations + calls with reasoning, timestamped) — can start as a pinned thread
+- [ ] Human creates X + Telegram; original pixel-art PFP/banner
+- [ ] Launch video per `docs/first-video-script.md` (cleared audio)
+- [ ] Fill `index.html` placeholders: buy link, addresses, X/TG, CA, countdown date
+- [ ] Deploy page; deployer wallet; bridge ETH (chain ID 4663)
+- [ ] T-5→T-1 cadence, then T-0: launch + CA on site and X same minute
 
 ## Hard rules
 
-- Never promise returns, post win-rates as marketing, or imply holders receive machine profits.
-- Never imply the NVDA pair confers NVIDIA ownership.
-- Machine losses get posted with the same energy as wins.
+- Never promise returns or market win-rates; burns are never framed as a price floor.
+- Never imply holders receive profits or own any piece of NVIDIA.
+- Losses get the same production value as wins.
 - The only official CA lives on the site and the pinned thread.

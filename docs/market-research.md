@@ -1,6 +1,6 @@
-# Market Research — $PRICEDIN on long.xyz (fee-funded AI trading pool)
+# Market Research — The Call ($CALL) on long.xyz (fee-funded AI earnings-trading flywheel)
 
-**Date:** 2026-09-03 (v2 — reworked after concept pivot to the fee→AI→Hyperliquid flywheel)
+**Date:** 2026-09-03 (v4 — mechanism locked: pool → call → profit → buy & burn)
 **Scope:** long.xyz mechanics, the Robinhood Chain launchpad landscape, the fee-funded prediction-pool mechanism, and what could kill this.
 
 Claims are labeled:
@@ -26,7 +26,7 @@ Claims are labeled:
 
 ## 3. The flywheel mechanism (new core)
 
-**Design:** trade $PRICEDIN → 1% pool fee → creator receives ~70% of fees → **69% of creator fee revenue** routes to an AI prediction engine's trading pool → the engine trades earnings-call outcomes on **Hyperliquid** → results are public onchain.
+**Design:** trade $CALL → 1% pool fee → creator receives ~70% of fees → **69% of creator fee revenue** routes to an AI prediction engine's trading pool → the engine trades earnings-call outcomes on **Hyperliquid** → results are public onchain.
 
 - **[verified]** Hyperliquid supports **trade-only API wallets** (agent wallets) — the bot can trade but never withdraw, which is the right key-security posture.
 - **[verified]** Hyperliquid **vaults** provide transparent onchain accounting of every trade; running the strategy as a vault leader makes P&L public by construction. Its orderbook is fully onchain — anyone can audit every fill.
@@ -34,26 +34,30 @@ Claims are labeled:
 - **[derived — recommendation]** Run the machine as a **public Hyperliquid vault** (or at minimum a published account address). "Verify, don't believe" is the strongest trust story available in this niche and differentiates us from every "AI trading" token that posts screenshots.
 - **[hypothesis]** The earnings-prediction engine (built in the separate harness) has positive expectancy. Nothing in this doc assumes it does; the public design must survive the engine losing money, because sometimes it will.
 
-### 3b. Mechanism v3 (2026-09-03 update): winnings buy back the coin
+### 3b. Mechanism v4 (2026-09-03, locked): the machine, the pool, the burn
 
-Founder direction: the engine's profits **buy back the token**; the AI's objective is to accumulate as much supply as possible. Right → it buys more; wrong → the pool shrinks and it buys less. Bets are placed on Hyperliquid **stock perps** with sizable open interest.
+Founder direction: the machine's goal is to **buy and burn as much $CALL as it can, funded only by trading profit**. The fee pool is its *capital*, which it may allocate with freedom between trading stake, research/compute to improve itself, and marketing to grow volume. Coins bought are burned — "accumulate but never sell" resolved as burn, so no spendable coin treasury exists. Everything transparent.
 
 - **[verified]** Hyperliquid HIP-3 (live since Oct 2025) hosts permissionless perp markets for equities — NVDA, TSLA, S&P 500, gold, oil, pre-IPO names. RWA-perp open interest passed **$3.2B in June 2026** and later a record **$3.6B**; on peak days HIP-3 markets were ~48% of Hyperliquid volume. TradeXYZ (Hyperunit) deploys >90% of HIP-3 OI. NVDA-PERP is USDC-settled, tracks Nasdaq spot via oracle, trades 24/7. → Sizable, directional earnings bets on NVDA are feasible.
-- **[derived]** An "up or down after earnings" bet = holding a perp through the print. The engine must handle funding costs, the oracle's after-hours behavior around the release, and liquidation risk at whatever leverage it uses. A prediction being right on direction can still lose on sizing/leverage.
-- **[derived]** **Burn vs. hold decision.** "Accumulate" has three implementations: (a) buy and burn; (b) buy and provably lock forever ("the machine never sells"); (c) buy and hold freely. (c) makes the machine the largest holder with the power to dump — permanent FUD and a worse legal look. **Recommendation: (b)** — keeps the accumulation scoreboard ("the machine owns 4.2% of supply") while eliminating dump risk; (a) is the fallback if locking is impractical.
-- **[derived]** The genuinely novel asset is not "AI trading" (crowded) but the **scheduled public spectacle**: every earnings date is an event where the machine posts its call in advance, everyone watches the print, and the outcome visibly changes how much supply it can eat. Brand and content calendar should be built around the event, not the AI.
-- **[derived]** Legal posture moves from §4 posture 1 to posture 2 (value accrual to holders via buybacks). Accepted by founder direction; counsel review is now more important, not less.
+- **[verified]** NVDA's next earnings release is **mid/late November 2026** (sources disagree: Nov 17, 18, or 25 — confirm on NVIDIA IR). Not October.
+- **[derived]** An "up or down after earnings" bet = holding a perp through the print. The engine must handle funding, the oracle's after-hours behavior around the release, and liquidation at whatever leverage it uses. Right on direction can still lose on sizing.
+- **[derived — important correction]** "Bigger pool → better predictions" is not causal. Pool size scales *bet size*; only research/compute spend can plausibly improve *accuracy*. Copy must not claim that volume makes the machine smarter.
+- **[derived — hard constraint]** An agent optimizing "buy back as much as possible via trading" with freedom will discover that trading its own pair generates fees for itself. That is wash trading — market manipulation. **The machine must be walled off from trading $CALL except profit-funded buys that are burned.** Written into the constitution (§3 on the site).
+- **[derived — hard constraint]** Marketing spend must be disclosed as paid promotion wherever it lands (undisclosed crypto promo is an enforcement magnet for both the promoter and the project). Constitution §5.
+- **[derived]** Why burn rather than a coin treasury: a spendable coin stash reintroduces sell pressure ("the machine sold to pay for ads") and contradicts "never sells." Spending authority lives in the *USDC pool*, not in coins. Suggested guardrail: cap non-trading spend at ~20% of pool per quarter so the pool cannot be marketed to zero. Open decision.
+- **[derived]** The genuinely novel asset is the **scheduled public spectacle**: each earnings date is an event where the machine posts its call in advance, everyone watches the print, and the outcome visibly changes the burn counter. Brand and content calendar are built around the event.
+- **[derived]** Legal posture is §4 posture 2 (value accrual via buyback-and-burn). Accepted by founder direction; counsel review is more important, not less. Marketing must never frame burns as a price floor.
 
 ## 4. Legal / structural red flags (read before launch)
 
 - **[derived — serious]** A token whose fees fund a managed trading pool moves away from "pure meme" toward **investment-contract territory** (pooled funds + profits from the efforts of others). Three postures, in increasing legal aggression:
-  1. **Winnings compound the pool, never distributed** (current design — weakest profit-expectation link; this is why the site says "no distributions").
-  2. Winnings buy back and burn the token (value accrual to holders — more aggressive).
+  1. Winnings compound the pool, never distributed (weakest profit-expectation link).
+  2. **Winnings buy back and burn the token** (value accrual to holders — more aggressive; **current design**).
   3. Winnings distributed to holders (looks like a dividend — most aggressive; do not do this without counsel).
   This is not legal advice and none of us are lawyers; **get an actual crypto-competent lawyer to review the structure and the copy before launch.** Jurisdiction of the team matters.
 - **[verified]** Asset-confusion risk is real on this venue (holders thinking pairs = stock ownership); our copy must keep repeating that it doesn't.
 - **[derived]** Never market with profit promises, projected returns, or "the AI wins X%" claims. The edgy voice must stay on culture and transparency, not returns.
-- **[derived]** Avoid "insider" framing in naming/copy (e.g., "Insider Inu") — implying material-non-public-information trading is a legal and platform-ban magnet. "Whisper number" culture is the safe edge of that joke.
+- **[derived]** Avoid "insider" framing in naming/copy — implying material-non-public-information trading is a legal and platform-ban magnet. "Whisper number" culture is the safe edge of that joke.
 
 ## 5. Competitive landscape
 
