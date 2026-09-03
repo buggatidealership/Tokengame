@@ -1,6 +1,6 @@
 # Market Research — The Call ($CALL) on long.xyz (fee-funded AI earnings-trading flywheel)
 
-**Date:** 2026-09-03 (v4 — mechanism locked: pool → call → profit → buy & burn)
+**Date:** 2026-09-03 (v5 — pool → call → profit → buy & lock; 69/31 pool/ops)
 **Scope:** long.xyz mechanics, the Robinhood Chain launchpad landscape, the fee-funded prediction-pool mechanism, and what could kill this.
 
 Claims are labeled:
@@ -47,6 +47,14 @@ Founder direction: the machine's goal is to **buy and burn as much $CALL as it c
 - **[derived]** Why burn rather than a coin treasury: a spendable coin stash reintroduces sell pressure ("the machine sold to pay for ads") and contradicts "never sells." Spending authority lives in the *USDC pool*, not in coins. Suggested guardrail: cap non-trading spend at ~20% of pool per quarter so the pool cannot be marketed to zero. Open decision.
 - **[derived]** The genuinely novel asset is the **scheduled public spectacle**: each earnings date is an event where the machine posts its call in advance, everyone watches the print, and the outcome visibly changes the burn counter. Brand and content calendar are built around the event.
 - **[derived]** Legal posture is §4 posture 2 (value accrual via buyback-and-burn). Accepted by founder direction; counsel review is more important, not less. Marketing must never frame burns as a price floor.
+
+### 3c. Mechanism v5 (2026-09-03, founder decisions)
+
+- **Wash trading: hard no.** The machine never trades $CALL under any circumstances. The only $CALL it touches is bought with realized profit and sent to the lock.
+- **Lock, not burn.** Bought-back coins go to an onchain lock. **[derived]** This only means something if the lock is enforced by code — a contract with no withdraw path. A multisig wallet with a "we promise" policy is a team-controlled stash: it invites dump FUD and, legally, looks like team holdings. Recommend the contract; publish and verify its source.
+- **Fee split: 69% pool / 31% ops.** Of the creator's ~70% share of the 1% swap fee: 69% is the machine's stake (pool), 31% funds intelligence — AI inference/compute, research, and the maintainers — so the machine is never credit-constrained mid-call. **[derived]** This resolves an earlier ambiguity: the pool is now *pure stake*; research/marketing/compute come from ops, not the pool. The "non-trading spend cap" question disappears and constitution §1 gets simpler.
+- **[derived — reality check on ops funding]** At ecosystem-standard fees, ops ≈ 0.22% of volume — about $2.2k per $1M of cumulative volume. Continuous frontier-model inference for earnings research is not free; until volume is meaningful, ops runs out of pocket. Plan a runway rather than assuming fees cover the machine from day one.
+- **[derived]** Legal posture: buy-and-lock is functionally close to burn (supply leaves circulation) — still §4 posture 2. A team-unlockable lock is worse than burn, not better.
 
 ## 4. Legal / structural red flags (read before launch)
 
