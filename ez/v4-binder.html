@@ -180,7 +180,10 @@ footer{padding:70px 16px 90px;text-align:center}
 dialog{border:0;padding:0;background:transparent;margin:auto;overflow:visible;max-width:calc(100vw - 20px)}
 dialog::backdrop{background:rgba(35,29,22,.7);backdrop-filter:blur(4px)}
 .viewer{display:flex;flex-direction:column;align-items:center;gap:14px}
-.flip{position:relative;perspective:1400px}
+.flip{position:relative;perspective:1400px;width:min(460px,calc(100vw - 24px));height:min(760px,calc(100dvh - 110px))}
+.flip .inner{height:100%}
+.side.front{height:100%;display:flex;flex-direction:column}
+.side.front video{flex:1;min-height:0;width:100%!important;height:auto!important;max-width:none!important;object-fit:contain}
 .flip .inner{position:relative;transition:transform .7s cubic-bezier(.3,1.2,.5,1);transform-style:preserve-3d}
 .flip.back .inner{transform:rotateY(180deg)}
 .side{backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;background:var(--paper);box-shadow:0 0 0 4px var(--ink),0 30px 60px -20px rgba(0,0,0,.6);padding:10px;overflow:hidden}
@@ -189,14 +192,29 @@ dialog::backdrop{background:rgba(35,29,22,.7);backdrop-filter:blur(4px)}
 .side.front.tall video{height:min(720px,calc(100dvh - 190px));width:auto;max-width:calc(100vw - 44px)}
 .side.front .cap{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:10px 4px 2px;font:800 17px/1.1 var(--fd)}
 .side.front .cap span{font:700 12px/1 var(--fm)}
-.side.back{position:absolute;inset:0;transform:rotateY(180deg);display:flex;flex-direction:column;gap:12px;padding:20px;overflow:auto;background:var(--paper)}
-.side.back .t{font:700 11px/1 var(--fm);letter-spacing:.1em;color:var(--dim)}
-.side.back h3{font:800 clamp(22px,3vw,30px)/1.05 var(--fd);letter-spacing:-.02em}
-.tbl{font:700 13px/1.9 var(--fm);border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:6px 0}
-.tbl div{display:grid;grid-template-columns:70px 1fr auto;gap:8px}
-.tbl .w{color:var(--up)}.tbl .x{color:var(--dn)}
-.tbl hr{border:0;border-top:1.5px dashed var(--dim);margin:6px 0}
-.side.back p{font-size:15px;color:var(--ink2)}
+.side.back{position:absolute;inset:0;transform:rotateY(180deg);background:var(--paper);padding:0;container-type:size}
+.bk{height:100%;display:flex;flex-direction:column;gap:max(8px,2cqh);padding:max(14px,4cqw)}
+.bk .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;font:700 max(11px,2.4cqw)/1.2 var(--fm);letter-spacing:.06em}
+.bk .hd em{font-style:normal;background:var(--ink);color:var(--paper);padding:5px 8px;border-radius:4px;white-space:nowrap}
+.ver{border-radius:12px;box-shadow:0 0 0 3px var(--ink);padding:max(12px,3.2cqw) max(12px,3cqw);text-align:center;background:linear-gradient(115deg,#ff9ad5,#ffe38a 30%,#a8ffcf 60%,#8fd3ff)}
+.ver.none{background:repeating-linear-gradient(-45deg,#fde4e2 0 10px,#fbd0cc 10px 20px)}
+.ver small{display:block;font:700 max(11px,2.4cqw)/1 var(--fm);letter-spacing:.12em}
+.ver b{display:block;font:800 max(28px,min(10cqw,9cqh))/1 var(--fd);letter-spacing:-.03em;margin:max(4px,1cqh) 0}
+.ver span{font:700 max(13px,3cqw)/1.3 var(--fd)}
+.what{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:max(6px,1.2cqh)}
+.what small{font:700 max(11px,2.4cqw)/1.2 var(--fm);letter-spacing:.08em}
+.what b{font:800 max(26px,min(9cqw,8cqh))/1 var(--fd);letter-spacing:-.02em}
+.what b.u{color:var(--up)}.what b.d{color:var(--dn)}
+.nl{width:100%;height:auto;flex:1 1 auto;min-height:0;max-height:34cqh}
+.rows{display:flex;flex-direction:column;gap:max(6px,1.2cqh)}
+.rw{display:grid;grid-template-columns:max(28px,6.5cqw) 1fr auto;align-items:center;gap:max(8px,2cqw);font:700 max(13px,3.1cqw)/1.2 var(--fd)}
+.rw i{font-style:normal;width:max(28px,6.5cqw);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;color:#fff;font:800 max(13px,3cqw)/1 var(--fd);box-shadow:0 0 0 2px var(--ink)}
+.rw .c small{display:block;font:700 max(10.5px,2.3cqw)/1.2 var(--fm);color:var(--dim);margin-top:2px}
+.rw .c small.ok{color:var(--up)}.rw .c small.no{color:var(--dn)}
+.rw .off{font:700 max(12px,2.8cqw)/1.2 var(--fm);text-align:right}
+.rw.win{background:#fff3c4;border-radius:10px;box-shadow:0 0 0 2px var(--ink);padding:max(4px,.8cqh) max(6px,1.2cqw);margin:0 calc(-1*max(6px,1.2cqw))}
+.bk .ft{margin-top:auto;font:700 max(10px,2.2cqw)/1.4 var(--fm);color:var(--dim);letter-spacing:.06em;text-align:center}
+.side.front .hintf{font:700 11px/1 var(--fm);color:var(--dim);padding:6px 4px 0}
 .vbar{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .vbar .btn{font-size:14px;padding:11px 16px}
 
@@ -370,18 +388,45 @@ function isUp(s){return s.charAt(0)==="+"}
   $("#rost").innerHTML=h;
 })();
 
+
+/* the back of the card: verdict first, then the move, then where each call landed */
+function num(s){var m=String(s).match(/(UP|DOWN)?\s*([+−-]?)([\d.]+)/);var v=parseFloat(m[3]);return (m[1]==="DOWN"||m[2]==="−"||m[2]==="-")?-v:v}
+function backHTML(r){
+  var o=num(r.out),wn=r.win?r.win.split(" & "):[],up=o>0;
+  var verdict,sub;
+  if(!r.win){verdict="NOBODY WINS";sub="All three called the wrong direction."}
+  else if(wn.length>1){var d=r.calls.filter(function(c){return c[0]===wn[0]})[0][2];verdict=wn.join(" & ")+" SPLIT IT";sub="Both landed "+d+" pts from the close."}
+  else{var d1=r.calls.filter(function(c){return c[0]===wn[0]})[0][2];verdict=wn[0]+" WINS";sub="Right direction, "+d1+" pts from the close — nearest of the three."}
+  /* number line, −10 … +10 */
+  var W=320,X0=24,X1=W-16,y0=26,lane=22,ax=y0+lane*3+6;function x(v){return X0+(v+10)/20*(X1-X0)}
+  var g='<svg class="nl" viewBox="0 0 '+W+' '+(ax+22)+'" role="img" aria-label="Where each call landed against the actual move">';
+  [-10,-5,0,5,10].forEach(function(t){g+='<line x1="'+x(t)+'" x2="'+x(t)+'" y1="'+(y0-10)+'" y2="'+ax+'" stroke="'+(t===0?'#231d16':'#d8ccb4')+'" stroke-width="'+(t===0?1.5:1)+'" '+(t===0?'stroke-dasharray="3 3"':'')+'/><text x="'+x(t)+'" y="'+(ax+16)+'" text-anchor="middle" font-family="Space Mono,monospace" font-size="11" font-weight="700" fill="#8f8474">'+(t>0?'+':t<0?'−':'')+Math.abs(t)+'%</text>'});
+  g+='<line x1="'+X0+'" x2="'+X1+'" y1="'+ax+'" y2="'+ax+'" stroke="#231d16" stroke-width="2"/>';
+  var oc=up?'#16a34a':'#e5322d';
+  g+='<rect x="'+(x(o)-2.5)+'" y="'+(y0-16)+'" width="5" height="'+(ax-y0+16)+'" rx="2" fill="'+oc+'"/>';
+  g+='<text x="'+x(o)+'" y="'+(y0-20)+'" text-anchor="'+(o>6?'end':o<-6?'start':'middle')+'" font-family="Bricolage Grotesque,sans-serif" font-size="13" font-weight="800" fill="'+oc+'">ACTUAL '+r.out+'</text>';
+  r.calls.forEach(function(c,i){var v=num(c[1]),cx=x(v),cy=y0+lane*i+8,won=wn.indexOf(c[0])>-1;
+    g+='<line x1="'+cx+'" x2="'+x(o)+'" y1="'+cy+'" y2="'+cy+'" stroke="'+MODELS[c[0]]+'" stroke-width="2" stroke-dasharray="2 3" opacity=".7"/>';
+    if(won)g+='<circle cx="'+cx+'" cy="'+cy+'" r="11.5" fill="#ffe38a" stroke="#231d16" stroke-width="2"/>';
+    g+='<circle cx="'+cx+'" cy="'+cy+'" r="8.5" fill="'+MODELS[c[0]]+'" stroke="#231d16" stroke-width="1.5"/><text x="'+cx+'" y="'+(cy+4)+'" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="10" font-weight="800" fill="#fff">'+c[0].charAt(0)+'</text>'});
+  g+='</svg>';
+  var rows=r.calls.map(function(c){var v=num(c[1]),ok=(v>0)===(o>0),won=wn.indexOf(c[0])>-1;
+    return '<div class="rw'+(won?' win':'')+'"><i style="background:'+MODELS[c[0]]+'">'+c[0].charAt(0)+'</i><div class="c">'+(won?'★ ':'')+c[0]+' said '+c[1]+'<small class="'+(ok?'ok':'no')+'">'+(ok?'✓ right direction':'✗ wrong direction')+'</small></div><span class="off">'+c[2]+'<br>pts off</span></div>'}).join("");
+  return '<div class="bk"><div class="hd"><span>ROUND '+r.n+' · '+r.co.toUpperCase()+'</span><em>'+r.tag+'</em></div>'+
+    '<div class="ver'+(r.win?'':' none')+'"><small>THE WINNER</small><b>'+verdict+'</b><span>'+sub+'</span></div>'+
+    '<div class="what"><small>WHAT THE STOCK DID</small><b class="'+(up?'u':'d')+'">'+r.out+'</b></div>'+g+
+    '<div class="rows">'+rows+'</div><div class="ft">FILED BEFORE THE BELL · GRADED +24H · NEVER REPRINTED</div></div>';
+}
 /* card viewer: film on the front, receipt on the back */
 var dlg=$("#view");
 function openCard(n,noHash){
   var r=ROUNDS[n-1];if(!r)return;var wn=r.win?r.win.split(" & "):[];
   $("#viewer").innerHTML='<div class="flip" id="flip"><div class="inner">'+
-   '<div class="side front '+(r.tall?'tall':'sq')+'"><video controls playsinline preload="metadata" poster="'+MEDIA+r.poster+'.jpg"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video><div class="cap">Round '+r.n+' · '+r.co+'<span>'+r.tag+'</span></div></div>'+
-   '<div class="side back"><span class="t">THE RECEIPT · NEVER REPRINTED</span><h3>'+r.head+'</h3><div class="tbl">'+
-     r.calls.map(function(c){return '<div><span>'+(wn.indexOf(c[0])>-1?'★ ':'')+c[0]+'</span><span>'+c[1]+'</span><span>'+c[2]+' pts off</span></div>'}).join("")+
-     '<hr><div><span>OUTCOME</span><span>'+r.out+'</span><span></span></div><div><span>WINNER</span><span class="'+(r.win?'w':'x')+'">'+(r.win||'NOBODY')+'</span><span></span></div></div><p>'+r.story+'</p></div>'+
-   '</div></div><div class="vbar">'+(n>1?'<button class="btn lt" data-go="'+(n-1)+'" type="button">← '+(n-1)+'</button>':'')+'<button class="btn" id="flipBtn" type="button">Flip card</button>'+(n<ROUNDS.length?'<button class="btn lt" data-go="'+(n+1)+'" type="button">'+(n+1)+' →</button>':'')+'<button class="btn lt" id="shareBtn" type="button">Share</button><button class="btn lt" id="closeBtn" type="button">Close</button></div>';
+   '<div class="side front '+(r.tall?'tall':'sq')+'"><video controls playsinline preload="metadata" poster="'+MEDIA+r.poster+'.jpg"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video><div class="cap">Round '+r.n+' · '+r.co+'<span>'+r.tag+'</span></div><div class="hintf">Flip the card for the scorecard →</div></div>'+
+   '<div class="side back">'+backHTML(r)+'</div>'+
+   '</div></div><div class="vbar">'+(n>1?'<button class="btn lt" data-go="'+(n-1)+'" type="button">← '+(n-1)+'</button>':'')+'<button class="btn" id="flipBtn" type="button">Flip → scorecard</button>'+(n<ROUNDS.length?'<button class="btn lt" data-go="'+(n+1)+'" type="button">'+(n+1)+' →</button>':'')+'<button class="btn lt" id="shareBtn" type="button">Share</button><button class="btn lt" id="closeBtn" type="button">Close</button></div>';
   var v=$("#viewer video"),f=$("#flip");
-  $("#flipBtn").addEventListener("click",function(){f.classList.toggle("back");if(f.classList.contains("back"))v.pause()});
+  $("#flipBtn").addEventListener("click",function(){f.classList.toggle("back");var b=f.classList.contains("back");if(b)v.pause();this.textContent=b?"Flip → film":"Flip → scorecard"});
   $("#closeBtn").addEventListener("click",close);
   $("#shareBtn").addEventListener("click",function(){var url=location.href.split("#")[0]+"#round-"+r.n;if(navigator.share)navigator.share({title:"Round "+r.n+" · "+r.co+" — Earnings Zeason",url:url}).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(url).then(function(){toast("Link to this card copied")})});
   $$("#viewer [data-go]").forEach(function(b){b.addEventListener("click",function(){openCard(+b.dataset.go)})});
