@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Earnings Zeason — The Binder</title>
+<meta name="description" content="Every earnings round is a card. Three AI models call it before the bell, the market grades it, the card goes in the binder — never edited. Season One: six cards pulled, one pack sealed.">
+<meta name="theme-color" content="#f3ead8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   EARNINGS ZEASON · v4 "THE BINDER"
+   Every round is a collectible card. The season is a binder you fill.
+   The next round is a sealed pack. Your own call becomes your card.
+   Maintenance: edit DATA at the top of the script. Nothing else.
+   Hard facts = the calls and the outcomes (verbatim). The rest is play.
+   ===================================================================== */
+:root{
+  --kraft:#f3ead8;--kraft2:#e8dcc2;--paper:#fffaf0;--ink:#231d16;--ink2:#5a4f42;--dim:#8f8474;
+  --up:#16a34a;--dn:#e5322d;--gold:#e8a317;--foil1:#ff9ad5;--foil2:#8fd3ff;--foil3:#ffe38a;--foil4:#a8ffcf;
+  --fd:'Bricolage Grotesque',system-ui,sans-serif;--fm:'Space Mono',ui-monospace,monospace;
+  --r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;background:var(--kraft);overflow-x:clip}
+body{background:var(--kraft);color:var(--ink);font-family:var(--fd);font-size:17px;line-height:1.5;
+  background-image:radial-gradient(rgba(35,29,22,.08) 1px,transparent 1.3px);background-size:14px 14px}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img,video{display:block;max-width:100%}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+.mono{font-family:var(--fm)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 15px/1 var(--fd);text-decoration:none;padding:14px 20px;border-radius:999px;background:var(--ink);color:var(--paper);border:2px solid var(--ink);transition:transform .15s}
+.btn:hover{transform:translateY(-2px) rotate(-1deg)}
+.btn.lt{background:var(--paper);color:var(--ink)}
+.btn.off{background:transparent;color:var(--dim);border-style:dashed;border-color:var(--dim);pointer-events:none}
+.btn.sm{font-size:13px;padding:10px 14px}
+
+/* ---------- top ---------- */
+.top{position:sticky;top:0;z-index:40;background:rgba(243,234,216,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:2px solid var(--ink)}
+.top-in{max-width:1120px;margin:0 auto;padding:0 16px;height:58px;display:flex;align-items:center;gap:14px}
+.logo{font:800 20px/1 var(--fd);text-decoration:none;letter-spacing:-.02em;white-space:nowrap}
+.logo .d{color:var(--gold)}.logo .e{color:var(--up)}.logo .z{color:var(--dn)}
+.logo small{font:700 11px/1 var(--fm);color:var(--dim);margin-left:8px;letter-spacing:.06em}
+.count{margin-left:auto;font:700 12px/1 var(--fm);white-space:nowrap;display:flex;align-items:center;gap:8px}
+.count i{width:8px;height:8px;border-radius:50%;background:var(--dn);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.25}}
+@media(max-width:560px){.logo small,.count .l{display:none}}
+
+/* ---------- hero: the booster ---------- */
+.hero{padding:40px 0 30px;text-align:center}
+.eyebrow{font:700 12px/1 var(--fm);letter-spacing:.14em;color:var(--ink2)}
+.hero h1{font:800 clamp(40px,8vw,92px)/.92 var(--fd);letter-spacing:-.045em;margin:16px auto 14px;max-width:900px}
+.hero h1 span{display:inline-block;background:linear-gradient(100deg,var(--foil1),var(--foil3),var(--foil4),var(--foil2),var(--foil1));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:foil 6s linear infinite;-webkit-text-stroke:2px var(--ink)}
+@keyframes foil{to{background-position:300% 0}}
+.hero .sub{max-width:600px;margin:0 auto;color:var(--ink2);font-size:18px}
+.stage{position:relative;height:clamp(380px,62vw,500px);margin:28px auto 0;max-width:720px;transition:height .6s cubic-bezier(.3,1.2,.5,1)}
+.stage.open{height:clamp(270px,42vw,360px)}
+.pack{position:absolute;left:50%;top:50%;width:min(250px,56vw);aspect-ratio:5/7.4;transform:translate(-50%,-50%) rotate(-3deg);border-radius:10px;cursor:pointer;z-index:5;transition:transform .5s cubic-bezier(.3,1.4,.5,1),opacity .4s;
+  background:linear-gradient(115deg,#ff9ad5,#ffe38a 25%,#a8ffcf 50%,#8fd3ff 75%,#ff9ad5);background-size:300% 300%;animation:foil 5s linear infinite;box-shadow:0 20px 40px -14px rgba(35,29,22,.6),inset 0 0 0 3px var(--ink)}
+.pack::before{content:"";position:absolute;inset:0;border-radius:10px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 2px,transparent 2px 7px)}
+.pack .crimp{position:absolute;left:0;right:0;height:22px;background:repeating-linear-gradient(90deg,var(--ink) 0 6px,#3a3027 6px 12px);clip-path:polygon(0 0,100% 0,100% 60%,96% 100%,92% 60%,88% 100%,84% 60%,80% 100%,76% 60%,72% 100%,68% 60%,64% 100%,60% 60%,56% 100%,52% 60%,48% 100%,44% 60%,40% 100%,36% 60%,32% 100%,28% 60%,24% 100%,20% 60%,16% 100%,12% 60%,8% 100%,4% 60%,0 100%)}
+.pack .crimp.t{top:0;transition:transform .5s cubic-bezier(.5,-0.4,.6,1),opacity .5s}
+.pack .crimp.b{bottom:0;transform:scaleY(-1)}
+.pack .face{position:absolute;inset:30px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;background:rgba(255,250,240,.9);border-radius:6px;box-shadow:inset 0 0 0 2px var(--ink)}
+.pack .face b{font:800 30px/.9 var(--fd);letter-spacing:-.03em}
+.pack .face b .d{color:var(--gold)}.pack .face b .e{color:var(--up)}.pack .face b .z{color:var(--dn)}
+.pack .face span{font:700 10px/1.4 var(--fm);letter-spacing:.08em}
+.pack .face .tear{margin-top:6px;font:800 14px/1 var(--fd);background:var(--ink);color:var(--paper);padding:9px 12px;border-radius:999px;animation:nudge 1.6s ease-in-out infinite}
+@keyframes nudge{50%{transform:scale(1.07) rotate(-2deg)}}
+.stage.open .pack{transform:translate(-50%,-50%) rotate(-3deg) scale(.6) translateY(120px);opacity:0;pointer-events:none}
+.stage.open .pack .crimp.t{transform:translate(40px,-80px) rotate(24deg);opacity:0}
+.fan{position:absolute;inset:0;pointer-events:none}
+.fan .mini{position:absolute;left:50%;top:50%;width:min(150px,27vw);aspect-ratio:5/7;margin:calc(min(150px,27vw)*-.7) 0 0 calc(min(150px,27vw)*-.5);border-radius:9px;overflow:hidden;box-shadow:0 14px 28px -12px rgba(35,29,22,.7),0 0 0 3px var(--paper),0 0 0 5px var(--ink);opacity:0;transform:translateY(40px) scale(.5);transition:transform .8s cubic-bezier(.3,1.35,.5,1),opacity .3s;pointer-events:auto;cursor:pointer;background:var(--ink)}
+.fan .mini img{width:100%;height:100%;object-fit:cover}
+.stage.open .fan .mini{opacity:1}
+.hint{margin-top:10px;font:700 12px/1.4 var(--fm);color:var(--ink2)}
+
+/* ---------- section heads ---------- */
+.sec{padding:60px 0}
+.sh{margin-bottom:26px}
+.sh .eyebrow{display:inline-block;background:var(--ink);color:var(--paper);padding:7px 10px;border-radius:4px;letter-spacing:.1em}
+.sh h2{font:800 clamp(32px,5vw,56px)/.98 var(--fd);letter-spacing:-.035em;margin:14px 0 10px}
+.sh p{color:var(--ink2);max-width:660px}
+
+/* ---------- the binder ---------- */
+.binder{background:#2f3b33;border-radius:22px;padding:22px;box-shadow:inset 0 0 0 3px var(--ink),0 30px 60px -30px rgba(35,29,22,.8);position:relative}
+.binder::before{content:"";position:absolute;left:50%;top:14px;bottom:14px;width:3px;margin-left:-1.5px;background:repeating-linear-gradient(transparent 0 26px,rgba(0,0,0,.35) 26px 44px)}
+.pages{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;position:relative}
+@media(max-width:900px){.pages{grid-template-columns:repeat(3,1fr)}.binder::before{display:none}}
+@media(max-width:560px){.pages{grid-template-columns:1fr 1fr;gap:12px}.binder{padding:14px;border-radius:16px}}
+.sleeve{position:relative;aspect-ratio:5/7;border-radius:12px;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}
+.sleeve::after{content:"";position:absolute;inset:0;border-radius:12px;pointer-events:none;background:linear-gradient(160deg,rgba(255,255,255,.22),transparent 38%)}
+.card{--mx:50%;--my:50%;--rx:0deg;--ry:0deg;position:absolute;inset:6px;border-radius:9px;overflow:hidden;background:var(--paper);box-shadow:0 0 0 3px var(--ink);cursor:pointer;display:flex;flex-direction:column;transform:perspective(700px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .2s;text-align:left}
+.card .art{position:relative;flex:1;min-height:0;background:#111;margin:6px 6px 0;border-radius:5px;overflow:hidden;box-shadow:0 0 0 2px var(--ink)}
+.card .art img{width:100%;height:100%;object-fit:cover}
+.card .holo{position:absolute;inset:0;pointer-events:none;mix-blend-mode:color-dodge;opacity:.45;background:radial-gradient(circle at var(--mx) var(--my),rgba(255,255,255,.75),transparent 40%),linear-gradient(115deg,transparent 20%,rgba(255,154,213,.55) 35%,rgba(143,211,255,.55) 50%,rgba(168,255,207,.55) 65%,transparent 80%);background-size:100% 100%,250% 250%;background-position:center,var(--mx) var(--my)}
+.card .rar{position:absolute;top:6px;right:6px;font:700 8.5px/1 var(--fm);letter-spacing:.06em;background:var(--paper);padding:5px 6px;border-radius:4px;box-shadow:0 0 0 1.5px var(--ink)}
+.card .nm{padding:7px 8px 2px;font:800 clamp(11px,1.3vw,14px)/1.1 var(--fd);letter-spacing:-.01em}
+.card .st{display:flex;justify-content:space-between;align-items:baseline;padding:2px 8px 8px;font:700 clamp(10px,1.1vw,12px)/1.2 var(--fm)}
+.card.u{background:#e3f7e8}.card.d{background:#fde4e2}
+.card .st .o.u{color:var(--up)}.card .st .o.d{color:var(--dn)}
+.card.miss .art img{filter:grayscale(.3) contrast(1.05)}
+.sealed{position:absolute;inset:6px;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;padding:10px;color:var(--ink);text-decoration:none;
+  background:linear-gradient(115deg,#ff9ad5,#ffe38a 25%,#a8ffcf 50%,#8fd3ff 75%,#ff9ad5);background-size:300% 300%;animation:foil 5s linear infinite;box-shadow:0 0 0 3px var(--ink)}
+.sealed b{font:800 clamp(15px,1.8vw,20px)/1 var(--fd)}
+.sealed span{font:700 10px/1.3 var(--fm)}
+.sealed em{font:700 clamp(11px,1.3vw,13px)/1 var(--fm);font-style:normal;background:var(--ink);color:var(--paper);padding:6px 8px;border-radius:4px}
+.empty{position:absolute;inset:6px;border-radius:9px;border:2px dashed rgba(255,255,255,.3);display:grid;place-items:center;font:800 26px/1 var(--fd);color:rgba(255,255,255,.35)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px;font:700 12px/1.4 var(--fm);color:var(--ink2)}
+
+/* ---------- roster (player cards) ---------- */
+.roster{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:900px){.roster{grid-template-columns:1fr 1fr}}
+.pcard{border-radius:14px;background:var(--paper);box-shadow:0 0 0 3px var(--ink),6px 8px 0 3px rgba(35,29,22,.18);padding:14px;display:flex;flex-direction:column;gap:10px;transform:rotate(var(--t,0deg))}
+.pcard .face{aspect-ratio:1.3;border-radius:8px;display:grid;place-items:center;font:800 clamp(36px,6vw,64px)/1 var(--fd);color:var(--paper);box-shadow:0 0 0 2px var(--ink);position:relative;overflow:hidden}
+.pcard .face::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,255,255,.12) 0 6px,transparent 6px 12px)}
+.pcard h3{font:800 22px/1 var(--fd);letter-spacing:-.02em}
+.pcard dl{display:grid;grid-template-columns:1fr auto;gap:4px 8px;font:700 12px/1.4 var(--fm)}
+.pcard dt{color:var(--dim)}
+.pcard .rank{font:700 11px/1 var(--fm);letter-spacing:.08em;color:var(--dim)}
+.pcard.lead .rank{color:var(--up)}
+.pcard.ghost{background:transparent;box-shadow:0 0 0 3px var(--dim);border:0}
+.pcard.ghost .face{background:repeating-linear-gradient(45deg,var(--kraft2) 0 8px,var(--kraft) 8px 16px);color:var(--dim);box-shadow:0 0 0 2px var(--dim)}
+.pcard.ghost p{font-size:14px;color:var(--ink2)}
+
+/* ---------- your card ---------- */
+.yours{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center}
+@media(max-width:860px){.yours{grid-template-columns:1fr}}
+.form{background:var(--paper);border-radius:18px;box-shadow:0 0 0 3px var(--ink);padding:22px}
+.form h3{font:800 26px/1.05 var(--fd);letter-spacing:-.02em}
+.form p{color:var(--ink2);font-size:15.5px;margin:8px 0 16px}
+.dir{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dir button{font:800 20px/1 var(--fd);padding:16px;border-radius:12px;box-shadow:0 0 0 3px var(--ink);background:var(--kraft);transition:transform .12s}
+.dir button:hover{transform:translateY(-2px)}
+.dir button[data-d="UP"].on{background:var(--up);color:#fff}.dir button[data-d="DOWN"].on{background:var(--dn);color:#fff}
+.dir button:disabled{opacity:.4;cursor:not-allowed}
+.sz{display:flex;align-items:center;gap:12px;margin:18px 0 6px;font:700 13px/1 var(--fm)}
+.sz input{flex:1;accent-color:var(--ink)}
+.sz output{min-width:52px;text-align:right;font-size:15px}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.preview{display:flex;justify-content:center}
+.preview canvas{width:min(320px,80vw);height:auto;border-radius:14px;box-shadow:0 0 0 3px var(--ink),10px 14px 0 3px rgba(35,29,22,.2);transform:rotate(2deg)}
+.cd4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.cd4 div{background:var(--kraft);border-radius:10px;text-align:center;padding:10px 2px 8px;box-shadow:0 0 0 2px var(--ink)}
+.cd4 b{display:block;font:800 26px/1 var(--fd)}
+.cd4 span{font:700 9px/1 var(--fm);color:var(--dim)}
+.fine{font:400 12.5px/1.6 var(--fm);color:var(--ink2);margin-top:12px}
+
+/* ---------- counter (get $EZ) ---------- */
+.counter{background:var(--paper);border-radius:22px;box-shadow:0 0 0 3px var(--ink);padding:26px 22px}
+.pot{display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px;padding-bottom:20px;border-bottom:2px dashed var(--dim);margin-bottom:22px}
+.pot h3{font:800 24px/1 var(--fd)}
+.pips{display:flex;gap:6px}
+.pips i{width:22px;height:30px;border-radius:4px;box-shadow:0 0 0 2px var(--ink);background:var(--kraft2)}
+.pips i.f{background:linear-gradient(115deg,#ff9ad5,#ffe38a,#a8ffcf,#8fd3ff)}
+.pips i.n{background:var(--kraft);animation:pulse 1.2s infinite}
+.pot p{flex:1 1 280px;font-size:14.5px;color:var(--ink2)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:860px){.steps{grid-template-columns:1fr}}
+.step{display:flex;flex-direction:column;gap:8px}
+.step .n{font:700 11px/1 var(--fm);color:var(--dim)}
+.step h4{font:800 20px/1.1 var(--fd)}
+.step p{font-size:15px;color:var(--ink2)}
+.ca{font:700 12px/1.5 var(--fm);background:var(--kraft);border-radius:8px;padding:10px;box-shadow:inset 0 0 0 2px var(--dim);overflow-wrap:anywhere;color:var(--ink2)}
+.ca.live{box-shadow:inset 0 0 0 2px var(--ink);color:var(--ink);cursor:copy}
+.step .btn{margin-top:auto}
+.risk{margin-top:22px;font:400 12.5px/1.65 var(--fm);color:var(--ink2)}
+
+footer{padding:70px 16px 90px;text-align:center}
+.motto{font:800 clamp(30px,6vw,64px)/1 var(--fd);letter-spacing:-.04em}
+.motto .e{color:var(--up)}.motto .z{color:var(--dn)}
+.fmark{display:inline-block;margin-top:18px;font:800 40px/1 var(--fd);background:var(--ink);padding:10px 18px;border-radius:10px}
+.fmark .d{color:var(--gold)}.fmark .e{color:#4ade80}.fmark .z{color:#ff5b55}
+.colo{margin-top:14px;font:700 11px/1.6 var(--fm);color:var(--dim);letter-spacing:.08em}
+
+/* ---------- card viewer ---------- */
+dialog{border:0;padding:0;background:transparent;margin:auto;overflow:visible;max-width:calc(100vw - 20px)}
+dialog::backdrop{background:rgba(35,29,22,.7);backdrop-filter:blur(4px)}
+.viewer{display:flex;flex-direction:column;align-items:center;gap:14px}
+.flip{position:relative;perspective:1400px}
+.flip .inner{position:relative;transition:transform .7s cubic-bezier(.3,1.2,.5,1);transform-style:preserve-3d}
+.flip.back .inner{transform:rotateY(180deg)}
+.side{backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;background:var(--paper);box-shadow:0 0 0 4px var(--ink),0 30px 60px -20px rgba(0,0,0,.6);padding:10px;overflow:hidden}
+.side.front video{border-radius:10px;background:#000;display:block}
+.side.front.sq video{width:min(560px,calc(100vw - 44px),calc(100dvh - 190px));height:auto}
+.side.front.tall video{height:min(720px,calc(100dvh - 190px));width:auto;max-width:calc(100vw - 44px)}
+.side.front .cap{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:10px 4px 2px;font:800 17px/1.1 var(--fd)}
+.side.front .cap span{font:700 12px/1 var(--fm)}
+.side.back{position:absolute;inset:0;transform:rotateY(180deg);display:flex;flex-direction:column;gap:12px;padding:20px;overflow:auto;background:var(--paper)}
+.side.back .t{font:700 11px/1 var(--fm);letter-spacing:.1em;color:var(--dim)}
+.side.back h3{font:800 clamp(22px,3vw,30px)/1.05 var(--fd);letter-spacing:-.02em}
+.tbl{font:700 13px/1.9 var(--fm);border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:6px 0}
+.tbl div{display:grid;grid-template-columns:70px 1fr auto;gap:8px}
+.tbl .w{color:var(--up)}.tbl .x{color:var(--dn)}
+.tbl hr{border:0;border-top:1.5px dashed var(--dim);margin:6px 0}
+.side.back p{font-size:15px;color:var(--ink2)}
+.vbar{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.vbar .btn{font-size:14px;padding:11px 16px}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);opacity:0;background:var(--ink);color:var(--paper);font:700 13px/1 var(--fm);padding:12px 16px;border-radius:999px;transition:all .2s;z-index:100;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.reveal{opacity:0;transform:translateY(20px) rotate(-.5deg);transition:opacity .6s,transform .6s cubic-bezier(.3,1.3,.5,1)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <a class="logo" href="#top"><span class="d">$</span><span class="e">E</span><span class="z">Z</span><small>EARNINGS ZEASON</small></a>
+  <span class="count"><i></i><span class="l">NEXT PACK SEALS IN</span><b data-cd>—</b></span>
+  <a class="btn sm" href="#counter">Get $EZ</a>
+</div></header>
+
+<main id="top">
+<!-- ============ HERO: the booster ============ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">EARNINGS ZEASON · SEASON ONE</div>
+    <h1>Every earnings print is a <span>card.</span></h1>
+    <p class="sub">Three AI models call it before the bell. The market grades it twenty-four hours later. The card goes in the binder — and nobody can ever reprint it.</p>
+    <div class="stage" id="stage">
+      <div class="pack" id="pack" role="button" tabindex="0" aria-label="Open the Season One pack">
+        <div class="crimp t"></div><div class="crimp b"></div>
+        <div class="face"><span>SEASON ONE BOOSTER</span><b><span class="d">$</span><span class="e">E</span><span class="z">Z</span></b><span>6 CARDS PULLED<br>1 STILL SEALED</span><span class="tear">RIP IT OPEN</span></div>
+      </div>
+      <div class="fan" id="fan"></div>
+    </div>
+    <p class="hint" id="hint">Tap the pack.</p>
+  </div>
+</section>
+
+<!-- ============ THE BINDER ============ -->
+<section class="sec" id="binder">
+  <div class="wrap">
+    <div class="sh reveal"><span class="eyebrow">THE BINDER</span><h2>Six pulled. One sealed. Three to go.</h2><p>Tap a card to play its film. Flip it for the receipt: every call, the outcome, the winner, how far off each machine landed.</p></div>
+    <div class="binder reveal"><div class="pages" id="pages"></div></div>
+    <div class="legend"><span>GREEN CARD = STOCK WENT UP</span><span>RED CARD = STOCK WENT DOWN</span><span>TAG = WHAT MADE THE ROUND</span></div>
+  </div>
+</section>
+
+<!-- ============ ROSTER ============ -->
+<section class="sec" id="roster">
+  <div class="wrap">
+    <div class="sh reveal"><span class="eyebrow">THE ROSTER</span><h2>Three machines. Their cards so far.</h2><p>Rounds won, direction called right, and the average distance from the close — as published on the record.</p></div>
+    <div class="roster" id="rost"></div>
+  </div>
+</section>
+
+<!-- ============ YOUR CARD ============ -->
+<section class="sec" id="yours">
+  <div class="wrap">
+    <div class="sh reveal"><span class="eyebrow">YOUR CARD</span><h2>Pull your own for Round 7 · Micron.</h2><p>Call it before the machines show their hands. Your card is made on this device — save it, post it, and come back after the print to see who you beat.</p></div>
+    <div class="yours">
+      <div class="form reveal">
+        <h3>Micron: up or down?</h3>
+        <p>Not part of the record. No wallet, no account. Just you against three machines.</p>
+        <div class="dir"><button type="button" data-d="UP">▲ UP</button><button type="button" data-d="DOWN">▼ DOWN</button></div>
+        <label class="sz">BY<input type="range" id="size" min="0.5" max="15" step="0.5" value="3" aria-label="Size of the move in percent"><output id="sizeOut">3%</output></label>
+        <div class="row"><button class="btn" type="button" id="save">Save my card</button><button class="btn lt" type="button" id="post">Share it</button><button class="btn lt" type="button" id="ics">+ Calendar</button></div>
+        <div class="cd4"><div><b data-cd="d">—</b><span>DAYS</span></div><div><b data-cd="h">—</b><span>HRS</span></div><div><b data-cd="m">—</b><span>MIN</span></div><div><b data-cd="s">—</b><span>SEC</span></div></div>
+        <p class="fine">Calls lock Wed, Sep 30 · 4:30 pm ET. Date per Micron's announcement — the sheet will carry it officially.</p>
+      </div>
+      <div class="preview reveal"><canvas id="mycard" width="600" height="840" aria-label="Preview of your Round 7 card"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE COUNTER ============ -->
+<section class="sec" id="counter">
+  <div class="wrap">
+    <div class="sh reveal"><span class="eyebrow">THE COUNTER</span><h2>Get $EZ.</h2></div>
+    <div class="counter reveal">
+      <div class="pot"><h3>The purse</h3><div class="pips" id="pips" aria-label="6 of 10 rounds settled"></div><p>Accruing since Round I, sealed until Round X. 69% to the season's winning machine. Settles in $EZ. No purse figures published yet — the ledger carries the number the day it is written.</p></div>
+      <div class="steps">
+        <div class="step"><span class="n">01</span><h4>Check the address</h4><p>The only official contract address lives here and on the pinned post. Anything posted elsewhere first is not us.</p><div class="ca" id="ca">Not posted yet — it appears here, and only here, at launch.</div></div>
+        <div class="step"><span class="n">02</span><h4>Get $EZ</h4><p>Only through the link on this page, against the address beside it.</p><a class="btn off" id="buy" href="#counter" target="_blank" rel="noopener">Opens at launch</a></div>
+        <div class="step"><span class="n">03</span><h4>Be there for the next pack</h4><p>The calls post before the bell, the grade after the close. Both land here first.</p><div id="follow" style="display:flex;flex-direction:column;gap:8px;margin-top:auto"></div></div>
+      </div>
+      <p class="risk">$EZ is a memecoin. Nothing here promises value, returns or a payout, and none of it is financial advice. The machines' calls are an experiment in public, not trading signals — six rounds in, one card has no winner at all.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="motto">Nobody said it would be <span class="e">E</span><span class="z">Z</span></div>
+  <div class="fmark" aria-label="$EZ"><span class="d">$</span><span class="e">E</span><span class="z">Z</span></div>
+  <div class="colo">CALLS FILED BEFORE THE BELL · GRADED +24H · NEVER REPRINTED</div>
+</footer>
+
+<dialog id="view" aria-label="Round card"><div class="viewer" id="viewer"></div></dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ===================================================================
+   DATA — the only block you edit.
+   Calls and outcomes are verbatim from the record. To add a round:
+   copy one entry, fill it in, drop its film in media/.
+   tag = a label for what made the round (words, not new numbers).
+   =================================================================== */
+var CONFIG={ca:"",buyUrl:"",chain:"",x:"",tg:""};
+var NEXT={n:7,co:"Micron",lockAt:"2026-09-30T20:30:00Z",calls:null,out:null,win:null};
+var MODELS={GPT:"#3d6fe0",KIMI:"#7a4de0",CLAUDE:"#e0762a"};
+var LADDER=[{m:"GPT",won:3,dir:"4 / 6",avg:"3.96"},{m:"KIMI",won:2,dir:"4 / 6",avg:"4.46"},{m:"CLAUDE",won:1,dir:"3 / 6",avg:"4.61"}];
+var ROUNDS=[
+ {n:1,co:"GameStop",out:"+5.95%",win:"KIMI",tag:"SEASON OPENER",head:"Kimi Calls GameStop",film:"round-1-gamestop",poster:"round-1-gamestop-poster",tall:true,
+  calls:[["GPT","UP 1%","4.95"],["KIMI","UP 4%","1.95"],["CLAUDE","UP 2%","3.95"]],
+  story:"Three machines called GameStop higher before the bell. The tape agreed — +5.95% — and KIMI's UP 4 finished 1.95 points from the close. Nobody was closer."},
+ {n:2,co:"Oracle",out:"−1.74%",win:"CLAUDE",tag:"THE FADE",head:"Oracle Fades; Claude Collects",film:"round-2-oracle",poster:"round-2-oracle-poster",tall:true,
+  calls:[["GPT","UP 6%","7.74"],["KIMI","DOWN 6%","4.26"],["CLAUDE","DOWN 3%","1.26"]],
+  story:"Oracle fell, and CLAUDE saw it coming. DOWN 3, filed before the bell, finished 1.26 points from the close. GPT's guidance thesis did not survive the print."},
+ {n:3,co:"AutoZone",out:"+3.25%",win:"GPT",tag:"TIGHTEST CALL",head:"GPT Answers the Doubters",film:"round-3-autozone",poster:"round-3-autozone-end",
+  calls:[["GPT","UP 4%","0.75"],["KIMI","DOWN 5%","8.25"],["CLAUDE","DOWN 4.5%","7.75"]],
+  story:"AutoZone moved up, and GPT was the only machine that said so. UP 4 against a +3.25% close — 0.75 points off, the tightest call of the season."},
+ {n:4,co:"General Mills",out:"+1.04%",win:"GPT & KIMI",tag:"DEAD HEAT",head:"A Dead Heat at General Mills",film:"round-4-generalmills",poster:"round-4-generalmills-poster",
+  calls:[["GPT","UP 3%","1.96"],["KIMI","UP 3%","1.96"],["CLAUDE","DOWN 3%","4.04"]],
+  story:"Two machines filed the same call: UP 3. GPT and KIMI dead-heated at 1.96 points off — both marked winners. Ties are not rounded away here."},
+ {n:5,co:"BlackBerry",out:"+4.10%",win:"GPT",tag:"LEAD CHANGE",head:"GPT Again, and the Standings Turn",film:"round-5-blackberry",poster:"round-5-blackberry-poster",
+  calls:[["GPT","UP 7%","2.90"],["KIMI","UP 9%","4.90"],["CLAUDE","UP 9%","4.90"]],
+  story:"GPT said UP 7 — high, but nearer than the two UP 9s beside it. The machine written off after Oracle now leads the season."},
+ {n:6,co:"Costco",out:"+2.95%",win:null,tag:"MISPRINT · NO WINNER",head:"The Call That Fooled All Three",film:"round-6-costco",poster:"round-6-costco-poster",
+  calls:[["GPT","DOWN 2.5%","5.45"],["KIMI","DOWN 2.5%","5.45"],["CLAUDE","DOWN 2.8%","5.75"]],
+  story:"Costco went up. All three machines said down. No winner — the card belongs to nobody, and the record prints it anyway."}
+];
+var MEDIA="media/";
+
+/* =================================================================== */
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function toast(t){var x=$("#toast");x.textContent=t;x.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(function(){x.classList.remove("on")},2300)}
+function pad(n){return ("0"+n).slice(-2)}
+var LOCK=Date.parse(NEXT.lockAt),reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function isUp(s){return s.charAt(0)==="+"}
+
+/* hero pack → fan of the six cards */
+(function(){
+  var fan=$("#fan"),stage=$("#stage"),n=ROUNDS.length;
+  ROUNDS.forEach(function(r,i){var c=document.createElement("button");c.className="mini";c.type="button";c.setAttribute("aria-label","Round "+r.n+" · "+r.co);
+    c.innerHTML='<img src="'+MEDIA+r.poster+'.jpg" alt="">';c.addEventListener("click",function(){openCard(r.n)});fan.appendChild(c)});
+  function rip(){if(stage.classList.contains("open"))return;stage.classList.add("open");store("ez.bnd.opened","1");
+    var w=Math.min(720,stage.clientWidth),spread=Math.min(110,w/10);
+    $$(".mini",fan).forEach(function(c,i){var k=i-(n-1)/2;setTimeout(function(){c.style.transform="translate("+(k*spread)+"px,"+(Math.abs(k)*12)+"px) rotate("+(k*7)+"deg)"},reduce?0:120+i*90)});
+    $("#hint").textContent="Tap a card to play its round — or scroll to the binder.";}
+  $("#pack").addEventListener("click",rip);$("#pack").addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();rip()}});
+  if(store("ez.bnd.opened")==="1"||reduce)setTimeout(rip,reduce?0:500);
+})();
+
+/* the binder */
+(function(){
+  var p=$("#pages"),h="";
+  ROUNDS.forEach(function(r){var u=isUp(r.out);
+    h+='<div class="sleeve"><button class="card '+(u?'u':'d')+(r.win?'':' miss')+'" type="button" data-r="'+r.n+'" aria-label="Round '+r.n+' · '+r.co+' card"><div class="art"><img loading="lazy" src="'+MEDIA+r.poster+'.jpg" alt=""><span class="rar">'+r.tag+'</span><div class="holo"></div></div>'+
+      '<div class="nm">Round '+r.n+' · '+r.co+'</div><div class="st"><span class="o '+(u?'u':'d')+'">'+r.out+'</span><span>'+(r.win||'NOBODY')+'</span></div></button></div>'});
+  h+='<div class="sleeve"><a class="sealed" href="#yours"><span>ROUND '+NEXT.n+'</span><b>'+NEXT.co+'</b><span>'+(NEXT.calls?'CALLS ARE IN':'SEALED UNTIL THE CALLS FILE')+'</span><em data-cd>—</em></a></div>';
+  for(var i=NEXT.n+1;i<=10;i++)h+='<div class="sleeve"><div class="empty">?</div></div>';
+  p.innerHTML=h;
+  $$(".card[data-r]").forEach(function(c){c.addEventListener("click",function(){openCard(+c.dataset.r)});
+    if(!reduce){c.addEventListener("pointermove",function(e){var b=c.getBoundingClientRect(),x=(e.clientX-b.left)/b.width,y=(e.clientY-b.top)/b.height;c.style.setProperty("--mx",x*100+"%");c.style.setProperty("--my",y*100+"%");c.style.setProperty("--ry",(x-.5)*14+"deg");c.style.setProperty("--rx",(.5-y)*14+"deg")});
+      c.addEventListener("pointerleave",function(){c.style.setProperty("--rx","0deg");c.style.setProperty("--ry","0deg")})}});
+})();
+
+/* roster */
+(function(){
+  var h="";LADDER.forEach(function(l,i){h+='<div class="pcard reveal'+(i===0?' lead':'')+'" style="--t:'+(i%2?1.2:-1.2)+'deg"><span class="rank">#'+(i+1)+(i===0?' · LEADS THE SEASON':'')+'</span><div class="face" style="background:'+MODELS[l.m]+'">'+l.m.charAt(0)+'</div><h3>'+l.m+'</h3><dl><dt>Rounds won</dt><dd>'+l.won+'</dd><dt>Direction</dt><dd>'+l.dir+'</dd><dt>Avg distance</dt><dd>'+l.avg+' pts</dd></dl></div>'});
+  h+='<div class="pcard ghost reveal"><span class="rank">#4 · INVITED</span><div class="face">?</div><h3>GROK</h3><p>Seat four is empty. When the paperwork clears, the binder grows to four, then five, then seven.</p></div>';
+  $("#rost").innerHTML=h;
+})();
+
+/* card viewer: film on the front, receipt on the back */
+var dlg=$("#view");
+function openCard(n,noHash){
+  var r=ROUNDS[n-1];if(!r)return;var wn=r.win?r.win.split(" & "):[];
+  $("#viewer").innerHTML='<div class="flip" id="flip"><div class="inner">'+
+   '<div class="side front '+(r.tall?'tall':'sq')+'"><video controls playsinline preload="metadata" poster="'+MEDIA+r.poster+'.jpg"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video><div class="cap">Round '+r.n+' · '+r.co+'<span>'+r.tag+'</span></div></div>'+
+   '<div class="side back"><span class="t">THE RECEIPT · NEVER REPRINTED</span><h3>'+r.head+'</h3><div class="tbl">'+
+     r.calls.map(function(c){return '<div><span>'+(wn.indexOf(c[0])>-1?'★ ':'')+c[0]+'</span><span>'+c[1]+'</span><span>'+c[2]+' pts off</span></div>'}).join("")+
+     '<hr><div><span>OUTCOME</span><span>'+r.out+'</span><span></span></div><div><span>WINNER</span><span class="'+(r.win?'w':'x')+'">'+(r.win||'NOBODY')+'</span><span></span></div></div><p>'+r.story+'</p></div>'+
+   '</div></div><div class="vbar">'+(n>1?'<button class="btn lt" data-go="'+(n-1)+'" type="button">← '+(n-1)+'</button>':'')+'<button class="btn" id="flipBtn" type="button">Flip card</button>'+(n<ROUNDS.length?'<button class="btn lt" data-go="'+(n+1)+'" type="button">'+(n+1)+' →</button>':'')+'<button class="btn lt" id="shareBtn" type="button">Share</button><button class="btn lt" id="closeBtn" type="button">Close</button></div>';
+  var v=$("#viewer video"),f=$("#flip");
+  $("#flipBtn").addEventListener("click",function(){f.classList.toggle("back");if(f.classList.contains("back"))v.pause()});
+  $("#closeBtn").addEventListener("click",close);
+  $("#shareBtn").addEventListener("click",function(){var url=location.href.split("#")[0]+"#round-"+r.n;if(navigator.share)navigator.share({title:"Round "+r.n+" · "+r.co+" — Earnings Zeason",url:url}).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(url).then(function(){toast("Link to this card copied")})});
+  $$("#viewer [data-go]").forEach(function(b){b.addEventListener("click",function(){openCard(+b.dataset.go)})});
+  if(!dlg.open)dlg.showModal();
+  if(!noHash)history.replaceState(null,"","#round-"+n);
+  if(!reduce){var pl=v.play();if(pl&&pl.catch)pl.catch(function(){})}
+}
+function close(){var v=$("#viewer video");if(v)v.pause();dlg.close();history.replaceState(null,"",location.pathname+location.search)}
+dlg.addEventListener("click",function(e){if(e.target===dlg)close()});
+dlg.addEventListener("cancel",function(e){e.preventDefault();close()});
+var hm=location.hash.match(/^#round-(\d+)$/);if(hm)setTimeout(function(){openCard(+hm[1],true)},300);
+
+/* your card */
+var myDir=null,sizeIn=$("#size");
+(function(){try{var c=JSON.parse(store("ez.bnd.call")||"null");if(c){myDir=c.d;sizeIn.value=c.s}}catch(e){}})();
+function paintDir(){$$(".dir button").forEach(function(b){b.classList.toggle("on",b.dataset.d===myDir)});$("#sizeOut").textContent=sizeIn.value+"%"}
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function drawCard(){
+  var cv=$("#mycard"),c=cv.getContext("2d"),W=600,H=840,up=myDir==="UP",dn=myDir==="DOWN";
+  c.clearRect(0,0,W,H);
+  var g=c.createLinearGradient(0,0,W,H);["#ff9ad5","#ffe38a","#a8ffcf","#8fd3ff","#ff9ad5"].forEach(function(col,i){g.addColorStop(i/4,col)});
+  rr(c,0,0,W,H,36);c.fillStyle=g;c.fill();c.lineWidth=10;c.strokeStyle="#231d16";c.stroke();
+  rr(c,34,34,W-68,H-68,22);c.fillStyle="#fffaf0";c.fill();c.lineWidth=5;c.stroke();
+  c.fillStyle="#231d16";c.font="700 22px 'Space Mono',monospace";c.fillText("MY CALL · NOT THE RECORD",66,92);
+  c.font="800 58px 'Bricolage Grotesque',sans-serif";c.fillText("Round "+NEXT.n,66,172);c.fillText(NEXT.co,66,236);
+  rr(c,66,272,W-132,300,18);c.fillStyle=up?"#16a34a":dn?"#e5322d":"#e8dcc2";c.fill();c.lineWidth=5;c.strokeStyle="#231d16";c.stroke();
+  c.fillStyle=myDir?"#fffaf0":"#8f8474";c.textAlign="center";c.font="800 120px 'Bricolage Grotesque',sans-serif";
+  c.fillText(myDir?(up?"▲ UP":"▼ DOWN"):"?",W/2,430);
+  c.font="800 64px 'Bricolage Grotesque',sans-serif";c.fillText(myDir?sizeIn.value+"%":"make your call",W/2,520);
+  c.textAlign="left";c.fillStyle="#231d16";c.font="700 22px 'Space Mono',monospace";
+  var saved=null;try{saved=JSON.parse(store("ez.bnd.call")||"null")}catch(e){}
+  c.fillText(saved?"FILED "+new Date(saved.t).toLocaleString([],{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}).toUpperCase():"NOT FILED YET",66,630);
+  c.fillText("VS GPT · KIMI · CLAUDE",66,668);
+  c.font="700 18px 'Space Mono',monospace";c.fillStyle="#5a4f42";c.fillText("GRADED BY THE MARKET +24H",66,704);
+  c.font="800 44px 'Bricolage Grotesque',sans-serif";c.fillStyle="#e8a317";c.fillText("$",66,780);c.fillStyle="#16a34a";c.fillText("E",94,780);c.fillStyle="#e5322d";c.fillText("Z",124,780);
+  c.fillStyle="#231d16";c.font="700 16px 'Space Mono',monospace";c.textAlign="right";c.fillText("EARNINGS ZEASON",W-66,776);c.textAlign="left";
+}
+function saveCall(){if(!myDir){toast("Pick up or down first");return false}if(Date.now()>=LOCK){toast("Calls are locked");return false}store("ez.bnd.call",JSON.stringify({d:myDir,s:sizeIn.value,t:Date.now()}));drawCard();return true}
+$$(".dir button").forEach(function(b){b.addEventListener("click",function(){if(Date.now()>=LOCK)return;myDir=b.dataset.d;paintDir();drawCard()})});
+sizeIn.addEventListener("input",function(){paintDir();drawCard()});
+$("#save").addEventListener("click",function(){if(!saveCall())return;$("#mycard").toBlob(function(bl){var u=URL.createObjectURL(bl),a=document.createElement("a");a.href=u;a.download="ez-round-"+NEXT.n+"-my-card.png";document.body.appendChild(a);a.click();a.remove();toast("Card saved — see you after the print")})});
+$("#post").addEventListener("click",function(){if(!saveCall())return;$("#mycard").toBlob(function(bl){var file=new File([bl],"ez-round-"+NEXT.n+"-my-card.png",{type:"image/png"}),url=location.href.split("#")[0];
+  if(navigator.canShare&&navigator.canShare({files:[file]}))navigator.share({files:[file],title:"My Round "+NEXT.n+" card",text:"I called "+NEXT.co+" "+myDir+" "+sizeIn.value+"% before the machines. "+url}).catch(function(){});
+  else window.open("https://x.com/intent/post?text="+encodeURIComponent("I called "+NEXT.co+" "+myDir+" "+sizeIn.value+"% before the machines did. Earnings Zeason, Round "+NEXT.n+". "+url),"_blank","noopener")})});
+$("#ics").addEventListener("click",function(){var f=function(t){return new Date(t).toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"")};
+  var ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//EZ//Binder//EN\r\nBEGIN:VEVENT\r\nUID:ez-round"+NEXT.n+"@ez\r\nDTSTAMP:"+f(Date.now())+"\r\nDTSTART:"+f(LOCK)+"\r\nDTEND:"+f(LOCK+18e5)+"\r\nSUMMARY:Earnings Zeason · Round "+NEXT.n+" · "+NEXT.co+" — calls lock\r\nEND:VEVENT\r\nEND:VCALENDAR";
+  var u=URL.createObjectURL(new Blob([ics],{type:"text/calendar"})),a=document.createElement("a");a.href=u;a.download="ez-round-"+NEXT.n+".ics";document.body.appendChild(a);a.click();a.remove();toast("Added — the pack opens then")});
+paintDir();(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(drawCard);drawCard();
+
+/* purse pips */
+(function(){var p=$("#pips");for(var i=1;i<=10;i++){var e=document.createElement("i");if(i<=6)e.className="f";else if(i===7)e.className="n";e.title="Round "+i;p.appendChild(e)}})();
+
+/* countdown */
+function tick(){var ms=Math.max(0,LOCK-Date.now()),d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),mi=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
+  $$("[data-cd]").forEach(function(n){var k=n.dataset.cd;n.textContent=!k?(ms<=0?"LOCKED":(d?d+"D ":"")+pad(h)+":"+pad(mi)+":"+pad(s)):k==="d"?d:k==="h"?pad(h):k==="m"?pad(mi):pad(s)});
+  if(ms<=0)$$(".dir button").forEach(function(b){b.disabled=true})}
+tick();setInterval(tick,1000);
+
+/* config */
+(function(){
+  if(CONFIG.ca){var ca=$("#ca");ca.className="ca live";ca.textContent=(CONFIG.chain?CONFIG.chain+" · ":"")+CONFIG.ca;ca.addEventListener("click",function(){navigator.clipboard&&navigator.clipboard.writeText(CONFIG.ca).then(function(){toast("Address copied")})})}
+  if(CONFIG.buyUrl){var b=$("#buy");b.href=CONFIG.buyUrl;b.classList.remove("off");b.textContent="Get $EZ ↗"}
+  var f=$("#follow"),any=false;[["x","Follow on X"],["tg","Telegram"]].forEach(function(k){if(CONFIG[k[0]]){any=true;var a=document.createElement("a");a.className="btn lt";a.href=CONFIG[k[0]];a.target="_blank";a.rel="noopener";a.textContent=k[1]+" ↗";f.appendChild(a)}});
+  if(!any){var s=document.createElement("span");s.className="btn off";s.textContent="Channels at launch";f.appendChild(s)}
+})();
+
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}})},{threshold:.12});
+$$(".reveal").forEach(function(n){if(reduce)n.classList.add("in");else io.observe(n)});
+</script>
+</body>
+</html>
