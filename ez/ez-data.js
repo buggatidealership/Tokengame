@@ -3,7 +3,10 @@
    Mirrors the ARENA sheet cell for cell. Edit here once; all variants follow.
    Winners, distances, direction, ladder: derived, never typed.
    ===================================================================== */
-var CONFIG={ca:"",buyUrl:"",chain:"",x:"",tg:"",pool:"",poolUrl:""};
+var CONFIG={ca:"",buyUrl:"",chain:"",x:"",tg:"",pool:"",poolUrl:"",betDate:""};
+/* The prompt every model gets, every round. verbatim:false = the shape only (pages say so);
+   paste the exact text and set verbatim:true to publish it word for word. */
+var PROMPT={verbatim:false,lines:["Company <i>X</i> reports on <i>date</i>.","Full freedom: use any tool you like.","Answer: <i>up or down</i>, and <i>by how much</i>."]};
 var SHEET_CSV_URL="";
 var SHEET_HEADER=["ROUND","TICKER","CALL DATE (T-1)","GPT DIR","GPT MAG (%)","KIMI DIR","KIMI MAG (%)","CLAUDE DIR","CLAUDE MAG (%)","GROK DIR","GROK MAG (%)","RESOLUTION DATE/TIME","ACTUAL MOVE (%)"];
 var SHEET=[
