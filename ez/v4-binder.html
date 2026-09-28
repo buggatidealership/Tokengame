@@ -82,25 +82,18 @@ img,video{display:block;max-width:100%}
 .hc{max-width:760px;margin:30px auto 0}
 .hc-lab{display:flex;justify-content:center;align-items:center;gap:10px;font:800 16px/1 var(--fd);margin-bottom:14px}
 .newpill{font:800 11px/1 var(--fm);background:#ffe38a;padding:6px 9px;border-radius:999px;box-shadow:0 0 0 2px var(--ink);animation:nudge 1.8s ease-in-out infinite}
-.hc-pair{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-.hc-front,.hc-back{position:relative;aspect-ratio:5/7.2;border-radius:16px;overflow:hidden;background:var(--paper);box-shadow:0 0 0 3px var(--ink),8px 12px 0 3px rgba(35,29,22,.18);text-align:left}
-.hc-front{padding:0;cursor:pointer;display:flex;flex-direction:column;transform:rotate(-1.5deg)}
-.hc-back{container-type:size;transform:rotate(1.2deg)}
-.hc-front img{flex:1;min-height:0;width:100%;object-fit:cover}
-.hc-front .cap{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:10px 12px;font:800 16px/1.1 var(--fd);border-top:3px solid var(--ink)}
+.hc-pair{position:relative;perspective:1400px;width:min(420px,100%);margin:0 auto;aspect-ratio:5/7.2}
+.hc-front,.hc-back{position:absolute;inset:0;border-radius:16px;overflow:hidden;background:var(--paper);box-shadow:0 0 0 3px var(--ink),8px 12px 0 3px rgba(35,29,22,.18);text-align:left;backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:transform .8s cubic-bezier(.3,1.2,.5,1)}
+.hc-back{container-type:size;transform:rotateY(0)}
+.hc-front{transform:rotateY(180deg);display:flex;flex-direction:column;background:#000}
+.hc-pair.flipped .hc-back{transform:rotateY(-180deg)}
+.hc-pair.flipped .hc-front{transform:rotateY(0)}
+.hc-front video{flex:1;min-height:0;width:100%;object-fit:contain;background:#000}
+.hc-front .cap{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:10px 12px;font:800 16px/1.1 var(--fd);border-top:3px solid var(--ink);background:var(--paper);color:var(--ink)}
 .hc-front .cap span{font:700 12px/1 var(--fm)}
-.hc-front .pl{position:absolute;left:50%;top:42%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:rgba(255,250,240,.92);display:grid;place-items:center;font-size:24px;box-shadow:0 0 0 3px var(--ink);transition:transform .2s}
-.hc-front:hover .pl{transform:scale(1.1)}
-.hc-acts{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:18px}
-.hc-flip{display:none}
-@media(max-width:640px){
-  .hc-pair{display:block;position:relative;perspective:1200px}
-  .hc-front,.hc-back{transform:none;width:min(330px,100%);margin:0 auto;backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:transform .7s cubic-bezier(.3,1.2,.5,1)}
-  .hc-back{position:absolute;top:0;left:50%;margin-left:calc(min(330px,100%) / -2);transform:rotateY(180deg)}
-  .hc-pair.back .hc-front{transform:rotateY(-180deg)}
-  .hc-pair.back .hc-back{transform:rotateY(0)}
-  .hc-flip{display:inline-flex}
-}
+.hc-acts{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:20px}
+.hc-flip{animation:nudge 2.2s ease-in-out infinite}
+.hc-pair.flipped~.hc-acts .hc-flip{animation:none}
 /* ---------- section heads ---------- */
 .sec{padding:60px 0}
 .sh{margin-bottom:26px}
@@ -327,12 +320,12 @@ dialog::backdrop{background:rgba(35,29,22,.7);backdrop-filter:blur(4px)}
     <h1>Every earnings print is a <span>card.</span></h1>
     <p class="sub">Three AI models call it before the bell. The market grades it twenty-four hours later. The card goes in the binder — and nobody can ever reprint it.</p>
     <div class="hc" id="hc">
-      <div class="hc-lab"><span class="newpill">NEWEST CARD</span><span id="hcName"></span></div>
+      <div class="hc-lab"><span class="newpill">FEATURED CARD</span><span id="hcName"></span></div>
       <div class="hc-pair" id="hcPair">
-        <button class="hc-front" id="hcFront" type="button"></button>
         <div class="hc-back" id="hcBack"></div>
+        <div class="hc-front" id="hcFront"></div>
       </div>
-      <div class="hc-acts"><button class="btn lt sm hc-flip" id="hcFlip" type="button">Flip card</button><button class="btn sm" id="hcPlay" type="button">▶ Play the film</button><a class="btn lt sm" href="#binder">All cards ↓</a></div>
+      <div class="hc-acts"><button class="btn hc-flip" id="hcFlip" type="button">Flip card ↻ watch the film</button><a class="btn lt" href="#binder">All cards ↓</a></div>
       <p class="hint" id="hcPend"></p>
     </div>
   </div>
@@ -467,6 +460,8 @@ var CARDS={
 /* optional exact times (UTC) for countdowns; the sheet only carries dates */
 var TIMES={MU:{lock:"2026-09-30T20:30:00Z"}};
 var MEDIA="media/";
+/* the card shown at the top of the page (a round number) — pick one with a winner and a film */
+var HERO_ROUND=3;
 
 /* MODELS — add a model here and it appears everywhere (roster, cards, logos).
    Marks: Simple Icons (CC0 paths of each brand's own mark), styled like the phone app icons. */
@@ -526,16 +521,17 @@ function isUp(s){return s.charAt(0)==="+"}
 
 function start(){
 setLock();
-/* hero: the newest graded card, front and back */
+/* hero: one featured card — scorecard side first, flip for the film */
 (function(){
-  var r=ROUNDS[ROUNDS.length-1];if(!r)return;
+  var r=ROUNDS.filter(function(x){return x.n===HERO_ROUND&&x.film})[0]||ROUNDS.filter(function(x){return x.film&&x.win}).pop();if(!r)return;
   $("#hcName").textContent="Round "+r.n+" · "+r.co;
-  $("#hcFront").innerHTML='<img src="'+MEDIA+r.poster+'.jpg" alt=""><span class="pl" aria-hidden="true">▶</span><div class="cap">Round '+r.n+' · '+r.co+'<span>'+r.tag+'</span></div>';
-  $("#hcFront").setAttribute("aria-label","Play the Round "+r.n+" film");
   $("#hcBack").innerHTML=backHTML(r);
-  $("#hcFront").addEventListener("click",function(){openCard(r.n)});
-  $("#hcPlay").addEventListener("click",function(){openCard(r.n)});
-  $("#hcFlip").addEventListener("click",function(){var p=$("#hcPair");p.classList.toggle("back");this.textContent=p.classList.contains("back")?"Flip → film":"Flip card"});
+  $("#hcFront").innerHTML='<video playsinline controls preload="none" poster="'+MEDIA+r.poster+'.jpg"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video><div class="cap">Round '+r.n+' · '+r.co+'<span>'+r.tag+'</span></div>';
+  var pair=$("#hcPair"),v=$("#hcFront video"),btn=$("#hcFlip");
+  function flip(){var on=pair.classList.toggle("flipped");btn.textContent=on?"Flip back ↻ the scorecard":"Flip card ↻ watch the film";
+    if(on){v.currentTime=0;var pl=v.play();if(pl&&pl.catch)pl.catch(function(){})}else v.pause()}
+  btn.addEventListener("click",flip);
+  $("#hcBack").addEventListener("click",flip);$("#hcBack").style.cursor="pointer";
   var pend=PENDING[PENDING.length-1];
   if(pend){$("#hcPend").innerHTML='Also live: <a href="#round-'+pend.n+'" id="pendLink">Round '+pend.n+' · '+pend.co+' — the calls are in</a>. The market answers '+fmtDate(pend.resolves)+'.';
     $("#pendLink").addEventListener("click",function(e){e.preventDefault();openPending(pend.n)})}
