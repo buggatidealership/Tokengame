@@ -104,9 +104,12 @@ img,video{display:block;max-width:100%}
 /* ---------- the binder ---------- */
 .binder{background:#2f3b33;border-radius:22px;padding:22px;box-shadow:inset 0 0 0 3px var(--ink),0 30px 60px -30px rgba(35,29,22,.8);position:relative}
 .binder::before{content:"";position:absolute;left:50%;top:14px;bottom:14px;width:3px;margin-left:-1.5px;background:repeating-linear-gradient(transparent 0 26px,rgba(0,0,0,.35) 26px 44px)}
-.pages{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;position:relative}
-@media(max-width:900px){.pages{grid-template-columns:repeat(3,1fr)}.binder::before{display:none}}
-@media(max-width:560px){.pages{grid-template-columns:1fr 1fr;gap:12px}.binder{padding:14px;border-radius:16px}}
+.pages{display:flex;gap:14px;position:relative;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 4px 10px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.35) transparent}
+.pages .sleeve{flex:0 0 clamp(128px,15vw,172px);scroll-snap-align:start}
+.binder::before{display:none}
+.strip-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:#e9e2d0;font:700 11px/1 var(--fm);letter-spacing:.08em}
+.strip-h button{color:#fffaf0;font:800 18px/1 var(--fd);width:36px;height:36px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+@media(max-width:560px){.binder{padding:14px;border-radius:16px}.strip-h button{display:none}}
 .sleeve{position:relative;aspect-ratio:5/7;border-radius:12px;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}
 .sleeve::after{content:"";position:absolute;inset:0;border-radius:12px;pointer-events:none;background:linear-gradient(160deg,rgba(255,255,255,.22),transparent 38%)}
 .card{--mx:50%;--my:50%;--rx:0deg;--ry:0deg;position:absolute;inset:6px;border-radius:9px;overflow:hidden;background:var(--paper);box-shadow:0 0 0 3px var(--ink);cursor:pointer;display:flex;flex-direction:column;transform:perspective(700px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .2s;text-align:left}
@@ -199,7 +202,30 @@ img,video{display:block;max-width:100%}
 .bar i{display:grid;place-items:center;font:800 18px/1 var(--fd);font-style:normal}
 .bar .p69{flex:69;background:var(--up);color:#fff}
 .bar .p31{flex:31;background:var(--kraft2);color:var(--ink);border-left:2px solid var(--ink)}
-.fa{display:grid;place-items:center;font:800 28px/1 var(--fd)}
+.fa{position:relative;display:grid;place-items:center;font:800 28px/1 var(--fd)}
+.fa::after{content:"";position:absolute;width:14px;height:14px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--ink);opacity:0}
+.flow.run .fa::after{animation:coin 4s linear infinite}
+.flow.run .fa:nth-of-type(4)::after{animation-delay:1s}
+.flow.run .fa:nth-of-type(6)::after{animation-delay:2s}
+@keyframes coin{0%{opacity:0;transform:translateX(-18px)}5%{opacity:1}20%{opacity:1;transform:translateX(18px)}25%,100%{opacity:0;transform:translateX(18px)}}
+.flow.run .fs{animation:lit 4s ease-in-out infinite}
+.flow.run .fs:nth-of-type(3){animation-delay:1s}.flow.run .fs:nth-of-type(5){animation-delay:2s}.flow.run .fs:nth-of-type(7){animation-delay:3s}
+@keyframes lit{0%,100%{transform:none}8%{transform:translateY(-6px);box-shadow:0 0 0 3px var(--ink),0 10px 0 0 rgba(35,29,22,.15)}20%{transform:none}}
+.bar .p69{position:relative;overflow:hidden}
+.bar .p69::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:translateX(-100%)}
+.flow.run .bar .p69::before{animation:sweep 4s ease-in-out 1s infinite}
+@keyframes sweep{0%{transform:translateX(-100%)}20%,100%{transform:translateX(100%)}}
+.jar{position:relative;width:54px;height:54px;border-radius:10px 10px 14px 14px;background:var(--paper);box-shadow:0 0 0 2px var(--ink);overflow:hidden}
+.jar i{position:absolute;left:0;right:0;bottom:0;height:30%;background:var(--up);transition:height .6s}
+.jar i::before{content:"";position:absolute;left:-10%;right:-10%;top:-5px;height:10px;border-radius:50%;background:#2fbf6a}
+.flow.run .jar i{animation:fill 4s ease-in-out 2s infinite}
+@keyframes fill{0%{height:30%}20%,70%{height:78%}100%{height:30%}}
+.tgt{position:relative;width:54px;height:54px;border-radius:14px;background:#ffe38a;display:grid;place-items:center;font:800 11px/1 var(--fd);color:var(--ink);box-shadow:0 0 0 2px #ffe38a}
+.tgt b{font:800 12px/1 var(--fd)!important;color:var(--ink)!important}
+.flow.run .tgt{animation:hit 4s ease-in-out 3s infinite}
+@keyframes hit{0%,100%{transform:none}6%{transform:scale(1.18) rotate(-6deg)}14%{transform:none}}
+@media(max-width:980px){.fa::after{display:none}}
+@media(prefers-reduced-motion:reduce){.flow.run *{animation:none!important}}
 @media(max-width:980px){.flow{grid-template-columns:1fr}.fa{transform:rotate(90deg);height:26px}}
 .risk.tr{margin-top:18px}
 /* ---------- your card ---------- */
@@ -275,7 +301,7 @@ dialog::backdrop{background:rgba(35,29,22,.7);backdrop-filter:blur(4px)}
 .ver{display:flex;align-items:center;gap:max(12px,3cqw);border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);padding:max(12px,2.4cqh) 0}
 .ver .lg{font-size:max(46px,13cqw)}
 .ver b{display:block;font:800 max(28px,min(10cqw,7.5cqh))/1 var(--fd);letter-spacing:-.03em;color:var(--ink)}
-.ver span{display:block;margin-top:4px;font:600 max(13px,3cqw)/1.3 var(--fd);color:var(--ink2)}
+.ver>div>span{display:block;margin-top:4px;font:600 max(13px,3cqw)/1.3 var(--fd);color:var(--ink2)}
 .ver .nob{display:grid;place-items:center;width:max(46px,13cqw);height:max(46px,13cqw);border-radius:22.5%;background:var(--kraft2);font:800 max(22px,6cqw)/1 var(--fd);color:var(--ink2);flex:none}
 .tb{width:100%;border-collapse:collapse;font:600 max(14px,3.4cqw)/1.2 var(--fd);color:var(--ink)}
 .tb th{font:700 max(10px,2.2cqw)/1.2 var(--fm);letter-spacing:.08em;color:var(--ink2);text-align:left;padding:0 0 8px;border-bottom:1.5px solid var(--ink)}
@@ -317,8 +343,8 @@ dialog::backdrop{background:rgba(35,29,22,.7);backdrop-filter:blur(4px)}
 <section class="hero">
   <div class="wrap">
     <div class="eyebrow">EARNINGS ZEASON · SEASON ONE</div>
-    <h1>Every earnings print is a <span>card.</span></h1>
-    <p class="sub">Three AI models call it before the bell. The market grades it twenty-four hours later. The card goes in the binder — and nobody can ever reprint it.</p>
+    <h1>They used to call it stock picking.<br>We call it <span>model picking.</span></h1>
+    <p class="sub">Three AI models call every earnings print before the bell. Twenty-four hours later the market grades them. Every round becomes a card — and a card is never reprinted.</p>
     <div class="hc" id="hc">
       <div class="hc-lab"><span class="newpill">FEATURED CARD</span><span id="hcName"></span></div>
       <div class="hc-pair" id="hcPair">
@@ -334,8 +360,8 @@ dialog::backdrop{background:rgba(35,29,22,.7);backdrop-filter:blur(4px)}
 <!-- ============ THE BINDER ============ -->
 <section class="sec" id="binder">
   <div class="wrap">
-    <div class="sh reveal"><span class="eyebrow">THE BINDER</span><h2 id="binderH">Six pulled. Five sealed.</h2><p>Tap a card to play its film. Flip it for the receipt: every call, the outcome, the winner, how far off each machine landed.</p></div>
-    <div class="binder reveal"><div class="pages" id="pages"></div></div>
+    <div class="sh reveal"><span class="eyebrow">THE BINDER</span><h2 id="binderH">Six pulled. Five sealed.</h2><p>One card per earnings print. Tap a card to open it: the film on one side, the scorecard on the other.</p></div>
+    <div class="binder reveal"><div class="strip-h"><span>SWIPE · TAP A CARD TO OPEN IT</span><span><button type="button" id="stL" aria-label="Scroll left">←</button> <button type="button" id="stR" aria-label="Scroll right">→</button></span></div><div class="pages" id="pages"></div></div>
     <div class="legend"><span>GREEN CARD = STOCK WENT UP</span><span>RED CARD = STOCK WENT DOWN</span><span>TAG = WHAT MADE THE ROUND</span></div>
   </div>
 </section>
@@ -349,7 +375,7 @@ dialog::backdrop{background:rgba(35,29,22,.7);backdrop-filter:blur(4px)}
 </section>
 
 <!-- ============ YOUR CARD ============ -->
-<section class="sec" id="yours">
+<section class="sec" id="yours" hidden>
   <div class="wrap">
     <div class="sh reveal"><span class="eyebrow">YOUR CARD</span><h2 id="yoursH">Pull your own before the calls lock.</h2><p>Call it before the machines show their hands. Your card is made on this device — save it, post it, and come back after the print to see who you beat.</p></div>
     <div class="yours">
@@ -371,14 +397,14 @@ dialog::backdrop{background:rgba(35,29,22,.7);backdrop-filter:blur(4px)}
 <section class="sec" id="table">
   <div class="wrap">
     <div class="sh reveal"><span class="eyebrow">THE BET</span><h2>Trading fees become the machine's first real bet.</h2><p>Four steps. No fine print.</p></div>
-    <div class="flow reveal">
+    <div class="flow reveal" id="flow">
       <div class="fs"><div class="ic">⇄</div><b>Someone trades $EZ</b><span>Every buy or sell pays a trading fee.</span></div>
       <div class="fa" aria-hidden="true">→</div>
       <div class="fs split"><div class="bar"><i class="p69">69%</i><i class="p31">31%</i></div><b>The fee splits</b><span><strong>69%</strong> into the pool · <strong>31%</strong> pays for the AI models</span></div>
       <div class="fa" aria-hidden="true">→</div>
-      <div class="fs"><div class="ic pool">🏦</div><b>The pool fills</b><span id="poolTxt">Every trade adds to it. Live balance posted at launch.</span></div>
+      <div class="fs"><div class="jar" aria-hidden="true"><i></i></div><b>The pool fills</b><span id="poolTxt">Every trade adds to it. Live balance posted at launch.</span></div>
       <div class="fa" aria-hidden="true">→</div>
-      <div class="fs hot"><div class="ic">🎯</div><b>The AI bets it</b><span>A leveraged bet on <strong>Hyperliquid</strong>. First target: <strong>NVIDIA</strong> earnings.</span></div>
+      <div class="fs hot"><div class="tgt" aria-hidden="true"><b>NVDA</b></div><b>The AI bets it</b><span>A leveraged bet on <strong>Hyperliquid</strong>. First target: <strong>NVIDIA</strong> earnings.</span></div>
     </div>
     <p class="risk tr">Leverage cuts both ways: a leveraged bet can be wiped out. The pool can shrink as fast as it grows, and none of it is paid out to holders. Nothing here is a promise of returns.</p>
   </div>
@@ -404,7 +430,7 @@ dialog::backdrop{background:rgba(35,29,22,.7);backdrop-filter:blur(4px)}
 <footer>
   <div class="motto">Nobody said it would be <span class="e">E</span><span class="z">Z</span></div>
   <div class="fmark" aria-label="$EZ"><span class="d">$</span><span class="e">E</span><span class="z">Z</span></div>
-  <div class="colo">CALLS FILED BEFORE THE BELL · GRADED +24H · NEVER REPRINTED</div>
+  <div class="colo">$EZ · EARNINGS ZEASON — WITH A Z<br>CALLS FILED BEFORE THE BELL · GRADED +24H · NEVER REPRINTED</div>
 </footer>
 
 <dialog id="view" aria-label="Round card"><div class="viewer" id="viewer"></div></dialog>
@@ -461,7 +487,7 @@ var CARDS={
 var TIMES={MU:{lock:"2026-09-30T20:30:00Z"}};
 var MEDIA="media/";
 /* the card shown at the top of the page (a round number) — pick one with a winner and a film */
-var HERO_ROUND=3;
+var HERO_ROUND=1;
 
 /* MODELS — add a model here and it appears everywhere (roster, cards, logos).
    Marks: Simple Icons (CC0 paths of each brand's own mark), styled like the phone app icons. */
@@ -545,9 +571,11 @@ setLock();
       '<div class="nm">Round '+r.n+' · '+r.co+'</div><div class="st"><span class="o '+(u?'u':'d')+'">'+r.out+'</span><span>'+(r.win||'NOBODY')+'</span></div></button></div>'});
   PENDING.forEach(function(u){h+='<div class="sleeve"><button class="card pendc" type="button" data-p="'+u.n+'" aria-label="Round '+u.n+' · '+u.co+' — calls are in">'+pendFace(u)+'</button></div>'});
   UPCOMING.forEach(function(u,i){
-    h+='<div class="sleeve"><a class="sealed'+(i?' dim':'')+'" href="#yours"><span>ROUND '+u.n+'</span><b>'+u.co+'</b><span>SEALED</span><span class="st2">CALLS '+fmtDate(u.called).toUpperCase()+'</span></a></div>'});
+    h+='<div class="sleeve"><a class="sealed'+(i?' dim':'')+'" href="#binder"><span>ROUND '+u.n+'</span><b>'+u.co+'</b><span>SEALED</span><span class="st2">CALLS '+fmtDate(u.called).toUpperCase()+'</span></a></div>'});
   p.innerHTML=h;
   $("#binderH").textContent=ROUNDS.length+" graded · "+PENDING.length+" waiting on the market · "+UPCOMING.length+" sealed";
+  $("#stL").addEventListener("click",function(){p.scrollBy({left:-p.clientWidth*.8,behavior:"smooth"})});
+  $("#stR").addEventListener("click",function(){p.scrollBy({left:p.clientWidth*.8,behavior:"smooth"})});
   $$(".card[data-p]").forEach(function(c){c.addEventListener("click",function(){openPending(+c.dataset.p)})});
   $$(".card[data-r]").forEach(function(c){c.addEventListener("click",function(){openCard(+c.dataset.r)});
     if(!reduce){c.addEventListener("pointermove",function(e){var b=c.getBoundingClientRect(),x=(e.clientX-b.left)/b.width,y=(e.clientY-b.top)/b.height;c.style.setProperty("--mx",x*100+"%");c.style.setProperty("--my",y*100+"%");c.style.setProperty("--ry",(x-.5)*14+"deg");c.style.setProperty("--rx",(.5-y)*14+"deg")});
@@ -666,6 +694,7 @@ $("#ics").addEventListener("click",function(){var f=function(t){return new Date(
   var u=URL.createObjectURL(new Blob([ics],{type:"text/calendar"})),a=document.createElement("a");a.href=u;a.download="ez-"+NEXT.co.toLowerCase()+".ics";document.body.appendChild(a);a.click();a.remove();toast("Added — the pack opens then")});
 paintDir();(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(drawCard);drawCard();
 
+(function(){var f=$("#flow");if(!f)return;var o=new IntersectionObserver(function(es){es.forEach(function(e){f.classList.toggle("run",e.isIntersecting)})},{threshold:.3});o.observe(f)})();
 if(CONFIG.pool){$("#poolTxt").textContent="Pool: "+CONFIG.pool+(CONFIG.poolUrl?" — verify on-chain.":"")}
 
 /* purse pips */
