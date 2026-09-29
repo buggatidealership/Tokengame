@@ -52,8 +52,8 @@ a{color:inherit}
 .hero h1 span{color:var(--red)}
 .hero p{margin-top:10px;font:600 17px/1.45 var(--fb);color:var(--ink2);max-width:62ch}
 /* the screen: film left, graphics right, never on top of each other */
-.tv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.4fr);max-width:920px;margin-inline:auto;background:var(--navy);border-radius:10px;overflow:hidden;box-shadow:0 20px 50px -20px rgba(16,26,58,.6)}
-@media(max-width:700px){.tv{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}}
+.tv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3.4fr);max-width:920px;margin-inline:auto;background:var(--navy);border-radius:10px;overflow:hidden;box-shadow:0 20px 50px -20px rgba(16,26,58,.6)}
+@media(max-width:700px){.tv{grid-template-columns:minmax(0,1fr) minmax(0,4.2fr)}}
 .film{position:relative;background:#000;overflow:hidden;aspect-ratio:1/1;max-width:100%}
 .film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .film .onair{position:absolute;top:10px;left:10px;z-index:2;font:800 12px/1 var(--fc);letter-spacing:.14em;background:rgba(10,17,48,.85);color:#fff;padding:5px 8px;border-radius:3px}
@@ -80,25 +80,18 @@ a{color:inherit}
 .tvbar button{font:800 14px/1 var(--fc);letter-spacing:.06em;text-transform:uppercase;background:var(--navy);color:#fff;padding:10px 14px;border-radius:4px}
 .tvbar button.alt{background:var(--card);color:var(--navy);box-shadow:inset 0 0 0 2px var(--navy)}
 .tvbar .now{margin-left:auto;font:700 13px/1 var(--fb);color:var(--ink2)}
-/* current standings, TV-bug style, beside the film */
-.bug{display:flex;flex-direction:column;min-width:0;color:#fff;border-right:3px solid var(--red)}
-.bug .bh{background:var(--red);padding:12px 14px}
-.bug .bh b{display:block;font:900 19px/1 var(--fc);letter-spacing:.1em;text-transform:uppercase}
-.bug .bh small{display:block;font:700 11.5px/1.2 var(--fb);margin-top:4px;opacity:.9}
-.bug .rows{display:flex;flex-direction:column;flex:1;justify-content:space-evenly}
-.br{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:14px;border-top:1px solid rgba(255,255,255,.1)}
-.br:first-child{border-top:0}
-.br .rk{font:900 30px/1 var(--fc);color:#8f99bd;min-width:.7em}
-.br>.lg{font-size:32px;box-shadow:none}
-.br .nm{min-width:0}.br .nm b{display:block;font:800 20px/1 var(--fc);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.br .nm small{display:block;font:600 11.5px/1.2 var(--fb);color:#c9cfe4;margin-top:3px;white-space:normal}
-.br .pc{font:900 28px/1 var(--fc);font-variant-numeric:tabular-nums}
-.br.lead{background:rgba(255,199,44,.13);box-shadow:inset 4px 0 0 var(--gold)}.br.lead .rk,.br.lead .pc{color:var(--gold)}
-.bug .bf{display:flex;justify-content:space-between;gap:8px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.1);font:700 11px/1.2 var(--fb);color:#c9cfe4}
-.bug .bf a{color:var(--gold);text-decoration:none;font-weight:800;white-space:nowrap}
-@media(max-width:700px){.bug .bh{padding:8px}.bug .bh b{font-size:12.5px;letter-spacing:.02em}.bug .bh small{font-size:9.5px}
-  .br{grid-template-columns:auto auto minmax(0,1fr);gap:5px;padding:6px 8px}.br .nm{display:none}.br .rk{font-size:17px;min-width:0}.br>.lg{font-size:22px}.br .pc{font-size:17px;text-align:right}
-  .bug .bf{padding:6px 8px;font-size:9.5px}.bug .bf a{display:none}}
+/* current standings: quiet, order only */
+.br .nm .sh{display:none}
+@media(max-width:700px){.br .nm{display:none}.br{justify-content:center}.bug .bh{text-align:center}}
+.bug{display:flex;flex-direction:column;justify-content:center;gap:18px;padding:20px 18px;min-width:0;color:#fff;border-right:1px solid rgba(255,255,255,.08)}
+.bug .bh{font:700 11px/1.2 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:#8f99bd}
+.bug .rows{display:flex;flex-direction:column;gap:16px}
+.br{display:flex;align-items:center;gap:10px;min-width:0}
+.br .rk{font:800 16px/1 var(--fc);color:#8f99bd;width:.8em;flex:none}
+.br>.lg{font-size:28px;box-shadow:none}
+.br .nm{font:700 17px/1 var(--fc);text-transform:uppercase;letter-spacing:.04em;color:#c9cfe4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.br.lead .rk{color:var(--gold)}.br.lead .nm{color:#fff}
+@media(max-width:700px){.bug{padding:10px 8px;gap:10px}.bug .bh{font-size:8.5px;letter-spacing:.1em}.bug .rows{gap:10px}.br{gap:6px}.br .rk{font-size:13px}.br>.lg{font-size:20px}.br .nm{font-size:12.5px;letter-spacing:.02em}}
 /* scorecard band under the screen */
 .g1{min-width:0}.g3{display:flex;flex-direction:column;gap:10px;min-width:0}
 /* round strip: small cards, tap to put it on screen */
@@ -392,10 +385,9 @@ $("#stand").innerHTML=rows.map(function(r,k){return '<div class="st'+(k?'':' fir
   '<div class="foot">'+r.won+' '+(r.won===1?'round':'rounds')+' won outright or shared</div></div>'}).join("");
 new IntersectionObserver(function(es,ob){es.forEach(function(e){if(e.isIntersecting){$$("#stand .bar i").forEach(function(b){b.style.width=b.dataset.w+"%"});ob.disconnect()}})},{threshold:.3}).observe($("#stand"));
 
-/* current standings panel beside the film: season totals, same ranking as the leaderboard */
-$("#bug").innerHTML='<div class="bh"><b>Current standings</b><small>Season total · after '+ROUNDS.length+' rounds</small></div><div class="rows">'+
-  rows.map(function(r,k){return '<div class="br'+(k?'':' lead')+'"><span class="rk">'+(k+1)+'</span>'+logo(r.m)+'<span class="nm"><b>'+MODELS[r.m].app+'</b><small>'+r.won+' won · '+r.avg.toFixed(2)+' off</small></span><span class="pc">'+Math.round(r.pct*100)+'%</span></div>'}).join("")+
-  '</div><div class="bf"><span>% = right direction</span><a href="#standings">Full table ↓</a></div>';
+/* current standings beside the film: a quiet cue, order only. The numbers live in the leaderboard. */
+$("#bug").innerHTML='<div class="bh">Current standings</div><div class="rows">'+
+  rows.map(function(r,k){return '<div class="br'+(k?'':' lead')+'"><span class="rk">'+(k+1)+'</span>'+logo(r.m)+'<span class="nm"><span class="lo">'+MODELS[r.m].app+'</span><span class="sh">'+MODELS[r.m].name+'</span></span></div>'}).join("")+'</div>';
 /* are they learning? */
 EZLearn.together($("#lxDir"));EZLearn.calls($("#lxCalls"));EZLearn.table($("#lxTbl"));
 var best=Math.max.apply(null,S.map(function(x){return x.right}));
