@@ -79,21 +79,6 @@ a{color:inherit}
 .tvbar button{font:800 14px/1 var(--fc);letter-spacing:.06em;text-transform:uppercase;background:var(--navy);color:#fff;padding:10px 14px;border-radius:4px}
 .tvbar button.alt{background:var(--card);color:var(--navy);box-shadow:inset 0 0 0 2px var(--navy)}
 .tvbar .now{margin-left:auto;font:700 13px/1 var(--fb);color:var(--ink2)}
-/* standings bug: a small broadcast-style score bug in the film's corner */
-.sbug{position:absolute;top:12px;left:12px;z-index:3;width:62px;display:flex;flex-direction:column;padding:0;border:0;border-radius:8px;overflow:visible;background:rgba(10,17,48,.9);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#fff;cursor:pointer;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.4)}
-.sbug .bt{display:block;background:var(--gold);color:var(--navy);font:900 11px/1 var(--fc);letter-spacing:.1em;padding:6px 0;border-radius:8px 8px 0 0}
-.sbug .bi{position:relative;display:flex;flex-direction:column;align-items:center;padding:9px 0 7px;border-top:1px solid rgba(255,255,255,.08)}
-.sbug .bi:last-of-type{border-radius:0 0 8px 8px}
-.sbug .bi.lead{background:rgba(255,199,44,.16)}
-.sbug .bi .cr{font-size:13px;line-height:1;margin-bottom:3px}
-.sbug .bi>.lg{font-size:30px;box-shadow:none}
-.sbug .bi .wc{font:900 18px/1 var(--fc);margin-top:5px}
-.sbug .bi.lead .wc{color:var(--gold)}
-.sbug .bi .plus{position:absolute;left:100%;top:50%;margin-left:6px;transform:translate(-6px,-50%);opacity:0;white-space:nowrap;font:900 13px/1 var(--fc);color:var(--navy);background:var(--gold);border-radius:4px;padding:4px 6px;transition:opacity .4s,transform .5s cubic-bezier(.3,1.4,.5,1)}
-.sbug .bi.win .plus{opacity:1;transform:translate(0,-50%)}
-.sbug .bi.win>.lg{box-shadow:0 0 0 2px var(--gold);animation:pop .6s}
-@keyframes pop{40%{transform:scale(1.3)}}
-@media(max-width:700px){.sbug{top:8px;left:8px;width:44px}.sbug .bt{font-size:9px;padding:5px 0}.sbug .bi{padding:6px 0 5px}.sbug .bi .cr{font-size:10px}.sbug .bi>.lg{font-size:22px}.sbug .bi .wc{font-size:14px;margin-top:3px}}
 /* scorecard beside the film */
 .g1{min-width:0}.g3{display:flex;flex-direction:column;gap:10px;min-width:0;margin-top:auto}
 /* round strip: small cards, tap to put it on screen */
@@ -257,7 +242,7 @@ footer small{display:block;margin-top:10px;font:700 12px/1.5 var(--fb);letter-sp
   </section>
 
   <section aria-label="Replays">
-    <div class="tv"><div class="film"><video id="tvV" playsinline muted preload="metadata"></video><span class="onair" id="onair"></span><button class="sbug" id="bug" type="button" aria-label="Current standings. Open the full leaderboard"></button></div><div class="gfx" id="gfx" aria-live="polite"></div></div>
+    <div class="tv"><div class="film"><video id="tvV" playsinline muted preload="metadata"></video><span class="onair" id="onair"></span></div><div class="gfx" id="gfx" aria-live="polite"></div></div>
     <div class="tvbar"><button type="button" id="snd">🔇 Sound</button><button type="button" class="alt" id="nxt">Next round ▶</button><span class="now" id="now"></span></div>
     <div class="strip-h"><b>Every round</b><span>Tap one to put it on screen</span></div>
     <div class="strip" id="strip"></div>
@@ -389,15 +374,6 @@ $("#stand").innerHTML=rows.map(function(r,k){return '<div class="st'+(k?'':' fir
   '<div class="foot">'+r.won+' '+(r.won===1?'round':'rounds')+' won outright or shared</div></div>'}).join("");
 new IntersectionObserver(function(es,ob){es.forEach(function(e){if(e.isIntersecting){$$("#stand .bar i").forEach(function(b){b.style.width=b.dataset.w+"%"});ob.disconnect()}})},{threshold:.3}).observe($("#stand"));
 
-/* standings bug: an upright tile in the film's corner. Rounds won, most first; it moves once per film, when that round's point lands. */
-$("#bug").innerHTML='<span class="bt">WINS</span>'+LADDER.map(function(l,k){return '<span class="bi'+(k?'':' lead')+'" data-m="'+l.m+'">'+(k?'':'<span class="cr" aria-hidden="true">👑</span>')+logo(l.m)+'<b class="wc">'+l.won+'</b><em class="plus">+1</em></span>'}).join("");
-$("#bug").setAttribute("aria-label","Rounds won: "+LADDER.map(function(l){return MODELS[l.m].app+" "+l.won}).join(", ")+". Open the full leaderboard");
-$("#bug").addEventListener("click",function(){$("#standings").scrollIntoView({behavior:reduce?"auto":"smooth"})});
-function bugReset(){$("#bug").classList.remove("scored");$$("#bug .bi").forEach(function(x){x.classList.remove("win")})}
-v.addEventListener("loadstart",bugReset);
-v.addEventListener("timeupdate",function(){if(!v.duration)return;var b=$("#bug"),r=REEL[i];
-  if(v.currentTime>v.duration*.62&&!b.classList.contains("scored")){b.classList.add("scored");if(r.win)r.win.split(" & ").forEach(function(m){var e=$('#bug .bi[data-m="'+m+'"]');if(e)e.classList.add("win")})}});
-bugReset();
 /* are they learning? */
 EZLearn.together($("#lxDir"));EZLearn.calls($("#lxCalls"));EZLearn.table($("#lxTbl"));
 var best=Math.max.apply(null,S.map(function(x){return x.right}));
