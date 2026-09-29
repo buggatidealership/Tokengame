@@ -95,7 +95,7 @@ a{color:inherit}
 .strip-h{display:flex;align-items:baseline;gap:10px;margin:22px 0 8px}
 .strip-h b{font:800 18px/1 var(--fd);letter-spacing:-.02em}
 .strip-h span{font:700 11.5px/1 var(--fm);color:var(--ink2)}
-.strip{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 4px 16px;scrollbar-width:thin}
+.strip{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:6px;padding:6px 6px 16px;scrollbar-width:thin}
 .mini{flex:0 0 150px;scroll-snap-align:start;background:var(--paper);border-radius:12px;box-shadow:0 0 0 2px var(--ink),4px 5px 0 2px rgba(35,29,22,.14);padding:10px 11px;text-align:left;display:flex;flex-direction:column;gap:7px;text-decoration:none;color:inherit;transition:transform .2s}
 .mini.nofilm{opacity:.75;cursor:default}.mini.nofilm:hover{transform:none}.mini .soon{font:700 10px/1 var(--fb,system-ui);letter-spacing:.08em;text-transform:uppercase;opacity:.7}
 .mini:hover{transform:translateY(-2px) rotate(-1deg)}
@@ -128,11 +128,11 @@ a{color:inherit}
 .lb-r .who small{display:block;font:700 10.5px/1 var(--fm);letter-spacing:.08em;color:var(--ink2);margin-top:5px}
 .lb-r .pc{display:flex;align-items:baseline;gap:4px 8px;flex-wrap:wrap}
 .lb-r .pc small{white-space:nowrap}
-.lb-r .pc b{font:800 34px/1 var(--fd);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.lb-r .pc b{font:800 24px/1 var(--fd);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .lb-r .pc small{font:700 11.5px/1 var(--fm);color:var(--ink2)}
 .lb-r .bar{height:10px;border-radius:5px;background:var(--kraft);box-shadow:inset 0 0 0 2px var(--ink);margin-top:8px;overflow:hidden}
 .lb-r .bar i{display:block;height:100%;width:0;background:var(--ink);border-radius:5px;transition:width 1.2s cubic-bezier(.3,1,.4,1)}
-.lb-r .off b{font:800 34px/1 var(--fd);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.lb-r .off b{font:800 24px/1 var(--fd);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .lb-r .off small{display:block;font:700 11px/1.3 var(--fm);color:var(--ink2);margin-top:4px}
 .lb-r .wn{font:800 30px/1 var(--fd);text-align:center}.lb-r .wn small{display:block;font:700 10px/1 var(--fm);color:var(--ink2);margin-top:3px}
 .lb-r.lead{background:linear-gradient(90deg,rgba(255,227,138,.55),rgba(255,227,138,.12));padding-block:22px}
@@ -182,7 +182,7 @@ a{color:inherit}
 .rec .cc small{display:block;font:700 10px/1 var(--fm);color:var(--ink2);margin-top:5px;white-space:nowrap}
 .rec .cc.no{background:transparent;box-shadow:inset 0 0 0 1.5px var(--kraft2)}.rec .cc.no small{color:var(--dn)}
 .rec .cc.win{background:var(--foil3);box-shadow:inset 0 0 0 2px var(--ink)}
-.rec td.rd .mm{display:none;font:800 12px/1 var(--fd);margin-top:4px}.rec td.rd .mm.u{color:var(--up)}.rec td.rd .mm.d{color:var(--dn)}
+.rec td.rd .mm{display:block;font:700 11px/1 var(--fm);color:var(--ink2);margin-top:5px}.rec td.rd .mm b{font:800 13px/1 var(--fd)}.rec td.rd .mm b.u{color:var(--up)}.rec td.rd .mm b.d{color:var(--dn)}
 @media(max-width:560px){.rec{min-width:0;border-spacing:3px}.rec th.mkh,.rec td.mk{display:none}.rec td.rd{font-size:13px}.rec td.rd .mm{display:block}.rec .cc{padding:7px 2px;font-size:13px}.rec .cc small{font-size:9px}.rec th .lg{font-size:22px}}
 .recl{font:500 13px/1.4 var(--fd);color:var(--ink2);margin:8px 5px 2px}
 details.nums{margin-top:14px;padding:4px 16px}
@@ -317,7 +317,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 
   <section class="sec" id="standings"><div class="sh"><span class="eb" id="standSub">Leaderboard</span><h2>Who's calling it best?</h2></div>
     <div class="panel lb" id="lb">
-      <div class="lb-h"><span>Rank</span><span>Model</span><span>Right direction</span><span>Off by, on average</span><span>Rounds won</span></div>
+      <div class="lb-h"><span>Rank</span><span>Model</span><span>Right direction</span><span>Average miss</span><span>Rounds won</span></div>
     </div>
     <details class="panel nums"><summary>See every call behind these numbers</summary><div class="recw" id="rec"></div></details></section>
 
@@ -431,19 +431,19 @@ $("#standSub").textContent="Leaderboard · after "+ROUNDS.length+" rounds";
 $("#lb").insertAdjacentHTML("beforeend",rows.map(function(r,k){return '<div class="lb-r'+(k?'':' lead')+'"><span class="rk">'+(k?'':'<span class="crown" aria-hidden="true">👑</span>')+'<i>#</i>'+(k+1)+'</span>'+
   '<div class="who">'+logo(r.m)+'<div><b>'+MODELS[r.m].app+'</b>'+(k?'':'<small>LEADER</small>')+'</div></div>'+
   '<div class="pcw"><span class="k2">Right direction</span><div class="pc"><b>'+Math.round(r.pct*100)+'%</b><small>'+r.right+' of '+r.tot+' calls</small></div><div class="bar"><i data-w="'+Math.round(r.pct*100)+'"></i></div></div>'+
-  '<div class="off"><span class="k2">Off by, on average</span><b>'+r.avg.toFixed(2)+'</b><small>percentage points</small></div>'+
+  '<div class="off"><span class="k2">Average miss</span><b>±'+r.avg.toFixed(2)+'%</b><small>per call</small></div>'+
   '<div class="wn">'+r.won+'<small>won</small></div></div>'}).join("")+
-  '<div class="lb-n"><b>Right direction:</b> how often the up or down call was right. <b>Off by:</b> the gap between the call and the real move. A call of +4% on a +5.95% day is 1.95 points off. Ranked by right direction first, then by the smaller miss. '+ROUNDS.length+' calls each so far, so expect these to move.</div>');
+  '<div class="lb-n"><b>Right direction:</b> how often the up or down call was right. <b>Average miss:</b> how far each call landed from the real move. A call of +4% on a +5.95% day missed by 1.95%. Ranked by right direction first, then by the smaller miss. '+ROUNDS.length+' calls each so far, so expect these to move.</div>');
 new IntersectionObserver(function(es,ob){es.forEach(function(e){if(e.isIntersecting){$$("#lb .bar i").forEach(function(b){b.style.width=b.dataset.w+"%"});ob.disconnect()}})},{threshold:.3}).observe($("#lb"));
 
 /* are they learning? */
 EZLearn.together($("#lxDir"));EZLearn.misses($("#lxMiss"));/* the record: every graded call, round by round; gold = that round's closest call */
 (function(){var ms=MODEL_KEYS.filter(function(m){return MODELS[m]});
-  $("#rec").innerHTML='<table class="rec"><thead><tr><th style="text-align:left">Round</th><th class="mkh">Market</th>'+ms.map(function(m){return '<th>'+logo(m)+'</th>'}).join("")+'</tr></thead><tbody>'+
-  ROUNDS.map(function(r){return '<tr><td class="rd">'+r.co+'<small>R'+r.n+' · '+fmtDate(r.called)+'</small><span class="mm '+(r.a>0?'u':'d')+'">'+r.out+'</span></td><td class="mk '+(r.a>0?'u':'d')+'">'+r.out+'</td>'+ms.map(function(m){var c=callOf(r,m);if(!c)return '<td></td>';
+  $("#rec").innerHTML='<table class="rec"><thead><tr><th style="text-align:left">Round</th>'+ms.map(function(m){return '<th>'+logo(m)+'</th>'}).join("")+'</tr></thead><tbody>'+
+  ROUNDS.map(function(r){return '<tr><td class="rd">'+r.co+'<span class="mm">Market <b class="'+(r.a>0?'u':'d')+'">'+r.out+'</b></span></td>'+ms.map(function(m){var c=callOf(r,m);if(!c)return '<td></td>';
     var ok=callOk(r,c),dn=/^DOWN/.test(c[1]),mag=c[1].replace(/^\w+\s*/,""),win=r.win&&r.win.split(" & ").indexOf(m)>-1;
     return '<td><span class="cc '+(ok?'ok':'no')+(win?' win':'')+'"><em class="'+(dn?'d':'u')+'">'+(dn?'▼':'▲')+mag+'</em><small>'+(ok?'✓ '+c[2]:'✗ wrong')+'</small></span></td>'}).join("")+'</tr>'}).join("")+
-  '</tbody></table><p class="recl">▲ up, ▼ down: what each model predicted. ✓ right way, with how many points it was off. Gold is the closest call of that round.</p>';})();
+  '</tbody></table><p class="recl">▲ up, ▼ down: what each model predicted. ✓ right way, with how far it missed. Gold is the closest call of that round.</p>';})();
 var best=Math.max.apply(null,S.map(function(x){return x.right}));
 $("#vRounds").textContent="After "+B.rounds+" rounds";
 $("#vList").innerHTML='<li><b>The bar to beat:</b> saying "UP" every single time would have been right '+B.alwaysUp+' of '+B.rounds+'. '+(best>B.alwaysUp?'At least one model beats it.':'No model has beaten that yet.')+'</li>'+
