@@ -27,7 +27,7 @@ var SHEET=[
 var TICKERS={GME:"GameStop",ORCL:"Oracle",AZO:"AutoZone",GIS:"General Mills",BB:"BlackBerry",COST:"Costco",JEF:"Jefferies",CCL:"Carnival",MU:"Micron",ACN:"Accenture",NKE:"Nike"};
 var CARDS={
  1:{tag:"SEASON OPENER",head:"Kimi Calls GameStop",film:"round-1-gamestop",poster:"round-1-gamestop-poster",tall:true},
- 2:{tag:"THE FADE",head:"Oracle Fades; Claude Collects",film:"round-2-oracle",poster:"round-2-oracle-poster",tall:true},
+ 2:{tag:"THE FADE",head:"Oracle Fades; Claude Collects",film:"round-2-oracle-sq",poster:"round-2-oracle-sq-poster"},
  3:{tag:"TIGHTEST CALL",head:"GPT Answers the Doubters",film:"round-3-autozone",poster:"round-3-autozone-end"},
  4:{tag:"DEAD HEAT",head:"A Dead Heat at General Mills",film:"round-4-generalmills",poster:"round-4-generalmills-poster"},
  5:{tag:"LEAD CHANGE",head:"GPT Again, and the Standings Turn",film:"round-5-blackberry",poster:"round-5-blackberry-poster"},
@@ -38,7 +38,7 @@ var TIMES={MU:{lock:"2026-09-30T20:30:00Z"}};
 var MEDIA="media/";
 /* the round films: webm/mp4/poster in media/, tall = 9:16 */
 /* pan: for 9:16 films shown in a square, [second, vertical position %] keyframes so the frame follows the action */
-var FILMS={1:{f:"round-1-gamestop",p:"round-1-gamestop-poster",tall:true,pan:[[0,27],[7,33],[10,42],[14,52],[20,66]]},2:{f:"round-2-oracle",p:"round-2-oracle-poster",tall:true,pan:[[0,50],[5,56],[11,66],[15,66],[20,58]]},3:{f:"round-3-autozone",p:"round-3-autozone-end"},4:{f:"round-4-generalmills",p:"round-4-generalmills-poster"},5:{f:"round-5-blackberry",p:"round-5-blackberry-poster"},6:{f:"round-6-costco",p:"round-6-costco-poster"}};
+var FILMS={1:{f:"round-1-gamestop",p:"round-1-gamestop-poster",tall:true,pan:[[0,27],[7,33],[10,42],[14,52],[20,66]]},2:{f:"round-2-oracle-sq",p:"round-2-oracle-sq-poster"},3:{f:"round-3-autozone",p:"round-3-autozone-end"},4:{f:"round-4-generalmills",p:"round-4-generalmills-poster"},5:{f:"round-5-blackberry",p:"round-5-blackberry-poster"},6:{f:"round-6-costco",p:"round-6-costco-poster"}};
 var NVIDIA_D="M8.948 8.798v-1.43a6.7 6.7 0 0 1 .424-.018c3.922-.124 6.493 3.374 6.493 3.374s-2.774 3.851-5.75 3.851c-.398 0-.787-.062-1.158-.185v-4.346c1.528.185 1.837.857 2.747 2.385l2.04-1.714s-1.492-1.952-4-1.952a6.016 6.016 0 0 0-.796.035m0-4.735v2.138l.424-.027c5.45-.185 9.01 4.47 9.01 4.47s-4.08 4.964-8.33 4.964c-.37 0-.733-.035-1.095-.097v1.325c.3.035.61.062.91.062 3.957 0 6.82-2.023 9.593-4.408.459.371 2.34 1.263 2.73 1.652-2.633 2.208-8.772 3.984-12.253 3.984-.335 0-.653-.018-.971-.053v1.864H24V4.063zm0 10.326v1.131c-3.657-.654-4.673-4.46-4.673-4.46s1.758-1.944 4.673-2.262v1.237H8.94c-1.528-.186-2.73 1.245-2.73 1.245s.68 2.412 2.739 3.11M2.456 10.9s2.164-3.197 6.5-3.533V6.201C4.153 6.59 0 10.653 0 10.653s2.35 6.802 8.948 7.42v-1.237c-4.84-.6-6.492-5.936-6.492-5.936z";
 function nvLogo(){return '<span class="lg" style="background:#000" title="NVIDIA"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#76B900" d="'+NVIDIA_D+'"/></svg></span>'}
 function hlLogo(){return '<span class="lg" style="background:#0f1a1f" title="Hyperliquid"><img src="'+MEDIA+'logo-hyperliquid.png" alt="" style="width:70%;height:70%;object-fit:contain"></span>'}
