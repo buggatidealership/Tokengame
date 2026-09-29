@@ -220,7 +220,27 @@ var EZLearn=(function(){
       o+='<g class="lx-g" tabindex="0" data-tip="'+tip.replace(/"/g,'&quot;')+'" data-x="'+cx.toFixed(1)+'" data-w="'+W+'"><rect class="lx-col" x="'+(cx-cw/2).toFixed(1)+'" y="'+T+'" width="'+cw.toFixed(1)+'" height="'+ph+'" rx="4"/>'+inner+'</g>'});
     el.innerHTML='<div class="lx-p">'+o+'</svg></div><div class="lx2-leg"><span><i class="ac"></i> what the market did</span>'+legendModels()+'<span>the thin line is how far off each call was</span></div>';
   })}
+
+  /* misses(el): Step 2, simplest form. Every round, how many points off each model was. Shorter = closer. */
+  function misses(el){mount(el,function(W){
+    var ms=models(),sl=slotsFor(W),H=W<520?250:290,L=44,R=12,T=18,B=28,cw=(W-L-R)/sl.length,ph=H-T-B,x=function(i){return L+(i+.5)*cw};
+    var mx=0;ROUNDS.forEach(function(r){r.calls.forEach(function(c){mx=Math.max(mx,parseFloat(c[2]))})});
+    var hi=Math.max(5,Math.ceil(mx/5)*5),y=function(v){return T+(1-v/hi)*ph},base=y(0);
+    var o='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="How many points off each model was, every round">';
+    for(var g=0;g<=hi;g+=5)o+='<line class="lx-gl" x1="'+L+'" x2="'+(W-R)+'" y1="'+y(g)+'" y2="'+y(g)+'"/><text class="lx-ax" x="'+(L-6)+'" y="'+(y(g)+3)+'" text-anchor="end">'+g+(g===hi?' pts':'')+'</text>';
+    sl.forEach(function(q,i){o+='<text class="lx-ax'+(q.st==='g'?'':' f')+'" x="'+x(i).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle">R'+q.n+'</text>'});
+    var gw=Math.min(54,cw*.78),n=ms.length,gap=2,bw=Math.max(3,(gw-gap*(n-1))/n);
+    sl.forEach(function(q,i){var cx=x(i),r=ROUNDS.filter(function(r){return r.n===q.n})[0],inner='',tip;
+      if(r){var cl=ms.map(function(m){var c=callOf(r,m);return c?{m:m,said:c[1],off:parseFloat(c[2])}:null}).filter(Boolean);
+        var best=Math.min.apply(null,cl.map(function(c){return c.off}));
+        tip='<b>R'+q.n+' · '+q.co+'</b>The market did '+r.out+'<br>'+cl.map(function(c){return MODELS[c.m].app+' said '+c.said+': off by '+c.off.toFixed(2)+' pts'}).join('<br>');
+        cl.forEach(function(c,k){var x0=cx-gw/2+k*(bw+gap),top=y(c.off),h=base-top,rr=Math.min(4,h,bw/2),x1=x0+bw;
+          inner+='<path fill="'+colr(c.m)+'" d="M'+x0.toFixed(1)+' '+base+' V'+(top+rr).toFixed(1)+' Q'+x0.toFixed(1)+' '+top.toFixed(1)+' '+(x0+rr).toFixed(1)+' '+top.toFixed(1)+' H'+(x1-rr).toFixed(1)+' Q'+x1.toFixed(1)+' '+top.toFixed(1)+' '+x1.toFixed(1)+' '+(top+rr).toFixed(1)+' V'+base+' Z"/>'});
+      }else{tip=pendTip(q);if(q.st==='p')inner='<text class="lx-q" x="'+cx+'" y="'+(base-6)+'" text-anchor="middle">?</text>'}
+      o+='<g class="lx-g" tabindex="0" data-tip="'+tip.replace(/"/g,'&quot;')+'" data-x="'+cx.toFixed(1)+'" data-w="'+W+'"><rect class="lx-col" x="'+(cx-cw/2).toFixed(1)+'" y="'+T+'" width="'+cw.toFixed(1)+'" height="'+ph+'" rx="4"/>'+inner+'</g>'});
+    el.innerHTML='<div class="lx-p">'+o+'</svg></div><div class="lx2-leg">'+legendModels()+'<span>shorter bar = closer call</span></div>';
+  })}
   /* the plain benchmarks a skeptic would ask for */
   function baselines(){var up=ROUNDS.filter(function(r){return r.a>0}).length;return {rounds:ROUNDS.length,alwaysUp:up}}
-  return {series:series,summary:summary,direction:direction,distance:distance,table:table,baselines:baselines,together:together,calls:calls,color:colr};
+  return {series:series,summary:summary,direction:direction,distance:distance,table:table,baselines:baselines,together:together,calls:calls,misses:misses,color:colr};
 })();
