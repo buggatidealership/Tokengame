@@ -52,14 +52,13 @@ a{color:inherit}
 .hero h1 span{color:var(--red)}
 .hero p{margin-top:10px;font:600 17px/1.45 var(--fb);color:var(--ink2);max-width:62ch}
 /* the screen: film left, graphics right, never on top of each other */
-.tv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3.4fr);max-width:920px;margin-inline:auto;background:var(--navy);border-radius:10px;overflow:hidden;box-shadow:0 20px 50px -20px rgba(16,26,58,.6)}
-@media(max-width:700px){.tv{grid-template-columns:minmax(0,1fr) minmax(0,4.2fr)}}
+.tv{display:grid;grid-template-columns:minmax(0,56.25fr) minmax(0,43.75fr);background:var(--navy);border-radius:10px;overflow:hidden;box-shadow:0 20px 50px -20px rgba(16,26,58,.6)}
+@media(max-width:700px){.tv{grid-template-columns:1fr}}
 .film{position:relative;background:#000;overflow:hidden;aspect-ratio:1/1;max-width:100%}
 .film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.film .onair{position:absolute;top:10px;left:10px;z-index:2;font:800 12px/1 var(--fc);letter-spacing:.14em;background:rgba(10,17,48,.85);color:#fff;padding:5px 8px;border-radius:3px}
+.film .onair{position:absolute;top:10px;right:10px;z-index:2;font:800 12px/1 var(--fc);letter-spacing:.14em;background:rgba(10,17,48,.85);color:#fff;padding:5px 8px;border-radius:3px}
 .film .onair b{color:var(--gold)}
-.gfx{max-width:920px;margin:10px auto 0;background:var(--navy);color:#fff;border-radius:10px;padding:16px 18px;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr) minmax(0,1fr);gap:18px;align-items:center}
-@media(max-width:900px){.gfx{grid-template-columns:1fr;gap:12px}}
+.gfx{color:#fff;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:hidden}
 .gfx .k{font:800 13px/1 var(--fc);letter-spacing:.16em;color:var(--gold);text-transform:uppercase}
 .gfx h3{font:900 clamp(28px,3.4vw,44px)/.95 var(--fc);text-transform:uppercase}
 .gfx .cl{display:grid;gap:6px}
@@ -76,24 +75,24 @@ a{color:inherit}
 .gfx.on .wn{transform:none}
 .gfx .wn small{font:800 11px/1 var(--fb);letter-spacing:.14em;display:block}
 .gfx .wn .lg{font-size:32px;box-shadow:none}
-.tvbar{max-width:920px;margin-inline:auto;display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+.tvbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
 .tvbar button{font:800 14px/1 var(--fc);letter-spacing:.06em;text-transform:uppercase;background:var(--navy);color:#fff;padding:10px 14px;border-radius:4px}
 .tvbar button.alt{background:var(--card);color:var(--navy);box-shadow:inset 0 0 0 2px var(--navy)}
 .tvbar .now{margin-left:auto;font:700 13px/1 var(--fb);color:var(--ink2)}
-/* current standings: quiet, order only */
-.br .nm .sh{display:none}
-@media(max-width:700px){.br .nm{display:none}.br{justify-content:center}.bug .bh{text-align:center}}
-.bug{display:flex;flex-direction:column;justify-content:center;gap:18px;padding:20px 18px;min-width:0;color:#fff;border-right:1px solid rgba(255,255,255,.08)}
-.bug .bh{font:700 11px/1.2 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:#8f99bd}
-.bug .rows{display:flex;flex-direction:column;gap:16px}
-.br{display:flex;align-items:center;gap:10px;min-width:0}
-.br .rk{font:800 16px/1 var(--fc);color:#8f99bd;width:.8em;flex:none}
-.br>.lg{font-size:28px;box-shadow:none}
-.br .nm{font:700 17px/1 var(--fc);text-transform:uppercase;letter-spacing:.04em;color:#c9cfe4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.br.lead .rk{color:var(--gold)}.br.lead .nm{color:#fff}
-@media(max-width:700px){.bug{padding:10px 8px;gap:10px}.bug .bh{font-size:8.5px;letter-spacing:.1em}.bug .rows{gap:10px}.br{gap:6px}.br .rk{font-size:13px}.br>.lg{font-size:20px}.br .nm{font-size:12.5px;letter-spacing:.02em}}
-/* scorecard band under the screen */
-.g1{min-width:0}.g3{display:flex;flex-direction:column;gap:10px;min-width:0}
+/* standings bug: a small broadcast-style score bug in the film's corner */
+.sbug{position:absolute;top:10px;left:10px;z-index:3;display:flex;align-items:center;gap:7px;padding:5px 8px;border:0;border-radius:8px;background:rgba(10,17,48,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#fff;cursor:pointer}
+.sbug .bt{font:800 10px/1 var(--fc);letter-spacing:.14em;text-transform:uppercase;color:#8f99bd;margin-right:2px}
+.sbug .bi{display:inline-flex;align-items:center;gap:3px}
+.sbug .bi>i{font:800 12px/1 var(--fc);font-style:normal;color:#8f99bd}
+.sbug .bi.lead>i{color:var(--gold)}
+.sbug .bi>.lg{font-size:20px;box-shadow:none}
+.sbug .bi.win>.lg{box-shadow:0 0 0 2px var(--gold);animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.35)}}
+.sbug .pt{max-width:0;overflow:hidden;white-space:nowrap;font:800 12px/1 var(--fc);letter-spacing:.06em;text-transform:uppercase;color:var(--navy);background:var(--gold);border-radius:4px;padding:4px 0;transition:max-width .5s,padding .5s}
+.sbug.scored .pt{max-width:150px;padding:4px 6px}
+@media(max-width:700px){.sbug{top:8px;left:8px;padding:4px 6px;gap:5px}.sbug .bt{display:none}.sbug .bi>.lg{font-size:17px}}
+/* scorecard beside the film */
+.g1{min-width:0}.g3{display:flex;flex-direction:column;gap:10px;min-width:0;margin-top:auto}
 /* round strip: small cards, tap to put it on screen */
 .strip-h{display:flex;align-items:baseline;gap:10px;margin:18px 0 8px}
 .strip-h b{font:800 16px/1 var(--fc);letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
@@ -254,8 +253,7 @@ footer small{display:block;margin-top:10px;font:700 12px/1.5 var(--fb);letter-sp
   </section>
 
   <section aria-label="Replays">
-    <div class="tv"><aside class="bug" id="bug" aria-label="Current standings"></aside><div class="film"><video id="tvV" playsinline muted preload="metadata"></video><span class="onair" id="onair"></span></div></div>
-    <div class="gfx" id="gfx" aria-live="polite"></div>
+    <div class="tv"><div class="film"><video id="tvV" playsinline muted preload="metadata"></video><span class="onair" id="onair"></span><button class="sbug" id="bug" type="button" aria-label="Current standings. Open the full leaderboard"></button></div><div class="gfx" id="gfx" aria-live="polite"></div></div>
     <div class="tvbar"><button type="button" id="snd">🔇 Sound</button><button type="button" class="alt" id="nxt">Next round ▶</button><span class="now" id="now"></span></div>
     <div class="strip-h"><b>Every round</b><span>Tap one to put it on screen</span></div>
     <div class="strip" id="strip"></div>
@@ -385,9 +383,16 @@ $("#stand").innerHTML=rows.map(function(r,k){return '<div class="st'+(k?'':' fir
   '<div class="foot">'+r.won+' '+(r.won===1?'round':'rounds')+' won outright or shared</div></div>'}).join("");
 new IntersectionObserver(function(es,ob){es.forEach(function(e){if(e.isIntersecting){$$("#stand .bar i").forEach(function(b){b.style.width=b.dataset.w+"%"});ob.disconnect()}})},{threshold:.3}).observe($("#stand"));
 
-/* current standings beside the film: a quiet cue, order only. The numbers live in the leaderboard. */
-$("#bug").innerHTML='<div class="bh">Current standings</div><div class="rows">'+
-  rows.map(function(r,k){return '<div class="br'+(k?'':' lead')+'"><span class="rk">'+(k+1)+'</span>'+logo(r.m)+'<span class="nm"><span class="lo">'+MODELS[r.m].app+'</span><span class="sh">'+MODELS[r.m].name+'</span></span></div>'}).join("")+'</div>';
+/* standings bug: small, fixed corner of the film, like a broadcast score bug.
+   It stays still, and only moves once per film: when that round's point lands. The full numbers live in the leaderboard. */
+$("#bug").innerHTML='<span class="bt">Standings</span>'+rows.map(function(r,k){return '<span class="bi'+(k?'':' lead')+'" data-m="'+r.m+'"><i>'+(k+1)+'</i>'+logo(r.m)+'</span>'}).join("")+'<span class="pt" id="bugPt"></span>';
+$("#bug").addEventListener("click",function(){$("#standings").scrollIntoView({behavior:reduce?"auto":"smooth"})});
+function bugReset(){var b=$("#bug"),r=ROUNDS[i];b.classList.remove("scored");$$("#bug .bi").forEach(function(x){x.classList.remove("win")});
+  $("#bugPt").textContent=r.win?"+1 "+r.win.replace(" & "," & "):"No point"}
+v.addEventListener("loadstart",bugReset);
+v.addEventListener("timeupdate",function(){if(!v.duration)return;var b=$("#bug"),r=ROUNDS[i];
+  if(v.currentTime>v.duration*.62&&!b.classList.contains("scored")){b.classList.add("scored");if(r.win)r.win.split(" & ").forEach(function(m){var e=$('#bug .bi[data-m="'+m+'"]');if(e)e.classList.add("win")})}});
+bugReset();
 /* are they learning? */
 EZLearn.together($("#lxDir"));EZLearn.calls($("#lxCalls"));EZLearn.table($("#lxTbl"));
 var best=Math.max.apply(null,S.map(function(x){return x.right}));
