@@ -99,6 +99,7 @@ a{color:inherit}
 .strip-h span{font:600 13px/1 var(--fb);color:var(--ink2)}
 .strip{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 12px;scrollbar-width:thin}
 .mini{text-decoration:none;color:inherit;flex:0 0 150px;scroll-snap-align:start;background:var(--card);border-radius:10px;box-shadow:0 0 0 1px var(--line);padding:10px;text-align:left;display:flex;flex-direction:column;gap:8px;transition:transform .2s,box-shadow .2s}
+.mini.nofilm{opacity:.75;cursor:default}.mini.nofilm:hover{transform:none}.mini .soon{font:700 10px/1 var(--fb,system-ui);letter-spacing:.08em;text-transform:uppercase;opacity:.7}
 .mini:hover{transform:translateY(-2px)}
 .mini.on{box-shadow:0 0 0 2.5px var(--navy)}
 .mini .t{font:800 16px/1.05 var(--fc);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -354,23 +355,25 @@ function gfx(r){
 /* 9:16 films fill the square and the frame follows the action (pan keyframes in ez-data.js) */
 function panAt(tt){if(!pan)return 50;for(var k=1;k<pan.length;k++)if(tt<=pan[k][0]){var a=pan[k-1],b=pan[k],f=(tt-a[0])/(b[0]-a[0]),e=f<.5?2*f*f:1-Math.pow(-2*f+2,2)/2;return a[1]+(b[1]-a[1])*e}return pan[pan.length-1][1]}
 (function tick(){if(pan)v.style.objectPosition="50% "+panAt(v.currentTime).toFixed(2)+"%";requestAnimationFrame(tick)})();
+/* rounds with a film yet; a graded round without one still counts everywhere else */
+var REEL=ROUNDS.filter(function(r){return r.film});
 function play(k){
-  i=(k+ROUNDS.length)%ROUNDS.length;var r=ROUNDS[i];pan=r.tall?(r.pan||[[0,50]]):null;v.style.objectPosition=r.tall?"50% "+panAt(0)+"%":"50% 50%";
+  i=(k+REEL.length)%REEL.length;var r=REEL[i];pan=r.tall?(r.pan||[[0,50]]):null;v.style.objectPosition=r.tall?"50% "+panAt(0)+"%":"50% 50%";
   v.poster=MEDIA+r.poster+".jpg";v.innerHTML='<source src="'+MEDIA+r.film+'.mp4" type="video/mp4"><source src="'+MEDIA+r.film+'.webm" type="video/webm">';v.load();v.muted=!soundOn;
   if(!reduce){var p=v.play();if(p&&p.catch)p.catch(function(){})}
   $("#onair").innerHTML='REPLAY · <b>R'+r.n+'</b>';
   var g=$("#gfx");g.classList.remove("on");g.innerHTML=gfx(r);void g.offsetWidth;setTimeout(function(){g.classList.add("on")},reduce?0:350);
   $$(".mini[data-k]").forEach(function(b){b.classList.toggle("on",+b.dataset.k===i)});
-  $("#now").textContent="Now showing: R"+r.n+" · "+r.co+" ("+(i+1)+"/"+ROUNDS.length+")";
+  $("#now").textContent="Now showing: R"+r.n+" · "+r.co+" ("+(i+1)+"/"+REEL.length+")";
 }
 v.addEventListener("ended",function(){play(i+1)});
-$("#strip").innerHTML=ROUNDS.map(function(r,k){return '<button class="mini" type="button" data-k="'+k+'"><span class="t">R'+r.n+' · '+r.co+'</span><span class="w">WINNER</span><span class="wv">'+(r.win?winLogos(r)+r.win.replace(" & "," &amp; "):'Nobody')+'</span></button>'}).join("")+
+$("#strip").innerHTML=ROUNDS.map(function(r){var k=REEL.indexOf(r);return (k<0?'<div class="mini nofilm">':'<button class="mini" type="button" data-k="'+k+'">')+'<span class="t">R'+r.n+' · '+r.co+'</span><span class="w">WINNER</span><span class="wv">'+(r.win?winLogos(r)+r.win.replace(" & "," &amp; "):'Nobody')+'</span>'+(k<0?'<span class="soon">Film soon</span></div>':'</button>')}).join("")+
   PENDING.map(function(u){return '<a class="mini pend" href="#guide"><span class="t">R'+u.n+' · '+u.co+'</span><span class="w">RESULT</span><span class="wv">Calls are in · '+fmtDate(u.resolves)+'</span></a>'}).join("");
 $$(".mini[data-k]").forEach(function(b){b.addEventListener("click",function(){play(+b.dataset.k);$(".tv").scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"})})});
 $("#nxt").addEventListener("click",function(){play(i+1)});
 $("#snd").addEventListener("click",function(){soundOn=!soundOn;v.muted=!soundOn;this.textContent=soundOn?"🔊 Sound on":"🔇 Sound";if(soundOn){v.currentTime=0;v.play().catch(function(){})}});
 new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){if(!reduce&&v.paused&&!v.ended)v.play().catch(function(){})}else v.pause()})},{threshold:.3}).observe($(".tv"));
-var m=location.hash.match(/^#round-(\d+)/),start=m?ROUNDS.findIndex(function(r){return r.n==m[1]}):0;play(start<0?0:start);
+var m=location.hash.match(/^#round-(\d+)/),start=m?REEL.findIndex(function(r){return r.n==m[1]}):0;play(start<0?0:start);
 /* standings: right direction % and average miss, ranked in that order */
 var S=EZLearn.summary(),B=EZLearn.baselines();
 var won={};LADDER.forEach(function(l){won[l.m]=l});
@@ -387,10 +390,10 @@ new IntersectionObserver(function(es,ob){es.forEach(function(e){if(e.isIntersect
    It stays still, and only moves once per film: when that round's point lands. The full numbers live in the leaderboard. */
 $("#bug").innerHTML='<span class="bt">Standings</span>'+rows.map(function(r,k){return '<span class="bi'+(k?'':' lead')+'" data-m="'+r.m+'"><i>'+(k+1)+'</i>'+logo(r.m)+'</span>'}).join("")+'<span class="pt" id="bugPt"></span>';
 $("#bug").addEventListener("click",function(){$("#standings").scrollIntoView({behavior:reduce?"auto":"smooth"})});
-function bugReset(){var b=$("#bug"),r=ROUNDS[i];b.classList.remove("scored");$$("#bug .bi").forEach(function(x){x.classList.remove("win")});
+function bugReset(){var b=$("#bug"),r=REEL[i];b.classList.remove("scored");$$("#bug .bi").forEach(function(x){x.classList.remove("win")});
   $("#bugPt").textContent=r.win?"+1 "+r.win.replace(" & "," & "):"No point"}
 v.addEventListener("loadstart",bugReset);
-v.addEventListener("timeupdate",function(){if(!v.duration)return;var b=$("#bug"),r=ROUNDS[i];
+v.addEventListener("timeupdate",function(){if(!v.duration)return;var b=$("#bug"),r=REEL[i];
   if(v.currentTime>v.duration*.62&&!b.classList.contains("scored")){b.classList.add("scored");if(r.win)r.win.split(" & ").forEach(function(m){var e=$('#bug .bi[data-m="'+m+'"]');if(e)e.classList.add("win")})}});
 bugReset();
 /* are they learning? */
