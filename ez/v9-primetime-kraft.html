@@ -64,7 +64,7 @@ a{color:inherit}
 .hero h1 span{display:inline-block;background:var(--foil);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:foil 6s linear infinite;-webkit-text-stroke:2px var(--ink)}
 .hero .sub{max-width:600px;margin:0 auto;color:var(--ink2);font-size:18px}
 /* the screen */
-.tv{scroll-margin-top:70px;display:grid;grid-template-columns:minmax(0,56.25fr) minmax(0,43.75fr);background:var(--ink);border-radius:18px;overflow:hidden;box-shadow:0 0 0 3px var(--ink),10px 14px 0 3px rgba(35,29,22,.18)}
+.tv{position:relative;will-change:transform;scroll-margin-top:70px;display:grid;grid-template-columns:minmax(0,56.25fr) minmax(0,43.75fr);background:var(--ink);border-radius:18px;overflow:hidden;box-shadow:0 0 0 3px var(--ink),10px 14px 0 3px rgba(35,29,22,.18)}
 @media(max-width:700px){.tv{grid-template-columns:1fr}}
 .film{position:relative;background:#000;overflow:hidden;aspect-ratio:1/1;max-width:100%;border-right:3px solid var(--ink)}
 .film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -75,7 +75,23 @@ a{color:inherit}
 .gfx.flipped .face.fr{display:none}.gfx.flipped .face.bk{display:flex}
 .gfx.turn{animation:turn .5s cubic-bezier(.3,1.2,.5,1)}
 @keyframes turn{0%{transform:perspective(900px) rotateY(80deg);opacity:.3}100%{transform:none;opacity:1}}
-/* back of the card */
+/* back of the card: covers the whole card when flipped */
+.tvback{position:absolute;inset:0;z-index:6;display:none;justify-content:center;gap:16px;padding:28px clamp(18px,4vw,48px);overflow:auto}
+.tv.flipped .tvback{display:flex;flex-direction:column}
+.tvback>*{width:100%;max-width:620px;margin-inline:auto}
+.gfx.tvback .mk,.gfx.tvback .how{margin-top:0}
+.gfx.tvback{gap:20px}
+.gfx.tvback .cl{gap:10px}
+.gfx.tvback .brow{padding:14px 12px}
+.gfx.tvback .bh,.gfx.tvback .brow{grid-template-columns:40px minmax(0,1fr) 80px 116px;gap:10px}
+.gfx.tvback .brow .who{font-size:16px}.gfx.tvback .brow .who .lg{font-size:30px}.gfx.tvback .brow .pd{font-size:18px}.gfx.tvback .brow .of{font-size:12.5px}
+.gfx.tvback .how{font-size:14px}
+@media(max-width:420px){.gfx.tvback .bh,.gfx.tvback .brow{grid-template-columns:24px minmax(0,1fr) 60px 72px;gap:6px}.gfx.tvback .brow .rk{font-size:15px}.gfx.tvback .brow .of .lw{display:none}}
+@media(max-width:379px){.gfx.tvback .brow .who .lg{display:none}}
+@media(max-width:420px){.gfx.tvback .brow .who{font-size:15px;gap:6px}.gfx.tvback .brow .who .lg{font-size:26px}.gfx.tvback .brow .pd{font-size:16px}.gfx.tvback .brow .of{font-size:11.5px}}
+.tvback h3{font-size:clamp(34px,4vw,52px)}
+.tvback .brow{padding:12px}
+@media(min-width:701px){.tvback .brow .who{font-size:18px}.tvback .brow .who .lg{font-size:34px}.tvback .brow .pd{font-size:20px}.tvback .brow .of{font-size:13px}}
 .gfx .bh{display:grid;grid-template-columns:34px minmax(0,1fr) 70px 78px;gap:8px;padding:0 10px;font:700 10px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
 .gfx .bh span:nth-child(n+3){text-align:right}
 .gfx .brow{display:grid;grid-template-columns:34px minmax(0,1fr) 70px 78px;gap:8px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--kraft);box-shadow:inset 0 0 0 2px var(--ink)}
@@ -96,15 +112,15 @@ a{color:inherit}
 .gfx .row .pd{font:800 20px/1 var(--fd);letter-spacing:-.02em;white-space:nowrap}
 .gfx .row .pd.u{color:var(--up)}.gfx .row .pd.d{color:var(--dn)}
 .gfx .mk{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:2px dashed var(--kraft2);padding-top:14px;margin-top:auto;font:700 12px/1 var(--fm);letter-spacing:.1em;color:var(--ink2);text-transform:uppercase}
-.gfx .mk b{font:800 clamp(34px,3.6vw,44px)/1 var(--fd);letter-spacing:-.03em;text-transform:none}
+.gfx .mk b{font:800 22px/1 var(--fd);letter-spacing:-.03em;text-transform:none}
 .gfx .mk b.u{color:var(--up)}.gfx .mk b.d{color:var(--dn)}
 .gfx .wn{display:flex;align-items:center;gap:12px;background:var(--foil);background-size:300% 100%;animation:foil 6s linear infinite;border-radius:14px;box-shadow:0 0 0 2px var(--ink);padding:12px 14px;font:800 26px/1.05 var(--fd);letter-spacing:-.02em;transform:scaleX(0);transform-origin:left;transition:transform .5s .5s cubic-bezier(.3,1.2,.5,1)}
 .gfx.on .wn{transform:none}
 .gfx .wn small{font:700 11px/1 var(--fm);letter-spacing:.12em;display:block;margin-bottom:4px}
 .gfx .wn .lg{font-size:40px}
-@media(min-width:701px){.gfx .cl{gap:12px;margin-top:4px}.gfx .row{padding:12px 20px 12px 12px;border-radius:16px}.gfx .row>.lg{font-size:clamp(34px,3.4vw,46px)}.gfx .row .nm{font-size:clamp(18px,1.8vw,24px)}.gfx .row .pd{font-size:clamp(20px,2.1vw,28px)}}
+@media(min-width:701px){.gfx .cl{gap:12px;margin-top:4px}.gfx .row{padding:12px 20px 12px 12px;border-radius:16px}.gfx .row>.lg{font-size:clamp(34px,3.4vw,46px)}.gfx .row .nm{font-size:clamp(18px,1.8vw,24px)}.gfx .row .pd{font-size:clamp(20px,2.1vw,28px)}.gfx .mk b{font-size:clamp(24px,2.5vw,32px)}}
 .gfx .wn em{font:700 11px/1.2 var(--fm);font-style:normal;letter-spacing:.02em;margin-left:6px;opacity:.8}
-@media(max-width:700px){.gfx .face{gap:10px}.gfx{padding:14px 16px 16px}.gfx h3{font-size:30px;margin-top:4px}.gfx .cl{gap:6px}.gfx .row{padding:6px 12px 6px 6px;border-radius:12px}.gfx .row>.lg{font-size:28px}.gfx .row .nm{font-size:16px}.gfx .row .pd{font-size:17px}.gfx .mk{padding-top:10px}.gfx .mk b{font-size:32px}.gfx .wn{font-size:21px;padding:9px 12px}.gfx .wn .lg{font-size:30px}}
+@media(max-width:700px){.gfx .face{gap:10px}.gfx{padding:14px 16px 16px}.gfx h3{font-size:30px;margin-top:4px}.gfx .cl{gap:6px}.gfx .row{padding:6px 12px 6px 6px;border-radius:12px}.gfx .row>.lg{font-size:28px}.gfx .row .nm{font-size:16px}.gfx .row .pd{font-size:17px}.gfx .mk{padding-top:10px}.gfx .mk b{font-size:20px}.gfx .wn{font-size:21px;padding:9px 12px}.gfx .wn .lg{font-size:30px}}
 .tvbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
 .tvbar .btn{padding:8px 14px;font-size:13.5px;border-width:2px}
 @media(max-width:420px){.tvbar{flex-wrap:nowrap;gap:6px}.tvbar .btn{padding:7px 10px;font-size:12.5px}}
@@ -327,7 +343,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
   </section>
 
   <section aria-label="Replays">
-    <div class="tv"><div class="film"><video id="tvV" playsinline muted preload="metadata"></video><span class="onair" id="onair"></span></div><div class="gfx" id="gfx" aria-live="polite"></div></div>
+    <div class="tv"><div class="film"><video id="tvV" playsinline muted preload="metadata"></video><span class="onair" id="onair"></span></div><div class="gfx" id="gfx" aria-live="polite"></div><div class="gfx tvback" id="tvBack" aria-live="polite"></div></div>
     <div class="tvbar"><button type="button" class="btn lt" id="snd">🔇 Sound</button><button type="button" class="btn lt" id="flip">Flip the card ↻</button><button type="button" class="btn" id="nxt">Next round ▶</button></div>
     <div class="strip-h"><b>Every round</b><span>Tap one to put it on screen</span></div>
     <div class="strip" id="strip"></div>
@@ -427,7 +443,7 @@ function gfxBack(r){
   return '<div class="g1"><span class="k">R'+r.n+' · the numbers</span><h3>'+r.co+'</h3></div>'+
     '<div class="bh"><span>#</span><span>Model</span><span>Called</span><span>Missed by</span></div><div class="cl">'+
     cs.map(function(c){var rk=c.ok?'#'+(1+cs.filter(function(d){return d.ok&&d.off<c.off-1e-9}).length):'–';
-      return '<div class="brow '+(c.ok?'ok':'no')+'"><span class="rk">'+rk+'</span><span class="who">'+logo(c.m)+c.m+'</span><span class="pd '+(c.dn?'d':'u')+'">'+(c.dn?'▼ ':'▲ ')+c.mag+'</span><span class="of">'+(c.ok?'✓ '+c.off.toFixed(2)+'%':'✗ wrong way')+'</span></div>'}).join("")+'</div>'+
+      return '<div class="brow '+(c.ok?'ok':'no')+'"><span class="rk">'+rk+'</span><span class="who">'+logo(c.m)+c.m+'</span><span class="pd '+(c.dn?'d':'u')+'">'+(c.dn?'▼ ':'▲ ')+c.mag+'</span><span class="of">'+(c.ok?'✓ '+c.off.toFixed(2)+'%':'✗ wrong<span class="lw"> way</span>')+'</span></div>'}).join("")+'</div>'+
     '<div class="mk">Outcome <b class="'+(r.a>0?'u':'d')+'">'+r.out+'</b></div>'+
     '<p class="how"><b>How a round is won:</b> call the direction right, then land closest to the real move. A wrong-way call can\u2019t win, however close the number.</p>';
 }
@@ -440,7 +456,7 @@ function play(k){
   v.poster=MEDIA+r.poster+".jpg";v.innerHTML='<source src="'+MEDIA+r.film+'.mp4" type="video/mp4"><source src="'+MEDIA+r.film+'.webm" type="video/webm">';v.load();v.muted=!soundOn;
   if(!reduce){var p=v.play();if(p&&p.catch)p.catch(function(){})}
   $("#onair").textContent='REPLAY · R'+r.n;
-  var g=$("#gfx");g.classList.remove("on","flipped");g.innerHTML='<div class="face fr">'+gfx(r)+'</div><div class="face bk">'+gfxBack(r)+'</div>';if($("#flip"))$("#flip").textContent="Flip the card ↻";void g.offsetWidth;setTimeout(function(){g.classList.add("on")},reduce?0:350);
+  var g=$("#gfx");g.classList.remove("on");g.innerHTML='<div class="face fr">'+gfx(r)+'</div>';$("#tvBack").innerHTML=gfxBack(r);$(".tv").classList.remove("flipped");$(".tv").style.transform="";if($("#flip"))$("#flip").textContent="Flip the card ↻";void g.offsetWidth;setTimeout(function(){g.classList.add("on")},reduce?0:350);
   $$(".mini[data-k]").forEach(function(b){b.classList.toggle("on",+b.dataset.k===i)});
 }
 v.addEventListener("ended",function(){play(i+1)});
@@ -449,7 +465,15 @@ $("#strip").innerHTML=ROUNDS.map(function(r){var k=REEL.indexOf(r);return (k<0?'
 function toCard(){var bar=$(".top"),h=bar?bar.getBoundingClientRect().bottom:0,y=$(".tv").getBoundingClientRect().top+window.pageYOffset-Math.max(0,h)-12;window.scrollTo({top:Math.max(0,y),behavior:reduce?"auto":"smooth"})}
 $$(".mini[data-k]").forEach(function(b){b.addEventListener("click",function(){play(+b.dataset.k);toCard()})});
 $("#nxt").addEventListener("click",function(){play(i+1)});
-$("#flip").addEventListener("click",function(){var g=$("#gfx"),f=!g.classList.contains("flipped");g.classList.toggle("flipped",f);this.textContent=f?"Flip back ↻":"Flip the card ↻";if(!reduce){g.classList.remove("turn");void g.offsetWidth;g.classList.add("turn")}});
+/* flip the whole card: turn to the edge, swap faces, turn back */
+var flipping=false;
+$("#flip").addEventListener("click",function(){if(flipping)return;var tv=$(".tv"),btn=this,f=!tv.classList.contains("flipped");
+  function swap(){tv.classList.toggle("flipped",f);btn.textContent=f?"Flip back ↻":"Flip the card ↻";if(f)v.pause();else if(!reduce)v.play().catch(function(){})}
+  if(reduce){swap();return}
+  flipping=true;tv.style.transition="transform .22s ease-in";tv.style.transform="perspective(1600px) rotateY(90deg)";
+  setTimeout(function(){swap();tv.style.transition="none";tv.style.transform="perspective(1600px) rotateY(-90deg)";void tv.offsetWidth;
+    tv.style.transition="transform .3s cubic-bezier(.2,1.3,.5,1)";tv.style.transform="perspective(1600px) rotateY(0deg)";
+    setTimeout(function(){tv.style.transition="";tv.style.transform="";flipping=false},320)},230)});
 $("#snd").addEventListener("click",function(){soundOn=!soundOn;v.muted=!soundOn;this.textContent=soundOn?"🔊 Sound on":"🔇 Sound";if(soundOn){v.currentTime=0;v.play().catch(function(){})}});
 new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){if(!reduce&&v.paused&&!v.ended)v.play().catch(function(){})}else v.pause()})},{threshold:.3}).observe($(".tv"));
 var m=location.hash.match(/^#round-(\d+)/),start=m?REEL.findIndex(function(r){return r.n==m[1]}):0;play(start<0?0:start);
