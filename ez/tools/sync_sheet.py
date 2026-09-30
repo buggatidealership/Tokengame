@@ -111,6 +111,11 @@ def main():
             warnings.append("R%s ticker %s has no company name in TICKERS (add it once)" % (rn, tk))
         new.append(out)
 
+    # every model that makes a call needs an entry (logo) in MODELS
+    known = set(re.findall(r"\b([A-Z]+):\{name:", re.search(r"var MODELS=\{(.*?)\n\};", src, re.S).group(1)))
+    for m in ("GPT", "KIMI", "CLAUDE", "GROK"):
+        if m + " DIR" in col and any(r[want.index(m + " DIR")] for r in new) and m not in known:
+            problems.append("%s makes calls in the sheet but has no entry in MODELS in ez-data.js (add its name and logo first)" % m)
     # what changed
     oldby = {r[0]: r for r in old}
     act = want.index("ACTUAL MOVE (%)")

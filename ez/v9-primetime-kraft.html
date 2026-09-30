@@ -501,7 +501,7 @@ new IntersectionObserver(function(es,ob){es.forEach(function(e){if(e.isIntersect
 
 /* are they learning? */
 EZLearn.together($("#lxDir"));EZLearn.misses($("#lxMiss"));/* the record: every graded call, round by round; gold = that round's closest call */
-(function(){var ms=MODEL_KEYS.filter(function(m){return MODELS[m]});
+(function(){var ms=MODEL_KEYS.filter(function(m){return MODELS[m]&&ROUNDS.some(function(r){return callOf(r,m)})});
   $("#rec").innerHTML='<table class="rec"><thead><tr><th style="text-align:left">Round</th>'+ms.map(function(m){return '<th>'+logo(m)+'</th>'}).join("")+'</tr></thead><tbody>'+
   ROUNDS.map(function(r){return '<tr><td class="rd">'+r.co+'<span class="mm">Market <b class="'+(r.a>0?'u':'d')+'">'+r.out+'</b></span></td>'+ms.map(function(m){var c=callOf(r,m);if(!c)return '<td></td>';
     var ok=callOk(r,c),dn=/^DOWN/.test(c[1]),mag=c[1].replace(/^\w+\s*/,""),win=r.win&&r.win.split(" & ").indexOf(m)>-1;
