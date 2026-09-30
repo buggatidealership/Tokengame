@@ -129,10 +129,14 @@ a{color:inherit}
 .gfx .mk b.u{color:var(--up)}.gfx .mk b.d{color:var(--dn)}
 .gfx .wn{display:flex;align-items:center;gap:12px;background:var(--foil);background-size:300% 100%;animation:foil 6s linear infinite;border-radius:14px;box-shadow:0 0 0 2px var(--ink);padding:12px 14px;font:800 26px/1.05 var(--fd);letter-spacing:-.02em;transform:scaleX(0);transform-origin:left;transition:transform .5s .5s cubic-bezier(.3,1.2,.5,1)}
 .gfx.on .wn{transform:none}
-.gfx .wn small{font:700 11px/1 var(--fm);letter-spacing:.12em;display:block;margin-bottom:4px}
+.gfx .wn{justify-content:space-between}
+.gfx .wn small{font:700 13px/1 var(--fm);letter-spacing:.14em;display:block}
+.gfx .wn .wr{display:flex;align-items:center;gap:10px;text-align:right}
+.gfx .wn .wr .lg+.lg{margin-left:-2px}
+.gfx .wn .wr.nob{flex-direction:column;align-items:flex-end;gap:3px}
 .gfx .wn .lg{font-size:40px}
 @media(min-width:701px){.gfx .cl{gap:12px;margin-top:4px}.gfx .row{padding:12px 20px 12px 12px;border-radius:16px}.gfx .row>.lg{font-size:clamp(34px,3.4vw,46px)}.gfx .row .nm{font-size:clamp(18px,1.8vw,24px)}.gfx .row .pd{font-size:clamp(20px,2.1vw,28px)}.gfx .mk b{font-size:clamp(24px,2.5vw,32px)}}
-.gfx .wn em{font:700 11px/1.2 var(--fm);font-style:normal;letter-spacing:.02em;margin-left:6px;opacity:.8}
+.gfx .wn em{font:700 11px/1.2 var(--fm);font-style:normal;letter-spacing:.02em;opacity:.8}
 @media(max-width:700px){.gfx .face{gap:10px}.gfx{padding:14px 16px 16px}.gfx h3{font-size:30px;margin-top:4px}.gfx .cl{gap:6px}.gfx .row{padding:6px 12px 6px 6px;border-radius:12px}.gfx .row>.lg{font-size:28px}.gfx .row .nm{font-size:16px}.gfx .row .pd{font-size:17px}.gfx .mk{padding-top:10px}.gfx .mk b{font-size:20px}.gfx .wn{font-size:21px;padding:9px 12px}.gfx .wn .lg{font-size:30px}}
 .tvbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
 .tvbar .btn{padding:8px 14px;font-size:13.5px;border-width:2px}
@@ -443,12 +447,12 @@ var t='<span><b>LEADERBOARD</b> '+LADDER.map(function(l){return l.m+' '+l.won}).
 $("#tt").innerHTML=t+t;
 /* the screen */
 var i=0,v=$("#tvV"),soundOn=false,pan=null;
-// keep "Round N Company" on one line: shrink from the CSS size until it fits the panel
+// keep "R4 · Company" on one line: shrink from the CSS size until it fits the panel
 function fitTitle(){var h=document.querySelector("#gfx .g1.slim h3");if(!h)return;h.style.fontSize="";var fs=parseFloat(getComputedStyle(h).fontSize);while(h.scrollWidth>h.clientWidth+1&&fs>16){fs-=1;h.style.fontSize=fs+"px"}}
 addEventListener("resize",fitTitle);
 function gfx(r){
-  return '<div class="g1 slim"><h3><span class="rd">Round '+r.n+'</span> '+r.co+'</h3></div>'+
-    '<div class="wn">'+(r.win?winLogos(r)+'<div><small>WINNER</small>'+r.win.replace(" & "," &amp; ")+'</div>':'<div><small>WINNER</small>Nobody <em>all three went the wrong way</em></div>')+'</div>';
+  return '<div class="g1 slim"><h3><span class="rd">R'+r.n+' ·</span> '+r.co+'</h3></div>'+
+    '<div class="wn"><small>WINNER</small>'+(r.win?'<span class="wr"><span class="wm">'+r.win.replace(" & "," &amp; ")+'</span>'+winLogos(r)+'</span>':'<span class="wr nob"><span class="wm">Nobody</span><em>all three went the wrong way</em></span>')+'</div>';
 }
 function gfxBack(r){
   var cs=r.calls.map(function(c){var dn=/^DOWN/.test(c[1]);return {m:c[0],dn:dn,mag:c[1].replace(/^\w+\s*/,""),ok:callOk(r,c),off:parseFloat(c[2])}});
