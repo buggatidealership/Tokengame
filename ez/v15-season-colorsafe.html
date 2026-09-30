@@ -11,8 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@75..125,500..900&family=Chivo+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* EARNINGS ZEASON · V15 · THE SEASON
-   The hero standings card flips to replay the season, round by round (models only). Then the record as a season of
-   swipeable cards, "Are they learning?" (ez-learn.js charts), and a pool calculator for the NVIDIA bet.
+   The hero shows the standings as one small card per model (Variant 1's roster, in Daylight). Then the record as a season
+   of swipeable cards, "Are they learning?" (ez-learn.js charts), what's coming up, and a pool calculator for the bets.
    Data: ez-data.js only. Nothing typed by hand.
    Contrast rule: on light surfaces (card, field, --yel) text is --ink/--ink2; on dark surfaces (--slab, --red/--dn, --up)
    text is --on-slab. Every state (hover, focus, pressed, flipped, disabled) keeps that pair. */
@@ -35,7 +35,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{background:var(--field);overflow-x:clip;scroll-behavior:smooth}
-body{background:var(--field);color:var(--ink);font:500 16px/1.5 var(--fb);font-stretch:100%;-webkit-font-smoothing:antialiased;
+body{background:var(--field);color:var(--ink);font:500 15px/1.5 var(--fb);font-stretch:100%;-webkit-font-smoothing:antialiased;
   background-image:repeating-linear-gradient(180deg,var(--field) 0 180px,var(--field2) 180px 360px)}
 [hidden]{display:none!important}
 button{font:inherit;color:var(--ink);background:none;border:0;cursor:pointer}
@@ -45,14 +45,14 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid 
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .u{color:var(--up)}.d{color:var(--dn)}
 /* model logos: one frame everywhere (same radius, same solid ring) */
-.lg{display:inline-grid;place-items:center;width:1em;height:1em;border-radius:22.5%;flex:none;vertical-align:middle;box-shadow:0 0 0 1.5px var(--ink)}
-.lg svg{width:62%;height:62%}
-.lg img{display:block}
+/* a fixed square tile: never stretched or squeezed by a flex or grid parent, the mark centred and contained */
+.lg{display:inline-grid;place-items:center;width:1em;height:1em;min-width:1em;min-height:1em;aspect-ratio:1/1;flex:none;align-self:center;border-radius:22.5%;vertical-align:middle;box-shadow:0 0 0 1.5px var(--ink)}
+span.lg>svg{display:block;width:62%;height:62%;margin:0;object-fit:contain}
+span.lg>img{display:block;object-fit:contain}
 .lg.nob{background:var(--card);color:var(--red);font:900 .62em/1 var(--fb)}
 .mark{font-family:var(--fd);letter-spacing:.01em}
 .mark .s{color:var(--mark-s)}.mark .e{color:var(--mark-e)}.mark .z{color:var(--mark-z)}
 @keyframes pulse{50%{opacity:.35}}
-@keyframes pop{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.18);opacity:1}100%{transform:scale(1)}}
 
 /* top bar */
 .top{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--field) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:2.5px solid var(--ink)}
@@ -71,18 +71,18 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid 
 @media(max-width:760px){.live{display:inline-flex}}
 
 /* section heads */
-.sec{padding-top:60px;scroll-margin-top:66px}
+.sec{padding-top:52px;scroll-margin-top:66px}
 .sh{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr);align-items:end;gap:10px 40px;margin-bottom:20px}
 .sh:not(:has(.lede)){grid-template-columns:1fr}
 @media(max-width:900px){.sh{grid-template-columns:1fr}}
-.sh .no{display:inline-block;vertical-align:middle;margin-right:8px;font:400 17px/1 var(--fd);background:var(--yel);color:var(--ink);padding:3px 7px 2px;border-radius:6px;box-shadow:0 0 0 2px var(--ink)}
+.sh .no{display:inline-block;vertical-align:middle;margin-right:8px;font:400 15px/1 var(--fd);background:var(--yel);color:var(--ink);padding:3px 7px 2px;border-radius:6px;box-shadow:0 0 0 2px var(--ink)}
 .sh .tx{min-width:0}
 .sh .eb{vertical-align:middle}
 .eb{display:inline-block;font:700 11px/1 var(--fm);letter-spacing:.1em;text-transform:uppercase;background:var(--slab);color:var(--on-slab);padding:6px 8px;border-radius:6px}
-h2{font:400 clamp(32px,5.2vw,54px)/.95 var(--fd);text-transform:uppercase;letter-spacing:.005em;margin-top:8px}
-.lede{font:500 16px/1.5 var(--fb);color:var(--ink2);max-width:62ch}
+h2{font:400 clamp(27px,4.2vw,44px)/.96 var(--fd);text-transform:uppercase;letter-spacing:.005em;margin-top:8px}
+.lede{font:500 15px/1.5 var(--fb);color:var(--ink2);max-width:62ch}
 .lede b{color:var(--ink)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:12px;background:var(--slab);color:var(--on-slab);font:800 15px/1 var(--fb);font-stretch:95%;text-transform:uppercase;letter-spacing:.03em;text-decoration:none;box-shadow:4px 5px 0 var(--yel),4px 5px 0 2px var(--ink);transition:transform .12s,box-shadow .12s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:12px;background:var(--slab);color:var(--on-slab);font:800 14px/1 var(--fb);font-stretch:95%;text-transform:uppercase;letter-spacing:.03em;text-decoration:none;box-shadow:4px 5px 0 var(--yel),4px 5px 0 2px var(--ink);transition:transform .12s,box-shadow .12s}
 .btn:hover{transform:translate(-1px,-1px);box-shadow:5px 6px 0 var(--yel),5px 6px 0 2px var(--ink);color:var(--on-slab)}
 .btn:active{transform:translate(3px,4px);box-shadow:1px 1px 0 var(--yel),1px 1px 0 2px var(--ink)}
 .btn.lt{background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--ink),4px 5px 0 2px var(--ink)}
@@ -91,18 +91,19 @@ h2{font:400 clamp(32px,5.2vw,54px)/.95 var(--fd);text-transform:uppercase;letter
 /* disabled: no opacity (it would fade the text), a dashed outline instead */
 .btn[disabled],.btn.off{background:var(--field2);color:var(--ink2);box-shadow:none;outline:2px dashed var(--ink2);outline-offset:-2px;cursor:not-allowed;transform:none}
 
-/* hero */
-.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:36px;align-items:center;padding-top:36px}
-@media(max-width:900px){.hero{grid-template-columns:1fr;gap:24px;padding-top:24px}}
+/* hero: the pitch and what's in play, then the standings in one row of small cards */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);grid-template-areas:"t n" "s s";gap:26px 40px;align-items:center;padding-top:32px}
+.hero-t{grid-area:t;min-width:0}
+.stand{grid-area:s;min-width:0;scroll-margin-top:72px}
+.hero-s{grid-area:n;display:grid;gap:10px;min-width:0}
+@media(max-width:900px){.hero{grid-template-columns:1fr;grid-template-areas:"t" "s" "n";gap:20px;padding-top:22px}}
 .kick{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center;font:700 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase}
 .kick span{background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--ink);padding:7px 9px;border-radius:999px}
 .kick span.y{background:var(--yel)}
-h1{font:400 clamp(40px,5.8vw,76px)/.93 var(--fd);text-transform:uppercase;letter-spacing:.005em;margin-top:16px}
+h1{font:400 clamp(34px,4.8vw,62px)/.94 var(--fd);text-transform:uppercase;letter-spacing:.005em;margin-top:14px}
 h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:clone;background:linear-gradient(transparent 58%,var(--yel) 58%,var(--yel) 92%,transparent 92%)}
-.hero .sub{font:500 clamp(16px,1.4vw,18px)/1.55 var(--fb);color:var(--ink2);max-width:44ch;margin-top:16px}
+.hero .sub{font:500 clamp(15px,1.2vw,16px)/1.55 var(--fb);color:var(--ink2);max-width:50ch;margin-top:14px}
 .hero .sub b{color:var(--ink)}
-.hero-s{display:grid;gap:12px;justify-items:center;min-width:0}
-.hero-s>*{width:100%;max-width:520px}
 .nextup{display:flex;align-items:center;gap:12px;padding:10px 14px;min-height:52px;border-radius:14px;background:var(--slab);color:var(--on-slab);text-decoration:none;box-shadow:0 0 0 2px var(--ink)}
 .nextup:hover{background:var(--slabA);color:var(--on-slab)}
 .nextup i{width:10px;height:10px;border-radius:50%;background:var(--yel);flex:none;animation:pulse 1.2s infinite}
@@ -113,68 +114,63 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .nextcall small{font:700 10.5px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);flex:none}
 .nextcall:hover small{color:var(--ink)}
 
-/* current standings: one card, two faces. Front = the table now. Back = the season replayed, round by round. */
-.sf{display:grid;perspective:1800px;min-width:0;scroll-margin-top:72px}
-.sf-in{display:grid;grid-template:1fr/1fr;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.3,1.15,.45,1)}
-.sf.flipped .sf-in{transform:rotateY(180deg)}
-.sf-face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;min-width:0}
-.sf-back{transform:rotateY(180deg)}
-.stand{background:var(--card);color:var(--ink);border-radius:20px;box-shadow:var(--pop);padding:14px 14px 14px;min-width:0}
-.st-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:0 2px 10px}
-.st-h h2{font:400 24px/1 var(--fd);margin:0}
+/* current standings: one small card per model (Variant 1's roster, in Daylight). The leader is lime and wears the crown. */
+.st-h{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 12px}
+.st-h h2{font:400 22px/1 var(--fd);margin:0}
 .st-h span{font:700 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
-.st-list{list-style:none;display:grid;gap:8px}
-.st-row{display:grid;grid-template-columns:24px 28px minmax(0,1fr) 70px 42px;gap:8px;align-items:center;padding:7px 8px;border-radius:11px;box-shadow:0 0 0 1.5px var(--ink);background:var(--card);color:var(--ink);min-height:54px}
-.st-row.hd{box-shadow:none;min-height:0;padding:0 8px;font:700 9.5px/1.2 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
-.st-row.hd span:nth-child(n+4){text-align:right}
-.st-row.lead{background:var(--yel)}
-.st-row .rk{font:400 21px/1 var(--fd);text-align:center}
-.st-row .lg{font-size:26px}
-.st-row .nm{font:400 19px/1 var(--fd);text-transform:uppercase;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.st-row .nm small{display:block;font:700 9.5px/1.2 var(--fm);letter-spacing:.06em;color:var(--ink);margin-top:3px}
-.st-row .v{font:700 13.5px/1 var(--fm);text-align:right;white-space:nowrap}
-.st-row.bench{grid-template-columns:24px 28px minmax(0,1fr);background:var(--field2);box-shadow:0 0 0 1.5px var(--ink2)}
-.st-row.bench .nm{font:700 13px/1.3 var(--fb);text-transform:none;white-space:normal}
-.st-foot{font:600 13px/1.45 var(--fb);color:var(--ink2);padding:10px 2px 0}
-/* the season so far, as company badges (front) */
-.st-season{margin-top:auto;padding:16px 2px 0}
-.st-season small{display:block;font:700 10.5px/1.2 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:8px}
-.st-season>div{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:8px 4px}
-.ss{display:grid;justify-items:center;gap:5px}
-.ss .co-mark{--cm:34px}
-.ssw{display:flex;gap:2px;font-size:16px;height:16px;align-items:center}
-.ssw .lg{box-shadow:0 0 0 1px var(--ink)}
-.ssw .x{font:800 13px/1 var(--fb);color:var(--dn)}
-.toRace{width:100%;margin-top:14px;min-height:58px;font-size:16px;border-radius:14px}
-.toRace .ico{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--yel);color:var(--ink);font-size:12px}
-/* phones: the hero fits one screen as far as it can. The live chip in the top bar links to Coming up from the first screen. */
+.st-h p{margin-left:auto;font:600 13px/1.4 var(--fb);color:var(--ink2)}
+.roster{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 14px;padding-top:18px}
+@media(max-width:1023px){.roster{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pc{position:relative;display:flex;flex-direction:column;gap:10px;min-width:0;padding:12px 12px 11px;border-radius:16px;background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--ink),4px 5px 0 0 var(--ink)}
+.pc.lead{background:var(--yel);box-shadow:0 0 0 2.5px var(--ink),4px 5px 0 .5px var(--ink)}
+.pc-top{display:flex;align-items:center;gap:9px;min-width:0}
+.pc .rk{flex:none;font:400 40px/.8 var(--fd);font-variant-numeric:tabular-nums}
+.pc .rk sup{font-size:.42em;vertical-align:.95em;margin-right:1px}
+.pc-top .lg{font-size:34px}
+.pc h3{min-width:0;font:400 22px/1 var(--fd);text-transform:uppercase;overflow-wrap:anywhere}
+.pc h3 small{display:block;margin-top:3px;font:700 11px/1.2 var(--fm);letter-spacing:.04em;text-transform:none;color:var(--ink2)}
+.pc-st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:auto;padding-top:9px;border-top:1.5px dashed var(--ink2);text-align:center}
+.pc.lead .pc-st{border-color:var(--ink)}
+.pc-st b{display:block;font:400 24px/1 var(--fd);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pc-st span{display:block;margin-top:4px;font:700 13px/1.05 var(--fb);font-stretch:75%;letter-spacing:.02em;text-transform:uppercase;color:var(--ink2)}
+.pc .crown{position:absolute;top:-13px;right:12px;display:inline-flex;align-items:center;gap:5px;font:700 10.5px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;background:var(--card);color:var(--ink);padding:5px 9px 5px 7px;border-radius:999px;box-shadow:0 0 0 2px var(--ink);transform:rotate(3deg)}
+.pc .crown i{font-style:normal;font-size:13px;display:inline-block;transform-origin:50% 85%;animation:crown 2.4s ease-in-out infinite}
+@keyframes crown{0%,55%,100%{transform:rotate(0)}65%{transform:rotate(-14deg)}75%{transform:rotate(11deg)}85%{transform:rotate(-6deg)}}
+@media(prefers-reduced-motion:reduce){.pc .crown i{animation:none}}
+/* a model with no graded calls yet: same shape, quieter */
+.pc.ghost{background:var(--field2);box-shadow:0 0 0 2px var(--ink2)}
+.pc.ghost .rk{color:var(--ink2)}
+.pc-note{margin-top:auto;padding-top:9px;border-top:1.5px dashed var(--ink2);display:grid;gap:2px;text-align:center;font:600 13px/1.3 var(--fb);color:var(--ink2)}
+.pc-note b{font-weight:800;color:var(--ink)}
+/* phones: one tight row per model, the stats to the right of the name */
 @media(max-width:640px){
-  .hero{padding-top:12px;gap:12px}
+  .hero{padding-top:12px;gap:14px}
   .kick{font-size:10px;gap:6px}.kick span{padding:5px 8px}
-  h1{font-size:clamp(34px,9.6vw,40px);margin-top:10px}
+  h1{font-size:clamp(29px,8.2vw,34px);margin-top:10px}
   .hero .sub{font-size:15px;line-height:1.45;margin-top:8px}
   .hero-s{gap:8px}
   .nextup{min-height:48px;padding:8px 12px}
   .nextup span{font-size:13.5px}
   .nextcall{min-height:44px;padding:6px 12px;font-size:13.5px}
-  .stand{padding:10px 10px 12px;border-radius:18px}
-  .st-h{padding-bottom:6px}
-  .st-list{gap:6px}
-  .st-row{min-height:46px;padding:5px 8px}
-  .st-foot{font-size:12px;padding-top:6px}
-  .st-season{padding-top:10px}
-  .st-season small{margin-bottom:6px}
-  .ss .co-mark{--cm:30px}
-  .toRace{min-height:50px;margin-top:10px}
-  .rf-top{padding-bottom:6px}
-  .np{padding:8px 10px;gap:10px}.np .co-mark{--cm:48px}
-  .tl{padding:6px 2px 6px}
-  .callout{margin:2px 0 8px;padding:6px 10px}
-  .board{gap:6px}.row{padding:6px 8px}
-  .rf-end{padding-top:10px}
-  .backb{min-height:46px}
-  .benchline{padding:6px 10px;font-size:13px}
-  .sec{padding-top:48px}
+  .st-h h2{font-size:20px}
+  .st-h p{margin-left:0;width:100%;font-size:13px}
+  .roster{grid-template-columns:1fr;gap:8px;padding-top:14px}
+  .pc{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.35fr);align-items:center;gap:0 8px;padding:8px 10px;border-radius:13px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
+  .pc.lead{box-shadow:0 0 0 2.5px var(--ink),3px 4px 0 .5px var(--ink)}
+  .pc.ghost{box-shadow:0 0 0 2px var(--ink2)}
+  .pc-top{gap:7px}
+  .pc .rk{font-size:28px}
+  .pc-top .lg{font-size:26px}
+  .pc h3{font-size:17px}
+  .pc h3 small{display:none}
+  .pc-st,.pc-note{margin-top:0;border-top:0;border-left:1.5px dashed var(--ink2);padding:1px 0 1px 8px}
+  .pc.lead .pc-st{border-color:var(--ink)}
+  .pc-st b{font-size:19px}
+  .pc-st span{margin-top:3px}
+  .pc-note{text-align:left}
+  .pc.lead{padding-top:16px}
+  .pc .crown{top:-11px;right:auto;left:12px;font-size:10px}
+  .sec{padding-top:44px}
 }
 
 /* company badge: the ticker in the display font, or the logo once CO_LOGOS has one */
@@ -187,13 +183,14 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .rec-hint{font:600 15px/1.45 var(--fb);color:var(--ink2);margin-top:10px}
 .rec-hint .hp{display:none}
 @media(hover:hover) and (pointer:fine){.rec-hint .ht{display:none}.rec-hint .hp{display:inline}}
-.car{--cw:min(80vw,340px);--gap:14px;position:relative;display:flex;align-items:stretch;gap:var(--gap);overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
-  scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:-16px;padding:6px 0 22px;border-radius:4px}
+/* the centred card with about a third of each neighbour showing: on phones the card is 58% of the screen */
+.car{--cw:58vw;--gap:10px;position:relative;display:flex;align-items:stretch;gap:var(--gap);overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:-16px;padding:6px 0 18px;border-radius:4px}
 .car::-webkit-scrollbar{display:none}
 .car::before,.car::after{content:"";flex:0 0 calc((100% - var(--cw)) / 2 - var(--gap))}
 .car:focus-visible{outline:3px solid var(--cob);outline-offset:-3px}
-@media(min-width:760px){.car{--cw:350px;--gap:18px;margin-inline:0}}
-@media(min-width:1100px){.car{--cw:364px;--gap:22px}}
+@media(min-width:760px){.car{--cw:330px;--gap:18px;max-width:600px;margin-inline:auto;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 64px,#000 calc(100% - 64px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 64px,#000 calc(100% - 64px),transparent 100%)}}
 .car-ctl{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:2px}
 .arw{width:48px;height:48px;border-radius:50%;background:var(--slab);color:var(--on-slab);font:800 20px/1 var(--fb);display:grid;place-items:center;flex:none;box-shadow:0 0 0 2px var(--ink)}
 .arw:hover{background:var(--yel);color:var(--ink)}
@@ -220,7 +217,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .f-none .face{background:var(--hazard)}
 .pend .face{background:var(--slab)}
 .seal .face{background:repeating-linear-gradient(135deg,var(--card) 0 8px,var(--field2) 8px 16px)}
-.ctop{padding:11px 12px 10px;border-bottom:2px solid var(--ink);background:var(--card);color:var(--ink);font:400 21px/1.02 var(--fd);text-transform:uppercase;letter-spacing:.005em}
+.ctop{padding:11px 12px 10px;border-bottom:2px solid var(--ink);background:var(--card);color:var(--ink);font:400 19px/1.02 var(--fd);text-transform:uppercase;letter-spacing:.005em}
 .rd{color:var(--ink2)}
 .art{position:relative;aspect-ratio:1/1;background:var(--slab2);overflow:hidden;border-bottom:2px solid var(--ink)}
 .art img,.art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
@@ -232,10 +229,10 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .art .soon small{display:block;font:700 11px/1.4 var(--fm);letter-spacing:.08em;color:var(--yel);margin-top:8px}
 /* winner bar: WINNER and the name at the same size and weight */
 .cwin{margin:10px 10px 0;display:flex;align-items:center;gap:10px 12px;background:var(--slab);color:var(--on-slab);border-radius:11px;padding:10px 12px;min-height:60px}
-.cwin small{font:400 24px/1 var(--fd);letter-spacing:.02em;color:var(--yel);flex:none;text-transform:uppercase}
+.cwin small{font:400 22px/1 var(--fd);letter-spacing:.02em;color:var(--yel);flex:none;text-transform:uppercase}
 .cwin .wv{flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:6px 10px}
-.cwin .wn{display:inline-flex;align-items:center;gap:8px;font:400 24px/1 var(--fd);text-transform:uppercase;white-space:nowrap;color:var(--on-slab)}
-.cwin .wn .lg{font-size:28px}
+.cwin .wn{display:inline-flex;align-items:center;gap:8px;font:400 22px/1 var(--fd);text-transform:uppercase;white-space:nowrap;color:var(--on-slab)}
+.cwin .wn .lg{font-size:26px}
 .cwin .amp{font:400 20px/1 var(--fd);color:var(--yel)}
 .f-none .cwin{background:var(--red)}
 .f-none .cwin small{color:var(--on-slab)}
@@ -248,7 +245,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .nw{white-space:nowrap}
 /* back: dates, timing, the ranked calls, what happened, the rule. Spread over the full height. */
 .bk-h{padding:12px 14px 12px;border-bottom:2px solid var(--ink);background:var(--slab);color:var(--on-slab)}
-.bk-h h4{font:400 21px/1.02 var(--fd);text-transform:uppercase;color:var(--on-slab)}
+.bk-h h4{font:400 19px/1.02 var(--fd);text-transform:uppercase;color:var(--on-slab)}
 .bk-h h4 .rd{color:var(--on-slab2)}
 .bk-h p{font:700 11px/1.3 var(--fm);letter-spacing:.06em;color:var(--yel);text-transform:uppercase;margin-top:8px}
 .bk-h p.tm{color:var(--on-slab);margin-top:5px}
@@ -263,7 +260,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .bk-r.win{background:var(--yel)}
 .bk-r .rk{font:400 21px/1 var(--fd);text-align:center;color:var(--ink)}
 .bk-r.no .rk{color:var(--dn)}
-.bk-r .who{display:flex;align-items:center;gap:8px;font:800 14px/1 var(--fb);font-stretch:88%;text-transform:uppercase;min-width:0;overflow:hidden;color:var(--ink)}
+.bk-r .who{display:flex;align-items:center;gap:8px;font:800 14px/1 var(--fb);font-stretch:88%;text-transform:uppercase;min-width:0;padding-left:2px;color:var(--ink)}
 .bk-r .who .lg{font-size:26px}
 .bk-r .who span.n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bk-r .pd{font:700 13px/1 var(--fm);text-align:right;white-space:nowrap}
@@ -294,121 +291,101 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .seal .cwin{background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
 .seal .cwin small{color:var(--ink2)}
 .seal .cwin .wn{color:var(--ink)}
-
-/* the race: the back of the standings card */
-.rf-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px 10px}
-.rf-top h2{font:400 24px/1 var(--fd);margin:0}
-.race-btns{display:flex;gap:8px;align-items:center;flex:none}
-.spd{min-height:44px;min-width:52px;padding:0 12px;font-size:13px;border-radius:10px;box-shadow:0 0 0 2px var(--ink)}
-.spd.lt{box-shadow:0 0 0 2px var(--ink)}
-/* now playing: the round on screen, big and plain */
-.np{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--slab);color:var(--on-slab)}
-.np .co-mark{--cm:58px;box-shadow:inset 0 0 0 2px var(--ink),0 0 0 2px var(--on-slab2)}
-.np .co-mark.ez{background:var(--slab2);font:400 22px/1 var(--fd)}
-.np-tx{min-width:0;display:grid;gap:5px;justify-items:start}
-.np-tx small{font:700 10.5px/1.2 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--on-slab2)}
-.np-tx b{font:400 clamp(21px,2.2vw,25px)/1.02 var(--fd);text-transform:uppercase;color:var(--on-slab)}
-.np-mv{display:inline-flex;align-items:center;gap:6px;font:700 13px/1 var(--fm);color:var(--on-slab);background:var(--slabA);box-shadow:inset 0 0 0 1.5px var(--on-slab2);padding:6px 8px;border-radius:7px}
-.np-mv.u{background:var(--up)}.np-mv.d{background:var(--dn)}
-.np-mv.u,.np-mv.d{box-shadow:none;color:var(--on-slab)}
-.np.tick .co-mark{animation:pop .45s cubic-bezier(.3,1.4,.5,1) both}
-/* the season as a strip of badges: tap one to jump there */
-.tl{display:flex;gap:5px;overflow-x:auto;scrollbar-width:thin;padding:10px 2px 8px;margin:0 -2px}
-.tlb{flex:none;display:grid;place-items:center;width:44px;height:48px;border-radius:12px;background:none;position:relative}
-.tlb .co-mark{--cm:40px;background:var(--field2);color:var(--ink2);box-shadow:inset 0 0 0 1.5px var(--ink2);transition:background .3s,color .3s}
-.tlb.on .co-mark{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
-.tlb.cur .co-mark{background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 2.5px var(--ink)}
-.tlb.cur::after{content:"";position:absolute;left:50%;bottom:0;width:14px;height:4px;margin-left:-7px;border-radius:2px;background:var(--ink)}
-.tlb:hover .co-mark{background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
-.callout{display:flex;align-items:center;gap:10px;margin:2px 0 12px;padding:8px 10px;border-radius:12px;background:var(--field2);color:var(--ink);box-shadow:0 0 0 1.5px var(--ink)}
-.callout .co-lg{display:flex;gap:4px;font-size:28px;flex:none}
-.callout .co-lg>*{animation:pop .45s cubic-bezier(.3,1.4,.5,1) both}
-.callout p{flex:1;min-width:0;font:600 14.5px/1.35 var(--fb);color:var(--ink2)}
-.callout p b{color:var(--ink);font-weight:800}
-.newlead{flex:none;font:700 10.5px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;background:var(--red);color:var(--on-slab);padding:6px 8px;border-radius:999px}
-.row{display:grid;grid-template-columns:36px minmax(0,1fr) 72px 70px 42px;gap:8px;align-items:center;padding:8px 10px;border-radius:13px;background:var(--field2);color:var(--ink);box-shadow:0 0 0 2px var(--ink);position:relative;z-index:1}
-.row.hd{background:none;box-shadow:none;padding:0 10px 6px;font:700 9.5px/1.2 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
-.row.hd span:nth-child(n+3),.row .c{text-align:right}
-.board{display:grid;gap:7px}
-.row .pos{font:400 24px/1 var(--fd);text-align:center}
-.row .who{display:flex;align-items:center;gap:9px;min-width:0}
-.row .who .lg{font-size:30px}
-.row .nmb{flex:1;min-width:0}
-.row .nmb b{display:flex;align-items:center;gap:6px;font:400 18px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden}
-.row .crown{display:none;width:20px;height:16px;flex:none}
-.row .crown path{fill:var(--ink)}
-.row.lead .crown{display:inline-block;animation:pop .5s cubic-bezier(.3,1.4,.5,1) both}
-.row .bar{display:block;height:9px;border-radius:99px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--ink);margin-top:6px;overflow:hidden}
-.row .bar i{display:block;height:100%;width:0;background:var(--c,var(--ink));border-radius:99px;box-shadow:inset 0 0 0 1.5px var(--ink);transition:width .9s cubic-bezier(.2,.8,.2,1)}
-.row .c b{font:400 19px/1 var(--fd);white-space:nowrap}
-.row.lead{background:var(--yel)}
-.row.pass{box-shadow:0 0 0 3px var(--cob)}
-@media(max-width:640px){
-  .row{grid-template-columns:26px minmax(0,1fr) 52px 50px 30px;gap:6px;padding:8px 8px}
-  .row.hd{padding:0 8px 4px;font-size:9px;letter-spacing:.04em}
-  .row .pos{font-size:21px}
-  .row .who{gap:7px}
-  .row .who .lg{font-size:26px}
-  .row .nmb b{font-size:16px}
-  .row .c b{font-size:16px}
+/* phones: the card is about 58% of the screen, so everything on it steps down */
+@media(max-width:759px){
+  .face{border-radius:15px;padding:6px;box-shadow:0 0 0 2px var(--ink),4px 5px 0 0 var(--ink)}
+  .fin{border-radius:10px}
+  .f-tie .fin{box-shadow:0 0 0 2px var(--ink),0 0 0 4px var(--card),0 0 0 6px var(--ink)}
+  .ctop{padding:8px 9px 7px;font-size:15px}
+  .art .soon{font-size:21px}
+  .cwin{margin:7px 7px 0;gap:6px 8px;padding:7px 9px;min-height:44px;border-radius:9px}
+  .cwin small,.cwin .wn{font-size:18px}
+  .cwin .wv{gap:4px 6px}
+  .cwin .wn{gap:5px}
+  .cwin .wn .lg{font-size:21px}
+  .cwin .amp{font-size:15px}
+  .cfoot{padding:7px 7px 8px}
+  .flipb{min-height:44px;font-size:12px;letter-spacing:.03em;border-radius:9px}
+  .cnote{padding:8px 10px 10px;font-size:12px;line-height:1.4;min-height:0}
+  .bk-h{padding:8px 10px 9px}
+  .bk-h h4{font-size:15px}
+  .bk-h p{font-size:9.5px;margin-top:5px;letter-spacing:.04em}
+  .bk-h p.tm{margin-top:3px}
+  .bk-body{gap:8px;padding:9px 7px 2px}
+  .bk-sec{font-size:9.5px;padding:0 3px 6px}
+  .bk-rows{gap:5px}
+  .bk-hd,.bk-r{grid-template-columns:14px minmax(0,1fr) 36px 44px;gap:4px}
+  .bk-hd{font-size:9px;letter-spacing:.02em;padding:0 5px}
+  .bk-r{padding:4px 5px;min-height:36px;border-radius:8px}
+  .bk-r .rk{font-size:16px}
+  .bk-r .who{gap:5px;font-size:12px}
+  .bk-r .who .lg{font-size:20px}
+  .bk-r .pd{font-size:11px}
+  .bk-r .of{font-size:10.5px}
+  .bk-out{padding:7px 9px;gap:6px;border-radius:9px}
+  .bk-out small{font-size:9px}
+  .bk-out b{font-size:26px}
+  .bk-how{font-size:11px;line-height:1.35;padding:0 3px}
+  .slabart{gap:7px;padding:9px 7px}
+  .stamp{font-size:14px;padding:5px 8px 4px;gap:6px}
+  .stamp i{width:7px;height:7px}
+  .pcalls{gap:4px}
+  .pcalls li{grid-template-columns:20px minmax(0,1fr) auto;gap:6px;min-height:32px;padding:3px 4px 3px 6px;border-radius:8px}
+  .pcalls .lg{font-size:20px}
+  .pcalls .nm{font-size:14px}
+  .pcalls b{font-size:11px;padding:5px 6px;border-radius:6px}
+  .pend .cwin small,.seal .cwin small{font-size:9.5px;letter-spacing:.06em}
+  .sealart{gap:9px;background:radial-gradient(circle at 50% 44%,var(--card) 0 46px,transparent 47px),repeating-conic-gradient(from 0deg at 50% 44%,var(--yel) 0 10deg,var(--card) 10deg 20deg)}
+  .sealart .mark{font-size:28px;padding:7px 9px 6px;border-radius:9px}
+  .sealart span.sl{font-size:10px;padding:5px 8px}
 }
-.benchline{display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px 10px;border-radius:12px;box-shadow:0 0 0 1.5px var(--ink2);background:var(--card);font:600 13.5px/1.4 var(--fb);color:var(--ink2)}
-.benchline .lg{font-size:24px}
-.benchline b{color:var(--ink)}
-.backb{width:100%;margin-top:auto;min-height:52px}
-.rf-end{padding-top:14px;margin-top:auto}
 
 /* are they learning? */
 .lrn{display:grid;gap:18px}
 .lq{background:var(--card);color:var(--ink);border-radius:20px;box-shadow:var(--pop);padding:16px;display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1.6fr);gap:14px 28px;align-items:start;min-width:0}
 @media(max-width:900px){.lq{grid-template-columns:1fr;padding:14px 12px}}
-.lq h3{font:400 clamp(22px,2.4vw,30px)/1 var(--fd);text-transform:uppercase}
+.lq h3{font:400 clamp(20px,2vw,25px)/1 var(--fd);text-transform:uppercase}
 .lq p{font:500 15px/1.5 var(--fb);color:var(--ink2);margin-top:8px}
 .lq p b{color:var(--ink)}
 .lxv{min-width:0;--lx-ink:var(--ink);--lx-text:var(--ink);--lx-mute:var(--ink2);--lx-grid:color-mix(in srgb,var(--ink) 14%,var(--card));--lx-surface:var(--card);--lx-tipbg:var(--slab);--lx-tipfg:var(--on-slab);--lx-font:var(--fb)}
 .lxv .lx-h b{font-weight:800}
-.verdict{margin-top:18px;display:flex;gap:12px;align-items:flex-start;background:var(--yel);color:var(--ink);border-radius:16px;box-shadow:0 0 0 2.5px var(--ink);padding:14px 16px;font:600 16px/1.5 var(--fb)}
+.verdict{margin-top:16px;display:flex;gap:12px;align-items:flex-start;background:var(--yel);color:var(--ink);border-radius:16px;box-shadow:0 0 0 2.5px var(--ink);padding:12px 14px;font:600 15px/1.5 var(--fb)}
 .verdict small{flex:none;font:700 11px/1 var(--fm);letter-spacing:.1em;text-transform:uppercase;background:var(--slab);color:var(--on-slab);padding:6px 8px;border-radius:6px;margin-top:2px}
 @media(max-width:560px){.verdict{flex-direction:column;gap:8px}}
 
-/* coming up: a calendar of the calls in play and the rounds still sealed */
-.cal{list-style:none;display:grid;gap:10px}
-.cr{display:grid;grid-template-columns:62px minmax(0,1fr);gap:12px;align-items:center;background:var(--card);color:var(--ink);border-radius:16px;box-shadow:0 0 0 2px var(--ink);padding:10px 12px 10px 10px;min-width:0}
-.cr.pend{box-shadow:var(--pop);padding:12px 14px 12px 12px;align-items:start}
-.cr.pend .cm{display:contents}
-.cr.pend .ct{align-self:center}
-.cr.pend .cc,.cr.pend .cans{grid-column:1/-1}
-@media(min-width:620px){.cr.pend .cm{display:grid}.cr.pend .ct{align-self:auto}.cr.pend .cc,.cr.pend .cans{grid-column:auto}}
-.cd{display:grid;justify-items:center;align-content:center;gap:3px;min-height:62px;border-radius:12px;background:var(--field2);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);padding:6px 2px}
-.cd small{font:700 9.5px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
-.cd b{font:400 28px/1 var(--fd)}
-.cd em{font:700 11px/1 var(--fm);font-style:normal;letter-spacing:.08em;text-transform:uppercase}
-.pend .cd{background:var(--yel);box-shadow:inset 0 0 0 2px var(--ink)}
-.pend .cd small{color:var(--ink)}
-.cm{min-width:0;display:grid;gap:10px}
+/* coming up: two groups. "Calls are in" (face up, waiting on the market), then "Next calls" (sealed), each with its dates */
+.cal{display:grid;gap:24px}
+.cg-h{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;font:400 20px/1 var(--fd);text-transform:uppercase;margin-bottom:12px}
+.cg-h i{width:9px;height:9px;border-radius:50%;background:var(--red);flex:none;animation:pulse 1.2s infinite}
+.cg-h span{font:700 11px/1.3 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.cgl{list-style:none;display:grid;gap:10px}
+.cr{display:grid;gap:10px;min-width:0;background:var(--card);color:var(--ink);border-radius:16px;box-shadow:0 0 0 2px var(--ink);padding:10px 12px}
+.cr.pend{box-shadow:var(--pop);padding:12px 14px}
 .ct{display:flex;align-items:center;gap:10px;min-width:0}
-.ct .co-mark{--cm:40px}
-.ct span{min-width:0;display:grid;gap:4px}
-.ct b{font:400 21px/1.05 var(--fd);text-transform:uppercase}
+.ct .co-mark{--cm:38px}
+.ct .ctt{flex:1;min-width:0;display:grid;gap:4px}
+.ct b{font:400 18px/1.05 var(--fd);text-transform:uppercase}
 .ct em{font:700 10.5px/1.3 var(--fm);font-style:normal;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
-.ct em.in{display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
-.ct em.in i{width:8px;height:8px;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite}
+.due{flex:none;display:grid;justify-items:center;gap:3px;padding:6px 10px 5px;border-radius:10px;background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.due small{font:700 9.5px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase}
+.due b{font:400 20px/1 var(--fd);text-transform:uppercase;white-space:nowrap}
 .cc{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:6px}
 .cc li{display:flex;align-items:center;gap:8px;min-height:44px;padding:5px 6px 5px 8px;border-radius:10px;background:var(--slab);color:var(--on-slab)}
-.cc .lg{font-size:26px;box-shadow:0 0 0 1.5px var(--on-slab2)}
-.cc .n{flex:1;min-width:0;font:400 18px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cc b{font:700 14px/1 var(--fm);font-variant-numeric:tabular-nums;color:var(--on-slab);padding:7px 8px;border-radius:7px;white-space:nowrap}
+.cc .lg{font-size:24px;box-shadow:0 0 0 1.5px var(--on-slab2)}
+.cc .n{flex:1;min-width:0;font:400 17px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc b{font:700 13px/1 var(--fm);font-variant-numeric:tabular-nums;color:var(--on-slab);padding:7px 8px;border-radius:7px;white-space:nowrap}
 .cc b.up{background:var(--up)}.cc b.dn{background:var(--dn)}
-.cans{font:700 15px/1.35 var(--fb);color:var(--ink)}
-.cans span{color:var(--ink2);font-weight:600}
-.cr.seal .ct b{font-size:19px}
-.cal-h{font:700 11px/1 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin:10px 2px 0}
-@media(max-width:420px){.cc li{gap:6px;padding:5px 5px 5px 6px}.cc .lg{font-size:24px}.cc .n{font-size:16px}.cc b{font-size:13px;padding:6px 6px}}
-@media(min-width:900px){.cal{grid-template-columns:repeat(2,minmax(0,1fr))}.cr.pend,.cal-h{grid-column:1/-1}.cc{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.cans,.cdates{font:600 15px/1.4 var(--fb);color:var(--ink2)}
+.cans b,.cdates b{font-weight:800;color:var(--ink)}
+.cr.seal{grid-template-columns:auto minmax(0,1fr);align-items:center;gap:3px 10px}
+.cr.seal .co-mark{--cm:38px;grid-row:span 2}
+.cr.seal>b{font:400 18px/1.05 var(--fd);text-transform:uppercase;min-width:0}
+@media(max-width:420px){.cc li{gap:6px;padding:5px 5px 5px 6px}.cc .lg{font-size:22px}.cc .n{font-size:15px}.cc b{font-size:12.5px;padding:6px 6px}}
+@media(min-width:900px){.cg-up .cgl{grid-template-columns:repeat(2,minmax(0,1fr))}.cc{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
 /* the learning toggle: one chart at a time */
 .lsw{display:inline-flex;gap:4px;padding:4px;border-radius:14px;background:var(--card);box-shadow:0 0 0 2px var(--ink);margin-bottom:14px}
-.lsw button{min-height:44px;padding:0 16px;border-radius:10px;font:800 14px/1 var(--fb);font-stretch:95%;text-transform:uppercase;letter-spacing:.03em;color:var(--ink)}
+.lsw button{min-height:44px;padding:0 16px;border-radius:10px;font:800 13px/1 var(--fb);font-stretch:95%;text-transform:uppercase;letter-spacing:.03em;color:var(--ink)}
 .lsw button:hover{background:var(--yel);color:var(--ink)}
 .lsw button[aria-pressed=true]{background:var(--slab);color:var(--on-slab)}
 
@@ -461,7 +438,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .cmpbox,.tierbox{background:var(--card);color:var(--ink);border-radius:20px;box-shadow:0 0 0 2.5px var(--ink);padding:14px 16px;min-width:0}
 .wow{display:grid;gap:4px;margin-bottom:12px}
 .wow{gap:8px!important}
-.wow p{font:800 clamp(18px,2vw,22px)/1.3 var(--fb);color:var(--ink)}
+.wow p{font:800 clamp(16px,1.7vw,19px)/1.3 var(--fb);color:var(--ink)}
 .wow p b{display:inline-block;vertical-align:-.1em;font:400 1.4em/1.05 var(--fd);background:var(--yel);padding:2px 7px 0;border-radius:6px;box-shadow:0 0 0 1.5px var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
 .cbars{display:grid;gap:8px}
 .cb{display:grid;grid-template-columns:minmax(0,120px) minmax(0,1fr) auto;align-items:center;gap:10px}
@@ -478,7 +455,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .tr:hover{background:var(--field2);color:var(--ink)}
 .tr em{font:700 11px/1 var(--fm);font-style:normal;font-variant-numeric:tabular-nums;color:var(--ink2);white-space:nowrap}
 .tr i{display:block;flex:none;width:70%;max-width:44px;height:0;min-height:3px;border-radius:5px 5px 2px 2px;background:var(--field2);box-shadow:inset 0 0 0 1.5px var(--ink);transition:height .6s cubic-bezier(.2,.8,.2,1)}
-.tr span{font:400 17px/1 var(--fd)}
+.tr span{font:400 16px/1 var(--fd)}
 .tr[aria-pressed=true] i{background:var(--yel);box-shadow:inset 0 0 0 2px var(--ink)}
 .tr[aria-pressed=true] em{color:var(--ink)}
 .tr[aria-pressed=true] span{background:var(--slab);color:var(--on-slab);padding:3px 5px 2px;border-radius:5px}
@@ -487,7 +464,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .flow1{list-style:none;display:flex;flex-wrap:wrap;align-items:stretch;gap:8px 22px;counter-reset:f}
 .flow1>li{position:relative;display:flex;align-items:center;gap:8px;background:var(--card);color:var(--ink);border-radius:12px;box-shadow:0 0 0 2px var(--ink);padding:8px 11px;font:700 14px/1.3 var(--fb);min-width:0}
 .flow1>li+li::before{content:"→";position:absolute;left:-17px;top:50%;transform:translateY(-50%);font:800 15px/1 var(--fb);color:var(--ink)}
-.flow1 .pct{font:400 22px/1 var(--fd)}
+.flow1 .pct{font:400 20px/1 var(--fd)}
 .flow1 li.pl{background:var(--yel)}
 .flow1 li.ai{background:var(--slab);color:var(--on-slab)}
 .flow1 .lgs{display:inline-flex;gap:4px;font-size:22px;flex:none}
@@ -504,16 +481,16 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .get{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 @media(max-width:860px){.get{grid-template-columns:1fr}}
 .gbox{background:var(--card);color:var(--ink);border-radius:18px;box-shadow:0 0 0 2.5px var(--ink);padding:16px}
-.gbox .n{font:400 24px/1 var(--fd);color:var(--dim)}
-.gbox h3{font:400 21px/1.05 var(--fd);text-transform:uppercase;margin-top:6px}
+.gbox .n{font:400 20px/1 var(--fd);color:var(--dim)}
+.gbox h3{font:400 18px/1.05 var(--fd);text-transform:uppercase;margin-top:6px}
 .gbox p{font:500 15px/1.5 var(--fb);color:var(--ink2);margin-top:6px}
 .ca{margin-top:10px;font:500 12.5px/1.5 var(--fm);border:2px dashed var(--dim);border-radius:10px;padding:10px;color:var(--ink2);overflow-wrap:anywhere}
 .gbox .btn{width:100%;margin-top:12px}
 .risk{font:500 12px/1.6 var(--fm);color:var(--ink2);margin-top:16px}
-footer{margin-top:72px;border-top:2.5px solid var(--ink);text-align:center;padding:48px 16px 56px;background:var(--card);color:var(--ink)}
-.motto{font:400 clamp(30px,6vw,72px)/.95 var(--fd);text-transform:uppercase;letter-spacing:.005em}
+footer{margin-top:64px;border-top:2.5px solid var(--ink);text-align:center;padding:48px 16px 56px;background:var(--card);color:var(--ink)}
+.motto{font:400 clamp(28px,5vw,58px)/.95 var(--fd);text-transform:uppercase;letter-spacing:.005em}
 .motto .e{color:var(--grn)}.motto .z{color:var(--red)}
-.badge{display:inline-block;margin-top:16px;font-size:30px;background:var(--slab);padding:10px 16px 8px;border-radius:12px}
+.badge{display:inline-block;margin-top:16px;font-size:26px;background:var(--slab);padding:10px 16px 8px;border-radius:12px}
 footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-spacing:.1em;color:var(--ink2)}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
@@ -528,34 +505,16 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 
 <main id="top" class="wrap">
   <section class="hero" aria-label="Intro">
-    <div>
+    <div class="hero-t">
       <div class="kick"><span class="y">Season one</span><span id="kModels"></span></div>
       <h1>We're teaching AIs to bet. <span class="hl">The market keeps score.</span></h1>
       <p class="sub">We pick a company that's about to report earnings. <b>The day before, each AI says up or down, and by how much.</b> The day after, we give every AI the closing price from TradingView. They don't look it up themselves, so each one is graded against a fact it didn't fetch.</p>
     </div>
+    <div class="stand" id="stand">
+      <div class="st-h"><h2 id="standH">Current standings</h2><span id="standSub"></span><p>Ranked by right direction first, then the smaller average miss.</p></div>
+      <ol class="roster" id="roster" aria-labelledby="standH"></ol>
+    </div>
     <div class="hero-s">
-      <div class="sf" id="race">
-        <div class="sf-in">
-          <div class="stand sf-face sf-front" id="stand">
-            <div class="st-h"><h2 id="standH">Current standings</h2><span id="standSub"></span></div>
-            <ol class="st-list" id="stList" aria-labelledby="standH"></ol>
-            <p class="st-foot">Ranked by right direction first, then the smaller average miss.</p>
-            <div class="st-season" aria-hidden="true"><small id="seasonLbl"></small><div id="seasonMarks"></div></div>
-            <button type="button" class="btn toRace" id="toRace"><span class="ico" aria-hidden="true">▶</span>Replay the season</button>
-          </div>
-          <div class="stand sf-face sf-back" id="raceBox" aria-hidden="true">
-            <div class="rf-top"><h2 id="raceH">The race</h2>
-              <div class="race-btns"><button type="button" class="btn lt spd" id="replay">↻ Restart</button><button type="button" class="btn lt spd" id="spd" aria-pressed="false" aria-label="Double speed">2x</button></div></div>
-            <div class="np" id="np" aria-live="polite"><span id="npMark"></span><div class="np-tx"><small id="npStep"></small><b id="npTitle"></b><span class="np-mv" id="npMv"></span></div></div>
-            <div class="tl" id="tl" role="group" aria-label="Jump to a round"></div>
-            <div class="callout" id="rcCall"></div>
-            <div class="row hd" aria-hidden="true"><span>#</span><span>Model</span><span>Right way</span><span>Avg miss</span><span>Won</span></div>
-            <div class="board" id="board" role="list" aria-label="Standings"></div>
-            <div id="benchLines"></div>
-            <div class="rf-end"><button type="button" class="btn lt backb" id="toStand">← Back to standings</button></div>
-          </div>
-        </div>
-      </div>
       <a class="nextup" id="nextup" href="#coming" hidden><i></i><span id="nextTxt"></span><em>See the calls</em></a>
       <a class="nextcall" id="nextcall" href="#coming" hidden><small>Next call</small><span id="nextCallTxt"></span></a>
     </div>
@@ -585,12 +544,12 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
   <section class="sec" id="coming" aria-labelledby="comH">
     <div class="sh"><div class="tx"><span class="no">03</span><span class="eb">Coming up</span><h2 id="comH">What the AIs are calling next</h2></div>
       <p class="lede">Every call goes in the day before the report. <b>Check back when the market answers.</b></p></div>
-    <ol class="cal" id="cal"></ol>
+    <div class="cal" id="cal"></div>
   </section>
 
   <section class="sec" id="bet" aria-labelledby="betH">
     <div class="sh"><div class="tx"><span class="no">04</span><span class="eb">The bet</span><h2 id="betH">How big could the bet get?</h2></div>
-      <p class="lede"><b>One AI, one job: buy back $EZ.</b> It can only do that by winning its bet on NVIDIA. Pick a market cap.</p></div>
+      <p class="lede"><b>One AI, one job: buy back $EZ.</b> It does that by winning bets on earnings. <b>The first bet is on NVIDIA.</b> After that, any stock on Hyperliquid with enough open interest and volume to carry the bet.</p></div>
     <div class="bx">
       <div class="bx-ctl">
         <p class="bx-q" id="lMc">If $EZ had a market cap of</p>
@@ -600,7 +559,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
       </div>
       <div class="bx-nums" aria-live="polite">
         <div class="bn pool"><small>Pool at the bet</small><b class="big" id="oPool"></b><p id="oPoolSub"></p></div>
-        <div class="bn bet"><small>The bet on NVIDIA <span class="lgs" id="betLogos"></span></small><b class="big" id="oBet"></b><p id="oBetSub"></p></div>
+        <div class="bn bet"><small>The first bet (NVIDIA) <span class="lgs" id="betLogos"></span></small><b class="big" id="oBet"></b><p id="oBetSub"></p></div>
         <div class="bn win"><small>If the AI is right, it buys back</small><b class="big" id="oWin"></b><p class="of">of $EZ, the day after earnings.</p>
           <p class="lose" id="oLose"></p><div class="tbcs" id="tWin"></div></div>
       </div>
@@ -724,9 +683,16 @@ function flip(c){var f=!c.classList.contains("flipped"),had=c.contains(document.
 $("#kModels").textContent=ACTIVE.length+" AI models · selected earnings";
 $("#standSub").textContent="After "+NR+" round"+(NR===1?"":"s");
 var bench=ACTIVE.filter(function(m){return RUN.indexOf(m)<0});
-$("#stList").innerHTML='<li class="st-row hd" aria-hidden="true"><span>#</span><span></span><span>Model</span><span>Right way</span><span>Won</span></li>'+
-  FINAL.map(function(T,i){return '<li class="st-row'+(i?'':' lead')+'"><span class="rk">'+(i+1)+'</span>'+logo(T.id)+'<span class="nm">'+nm(T.id)+(i?'':'<small>Leading</small>')+'</span><span class="v">'+T.right+' of '+T.n+'</span><span class="v">'+T.won+'</span></li>'}).join("")+
-  bench.map(function(m){var f=firstIn(m);return '<li class="st-row bench"><span class="rk">·</span>'+logo(m)+'<span class="nm">'+(f?nm(m)+' joins in Round '+f.n:nm(m)+' has no graded calls yet')+'</span></li>'}).join("");
+/* the standings: one card per model, in the order and with the numbers of the rule above (FINAL). The leader wears the crown.
+   A model whose calls are not graded yet gets a quieter card of the same shape. */
+function avgTxt(T){return T.avg==null?"·":T.avg.toFixed(2)}
+$("#roster").innerHTML=FINAL.map(function(T,i){var app=MODELS[T.id].app;
+  return '<li class="pc'+(i?'':' lead')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i>Leads the season</span>')+
+    '<div class="pc-top"><span class="rk"><sup>#</sup>'+(i+1)+'</span>'+logo(T.id)+'<h3>'+nm(T.id)+(app.toLowerCase()!==nm(T.id).toLowerCase()?'<small>'+app+'</small>':'')+'</h3></div>'+
+    '<div class="pc-st"><div><b>'+T.won+'</b><span>Rounds<br>won</span></div><div><b>'+T.right+'/'+T.n+'</b><span>Right<br>direction</span></div><div><b>'+avgTxt(T)+'</b><span>Avg pts<br>off</span></div></div></li>'}).join("")+
+  bench.map(function(m){var f=firstIn(m);
+    return '<li class="pc ghost"><div class="pc-top"><span class="rk"><sup>#</sup>?</span>'+logo(m)+'<h3>'+nm(m)+'</h3></div>'+
+      '<p class="pc-note">'+(f?'<b>Joins in Round '+f.n+'</b><span>First grade '+fmtDate(f.resolves)+'</span>':'<b>No graded calls yet</b>')+'</p></li>'}).join("");
 var P0=PENDING[0]||null,U0=UPCOMING[0]||null;
 if(P0){$("#nextup").hidden=false;$("#nextTxt").textContent=plain(P0)+". Calls are in. The market answers "+fmtDate(P0.resolves)+"."}
 if(U0){$("#nextcall").hidden=false;$("#nextCallTxt").textContent=plain(U0)+", "+fmtDate(U0.called)}
@@ -788,114 +754,6 @@ home();requestAnimationFrame(home);
 addEventListener("load",function(){if(cur===START||cur<0)go(START,false)});
 var rT=null;addEventListener("resize",function(){clearTimeout(rT);rT=setTimeout(function(){if(cur>=0)car.scrollTo({left:target(cur)})},120)});
 
-/* ---------- the race: the back of the standings card. A leaderboard replay, round by round ---------- */
-var board=$("#board"),rowEl={},sf=$("#race"),front=$("#stand"),back=$("#raceBox");
-var CROWN='<svg class="crown" viewBox="0 0 20 16" aria-hidden="true"><path d="M1 4l4.5 4L10 1l4.5 7L19 4l-2 11H3z"/></svg>';
-var EZTILE='<span class="co-mark ez mark" aria-hidden="true"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span>';
-function statCell(cls){return '<span class="c '+cls+'"><b data-v="'+cls+'"></b></span>'}
-FINAL.forEach(function(T){
-  var el=document.createElement("div");el.className="row";el.setAttribute("role","listitem");el.dataset.id=T.id;
-  el.style.setProperty("--c",MODELS[T.id].c);
-  el.innerHTML='<span class="pos"></span><div class="who">'+logo(T.id)+
-    '<div class="nmb"><b><span>'+nm(T.id)+'</span>'+CROWN+'</b><span class="bar"><i></i></span></div></div>'+
-    statCell("r")+statCell("avg")+statCell("won");
-  el._v={r:0,avg:null,won:0};rowEl[T.id]=el;board.appendChild(el);
-});
-$("#benchLines").innerHTML=bench.map(function(m){var f=firstIn(m);return '<p class="benchline">'+logo(m)+'<span><b>'+nm(m)+(f?' joins in '+plain(f)+'.':' has no graded calls yet.')+'</b>'+(f?' First grade '+fmtDate(f.resolves)+'.':'')+'</span></p>'}).join("");
-$("#tl").innerHTML=ROUNDS.map(function(r,i){return '<button type="button" class="tlb" data-k="'+(i+1)+'" aria-label="Standings after '+plain(r)+'">'+coMark(r.ticker)+'</button>'}).join("");
-/* the front shows the same season as small badges */
-$("#seasonLbl").textContent="Who won each round";
-$("#seasonMarks").innerHTML=ROUNDS.map(function(r){return '<span class="ss">'+coMark(r.ticker)+'<span class="ssw">'+(r.win?winLogos(r):'<span class="x">✗</span>')+'</span></span>'}).join("");
-function who(T){return nm(T.id)}
-function fmtR(x,n){return Math.round(x)+" / "+n}
-function fmtA(x){return x==null?"·":"±"+x.toFixed(2)}
-function tween(el,from,to,fmt,anim){
-  if(!anim||reduce||from==null||to==null||from===to){el.textContent=fmt(to);return}
-  var t0=performance.now(),D=650;
-  (function f(t){var p=Math.min(1,(t-t0)/D),e=1-Math.pow(1-p,3);el.textContent=fmt(from+(to-from)*e);if(p<1)requestAnimationFrame(f)})(t0);
-}
-/* now playing: the round on screen, its company badge and the market move */
-function npHTML(k){
-  if(!k)return {mark:EZTILE,step:"Starting grid",title:"Before Round 1",mv:"Everyone starts at zero",cls:""};
-  var r=ROUNDS[k-1];
-  return {mark:coMark(r.ticker),step:"Now playing · "+k+" of "+NR,title:plain(r),mv:'<span aria-hidden="true">'+(r.a>0?"▲":"▼")+'</span>Market '+r.out,cls:r.a>0?"u":"d"};
-}
-function setNP(k){var h=npHTML(k);$("#npMark").innerHTML=h.mark;$("#npStep").textContent=h.step;$("#npTitle").textContent=h.title;
-  var mv=$("#npMv");mv.innerHTML=h.mv;mv.className="np-mv"+(h.cls?" "+h.cls:"")}
-function callout(k,L,isNew){
-  if(!k)return '<p><b>Before Round 1.</b> Press a badge to jump to any round.</p>';
-  var r=ROUNDS[k-1],ws=r.win?r.win.split(" & "):[];
-  var said=ws.length>1?list(ws.map(nm))+" tie.":ws.length?nm(ws[0])+" wins.":"Nobody wins.";
-  return '<span class="co-lg">'+(ws.length?ws.map(function(m){return logo(m)}).join(""):'<span class="lg nob" aria-hidden="true">✗</span>')+'</span>'+
-    '<p><b>'+said+'</b> In the lead: <b>'+who(L[0])+'</b>.</p>'+(isNew?'<span class="newlead">New leader</span>':'');
-}
-var shownLead=null;
-function show(k,anim){
-  var L=standAt(k),first={};
-  if(anim)L.forEach(function(T){first[T.id]=rowEl[T.id].getBoundingClientRect().top});
-  L.forEach(function(T,i){
-    var el=rowEl[T.id],v=el._v;board.appendChild(el);
-    el.classList.toggle("lead",k>0&&i===0);
-    $(".pos",el).textContent=k?String(i+1):"·";
-    $(".bar i",el).style.width=(NR?T.right/NR*100:0)+"%";
-    tween($('[data-v="r"]',el),v.r,T.right,function(x){return fmtR(x,T.n)},anim&&k>0);
-    tween($('[data-v="avg"]',el),v.avg,T.avg,fmtA,anim&&k>0);
-    tween($('[data-v="won"]',el),v.won,T.won,function(x){return String(Math.round(x))},anim&&k>0);
-    el._v={r:T.right,avg:T.avg,won:T.won};
-    el.setAttribute("aria-label",(k?(i+1)+". ":"")+who(T)+": "+T.right+" of "+T.n+" right, average miss "+fmtA(T.avg)+", "+T.won+" won");
-  });
-  if(anim)L.forEach(function(T){var el=rowEl[T.id],d=first[T.id]-el.getBoundingClientRect().top;
-    if(Math.abs(d)>1){el.style.transition="none";el.style.transform="translateY("+d+"px)";el.style.zIndex=d>0?"3":"1";el.offsetHeight;
-      el.style.transition="transform .7s cubic-bezier(.2,.8,.2,1)";el.style.transform="";
-      if(d>0){el.classList.add("pass");setTimeout(function(){el.classList.remove("pass");el.style.zIndex=""},900)}}});
-  var lead=k?L[0].id:null,isNew=!!(anim&&k>1&&shownLead&&lead!==shownLead);
-  setNP(k);
-  var np=$("#np");np.classList.remove("tick");if(anim&&!reduce){np.offsetWidth;np.classList.add("tick")}
-  $("#rcCall").innerHTML=callout(k,L,isNew);
-  shownLead=lead;
-  $$("#tl .tlb").forEach(function(s,i){s.classList.toggle("on",i<k-1);s.classList.toggle("cur",i===k-1);
-    if(i===k-1)s.setAttribute("aria-current","step");else s.removeAttribute("aria-current")});
-  var rs=$("#tl"),rc=rs.children[Math.max(0,k-1)];if(rc&&rs.scrollWidth>rs.clientWidth)rs.scrollTo({left:rc.offsetLeft-rs.offsetLeft-(rs.clientWidth-rc.offsetWidth)/2,behavior:anim&&!reduce?"smooth":"auto"});
-  shownK=k;
-}
-var shownK=NR;
-show(NR,false);
-/* stable card: the now-playing bar and the callout keep the height of their tallest round, so nothing jumps */
-function lockRace(){var np=$("#np"),co=$("#rcCall"),hn=0,hc=0;np.style.minHeight=co.style.minHeight="";
-  for(var k=0;k<=NR;k++){setNP(k);co.innerHTML=callout(k,standAt(k),k>1);hn=Math.max(hn,np.offsetHeight);hc=Math.max(hc,co.offsetHeight)}
-  np.style.minHeight=hn+"px";co.style.minHeight=hc+"px";setNP(shownK);co.innerHTML=callout(shownK,standAt(shownK),false)}
-lockRace();
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(lockRace);
-var lkT=null;addEventListener("resize",function(){clearTimeout(lkT);lkT=setTimeout(lockRace,150)});
-var timer=null,fast=false;
-function delay(){return fast?700:1400}
-function stopRace(){if(timer){clearTimeout(timer);timer=null}}
-function step(){timer=setTimeout(function(){show(shownK+1,true);if(shownK>=NR){timer=null}else step()},delay())}
-function playRace(){
-  stopRace();
-  if(reduce||!NR){show(NR,false);return}
-  shownLead=null;show(0,false);step();
-}
-/* the flip: front = standings now, back = the race. Only the visible face is focusable. */
-function faces(f){front.setAttribute("aria-hidden",f?"true":"false");back.setAttribute("aria-hidden",f?"false":"true");
-  if("inert" in front){front.inert=f;back.inert=!f}}
-faces(false);
-function flipRace(on,focus){
-  var f=on==null?!sf.classList.contains("flipped"):on;
-  if(f===sf.classList.contains("flipped")){if(f)playRace();return}
-  sf.classList.toggle("flipped",f);faces(f);
-  if(f)playRace();else{stopRace();show(NR,false)}
-  var top=sf.getBoundingClientRect().top;if(top<70)window.scrollBy({top:top-74,behavior:reduce?"auto":"smooth"});
-  if(focus)(f?$("#toStand"):$("#toRace")).focus({preventScroll:true});
-}
-$("#toRace").addEventListener("click",function(){flipRace(true,true)});
-$("#toStand").addEventListener("click",function(){flipRace(false,true)});
-$("#replay").addEventListener("click",playRace);
-$("#spd").addEventListener("click",function(){fast=!fast;this.setAttribute("aria-pressed",String(fast));
-  if(timer){clearTimeout(timer);step()}});
-$$("#tl .tlb").forEach(function(b){b.addEventListener("click",function(){stopRace();var k=+b.dataset.k;
-  if(k!==shownK)show(k,!reduce)})});
-
 /* ---------- are they learning? Charts from ez-learn.js, lines draw in once when they scroll into view ---------- */
 var lxDir=$("#lxDir"),lxDist=$("#lxDist");
 if(window.EZLearn&&NR){
@@ -944,17 +802,17 @@ if(window.EZLearn&&NR){
   $("#verdict").textContent=vs.filter(Boolean).join(" ");
 }else $("#learn").hidden=true;
 
-/* ---------- coming up: the calls in play, face up, then the sealed rounds with their call dates ---------- */
-function dateBlock(lbl,d){var m=String(d).match(/(\d+)\/(\d+)/);
-  return '<div class="cd"><small>'+lbl+'</small>'+(m?'<em>'+["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+m[1]]+'</em><b>'+(+m[2])+'</b>':'<b>'+d+'</b>')+'</div>'}
-var calHTML=PENDING.map(function(u){var tm=timed(u.timing,false);
-  return '<li class="cr pend">'+dateBlock("Answer",u.resolves)+'<div class="cm">'+
-    '<div class="ct">'+coMark(u.ticker)+'<span><b>'+plain(u)+'</b><em class="in"><i aria-hidden="true"></i>Calls are in'+(tm?' · '+tm:'')+'</em></span></div>'+
-    '<ul class="cc">'+u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span><b class="'+(up?'up':'dn')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'Up':'Down')+'</span> '+c.mag+'%</b></li>'}).join("")+'</ul>'+
-    '<p class="cans">The market answers '+fmtDate(u.resolves)+'. <span>Filed '+fmtDate(u.called)+', never edited.</span></p></div></li>'}).join("")+
-  (UPCOMING.length?'<li class="cal-h" aria-hidden="true">Sealed. Calls go in on the date shown.</li>':'')+
+/* ---------- coming up: two groups, each with its dates. Calls are in (face up), then the next calls (sealed) ---------- */
+function callChips(u){return '<ul class="cc">'+u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span><b class="'+(up?'up':'dn')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'Up':'Down')+'</span> '+c.mag+'%</b></li>'}).join("")+'</ul>'}
+var calHTML="";
+if(PENDING.length)calHTML+='<div class="cg cg-in"><h3 class="cg-h"><i aria-hidden="true"></i>Calls are in<span>Filed the day before. Never edited.</span></h3><ol class="cgl">'+
+  PENDING.map(function(u){var tm=timed(u.timing,false);
+    return '<li class="cr pend"><div class="ct">'+coMark(u.ticker)+'<span class="ctt"><b>'+plain(u)+'</b>'+(tm?'<em>'+tm+'</em>':'')+'</span>'+
+      '<span class="due"><small>Answer</small><b>'+fmtDate(u.resolves)+'</b></span></div>'+callChips(u)+
+      '<p class="cans"><b>The market answers '+fmtDate(u.resolves)+'.</b> Filed '+fmtDate(u.called)+'.</p></li>'}).join("")+'</ol></div>';
+if(UPCOMING.length)calHTML+='<div class="cg cg-up"><h3 class="cg-h">Next calls<span>Sealed until the call date</span></h3><ol class="cgl">'+
   UPCOMING.map(function(u){var tm=timed(u.timing,false);
-  return '<li class="cr seal">'+dateBlock("Calls",u.called)+'<div class="cm"><div class="ct">'+coMark(u.ticker)+'<span><b>'+plain(u)+'</b><em>Sealed · answer '+fmtDate(u.resolves)+(tm?' · '+tm:'')+'</em></span></div></div></li>'}).join("");
+    return '<li class="cr seal">'+coMark(u.ticker)+'<b>'+plain(u)+'</b><p class="cdates">Calls <b>'+fmtDate(u.called)+'</b> · Answer <b>'+fmtDate(u.resolves)+'</b>'+(tm?' · '+tm:'')+'</p></li>'}).join("")+'</ol></div>';
 $("#cal").innerHTML=calHTML;
 if(!PENDING.length&&!UPCOMING.length)$("#coming").hidden=true;
 
@@ -1004,7 +862,7 @@ $("#tWin").innerHTML=tbc("[owner to confirm] profit or whole pool?");
 $("#tiers").innerHTML=MCAPS.map(function(v){return '<button type="button" class="tr" data-mc="'+v+'" aria-pressed="false"><em></em><i></i><span>'+money(v)+'</span></button>'}).join("");
 var pct=function(v){return String(+(+v).toFixed(2))+"%"};
 $("#flow").innerHTML='<li>Every $EZ trade pays a fee</li><li class="pl"><span class="pct">'+Math.round(A.poolShare*100)+'%</span>goes into the pool'+(CONFIG.pool?' ('+CONFIG.pool+' so far)':'')+'</li>'+
-  '<li class="ai"><span class="lgs">'+nvLogo()+hlLogo()+'</span>One AI bets the pool on NVIDIA\'s earnings, leveraged, on Hyperliquid</li>'+
+  '<li class="ai"><span class="lgs">'+nvLogo()+hlLogo()+'</span>One AI bets the pool on earnings (first: NVIDIA), leveraged, on Hyperliquid</li>'+
   '<li class="out"><span class="w"><b>Win:</b> it buys back $EZ</span><span class="l"><b>Lose:</b> the pool is gone</span></li><li class="np0">Nothing is paid out to holders.</li>';
 $("#fine").textContent="Rough math, not a forecast. It assumes the coin trades about "+pct(A.volPct)+" of its market cap a day, we keep about "+pct(A.feePct)+" of every trade (this differs by platform), "+Math.round(A.poolShare*100)+"% goes to the pool, "+
   (betD?A.days+" days of fees until the bet on "+fmtDate(betRaw):A.days+" days of fees")+", and NVIDIA moves "+pct(A.move)+". It leaves out funding and costs.";
