@@ -36,6 +36,16 @@ var CARDS={
 /* optional exact times (UTC) for countdowns; the sheet only carries dates */
 var TIMES={MU:{lock:"2026-09-30T20:30:00Z"}};
 var MEDIA="media/";
+/* Company marks. Put a logo file in media/logos/ (SVG or PNG, square, transparent) and list it here, e.g. GME:"logos/GME.svg".
+   Without a file, pages show a ticker badge, so a new round never breaks the page. */
+var CO_LOGOS={};
+function coMark(t,cls){t=String(t||"").toUpperCase();var f=CO_LOGOS[t];
+  return f?'<span class="co-mark has-logo '+(cls||'')+'" title="'+(TICKERS[t]||t)+'"><img src="'+MEDIA+f+'" alt="'+(TICKERS[t]||t)+'" loading="lazy"></span>'
+          :'<span class="co-mark '+(cls||'')+'" title="'+(TICKERS[t]||t)+'">'+t+'</span>'}
+/* Pool calculator assumptions (owner to confirm). null = not decided yet: the page uses its example value and marks it.
+   feePct: % of each $EZ trade that becomes fees we collect · leverage: the bet's leverage · volPct: example daily volume as % of market cap
+   betDate: MM/DD/YY of the NVIDIA bet (also CONFIG.betDate) */
+var SIM={feePct:null,leverage:null,volPct:25,betDate:null};
 /* the round films: webm/mp4/poster in media/, tall = 9:16 */
 /* all rounds: 1080x1080 at 60fps ("-hd"); the original files stay for Variant 1.
    pan: for 9:16 films shown in a square, [second, vertical position %] keyframes so the frame follows the action */
