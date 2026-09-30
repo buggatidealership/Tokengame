@@ -11,7 +11,7 @@
 <style>
 /* EARNINGS ZEASON · V15 · THE SEASON
    The record as a season of cards. Every round is a card (flip for the stats), the standings replay as a
-   race against the "always up" ghost, and the machines' calls for the round in play are shown face up.
+   replay the season as a leaderboard of the models, and the machines' calls for the round in play are shown face up.
    Data: ez-data.js only. Nothing typed by hand. */
 :root{color-scheme:light;
   --field:#e4f2ea;--field2:#ecf7f0;--ink:#0e1726;--ink2:#46526a;--dim:#7d889c;--card:#ffffff;
@@ -435,7 +435,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
   </section>
 
   <section class="sec" id="race">
-    <div class="sh"><div class="tx"><span class="no">02</span><span class="eb" id="raceEb">The race</span><h2>Chasing the ghost</h2></div>
+    <div class="sh"><div class="tx"><span class="no">02</span><span class="eb" id="raceEb">The race</span><h2>Who takes the lead?</h2></div>
       <p class="lede" id="raceLede"></p></div>
     <div class="race" id="raceBox">
       <div class="race-top">
@@ -446,7 +446,6 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
       <div class="row hd" aria-hidden="true"><span>#</span><span>Player</span><span>Right way</span><span>Avg miss</span><span>Won</span></div>
       <div class="board" id="board" role="list" aria-label="Standings"></div>
       <div id="benchLines"></div>
-      <div class="verdict"><div class="big" id="vBig"></div><p id="vTxt"></p></div>
       <p class="rule" id="raceRule"></p>
     </div>
   </section>
@@ -586,7 +585,7 @@ function key(n){return "ez15.call.r"+n}
 
 /* ---------- standings, computed round by round from ROUNDS ----------
    Rule: right direction first (share of calls), then the smaller average miss.
-   The ghost ("always up") has no size, so on a tie it stays ahead: a model has to beat it, not match it. */
+   Models only. */
 var RUN=MODEL_KEYS.filter(function(m){return MODELS[m]&&ROUNDS.some(function(r){return callOf(r,m)})});
 function rate(T){return T.n?T.right/T.n:-1}
 function cmp(a,b){var d=rate(b)-rate(a);if(Math.abs(d)>1e-9)return d;
@@ -594,9 +593,7 @@ function cmp(a,b){var d=rate(b)-rate(a);if(Math.abs(d)>1e-9)return d;
   if(a.avg!=null&&b.avg!=null&&Math.abs(a.avg-b.avg)>1e-9)return a.avg-b.avg;return a.i-b.i}
 function standAt(k){
   var S={};RUN.forEach(function(m,i){S[m]={id:m,i:i,right:0,n:0,err:0,won:0}});
-  S.GHOST={id:"GHOST",i:RUN.length,right:0,n:0,err:0,won:0,ghost:true};
   for(var j=0;j<k;j++){var r=ROUNDS[j],wn=r.win?r.win.split(" & "):[];
-    S.GHOST.n++;if(r.a>0)S.GHOST.right++;
     r.calls.forEach(function(c){var T=S[c[0]];if(!T)return;var v=(/^DOWN/.test(c[1])?-1:1)*parseFloat(c[1].replace(/^\w+\s*/,""));
       T.n++;T.err+=Math.abs(v-r.a);if((v>0)===(r.a>0))T.right++;if(wn.indexOf(c[0])>-1)T.won++})}
   var L=Object.keys(S).map(function(x){var T=S[x];T.avg=T.n&&!T.ghost?T.err/T.n:null;return T});
@@ -776,16 +773,8 @@ var best=models.length?Math.max.apply(null,models.map(function(T){return T.right
 var leaders=models.filter(function(T){return T.right===best}).map(who);
 var beat=models.filter(function(T){return rate(T)>UPS/Math.max(NR,1)+1e-9});
 $("#raceEb").textContent="The race · after "+NR+" rounds";
-$("#raceRule").innerHTML="Ranked by right direction first, then the smaller average miss. The ghost, “always up”, is a player who says “up” every round, no thinking at all. It has no size, so on a tie it stays ahead: a model has to beat it, not match it.";
-if(beat.length){
-  $("#raceLede").innerHTML="Every model races a ghost: a player who says “up” every time. <b>"+list(beat.map(who))+" "+(beat.length>1?"have":"has")+" passed it.</b> "+NR+" rounds is still a small sample. Press play to watch the lead change hands.";
-  $("#vBig").textContent="Ghost passed";
-  $("#vTxt").innerHTML="<b>Always up: "+UPS+" of "+NR+".</b> Best so far: "+list(leaders)+", "+best+" of "+NR+". It has to hold for dozens of rounds before it means much.";
-}else{
-  $("#raceLede").innerHTML="Every model races a ghost: a player who says “up” every time. <b>After "+NR+" rounds, no AI beats the simplest strategy there is.</b> That's the bar. Press play to watch them try.";
-  $("#vBig").textContent="Nobody has passed it yet";
-  $("#vTxt").innerHTML="<b>Saying “up” every time: right "+UPS+" of "+NR+".</b> Best model so far: "+list(leaders)+", "+best+" of "+NR+". We say it first, so you don't have to find it.";
-}
+$("#raceRule").innerHTML="Ranked by right direction first, then the smaller average miss.";
+$("#raceLede").innerHTML="Every round moves the table."+(models.length?" <b>"+who(models[0])+" leads after "+NR+" rounds.</b>":"")+" Press play to watch the lead change hands.";
 
 /* ---------- in play: the machines' calls, face up; your call is an optional extra ---------- */
 var SIZES=[1,2,3,4,5,7,10,15],pick={dir:null,mag:null},current=null;
