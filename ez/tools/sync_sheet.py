@@ -71,15 +71,19 @@ def main():
     if hi is None:
         sys.exit("BLOCKED: no header row with ROUND and TICKER found.")
     got = [c.strip().upper() for c in rows[hi]]
-    missing = [h for h in want if h not in got]
+    OPTIONAL = {"REPORT TIME"}   # metadata columns the sheet may not have yet; never part of the graded record
+    missing = [h for h in want if h not in got and h not in OPTIONAL]
     if missing:
         sys.exit("BLOCKED: sheet is missing columns: %s" % ", ".join(missing))
-    col = {h: got.index(h) for h in want}
+    col = {h: got.index(h) for h in want if h in got}
+    for h in want:
+        if h not in col:
+            print("NOTE: the sheet has no %s column yet (optional)." % h)
 
     problems, warnings, new = [], [], []
     seen = set()
     for r in rows[hi + 1:]:
-        g = lambda h: r[col[h]] if col[h] < len(r) else ""
+        g = lambda h: (r[col[h]] if col[h] < len(r) else "") if h in col else ""
         rn, tk = g("ROUND").strip(), g("TICKER").strip().upper()
         if not rn and not tk:
             continue
@@ -99,6 +103,12 @@ def main():
                 v = clean(v)
                 if v and not NUM.match(v):
                     problems.append("R%s %s is '%s' (not a number)" % (rn, h, g(h)))
+            elif h == "REPORT TIME":
+                v = {"BMO": "BMO", "BEFORE OPEN": "BMO", "PRE": "BMO", "PRE-MARKET": "BMO", "PREMARKET": "BMO",
+                     "AMC": "AMC", "AFTER CLOSE": "AMC", "POST": "AMC", "POST-MARKET": "AMC", "POSTMARKET": "AMC",
+                     "DURING": "DURING", "DMH": "DURING", "INTRADAY": "DURING", "MARKET HOURS": "DURING", "": ""}.get(v.upper(), "?" + v)
+                if v.startswith("?"):
+                    problems.append("R%s REPORT TIME is '%s' (use BMO, AMC or DURING)" % (rn, v[1:]))
             elif h == "TICKER":
                 v = tk
             out.append(v)
@@ -124,7 +134,11 @@ def main():
         o = oldby.get(r[0])
         if not o:
             report.append("NEW ROUND R%s %s" % (r[0], r[1])); continue
-        diffs = [(want[i], o[i], r[i]) for i in range(len(want)) if (o[i] if i < len(o) else "") != r[i]]
+        diffs = [(want[i], o[i] if i < len(o) else "", r[i]) for i in range(len(want)) if (o[i] if i < len(o) else "") != r[i]]
+        meta = [d for d in diffs if d[0] in OPTIONAL]
+        diffs = [d for d in diffs if d[0] not in OPTIONAL]
+        if meta and not diffs:
+            report.append("DETAILS    R%s %s: %s" % (r[0], r[1], "; ".join("%s %r -> %r" % d for d in meta))); continue
         if not diffs:
             continue
         if o[act] != "":

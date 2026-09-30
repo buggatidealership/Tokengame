@@ -8,7 +8,7 @@ var CONFIG={ca:"",buyUrl:"",chain:"",x:"",tg:"",pool:"",poolUrl:"",betDate:""};
    paste the exact text and set verbatim:true to publish it word for word. */
 var PROMPT={verbatim:false,lines:["Company <i>X</i> reports on <i>date</i>.","Full freedom: use any tool you like.","Answer: <i>up or down</i>, and <i>by how much</i>."]};
 var SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/1Y9pKNsyB6NL_LGqUrEUydrt3R0cAwnGVllIRwk7CsLc/export?format=csv&gid=352731177";
-var SHEET_HEADER=["ROUND","TICKER","CALL DATE (T-1)","GPT DIR","GPT MAG (%)","KIMI DIR","KIMI MAG (%)","CLAUDE DIR","CLAUDE MAG (%)","GROK DIR","GROK MAG (%)","RESOLUTION DATE/TIME","ACTUAL MOVE (%)"];
+var SHEET_HEADER=["ROUND","TICKER","CALL DATE (T-1)","GPT DIR","GPT MAG (%)","KIMI DIR","KIMI MAG (%)","CLAUDE DIR","CLAUDE MAG (%)","GROK DIR","GROK MAG (%)","RESOLUTION DATE/TIME","ACTUAL MOVE (%)","REPORT TIME"];
 var SHEET=[
  ["1","GME","09/08/26","UP","1","UP","4","UP","2","","","09/09/26","5.95"],
  ["2","ORCL","09/16/26","UP","6","DOWN","6","DOWN","3","","","09/17/26","-1.74"],
@@ -67,7 +67,7 @@ function build(header,rows){
     var n=+g(r,"ROUND"),t=g(r,"TICKER").toUpperCase();if(!n||!t)return;
     var co=TICKERS[t]||t,act=g(r,"ACTUAL MOVE (%)"),calls=[];
     MODEL_KEYS.forEach(function(m){var d=g(r,m+" DIR").toUpperCase(),mg=g(r,m+" MAG (%)");if(d&&mg!=="")calls.push({m:m,dir:d,mag:mg,v:(d==="DOWN"?-1:1)*parseFloat(mg)})});
-    var base={n:n,ticker:t,co:co,called:g(r,"CALL DATE (T-1)"),resolves:g(r,"RESOLUTION DATE/TIME"),card:CARDS[n]||{}};
+    var base={n:n,ticker:t,co:co,called:g(r,"CALL DATE (T-1)"),resolves:g(r,"RESOLUTION DATE/TIME"),timing:g(r,"REPORT TIME").toUpperCase(),card:CARDS[n]||{}};
     if(act!==""&&calls.length){
       var a=parseFloat(act),up=a>0;
       calls.forEach(function(c){c.ok=(c.v>0)===up;c.off=Math.abs(c.v-a);c.offs=c.off.toFixed(2)});
@@ -75,16 +75,18 @@ function build(header,rows){
       var wn=right.filter(function(c){return Math.abs(c.off-best)<1e-9}).map(function(c){return c.m});
       calls.forEach(function(c){var T=tally[c.m];T.n++;T.err+=c.off;if(c.ok)T.right++;if(wn.indexOf(c.m)>-1)T.won++});
       var cd=base.card;
-      ROUNDS.push({n:n,co:co,ticker:t,called:base.called,resolves:base.resolves,out:fmtOut(act),a:a,win:wn.length?wn.join(" & "):null,
+      ROUNDS.push({n:n,co:co,ticker:t,called:base.called,resolves:base.resolves,timing:base.timing,out:fmtOut(act),a:a,win:wn.length?wn.join(" & "):null,
         tag:cd.tag||(wn.length>1?"DEAD HEAT":wn.length?"":"NO WINNER"),head:cd.head||"",film:cd.film,poster:cd.poster,tall:cd.tall,
         calls:calls.map(function(c){return [c.m,c.dir+" "+c.mag+"%",c.offs]}),story:""});
-    }else if(calls.length){PENDING.push({n:n,co:co,ticker:t,called:base.called,resolves:base.resolves,calls:calls,status:"calls-in"})}
-    else{UPCOMING.push({n:n,co:co,ticker:t,called:base.called,resolves:base.resolves,lockAt:(TIMES[t]||{}).lock||null})}
+    }else if(calls.length){PENDING.push({n:n,co:co,ticker:t,called:base.called,resolves:base.resolves,timing:base.timing,calls:calls,status:"calls-in"})}
+    else{UPCOMING.push({n:n,co:co,ticker:t,called:base.called,resolves:base.resolves,timing:base.timing,lockAt:(TIMES[t]||{}).lock||null})}
   });
   LADDER=MODEL_KEYS.filter(function(m){return tally[m].n}).map(function(m){var T=tally[m];return {m:m,won:T.won,dir:T.right+" / "+T.n,avg:(T.err/T.n).toFixed(2)}})
     .sort(function(x,y){return (y.won-x.won)||(parseFloat(x.avg)-parseFloat(y.avg))});
   NEXT=UPCOMING[0]||PENDING[0]||null;
 }
+// REPORT TIME column (optional in the sheet): BMO = before the market opens, AMC = after it closes, DURING = in market hours
+function timingLabel(t){return {BMO:"Before the open",AMC:"After the close",DURING:"During market hours"}[t]||""}
 function nextLabel(u){return "Round "+u.n+" · "+u.co}
 function parseCSV(t){var rows=[],r=[],f="",q=false;for(var i=0;i<t.length;i++){var ch=t[i];if(q){if(ch==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=ch}else if(ch==='"')q=true;else if(ch===","){r.push(f);f=""}else if(ch==="\n"||ch==="\r"){if(ch==="\r"&&t[i+1]==="\n")i++;r.push(f);rows.push(r);r=[];f=""}else f+=ch}if(f!==""||r.length){r.push(f);rows.push(r)}return rows.filter(function(x){return x.some(function(c){return String(c).trim()!==""})})}
 build(SHEET_HEADER,SHEET);

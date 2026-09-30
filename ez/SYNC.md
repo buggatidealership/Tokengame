@@ -38,6 +38,9 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    and what to QA.
 
 ## Notes
+- Optional sheet column **REPORT TIME** (when the company reported): `BMO` (before the open), `AMC` (after the close) or `DURING`
+  (market hours). Words like "after close" or "pre-market" are accepted too. It is shown on the round cards where a page supports it.
+  Filling it in for a graded round is a detail, not a record edit, so it doesn't need `--allow-edits`.
 - Variant 1 (`ez/v1-binder.html`) is frozen and uses its own copies of the original films. Do not touch it.
 - Going live on GitHub Pages needs push access to the repository that hosts the site.
   The old site lives at buggatidealership.github.io/EZ (so, most likely, the `buggatidealership/EZ` repo).
