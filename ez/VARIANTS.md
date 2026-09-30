@@ -17,3 +17,7 @@ The prompt shown comes from `PROMPT` in `ez-data.js`; it says "shape of the prom
 - **Variant 7** = `v7-fightnight.html` — "Fight Night": money-led. Opens on the main event (the machines vs NVIDIA); the rounds are the undercard.
 - **Variant 8** = `v8-thequestion.html` — "The Question": question-led. Opens on "Are they learning?" with the live answer and both charts.
 - **Variant 9** = `v9-primetime-kraft.html`: Primetime's running order in Variant 1's look (kraft, ink, foil). Leaderboard table, simpler Step 2 bars, "GPT predicts ▲ up 3%" listings, visual main event. V1 and V6 untouched.
+
+## Locked (2026-09-30)
+Variant 6 (Primetime) and Variant 9 (Primetime Kraft) are locked by the owner: design, layout and copy frozen.
+They keep updating from `ez-data.js`. Previews: V6 https://claude.ai/artifact/32CQftWp6gJUZiX6di64b4 · V9 https://claude.ai/artifact/MHR1WUyvjBcnYkTWwdZQFp
