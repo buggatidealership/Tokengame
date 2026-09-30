@@ -28,3 +28,9 @@ sell subtly. Research: `RESEARCH-subtle.md`. All three say "Get $EZ" once, at th
 - **Variant 10** = `v10-timetable.html` — "The Timetable": EZ as a transit timetable. The route, arrivals, punctuality, next departures, special service. https://claude.ai/artifact/56BHpBa24We9W5hRaYsZi9
 - **Variant 11** = `v11-picturebook.html` — "The Picture Book": one idea per page, flat shapes; "Your turn" lets the visitor call the next print before seeing the machines. https://claude.ai/artifact/CD8myrMvob8patBpPmf9c1
 - **Variant 12** = `v12-scorebook.html` — "The Scorebook": the record kept by hand; box scores, stamps, margin notes, "What would prove this wrong?". https://claude.ai/artifact/WbUS8Te1SPMw5wQrrhhzAN
+
+## Round 6 (2026-09-30): the memeified buyback, honesty first
+Brief: `BRIEF-narrative.md` (owner's thesis dissected, pushback, money facts with [owner to confirm] gaps, line bank).
+- **Variant 13** = `v13-machine.html` — "The Machine": dream first. "An AI with one job: buy back $EZ." Two-buyback illustration, honest scoreboard vs "always up". https://claude.ai/artifact/ADvTGPPcFuZvcMejqeWGMW
+- **Variant 14** = `v14-openbooks.html` — "Open Books": honesty first. Where every dollar goes, what we know and don't, why the market judges. https://claude.ai/artifact/M1pWG7nJEy8xXGSyfVJDx8
+- **Variant 15** = `v15-season.html` — "The Season": data first. Collectible flip cards, race against the "always up" ghost, your call. https://claude.ai/artifact/XxQqLLfSx18hzSV9qawyeN
