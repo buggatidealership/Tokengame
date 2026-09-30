@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>EZ Picture Book</title>
+<meta name="description" content="Earnings Zeason, told one page at a time. What we do, how we do it, how it's going and what's coming up.">
+<meta name="theme-color" content="#ffd23f">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* EARNINGS ZEASON · V11 · THE PICTURE BOOK
+   One idea per page, huge friendly type, flat geometric shapes drawn in CSS and inline SVG.
+   Every number comes from ez-data.js. */
+:root{color-scheme:light;
+  --ink:#17183b;--ink2:#474a6e;--mute:#6f7294;--paper:#fbfaf6;--white:#fff;
+  --yellow:#ffd23f;--butter:#fff0b3;--sky:#d4e9ff;--blue:#2443d6;--pink:#ffd6e4;--mint:#caf2da;
+  --up:#14945a;--dn:#e5382b;--upl:#bfeccf;--dnl:#ffd0cb;--gold:#e8a317;
+  --f:'Gabarito','Avenir Next','Segoe UI',system-ui,-apple-system,sans-serif;
+  --r:22px;--line:3px solid var(--ink)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--paper);overflow-x:clip;scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font:500 18px/1.5 var(--f);-webkit-font-smoothing:antialiased;overflow-x:clip}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px;border-radius:6px}
+.pg.dark :focus-visible{outline-color:var(--yellow)}
+img{display:block;max-width:100%}
+.num{font-variant-numeric:tabular-nums}
+.u{color:var(--up)}.d{color:var(--dn)}
+.lg{display:inline-grid;place-items:center;width:1em;height:1em;border-radius:22.5%;flex:none;vertical-align:middle;box-shadow:0 0 0 2px var(--ink)}
+.lg svg{width:62%;height:62%}
+.mark .s{color:var(--gold)}.mark .e{color:var(--up)}.mark .z{color:var(--dn)}
+
+/* header */
+.top{display:flex;align-items:center;gap:12px;max-width:1120px;margin:0 auto;padding:14px 20px}
+.logo{font:900 22px/1 var(--f);letter-spacing:-.03em;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+.top .rt{margin-left:auto;font:700 14px/1.2 var(--f);color:var(--ink2);text-align:right}
+
+/* pages */
+.pg{position:relative;overflow:clip;background:var(--bg,var(--paper));border-top:var(--line)}
+.pg-in{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:64px 20px 72px}
+.pno{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--ink);color:var(--white);font:800 17px/1 var(--f);margin-bottom:20px}
+.pg.dark .pno{background:var(--yellow);color:var(--ink)}
+.big{font:900 clamp(40px,10.6vw,92px)/.96 var(--f);letter-spacing:-.04em;text-wrap:balance;max-width:14ch}
+.big.w{max-width:18ch}
+.lede{font:500 clamp(19px,2.4vw,24px)/1.4 var(--f);color:var(--ink2);max-width:36ch;margin-top:18px;text-wrap:pretty}
+.lede b{color:var(--ink);font-weight:800}
+.pg.dark{color:var(--white)}.pg.dark .lede{color:#dfe4ff}.pg.dark .lede b{color:var(--white)}
+.beat{margin-top:56px}
+.beat:first-of-type{margin-top:0}
+.small{font:600 15px/1.45 var(--f);color:var(--mute)}
+.chip{display:inline-flex;align-items:center;gap:8px;font:800 15px/1.1 var(--f);background:var(--white);box-shadow:0 0 0 3px var(--ink);border-radius:999px;padding:10px 16px;min-height:44px}
+.chip .lg{font-size:24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:14px 24px;border-radius:999px;background:var(--ink);color:var(--white);font:800 18px/1 var(--f);text-decoration:none;box-shadow:0 0 0 3px var(--ink),0 6px 0 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 0 3px var(--ink),0 8px 0 0 var(--ink)}
+.btn:active{transform:translateY(4px);box-shadow:0 0 0 3px var(--ink),0 2px 0 0 var(--ink)}
+.btn.lt{background:var(--white);color:var(--ink)}
+.btn.off{background:transparent;color:var(--mute);box-shadow:inset 0 0 0 3px var(--mute);border:0;pointer-events:none;border-style:dashed}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.card{background:var(--white);border-radius:var(--r);box-shadow:0 0 0 3px var(--ink),8px 10px 0 0 rgba(23,24,59,.14)}
+
+/* decorative flat shapes */
+.shp{position:absolute;z-index:0;pointer-events:none}
+.c{border-radius:50%}
+.tri{width:0;height:0}
+@keyframes bob{50%{transform:translateY(-10px) rotate(4deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* cover */
+.cover{--bg:var(--yellow);border-top:0}
+.cover .pg-in{display:grid;gap:28px;padding-top:28px;padding-bottom:64px}
+.cover h1{font:900 clamp(56px,16vw,150px)/.86 var(--f);letter-spacing:-.055em}
+.cover h1 .mark{display:inline}
+.cover .sub{font:600 clamp(20px,2.6vw,27px)/1.3 var(--f);max-width:30ch;text-wrap:balance}
+.cover-art{width:100%;max-width:520px;justify-self:center}
+.cover .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+@media(min-width:900px){.cover .pg-in{grid-template-columns:1.1fr .9fr;align-items:center;padding-top:40px;padding-bottom:96px}.cover-art{grid-column:2;grid-row:1/4}}
+
+/* page 1: the cast */
+.scene{display:grid;grid-template-columns:1fr;gap:28px;align-items:center}
+@media(min-width:860px){.scene{grid-template-columns:1.35fr .65fr;gap:48px}}
+.scene svg{width:100%;height:auto;max-width:460px;justify-self:center}
+.cast{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:14px;margin-top:34px;max-width:760px}
+.who{display:flex;flex-direction:column;align-items:center;text-align:center;gap:0}
+.who .lg{font-size:clamp(70px,19vw,132px);box-shadow:0 0 0 3px var(--ink);position:relative;z-index:1;border-radius:26%}
+.who .body{width:100%;max-width:170px;height:clamp(40px,10vw,70px);border-radius:999px 999px 0 0;background:var(--c);margin-top:-14px;box-shadow:0 0 0 3px var(--ink)}
+.who b{font:900 clamp(20px,4.6vw,30px)/1 var(--f);letter-spacing:-.02em;margin-top:12px}
+.newbie{margin-top:22px;display:flex;align-items:center;gap:12px;font:700 16px/1.35 var(--f);color:var(--ink2)}
+.newbie .lg{font-size:40px}
+
+/* page 2: the question */
+.ask{display:grid;gap:22px;margin-top:34px;align-items:stretch}
+@media(min-width:860px){.ask{grid-template-columns:1.1fr .9fr}}
+.bubble{position:relative;padding:26px 24px;font:700 clamp(21px,3vw,30px)/1.35 var(--f)}
+.bubble::after{content:"";position:absolute;left:44px;bottom:-22px;width:34px;height:34px;background:var(--white);transform:rotate(45deg);box-shadow:3px 3px 0 0 var(--ink);clip-path:polygon(100% 0,100% 100%,0 100%)}
+.bubble i{font-style:normal;background:var(--butter);padding:0 .2em;border-radius:6px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.bubble .k{display:block;font:800 13px/1 var(--f);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-bottom:12px}
+.ud{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ud>div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:22px 10px;border-radius:var(--r);box-shadow:0 0 0 3px var(--ink);text-align:center}
+.ud .upc{background:var(--upl)}.ud .dnc{background:var(--dnl)}
+.ud svg{width:74px;height:64px}
+.ud b{font:900 30px/1 var(--f);letter-spacing:-.03em}
+.ud small{font:700 15px/1.3 var(--f);color:var(--ink2)}
+.nohint{margin-top:34px;display:flex;flex-wrap:wrap;gap:10px}
+
+/* number line */
+.nl{position:relative;height:calc(var(--rows,1)*44px + 124px);margin:8px 6px 0}
+.nl .zone{position:absolute;top:calc(var(--rows,1)*44px + 16px);height:48px;border-radius:10px}
+.nl .zdn{left:0;background:var(--dnl);border-radius:10px 0 0 10px}
+.nl .zup{right:0;background:var(--upl);border-radius:0 10px 10px 0}
+.nl .zone span{position:absolute;top:7px;font:900 12px/1 var(--f);letter-spacing:.1em}
+.nl .zdn span{left:10px;color:var(--dn)}.nl .zup span{right:10px;color:var(--up)}
+.nl .axis{position:absolute;left:0;right:0;top:calc(var(--rows,1)*44px + 50px);height:3px;background:var(--ink);border-radius:2px}
+.nl .zero{position:absolute;top:calc(var(--rows,1)*44px + 12px);width:3px;height:56px;background:var(--ink);transform:translateX(-50%)}
+.nl .zero::after{content:"0";position:absolute;top:60px;left:50%;transform:translateX(-50%);font:800 13px/1 var(--f);color:var(--mute)}
+.nl .m{position:absolute;top:calc(var(--row)*44px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
+.nl .m .lg{font-size:34px}
+.nl .m::after{content:"";width:3px;height:calc((var(--rows,1) - var(--row))*44px - 18px);background:var(--ink);opacity:.35}
+.nl .m.you .dot{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--yellow);box-shadow:0 0 0 3px var(--ink);font:900 11px/1 var(--f);letter-spacing:.02em}
+.nl .ans{position:absolute;top:calc(var(--rows,1)*44px + 33px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:2}
+.nl .ans svg{width:36px;height:36px}
+.nl .ans b{font:900 18px/1 var(--f);background:var(--ink);color:var(--white);padding:6px 9px;border-radius:999px;white-space:nowrap}
+.nl .ans.edgeL{transform:translateX(-18px);align-items:flex-start}
+.nl .ans.edgeR{transform:translateX(calc(-100% + 18px));align-items:flex-end}
+
+/* page 3: the worked example */
+.ex{display:grid;gap:26px;margin-top:34px;align-items:start}
+@media(min-width:900px){.ex{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:36px}}
+.film{position:relative;aspect-ratio:1/1;background:var(--ink);border-radius:var(--r);overflow:hidden;box-shadow:0 0 0 3px var(--ink),10px 12px 0 0 rgba(23,24,59,.16)}
+.film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.film .tag{position:absolute;left:12px;top:12px;z-index:2;font:800 13px/1 var(--f);letter-spacing:.06em;background:var(--yellow);color:var(--ink);padding:8px 11px;border-radius:999px;box-shadow:0 0 0 2px var(--ink);pointer-events:none}
+.ex h3{font:900 clamp(28px,4vw,42px)/1 var(--f);letter-spacing:-.03em}
+.ex .dts{font:700 15px/1.3 var(--f);color:var(--ink2);margin-top:8px}
+.calls{display:grid;gap:10px;margin-top:18px}
+.call{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px 10px 10px;border-radius:16px;background:var(--white);box-shadow:0 0 0 3px var(--ink)}
+.call .lg{font-size:40px}
+.call b{display:block;font:900 20px/1.05 var(--f)}
+.call small{display:block;font:700 15px/1.3 var(--f);color:var(--ink2);margin-top:2px}
+.call .res{font:900 15px/1.15 var(--f);text-align:right;white-space:nowrap}
+.call.no{background:transparent;box-shadow:0 0 0 3px var(--ink) inset;border:0}
+.call.no .res{color:var(--dn)}.call.ok .res{color:var(--up)}
+.call.win{background:var(--yellow)}
+.call.win .res{color:var(--ink)}
+.rule{margin-top:18px;padding:16px 18px;border-radius:16px;background:var(--sky);box-shadow:0 0 0 3px var(--ink);font:600 17px/1.45 var(--f)}
+.rule b{font-weight:900}
+.answer{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:18px}
+.answer small{min-width:12ch;flex:1}
+.answer .big-n{font:900 clamp(48px,9vw,76px)/.9 var(--f);letter-spacing:-.04em}
+.answer small{font:700 15px/1.3 var(--f);color:var(--ink2)}
+
+/* page 4: the loop */
+.loopw{display:grid;gap:30px;margin-top:34px;align-items:center}
+@media(min-width:900px){.loopw{grid-template-columns:1fr 1fr}}
+.loop{position:relative;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:560px;width:100%;justify-self:center}
+.loop::before{content:"";position:absolute;inset:18%;border-radius:50%;border:6px dashed var(--ink);opacity:.25;z-index:0;animation:spin 40s linear infinite}
+.loop li{position:relative;z-index:1;background:var(--white);border-radius:var(--r);box-shadow:0 0 0 3px var(--ink);padding:16px;display:flex;flex-direction:column;gap:6px;min-height:150px}
+.loop li:nth-child(3){order:4}.loop li:nth-child(4){order:3}
+.loop li .n{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--white);font:900 17px/1 var(--f)}
+.loop li:nth-child(1) .n{background:var(--blue)}.loop li:nth-child(2) .n{background:var(--up)}.loop li:nth-child(3) .n{background:var(--dn)}.loop li:nth-child(4) .n{background:var(--gold);color:var(--ink)}
+.loop li b{font:900 20px/1.1 var(--f);letter-spacing:-.01em}
+.loop li span{font:600 15px/1.4 var(--f);color:var(--ink2)}
+.boring{font:900 clamp(30px,5.4vw,54px)/1 var(--f);letter-spacing:-.035em;max-width:16ch;text-wrap:balance}
+.boring em{font-style:normal;background:var(--ink);color:var(--yellow);padding:0 .18em;border-radius:10px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+
+/* page 5: the record */
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:34px}
+@media(min-width:760px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}}
+@media(min-width:1060px){.tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.tile{display:flex;flex-direction:column;text-align:left;background:var(--white);border-radius:var(--r);box-shadow:0 0 0 3px var(--ink);overflow:hidden;transition:transform .15s,box-shadow .15s;min-width:0}
+button.tile:hover{transform:translateY(-3px) rotate(-.6deg);box-shadow:0 0 0 3px var(--ink),6px 8px 0 0 rgba(23,24,59,.18)}
+.tile .pic{position:relative;aspect-ratio:1/1;background:var(--sky);border-bottom:3px solid var(--ink);overflow:hidden}
+.tile .pic img{width:100%;height:100%;object-fit:cover}
+.tile .play{position:absolute;right:10px;bottom:10px;display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--yellow);box-shadow:0 0 0 3px var(--ink)}
+.tile .play svg{width:18px;height:18px;margin-left:3px}
+.tile .soon{position:absolute;inset:0;display:grid;place-items:center;font:900 15px/1 var(--f);letter-spacing:.08em;text-transform:uppercase}
+.tile .bd{padding:12px 12px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.tile .t{font:800 16px/1.15 var(--f);letter-spacing:-.01em}
+.tile .t .rn{color:var(--mute);font-weight:700}
+.tile .mv{font:900 clamp(22px,6.2vw,36px)/1 var(--f);letter-spacing:-.04em;display:flex;align-items:center;gap:6px}
+.tile .mv svg{width:.62em;height:.62em;flex:none}
+.tile .marks{display:flex;gap:6px;flex-wrap:wrap}
+.tile .mk{position:relative;display:inline-grid;place-items:center}
+.tile .mk .lg{font-size:28px}
+.tile .mk i{position:absolute;right:-5px;bottom:-5px;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;font:900 11px/1 var(--f);font-style:normal;color:var(--white);box-shadow:0 0 0 2px var(--white)}
+.tile .mk.ok i{background:var(--up)}.tile .mk.no i{background:var(--dn)}
+.tile .mk.no .lg{opacity:.42}
+.tile .wn{margin-top:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font:800 15px/1.15 var(--f);padding-top:8px;border-top:2px dashed #d8d6e6}
+.tile .wn small{font:800 12px/1 var(--f);letter-spacing:.08em;color:var(--mute);text-transform:uppercase;width:100%}
+.tile .wn .lg{font-size:22px}
+.tile .wn .nob{display:inline-flex;align-items:center;gap:6px}
+.tile .wn .nob::before{content:"";width:18px;height:18px;border-radius:50%;box-shadow:inset 0 0 0 3px var(--dn)}
+.tile.none{background:var(--pink)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:20px;font:700 15px/1.3 var(--f);color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend i{width:18px;height:18px;border-radius:50%;display:inline-grid;place-items:center;font:900 11px/1 var(--f);font-style:normal;color:var(--white)}
+.legend .ok{background:var(--up)}.legend .no{background:var(--dn)}
+
+/* page 6: standings */
+.stand{display:grid;gap:16px;margin-top:34px}
+.st{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px;align-items:center;padding:18px;border-radius:var(--r);background:var(--white);box-shadow:0 0 0 3px var(--ink)}
+.st.lead{background:var(--yellow);box-shadow:0 0 0 3px var(--ink),8px 10px 0 0 rgba(23,24,59,.14)}
+.st .rk{grid-row:1/3;display:grid;place-items:center;width:62px;height:62px;border-radius:50%;background:var(--ink);color:var(--white);font:900 28px/1 var(--f)}
+.st.lead .rk{width:74px;height:74px;font-size:34px}
+.st .hd{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.st .hd .lg{font-size:42px}
+.st .hd b{font:900 clamp(24px,4vw,34px)/1 var(--f);letter-spacing:-.02em}
+.st .hd .won{margin-left:auto;font:800 15px/1.2 var(--f);color:var(--ink2);white-space:nowrap}
+.st .hd .won b{font-size:20px;color:var(--ink)}
+.st .dots{display:flex;flex-wrap:wrap;gap:6px}
+.st .dots i{width:20px;height:20px;border-radius:50%;flex:none}
+.st .dots{gap:5px}
+.st .dots i.ok{background:var(--up);box-shadow:0 0 0 2px var(--ink)}
+.st .dots i.no{background:var(--white);box-shadow:inset 0 0 0 3px var(--dn),0 0 0 2px var(--ink)}
+.st .facts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px 22px;font:700 17px/1.35 var(--f);color:var(--ink2)}
+.st .facts b{font-weight:900;color:var(--ink)}
+@media(min-width:760px){.st{grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);padding:22px 26px}.st .rk{grid-row:1/3}.st .dots{grid-column:3;grid-row:1}.st .facts{grid-column:2/4}}
+.bar2beat{margin-top:22px;display:grid;gap:14px;padding:22px;border-radius:var(--r);background:var(--sky);box-shadow:0 0 0 3px var(--ink)}
+.bar2beat .q{font:900 clamp(24px,3.6vw,34px)/1.1 var(--f);letter-spacing:-.025em;max-width:26ch}
+.bar2beat .dots{display:flex;flex-wrap:wrap;gap:6px}
+.bar2beat .dots i{width:24px;height:24px;border-radius:50%}
+.bar2beat .dots i.ok{background:var(--ink)}.bar2beat .dots i.no{background:transparent;box-shadow:inset 0 0 0 3px var(--ink)}
+.bar2beat p{font:600 17px/1.45 var(--f);color:var(--ink2);max-width:62ch}
+.bar2beat p b{color:var(--ink);font-weight:900}
+.bar2beat .reveal-a{font:900 clamp(26px,4vw,36px)/1.05 var(--f);letter-spacing:-.03em}
+.bar2beat .q{color:var(--ink)}
+
+/* page 7: your turn */
+.turn{display:grid;gap:22px;margin-top:34px}
+@media(min-width:960px){.turn{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}}
+.ask2{padding:22px}
+.ask2 .rd{font:900 clamp(26px,4vw,38px)/1.05 var(--f);letter-spacing:-.03em}
+.ask2 .when{font:700 16px/1.35 var(--f);color:var(--ink2);margin-top:6px}
+.picks{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.pick{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:120px;border-radius:18px;box-shadow:0 0 0 3px var(--ink);background:var(--white);font:900 24px/1 var(--f);transition:transform .12s,background .12s}
+.pick svg{width:52px;height:46px}
+.pick[aria-pressed="true"].pu{background:var(--up);color:var(--white)}
+.pick[aria-pressed="true"].pd{background:var(--dn);color:var(--white)}
+.pick[aria-pressed="true"] svg path{fill:var(--white)}
+.pick:active{transform:scale(.97)}
+.size{margin-top:22px}
+.size label{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font:800 17px/1.2 var(--f)}
+.size output{font:900 34px/1 var(--f);letter-spacing:-.03em}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin-top:6px}
+input[type=range]::-webkit-slider-runnable-track{height:12px;border-radius:999px;background:var(--sky);box-shadow:inset 0 0 0 3px var(--ink)}
+input[type=range]::-moz-range-track{height:12px;border-radius:999px;background:var(--sky);box-shadow:inset 0 0 0 3px var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:36px;height:36px;margin-top:-12px;border-radius:50%;background:var(--yellow);box-shadow:0 0 0 3px var(--ink);cursor:grab}
+input[type=range]::-moz-range-thumb{width:36px;height:36px;border-radius:50%;background:var(--yellow);border:3px solid var(--ink);cursor:grab}
+.size .ends{display:flex;justify-content:space-between;font:700 13px/1 var(--f);color:var(--mute)}
+.lock{margin-top:22px;width:100%}
+.hint{margin-top:12px;font:600 14px/1.4 var(--f);color:var(--mute)}
+.sealed{padding:22px;display:flex;flex-direction:column;gap:16px}
+.sealed .k{font:800 13px/1 var(--f);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.sealed h3{font:900 clamp(24px,3.4vw,32px)/1.08 var(--f);letter-spacing:-.025em}
+.env{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.env>div{position:relative;display:flex;align-items:center;gap:10px;padding:10px;border-radius:16px;box-shadow:0 0 0 3px var(--ink);background:var(--white);min-height:64px}
+.env .lg{font-size:40px}
+.env b{font:900 17px/1.05 var(--f)}
+.env small{display:block;font:800 15px/1.2 var(--f);margin-top:3px}
+.env .shut{display:inline-block;background:var(--ink);color:var(--ink);border-radius:6px;padding:0 4px;user-select:none}
+.env>div.me{background:var(--yellow)}
+.env>div .ya{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--white);box-shadow:0 0 0 3px var(--ink);font:900 12px/1 var(--f);flex:none}
+.agree{font:800 clamp(20px,2.6vw,24px)/1.3 var(--f);letter-spacing:-.01em}
+.agree .u,.agree .d{font-weight:900}
+.acts{display:flex;flex-wrap:wrap;gap:12px}
+.acts .btn{font-size:16px;min-height:48px;padding:12px 18px}
+.back{padding:18px 20px;background:var(--white);border-radius:var(--r);box-shadow:0 0 0 3px var(--ink);margin-top:26px}
+.back b{font-weight:900}
+.later{margin-top:28px}
+.later h3{font:900 22px/1.1 var(--f)}
+.later ul{list-style:none;display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.later li{display:inline-flex;flex-direction:column;gap:2px;padding:10px 16px;border-radius:16px;background:var(--white);box-shadow:0 0 0 3px var(--ink)}
+.later li b{font:900 17px/1.1 var(--f)}
+.later li small{font:700 14px/1.2 var(--f);color:var(--ink2)}
+
+/* page 8: the big one */
+.bigone{--bg:var(--blue)}
+.flow{list-style:none;display:grid;gap:40px;margin-top:40px;max-width:980px}
+@media(min-width:820px){.flow{grid-template-columns:repeat(3,minmax(0,1fr));gap:30px}}
+.flow li{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px}
+.flow li+li::before{content:"";position:absolute;top:-34px;left:50%;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:20px solid var(--yellow);transform:translateX(-50%)}
+@media(min-width:820px){.flow li+li::before{top:58px;left:-22px;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:20px solid var(--yellow);border-right:0;transform:none}}
+.flow .ic{display:grid;place-items:center;width:136px;height:136px;border-radius:50%;background:var(--white);color:var(--ink);box-shadow:0 0 0 4px var(--ink);font:900 38px/1 var(--f);position:relative;overflow:hidden}
+.flow .jar{border-radius:26px 26px 40px 40px}
+.flow .jar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:69%;background:var(--yellow);animation:fill 3.4s ease-in-out infinite alternate}
+.flow .jar span{position:relative;z-index:1}
+@keyframes fill{from{height:40%}to{height:69%}}
+.flow .duo{width:auto;padding:0 18px;border-radius:999px;display:flex;gap:10px}
+.flow .duo .q{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:var(--yellow);box-shadow:0 0 0 3px var(--ink);font:900 38px/1 var(--f)}
+.flow .duo .lg{font-size:64px;border-radius:50%}
+.flow b{font:900 clamp(22px,2.8vw,28px)/1.1 var(--f);letter-spacing:-.02em;max-width:16ch}
+.flow small{font:700 16px/1.3 var(--f);color:#dfe4ff}
+.flow small .lg{font-size:24px;box-shadow:0 0 0 2px var(--white)}
+.wipe{margin-top:56px;display:grid;gap:10px}
+.wipe b{font:900 clamp(40px,8vw,80px)/.95 var(--f);letter-spacing:-.045em;color:var(--yellow)}
+.wipe span{font:700 clamp(20px,2.6vw,26px)/1.3 var(--f)}
+
+/* page 9: get */
+.end{display:grid;gap:22px;margin-top:34px}
+@media(min-width:900px){.end{grid-template-columns:1.1fr .9fr;align-items:start}}
+.nextcard{padding:24px;background:var(--mint)}
+.nextcard .k{font:800 13px/1 var(--f);letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.nextcard h3{font:900 clamp(30px,4.6vw,46px)/1 var(--f);letter-spacing:-.035em;margin-top:10px}
+.nextcard p{font:600 17px/1.45 var(--f);color:var(--ink2);margin-top:10px}
+.nextcard .acts{margin-top:16px}
+.getcard{padding:24px}
+.getcard h3{font:900 30px/1 var(--f);letter-spacing:-.03em}
+.getcard ol{list-style:none;display:grid;gap:14px;margin-top:16px}
+.getcard li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:start;font:600 16px/1.45 var(--f);color:var(--ink2)}
+.getcard li>span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--white);font:900 15px/1 var(--f)}
+.getcard li b{display:block;color:var(--ink);font:900 18px/1.2 var(--f)}
+.ca{margin-top:8px;font:600 14.5px/1.45 ui-monospace,Menlo,Consolas,monospace;border:3px dashed var(--mute);border-radius:12px;padding:10px 12px;color:var(--ink2);overflow-wrap:anywhere}
+.getcard .btn{margin-top:10px;width:100%}
+.risk{font:600 14px/1.55 var(--f);color:var(--mute);margin-top:22px;max-width:70ch}
+
+footer{border-top:var(--line);background:var(--yellow);text-align:center;padding:56px 20px 64px}
+.motto{font:900 clamp(34px,7vw,72px)/.95 var(--f);letter-spacing:-.045em;text-transform:uppercase;max-width:14ch;margin:0 auto;text-wrap:balance}
+.motto .e{color:var(--up)}.motto .z{color:var(--dn)}
+.badge{display:inline-block;margin-top:20px;font:900 34px/1 var(--f);background:var(--ink);padding:12px 18px;border-radius:14px;letter-spacing:-.02em}
+.badge .s{color:var(--gold)}.badge .e{color:#3fd88a}.badge .z{color:#ff6257}
+footer small{display:block;margin-top:16px;font:800 13px/1.6 var(--f);letter-spacing:.1em;color:var(--ink2)}
+
+/* film dialog */
+dialog{border:0;padding:0;background:transparent;max-width:min(92vw,620px);width:100%;margin:auto;color:var(--ink)}
+dialog::backdrop{background:rgba(23,24,59,.72)}
+.dl{background:var(--white);border-radius:var(--r);box-shadow:0 0 0 3px var(--ink);overflow:hidden}
+.dl .film{border-radius:0;box-shadow:none;border-bottom:3px solid var(--ink)}
+.dl .bar{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px}
+.dl .bar b{font:900 20px/1.1 var(--f);flex:1;min-width:0}
+.dl .bar small{display:block;font:700 14px/1.3 var(--f);color:var(--ink2);margin-top:3px}
+.dl .x{min-width:48px;min-height:48px;border-radius:50%;background:var(--ink);color:var(--white);display:grid;place-items:center;font:900 20px/1 var(--f)}
+
+@media(max-width:420px){.pg-in{padding:52px 18px 60px}.cast{gap:10px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="logo mark" href="#cover" aria-label="Earnings Zeason, back to the cover"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></a>
+  <span class="rt">A short book. About two minutes.</span>
+</header>
+
+<main>
+<!-- COVER -->
+<section class="pg cover" id="cover" aria-label="Cover">
+  <div class="pg-in">
+    <h1><span class="mark"><span class="e">E</span></span>arnings<br><span class="mark"><span class="z">Z</span></span>eason</h1>
+    <p class="sub" id="coverSub">Machines calling earnings. The market keeping score.</p>
+    <svg class="cover-art" viewBox="0 0 400 340" role="img" aria-label="Flat shapes: a sun, an up arrow, a down arrow and a question mark">
+      <circle cx="270" cy="120" r="96" fill="#fff"/><circle cx="270" cy="120" r="96" fill="none" stroke="#17183b" stroke-width="6"/>
+      <rect x="20" y="210" width="360" height="110" rx="18" fill="#2443d6" stroke="#17183b" stroke-width="6"/>
+      <path d="M70 200 L130 90 L190 200 Z" fill="#14945a" stroke="#17183b" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M210 220 L270 320 L330 220 Z" fill="#e5382b" stroke="#17183b" stroke-width="6" stroke-linejoin="round"/>
+      <circle cx="80" cy="60" r="28" fill="#ffd6e4" stroke="#17183b" stroke-width="6"/>
+      <text x="270" y="152" text-anchor="middle" font-family="Gabarito,system-ui,sans-serif" font-weight="900" font-size="96" fill="#17183b">?</text>
+      <rect x="44" y="244" width="120" height="16" rx="8" fill="#fff" opacity=".9"/><rect x="44" y="272" width="80" height="16" rx="8" fill="#fff" opacity=".6"/>
+    </svg>
+    <div class="row">
+      <a class="btn" href="#p1">Start reading <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v11M3 8.5 8 13.5 13 8.5" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <span class="chip" id="coverNext" hidden></span>
+    </div>
+  </div>
+  <span class="shp c" style="width:160px;height:160px;right:-60px;top:-50px;background:#fff0b3;opacity:.7"></span>
+</section>
+
+<!-- 1. WHAT WE DO -->
+<section class="pg" id="p1" style="--bg:var(--paper)" aria-labelledby="h1a">
+  <div class="pg-in">
+    <span class="pno">1</span>
+    <div class="scene">
+      <div>
+        <h2 class="big" id="h1a">Every earnings season, companies report.</h2>
+        <p class="lede">A few times a year, each public company tells the world how it's doing. <b>The next day, its stock jumps or drops.</b></p>
+      </div>
+      <svg viewBox="0 0 420 300" role="img" aria-label="A company building next to its report, with a chart going up">
+        <rect x="30" y="60" width="150" height="220" rx="10" fill="#d4e9ff" stroke="#17183b" stroke-width="6"/>
+        <g fill="#17183b"><rect x="58" y="90" width="30" height="30" rx="4"/><rect x="122" y="90" width="30" height="30" rx="4"/><rect x="58" y="142" width="30" height="30" rx="4"/><rect x="122" y="142" width="30" height="30" rx="4" fill="#ffd23f" stroke="#17183b" stroke-width="4"/><rect x="58" y="194" width="30" height="30" rx="4" fill="#ffd23f" stroke="#17183b" stroke-width="4"/><rect x="122" y="194" width="30" height="30" rx="4"/></g>
+        <rect x="88" y="236" width="34" height="44" rx="4" fill="#17183b"/>
+        <rect x="220" y="30" width="170" height="220" rx="14" fill="#fff" stroke="#17183b" stroke-width="6" transform="rotate(4 305 140)"/>
+        <g transform="rotate(4 305 140)"><rect x="244" y="56" width="90" height="12" rx="6" fill="#17183b"/><rect x="244" y="78" width="120" height="10" rx="5" fill="#b9bbd3"/>
+        <rect x="248" y="180" width="24" height="44" rx="3" fill="#e5382b" stroke="#17183b" stroke-width="4"/><rect x="284" y="160" width="24" height="64" rx="3" fill="#ffd23f" stroke="#17183b" stroke-width="4"/><rect x="320" y="126" width="24" height="98" rx="3" fill="#14945a" stroke="#17183b" stroke-width="4"/>
+        <path d="M250 150 L300 124 L350 100" stroke="#17183b" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M336 94 L354 98 L346 114" stroke="#17183b" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+      </svg>
+    </div>
+    <div class="beat" style="margin-top:64px">
+      <h2 class="big w" id="castHead">The day before, three AIs make a call.</h2>
+      <div class="cast" id="cast"></div>
+      <div class="newbie" id="newbie" hidden></div>
+    </div>
+  </div>
+  <span class="shp c" style="width:120px;height:120px;right:-50px;top:30px;background:var(--pink)"></span>
+</section>
+
+<!-- 2. HOW WE DO IT -->
+<section class="pg" id="p2" style="--bg:var(--sky)" aria-labelledby="h2a">
+  <div class="pg-in">
+    <span class="pno">2</span>
+    <h2 class="big" id="h2a">Same question for all of them.</h2>
+    <p class="lede">Every model gets the same short prompt, every round. <b>Up or down, and by how much?</b></p>
+    <div class="ask">
+      <div class="card bubble"><span class="k" id="prl">The shape of the prompt</span><div id="pr"></div></div>
+      <div class="ud">
+        <div class="upc"><svg viewBox="0 0 74 64" aria-hidden="true"><path d="M37 4 L70 60 L4 60 Z" fill="#14945a" stroke="#17183b" stroke-width="5" stroke-linejoin="round"/></svg><b class="u">Up</b><small id="udUp">by how much?</small></div>
+        <div class="dnc"><svg viewBox="0 0 74 64" aria-hidden="true"><path d="M4 4 L70 4 L37 60 Z" fill="#e5382b" stroke="#17183b" stroke-width="5" stroke-linejoin="round"/></svg><b class="d">Down</b><small id="udDn">by how much?</small></div>
+      </div>
+    </div>
+    <div class="nohint"><span class="chip">No list of factors</span><span class="chip">No hints</span><span class="chip">Any tool they like</span><span class="chip">Filed before the print</span></div>
+    <p class="lede" style="margin-top:22px">Tell a model what to look at and it only looks there. We'd rather it find its own way in.</p>
+  </div>
+  <span class="shp tri" style="right:-30px;top:40px;border-left:70px solid transparent;border-right:70px solid transparent;border-bottom:120px solid rgba(255,255,255,.7)"></span>
+</section>
+
+<!-- 3. THE MARKET ANSWERS -->
+<section class="pg" id="p3" style="--bg:var(--paper)" aria-labelledby="h3a">
+  <div class="pg-in">
+    <span class="pno">3</span>
+    <h2 class="big" id="h3a">Then the market answers.</h2>
+    <p class="lede" id="exLede">Here's one real round, start to finish.</p>
+    <div class="ex" id="ex"></div>
+  </div>
+</section>
+
+<!-- 4. AND AGAIN -->
+<section class="pg" id="p4" style="--bg:var(--pink)" aria-labelledby="h4a">
+  <div class="pg-in">
+    <span class="pno">4</span>
+    <h2 class="big" id="h4a">Then they do it again. Every print.</h2>
+    <div class="loopw">
+      <ol class="loop" aria-label="The loop, in four steps">
+        <li><span class="n">1</span><b>The call</b><span>Same question, any tool. Filed the day before the print.</span></li>
+        <li><span class="n">2</span><b>The grade</b><span>The market answers. Right way or wrong way, and by how many points.</span></li>
+        <li><span class="n">3</span><b>The self-review</b><span>Each model gets its own call back and works out what it got wrong. Nobody tells it.</span></li>
+        <li><span class="n">4</span><b>The next call</b><span>It carries its own notes into the next print.</span></li>
+      </ol>
+      <div>
+        <p class="boring">We know it's boring. <em>Consistency is everything.</em></p>
+        <p class="lede">Same question, same rules, every company, every time. Nothing gets edited. A mistake you can prove wrong is a mistake you can learn from.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. THE RECORD -->
+<section class="pg" id="p5" style="--bg:var(--paper)" aria-labelledby="h5a">
+  <div class="pg-in">
+    <span class="pno">5</span>
+    <h2 class="big" id="h5a">Here's every round so far.</h2>
+    <p class="lede" id="recLede">Wins and misses, all of them. Tap a round to watch its film.</p>
+    <div class="tiles" id="tiles"></div>
+    <div class="legend"><span><i class="ok">&#10003;</i>called the right way</span><span><i class="no">&#10007;</i>called the wrong way</span></div>
+  </div>
+</section>
+
+<!-- 6. STANDINGS -->
+<section class="pg" id="p6" style="--bg:var(--mint)" aria-labelledby="h6a">
+  <div class="pg-in">
+    <span class="pno">6</span>
+    <h2 class="big" id="h6a">Who's calling it best?</h2>
+    <p class="lede">Two questions, in order. <b>Did they pick the right way?</b> And when they did, <b>how close did they get?</b></p>
+    <div class="stand" id="stand"></div>
+    <div class="bar2beat" id="b2b"></div>
+  </div>
+</section>
+
+<!-- 7. YOUR TURN -->
+<section class="pg" id="p7" style="--bg:var(--butter)" aria-labelledby="h7a">
+  <div class="pg-in">
+    <span class="pno">7</span>
+    <h2 class="big" id="h7a">Your turn.</h2>
+    <p class="lede" id="turnLede">Make your own call before you see theirs. It stays on this device. Nobody else sees it.</p>
+    <div id="backCalls"></div>
+    <div class="turn" id="turn"></div>
+    <div class="later" id="later" hidden><h3>After that</h3><ul id="laterList"></ul></div>
+  </div>
+  <span class="shp c" style="width:200px;height:200px;right:-90px;bottom:-80px;background:var(--yellow)"></span>
+</section>
+
+<!-- 8. THE BIG ONE -->
+<section class="pg dark bigone" id="p8" aria-labelledby="h8a">
+  <div class="pg-in">
+    <span class="pno">8</span>
+    <h2 class="big w" id="h8a">And one day, the big one.</h2>
+    <p class="lede">Every $EZ trade fills a pool. <b>One AI will take the whole pool and bet it on NVIDIA's next earnings.</b></p>
+    <ol class="flow">
+      <li><span class="ic"><span class="mark"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span></span><b>Someone trades $EZ</b></li>
+      <li><span class="ic jar"><span>69%</span></span><b>69% of every fee goes into the pool</b><small id="poolTxt"></small></li>
+      <li><span class="ic duo"><span class="q">?</span><span id="nvt"></span></span><b>One AI bets it on NVIDIA</b><small>leveraged, on Hyperliquid <span id="hlt"></span></small></li>
+    </ol>
+    <div class="wipe"><b>Win or wipe.</b><span>Nothing is paid out to holders.</span></div>
+  </div>
+  <span class="shp c" style="width:260px;height:260px;right:-110px;top:-90px;background:rgba(255,255,255,.08)"></span>
+  <span class="shp c" style="width:110px;height:110px;right:-40px;bottom:-40px;background:var(--yellow)"></span>
+</section>
+
+<!-- 9. THE END -->
+<section class="pg" id="get" style="--bg:var(--paper)" aria-labelledby="h9a">
+  <div class="pg-in">
+    <span class="pno">9</span>
+    <h2 class="big w" id="h9a">That's the book so far.</h2>
+    <p class="lede">Every print adds a page. You've seen the rules, the record and the misses. <b>What happens next is up to the market.</b></p>
+    <div class="end">
+      <div class="card nextcard" id="nextCard"></div>
+      <div class="card getcard">
+        <h3>Get $EZ</h3>
+        <p class="small" style="margin-top:8px">If you'd like a seat for the next print, this is the only place it will be.</p>
+        <ol>
+          <li><span>1</span><div><b>Check the address</b><div class="ca" id="ca">Not posted yet. It appears here, and only here, at launch.</div></div></li>
+          <li><span>2</span><div><b>Open the link</b>Only through the link on this page.<a class="btn off" id="buyL" href="#get" target="_blank" rel="noopener">Opens at launch</a></div></li>
+          <li><span>3</span><div><b>Watch the next print</b><span id="nextTxt">Calls the day before, the grade after the market answers.</span></div></li>
+        </ol>
+      </div>
+    </div>
+    <p class="risk">$EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p>
+  </div>
+</section>
+</main>
+
+<footer><div class="motto">Nobody said it would be <span class="e">E</span><span class="z">Z</span></div><div class="badge mark"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></div><small>EARNINGS ZEASON, WITH A Z<br>CALLS FILED BEFORE THE PRINT · GRADED +24H · NEVER EDITED</small></footer>
+
+<dialog id="dlg" aria-labelledby="dlgT"><div class="dl"><div class="film" id="dlgF"></div><div class="bar"><div style="min-width:0;flex:1"><b id="dlgT"></b><small id="dlgS"></small></div><button type="button" class="x" id="dlgX" aria-label="Close the film">&#10005;</button></div></div></dialog>
+
+<script src="ez-data.js"></script>
+<script>
+(function(){
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return [].slice.call((r||document).querySelectorAll(s))}
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* same scoring as v9: right way first, then the smaller miss */
+function callOk(r,c){return ((/^DOWN/.test(c[1])?-1:1)>0)===(r.a>0)?1:0}
+function words(n){return ["no","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve"][n]||String(n)}
+function nm(m){var M=MODELS[m];return M.name.length<=3?M.name:M.app}
+function list(a){return a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function arrow(up){return up?'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2 L19 18 L1 18 Z" fill="currentColor"/></svg>':'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 2 L19 2 L10 18 Z" fill="currentColor"/></svg>'}
+function said(dn,mag){return (dn?"down ":"up ")+mag}
+/* a film tag: mp4 first, then webm, always with its poster */
+function vid(r,attrs){return '<video '+attrs+' poster="'+MEDIA+r.poster+'.jpg"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"><source src="'+MEDIA+r.film+'.webm" type="video/webm"></video>'}
+/* parse one graded round's calls */
+function calls(r){return r.calls.map(function(c){var dn=/^DOWN/.test(c[1]),mag=c[1].replace(/^\w+\s*/,"").replace(/%$/,""),v=(dn?-1:1)*parseFloat(mag);
+  return {m:c[0],dn:dn,mag:mag,v:v,ok:!!callOk(r,c),off:Math.abs(v-r.a),win:!!(r.win&&r.win.split(" & ").indexOf(c[0])>-1)}})}
+var CAST=MODEL_KEYS.filter(function(m){return MODELS[m]&&ROUNDS.some(function(r){return callOf(r,m)})});
+var REEL=ROUNDS.filter(function(r){return r.film});
+var NEXTP=PENDING[0]||null,NEXTU=UPCOMING[0]||null;
+function rl(u){return "Round "+u.n+" · "+u.co}
+
+/* ---------- cover ---------- */
+$("#coverSub").textContent=(CAST.length?words(CAST.length).replace(/^./,function(c){return c.toUpperCase()})+" AIs call every earnings print. ":"")+"The market keeps score. "+(ROUNDS.length?words(ROUNDS.length).replace(/^./,function(c){return c.toUpperCase()})+" rounds so far.":"");
+if(NEXTP){$("#coverNext").textContent="Next answer: "+NEXTP.co+", "+fmtDate(NEXTP.resolves);$("#coverNext").hidden=false}
+else if(NEXTU){$("#coverNext").textContent="Next up: "+NEXTU.co+", calls "+fmtDate(NEXTU.called);$("#coverNext").hidden=false}
+
+/* ---------- page 1: the cast ---------- */
+$("#castHead").textContent="The day before, "+words(CAST.length)+" AIs make a call.";
+$("#cast").style.setProperty("--n",Math.min(CAST.length,4));
+$("#cast").innerHTML=CAST.map(function(m){return '<div class="who" style="--c:'+MODELS[m].c+'">'+logo(m)+'<span class="body" aria-hidden="true"></span><b>'+nm(m)+'</b></div>'}).join("");
+(function(){var fresh=[];PENDING.concat(UPCOMING).forEach(function(u){(u.calls||[]).forEach(function(c){if(CAST.indexOf(c.m)<0&&MODELS[c.m]&&!fresh.some(function(f){return f.m===c.m}))fresh.push({m:c.m,u:u})})});
+  if(fresh.length){$("#newbie").innerHTML=fresh.map(function(f){return logo(f.m)+'<span><b>'+nm(f.m)+'</b> makes its first call in '+rl(f.u)+'.</span>'}).join("");$("#newbie").hidden=false}})();
+
+/* ---------- page 2: the prompt shape ---------- */
+$("#pr").innerHTML=PROMPT.lines.join("<br>");$("#prl").textContent=PROMPT.verbatim?"The prompt, word for word":"The shape of the prompt";
+
+/* ---------- number line (shared by page 3 and page 7) ---------- */
+function numberLine(pts,actual,label){
+  var vals=pts.map(function(p){return p.v}).concat(actual==null?[]:[actual]).concat([0]);
+  var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals),span=Math.max(hi-lo,6),pad=span*.14;lo-=pad;hi+=pad;
+  var x=function(v){return (v-lo)/(hi-lo)*100};
+  var s=pts.slice().sort(function(a,b){return a.v-b.v}),rows=[];
+  s.forEach(function(p){var r=0;while(rows[r]!=null&&x(p.v)-rows[r]<11)r++;rows[r]=x(p.v);p.row=r});
+  var R=Math.max(1,rows.length),z=x(0);
+  var o='<div class="nl" role="img" aria-label="'+esc(label)+'" style="--rows:'+R+'">'+
+    '<div class="zone zdn" style="width:'+z+'%"><span>DOWN</span></div><div class="zone zup" style="width:'+(100-z)+'%"><span>UP</span></div>'+
+    '<div class="axis"></div><div class="zero" style="left:'+z+'%"></div>';
+  s.forEach(function(p){o+='<span class="m'+(p.you?' you':'')+'" style="left:'+x(p.v)+'%;--row:'+(R-1-p.row)+'">'+(p.you?'<span class="dot">YOU</span>':logo(p.m))+'</span>'});
+  if(actual!=null){var ax=x(actual),edge=ax<12?' edgeL':ax>88?' edgeR':'';
+    o+='<span class="ans'+edge+'" style="left:'+ax+'%"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M18 2 L22.5 13 L34 13.5 L25 21 L28 33 L18 26.5 L8 33 L11 21 L2 13.5 L13.5 13 Z" fill="#ffd23f" stroke="#17183b" stroke-width="3" stroke-linejoin="round"/></svg><b>Market '+fmtOut(actual)+'</b></span>'}
+  return o+'</div>';
+}
+
+/* ---------- page 3: the worked example (latest graded round with a film) ---------- */
+(function(){
+  var r=REEL[REEL.length-1]||ROUNDS[ROUNDS.length-1];if(!r){$("#p3 .ex").innerHTML='<p class="lede">The first round is on its way.</p>';return}
+  var cs=calls(r);cs.sort(function(a,b){return (b.ok-a.ok)||(a.off-b.off)});
+  var up=r.a>0;
+  $("#exLede").innerHTML="Here's one real round, start to finish: <b>"+rl(r)+"</b>.";
+  var film=r.film?'<div class="film">'+vid(r,'id="exV" playsinline muted loop controls preload="metadata"')+'<span class="tag">'+rl(r)+'</span></div>':'';
+  var rightNames=cs.filter(function(c){return c.ok}).map(function(c){return nm(c.m)});
+  $("#ex").innerHTML=film+'<div>'+
+    '<h3>'+rl(r)+'</h3><p class="dts">Called '+fmtDate(r.called)+'. Graded '+fmtDate(r.resolves)+'.</p>'+
+    '<div class="answer"><span class="big-n '+(up?'u':'d')+'">'+r.out+'</span><small>What '+r.co+' actually did.<br>'+(rightNames.length?list(rightNames)+' called the right way.':'Nobody called the right way.')+'</small></div>'+
+    numberLine(cs.map(function(c){return {m:c.m,v:c.v}}),r.a,rl(r)+": each model's call and the real move, "+r.out)+
+    '<div class="calls">'+cs.map(function(c){return '<div class="call '+(c.ok?'ok':'no')+(c.win?' win':'')+'">'+logo(c.m)+'<div><b>'+nm(c.m)+'</b><small>said <span class="'+(c.dn?'d':'u')+'">'+said(c.dn,c.mag)+'%</span></small></div>'+
+      '<span class="res">'+(c.win?'Closest. Wins.<br>':'')+(c.ok?'Right way<br>'+c.off.toFixed(2)+' off':'Wrong way')+'</span></div>'}).join("")+'</div>'+
+    '<p class="rule"><b>How a round is won:</b> call the direction right, then land closest to the real move. A wrong-way call can’t win, however close the number.</p>'+
+  '</div>';
+})();
+
+/* ---------- page 5: every round ---------- */
+$("#recLede").innerHTML="All "+words(ROUNDS.length)+" of them. Wins and misses side by side. Tap a round to watch its film.";
+$("#tiles").innerHTML=ROUNDS.map(function(r){
+  var cs=calls(r),up=r.a>0,has=!!r.film,tag=has?'button type="button" data-n="'+r.n+'" aria-label="Play the film for '+rl(r)+'"':'div';
+  var pic=has?'<span class="pic"><img src="'+MEDIA+r.poster+'.jpg" alt="" decoding="async" width="540" height="540"><span class="play" aria-hidden="true"><svg viewBox="0 0 18 18"><path d="M2 1 L17 9 L2 17 Z" fill="#17183b"/></svg></span></span>'
+    :'<span class="pic" style="background:'+(up?'var(--upl)':'var(--dnl)')+'"><span class="soon">Film soon</span></span>';
+  return '<'+tag+' class="tile'+(r.win?'':' none')+'">'+pic+'<span class="bd">'+
+    '<span class="t"><span class="rn">Round '+r.n+' ·</span> '+r.co+'</span>'+
+    '<span class="mv '+(up?'u':'d')+'">'+arrow(up)+r.out+'</span>'+
+    '<span class="marks">'+cs.map(function(c){return '<span class="mk '+(c.ok?'ok':'no')+'" title="'+nm(c.m)+' said '+said(c.dn,c.mag)+'%">'+logo(c.m)+'<i aria-hidden="true">'+(c.ok?'&#10003;':'&#10007;')+'</i></span>'}).join("")+'</span>'+
+    '<span class="wn"><small>Winner</small>'+(r.win?winLogos(r)+r.win.split(" & ").map(nm).join(" &amp; "):'<span class="nob">Nobody</span>')+'</span>'+
+  '</span></'+(has?'button':'div')+'>';
+}).join("");
+
+/* film dialog */
+var dlg=$("#dlg");
+function openFilm(n){var r=ROUNDS.filter(function(x){return x.n===n})[0];if(!r||!r.film)return;
+  $("#dlgF").innerHTML=vid(r,'playsinline controls loop'+(reduce?'':' autoplay muted')+' preload="auto"');
+  $("#dlgT").textContent=rl(r);$("#dlgS").textContent="Market "+r.out+". "+(r.win?"Winner: "+r.win.split(" & ").map(nm).join(" & ")+".":"No winner.");
+  if(dlg.showModal)dlg.showModal();else dlg.setAttribute("open","");
+  var v=$("#dlgF video");if(v&&!reduce){var p=v.play();if(p&&p.catch)p.catch(function(){})}}
+function closeFilm(){$("#dlgF").innerHTML="";if(dlg.close)dlg.close();else dlg.removeAttribute("open")}
+$$("#tiles button[data-n]").forEach(function(b){b.addEventListener("click",function(){openFilm(+b.dataset.n)})});
+$("#dlgX").addEventListener("click",closeFilm);
+dlg.addEventListener("click",function(e){if(e.target===dlg)closeFilm()});
+dlg.addEventListener("close",function(){$("#dlgF").innerHTML=""});
+
+/* the worked-example film plays when it's on screen */
+(function(){var v=$("#exV");if(!v||reduce||!("IntersectionObserver" in window))return;
+  new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var p=v.play();if(p&&p.catch)p.catch(function(){})}else v.pause()})},{threshold:.4}).observe(v)})();
+
+/* ---------- page 6: standings (v9 rule: right direction first, then the smaller average miss) ---------- */
+(function(){
+  var won={};LADDER.forEach(function(l){won[l.m]=l.won});
+  var S=CAST.map(function(m){var right=0,tot=0,sum=0,dots=[];ROUNDS.forEach(function(r){var c=callOf(r,m);if(!c)return;var p=calls(r).filter(function(x){return x.m===m})[0];tot++;sum+=p.off;if(p.ok)right++;dots.push(p.ok)});
+    return {m:m,right:right,tot:tot,pct:tot?right/tot:0,avg:tot?sum/tot:0,won:won[m]||0,dots:dots}})
+    .sort(function(a,b){return (b.pct-a.pct)||(a.avg-b.avg)});
+  $("#stand").innerHTML=S.map(function(s,k){return '<div class="st'+(k?'':' lead')+'"><span class="rk" aria-label="Rank '+(k+1)+'">'+(k+1)+'</span>'+
+    '<div class="hd">'+logo(s.m)+'<b>'+nm(s.m)+'</b></div>'+
+    '<div class="dots" role="img" aria-label="'+s.right+' of '+s.tot+' calls the right way">'+s.dots.map(function(o){return '<i class="'+(o?'ok':'no')+'"></i>'}).join("")+'</div>'+
+    '<div class="facts"><span><b>'+s.right+' of '+s.tot+'</b> the right way</span><span>Missed by <b>'+s.avg.toFixed(2)+'</b> points on average</span><span><b>'+s.won+'</b> '+(s.won===1?'round':'rounds')+' won</span></div></div>'}).join("");
+  var ups=ROUNDS.map(function(r){return r.a>0}),upN=ups.filter(Boolean).length,best=Math.max.apply(null,S.map(function(s){return s.right}).concat([0]));
+  var beaters=S.filter(function(s){return s.right>upN}).map(function(s){return nm(s.m)});
+  $("#b2b").innerHTML='<div class="q">Here’s a question worth sitting with. What if you just said “up” every single time?</div>'+
+    '<div class="dots" role="img" aria-label="Saying up every time: '+upN+' of '+ROUNDS.length+'">'+ups.map(function(o){return '<i class="'+(o?'ok':'no')+'"></i>'}).join("")+'</div>'+
+    '<div class="reveal-a">'+upN+' of '+ROUNDS.length+'. '+(beaters.length?list(beaters)+(beaters.length>1?' beat':' beats')+' that so far.':'No model has beaten that yet.')+'</div>'+
+    '<p>A coin flip gets 50% over time. '+words(ROUNDS.length).replace(/^./,function(c){return c.toUpperCase()})+' calls each is not a lot, so expect these to move. <b>What would settle it is dozens of rounds, not '+words(ROUNDS.length)+'.</b> That’s why we keep going.</p>';
+})();
+
+/* ---------- page 7: your turn ---------- */
+var store={get:function(k){try{var s=localStorage.getItem(k);return s?JSON.parse(s):null}catch(e){return null}},
+  set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del:function(k){try{localStorage.removeItem(k)}catch(e){}}};
+function key(u){return "ez-v11-call-"+u.n+"-"+u.ticker}
+function ymd(d){var m=String(d).match(/(\d+)\/(\d+)\/(\d+)/);if(!m)return null;var y=+m[3];if(y<100)y+=2000;return y+("0"+m[1]).slice(-2)+("0"+m[2]).slice(-2)}
+function ics(u,what,date){var dt=ymd(date);if(!dt)return "";var now=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
+  var t=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Earnings Zeason//Picture Book//EN","BEGIN:VEVENT","UID:ez-r"+u.n+"-"+what.replace(/\W/g,"")+"@earnings-zeason","DTSTAMP:"+now,"DTSTART;VALUE=DATE:"+dt,"SUMMARY:EZ "+rl(u)+": "+what,"END:VEVENT","END:VCALENDAR"].join("\r\n");
+  return '<a class="btn lt" download="ez-round-'+u.n+'.ics" href="data:text/calendar;charset=utf-8,'+encodeURIComponent(t)+'">Add '+fmtDate(date)+' to my calendar</a>'}
+
+/* calls the visitor made on rounds that are now graded */
+(function(){var o=ROUNDS.map(function(r){var s=store.get(key(r));if(!s)return "";var v=(s.dir==="DOWN"?-1:1)*s.mag,ok=(v>0)===(r.a>0),off=Math.abs(v-r.a);
+  var beat=calls(r).filter(function(c){return c.ok&&c.off>off+1e-9}).map(function(c){return nm(c.m)});
+  return '<p class="back">Your call on <b>'+rl(r)+'</b>: '+said(s.dir==="DOWN",s.mag)+'%. The market: <b class="'+(r.a>0?'u':'d')+'">'+r.out+'</b>. '+(ok?'Right way, '+off.toFixed(2)+' points off.'+(beat.length?' Closer than '+list(beat)+'.':''):'Wrong way this time.')+'</p>'}).join("");
+  $("#backCalls").innerHTML=o})();
+
+(function(){
+  var T=NEXTP||NEXTU,box=$("#turn");
+  if(!T){$("#turnLede").textContent="No round is on the calendar right now. The next one shows up here as soon as it's set.";return}
+  var hasCalls=!!(T.calls&&T.calls.length),K=key(T),mine=store.get(K),dir=null,mag=3;
+  var others=UPCOMING.filter(function(u){return u!==T});
+  if(others.length){$("#laterList").innerHTML=others.map(function(u){return '<li><b>'+rl(u)+'</b><small>Calls '+fmtDate(u.called)+'. Market answers '+fmtDate(u.resolves)+'.</small></li>'}).join("");$("#later").hidden=false}
+  var whoList=hasCalls?T.calls.map(function(c){return c.m}):CAST;
+  function sealedCards(){return whoList.map(function(m){return '<div>'+logo(m)+'<div><b>'+nm(m)+'</b><small>'+(hasCalls?'<span class="shut" aria-hidden="true">up 0.0%</span><span style="position:absolute;left:-9999px">sealed</span>':'files '+fmtDate(T.called))+'</small></div></div>'}).join("")}
+  function form(){
+    box.innerHTML='<div class="card ask2"><p class="rd">'+rl(T)+'</p><p class="when">'+(hasCalls?'The machines have filed. The market answers '+fmtDate(T.resolves)+'.':'The machines file on '+fmtDate(T.called)+'. The market answers '+fmtDate(T.resolves)+'.')+'</p>'+
+      '<div class="picks" role="group" aria-label="Which way?">'+
+        '<button type="button" class="pick pu" data-d="UP" aria-pressed="false"><svg viewBox="0 0 52 46" aria-hidden="true"><path d="M26 3 L49 43 L3 43 Z" fill="#14945a"/></svg>Up</button>'+
+        '<button type="button" class="pick pd" data-d="DOWN" aria-pressed="false"><svg viewBox="0 0 52 46" aria-hidden="true"><path d="M3 3 L49 3 L26 43 Z" fill="#e5382b"/></svg>Down</button></div>'+
+      '<div class="size"><label for="mag"><span>By how much?</span><output id="magO" for="mag">'+mag+'%</output></label><input id="mag" type="range" min="0.5" max="15" step="0.5" value="'+mag+'"><div class="ends"><span>a little</span><span>a lot</span></div></div>'+
+      '<button type="button" class="btn lock" id="lockB" disabled>Pick up or down first</button>'+
+      '<p class="hint">Saved only in this browser. Change it any time.</p></div>'+
+      '<div class="card sealed"><span class="k">'+(hasCalls?'Their calls are in, face down':'Still to come')+'</span><h3>'+(hasCalls?'Make yours, then we turn them over.':'Call it before they do.')+'</h3><div class="env">'+sealedCards()+'</div></div>';
+    var lock=$("#lockB"),rg=$("#mag");
+    function paint(){var o=$("#magO");o.textContent=(dir?(dir==="UP"?"up ":"down "):"")+mag+"%";o.className=dir?(dir==="UP"?"u":"d"):"";
+      lock.disabled=!dir;lock.textContent=dir?"Lock in: "+(dir==="UP"?"up ":"down ")+mag+"%":"Pick up or down first"}
+    $$(".pick",box).forEach(function(b){b.addEventListener("click",function(){dir=b.dataset.d;$$(".pick",box).forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});paint()})});
+    rg.addEventListener("input",function(){mag=parseFloat(rg.value);paint()});
+    lock.addEventListener("click",function(){if(!dir)return;mine={dir:dir,mag:mag,at:new Date().toISOString()};store.set(K,mine);show(true)});
+    paint();
+  }
+  function show(fresh){
+    var you={you:true,v:(mine.dir==="DOWN"?-1:1)*mine.mag},dn=mine.dir==="DOWN";
+    var out='<div class="card sealed" style="grid-column:1/-1"><span class="k">'+rl(T)+'</span>';
+    if(hasCalls){
+      var same=T.calls.filter(function(c){return (c.v<0)===dn}).map(function(c){return nm(c.m)}),diff=T.calls.filter(function(c){return (c.v<0)!==dn}).map(function(c){return nm(c.m)});
+      out+='<h3>Here’s what they called.</h3><div class="env"><div class="me"><span class="ya">YOU</span><div><b>You</b><small class="'+(dn?'d':'u')+'">'+said(dn,mine.mag)+'%</small></div></div>'+
+        T.calls.map(function(c){var d=c.v<0;return '<div>'+logo(c.m)+'<div><b>'+nm(c.m)+'</b><small class="'+(d?'d':'u')+'">'+said(d,c.mag)+'%</small></div></div>'}).join("")+'</div>'+
+        numberLine([you].concat(T.calls.map(function(c){return {m:c.m,v:c.v}})),null,"Your call and the machines' calls for "+rl(T))+
+        '<p class="agree">'+(same.length?'You agree with '+list(same)+' on the direction.':'You went against all of them.')+(diff.length&&same.length?' '+list(diff)+(diff.length>1?' went':' went')+' the other way.':'')+'</p>'+
+        '<p class="lede" style="margin-top:0">The market answers <b>'+fmtDate(T.resolves)+'</b>. Then we’ll all know who was closest. Who would you back?</p>';
+    }else{
+      out+='<h3>You called it first.</h3><div class="env"><div class="me"><span class="ya">YOU</span><div><b>You</b><small class="'+(dn?'d':'u')+'">'+said(dn,mine.mag)+'%</small></div></div>'+sealedCards()+'</div>'+
+        '<p class="lede" style="margin-top:0">The machines file on <b>'+fmtDate(T.called)+'</b>. The market answers <b>'+fmtDate(T.resolves)+'</b>. Come back and see who was closer.</p>';
+    }
+    out+='<div class="acts">'+ics(T,"the market answers",T.resolves)+'<button type="button" class="btn lt" id="redo">Change my call</button></div></div>';
+    box.innerHTML=out;
+    $("#redo").addEventListener("click",function(){store.del(K);dir=mine.dir;mag=mine.mag;mine=null;form();var p=$(".pick[data-d='"+dir+"']",box);if(p)p.click();$("#mag").value=mag;$("#mag").dispatchEvent(new Event("input"));var h=$("#h7a");if(h)h.scrollIntoView({block:"start",behavior:reduce?"auto":"smooth"})});
+    if(fresh){var h3=$("#turn h3");if(h3){h3.setAttribute("tabindex","-1");h3.focus({preventScroll:true})}}
+  }
+  if(mine&&mine.dir&&mine.mag)show(false);else{mine=null;form()}
+})();
+
+/* ---------- page 8: the big one ---------- */
+$("#nvt").innerHTML=nvLogo();$("#hlt").innerHTML=hlLogo();
+if(CONFIG.pool)$("#poolTxt").textContent=CONFIG.pool+" in the pool so far";
+
+/* ---------- page 9: the end ---------- */
+(function(){var c=$("#nextCard");
+  if(NEXTP){c.innerHTML='<span class="k">Next answer</span><h3>'+rl(NEXTP)+'</h3><p>The calls are in. The market answers '+fmtDate(NEXTP.resolves)+'. The grade goes up here, win or miss.</p><div class="acts">'+ics(NEXTP,"the market answers",NEXTP.resolves)+'<a class="btn lt" href="#p7">See the calls</a></div>'}
+  else if(NEXTU){c.innerHTML='<span class="k">Next up</span><h3>'+rl(NEXTU)+'</h3><p>The machines file on '+fmtDate(NEXTU.called)+'. The market answers '+fmtDate(NEXTU.resolves)+'.</p><div class="acts">'+ics(NEXTU,"the calls go in",NEXTU.called)+'</div>'}
+  else c.innerHTML='<span class="k">Next up</span><h3>The next print</h3><p>The next round shows up here as soon as it’s on the calendar.</p>';
+  var nx=NEXTP||NEXTU;if(nx)$("#nextTxt").textContent=NEXTP?"Next answer: "+nx.co+", "+fmtDate(nx.resolves)+". Calls are already in.":"Next up: "+nx.co+", calls "+fmtDate(nx.called)+".";
+  if(CONFIG.ca)$("#ca").textContent=(CONFIG.chain?CONFIG.chain+" · ":"")+CONFIG.ca;
+  if(CONFIG.buyUrl){var b=$("#buyL");b.href=CONFIG.buyUrl;b.classList.remove("off");b.textContent="Open the link"}
+})();
+})();
+</script>
+</body>
+</html>
