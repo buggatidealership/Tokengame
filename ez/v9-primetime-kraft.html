@@ -147,12 +147,14 @@ a{color:inherit}
 .strip-h b{font:800 18px/1 var(--fd);letter-spacing:-.02em}
 .strip-h span{font:700 11.5px/1 var(--fm);color:var(--ink2)}
 .strip{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:6px;padding:6px 6px 16px;scrollbar-width:thin}
-.mini{flex:0 0 150px;scroll-snap-align:start;background:var(--paper);border-radius:12px;box-shadow:0 0 0 2px var(--ink),4px 5px 0 2px rgba(35,29,22,.14);padding:10px 11px;text-align:left;display:flex;flex-direction:column;gap:7px;text-decoration:none;color:inherit;transition:transform .2s}
+.mini{flex:0 0 214px;scroll-snap-align:start;background:var(--paper);border-radius:12px;box-shadow:0 0 0 2px var(--ink),4px 5px 0 2px rgba(35,29,22,.14);padding:10px 11px;text-align:left;display:flex;flex-direction:column;gap:7px;text-decoration:none;color:inherit;transition:transform .2s}
 .mini.nofilm{opacity:.75;cursor:default}.mini.nofilm:hover{transform:none}.mini .soon{font:700 10px/1 var(--fb,system-ui);letter-spacing:.08em;text-transform:uppercase;opacity:.7}
 .mini:hover{transform:translateY(-2px) rotate(-1deg)}
 .mini.on{background:var(--foil3)}
-.mini .t{font:800 15px/1.05 var(--fd);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .t{font:800 15px/1.1 var(--fd);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .wv{white-space:nowrap}.mini .wv>.lg+.lg{margin-left:-10px}
 .mini .w{font:700 10px/1 var(--fm);letter-spacing:.08em;color:var(--ink2)}
+.mini .wrow{display:flex;align-items:center;gap:8px;margin-top:auto}.mini .wrow .wv{min-width:0}
 .mini .wv{display:flex;align-items:center;gap:6px;font:800 14.5px/1.1 var(--fd)}
 .mini .wv>.lg{font-size:22px}
 .mini.pend{background:repeating-linear-gradient(135deg,var(--paper) 0 10px,#fbf1dc 10px 20px)}
@@ -447,17 +449,21 @@ var t='<span><b>LEADERBOARD</b> '+LADDER.map(function(l){return l.m+' '+l.won}).
 $("#tt").innerHTML=t+t;
 /* the screen */
 var i=0,v=$("#tvV"),soundOn=false,pan=null;
-// keep "R4 · Company" on one line: shrink from the CSS size until it fits the panel
-function fitTitle(){var h=document.querySelector("#gfx .g1.slim h3");if(!h)return;h.style.fontSize="";var fs=parseFloat(getComputedStyle(h).fontSize);while(h.scrollWidth>h.clientWidth+1&&fs>16){fs-=1;h.style.fontSize=fs+"px"}}
+// keep "Round 4 · Company" on one line: shrink from the CSS size until it fits the panel
+function title(r){return '<span class="rd">Round '+r.n+' ·</span> '+r.co}
+function fitTitle(){var h=document.querySelector("#gfx .g1.slim h3");if(!h)return;var keep=h.innerHTML;h.style.fontSize="";var fs=parseFloat(getComputedStyle(h).fontSize);
+  // one size for every round (the size the longest name needs), so the title doesn't jump between rounds
+  REEL.forEach(function(r){h.innerHTML=title(r);h.style.fontSize=fs+"px";while(h.scrollWidth>h.clientWidth+1&&fs>16){fs-=1;h.style.fontSize=fs+"px"}});
+  h.innerHTML=keep;h.style.fontSize=fs+"px"}
 addEventListener("resize",fitTitle);
 function gfx(r){
-  return '<div class="g1 slim"><h3><span class="rd">R'+r.n+' ·</span> '+r.co+'</h3></div>'+
+  return '<div class="g1 slim"><h3>'+title(r)+'</h3></div>'+
     '<div class="wn"><small>WINNER</small>'+(r.win?'<span class="wr"><span class="wm">'+r.win.replace(" & "," &amp; ")+'</span>'+winLogos(r)+'</span>':'<span class="wr nob"><span class="wm">Nobody</span><em>all three went the wrong way</em></span>')+'</div>';
 }
 function gfxBack(r){
   var cs=r.calls.map(function(c){var dn=/^DOWN/.test(c[1]);return {m:c[0],dn:dn,mag:c[1].replace(/^\w+\s*/,""),ok:callOk(r,c),off:parseFloat(c[2])}});
   cs.sort(function(a,b){return (b.ok-a.ok)||(a.off-b.off)});var n=0;
-  return '<div class="g1"><span class="k">R'+r.n+' · the stats</span><h3>'+r.co+'</h3><div class="dts"><span>Called <b>'+fmtDate(r.called)+'</b></span><span>Graded <b>'+fmtDate(r.resolves)+'</b></span></div></div>'+
+  return '<div class="g1"><span class="k">Round '+r.n+' · the stats</span><h3>'+r.co+'</h3><div class="dts"><span>Called <b>'+fmtDate(r.called)+'</b></span><span>Graded <b>'+fmtDate(r.resolves)+'</b></span></div></div>'+
     '<div class="bh"><span>#</span><span>Model</span><span>Predicted</span><span>Missed by</span></div><div class="cl">'+
     cs.map(function(c){var rk=c.ok?'#'+(1+cs.filter(function(d){return d.ok&&d.off<c.off-1e-9}).length):'–';
       return '<div class="brow '+(c.ok?'ok':'no')+'"><span class="rk">'+rk+'</span><span class="who">'+logo(c.m)+c.m+'</span><span class="pd '+(c.dn?'d':'u')+'">'+(c.dn?'−':'+')+c.mag+'</span><span class="of">'+(c.ok?'✓ '+c.off.toFixed(2)+'%':'✗ wrong<span class="lw"> way</span>')+'</span></div>'}).join("")+'</div>'+
@@ -476,8 +482,8 @@ function play(k){
   $$(".mini[data-k]").forEach(function(b){b.classList.toggle("on",+b.dataset.k===i)});
 }
 v.addEventListener("ended",function(){play(i+1)});
-$("#strip").innerHTML=ROUNDS.map(function(r){var k=REEL.indexOf(r);return (k<0?'<div class="mini nofilm">':'<button class="mini" type="button" data-k="'+k+'">')+'<span class="t">R'+r.n+' · '+r.co+'</span><span class="w">WINNER</span><span class="wv">'+(r.win?winLogos(r)+r.win.replace(" & "," &amp; "):'Nobody')+'</span>'+(k<0?'<span class="soon">Film soon</span></div>':'</button>')}).join("")+
-  PENDING.map(function(u){return '<a class="mini pend" href="#guide"><span class="t">R'+u.n+' · '+u.co+'</span><span class="w">RESULT</span><span class="wv">Calls are in · '+fmtDate(u.resolves)+'</span></a>'}).join("");
+$("#strip").innerHTML=ROUNDS.map(function(r){var k=REEL.indexOf(r);return (k<0?'<div class="mini nofilm">':'<button class="mini" type="button" data-k="'+k+'">')+'<span class="t">Round '+r.n+' · '+r.co+'</span><span class="wrow"><span class="w">WINNER</span><span class="wv">'+(r.win?winLogos(r)+r.win.replace(" & "," &amp; "):'Nobody')+'</span></span>'+(k<0?'<span class="soon">Film soon</span></div>':'</button>')}).join("")+
+  PENDING.map(function(u){return '<a class="mini pend" href="#guide"><span class="t">Round '+u.n+' · '+u.co+'</span><span class="wrow"><span class="w">RESULT</span><span class="wv">Due '+fmtDate(u.resolves)+'</span></span></a>'}).join("");
 function toCard(){var bar=$(".top"),h=bar?bar.getBoundingClientRect().bottom:0,y=$(".tv").getBoundingClientRect().top+window.pageYOffset-Math.max(0,h)-12;window.scrollTo({top:Math.max(0,y),behavior:reduce?"auto":"smooth"})}
 $$(".mini[data-k]").forEach(function(b){b.addEventListener("click",function(){play(+b.dataset.k);toCard()})});
 $("#nxt").addEventListener("click",function(){play(i+1)});
