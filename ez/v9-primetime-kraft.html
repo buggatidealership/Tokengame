@@ -68,7 +68,6 @@ a{color:inherit}
 @media(max-width:700px){.tv{grid-template-columns:1fr}}
 .film{position:relative;background:#000;overflow:hidden;aspect-ratio:1/1;max-width:100%;border-right:3px solid var(--ink)}
 .film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.film .onair{position:absolute;top:12px;right:12px;z-index:2;font:700 11px/1 var(--fm);letter-spacing:.06em;background:var(--paper);color:var(--ink);padding:6px 9px;border-radius:999px;box-shadow:0 0 0 2px var(--ink)}
 .gfx{background:var(--paper);padding:20px 22px;display:flex;flex-direction:column;min-width:0;overflow:hidden}
 .gfx .face{display:flex;flex-direction:column;gap:14px;flex:1;min-height:0}
 .gfx .face.bk{display:none}
@@ -112,7 +111,9 @@ a{color:inherit}
 .gfx .oc b.u{color:var(--up)}.gfx .oc b.d{color:var(--dn)}
 .gfx .face.fr{justify-content:flex-end;gap:12px}
 .gfx .face.fr .g1.slim .k{font-size:13px}
-.gfx .face.fr .g1.slim h3{font-size:clamp(34px,4vw,54px)}
+.gfx .face.fr .g1.slim h3{font-size:clamp(30px,3.2vw,46px);margin-top:0;white-space:nowrap;overflow:hidden}
+.gfx .g1.slim h3 .rd{color:var(--ink2);font-weight:600;margin-right:.12em}
+@media(max-width:700px){.gfx .face.fr .g1.slim h3{font-size:28px}}
 @media(min-width:701px){.gfx .face.fr{justify-content:center;gap:22px}}
 .gfx .dts{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;font:700 11px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
 .gfx .dts b{color:var(--ink)}
@@ -355,7 +356,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
   </section>
 
   <section aria-label="Replays">
-    <div class="tv"><div class="film"><video id="tvV" playsinline muted preload="metadata"></video><span class="onair" id="onair"></span></div><div class="gfx" id="gfx" aria-live="polite"></div><div class="gfx tvback" id="tvBack" aria-live="polite"></div></div>
+    <div class="tv"><div class="film"><video id="tvV" playsinline muted preload="metadata"></video></div><div class="gfx" id="gfx" aria-live="polite"></div><div class="gfx tvback" id="tvBack" aria-live="polite"></div></div>
     <div class="tvbar"><button type="button" class="btn lt" id="snd">🔇 Sound</button><button type="button" class="btn lt" id="flip">See the stats</button><button type="button" class="btn" id="nxt">Next round ▶</button></div>
     <div class="strip-h"><b>Every round</b><span>Tap one to put it on screen</span></div>
     <div class="strip" id="strip"></div>
@@ -442,8 +443,11 @@ var t='<span><b>LEADERBOARD</b> '+LADDER.map(function(l){return l.m+' '+l.won}).
 $("#tt").innerHTML=t+t;
 /* the screen */
 var i=0,v=$("#tvV"),soundOn=false,pan=null;
+// keep "Round N Company" on one line: shrink from the CSS size until it fits the panel
+function fitTitle(){var h=document.querySelector("#gfx .g1.slim h3");if(!h)return;h.style.fontSize="";var fs=parseFloat(getComputedStyle(h).fontSize);while(h.scrollWidth>h.clientWidth+1&&fs>16){fs-=1;h.style.fontSize=fs+"px"}}
+addEventListener("resize",fitTitle);
 function gfx(r){
-  return '<div class="g1 slim"><span class="k">R'+r.n+'</span><h3>'+r.co+'</h3></div>'+
+  return '<div class="g1 slim"><h3><span class="rd">Round '+r.n+'</span> '+r.co+'</h3></div>'+
     '<div class="wn">'+(r.win?winLogos(r)+'<div><small>WINNER</small>'+r.win.replace(" & "," &amp; ")+'</div>':'<div><small>WINNER</small>Nobody <em>all three went the wrong way</em></div>')+'</div>';
 }
 function gfxBack(r){
@@ -464,8 +468,7 @@ function play(k){
   i=(k+REEL.length)%REEL.length;var r=REEL[i];pan=r.tall?(r.pan||[[0,50]]):null;v.style.objectPosition=r.tall?"50% "+panAt(0)+"%":"50% 50%";
   v.poster=MEDIA+r.poster+".jpg";v.innerHTML='<source src="'+MEDIA+r.film+'.mp4" type="video/mp4"><source src="'+MEDIA+r.film+'.webm" type="video/webm">';v.load();v.muted=!soundOn;
   if(!reduce){var p=v.play();if(p&&p.catch)p.catch(function(){})}
-  $("#onair").textContent='REPLAY · R'+r.n;
-  var g=$("#gfx");g.classList.remove("on");g.innerHTML='<div class="face fr">'+gfx(r)+'</div>';$("#tvBack").innerHTML=gfxBack(r);$(".tv").classList.remove("flipped");$(".tv").style.transform="";if($("#flip"))$("#flip").textContent="See the stats";void g.offsetWidth;setTimeout(function(){g.classList.add("on")},reduce?0:350);
+  var g=$("#gfx");g.classList.remove("on");g.innerHTML='<div class="face fr">'+gfx(r)+'</div>';fitTitle();$("#tvBack").innerHTML=gfxBack(r);$(".tv").classList.remove("flipped");$(".tv").style.transform="";if($("#flip"))$("#flip").textContent="See the stats";void g.offsetWidth;setTimeout(function(){g.classList.add("on")},reduce?0:350);
   $$(".mini[data-k]").forEach(function(b){b.classList.toggle("on",+b.dataset.k===i)});
 }
 v.addEventListener("ended",function(){play(i+1)});
