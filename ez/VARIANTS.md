@@ -21,3 +21,10 @@ The prompt shown comes from `PROMPT` in `ez-data.js`; it says "shape of the prom
 ## Locked (2026-09-30)
 Variant 6 (Primetime) and Variant 9 (Primetime Kraft) are locked by the owner: design, layout and copy frozen.
 They keep updating from `ez-data.js`. Previews: V6 https://claude.ai/artifact/32CQftWp6gJUZiX6di64b4 · V9 https://claude.ai/artifact/MHR1WUyvjBcnYkTWwdZQFp
+
+## Round 5 (2026-09-30): same data, three new ways to present it
+Brief: simple journey (what we do, how, how it's going, what's next), "we know it's boring, consistency is everything",
+sell subtly. Research: `RESEARCH-subtle.md`. All three say "Get $EZ" once, at the end.
+- **Variant 10** = `v10-timetable.html` — "The Timetable": EZ as a transit timetable. The route, arrivals, punctuality, next departures, special service. https://claude.ai/artifact/56BHpBa24We9W5hRaYsZi9
+- **Variant 11** = `v11-picturebook.html` — "The Picture Book": one idea per page, flat shapes; "Your turn" lets the visitor call the next print before seeing the machines. https://claude.ai/artifact/CD8myrMvob8patBpPmf9c1
+- **Variant 12** = `v12-scorebook.html` — "The Scorebook": the record kept by hand; box scores, stamps, margin notes, "What would prove this wrong?". https://claude.ai/artifact/WbUS8Te1SPMw5wQrrhhzAN
