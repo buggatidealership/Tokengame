@@ -121,7 +121,9 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .band{--rh:100px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto repeat(var(--rows,4),minmax(var(--rh),1fr));
   column-gap:28px;row-gap:12px;max-width:680px}
 .col{min-width:0;scroll-margin-top:66px;display:grid;grid-row:1/-1;grid-template-rows:subgrid}
-.band-ft{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 16px;max-width:680px;margin-top:10px}
+/* under the band, on the band's own two columns: "How do we grade?" under Standings, "All upcoming" under Up next */
+.band-ft{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;justify-items:start;column-gap:28px;row-gap:8px;max-width:680px;margin-top:10px}
+.band-ft>.howb{grid-column:1}.band-ft>.un-more{grid-column:2}
 .band-ft:not(:has(>:not([hidden]))){display:none}
 /* the landing band flips as one card: the front is the band, the back is "How we grade" (same box, never taller) */
 .bflip{max-width:680px;margin-top:40px;perspective:2000px}
@@ -169,22 +171,23 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 
 /* up next: one tall card for the next round. The title, the four calls stacked one per row, then the result date. */
 .un-b{grid-row:2/-1;display:flex;flex-direction:column;min-width:0}
-.up-p{flex:1 1 auto;display:flex;flex-direction:column;gap:14px;min-width:0;background:var(--card);color:var(--ink);border-radius:16px;padding:16px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
-.up-p .nm{display:block;font:400 22px/1.05 var(--fd);text-transform:uppercase;min-width:0}
-.cc{flex:1;list-style:none;display:grid;grid-auto-rows:minmax(0,1fr);gap:9px}
-.cc li{display:flex;align-items:center;gap:10px;min-width:0;padding:6px 6px 6px 8px;border-radius:11px;background:var(--slab);color:var(--on-slab)}
-.cc .lg{font-size:32px;box-shadow:0 0 0 1.5px var(--on-slab2)}
-.cc .n{flex:1;min-width:0;font:400 20px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cc b{margin-left:auto;align-self:stretch;display:flex;align-items:center;justify-content:center;gap:6px;min-width:5.4em;font:700 20px/1 var(--fm);font-variant-numeric:tabular-nums;padding:0 10px;border-radius:8px;white-space:nowrap}
+.up-p{flex:1 1 auto;display:flex;flex-direction:column;gap:10px;min-width:0;background:var(--card);color:var(--ink);border-radius:16px;padding:12px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
+.up-p .nm{display:block;font:400 21px/1.05 var(--fd);text-transform:uppercase;min-width:0}
+/* compact: the four bars share the card's height (so it still matches the standings), the pills inside them stay small */
+.cc{flex:1;list-style:none;display:grid;grid-auto-rows:minmax(0,1fr);gap:6px}
+.cc li{display:flex;align-items:center;gap:9px;min-width:0;padding:4px 6px 4px 7px;border-radius:10px;background:var(--slab);color:var(--on-slab)}
+.cc .lg{font-size:28px;box-shadow:0 0 0 1.5px var(--on-slab2)}
+.cc .n{flex:1;min-width:0;font:400 18px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc b{margin-left:auto;height:38px;display:flex;align-items:center;justify-content:center;gap:6px;min-width:5.4em;font:700 17px/1 var(--fm);font-variant-numeric:tabular-nums;padding:0 9px;border-radius:7px;white-space:nowrap}
 /* no calls yet: the date the calls come in, in the calls' place */
 .un-seal{flex:1;display:grid;place-items:center;align-content:center;gap:10px;border-radius:11px;text-align:center;box-shadow:inset 0 0 0 2px var(--ink);
   background:repeating-linear-gradient(135deg,var(--card) 0 8px,var(--field2) 8px 16px)}
 .un-seal .mark{font-size:30px;line-height:1;background:var(--slab);padding:8px 10px 6px;border-radius:10px}
 .un-seal b{font:400 26px/1 var(--fd);text-transform:uppercase;background:var(--card);padding:6px 10px 5px;border-radius:8px;box-shadow:0 0 0 2px var(--ink)}
-.due{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px 8px;border-radius:10px;background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.due{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 11px 6px;border-radius:10px;background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
 .due small{font:700 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase}
-.due b{font:400 26px/1 var(--fd);text-transform:uppercase;white-space:nowrap}
-.un-more{margin-right:auto;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:700 12px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;list-style:none}
+.due b{font:400 23px/1 var(--fd);text-transform:uppercase;white-space:nowrap}
+.un-more{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:700 12px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;list-style:none}
 .un-more::after{content:"+";font:800 16px/1 var(--fb)}
 .un-more[aria-expanded=true]::after{content:"−"}
 .un-more:hover{background:var(--yel);color:var(--ink)}
@@ -193,7 +196,9 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .up-all{display:grid;grid-template-columns:repeat(var(--ua-cols,1),minmax(0,1fr));gap:18px 20px;align-items:start;max-width:680px;margin-top:14px}
 @media(max-width:640px){.up-all{grid-template-columns:minmax(0,1fr)}}
 .ua-h{font:700 11px/1 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--ink);margin:0 0 8px;display:flex;align-items:center;gap:6px}
-.ua-h i{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none;animation:pulse 1.2s infinite}
+/* the breathing dot: next to "Calls in" and on the All upcoming button (still under prefers-reduced-motion) */
+.ua-h i,.un-more i{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none;animation:pulse 1.2s infinite}
+@media(prefers-reduced-motion:reduce){.ua-h i,.un-more i{animation:none}}
 .ua-l{list-style:none;display:grid;gap:8px}
 .up-s{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 14px;min-width:0;background:var(--card);color:var(--ink);border-radius:14px;box-shadow:0 0 0 2px var(--ink);padding:10px 14px}
 .up-s .co-mark{display:none}
@@ -212,6 +217,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 /* tablets: the same two columns, a little tighter */
 @media(max-width:899px){
   .band{--rh:84px;column-gap:20px}
+  .band-ft{column-gap:20px}
   .pc{gap:10px;padding-inline:12px 14px}
   .pc .rk{font-size:22px}
   .pc>.lg{font-size:30px}
@@ -246,19 +252,19 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .pc .crown{top:-11px;left:4px;padding:3px 5px}
   .pc .crown .cw{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .st-note{font-size:12px}
-  .up-p{gap:7px;padding:8px;border-radius:12px;box-shadow:0 0 0 2px var(--ink),2px 3px 0 0 var(--ink)}
-  .up-p .nm{font-size:16px;line-height:1.05}
-  .cc{gap:6px}
-  .cc li{gap:6px;padding:4px;border-radius:9px}
-  .cc .lg{font-size:24px}
+  .up-p{gap:6px;padding:7px;border-radius:12px;box-shadow:0 0 0 2px var(--ink),2px 3px 0 0 var(--ink)}
+  .up-p .nm{font-size:15px;line-height:1.05}
+  .cc{gap:4px}
+  .cc li{gap:5px;padding:3px 4px;border-radius:8px}
+  .cc .lg{font-size:21px}
   .cc .n{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .cc b{flex:1;min-width:0;font-size:14px;gap:5px;padding:0 4px;border-radius:6px}
+  .cc b{flex:1;min-width:0;height:26px;font-size:13px;gap:5px;padding:0 4px;border-radius:6px}
   .un-seal{gap:7px}
   .un-seal .mark{font-size:22px;padding:6px 7px 4px}
   .un-seal b{font-size:17px}
-  .due{padding:6px 8px 5px;border-radius:8px;gap:6px}
+  .due{padding:5px 7px 4px;border-radius:8px;gap:6px}
   .due small{font-size:9.5px;letter-spacing:.06em}
-  .due b{font-size:17px}
+  .due b{font-size:16px}
   .up-s{padding:8px 10px;border-radius:11px;gap:7px 10px}
   .up-s .nm{font-size:15px;line-height:1.05}
   .up-s .nm small{font-size:9.5px;margin-bottom:3px}
@@ -268,7 +274,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .cp b{font-size:11.5px;padding:4px 5px}
   .un-more{padding:0 12px;gap:5px;font-size:10.5px;letter-spacing:.03em}
   .howb{font-size:12px;gap:4px}
-  .band-ft{gap:8px}
+  .band-ft{column-gap:10px}
   .sec{padding-top:88px}
 }
 /* company badge: the ticker in the display font, or the logo once CO_LOGOS has one */
@@ -286,24 +292,24 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .car:focus-visible{outline:3px solid var(--cob);outline-offset:-3px}
 @media(min-width:760px){.car{--cw:330px;--gap:18px;max-width:600px;margin-inline:auto;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 64px,#000 calc(100% - 64px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 64px,#000 calc(100% - 64px),transparent 100%)}}
-.car-ctl{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:2px}
+/* the nav: left arrow, the round chips (one line, scrolling inside itself), right arrow. Under each arrow a small caption. */
+.car-ctl{display:flex;align-items:flex-start;gap:10px;max-width:600px;margin:2px auto 0}
+.car-end{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.car-cap{min-height:32px;padding:0 4px;border-radius:7px;font:700 10px/1 var(--fm);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;color:var(--ink)}
+.car-cap:hover{background:var(--yel);color:var(--ink)}
+.car-cap[disabled]{color:var(--ink2);cursor:default;background:none}
 .arw{width:48px;height:48px;border-radius:50%;background:var(--slab);color:var(--on-slab);font:800 20px/1 var(--fb);display:grid;place-items:center;flex:none;box-shadow:0 0 0 2px var(--ink)}
 .arw:hover{background:var(--yel);color:var(--ink)}
 .arw:active{background:var(--slabA);color:var(--on-slab)}
 .arw[disabled]{background:var(--card);color:var(--ink2);box-shadow:0 0 0 2px var(--ink2);outline:0;cursor:default}
-.car-lbl{font:700 12px/1.3 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);text-align:center;min-width:0;flex:0 1 270px;min-height:48px;display:flex;flex-direction:column;justify-content:center;gap:3px}
-.car-lbl small{font:inherit;font-size:11px;color:var(--ink2)}
-.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding:12px 2px 6px;margin-top:6px;justify-content:safe center;scroll-snap-type:x proximity}
+.chips{position:relative;flex:1 1 auto;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:6px 6px;margin-top:-4px;justify-content:safe center;scroll-snap-type:x proximity;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%)}
+.chips::-webkit-scrollbar{display:none}
 .chip{flex:none;min-width:44px;height:44px;padding:0 8px;border-radius:10px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:700 13px/1 var(--fm);scroll-snap-align:center}
 .chip:hover{background:var(--yel);color:var(--ink)}
 .chip.p{background:repeating-linear-gradient(135deg,var(--yel) 0 6px,var(--card) 6px 12px)}
 .chip.s{box-shadow:inset 0 0 0 1.5px var(--ink2);color:var(--ink2);background:var(--field2)}
 .chip.s:hover{background:var(--yel);color:var(--ink)}
-/* under the chips: a quiet two-sided label. Left jumps back to results, right to the rounds still to come. */
-.car-dir{display:flex;justify-content:space-between;gap:12px;max-width:600px;margin:2px auto 0}
-.car-dir button{min-height:44px;padding:0 6px;border-radius:8px;font:700 12px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
-.car-dir button:hover{background:var(--yel);color:var(--ink)}
-.car-dir button[disabled]{color:var(--ink2);cursor:default;background:none}
 .chip[aria-current=true]{background:var(--slab);color:var(--on-slab);box-shadow:inset 0 0 0 1.5px var(--ink),0 0 0 2px var(--yel),0 0 0 3.5px var(--ink)}
 
 /* ============ THE CARD ============
@@ -638,16 +644,16 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
       </div>
     </div>
     <div class="band-ft">
-      <button type="button" class="un-more" id="unMore" aria-expanded="false" aria-controls="unAll" hidden><span id="unMoreT">All upcoming</span></button>
       <button type="button" class="howb" id="howB" aria-expanded="false" aria-controls="bfBack"><span class="ul">How do we grade?</span> <span aria-hidden="true">ⓘ</span></button>
+      <button type="button" class="un-more" id="unMore" aria-expanded="false" aria-controls="unAll" hidden><i aria-hidden="true"></i><span id="unMoreT">All upcoming</span></button>
     </div>
     <div class="up-all" id="unAll" role="region" aria-label="All upcoming rounds" hidden></div>
     </div>
     <div class="bf-face bf-back" id="bfBack" role="region" aria-labelledby="howH" aria-hidden="true">
       <h2 id="howH" tabindex="-1">How we grade</h2>
       <ol class="how">
-        <li><b>Direction first.</b> Did the model call up or down right?</li>
-        <li><b>Then size.</b> Among the models that got the direction right, the one closest to the real move wins the round.</li>
+        <li><b>Direction first.</b> Did the model call up or down correctly? Wrong way, it's out.</li>
+        <li><b>Then size.</b> Of the models that got the direction right, the one closest to the real move wins the round.</li>
         <li><b>Nobody right, nobody wins.</b> If every model gets the direction wrong, the round has no winner.</li>
         <li><b>Ties.</b> Equal wins are split by who was closer on average.</li>
       </ol>
@@ -658,11 +664,14 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 
   <section class="sec" id="record" aria-labelledby="recH">
     <div class="sh"><div class="tx"><span class="no">01</span><span class="eb">The record</span><h2 id="recH">Every prediction, on the record</h2></div>
-      <p class="lede">Graded at the first market close after the earnings report. We hand every AI the closing price from TradingView, so none of them can make one up.</p></div>
+      <p class="lede">Graded at the first market close after the earnings report. We hand every AI the closing price from TradingView, so none of them can hallucinate the outcome.</p></div>
     <div class="car" id="car" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Every round, one card each. Left and right arrow keys move between rounds."></div>
-    <div class="car-ctl"><button type="button" class="arw" id="carPrev" aria-label="Earlier round">←</button><p class="car-lbl" id="carLbl" aria-live="polite"></p><button type="button" class="arw" id="carNext" aria-label="Later round">→</button></div>
-    <div class="chips" id="chips" role="group" aria-label="Jump to a round"></div>
-    <div class="car-dir"><button type="button" id="toPast">← Past rounds</button><button type="button" id="toUp">Upcoming →</button></div>
+    <div class="car-ctl">
+      <div class="car-end"><button type="button" class="arw" id="carPrev" aria-label="Earlier round">←</button><button type="button" class="car-cap" id="toPast">← Past rounds</button></div>
+      <div class="chips" id="chips" role="group" aria-label="Jump to a round"></div>
+      <div class="car-end"><button type="button" class="arw" id="carNext" aria-label="Later round">→</button><button type="button" class="car-cap" id="toUp">Upcoming →</button></div>
+    </div>
+    <p class="sr" id="carLbl" aria-live="polite"></p>
   </section>
 
   <section class="sec" id="learn" aria-labelledby="lrnH">
@@ -1076,7 +1085,7 @@ var unMore=$("#unMore"),unAll=$("#unAll");
 var pIn=PS.filter(function(u){return u!==NX}),sched=US.filter(function(u){return u!==NX}),GR=[];
 if(pIn.length)GR.push('<section class="ua-g" aria-labelledby="uaP"><h3 class="ua-h" id="uaP"><i aria-hidden="true"></i>Calls in</h3><ol class="ua-l">'+pIn.map(pendRow).join("")+'</ol></section>');
 if(sched.length)GR.push('<section class="ua-g" aria-labelledby="uaS"><h3 class="ua-h" id="uaS">Scheduled</h3><ol class="ua-l">'+sched.map(sealRow).join("")+'</ol></section>');
-if(GR.length){unMore.hidden=false;$("#unMoreT").textContent="All upcoming ("+(pIn.length+sched.length)+" more)";
+if(GR.length){unMore.hidden=false;$("#unMoreT").textContent="All upcoming";
   unAll.innerHTML=GR.join("");unAll.style.setProperty("--ua-cols",GR.length);
   unMore.addEventListener("click",function(){var o=unMore.getAttribute("aria-expanded")!=="true";unMore.setAttribute("aria-expanded",String(o));unAll.hidden=!o})}
 if(!NX){$("#unB").innerHTML='<p class="st-note">The next rounds are posted soon.</p>'}
