@@ -108,7 +108,8 @@ h2{font:400 clamp(27px,4.2vw,44px)/.96 var(--fd);text-transform:uppercase;letter
 
 /* the landing: headline and one line, then the band. Standings (left) and Up next (right), half and half at every width.
    One shared row grid: the band's rows are equal (1fr), both columns use them (subgrid), so the columns start and end
-   on the same lines. Standings: one model per row. Up next: one tall card for the next round, as tall as the standings.
+   on the same lines. Standings: one model per row, spanning down to the All upcoming button. Up next: one tall card
+   (title, then five equal rows: four calls and the result date), then the All upcoming button.
    --rows is set from the data. On wide screens the band keeps a squarish 680px, under the headline. */
 .hero{padding-top:44px}
 .hero-t{min-width:0;max-width:900px}
@@ -118,13 +119,10 @@ h1{font:400 clamp(34px,4.8vw,62px)/.94 var(--fd);text-transform:uppercase;letter
 h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:clone;background:linear-gradient(transparent 58%,var(--yel) 58%,var(--yel) 92%,transparent 92%)}
 .hero .sub{font:500 clamp(15px,1.3vw,17px)/1.6 var(--fb);color:var(--ink2);max-width:60ch;margin-top:16px}
 .hero .sub b{color:var(--ink)}
-.band{--rh:100px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto repeat(var(--rows,4),minmax(var(--rh),1fr));
+.band{--rh:100px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto minmax(0,1fr) auto;
   column-gap:28px;row-gap:12px;max-width:680px}
 .col{min-width:0;scroll-margin-top:66px;display:grid;grid-row:1/-1;grid-template-rows:subgrid}
 /* under the band, on the band's own two columns: "How do we grade?" under Standings, "All upcoming" under Up next */
-.band-ft{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;justify-items:start;column-gap:28px;row-gap:8px;max-width:680px;margin-top:10px}
-.band-ft>.howb{grid-column:1}.band-ft>.un-more{grid-column:2}
-.band-ft:not(:has(>:not([hidden]))){display:none}
 /* the landing band flips as one card: the front is the band, the back is "How we grade" (same box, never taller) */
 .bflip{max-width:680px;margin-top:40px;perspective:2000px}
 .bf-in{display:grid;grid-template:1fr/minmax(0,1fr);transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.15,.45,1)}
@@ -140,10 +138,15 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .how li::before{content:counter(how);position:absolute;left:0;top:calc((var(--lh) - var(--sq)) / 2);display:grid;place-items:center;width:var(--sq);height:var(--sq);border-radius:10px;background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink);font:400 25px/1 var(--fd)}
 .how b{color:var(--ink);font-weight:800;font-size:24px}
 /* the two small text buttons: link style, 44px tall hit area */
-.howb,.howback{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 4px;font:700 13px/1 var(--fb);color:var(--ink)}
-.howb .ul,.howback .ul{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
-.howb>span[aria-hidden]{font-size:16px}
-.howb:hover,.howback:hover{background:var(--yel);color:var(--ink);border-radius:6px}
+/* "How we grade": a small chip at the right of the Standings heading. A see-through strip keeps a 44px tap target. */
+.howb{position:relative;margin-left:auto;align-self:center;display:inline-flex;align-items:center;gap:5px;min-height:28px;padding:0 10px;border-radius:999px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:700 12px/1 var(--fb);white-space:nowrap}
+.howb::after{content:"";position:absolute;left:0;right:0;top:-8px;bottom:-8px}
+.st-h .howb span{font:inherit;letter-spacing:0;text-transform:none;color:inherit;margin:0;display:inline}
+.st-h .howb>span[aria-hidden]{font-size:14px}
+.howb:hover{background:var(--yel);color:var(--ink)}
+.howback{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 4px;font:700 13px/1 var(--fb);color:var(--ink)}
+.howback .ul{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
+.howback:hover{background:var(--yel);color:var(--ink);border-radius:6px}
 .howback{align-self:flex-start}
 
 /* column heads (Standings, Up next) */
@@ -152,7 +155,8 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .st-h span{font:700 11px/1.3 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
 
 /* standings: one row per model. Rank, logo, name, wins. The leader (LADDER[0]) is lime and wears the crown. */
-.roster{list-style:none;grid-row:2/-1;display:grid;grid-template-rows:subgrid;min-width:0}
+/* the standings span the band's body and its button row, so their bottom lines up with the All upcoming button */
+.roster{list-style:none;grid-row:2/-1;display:grid;grid-template-rows:repeat(var(--rows,4),minmax(var(--rh),1fr));gap:var(--rg,12px);min-width:0}
 .pc{position:relative;display:flex;align-items:center;gap:14px;min-width:0;padding:8px 18px 8px 14px;border-radius:16px;background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
 .pc.lead{background:var(--yel);box-shadow:0 0 0 2.5px var(--ink),3px 4px 0 .5px var(--ink)}
 .pc .rk{flex:none;min-width:1.5em;font:400 26px/1 var(--fd);font-variant-numeric:tabular-nums}
@@ -170,24 +174,24 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .st-note{font:600 12px/1.45 var(--fb);color:var(--ink2)}
 
 /* up next: one tall card for the next round. The title, the four calls stacked one per row, then the result date. */
-.un-b{grid-row:2/-1;display:flex;flex-direction:column;min-width:0}
-.up-p{flex:1 1 auto;display:flex;flex-direction:column;gap:10px;min-width:0;background:var(--card);color:var(--ink);border-radius:16px;padding:12px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
-.up-p .nm{display:block;font:400 21px/1.05 var(--fd);text-transform:uppercase;min-width:0}
+.un-b{grid-row:2;display:flex;flex-direction:column;min-width:0}
+.up-p{flex:1 1 auto;display:grid;grid-template-rows:auto repeat(5,minmax(0,1fr));gap:6px;min-width:0;background:var(--card);color:var(--ink);border-radius:16px;padding:12px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
+.up-p .nm{display:block;margin-bottom:4px;font:400 21px/1.05 var(--fd);text-transform:uppercase;min-width:0}
 /* compact: the four bars share the card's height (so it still matches the standings), the pills inside them stay small */
-.cc{flex:1;list-style:none;display:grid;grid-auto-rows:minmax(0,1fr);gap:6px}
+.cc{display:contents;list-style:none}
 .cc li{display:flex;align-items:center;gap:9px;min-width:0;padding:4px 6px 4px 7px;border-radius:10px;background:var(--slab);color:var(--on-slab)}
 .cc .lg{font-size:28px;box-shadow:0 0 0 1.5px var(--on-slab2)}
 .cc .n{flex:1;min-width:0;font:400 18px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cc b{margin-left:auto;height:38px;display:flex;align-items:center;justify-content:center;gap:6px;min-width:5.4em;font:700 17px/1 var(--fm);font-variant-numeric:tabular-nums;padding:0 9px;border-radius:7px;white-space:nowrap}
 /* no calls yet: the date the calls come in, in the calls' place */
-.un-seal{flex:1;display:grid;place-items:center;align-content:center;gap:10px;border-radius:11px;text-align:center;box-shadow:inset 0 0 0 2px var(--ink);
+.un-seal{grid-row:span 4;display:grid;place-items:center;align-content:center;gap:10px;border-radius:11px;text-align:center;box-shadow:inset 0 0 0 2px var(--ink);
   background:repeating-linear-gradient(135deg,var(--card) 0 8px,var(--field2) 8px 16px)}
 .un-seal .mark{font-size:30px;line-height:1;background:var(--slab);padding:8px 10px 6px;border-radius:10px}
 .un-seal b{font:400 26px/1 var(--fd);text-transform:uppercase;background:var(--card);padding:6px 10px 5px;border-radius:8px;box-shadow:0 0 0 2px var(--ink)}
-.due{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 11px 6px;border-radius:10px;background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.due{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;padding:4px 11px;border-radius:10px;background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
 .due small{font:700 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase}
 .due b{font:400 23px/1 var(--fd);text-transform:uppercase;white-space:nowrap}
-.un-more{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:700 12px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;list-style:none}
+.un-more{grid-row:3;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:0 14px;border-radius:999px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:700 12px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;list-style:none}
 .un-more::after{content:"+";font:800 16px/1 var(--fb)}
 .un-more[aria-expanded=true]::after{content:"−"}
 .un-more:hover{background:var(--yel);color:var(--ink)}
@@ -217,7 +221,6 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 /* tablets: the same two columns, a little tighter */
 @media(max-width:899px){
   .band{--rh:84px;column-gap:20px}
-  .band-ft{column-gap:20px}
   .pc{gap:10px;padding-inline:12px 14px}
   .pc .rk{font-size:22px}
   .pc>.lg{font-size:30px}
@@ -230,8 +233,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .hero{padding-top:22px}
   h1{font-size:clamp(28px,8vw,33px)}
   .hero .sub{font-size:15px;line-height:1.5;margin-top:10px}
-  .band{--rh:64px;column-gap:10px;row-gap:8px}
-  .band-ft{margin-top:6px}
+  .band{--rh:64px;--rg:8px;column-gap:10px;row-gap:8px}
   .bflip{margin-top:20px}
   .bf-back{padding:14px 14px 4px;gap:6px;border-radius:14px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
   .bf-back h2{font-size:21px}
@@ -248,7 +250,8 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .pc>.lg{font-size:26px}
   .pc h3{font-size:17px}
   .pc-w b{font-size:28px}
-  .pc-w span{display:none}
+  .pc-w{flex-direction:column;align-items:center;gap:2px}
+  .pc-w span{font-size:8.5px;letter-spacing:.04em}
   .pc .crown{top:-11px;left:4px;padding:3px 5px}
   .pc .crown .cw{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .st-note{font-size:12px}
@@ -272,9 +275,9 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .cp{gap:5px 8px}
   .cp .lg{font-size:19px}
   .cp b{font-size:11.5px;padding:4px 5px}
-  .un-more{padding:0 12px;gap:5px;font-size:10.5px;letter-spacing:.03em}
-  .howb{font-size:12px;gap:4px}
-  .band-ft{column-gap:10px}
+  .un-more{min-height:30px;padding:0 8px;gap:5px;font-size:10.5px;letter-spacing:.03em}
+  .howb{display:inline-flex;margin-top:5px;min-height:24px;padding:0 8px;font-size:11px;gap:4px}
+  .st-h .howb>span[aria-hidden]{font-size:12px}
   .sec{padding-top:88px}
 }
 /* company badge: the ticker in the display font, or the logo once CO_LOGOS has one */
@@ -635,17 +638,14 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
     <div class="bf-face bf-front" id="bfFront">
     <div class="band">
       <div class="col stand" id="stand">
-        <div class="st-h"><h2 id="standH">Standings</h2><span id="standSub"></span></div>
+        <div class="st-h"><h2 id="standH">Standings</h2><button type="button" class="howb" id="howB" aria-expanded="false" aria-controls="bfBack" aria-label="How we grade: the grading rules"><span>How we grade</span><span aria-hidden="true">ⓘ</span></button></div>
         <ol class="roster" id="roster" aria-labelledby="standH"></ol>
       </div>
       <div class="col un" id="upnext" role="region" aria-labelledby="unH">
         <div class="st-h"><h2 id="unH">Up next</h2><span>Filed the day before</span></div>
         <div class="un-b" id="unB"></div>
+        <button type="button" class="un-more" id="unMore" aria-expanded="false" aria-controls="unAll" hidden><i aria-hidden="true"></i><span id="unMoreT">All upcoming</span></button>
       </div>
-    </div>
-    <div class="band-ft">
-      <button type="button" class="howb" id="howB" aria-expanded="false" aria-controls="bfBack"><span class="ul">How do we grade?</span> <span aria-hidden="true">ⓘ</span></button>
-      <button type="button" class="un-more" id="unMore" aria-expanded="false" aria-controls="unAll" hidden><i aria-hidden="true"></i><span id="unMoreT">All upcoming</span></button>
     </div>
     <div class="up-all" id="unAll" role="region" aria-label="All upcoming rounds" hidden></div>
     </div>
@@ -664,7 +664,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 
   <section class="sec" id="record" aria-labelledby="recH">
     <div class="sh"><div class="tx"><span class="no">01</span><span class="eb">The record</span><h2 id="recH">Every prediction, on the record</h2></div>
-      <p class="lede">Graded at the first market close after the earnings report. We hand every AI the closing price from TradingView, so none of them can hallucinate the outcome.</p></div>
+      <p class="lede">Each prediction gets graded at the first market close after the earnings report. Every AI gets handed the closing price from TradingView, so they can't fabricate the truth.</p></div>
     <div class="car" id="car" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Every round, one card each. Left and right arrow keys move between rounds."></div>
     <div class="car-ctl">
       <div class="car-end"><button type="button" class="arw" id="carPrev" aria-label="Earlier round">←</button><button type="button" class="car-cap" id="toPast">← Past rounds</button></div>
@@ -853,7 +853,6 @@ function flip(c){var f=!c.classList.contains("flipped"),had=c.contains(document.
    Order and tie-breaks come from LADDER (ez-data.js: wins, then the smaller average miss). Ties share the rank number.
    The crown goes to LADDER[0]. A model with calls but none graded yet (Grok) joins the table below them with 0 wins. */
 var LD=LADDER.filter(function(T){return MODELS[T.m]});
-$("#standSub").textContent="Wins · "+NR+" round"+(NR===1?"":"s");
 var bench=ACTIVE.filter(function(m){return !LD.some(function(T){return T.m===m})});
 var ROWS=LD.concat(bench.map(function(m){return {m:m,won:0}}));
 function rankOf(T){return 1+ROWS.filter(function(U){return U.won>T.won}).length}
