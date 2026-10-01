@@ -146,7 +146,8 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .st-note{font:600 12px/1.45 var(--fb);color:var(--ink2)}
 
 /* up next: the round whose calls are in (calls face up, two rows tall), then the next sealed rounds (a row each) */
-.un-b{grid-row:2/-1;display:grid;grid-template-rows:subgrid;min-width:0}
+.un-b{grid-row:2/-1;display:flex;flex-direction:column;gap:inherit;row-gap:var(--band-gap,14px);min-width:0}
+.un-b>.up-p{flex:1 1 auto}
 .up-p{grid-row:span 2;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"t d" "c c";align-content:center;align-items:start;gap:18px 12px;min-width:0;background:var(--card);color:var(--ink);border-radius:16px;padding:14px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
 .up-t{grid-area:t;display:flex;align-items:center;gap:12px;min-width:0}
 .up-t .co-mark{--cm:38px}
@@ -163,7 +164,23 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .cc .n{flex:1;min-width:0;font:400 16px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cc b{margin-left:auto;font:700 13.5px/1 var(--fm);font-variant-numeric:tabular-nums;padding:6px 7px;border-radius:7px;white-space:nowrap}
 .up-sl{list-style:none;display:grid;gap:10px}
-.un-b .up-sl{grid-row:span var(--n,2);grid-template-rows:subgrid;gap:normal}
+.un-b .up-sl{flex:none;grid-template-columns:repeat(var(--tiles,2),minmax(0,1fr));gap:10px}
+/* next sealed rounds as small square tiles under the round in play */
+.up-sl .up-s{flex-direction:column;align-items:flex-start;justify-content:space-between;gap:8px;padding:12px;aspect-ratio:1/1}
+.up-sl .up-s .ctt{gap:4px}
+.up-s .nm small{display:block;font:700 10.5px/1 var(--fm);letter-spacing:.08em;color:var(--ink2);margin-bottom:5px}
+.up-s .tkn{white-space:nowrap}
+.up-s .dl{display:grid;gap:2px;font:600 13px/1.25 var(--fb);color:var(--ink2)}
+.up-s .dl b{font-weight:800;color:var(--ink)}
+.up-s .dl>span{white-space:nowrap}
+.band{--band-gap:12px}
+@media (max-width:560px){
+  .band{--band-gap:8px}
+  .up-sl .up-s{padding:8px;gap:4px}
+  .up-sl .up-s .nm{font-size:13px;line-height:1.1}
+  .up-s .nm small{font-size:9.5px;margin-bottom:3px}
+  .up-s .dl{font-size:11.5px;line-height:1.2}
+}
 .up-s{display:flex;align-items:center;gap:12px;min-width:0;background:var(--card);color:var(--ink);border-radius:14px;box-shadow:0 0 0 2px var(--ink);padding:10px 14px}
 .up-s .co-mark{--cm:34px}
 .up-s .nm{font-size:19px}
@@ -874,15 +891,15 @@ if(window.EZLearn&&NR){
 function coLogo(t){return CO_LOGOS[t]?coMark(t):""}
 function callChips(u){return '<ul class="cc" aria-label="The calls">'+u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span><b class="'+(up?'u':'d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'Up':'Down')+'</span> '+c.mag+'%</b></li>'}).join("")+'</ul>'}
 function sealRow(u){var tm=timed(u.timing,false);
-  return '<li class="up-s">'+coLogo(u.ticker)+'<span class="ctt"><b class="nm">'+coTitle(u)+'</b><p>Calls <b>'+fmtDate(u.called)+'</b> · Answer <b>'+fmtDate(u.resolves)+'</b>'+(tm?'<span class="tm"> · '+tm+'</span>':'')+'</p></span><span class="sl">Sealed</span></li>'}
+  return '<li class="up-s">'+coLogo(u.ticker)+'<span class="ctt"><b class="nm"><small>Round '+u.n+'</small>'+u.co+(u.ticker?' <span class="tkn">$'+u.ticker+'</span>':'')+'</b></span><span class="dl"><span>Calls <b>'+fmtDate(u.called)+'</b></span><span>Answer <b>'+fmtDate(u.resolves)+'</b></span>'+(tm?'<span class="tm">'+tm+'</span>':'')+'</span></li>'}
 /* the band's rows: one per standings row. Each round whose calls are in takes two, then sealed rounds fill the rest. */
-var SHOW=Math.max(1,ROWS.length-2*PENDING.length),unHTML="";
+var SPARE=Math.max(1,ROWS.length-2*PENDING.length),SHOW=PENDING.length?2:4,unHTML="";
 unHTML+=PENDING.map(function(u){var tm=timed(u.timing,false);
   return '<div class="up-p"><div class="up-t">'+coLogo(u.ticker)+'<span class="ctt"><b class="nm">'+coTitle(u)+'</b><em><i aria-hidden="true"></i><span>Calls are in</span><span>· Filed '+fmtDate(u.called)+'</span>'+(tm?'<span>· '+tm+'</span>':'')+'</em></span></div>'+
     callChips(u)+'<p class="due"><small>Answer</small> <b>'+fmtDate(u.resolves)+'</b></p></div>'}).join("");
 var nSeal=Math.min(SHOW,UPCOMING.length);
-if(nSeal)unHTML+='<ol class="up-sl" aria-label="Next calls" style="--n:'+nSeal+'">'+UPCOMING.slice(0,SHOW).map(sealRow).join("")+'</ol>';
-$(".band").style.setProperty("--rows",Math.max(1,ROWS.length,2*PENDING.length+nSeal));
+if(nSeal)unHTML+='<ol class="up-sl" aria-label="Next calls" style="--n:'+SPARE+';--tiles:'+Math.min(2,nSeal)+'">'+UPCOMING.slice(0,SHOW).map(sealRow).join("")+'</ol>';
+$(".band").style.setProperty("--rows",Math.max(1,ROWS.length,2*PENDING.length+(nSeal?1:0)));
 $("#unB").innerHTML=unHTML;
 if(UPCOMING.length>SHOW){var rest=UPCOMING.slice(SHOW);$("#unMore").hidden=false;$("#unMoreT").textContent="All upcoming ("+rest.length+" more)";$("#unAll").innerHTML=rest.map(sealRow).join("")}
 if(!PENDING.length&&!UPCOMING.length){$("#unB").innerHTML='<p class="st-note">The next rounds are posted soon.</p>'}
