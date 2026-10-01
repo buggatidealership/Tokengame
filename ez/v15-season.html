@@ -15,8 +15,9 @@
    width), the record (swipeable cards), are they learning, the bet (a fight-card poster), the calculator, the buy steps.
    Companies: always the name plus a small $TICKER tag (.tk), built by one helper, coTitle()/coName().
    Data: ez-data.js only. Nothing typed by hand.
-   Contrast rule: on light surfaces (card, field, --yel) text is --ink/--ink2; on dark surfaces (--slab, --red/--dn, --up)
-   text is --on-slab. Every state (hover, focus, pressed, flipped, disabled) keeps that pair. */
+   Contrast rule: on light surfaces (card, field, --yel) text is --ink/--ink2; on dark surfaces (--slab, --red)
+   text is --on-slab. Up / down and win / lose are --ez-green / --ez-red fills with --on-ez text (classes .u / .d).
+   Every state (hover, focus, pressed, flipped, disabled) keeps that pair. */
 :root{color-scheme:light;
   /* PALETTE (tools/palettes.py swaps this block) */
   --field:#ffffff;--field2:#f4f4f4;--ink:#0a0a0a;--ink2:#30343b;--dim:#50565f;--card:#ffffff;
@@ -28,6 +29,9 @@
   /* BRAND: the $EZ mark's three colours. Fixed brand colours on the dark mark tile, exempt from the palette
      (tools/palettes.py never swaps them), so the mark reads the same in every palette. */
   --mark-s:#ffc72c;--mark-e:#1fcf6b;--mark-z:#ff4136;
+  /* the same three as the up and down colours: green = up / win, red = down / lose. Always FILLS with --on-ez text on top
+     (the green is too light for text on a light surface), so they stay the same in every palette. */
+  --ez-gold:#ffc72c;--ez-green:#1fcf6b;--ez-red:#ff4136;--on-ez:#0a0a0a;
   --fd:'Anton',Impact,'Arial Narrow Bold',sans-serif;
   --fb:'Archivo',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --fm:'Chivo Mono',ui-monospace,Menlo,Consolas,monospace;
@@ -44,13 +48,14 @@ a{color:inherit}
 button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--cob);outline-offset:3px}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:16px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.u{color:var(--up)}.d{color:var(--dn)}
+/* up / down: a brand-colour fill with ink text, never coloured text */
+.u{background:var(--ez-green);color:var(--on-ez)}.d{background:var(--ez-red);color:var(--on-ez)}
 /* model logos: one frame everywhere (same radius, same solid ring) */
 /* a fixed square tile: never stretched or squeezed by a flex or grid parent, the mark centred and contained */
 .lg{display:inline-grid;place-items:center;width:1em;height:1em;min-width:1em;min-height:1em;aspect-ratio:1/1;flex:none;align-self:center;border-radius:22.5%;vertical-align:middle;box-shadow:0 0 0 1.5px var(--ink)}
 span.lg>svg{display:block;width:62%;height:62%;margin:0;object-fit:contain}
 span.lg>img{display:block;object-fit:contain}
-.lg.nob{background:var(--card);color:var(--red);font:900 .62em/1 var(--fb)}
+.lg.nob{background:var(--ez-red);color:var(--on-ez);font:900 .62em/1 var(--fb)}
 .mark{font-family:var(--fd);letter-spacing:.01em}
 .mark .s{color:var(--mark-s)}.mark .e{color:var(--mark-e)}.mark .z{color:var(--mark-z)}
 @keyframes pulse{50%{opacity:.35}}
@@ -98,51 +103,51 @@ h2{font:400 clamp(27px,4.2vw,44px)/.96 var(--fd);text-transform:uppercase;letter
 .tk{display:inline-block;margin-left:.1em;padding:.3em .42em .26em;border-radius:5px;font:700 max(10px,.56em)/1 var(--fm);letter-spacing:.03em;text-transform:none;white-space:nowrap;
   vertical-align:.16em;color:var(--tk,var(--ink2));box-shadow:inset 0 0 0 1px color-mix(in srgb,currentColor 50%,transparent)}
 
-/* the landing: headline and one line, then the band. Standings (a narrow column, left) and Up next (right),
-   side by side at every width. On phones about 40 / 60, everything steps down so both fit. */
+/* in round titles (cards, Up next) the cashtag is part of the title: same font, size and weight as the name */
+.tkn{white-space:nowrap}
+
+/* the landing: headline and one line, then the band. Standings (left) and Up next (right), side by side at every width.
+   One shared row grid: the band's rows are equal (1fr), both columns use them (subgrid), so the columns start and end
+   on the same lines. Standings: one model per row. Up next: the round whose calls are in spans two rows, then one row
+   per sealed round. --rows is set from the data. On wide screens the band keeps a squarish 680px, under the headline. */
 .hero{padding-top:44px}
 .hero-t{min-width:0;max-width:900px}
 h1{font:400 clamp(34px,4.8vw,62px)/.94 var(--fd);text-transform:uppercase;letter-spacing:.005em}
 h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:clone;background:linear-gradient(transparent 58%,var(--yel) 58%,var(--yel) 92%,transparent 92%)}
 .hero .sub{font:500 clamp(15px,1.3vw,17px)/1.6 var(--fb);color:var(--ink2);max-width:60ch;margin-top:16px}
 .hero .sub b{color:var(--ink)}
-.band{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);column-gap:36px;align-items:start;margin-top:36px}
-@media(min-width:1100px){.band{grid-template-columns:minmax(0,400px) minmax(0,1fr);column-gap:56px}}
-.col{min-width:0;scroll-margin-top:66px}
+.band{--rh:100px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);grid-template-rows:auto repeat(var(--rows,4),minmax(var(--rh),1fr));
+  column-gap:28px;row-gap:12px;max-width:680px;margin-top:40px}
+.col{min-width:0;scroll-margin-top:66px;display:grid;grid-row:1/-1;grid-template-rows:subgrid}
+.band-ft{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;max-width:680px;margin-top:14px}
+.band-ft:not(:has(>:not([hidden]))){display:none}
 
 /* column heads (Standings, Up next) */
-.st-h{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin-bottom:18px}
+.st-h{grid-row:1;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin-bottom:6px}
 .st-h h2{font:400 24px/1 var(--fd);margin:0}
 .st-h span{font:700 11px/1.3 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
 
-/* standings: compact rows. Rank, logo, name, wins. The leader (LADDER[0]) is lime and wears the crown. */
-.roster{list-style:none;display:grid;gap:10px}
-.pc{position:relative;display:flex;align-items:center;gap:12px;min-width:0;min-height:56px;padding:8px 16px 8px 12px;border-radius:14px;background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
+/* standings: one row per model. Rank, logo, name, wins. The leader (LADDER[0]) is lime and wears the crown. */
+.roster{list-style:none;grid-row:2/-1;display:grid;grid-template-rows:subgrid;min-width:0}
+.pc{position:relative;display:flex;align-items:center;gap:14px;min-width:0;padding:8px 18px 8px 14px;border-radius:16px;background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
 .pc.lead{background:var(--yel);box-shadow:0 0 0 2.5px var(--ink),3px 4px 0 .5px var(--ink)}
-.pc .rk{flex:none;min-width:1.5em;font:400 22px/1 var(--fd);font-variant-numeric:tabular-nums}
+.pc .rk{flex:none;min-width:1.5em;font:400 26px/1 var(--fd);font-variant-numeric:tabular-nums}
 .pc .rk sup{font-size:.55em;vertical-align:.6em;margin-right:1px}
-.pc>.lg{font-size:28px}
-.pc h3{flex:1;min-width:0;font:400 20px/1.1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc>.lg{font-size:36px}
+.pc h3{flex:1;min-width:0;font:400 24px/1.1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pc-w{flex:none;display:flex;align-items:baseline;gap:6px}
-.pc-w b{font:400 32px/.85 var(--fd);font-variant-numeric:tabular-nums}
+.pc-w b{font:400 40px/.85 var(--fd);font-variant-numeric:tabular-nums}
 .pc-w span{font:700 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
 .pc.lead .pc-w span{color:var(--ink)}
 .pc .crown{position:absolute;top:-12px;left:8px;display:inline-flex;align-items:center;gap:4px;font:700 10px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;background:var(--card);color:var(--ink);padding:4px 8px 4px 6px;border-radius:999px;box-shadow:0 0 0 2px var(--ink);transform:rotate(-4deg)}
 .pc .crown i{font-style:normal;font-size:12px;display:inline-block;transform-origin:50% 85%;animation:crown 2.4s ease-in-out infinite}
-.pc.lead{padding-top:12px}
 @keyframes crown{0%,55%,100%{transform:rotate(0)}65%{transform:rotate(-14deg)}75%{transform:rotate(11deg)}85%{transform:rotate(-6deg)}}
 @media(prefers-reduced-motion:reduce){.pc .crown i{animation:none}}
-/* a model with no graded calls yet: one quiet line */
-.pc.ghost{min-height:0;padding:4px 12px;gap:8px;background:none;box-shadow:none;color:var(--ink2)}
-.pc.ghost>.lg{font-size:20px}
-.pc.ghost h3{flex:none;font:800 13px/1.2 var(--fb);font-stretch:90%;color:var(--ink2)}
-.pc-note{min-width:0;font:700 11px/1.2 var(--fm);letter-spacing:.04em;text-transform:uppercase;color:var(--ink2);white-space:nowrap}
-.st-note{margin-top:12px;font:600 12px/1.45 var(--fb);color:var(--ink2)}
-.sht{display:none}
+.st-note{font:600 12px/1.45 var(--fb);color:var(--ink2)}
 
-/* up next: the round whose calls are in (calls face up), then the next sealed rounds with their dates */
-.un-b{display:flex;flex-direction:column;gap:12px;min-width:0}
-.up-p{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"t d" "c c";align-items:start;gap:14px 12px;min-width:0;background:var(--card);color:var(--ink);border-radius:16px;padding:14px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
+/* up next: the round whose calls are in (calls face up, two rows tall), then the next sealed rounds (a row each) */
+.un-b{grid-row:2/-1;display:grid;grid-template-rows:subgrid;min-width:0}
+.up-p{grid-row:span 2;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"t d" "c c";align-content:center;align-items:start;gap:18px 12px;min-width:0;background:var(--card);color:var(--ink);border-radius:16px;padding:14px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
 .up-t{grid-area:t;display:flex;align-items:center;gap:12px;min-width:0}
 .up-t .co-mark{--cm:38px}
 .up-t .ctt,.up-s .ctt{flex:1;min-width:0;display:grid;gap:5px}
@@ -153,20 +158,19 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .due small{font:700 9.5px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase}
 .due b{font:400 20px/1 var(--fd);text-transform:uppercase;white-space:nowrap}
 .cc{grid-area:c;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-@media(min-width:1100px){.cc{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.cc li{display:flex;align-items:center;gap:7px;min-height:40px;padding:4px 5px 4px 7px;border-radius:10px;background:var(--slab);color:var(--on-slab)}
-.cc .lg{font-size:22px;box-shadow:0 0 0 1.5px var(--on-slab2)}
+.cc li{display:flex;align-items:center;gap:7px;min-height:46px;padding:4px 5px 4px 7px;border-radius:10px;background:var(--slab);color:var(--on-slab)}
+.cc .lg{font-size:24px;box-shadow:0 0 0 1.5px var(--on-slab2)}
 .cc .n{flex:1;min-width:0;font:400 16px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cc b{margin-left:auto;font:700 12.5px/1 var(--fm);font-variant-numeric:tabular-nums;color:var(--on-slab);padding:6px 6px;border-radius:7px;white-space:nowrap}
-.cc b.up{background:var(--up)}.cc b.dn{background:var(--dn)}
+.cc b{margin-left:auto;font:700 13.5px/1 var(--fm);font-variant-numeric:tabular-nums;padding:6px 7px;border-radius:7px;white-space:nowrap}
 .up-sl{list-style:none;display:grid;gap:10px}
+.un-b .up-sl{grid-row:span var(--n,2);grid-template-rows:subgrid;gap:normal}
 .up-s{display:flex;align-items:center;gap:12px;min-width:0;background:var(--card);color:var(--ink);border-radius:14px;box-shadow:0 0 0 2px var(--ink);padding:10px 14px}
 .up-s .co-mark{--cm:34px}
-.up-s .nm{font-size:18px}
+.up-s .nm{font-size:19px}
 .up-s p{font:600 14px/1.4 var(--fb);color:var(--ink2)}
 .up-s p b{font-weight:800;color:var(--ink)}
 .up-s .sl{flex:none;font:700 10px/1 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);padding:6px 8px;border-radius:999px;box-shadow:inset 0 0 0 1.5px var(--ink2);background:var(--field2)}
-.un-more{margin-top:12px}
+.un-more{margin-left:auto}
 .un-more summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:700 12px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;list-style:none}
 .un-more summary::-webkit-details-marker{display:none}
 .un-more summary::after{content:"+";font:800 16px/1 var(--fb)}
@@ -177,55 +181,51 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 
 /* tablets: the same two columns, a little tighter */
 @media(max-width:899px){
-  .band{column-gap:24px}
-  .pc{gap:9px;padding-inline:10px 12px}
-  .pc .rk{font-size:19px}
-  .pc>.lg{font-size:24px}
-  .pc h3{font-size:18px}
-  .pc-w b{font-size:28px}
+  .band{--rh:84px;column-gap:20px}
+  .pc{gap:10px;padding-inline:12px 14px}
+  .pc .rk{font-size:22px}
+  .pc>.lg{font-size:30px}
+  .pc h3{font-size:21px}
+  .pc-w b{font-size:34px}
   .up-s .sl{display:none}
 }
-/* phones: still side by side. Standings about 40%: logo, short name, wins. Up next about 60%: compact rows. */
+/* phones: still side by side and on the same rows. Standings about 40%: rank, logo, name, wins.
+   Up next about 60%: the calls shrink to logo plus ▲/▼ number so the round fits two rows. */
 @media(max-width:640px){
   .hero{padding-top:22px}
   h1{font-size:clamp(28px,8vw,33px)}
   .hero .sub{font-size:15px;line-height:1.5;margin-top:10px}
-  .band{column-gap:10px;margin-top:20px}
-  .st-h{display:block;margin-bottom:15px}
+  .band{--rh:64px;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);column-gap:10px;row-gap:8px;margin-top:20px}
+  .band-ft{margin-top:10px}
+  .st-h{display:block;margin-bottom:6px}
   .st-h h2{font-size:19px}
   .st-h span{display:block;margin-top:4px;font-size:10px;letter-spacing:.04em;line-height:1.25}
-  .roster{gap:8px}
-  .pc{gap:5px;min-height:42px;padding:5px 7px 5px 6px;border-radius:11px;box-shadow:0 0 0 2px var(--ink),2px 3px 0 0 var(--ink)}
-  .pc.lead{padding-top:9px;box-shadow:0 0 0 2.5px var(--ink),2px 3px 0 .5px var(--ink)}
-  .pc .rk{font-size:15px;min-width:1.35em}
-  .pc>.lg{font-size:20px}
-  .pc h3{font-size:15px}
-  .pc-w b{font-size:22px}
+  .pc{gap:5px;padding:5px 7px 5px 6px;border-radius:11px;box-shadow:0 0 0 2px var(--ink),2px 3px 0 0 var(--ink)}
+  .pc.lead{box-shadow:0 0 0 2.5px var(--ink),2px 3px 0 .5px var(--ink)}
+  .pc .rk{font-size:16px;min-width:1.35em}
+  .pc>.lg{font-size:24px}
+  .pc h3{font-size:16px}
+  .pc-w b{font-size:26px}
   .pc-w span{display:none}
   .pc .crown{top:-11px;left:4px;padding:3px 5px}
   .pc .crown .cw{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .pc.ghost{padding:2px 6px;gap:5px;min-height:0}
-  .pc.ghost>.lg{font-size:16px}
-  .pc.ghost h3{font-size:12px}
-  .pc-note{font-size:10px}
-  .lng{display:none}.sht{display:inline}
-  .st-note{font-size:11px;margin-top:8px}
-  .un-b{gap:8px}
-  .up-p{grid-template-columns:minmax(0,1fr);grid-template-areas:"t" "c" "d";gap:8px;padding:9px 8px 8px;border-radius:12px;box-shadow:0 0 0 2px var(--ink),2px 3px 0 0 var(--ink)}
+  .st-note{font-size:12px}
+  .up-p{grid-template-columns:minmax(0,1fr);grid-template-areas:"t" "c" "d";gap:6px;padding:8px;border-radius:12px;box-shadow:0 0 0 2px var(--ink),2px 3px 0 0 var(--ink)}
   .up-t .nm,.up-s .nm{font-size:15px;line-height:1.05}
-  .up-t em{font-size:10px;letter-spacing:.03em;gap:2px 5px}
+  .up-t .ctt{gap:4px}
+  .up-t em{font-size:10.5px;letter-spacing:.02em;gap:2px 5px}
   .up-t em i{width:7px;height:7px}
   .cc{gap:5px}
-  .cc li{gap:4px;min-height:32px;padding:3px 3px 3px 4px;border-radius:8px}
-  .cc .lg{font-size:18px}
+  .cc li{gap:4px;min-height:30px;padding:3px;border-radius:8px}
+  .cc .lg{font-size:20px}
   .cc .n{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .cc b{font-size:11px;padding:5px 4px;border-radius:6px}
-  .due{display:flex;align-items:baseline;justify-content:center;gap:7px;padding:7px 8px 6px;border-radius:8px}
+  .cc b{font-size:13px;padding:5px 4px;border-radius:6px;flex:1;text-align:center}
+  .due{display:flex;align-items:baseline;justify-content:center;gap:7px;padding:6px 8px 5px;border-radius:8px}
   .due small{font-size:10px}
   .due b{font-size:16px}
-  .up-sl{gap:8px}
   .up-s{padding:7px 8px;border-radius:11px;gap:8px}
-  .up-s p{font:700 10px/1.35 var(--fm);letter-spacing:.02em}
+  .up-s .ctt{gap:3px}
+  .up-s p{font:600 13px/1.3 var(--fb)}
   .up-s p .tm{display:none}
   .un-more summary{padding:0 12px;font-size:10.5px}
   .sec{padding-top:88px}
@@ -274,7 +274,11 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .f-none .face{background:var(--hazard)}
 .pend .face{background:var(--slab)}
 .seal .face{background:repeating-linear-gradient(135deg,var(--card) 0 8px,var(--field2) 8px 16px)}
-.ctop{padding:11px 12px 10px;border-bottom:2px solid var(--ink);background:var(--card);color:var(--ink);font:400 19px/1.02 var(--fd);text-transform:uppercase;letter-spacing:.005em}
+/* the top bar: the round title, and on a card with a film a small sound icon at the far right.
+   The title gives way first (ellipsis), the icon keeps its size. */
+.ctop{display:flex;align-items:center;gap:4px;min-height:46px;padding:0 0 0 12px;border-bottom:2px solid var(--ink);background:var(--card);color:var(--ink);font:400 19px/1.02 var(--fd);text-transform:uppercase;letter-spacing:.005em}
+.ctop h3{flex:1;min-width:0;padding:11px 12px 10px 0;font:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctop h3:has(+.snd){padding-right:0}
 .rd{color:var(--ink2)}
 .art{position:relative;aspect-ratio:1/1;background:var(--slab2);overflow:hidden;border-bottom:2px solid var(--ink)}
 .art img,.art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
@@ -282,15 +286,17 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 /* the art is at least square and takes up any extra height, so every card in the row lines up without gaps */
 .face.front .art{flex:1 0 auto}
 .art video.on{opacity:1}
-/* sound: one toggle on the centred card's film. Muted until the visitor touches the page (browsers block sound before that). */
-.snd{position:absolute;right:8px;bottom:8px;z-index:2;display:none;align-items:center;gap:6px;min-height:44px;min-width:44px;padding:0 12px 0 10px;border-radius:999px;background:var(--slab);color:var(--on-slab);box-shadow:0 0 0 2px var(--on-slab);font:700 12px/1 var(--fm);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
-.snd i{font-style:normal;font-size:16px;line-height:1}
-.card.cur .snd{display:inline-flex}
-.snd[data-on="1"]{background:var(--yel);color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
-.snd:hover{background:var(--yel);color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
-.snd:active{background:var(--card);color:var(--ink)}
+/* sound: an icon-only toggle in the centred card's top bar. Muted until the visitor touches the page (browsers block
+   sound before that). A 16px icon; the button fills the bar's height (44px) and a pseudo-element widens its 28px to a
+   44px hit area over the title's end, so it never pushes the layout. */
+.snd{position:relative;flex:none;align-self:stretch;display:grid;place-items:center;width:28px;min-height:44px;margin-right:6px;color:var(--ink);visibility:hidden}
+.snd::before{content:"";position:absolute;top:0;bottom:0;left:-16px;right:0}
+.snd svg{display:block;width:16px;height:16px;padding:6px;box-sizing:content-box;border-radius:50%}
+.card.cur .snd{visibility:visible}
+.snd:hover svg,.snd:focus-visible svg{background:var(--yel);color:var(--ink);box-shadow:0 0 0 1.5px var(--ink)}
+.snd:active svg{background:var(--slab);color:var(--on-slab)}
+.snd:focus-visible{outline-offset:-3px}
 .rm .snd{display:none!important}
-@media(max-width:759px){.snd{right:6px;bottom:6px;padding:0 10px 0 8px;font-size:11px}.snd i{font-size:15px}}
 .art .soon{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--on-slab);font:400 30px/1 var(--fd);text-transform:uppercase;background:repeating-linear-gradient(45deg,var(--slabA) 0 14px,var(--slabB) 14px 28px)}
 .art .soon small{--tk:var(--on-slab2);display:block;font:700 11px/1.4 var(--fm);letter-spacing:.08em;color:var(--yel);margin-top:8px}
 /* winner bar: WINNER and the name at the same size and weight */
@@ -319,17 +325,17 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .bk-sec{font:700 10.5px/1 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);padding:0 4px 12px}
 .bk-rows{display:grid;gap:10px}
 .bk-r{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--card);color:var(--ink);box-shadow:0 0 0 1.5px var(--ink);border-radius:11px;padding:9px 12px;min-height:54px}
-.bk-r.ok{background:color-mix(in srgb,var(--up) 9%,var(--card))}
+.bk-r.ok{background:color-mix(in srgb,var(--ez-green) 16%,var(--card))}
 .bk-r.win{background:var(--yel)}
 .bk-r .rk{font:400 22px/1 var(--fd);text-align:center;color:var(--ink)}
-.bk-r.no .rk{color:var(--dn)}
+.bk-r.no .rk span[aria-hidden]{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--ez-red);color:var(--on-ez);font:900 14px/1 var(--fb)}
 .bk-r .who{display:flex;align-items:center;gap:9px;font:800 15px/1 var(--fb);font-stretch:88%;text-transform:uppercase;min-width:0;color:var(--ink)}
 .bk-r .who .lg{font-size:26px}
 .bk-r .who span.n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bk-r .pd{font:700 14px/1 var(--fm);text-align:right;white-space:nowrap}
+.bk-r .pd{font:700 14px/1 var(--fm);text-align:right;white-space:nowrap;padding:6px 7px;border-radius:7px}
 .bk-out{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-radius:12px;box-shadow:0 0 0 2px var(--ink);background:var(--field2);color:var(--ink)}
 .bk-out small{font:700 10.5px/1.4 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
-.bk-out b{font:400 36px/.9 var(--fd)}
+.bk-out b{font:400 36px/.9 var(--fd);padding:7px 10px 5px;border-radius:10px;white-space:nowrap}
 .f-none .bk-h{background:var(--red);--tk:var(--on-slab)}
 .f-none .bk-h h4 .rd{color:var(--on-slab3)}
 .f-none .bk-h p{color:var(--on-slab)}
@@ -341,8 +347,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .pcalls li{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:46px;padding:6px 8px;border-radius:10px;background:var(--slabA);box-shadow:inset 0 0 0 1.5px var(--on-slab2);color:var(--on-slab)}
 .pcalls .lg{font-size:30px;box-shadow:0 0 0 1.5px var(--on-slab2)}
 .pcalls .nm{font:400 20px/1 var(--fd);text-transform:uppercase;color:var(--on-slab);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pcalls b{font:700 14px/1 var(--fm);color:var(--on-slab);padding:7px 9px;border-radius:7px;white-space:nowrap}
-.pcalls b.up{background:var(--up)}.pcalls b.dn{background:var(--dn)}
+.pcalls b{font:700 14px/1 var(--fm);padding:7px 9px;border-radius:7px;white-space:nowrap}
 .pend .cwin small,.seal .cwin small{font:700 11px/1.3 var(--fm);letter-spacing:.1em}
 /* sealed rounds */
 .sealart{display:grid;place-items:center;align-content:center;gap:12px;background:radial-gradient(circle at 50% 44%,var(--card) 0 64px,transparent 65px),repeating-conic-gradient(from 0deg at 50% 44%,var(--yel) 0 10deg,var(--card) 10deg 20deg)}
@@ -356,7 +361,9 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .face{border-radius:15px;padding:6px;box-shadow:0 0 0 2px var(--ink),4px 5px 0 0 var(--ink)}
   .fin{border-radius:10px}
   .f-tie .fin{box-shadow:0 0 0 2px var(--ink),0 0 0 4px var(--card),0 0 0 6px var(--ink)}
-  .ctop{padding:8px 9px 7px;font-size:15px}
+  .ctop{padding-left:9px;font-size:14px}
+  .snd{margin-right:3px}
+  .ctop h3{padding-top:8px;padding-bottom:7px}
   .art .soon{font-size:21px}
   .cwin{margin:7px 7px 0;gap:6px 8px;padding:7px 9px;min-height:44px;border-radius:9px}
   .cwin small,.cwin .wn{font-size:18px}
@@ -378,10 +385,11 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .bk-r .rk{font-size:17px}
   .bk-r .who{gap:6px;font-size:12.5px}
   .bk-r .who .lg{font-size:21px}
-  .bk-r .pd{font-size:11.5px}
+  .bk-r .pd{font-size:11.5px;padding:5px 5px}
+  .bk-r.no .rk span[aria-hidden]{width:15px;height:17px;border-radius:4px;font-size:11px}
   .bk-out{padding:9px 10px;gap:6px;border-radius:9px}
   .bk-out small{font-size:9px}
-  .bk-out b{font-size:26px}
+  .bk-out b{font-size:26px;padding:5px 7px 4px;border-radius:8px}
   .slabart{gap:7px;padding:9px 7px}
   .stamp{font-size:14px;padding:5px 8px 4px;gap:6px}
   .stamp i{width:7px;height:7px}
@@ -434,9 +442,9 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .pz-t.pot .pz-d{background:var(--slab);color:var(--on-slab)}
 .pz-vs{align-self:center;display:grid;place-items:center;width:76px;height:76px;border-radius:50%;background:var(--yel);color:var(--ink);font:400 34px/1 var(--fd);box-shadow:0 0 0 3px var(--slab),0 0 0 5.5px var(--yel);transform:rotate(-8deg)}
 .pz-out{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}
-.pz-out li{display:flex;flex-direction:column;gap:8px;border-radius:16px;padding:16px 20px 18px;color:var(--on-slab);min-width:0}
-.pz-out li.w{background:var(--up)}.pz-out li.l{background:var(--dn)}
-.pz-out small{font:700 12px/1.2 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--on-slab)}
+.pz-out li{display:flex;flex-direction:column;gap:8px;border-radius:16px;padding:16px 20px 18px;color:var(--on-ez);min-width:0}
+.pz-out li.w{background:var(--ez-green)}.pz-out li.l{background:var(--ez-red)}
+.pz-out small{font:700 12px/1.2 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--on-ez)}
 .pz-out b{font:400 clamp(30px,3.6vw,50px)/.92 var(--fd);text-transform:uppercase}
 .pz-line{margin-top:22px;font:700 clamp(15px,1.4vw,18px)/1.4 var(--fb);color:var(--on-slab3)}
 .np0{margin-top:16px;font:600 13px/1.5 var(--fb);color:var(--ink2)}
@@ -487,12 +495,12 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .bn.bet p{color:var(--on-slab3)}
 .bn.bet .lgs{display:inline-flex;gap:6px;font-size:22px;vertical-align:middle;margin-left:4px}
 @media(max-width:560px){.bn.bet .lgs{display:flex;margin:8px 0 0}}
-.bn.win{background:color-mix(in srgb,var(--up) 9%,var(--card))}
-.bn.win small{color:var(--ink)}
-.bn.win .big{color:var(--up)}
-.bn.win .of{font:800 16px/1.35 var(--fb);color:var(--ink)}
-.bn .lose{margin-top:6px;padding-top:12px;border-top:1.5px solid var(--ink);font:800 15px/1.35 var(--fb);color:var(--ink)}
-.bn .lose b{font:400 24px/1 var(--fd);color:var(--dn);font-variant-numeric:tabular-nums}
+/* win: the whole tile is the brand green, the wrong-way line a brand-red strip at its foot. Ink text on both. */
+.bn.win{--tk:var(--on-ez);background:var(--ez-green);color:var(--on-ez)}
+.bn.win small,.bn.win .big,.bn.win .of{color:var(--on-ez)}
+.bn.win .of{font:800 16px/1.35 var(--fb)}
+.bn .lose{margin-top:auto;padding:10px 14px;border-radius:12px;background:var(--ez-red);color:var(--on-ez);box-shadow:0 0 0 2px var(--on-ez);font:800 15px/1.35 var(--fb)}
+.bn .lose b{font:400 24px/1 var(--fd);color:var(--on-ez);font-variant-numeric:tabular-nums}
 .big.pop{animation:bigpop .5s cubic-bezier(.3,1.5,.5,1)}
 @keyframes bigpop{40%{transform:scale(1.06)}}
 .bn .big{transform-origin:left center}
@@ -538,13 +546,15 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
       <div class="col stand" id="stand">
         <div class="st-h"><h2 id="standH">Standings</h2><span id="standSub"></span></div>
         <ol class="roster" id="roster" aria-labelledby="standH"></ol>
-        <p class="st-note" id="stNote" hidden>Ties go to the closer calls.</p>
       </div>
       <div class="col un" id="upnext" role="region" aria-labelledby="unH">
         <div class="st-h"><h2 id="unH">Up next</h2><span>Filed the day before</span></div>
         <div class="un-b" id="unB"></div>
-        <details class="un-more" id="unMore" hidden><summary><span id="unMoreT">All upcoming</span></summary><ol class="up-sl up-all" id="unAll"></ol></details>
       </div>
+    </div>
+    <div class="band-ft">
+      <p class="st-note" id="stNote" hidden>Ties go to the closer calls.</p>
+      <details class="un-more" id="unMore" hidden><summary><span id="unMoreT">All upcoming</span></summary><ol class="up-sl up-all" id="unAll"></ol></details>
     </div>
   </section>
 
@@ -628,11 +638,13 @@ if(reduce)document.documentElement.classList.add("rm");
 /* display names: GPT, Kimi, Claude, Grok (from MODELS, never typed per round) */
 function nm(m){var n=(MODELS[m]&&MODELS[m].name)||m;return n.length<=3?n:n.charAt(0)+n.slice(1).toLowerCase()}
 function list(a){return a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
-/* companies: one helper, one style. The name, then its cashtag as a small tag (r.ticker, names from TICKERS).
-   coName: "Carnival $CCL" · coTitle: "Round 8 · Carnival $CCL" · plain: the same as text, for labels and titles */
+/* companies: one helper, one style. The name, then its cashtag (r.ticker, names from TICKERS).
+   coName: "Carnival $CCL" with the cashtag as a small tag, for running text and labels.
+   coTitle: "Round 8 · Carnival $CCL" for round titles (cards, Up next): the cashtag in the title's own font and size.
+   plain: the same as text, for aria labels and titles */
 function tkTag(t){return t?'<span class="tk">$'+t+'</span>':""}
 function coName(r){return r.co+(r.ticker?" "+tkTag(r.ticker):"")}
-function coTitle(r){return '<span class="rd">Round '+r.n+' ·</span> '+coName(r)}
+function coTitle(r){return '<span class="rd">Round '+r.n+' ·</span> '+r.co+(r.ticker?' <span class="tkn">$'+r.ticker+'</span>':"")}
 function plainCo(r){return r.co+(r.ticker?" ($"+r.ticker+")":"")}
 function plain(r){return "Round "+r.n+" · "+plainCo(r)}
 function timed(t,past){var l=timingLabel(t);return l?(past?"Reported ":"Reports ")+l.charAt(0).toLowerCase()+l.slice(1):""}
@@ -645,18 +657,23 @@ function parsed(r){var cs=r.calls.map(function(c){var dn=/^DOWN/.test(c[1]);retu
 var ACTIVE=MODEL_KEYS.filter(function(m){return MODELS[m]&&(ROUNDS.some(function(r){return callOf(r,m)})||PENDING.some(function(u){return u.calls.some(function(c){return c.m===m})}))});
 var NR=ROUNDS.length,UPS=ROUNDS.filter(function(r){return r.a>0}).length;
 var TARGET=PENDING[0]||UPCOMING[0]||null;
-function firstIn(m){return PENDING.filter(function(u){return u.calls.some(function(c){return c.m===m})})[0]||null}
 
 /* ---------- cards ---------- */
 /* the sound toggle's face: the film is muted until the visitor touches the page or turns it on */
 var soundOn=false;
-function sndFace(){return '<i aria-hidden="true">'+(soundOn?'🔊':'🔇')+'</i>'+(soundOn?'Sound on':'Sound off')}
-function sndBtn(){return '<button type="button" class="snd" data-on="'+(soundOn?1:0)+'">'+sndFace()+'</button>'}
+/* a speaker, with sound waves (on) or a slash (off). Drawn in currentColor. */
+var SPK='<path d="M3 6h3l4-3.5v11L6 10H3z" fill="currentColor"/>',
+    SND_ON='<svg viewBox="0 0 16 16" aria-hidden="true">'+SPK+'<path d="M12 5.2a4 4 0 0 1 0 5.6M13.9 3.3a6.6 6.6 0 0 1 0 9.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    SND_OFF='<svg viewBox="0 0 16 16" aria-hidden="true">'+SPK+'<path d="M11.5 5.5l4 4M15.5 5.5l-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+function sndLbl(){return soundOn?"Sound on":"Sound off"}
+function sndBtn(){return '<button type="button" class="snd" data-on="'+(soundOn?1:0)+'" aria-label="'+sndLbl()+'" title="'+sndLbl()+'">'+(soundOn?SND_ON:SND_OFF)+'</button>'}
+/* the round title bar of a card front; graded cards with a film carry the sound icon */
+function topBar(r,snd){return '<div class="ctop"><h3>'+coTitle(r)+'</h3>'+(snd?sndBtn():'')+'</div>'}
 function frame(r){return !r.win?"f-none":r.win.indexOf(" & ")>-1?"f-tie":"f-win"}
 function art(r){
   if(!r.film)return '<div class="art"><div class="soon"><div>Film soon<small>'+coName(r)+'</small></div></div></div>';
   return '<div class="art">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy" decoding="async">':'')+
-    '<video playsinline muted loop preload="none" aria-label="Round '+r.n+' film"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video>'+sndBtn()+'</div>';
+    '<video playsinline muted loop preload="none" aria-label="Round '+r.n+' film"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video></div>';
 }
 function winBar(r){
   var v=r.win?r.win.split(" & ").map(function(m){return '<span class="wn">'+nm(m)+logo(m)+'</span>'}).join('<span class="amp">&amp;</span>')
@@ -674,16 +691,16 @@ function backFace(r){
 }
 function gradedCard(r,i){
   return '<article class="card '+frame(r)+'" data-i="'+i+'" data-n="'+r.n+'" data-k="g" role="group" aria-roledescription="card" aria-label="'+plain(r)+'"><div class="cin">'+
-    '<div class="face front"><div class="fin"><h3 class="ctop">'+coTitle(r)+'</h3>'+art(r)+winBar(r)+
+    '<div class="face front"><div class="fin">'+topBar(r,!!r.film)+art(r)+winBar(r)+
     '<div class="cfoot"><button type="button" class="flipb" data-flip>See the stats ↻</button></div></div></div>'+
     backFace(r)+'</div></article>';
 }
 function pendingCard(u,i){
   var tm=timed(u.timing,false);
   return '<article class="card pend" data-i="'+i+'" data-n="'+u.n+'" data-k="p" role="group" aria-roledescription="card" aria-label="'+plain(u)+'. Calls are in."><div class="cin">'+
-    '<div class="face front"><div class="fin"><h3 class="ctop">'+coTitle(u)+'</h3>'+
+    '<div class="face front"><div class="fin">'+topBar(u,false)+
     '<div class="art slabart"><span class="stamp"><i aria-hidden="true"></i>Calls are in</span><ul class="pcalls">'+
-    u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<span class="nm">'+nm(c.m)+'</span><b class="'+(up?'up':'dn')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'Up':'Down')+'</span> '+c.mag+'%</b></li>'}).join("")+
+    u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<span class="nm">'+nm(c.m)+'</span><b class="'+(up?'u':'d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'Up':'Down')+'</span> '+c.mag+'%</b></li>'}).join("")+
     '</ul></div>'+
     '<div class="cwin"><small>The market answers</small><span class="wv"><span class="wn">'+fmtDate(u.resolves)+'</span></span></div>'+
     '<p class="cnote"><span><b>Filed <span class="nw">'+fmtDate(u.called)+'</span>, before the report.</b> Never edited.</span>'+(tm?'<span>'+tm+'.</span>':'')+'</p></div></div></div></article>';
@@ -691,7 +708,7 @@ function pendingCard(u,i){
 function sealedCard(u,i){
   var tm=timed(u.timing,false);
   return '<article class="card seal" data-i="'+i+'" data-n="'+u.n+'" data-k="s" role="group" aria-roledescription="card" aria-label="'+plain(u)+'. Sealed. Calls '+fmtDate(u.called)+'."><div class="cin">'+
-    '<div class="face front"><div class="fin"><h3 class="ctop">'+coTitle(u)+'</h3>'+
+    '<div class="face front"><div class="fin">'+topBar(u,false)+
     '<div class="art sealart"><span class="mark" aria-hidden="true"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span><span class="sl">Sealed</span></div>'+
     '<div class="cwin"><small>Calls</small><span class="wv"><span class="wn">'+fmtDate(u.called)+'</span></span></div>'+
     '<p class="cnote"><span>No calls yet. <b>The market answers <span class="nw">'+fmtDate(u.resolves)+'.</span></b></span>'+(tm?'<span>'+tm+'.</span>':'')+'</p></div></div></div></article>';
@@ -707,19 +724,17 @@ function flip(c){var f=!c.classList.contains("flipped"),had=c.contains(document.
 
 /* ---------- hero: the standings, a leaderboard of rounds won ----------
    Order and tie-breaks come from LADDER (ez-data.js: wins, then the smaller average miss). Ties share the rank number.
-   The crown goes to LADDER[0]. A model whose calls are not graded yet gets a quieter card of the same shape. */
+   The crown goes to LADDER[0]. A model with calls but none graded yet (Grok) joins the table below them with 0 wins. */
 var LD=LADDER.filter(function(T){return MODELS[T.m]});
 $("#standSub").textContent="Wins · "+NR+" round"+(NR===1?"":"s");
 var bench=ACTIVE.filter(function(m){return !LD.some(function(T){return T.m===m})});
-function rankOf(T){return 1+LD.filter(function(U){return U.won>T.won}).length}
+var ROWS=LD.concat(bench.map(function(m){return {m:m,won:0}}));
+function rankOf(T){return 1+ROWS.filter(function(U){return U.won>T.won}).length}
 var tied=LD.some(function(T,i){return LD.some(function(U,j){return i!==j&&U.won===T.won})});
-$("#roster").innerHTML=LD.map(function(T,i){
+$("#roster").innerHTML=ROWS.map(function(T,i){
   return '<li class="pc'+(i?'':' lead')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
     '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<h3>'+nm(T.m)+'</h3>'+
-    '<p class="pc-w"><b>'+T.won+'</b><span>'+(T.won===1?'win':'wins')+'</span></p></li>'}).join("")+
-  bench.map(function(m){var f=firstIn(m);
-    return '<li class="pc ghost">'+logo(m)+'<h3>'+nm(m)+'</h3>'+
-      '<p class="pc-note">'+(f?'<span class="lng">Joins in Round '+f.n+'</span><span class="sht">From R'+f.n+'</span>':'No graded calls yet')+'</p></li>'}).join("");
+    '<p class="pc-w"><b>'+T.won+'</b><span>'+(T.won===1?'win':'wins')+'</span></p></li>'}).join("");
 $("#stNote").hidden=!tied;
 var P0=PENDING[0]||null;
 if(TARGET){$("#liveTxt").innerHTML=(P0?"In play: ":"Next: ")+coName(TARGET)}
@@ -766,7 +781,7 @@ function syncFilms(){clearTimeout(filmT);
    The toggle on the centred card always wins: off stays off. The choice lives in sessionStorage. */
 var SK="ez-sound",pref=null;try{pref=sessionStorage.getItem(SK)}catch(e){}
 function savePref(v){pref=v;try{sessionStorage.setItem(SK,v)}catch(e){}}
-function sndUI(){$$(".snd").forEach(function(b){b.dataset.on=soundOn?"1":"0";b.innerHTML=sndFace()})}
+function sndUI(){$$(".snd").forEach(function(b){b.dataset.on=soundOn?"1":"0";b.setAttribute("aria-label",sndLbl());b.title=sndLbl();b.innerHTML=soundOn?SND_ON:SND_OFF})}
 function live(){var s=slides[cur],v=s&&$("video",s);return v&&carVis&&!reduce&&!s.classList.contains("flipped")?v:null}
 function fallback(v){soundOn=false;sndUI();v.muted=true;if(v===live())v.play().then(function(){v.classList.add("on")}).catch(function(){})}
 /* plays a film with the current sound setting; if the browser refuses sound, plays it muted */
@@ -857,14 +872,17 @@ if(window.EZLearn&&NR){
 /* ---------- up next (landing band, right column): the round(s) whose calls are in, face up, then the next sealed rounds.
    Up to SHOW sealed rows; the rest sit in "All upcoming". A company logo shows only once CO_LOGOS has one (the tag carries the ticker). */
 function coLogo(t){return CO_LOGOS[t]?coMark(t):""}
-function callChips(u){return '<ul class="cc" aria-label="The calls">'+u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span><b class="'+(up?'up':'dn')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'Up':'Down')+'</span> '+c.mag+'%</b></li>'}).join("")+'</ul>'}
+function callChips(u){return '<ul class="cc" aria-label="The calls">'+u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span><b class="'+(up?'u':'d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'Up':'Down')+'</span> '+c.mag+'%</b></li>'}).join("")+'</ul>'}
 function sealRow(u){var tm=timed(u.timing,false);
   return '<li class="up-s">'+coLogo(u.ticker)+'<span class="ctt"><b class="nm">'+coTitle(u)+'</b><p>Calls <b>'+fmtDate(u.called)+'</b> · Answer <b>'+fmtDate(u.resolves)+'</b>'+(tm?'<span class="tm"> · '+tm+'</span>':'')+'</p></span><span class="sl">Sealed</span></li>'}
-var SHOW=PENDING.length?2:3,unHTML="";
+/* the band's rows: one per standings row. Each round whose calls are in takes two, then sealed rounds fill the rest. */
+var SHOW=Math.max(1,ROWS.length-2*PENDING.length),unHTML="";
 unHTML+=PENDING.map(function(u){var tm=timed(u.timing,false);
   return '<div class="up-p"><div class="up-t">'+coLogo(u.ticker)+'<span class="ctt"><b class="nm">'+coTitle(u)+'</b><em><i aria-hidden="true"></i><span>Calls are in</span><span>· Filed '+fmtDate(u.called)+'</span>'+(tm?'<span>· '+tm+'</span>':'')+'</em></span></div>'+
     callChips(u)+'<p class="due"><small>Answer</small> <b>'+fmtDate(u.resolves)+'</b></p></div>'}).join("");
-if(UPCOMING.length)unHTML+='<ol class="up-sl" aria-label="Next calls">'+UPCOMING.slice(0,SHOW).map(sealRow).join("")+'</ol>';
+var nSeal=Math.min(SHOW,UPCOMING.length);
+if(nSeal)unHTML+='<ol class="up-sl" aria-label="Next calls" style="--n:'+nSeal+'">'+UPCOMING.slice(0,SHOW).map(sealRow).join("")+'</ol>';
+$(".band").style.setProperty("--rows",Math.max(1,ROWS.length,2*PENDING.length+nSeal));
 $("#unB").innerHTML=unHTML;
 if(UPCOMING.length>SHOW){var rest=UPCOMING.slice(SHOW);$("#unMore").hidden=false;$("#unMoreT").textContent="All upcoming ("+rest.length+" more)";$("#unAll").innerHTML=rest.map(sealRow).join("")}
 if(!PENDING.length&&!UPCOMING.length){$("#unB").innerHTML='<p class="st-note">The next rounds are posted soon.</p>'}
