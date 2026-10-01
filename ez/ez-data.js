@@ -10,21 +10,30 @@ var PROMPT={verbatim:false,lines:["Company <i>X</i> reports on <i>date</i>.","Fu
 var SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/1Y9pKNsyB6NL_LGqUrEUydrt3R0cAwnGVllIRwk7CsLc/export?format=csv&gid=352731177";
 var SHEET_HEADER=["ROUND","TICKER","CALL DATE (T-1)","GPT DIR","GPT MAG (%)","KIMI DIR","KIMI MAG (%)","CLAUDE DIR","CLAUDE MAG (%)","GROK DIR","GROK MAG (%)","RESOLUTION DATE/TIME","ACTUAL MOVE (%)","REPORT TIME"];
 var SHEET=[
- ["1","GME","09/08/26","UP","1","UP","4","UP","2","","","09/09/26","5.95"],
- ["2","ORCL","09/16/26","UP","6","DOWN","6","DOWN","3","","","09/17/26","-1.74"],
- ["3","AZO","09/19/26","UP","4","DOWN","5","DOWN","4.5","","","09/22/26","3.25"],
- ["4","GIS","09/19/26","UP","3","UP","3","DOWN","3","","","09/23/26","1.04"],
- ["5","BB","09/20/26","UP","7","UP","9","UP","9","","","09/21/26","4.1"],
- ["6","COST","09/24/26","DOWN","2.5","DOWN","2.5","DOWN","2.8","","","09/25/26","2.95"],
- ["7","JEF","09/28/26","UP","3","UP","4.5","UP","3.7","","","09/29/26","-1.25"],
- ["8","CCL","09/29/26","UP","3","UP","5","DOWN","5.7","","","09/29/26","13.53"],
- ["9","MU","09/30/26","UP","4","UP","7","DOWN","6.8","UP","6","10/01/26",""],
- ["10","ACN","10/01/26","","","","","","","","","10/01/26",""],
- ["11","NKE","10/01/26","","","","","","","","","10/02/26",""]
+ ["1","GME","09/08/26","UP","1","UP","4","UP","2","","","09/09/26","5.95",""],
+ ["2","ORCL","09/16/26","UP","6","DOWN","6","DOWN","3","","","09/17/26","-1.74",""],
+ ["3","AZO","09/19/26","UP","4","DOWN","5","DOWN","4.5","","","09/22/26","3.25",""],
+ ["4","GIS","09/19/26","UP","3","UP","3","DOWN","3","","","09/23/26","1.04",""],
+ ["5","BB","09/20/26","UP","7","UP","9","UP","9","","","09/21/26","4.1",""],
+ ["6","COST","09/24/26","DOWN","2.5","DOWN","2.5","DOWN","2.8","","","09/25/26","2.95",""],
+ ["7","JEF","09/28/26","UP","3","UP","4.5","UP","3.7","","","09/29/26","-1.25",""],
+ ["8","CCL","09/29/26","UP","3","UP","5","DOWN","5.7","","","09/29/26","13.53",""],
+ ["9","MU","09/30/26","UP","4","UP","7","DOWN","6.8","UP","6","10/01/26","",""],
+ ["10","ACN","10/01/26","DOWN","4","DOWN","4.5","DOWN","6","DOWN","4.5","10/01/26","",""],
+ ["11","NKE","10/01/26","DOWN","3","UP","6","DOWN","8","DOWN","4.5","10/02/26","",""],
+ ["12","2317.TW","10/05/26","","","","","","","","","10/06/26","",""],
+ ["13","RPM","10/05/26","","","","","","","","","10/06/26","",""],
+ ["14","005930.KS","10/06/26","","","","","","","","","10/08/26","",""],
+ ["15","STX","10/06/26","","","","","","","","","10/07/26","",""],
+ ["16","LEVI","10/07/26","","","","","","","","","10/08/26","",""],
+ ["17","APLD","10/07/26","","","","","","","","","10/08/26","",""],
+ ["18","PEP","10/07/26","","","","","","","","","10/08/26","",""],
+ ["19","TSMC","10/08/26","","","","","","","","","10/12/26","",""],
+ ["20","DAL","10/08/26","","","","","","","","","10/09/26","",""]
 ];
 
 /* presentation only — names, films, and the words on each card (never numbers) */
-var TICKERS={GME:"GameStop",ORCL:"Oracle",AZO:"AutoZone",GIS:"General Mills",BB:"BlackBerry",COST:"Costco",JEF:"Jefferies",CCL:"Carnival",MU:"Micron",ACN:"Accenture",NKE:"Nike"};
+var TICKERS={GME:"GameStop",ORCL:"Oracle",AZO:"AutoZone",GIS:"General Mills",BB:"BlackBerry",COST:"Costco",JEF:"Jefferies",CCL:"Carnival",MU:"Micron",ACN:"Accenture",NKE:"Nike","2317.TW":"Foxconn",RPM:"RPM","005930.KS":"Samsung",STX:"Seagate",LEVI:"Levi Strauss",APLD:"Applied Digital",PEP:"PepsiCo",TSMC:"TSMC",DAL:"Delta"};
 var CARDS={
  1:{tag:"SEASON OPENER",head:"Kimi Calls GameStop",film:"round-1-gamestop-hd",poster:"round-1-gamestop-hd-poster"},
  2:{tag:"THE FADE",head:"Oracle Fades; Claude Collects",film:"round-2-oracle-hd",poster:"round-2-oracle-hd-poster"},

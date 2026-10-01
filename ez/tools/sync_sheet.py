@@ -54,7 +54,7 @@ def main():
     src = read_data()
     header, _ = js_array(src, "SHEET_HEADER")
     old, sheet_m = js_array(src, "SHEET")
-    tickers = set(re.findall(r'(\w+):"', re.search(r"var TICKERS=\{(.*?)\};", src).group(1)))
+    tickers = set(re.findall(r'"?([\w.]+)"?:"', re.search(r"var TICKERS=\{(.*?)\};", src).group(1)))
     films = set(re.findall(r"(\d+):\{f:", re.search(r"var FILMS=\{(.*?)\};", src, re.S).group(1)))
 
     if "--file" in args:
