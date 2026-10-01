@@ -29,11 +29,27 @@ var SHEET=[
  ["17","APLD","10/07/26","","","","","","","","","10/08/26","",""],
  ["18","PEP","10/07/26","","","","","","","","","10/08/26","",""],
  ["19","TSMC","10/08/26","","","","","","","","","10/12/26","",""],
- ["20","DAL","10/08/26","","","","","","","","","10/09/26","",""]
+ ["20","DAL","10/08/26","","","","","","","","","10/09/26","",""],
+ ["21","JPM","10/12/26","","","","","","","","","10/13/26","",""],
+ ["22","JNJ","10/12/26","","","","","","","","","10/13/26","",""],
+ ["23","UNH","10/12/26","","","","","","","","","10/13/26","",""],
+ ["24","GS","10/12/26","","","","","","","","","10/13/26","",""],
+ ["25","WFC","10/12/26","","","","","","","","","10/13/26","",""],
+ ["26","C","10/12/26","","","","","","","","","10/13/26","",""],
+ ["27","DPZ","10/12/26","","","","","","","","","10/13/26","",""],
+ ["28","8267.T","10/12/26","","","","","","","","","10/14/26","",""],
+ ["29","ASML.AS","10/13/26","","","","","","","","","10/14/26","",""],
+ ["30","BAC","10/13/26","","","","","","","","","10/14/26","",""],
+ ["31","MS","10/13/26","","","","","","","","","10/14/26","",""],
+ ["32","BLK","10/13/26","","","","","","","","","10/14/26","",""],
+ ["33","2330.TW","10/14/26","","","","","","","","","10/16/26","",""],
+ ["34","9602.T","10/14/26","","","","","","","","","10/16/26","",""],
+ ["35","IBKR","10/15/26","","","","","","","","","10/16/26","",""],
+ ["36","AA","10/15/26","","","","","","","","","10/16/26","",""]
 ];
 
 /* presentation only — names, films, and the words on each card (never numbers) */
-var TICKERS={GME:"GameStop",ORCL:"Oracle",AZO:"AutoZone",GIS:"General Mills",BB:"BlackBerry",COST:"Costco",JEF:"Jefferies",CCL:"Carnival",MU:"Micron",ACN:"Accenture",NKE:"Nike","2317.TW":"Foxconn",RPM:"RPM","005930.KS":"Samsung",STX:"Seagate",LEVI:"Levi Strauss",APLD:"Applied Digital",PEP:"PepsiCo",TSMC:"TSMC",DAL:"Delta"};
+var TICKERS={JPM:"JPMorgan Chase",JNJ:"Johnson & Johnson",UNH:"UnitedHealth",GS:"Goldman Sachs",WFC:"Wells Fargo",C:"Citigroup",DPZ:"Domino's",BAC:"Bank of America",MS:"Morgan Stanley",BLK:"BlackRock",IBKR:"Interactive Brokers",AA:"Alcoa","8267.T":"AEON","ASML.AS":"ASML","2330.TW":"TSMC","9602.T":"Toho",GME:"GameStop",ORCL:"Oracle",AZO:"AutoZone",GIS:"General Mills",BB:"BlackBerry",COST:"Costco",JEF:"Jefferies",CCL:"Carnival",MU:"Micron",ACN:"Accenture",NKE:"Nike","2317.TW":"Foxconn",RPM:"RPM","005930.KS":"Samsung",STX:"Seagate",LEVI:"Levi Strauss",APLD:"Applied Digital",PEP:"PepsiCo",TSMC:"TSMC",DAL:"Delta"};
 var CARDS={
  1:{tag:"SEASON OPENER",head:"Kimi Calls GameStop",film:"round-1-gamestop-hd",poster:"round-1-gamestop-hd-poster"},
  2:{tag:"THE FADE",head:"Oracle Fades; Claude Collects",film:"round-2-oracle-hd",poster:"round-2-oracle-hd-poster"},

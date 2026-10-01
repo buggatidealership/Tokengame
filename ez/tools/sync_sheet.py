@@ -84,7 +84,14 @@ def main():
     seen = set()
     for r in rows[hi + 1:]:
         g = lambda h: (r[col[h]] if col[h] < len(r) else "") if h in col else ""
-        rn, tk = g("ROUND").strip(), g("TICKER").strip().upper()
+        rn, tk = g("ROUND").strip(), g("TICKER").strip()
+        # a note after the ticker, e.g. "AA (Alcoa)" or "8267.T (AEON)": keep the ticker, report the note
+        mt = re.match(r"^([^\s(]+)\s*\((.*)\)\s*$", tk)
+        if mt:
+            tk = mt.group(1)
+            if mt.group(1).upper() not in tickers:
+                warnings.append("R%s ticker cell '%s': used %s; add the name to TICKERS" % (rn, g("TICKER").strip(), tk.upper()))
+        tk = tk.upper()
         if not rn and not tk:
             continue
         if not re.match(r"^\d+$", rn) or not tk:
@@ -95,6 +102,8 @@ def main():
         out = []
         for h in want:
             v = g(h).strip()
+            if v in ("-", "\u2013", "\u2014", "N/A", "n/a", "NA"):
+                v = ""   # "-" means the model didn't take part in that round
             if h.endswith(" DIR"):
                 v = v.upper()
                 if v not in ("", "UP", "DOWN"):
