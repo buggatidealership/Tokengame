@@ -49,7 +49,7 @@ PALETTES = {
     #    near-black ink (less blue light, softer than white), gold from the $ as the highlight, green from the E for up,
     #    red from the Z for down. Every text pair still clears the contrast checks below.
     "warm": dict(field="#f3ead8", field2="#f8f1e3", ink="#2a1f14", ink2="#55483a", dim="#6c5f4f", card="#fcf6ea",
-                 yel="#f2c14e", red="#b3322a", grn="#1d7646", cob="#2f53a3", gold="#7f5500", tbc="#a1236a",
+                 yel="#ffc72c", red="#b3322a", grn="#1d7646", cob="#2f53a3", gold="#7f5500", tbc="#a1236a",
                  up="#1d7646", dn="#b3322a",
                  slab="#2a1f14", slab2="#20180f", slabA="#35291c", slabB="#2a1f14", slabC="#302418",
                  **{"on-slab": "#fcf6ea", "on-slab2": "#cdbfa8", "on-slab3": "#efe5d3"}),
