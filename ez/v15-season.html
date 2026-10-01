@@ -12,7 +12,7 @@
 <style>
 /* EARNINGS ZEASON · V15 · THE SEASON
    Clean and spacious. The journey: the landing (headline, one line, then Standings and Up next side by side at every
-   width), the record (swipeable cards), are they learning, the bet (a fight-card poster), the calculator, the buy steps.
+   width), the record (swipeable cards), are they learning, the buyback (a fight-card poster), the math, the buy steps.
    Companies: always the name plus a small $TICKER tag (.tk), built by one helper, coTitle()/coName().
    Data: ez-data.js only. Nothing typed by hand.
    Contrast rule: on light surfaces (card, field, --yel) text is --ink/--ink2; on dark surfaces (--slab, --red)
@@ -106,10 +106,10 @@ h2{font:400 clamp(27px,4.2vw,44px)/.96 var(--fd);text-transform:uppercase;letter
 /* in round titles (cards, Up next) the ticker is part of the title: same font, size and weight as the name */
 .tkn{white-space:nowrap}
 
-/* the landing: headline and one line, then the band. Standings (left) and Up next (right), side by side at every width.
+/* the landing: headline and one line, then the band. Standings (left) and Up next (right), half and half at every width.
    One shared row grid: the band's rows are equal (1fr), both columns use them (subgrid), so the columns start and end
-   on the same lines. Standings: one model per row. Up next: the round whose calls are in spans two rows, then one row
-   per sealed round. --rows is set from the data. On wide screens the band keeps a squarish 680px, under the headline. */
+   on the same lines. Standings: one model per row. Up next: one tall card for the next round, as tall as the standings.
+   --rows is set from the data. On wide screens the band keeps a squarish 680px, under the headline. */
 .hero{padding-top:44px}
 .hero-t{min-width:0;max-width:900px}
 h1{font:400 clamp(34px,4.8vw,62px)/.94 var(--fd);text-transform:uppercase;letter-spacing:.005em}
@@ -118,7 +118,7 @@ h1{font:400 clamp(34px,4.8vw,62px)/.94 var(--fd);text-transform:uppercase;letter
 h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:clone;background:linear-gradient(transparent 58%,var(--yel) 58%,var(--yel) 92%,transparent 92%)}
 .hero .sub{font:500 clamp(15px,1.3vw,17px)/1.6 var(--fb);color:var(--ink2);max-width:60ch;margin-top:16px}
 .hero .sub b{color:var(--ink)}
-.band{--rh:100px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);grid-template-rows:auto repeat(var(--rows,4),minmax(var(--rh),1fr));
+.band{--rh:100px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto repeat(var(--rows,4),minmax(var(--rh),1fr));
   column-gap:28px;row-gap:12px;max-width:680px}
 .col{min-width:0;scroll-margin-top:66px;display:grid;grid-row:1/-1;grid-template-rows:subgrid}
 .band-ft{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 16px;max-width:680px;margin-top:10px}
@@ -131,16 +131,18 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .bf-back{transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:flex-start;gap:18px;min-height:0;overflow:hidden;
   background:var(--card);color:var(--ink);border-radius:20px;box-shadow:0 0 0 2.5px var(--ink),5px 6px 0 0 var(--ink);padding:24px 26px 20px}
 .bf-back h2{font:400 30px/1 var(--fd);margin:0;outline-offset:6px}
-.how{list-style:none;counter-reset:how;display:grid;gap:14px}
-.how li{counter-increment:how;position:relative;padding-left:42px;min-height:30px;font:500 16px/1.45 var(--fb);color:var(--ink2)}
-.how li::before{content:counter(how);position:absolute;left:0;top:-2px;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink);font:400 17px/1 var(--fd)}
-.how b{color:var(--ink);font-weight:800}
+/* the four rules spread over the card's height. Each number square is centred on the first line of its text:
+   --lh is the line height, --sq the square, so the square's top is (--lh − --sq) / 2. */
+.how{--lh:32px;--sq:40px;flex:1;list-style:none;counter-reset:how;display:grid;align-content:space-evenly;gap:14px}
+.how li{counter-increment:how;position:relative;padding-left:calc(var(--sq) + 14px);min-height:var(--sq);font:500 21px/var(--lh) var(--fb);color:var(--ink2)}
+.how li::before{content:counter(how);position:absolute;left:0;top:calc((var(--lh) - var(--sq)) / 2);display:grid;place-items:center;width:var(--sq);height:var(--sq);border-radius:10px;background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink);font:400 25px/1 var(--fd)}
+.how b{color:var(--ink);font-weight:800;font-size:24px}
 /* the two small text buttons: link style, 44px tall hit area */
 .howb,.howback{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 4px;font:700 13px/1 var(--fb);color:var(--ink)}
 .howb .ul,.howback .ul{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
 .howb>span[aria-hidden]{font-size:16px}
 .howb:hover,.howback:hover{background:var(--yel);color:var(--ink);border-radius:6px}
-.howback{align-self:flex-start;margin-top:auto}
+.howback{align-self:flex-start}
 
 /* column heads (Standings, Up next) */
 .st-h{grid-row:1;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin-bottom:6px}
@@ -165,85 +167,47 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 @media(prefers-reduced-motion:reduce){.pc .crown i{animation:none}}
 .st-note{font:600 12px/1.45 var(--fb);color:var(--ink2)}
 
-/* up next: the round whose calls are in (calls face up, two rows tall), then the next sealed rounds (a row each) */
-.un-b{grid-row:2/-1;display:flex;flex-direction:column;gap:inherit;row-gap:var(--band-gap,14px);min-width:0}
-.un-b>.up-p{flex:1 1 auto}
-.up-p{grid-row:span 2;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"t d" "c c";align-content:center;align-items:start;gap:18px 12px;min-width:0;background:var(--card);color:var(--ink);border-radius:16px;padding:14px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
-.up-t{grid-area:t;display:flex;align-items:center;gap:12px;min-width:0}
-.up-t .co-mark{--cm:38px}
-.up-t .ctt,.up-s .ctt{flex:1;min-width:0;display:grid;gap:5px}
-.up-t .nm,.up-s .nm{font:400 20px/1.1 var(--fd);text-transform:uppercase;min-width:0}
-.up-t em{display:flex;align-items:center;flex-wrap:wrap;gap:3px 6px;font:700 11px/1.3 var(--fm);font-style:normal;letter-spacing:.05em;text-transform:uppercase;color:var(--ink2)}
-.up-t em i{width:8px;height:8px;border-radius:50%;background:var(--red);flex:none;animation:pulse 1.2s infinite}
-.due{grid-area:d;display:grid;justify-items:center;gap:3px;padding:6px 10px 5px;border-radius:10px;background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
-.due small{font:700 9.5px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase}
-.due b{font:400 20px/1 var(--fd);text-transform:uppercase;white-space:nowrap}
-.cc{grid-area:c;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.cc li{display:flex;align-items:center;gap:7px;min-height:46px;padding:4px 5px 4px 7px;border-radius:10px;background:var(--slab);color:var(--on-slab)}
-.cc .lg{font-size:24px;box-shadow:0 0 0 1.5px var(--on-slab2)}
-.cc .n{flex:1;min-width:0;font:400 16px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cc b{margin-left:auto;font:700 13.5px/1 var(--fm);font-variant-numeric:tabular-nums;padding:6px 7px;border-radius:7px;white-space:nowrap}
-.up-sl{list-style:none;display:grid;gap:10px}
-.un-b .up-sl{flex:none;grid-template-columns:repeat(var(--tiles,2),minmax(0,1fr));gap:10px}
-/* next sealed rounds as small square tiles under the round in play */
-.up-sl .up-s{flex-direction:column;align-items:flex-start;justify-content:space-between;gap:8px;padding:12px;aspect-ratio:1/1}
-.up-sl .up-s .ctt{gap:4px}
-.up-s .nm small{display:block;font:700 10.5px/1 var(--fm);letter-spacing:.08em;color:var(--ink2);margin-bottom:5px}
-.up-s .tkn{white-space:nowrap}
-.up-s .dl{display:grid;gap:2px;font:600 13px/1.25 var(--fb);color:var(--ink2)}
-.up-s .dl b{font-weight:800;color:var(--ink)}
-.up-s .dl>span{white-space:nowrap}
-.band{--band-gap:12px}
-@media (max-width:560px){
-  .band{--band-gap:8px}
-  .up-sl .up-s{padding:8px;gap:4px}
-  .up-sl .up-s .nm{font-size:13px;line-height:1.1}
-  .up-s .nm small{font-size:9.5px;margin-bottom:3px}
-  .up-s .dl{font-size:11.5px;line-height:1.2}
-}
-.up-s{display:flex;align-items:center;gap:12px;min-width:0;background:var(--card);color:var(--ink);border-radius:14px;box-shadow:0 0 0 2px var(--ink);padding:10px 14px}
-.up-s .co-mark{--cm:34px}
-.up-s .nm{font-size:19px}
-.up-s p{font:600 14px/1.4 var(--fb);color:var(--ink2)}
-.up-s p b{font-weight:800;color:var(--ink)}
-.up-s .sl{flex:none;font:700 10px/1 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);padding:6px 8px;border-radius:999px;box-shadow:inset 0 0 0 1.5px var(--ink2);background:var(--field2)}
+/* up next: one tall card for the next round. The title, the four calls stacked one per row, then the result date. */
+.un-b{grid-row:2/-1;display:flex;flex-direction:column;min-width:0}
+.up-p{flex:1 1 auto;display:flex;flex-direction:column;gap:14px;min-width:0;background:var(--card);color:var(--ink);border-radius:16px;padding:16px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
+.up-p .nm{display:block;font:400 22px/1.05 var(--fd);text-transform:uppercase;min-width:0}
+.cc{flex:1;list-style:none;display:grid;grid-auto-rows:minmax(0,1fr);gap:9px}
+.cc li{display:flex;align-items:center;gap:10px;min-width:0;padding:6px 6px 6px 8px;border-radius:11px;background:var(--slab);color:var(--on-slab)}
+.cc .lg{font-size:32px;box-shadow:0 0 0 1.5px var(--on-slab2)}
+.cc .n{flex:1;min-width:0;font:400 20px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc b{margin-left:auto;align-self:stretch;display:flex;align-items:center;justify-content:center;gap:6px;min-width:5.4em;font:700 20px/1 var(--fm);font-variant-numeric:tabular-nums;padding:0 10px;border-radius:8px;white-space:nowrap}
+/* no calls yet: the date the calls come in, in the calls' place */
+.un-seal{flex:1;display:grid;place-items:center;align-content:center;gap:10px;border-radius:11px;text-align:center;box-shadow:inset 0 0 0 2px var(--ink);
+  background:repeating-linear-gradient(135deg,var(--card) 0 8px,var(--field2) 8px 16px)}
+.un-seal .mark{font-size:30px;line-height:1;background:var(--slab);padding:8px 10px 6px;border-radius:10px}
+.un-seal b{font:400 26px/1 var(--fd);text-transform:uppercase;background:var(--card);padding:6px 10px 5px;border-radius:8px;box-shadow:0 0 0 2px var(--ink)}
+.due{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px 8px;border-radius:10px;background:var(--yel);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.due small{font:700 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase}
+.due b{font:400 26px/1 var(--fd);text-transform:uppercase;white-space:nowrap}
 .un-more{margin-right:auto;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:700 12px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;list-style:none}
 .un-more::after{content:"+";font:800 16px/1 var(--fb)}
 .un-more[aria-expanded=true]::after{content:"−"}
 .un-more:hover{background:var(--yel);color:var(--ink)}
-/* "All upcoming": a plain list, one row per round, under the band */
-.up-all{list-style:none;display:grid;gap:8px;max-width:680px;margin-top:10px}
-.up-all .up-s{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 14px;padding:10px 14px}
-.up-all .up-s .co-mark{display:none}
-.up-all .up-s .dl{grid-column:2;grid-row:1;justify-items:end;text-align:right}
-.up-all .up-pt .ci,.up-all .up-pt .cp{grid-column:1/-1}
-.up-all .up-pt .dl{grid-row:1}
-.up-all .cp{grid-template-columns:repeat(4,max-content)}
-/* a calls-in tile: the round, "Calls in" and four compact call pills */
-.ci{display:inline-flex;align-items:center;gap:5px;font:700 10px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
-.ci i{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none;animation:pulse 1.2s infinite}
-.cp{list-style:none;display:grid;grid-template-columns:repeat(2,max-content);gap:6px 8px}
+/* "All upcoming": two groups under the band. "Calls in" (with the calls) and "Scheduled" (with the dates).
+   Side by side on wide screens, stacked on phones. */
+.up-all{display:grid;grid-template-columns:repeat(var(--ua-cols,1),minmax(0,1fr));gap:18px 20px;align-items:start;max-width:680px;margin-top:14px}
+@media(max-width:640px){.up-all{grid-template-columns:minmax(0,1fr)}}
+.ua-h{font:700 11px/1 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--ink);margin:0 0 8px;display:flex;align-items:center;gap:6px}
+.ua-h i{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none;animation:pulse 1.2s infinite}
+.ua-l{list-style:none;display:grid;gap:8px}
+.up-s{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 14px;min-width:0;background:var(--card);color:var(--ink);border-radius:14px;box-shadow:0 0 0 2px var(--ink);padding:10px 14px}
+.up-s .co-mark{display:none}
+.up-s .nm{font:400 19px/1.1 var(--fd);text-transform:uppercase;min-width:0}
+.up-s .nm small{display:block;font:700 10.5px/1 var(--fm);letter-spacing:.08em;color:var(--ink2);margin-bottom:5px}
+.up-s .tkn{white-space:nowrap}
+.up-s .dl{display:grid;gap:2px;justify-items:end;text-align:right;font:600 13px/1.25 var(--fb);color:var(--ink2)}
+.up-s .dl b{font-weight:800;color:var(--ink)}
+.up-s .dl>span{white-space:nowrap}
+.up-pt .cp{grid-column:1/-1}
+.cp{list-style:none;display:flex;flex-wrap:wrap;gap:6px 7px}
 .cp li{display:flex;align-items:center;gap:4px}
-.cp .lg{font-size:21px}
-.cp b{font:700 12px/1 var(--fm);padding:4px 5px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.up-sl .up-pt{gap:5px;justify-content:flex-start}
-.up-sl .up-pt .dl{margin-top:auto}
-@media (max-width:560px){
-  /* phones: the tile is about 100px. "Calls in" takes the round label's place (the round stays for screen readers),
-     the answer date goes, and the four pills pack into two tight rows. */
-  .up-sl .up-pt{gap:4px;padding:7px 6px}
-  .up-sl .up-pt .dl{display:none}
-  .up-sl .up-pt .ci{order:-1}
-  .up-sl .up-pt .nm small{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .ci{font-size:9.5px;letter-spacing:.04em}
-  .cp{gap:3px 3px}
-  .up-sl .cp{margin-top:auto}
-  .cp li{gap:2px}
-  .cp .lg{font-size:12px;box-shadow:0 0 0 1px var(--ink)}
-  .cp b{font-size:9.5px;padding:2px 2px;border-radius:4px;letter-spacing:-.02em}
-  .up-sl .cp .pc-pct{display:none}
-  .up-all .up-s{padding:8px 10px}
-}
+.cp .lg{font-size:20px}
+.cp b{font:700 12.5px/1 var(--fm);padding:5px 6px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
 
 /* tablets: the same two columns, a little tighter */
 @media(max-width:899px){
@@ -253,53 +217,56 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .pc>.lg{font-size:30px}
   .pc h3{font-size:21px}
   .pc-w b{font-size:34px}
-  .up-s .sl{display:none}
 }
-/* phones: still side by side and on the same rows. Standings about 40%: rank, logo, name, wins.
-   Up next about 60%: the calls shrink to logo plus ▲/▼ number so the round fits two rows. */
+/* phones: still half and half, on the same rows. Standings: rank, logo, name, wins.
+   Up next: the calls shrink to logo plus ▲/▼ number, one per row. */
 @media(max-width:640px){
   .hero{padding-top:22px}
   h1{font-size:clamp(28px,8vw,33px)}
   .hero .sub{font-size:15px;line-height:1.5;margin-top:10px}
-  .band{--rh:64px;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);column-gap:10px;row-gap:8px}
+  .band{--rh:64px;column-gap:10px;row-gap:8px}
   .band-ft{margin-top:6px}
   .bflip{margin-top:20px}
-  .bf-back{padding:14px 14px 6px;gap:8px;border-radius:14px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
+  .bf-back{padding:14px 14px 4px;gap:6px;border-radius:14px;box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
   .bf-back h2{font-size:21px}
-  .how{gap:9px}
-  .how li{padding-left:33px;min-height:24px;font-size:13.5px;line-height:1.38}
-  .how li::before{width:24px;height:24px;top:-2px;border-radius:6px;font-size:14px}
+  .how{--lh:20px;--sq:24px;gap:8px}
+  .how li{padding-left:calc(var(--sq) + 9px);font-size:14.5px}
+  .how li::before{border-radius:6px;font-size:15px}
+  .how b{font-size:15.5px}
   .st-h{display:block;margin-bottom:6px}
   .st-h h2{font-size:19px}
   .st-h span{display:block;margin-top:4px;font-size:10px;letter-spacing:.04em;line-height:1.25}
-  .pc{gap:5px;padding:5px 7px 5px 6px;border-radius:11px;box-shadow:0 0 0 2px var(--ink),2px 3px 0 0 var(--ink)}
+  .pc{gap:6px;padding:5px 8px 5px 7px;border-radius:11px;box-shadow:0 0 0 2px var(--ink),2px 3px 0 0 var(--ink)}
   .pc.lead{box-shadow:0 0 0 2.5px var(--ink),2px 3px 0 .5px var(--ink)}
-  .pc .rk{font-size:16px;min-width:1.35em}
-  .pc>.lg{font-size:24px}
-  .pc h3{font-size:16px}
-  .pc-w b{font-size:26px}
+  .pc .rk{font-size:17px;min-width:1.35em}
+  .pc>.lg{font-size:26px}
+  .pc h3{font-size:17px}
+  .pc-w b{font-size:28px}
   .pc-w span{display:none}
   .pc .crown{top:-11px;left:4px;padding:3px 5px}
   .pc .crown .cw{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .st-note{font-size:12px}
-  .up-p{grid-template-columns:minmax(0,1fr);grid-template-areas:"t" "c" "d";gap:6px;padding:8px;border-radius:12px;box-shadow:0 0 0 2px var(--ink),2px 3px 0 0 var(--ink)}
-  .up-t .nm,.up-s .nm{font-size:15px;line-height:1.05}
-  .up-t .ctt{gap:4px}
-  .up-t em{font-size:10.5px;letter-spacing:.02em;gap:2px 5px}
-  .up-t em i{width:7px;height:7px}
-  .cc{gap:5px}
-  .cc li{gap:4px;min-height:30px;padding:3px;border-radius:8px}
-  .cc .lg{font-size:20px}
+  .up-p{gap:7px;padding:8px;border-radius:12px;box-shadow:0 0 0 2px var(--ink),2px 3px 0 0 var(--ink)}
+  .up-p .nm{font-size:16px;line-height:1.05}
+  .cc{gap:6px}
+  .cc li{gap:6px;padding:4px;border-radius:9px}
+  .cc .lg{font-size:24px}
   .cc .n{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .cc b{font-size:13px;padding:5px 4px;border-radius:6px;flex:1;text-align:center}
-  .due{display:flex;align-items:baseline;justify-content:center;gap:7px;padding:6px 8px 5px;border-radius:8px}
-  .due small{font-size:10px}
-  .due b{font-size:16px}
-  .up-s{padding:7px 8px;border-radius:11px;gap:8px}
-  .up-s .ctt{gap:3px}
-  .up-s p{font:600 13px/1.3 var(--fb)}
-  .up-s p .tm{display:none}
-  .un-more{padding:0 10px;gap:5px;font-size:10px;letter-spacing:.03em}
+  .cc b{flex:1;min-width:0;font-size:14px;gap:5px;padding:0 4px;border-radius:6px}
+  .un-seal{gap:7px}
+  .un-seal .mark{font-size:22px;padding:6px 7px 4px}
+  .un-seal b{font-size:17px}
+  .due{padding:6px 8px 5px;border-radius:8px;gap:6px}
+  .due small{font-size:9.5px;letter-spacing:.06em}
+  .due b{font-size:17px}
+  .up-s{padding:8px 10px;border-radius:11px;gap:7px 10px}
+  .up-s .nm{font-size:15px;line-height:1.05}
+  .up-s .nm small{font-size:9.5px;margin-bottom:3px}
+  .up-s .dl{font-size:12px}
+  .cp{gap:5px 8px}
+  .cp .lg{font-size:19px}
+  .cp b{font-size:11.5px;padding:4px 5px}
+  .un-more{padding:0 12px;gap:5px;font-size:10.5px;letter-spacing:.03em}
   .howb{font-size:12px;gap:4px}
   .band-ft{gap:8px}
   .sec{padding-top:88px}
@@ -360,8 +327,9 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .art{position:relative;aspect-ratio:1/1;background:var(--slab2);overflow:hidden;border-bottom:2px solid var(--ink)}
 .art img,.art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .art video{opacity:0;transition:opacity .3s}
-/* the art is at least square and takes up any extra height, so every card in the row lines up without gaps */
-.face.front .art{flex:1 0 auto}
+/* the art is a touch taller than square (it gets the room the short flip button frees) and takes up any extra height,
+   so every card in the row lines up without gaps */
+.face.front .art{flex:1 0 auto;aspect-ratio:1/1.05}
 .art video.on{opacity:1}
 /* sound: an icon-only toggle in the centred card's top bar. Muted until the visitor touches the page (browsers block
    sound before that). A 16px icon; the button fills the bar's height (44px) and a pseudo-element widens its 28px to a
@@ -376,17 +344,19 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .rm .snd{display:none!important}
 .art .soon{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--on-slab);font:400 30px/1 var(--fd);text-transform:uppercase;background:repeating-linear-gradient(45deg,var(--slabA) 0 14px,var(--slabB) 14px 28px)}
 .art .soon small{--tk:var(--on-slab2);display:block;font:700 11px/1.4 var(--fm);letter-spacing:.08em;color:var(--yel);margin-top:8px}
-/* winner bar: WINNER and the name at the same size and weight */
-.cwin{margin:10px 10px 0;display:flex;align-items:center;gap:10px 12px;background:var(--slab);color:var(--on-slab);border-radius:11px;padding:10px 12px;min-height:60px}
-.cwin small{font:400 22px/1 var(--fd);letter-spacing:.02em;color:var(--yel);flex:none;text-transform:uppercase}
+/* winner bar: WINNER and the name at the same size and weight. The loudest thing under the film, well above the button. */
+.cwin{margin:10px 10px 0;display:flex;align-items:center;gap:10px 12px;background:var(--slab);color:var(--on-slab);border-radius:12px;padding:12px 14px;min-height:72px}
+.cwin small{font:400 30px/1 var(--fd);letter-spacing:.02em;color:var(--yel);flex:none;text-transform:uppercase}
 .cwin .wv{flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:6px 10px}
-.cwin .wn{display:inline-flex;align-items:center;gap:8px;font:400 22px/1 var(--fd);text-transform:uppercase;white-space:nowrap;color:var(--on-slab)}
-.cwin .wn .lg{font-size:26px}
-.cwin .amp{font:400 20px/1 var(--fd);color:var(--yel)}
+.cwin .wn{display:inline-flex;align-items:center;gap:9px;font:400 30px/1 var(--fd);text-transform:uppercase;white-space:nowrap;color:var(--on-slab)}
+.cwin .wn .lg{font-size:32px}
+.cwin .amp{font:400 24px/1 var(--fd);color:var(--yel)}
 .f-none .cwin{background:var(--red)}
 .f-none .cwin small{color:var(--on-slab)}
-.cfoot{margin-top:auto;padding:10px 10px 11px;display:flex;gap:8px}
-.flipb{flex:1;min-height:48px;border-radius:10px;background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--ink);font:800 14px/1 var(--fb);text-transform:uppercase;letter-spacing:.04em;font-stretch:95%;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.cfoot{margin-top:auto;padding:8px 10px 10px;display:flex;gap:8px}
+/* the flip button: full width but short. A see-through strip above and below keeps a 44px tap target. */
+.flipb{position:relative;flex:1;min-height:34px;border-radius:9px;background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--ink);font:800 13px/1 var(--fb);text-transform:uppercase;letter-spacing:.04em;font-stretch:95%;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.flipb::after{content:"";position:absolute;left:0;right:0;top:-5px;bottom:-5px}
 .flipb:hover,.flipb:focus-visible{background:var(--yel);color:var(--ink)}
 .flipb:active{background:var(--slab);color:var(--on-slab)}
 .cnote{margin-top:auto;padding:12px 14px 14px;font:600 13.5px/1.45 var(--fb);color:var(--ink2);min-height:70px;display:flex;flex-direction:column;justify-content:center}
@@ -410,9 +380,10 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .bk-r .who .lg{font-size:26px}
 .bk-r .who span.n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bk-r .pd{font:700 14px/1 var(--fm);text-align:right;white-space:nowrap;padding:6px 7px;border-radius:7px}
-.bk-out{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-radius:12px;box-shadow:0 0 0 2px var(--ink);background:var(--field2);color:var(--ink)}
-.bk-out small{font:700 10.5px/1.4 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
-.bk-out b{font:400 36px/.9 var(--fd);padding:7px 10px 5px;border-radius:10px;white-space:nowrap}
+/* the real move, one compact row under the calls: the label, then the move pill (lined up with the call pills) */
+.bk-out{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:54px;padding:8px 12px;border-radius:11px;box-shadow:0 0 0 2px var(--ink);background:var(--field2);color:var(--ink)}
+.bk-out small{font:400 22px/1 var(--fd);text-transform:uppercase;color:var(--ink)}
+.bk-out b{display:inline-flex;align-items:center;gap:6px;font:700 17px/1 var(--fm);font-variant-numeric:tabular-nums;padding:7px 9px;border-radius:8px;white-space:nowrap}
 .f-none .bk-h{background:var(--red);--tk:var(--on-slab)}
 .f-none .bk-h h4 .rd{color:var(--on-slab3)}
 .f-none .bk-h p{color:var(--on-slab)}
@@ -442,14 +413,15 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .snd{margin-right:3px}
   .ctop h3{padding-top:8px;padding-bottom:7px}
   .art .soon{font-size:21px}
-  .cwin{margin:7px 7px 0;gap:6px 8px;padding:7px 9px;min-height:44px;border-radius:9px}
-  .cwin small,.cwin .wn{font-size:18px}
+  .cwin{margin:7px 7px 0;gap:6px 8px;padding:8px 9px;min-height:52px;border-radius:9px}
+  .cwin small,.cwin .wn{font-size:23px}
   .cwin .wv{gap:4px 6px}
   .cwin .wn{gap:5px}
-  .cwin .wn .lg{font-size:21px}
-  .cwin .amp{font-size:15px}
-  .cfoot{padding:7px 7px 8px}
-  .flipb{min-height:44px;font-size:12px;letter-spacing:.03em;border-radius:9px}
+  .cwin .wn .lg{font-size:24px}
+  .cwin .amp{font-size:17px}
+  .cfoot{padding:6px 7px 7px}
+  .flipb{min-height:28px;font-size:11px;letter-spacing:.03em;border-radius:7px}
+  .flipb::after{top:-8px;bottom:-8px}
   .cnote{padding:8px 10px 10px;font-size:12px;line-height:1.4;min-height:0}
   .bk-h{padding:11px 11px 10px}
   .bk-h h4{font-size:15px}
@@ -464,9 +436,9 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .bk-r .who .lg{font-size:21px}
   .bk-r .pd{font-size:11.5px;padding:5px 5px}
   .bk-r.no .rk span[aria-hidden]{width:15px;height:17px;border-radius:4px;font-size:11px}
-  .bk-out{padding:9px 10px;gap:6px;border-radius:9px}
-  .bk-out small{font-size:9px}
-  .bk-out b{font-size:26px;padding:5px 7px 4px;border-radius:8px}
+  .bk-out{min-height:40px;padding:6px 8px 6px 10px;gap:6px;border-radius:9px}
+  .bk-out small{font-size:17px}
+  .bk-out b{font-size:13px;gap:4px;padding:5px 6px;border-radius:6px}
   .slabart{gap:7px;padding:9px 7px}
   .stamp{font-size:14px;padding:5px 8px 4px;gap:6px}
   .stamp i{width:7px;height:7px}
@@ -524,7 +496,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .lsw button:hover{background:var(--yel);color:var(--ink)}
 .lsw button[aria-pressed=true]{background:var(--slab);color:var(--on-slab)}
 
-/* the bet: a fight-card poster. $EZ's pot, the bet on NVIDIA (NVDA) earnings, then the two outcomes. Big type, few words. */
+/* the buyback: a fight-card poster. $EZ's pot, the bet on NVIDIA (NVDA) earnings, then the two outcomes. Big type, few words. */
 .poster{position:relative;background:var(--slab);color:var(--on-slab);border-radius:24px;padding:0 28px 26px;overflow:hidden;
   box-shadow:0 0 0 2.5px var(--ink),8px 10px 0 var(--yel),8px 10px 0 2.5px var(--ink)}
 .poster::before{content:"";display:block;height:12px;margin:0 -28px;background:var(--hazard)}
@@ -539,7 +511,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .pz-f .lg{font-size:40px}
 .pz-h{font:400 clamp(30px,3.4vw,44px)/.95 var(--fd);letter-spacing:.005em;text-transform:uppercase}
 .pz-f .lg+.lg{margin-left:-4px}
-.pz-tx{font:700 clamp(16px,1.5vw,19px)/1.42 var(--fb);color:var(--ink)}
+.pz-tx{--tk:var(--ink);font:700 clamp(16px,1.5vw,19px)/1.42 var(--fb);color:var(--ink)}
 .pz-d{margin-top:auto;align-self:flex-start;font:400 26px/1 var(--fd);text-transform:uppercase;background:var(--slab);color:var(--on-slab);padding:7px 11px 6px;border-radius:9px}
 .pz-d.tbc{font:700 12px/1 var(--fm);letter-spacing:.1em;padding:8px 10px;background:none;color:var(--ink2);box-shadow:inset 0 0 0 1.5px var(--ink2)}
 .pz-t.pot .pz-d{background:var(--slab);color:var(--on-slab)}
@@ -575,62 +547,46 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .pz-line{margin-top:14px;font-size:15px}
 }
 
-/* the calculator: one control and three big numbers */
-.bx{display:grid;gap:40px}
-.bx-ctl{display:flex;flex-wrap:wrap;align-items:end;gap:18px 32px}
-.bx-q{width:100%;font:800 16px/1.3 var(--fb);color:var(--ink)}
-.mc{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;flex:1 1 440px;max-width:620px}
-.mcb{min-height:60px;border-radius:14px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 2.5px var(--ink),3px 4px 0 var(--ink);font:400 clamp(18px,4.8vw,28px)/1 var(--fd);font-variant-numeric:tabular-nums;transition:transform .12s}
-.mcb:hover{background:var(--yel);color:var(--ink)}
+/* the math: two picks (market cap, leverage), one bet size line, one big punchline. Instant to read. */
+.mx{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px 30px;align-items:stretch;background:var(--yel);color:var(--ink);border-radius:22px;padding:26px 28px;box-shadow:var(--pop)}
+.mx-in{display:grid;gap:26px;align-content:center;min-width:0}
+.mx-step{display:grid;gap:12px;min-width:0}
+.mx-q{display:flex;align-items:center;gap:10px;font:800 17px/1.2 var(--fb);color:var(--ink)}
+.mx-n{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:8px;background:var(--slab);color:var(--on-slab);font:400 17px/1 var(--fd)}
+.mc{display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:8px}
+.mcb{min-height:56px;border-radius:14px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 2.5px var(--ink),3px 4px 0 var(--ink);font:400 clamp(18px,4.8vw,26px)/1 var(--fd);font-variant-numeric:tabular-nums;transition:transform .12s}
+.mcb:hover{background:var(--field2);color:var(--ink)}
 .mcb:active{transform:translate(2px,3px)}
-.mcb[aria-pressed=true]{background:var(--slab);color:var(--yel);box-shadow:inset 0 0 0 2.5px var(--ink),0 0 0 2.5px var(--yel),0 0 0 4.5px var(--ink)}
-.lv{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px}
-.lv>span:first-child{font:700 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
-.lv [role=group]{display:flex;gap:6px}
-.lvb{min-height:44px;min-width:52px;padding:0 12px;border-radius:10px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:700 14px/1 var(--fm)}
-.lvb:hover{background:var(--yel);color:var(--ink)}
-.lvb[aria-pressed=true]{background:var(--slab);color:var(--on-slab)}
-.bx-nums{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,1.25fr);gap:22px}
-@media(max-width:900px){.bx-nums{grid-template-columns:1fr 1fr;gap:16px}.bn.win{grid-column:1/-1}}
-@media(max-width:560px){.bx-nums{gap:12px}.bn{padding:14px 14px 13px;gap:6px}.bn .big{font-size:clamp(28px,8.4vw,34px)}.bn.pool .big,.bn.bet .big{font-size:clamp(24px,7.2vw,30px)}.bn small{font-size:10.5px}}
-.bn{border-radius:18px;padding:18px 20px 16px;display:flex;flex-direction:column;gap:7px;min-width:0;background:var(--card);color:var(--ink);box-shadow:0 0 0 2.5px var(--ink)}
-.bn small{font:700 11.5px/1.3 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
-.bn .big{display:block;font:400 clamp(34px,4.1vw,54px)/.95 var(--fd);font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:.005em}
-.bn p{font:600 13.5px/1.4 var(--fb);color:var(--ink2)}
-.bn.bet{--tk:var(--on-slab2);background:var(--slab);color:var(--on-slab);box-shadow:0 0 0 2.5px var(--ink),5px 6px 0 var(--yel),5px 6px 0 2.5px var(--ink)}
-.bn.bet small{color:var(--on-slab2)}
-.bn.bet .big{color:var(--yel)}
-.bn.bet p{color:var(--on-slab3)}
-.bn.bet .lgs{display:inline-flex;gap:6px;font-size:22px;vertical-align:middle;margin-left:4px}
-@media(max-width:560px){.bn.bet .lgs{display:flex;margin:8px 0 0}}
-/* win: the whole tile is the brand green, the wrong-way line a brand-red strip at its foot. Ink text on both. */
-.bn.win{--tk:var(--on-ez);background:var(--ez-green);color:var(--on-ez)}
-.bn.win small,.bn.win .big,.bn.win .of{color:var(--on-ez)}
-.bn.win .of{font:800 16px/1.35 var(--fb)}
-.bn .lose{margin-top:auto;padding:8px 12px;border-radius:11px;background:var(--ez-red);color:var(--on-ez);box-shadow:0 0 0 2px var(--on-ez);font:800 14px/1.35 var(--fb)}
-.bn .lose b{font:400 20px/1 var(--fd);color:var(--on-ez);font-variant-numeric:tabular-nums}
-.bn.win .of{font-size:15px}
-/* the season: the hero output. What 10 bets buy back when the AI is right X times out of 10. */
-.season{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px 36px;align-items:start;background:var(--yel);color:var(--ink);border-radius:22px;padding:26px 28px 24px;box-shadow:var(--pop)}
-@media(max-width:900px){.season{grid-template-columns:1fr;padding:20px 18px}}
-.se-q{grid-column:1/-1;font:800 clamp(17px,1.6vw,20px)/1.3 var(--fb);color:var(--ink)}
-.se-ctl{display:grid;gap:10px;min-width:0}
-.se-chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.seb{min-height:52px;border-radius:12px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink),3px 4px 0 var(--ink);font:400 clamp(17px,2vw,22px)/1 var(--fd);white-space:nowrap;padding:0 4px}
-.seb:hover{background:var(--field2);color:var(--ink)}
-.seb[aria-pressed=true]{background:var(--slab);color:var(--on-slab);box-shadow:inset 0 0 0 2px var(--ink),0 0 0 2.5px var(--card),0 0 0 4.5px var(--ink)}
-.se-best{position:relative;padding-top:16px;font:700 12px/1.4 var(--fm);letter-spacing:.04em;color:var(--ink)}
-.se-best::before{content:"";position:absolute;left:12.5%;right:12.5%;top:5px;height:2px;background:var(--ink)}
-.se-pin{position:absolute;top:0;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--card);box-shadow:inset 0 0 0 3px var(--ink)}
-.se-out{display:grid;gap:6px;align-content:start;min-width:0}
-.se-out small{font:700 11.5px/1.3 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
-.se-big{display:block;font:400 clamp(48px,6vw,80px)/.92 var(--fd);font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:.005em;color:var(--ink)}
-.se-sum{font:600 14px/1.45 var(--fb);color:var(--ink)}
-.se-sum .m{font:700 13px/1.45 var(--fm);white-space:nowrap}
-.se-line{grid-column:1/-1;padding-top:14px;border-top:2px solid var(--ink);font:800 clamp(16px,1.5vw,19px)/1.4 var(--fb);color:var(--ink)}
-.big.pop{animation:bigpop .5s cubic-bezier(.3,1.5,.5,1)}
+.mcb[aria-pressed=true]{background:var(--slab);color:var(--yel);box-shadow:inset 0 0 0 2.5px var(--ink),0 0 0 2.5px var(--card),0 0 0 4.5px var(--ink)}
+.mx-bet{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;font:800 16px/1.2 var(--fb);color:var(--ink)}
+.mx-bet b{font:400 32px/1 var(--fd);font-variant-numeric:tabular-nums;background:var(--card);padding:5px 9px 3px;border-radius:9px;box-shadow:0 0 0 2px var(--ink)}
+/* the punchline: a brand-green win tile with a brand-red strip for the honest line. Ink text on both. */
+.mx-out{display:flex;flex-direction:column;justify-content:center;gap:8px;min-width:0;border-radius:18px;padding:22px 22px 18px;background:var(--ez-green);color:var(--on-ez);box-shadow:0 0 0 2.5px var(--ink),5px 6px 0 0 var(--ink)}
+.mx-k{font:800 clamp(17px,1.7vw,21px)/1.25 var(--fb);color:var(--on-ez)}
+.mx-big{display:block;font:400 clamp(64px,8.6vw,112px)/.9 var(--fd);font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:.005em;color:var(--on-ez);transform-origin:left center}
+.mx-of{font:400 clamp(26px,2.8vw,36px)/1 var(--fd);text-transform:uppercase;color:var(--on-ez)}
+.mx-lose{margin-top:10px;align-self:flex-start;padding:7px 11px;border-radius:9px;background:var(--ez-red);color:var(--on-ez);box-shadow:0 0 0 2px var(--on-ez);font:700 13.5px/1.35 var(--fb)}
+.mx-pub{margin-top:26px;display:flex;align-items:center;gap:10px;font:700 13px/1.45 var(--fm);letter-spacing:.02em;color:var(--ink)}
+.mx-pub i{width:8px;height:8px;border-radius:50%;background:var(--red);flex:none;animation:pulse 1.2s infinite}
+.mx-fine{margin-top:14px}
+@media(max-width:900px){.mx{grid-template-columns:minmax(0,1fr);padding:20px 18px}}
+@media(max-width:560px){
+  .mx{padding:16px 14px 18px;gap:18px;border-radius:18px;box-shadow:0 0 0 2.5px var(--ink),5px 6px 0 0 var(--ink)}
+  .mx-in{gap:20px}
+  .mx-step{gap:10px}
+  .mx-q{font-size:15.5px}
+  .mc{gap:6px}
+  .mcb{min-height:50px;border-radius:11px;font-size:clamp(17px,5vw,21px);box-shadow:inset 0 0 0 2px var(--ink),2px 3px 0 var(--ink)}
+  .mx-bet{font-size:14.5px}
+  .mx-bet b{font-size:26px}
+  .mx-out{padding:16px 16px 14px;border-radius:14px}
+  .mx-k{font-size:16px}
+  .mx-big{font-size:clamp(56px,17vw,76px)}
+  .mx-of{font-size:24px}
+  .mx-lose{font-size:13px}
+}
+.big.pop,.mx-big.pop{animation:bigpop .5s cubic-bezier(.3,1.5,.5,1)}
 @keyframes bigpop{40%{transform:scale(1.06)}}
-.bn .big{transform-origin:left center}
 .fine{font:500 12.5px/1.6 var(--fb);color:var(--ink2);max-width:80ch}
 .tbcl{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:8px;font:600 12px/1.5 var(--fm);color:var(--ink2)}
 .tbcl i{font-style:normal;font-size:9px;letter-spacing:.08em;background:var(--tbc);color:var(--on-slab);border-radius:3px;padding:2px 4px}
@@ -659,7 +615,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 <body>
 <header class="top"><div class="top-in">
   <a class="brand" href="#top" aria-label="Earnings Zeason, back to top"><span class="mark"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span><b>Earnings Zeason<small>Season one</small></b></a>
-  <nav class="nav" aria-label="Sections"><a href="#upnext">Up next</a><a href="#record">The record</a><a href="#learn">Learning</a><a href="#bet">The bet</a></nav>
+  <nav class="nav" aria-label="Sections"><a href="#upnext">Up next</a><a href="#record">The record</a><a href="#learn">Learning</a><a href="#bet">The buyback</a><a href="#calc">The math</a></nav>
   <a class="live" href="#upnext" id="liveChip"><i></i><span id="liveTxt">In play</span></a>
 </div></header>
 
@@ -685,7 +641,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
       <button type="button" class="un-more" id="unMore" aria-expanded="false" aria-controls="unAll" hidden><span id="unMoreT">All upcoming</span></button>
       <button type="button" class="howb" id="howB" aria-expanded="false" aria-controls="bfBack"><span class="ul">How do we grade?</span> <span aria-hidden="true">ⓘ</span></button>
     </div>
-    <ol class="up-all" id="unAll" aria-label="All upcoming rounds" hidden></ol>
+    <div class="up-all" id="unAll" role="region" aria-label="All upcoming rounds" hidden></div>
     </div>
     <div class="bf-face bf-back" id="bfBack" role="region" aria-labelledby="howH" aria-hidden="true">
       <h2 id="howH" tabindex="-1">How we grade</h2>
@@ -702,7 +658,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 
   <section class="sec" id="record" aria-labelledby="recH">
     <div class="sh"><div class="tx"><span class="no">01</span><span class="eb">The record</span><h2 id="recH">Every prediction, on the record</h2></div>
-      <p class="lede">Graded at the close of the first trading session after the report. We hand every AI the closing price from TradingView, so none of them can make one up.</p></div>
+      <p class="lede">Graded at the first market close after the earnings report. We hand every AI the closing price from TradingView, so none of them can make one up.</p></div>
     <div class="car" id="car" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Every round, one card each. Left and right arrow keys move between rounds."></div>
     <div class="car-ctl"><button type="button" class="arw" id="carPrev" aria-label="Earlier round">←</button><p class="car-lbl" id="carLbl" aria-live="polite"></p><button type="button" class="arw" id="carNext" aria-label="Later round">→</button></div>
     <div class="chips" id="chips" role="group" aria-label="Jump to a round"></div>
@@ -723,7 +679,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
   </section>
 
   <section class="sec" id="bet" aria-labelledby="betH">
-    <div class="sh"><div class="tx"><span class="no">03</span><span class="eb">The bet</span><h2 id="betH">One pot. One AI. One print.</h2></div></div>
+    <div class="sh"><div class="tx"><span class="no">03</span><span class="eb">The buyback</span><h2 id="betH">An AI with one job: buy back $EZ.</h2></div></div>
     <div class="poster">
       <p class="pz-top"><b>Main event</b><span>Season one</span></p>
       <div class="pz-card">
@@ -734,7 +690,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
       <div class="pz-goal"><small>The goal</small><p>Each model is told one thing: end up with as much $EZ as possible, by going long or short on stocks on Hyperliquid.</p></div>
       <ul class="pz-out">
         <li class="w"><small>AI wins →</small><b>Buys back $EZ</b></li>
-        <li class="l"><small>AI loses →</small><b>The pot gets smaller</b></li>
+        <li class="l"><small>AI loses →</small><b>The pot can be wiped out.</b></li>
       </ul>
       <p class="pz-line">Most buybacks rise and fall with trading cycles. This one depends on one thing: whether the AI gets good. We're memeifying buybacks.</p>
     </div>
@@ -742,28 +698,24 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
   </section>
 
   <section class="sec" id="calc" aria-labelledby="calcH">
-    <div class="sh"><div class="tx"><span class="no">04</span><span class="eb">The math</span><h2 id="calcH">How big could the bet get?</h2></div></div>
-    <div class="bx">
-      <div class="bx-ctl">
-        <p class="bx-q" id="lMc">If $EZ had a market cap of</p>
-        <div class="mc" role="group" aria-labelledby="lMc" id="pMc"></div>
-        <div class="lv"><span id="lLv">Leverage</span><div role="group" aria-labelledby="lLv" id="pLv"></div></div>
+    <div class="sh"><div class="tx"><span class="no">04</span><span class="eb">The math</span><h2 id="calcH">How big could the buyback get?</h2></div></div>
+    <div class="mx">
+      <div class="mx-in">
+        <div class="mx-step"><p class="mx-q" id="lMc"><span class="mx-n" aria-hidden="true">1</span>Pick a market cap</p>
+          <div class="mc" role="group" aria-labelledby="lMc" id="pMc"></div>
+          <p class="mx-bet" aria-live="polite">Bet size estimate: <b id="oBet"></b></p></div>
+        <div class="mx-step"><p class="mx-q" id="lLv"><span class="mx-n" aria-hidden="true">2</span>Pick leverage</p>
+          <div class="mc" role="group" aria-labelledby="lLv" id="pLv"></div></div>
       </div>
-      <div class="bx-nums" aria-live="polite">
-        <div class="bn pool"><small>Pot at the bet</small><b class="big" id="oPool"></b><p id="oPoolSub"></p></div>
-        <div class="bn bet"><small>The first bet: NVIDIA <span class="tk">(NVDA)</span> <span class="lgs" id="betLogos"></span></small><b class="big" id="oBet"></b><p id="oBetSub"></p></div>
-        <div class="bn win"><small>If the AI is right, it buys back</small><b class="big" id="oWin"></b><p class="of">of $EZ, after earnings.</p>
-          <p class="lose" id="oLose"></p></div>
+      <div class="mx-out" aria-live="polite">
+        <p class="mx-k">If the AI is right, it buys back</p>
+        <b class="mx-big" id="oWin"></b>
+        <p class="mx-of">of $EZ</p>
+        <p class="mx-lose">If it's wrong, the pot can be wiped out.</p>
       </div>
-      <div class="season" id="season">
-        <p class="se-q" id="lSe">A season of 10 bets. If the AI gets the direction right</p>
-        <div class="se-ctl"><div class="se-chips" role="group" aria-labelledby="lSe" id="pSe"></div>
-          <p class="se-best" id="seBest"><span class="se-pin" id="sePin" aria-hidden="true"></span><span id="seBestT"></span></p></div>
-        <div class="se-out" aria-live="polite"><small>Over the season, it buys back</small><b class="se-big" id="oSe"></b><p class="se-sum" id="oSeSum"></p></div>
-        <p class="se-line">One bet is luck. Getting the direction right again and again is the buyback.</p>
-      </div>
-      <div><p class="fine" id="fine"></p><p class="tbcl" id="tbcl" hidden></p></div>
     </div>
+    <p class="mx-pub" id="pub"></p>
+    <div class="mx-fine"><p class="fine" id="fine"></p><p class="tbcl" id="tbcl" hidden></p></div>
   </section>
 
   <section class="sec" id="get">
@@ -782,6 +734,9 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 <script src="ez-learn.js"></script>
 <script>
 (function(){
+/* words the owner may rename: the label before a round's result date, and the label before the real move on a card's back */
+const RESOLVE_WORD = "Resolves";
+const ACTUAL_WORD = "Actual";
 function $(s,r){return (r||document).querySelector(s)}
 function $$(s,r){return [].slice.call((r||document).querySelectorAll(s))}
 var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -817,7 +772,9 @@ var NM=MODEL_KEYS.filter(function(m){return MODELS[m]}).length;
 $("#heroSub").textContent=(NUMW[NM]||String(NM))+" AI model"+(NM===1?"":"s")+" predict"+(NM===1?"s":"")+" how a stock moves after its earnings: up or down, and by how much.";
 /* rounds whose calls are in, soonest answer first (then by round) */
 var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});
-var TARGET=PS[0]||UPCOMING[0]||null;
+/* rounds still to call, soonest calls first (then by round) */
+var US=UPCOMING.slice().sort(function(a,b){return ((mmdd(a.called)||0)-(mmdd(b.called)||0))||(a.n-b.n)});
+var TARGET=PS[0]||US[0]||null;
 
 /* ---------- cards ---------- */
 /* the sound toggle's face: the film is muted until the visitor touches the page or turns it on */
@@ -844,10 +801,10 @@ function winBar(r){
 function backFace(r){
   var cs=parsed(r),wn=r.win?r.win.split(" & "):[],tm=timed(r.timing,true);
   return '<div class="face back" aria-hidden="true"><div class="fin">'+
-    '<div class="bk-h"><h4>'+coTitle(r)+'</h4><p>Called '+fmtDate(r.called)+' · Graded '+fmtDate(r.resolves)+'</p>'+(tm?'<p class="tm">'+tm+'</p>':'')+'</div>'+
+    '<div class="bk-h"><h4>'+coTitle(r)+'</h4><p><span class="nw">Calls filed '+fmtDate(r.called)+'</span> · <span class="nw">Graded '+fmtDate(r.resolves)+'</span></p>'+(tm?'<p class="tm">'+tm+'</p>':'')+'</div>'+
     '<div class="bk-body"><div><p class="bk-sec">What they predicted</p><div class="bk-rows">'+
     cs.map(function(c){var w=wn.indexOf(c.m)>-1;return '<div class="bk-r '+(w?'win':c.ok?'ok':'no')+'"><span class="rk">'+(c.rank?'<span class="sr">Rank </span>'+c.rank:'<span aria-hidden="true">✗</span><span class="sr">Wrong way</span>')+'</span><span class="who">'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span></span><span class="pd '+(c.dn?'d':'u')+'"><span aria-hidden="true">'+(c.dn?'▼':'▲')+'</span><span class="sr">'+(c.dn?'Down ':'Up ')+'</span>'+c.mag+'</span></div>'}).join("")+'</div></div>'+
-    '<div class="bk-out"><small>What happened:<br>the market moved</small><b class="'+(r.a>0?'u':'d')+'">'+r.out+'</b></div></div>'+
+    '<div class="bk-out"><small>'+ACTUAL_WORD+'</small><b class="'+(r.a>0?'u':'d')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span><span class="sr">'+(r.a>0?'Up ':'Down ')+'</span>'+r.out.replace(/^[+−-]/,"")+'</b></div></div>'+
     '<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button></div></div></div>';
 }
 function gradedCard(r,i){
@@ -1095,45 +1052,45 @@ if(window.EZLearn&&NR){
   $("#verdict").textContent=vs.filter(Boolean).join(" ");
 }else $("#learn").hidden=true;
 
-/* ---------- up next (landing band, right column): the round(s) whose calls are in, face up, then the next sealed rounds.
-   Up to SHOW sealed rows; the rest sit in "All upcoming". A company logo shows only once CO_LOGOS has one (the tag carries the ticker). */
+/* ---------- up next (landing band, right column): only the next round (TARGET: the soonest round whose calls are in,
+   else the soonest scheduled one). Its title, the four calls one per row (or, with no calls yet, the day they come in),
+   then the result date. Every other round sits in "All upcoming", in two groups: "Calls in" and "Scheduled".
+   A company logo shows only once CO_LOGOS has one (the title carries the ticker). */
 function coLogo(t){return CO_LOGOS[t]?coMark(t):""}
 function callChips(u){return '<ul class="cc" aria-label="The calls">'+u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span><b class="'+(up?'u':'d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'Up':'Down')+'</span> '+c.mag+'%</b></li>'}).join("")+'</ul>'}
 function sealRow(u){var tm=timed(u.timing,false);
-  return '<li class="up-s">'+coLogo(u.ticker)+'<span class="ctt"><b class="nm"><small>Round '+u.n+'</small>'+coTkn(u)+'</b></span><span class="dl"><span>Calls <b>'+fmtDate(u.called)+'</b></span><span>Answer <b>'+fmtDate(u.resolves)+'</b></span>'+(tm?'<span class="tm">'+tm+'</span>':'')+'</span></li>'}
-/* a round whose calls are in, as a small square tile: "Calls in" and the call pills, compact */
-function pendTile(u){var tm=timed(u.timing,false);
+  return '<li class="up-s">'+coLogo(u.ticker)+'<span class="ctt"><b class="nm"><small>Round '+u.n+'</small>'+coTkn(u)+'</b></span><span class="dl"><span>Calls <b>'+fmtDate(u.called)+'</b></span><span>'+RESOLVE_WORD+' <b>'+fmtDate(u.resolves)+'</b></span>'+(tm?'<span class="tm">'+tm+'</span>':'')+'</span></li>'}
+/* a round whose calls are in: the round, its result date and the four call pills */
+function pendRow(u){var tm=timed(u.timing,false);
   return '<li class="up-s up-pt">'+coLogo(u.ticker)+'<span class="ctt"><b class="nm"><small>Round '+u.n+'</small>'+coTkn(u)+'</b></span>'+
-    '<span class="ci"><i aria-hidden="true"></i>Calls in<span class="sr">. The market answers '+fmtDate(u.resolves)+'.</span></span>'+
-    '<ul class="cp" aria-label="The calls">'+u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<b class="'+(up?'u':'d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+nm(c.m)+(up?' up ':' down ')+'</span>'+c.mag+'<span class="pc-pct">%</span></b></li>'}).join("")+'</ul>'+
-    '<span class="dl"><span>Answer <b>'+fmtDate(u.resolves)+'</b></span>'+(tm?'<span class="tm">'+tm+'</span>':'')+'</span></li>'}
-/* the band keeps the standings' rows (4). The soonest round whose calls are in is the big card (two rows); the next two
-   items are square tiles under it (the other rounds whose calls are in first, then sealed ones). The rest go in
-   "All upcoming", calls-in rounds first. With no calls in, up to four sealed tiles. */
-var big=PS[0]||null,queue=PS.slice(1).map(function(u){return {k:"p",u:u}}).concat(UPCOMING.map(function(u){return {k:"s",u:u}}));
-var SHOW=big?2:4,tiles=queue.slice(0,SHOW),rest=queue.slice(SHOW),unHTML="";
-function item(q){return q.k==="p"?pendTile(q.u):sealRow(q.u)}
-if(big){var tm0=timed(big.timing,false);
-  unHTML+='<div class="up-p"><div class="up-t">'+coLogo(big.ticker)+'<span class="ctt"><b class="nm">'+coTitle(big)+'</b><em><i aria-hidden="true"></i><span>Calls are in</span><span>· Filed '+fmtDate(big.called)+'</span>'+(tm0?'<span>· '+tm0+'</span>':'')+'</em></span></div>'+
-    callChips(big)+'<p class="due"><small>Answer</small> <b>'+fmtDate(big.resolves)+'</b></p></div>'}
-if(tiles.length)unHTML+='<ol class="up-sl" aria-label="Next rounds" style="--tiles:'+Math.min(2,tiles.length)+'">'+tiles.map(item).join("")+'</ol>';
-$(".band").style.setProperty("--rows",Math.max(1,ROWS.length,(big?2:0)+Math.ceil(tiles.length/2)));
+    '<span class="dl"><span>'+RESOLVE_WORD+' <b>'+fmtDate(u.resolves)+'</b></span>'+(tm?'<span class="tm">'+tm+'</span>':'')+'</span>'+
+    '<ul class="cp" aria-label="The calls">'+u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<b class="'+(up?'u':'d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+nm(c.m)+(up?' up ':' down ')+'</span>'+c.mag+'%</b></li>'}).join("")+'</ul></li>'}
+var NX=TARGET,unHTML="";
+if(NX){var hasCalls=!!(NX.calls&&NX.calls.length);
+  unHTML='<div class="up-p"><h3 class="nm">'+coTitle(NX)+'</h3>'+
+    (hasCalls?callChips(NX):'<div class="un-seal"><span class="mark" aria-hidden="true"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span><b>Calls '+fmtDate(NX.called)+'</b></div>')+
+    '<p class="due"><small>'+RESOLVE_WORD+'</small> <b>'+fmtDate(NX.resolves)+'</b></p></div>'}
+$(".band").style.setProperty("--rows",Math.max(1,ROWS.length));
 $("#unB").innerHTML=unHTML;
 var unMore=$("#unMore"),unAll=$("#unAll");
-if(rest.length){unMore.hidden=false;$("#unMoreT").textContent="All upcoming ("+rest.length+" more)";unAll.innerHTML=rest.map(item).join("");
+var pIn=PS.filter(function(u){return u!==NX}),sched=US.filter(function(u){return u!==NX}),GR=[];
+if(pIn.length)GR.push('<section class="ua-g" aria-labelledby="uaP"><h3 class="ua-h" id="uaP"><i aria-hidden="true"></i>Calls in</h3><ol class="ua-l">'+pIn.map(pendRow).join("")+'</ol></section>');
+if(sched.length)GR.push('<section class="ua-g" aria-labelledby="uaS"><h3 class="ua-h" id="uaS">Scheduled</h3><ol class="ua-l">'+sched.map(sealRow).join("")+'</ol></section>');
+if(GR.length){unMore.hidden=false;$("#unMoreT").textContent="All upcoming ("+(pIn.length+sched.length)+" more)";
+  unAll.innerHTML=GR.join("");unAll.style.setProperty("--ua-cols",GR.length);
   unMore.addEventListener("click",function(){var o=unMore.getAttribute("aria-expanded")!=="true";unMore.setAttribute("aria-expanded",String(o));unAll.hidden=!o})}
-if(!PENDING.length&&!UPCOMING.length){$("#unB").innerHTML='<p class="st-note">The next rounds are posted soon.</p>'}
+if(!NX){$("#unB").innerHTML='<p class="st-note">The next rounds are posted soon.</p>'}
 
 /* ---------- the bet poster: the pot (live when CONFIG.pool is set), the first target and its date ---------- */
 $("#pzNv").outerHTML=nvLogo();$("#pzHl").outerHTML=hlLogo();
 if(CONFIG.pool)$("#pzPot").textContent="Live: "+CONFIG.pool;
 else{$("#pzPot").textContent="Opens at launch";$("#pzPot").classList.add("tbc")}
 
-/* ---------- the calculator: how big the bet could get ----------
+/* ---------- the math: pick a market cap, pick leverage, see what a right call buys back ----------
    ASSUME: rough fixed assumptions. The owner can edit these. SIM in ez-data.js overrides them when set.
      volPct    daily trading volume, as % of $EZ's market cap
      feePct    fee we keep per trade, % (roughly Pons's rate: 1% fee, creator keeps about 70%)
-     poolShare share of the fees that goes into the pool
+     poolShare share of the fees that goes into the pot
      days      days of fees before the bet (SIM.betDate, when set, counts the days from today instead)
      move      NVIDIA's move after earnings, % */
 var ASSUME={volPct:25,feePct:0.7,poolShare:0.69,days:60,move:5};
@@ -1146,70 +1103,50 @@ var A={volPct:SIM.volPct!=null?+SIM.volPct:ASSUME.volPct,feePct:SIM.feePct!=null
   days:betD?Math.max(1,Math.ceil((betD-today)/864e5)):ASSUME.days,move:ASSUME.move};
 var LEV0=SIM.leverage!=null?+SIM.leverage:5;if(LEVS.indexOf(LEV0)<0){LEVS.push(LEV0);LEVS.sort(function(a,b){return a-b})}
 /* pure math. o: {mcap $, lev x}, plus any ASSUME field to override. Funding and costs are left out.
-   pool = mcap × volPct% × feePct% × poolShare × days · bet = pool × lev · win = bet × move%
-   wrong way: the pool loses bet × move%, and is gone once move% ≥ 100 / lev */
+   bet (the pot at the bet) = mcap × volPct% × feePct% × poolShare × days · buyback = bet × lev × move%
+   If the AI is wrong, the pot can be wiped out. */
 function ezCalc(o){
   var a={};for(var k in A)a[k]=o[k]!=null?o[k]:A[k];
-  var perDay=o.mcap*a.volPct/100*a.feePct/100*a.poolShare,pool=perDay*a.days,bet=pool*o.lev,win=bet*a.move/100,
-      gone=a.move>=100/o.lev-1e-9,loss=gone?pool:Math.min(pool,bet*a.move/100);
-  return {perDay:perDay,pool:pool,bet:bet,win:win,loss:loss,gone:gone};
+  var perDay=o.mcap*a.volPct/100*a.feePct/100*a.poolShare,bet=perDay*a.days,buyback=bet*o.lev*a.move/100;
+  return {mcap:o.mcap,lev:o.lev,perDay:perDay,days:a.days,move:a.move,bet:bet,buyback:buyback};
 }
-ezCalc.ASSUME=ASSUME;
-window.EZCalc=ezCalc;
-/* a season: 10 bets of the same size. Right: + bet × move%. Wrong: − the same. Net = (right − wrong) × bet × move%.
-   No compounding, funding or fees. */
-var SEASON=10,HITS=[5,6,7,8];
-function ezSeason(o,right){var C=ezCalc(o),wrong=SEASON-right;return {per:C.win,right:right,wrong:wrong,net:(right-wrong)*C.win}}
-window.EZSeason=ezSeason;
 /* $36.2M, $181K, $7.25M: three significant figures */
 function money(v){var a=Math.abs(v),u="";if(a>=1e9){a/=1e9;u="B"}else if(a>=1e6){a/=1e6;u="M"}else if(a>=1e3){a/=1e3;u="K"}
   var t=a>=100?String(Math.round(a*(1+1e-9))):(a*(1+1e-9)).toPrecision(3).replace(/\.?0+$/,"");return "$"+t+u}
-var ST={mcap:1e8,lev:LEV0,hit:6};
+var ST={mcap:1e7,lev:LEV0};
+/* window.EZCalc(o) is the math; EZCalc.current() gives the numbers on screen */
+ezCalc.ASSUME=ASSUME;ezCalc.A=A;ezCalc.MCAPS=MCAPS;ezCalc.LEVS=LEVS;
+ezCalc.current=function(){return ezCalc(ST)};
+window.EZCalc=ezCalc;
 $("#pMc").innerHTML=MCAPS.map(function(v){return '<button type="button" class="mcb" data-mc="'+v+'" aria-pressed="false">'+money(v)+'</button>'}).join("");
-$("#pLv").innerHTML=LEVS.map(function(v){return '<button type="button" class="lvb" data-lev="'+v+'" aria-pressed="false">'+v+'x</button>'}).join("");
-$("#betLogos").innerHTML=nvLogo()+hlLogo();
-$("#pSe").innerHTML=HITS.map(function(v){return '<button type="button" class="seb" data-hit="'+v+'" aria-pressed="false">'+v+' of '+SEASON+'</button>'}).join("");
-/* today's best real hit rate, from the record: right-way calls over graded calls, per model */
-var HR=ACTIVE.map(function(m){var g=0,ok=0;ROUNDS.forEach(function(r){var c=callOf(r,m);if(c){g++;ok+=callOk(r,c)}});return {m:m,g:g,ok:ok,p:g?ok/g:0}}).filter(function(x){return x.g});
-if(HR.length){var top=Math.max.apply(null,HR.map(function(x){return x.p})),best=HR.filter(function(x){return Math.abs(x.p-top)<1e-9}),b0=best[0],at=top*SEASON;
-  $("#seBestT").textContent="Best model so far: "+b0.ok+" of "+b0.g+" ("+Math.round(top*100)+"%), "+list(best.map(function(x){return nm(x.m)}))+".";
-  /* the pin sits on the 5 to 8 scale under the chips (chip centres at 12.5% and 87.5%) */
-  var lo=HITS[0],hi=HITS[HITS.length-1];$("#sePin").style.left=Math.max(0,Math.min(100,12.5+(at-lo)/(hi-lo)*75))+"%";
-}else $("#seBest").hidden=true;
+$("#pLv").innerHTML=LEVS.map(function(v){return '<button type="button" class="mcb" data-lev="'+v+'" aria-pressed="false">'+v+'x</button>'}).join("");
+$("#pMc").style.setProperty("--n",MCAPS.length);$("#pLv").style.setProperty("--n",LEVS.length);
 /* still open with the owner: one quiet line, only the items not decided in SIM / CONFIG */
 var todo=[SIM.feePct==null&&"platform fee",SIM.leverage==null&&"leverage",!betD&&"bet date","profit or whole pot"].filter(Boolean);
 if(todo.length){$("#tbcl").hidden=false;$("#tbcl").innerHTML='<i>TBC</i><span>To confirm: '+todo.join(", ")+'.</span>'}
 var pct=function(v){return String(+(+v).toFixed(2))+"%"};
-$("#fine").innerHTML="Rough math, not a forecast: daily volume of "+pct(A.volPct)+" of market cap, a "+pct(A.feePct)+" fee, "+Math.round(A.poolShare*100)+"% to the pot, "+
-  (betD?A.days+" days of fees until "+fmtDate(betRaw):A.days+" days of fees")+" and a "+pct(A.move)+" NVIDIA "+tkTag("NVDA")+" move each time. The season assumes the same bet each time and ignores compounding, funding and fees.";
+$("#fine").textContent="Estimate, not a promise. Assumes "+pct(A.volPct)+" daily volume, "+pct(A.feePct)+" fee, "+
+  (betD?A.days+" days until "+fmtDate(betRaw):A.days+" days")+", a "+pct(A.move)+" move.";
+/* real people, real record: the graded rounds, from the data */
+if(NR)$("#pub").innerHTML='<i aria-hidden="true"></i><span>Built in public: '+NR+' round'+(NR===1?'':'s')+' called, every call filed before the print.</span>';
+else $("#pub").hidden=true;
 /* count-up for the big numbers, tabular figures so nothing jumps */
 function countTo(el,to,fmt){var from=el._v;el._v=to;cancelAnimationFrame(el._r||0);
   if(reduce||from==null||from===to){el.textContent=fmt(to);return}
   var t0=performance.now(),D=620;(function f(t){var p=Math.min(1,(t-t0)/D),e=1-Math.pow(1-p,3);el.textContent=fmt(from+(to-from)*e);if(p<1)el._r=requestAnimationFrame(f)})(t0)}
 function tilde(v){return "~"+money(v)}
-var betFirst=true;
-function renderBet(){
+var calcFirst=true;
+function renderCalc(){
   var C=ezCalc(ST);
   $$("#pMc .mcb").forEach(function(b){b.setAttribute("aria-pressed",String(+b.dataset.mc===ST.mcap))});
-  $$("#pLv .lvb").forEach(function(b){b.setAttribute("aria-pressed",String(+b.dataset.lev===ST.lev))});
-  countTo($("#oPool"),C.pool,money);
-  $("#oPoolSub").textContent=money(C.perDay)+" a day × "+A.days+" days";
+  $$("#pLv .mcb").forEach(function(b){b.setAttribute("aria-pressed",String(+b.dataset.lev===ST.lev))});
   countTo($("#oBet"),C.bet,money);
-  $("#oBetSub").textContent="The pot × "+ST.lev+"x leverage";
-  countTo($("#oWin"),C.win,tilde);
-  $("#oLose").innerHTML=C.gone?"If it's wrong: <b>the pot is gone.</b>":"If it's wrong: the pot loses <b>"+tilde(C.loss)+"</b>.";
-  /* the season */
-  var S=ezSeason(ST,ST.hit);
-  $$("#pSe .seb").forEach(function(b){b.setAttribute("aria-pressed",String(+b.dataset.hit===ST.hit))});
-  countTo($("#oSe"),S.net,function(v){return v<0.5?"$0":tilde(v)});
-  $("#oSeSum").innerHTML=S.net<0.5?"Right "+S.right+" times, wrong "+S.wrong+" times: the wins and losses cancel out. <b>Nothing is bought back.</b>"
-    :'<span class="m">'+S.right+" right − "+S.wrong+" wrong = "+(S.right-S.wrong)+" × "+tilde(S.per)+"</span> of $EZ, over "+SEASON+" bets.";
-  var ob=$("#oBet");if(!betFirst&&!reduce){ob.classList.remove("pop");ob.offsetWidth;ob.classList.add("pop")}betFirst=false;
+  countTo($("#oWin"),C.buyback,tilde);
+  var ob=$("#oWin");if(!calcFirst&&!reduce){ob.classList.remove("pop");ob.offsetWidth;ob.classList.add("pop")}calcFirst=false;
 }
-$$("#pMc .mcb").forEach(function(b){b.addEventListener("click",function(){ST.mcap=+b.dataset.mc;renderBet()})});
-$$("#pLv .lvb").forEach(function(b){b.addEventListener("click",function(){ST.lev=+b.dataset.lev;renderBet()})});
-$$("#pSe .seb").forEach(function(b){b.addEventListener("click",function(){ST.hit=+b.dataset.hit;renderBet()})});
-renderBet();
+$$("#pMc .mcb").forEach(function(b){b.addEventListener("click",function(){ST.mcap=+b.dataset.mc;renderCalc()})});
+$$("#pLv .mcb").forEach(function(b){b.addEventListener("click",function(){ST.lev=+b.dataset.lev;renderCalc()})});
+renderCalc();
 
 /* ---------- long tickers ($005930.KS): a title that does not fit its box steps its font down (to 72% at most),
    then may wrap. The cashtag keeps the title's own size. Re-run when fonts load and on resize. ---------- */
