@@ -18,8 +18,8 @@ var SHEET=[
  ["6","COST","09/24/26","DOWN","2.5","DOWN","2.5","DOWN","2.8","","","09/25/26","2.95",""],
  ["7","JEF","09/28/26","UP","3","UP","4.5","UP","3.7","","","09/29/26","-1.25",""],
  ["8","CCL","09/29/26","UP","3","UP","5","DOWN","5.7","","","09/29/26","13.53",""],
- ["9","MU","09/30/26","UP","4","UP","7","DOWN","6.8","UP","6","10/01/26","",""],
- ["10","ACN","10/01/26","DOWN","4","DOWN","4.5","DOWN","6","DOWN","4.5","10/01/26","",""],
+ ["9","MU","09/30/26","UP","4","UP","7","DOWN","6.8","UP","6","10/01/26","3.11",""],
+ ["10","ACN","10/01/26","DOWN","4","DOWN","4.5","DOWN","6","DOWN","4.5","10/01/26","16.02",""],
  ["11","NKE","10/01/26","DOWN","3","UP","6","DOWN","8","DOWN","4.5","10/02/26","",""],
  ["12","2317.TW","10/05/26","","","","","","","","","10/06/26","",""],
  ["13","RPM","10/05/26","","","","","","","","","10/06/26","",""],
@@ -74,7 +74,7 @@ var SIM={feePct:null,leverage:null,volPct:25,betDate:null};
 /* the round films: webm/mp4/poster in media/, tall = 9:16 */
 /* all rounds: 1080x1080 at 60fps ("-hd"); the original files stay for Variant 1.
    pan: for 9:16 films shown in a square, [second, vertical position %] keyframes so the frame follows the action */
-var FILMS={1:{f:"round-1-gamestop-hd",p:"round-1-gamestop-hd-poster"},2:{f:"round-2-oracle-hd",p:"round-2-oracle-hd-poster"},3:{f:"round-3-autozone-hd",p:"round-3-autozone-end"},4:{f:"round-4-generalmills-hd",p:"round-4-generalmills-poster"},5:{f:"round-5-blackberry-hd",p:"round-5-blackberry-poster"},6:{f:"round-6-costco-hd",p:"round-6-costco-poster"},7:{f:"round-7-jefferies-hd",p:"round-7-jefferies-hd-poster"},8:{f:"round-8-carnival-hd",p:"round-8-carnival-hd-poster"}};
+var FILMS={1:{f:"round-1-gamestop-hd",p:"round-1-gamestop-hd-poster"},2:{f:"round-2-oracle-hd",p:"round-2-oracle-hd-poster"},3:{f:"round-3-autozone-hd",p:"round-3-autozone-end"},4:{f:"round-4-generalmills-hd",p:"round-4-generalmills-poster"},5:{f:"round-5-blackberry-hd",p:"round-5-blackberry-poster"},6:{f:"round-6-costco-hd",p:"round-6-costco-poster"},7:{f:"round-7-jefferies-hd",p:"round-7-jefferies-hd-poster"},8:{f:"round-8-carnival-hd",p:"round-8-carnival-hd-poster"},9:{f:"round-9-micron-hd",p:"round-9-micron-hd-poster"}};
 var NVIDIA_D="M8.948 8.798v-1.43a6.7 6.7 0 0 1 .424-.018c3.922-.124 6.493 3.374 6.493 3.374s-2.774 3.851-5.75 3.851c-.398 0-.787-.062-1.158-.185v-4.346c1.528.185 1.837.857 2.747 2.385l2.04-1.714s-1.492-1.952-4-1.952a6.016 6.016 0 0 0-.796.035m0-4.735v2.138l.424-.027c5.45-.185 9.01 4.47 9.01 4.47s-4.08 4.964-8.33 4.964c-.37 0-.733-.035-1.095-.097v1.325c.3.035.61.062.91.062 3.957 0 6.82-2.023 9.593-4.408.459.371 2.34 1.263 2.73 1.652-2.633 2.208-8.772 3.984-12.253 3.984-.335 0-.653-.018-.971-.053v1.864H24V4.063zm0 10.326v1.131c-3.657-.654-4.673-4.46-4.673-4.46s1.758-1.944 4.673-2.262v1.237H8.94c-1.528-.186-2.73 1.245-2.73 1.245s.68 2.412 2.739 3.11M2.456 10.9s2.164-3.197 6.5-3.533V6.201C4.153 6.59 0 10.653 0 10.653s2.35 6.802 8.948 7.42v-1.237c-4.84-.6-6.492-5.936-6.492-5.936z";
 function nvLogo(){return '<span class="lg" style="background:#000" title="NVIDIA"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#76B900" d="'+NVIDIA_D+'"/></svg></span>'}
 function hlLogo(){return '<span class="lg" style="background:#0f1a1f" title="Hyperliquid"><img src="'+MEDIA+'logo-hyperliquid.png" alt="" style="width:70%;height:70%;object-fit:contain"></span>'}
