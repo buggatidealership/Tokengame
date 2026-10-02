@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>$EZ Degen Terminal</title>
+<meta name="description" content="Four AIs call every earnings print before it happens. The market grades them. One AI bets the pot on Hyperliquid to buy back $EZ.">
+<meta name="theme-color" content="#07080a">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* EARNINGS ZEASON · V19 · THE DEGEN TERMINAL
+   For crypto Twitter: a trading terminal / DEX-screener look. Near-black, monospace numbers, green and red ticks.
+   ONE fluid layout, no device breakpoints: auto-fit grids, container queries, clamp() type and spacing.
+   Hero: the manifesto flows around a moving $EZ coin, laid out line by line with Pretext (canvas measurement,
+   layout by arithmetic). Without Pretext it falls back to CSS shape-outside. The real text always stays in the DOM.
+   Every number is built from ez-data.js at run time. Nothing typed by hand. */
+:root{color-scheme:dark;
+  --bg:#07080a;--panel:#0d1014;--panel2:#13171d;--panel3:#1a2028;--line:#252c36;--line2:#323b47;
+  --tx:#eef1f4;--tx2:#b7c0ca;--dim:#919ba6;
+  --gold:#ffc72c;--green:#1fcf6b;--red:#ff4136;--ink:#0a0a0a;--focus:#7cb4ff;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --disp:'Space Grotesk','JetBrains Mono',system-ui,sans-serif;
+  --gut:clamp(16px,4vw,56px);
+  --sp:clamp(56px,9vw,128px);
+  --r:clamp(10px,1.2vw,16px);
+  --max:1440px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg);overflow-x:clip;scroll-behavior:smooth;scroll-padding-top:72px}
+body{background:var(--bg);color:var(--tx);font:400 clamp(14px,.35vw + 13px,17px)/1.55 var(--mono);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;min-height:100vh}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.up{color:var(--green)}.dn{color:var(--red)}.au{color:var(--gold)}
+/* order-book texture: faint horizontal rows, like a depth ladder */
+.tex{background-image:repeating-linear-gradient(180deg,transparent 0 27px,rgb(255 255 255/.025) 27px 28px)}
+.wrap{width:min(100% - 2*var(--gut),var(--max));margin-inline:auto}
+
+/* model tiles (logo() from ez-data.js) and the $EZ mark */
+.lg{display:inline-grid;place-items:center;width:1em;height:1em;min-width:1em;aspect-ratio:1/1;flex:none;border-radius:24%;vertical-align:middle;box-shadow:0 0 0 1.5px #3a424d}
+span.lg>svg{display:block;width:62%;height:62%}
+span.lg>img{display:block}
+.ezm{display:inline-grid;place-items:center;width:1em;height:1em;flex:none;border-radius:24%;background:#000;box-shadow:0 0 0 1.5px #3a424d;vertical-align:middle}
+.ezm b{font:800 .36em/1 var(--disp);letter-spacing:-.02em}
+.s{color:var(--gold)}.e{color:var(--green)}.z{color:var(--red)}
+
+/* ---------- top bar ---------- */
+.bar{container-type:inline-size;position:sticky;top:0;z-index:20;background:rgb(7 8 10/.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar-in{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;font:800 15px/1 var(--disp);text-decoration:none;margin-right:auto}
+.brand .ezm{font-size:32px}
+.brand small{display:block;font:500 11px/1.2 var(--mono);color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid var(--line2);border-radius:6px;font:500 12px/1.1 var(--mono);color:var(--tx2);white-space:nowrap}
+.chip b{color:var(--tx);font-weight:700}
+@container (max-width:600px){.chip.opt,.brand small{display:none}.bar-in{gap:6px 10px;padding-block:8px}.brand .ezm{font-size:28px}}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgb(31 207 107/.6);animation:ping 1.6s ease-out 3}
+@keyframes ping{to{box-shadow:0 0 0 8px rgb(31 207 107/0)}}
+/* scroll progress, driven by the scroll position itself */
+.prog{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--green),var(--gold),var(--red));transform-origin:0 50%;transform:scaleX(0)}
+@supports (animation-timeline:scroll()){
+  .prog{animation:grow linear both;animation-timeline:scroll(root)}
+  @keyframes grow{to{transform:scaleX(1)}}
+}
+@supports not (animation-timeline:scroll()){.prog{display:none}}
+
+/* ---------- ticker tape ---------- */
+.tick{display:flex;align-items:stretch;border-bottom:1px solid var(--line);background:var(--panel)}
+.tick-v{flex:1;min-width:0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.tick-t{display:flex;width:max-content;animation:tape var(--dur,60s) linear infinite}
+.tick-t ul{display:flex;list-style:none}
+.tick-t li{display:flex;align-items:center;gap:8px;padding:9px 18px;border-right:1px solid var(--line);font:500 13px/1 var(--mono);white-space:nowrap;color:var(--tx2)}
+.tick-t li b{color:var(--tx);font-weight:700}
+.tick-t li .lg{font-size:16px}
+.tick:hover .tick-t,.tick.paused .tick-t{animation-play-state:paused}
+@keyframes tape{to{transform:translateX(-50%)}}
+.ctl{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-left:1px solid var(--line);font:700 12px/1 var(--mono);color:var(--tx2);text-transform:uppercase;letter-spacing:.06em}
+.ctl:hover{color:var(--tx)}
+.ctl i{font-style:normal;color:var(--gold)}
+
+/* ---------- section scaffolding ---------- */
+section{padding-block:var(--sp) 0}
+.kick{display:flex;align-items:center;gap:10px;font:700 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.kick::before{content:"";width:22px;height:2px;background:currentColor}
+h2{font:700 clamp(28px,4.4vw,60px)/1.02 var(--disp);letter-spacing:-.025em;max-width:22ch;text-wrap:balance}
+.lede{margin-top:14px;max-width:62ch;color:var(--tx2);font-size:clamp(14px,.4vw + 13px,17px);text-wrap:pretty}
+.lede b{color:var(--tx)}
+.note{margin-top:12px;font:500 12.5px/1.5 var(--mono);color:var(--dim)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+/* reveal on scroll: CSS scroll-driven, no JS. Fallback: just visible. */
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .rv{animation:rise linear both;animation-timeline:view();animation-range:entry 0% cover 28%}
+    @keyframes rise{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+  }
+}
+
+/* ---------- hero ---------- */
+.hero{container-type:inline-size;padding-block:clamp(28px,6vw,80px) 0}
+.hero-top{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:clamp(16px,3vw,28px)}
+.tag{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:6px;background:var(--panel2);border:1px solid var(--line2);font:700 11.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--tx2)}
+.tag .lg{font-size:15px}
+h1{font:700 clamp(34px,8.4cqi,132px)/.94 var(--disp);letter-spacing:-.035em;text-wrap:balance;max-width:16ch}
+h1 .g{color:var(--gold)}
+.hero-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:clamp(20px,4vw,56px);margin-top:clamp(24px,4vw,48px);align-items:start}
+/* the flow block: Pretext lays out lines around the coin; fallback floats the coin with shape-outside */
+.flow{position:relative;container-type:inline-size;font:500 clamp(15px,3.6cqi,21px)/1.62 var(--mono)}
+.flow .mani p{margin-bottom:.9em;text-wrap:pretty}
+.flow .mani p:last-child{margin-bottom:0}
+.t-dim{color:var(--dim)}.t-tx{color:var(--tx)}.t-au{color:var(--gold)}.t-up{color:var(--green)}
+.coin{--d:clamp(96px,34cqi,230px);float:right;width:var(--d);height:var(--d);margin:0 0 12px 14px;shape-outside:circle(50%);shape-margin:12px;border-radius:50%;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 34% 28%,#ffe58a,var(--gold) 38%,#c9930a 74%,#8a6100);box-shadow:0 0 0 2px #000,0 18px 60px -12px rgb(255 199 44/.45),inset 0 -6px 18px rgb(0 0 0/.35);touch-action:none;user-select:none}
+.coin svg{position:absolute;inset:0;width:100%;height:100%;animation:spin 18s linear infinite}
+.coin svg text{font:800 9.5px/1 var(--mono);fill:#2a1d00}
+.coin .face{position:absolute;inset:21%;border-radius:50%;background:#050505;display:grid;place-items:center;box-shadow:inset 0 0 0 2px #3d2d00}
+.coin .face b{font:800 calc(var(--d)*.2)/1 var(--disp);letter-spacing:-.03em}
+@keyframes spin{to{transform:rotate(360deg)}}
+.flow.paused .coin svg{animation-play-state:paused}
+.flow.pt .coin{float:none;position:absolute;left:0;top:0;margin:0;will-change:transform;cursor:grab}
+.flow.pt .coin:active{cursor:grabbing}
+.flow.pt .mani{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.layer{position:absolute;inset:0;pointer-events:none}
+.layer span{position:absolute;left:0;top:0;white-space:pre;will-change:transform}
+.flow-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:16px;font:500 12px/1.4 var(--mono);color:var(--dim)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--line2);background:var(--panel2);font:700 12.5px/1 var(--mono);color:var(--tx);letter-spacing:.04em;text-transform:uppercase}
+.btn:hover{border-color:var(--gold)}
+.btn i{font-style:normal;color:var(--gold)}
+.btn.gold{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+/* hero side: live stat blocks */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.stat{box-shadow:0 0 0 .5px var(--line);padding:clamp(14px,2vw,20px);display:flex;flex-direction:column;gap:6px;min-width:0}
+.stat small{font:700 11px/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.stat b{font:800 clamp(24px,3vw,40px)/1 var(--mono);letter-spacing:-.03em}
+.stat span{font:500 12.5px/1.35 var(--mono);color:var(--tx2)}
+.stat .lg{font-size:1em}
+.side-note{margin-top:12px;font:500 13px/1.5 var(--mono);color:var(--tx2)}
+
+/* ---------- the board: PnL cards per model ---------- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:clamp(8px,1.2vw,14px);margin-top:clamp(20px,3vw,32px)}
+.tile{container-type:inline-size;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:clamp(12px,1.6vw,18px);display:grid;gap:10px;position:relative;transition:border-color .2s}
+.tile:hover{border-color:var(--line2)}
+.tile[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.t-h{display:flex;align-items:center;gap:10px;font:700 15px/1 var(--disp)}
+.t-h .lg{font-size:30px}
+.t-h .rk{margin-left:auto;font:700 12px/1 var(--mono);color:var(--dim)}
+.t-big{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.t-big b{font:800 clamp(30px,16cqi,48px)/1 var(--mono);letter-spacing:-.04em}
+.t-big span{font:700 13px/1 var(--mono)}
+.t-sub{font:500 12.5px/1.4 var(--mono);color:var(--tx2)}
+.spark{display:flex;gap:3px;height:22px;align-items:flex-end}
+.spark i{flex:1;max-width:14px;border-radius:2px;background:var(--red);height:45%}
+.spark i.ok{background:var(--green);height:100%}
+.spark i.w{box-shadow:0 0 0 2px var(--gold)}
+@container (max-width:200px){.spark{display:none}.t-big span{display:none}}
+/* the detail card: View Transitions swap it when you pick a model */
+.detail{container-type:inline-size;margin-top:clamp(10px,1.4vw,16px);view-transition-name:detail}
+.d-in{display:grid;gap:clamp(16px,2.4vw,28px);padding:clamp(16px,2.4vw,28px)}
+@container (min-width:760px){.d-in{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}}
+.d-h{display:flex;align-items:center;gap:12px;font:700 clamp(20px,2.4vw,28px)/1.1 var(--disp)}
+.d-h .lg{font-size:44px}
+.d-h small{display:block;font:500 12px/1.3 var(--mono);color:var(--dim);margin-top:4px}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr));gap:0;background:var(--panel2);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:16px}
+.kv div{box-shadow:0 0 0 .5px var(--line);padding:12px;min-width:0}
+.kv small{display:block;font:700 10.5px/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.kv b{font:800 clamp(18px,2vw,24px)/1.1 var(--mono)}
+.kv span{display:block;font:500 12px/1.35 var(--mono);color:var(--tx2);margin-top:4px}
+.vs{margin-top:16px;display:grid;gap:8px}
+.vs-r{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr) 4.2em;gap:10px;align-items:center;font:500 12.5px/1.2 var(--mono);color:var(--tx2)}
+.vs-r b{text-align:right;color:var(--tx)}
+.vs-r .trk{height:10px;border-radius:3px;background:var(--panel3);overflow:hidden}
+.vs-r .trk i{display:block;height:100%;border-radius:3px}
+.chart h3{font:700 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:10px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.chart h3 span{letter-spacing:0;text-transform:none;font-weight:500}
+.cv{position:relative;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 10px 4px}
+.cv svg{display:block;width:100%;height:clamp(150px,22cqi,240px)}
+.cv .xl{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));font:500 10.5px/1.2 var(--mono);color:var(--dim);text-align:center;padding-top:6px}
+.lgd{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font:500 12px/1.3 var(--mono);color:var(--tx2)}
+.lgd i{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:6px}
+::view-transition-old(detail),::view-transition-new(detail){animation-duration:.32s}
+::view-transition-old(detail){animation-name:vt-out}
+::view-transition-new(detail){animation-name:vt-in}
+@keyframes vt-out{to{opacity:0;transform:translateY(-10px) scale(.985);filter:blur(4px)}}
+@keyframes vt-in{from{opacity:0;transform:translateY(12px) scale(.985);filter:blur(4px)}}
+
+/* ---------- the tape: every graded round ---------- */
+.tape{container-type:inline-size;margin-top:clamp(20px,3vw,32px);overflow:hidden}
+.tp-h,.tp-r{display:grid;gap:8px 14px;align-items:center;padding:12px clamp(12px,1.6vw,18px)}
+.tp-h{display:none;font:700 10.5px/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line)}
+.tp-r{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"n co mv" "cl cl cl";border-bottom:1px solid var(--line);position:relative;isolation:isolate}
+.tp-r:last-child{border-bottom:0}
+.tp-r::before{content:"";position:absolute;inset:0 auto 0 0;width:var(--depth);background:var(--dc);opacity:.09;z-index:-1}
+.tp-n{grid-area:n;font:700 12px/1 var(--mono);color:var(--dim)}
+.tp-co{grid-area:co;min-width:0;font:700 14.5px/1.25 var(--disp)}
+.tp-co small{display:block;font:500 11.5px/1.3 var(--mono);color:var(--dim);margin-top:2px}
+.tp-mv{grid-area:mv;font:800 clamp(15px,2.2cqi,20px)/1 var(--mono);text-align:right}
+.tp-cl{grid-area:cl;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,128px),1fr));gap:6px}
+.tp-w{grid-area:auto}
+.cc{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);font:700 12.5px/1 var(--mono);white-space:nowrap;min-width:0}
+.cc .lg{font-size:18px}
+.cc.ok{border-color:rgb(31 207 107/.45)}
+.cc.x{opacity:.92}
+.cc.x b{color:var(--red);text-decoration:line-through;text-decoration-thickness:1.5px}
+.cc.ok b{color:var(--green)}
+.cc.w{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.cc.w::after{content:"W";margin-left:auto;font:800 10px/1 var(--mono);background:var(--gold);color:var(--ink);padding:3px 4px;border-radius:3px}
+.cc.na{color:var(--dim);font-weight:500;border-style:dashed}
+.tp-res{grid-column:1/-1;font:500 12px/1.3 var(--mono);color:var(--tx2)}
+.tp-res b{color:var(--gold)}
+@container (min-width:900px){
+  .tp-h,.tp-r{grid-template-columns:3.2em minmax(10em,1.4fr) 5.5em minmax(0,4.6fr) minmax(9em,1fr);grid-template-areas:none}
+  .tp-h{display:grid}
+  .tp-n,.tp-co,.tp-mv,.tp-cl{grid-area:auto}
+  .tp-mv{text-align:left}
+  .tp-cl{grid-template-columns:repeat(var(--m),minmax(0,1fr))}
+  .tp-res{grid-column:auto}
+}
+
+/* ---------- open positions + queue ---------- */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(10px,1.4vw,16px);margin-top:clamp(20px,3vw,32px)}
+.pos{container-type:inline-size;padding:clamp(14px,2vw,22px)}
+.pos h3{font:700 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.pos h3 .dot{animation-iteration-count:3}
+.pos-t{font:700 clamp(18px,2.2vw,24px)/1.15 var(--disp);margin-bottom:4px}
+.pos-s{font:500 12.5px/1.4 var(--mono);color:var(--tx2);margin-bottom:12px}
+.ob{list-style:none;display:grid;gap:4px}
+.ob li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:6px;position:relative;isolation:isolate;font:600 13px/1.2 var(--mono)}
+.ob li::before{content:"";position:absolute;inset:0 0 0 auto;width:var(--depth,0%);border-radius:6px;background:var(--dc,var(--line));opacity:.14;z-index:-1}
+.ob li .lg{font-size:22px}
+.ob li small{display:block;font:500 11.5px/1.2 var(--mono);color:var(--dim);margin-top:2px}
+.ob .side{font-weight:800;text-align:right;white-space:nowrap}
+.q li{grid-template-columns:3.4em minmax(0,1fr) auto;background:transparent;border-bottom:1px dashed var(--line);border-radius:0}
+.q li:last-child{border-bottom:0}
+.q .r{color:var(--dim);font-weight:700}
+.q .d{color:var(--tx2);font-weight:500;text-align:right;white-space:nowrap}
+.more{margin-top:10px;font:500 12px/1.3 var(--mono);color:var(--dim)}
+
+/* ---------- the pot: liquidation meter ---------- */
+.potbox{container-type:inline-size;margin-top:clamp(20px,3vw,32px);padding:clamp(16px,2.4vw,28px);display:grid;gap:clamp(18px,2.6vw,28px)}
+@container (min-width:820px){.pot-g{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}}
+.pot-g{display:grid;gap:clamp(18px,2.6vw,28px)}
+.flowline{list-style:none;display:grid;gap:8px;counter-reset:f}
+.flowline li{display:grid;grid-template-columns:2.4em minmax(0,1fr);gap:10px;align-items:center;padding:10px 12px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);font:600 13.5px/1.35 var(--mono);counter-increment:f}
+.flowline li::before{content:"0" counter(f);font:800 12px/1 var(--mono);color:var(--gold)}
+.flowline small{display:block;font:500 12px/1.35 var(--mono);color:var(--dim)}
+.flowline .lgs{display:inline-flex;gap:4px;font-size:20px;vertical-align:middle;margin-left:6px}
+.meter{display:grid;gap:10px}
+.m-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.m-top b{font:800 clamp(22px,3vw,34px)/1 var(--mono)}
+.m-top small{font:700 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.m-bar{position:relative;height:clamp(40px,5vw,56px);border-radius:8px;background:repeating-linear-gradient(90deg,var(--panel2) 0 calc(5% - 2px),var(--bg) calc(5% - 2px) 5%);border:1px solid var(--line2);overflow:hidden}
+.m-fill{position:absolute;inset:0 auto 0 0;width:var(--lvl,55%);background:linear-gradient(90deg,var(--red),#ff8a1e 18%,var(--gold) 40%,var(--green));-webkit-mask:repeating-linear-gradient(90deg,#000 0 calc(5% - 2px),transparent calc(5% - 2px) 5%);mask:repeating-linear-gradient(90deg,#000 0 calc(5% - 2px),transparent calc(5% - 2px) 5%);background-size:calc(10000% / var(--lvln,55)) 100%;transition:width .7s cubic-bezier(.3,.7,.2,1)}
+.m-liq{position:absolute;top:0;bottom:0;left:0;width:10%;border-right:2px dashed var(--red);background:rgb(255 65 54/.12)}
+.m-ax{display:flex;justify-content:space-between;font:600 11px/1 var(--mono);color:var(--dim)}
+.m-ax .liq{color:var(--red)}
+.m-ctl{display:flex;flex-wrap:wrap;gap:8px}
+.m-log{min-height:3.2em;font:600 13.5px/1.45 var(--mono);color:var(--tx);padding:10px 12px;border-radius:8px;background:var(--panel2);border-left:3px solid var(--gold)}
+.m-log.win{border-left-color:var(--green)}.m-log.loss{border-left-color:var(--red)}
+.bb{display:flex;flex-wrap:wrap;gap:4px;min-height:24px}
+.bb .ezm{font-size:22px;animation:pop .4s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(0)}}
+.ring{width:56px;height:56px;border-radius:50%;background:conic-gradient(var(--gold) 0 var(--p),var(--panel3) var(--p) 100%);display:grid;place-items:center;flex:none}
+.ring::after{content:"";width:34px;height:34px;border-radius:50%;background:var(--panel)}
+.split{display:flex;align-items:center;gap:14px;font:600 13.5px/1.4 var(--mono)}
+.split small{display:block;color:var(--dim);font-weight:500}
+
+/* ---------- replays ---------- */
+.rp{container-type:inline-size;margin-top:clamp(20px,3vw,32px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:clamp(12px,2vw,24px);align-items:start}
+.rp-main{view-transition-name:replay;position:relative;border-radius:var(--r);overflow:hidden;background:#000;border:1px solid var(--line);aspect-ratio:1/1;max-height:min(80vh,760px);width:100%;justify-self:center}
+.rp-main video{display:block;width:100%;height:100%;object-fit:cover}
+.rp-badge{position:absolute;left:10px;top:10px;padding:5px 8px;border-radius:5px;background:rgb(0 0 0/.75);font:800 11px/1 var(--mono);letter-spacing:.1em;color:var(--red)}
+.rp-side{display:grid;gap:12px;align-content:start}
+.rp-cap{font:500 13.5px/1.5 var(--mono);color:var(--tx2)}
+.rp-cap b{display:block;font:700 clamp(20px,2.4vw,28px)/1.15 var(--disp);color:var(--tx);margin-bottom:6px}
+.strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,92px),1fr));gap:8px}
+.strip button{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--line);aspect-ratio:1/1;background:#000}
+.strip button img{display:block;width:100%;height:100%;object-fit:cover;opacity:.75;transition:opacity .2s}
+.strip button:hover img,.strip button[aria-pressed="true"] img{opacity:1}
+.strip button[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.strip span{position:absolute;left:0;right:0;bottom:0;padding:4px 6px;background:linear-gradient(transparent,rgb(0 0 0/.9));font:700 10.5px/1.2 var(--mono);text-align:left}
+::view-transition-old(replay),::view-transition-new(replay){animation-duration:.3s}
+
+/* ---------- the dream ---------- */
+.dream{container-type:inline-size;text-align:left;overflow-x:clip}
+.big{font:700 clamp(44px,13cqi,220px)/.9 var(--disp);letter-spacing:-.05em}
+.big span{display:block}
+.big .q2{color:var(--gold)}
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .big span{animation:slide linear both;animation-timeline:view();animation-range:entry 10% cover 45%}
+    .big .q2{animation-name:slide2}
+    @keyframes slide{from{transform:translateX(-12%);opacity:.15}to{transform:none;opacity:1}}
+    @keyframes slide2{from{transform:translateX(18%);opacity:.15}to{transform:none;opacity:1}}
+  }
+}
+.gauge{margin-top:clamp(24px,4vw,40px);padding:clamp(16px,2.4vw,28px)}
+.g-trk{position:relative;height:14px;border-radius:7px;background:linear-gradient(90deg,rgb(255 65 54/.35),rgb(255 199 44/.35) 60%,rgb(31 207 107/.45));margin:clamp(70px,8vw,84px) 0 clamp(54px,6vw,64px)}
+.g-m{position:absolute;top:50%;transform:translate(-50%,-50%)}
+.g-m.gt{width:2px;height:34px;background:var(--tx2)}
+.g-m.ghost{width:2px;height:34px;background:repeating-linear-gradient(180deg,var(--gold) 0 4px,transparent 4px 8px)}
+.g-l{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font:700 11.5px/1.2 var(--mono);text-align:center}
+.g-l.a{bottom:calc(100% + 6px)}.g-l.b{top:calc(100% + 6px)}
+.g-l small{display:block;font-weight:500;color:var(--dim)}
+.g-dot{position:absolute;top:50%;font-size:22px;transform:translate(-50%,-50%)}
+.g-dot .lg{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--tx2)}
+.g-ax{display:flex;justify-content:space-between;font:600 11px/1 var(--mono);color:var(--dim)}
+
+/* ---------- the road ---------- */
+.road{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:clamp(20px,3vw,32px)}
+.road li{background:var(--panel);padding:clamp(14px,2vw,20px);display:grid;gap:8px;align-content:start;min-width:0}
+.road .st{font:800 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.road li.done .st{color:var(--green)}
+.road li.cur{background:var(--panel2);box-shadow:inset 0 3px 0 var(--gold)}
+.road li.cur .st{color:var(--gold)}
+.road b{font:700 clamp(15px,1.4vw,18px)/1.25 var(--disp)}
+.road li.todo b{color:var(--tx2)}
+.ascii{font:700 13px/1 var(--mono);color:var(--gold);letter-spacing:-.02em;overflow-wrap:anywhere}
+.ascii .o{color:var(--line2)}
+.road small{font:500 12px/1.35 var(--mono);color:var(--tx2)}
+
+/* ---------- get $EZ + footer ---------- */
+.get{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:clamp(16px,3vw,32px);align-items:center;padding:clamp(18px,3vw,36px);margin-top:clamp(20px,3vw,32px)}
+.ca{font:600 13.5px/1.5 var(--mono);color:var(--tx2);padding:14px;border-radius:8px;background:var(--panel2);border:1px dashed var(--line2);overflow-wrap:anywhere}
+.ca code{display:block;margin-top:6px;font:700 14px/1.4 var(--mono);color:var(--tx)}
+footer{margin-top:var(--sp);border-top:1px solid var(--line);padding-block:28px 40px;font:500 12.5px/1.6 var(--mono);color:var(--dim)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .tick-v{overflow-x:auto;mask-image:none}
+  .tick-t ul+ul{display:none}
+  .prog{display:none}
+  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}
+}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="brand" href="#top"><span class="ezm" aria-hidden="true"><b><span class="s">$</span><span class="e">E</span><span class="z">Z</span></b></span><span>$EZ terminal<small>Earnings Zeason</small></span></a>
+    <div class="chips" id="chips"></div>
+  </div>
+  <div class="prog" aria-hidden="true"></div>
+</header>
+<div class="tick" id="tick" role="region" aria-label="Ticker: every graded round">
+  <div class="tick-v"><div class="tick-t" id="tickT"></div></div>
+  <button type="button" class="ctl" id="tickBtn" aria-pressed="false"><i aria-hidden="true">❚❚</i><span>Pause</span></button>
+</div>
+
+<main id="top">
+  <!-- 01 · hero -->
+  <section class="hero wrap" aria-labelledby="h1">
+    <div class="hero-top" id="heroTags"></div>
+    <h1 id="h1">We're teaching AIs to bet. <span class="g">The market grades them.</span></h1>
+    <div class="hero-grid">
+      <div>
+        <div class="flow" id="flow">
+          <div class="coin" id="coin" aria-hidden="true">
+            <svg viewBox="0 0 100 100"><defs><path id="rim" d="M50,50 m-39,0 a39,39 0 1,1 78,0 a39,39 0 1,1 -78,0"/></defs><text><textPath href="#rim" textLength="242" lengthAdjust="spacing">BUY BACK $EZ · BUY BACK $EZ · </textPath></text></svg>
+            <span class="face"><b><span class="s">$</span><span class="e">E</span><span class="z">Z</span></b></span>
+          </div>
+          <div class="mani" id="mani">
+            <p class="t-dim" data-tone="t-dim">Every coin's the same shit. Buy, stare at the chart, pray. Nobody roots for anything.</p>
+            <p class="t-tx" data-tone="t-tx">Here, an AI has one job: buy back $EZ. It degens on earnings with leverage on Hyperliquid, long or short. You root for it.</p>
+            <p class="t-au" data-tone="t-au" id="maniCall">Before each print, the AIs call it: up or down, and by how much. The market grades them at the next close. On the record. Never edited.</p>
+            <p class="t-up" data-tone="t-up">Fees fill the pot. A win buys back $EZ. A loss drains the pot, and your trading refills it.</p>
+          </div>
+          <div class="layer" id="layer" aria-hidden="true"></div>
+        </div>
+        <div class="flow-ctl">
+          <button type="button" class="btn" id="coinBtn" aria-pressed="false" aria-controls="flow"><i aria-hidden="true">❚❚</i><span>Pause coin</span></button>
+          <span id="flowNote">Drag the coin. The text gets out of its way.</span>
+        </div>
+      </div>
+      <div>
+        <div class="stats" id="heroStats"></div>
+        <p class="side-note" id="heroNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 · the board -->
+  <section class="wrap rv" id="board" aria-labelledby="hBoard">
+    <p class="kick">The board</p>
+    <h2 id="hBoard">Four degens. One scoreboard.</h2>
+    <p class="lede" id="boardLede"></p>
+    <div class="tiles" id="tiles" role="group" aria-label="Pick a model"></div>
+    <div class="detail panel tex" id="detail" aria-live="polite"></div>
+  </section>
+
+  <!-- 03 · the tape -->
+  <section class="wrap rv" id="tape" aria-labelledby="hTape">
+    <p class="kick">The tape</p>
+    <h2 id="hTape">Every call. Graded by the close.</h2>
+    <p class="lede">Graded at the first market close after the report, on the closing price from TradingView. Wrong way, you're out. Of the right ones, closest to the real move wins. Nobody right, nobody wins. <b>Nothing gets edited.</b></p>
+    <div class="tape panel tex" id="tapeT"></div>
+  </section>
+
+  <!-- 04 · open positions -->
+  <section class="wrap rv" id="open" aria-labelledby="hOpen">
+    <p class="kick">Open positions</p>
+    <h2 id="hOpen">Calls locked. Waiting on the close.</h2>
+    <div class="two" id="openT"></div>
+  </section>
+
+  <!-- 05 · the pot -->
+  <section class="wrap rv" id="pot" aria-labelledby="hPot">
+    <p class="kick">The pot</p>
+    <h2 id="hPot">Fees fill it. One AI sends it.</h2>
+    <p class="lede">Every $EZ trade pays a fee. Most of it goes into the pot. One AI bets the pot on earnings, on Hyperliquid, with leverage, long or short. <b>A win buys back $EZ. A loss drains the pot, and your trading refills it.</b> The pot can be wiped out.</p>
+    <div class="potbox panel tex">
+      <div class="pot-g">
+        <div>
+          <ol class="flowline" id="flowline"></ol>
+        </div>
+        <div class="meter">
+          <div class="m-top"><small>Pot health</small><b id="potVal"></b></div>
+          <div class="m-bar" id="mBar" role="meter" aria-label="Pot level, illustration" aria-valuemin="0" aria-valuemax="100" aria-valuenow="55"><div class="m-liq" aria-hidden="true"></div><div class="m-fill" id="mFill"></div></div>
+          <div class="m-ax" aria-hidden="true"><span class="liq">LIQ</span><span>half</span><span>full</span></div>
+          <div class="m-ctl" role="group" aria-label="Try the loop">
+            <button type="button" class="btn" data-sim="fee"><i aria-hidden="true">+</i>Trades pay fees</button>
+            <button type="button" class="btn" data-sim="win"><i aria-hidden="true">▲</i>AI wins</button>
+            <button type="button" class="btn" data-sim="loss"><i aria-hidden="true">▼</i>AI loses</button>
+          </div>
+          <p class="m-log" id="mLog" aria-live="polite">Press a button to run the loop.</p>
+          <div><small class="note" style="margin:0">Bought back in this illustration</small><div class="bb" id="bb" aria-hidden="true"></div></div>
+          <p class="note" id="potNote"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 · replays -->
+  <section class="wrap rv" id="replays" aria-labelledby="hRep">
+    <p class="kick">Replays</p>
+    <h2 id="hRep">Watch the prints land.</h2>
+    <div class="rp" id="rp">
+      <div class="rp-main" id="rpMain"></div>
+      <div class="rp-side">
+        <p class="rp-cap" id="rpCap" aria-live="polite"></p>
+        <div><button type="button" class="btn" id="rpBtn" aria-pressed="false"><i aria-hidden="true">❚❚</i><span>Pause replay</span></button></div>
+        <div class="strip" id="strip" role="group" aria-label="Pick a replay"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 · the dream -->
+  <section class="wrap dream" id="dream" aria-labelledby="hDream">
+    <p class="kick">The question</p>
+    <h2 class="big" id="hDream"><span>What if it hits 70%?</span><span class="q2">80%?</span></h2>
+    <p class="lede" id="dreamLede"></p>
+    <div class="gauge panel tex rv" id="gauge"></div>
+  </section>
+
+  <!-- 08 · the road -->
+  <section class="wrap rv" id="road" aria-labelledby="hRoad">
+    <p class="kick">The road</p>
+    <h2 id="hRoad">Each step unlocks when volume pays for it.</h2>
+    <ol class="road" id="roadT"></ol>
+  </section>
+
+  <!-- 09 · get $EZ -->
+  <section class="wrap rv" id="get" aria-labelledby="hGet">
+    <div class="get panel">
+      <div>
+        <p class="kick">Get $EZ</p>
+        <h2 id="hGet" style="font-size:clamp(24px,3vw,40px)">Pick a side. Root for the bot.</h2>
+        <p class="lede">No promises on price, returns or buyback size. The AI can be wrong. The pot can go to zero.</p>
+      </div>
+      <div id="getT"></div>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span>$EZ is a memecoin experiment. Not financial advice. The pot can be wiped out.</span><span id="footN"></span></div></footer>
+
+<script src="ez-data.js"></script>
+<script>
+(function(){
+"use strict";
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* ---------- helpers (copied from v15 / v18) ---------- */
+function nm(m){var n=(MODELS[m]&&MODELS[m].name)||m;return n.length<=3?n:n.charAt(0)+n.slice(1).toLowerCase()}
+function list(a){return a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
+function hasTk(r){return !!r.ticker&&String(r.co).toUpperCase()!==String(r.ticker).toUpperCase()}
+function plainCo(r){return r.co+(hasTk(r)?" ("+r.ticker+")":"")}
+function callOk(r,c){return ((/^DOWN/.test(c[1])?-1:1)>0)===(r.a>0)?1:0}
+function parsedCall(r,c){var dn=/^DOWN/.test(c[1]);return {m:c[0],dn:dn,mag:c[1].replace(/^\w+\s*/,"").replace("%",""),ok:callOk(r,c),off:parseFloat(c[2]),v:(dn?-1:1)*parseFloat(c[1].replace(/^\w+\s*/,""))}}
+function mmdd(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?new Date(2000+(+m[3]%100),+m[1]-1,+m[2]):null}
+function absOut(r){return r.out.replace(/^[+−-]/,"")}
+function pct(x){return Math.round(x*100)+"%"}
+function winners(r){return r.win?r.win.split(" & "):[]}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var NUMW=["no","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve"];
+function numw(n){return NUMW[n]||String(n)}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function arrow(dn){return dn?"▼":"▲"}
+function sgn(dn){return dn?"−":"+"}
+/* readable model colour on the dark surface (GROK's mark is near-black) */
+function lum(h){h=h.replace("#","");if(h.length===3)h=h.replace(/./g,"$&$&");return [0,2,4].map(function(i){var v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce(function(a,v,i){return a+v*[.2126,.7152,.0722][i]},0)}
+function mcol(m){var c=MODELS[m]&&MODELS[m].c;return c&&lum(c)>.2?c:"#c9ced6"}
+var EZM='<span class="ezm"><b><span class="s">$</span><span class="e">E</span><span class="z">Z</span></b></span>';
+
+/* ---------- derived numbers ---------- */
+var ACTIVE=MODEL_KEYS.filter(function(m){return MODELS[m]&&(ROUNDS.some(function(r){return callOf(r,m)})||PENDING.some(function(u){return u.calls.some(function(c){return c.m===m})}))});
+var NR=ROUNDS.length,UPS=ROUNDS.filter(function(r){return r.a>0}).length,UPP=NR?UPS/NR:0,NOWIN=ROUNDS.filter(function(r){return !r.win}).length;
+var STATS={};
+ACTIVE.forEach(function(m){var s={m:m,right:0,tot:0,won:0,seq:[],last:null,lastR:null,pend:null};
+  ROUNDS.forEach(function(r){var c=callOf(r,m);if(!c)return;var p=parsedCall(r,c);s.tot++;if(p.ok)s.right++;var w=winners(r).indexOf(m)>-1;if(w)s.won++;
+    s.seq.push({r:r,p:p,w:w});s.last=p;s.lastR=r});
+  PENDING.forEach(function(u){u.calls.forEach(function(c){if(c.m===m)s.pend={u:u,c:c}})});
+  /* the current streak: same result (right way / wrong way) counted back from the latest graded call */
+  s.streak=0;s.streakOk=null;for(var i=s.seq.length-1;i>=0;i--){var ok=!!s.seq[i].p.ok;if(s.streakOk===null)s.streakOk=ok;if(ok!==s.streakOk)break;s.streak++}
+  s.rate=s.tot?s.right/s.tot:0;
+  var L=LADDER.filter(function(T){return T.m===m})[0];s.avg=L?L.avg:null;
+  STATS[m]=s});
+var LD=LADDER.filter(function(T){return MODELS[T.m]});
+var ROWS=LD.map(function(T){return T.m}).concat(ACTIVE.filter(function(m){return !LD.some(function(T){return T.m===m})}));
+function rankOf(m){return 1+ROWS.filter(function(o){return STATS[o].won>STATS[m].won}).length}
+var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});
+var US=UPCOMING.slice().sort(function(a,b){return ((mmdd(a.called)||0)-(mmdd(b.called)||0))||(a.n-b.n)});
+var LAUNCH_AT=+(CONFIG.launchAt||35),LAUNCHED=!!CONFIG.launched;
+/* the fee split is a placeholder the owner still has to confirm (not a result) */
+var POOL_SHARE=0.69,P=Math.round(POOL_SHARE*100),Q=100-P;
+var BEST=ACTIVE.slice().sort(function(a,b){return (STATS[b].rate-STATS[a].rate)||(STATS[b].tot-STATS[a].tot)})[0];
+var LAST=ROUNDS[NR-1]||null;
+var TOTCALLS=0,TOTRIGHT=0;ACTIVE.forEach(function(m){TOTCALLS+=STATS[m].tot;TOTRIGHT+=STATS[m].right});
+
+/* ---------- top bar chips ---------- */
+var chips=['<span class="chip"><span class="dot" aria-hidden="true"></span>Graded <b>'+NR+'</b></span>',
+  '<span class="chip">Launch <b>'+Math.min(NR,LAUNCH_AT)+'/'+LAUNCH_AT+'</b></span>',
+  '<span class="chip opt">Pot <b>'+(CONFIG.pool?esc(CONFIG.pool):"opens at launch")+'</b></span>'];
+$("#chips").innerHTML=chips.join("");
+
+/* ---------- ticker tape: built from the record ---------- */
+var items=[];
+ROUNDS.slice().reverse().forEach(function(r){var dn=r.a<0,W=winners(r);
+  items.push('<li><span>R'+r.n+'</span><b>'+esc(r.ticker)+'</b><span class="'+(dn?'dn':'up')+'">'+arrow(dn)+' '+absOut(r)+'</span>'+
+    (W.length?'<span>W</span>'+W.map(function(m){return logo(m)}).join(""):'<span class="dim">no winner</span>')+'</li>')});
+PS.forEach(function(u){items.push('<li><span>R'+u.n+'</span><b>'+esc(u.ticker)+'</b><span class="au">calls in · grades '+fmtDate(u.resolves)+'</span></li>')});
+ROWS.forEach(function(m){var S=STATS[m];items.push('<li>'+logo(m)+'<b>'+nm(m)+'</b><span>'+S.right+'/'+S.tot+' right way</span><span class="au">'+S.won+'W</span></li>')});
+items.push('<li><b>ALWAYS UP</b><span>'+UPS+'/'+NR+'</span><span class="au">the bar to beat</span></li>');
+var ul='<ul>'+items.join("")+'</ul>';
+$("#tickT").innerHTML=ul+ul.replace("<ul>",'<ul aria-hidden="true">');
+$("#tickT").style.setProperty("--dur",Math.max(30,items.length*5)+"s");
+var tick=$("#tick"),tickBtn=$("#tickBtn");
+function setTick(p){tick.classList.toggle("paused",p);tickBtn.setAttribute("aria-pressed",String(p));tickBtn.innerHTML=p?'<i aria-hidden="true">▶</i><span>Play</span>':'<i aria-hidden="true">❚❚</i><span>Pause</span>'}
+tickBtn.addEventListener("click",function(){setTick(!tick.classList.contains("paused"))});
+if(reduce)tickBtn.hidden=true;
+
+/* ---------- hero ---------- */
+$("#heroTags").innerHTML='<span class="tag">'+ACTIVE.map(function(m){return logo(m)}).join("")+numw(ACTIVE.length)+' AIs</span>'+
+  '<span class="tag">'+hlLogo()+'Bets on Hyperliquid</span><span class="tag">'+nvLogo()+'First target: NVIDIA</span>';
+$("#maniCall").textContent="Before each print, "+numw(ACTIVE.length)+" AIs call it: up or down, and by how much. The market grades them at the next close. On the record. Never edited.";
+var hs=[];
+hs.push('<div class="stat"><small>Rounds graded</small><b>'+NR+'</b><span>'+TOTCALLS+' calls on the record</span></div>');
+hs.push('<div class="stat"><small>Right way, all AIs</small><b class="'+(TOTRIGHT/TOTCALLS>.5?'up':'dn')+'">'+pct(TOTCALLS?TOTRIGHT/TOTCALLS:0)+'</b><span>'+TOTRIGHT+' of '+TOTCALLS+' calls</span></div>');
+hs.push('<div class="stat"><small>Bar to beat</small><b class="au">'+pct(UPP)+'</b><span>Always say up: '+UPS+' of '+NR+'</span></div>');
+if(LAST)hs.push('<div class="stat"><small>Last print</small><b class="'+(LAST.a<0?'dn':'up')+'">'+LAST.out+'</b><span>'+esc(plainCo(LAST))+'. '+(LAST.win?list(winners(LAST).map(nm))+' won.':'Nobody won.')+'</span></div>');
+$("#heroStats").innerHTML=hs.join("");
+var behind=ACTIVE.filter(function(m){return STATS[m].rate<UPP-1e-9});
+$("#heroNote").textContent=behind.length===ACTIVE.length?"Right now, no AI beats a bot that always says up. That's the honest number. It's early.":
+  behind.length?"Right now "+list(behind.map(nm))+(behind.length>1?" trail":" trails")+" a bot that always says up.":"Right now every AI beats a bot that always says up. It's early.";
+
+/* ---------- the board ---------- */
+$("#hBoard").textContent=cap(numw(ACTIVE.length))+" degens. One scoreboard.";
+$("#boardLede").innerHTML="Hit rate is how often a model called the direction right. Each tile shows it against a coin flip (50%) and against <b>always saying up</b> ("+pct(UPP)+" so far). Pick one to open its book.";
+function delta(x,base){var d=Math.round(x*100)-Math.round(base*100);return (d>0?"+":d<0?"−":"±")+Math.abs(d)}
+function tile(m,i){var S=STATS[m],d=delta(S.rate,.5),d2=delta(S.rate,UPP);
+  return '<button type="button" class="tile" data-m="'+m+'" aria-pressed="false">'+
+    '<span class="t-h">'+logo(m)+'<span>'+nm(m)+'</span><span class="rk">#'+rankOf(m)+'</span></span>'+
+    '<span class="t-big"><b class="'+(S.rate>.5?'up':S.rate<.5?'dn':'')+'">'+pct(S.rate)+'</b><span class="'+(S.rate>.5?'up':'dn')+'">'+d+' vs flip</span></span>'+
+    '<span class="t-sub">'+S.right+'/'+S.tot+' right · '+S.won+' '+(S.won===1?'win':'wins')+' · <span class="'+(S.rate>=UPP?'up':'dn')+'">'+d2+' vs up</span></span>'+
+    '<span class="spark" aria-hidden="true">'+S.seq.map(function(q){return '<i class="'+(q.p.ok?'ok':'')+(q.w?' w':'')+'"></i>'}).join("")+'</span></button>'}
+$("#tiles").innerHTML=ROWS.map(tile).join("");
+/* one shared scale for every model's chart */
+var SCALE=0;ROUNDS.forEach(function(r){SCALE=Math.max(SCALE,Math.abs(r.a));r.calls.forEach(function(c){SCALE=Math.max(SCALE,Math.abs(parsedCall(r,c).v))})});SCALE=Math.ceil(SCALE/5)*5||5;
+function chart(m){var S=STATS[m],n=S.seq.length,W=n*40,H=200,mid=H/2,k=(H/2-8)/SCALE,o="";
+  o+='<line x1="0" x2="'+W+'" y1="'+mid+'" y2="'+mid+'" stroke="#3a424d" stroke-width="1" vector-effect="non-scaling-stroke"/>';
+  [5,10,15,20].forEach(function(g){if(g<SCALE)[-1,1].forEach(function(s){var y=mid-s*g*k;o+='<line x1="0" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="#1f252d" stroke-dasharray="3 4" stroke-width="1" vector-effect="non-scaling-stroke"/>'})});
+  S.seq.forEach(function(q,i){var x=i*40+8,v=q.p.v,y=v>0?mid-v*k:mid,h=Math.max(1.5,Math.abs(v)*k),a=q.r.a,ya=mid-a*k;
+    o+='<rect x="'+x+'" y="'+y.toFixed(1)+'" width="24" height="'+h.toFixed(1)+'" rx="2" fill="'+(q.p.ok?'#1fcf6b':'#ff4136')+'" opacity="'+(q.p.ok?.9:.75)+'"><title>Round '+q.r.n+', '+esc(plainCo(q.r))+': called '+(q.p.dn?'down ':'up ')+q.p.mag+'%, it moved '+q.r.out+'</title></rect>';
+    o+='<line x1="'+(x-5)+'" x2="'+(x+29)+'" y1="'+ya.toFixed(1)+'" y2="'+ya.toFixed(1)+'" stroke="#ffc72c" stroke-width="3" vector-effect="non-scaling-stroke"/>';
+    if(q.w)o+='<circle cx="'+(x+12)+'" cy="'+(a>0?ya-9:ya+9).toFixed(1)+'" r="4" fill="#ffc72c"/>'});
+  return '<div class="cv" style="--n:'+n+'"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" aria-label="'+nm(m)+': each call against the real move, '+n+' rounds">'+o+'</svg>'+
+    '<div class="xl" aria-hidden="true">'+S.seq.map(function(q){return '<span>'+esc(q.r.ticker.split(".")[0])+'</span>'}).join("")+'</div></div>'}
+function detail(m){var S=STATS[m],lastTxt,lastSub;
+  if(S.pend){var c=S.pend.c,dn=c.dir==="DOWN";lastTxt='<b class="'+(dn?'dn':'up')+'">'+arrow(dn)+' '+c.mag+'%</b>';lastSub=esc(plainCo(S.pend.u))+'. Open, grades '+fmtDate(S.pend.u.resolves)+'.'}
+  else if(S.last){lastTxt='<b class="'+(S.last.dn?'dn':'up')+'">'+arrow(S.last.dn)+' '+S.last.mag+'%</b>';lastSub=esc(plainCo(S.lastR))+'. '+(S.last.ok?'Right way.':'Wrong way.')}
+  else{lastTxt='<b>none</b>';lastSub=''}
+  var bars=[["Hit rate, "+nm(m),S.rate,mcol(m)],["Coin flip",.5,"#5b6573"],["Always up",UPP,"#ffc72c"]];
+  return '<div class="d-in"><div>'+
+    '<div class="d-h">'+logo(m)+'<span>'+nm(m)+'<small>Rank #'+rankOf(m)+' of '+ROWS.length+' · '+S.tot+' graded calls</small></span></div>'+
+    '<div class="kv">'+
+      '<div><small>Hit rate</small><b class="'+(S.rate>.5?'up':S.rate<.5?'dn':'')+'">'+pct(S.rate)+'</b><span>'+S.right+' of '+S.tot+' right way</span></div>'+
+      '<div><small>Round wins</small><b class="au">'+S.won+'</b><span>Right way, closest</span></div>'+
+      '<div><small>Streak</small><b class="'+(S.streakOk?'up':'dn')+'">'+(S.streak?S.streak+(S.streakOk?' right':' wrong'):'none')+'</b><span>'+(S.streak?'In a row, latest first':'')+'</span></div>'+
+      '<div><small>'+(S.pend?'Open call':'Last call')+'</small>'+lastTxt+'<span>'+lastSub+'</span></div>'+
+      (S.avg!==null?'<div><small>Avg miss</small><b>'+S.avg+'</b><span>Points from the real move</span></div>':'')+
+    '</div>'+
+    '<div class="vs">'+bars.map(function(b){return '<div class="vs-r"><span>'+b[0]+'</span><span class="trk"><i style="width:'+(b[1]*100).toFixed(1)+'%;background:'+b[2]+'"></i></span><b>'+pct(b[1])+'</b></div>'}).join("")+'</div>'+
+    '</div><div class="chart"><h3>The book<span>'+S.tot+' calls vs the real move</span></h3>'+chart(m)+
+    '<div class="lgd"><span><i style="background:#1fcf6b"></i>Call, right way</span><span><i style="background:#ff4136"></i>Call, wrong way</span><span><i style="background:#ffc72c;height:3px;vertical-align:3px"></i>What the stock did</span><span><i style="background:#ffc72c;border-radius:50%"></i>Round win</span></div></div></div>'}
+var cur=null;
+function pick(m,anim){if(m===cur)return;cur=m;
+  var run=function(){$("#detail").innerHTML=detail(m);$$("#tiles .tile").forEach(function(t){t.setAttribute("aria-pressed",String(t.dataset.m===m))})};
+  if(anim&&!reduce&&document.startViewTransition)document.startViewTransition(run);else run()}
+$$("#tiles .tile").forEach(function(t){t.addEventListener("click",function(){pick(t.dataset.m,true)})});
+if(ROWS.length)pick(ROWS[0],false);
+
+/* ---------- the tape ---------- */
+var tp='<div class="tp-h" style="--m:'+ACTIVE.length+'" aria-hidden="true"><span>Rnd</span><span>Company</span><span>Move</span><span>The calls</span><span>Result</span></div>';
+var MAXA=Math.max.apply(null,ROUNDS.map(function(r){return Math.abs(r.a)}).concat([1]));
+ROUNDS.slice().reverse().forEach(function(r){var dn=r.a<0,W=winners(r);
+  var cells=ACTIVE.map(function(m){var c=callOf(r,m);if(!c)return '<span class="cc na">'+logo(m)+'no call</span>';var p=parsedCall(r,c),w=W.indexOf(m)>-1;
+    return '<span class="cc '+(w?'w ':'')+(p.ok?'ok':'x')+'">'+logo(m)+'<b>'+arrow(p.dn)+p.mag+'%</b><span class="sr">'+nm(m)+' called '+(p.dn?'down ':'up ')+p.mag+'%, '+(p.ok?'right way, '+p.off.toFixed(2)+' points off':'wrong way')+(w?', wins':'')+'.</span></span>'}).join("");
+  tp+='<div class="tp-r" style="--m:'+ACTIVE.length+';--depth:'+(Math.abs(r.a)/MAXA*100).toFixed(1)+'%;--dc:'+(dn?'var(--red)':'var(--green)')+'">'+
+    '<span class="tp-n">R'+r.n+'</span><span class="tp-co">'+esc(plainCo(r))+'<small>Called '+fmtDate(r.called)+' · graded '+fmtDate(r.resolves)+'</small></span>'+
+    '<span class="tp-mv '+(dn?'dn':'up')+'"><span aria-hidden="true">'+arrow(dn)+'</span><span class="sr">'+(dn?'Down ':'Up ')+'</span>'+absOut(r)+'</span>'+
+    '<span class="tp-cl">'+cells+'</span>'+
+    '<span class="tp-res">'+(W.length?'<b>'+list(W.map(nm))+'</b> '+(W.length>1?'tie':'wins'):'No winner')+'</span></div>'});
+$("#tapeT").innerHTML=tp;
+
+/* ---------- open positions and the queue ---------- */
+var op="";
+if(PS.length){PS.forEach(function(u){var mx=Math.max.apply(null,u.calls.map(function(c){return parseFloat(c.mag)||0}).concat([1]));
+  var ups=u.calls.filter(function(c){return c.dir==="UP"}).length;
+  op+='<div class="pos panel tex"><h3><span class="dot" aria-hidden="true"></span>Open · round '+u.n+'</h3><p class="pos-t">'+esc(plainCo(u))+'</p>'+
+    '<p class="pos-s">Called '+fmtDate(u.called)+'. Grades '+fmtDate(u.resolves)+'. '+ups+' long, '+(u.calls.length-ups)+' short.</p><ul class="ob">'+
+    u.calls.map(function(c){var dn=c.dir==="DOWN";return '<li style="--depth:'+((parseFloat(c.mag)||0)/mx*100).toFixed(0)+'%;--dc:'+(dn?'var(--red)':'var(--green)')+'">'+logo(c.m)+'<span>'+nm(c.m)+'<small>'+(dn?'Short':'Long')+'</small></span><span class="side '+(dn?'dn':'up')+'">'+arrow(dn)+' '+c.mag+'%</span></li>'}).join("")+'</ul></div>'})}
+if(US.length){var SHOWN=8;
+  op+='<div class="pos panel tex"><h3>Queue · next prints</h3><p class="pos-t">'+US.length+' rounds scheduled</p><p class="pos-s">The AIs call each one the day before it reports.</p><ul class="ob q">'+
+    US.slice(0,SHOWN).map(function(u){return '<li><span class="r">R'+u.n+'</span><span>'+esc(plainCo(u))+'</span><span class="d">calls '+fmtDate(u.called)+'</span></li>'}).join("")+'</ul>'+
+    (US.length>SHOWN?'<p class="more">+'+(US.length-SHOWN)+' more on the schedule.</p>':'')+'</div>'}
+if(!op)op='<div class="pos panel"><p class="pos-s">The next rounds are posted soon.</p></div>';
+$("#openT").innerHTML=op;
+
+/* ---------- the pot ---------- */
+$("#flowline").innerHTML=
+  '<li><span>You trade $EZ<small>Every trade pays a fee</small></span></li>'+
+  '<li><span style="display:flex;align-items:center;gap:12px"><span class="ring" style="--p:'+P+'%" aria-hidden="true"></span><span>'+P+'% of fees go to the pot<small>'+Q+'% runs the lab. Split still to be confirmed.</small></span></span></li>'+
+  '<li><span>One AI bets the pot<span class="lgs" aria-hidden="true">'+nvLogo()+hlLogo()+'</span><small>On earnings, on Hyperliquid, with leverage. First target: NVIDIA'+(CONFIG.betDate?', '+fmtDate(CONFIG.betDate):'')+'.</small></span></li>'+
+  '<li><span><span class="up">Win:</span> it buys back $EZ<small><span class="dn">Loss:</span> the pot drains. Your trading refills it.</small></span></li>';
+$("#potVal").textContent=CONFIG.pool?CONFIG.pool:"Opens at launch";
+$("#potNote").textContent=(CONFIG.pool?"":"No real pot yet. ")+"The meter above is an illustration, not real numbers. The pot can be wiped out.";
+var lvl=55,bought=0,mFill=$("#mFill"),mBar=$("#mBar"),mLog=$("#mLog"),bb=$("#bb");
+function setLvl(v){lvl=Math.max(0,Math.min(100,v));mFill.style.setProperty("--lvl",lvl+"%");mFill.style.setProperty("--lvln",Math.max(1,lvl));mBar.setAttribute("aria-valuenow",String(lvl))}
+setLvl(lvl);
+$$("[data-sim]").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.sim;mLog.className="m-log";
+  if(k==="fee"){setLvl(lvl+12);mLog.textContent=lvl>=100?"Pot full. Trades keep paying fees.":"Trades pay fees. The pot fills."}
+  else if(lvl<=0){mLog.className="m-log loss";mLog.textContent="Pot is empty. No bet until trading refills it."}
+  else if(k==="win"){bought++;if(bought<=24)bb.insertAdjacentHTML("beforeend",EZM);mLog.className="m-log win";mLog.textContent="The AI called it. The profit buys back $EZ. The pot stays in the game."}
+  else{var hit=lvl<=30?lvl:Math.round(lvl*.55);setLvl(lvl-hit);mLog.className="m-log loss";
+    mLog.textContent=lvl<=0?"Liquidated. The pot is wiped out. Only trading refills it.":"The AI got it wrong. The pot drains. Trading refills it."}
+})});
+
+/* ---------- replays ---------- */
+var FR=ROUNDS.filter(function(r){return FILMS[r.n]}).reverse();
+var rpMain=$("#rpMain"),rpCap=$("#rpCap"),rpBtn=$("#rpBtn"),vid=null,rpPaused=reduce,rpCur=null,rpSeen=false;
+function filmCap(r){var W=winners(r);return '<b>Round '+r.n+' · '+esc(plainCo(r))+'</b>It '+(r.a>0?'went up ':'fell ')+absOut(r)+'. '+(W.length?list(W.map(nm))+(W.length>1?' tie: right way, equally close.':' wins: right way, closest to the real move.'):'Nobody called the direction. Nobody wins.')}
+function setRpBtn(){rpBtn.setAttribute("aria-pressed",String(rpPaused));rpBtn.innerHTML=rpPaused?'<i aria-hidden="true">▶</i><span>Play replay</span>':'<i aria-hidden="true">❚❚</i><span>Pause replay</span>'}
+function loadFilm(r){rpCur=r;var F=FILMS[r.n];
+  rpMain.innerHTML='<video muted loop playsinline preload="metadata" poster="'+MEDIA+F.p+'.jpg" aria-label="Replay of round '+r.n+', '+esc(plainCo(r))+'"><source src="'+MEDIA+F.f+'.webm" type="video/webm"><source src="'+MEDIA+F.f+'.mp4" type="video/mp4"></video><span class="rp-badge" aria-hidden="true">● REPLAY</span>';
+  vid=$("video",rpMain);rpCap.innerHTML=filmCap(r);
+  $$("#strip button").forEach(function(b){b.setAttribute("aria-pressed",String(+b.dataset.n===r.n))});
+  if(!rpPaused&&rpSeen){var pr=vid.play();if(pr&&pr.catch)pr.catch(function(){})}}
+if(FR.length){
+  $("#strip").innerHTML=FR.map(function(r){return '<button type="button" data-n="'+r.n+'" aria-pressed="false" aria-label="Replay round '+r.n+', '+esc(plainCo(r))+'"><img src="'+MEDIA+FILMS[r.n].p+'.jpg" alt="" loading="lazy" decoding="async"><span aria-hidden="true">R'+r.n+' '+esc(r.ticker)+'</span></button>'}).join("");
+  $$("#strip button").forEach(function(b){b.addEventListener("click",function(){var r=ROUNDS.filter(function(x){return x.n===+b.dataset.n})[0];if(!r||r===rpCur)return;
+    if(!reduce&&document.startViewTransition)document.startViewTransition(function(){loadFilm(r)});else loadFilm(r)})});
+  loadFilm(FR[0]);setRpBtn();
+  rpBtn.addEventListener("click",function(){rpPaused=!rpPaused;setRpBtn();if(!vid)return;if(rpPaused)vid.pause();else{var pr=vid.play();if(pr&&pr.catch)pr.catch(function(){})}});
+  if("IntersectionObserver" in window){new IntersectionObserver(function(es){es.forEach(function(e){rpSeen=e.isIntersecting;if(!vid)return;
+    if(e.isIntersecting&&!rpPaused){var pr=vid.play();if(pr&&pr.catch)pr.catch(function(){})}else vid.pause()})},{threshold:.4}).observe(rpMain)}
+}else $("#replays").hidden=true;
+
+/* ---------- the dream ---------- */
+var bestS=BEST?STATS[BEST]:null;
+$("#dreamLede").innerHTML=(bestS?"Right now the sharpest caller is <b>"+nm(BEST)+"</b> at <b>"+pct(bestS.rate)+"</b> right way, over "+bestS.tot+" calls. ":"")+
+  "A coin flip gets 50%. Always saying up got <b>"+pct(UPP)+"</b> so far, and that's the real bar. "+NR+" rounds is a small sample. No promises: it can go the other way. We're about to find out.";
+function gm(x,cls,lab,pos){return '<span class="g-m '+cls+'" style="left:'+(x*100).toFixed(1)+'%"><span class="g-l '+pos+'">'+lab+'</span></span>'}
+var gd='<div class="g-trk" role="img" aria-label="Hit rates on a 0 to 100% line. Coin flip 50%. Always up '+pct(UPP)+'. '+ACTIVE.map(function(m){return nm(m)+' '+pct(STATS[m].rate)}).join(", ")+'. Targets 70% and 80%, not reached.">'+
+  gm(.5,"gt","Coin flip<small>50%</small>","b")+gm(UPP,"gt","Always up<small>"+pct(UPP)+"</small>","b")+gm(.7,"ghost","70%?","a")+gm(.8,"ghost","80%?","a");
+/* model dots: spread overlapping ones a little so every logo shows */
+var placed=[];ACTIVE.slice().sort(function(a,b){return STATS[a].rate-STATS[b].rate}).forEach(function(m){var x=STATS[m].rate,dy=0;
+  placed.forEach(function(p){if(Math.abs(p-x)<.035)dy++});placed.push(x);
+  gd+='<span class="g-dot" style="left:'+(x*100).toFixed(1)+'%;margin-top:'+(dy?(dy%2?-1:1)*Math.ceil(dy/2)*26:0)+'px" title="'+nm(m)+' '+pct(x)+'">'+logo(m)+'</span>'});
+gd+='</div><div class="g-ax" aria-hidden="true"><span>0%</span><span>50%</span><span>100%</span></div>';
+$("#gauge").innerHTML=gd;
+
+/* ---------- the road ---------- */
+var STEPS=["Calls on the record","Launch","Cover the AI bills","More models","Runs on autopilot","The best model shows its thinking"];
+var CUR=LAUNCHED?2:1,done=Math.min(NR,LAUNCH_AT),fr=done/LAUNCH_AT,cells=20,full=Math.round(fr*cells);
+$("#roadT").innerHTML=STEPS.map(function(s,i){var st=i<CUR?"done":i===CUR?"cur":"todo";
+  var extra=(i===1&&!LAUNCHED)?'<span class="ascii" role="progressbar" aria-valuemin="0" aria-valuemax="'+LAUNCH_AT+'" aria-valuenow="'+done+'" aria-label="Rounds graded toward launch">['+"█".repeat(full)+'<span class="o">'+"░".repeat(cells-full)+'</span>]</span><small>'+done+' of about '+LAUNCH_AT+' rounds graded</small>':
+    i===0?'<small>'+NR+' rounds, '+TOTCALLS+' calls, never edited</small>':'';
+  return '<li class="'+st+'"'+(st==="cur"?' aria-current="step"':'')+'><span class="st">'+(st==="done"?"Done":st==="cur"?"Now":"Step "+(i+1))+'</span><b>'+s+'</b>'+extra+'</li>'}).join("");
+
+/* ---------- get $EZ ---------- */
+$("#getT").innerHTML=(CONFIG.ca?'<div class="ca">Contract address<code>'+esc(CONFIG.ca)+'</code></div>':'<div class="ca">Contract address: not posted yet. It appears here, and only here, at launch. Anyone posting one before that is not us.</div>')+
+  (CONFIG.buyUrl&&LAUNCHED?'<p style="margin-top:12px"><a class="btn gold" href="'+esc(CONFIG.buyUrl)+'" target="_blank" rel="noopener">Get $EZ</a></p>':'');
+$("#footN").textContent=NR+" rounds graded · "+TOTCALLS+" calls on the record";
+
+/* expose for the Pretext module (data only, no globals needed beyond this) */
+window.EZ19={reduce:reduce};
+})();
+</script>
+
+<!-- Pretext: the manifesto flows around the $EZ coin, re-laid out every frame by arithmetic (no DOM reflow).
+     If the CDN fails, the CSS shape-outside version above stays. The real paragraphs always stay in the DOM. -->
+<script type="module">
+const flow=document.getElementById("flow"),coin=document.getElementById("coin"),layer=document.getElementById("layer"),btn=document.getElementById("coinBtn"),note=document.getElementById("flowNote");
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let paused=reduce;
+function setBtn(){btn.setAttribute("aria-pressed",String(paused));btn.innerHTML=paused?'<i aria-hidden="true">▶</i><span>Play coin</span>':'<i aria-hidden="true">❚❚</i><span>Pause coin</span>';flow.classList.toggle("paused",paused)}
+setBtn();
+btn.addEventListener("click",()=>{paused=!paused;setBtn();if(window.__ptLoop){if(!paused)window.__ptReset&&window.__ptReset();window.__ptLoop()}});
+let PT=null;
+async function main(){
+  PT=await import("https://cdn.jsdelivr.net/npm/@chenglou/pretext@0.0.9/+esm");
+  if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+  const paras=[...flow.querySelectorAll(".mani p")].map(p=>({text:p.textContent.replace(/\s+/g," ").trim(),tone:p.dataset.tone}));
+  let font,lh,gap,prepared,W,R,PAD,H,spans=[],t0=performance.now(),tAcc=0,drag=null,manual=null;
+  function setup(){
+    flow.classList.add("pt");
+    const cs=getComputedStyle(flow);
+    font=cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;
+    const fs=parseFloat(cs.fontSize);lh=Math.round(parseFloat(cs.lineHeight)||fs*1.6);gap=Math.round(fs*.9);
+    PT.clearCache&&PT.clearCache();
+    prepared=paras.map(p=>PT.prepareWithSegments(p.text,font));
+    W=flow.clientWidth;R=Math.round(Math.max(44,Math.min(W*.17,118)));PAD=Math.round(Math.max(10,fs*.7));
+    coin.style.setProperty("--d",(2*R)+"px");coin.style.width=coin.style.height=(2*R)+"px";
+    /* height: text height at full width, then the worst case across the coin's whole path */
+    const H0=layoutAll(null,false);H=Math.max(H0,2*R+lh);
+    let mx=H;for(let i=0;i<160;i++){mx=Math.max(mx,layoutAll(pos(i*397),false))}
+    flow.style.height=Math.ceil(mx)+"px";H=Math.max(H,2*R);
+  }
+  /* a slow Lissajous drift inside the block */
+  function pos(t){if(manual)return manual;
+    if(paused&&!drag&&tAcc===0)return {x:W-R,y:R};
+    const ax=Math.max(0,(W-2*R)/2),ay=Math.max(0,(H-2*R)/2);
+    return {x:R+ax+ax*Math.sin(t*.00023+1.2),y:R+ay+ay*Math.sin(t*.00037)}}
+  /* free horizontal slots for one line band, carved around the circle */
+  function slots(top,c){
+    if(!c)return [[0,W]];
+    const bot=top+lh,rr=R+PAD;
+    if(bot<=c.y-rr||top>=c.y+rr)return [[0,W]];
+    const dy=Math.max(0,top-c.y,c.y-bot),hw=Math.sqrt(Math.max(0,rr*rr-dy*dy));
+    const out=[],min=Math.max(64,lh*2.6),L=c.x-hw,Rt=c.x+hw;
+    if(L>=min)out.push([0,L]);
+    if(W-Rt>=min)out.push([Rt,W]);
+    return out}
+  function place(k,text,x,y,tone){let s=spans[k];if(!s){s=document.createElement("span");layer.appendChild(s);spans[k]=s}
+    if(s.textContent!==text)s.textContent=text;if(s.className!==tone)s.className=tone;s.style.transform="translate("+Math.round(x)+"px,"+y+"px)";s.hidden=false}
+  function layoutAll(c,render){
+    let y=0,k=0,guard=0;
+    for(let pi=0;pi<prepared.length;pi++){
+      let cur={segmentIndex:0,graphemeIndex:0},end=false;
+      while(!end&&guard++<600){
+        const sl=slots(y,c);let placedHere=false;
+        for(const s of sl){const line=PT.layoutNextLine(prepared[pi],cur,s[1]-s[0]);
+          if(!line){end=true;break}
+          if(render)place(k++,line.text,s[0],y,paras[pi].tone);
+          cur=line.end;placedHere=true}
+        if(!end||placedHere)y+=lh;
+        if(!end&&!sl.length)continue;
+      }
+      if(pi<prepared.length-1)y+=gap;
+    }
+    if(render)for(let i=k;i<spans.length;i++)spans[i].hidden=true;
+    return y}
+  let raf=0,last=performance.now();
+  function frame(now){raf=0;
+    if(!paused&&!drag&&!manual)tAcc+=Math.min(64,now-last);last=now;
+    const c=pos(tAcc);
+    coin.style.transform="translate("+(c.x-R)+"px,"+(c.y-R)+"px)";
+    const h=layoutAll(c,true);
+    if(h>parseFloat(flow.style.height))flow.style.height=Math.ceil(h)+"px";
+    if(!paused||drag)raf=requestAnimationFrame(frame)}
+  function loop(){if(!raf){last=performance.now();raf=requestAnimationFrame(frame)}}
+  window.__ptLoop=loop;
+  setup();loop();
+  /* drag the coin: text reflows live under your finger */
+  coin.addEventListener("pointerdown",e=>{drag={id:e.pointerId};coin.setPointerCapture(e.pointerId);manual=null;loop();e.preventDefault()});
+  coin.addEventListener("pointermove",e=>{if(!drag)return;const b=flow.getBoundingClientRect();
+    manual={x:Math.max(R,Math.min(W-R,e.clientX-b.left)),y:Math.max(R,Math.min(parseFloat(flow.style.height)-R,e.clientY-b.top))};loop()});
+  const endDrag=()=>{if(!drag)return;drag=null;if(!paused){paused=true;setBtn()}loop()};
+  window.__ptReset=()=>{manual=null};
+  coin.addEventListener("pointerup",endDrag);coin.addEventListener("pointercancel",endDrag);
+  let rw=W;new ResizeObserver(()=>{if(Math.abs(flow.clientWidth-rw)<1)return;rw=flow.clientWidth;manual=null;setup();loop()}).observe(flow);
+  note.textContent=reduce?"Motion is off. Drag the coin to move it; the text gets out of its way.":"Drag the coin. The text gets out of its way.";
+}
+main().catch(()=>{flow.classList.remove("pt");note.textContent="";});
+</script>
+</body>
+</html>
