@@ -41,4 +41,5 @@ Edit `v15-season.html` only, then rerun the script; never edit the generated fil
 - Paper (apricot): https://claude.ai/artifact/NiHqxZ2EYfmpHkRcRgdLby
 - Colour-safe (sky blue, blue up / vermilion down): https://claude.ai/artifact/TU2hetnpei5xnfZQvCwBmt
 - Daylight (lime, max contrast): https://claude.ai/artifact/3TxtevJAtSG4UeeRV4bAkP
+- Binder (Variant 1 colours: kraft paper, foil yellow, binder green): https://claude.ai/artifact/EXCppS12dpj3zJmovadQAq
 - Warm ($EZ gold/green/red on low-blue parchment): https://claude.ai/artifact/5bAexLzNhnGeoAaWetbe9w

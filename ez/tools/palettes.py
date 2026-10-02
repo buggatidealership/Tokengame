@@ -53,8 +53,16 @@ PALETTES = {
                  up="#1d7646", dn="#b3322a",
                  slab="#2a1f14", slab2="#20180f", slabA="#35291c", slabB="#2a1f14", slabC="#302418",
                  **{"on-slab": "#fcf6ea", "on-slab2": "#cdbfa8", "on-slab3": "#efe5d3"}),
+    # 5. Binder: the colours of Variant 1 ("The Binder", v1-binder.html). Kraft-paper ground, warm ink, the pale
+    #    foil yellow as the highlight, and the binder's dark green for the dark panels. Its up/down greens and reds
+    #    are darkened a step so they pass as text on the paper.
+    "binder": dict(field="#f3ead8", field2="#e8dcc2", ink="#231d16", ink2="#5a4f42", dim="#6b6152", card="#fffaf0",
+                   yel="#ffe38a", red="#c0271f", grn="#137a37", cob="#2f53a3", gold="#8a5a00", tbc="#a1236a",
+                   up="#137a37", dn="#c0271f",
+                   slab="#2f3b33", slab2="#262f29", slabA="#3a473e", slabB="#2f3b33", slabC="#35423a",
+                   **{"on-slab": "#fffaf0", "on-slab2": "#d6cfbd", "on-slab3": "#f3ead8"}),
 }
-WRITE = ["paper", "colorsafe", "daylight", "warm"]
+WRITE = ["paper", "colorsafe", "daylight", "warm", "binder"]
 
 # text/background pairs the page actually uses, with the level they must clear
 # (4.5 = WCAG AA for normal text, 3.0 = AA for large text and graphics)
