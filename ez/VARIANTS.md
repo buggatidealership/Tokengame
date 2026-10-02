@@ -50,3 +50,9 @@ Edit `v15-season.html` only, then rerun `python3 ez/tools/skins.py`; never edit 
 - Broadsheet (serious 1920s–50s financial daily): https://claude.ai/artifact/5qzKQvXzqJHkEjr2dKwHXH
 - Extra (1929 crash-era tabloid): https://claude.ai/artifact/DzrkBASR47pBaCop3BU5jq
 - Stock pages (old market listings): https://claude.ai/artifact/HF9sg4pX2QAgAgpgK2fLHs
+
+## Round 7: unfolding story pages (2026-10-02)
+Brief: `BRIEF-unfold.md`. Same data, the story told step by step.
+- v16 Keynote (Apple-style, one idea per screen): https://claude.ai/artifact/QqapVKaBESwnmcCbrXS8kd
+- v17 Playground (arcade levels, make your own call, toy pot): `ez/v17-playground.html`
+- v18 Group chat (the story as a chat with the four AIs): https://claude.ai/artifact/4oCSeKwfQTWVHMbtPTbvH3
