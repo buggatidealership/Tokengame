@@ -43,6 +43,10 @@
   --hazard:repeating-linear-gradient(-45deg,var(--red) 0 12px,var(--ink) 12px 24px);
   --pop:0 0 0 2.5px var(--ink),6px 8px 0 0 var(--ink);
 }
+/* PRIMETIME FONTS: the main page only (html.pt). tools/palettes.py and tools/skins.py strip the class and the Barlow
+   link, so every generated variant keeps the Season fonts. Barlow Condensed loads at 800 only, so every display rule
+   (written as weight 400 for Anton) gets the heavy cut; labels use it too, like Primetime. */
+.pt{--fd:'Barlow Condensed',Impact,'Arial Narrow',sans-serif;--fb:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--fm:'Barlow Condensed',Impact,'Arial Narrow',sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 html{background:var(--field);overflow-x:clip;scroll-behavior:smooth}
 body{background:var(--field);color:var(--ink);font:500 15px/1.6 var(--fb);font-stretch:100%;-webkit-font-smoothing:antialiased;
@@ -81,6 +85,29 @@ span.lg>img{display:block;object-fit:contain}
 .live span{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .live i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite}
 @media(max-width:760px){.live{display:inline-flex}}
+
+/* the score bar: Primetime's ticker, under the header, full width (not sticky, so it never takes phone height for
+   long). A still gold label, then the scores scrolling slowly. It pauses on hover, on keyboard focus and with the
+   pause button (WCAG 2.2.2). The text is there once for screen readers; the loop copy is aria-hidden.
+   Reduced motion: no auto-scroll, a strip you swipe. Themed with tokens, so every palette looks native. */
+.tick{display:flex;align-items:stretch;min-width:0;background:var(--slab);color:var(--on-slab);border-bottom:2px solid var(--ink)}
+.tick .tl{flex:none;display:flex;align-items:center;padding:0 12px;background:var(--ez-gold);color:var(--on-ez);font:700 11px/1 var(--fm);letter-spacing:.1em;text-transform:uppercase}
+.tick .tw{flex:1;min-width:0;overflow:hidden;display:flex;align-items:center}
+.tick .tw:focus-visible{outline:3px solid var(--yel);outline-offset:-3px}
+.tick .tt{display:flex;width:max-content;animation:tick var(--tdur,90s) linear infinite}
+.tick .tc{display:flex}
+.tick .tc>span{display:flex;align-items:center;gap:5px;white-space:nowrap;min-height:32px;padding:0 16px;font:700 12.5px/1 var(--fm);letter-spacing:.04em;text-transform:uppercase;border-right:1px solid color-mix(in srgb,var(--on-slab) 22%,transparent)}
+.tick .tc b{color:var(--yel);font-weight:inherit}
+.tick .tc .up{color:var(--ez-green)}.tick .tc .dn{color:var(--dn-hi)}
+.tick .tw:hover .tt,.tick .tw:focus .tt,.tick.paused .tt{animation-play-state:paused}
+.tick .tp{position:relative;flex:none;display:grid;place-items:center;width:34px;background:var(--slab2);color:var(--on-slab);font:700 11px/1 var(--fb);border-left:1px solid color-mix(in srgb,var(--on-slab) 22%,transparent)}
+.tick .tp::after{content:"";position:absolute;inset:-6px 0}
+.tick .tp:hover{background:var(--yel);color:var(--ink)}
+@keyframes tick{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){
+  .tick .tw{overflow-x:auto;scrollbar-width:none}.tick .tw::-webkit-scrollbar{display:none}
+  .tick .tt{animation:none}.tick .tc[aria-hidden]{display:none}.tick .tp{display:none}
+}
 
 /* section heads */
 .sec{padding-top:112px;scroll-margin-top:66px}
@@ -708,6 +735,11 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
   <nav class="nav" aria-label="Sections"><a href="#upnext">Up next</a><a href="#record">The record</a><a href="#learn">Learning</a><a href="#bet">The buyback</a><a href="#calc">The math</a><a href="#road">The road</a></nav>
   <a class="live" href="#upnext" id="liveChip"><i></i><span id="liveTxt">In play</span></a>
 </div></header>
+<div class="tick" id="tick" role="region" aria-label="Scores">
+  <span class="tl" aria-hidden="true">Scores</span>
+  <div class="tw" id="tw" tabindex="0" aria-label="Scores, scrolling. Hover or focus to pause."><div class="tt" id="tt"></div></div>
+  <button type="button" class="tp" id="tickP" aria-pressed="false" aria-label="Pause the scores"><span aria-hidden="true">❚❚</span></button>
+</div>
 
 <main id="top" class="wrap">
   <section class="hero" aria-label="Intro">
@@ -953,6 +985,20 @@ $("#roster").innerHTML=ROWS.map(function(T,i){
     '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<h3>'+nm(T.m)+'</h3>'+
     '<p class="pc-w"><b>'+T.won+'</b><span>'+(T.won===1?'win':'wins')+'</span></p></li>'}).join("");
 var P0=PS[0]||null;
+/* ---------- the score bar (Primetime's ticker): the standings, every graded round, then the rounds to come ---------- */
+(function(){var tt=$("#tt"),tick=$("#tick"),tp=$("#tickP");if(!tt)return;
+  var sp=[ '<b>Leaderboard</b> '+ROWS.map(function(T){return nm(T.m)+' '+T.won}).join(' · ') ];
+  ROUNDS.forEach(function(r){var w=r.win?r.win.split(" & ").map(nm).join(" & ")+(r.win.indexOf(" & ")>-1?" win":" wins"):"No winner";
+    sp.push('R'+r.n+' '+r.co+' <span class="'+(r.a>0?'up':'dn')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span>'+r.out+'</span> · '+w)});
+  PS.forEach(function(u){sp.push('R'+u.n+' '+u.co+' · <b>Calls are in</b> · '+RESOLVE_WORD+' '+fmtDate(u.resolves))});
+  US.forEach(function(u){sp.push('R'+u.n+' '+u.co+' · Calls '+fmtDate(u.called))});
+  var one=sp.map(function(x){return '<span>'+x+'</span>'}).join("");
+  tt.innerHTML='<div class="tc">'+one+'</div><div class="tc" aria-hidden="true">'+one+'</div>';
+  /* slow and readable: about 45px a second, whatever the length */
+  function speed(){var w=tt.scrollWidth/2;if(w)tt.style.setProperty("--tdur",Math.max(30,Math.round(w/45))+"s")}
+  speed();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(speed);
+  tp.addEventListener("click",function(){var p=!tick.classList.contains("paused");tick.classList.toggle("paused",p);
+    tp.setAttribute("aria-pressed",String(p));tp.setAttribute("aria-label",p?"Play the scores":"Pause the scores");tp.firstChild.textContent=p?"▶":"❚❚"})})();
 if(TARGET){$("#liveTxt").innerHTML=(P0?"In play: ":"Next: ")+coName(TARGET)}
 else $("#liveChip").style.display="none";
 
