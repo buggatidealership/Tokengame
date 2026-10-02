@@ -32,6 +32,11 @@
   /* the same three as the up and down colours: green = up / win, red = down / lose. Always FILLS with --on-ez text on top
      (the green is too light for text on a light surface), so they stay the same in every palette. */
   --ez-gold:#ffc72c;--ez-green:#1fcf6b;--ez-red:#ff4136;--on-ez:#0a0a0a;
+  /* FOIL: the winner highlight (trial, off by default; html.foil-bg or html.foil-text turns it on). The Binder foil's
+     four stops, softened about 20% toward white, slow and calm. Fixed like the brand colours: palettes never swap them. */
+  --foil-1:#ffaedd;--foil-2:#a5dcff;--foil-3:#ffe9a1;--foil-4:#b9ffd9;
+  --foil-grad:linear-gradient(100deg,var(--foil-1),var(--foil-3),var(--foil-4),var(--foil-2),var(--foil-1));
+  --foil-speed:14s;
   --fd:'Anton',Impact,'Arial Narrow Bold',sans-serif;
   --fb:'Archivo',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --fm:'Chivo Mono',ui-monospace,Menlo,Consolas,monospace;
@@ -618,6 +623,34 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 .ftl a{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;font:700 13px/1 var(--fb);color:var(--ink);text-underline-offset:4px}
 .ftl a:hover{background:var(--yel);color:var(--ink);border-radius:8px}
 
+/* ============ FOIL: the winner highlight, two trial modes (default: none) ============
+   Only three places: the rank-1 standings card(s), the WINNER bar of a graded card with a winner, the winning row on a
+   card's back. html.foil-bg: the foil is the background, ink on top. html.foil-text: a calm card background with the
+   normal ink border, the model name in foil letters with an ink outline. Nothing else moves; reduced motion: static. */
+@keyframes foil{to{background-position:300% 0}}
+.foil-bg .pc.r1,.foil-bg .f-win .cwin,.foil-bg .f-tie .cwin,.foil-bg .bk-r.win,
+.foil-text .pc.r1 h3,.foil-text .f-win .cwin .wnm,.foil-text .f-tie .cwin .wnm,.foil-text .bk-r.win .who .n{
+  background:var(--foil-grad);background-size:300% 100%;animation:foil var(--foil-speed) linear infinite}
+/* foil background: ink text and ink rings on the foil */
+.foil-bg .pc.r1{color:var(--ink);box-shadow:0 0 0 2.5px var(--ink),3px 4px 0 .5px var(--ink)}
+.foil-bg .pc.r1 .pc-w span{color:var(--ink)}
+.foil-bg .f-win .cwin,.foil-bg .f-tie .cwin{color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.foil-bg .f-win .cwin small,.foil-bg .f-tie .cwin small,.foil-bg .f-win .cwin .wn,.foil-bg .f-tie .cwin .wn,.foil-bg .f-tie .cwin .amp{color:var(--ink)}
+/* foil letters: neutral surfaces, the name clipped to the foil with an ink outline */
+.foil-text .pc.lead{background:var(--card)}
+.foil-text .pc.r1 .pc-w span{color:var(--ink2)}
+.foil-text .f-win .cwin,.foil-text .f-tie .cwin{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.foil-text .f-win .cwin small,.foil-text .f-tie .cwin small,.foil-text .f-tie .cwin .amp{color:var(--ink)}
+.foil-text .bk-r.win{background:var(--card);box-shadow:0 0 0 2px var(--ink)}
+.foil-text .pc.r1 h3,.foil-text .f-win .cwin .wnm,.foil-text .f-tie .cwin .wnm,.foil-text .bk-r.win .who .n{
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:1.5px var(--ink)}
+/* the back's names are small body type: set them in the display face, a little larger, with a thinner outline */
+.foil-text .bk-r.win .who .n{font:400 19px/1.05 var(--fd);letter-spacing:.02em;-webkit-text-stroke:1px var(--ink);padding-block:1px}
+@media(max-width:759px){.foil-text .bk-r.win .who .n{font-size:18px;-webkit-text-stroke:1.1px var(--ink)}}
+/* phones: the standings name is small (17px), so the foil name steps up to 19px with a firmer outline */
+@media(max-width:640px){.foil-text .pc.r1 h3{font-size:19px;-webkit-text-stroke:1.3px var(--ink)}}
+@media(max-width:759px){.foil-text .f-win .cwin .wnm,.foil-text .f-tie .cwin .wnm{-webkit-text-stroke:1.2px var(--ink)}}
+
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
@@ -803,7 +836,7 @@ function art(r){
     '<video playsinline muted loop preload="none" aria-label="Round '+r.n+' film"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video></div>';
 }
 function winBar(r){
-  var v=r.win?r.win.split(" & ").map(function(m){return '<span class="wn">'+nm(m)+logo(m)+'</span>'}).join('<span class="amp">&amp;</span>')
+  var v=r.win?r.win.split(" & ").map(function(m){return '<span class="wn"><span class="wnm">'+nm(m)+'</span>'+logo(m)+'</span>'}).join('<span class="amp">&amp;</span>')
     :'<span class="wn">Nobody<span class="lg nob" aria-hidden="true">✗</span></span>';
   return '<div class="cwin"><small>Winner</small><span class="wv">'+v+'</span></div>';
 }
@@ -857,7 +890,7 @@ var bench=ACTIVE.filter(function(m){return !LD.some(function(T){return T.m===m})
 var ROWS=LD.concat(bench.map(function(m){return {m:m,won:0}}));
 function rankOf(T){return 1+ROWS.filter(function(U){return U.won>T.won}).length}
 $("#roster").innerHTML=ROWS.map(function(T,i){
-  return '<li class="pc'+(i?'':' lead')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
+  return '<li class="pc'+(i?'':' lead')+(rankOf(T)===1&&T.won>0?' r1':'')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
     '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<h3>'+nm(T.m)+'</h3>'+
     '<p class="pc-w"><b>'+T.won+'</b><span>'+(T.won===1?'win':'wins')+'</span></p></li>'}).join("");
 var P0=PS[0]||null;
