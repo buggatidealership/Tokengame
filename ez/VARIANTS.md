@@ -57,3 +57,4 @@ Brief: `BRIEF-unfold.md`. Same data, the story told step by step.
 - v17 Playground (arcade levels, make your own call, toy pot): `ez/v17-playground.html`
 - v18 Group chat (the story as a chat with the four AIs): https://claude.ai/artifact/4oCSeKwfQTWVHMbtPTbvH3
 - v19 Degen terminal (trading-terminal look, one fluid layout with no breakpoints, Pretext text flow around the $EZ coin): `ez/v19-degen.html`
+- v20 Unfold (one pinned stage that evolves as you scroll, same order as the Season page; GSAP ScrollTrigger): `ez/v20-unfold.html`
