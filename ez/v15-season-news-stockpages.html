@@ -753,7 +753,7 @@ h1 .hl{background:none;font-style:italic}
       <p class="lede" id="lrnLede"></p></div>
     <div class="lsw" role="group" aria-label="Pick a chart"><button type="button" id="swDir" aria-pressed="true" aria-controls="lqDir">Direction</button><button type="button" id="swDist" aria-pressed="false" aria-controls="lqDist">How close</button></div>
     <div class="lrn">
-      <div class="lq" id="lqDir"><div><h3>Did they call the direction right?</h3><p>Share of calls in the right direction so far. <b>The dashed line is a coin flip.</b></p></div>
+      <div class="lq" id="lqDir"><div><h3>Did they call the direction right?</h3></div>
         <div class="lxv" id="lxDir"></div></div>
       <div class="lq" id="lqDist"><div><h3>When they got the direction right, how close?</h3></div>
         <div class="tgv" id="lxDist"></div></div>
@@ -1083,7 +1083,7 @@ function targets(el){
   el.innerHTML='<div class="tg-grid">'+ACTIVE.map(function(m){var W=tgWrong(m);
     return '<figure class="tg" data-m="'+m+'"><figcaption class="tg-h">'+logo(m)+'<span>'+nm(m)+'</span></figcaption>'+tgSVG(m)+
       (W.g?'':'<p class="tg-n">No results yet</p>')+'</figure>'}).join("")+'</div>'+
-    '<p class="tg-note">The closer a dot is to the middle, the closer the call was to the real move. Each dot is one round. Darker dots are newer. Calls that went the wrong way are not shown.</p>';
+    '<p class="tg-note">Think target practice. The bullseye is what the stock really did. Each dot is one call. The closer to the bullseye, the better the call. Calls that went the wrong way never hit the board.</p>';
   var tip=null;
   function hide(){if(tip){tip.remove();tip=null}$$(".tg-d.on",el).forEach(function(g){g.classList.remove("on")})}
   function show(g){hide();var f=g.closest(".tg"),sv=$("svg",f),sr=sv.getBoundingClientRect(),fr=f.getBoundingClientRect(),k=sr.width/200;
@@ -1097,7 +1097,7 @@ function targets(el){
     g.addEventListener("click",function(e){e.stopPropagation();g.classList.contains("on")?hide():show(g)})});
 }
 if(window.EZLearn&&NR){
-  EZLearn.together(lxDir);targets(lxDist);
+  EZLearn.together(lxDir,{pctOnly:true,noCoin:true});targets(lxDist);
   /* one chart at a time: Direction or How close. Resting state is the drawn chart. Only when JS runs and the chart
      comes into view do we rewind and draw it. */
   var lqDir=$("#lqDir"),lqDist=$("#lqDist"),swDir=$("#swDir"),swDist=$("#swDist"),seen=false;

@@ -173,8 +173,11 @@ var EZLearn=(function(){
     if(items.length&&items[0].y<lo){var d=lo-items[0].y;items.forEach(function(it){it.y+=d})}return items}
   /* narrow screens: graded rounds plus the next one or two, so marks keep room */
   function slotsFor(W){var a=slots();if(W>=560)return a;var g=ROUNDS.length;return a.slice(0,g+(W<400?1:2))}
-  function together(el){mount(el,function(W){
-    var ms=models(),sl=slotsFor(W),H=W<520?230:270,L=40,R=W<520?86:104,T=14,B=28,cw=(W-L-R)/sl.length,ph=H-T-B,
+  /* opts (optional, used by v15 only; the locked pages pass none and render exactly as before):
+     pctOnly: end labels show just the % (no model name), so the plot gets the freed width
+     noCoin:  leave "coin flip" out of the legend */
+  function together(el,opts){opts=opts||{};mount(el,function(W){
+    var ms=models(),sl=slotsFor(W),H=W<520?230:270,L=40,R=opts.pctOnly?(W<520?50:58):(W<520?86:104),T=14,B=28,cw=(W-L-R)/sl.length,ph=H-T-B,
         x=function(i){return L+(i+.5)*cw},y=function(p){return T+(1-p)*ph},dz=Math.min(5,cw*.18);
     var idx=function(n){for(var i=0;i<sl.length;i++)if(sl[i].n===n)return i;return -1};
     var S={};ms.forEach(function(m){S[m]=series(m)});
@@ -194,8 +197,8 @@ var EZLearn=(function(){
       var lp=pts[pts.length-1];if(lp)ends.push({m:m,c:c,x:lp[0],y0:lp[1],y:lp[1],v:Math.round(lp[2].pct*100)})});
     var lx=Math.max.apply(null,ends.map(function(e){return e.x}))+12;
     spread(ends,15,T+4,H-B-2).forEach(function(e){
-      o+='<line x1="'+(e.x+5)+'" y1="'+e.y0+'" x2="'+(lx-3)+'" y2="'+e.y+'" stroke="'+e.c+'" stroke-width="1" opacity=".6"/><circle cx="'+(lx+2)+'" cy="'+e.y+'" r="3.5" fill="'+e.c+'"/><text class="lab" x="'+(lx+9)+'" y="'+(e.y+4)+'">'+MODELS[e.m].app+' <tspan class="v">'+e.v+'%</tspan></text>'});
-    el.innerHTML='<div class="lx-p">'+o+'</svg></div><div class="lx2-leg">'+legendModels()+'<span><i class="d1"></i> right way</span><span><i class="d0"></i> wrong way</span><span><i class="dr"></i> coin flip</span></div>';
+      o+='<line x1="'+(e.x+5)+'" y1="'+e.y0+'" x2="'+(lx-3)+'" y2="'+e.y+'" stroke="'+e.c+'" stroke-width="1" opacity=".6"/><circle cx="'+(lx+2)+'" cy="'+e.y+'" r="3.5" fill="'+e.c+'"/><text class="lab" x="'+(lx+9)+'" y="'+(e.y+4)+'">'+(opts.pctOnly?'':MODELS[e.m].app+' ')+'<tspan class="v">'+e.v+'%</tspan></text>'});
+    el.innerHTML='<div class="lx-p">'+o+'</svg></div><div class="lx2-leg">'+legendModels()+'<span><i class="d1"></i> right way</span><span><i class="d0"></i> wrong way</span>'+(opts.noCoin?'':'<span><i class="dr"></i> coin flip</span>')+'</div>';
   })}
   function calls(el){mount(el,function(W){
     var ms=models(),sl=slotsFor(W),H=W<520?270:320,L=44,R=12,T=16,B=28,cw=(W-L-R)/sl.length,ph=H-T-B,x=function(i){return L+(i+.5)*cw};
