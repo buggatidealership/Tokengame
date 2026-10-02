@@ -796,14 +796,23 @@ function icsText(){var now=new Date(),st=now.toISOString().replace(/[-:]/g,"").r
     if(c)ev("r"+u.n+"-calls",c,t+" calls filed","Four AIs file their calls on "+plainCo(u)+" before the report.");
     if(r)ev("r"+u.n+"-graded",r,t+" graded","Graded at the first market close after the report.")});
   L.push("END:VCALENDAR");return L.map(icsFold).join("\r\n")+"\r\n"}
-function save(blob,name){var a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},1500)}
+/* Saving files: on the real site a normal download; inside the claude.ai preview the viewer only allows saves
+   through its downloads capability (which does not accept .ics, so the calendar says it works on the live site). */
+var DL=null;try{if(window.claude&&claude.use)claude.use("downloads").then(function(d){DL=d}).catch(function(){})}catch(e){}
+function inViewer(){return !!(window.claude&&claude.use)}
+function save(blob,name){
+  if(inViewer()){
+    if(/\.ics$/.test(name))return Promise.reject({code:"ics_preview"});
+    if(!DL)return Promise.reject({code:"unavailable"});
+    return DL.save({filename:name,data:blob})}
+  var a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},1500);return Promise.resolve({status:"saved"})}
 function alertsBlock(){var n=PS.length+US.length;
   var soc=(CONFIG.tg?'<a class="btn lt" href="'+esc(CONFIG.tg)+'" target="_blank" rel="noopener">Telegram</a>':'')+(CONFIG.x?'<a class="btn lt" href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'');
   return '<div class="al"><div class="card"><h3>Every round in your calendar</h3><p class="note">'+n+' round'+(n===1?'':'s')+' to come. Two all-day events each: the day the calls are filed, and the day the market grades them. Works with Apple, Google and Outlook calendars.</p>'+
     '<div><button type="button" class="btn" id="icsB"'+(n?'':' disabled')+'>Add all rounds to my calendar</button></div><p class="stat-msg" id="icsMsg" aria-live="polite"></p></div>'+
     '<div class="card"><h3>Get pinged</h3>'+(soc?'<div class="soc">'+soc+'</div>':'<p class="soon">Telegram channel opens at launch.</p>')+'<p class="note">Or bookmark this board: earnings-day mode switches on by itself.</p></div></div>'}
-function wireAlerts(root){var b=$("#icsB",root);if(b)b.addEventListener("click",function(){save(new Blob([icsText()],{type:"text/calendar"}),"ez-rounds.ics");
-  var m=$("#icsMsg",root);if(m)m.textContent="Downloaded ez-rounds.ics. Open it to add the rounds."})}
+function wireAlerts(root){var b=$("#icsB",root);if(b)b.addEventListener("click",function(){var m=$("#icsMsg",root);
+  save(new Blob([icsText()],{type:"text/calendar"}),"ez-rounds.ics").then(function(){if(m)m.textContent="Downloaded ez-rounds.ics. Open it to add the rounds."},function(e){if(m)m.textContent=e&&e.code==="ics_preview"?"Calendar files can't be saved from this preview. This button works on the live site.":e&&e.code==="declined"?"No file saved.":"Couldn't save the file here."})})}
 
 /* ---------- the pot dashboard ---------- */
 function potBlock(){var C=CONFIG;
@@ -871,7 +880,7 @@ function wireRound(root,n){var v=rv(n);
     fp.addEventListener("click",function(){if(vid.paused){var p=vid.play();if(p&&p.catch)p.catch(function(){});fp.textContent="❚❚ Pause film";fp.setAttribute("aria-pressed","false")}else{vid.pause();fp.textContent="▶ Play film";fp.setAttribute("aria-pressed","true")}})}
   var cv=$("#cv",root);drawCard(cv,v);
   if(document.fonts&&document.fonts.load)Promise.all(['400 40px "Barlow Condensed"','800 40px "Barlow Condensed"','700 20px "Barlow"','800 20px "Barlow"'].map(function(f){return document.fonts.load(f).catch(function(){})})).then(function(){if(cv.isConnected)drawCard(cv,v)});
-  $("#dlB",root).addEventListener("click",function(){var msg=$("#shMsg",root);try{cv.toBlob(function(b){if(b){save(b,"ez-round-"+n+".png");msg.textContent="Saved ez-round-"+n+".png."}else msg.textContent="Could not make the image in this browser."},"image/png")}catch(e){msg.textContent="Could not make the image in this browser."}});
+  $("#dlB",root).addEventListener("click",function(){var msg=$("#shMsg",root);try{cv.toBlob(function(b){if(b){save(b,"ez-round-"+n+".png").then(function(){msg.textContent="Saved ez-round-"+n+".png."},function(e){msg.textContent=e&&e.code==="declined"?"No file saved.":"Couldn't save the image here."})}else msg.textContent="Could not make the image in this browser."},"image/png")}catch(e){msg.textContent="Could not make the image in this browser."}});
   $("#cpB",root).addEventListener("click",function(){var url=location.href.replace(/#.*$/,"")+"#/round/"+n,msg=$("#shMsg",root);
     function fb(){msg.innerHTML='<label class="sr" for="lnk">Link to this round</label><input class="linkbox" id="lnk" readonly value="'+esc(url)+'">';var i=$("#lnk",root);i.focus();i.select();try{document.execCommand("copy");msg.insertAdjacentHTML("beforeend",'<span style="display:block;margin-top:6px">Link copied.</span>')}catch(e){}}
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(function(){msg.textContent="Link copied: "+url},fb);else fb()})}
