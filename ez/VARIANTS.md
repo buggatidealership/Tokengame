@@ -59,3 +59,6 @@ Brief: `BRIEF-unfold.md`. Same data, the story told step by step.
 - v19 Degen terminal (trading-terminal look, one fluid layout with no breakpoints, Pretext text flow around the $EZ coin): `ez/v19-degen.html` (retired 2026-10-02; preview deleted, source kept)
 - v20 Unfold (one pinned stage that evolves as you scroll, same order as the Season page; GSAP ScrollTrigger): `ez/v20-unfold.html`
 - v21 Live (live product: board with earnings-day mode, a page per round with receipt + share image, model pages, you vs the AIs, calendar alerts, pot dashboard): `ez/v21-live.html`
+
+## Round 8: Season Live (combination)
+- v22 Season Live (`ez/v22-season-live.html`): Season as the board, untouched in look, plus Live's top navigation (Board, Rounds, Models, Upcoming, Buyback), standings rows with right way and average miss that open each model's page, a page per round (film, calls, outcome, winner, receipt, share image), model pages (stats, every round, best and worst, bullseye), a visual Rounds page (posters, filters, hover previews) and an Upcoming page (countdown, add to calendar). No "You vs the AIs". Built from v15 by a script; Season itself is unchanged.
