@@ -184,10 +184,12 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .up-p .nm{display:block;margin-bottom:4px;font:400 21px/1.05 var(--fd);text-transform:uppercase;min-width:0}
 /* compact: the four bars share the card's height (so it still matches the standings), the pills inside them stay small */
 .cc{display:contents;list-style:none}
-.cc li{display:flex;align-items:center;gap:9px;min-width:0;padding:4px 6px 4px 7px;border-radius:10px;background:var(--slab);color:var(--on-slab)}
-.cc .lg{font-size:28px;box-shadow:0 0 0 1.5px var(--on-slab2)}
+.cc li{display:flex;align-items:center;gap:9px;min-width:0;padding:4px 6px 4px 7px;border-radius:10px;background:var(--field2);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.cc .lg{font-size:28px}
 .cc .n{flex:1;min-width:0;font:400 18px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cc b.u,.cc b.d{background:none}.cc b.u{color:var(--ez-green)}.cc b.d{color:var(--dn-hi)}
+/* calls as coloured text (no fill), on light rows; up/down darkened a step so they read on any palette */
+.cc b.u,.cc b.d,.bk-r .pd.u,.bk-r .pd.d{background:none;box-shadow:none}
+.cc b.u,.bk-r .pd.u{color:color-mix(in srgb,var(--up) 80%,#000)}.cc b.d,.bk-r .pd.d{color:color-mix(in srgb,var(--dn) 80%,#000)}
 .cc b{margin-left:auto;height:38px;display:flex;align-items:center;justify-content:center;gap:6px;min-width:5.4em;font:700 17px/1 var(--fm);font-variant-numeric:tabular-nums;padding:0 9px;border-radius:7px;white-space:nowrap}
 /* no calls yet: the date the calls come in, in the calls' place */
 .un-seal{grid-row:span 4;display:grid;place-items:center;align-content:center;gap:10px;border-radius:11px;text-align:center;box-shadow:inset 0 0 0 2px var(--ink);
@@ -198,8 +200,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .due small{font:700 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase}
 .due b{font:400 23px/1 var(--fd);text-transform:uppercase;white-space:nowrap}
 .un-more{grid-row:3;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:0 14px;border-radius:999px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:700 12px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;list-style:none}
-.un-more::after{content:"+";font:800 16px/1 var(--fb)}
-.un-more[aria-expanded=true]::after{content:"−"}
+.un-more::after{content:"→";font:800 15px/1 var(--fb)}
 .un-more:hover{background:var(--yel);color:var(--ink)}
 /* "All upcoming": two groups under the band. "Calls in" (with the calls) and "Scheduled" (with the dates).
    Side by side on wide screens, stacked on phones. */
@@ -399,7 +400,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .bk-r .who{display:flex;align-items:center;gap:9px;font:800 15px/1 var(--fb);font-stretch:88%;text-transform:uppercase;min-width:0;color:var(--ink)}
 .bk-r .who .lg{font-size:26px}
 .bk-r .who span.n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bk-r .pd{font:700 14px/1 var(--fm);text-align:right;white-space:nowrap;padding:6px 7px;border-radius:7px}
+.bk-r .pd{font:700 16px/1 var(--fm);text-align:right;white-space:nowrap;padding:6px 7px;border-radius:7px}
 /* the real move, one compact row under the calls: the label, then the move pill (lined up with the call pills) */
 .bk-out{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:54px;padding:8px 12px;border-radius:11px;box-shadow:0 0 0 2px var(--ink);background:var(--field2);color:var(--ink)}
 .bk-out small{font:400 22px/1 var(--fd);text-transform:uppercase;color:var(--ink)}
@@ -458,7 +459,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .bk-r .rk{font-size:17px}
   .bk-r .who{gap:6px;font-size:12.5px}
   .bk-r .who .lg{font-size:21px}
-  .bk-r .pd{font-size:11.5px;padding:5px 5px}
+  .bk-r .pd{font-size:13px;padding:5px 5px}
   .bk-r.no .rk span[aria-hidden]{width:15px;height:17px;border-radius:4px;font-size:11px}
   .bk-out{min-height:40px;padding:6px 8px 6px 10px;gap:6px;border-radius:9px}
   .bk-out small{font-size:17px}
@@ -767,7 +768,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 (function(){
 /* words the owner may rename: the label before a round's result date, and the label before the real move on a card's back */
 const RESOLVE_WORD = "Resolves";
-const ACTUAL_WORD = "Actual";
+const ACTUAL_WORD = "Outcome";
 function $(s,r){return (r||document).querySelector(s)}
 function $$(s,r){return [].slice.call((r||document).querySelectorAll(s))}
 var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1117,9 +1118,10 @@ var unMore=$("#unMore"),unAll=$("#unAll");
 var pIn=PS.filter(function(u){return u!==NX}),sched=US.filter(function(u){return u!==NX}),GR=[];
 if(pIn.length)GR.push('<section class="ua-g" aria-labelledby="uaP"><h3 class="ua-h" id="uaP"><i aria-hidden="true"></i>Calls in</h3><ol class="ua-l">'+pIn.map(pendRow).join("")+'</ol></section>');
 if(sched.length)GR.push('<section class="ua-g" aria-labelledby="uaS"><h3 class="ua-h" id="uaS">Scheduled</h3><ol class="ua-l">'+sched.map(sealRow).join("")+'</ol></section>');
-if(GR.length){unMore.hidden=false;$("#unMoreT").textContent="All upcoming";
-  unAll.innerHTML=GR.join("");unAll.style.setProperty("--ua-cols",GR.length);
-  unMore.addEventListener("click",function(){var o=unMore.getAttribute("aria-expanded")!=="true";unMore.setAttribute("aria-expanded",String(o));unAll.hidden=!o})}
+/* "All upcoming" no longer opens a list (it grows every week): it jumps to the record, on the first round without an outcome */
+if(GR.length||NX){unMore.hidden=false;$("#unMoreT").textContent="All upcoming";unMore.removeAttribute("aria-expanded");unMore.removeAttribute("aria-controls");
+  unMore.addEventListener("click",function(){var i=SL.findIndex(function(s){return s.k!=="g"});if(i<0)i=SL.length-1;
+    $("#record").scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});setTimeout(function(){go(i,true)},reduce?0:450)})}
 if(!NX){$("#unB").innerHTML='<p class="st-note">The next rounds are posted soon.</p>'}
 
 /* ---------- the bet poster: the pot (live when CONFIG.pool is set), the first target and its date ---------- */
