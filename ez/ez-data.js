@@ -3,7 +3,11 @@
    Mirrors the ARENA sheet cell for cell. Edit here once; all variants follow.
    Winners, distances, direction, ladder: derived, never typed.
    ===================================================================== */
-var CONFIG={ca:"",buyUrl:"",chain:"",x:"",tg:"",pool:"",poolUrl:"",betDate:""};
+var CONFIG={ca:"",buyUrl:"",chain:"",x:"",tg:"",pool:"",poolUrl:"",betDate:"",
+  /* the buyback scoreboard: "$EZ bought back" (text, e.g. "$12.4K"); empty = "Opens at launch" */
+  boughtBack:"",
+  /* the road: launch comes after launchAt graded rounds; set launched:true once $EZ is live */
+  launchAt:35,launched:false};
 /* The prompt every model gets, every round. verbatim:false = the shape only (pages say so);
    paste the exact text and set verbatim:true to publish it word for word. */
 var PROMPT={verbatim:false,lines:["Company <i>X</i> reports on <i>date</i>.","Full freedom: use any tool you like.","Answer: <i>up or down</i>, and <i>by how much</i>."]};

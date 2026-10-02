@@ -29,8 +29,8 @@ BASE = """
 /* SKIN (tools/skins.py): an old-newspaper look over the same page. CSS only, plus the --issue number. */
 body{background-image:none}
 /* flat print: hairline ink frames instead of offset drop shadows */
-.btn,.btn:hover,.btn:active,.btn.lt,.pc,.pc.lead,.up-p,.bf-back,.face,.lq,.poster,.mx,.mcb,.mx-out,.verdict,.gbox,.mx-bet b,
-.pz-t,.bk-r,.bk-out,.cwin,.flipb,.up-s,.lsw,.chip,.arw,.un-more,.howb,.due,.sh .no,.crown,.stamp,.pz-out li,.mx-lose{box-shadow:0 0 0 1px var(--ink)}
+.btn,.btn:hover,.btn:active,.btn.lt,.pc,.pc.lead,.up-p,.bf-back,.face,.lq,.mach,.sc,.mx,.mcb,.mx-out,.verdict,.gbox,.mx-bet b,
+.bk-r,.bk-out,.cwin,.flipb,.up-s,.lsw,.chip,.arw,.un-more,.howb,.due,.sh .no,.crown,.stamp,.mx-lose{box-shadow:0 0 0 1px var(--ink)}
 .btn:hover,.btn:active,.mcb:active{transform:none}
 .mcb[aria-pressed=true],.chip[aria-current=true]{box-shadow:0 0 0 1px var(--ink),0 0 0 3px var(--field),0 0 0 4px var(--ink)}
 .bk-r.win{box-shadow:0 0 0 2.5px var(--ink)}
@@ -48,8 +48,8 @@ footer{border-top:3px double var(--ink)}
 @media(max-width:640px){.brand b{white-space:nowrap;font-size:17px!important}.live{flex:0 1 auto;min-width:0;padding:8px 9px;font-size:10px;letter-spacing:0}.brand b small{display:none}.sec{margin-top:56px;padding-top:30px}.hero::before{font-size:9.5px;letter-spacing:.08em;margin-bottom:16px}}
 """
 
-DISPLAY = (".st-h h2,.bf-back h2,h1,h2,.pc h3,.ctop,.bk-h h4,.up-p .nm,.up-s .nm,.cwin small,.cwin .wn,.pz-h,.pz-out b,.mx-of,"
-           ".motto,.gbox h3,.lq h3,.pz-top b,.bk-out small,.cc .n,.due b,.un-seal b,.art .soon,.stamp,.pcalls .nm,.lsw button")
+DISPLAY = (".st-h h2,.bf-back h2,h1,h2,.pc h3,.ctop,.bk-h h4,.up-p .nm,.up-s .nm,.cwin small,.cwin .wn,.mx-of,"
+           ".motto,.gbox h3,.lq h3,.bk-out small,.cc .n,.due b,.un-seal b,.art .soon,.stamp,.pcalls .nm,.lsw button")
 
 SKINS = {
     # 1. Broadsheet: a serious financial daily, 1920s to 50s. Blackletter masthead, serif heads and body, column rules.
@@ -84,6 +84,8 @@ h2{font-weight:800;line-height:1.05}
 .pc .crown{background:var(--card)}
 .cwin small,.cwin .wn{font-style:italic}
 .mx-big{letter-spacing:-.01em}
+/* the machine: Playfair is wider than Anton, so the label inside the pot steps down */
+.m-pot-t{font-size:25px;font-weight:700}
 """,
     ),
     # 2. Extra: a 1929 crash-era tabloid. Huge condensed heads, EXTRA! banners, yellowed halftone paper, one red spot colour.
@@ -123,8 +125,6 @@ h2{font-size:clamp(34px,5.4vw,64px);line-height:.92}
 /* the leader: the red spot colour, ink-free text on it */
 .pc.r1{background:var(--red);color:var(--on-slab);animation:none;box-shadow:0 0 0 2px var(--ink)}
 .pc.r1 .pc-w span,.pc.r1 .rk{color:var(--on-slab)}
-.poster::before{background:repeating-linear-gradient(-45deg,var(--red) 0 12px,var(--ink) 12px 24px)}
-.pz-top b{color:var(--yel)}
 .motto .e{color:var(--grn)}
 """,
     ),
@@ -150,7 +150,7 @@ h1 .hl{background:none;font-style:italic}
 .brand b{font:400 24px/1 var(--fd);text-transform:none;letter-spacing:0}
 .brand b small{font:500 10px/1.2 var(--fm);letter-spacing:.12em}
 /* labels in small caps, figures in agate mono */
-.eb,.st-h span,.bk-sec,.ua-h,.car-cap,.due small,.mx-q,.pz-f,.pz-goal small,.pz-out small{font-variant:small-caps}
+.eb,.st-h span,.bk-sec,.ua-h,.car-cap,.due small,.mx-q{font-variant:small-caps}
 .eb{background:none;color:var(--ink);padding:0;border-bottom:1px solid var(--ink);text-transform:lowercase;font-size:13px;letter-spacing:.12em}
 .sh .no{background:none;box-shadow:none;font:600 13px/1 var(--fm);padding:0}
 .pc-w b,.mx-big,.mx-bet b,.bk-r .rk,.pc .rk,.due b,.mcb{font-family:var(--fm);font-weight:600;letter-spacing:-.02em}
