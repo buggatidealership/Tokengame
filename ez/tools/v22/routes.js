@@ -64,42 +64,33 @@ function tkBadge(t){if(CO_LOGOS[String(t||"").toUpperCase()])return coMark(t);va
   return '<span class="co-mark tkb'+(s.length>3?' l'+s.length:'')+'" aria-hidden="true">'+esc(s)+'</span>'}
 /* the season in one picture: every round on one line. Graded rounds are bars (up above the line, down below, height = the
    move), capped with the winner's colour; rounds still to come are dots. Tap a round to open it. */
-function svgLogo(m,cx,cy,s){var M=MODELS[m],k=s*.62/24;return '<g class="s-lg"><rect x="'+(cx-s/2)+'" y="'+(cy-s/2)+'" width="'+s+'" height="'+s+'" rx="'+(s*.225)+'" style="fill:'+M.bg+'"/>'+
-  '<g transform="translate('+(cx-s/2+s*.19)+','+(cy-s/2+s*.19)+') scale('+k+')"><path d="'+M.d+'" style="fill:'+M.fg+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+'/>'+(M.dot?'<path d="'+M.dot+'" style="fill:'+M.dotc+'"/>':'')+'</g></g>'}
-function seasonSVG(W,H,cls){var G=ALLN.filter(function(n){return findR(n)||findP(n)}),U=ALLN.filter(function(n){return G.indexOf(n)<0}),L=20,R=20,Y0=H*.5,UP=H*.5-58,DN=H*.5-58;
-  var gw=(W-L-R)*(U.length?.74:1),gs=G.length?gw/G.length:0,us=U.length?(W-L-R-gw)/U.length:0,bw=Math.min(30,gs*.56),ls=Math.min(30,Math.max(20,gs*.62));
-  var mx=Math.max.apply(null,ROUNDS.map(function(r){return Math.abs(r.a)}).concat([1]));
-  var o='<svg class="ssvg '+cls+'" viewBox="0 0 '+W+' '+H+'" role="group" aria-label="The season: '+NR+' rounds graded, '+(ALLN.length-NR)+' to come">';
-  var tx=L+gw;if(U.length)o+='<line class="s-now" x1="'+tx+'" x2="'+tx+'" y1="16" y2="'+(H-30)+'"/>'+(cls==="s-wide"?'<text class="s-nowt" x="'+(tx+8)+'" y="28">Today</text>':'')+'<text class="s-nowt" x="'+(W-R)+'" y="28" text-anchor="end">'+U.length+' to come</text>';
-  o+='<line class="s-axis" x1="'+L+'" x2="'+(W-R)+'" y1="'+Y0+'" y2="'+Y0+'"/>';
-  function link(n,v,inner){return '<a href="#/round/'+n+'" class="s-r" aria-label="'+esc(plain(v))+(v.st==="graded"?', '+v.out+', '+(v.win.length?'won by '+v.win.map(nm).join(" and "):'no winner'):v.st==="calls"?', calls are in':', calls '+fmtDate(v.called))+'"><title>'+esc(plain(v))+(v.st==="graded"?' · '+v.out:'')+'</title>'+inner+'</a>'}
-  G.forEach(function(n,i){var cx=L+gs*i+gs/2,v=rv(n),s='<rect class="s-hit" x="'+(cx-gs/2)+'" y="8" width="'+gs+'" height="'+(H-16)+'"/>';
-    if(v.st==="graded"){var h=Math.max(6,Math.abs(v.a)/mx*(v.a>0?UP:DN)),y=v.a>0?Y0-h:Y0,cy=v.a>0?y-ls/2-6:y+h+ls/2+6;
-      s+='<rect class="s-bar '+(v.a>0?'u':'d')+'" x="'+(cx-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="3"/>';
-      if(v.win.length>1){var s2=ls*.78;s+=svgLogo(v.win[1],cx+s2*.32,cy+(v.a>0?-s2*.32:s2*.32),s2)+svgLogo(v.win[0],cx-s2*.32,cy+(v.a>0?s2*.12:-s2*.12),s2)}
-      else if(v.win.length)s+=svgLogo(v.win[0],cx,cy,ls);
-      else s+='<g class="s-x" transform="translate('+cx+','+cy+')"><circle r="'+(ls*.42)+'"/><path d="M-4,-4L4,4M4,-4L-4,4"/></g>'}
-    else s+='<circle class="s-dot p" cx="'+cx+'" cy="'+Y0+'" r="8"/>';
-    s+='<text class="s-n" x="'+cx+'" y="'+(H-8)+'">'+n+'</text>';o+=link(n,v,s)});
-  U.forEach(function(n,i){var cx=L+gw+us*i+us/2,v=rv(n);o+=link(n,v,'<rect class="s-hit" x="'+(cx-us/2)+'" y="'+(Y0-14)+'" width="'+us+'" height="28"/><circle class="s-dot" cx="'+cx+'" cy="'+Y0+'" r="'+Math.min(4.5,us*.32)+'"/>')});
-  return o+'</svg>'}
-function seasonLegend(){return '<p class="s-leg"><span><i class="up"></i>Went up</span><span><i class="dn"></i>Went down</span><span>Logo on top: the winner</span><span><i class="x"></i>No winner</span></p>'}
+/* the season so far: a progress bar, then one tile per round. Played rounds show who won; the rest show their date. */
+function seasonCard(){var N=ALLN.length,pc=Math.round(NR/N*100);
+  var tiles=ALLN.map(function(n){var v=rv(n),inner,cls,lab;
+    if(v.st==="graded"){cls=v.win.length?"g":"g none";inner=v.win.length?'<span class="st-w">'+v.win.map(function(m){return logo(m)}).join("")+'</span>':'<span class="st-x" aria-hidden="true">✗</span>';
+      lab=plain(v)+'. '+(v.win.length?v.win.map(nm).join(" and ")+' won':'Nobody won')+'.'}
+    else if(v.st==="calls"){cls="p";inner='<span class="st-d">Calls in</span>';lab=plain(v)+'. Calls are in.'}
+    else{cls="s";inner='<span class="st-d">'+fmtDate(v.called)+'</span>';lab=plain(v)+'. Calls '+fmtDate(v.called)+'.'}
+    return '<li><a class="stl '+cls+'" href="#/round/'+n+'" aria-label="'+esc(lab)+'" title="'+esc(lab)+'"><small>R'+n+'</small>'+inner+'</a></li>'}).join("");
+  return '<section class="ssn" aria-labelledby="scH"><div class="ssn-h"><h2 id="scH"><b>'+NR+'</b> of '+N+' rounds graded</h2><span>'+(N-NR)+' to go</span></div>'+
+    '<div class="ssn-bar" role="img" aria-label="'+pc+'% of the season graded"><i style="width:'+pc+'%"></i></div>'+
+    '<ol class="ssn-t">'+tiles+'</ol><p class="ssn-k">Each tile is a round. A logo means that AI won it. <span class="st-x sm" aria-hidden="true">✗</span> means nobody did. A date means it hasn\'t happened yet.</p></section>'}
 /* one round as a card: the film still on top, the name and the result underneath (never over the film's own text) */
 function tkBadge(t){if(CO_LOGOS[String(t||"").toUpperCase()])return coMark(t);var s=String(t||"").split(".")[0].slice(0,5);
   return '<span class="co-mark tkb'+(s.length>3?' l'+s.length:'')+'" aria-hidden="true">'+esc(s)+'</span>'}
 function rcard(n){var v=rv(n),f=v.st==="graded"?FILMS[n]:preFilm(v),g=v.st==="graded";
   var art=f?'<img src="'+MEDIA+f.p+'.jpg" alt="" loading="lazy" decoding="async">':'<span class="rc-soon">'+tkBadge(v.ticker)+'<small>Film soon</small></span>';
-  var res=g?pill(v.a<0,v.out.replace(/^[+−-]/,""))+'<span class="ws">'+(v.win.length?v.win.map(function(m){return logo(m)}).join(""):'<span class="lg nob" aria-hidden="true">✗</span>')+'<span class="sr">'+(v.win.length?'Winner '+v.win.map(nm).join(" and "):'No winner')+'</span></span>'
-    :'<span class="tag y"><i aria-hidden="true"></i>Calls in</span>';
+  var win=g?'<span class="rc-w"><small>Winner</small>'+(v.win.length?'<b>'+v.win.map(nm).join(" & ")+'</b><span class="ws">'+v.win.map(function(m){return logo(m)}).join("")+'</span>':'<b>Nobody</b><span class="lg nob" aria-hidden="true">✗</span>')+'</span>'
+    :'<span class="rc-w"><small>'+RESOLVE_WORD+'</small><b>'+fmtDate(v.resolves)+'</b></span>';
   return '<li><a class="rc'+(g&&!v.win.length?' none':'')+(g?'':' pend')+'" href="#/round/'+n+'"'+(f?' data-f="'+f.f+'"':'')+'><span class="rc-art">'+art+'</span>'+
-    '<span class="rc-b"><span class="rc-t"><small>Round '+n+'</small><b>'+esc(v.co)+'</b></span><span class="rc-r">'+res+'</span></span></a></li>'}
+    '<span class="rc-b"><small class="rc-n">Round '+n+'</small><span class="rc-t"><b>'+esc(v.co)+'</b>'+(g?pill(v.a<0,v.out.replace(/^[+−-]/,"")):'<span class="tag y"><i aria-hidden="true"></i>Calls in</span>')+'</span>'+win+'</span></a></li>'}
 function vRounds(){var up=ROUNDS.filter(function(r){return r.a>0}).length,nw=ROUNDS.filter(function(r){return !r.win}).length;
   var res=PS.map(function(u){return u.n}).concat(ROUNDS.slice().reverse().map(function(r){return r.n}));
   var mo=null,cu='';if(PS.length)cu+='<h2 class="grp-h"><i aria-hidden="true"></i>Calls are in</h2><ul class="ul">'+PS.map(function(u){return urow(u,true)}).join("")+'</ul>';
   US.forEach(function(u){var d=mmdd(u.called),k=d?d.toLocaleString("en-US",{month:"long",year:"numeric"}):"Later";if(k!==mo){cu+=(mo?'</ul>':'')+'<h2 class="mo-h">'+esc(k)+'</h2><ul class="ul">';mo=k}cu+=urow(u,false)});if(mo)cu+='</ul>';
-  return '<h1 tabindex="-1">Every round</h1><p class="sub">'+NR+' graded, '+(PS.length+US.length)+' to come. Each bar is one result, as big as the move. The logo on top won it.</p>'+
-    '<figure class="season">'+seasonSVG(1000,320,"s-wide")+seasonSVG(420,330,"s-tall")+seasonLegend()+'</figure>'+
-    '<div class="seg" role="tablist" aria-label="Rounds"><button type="button" role="tab" id="tbR" aria-selected="true" aria-controls="pnR">Results <b>'+NR+'</b></button><button type="button" role="tab" id="tbU" aria-selected="false" aria-controls="pnU">Coming up <b>'+(PS.length+US.length)+'</b></button></div>'+
+  return '<h1 tabindex="-1">Every round</h1><p class="sub">'+NR+' graded, '+(PS.length+US.length)+' to come. Tap any round to see the four calls, the film and who won.</p>'+
+    seasonCard()+
+    '<div class="seg" role="tablist" aria-label="Rounds"><button type="button" role="tab" id="tbR" aria-selected="true" aria-controls="pnR">Graded <b>'+NR+'</b></button><button type="button" role="tab" id="tbU" aria-selected="false" aria-controls="pnU">Coming up <b>'+(PS.length+US.length)+'</b></button></div>'+
     '<div id="pnR" role="tabpanel" aria-labelledby="tbR"><ul class="rcg">'+res.map(rcard).join("")+'</ul></div>'+
     '<div id="pnU" role="tabpanel" aria-labelledby="tbU" hidden>'+(cu||'<p class="empty">The next rounds are posted soon.</p>')+'<p class="note" style="margin-top:18px"><a href="#/upcoming">Countdown and calendar →</a></p></div>'}
 function wireRounds(root){var tabs=[$("#tbR",root),$("#tbU",root)];
