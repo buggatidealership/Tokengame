@@ -16,12 +16,12 @@ i=src.rindex('</style>'); src=src[:i]+css+src[i:]
 # header: brand to the board, the route nav
 rep('<a class="brand" href="#top"','<a class="brand" href="#/"')
 rep('<nav class="nav" aria-label="Sections"><a href="#upnext">Up next</a><a href="#record">The record</a><a href="#learn">Learning</a><a href="#bet">The buyback</a><a href="#calc">The math</a><a href="#road">The road</a></nav>',
-    '<nav class="nav" aria-label="Main"><a href="#/" data-r="board">Board</a><a href="#/rounds" data-r="rounds">Rounds</a><a href="#/leaderboard" data-r="leaderboard">Leaderboard</a><a href="#bet" data-r="buyback">Buyback</a></nav>')
+    '<nav class="nav" aria-label="Main"><a href="#/" data-r="board">Overview</a><a href="#/rounds" data-r="rounds">Rounds</a><a href="#/leaderboard" data-r="leaderboard">Leaderboard</a><a href="#bet" data-r="buyback">Buyback</a></nav>')
 # the page view, after the board
 rep('</main>\n<footer>','</main>\n<main id="view" class="wrap" tabindex="-1" hidden></main>\n<footer>')
 # standings: the row opens the model page (Season already shows right way and average miss)
-rep("""'<span class="pc-t"><h3>'+nm(T.m)+'</h3>'+pcStats(T.m)+'</span>'+""",
-    """'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+pcStats(T.m)+'</span>'+""")
+rep("""'<span class="pc-t"><h3>'+nm(T.m)+'</h3></span>'+pcStats(T.m)+""",
+    """'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3></span>'+pcStats(T.m)+""")
 # card back: the round page next to Flip back
 rep("""'<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button>'+shareBtn(r.n)+'</div></div></div>';""",
     """'<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button>'+shareBtn(r.n)+'</div></div></div>';""")

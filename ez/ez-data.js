@@ -80,7 +80,7 @@ var SIM={feePct:null,leverage:null,volPct:25,betDate:null};
    pan: for 9:16 films shown in a square, [second, vertical position %] keyframes so the frame follows the action */
 /* PREFILMS: optional "calls are in" clips for rounds not graded yet (shown on the pending card only; the
    locked pages ignore them). Remove the entry once the round's real film is in FILMS. */
-var PREFILMS={11:{f:"round-11-nike-calls",p:"round-11-nike-calls-poster"}};
+var PREFILMS={};
 /* RECEIPTS: public proof the calls were filed before the report, per round. Paste the link of the post
    (X, Telegram, or an on-chain memo) that published the calls with a timestamp, e.g. 11:"https://x.com/...". */
 var RECEIPTS={};
