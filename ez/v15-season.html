@@ -728,6 +728,30 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 .pc.r1 .pc-w span{color:var(--ink)}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+/* share: a quiet icon in each card's title bar (the card in focus only, like the sound icon), and on the card's back */
+.shr{position:relative;flex:none;align-self:stretch;display:grid;place-items:center;width:30px;min-height:44px;margin-right:8px;color:var(--ink);visibility:hidden}
+.shr::before{content:"";position:absolute;top:0;bottom:0;left:-6px;right:-6px}
+.shr svg{display:block;width:16px;height:16px;padding:6px;box-sizing:content-box;border-radius:50%}
+.card.cur .shr{visibility:visible}
+.shr:hover svg,.shr:focus-visible svg{background:var(--yel);color:var(--ink);box-shadow:0 0 0 1.5px var(--ink)}
+.shr:focus-visible{outline-offset:-3px}
+.shr.busy svg{animation:pulse .9s infinite}
+.ctop h3:has(+.shr){padding-right:0}
+.ctop .snd{margin-right:0}
+.cfoot .shr{visibility:visible;align-self:auto;width:38px;min-height:34px;margin:0;border-radius:9px;background:var(--card);box-shadow:0 0 0 2px var(--ink)}
+.cfoot .shr svg{padding:0}
+.cfoot .shr:hover,.cfoot .shr:focus-visible{background:var(--yel)}
+.cfoot .shr:hover svg,.cfoot .shr:focus-visible svg{background:none;box-shadow:none}
+@media(max-width:640px){.shr{width:26px;margin-right:4px}.cfoot .shr{width:32px;min-height:28px;border-radius:7px}}
+.shp{position:absolute;z-index:200;width:min(272px,calc(100vw - 24px));background:var(--card);color:var(--ink);border-radius:16px;padding:10px;box-shadow:0 0 0 2.5px var(--ink),5px 6px 0 0 var(--ink)}
+.shp img{display:block;width:100%;height:auto;border-radius:10px;box-shadow:0 0 0 2px var(--ink)}
+.shp-a{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}
+.shp-a button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;border-radius:10px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:800 12px/1 var(--fb);text-transform:uppercase;letter-spacing:.04em}
+.shp-a button:hover,.shp-a button:focus-visible{background:var(--yel)}
+.shp-a button[data-a=x]{background:var(--ink);color:#fff;box-shadow:none}
+.shp-a button[data-a=x]:hover,.shp-a button[data-a=x]:focus-visible{background:var(--slab)}
+.shp-a svg{width:14px;height:14px}
+.shp-m{min-height:1.3em;margin-top:8px;font:600 12px/1.3 var(--fb);color:var(--ink2);overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -909,7 +933,7 @@ var SPK='<path d="M3 6h3l4-3.5v11L6 10H3z" fill="currentColor"/>',
 function sndLbl(){return soundOn?"Sound on":"Sound off"}
 function sndBtn(){return '<button type="button" class="snd" data-on="'+(soundOn?1:0)+'" aria-label="'+sndLbl()+'" title="'+sndLbl()+'">'+(soundOn?SND_ON:SND_OFF)+'</button>'}
 /* the round title bar of a card front; graded cards with a film carry the sound icon */
-function topBar(r,snd){return '<div class="ctop"><h3>'+coTitle(r)+'</h3>'+(snd?sndBtn():'')+'</div>'}
+function topBar(r,snd){return '<div class="ctop"><h3>'+coTitle(r)+'</h3>'+(snd?sndBtn():'')+shareBtn(r.n)+'</div>'}
 function frame(r){return !r.win?"f-none":r.win.indexOf(" & ")>-1?"f-tie":"f-win"}
 function art(r){
   if(!r.film)return '<div class="art"><div class="soon"><div>Film soon<small>'+coName(r)+'</small></div></div></div>';
@@ -928,7 +952,7 @@ function backFace(r){
     '<div class="bk-body"><div><p class="bk-sec">What they predicted</p><div class="bk-rows">'+
     cs.map(function(c){var w=wn.indexOf(c.m)>-1;return '<div class="bk-r '+(w?'win':c.ok?'ok':'no')+'">'+(w?'<span class="crown"><i aria-hidden="true">👑</i>Winner</span>':'')+'<span class="rk">'+(c.rank?'<span class="sr">Rank </span>'+c.rank:'<span aria-hidden="true">✗</span><span class="sr">Wrong way</span>')+'</span><span class="who">'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span></span><span class="pd '+(c.dn?'d':'u')+'"><span aria-hidden="true">'+(c.dn?'▼':'▲')+'</span><span class="sr">'+(c.dn?'Down ':'Up ')+'</span>'+c.mag+'</span></div>'}).join("")+'</div></div>'+
     '<div class="bk-out"><small>'+ACTUAL_WORD+'</small><b class="'+(r.a>0?'u':'d')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span><span class="sr">'+(r.a>0?'Up ':'Down ')+'</span>'+r.out.replace(/^[+−-]/,"")+'</b></div></div>'+
-    '<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button></div></div></div>';
+    '<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button>'+shareBtn(r.n)+'</div></div></div>';
 }
 function gradedCard(r,i){
   return '<article class="card '+frame(r)+'" data-i="'+i+'" data-n="'+r.n+'" data-k="g" role="group" aria-roledescription="card" aria-label="'+plain(r)+'"><div class="cin">'+
@@ -1070,7 +1094,7 @@ function soundDown(){soundOn=false;sndUI();$$("video",car).forEach(function(v){v
 var tx0=null;
 document.addEventListener("touchstart",function(e){var t=e.touches[0];tx0=t?[t.clientX,t.clientY]:null},{passive:true,capture:true});
 function onGesture(e){if(soundOn||pref==="off"||reduce)return;
-  if(e.target&&e.target.closest&&e.target.closest(".snd"))return;
+  if(e.target&&e.target.closest&&e.target.closest(".snd,.shr"))return;
   if(e.type==="keydown"&&/^(Escape|Tab|Shift|Control|Alt|Meta)$/.test(e.key))return;
   if(e.type==="touchend"){var t=e.changedTouches[0];if(tx0&&t&&Math.abs(t.clientX-tx0[0])+Math.abs(t.clientY-tx0[1])>12)return}
   var ua=navigator.userActivation;if(ua&&!ua.isActive)return;
@@ -1091,7 +1115,8 @@ if(!NR)toPast.hidden=true;if(NR>=SL.length)toUp.hidden=true;
 toPast.addEventListener("click",function(){go(cur>=NR?NR-1:cur-1,true)});
 toUp.addEventListener("click",function(){go(cur<NR-1?NR:cur+1,true)});
 slides.forEach(function(c,i){
-  c.addEventListener("click",function(e){if(e.target.closest(".snd")){e.stopPropagation();if(soundOn){savePref("off");soundDown()}else{savePref("on");soundUp()}return}
+  c.addEventListener("click",function(e){var sb=e.target.closest(".shr");if(sb){e.stopPropagation();e.preventDefault();shareRound(sb);return}
+    if(e.target.closest(".snd")){e.stopPropagation();if(soundOn){savePref("off");soundDown()}else{savePref("on");soundUp()}return}
     if(e.target.closest("a")||e.target.closest("video[controls]"))return;
     if(i!==cur){e.preventDefault();go(i,true);return}
     if(c.dataset.k==="g")flip(c)});
@@ -1384,6 +1409,138 @@ if(CONFIG.ca)$("#ca").textContent=(CONFIG.chain?CONFIG.chain+" · ":"")+CONFIG.c
 if(CONFIG.buyUrl){var b=$("#buyL");b.href=CONFIG.buyUrl;b.classList.remove("off");b.removeAttribute("aria-disabled");b.textContent="Open the link ↗"}
 else $("#buyL").addEventListener("click",function(e){e.preventDefault()});
 if(TARGET)$("#nextTxt2").innerHTML=P0?"Next answer: "+coName(TARGET)+", "+fmtDate(TARGET.resolves)+". Calls are already in.":"Next up: "+coName(TARGET)+", calls "+fmtDate(TARGET.called)+".";
+
+/* ---------- share a round: a quiet icon on each card. Phones open the native share sheet with the image (one tap).
+   Elsewhere a small panel offers: post on X (the image is copied first, so it pastes straight in), copy image, save, copy link.
+   The image is drawn here on a canvas from the same data (1080 x 1080, square for every feed). ---------- */
+function shareGlyph(){return '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6v8.2M5 4.4 8 1.4l3 3M4.6 7H3.4v7.2h9.2V7h-1.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
+function shareBtn(n){return '<button type="button" class="shr" data-share="'+n+'" aria-label="Share round '+n+'" title="Share">'+shareGlyph()+'</button>'}
+var SH={W:1080,INK:"#12131a",FIELD:"#f4efe6",CARD:"#ffffff",SLAB:"#101a3a",SLAB2:"#0b1330",GOLD:"#ffc72c",GRN:"#1fcf6b",RED:"#ff4136",INK2:"#4a4c58",ON2:"#b9c0d6",
+  FD:'800 % "Barlow Condensed", "Arial Narrow", Impact, sans-serif',FB:'700 % "Barlow", system-ui, sans-serif',FB8:'800 % "Barlow", system-ui, sans-serif'};
+var shPaths={};function shPath(d){if(!shPaths[d])shPaths[d]=new Path2D(d);return shPaths[d]}
+function shRR(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function shFont(c,f,px){c.font=f.replace("%",px+"px")}
+function shFit(c,t,f,px,max,min){shFont(c,f,px);while(c.measureText(t).width>max&&px>(min||12)){px-=2;shFont(c,f,px)}return px}
+function shTri(c,x,y,s,dn){c.beginPath();if(dn){c.moveTo(x,y-s*.42);c.lineTo(x+s,y-s*.42);c.lineTo(x+s/2,y+s*.48)}else{c.moveTo(x,y+s*.42);c.lineTo(x+s,y+s*.42);c.lineTo(x+s/2,y-s*.48)}c.closePath();c.fill()}
+function shLogo(c,m,x,y,s){var M=MODELS[m];if(!M)return;shRR(c,x,y,s,s,s*.225);c.fillStyle=M.bg;c.fill();c.lineWidth=Math.max(2,s/22);c.strokeStyle=SH.INK;c.stroke();
+  c.save();var k=s*.62/24;c.translate(x+s*.19,y+s*.19);c.scale(k,k);c.fillStyle=M.fg;c.fill(shPath(M.d),M.fr==="evenodd"?"evenodd":"nonzero");if(M.dot){c.fillStyle=M.dotc;c.fill(shPath(M.dot))}c.restore()}
+function shCrown(c,x,y,w){var h=w*.72;c.beginPath();c.moveTo(x,y+h);c.lineTo(x,y+h*.26);c.lineTo(x+w*.27,y+h*.56);c.lineTo(x+w*.5,y);c.lineTo(x+w*.73,y+h*.56);c.lineTo(x+w,y+h*.26);c.lineTo(x+w,y+h);c.closePath()}
+function shMark(c,x,y,px){shFont(c,SH.FD,px);[["$",SH.GOLD],["E",SH.GRN],["Z",SH.RED]].forEach(function(p){c.fillStyle=p[1];c.fillText(p[0],x,y);x+=c.measureText(p[0]).width+px*.02});return x}
+function shImg(src){return new Promise(function(res){if(!src)return res(null);var i=new Image();i.decoding="async";i.onload=function(){res(i)};i.onerror=function(){res(null)};i.src=src})}
+/* one slide (graded, calls in, sealed) as plain data for the image */
+function shData(s){var d=s.d,v={n:d.n,co:d.co,ticker:d.ticker,called:d.called,resolves:d.resolves,k:s.k};
+  if(s.k==="g"){var wn=d.win?d.win.split(" & "):[];v.out=d.out;v.a=d.a;v.win=wn;v.calls=parsed(d).map(function(c){return {m:c.m,dn:c.dn,mag:c.mag,ok:c.ok,off:c.off,rank:c.rank,win:wn.indexOf(c.m)>-1}});v.poster=d.poster||null}
+  else if(s.k==="p"){v.calls=d.calls.map(function(c){return {m:c.m,dn:c.dir==="DOWN",mag:c.mag+"%"}});var pf=preFilm(d);v.poster=pf?pf.p:null}
+  else{v.calls=[];v.poster=null}
+  return v}
+function shText(v){var t="Round "+v.n+" · "+plainCo(v);
+  if(v.k==="g")return t+" moved "+v.out+". "+(v.win.length?v.win.map(nm).join(" and ")+(v.win.length>1?" share the round.":" wins the round."):"Every AI got the direction wrong.")+" Four AIs called it before the report. The market graded it. $EZ";
+  if(v.k==="p")return t+". The AIs have made their calls. The market answers "+fmtDate(v.resolves)+". $EZ";
+  return t+". Four AIs call it on "+fmtDate(v.called)+". $EZ"}
+function shURL(n){return location.href.replace(/#.*$/,"")+"#round-"+n}
+function drawShare(cv,v,img){var c=cv.getContext("2d"),W=SH.W;cv.width=W;cv.height=W;
+  /* ground: the navy slab, a soft light behind the card, a faint dot grid */
+  c.fillStyle=SH.SLAB;c.fillRect(0,0,W,W);
+  var g=c.createRadialGradient(W*.5,W*.42,40,W*.5,W*.42,W*.75);g.addColorStop(0,"rgba(36,67,184,.55)");g.addColorStop(1,"rgba(11,19,48,0)");c.fillStyle=g;c.fillRect(0,0,W,W);
+  c.fillStyle="rgba(255,255,255,.06)";for(var gy=24;gy<W;gy+=36)for(var gx=24;gx<W;gx+=36){c.beginPath();c.arc(gx,gy,1.6,0,7);c.fill()}
+  c.textBaseline="alphabetic";
+  /* header: the mark, the show, the round state */
+  shMark(c,56,104,78);
+  shFont(c,SH.FB8,19);c.fillStyle=SH.GOLD;c.letterSpacing="3px";c.fillText("EARNINGS ZEASON",196,70);
+  shFont(c,SH.FB,19);c.fillStyle=SH.ON2;c.fillText((v.k==="g"?"GRADED "+fmtDate(v.resolves):v.k==="p"?"CALLS ARE IN · ANSWER "+fmtDate(v.resolves):"CALLS "+fmtDate(v.called)).toUpperCase(),196,102);c.letterSpacing="0px";
+  /* round number badge, top right */
+  shFont(c,SH.FD,30);var rb="ROUND "+v.n,rw=c.measureText(rb).width+40;shRR(c,W-56-rw,52,rw,56,28);c.fillStyle=SH.GOLD;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();c.fillStyle=SH.INK;c.fillText(rb,W-56-rw+20,91);
+  /* the card: the site's yellow frame, ink line and hard shadow */
+  var X=56,Y=146,CW=W-112,CH=838;
+  shRR(c,X+12,Y+14,CW,CH,34);c.fillStyle="#000";c.fill();
+  shRR(c,X,Y,CW,CH,34);c.fillStyle=v.k==="g"&&!v.win.length?SH.RED:v.k==="g"?SH.GOLD:v.k==="p"?SH.SLAB2:SH.FIELD;c.fill();c.lineWidth=5;c.strokeStyle=SH.INK;c.stroke();
+  if(v.k==="g"&&!v.win.length){c.save();shRR(c,X,Y,CW,CH,34);c.clip();c.strokeStyle="rgba(18,19,26,.9)";c.lineWidth=22;for(var hz=-CH;hz<CW+CH;hz+=52){c.beginPath();c.moveTo(X+hz,Y);c.lineTo(X+hz-CH,Y+CH);c.stroke()}c.restore();shRR(c,X,Y,CW,CH,34);c.lineWidth=5;c.strokeStyle=SH.INK;c.stroke()}
+  var IX=X+16,IY=Y+16,IW=CW-32,IH=CH-32;shRR(c,IX,IY,IW,IH,22);c.fillStyle=SH.CARD;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+  /* title bar */
+  var tt=plainCo(v).toUpperCase();var tp=shFit(c,tt,SH.FD,60,IW-56,30);c.fillStyle=SH.INK;c.fillText(tt,IX+28,IY+70);
+  c.fillStyle=SH.INK;c.fillRect(IX,IY+96,IW,4);
+  /* left: the film still (or the ticker), square */
+  var PX=IX+28,PY=IY+128,PS=392;
+  c.save();shRR(c,PX,PY,PS,PS,18);c.clip();
+  if(img){var s=Math.min(img.naturalWidth,img.naturalHeight);c.drawImage(img,(img.naturalWidth-s)/2,(img.naturalHeight-s)/2,s,s,PX,PY,PS,PS)}
+  else{var tg=c.createLinearGradient(PX,PY,PX+PS,PY+PS);tg.addColorStop(0,"#18244b");tg.addColorStop(1,SH.SLAB2);c.fillStyle=tg;c.fillRect(PX,PY,PS,PS);
+    var tk=String(v.ticker||v.co).split(".")[0].toUpperCase();var tkp=shFit(c,tk,SH.FD,150,PS-80,40);c.fillStyle="#fff";c.textAlign="center";c.fillText(tk,PX+PS/2,PY+PS/2+tkp*.34);
+    shFont(c,SH.FB8,18);c.fillStyle=SH.GOLD;c.letterSpacing="3px";c.fillText(v.k==="s"?"SEALED":"FILM SOON",PX+PS/2,PY+PS-36);c.letterSpacing="0px";c.textAlign="left"}
+  c.restore();shRR(c,PX,PY,PS,PS,18);c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+  /* right: the outcome and the winner (or what is still to come) */
+  var RX=PX+PS+28,RW=IX+IW-28-RX;
+  if(v.k==="g"){var dn=v.a<0;
+    shFont(c,SH.FB8,20);c.fillStyle=SH.INK2;c.letterSpacing="3px";c.fillText("THE MARKET SAID",RX,PY+22);c.letterSpacing="0px";
+    shRR(c,RX,PY+40,RW,150,18);c.fillStyle=dn?SH.RED:SH.GRN;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+    var ot=v.out.replace(/^[+−-]/,"");c.fillStyle=SH.INK;var op=shFit(c,ot,SH.FD,124,RW-130,60);shTri(c,RX+30,PY+115,54,dn);c.fillText(ot,RX+100,PY+115+op*.36);
+    var WY=PY+214,WH=PS-214+PY-PY;WH=PY+PS-WY;
+    shRR(c,RX,WY,RW,WH,18);c.fillStyle=v.win.length?SH.SLAB:SH.RED;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+    shFont(c,SH.FB8,20);c.fillStyle=v.win.length?SH.GOLD:"#fff";c.letterSpacing="3px";c.fillText(v.win.length>1?"WINNERS":"WINNER",RX+24,WY+40);c.letterSpacing="0px";
+    if(v.win.length){c.fillStyle=SH.GOLD;shCrown(c,RX+RW-62,WY+20,38);c.fill();c.lineWidth=2.5;c.strokeStyle=SH.INK;c.stroke();
+      var many=v.win.length>1,ls=many?50:68,ly=WY+(many?58:66);
+      v.win.slice(0,2).forEach(function(m,i){var yy=ly+i*(ls+10);shLogo(c,m,RX+24,yy,ls);c.fillStyle="#fff";shFit(c,nm(m).toUpperCase(),SH.FD,many?52:76,RW-ls-60,28);c.fillText(nm(m).toUpperCase(),RX+24+ls+16,yy+ls*.8)})}
+    else{c.fillStyle="#fff";shFont(c,SH.FD,72);c.fillText("NOBODY",RX+24,WY+120);shFont(c,SH.FB,19);c.fillText("Every call went the wrong way",RX+24,WY+152)}}
+  else{shFont(c,SH.FB8,20);c.fillStyle=SH.INK2;c.letterSpacing="3px";c.fillText(v.k==="p"?"THE MARKET ANSWERS":"THE CALLS COME IN",RX,PY+22);c.letterSpacing="0px";
+    shRR(c,RX,PY+40,RW,150,18);c.fillStyle=SH.SLAB;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+    var dt=fmtDate(v.k==="p"?v.resolves:v.called).toUpperCase();c.fillStyle=SH.GOLD;var dp=shFit(c,dt,SH.FD,112,RW-48,50);c.fillText(dt,RX+24,PY+115+dp*.36);
+    var QY=PY+214,QH=PY+PS-QY;shRR(c,RX,QY,RW,QH,18);c.fillStyle=SH.GOLD;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+    c.fillStyle=SH.INK;shFont(c,SH.FD,64);c.fillText("WHO CALLS IT?",RX+24,QY+86);shFont(c,SH.FB,19);c.fillText(v.k==="p"?"Calls filed before the report":"Filed the day before the report",RX+24,QY+124)}
+  /* the calls: one chip each, in two rows of two */
+  var CY=PY+PS+28,GW=(IW-56-20)/2,GH=(IY+IH-24-CY-16)/2,list=v.calls.length?v.calls:ACTIVE.map(function(m){return {m:m,sealed:true}});
+  list.slice(0,4).forEach(function(cl,i){var cx=IX+28+(i%2)*(GW+20),cy=CY+Math.floor(i/2)*(GH+16),g=v.k==="g";
+    shRR(c,cx,cy,GW,GH,16);c.fillStyle=cl.win?SH.GOLD:g&&!cl.ok?"#f1eeea":SH.FIELD;c.fill();c.lineWidth=cl.win?4:3;c.strokeStyle=SH.INK;c.stroke();
+    var ls=Math.min(58,GH-34);shLogo(c,cl.m,cx+18,cy+(GH-ls)/2,ls);
+    c.fillStyle=g&&!cl.ok?SH.INK2:SH.INK;shFit(c,nm(cl.m).toUpperCase(),SH.FD,42,GW-ls-200,24);c.fillText(nm(cl.m).toUpperCase(),cx+ls+32,cy+GH/2+(g?2:14));
+    if(g){shFont(c,SH.FB,17);c.fillStyle=SH.INK2;c.fillText(cl.ok?(cl.win?"WINNER · ":"")+"OFF "+cl.off.toFixed(2):"WRONG WAY",cx+ls+32,cy+GH/2+30)}
+    if(cl.sealed){shFont(c,SH.FB8,18);c.fillStyle=SH.INK2;c.textAlign="right";c.letterSpacing="2px";c.fillText("SEALED",cx+GW-20,cy+GH/2+7);c.letterSpacing="0px";c.textAlign="left";return}
+    var pw=136,ph=56,px=cx+GW-18-pw,py=cy+(GH-ph)/2;shRR(c,px,py,pw,ph,12);c.fillStyle=cl.dn?SH.RED:SH.GRN;c.fill();c.lineWidth=3;c.strokeStyle=SH.INK;c.stroke();
+    shFont(c,SH.FD,38);var mw=c.measureText(cl.mag).width,gx=px+(pw-(20+10+mw))/2;c.fillStyle=SH.INK;shTri(c,gx,py+ph/2,20,cl.dn);c.fillText(cl.mag,gx+30,py+ph/2+13);
+    if(g&&!cl.ok){c.save();c.globalAlpha=.55;shRR(c,cx,cy,GW,GH,16);c.fillStyle="#fff";c.fill();c.restore();shRR(c,cx,cy,GW,GH,16);c.lineWidth=3;c.strokeStyle=SH.INK;c.stroke()}});
+  /* footer line, under the card */
+  shFont(c,SH.FB,21);c.fillStyle=SH.ON2;c.fillText("We're teaching AIs to bet. The market grades them.",56,1052);
+  shFont(c,SH.FB8,17);c.fillStyle=SH.GOLD;c.textAlign="right";c.letterSpacing="2px";c.fillText("CALLED BEFORE THE REPORT",W-56,1051);c.letterSpacing="0px";c.textAlign="left"}
+function shMake(s){var v=shData(s);var fonts=document.fonts&&document.fonts.load?Promise.all(['800 60px "Barlow Condensed"','700 20px "Barlow"','800 20px "Barlow"'].map(function(f){return document.fonts.load(f).catch(function(){})})):Promise.resolve();
+  return Promise.all([fonts,shImg(v.poster?MEDIA+v.poster+".jpg":null)]).then(function(r){var cv=document.createElement("canvas");drawShare(cv,v,r[1]);
+    return new Promise(function(res){cv.toBlob(function(b){res({v:v,blob:b,cv:cv})},"image/png")})})}
+/* saving: a normal download on a real site; inside the claude.ai preview, through its downloads capability */
+var shDL=null;try{if(window.claude&&claude.use)claude.use("downloads").then(function(d){shDL=d}).catch(function(){})}catch(e){}
+function shSave(blob,name){if(window.claude&&claude.use){if(!shDL)return Promise.reject({code:"unavailable"});return shDL.save({filename:name,data:blob})}
+  var a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},1500);return Promise.resolve()}
+function shCopyImg(blob){if(!(navigator.clipboard&&window.ClipboardItem))return Promise.reject();return navigator.clipboard.write([new ClipboardItem({"image/png":blob})])}
+function shCopyText(t){if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);return Promise.reject()}
+var shPop=null,shFrom=null;
+function shClose(){if(!shPop)return;shPop.remove();shPop=null;if(shFrom&&shFrom.isConnected)shFrom.focus({preventScroll:true});shFrom=null}
+function shPanel(btn,R){shClose();shFrom=btn;var url=URL.createObjectURL(R.blob),n=R.v.n,text=shText(R.v),link=shURL(n);
+  var p=document.createElement("div");p.className="shp";p.setAttribute("role","dialog");p.setAttribute("aria-label","Share round "+n);
+  p.innerHTML='<img src="'+url+'" alt="The share image for round '+n+'"><div class="shp-a">'+
+    '<button type="button" data-a="x"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-7.2 8.2L23.3 22h-6.6l-5.2-6.8L5.6 22H2.4l7.7-8.8L2 2h6.8l4.7 6.2zm-1.2 18h1.8L7.4 3.9H5.5z"/></svg>Post</button>'+
+    '<button type="button" data-a="ci">Copy image</button><button type="button" data-a="sv">Save</button><button type="button" data-a="cl">Copy link</button></div><p class="shp-m" aria-live="polite"></p>';
+  document.body.appendChild(p);shPop=p;
+  var r=btn.getBoundingClientRect(),pw=p.offsetWidth,ph=p.offsetHeight,x=Math.min(Math.max(12,r.right-pw),innerWidth-pw-12),y=r.bottom+8;if(y+ph>innerHeight-12)y=Math.max(12,r.top-ph-8);
+  p.style.left=(x+scrollX)+"px";p.style.top=(y+scrollY)+"px";
+  var msg=$(".shp-m",p);function say(t){msg.textContent=t}
+  $$("[data-a]",p).forEach(function(b){b.addEventListener("click",function(){var a=b.dataset.a;
+    if(a==="x"){shCopyImg(R.blob).then(function(){say("Image copied. Paste it into your post.")},function(){say("Save the image to add it to your post.")});
+      window.open("https://x.com/intent/post?text="+encodeURIComponent(text)+"&url="+encodeURIComponent(link),"_blank","noopener")}
+    else if(a==="ci")shCopyImg(R.blob).then(function(){say("Image copied.")},function(){say("This browser can't copy images. Use Save.")});
+    else if(a==="sv")shSave(R.blob,"ez-round-"+n+".png").then(function(){say("Saved.")},function(e){say(e&&e.code==="declined"?"Not saved.":"Couldn't save here.")});
+    else if(a==="cl")shCopyText(link).then(function(){say("Link copied.")},function(){say(link)})})});
+  $("button",p).focus({preventScroll:true})}
+document.addEventListener("click",function(e){if(shPop&&!shPop.contains(e.target)&&!e.target.closest(".shr"))shClose()},true);
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&shPop)shClose()});
+addEventListener("resize",function(){shClose()});
+function shareRound(btn){var n=+btn.dataset.share,s=SL.filter(function(x){return x.n===n})[0];if(!s||btn.dataset.busy)return;btn.dataset.busy="1";btn.classList.add("busy");
+  shMake(s).then(function(R){delete btn.dataset.busy;btn.classList.remove("busy");if(!R.blob)return;
+    var file=null;try{file=new File([R.blob],"ez-round-"+n+".png",{type:"image/png"})}catch(e){}
+    var data=file?{files:[file],text:shText(R.v)+" "+shURL(n)}:null;
+    /* phones: straight to the share sheet with the image. Desktop and the preview: the small panel. */
+    var touch=matchMedia("(pointer: coarse)").matches;
+    if(touch&&data&&navigator.canShare&&navigator.canShare(data))navigator.share(data).catch(function(e){if(!e||e.name!=="AbortError")shPanel(btn,R)});
+    else shPanel(btn,R)},function(){delete btn.dataset.busy;btn.classList.remove("busy")})}
+/* a shared link (#round-9) opens the record on that round */
+function shDeep(){var m=location.hash.match(/^#round-(\d+)$/);if(!m)return;var i=SL.findIndex(function(s){return s.n===+m[1]});if(i<0)return;
+  $("#record").scrollIntoView({block:"start"});go(i,false)}
+addEventListener("hashchange",shDeep);requestAnimationFrame(function(){requestAnimationFrame(shDeep)});
 })();
 </script>
 </body>

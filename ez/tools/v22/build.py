@@ -33,8 +33,8 @@ function pcStats(m){var C=career(m);if(!C.g)return '<span class="pc-s">No graded
   return '<span class="pc-s"><span><b>'+C.right+'/'+C.g+'</b> right</span><span><b>'+C.avg.toFixed(2)+'</b> avg miss</span></span>'}
 var P0=PS[0]||null;""")
 # card back: the round page next to Flip back
-rep("""'<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button></div></div></div>';""",
-    """'<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button><a class="rpl" href="#/round/'+r.n+'">Round page →</a></div></div></div>';""")
+rep("""'<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button>'+shareBtn(r.n)+'</div></div></div>';""",
+    """'<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button><a class="rpl" href="#/round/'+r.n+'">Round page →</a>'+shareBtn(r.n)+'</div></div></div>';""")
 # up next: the title opens the round; All upcoming opens the upcoming page
 rep("""unHTML='<div class="up-p"><h3 class="nm">'+coTitle(NX)+'</h3>'+""","""unHTML='<div class="up-p"><h3 class="nm"><a href="#/round/'+NX.n+'">'+coTitle(NX)+'</a></h3>'+""")
 rep("""  unMore.addEventListener("click",function(){var i=SL.findIndex(function(s){return s.k!=="g"});if(i<0)i=SL.length-1;
