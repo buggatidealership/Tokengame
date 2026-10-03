@@ -62,34 +62,53 @@ function winIcons(v){return '<span class="ws">'+(v.win.length?v.win.map(function
 /* the company's logo when CO_LOGOS has one, else a ticker badge that fits ("2317.TW" shows as 2317) */
 function tkBadge(t){if(CO_LOGOS[String(t||"").toUpperCase()])return coMark(t);var s=String(t||"").split(".")[0].slice(0,5);
   return '<span class="co-mark tkb'+(s.length>3?' l'+s.length:'')+'" aria-hidden="true">'+esc(s)+'</span>'}
-function poster(n){var v=rv(n),f=v.st==="graded"?FILMS[n]:preFilm(v),cls="pt-a"+(f?"":" soon")+(v.st==="calls"?" pend":"");
-  var head='<span class="pt-h"><small>Round '+n+'</small>'+(v.st==="calls"?'<span class="tag y y-live"><i aria-hidden="true"></i>Calls in</span>':v.tag?'<span class="tag y">'+esc(v.tag)+'</span>':'')+'</span>';
-  var foot='<span class="pt-f"><b class="ttl">'+esc(v.co)+'</b>'+(v.st==="graded"?pill(v.a<0,v.out.replace(/^[+−-]/,""))+winIcons(v):'<span class="tag">'+RESOLVE_WORD+' '+fmtDate(v.resolves)+'</span>')+'</span>';
-  var art=f?'<img src="'+MEDIA+f.p+'.jpg" alt="" loading="lazy" decoding="async">':tkBadge(v.ticker)+'<span class="fs">Film soon</span>';
-  return '<li data-w="'+(v.st==="graded"?(v.win.length?v.win.join(" "):"NONE"):"PEND")+'"><a class="'+cls+'" href="#/round/'+n+'"'+(f?' data-f="'+f.f+'"':'')+' aria-label="'+esc(plain(v))+(v.st==="graded"?', '+v.out+', '+(v.win.length?'won by '+v.win.map(nm).join(" and "):'no winner'):', calls are in')+'">'+art+head+foot+'</a></li>'}
-function vRounds(){
-  var up=ROUNDS.filter(function(r){return r.a>0}).length,big=ROUNDS.slice().sort(function(a,b){return Math.abs(b.a)-Math.abs(a.a)})[0],best=null;
-  ROUNDS.forEach(function(r){parsed(r).forEach(function(c){if(c.ok&&(!best||c.off<best.c.off))best={r:r,c:c}})});
-  var nw=ROUNDS.filter(function(r){return !r.win}).length;
-  var sum='<div class="rs-sum"><div><small>Graded</small><b>'+NR+'</b><span>'+(PS.length?PS.length+' with calls in · ':'')+US.length+' to come</span></div>'+
-    '<div><small>Went up</small><b>'+up+' of '+NR+'</b><span>Down '+(NR-up)+' times</span></div>'+
-    (big?'<div><small>Biggest move</small><b>'+big.out+'</b><span>R'+big.n+' · '+esc(big.co)+'</span></div>':'')+
-    (best?'<div><small>Closest call</small><b>'+best.c.off.toFixed(2)+'</b><span>Points off · '+nm(best.c.m)+', R'+best.r.n+'</span></div>':'')+'</div>';
-  var fl=[['all','All',NR+PS.length]].concat(RK.filter(function(m){return CAR[m]&&CAR[m].won}).map(function(m){return [m,nm(m)+' wins',CAR[m].won]}));if(nw)fl.push(['NONE','No winner',nw]);
-  var flt='<div class="flt" role="group" aria-label="Filter the rounds">'+fl.map(function(f,i){return '<button type="button" data-fl="'+f[0]+'" aria-pressed="'+(i?'false':'true')+'">'+(MODELS[f[0]]?logo(f[0]):'')+f[1]+' <b>'+f[2]+'</b></button>'}).join("")+'</div>';
-  var list=PS.map(function(u){return u.n}).concat(ROUNDS.slice().reverse().map(function(r){return r.n}));
-  return '<h1 tabindex="-1">Every round</h1><p class="sub">Calls filed before the report. Graded at the first market close after it, on the closing price. Never edited. Tap a round for the film, the calls and a share image.</p>'+
-    sum+flt+'<ul class="pg" id="pg">'+list.map(poster).join("")+'</ul>'+
-    (US.length?'<p class="note" style="margin-top:22px">'+US.length+' more rounds are scheduled. <a href="#/upcoming">See what\'s coming →</a></p>':'')}
-function wireRounds(root){
-  $$("[data-fl]",root).forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.fl;
-    $$("[data-fl]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});
-    $$("#pg li",root).forEach(function(li){var w=li.dataset.w.split(" ");li.hidden=!(k==="all"||w.indexOf(k)>-1)})})});
-  /* a poster plays its film while you hover it (mouse only, never with reduced motion) */
+/* the season in one picture: every round on one line. Graded rounds are bars (up above the line, down below, height = the
+   move), capped with the winner's colour; rounds still to come are dots. Tap a round to open it. */
+function svgLogo(m,cx,cy,s){var M=MODELS[m],k=s*.62/24;return '<g class="s-lg"><rect x="'+(cx-s/2)+'" y="'+(cy-s/2)+'" width="'+s+'" height="'+s+'" rx="'+(s*.225)+'" style="fill:'+M.bg+'"/>'+
+  '<g transform="translate('+(cx-s/2+s*.19)+','+(cy-s/2+s*.19)+') scale('+k+')"><path d="'+M.d+'" style="fill:'+M.fg+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+'/>'+(M.dot?'<path d="'+M.dot+'" style="fill:'+M.dotc+'"/>':'')+'</g></g>'}
+function seasonSVG(W,H,cls){var G=ALLN.filter(function(n){return findR(n)||findP(n)}),U=ALLN.filter(function(n){return G.indexOf(n)<0}),L=20,R=20,Y0=H*.5,UP=H*.5-58,DN=H*.5-58;
+  var gw=(W-L-R)*(U.length?.74:1),gs=G.length?gw/G.length:0,us=U.length?(W-L-R-gw)/U.length:0,bw=Math.min(30,gs*.56),ls=Math.min(30,Math.max(20,gs*.62));
+  var mx=Math.max.apply(null,ROUNDS.map(function(r){return Math.abs(r.a)}).concat([1]));
+  var o='<svg class="ssvg '+cls+'" viewBox="0 0 '+W+' '+H+'" role="group" aria-label="The season: '+NR+' rounds graded, '+(ALLN.length-NR)+' to come">';
+  var tx=L+gw;if(U.length)o+='<line class="s-now" x1="'+tx+'" x2="'+tx+'" y1="16" y2="'+(H-30)+'"/>'+(cls==="s-wide"?'<text class="s-nowt" x="'+(tx+8)+'" y="28">Today</text>':'')+'<text class="s-nowt" x="'+(W-R)+'" y="28" text-anchor="end">'+U.length+' to come</text>';
+  o+='<line class="s-axis" x1="'+L+'" x2="'+(W-R)+'" y1="'+Y0+'" y2="'+Y0+'"/>';
+  function link(n,v,inner){return '<a href="#/round/'+n+'" class="s-r" aria-label="'+esc(plain(v))+(v.st==="graded"?', '+v.out+', '+(v.win.length?'won by '+v.win.map(nm).join(" and "):'no winner'):v.st==="calls"?', calls are in':', calls '+fmtDate(v.called))+'"><title>'+esc(plain(v))+(v.st==="graded"?' · '+v.out:'')+'</title>'+inner+'</a>'}
+  G.forEach(function(n,i){var cx=L+gs*i+gs/2,v=rv(n),s='<rect class="s-hit" x="'+(cx-gs/2)+'" y="8" width="'+gs+'" height="'+(H-16)+'"/>';
+    if(v.st==="graded"){var h=Math.max(6,Math.abs(v.a)/mx*(v.a>0?UP:DN)),y=v.a>0?Y0-h:Y0,cy=v.a>0?y-ls/2-6:y+h+ls/2+6;
+      s+='<rect class="s-bar '+(v.a>0?'u':'d')+'" x="'+(cx-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="3"/>';
+      if(v.win.length>1){var s2=ls*.78;s+=svgLogo(v.win[1],cx+s2*.32,cy+(v.a>0?-s2*.32:s2*.32),s2)+svgLogo(v.win[0],cx-s2*.32,cy+(v.a>0?s2*.12:-s2*.12),s2)}
+      else if(v.win.length)s+=svgLogo(v.win[0],cx,cy,ls);
+      else s+='<g class="s-x" transform="translate('+cx+','+cy+')"><circle r="'+(ls*.42)+'"/><path d="M-4,-4L4,4M4,-4L-4,4"/></g>'}
+    else s+='<circle class="s-dot p" cx="'+cx+'" cy="'+Y0+'" r="8"/>';
+    s+='<text class="s-n" x="'+cx+'" y="'+(H-8)+'">'+n+'</text>';o+=link(n,v,s)});
+  U.forEach(function(n,i){var cx=L+gw+us*i+us/2,v=rv(n);o+=link(n,v,'<rect class="s-hit" x="'+(cx-us/2)+'" y="'+(Y0-14)+'" width="'+us+'" height="28"/><circle class="s-dot" cx="'+cx+'" cy="'+Y0+'" r="'+Math.min(4.5,us*.32)+'"/>')});
+  return o+'</svg>'}
+function seasonLegend(){return '<p class="s-leg"><span><i class="up"></i>Went up</span><span><i class="dn"></i>Went down</span><span>Logo on top: the winner</span><span><i class="x"></i>No winner</span></p>'}
+/* one round as a card: the film still on top, the name and the result underneath (never over the film's own text) */
+function tkBadge(t){if(CO_LOGOS[String(t||"").toUpperCase()])return coMark(t);var s=String(t||"").split(".")[0].slice(0,5);
+  return '<span class="co-mark tkb'+(s.length>3?' l'+s.length:'')+'" aria-hidden="true">'+esc(s)+'</span>'}
+function rcard(n){var v=rv(n),f=v.st==="graded"?FILMS[n]:preFilm(v),g=v.st==="graded";
+  var art=f?'<img src="'+MEDIA+f.p+'.jpg" alt="" loading="lazy" decoding="async">':'<span class="rc-soon">'+tkBadge(v.ticker)+'<small>Film soon</small></span>';
+  var res=g?pill(v.a<0,v.out.replace(/^[+−-]/,""))+'<span class="ws">'+(v.win.length?v.win.map(function(m){return logo(m)}).join(""):'<span class="lg nob" aria-hidden="true">✗</span>')+'<span class="sr">'+(v.win.length?'Winner '+v.win.map(nm).join(" and "):'No winner')+'</span></span>'
+    :'<span class="tag y"><i aria-hidden="true"></i>Calls in</span>';
+  return '<li><a class="rc'+(g&&!v.win.length?' none':'')+(g?'':' pend')+'" href="#/round/'+n+'"'+(f?' data-f="'+f.f+'"':'')+'><span class="rc-art">'+art+'</span>'+
+    '<span class="rc-b"><span class="rc-t"><small>Round '+n+'</small><b>'+esc(v.co)+'</b></span><span class="rc-r">'+res+'</span></span></a></li>'}
+function vRounds(){var up=ROUNDS.filter(function(r){return r.a>0}).length,nw=ROUNDS.filter(function(r){return !r.win}).length;
+  var res=PS.map(function(u){return u.n}).concat(ROUNDS.slice().reverse().map(function(r){return r.n}));
+  var mo=null,cu='';if(PS.length)cu+='<h2 class="grp-h"><i aria-hidden="true"></i>Calls are in</h2><ul class="ul">'+PS.map(function(u){return urow(u,true)}).join("")+'</ul>';
+  US.forEach(function(u){var d=mmdd(u.called),k=d?d.toLocaleString("en-US",{month:"long",year:"numeric"}):"Later";if(k!==mo){cu+=(mo?'</ul>':'')+'<h2 class="mo-h">'+esc(k)+'</h2><ul class="ul">';mo=k}cu+=urow(u,false)});if(mo)cu+='</ul>';
+  return '<h1 tabindex="-1">Every round</h1><p class="sub">'+NR+' graded, '+(PS.length+US.length)+' to come. Each bar is one result, as big as the move. The logo on top won it.</p>'+
+    '<figure class="season">'+seasonSVG(1000,320,"s-wide")+seasonSVG(420,330,"s-tall")+seasonLegend()+'</figure>'+
+    '<div class="seg" role="tablist" aria-label="Rounds"><button type="button" role="tab" id="tbR" aria-selected="true" aria-controls="pnR">Results <b>'+NR+'</b></button><button type="button" role="tab" id="tbU" aria-selected="false" aria-controls="pnU">Coming up <b>'+(PS.length+US.length)+'</b></button></div>'+
+    '<div id="pnR" role="tabpanel" aria-labelledby="tbR"><ul class="rcg">'+res.map(rcard).join("")+'</ul></div>'+
+    '<div id="pnU" role="tabpanel" aria-labelledby="tbU" hidden>'+(cu||'<p class="empty">The next rounds are posted soon.</p>')+'<p class="note" style="margin-top:18px"><a href="#/upcoming">Countdown and calendar →</a></p></div>'}
+function wireRounds(root){var tabs=[$("#tbR",root),$("#tbU",root)];
+  function sel(t){tabs.forEach(function(x){var on=x===t;x.setAttribute("aria-selected",String(on));$("#"+x.getAttribute("aria-controls"),root).hidden=!on})}
+  tabs.forEach(function(t,i){t.addEventListener("click",function(){sel(t)});t.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();var o=tabs[1-i];sel(o);o.focus()}})});
   if(reduce||!matchMedia("(hover: hover)").matches)return;
-  $$(".pt-a[data-f]",root).forEach(function(a){var v=null;
+  $$(".rc[data-f]",root).forEach(function(a){var v=null,box=$(".rc-art",a);
     a.addEventListener("mouseenter",function(){if(!v){v=document.createElement("video");v.muted=true;v.loop=true;v.playsInline=true;v.setAttribute("aria-hidden","true");
-      v.innerHTML='<source src="'+MEDIA+a.dataset.f+'.webm" type="video/webm"><source src="'+MEDIA+a.dataset.f+'.mp4" type="video/mp4">';a.insertBefore(v,a.children[1])}
+      v.innerHTML='<source src="'+MEDIA+a.dataset.f+'.webm" type="video/webm"><source src="'+MEDIA+a.dataset.f+'.mp4" type="video/mp4">';box.appendChild(v)}
       var p=v.play();if(p&&p.catch)p.catch(function(){})});
     a.addEventListener("mouseleave",function(){if(v)v.pause()})})}
 
@@ -108,65 +127,15 @@ function vRound(n){var v=rv(n);if(!v)return null;var i=ALLN.indexOf(n),pv=ALLN[i
   var tl=timingLabel(v.timing);
   var rc=RECEIPTS&&RECEIPTS[n]?'<div class="rcpt"><small>Receipt</small><a href="'+esc(RECEIPTS[n])+'" target="_blank" rel="noopener">Calls posted before the report → view receipt</a></div>':'<div class="rcpt"><small>Receipt</small><span>Public proof of the calls, posted before the report. Link added at launch.</span></div>';
   return '<nav class="rnav" aria-label="Rounds">'+(pv?'<a href="#/round/'+pv+'">← R'+pv+'</a>':'<a class="gap" aria-hidden="true" tabindex="-1">←</a>')+'<a class="all" href="#/rounds">All rounds</a>'+(nx?'<a href="#/round/'+nx+'">R'+nx+' →</a>':'<a class="gap" aria-hidden="true" tabindex="-1">→</a>')+'</nav>'+
-    '<div class="rh">'+(g?'<span class="tag n">Graded</span>':v.st==="calls"?'<span class="tag y"><i aria-hidden="true"></i>Calls are in</span>':'<span class="tag">Sealed</span>')+(v.tag?'<span class="tag y">'+esc(v.tag)+'</span>':'')+'</div>'+
+    '<div class="rh">'+(g?'<span class="tag n">Graded</span>':v.st==="calls"?'<span class="tag y"><i aria-hidden="true"></i>Calls are in</span>':'<span class="tag">Sealed</span>')+(v.tag?'<span class="tag y">'+esc(v.tag)+'</span>':'')+'<button type="button" class="shr rsh" data-share="'+n+'" aria-label="Share round '+n+'">'+shareGlyph()+'<span>Share</span></button></div>'+
     '<h1 tabindex="-1">Round '+n+' · '+coTkn(v)+'</h1>'+(v.head?'<p class="sub">'+esc(v.head)+'</p>':'')+
     '<div class="rgrid"><div>'+filmBox(v)+'</div><div><h2 class="grp-h" style="margin-top:0">The calls</h2>'+calls+out+
-      '<div class="facts"><div><small>Calls filed</small><b>'+fmtDate(v.called)+'</b></div><div><small>'+(g?'Graded':RESOLVE_WORD)+'</small><b>'+fmtDate(v.resolves)+'</b></div></div>'+(tl?'<p class="note" style="margin-top:8px">Reports '+tl.toLowerCase()+'.</p>':'')+rc+'</div></div>'+
-    '<section class="blk" aria-labelledby="shH"><div class="hh"><h2 id="shH">Share this round</h2></div><div class="share"><canvas id="cv" width="1200" height="675" role="img" aria-label="Share image for '+esc(plain(v))+'"></canvas>'+
-      '<div class="acts"><p class="note">A 1200 by 675 image with the calls, the outcome and the standings. Made on this page, saved by you.</p><button type="button" class="btn" id="dlB">Download share image</button><button type="button" class="btn lt" id="cpB">Copy link</button><p class="stat-msg" id="shMsg" aria-live="polite"></p></div></div></section>'}
+      '<div class="facts"><div><small>Calls filed</small><b>'+fmtDate(v.called)+'</b></div><div><small>'+(g?'Graded':RESOLVE_WORD)+'</small><b>'+fmtDate(v.resolves)+'</b></div></div>'+(tl?'<p class="note" style="margin-top:8px">Reports '+tl.toLowerCase()+'.</p>':'')+rc+'</div></div>'}
 function wireRound(root,n){var v=rv(n),vid=$("video",root),fp=$("#fp",root);
   if(vid&&fp)fp.addEventListener("click",function(){if(vid.paused){var p=vid.play();if(p&&p.catch)p.catch(function(){});fp.textContent="❚❚ Pause film";fp.setAttribute("aria-pressed","false")}else{vid.pause();fp.textContent="▶ Play film";fp.setAttribute("aria-pressed","true")}});
-  var cv=$("#cv",root);drawCard(cv,v);
-  if(document.fonts&&document.fonts.load)Promise.all(['800 40px "Barlow Condensed"','700 20px "Barlow"'].map(function(f){return document.fonts.load(f).catch(function(){})})).then(function(){if(cv.isConnected)drawCard(cv,v)});
-  $("#dlB",root).addEventListener("click",function(){var msg=$("#shMsg",root);try{cv.toBlob(function(b){if(b)save(b,"ez-round-"+n+".png").then(function(){msg.textContent="Saved ez-round-"+n+".png."},function(e){msg.textContent=e&&e.code==="declined"?"No file saved.":"Couldn't save the image here."});else msg.textContent="Could not make the image in this browser."},"image/png")}catch(e){msg.textContent="Could not make the image in this browser."}});
-  $("#cpB",root).addEventListener("click",function(){var url=location.href.replace(/#.*$/,"")+"#/round/"+n,msg=$("#shMsg",root);
-    function fb(){msg.innerHTML='<label class="sr" for="lnk">Link to this round</label><input class="linkbox" id="lnk" readonly value="'+esc(url)+'">';var i=$("#lnk",root);i.focus();i.select();try{document.execCommand("copy")}catch(e){}}
-    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(function(){msg.textContent="Link copied."},fb);else fb()})}
-
-/* ---------- the share image, drawn on canvas (no images, so it never taints and always saves) ---------- */
-var PATHS={};function mpath(d){if(!PATHS[d])PATHS[d]=new Path2D(d);return PATHS[d]}
-function rrect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
-function fit(c,txt,font,size,max){c.font=font.replace("%",size+"px");while(c.measureText(txt).width>max&&size>10){size-=2;c.font=font.replace("%",size+"px")}return size}
-function tri(c,x,y,s,dn){c.beginPath();if(dn){c.moveTo(x,y-s*.45);c.lineTo(x+s,y-s*.45);c.lineTo(x+s/2,y+s*.45)}else{c.moveTo(x,y+s*.45);c.lineTo(x+s,y+s*.45);c.lineTo(x+s/2,y-s*.45)}c.closePath();c.fill()}
-function drawLogo(c,m,x,y,s){var M=MODELS[m];rrect(c,x,y,s,s,s*.225);c.fillStyle=M.bg;c.fill();c.lineWidth=2;c.strokeStyle="#12131a";c.stroke();
-  c.save();var k=s*.62/24;c.translate(x+s*.19,y+s*.19);c.scale(k,k);c.fillStyle=M.fg;c.fill(mpath(M.d),M.fr==="evenodd"?"evenodd":"nonzero");if(M.dot){c.fillStyle=M.dotc;c.fill(mpath(M.dot))}c.restore()}
-function crownPath(c,x,y,w){var h=w*.7;c.beginPath();c.moveTo(x,y+h);c.lineTo(x,y+h*.25);c.lineTo(x+w*.27,y+h*.55);c.lineTo(x+w*.5,y);c.lineTo(x+w*.73,y+h*.55);c.lineTo(x+w,y+h*.25);c.lineTo(x+w,y+h);c.closePath()}
-function drawCard(cv,v){var c=cv.getContext("2d");if(!c)return;
-  var INK="#12131a",FIELD="#f4efe6",CARD="#ffffff",SLAB="#101a3a",GOLD="#ffc72c",GRN="#1fcf6b",RED="#ff4136",INK2="#4a4c58",ON2="#b9c0d6";
-  var FD='800 % "Barlow Condensed", Impact, sans-serif',FB='700 % "Barlow", system-ui, sans-serif';
-  c.clearRect(0,0,1200,675);c.fillStyle=FIELD;c.fillRect(0,0,1200,675);
-  c.fillStyle=SLAB;c.fillRect(0,0,1200,150);
-  c.textBaseline="alphabetic";c.font=FD.replace("%","64px");
-  var mx=48;[["$",GOLD],["E",GRN],["Z",RED]].forEach(function(p){c.fillStyle=p[1];c.fillText(p[0],mx,98);mx+=c.measureText(p[0]).width+1});
-  c.fillStyle=GOLD;c.font=FB.replace("%","20px");c.fillText(("ROUND "+v.n+(v.st==="graded"?" · GRADED "+fmtDate(v.resolves):v.st==="calls"?" · CALLS ARE IN":" · CALLS "+fmtDate(v.called))).toUpperCase(),170,62);
-  var title=plainCo(v).toUpperCase();fit(c,title,FD,58,980);c.fillStyle="#ffffff";c.fillText(title,170,118);
-  c.fillStyle=GOLD;c.fillRect(0,150,1200,6);
-  rrect(c,48,184,700,404,22);c.fillStyle=CARD;c.fill();c.lineWidth=4;c.strokeStyle=INK;c.stroke();
-  c.fillStyle=INK2;c.font=FB.replace("%","17px");c.fillText("THE CALLS",72,218);
-  var rows=v.calls.length?v.calls:ACTIVE.map(function(m){return {m:m,sealed:true}}),y=236,rh=80;
-  rows.slice(0,4).forEach(function(cl){var g=v.st==="graded";
-    rrect(c,68,y,660,rh-12,14);c.fillStyle=cl.win?GOLD:(g&&cl.ok?"#e2f8eb":FIELD);c.fill();c.lineWidth=cl.win?3.5:2;c.strokeStyle=INK;c.stroke();
-    drawLogo(c,cl.m,84,y+10,48);
-    c.fillStyle=INK;c.font=FD.replace("%","36px");c.fillText(nm(cl.m).toUpperCase(),148,y+48);
-    var nw=c.measureText(nm(cl.m).toUpperCase()).width;
-    if(cl.win){var wx=148+nw+16;rrect(c,wx,y+20,124,30,15);c.fillStyle=CARD;c.fill();c.lineWidth=2;c.stroke();c.fillStyle=GOLD;crownPath(c,wx+12,y+26,24);c.fill();c.lineWidth=1.5;c.strokeStyle=INK;c.stroke();c.fillStyle=INK;c.font=FB.replace("%","16px");c.fillText("WINNER",wx+44,y+41)}
-    if(cl.sealed){c.fillStyle=INK2;c.font=FB.replace("%","18px");c.textAlign="right";c.fillText("SEALED UNTIL "+fmtDate(v.called).toUpperCase(),708,y+44);c.textAlign="left"}
-    else{var pw=128;rrect(c,708-pw,y+12,pw,44,9);c.fillStyle=cl.dn?RED:GRN;c.fill();c.fillStyle=INK;tri(c,708-pw+14,y+34,18,cl.dn);c.font=FD.replace("%","32px");c.textAlign="right";c.fillText(cl.mag,708-14,y+46);c.textAlign="left";
-      if(g){c.fillStyle=INK2;c.font=FB.replace("%","17px");c.textAlign="right";c.fillText(cl.ok?"OFF "+cl.off.toFixed(2):"WRONG WAY",708-pw-16,y+42);c.textAlign="left"}}
-    y+=rh});
-  rrect(c,780,184,372,186,22);c.fillStyle=v.st==="graded"?(v.a<0?RED:GRN):CARD;c.fill();c.lineWidth=4;c.strokeStyle=INK;c.stroke();
-  c.fillStyle=INK;c.font=FB.replace("%","18px");c.fillText(ACTUAL_WORD.toUpperCase(),806,222);
-  if(v.st==="graded"){tri(c,808,300,46,v.a<0);c.font=FD.replace("%","104px");c.fillText(v.out.replace(/^[+−-]/,""),868,334)}
-  else{c.font=FD.replace("%","52px");c.fillText(RESOLVE_WORD.toUpperCase()+" "+fmtDate(v.resolves).toUpperCase(),806,300);c.font=FB.replace("%","18px");c.fillStyle=INK2;c.fillText("At the first market close after the report",806,336)}
-  rrect(c,780,394,372,194,22);c.fillStyle=SLAB;c.fill();c.lineWidth=4;c.strokeStyle=INK;c.stroke();
-  c.fillStyle=GOLD;c.font=FD.replace("%","34px");c.fillText("WINNER",806,440);
-  if(v.st==="graded"){if(v.win.length){var wy=468;v.win.slice(0,2).forEach(function(m){drawLogo(c,m,806,wy,46);c.fillStyle="#ffffff";c.font=FD.replace("%","44px");c.fillText(nm(m).toUpperCase(),866,wy+40);wy+=56})}
-    else{c.fillStyle="#ffffff";c.font=FD.replace("%","48px");c.fillText("NOBODY",806,510);c.fillStyle=ON2;c.font=FB.replace("%","18px");c.fillText("Every call went the wrong way",806,546)}}
-  else{c.fillStyle="#ffffff";c.font=FD.replace("%","44px");c.fillText("TO BE GRADED",806,508);c.fillStyle=ON2;c.font=FB.replace("%","18px");c.fillText("By the market, not by us",806,546)}
-  c.fillStyle=INK;c.fillRect(0,612,1200,63);
-  c.fillStyle=GOLD;c.font=FB.replace("%","17px");c.fillText("STANDINGS",48,651);
-  var line=ROWS.map(function(T){return nm(T.m).toUpperCase()+" "+T.won}).join("  ·  ");c.fillStyle="#ffffff";fit(c,line,FD,30,560);c.fillText(line,160,652);
-  c.fillStyle=ON2;c.font=FB.replace("%","16px");c.textAlign="right";c.fillText("Calls filed before the report. Graded by the market.",1152,650);c.textAlign="left"}
+  var sb=$(".rsh",root);if(sb)sb.addEventListener("click",function(){shareRound(sb)})}
+/* shared links open the round's own page here */
+function shURL(n){return location.href.replace(/#.*$/,"")+"#/round/"+n}
 
 /* ---------- models ---------- */
 var CROWN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V8l5 4 4-8 4 8 5-4v11z" fill="#12131a"/></svg>';

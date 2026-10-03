@@ -728,6 +728,30 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 .pc.r1 .pc-w span{color:var(--ink)}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+/* share: a quiet icon in each card's title bar (the card in focus only, like the sound icon), and on the card's back */
+.shr{position:relative;flex:none;align-self:stretch;display:grid;place-items:center;width:30px;min-height:44px;margin-right:8px;color:var(--ink);visibility:hidden}
+.shr::before{content:"";position:absolute;top:0;bottom:0;left:-6px;right:-6px}
+.shr svg{display:block;width:16px;height:16px;padding:6px;box-sizing:content-box;border-radius:50%}
+.card.cur .shr{visibility:visible}
+.shr:hover svg,.shr:focus-visible svg{background:var(--yel);color:var(--ink);box-shadow:0 0 0 1.5px var(--ink)}
+.shr:focus-visible{outline-offset:-3px}
+.shr.busy svg{animation:pulse .9s infinite}
+.ctop h3:has(+.shr){padding-right:0}
+.ctop .snd{margin-right:0}
+.cfoot .shr{visibility:visible;align-self:auto;width:38px;min-height:34px;margin:0;border-radius:9px;background:var(--card);box-shadow:0 0 0 2px var(--ink)}
+.cfoot .shr svg{padding:0}
+.cfoot .shr:hover,.cfoot .shr:focus-visible{background:var(--yel)}
+.cfoot .shr:hover svg,.cfoot .shr:focus-visible svg{background:none;box-shadow:none}
+@media(max-width:640px){.shr{width:26px;margin-right:4px}.cfoot .shr{width:32px;min-height:28px;border-radius:7px}}
+.shp{position:absolute;z-index:200;width:min(272px,calc(100vw - 24px));background:var(--card);color:var(--ink);border-radius:16px;padding:10px;box-shadow:0 0 0 2.5px var(--ink),5px 6px 0 0 var(--ink)}
+.shp img{display:block;width:100%;height:auto;border-radius:10px;box-shadow:0 0 0 2px var(--ink)}
+.shp-a{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}
+.shp-a button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;border-radius:10px;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);font:800 12px/1 var(--fb);text-transform:uppercase;letter-spacing:.04em}
+.shp-a button:hover,.shp-a button:focus-visible{background:var(--yel)}
+.shp-a button[data-a=x]{background:var(--ink);color:#fff;box-shadow:none}
+.shp-a button[data-a=x]:hover,.shp-a button[data-a=x]:focus-visible{background:var(--slab)}
+.shp-a svg{width:14px;height:14px}
+.shp-m{min-height:1.3em;margin-top:8px;font:600 12px/1.3 var(--fb);color:var(--ink2);overflow-wrap:anywhere}
 
 /* ================= V22 · SEASON LIVE: Season's landing as the Board, plus Live's pages =================
    Hash routes: #/ (the board, Season as it was), #/rounds, #/round/11, #/models, #/model/gpt, #/upcoming.
@@ -964,6 +988,60 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 
 .co-mark.tkb.l4{font-size:calc(var(--cm) * .27)}.co-mark.tkb.l5{font-size:calc(var(--cm) * .22)}
 @media(max-width:700px){#view .pt-h .tag:not(.y-live){display:none}.pt-a.soon .co-mark{--cm:52px;top:38%}.pt-a.soon .fs{top:52%;font-size:10px}}
+
+/* rounds: the season picture */
+.season{margin:26px 0 0;background:var(--card);border-radius:20px;padding:14px 16px 12px;box-shadow:0 0 0 2.5px var(--ink),5px 6px 0 0 var(--ink)}
+.ssvg{display:block;width:100%;height:auto;overflow:visible}
+.s-axis{stroke:var(--ink);stroke-width:2}
+.s-now{stroke:var(--ink2);stroke-width:1.5;stroke-dasharray:4 5}
+.s-nowt{font:700 13px var(--fm);letter-spacing:.08em;text-transform:uppercase;fill:var(--ink2)}
+.s-hit{fill:transparent}
+.s-r:hover .s-hit,.s-r:focus-visible .s-hit{fill:color-mix(in srgb,var(--yel) 40%,transparent)}
+.s-r:focus{outline:none}
+.s-bar{stroke:var(--ink);stroke-width:2}.s-bar.u{fill:var(--ez-green)}.s-bar.d{fill:var(--ez-red)}
+.s-cap{stroke:var(--ink);stroke-width:2}
+.s-x circle{fill:var(--ez-red);stroke:var(--ink);stroke-width:2}.s-x path{stroke:var(--ink);stroke-width:2;stroke-linecap:round}
+.s-dot{fill:var(--card);stroke:var(--ink2);stroke-width:2}.s-dot.p{fill:var(--yel);stroke:var(--ink)}
+.s-n{font:700 13px var(--fm);fill:var(--ink2);text-anchor:middle}
+.s-leg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font:600 12.5px/1.3 var(--fb);color:var(--ink2)}
+.s-leg span{display:inline-flex;align-items:center;gap:6px}
+.s-leg i{width:12px;height:12px;border-radius:50%;box-shadow:0 0 0 1.5px var(--ink)}
+.s-leg i.x{background:var(--ez-red)}.s-leg i.up{border-radius:3px;background:var(--ez-green)}.s-leg i.dn{border-radius:3px;background:var(--ez-red)}
+.s-lg rect{stroke:var(--ink);stroke-width:2}
+.ssvg.s-tall{display:none}
+@media(max-width:640px){.season{padding:10px 8px 10px;border-radius:16px}.ssvg.s-wide{display:none}.ssvg.s-tall{display:block}.s-n{font-size:13px}.s-nowt{font-size:12px}}
+/* rounds: results or what's coming */
+.seg{display:inline-flex;gap:4px;margin-top:30px;padding:4px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.seg button{min-height:42px;padding:0 16px;border-radius:999px;font:800 13px/1 var(--fb);text-transform:uppercase;letter-spacing:.03em;color:var(--ink)}
+.seg button b{font-weight:inherit;opacity:.6;margin-left:4px}
+.seg button[aria-selected=true]{background:var(--slab);color:var(--on-slab)}
+.seg button:not([aria-selected=true]):hover{background:var(--field2)}
+#pnR,#pnU{margin-top:18px}
+#pnU .grp-h:first-child,#pnU .mo-h:first-child{margin-top:4px}
+.rcg{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+@media(max-width:1000px){.rcg{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){.rcg{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+.rc{display:flex;flex-direction:column;height:100%;border-radius:16px;background:var(--yel);padding:6px;color:var(--ink);text-decoration:none;box-shadow:0 0 0 2.5px var(--ink),4px 5px 0 0 var(--ink);transition:transform .14s,box-shadow .14s}
+.rc.none{background:var(--hazard)}.rc.pend{background:var(--slab)}
+.rc:hover,.rc:focus-visible{transform:translate(-2px,-2px);box-shadow:0 0 0 2.5px var(--ink),6px 8px 0 0 var(--ink)}
+.rc-art{position:relative;display:block;aspect-ratio:1/1;border-radius:11px 11px 0 0;overflow:hidden;background:var(--slab2);box-shadow:0 0 0 2px var(--ink)}
+.rc-art img,.rc-art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.rc-soon{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:10px;background:radial-gradient(circle at 50% 42%,var(--slabA),var(--slab2) 70%)}
+.rc-soon .co-mark{--cm:64px}
+.rc-soon small{font:700 11px/1 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--yel)}
+.rc-b{flex:1;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;background:var(--card);border-radius:0 0 11px 11px;box-shadow:0 0 0 2px var(--ink)}
+.rc-t{min-width:0}
+.rc-t small{display:block;font:700 10.5px/1 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.rc-t b{display:block;margin-top:4px;font:400 20px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc-r{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.rc-r .pill{font-size:13px;padding:5px 6px}
+.rc-r .ws{display:inline-flex;gap:3px;font-size:20px}
+@media(max-width:640px){.rc{padding:4px;border-radius:13px}.rc-b{padding:8px 8px;flex-direction:column;align-items:flex-start}.rc-r{flex-direction:row;align-items:center;width:100%;justify-content:space-between}.rc-t b{font-size:17px}.rc-r .ws{font-size:18px}}
+/* round page: a quiet share, like Season's */
+#view .shr.rsh{visibility:visible;width:auto;min-height:32px;align-self:auto;margin:0 0 0 auto;display:inline-flex;align-items:center;gap:4px;padding:0 12px 0 6px;border-radius:999px;box-shadow:inset 0 0 0 1.5px var(--ink);font:700 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase}
+#view .shr.rsh svg{padding:4px}
+#view .shr.rsh:hover,#view .shr.rsh:focus-visible{background:var(--yel)}
+#view .shr.rsh:hover svg,#view .shr.rsh:focus-visible svg{background:none;box-shadow:none}
 </style>
 </head>
 <body>
@@ -1146,7 +1224,7 @@ var SPK='<path d="M3 6h3l4-3.5v11L6 10H3z" fill="currentColor"/>',
 function sndLbl(){return soundOn?"Sound on":"Sound off"}
 function sndBtn(){return '<button type="button" class="snd" data-on="'+(soundOn?1:0)+'" aria-label="'+sndLbl()+'" title="'+sndLbl()+'">'+(soundOn?SND_ON:SND_OFF)+'</button>'}
 /* the round title bar of a card front; graded cards with a film carry the sound icon */
-function topBar(r,snd){return '<div class="ctop"><h3>'+coTitle(r)+'</h3>'+(snd?sndBtn():'')+'</div>'}
+function topBar(r,snd){return '<div class="ctop"><h3>'+coTitle(r)+'</h3>'+(snd?sndBtn():'')+shareBtn(r.n)+'</div>'}
 function frame(r){return !r.win?"f-none":r.win.indexOf(" & ")>-1?"f-tie":"f-win"}
 function art(r){
   if(!r.film)return '<div class="art"><div class="soon"><div>Film soon<small>'+coName(r)+'</small></div></div></div>';
@@ -1165,7 +1243,7 @@ function backFace(r){
     '<div class="bk-body"><div><p class="bk-sec">What they predicted</p><div class="bk-rows">'+
     cs.map(function(c){var w=wn.indexOf(c.m)>-1;return '<div class="bk-r '+(w?'win':c.ok?'ok':'no')+'">'+(w?'<span class="crown"><i aria-hidden="true">👑</i>Winner</span>':'')+'<span class="rk">'+(c.rank?'<span class="sr">Rank </span>'+c.rank:'<span aria-hidden="true">✗</span><span class="sr">Wrong way</span>')+'</span><span class="who">'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span></span><span class="pd '+(c.dn?'d':'u')+'"><span aria-hidden="true">'+(c.dn?'▼':'▲')+'</span><span class="sr">'+(c.dn?'Down ':'Up ')+'</span>'+c.mag+'</span></div>'}).join("")+'</div></div>'+
     '<div class="bk-out"><small>'+ACTUAL_WORD+'</small><b class="'+(r.a>0?'u':'d')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span><span class="sr">'+(r.a>0?'Up ':'Down ')+'</span>'+r.out.replace(/^[+−-]/,"")+'</b></div></div>'+
-    '<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button><a class="rpl" href="#/round/'+r.n+'">Round page →</a></div></div></div>';
+    '<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button><a class="rpl" href="#/round/'+r.n+'">Round page →</a>'+shareBtn(r.n)+'</div></div></div>';
 }
 function gradedCard(r,i){
   return '<article class="card '+frame(r)+'" data-i="'+i+'" data-n="'+r.n+'" data-k="g" role="group" aria-roledescription="card" aria-label="'+plain(r)+'"><div class="cin">'+
@@ -1316,7 +1394,7 @@ function soundDown(){soundOn=false;sndUI();$$("video",car).forEach(function(v){v
 var tx0=null;
 document.addEventListener("touchstart",function(e){var t=e.touches[0];tx0=t?[t.clientX,t.clientY]:null},{passive:true,capture:true});
 function onGesture(e){if(soundOn||pref==="off"||reduce)return;
-  if(e.target&&e.target.closest&&e.target.closest(".snd"))return;
+  if(e.target&&e.target.closest&&e.target.closest(".snd,.shr"))return;
   if(e.type==="keydown"&&/^(Escape|Tab|Shift|Control|Alt|Meta)$/.test(e.key))return;
   if(e.type==="touchend"){var t=e.changedTouches[0];if(tx0&&t&&Math.abs(t.clientX-tx0[0])+Math.abs(t.clientY-tx0[1])>12)return}
   var ua=navigator.userActivation;if(ua&&!ua.isActive)return;
@@ -1337,7 +1415,8 @@ if(!NR)toPast.hidden=true;if(NR>=SL.length)toUp.hidden=true;
 toPast.addEventListener("click",function(){go(cur>=NR?NR-1:cur-1,true)});
 toUp.addEventListener("click",function(){go(cur<NR-1?NR:cur+1,true)});
 slides.forEach(function(c,i){
-  c.addEventListener("click",function(e){if(e.target.closest(".snd")){e.stopPropagation();if(soundOn){savePref("off");soundDown()}else{savePref("on");soundUp()}return}
+  c.addEventListener("click",function(e){var sb=e.target.closest(".shr");if(sb){e.stopPropagation();e.preventDefault();shareRound(sb);return}
+    if(e.target.closest(".snd")){e.stopPropagation();if(soundOn){savePref("off");soundDown()}else{savePref("on");soundUp()}return}
     if(e.target.closest("a")||e.target.closest("video[controls]"))return;
     if(i!==cur){e.preventDefault();go(i,true);return}
     if(c.dataset.k==="g")flip(c)});
@@ -1630,6 +1709,138 @@ if(CONFIG.buyUrl){var b=$("#buyL");b.href=CONFIG.buyUrl;b.classList.remove("off"
 else $("#buyL").addEventListener("click",function(e){e.preventDefault()});
 if(TARGET)$("#nextTxt2").innerHTML=P0?"Next answer: "+coName(TARGET)+", "+fmtDate(TARGET.resolves)+". Calls are already in.":"Next up: "+coName(TARGET)+", calls "+fmtDate(TARGET.called)+".";
 
+/* ---------- share a round: a quiet icon on each card. Phones open the native share sheet with the image (one tap).
+   Elsewhere a small panel offers: post on X (the image is copied first, so it pastes straight in), copy image, save, copy link.
+   The image is drawn here on a canvas from the same data (1080 x 1080, square for every feed). ---------- */
+function shareGlyph(){return '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6v8.2M5 4.4 8 1.4l3 3M4.6 7H3.4v7.2h9.2V7h-1.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
+function shareBtn(n){return '<button type="button" class="shr" data-share="'+n+'" aria-label="Share round '+n+'" title="Share">'+shareGlyph()+'</button>'}
+var SH={W:1080,INK:"#12131a",FIELD:"#f4efe6",CARD:"#ffffff",SLAB:"#101a3a",SLAB2:"#0b1330",GOLD:"#ffc72c",GRN:"#1fcf6b",RED:"#ff4136",INK2:"#4a4c58",ON2:"#b9c0d6",
+  FD:'800 % "Barlow Condensed", "Arial Narrow", Impact, sans-serif',FB:'700 % "Barlow", system-ui, sans-serif',FB8:'800 % "Barlow", system-ui, sans-serif'};
+var shPaths={};function shPath(d){if(!shPaths[d])shPaths[d]=new Path2D(d);return shPaths[d]}
+function shRR(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function shFont(c,f,px){c.font=f.replace("%",px+"px")}
+function shFit(c,t,f,px,max,min){shFont(c,f,px);while(c.measureText(t).width>max&&px>(min||12)){px-=2;shFont(c,f,px)}return px}
+function shTri(c,x,y,s,dn){c.beginPath();if(dn){c.moveTo(x,y-s*.42);c.lineTo(x+s,y-s*.42);c.lineTo(x+s/2,y+s*.48)}else{c.moveTo(x,y+s*.42);c.lineTo(x+s,y+s*.42);c.lineTo(x+s/2,y-s*.48)}c.closePath();c.fill()}
+function shLogo(c,m,x,y,s){var M=MODELS[m];if(!M)return;shRR(c,x,y,s,s,s*.225);c.fillStyle=M.bg;c.fill();c.lineWidth=Math.max(2,s/22);c.strokeStyle=SH.INK;c.stroke();
+  c.save();var k=s*.62/24;c.translate(x+s*.19,y+s*.19);c.scale(k,k);c.fillStyle=M.fg;c.fill(shPath(M.d),M.fr==="evenodd"?"evenodd":"nonzero");if(M.dot){c.fillStyle=M.dotc;c.fill(shPath(M.dot))}c.restore()}
+function shCrown(c,x,y,w){var h=w*.72;c.beginPath();c.moveTo(x,y+h);c.lineTo(x,y+h*.26);c.lineTo(x+w*.27,y+h*.56);c.lineTo(x+w*.5,y);c.lineTo(x+w*.73,y+h*.56);c.lineTo(x+w,y+h*.26);c.lineTo(x+w,y+h);c.closePath()}
+function shMark(c,x,y,px){shFont(c,SH.FD,px);[["$",SH.GOLD],["E",SH.GRN],["Z",SH.RED]].forEach(function(p){c.fillStyle=p[1];c.fillText(p[0],x,y);x+=c.measureText(p[0]).width+px*.02});return x}
+function shImg(src){return new Promise(function(res){if(!src)return res(null);var i=new Image();i.decoding="async";i.onload=function(){res(i)};i.onerror=function(){res(null)};i.src=src})}
+/* one slide (graded, calls in, sealed) as plain data for the image */
+function shData(s){var d=s.d,v={n:d.n,co:d.co,ticker:d.ticker,called:d.called,resolves:d.resolves,k:s.k};
+  if(s.k==="g"){var wn=d.win?d.win.split(" & "):[];v.out=d.out;v.a=d.a;v.win=wn;v.calls=parsed(d).map(function(c){return {m:c.m,dn:c.dn,mag:c.mag,ok:c.ok,off:c.off,rank:c.rank,win:wn.indexOf(c.m)>-1}});v.poster=d.poster||null}
+  else if(s.k==="p"){v.calls=d.calls.map(function(c){return {m:c.m,dn:c.dir==="DOWN",mag:c.mag+"%"}});var pf=preFilm(d);v.poster=pf?pf.p:null}
+  else{v.calls=[];v.poster=null}
+  return v}
+function shText(v){var t="Round "+v.n+" · "+plainCo(v);
+  if(v.k==="g")return t+" moved "+v.out+". "+(v.win.length?v.win.map(nm).join(" and ")+(v.win.length>1?" share the round.":" wins the round."):"Every AI got the direction wrong.")+" Four AIs called it before the report. The market graded it. $EZ";
+  if(v.k==="p")return t+". The AIs have made their calls. The market answers "+fmtDate(v.resolves)+". $EZ";
+  return t+". Four AIs call it on "+fmtDate(v.called)+". $EZ"}
+function shURL(n){return location.href.replace(/#.*$/,"")+"#round-"+n}
+function drawShare(cv,v,img){var c=cv.getContext("2d"),W=SH.W;cv.width=W;cv.height=W;
+  /* ground: the navy slab, a soft light behind the card, a faint dot grid */
+  c.fillStyle=SH.SLAB;c.fillRect(0,0,W,W);
+  var g=c.createRadialGradient(W*.5,W*.42,40,W*.5,W*.42,W*.75);g.addColorStop(0,"rgba(36,67,184,.55)");g.addColorStop(1,"rgba(11,19,48,0)");c.fillStyle=g;c.fillRect(0,0,W,W);
+  c.fillStyle="rgba(255,255,255,.06)";for(var gy=24;gy<W;gy+=36)for(var gx=24;gx<W;gx+=36){c.beginPath();c.arc(gx,gy,1.6,0,7);c.fill()}
+  c.textBaseline="alphabetic";
+  /* header: the mark, the show, the round state */
+  shMark(c,56,104,78);
+  shFont(c,SH.FB8,19);c.fillStyle=SH.GOLD;c.letterSpacing="3px";c.fillText("EARNINGS ZEASON",196,70);
+  shFont(c,SH.FB,19);c.fillStyle=SH.ON2;c.fillText((v.k==="g"?"GRADED "+fmtDate(v.resolves):v.k==="p"?"CALLS ARE IN · ANSWER "+fmtDate(v.resolves):"CALLS "+fmtDate(v.called)).toUpperCase(),196,102);c.letterSpacing="0px";
+  /* round number badge, top right */
+  shFont(c,SH.FD,30);var rb="ROUND "+v.n,rw=c.measureText(rb).width+40;shRR(c,W-56-rw,52,rw,56,28);c.fillStyle=SH.GOLD;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();c.fillStyle=SH.INK;c.fillText(rb,W-56-rw+20,91);
+  /* the card: the site's yellow frame, ink line and hard shadow */
+  var X=56,Y=146,CW=W-112,CH=838;
+  shRR(c,X+12,Y+14,CW,CH,34);c.fillStyle="#000";c.fill();
+  shRR(c,X,Y,CW,CH,34);c.fillStyle=v.k==="g"&&!v.win.length?SH.RED:v.k==="g"?SH.GOLD:v.k==="p"?SH.SLAB2:SH.FIELD;c.fill();c.lineWidth=5;c.strokeStyle=SH.INK;c.stroke();
+  if(v.k==="g"&&!v.win.length){c.save();shRR(c,X,Y,CW,CH,34);c.clip();c.strokeStyle="rgba(18,19,26,.9)";c.lineWidth=22;for(var hz=-CH;hz<CW+CH;hz+=52){c.beginPath();c.moveTo(X+hz,Y);c.lineTo(X+hz-CH,Y+CH);c.stroke()}c.restore();shRR(c,X,Y,CW,CH,34);c.lineWidth=5;c.strokeStyle=SH.INK;c.stroke()}
+  var IX=X+16,IY=Y+16,IW=CW-32,IH=CH-32;shRR(c,IX,IY,IW,IH,22);c.fillStyle=SH.CARD;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+  /* title bar */
+  var tt=plainCo(v).toUpperCase();var tp=shFit(c,tt,SH.FD,60,IW-56,30);c.fillStyle=SH.INK;c.fillText(tt,IX+28,IY+70);
+  c.fillStyle=SH.INK;c.fillRect(IX,IY+96,IW,4);
+  /* left: the film still (or the ticker), square */
+  var PX=IX+28,PY=IY+128,PS=392;
+  c.save();shRR(c,PX,PY,PS,PS,18);c.clip();
+  if(img){var s=Math.min(img.naturalWidth,img.naturalHeight);c.drawImage(img,(img.naturalWidth-s)/2,(img.naturalHeight-s)/2,s,s,PX,PY,PS,PS)}
+  else{var tg=c.createLinearGradient(PX,PY,PX+PS,PY+PS);tg.addColorStop(0,"#18244b");tg.addColorStop(1,SH.SLAB2);c.fillStyle=tg;c.fillRect(PX,PY,PS,PS);
+    var tk=String(v.ticker||v.co).split(".")[0].toUpperCase();var tkp=shFit(c,tk,SH.FD,150,PS-80,40);c.fillStyle="#fff";c.textAlign="center";c.fillText(tk,PX+PS/2,PY+PS/2+tkp*.34);
+    shFont(c,SH.FB8,18);c.fillStyle=SH.GOLD;c.letterSpacing="3px";c.fillText(v.k==="s"?"SEALED":"FILM SOON",PX+PS/2,PY+PS-36);c.letterSpacing="0px";c.textAlign="left"}
+  c.restore();shRR(c,PX,PY,PS,PS,18);c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+  /* right: the outcome and the winner (or what is still to come) */
+  var RX=PX+PS+28,RW=IX+IW-28-RX;
+  if(v.k==="g"){var dn=v.a<0;
+    shFont(c,SH.FB8,20);c.fillStyle=SH.INK2;c.letterSpacing="3px";c.fillText("THE MARKET SAID",RX,PY+22);c.letterSpacing="0px";
+    shRR(c,RX,PY+40,RW,150,18);c.fillStyle=dn?SH.RED:SH.GRN;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+    var ot=v.out.replace(/^[+−-]/,"");c.fillStyle=SH.INK;var op=shFit(c,ot,SH.FD,124,RW-130,60);shTri(c,RX+30,PY+115,54,dn);c.fillText(ot,RX+100,PY+115+op*.36);
+    var WY=PY+214,WH=PS-214+PY-PY;WH=PY+PS-WY;
+    shRR(c,RX,WY,RW,WH,18);c.fillStyle=v.win.length?SH.SLAB:SH.RED;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+    shFont(c,SH.FB8,20);c.fillStyle=v.win.length?SH.GOLD:"#fff";c.letterSpacing="3px";c.fillText(v.win.length>1?"WINNERS":"WINNER",RX+24,WY+40);c.letterSpacing="0px";
+    if(v.win.length){c.fillStyle=SH.GOLD;shCrown(c,RX+RW-62,WY+20,38);c.fill();c.lineWidth=2.5;c.strokeStyle=SH.INK;c.stroke();
+      var many=v.win.length>1,ls=many?50:68,ly=WY+(many?58:66);
+      v.win.slice(0,2).forEach(function(m,i){var yy=ly+i*(ls+10);shLogo(c,m,RX+24,yy,ls);c.fillStyle="#fff";shFit(c,nm(m).toUpperCase(),SH.FD,many?52:76,RW-ls-60,28);c.fillText(nm(m).toUpperCase(),RX+24+ls+16,yy+ls*.8)})}
+    else{c.fillStyle="#fff";shFont(c,SH.FD,72);c.fillText("NOBODY",RX+24,WY+120);shFont(c,SH.FB,19);c.fillText("Every call went the wrong way",RX+24,WY+152)}}
+  else{shFont(c,SH.FB8,20);c.fillStyle=SH.INK2;c.letterSpacing="3px";c.fillText(v.k==="p"?"THE MARKET ANSWERS":"THE CALLS COME IN",RX,PY+22);c.letterSpacing="0px";
+    shRR(c,RX,PY+40,RW,150,18);c.fillStyle=SH.SLAB;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+    var dt=fmtDate(v.k==="p"?v.resolves:v.called).toUpperCase();c.fillStyle=SH.GOLD;var dp=shFit(c,dt,SH.FD,112,RW-48,50);c.fillText(dt,RX+24,PY+115+dp*.36);
+    var QY=PY+214,QH=PY+PS-QY;shRR(c,RX,QY,RW,QH,18);c.fillStyle=SH.GOLD;c.fill();c.lineWidth=4;c.strokeStyle=SH.INK;c.stroke();
+    c.fillStyle=SH.INK;shFont(c,SH.FD,64);c.fillText("WHO CALLS IT?",RX+24,QY+86);shFont(c,SH.FB,19);c.fillText(v.k==="p"?"Calls filed before the report":"Filed the day before the report",RX+24,QY+124)}
+  /* the calls: one chip each, in two rows of two */
+  var CY=PY+PS+28,GW=(IW-56-20)/2,GH=(IY+IH-24-CY-16)/2,list=v.calls.length?v.calls:ACTIVE.map(function(m){return {m:m,sealed:true}});
+  list.slice(0,4).forEach(function(cl,i){var cx=IX+28+(i%2)*(GW+20),cy=CY+Math.floor(i/2)*(GH+16),g=v.k==="g";
+    shRR(c,cx,cy,GW,GH,16);c.fillStyle=cl.win?SH.GOLD:g&&!cl.ok?"#f1eeea":SH.FIELD;c.fill();c.lineWidth=cl.win?4:3;c.strokeStyle=SH.INK;c.stroke();
+    var ls=Math.min(58,GH-34);shLogo(c,cl.m,cx+18,cy+(GH-ls)/2,ls);
+    c.fillStyle=g&&!cl.ok?SH.INK2:SH.INK;shFit(c,nm(cl.m).toUpperCase(),SH.FD,42,GW-ls-200,24);c.fillText(nm(cl.m).toUpperCase(),cx+ls+32,cy+GH/2+(g?2:14));
+    if(g){shFont(c,SH.FB,17);c.fillStyle=SH.INK2;c.fillText(cl.ok?(cl.win?"WINNER · ":"")+"OFF "+cl.off.toFixed(2):"WRONG WAY",cx+ls+32,cy+GH/2+30)}
+    if(cl.sealed){shFont(c,SH.FB8,18);c.fillStyle=SH.INK2;c.textAlign="right";c.letterSpacing="2px";c.fillText("SEALED",cx+GW-20,cy+GH/2+7);c.letterSpacing="0px";c.textAlign="left";return}
+    var pw=136,ph=56,px=cx+GW-18-pw,py=cy+(GH-ph)/2;shRR(c,px,py,pw,ph,12);c.fillStyle=cl.dn?SH.RED:SH.GRN;c.fill();c.lineWidth=3;c.strokeStyle=SH.INK;c.stroke();
+    shFont(c,SH.FD,38);var mw=c.measureText(cl.mag).width,gx=px+(pw-(20+10+mw))/2;c.fillStyle=SH.INK;shTri(c,gx,py+ph/2,20,cl.dn);c.fillText(cl.mag,gx+30,py+ph/2+13);
+    if(g&&!cl.ok){c.save();c.globalAlpha=.55;shRR(c,cx,cy,GW,GH,16);c.fillStyle="#fff";c.fill();c.restore();shRR(c,cx,cy,GW,GH,16);c.lineWidth=3;c.strokeStyle=SH.INK;c.stroke()}});
+  /* footer line, under the card */
+  shFont(c,SH.FB,21);c.fillStyle=SH.ON2;c.fillText("We're teaching AIs to bet. The market grades them.",56,1052);
+  shFont(c,SH.FB8,17);c.fillStyle=SH.GOLD;c.textAlign="right";c.letterSpacing="2px";c.fillText("CALLED BEFORE THE REPORT",W-56,1051);c.letterSpacing="0px";c.textAlign="left"}
+function shMake(s){var v=shData(s);var fonts=document.fonts&&document.fonts.load?Promise.all(['800 60px "Barlow Condensed"','700 20px "Barlow"','800 20px "Barlow"'].map(function(f){return document.fonts.load(f).catch(function(){})})):Promise.resolve();
+  return Promise.all([fonts,shImg(v.poster?MEDIA+v.poster+".jpg":null)]).then(function(r){var cv=document.createElement("canvas");drawShare(cv,v,r[1]);
+    return new Promise(function(res){cv.toBlob(function(b){res({v:v,blob:b,cv:cv})},"image/png")})})}
+/* saving: a normal download on a real site; inside the claude.ai preview, through its downloads capability */
+var shDL=null;try{if(window.claude&&claude.use)claude.use("downloads").then(function(d){shDL=d}).catch(function(){})}catch(e){}
+function shSave(blob,name){if(window.claude&&claude.use){if(!shDL)return Promise.reject({code:"unavailable"});return shDL.save({filename:name,data:blob})}
+  var a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},1500);return Promise.resolve()}
+function shCopyImg(blob){if(!(navigator.clipboard&&window.ClipboardItem))return Promise.reject();return navigator.clipboard.write([new ClipboardItem({"image/png":blob})])}
+function shCopyText(t){if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);return Promise.reject()}
+var shPop=null,shFrom=null;
+function shClose(){if(!shPop)return;shPop.remove();shPop=null;if(shFrom&&shFrom.isConnected)shFrom.focus({preventScroll:true});shFrom=null}
+function shPanel(btn,R){shClose();shFrom=btn;var url=URL.createObjectURL(R.blob),n=R.v.n,text=shText(R.v),link=shURL(n);
+  var p=document.createElement("div");p.className="shp";p.setAttribute("role","dialog");p.setAttribute("aria-label","Share round "+n);
+  p.innerHTML='<img src="'+url+'" alt="The share image for round '+n+'"><div class="shp-a">'+
+    '<button type="button" data-a="x"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-7.2 8.2L23.3 22h-6.6l-5.2-6.8L5.6 22H2.4l7.7-8.8L2 2h6.8l4.7 6.2zm-1.2 18h1.8L7.4 3.9H5.5z"/></svg>Post</button>'+
+    '<button type="button" data-a="ci">Copy image</button><button type="button" data-a="sv">Save</button><button type="button" data-a="cl">Copy link</button></div><p class="shp-m" aria-live="polite"></p>';
+  document.body.appendChild(p);shPop=p;
+  var r=btn.getBoundingClientRect(),pw=p.offsetWidth,ph=p.offsetHeight,x=Math.min(Math.max(12,r.right-pw),innerWidth-pw-12),y=r.bottom+8;if(y+ph>innerHeight-12)y=Math.max(12,r.top-ph-8);
+  p.style.left=(x+scrollX)+"px";p.style.top=(y+scrollY)+"px";
+  var msg=$(".shp-m",p);function say(t){msg.textContent=t}
+  $$("[data-a]",p).forEach(function(b){b.addEventListener("click",function(){var a=b.dataset.a;
+    if(a==="x"){shCopyImg(R.blob).then(function(){say("Image copied. Paste it into your post.")},function(){say("Save the image to add it to your post.")});
+      window.open("https://x.com/intent/post?text="+encodeURIComponent(text)+"&url="+encodeURIComponent(link),"_blank","noopener")}
+    else if(a==="ci")shCopyImg(R.blob).then(function(){say("Image copied.")},function(){say("This browser can't copy images. Use Save.")});
+    else if(a==="sv")shSave(R.blob,"ez-round-"+n+".png").then(function(){say("Saved.")},function(e){say(e&&e.code==="declined"?"Not saved.":"Couldn't save here.")});
+    else if(a==="cl")shCopyText(link).then(function(){say("Link copied.")},function(){say(link)})})});
+  $("button",p).focus({preventScroll:true})}
+document.addEventListener("click",function(e){if(shPop&&!shPop.contains(e.target)&&!e.target.closest(".shr"))shClose()},true);
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&shPop)shClose()});
+addEventListener("resize",function(){shClose()});
+function shareRound(btn){var n=+btn.dataset.share,s=SL.filter(function(x){return x.n===n})[0];if(!s||btn.dataset.busy)return;btn.dataset.busy="1";btn.classList.add("busy");
+  shMake(s).then(function(R){delete btn.dataset.busy;btn.classList.remove("busy");if(!R.blob)return;
+    var file=null;try{file=new File([R.blob],"ez-round-"+n+".png",{type:"image/png"})}catch(e){}
+    var data=file?{files:[file],text:shText(R.v)+" "+shURL(n)}:null;
+    /* phones: straight to the share sheet with the image. Desktop and the preview: the small panel. */
+    var touch=matchMedia("(pointer: coarse)").matches;
+    if(touch&&data&&navigator.canShare&&navigator.canShare(data))navigator.share(data).catch(function(e){if(!e||e.name!=="AbortError")shPanel(btn,R)});
+    else shPanel(btn,R)},function(){delete btn.dataset.busy;btn.classList.remove("busy")})}
+/* a shared link (#round-9) opens the record on that round */
+function shDeep(){var m=location.hash.match(/^#round-(\d+)$/);if(!m)return;var i=SL.findIndex(function(s){return s.n===+m[1]});if(i<0)return;
+  $("#record").scrollIntoView({block:"start"});go(i,false)}
+addEventListener("hashchange",shDeep);requestAnimationFrame(function(){requestAnimationFrame(shDeep)});
+
 /* ================= V22 · SEASON LIVE: pages =================
    The board is Season, untouched. The other pages render into #view from the same data. */
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -1693,34 +1904,53 @@ function winIcons(v){return '<span class="ws">'+(v.win.length?v.win.map(function
 /* the company's logo when CO_LOGOS has one, else a ticker badge that fits ("2317.TW" shows as 2317) */
 function tkBadge(t){if(CO_LOGOS[String(t||"").toUpperCase()])return coMark(t);var s=String(t||"").split(".")[0].slice(0,5);
   return '<span class="co-mark tkb'+(s.length>3?' l'+s.length:'')+'" aria-hidden="true">'+esc(s)+'</span>'}
-function poster(n){var v=rv(n),f=v.st==="graded"?FILMS[n]:preFilm(v),cls="pt-a"+(f?"":" soon")+(v.st==="calls"?" pend":"");
-  var head='<span class="pt-h"><small>Round '+n+'</small>'+(v.st==="calls"?'<span class="tag y y-live"><i aria-hidden="true"></i>Calls in</span>':v.tag?'<span class="tag y">'+esc(v.tag)+'</span>':'')+'</span>';
-  var foot='<span class="pt-f"><b class="ttl">'+esc(v.co)+'</b>'+(v.st==="graded"?pill(v.a<0,v.out.replace(/^[+−-]/,""))+winIcons(v):'<span class="tag">'+RESOLVE_WORD+' '+fmtDate(v.resolves)+'</span>')+'</span>';
-  var art=f?'<img src="'+MEDIA+f.p+'.jpg" alt="" loading="lazy" decoding="async">':tkBadge(v.ticker)+'<span class="fs">Film soon</span>';
-  return '<li data-w="'+(v.st==="graded"?(v.win.length?v.win.join(" "):"NONE"):"PEND")+'"><a class="'+cls+'" href="#/round/'+n+'"'+(f?' data-f="'+f.f+'"':'')+' aria-label="'+esc(plain(v))+(v.st==="graded"?', '+v.out+', '+(v.win.length?'won by '+v.win.map(nm).join(" and "):'no winner'):', calls are in')+'">'+art+head+foot+'</a></li>'}
-function vRounds(){
-  var up=ROUNDS.filter(function(r){return r.a>0}).length,big=ROUNDS.slice().sort(function(a,b){return Math.abs(b.a)-Math.abs(a.a)})[0],best=null;
-  ROUNDS.forEach(function(r){parsed(r).forEach(function(c){if(c.ok&&(!best||c.off<best.c.off))best={r:r,c:c}})});
-  var nw=ROUNDS.filter(function(r){return !r.win}).length;
-  var sum='<div class="rs-sum"><div><small>Graded</small><b>'+NR+'</b><span>'+(PS.length?PS.length+' with calls in · ':'')+US.length+' to come</span></div>'+
-    '<div><small>Went up</small><b>'+up+' of '+NR+'</b><span>Down '+(NR-up)+' times</span></div>'+
-    (big?'<div><small>Biggest move</small><b>'+big.out+'</b><span>R'+big.n+' · '+esc(big.co)+'</span></div>':'')+
-    (best?'<div><small>Closest call</small><b>'+best.c.off.toFixed(2)+'</b><span>Points off · '+nm(best.c.m)+', R'+best.r.n+'</span></div>':'')+'</div>';
-  var fl=[['all','All',NR+PS.length]].concat(RK.filter(function(m){return CAR[m]&&CAR[m].won}).map(function(m){return [m,nm(m)+' wins',CAR[m].won]}));if(nw)fl.push(['NONE','No winner',nw]);
-  var flt='<div class="flt" role="group" aria-label="Filter the rounds">'+fl.map(function(f,i){return '<button type="button" data-fl="'+f[0]+'" aria-pressed="'+(i?'false':'true')+'">'+(MODELS[f[0]]?logo(f[0]):'')+f[1]+' <b>'+f[2]+'</b></button>'}).join("")+'</div>';
-  var list=PS.map(function(u){return u.n}).concat(ROUNDS.slice().reverse().map(function(r){return r.n}));
-  return '<h1 tabindex="-1">Every round</h1><p class="sub">Calls filed before the report. Graded at the first market close after it, on the closing price. Never edited. Tap a round for the film, the calls and a share image.</p>'+
-    sum+flt+'<ul class="pg" id="pg">'+list.map(poster).join("")+'</ul>'+
-    (US.length?'<p class="note" style="margin-top:22px">'+US.length+' more rounds are scheduled. <a href="#/upcoming">See what\'s coming →</a></p>':'')}
-function wireRounds(root){
-  $$("[data-fl]",root).forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.fl;
-    $$("[data-fl]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});
-    $$("#pg li",root).forEach(function(li){var w=li.dataset.w.split(" ");li.hidden=!(k==="all"||w.indexOf(k)>-1)})})});
-  /* a poster plays its film while you hover it (mouse only, never with reduced motion) */
+/* the season in one picture: every round on one line. Graded rounds are bars (up above the line, down below, height = the
+   move), capped with the winner's colour; rounds still to come are dots. Tap a round to open it. */
+function svgLogo(m,cx,cy,s){var M=MODELS[m],k=s*.62/24;return '<g class="s-lg"><rect x="'+(cx-s/2)+'" y="'+(cy-s/2)+'" width="'+s+'" height="'+s+'" rx="'+(s*.225)+'" style="fill:'+M.bg+'"/>'+
+  '<g transform="translate('+(cx-s/2+s*.19)+','+(cy-s/2+s*.19)+') scale('+k+')"><path d="'+M.d+'" style="fill:'+M.fg+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+'/>'+(M.dot?'<path d="'+M.dot+'" style="fill:'+M.dotc+'"/>':'')+'</g></g>'}
+function seasonSVG(W,H,cls){var G=ALLN.filter(function(n){return findR(n)||findP(n)}),U=ALLN.filter(function(n){return G.indexOf(n)<0}),L=20,R=20,Y0=H*.5,UP=H*.5-58,DN=H*.5-58;
+  var gw=(W-L-R)*(U.length?.74:1),gs=G.length?gw/G.length:0,us=U.length?(W-L-R-gw)/U.length:0,bw=Math.min(30,gs*.56),ls=Math.min(30,Math.max(20,gs*.62));
+  var mx=Math.max.apply(null,ROUNDS.map(function(r){return Math.abs(r.a)}).concat([1]));
+  var o='<svg class="ssvg '+cls+'" viewBox="0 0 '+W+' '+H+'" role="group" aria-label="The season: '+NR+' rounds graded, '+(ALLN.length-NR)+' to come">';
+  var tx=L+gw;if(U.length)o+='<line class="s-now" x1="'+tx+'" x2="'+tx+'" y1="16" y2="'+(H-30)+'"/>'+(cls==="s-wide"?'<text class="s-nowt" x="'+(tx+8)+'" y="28">Today</text>':'')+'<text class="s-nowt" x="'+(W-R)+'" y="28" text-anchor="end">'+U.length+' to come</text>';
+  o+='<line class="s-axis" x1="'+L+'" x2="'+(W-R)+'" y1="'+Y0+'" y2="'+Y0+'"/>';
+  function link(n,v,inner){return '<a href="#/round/'+n+'" class="s-r" aria-label="'+esc(plain(v))+(v.st==="graded"?', '+v.out+', '+(v.win.length?'won by '+v.win.map(nm).join(" and "):'no winner'):v.st==="calls"?', calls are in':', calls '+fmtDate(v.called))+'"><title>'+esc(plain(v))+(v.st==="graded"?' · '+v.out:'')+'</title>'+inner+'</a>'}
+  G.forEach(function(n,i){var cx=L+gs*i+gs/2,v=rv(n),s='<rect class="s-hit" x="'+(cx-gs/2)+'" y="8" width="'+gs+'" height="'+(H-16)+'"/>';
+    if(v.st==="graded"){var h=Math.max(6,Math.abs(v.a)/mx*(v.a>0?UP:DN)),y=v.a>0?Y0-h:Y0,cy=v.a>0?y-ls/2-6:y+h+ls/2+6;
+      s+='<rect class="s-bar '+(v.a>0?'u':'d')+'" x="'+(cx-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="3"/>';
+      if(v.win.length>1){var s2=ls*.78;s+=svgLogo(v.win[1],cx+s2*.32,cy+(v.a>0?-s2*.32:s2*.32),s2)+svgLogo(v.win[0],cx-s2*.32,cy+(v.a>0?s2*.12:-s2*.12),s2)}
+      else if(v.win.length)s+=svgLogo(v.win[0],cx,cy,ls);
+      else s+='<g class="s-x" transform="translate('+cx+','+cy+')"><circle r="'+(ls*.42)+'"/><path d="M-4,-4L4,4M4,-4L-4,4"/></g>'}
+    else s+='<circle class="s-dot p" cx="'+cx+'" cy="'+Y0+'" r="8"/>';
+    s+='<text class="s-n" x="'+cx+'" y="'+(H-8)+'">'+n+'</text>';o+=link(n,v,s)});
+  U.forEach(function(n,i){var cx=L+gw+us*i+us/2,v=rv(n);o+=link(n,v,'<rect class="s-hit" x="'+(cx-us/2)+'" y="'+(Y0-14)+'" width="'+us+'" height="28"/><circle class="s-dot" cx="'+cx+'" cy="'+Y0+'" r="'+Math.min(4.5,us*.32)+'"/>')});
+  return o+'</svg>'}
+function seasonLegend(){return '<p class="s-leg"><span><i class="up"></i>Went up</span><span><i class="dn"></i>Went down</span><span>Logo on top: the winner</span><span><i class="x"></i>No winner</span></p>'}
+/* one round as a card: the film still on top, the name and the result underneath (never over the film's own text) */
+function tkBadge(t){if(CO_LOGOS[String(t||"").toUpperCase()])return coMark(t);var s=String(t||"").split(".")[0].slice(0,5);
+  return '<span class="co-mark tkb'+(s.length>3?' l'+s.length:'')+'" aria-hidden="true">'+esc(s)+'</span>'}
+function rcard(n){var v=rv(n),f=v.st==="graded"?FILMS[n]:preFilm(v),g=v.st==="graded";
+  var art=f?'<img src="'+MEDIA+f.p+'.jpg" alt="" loading="lazy" decoding="async">':'<span class="rc-soon">'+tkBadge(v.ticker)+'<small>Film soon</small></span>';
+  var res=g?pill(v.a<0,v.out.replace(/^[+−-]/,""))+'<span class="ws">'+(v.win.length?v.win.map(function(m){return logo(m)}).join(""):'<span class="lg nob" aria-hidden="true">✗</span>')+'<span class="sr">'+(v.win.length?'Winner '+v.win.map(nm).join(" and "):'No winner')+'</span></span>'
+    :'<span class="tag y"><i aria-hidden="true"></i>Calls in</span>';
+  return '<li><a class="rc'+(g&&!v.win.length?' none':'')+(g?'':' pend')+'" href="#/round/'+n+'"'+(f?' data-f="'+f.f+'"':'')+'><span class="rc-art">'+art+'</span>'+
+    '<span class="rc-b"><span class="rc-t"><small>Round '+n+'</small><b>'+esc(v.co)+'</b></span><span class="rc-r">'+res+'</span></span></a></li>'}
+function vRounds(){var up=ROUNDS.filter(function(r){return r.a>0}).length,nw=ROUNDS.filter(function(r){return !r.win}).length;
+  var res=PS.map(function(u){return u.n}).concat(ROUNDS.slice().reverse().map(function(r){return r.n}));
+  var mo=null,cu='';if(PS.length)cu+='<h2 class="grp-h"><i aria-hidden="true"></i>Calls are in</h2><ul class="ul">'+PS.map(function(u){return urow(u,true)}).join("")+'</ul>';
+  US.forEach(function(u){var d=mmdd(u.called),k=d?d.toLocaleString("en-US",{month:"long",year:"numeric"}):"Later";if(k!==mo){cu+=(mo?'</ul>':'')+'<h2 class="mo-h">'+esc(k)+'</h2><ul class="ul">';mo=k}cu+=urow(u,false)});if(mo)cu+='</ul>';
+  return '<h1 tabindex="-1">Every round</h1><p class="sub">'+NR+' graded, '+(PS.length+US.length)+' to come. Each bar is one result, as big as the move. The logo on top won it.</p>'+
+    '<figure class="season">'+seasonSVG(1000,320,"s-wide")+seasonSVG(420,330,"s-tall")+seasonLegend()+'</figure>'+
+    '<div class="seg" role="tablist" aria-label="Rounds"><button type="button" role="tab" id="tbR" aria-selected="true" aria-controls="pnR">Results <b>'+NR+'</b></button><button type="button" role="tab" id="tbU" aria-selected="false" aria-controls="pnU">Coming up <b>'+(PS.length+US.length)+'</b></button></div>'+
+    '<div id="pnR" role="tabpanel" aria-labelledby="tbR"><ul class="rcg">'+res.map(rcard).join("")+'</ul></div>'+
+    '<div id="pnU" role="tabpanel" aria-labelledby="tbU" hidden>'+(cu||'<p class="empty">The next rounds are posted soon.</p>')+'<p class="note" style="margin-top:18px"><a href="#/upcoming">Countdown and calendar →</a></p></div>'}
+function wireRounds(root){var tabs=[$("#tbR",root),$("#tbU",root)];
+  function sel(t){tabs.forEach(function(x){var on=x===t;x.setAttribute("aria-selected",String(on));$("#"+x.getAttribute("aria-controls"),root).hidden=!on})}
+  tabs.forEach(function(t,i){t.addEventListener("click",function(){sel(t)});t.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();var o=tabs[1-i];sel(o);o.focus()}})});
   if(reduce||!matchMedia("(hover: hover)").matches)return;
-  $$(".pt-a[data-f]",root).forEach(function(a){var v=null;
+  $$(".rc[data-f]",root).forEach(function(a){var v=null,box=$(".rc-art",a);
     a.addEventListener("mouseenter",function(){if(!v){v=document.createElement("video");v.muted=true;v.loop=true;v.playsInline=true;v.setAttribute("aria-hidden","true");
-      v.innerHTML='<source src="'+MEDIA+a.dataset.f+'.webm" type="video/webm"><source src="'+MEDIA+a.dataset.f+'.mp4" type="video/mp4">';a.insertBefore(v,a.children[1])}
+      v.innerHTML='<source src="'+MEDIA+a.dataset.f+'.webm" type="video/webm"><source src="'+MEDIA+a.dataset.f+'.mp4" type="video/mp4">';box.appendChild(v)}
       var p=v.play();if(p&&p.catch)p.catch(function(){})});
     a.addEventListener("mouseleave",function(){if(v)v.pause()})})}
 
@@ -1739,65 +1969,15 @@ function vRound(n){var v=rv(n);if(!v)return null;var i=ALLN.indexOf(n),pv=ALLN[i
   var tl=timingLabel(v.timing);
   var rc=RECEIPTS&&RECEIPTS[n]?'<div class="rcpt"><small>Receipt</small><a href="'+esc(RECEIPTS[n])+'" target="_blank" rel="noopener">Calls posted before the report → view receipt</a></div>':'<div class="rcpt"><small>Receipt</small><span>Public proof of the calls, posted before the report. Link added at launch.</span></div>';
   return '<nav class="rnav" aria-label="Rounds">'+(pv?'<a href="#/round/'+pv+'">← R'+pv+'</a>':'<a class="gap" aria-hidden="true" tabindex="-1">←</a>')+'<a class="all" href="#/rounds">All rounds</a>'+(nx?'<a href="#/round/'+nx+'">R'+nx+' →</a>':'<a class="gap" aria-hidden="true" tabindex="-1">→</a>')+'</nav>'+
-    '<div class="rh">'+(g?'<span class="tag n">Graded</span>':v.st==="calls"?'<span class="tag y"><i aria-hidden="true"></i>Calls are in</span>':'<span class="tag">Sealed</span>')+(v.tag?'<span class="tag y">'+esc(v.tag)+'</span>':'')+'</div>'+
+    '<div class="rh">'+(g?'<span class="tag n">Graded</span>':v.st==="calls"?'<span class="tag y"><i aria-hidden="true"></i>Calls are in</span>':'<span class="tag">Sealed</span>')+(v.tag?'<span class="tag y">'+esc(v.tag)+'</span>':'')+'<button type="button" class="shr rsh" data-share="'+n+'" aria-label="Share round '+n+'">'+shareGlyph()+'<span>Share</span></button></div>'+
     '<h1 tabindex="-1">Round '+n+' · '+coTkn(v)+'</h1>'+(v.head?'<p class="sub">'+esc(v.head)+'</p>':'')+
     '<div class="rgrid"><div>'+filmBox(v)+'</div><div><h2 class="grp-h" style="margin-top:0">The calls</h2>'+calls+out+
-      '<div class="facts"><div><small>Calls filed</small><b>'+fmtDate(v.called)+'</b></div><div><small>'+(g?'Graded':RESOLVE_WORD)+'</small><b>'+fmtDate(v.resolves)+'</b></div></div>'+(tl?'<p class="note" style="margin-top:8px">Reports '+tl.toLowerCase()+'.</p>':'')+rc+'</div></div>'+
-    '<section class="blk" aria-labelledby="shH"><div class="hh"><h2 id="shH">Share this round</h2></div><div class="share"><canvas id="cv" width="1200" height="675" role="img" aria-label="Share image for '+esc(plain(v))+'"></canvas>'+
-      '<div class="acts"><p class="note">A 1200 by 675 image with the calls, the outcome and the standings. Made on this page, saved by you.</p><button type="button" class="btn" id="dlB">Download share image</button><button type="button" class="btn lt" id="cpB">Copy link</button><p class="stat-msg" id="shMsg" aria-live="polite"></p></div></div></section>'}
+      '<div class="facts"><div><small>Calls filed</small><b>'+fmtDate(v.called)+'</b></div><div><small>'+(g?'Graded':RESOLVE_WORD)+'</small><b>'+fmtDate(v.resolves)+'</b></div></div>'+(tl?'<p class="note" style="margin-top:8px">Reports '+tl.toLowerCase()+'.</p>':'')+rc+'</div></div>'}
 function wireRound(root,n){var v=rv(n),vid=$("video",root),fp=$("#fp",root);
   if(vid&&fp)fp.addEventListener("click",function(){if(vid.paused){var p=vid.play();if(p&&p.catch)p.catch(function(){});fp.textContent="❚❚ Pause film";fp.setAttribute("aria-pressed","false")}else{vid.pause();fp.textContent="▶ Play film";fp.setAttribute("aria-pressed","true")}});
-  var cv=$("#cv",root);drawCard(cv,v);
-  if(document.fonts&&document.fonts.load)Promise.all(['800 40px "Barlow Condensed"','700 20px "Barlow"'].map(function(f){return document.fonts.load(f).catch(function(){})})).then(function(){if(cv.isConnected)drawCard(cv,v)});
-  $("#dlB",root).addEventListener("click",function(){var msg=$("#shMsg",root);try{cv.toBlob(function(b){if(b)save(b,"ez-round-"+n+".png").then(function(){msg.textContent="Saved ez-round-"+n+".png."},function(e){msg.textContent=e&&e.code==="declined"?"No file saved.":"Couldn't save the image here."});else msg.textContent="Could not make the image in this browser."},"image/png")}catch(e){msg.textContent="Could not make the image in this browser."}});
-  $("#cpB",root).addEventListener("click",function(){var url=location.href.replace(/#.*$/,"")+"#/round/"+n,msg=$("#shMsg",root);
-    function fb(){msg.innerHTML='<label class="sr" for="lnk">Link to this round</label><input class="linkbox" id="lnk" readonly value="'+esc(url)+'">';var i=$("#lnk",root);i.focus();i.select();try{document.execCommand("copy")}catch(e){}}
-    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(function(){msg.textContent="Link copied."},fb);else fb()})}
-
-/* ---------- the share image, drawn on canvas (no images, so it never taints and always saves) ---------- */
-var PATHS={};function mpath(d){if(!PATHS[d])PATHS[d]=new Path2D(d);return PATHS[d]}
-function rrect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
-function fit(c,txt,font,size,max){c.font=font.replace("%",size+"px");while(c.measureText(txt).width>max&&size>10){size-=2;c.font=font.replace("%",size+"px")}return size}
-function tri(c,x,y,s,dn){c.beginPath();if(dn){c.moveTo(x,y-s*.45);c.lineTo(x+s,y-s*.45);c.lineTo(x+s/2,y+s*.45)}else{c.moveTo(x,y+s*.45);c.lineTo(x+s,y+s*.45);c.lineTo(x+s/2,y-s*.45)}c.closePath();c.fill()}
-function drawLogo(c,m,x,y,s){var M=MODELS[m];rrect(c,x,y,s,s,s*.225);c.fillStyle=M.bg;c.fill();c.lineWidth=2;c.strokeStyle="#12131a";c.stroke();
-  c.save();var k=s*.62/24;c.translate(x+s*.19,y+s*.19);c.scale(k,k);c.fillStyle=M.fg;c.fill(mpath(M.d),M.fr==="evenodd"?"evenodd":"nonzero");if(M.dot){c.fillStyle=M.dotc;c.fill(mpath(M.dot))}c.restore()}
-function crownPath(c,x,y,w){var h=w*.7;c.beginPath();c.moveTo(x,y+h);c.lineTo(x,y+h*.25);c.lineTo(x+w*.27,y+h*.55);c.lineTo(x+w*.5,y);c.lineTo(x+w*.73,y+h*.55);c.lineTo(x+w,y+h*.25);c.lineTo(x+w,y+h);c.closePath()}
-function drawCard(cv,v){var c=cv.getContext("2d");if(!c)return;
-  var INK="#12131a",FIELD="#f4efe6",CARD="#ffffff",SLAB="#101a3a",GOLD="#ffc72c",GRN="#1fcf6b",RED="#ff4136",INK2="#4a4c58",ON2="#b9c0d6";
-  var FD='800 % "Barlow Condensed", Impact, sans-serif',FB='700 % "Barlow", system-ui, sans-serif';
-  c.clearRect(0,0,1200,675);c.fillStyle=FIELD;c.fillRect(0,0,1200,675);
-  c.fillStyle=SLAB;c.fillRect(0,0,1200,150);
-  c.textBaseline="alphabetic";c.font=FD.replace("%","64px");
-  var mx=48;[["$",GOLD],["E",GRN],["Z",RED]].forEach(function(p){c.fillStyle=p[1];c.fillText(p[0],mx,98);mx+=c.measureText(p[0]).width+1});
-  c.fillStyle=GOLD;c.font=FB.replace("%","20px");c.fillText(("ROUND "+v.n+(v.st==="graded"?" · GRADED "+fmtDate(v.resolves):v.st==="calls"?" · CALLS ARE IN":" · CALLS "+fmtDate(v.called))).toUpperCase(),170,62);
-  var title=plainCo(v).toUpperCase();fit(c,title,FD,58,980);c.fillStyle="#ffffff";c.fillText(title,170,118);
-  c.fillStyle=GOLD;c.fillRect(0,150,1200,6);
-  rrect(c,48,184,700,404,22);c.fillStyle=CARD;c.fill();c.lineWidth=4;c.strokeStyle=INK;c.stroke();
-  c.fillStyle=INK2;c.font=FB.replace("%","17px");c.fillText("THE CALLS",72,218);
-  var rows=v.calls.length?v.calls:ACTIVE.map(function(m){return {m:m,sealed:true}}),y=236,rh=80;
-  rows.slice(0,4).forEach(function(cl){var g=v.st==="graded";
-    rrect(c,68,y,660,rh-12,14);c.fillStyle=cl.win?GOLD:(g&&cl.ok?"#e2f8eb":FIELD);c.fill();c.lineWidth=cl.win?3.5:2;c.strokeStyle=INK;c.stroke();
-    drawLogo(c,cl.m,84,y+10,48);
-    c.fillStyle=INK;c.font=FD.replace("%","36px");c.fillText(nm(cl.m).toUpperCase(),148,y+48);
-    var nw=c.measureText(nm(cl.m).toUpperCase()).width;
-    if(cl.win){var wx=148+nw+16;rrect(c,wx,y+20,124,30,15);c.fillStyle=CARD;c.fill();c.lineWidth=2;c.stroke();c.fillStyle=GOLD;crownPath(c,wx+12,y+26,24);c.fill();c.lineWidth=1.5;c.strokeStyle=INK;c.stroke();c.fillStyle=INK;c.font=FB.replace("%","16px");c.fillText("WINNER",wx+44,y+41)}
-    if(cl.sealed){c.fillStyle=INK2;c.font=FB.replace("%","18px");c.textAlign="right";c.fillText("SEALED UNTIL "+fmtDate(v.called).toUpperCase(),708,y+44);c.textAlign="left"}
-    else{var pw=128;rrect(c,708-pw,y+12,pw,44,9);c.fillStyle=cl.dn?RED:GRN;c.fill();c.fillStyle=INK;tri(c,708-pw+14,y+34,18,cl.dn);c.font=FD.replace("%","32px");c.textAlign="right";c.fillText(cl.mag,708-14,y+46);c.textAlign="left";
-      if(g){c.fillStyle=INK2;c.font=FB.replace("%","17px");c.textAlign="right";c.fillText(cl.ok?"OFF "+cl.off.toFixed(2):"WRONG WAY",708-pw-16,y+42);c.textAlign="left"}}
-    y+=rh});
-  rrect(c,780,184,372,186,22);c.fillStyle=v.st==="graded"?(v.a<0?RED:GRN):CARD;c.fill();c.lineWidth=4;c.strokeStyle=INK;c.stroke();
-  c.fillStyle=INK;c.font=FB.replace("%","18px");c.fillText(ACTUAL_WORD.toUpperCase(),806,222);
-  if(v.st==="graded"){tri(c,808,300,46,v.a<0);c.font=FD.replace("%","104px");c.fillText(v.out.replace(/^[+−-]/,""),868,334)}
-  else{c.font=FD.replace("%","52px");c.fillText(RESOLVE_WORD.toUpperCase()+" "+fmtDate(v.resolves).toUpperCase(),806,300);c.font=FB.replace("%","18px");c.fillStyle=INK2;c.fillText("At the first market close after the report",806,336)}
-  rrect(c,780,394,372,194,22);c.fillStyle=SLAB;c.fill();c.lineWidth=4;c.strokeStyle=INK;c.stroke();
-  c.fillStyle=GOLD;c.font=FD.replace("%","34px");c.fillText("WINNER",806,440);
-  if(v.st==="graded"){if(v.win.length){var wy=468;v.win.slice(0,2).forEach(function(m){drawLogo(c,m,806,wy,46);c.fillStyle="#ffffff";c.font=FD.replace("%","44px");c.fillText(nm(m).toUpperCase(),866,wy+40);wy+=56})}
-    else{c.fillStyle="#ffffff";c.font=FD.replace("%","48px");c.fillText("NOBODY",806,510);c.fillStyle=ON2;c.font=FB.replace("%","18px");c.fillText("Every call went the wrong way",806,546)}}
-  else{c.fillStyle="#ffffff";c.font=FD.replace("%","44px");c.fillText("TO BE GRADED",806,508);c.fillStyle=ON2;c.font=FB.replace("%","18px");c.fillText("By the market, not by us",806,546)}
-  c.fillStyle=INK;c.fillRect(0,612,1200,63);
-  c.fillStyle=GOLD;c.font=FB.replace("%","17px");c.fillText("STANDINGS",48,651);
-  var line=ROWS.map(function(T){return nm(T.m).toUpperCase()+" "+T.won}).join("  ·  ");c.fillStyle="#ffffff";fit(c,line,FD,30,560);c.fillText(line,160,652);
-  c.fillStyle=ON2;c.font=FB.replace("%","16px");c.textAlign="right";c.fillText("Calls filed before the report. Graded by the market.",1152,650);c.textAlign="left"}
+  var sb=$(".rsh",root);if(sb)sb.addEventListener("click",function(){shareRound(sb)})}
+/* shared links open the round's own page here */
+function shURL(n){return location.href.replace(/#.*$/,"")+"#/round/"+n}
 
 /* ---------- models ---------- */
 var CROWN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V8l5 4 4-8 4 8 5-4v11z" fill="#12131a"/></svg>';
