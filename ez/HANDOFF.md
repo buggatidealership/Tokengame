@@ -45,6 +45,13 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Both: section intros smaller; the record intro in plain words. Record controls: no big arrows; "Past rounds" and "Upcoming" are red pills beside the round chips (Upcoming glows). "So far" removed. "If you'd followed each AI" is now "$10K on every call": four tiles, big %, dollars, a small path. Buyback steps shorter; the pot scoreboard is off the overview. The road has no launch step (the site goes live with the coin).
 - Season Live: Buyback tab is its own page (#/buyback) with the pot and $EZ bought back.
 
+## 2026-10-03 (later still)
+- Overview band (both): "How we grade" is plain text right of Standings; a breathing dot left of Up next (gone from All upcoming); "Filed the day before" removed; the yellow box shows Predictions and Resolves dates.
+- "Zeason" with a Z in visible copy (brand line "Zeason one", calendar link).
+- Season Live leaderboard: the race is replaced by "The stats" (same four-way flip: wins, hit rate, avg miss, ROI as ranked bars, longer is always better). Highlights are a front page, "The Zeason Times", lead story with the film still. Legend: "Simulated, before fees" (owner asked for "estimated"; see note to owner).
+- Upcoming: a temporary "Look" switch for review: Brand colours (tiles in each company's colour, CO_LOGOS.c from tools/fetch_logos.py) or Compact (one line per day, rounds as chips). Remove the switch once the owner picks.
+- A round opened over the page now uses full-size card text on phones.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.

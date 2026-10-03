@@ -73,7 +73,10 @@ function dayOf(v){return mmdd(v.st==="sealed"?v.called:v.resolves)}
 function dkey(d){return d?d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"):"9999"}
 var DAYS=(function(){var m={};ALLN.forEach(function(n){var v=rv(n),d=dayOf(v),k=dkey(d);(m[k]=m[k]||{k:k,d:d,ns:[]}).ns.push(n)});
   return Object.keys(m).sort().map(function(k){var D=m[k];D.ns.sort(function(x,y){var bx=isBig(rv(x).ticker),by=isBig(rv(y).ticker);return (by-bx)||(x-y)});return D})})();
-var TODAYK=dkey(new Date()),RBIG=false;
+var TODAYK=dkey(new Date()),RBIG=false,RLOOK="brand";
+/* a company's colour (CO_LOGOS.c, from tools/fetch_logos.py) and the ink that reads on it */
+function bcol(t){var L=CO_LOGOS[String(t||"").toUpperCase()];return L&&L.c||"#12131a"}
+function onCol(h){var c=parseInt(h.slice(1),16),r=c>>16&255,g=c>>8&255,b=c&255;return (0.2126*r+0.7152*g+0.0722*b)>150?"#12131a":"#ffffff"}
 function dayLabel(D){if(!D.d)return {w:"Later",m:"TBC"};return {w:D.k===TODAYK?"Today":D.d.toLocaleDateString("en-US",{weekday:"long"}),m:fmtDate((D.d.getMonth()+1)+"/"+D.d.getDate())}}
 /* the next day: the first day from today that still has a round to come (else the last day) */
 function nextK(days){var x=days.filter(function(D){return D.k>=TODAYK&&D.ns.some(function(n){return rv(n).st!=="graded"})})[0]||days.filter(function(D){return D.k>=TODAYK})[0]||days[days.length-1];return x?x.k:null}
@@ -84,19 +87,31 @@ function rcard(n){var v=rv(n),src=findR(n)||findP(n),art,foot;
     foot=v.win.length?'<small>Winner</small><span class="rcd-w">'+v.win.map(function(m){return logo(m)}).join("")+'<b>'+v.win.map(nm).join(" & ")+'</b></span>':'<span class="rcd-w"><span class="lg nob" aria-hidden="true">✗</span><b>No winner</b></span>'}
   else{art='<span class="rcd-b">'+tkBadge(v.ticker)+'<em>Calls are in</em></span>';
     foot='<span class="rcd-c">'+v.calls.map(function(c){return '<span>'+logo(c.m)+'<b class="'+(c.dn?'cd':'cu')+'">'+(c.dn?'▼':'▲')+esc(c.mag)+'</b></span>'}).join("")+'</span>'}
-  return '<li><a class="rcd '+v.st+'" href="#/round/'+n+'"><span class="rcd-a">'+art+'</span><span class="rcd-t">Round '+n+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+' <span aria-hidden="true">·</span> '+esc(v.co)+(hasTk(v)?' <span class="tk">('+esc(v.ticker)+')</span>':'')+'</span><span class="rcd-f">'+foot+'</span></a></li>'}
-function rtile(n){var v=rv(n);
-  return '<li><a class="rtl" href="#/round/'+n+'">'+tkBadge(v.ticker)+'<span class="rt"><small>Round '+n+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+'</small><b>'+esc(v.co)+'</b><span>'+(hasTk(v)?esc(v.ticker)+' · ':'')+'Result '+fmtDate(v.resolves)+'</span></span></a></li>'}
+  var c=bcol(v.ticker);
+  return '<li><a class="rcd '+v.st+'" style="--bc:'+c+';--bi:'+onCol(c)+'" href="#/round/'+n+'"><span class="rcd-a">'+art+'</span><span class="rcd-t">Round '+n+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+' <span aria-hidden="true">·</span> '+esc(v.co)+(hasTk(v)?' <span class="tk">('+esc(v.ticker)+')</span>':'')+'</span><span class="rcd-f">'+foot+'</span></a></li>'}
+function rtile(n){var v=rv(n),c=bcol(v.ticker);
+  return '<li><a class="rtl" style="--bc:'+c+';--bi:'+onCol(c)+'" data-tk="'+esc(String(v.ticker||"").split(".")[0])+'" href="#/round/'+n+'">'+tkBadge(v.ticker)+'<span class="rt"><small>Round '+n+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+'</small><b>'+esc(v.co)+'</b><span>'+(hasTk(v)?esc(v.ticker)+' · ':'')+'Result '+fmtDate(v.resolves)+'</span></span></a></li>'}
 function timeline(){var days=DAYS.map(function(D){return {k:D.k,d:D.d,ns:RBIG?D.ns.filter(function(n){return isBig(rv(n).ticker)}):D.ns}}).filter(function(D){return D.ns.length}),nk=nextK(days);
   if(!days.length)return '<p class="empty">No big names yet.</p>';
   return days.map(function(D){var L=dayLabel(D),done=D.ns.filter(function(n){return rv(n).st!=="sealed"}),seal=D.ns.filter(function(n){return rv(n).st==="sealed"}),
       st=D.ns.every(function(n){return rv(n).st==="graded"})?'Graded':D.ns.some(function(n){return rv(n).st==="calls"})?'Calls are in':'Calls come in';
     return '<section class="rday'+(D.k===nk?' next':'')+(D.k<TODAYK?' past':'')+'" data-k="'+D.k+'" aria-label="'+esc(L.w+' '+L.m)+'"><div class="rdh"><h2>'+esc(L.m)+'</h2><span class="rdw">'+esc(L.w)+'</span>'+(D.k===nk?'<b class="nx">Next</b>':'')+'<span class="rds">'+st+' · '+D.ns.length+'</span></div>'+
       (done.length?'<ul class="rcds">'+done.map(rcard).join("")+'</ul>':'')+(seal.length?'<ul class="rtls">'+seal.map(rtile).join("")+'</ul>':'')+'</section>'}).join("")}
+function cchip(n){var v=rv(n),c=bcol(v.ticker),r;
+  if(v.st==="graded")r='<span class="cc-r '+(v.a<0?'d':'u')+'">'+(v.a<0?'▼':'▲')+esc(v.out.replace(/^[+−-]/,""))+'</span>'+(v.win.length?v.win.map(function(m){return logo(m)}).join(""):'<span class="lg nob" aria-hidden="true">✗</span>');
+  else if(v.st==="calls")r='<span class="cc-r p">Calls in</span>';
+  else r='<span class="cc-r s">'+fmtDate(v.resolves)+'</span>';
+  return '<li><a class="cch '+v.st+'" style="--bc:'+c+'" href="#/round/'+n+'">'+tkBadge(v.ticker)+'<b>'+esc(v.co)+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+'</b>'+r+'</a></li>'}
+function compactList(){var days=DAYS.map(function(D){return {k:D.k,d:D.d,ns:RBIG?D.ns.filter(function(n){return isBig(rv(n).ticker)}):D.ns}}).filter(function(D){return D.ns.length}),nk=nextK(days);
+  if(!days.length)return '<p class="empty">No big names yet.</p>';
+  return '<div class="cpt">'+days.map(function(D){var L=dayLabel(D);
+    return '<section class="rday cday'+(D.k===nk?' next':'')+(D.k<TODAYK?' past':'')+'" data-k="'+D.k+'" aria-label="'+esc(L.w+' '+L.m)+'"><div class="cd-d"><b>'+esc(L.m)+'</b><small>'+esc(L.w.slice(0,3))+'</small>'+(D.k===nk?'<i class="nx">Next</i>':'')+'</div><ul class="cd-l">'+D.ns.map(cchip).join("")+'</ul></section>'}).join("")+'</div>'}
+function body(){return RLOOK==="compact"?compactList():timeline()}
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
   return '<div class="rhd"><h1 tabindex="-1">Upcoming</h1><div class="seg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All</button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names</button></div></div>'+
-    '<p class="rfoot">Every call goes out before the report. '+x+' to see them first. <span aria-hidden="true">·</span> <button type="button" class="lnk" id="icsB">Add the season to your calendar</button> <span id="icsMsg" class="note" aria-live="polite"></span></p>'+
-    '<div id="rtl" class="rtline">'+timeline()+'</div>'}
+    '<p class="rfoot">Every call goes out before the report. '+x+' to see them first. <span aria-hidden="true">·</span> <button type="button" class="lnk" id="icsB">Add the Zeason to your calendar</button> <span id="icsMsg" class="note" aria-live="polite"></span></p>'+
+    '<div class="look" role="group" aria-label="Preview a look (for review)"><small>Look</small><button type="button" data-look="brand" aria-pressed="'+(RLOOK==="brand")+'">Brand colours</button><button type="button" data-look="compact" aria-pressed="'+(RLOOK==="compact")+'">Compact</button></div>'+
+    '<div id="rtl" class="rtline look-'+RLOOK+'">'+body()+'</div>'}
 /* put a day (the next one, or a shared round's day) in the middle of the screen */
 function centerDay(root,k){var s=(k&&$('.rday[data-k="'+k+'"]',root))||$(".rday.next",root);if(!s)return;
   var y=s.getBoundingClientRect().top+scrollY-Math.max(120,innerHeight*.32);window.scrollTo(0,Math.max(0,y))}
@@ -104,7 +119,9 @@ function wireRounds(root){
   /* the title and the All / Big names switch stay under the top bar */
   function th(){var t=$(".top");if(t)document.documentElement.style.setProperty("--toph",t.offsetHeight+"px")}th();addEventListener("resize",th);
   $$("[data-big]",root).forEach(function(b){b.addEventListener("click",function(){RBIG=b.dataset.big==="1";$$("[data-big]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});
-    $("#rtl",root).innerHTML=timeline();centerDay(root)})});
+    $("#rtl",root).innerHTML=body();centerDay(root)})});
+  $$("[data-look]",root).forEach(function(b){b.addEventListener("click",function(){RLOOK=b.dataset.look;$$("[data-look]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});
+    var t=$("#rtl",root);t.className="rtline look-"+RLOOK;t.innerHTML=body();centerDay(root)})});
   wireCal(root)}
 function wireCal(root){var b=$("#icsB",root);if(b)b.addEventListener("click",function(){var m=$("#icsMsg",root);
   save(new Blob([icsText()],{type:"text/calendar"}),"ez-rounds.ics").then(function(){m.textContent="Saved ez-rounds.ics."},
@@ -154,74 +171,41 @@ function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=10000;
     '<span class="lb-c roi '+(b==null?'':up?'pu':'pd')+'" role="cell"><b>'+(b==null?'n/a':pctTxt(b))+'</b><small>'+(b==null?'':usd(b))+'</small></span>'+
     '<span class="lb-f" role="cell">'+formDots(C)+'</span>'+
     '<span class="lb-w pc-w" role="cell"><b>'+C.won+'</b><span>'+(C.won===1?'win':'wins')+'</span></span></li>'}
-/* ---------- the race: one chart, four ways to score it (wins, hit rate, average miss, ROI). Like "Are they learning?",
-   a switch picks the measure and the card flips to it. Each AI is a racer: its logo rides its line to the finish.
-   Every number is worked out from ROUNDS here; shared wins count for both. ---------- */
+/* ---------- the stats: four ways to rank the AIs (wins, hit rate, average miss, ROI). A switch picks one and the card
+   flips to it, like "Are they learning?". One row per AI: rank, a bar (longer is always better), the number, one line
+   of detail. Every number is worked out from ROUNDS here. ---------- */
 var RMET={
-  wins:{t:"Wins",sub:"Rounds won, round by round.",step:true,f:function(v){return String(v)}},
-  hit:{t:"Hit rate",sub:"Share of calls with the direction right, round by round.",f:function(v){return Math.round(v)+"%"}},
-  miss:{t:"Avg miss",sub:"Average points off the real move. Smaller is better, so the closest rides on top.",inv:true,f:function(v){return v.toFixed(2)}},
-  roi:{t:"ROI",sub:"$10,000 following every call, all in. Hypothetical, before fees.",zero:true,f:function(v){return (v>=0?"+":"−")+Math.abs(v).toFixed(1)+"%"}}};
+  wins:{t:"Wins",sub:"Rounds won. A shared round counts for each winner."},
+  hit:{t:"Hit rate",sub:"Calls that got the direction right."},
+  miss:{t:"Avg miss",sub:"Average points off the real move. Smaller is better."},
+  roi:{t:"ROI",sub:"$10,000 rolled through every call. Simulated, before fees."}};
 var RKEYS=["wins","hit","miss","roi"],RCUR="wins";
-function raceData(k){var S={};RK.forEach(function(m){var w=0,g=0,ok=0,err=0,bal=10000,p=[k==="wins"||k==="roi"?0:null];
-    ROUNDS.forEach(function(r){var c=callOf(r,m);if(r.win&&r.win.split(" & ").indexOf(m)>-1)w++;
-      if(c){g++;ok+=callOk(r,c);err+=parseFloat(c[2]);bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100}
-      p.push(k==="wins"?w:k==="hit"?(g?ok/g*100:null):k==="miss"?(g?err/g:null):(bal/10000-1)*100)});S[m]=p});return S}
-var RACE_INK={GROK:"#e9e9ef"};
-function rcol(m){return RACE_INK[m]||MODELS[m].c}
-/* draw one measure into a face: the track (SVG) and the racers (logos that ride each line) */
-function drawRace(face,k,anim){var M=RMET[k],S=raceData(k),n=ROUNDS.length,box=$(".rc-trk",face);if(!box)return;
-  var W=Math.max(300,box.clientWidth),sm=W<560,H=sm?250:320,L=sm?30:44,R=sm?118:150,T=26,B=34;
-  var vals=[];RK.forEach(function(m){S[m].forEach(function(v){if(v!=null)vals.push(v)})});
-  var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals);
-  if(k==="wins"){lo=0;hi=Math.max(hi,1)}else if(k==="hit"){lo=0;hi=100}else if(k==="miss"){lo=0;hi=Math.ceil(hi/5)*5||5}else{var a=Math.max(Math.abs(lo),Math.abs(hi),5);a=Math.ceil(a/10)*10;lo=-a;hi=a}
-  function X(i){return L+i/n*(W-L-R)}function Y(v){var t=(v-lo)/(hi-lo);if(M.inv)t=1-t;return T+(1-t)*(H-T-B)}
-  var off={};RK.forEach(function(m,i){off[m]=(i-(RK.length-1)/2)*3});
-  var ticks=k==="wins"?Array.from({length:hi+1},function(_,i){return i}):k==="hit"?[0,25,50,75,100]:k==="miss"?Array.from({length:hi/5+1},function(_,i){return i*5}):[lo,lo/2,0,hi/2,hi];
-  var g='';ticks.forEach(function(v){g+='<line class="'+(M.zero&&v===0?'rt-z':'rt-g')+'" x1="'+L+'" x2="'+X(n)+'" y1="'+Y(v)+'" y2="'+Y(v)+'"/><text class="rt-y" x="'+(L-8)+'" y="'+(Y(v)+4)+'">'+(k==="hit"?v+"%":k==="roi"?(v>0?"+":v<0?"−":"")+Math.abs(v)+"%":v)+'</text>'});
-  for(var i=1;i<=n;i++)if(n<=14||i%5===0||i===n)g+='<text class="rt-x" x="'+X(i)+'" y="'+(H-10)+'">R'+ROUNDS[i-1].n+'</text>';
-  /* the finish: a checkered strip at the last round */
-  g+='<defs><pattern id="chk-'+k+'" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#fff"/><rect x="4" y="4" width="4" height="4" fill="#fff"/></pattern></defs><rect class="rt-fin" x="'+(X(n)-4)+'" y="'+(T-12)+'" width="8" height="'+(H-B-T+12)+'" fill="url(#chk-'+k+')"/>';
-  var paths={},ends=[];RK.forEach(function(m){var p=S[m],d="",first=-1;for(var i=0;i<=n;i++){if(p[i]==null)continue;var x=X(i),y=Y(p[i])+off[m];
-      if(first<0){d="M"+x.toFixed(1)+","+y.toFixed(1);first=i}else d+=M.step?"H"+x.toFixed(1)+"V"+y.toFixed(1):"L"+x.toFixed(1)+","+y.toFixed(1)}
-    paths[m]=d;if(p[n]!=null)ends.push({m:m,v:p[n],y:Y(p[n])+off[m]})});
-  /* the order at the finish: best first, labels pushed apart so none overlap, each tied to its line */
-  var order=ends.slice().sort(function(a,b){return M.inv?a.v-b.v:b.v-a.v});
-  var lab=order.slice();lab.forEach(function(e){e.ly=Math.max(T-6,e.y)});for(var j=1;j<lab.length;j++)if(lab[j].ly-lab[j-1].ly<30)lab[j].ly=lab[j-1].ly+30;
-  var LX=X(n)+(sm?22:30);
-  g+=lab.map(function(e){return '<path class="rt-k" d="M'+(X(n)+5)+','+e.y+'C'+(X(n)+14)+','+e.y+' '+(LX-12)+','+e.ly+' '+(LX-2)+','+e.ly+'" stroke="'+rcol(e.m)+'"/>'}).join("");
-  var lines=RK.slice().reverse().map(function(m){return paths[m]?'<path class="rt-l" data-m="'+m+'" d="'+paths[m]+'" stroke="'+rcol(m)+'"/>':''}).join("");
-  box.innerHTML='<svg class="rt" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="'+esc(M.t)+' after round '+ROUNDS[n-1].n+': '+order.map(function(e){return nm(e.m)+' '+M.f(e.v)}).join(", ")+'">'+g+lines+
-    '<line class="rt-cur" y1="'+T+'" y2="'+(H-B)+'" x1="-9" x2="-9"/><rect class="rt-hit" x="'+L+'" y="0" width="'+(X(n)-L)+'" height="'+H+'"/></svg>'+
-    RK.map(function(m){return paths[m]?'<span class="rt-rc'+(order[0]&&order[0].m===m?' lead':'')+'" data-m="'+m+'" style="offset-path:path(\''+paths[m]+'\')">'+logo(m)+'</span>':''}).join("")+
-    lab.map(function(e){var pos=order.indexOf(e);return '<span class="rt-lb" style="left:'+LX+'px;top:'+e.ly+'px"><b>'+(pos+1)+(pos===0?'st':pos===1?'nd':pos===2?'rd':'th')+'</b>'+logo(e.m)+'<span>'+nm(e.m)+'</span><strong>'+M.f(e.v)+'</strong></span>'}).join("")+
-    '<div class="rc-tip" hidden></div>';
-  box.style.height=H+"px";
-  var go=anim&&!reduce&&CSS.supports&&CSS.supports("offset-path","path('M0,0L1,1')");
-  $$(".rt-rc",box).forEach(function(el){if(!CSS.supports||!CSS.supports("offset-path","path('M0,0L1,1')")){var e=ends.filter(function(x){return x.m===el.dataset.m})[0];if(e){el.style.left=X(n)+"px";el.style.top=e.y+"px";el.style.offsetPath="none"}return}
-    el.style.offsetDistance="100%";if(go)el.animate([{offsetDistance:"0%"},{offsetDistance:"100%"}],{duration:1600,easing:"cubic-bezier(.45,.05,.3,1)"})});
-  $$(".rt-l",box).forEach(function(p){if(!go)return;var len=p.getTotalLength();p.style.strokeDasharray=len;p.animate([{strokeDashoffset:len},{strokeDashoffset:0}],{duration:1600,easing:"cubic-bezier(.45,.05,.3,1)"})});
-  $$(".rt-lb",box).forEach(function(el){if(go)el.animate([{opacity:0},{opacity:0,offset:.85},{opacity:1}],{duration:1900})});
-  /* hover or touch: the standings after any round */
-  var sv=$("svg",box),tip=$(".rc-tip",box),cur=$(".rt-cur",box);
-  function at(e){var r=sv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W,i=0,bd=1e9;for(var q=1;q<=n;q++){var dx=Math.abs(X(q)-x);if(dx<bd){bd=dx;i=q}}return i}
-  function show(e){var i=at(e);if(!i)return;cur.setAttribute("x1",X(i));cur.setAttribute("x2",X(i));var r=ROUNDS[i-1];
-    tip.innerHTML='<b>After round '+r.n+' · '+esc(r.co)+'</b>'+RK.filter(function(m){return S[m][i]!=null}).sort(function(a,b){return M.inv?S[a][i]-S[b][i]:S[b][i]-S[a][i]}).map(function(m){return '<span>'+logo(m)+nm(m)+' <b>'+M.f(S[m][i])+'</b></span>'}).join("");
-    tip.hidden=false;tip.style.left=Math.max(4,Math.min(W-tip.offsetWidth-4,X(i)+12))+"px"}
-  function hide(){tip.hidden=true;cur.setAttribute("x1",-9);cur.setAttribute("x2",-9)}
-  sv.addEventListener("pointermove",show);sv.addEventListener("pointerdown",show);sv.addEventListener("pointerleave",hide)}
-function raceHTML(){return '<section class="blk" aria-labelledby="raceH"><div class="hh"><h2 id="raceH">The race</h2></div>'+
-  '<div class="lsw rsw" role="group" aria-label="Score the race by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+RMET[k].t+'</button>'}).join("")+'</div>'+
-  '<div class="rflip" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><p class="rf-sub"></p><div class="rc-trk"></div></div>'}).join("")+'</div></div></section>'}
-function wireRace(root){var fl=$("#rflip",root);if(!fl)return;var faces=$$(".rf-face",fl),front=0,seen=false;
-  function fill(i,k,anim){$(".rf-sub",faces[i]).textContent=RMET[k].sub;drawRace(faces[i],k,anim)}
+function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(function(h){return !h.none});
+    var shared=ROUNDS.filter(function(r){var w=r.win?r.win.split(" & "):[];return w.length>1&&w.indexOf(m)>-1}).length,bestC=calls.slice().sort(function(a,b){return a.off-b.off})[0],b=fbal(m);
+    if(k==="wins")return {m:m,v:C.won,txt:String(C.won),sub:C.won?(C.won-shared)+" outright"+(shared?", "+shared+" shared":""):"Not yet"};
+    if(k==="hit")return {m:m,v:C.g?C.right/C.g*100:0,txt:C.g?pctOf(C.right,C.g)+"%":"n/a",sub:C.right+" of "+C.g+" calls"};
+    if(k==="miss")return {m:m,v:C.avg,txt:C.avg==null?"n/a":C.avg.toFixed(2),sub:bestC?"Best: "+bestC.off.toFixed(2)+" on "+bestC.r.co:""};
+    return {m:m,v:b==null?0:(b/10000-1)*100,txt:b==null?"n/a":pctTxt(b),sub:b==null?"":usd(b)}})
+  .filter(function(x){return x.v!=null}).sort(function(a,b){return k==="miss"?a.v-b.v:b.v-a.v})}
+function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=statRows(k);
+  var mx=Math.max.apply(null,R.map(function(x){return Math.abs(x.v)}))||1,best=R.length?R[0].v:1;
+  box.innerHTML='<ol class="sxl">'+R.map(function(x,i){var w,bar;
+      if(k==="roi"){w=Math.abs(x.v)/mx*50;bar='<span class="sb dv"><i class="'+(x.v>=0?'pu':'pd')+'" style="--w:'+w.toFixed(1)+'%;'+(x.v>=0?'left:50%':'right:50%')+'"></i></span>'}
+      else{w=k==="miss"?(x.v?best/x.v*100:0):k==="hit"?x.v:x.v/mx*100;bar='<span class="sb"><i style="--w:'+w.toFixed(1)+'%;background:'+MODELS[x.m].c+'"></i></span>'}
+      return '<li class="sxr'+(i?'':' top')+'"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span>'+bar+
+        '<span class="st-v"><b class="'+(k==="roi"?(x.v>=0?'pu':'pd'):'')+'">'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
+  var bars=$$(".sb i",box);if(anim&&!reduce){bars.forEach(function(b){b.style.width="0"});requestAnimationFrame(function(){requestAnimationFrame(function(){bars.forEach(function(b,i){b.style.transitionDelay=(i*90)+"ms";b.style.width=""})})})}}
+function statsHTML(){return '<section class="blk" aria-labelledby="stH"><div class="hh"><h2 id="stH">The stats</h2></div>'+
+  '<div class="lsw rsw" role="group" aria-label="Rank the AIs by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+RMET[k].t+'</button>'}).join("")+'</div>'+
+  '<div class="rflip sflip" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><p class="rf-sub"></p><div class="st-box"></div></div>'}).join("")+'</div></div></section>'}
+function wireStats(root){var fl=$("#rflip",root);if(!fl)return;var faces=$$(".rf-face",fl),front=0,seen=false;
+  function fill(i,k,anim){$(".rf-sub",faces[i]).textContent=RMET[k].sub;drawStats(faces[i],k,anim)}
   fill(0,RCUR,false);
   if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&!seen){seen=true;io.disconnect();fill(front,RCUR,true)}})},{threshold:.4});io.observe(fl)}
   $$("[data-rk]",root).forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.rk;if(k===RCUR)return;RCUR=k;
     $$("[data-rk]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});
     var nx=1-front;fill(nx,k,false);fl.classList.toggle("flipped",nx===1);faces[front].setAttribute("aria-hidden","true");faces[nx].removeAttribute("aria-hidden");front=nx;
-    setTimeout(function(){fill(front,k,true)},reduce?0:380)})});
-  var rt;addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){if(fl.isConnected)fill(front,RCUR,false)},200)})}
+    setTimeout(function(){fill(front,k,true)},reduce?0:380)})})}
 
 /* ---------- season records: the record book, written like a sports page. A kicker, a one-line headline, then the
    logo and the number. Each opens its round. Headlines are built from the data, so they stay true. ---------- */
@@ -236,7 +220,9 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
   var wr=RK.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length})[0],
       rr=RK.map(function(m){return run(m,function(r,c){return callOk(r,c)},false)}).sort(function(a,b){return b.rs.length-a.rs.length})[0];
   function word(k){return ["","one","two","three","four","five","six","seven","eight","nine","ten"][k]||String(k)}
-  function tile(kick,head,m,big,unit,n){return '<a class="rec" href="#/round/'+n+'"><small>'+kick+'</small><h3>'+esc(head)+'</h3><span class="rec-v">'+logo(m)+'<b>'+big+'</b><i>'+unit+'</i></span></a>'}
+  var first=true;
+  function tile(kick,head,m,big,unit,n){var r=findR(n),ph=first&&r&&r.poster?'<span class="np-ph"><img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy"></span>':'';first=false;
+    return '<a class="np-a" href="#/round/'+n+'">'+ph+'<small>'+kick+'</small><h3>'+esc(head)+'</h3><p class="np-d">'+logo(m)+'<b>'+big+'</b> '+unit+'<span class="np-r">Round '+n+(r?' · '+fmtDate(r.resolves):'')+'</span></p><span class="np-m">See the card →</span></a>'}
   var out='';
   if(wr.rs.length>1)out+=tile("Most wins in a row",wr.rs.length===2?nm(wr.m)+" takes "+listCo(wr.rs)+" back to back":wr.rs.length===3?nm(wr.m)+" runs the table on "+listCo(wr.rs):nm(wr.m)+" wins "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n);
   out+=tile("Closest call",best.off<1?nm(best.m)+" calls "+best.r.co+" by a hair":nm(best.m)+" gets closest on "+best.r.co,best.m,best.off.toFixed(2),"pts off",best.r.n);
@@ -247,10 +233,10 @@ function vModels(){
   return '<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>'+
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
-    '<p class="lbn"><b>Hit rate</b>: share of calls with the direction right. <b>Avg miss</b>: how far the call was from the real move, in points. <b>ROI</b>: $10,000 that followed every call, all in. Hypothetical, before fees.</p>'+
-    raceHTML()+
-    '<section class="blk" aria-labelledby="recH"><div class="hh"><h2 id="recH">Season records</h2></div><div class="recs">'+records()+'</div></section>'}
-function wireModels(root){wireRace(root)}
+    '<p class="lbn"><b>Hit rate</b>: calls right on direction. <b>Avg miss</b>: points off the real move. <b>ROI</b>: $10,000 rolled through every call. Simulated, before fees.</p>'+
+    statsHTML()+
+    '<section class="blk" aria-labelledby="recH"><div class="hh"><h2 id="recH">Highlights</h2></div><div class="np"><div class="np-mast"><b>The Zeason Times</b><span>After round '+(ROUNDS.length?ROUNDS[ROUNDS.length-1].n:0)+'</span></div><div class="np-g">'+records()+'</div></div></section>'}
+function wireModels(root){wireStats(root)}
 function vModel(m){if(!CAR[m])return null;var C=CAR[m],calls=C.hist.filter(function(h){return !h.none});
   var okc=calls.filter(function(h){return h.ok}),best=okc.slice().sort(function(a,b){return a.off-b.off})[0],worst=calls.slice().sort(function(a,b){return b.off-a.off})[0];
   function callCard(h,lab){if(!h)return '<div class="box"><small>'+lab+'</small><b>Not yet</b><p>No right-way calls graded yet.</p></div>';var r=h.r,dn=/^DOWN/.test(h.said);
@@ -260,7 +246,7 @@ function vModel(m){if(!CAR[m])return null;var C=CAR[m],calls=C.hist.filter(funct
     '<div class="mh">'+logo(m)+'<div class="t"><span class="eb">#'+rkOf(m)+' on the leaderboard</span><h1 tabindex="-1" style="margin-top:8px">'+nm(m)+'</h1><p class="note">'+esc(MODELS[m].ver||'')+' · '+C.g+' graded call'+(C.g===1?'':'s')+' so far.</p></div></div>'+
     '<div class="tiles"><div><small>Wins</small><b>'+C.won+'</b><span>Rounds won outright or shared</span></div><div><small>Right way</small><b>'+pctOf(C.right,C.g)+'%</b><span>'+C.right+' of '+C.g+' calls</span></div><div><small>Average miss</small><b>'+(C.avg==null?'n/a':C.avg.toFixed(2))+'</b><span>Points from the real move</span></div>'+
       '<div><small>Current streak</small><b>'+esc(st)+'</b><span>Right or wrong way, in a row</span></div></div>'+
-    '<section class="blk" aria-labelledby="hiH"><div class="hh"><h2 id="hiH">Every round</h2><p>One dot per round. Tap one to see the card.</p></div><ol class="strip">'+
+    '<section class="blk" aria-labelledby="hiH"><div class="hh"><h2 id="hiH">Every round</h2><p>One dot per round. Tap one to see the card.</p></div><ol class="sxrip">'+
       C.hist.map(function(h){var cls=h.none?"n":h.win?"w":h.ok?"g":"r",lab=h.none?"no call":h.win?"won":h.ok?"right way":"wrong way";
         return '<li><a href="#/round/'+h.n+'" aria-label="Round '+h.n+': '+lab+'"><span class="dt '+cls+'" aria-hidden="true">'+(h.win?CROWN:h.none?'·':h.ok?'✓':'✗')+'</span><small aria-hidden="true">R'+h.n+'</small></a></li>'}).join("")+'</ol>'+
       '<p class="legend"><span><i style="background:var(--ez-gold)"></i>Won</span><span><i style="background:var(--ez-green)"></i>Right way</span><span><i style="background:var(--ez-red)"></i>Wrong way</span><span><i style="background:var(--card)"></i>No call</span></p></section>'+

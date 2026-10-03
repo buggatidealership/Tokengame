@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>EZ Season</title>
-<meta name="description" content="Earnings Zeason, season one. We're teaching AIs to bet. AI models predict how a stock moves after its earnings, then the market grades them. Every prediction is on the record.">
+<meta name="description" content="Earnings Zeason, Zeason one. We're teaching AIs to bet. AI models predict how a stock moves after its earnings, then the market grades them. Every prediction is on the record.">
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link id="pt-fonts" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=Barlow:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -902,11 +902,25 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 .ft-s path{fill:none;stroke-width:2.2;stroke-linejoin:round;vector-effect:non-scaling-stroke}
 .ft-s .pu{stroke:color-mix(in srgb,var(--up) 80%,#000)}.ft-s .pd{stroke:color-mix(in srgb,var(--dn) 85%,#000)}
 @media(max-width:760px){.ftl{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ft{padding:10px 11px 8px}.ft-p{font-size:34px}}
+/* round 14: How we grade as plain text beside Standings; a breathing dot beside Up next; predictions and result dates */
+.howb{min-height:24px;padding:0 2px;border-radius:4px;background:none;box-shadow:none;font:700 12px/1 var(--fb);color:var(--ink2)}
+.howb:hover{background:none;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.st-h h2 .bdot{display:inline-block;width:9px;height:9px;margin:0 8px 0 2px;vertical-align:.18em;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite}
+@media(prefers-reduced-motion:reduce){.st-h h2 .bdot{animation:none}}
+.due{flex-direction:column;align-items:stretch;gap:4px;padding:6px 11px}
+.due>span{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.due b{font-size:20px}
+@media(max-width:640px){
+  #stand .st-h{display:flex!important;align-items:baseline;flex-wrap:nowrap}
+  .howb{margin:0 0 0 auto;font-size:10.5px;min-height:20px}
+  .st-h h2 .bdot{width:7px;height:7px;margin-right:5px}
+  .due{padding:4px 6px;gap:3px}.due>span{gap:4px}.due small{font-size:7.5px;letter-spacing:.02em}.due b{font-size:13px}
+}
 </style>
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <a class="brand" href="#top" aria-label="Earnings Zeason, back to top"><span class="mark"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span><b>Earnings Zeason<small>Season one</small></b></a>
+  <a class="brand" href="#top" aria-label="Earnings Zeason, back to top"><span class="mark"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span><b>Earnings Zeason<small>Zeason one</small></b></a>
   <nav class="nav" aria-label="Sections"><a href="#upnext">Up next</a><a href="#record">The record</a><a href="#learn">Learning</a><a href="#bet">The buyback</a><a href="#calc">The math</a><a href="#road">The road</a></nav>
   <a class="live" href="#upnext" id="liveChip"><i></i><span id="liveTxt">In play</span></a>
 </div></header>
@@ -930,9 +944,9 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
         <ol class="roster" id="roster" aria-labelledby="standH"></ol>
       </div>
       <div class="col un" id="upnext" role="region" aria-labelledby="unH">
-        <div class="st-h"><h2 id="unH">Up next</h2><span>Filed the day before</span></div>
+        <div class="st-h"><h2 id="unH"><i class="bdot" aria-hidden="true"></i>Up next</h2></div>
         <div class="un-b" id="unB"></div>
-        <button type="button" class="un-more" id="unMore" aria-expanded="false" aria-controls="unAll" hidden><i aria-hidden="true"></i><span id="unMoreT">All upcoming</span></button>
+        <button type="button" class="un-more" id="unMore" aria-expanded="false" aria-controls="unAll" hidden><span id="unMoreT">All upcoming</span></button>
       </div>
     </div>
     <div class="up-all" id="unAll" role="region" aria-label="All upcoming rounds" hidden></div>
@@ -1406,8 +1420,8 @@ function pendRow(u){var tm=timed(u.timing,false);
 var NX=TARGET,unHTML="";
 if(NX){var hasCalls=!!(NX.calls&&NX.calls.length);
   unHTML='<div class="up-p"><h3 class="nm">'+coTitle(NX)+'</h3>'+
-    (hasCalls?callChips(NX):'<div class="un-seal"><span class="mark" aria-hidden="true"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span><b>Calls '+fmtDate(NX.called)+'</b></div>')+
-    '<p class="due"><small>'+RESOLVE_WORD+'</small> <b>'+fmtDate(NX.resolves)+'</b></p></div>'}
+    (hasCalls?callChips(NX):'<div class="un-seal"><span class="mark" aria-hidden="true"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span></div>')+
+    '<p class="due"><span><small>Predictions</small> <b>'+fmtDate(NX.called)+'</b></span><span><small>'+RESOLVE_WORD+'</small> <b>'+fmtDate(NX.resolves)+'</b></span></p></div>'}
 $(".band").style.setProperty("--rows",Math.max(1,ROWS.length));
 $("#unB").innerHTML=unHTML;
 var unMore=$("#unMore"),unAll=$("#unAll");
@@ -1746,7 +1760,7 @@ function followAll(){var out=[];ACTIVE.forEach(function(m){var bal=10000,n=0,fir
   return out.sort(function(a,b){return b.bal-a.bal})}
 function usd(v){return "$"+Math.round(v).toLocaleString("en-US")}
 function pctTxt(b){var pc=(b/10000-1)*100;return (pc>=0?"+":"−")+Math.abs(pc).toFixed(1)+"%"}
-var FOLLOW_NOTE="Hypothetical, before fees. Buy on an up call, short on a down call. In before the report, out at the next close.";
+var FOLLOW_NOTE="Simulated, before fees. Buy on an up call, short on a down call. In before the report, out at the next close.";
 (function(){var L=$("#folL");if(!L||!FOLLOW.length){var f=$("#fol");if(f)f.hidden=true;return}
   /* one tile per AI: the return big, the dollars under it, and its path from $10,000 (dashed) round by round */
   var all=[].concat.apply([],FOLLOW.map(function(o){return o.path})),lo=Math.min.apply(null,all.concat([10000])),hi=Math.max.apply(null,all.concat([10000])),pad=(hi-lo)*.12||500;lo-=pad;hi+=pad;
