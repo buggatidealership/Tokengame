@@ -916,6 +916,36 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
   .st-h h2 .bdot{width:7px;height:7px;margin-right:5px}
   .due{padding:4px 6px;gap:3px}.due>span{gap:4px}.due small{font-size:7.5px;letter-spacing:.02em}.due b{font-size:13px}
 }
+/* round 16: How we grade sits right after the Standings title */
+#stand .st-h .howb{margin-left:10px}
+/* the last round beside the standings: a small looping film and the winner; tap opens the card */
+.up-p.lr{width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.up-p.lr:hover,.up-p.lr:focus-visible{transform:translate(-1px,-2px);box-shadow:0 0 0 2px var(--ink),5px 6px 0 0 var(--ink)}
+.lr-art{grid-row:span 4;position:relative;display:block;min-height:0;border-radius:11px;overflow:hidden;background:var(--slab2);box-shadow:inset 0 0 0 2px var(--ink)}
+.lr-art img,.lr-art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.lr-tap{position:absolute;right:6px;bottom:6px;padding:4px 7px;border-radius:999px;background:rgba(10,12,24,.75);color:#fff;font:700 10px/1 var(--fm);letter-spacing:.04em;text-transform:uppercase}
+.lr-w{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;padding:6px 11px;border-radius:10px;background:var(--slab);color:var(--on-slab)}
+.lr-w small{font:400 20px/1 var(--fd);text-transform:uppercase;color:var(--yel)}
+.lr-w>span{display:flex;align-items:center;gap:6px;min-width:0}.lr-w .lg{font-size:24px}.lr-w b{font:400 20px/1 var(--fd);text-transform:uppercase;white-space:nowrap}
+@media(max-width:640px){.lr-w{padding:4px 6px;gap:4px}.lr-w small{font-size:13px}.lr-w .lg{font-size:17px}.lr-w b{font-size:13px}.lr-tap{font-size:8px;padding:3px 5px;right:4px;bottom:4px}}
+body.lmod-on{overflow:hidden}
+.lmod{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--slab2) 78%,transparent);backdrop-filter:blur(3px)}
+.lmod-c{position:relative;width:min(400px,100%);max-height:100%;overflow:auto;padding-top:46px}
+.lmod-c .card{--cw:100%;width:100%;flex:none;cursor:pointer}
+.lmod-x{position:absolute;top:0;right:0;width:40px;height:40px;border-radius:50%;background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--ink);font:800 16px/1 var(--fb)}
+.lmod-x:hover{background:var(--yel)}
+@media(max-width:759px){
+  .lmod .ctop{font-size:17px;padding-left:12px}
+  .lmod .cwin small,.lmod .cwin .wn{font-size:30px}.lmod .cwin .wn .lg{font-size:30px}
+  .lmod .flipb{min-height:34px;font-size:13px}
+  .lmod .bk-h{padding:14px 14px 12px}.lmod .bk-h h4{font-size:20px}.lmod .bk-h p{font-size:11px}
+  .lmod .bk-body{gap:16px;padding:18px 12px 8px}.lmod .bk-sec{font-size:11px;padding:0 3px 12px}
+  .lmod .bk-rows{gap:10px}
+  .lmod .bk-r{grid-template-columns:22px minmax(0,1fr) auto;gap:10px;padding:9px 12px;min-height:54px;border-radius:11px}
+  .lmod .bk-r .rk{font-size:22px}.lmod .bk-r .who{gap:8px;font-size:17px}.lmod .bk-r .who .lg{font-size:28px}
+  .lmod .bk-r .pd{font-size:17px;padding:6px 7px}.lmod .bk-r .crown{font-size:11px;top:-12px;right:10px}
+  .lmod .bk-out{min-height:54px;padding:8px 12px}.lmod .bk-out small{font-size:24px}.lmod .bk-out b{font-size:17px;padding:6px 8px}
+}
 </style>
 </head>
 <body>
@@ -1422,8 +1452,33 @@ if(NX){var hasCalls=!!(NX.calls&&NX.calls.length);
   unHTML='<div class="up-p"><h3 class="nm">'+coTitle(NX)+'</h3>'+
     (hasCalls?callChips(NX):'<div class="un-seal"><span class="mark" aria-hidden="true"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span></div>')+
     '<p class="due"><span><small>Predictions</small> <b>'+fmtDate(NX.called)+'</b></span><span><small>'+RESOLVE_WORD+'</small> <b>'+fmtDate(NX.resolves)+'</b></span></p></div>'}
+/* BAND_RIGHT: what sits beside the standings. "last" = the last graded round (its film, small, and the winner; tap it to
+   open the full card over the page). "next" = the next round (Up next). Season Live builds with "next". */
+var BAND_RIGHT="last",LR=ROUNDS.length?ROUNDS[ROUNDS.length-1]:null;
+if(BAND_RIGHT==="last"&&LR){var lw=LR.win?LR.win.split(" & "):[];
+  $("#unH").innerHTML="Last round";
+  unHTML='<button type="button" class="up-p lr" id="lrB" aria-label="Open the card: '+plain(LR)+'"><span class="nm">'+coTitle(LR)+'</span>'+
+    '<span class="lr-art">'+(LR.poster?'<img src="'+MEDIA+LR.poster+'.jpg" alt="">':'')+(LR.film&&!reduce?'<video muted loop playsinline autoplay preload="metadata" aria-hidden="true"'+(LR.poster?' poster="'+MEDIA+LR.poster+'.jpg"':'')+'><source src="'+MEDIA+LR.film+'.webm" type="video/webm"><source src="'+MEDIA+LR.film+'.mp4" type="video/mp4"></video>':'')+'<span class="lr-tap" aria-hidden="true">Tap to open ↗</span></span>'+
+    '<span class="lr-w"><small>'+(lw.length?'Winner':'No winner')+'</small><span>'+(lw.length?lw.map(function(m){return logo(m)}).join("")+'<b>'+lw.map(nm).join(" & ")+'</b>':'<b>✗</b>')+'</span></span></button>'}
 $(".band").style.setProperty("--rows",Math.max(1,ROWS.length));
 $("#unB").innerHTML=unHTML;
+/* the last round, opened over the page: the same flip card as the record. Close with ✕, Esc or a tap outside. */
+var lMod=null,lFrom=null;
+function lClose(){if(!lMod)return;$$("video",lMod).forEach(function(v){v.pause()});lMod.remove();lMod=null;document.body.classList.remove("lmod-on");if(lFrom)lFrom.focus({preventScroll:true})}
+function lOpen(r,from){lClose();lFrom=from;var m=document.createElement("div");m.className="lmod";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label",plain(r));
+  m.innerHTML='<div class="lmod-c"><button type="button" class="lmod-x" aria-label="Close">✕</button>'+gradedCard(r,0)+'</div>';
+  document.body.appendChild(m);lMod=m;document.body.classList.add("lmod-on");
+  var c=$(".card",m);c.classList.add("cur");setFaces(c,false);
+  var vid=$("video",m);if(vid){vid.muted=true;vid.loop=true;vid.classList.add("on");var pp=vid.play();if(pp&&pp.catch)pp.catch(function(){})}
+  var cc=$(".lmod-c",m);if(!reduce&&cc.animate){var ra=from.getBoundingClientRect(),rb=cc.getBoundingClientRect();
+    cc.animate([{transform:"translate("+(ra.left+ra.width/2-rb.left-rb.width/2)+"px,"+(ra.top+ra.height/2-rb.top-rb.height/2)+"px) scale("+Math.max(.2,ra.width/rb.width)+")",opacity:.5},{transform:"none",opacity:1}],{duration:460,easing:"cubic-bezier(.2,1.3,.35,1)"})}
+  m.addEventListener("click",function(e){if(e.target===m||e.target.closest(".lmod-x")){lClose();return}
+    var sb=e.target.closest(".shr");if(sb){e.stopPropagation();shareRound(sb);return}
+    var sd=e.target.closest(".snd");if(sd){if(vid){vid.muted=!vid.muted;sd.innerHTML=vid.muted?SND_OFF:SND_ON;sd.setAttribute("aria-label",vid.muted?"Sound off":"Sound on")}return}
+    if(e.target.closest("a"))return;if(e.target.closest(".card"))flip(c)});
+  $(".lmod-x",m).focus({preventScroll:true})}
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&lMod&&!shPop)lClose()});
+var lrB=$("#lrB");if(lrB)lrB.addEventListener("click",function(){lOpen(LR,lrB)});
 var unMore=$("#unMore"),unAll=$("#unAll");
 var pIn=PS.filter(function(u){return u!==NX}),sched=US.filter(function(u){return u!==NX}),GR=[];
 if(pIn.length)GR.push('<section class="ua-g" aria-labelledby="uaP"><h3 class="ua-h" id="uaP"><i aria-hidden="true"></i>Calls in</h3><ol class="ua-l">'+pIn.map(pendRow).join("")+'</ol></section>');

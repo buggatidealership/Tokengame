@@ -56,6 +56,10 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Leaderboard stats: order Hit rate, Avg miss, ROI, Wins; each its own picture (bars; the bullseye with averages ranked; columns up or down from $10,000; a crown per win, half crown for shared, each opens its round). The switch spans the card. The side facing away is emptied after a flip.
 - Highlights: four big tiles over the round's blurred film still, the label big, CT headlines ("goes three for three", "basically front-ran", "got rekt on", "can't miss"). The Zeason Times is parked for a later tab.
 
+## 2026-10-04 (later)
+- Both: "How we grade" sits right after the Standings title.
+- Season only: the panel beside the standings is the last graded round (small looping film, the winner); a tap opens the flip card over the page. Switch: BAND_RIGHT in v15 ("last" or "next"); build.py sets "next" for Season Live, which keeps Up next.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
