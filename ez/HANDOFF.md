@@ -28,13 +28,12 @@ Paste this into a new session, with the zip, to pick up where we left off.
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
-- Nike (round 11) film: waiting on Hedra's re-cut.
 
 ## Rules that stand
 - All numbers come from `ez/ez-data.js` (a snapshot of the owner's public sheet). Never type results by hand. When the owner says "sheet has been updated", follow `ez/SYNC.md`.
 - Variant 1 (`ez/v1-binder.html`) and its media are frozen. v6 Primetime and v9 Primetime Kraft are locked in design and copy.
 - Copy: no long dashes; plain sentences; tickers as "Micron (MU)" with no $ (only $EZ keeps it); no promises of price, return or buyback; "Not financial advice" once; say the pot can be wiped out. Never show the prompt column.
-- Films: the site uses square crops cut from the owner's Hedra masters, scaled down only, always keeping the "$EZ / Nobody said it would be EZ" ending in frame. Nike (round 11) is being re-cut by Hedra after its outcome was corrected to -3.64% (GPT wins).
+- Films: the site uses square crops cut from the owner's Hedra masters, scaled down only, always keeping the "$EZ / Nobody said it would be EZ" ending in frame. Nike (round 11) uses Hedra's re-cut with the corrected outcome, -3.64% (GPT wins), cropped 1800:1800:180:0.
 
 ## Status
 - 11 rounds graded; standings GPT 5, Kimi 3, Claude 1, Grok 0. Rounds 12 to 36 scheduled.
