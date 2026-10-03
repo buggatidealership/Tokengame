@@ -192,3 +192,14 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
   firstR=false}
 addEventListener("hashchange",route);
 route();
+
+/* ---------- Season Live's take on "If you'd followed each AI": the same numbers, each AI as a small line from $10,000
+   to where it is now, round by round (the dashed line is $10,000) ---------- */
+(function(){var L=$("#folL");if(!L||!FOLLOW.length)return;L.classList.add("fol-sp");
+  var all=[].concat.apply([],FOLLOW.map(function(o){return o.path})),lo=Math.min.apply(null,all.concat([10000])),hi=Math.max.apply(null,all.concat([10000])),pad=(hi-lo)*.12||500;lo-=pad;hi+=pad;
+  var W=160,H=44;function Y(v){return (H-4-(v-lo)/(hi-lo)*(H-8)).toFixed(1)}
+  L.innerHTML=FOLLOW.map(function(o,i){var n=o.path.length-1,X=function(k){return (2+k/(n||1)*(W-8)).toFixed(1)},up=o.bal>=10000;
+    var d=o.path.map(function(v,k){return (k?"L":"M")+X(k)+","+Y(v)}).join("");
+    var svg='<svg class="fol-s" viewBox="0 0 '+W+' '+H+'" aria-hidden="true"><line x1="0" x2="'+W+'" y1="'+Y(10000)+'" y2="'+Y(10000)+'" class="z"/><path d="'+d+'" class="'+(up?'pu':'pd')+'"/><circle cx="'+X(n)+'" cy="'+Y(o.bal)+'" r="3.5" class="'+(up?'pu':'pd')+'"/></svg>';
+    return '<li class="fol-r2'+(i?'':' top')+'"><span class="fol-w2">'+logo(o.m)+'<span>'+nm(o.m)+'<small>'+(MODELS[o.m].ver||'')+(o.n<NR?' · '+o.n+' rounds':'')+'</small></span></span>'+svg+
+      '<span class="fol-v2"><b>'+usd(o.bal)+'</b><span class="'+(up?'pu':'pd')+'">'+pctTxt(o.bal)+'</span></span></li>'}).join("")})();
