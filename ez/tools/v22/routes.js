@@ -179,7 +179,7 @@ var RMET={
   hit:{t:"Hit rate",sub:"Calls that got the direction right."},
   miss:{t:"Avg miss",sub:"Average points off the real move. Smaller is better."},
   roi:{t:"ROI",sub:"$10,000 rolled through every call. Simulated, before fees."}};
-var RKEYS=["wins","hit","miss","roi"],RCUR="wins";
+var RKEYS=["hit","miss","roi","wins"],RCUR="hit";
 function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(function(h){return !h.none});
     var shared=ROUNDS.filter(function(r){var w=r.win?r.win.split(" & "):[];return w.length>1&&w.indexOf(m)>-1}).length,bestC=calls.slice().sort(function(a,b){return a.off-b.off})[0],b=fbal(m);
     if(k==="wins")return {m:m,v:C.won,txt:String(C.won),sub:C.won?(C.won-shared)+" outright"+(shared?", "+shared+" shared":""):"Not yet"};
@@ -188,13 +188,24 @@ function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(
     return {m:m,v:b==null?0:(b/10000-1)*100,txt:b==null?"n/a":pctTxt(b),sub:b==null?"":usd(b)}})
   .filter(function(x){return x.v!=null}).sort(function(a,b){return k==="miss"?a.v-b.v:b.v-a.v})}
 function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=statRows(k);
-  var mx=Math.max.apply(null,R.map(function(x){return Math.abs(x.v)}))||1,best=R.length?R[0].v:1;
-  box.innerHTML='<ol class="sxl">'+R.map(function(x,i){var w,bar;
-      if(k==="roi"){w=Math.abs(x.v)/mx*50;bar='<span class="sb dv"><i class="'+(x.v>=0?'pu':'pd')+'" style="--w:'+w.toFixed(1)+'%;'+(x.v>=0?'left:50%':'right:50%')+'"></i></span>'}
-      else{w=k==="miss"?(x.v?best/x.v*100:0):k==="hit"?x.v:x.v/mx*100;bar='<span class="sb"><i style="--w:'+w.toFixed(1)+'%;background:'+MODELS[x.m].c+'"></i></span>'}
-      return '<li class="sxr'+(i?'':' top')+'"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span>'+bar+
-        '<span class="st-v"><b class="'+(k==="roi"?(x.v>=0?'pu':'pd'):'')+'">'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
-  var bars=$$(".sb i",box);if(anim&&!reduce){bars.forEach(function(b){b.style.width="0"});requestAnimationFrame(function(){requestAnimationFrame(function(){bars.forEach(function(b,i){b.style.transitionDelay=(i*90)+"ms";b.style.width=""})})})}}
+  /* hit rate: bars (longer is better) */
+  if(k==="hit"){box.innerHTML='<ol class="sxl">'+R.map(function(x,i){
+      return '<li class="sxr'+(i?'':' lead')+'"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span><span class="sb"><i style="--w:'+x.v.toFixed(1)+'%;background:'+MODELS[x.m].c+'"></i></span><span class="st-v"><b>'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
+    var bars=$$(".sb i",box);if(anim&&!reduce){bars.forEach(function(b){b.style.width="0"});requestAnimationFrame(function(){requestAnimationFrame(function(){bars.forEach(function(b,i){b.style.transitionDelay=(i*90)+"ms";b.style.width=""})})})}return}
+  /* avg miss: the bullseye, with the averages ranked above it */
+  if(k==="miss"){box.innerHTML='<ol class="mxr">'+R.map(function(x,i){return '<li'+(i?'':' class="lead"')+'><span>'+(i+1)+'</span>'+logo(x.m)+'<b>'+nm(x.m)+'</b><strong>'+x.txt+'</strong><small>pts</small></li>'}).join("")+'</ol><div class="tgv mxt"></div>';
+    targets($(".mxt",box),R.map(function(x){return x.m}));return}
+  /* ROI: columns up or down from the $10,000 line */
+  if(k==="roi"){var mx=Math.max.apply(null,R.map(function(x){return Math.abs(x.v)}))||1;
+    box.innerHTML='<div class="rcol">'+R.map(function(x,i){var h=Math.abs(x.v)/mx*100,up=x.v>=0;
+      return '<div class="rcx'+(i?'':' lead')+'"><div class="rc-up">'+(up?'<span class="rc-l pu">'+x.txt+'</span><i class="pu" style="--h:'+h.toFixed(1)+'%"></i>':'')+'</div><div class="rc-dn">'+(up?'':'<i class="pd" style="--h:'+h.toFixed(1)+'%"></i><span class="rc-l pd">'+x.txt+'</span>')+'</div>'+
+        '<div class="rc-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b><small>'+esc(x.sub)+'</small></div></div>'}).join("")+'<span class="rc-base">$10,000</span></div>';
+    var cols=$$(".rcol i",box);if(anim&&!reduce){cols.forEach(function(c){c.style.height="0"});requestAnimationFrame(function(){requestAnimationFrame(function(){cols.forEach(function(c,i){c.style.transitionDelay=(i*110)+"ms";c.style.height=""})})})}return}
+  /* wins: a crown per round won; a shared win is a half crown. Each crown opens its round. */
+  box.innerHTML='<ol class="sxl">'+R.map(function(x,i){var won=ROUNDS.filter(function(r){return r.win&&r.win.split(" & ").indexOf(x.m)>-1});
+      return '<li class="sxr wr'+(i?'':' lead')+'"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span><span class="crs">'+(won.length?won.map(function(r,j){var sh=r.win.indexOf(" & ")>-1;
+        return '<a class="cr'+(sh?' crh':'')+'" style="--d:'+(j*80)+'ms" href="#/round/'+r.n+'" title="Round '+r.n+', '+esc(r.co)+(sh?' (shared)':'')+'" aria-label="Round '+r.n+' '+esc(r.co)+(sh?', shared':'')+'">'+CROWN+'</a>'}).join(""):'<span class="cr0">No wins yet</span>')+'</span><span class="st-v"><b>'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
+  if(anim&&!reduce)$$(".cr",box).forEach(function(c){c.classList.add("pop")})}
 function statsHTML(){return '<section class="blk" aria-labelledby="stH"><div class="hh"><h2 id="stH">The stats</h2></div>'+
   '<div class="lsw rsw" role="group" aria-label="Rank the AIs by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+RMET[k].t+'</button>'}).join("")+'</div>'+
   '<div class="rflip sflip" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><p class="rf-sub"></p><div class="st-box"></div></div>'}).join("")+'</div></div></section>'}
@@ -205,7 +216,9 @@ function wireStats(root){var fl=$("#rflip",root);if(!fl)return;var faces=$$(".rf
   $$("[data-rk]",root).forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.rk;if(k===RCUR)return;RCUR=k;
     $$("[data-rk]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});
     var nx=1-front;fill(nx,k,false);fl.classList.toggle("flipped",nx===1);faces[front].setAttribute("aria-hidden","true");faces[nx].removeAttribute("aria-hidden");front=nx;
-    setTimeout(function(){fill(front,k,true)},reduce?0:380)})})}
+    var old=faces[1-front];setTimeout(function(){fill(front,k,true)},reduce?0:380);
+    /* empty the side now facing away, so the card takes the height of the side you see */
+    setTimeout(function(){if(faces[1-front]===old){$(".st-box",old).innerHTML="";$(".rf-sub",old).textContent=""}},reduce?0:760)})})}
 
 /* ---------- season records: the record book, written like a sports page. A kicker, a one-line headline, then the
    logo and the number. Each opens its round. Headlines are built from the data, so they stay true. ---------- */
@@ -220,14 +233,14 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
   var wr=RK.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length})[0],
       rr=RK.map(function(m){return run(m,function(r,c){return callOk(r,c)},false)}).sort(function(a,b){return b.rs.length-a.rs.length})[0];
   function word(k){return ["","one","two","three","four","five","six","seven","eight","nine","ten"][k]||String(k)}
-  var first=true;
-  function tile(kick,head,m,big,unit,n){var r=findR(n),ph=first&&r&&r.poster?'<span class="np-ph"><img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy"></span>':'';first=false;
-    return '<a class="np-a" href="#/round/'+n+'">'+ph+'<small>'+kick+'</small><h3>'+esc(head)+'</h3><p class="np-d">'+logo(m)+'<b>'+big+'</b> '+unit+'<span class="np-r">Round '+n+(r?' · '+fmtDate(r.resolves):'')+'</span></p><span class="np-m">See the card →</span></a>'}
+  function cos(rs){return rs.map(function(r){return r.co}).join(", ")}
+  function tile(kick,head,m,big,unit,n){var r=findR(n),bg=r&&r.poster?' style="--bg:url(\''+MEDIA+r.poster+'.jpg\')"':'';
+    return '<a class="hl"'+bg+' href="#/round/'+n+'"><span class="hl-k">'+kick+'</span><span class="hl-v">'+logo(m)+'<b>'+big+'</b><i>'+unit+'</i></span><span class="hl-h">'+esc(head)+'</span><span class="hl-r">Round '+n+(r?' · '+fmtDate(r.resolves):'')+' <span aria-hidden="true">→</span></span></a>'}
   var out='';
-  if(wr.rs.length>1)out+=tile("Most wins in a row",wr.rs.length===2?nm(wr.m)+" takes "+listCo(wr.rs)+" back to back":wr.rs.length===3?nm(wr.m)+" runs the table on "+listCo(wr.rs):nm(wr.m)+" wins "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n);
-  out+=tile("Closest call",best.off<1?nm(best.m)+" calls "+best.r.co+" by a hair":nm(best.m)+" gets closest on "+best.r.co,best.m,best.off.toFixed(2),"pts off",best.r.n);
-  out+=tile("Biggest miss",nm(worst.m)+" whiffs on "+worst.r.co,worst.m,worst.off.toFixed(2),"pts off",worst.r.n);
-  if(rr.rs.length>1)out+=tile("Most right calls in a row",rr.rs.length<4?nm(rr.m)+" gets the direction right on "+listCo(rr.rs):nm(rr.m)+" gets the direction right "+word(rr.rs.length)+" times running",rr.m,rr.rs.length,"in a row",rr.rs[rr.rs.length-1].n);
+  if(wr.rs.length>1)out+=tile("Most wins in a row",wr.rs.length===2?nm(wr.m)+" goes back to back: "+cos(wr.rs):wr.rs.length===3?nm(wr.m)+" goes three for three: "+cos(wr.rs):nm(wr.m)+" is on a heater: "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n);
+  out+=tile("Closest call",best.off<1?nm(best.m)+" basically front-ran "+best.r.co:nm(best.m)+" sniped "+best.r.co,best.m,best.off.toFixed(2),"pts off",best.r.n);
+  out+=tile("Biggest miss",nm(worst.m)+" got rekt on "+worst.r.co,worst.m,worst.off.toFixed(2),"pts off",worst.r.n);
+  if(rr.rs.length>1)out+=tile("Most right calls in a row",rr.rs.length<4?nm(rr.m)+" can't miss: "+cos(rr.rs):nm(rr.m)+" calls the direction "+word(rr.rs.length)+" straight",rr.m,rr.rs.length,"in a row",rr.rs[rr.rs.length-1].n);
   return out}
 function vModels(){
   return '<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>'+
@@ -235,7 +248,7 @@ function vModels(){
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
     '<p class="lbn"><b>Hit rate</b>: calls right on direction. <b>Avg miss</b>: points off the real move. <b>ROI</b>: $10,000 rolled through every call. Simulated, before fees.</p>'+
     statsHTML()+
-    '<section class="blk" aria-labelledby="recH"><div class="hh"><h2 id="recH">Highlights</h2></div><div class="np"><div class="np-mast"><b>The Zeason Times</b><span>After round '+(ROUNDS.length?ROUNDS[ROUNDS.length-1].n:0)+'</span></div><div class="np-g">'+records()+'</div></div></section>'}
+    '<section class="blk" aria-labelledby="recH"><div class="hh"><h2 id="recH">Highlights</h2></div><div class="hls">'+records()+'</div></section>'}
 function wireModels(root){wireStats(root)}
 function vModel(m){if(!CAR[m])return null;var C=CAR[m],calls=C.hist.filter(function(h){return !h.none});
   var okc=calls.filter(function(h){return h.ok}),best=okc.slice().sort(function(a,b){return a.off-b.off})[0],worst=calls.slice().sort(function(a,b){return b.off-a.off})[0];

@@ -52,6 +52,10 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Upcoming: a temporary "Look" switch for review: Brand colours (tiles in each company's colour, CO_LOGOS.c from tools/fetch_logos.py) or Compact (one line per day, rounds as chips). Remove the switch once the owner picks.
 - A round opened over the page now uses full-size card text on phones.
 
+## 2026-10-04
+- Leaderboard stats: order Hit rate, Avg miss, ROI, Wins; each its own picture (bars; the bullseye with averages ranked; columns up or down from $10,000; a crown per win, half crown for shared, each opens its round). The switch spans the card. The side facing away is emptied after a flip.
+- Highlights: four big tiles over the round's blurred film still, the label big, CT headlines ("goes three for three", "basically front-ran", "got rekt on", "can't miss"). The Zeason Times is parked for a later tab.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
