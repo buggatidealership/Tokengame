@@ -16,7 +16,7 @@ i=src.rindex('</style>'); src=src[:i]+css+src[i:]
 # header: brand to the board, the route nav
 rep('<a class="brand" href="#top"','<a class="brand" href="#/"')
 rep('<nav class="nav" aria-label="Sections"><a href="#upnext">Up next</a><a href="#record">The record</a><a href="#learn">Learning</a><a href="#bet">The buyback</a><a href="#calc">The math</a><a href="#road">The road</a></nav>',
-    '<nav class="nav" aria-label="Main"><a href="#/" data-r="board">Overview</a><a href="#/leaderboard" data-r="leaderboard">Leaderboard</a><a href="#/upcoming" data-r="upcoming">Upcoming</a><a href="#bet" data-r="buyback">Buyback</a></nav>')
+    '<nav class="nav" aria-label="Main"><a href="#/" data-r="board">Overview</a><a href="#/leaderboard" data-r="leaderboard">Leaderboard</a><a href="#/upcoming" data-r="upcoming">Upcoming</a><a href="#/buyback" data-r="buyback">Buyback</a></nav>')
 # the page view, after the board
 rep('</main>\n<footer>','</main>\n<main id="view" class="wrap" tabindex="-1" hidden></main>\n<footer>')
 # standings: the row opens the model page (Season already shows right way and average miss)

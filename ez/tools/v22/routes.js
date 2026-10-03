@@ -268,6 +268,14 @@ function vModel(m){if(!CAR[m])return null;var C=CAR[m],calls=C.hist.filter(funct
     '<section class="blk" aria-labelledby="tgH"><div class="hh"><h2 id="tgH">How close</h2></div><div class="tgv tg1" id="tg1"></div></section>'}
 function wireModel(root,m){var el=$("#tg1",root);if(el)targets(el,[m])}
 
+/* ---------- buyback: the scoreboard that only means something after launch (the pot, $EZ bought back),
+   then where to read more. The overview keeps the four-step explainer. ---------- */
+function vBuyback(){function v(x){return x?esc(x):'<span class="soon">Opens at launch</span>'}
+  return '<h1 tabindex="-1">Buyback</h1><p class="sub">Trading fees fill a pot. An AI bets it on earnings. A right call buys back $EZ; a wrong one drains the pot.</p>'+
+    '<div class="bbn"><div><small>In the pot</small><b>'+v(CONFIG.pool)+'</b></div><div><small>$EZ bought back</small><b>'+v(CONFIG.boughtBack)+'</b></div></div>'+
+    '<p class="bbt">Every buyback will be listed here with its transaction.</p>'+
+    '<p class="bbl"><a href="#bet">How it works</a> <span aria-hidden="true">·</span> <a href="#calc">How big it could get</a> <span aria-hidden="true">·</span> <a href="#road">Where this goes</a></p>'+
+    '<p class="m-fine">A memecoin experiment. Not financial advice. The pot can be wiped out.</p>'}
 /* ---------- router: #/ is the board (Season). Other routes render into #view. Plain anchors scroll the board. ---------- */
 var boardEl=$("#top"),view=$("#view"),firstR=true,curSec=null;
 function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=null,sec="board",wire=null,openN=null,ck=null;
@@ -276,6 +284,7 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
       if(p[0]==="round"){openN=+p[1];var v=rv(openN);ck=v?dkey(dayOf(v)):null}
       if(curSec==="upcoming"&&!view.hidden){if(openN)openRound(openN);return}
       html=vRounds();wire=wireRounds}
+    else if(p[0]==="buyback"){html=vBuyback();sec="buyback"}
     else if(p[0]==="model"&&p[1]){var m=String(p[1]).toUpperCase();html=vModel(m);sec="leaderboard";wire=function(r){wireModel(r,m)}}
     else if(p[0]==="models"||p[0]==="leaderboard"){html=vModels();sec="leaderboard";wire=wireModels}}
   closeRound();
@@ -296,14 +305,3 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
   firstR=false}
 addEventListener("hashchange",route);
 route();
-
-/* ---------- Season Live's take on "If you'd followed each AI": the same numbers, each AI as a small line from $10,000
-   to where it is now, round by round (the dashed line is $10,000) ---------- */
-(function(){var L=$("#folL");if(!L||!FOLLOW.length)return;L.classList.add("fol-sp");
-  var all=[].concat.apply([],FOLLOW.map(function(o){return o.path})),lo=Math.min.apply(null,all.concat([10000])),hi=Math.max.apply(null,all.concat([10000])),pad=(hi-lo)*.12||500;lo-=pad;hi+=pad;
-  var W=160,H=44;function Y(v){return (H-4-(v-lo)/(hi-lo)*(H-8)).toFixed(1)}
-  L.innerHTML=FOLLOW.map(function(o,i){var n=o.path.length-1,X=function(k){return (2+k/(n||1)*(W-8)).toFixed(1)},up=o.bal>=10000;
-    var d=o.path.map(function(v,k){return (k?"L":"M")+X(k)+","+Y(v)}).join("");
-    var svg='<svg class="fol-s" viewBox="0 0 '+W+' '+H+'" aria-hidden="true"><line x1="0" x2="'+W+'" y1="'+Y(10000)+'" y2="'+Y(10000)+'" class="z"/><path d="'+d+'" class="'+(up?'pu':'pd')+'"/><circle cx="'+X(n)+'" cy="'+Y(o.bal)+'" r="3.5" class="'+(up?'pu':'pd')+'"/></svg>';
-    return '<li class="fol-r2'+(i?'':' top')+'"><span class="fol-w2">'+logo(o.m)+'<span>'+nm(o.m)+'<small>'+(MODELS[o.m].ver||'')+(o.n<NR?' · '+o.n+' rounds':'')+'</small></span></span>'+svg+
-      '<span class="fol-v2"><b class="'+(up?'pu':'pd')+'">'+pctTxt(o.bal)+'</b><span>'+usd(o.bal)+'</span></span></li>'}).join("")})();

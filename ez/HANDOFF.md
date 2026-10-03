@@ -41,6 +41,10 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Leaderboard: the race has four measures (wins, hit rate, avg miss, ROI) on a flip card, racers ride their lines to a finish; head to head removed; records are headlines (kicker, one-line headline, logo and number).
 - Company logos: ez/media/logos/ via tools/fetch_logos.py (source financialmodelingprep image-stock; Foxconn and Toho hand-picked from Wikimedia Commons). Cards on Upcoming: one line (round, star, company and ticker), then the winner.
 
+## 2026-10-03 (late)
+- Both: section intros smaller; the record intro in plain words. Record controls: no big arrows; "Past rounds" and "Upcoming" are red pills beside the round chips (Upcoming glows). "So far" removed. "If you'd followed each AI" is now "$10K on every call": four tiles, big %, dollars, a small path. Buyback steps shorter; the pot scoreboard is off the overview. The road has no launch step (the site goes live with the coin).
+- Season Live: Buyback tab is its own page (#/buyback) with the pot and $EZ bought back.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
