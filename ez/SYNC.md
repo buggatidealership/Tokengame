@@ -29,7 +29,7 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    Until a film exists the round still counts everywhere and shows "Film soon".
 5. **Check.** `node ez/tools/check_pages.js` must print `OK` for every page, with the expected
    round count and standings. Fix anything it reports.
-6. **Commit and publish.** Commit, push the branch, rebuild Season Live (`python3 ez/tools/v22/build.py ez/tools/v22` from `ez/`), and republish the two preview pages (same file paths keep the same links):
+6. **Commit and publish.** (While the experiments X1 and X2 exist, `build.py` also rebuilds `v23-live-x1.html` and `v24-live-x2.html`; republish those too, same file paths, and include any new film or logo files.) Commit, push the branch, rebuild Season Live (`python3 ez/tools/v22/build.py ez/tools/v22` from `ez/`), and republish the two preview pages (same file paths keep the same links):
    - EZ Season: https://claude.ai/artifact/XxQqLLfSx18hzSV9qawyeN (`ez/v15-season.html`)
    - EZ Season Live: https://claude.ai/artifact/3FJq71NA8CwsLN2rZZxNa8 (`ez/v22-season-live.html`)
    Include `ez-data.js`, and any new `media/` files, in the publish. (Primetime and Primetime Kraft previews were deleted on 2026-10-03; their source files are kept.)

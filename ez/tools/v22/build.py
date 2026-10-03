@@ -34,7 +34,13 @@ rep("""  unMore.addEventListener("click",function(){var i=SL.findIndex(function(
     """  unMore.addEventListener("click",function(){location.hash="#/upcoming"})}""")
 # the bullseye can draw one model (the model page) as well as all of them
 rep("function targets(el){\n  el.innerHTML='<div class=\"tg-grid\">'+ACTIVE.map(","function targets(el,only){\n  el.innerHTML='<div class=\"tg-grid\">'+(only||ACTIVE).map(")
-# the pages, at the end of the main script
-i=src.rindex('})();\n</script>'); src=src[:i]+js+src[i:]
-open('v22-season-live.html','w').write(src)
-print("ok",len(src))
+# the pages, at the end of the main script; Season Live plus the two experiments (window.EZ_EXP)
+i=src.rindex('})();\n</script>'); base=src
+NAV4='<nav class="nav" aria-label="Main"><a href="#/" data-r="board">Overview</a><a href="#/leaderboard" data-r="leaderboard">Leaderboard</a><a href="#/upcoming" data-r="upcoming">Upcoming</a><a href="#/buyback" data-r="buyback">Buyback</a></nav>'
+NAV5='<nav class="nav" aria-label="Main"><a href="#/" data-r="board">Overview</a><a href="#/leaderboard" data-r="leaderboard">Leaderboard</a><a href="#/results" data-r="results">Results</a><a href="#/upcoming" data-r="upcoming">Upcoming</a><a href="#/buyback" data-r="buyback">Buyback</a></nav>'
+for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1.html","x1","EZ Live X1"),("v24-live-x2.html","x2","EZ Live X2")]:
+    page=base[:i]+'window.EZ_EXP="'+exp+'";\n'+js+base[i:]
+    page=re.sub(r'<title>[^<]*</title>','<title>'+title+'</title>',page,1)
+    if exp=="x1":
+        assert page.count(NAV4)==1; page=page.replace(NAV4,NAV5)
+    open(out,'w').write(page); print("ok",out,len(page))

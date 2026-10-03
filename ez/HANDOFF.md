@@ -60,6 +60,13 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Both: "How we grade" sits right after the Standings title.
 - Season only: the panel beside the standings is the last graded round (small looping film, the winner); a tap opens the flip card over the page. Switch: BAND_RIGHT in v15 ("last" or "next"); build.py sets "next" for Season Live, which keeps Up next.
 
+## 2026-10-04 (experiments)
+- Round cards on Upcoming: the round small, the company and ticker bigger.
+- build.py now also writes two experiments from the same code (window.EZ_EXP):
+  - X1 `v23-live-x1.html` (https://claude.ai/artifact/RwimZSvDF4eLmVFszmW3hq): five tabs, a Results tab (the films as a gallery, newest first, film plays on hover) and Upcoming only for rounds still to come.
+  - X2 `v24-live-x2.html` (https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL): four tabs; Upcoming opens on what's next, the films as a gallery above it (no date headers).
+  Both use the brand-colour tiles, no Look switch. Season Live itself is unchanged apart from the card label.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
