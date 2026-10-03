@@ -81,6 +81,10 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Overview with the last round (Season and X1): half and half, the last round's date next to its title, no All upcoming button (the tabs lead there). On phones How we grade is its ⓘ.
 - X1 tab pages never repeat the tab's name: section headers are the number and the title ("01 Current standings"). Results opens on "01 Latest result" with the All / Big names switch beside it; Upcoming keeps the switch in its sticky bar, the title is for screen readers only.
 
+## 2026-10-04 (round 21)
+- Season and X1: the record lands on the stats side of graded cards ("↻ See the film" turns them); the back shows Calls filed and Graded dates big, with a GRADED stamp. Last round's winner bar in the cards' proportions; the info icon sits right after "Standings". Opening a card: no black flash (the film shows once it plays), a slower, softer unfold.
+- X1: records to beat are shorter; Longest hit streak says what it means; a record opens its story (what happened, the holder, each round small, a round opens its card). Results: 01 Record rounds (the record name biggest, the company colour under the still; "Everyone was wrong"), 02 Every round. The latest result lives on the overview only.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.

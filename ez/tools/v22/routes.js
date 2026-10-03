@@ -129,18 +129,17 @@ function shelf(){var RR=RS();if(!RR.length)return '';var calls=[];RR.forEach(fun
   var tight=RR.map(function(r){var o=r.calls.map(function(c){return parseFloat(c[2])});return {r:r,v:o.reduce(function(a,b){return a+b},0)/o.length}}).sort(function(a,b){return a.v-b.v})[0];
   var big=RR.slice().sort(function(a,b){return Math.abs(b.a)-Math.abs(a.a)})[0];
   var none=RR.filter(function(r){return !r.win});
-  function f(kick,r,line){return '<li><a class="shf" href="#/round/'+r.n+'"><span class="shf-a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">':'')+'</span><span class="shf-t"><small>'+kick+'</small><b>'+esc(r.co)+'</b><span>'+line+'</span></span></a></li>'}
+  function f(kick,r,line){return '<li><a class="shf" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'"><span class="shf-a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">':'')+'</span><span class="shf-t"><b class="shf-k">'+kick+'</b><span class="shf-c">Round '+r.n+' · '+esc(r.co)+'</span><span>'+line+'</span></span></a></li>'}
   return '<ul class="shl">'+f("Closest call",close.r,nm(close.m)+' off by '+close.off.toFixed(2)+' pts')+f("Tightest race",tight.r,'All four '+tight.v.toFixed(2)+' pts off on average')+
-    f("Biggest move",big,(big.a>0?'▲ ':'▼ ')+big.out.replace(/^[+−-]/,""))+(none.length?f("Nobody got it",(none.filter(function(r){return r!==big&&r!==close.r&&r!==tight.r}).pop()||none[none.length-1]),none.length+' round'+(none.length>1?'s':'')+' with no winner'):'')+'</ul>'}
+    f("Biggest move",big,(big.a>0?'▲ ':'▼ ')+big.out.replace(/^[+−-]/,""))+(none.length?f("Everyone was wrong",(none.filter(function(r){return r!==big&&r!==close.r&&r!==tight.r}).pop()||none[none.length-1]),none.length+' round'+(none.length>1?'s':'')+' with no winner'):'')+'</ul>'}
 function hero(){var RR=RS(),r=RR[RR.length-1];if(!r)return '';var v=rv(r.n);
   return '<a class="hero2" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'"><span class="h2a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="">':'')+(r.film&&!reduce?'<video muted loop playsinline autoplay preload="metadata" aria-hidden="true"'+(r.poster?' poster="'+MEDIA+r.poster+'.jpg"':'')+'><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video>':'')+'</span>'+
     '<span class="h2t"><small>Latest result · '+fmtDate(r.resolves)+'</small><b>Round '+r.n+' · '+esc(r.co)+(hasTk(v)?' <span class="tk">('+esc(r.ticker)+')</span>':'')+'</b><span class="h2m '+(r.a<0?'d':'u')+'">'+(r.a<0?'▼':'▲')+esc(r.out.replace(/^[+−-]/,""))+'</span>'+
     '<span class="gt-w">'+(v.win.length?'<small>Winner</small>'+v.win.map(function(m){return logo(m)}).join("")+'<b>'+v.win.map(nm).join(" & ")+'</b>':'<span class="lg nob" aria-hidden="true">✗</span><b>No winner</b>')+'</span><span class="h2o">Open the card →</span></span></a>'}
 function bigSeg(){var all=ROUNDS.length,bg=ROUNDS.filter(function(r){return isBig(r.ticker)}).length;
   return '<div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+all+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+bg+'</b></button></div>'}
-function resultsBody(){return '<section class="xsec">'+xsh("01","","Latest result",RBIG?"The newest round on a big name.":"The newest graded round.",true,"",bigSeg())+hero()+'</section>'+
-  '<section class="xsec">'+xsh("02","Records","Record rounds","The rounds that set the marks so far.")+shelf()+'</section>'+
-  '<section class="xsec">'+xsh("03","Archive","Every round","Newest first. Tap a round for the full card.")+gallery(true)+'</section>'}
+function resultsBody(){return '<section class="xsec">'+xsh("01","","Record rounds",RBIG?"The big-name rounds that set the marks.":"The rounds that set the marks so far.",true,"",bigSeg())+shelf()+'</section>'+
+  '<section class="xsec">'+xsh("02","","Every round","Newest first. Tap a round for the full card.")+gallery(true)+'</section>'}
 function vResults(){return '<div id="gal">'+resultsBody()+'</div>'}
 function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-big]");if(!b)return;RBIG=b.dataset.big==="1";$("#gal",root).innerHTML=resultsBody();var f=$('[data-big="'+b.dataset.big+'"]',root);if(f)f.focus({preventScroll:true})});wireGallery(root)}
 function body(){if(EXP==="x2")return '<section class="gsec" aria-labelledby="galH"><h2 id="galH" class="gh">Results</h2>'+gallery(false)+'</section><h2 class="gh nxh">Coming up</h2>'+timeline();return RLOOK==="compact"?compactList():timeline()}
@@ -180,10 +179,10 @@ function openRound(n,from){var v=rv(n);if(!v)return;closeRound();RMFROM=from||do
   /* the card jumps out of whatever opened it (a round card, a tile, a dot), or pops in from the middle */
   var cc=$(".rmod-c",m);if(!reduce&&cc.animate){var fr=from&&from.getBoundingClientRect?from:null,ra=fr&&fr.getBoundingClientRect(),rb=cc.getBoundingClientRect();
     if(ra&&ra.width&&ra.bottom>0&&ra.top<innerHeight){var k=Math.max(.15,Math.min(1,ra.width/rb.width));
-      cc.animate([{transform:"translate("+(ra.left+ra.width/2-rb.left-rb.width/2)+"px,"+(ra.top+ra.height/2-rb.top-rb.height/2)+"px) scale("+k+")",opacity:.5},{transform:"none",opacity:1}],{duration:480,easing:"cubic-bezier(.2,1.3,.35,1)"})}
-    else cc.animate([{transform:"scale(.82)",opacity:0},{transform:"none",opacity:1}],{duration:340,easing:"cubic-bezier(.2,1.3,.35,1)"});
-    m.animate([{backgroundColor:"transparent"},{}],{duration:260})}
-  var vid=$("video",m);if(vid){vid.muted=true;vid.loop=true;vid.classList.add("on");var pp=vid.play();if(pp&&pp.catch)pp.catch(function(){})}
+      cc.animate([{transform:"translate("+(ra.left+ra.width/2-rb.left-rb.width/2)+"px,"+(ra.top+ra.height/2-rb.top-rb.height/2)+"px) scale("+k+")",opacity:0},{opacity:1,offset:.35},{transform:"none",opacity:1}],{duration:720,easing:"cubic-bezier(.22,.61,.36,1)"})}
+    else cc.animate([{transform:"scale(.9)",opacity:0},{transform:"none",opacity:1}],{duration:520,easing:"cubic-bezier(.22,.61,.36,1)"});
+    m.animate([{opacity:0},{opacity:1}],{duration:420,easing:"ease-out"})}
+  var vid=$("video",m);if(vid){vid.muted=true;vid.loop=true;vid.addEventListener("playing",function(){vid.classList.add("on")},{once:true});var pp=vid.play();if(pp&&pp.catch)pp.catch(function(){})}
   m.addEventListener("click",function(e){if(e.target===m||e.target.closest(".rmod-x")){closeRound();return}
     var sb=e.target.closest(".shr");if(sb){e.stopPropagation();shareRound(sb);return}
     var sd=e.target.closest(".snd");if(sd){if(vid){vid.muted=!vid.muted;sd.innerHTML=vid.muted?SND_OFF:SND_ON;sd.setAttribute("aria-label",vid.muted?"Sound off":"Sound on")}return}
@@ -280,6 +279,8 @@ function wireStats(root){var fl=$("#rflip",root);if(!fl)return;var faces=$$(".rf
 /* ---------- season records: the record book, written like a sports page. A kicker, a one-line headline, then the
    logo and the number. Each opens its round. Headlines are built from the data, so they stay true. ---------- */
 function listCo(rs){var c=rs.map(function(r){return r.co});return c.length<2?c.join(""):c.slice(0,-1).join(", ")+" and "+c[c.length-1]}
+var RECS=[];
+function said(r,m){var c=callOf(r,m);if(!c)return "";return (/^DOWN/.test(c[1])?"down ":"up ")+String(c[1]).replace(/^\w+\s*/,"")}
 function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(function(c){all.push({m:c[0],r:r,off:parseFloat(c[2]),ok:callOk(r,c)})})});
   if(!all.length)return '';
   var best=all.slice().sort(function(a,b){return a.off-b.off})[0],worst=all.slice().sort(function(a,b){return b.off-a.off})[0];
@@ -291,15 +292,34 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
       rr=RK.map(function(m){return run(m,function(r,c){return callOk(r,c)},false)}).sort(function(a,b){return b.rs.length-a.rs.length})[0];
   function word(k){return ["","one","two","three","four","five","six","seven","eight","nine","ten"][k]||String(k)}
   function cos(rs){return rs.map(function(r){return r.co}).join(", ")}
-  function tile(kick,head,m,big,unit,n){var r=findR(n),bg=r&&r.poster?' style="--bg:url(\''+MEDIA+r.poster+'.jpg\')"':'';
-    if(EXP==="x1")return '<a class="hlt rec2"'+bg+' href="#/round/'+n+'"><span class="hl-k">'+kick+'</span><span class="hl-h">'+esc(head)+'</span><span class="hl-hold"><small>Current holder</small>'+logo(m)+'<b>'+nm(m)+'</b><strong>'+big+'</strong><i>'+unit+'</i></span></a>';
+  RECS=[];
+  function tile(kick,head,m,big,unit,n,rs,why,sub){var r=findR(n),bg=r&&r.poster?' style="--bg:url(\''+MEDIA+r.poster+'.jpg\')"':'';
+    if(EXP==="x1"){RECS.push({kick:kick,head:head,m:m,big:big,unit:unit,rs:rs||[r],why:why||""});
+      return '<button type="button" class="hlt rec2"'+bg+' data-rec="'+(RECS.length-1)+'"><span class="hl-k">'+kick+'</span>'+(sub?'<span class="hl-s">'+sub+'</span>':'')+'<span class="hl-h">'+esc(head)+'</span><span class="hl-hold"><small>Current holder</small>'+logo(m)+'<b>'+nm(m)+'</b><strong>'+big+'</strong><i>'+unit+'</i></span></button>'}
     return '<a class="hlt"'+bg+' href="#/round/'+n+'"><span class="hl-k">'+kick+'</span><span class="hl-v">'+logo(m)+'<b>'+big+'</b><i>'+unit+'</i></span><span class="hl-h">'+esc(head)+'</span><span class="hl-r">Round '+n+(r?' · '+fmtDate(r.resolves):'')+' <span aria-hidden="true">→</span></span></a>'}
   var out='';
-  if(wr.rs.length>1)out+=tile(EXP==="x1"?"Longest winning streak":"Most wins in a row",wr.rs.length===2?nm(wr.m)+" goes back to back: "+cos(wr.rs):wr.rs.length===3?nm(wr.m)+" goes three for three: "+cos(wr.rs):nm(wr.m)+" is on a heater: "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n);
-  out+=tile("Closest call",best.off<1?nm(best.m)+" basically front-ran "+best.r.co:nm(best.m)+" sniped "+best.r.co,best.m,best.off.toFixed(2),"pts off",best.r.n);
-  out+=tile("Biggest miss",nm(worst.m)+" got rekt on "+worst.r.co,worst.m,worst.off.toFixed(2),"pts off",worst.r.n);
-  if(rr.rs.length>1)out+=tile(EXP==="x1"?"Longest hit streak":"Most right calls in a row",rr.rs.length<4?nm(rr.m)+" can't miss: "+cos(rr.rs):nm(rr.m)+" calls the direction "+word(rr.rs.length)+" straight",rr.m,rr.rs.length,"in a row",rr.rs[rr.rs.length-1].n);
+  if(wr.rs.length>1)out+=tile(EXP==="x1"?"Longest winning streak":"Most wins in a row",wr.rs.length===2?nm(wr.m)+" goes back to back: "+cos(wr.rs):wr.rs.length===3?nm(wr.m)+" goes three for three: "+cos(wr.rs):nm(wr.m)+" is on a heater: "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n,wr.rs,nm(wr.m)+" won "+word(wr.rs.length)+" rounds in a row. A win takes the right direction and the closest size of the four.");
+  out+=tile("Closest call",best.off<1?nm(best.m)+" basically front-ran "+best.r.co:nm(best.m)+" sniped "+best.r.co,best.m,best.off.toFixed(2),"pts off",best.r.n,[best.r],nm(best.m)+" called "+best.r.co+" "+said(best.r,best.m)+". It moved "+best.r.out+". Off by "+best.off.toFixed(2)+" points, the closest call so far.");
+  out+=tile("Biggest miss",nm(worst.m)+" got rekt on "+worst.r.co,worst.m,worst.off.toFixed(2),"pts off",worst.r.n,[worst.r],nm(worst.m)+" called "+worst.r.co+" "+said(worst.r,worst.m)+". It moved "+worst.r.out+". Off by "+worst.off.toFixed(2)+" points, the furthest any call has landed.");
+  if(rr.rs.length>1)out+=tile(EXP==="x1"?"Longest hit streak":"Most right calls in a row",rr.rs.length<4?nm(rr.m)+" can't miss: "+cos(rr.rs):nm(rr.m)+" calls the direction "+word(rr.rs.length)+" straight",rr.m,rr.rs.length,"in a row",rr.rs[rr.rs.length-1].n,rr.rs,nm(rr.m)+" called the direction right "+word(rr.rs.length)+" rounds running. A hit only needs up or down to be right, whatever the size.","Right direction, round after round");
   return out}
+/* a record, opened: what happened, who holds it, and each round it took, small; a round opens its card */
+var XMOD=null;
+function closeRec(){if(XMOD){XMOD.remove();XMOD=null;document.body.classList.remove("rmod-on")}}
+function openRec(i,from){var R=RECS[i];if(!R)return;closeRec();
+  var m=document.createElement("div");m.className="rmod";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label",R.kick);
+  m.innerHTML='<div class="rxm"><button type="button" class="rmod-x" aria-label="Close">✕</button><small class="rxm-k">'+R.kick+'</small><h3>'+esc(R.head)+'</h3>'+
+    '<p class="rxm-h">'+logo(R.m)+'<b>'+nm(R.m)+'</b><span>holds it with</span><strong>'+R.big+'</strong><i>'+R.unit+'</i></p><p class="rxm-w">'+esc(R.why)+'</p>'+
+    '<ol class="rxl">'+R.rs.map(function(r){var c=callOf(r,R.m),ok=c&&callOk(r,c),w=r.win&&r.win.split(" & ").indexOf(R.m)>-1;
+      return '<li><button type="button" class="rxt" data-n="'+r.n+'"><span class="rxt-a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">':'')+'</span>'+
+        '<span class="rxt-b"><small>Round '+r.n+'</small><b>'+esc(r.co)+'</b><span>Moved '+r.out+'</span><span class="rxt-c'+(w?' w':ok?' g':' r')+'">'+logo(R.m)+' '+esc(said(r,R.m))+(w?' · won':ok?' · right way':' · wrong way')+'</span></span></button></li>'}).join("")+'</ol></div>';
+  document.body.appendChild(m);XMOD=m;document.body.classList.add("rmod-on");
+  if(!reduce&&m.animate){m.animate([{opacity:0},{opacity:1}],{duration:380,easing:"ease-out"});$(".rxm",m).animate([{transform:"translateY(24px) scale(.97)",opacity:0},{transform:"none",opacity:1}],{duration:560,easing:"cubic-bezier(.22,.61,.36,1)"})}
+  m.addEventListener("click",function(e){if(e.target===m||e.target.closest(".rmod-x")){closeRec();if(from)from.focus({preventScroll:true});return}
+    var t=e.target.closest(".rxt");if(t){var n=+t.dataset.n;closeRec();openRound(n,from)}});
+  $(".rmod-x",m).focus({preventScroll:true})}
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&XMOD)closeRec()});
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-rec]");if(b)openRec(+b.dataset.rec,b)});
 function vModels(){
   return (EXP==="x1"?xsh("01","Leaderboard","Current standings","Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+

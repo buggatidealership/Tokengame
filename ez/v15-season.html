@@ -961,10 +961,32 @@ body.lmod-on{overflow:hidden}
   .band.half .pc h3{font-size:13px}
   .band.half .pc-s b{font-size:15px}.band.half .pc-s small{font-size:7px}
   .band.half .pc-w{min-width:1.7em}.band.half .pc-w b{font-size:20px}.band.half .pc-w span{font-size:7px}
-  .band.half #stand .howb>span:first-child{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .band.half #stand .howb>span:last-child{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   .band.half .howb{margin-left:6px}
   .up-p.lr .nm{white-space:normal;font-size:12.5px;line-height:1.1}
 }
+/* round 18: the card back's dates and the GRADED stamp */
+.bk-h{position:relative;padding-right:84px}
+.bk-d{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:12px}
+.bk-d span{display:grid;gap:4px}
+.bk-d small{font:700 9.5px/1 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--on-slab2)}
+.bk-d b{font:400 22px/1 var(--fd);text-transform:uppercase;color:var(--yel)}
+.f-none .bk-d b{color:#fff}
+.gstamp{position:absolute;top:12px;right:12px;display:grid;place-items:center;align-content:center;gap:1px;width:62px;height:62px;border-radius:50%;
+  border:3px double var(--ez-green);color:var(--ez-green);font:400 12px/1 var(--fd);letter-spacing:.04em;text-transform:uppercase;transform:rotate(-14deg);opacity:.95}
+.gstamp i{font-style:normal;font:900 18px/1 var(--fb)}
+.f-none .gstamp{border-color:#fff;color:#fff}
+@media(max-width:759px){.bk-h{padding-right:58px}.bk-d{gap:4px 14px;margin-top:8px}.bk-d b{font-size:15px}.bk-d small{font-size:8px}.gstamp{width:44px;height:44px;top:8px;right:8px;font-size:9px;border-width:2.5px}.gstamp i{font-size:13px}
+  .lmod .bk-h{padding-right:84px}.lmod .bk-d b{font-size:21px}.lmod .gstamp{width:60px;height:60px;font-size:11px}}
+/* the last round: a winner bar in the record cards' proportions */
+.lr-w{padding:8px 12px;min-height:52px}
+.lr-w small{font-size:26px}.lr-w .lg{font-size:28px}.lr-w b{font-size:26px}
+@media(max-width:640px){.lr-w{padding:6px 7px;min-height:38px}.lr-w small{font-size:16px}.lr-w .lg{font-size:18px}.lr-w b{font-size:16px}}
+/* the info icon, attached to the Standings title */
+#stand .st-h .howb{margin-left:6px;gap:6px}
+.howb .ib,#stand .st-h .howb>span.ib{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--ink);color:#fff;font:900 11.5px/1 Georgia,serif;font-style:italic}
+.howb:hover .ib{background:var(--red)}
+@media(max-width:640px){#stand .st-h .howb{margin-left:4px}.howb .ib{width:16px;height:16px;font-size:10.5px}}
 </style>
 </head>
 <body>
@@ -989,7 +1011,7 @@ body.lmod-on{overflow:hidden}
     <div class="bf-face bf-front" id="bfFront">
     <div class="band">
       <div class="col stand" id="stand">
-        <div class="st-h"><h2 id="standH">Standings</h2><button type="button" class="howb" id="howB" aria-expanded="false" aria-controls="bfBack" aria-label="How we grade: the grading rules"><span>How we grade</span><span aria-hidden="true">ⓘ</span></button></div>
+        <div class="st-h"><h2 id="standH">Standings</h2><button type="button" class="howb" id="howB" aria-expanded="false" aria-controls="bfBack" aria-label="How we grade: the grading rules"><span class="ib" aria-hidden="true">i</span><span>How we grade</span></button></div>
         <ol class="roster" id="roster" aria-labelledby="standH"></ol>
       </div>
       <div class="col un" id="upnext" role="region" aria-labelledby="unH">
@@ -1165,11 +1187,11 @@ function winBar(r){
 function backFace(r){
   var cs=parsed(r),wn=r.win?r.win.split(" & "):[],tm=timed(r.timing,true);
   return '<div class="face back" aria-hidden="true"><div class="fin">'+
-    '<div class="bk-h"><h4>'+coTitle(r)+'</h4><p><span class="nw">Calls filed '+fmtDate(r.called)+'</span> · <span class="nw">Graded '+fmtDate(r.resolves)+'</span></p>'+(tm?'<p class="tm">'+tm+'</p>':'')+'</div>'+
+    '<div class="bk-h"><h4>'+coTitle(r)+'</h4><div class="bk-d"><span><small>Calls filed</small><b>'+fmtDate(r.called)+'</b></span><span><small>Graded</small><b>'+fmtDate(r.resolves)+'</b></span></div>'+(tm?'<p class="tm">'+tm+'</p>':'')+'<span class="gstamp" aria-hidden="true"><i>✓</i>Graded</span></div>'+
     '<div class="bk-body"><div><p class="bk-sec">What they predicted</p><div class="bk-rows">'+
     cs.map(function(c){var w=wn.indexOf(c.m)>-1;return '<div class="bk-r '+(w?'win':c.ok?'ok':'no')+'">'+(w?'<span class="crown"><i aria-hidden="true">👑</i>Winner</span>':'')+'<span class="rk">'+(c.rank?'<span class="sr">Rank </span>'+c.rank:'<span aria-hidden="true">✗</span><span class="sr">Wrong way</span>')+'</span><span class="who">'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span></span><span class="pd '+(c.dn?'d':'u')+'"><span aria-hidden="true">'+(c.dn?'▼':'▲')+'</span><span class="sr">'+(c.dn?'Down ':'Up ')+'</span>'+c.mag+'</span></div>'}).join("")+'</div></div>'+
     '<div class="bk-out"><small>'+ACTUAL_WORD+'</small><b class="'+(r.a>0?'u':'d')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span><span class="sr">'+(r.a>0?'Up ':'Down ')+'</span>'+r.out.replace(/^[+−-]/,"")+'</b></div></div>'+
-    '<div class="cfoot"><button type="button" class="flipb" data-flip>↻ Flip back</button>'+shareBtn(r.n)+'</div></div></div>';
+    '<div class="cfoot"><button type="button" class="flipb" data-flip>↻ See the film</button>'+shareBtn(r.n)+'</div></div></div>';
 }
 function gradedCard(r,i){
   return '<article class="card '+frame(r)+'" data-i="'+i+'" data-n="'+r.n+'" data-k="g" role="group" aria-roledescription="card" aria-label="'+plain(r)+'"><div class="cin">'+
@@ -1283,7 +1305,7 @@ car.innerHTML=SL.map(function(s,i){return s.k==="g"?gradedCard(s.d,i):s.k==="p"?
 chips.innerHTML=SL.map(function(s,i){return '<button type="button" class="chip'+(s.k==="p"?' p':s.k==="s"?' s':'')+'" data-i="'+i+'" title="'+plain(s.d)+'" aria-label="'+plain(s.d)+(s.k==="p"?'. Calls are in':s.k==="s"?'. Sealed':'')+'">R'+s.n+'</button>'}).join("");
 if(!SL.length)$("#record").hidden=true;
 var slides=$$(".card",car),chipEls=$$(".chip",chips),cur=-1,carVis=false;
-slides.forEach(function(c){setFaces(c,false)});
+slides.forEach(function(c){var g=c.dataset.k==="g";c.classList.toggle("flipped",g);setFaces(c,g)});
 function target(i){var s=slides[i];return s.offsetLeft-(car.clientWidth-s.offsetWidth)/2}
 var lockT=null,locked=false;
 function go(i,smooth){if(!slides.length)return;i=Math.max(0,Math.min(slides.length-1,i));
@@ -1488,9 +1510,10 @@ function lOpen(r,from){lClose();lFrom=from;var m=document.createElement("div");m
   m.innerHTML='<div class="lmod-c"><button type="button" class="lmod-x" aria-label="Close">✕</button>'+gradedCard(r,0)+'</div>';
   document.body.appendChild(m);lMod=m;document.body.classList.add("lmod-on");
   var c=$(".card",m);c.classList.add("cur");setFaces(c,false);
-  var vid=$("video",m);if(vid){vid.muted=true;vid.loop=true;vid.classList.add("on");var pp=vid.play();if(pp&&pp.catch)pp.catch(function(){})}
+  var vid=$("video",m);if(vid){vid.muted=true;vid.loop=true;vid.addEventListener("playing",function(){vid.classList.add("on")},{once:true});var pp=vid.play();if(pp&&pp.catch)pp.catch(function(){})}
   var cc=$(".lmod-c",m);if(!reduce&&cc.animate){var ra=from.getBoundingClientRect(),rb=cc.getBoundingClientRect();
-    cc.animate([{transform:"translate("+(ra.left+ra.width/2-rb.left-rb.width/2)+"px,"+(ra.top+ra.height/2-rb.top-rb.height/2)+"px) scale("+Math.max(.2,ra.width/rb.width)+")",opacity:.5},{transform:"none",opacity:1}],{duration:460,easing:"cubic-bezier(.2,1.3,.35,1)"})}
+    m.animate([{opacity:0},{opacity:1}],{duration:420,easing:"ease-out"});
+    cc.animate([{transform:"translate("+(ra.left+ra.width/2-rb.left-rb.width/2)+"px,"+(ra.top+ra.height/2-rb.top-rb.height/2)+"px) scale("+Math.max(.2,ra.width/rb.width)+")",opacity:0},{opacity:1,offset:.35},{transform:"none",opacity:1}],{duration:720,easing:"cubic-bezier(.22,.61,.36,1)"})}
   m.addEventListener("click",function(e){if(e.target===m||e.target.closest(".lmod-x")){lClose();return}
     var sb=e.target.closest(".shr");if(sb){e.stopPropagation();shareRound(sb);return}
     var sd=e.target.closest(".snd");if(sd){if(vid){vid.muted=!vid.muted;sd.innerHTML=vid.muted?SND_OFF:SND_ON;sd.setAttribute("aria-label",vid.muted?"Sound off":"Sound on")}return}
