@@ -144,7 +144,7 @@ function fbal(m){var o=FOLLOW.filter(function(f){return f.m===m})[0];return o?o.
 function formDots(C){return C.hist.slice(-5).map(function(h){var cls=h.none?"n":h.win?"w":h.ok?"g":"r",lab=h.none?"no call":h.win?"won":h.ok?"right way":"wrong way";
   return '<a class="fd '+cls+'" href="#/round/'+h.n+'" title="Round '+h.n+': '+lab+'" aria-label="Round '+h.n+': '+lab+'">'+(h.win?CROWN:h.none?'':h.ok?'✓':'✗')+'</a>'}).join("")}
 function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=10000;
-  return '<li class="lbr pc'+(i?'':' lead')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
+  return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.won>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
     '<span class="rk" role="cell"><sup>#</sup>'+rkOf(m)+'</span>'+
     '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3><a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a></h3><small>'+esc(MODELS[m].ver||'')+'</small></span></span>'+
     '<span class="lb-c" role="cell"><b>'+(C.g?pctOf(C.right,C.g)+'%':'n/a')+'</b><small>'+C.right+' of '+C.g+'</small></span>'+
@@ -169,9 +169,11 @@ function raceSVG(){var sm=innerWidth<640,W=sm?420:760,H=sm?230:250,L=sm?24:34,R=
   return {svg:'<svg class="race" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Wins after each round: '+RK.map(function(m){return nm(m)+' '+S[m][n]}).join(", ")+'">'+g+lines+'<line class="rc-cur" id="rcCur" y1="'+T+'" y2="'+(H-B)+'" x1="-9" x2="-9"/>'+lab+'<rect class="rc-hit" x="'+L+'" y="0" width="'+(W-L-R)+'" height="'+H+'"/></svg>',S:S,X:X,W:W,n:n}}
 /* head to head: in the rounds both called, who was closer to the real move */
 function h2h(a,b){var w=0,l=0,d=0;ROUNDS.forEach(function(r){var A=callOf(r,a),B=callOf(r,b);if(!A||!B)return;var x=parseFloat(A[2]),y=parseFloat(B[2]);if(x<y)w++;else if(y<x)l++;else d++});return {w:w,l:l,d:d}}
-function h2hTable(){return '<div class="h2w"><table class="h2"><caption class="sr">Head to head: rounds where the AI on the left was closer than the AI on top</caption><thead><tr><td class="hc"></td>'+RK.map(function(m){return '<th scope="col">'+logo(m)+'<span>'+nm(m)+'</span></th>'}).join("")+'</tr></thead><tbody>'+
-  RK.map(function(a){return '<tr><th scope="row">'+logo(a)+'<span>'+nm(a)+'</span></th>'+RK.map(function(b){if(a===b)return '<td class="me" aria-label="Same AI"></td>';var h=h2h(a,b),t=h.w+h.l+h.d;
-    return '<td class="'+(!t?'hna':h.w>h.l?'hup':h.w<h.l?'hdn':'hlv')+'" title="'+nm(a)+' closer than '+nm(b)+' in '+h.w+' of '+t+' rounds both called'+(h.d?' ('+h.d+' level)':'')+'"><b>'+(t?h.w+'–'+h.l:'·')+'</b></td>'}).join("")+'</tr>'}).join("")+'</tbody></table></div>'}
+function h2hTable(){var P=[];RK.forEach(function(a,i){RK.slice(i+1).forEach(function(b){var h=h2h(a,b);if(h.w+h.l+h.d)P.push({a:a,b:b,h:h})})});
+  return '<ul class="mu">'+P.map(function(p){var h=p.h,t=h.w+h.l+h.d,lead=h.w>h.l?'a':h.l>h.w?'b':'';
+    return '<li class="mu-r" title="In '+t+' rounds both called: '+nm(p.a)+' closer '+h.w+', '+nm(p.b)+' closer '+h.l+(h.d?', level '+h.d:'')+'">'+
+      '<span class="mu-s'+(lead==='a'?' on':'')+'">'+logo(p.a)+'<b>'+nm(p.a)+'</b></span><span class="mu-sc"><b'+(lead==='a'?' class="on"':'')+'>'+h.w+'</b><i>–</i><b'+(lead==='b'?' class="on"':'')+'>'+h.l+'</b></span><span class="mu-s r'+(lead==='b'?' on':'')+'"><b>'+nm(p.b)+'</b>'+logo(p.b)+'</span>'+
+      '<span class="mu-bar" aria-hidden="true"><i style="flex:'+h.w+';background:'+MODELS[p.a].c+'"></i>'+(h.d?'<i class="lv" style="flex:'+h.d+'"></i>':'')+'<i style="flex:'+h.l+';background:'+MODELS[p.b].c+'"></i></span></li>'}).join("")+'</ul>'}
 /* season records */
 function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(function(c){all.push({m:c[0],r:r,off:parseFloat(c[2]),ok:callOk(r,c)})})});
   if(!all.length)return '';
@@ -180,18 +182,18 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
   function okF(r,c){return callOk(r,c)}function winF(r,c){return r.win&&r.win.split(" & ").indexOf(c[0])>-1}
   var rr=RK.map(function(m){return run(m,okF)}).sort(function(a,b){return b.k-a.k})[0],wr=RK.map(function(m){return run(m,winF)}).sort(function(a,b){return b.k-a.k})[0];
   function tile(lab,who,big,txt,n){return '<a class="rec" href="#/round/'+n+'"><small>'+lab+'</small><span class="rec-v">'+logo(who)+'<b>'+big+'</b></span><span class="rec-t">'+txt+'</span></a>'}
-  return tile("Closest call",best.m,best.off.toFixed(2)+' pts',nm(best.m)+' on '+esc(best.r.co)+', round '+best.r.n+'.',best.r.n)+
+  return (wr.at?tile("Most wins in a row",wr.m,wr.k+' in a row',nm(wr.m)+', up to round '+wr.at.n+'.',wr.at.n):'')+
+    tile("Closest call",best.m,best.off.toFixed(2)+' pts',nm(best.m)+' on '+esc(best.r.co)+', round '+best.r.n+'.',best.r.n)+
     tile("Biggest miss",worst.m,worst.off.toFixed(2)+' pts',nm(worst.m)+' on '+esc(worst.r.co)+', round '+worst.r.n+'.',worst.r.n)+
-    (rr.at?tile("Longest right-way run",rr.m,rr.k+' in a row',nm(rr.m)+', up to round '+rr.at.n+'.',rr.at.n):'')+
-    (wr.at?tile("Most wins in a row",wr.m,wr.k+' in a row',nm(wr.m)+', up to round '+wr.at.n+'.',wr.at.n):'')}
+    (rr.at?tile("Longest right-way run",rr.m,rr.k+' in a row',nm(rr.m)+', up to round '+rr.at.n+'.',rr.at.n):'')}
 var RACE=null;
 function vModels(){RACE=raceSVG();
-  return '<h1 tabindex="-1">Leaderboard</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>'+
-    '<div class="lbx" role="table" aria-label="Leaderboard"><div class="lbh" role="row"><span role="columnheader">#</span><span role="columnheader">AI</span><span role="columnheader">Right way</span><span role="columnheader">Avg miss</span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
+  return '<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>'+
+    '<div class="lbx" role="table" aria-label="Leaderboard"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Right way</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
     '<p class="lbn"><b>Right way</b>: called the direction. <b>Avg miss</b>: how far the call was from the real move, in points. <b>ROI</b>: $10,000 that followed every call, all in. Hypothetical, before fees.</p>'+
     '<section class="blk" aria-labelledby="raceH"><div class="hh"><h2 id="raceH">The race</h2><p>Wins after each round.</p></div><div class="rcw">'+RACE.svg+'<div class="rc-tip" id="rcTip" hidden></div></div></section>'+
-    '<section class="blk" aria-labelledby="h2H"><div class="hh"><h2 id="h2H">Head to head</h2><p>Who was closer, in the rounds both called. Read across.</p></div>'+h2hTable()+'</section>'+
+    '<section class="blk" aria-labelledby="h2H"><div class="hh"><h2 id="h2H">Head to head</h2><p>Who was closer to the real move, in the rounds both called.</p></div>'+h2hTable()+'</section>'+
     '<section class="blk" aria-labelledby="recH"><div class="hh"><h2 id="recH">Season records</h2></div><div class="recs">'+records()+'</div></section>'}
 function wireModels(root){var sv=$(".race",root),tip=$("#rcTip",root),cur=$("#rcCur",root);if(!sv||!RACE)return;
   function at(e){var p=sv.createSVGPoint();p.x=e.clientX;p.y=e.clientY;var q=p.matrixTransform(sv.getScreenCTM().inverse()),i=0,bd=1e9;

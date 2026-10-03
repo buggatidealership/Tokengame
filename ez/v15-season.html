@@ -319,7 +319,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   .pc .rk{min-width:1.2em;font-size:16px}
   .pc>.lg{font-size:24px}
   .pc h3{font-size:15.5px}
-  .pc-s{margin-right:2px;gap:2px}.pc-s b{font-size:18px}.pc-s small{font-size:7.5px;letter-spacing:0}
+  .pc-s{gap:2px}.pc-s b{font-size:17px}.pc-s small{font-size:7.5px;letter-spacing:0}
   .pc-w{min-width:2em}.pc-w b{font-size:24px}.pc-w span{font-size:7.5px}
   .up-p{padding:6px;gap:5px}
   .up-p .nm{font-size:13px;margin-bottom:0}
@@ -774,7 +774,8 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 /* standings: the name on the logo's line, then how often it called the direction right, then the wins */
 .pc .pc-t{flex:1;min-width:0}
 .pc .pc-t h3{display:block}
-.pc-s{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px;margin-right:clamp(6px,2vw,22px);font-variant-numeric:tabular-nums}
+.pc-s{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-variant-numeric:tabular-nums}
+.pc-s.pu b{color:color-mix(in srgb,var(--up) 70%,#000)}.pc-s.pd b{color:color-mix(in srgb,var(--dn) 80%,#000)}
 .pc-s b{font:400 28px/.9 var(--fd);color:var(--ink)}
 .pc-s small{font:700 10.5px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);white-space:nowrap}
 .pc.lead .pc-s small{color:var(--ink)}
@@ -1133,6 +1134,11 @@ function flip(c){var f=!c.classList.contains("flipped"),had=c.contains(document.
 /* ---------- hero: the standings, a leaderboard of rounds won ----------
    Order and tie-breaks come from LADDER (ez-data.js: wins, then the smaller average miss). Ties share the rank number.
    The crown goes to LADDER[0]. A model with calls but none graded yet (Grok) joins the table below them with 0 wins. */
+/* next to each name, one number. STAND_STAT picks it:
+   "roi"   the return on $10,000 that followed every call (the "If you'd followed" panel, hypothetical, before fees)
+   "right" how often it called the direction right
+   To go back to right way, change "roi" to "right". Nothing else depends on it. */
+var STAND_STAT="roi",FOL_EARLY=null;
 var LD=LADDER.filter(function(T){return MODELS[T.m]});
 var bench=ACTIVE.filter(function(m){return !LD.some(function(T){return T.m===m})});
 var ROWS=LD.concat(bench.map(function(m){return {m:m,won:0}}));
@@ -1148,8 +1154,9 @@ function career(m){var g=0,right=0,err=0,won=0,hist=[];
   var streak=null,cs=hist.filter(function(h){return !h.none});
   if(cs.length){var last=cs[cs.length-1].ok,k=0;for(var i=cs.length-1;i>=0&&cs[i].ok===last;i--)k++;streak={ok:last,k:k}}
   return {m:m,g:g,right:right,won:won,avg:g?err/g:null,hist:hist,streak:streak}}
-/* next to each name: how often it called the direction right, as a share (the average miss lives on the leaderboard) */
-function pcStats(m){var C=career(m);if(!C.g)return '<span class="pc-s"><b>n/a</b><small>No calls yet</small></span>';
+function pcStats(m){if(STAND_STAT==="roi"){var o=(FOL_EARLY=FOL_EARLY||followAll()).filter(function(f){return f.m===m})[0];
+    if(o){var pc=(o.bal/10000-1)*100;return '<span class="pc-s roi '+(o.bal>=10000?'pu':'pd')+'" title="Hypothetical: $10,000 that followed every '+nm(m)+' call, all in, before fees, is now '+usd(o.bal)+'"><b>'+pctTxt(o.bal)+'</b><small>ROI if followed</small></span>'}}
+  var C=career(m);if(!C.g)return '<span class="pc-s"><b>n/a</b><small>No calls yet</small></span>';
   return '<span class="pc-s" title="'+C.right+' of '+C.g+' calls the right way"><b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'right way')+'</small></span>'}
 var P0=PS[0]||null;
 /* ---------- the score bar (Primetime's ticker): the standings, every graded round, then the rounds to come ---------- */
@@ -1715,10 +1722,11 @@ addEventListener("hashchange",shDeep);requestAnimationFrame(function(){requestAn
 /* ---------- if you'd followed each AI: everyone starts with $10,000 and puts all of it on every call (buy if the AI says
    up, bet against the stock if it says down), in before the report, out at the next close, compounding.
    Hypothetical, from the graded moves in ez-data.js, before fees and costs. FOLLOW is shared with Season Live. ---------- */
-var FOLLOW=(function(){var out=[];ACTIVE.forEach(function(m){var bal=10000,n=0,first=null,path=[10000];
+var FOLLOW=followAll();
+function followAll(){var out=[];ACTIVE.forEach(function(m){var bal=10000,n=0,first=null,path=[10000];
     ROUNDS.forEach(function(r){var c=callOf(r,m);if(!c)return;if(first==null)first=r.n;n++;bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;path.push(bal)});
     if(n)out.push({m:m,bal:bal,n:n,first:first,path:path})});
-  return out.sort(function(a,b){return b.bal-a.bal})})();
+  return out.sort(function(a,b){return b.bal-a.bal})}
 function usd(v){return "$"+Math.round(v).toLocaleString("en-US")}
 function pctTxt(b){var pc=(b/10000-1)*100;return (pc>=0?"+":"−")+Math.abs(pc).toFixed(1)+"%"}
 var FOLLOW_NOTE="Hypothetical. Each AI starts with $10,000 and puts it all on every call: buy if it says up, bet against the stock if it says down. In before the report, out at the next close. Before fees and costs.";

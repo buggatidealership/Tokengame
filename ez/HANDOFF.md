@@ -32,6 +32,9 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Rounds: one timeline of days, done rounds above as small cards (film poster, move, winner), rounds to come below as compact tiles. Opens on the next day in the middle of the screen. A card jumps out into the full card. "Big names" filters the whole timeline. The big-names list (routes.js, or BIG in ez-data.js) now covers banks, pharma, AI chips and gear worldwide, the Magnificent Seven and household names.
 - Research note (what competition sites bring people back for): measured data points to live, personal, in-progress results first; standings matter as the frame, but that ranking is inference, not measured.
 
+- Standings stat (both pages): now ROI if followed (the $10k panel's number), centred between name and wins. To revert to right way, set STAND_STAT="right" in v15-season.html and rebuild v22. Under owner review, plus legal (it shows a hypothetical return on the landing).
+- Season Live: flatter nav pill; leaderboard titled "Current standings", even centred columns, the leader in the foil; head to head is one line per pairing; records lead with most wins in a row.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
