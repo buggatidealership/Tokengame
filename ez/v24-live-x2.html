@@ -2081,7 +2081,8 @@ car.innerHTML=SL.map(function(s,i){return s.k==="g"?gradedCard(s.d,i):s.k==="p"?
 chips.innerHTML=SL.map(function(s,i){return '<button type="button" class="chip'+(s.k==="p"?' p':s.k==="s"?' s':'')+'" data-i="'+i+'" title="'+plain(s.d)+'" aria-label="'+plain(s.d)+(s.k==="p"?'. Calls are in':s.k==="s"?'. Sealed':'')+'">R'+s.n+'</button>'}).join("");
 if(!SL.length)$("#record").hidden=true;
 var slides=$$(".card",car),chipEls=$$(".chip",chips),cur=-1,carVis=false;
-slides.forEach(function(c){var g=c.dataset.k==="g";c.classList.toggle("flipped",g);setFaces(c,g)});
+/* only the card the record opens on (the latest result) starts on its stats: its film is already up top, in Last round */
+slides.forEach(function(c,i){var g=c.dataset.k==="g"&&i===START;c.classList.toggle("flipped",g);setFaces(c,g)});
 function target(i){var s=slides[i];return s.offsetLeft-(car.clientWidth-s.offsetWidth)/2}
 var lockT=null,locked=false;
 function go(i,smooth){if(!slides.length)return;i=Math.max(0,Math.min(slides.length-1,i));
