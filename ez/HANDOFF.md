@@ -15,6 +15,8 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Round page: the share block is gone; a small Share button uses Season's share image and panel.
 - Season also has share on every card; BlackBerry zoomed in, Carnival zoomed out, Jefferies and Costco keep their $EZ ending.
 
+- "If you'd followed each AI" panel (Season, in "Are they learning?"; Season Live inherits it): $10,000 each, all-in on every call, compounding, with "Just buy every stock" as the yardstick. Hypothetical, before fees. Assumes the sheet's move runs from the close before the report to the first close after (owner to confirm).
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
