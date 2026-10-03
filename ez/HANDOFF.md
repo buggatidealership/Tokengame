@@ -85,6 +85,10 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Season and X1: only the card the record opens on (the latest result) starts on its stats ("↻ See the film" turns it); every other card shows its film; the back shows Calls filed and Graded dates big, with a GRADED stamp. Last round's winner bar in the cards' proportions; the info icon sits right after "Standings". Opening a card: no black flash (the film shows once it plays), a slower, softer unfold.
 - X1: records to beat are shorter; Longest hit streak says what it means; a record opens its story (what happened, the holder, each round small, a round opens its card). Results: 01 Record rounds (the record name biggest, the company colour under the still; "Everyone was wrong"), 02 Every round. The latest result lives on the overview only.
 
+## 2026-10-04 (round 22)
+- Season and X1: less space between a section's intro line and its content. Section 02 is called "The test". The $10K panel is now "If you'd copied them": each AI's balance big, a green or red % pill, the sparkline.
+- X1: the records section is "Record book", each tile names the "Record holder". Results: the All / Big names switch sits on top and filters the whole page; then 01 Highlights (dark tiles, each with a short story line: Closest call, Tightest race, Biggest move, Everyone was wrong) and 02 Every round. "Everyone was wrong" picks the no-winner round not already shown (Costco now) and lists the others.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
