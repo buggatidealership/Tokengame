@@ -946,6 +946,25 @@ body.lmod-on{overflow:hidden}
   .lmod .bk-r .pd{font-size:17px;padding:6px 7px}.lmod .bk-r .crown{font-size:11px;top:-12px;right:10px}
   .lmod .bk-out{min-height:54px;padding:8px 12px}.lmod .bk-out small{font-size:24px}.lmod .bk-out b{font-size:17px;padding:6px 8px}
 }
+/* round 17: with the last round beside it, the band is half and half, and All upcoming goes (the tabs lead there) */
+.band.half{grid-template-columns:repeat(2,minmax(0,1fr))}
+.band.half .un-more{display:none}
+.band.half .un-b{grid-row:2/-1}
+.st-h h2 .lr-d{margin-left:8px;font:700 11px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);vertical-align:.25em}
+@media(max-width:640px){.st-h h2 .lr-d{font-size:9px;margin-left:5px}}
+/* half and half on phones: a tighter standings row, How we grade as its icon, the last round's title wraps */
+@media(max-width:640px){
+  .band.half{column-gap:8px}
+  .band.half .pc{gap:4px;padding:5px 6px 5px 5px}
+  .band.half .pc .rk{font-size:13px;min-width:1.1em}
+  .band.half .pc>.lg{font-size:21px}
+  .band.half .pc h3{font-size:13px}
+  .band.half .pc-s b{font-size:15px}.band.half .pc-s small{font-size:7px}
+  .band.half .pc-w{min-width:1.7em}.band.half .pc-w b{font-size:20px}.band.half .pc-w span{font-size:7px}
+  .band.half #stand .howb>span:first-child{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .band.half .howb{margin-left:6px}
+  .up-p.lr .nm{white-space:normal;font-size:12.5px;line-height:1.1}
+}
 </style>
 </head>
 <body>
@@ -1456,7 +1475,7 @@ if(NX){var hasCalls=!!(NX.calls&&NX.calls.length);
    open the full card over the page). "next" = the next round (Up next). Season Live builds with "next". */
 var BAND_RIGHT="last",LR=ROUNDS.length?ROUNDS[ROUNDS.length-1]:null;
 if(BAND_RIGHT==="last"&&LR){var lw=LR.win?LR.win.split(" & "):[];
-  $("#unH").innerHTML="Last round";
+  $("#unH").innerHTML='Last round <small class="lr-d">'+fmtDate(LR.resolves)+'</small>';$(".band").classList.add("half");
   unHTML='<button type="button" class="up-p lr" id="lrB" aria-label="Open the card: '+plain(LR)+'"><span class="nm">'+coTitle(LR)+'</span>'+
     '<span class="lr-art">'+(LR.poster?'<img src="'+MEDIA+LR.poster+'.jpg" alt="">':'')+(LR.film&&!reduce?'<video muted loop playsinline autoplay preload="metadata" aria-hidden="true"'+(LR.poster?' poster="'+MEDIA+LR.poster+'.jpg"':'')+'><source src="'+MEDIA+LR.film+'.webm" type="video/webm"><source src="'+MEDIA+LR.film+'.mp4" type="video/mp4"></video>':'')+'<span class="lr-tap" aria-hidden="true">Tap to open ↗</span></span>'+
     '<span class="lr-w"><small>'+(lw.length?'Winner':'No winner')+'</small><span>'+(lw.length?lw.map(function(m){return logo(m)}).join("")+'<b>'+lw.map(nm).join(" & ")+'</b>':'<b>✗</b>')+'</span></span></button>'}

@@ -77,7 +77,7 @@ var DAYS=(function(){var m={};ALLN.forEach(function(n){var v=rv(n),d=dayOf(v),k=
    gallery) and Upcoming only for what's ahead; "x2" = Upcoming opens on what's next, with the films as a gallery above. */
 var EXP=window.EZ_EXP||"";
 var TODAYK=dkey(new Date()),RBIG=false,RLOOK="brand";
-function xsh(no,eb,title,sub,h1,id){var tag=h1?"h1":"h2";return '<div class="xsh"><span class="no">'+no+'</span><span class="eb">'+eb+'</span><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'}
+function xsh(no,eb,title,sub,h1,id,side){var tag=h1?"h1":"h2";return '<div class="xsh'+(side?' wside':'')+'"><div class="xsh-t"><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="no">'+no+'</span><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(side||'')+'</div>'}
 /* a company's colour (CO_LOGOS.c, from tools/fetch_logos.py) and the ink that reads on it */
 function bcol(t){var L=CO_LOGOS[String(t||"").toUpperCase()];return L&&L.c||"#12131a"}
 function onCol(h){var c=parseInt(h.slice(1),16),r=c>>16&255,g=c>>8&255,b=c&255;return (0.2126*r+0.7152*g+0.0722*b)>150?"#12131a":"#ffffff"}
@@ -138,15 +138,15 @@ function hero(){var RR=RS(),r=RR[RR.length-1];if(!r)return '';var v=rv(r.n);
     '<span class="gt-w">'+(v.win.length?'<small>Winner</small>'+v.win.map(function(m){return logo(m)}).join("")+'<b>'+v.win.map(nm).join(" & ")+'</b>':'<span class="lg nob" aria-hidden="true">✗</span><b>No winner</b>')+'</span><span class="h2o">Open the card →</span></span></a>'}
 function bigSeg(){var all=ROUNDS.length,bg=ROUNDS.filter(function(r){return isBig(r.ticker)}).length;
   return '<div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+all+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+bg+'</b></button></div>'}
-function resultsBody(){return '<section class="xsec">'+xsh("01",RBIG?"Big names":"Results","Latest result",RBIG?"The newest round on a big name.":"The newest graded round.")+hero()+'</section>'+
+function resultsBody(){return '<section class="xsec">'+xsh("01","","Latest result",RBIG?"The newest round on a big name.":"The newest graded round.",true,"",bigSeg())+hero()+'</section>'+
   '<section class="xsec">'+xsh("02","Records","Record rounds","The rounds that set the marks so far.")+shelf()+'</section>'+
   '<section class="xsec">'+xsh("03","Archive","Every round","Newest first. Tap a round for the full card.")+gallery(true)+'</section>'}
-function vResults(){return '<div class="rhd xrhd"><h1 tabindex="-1"><span class="mk">Results</span></h1>'+bigSeg()+'</div><div id="gal">'+resultsBody()+'</div>'}
-function wireResults(root){$$("[data-big]",root).forEach(function(b){b.addEventListener("click",function(){RBIG=b.dataset.big==="1";$$("[data-big]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$("#gal",root).innerHTML=resultsBody()})});wireGallery(root)}
+function vResults(){return '<div id="gal">'+resultsBody()+'</div>'}
+function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-big]");if(!b)return;RBIG=b.dataset.big==="1";$("#gal",root).innerHTML=resultsBody();var f=$('[data-big="'+b.dataset.big+'"]',root);if(f)f.focus({preventScroll:true})});wireGallery(root)}
 function body(){if(EXP==="x2")return '<section class="gsec" aria-labelledby="galH"><h2 id="galH" class="gh">Results</h2>'+gallery(false)+'</section><h2 class="gh nxh">Coming up</h2>'+timeline();return RLOOK==="compact"?compactList():timeline()}
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
   var up=ALLN.filter(function(n){return rv(n).st!=="graded"}),ub=up.filter(function(n){return isBig(rv(n).ticker)}).length;
-  return (EXP==="x1"?'<div class="rhd xrhd"><h1 tabindex="-1"><span class="mk">Upcoming</span></h1><div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+up.length+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+ub+'</b></button></div></div>':
+  return (EXP==="x1"?'<div class="rhd xrhd"><h1 tabindex="-1" class="sr">Upcoming rounds</h1><div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+up.length+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+ub+'</b></button></div></div>':
     '<div class="rhd"><h1 tabindex="-1">Upcoming</h1><div class="seg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All</button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names</button></div></div>')+
     '<p class="rfoot">Every call goes out before the report. '+x+' to see them first. <span aria-hidden="true">·</span> <button type="button" class="lnk" id="icsB">Add the Zeason to your calendar</button> <span id="icsMsg" class="note" aria-live="polite"></span></p>'+
     (EXP?'':'<div class="look" role="group" aria-label="Preview a look (for review)"><small>Look</small><button type="button" data-look="brand" aria-pressed="'+(RLOOK==="brand")+'">Brand colours</button><button type="button" data-look="compact" aria-pressed="'+(RLOOK==="compact")+'">Compact</button></div>')+

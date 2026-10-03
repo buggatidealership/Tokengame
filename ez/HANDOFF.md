@@ -77,6 +77,10 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - X1 stats: Hit rate, Avg miss (small bullseyes in one row), ROI, Bull/bear (share of up calls vs how often stocks went up), Boldness (average call size vs the average real move). Every view the same height.
 - Post-launch list: model pages.
 
+## 2026-10-04 (X1 round 4)
+- Overview with the last round (Season and X1): half and half, the last round's date next to its title, no All upcoming button (the tabs lead there). On phones How we grade is its ⓘ.
+- X1 tab pages never repeat the tab's name: section headers are the number and the title ("01 Current standings"). Results opens on "01 Latest result" with the All / Big names switch beside it; Upcoming keeps the switch in its sticky bar, the title is for screen readers only.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.

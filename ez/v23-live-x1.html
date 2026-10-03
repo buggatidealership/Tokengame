@@ -946,6 +946,25 @@ body.lmod-on{overflow:hidden}
   .lmod .bk-r .pd{font-size:17px;padding:6px 7px}.lmod .bk-r .crown{font-size:11px;top:-12px;right:10px}
   .lmod .bk-out{min-height:54px;padding:8px 12px}.lmod .bk-out small{font-size:24px}.lmod .bk-out b{font-size:17px;padding:6px 8px}
 }
+/* round 17: with the last round beside it, the band is half and half, and All upcoming goes (the tabs lead there) */
+.band.half{grid-template-columns:repeat(2,minmax(0,1fr))}
+.band.half .un-more{display:none}
+.band.half .un-b{grid-row:2/-1}
+.st-h h2 .lr-d{margin-left:8px;font:700 11px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);vertical-align:.25em}
+@media(max-width:640px){.st-h h2 .lr-d{font-size:9px;margin-left:5px}}
+/* half and half on phones: a tighter standings row, How we grade as its icon, the last round's title wraps */
+@media(max-width:640px){
+  .band.half{column-gap:8px}
+  .band.half .pc{gap:4px;padding:5px 6px 5px 5px}
+  .band.half .pc .rk{font-size:13px;min-width:1.1em}
+  .band.half .pc>.lg{font-size:21px}
+  .band.half .pc h3{font-size:13px}
+  .band.half .pc-s b{font-size:15px}.band.half .pc-s small{font-size:7px}
+  .band.half .pc-w{min-width:1.7em}.band.half .pc-w b{font-size:20px}.band.half .pc-w span{font-size:7px}
+  .band.half #stand .howb>span:first-child{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .band.half .howb{margin-left:6px}
+  .up-p.lr .nm{white-space:normal;font-size:12.5px;line-height:1.1}
+}
 
 /* ================= V22 · SEASON LIVE: Season's landing as the Board, plus Live's pages =================
    Hash routes: #/ (the board, Season as it was), #/rounds, #/round/11, #/models, #/model/gpt, #/upcoming.
@@ -1679,6 +1698,15 @@ table.lb{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
 .gal{gap:22px}
 @media(max-width:760px){.xsec{margin-top:52px}.shl{gap:12px}.shf-t{padding:10px 10px 12px}.shf-t b{font-size:17px}.gal{gap:14px}}
 @media(max-width:640px){.sflip .rf-sub{min-height:2.9em}}
+
+/* ===== X1, round 19: headers say what the section is, not the tab; the switch beside the first section ===== */
+.xsh .xsh-t{min-width:0}
+#view .xsh h1,#view .xsh h2{margin:0}
+.xsh h1 .no,.xsh h2 .no{font-size:clamp(15px,1.8vw,19px);margin-right:12px;vertical-align:.4em}
+.xsh.wside{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px 20px}
+.xsh.wside .seg{margin-top:0}
+#view .xrhd{justify-content:flex-start}
+@media(max-width:640px){.xsh.wside{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
@@ -2190,7 +2218,7 @@ if(NX){var hasCalls=!!(NX.calls&&NX.calls.length);
    open the full card over the page). "next" = the next round (Up next). Season Live builds with "next". */
 var BAND_RIGHT="last",LR=ROUNDS.length?ROUNDS[ROUNDS.length-1]:null;
 if(BAND_RIGHT==="last"&&LR){var lw=LR.win?LR.win.split(" & "):[];
-  $("#unH").innerHTML="Last round";
+  $("#unH").innerHTML='Last round <small class="lr-d">'+fmtDate(LR.resolves)+'</small>';$(".band").classList.add("half");
   unHTML='<button type="button" class="up-p lr" id="lrB" aria-label="Open the card: '+plain(LR)+'"><span class="nm">'+coTitle(LR)+'</span>'+
     '<span class="lr-art">'+(LR.poster?'<img src="'+MEDIA+LR.poster+'.jpg" alt="">':'')+(LR.film&&!reduce?'<video muted loop playsinline autoplay preload="metadata" aria-hidden="true"'+(LR.poster?' poster="'+MEDIA+LR.poster+'.jpg"':'')+'><source src="'+MEDIA+LR.film+'.webm" type="video/webm"><source src="'+MEDIA+LR.film+'.mp4" type="video/mp4"></video>':'')+'<span class="lr-tap" aria-hidden="true">Tap to open ↗</span></span>'+
     '<span class="lr-w"><small>'+(lw.length?'Winner':'No winner')+'</small><span>'+(lw.length?lw.map(function(m){return logo(m)}).join("")+'<b>'+lw.map(nm).join(" & ")+'</b>':'<b>✗</b>')+'</span></span></button>'}
@@ -2639,7 +2667,7 @@ var DAYS=(function(){var m={};ALLN.forEach(function(n){var v=rv(n),d=dayOf(v),k=
    gallery) and Upcoming only for what's ahead; "x2" = Upcoming opens on what's next, with the films as a gallery above. */
 var EXP=window.EZ_EXP||"";
 var TODAYK=dkey(new Date()),RBIG=false,RLOOK="brand";
-function xsh(no,eb,title,sub,h1,id){var tag=h1?"h1":"h2";return '<div class="xsh"><span class="no">'+no+'</span><span class="eb">'+eb+'</span><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'}
+function xsh(no,eb,title,sub,h1,id,side){var tag=h1?"h1":"h2";return '<div class="xsh'+(side?' wside':'')+'"><div class="xsh-t"><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="no">'+no+'</span><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(side||'')+'</div>'}
 /* a company's colour (CO_LOGOS.c, from tools/fetch_logos.py) and the ink that reads on it */
 function bcol(t){var L=CO_LOGOS[String(t||"").toUpperCase()];return L&&L.c||"#12131a"}
 function onCol(h){var c=parseInt(h.slice(1),16),r=c>>16&255,g=c>>8&255,b=c&255;return (0.2126*r+0.7152*g+0.0722*b)>150?"#12131a":"#ffffff"}
@@ -2700,15 +2728,15 @@ function hero(){var RR=RS(),r=RR[RR.length-1];if(!r)return '';var v=rv(r.n);
     '<span class="gt-w">'+(v.win.length?'<small>Winner</small>'+v.win.map(function(m){return logo(m)}).join("")+'<b>'+v.win.map(nm).join(" & ")+'</b>':'<span class="lg nob" aria-hidden="true">✗</span><b>No winner</b>')+'</span><span class="h2o">Open the card →</span></span></a>'}
 function bigSeg(){var all=ROUNDS.length,bg=ROUNDS.filter(function(r){return isBig(r.ticker)}).length;
   return '<div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+all+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+bg+'</b></button></div>'}
-function resultsBody(){return '<section class="xsec">'+xsh("01",RBIG?"Big names":"Results","Latest result",RBIG?"The newest round on a big name.":"The newest graded round.")+hero()+'</section>'+
+function resultsBody(){return '<section class="xsec">'+xsh("01","","Latest result",RBIG?"The newest round on a big name.":"The newest graded round.",true,"",bigSeg())+hero()+'</section>'+
   '<section class="xsec">'+xsh("02","Records","Record rounds","The rounds that set the marks so far.")+shelf()+'</section>'+
   '<section class="xsec">'+xsh("03","Archive","Every round","Newest first. Tap a round for the full card.")+gallery(true)+'</section>'}
-function vResults(){return '<div class="rhd xrhd"><h1 tabindex="-1"><span class="mk">Results</span></h1>'+bigSeg()+'</div><div id="gal">'+resultsBody()+'</div>'}
-function wireResults(root){$$("[data-big]",root).forEach(function(b){b.addEventListener("click",function(){RBIG=b.dataset.big==="1";$$("[data-big]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$("#gal",root).innerHTML=resultsBody()})});wireGallery(root)}
+function vResults(){return '<div id="gal">'+resultsBody()+'</div>'}
+function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-big]");if(!b)return;RBIG=b.dataset.big==="1";$("#gal",root).innerHTML=resultsBody();var f=$('[data-big="'+b.dataset.big+'"]',root);if(f)f.focus({preventScroll:true})});wireGallery(root)}
 function body(){if(EXP==="x2")return '<section class="gsec" aria-labelledby="galH"><h2 id="galH" class="gh">Results</h2>'+gallery(false)+'</section><h2 class="gh nxh">Coming up</h2>'+timeline();return RLOOK==="compact"?compactList():timeline()}
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
   var up=ALLN.filter(function(n){return rv(n).st!=="graded"}),ub=up.filter(function(n){return isBig(rv(n).ticker)}).length;
-  return (EXP==="x1"?'<div class="rhd xrhd"><h1 tabindex="-1"><span class="mk">Upcoming</span></h1><div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+up.length+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+ub+'</b></button></div></div>':
+  return (EXP==="x1"?'<div class="rhd xrhd"><h1 tabindex="-1" class="sr">Upcoming rounds</h1><div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+up.length+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+ub+'</b></button></div></div>':
     '<div class="rhd"><h1 tabindex="-1">Upcoming</h1><div class="seg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All</button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names</button></div></div>')+
     '<p class="rfoot">Every call goes out before the report. '+x+' to see them first. <span aria-hidden="true">·</span> <button type="button" class="lnk" id="icsB">Add the Zeason to your calendar</button> <span id="icsMsg" class="note" aria-live="polite"></span></p>'+
     (EXP?'':'<div class="look" role="group" aria-label="Preview a look (for review)"><small>Look</small><button type="button" data-look="brand" aria-pressed="'+(RLOOK==="brand")+'">Brand colours</button><button type="button" data-look="compact" aria-pressed="'+(RLOOK==="compact")+'">Compact</button></div>')+
