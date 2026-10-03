@@ -43,4 +43,8 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
     page=re.sub(r'<title>[^<]*</title>','<title>'+title+'</title>',page,1)
     if exp=="x1":
         assert page.count(NAV4)==1; page=page.replace(NAV4,NAV5)
+        # X1: the last round beside the standings (like Season); model pages come after launch, so names are plain text
+        page=page.replace('var BAND_RIGHT="next"','var BAND_RIGHT="last"')
+        L="""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3></span>'"""
+        assert page.count(L)==1; page=page.replace(L,"""'<span class="pc-t"><h3>'+nm(T.m)+'</h3></span>'""")
     open(out,'w').write(page); print("ok",out,len(page))

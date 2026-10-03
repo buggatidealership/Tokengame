@@ -71,6 +71,12 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Fixed (all three pages): the model page's "Every round" strip had lost its styles (a find-and-replace turned class="strip" into "sxrip").
 - X1 only: stats are Hit rate (the "Are they learning?" direction chart), Avg miss (bullseye), ROI (bars from $10,000); no Wins tab. Highlights two to a row: the record name, the story, "Current holder" with logo and number. Results: the latest round big (film playing), a "Record rounds" shelf (closest call, tightest race, biggest move, nobody got it), then every round; tile label on one line, bigger winner bar.
 
+## 2026-10-04 (X1 round 3) — the owner keeps EZ Season and EZ Live X1
+- X1: Last round beside the standings (as Season). Model pages are plain text for now (ship after launch; #/model goes to the leaderboard).
+- X1 sections look like the overview's: number, label, title with the yellow marker, one line under; more space between and inside. Leaderboard: 01 Current standings, 02 The stats, 03 Highlights. Results: 01 Latest result, 02 Record rounds (four different rounds when possible), 03 Every round. Big names switches every part, top story included. Upcoming has the same title and a counted All / Big names switch.
+- X1 stats: Hit rate, Avg miss (small bullseyes in one row), ROI, Bull/bear (share of up calls vs how often stocks went up), Boldness (average call size vs the average real move). Every view the same height.
+- Post-launch list: model pages.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
