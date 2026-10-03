@@ -67,6 +67,10 @@ Paste this into a new session, with the zip, to pick up where we left off.
   - X2 `v24-live-x2.html` (https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL): four tabs; Upcoming opens on what's next, the films as a gallery above it (no date headers).
   Both use the brand-colour tiles, no Look switch. Season Live itself is unchanged apart from the card label.
 
+## 2026-10-04 (X1 round 2)
+- Fixed (all three pages): the model page's "Every round" strip had lost its styles (a find-and-replace turned class="strip" into "sxrip").
+- X1 only: stats are Hit rate (the "Are they learning?" direction chart), Avg miss (bullseye), ROI (bars from $10,000); no Wins tab. Highlights two to a row: the record name, the story, "Current holder" with logo and number. Results: the latest round big (film playing), a "Record rounds" shelf (closest call, tightest race, biggest move, nobody got it), then every round; tile label on one line, bigger winner bar.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
