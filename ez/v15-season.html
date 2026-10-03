@@ -788,13 +788,6 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 .fol-f{margin-top:14px;font:600 12.5px/1.5 var(--fb);color:var(--ink2);max-width:80ch}
 @media(max-width:640px){.fol{padding:14px}.fol-r{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"w v" "t t";row-gap:6px;padding:8px 10px}.fol-w{grid-area:w;font-size:18px}.fol-w .lg{font-size:26px}.fol-t{grid-area:t}.fol-v{grid-area:v}.fol-v b{font-size:22px}}
 
-/* which models are playing */
-.now-m{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:14px;font:400 18px/1 var(--fd);text-transform:uppercase}
-.now-m small{font:700 11px/1 var(--fm);letter-spacing:.1em;color:var(--ink2)}
-.now-m span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
-.now-m .lg{font-size:22px}
-.now-m em{flex-basis:100%;font:600 13px/1.4 var(--fb);font-style:normal;text-transform:none;color:var(--ink2)}
-@media(max-width:640px){.now-m{gap:6px 12px;font-size:15px}.now-m .lg{font-size:18px}.now-m em{font-size:12px}}
 /* if you'd followed each AI: compact, no bars */
 .fol{margin:0 0 30px;padding:0;background:none;box-shadow:none;border-radius:0}
 .fol-h{display:flex;align-items:baseline;gap:6px 14px;flex-wrap:wrap}
@@ -864,7 +857,6 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
     <div class="hero-t">
       <h1>We're teaching <span class="lc">AIs</span> to bet.<br> <span class="hl">The market grades them.</span></h1>
       <p class="sub" id="heroSub">AI models predict how a stock moves after its earnings: up or down, and by how much.</p>
-      <p class="now-m" id="nowM"></p>
     </div>
     <div class="bflip" id="bflip"><div class="bf-in">
     <div class="bf-face bf-front" id="bfFront">
@@ -1015,10 +1007,6 @@ var NR=ROUNDS.length,UPS=ROUNDS.filter(function(r){return r.a>0}).length;
 /* the line under the headline: the model count from the data (MODEL_KEYS with a MODELS entry) */
 var NUMW=["No","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve"];
 var NM=MODEL_KEYS.filter(function(m){return MODELS[m]}).length;
-(function(){var el=$("#nowM");if(!el)return;var ms=ACTIVE.filter(function(m){return MODELS[m].ver});
-  if(!ms.length){el.hidden=true;return}
-  el.innerHTML='<small>In play</small>'+ms.map(function(m){return '<span>'+logo(m)+esc2(MODELS[m].ver)+'</span>'}).join("")+'<em>The newest version of each, on its top paid plan.</em>'})();
-function esc2(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 $("#heroSub").textContent=(NUMW[NM]||String(NM))+" AI model"+(NM===1?"":"s")+" predict"+(NM===1?"s":"")+" how a stock moves after its earnings: up or down, and by how much.";
 /* rounds whose calls are in, soonest answer first (then by round) */
 var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});
@@ -1289,7 +1277,7 @@ function targets(el){
     g.addEventListener("click",function(e){e.stopPropagation();g.classList.contains("on")?hide():show(g)})});
 }
 if(window.EZLearn&&NR){
-  EZLearn.together(lxDir,{pctOnly:true,noCoin:true});targets(lxDist);
+  EZLearn.together(lxDir,{pctOnly:true,noCoin:true,ver:true});targets(lxDist);
   /* one chart at a time: Direction or How close. Resting state is the drawn chart. Only when JS runs and the chart
      comes into view do we rewind and draw it. */
   var lqDir=$("#lqDir"),lqDist=$("#lqDist"),swDir=$("#swDir"),swDist=$("#swDist"),seen=false;
