@@ -1270,10 +1270,11 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
   <section class="sec" id="learn" aria-labelledby="lrnH">
     <div class="sh"><div class="tx"><span class="no">02</span><h2 id="lrnH">Are they learning?</h2></div>
       <p class="lede" id="lrnLede"></p></div>
+    <div class="lsw" role="group" aria-label="Pick a chart"><button type="button" id="swDir" aria-pressed="true" aria-controls="lqDir">Direction</button><button type="button" id="swDist" aria-pressed="false" aria-controls="lqDist">How close</button></div>
     <div class="lrn lflip" id="lflip"><div class="lf-in">
-      <div class="lq" id="lqDir" role="region" aria-labelledby="lqDirH"><div class="lq-t"><h3 id="lqDirH">Did they call the direction right?</h3><button type="button" class="howb lfb" id="swDist" aria-controls="lqDist" aria-expanded="false"><span>How close?</span><span aria-hidden="true">↻</span></button></div>
+      <div class="lq" id="lqDir" role="region" aria-labelledby="lqDirH"><div class="lq-t"><h3 id="lqDirH">Did they call the direction right?</h3></div>
         <div class="lxv" id="lxDir"></div></div>
-      <div class="lq" id="lqDist" role="region" aria-labelledby="lqDistH"><div class="lq-t"><h3 id="lqDistH">When they got the direction right, how close?</h3><button type="button" class="howb lfb" id="swDir" aria-controls="lqDir"><span aria-hidden="true">↻</span><span>Direction</span></button></div>
+      <div class="lq" id="lqDist" role="region" aria-labelledby="lqDistH"><div class="lq-t"><h3 id="lqDistH">When they got the direction right, how close?</h3></div>
         <div class="tgv" id="lxDist"></div></div>
     </div></div>
     <p class="verdict"><small>So far</small><span id="verdict"></span></p>
@@ -1667,13 +1668,12 @@ if(window.EZLearn&&NR){
     }}
   /* one card, two faces (like How we grade): Direction on the front, How close on the back. The hidden face is inert. */
   var lflip=$("#lflip");
-  function faces(d){lqDir.setAttribute("aria-hidden",String(!d));lqDist.setAttribute("aria-hidden",String(d));if("inert" in lqDir){lqDir.inert=!d;lqDist.inert=d}swDist.setAttribute("aria-expanded",String(!d))}
+  function faces(d){lqDir.setAttribute("aria-hidden",String(!d));lqDist.setAttribute("aria-hidden",String(d));if("inert" in lqDir){lqDir.inert=!d;lqDist.inert=d}swDir.setAttribute("aria-pressed",String(d));swDist.setAttribute("aria-pressed",String(!d))}
   function pick(which,anim,focus){var d=which==="dir";lflip.classList.toggle("flipped",!d);faces(d);
-    if(focus)(d?swDist:swDir).focus({preventScroll:true});
     if(anim&&seen)setTimeout(function(){animate(which)},reduce?0:380)}
   pick("dir",false);
-  swDir.addEventListener("click",function(){pick("dir",true,true)});
-  swDist.addEventListener("click",function(){pick("dist",true,true)});
+  swDir.addEventListener("click",function(){if(lflip.classList.contains("flipped"))pick("dir",true)});
+  swDist.addEventListener("click",function(){if(!lflip.classList.contains("flipped"))pick("dist",true)});
   if(!reduce&&"IntersectionObserver" in window){
     var lio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){lio.disconnect();seen=true;animate(lflip.classList.contains("flipped")?"dist":"dir")}})},{threshold:.35});
     lio.observe($("#learn .lrn"));
