@@ -124,7 +124,7 @@ function wireGallery(root){if(!matchMedia("(hover:hover)").matches||reduce)retur
   root.addEventListener("mouseout",function(e){var a=e.target.closest&&e.target.closest(".gt");if(!a||a.contains(e.relatedTarget))return;var v=$("video",a);if(v){v.pause();v.classList.remove("on")}})}
 /* the shelf: rounds that hold a record, worked out from ROUNDS */
 function RS(){return ROUNDS.filter(function(r){return !RBIG||isBig(r.ticker)})}
-function shelf(){var RR=RS();if(!RR.length)return '';var calls=[];RR.forEach(function(r){r.calls.forEach(function(c){calls.push({m:c[0],r:r,off:parseFloat(c[2])})})});
+function shelf(){var RR=ROUNDS;if(!RR.length)return '';var calls=[];RR.forEach(function(r){r.calls.forEach(function(c){calls.push({m:c[0],r:r,off:parseFloat(c[2])})})});
   function avgOff(r){var o=r.calls.map(function(c){return parseFloat(c[2])});return o.reduce(function(a,b){return a+b},0)/o.length}
   function dirWord(r){return r.a>0?"rose":"fell"}
   var close=calls.slice().sort(function(a,b){return a.off-b.off})[0];
@@ -147,14 +147,14 @@ function hero(){var RR=RS(),r=RR[RR.length-1];if(!r)return '';var v=rv(r.n);
     '<span class="gt-w">'+(v.win.length?'<small>Winner</small>'+v.win.map(function(m){return logo(m)}).join("")+'<b>'+v.win.map(nm).join(" & ")+'</b>':'<span class="lg nob" aria-hidden="true">✗</span><b>No winner</b>')+'</span><span class="h2o">Open the card →</span></span></a>'}
 function bigSeg(){var all=ROUNDS.length,bg=ROUNDS.filter(function(r){return isBig(r.ticker)}).length;
   return '<div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+all+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+bg+'</b></button></div>'}
-function resultsBody(){return '<section class="xsec">'+xsh("01","","Highlights",RBIG?"The big-name rounds worth knowing.":"The rounds worth knowing so far.")+shelf()+'</section>'+
-  '<section class="xsec">'+xsh("02","","Every round","Newest first. Tap a round for the full card.")+gallery(true)+'</section>'}
-function vResults(){return '<div class="rhd xrhd"><h1 tabindex="-1" class="sr">Results</h1>'+bigSeg()+'</div><div id="gal">'+resultsBody()+'</div>'}
-function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-big]");if(!b)return;RBIG=b.dataset.big==="1";$$("[data-big]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x.dataset.big===b.dataset.big))});$("#gal",root).innerHTML=resultsBody()});wireGallery(root)}
+function vResults(){RBIG=false;return '<h1 tabindex="-1" class="sr">Results</h1><section class="xsec">'+xsh("01","","Highlights","The rounds worth knowing so far.")+shelf()+'</section>'+
+  '<section class="xsec">'+xsh("02","","Every round","Newest first. Tap a round for the full card.",false,"",bigSeg())+'<div id="gal">'+gallery(true)+'</div></section>'}
+function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-big]");if(!b)return;RBIG=b.dataset.big==="1";$$("[data-big]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x.dataset.big===b.dataset.big))});$("#gal",root).innerHTML=gallery(true)});wireGallery(root)}
 function body(){if(EXP==="x2")return '<section class="gsec" aria-labelledby="galH"><h2 id="galH" class="gh">Results</h2>'+gallery(false)+'</section><h2 class="gh nxh">Coming up</h2>'+timeline();return RLOOK==="compact"?compactList():timeline()}
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
   var up=ALLN.filter(function(n){return rv(n).st!=="graded"}),ub=up.filter(function(n){return isBig(rv(n).ticker)}).length;
-  return (EXP==="x1"?'<div class="rhd xrhd"><h1 tabindex="-1" class="sr">Upcoming rounds</h1><div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+up.length+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+ub+'</b></button></div></div>':
+  if(EXP==="x1")RBIG=false;
+  return (EXP==="x1"?'<div class="xup">'+xsh("01","","The calendar",up.length+" rounds to go, "+ub+" of them big names (★).",true)+'</div>':
     '<div class="rhd"><h1 tabindex="-1">Upcoming</h1><div class="seg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All</button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names</button></div></div>')+
     '<p class="rfoot">Every call goes out before the report. '+x+' to see them first. <span aria-hidden="true">·</span> <button type="button" class="lnk" id="icsB">Add the Zeason to your calendar</button> <span id="icsMsg" class="note" aria-live="polite"></span></p>'+
     (EXP?'':'<div class="look" role="group" aria-label="Preview a look (for review)"><small>Look</small><button type="button" data-look="brand" aria-pressed="'+(RLOOK==="brand")+'">Brand colours</button><button type="button" data-look="compact" aria-pressed="'+(RLOOK==="compact")+'">Compact</button></div>')+
@@ -224,18 +224,17 @@ function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=10000;
    of detail. Every number is worked out from ROUNDS here. ---------- */
 var RMET={
   wins:{t:"Wins",sub:"Rounds won. A shared round counts for each winner."},
-  hit:{t:"Hit rate",sub:"Calls that got the direction right."},
-  miss:{t:"Avg miss",sub:"Average points off the real move. Smaller is better."},
-  roi:{t:"ROI",sub:"$10,000 rolled through every call. Simulated, before fees."}};
-var RKEYS=EXP==="x1"?["hit","miss","roi","bull","bold"]:["hit","miss","roi","wins"],RCUR="hit";
+  hit:{t:"Hit rate",sub:"<b>How often did they call the direction right?</b> Only up or down counts here, not the size."},
+  miss:{t:"Avg miss",sub:"<b>How close did they get?</b> Average points off the real move, smaller is better. The bullseye is what the stock did. Each dot is one call."},
+  roi:{t:"ROI",sub:"<b>What would $10,000 be worth now?</b> All in on every call: buy on an up call, short on a down call. Simulated, before fees."}};
+var RKEYS=EXP==="x1"?["hit","miss","roi","bull"]:["hit","miss","roi","wins"],RCUR="hit";
 var UPS_N=ROUNDS.filter(function(r){return r.a>0}).length,AVG_MOVE=ROUNDS.length?ROUNDS.reduce(function(a,r){return a+Math.abs(r.a)},0)/ROUNDS.length:0;
-RMET.bull={t:"Bull/bear",sub:"Share of calls that said up. The stocks went up in "+UPS_N+" of "+ROUNDS.length+" rounds (the line)."};
-RMET.bold={t:"Boldness",sub:"Average size of the call. The real moves averaged "+AVG_MOVE.toFixed(2)+"% (the line)."};
+RMET.bull={t:"Up or down",sub:"<b>Do they lean up or down?</b> Each AI's up and down calls, next to what the stocks really did."};
 function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(function(h){return !h.none});
     var shared=ROUNDS.filter(function(r){var w=r.win?r.win.split(" & "):[];return w.length>1&&w.indexOf(m)>-1}).length,bestC=calls.slice().sort(function(a,b){return a.off-b.off})[0],b=fbal(m);
     if(k==="bull"||k==="bold"){var cs=ROUNDS.map(function(r){return callOf(r,m)}).filter(Boolean),ups=cs.filter(function(c){return !/^DOWN/.test(c[1])}).length,
         mags=cs.map(function(c){return Math.abs(parseFloat(String(c[1]).replace(/^\w+\s*/,"")))}).filter(function(x){return !isNaN(x)}),am=mags.length?mags.reduce(function(a,b){return a+b},0)/mags.length:0;
-      return k==="bull"?{m:m,v:cs.length?ups/cs.length*100:0,txt:cs.length?Math.round(ups/cs.length*100)+"% up":"n/a",sub:ups+" up, "+(cs.length-ups)+" down"}:{m:m,v:am,txt:am.toFixed(1)+"%",sub:"over "+mags.length+" calls"}}
+      return k==="bull"?{m:m,v:cs.length?ups/cs.length*100:0,up:ups,dn:cs.length-ups,txt:cs.length?Math.round(ups/cs.length*100)+"% up":"n/a",sub:ups+" up, "+(cs.length-ups)+" down"}:{m:m,v:am,txt:am.toFixed(1)+"%",sub:"over "+mags.length+" calls"}}
     if(k==="wins")return {m:m,v:C.won,txt:String(C.won),sub:C.won?(C.won-shared)+" outright"+(shared?", "+shared+" shared":""):"Not yet"};
     if(k==="hit")return {m:m,v:C.g?C.right/C.g*100:0,txt:C.g?pctOf(C.right,C.g)+"%":"n/a",sub:C.right+" of "+C.g+" calls"};
     if(k==="miss")return {m:m,v:C.avg,txt:C.avg==null?"n/a":C.avg.toFixed(2),sub:bestC?"Best: "+bestC.off.toFixed(2)+" on "+bestC.r.co:""};
@@ -244,21 +243,32 @@ function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(
 function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=statRows(k);
   /* X1, hit rate: the direction chart from "Are they learning?" (hit rate round by round, one line per AI) */
   if(k==="hit"&&EXP==="x1"&&window.EZLearn){box.innerHTML='<div class="lxv hx"></div>';EZLearn.together($(".hx",box),{pctOnly:true,noCoin:true,ver:true});return}
-  /* X1, ROI: bars from the $10,000 line, green right, red left */
-  if(k==="roi"&&EXP==="x1"){var mr=Math.max.apply(null,R.map(function(x){return Math.abs(x.v)}))||1;
-    box.innerHTML='<ol class="sxl">'+R.map(function(x,i){var w=Math.abs(x.v)/mr*50;
-      return '<li class="sxr'+(i?'':' lead')+'"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span><span class="sb dv"><i class="'+(x.v>=0?'pu':'pd')+'" style="--w:'+w.toFixed(1)+'%;'+(x.v>=0?'left:50%':'right:50%')+'"></i></span><span class="st-v"><b class="'+(x.v>=0?'pu':'pd')+'">'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
-    var rb=$$(".sb i",box);if(anim&&!reduce){rb.forEach(function(b){b.style.width="0"});requestAnimationFrame(function(){requestAnimationFrame(function(){rb.forEach(function(b,i){b.style.transitionDelay=(i*90)+"ms";b.style.width=""})})})}return}
-  /* X1, bull or bear and boldness: bars with the market's line on them */
-  if(k==="bull"||k==="bold"){var top=k==="bull"?100:Math.max(AVG_MOVE,Math.max.apply(null,R.map(function(x){return x.v})))*1.15,ln=(k==="bull"?(ROUNDS.length?UPS_N/ROUNDS.length*100:0):AVG_MOVE)/top*100;
-    box.innerHTML='<ol class="sxl">'+R.map(function(x,i){return '<li class="sxr"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span><span class="sb ln"><i style="--w:'+(x.v/top*100).toFixed(1)+'%;background:'+MODELS[x.m].c+'"></i><em style="left:'+ln.toFixed(1)+'%"></em></span><span class="st-v"><b>'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
-    var lb=$$(".sb i",box);if(anim&&!reduce){lb.forEach(function(b){b.style.width="0"});requestAnimationFrame(function(){requestAnimationFrame(function(){lb.forEach(function(b,i){b.style.transitionDelay=(i*90)+"ms";b.style.width=""})})})}return}
+  /* X1, ROI: the balance over the rounds, like a trading app's portfolio chart. $10,000 at the start, one line per AI. */
+  if(k==="roi"&&EXP==="x1"){var N=ROUNDS.length,F=R.map(function(x){var bal=10000,pts=[],st=null;
+        ROUNDS.forEach(function(r,i){var c=callOf(r,x.m);if(!c)return;if(st==null){st=i;pts.push([i,bal])}bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,bal])});return {m:x.m,pts:pts,bal:bal,x:x}}),
+      vs=[].concat.apply([10000],F.map(function(f){return f.pts.map(function(p){return p[1]})})),lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||500;lo-=pd;hi+=pd;
+    function X(i){return i/N*100}function Y(v){return (hi-v)/(hi-lo)*100}
+    box.innerHTML='<ol class="pnl-k">'+F.map(function(f,i){var up=f.bal>=10000;return '<li'+(i?'':' class="lead"')+'><span class="pk-r">'+(i+1)+'</span>'+logo(f.m)+'<b class="pk-n">'+nm(f.m)+'</b><strong>'+usd(f.bal)+'</strong><em class="'+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(f.bal).replace(/^[+−]/,"")+'</em></li>'}).join("")+'</ol>'+
+      '<div class="pnl"><span class="pnl-z" style="top:'+Y(10000).toFixed(2)+'%"><small>Start $10,000</small></span>'+
+      '<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+F.slice().reverse().map(function(f){return '<path d="'+f.pts.map(function(p,j){return (j?"L":"M")+X(p[0]).toFixed(2)+","+Y(p[1]).toFixed(2)}).join("")+'" style="stroke:'+MODELS[f.m].c+'"/>'}).join("")+'</svg>'+
+      F.map(function(f){var p=f.pts[f.pts.length-1];return '<i class="pnl-d" style="left:'+X(p[0]).toFixed(2)+'%;top:'+Y(p[1]).toFixed(2)+'%;background:'+MODELS[f.m].c+'"></i>'}).join("")+
+      '<span class="pnl-x"><small>R1</small><small>R'+N+'</small></span></div>';
+    if(anim&&!reduce)box.querySelector(".pnl").classList.add("draw");return}
+  /* X1, up or down: each AI's up calls (green) and down calls (red) in one bar, then what the stocks really did */
+  if(k==="bull"){var rows=R.concat([{m:null,up:UPS_N,dn:ROUNDS.length-UPS_N}]);
+    box.innerHTML='<ol class="udl">'+rows.map(function(x){var t=x.up+x.dn||1;
+      return '<li class="udr'+(x.m?'':' mkt')+'"><span class="st-who">'+(x.m?logo(x.m)+'<b>'+nm(x.m)+'</b>':'<b>The stocks</b>')+'</span><span class="udb"><i class="pu" style="--w:'+(x.up/t*100).toFixed(1)+'%">'+(x.up?'▲ '+x.up:'')+'</i><i class="pd" style="--w:'+(x.dn/t*100).toFixed(1)+'%">'+(x.dn?'▼ '+x.dn:'')+'</i></span><span class="st-v"><b>'+Math.round(x.up/t*100)+'%</b><small>said up</small></span></li>'}).join("")+'</ol>';
+    var mk=$(".udr.mkt small",box);if(mk)mk.textContent="went up";
+    var ub=$$(".udb i",box);if(anim&&!reduce){ub.forEach(function(b){b.style.flexBasis="0"});requestAnimationFrame(function(){requestAnimationFrame(function(){ub.forEach(function(b){b.style.flexBasis=""})})})}return}
   /* hit rate: bars (longer is better) */
   if(k==="hit"){box.innerHTML='<ol class="sxl">'+R.map(function(x,i){
       return '<li class="sxr'+(i?'':' lead')+'"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span><span class="sb"><i style="--w:'+x.v.toFixed(1)+'%;background:'+MODELS[x.m].c+'"></i></span><span class="st-v"><b>'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
     var bars=$$(".sb i",box);if(anim&&!reduce){bars.forEach(function(b){b.style.width="0"});requestAnimationFrame(function(){requestAnimationFrame(function(){bars.forEach(function(b,i){b.style.transitionDelay=(i*90)+"ms";b.style.width=""})})})}return}
   /* avg miss: the bullseye, with the averages ranked above it */
-  if(k==="miss"){box.classList.toggle("cmp",EXP==="x1");box.innerHTML='<ol class="mxr">'+R.map(function(x,i){return '<li'+(i?'':' class="lead"')+'><span>'+(i+1)+'</span>'+logo(x.m)+'<b>'+nm(x.m)+'</b><strong>'+x.txt+'</strong><small>pts</small></li>'}).join("")+'</ol><div class="tgv mxt"></div>';
+  if(k==="miss"&&EXP==="x1"){box.classList.add("cmp");box.innerHTML='<div class="tgv mxt"></div>';targets($(".mxt",box),R.map(function(x){return x.m}));
+    var gr=$(".tg-grid",box);R.forEach(function(x,i){var f=$('.tg[data-m="'+x.m+'"]',gr);if(!f)return;gr.appendChild(f);if(!i)f.classList.add("lead");
+      $(".tg-h",f).insertAdjacentHTML("afterbegin",'<span class="tg-r">'+(i+1)+'</span>');$(".tg-h",f).insertAdjacentHTML("beforeend",'<strong>'+x.txt+'<small> pts</small></strong>')});return}
+  if(k==="miss"){box.classList.remove("cmp");box.innerHTML='<ol class="mxr">'+R.map(function(x,i){return '<li'+(i?'':' class="lead"')+'><span>'+(i+1)+'</span>'+logo(x.m)+'<b>'+nm(x.m)+'</b><strong>'+x.txt+'</strong><small>pts</small></li>'}).join("")+'</ol><div class="tgv mxt"></div>';
     targets($(".mxt",box),R.map(function(x){return x.m}));return}
   /* ROI: columns up or down from the $10,000 line */
   if(k==="roi"){var mx=Math.max.apply(null,R.map(function(x){return Math.abs(x.v)}))||1;
@@ -273,9 +283,9 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=s
   if(anim&&!reduce)$$(".cr",box).forEach(function(c){c.classList.add("pop")})}
 function statsHTML(){return '<section class="blk" aria-labelledby="stH">'+(EXP==="x1"?xsh("02","The stats","How they stack up","Pick a measure. The card flips to it.",false,"stH"):'<div class="hh"><h2 id="stH">The stats</h2></div>')+
   '<div class="lsw rsw" role="group" aria-label="Rank the AIs by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+RMET[k].t+'</button>'}).join("")+'</div>'+
-  '<div class="rflip sflip" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><p class="rf-sub"></p><div class="st-box"></div></div>'}).join("")+'</div></div></section>'}
+  '<div class="rflip sflip" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><div class="st-box"></div><p class="rf-sub"></p></div>'}).join("")+'</div></div></section>'}
 function wireStats(root){var fl=$("#rflip",root);if(!fl)return;var faces=$$(".rf-face",fl),front=0,seen=false;
-  function fill(i,k,anim){$(".rf-sub",faces[i]).textContent=RMET[k].sub;drawStats(faces[i],k,anim)}
+  function fill(i,k,anim){$(".rf-sub",faces[i]).innerHTML=RMET[k].sub;drawStats(faces[i],k,anim)}
   fill(0,RCUR,false);
   if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&!seen){seen=true;io.disconnect();fill(front,RCUR,true)}})},{threshold:.4});io.observe(fl)}
   $$("[data-rk]",root).forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.rk;if(k===RCUR)return;RCUR=k;

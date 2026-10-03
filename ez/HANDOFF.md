@@ -89,6 +89,11 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Season and X1: less space between a section's intro line and its content. Section 02 is called "The test". The $10K panel is now "If you'd copied them": each AI's balance big, a green or red % pill, the sparkline.
 - X1: the records section is "Record book", each tile names the "Record holder". Results: the All / Big names switch sits on top and filters the whole page; then 01 Highlights (dark tiles, each with a short story line: Closest call, Tightest race, Biggest move, Everyone was wrong) and 02 Every round. "Everyone was wrong" picks the no-winner round not already shown (Costco now) and lists the others.
 
+## 2026-10-04 (round 23, X1)
+- Results: the All / Big names switch moved next to "02 Every round" and filters only that list (All by default). Highlights always use every round.
+- Upcoming: no switch. The page opens on "01 The calendar" with how many rounds are left and how many are big names (★).
+- How they stack up: the text sits under the card, led by a question ("How often did they call the direction right?"). Avg miss: four big bullseyes, ranked, each with its number (2 by 2 on phones). ROI: a balance chart from $10,000 with each AI's balance and % on top. "Bull/bear" is now "Up or down": up and down calls in one bar per AI, with the stocks as the last row. Boldness is gone.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
