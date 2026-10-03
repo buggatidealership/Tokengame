@@ -26,7 +26,7 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Previews: only EZ Season and EZ Season Live exist now.
 
 ## 2026-10-03 (evening): Overview, standings, leaderboard, rounds
-- Both pages: standings take two thirds of the band, Up next one third (phones: standings full width, Up next under it). Each row is rank, logo, name on the logo's line, right way %, wins. Average miss moved to the leaderboard. A model with fewer calls than rounds shows "2 of 3 right" instead of "right way".
+- Both pages: standings take two thirds of the band, Up next one third (phones too, side by side; Up next drops to the essentials). Each row is rank, logo, name on the logo's line, right way %, wins. Average miss moved to the leaderboard. A model with fewer calls than rounds shows "2 of 3 right" instead of "right way".
 - Season Live: "Board" is now "Overview".
 - Leaderboard: the standings' rows with columns Right way, Avg miss, ROI ($10k followed every call), Last 5, Wins (far right). Under it: The race (wins after each round), Head to head (who was closer, in rounds both called), Season records.
 - Rounds: one timeline of days, done rounds above as small cards (film poster, move, winner), rounds to come below as compact tiles. Opens on the next day in the middle of the screen. A card jumps out into the full card. "Big names" filters the whole timeline. The big-names list (routes.js, or BIG in ez-data.js) now covers banks, pharma, AI chips and gear worldwide, the Magnificent Seven and household names.
