@@ -235,7 +235,7 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
   function word(k){return ["","one","two","three","four","five","six","seven","eight","nine","ten"][k]||String(k)}
   function cos(rs){return rs.map(function(r){return r.co}).join(", ")}
   function tile(kick,head,m,big,unit,n){var r=findR(n),bg=r&&r.poster?' style="--bg:url(\''+MEDIA+r.poster+'.jpg\')"':'';
-    return '<a class="hl"'+bg+' href="#/round/'+n+'"><span class="hl-k">'+kick+'</span><span class="hl-v">'+logo(m)+'<b>'+big+'</b><i>'+unit+'</i></span><span class="hl-h">'+esc(head)+'</span><span class="hl-r">Round '+n+(r?' · '+fmtDate(r.resolves):'')+' <span aria-hidden="true">→</span></span></a>'}
+    return '<a class="hlt"'+bg+' href="#/round/'+n+'"><span class="hl-k">'+kick+'</span><span class="hl-v">'+logo(m)+'<b>'+big+'</b><i>'+unit+'</i></span><span class="hl-h">'+esc(head)+'</span><span class="hl-r">Round '+n+(r?' · '+fmtDate(r.resolves):'')+' <span aria-hidden="true">→</span></span></a>'}
   var out='';
   if(wr.rs.length>1)out+=tile("Most wins in a row",wr.rs.length===2?nm(wr.m)+" goes back to back: "+cos(wr.rs):wr.rs.length===3?nm(wr.m)+" goes three for three: "+cos(wr.rs):nm(wr.m)+" is on a heater: "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n);
   out+=tile("Closest call",best.off<1?nm(best.m)+" basically front-ran "+best.r.co:nm(best.m)+" sniped "+best.r.co,best.m,best.off.toFixed(2),"pts off",best.r.n);
