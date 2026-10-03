@@ -1,3 +1,5 @@
+> **2026-10-03:** every preview except EZ Season and EZ Season Live was deleted at the owner's request. Links below to other pages no longer work; their source files are kept in `ez/`.
+
 # EZ landing page — variant index
 
 All variants read `ez-data.js` (mirrors the ARENA sheet) and need `media/` alongside.

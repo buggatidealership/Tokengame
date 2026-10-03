@@ -17,6 +17,14 @@ Paste this into a new session, with the zip, to pick up where we left off.
 
 - "If you'd followed each AI" panel (Season, in "Are they learning?"; Season Live inherits it): $10,000 each, all-in on every call, compounding, with "Just buy every stock" as the yardstick. Hypothetical, before fees. Assumes the sheet's move runs from the close before the report to the first close after (owner to confirm).
 
+## Season Live, 2026-10-03 (later)
+- Nav: Board · Rounds · Leaderboard · Buyback. No separate Upcoming tab and no page per round.
+- Rounds: one strip of earnings days, past on the left, next on the right, opening on the next day with rounds; pick a day to see its rounds as rows. "Big names" filter (starter list in routes.js, owner can set BIG in ez-data.js). Calendar and X follow as one quiet line.
+- A round opens as its flip card over the page (close with ✕, Esc or a tap outside); shared links #/round/N open it on the Rounds tab.
+- Leaderboard: table (wins, right way %, avg miss, streak, $10k became); rows open model pages with a "← Leaderboard" link.
+- Share only on rounds whose calls or result are public (Season too).
+- Previews: only EZ Season and EZ Season Live exist now.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
