@@ -338,6 +338,7 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
   font:400 calc(var(--cm) * .33)/1 var(--fd);letter-spacing:.01em;text-transform:uppercase;white-space:nowrap;overflow:hidden;vertical-align:middle}
 .co-mark.has-logo{padding:calc(var(--cm) * .14)}
 .co-mark.has-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.co-mark.has-logo.dk{background:var(--slab)}
 
 /* ============ THE RECORD: one swipeable row of cards ============ */
 /* the centred card with about a third of each neighbour showing: on phones the card is 58% of the screen */
@@ -1136,9 +1137,9 @@ function flip(c){var f=!c.classList.contains("flipped"),had=c.contains(document.
    The crown goes to LADDER[0]. A model with calls but none graded yet (Grok) joins the table below them with 0 wins. */
 /* next to each name, one number. STAND_STAT picks it:
    "roi"   the return on $10,000 that followed every call (the "If you'd followed" panel, hypothetical, before fees)
-   "right" how often it called the direction right
-   To go back to right way, change "roi" to "right". Nothing else depends on it. */
-var STAND_STAT="roi",FOL_EARLY=null;
+   "right" hit rate: the share of calls that got the direction right (the default)
+   To try ROI again, change "right" to "roi". Nothing else depends on it. */
+var STAND_STAT="right",FOL_EARLY=null;
 var LD=LADDER.filter(function(T){return MODELS[T.m]});
 var bench=ACTIVE.filter(function(m){return !LD.some(function(T){return T.m===m})});
 var ROWS=LD.concat(bench.map(function(m){return {m:m,won:0}}));
@@ -1157,7 +1158,7 @@ function career(m){var g=0,right=0,err=0,won=0,hist=[];
 function pcStats(m){if(STAND_STAT==="roi"){var o=(FOL_EARLY=FOL_EARLY||followAll()).filter(function(f){return f.m===m})[0];
     if(o){var pc=(o.bal/10000-1)*100;return '<span class="pc-s roi '+(o.bal>=10000?'pu':'pd')+'" title="Hypothetical: $10,000 that followed every '+nm(m)+' call, all in, before fees, is now '+usd(o.bal)+'"><b>'+pctTxt(o.bal)+'</b><small>ROI if followed</small></span>'}}
   var C=career(m);if(!C.g)return '<span class="pc-s"><b>n/a</b><small>No calls yet</small></span>';
-  return '<span class="pc-s" title="'+C.right+' of '+C.g+' calls the right way"><b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'right way')+'</small></span>'}
+  return '<span class="pc-s" title="'+C.right+' of '+C.g+' calls the right way"><b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'hit rate')+'</small></span>'}
 var P0=PS[0]||null;
 /* ---------- the score bar (Primetime's ticker): the standings, every graded round, then the rounds to come ---------- */
 (function(){var tt=$("#tt"),tick=$("#tick"),tp=$("#tickP");if(!tt)return;

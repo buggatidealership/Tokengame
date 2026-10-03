@@ -67,9 +67,10 @@ var TIMES={MU:{lock:"2026-09-30T20:30:00Z"}};
 var MEDIA="media/";
 /* Company marks. Put a logo file in media/logos/ (SVG or PNG, square, transparent) and list it here, e.g. GME:"logos/GME.svg".
    Without a file, pages show a ticker badge, so a new round never breaks the page. */
-var CO_LOGOS={};
-function coMark(t,cls){t=String(t||"").toUpperCase();var f=CO_LOGOS[t];
-  return f?'<span class="co-mark has-logo '+(cls||'')+'" title="'+(TICKERS[t]||t)+'"><img src="'+MEDIA+f+'" alt="'+(TICKERS[t]||t)+'" loading="lazy"></span>'
+var CO_LOGOS={"005930.KS":{f:"logos/005930.KS.png"},"2317.TW":{f:"logos/2317.TW.png"},"2330.TW":{f:"logos/2330.TW.png"},"8267.T":{f:"logos/8267.T.png"},"9602.T":{f:"logos/9602.T.png"},"AA":{f:"logos/AA.png"},"ACN":{f:"logos/ACN.png"},"APLD":{f:"logos/APLD.png"},"ASML.AS":{f:"logos/ASML.AS.png"},"AZO":{f:"logos/AZO.png"},"BAC":{f:"logos/BAC.png"},"BB":{f:"logos/BB.png",dark:1},"BLK":{f:"logos/BLK.png",dark:1},"C":{f:"logos/C.png"},"CCL":{f:"logos/CCL.png"},"COST":{f:"logos/COST.png"},"DAL":{f:"logos/DAL.png"},"DPZ":{f:"logos/DPZ.png"},"GIS":{f:"logos/GIS.png"},"GME":{f:"logos/GME.png"},"GS":{f:"logos/GS.png"},"IBKR":{f:"logos/IBKR.png"},"JEF":{f:"logos/JEF.png"},"JNJ":{f:"logos/JNJ.png"},"JPM":{f:"logos/JPM.png"},"LEVI":{f:"logos/LEVI.png"},"MS":{f:"logos/MS.png"},"MU":{f:"logos/MU.png"},"NKE":{f:"logos/NKE.png",dark:1},"ORCL":{f:"logos/ORCL.png"},"PEP":{f:"logos/PEP.png"},"RPM":{f:"logos/RPM.png"},"STX":{f:"logos/STX.png"},"TSMC":{f:"logos/TSMC.png"},"UNH":{f:"logos/UNH.png",dark:1},"WFC":{f:"logos/WFC.png"}};
+/* CO_LOGOS is written by tools/fetch_logos.py: {TICKER:{f:"logos/X.png",dark:1}}; dark = a light logo, shown on a dark badge */
+function coMark(t,cls){t=String(t||"").toUpperCase();var L=CO_LOGOS[t],f=L&&(L.f||L);
+  return f?'<span class="co-mark has-logo'+(L.dark?' dk':'')+' '+(cls||'')+'" title="'+(TICKERS[t]||t)+'"><img src="'+MEDIA+f+'" alt="'+(TICKERS[t]||t)+'" loading="lazy"></span>'
           :'<span class="co-mark '+(cls||'')+'" title="'+(TICKERS[t]||t)+'">'+t+'</span>'}
 /* Pool calculator assumptions (owner to confirm). null = not decided yet: the page uses its example value and marks it.
    feePct: % of each $EZ trade that becomes fees we collect · leverage: the bet's leverage · volPct: example daily volume as % of market cap

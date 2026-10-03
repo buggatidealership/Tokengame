@@ -35,6 +35,12 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Standings stat (both pages): now ROI if followed (the $10k panel's number), centred between name and wins. To revert to right way, set STAND_STAT="right" in v15-season.html and rebuild v22. Under owner review, plus legal (it shows a hypothetical return on the landing).
 - Season Live: flatter nav pill; leaderboard titled "Current standings", even centred columns, the leader in the foil; head to head is one line per pairing; records lead with most wins in a row.
 
+## 2026-10-03 (night)
+- Standings stat back to the direction share, now worded "hit rate" (the TradFi term). ROI stays one switch away (STAND_STAT in v15).
+- Season Live nav: Overview, Leaderboard, Upcoming, Buyback (#/upcoming; #/rounds still works).
+- Leaderboard: the race has four measures (wins, hit rate, avg miss, ROI) on a flip card, racers ride their lines to a finish; head to head removed; records are headlines (kicker, one-line headline, logo and number).
+- Company logos: ez/media/logos/ via tools/fetch_logos.py (source financialmodelingprep image-stock; Foxconn and Toho hand-picked from Wikimedia Commons). Cards on Upcoming: one line (round, star, company and ticker), then the winner.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
