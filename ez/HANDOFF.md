@@ -10,13 +10,15 @@ Paste this into a new session, with the zip, to pick up where we left off.
 2. **EZ Season Live** (`ez/v22-season-live.html`, live: https://claude.ai/artifact/3FJq71NA8CwsLN2rZZxNa8). Season as the home page, plus a top nav (Board, Rounds, Models, Upcoming, Buyback), richer standings (right way, average miss), a page per round, model pages, a Rounds page and an Upcoming page with a calendar. Built from v15 by `ez/tools/v22/build.py`.
    Reference only: **EZ Live** (`ez/v21-live.html`), the page v22 took its navigation, standings, model pages and calendar from.
 
-## Open feedback on Season Live (to do next)
-- Rounds page is too crowded. Goal: one place to browse every past and upcoming round.
-- The four summary tiles on Rounds should become one good visual.
-- Rethink how the round cards are displayed there.
-- The round page's share block is too loud; use the same quiet icon and share image as Season.
+## Season Live: done on 2026-10-03
+- Rounds page: one season chart (a bar per graded round, as big as the move, the winner's logo on top, then the rounds to come), a Results / Coming up switch, cards with the name and result under the film.
+- Round page: the share block is gone; a small Share button uses Season's share image and panel.
+- Season also has share on every card; BlackBerry zoomed in, Carnival zoomed out, Jefferies and Costco keep their $EZ ending.
+
+## Still open
 - Navigation for Season Live is still to be decided.
-- Share placement on Season: currently top right of the card in focus, plus on the card back. Owner to confirm.
+- Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
+- Nike (round 11) film: waiting on Hedra's re-cut.
 
 ## Rules that stand
 - All numbers come from `ez/ez-data.js` (a snapshot of the owner's public sheet). Never type results by hand. When the owner says "sheet has been updated", follow `ez/SYNC.md`.
