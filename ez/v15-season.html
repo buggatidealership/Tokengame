@@ -838,6 +838,16 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 /* the road: one line each */
 .rs .rd{font:500 13px/1.45 var(--fb);color:var(--ink2);max-width:22ch}
 @media(max-width:760px){.rs .rd{max-width:none}}
+
+/* How close: same footprint as Direction. Title left, the four targets in one row (desktop); smaller targets on phones */
+#lqDist{grid-template-columns:minmax(0,.62fr) minmax(0,1.6fr)}
+#lqDist .tg-grid{gap:16px}
+#lqDist>.tgv{align-self:center}
+#lqDist .tg svg{max-width:168px}
+#lqDist .tg-note{margin-top:14px;font-size:13.5px}
+.fol{margin:30px 0 0}
+@media(max-width:900px){#lqDist{grid-template-columns:1fr}}
+@media(max-width:560px){#lqDist .tg-grid{gap:10px 14px}#lqDist .tg svg{max-width:min(104px,27vw)}#lqDist .tg{gap:4px}#lqDist h3{font-size:19px}#lqDist .tg-h{font-size:12.5px}#lqDist .tg-h .lg{font-size:20px}#lqDist .tg-note{margin-top:8px;font-size:12.5px;line-height:1.45}}
 </style>
 </head>
 <body>
@@ -901,11 +911,6 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
   <section class="sec" id="learn" aria-labelledby="lrnH">
     <div class="sh"><div class="tx"><span class="no">02</span><h2 id="lrnH">Are they learning?</h2></div>
       <p class="lede" id="lrnLede"></p></div>
-    <div class="fol" id="fol" aria-labelledby="folH">
-      <div class="fol-h"><h3 id="folH">If you'd followed each AI</h3><p>Everyone starts with $10,000</p></div>
-      <ol class="fol-l" id="folL"></ol>
-      <p class="fol-f" id="folF"></p>
-    </div>
     <div class="lsw" role="group" aria-label="Pick a chart"><button type="button" id="swDir" aria-pressed="true" aria-controls="lqDir">Direction</button><button type="button" id="swDist" aria-pressed="false" aria-controls="lqDist">How close</button></div>
     <div class="lrn">
       <div class="lq" id="lqDir"><div><h3>Did they call the direction right?</h3></div>
@@ -914,6 +919,11 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
         <div class="tgv" id="lxDist"></div></div>
     </div>
     <p class="verdict"><small>So far</small><span id="verdict"></span></p>
+    <div class="fol" id="fol" aria-labelledby="folH">
+      <div class="fol-h"><h3 id="folH">If you'd followed each AI</h3><p>Everyone starts with $10,000</p></div>
+      <ol class="fol-l" id="folL"></ol>
+      <p class="fol-f" id="folF"></p>
+    </div>
   </section>
 
   <section class="sec" id="bet" aria-labelledby="betH">
@@ -1263,7 +1273,7 @@ function targets(el){
   el.innerHTML='<div class="tg-grid">'+ACTIVE.map(function(m){var W=tgWrong(m);
     return '<figure class="tg" data-m="'+m+'"><figcaption class="tg-h">'+logo(m)+'<span>'+nm(m)+'</span></figcaption>'+tgSVG(m)+
       (W.g?'':'<p class="tg-n">No results yet</p>')+'</figure>'}).join("")+'</div>'+
-    '<p class="tg-note">Think target practice. The bullseye is what the stock really did. Each dot is one call. The closer to the bullseye, the better the call. Calls that went the wrong way never hit the board.</p>';
+    '<p class="tg-note">Bullseye: what the stock really did. Each dot: one call. Wrong-way calls miss the board.</p>';
   var tip=null;
   function hide(){if(tip){tip.remove();tip=null}$$(".tg-d.on",el).forEach(function(g){g.classList.remove("on")})}
   function show(g){hide();var f=g.closest(".tg"),sv=$("svg",f),sr=sv.getBoundingClientRect(),fr=f.getBoundingClientRect(),k=sr.width/200;
@@ -1303,6 +1313,10 @@ if(window.EZLearn&&NR){
     if(stale)dispatchEvent(new Event("resize"));
     if(anim&&seen)setTimeout(function(){animate(which)},stale?220:0)}
   pick("dir",false);
+  /* both charts keep the same footprint: the box holds the Direction card's height, so switching never moves the page */
+  var lrnBox=lqDir.parentNode;function eqH(){if(!lqDir.hidden&&lqDir.offsetHeight)lrnBox.style.minHeight=lqDir.offsetHeight+"px"}
+  eqH();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(eqH);var eqT=null;
+  addEventListener("resize",function(){clearTimeout(eqT);eqT=setTimeout(function(){lrnBox.style.minHeight="";if(lqDir.hidden){lqDir.hidden=false;lqDist.hidden=true;eqH();lqDir.hidden=true;lqDist.hidden=false}else eqH()},260)});
   swDir.addEventListener("click",function(){if(lqDir.hidden)pick("dir",true)});
   swDist.addEventListener("click",function(){if(lqDist.hidden)pick("dist",true)});
   if(!reduce&&"IntersectionObserver" in window){
