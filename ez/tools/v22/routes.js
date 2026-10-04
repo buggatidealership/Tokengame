@@ -184,8 +184,8 @@ function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" r
 function upBar(up){function c(f){return up.filter(function(n){return inF(n,f)}).length}var sc={};up.forEach(function(n){var x=secOfN(n);if(x)sc[x]=(sc[x]||0)+1});
   var secs=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a]});
   /* one bar: the three themes, then the sector menu in the same pill */
-  return '<div class="ufb"><div class="seg bseg ufg" role="group" aria-label="Which rounds">'+[["all","All"],["mag7","Mag 7"],["ai","AI"]].map(function(x){return '<button type="button" data-uf="'+x[0]+'" aria-pressed="'+(UF===x[0])+'">'+x[1]+' <b>'+c(x[0])+'</b></button>'}).join("")+
-    '<label class="ufs'+(US?' on':'')+'"><span class="sr">Sector</span><select id="ufSec"><option value="">All sectors</option>'+secs.map(function(x){return '<option value="'+esc(x)+'"'+(US===x?' selected':'')+'>'+esc(SECT_SHORT[x]||x)+' ('+sc[x]+')</option>'}).join("")+'</select></label></div></div>'}
+  return '<div class="ufb"><div class="ufc" role="group" aria-label="Filter the calendar">'+[["all","All"],["mag7","Mag 7"],["ai","AI"]].map(function(x){return '<button type="button" data-uf="'+x[0]+'" aria-pressed="'+(UF===x[0])+'">'+x[1]+'<b>'+c(x[0])+'</b></button>'}).join("")+
+    '<label class="ufs'+(US?' on':'')+'"><span class="sr">Sector</span><select id="ufSec"><option value="">Sector</option>'+secs.map(function(x){return '<option value="'+esc(x)+'"'+(US===x?' selected':'')+'>'+esc(SECT_SHORT[x]||x)+' ('+sc[x]+')</option>'}).join("")+'</select></label></div></div>'}
 /* put a day (the next one, or a shared round's day) in the middle of the screen */
 function centerDay(root,k){var s=(k&&$('.rday[data-k="'+k+'"]',root))||$(".rday.next",root);if(!s)return;
   var y=s.getBoundingClientRect().top+scrollY-Math.max(120,innerHeight*.32);window.scrollTo(0,Math.max(0,y))}
@@ -358,7 +358,8 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
   RECS=[];
   function tile(kick,head,m,big,unit,n,rs,why,sub,more){var r=findR(n),bg=r&&r.poster?' style="--bg:url(\''+MEDIA+r.poster+'.jpg\')"':'';
     if(EXP==="x1"){RECS.push(Object.assign({kick:kick,head:head,m:m,big:big,unit:unit,rs:rs||[r],why:why||""},more||{}));
-      return '<button type="button" class="hlt rec2"'+bg+' data-rec="'+(RECS.length-1)+'"><span class="hl-k">'+kick+'</span>'+(sub?'<span class="hl-s">'+sub+'</span>':'')+'<span class="hl-h">'+esc(head)+'</span><span class="hl-hold"><small>Record holder</small>'+logo(m)+'<b>'+nm(m)+'</b><strong>'+big+'</strong><i>'+unit+'</i></span></button>'}
+      var rk={"Longest winning streak":["rk-win","👑"],"Closest call":["rk-close","🎯"],"Biggest miss":["rk-miss","💥"],"Longest hit streak":["rk-hit","🔥"]}[kick]||["",""];
+      return '<button type="button" class="hlt rec2 '+rk[0]+'" data-rec="'+(RECS.length-1)+'"><span class="hl-wm" aria-hidden="true">'+big+'</span><span class="hl-k">'+(rk[1]?'<i class="hl-ic" aria-hidden="true">'+rk[1]+'</i>':'')+kick+'</span>'+(sub?'<span class="hl-s">'+sub+'</span>':'')+'<span class="hl-h">'+esc(head)+'</span><span class="hl-hold"><small>Record holder</small>'+logo(m)+'<b>'+nm(m)+'</b><strong>'+big+'</strong><i>'+unit+'</i></span></button>'}
     return '<a class="hlt"'+bg+' href="#/round/'+n+'"><span class="hl-k">'+kick+'</span><span class="hl-v">'+logo(m)+'<b>'+big+'</b><i>'+unit+'</i></span><span class="hl-h">'+esc(head)+'</span><span class="hl-r">Round '+n+(r?' · '+fmtDate(r.resolves):'')+' <span aria-hidden="true">→</span></span></a>'}
   var LAST=ROUNDS[ROUNDS.length-1],NEXTN=LAST?LAST.n+1:1;
   function fx(rs){var d=rs.map(function(r){return r.resolves}).sort(),a=d[0],b=d[d.length-1];return [["Rounds",rs.map(function(r){return "R"+r.n}).join(" ")],["Dates",fmtDate(a)+(b!==a?" to "+fmtDate(b):"")]]}

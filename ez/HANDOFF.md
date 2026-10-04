@@ -146,6 +146,11 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Results highlights: record name big, then one short paragraph (the story with the key figure in bold: e.g. "0.64 points from perfect, 11x closer than the average call"), a round watch button top right. No round footer: the card opens the round.
 - Upcoming: no "01 The calendar" header (screen-reader title only). One pill holds All / Mag 7 / AI and the sector menu; the line under it reads "The calls drop before each report. Follow on X (link at launch) to see them first."
 
+## 2026-10-04 (round 33, X1)
+- Record book: each record has its own colour and icon (winning streak gold 👑, closest call green 🎯, biggest miss red 💥, hit streak blue 🔥) and its number huge in the background; no film stills.
+- Results highlights: a clean front page: paper panel under a double rule, thin rules between stories, the record name as the headline underlined in the company colour, a serif paragraph, an outlined ▶ top right.
+- Upcoming: less space at the top; four separate chips across the width (All, Mag 7, AI with counts, then Sector ▾; on phones Sector takes its own row).
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
