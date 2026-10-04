@@ -782,7 +782,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 .pc.lead .pc-s small{color:var(--ink)}
 @media(max-width:640px){.pc-s b{font-size:22px}.pc-s small{font-size:8.5px;letter-spacing:.03em}}
 
-/* if you'd followed each AI: $10,000 each, compounding, against just buying every stock */
+/* if you'd followed each AI: the stake each, compounding, against just buying every stock */
 .fol{margin-top:28px;background:var(--card);color:var(--ink);border-radius:20px;padding:20px 22px;box-shadow:0 0 0 2.5px var(--ink),5px 6px 0 0 var(--ink)}
 .fol-h{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 16px}
 .fol-h h3{font:400 clamp(24px,3vw,32px)/1 var(--fd);text-transform:uppercase}
@@ -2068,7 +2068,7 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
         <div class="tgv" id="lxDist"></div></div>
     </div></div>
     <div class="fol" id="fol" aria-labelledby="folH">
-      <div class="fol-h"><h3 id="folH">How much would they have made by now?</h3><p>$10,000 on each AI, all in on every call. Simulated.</p></div>
+      <div class="fol-h"><h3 id="folH">Give each AI $100,000. Here's where they'd stand.</h3><p>All in on every call.</p></div>
       <ol class="fol-l" id="folL"></ol>
       <p class="fol-f" id="folF"></p>
     </div>
@@ -2131,6 +2131,8 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
 <script src="ez-learn.js"></script>
 <script>
 (function(){
+/* the simulated stake each AI starts with, in "If you'd copied them" and the leaderboard ROI */
+var STAKE=100000;
 /* words the owner may rename: the label before a round's result date, and the label before the real move on a card's back */
 const RESOLVE_WORD = "Resolves";
 const ACTUAL_WORD = "Outcome";
@@ -2253,7 +2255,7 @@ function flip(c){var f=!c.classList.contains("flipped"),had=c.contains(document.
    Order and tie-breaks come from LADDER (ez-data.js: wins, then the smaller average miss). Ties share the rank number.
    The crown goes to LADDER[0]. A model with calls but none graded yet (Grok) joins the table below them with 0 wins. */
 /* next to each name, one number. STAND_STAT picks it:
-   "roi"   the return on $10,000 that followed every call (the "If you'd followed" panel, hypothetical, before fees)
+   "roi"   the return on the stake that followed every call (the "If you'd followed" panel, hypothetical, before fees)
    "right" hit rate: the share of calls that got the direction right (the default)
    To try ROI again, change "right" to "roi". Nothing else depends on it. */
 var STAND_STAT="right",FOL_EARLY=null;
@@ -2273,7 +2275,7 @@ function career(m){var g=0,right=0,err=0,won=0,hist=[];
   if(cs.length){var last=cs[cs.length-1].ok,k=0;for(var i=cs.length-1;i>=0&&cs[i].ok===last;i--)k++;streak={ok:last,k:k}}
   return {m:m,g:g,right:right,won:won,avg:g?err/g:null,hist:hist,streak:streak}}
 function pcStats(m){if(STAND_STAT==="roi"){var o=(FOL_EARLY=FOL_EARLY||followAll()).filter(function(f){return f.m===m})[0];
-    if(o){var pc=(o.bal/10000-1)*100;return '<span class="pc-s roi '+(o.bal>=10000?'pu':'pd')+'" title="Hypothetical: $10,000 that followed every '+nm(m)+' call, all in, before fees, is now '+usd(o.bal)+'"><b>'+pctTxt(o.bal)+'</b><small>ROI if followed</small></span>'}}
+    if(o){var pc=(o.bal/STAKE-1)*100;return '<span class="pc-s roi '+(o.bal>=STAKE?'pu':'pd')+'" title="Hypothetical: '+usd(STAKE)+' that followed every '+nm(m)+' call, all in, before fees, is now '+usd(o.bal)+'"><b>'+pctTxt(o.bal)+'</b><small>ROI if followed</small></span>'}}
   var C=career(m);if(!C.g)return '<span class="pc-s"><b>n/a</b><small>No calls yet</small></span>';
   return '<span class="pc-s" title="'+C.right+' of '+C.g+' calls the right way"><b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'hit rate')+'</small></span>'}
 var P0=PS[0]||null;
@@ -2837,27 +2839,27 @@ function shDeep(){var m=location.hash.match(/^#round-(\d+)$/);if(!m)return;var i
   $("#record").scrollIntoView({block:"start"});go(i,false)}
 addEventListener("hashchange",shDeep);requestAnimationFrame(function(){requestAnimationFrame(shDeep)});
 
-/* ---------- if you'd followed each AI: everyone starts with $10,000 and puts all of it on every call (buy if the AI says
+/* ---------- if you'd followed each AI: everyone starts with the stake (STAKE) and puts all of it on every call (buy if the AI says
    up, bet against the stock if it says down), in before the report, out at the next close, compounding.
    Hypothetical, from the graded moves in ez-data.js, before fees and costs. FOLLOW is shared with Season Live. ---------- */
 var FOLLOW=followAll();
-function followAll(){var out=[];ACTIVE.forEach(function(m){var bal=10000,n=0,first=null,path=[10000];
+function followAll(){var out=[];ACTIVE.forEach(function(m){var bal=STAKE,n=0,first=null,path=[STAKE];
     ROUNDS.forEach(function(r){var c=callOf(r,m);if(!c)return;if(first==null)first=r.n;n++;bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;path.push(bal)});
     if(n)out.push({m:m,bal:bal,n:n,first:first,path:path})});
   return out.sort(function(a,b){return b.bal-a.bal})}
 function usd(v){return "$"+Math.round(v).toLocaleString("en-US")}
-function pctTxt(b){var pc=(b/10000-1)*100;return (pc>=0?"+":"−")+Math.abs(pc).toFixed(1)+"%"}
+function pctTxt(b){var pc=(b/STAKE-1)*100;return (pc>=0?"+":"−")+Math.abs(pc).toFixed(1)+"%"}
 var FOLLOW_NOTE="Simulated, before fees. Buy on an up call, short on a down call. In before the report, out at the next close.";
 (function(){var L=$("#folL");if(!L||!FOLLOW.length){var f=$("#fol");if(f)f.hidden=true;return}
-  /* one tile per AI: the return big, the dollars under it, and its path from $10,000 (dashed) round by round */
-  var all=[].concat.apply([],FOLLOW.map(function(o){return o.path})),lo=Math.min.apply(null,all.concat([10000])),hi=Math.max.apply(null,all.concat([10000])),pad=(hi-lo)*.12||500;lo-=pad;hi+=pad;
+  /* one tile per AI: the return big, the dollars under it, and its path from the stake (dashed) round by round */
+  var all=[].concat.apply([],FOLLOW.map(function(o){return o.path})),lo=Math.min.apply(null,all.concat([STAKE])),hi=Math.max.apply(null,all.concat([STAKE])),pad=(hi-lo)*.12||STAKE*.05;lo-=pad;hi+=pad;
   function spark(o,up){var W=120,H=30,n=o.path.length-1;function X(k){return (2+k/(n||1)*(W-6)).toFixed(1)}function Y(v){return (H-3-(v-lo)/(hi-lo)*(H-6)).toFixed(1)}
-    return '<svg class="ft-s" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="'+W+'" y1="'+Y(10000)+'" y2="'+Y(10000)+'" class="z"/><path d="'+o.path.map(function(v,k){return (k?"L":"M")+X(k)+","+Y(v)}).join("")+'" class="'+(up?'pu':'pd')+'"/></svg>'}
+    return '<svg class="ft-s" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="'+W+'" y1="'+Y(STAKE)+'" y2="'+Y(STAKE)+'" class="z"/><path d="'+o.path.map(function(v,k){return (k?"L":"M")+X(k)+","+Y(v)}).join("")+'" class="'+(up?'pu':'pd')+'"/></svg>'}
   L.className="ftl";
-  L.innerHTML=FOLLOW.map(function(o,i){var up=o.bal>=10000;
+  L.innerHTML=FOLLOW.map(function(o,i){var up=o.bal>=STAKE;
     return '<li class="ft'+(i?'':' lead')+'"><span class="ft-w">'+logo(o.m)+'<span>'+nm(o.m)+(o.n<NR?'<small>'+o.n+' rounds</small>':'')+'</span></span>'+
       spark(o,up)+'<span class="ft-v"><b class="ft-bal">'+usd(o.bal)+'</b><span class="ft-pill '+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(o.bal).replace(/^[+−]/,"")+'</span></span></li>'}).join("");
-  $("#folF").textContent=FOLLOW_NOTE})();
+  $("#folH").textContent="Give each AI "+usd(STAKE)+". Here's where they'd stand.";$("#folF").textContent=FOLLOW_NOTE})();
 window.EZ_EXP="x2";
 
 /* ================= V22 · SEASON LIVE: pages =================
@@ -3065,13 +3067,13 @@ document.addEventListener("click",function(e){var a=e.target.closest&&e.target.c
 function shURL(n){return location.href.replace(/#.*$/,"")+"#/round/"+n}
 
 /* ---------- leaderboard: the standings' own rows, with more columns. Hit rate first, then the average miss,
-   then the return on $10,000, the last five rounds, and wins (what the ranking is decided on) on the far right.
+   then the return on the stake, the last five rounds, and wins (what the ranking is decided on) on the far right.
    Under it: the title race, head to head, and the season's records. Every number comes from ROUNDS. ---------- */
 var CROWN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V8l5 4 4-8 4 8 5-4v11z" fill="#12131a"/></svg>';
 function fbal(m){var o=FOLLOW.filter(function(f){return f.m===m})[0];return o?o.bal:null}
 function formDots(C){return C.hist.slice(-5).map(function(h){var cls=h.none?"n":h.win?"w":h.ok?"g":"r",lab=h.none?"no call":h.win?"won":h.ok?"right way":"wrong way";
   return '<a class="fd '+cls+'" href="#/round/'+h.n+'" title="Round '+h.n+': '+lab+'" aria-label="Round '+h.n+': '+lab+'">'+(h.win?CROWN:h.none?'':h.ok?'✓':'✗')+'</a>'}).join("")}
-function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=10000;
+function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=STAKE;
   return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.won>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
     '<span class="rk" role="cell"><sup>#</sup>'+rkOf(m)+'</span>'+
     '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3>'+(EXP==="x1"?nm(m):'<a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a>')+'</h3><small>'+esc(MODELS[m].ver||'')+'</small></span></span>'+
@@ -3087,7 +3089,7 @@ var RMET={
   wins:{t:"Wins",sub:"Rounds won. A shared round counts for each winner."},
   hit:{t:"Hit rate",sub:"<b>How often did they call the direction right?</b> Only up or down counts here, not the size."},
   miss:{t:"Avg miss",sub:"<b>How close did they get?</b> Average points off the real move, smaller is better. The bullseye is what the stock did. Each dot is one call."},
-  roi:{t:"ROI",sub:"<b>What would $10,000 be worth now?</b> All in on every call: buy on an up call, short on a down call. Simulated, before fees."}};
+  roi:{t:"ROI",sub:"<b>What would "+usd(STAKE)+" be worth now?</b> All in on every call: buy on an up call, short on a down call. Simulated, before fees."}};
 var RKEYS=EXP==="x1"?["hit","miss","roi","bull"]:["hit","miss","roi","wins"],RCUR="hit";
 var UPS_N=ROUNDS.filter(function(r){return r.a>0}).length,AVG_MOVE=ROUNDS.length?ROUNDS.reduce(function(a,r){return a+Math.abs(r.a)},0)/ROUNDS.length:0;
 RMET.bull={t:"Up or down",sub:"<b>Do they lean up or down?</b> Each AI's up and down calls, next to what the stocks really did."};
@@ -3099,18 +3101,18 @@ function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(
     if(k==="wins")return {m:m,v:C.won,txt:String(C.won),sub:C.won?(C.won-shared)+" outright"+(shared?", "+shared+" shared":""):"Not yet"};
     if(k==="hit")return {m:m,v:C.g?C.right/C.g*100:0,txt:C.g?pctOf(C.right,C.g)+"%":"n/a",sub:C.right+" of "+C.g+" calls"};
     if(k==="miss")return {m:m,v:C.avg,txt:C.avg==null?"n/a":C.avg.toFixed(2),sub:bestC?"Best: "+bestC.off.toFixed(2)+" on "+bestC.r.co:""};
-    return {m:m,v:b==null?0:(b/10000-1)*100,txt:b==null?"n/a":pctTxt(b),sub:b==null?"":usd(b)}})
+    return {m:m,v:b==null?0:(b/STAKE-1)*100,txt:b==null?"n/a":pctTxt(b),sub:b==null?"":usd(b)}})
   .filter(function(x){return x.v!=null}).sort(function(a,b){return k==="miss"?a.v-b.v:b.v-a.v})}
 function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=statRows(k);
   /* X1, hit rate: the direction chart from "Are they learning?" (hit rate round by round, one line per AI) */
   if(k==="hit"&&EXP==="x1"&&window.EZLearn){box.innerHTML='<div class="lxv hx"></div>';EZLearn.together($(".hx",box),{pctOnly:true,noCoin:true,ver:true});return}
-  /* X1, ROI: the balance over the rounds, like a trading app's portfolio chart. $10,000 at the start, one line per AI. */
-  if(k==="roi"&&EXP==="x1"){var N=ROUNDS.length,F=R.map(function(x){var bal=10000,pts=[],st=null;
+  /* X1, ROI: the balance over the rounds, like a trading app's portfolio chart. the stake at the start, one line per AI. */
+  if(k==="roi"&&EXP==="x1"){var N=ROUNDS.length,F=R.map(function(x){var bal=STAKE,pts=[],st=null;
         ROUNDS.forEach(function(r,i){var c=callOf(r,x.m);if(!c)return;if(st==null){st=i;pts.push([i,bal])}bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,bal])});return {m:x.m,pts:pts,bal:bal,x:x}}),
-      vs=[].concat.apply([10000],F.map(function(f){return f.pts.map(function(p){return p[1]})})),lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||500;lo-=pd;hi+=pd;
+      vs=[].concat.apply([STAKE],F.map(function(f){return f.pts.map(function(p){return p[1]})})),lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STAKE*.05;lo-=pd;hi+=pd;
     function X(i){return i/N*100}function Y(v){return (hi-v)/(hi-lo)*100}
-    box.innerHTML='<ol class="pnl-k">'+F.map(function(f,i){var up=f.bal>=10000;return '<li'+(i?'':' class="lead"')+'><span class="pk-r">'+(i+1)+'</span>'+logo(f.m)+'<b class="pk-n">'+nm(f.m)+'</b><strong>'+usd(f.bal)+'</strong><em class="'+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(f.bal).replace(/^[+−]/,"")+'</em></li>'}).join("")+'</ol>'+
-      '<div class="pnl"><span class="pnl-z" style="top:'+Y(10000).toFixed(2)+'%"><small>Start $10,000</small></span>'+
+    box.innerHTML='<ol class="pnl-k">'+F.map(function(f,i){var up=f.bal>=STAKE;return '<li'+(i?'':' class="lead"')+'><span class="pk-r">'+(i+1)+'</span>'+logo(f.m)+'<b class="pk-n">'+nm(f.m)+'</b><strong>'+usd(f.bal)+'</strong><em class="'+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(f.bal).replace(/^[+−]/,"")+'</em></li>'}).join("")+'</ol>'+
+      '<div class="pnl"><span class="pnl-z" style="top:'+Y(STAKE).toFixed(2)+'%"><small>Start '+usd(STAKE)+'</small></span>'+
       '<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+F.slice().reverse().map(function(f){return '<path d="'+f.pts.map(function(p,j){return (j?"L":"M")+X(p[0]).toFixed(2)+","+Y(p[1]).toFixed(2)}).join("")+'" style="stroke:'+MODELS[f.m].c+'"/>'}).join("")+'</svg>'+
       F.map(function(f){var p=f.pts[f.pts.length-1];return '<i class="pnl-d" style="left:'+X(p[0]).toFixed(2)+'%;top:'+Y(p[1]).toFixed(2)+'%;background:'+MODELS[f.m].c+'"></i>'}).join("")+
       '<span class="pnl-x"><small>R1</small><small>R'+N+'</small></span></div>';
@@ -3131,11 +3133,11 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=s
       $(".tg-h",f).insertAdjacentHTML("afterbegin",'<span class="tg-r">'+(i+1)+'</span>');$(".tg-h",f).insertAdjacentHTML("beforeend",'<strong>'+x.txt+'<small> pts</small></strong>')});return}
   if(k==="miss"){box.classList.remove("cmp");box.innerHTML='<ol class="mxr">'+R.map(function(x,i){return '<li'+(i?'':' class="lead"')+'><span>'+(i+1)+'</span>'+logo(x.m)+'<b>'+nm(x.m)+'</b><strong>'+x.txt+'</strong><small>pts</small></li>'}).join("")+'</ol><div class="tgv mxt"></div>';
     targets($(".mxt",box),R.map(function(x){return x.m}));return}
-  /* ROI: columns up or down from the $10,000 line */
+  /* ROI: columns up or down from the stake line */
   if(k==="roi"){var mx=Math.max.apply(null,R.map(function(x){return Math.abs(x.v)}))||1;
     box.innerHTML='<div class="rcol">'+R.map(function(x,i){var h=Math.abs(x.v)/mx*100,up=x.v>=0;
       return '<div class="rcx'+(i?'':' lead')+'"><div class="rc-up">'+(up?'<span class="rc-l pu">'+x.txt+'</span><i class="pu" style="--h:'+h.toFixed(1)+'%"></i>':'')+'</div><div class="rc-dn">'+(up?'':'<i class="pd" style="--h:'+h.toFixed(1)+'%"></i><span class="rc-l pd">'+x.txt+'</span>')+'</div>'+
-        '<div class="rc-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b><small>'+esc(x.sub)+'</small></div></div>'}).join("")+'<span class="rc-base">$10,000</span></div>';
+        '<div class="rc-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b><small>'+esc(x.sub)+'</small></div></div>'}).join("")+'<span class="rc-base">'+usd(STAKE)+'</span></div>';
     var cols=$$(".rcol i",box);if(anim&&!reduce){cols.forEach(function(c){c.style.height="0"});requestAnimationFrame(function(){requestAnimationFrame(function(){cols.forEach(function(c,i){c.style.transitionDelay=(i*110)+"ms";c.style.height=""})})})}return}
   /* wins: a crown per round won; a shared win is a half crown. Each crown opens its round. */
   box.innerHTML='<ol class="sxl">'+R.map(function(x,i){var won=ROUNDS.filter(function(r){return r.win&&r.win.split(" & ").indexOf(x.m)>-1});
@@ -3230,7 +3232,7 @@ function vModels(){
   return (EXP==="x1"?xsh("01","Leaderboard","Current standings","Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
-    '<p class="lbn"><b>Hit rate</b>: calls right on direction. <b>Avg miss</b>: points off the real move. <b>ROI</b>: $10,000 rolled through every call. Simulated, before fees.</p>'+
+    '<p class="lbn"><b>Hit rate</b>: calls right on direction. <b>Avg miss</b>: points off the real move. <b>ROI</b>: '+usd(STAKE)+' rolled through every call. Simulated, before fees.</p>'+
     statsHTML()+
     '<section class="blk" aria-labelledby="recH">'+(EXP==="x1"?xsh("03","Highlights","Record book","Tap a record for the story behind it.",false,"recH"):'<div class="hh"><h2 id="recH">Highlights</h2></div>')+'<div class="hls">'+records()+'</div></section>'}
 function wireModels(root){wireStats(root)}

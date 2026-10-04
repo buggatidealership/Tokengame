@@ -115,6 +115,9 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - 03 The buyback: $EZ in its colours without the badge. Where the money goes as a tree: every $EZ trade pays a small fee, 69% to the pot (the AI trades it on Hyperliquid; right call buys back $EZ, wrong call drains it), 31% to the lab (keeps things running, then the old road as a checklist: calls on the record done, more models now, pipeline, the AI places the bet, more to come). "How big could it get?" has an Estimated tag; the assumptions line and the TBC line are hidden (still in the page, hidden). Fine print is only "The pot can be wiped out."
 - The road section is gone (it lives in the lab branch, anchor #road kept). The token is 04.
 
+## 2026-10-04 (round 27)
+- The simulated stake is $100,000 (one setting, STAKE, at the top of the page script). Overview: "Give each AI $100,000. Here's where they'd stand." X1 leaderboard ROI, its chart and the standings tooltip use the same stake.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.

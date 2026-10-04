@@ -204,13 +204,13 @@ document.addEventListener("click",function(e){var a=e.target.closest&&e.target.c
 function shURL(n){return location.href.replace(/#.*$/,"")+"#/round/"+n}
 
 /* ---------- leaderboard: the standings' own rows, with more columns. Hit rate first, then the average miss,
-   then the return on $10,000, the last five rounds, and wins (what the ranking is decided on) on the far right.
+   then the return on the stake, the last five rounds, and wins (what the ranking is decided on) on the far right.
    Under it: the title race, head to head, and the season's records. Every number comes from ROUNDS. ---------- */
 var CROWN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V8l5 4 4-8 4 8 5-4v11z" fill="#12131a"/></svg>';
 function fbal(m){var o=FOLLOW.filter(function(f){return f.m===m})[0];return o?o.bal:null}
 function formDots(C){return C.hist.slice(-5).map(function(h){var cls=h.none?"n":h.win?"w":h.ok?"g":"r",lab=h.none?"no call":h.win?"won":h.ok?"right way":"wrong way";
   return '<a class="fd '+cls+'" href="#/round/'+h.n+'" title="Round '+h.n+': '+lab+'" aria-label="Round '+h.n+': '+lab+'">'+(h.win?CROWN:h.none?'':h.ok?'✓':'✗')+'</a>'}).join("")}
-function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=10000;
+function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=STAKE;
   return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.won>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
     '<span class="rk" role="cell"><sup>#</sup>'+rkOf(m)+'</span>'+
     '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3>'+(EXP==="x1"?nm(m):'<a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a>')+'</h3><small>'+esc(MODELS[m].ver||'')+'</small></span></span>'+
@@ -226,7 +226,7 @@ var RMET={
   wins:{t:"Wins",sub:"Rounds won. A shared round counts for each winner."},
   hit:{t:"Hit rate",sub:"<b>How often did they call the direction right?</b> Only up or down counts here, not the size."},
   miss:{t:"Avg miss",sub:"<b>How close did they get?</b> Average points off the real move, smaller is better. The bullseye is what the stock did. Each dot is one call."},
-  roi:{t:"ROI",sub:"<b>What would $10,000 be worth now?</b> All in on every call: buy on an up call, short on a down call. Simulated, before fees."}};
+  roi:{t:"ROI",sub:"<b>What would "+usd(STAKE)+" be worth now?</b> All in on every call: buy on an up call, short on a down call. Simulated, before fees."}};
 var RKEYS=EXP==="x1"?["hit","miss","roi","bull"]:["hit","miss","roi","wins"],RCUR="hit";
 var UPS_N=ROUNDS.filter(function(r){return r.a>0}).length,AVG_MOVE=ROUNDS.length?ROUNDS.reduce(function(a,r){return a+Math.abs(r.a)},0)/ROUNDS.length:0;
 RMET.bull={t:"Up or down",sub:"<b>Do they lean up or down?</b> Each AI's up and down calls, next to what the stocks really did."};
@@ -238,18 +238,18 @@ function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(
     if(k==="wins")return {m:m,v:C.won,txt:String(C.won),sub:C.won?(C.won-shared)+" outright"+(shared?", "+shared+" shared":""):"Not yet"};
     if(k==="hit")return {m:m,v:C.g?C.right/C.g*100:0,txt:C.g?pctOf(C.right,C.g)+"%":"n/a",sub:C.right+" of "+C.g+" calls"};
     if(k==="miss")return {m:m,v:C.avg,txt:C.avg==null?"n/a":C.avg.toFixed(2),sub:bestC?"Best: "+bestC.off.toFixed(2)+" on "+bestC.r.co:""};
-    return {m:m,v:b==null?0:(b/10000-1)*100,txt:b==null?"n/a":pctTxt(b),sub:b==null?"":usd(b)}})
+    return {m:m,v:b==null?0:(b/STAKE-1)*100,txt:b==null?"n/a":pctTxt(b),sub:b==null?"":usd(b)}})
   .filter(function(x){return x.v!=null}).sort(function(a,b){return k==="miss"?a.v-b.v:b.v-a.v})}
 function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=statRows(k);
   /* X1, hit rate: the direction chart from "Are they learning?" (hit rate round by round, one line per AI) */
   if(k==="hit"&&EXP==="x1"&&window.EZLearn){box.innerHTML='<div class="lxv hx"></div>';EZLearn.together($(".hx",box),{pctOnly:true,noCoin:true,ver:true});return}
-  /* X1, ROI: the balance over the rounds, like a trading app's portfolio chart. $10,000 at the start, one line per AI. */
-  if(k==="roi"&&EXP==="x1"){var N=ROUNDS.length,F=R.map(function(x){var bal=10000,pts=[],st=null;
+  /* X1, ROI: the balance over the rounds, like a trading app's portfolio chart. the stake at the start, one line per AI. */
+  if(k==="roi"&&EXP==="x1"){var N=ROUNDS.length,F=R.map(function(x){var bal=STAKE,pts=[],st=null;
         ROUNDS.forEach(function(r,i){var c=callOf(r,x.m);if(!c)return;if(st==null){st=i;pts.push([i,bal])}bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,bal])});return {m:x.m,pts:pts,bal:bal,x:x}}),
-      vs=[].concat.apply([10000],F.map(function(f){return f.pts.map(function(p){return p[1]})})),lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||500;lo-=pd;hi+=pd;
+      vs=[].concat.apply([STAKE],F.map(function(f){return f.pts.map(function(p){return p[1]})})),lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STAKE*.05;lo-=pd;hi+=pd;
     function X(i){return i/N*100}function Y(v){return (hi-v)/(hi-lo)*100}
-    box.innerHTML='<ol class="pnl-k">'+F.map(function(f,i){var up=f.bal>=10000;return '<li'+(i?'':' class="lead"')+'><span class="pk-r">'+(i+1)+'</span>'+logo(f.m)+'<b class="pk-n">'+nm(f.m)+'</b><strong>'+usd(f.bal)+'</strong><em class="'+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(f.bal).replace(/^[+−]/,"")+'</em></li>'}).join("")+'</ol>'+
-      '<div class="pnl"><span class="pnl-z" style="top:'+Y(10000).toFixed(2)+'%"><small>Start $10,000</small></span>'+
+    box.innerHTML='<ol class="pnl-k">'+F.map(function(f,i){var up=f.bal>=STAKE;return '<li'+(i?'':' class="lead"')+'><span class="pk-r">'+(i+1)+'</span>'+logo(f.m)+'<b class="pk-n">'+nm(f.m)+'</b><strong>'+usd(f.bal)+'</strong><em class="'+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(f.bal).replace(/^[+−]/,"")+'</em></li>'}).join("")+'</ol>'+
+      '<div class="pnl"><span class="pnl-z" style="top:'+Y(STAKE).toFixed(2)+'%"><small>Start '+usd(STAKE)+'</small></span>'+
       '<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+F.slice().reverse().map(function(f){return '<path d="'+f.pts.map(function(p,j){return (j?"L":"M")+X(p[0]).toFixed(2)+","+Y(p[1]).toFixed(2)}).join("")+'" style="stroke:'+MODELS[f.m].c+'"/>'}).join("")+'</svg>'+
       F.map(function(f){var p=f.pts[f.pts.length-1];return '<i class="pnl-d" style="left:'+X(p[0]).toFixed(2)+'%;top:'+Y(p[1]).toFixed(2)+'%;background:'+MODELS[f.m].c+'"></i>'}).join("")+
       '<span class="pnl-x"><small>R1</small><small>R'+N+'</small></span></div>';
@@ -270,11 +270,11 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=s
       $(".tg-h",f).insertAdjacentHTML("afterbegin",'<span class="tg-r">'+(i+1)+'</span>');$(".tg-h",f).insertAdjacentHTML("beforeend",'<strong>'+x.txt+'<small> pts</small></strong>')});return}
   if(k==="miss"){box.classList.remove("cmp");box.innerHTML='<ol class="mxr">'+R.map(function(x,i){return '<li'+(i?'':' class="lead"')+'><span>'+(i+1)+'</span>'+logo(x.m)+'<b>'+nm(x.m)+'</b><strong>'+x.txt+'</strong><small>pts</small></li>'}).join("")+'</ol><div class="tgv mxt"></div>';
     targets($(".mxt",box),R.map(function(x){return x.m}));return}
-  /* ROI: columns up or down from the $10,000 line */
+  /* ROI: columns up or down from the stake line */
   if(k==="roi"){var mx=Math.max.apply(null,R.map(function(x){return Math.abs(x.v)}))||1;
     box.innerHTML='<div class="rcol">'+R.map(function(x,i){var h=Math.abs(x.v)/mx*100,up=x.v>=0;
       return '<div class="rcx'+(i?'':' lead')+'"><div class="rc-up">'+(up?'<span class="rc-l pu">'+x.txt+'</span><i class="pu" style="--h:'+h.toFixed(1)+'%"></i>':'')+'</div><div class="rc-dn">'+(up?'':'<i class="pd" style="--h:'+h.toFixed(1)+'%"></i><span class="rc-l pd">'+x.txt+'</span>')+'</div>'+
-        '<div class="rc-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b><small>'+esc(x.sub)+'</small></div></div>'}).join("")+'<span class="rc-base">$10,000</span></div>';
+        '<div class="rc-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b><small>'+esc(x.sub)+'</small></div></div>'}).join("")+'<span class="rc-base">'+usd(STAKE)+'</span></div>';
     var cols=$$(".rcol i",box);if(anim&&!reduce){cols.forEach(function(c){c.style.height="0"});requestAnimationFrame(function(){requestAnimationFrame(function(){cols.forEach(function(c,i){c.style.transitionDelay=(i*110)+"ms";c.style.height=""})})})}return}
   /* wins: a crown per round won; a shared win is a half crown. Each crown opens its round. */
   box.innerHTML='<ol class="sxl">'+R.map(function(x,i){var won=ROUNDS.filter(function(r){return r.win&&r.win.split(" & ").indexOf(x.m)>-1});
@@ -369,7 +369,7 @@ function vModels(){
   return (EXP==="x1"?xsh("01","Leaderboard","Current standings","Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
-    '<p class="lbn"><b>Hit rate</b>: calls right on direction. <b>Avg miss</b>: points off the real move. <b>ROI</b>: $10,000 rolled through every call. Simulated, before fees.</p>'+
+    '<p class="lbn"><b>Hit rate</b>: calls right on direction. <b>Avg miss</b>: points off the real move. <b>ROI</b>: '+usd(STAKE)+' rolled through every call. Simulated, before fees.</p>'+
     statsHTML()+
     '<section class="blk" aria-labelledby="recH">'+(EXP==="x1"?xsh("03","Highlights","Record book","Tap a record for the story behind it.",false,"recH"):'<div class="hh"><h2 id="recH">Highlights</h2></div>')+'<div class="hls">'+records()+'</div></section>'}
 function wireModels(root){wireStats(root)}

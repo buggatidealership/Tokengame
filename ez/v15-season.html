@@ -782,7 +782,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 .pc.lead .pc-s small{color:var(--ink)}
 @media(max-width:640px){.pc-s b{font-size:22px}.pc-s small{font-size:8.5px;letter-spacing:.03em}}
 
-/* if you'd followed each AI: $10,000 each, compounding, against just buying every stock */
+/* if you'd followed each AI: the stake each, compounding, against just buying every stock */
 .fol{margin-top:28px;background:var(--card);color:var(--ink);border-radius:20px;padding:20px 22px;box-shadow:0 0 0 2.5px var(--ink),5px 6px 0 0 var(--ink)}
 .fol-h{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 16px}
 .fol-h h3{font:400 clamp(24px,3vw,32px)/1 var(--fd);text-transform:uppercase}
@@ -1182,7 +1182,7 @@ body.lmod-on{overflow:hidden}
         <div class="tgv" id="lxDist"></div></div>
     </div></div>
     <div class="fol" id="fol" aria-labelledby="folH">
-      <div class="fol-h"><h3 id="folH">How much would they have made by now?</h3><p>$10,000 on each AI, all in on every call. Simulated.</p></div>
+      <div class="fol-h"><h3 id="folH">Give each AI $100,000. Here's where they'd stand.</h3><p>All in on every call.</p></div>
       <ol class="fol-l" id="folL"></ol>
       <p class="fol-f" id="folF"></p>
     </div>
@@ -1244,6 +1244,8 @@ body.lmod-on{overflow:hidden}
 <script src="ez-learn.js"></script>
 <script>
 (function(){
+/* the simulated stake each AI starts with, in "If you'd copied them" and the leaderboard ROI */
+var STAKE=100000;
 /* words the owner may rename: the label before a round's result date, and the label before the real move on a card's back */
 const RESOLVE_WORD = "Resolves";
 const ACTUAL_WORD = "Outcome";
@@ -1366,7 +1368,7 @@ function flip(c){var f=!c.classList.contains("flipped"),had=c.contains(document.
    Order and tie-breaks come from LADDER (ez-data.js: wins, then the smaller average miss). Ties share the rank number.
    The crown goes to LADDER[0]. A model with calls but none graded yet (Grok) joins the table below them with 0 wins. */
 /* next to each name, one number. STAND_STAT picks it:
-   "roi"   the return on $10,000 that followed every call (the "If you'd followed" panel, hypothetical, before fees)
+   "roi"   the return on the stake that followed every call (the "If you'd followed" panel, hypothetical, before fees)
    "right" hit rate: the share of calls that got the direction right (the default)
    To try ROI again, change "right" to "roi". Nothing else depends on it. */
 var STAND_STAT="right",FOL_EARLY=null;
@@ -1386,7 +1388,7 @@ function career(m){var g=0,right=0,err=0,won=0,hist=[];
   if(cs.length){var last=cs[cs.length-1].ok,k=0;for(var i=cs.length-1;i>=0&&cs[i].ok===last;i--)k++;streak={ok:last,k:k}}
   return {m:m,g:g,right:right,won:won,avg:g?err/g:null,hist:hist,streak:streak}}
 function pcStats(m){if(STAND_STAT==="roi"){var o=(FOL_EARLY=FOL_EARLY||followAll()).filter(function(f){return f.m===m})[0];
-    if(o){var pc=(o.bal/10000-1)*100;return '<span class="pc-s roi '+(o.bal>=10000?'pu':'pd')+'" title="Hypothetical: $10,000 that followed every '+nm(m)+' call, all in, before fees, is now '+usd(o.bal)+'"><b>'+pctTxt(o.bal)+'</b><small>ROI if followed</small></span>'}}
+    if(o){var pc=(o.bal/STAKE-1)*100;return '<span class="pc-s roi '+(o.bal>=STAKE?'pu':'pd')+'" title="Hypothetical: '+usd(STAKE)+' that followed every '+nm(m)+' call, all in, before fees, is now '+usd(o.bal)+'"><b>'+pctTxt(o.bal)+'</b><small>ROI if followed</small></span>'}}
   var C=career(m);if(!C.g)return '<span class="pc-s"><b>n/a</b><small>No calls yet</small></span>';
   return '<span class="pc-s" title="'+C.right+' of '+C.g+' calls the right way"><b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'hit rate')+'</small></span>'}
 var P0=PS[0]||null;
@@ -1951,27 +1953,27 @@ function shDeep(){var m=location.hash.match(/^#round-(\d+)$/);if(!m)return;var i
   $("#record").scrollIntoView({block:"start"});go(i,false)}
 addEventListener("hashchange",shDeep);requestAnimationFrame(function(){requestAnimationFrame(shDeep)});
 
-/* ---------- if you'd followed each AI: everyone starts with $10,000 and puts all of it on every call (buy if the AI says
+/* ---------- if you'd followed each AI: everyone starts with the stake (STAKE) and puts all of it on every call (buy if the AI says
    up, bet against the stock if it says down), in before the report, out at the next close, compounding.
    Hypothetical, from the graded moves in ez-data.js, before fees and costs. FOLLOW is shared with Season Live. ---------- */
 var FOLLOW=followAll();
-function followAll(){var out=[];ACTIVE.forEach(function(m){var bal=10000,n=0,first=null,path=[10000];
+function followAll(){var out=[];ACTIVE.forEach(function(m){var bal=STAKE,n=0,first=null,path=[STAKE];
     ROUNDS.forEach(function(r){var c=callOf(r,m);if(!c)return;if(first==null)first=r.n;n++;bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;path.push(bal)});
     if(n)out.push({m:m,bal:bal,n:n,first:first,path:path})});
   return out.sort(function(a,b){return b.bal-a.bal})}
 function usd(v){return "$"+Math.round(v).toLocaleString("en-US")}
-function pctTxt(b){var pc=(b/10000-1)*100;return (pc>=0?"+":"−")+Math.abs(pc).toFixed(1)+"%"}
+function pctTxt(b){var pc=(b/STAKE-1)*100;return (pc>=0?"+":"−")+Math.abs(pc).toFixed(1)+"%"}
 var FOLLOW_NOTE="Simulated, before fees. Buy on an up call, short on a down call. In before the report, out at the next close.";
 (function(){var L=$("#folL");if(!L||!FOLLOW.length){var f=$("#fol");if(f)f.hidden=true;return}
-  /* one tile per AI: the return big, the dollars under it, and its path from $10,000 (dashed) round by round */
-  var all=[].concat.apply([],FOLLOW.map(function(o){return o.path})),lo=Math.min.apply(null,all.concat([10000])),hi=Math.max.apply(null,all.concat([10000])),pad=(hi-lo)*.12||500;lo-=pad;hi+=pad;
+  /* one tile per AI: the return big, the dollars under it, and its path from the stake (dashed) round by round */
+  var all=[].concat.apply([],FOLLOW.map(function(o){return o.path})),lo=Math.min.apply(null,all.concat([STAKE])),hi=Math.max.apply(null,all.concat([STAKE])),pad=(hi-lo)*.12||STAKE*.05;lo-=pad;hi+=pad;
   function spark(o,up){var W=120,H=30,n=o.path.length-1;function X(k){return (2+k/(n||1)*(W-6)).toFixed(1)}function Y(v){return (H-3-(v-lo)/(hi-lo)*(H-6)).toFixed(1)}
-    return '<svg class="ft-s" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="'+W+'" y1="'+Y(10000)+'" y2="'+Y(10000)+'" class="z"/><path d="'+o.path.map(function(v,k){return (k?"L":"M")+X(k)+","+Y(v)}).join("")+'" class="'+(up?'pu':'pd')+'"/></svg>'}
+    return '<svg class="ft-s" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="'+W+'" y1="'+Y(STAKE)+'" y2="'+Y(STAKE)+'" class="z"/><path d="'+o.path.map(function(v,k){return (k?"L":"M")+X(k)+","+Y(v)}).join("")+'" class="'+(up?'pu':'pd')+'"/></svg>'}
   L.className="ftl";
-  L.innerHTML=FOLLOW.map(function(o,i){var up=o.bal>=10000;
+  L.innerHTML=FOLLOW.map(function(o,i){var up=o.bal>=STAKE;
     return '<li class="ft'+(i?'':' lead')+'"><span class="ft-w">'+logo(o.m)+'<span>'+nm(o.m)+(o.n<NR?'<small>'+o.n+' rounds</small>':'')+'</span></span>'+
       spark(o,up)+'<span class="ft-v"><b class="ft-bal">'+usd(o.bal)+'</b><span class="ft-pill '+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(o.bal).replace(/^[+−]/,"")+'</span></span></li>'}).join("");
-  $("#folF").textContent=FOLLOW_NOTE})();
+  $("#folH").textContent="Give each AI "+usd(STAKE)+". Here's where they'd stand.";$("#folF").textContent=FOLLOW_NOTE})();
 })();
 </script>
 </body>
