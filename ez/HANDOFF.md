@@ -124,6 +124,12 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - ez-data.js: SIM.leverage = 10 (the calculator opens on 10x).
 - Header chip shrinks on narrow phones (no sideways scroll at 360px).
 
+## 2026-10-04 (round 29, sheet sync)
+- Sheet synced: 110 rounds (R37 to R110 new, up to NVIDIA at R110), still 11 graded, no record edits. The new Industry and Prediction due time columns are ignored on purpose (owner: don't use them yet); the sync script reads columns by name, so nothing to change there.
+- 73 company names added to TICKERS and 73 logos fetched and checked by eye (white logos flagged dark).
+- Standings: the info button is just the icon again; its back is "How we grade" with the four-line list.
+- Record section: "Every call is graded at the first market close after earnings (marked). We send the AIs the closing price from TradingView, so they can't make shit up."
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.

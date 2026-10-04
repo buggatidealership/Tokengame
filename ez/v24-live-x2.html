@@ -961,7 +961,7 @@ body.lmod-on{overflow:hidden}
   .band.half .pc h3{font-size:13px}
   .band.half .pc-s b{font-size:15px}.band.half .pc-s small{font-size:7px}
   .band.half .pc-w{min-width:1.7em}.band.half .pc-w b{font-size:20px}.band.half .pc-w span{font-size:7px}
-  .band.half #stand .howb>span:last-child{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .band.half #stand .howb>span:last-child:not(.ib){position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   .band.half .howb{margin-left:6px}
   .up-p.lr .nm{white-space:normal;font-size:12.5px;line-height:1.1}
 }
@@ -1122,6 +1122,8 @@ body.lmod-on{overflow:hidden}
 .mt-box>p b{color:var(--ink)}
 /* the header chip may shrink (with an ellipsis) on narrow phones */
 .live{flex:0 1 auto}
+/* the record: when a call is graded, marked */
+.hlx{font-weight:700;color:var(--ink);background:linear-gradient(transparent 58%,color-mix(in srgb,var(--yel) 80%,transparent) 58%)}
 
 /* ================= V22 · SEASON LIVE: Season's landing as the Board, plus Live's pages =================
    Hash routes: #/ (the board, Season as it was), #/rounds, #/round/11, #/models, #/model/gpt, #/upcoming.
@@ -2032,7 +2034,7 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
     <div class="bf-face bf-front" id="bfFront">
     <div class="band">
       <div class="col stand" id="stand">
-        <div class="st-h"><h2 id="standH">Standings</h2><button type="button" class="howb" id="howB" aria-expanded="false" aria-controls="bfBack" aria-label="What counts as a win"><span class="ib" aria-hidden="true">i</span><span>What counts as a win</span></button></div>
+        <div class="st-h"><h2 id="standH">Standings</h2><button type="button" class="howb" id="howB" aria-expanded="false" aria-controls="bfBack" aria-label="How we grade" title="How we grade"><span class="ib" aria-hidden="true">i</span></button></div>
         <ol class="roster" id="roster" aria-labelledby="standH"></ol>
       </div>
       <div class="col un" id="upnext" role="region" aria-labelledby="unH">
@@ -2044,15 +2046,13 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
     <div class="up-all" id="unAll" role="region" aria-label="All upcoming rounds" hidden></div>
     </div>
     <div class="bf-face bf-back" id="bfBack" role="region" aria-labelledby="howH" aria-hidden="true">
-      <h2 id="howH" tabindex="-1">What counts as a win</h2>
-      <div class="wtree" role="group" aria-label="How a round is won">
-        <p class="wt-q"><small>Step 1 · Direction</small>Did the AI call up or down right?</p>
-        <div class="wt-split">
-          <div class="wt-b yes"><span class="wt-a" aria-hidden="true">↓</span><em>Yes</em><p><small>Step 2 · Size</small><b>Closest to the real move wins the round.</b></p></div>
-          <div class="wt-b no"><span class="wt-a" aria-hidden="true">↓</span><em>No</em><p><b>It's out.</b>If every AI is out, nobody wins.</p></div>
-        </div>
-        <p class="wt-tie">Ties in the standings go to whoever was closer on average.</p>
-      </div>
+      <h2 id="howH" tabindex="-1">How we grade</h2>
+      <ol class="how">
+        <li><b>Direction first.</b> Did the AI call up or down correctly? Wrong way, it's out.</li>
+        <li><b>Then size.</b> Of the AIs that got the direction right, the one closest to the real move wins the round.</li>
+        <li><b>Nobody right, nobody wins.</b> If every AI gets the direction wrong, the round has no winner.</li>
+        <li><b>Ties.</b> Equal wins are split by who was closer on average.</li>
+      </ol>
       <button type="button" class="howback" id="howBack"><span aria-hidden="true">←</span> <span class="ul">Back</span></button>
     </div>
     </div></div>
@@ -2060,7 +2060,7 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
 
   <section class="sec" id="record" aria-labelledby="recH">
     <div class="sh"><div class="tx"><span class="no">01</span><span class="eb">The record</span><h2 id="recH">Every prediction, on the record</h2></div>
-      <p class="lede">Every call is graded at the first market close after earnings, using the real closing price. No AI can make up the result.</p></div>
+      <p class="lede">Every call is graded at the <b class="hlx">first market close after earnings</b>. We send the AIs the closing price from TradingView, so they can't make shit up.</p></div>
     <div class="car" id="car" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Every round, one card each. Left and right arrow keys move between rounds."></div>
     <div class="car-ctl">
       <div class="car-end"><button type="button" class="car-cap" id="toPast">← Past rounds</button></div>
