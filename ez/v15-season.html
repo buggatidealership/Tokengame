@@ -1109,6 +1109,19 @@ body.lmod-on{overflow:hidden}
 /* the math: Estimated, beside the title */
 .est{display:inline-block;margin-left:8px;padding:4px 9px;border-radius:999px;background:var(--field2);color:var(--ink2);font:800 11px/1 var(--fb);letter-spacing:.06em;vertical-align:.35em;box-shadow:inset 0 0 0 1.5px var(--ink2)}
 @media(min-width:761px){.wt-q{padding:18px 22px;font-size:32px}.wt-b p{padding:16px 18px;font-size:15px}.wt-b p b{font-size:26px}.wt-a{font-size:28px}.wt-b em{font-size:18px}.wt-tie{font-size:13px}}
+
+/* ===== round 28 ===== */
+/* 02: the one line sits under "Are they learning?", above the switch */
+#learn .sh{grid-template-columns:minmax(0,1fr);gap:8px}
+#learn .sh .lede{max-width:none}
+#learn .ld-s{display:none}
+@media(max-width:640px){#learn .ld-l{display:none}#learn .ld-s{display:inline;white-space:nowrap;font-size:min(13.5px,3.4vw)}}
+/* 03: "How?" opens the money tree */
+.mt-how{margin:0 0 14px;font:400 clamp(26px,3.2vw,36px)/1 var(--fd);text-transform:uppercase}
+.mt-box>p+p{margin-top:8px}
+.mt-box>p b{color:var(--ink)}
+/* the header chip may shrink (with an ellipsis) on narrow phones */
+.live{flex:0 1 auto}
 </style>
 </head>
 <body>
@@ -1189,16 +1202,18 @@ body.lmod-on{overflow:hidden}
   </section>
 
   <section class="sec" id="bet" aria-labelledby="betH">
-    <div class="sh"><div class="tx"><span class="no">03</span><span class="eb">The buyback</span><h2 id="betH">An AI with one job: buy back <span class="mark ezb"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span></h2></div>
-      <p class="lede">By trading on Hyperliquid.</p></div>
+    <div class="sh"><div class="tx"><span class="no">03</span><span class="eb">The buyback</span><h2 id="betH">An AI with one goal: buy back <span class="mark ezb"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span></h2></div>
+      </div>
+    <h3 class="mt-how">How?</h3>
     <div class="mt" id="bbf" role="group" aria-label="Where the money goes">
-      <p class="mt-top"><span aria-hidden="true">💱</span><b>Every $EZ trade pays a small fee</b></p>
+      <p class="mt-top"><span aria-hidden="true">💱</span><b>Every $EZ trade pays a fee. The fees land in one address.</b></p>
       <div class="mt-split">
         <div class="mt-br pot"><span class="mt-a" aria-hidden="true">↓</span><em id="mtP"></em>
-          <div class="mt-box"><h3>The pot</h3><p>The AI trades it on one earnings report, up or down, on Hyperliquid.</p></div>
-          <div class="mt-out"><p class="w"><b>Right call</b>The winnings buy back $EZ.</p><p class="l"><b>Wrong call</b>The pot drains. It can be wiped out.</p></div></div>
+          <div class="mt-box"><h3>The pot</h3><p>The market sets its size: the more $EZ trades, the bigger it gets.</p>
+            <p>At NVIDIA's earnings, the AI ranked first on the leaderboard makes the call. The pot goes on it at <b id="mtLev"></b> leverage, on Hyperliquid.</p></div>
+          <div class="mt-out"><p class="w"><b>Right call</b>The winnings buy back $EZ.</p><p class="l"><b>Wrong call</b>The pot gets wiped out.</p></div></div>
         <div class="mt-br lab" id="road"><span class="mt-a" aria-hidden="true">↓</span><em id="mtL"></em>
-          <div class="mt-box"><h3>The lab</h3><p>Keeps the AIs running, the films made and the site live. Then it builds what's next:</p>
+          <div class="mt-box"><h3>Operations</h3><p>Keeps the AIs, the films and the site running. Then, in order:</p>
             <ol class="lab-l" id="roadL"></ol><p class="lab-c">Each step starts when fees pay for it.</p></div></div>
       </div>
     </div>
@@ -1588,8 +1603,10 @@ if(window.EZLearn&&NR){
     lio.observe($("#learn .lrn"));
   }else seen=true;
   /* one plain line under the heading, computed */
-  $("#lrnLede").textContent=NR<100?"After "+NR+" round"+(NR===1?"":"s")+" it's too early to say. At 100 rounds we'll know a lot more."
-    :"After "+NR+" rounds, here is how they stand.";
+  var GP=ROUNDS.reduce(function(a,r){return a+r.calls.length},0);
+  /* one line: the long form on wide screens, a short one on phones */
+  $("#lrnLede").innerHTML=GP<100?'<span class="ld-l">After '+GP+' graded prediction'+(GP===1?'':'s')+' it\'s too early to say. At 100 we\'ll know a lot more.</span><span class="ld-s">'+GP+' graded predictions. Too early to say until 100.</span>'
+    :"After "+GP+" graded predictions, here is how they stand.";
   /* the verdict, computed */
   var SM=EZLearn.summary(),BL=EZLearn.baselines();
   function grp(a,one,many){if(!a.length)return "";var v=a.length>1?many:one;
@@ -1783,7 +1800,7 @@ function machSVG(tall){
   }
   return o}
 /* ---------- where the money goes: the fee splits into the pot and the lab. The split comes from ASSUME. ---------- */
-(function(){var P=Math.round((typeof ASSUME!=="undefined"&&ASSUME.poolShare||.69)*100);if($("#mtP"))$("#mtP").textContent=P+"% → the pot";if($("#mtL"))$("#mtL").textContent=(100-P)+"% → the lab"})();
+(function(){var P=Math.round((typeof ASSUME!=="undefined"&&ASSUME.poolShare||.69)*100);if($("#mtP"))$("#mtP").textContent=P+"% → the pot";if($("#mtL"))$("#mtL").textContent=(100-P)+"% → operations";if($("#mtLev"))$("#mtLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x"})();
 var machEl=$("#mach");
 if(machEl){machEl.innerHTML=machSVG(false)+machSVG(true);
   if(!reduce&&"IntersectionObserver" in window){machEl.classList.add("arm");
@@ -1795,9 +1812,8 @@ if($("#scPot")){board($("#scPot"),CONFIG.pool);board($("#scBack"),CONFIG.boughtB
 
 /* ---------- the road: six milestones. Step 1 is done; step 2 (launch) is current with a progress bar of graded rounds
    against CONFIG.launchAt until CONFIG.launched is true; then step 3 is current. ---------- */
-var CUR=1;
-var STEPS=[["📋","Calls on the record","Every call is posted before the report. Never edited."],
-  ["🤖","More models join","Qwen and Mistral are next."],
+var CUR=0;
+var STEPS=[["🤖","More models join","Max plans on each AI's newest model. Qwen, Mistral and Gemini are next."],
   ["⚙️","The pipeline runs itself","Calls, films and the site run on their own. A human signs off."],
   ["🎯","The AI places the bet","The AI trades the pot itself, with no human in between."],
   ["✨","More to come","We keep adding as the lab grows."]];

@@ -118,6 +118,12 @@ Paste this into a new session, with the zip, to pick up where we left off.
 ## 2026-10-04 (round 27)
 - The simulated stake is $100,000 (one setting, STAKE, at the top of the page script). Overview: "Give each AI $100,000. Here's where they'd stand." X1 leaderboard ROI, its chart and the standings tooltip use the same stake.
 
+## 2026-10-04 (round 28)
+- 02: one line under "Are they learning?": "After N graded predictions it's too early to say. At 100 we'll know a lot more." (N counted from ROUNDS; a shorter line on phones so it stays on one line).
+- 03: "An AI with one goal: buy back $EZ." then "How?" and the tree: every $EZ trade pays a fee, fees land in one address; 69% to the pot (the market sets its size; at NVIDIA's earnings the AI ranked first makes the call, the pot goes on it at 10x on Hyperliquid; right call buys back $EZ, wrong call wipes it out); 31% to operations (more models now: max plans on each AI's newest model, Qwen, Mistral and Gemini next; then the pipeline, the AI places the bet, more to come).
+- ez-data.js: SIM.leverage = 10 (the calculator opens on 10x).
+- Header chip shrinks on narrow phones (no sideways scroll at 360px).
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
