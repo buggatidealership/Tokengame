@@ -136,6 +136,11 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - X1 Stats: hit rate a softer blue; "Up or down" is replaced by "By sector" (purple): each AI's right calls per sector as a grid, "x/y" cells coloured by share.
 - X1 Results: Highlights are text cards (no thumbnails): what it is, the number, why it matters (computed against the averages), what happened, then the round and Watch at the bottom; a card opens its round. Every round filters: All, Mag 7, AI (from the sheet). No Mag 7 round is graded yet; the empty state names the first one.
 
+## 2026-10-04 (round 31, X1)
+- Results highlights: the record name (Closest call, Tightest race, Biggest move, Everyone was wrong) is the biggest text on each card.
+- Upcoming: no "Add the Zeason to your calendar" link. A filter bar stays under the top bar: All / Mag 7 / AI (counts of rounds to come) plus a sector dropdown; both combine. Empty combos say so. Tiles without a result date yet no longer show a bare "Result".
+- Accenture (R10) is tagged AI in the sheet's THEMES; it stays in the AI filter until the sheet changes.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.

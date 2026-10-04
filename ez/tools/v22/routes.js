@@ -76,7 +76,7 @@ var DAYS=(function(){var m={};ALLN.forEach(function(n){var v=rv(n),d=dayOf(v),k=
 /* EXP: the build sets window.EZ_EXP for the experiments. "" = Season Live as is; "x1" = a Results tab (the films as a
    gallery) and Upcoming only for what's ahead; "x2" = Upcoming opens on what's next, with the films as a gallery above. */
 var EXP=window.EZ_EXP||"";
-var TODAYK=dkey(new Date()),RBIG=false,RF="all",RLOOK="brand";
+var TODAYK=dkey(new Date()),RBIG=false,RF="all",UF="all",US="",RLOOK="brand";
 function xsh(no,eb,title,sub,h1,id,side){var tag=h1?"h1":"h2";return '<div class="xsh'+(side?' wside':'')+'"><div class="xsh-t"><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="no">'+no+'</span><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(side||'')+'</div>'}
 /* a company's colour (CO_LOGOS.c, from tools/fetch_logos.py) and the ink that reads on it */
 function bcol(t){var L=CO_LOGOS[String(t||"").toUpperCase()];return L&&L.c||"#12131a"}
@@ -94,8 +94,10 @@ function rcard(n){var v=rv(n),src=findR(n)||findP(n),art,foot;
   var c=bcol(v.ticker);
   return '<li><a class="rcd '+v.st+'" style="--bc:'+c+';--bi:'+onCol(c)+'" href="#/round/'+n+'"><span class="rcd-a">'+art+'</span><span class="rcd-t"><small>Round '+n+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+'</small><b>'+esc(v.co)+(hasTk(v)?' <span class="tk">('+esc(v.ticker)+')</span>':'')+'</b></span><span class="rcd-f">'+foot+'</span></a></li>'}
 function rtile(n){var v=rv(n),c=bcol(v.ticker);
-  return '<li><a class="rtl" style="--bc:'+c+';--bi:'+onCol(c)+'" data-tk="'+esc(String(v.ticker||"").split(".")[0])+'" href="#/round/'+n+'">'+tkBadge(v.ticker)+'<span class="rt"><small>Round '+n+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+'</small><b>'+esc(v.co)+'</b><span>'+(hasTk(v)?esc(v.ticker)+' · ':'')+'Result '+fmtDate(v.resolves)+'</span></span></a></li>'}
-function timeline(){var days=DAYS.map(function(D){return {k:D.k,d:D.d,ns:D.ns.filter(function(n){return (!RBIG||isBig(rv(n).ticker))&&(!EXP||rv(n).st!=="graded")})}}).filter(function(D){return D.ns.length}),nk=nextK(days);
+  return '<li><a class="rtl" style="--bc:'+c+';--bi:'+onCol(c)+'" data-tk="'+esc(String(v.ticker||"").split(".")[0])+'" href="#/round/'+n+'">'+tkBadge(v.ticker)+'<span class="rt"><small>Round '+n+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+'</small><b>'+esc(v.co)+'</b><span>'+(hasTk(v)?esc(v.ticker):'')+(v.resolves?(hasTk(v)?' · ':'')+'Result '+fmtDate(v.resolves):'')+'</span></span></a></li>'}
+function upOk(n){return EXP!=="x1"||(inF(n,UF)&&(!US||secOfN(n)===US))}
+function timeline(){var days=DAYS.map(function(D){return {k:D.k,d:D.d,ns:D.ns.filter(function(n){return (!RBIG||isBig(rv(n).ticker))&&(!EXP||rv(n).st!=="graded")&&upOk(n)})}}).filter(function(D){return D.ns.length}),nk=nextK(days);
+  if(!days.length)return '<p class="empty">No rounds coming up in this filter.</p>';
   if(!days.length)return '<p class="empty">No big names yet.</p>';
   return days.map(function(D){var L=dayLabel(D),done=D.ns.filter(function(n){return rv(n).st!=="sealed"}),seal=D.ns.filter(function(n){return rv(n).st==="sealed"}),
       st=D.ns.every(function(n){return rv(n).st==="graded"})?'Graded':D.ns.some(function(n){return rv(n).st==="calls"})?'Calls are in':'Calls come in';
@@ -116,6 +118,8 @@ function gtile(n){var v=rv(n),r=findR(n),c=bcol(v.ticker);
     '<span class="gt-mv '+(v.a<0?'d':'u')+'">'+(v.a<0?'▼':'▲')+esc(v.out.replace(/^[+−-]/,""))+'</span></span>'+
     '<span class="gt-b"><span class="gt-l"><small>Round '+n+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+' ·</small> '+esc(v.co)+(hasTk(v)?' <span class="tk">('+esc(v.ticker)+')</span>':'')+'</span>'+
     '<span class="gt-w">'+(v.win.length?'<small>Winner</small>'+v.win.map(function(m){return logo(m)}).join("")+'<b>'+v.win.map(nm).join(" & ")+'</b>':'<span class="lg nob" aria-hidden="true">✗</span><b>No winner</b>')+'</span></span></a></li>'}
+var SECT_SHORT={"Information Technology":"Tech","Consumer Discretionary":"Consumer","Consumer Staples":"Staples","Financials":"Finance","Industrials":"Industrials","Communication Services":"Media & telecom","Health Care":"Health","Materials":"Materials","Energy":"Energy","Utilities":"Utilities","Real Estate":"Real estate"};
+function secOfN(n){return ((typeof RMETA!=="undefined"&&RMETA[n])||{}).sector||""}
 function inF(n,f){var d=(typeof RMETA!=="undefined"&&RMETA[n])||{};return f==="mag7"?!!d.mag7:f==="ai"?(d.themes||[]).indexOf("AI")>-1:true}
 function gallery(newest){var ns=ROUNDS.map(function(r){return r.n}).filter(function(n){return (!RBIG||isBig(rv(n).ticker))&&inF(n,RF)});if(newest)ns.reverse();
   if(ns.length)return '<ul class="gal">'+ns.map(gtile).join("")+'</ul>';
@@ -171,12 +175,18 @@ function wireResults(root){root.addEventListener("click",function(e){var b=e.tar
 function body(){if(EXP==="x2")return '<section class="gsec" aria-labelledby="galH"><h2 id="galH" class="gh">Results</h2>'+gallery(false)+'</section><h2 class="gh nxh">Coming up</h2>'+timeline();return RLOOK==="compact"?compactList():timeline()}
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
   var up=ALLN.filter(function(n){return rv(n).st!=="graded"}),ub=up.filter(function(n){return isBig(rv(n).ticker)}).length;
-  if(EXP==="x1")RBIG=false;
+  if(EXP==="x1"){RBIG=false;UF="all";US=""}
   return (EXP==="x1"?'<div class="xup">'+xsh("01","","The calendar","",true)+'</div>':
     '<div class="rhd"><h1 tabindex="-1">Upcoming</h1><div class="seg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All</button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names</button></div></div>')+
-    '<p class="rfoot">Every call goes out before the report. '+x+' to see them first. <span aria-hidden="true">·</span> <button type="button" class="lnk" id="icsB">Add the Zeason to your calendar</button> <span id="icsMsg" class="note" aria-live="polite"></span></p>'+
+    (EXP==="x1"?'<p class="rfoot">Every call goes out before the report. '+x+' to see them first.</p>'+upBar(up):
+    '<p class="rfoot">Every call goes out before the report. '+x+' to see them first. <span aria-hidden="true">·</span> <button type="button" class="lnk" id="icsB">Add the Zeason to your calendar</button> <span id="icsMsg" class="note" aria-live="polite"></span></p>')+
     (EXP?'':'<div class="look" role="group" aria-label="Preview a look (for review)"><small>Look</small><button type="button" data-look="brand" aria-pressed="'+(RLOOK==="brand")+'">Brand colours</button><button type="button" data-look="compact" aria-pressed="'+(RLOOK==="compact")+'">Compact</button></div>')+
     '<div id="rtl" class="rtline look-'+RLOOK+'">'+body()+'</div>'}
+/* Upcoming filters (X1): a theme (All, Mag 7, AI) and a sector. Counts are rounds still to come. */
+function upBar(up){function c(f){return up.filter(function(n){return inF(n,f)}).length}var sc={};up.forEach(function(n){var x=secOfN(n);if(x)sc[x]=(sc[x]||0)+1});
+  var secs=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a]});
+  return '<div class="ufb"><div class="seg bseg" role="group" aria-label="Which rounds">'+[["all","All"],["mag7","Mag 7"],["ai","AI"]].map(function(x){return '<button type="button" data-uf="'+x[0]+'" aria-pressed="'+(UF===x[0])+'">'+x[1]+' <b>'+c(x[0])+'</b></button>'}).join("")+'</div>'+
+    '<label class="ufs"><span class="sr">Sector</span><select id="ufSec"><option value="">All sectors</option>'+secs.map(function(x){return '<option value="'+esc(x)+'"'+(US===x?' selected':'')+'>'+esc(SECT_SHORT[x]||x)+' ('+sc[x]+')</option>'}).join("")+'</select></label></div>'}
 /* put a day (the next one, or a shared round's day) in the middle of the screen */
 function centerDay(root,k){var s=(k&&$('.rday[data-k="'+k+'"]',root))||$(".rday.next",root);if(!s)return;
   var y=s.getBoundingClientRect().top+scrollY-Math.max(120,innerHeight*.32);window.scrollTo(0,Math.max(0,y))}
@@ -186,6 +196,9 @@ function wireRounds(root){
   $$("[data-big]",root).forEach(function(b){b.addEventListener("click",function(){RBIG=b.dataset.big==="1";$$("[data-big]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});
     $("#rtl",root).innerHTML=body();centerDay(root)})});
   wireGallery(root);
+  function refilter(){$("#rtl",root).innerHTML=body();var b=$(".ufb",root);if(b)window.scrollTo(0,Math.max(0,b.getBoundingClientRect().top+scrollY-(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--toph"))||0)-8))}
+  $$("[data-uf]",root).forEach(function(b){b.addEventListener("click",function(){UF=b.dataset.uf;$$("[data-uf]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});refilter()})});
+  var us=$("#ufSec",root);if(us)us.addEventListener("change",function(){US=us.value;refilter()});
   $$("[data-look]",root).forEach(function(b){b.addEventListener("click",function(){RLOOK=b.dataset.look;$$("[data-look]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});
     var t=$("#rtl",root);t.className="rtline look-"+RLOOK;t.innerHTML=body();centerDay(root)})});
   wireCal(root)}
@@ -274,7 +287,7 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=s
       '<span class="pnl-x"><small>R1</small><small>R'+N+'</small></span></div>';
     if(anim&&!reduce)box.querySelector(".pnl").classList.add("draw");return}
   /* X1, by sector: each AI's right calls in each sector, as "right of calls". Sectors come from the sheet's details. */
-  if(k==="sector"){var SH={"Information Technology":"Tech","Consumer Discretionary":"Consumer","Consumer Staples":"Staples","Financials":"Finance","Industrials":"Industrials","Communication Services":"Media & telecom","Health Care":"Health","Materials":"Materials","Energy":"Energy","Utilities":"Utilities","Real Estate":"Real estate"};
+  if(k==="sector"){var SH=SECT_SHORT;
     var secOf=function(r){return ((typeof RMETA!=="undefined"&&RMETA[r.n])||{}).sector||""},cnt={};ROUNDS.forEach(function(r){var x=secOf(r);if(x)cnt[x]=(cnt[x]||0)+1});
     var cols=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
     if(!cols.length){box.innerHTML='<p class="empty">No sectors in the sheet yet.</p>';return}
