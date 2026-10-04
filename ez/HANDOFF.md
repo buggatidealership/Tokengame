@@ -151,6 +151,9 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Results highlights: a clean front page: paper panel under a double rule, thin rules between stories, the record name as the headline underlined in the company colour, a serif paragraph, an outlined ▶ top right.
 - Upcoming: less space at the top; four separate chips across the width (All, Mag 7, AI with counts, then Sector ▾; on phones Sector takes its own row).
 
+## 2026-10-04 (round 34)
+- Season and X1, 03 The buyback: the pot and operations are two lanes side by side on every screen (phones too), each with its own solid tint (pot yellow, operations blue), joined to the fee box by a split line.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
