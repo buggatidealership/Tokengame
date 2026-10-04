@@ -130,6 +130,12 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Standings: the info button is just the icon again; its back is "How we grade" with the four-line list.
 - Record section: "Every call is graded at the first market close after earnings (marked). We send the AIs the closing price from TradingView, so they can't make shit up."
 
+## 2026-10-04 (round 30, sheet sync 2)
+- Sheet: new SECTOR, INDUSTRY GROUP, THEMES (";"-separated) and MAG 7 (TRUE/FALSE) columns come into ez-data.js as details (RMETA[round]), never part of the graded record (sync_sheet.py OPTIONAL). Prediction due time is still ignored.
+- 02 line: "You don't have to trust us. See for yourself."
+- X1 Stats: hit rate a softer blue; "Up or down" is replaced by "By sector" (purple): each AI's right calls per sector as a grid, "x/y" cells coloured by share.
+- X1 Results: Highlights are text cards (no thumbnails): what it is, the number, why it matters (computed against the averages), what happened, then the round and Watch at the bottom; a card opens its round. Every round filters: All, Mag 7, AI (from the sheet). No Mag 7 round is graded yet; the empty state names the first one.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.

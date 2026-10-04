@@ -71,7 +71,7 @@ def main():
     if hi is None:
         sys.exit("BLOCKED: no header row with ROUND and TICKER found.")
     got = [c.strip().upper() for c in rows[hi]]
-    OPTIONAL = {"REPORT TIME"}   # metadata columns the sheet may not have yet; never part of the graded record
+    OPTIONAL = {"REPORT TIME", "SECTOR", "INDUSTRY GROUP", "THEMES", "MAG 7"}   # metadata columns the sheet may not have yet; never part of the graded record
     missing = [h for h in want if h not in got and h not in OPTIONAL]
     if missing:
         sys.exit("BLOCKED: sheet is missing columns: %s" % ", ".join(missing))

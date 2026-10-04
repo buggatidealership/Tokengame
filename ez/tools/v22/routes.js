@@ -76,7 +76,7 @@ var DAYS=(function(){var m={};ALLN.forEach(function(n){var v=rv(n),d=dayOf(v),k=
 /* EXP: the build sets window.EZ_EXP for the experiments. "" = Season Live as is; "x1" = a Results tab (the films as a
    gallery) and Upcoming only for what's ahead; "x2" = Upcoming opens on what's next, with the films as a gallery above. */
 var EXP=window.EZ_EXP||"";
-var TODAYK=dkey(new Date()),RBIG=false,RLOOK="brand";
+var TODAYK=dkey(new Date()),RBIG=false,RF="all",RLOOK="brand";
 function xsh(no,eb,title,sub,h1,id,side){var tag=h1?"h1":"h2";return '<div class="xsh'+(side?' wside':'')+'"><div class="xsh-t"><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="no">'+no+'</span><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(side||'')+'</div>'}
 /* a company's colour (CO_LOGOS.c, from tools/fetch_logos.py) and the ink that reads on it */
 function bcol(t){var L=CO_LOGOS[String(t||"").toUpperCase()];return L&&L.c||"#12131a"}
@@ -116,8 +116,12 @@ function gtile(n){var v=rv(n),r=findR(n),c=bcol(v.ticker);
     '<span class="gt-mv '+(v.a<0?'d':'u')+'">'+(v.a<0?'▼':'▲')+esc(v.out.replace(/^[+−-]/,""))+'</span></span>'+
     '<span class="gt-b"><span class="gt-l"><small>Round '+n+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+' ·</small> '+esc(v.co)+(hasTk(v)?' <span class="tk">('+esc(v.ticker)+')</span>':'')+'</span>'+
     '<span class="gt-w">'+(v.win.length?'<small>Winner</small>'+v.win.map(function(m){return logo(m)}).join("")+'<b>'+v.win.map(nm).join(" & ")+'</b>':'<span class="lg nob" aria-hidden="true">✗</span><b>No winner</b>')+'</span></span></a></li>'}
-function gallery(newest){var ns=ROUNDS.map(function(r){return r.n}).filter(function(n){return !RBIG||isBig(rv(n).ticker)});if(newest)ns.reverse();
-  return ns.length?'<ul class="gal">'+ns.map(gtile).join("")+'</ul>':'<p class="empty">No big names yet.</p>'}
+function inF(n,f){var d=(typeof RMETA!=="undefined"&&RMETA[n])||{};return f==="mag7"?!!d.mag7:f==="ai"?(d.themes||[]).indexOf("AI")>-1:true}
+function gallery(newest){var ns=ROUNDS.map(function(r){return r.n}).filter(function(n){return (!RBIG||isBig(rv(n).ticker))&&inF(n,RF)});if(newest)ns.reverse();
+  if(ns.length)return '<ul class="gal">'+ns.map(gtile).join("")+'</ul>';
+  /* nothing graded in this filter yet: say which one comes first */
+  var nx=PENDING.concat(UPCOMING).filter(function(u){return inF(u.n,RF)}).sort(function(a,b){return a.n-b.n})[0];
+  return '<p class="empty">'+(RF==="mag7"?'No Mag 7 round graded yet.':RF==="ai"?'No AI round graded yet.':'No big names yet.')+(nx?' First up: '+esc(nx.co)+', round '+nx.n+(nx.resolves?', result '+fmtDate(nx.resolves):nx.called?', calls '+fmtDate(nx.called):'')+'.':'')+'</p>'}
 function wireGallery(root){if(!matchMedia("(hover:hover)").matches||reduce)return;
   root.addEventListener("mouseover",function(e){var a=e.target.closest&&e.target.closest(".gt");if(!a)return;var v=$("video",a);if(!v)return;
     if(!v.src)v.src=MEDIA+v.dataset.f+(v.canPlayType("video/webm")?".webm":".mp4");v.classList.add("on");var p=v.play();if(p&&p.catch)p.catch(function(){})});
@@ -135,21 +139,35 @@ function shelf(){var RR=ROUNDS;if(!RR.length)return '';var calls=[];RR.forEach(f
   function allSame(r){var d=r.calls.map(function(c){return /^DOWN/.test(c[1])});return d.every(function(x){return x===d[0]})?(d[0]?"down":"up"):null}
   function story(r){var w=r.calls.filter(function(c){return !callOk(r,c)}).length,same=allSame(r);
     return w===r.calls.length?(same?"Every AI called it "+same+".":"Every AI got the direction wrong."):w?w+" of "+r.calls.length+" called it the wrong way.":"All "+r.calls.length+" called the direction right."}
-  function f(kick,r,stat,line){return '<li><a class="shf" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'"><span class="shf-a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">':'')+'</span><span class="shf-t"><b class="shf-k">'+kick+'</b><span class="shf-c">Round '+r.n+' · '+esc(r.co)+'</span><strong class="shf-s">'+stat+'</strong><span class="shf-l">'+line+'</span></span></a></li>'}
-  return '<ul class="shl">'+
-    f("Closest call",close.r,nm(close.m)+' off by '+close.off.toFixed(2)+' pts',nm(close.m)+' said '+esc(said(close.r,close.m))+'. '+esc(close.r.co)+' '+dirWord(close.r)+' '+close.r.out.replace(/^[+−-]/,"")+'. Nobody has come closer.')+
-    f("Tightest race",tight.r,'All four '+tight.v.toFixed(2)+' pts off on average','The four calls landed closest together here. '+story(tight.r))+
-    f("Biggest move",big,(big.a>0?'▲ ':'▼ ')+big.out.replace(/^[+−-]/,""),esc(big.co)+' '+dirWord(big)+' '+big.out.replace(/^[+−-]/,"")+', the biggest move so far. '+story(big))+
-    (wrong?f("Everyone was wrong",wrong,none.length+' round'+(none.length>1?'s':'')+' with no winner',esc(wrong.co)+' '+dirWord(wrong)+' '+wrong.out.replace(/^[+−-]/,"")+'. '+story(wrong)+(none.length>1?' Also: '+none.filter(function(r){return r!==wrong}).map(function(r){return esc(r.co)}).join(", ")+'.':'')):'')+'</ul>'}
+  var avgAll=calls.reduce(function(a,c){return a+c.off},0)/calls.length,
+      avgRnd=RR.reduce(function(a,r){return a+avgOff(r)},0)/RR.length,
+      avgMv=RR.reduce(function(a,r){return a+Math.abs(r.a)},0)/RR.length;
+  function x(v){return v>=10?Math.round(v)+"x":v.toFixed(1).replace(/\.0$/,"")+"x"}
+  function verb(dn){return dn?"fall":"rise"}
+  function f(kick,r,head,sub,body){return '<li><a class="hcd" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'"><span class="hcd-k">'+kick+'</span><strong class="hcd-h">'+head+'</strong><span class="hcd-s">'+sub+'</span><span class="hcd-b">'+body+'</span>'+
+    '<span class="hcd-f"><span>Round '+r.n+' · '+esc(r.co)+'</span><i>'+(r.film?'▶ Watch':'Open')+'</i></span></a></li>'}
+  var cs=said(close.r,close.m),cdn=/^down/.test(cs),same=wrong?allSame(wrong):null;
+  return '<ul class="hcl">'+
+    f("Closest call",close.r,close.off.toFixed(2)+' points from perfect',x(avgAll/close.off)+' closer than the average call ('+avgAll.toFixed(1)+' points off).',
+      nm(close.m)+' said '+esc(close.r.co)+' would '+verb(cdn)+' '+cs.replace(/^\w+\s*/,"")+'. It '+dirWord(close.r)+' '+close.r.out.replace(/^[+−-]/,"")+'. Nobody has come closer.')+
+    f("Tightest race",tight.r,'All '+tight.r.calls.length+' AIs, '+tight.v.toFixed(2)+' points off on average','Their best round together. A usual round: '+avgRnd.toFixed(1)+' points.',
+      esc(tight.r.co)+' '+dirWord(tight.r)+' '+tight.r.out.replace(/^[+−-]/,"")+'. '+story(tight.r))+
+    f("Biggest move",big,(big.a>0?'▲ ':'▼ ')+big.out.replace(/^[+−-]/,""),x(Math.abs(big.a)/avgMv)+' the average move ('+avgMv.toFixed(1)+'%).',
+      esc(big.co)+' '+(big.a>0?'jumped':'dropped')+' '+big.out.replace(/^[+−-]/,"")+'. '+story(big))+
+    (wrong?f("Everyone was wrong",wrong,same?'Every AI said '+same+'. It '+(wrong.a>0?'rose.':'fell.'):'Nobody got the direction right',none.length+' of '+RR.length+' rounds had no winner.',
+      esc(wrong.co)+' '+dirWord(wrong)+' '+wrong.out.replace(/^[+−-]/,"")+'.'+(none.length>1?' The others: '+none.filter(function(r){return r!==wrong}).map(function(r){return esc(r.co)}).join(", ")+'.':'')):'')+'</ul>'}
 function hero(){var RR=RS(),r=RR[RR.length-1];if(!r)return '';var v=rv(r.n);
   return '<a class="hero2" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'"><span class="h2a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="">':'')+(r.film&&!reduce?'<video muted loop playsinline autoplay preload="metadata" aria-hidden="true"'+(r.poster?' poster="'+MEDIA+r.poster+'.jpg"':'')+'><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video>':'')+'</span>'+
     '<span class="h2t"><small>Latest result · '+fmtDate(r.resolves)+'</small><b>Round '+r.n+' · '+esc(r.co)+(hasTk(v)?' <span class="tk">('+esc(r.ticker)+')</span>':'')+'</b><span class="h2m '+(r.a<0?'d':'u')+'">'+(r.a<0?'▼':'▲')+esc(r.out.replace(/^[+−-]/,""))+'</span>'+
     '<span class="gt-w">'+(v.win.length?'<small>Winner</small>'+v.win.map(function(m){return logo(m)}).join("")+'<b>'+v.win.map(nm).join(" & ")+'</b>':'<span class="lg nob" aria-hidden="true">✗</span><b>No winner</b>')+'</span><span class="h2o">Open the card →</span></span></a>'}
+/* Every round, X1: All, Mag 7, AI. Counts are graded rounds. */
+function fSeg(){function c(f){return ROUNDS.filter(function(r){return inF(r.n,f)}).length}
+  return '<div class="seg bseg" role="group" aria-label="Which rounds">'+[["all","All"],["mag7","Mag 7"],["ai","AI"]].map(function(x){return '<button type="button" data-rf="'+x[0]+'" aria-pressed="'+(RF===x[0])+'">'+x[1]+' <b>'+c(x[0])+'</b></button>'}).join("")+'</div>'}
 function bigSeg(){var all=ROUNDS.length,bg=ROUNDS.filter(function(r){return isBig(r.ticker)}).length;
   return '<div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+all+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+bg+'</b></button></div>'}
-function vResults(){RBIG=false;return '<h1 tabindex="-1" class="sr">Results</h1><section class="xsec">'+xsh("01","","Highlights","The rounds worth knowing so far.")+shelf()+'</section>'+
-  '<section class="xsec">'+xsh("02","","Every round","Newest first. Tap a round for the full card.",false,"",bigSeg())+'<div id="gal">'+gallery(true)+'</div></section>'}
-function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-big]");if(!b)return;RBIG=b.dataset.big==="1";$$("[data-big]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x.dataset.big===b.dataset.big))});$("#gal",root).innerHTML=gallery(true)});wireGallery(root)}
+function vResults(){RBIG=false;RF="all";return '<h1 tabindex="-1" class="sr">Results</h1><section class="xsec">'+xsh("01","","Highlights","The rounds worth knowing so far.")+shelf()+'</section>'+
+  '<section class="xsec">'+xsh("02","","Every round","Newest first. Tap a round for the full card.",false,"",fSeg())+'<div id="gal">'+gallery(true)+'</div></section>'}
+function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-rf]");if(!b)return;RF=b.dataset.rf;$$("[data-rf]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$("#gal",root).innerHTML=gallery(true)});wireGallery(root)}
 function body(){if(EXP==="x2")return '<section class="gsec" aria-labelledby="galH"><h2 id="galH" class="gh">Results</h2>'+gallery(false)+'</section><h2 class="gh nxh">Coming up</h2>'+timeline();return RLOOK==="compact"?compactList():timeline()}
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
   var up=ALLN.filter(function(n){return rv(n).st!=="graded"}),ub=up.filter(function(n){return isBig(rv(n).ticker)}).length;
@@ -227,8 +245,9 @@ var RMET={
   hit:{t:"Hit rate",sub:"<b>How often did they call the direction right?</b> Only up or down counts here, not the size."},
   miss:{t:"Avg miss",sub:"<b>How close did they get?</b> Average points off the real move, smaller is better. The bullseye is what the stock did. Each dot is one call."},
   roi:{t:"ROI",sub:"<b>What would "+usd(STAKE)+" be worth now?</b> All in on every call: buy on an up call, short on a down call. Simulated, before fees."}};
-var RKEYS=EXP==="x1"?["hit","miss","roi","bull"]:["hit","miss","roi","wins"],RCUR="hit";
+var RKEYS=EXP==="x1"?["hit","miss","roi","sector"]:["hit","miss","roi","wins"],RCUR="hit";
 var UPS_N=ROUNDS.filter(function(r){return r.a>0}).length,AVG_MOVE=ROUNDS.length?ROUNDS.reduce(function(a,r){return a+Math.abs(r.a)},0)/ROUNDS.length:0;
+RMET.sector={t:"By sector",sub:"<b>Where are they sharpest?</b> Right calls by sector. Small samples for now: the grid fills in as the Zeason goes on."};
 RMET.bull={t:"Up or down",sub:"<b>Do they lean up or down?</b> Each AI's up and down calls, next to what the stocks really did."};
 function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(function(h){return !h.none});
     var shared=ROUNDS.filter(function(r){var w=r.win?r.win.split(" & "):[];return w.length>1&&w.indexOf(m)>-1}).length,bestC=calls.slice().sort(function(a,b){return a.off-b.off})[0],b=fbal(m);
@@ -254,6 +273,19 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=s
       F.map(function(f){var p=f.pts[f.pts.length-1];return '<i class="pnl-d" style="left:'+X(p[0]).toFixed(2)+'%;top:'+Y(p[1]).toFixed(2)+'%;background:'+MODELS[f.m].c+'"></i>'}).join("")+
       '<span class="pnl-x"><small>R1</small><small>R'+N+'</small></span></div>';
     if(anim&&!reduce)box.querySelector(".pnl").classList.add("draw");return}
+  /* X1, by sector: each AI's right calls in each sector, as "right of calls". Sectors come from the sheet's details. */
+  if(k==="sector"){var SH={"Information Technology":"Tech","Consumer Discretionary":"Consumer","Consumer Staples":"Staples","Financials":"Finance","Industrials":"Industrials","Communication Services":"Media & telecom","Health Care":"Health","Materials":"Materials","Energy":"Energy","Utilities":"Utilities","Real Estate":"Real estate"};
+    var secOf=function(r){return ((typeof RMETA!=="undefined"&&RMETA[r.n])||{}).sector||""},cnt={};ROUNDS.forEach(function(r){var x=secOf(r);if(x)cnt[x]=(cnt[x]||0)+1});
+    var cols=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
+    if(!cols.length){box.innerHTML='<p class="empty">No sectors in the sheet yet.</p>';return}
+    var rows=RK.filter(function(m){return CAR[m]&&CAR[m].g});
+    function cell(m,sec){var rs=ROUNDS.filter(function(r){return secOf(r)===sec}),n=0,ok=0;rs.forEach(function(r){var c=callOf(r,m);if(c){n++;if(callOk(r,c))ok++}});
+      if(!n)return '<span class="sgr-c none" role="cell">–</span>';var q=ok/n;
+      return '<span class="sgr-c '+(q>=.67?'hi':q>=.34?'md':'lo')+'" role="cell" title="'+nm(m)+', '+esc(sec)+': '+ok+' of '+n+' right"><b>'+ok+'/'+n+'</b></span>'}
+    box.innerHTML='<div class="sgr" role="table" aria-label="Right calls by sector" style="--cols:'+cols.length+'"><div class="sgr-r sgr-h" role="row"><span role="columnheader"></span>'+cols.map(function(c){return '<span role="columnheader"><b>'+esc(SH[c]||c)+'</b><small>'+cnt[c]+' round'+(cnt[c]>1?'s':'')+'</small></span>'}).join("")+'</div>'+
+      rows.map(function(m){return '<div class="sgr-r" role="row"><span class="st-who" role="rowheader">'+logo(m)+'<b>'+nm(m)+'</b></span>'+cols.map(function(c){return cell(m,c)}).join("")+'</div>'}).join("")+'</div>'+
+      '<p class="sgr-k"><span><i class="hi"></i>2 of 3 or better</span><span><i class="md"></i>about half</span><span><i class="lo"></i>under a third</span></p>';
+    if(anim&&!reduce)$$(".sgr-c",box).forEach(function(c,i){c.style.animationDelay=(i*30)+"ms";c.classList.add("pop")});return}
   /* X1, up or down: each AI's up calls (green) and down calls (red) in one bar, then what the stocks really did */
   if(k==="bull"){var rows=R.concat([{m:null,up:UPS_N,dn:ROUNDS.length-UPS_N}]);
     box.innerHTML='<ol class="udl">'+rows.map(function(x){var t=x.up+x.dn||1;
