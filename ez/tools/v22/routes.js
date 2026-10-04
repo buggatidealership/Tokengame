@@ -154,7 +154,7 @@ function body(){if(EXP==="x2")return '<section class="gsec" aria-labelledby="gal
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
   var up=ALLN.filter(function(n){return rv(n).st!=="graded"}),ub=up.filter(function(n){return isBig(rv(n).ticker)}).length;
   if(EXP==="x1")RBIG=false;
-  return (EXP==="x1"?'<div class="xup">'+xsh("01","","The calendar",up.length+" rounds to go, "+ub+" of them big names (★).",true)+'</div>':
+  return (EXP==="x1"?'<div class="xup">'+xsh("01","","The calendar","",true)+'</div>':
     '<div class="rhd"><h1 tabindex="-1">Upcoming</h1><div class="seg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All</button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names</button></div></div>')+
     '<p class="rfoot">Every call goes out before the report. '+x+' to see them first. <span aria-hidden="true">·</span> <button type="button" class="lnk" id="icsB">Add the Zeason to your calendar</button> <span id="icsMsg" class="note" aria-live="polite"></span></p>'+
     (EXP?'':'<div class="look" role="group" aria-label="Preview a look (for review)"><small>Look</small><button type="button" data-look="brand" aria-pressed="'+(RLOOK==="brand")+'">Brand colours</button><button type="button" data-look="compact" aria-pressed="'+(RLOOK==="compact")+'">Compact</button></div>')+
@@ -281,11 +281,11 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=s
       return '<li class="sxr wr'+(i?'':' lead')+'"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span><span class="crs">'+(won.length?won.map(function(r,j){var sh=r.win.indexOf(" & ")>-1;
         return '<a class="cr'+(sh?' crh':'')+'" style="--d:'+(j*80)+'ms" href="#/round/'+r.n+'" title="Round '+r.n+', '+esc(r.co)+(sh?' (shared)':'')+'" aria-label="Round '+r.n+' '+esc(r.co)+(sh?', shared':'')+'">'+CROWN+'</a>'}).join(""):'<span class="cr0">No wins yet</span>')+'</span><span class="st-v"><b>'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
   if(anim&&!reduce)$$(".cr",box).forEach(function(c){c.classList.add("pop")})}
-function statsHTML(){return '<section class="blk" aria-labelledby="stH">'+(EXP==="x1"?xsh("02","The stats","How they stack up","Pick a measure. The card flips to it.",false,"stH"):'<div class="hh"><h2 id="stH">The stats</h2></div>')+
-  '<div class="lsw rsw" role="group" aria-label="Rank the AIs by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+RMET[k].t+'</button>'}).join("")+'</div>'+
-  '<div class="rflip sflip" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><div class="st-box"></div><p class="rf-sub"></p></div>'}).join("")+'</div></div></section>'}
+function statsHTML(){return '<section class="blk" aria-labelledby="stH">'+(EXP==="x1"?xsh("02","The stats","Stats","Pick a measure. The card flips to it.",false,"stH"):'<div class="hh"><h2 id="stH">The stats</h2></div>')+
+  '<div class="lsw rsw" role="group" aria-label="Rank the AIs by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+(EXP==="x1"?'<i class="skd" aria-hidden="true"></i>':'')+RMET[k].t+'</button>'}).join("")+'</div>'+
+  '<div class="rflip sflip'+(EXP==="x1"?' sx1':'')+'" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><div class="st-box"></div><p class="rf-sub"></p></div>'}).join("")+'</div></div></section>'}
 function wireStats(root){var fl=$("#rflip",root);if(!fl)return;var faces=$$(".rf-face",fl),front=0,seen=false;
-  function fill(i,k,anim){$(".rf-sub",faces[i]).innerHTML=RMET[k].sub;drawStats(faces[i],k,anim)}
+  function fill(i,k,anim){faces[i].dataset.k=k;$(".rf-sub",faces[i]).innerHTML=RMET[k].sub;drawStats(faces[i],k,anim)}
   fill(0,RCUR,false);
   if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&!seen){seen=true;io.disconnect();fill(front,RCUR,true)}})},{threshold:.4});io.observe(fl)}
   $$("[data-rk]",root).forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.rk;if(k===RCUR)return;RCUR=k;
@@ -312,28 +312,54 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
   function word(k){return ["","one","two","three","four","five","six","seven","eight","nine","ten"][k]||String(k)}
   function cos(rs){return rs.map(function(r){return r.co}).join(", ")}
   RECS=[];
-  function tile(kick,head,m,big,unit,n,rs,why,sub){var r=findR(n),bg=r&&r.poster?' style="--bg:url(\''+MEDIA+r.poster+'.jpg\')"':'';
-    if(EXP==="x1"){RECS.push({kick:kick,head:head,m:m,big:big,unit:unit,rs:rs||[r],why:why||""});
+  function tile(kick,head,m,big,unit,n,rs,why,sub,more){var r=findR(n),bg=r&&r.poster?' style="--bg:url(\''+MEDIA+r.poster+'.jpg\')"':'';
+    if(EXP==="x1"){RECS.push(Object.assign({kick:kick,head:head,m:m,big:big,unit:unit,rs:rs||[r],why:why||""},more||{}));
       return '<button type="button" class="hlt rec2"'+bg+' data-rec="'+(RECS.length-1)+'"><span class="hl-k">'+kick+'</span>'+(sub?'<span class="hl-s">'+sub+'</span>':'')+'<span class="hl-h">'+esc(head)+'</span><span class="hl-hold"><small>Record holder</small>'+logo(m)+'<b>'+nm(m)+'</b><strong>'+big+'</strong><i>'+unit+'</i></span></button>'}
     return '<a class="hlt"'+bg+' href="#/round/'+n+'"><span class="hl-k">'+kick+'</span><span class="hl-v">'+logo(m)+'<b>'+big+'</b><i>'+unit+'</i></span><span class="hl-h">'+esc(head)+'</span><span class="hl-r">Round '+n+(r?' · '+fmtDate(r.resolves):'')+' <span aria-hidden="true">→</span></span></a>'}
+  var LAST=ROUNDS[ROUNDS.length-1],NEXTN=LAST?LAST.n+1:1;
+  function fx(rs){var d=rs.map(function(r){return r.resolves}).sort(),a=d[0],b=d[d.length-1];return [["Rounds",rs.map(function(r){return "R"+r.n}).join(" ")],["Dates",fmtDate(a)+(b!==a?" to "+fmtDate(b):"")]]}
+  /* a streak: who comes next, and whether it is still running or what broke it */
+  function streakMore(lst,hold,f,breakOnNone,unitWord,goal){var nx=lst.filter(function(x){return x.m!==hold.m&&x.rs.length})[0],end=hold.rs[hold.rs.length-1],
+      later=ROUNDS.filter(function(r){return r.n>end.n&&(breakOnNone||callOf(r,hold.m))}),brk=later[0],alive=!brk;
+    var st=alive?"The run is still alive. "+goal+" in round "+NEXTN+" and it grows to "+(hold.rs.length+1)+".":
+      "It ended in round "+brk.n+" on "+brk.co+": "+(callOf(brk,hold.m)?nm(hold.m)+" said "+said(brk,hold.m)+", it moved "+brk.out+(brk.win?" and "+brk.win.split(" & ").map(nm).join(" & ")+" took the round.":", no winner."):nm(hold.m)+" made no call.");
+    return {facts:fx(hold.rs).concat([["Status",alive?"Still running":"Ended R"+brk.n]]),
+      chase:nx&&nx.rs.length>1?"Next best: "+nm(nx.m)+" with "+nx.rs.length+" "+unitWord+(nx.rs.length===hold.rs.length?", level with the record.":"."):"Nobody else has strung two together yet.",story:st}}
+  function callMore(c,sorted,worstWay){var nx=sorted.filter(function(x){return x.m!==c.m})[0];
+    return {facts:[["Called",said(c.r,c.m)],["Moved",c.r.out],["Off by",c.off.toFixed(2)+" pts"]],
+      chase:nx?(worstWay?"Next worst from the others: ":"Best of the rest: ")+nm(nx.m)+", "+nx.off.toFixed(2)+" off on "+nx.r.co+".":"",
+      story:worstWay?"Nobody wants this one. It only changes hands if a call misses by more than "+c.off.toFixed(2)+" points.":"To take it, a call has to land within "+c.off.toFixed(2)+" points of the real move."}}
+  var wl=RK.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length}),
+      rl=RK.map(function(m){return run(m,function(r,c){return callOk(r,c)},false)}).sort(function(a,b){return b.rs.length-a.rs.length});
   var out='';
-  if(wr.rs.length>1)out+=tile(EXP==="x1"?"Longest winning streak":"Most wins in a row",wr.rs.length===2?nm(wr.m)+" goes back to back: "+cos(wr.rs):wr.rs.length===3?nm(wr.m)+" goes three for three: "+cos(wr.rs):nm(wr.m)+" is on a heater: "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n,wr.rs,nm(wr.m)+" won "+word(wr.rs.length)+" rounds in a row. A win takes the right direction and the closest size of the four.");
-  out+=tile("Closest call",best.off<1?nm(best.m)+" basically front-ran "+best.r.co:nm(best.m)+" sniped "+best.r.co,best.m,best.off.toFixed(2),"pts off",best.r.n,[best.r],nm(best.m)+" called "+best.r.co+" "+said(best.r,best.m)+". It moved "+best.r.out+". Off by "+best.off.toFixed(2)+" points, the closest call so far.");
-  out+=tile("Biggest miss",nm(worst.m)+" got rekt on "+worst.r.co,worst.m,worst.off.toFixed(2),"pts off",worst.r.n,[worst.r],nm(worst.m)+" called "+worst.r.co+" "+said(worst.r,worst.m)+". It moved "+worst.r.out+". Off by "+worst.off.toFixed(2)+" points, the furthest any call has landed.");
-  if(rr.rs.length>1)out+=tile(EXP==="x1"?"Longest hit streak":"Most right calls in a row",rr.rs.length<4?nm(rr.m)+" can't miss: "+cos(rr.rs):nm(rr.m)+" calls the direction "+word(rr.rs.length)+" straight",rr.m,rr.rs.length,"in a row",rr.rs[rr.rs.length-1].n,rr.rs,nm(rr.m)+" called the direction right "+word(rr.rs.length)+" rounds running. A hit only needs up or down to be right, whatever the size.","Right direction, round after round");
+  if(wr.rs.length>1)out+=tile(EXP==="x1"?"Longest winning streak":"Most wins in a row",wr.rs.length===2?nm(wr.m)+" goes back to back: "+cos(wr.rs):wr.rs.length===3?nm(wr.m)+" goes three for three: "+cos(wr.rs):nm(wr.m)+" is on a heater: "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n,wr.rs,nm(wr.m)+" won "+word(wr.rs.length)+" rounds in a row. A win takes the right direction and the closest size of the four.",undefined,streakMore(wl,wr,winF,true,"in a row","Win"));
+  out+=tile("Closest call",best.off<1?nm(best.m)+" basically front-ran "+best.r.co:nm(best.m)+" sniped "+best.r.co,best.m,best.off.toFixed(2),"pts off",best.r.n,[best.r],nm(best.m)+" called "+best.r.co+" "+said(best.r,best.m)+". It moved "+best.r.out+". Off by "+best.off.toFixed(2)+" points, the closest call so far.",undefined,callMore(best,all.slice().sort(function(a,b){return a.off-b.off}),false));
+  out+=tile("Biggest miss",nm(worst.m)+" got rekt on "+worst.r.co,worst.m,worst.off.toFixed(2),"pts off",worst.r.n,[worst.r],nm(worst.m)+" called "+worst.r.co+" "+said(worst.r,worst.m)+". It moved "+worst.r.out+". Off by "+worst.off.toFixed(2)+" points, the furthest any call has landed.",undefined,callMore(worst,all.slice().sort(function(a,b){return b.off-a.off}),true));
+  if(rr.rs.length>1)out+=tile(EXP==="x1"?"Longest hit streak":"Most right calls in a row",rr.rs.length<4?nm(rr.m)+" can't miss: "+cos(rr.rs):nm(rr.m)+" calls the direction "+word(rr.rs.length)+" straight",rr.m,rr.rs.length,"in a row",rr.rs[rr.rs.length-1].n,rr.rs,nm(rr.m)+" called the direction right "+word(rr.rs.length)+" rounds running. A hit only needs up or down to be right, whatever the size.","Right direction, round after round",streakMore(rl,rr,null,false,"in a row","Call the direction right"));
   return out}
 /* a record, opened: what happened, who holds it, and each round it took, small; a round opens its card */
 var XMOD=null;
 function closeRec(){if(XMOD){XMOD.remove();XMOD=null;document.body.classList.remove("rmod-on")}}
-function openRec(i,from){var R=RECS[i];if(!R)return;closeRec();
+function openRec(i,from){var R=RECS[i];if(!R)return;closeRec();var LAST=ROUNDS[ROUNDS.length-1],k=0;function rvc(){return ' rv" style="--i:'+(k++)}
   var m=document.createElement("div");m.className="rmod";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label",R.kick);
-  m.innerHTML='<div class="rxm"><button type="button" class="rmod-x" aria-label="Close">✕</button><small class="rxm-k">'+R.kick+'</small><h3>'+esc(R.head)+'</h3>'+
-    '<p class="rxm-h">'+logo(R.m)+'<b>'+nm(R.m)+'</b><span>holds it with</span><strong>'+R.big+'</strong><i>'+R.unit+'</i></p><p class="rxm-w">'+esc(R.why)+'</p>'+
+  m.innerHTML='<article class="rxm rxn"><button type="button" class="rmod-x" aria-label="Close">✕</button>'+
+    '<p class="rxn-mast'+rvc()+'"><b>The EZ record book</b><span>Updated after round '+(LAST?LAST.n:0)+'</span></p>'+
+    '<small class="rxm-k'+rvc()+'">'+R.kick+'</small><h3 class="rxn-h'+rvc()+'">'+esc(R.head)+'</h3>'+
+    '<p class="rxm-h'+rvc()+'">'+logo(R.m)+'<b>'+nm(R.m)+'</b><span>Record holder</span><strong>'+R.big+'</strong><i>'+R.unit+'</i></p>'+
+    (R.facts?'<dl class="rxn-f'+rvc()+'">'+R.facts.map(function(f){return '<div><dt>'+f[0]+'</dt><dd>'+esc(f[1])+'</dd></div>'}).join("")+'</dl>':'')+
+    '<div class="rxn-b'+rvc()+'"><p class="rxn-lede">'+esc(R.why)+'</p>'+(R.story?'<p>'+esc(R.story)+'</p>':'')+(R.chase?'<p class="rxn-ch"><span aria-hidden="true">▸</span> '+esc(R.chase)+'</p>':'')+'</div>'+
+    '<h4 class="rxn-s'+rvc()+'">'+(R.rs.length>1?'The '+R.rs.length+' rounds':'The round')+'</h4>'+
     '<ol class="rxl">'+R.rs.map(function(r){var c=callOf(r,R.m),ok=c&&callOk(r,c),w=r.win&&r.win.split(" & ").indexOf(R.m)>-1;
-      return '<li><button type="button" class="rxt" data-n="'+r.n+'"><span class="rxt-a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">':'')+'</span>'+
-        '<span class="rxt-b"><small>Round '+r.n+'</small><b>'+esc(r.co)+'</b><span>Moved '+r.out+'</span><span class="rxt-c'+(w?' w':ok?' g':' r')+'">'+logo(R.m)+' '+esc(said(r,R.m))+(w?' · won':ok?' · right way':' · wrong way')+'</span></span></button></li>'}).join("")+'</ol></div>';
+      return '<li class="rv" style="--i:'+(k++)+'"><button type="button" class="rxt" data-n="'+r.n+'"><span class="rxt-a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">':'')+'</span>'+
+        '<span class="rxt-b"><small>Round '+r.n+'</small><b>'+esc(r.co)+'</b><span>Moved '+r.out+'</span><span class="rxt-c'+(w?' w':ok?' g':' r')+'">'+logo(R.m)+' '+esc(said(r,R.m))+(w?' · won':ok?' · right way':' · wrong way')+'</span></span></button></li>'}).join("")+'</ol></article>';
   document.body.appendChild(m);XMOD=m;document.body.classList.add("rmod-on");
-  if(!reduce&&m.animate){m.animate([{opacity:0},{opacity:1}],{duration:380,easing:"ease-out"});$(".rxm",m).animate([{transform:"translateY(24px) scale(.97)",opacity:0},{transform:"none",opacity:1}],{duration:560,easing:"cubic-bezier(.22,.61,.36,1)"})}
+  var box=$(".rxm",m);
+  if(!reduce&&m.animate){m.animate([{opacity:0},{opacity:1}],{duration:320,easing:"ease-out"});
+    /* it grows out of the tile you tapped, then the piece rolls out line by line */
+    var a=from&&from.getBoundingClientRect?from.getBoundingClientRect():null,b=box.getBoundingClientRect();
+    var t0=a&&a.width?'translate('+((a.left+a.width/2)-(b.left+b.width/2)).toFixed(0)+'px,'+((a.top+a.height/2)-(b.top+b.height/2)).toFixed(0)+'px) scale('+Math.max(.25,a.width/b.width).toFixed(3)+','+Math.max(.15,a.height/b.height).toFixed(3)+')':'translateY(24px) scale(.97)';
+    box.animate([{transform:t0,opacity:.4,borderRadius:"18px"},{transform:"none",opacity:1}],{duration:620,easing:"cubic-bezier(.2,.8,.2,1)"});
+    m.classList.add("roll")}
   m.addEventListener("click",function(e){if(e.target===m||e.target.closest(".rmod-x")){closeRec();if(from)from.focus({preventScroll:true});return}
     var t=e.target.closest(".rxt");if(t){var n=+t.dataset.n;closeRec();openRound(n,from)}});
   $(".rmod-x",m).focus({preventScroll:true})}

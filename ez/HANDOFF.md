@@ -94,6 +94,12 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Upcoming: no switch. The page opens on "01 The calendar" with how many rounds are left and how many are big names (★).
 - How they stack up: the text sits under the card, led by a question ("How often did they call the direction right?"). Avg miss: four big bullseyes, ranked, each with its number (2 by 2 on phones). ROI: a balance chart from $10,000 with each AI's balance and % on top. "Bull/bear" is now "Up or down": up and down calls in one bar per AI, with the stocks as the last row. Boldness is gone.
 
+## 2026-10-04 (round 24)
+- Season and X1: the "How we grade" icon is a small outlined i, the text beside it smaller.
+- X1 Leaderboard: section 02 is "Stats". Each measure has its own colour (hit rate blue, avg miss green, ROI gold, up or down purple; a dot on each switch button), and every card is the same size (450px, 520px on phones). White stays for the standings. Avg miss: smaller, real red and white targets. The leader on Avg miss and ROI wears the standings' moving foil.
+- X1 Record book: a record opens as a short news piece that grows out of the tile and rolls out line by line: masthead, kicker, headline, holder in foil, three facts, the story (what happened, how it ended or what keeps it alive, who is chasing), then the rounds.
+- X1 Results lines up with the other tabs at the top. Upcoming: the count line under "The calendar" is gone.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.

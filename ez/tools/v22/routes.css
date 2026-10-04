@@ -785,7 +785,7 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
 /* ===== X1, round 23: the stats card says its question underneath; Results filters only Every round ===== */
 .sflip .rf-sub{margin:14px 0 0;padding-top:12px;border-top:1.5px solid var(--field2);font:500 13px/1.45 var(--fb);min-height:0}
 .sflip .rf-sub b{color:var(--ink);font-weight:700}
-.sr+.xsec{margin-top:28px}
+#view .sr+.xsec{margin-top:0}
 .xup .xsh{margin-bottom:12px}
 .xup+.rfoot{margin-top:0}
 /* avg miss: the bullseyes are the ranking */
@@ -825,3 +825,53 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
 .udb i{flex:0 0 var(--w);display:flex;align-items:center;padding:0 8px;font:800 12px/1 var(--fb);font-style:normal;color:var(--on-ez);white-space:nowrap;overflow:hidden;transition:flex-basis .7s cubic-bezier(.2,.8,.2,1)}
 .udb i.pu{background:var(--ez-green)}.udb i.pd{background:var(--ez-red);justify-content:flex-end}
 @media(max-width:640px){.udr{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"w v" "b b";gap:6px 8px;padding:8px 10px}.udr .st-who{grid-area:w}.udr .udb{grid-area:b;height:24px}.udr .st-v{grid-area:v}}
+
+/* ===== X1, round 24: each stat has its own colour (white stays for the standings); the cards are one size ===== */
+.sx1 .rf-face{--mc:#2f7fe0;background:color-mix(in srgb,var(--mc) 15%,var(--card));display:flex;flex-direction:column;height:var(--sxh,520px)}
+.sx1 .rf-face[data-k=miss]{--mc:#1f9d55}
+.sx1 .rf-face[data-k=roi]{--mc:#e0a400}
+.sx1 .rf-face[data-k=bull]{--mc:#8a5cf6}
+.sx1 .st-box{flex:1;min-height:0!important}
+.sx1 .rf-sub{border-top-color:color-mix(in srgb,var(--mc) 35%,transparent)}
+.sx1 .rf-face .pnl-k li,.sx1 .rf-face .udr:not(.mkt),.sx1 .st-box.cmp .tg-h{background:color-mix(in srgb,#fff 70%,transparent)}
+.skd{display:inline-block;width:9px;height:9px;margin-right:7px;border-radius:50%;vertical-align:.05em;box-shadow:0 0 0 1.5px var(--ink)}
+[data-rk=hit] .skd{background:#2f7fe0}[data-rk=miss] .skd{background:#1f9d55}[data-rk=roi] .skd{background:#e0a400}[data-rk=bull] .skd{background:#8a5cf6}
+/* the leader wears the standings' foil */
+.sx1 .st-box.cmp .tg.lead .tg-h,.sx1 .pnl-k li.lead{background:var(--foil-grad);background-size:300% 100%;animation:foil var(--foil-speed) linear infinite;box-shadow:inset 0 0 0 2px var(--ink)}
+@media(prefers-reduced-motion:reduce){.sx1 .st-box.cmp .tg.lead .tg-h,.sx1 .pnl-k li.lead{animation:none}}
+/* avg miss: smaller, and a real target: red and white rings, a gold middle, the calls in ink */
+.sx1 .st-box.cmp .tg svg{max-width:190px}
+.sx1 .st-box.cmp .tg .rg{fill:#fff;stroke:var(--ink);stroke-width:1.2}
+.sx1 .st-box.cmp .tg .rg.alt{fill:#e63a2e}
+.sx1 .st-box.cmp .tg .bull{fill:var(--yel);stroke:var(--ink);stroke-width:1.5}
+.sx1 .st-box.cmp .tg .dot{fill:var(--ink)!important;stroke:#fff;stroke-width:2}
+@media(max-width:640px){.sx1 .st-box.cmp .tg svg{max-width:132px}.sx1 .st-box.cmp .tg-grid{gap:12px 10px}}
+.sx1{--sxh:450px}
+@media(max-width:640px){.sx1{--sxh:520px}.sx1 .udl{gap:6px}.sx1 .udr{padding:6px 10px;gap:4px 8px}.sx1 .udr .udb{height:20px}.sx1 .udr.mkt{margin-top:4px}.sx1 .pnl{height:160px}}
+/* a record, opened, reads like a short news piece: masthead, kicker, headline, the holder in foil, the facts, the story, the rounds */
+.rxn{padding:0 22px 22px;transform-origin:center}
+.rxn-mast{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 -22px 16px;padding:12px 60px 11px 22px;background:var(--slab);color:var(--on-slab);border-bottom:3px solid var(--yel);font:700 10.5px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase}
+.rxn-mast b{font:400 16px/1 var(--fd);letter-spacing:.02em;color:var(--yel)}
+.rxn-mast span{opacity:.75}
+.rxn .rmod-x{top:5px;right:8px;width:34px;height:34px;font-size:14px;z-index:2}
+.rxn .rxm-k{padding-right:0}
+.rxm .rxn-h{margin:8px 0 0;font:400 clamp(28px,4.4vw,40px)/1 var(--fd);text-transform:uppercase;letter-spacing:.005em}
+.rxn .rxm-k{font-size:clamp(15px,1.8vw,18px);letter-spacing:.02em}
+.rxn .rxm-h{background:var(--foil-grad);background-size:300% 100%;animation:foil var(--foil-speed) linear infinite}
+.rxn .rxm-h span:not(.lg){font:700 10px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.rxn-f{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 0}
+.rxn-f div{padding:9px 10px;border-radius:10px;background:var(--field)}
+.rxn-f dt{font:700 9.5px/1 var(--fm);letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
+.rxn-f dd{margin:5px 0 0;font:400 19px/1.05 var(--fd);text-transform:uppercase}
+.rxn-b{margin-top:16px;padding-top:14px;border-top:1.5px solid var(--field2);font:500 14.5px/1.6 var(--fb);color:var(--ink)}
+.rxn-b p+p{margin-top:8px}
+.rxn-lede{font-weight:700}
+.rxn-ch{padding:8px 12px;border-radius:10px;background:color-mix(in srgb,var(--yel) 30%,var(--card));font-weight:700}
+.rxn-ch span{color:var(--red)}
+.rxn-s{margin:20px 0 0;font:700 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+.rxn .rxl{margin-top:10px}
+/* the roll-out: each line arrives a beat after the last */
+.rmod.roll .rv{animation:rxIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(240ms + var(--i,0) * 70ms)}
+@keyframes rxIn{from{opacity:0;transform:translateY(12px)}}
+@media(prefers-reduced-motion:reduce){.rmod.roll .rv{animation:none}.rxn .rxm-h{animation:none}}
+@media(max-width:640px){.rxn{padding:0 14px 16px}.rxn-mast{margin:0 -14px 14px;padding:11px 54px 10px 14px;font-size:9.5px}.rxn-mast b{font-size:14px}.rxn-f{gap:6px}.rxn-f div{padding:8px}.rxn-f dd{font-size:15px}.rxn-b{font-size:14px}}
