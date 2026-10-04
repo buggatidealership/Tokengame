@@ -100,6 +100,14 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - X1 Record book: a record opens as a short news piece that grows out of the tile and rolls out line by line: masthead, kicker, headline, holder in foil, three facts, the story (what happened, how it ended or what keeps it alive, who is chasing), then the rounds.
 - X1 Results lines up with the other tabs at the top. Upcoming: the count line under "The calendar" is gone.
 
+## 2026-10-04 (round 25)
+- Overview (Season and X1): the info icon sits right after "Standings". Last round's winner is bigger. Opening the last round's card plays the film from the start with sound (muted only if the browser refuses).
+- 02: the Direction / How close switch is the card's width and slimmer; "If you'd copied them" is its own dark card, the leader in foil.
+- 03 The buyback: "An AI with one job: buy back $EZ" ($EZ in its colours), "By trading on Hyperliquid." The four steps show all at once and light up in turn (no Next button, one size). "How big could it get?" is part of 03 (anchor #calc kept).
+- 04 What's next (was 05 The road): Calls on the record, More models join (now), The pipeline runs itself, The AI places the bet, More to come. "Cover the AI bills" is gone.
+- 05 The token: Get $EZ.
+- X1 tiles on phones: pictures never shrink under the text (Safari), winner bars line up, no tile stays lifted after a tap.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
