@@ -108,6 +108,13 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - 05 The token: Get $EZ.
 - X1 tiles on phones: pictures never shrink under the text (Safari), winner bars line up, no tile stays lifted after a tap.
 
+## 2026-10-04 (round 26)
+- Hero: "Before a company reports earnings, AI models call how its stock will react: up or down, and by how much." (the calls come before the report).
+- "How we grade" is now "What counts as a win": a small tree (did the AI call up or down right? yes: closest to the real move wins; no: it's out, and if every AI is out nobody wins), ties line underneath.
+- 02: "How much would they have made by now?", one AI per row (name, line, balance and %).
+- 03 The buyback: $EZ in its colours without the badge. Where the money goes as a tree: every $EZ trade pays a small fee, 69% to the pot (the AI trades it on Hyperliquid; right call buys back $EZ, wrong call drains it), 31% to the lab (keeps things running, then the old road as a checklist: calls on the record done, more models now, pipeline, the AI places the bet, more to come). "How big could it get?" has an Estimated tag; the assumptions line and the TBC line are hidden (still in the page, hidden). Fine print is only "The pot can be wiped out."
+- The road section is gone (it lives in the lab branch, anchor #road kept). The token is 04.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
