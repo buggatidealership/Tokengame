@@ -148,18 +148,16 @@ function shelf(){var RR=ROUNDS;if(!RR.length)return '';var calls=[];RR.forEach(f
       avgMv=RR.reduce(function(a,r){return a+Math.abs(r.a)},0)/RR.length;
   function x(v){return v>=10?Math.round(v)+"x":v.toFixed(1).replace(/\.0$/,"")+"x"}
   function verb(dn){return dn?"fall":"rise"}
-  function f(kick,r,head,sub,body){return '<li><a class="hcd" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'"><span class="hcd-k">'+kick+'</span><strong class="hcd-h">'+head+'</strong><span class="hcd-s">'+sub+'</span><span class="hcd-b">'+body+'</span>'+
-    '<span class="hcd-f"><span>Round '+r.n+' · '+esc(r.co)+'</span><i>'+(r.film?'▶ Watch':'Open')+'</i></span></a></li>'}
-  var cs=said(close.r,close.m),cdn=/^down/.test(cs),same=wrong?allSame(wrong):null;
+  /* a card: what it is (big), then one short paragraph that tells the story; watch, top right */
+  function f(kick,r,text){return '<li><a class="hcd" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'" aria-label="'+kick+': open round '+r.n+', '+esc(r.co)+'"><span class="hcd-t"><span class="hcd-k">'+kick+'</span><i class="hcd-w" aria-hidden="true">'+(r.film?'▶':'→')+'</i></span><span class="hcd-p">'+text+'</span></a></li>'}
+  var cs=said(close.r,close.m),cdn=/^down/.test(cs),same=wrong?allSame(wrong):null,others=wrong?none.filter(function(r){return r!==wrong}).map(function(r){return esc(r.co)}):[];
+  function and(a){return a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
   return '<ul class="hcl">'+
-    f("Closest call",close.r,close.off.toFixed(2)+' points from perfect',x(avgAll/close.off)+' closer than the average call ('+avgAll.toFixed(1)+' points off).',
-      nm(close.m)+' said '+esc(close.r.co)+' would '+verb(cdn)+' '+cs.replace(/^\w+\s*/,"")+'. It '+dirWord(close.r)+' '+close.r.out.replace(/^[+−-]/,"")+'. Nobody has come closer.')+
-    f("Tightest race",tight.r,'All '+tight.r.calls.length+' AIs, '+tight.v.toFixed(2)+' points off on average','Their best round together. A usual round: '+avgRnd.toFixed(1)+' points.',
-      esc(tight.r.co)+' '+dirWord(tight.r)+' '+tight.r.out.replace(/^[+−-]/,"")+'. '+story(tight.r))+
-    f("Biggest move",big,(big.a>0?'▲ ':'▼ ')+big.out.replace(/^[+−-]/,""),x(Math.abs(big.a)/avgMv)+' the average move ('+avgMv.toFixed(1)+'%).',
-      esc(big.co)+' '+(big.a>0?'jumped':'dropped')+' '+big.out.replace(/^[+−-]/,"")+'. '+story(big))+
-    (wrong?f("Everyone was wrong",wrong,same?'Every AI said '+same+'. It '+(wrong.a>0?'rose.':'fell.'):'Nobody got the direction right',none.length+' of '+RR.length+' rounds had no winner.',
-      esc(wrong.co)+' '+dirWord(wrong)+' '+wrong.out.replace(/^[+−-]/,"")+'.'+(none.length>1?' The others: '+none.filter(function(r){return r!==wrong}).map(function(r){return esc(r.co)}).join(", ")+'.':'')):'')+'</ul>'}
+    f("Closest call",close.r,nm(close.m)+' said '+esc(close.r.co)+' would '+verb(cdn)+' '+cs.replace(/^\w+\s*/,"")+' after its earnings. It '+dirWord(close.r)+' '+close.r.out.replace(/^[+−-]/,"")+'. Nobody has come closer: <b>'+close.off.toFixed(2)+' points from perfect</b>, '+x(avgAll/close.off)+' closer than the average call.')+
+    f("Tightest race",tight.r,esc(tight.r.co)+' '+dirWord(tight.r)+' '+tight.r.out.replace(/^[+−-]/,"")+'. All '+tight.r.calls.length+' AIs landed <b>'+tight.v.toFixed(2)+' points off on average</b>, their best round together. A usual round is '+avgRnd.toFixed(1)+'. '+story(tight.r))+
+    f("Biggest move",big,esc(big.co)+' '+(big.a>0?'jumped':'dropped')+' <b>'+big.out.replace(/^[+−-]/,"")+'</b> after its earnings, '+x(Math.abs(big.a)/avgMv)+' the average move. '+story(big))+
+    (wrong?f("Everyone was wrong",wrong,(same?'Every AI said '+esc(wrong.co)+' would '+(same==="down"?'fall':'rise')+'. It '+dirWord(wrong)+' <b>'+wrong.out.replace(/^[+−-]/,"")+'</b>.':'Nobody got '+esc(wrong.co)+' right. It '+dirWord(wrong)+' <b>'+wrong.out.replace(/^[+−-]/,"")+'</b>.')+
+      ' '+none.length+' of '+RR.length+' rounds had no winner'+(others.length?', with '+and(others):'')+'.'):'')+'</ul>'}
 function hero(){var RR=RS(),r=RR[RR.length-1];if(!r)return '';var v=rv(r.n);
   return '<a class="hero2" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'"><span class="h2a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="">':'')+(r.film&&!reduce?'<video muted loop playsinline autoplay preload="metadata" aria-hidden="true"'+(r.poster?' poster="'+MEDIA+r.poster+'.jpg"':'')+'><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video>':'')+'</span>'+
     '<span class="h2t"><small>Latest result · '+fmtDate(r.resolves)+'</small><b>Round '+r.n+' · '+esc(r.co)+(hasTk(v)?' <span class="tk">('+esc(r.ticker)+')</span>':'')+'</b><span class="h2m '+(r.a<0?'d':'u')+'">'+(r.a<0?'▼':'▲')+esc(r.out.replace(/^[+−-]/,""))+'</span>'+
@@ -176,17 +174,18 @@ function body(){if(EXP==="x2")return '<section class="gsec" aria-labelledby="gal
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
   var up=ALLN.filter(function(n){return rv(n).st!=="graded"}),ub=up.filter(function(n){return isBig(rv(n).ticker)}).length;
   if(EXP==="x1"){RBIG=false;UF="all";US=""}
-  return (EXP==="x1"?'<div class="xup">'+xsh("01","","The calendar","",true)+'</div>':
+  return (EXP==="x1"?'<h1 tabindex="-1" class="sr">Upcoming rounds</h1>':
     '<div class="rhd"><h1 tabindex="-1">Upcoming</h1><div class="seg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All</button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names</button></div></div>')+
-    (EXP==="x1"?'<p class="rfoot">Every call goes out before the report. '+x+' to see them first.</p>'+upBar(up):
+    (EXP==="x1"?upBar(up)+'<p class="rfoot ufn">The calls drop before each report. '+x+' to see them first.</p>':
     '<p class="rfoot">Every call goes out before the report. '+x+' to see them first. <span aria-hidden="true">·</span> <button type="button" class="lnk" id="icsB">Add the Zeason to your calendar</button> <span id="icsMsg" class="note" aria-live="polite"></span></p>')+
     (EXP?'':'<div class="look" role="group" aria-label="Preview a look (for review)"><small>Look</small><button type="button" data-look="brand" aria-pressed="'+(RLOOK==="brand")+'">Brand colours</button><button type="button" data-look="compact" aria-pressed="'+(RLOOK==="compact")+'">Compact</button></div>')+
     '<div id="rtl" class="rtline look-'+RLOOK+'">'+body()+'</div>'}
 /* Upcoming filters (X1): a theme (All, Mag 7, AI) and a sector. Counts are rounds still to come. */
 function upBar(up){function c(f){return up.filter(function(n){return inF(n,f)}).length}var sc={};up.forEach(function(n){var x=secOfN(n);if(x)sc[x]=(sc[x]||0)+1});
   var secs=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a]});
-  return '<div class="ufb"><div class="seg bseg" role="group" aria-label="Which rounds">'+[["all","All"],["mag7","Mag 7"],["ai","AI"]].map(function(x){return '<button type="button" data-uf="'+x[0]+'" aria-pressed="'+(UF===x[0])+'">'+x[1]+' <b>'+c(x[0])+'</b></button>'}).join("")+'</div>'+
-    '<label class="ufs"><span class="sr">Sector</span><select id="ufSec"><option value="">All sectors</option>'+secs.map(function(x){return '<option value="'+esc(x)+'"'+(US===x?' selected':'')+'>'+esc(SECT_SHORT[x]||x)+' ('+sc[x]+')</option>'}).join("")+'</select></label></div>'}
+  /* one bar: the three themes, then the sector menu in the same pill */
+  return '<div class="ufb"><div class="seg bseg ufg" role="group" aria-label="Which rounds">'+[["all","All"],["mag7","Mag 7"],["ai","AI"]].map(function(x){return '<button type="button" data-uf="'+x[0]+'" aria-pressed="'+(UF===x[0])+'">'+x[1]+' <b>'+c(x[0])+'</b></button>'}).join("")+
+    '<label class="ufs'+(US?' on':'')+'"><span class="sr">Sector</span><select id="ufSec"><option value="">All sectors</option>'+secs.map(function(x){return '<option value="'+esc(x)+'"'+(US===x?' selected':'')+'>'+esc(SECT_SHORT[x]||x)+' ('+sc[x]+')</option>'}).join("")+'</select></label></div></div>'}
 /* put a day (the next one, or a shared round's day) in the middle of the screen */
 function centerDay(root,k){var s=(k&&$('.rday[data-k="'+k+'"]',root))||$(".rday.next",root);if(!s)return;
   var y=s.getBoundingClientRect().top+scrollY-Math.max(120,innerHeight*.32);window.scrollTo(0,Math.max(0,y))}
@@ -198,7 +197,7 @@ function wireRounds(root){
   wireGallery(root);
   function refilter(){$("#rtl",root).innerHTML=body();var b=$(".ufb",root);if(b)window.scrollTo(0,Math.max(0,b.getBoundingClientRect().top+scrollY-(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--toph"))||0)-8))}
   $$("[data-uf]",root).forEach(function(b){b.addEventListener("click",function(){UF=b.dataset.uf;$$("[data-uf]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});refilter()})});
-  var us=$("#ufSec",root);if(us)us.addEventListener("change",function(){US=us.value;refilter()});
+  var us=$("#ufSec",root);if(us)us.addEventListener("change",function(){US=us.value;us.parentNode.classList.toggle("on",!!US);refilter()});
   $$("[data-look]",root).forEach(function(b){b.addEventListener("click",function(){RLOOK=b.dataset.look;$$("[data-look]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});
     var t=$("#rtl",root);t.className="rtline look-"+RLOOK;t.innerHTML=body();centerDay(root)})});
   wireCal(root)}
@@ -272,7 +271,7 @@ function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(
     if(k==="miss")return {m:m,v:C.avg,txt:C.avg==null?"n/a":C.avg.toFixed(2),sub:bestC?"Best: "+bestC.off.toFixed(2)+" on "+bestC.r.co:""};
     return {m:m,v:b==null?0:(b/STAKE-1)*100,txt:b==null?"n/a":pctTxt(b),sub:b==null?"":usd(b)}})
   .filter(function(x){return x.v!=null}).sort(function(a,b){return k==="miss"?a.v-b.v:b.v-a.v})}
-function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=statRows(k);
+function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;box.classList.toggle("sgx",k==="sector");var R=statRows(k);
   /* X1, hit rate: the direction chart from "Are they learning?" (hit rate round by round, one line per AI) */
   if(k==="hit"&&EXP==="x1"&&window.EZLearn){box.innerHTML='<div class="lxv hx"></div>';EZLearn.together($(".hx",box),{pctOnly:true,noCoin:true,ver:true});return}
   /* X1, ROI: the balance over the rounds, like a trading app's portfolio chart. the stake at the start, one line per AI. */
@@ -295,7 +294,7 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;var R=s
     function cell(m,sec){var rs=ROUNDS.filter(function(r){return secOf(r)===sec}),n=0,ok=0;rs.forEach(function(r){var c=callOf(r,m);if(c){n++;if(callOk(r,c))ok++}});
       if(!n)return '<span class="sgr-c none" role="cell">–</span>';var q=ok/n;
       return '<span class="sgr-c '+(q>=.67?'hi':q>=.34?'md':'lo')+'" role="cell" title="'+nm(m)+', '+esc(sec)+': '+ok+' of '+n+' right"><b>'+ok+'/'+n+'</b></span>'}
-    box.innerHTML='<div class="sgr" role="table" aria-label="Right calls by sector" style="--cols:'+cols.length+'"><div class="sgr-r sgr-h" role="row"><span role="columnheader"></span>'+cols.map(function(c){return '<span role="columnheader"><b>'+esc(SH[c]||c)+'</b><small>'+cnt[c]+' round'+(cnt[c]>1?'s':'')+'</small></span>'}).join("")+'</div>'+
+    box.innerHTML='<div class="sgr" role="table" aria-label="Right calls by sector" style="--cols:'+cols.length+';--rows:'+rows.length+'"><div class="sgr-r sgr-h" role="row"><span role="columnheader"></span>'+cols.map(function(c){return '<span role="columnheader"><b>'+esc(SH[c]||c)+'</b><small>'+cnt[c]+' round'+(cnt[c]>1?'s':'')+'</small></span>'}).join("")+'</div>'+
       rows.map(function(m){return '<div class="sgr-r" role="row"><span class="st-who" role="rowheader">'+logo(m)+'<b>'+nm(m)+'</b></span>'+cols.map(function(c){return cell(m,c)}).join("")+'</div>'}).join("")+'</div>'+
       '<p class="sgr-k"><span><i class="hi"></i>2 of 3 or better</span><span><i class="md"></i>about half</span><span><i class="lo"></i>under a third</span></p>';
     if(anim&&!reduce)$$(".sgr-c",box).forEach(function(c,i){c.style.animationDelay=(i*30)+"ms";c.classList.add("pop")});return}

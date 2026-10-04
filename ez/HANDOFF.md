@@ -141,6 +141,11 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Upcoming: no "Add the Zeason to your calendar" link. A filter bar stays under the top bar: All / Mag 7 / AI (counts of rounds to come) plus a sector dropdown; both combine. Empty combos say so. Tiles without a result date yet no longer show a bare "Result".
 - Accenture (R10) is tagged AI in the sheet's THEMES; it stays in the AI filter until the sheet changes.
 
+## 2026-10-04 (round 32, X1)
+- Stats, By sector: the grid fills its card (rows share the height, bigger cells). Note: the class "sec" is the page section class; the grid's box uses "sgx".
+- Results highlights: record name big, then one short paragraph (the story with the key figure in bold: e.g. "0.64 points from perfect, 11x closer than the average call"), a round watch button top right. No round footer: the card opens the round.
+- Upcoming: no "01 The calendar" header (screen-reader title only). One pill holds All / Mag 7 / AI and the sector menu; the line under it reads "The calls drop before each report. Follow on X (link at launch) to see them first."
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
