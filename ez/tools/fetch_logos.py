@@ -8,14 +8,15 @@ one the source knows. A logo that is light on transparent (made for dark screens
 puts it on a dark badge. c is the brand colour (most common strong colour), used for themed tiles. Remove a file and re-run to refresh it. Tickers with no logo keep the ticker badge.
 
 Existing files are never overwritten, so a hand-picked logo stays. Check new ones by eye: the source is sometimes wrong.
-Hand-picked so far (Wikimedia Commons): 2317.TW Foxconn wordmark, 9602.T the Toho mark (the source had the wrong Toho)."""
+Hand-picked so far (Wikimedia Commons): 2317.TW Foxconn wordmark, 9602.T the Toho mark (the source had the wrong Toho), DHL wordmark on its yellow.
+KIOXIA, NINTENDO, SOFTBANK reuse 285A.T, 7974.T, 9984.T; SHEL.L and SIE.DE use the US listings (SHEL, SIEGY)."""
 import os, re, sys, urllib.request, io
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)); EZ = os.path.join(HERE, "..")
 DATA = os.path.join(EZ, "ez-data.js"); OUT = os.path.join(EZ, "media", "logos")
-ALIAS = {"TSMC": "TSM", "8267.T": "AONNF"}
+ALIAS = {"TSMC": "TSM", "8267.T": "AONNF", "BMW": "BMW.DE", "DHL": "DHL.DE"}
 # brand colours the logo file gets wrong (a white logo on black, or a grey one): set by hand
-BRAND = {"005930.KS": "#1428a0", "GS": "#7399c6", "MS": "#002b51", "UNH": "#002677", "STX": "#4f9a3a"}
+BRAND = {"005930.KS": "#1428a0", "GS": "#7399c6", "MS": "#002b51", "UNH": "#002677", "STX": "#4f9a3a", "SIE.DE": "#009999"}
 src = open(DATA).read()
 tickers = set(re.findall(r'^\s*\["\d+","([^"]+)"', src, re.M))
 tickers |= set(t for t in re.findall(r'ticker:"([^"]+)"', src))

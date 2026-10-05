@@ -226,3 +226,9 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Wording: "Right call / Wrong call" became "Winning trade / Losing trade" (trading language for the position; "call" stays reserved for the AI's prediction).
 - Connector lines are thinner (2px) and shorter, and stop at the box edge.
 - On desktop the Operations box stretches to match the taller pot lane.
+
+### Sync 2026-10-05
+- Sheet sync: R12 Foxconn calls filed (pending). Schedule reshuffled from R44 on (tickers and call dates moved); 10 new rounds R111-R120 (USAR, CRWV, RKLB, NBIS, SOFTBANK, SIE.DE, AMAT, DIS, HD, NVDA). 120 rounds: 11 graded, 1 pending, 108 upcoming. No record edits; standings unchanged.
+- 13 new names in TICKERS. The sheet now uses plain names as tickers for KIOXIA, BMW, NINTENDO, DHL, SOFTBANK; the pages then show the name alone (no parentheses).
+- Logos: KIOXIA/NINTENDO/SOFTBANK reuse the old 285A.T/7974.T/9984.T files; SHEL.L and SIE.DE from the US listings (source had wrong ones); DHL wordmark from Wikimedia on its yellow.
+- Flagged to owner: R120 NVDA has MAG 7 = FALSE (was TRUE as R110), so the Mag 7 filter shows 6. NOVN.SW and AZN.L industry group lacks the space after the comma.
