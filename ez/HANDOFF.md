@@ -175,6 +175,9 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Last round card: no "Tap to open" (still tappable); the rows fill the space under "What they predicted".
 - Season header chip "Next: …" links to #round-N and jumps to that round's card in the record (works on a repeat tap too). X1 has no chip (its header holds the tabs).
 
+## 2026-10-05 (round 40)
+- Last round card: less space between "What they predicted" and the first row (the winner tag shares that line on the right); a small gap before Outcome.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
