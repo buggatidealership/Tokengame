@@ -183,7 +183,7 @@ Paste this into a new session, with the zip, to pick up where we left off.
 
 ## 2026-10-05 (round 42)
 - Last round card: rows a touch higher (7px under "What they predicted" on phones, 9px desktop).
-- Season "Next" chip: jumps instantly (no smooth scroll) to the record with that round's card in place (jumpTo).
+- Season "Next" chip: glides to the record with that round's card in place, "01 The record" about 63px under the top bar (jumpTo).
 - Record line, two lines on phones: "Graded at the first market close after earnings. The AIs get TradingView's closing price, so they can't make shit up."
 
 ## Still open

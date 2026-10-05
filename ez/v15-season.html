@@ -2070,10 +2070,12 @@ function shareRound(btn){var n=+btn.dataset.share,s=SL.filter(function(x){return
     else shPanel(btn,R)},function(){delete btn.dataset.busy;btn.classList.remove("busy")})}
 /* a shared link (#round-9) opens the record on that round */
 function shDeep(){var m=location.hash.match(/^#round-(\d+)$/);if(m)jumpTo(+m[1])}
-/* straight to a round's card in the record: the card first, then the page, both without animation */
+/* to a round's card in the record: the card is put in place first, then the page glides so "01 The record"
+   sits just under the top bar and the whole card, with the round buttons, is in view */
 function jumpTo(n){var i=SL.findIndex(function(s){return s.n===n});if(i<0)return;
-  requestAnimationFrame(function(){go(i,false);var rec=$("#record"),top=$(".top"),y=rec.getBoundingClientRect().top+scrollY-(top?top.offsetHeight:0)+8;
-    var h=document.documentElement,sb=h.style.scrollBehavior;h.style.scrollBehavior="auto";window.scrollTo(0,Math.max(0,y));h.style.scrollBehavior=sb})}
+  requestAnimationFrame(function(){go(i,false);var lab=$("#record .sh")||$("#record"),top=$(".top"),
+    y=lab.getBoundingClientRect().top+scrollY-(top?top.offsetHeight:0)-63;
+    window.scrollTo({top:Math.max(0,y),behavior:reduce?"auto":"smooth"})})}
 addEventListener("hashchange",shDeep);requestAnimationFrame(function(){requestAnimationFrame(shDeep)});
 
 /* ---------- if you'd followed each AI: everyone starts with the stake (STAKE) and puts all of it on every call (buy if the AI says
