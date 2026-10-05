@@ -1135,6 +1135,36 @@ body.lmod-on{overflow:hidden}
 .live{flex:0 1 auto}
 /* the record: when a call is graded, marked */
 .hlx{font-weight:700;color:var(--ink);background:linear-gradient(transparent 58%,color-mix(in srgb,var(--yel) 80%,transparent) 58%)}
+
+/* ===== round 35 ===== */
+/* last round: the stats, not the film */
+.lr-st{grid-row:span 4;min-height:0;justify-content:center;position:relative;display:flex;flex-direction:column;gap:5px;padding:10px;border-radius:12px;background:var(--field);box-shadow:inset 0 0 0 2px var(--ink)}
+.lr-r{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:7px;padding:6px 8px;border-radius:9px;background:var(--card)}
+.lr-r .lg{font-size:22px}
+.lr-r b{font:400 16px/1 var(--fd);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lr-r i{font:700 12.5px/1 var(--fm);font-style:normal;white-space:nowrap}.lr-r i.lrv-u{color:color-mix(in srgb,var(--up) 75%,#000)}.lr-r i.lrv-d{color:color-mix(in srgb,var(--dn) 85%,#000)}
+.lr-r em{font:700 10px/1 var(--fm);font-style:normal;color:var(--ink2);white-space:nowrap}
+.lr-r.win{background:var(--yel)}
+.lr-r.no{opacity:.7}.lr-r.no em{color:color-mix(in srgb,var(--dn) 85%,#000)}
+.lr-mv{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:2px;padding:4px 4px 0}
+.lr-mv small{font:700 10px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.lr-mv b{font:400 26px/1 var(--fd)}.lr-mv b.lrv-u{color:color-mix(in srgb,var(--up) 75%,#000)}.lr-mv b.lrv-d{color:color-mix(in srgb,var(--dn) 85%,#000)}
+.lr-st .lr-tap{position:static;align-self:flex-end;margin-top:2px}
+@media(max-width:640px){.lr-st{gap:4px;padding:6px}.lr-r{grid-template-columns:auto minmax(0,1fr) auto;gap:4px;padding:4px 5px}.lr-r em{display:none}.lr-r .lg{font-size:16px}.lr-r b{font-size:12px}.lr-r i{font-size:10px}.lr-mv small{font-size:8px}.lr-mv b{font-size:18px}}
+/* how close: the key, and each AI's wrong-way count */
+.tg-x{font:700 11px/1 var(--fm);color:color-mix(in srgb,var(--dn) 85%,#000);padding:4px 7px;border-radius:999px;background:color-mix(in srgb,var(--ez-red) 14%,var(--card));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ez-red) 60%,transparent)}
+.st-box.cmp .tg-x{display:none}
+#lqDist .tg-x{font-size:11px;padding:3px 7px;margin-top:2px}
+@media(max-width:560px){#lqDist .tg-x{font-size:9.5px;padding:2px 6px}}
+.tg-key{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px}
+.tg-key span{display:inline-flex;align-items:center;gap:6px}
+.tg-key i{display:inline-grid;place-items:center;width:13px;height:13px;border-radius:50%;font-style:normal}
+.tg-key .k-b{background:var(--yel);box-shadow:0 0 0 1.5px var(--ink)}
+.tg-key .k-d{background:var(--ink)}
+.tg-key .k-x{width:auto;height:auto;color:color-mix(in srgb,var(--dn) 85%,#000);font:800 13px/1 var(--fb)}
+/* the follow card gets its question first */
+.fol-x{margin:34px 0 12px;font:400 clamp(26px,3.2vw,36px)/1 var(--fd);text-transform:uppercase}
+#learn .fol-x+.fol{margin-top:0}
 </style>
 </head>
 <body>
@@ -1200,11 +1230,12 @@ body.lmod-on{overflow:hidden}
       <p class="lede" id="lrnLede"></p></div>
     <div class="lsw" role="group" aria-label="Pick a chart"><button type="button" id="swDir" aria-pressed="true" aria-controls="lqDir">Direction</button><button type="button" id="swDist" aria-pressed="false" aria-controls="lqDist">How close</button></div>
     <div class="lrn lflip" id="lflip"><div class="lf-in">
-      <div class="lq" id="lqDir" role="region" aria-labelledby="lqDirH"><div class="lq-t"><h3 id="lqDirH">Did they call the direction right?</h3></div>
+      <div class="lq" id="lqDir" role="region" aria-labelledby="lqDirH"><div class="lq-t"><h3 id="lqDirH">How often do they call the direction right?</h3></div>
         <div class="lxv" id="lxDir"></div></div>
       <div class="lq" id="lqDist" role="region" aria-labelledby="lqDistH"><div class="lq-t"><h3 id="lqDistH">When they got the direction right, how close?</h3></div>
         <div class="tgv" id="lxDist"></div></div>
     </div></div>
+    <h3 class="fol-x">What if you'd followed them?</h3>
     <div class="fol" id="fol" aria-labelledby="folH">
       <div class="fol-h"><h3 id="folH">Give each AI $100,000. Here's where they'd stand.</h3><p>All in on every call.</p></div>
       <ol class="fol-l" id="folL"></ol>
@@ -1459,7 +1490,7 @@ chips.innerHTML=SL.map(function(s,i){return '<button type="button" class="chip'+
 if(!SL.length)$("#record").hidden=true;
 var slides=$$(".card",car),chipEls=$$(".chip",chips),cur=-1,carVis=false;
 /* only the card the record opens on (the latest result) starts on its stats: its film is already up top, in Last round */
-slides.forEach(function(c,i){var g=c.dataset.k==="g"&&i===START;c.classList.toggle("flipped",g);setFaces(c,g)});
+slides.forEach(function(c){c.classList.remove("flipped");setFaces(c,false)});
 function target(i){var s=slides[i];return s.offsetLeft-(car.clientWidth-s.offsetWidth)/2}
 var lockT=null,locked=false;
 function go(i,smooth){if(!slides.length)return;i=Math.max(0,Math.min(slides.length-1,i));
@@ -1567,8 +1598,8 @@ function tgWrong(m){var g=0,w=0;ROUNDS.forEach(function(r){var c=callOf(r,m);if(
 function targets(el){
   el.innerHTML='<div class="tg-grid">'+ACTIVE.map(function(m){var W=tgWrong(m);
     return '<figure class="tg" data-m="'+m+'"><figcaption class="tg-h">'+logo(m)+'<span>'+nm(m)+'</span></figcaption>'+tgSVG(m)+
-      (W.g?'':'<p class="tg-n">No results yet</p>')+'</figure>'}).join("")+'</div>'+
-    '<p class="tg-note">Bullseye: what the stock really did. Each dot: one call. Wrong-way calls miss the board.</p>';
+      (W.g?(W.w?'<p class="tg-x">✗ '+W.w+' wrong way</p>':''):'<p class="tg-n">No results yet</p>')+'</figure>'}).join("")+'</div>'+
+    '<p class="tg-note tg-key"><span><i class="k-b" aria-hidden="true"></i>Bullseye: what the stock really did</span><span><i class="k-d" aria-hidden="true"></i>One dot: one call</span><span><i class="k-x" aria-hidden="true">✗</i>Wrong way: off the board</span></p>';
   var tip=null;
   function hide(){if(tip){tip.remove();tip=null}$$(".tg-d.on",el).forEach(function(g){g.classList.remove("on")})}
   function show(g){hide();var f=g.closest(".tg"),sv=$("svg",f),sr=sv.getBoundingClientRect(),fr=f.getBoundingClientRect(),k=sr.width/200;
@@ -1654,7 +1685,9 @@ var BAND_RIGHT="last",LR=ROUNDS.length?ROUNDS[ROUNDS.length-1]:null;
 if(BAND_RIGHT==="last"&&LR){var lw=LR.win?LR.win.split(" & "):[];
   $("#unH").innerHTML='Last round <small class="lr-d">'+fmtDate(LR.resolves)+'</small>';$(".band").classList.add("half");
   unHTML='<button type="button" class="up-p lr" id="lrB" aria-label="Open the card: '+plain(LR)+'"><span class="nm">'+coTitle(LR)+'</span>'+
-    '<span class="lr-art">'+(LR.poster?'<img src="'+MEDIA+LR.poster+'.jpg" alt="">':'')+(LR.film&&!reduce?'<video muted loop playsinline autoplay preload="metadata" aria-hidden="true"'+(LR.poster?' poster="'+MEDIA+LR.poster+'.jpg"':'')+'><source src="'+MEDIA+LR.film+'.webm" type="video/webm"><source src="'+MEDIA+LR.film+'.mp4" type="video/mp4"></video>':'')+'<span class="lr-tap" aria-hidden="true">Tap to open ↗</span></span>'+
+    '<span class="lr-st">'+parsed(LR).map(function(c){var w=lw.indexOf(c.m)>-1;return '<span class="lr-r'+(w?' win':c.ok?'':' no')+'">'+logo(c.m)+'<b>'+nm(c.m)+'</b><i class="'+(c.dn?'lrv-d':'lrv-u')+'">'+(c.dn?'▼ ':'▲ ')+c.mag+'</i><em>'+(c.ok?c.off.toFixed(2)+' off':'✗ wrong way')+'</em></span>'}).join("")+
+      '<span class="lr-mv"><small>The move</small><b class="'+(LR.a>0?'lrv-u':'lrv-d')+'">'+(LR.a>0?'▲ ':'▼ ')+LR.out.replace(/^[+−-]/,"")+'</b></span><span class="lr-tap" aria-hidden="true">Tap to open ↗</span></span>'+
+
     '<span class="lr-w'+(lw.length>1?' two':'')+'"><small>'+(lw.length?'Winner':'No winner')+'</small><span>'+(lw.length?lw.map(function(m){return logo(m)}).join("")+'<b>'+lw.map(nm).join(" & ")+'</b>':'<b>✗</b>')+'</span></span></button>'}
 $(".band").style.setProperty("--rows",Math.max(1,ROWS.length));
 $("#unB").innerHTML=unHTML;

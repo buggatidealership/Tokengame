@@ -154,6 +154,12 @@ Paste this into a new session, with the zip, to pick up where we left off.
 ## 2026-10-04 (round 34)
 - Season and X1, 03 The buyback: the pot and operations are two lanes side by side on every screen (phones too), each with its own solid tint (pot yellow, operations blue), joined to the fee box by a split line.
 
+## 2026-10-05 (round 35)
+- Season and X1 overview: Last round shows the stats, not the film: each AI's call (▲/▼ size), how far off or wrong way, the winner's row in yellow, then the real move; tap opens the full card (film with sound).
+- The record opens on the film for every card (no card starts on its stats).
+- 02: "How often do they call the direction right?"; How close has a key (bullseye, one dot one call, wrong way off the board) and each AI's wrong-way count in red under its target.
+- A header above the $100,000 card: "What if you'd followed them?"
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
