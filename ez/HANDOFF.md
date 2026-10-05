@@ -232,3 +232,8 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - 13 new names in TICKERS. The sheet now uses plain names as tickers for KIOXIA, BMW, NINTENDO, DHL, SOFTBANK; the pages then show the name alone (no parentheses).
 - Logos: KIOXIA/NINTENDO/SOFTBANK reuse the old 285A.T/7974.T/9984.T files; SHEL.L and SIE.DE from the US listings (source had wrong ones); DHL wordmark from Wikimedia on its yellow.
 - Flagged to owner: R120 NVDA has MAG 7 = FALSE (was TRUE as R110), so the Mag 7 filter shows 6. NOVN.SW and AZN.L industry group lacks the space after the comma.
+
+### Round 52: three no-noise story pages
+- New: v25 Quiet, v26 Round, v27 Board (see VARIANTS.md round 9) plus `ez/ez-story.js`. Season and X1 untouched.
+- `SIM.poolShare:.69` added to ez-data.js so the new pages read the pot share from data (v15 still uses its own ASSUME, same value).
+- They publish with ez-data.js, ez-story.js and the logos referenced in CO_LOGOS. On a sheet sync, republish them too.

@@ -159,7 +159,8 @@ function coMark(t,cls){t=String(t||"").toUpperCase();var L=CO_LOGOS[t],f=L&&(L.f
 /* Pool calculator assumptions (owner to confirm). null = not decided yet: the page uses its example value and marks it.
    feePct: % of each $EZ trade that becomes fees we collect · leverage: the bet's leverage · volPct: example daily volume as % of market cap
    betDate: MM/DD/YY of the NVIDIA bet (also CONFIG.betDate) */
-var SIM={feePct:null,leverage:10,volPct:25,betDate:null};
+/* poolShare: the share of fees that goes to the pot (the rest runs operations). Read by the story pages (v25-v27). */
+var SIM={feePct:null,leverage:10,volPct:25,betDate:null,poolShare:.69};
 /* the round films: webm/mp4/poster in media/, tall = 9:16 */
 /* all rounds: 1080x1080 at 60fps ("-hd"); the original files stay for Variant 1.
    pan: for 9:16 films shown in a square, [second, vertical position %] keyframes so the frame follows the action */

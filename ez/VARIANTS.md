@@ -64,3 +64,10 @@ Brief: `BRIEF-unfold.md`. Same data, the story told step by step.
 
 ## Round 8: Season Live (combination)
 - v22 Season Live: https://claude.ai/artifact/3FJq71NA8CwsLN2rZZxNa8 (`ez/v22-season-live.html`): Season as the board, untouched in look, plus Live's top navigation (Board, Rounds, Models, Upcoming, Buyback), standings rows with right way and average miss that open each model's page, a page per round (film, calls, outcome, winner, receipt, share image), model pages (stats, every round, best and worst, bullseye), a visual Rounds page (posters, filters, hover previews) and an Upcoming page (countdown, add to calendar). No "You vs the AIs". Built from v15 by a script; Season itself is unchanged.
+
+## Round 9: no-noise story pages (2026-10-05)
+Brief: simplify everything, no noise, still walk the visitor through a story. Season and Live X1 stay untouched.
+All three read `ez-data.js` through the small shared helper `ez/ez-story.js` (follow-the-AI simulation, standings, last/live round, pot share from `SIM.poolShare`).
+- v25 Quiet (`ez/v25-quiet.html`): one white column, big type, one idea per beat. Hero, last round, standings, the $100K number, live calls, four pot steps, Get $EZ.
+- v26 Round (`ez/v26-round.html`): night navy. The idea told through one real round as a dated timeline (question, calls, market close, a to-scale "how close" plot, winner), then zoom out to the season, the live round and the pot flow.
+- v27 Board (`ez/v27-board.html`): the scoreboard is the page. A yellow board (wins, right direction, $100K copied), two cards (last round, live now), four pot steps, Get $EZ.
