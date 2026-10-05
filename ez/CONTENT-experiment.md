@@ -1,4 +1,9 @@
-# EZ experiment (v31 to v35): the fixed content
+# EZ experiment: the content
+
+**Update (owner, 2026-10-05, for v36 to v40): the only fixed requirement is the data from the sheet.** Every number comes
+from `ez-data.js` / `EZS` and is never typed or altered by hand. All wording below is a reference, not a script: headlines,
+labels and copy are free. Kept as guardrails: no promises of price, return, payout or buyback size; the memecoin disclaimer
+once; say the pot can be wiped out; never show or invent the AIs' prompts; no long dashes.
 
 The content is the only fixed thing. Every stat, number and claim below must appear, exactly as written (copy) or exactly as
 computed (numbers). How it is presented and in what order is free. Numbers are never typed by hand: load `ez-data.js` then
@@ -8,6 +13,14 @@ computed (numbers). How it is presented and in what order is free. Numbers are n
 Hard copy rules: no long dashes anywhere. Plain, direct sentences. Companies as "Nike (NKE)" (`EZS.co(r)`); only $EZ keeps a $.
 "Not financial advice" appears once. Never show or invent the AIs' prompts. No promises of price, return, payout or buyback size.
 Never write that a buyback has happened or name a contract address (none exists yet).
+
+## 0. It is a platform, not a landing page (owner, 2026-10-05)
+The build is a place people come back to and move around in, not a story scrolled once. The single idea is the
+platform's whole world (its navigation, its screens, its motion), not a one-way scroll. It must have:
+- Places: distinct screens for now (the live round), every past round, each AI, what's coming, the buyback, Get $EZ, reachable from anywhere.
+- Deep links: every round and every AI has its own link (plain hash tokens like #round-11, #ai-gpt), shareable on X.
+- Return use: it opens on what is live now, and shows what changed since this browser's last visit (`EZS.since`).
+- Something to do: make your own call on the live round (kept in this browser), filter rounds, compare AIs.
 
 ## 1. What this is (brand + thesis)
 - Name: **Earnings Zeason** (with a Z), **Zeason one**, ticker **$EZ** (mark: gold $, green E, red Z on a dark tile).
