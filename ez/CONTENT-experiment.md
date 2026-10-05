@@ -5,6 +5,10 @@ from `ez-data.js` / `EZS` and is never typed or altered by hand. All wording bel
 labels and copy are free. Kept as guardrails: no promises of price, return, payout or buyback size; the memecoin disclaimer
 once; say the pot can be wiped out; never show or invent the AIs' prompts; no long dashes.
 
+**Owner, 2026-10-05: do not use the "always up" benchmark.** No "always up" line, number or comparison (the AIs losing to
+someone who just buys every stock). `EZS.always` stays in the helper for old pages only; `EZS.mountRace` leaves it out unless a
+page passes `{always:true}` (only the archived v28 and v34 do).
+
 The content is the only fixed thing. Every stat, number and claim below must appear, exactly as written (copy) or exactly as
 computed (numbers). How it is presented and in what order is free. Numbers are never typed by hand: load `ez-data.js` then
 `ez-story.js` and read them from `EZS` (and the globals `ROUNDS`, `PENDING`, `UPCOMING`, `MODELS`, `CONFIG`, `SIM`, `FILMS`,

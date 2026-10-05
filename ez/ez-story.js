@@ -76,10 +76,10 @@ var EZS=(function(){
   S.store={get:function(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},
     set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
-  /* the race chart: thin grey lines, the leader in the accent, "always up" dashed, end labels that never collide,
+  /* the race chart: thin grey lines, the leader in the accent, "always up" dashed only with o.always (owner 2026-10-05: no longer used in new builds), end labels that never collide,
      a crosshair + tooltip on hover/touch. Colours come from the page's CSS variables (--ink, --ink2, --line, --hi). */
-  S.mountRace=function(el,o){o=o||{};var W=el.clientWidth||600,H=o.h||(W<520?250:300),padL=6,padR=W<520?92:112,padT=14,padB=26;
-    var all=[].concat.apply([],S.series.map(function(s){return s.pts.map(function(p){return p[1]})})).concat(S.always.pts.map(function(p){return p[1]}));
+  S.mountRace=function(el,o){o=o||{};var UPL=o.always===true,W=el.clientWidth||600,H=o.h||(W<520?250:300),padL=6,padR=W<520?92:112,padT=14,padB=26;
+    var all=[].concat.apply([],S.series.map(function(s){return s.pts.map(function(p){return p[1]})})).concat(UPL?S.always.pts.map(function(p){return p[1]}):[]);
     var lo=Math.min.apply(null,all),hi=Math.max.apply(null,all),pad=(hi-lo)*.08;lo-=pad;hi+=pad;
     var N=R.length,X=function(i){return padL+(W-padL-padR)*i/N},Y=function(v){return padT+(H-padT-padB)*(1-(v-lo)/(hi-lo))};
     var d=function(pts){return pts.map(function(p,k){return (k?"L":"M")+X(p[0]).toFixed(1)+","+Y(p[1]).toFixed(1)}).join("")};
@@ -87,12 +87,12 @@ var EZS=(function(){
     var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" role="img" aria-label="'+S.esc(o.label||"")+'" style="display:block;overflow:visible">';
     svg+='<line x1="'+padL+'" x2="'+(W-padR)+'" y1="'+Y(S.STAKE)+'" y2="'+Y(S.STAKE)+'" stroke="var(--line)" stroke-width="1"/>';
     if(W>=520)svg+='<text x="'+padL+'" y="'+(Y(S.STAKE)+14)+'" fill="var(--ink2)" font-size="11" font-family="var(--fb)">Start '+S.usd(S.STAKE)+'</text>';
-    svg+='<path d="'+d(S.always.pts)+'" fill="none" stroke="var(--ink2)" stroke-width="1.5" stroke-dasharray="4 4"/>';
+    if(UPL)svg+='<path d="'+d(S.always.pts)+'" fill="none" stroke="var(--ink2)" stroke-width="1.5" stroke-dasharray="4 4"/>';
     S.series.slice().reverse().forEach(function(s){var L=s.m===lead;
       svg+='<path d="'+d(s.pts)+'" fill="none" stroke="'+(L?'var(--hi)':'var(--ink2)')+'" stroke-opacity="'+(L?1:.55)+'" stroke-width="'+(L?3:1.6)+'" stroke-linejoin="round" stroke-linecap="round"/>';
       var e=s.pts[s.pts.length-1];svg+='<circle cx="'+X(e[0])+'" cy="'+Y(e[1])+'" r="'+(L?5:3.5)+'" fill="'+(L?'var(--hi)':'var(--ink2)')+'" stroke="var(--bg)" stroke-width="2"/>'});
     /* end labels, pushed apart so they never overlap */
-    var labs=S.series.map(function(s){return {m:s.m,y:Y(s.bal),v:s.bal,L:s.m===lead}}).concat([{m:"UP",y:Y(S.always.bal),v:S.always.bal}]).sort(function(a,b){return a.y-b.y});
+    var labs=S.series.map(function(s){return {m:s.m,y:Y(s.bal),v:s.bal,L:s.m===lead}}).concat(UPL?[{m:"UP",y:Y(S.always.bal),v:S.always.bal}]:[]).sort(function(a,b){return a.y-b.y});
     for(var i=1;i<labs.length;i++)if(labs[i].y-labs[i-1].y<36)labs[i].y=labs[i-1].y+36;
     var ov=labs[labs.length-1].y-(H-padB);if(ov>0)labs.forEach(function(l){l.y-=ov});
     var lab='';labs.forEach(function(l){var nm=l.m==="UP"?"Always up":S.nm(l.m);
@@ -102,7 +102,7 @@ var EZS=(function(){
     el.style.position="relative";el.innerHTML=svg+'<div class="rc-labs" style="position:absolute;left:'+(W-padR+10)+'px;top:0;right:0">'+lab+'</div><div class="rc-tip" hidden></div>';
     var sv=el.querySelector("svg"),xl=el.querySelector(".rc-x"),tip=el.querySelector(".rc-tip");
     function at(i){var r=R[i-1],rows=S.series.map(function(s){var p=s.pts.filter(function(p){return p[0]===i})[0];return p?'<div><span>'+S.nm(s.m)+'</span><b>'+S.usd(p[1])+'</b></div>':''}).join("")
-        +'<div class="rc-tu"><span>Always up</span><b>'+S.usd(S.always.pts[i][1])+'</b></div>';
+        +(UPL?'<div class="rc-tu"><span>Always up</span><b>'+S.usd(S.always.pts[i][1])+'</b></div>':'');
       xl.setAttribute("x1",X(i));xl.setAttribute("x2",X(i));xl.setAttribute("opacity",".35");
       tip.innerHTML='<p>Round '+r.n+' · '+S.esc(S.co(r))+' <em class="'+(r.a<0?'d':'u')+'">'+S.outTxt(r)+'</em></p>'+rows;tip.hidden=false;
       var x=X(i)*el.clientWidth/W;tip.style.left=Math.min(Math.max(0,x-90),el.clientWidth-190)+"px"}
