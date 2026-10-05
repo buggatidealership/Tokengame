@@ -215,3 +215,8 @@ Paste this into a new session, with the zip, to pick up where we left off.
 ## Status
 - 11 rounds graded; standings GPT 5, Kimi 3, Claude 1, Grok 0. Rounds 12 to 36 scheduled.
 - GitHub push is blocked (account suspended / app access). Work is committed locally on branch `claude/bugatti-dealership-redesign-845i5j`.
+
+### Round 50
+- GRADED stamp: tilted right (12deg), solid outer ring plus thin inner ring, grainy ink mask. Applies to card backs and the Last round card.
+- Follow block: the dark module sits 12px under "Each AI starts with $100,000..." (was 28px plus 14px).
+- Buyback: "Every $EZ trade pays a fee" (no period). Pot copy: "The model on top of the leaderboard takes the pot and bets it on NVIDIA's earnings at 10x leverage on Hyperliquid." Right call / Wrong call now branch from the pot box with the same bracket line as the top split, side by side on all screens, and stretch to fill the pot lane to the Operations height.
