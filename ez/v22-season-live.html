@@ -1248,13 +1248,26 @@ body.lmod-on{overflow:hidden}
 .gstamp i{font-size:1.6em}
 .gstamp::after{content:"";position:absolute;inset:2.5px;border:1.5px solid currentColor;border-radius:50%}
 @media(max-width:759px){.gstamp::after{inset:2px;border-width:1px}.lr-card .gstamp{border-width:1.5px}.lr-card .gstamp::after{inset:1.5px;border-width:.8px}}
-/* the pot splits again: right call left, wrong call right, filling the lane */
-.mt-br.pot .mt-out{flex:1;position:relative;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:0;padding-top:24px}
-.mt-br.pot .mt-out::before{content:"";position:absolute;top:8px;left:25%;right:25%;height:16px;border:2.5px solid var(--ink);border-bottom:0;border-radius:12px 12px 0 0}
-.mt-br.pot .mt-out::after{content:"";position:absolute;top:0;left:50%;width:2.5px;height:10px;margin-left:-1.25px;background:var(--ink)}
-.mt-br.pot .mt-out p{display:flex;flex-direction:column;justify-content:center;text-align:center}
-@media(max-width:760px){.mt-br.pot .mt-out{gap:6px;padding-top:18px}.mt-br.pot .mt-out::before{top:6px;height:12px;border-width:2px}.mt-br.pot .mt-out::after{width:2px;height:8px;margin-left:-1px}
-  .mt-br.pot .mt-out p{padding:8px 4px}.mt-br.pot .mt-out p b{font-size:13px}}
+/* the pot splits again: winning trade left, losing trade right, then both lead to the next round */
+.mt-flow{flex:1;position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;padding-top:20px}
+.mt-flow::before{content:"";position:absolute;top:8px;left:25%;right:25%;height:10px;border:2px solid var(--ink);border-bottom:0;border-radius:10px 10px 0 0}
+.mt-flow::after{content:"";position:absolute;top:2px;left:50%;width:2px;height:7px;margin-left:-1px;background:var(--ink)}
+.mt-col{display:flex;flex-direction:column;align-items:center;min-width:0}
+.mt-col>p{width:100%;text-align:center;border-radius:12px;box-shadow:0 0 0 2px var(--ink)}
+.mt-o{padding:9px 6px;font:400 18px/1 var(--fd);text-transform:uppercase;color:var(--on-ez)}
+.mt-o.w{background:var(--ez-green)}.mt-o.l{background:var(--ez-red)}
+.mt-v{display:block;width:2px;height:16px;margin:2px 0;background:var(--ink);flex:none}
+.mt-r{flex:1;display:flex;align-items:center;justify-content:center;padding:10px 8px;background:var(--card);font:600 13px/1.35 var(--fb)}
+.mt-join{position:relative;width:100%;height:22px;flex:none}
+.mt-join::before{content:"";position:absolute;top:2px;left:25%;right:25%;height:10px;border:2px solid var(--ink);border-top:0;border-radius:0 0 10px 10px}
+.mt-join::after{content:"";position:absolute;top:12px;left:50%;width:2px;height:8px;margin-left:-1px;background:var(--ink)}
+.mt-next{width:100%;padding:10px 12px;border-radius:12px;background:var(--slab);color:var(--on-slab);box-shadow:0 0 0 2px var(--ink);text-align:center;font:600 13px/1.35 var(--fb)}
+.mt-next b{display:block;font:400 18px/1 var(--fd);text-transform:uppercase;margin-bottom:3px}
+.mt-br.lab .mt-box{flex:1}
+@media(max-width:760px){.mt-flow{gap:6px;padding-top:16px}.mt-flow::before{top:6px;height:8px}.mt-flow::after{height:5px}
+  .mt-o{padding:7px 3px;font-size:13px;border-radius:10px}.mt-col>p{border-radius:10px}.mt-v{height:12px}
+  .mt-r{padding:8px 5px;font-size:11.5px}.mt-join{height:18px}.mt-join::before{height:8px}.mt-join::after{top:10px;height:6px}
+  .mt-next{padding:8px;font-size:11.5px;border-radius:10px}.mt-next b{font-size:15px}}
 /* how close: a brighter bullseye that sits on top */
 .tg .bull{fill:#ffcf00;stroke:var(--ink);stroke-width:2;pointer-events:none}
 /* the follow card: the rule is a small line, not a headline */
@@ -2360,7 +2373,10 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
       <div class="mt-split">
         <div class="mt-br pot"><p class="mt-pc"><b id="mtP"></b><span>The pot</span></p>
           <div class="mt-box"><p>The model on top of the leaderboard takes the pot and bets it on NVIDIA's earnings at <b id="mtLev"></b> leverage on Hyperliquid.</p></div>
-          <div class="mt-out"><p class="w"><b>Right call</b>The profits buy back $EZ.</p><p class="l"><b>Wrong call</b>The pot shrinks.</p></div></div>
+          <div class="mt-flow"><div class="mt-col"><p class="mt-o w">Winning trade</p><i class="mt-v" aria-hidden="true"></i><p class="mt-r">The profits buy back $EZ.</p></div>
+            <div class="mt-col"><p class="mt-o l">Losing trade</p><i class="mt-v" aria-hidden="true"></i><p class="mt-r">The pot shrinks.</p></div></div>
+          <div class="mt-join" aria-hidden="true"></div>
+          <p class="mt-next"><b>Next round</b>The pot rides on the next call.</p></div>
         <div class="mt-br lab" id="road"><p class="mt-pc"><b id="mtL"></b><span>Operations</span></p>
           <div class="mt-box"><p>Keeps the project running, then pays for what's next:</p>
             <ol class="lab-l" id="roadL"></ol></div></div>

@@ -220,3 +220,9 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - GRADED stamp: tilted right (12deg), solid outer ring plus thin inner ring, grainy ink mask. Applies to card backs and the Last round card.
 - Follow block: the dark module sits 12px under "Each AI starts with $100,000..." (was 28px plus 14px).
 - Buyback: "Every $EZ trade pays a fee" (no period). Pot copy: "The model on top of the leaderboard takes the pot and bets it on NVIDIA's earnings at 10x leverage on Hyperliquid." Right call / Wrong call now branch from the pot box with the same bracket line as the top split, side by side on all screens, and stretch to fill the pot lane to the Operations height.
+
+### Round 51
+- Pot flow rebuilt: pot box, a short bracket to two modules ("Winning trade" green, "Losing trade" red), a line down from each to its result ("The profits buy back $EZ." / "The pot shrinks."), a bracket that joins them, then a dark "Next round" module ("The pot rides on the next call.").
+- Wording: "Right call / Wrong call" became "Winning trade / Losing trade" (trading language for the position; "call" stays reserved for the AI's prediction).
+- Connector lines are thinner (2px) and shorter, and stop at the box edge.
+- On desktop the Operations box stretches to match the taller pot lane.
