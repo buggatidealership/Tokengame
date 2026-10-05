@@ -78,3 +78,13 @@ Research notes in `ez/RESEARCH-conversion.md`. All three share `ez/ez-story.js` 
 - v28 Race (`ez/v28-race.html`) https://claude.ai/artifact/SRpYhw9TpnXEhLYFgbVGFn: hypothesis "money moves CT". Hero = race chart, copy each AI with $100,000, "always up" drawn as the bar no AI has beaten. Live round, the record table, the pot, what's coming, Get $EZ.
 - v29 Your call (`ez/v29-call.html`) https://claude.ai/artifact/QThZX2RYn2AkZaY98tnEqj: hypothesis "a visitor who makes a call comes back". Hero = the live round as a question; the AI calls stay hidden until you pick; your pick is graded on your next visit. Then how good they are vs always up, the last round replayed to scale, the pot, what's next.
 - v30 Receipts (`ez/v30-receipts.html`) https://claude.ai/artifact/JW5TqQeCGK4pqMfzuQgfLW: hypothesis "proof converts better than hype". Hero = "An AI with one job: buy back $EZ" beside a printed receipt of the latest round and three counters. The season as one grid (every call a square), the honest bar, all receipts, every fee itemized, a shipping log.
+
+## Round 11: the "not safe" experiment (2026-10-05)
+Brief: content fixed (`ez/CONTENT-experiment.md`), everything else free; one unified idea; one of five themed on crypto and AI memes.
+Each build: three concepts, the obvious one dropped, the one we believe in built. All read EZS helpers in `ez/ez-story.js`.
+- v31 Seismograph (`ez/v31-seismograph.html`) https://claude.ai/artifact/KuKmVtaSiBTmuwfeSggJ8G: one strip of recording paper; the AIs' calls are marks, the needle draws the market's move; the gap is the grade. (Dropped: exam paper. Also considered: one number that changes meaning.)
+- v32 Departures (`ez/v32-splitflap.html`) https://claude.ai/artifact/BfNzyukb6uFiN3vdLu1Q5N: one split-flap board that flips itself into every screen. (Dropped: courtroom. Also considered: receipt printer.)
+- v33 Timeline (`ez/v33-timeline.html`) https://claude.ai/artifact/3WGGUzVmSdP3jj2u6ztewk: the crypto and AI meme build. The AIs post calls on CT; the market community-notes them. (Dropped: trading terminal. Also considered: Wojak on one candle.)
+- v34 Higher or Lower (`ez/v34-higherlower.html`) https://claude.ai/artifact/C7a5i8bd8UHY3WEv6J4m1Q: one game run; guess before every number lands; score vs the AIs. (Dropped: annual report. Also considered: orbits.)
+- v35 Powers of Ten (`ez/v35-zoom.html`) https://claude.ai/artifact/KCqnGz1ndk5cPKqHKJt5F6: one continuous zoom from a coin to the season and down to one call. (Dropped: magazine long-read. Also considered: field guide.)
+Published with MP4 films only (WebM over the 64MB publish limit; the pages fall back to MP4).
