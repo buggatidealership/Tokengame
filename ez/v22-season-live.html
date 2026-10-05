@@ -1165,6 +1165,16 @@ body.lmod-on{overflow:hidden}
 /* the follow card gets its question first */
 .fol-x{margin:34px 0 12px;font:400 clamp(26px,3.2vw,36px)/1 var(--fd);text-transform:uppercase}
 #learn .fol-x+.fol{margin-top:0}
+/* Last round panel: the card back's own rows and outcome, a little tighter */
+.lr-bk{gap:8px;padding:12px 10px 10px;background:var(--card)}
+.lr-bk .bk-rows{gap:8px}.lr-bk .bk-r{min-height:44px;padding:7px 10px}.lr-bk .bk-r .who .lg{font-size:22px}
+.lr-bk .bk-r.win{margin-top:8px}
+.lr-bk .bk-out{min-height:44px}
+.lr-bk .lr-tap{position:static;align-self:flex-end}
+@media(max-width:640px){.lr-bk{gap:5px;padding:9px 5px 5px}.lr-bk .bk-rows{gap:5px}.lr-bk .bk-r{grid-template-columns:12px minmax(0,1fr) auto;gap:4px;min-height:0;padding:4px 5px;border-radius:7px}
+  .lr-bk .bk-r .rk{font-size:13px}.lr-bk .bk-r .who{gap:4px;font-size:10.5px}.lr-bk .bk-r .who .lg{font-size:15px}.lr-bk .bk-r .pd{font-size:10px;padding:2px 2px}
+  .lr-bk .bk-r.win{margin-top:11px}.lr-bk .bk-r .crown{top:-13px;right:3px;padding:2px 4px;font-size:7.5px}.lr-bk .bk-r.no .rk span[aria-hidden]{width:12px;height:13px;font-size:9px}
+  .lr-bk .bk-out{min-height:0;padding:4px 6px;border-radius:8px}.lr-bk .bk-out small{font-size:13px}.lr-bk .bk-out b{font-size:11px;padding:3px 5px}}
 
 /* ================= V22 · SEASON LIVE: Season's landing as the Board, plus Live's pages =================
    Hash routes: #/ (the board, Season as it was), #/rounds, #/round/11, #/models, #/model/gpt, #/upcoming.
@@ -2377,13 +2387,14 @@ function winBar(r){
     :'<span class="wn">Nobody<span class="lg nob" aria-hidden="true">✗</span></span>';
   return '<div class="cwin"><small>Winner</small><span class="wv">'+v+'</span></div>';
 }
+/* the card back's rows and outcome, shared with the overview's Last round panel */
+function bkRows(r){var cs=parsed(r),wn=r.win?r.win.split(" & "):[];return '<div class="bk-rows">'+cs.map(function(c){var w=wn.indexOf(c.m)>-1;return '<div class="bk-r '+(w?'win':c.ok?'ok':'no')+'">'+(w?'<span class="crown"><i aria-hidden="true">👑</i>Winner</span>':'')+'<span class="rk">'+(c.rank?'<span class="sr">Rank </span>'+c.rank:'<span aria-hidden="true">✗</span><span class="sr">Wrong way</span>')+'</span><span class="who">'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span></span><span class="pd '+(c.dn?'d':'u')+'"><span aria-hidden="true">'+(c.dn?'▼':'▲')+'</span><span class="sr">'+(c.dn?'Down ':'Up ')+'</span>'+c.mag+'</span></div>'}).join("")+'</div>'}
+function bkOut(r){return '<div class="bk-out"><small>'+ACTUAL_WORD+'</small><b class="'+(r.a>0?'u':'d')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span><span class="sr">'+(r.a>0?'Up ':'Down ')+'</span>'+r.out.replace(/^[+−-]/,"")+'</b></div>'}
 function backFace(r){
   var cs=parsed(r),wn=r.win?r.win.split(" & "):[],tm=timed(r.timing,true);
   return '<div class="face back" aria-hidden="true"><div class="fin">'+
     '<div class="bk-h"><h4>'+coTitle(r)+'</h4><div class="bk-d"><span><small>Calls filed</small><b>'+fmtDate(r.called)+'</b></span><span><small>Graded</small><b>'+fmtDate(r.resolves)+'</b></span></div>'+(tm?'<p class="tm">'+tm+'</p>':'')+'<span class="gstamp" aria-hidden="true"><i>✓</i>Graded</span></div>'+
-    '<div class="bk-body"><div><p class="bk-sec">What they predicted</p><div class="bk-rows">'+
-    cs.map(function(c){var w=wn.indexOf(c.m)>-1;return '<div class="bk-r '+(w?'win':c.ok?'ok':'no')+'">'+(w?'<span class="crown"><i aria-hidden="true">👑</i>Winner</span>':'')+'<span class="rk">'+(c.rank?'<span class="sr">Rank </span>'+c.rank:'<span aria-hidden="true">✗</span><span class="sr">Wrong way</span>')+'</span><span class="who">'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span></span><span class="pd '+(c.dn?'d':'u')+'"><span aria-hidden="true">'+(c.dn?'▼':'▲')+'</span><span class="sr">'+(c.dn?'Down ':'Up ')+'</span>'+c.mag+'</span></div>'}).join("")+'</div></div>'+
-    '<div class="bk-out"><small>'+ACTUAL_WORD+'</small><b class="'+(r.a>0?'u':'d')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span><span class="sr">'+(r.a>0?'Up ':'Down ')+'</span>'+r.out.replace(/^[+−-]/,"")+'</b></div></div>'+
+    '<div class="bk-body"><div><p class="bk-sec">What they predicted</p>'+bkRows(r)+'</div>'+bkOut(r)+'</div>'+
     '<div class="cfoot"><button type="button" class="flipb" data-flip>↻ See the film</button>'+shareBtn(r.n)+'</div></div></div>';
 }
 function gradedCard(r,i){
@@ -2694,8 +2705,7 @@ var BAND_RIGHT="next",LR=ROUNDS.length?ROUNDS[ROUNDS.length-1]:null;
 if(BAND_RIGHT==="last"&&LR){var lw=LR.win?LR.win.split(" & "):[];
   $("#unH").innerHTML='Last round <small class="lr-d">'+fmtDate(LR.resolves)+'</small>';$(".band").classList.add("half");
   unHTML='<button type="button" class="up-p lr" id="lrB" aria-label="Open the card: '+plain(LR)+'"><span class="nm">'+coTitle(LR)+'</span>'+
-    '<span class="lr-st">'+parsed(LR).map(function(c){var w=lw.indexOf(c.m)>-1;return '<span class="lr-r'+(w?' win':c.ok?'':' no')+'">'+logo(c.m)+'<b>'+nm(c.m)+'</b><i class="'+(c.dn?'lrv-d':'lrv-u')+'">'+(c.dn?'▼ ':'▲ ')+c.mag+'</i><em>'+(c.ok?c.off.toFixed(2)+' off':'✗ wrong way')+'</em></span>'}).join("")+
-      '<span class="lr-mv"><small>The move</small><b class="'+(LR.a>0?'lrv-u':'lrv-d')+'">'+(LR.a>0?'▲ ':'▼ ')+LR.out.replace(/^[+−-]/,"")+'</b></span><span class="lr-tap" aria-hidden="true">Tap to open ↗</span></span>'+
+    '<span class="lr-st lr-bk">'+bkRows(LR)+bkOut(LR)+'<span class="lr-tap" aria-hidden="true">Tap to open ↗</span></span>'+
 
     '<span class="lr-w'+(lw.length>1?' two':'')+'"><small>'+(lw.length?'Winner':'No winner')+'</small><span>'+(lw.length?lw.map(function(m){return logo(m)}).join("")+'<b>'+lw.map(nm).join(" & ")+'</b>':'<b>✗</b>')+'</span></span></button>'}
 $(".band").style.setProperty("--rows",Math.max(1,ROWS.length));

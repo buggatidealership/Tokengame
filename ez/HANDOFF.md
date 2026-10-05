@@ -160,6 +160,9 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - 02: "How often do they call the direction right?"; How close has a key (bullseye, one dot one call, wrong way off the board) and each AI's wrong-way count in red under its target.
 - A header above the $100,000 card: "What if you'd followed them?"
 
+## 2026-10-05 (round 36)
+- Season and X1 overview: the Last round panel uses the card back's own rows and outcome (bkRows / bkOut, shared with backFace), so it always matches the record's stats side.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
