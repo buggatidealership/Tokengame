@@ -248,3 +248,11 @@ Paste this into a new session, with the zip, to pick up where we left off.
 ### Round 54: X2 grid polish, film thumbnails in the round list
 - Grid: sits on its own card (fits its content); the sticky AI column is opaque and covers the row gaps, so nothing shows through while scrolling. Company and AI logos are square-sized. Won the round = the leader's foil (same as #1 in the standings), same ring as every square, a small crown inside the top-right corner. Legend swatch matches.
 - Round list: the film's thumbnail on the right (poster, then the film plays muted); the market move and the winner moved left under the company. Only one film plays at a time (the visible one nearest the middle of the screen); films load only when shown. Winner chips use the foil too.
+
+### Round 55: X2 round list compact, highlights as film tiles, record holders, headline findings, Foxconn tile
+- Round list: name and date on top; the calls and the market's move on one line; film thumbnail on the right (phones: next to the name). Winner chip: foil at --foil-fast (4s) plus a small gold crown (GCROWN). "No winner" is a small tag by the date. Phones drop the "%" inside the call chips (the market move keeps it).
+- Grid winners: the same faster foil and gold crown.
+- Highlights (Results 01): film tiles (poster, the key number on it, then headline and one sentence); swipe on phones, four across on desktop.
+- Leaderboard order: 01 standings, 02 Record holders (three: longest winning streak, closest call, biggest miss), 03 every call, 04 stats, 05 what the record shows.
+- What the record shows: headline first (written from the numbers, e.g. "When they all agree, they're usually wrong"), then the explanation, then the numbers as small stats.
+- Upcoming: a round with calls in (st "calls") is a full-row tile with its calls inline, instead of the tall poster card (X1 keeps the tall card: locked).
