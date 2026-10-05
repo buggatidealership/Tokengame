@@ -88,3 +88,12 @@ Each build: three concepts, the obvious one dropped, the one we believe in built
 - v34 Higher or Lower (`ez/v34-higherlower.html`) https://claude.ai/artifact/C7a5i8bd8UHY3WEv6J4m1Q: one game run; guess before every number lands; score vs the AIs. (Dropped: annual report. Also considered: orbits.)
 - v35 Powers of Ten (`ez/v35-zoom.html`) https://claude.ai/artifact/KCqnGz1ndk5cPKqHKJt5F6: one continuous zoom from a coin to the season and down to one call. (Dropped: magazine long-read. Also considered: field guide.)
 Published with MP4 films only (WebM over the 64MB publish limit; the pages fall back to MP4).
+
+## Round 12: platforms, not landing pages (2026-10-05)
+Brief: same content, but each build is a place people come back to: a screen for now, every round, each AI, what's coming, the buyback and Get $EZ; deep links for every round and AI (#round-11, #ai-gpt); opens on the live round and shows what changed since the last visit; something to do (your own call on the live round, filters, compare). Only the sheet data is fixed; wording is free.
+- v36 The Floor (`ez/v36-floor.html`) https://claude.ai/artifact/LoS8u1P1Kh2XPU6oQzSAjq: a trading floor; every place is a desk.
+- v37 EZ OS (`ez/v37-os.html`) https://claude.ai/artifact/XGHSSd6b31RAdZ7SymcPxt: an operating system. Betting chips are the apps, the wallpaper is a bullseye of every call, each window is a bet slip; desktop windows on wide screens, a home screen with a dock on phones; Ctrl K goes anywhere.
+- v38 EZ-GPT (`ez/v38-ezgpt.html`) https://claude.ai/artifact/Y7LUDe5RuRvTtvyQ3UQu88: the crypto and AI meme build. A scripted chatbot (no AI, no network) that answers with data cards; the sidebar is the chat history. Laser eyes on whoever leads, original rank memes behind the standings, a god candle on the biggest move, "we're so back / it's over" per round, a Degen/Plain switch. No real people.
+- v39 Transit (`ez/v39-transit.html`) https://claude.ai/artifact/41TmFAwKtbjjEbjoCRuCNk: a transit map. Each AI is a line, each round a station; a wrong call drops the line to the lower track; winners get an interchange ring; Foxconn is "You are here"; future rounds are under construction.
+- v40 The Museum (`ez/v40-museum.html`) https://claude.ai/artifact/Tbr1Bes291vwsyM5XHhxQZ: each graded round is an exhibit with its film and wall label; AI halls, Side by side, Library, Coming soon, Endowment (buyback), Gift shop (Get $EZ).
+Published with MP4 films only, in two batches.
