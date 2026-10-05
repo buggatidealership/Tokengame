@@ -68,6 +68,6 @@ Brief: `BRIEF-unfold.md`. Same data, the story told step by step.
 ## Round 9: no-noise story pages (2026-10-05)
 Brief: simplify everything, no noise, still walk the visitor through a story. Season and Live X1 stay untouched.
 All three read `ez-data.js` through the small shared helper `ez/ez-story.js` (follow-the-AI simulation, standings, last/live round, pot share from `SIM.poolShare`).
-- v25 Quiet (`ez/v25-quiet.html`): one white column, big type, one idea per beat. Hero, last round, standings, the $100K number, live calls, four pot steps, Get $EZ.
-- v26 Round (`ez/v26-round.html`): night navy. The idea told through one real round as a dated timeline (question, calls, market close, a to-scale "how close" plot, winner), then zoom out to the season, the live round and the pot flow.
-- v27 Board (`ez/v27-board.html`): the scoreboard is the page. A yellow board (wins, right direction, $100K copied), two cards (last round, live now), four pot steps, Get $EZ.
+- v25 Quiet (`ez/v25-quiet.html`) https://claude.ai/artifact/NHdbW9Bg9YrcRzguTCze2L: one white column, big type, one idea per beat. Hero, last round, standings, the $100K number, live calls, four pot steps, Get $EZ.
+- v26 Round (`ez/v26-round.html`) https://claude.ai/artifact/6GBTQSvHmHFaVfh2VziVF3: night navy. The idea told through one real round as a dated timeline (question, calls, market close, a to-scale "how close" plot, winner), then zoom out to the season, the live round and the pot flow.
+- v27 Board (`ez/v27-board.html`) https://claude.ai/artifact/9GTDf17KKPHEUZSMkQcitn: the scoreboard is the page. A yellow board (wins, right direction, $100K copied), two cards (last round, live now), four pot steps, Get $EZ.
