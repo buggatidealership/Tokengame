@@ -112,3 +112,68 @@ var EZS=(function(){
     sv.addEventListener("pointermove",mv);sv.addEventListener("pointerdown",mv);sv.addEventListener("pointerleave",out);
     return {lead:lead}};
 })(EZS);
+
+/* ---------- experiment pages (v31 to v35): everything the main page says, computed the same way ---------- */
+(function(S){
+  var R=ROUNDS,M=S.board.map(function(b){return b.m});
+  function dn(c){return /^DOWN/.test(c[1])}
+  function ok(r,c){return dn(c)===(r.a<0)}
+  function won(r,m){return S.winners(r).indexOf(m)>-1}
+  var W=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve"];
+  S.word=function(k){return W[k]||String(k)};
+  S.models=M;
+  S.ver=function(m){return (MODELS[m]&&MODELS[m].ver)||""};
+  /* standings rows exactly as the main page shows them: hit rate %, average miss (points), ROI on $100,000, wins */
+  S.rows=M.map(function(m){var b=S.board.filter(function(x){return x.m===m})[0],f=S.follow.filter(function(x){return x.m===m})[0];
+    return {m:m,ver:S.ver(m),won:b.won,right:b.right,n:b.n,hit:Math.round(b.right/b.n*100),avg:b.avg,bal:f?f.bal:S.STAKE,roi:f?S.pct(f.bal):"+0.0%"}});
+  /* the last k rounds for one AI: w = won, g = right way, r = wrong way, n = no call yet */
+  S.form=function(m,k){return R.slice(-k).map(function(r){var c=callOf(r,m);return !c?"n":won(r,m)?"w":ok(r,c)?"g":"r"})};
+  /* hit rate after each round (only rounds the AI called) */
+  S.hitPath={};M.forEach(function(m){var n=0,o=0;S.hitPath[m]=R.map(function(r){var c=callOf(r,m);if(c){n++;if(ok(r,c))o++}return n?{n:r.n,pct:Math.round(o/n*100),calls:n}:null})});
+  /* every call with its distance from the real move (the bullseye) */
+  S.shots={};M.forEach(function(m){S.shots[m]=R.map(function(r){var c=callOf(r,m);return c?{r:r,said:c[1],v:(dn(c)?-1:1)*parseFloat(c[1].split(" ")[1]),off:parseFloat(c[2]),ok:ok(r,c),won:won(r,m)}:null}).filter(Boolean)});
+  /* how we grade: the four rules, word for word from the main page */
+  S.rules=[["Direction first.","Did the AI call up or down correctly? Wrong way, it's out."],["Then size.","Of the AIs that got the direction right, the one closest to the real move wins the round."],
+    ["Nobody right, nobody wins.","If every AI gets the direction wrong, the round has no winner."],["Ties.","Equal wins are split by who was closer on average."]];
+  /* record holders: longest winning streak (rounds won in a row), closest call ever, biggest miss ever */
+  S.records=(function(){var best={m:null,rs:[]};M.forEach(function(m){var cur=[];R.forEach(function(r){var c=callOf(r,m);if(!c)return;if(won(r,m)){cur.push(r);if(cur.length>best.rs.length)best={m:m,rs:cur.slice()}}else cur=[]})});
+    var all=[];R.forEach(function(r){r.calls.forEach(function(c){all.push({m:c[0],r:r,said:c[1],off:parseFloat(c[2])})})});
+    var cl=all.slice().sort(function(a,b){return a.off-b.off})[0],wo=all.slice().sort(function(a,b){return b.off-a.off})[0];
+    return {streak:best,closest:cl,worst:wo}})();
+  /* highlights (Results): closest call, tightest race, biggest move, everyone was wrong */
+  S.highlights=(function(){function avg(r){return r.calls.reduce(function(s,c){return s+parseFloat(c[2])},0)/r.calls.length}
+    var tight=R.slice().sort(function(a,b){return avg(a)-avg(b)})[0],big=R.slice().sort(function(a,b){return Math.abs(b.a)-Math.abs(a.a)})[0],
+      none=R.filter(function(r){return !r.win}),used=[S.records.closest.r,tight,big],
+      wrong=none.filter(function(r){return used.indexOf(r)<0}).sort(function(a,b){return avg(b)-avg(a)})[0]||none[none.length-1];
+    var allOff=[];R.forEach(function(r){r.calls.forEach(function(c){allOff.push(parseFloat(c[2]))})});
+    var avgAll=allOff.reduce(function(a,b){return a+b},0)/allOff.length,avgRnd=R.reduce(function(s,r){return s+avg(r)},0)/R.length,avgMv=R.reduce(function(s,r){return s+Math.abs(r.a)},0)/R.length;
+    return {closest:S.records.closest,closeX:avgAll/S.records.closest.off,tight:{r:tight,v:avg(tight)},avgRound:avgRnd,big:big,bigX:Math.abs(big.a)/avgMv,wrong:wrong,noWinner:none}})();
+  /* unusual findings: the same rules as the main page (each needs at least 5 cases) */
+  S.findings=(function(){var out=[],MIN=5,ag={n:0,ok:0},sp={n:0,ok:0},up={n:0,ok:0},dw={n:0,ok:0};
+    R.forEach(function(r){var s=r.calls.reduce(function(t,c){return t+(dn(c)?-1:1)},0);if(Math.abs(s)===r.calls.length){ag.n++;if((s>0)===(r.a>0))ag.ok++}else if(s!==0){sp.n++;if((s>0)===(r.a>0))sp.ok++}
+      r.calls.forEach(function(c){var o=dn(c)?dw:up;o.n++;if(ok(r,c))o.ok++})});
+    if(ag.n>=MIN){var a=ag.ok/ag.n,b=sp.n?sp.ok/sp.n:0,P=PENDING[0],now=null;
+      if(P&&P.calls.length>1){var ps=P.calls.reduce(function(t,c){return t+(c.dir==="DOWN"?-1:1)},0);if(Math.abs(ps)===P.calls.length)now="Right now: all "+S.word(P.calls.length)+" say "+(ps>0?"up":"down")+" on "+S.co(P)+"."}
+      out.push({k:"When they all agree",head:a<.5?"When they all agree, they're usually wrong":a===.5?"When they all agree, it's a coin flip":"When they all agree, they're usually right",
+        expl:"In "+S.word(ag.n)+" rounds every AI called the same direction. They were right in "+S.word(ag.ok)+" of them."+(sp.n?(b>a?" When they disagreed, going with the majority worked better.":" When they disagreed, the majority did no better."):""),
+        stats:[[ag.ok+" of "+ag.n,"right when all agree"]].concat(sp.n?[[sp.ok+" of "+sp.n,"majority right when split"]]:[]),base:(ag.n+sp.n)+" rounds",now:now})}
+    if(up.n>=MIN&&dw.n>=MIN){var u=up.ok/up.n,d=dw.ok/dw.n;out.push({k:"Up calls vs down calls",head:u-d>=.2?"Good at calling ups. Bad at calling downs.":d-u>=.2?"Better at calling drops than gains":"Up or down, the same hit rate",
+      expl:"When an AI says a stock will rise, it "+(u>.5?"usually does":"often doesn't")+". When it says the stock will fall, it's "+(d>.5?"usually right":"usually wrong")+".",stats:[["▲ "+up.ok+" of "+up.n,"up calls right"],["▼ "+dw.ok+" of "+dw.n,"down calls right"]],base:(up.n+dw.n)+" calls"})}
+    var sz=M.map(function(m){var n=0,ca=0,ma=0;R.forEach(function(r){var c=callOf(r,m);if(!c)return;n++;ca+=parseFloat(c[1].split(" ")[1]);ma+=Math.abs(r.a)});return n>=MIN?{m:m,n:n,c:ca/n,a:ma/n}:null}).filter(Boolean).sort(function(x,y){return Math.abs(y.c-y.a)-Math.abs(x.c-x.a)})[0];
+    if(sz&&Math.abs(sz.c-sz.a)>=.5)out.push({k:"How big",head:S.nm(sz.m)+(sz.c<sz.a?" plays it too safe":" swings too big"),expl:S.nm(sz.m)+"'s calls expect "+(sz.c<sz.a?"smaller":"bigger")+" moves than the market makes. Right or wrong on direction, it "+(sz.c<sz.a?"undersells":"oversells")+" how far the stock goes.",
+      stats:[[sz.c.toFixed(1)+"%","its average call"],[sz.a.toFixed(1)+"%","average real move"]],base:sz.n+" rounds"});
+    var hr=M.map(function(m){var n=0,o=0;R.forEach(function(r){var c=callOf(r,m);if(!c)return;n++;if(ok(r,c))o++});return n>=MIN?{m:m,n:n,ok:o}:null}).filter(Boolean);
+    if(hr.length>1){var lo=hr.slice().sort(function(a,b){return a.ok/a.n-b.ok/b.n})[0],hi=hr.slice().sort(function(a,b){return b.ok/b.n-a.ok/a.n})[0],inv=lo.n-lo.ok;
+      if(inv/lo.n>.5)out.push({k:"Just for fun",head:"Inverse "+S.nm(lo.m),expl:"Betting against every "+S.nm(lo.m)+" call would have been right "+S.word(inv)+" times out of "+lo.n+". "+(inv/lo.n>=hi.ok/hi.n?"That ties the best AI. ":"")+"It's a joke. "+S.nm(lo.m)+" has been informed.",
+        stats:[[inv+" of "+lo.n,"right, betting against "+S.nm(lo.m)]],base:lo.n+" rounds",fun:true})}
+    return out})();
+  /* how big could it get: the main page's estimator, same assumptions and formula (an estimate, not a promise) */
+  var A={volPct:SIM.volPct!=null?+SIM.volPct:25,feePct:SIM.feePct!=null?+SIM.feePct:0.7,poolShare:SIM.poolShare!=null?SIM.poolShare:0.69,days:60,move:5};
+  S.calcA=A;S.MCAPS=[1e6,1e7,1e8,5e8,1e9];S.LEVS=[2,5,10];
+  S.calc=function(mcap,lev){var perDay=mcap*A.volPct/100*A.feePct/100*A.poolShare,bet=perDay*A.days;return {mcap:mcap,lev:lev,bet:bet,buyback:bet*lev*A.move/100}};
+  S.money=function(v){var a=Math.abs(v),u="";if(a>=1e9){a/=1e9;u="B"}else if(a>=1e6){a/=1e6;u="M"}else if(a>=1e3){a/=1e3;u="K"}
+    var t=a>=100?String(Math.round(a*(1+1e-9))):(a*(1+1e-9)).toPrecision(3).replace(/\.?0+$/,"");return "$"+t+u};
+  S.calcFine="Estimate, not a promise. Assumes "+A.volPct+"% daily volume, "+A.feePct+"% fee, "+A.days+" days, a "+A.move+"% move.";
+  /* what operations pays for next (the main page's three steps; the first is now) */
+  S.steps=[["More models","Max plans on each AI's newest model. Gemini and Qwen are next, then Mistral and NVIDIA's Nemotron.",true],["The pipeline runs itself","Calls, films and site updates run on their own. A human signs off.",false],["The AI places its own bet","No human in between.",false]];
+})(EZS);
