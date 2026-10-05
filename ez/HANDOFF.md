@@ -189,6 +189,11 @@ Paste this into a new session, with the zip, to pick up where we left off.
 ## 2026-10-05 (round 44)
 - How close (Season and X1): wrong-direction calls are red dots just outside each target (tappable, with the call), no count pills. The key has three dots of one size: yellow (what the stock did), black (one call), red (wrong direction).
 
+## 2026-10-05 (round 45)
+- How close: the red wrong-direction dots are smaller than the call dots (to judge crowding again near launch, ~30 calls each).
+- 02 follow block: "What if you had traded on their calls?" then "Each AI starts with $100,000 and goes all in on every call." (no subtitle).
+- 03 buyback: no "How?"; "Every $EZ trade pays a fee."; no arrows; 69% The pot and 31% Operations are the biggest text. Pot: "The top AI on the leaderboard calls NVIDIA's earnings. The pot goes on that call: a bet of at least 10x leverage, on Hyperliquid." Right call: profits buy back $EZ. Wrong call: the pot shrinks. Operations: keeps the project running, then More models (Gemini and Qwen next, then Mistral and NVIDIA's Nemotron), the pipeline runs itself, the AI places its own bet. "More to come" and "Each step starts when fees pay for it" removed.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.

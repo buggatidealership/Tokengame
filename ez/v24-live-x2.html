@@ -1232,6 +1232,13 @@ body.lmod-on{overflow:hidden}
 .tg-key .k-d{background:var(--ink)}
 .tg-key .k-x{background:var(--ez-red);box-shadow:inset 0 0 0 1.2px var(--ink)}
 .sx1 .st-box.cmp .tg .tg-w .dot{fill:var(--ez-red)!important;stroke:var(--ink)!important}
+/* buyback: the two shares are the biggest thing in the tree */
+.mt-split{padding-top:22px}
+.mt-pc{display:flex;align-items:baseline;justify-content:center;gap:8px;margin:8px 0 10px}
+.mt-pc b{font:400 clamp(44px,6vw,64px)/.9 var(--fd)}
+.mt-pc span{font:400 clamp(20px,2.4vw,26px)/1 var(--fd);text-transform:uppercase}
+.mt-out{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:760px){.mt-pc{flex-direction:column;align-items:center;gap:2px;margin:6px 0 8px}.mt-pc b{font-size:40px}.mt-pc span{font-size:15px}.mt-out{grid-template-columns:minmax(0,1fr)}}
 
 /* ================= V22 · SEASON LIVE: Season's landing as the Board, plus Live's pages =================
    Hash routes: #/ (the board, Season as it was), #/rounds, #/round/11, #/models, #/model/gpt, #/upcoming.
@@ -2310,9 +2317,9 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
       <div class="lq" id="lqDist" role="region" aria-labelledby="lqDistH"><div class="lq-t"><h3 id="lqDistH">When they got the direction right, how close?</h3></div>
         <div class="tgv" id="lxDist"></div></div>
     </div></div>
-    <h3 class="fol-x">What if you'd followed them?</h3>
+    <h3 class="fol-x">What if you had traded on their calls?</h3>
     <div class="fol" id="fol" aria-labelledby="folH">
-      <div class="fol-h"><h3 id="folH">Give each AI $100,000. Here's where they'd stand.</h3><p>All in on every call.</p></div>
+      <div class="fol-h"><h3 id="folH">Each AI starts with $100,000 and goes all in on every call.</h3></div>
       <ol class="fol-l" id="folL"></ol>
       <p class="fol-f" id="folF"></p>
     </div>
@@ -2321,17 +2328,15 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
   <section class="sec" id="bet" aria-labelledby="betH">
     <div class="sh"><div class="tx"><span class="no">03</span><span class="eb">The buyback</span><h2 id="betH">An AI with one goal: buy back <span class="mark ezb"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span></h2></div>
       </div>
-    <h3 class="mt-how">How?</h3>
     <div class="mt" id="bbf" role="group" aria-label="Where the money goes">
-      <p class="mt-top"><span aria-hidden="true">💱</span><b>Every $EZ trade pays a fee. The fees land in one address.</b></p>
+      <p class="mt-top"><span aria-hidden="true">💱</span><b>Every $EZ trade pays a fee.</b></p>
       <div class="mt-split">
-        <div class="mt-br pot"><span class="mt-a" aria-hidden="true">↓</span><em id="mtP"></em>
-          <div class="mt-box"><h3>The pot</h3><p>The market sets its size: the more $EZ trades, the bigger it gets.</p>
-            <p>At NVIDIA's earnings, the AI ranked first on the leaderboard makes the call. The pot goes on it at <b id="mtLev"></b> leverage, on Hyperliquid.</p></div>
-          <div class="mt-out"><p class="w"><b>Right call</b>The winnings buy back $EZ.</p><p class="l"><b>Wrong call</b>The pot gets wiped out.</p></div></div>
-        <div class="mt-br lab" id="road"><span class="mt-a" aria-hidden="true">↓</span><em id="mtL"></em>
-          <div class="mt-box"><h3>Operations</h3><p>Keeps the AIs, the films and the site running. Then, in order:</p>
-            <ol class="lab-l" id="roadL"></ol><p class="lab-c">Each step starts when fees pay for it.</p></div></div>
+        <div class="mt-br pot"><p class="mt-pc"><b id="mtP"></b><span>The pot</span></p>
+          <div class="mt-box"><p>The top AI on the leaderboard calls NVIDIA's earnings. The pot goes on that call: a bet of at least <b id="mtLev"></b> leverage, on Hyperliquid.</p></div>
+          <div class="mt-out"><p class="w"><b>Right call</b>The profits buy back $EZ.</p><p class="l"><b>Wrong call</b>The pot shrinks.</p></div></div>
+        <div class="mt-br lab" id="road"><p class="mt-pc"><b id="mtL"></b><span>Operations</span></p>
+          <div class="mt-box"><p>Keeps the project running, then pays for what's next:</p>
+            <ol class="lab-l" id="roadL"></ol></div></div>
       </div>
     </div>
     <div class="calc" id="calc" role="region" aria-labelledby="calcH">
@@ -2674,10 +2679,10 @@ function tgSVG(m){var R=TG.R,o='<svg viewBox="-100 -100 200 200" role="group" ar
       '<circle class="hit" cx="'+x+'" cy="'+y+'" r="11"/><circle class="dot" cx="'+x+'" cy="'+y+'" r="6" style="fill:color-mix(in srgb,var(--ink) '+sh+'%,var(--card))"/></g>'});
   /* wrong-direction calls miss the board: a red dot just outside the last ring */
   ROUNDS.forEach(function(r){var c=parsed(r).filter(function(c){return c.m===m})[0];if(!c||c.ok)return;
-    var rr=R+10,an=tgAng(r.n),x=(rr*Math.cos(an)).toFixed(2),y=(rr*Math.sin(an)).toFixed(2);
+    var rr=R+8,an=tgAng(r.n),x=(rr*Math.cos(an)).toFixed(2),y=(rr*Math.sin(an)).toFixed(2);
     var said=(c.dn?"down ":"up ")+c.mag,tip='<b>R'+r.n+' · '+plainCo(r)+'</b>Called '+said+' · Actual '+r.out+'<br>Wrong direction';
     o+='<g class="tg-d tg-w" tabindex="0" role="img" data-n="'+r.n+'" data-x="'+x+'" data-y="'+y+'" data-tip="'+tip.replace(/"/g,"&quot;")+'" aria-label="Round '+r.n+', '+plainCo(r)+': called '+said+', actual '+r.out+', wrong direction">'+
-      '<circle class="hit" cx="'+x+'" cy="'+y+'" r="11"/><circle class="dot" cx="'+x+'" cy="'+y+'" r="6"/></g>'});
+      '<circle class="hit" cx="'+x+'" cy="'+y+'" r="9"/><circle class="dot" cx="'+x+'" cy="'+y+'" r="3.8"/></g>'});
   /* ring labels last, over the dots (with a halo), so they always read */
   return o+'</svg>'}
 function tgWrong(m){var g=0,w=0;ROUNDS.forEach(function(r){var c=callOf(r,m);if(!c)return;g++;if(!callOk(r,c))w++});return {g:g,w:w}}
@@ -2925,7 +2930,7 @@ function machSVG(tall){
   }
   return o}
 /* ---------- where the money goes: the fee splits into the pot and the lab. The split comes from ASSUME. ---------- */
-(function(){var P=Math.round((typeof ASSUME!=="undefined"&&ASSUME.poolShare||.69)*100);if($("#mtP"))$("#mtP").textContent=P+"% → the pot";if($("#mtL"))$("#mtL").textContent=(100-P)+"% → operations";if($("#mtLev"))$("#mtLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x"})();
+(function(){var P=Math.round((typeof ASSUME!=="undefined"&&ASSUME.poolShare||.69)*100);if($("#mtP"))$("#mtP").textContent=P+"%";if($("#mtL"))$("#mtL").textContent=(100-P)+"%";if($("#mtLev"))$("#mtLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x"})();
 var machEl=$("#mach");
 if(machEl){machEl.innerHTML=machSVG(false)+machSVG(true);
   if(!reduce&&"IntersectionObserver" in window){machEl.classList.add("arm");
@@ -2938,10 +2943,9 @@ if($("#scPot")){board($("#scPot"),CONFIG.pool);board($("#scBack"),CONFIG.boughtB
 /* ---------- the road: six milestones. Step 1 is done; step 2 (launch) is current with a progress bar of graded rounds
    against CONFIG.launchAt until CONFIG.launched is true; then step 3 is current. ---------- */
 var CUR=0;
-var STEPS=[["🤖","More models join","Max plans on each AI's newest model. Qwen, Mistral and Gemini are next."],
-  ["⚙️","The pipeline runs itself","Calls, films and the site run on their own. A human signs off."],
-  ["🎯","The AI places the bet","The AI trades the pot itself, with no human in between."],
-  ["✨","More to come","We keep adding as the lab grows."]];
+var STEPS=[["🤖","More models","Max plans on each AI's newest model. Gemini and Qwen are next, then Mistral and NVIDIA's Nemotron."],
+  ["⚙️","The pipeline runs itself","Calls, films and site updates run on their own. A human signs off."],
+  ["🎯","The AI places its own bet","No human in between."]];
 $("#roadL").innerHTML=STEPS.map(function(s,i){var st=i<CUR?"done":i===CUR?"cur":"todo";
   return '<li class="ls '+st+'"'+(st==="cur"?' aria-current="step"':'')+'><span class="ls-m" aria-hidden="true">'+(st==="done"?"✓":st==="cur"?"●":"")+'</span><span class="ls-t"><b>'+s[1]+(st==="cur"?' <em>Now</em>':'')+'<span class="sr">'+(st==="done"?' (done)':st==="todo"?' (later)':'')+'</span></b><span>'+s[2]+'</span></span></li>'}).join("");
 
@@ -3119,7 +3123,7 @@ var FOLLOW_NOTE="Simulated, before fees. Buy on an up call, short on a down call
   L.innerHTML=FOLLOW.map(function(o,i){var up=o.bal>=STAKE;
     return '<li class="ft'+(i?'':' lead')+'"><span class="ft-w">'+logo(o.m)+'<span>'+nm(o.m)+(o.n<NR?'<small>'+o.n+' rounds</small>':'')+'</span></span>'+
       spark(o,up)+'<span class="ft-v"><b class="ft-bal">'+usd(o.bal)+'</b><span class="ft-pill '+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(o.bal).replace(/^[+−]/,"")+'</span></span></li>'}).join("");
-  $("#folH").textContent="Give each AI "+usd(STAKE)+". Here's where they'd stand.";$("#folF").textContent=FOLLOW_NOTE})();
+  $("#folH").textContent="Each AI starts with "+usd(STAKE)+" and goes all in on every call.";$("#folF").textContent=FOLLOW_NOTE})();
 window.EZ_EXP="x2";
 
 /* ================= V22 · SEASON LIVE: pages =================
