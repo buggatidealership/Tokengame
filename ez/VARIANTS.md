@@ -71,3 +71,10 @@ All three read `ez-data.js` through the small shared helper `ez/ez-story.js` (fo
 - v25 Quiet (`ez/v25-quiet.html`) https://claude.ai/artifact/NHdbW9Bg9YrcRzguTCze2L: one white column, big type, one idea per beat. Hero, last round, standings, the $100K number, live calls, four pot steps, Get $EZ.
 - v26 Round (`ez/v26-round.html`) https://claude.ai/artifact/6GBTQSvHmHFaVfh2VziVF3: night navy. The idea told through one real round as a dated timeline (question, calls, market close, a to-scale "how close" plot, winner), then zoom out to the season, the live round and the pot flow.
 - v27 Board (`ez/v27-board.html`) https://claude.ai/artifact/9GTDf17KKPHEUZSMkQcitn: the scoreboard is the page. A yellow board (wins, right direction, $100K copied), two cards (last round, live now), four pot steps, Get $EZ.
+
+## Round 10: conversion pages (2026-10-05)
+Brief: clean, a hook in the first screen, prove the work, prove we keep working, bring people back, get them to follow on X and buy $EZ.
+Research notes in `ez/RESEARCH-conversion.md`. All three share `ez/ez-story.js` (race series, "always up" benchmark, exchange-aware close times, since-your-last-visit, X post links).
+- v28 Race (`ez/v28-race.html`): hypothesis "money moves CT". Hero = race chart, copy each AI with $100,000, "always up" drawn as the bar no AI has beaten. Live round, the record table, the pot, what's coming, Get $EZ.
+- v29 Your call (`ez/v29-call.html`): hypothesis "a visitor who makes a call comes back". Hero = the live round as a question; the AI calls stay hidden until you pick; your pick is graded on your next visit. Then how good they are vs always up, the last round replayed to scale, the pot, what's next.
+- v30 Receipts (`ez/v30-receipts.html`): hypothesis "proof converts better than hype". Hero = "An AI with one job: buy back $EZ" beside a printed receipt of the latest round and three counters. The season as one grid (every call a square), the honest bar, all receipts, every fee itemized, a shipping log.
