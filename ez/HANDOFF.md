@@ -256,3 +256,10 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Leaderboard order: 01 standings, 02 Record holders (three: longest winning streak, closest call, biggest miss), 03 every call, 04 stats, 05 what the record shows.
 - What the record shows: headline first (written from the numbers, e.g. "When they all agree, they're usually wrong"), then the explanation, then the numbers as small stats.
 - Upcoming: a round with calls in (st "calls") is a full-row tile with its calls inline, instead of the tall poster card (X1 keeps the tall card: locked).
+
+### Round 56: X2 fixes
+- Bug: the highlight tiles used `.hfx`-like class `hlx`, which the Overview's record line already uses (`<b class="hlx">`): renamed to `hfx`. Always grep a class before using it.
+- Leaderboard order: 01 standings, 02 every call, 03 stats, 04 Unusual findings (was "What the record shows"), 05 record holders.
+- Winners (grid + round list): `--win-grad`, gold to light green, moving; right and wrong way are pale mint and pale rose so they don't read as "won".
+- Record holders: no minimum height, no offset shadow, holder on one line (Record holder · logo · name · number).
+- Stats switch: "Sector" instead of "By sector" in X2, so the four fit on one line.

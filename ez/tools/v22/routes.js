@@ -156,11 +156,11 @@ function shelf(){var RR=ROUNDS;if(!RR.length)return '';var calls=[];RR.forEach(f
   function x(v){return v>=10?Math.round(v)+"x":v.toFixed(1).replace(/\.0$/,"")+"x"}
   function verb(dn){return dn?"fall":"rise"}
   /* a card: what it is (big), then one short paragraph that tells the story; watch, top right */
-  function f(kick,r,text,big){if(X2)return '<li><a class="hlx" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'" aria-label="'+kick+': open round '+r.n+', '+esc(r.co)+'"><span class="hlx-a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">':'')+'<b class="hlx-big">'+big+'</b>'+(r.film?'<i class="hlx-w" aria-hidden="true">▶</i>':'')+'</span><span class="hlx-t"><span class="hlx-k">'+kick+'</span><span class="hlx-p">'+text+'</span></span></a></li>';
+  function f(kick,r,text,big){if(X2)return '<li><a class="hfx" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'" aria-label="'+kick+': open round '+r.n+', '+esc(r.co)+'"><span class="hfx-a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">':'')+'<b class="hfx-big">'+big+'</b>'+(r.film?'<i class="hfx-w" aria-hidden="true">▶</i>':'')+'</span><span class="hfx-t"><span class="hfx-k">'+kick+'</span><span class="hfx-p">'+text+'</span></span></a></li>';
     return '<li><a class="hcd" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'" aria-label="'+kick+': open round '+r.n+', '+esc(r.co)+'"><span class="hcd-t"><span class="hcd-k">'+kick+'</span><i class="hcd-w" aria-hidden="true">'+(r.film?'▶':'→')+'</i></span><span class="hcd-p">'+text+'</span></a></li>'}
   var cs=said(close.r,close.m),cdn=/^down/.test(cs),same=wrong?allSame(wrong):null,others=wrong?none.filter(function(r){return r!==wrong}).map(function(r){return esc(r.co)}):[];
   function and(a){return a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
-  return '<ul class="'+(X2?'hlxs':'hcl')+'">'+
+  return '<ul class="'+(X2?'hfxs':'hcl')+'">'+
     f("Closest call",close.r,nm(close.m)+' said '+esc(close.r.co)+' would '+verb(cdn)+' '+cs.replace(/^\w+\s*/,"")+' after its earnings. It '+dirWord(close.r)+' '+close.r.out.replace(/^[+−-]/,"")+'. Nobody has come closer: <b>'+close.off.toFixed(2)+' points from perfect</b>, '+x(avgAll/close.off)+' closer than the average call.',close.off.toFixed(2)+'<small>pts off</small>')+
     f("Tightest race",tight.r,esc(tight.r.co)+' '+dirWord(tight.r)+' '+tight.r.out.replace(/^[+−-]/,"")+'. All '+tight.r.calls.length+' AIs landed <b>'+tight.v.toFixed(2)+' points off on average</b>, their best round together. A usual round is '+avgRnd.toFixed(1)+'. '+story(tight.r),tight.v.toFixed(2)+'<small>pts avg</small>')+
     f("Biggest move",big,esc(big.co)+' '+(big.a>0?'jumped':'dropped')+' <b>'+big.out.replace(/^[+−-]/,"")+'</b> after its earnings, '+x(Math.abs(big.a)/avgMv)+' the average move. '+story(big),(big.a>0?'▲':'▼')+Math.abs(big.a)+'%')+
@@ -268,7 +268,7 @@ var RMET={
   roi:{t:"ROI",sub:"<b>What would "+usd(STAKE)+" be worth now?</b> All in on every call: buy on an up call, short on a down call. Simulated, before fees."}};
 var RKEYS=X1?["hit","miss","roi","sector"]:["hit","miss","roi","wins"],RCUR="hit";
 var UPS_N=ROUNDS.filter(function(r){return r.a>0}).length,AVG_MOVE=ROUNDS.length?ROUNDS.reduce(function(a,r){return a+Math.abs(r.a)},0)/ROUNDS.length:0;
-RMET.sector={t:"By sector",sub:"<b>Where are they sharpest?</b> Right calls by sector. Small samples for now: the grid fills in as the Zeason goes on."};
+RMET.sector={t:X2?"Sector":"By sector",sub:"<b>Where are they sharpest?</b> Right calls by sector. Small samples for now: the grid fills in as the Zeason goes on."};
 RMET.bull={t:"Up or down",sub:"<b>Do they lean up or down?</b> Each AI's up and down calls, next to what the stocks really did."};
 function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(function(h){return !h.none});
     var shared=ROUNDS.filter(function(r){var w=r.win?r.win.split(" & "):[];return w.length>1&&w.indexOf(m)>-1}).length,bestC=calls.slice().sort(function(a,b){return a.off-b.off})[0],b=fbal(m);
@@ -334,7 +334,7 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;box.cla
       return '<li class="sxr wr'+(i?'':' lead')+'"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span><span class="crs">'+(won.length?won.map(function(r,j){var sh=r.win.indexOf(" & ")>-1;
         return '<a class="cr'+(sh?' crh':'')+'" style="--d:'+(j*80)+'ms" href="#/round/'+r.n+'" title="Round '+r.n+', '+esc(r.co)+(sh?' (shared)':'')+'" aria-label="Round '+r.n+' '+esc(r.co)+(sh?', shared':'')+'">'+CROWN+'</a>'}).join(""):'<span class="cr0">No wins yet</span>')+'</span><span class="st-v"><b>'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
   if(anim&&!reduce)$$(".cr",box).forEach(function(c){c.classList.add("pop")})}
-function statsHTML(){return '<section class="blk" aria-labelledby="stH">'+(X1?xsh(X2?"04":"02","The stats","Stats","Pick a measure. The card flips to it.",false,"stH"):'<div class="hh"><h2 id="stH">The stats</h2></div>')+
+function statsHTML(){return '<section class="blk" aria-labelledby="stH">'+(X1?xsh(X2?"03":"02","The stats","Stats","Pick a measure. The card flips to it.",false,"stH"):'<div class="hh"><h2 id="stH">The stats</h2></div>')+
   '<div class="lsw rsw" role="group" aria-label="Rank the AIs by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+(X1?'<i class="skd" aria-hidden="true"></i>':'')+RMET[k].t+'</button>'}).join("")+'</div>'+
   '<div class="rflip sflip'+(X1?' sx1':'')+'" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><div class="st-box"></div><p class="rf-sub"></p></div>'}).join("")+'</div></div></section>'}
 function wireStats(root){var fl=$("#rflip",root);if(!fl)return;var faces=$$(".rf-face",fl),front=0,seen=false;
@@ -433,9 +433,9 @@ function callGrid(){var R=ROUNDS;
       var ok=isDn(c)===(r.a<0),w=wonBy(r).indexOf(m)>-1,lab=w?"won the round":ok?"right way":"wrong way";
       return '<a class="cg-c '+(w?'w':ok?'g':'r')+'" role="cell" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(plainCo(r))+': '+nm(m)+' called '+callAmt(c)+', '+lab+'">'+(w?GCROWN:'')+'<span>'+callAmt(c)+'</span></a>'}).join("")+'</div>'});
   h+='<div class="cg-r cg-mk" role="row"><span class="cg-l" role="rowheader"><b>Market</b></span>'+R.map(function(r){return '<span class="cg-m '+(r.a<0?'xd':'xu')+'" role="cell" title="Market '+r.out+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a).toFixed(1)+'</span>'}).join("")+'</div>';
-  return '<section class="blk xsec cgs" aria-labelledby="cgH">'+xsh("03","Every call","Every call, one square","Each column is a round, newest on the right. Tap a square for the full card.",false,"cgH")+
+  return '<section class="blk xsec cgs" aria-labelledby="cgH">'+xsh("02","Every call","Every call, one square","Each column is a round, newest on the right. Tap a square for the full card.",false,"cgH")+
     '<div class="cg-wrap" tabindex="0" aria-label="Every call, scrolls sideways"><div class="cg" role="table" aria-label="Every call, one square" style="--n:'+R.length+'">'+h+'</div></div>'+
-    '<p class="legend cg-k"><span><i class="foil"></i>Won the round</span><span><i style="background:var(--ez-green)"></i>Right way</span><span><i style="background:var(--ez-red)"></i>Wrong way</span><span><i style="background:var(--field)"></i>No call yet</span></p></section>'}
+    '<p class="legend cg-k"><span><i class="foil"></i>Won the round</span><span><i class="k-g"></i>Right way</span><span><i class="k-r"></i>Wrong way</span><span><i style="background:var(--field)"></i>No call yet</span></p></section>'}
 /* What the record shows: patterns in the calls so far, each with its sample size. A pattern only shows once it rests on
    at least FMIN cases. Small samples: they change with every round, and the page says so. */
 var FMIN=5,NUMW=["zero","one","two","three","four","five","six","seven","eight","nine","ten"];
@@ -471,7 +471,7 @@ function findings(){var R=ROUNDS,cards=[];
     if(inv/lo.n>.5)cards.push(card("Just for fun",'Inverse '+nm(lo.m),'Betting against every '+nm(lo.m)+' call would have been right '+(NUMW[inv]||inv)+' times out of '+lo.n+'. '+(inv/lo.n>=hi.ok/hi.n?'That ties the best AI. ':'')+'It\'s a joke. '+nm(lo.m)+' has been informed.',
       [stat(inv+' of '+lo.n,'right, betting against '+nm(lo.m))],lo.n+' rounds','fun'))}
   if(!cards.length)return '';
-  return '<section class="blk xsec fdgs" aria-labelledby="fdgH">'+xsh("05","Findings","What the record shows","Patterns in the calls so far. Small samples, so they will change with every round. Not advice.",false,"fdgH")+
+  return '<section class="blk xsec fdgs" aria-labelledby="fdgH">'+xsh("04","Findings","Unusual findings","What stands out in the calls so far. Small samples, so these will change with every round. Not advice.",false,"fdgH")+
     '<div class="fdg-g">'+cards.join("")+'</div></section>'}
 /* Results, X2: every round as one row. The calls with the winner in gold, the market's move, and a tag when nobody won. */
 function roundList(){var ns=ROUNDS.filter(function(r){return inF(r.n,RF)}).slice().reverse();
@@ -498,7 +498,7 @@ function vModels(){
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
     '<p class="lbn"><b>Hit rate</b>: calls right on direction. <b>Avg miss</b>: points off the real move. <b>ROI</b>: '+usd(STAKE)+' rolled through every call. Simulated, before fees.</p>'+
-    (X2?'<section class="blk xsec" aria-labelledby="recH">'+xsh("02","Records","Record holders","Who holds the three records that matter. Tap one for the story.",false,"recH")+'<div class="hls hls3">'+records()+'</div></section>'+callGrid():'')+statsHTML()+(X2?findings():'')+
+    (X2?callGrid():'')+statsHTML()+(X2?findings()+'<section class="blk xsec" aria-labelledby="recH">'+xsh("05","Records","Record holders","Who holds the three records that matter. Tap one for the story.",false,"recH")+'<div class="hls hls3">'+records()+'</div></section>':'')+
     (X2?'':'<section class="blk" aria-labelledby="recH">'+(X1?xsh("03","Highlights","Record book","Tap a record for the story behind it.",false,"recH"):'<div class="hh"><h2 id="recH">Highlights</h2></div>')+'<div class="hls">'+records()+'</div></section>')}
 function wireModels(root){wireStats(root);var g=$(".cg-wrap",root);if(g)requestAnimationFrame(function(){g.scrollLeft=g.scrollWidth})}
 function vModel(m){if(!CAR[m])return null;var C=CAR[m],calls=C.hist.filter(function(h){return !h.none});
