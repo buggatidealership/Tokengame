@@ -186,6 +186,9 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Season "Next" chip: glides to the record with that round's card in place, "01 The record" about 55px under the top bar (jumpTo).
 - Record line, two lines on phones: "Graded at the first market close after earnings. The AIs get TradingView's closing price, so they can't make shit up."
 
+## 2026-10-05 (round 44)
+- How close (Season and X1): wrong-direction calls are red dots just outside each target (tappable, with the call), no count pills. The key has three dots of one size: yellow (what the stock did), black (one call), red (wrong direction).
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.

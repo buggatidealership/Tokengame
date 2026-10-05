@@ -1225,6 +1225,13 @@ body.lmod-on{overflow:hidden}
 @media(max-width:640px){.lr-cb .bk-sec,.lr-cb .bk-sec:has(+.bk-rows>.bk-r.win){padding-bottom:5px}}
 .lr-cb .bk-sec,.lr-cb .bk-sec:has(+.bk-rows>.bk-r.win){padding-bottom:1px}
 @media(max-width:640px){.lr-cb .bk-sec,.lr-cb .bk-sec:has(+.bk-rows>.bk-r.win){padding-bottom:2px}}
+/* how close: wrong-direction calls land off the board, in red; the key's three dots are one size */
+.tg-w .dot{fill:var(--ez-red)!important;stroke:var(--ink)!important;stroke-width:1.2!important}
+.tg-key i,.tg-key .k-b,.tg-key .k-x{width:10px;height:10px;border-radius:50%;box-shadow:none}
+.tg-key .k-b{background:var(--yel);box-shadow:inset 0 0 0 1.2px var(--ink)}
+.tg-key .k-d{background:var(--ink)}
+.tg-key .k-x{background:var(--ez-red);box-shadow:inset 0 0 0 1.2px var(--ink)}
+.sx1 .st-box.cmp .tg .tg-w .dot{fill:var(--ez-red)!important;stroke:var(--ink)!important}
 </style>
 </head>
 <body>
@@ -1656,14 +1663,20 @@ function tgSVG(m){var R=TG.R,o='<svg viewBox="-100 -100 200 200" role="group" ar
     var said=(c.dn?"down ":"up ")+c.mag,tip='<b>R'+r.n+' · '+plainCo(r)+'</b>Called '+said+' · Actual '+r.out+'<br>Missed by '+c.off.toFixed(2)+' points';
     o+='<g class="tg-d" tabindex="0" role="img" data-n="'+r.n+'" data-off="'+c.off.toFixed(2)+'" data-x="'+x+'" data-y="'+y+'" data-tip="'+tip.replace(/"/g,"&quot;")+'" aria-label="Round '+r.n+', '+plainCo(r)+': called '+said+', actual '+r.out+', '+c.off.toFixed(2)+' points off">'+
       '<circle class="hit" cx="'+x+'" cy="'+y+'" r="11"/><circle class="dot" cx="'+x+'" cy="'+y+'" r="6" style="fill:color-mix(in srgb,var(--ink) '+sh+'%,var(--card))"/></g>'});
+  /* wrong-direction calls miss the board: a red dot just outside the last ring */
+  ROUNDS.forEach(function(r){var c=parsed(r).filter(function(c){return c.m===m})[0];if(!c||c.ok)return;
+    var rr=R+10,an=tgAng(r.n),x=(rr*Math.cos(an)).toFixed(2),y=(rr*Math.sin(an)).toFixed(2);
+    var said=(c.dn?"down ":"up ")+c.mag,tip='<b>R'+r.n+' · '+plainCo(r)+'</b>Called '+said+' · Actual '+r.out+'<br>Wrong direction';
+    o+='<g class="tg-d tg-w" tabindex="0" role="img" data-n="'+r.n+'" data-x="'+x+'" data-y="'+y+'" data-tip="'+tip.replace(/"/g,"&quot;")+'" aria-label="Round '+r.n+', '+plainCo(r)+': called '+said+', actual '+r.out+', wrong direction">'+
+      '<circle class="hit" cx="'+x+'" cy="'+y+'" r="11"/><circle class="dot" cx="'+x+'" cy="'+y+'" r="6"/></g>'});
   /* ring labels last, over the dots (with a halo), so they always read */
   return o+'</svg>'}
 function tgWrong(m){var g=0,w=0;ROUNDS.forEach(function(r){var c=callOf(r,m);if(!c)return;g++;if(!callOk(r,c))w++});return {g:g,w:w}}
 function targets(el){
   el.innerHTML='<div class="tg-grid">'+ACTIVE.map(function(m){var W=tgWrong(m);
     return '<figure class="tg" data-m="'+m+'"><figcaption class="tg-h">'+logo(m)+'<span>'+nm(m)+'</span></figcaption>'+tgSVG(m)+
-      (W.g?(W.w?'<p class="tg-x">✗ '+W.w+' wrong way</p>':''):'<p class="tg-n">No results yet</p>')+'</figure>'}).join("")+'</div>'+
-    '<p class="tg-note tg-key"><span><i class="k-b" aria-hidden="true"></i>Bullseye: what the stock really did</span><span><i class="k-d" aria-hidden="true"></i>One dot: one call</span><span><i class="k-x" aria-hidden="true">✗</i>Wrong way: off the board</span></p>';
+      (W.g?'':'<p class="tg-n">No results yet</p>')+'</figure>'}).join("")+'</div>'+
+    '<p class="tg-note tg-key"><span><i class="k-b" aria-hidden="true"></i>Bullseye: what the stock really did</span><span><i class="k-d" aria-hidden="true"></i>One dot: one call</span><span><i class="k-x" aria-hidden="true"></i>Red dot: wrong direction</span></p>';
   var tip=null;
   function hide(){if(tip){tip.remove();tip=null}$$(".tg-d.on",el).forEach(function(g){g.classList.remove("on")})}
   function show(g){hide();var f=g.closest(".tg"),sv=$("svg",f),sr=sv.getBoundingClientRect(),fr=f.getBoundingClientRect(),k=sr.width/200;
