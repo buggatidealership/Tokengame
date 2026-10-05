@@ -263,8 +263,8 @@ function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=STAKE;
    of detail. Every number is worked out from ROUNDS here. ---------- */
 var RMET={
   wins:{t:"Wins",sub:"Rounds won. A shared round counts for each winner."},
-  hit:{t:"Hit rate",sub:"<b>How often did they call the direction right?</b> Only up or down counts here, not the size."},
-  miss:{t:"Avg miss",sub:"<b>How close did they get?</b> Average points off the real move, smaller is better. The bullseye is what the stock did. Each dot is one call; red dots outside missed the direction."},
+  hit:{t:"Hit rate",sub:X2?"<b>How often were they right about the stock's direction?</b> Only up or down counts here, not the size.":"<b>How often did they call the direction right?</b> Only up or down counts here, not the size."},
+  miss:{t:"Avg miss",sub:X2?"<b>How close did they get?</b> The bullseye is what the stock did. Each dot is one call. A red dot outside missed the direction. The closer to the bullseye, the better.":"<b>How close did they get?</b> Average points off the real move, smaller is better. The bullseye is what the stock did. Each dot is one call; red dots outside missed the direction."},
   roi:{t:"ROI",sub:"<b>What would "+usd(STAKE)+" be worth now?</b> All in on every call: buy on an up call, short on a down call. Simulated, before fees."}};
 var RKEYS=X1?["hit","miss","roi","sector"]:["hit","miss","roi","wins"],RCUR="hit";
 var UPS_N=ROUNDS.filter(function(r){return r.a>0}).length,AVG_MOVE=ROUNDS.length?ROUNDS.reduce(function(a,r){return a+Math.abs(r.a)},0)/ROUNDS.length:0;
@@ -335,8 +335,8 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;box.cla
         return '<a class="cr'+(sh?' crh':'')+'" style="--d:'+(j*80)+'ms" href="#/round/'+r.n+'" title="Round '+r.n+', '+esc(r.co)+(sh?' (shared)':'')+'" aria-label="Round '+r.n+' '+esc(r.co)+(sh?', shared':'')+'">'+CROWN+'</a>'}).join(""):'<span class="cr0">No wins yet</span>')+'</span><span class="st-v"><b>'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
   if(anim&&!reduce)$$(".cr",box).forEach(function(c){c.classList.add("pop")})}
 function statsHTML(){return '<section class="blk" aria-labelledby="stH">'+(X1?xsh(X2?"03":"02","The stats","Stats","Pick a measure. The card flips to it.",false,"stH"):'<div class="hh"><h2 id="stH">The stats</h2></div>')+
-  '<div class="lsw rsw" role="group" aria-label="Rank the AIs by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+(X1?'<i class="skd" aria-hidden="true"></i>':'')+RMET[k].t+'</button>'}).join("")+'</div>'+
-  '<div class="rflip sflip'+(X1?' sx1':'')+'" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><div class="st-box"></div><p class="rf-sub"></p></div>'}).join("")+'</div></div></section>'}
+  '<div class="lsw rsw'+(X2?' rsw2':'')+'" role="group" aria-label="Rank the AIs by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+(X1?'<i class="skd" aria-hidden="true"></i>':'')+RMET[k].t+'</button>'}).join("")+'</div>'+
+  '<div class="rflip sflip'+(X1?' sx1':'')+(X2?' sx2':'')+'" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><div class="st-box"></div><p class="rf-sub"></p></div>'}).join("")+'</div></div></section>'}
 function wireStats(root){var fl=$("#rflip",root);if(!fl)return;var faces=$$(".rf-face",fl),front=0,seen=false;
   function fill(i,k,anim){faces[i].dataset.k=k;$(".rf-sub",faces[i]).innerHTML=RMET[k].sub;drawStats(faces[i],k,anim)}
   fill(0,RCUR,false);
@@ -428,12 +428,18 @@ function callAmt(c){return (isDn(c)?"▼":"▲")+c[1].split(" ")[1]}
 function callGrid(){var R=ROUNDS;
   var h='<div class="cg-r cg-hd" role="row"><span class="cg-l" role="columnheader"><span class="sr">AI</span></span>'+R.map(function(r){
       return '<a class="cg-co" role="columnheader" href="#/round/'+r.n+'" title="Round '+r.n+' · '+esc(plainCo(r))+'">'+coMark(r.ticker)+'<small>R'+r.n+'</small></a>'}).join("")+'</div>';
-  RK.forEach(function(m){h+='<div class="cg-r" role="row"><span class="cg-l" role="rowheader">'+logo(m)+'<b>'+nm(m)+'</b></span>'+R.map(function(r){var c=callOf(r,m);
+  h=h.replace(/<\/div>$/,'<span class="cg-sh" role="columnheader">Wins<br>Right</span></div>');
+  var tally={};RK.forEach(function(m){var t={n:0,ok:0,w:0};R.forEach(function(r){var c=callOf(r,m);if(!c)return;t.n++;if(isDn(c)===(r.a<0))t.ok++;if(wonBy(r).indexOf(m)>-1)t.w++});tally[m]=t});
+  RK.forEach(function(m){var t=tally[m];h+='<div class="cg-r" role="row"><span class="cg-l" role="rowheader">'+logo(m)+'<b>'+nm(m)+'</b></span>'+R.map(function(r){var c=callOf(r,m);
       if(!c)return '<span class="cg-c n" role="cell" title="Round '+r.n+': '+nm(m)+' had not joined yet"><span class="sr">No call</span></span>';
       var ok=isDn(c)===(r.a<0),w=wonBy(r).indexOf(m)>-1,lab=w?"won the round":ok?"right way":"wrong way";
-      return '<a class="cg-c '+(w?'w':ok?'g':'r')+'" role="cell" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(plainCo(r))+': '+nm(m)+' called '+callAmt(c)+', '+lab+'">'+(w?GCROWN:'')+'<span>'+callAmt(c)+'</span></a>'}).join("")+'</div>'});
-  h+='<div class="cg-r cg-mk" role="row"><span class="cg-l" role="rowheader"><b>Market</b></span>'+R.map(function(r){return '<span class="cg-m '+(r.a<0?'xd':'xu')+'" role="cell" title="Market '+r.out+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a).toFixed(1)+'</span>'}).join("")+'</div>';
-  return '<section class="blk xsec cgs" aria-labelledby="cgH">'+xsh("02","Every call","Every call, one square","Each column is a round, newest on the right. Tap a square for the full card.",false,"cgH")+
+      return '<a class="cg-c '+(w?'w':ok?'g':'r')+'" role="cell" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(plainCo(r))+': '+nm(m)+' called '+callAmt(c)+', '+lab+'">'+(w?GCROWN:'')+'<span>'+callAmt(c)+'</span></a>'}).join("")+'<span class="cg-sum" role="cell"><b>'+GCROWN+t.w+'</b><small>'+t.ok+'/'+t.n+'</small></span></div>'});
+  h+='<div class="cg-r cg-mk" role="row"><span class="cg-l" role="rowheader"><b>Market</b></span>'+R.map(function(r){return '<span class="cg-m '+(r.a<0?'xd':'xu')+'" role="cell" title="Market '+r.out+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a).toFixed(1)+'</span>'}).join("")+'<span class="cg-sum mk" role="cell"><small>▲'+R.filter(function(r){return r.a>0}).length+' ▼'+R.filter(function(r){return r.a<0}).length+'</small></span></div>';
+  /* the takeaway: who collects the crowns, and who is wrong most often (at least FMIN calls) */
+  var most=RK.slice().sort(function(a,b){return tally[b].w-tally[a].w})[0],elig=RK.filter(function(m){return tally[m].n>=FMIN}),
+      worst=elig.slice().sort(function(a,b){return (tally[b].n-tally[b].ok)/tally[b].n-(tally[a].n-tally[a].ok)/tally[a].n})[0],
+      take='<p class="cg-take"><b>'+nm(most)+' has the most crowns: '+tally[most].w+' of '+R.length+' rounds.</b>'+(worst&&worst!==most?' '+nm(worst)+' has the most red: wrong on '+(tally[worst].n-tally[worst].ok)+' of '+tally[worst].n+'.':'')+'</p>';
+  return '<section class="blk xsec cgs" aria-labelledby="cgH">'+xsh("02","Every call","Every call, one square","Each column is a round, newest on the right. Tap a square for the full card.",false,"cgH")+take+
     '<div class="cg-wrap" tabindex="0" aria-label="Every call, scrolls sideways"><div class="cg" role="table" aria-label="Every call, one square" style="--n:'+R.length+'">'+h+'</div></div>'+
     '<p class="legend cg-k"><span><i class="foil"></i>Won the round</span><span><i class="k-g"></i>Right way</span><span><i class="k-r"></i>Wrong way</span><span><i style="background:var(--field)"></i>No call yet</span></p></section>'}
 /* What the record shows: patterns in the calls so far, each with its sample size. A pattern only shows once it rests on

@@ -263,3 +263,8 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Winners (grid + round list): `--win-grad`, gold to light green, moving; right and wrong way are pale mint and pale rose so they don't read as "won".
 - Record holders: no minimum height, no offset shadow, holder on one line (Record holder · logo · name · number).
 - Stats switch: "Sector" instead of "By sector" in X2, so the four fit on one line.
+
+### Round 57: X2 is the main page (X1 retired)
+- Grid: crown centred just inside the top edge; a takeaway line above ("GPT has the most crowns..." / "... has the most red"), a Wins / Right column at the end of each row and ▲/▼ count for the market; beige module (`--mod2`), white stays for the standings.
+- Stats: each measure owns a colour on the switch (selected button filled) and on its card (hit rate now a clear blue). New copy for Hit rate and Avg miss.
+- Findings cards and the Results round list also on `--mod2` beige.
