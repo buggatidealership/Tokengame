@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EZ The Floor</title>
+<meta name="description" content="Earnings Zeason: four AIs call earnings moves, the market grades them. Walk the floor.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d10;--floor:#101318;--room:#14181e;--screen:#05070a;
+  --ink:#eee8dc;--ink2:#a6a196;--ink3:#6f6c65;
+  --line:rgba(238,232,220,.16);--line2:rgba(238,232,220,.32);--wall:rgba(222,214,198,.62);
+  --grid:rgba(238,232,220,.045);
+  --gold:#f2c040;--green:#43d17c;--red:#ff5c4f;--hi:#f2c040;
+  --fb:"Archivo","Arial Narrow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --fm:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --gut:16px;--ease:cubic-bezier(.2,.7,.1,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--fb);overflow-x:hidden;min-height:100vh}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:4px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mono{font-family:var(--fm)}
+.up{color:var(--green)}.dn{color:var(--red)}.au{color:var(--gold)}
+.mute{color:var(--ink2)}
+.wide{font-stretch:125%}
+.cond{font-stretch:75%}
+
+/* logos */
+.lg{display:inline-grid;place-items:center;width:1em;height:1em;border-radius:.24em;vertical-align:middle;overflow:hidden;flex:none}
+.lg svg{width:62%;height:62%;display:block}
+.co-mark{--s:36px;display:inline-flex;align-items:center;justify-content:center;width:var(--s);height:var(--s);border-radius:calc(var(--s)*.22);
+  background:#f3efe6;color:#111;font:800 calc(var(--s)*.24)/1 var(--fm);overflow:hidden;vertical-align:middle;flex:none}
+.co-mark.dk{background:#181b20}
+.co-mark img{width:78%;height:78%;object-fit:contain;display:block}
+
+/* the $EZ mark */
+.ez{display:inline-flex;align-items:center;justify-content:center;gap:.02em;background:#000;border:1px solid rgba(255,255,255,.14);border-radius:.22em;
+  padding:.08em .22em;font:900 1em/1 var(--fb);font-stretch:110%;letter-spacing:-.02em;text-decoration:none}
+.ez .d{color:var(--gold)}.ez .e{color:var(--green)}.ez .z{color:var(--red)}
+
+/* ---------- the persistent bar ---------- */
+.bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:8px var(--gut);min-height:60px;
+  background:rgba(11,13,16,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar .home{font-size:22px;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:8px}
+.crumbs{flex:1;min-width:0;display:flex;align-items:center;gap:6px;font:600 12px/1.2 var(--fm);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);overflow:hidden;white-space:nowrap}
+.crumbs a{text-decoration:none;color:var(--ink2);padding:12px 2px}
+.crumbs a:hover{color:var(--ink)}
+.crumbs b{color:var(--ink);overflow:hidden;text-overflow:ellipsis}
+.crumbs i{font-style:normal;color:var(--ink3)}
+.crumbs .ttl{display:flex;flex-direction:column;gap:2px;text-transform:none;letter-spacing:0}
+.crumbs .ttl b{font:800 15px/1.1 var(--fb);font-stretch:118%;letter-spacing:.01em}
+.crumbs .ttl span{font:500 11px/1.2 var(--fm);color:var(--ink2)}
+.minimap{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:4px 6px 4px 10px;border:1px solid var(--line2);border-radius:10px;background:var(--floor);cursor:pointer}
+.minimap span{font:700 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+.minimap svg{display:block;width:30px;height:38px}
+.mm-r{fill:none;stroke:rgba(238,232,220,.35);stroke-width:1}
+.mm-r.on{fill:var(--gold);stroke:var(--gold)}
+.mm-you{fill:var(--gold)}
+
+/* ---------- views ---------- */
+.view{min-height:calc(100vh - 60px)}
+.view[hidden]{display:none}
+#placeView{background:var(--bg)}
+
+/* ---------- the floor (home) ---------- */
+.lobby{padding:18px var(--gut) 6px;display:grid;gap:14px}
+.lobby h1{margin:0;font:800 clamp(27px,7.4vw,58px)/1.02 var(--fb);font-stretch:112%;letter-spacing:-.015em;text-wrap:balance}
+.lobby h1 em{font-style:normal;color:var(--gold)}
+.lobby .line{margin:0;color:var(--ink2);max-width:58ch;font-size:15px}
+.lobby .line b{color:var(--ink);font-weight:600}
+
+.slip{position:relative;background:#f4e7a8;color:#1e1b12;border-radius:3px;padding:12px 14px 12px 16px;box-shadow:0 10px 24px rgba(0,0,0,.45);transform:rotate(-.7deg);max-width:520px}
+.slip::before{content:"";position:absolute;top:-7px;left:50%;width:54px;height:14px;margin-left:-27px;background:rgba(255,255,255,.4);transform:rotate(2deg)}
+.slip h2{margin:0 0 4px;font:800 12px/1.2 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:#7b2e18}
+.slip p{margin:0;font-size:14.5px;line-height:1.4}
+.slip p+p{margin-top:4px}
+.slip a{color:#1e1b12;font-weight:700}
+
+.building{margin:10px var(--gut) 0;position:relative;border:6px double var(--wall);border-bottom-width:6px;
+  background-color:var(--floor);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:22px 22px;
+  padding:14px}
+.plan{display:grid;gap:14px;grid-template-columns:1fr 1fr;
+  grid-template-areas:"board board" "pit pit" "arch arch" "score test" "coming rules" "vault vault" "door door"}
+.entrance{position:relative;height:66px;margin:0 var(--gut) 8px;display:flex;justify-content:center}
+.entrance .gap{position:absolute;top:-6px;left:50%;width:96px;margin-left:-48px;height:6px;background:var(--bg)}
+.entrance .you{position:relative;margin-top:12px;display:flex;align-items:center;gap:8px;font:700 11px/1 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.entrance .you i{width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 0 rgba(242,192,64,.7);animation:ping 2.2s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(242,192,64,.6)}80%,100%{box-shadow:0 0 0 14px rgba(242,192,64,0)}}
+
+.room{position:relative;border:5px double var(--wall);background:var(--room);min-width:0;display:flex;flex-direction:column;text-decoration:none;color:inherit;
+  transition:background .2s,border-color .2s,transform .25s var(--ease)}
+a.room:hover,.room .rhead:hover{background:#1a1f27}
+a.room:hover{border-color:var(--gold)}
+.room .tag{display:flex;align-items:center;gap:8px;padding:9px 10px 0;font:700 10.5px/1.2 var(--fm);letter-spacing:.11em;text-transform:uppercase;color:var(--ink2)}
+.room .tag .no{color:var(--gold)}
+.room .tag .new{margin-left:auto;background:var(--gold);color:#111;border-radius:99px;padding:3px 7px;letter-spacing:.06em}
+.room h3{margin:2px 10px 0;font:800 19px/1.1 var(--fb);font-stretch:118%;letter-spacing:-.005em}
+.room .go{margin-top:auto;min-height:44px;padding:8px 10px 10px;font:600 13px/1.2 var(--fb);color:var(--gold);display:flex;align-items:center;gap:6px}
+.door{position:absolute;width:30px;height:6px;background:var(--room);pointer-events:none}
+.door::after{content:"";position:absolute;width:30px;height:30px;border-left:1.5px solid var(--wall);border-top:1px dashed var(--line2);border-right:1px dashed var(--line2);border-top-right-radius:100%}
+.door.b{bottom:-5px;right:16px}.door.b::after{bottom:6px;left:0}
+.door.t{top:-5px;right:16px}.door.t::after{top:6px;left:0;transform:scaleY(-1)}
+
+/* the big board on the floor */
+.r-board{grid-area:board;background:var(--screen);border-color:var(--wall)}
+.r-board .scr{margin:8px 10px 0;padding:12px;border-radius:6px;background:#020304;border:1px solid #1c222b;
+  background-image:radial-gradient(rgba(242,192,64,.07) 1px,transparent 1.2px);background-size:5px 5px}
+.r-board .live{display:inline-flex;align-items:center;gap:7px;font:800 11px/1 var(--fm);letter-spacing:.14em;color:var(--red)}
+.r-board .live i{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1.4s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+.r-board .co{display:flex;align-items:center;gap:10px;margin:10px 0 2px}
+.r-board .co b{font:800 24px/1.05 var(--fb);font-stretch:112%}
+.r-board .co span{display:block;font:500 12px/1.3 var(--fm);color:var(--ink2)}
+.calls4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0 0}
+.calls4 div{border:1px solid #1d232c;border-radius:6px;padding:8px 4px 7px;text-align:center;background:#06090c}
+.calls4 .lg{font-size:24px}
+.calls4 b{display:block;margin-top:5px;font:800 15px/1 var(--fm)}
+.calls4 small{display:block;margin-top:4px;font:500 10px/1 var(--fm);color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+.clock{display:flex;align-items:baseline;gap:10px;margin-top:12px;flex-wrap:wrap}
+.clock b{font:800 34px/1 var(--fm);color:var(--gold);letter-spacing:-.02em;text-shadow:0 0 18px rgba(242,192,64,.35)}
+.clock span{font:500 12.5px/1.3 var(--fm);color:var(--ink2)}
+
+/* desks */
+.r-pit{grid-area:pit;display:grid;grid-template-columns:1fr 1fr;gap:12px 12px;padding:30px 0 6px;position:relative}
+.r-pit::before{content:"The pit · four desks";position:absolute;top:4px;left:0;font:700 10.5px/1.2 var(--fm);letter-spacing:.11em;text-transform:uppercase;color:var(--ink2)}
+.desk{--c:var(--ink);position:relative;display:block;text-decoration:none;color:inherit;padding-bottom:28px;min-width:0}
+.desk .top{position:relative;border:2px solid var(--wall);border-radius:4px;background:var(--room);padding:8px;transition:border-color .2s,transform .25s var(--ease)}
+.desk:hover .top{border-color:var(--c)}
+.desk .mon{border-radius:4px;background:var(--screen);border:1px solid #20262f;padding:9px 8px;box-shadow:0 0 0 1px rgba(0,0,0,.6),0 0 22px -6px var(--c)}
+.desk .mon .row1{display:flex;align-items:center;gap:8px}
+.desk .mon .lg{font-size:30px}
+.desk .mon .nm{font:800 17px/1 var(--fb);font-stretch:115%}
+.desk .mon .vr{display:block;font:500 10.5px/1.2 var(--fm);color:var(--ink2);margin-top:3px}
+.desk .rk{margin-left:auto;font:800 22px/1 var(--fm);color:var(--c)}
+.desk dl{display:grid;grid-template-columns:minmax(0,auto) 1fr;gap:3px 8px;margin:9px 0 0;font:500 12px/1.25 var(--fm)}
+.desk dt{color:var(--ink2)}
+.desk dd{margin:0;text-align:right;font-weight:700;white-space:nowrap}
+.desk dt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.desk .chair{position:absolute;bottom:2px;left:50%;width:30px;height:22px;margin-left:-15px;border:2px solid var(--wall);border-top:none;border-radius:0 0 16px 16px;opacity:.75}
+.desk .lamp{position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
+.form{display:inline-flex;gap:3px;vertical-align:middle}
+.form i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.form .w{background:var(--gold)}.form .g{background:var(--green)}.form .r{background:var(--red)}.form .n{background:transparent;border:1px solid var(--ink3)}
+
+/* archive room */
+.r-arch{grid-area:arch}
+.r-arch .rhead{display:block;text-decoration:none;color:inherit;min-height:44px}
+.drawers{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px}
+.drawer{min-height:48px;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:5px 7px;border:1px solid var(--line2);border-left:4px solid var(--ink3);border-radius:3px;
+  background:linear-gradient(#1b2028,#161a21);text-decoration:none;color:inherit;font:600 11px/1.1 var(--fm);min-width:0}
+.drawer:hover{border-color:var(--gold)}
+.drawer b{font-size:12px}
+.drawer span{display:flex;align-items:center;gap:4px;color:var(--ink2);white-space:nowrap;overflow:hidden}
+.drawer .lg{font-size:14px}
+.drawer.nw{border-left-color:var(--red)}
+.drawer.hw{border-left-color:var(--gold)}
+.drawer.fresh{box-shadow:0 0 0 2px var(--gold)}
+/* scoreboard etc */
+.r-score{grid-area:score}.r-test{grid-area:test}.r-coming{grid-area:coming}.r-rules{grid-area:rules}.r-vault{grid-area:vault}.r-door{grid-area:door}
+.mini{padding:8px 10px 0;font:500 12px/1.35 var(--fm)}
+.mini li{display:flex;align-items:center;gap:6px;padding:2px 0}
+.mini ol,.mini ul{list-style:none;margin:0;padding:0}
+.mini .lg{font-size:15px}
+.mini b{margin-left:auto}
+.recmini{display:none;padding:12px 10px 0;margin-top:10px;border-top:1px dashed var(--line2)}
+.recmini p{margin:0 0 8px;font:500 11.5px/1.35 var(--fm);color:var(--ink2)}
+.recmini p b{display:block;color:var(--gold);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
+.spark{display:block;width:100%;height:56px;margin:8px 0 0;padding:0 10px}
+.dial{display:flex;align-items:center;gap:14px;padding:10px}
+.dial svg{width:92px;height:92px;flex:none}
+.dial p{margin:0;font:500 12.5px/1.4 var(--fm);color:var(--ink2)}
+.dial p b{color:var(--ink);font-size:22px;display:block;font-family:var(--fm)}
+.r-door{background:linear-gradient(90deg,var(--room),#0f1a13)}
+.exit{display:inline-block;margin:10px 10px 0;padding:5px 10px;border-radius:3px;background:#0d6b33;color:#eafff0;font:900 14px/1 var(--fb);font-stretch:125%;letter-spacing:.14em;box-shadow:0 0 18px rgba(67,209,124,.45)}
+.r-door .ez{font-size:26px;margin:10px 10px 0}
+
+/* ---------- places ---------- */
+.place{padding:0 var(--gut) 40px;max-width:1180px;margin:0 auto}
+.plaque{display:flex;align-items:flex-end;gap:14px;padding:26px 0 18px;border-bottom:5px double var(--wall);margin-bottom:22px;flex-wrap:wrap}
+.plaque .no{font:800 13px/1 var(--fm);color:#111;background:var(--gold);padding:7px 9px;border-radius:3px;letter-spacing:.06em;align-self:flex-start}
+.plaque .tx{flex:1;min-width:220px}
+.plaque .kick{font:700 11.5px/1.3 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.plaque h1{margin:6px 0 0;font:800 clamp(30px,8vw,60px)/1 var(--fb);font-stretch:115%;letter-spacing:-.02em;outline:none;text-wrap:balance}
+.plaque .sub{margin:10px 0 0;color:var(--ink2);max-width:62ch;font-size:15.5px}
+.sec{margin:34px 0 0}
+.sec>h2{margin:0 0 12px;font:800 22px/1.15 var(--fb);font-stretch:112%;letter-spacing:-.005em}
+.sec>h2 small{display:block;font:700 11px/1.3 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.sec>p{margin:0 0 12px;color:var(--ink2);max-width:64ch}
+.note{font:500 12.5px/1.5 var(--fm);color:var(--ink2);margin:10px 0 0;max-width:72ch}
+.panel{border:1px solid var(--line2);border-radius:8px;background:var(--room);padding:14px}
+.screen{border:1px solid #1d232c;border-radius:8px;background:var(--screen);padding:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 16px;border-radius:8px;border:1px solid var(--line2);background:var(--floor);
+  color:var(--ink);text-decoration:none;font:700 15px/1.1 var(--fb);cursor:pointer}
+.btn:hover{border-color:var(--gold)}
+.btn.pri{background:var(--gold);color:#121212;border-color:var(--gold)}
+.btn[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:not-allowed;border-style:dashed}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{text-decoration:none;min-height:44px;padding:8px 13px;border-radius:99px;border:1px solid var(--line2);background:var(--floor);cursor:pointer;font:600 13.5px/1 var(--fb);display:inline-flex;align-items:center;gap:7px}
+.chip .lg{font-size:18px}
+.chip[aria-pressed=true]{background:var(--ink);color:#111;border-color:var(--ink)}
+.grid2{display:grid;gap:14px}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat b{font:800 28px/1.05 var(--fm);letter-spacing:-.02em}
+.stat span{font:500 12px/1.35 var(--fm);color:var(--ink2)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 14px}
+
+/* number line instrument */
+.strip{position:relative;height:var(--h,150px);margin:6px 4px 0}
+.strip .axis{position:absolute;left:0;right:0;bottom:30px;height:2px;background:var(--line2)}
+.strip .zero{position:absolute;bottom:22px;width:1px;height:calc(100% - 26px);background:var(--ink3)}
+.strip .zero::after{content:"0";position:absolute;bottom:-18px;left:-4px;font:600 11px/1 var(--fm);color:var(--ink2)}
+.strip .tick{position:absolute;bottom:4px;transform:translateX(-50%);font:500 10.5px/1 var(--fm);color:var(--ink3)}
+.strip .mk{position:absolute;bottom:32px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px}
+.strip .mk .lg{font-size:24px;box-shadow:0 0 0 2px var(--screen)}
+.strip .mk b{font:800 11.5px/1 var(--fm);background:var(--screen);padding:1px 3px;border-radius:3px;white-space:nowrap}
+.strip .mk .stem{width:1px;background:var(--line2)}
+.strip .mk.you .dot{width:22px;height:22px;border-radius:50%;background:var(--gold);color:#111;display:grid;place-items:center;font:900 10px/1 var(--fb)}
+.strip .real{position:absolute;bottom:22px;top:0;width:3px;margin-left:-1.5px;background:var(--ink);box-shadow:0 0 12px rgba(238,232,220,.5)}
+.strip .real span{position:absolute;top:0;left:7px;white-space:nowrap;font:800 12px/1 var(--fm);background:var(--ink);color:#111;padding:3px 5px;border-radius:3px}
+.strip .real.l span{left:auto;right:7px}
+
+/* live board place */
+.board{position:relative;border:5px double var(--wall);border-radius:6px;background:#020304;padding:16px;
+  background-image:radial-gradient(rgba(242,192,64,.06) 1px,transparent 1.2px);background-size:5px 5px}
+.board .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.board .head .co-mark{--s:52px}
+.board .head h2{margin:0;font:800 30px/1 var(--fb);font-stretch:112%}
+.board .head p{margin:4px 0 0;font:500 12.5px/1.3 var(--fm);color:var(--ink2)}
+.callrow{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px}
+.callrow a{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #1d232c;border-radius:6px;background:#06090c;text-decoration:none;min-height:56px}
+.callrow a:hover{border-color:var(--gold)}
+.callrow .lg{font-size:30px}
+.callrow b{font:800 20px/1 var(--fm)}
+.callrow small{display:block;font:500 11px/1.2 var(--fm);color:var(--ink2)}
+.mycall{margin-top:14px}
+.mycall .dir{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mycall .dir button{min-height:56px;border-radius:8px;border:2px solid var(--line2);background:var(--floor);font:800 18px/1 var(--fb);font-stretch:112%;cursor:pointer}
+.mycall .dir button[aria-pressed=true].u{background:var(--green);border-color:var(--green);color:#06210f}
+.mycall .dir button[aria-pressed=true].d{background:var(--red);border-color:var(--red);color:#2a0805}
+.size{display:flex;align-items:center;gap:10px;margin-top:12px}
+.size button{width:48px;height:48px;border-radius:8px;border:1px solid var(--line2);background:var(--floor);font:800 22px/1 var(--fm);cursor:pointer;flex:none}
+.size input{flex:1;min-width:0;accent-color:var(--gold);height:44px}
+.size output{font:800 22px/1 var(--fm);min-width:86px;text-align:right}
+.saved{margin-top:10px;font:600 13px/1.4 var(--fm);color:var(--gold)}
+
+/* rounds */
+.ledger{display:grid;gap:8px}
+.lrow{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--ink3);border-radius:6px;background:var(--room);text-decoration:none;min-height:56px}
+.lrow:hover{border-color:var(--gold)}
+.lrow.nw{border-left-color:var(--red)}.lrow.hw{border-left-color:var(--gold)}
+.lrow .n{font:800 13px/1 var(--fm);color:var(--ink2);width:36px}
+.lrow .c{display:flex;align-items:center;gap:9px;min-width:0}
+.lrow .c .co-mark{--s:30px}
+.lrow .c b{font:700 15.5px/1.15 var(--fb);overflow:hidden;text-overflow:ellipsis}
+.lrow .c small{display:block;font:500 11px/1.2 var(--fm);color:var(--ink2)}
+.lrow .o{font:800 15px/1 var(--fm);text-align:right}
+.lrow .o small{display:block;margin-top:4px;font:600 11px/1 var(--fm);color:var(--ink2)}
+.lrow .cl{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.cell{display:flex;align-items:center;gap:5px;padding:5px 6px;border-radius:4px;font:700 12px/1 var(--fm);background:#0b0e12;border:1px solid transparent;white-space:nowrap;min-width:0}
+.cell .lg{font-size:15px}
+.cell.r{color:var(--red)}.cell.g{color:var(--green)}.cell.w{color:var(--gold);border-color:var(--gold)}.cell.e{color:var(--ink3)}
+.empty{padding:20px;border:1px dashed var(--line2);border-radius:8px;color:var(--ink2);text-align:center}
+.rcalls{display:grid;gap:8px}
+.rcall{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--room)}
+.rcall .lg{font-size:36px}
+.rcall .who b{font:800 17px/1.1 var(--fb);font-stretch:112%}
+.rcall .who small{display:block;font:500 11.5px/1.3 var(--fm);color:var(--ink2)}
+.rcall .said{font:800 20px/1 var(--fm);text-align:right}
+.rcall .said small{display:block;margin-top:4px;font:600 11.5px/1.2 var(--fm);color:var(--ink2)}
+.rcall .bar2{grid-column:1/-1;height:6px;border-radius:3px;background:#0b0e12;overflow:hidden}
+.rcall .bar2 i{display:block;height:100%;border-radius:3px}
+.rcall.w{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.crown{display:inline-block;margin-left:6px;padding:3px 6px;border-radius:3px;background:var(--gold);color:#111;font:800 10px/1 var(--fm);letter-spacing:.08em;vertical-align:2px}
+.verdict{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.verdict .panel b{display:block;font:800 30px/1 var(--fm)}
+.verdict .panel>span{display:block;margin-top:6px;font:500 12px/1.35 var(--fm);color:var(--ink2)}
+.film{position:relative;border:5px double var(--wall);border-radius:6px;overflow:hidden;background:#000;max-width:560px}
+.film video{display:block;width:100%;height:auto;aspect-ratio:1/1;background:#000}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:28px;flex-wrap:wrap}
+
+/* desk place */
+.deskhead{display:flex;gap:14px;align-items:center}
+.deskhead .lg{font-size:64px;box-shadow:0 0 30px -4px var(--c)}
+.big-rank{font:800 64px/1 var(--fm);color:var(--c);margin-left:auto}
+.bulls{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+.bulls figure{margin:0}
+.bulls svg{display:block;width:100%;max-width:340px;margin:0 auto;height:auto}
+.bulls figcaption{text-align:center;font:700 13px/1.3 var(--fm);margin-top:4px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font:500 12px/1.3 var(--fm);color:var(--ink2);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+
+/* scoreboard */
+.stand{display:grid;gap:8px}
+.srow{display:grid;grid-template-columns:44px 1fr auto;gap:4px 12px;align-items:center;padding:12px;border-radius:8px;background:var(--room);border:1px solid var(--line);text-decoration:none}
+.srow:hover{border-color:var(--gold)}
+.srow .rk{font:800 34px/1 var(--fm);color:var(--ink3)}
+.srow:first-child .rk{color:var(--gold)}
+.srow .who{display:flex;align-items:center;gap:10px;min-width:0}
+.srow .who .lg{font-size:34px}
+.srow .who b{font:800 18px/1 var(--fb);font-stretch:112%}
+.srow .who small{display:block;font:500 11.5px/1.3 var(--fm);color:var(--ink2);margin-top:3px}
+.srow .wins{text-align:right;font:800 26px/1 var(--fm)}
+.srow .wins small{display:block;font:600 10.5px/1 var(--fm);color:var(--ink2);margin-top:3px;letter-spacing:.06em;text-transform:uppercase}
+.srow .nums{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font:500 11px/1.3 var(--fm);color:var(--ink2)}
+.srow .nums b{display:block;color:var(--ink);font-size:15px}
+.plaques{display:grid;gap:10px}
+.plq{padding:14px;border-radius:6px;background:linear-gradient(160deg,#2a2412,#15130c);border:1px solid #5d4c1a}
+.plq small{font:700 11px/1.2 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.plq b{display:block;margin-top:6px;font:800 22px/1.1 var(--fb);font-stretch:110%}
+.plq p{margin:6px 0 0;color:var(--ink2);font-size:14px}
+.plq a{color:var(--ink)}
+.finds{display:grid;gap:12px}
+.find{padding:16px;border-radius:8px;background:var(--room);border:1px solid var(--line2)}
+.find small{font:700 11px/1.2 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.find h3{margin:6px 0 6px;font:800 21px/1.15 var(--fb);font-stretch:110%}
+.find p{margin:0;color:var(--ink2);font-size:14.5px}
+.find .fs{display:flex;flex-wrap:wrap;gap:18px;margin-top:12px}
+.find .fs b{display:block;font:800 22px/1 var(--fm)}
+.find .fs span{font:500 11.5px/1.3 var(--fm);color:var(--ink2)}
+.find .now{margin-top:10px;font:700 13px/1.35 var(--fm);color:var(--gold)}
+.find.fun{background:#f4e7a8;color:#1e1b12;border-color:#f4e7a8;transform:rotate(-.6deg)}
+.find.fun p,.find.fun small,.find.fun .fs span{color:#4d4632}
+
+/* chart */
+.chart{position:relative}
+.chart svg{display:block;overflow:visible}
+.rc-l{position:absolute;left:0;right:0;font:600 12px/1.15 var(--fm);color:var(--ink2);white-space:nowrap}
+.rc-l b{display:block;color:var(--ink);font-weight:700}
+.rc-l.rc-lead b,.rc-l.rc-lead span{color:var(--gold)}
+.rc-tip{position:absolute;top:0;width:190px;padding:8px 10px;border-radius:6px;background:#000;border:1px solid var(--line2);font:500 12px/1.4 var(--fm);pointer-events:none;z-index:2}
+.rc-tip p{margin:0 0 4px;font-weight:700}
+.rc-tip div{display:flex;justify-content:space-between;gap:10px}
+.rc-tip em{font-style:normal}.rc-tip em.u{color:var(--green)}.rc-tip em.d{color:var(--red)}
+.rc-tu{color:var(--ink2)}
+table.cmp{width:100%;border-collapse:collapse;font:500 13px/1.3 var(--fm);table-layout:fixed}
+.cmp th,.cmp td{padding:10px 6px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}
+.cmp th:first-child,.cmp td:first-child{text-align:left;color:var(--ink2);width:30%}
+.cmp thead th{font:800 13px/1.1 var(--fb)}
+.cmp thead .lg{font-size:24px;display:block;margin:0 0 4px auto}
+.cmp td b{font-size:15px}
+.cmp td.best b{color:var(--gold)}
+
+/* coming */
+.sched{display:grid;gap:6px}
+.srow2{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;padding:9px 12px;border-radius:6px;background:var(--room);border:1px solid var(--line);min-height:52px}
+.srow2 .n{font:800 13px/1 var(--fm);color:var(--ink2)}
+.srow2 .c{display:flex;align-items:center;gap:9px;min-width:0;font-weight:700}
+.srow2 .c .co-mark{--s:28px}
+.srow2 .c span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srow2 .d{font:600 12px/1.2 var(--fm);color:var(--ink2);text-align:right}
+.srow2.hl{border-color:var(--gold)}
+.srow2.now{border-color:var(--red);background:#1a1012}
+.season{height:14px;border-radius:7px;background:#0b0e12;border:1px solid var(--line2);overflow:hidden;display:flex}
+.season i{display:block;height:100%}
+
+/* rules */
+.rules{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:r}
+.rules li{counter-increment:r;display:grid;grid-template-columns:56px 1fr;gap:12px;padding:16px;border-radius:8px;background:var(--room);border:1px solid var(--line2)}
+.rules li::before{content:counter(r);font:800 40px/1 var(--fm);color:var(--gold)}
+.rules b{display:block;font:800 20px/1.15 var(--fb);font-stretch:110%}
+.rules span{display:block;margin-top:4px;color:var(--ink2)}
+
+/* vault */
+.vaultdoor{display:grid;gap:18px;align-items:center}
+.vaultdoor svg{width:100%;max-width:340px;margin:0 auto;display:block}
+.flow{display:grid;gap:10px}
+.flow .panel h3{margin:0 0 4px;font:800 18px/1.15 var(--fb);font-stretch:110%}
+.flow .panel p{margin:0;color:var(--ink2);font-size:14.5px}
+.outs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.outs div{padding:10px;border-radius:6px;background:#0b0e12;border:1px solid var(--line)}
+.outs b{display:block;font:800 14px/1.2 var(--fb)}
+.outs span{display:block;font-size:12.5px;line-height:1.35;color:var(--ink2);margin-top:4px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.steps li{padding:12px;border-radius:6px;border:1px solid var(--line);background:var(--room)}
+.steps li b{font:800 16px/1.2 var(--fb)}
+.steps li.now{border-color:var(--gold)}
+.steps li em{font-style:normal;margin-left:8px;font:800 10px/1 var(--fm);background:var(--gold);color:#111;padding:3px 6px;border-radius:3px;vertical-align:2px;letter-spacing:.08em}
+.steps li span{display:block;color:var(--ink2);font-size:14px;margin-top:3px}
+.est .row{margin-top:12px}
+.est .row>span{display:block;font:700 11px/1.2 var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);margin-bottom:8px}
+.est .out{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.est .out b{display:block;font:800 30px/1 var(--fm);color:var(--gold)}
+.est .out span{display:block;font:500 12.5px/1.4 var(--fm);color:var(--ink2);margin-top:6px}
+.wipe{margin-top:16px;padding:14px;border-radius:6px;border:2px solid var(--red);color:var(--ink);font:800 20px/1.2 var(--fb);font-stretch:110%;background:rgba(255,92,79,.08)}
+
+/* door */
+.doorsteps{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:d}
+.doorsteps li{counter-increment:d;padding:16px;border-radius:8px;background:var(--room);border:1px solid var(--line2)}
+.doorsteps li::before{content:"Step " counter(d);display:block;font:700 11px/1.2 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.doorsteps b{display:block;font:800 19px/1.2 var(--fb);font-stretch:110%}
+.doorsteps p{margin:6px 0 0;color:var(--ink2)}
+.addr{margin-top:10px;padding:10px 12px;border-radius:6px;border:1px dashed var(--line2);font:600 13px/1.4 var(--fm);color:var(--ink2);word-break:break-all}
+.disc{margin-top:26px;padding:14px;border-top:1px solid var(--line);font:500 13px/1.5 var(--fm);color:var(--ink2)}
+
+/* plan sheet */
+.sheet{position:fixed;inset:0;z-index:50;background:rgba(5,6,8,.72);display:flex;justify-content:flex-end}
+.sheet[hidden]{display:none}
+.sheet .in{width:min(420px,100%);height:100%;overflow:auto;background:var(--floor);border-left:5px double var(--wall);padding:14px var(--gut) 30px}
+.sheet .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sheet .hd b{font:800 20px/1 var(--fb);font-stretch:118%}
+.sheet .close{min-width:44px;min-height:44px;border-radius:8px;border:1px solid var(--line2);background:var(--room);cursor:pointer;font:700 18px/1 var(--fm)}
+.sheet h4{margin:18px 0 6px;font:700 11px/1.2 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.sheet nav a{display:flex;align-items:center;gap:10px;min-height:46px;padding:6px 10px;border-radius:6px;text-decoration:none;border:1px solid transparent}
+.sheet nav a:hover{border-color:var(--line2);background:var(--room)}
+.sheet nav a[aria-current=page]{border-color:var(--gold);background:#1c1a12}
+.sheet nav a .lg{font-size:22px}
+.sheet nav a small{margin-left:auto;font:600 11.5px/1 var(--fm);color:var(--ink2)}
+.sheet .rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.sheet .rgrid a{justify-content:center;border:1px solid var(--line2);font:700 13px/1 var(--fm)}
+
+.foot{padding:26px var(--gut) 40px;border-top:1px solid var(--line);margin-top:20px;font:500 12.5px/1.6 var(--fm);color:var(--ink2);text-align:center}
+.foot .ez{font-size:16px;vertical-align:-2px;margin-right:4px}
+.foot b{color:var(--ink)}
+
+/* zoom lens */
+.lens{position:fixed;z-index:40;pointer-events:none;border:5px double var(--gold);background:rgba(242,192,64,.06)}
+
+@media (min-width:700px){
+  :root{--gut:24px}
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .callrow{grid-template-columns:repeat(4,1fr)}
+  .grid2{grid-template-columns:1fr 1fr}
+  .bulls{grid-template-columns:repeat(2,1fr)}
+  .plaques{grid-template-columns:repeat(3,1fr)}
+  .finds{grid-template-columns:1fr 1fr}
+  .flow{grid-template-columns:1fr 1fr}
+  .vaultdoor{grid-template-columns:340px 1fr}
+  .verdict{grid-template-columns:repeat(4,1fr)}
+  .rcalls{grid-template-columns:1fr 1fr}
+}
+@media (min-width:1000px){
+  .lobby{grid-template-columns:1fr 380px;align-items:end;padding-top:26px;max-width:1280px;margin:0 auto}
+  .building,.entrance{max-width:1232px;margin-left:auto;margin-right:auto}
+  .building{padding:18px}
+  .plan{grid-template-columns:1.05fr 1fr 1fr 1fr 1.05fr;gap:18px;
+    grid-template-areas:"arch board board board score" "arch pit pit pit score" "arch pit pit pit test" "rules coming vault vault door"}
+  .r-pit{grid-template-columns:repeat(4,1fr);align-content:start}
+  .desk dl{font-size:11px;gap:3px 4px}
+  .recmini{display:block!important}
+  .drawers{grid-template-columns:1fr 1fr}
+  .r-board .co b{font-size:30px}
+  .clock b{font-size:44px}
+  .bulls{grid-template-columns:repeat(4,1fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<a class="sr" href="#placeView">Skip to content</a>
+<header class="bar" id="bar">
+  <a class="home" href="#floor" aria-label="Back to the floor"><span class="ez" aria-hidden="true"><b class="d">$</b><b class="e">E</b><b class="z">Z</b></span></a>
+  <div class="crumbs" id="crumbs"></div>
+  <button class="minimap" id="mmBtn" type="button" aria-haspopup="dialog" aria-controls="sheet"><span>Plan</span><svg id="mm" viewBox="0 0 30 38" aria-hidden="true"></svg></button>
+</header>
+
+<main>
+  <section class="view" id="floorView" aria-label="The floor"></section>
+  <section class="view" id="placeView" hidden tabindex="-1"></section>
+</main>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Floor plan" hidden>
+  <div class="in" id="sheetIn"></div>
+</div>
+
+<footer class="foot" id="foot"></footer>
+
+<script src="ez-data.js"></script>
+<script src="ez-story.js"></script>
+<script>
+(function(){
+"use strict";
+var S=EZS,P=S.live,M=S.models,R=ROUNDS;
+var RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+var COL={GPT:"#46c8e0",KIMI:"#a98bff",CLAUDE:"#ff9a62",GROK:"#e9e4d8"},EXTRA=["#7fe0a0","#f07fb8","#d9d36a","#8fc1ff"];
+function col(m){return COL[m]||EXTRA[M.indexOf(m)%EXTRA.length]}
+function esc(s){return S.esc(s)}
+function $(s,el){return (el||document).querySelector(s)}
+function $$(s,el){return Array.prototype.slice.call((el||document).querySelectorAll(s))}
+function slug(m){return String(m).toLowerCase()}
+function rowOf(m){return S.rows.filter(function(r){return r.m===m})[0]}
+function rank(m){return M.indexOf(m)+1}
+function hitTxt(r){return r.right+" of "+r.n}
+function rnd(n){return R.filter(function(r){return r.n===n})[0]}
+function dn(c){return /^DOWN/.test(c[1])}
+function okc(r,c){return dn(c)===(r.a<0)}
+function cls(r,c){if(!c)return "e";return S.winners(r).indexOf(c[0])>-1?"w":okc(r,c)?"g":"r"}
+function winTxt(r){var w=S.winners(r);return w.length?w.map(S.nm).join(" & "):"No winner"}
+function liveCall(m){return P?P.calls.filter(function(c){return c.m===m})[0]:null}
+function close(){return P?S.closeAt(P.resolves,P.ticker):null}
+function fmtX(x){return x>=10?String(Math.round(x)):x.toFixed(1)}
+var STORE_SEEN="ez36-seen",STORE_CALLS="ez36-mycalls",STORE_FILTER="ez36-filter",STORE_CMP="ez36-compare";
+
+/* ---------- return use: what changed since this browser was last here ---------- */
+var prevSeen=S.store.get(STORE_SEEN);
+var since=S.since(STORE_SEEN);
+var freshRounds=since?since.graded.map(function(r){return r.n}):[];
+function myCalls(){return S.store.get(STORE_CALLS)||{}}
+function gradeMine(r,mc){if(!mc)return null;var v=(mc.dir==="DOWN"?-1:1)*mc.mag,ok=(v<0)===(r.a<0),off=Math.abs(v-r.a);
+  var best=Math.min.apply(null,r.calls.filter(function(c){return okc(r,c)}).map(function(c){return parseFloat(c[2])}).concat([Infinity]));
+  return {v:v,ok:ok,off:off,beat:ok&&off<best}}
+
+/* ---------- places and their rooms on the floor ---------- */
+var ROOMS={live:{no:"01",name:"The Big Board"},archive:{no:"02",name:"Archive"},score:{no:"03",name:"Scoreboard wall"},test:{no:"04",name:"The test room"},
+  coming:{no:"05",name:"Coming up"},rules:{no:"06",name:"Floor rules"},vault:{no:"07",name:"The vault"},door:{no:"08",name:"Exit · Get $EZ"}};
+function deskNo(m){return "D"+(M.indexOf(m)+1)}
+
+function parse(h){h=decodeURIComponent(h||"").replace(/^#\/?/,"").toLowerCase().trim();var m;
+  if(!h||h==="floor"||h==="home"||h==="map")return {k:"floor"};
+  if(h==="live"||h==="board"||h==="now"||h==="call")return {k:"live"};
+  if((m=h.match(/^round-?(\d+)$/))){var n=+m[1],r=rnd(n);if(r)return {k:"round",r:r};if(P&&P.n===n)return {k:"live"};
+    if(UPCOMING.some(function(u){return u.n===n}))return {k:"coming",hl:n};return {k:"floor",miss:h}}
+  if((m=h.match(/^(?:ai|desk)-(\w+)$/))){var mm=M.filter(function(x){return slug(x)===m[1]})[0];if(mm)return {k:"ai",m:mm};return {k:"floor",miss:h}}
+  if((m=h.match(/^compare(?:-([a-z-]+))?$/))){var sel=(m[1]||"").split("-").map(function(x){return M.filter(function(y){return slug(y)===x})[0]}).filter(Boolean);return {k:"test",sel:sel}}
+  if(h==="archive"||h==="rounds"||h==="record"||h==="results")return {k:"archive"};
+  if(h==="scoreboard"||h==="standings"||h==="leaderboard"||h==="findings")return {k:"score"};
+  if(h==="test"||h==="learning")return {k:"test"};
+  if(h==="coming"||h==="next"||h==="upcoming"||h==="schedule")return {k:"coming"};
+  if(h==="rules"||h==="grading")return {k:"rules"};
+  if(h==="buyback"||h==="vault")return {k:"vault"};
+  if(h==="get"||h==="get-ez"||h==="buy"||h==="exit")return {k:"door"};
+  return {k:"floor",miss:h};
+}
+function roomOf(p){return p.k==="round"?"archive":p.k==="ai"?"ai-"+p.m:p.k}
+
+/* ---------- small instruments ---------- */
+function formHTML(m){return '<span class="form" aria-label="Last five: '+S.form(m,5).map(function(f){return {w:"won",g:"right way",r:"wrong way",n:"no call"}[f]}).join(", ")+'">'+
+  S.form(m,5).map(function(f){return '<i class="'+f+'"></i>'}).join("")+'</span>'}
+var FORMKEY='<span class="legend" style="margin-top:6px"><span><i style="background:var(--gold);border-radius:2px"></i>won</span><span><i style="background:var(--green);border-radius:2px"></i>right way</span><span><i style="background:var(--red);border-radius:2px"></i>wrong way</span><span><i style="border:1px solid var(--ink3);border-radius:2px"></i>no call</span></span>';
+
+/* a number line: where each AI's call sits, and (once graded) where the stock went */
+function strip(marks,real,opt){opt=opt||{};var vals=marks.map(function(k){return k.v});if(real!=null)vals.push(real);vals.push(0);
+  var lo=Math.min.apply(null,vals.concat([-1])),hi=Math.max.apply(null,vals.concat([1])),pad=(hi-lo)*.12;lo-=pad;hi+=pad;
+  function X(v){return (v-lo)/(hi-lo)*100}
+  var sorted=marks.slice().sort(function(a,b){return a.v-b.v}),lanes=[];
+  sorted.forEach(function(k){var x=X(k.v),l=0;while(lanes[l]!=null&&x-lanes[l]<15)l++;lanes[l]=x;k.lane=l});
+  var maxL=Math.max.apply(null,sorted.map(function(k){return k.lane}).concat([0]));
+  var h=Math.max(opt.h||130,80+maxL*44+ (real!=null?24:0));
+  var step=(hi-lo)>12?5:(hi-lo)>5?2:1,ticks="";for(var t=Math.ceil(lo/step)*step;t<=hi;t+=step){if(t!==0)ticks+='<span class="tick" style="left:'+X(t)+'%">'+(t>0?"+":"−")+Math.abs(t)+'%</span>'}
+  var html='<div class="strip" style="--h:'+h+'px" role="img" aria-label="'+esc(opt.label||"Calls on a line from down to up")+'"><div class="axis"></div>'+ticks+
+    '<div class="zero" style="left:'+X(0)+'%"></div>';
+  if(real!=null)html+='<div class="real'+(X(real)>62?' l':'')+'" style="left:'+X(real)+'%"><span>Stock '+(real<0?"▼ ":"▲ ")+Math.abs(real)+'%</span></div>';
+  sorted.forEach(function(k){var st=6+k.lane*44;
+    html+='<div class="mk'+(k.you?' you':'')+'" style="left:'+X(k.v)+'%">'+(k.you?'<span class="dot">YOU</span>':logo(k.m))+'<b class="'+(k.v<0?'dn':'up')+'">'+k.t+'</b><span class="stem" style="height:'+st+'px"></span></div>'});
+  return html+'</div>'}
+
+/* bullseye: the centre is what the stock did; distance out = points off */
+function bullseye(m,size){var sh=S.shots[m]||[],W=200,C=100,MAX=26;function rr(o){return Math.sqrt(Math.min(o,MAX)/MAX)*88}
+  var s='<svg viewBox="0 0 200 200" role="img" aria-label="'+esc(S.nm(m))+': '+sh.length+' calls around the bullseye">';
+  [26,10,5,1].forEach(function(o,i){s+='<circle cx="'+C+'" cy="'+C+'" r="'+rr(o)+'" fill="'+(i%2?'#0d1116':'#11161d')+'" stroke="rgba(238,232,220,.16)"/>'});
+  [1,5,10].forEach(function(o){s+='<text x="'+(C+3)+'" y="'+(C-rr(o)+9)+'" font-size="7" fill="rgba(238,232,220,.45)" font-family="var(--fm)">'+o+' pt'+(o>1?'s':'')+'</text>'});
+  s+='<circle cx="'+C+'" cy="'+C+'" r="3" fill="var(--ink)"/>';
+  sh.forEach(function(x,i){var a=-Math.PI/2+(R.indexOf(x.r))/R.length*Math.PI*2,r=rr(x.off),cx=C+Math.cos(a)*r,cy=C+Math.sin(a)*r;
+    s+='<g><title>Round '+x.r.n+' · '+esc(S.co(x.r))+': '+esc(x.said)+', '+x.off.toFixed(2)+' points off'+(x.won?', won':x.ok?', right way':', wrong way')+'</title>'+
+      (x.won?'<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="8" fill="none" stroke="var(--gold)" stroke-width="2"/>':'')+
+      '<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="5" fill="'+(x.ok?'var(--green)':'var(--red)')+'" stroke="#000" stroke-width="1"/></g>'});
+  return s+'</svg>'}
+var BULLKEY='<div class="legend"><span><i style="background:var(--green)"></i>right way</span><span><i style="background:var(--red)"></i>wrong way</span><span><i style="border:2px solid var(--gold)"></i>won the round</span><span>Round 1 sits at 12 o\'clock, then clockwise.</span></div>';
+
+/* hit rate after each round, one line per AI */
+function hitChart(el,sel){var W=Math.max(280,el.clientWidth||600),H=W<520?230:280,pl=34,pr=W<520?96:120,pt=12,pb=26,N=R.length;
+  function X(i){return pl+(W-pl-pr)*(i)/(N-1||1)}function Y(p){return pt+(H-pt-pb)*(1-p/100)}
+  var s='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Hit rate after each round">';
+  [0,50,100].forEach(function(p){s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(p)+'" y2="'+Y(p)+'" stroke="var(--line)"/><text x="'+(pl-6)+'" y="'+(Y(p)+4)+'" text-anchor="end" font-size="11" fill="var(--ink2)" font-family="var(--fm)">'+p+'%</text>'});
+  [0,Math.floor((N-1)/2),N-1].forEach(function(i){s+='<text x="'+X(i)+'" y="'+(H-6)+'" text-anchor="middle" font-size="11" fill="var(--ink2)" font-family="var(--fm)">R'+R[i].n+'</text>'});
+  var labs=[];
+  sel.forEach(function(m){var pts=S.hitPath[m].map(function(p,i){return p?[X(i),Y(p.pct),p]:null}).filter(Boolean);if(!pts.length)return;
+    s+='<path d="'+pts.map(function(p,k){return (k?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)}).join("")+'" fill="none" stroke="'+col(m)+'" stroke-width="2.5" stroke-linejoin="round"/>';
+    pts.forEach(function(p){s+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="2.6" fill="'+col(m)+'"/>'});
+    var e=pts[pts.length-1];labs.push({m:m,y:e[1],p:e[2]})});
+  labs.sort(function(a,b){return a.y-b.y});for(var i=1;i<labs.length;i++)if(labs[i].y-labs[i-1].y<30)labs[i].y=labs[i-1].y+30;
+  var ov=labs.length?labs[labs.length-1].y-(H-pb):0;if(ov>0)labs.forEach(function(l){l.y-=ov});
+  labs.forEach(function(l){s+='<text x="'+(W-pr+10)+'" y="'+(l.y-1)+'" font-size="12" font-weight="700" fill="'+col(l.m)+'" font-family="var(--fm)">'+S.nm(l.m)+' '+l.p.pct+'%</text>'+
+    '<text x="'+(W-pr+10)+'" y="'+(l.y+13)+'" font-size="11" fill="var(--ink2)" font-family="var(--fm)">'+rowOf(l.m).right+' of '+l.p.calls+' right</text>'});
+  el.innerHTML=s+'</svg>'}
+
+function sparkHTML(){var W=200,H=50,N=R.length,s='<svg class="spark" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">';
+  s+='<line x1="0" x2="'+W+'" y1="'+H/2+'" y2="'+H/2+'" stroke="rgba(238,232,220,.15)" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>';
+  M.forEach(function(m){var pts=S.hitPath[m].map(function(p,i){return p?[W*i/(N-1),4+(H-8)*(1-p.pct/100)]:null}).filter(Boolean);
+    s+='<path d="'+pts.map(function(p,k){return (k?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)}).join("")+'" fill="none" stroke="'+col(m)+'" stroke-width="2" vector-effect="non-scaling-stroke"/>'});
+  return s+'</svg>'}
+
+function dialSVG(sz){var r=40,c=2*Math.PI*r,p=S.pot/100;
+  var s='<svg viewBox="0 0 100 100" aria-hidden="true" style="width:'+(sz||92)+'px;height:'+(sz||92)+'px"><circle cx="50" cy="50" r="48" fill="#1b1f26" stroke="var(--wall)" stroke-width="1.5"/>'+
+    '<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="rgba(238,232,220,.28)" stroke-width="12"/>'+
+    '<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="var(--gold)" stroke-width="12" stroke-dasharray="'+(c*p).toFixed(2)+' '+c.toFixed(2)+'" transform="rotate(-90 50 50)"/>';
+  for(var i=0;i<8;i++){var a=i/8*Math.PI*2;s+='<line x1="'+(50+Math.cos(a)*14)+'" y1="'+(50+Math.sin(a)*14)+'" x2="'+(50+Math.cos(a)*26)+'" y2="'+(50+Math.sin(a)*26)+'" stroke="var(--wall)" stroke-width="2.4" stroke-linecap="round"/>'}
+  return s+'<circle cx="50" cy="50" r="10" fill="#0b0d10" stroke="var(--wall)" stroke-width="2"/></svg>'}
+
+/* ---------- the floor ---------- */
+function slipHTML(){var out=[],mc=myCalls();
+  if(!prevSeen){out.push('<p>First time on the floor. The board up front is the live round. Every desk, room and round has its own link, so you can come back to any of them.</p>')}
+  else if(since){var g=since.graded;
+    out.push('<p><b>'+g.length+' round'+(g.length>1?'s':'')+' graded</b> since your last visit: '+g.map(function(r){return '<a href="#round-'+r.n+'">Round '+r.n+' · '+esc(S.co(r))+'</a> ('+(r.win?esc(winTxt(r))+' won':'no winner')+')'}).join(", ")+'.</p>');
+    if(since.leadChanged)out.push('<p>The lead changed. '+esc(S.nm(S.board[0].m))+' is on top now.</p>');
+    g.forEach(function(r){var y=gradeMine(r,mc[r.n]);if(y)out.push('<p>Your call on Round '+r.n+' was '+(y.ok?'the right way':'the wrong way')+', '+y.off.toFixed(2)+' points off.'+(y.beat?' You beat every AI.':'')+'</p>')})}
+  else{var d=new Date(prevSeen.t);out.push('<p>Nothing new graded since you were here on '+d.toLocaleDateString("en-US",{month:"short",day:"numeric"})+'. '+(P?'Round '+P.n+' is still open.':'')+'</p>')}
+  return '<aside class="slip" aria-label="While you were out"><h2>While you were out</h2>'+out.join("")+'</aside>'}
+
+function renderFloor(){var b=S.rows,cl=close(),left=cl?S.left(cl):null,mc=P?myCalls()[P.n]:null;
+  var h='<div class="lobby"><div><h1>We\'re teaching AIs to bet. <em>The market grades them.</em></h1>'+
+    '<p class="line" style="margin-top:10px">Before a company reports earnings, '+S.word(M.length)+' AI models call how its stock will react: up or down, and by how much. <b>Nobody said it would be EZ.</b></p></div>'+slipHTML()+'</div>';
+  h+='<div class="building"><div class="plan">';
+  /* the big board */
+  if(P){h+='<a class="room r-board" href="#live" data-room="live"><span class="tag"><span class="no">01</span> The Big Board · front wall</span><div class="scr">'+
+    '<span class="live"><i></i>LIVE · ROUND '+P.n+' OF '+S.total+'</span>'+
+    '<div class="co">'+coMark(P.ticker)+'<div><b>'+esc(P.co)+'</b><span>'+esc(P.ticker)+' · the calls are in</span></div></div>'+
+    '<div class="calls4">'+P.calls.map(function(c){return '<div>'+logo(c.m)+'<b class="'+(c.dir==="DOWN"?'dn':'up')+'">'+S.liveTxt(c)+'</b><small>'+S.nm(c.m)+'</small></div>'}).join("")+'</div>'+
+    '<div class="clock"><b data-left>'+(left||"Closed")+'</b><span>'+(left?'to the close in Taipei · graded '+fmtDate(P.resolves):'The market has closed. The grade is on its way.')+'</span></div>'+
+    '</div><span class="go">'+(mc?'Your call: '+(mc.dir==="DOWN"?"▼ ":"▲ ")+mc.mag+'% · change it →':'Make your own call →')+'</span><i class="door b" aria-hidden="true"></i></a>'}
+  /* desks */
+  h+='<div class="r-pit">'+b.map(function(r){var m=r.m,lc=liveCall(m);
+    return '<a class="desk" href="#ai-'+slug(m)+'" data-room="ai-'+m+'" style="--c:'+col(m)+'"><div class="top"><i class="lamp" aria-hidden="true"></i><div class="mon"><div class="row1">'+logo(m)+
+      '<div><span class="nm">'+S.nm(m)+'</span><span class="vr">'+esc(r.ver)+'</span></div><span class="rk" aria-label="Rank '+rank(m)+'">#'+rank(m)+'</span></div>'+
+      '<dl><dt>Wins</dt><dd>'+r.won+'</dd><dt>Right way</dt><dd>'+hitTxt(r)+'</dd><dt>$100K is</dt><dd class="'+(r.bal>=S.STAKE?'up':'dn')+'">'+r.roi+'</dd>'+
+      (lc?'<dt>On '+esc(P.co)+'</dt><dd class="'+(lc.dir==="DOWN"?'dn':'up')+'">'+S.liveTxt(lc)+'</dd>':'')+'</dl></div></div><i class="chair" aria-hidden="true"></i><span class="sr">Desk '+deskNo(m)+'</span></a>'}).join("")+'</div>';
+  /* archive */
+  h+='<div class="room r-arch"><a class="rhead" href="#archive" data-room="archive"><span class="tag"><span class="no">02</span> Archive'+(freshRounds.length?'<span class="new">'+freshRounds.length+' new</span>':'')+'</span><h3>Every graded round</h3></a>'+
+    '<div class="drawers">'+R.slice().reverse().map(function(r){var w=S.winners(r);
+      return '<a class="drawer'+(w.length?' hw':' nw')+(freshRounds.indexOf(r.n)>-1?' fresh':'')+'" href="#round-'+r.n+'" data-room="archive" aria-label="Round '+r.n+', '+esc(S.co(r))+', '+esc(winTxt(r))+'"><b>R'+r.n+'</b><span>'+
+        (w.length?w.map(function(m){return logo(m)}).join(""):'<span class="dn">none</span>')+' '+esc(r.ticker)+'</span></a>'}).join("")+'</div>'+
+    '<a class="go" href="#archive" data-room="archive" style="text-decoration:none">Open the archive →</a><i class="door t" aria-hidden="true"></i></div>';
+  /* scoreboard */
+  h+='<a class="room r-score" href="#scoreboard" data-room="score"><span class="tag"><span class="no">03</span> Scoreboard'+(since&&since.leadChanged?'<span class="new">new lead</span>':'')+'</span><h3>Standings</h3><div class="mini"><ol>'+
+    b.map(function(r,i){return '<li><span class="mono">'+(i+1)+'</span>'+logo(r.m)+S.nm(r.m)+'<b>'+r.won+' W</b></li>'}).join("")+'</ol></div><div class="recmini"><p><b>Longest streak</b>'+S.nm(S.records.streak.m)+', '+S.records.streak.rs.length+' in a row</p><p><b>Closest call</b>'+S.nm(S.records.closest.m)+', '+S.records.closest.off.toFixed(2)+' pts ('+esc(S.records.closest.r.co)+')</p><p><b>Biggest miss</b>'+S.nm(S.records.worst.m)+', '+S.records.worst.off.toFixed(2)+' pts ('+esc(S.records.worst.r.co)+')</p></div><span class="go">Records, findings →</span><i class="door b" aria-hidden="true"></i></a>';
+  /* the test */
+  h+='<a class="room r-test" href="#test" data-room="test"><span class="tag"><span class="no">04</span> Test room</span><h3>Are they learning?</h3>'+sparkHTML()+'<span class="go">Compare AIs →</span><i class="door b" aria-hidden="true"></i></a>';
+  /* coming */
+  h+='<a class="room r-coming" href="#coming" data-room="coming"><span class="tag"><span class="no">05</span> Coming up</span><h3>Next on the board</h3><div class="mini"><ul>'+
+    S.upcoming(3).map(function(u){return '<li><span class="mono mute">R'+u.n+'</span> '+esc(u.co)+'<b class="mute">'+fmtDate(u.called)+'</b></li>'}).join("")+'</ul></div><span class="go">Season schedule →</span><i class="door b" aria-hidden="true"></i></a>';
+  /* rules */
+  h+='<a class="room r-rules" href="#rules" data-room="rules"><span class="tag"><span class="no">06</span> Floor rules</span><h3>How we grade</h3><div class="mini"><ol>'+
+    S.rules.map(function(x,i){return '<li><span class="mono au">'+(i+1)+'</span>'+esc(x[0].replace(/\.$/,""))+'</li>'}).join("")+'</ol></div><span class="go">Read the rules →</span><i class="door b" aria-hidden="true"></i></a>';
+  /* vault */
+  h+='<a class="room r-vault" href="#buyback" data-room="vault"><span class="tag"><span class="no">07</span> The vault</span><h3>An AI with one goal: buy back $EZ</h3><div class="dial">'+dialSVG()+
+    '<p><b class="au">'+S.pot+'%</b>of every fee goes to the pot. The top AI bets it on NVIDIA at '+S.lev+'x.<br><span style="color:var(--ink)">'+S.ops+'%</span> runs operations.</p></div><span class="go">Open the vault →</span><i class="door t" aria-hidden="true"></i></a>';
+  /* door */
+  h+='<a class="room r-door" href="#get" data-room="door"><span class="exit">EXIT</span><span class="ez" aria-hidden="true"><b class="d">$</b><b class="e">E</b><b class="z">Z</b></span><h3 style="margin-top:8px">Get $EZ</h3><span class="go" style="color:var(--green)">The way out, at launch →</span><i class="door b" aria-hidden="true"></i></a>';
+  h+='</div></div><div class="entrance"><span class="gap"></span><span class="you"><i></i>You are here · the entrance</span></div>';
+  $("#floorView").innerHTML=h}
+
+/* ---------- places ---------- */
+function plaque(no,kick,title,sub){return '<div class="plaque"><span class="no">'+no+'</span><div class="tx"><div class="kick">'+kick+'</div><h1 tabindex="-1">'+title+'</h1>'+(sub?'<p class="sub">'+sub+'</p>':'')+'</div></div>'}
+function shareBtn(text){return '<a class="btn" target="_blank" rel="noopener" href="'+S.post(text,location.href.split("#")[0]+location.hash)+'">Share this place on X</a>'}
+
+function placeLive(){if(!P)return plaque("01","The Big Board","Nothing live right now")+'<p>The next round starts soon. <a href="#coming">See what\'s coming.</a></p>';
+  var cl=close(),left=S.left(cl),mc=myCalls()[P.n]||null,f=S.findings.filter(function(x){return x.now})[0];
+  var h=plaque("01","The Big Board · live · Round "+P.n+" of "+S.total,esc(S.co(P)),"The calls are in. The market answers at the close, then the round is graded. Calls the day before, the grade after the market answers.");
+  h+='<div class="board"><div class="head">'+coMark(P.ticker)+'<div><h2>'+esc(P.co)+'</h2><p>Calls filed '+fmtDate(P.called)+' · graded at the market close on '+fmtDate(P.resolves)+'</p></div></div>'+
+    '<div class="clock"><b data-left>'+(left||"Closed")+'</b><span>'+(left?'to the close · '+cl.toLocaleString("en-US",{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})+' your time (Taipei closes 05:30 UTC)':'The market has closed. The grade is on its way.')+'</span></div>'+
+    '<div class="callrow">'+P.calls.map(function(c){return '<a href="#ai-'+slug(c.m)+'">'+logo(c.m)+'<span><small>'+S.nm(c.m)+'</small><b class="'+(c.dir==="DOWN"?'dn':'up')+'">'+S.liveTxt(c)+'</b></span></a>'}).join("")+'</div>'+
+    (f?'<p class="note" style="color:var(--gold)">'+esc(f.now)+' <a href="#scoreboard" style="color:var(--ink)">When they all agree, see what happened before.</a></p>':'')+
+    '<div id="liveStrip" style="margin-top:14px"></div></div>';
+  h+='<div class="sec panel mycall" id="mycall"><h2 style="margin:0 0 4px;font:800 22px/1.1 var(--fb);font-stretch:112%">Your call</h2><p class="mute" style="margin:0 0 12px">Up or down, and by how much. It stays in this browser. Come back after the close to see how far off you were.</p>'+
+    '<div class="dir" role="group" aria-label="Direction"><button type="button" class="u" data-dir="UP" aria-pressed="false">▲ Up</button><button type="button" class="d" data-dir="DOWN" aria-pressed="false">▼ Down</button></div>'+
+    '<div class="size"><button type="button" data-step="-0.25" aria-label="Smaller move">−</button><input type="range" id="mag" min="0.25" max="10" step="0.25" value="'+(mc?mc.mag:1.5)+'" aria-label="Size of the move in percent"><button type="button" data-step="0.25" aria-label="Bigger move">+</button><output id="magOut" aria-live="polite"></output></div>'+
+    '<div class="btns"><button class="btn pri" type="button" id="lock"'+(left?'':' disabled')+'>'+(mc?'Update my call':'Lock in my call')+'</button>'+(mc?'<button class="btn" type="button" id="clear">Clear it</button>':'')+'</div><p class="saved" id="saved" aria-live="polite"></p></div>';
+  h+='<div class="sec"><h2><small>Season</small>Round '+P.n+' of '+S.total+'</h2>'+seasonBar()+'<div class="btns"><a class="btn" href="#coming">What\'s coming next</a><a class="btn" href="#rules">How it gets graded</a>'+shareBtn("Round "+P.n+" · "+S.co(P)+": the AI calls are in. "+P.calls.map(function(c){return S.nm(c.m)+" "+S.liveTxt(c)}).join(", ")+".")+'</div></div>';
+  return h}
+function wireLive(){if(!P)return;var mc=myCalls()[P.n]||null,dir=mc?mc.dir:null,mag=$("#mag"),out=$("#magOut");
+  function draw(){var v=+mag.value;out.textContent=(dir==="DOWN"?"▼ ":dir==="UP"?"▲ ":"")+v+"%";out.className=dir==="DOWN"?"dn":dir==="UP"?"up":"";
+    $$(".dir button").forEach(function(b){b.setAttribute("aria-pressed",b.getAttribute("data-dir")===dir?"true":"false")});
+    var marks=P.calls.map(function(c){return {m:c.m,v:c.v,t:S.liveTxt(c)}});
+    if(dir)marks.push({you:1,v:(dir==="DOWN"?-1:1)*v,t:(dir==="DOWN"?"▼ ":"▲ ")+v+"%"});
+    $("#liveStrip").innerHTML=strip(marks,null,{label:"The four calls and yours on a line from down to up"})}
+  $$(".dir button").forEach(function(b){b.addEventListener("click",function(){dir=b.getAttribute("data-dir");draw()})});
+  $$(".size button").forEach(function(b){b.addEventListener("click",function(){mag.value=Math.min(10,Math.max(.25,+mag.value+ +b.getAttribute("data-step")));draw()})});
+  mag.addEventListener("input",draw);
+  function msg(){var c=myCalls()[P.n];$("#saved").textContent=c?"Locked: "+(c.dir==="DOWN"?"▼ ":"▲ ")+c.mag+"% on "+P.co+", saved "+new Date(c.t).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})+". Only this browser knows.":""}
+  $("#lock").addEventListener("click",function(){if(!dir){$("#saved").textContent="Pick up or down first.";return}var all=myCalls();all[P.n]={dir:dir,mag:+mag.value,t:Date.now()};S.store.set(STORE_CALLS,all);msg();$("#lock").textContent="Update my call"});
+  var cb=$("#clear");if(cb)cb.addEventListener("click",function(){var all=myCalls();delete all[P.n];S.store.set(STORE_CALLS,all);dir=null;draw();msg();cb.remove()});
+  draw();msg()}
+function seasonBar(){var g=R.length,p=PENDING.length,t=S.total;
+  return '<div class="season" role="img" aria-label="'+g+' graded, '+p+' live, '+UPCOMING.length+' to come, of '+t+' rounds"><i style="width:'+(g/t*100)+'%;background:var(--gold)"></i><i style="width:'+(p/t*100)+'%;background:var(--red)"></i></div>'+
+    '<p class="note">'+g+' graded · '+p+' live · '+UPCOMING.length+' to come. Zeason one has '+t+' rounds.</p>'}
+
+function placeArchive(){var f=S.store.get(STORE_FILTER)||"all";
+  var h=plaque("02","Archive","Every prediction, on the record.","Graded at the first market close after earnings. The AIs get TradingView's closing price, so they can't make shit up. "+R.length+" rounds so far, never edited.");
+  var opts=[["all","All "+R.length]].concat(M.map(function(m){return ["w-"+slug(m),"Won by "+S.nm(m)]})).concat([["none","No winner"],["up","Stock went up"],["down","Stock went down"]]);
+  h+='<div class="chips" role="group" aria-label="Filter rounds">'+opts.map(function(o){return '<button type="button" class="chip" data-f="'+o[0]+'" aria-pressed="'+(o[0]===f)+'">'+(o[0].indexOf("w-")===0?logo(M.filter(function(m){return "w-"+slug(m)===o[0]})[0]):'')+esc(o[1])+'</button>'}).join("")+'</div>';
+  h+='<p class="note" id="fcount" aria-live="polite"></p><div class="ledger" id="ledger" style="margin-top:10px"></div>';
+  h+='<p class="note">Each row: the four calls, coloured <span class="au">gold</span> for the winner, <span class="up">green</span> for the right way, <span class="dn">red</span> for the wrong way.</p>';
+  return h}
+function wireArchive(){function draw(f){var rs=R.slice().reverse().filter(function(r){var w=S.winners(r);
+      if(f==="all")return true;if(f==="none")return !w.length;if(f==="up")return r.a>0;if(f==="down")return r.a<0;return w.some(function(m){return "w-"+slug(m)===f})});
+    $("#fcount").textContent=rs.length+" of "+R.length+" rounds";
+    $("#ledger").innerHTML=rs.length?rs.map(function(r){var w=S.winners(r);
+      return '<a class="lrow '+(w.length?'hw':'nw')+'" href="#round-'+r.n+'"><span class="n">R'+r.n+'</span><span class="c">'+coMark(r.ticker)+'<span><b>'+esc(S.co(r))+'</b><small>'+fmtDate(r.called)+' → '+fmtDate(r.resolves)+'</small></span></span>'+
+        '<span class="o '+(r.a<0?'dn':'up')+'">'+S.outTxt(r)+'<small>'+(w.length?esc(winTxt(r)):'<span class="dn">No winner</span>')+'</small></span>'+
+        '<span class="cl">'+M.map(function(m){var c=callOf(r,m);return '<span class="cell '+cls(r,c)+'">'+logo(m)+(c?S.callTxt(c):"no call")+'</span>'}).join("")+'</span></a>'}).join(""):'<div class="empty">No rounds match that yet.</div>'}
+  $$(".chips .chip").forEach(function(b){b.addEventListener("click",function(){var f=b.getAttribute("data-f");$$(".chips .chip").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});S.store.set(STORE_FILTER,f);draw(f)})});
+  draw(S.store.get(STORE_FILTER)||"all")}
+
+function placeRound(r){var w=S.winners(r),i=R.indexOf(r),prev=R[i-1],next=R[i+1],mc=gradeMine(r,myCalls()[r.n]);
+  var maxOff=Math.max.apply(null,r.calls.map(function(c){return parseFloat(c[2])}));
+  var h=plaque("R"+r.n,"Archive · Round "+r.n+(r.tag?" · "+esc(r.tag.charAt(0)+r.tag.slice(1).toLowerCase()):""),esc(S.co(r)),(r.head?esc(r.head)+". ":"")+"Calls filed "+fmtDate(r.called)+". Graded at the close on "+fmtDate(r.resolves)+".");
+  h+='<div class="verdict"><div class="panel"><b class="'+(r.a<0?'dn':'up')+'">'+S.outTxt(r)+'</b><span>What the stock did ('+esc(r.out)+')</span></div>'+
+    '<div class="panel"><b class="'+(w.length?'au':'dn')+'">'+(w.length?w.map(function(m){return logo(m)}).join(" ")+' '+esc(winTxt(r)):'No winner')+'</b><span>'+(w.length>1?'A dead heat: equal distance':w.length?'Closest of the AIs that got the direction right':'Every AI called the wrong direction')+'</span></div>'+
+    '<div class="panel"><b>'+r.calls.filter(function(c){return okc(r,c)}).length+' of '+r.calls.length+'</b><span>AIs called the direction right</span></div>'+
+    '<div class="panel"><b>'+(w.length?parseFloat(callOf(r,w[0])[2]).toFixed(2):Math.min.apply(null,r.calls.map(function(c){return parseFloat(c[2])})).toFixed(2))+'</b><span>'+(w.length?'Points off for the winner':'Points off for the closest call, still the wrong way')+'</span></div></div>';
+  h+='<div class="sec"><h2><small>The calls</small>Who said what, and how far off</h2><div class="rcalls">'+r.calls.slice().sort(function(a,b){return parseFloat(a[2])-parseFloat(b[2])}).map(function(c){var k=cls(r,c);
+    return '<div class="rcall '+k+'">'+logo(c[0])+'<div class="who"><b><a href="#ai-'+slug(c[0])+'" style="text-decoration:none">'+S.nm(c[0])+'</a>'+(k==="w"?'<span class="crown">WON</span>':'')+'</b><small>'+esc(S.ver(c[0]))+' · '+(okc(r,c)?'right way':'wrong way, out')+'</small></div>'+
+      '<div class="said '+(dn(c)?'dn':'up')+'">'+S.callTxt(c)+'<small>'+c[2]+' points off</small></div><div class="bar2" aria-hidden="true"><i style="width:'+(parseFloat(c[2])/maxOff*100)+'%;background:'+(k==="w"?'var(--gold)':k==="g"?'var(--green)':'var(--red)')+'"></i></div></div>'}).join("")+'</div>';
+  h+='<div class="screen" style="margin-top:12px">'+strip(r.calls.map(function(c){return {m:c[0],v:(dn(c)?-1:1)*parseFloat(c[1].split(" ")[1]),t:S.callTxt(c)}}).concat(mc?[{you:1,v:mc.v,t:(mc.v<0?"▼ ":"▲ ")+Math.abs(mc.v)+"%"}]:[]),r.a,{label:"Calls against the real move"})+'</div>';
+  if(mc)h+='<p class="saved">Your call: '+(mc.v<0?"▼ ":"▲ ")+Math.abs(mc.v)+'%, '+(mc.ok?'the right way':'the wrong way')+', '+mc.off.toFixed(2)+' points off.'+(mc.beat?' You beat every AI.':'')+'</p>';
+  h+='</div>';
+  if(r.film)h+='<div class="sec"><h2><small>The film</small>Round '+r.n+' in under a minute</h2><div class="film"><video controls muted playsinline loop preload="none" poster="'+MEDIA+r.poster+'.jpg" aria-label="Film of round '+r.n+'"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video></div></div>';
+  h+='<div class="pager">'+(prev?'<a class="btn" href="#round-'+prev.n+'">← Round '+prev.n+' · '+esc(prev.co)+'</a>':'<span></span>')+
+    (next?'<a class="btn" href="#round-'+next.n+'">Round '+next.n+' · '+esc(next.co)+' →</a>':P?'<a class="btn pri" href="#live">Round '+P.n+' is live →</a>':'')+'</div>';
+  h+='<div class="btns"><a class="btn" href="#archive">All rounds</a>'+shareBtn("Round "+r.n+" · "+S.co(r)+": stock "+S.outTxt(r)+". "+(w.length?winTxt(r)+" won.":"No winner. Every AI got the direction wrong."))+'</div>';
+  return h}
+
+function placeAI(m){var r=rowOf(m),lc=liveCall(m),rec=S.records,c=col(m),fl=S.follow.filter(function(x){return x.m===m})[0],first=S.first[m];
+  var h='<div style="--c:'+c+'">'+plaque(deskNo(m),"The pit · Desk "+deskNo(m),esc(S.nm(m))+"'s desk",esc(r.ver)+" is the model in play."+(first>1?" Joined in Round "+first+", so the sample is small: "+hitTxt(r)+" right so far.":""));
+  h+='<div class="deskhead">'+logo(m)+'<div><div class="mono mute" style="font-size:12px">RANK</div><div style="font:800 22px/1.1 var(--fb)">'+(rank(m)===1?'Top of the floor':'Number '+rank(m)+' of '+M.length)+'</div><div style="margin-top:6px">'+formHTML(m)+' <span class="mono mute" style="font-size:12px">last 5</span></div></div><span class="big-rank">#'+rank(m)+'</span></div>'+FORMKEY;
+  h+='<div class="sec panel"><div class="stats">'+
+    '<div class="stat"><b class="au">'+r.won+'</b><span>rounds won</span></div>'+
+    '<div class="stat"><b>'+r.hit+'%</b><span>hit rate: '+hitTxt(r)+' right on direction</span></div>'+
+    '<div class="stat"><b>'+r.avg+'</b><span>avg miss, points off the real move</span></div>'+
+    '<div class="stat"><b class="'+(r.bal>=S.STAKE?'up':'dn')+'">'+r.roi+'</b><span>ROI: '+S.usd(S.STAKE)+' rolled through every call</span></div></div>'+
+    '<p class="note">Simulated, before fees.</p></div>';
+  if(lc)h+='<div class="sec"><h2><small>On the board now</small>Round '+P.n+' · '+esc(S.co(P))+'</h2><a class="lrow" href="#live" style="grid-template-columns:auto 1fr auto">'+'<span style="font-size:30px;display:inline-flex">'+logo(m)+'</span>'+'<span><b style="font:700 15px var(--fb)">'+S.nm(m)+' says</b><small class="mono mute" style="display:block;font-size:11px">graded '+fmtDate(P.resolves)+'</small></span><span class="o '+(lc.dir==="DOWN"?'dn':'up')+'" style="font:800 22px var(--fm)">'+S.liveTxt(lc)+'</span></a></div>';
+  h+='<div class="sec"><h2><small>Copy it with '+S.usd(S.STAKE)+'</small>'+(fl?S.usd(fl.bal)+' <span class="'+(fl.bal>=S.STAKE?'up':'dn')+'">'+S.pct(fl.bal)+'</span>':'No graded calls yet')+'</h2><p>All in on every '+S.nm(m)+' call: buy on an up call, short on a down call. In before the report, out at the next close. Simulated, before fees.</p></div>';
+  h+='<div class="sec"><h2><small>The bullseye</small>How close did '+S.nm(m)+' get?</h2><p>The centre is what the stock did. Each dot is one call. Red dots missed the direction. Closer to the centre is better.</p><div class="bulls" style="grid-template-columns:1fr;max-width:420px"><figure>'+bullseye(m)+'</figure></div>'+BULLKEY+'</div>';
+  var recs=[];if(rec.streak.m===m)recs.push("Longest winning streak: "+rec.streak.rs.length+" in a row ("+rec.streak.rs.map(function(x){return x.co}).join(", ")+")");
+  if(rec.closest.m===m)recs.push("Closest call: "+rec.closest.off.toFixed(2)+" points off ("+rec.closest.r.co+")");
+  if(rec.worst.m===m)recs.push("Biggest miss: "+rec.worst.off.toFixed(2)+" points off ("+rec.worst.r.co+")");
+  if(recs.length)h+='<div class="sec"><h2><small>On the scoreboard wall</small>Record'+(recs.length>1?'s':'')+' held</h2><div class="plaques">'+recs.map(function(t){var p=t.split(": ");return '<div class="plq"><small>'+esc(p[0])+'</small><b>'+esc(p[1])+'</b></div>'}).join("")+'</div></div>';
+  h+='<div class="sec"><h2><small>Every call</small>'+S.nm(m)+'\'s record</h2><div class="ledger">'+R.slice().reverse().map(function(rr){var cc=callOf(rr,m);if(!cc)return "";var k=cls(rr,cc);
+    return '<a class="lrow '+(k==="w"?'hw':k==="r"?'nw':'')+'" href="#round-'+rr.n+'"><span class="n">R'+rr.n+'</span><span class="c">'+coMark(rr.ticker)+'<span><b>'+esc(S.co(rr))+'</b><small>stock '+S.outTxt(rr)+'</small></span></span><span class="o '+(dn(cc)?'dn':'up')+'">'+S.callTxt(cc)+'<small>'+(k==="w"?'<span class="au">won</span> · ':'')+cc[2]+' pts off</small></span></a>'}).join("")+'</div></div>';
+  h+='<div class="sec"><h2><small>Next desk</small>Walk the pit</h2><div class="chips">'+M.filter(function(x){return x!==m}).map(function(x){return '<a class="chip" href="#ai-'+slug(x)+'">'+logo(x)+S.nm(x)+'</a>'}).join("")+
+    '<a class="chip" href="#compare-'+slug(m)+'-'+slug(M.filter(function(x){return x!==m})[0])+'">Compare '+S.nm(m)+' with another AI</a></div><div class="btns">'+shareBtn(S.nm(m)+" on Earnings Zeason: "+r.won+" wins, "+hitTxt(r)+" right on direction, "+S.usd(S.STAKE)+" copied is now "+(fl?S.usd(fl.bal):S.usd(S.STAKE))+".")+'</div></div></div>';
+  return h}
+
+function placeScore(){var rec=S.records,hl=S.highlights;
+  var h=plaque("03","Scoreboard wall","Standings","Ranked by rounds won, then by the smaller average miss.");
+  h+='<div class="stand">'+S.rows.map(function(r,i){return '<a class="srow" href="#ai-'+slug(r.m)+'"><span class="rk">'+(i+1)+'</span><span class="who">'+logo(r.m)+'<span><b>'+S.nm(r.m)+'</b><small>'+esc(r.ver)+'</small></span></span><span class="wins">'+r.won+'<small>wins</small></span>'+
+    '<span class="nums"><span><b>'+r.hit+'%</b>'+hitTxt(r)+' right</span><span><b>'+r.avg+'</b>avg miss</span><span><b class="'+(r.bal>=S.STAKE?'up':'dn')+'">'+r.roi+'</b>'+S.usd(r.bal)+'</span><span><b>'+formHTML(r.m)+'</b>last 5</span></span></a>'}).join("")+'</div>';
+  h+='<p class="note">Hit rate: calls right on direction. Avg miss: points off the real move. ROI: '+S.usd(S.STAKE)+' rolled through every call. Simulated, before fees. '+M.filter(function(m){return S.first[m]>1}).map(function(m){return S.nm(m)+' joined in Round '+S.first[m]+', so read its '+rowOf(m).hit+'% as '+hitTxt(rowOf(m))+'.'}).join(" ")+'</p>'+FORMKEY;
+  h+='<div class="sec"><h2><small>Record holders</small>Plaques on the wall</h2><div class="plaques">'+
+    '<div class="plq"><small>Longest winning streak</small><b>'+S.nm(rec.streak.m)+', '+rec.streak.rs.length+' in a row</b><p>'+rec.streak.rs.map(function(x){return '<a href="#round-'+x.n+'">'+esc(x.co)+'</a>'}).join(", ")+'</p></div>'+
+    '<div class="plq"><small>Closest call</small><b>'+S.nm(rec.closest.m)+', '+rec.closest.off.toFixed(2)+' points off</b><p><a href="#round-'+rec.closest.r.n+'">'+esc(rec.closest.r.co)+'</a></p></div>'+
+    '<div class="plq"><small>Biggest miss</small><b>'+S.nm(rec.worst.m)+', '+rec.worst.off.toFixed(2)+' points off</b><p><a href="#round-'+rec.worst.r.n+'">'+esc(rec.worst.r.co)+'</a></p></div></div></div>';
+  h+='<div class="sec"><h2><small>Highlights</small>The rounds people talk about</h2><div class="plaques" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">'+
+    '<a class="find" href="#round-'+hl.closest.r.n+'" style="text-decoration:none"><small>Closest call</small><h3>'+hl.closest.off.toFixed(2)+' pts</h3><p>'+S.nm(hl.closest.m)+' on '+esc(hl.closest.r.co)+', about '+fmtX(hl.closeX)+'x closer than the average call.</p></a>'+
+    '<a class="find" href="#round-'+hl.tight.r.n+'" style="text-decoration:none"><small>Tightest race</small><h3>'+esc(hl.tight.r.co)+'</h3><p>'+hl.tight.v.toFixed(2)+' points off on average. A usual round is '+hl.avgRound.toFixed(1)+'.</p></a>'+
+    '<a class="find" href="#round-'+hl.big.n+'" style="text-decoration:none"><small>Biggest move</small><h3>'+esc(hl.big.co)+' '+esc(hl.big.out)+'</h3><p>'+hl.bigX.toFixed(1)+'x the average move.</p></a>'+
+    '<a class="find" href="#round-'+hl.wrong.n+'" style="text-decoration:none"><small>Everyone was wrong</small><h3>'+esc(hl.wrong.co)+'</h3><p>'+hl.noWinner.length+' of '+R.length+' rounds had no winner.</p></a></div></div>';
+  h+='<div class="sec"><h2><small>Unusual findings</small>Patterns in '+R.length+' rounds</h2><p>Each one needs at least five cases. Small samples change with every round, so treat these as curiosities. Not advice.</p><div class="finds">'+
+    S.findings.map(function(f){return '<div class="find'+(f.fun?' fun':'')+'"><small>'+esc(f.k)+'</small><h3>'+esc(f.head)+'</h3><p>'+esc(f.expl)+'</p><div class="fs">'+f.stats.map(function(s){return '<div><b>'+esc(s[0])+'</b><span>'+esc(s[1])+'</span></div>'}).join("")+'</div>'+
+      '<p class="note" style="margin-top:8px">Based on '+esc(f.base)+'.</p>'+(f.now?'<p class="now">'+esc(f.now)+'</p>':'')+'</div>'}).join("")+'</div></div>';
+  return h}
+
+var cmpSel=null;
+function placeTest(p){var stored=S.store.get(STORE_CMP);cmpSel=(p.sel&&p.sel.length?p.sel:(stored&&stored.length?stored.filter(function(m){return M.indexOf(m)>-1}):M.slice())).slice();if(cmpSel.length<1)cmpSel=M.slice();
+  var h=plaque("04","The test room","Are they learning?","You don't have to trust us. See for yourself. Pick the AIs to put side by side.");
+  h+='<div class="chips" role="group" aria-label="Choose AIs to compare">'+M.map(function(m){return '<button type="button" class="chip" data-m="'+m+'" aria-pressed="'+(cmpSel.indexOf(m)>-1)+'">'+logo(m)+S.nm(m)+'</button>'}).join("")+'</div><div id="cmpBody"></div>';
+  return h}
+function wireTest(){function draw(){var sel=M.filter(function(m){return cmpSel.indexOf(m)>-1});S.store.set(STORE_CMP,sel);
+    var h='<div class="sec"><h2><small>Side by side</small>'+sel.map(S.nm).join(" vs ")+'</h2><div class="panel" style="padding:6px 10px;overflow:hidden"><table class="cmp"><thead><tr><th scope="col"><span class="sr">Measure</span></th>'+sel.map(function(m){return '<th scope="col">'+logo(m)+S.nm(m)+'</th>'}).join("")+'</tr></thead><tbody>';
+    function row(lbl,f,best){var vals=sel.map(function(m){return f(rowOf(m),m)}),b=best?best(sel):null;
+      h+='<tr><th scope="row">'+lbl+'</th>'+vals.map(function(v,i){return '<td'+(b===sel[i]?' class="best"':'')+'>'+v+'</td>'}).join("")+'</tr>'}
+    function top(key,low){return function(ms){return ms.slice().sort(function(a,b){var x=rowOf(a)[key],y=rowOf(b)[key];x=+x;y=+y;return low?x-y:y-x})[0]}}
+    row("Rank",function(r,m){return '<b>#'+rank(m)+'</b>'});
+    row("Wins",function(r){return '<b>'+r.won+'</b>'},top("won"));
+    row("Right way",function(r){return '<b>'+r.hit+'%</b><br><span class="mute">'+hitTxt(r)+'</span>'});
+    row("Avg miss",function(r){return '<b>'+r.avg+'</b><br><span class="mute">pts</span>'},top("avg",true));
+    row(S.usd(S.STAKE)+" became",function(r){return '<b class="'+(r.bal>=S.STAKE?'up':'dn')+'">'+r.roi+'</b><br><span class="mute">'+S.usd(r.bal)+'</span>'},top("bal"));
+    row("Last 5",function(r,m){return formHTML(m)});
+    if(P)row("On "+esc(P.co),function(r,m){var c=liveCall(m);return c?'<b class="'+(c.dir==="DOWN"?'dn':'up')+'">'+S.liveTxt(c)+'</b>':'<span class="mute">no call</span>'});
+    h+='</tbody></table></div><p class="note">Gold marks the best of the AIs you picked. A right-way rate needs its count: '+sel.map(function(m){return S.nm(m)+' '+hitTxt(rowOf(m))}).join(", ")+'. Link to this comparison: <a href="#compare-'+sel.map(slug).join("-")+'">#compare-'+sel.map(slug).join("-")+'</a></p></div>';
+    h+='<div class="sec"><h2><small>Direction</small>How often were they right about the stock\'s direction?</h2><p>The running hit rate after each round. Only up or down counts here, not the size.</p><div class="screen"><div class="chart" id="hitC"></div></div></div>';
+    h+='<div class="sec"><h2><small>Size</small>How close did they get?</h2><p>The bullseye is what the stock did. Each dot is one call. A red dot missed the direction. The closer to the centre, the better.</p><div class="bulls">'+sel.map(function(m){return '<figure>'+bullseye(m)+'<figcaption style="color:'+col(m)+'">'+S.nm(m)+' · avg miss '+rowOf(m).avg+'</figcaption></figure>'}).join("")+'</div>'+BULLKEY+'</div>';
+    h+='<div class="sec"><h2><small>Money</small>Would copying them have paid you?</h2><p>Each AI starts with '+S.usd(S.STAKE)+' and goes all in on every call. The dashed line is a plain bet that every stock goes up.</p><div class="grid2" style="margin-bottom:12px">'+
+      S.follow.map(function(f){return '<a class="srow" href="#ai-'+slug(f.m)+'" style="grid-template-columns:1fr auto"><span class="who">'+logo(f.m)+'<span><b>'+S.nm(f.m)+'</b><small>'+f.n+' calls</small></span></span><span class="wins '+(f.bal>=S.STAKE?'up':'dn')+'" style="font-size:20px">'+S.usd(f.bal)+'<small>'+S.pct(f.bal)+'</small></span></a>'}).join("")+
+      '</div><div class="screen"><div class="chart" id="raceC"></div></div><p class="note">Simulated, before fees. Buy on an up call, short on a down call. In before the report, out at the next close. Always up ends at '+S.usd(S.always.bal)+'.</p></div>';
+    $("#cmpBody").innerHTML=h;hitChart($("#hitC"),sel);try{S.mountRace($("#raceC"),{label:"What "+S.usd(S.STAKE)+" became, round by round"})}catch(e){}}
+  $$(".chips .chip[data-m]").forEach(function(b){b.addEventListener("click",function(){var m=b.getAttribute("data-m"),i=cmpSel.indexOf(m);
+    if(i>-1){if(cmpSel.length>1)cmpSel.splice(i,1)}else cmpSel.push(m);
+    $$(".chips .chip[data-m]").forEach(function(x){x.setAttribute("aria-pressed",cmpSel.indexOf(x.getAttribute("data-m"))>-1?"true":"false")});draw()})});
+  draw()}
+
+function placeComing(p){var all=UPCOMING,k=p.hl?Math.max(12,all.findIndex(function(u){return u.n===p.hl})+4):12;
+  var h=plaque("05","Coming up","What's on the schedule","Calls the day before, the grade after the market answers. Round "+(P?P.n:R.length)+" of "+S.total+" in Zeason one.");
+  h+=seasonBar();
+  h+='<div class="sec"><h2><small>Next</small>The queue</h2><div class="sched" id="sched">';
+  if(P)h+='<a class="srow2 now" href="#live" style="text-decoration:none"><span class="n dn">LIVE R'+P.n+'</span><span class="c">'+coMark(P.ticker)+'<span>'+esc(S.co(P))+'</span></span><span class="d">graded '+fmtDate(P.resolves)+'</span></a>';
+  h+=all.map(function(u,i){return '<div class="srow2'+(u.n===p.hl?' hl':'')+'" id="up-'+u.n+'"'+(i>=k?' hidden':'')+'><span class="n">R'+u.n+'</span><span class="c">'+coMark(u.ticker)+'<span>'+esc(S.co(u))+'</span></span><span class="d">calls '+fmtDate(u.called)+'</span></div>'}).join("")+'</div>';
+  if(all.length>k)h+='<div class="btns"><button class="btn" type="button" id="more">Show all '+all.length+' upcoming rounds</button></div>';
+  h+='</div>';return h}
+function wireComing(p){var b=$("#more");if(b)b.addEventListener("click",function(){$$("#sched [hidden]").forEach(function(x){x.hidden=false});b.remove()});
+  if(p.hl){var e=$("#up-"+p.hl);if(e)setTimeout(function(){e.scrollIntoView({block:"center",behavior:RM?"auto":"smooth"})},RM?0:420)}}
+
+function placeRules(){var h=plaque("06","Floor rules","How we grade","Four rules, the same every round. Graded at the first market close after earnings.");
+  h+='<ol class="rules">'+S.rules.map(function(x){return '<li><div><b>'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></div></li>'}).join("")+'</ol>';
+  h+='<div class="btns"><a class="btn" href="#archive">See the rules applied to every round</a>'+(P?'<a class="btn pri" href="#live">Watch Round '+P.n+'</a>':'')+'</div>';return h}
+
+function placeVault(){var h=plaque("07","The vault","An AI with one goal: buy back $EZ","Every $EZ trade pays a fee. Here is where it goes.");
+  h+='<div class="vaultdoor"><div>'+dialSVG(320).replace('style="width:320px;height:320px"','style="width:100%;max-width:320px;height:auto;display:block;margin:0 auto"')+'<p class="note" style="text-align:center;margin:10px auto 0"><span class="au">Gold: the pot, '+S.pot+'%.</span> Grey: operations, '+S.ops+'%.</p></div><div class="flow">'+
+    '<div class="panel" style="border-color:var(--gold)"><div class="stat"><b class="au">'+S.pot+'%</b><span>The pot</span></div><h3 style="margin-top:10px">The top AI bets it</h3><p>The model on top of the leaderboard takes the pot and bets it on NVIDIA\'s earnings at '+S.lev+'x leverage on Hyperliquid. '+'<span style="font-size:22px;display:inline-flex;gap:6px;vertical-align:middle">'+nvLogo()+hlLogo()+'</span>'+'</p>'+
+      '<div class="outs"><div><b class="up">Winning trade</b><span>The profits buy back $EZ.</span></div><div><b class="dn">Losing trade</b><span>The pot shrinks.</span></div><div><b>Next round</b><span>The pot rides on the next call.</span></div></div></div>'+
+    '<div class="panel"><div class="stat"><b>'+S.ops+'%</b><span>Operations</span></div><h3 style="margin-top:10px">Keeps the lights on</h3><p>It keeps the project running, then pays for what\'s next:</p><ol class="steps" style="margin-top:10px">'+
+      S.steps.map(function(s){return '<li'+(s[2]?' class="now"':'')+'><b>'+esc(s[0])+'</b>'+(s[2]?'<em>NOW</em>':'')+'<span>'+esc(s[1])+'</span></li>'}).join("")+'</ol></div></div></div>';
+  h+='<p class="wipe">The pot can be wiped out. A '+S.lev+'x bet that goes wrong drains it.</p>';
+  h+='<div class="sec panel est" id="est"><h2 style="margin:0;font:800 22px/1.1 var(--fb);font-stretch:112%">How big could it get? <span class="mute" style="font-size:14px;font-weight:600">(Estimated)</span></h2>'+
+    '<div class="row"><span>If $EZ had a market cap of</span><div class="chips" role="group" aria-label="Market cap">'+S.MCAPS.map(function(v,i){return '<button type="button" class="chip" data-mc="'+v+'" aria-pressed="'+(i===1)+'">'+S.money(v)+'</button>'}).join("")+'</div></div>'+
+    '<div class="row"><span>and the bet used leverage of</span><div class="chips" role="group" aria-label="Leverage">'+S.LEVS.map(function(v){return '<button type="button" class="chip" data-lv="'+v+'" aria-pressed="'+(v===S.lev)+'">'+v+'x</button>'}).join("")+'</div></div>'+
+    '<div class="out" aria-live="polite"><div><b id="eBet"></b><span>in the pot</span></div><div><b id="eBuy"></b><span id="eBuyT"></span></div></div><p class="note">If it\'s wrong, the pot drains. '+esc(S.calcFine)+'</p></div>';
+  h+='<div class="btns"><a class="btn" href="#scoreboard">Who is on top of the leaderboard</a><a class="btn" href="#get">Get $EZ</a></div>';return h}
+function wireVault(){var mc=S.MCAPS[1],lv=S.lev;function draw(){var c=S.calc(mc,lv);$("#eBet").textContent=S.money(c.bet);$("#eBuy").textContent="~"+S.money(c.buyback);$("#eBuyT").textContent="If the AI is right, it buys back ~"+S.money(c.buyback)+" of $EZ"}
+  $$("#est [data-mc]").forEach(function(b){b.addEventListener("click",function(){mc=+b.getAttribute("data-mc");$$("#est [data-mc]").forEach(function(x){x.setAttribute("aria-pressed",x===b)});draw()})});
+  $$("#est [data-lv]").forEach(function(b){b.addEventListener("click",function(){lv=+b.getAttribute("data-lv");$$("#est [data-lv]").forEach(function(x){x.setAttribute("aria-pressed",x===b)});draw()})});draw()}
+
+function placeDoor(){var h=plaque("08","Exit","Get $EZ","Three steps, and only three. Nothing here is live until launch.");
+  h+='<ol class="doorsteps"><li><b>Check the address</b><div class="addr">'+(CONFIG.ca?esc(CONFIG.ca):'Not posted yet. It appears here, and only here, at launch.')+'</div></li>'+
+    '<li><b>Use this page\'s link</b><p>Only through the link on this page.</p><div class="btns">'+(CONFIG.buyUrl?'<a class="btn pri" href="'+esc(CONFIG.buyUrl)+'" target="_blank" rel="noopener">Get $EZ</a>':'<button class="btn" type="button" disabled>Opens at launch</button>')+'</div></li>'+
+    '<li><b>Watch the next print</b><p>Calls the day before, the grade after the market answers.'+(P?' <a href="#live">Round '+P.n+' · '+esc(S.co(P))+' is on the board now.</a>':'')+'</p></li></ol>';
+  h+='<div class="btns">'+(S.xUrl?'<a class="btn" href="'+esc(S.xUrl)+'" target="_blank" rel="noopener">Follow on X</a>':'<button class="btn" type="button" disabled>Follow on X (link at launch)</button>')+'</div>';
+  h+='<p class="disc">$EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p>';return h}
+
+/* ---------- breadcrumb, mini-map, plan sheet ---------- */
+var MM={live:[3,3,24,6],"ai":[7,11,16,8],archive:[3,20,11,6],score:[16,20,11,6],test:[3,27,11,4],coming:[16,27,11,4],rules:[3,32,7,3],vault:[11,32,8,3],door:[20,32,7,3]};
+function mmKey(p){return p.k==="round"?"archive":p.k==="ai"?"ai":p.k}
+function drawMini(p){var k=mmKey(p),s='<rect x="1" y="1" width="28" height="36" fill="none" stroke="rgba(238,232,220,.5)" stroke-width="1"/>';
+  Object.keys(MM).forEach(function(x){var r=MM[x];s+='<rect class="mm-r'+(x===k?' on':'')+'" x="'+r[0]+'" y="'+r[1]+'" width="'+r[2]+'" height="'+r[3]+'"/>'});
+  if(k==="floor")s+='<circle class="mm-you" cx="15" cy="36" r="2.4"/>';
+  $("#mm").innerHTML=s}
+function crumbs(p){var c='<a href="#floor">Floor</a>';function sep(){return '<i aria-hidden="true">›</i>'}
+  if(p.k==="floor")return '<span class="ttl"><b>Earnings Zeason</b><span>Zeason one · '+(P?'Round '+P.n+' of '+S.total+' live':R.length+' rounds graded')+'</span></span>';
+  if(p.k==="round")return c+sep()+'<a href="#archive">Archive</a>'+sep()+'<b>Round '+p.r.n+'</b>';
+  if(p.k==="ai")return c+sep()+'<span>Pit</span>'+sep()+'<b>'+S.nm(p.m)+'\'s desk</b>';
+  var n={live:"The Big Board",archive:"Archive",score:"Scoreboard",test:"Test room",coming:"Coming up",rules:"Floor rules",vault:"The vault",door:"Exit · Get $EZ"}[p.k];
+  return c+sep()+'<b>'+esc(n)+'</b>'}
+function sheetHTML(cur){function a(href,label,extra){return '<a href="'+href+'"'+(cur===href?' aria-current="page"':'')+'>'+label+(extra?'<small>'+extra+'</small>':'')+'</a>'}
+  return '<div class="hd"><b>Floor plan</b><button class="close" type="button" id="sheetX" aria-label="Close the plan">✕</button></div>'+
+    '<svg viewBox="0 0 30 38" style="width:90px;height:114px;display:block;margin:12px auto 0" aria-hidden="true">'+$("#mm").innerHTML+'</svg>'+
+    '<nav aria-label="All places"><h4>Front</h4>'+a("#floor","The floor","home")+(P?a("#live","The Big Board · Round "+P.n,"live"):"")+
+    '<h4>The pit</h4>'+M.map(function(m){return a("#ai-"+slug(m),logo(m)+" "+S.nm(m)+"'s desk","#"+rank(m))}).join("")+
+    '<h4>Rooms</h4>'+a("#archive","Archive",R.length+" rounds")+a("#scoreboard","Scoreboard wall")+a("#test","Test room · compare AIs")+a("#coming","Coming up",UPCOMING.length+" rounds")+a("#rules","Floor rules")+a("#buyback","The vault · buyback")+a("#get","Exit · Get $EZ")+
+    '<h4>Every round</h4><div class="rgrid">'+R.map(function(r){return a("#round-"+r.n,"R"+r.n)}).join("")+'</div></nav>'}
+var lastFocus=null;
+function openSheet(){lastFocus=document.activeElement;$("#sheetIn").innerHTML=sheetHTML(location.hash||"#floor");$("#sheet").hidden=false;$("#sheetX").focus();
+  $("#sheetX").addEventListener("click",closeSheet);$$("#sheet nav a").forEach(function(x){x.addEventListener("click",function(){closeSheet(true)})})}
+function closeSheet(nav){$("#sheet").hidden=true;if(!nav&&lastFocus)lastFocus.focus()}
+$("#mmBtn").addEventListener("click",openSheet);
+$("#sheet").addEventListener("click",function(e){if(e.target.id==="sheet")closeSheet()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!$("#sheet").hidden){closeSheet();return}if(cur&&cur.k!=="floor"){location.hash="#floor"}}
+  if(e.key==="Tab"&&!$("#sheet").hidden){var f=$$("#sheet button,#sheet a"),first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+
+/* ---------- films: only when visible, one at a time ---------- */
+var io=null;
+function wireFilms(){if(io)io.disconnect();var vids=$$("#placeView video");if(!vids.length||!("IntersectionObserver" in window))return;
+  io=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting&&e.intersectionRatio>.6){if(RM)return;$$("video").forEach(function(o){if(o!==v)o.pause()});var pr=v.play();if(pr&&pr.catch)pr.catch(function(){})}else v.pause()})},{threshold:[0,.6,1]});
+  vids.forEach(function(v){io.observe(v)})}
+
+/* ---------- router with the zoom ---------- */
+var cur=null,floorScroll=0,clickRect=null;
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("[data-room]");clickRect=a?a.getBoundingClientRect():null},true);
+function lens(from,to,done){if(RM||!from||!document.body.animate){done&&done();return}
+  var l=document.createElement("div");l.className="lens";document.body.appendChild(l);
+  function box(r){return {left:r.left+"px",top:r.top+"px",width:r.width+"px",height:r.height+"px"}}
+  var an=l.animate([box(from),box(to)],{duration:340,easing:"cubic-bezier(.2,.7,.1,1)",fill:"forwards"});
+  an.onfinish=function(){l.remove();done&&done()}}
+function fullRect(){return {left:0,top:0,width:innerWidth,height:innerHeight}}
+function roomEl(p){var key=roomOf(p);if(p.k==="round")return $('#floorView .drawer[href="#round-'+p.r.n+'"]')||$('#floorView [data-room="archive"]');return $('#floorView [data-room="'+key+'"]')}
+
+function show(){var p=parse(location.hash),prev=cur;cur=p;if(io)io.disconnect();$$("video").forEach(function(v){v.pause()});
+  $("#crumbs").innerHTML=crumbs(p);drawMini(p);
+  if(p.k==="floor"){var fromPlace=prev&&prev.k!=="floor";
+    renderFloor();$("#placeView").hidden=true;$("#placeView").innerHTML="";$("#floorView").hidden=false;
+    if(p.miss){var s=$(".slip");if(s)s.insertAdjacentHTML("afterbegin",'<p><b>No place called "'+esc(p.miss)+'" on this floor.</b> Here is the plan.</p>')}
+    if(fromPlace){window.scrollTo(0,floorScroll);var el=roomEl(prev);if(el){var r=el.getBoundingClientRect();lens(fullRect(),r);el.focus({preventScroll:true})}
+      if(!RM&&$("#floorView").animate)$("#floorView").animate([{opacity:.3,transform:"scale(1.04)"},{opacity:1,transform:"none"}],{duration:340,easing:"cubic-bezier(.2,.7,.1,1)"})}
+    return}
+  if(!prev||prev.k==="floor")floorScroll=prev?window.scrollY:0;
+  var fromRect=clickRect||(prev&&prev.k==="floor"?(function(){var e=roomEl(p);return e&&e.getBoundingClientRect()})():null);clickRect=null;
+  var html=p.k==="live"?placeLive():p.k==="archive"?placeArchive():p.k==="round"?placeRound(p.r):p.k==="ai"?placeAI(p.m):p.k==="score"?placeScore():p.k==="test"?placeTest(p):p.k==="coming"?placeComing(p):p.k==="rules"?placeRules():p.k==="vault"?placeVault():placeDoor();
+  var pv=$("#placeView");pv.innerHTML='<div class="place">'+html+'<div class="btns" style="margin-top:34px;border-top:1px solid var(--line);padding-top:18px"><a class="btn" href="#floor">← Back to the floor</a><button class="btn" type="button" data-plan>Floor plan</button></div></div>';
+  $("#floorView").hidden=true;pv.hidden=false;window.scrollTo(0,0);
+  if(p.k==="live")wireLive();if(p.k==="archive")wireArchive();if(p.k==="test")wireTest();if(p.k==="coming")wireComing(p);if(p.k==="vault")wireVault();
+  $$("[data-plan]",pv).forEach(function(b){b.addEventListener("click",openSheet)});
+  wireFilms();
+  var h1=$("h1",pv);if(h1)h1.focus({preventScroll:true});
+  if(prev&&prev.k==="floor"&&fromRect){lens(fromRect,fullRect());if(!RM&&pv.animate)pv.animate([{opacity:0,transform:"scale(.97)"},{opacity:1,transform:"none"}],{duration:360,easing:"cubic-bezier(.2,.7,.1,1)"})}
+  else if(!RM&&prev&&pv.animate)pv.animate([{opacity:0,transform:"translateX(18px)"},{opacity:1,transform:"none"}],{duration:260,easing:"ease-out"})}
+window.addEventListener("hashchange",show);
+
+/* the countdown keeps ticking */
+setInterval(function(){var cl=close();if(!cl)return;var l=S.left(cl);$$("[data-left]").forEach(function(e){e.textContent=l||"Closed"})},30000);
+
+$("#foot").innerHTML='<p><span class="ez" aria-hidden="true"><b class="d">$</b><b class="e">E</b><b class="z">Z</b></span><b>$EZ · Earnings Zeason, with a Z</b></p><p>Calls filed before the print · Graded by the market · Never edited</p>';
+show();
+})();
+</script>
+</body>
+</html>
