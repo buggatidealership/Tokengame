@@ -2286,6 +2286,63 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
 @media(max-width:640px){.ufc{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.ufc .ufs{grid-column:1/-1}.ufc button,.ufc .ufs select{min-height:42px;font-size:12px}.ufc button b{display:inline-block}}
 .hlt.rec2 *{text-shadow:none}
 @media(max-width:560px){.hcl{background:var(--card)}.hcl>li{padding:0 14px}}
+
+/* ===== X2 (round 53): every call one square, what the record shows, the round list ===== */
+/* the grid: a sticky AI column, one column per round with the company mark on top, the market along the bottom */
+.cg-wrap{overflow-x:auto;padding:12px 4px 10px 0;scrollbar-width:thin}
+.cg-wrap:focus-visible{outline:3px solid var(--yel);outline-offset:2px;border-radius:12px}
+.cg{display:grid;gap:5px;width:max-content;--sq:56px}
+.cg-r{display:grid;grid-template-columns:118px repeat(var(--n),var(--sq));gap:5px;align-items:center}
+.cg-l{position:sticky;left:0;z-index:2;display:flex;align-items:center;gap:8px;height:100%;padding-right:8px;background:transparent;font:700 14px/1 var(--fb);color:var(--ink)}
+.cg-l .lg{font-size:26px}
+.cg-co{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--ink2)}
+.cg-co .co-mark{--cm:34px}
+.cg-co small{font:700 10px/1 var(--fb);letter-spacing:.04em}
+.cg-c{position:relative;display:grid;place-items:center;width:var(--sq);height:var(--sq);border-radius:10px;text-decoration:none;color:var(--on-ez);box-shadow:0 0 0 1.5px var(--ink);font:700 12px/1 var(--fb);font-variant-numeric:tabular-nums;transition:transform .12s}
+.cg-c span{white-space:nowrap}
+.cg-c.g{background:var(--ez-green)}.cg-c.r{background:color-mix(in srgb,var(--ez-red) 70%,var(--card))}
+.cg-c.w{background:var(--ez-gold);box-shadow:0 0 0 2.5px var(--ink),2px 3px 0 0 var(--ink)}
+.cg-c.w svg{position:absolute;top:-9px;left:50%;width:16px;height:16px;margin-left:-8px;filter:drop-shadow(0 0 0 #fff)}
+.cg-c.n{background:var(--card);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ink) 25%,transparent)}
+a.cg-c:hover{transform:translateY(-2px)}
+.cg-mk .cg-m{text-align:center;font:400 14px/1 var(--fd);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cg-mk .cg-m.xu{color:var(--grn)}.cg-mk .cg-m.xd{color:var(--dn)}
+.cg-mk{margin-top:4px;padding-top:8px;border-top:2px solid var(--ink)}
+.cg-k i{border-radius:4px!important}
+@media(max-width:640px){.cg-l{background:var(--field);box-shadow:6px 0 6px -4px color-mix(in srgb,var(--ink) 25%,transparent)}.cg-hd .cg-l,.cg-mk .cg-l{box-shadow:none}.cg{--sq:40px}.cg-r{grid-template-columns:44px repeat(var(--n),var(--sq));gap:4px}.cg-l b{display:none}.cg-mk .cg-l b{display:inline;font-size:10px;letter-spacing:.04em;text-transform:uppercase}
+  .cg-c{font-size:10px;border-radius:8px}.cg-co .co-mark{--cm:30px}.cg-mk .cg-m{font-size:12px}}
+/* what the record shows: one card per finding, the number biggest, the sample size always at the bottom */
+.fdg-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.fdg{display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:16px;background:var(--card);box-shadow:0 0 0 2px var(--ink),4px 5px 0 0 var(--ink)}
+.fdg small{font:700 11px/1 var(--fb);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.fdg b{font:400 clamp(38px,5vw,52px)/.95 var(--fd);text-transform:uppercase;font-variant-numeric:tabular-nums}
+.fdg b .xu{color:var(--grn)}.fdg b .xd{color:var(--dn)}.fdg b .vs{font-size:.5em;color:var(--ink2);vertical-align:.25em}
+.fdg p{font:500 15px/1.5 var(--fb);color:var(--ink)}
+.fdg .fdg-now{margin-top:2px;padding:9px 11px;border-radius:10px;background:var(--yel);font-weight:700}
+.fdg-n{margin-top:auto;padding-top:8px;border-top:1px dashed color-mix(in srgb,var(--ink) 25%,transparent);font:600 12px/1.3 var(--fb);color:var(--ink2)}
+.fdg.fun{background:var(--slab);color:var(--on-slab)}
+.fdg.fun small,.fdg.fun .fdg-n{color:var(--on-slab2)}.fdg.fun p{color:var(--on-slab)}.fdg.fun b{color:var(--yel)}
+@media(max-width:640px){.fdg-g{grid-template-columns:minmax(0,1fr)}.fdg{padding:16px}}
+/* the round list: wins, losses and rounds nobody won */
+.rlx{list-style:none;display:flex;flex-direction:column;gap:10px;margin:0;padding:0}
+.rlx-r{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,2fr) auto;gap:16px;align-items:center;padding:12px 16px;border-radius:14px;background:var(--card);color:var(--ink);text-decoration:none;box-shadow:0 0 0 2px var(--ink);transition:transform .12s,box-shadow .12s}
+.rlx-r:hover{transform:translateY(-2px);box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
+.rlx-t{display:flex;align-items:center;gap:12px;min-width:0}
+.rlx-t .co-mark{--cm:42px}
+.rlx-t b{display:block;font:400 22px/1 var(--fd);text-transform:uppercase}
+.rlx-t small{display:block;margin-top:4px;font:600 12px/1.3 var(--fb);color:var(--ink2)}
+.rlx-c{display:flex;flex-wrap:wrap;gap:6px}
+.rlx-c>span{display:inline-flex;align-items:center;gap:6px;padding:4px 9px 4px 4px;border-radius:9px;font:700 13px/1 var(--fb);white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--on-ez)}
+.rlx-c>span>.lg{font-size:20px}
+.rlx-c>.g{background:color-mix(in srgb,var(--ez-green) 55%,var(--card))}.rlx-c>.r{background:color-mix(in srgb,var(--ez-red) 35%,var(--card))}
+.rlx-c>.w{background:var(--ez-gold);box-shadow:0 0 0 1.5px var(--ink)}
+.rlx-m{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right}
+.rlx-m b{font:400 28px/1 var(--fd);white-space:nowrap}
+.rlx-m b.xu{color:var(--grn)}.rlx-m b.xd{color:var(--dn)}
+.rlx-m small{font:700 11px/1.2 var(--fb);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.rlx-m small.nw{padding:3px 7px;border-radius:6px;background:var(--ink);color:#fff}
+@media(max-width:860px){.rlx-r{grid-template-columns:minmax(0,1fr) auto}.rlx-c{grid-column:1/-1;grid-row:2}}
+@media(max-width:560px){.rlx-r{padding:12px;gap:10px 12px}.rlx-t .co-mark{--cm:36px}.rlx-t b{font-size:19px}.rlx-m b{font-size:24px}.rlx-c>span{font-size:12px;padding:3px 7px 3px 3px}}
 </style>
 </head>
 <body>
@@ -3245,8 +3302,10 @@ function dkey(d){return d?d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,
 var DAYS=(function(){var m={};ALLN.forEach(function(n){var v=rv(n),d=dayOf(v),k=dkey(d);(m[k]=m[k]||{k:k,d:d,ns:[]}).ns.push(n)});
   return Object.keys(m).sort().map(function(k){var D=m[k];D.ns.sort(function(x,y){var bx=isBig(rv(x).ticker),by=isBig(rv(y).ticker);return (by-bx)||(x-y)});return D})})();
 /* EXP: the build sets window.EZ_EXP for the experiments. "" = Season Live as is; "x1" = a Results tab (the films as a
-   gallery) and Upcoming only for what's ahead; "x2" = Upcoming opens on what's next, with the films as a gallery above. */
+   gallery) and Upcoming only for what's ahead; "x2" = X1 plus the call grid, the findings and the round list (below). */
 var EXP=window.EZ_EXP||"";
+/* X2 = X1 plus: every call as one square (Leaderboard), what the record shows (Leaderboard), the round list (Results). */
+var X1=EXP==="x1"||EXP==="x2",X2=EXP==="x2";
 var TODAYK=dkey(new Date()),RBIG=false,RF="all",UF="all",US="",RLOOK="brand";
 function xsh(no,eb,title,sub,h1,id,side){var tag=h1?"h1":"h2";return '<div class="xsh'+(side?' wside':'')+'"><div class="xsh-t"><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="no">'+no+'</span><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(side||'')+'</div>'}
 /* a company's colour (CO_LOGOS.c, from tools/fetch_logos.py) and the ink that reads on it */
@@ -3266,7 +3325,7 @@ function rcard(n){var v=rv(n),src=findR(n)||findP(n),art,foot;
   return '<li><a class="rcd '+v.st+'" style="--bc:'+c+';--bi:'+onCol(c)+'" href="#/round/'+n+'"><span class="rcd-a">'+art+'</span><span class="rcd-t"><small>Round '+n+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+'</small><b>'+esc(v.co)+(hasTk(v)?' <span class="tk">('+esc(v.ticker)+')</span>':'')+'</b></span><span class="rcd-f">'+foot+'</span></a></li>'}
 function rtile(n){var v=rv(n),c=bcol(v.ticker);
   return '<li><a class="rtl" style="--bc:'+c+';--bi:'+onCol(c)+'" data-tk="'+esc(String(v.ticker||"").split(".")[0])+'" href="#/round/'+n+'">'+tkBadge(v.ticker)+'<span class="rt"><small>Round '+n+(!RBIG&&isBig(v.ticker)?' <i class="star" title="Big name">★</i>':'')+'</small><b>'+esc(v.co)+'</b><span>'+(hasTk(v)?esc(v.ticker):'')+(v.resolves?(hasTk(v)?' · ':'')+'Result '+fmtDate(v.resolves):'')+'</span></span></a></li>'}
-function upOk(n){return EXP!=="x1"||(inF(n,UF)&&(!US||secOfN(n)===US))}
+function upOk(n){return !X1||(inF(n,UF)&&(!US||secOfN(n)===US))}
 function timeline(){var days=DAYS.map(function(D){return {k:D.k,d:D.d,ns:D.ns.filter(function(n){return (!RBIG||isBig(rv(n).ticker))&&(!EXP||rv(n).st!=="graded")&&upOk(n)})}}).filter(function(D){return D.ns.length}),nk=nextK(days);
   if(!days.length)return '<p class="empty">No rounds coming up in this filter.</p>';
   if(!days.length)return '<p class="empty">No big names yet.</p>';
@@ -3339,15 +3398,15 @@ function fSeg(){function c(f){return ROUNDS.filter(function(r){return inF(r.n,f)
 function bigSeg(){var all=ROUNDS.length,bg=ROUNDS.filter(function(r){return isBig(r.ticker)}).length;
   return '<div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+all+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+bg+'</b></button></div>'}
 function vResults(){RBIG=false;RF="all";return '<h1 tabindex="-1" class="sr">Results</h1><section class="xsec">'+xsh("01","","Highlights","The rounds worth knowing so far.")+shelf()+'</section>'+
-  '<section class="xsec">'+xsh("02","","Every round","Newest first. Tap a round for the full card.",false,"",fSeg())+'<div id="gal">'+gallery(true)+'</div></section>'}
-function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-rf]");if(!b)return;RF=b.dataset.rf;$$("[data-rf]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$("#gal",root).innerHTML=gallery(true)});wireGallery(root)}
-function body(){if(EXP==="x2")return '<section class="gsec" aria-labelledby="galH"><h2 id="galH" class="gh">Results</h2>'+gallery(false)+'</section><h2 class="gh nxh">Coming up</h2>'+timeline();return RLOOK==="compact"?compactList():timeline()}
+  '<section class="xsec">'+xsh("02","","Every round",X2?"Wins, losses and rounds nobody won. Newest first. Tap one for the full card.":"Newest first. Tap a round for the full card.",false,"",fSeg())+'<div id="gal">'+(X2?roundList():gallery(true))+'</div></section>'}
+function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-rf]");if(!b)return;RF=b.dataset.rf;$$("[data-rf]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$("#gal",root).innerHTML=X2?roundList():gallery(true)});wireGallery(root)}
+function body(){return RLOOK==="compact"?compactList():timeline()}
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
   var up=ALLN.filter(function(n){return rv(n).st!=="graded"}),ub=up.filter(function(n){return isBig(rv(n).ticker)}).length;
-  if(EXP==="x1"){RBIG=false;UF="all";US=""}
-  return (EXP==="x1"?'<h1 tabindex="-1" class="sr">Upcoming rounds</h1>':
+  if(X1){RBIG=false;UF="all";US=""}
+  return (X1?'<h1 tabindex="-1" class="sr">Upcoming rounds</h1>':
     '<div class="rhd"><h1 tabindex="-1">Upcoming</h1><div class="seg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All</button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names</button></div></div>')+
-    (EXP==="x1"?upBar(up)+'<p class="rfoot ufn">The calls drop before each report. '+x+' to see them first.</p>':
+    (X1?upBar(up)+'<p class="rfoot ufn">The calls drop before each report. '+x+' to see them first.</p>':
     '<p class="rfoot">Every call goes out before the report. '+x+' to see them first. <span aria-hidden="true">·</span> <button type="button" class="lnk" id="icsB">Add the Zeason to your calendar</button> <span id="icsMsg" class="note" aria-live="polite"></span></p>')+
     (EXP?'':'<div class="look" role="group" aria-label="Preview a look (for review)"><small>Look</small><button type="button" data-look="brand" aria-pressed="'+(RLOOK==="brand")+'">Brand colours</button><button type="button" data-look="compact" aria-pressed="'+(RLOOK==="compact")+'">Compact</button></div>')+
     '<div id="rtl" class="rtline look-'+RLOOK+'">'+body()+'</div>'}
@@ -3414,7 +3473,7 @@ function formDots(C){return C.hist.slice(-5).map(function(h){var cls=h.none?"n":
 function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=STAKE;
   return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.won>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
     '<span class="rk" role="cell"><sup>#</sup>'+rkOf(m)+'</span>'+
-    '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3>'+(EXP==="x1"?nm(m):'<a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a>')+'</h3><small>'+esc(MODELS[m].ver||'')+'</small></span></span>'+
+    '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3>'+(X1?nm(m):'<a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a>')+'</h3><small>'+esc(MODELS[m].ver||'')+'</small></span></span>'+
     '<span class="lb-c" role="cell"><b>'+(C.g?pctOf(C.right,C.g)+'%':'n/a')+'</b><small>'+C.right+' of '+C.g+'</small></span>'+
     '<span class="lb-c" role="cell"><b>'+(C.avg==null?'n/a':C.avg.toFixed(2))+'</b><small>points</small></span>'+
     '<span class="lb-c roi '+(b==null?'':up?'pu':'pd')+'" role="cell"><b>'+(b==null?'n/a':pctTxt(b))+'</b><small>'+(b==null?'':usd(b))+'</small></span>'+
@@ -3428,7 +3487,7 @@ var RMET={
   hit:{t:"Hit rate",sub:"<b>How often did they call the direction right?</b> Only up or down counts here, not the size."},
   miss:{t:"Avg miss",sub:"<b>How close did they get?</b> Average points off the real move, smaller is better. The bullseye is what the stock did. Each dot is one call; red dots outside missed the direction."},
   roi:{t:"ROI",sub:"<b>What would "+usd(STAKE)+" be worth now?</b> All in on every call: buy on an up call, short on a down call. Simulated, before fees."}};
-var RKEYS=EXP==="x1"?["hit","miss","roi","sector"]:["hit","miss","roi","wins"],RCUR="hit";
+var RKEYS=X1?["hit","miss","roi","sector"]:["hit","miss","roi","wins"],RCUR="hit";
 var UPS_N=ROUNDS.filter(function(r){return r.a>0}).length,AVG_MOVE=ROUNDS.length?ROUNDS.reduce(function(a,r){return a+Math.abs(r.a)},0)/ROUNDS.length:0;
 RMET.sector={t:"By sector",sub:"<b>Where are they sharpest?</b> Right calls by sector. Small samples for now: the grid fills in as the Zeason goes on."};
 RMET.bull={t:"Up or down",sub:"<b>Do they lean up or down?</b> Each AI's up and down calls, next to what the stocks really did."};
@@ -3444,9 +3503,9 @@ function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(
   .filter(function(x){return x.v!=null}).sort(function(a,b){return k==="miss"?a.v-b.v:b.v-a.v})}
 function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;box.classList.toggle("sgx",k==="sector");var R=statRows(k);
   /* X1, hit rate: the direction chart from "Are they learning?" (hit rate round by round, one line per AI) */
-  if(k==="hit"&&EXP==="x1"&&window.EZLearn){box.innerHTML='<div class="lxv hx"></div>';EZLearn.together($(".hx",box),{pctOnly:true,noCoin:true,ver:true});return}
+  if(k==="hit"&&X1&&window.EZLearn){box.innerHTML='<div class="lxv hx"></div>';EZLearn.together($(".hx",box),{pctOnly:true,noCoin:true,ver:true});return}
   /* X1, ROI: the balance over the rounds, like a trading app's portfolio chart. the stake at the start, one line per AI. */
-  if(k==="roi"&&EXP==="x1"){var N=ROUNDS.length,F=R.map(function(x){var bal=STAKE,pts=[],st=null;
+  if(k==="roi"&&X1){var N=ROUNDS.length,F=R.map(function(x){var bal=STAKE,pts=[],st=null;
         ROUNDS.forEach(function(r,i){var c=callOf(r,x.m);if(!c)return;if(st==null){st=i;pts.push([i,bal])}bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,bal])});return {m:x.m,pts:pts,bal:bal,x:x}}),
       vs=[].concat.apply([STAKE],F.map(function(f){return f.pts.map(function(p){return p[1]})})),lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STAKE*.05;lo-=pd;hi+=pd;
     function X(i){return i/N*100}function Y(v){return (hi-v)/(hi-lo)*100}
@@ -3480,7 +3539,7 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;box.cla
       return '<li class="sxr'+(i?'':' lead')+'"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span><span class="sb"><i style="--w:'+x.v.toFixed(1)+'%;background:'+MODELS[x.m].c+'"></i></span><span class="st-v"><b>'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
     var bars=$$(".sb i",box);if(anim&&!reduce){bars.forEach(function(b){b.style.width="0"});requestAnimationFrame(function(){requestAnimationFrame(function(){bars.forEach(function(b,i){b.style.transitionDelay=(i*90)+"ms";b.style.width=""})})})}return}
   /* avg miss: the bullseye, with the averages ranked above it */
-  if(k==="miss"&&EXP==="x1"){box.classList.add("cmp");box.innerHTML='<div class="tgv mxt"></div>';targets($(".mxt",box),R.map(function(x){return x.m}));
+  if(k==="miss"&&X1){box.classList.add("cmp");box.innerHTML='<div class="tgv mxt"></div>';targets($(".mxt",box),R.map(function(x){return x.m}));
     var gr=$(".tg-grid",box);R.forEach(function(x,i){var f=$('.tg[data-m="'+x.m+'"]',gr);if(!f)return;gr.appendChild(f);if(!i)f.classList.add("lead");
       $(".tg-h",f).insertAdjacentHTML("afterbegin",'<span class="tg-r">'+(i+1)+'</span>');$(".tg-h",f).insertAdjacentHTML("beforeend",'<strong>'+x.txt+'<small> pts</small></strong>')});return}
   if(k==="miss"){box.classList.remove("cmp");box.innerHTML='<ol class="mxr">'+R.map(function(x,i){return '<li'+(i?'':' class="lead"')+'><span>'+(i+1)+'</span>'+logo(x.m)+'<b>'+nm(x.m)+'</b><strong>'+x.txt+'</strong><small>pts</small></li>'}).join("")+'</ol><div class="tgv mxt"></div>';
@@ -3496,9 +3555,9 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;box.cla
       return '<li class="sxr wr'+(i?'':' lead')+'"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span><span class="crs">'+(won.length?won.map(function(r,j){var sh=r.win.indexOf(" & ")>-1;
         return '<a class="cr'+(sh?' crh':'')+'" style="--d:'+(j*80)+'ms" href="#/round/'+r.n+'" title="Round '+r.n+', '+esc(r.co)+(sh?' (shared)':'')+'" aria-label="Round '+r.n+' '+esc(r.co)+(sh?', shared':'')+'">'+CROWN+'</a>'}).join(""):'<span class="cr0">No wins yet</span>')+'</span><span class="st-v"><b>'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
   if(anim&&!reduce)$$(".cr",box).forEach(function(c){c.classList.add("pop")})}
-function statsHTML(){return '<section class="blk" aria-labelledby="stH">'+(EXP==="x1"?xsh("02","The stats","Stats","Pick a measure. The card flips to it.",false,"stH"):'<div class="hh"><h2 id="stH">The stats</h2></div>')+
-  '<div class="lsw rsw" role="group" aria-label="Rank the AIs by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+(EXP==="x1"?'<i class="skd" aria-hidden="true"></i>':'')+RMET[k].t+'</button>'}).join("")+'</div>'+
-  '<div class="rflip sflip'+(EXP==="x1"?' sx1':'')+'" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><div class="st-box"></div><p class="rf-sub"></p></div>'}).join("")+'</div></div></section>'}
+function statsHTML(){return '<section class="blk" aria-labelledby="stH">'+(X1?xsh(X2?"03":"02","The stats","Stats","Pick a measure. The card flips to it.",false,"stH"):'<div class="hh"><h2 id="stH">The stats</h2></div>')+
+  '<div class="lsw rsw" role="group" aria-label="Rank the AIs by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+(X1?'<i class="skd" aria-hidden="true"></i>':'')+RMET[k].t+'</button>'}).join("")+'</div>'+
+  '<div class="rflip sflip'+(X1?' sx1':'')+'" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><div class="st-box"></div><p class="rf-sub"></p></div>'}).join("")+'</div></div></section>'}
 function wireStats(root){var fl=$("#rflip",root);if(!fl)return;var faces=$$(".rf-face",fl),front=0,seen=false;
   function fill(i,k,anim){faces[i].dataset.k=k;$(".rf-sub",faces[i]).innerHTML=RMET[k].sub;drawStats(faces[i],k,anim)}
   fill(0,RCUR,false);
@@ -3528,7 +3587,7 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
   function cos(rs){return rs.map(function(r){return r.co}).join(", ")}
   RECS=[];
   function tile(kick,head,m,big,unit,n,rs,why,sub,more){var r=findR(n),bg=r&&r.poster?' style="--bg:url(\''+MEDIA+r.poster+'.jpg\')"':'';
-    if(EXP==="x1"){RECS.push(Object.assign({kick:kick,head:head,m:m,big:big,unit:unit,rs:rs||[r],why:why||""},more||{}));
+    if(X1){RECS.push(Object.assign({kick:kick,head:head,m:m,big:big,unit:unit,rs:rs||[r],why:why||""},more||{}));
       var rk={"Longest winning streak":["rk-win","👑"],"Closest call":["rk-close","🎯"],"Biggest miss":["rk-miss","💥"],"Longest hit streak":["rk-hit","🔥"]}[kick]||["",""];
       return '<button type="button" class="hlt rec2 '+rk[0]+'" data-rec="'+(RECS.length-1)+'"><span class="hl-wm" aria-hidden="true">'+big+'</span><span class="hl-k">'+(rk[1]?'<i class="hl-ic" aria-hidden="true">'+rk[1]+'</i>':'')+kick+'</span>'+(sub?'<span class="hl-s">'+sub+'</span>':'')+'<span class="hl-h">'+esc(head)+'</span><span class="hl-hold"><small>Record holder</small>'+logo(m)+'<b>'+nm(m)+'</b><strong>'+big+'</strong><i>'+unit+'</i></span></button>'}
     return '<a class="hlt"'+bg+' href="#/round/'+n+'"><span class="hl-k">'+kick+'</span><span class="hl-v">'+logo(m)+'<b>'+big+'</b><i>'+unit+'</i></span><span class="hl-h">'+esc(head)+'</span><span class="hl-r">Round '+n+(r?' · '+fmtDate(r.resolves):'')+' <span aria-hidden="true">→</span></span></a>'}
@@ -3548,10 +3607,10 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
   var wl=RK.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length}),
       rl=RK.map(function(m){return run(m,function(r,c){return callOk(r,c)},false)}).sort(function(a,b){return b.rs.length-a.rs.length});
   var out='';
-  if(wr.rs.length>1)out+=tile(EXP==="x1"?"Longest winning streak":"Most wins in a row",wr.rs.length===2?nm(wr.m)+" goes back to back: "+cos(wr.rs):wr.rs.length===3?nm(wr.m)+" goes three for three: "+cos(wr.rs):nm(wr.m)+" is on a heater: "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n,wr.rs,nm(wr.m)+" won "+word(wr.rs.length)+" rounds in a row. A win takes the right direction and the closest size of the four.",undefined,streakMore(wl,wr,winF,true,"in a row","Win"));
+  if(wr.rs.length>1)out+=tile(X1?"Longest winning streak":"Most wins in a row",wr.rs.length===2?nm(wr.m)+" goes back to back: "+cos(wr.rs):wr.rs.length===3?nm(wr.m)+" goes three for three: "+cos(wr.rs):nm(wr.m)+" is on a heater: "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n,wr.rs,nm(wr.m)+" won "+word(wr.rs.length)+" rounds in a row. A win takes the right direction and the closest size of the four.",undefined,streakMore(wl,wr,winF,true,"in a row","Win"));
   out+=tile("Closest call",best.off<1?nm(best.m)+" basically front-ran "+best.r.co:nm(best.m)+" sniped "+best.r.co,best.m,best.off.toFixed(2),"pts off",best.r.n,[best.r],nm(best.m)+" called "+best.r.co+" "+said(best.r,best.m)+". It moved "+best.r.out+". Off by "+best.off.toFixed(2)+" points, the closest call so far.",undefined,callMore(best,all.slice().sort(function(a,b){return a.off-b.off}),false));
   out+=tile("Biggest miss",nm(worst.m)+" got rekt on "+worst.r.co,worst.m,worst.off.toFixed(2),"pts off",worst.r.n,[worst.r],nm(worst.m)+" called "+worst.r.co+" "+said(worst.r,worst.m)+". It moved "+worst.r.out+". Off by "+worst.off.toFixed(2)+" points, the furthest any call has landed.",undefined,callMore(worst,all.slice().sort(function(a,b){return b.off-a.off}),true));
-  if(rr.rs.length>1)out+=tile(EXP==="x1"?"Longest hit streak":"Most right calls in a row",rr.rs.length<4?nm(rr.m)+" can't miss: "+cos(rr.rs):nm(rr.m)+" calls the direction "+word(rr.rs.length)+" straight",rr.m,rr.rs.length,"in a row",rr.rs[rr.rs.length-1].n,rr.rs,nm(rr.m)+" called the direction right "+word(rr.rs.length)+" rounds running. A hit only needs up or down to be right, whatever the size.","Right direction, round after round",streakMore(rl,rr,null,false,"in a row","Call the direction right"));
+  if(rr.rs.length>1)out+=tile(X1?"Longest hit streak":"Most right calls in a row",rr.rs.length<4?nm(rr.m)+" can't miss: "+cos(rr.rs):nm(rr.m)+" calls the direction "+word(rr.rs.length)+" straight",rr.m,rr.rs.length,"in a row",rr.rs[rr.rs.length-1].n,rr.rs,nm(rr.m)+" called the direction right "+word(rr.rs.length)+" rounds running. A hit only needs up or down to be right, whatever the size.","Right direction, round after round",streakMore(rl,rr,null,false,"in a row","Call the direction right"));
   return out}
 /* a record, opened: what happened, who holds it, and each round it took, small; a round opens its card */
 var XMOD=null;
@@ -3581,14 +3640,67 @@ function openRec(i,from){var R=RECS[i];if(!R)return;closeRec();var LAST=ROUNDS[R
   $(".rmod-x",m).focus({preventScroll:true})}
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&XMOD)closeRec()});
 document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-rec]");if(b)openRec(+b.dataset.rec,b)});
+/* ---------- X2 ---------- */
+function wonBy(r){return r.win?r.win.split(" & "):[]}
+function isDn(c){return /^DOWN/.test(c[1])}
+function callAmt(c){return (isDn(c)?"▼":"▲")+c[1].split(" ")[1]}
+/* Every call, one square: a row per AI (standings order), a column per graded round (oldest left; the strip opens on the
+   newest), the market's move along the bottom. Gold: won the round. Green: right way. Red: wrong way. Tap one for the round. */
+function callGrid(){var R=ROUNDS;
+  var h='<div class="cg-r cg-hd" role="row"><span class="cg-l" role="columnheader"><span class="sr">AI</span></span>'+R.map(function(r){
+      return '<a class="cg-co" role="columnheader" href="#/round/'+r.n+'" title="Round '+r.n+' · '+esc(plainCo(r))+'">'+coMark(r.ticker)+'<small>R'+r.n+'</small></a>'}).join("")+'</div>';
+  RK.forEach(function(m){h+='<div class="cg-r" role="row"><span class="cg-l" role="rowheader">'+logo(m)+'<b>'+nm(m)+'</b></span>'+R.map(function(r){var c=callOf(r,m);
+      if(!c)return '<span class="cg-c n" role="cell" title="Round '+r.n+': '+nm(m)+' had not joined yet"><span class="sr">No call</span></span>';
+      var ok=isDn(c)===(r.a<0),w=wonBy(r).indexOf(m)>-1,lab=w?"won the round":ok?"right way":"wrong way";
+      return '<a class="cg-c '+(w?'w':ok?'g':'r')+'" role="cell" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(plainCo(r))+': '+nm(m)+' called '+callAmt(c)+', '+lab+'">'+(w?CROWN:'')+'<span>'+callAmt(c)+'</span></a>'}).join("")+'</div>'});
+  h+='<div class="cg-r cg-mk" role="row"><span class="cg-l" role="rowheader"><b>Market</b></span>'+R.map(function(r){return '<span class="cg-m '+(r.a<0?'xd':'xu')+'" role="cell" title="Market '+r.out+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a).toFixed(1)+'</span>'}).join("")+'</div>';
+  return '<section class="blk xsec cgs" aria-labelledby="cgH">'+xsh("02","Every call","Every call, one square","Each column is a round, newest on the right. Tap a square for the full card.",false,"cgH")+
+    '<div class="cg-wrap" tabindex="0" aria-label="Every call, scrolls sideways"><div class="cg" role="table" aria-label="Every call, one square" style="--n:'+R.length+'">'+h+'</div></div>'+
+    '<p class="legend cg-k"><span><i style="background:var(--ez-gold)"></i>Won the round</span><span><i style="background:var(--ez-green)"></i>Right way</span><span><i style="background:var(--ez-red)"></i>Wrong way</span><span><i style="background:var(--card)"></i>No call yet</span></p></section>'}
+/* What the record shows: patterns in the calls so far, each with its sample size. A pattern only shows once it rests on
+   at least FMIN cases. Small samples: they change with every round, and the page says so. */
+var FMIN=5,NUMW=["zero","one","two","three","four","five","six","seven","eight","nine","ten"];
+function findings(){var R=ROUNDS,cards=[];
+  function card(k,big,p,base,cls){return '<div class="fdg'+(cls?' '+cls:'')+'"><small>'+k+'</small><b>'+big+'</b><p>'+p+'</p><span class="fdg-n">'+base+'</span></div>'}
+  /* 1 when they all agree vs when they split */
+  var ag={n:0,ok:0},sp={n:0,ok:0};
+  R.forEach(function(r){var s=r.calls.reduce(function(t,c){return t+(isDn(c)?-1:1)},0);
+    if(Math.abs(s)===r.calls.length){ag.n++;if((s>0)===(r.a>0))ag.ok++}else if(s!==0){sp.n++;if((s>0)===(r.a>0))sp.ok++}});
+  if(ag.n>=FMIN){var P=PENDING[0],now="";
+    if(P&&P.calls.length>1){var ps=P.calls.reduce(function(t,c){return t+(c.dir==="DOWN"?-1:1)},0);
+      if(Math.abs(ps)===P.calls.length)now='<p class="fdg-now">Right now: all '+(NUMW[P.calls.length]||P.calls.length)+' say '+(ps>0?'up':'down')+' on '+esc(plainCo(P))+'.</p>'}
+    cards.push(card("When they all agree",ag.ok+' of '+ag.n,'When every AI calls the same direction, they have been right '+ag.ok+' of '+ag.n+' times.'+(sp.n?' When they split, the majority was right '+sp.ok+' of '+sp.n+'.':'')+now,ag.n+' rounds where they all agreed'+(sp.n?', '+sp.n+' where they split':''),now?'hot':''))}
+  /* 2 up calls vs down calls, all AIs together */
+  var up={n:0,ok:0},dn={n:0,ok:0};R.forEach(function(r){r.calls.forEach(function(c){var o=isDn(c)?dn:up;o.n++;if(isDn(c)===(r.a<0))o.ok++})});
+  if(up.n>=FMIN&&dn.n>=FMIN)cards.push(card("Up calls vs down calls",'<span class="xu">▲'+up.ok+'/'+up.n+'</span> <span class="xd">▼'+dn.ok+'/'+dn.n+'</span>',
+    'Their up calls have been right '+up.ok+' of '+up.n+' times. Their down calls, '+dn.ok+' of '+dn.n+'.',(up.n+dn.n)+' calls'));
+  /* 3 the size of the move: the AI whose average call is furthest from the average real move in its rounds */
+  var sz=RK.map(function(m){var n=0,ca=0,ma=0;R.forEach(function(r){var c=callOf(r,m);if(!c)return;n++;ca+=parseFloat(c[1].split(" ")[1]);ma+=Math.abs(r.a)});return n>=FMIN?{m:m,n:n,c:ca/n,a:ma/n}:null})
+    .filter(Boolean).sort(function(x,y){return Math.abs(y.c-y.a)-Math.abs(x.c-x.a)})[0];
+  if(sz&&Math.abs(sz.c-sz.a)>=.5)cards.push(card("How big",sz.c.toFixed(1)+'% <span class="vs">vs</span> '+sz.a.toFixed(1)+'%',
+    nm(sz.m)+' calls '+(sz.c<sz.a?'smaller':'bigger')+' moves than the market makes: '+sz.c.toFixed(1)+'% on average, against real moves of '+sz.a.toFixed(1)+'%.',sz.n+' rounds'));
+  /* 4 just for fun: betting against the AI with the lowest hit rate */
+  var hr=RK.map(function(m){var n=0,ok=0;R.forEach(function(r){var c=callOf(r,m);if(!c)return;n++;if(isDn(c)===(r.a<0))ok++});return n>=FMIN?{m:m,n:n,ok:ok}:null}).filter(Boolean);
+  if(hr.length>1){var lo=hr.slice().sort(function(a,b){return a.ok/a.n-b.ok/b.n})[0],hi=hr.slice().sort(function(a,b){return b.ok/b.n-a.ok/a.n})[0],inv=lo.n-lo.ok;
+    if(inv/lo.n>.5)cards.push(card("Just for fun",'Inverse '+nm(lo.m),'Betting against every '+nm(lo.m)+' call would have been right '+inv+' of '+lo.n+' times. '+(inv/lo.n>=hi.ok/hi.n?'That ties the best AI. ':'')+'It\'s a joke. '+nm(lo.m)+' has been informed.',lo.n+' rounds','fun'))}
+  if(!cards.length)return '';
+  return '<section class="blk xsec fdgs" aria-labelledby="fdgH">'+xsh("04","Findings","What the record shows","Patterns in the calls so far. Small samples, so they will change with every round. Not advice.",false,"fdgH")+
+    '<div class="fdg-g">'+cards.join("")+'</div></section>'}
+/* Results, X2: every round as one row. The calls with the winner in gold, the market's move, and a tag when nobody won. */
+function roundList(){var ns=ROUNDS.filter(function(r){return inF(r.n,RF)}).slice().reverse();
+  if(!ns.length)return '<p class="rfoot">No graded rounds here yet.</p>';
+  return '<ol class="rlx">'+ns.map(function(r){var W=wonBy(r);
+    return '<li><a class="rlx-r'+(W.length?'':' nw')+'" href="#/round/'+r.n+'"><span class="rlx-t">'+coMark(r.ticker)+'<span><b>'+esc(plainCo(r))+'</b><small>Round '+r.n+' · filed '+fmtDate(r.called)+' · graded '+fmtDate(r.resolves)+'</small></span></span>'
+      +'<span class="rlx-c">'+r.calls.map(function(c){var ok=isDn(c)===(r.a<0),w=W.indexOf(c[0])>-1;return '<span class="'+(w?'w':ok?'g':'r')+'">'+logo(c[0])+callAmt(c)+'</span>'}).join("")+'</span>'
+      +'<span class="rlx-m"><b class="'+(r.a<0?'xd':'xu')+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a)+'%</b>'+(W.length?'<small>'+W.map(nm).join(" & ")+' won</small>':'<small class="nw">No winner</small>')+'</span></a></li>'}).join("")+'</ol>'}
 function vModels(){
-  return (EXP==="x1"?xsh("01","Leaderboard","Current standings","Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
+  return (X1?xsh("01","Leaderboard","Current standings","Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
     '<p class="lbn"><b>Hit rate</b>: calls right on direction. <b>Avg miss</b>: points off the real move. <b>ROI</b>: '+usd(STAKE)+' rolled through every call. Simulated, before fees.</p>'+
-    statsHTML()+
-    '<section class="blk" aria-labelledby="recH">'+(EXP==="x1"?xsh("03","Highlights","Record book","Tap a record for the story behind it.",false,"recH"):'<div class="hh"><h2 id="recH">Highlights</h2></div>')+'<div class="hls">'+records()+'</div></section>'}
-function wireModels(root){wireStats(root)}
+    (X2?callGrid():'')+statsHTML()+(X2?findings():'')+
+    '<section class="blk" aria-labelledby="recH">'+(X1?xsh(X2?"05":"03","Highlights","Record book","Tap a record for the story behind it.",false,"recH"):'<div class="hh"><h2 id="recH">Highlights</h2></div>')+'<div class="hls">'+records()+'</div></section>'}
+function wireModels(root){wireStats(root);var g=$(".cg-wrap",root);if(g)requestAnimationFrame(function(){g.scrollLeft=g.scrollWidth})}
 function vModel(m){if(!CAR[m])return null;var C=CAR[m],calls=C.hist.filter(function(h){return !h.none});
   var okc=calls.filter(function(h){return h.ok}),best=okc.slice().sort(function(a,b){return a.off-b.off})[0],worst=calls.slice().sort(function(a,b){return b.off-a.off})[0];
   function callCard(h,lab){if(!h)return '<div class="box"><small>'+lab+'</small><b>Not yet</b><p>No right-way calls graded yet.</p></div>';var r=h.r,dn=/^DOWN/.test(h.said);
@@ -3618,7 +3730,7 @@ function vBuyback(){function v(x){return x?esc(x):'<span class="soon">Opens at l
 var boardEl=$("#top"),view=$("#view"),firstR=true,curSec=null;
 function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=null,sec="board",wire=null,openN=null,ck=null;
   if(/^#\//.test(h)){
-    if(EXP==="x1"&&(p[0]==="results"||(p[0]==="round"&&findR(+p[1])))){sec="results";if(p[0]==="round")openN=+p[1];
+    if(X1&&(p[0]==="results"||(p[0]==="round"&&findR(+p[1])))){sec="results";if(p[0]==="round")openN=+p[1];
       if(curSec==="results"&&!view.hidden){if(openN)openRound(openN);return}
       html=vResults();wire=wireResults}
     else if((p[0]==="round"&&/^\d+$/.test(p[1]||""))||p[0]==="rounds"||p[0]==="upcoming"){sec="upcoming";
@@ -3626,7 +3738,7 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
       if(curSec==="upcoming"&&!view.hidden){if(openN)openRound(openN);return}
       html=vRounds();wire=wireRounds}
     else if(p[0]==="buyback"){html=vBuyback();sec="buyback"}
-    else if(p[0]==="model"&&p[1]&&EXP==="x1"){html=vModels();sec="leaderboard";wire=wireModels}
+    else if(p[0]==="model"&&p[1]&&X1){html=vModels();sec="leaderboard";wire=wireModels}
     else if(p[0]==="model"&&p[1]){var m=String(p[1]).toUpperCase();html=vModel(m);sec="leaderboard";wire=function(r){wireModel(r,m)}}
     else if(p[0]==="models"||p[0]==="leaderboard"){html=vModels();sec="leaderboard";wire=wireModels}}
   closeRound();

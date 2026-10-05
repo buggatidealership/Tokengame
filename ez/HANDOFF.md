@@ -237,3 +237,10 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - New: v25 Quiet, v26 Round, v27 Board (see VARIANTS.md round 9) plus `ez/ez-story.js`. Season and X1 untouched.
 - `SIM.poolShare:.69` added to ez-data.js so the new pages read the pot share from data (v15 still uses its own ASSUME, same value).
 - They publish with ez-data.js, ez-story.js and the logos referenced in CO_LOGOS. On a sheet sync, republish them too.
+
+### Round 53: Season and X1 locked, X2 = X1 plus three pieces
+- Locked: EZ Season (v15) and EZ Live X1 (v23). See CLAUDE.md.
+- `routes.js`: `X1` is now true for x1 and x2; `X2` only for x2. The old X2 (films gallery on Upcoming) is gone. build.py gives x2 the same nav and tweaks as x1.
+- X2 Leaderboard: 01 standings, 02 Every call, one square (`callGrid`: a sticky AI column, a column per round with the company mark, gold/green/red squares with the call, the market along the bottom; opens on the newest round; tap opens the round), 03 stats, 04 What the record shows (`findings`: all agree vs split, up vs down calls, how big, and the "Inverse <lowest hit rate>" joke; each needs at least FMIN=5 cases and shows its sample), 05 record book.
+- X2 Results: Every round is `roundList` (wins, losses and rounds nobody won; filters kept; tap opens the card).
+- Class prefixes: cg-, fdg, rlx, xu/xd (`.u`/`.d` are taken by filled pills).

@@ -41,7 +41,7 @@ NAV5='<nav class="nav" aria-label="Main"><a href="#/" data-r="board">Overview</a
 for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1.html","x1","EZ Live X1"),("v24-live-x2.html","x2","EZ Live X2")]:
     page=base[:i]+'window.EZ_EXP="'+exp+'";\n'+js+base[i:]
     page=re.sub(r'<title>[^<]*</title>','<title>'+title+'</title>',page,1)
-    if exp=="x1":
+    if exp in ("x1","x2"):
         assert page.count(NAV4)==1; page=page.replace(NAV4,NAV5)
         # X1: the last round beside the standings (like Season); model pages come after launch, so names are plain text
         page=page.replace('var BAND_RIGHT="next"','var BAND_RIGHT="last"')
