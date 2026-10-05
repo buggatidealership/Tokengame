@@ -168,6 +168,9 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - Fixed: a script rewrote the intro to the old "predict how a stock moves after its earnings"; it now reads "Before a company reports earnings, four AI models call how its stock will react: up or down, and by how much."
 - The record still opens with every card on its film (checked in the browser).
 
+## 2026-10-05 (round 38)
+- Last round card: black border like the standings; its rows share the card's height so it is full, with bigger text on phones and desktop.
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
