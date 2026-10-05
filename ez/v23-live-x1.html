@@ -1226,12 +1226,12 @@ body.lmod-on{overflow:hidden}
 .lr-cb .bk-sec,.lr-cb .bk-sec:has(+.bk-rows>.bk-r.win){padding-bottom:1px}
 @media(max-width:640px){.lr-cb .bk-sec,.lr-cb .bk-sec:has(+.bk-rows>.bk-r.win){padding-bottom:2px}}
 /* how close: wrong-direction calls land off the board, in red; the key's three dots are one size */
-.tg-w .dot{fill:var(--ez-red)!important;stroke:var(--ink)!important;stroke-width:1.2!important}
+.tg-w .dot{fill:color-mix(in srgb,var(--ez-red) 45%,var(--card))!important;stroke:none!important}
 .tg-key i,.tg-key .k-b,.tg-key .k-x{width:10px;height:10px;border-radius:50%;box-shadow:none}
 .tg-key .k-b{background:var(--yel);box-shadow:inset 0 0 0 1.2px var(--ink)}
 .tg-key .k-d{background:var(--ink)}
-.tg-key .k-x{background:var(--ez-red);box-shadow:inset 0 0 0 1.2px var(--ink)}
-.sx1 .st-box.cmp .tg .tg-w .dot{fill:var(--ez-red)!important;stroke:var(--ink)!important}
+.tg-key .k-x{background:color-mix(in srgb,var(--ez-red) 45%,var(--card));box-shadow:none}
+.sx1 .st-box.cmp .tg .tg-w .dot{fill:color-mix(in srgb,var(--ez-red) 45%,var(--card))!important;stroke:none!important}
 /* buyback: the two shares are the biggest thing in the tree */
 .mt-split{padding-top:22px}
 .mt-pc{display:flex;align-items:baseline;justify-content:center;gap:8px;margin:8px 0 10px}
@@ -1240,12 +1240,14 @@ body.lmod-on{overflow:hidden}
 .mt-out{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:760px){.mt-pc{flex-direction:column;align-items:center;gap:2px;margin:6px 0 8px}.mt-pc b{font-size:40px}.mt-pc span{font-size:15px}.mt-out{grid-template-columns:minmax(0,1fr)}}
 /* how close: a brighter bullseye that sits on top */
-.tg .bull{fill:#ffd21f;stroke:var(--ink);stroke-width:1.6;pointer-events:none}
-.tg .bull-g{fill:#ffd21f;opacity:.45;pointer-events:none}
+.tg .bull{fill:#ffcf00;stroke:var(--ink);stroke-width:2;pointer-events:none}
 /* the follow card: the rule is a small line, not a headline */
 #learn .fol-h h3#folH{font:600 13.5px/1.4 var(--fb);text-transform:none;letter-spacing:0;color:rgba(255,255,255,.82)}
 .fol-x{white-space:nowrap}
 @media(max-width:640px){.fol-x{font-size:min(28px,6.3vw)}#learn .fol-h h3#folH{font-size:12.5px}}
+#learn .fol-x{margin-bottom:8px}
+#learn .fol-sub{max-width:none;margin:0 0 14px}
+#learn .fol-l,#learn .ftl{margin-top:0}
 
 /* ================= V22 · SEASON LIVE: Season's landing as the Board, plus Live's pages =================
    Hash routes: #/ (the board, Season as it was), #/rounds, #/round/11, #/models, #/model/gpt, #/upcoming.
@@ -2325,8 +2327,9 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
         <div class="tgv" id="lxDist"></div></div>
     </div></div>
     <h3 class="fol-x">What if you copied them?</h3>
+    <p class="lede fol-sub" id="folH">Each AI starts with $100,000 and goes all in on every call.</p>
     <div class="fol" id="fol" aria-labelledby="folH">
-      <div class="fol-h"><h3 id="folH">Each AI starts with $100,000 and goes all in on every call.</h3></div>
+      
       <ol class="fol-l" id="folL"></ol>
       <p class="fol-f" id="folF"></p>
     </div>
@@ -2679,7 +2682,7 @@ function tgSVG(m){var R=TG.R,o='<svg viewBox="-100 -100 200 200" role="group" ar
   o+='<circle class="rg alt" r="'+R+'"/>';
   TG.rings.slice(1).reverse().forEach(function(g,i){o+='<circle class="rg'+(i%2?' alt':'')+'" r="'+(R*g[1]).toFixed(2)+'"/>'});
   /* the bullseye, under the calls: a soft yellow glow and a bright centre, so it shows around them */
-  o+='<circle class="bull-g" r="11"/><circle class="bull" r="6"/>';
+  o+='<circle class="bull" r="6.5"/>';
   ROUNDS.forEach(function(r){var c=parsed(r).filter(function(c){return c.m===m})[0];if(!c||!c.ok)return;
     var rr=tgR(c.off),an=tgAng(r.n),x=(rr*Math.cos(an)).toFixed(2),y=(rr*Math.sin(an)).toFixed(2),sh=tgShade(r.n);
     var said=(c.dn?"down ":"up ")+c.mag,tip='<b>R'+r.n+' · '+plainCo(r)+'</b>Called '+said+' · Actual '+r.out+'<br>Missed by '+c.off.toFixed(2)+' points';
