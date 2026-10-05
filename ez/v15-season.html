@@ -1175,6 +1175,29 @@ body.lmod-on{overflow:hidden}
   .lr-bk .bk-r .rk{font-size:13px}.lr-bk .bk-r .who{gap:4px;font-size:10.5px}.lr-bk .bk-r .who .lg{font-size:15px}.lr-bk .bk-r .pd{font-size:10px;padding:2px 2px}
   .lr-bk .bk-r.win{margin-top:11px}.lr-bk .bk-r .crown{top:-13px;right:3px;padding:2px 4px;font-size:7.5px}.lr-bk .bk-r.no .rk span[aria-hidden]{width:12px;height:13px;font-size:9px}
   .lr-bk .bk-out{min-height:0;padding:4px 6px;border-radius:8px}.lr-bk .bk-out small{font-size:13px}.lr-bk .bk-out b{font-size:11px;padding:3px 5px}}
+/* Last round: the card back itself, small */
+.up-p.lrc{display:block;padding:0;background:none;box-shadow:none;border-radius:16px}
+.up-p.lrc:hover,.up-p.lrc:focus-visible{box-shadow:none}
+.lr-card{display:flex;flex-direction:column;height:100%;overflow:hidden;border-radius:16px;background:var(--card);box-shadow:0 0 0 3px var(--yel),0 0 0 5px var(--ink),4px 5px 0 0 var(--ink)}
+.lr-card .bk-h{padding:12px 74px 12px 14px}.lr-card .bk-h h4{font-size:18px}
+.lr-card .bk-d{margin-top:6px}.lr-card .bk-d b{font-size:17px}
+.lr-card .gstamp{width:56px;height:56px;top:10px;right:10px;font-size:10px}
+.lr-cb{flex:1;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:12px 12px 10px}
+.lr-cb .bk-sec{padding:0 2px 8px}
+.lr-cb .bk-rows{gap:7px}.lr-cb .bk-r{min-height:40px;padding:6px 10px}.lr-cb .bk-r .who .lg{font-size:22px}
+.lr-cb .bk-out{min-height:42px}
+.lr-cb .lr-tap{position:static;align-self:flex-end}
+@media(max-width:640px){.lr-card{border-radius:12px;box-shadow:0 0 0 2px var(--yel),0 0 0 3.5px var(--ink),2px 3px 0 0 var(--ink)}
+  .lr-card .bk-h{padding:7px 36px 7px 7px}.lr-card .bk-h h4{font-size:11.5px}
+  .lr-card .bk-d{gap:2px 8px;margin-top:3px}.lr-card .bk-d small{font-size:6px}.lr-card .bk-d b{font-size:11px}
+  .lr-card .gstamp{width:30px;height:30px;top:6px;right:5px;font-size:5.5px;border-width:1.5px}
+  .lr-cb{gap:4px;padding:6px 5px 5px}.lr-cb .bk-sec{font-size:7px;padding:0 1px 9px}
+  .lr-cb .bk-rows{gap:4px}.lr-cb .bk-r{grid-template-columns:11px minmax(0,1fr) auto;gap:3px;min-height:0;padding:3px 4px;border-radius:6px}
+  .lr-cb .bk-r.win{margin-top:8px}.lr-cb .bk-r .crown{top:-14px;right:2px;padding:1px 4px;font-size:6.5px}
+  .lr-cb .bk-r .rk{font-size:12px}.lr-cb .bk-r .who{gap:3px;font-size:9.5px}.lr-cb .bk-r .who .lg{font-size:13px}.lr-cb .bk-r .pd{font-size:9px;padding:1px}
+  .lr-cb .bk-r.no .rk span[aria-hidden]{width:11px;height:12px;font-size:8px;border-radius:3px}
+  .lr-cb .bk-out{min-height:0;padding:3px 5px;border-radius:6px}.lr-cb .bk-out small{font-size:11px}.lr-cb .bk-out b{font-size:9.5px;padding:2px 4px}
+  .lr-cb .lr-tap{font-size:7px;padding:2px 5px}}
 </style>
 </head>
 <body>
@@ -1348,7 +1371,7 @@ var NR=ROUNDS.length,UPS=ROUNDS.filter(function(r){return r.a>0}).length;
 /* the line under the headline: the model count from the data (MODEL_KEYS with a MODELS entry) */
 var NUMW=["No","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve"];
 var NM=MODEL_KEYS.filter(function(m){return MODELS[m]}).length;
-$("#heroSub").textContent=(NUMW[NM]||String(NM))+" AI model"+(NM===1?"":"s")+" predict"+(NM===1?"s":"")+" how a stock moves after its earnings: up or down, and by how much.";
+$("#heroSub").textContent="Before a company reports earnings, "+(NUMW[NM]||String(NM)).toLowerCase()+" AI model"+(NM===1?"":"s")+" call"+(NM===1?"s":"")+" how its stock will react: up or down, and by how much.";
 /* rounds whose calls are in, soonest answer first (then by round) */
 var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});
 /* rounds still to call, soonest calls first (then by round) */
@@ -1381,10 +1404,11 @@ function winBar(r){
 /* the card back's rows and outcome, shared with the overview's Last round panel */
 function bkRows(r){var cs=parsed(r),wn=r.win?r.win.split(" & "):[];return '<div class="bk-rows">'+cs.map(function(c){var w=wn.indexOf(c.m)>-1;return '<div class="bk-r '+(w?'win':c.ok?'ok':'no')+'">'+(w?'<span class="crown"><i aria-hidden="true">👑</i>Winner</span>':'')+'<span class="rk">'+(c.rank?'<span class="sr">Rank </span>'+c.rank:'<span aria-hidden="true">✗</span><span class="sr">Wrong way</span>')+'</span><span class="who">'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span></span><span class="pd '+(c.dn?'d':'u')+'"><span aria-hidden="true">'+(c.dn?'▼':'▲')+'</span><span class="sr">'+(c.dn?'Down ':'Up ')+'</span>'+c.mag+'</span></div>'}).join("")+'</div>'}
 function bkOut(r){return '<div class="bk-out"><small>'+ACTUAL_WORD+'</small><b class="'+(r.a>0?'u':'d')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span><span class="sr">'+(r.a>0?'Up ':'Down ')+'</span>'+r.out.replace(/^[+−-]/,"")+'</b></div>'}
+function bkHead(r){var tm=timed(r.timing,true);return '<div class="bk-h"><h4>'+coTitle(r)+'</h4><div class="bk-d"><span><small>Calls filed</small><b>'+fmtDate(r.called)+'</b></span><span><small>Graded</small><b>'+fmtDate(r.resolves)+'</b></span></div>'+(tm?'<p class="tm">'+tm+'</p>':'')+'<span class="gstamp" aria-hidden="true"><i>✓</i>Graded</span></div>'}
 function backFace(r){
   var cs=parsed(r),wn=r.win?r.win.split(" & "):[],tm=timed(r.timing,true);
   return '<div class="face back" aria-hidden="true"><div class="fin">'+
-    '<div class="bk-h"><h4>'+coTitle(r)+'</h4><div class="bk-d"><span><small>Calls filed</small><b>'+fmtDate(r.called)+'</b></span><span><small>Graded</small><b>'+fmtDate(r.resolves)+'</b></span></div>'+(tm?'<p class="tm">'+tm+'</p>':'')+'<span class="gstamp" aria-hidden="true"><i>✓</i>Graded</span></div>'+
+    bkHead(r)+
     '<div class="bk-body"><div><p class="bk-sec">What they predicted</p>'+bkRows(r)+'</div>'+bkOut(r)+'</div>'+
     '<div class="cfoot"><button type="button" class="flipb" data-flip>↻ See the film</button>'+shareBtn(r.n)+'</div></div></div>';
 }
@@ -1695,10 +1719,8 @@ if(NX){var hasCalls=!!(NX.calls&&NX.calls.length);
 var BAND_RIGHT="last",LR=ROUNDS.length?ROUNDS[ROUNDS.length-1]:null;
 if(BAND_RIGHT==="last"&&LR){var lw=LR.win?LR.win.split(" & "):[];
   $("#unH").innerHTML='Last round <small class="lr-d">'+fmtDate(LR.resolves)+'</small>';$(".band").classList.add("half");
-  unHTML='<button type="button" class="up-p lr" id="lrB" aria-label="Open the card: '+plain(LR)+'"><span class="nm">'+coTitle(LR)+'</span>'+
-    '<span class="lr-st lr-bk">'+bkRows(LR)+bkOut(LR)+'<span class="lr-tap" aria-hidden="true">Tap to open ↗</span></span>'+
-
-    '<span class="lr-w'+(lw.length>1?' two':'')+'"><small>'+(lw.length?'Winner':'No winner')+'</small><span>'+(lw.length?lw.map(function(m){return logo(m)}).join("")+'<b>'+lw.map(nm).join(" & ")+'</b>':'<b>✗</b>')+'</span></span></button>'}
+  unHTML='<button type="button" class="up-p lr lrc" id="lrB" aria-label="Open the card: '+plain(LR)+'"><span class="lr-card">'+bkHead(LR)+
+    '<span class="lr-cb"><span class="bk-sec">What they predicted</span>'+bkRows(LR)+bkOut(LR)+'<span class="lr-tap" aria-hidden="true">Tap to open ↗</span></span></span></button>'}
 $(".band").style.setProperty("--rows",Math.max(1,ROWS.length));
 $("#unB").innerHTML=unHTML;
 /* the last round, opened over the page: the same flip card as the record. Close with ✕, Esc or a tap outside. */

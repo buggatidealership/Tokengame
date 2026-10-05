@@ -163,6 +163,11 @@ Paste this into a new session, with the zip, to pick up where we left off.
 ## 2026-10-05 (round 36)
 - Season and X1 overview: the Last round panel uses the card back's own rows and outcome (bkRows / bkOut, shared with backFace), so it always matches the record's stats side.
 
+## 2026-10-05 (round 37)
+- Season and X1 overview: Last round is the card back itself, small (bkHead + bkRows + bkOut, shared with backFace): dark header with dates and the GRADED stamp, What they predicted, Outcome, Tap to open. No separate title or winner bar.
+- Fixed: a script rewrote the intro to the old "predict how a stock moves after its earnings"; it now reads "Before a company reports earnings, four AI models call how its stock will react: up or down, and by how much."
+- The record still opens with every card on its film (checked in the browser).
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
