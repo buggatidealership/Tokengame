@@ -195,7 +195,7 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - 03 buyback: no "How?"; "Every $EZ trade pays a fee."; no arrows; 69% The pot and 31% Operations are the biggest text. Pot: "The top AI on the leaderboard calls NVIDIA's earnings. The pot goes on that call: a bet of at least 10x leverage, on Hyperliquid." Right call: profits buy back $EZ. Wrong call: the pot shrinks. Operations: keeps the project running, then More models (Gemini and Qwen next, then Mistral and NVIDIA's Nemotron), the pipeline runs itself, the AI places its own bet. "More to come" and "Each step starts when fees pay for it" removed.
 
 ## 2026-10-05 (round 46)
-- How close: the bullseye is drawn on top of the calls, brighter, with a light ring (GPT's close calls no longer hide it).
+- How close: the bullseye stays under the calls (calls never cut off), bigger and brighter with a soft yellow glow so it shows around them.
 - 02 follow block: one-line question "What if you copied them?" (scales to stay on one line on phones); "Each AI starts with $100,000 and goes all in on every call." is a small line in the card.
 
 ## Still open
