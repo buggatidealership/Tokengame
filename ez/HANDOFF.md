@@ -196,11 +196,11 @@ Paste this into a new session, with the zip, to pick up where we left off.
 
 ## 2026-10-05 (round 46)
 - How close: the bullseye stays under the calls (calls never cut off), bigger and brighter with a soft yellow glow so it shows around them.
-- 02 follow block: one-line question "What if you copied them?" (scales to stay on one line on phones); "Each AI starts with $100,000 and goes all in on every call." is a small line in the card.
+- 02 follow block: one-line question "Would copying them have paid you?" (scales to stay on one line on phones); "Each AI starts with $100,000 and goes all in on every call." is a small line in the card.
 
 ## 2026-10-05 (round 47)
 - How close: no glow; the bullseye is a bolder dot (bigger, stronger yellow, thicker outline) that stays inside its own size. Red wrong-direction dots are a soft red, the least prominent marks.
-- 02 follow block: "Each AI starts with $100,000 and goes all in on every call." sits under "What if you copied them?" outside the dark card.
+- 02 follow block: "Each AI starts with $100,000 and goes all in on every call." sits under "Would copying them have paid you?" outside the dark card.
 
 ## Still open
 - Navigation for Season Live is still to be decided.
