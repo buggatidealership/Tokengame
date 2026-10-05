@@ -181,6 +181,11 @@ Paste this into a new session, with the zip, to pick up where we left off.
 ## 2026-10-05 (round 41)
 - Last round card: the gap above the first row equals the gap above Outcome (10px phones, 12px desktop).
 
+## 2026-10-05 (round 42)
+- Last round card: rows a touch higher (7px under "What they predicted" on phones, 9px desktop).
+- Season "Next" chip: jumps instantly (no smooth scroll) to the record with that round's card in place (jumpTo).
+- Record line, two lines on phones: "Graded at the first market close after earnings. The AIs get TradingView's closing price, so they can't make shit up."
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.

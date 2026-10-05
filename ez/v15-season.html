@@ -1223,6 +1223,8 @@ body.lmod-on{overflow:hidden}
 /* Last round: the gap above the first row equals the gap above Outcome */
 .lr-cb .bk-sec,.lr-cb .bk-sec:has(+.bk-rows>.bk-r.win){padding-bottom:4px}
 @media(max-width:640px){.lr-cb .bk-sec,.lr-cb .bk-sec:has(+.bk-rows>.bk-r.win){padding-bottom:5px}}
+.lr-cb .bk-sec,.lr-cb .bk-sec:has(+.bk-rows>.bk-r.win){padding-bottom:1px}
+@media(max-width:640px){.lr-cb .bk-sec,.lr-cb .bk-sec:has(+.bk-rows>.bk-r.win){padding-bottom:2px}}
 </style>
 </head>
 <body>
@@ -1273,7 +1275,7 @@ body.lmod-on{overflow:hidden}
 
   <section class="sec" id="record" aria-labelledby="recH">
     <div class="sh"><div class="tx"><span class="no">01</span><span class="eb">The record</span><h2 id="recH">Every prediction, on the record</h2></div>
-      <p class="lede">Every call is graded at the <b class="hlx">first market close after earnings</b>. We send the AIs the closing price from TradingView, so they can't make shit up.</p></div>
+      <p class="lede">Graded at the <b class="hlx">first market close after earnings</b>. The AIs get TradingView's closing price, so they can't make shit up.</p></div>
     <div class="car" id="car" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Every round, one card each. Left and right arrow keys move between rounds."></div>
     <div class="car-ctl">
       <div class="car-end"><button type="button" class="car-cap" id="toPast">← Past rounds</button></div>
@@ -1525,7 +1527,7 @@ var P0=PS[0]||null;
     tp.setAttribute("aria-pressed",String(p));tp.setAttribute("aria-label",p?"Play the scores":"Pause the scores");tp.firstChild.textContent=p?"▶":"❚❚"})})();
 if(TARGET){$("#liveTxt").innerHTML=(P0?"In play: ":"Next: ")+coName(TARGET);
   /* tap: straight to that round's card in the record */
-  var lc=$("#liveChip");lc.href="#round-"+TARGET.n;lc.addEventListener("click",function(e){if(location.hash==="#round-"+TARGET.n){e.preventDefault();shDeep()}})}
+  var lc=$("#liveChip");lc.href="#round-"+TARGET.n;lc.addEventListener("click",function(e){e.preventDefault();jumpTo(TARGET.n)})}
 else $("#liveChip").style.display="none";
 
 /* ---------- the landing band flips to "How we grade" and back. One card: the hidden face is inert. ---------- */
@@ -2067,8 +2069,11 @@ function shareRound(btn){var n=+btn.dataset.share,s=SL.filter(function(x){return
     if(touch&&data&&navigator.canShare&&navigator.canShare(data))navigator.share(data).catch(function(e){if(!e||e.name!=="AbortError")shPanel(btn,R)});
     else shPanel(btn,R)},function(){delete btn.dataset.busy;btn.classList.remove("busy")})}
 /* a shared link (#round-9) opens the record on that round */
-function shDeep(){var m=location.hash.match(/^#round-(\d+)$/);if(!m)return;var i=SL.findIndex(function(s){return s.n===+m[1]});if(i<0)return;
-  requestAnimationFrame(function(){$("#record").scrollIntoView({block:"start"});go(i,false)})}
+function shDeep(){var m=location.hash.match(/^#round-(\d+)$/);if(m)jumpTo(+m[1])}
+/* straight to a round's card in the record: the card first, then the page, both without animation */
+function jumpTo(n){var i=SL.findIndex(function(s){return s.n===n});if(i<0)return;
+  requestAnimationFrame(function(){go(i,false);var rec=$("#record"),top=$(".top"),y=rec.getBoundingClientRect().top+scrollY-(top?top.offsetHeight:0)+8;
+    var h=document.documentElement,sb=h.style.scrollBehavior;h.style.scrollBehavior="auto";window.scrollTo(0,Math.max(0,y));h.style.scrollBehavior=sb})}
 addEventListener("hashchange",shDeep);requestAnimationFrame(function(){requestAnimationFrame(shDeep)});
 
 /* ---------- if you'd followed each AI: everyone starts with the stake (STAKE) and puts all of it on every call (buy if the AI says
