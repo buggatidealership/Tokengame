@@ -2288,29 +2288,34 @@ button.hlt{width:100%;text-align:left;font:inherit;cursor:pointer;border:0}
 @media(max-width:560px){.hcl{background:var(--card)}.hcl>li{padding:0 14px}}
 
 /* ===== X2 (round 53): every call one square, what the record shows, the round list ===== */
-/* the grid: a sticky AI column, one column per round with the company mark on top, the market along the bottom */
-.cg-wrap{overflow-x:auto;padding:12px 4px 10px 0;scrollbar-width:thin}
-.cg-wrap:focus-visible{outline:3px solid var(--yel);outline-offset:2px;border-radius:12px}
-.cg{display:grid;gap:5px;width:max-content;--sq:56px}
-.cg-r{display:grid;grid-template-columns:118px repeat(var(--n),var(--sq));gap:5px;align-items:center}
-.cg-l{position:sticky;left:0;z-index:2;display:flex;align-items:center;gap:8px;height:100%;padding-right:8px;background:transparent;font:700 14px/1 var(--fb);color:var(--ink)}
-.cg-l .lg{font-size:26px}
-.cg-co{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--ink2)}
-.cg-co .co-mark{--cm:34px}
+/* the grid sits on one card so the sticky AI column always has a solid surface behind it */
+.cg-wrap{width:fit-content;max-width:100%;overflow-x:auto;padding:14px 14px 12px 0;border-radius:16px;background:var(--card);box-shadow:0 0 0 2px var(--ink);scrollbar-width:thin}
+.cg-wrap:focus-visible{outline:3px solid var(--yel);outline-offset:3px}
+.cg{display:grid;gap:5px;width:max-content;--sq:52px}
+.cg-r{display:grid;grid-template-columns:132px repeat(var(--n),var(--sq));gap:5px;align-items:center}
+/* the sticky column also covers the row gaps (negative margin), so nothing shows through while scrolling */
+.cg-l{position:sticky;left:0;z-index:3;align-self:stretch;display:flex;align-items:center;gap:10px;margin:-3px 0;padding:3px 10px 3px 14px;background:var(--card);font:700 14px/1 var(--fb);color:var(--ink)}
+.cg-l .lg{font-size:var(--sq)}
+.cg-co{display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:var(--ink2)}
+.cg-co .co-mark{--cm:var(--sq)}
 .cg-co small{font:700 10px/1 var(--fb);letter-spacing:.04em}
-.cg-c{position:relative;display:grid;place-items:center;width:var(--sq);height:var(--sq);border-radius:10px;text-decoration:none;color:var(--on-ez);box-shadow:0 0 0 1.5px var(--ink);font:700 12px/1 var(--fb);font-variant-numeric:tabular-nums;transition:transform .12s}
+.cg-c{position:relative;display:grid;place-items:center;width:var(--sq);height:var(--sq);border-radius:10px;text-decoration:none;color:var(--on-ez);box-shadow:inset 0 0 0 1.5px var(--ink);font:700 12px/1 var(--fb);font-variant-numeric:tabular-nums;transition:transform .12s}
 .cg-c span{white-space:nowrap}
 .cg-c.g{background:var(--ez-green)}.cg-c.r{background:color-mix(in srgb,var(--ez-red) 70%,var(--card))}
-.cg-c.w{background:var(--ez-gold);box-shadow:0 0 0 2.5px var(--ink),2px 3px 0 0 var(--ink)}
-.cg-c.w svg{position:absolute;top:-9px;left:50%;width:16px;height:16px;margin-left:-8px;filter:drop-shadow(0 0 0 #fff)}
-.cg-c.n{background:var(--card);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ink) 25%,transparent)}
+/* won the round: the leader's foil (same as the #1 standings card), same ring as every square, a small crown in the corner */
+.cg-c.w{background:var(--foil-grad);background-size:300% 100%;animation:foil var(--foil-speed) linear infinite}
+.cg-c.w svg{position:absolute;top:3px;right:3px;width:11px;height:11px}
+.cg-c.n{background:var(--field);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ink) 18%,transparent)}
 a.cg-c:hover{transform:translateY(-2px)}
 .cg-mk .cg-m{text-align:center;font:400 14px/1 var(--fd);font-variant-numeric:tabular-nums;white-space:nowrap}
 .cg-mk .cg-m.xu{color:var(--grn)}.cg-mk .cg-m.xd{color:var(--dn)}
-.cg-mk{margin-top:4px;padding-top:8px;border-top:2px solid var(--ink)}
+.cg-mk{margin-top:4px;padding-top:9px;border-top:2px solid var(--ink)}
+.cg-mk .cg-l{margin-top:-9px;padding-top:12px}
 .cg-k i{border-radius:4px!important}
-@media(max-width:640px){.cg-l{background:var(--field);box-shadow:6px 0 6px -4px color-mix(in srgb,var(--ink) 25%,transparent)}.cg-hd .cg-l,.cg-mk .cg-l{box-shadow:none}.cg{--sq:40px}.cg-r{grid-template-columns:44px repeat(var(--n),var(--sq));gap:4px}.cg-l b{display:none}.cg-mk .cg-l b{display:inline;font-size:10px;letter-spacing:.04em;text-transform:uppercase}
-  .cg-c{font-size:10px;border-radius:8px}.cg-co .co-mark{--cm:30px}.cg-mk .cg-m{font-size:12px}}
+.cg-k i.foil{background:var(--foil-grad)!important;background-size:300% 100%!important;animation:foil var(--foil-speed) linear infinite}
+@media(max-width:640px){.cg{--sq:42px}.cg-r{grid-template-columns:calc(var(--sq) + 20px) repeat(var(--n),var(--sq));gap:4px}.cg-l{padding-left:10px;padding-right:10px}.cg-l b{display:none}
+  .cg-mk .cg-l b{display:inline;font-size:9px;letter-spacing:.04em;text-transform:uppercase}
+  .cg-c{font-size:10px;border-radius:9px}.cg-c.w svg{width:9px;height:9px;top:2px;right:2px}.cg-mk .cg-m{font-size:12px}.cg-wrap{padding-right:10px}}
 /* what the record shows: one card per finding, the number biggest, the sample size always at the bottom */
 .fdg-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .fdg{display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:16px;background:var(--card);box-shadow:0 0 0 2px var(--ink),4px 5px 0 0 var(--ink)}
@@ -2323,26 +2328,32 @@ a.cg-c:hover{transform:translateY(-2px)}
 .fdg.fun{background:var(--slab);color:var(--on-slab)}
 .fdg.fun small,.fdg.fun .fdg-n{color:var(--on-slab2)}.fdg.fun p{color:var(--on-slab)}.fdg.fun b{color:var(--yel)}
 @media(max-width:640px){.fdg-g{grid-template-columns:minmax(0,1fr)}.fdg{padding:16px}}
-/* the round list: wins, losses and rounds nobody won */
+/* the round list: wins, losses and rounds nobody won. Left: the company, the market's move and the winner, then the calls.
+   Right: the round's film as a thumbnail (the poster, then the film plays muted while the row is on screen). */
 .rlx{list-style:none;display:flex;flex-direction:column;gap:10px;margin:0;padding:0}
-.rlx-r{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,2fr) auto;gap:16px;align-items:center;padding:12px 16px;border-radius:14px;background:var(--card);color:var(--ink);text-decoration:none;box-shadow:0 0 0 2px var(--ink);transition:transform .12s,box-shadow .12s}
+.rlx-r{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.6fr) auto;gap:16px;align-items:center;padding:12px;border-radius:14px;background:var(--card);color:var(--ink);text-decoration:none;box-shadow:0 0 0 2px var(--ink);transition:transform .12s,box-shadow .12s}
 .rlx-r:hover{transform:translateY(-2px);box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
-.rlx-t{display:flex;align-items:center;gap:12px;min-width:0}
+.rlx-t{display:flex;align-items:flex-start;gap:12px;min-width:0;padding-left:4px}
 .rlx-t .co-mark{--cm:42px}
+.rlx-t>span{min-width:0}
 .rlx-t b{display:block;font:400 22px/1 var(--fd);text-transform:uppercase}
 .rlx-t small{display:block;margin-top:4px;font:600 12px/1.3 var(--fb);color:var(--ink2)}
+.rlx-m{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin-top:8px}
+.rlx-m b{font:400 28px/1 var(--fd);white-space:nowrap}
+.rlx-m b.xu{color:var(--grn)}.rlx-m b.xd{color:var(--dn)}
+.rlx-m small{margin:0!important;font:700 11px/1.2 var(--fb)!important;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.rlx-m small.nw{padding:3px 7px;border-radius:6px;background:var(--ink);color:#fff}
 .rlx-c{display:flex;flex-wrap:wrap;gap:6px}
 .rlx-c>span{display:inline-flex;align-items:center;gap:6px;padding:4px 9px 4px 4px;border-radius:9px;font:700 13px/1 var(--fb);white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--on-ez)}
 .rlx-c>span>.lg{font-size:20px}
 .rlx-c>.g{background:color-mix(in srgb,var(--ez-green) 55%,var(--card))}.rlx-c>.r{background:color-mix(in srgb,var(--ez-red) 35%,var(--card))}
-.rlx-c>.w{background:var(--ez-gold);box-shadow:0 0 0 1.5px var(--ink)}
-.rlx-m{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right}
-.rlx-m b{font:400 28px/1 var(--fd);white-space:nowrap}
-.rlx-m b.xu{color:var(--grn)}.rlx-m b.xd{color:var(--dn)}
-.rlx-m small{font:700 11px/1.2 var(--fb);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
-.rlx-m small.nw{padding:3px 7px;border-radius:6px;background:var(--ink);color:#fff}
-@media(max-width:860px){.rlx-r{grid-template-columns:minmax(0,1fr) auto}.rlx-c{grid-column:1/-1;grid-row:2}}
-@media(max-width:560px){.rlx-r{padding:12px;gap:10px 12px}.rlx-t .co-mark{--cm:36px}.rlx-t b{font-size:19px}.rlx-m b{font-size:24px}.rlx-c>span{font-size:12px;padding:3px 7px 3px 3px}}
+.rlx-c>.w{background:var(--foil-grad);background-size:300% 100%;animation:foil var(--foil-speed) linear infinite;box-shadow:inset 0 0 0 1.5px var(--ink)}
+.rlx-v{position:relative;display:block;width:120px;aspect-ratio:1;border-radius:11px;overflow:hidden;background:var(--slab);box-shadow:0 0 0 2px var(--ink);flex:none}
+.rlx-v img,.rlx-v video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rlx-v video{opacity:0;transition:opacity .3s}.rlx-v.on video{opacity:1}
+.rlx-v i{position:absolute;right:6px;bottom:6px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font:700 10px/1 var(--fb);font-style:normal}
+@media(max-width:860px){.rlx-r.hasv{grid-template-columns:minmax(0,1fr) auto}.rlx-r{grid-template-columns:minmax(0,1fr)}.rlx-c{grid-column:1/-1;grid-row:2}.rlx-v{grid-column:2;grid-row:1;width:104px}}
+@media(max-width:560px){.rlx-r{padding:10px;gap:10px 12px}.rlx-t{gap:10px;padding-left:2px}.rlx-t .co-mark{--cm:34px}.rlx-t b{font-size:19px}.rlx-m b{font-size:24px}.rlx-v{width:96px}.rlx-c>span{font-size:12px;padding:3px 7px 3px 3px}}
 </style>
 </head>
 <body>
@@ -3399,7 +3410,7 @@ function bigSeg(){var all=ROUNDS.length,bg=ROUNDS.filter(function(r){return isBi
   return '<div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+all+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+bg+'</b></button></div>'}
 function vResults(){RBIG=false;RF="all";return '<h1 tabindex="-1" class="sr">Results</h1><section class="xsec">'+xsh("01","","Highlights","The rounds worth knowing so far.")+shelf()+'</section>'+
   '<section class="xsec">'+xsh("02","","Every round",X2?"Wins, losses and rounds nobody won. Newest first. Tap one for the full card.":"Newest first. Tap a round for the full card.",false,"",fSeg())+'<div id="gal">'+(X2?roundList():gallery(true))+'</div></section>'}
-function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-rf]");if(!b)return;RF=b.dataset.rf;$$("[data-rf]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$("#gal",root).innerHTML=X2?roundList():gallery(true)});wireGallery(root)}
+function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-rf]");if(!b)return;RF=b.dataset.rf;$$("[data-rf]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$("#gal",root).innerHTML=X2?roundList():gallery(true);if(X2)wireRlx(root)});wireGallery(root);if(X2)wireRlx(root)}
 function body(){return RLOOK==="compact"?compactList():timeline()}
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
   var up=ALLN.filter(function(n){return rv(n).st!=="graded"}),ub=up.filter(function(n){return isBig(rv(n).ticker)}).length;
@@ -3656,7 +3667,7 @@ function callGrid(){var R=ROUNDS;
   h+='<div class="cg-r cg-mk" role="row"><span class="cg-l" role="rowheader"><b>Market</b></span>'+R.map(function(r){return '<span class="cg-m '+(r.a<0?'xd':'xu')+'" role="cell" title="Market '+r.out+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a).toFixed(1)+'</span>'}).join("")+'</div>';
   return '<section class="blk xsec cgs" aria-labelledby="cgH">'+xsh("02","Every call","Every call, one square","Each column is a round, newest on the right. Tap a square for the full card.",false,"cgH")+
     '<div class="cg-wrap" tabindex="0" aria-label="Every call, scrolls sideways"><div class="cg" role="table" aria-label="Every call, one square" style="--n:'+R.length+'">'+h+'</div></div>'+
-    '<p class="legend cg-k"><span><i style="background:var(--ez-gold)"></i>Won the round</span><span><i style="background:var(--ez-green)"></i>Right way</span><span><i style="background:var(--ez-red)"></i>Wrong way</span><span><i style="background:var(--card)"></i>No call yet</span></p></section>'}
+    '<p class="legend cg-k"><span><i class="foil"></i>Won the round</span><span><i style="background:var(--ez-green)"></i>Right way</span><span><i style="background:var(--ez-red)"></i>Wrong way</span><span><i style="background:var(--field)"></i>No call yet</span></p></section>'}
 /* What the record shows: patterns in the calls so far, each with its sample size. A pattern only shows once it rests on
    at least FMIN cases. Small samples: they change with every round, and the page says so. */
 var FMIN=5,NUMW=["zero","one","two","three","four","five","six","seven","eight","nine","ten"];
@@ -3690,9 +3701,22 @@ function findings(){var R=ROUNDS,cards=[];
 function roundList(){var ns=ROUNDS.filter(function(r){return inF(r.n,RF)}).slice().reverse();
   if(!ns.length)return '<p class="rfoot">No graded rounds here yet.</p>';
   return '<ol class="rlx">'+ns.map(function(r){var W=wonBy(r);
-    return '<li><a class="rlx-r'+(W.length?'':' nw')+'" href="#/round/'+r.n+'"><span class="rlx-t">'+coMark(r.ticker)+'<span><b>'+esc(plainCo(r))+'</b><small>Round '+r.n+' · filed '+fmtDate(r.called)+' · graded '+fmtDate(r.resolves)+'</small></span></span>'
+    /* the film's thumbnail on the right: the poster, and the film itself plays (muted) while the row is on screen */
+    var th=r.poster?'<span class="rlx-v" aria-hidden="true"><img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">'+(r.film&&!reduce?'<video muted loop playsinline preload="none" poster="'+MEDIA+r.poster+'.jpg"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video>':'')+'<i>▶</i></span>':'';
+    return '<li><a class="rlx-r'+(W.length?'':' nw')+(th?' hasv':'')+'" href="#/round/'+r.n+'"><span class="rlx-t">'+coMark(r.ticker)+'<span><b>'+esc(plainCo(r))+'</b><small>Round '+r.n+' · filed '+fmtDate(r.called)+' · graded '+fmtDate(r.resolves)+'</small>'
+      +'<span class="rlx-m"><b class="'+(r.a<0?'xd':'xu')+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a)+'%</b>'+(W.length?'<small>'+W.map(nm).join(" & ")+' won</small>':'<small class="nw">No winner</small>')+'</span></span></span>'
       +'<span class="rlx-c">'+r.calls.map(function(c){var ok=isDn(c)===(r.a<0),w=W.indexOf(c[0])>-1;return '<span class="'+(w?'w':ok?'g':'r')+'">'+logo(c[0])+callAmt(c)+'</span>'}).join("")+'</span>'
-      +'<span class="rlx-m"><b class="'+(r.a<0?'xd':'xu')+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a)+'%</b>'+(W.length?'<small>'+W.map(nm).join(" & ")+' won</small>':'<small class="nw">No winner</small>')+'</span></a></li>'}).join("")+'</ol>'}
+      +th+'</a></li>'}).join("")+'</ol>'}
+/* play the round films in the list only while they are on screen; nothing loads until a row is visible */
+var RLX_IO=null;
+function wireRlx(root){if(RLX_IO)RLX_IO.disconnect();if(reduce||!("IntersectionObserver" in window))return;
+  /* only one film plays at a time: the visible one nearest the middle of the screen (keeps phone data light) */
+  var vis=new Set(),cur=null;
+  function pick(){var mid=innerHeight/2,best=null,bd=1e9;vis.forEach(function(v){var r=v.getBoundingClientRect(),d=Math.abs(r.top+r.height/2-mid);if(d<bd){bd=d;best=v}});
+    if(best===cur)return;if(cur){cur.pause();cur.parentNode.classList.remove("on")}cur=best;if(cur){var p=cur.play();if(p&&p.catch)p.catch(function(){})}}
+  RLX_IO=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)vis.add(e.target);else vis.delete(e.target)});pick()},{threshold:.6});
+  $$(".rlx-v video",root).forEach(function(v){v.addEventListener("playing",function(){if(v===cur)v.parentNode.classList.add("on")});RLX_IO.observe(v)});
+  var t;addEventListener("scroll",function(){clearTimeout(t);t=setTimeout(pick,120)},{passive:true})}
 function vModels(){
   return (X1?xsh("01","Leaderboard","Current standings","Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+

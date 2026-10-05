@@ -171,7 +171,7 @@ function bigSeg(){var all=ROUNDS.length,bg=ROUNDS.filter(function(r){return isBi
   return '<div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+all+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+bg+'</b></button></div>'}
 function vResults(){RBIG=false;RF="all";return '<h1 tabindex="-1" class="sr">Results</h1><section class="xsec">'+xsh("01","","Highlights","The rounds worth knowing so far.")+shelf()+'</section>'+
   '<section class="xsec">'+xsh("02","","Every round",X2?"Wins, losses and rounds nobody won. Newest first. Tap one for the full card.":"Newest first. Tap a round for the full card.",false,"",fSeg())+'<div id="gal">'+(X2?roundList():gallery(true))+'</div></section>'}
-function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-rf]");if(!b)return;RF=b.dataset.rf;$$("[data-rf]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$("#gal",root).innerHTML=X2?roundList():gallery(true)});wireGallery(root)}
+function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-rf]");if(!b)return;RF=b.dataset.rf;$$("[data-rf]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$("#gal",root).innerHTML=X2?roundList():gallery(true);if(X2)wireRlx(root)});wireGallery(root);if(X2)wireRlx(root)}
 function body(){return RLOOK==="compact"?compactList():timeline()}
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
   var up=ALLN.filter(function(n){return rv(n).st!=="graded"}),ub=up.filter(function(n){return isBig(rv(n).ticker)}).length;
@@ -428,7 +428,7 @@ function callGrid(){var R=ROUNDS;
   h+='<div class="cg-r cg-mk" role="row"><span class="cg-l" role="rowheader"><b>Market</b></span>'+R.map(function(r){return '<span class="cg-m '+(r.a<0?'xd':'xu')+'" role="cell" title="Market '+r.out+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a).toFixed(1)+'</span>'}).join("")+'</div>';
   return '<section class="blk xsec cgs" aria-labelledby="cgH">'+xsh("02","Every call","Every call, one square","Each column is a round, newest on the right. Tap a square for the full card.",false,"cgH")+
     '<div class="cg-wrap" tabindex="0" aria-label="Every call, scrolls sideways"><div class="cg" role="table" aria-label="Every call, one square" style="--n:'+R.length+'">'+h+'</div></div>'+
-    '<p class="legend cg-k"><span><i style="background:var(--ez-gold)"></i>Won the round</span><span><i style="background:var(--ez-green)"></i>Right way</span><span><i style="background:var(--ez-red)"></i>Wrong way</span><span><i style="background:var(--card)"></i>No call yet</span></p></section>'}
+    '<p class="legend cg-k"><span><i class="foil"></i>Won the round</span><span><i style="background:var(--ez-green)"></i>Right way</span><span><i style="background:var(--ez-red)"></i>Wrong way</span><span><i style="background:var(--field)"></i>No call yet</span></p></section>'}
 /* What the record shows: patterns in the calls so far, each with its sample size. A pattern only shows once it rests on
    at least FMIN cases. Small samples: they change with every round, and the page says so. */
 var FMIN=5,NUMW=["zero","one","two","three","four","five","six","seven","eight","nine","ten"];
@@ -462,9 +462,22 @@ function findings(){var R=ROUNDS,cards=[];
 function roundList(){var ns=ROUNDS.filter(function(r){return inF(r.n,RF)}).slice().reverse();
   if(!ns.length)return '<p class="rfoot">No graded rounds here yet.</p>';
   return '<ol class="rlx">'+ns.map(function(r){var W=wonBy(r);
-    return '<li><a class="rlx-r'+(W.length?'':' nw')+'" href="#/round/'+r.n+'"><span class="rlx-t">'+coMark(r.ticker)+'<span><b>'+esc(plainCo(r))+'</b><small>Round '+r.n+' · filed '+fmtDate(r.called)+' · graded '+fmtDate(r.resolves)+'</small></span></span>'
+    /* the film's thumbnail on the right: the poster, and the film itself plays (muted) while the row is on screen */
+    var th=r.poster?'<span class="rlx-v" aria-hidden="true"><img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">'+(r.film&&!reduce?'<video muted loop playsinline preload="none" poster="'+MEDIA+r.poster+'.jpg"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video>':'')+'<i>▶</i></span>':'';
+    return '<li><a class="rlx-r'+(W.length?'':' nw')+(th?' hasv':'')+'" href="#/round/'+r.n+'"><span class="rlx-t">'+coMark(r.ticker)+'<span><b>'+esc(plainCo(r))+'</b><small>Round '+r.n+' · filed '+fmtDate(r.called)+' · graded '+fmtDate(r.resolves)+'</small>'
+      +'<span class="rlx-m"><b class="'+(r.a<0?'xd':'xu')+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a)+'%</b>'+(W.length?'<small>'+W.map(nm).join(" & ")+' won</small>':'<small class="nw">No winner</small>')+'</span></span></span>'
       +'<span class="rlx-c">'+r.calls.map(function(c){var ok=isDn(c)===(r.a<0),w=W.indexOf(c[0])>-1;return '<span class="'+(w?'w':ok?'g':'r')+'">'+logo(c[0])+callAmt(c)+'</span>'}).join("")+'</span>'
-      +'<span class="rlx-m"><b class="'+(r.a<0?'xd':'xu')+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a)+'%</b>'+(W.length?'<small>'+W.map(nm).join(" & ")+' won</small>':'<small class="nw">No winner</small>')+'</span></a></li>'}).join("")+'</ol>'}
+      +th+'</a></li>'}).join("")+'</ol>'}
+/* play the round films in the list only while they are on screen; nothing loads until a row is visible */
+var RLX_IO=null;
+function wireRlx(root){if(RLX_IO)RLX_IO.disconnect();if(reduce||!("IntersectionObserver" in window))return;
+  /* only one film plays at a time: the visible one nearest the middle of the screen (keeps phone data light) */
+  var vis=new Set(),cur=null;
+  function pick(){var mid=innerHeight/2,best=null,bd=1e9;vis.forEach(function(v){var r=v.getBoundingClientRect(),d=Math.abs(r.top+r.height/2-mid);if(d<bd){bd=d;best=v}});
+    if(best===cur)return;if(cur){cur.pause();cur.parentNode.classList.remove("on")}cur=best;if(cur){var p=cur.play();if(p&&p.catch)p.catch(function(){})}}
+  RLX_IO=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)vis.add(e.target);else vis.delete(e.target)});pick()},{threshold:.6});
+  $$(".rlx-v video",root).forEach(function(v){v.addEventListener("playing",function(){if(v===cur)v.parentNode.classList.add("on")});RLX_IO.observe(v)});
+  var t;addEventListener("scroll",function(){clearTimeout(t);t=setTimeout(pick,120)},{passive:true})}
 function vModels(){
   return (X1?xsh("01","Leaderboard","Current standings","Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+

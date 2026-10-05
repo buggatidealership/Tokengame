@@ -244,3 +244,7 @@ Paste this into a new session, with the zip, to pick up where we left off.
 - X2 Leaderboard: 01 standings, 02 Every call, one square (`callGrid`: a sticky AI column, a column per round with the company mark, gold/green/red squares with the call, the market along the bottom; opens on the newest round; tap opens the round), 03 stats, 04 What the record shows (`findings`: all agree vs split, up vs down calls, how big, and the "Inverse <lowest hit rate>" joke; each needs at least FMIN=5 cases and shows its sample), 05 record book.
 - X2 Results: Every round is `roundList` (wins, losses and rounds nobody won; filters kept; tap opens the card).
 - Class prefixes: cg-, fdg, rlx, xu/xd (`.u`/`.d` are taken by filled pills).
+
+### Round 54: X2 grid polish, film thumbnails in the round list
+- Grid: sits on its own card (fits its content); the sticky AI column is opaque and covers the row gaps, so nothing shows through while scrolling. Company and AI logos are square-sized. Won the round = the leader's foil (same as #1 in the standings), same ring as every square, a small crown inside the top-right corner. Legend swatch matches.
+- Round list: the film's thumbnail on the right (poster, then the film plays muted); the market move and the winner moved left under the company. Only one film plays at a time (the visible one nearest the middle of the screen); films load only when shown. Winner chips use the foil too.
