@@ -2523,7 +2523,9 @@ var P0=PS[0]||null;
   speed();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(speed);
   tp.addEventListener("click",function(){var p=!tick.classList.contains("paused");tick.classList.toggle("paused",p);
     tp.setAttribute("aria-pressed",String(p));tp.setAttribute("aria-label",p?"Play the scores":"Pause the scores");tp.firstChild.textContent=p?"▶":"❚❚"})})();
-if(TARGET){$("#liveTxt").innerHTML=(P0?"In play: ":"Next: ")+coName(TARGET)}
+if(TARGET){$("#liveTxt").innerHTML=(P0?"In play: ":"Next: ")+coName(TARGET);
+  /* tap: straight to that round's card in the record */
+  var lc=$("#liveChip");lc.href="#round-"+TARGET.n;lc.addEventListener("click",function(e){if(location.hash==="#round-"+TARGET.n){e.preventDefault();shDeep()}})}
 else $("#liveChip").style.display="none";
 
 /* ---------- the landing band flips to "How we grade" and back. One card: the hidden face is inert. ---------- */
@@ -2745,7 +2747,7 @@ var BAND_RIGHT="next",LR=ROUNDS.length?ROUNDS[ROUNDS.length-1]:null;
 if(BAND_RIGHT==="last"&&LR){var lw=LR.win?LR.win.split(" & "):[];
   $("#unH").innerHTML='Last round <small class="lr-d">'+fmtDate(LR.resolves)+'</small>';$(".band").classList.add("half");
   unHTML='<button type="button" class="up-p lr lrc" id="lrB" aria-label="Open the card: '+plain(LR)+'"><span class="lr-card">'+bkHead(LR)+
-    '<span class="lr-cb"><span class="bk-sec">What they predicted</span>'+bkRows(LR)+bkOut(LR)+'<span class="lr-tap" aria-hidden="true">Tap to open ↗</span></span></span></button>'}
+    '<span class="lr-cb"><span class="bk-sec">What they predicted</span>'+bkRows(LR)+bkOut(LR)+'</span></span></button>'}
 $(".band").style.setProperty("--rows",Math.max(1,ROWS.length));
 $("#unB").innerHTML=unHTML;
 /* the last round, opened over the page: the same flip card as the record. Close with ✕, Esc or a tap outside. */
@@ -3065,7 +3067,7 @@ function shareRound(btn){var n=+btn.dataset.share,s=SL.filter(function(x){return
     else shPanel(btn,R)},function(){delete btn.dataset.busy;btn.classList.remove("busy")})}
 /* a shared link (#round-9) opens the record on that round */
 function shDeep(){var m=location.hash.match(/^#round-(\d+)$/);if(!m)return;var i=SL.findIndex(function(s){return s.n===+m[1]});if(i<0)return;
-  $("#record").scrollIntoView({block:"start"});go(i,false)}
+  requestAnimationFrame(function(){$("#record").scrollIntoView({block:"start"});go(i,false)})}
 addEventListener("hashchange",shDeep);requestAnimationFrame(function(){requestAnimationFrame(shDeep)});
 
 /* ---------- if you'd followed each AI: everyone starts with the stake (STAKE) and puts all of it on every call (buy if the AI says
