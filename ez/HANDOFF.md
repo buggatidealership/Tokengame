@@ -178,6 +178,9 @@ Paste this into a new session, with the zip, to pick up where we left off.
 ## 2026-10-05 (round 40)
 - Last round card: less space between "What they predicted" and the first row (the winner tag shares that line on the right); a small gap before Outcome.
 
+## 2026-10-05 (round 41)
+- Last round card: the gap above the first row equals the gap above Outcome (10px phones, 12px desktop).
+
 ## Still open
 - Navigation for Season Live is still to be decided.
 - Share placement on Season: top right of the card in focus, plus on the card back. Owner to confirm.
