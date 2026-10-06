@@ -649,31 +649,46 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
 addEventListener("hashchange",route);
 route();
 
-/* ---------- X2 Overview, the proof: How close (the targets) first and by default, then Direction. A Replay button
-   plays the season round by round: each AI's shot lands on its own target one after the other, then the round's
-   winner pops in the middle. ---------- */
+/* ---------- X2 Overview, the proof: How close (the targets) first and by default, then Direction. The last round
+   plays out once when the section comes into view (and again on the button): the real move is the bullseye, each AI's
+   shot flies in one after the other with a trail and an impact ripple and its call labelled, then the winner's target
+   lights up and the others dim. ---------- */
 if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist");if(!sw||!sd)return;
   sw.parentNode.insertBefore(sd,sw);sd.click();
   var box=$("#lxDist");if(!box)return;var grid=$(".tg-grid",box);if(!grid)return;
-  var red=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var bar=document.createElement("div");bar.className="tgx-bar";bar.innerHTML='<button type="button" class="tgx-go"><span aria-hidden="true">▶</span> Replay the season</button><span class="tgx-st" aria-live="polite"></span>';
+  var RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,L=ROUNDS[ROUNDS.length-1],NS="http://www.w3.org/2000/svg";
+  var wins=L.win?L.win.split(" & "):[];
+  var bar=document.createElement("div");bar.className="tgx-bar";
+  bar.innerHTML='<div class="tgx-cap"><small>Last round</small><b>'+esc(L.co)+'</b><span class="'+(L.a<0?'dn':'up')+'">'+(L.a<0?'▼ ':'▲ ')+esc(String(L.out).replace(/^[+−-]/,""))+'</span><em>= the bullseye</em></div>'+
+    '<button type="button" class="tgx-go"><span aria-hidden="true">▶</span> Replay</button>';
   box.insertBefore(bar,box.firstChild);
-  var stage=document.createElement("div");stage.className="tgx-pop";stage.hidden=true;grid.style.position="relative";grid.appendChild(stage);
-  var go=$(".tgx-go",bar),st=$(".tgx-st",bar),timers=[],running=false;
+  var go=$(".tgx-go",bar),timers=[],busy=false;
   function later(f,ms){timers.push(setTimeout(f,ms))}
-  function dots(){return $$(".tg-d",grid)}
-  function stop(){timers.forEach(clearTimeout);timers=[];running=false;dots().forEach(function(g){g.classList.remove("tgx-off","tgx-hit")});stage.hidden=true;st.textContent="";go.innerHTML='<span aria-hidden="true">▶</span> Replay the season'}
-  go.addEventListener("click",function(){if(running){stop();return}
-    running=true;go.innerHTML='<span aria-hidden="true">■</span> Stop';dots().forEach(function(g){g.classList.add("tgx-off");g.classList.remove("tgx-hit")});
-    var t=300,SHOT=red?0:260,HOLD=red?700:1300;
-    ROUNDS.forEach(function(r){var order=$$(".tg",grid);
-      later(function(){st.textContent="Round "+r.n+" · "+r.co;stage.hidden=true},t);
-      order.forEach(function(f){var g=$('.tg-d[data-n="'+r.n+'"]',f);if(!g)return;t+=SHOT;
-        later(function(){g.classList.remove("tgx-off");g.classList.add("tgx-hit")},t)});
-      t+=red?100:420;
-      later(function(){var w=r.win?r.win.split(" & "):[];
-        stage.innerHTML='<small>Round '+r.n+' · '+esc(r.co)+'</small>'+(w.length?'<span>Winner</span><b>'+w.map(function(m){return logo(m)+nm(m)}).join(" & ")+'</b>':'<span>No winner</span><b>All wrong</b>');
-        stage.hidden=false;stage.classList.remove("in");stage.offsetWidth;stage.classList.add("in")},t);
-      t+=HOLD});
-    later(function(){stage.hidden=true;st.textContent="Season so far: "+ROUNDS.length+" rounds";running=false;go.innerHTML='<span aria-hidden="true">▶</span> Replay the season';dots().forEach(function(g){g.classList.remove("tgx-hit")})},t+200)});
+  function clean(){timers.forEach(clearTimeout);timers=[];$$(".tgx-fx",grid).forEach(function(e){e.remove()});
+    $$(".tg",grid).forEach(function(f){f.classList.remove("tgx-dim","tgx-win")});$$(".tg-d",grid).forEach(function(g){g.classList.remove("tgx-off","tgx-hit","tgx-last","tgx-old")})}
+  function shot(f,c,i,t0){var g=$('.tg-d[data-n="'+L.n+'"]',f),sv=$("svg",f),m=f.getAttribute("data-m");
+    var lab=document.createElement("div");lab.className="tgx-fx tgx-lab";
+    lab.innerHTML=c?'<b class="'+(c.dn?'dn':'up')+'">'+(c.dn?'▼ ':'▲ ')+esc(c.mag)+'</b><span>'+(c.ok?c.off.toFixed(2)+' pts off':'wrong way')+'</span>':'<span>no call</span>';
+    f.appendChild(lab);
+    if(!g||!sv){later(function(){lab.classList.add("in")},t0);return}
+    var x=+g.dataset.x,y=+g.dataset.y,sx=x+70,sy=y-130;
+    var tr=document.createElementNS(NS,"line");tr.setAttribute("class","tgx-fx tgx-tr");tr.setAttribute("x1",sx);tr.setAttribute("y1",sy);tr.setAttribute("x2",x);tr.setAttribute("y2",y);
+    var len=Math.hypot(x-sx,y-sy);tr.style.strokeDasharray=len;tr.style.strokeDashoffset=len;sv.appendChild(tr);
+    var rp=document.createElementNS(NS,"circle");rp.setAttribute("class","tgx-fx tgx-rp"+(c&&!c.ok?" bad":""));rp.setAttribute("cx",x);rp.setAttribute("cy",y);rp.setAttribute("r",6);sv.appendChild(rp);
+    later(function(){tr.classList.add("go")},t0);
+    later(function(){g.classList.remove("tgx-off");g.classList.add("tgx-hit","tgx-last");rp.classList.add("go");lab.classList.add("in")},t0+(RM?0:360));
+    later(function(){tr.classList.add("fade")},t0+(RM?0:900))}
+  function play(){if(busy)return;busy=true;clean();
+    var figs=$$(".tg",grid),calls=parsed(L);
+    $$(".tg-d",grid).forEach(function(g){g.classList.add(+g.dataset.n===L.n?"tgx-off":"tgx-old")});
+    var t=RM?0:250,STEP=RM?0:700;
+    figs.forEach(function(f,i){var m=f.getAttribute("data-m"),c=calls.filter(function(x){return x.m===m})[0];shot(f,c,i,t);t+=STEP});
+    later(function(){figs.forEach(function(f){var m=f.getAttribute("data-m");f.classList.add(wins.indexOf(m)>-1?"tgx-win":"tgx-dim")});
+      if(wins.length)figs.forEach(function(f){if(wins.indexOf(f.getAttribute("data-m"))<0)return;var pop=document.createElement("div");pop.className="tgx-fx tgx-pop";pop.innerHTML=CROWN+'<span>'+nm(f.getAttribute("data-m"))+' wins</span>';
+        f.appendChild(pop);requestAnimationFrame(function(){pop.classList.add("in")})});
+      else{var pop=document.createElement("div");pop.className="tgx-fx tgx-none";pop.textContent="No winner: every AI got the direction wrong";bar.appendChild(pop)}},t+(RM?0:300));
+    later(function(){busy=false},t+400)}
+  grid.style.position="relative";
+  go.addEventListener("click",function(){busy=false;play()});
+  if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.disconnect();setTimeout(play,500)}})},{threshold:.5});io.observe(grid)}else play();
 })();
