@@ -638,7 +638,26 @@ function wireModel(root,m){var el=$("#tg1",root);if(el)targets(el,[m])}
 
 /* ---------- buyback: the scoreboard that only means something after launch (the pot, $EZ bought back),
    then where to read more. The overview keeps the four-step explainer. ---------- */
-function vBuyback(){function v(x){return x?esc(x):'<span class="soon">Opens at launch</span>'}
+/* X2: the market-cap calculator lives on the Buyback tab. It is one live element (its buttons are wired once on the
+   board), so it moves into the tab and back rather than being copied. */
+var CALC=null,CALC_MARK=null;
+function calcAway(root){CALC=CALC||$("#calc");if(!CALC)return;if(!CALC_MARK){CALC_MARK=document.createComment("calc");CALC.parentNode.insertBefore(CALC_MARK,CALC)}var slot=$("#bbCalc",root);if(slot)slot.appendChild(CALC)}
+function calcHome(){if(CALC&&CALC_MARK&&CALC.parentNode!==CALC_MARK.parentNode)CALC_MARK.parentNode.insertBefore(CALC,CALC_MARK)}
+/* X2 Buyback: the pool first. Until launch there is no address; once CONFIG.pool (address) and CONFIG.chain are set,
+   the balance is read live from a public RPC and refreshed every 30s, with a link to the explorer. */
+function vBuybackX2(){var addr=CONFIG.pool||"",ch=String(CONFIG.chain||"").toLowerCase(),url=CONFIG.poolUrl||"";
+  return '<h1 tabindex="-1">Buyback</h1><p class="sub">Every $EZ trade pays a fee. '+Math.round((SIM.poolShare!=null?SIM.poolShare:.69)*100)+'% of it fills this pool. The AI on top bets it on NVIDIA\'s earnings at '+(SIM.leverage!=null?SIM.leverage:5)+'x. Win, it buys back $EZ. Lose, the pool gets rekt.</p>'+
+    '<div class="pool"><small>In the pool</small><b id="poolBal">'+(addr?'<span class="pool-ld">Reading the chain…</span>':'Opens at launch')+'</b>'+
+    (addr?'<p class="pool-a"><span>'+esc(addr.slice(0,6)+'…'+addr.slice(-4))+'</span>'+(url?'<a href="'+esc(url)+'" target="_blank" rel="noopener">See it on the explorer ↗</a>':'')+'</p>':'<p class="pool-a">The pool address appears here, and only here, at launch. Every fee lands in it, on chain, for anyone to check.</p>')+
+    '<div class="pool-r"><div><small>Bought back so far</small><b>'+(CONFIG.boughtBack?esc(CONFIG.boughtBack):'Nothing yet')+'</b></div><div><small>Next bet</small><b>NVIDIA earnings · '+(SIM.leverage!=null?SIM.leverage:5)+'x</b></div></div></div>'+
+    '<div id="bbCalc"></div><p class="m-fine">A memecoin experiment. Not financial advice. The pot can be wiped out.</p>'}
+function wirePool(root){var addr=CONFIG.pool,ch=String(CONFIG.chain||"").toLowerCase(),el=$("#poolBal",root);if(!addr||!el)return;
+  function show(v,u){el.textContent=v.toLocaleString("en-US",{maximumFractionDigits:v<10?3:1})+" "+u}
+  function read(){var req,u;if(/sol/.test(ch)){u="SOL";req=fetch("https://api.mainnet-beta.solana.com",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method:"getBalance",params:[addr]})}).then(function(r){return r.json()}).then(function(j){return j.result.value/1e9})}
+    else{u="ETH";var rpc=/base/.test(ch)?"https://mainnet.base.org":"https://ethereum-rpc.publicnode.com";req=fetch(rpc,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_getBalance",params:[addr,"latest"]})}).then(function(r){return r.json()}).then(function(j){return parseInt(j.result,16)/1e18})}
+    req.then(function(v){show(v,u)}).catch(function(){el.innerHTML='<span class="pool-ld">Could not reach the chain. Check the explorer.</span>'})}
+  read();var t=setInterval(function(){if(!document.body.contains(el)){clearInterval(t);return}read()},30000)}
+function vBuyback(){if(X2)return vBuybackX2();function v(x){return x?esc(x):'<span class="soon">Opens at launch</span>'}
   return '<h1 tabindex="-1">Buyback</h1><p class="sub">Trading fees fill a pot. An AI bets it on earnings. A right call buys back $EZ; a wrong one drains the pot.</p>'+
     '<div class="bbn"><div><small>In the pot</small><b>'+v(CONFIG.pool)+'</b></div><div><small>$EZ bought back</small><b>'+v(CONFIG.boughtBack)+'</b></div></div>'+
     '<p class="bbt">Every buyback will be listed here with its transaction.</p>'+
@@ -655,11 +674,12 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
       if(p[0]==="round"){openN=+p[1];var v=rv(openN);ck=v?dkey(dayOf(v)):null}
       if(curSec==="upcoming"&&!view.hidden){if(openN)openRound(openN);return}
       html=vRounds();wire=wireRounds}
-    else if(p[0]==="buyback"){html=vBuyback();sec="buyback"}
+    else if(p[0]==="buyback"){html=vBuyback();sec="buyback";if(X2)wire=wirePool}
     else if(p[0]==="model"&&p[1]&&X1&&!X2){html=vModels();sec="leaderboard";wire=wireModels}
     else if(p[0]==="model"&&p[1]){var m=String(p[1]).toUpperCase();html=X2?vProfile(m):vModel(m);sec="leaderboard";wire=X2?function(){}:function(r){wireModel(r,m)}}
     else if(p[0]==="models"||p[0]==="leaderboard"){html=vModels();sec="leaderboard";wire=wireModels}}
   closeRound();
+  if(X2)calcHome();
   var onBoard=!html;
   $$("video",view).forEach(function(v){v.pause()});
   if(onBoard){view.hidden=true;view.innerHTML="";boardEl.hidden=false;
@@ -670,7 +690,8 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
   else{boardEl.hidden=true;view.innerHTML=html;view.hidden=false;if(wire)wire(view);
     if(!firstR){window.scrollTo(0,0);var h1=$("h1",view);if(h1)h1.focus({preventScroll:true})}
     if(sec==="upcoming")requestAnimationFrame(function(){centerDay(view,ck)})}
-  curSec=sec;
+  curSec=sec;document.documentElement.setAttribute("data-sec",sec);
+  if(X2&&sec==="buyback"&&!onBoard)calcAway(view);
   $$(".nav a").forEach(function(a){if(a.dataset.r===sec)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   document.title=onBoard?"EZ Season Live":(($("h1",view)||{}).textContent||"EZ")+" · EZ Season Live";
   if(openN)setTimeout(function(){openRound(openN)},60);
@@ -678,24 +699,24 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
 addEventListener("hashchange",route);
 route();
 
-/* ---------- X2 Overview, the proof: How close (the targets) first and by default, then Direction. The last round
-   plays out once when the section comes into view (and again on the button): the real move is the bullseye, each AI's
-   shot flies in one after the other with a trail and an impact ripple and its call labelled, then the winner's target
-   lights up and the others dim. ---------- */
+/* ---------- X2 Overview, the proof: How close (the targets) first and by default, showing every call so far. A small
+   "Replay last round" button wipes the targets with a short static flicker, then the last round plays: each AI's shot
+   flies in one after the other with a trail and an impact ripple and its call labelled; the winner's target lights up.
+   "Show every call" brings the season back. ---------- */
 if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist");if(!sw||!sd)return;
   sw.parentNode.insertBefore(sd,sw);sd.click();
   var box=$("#lxDist");if(!box)return;var grid=$(".tg-grid",box);if(!grid)return;
   var RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,L=ROUNDS[ROUNDS.length-1],NS="http://www.w3.org/2000/svg";
   var wins=L.win?L.win.split(" & "):[];
   var bar=document.createElement("div");bar.className="tgx-bar";
-  bar.innerHTML='<div class="tgx-cap"><small>Last round</small><b>'+esc(L.co)+'</b><span class="'+(L.a<0?'dn':'up')+'">'+(L.a<0?'▼ ':'▲ ')+esc(String(L.out).replace(/^[+−-]/,""))+'</span><em>= the bullseye</em></div>'+
-    '<button type="button" class="tgx-go"><span aria-hidden="true">▶</span> Replay</button>';
+  bar.innerHTML='<p class="tgx-cap"><span class="tgx-all">Every call so far. The bullseye is what the stock did.</span><span class="tgx-one" hidden><small>Last round</small> <b>'+esc(L.co)+'</b> <span class="'+(L.a<0?'dn':'up')+'">'+(L.a<0?'▼ ':'▲ ')+esc(String(L.out).replace(/^[+−-]/,""))+'</span></span></p>'+
+    '<button type="button" class="tgx-go"><span aria-hidden="true">▶</span> Replay last round</button>';
   box.insertBefore(bar,box.firstChild);
-  var go=$(".tgx-go",bar),timers=[],busy=false;
+  var go=$(".tgx-go",bar),all=$(".tgx-all",bar),one=$(".tgx-one",bar),timers=[],mode="all";
   function later(f,ms){timers.push(setTimeout(f,ms))}
   function clean(){timers.forEach(clearTimeout);timers=[];$$(".tgx-fx",grid).forEach(function(e){e.remove()});
-    $$(".tg",grid).forEach(function(f){f.classList.remove("tgx-dim","tgx-win")});$$(".tg-d",grid).forEach(function(g){g.classList.remove("tgx-off","tgx-hit","tgx-last","tgx-old")})}
-  function shot(f,c,i,t0){var g=$('.tg-d[data-n="'+L.n+'"]',f),sv=$("svg",f),m=f.getAttribute("data-m");
+    $$(".tg",grid).forEach(function(f){f.classList.remove("tgx-dim","tgx-win","tgx-noise")});$$(".tg-d",grid).forEach(function(g){g.classList.remove("tgx-off","tgx-hit","tgx-last","tgx-gone")})}
+  function shot(f,c,t0){var g=$('.tg-d[data-n="'+L.n+'"]',f),sv=$("svg",f);
     var lab=document.createElement("div");lab.className="tgx-fx tgx-lab";
     lab.innerHTML=c?'<b class="'+(c.dn?'dn':'up')+'">'+(c.dn?'▼ ':'▲ ')+esc(c.mag)+'</b><span>'+(c.ok?c.off.toFixed(2)+' pts off':'wrong way')+'</span>':'<span>no call</span>';
     f.appendChild(lab);
@@ -707,17 +728,20 @@ if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist");if(!sw||!sd)return;
     later(function(){tr.classList.add("go")},t0);
     later(function(){g.classList.remove("tgx-off");g.classList.add("tgx-hit","tgx-last");rp.classList.add("go");lab.classList.add("in")},t0+(RM?0:360));
     later(function(){tr.classList.add("fade")},t0+(RM?0:900))}
-  function play(){if(busy)return;busy=true;clean();
+  function showAll(){clean();mode="all";all.hidden=false;one.hidden=true;go.innerHTML='<span aria-hidden="true">▶</span> Replay last round'}
+  function replay(){clean();mode="one";all.hidden=true;one.hidden=false;go.innerHTML='<span aria-hidden="true">↺</span> Show every call';
     var figs=$$(".tg",grid),calls=parsed(L);
-    $$(".tg-d",grid).forEach(function(g){g.classList.add(+g.dataset.n===L.n?"tgx-off":"tgx-old")});
-    var t=RM?0:250,STEP=RM?0:700;
-    figs.forEach(function(f,i){var m=f.getAttribute("data-m"),c=calls.filter(function(x){return x.m===m})[0];shot(f,c,i,t);t+=STEP});
-    later(function(){figs.forEach(function(f){var m=f.getAttribute("data-m");f.classList.add(wins.indexOf(m)>-1?"tgx-win":"tgx-dim")});
+    /* the wipe: a short burst of static on every target, then only the last round's shots are left to come */
+    figs.forEach(function(f){f.classList.add("tgx-noise");var sv=$("svg",f),n=document.createElement("i");n.className="tgx-fx tgx-static";
+      if(sv){var d=sv.getBoundingClientRect(),fr=f.getBoundingClientRect(),k=Math.min(d.width,d.height)*.88;n.style.cssText="left:"+(d.left-fr.left+(d.width-k)/2)+"px;top:"+(d.top-fr.top+(d.height-k)/2)+"px;width:"+k+"px;height:"+k+"px"}f.appendChild(n)});
+    later(function(){$$(".tg-d",grid).forEach(function(g){g.classList.add(+g.dataset.n===L.n?"tgx-off":"tgx-gone")})},RM?0:220);
+    later(function(){figs.forEach(function(f){f.classList.remove("tgx-noise")});$$(".tgx-static",grid).forEach(function(e){e.remove()})},RM?0:520);
+    var t=RM?0:700,STEP=RM?0:650;
+    figs.forEach(function(f){var m=f.getAttribute("data-m"),c=calls.filter(function(x){return x.m===m})[0];shot(f,c,t);t+=STEP});
+    later(function(){figs.forEach(function(f){f.classList.add(wins.indexOf(f.getAttribute("data-m"))>-1?"tgx-win":"tgx-dim")});
       if(wins.length)figs.forEach(function(f){if(wins.indexOf(f.getAttribute("data-m"))<0)return;var pop=document.createElement("div");pop.className="tgx-fx tgx-pop";pop.innerHTML=CROWN+'<span>'+nm(f.getAttribute("data-m"))+' wins</span>';
         f.appendChild(pop);requestAnimationFrame(function(){pop.classList.add("in")})});
-      else{var pop=document.createElement("div");pop.className="tgx-fx tgx-none";pop.textContent="No winner: every AI got the direction wrong";bar.appendChild(pop)}},t+(RM?0:300));
-    later(function(){busy=false},t+400)}
+      else{var pop=document.createElement("p");pop.className="tgx-fx tgx-none";pop.textContent="No winner: every AI got the direction wrong";bar.appendChild(pop)}},t+(RM?0:300))}
   grid.style.position="relative";
-  go.addEventListener("click",function(){busy=false;play()});
-  if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.disconnect();setTimeout(play,500)}})},{threshold:.5});io.observe(grid)}else play();
+  go.addEventListener("click",function(){mode==="all"?replay():showAll()});
 })();
