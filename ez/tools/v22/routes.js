@@ -534,11 +534,16 @@ function vProfile(m){if(!CAR[m])return null;
   var hit=function(k){return CAR[k].g?CAR[k].right/CAR[k].g:0},miss=function(k){return CAR[k].avg==null?99:CAR[k].avg};
   var hR=place(m,hit,function(a,b){return a>b}),mR=place(m,miss,function(a,b){return a<b}),fR=place(m,bal,function(a,b){return a>b});
   var NW=["","one","two","three","four","five","six"][N]||N,rk=rkOf(m),nmM=nm(m),ord=["","first","second","third","fourth","fifth"];
-  /* the one-paragraph read, written from the numbers */
-  var s1=(rk===1?nmM+' leads the season':nmM+' is '+ord[rk]+' of '+N)+' with '+C.won+' '+(C.won===1?'win':'wins')+'.';
-  var s2=' It called the direction right on '+C.right+' of '+C.g+(full.indexOf(m)<0?' (it joined later, so it isn\'t ranked on this yet).':hR===1?', the best of the '+NW+'.':hR===full.length?', the worst of the '+NW+'.':'.');
-  var s3=C.avg==null?'':' On average its number lands '+C.avg.toFixed(2)+' points from the real move'+(mR===1&&full.indexOf(m)>-1?', the closest of anyone.':mR===full.length&&full.indexOf(m)>-1?', the furthest of anyone.':'.');
-  var st=C.streak?' Right now: '+C.streak.k+' '+(C.streak.ok?'right':'wrong')+' in a row.':'';
+  /* the headline: one sentence that steers what people remember (a chart's title drives recall), then the sample size */
+  var me=full.indexOf(m)>-1,pos=rk===1?nmM+' leads with '+C.won+' '+(C.won===1?'win':'wins'):nmM+' is '+ord[rk]+' with '+C.won+' '+(C.won===1?'win':'wins'),tail='';
+  if(me&&hR===1)tail=' and the best hit rate';
+  else if(me&&mR===1)tail=' and the closest calls';
+  else if(me&&hR===full.length)tail=', but the worst hit rate';
+  else if(me&&mR===full.length)tail=', but misses by the most';
+  else if(!me)tail=' from '+C.g+' calls since joining late';
+  var verdictLine=pos+tail+'.';
+  var sample=C.g+' calls so far, a small sample, so ranks can still swing.'+(C.streak?' Right now: '+C.streak.k+' '+(C.streak.ok?'right':'wrong')+' in a row.':'');
+  var O2=['','1st','2nd','3rd','4th','5th','6th'];function rankTag(r){return r?'<em class="pf-tag">'+O2[r]+' place</em>':'<em class="pf-tag">not ranked yet</em>'}
   function bars(title,unit,val,fmt,better,sub){var el=function(k){return full.indexOf(k)>-1},L=RK.slice().sort(function(a,b){if(el(a)!==el(b))return el(a)?-1:1;return better(val(a),val(b))?-1:better(val(b),val(a))?1:0}),
       mx=Math.max.apply(null,RK.map(function(k){return Math.abs(val(k))}))||1;
     return '<div class="pf-cmp"><h3>'+title+'</h3><p>'+sub+'</p><ol>'+L.map(function(k){var me=k===m,v=val(k),w=Math.max(4,Math.abs(v)/mx*100);
@@ -550,7 +555,7 @@ function vProfile(m){if(!CAR[m])return null;
   /* form: newest first */
   var form='<section class="pf-sec" aria-labelledby="pfFH"><h2 id="pfFH">Form</h2><p class="pf-sub">Newest first. Gold won the round, green got the direction right, red got it wrong.</p><ol class="pf-form">'+
     C.hist.slice().reverse().map(function(h){var r=ROUNDS.filter(function(x){return x.n===h.n})[0],cls=h.none?"n":h.win?"w":h.ok?"g":"r",lab=h.none?"no call":h.win?"won":h.ok?"right way":"wrong way";
-      return '<li><a href="#/round/'+h.n+'" class="'+cls+'" aria-label="Round '+h.n+', '+esc(r?r.co:'')+': '+lab+'"><span class="pf-fl">'+(r?coMark(r.ticker):'')+'</span>'+(h.win?'<span class="pf-fc">'+CROWN+'</span>':'')+'<small>R'+h.n+'</small></a></li>'}).join("")+'</ol></section>';
+      return '<li><a href="#/round/'+h.n+'" class="'+cls+'" aria-label="Round '+h.n+', '+esc(r?r.co:'')+': '+lab+'"><span class="pf-fl">'+(r?coMark(r.ticker):'')+'</span>'+(h.win?'<span class="pf-fc">'+CROWN+'</span>':'')+'<small>'+esc(r?r.ticker.replace(/\..*$/,''):'R'+h.n)+'</small></a></li>'}).join("")+'</ol></section>';
   /* every call as a number line, on one shared scale */
   var M=5*Math.ceil(Math.max.apply(null,ROUNDS.map(function(r){return Math.max.apply(null,[Math.abs(r.a)].concat(r.calls.map(function(c){return Math.abs(parseFloat(String(c[1]).replace(/[^0-9.]/g,""))||0)})))}))/5);
   function sv(h){var v=parseFloat(String(h.said).replace(/[^0-9.]/g,""))||0;return /^DOWN/.test(h.said)?-v:v}
@@ -568,20 +573,38 @@ function vProfile(m){if(!CAR[m])return null;
       '<text x="'+ax+'" y="'+(y+(big?24:20))+'" text-anchor="'+lab2+'" class="pf-ta">'+f(av)+'</text></svg>'}
   function verdict(h){return '<span class="pf-v '+(h.win?'w':h.ok?'g':'r')+'">'+'<span>'+(h.win?CROWN+'Won':h.ok?'Right way':'Wrong way')+'</span><small>'+h.off.toFixed(2)+' pts off</small></span>'}
   var list='<section class="pf-sec" aria-labelledby="pfLH"><h2 id="pfLH">Every call</h2><p class="pf-sub">Filed before the report, never edited. <span class="pf-key"><i class="c"></i>its call</span> <span class="pf-key"><i class="a"></i>what the stock did</span> The line between them is the miss. Right of the middle is up, left is down.</p><ol class="pf-calls">'+
-    calls.slice().reverse().map(function(h){var r=h.r;return '<li><a class="'+(h.win?'w':h.ok?'g':'r')+'" href="#/round/'+r.n+'"><span class="pf-rn">R'+r.n+'</span><span class="pf-co">'+coMark(r.ticker)+'<span><b>'+esc(r.co)+'</b><small>'+esc(r.ticker)+' · '+fmtDate(r.resolves||r.called)+'</small></span></span>'+line(h)+verdict(h)+'</a></li>'}).join("")+'</ol></section>';
+    calls.slice().reverse().map(function(h){var r=h.r;return '<li><a class="'+(h.win?'w':h.ok?'g':'r')+'" href="#/round/'+r.n+'"><span class="pf-rn">R'+r.n+'</span><span class="pf-co">'+coMark(r.ticker)+'<span><b>'+esc(r.co)+'</b><small>'+esc(r.ticker)+' · called '+fmtDate(r.called)+', graded '+fmtDate(r.resolves||r.called)+'</small></span></span>'+line(h)+verdict(h)+'</a></li>'}).join("")+'</ol></section>';
   var okc=calls.filter(function(h){return h.ok}),best=okc.slice().sort(function(a,b){return a.off-b.off})[0],worst=calls.slice().sort(function(a,b){return b.off-a.off})[0];
   function bw(h,t){if(!h)return '';var r=h.r;return '<a class="pf-bw '+(h.ok?'g':'r')+'" href="#/round/'+r.n+'"><small>'+t+'</small><b>'+esc(r.co)+' <span>R'+r.n+'</span></b>'+line(h,true)+'<p>'+h.off.toFixed(2)+' points off. '+(h.ok?'Right way.':'Wrong way.')+'</p></a>'}
   var bwS='<section class="pf-sec" aria-labelledby="pfBH"><h2 id="pfBH">Best and worst</h2><div class="pf-bws">'+bw(best,"Best call")+bw(worst,"Worst call")+'</div></section>';
   var i=RK.indexOf(m),nx=RK[(i+1)%N],pv=RK[(i-1+N)%N];
   var nav='<nav class="pf-pn" aria-label="Other AIs"><a href="#/model/'+pv.toLowerCase()+'"><small>← Previous</small>'+logo(pv)+nm(pv)+'</a><a href="#/model/'+nx.toLowerCase()+'"><small>Next →</small>'+logo(nx)+nm(nx)+'</a></nav>';
-  var cap='<header class="pf-hero"><div class="pf-id">'+logo(m,"pf-lg")+'<div><span class="pf-rk">#'+rk+' of '+N+'</span><h1 tabindex="-1">'+nmM+'</h1><p class="pf-ver">'+esc(MODELS[m].ver||'')+' · '+C.g+' graded calls</p></div></div>'+
-    '<p class="pf-read">'+s1+s2+s3+st+'</p>'+
-    '<div class="pf-kpi"><div class="pf-k gold"><small>Wins</small><b>'+C.won+'</b><span>rounds won</span></div>'+
-    '<div class="pf-k"><small>Right way</small><b>'+C.right+'<span>/'+C.g+'</span></b><span>up or down right</span></div>'+
-    '<div class="pf-k"><small>Average miss</small><b>'+(C.avg==null?'n/a':C.avg.toFixed(2))+'</b><span>points off</span></div>'+
-    '<div class="pf-k"><small>'+usd(STAKE)+' copied</small><b>'+usd(bal(m))+'</b><span>'+pctTxt(bal(m))+', simulated</span></div></div></header>';
+  var dots=calls.map(function(h){return h.win?'w':h.ok?'g':'r'}).sort(function(a,b){return 'wgr'.indexOf(a)-'wgr'.indexOf(b)});
+  var cap='<header class="pf-hero"><div class="pf-id">'+logo(m,"pf-lg")+'<div><span class="pf-rk">#'+rk+' of '+N+'</span><h1 tabindex="-1">'+nmM+'</h1><p class="pf-ver">'+esc(MODELS[m].ver||'')+'</p></div></div>'+
+    '<p class="pf-verdict">'+verdictLine+'</p>'+
+    '<div class="pf-arr" role="img" aria-label="'+C.right+' of '+C.g+' calls got the direction right, '+C.won+' of them won the round"><div class="pf-dots">'+dots.map(function(c){return '<i class="'+c+'"></i>'}).join("")+'</div>'+
+      '<p><b>'+C.right+' of '+C.g+'</b> calls got up or down right <span>('+pctOf(C.right,C.g)+'%)</span>. <span class="pf-lg2"><i class="w"></i>won the round <i class="g"></i>right way <i class="r"></i>wrong way</span></p></div>'+
+    '<div class="pf-kpi"><div class="pf-k gold"><small>Wins</small><b>'+C.won+'</b><span>'+rankTag(place(m,function(k){return CAR[k].won},function(a,b){return a>b}))+'</span></div>'+
+    '<div class="pf-k"><small>Right way</small><b>'+C.right+'<span>/'+C.g+'</span></b><span>'+rankTag(hR)+'</span></div>'+
+    '<div class="pf-k"><small>Average miss</small><b>'+(C.avg==null?'n/a':C.avg.toFixed(2))+'<span> pts</span></b><span>'+rankTag(mR)+'</span></div>'+
+    '<div class="pf-k"><small>'+usd(STAKE)+' copied</small><b>'+usd(bal(m))+'</b><span>'+rankTag(fR)+' '+pctTxt(bal(m))+'</span></div></div>'+
+    '<p class="pf-sample">'+sample+'</p></header>';
+  /* one chart: $100K copied, round by round; this AI bold, the others faint, labelled at the end */
+  var ser=RK.map(function(k){var b=STAKE,pts=[],started=false;ROUNDS.forEach(function(r,i){var c=callOf(r,k);if(c){if(!started){pts.push([i,STAKE]);started=true}b*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,b])}else if(started)pts.push([i+1,b])});return {k:k,pts:pts,end:b}});
+  var all=[].concat.apply([],ser.map(function(x){return x.pts.map(function(p){return p[1]})})),lo=Math.min.apply(null,all.concat([STAKE])),hi=Math.max.apply(null,all.concat([STAKE])),pad=(hi-lo)*.08;lo-=pad;hi+=pad;
+  var NAR=window.innerWidth<640,CW=NAR?380:640,CH=NAR?250:260,L0=8,R0=NAR?116:104,T0=12,B0=26,cx=function(i){return L0+i/G*(CW-L0-R0)},cy=function(v){return T0+(1-(v-lo)/(hi-lo))*(CH-T0-B0)};
+  var labs=ser.map(function(x){return {k:x.k,y:cy(x.end),v:x.end}}).sort(function(a,b){return a.y-b.y});for(var q=1;q<labs.length;q++)if(labs[q].y-labs[q-1].y<16)labs[q].y=labs[q-1].y+16;
+  var kfmt=function(v){return '$'+Math.round(v/1000)+'K'};
+  var chart='<svg class="pf-bal" viewBox="0 0 '+CW+' '+CH+'" role="img" aria-label="What '+usd(STAKE)+' copying each AI became, round by round">'+
+    '<line x1="'+L0+'" x2="'+(CW-R0)+'" y1="'+cy(STAKE)+'" y2="'+cy(STAKE)+'" stroke="var(--ink)" stroke-opacity=".25" stroke-dasharray="3 4"/><text x="'+L0+'" y="'+(cy(STAKE)+15)+'" class="pf-bt">Start '+kfmt(STAKE)+'</text>'+
+    ser.filter(function(x){return x.k!==m}).map(function(x){return '<polyline points="'+x.pts.map(function(p){return cx(p[0]).toFixed(1)+','+cy(p[1]).toFixed(1)}).join(" ")+'" fill="none" stroke="var(--ink)" stroke-opacity=".22" stroke-width="2" stroke-linejoin="round"/>'}).join("")+
+    ser.filter(function(x){return x.k===m}).map(function(x){return '<polyline points="'+x.pts.map(function(p){return cx(p[0]).toFixed(1)+','+cy(p[1]).toFixed(1)}).join(" ")+'" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>'+
+      x.pts.slice(1).map(function(p){var r=ROUNDS[p[0]-1];return '<circle cx="'+cx(p[0]).toFixed(1)+'" cy="'+cy(p[1]).toFixed(1)+'" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="2"><title>After round '+r.n+' ('+esc(r.co)+'): '+usd(p[1])+'</title></circle>'}).join("")}).join("")+
+    labs.map(function(l){return '<text x="'+(CW-R0+8)+'" y="'+(l.y+4).toFixed(1)+'" class="pf-bl'+(l.k===m?' me':'')+'">'+nm(l.k)+' '+kfmt(l.v)+'</text>'}).join("")+
+    '<text x="'+cx(1)+'" y="'+(CH-6)+'" class="pf-bt" text-anchor="middle">R1</text><text x="'+cx(G)+'" y="'+(CH-6)+'" class="pf-bt" text-anchor="middle">R'+ROUNDS[G-1].n+'</text></svg>';
+  var balS='<section class="pf-sec" aria-labelledby="pfMH"><h2 id="pfMH">If you had copied it</h2><p class="pf-sub">'+usd(STAKE)+' in on every call: buy on an up call, short on a down call, out at the next close. '+nmM+' in black, the others in grey. Simulated, before fees.</p>'+chart+'</section>';
   return '<nav class="mnav" aria-label="Models"><a class="back" href="#/leaderboard">← Leaderboard</a>'+RK.map(function(k){return '<a href="#/model/'+k.toLowerCase()+'"'+(k===m?' aria-current="page"':'')+'>'+logo(k)+nm(k)+'</a>'}).join("")+'</nav>'+
-    '<div class="pf">'+cap+form+cmp+list+bwS+nav+'</div>'}
+    '<div class="pf">'+cap+form+cmp+balS+list+bwS+nav+'</div>'}
 function wireModel(root,m){var el=$("#tg1",root);if(el)targets(el,[m])}
 
 /* ---------- buyback: the scoreboard that only means something after launch (the pot, $EZ bought back),
