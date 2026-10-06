@@ -1284,13 +1284,13 @@ body.lmod-on{overflow:hidden}
 .gpu-c{background:#000;border:2px solid var(--ink,#111);border-radius:22px;overflow:hidden;box-shadow:4px 4px 0 var(--ink,#111)}
 .gpu-img{position:relative;max-width:900px;margin:0 auto}
 .gpu-img img{display:block;width:100%;height:auto}
-.gpu-led{position:absolute;left:34.18%;top:43.49%;width:31.98%;height:7.29%}
-.gpu-lab{position:absolute;left:34.18%;top:52.73%;width:31.98%;height:2.6%}
-.gpu-led circle,.gpu-lab circle{fill:#2b302d}
-.gpu-led circle.on{fill:#ff3b30;filter:drop-shadow(0 0 2px #ff2a1f)}
-.gpu-lab circle.on{fill:#7fc34a;opacity:.85}
-.gpu-bg{fill:#0a0c0b}
-@media (max-width:640px){.gpu-img{transform:scale(1.6);transform-origin:50% 48%}}
+.gpu-core{position:absolute;inset:0;width:100%;height:100%}
+.gc-bg{fill:none}
+.gc-blk{fill:#141518;stroke:#3a3c42;stroke-width:2;filter:drop-shadow(0 2px 3px rgba(0,0,0,.55))}
+.gc{fill:#26282d;stroke:#34363c;stroke-width:1}
+.gc.gc-on,circle.gc-on{fill:#ff3b2f;stroke:#ff9a8f;stroke-width:.8;filter:drop-shadow(0 0 4px #ff2a1f)}
+.gc-u{font:800 25px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.32em;fill:#f2efe6;paint-order:stroke;stroke:#0b0b0d;stroke-width:4px;stroke-linejoin:round}
+@media (max-width:640px){.gpu-img{transform:scale(1.55);transform-origin:50% 49%}}
 .gpu-t{margin:14px 2px 4px;font-size:clamp(16px,2.1vw,19px);line-height:1.45;max-width:46em}
 .gpu-n{margin:0 2px;font-size:14px;opacity:.75}
 
@@ -2658,7 +2658,7 @@ a.cg-c:hover{transform:translateY(-2px)}
   <section class="sec" id="bet" aria-labelledby="betH">
     <div class="sh"><div class="tx"><span class="no">03</span><span class="eb">The buyback</span><h2 id="betH">One AI, one job: buy back <span class="mark ezb"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span></h2></div>
       </div>
-    <div class="gpu" id="gpu" hidden><div class="gpu-c"><div class="gpu-img"><img src="media/ez-gpu.jpg" srcset="media/ez-gpu-1200.jpg 1200w, media/ez-gpu.jpg 2048w" sizes="(max-width:640px) 160vw, (max-width:800px) 100vw, 900px" width="2048" height="1536" loading="lazy" decoding="async" alt="A GPU package with an LED countdown to NVIDIA's earnings on its dies"><svg class="gpu-led" id="gpuLed" viewBox="0 0 655 112" preserveAspectRatio="none" role="timer" aria-live="off" aria-label="Countdown"></svg><svg class="gpu-lab" id="gpuLab" viewBox="0 0 655 40" preserveAspectRatio="none" aria-hidden="true"></svg><span class="sr" id="gpuSr"></span></div></div><p class="gpu-t">When the timer hits zero, we place a bet on NVIDIA's earnings at <b id="gpuLev"></b> leverage on Hyperliquid. The call comes from the AI on top of the leaderboard at that moment.</p><p class="gpu-n" id="gpuN"></p></div>
+    <div class="gpu" id="gpu" hidden><div class="gpu-c"><div class="gpu-img"><img src="media/ez-gpu2.jpg" srcset="media/ez-gpu2-1200.jpg 1200w, media/ez-gpu2.jpg 2000w" sizes="(max-width:640px) 160vw, (max-width:800px) 100vw, 900px" width="2000" height="1500" loading="lazy" decoding="async" alt="A GPU package with a live countdown to NVIDIA's earnings lit up in its cores"><svg class="gpu-core" id="gpuCore" viewBox="0 0 2000 1500" role="timer" aria-hidden="true"></svg><span class="sr" id="gpuSr"></span></div></div><p class="gpu-t">When the timer hits zero, we place a bet on NVIDIA's earnings at <b id="gpuLev"></b> leverage on Hyperliquid. The call comes from the AI on top of the leaderboard at that moment.</p><p class="gpu-n" id="gpuN"></p></div>
     <div class="mt" id="bbf" role="group" aria-label="Where the money goes">
       <p class="mt-top"><span aria-hidden="true">💱</span><b>Every $EZ trade pays a fee. Here's where it goes.</b></p>
       <div class="mt-split">
@@ -3280,21 +3280,23 @@ function machSVG(tall){
   var lead=LADDER&&LADDER[0]?nm(LADDER[0].m):"";
   var when=new Date(T).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"});
   $("#gpuN").textContent=(lead?"On top right now: "+lead+". ":"")+"The timer ends at the market close on "+when+" (New York), before NVIDIA reports.";
-  var F={0:"01110100011001110101110011000101110",1:"00100011000010000100001000010001110",2:"01110100010000100010001000100011111",3:"11110000010000101110000010000111110",
+  var F={0:"01110100011000110001100011000101110",1:"00100011000010000100001000010001110",2:"01110100010000100010001000100011111",3:"11110000010000101110000010000111110",
     4:"00010001100101010010111110001000010",5:"11111100001111000001000011000101110",6:"00110010001000011110100011000101110",7:"11111000010001000100010000100001000",
-    8:"01110100011000101110100011000101110",9:"01110100011000101111000010001001100"},
-    L={D:"110101101101110",A:"010101111101101",Y:"101101010010010",S:"011100010001110",H:"101101111101101",R:"110101110101101",M:"101111111101101",
-    I:"111010010010111",N:"110101101101101",E:"111100110100111",C:"011100100100011"};
-  /* 63 columns: four pairs of 5-wide digits (2 columns apart), a colon with 2 columns either side; 9 rows of square pitch (7 for glyphs) */
-  var NS="http://www.w3.org/2000/svg",led=$("#gpuLed"),lab=$("#gpuLab"),COLS=63,P=655/COLS,Y0=(112-9*P)/2,dots=[],x0=[],mid=[];
-  [[led,112],[lab,40]].forEach(function(q){var b=document.createElementNS(NS,"rect");b.setAttribute("width",655);b.setAttribute("height",q[1]);b.setAttribute("rx",3);b.setAttribute("class","gpu-bg");q[0].appendChild(b)});
-  for(var g=0,c=0;g<4;g++){x0.push(c,c+7);mid.push((c+6)*P);c+=12;if(g<3)c+=5}
-  for(var r=0;r<9;r++){dots[r]=[];for(var k=0;k<COLS;k++){var e=document.createElementNS(NS,"circle");e.setAttribute("cx",(k+.5)*P);e.setAttribute("cy",Y0+(r+.5)*P);e.setAttribute("r",P*.38);led.appendChild(e);dots[r][k]=e}}
-  [14,31,48].forEach(function(cc){[3,6].forEach(function(rr){dots[rr][cc].classList.add("on")})});
-  var LP=7,LY=(40-5*LP)/2;
-  ["DAYS","HRS","MIN","SEC"].forEach(function(w,i){var W=w.length*4-1,sx=mid[i]-W*LP/2;for(var j=0;j<w.length;j++)for(var rr=0;rr<5;rr++)for(var cc=0;cc<3;cc++)
-    if(L[w[j]][rr*3+cc]==="1"){var e2=document.createElementNS(NS,"circle");e2.setAttribute("cx",sx+(j*4+cc+.5)*LP);e2.setAttribute("cy",LY+(rr+.5)*LP);e2.setAttribute("r",LP*.36);e2.setAttribute("class","on");lab.appendChild(e2)}});
-  function put(i,d){var f=F[d];for(var rr=0;rr<7;rr++)for(var cc=0;cc<5;cc++)dots[rr+1][x0[i]+cc].classList.toggle("on",f[rr*5+cc]==="1")}
+    8:"01110100011000101110100011000101110",9:"01110100011000101111000010001001100"};
+  /* one core block in the open middle of each die (image coordinates, 2000 x 1500): days and hours on the left die,
+     minutes and seconds on the right; each digit is 5 x 7 cells styled like the image's own dark core blocks */
+  var NS="http://www.w3.org/2000/svg",sv=$("#gpuCore"),cells=[];
+  function mk(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);sv.appendChild(e);return e}
+  var PANELS=[{x:478,u:["DAYS","HRS"]},{x:1078,u:["MIN","SEC"]}],PW=446,PY=628,P=17.2,CS=13.6;
+  PANELS.forEach(function(pn,pi){mk("rect",{x:pn.x,y:PY,width:PW,height:214,rx:6,"class":"gc-bg"});
+    for(var q=0;q<2;q++){var gx=pn.x+19+q*(12*P+30);
+      mk("rect",{x:gx-7,y:PY+14,width:10*P+CS+14,height:7*P-P+CS+14,rx:4,"class":"gc-blk"});
+      for(var dgt=0;dgt<2;dgt++){var cs=[];for(var r=0;r<7;r++)for(var c=0;c<5;c++)cs.push(mk("rect",{x:(gx+(dgt*6+c)*P).toFixed(1),y:(PY+21+r*P).toFixed(1),width:CS,height:CS,rx:2,"class":"gc"}));cells.push(cs)}
+      var t=mk("text",{x:(gx+5*P+CS/2).toFixed(1),y:PY+180,"text-anchor":"middle","class":"gc-u"});t.textContent=pn.u[q]}
+    var cx=pn.x+19+(10*P+CS+12*P+30)/2;mk("circle",{cx:cx,cy:PY+21+2*P+CS/2,r:5,"class":"gc-on"});mk("circle",{cx:cx,cy:PY+21+4*P+CS/2,r:5,"class":"gc-on"})});
+  /* the colon between hours and minutes sits on the gap between the two dies */
+  mk("circle",{cx:999.5,cy:PY+21+2*P+CS/2,r:6,"class":"gc-on"});mk("circle",{cx:999.5,cy:PY+21+4*P+CS/2,r:6,"class":"gc-on"});
+  function put(i,d){var f=F[d];cells[i].forEach(function(e,k){e.setAttribute("class",f[k]==="1"?"gc gc-on":"gc")})}
   var p=function(n){return n<10?"0"+n:String(Math.min(n,99))};
   function tick(){var s=Math.max(0,Math.floor((T-Date.now())/1e3)),v=[Math.floor(s/86400),Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60];
     v.forEach(function(n,i){var t=p(n);put(i*2,+t[0]);put(i*2+1,+t[1])});
