@@ -175,8 +175,8 @@ function fSeg(){function c(f){return ROUNDS.filter(function(r){return inF(r.n,f)
   return '<div class="seg bseg" role="group" aria-label="Which rounds">'+[["all","All"],["mag7","Mag 7"],["ai","AI"]].map(function(x){return '<button type="button" data-rf="'+x[0]+'" aria-pressed="'+(RF===x[0])+'">'+x[1]+' <b>'+c(x[0])+'</b></button>'}).join("")+'</div>'}
 function bigSeg(){var all=ROUNDS.length,bg=ROUNDS.filter(function(r){return isBig(r.ticker)}).length;
   return '<div class="seg bseg" role="group" aria-label="Which rounds"><button type="button" data-big="0" aria-pressed="'+!RBIG+'">All <b>'+all+'</b></button><button type="button" data-big="1" aria-pressed="'+RBIG+'">★ Big names <b>'+bg+'</b></button></div>'}
-function vResults(){RBIG=false;RF="all";return '<h1 tabindex="-1" class="sr">Results</h1><section class="xsec">'+xsh("01","","Highlights","The rounds worth knowing so far.")+shelf()+'</section>'+
-  '<section class="xsec">'+xsh("02","","Every round",X2?"Wins, losses and rounds nobody won. Newest first. Tap one for the full card.":"Newest first. Tap a round for the full card.",false,"",fSeg())+'<div id="gal">'+(X2?roundList():gallery(true))+'</div></section>'}
+function vResults(){RBIG=false;RF="all";return '<h1 tabindex="-1" class="sr">Results</h1><section class="xsec">'+xsh("01","","Highlights",X2?"The rounds CT would screenshot.":"The rounds worth knowing so far.")+shelf()+'</section>'+
+  '<section class="xsec">'+xsh("02","","Every round",X2?"Every W, every L, every round where they all got rekt. Newest first. Tap one for the full card.":"Newest first. Tap a round for the full card.",false,"",fSeg())+'<div id="gal">'+(X2?roundList():gallery(true))+'</div></section>'}
 function wireResults(root){root.addEventListener("click",function(e){var b=e.target.closest("[data-rf]");if(!b)return;RF=b.dataset.rf;$$("[data-rf]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$("#gal",root).innerHTML=X2?roundList():gallery(true);if(X2)wireRlx(root)});wireGallery(root);if(X2)wireRlx(root)}
 function body(){return RLOOK==="compact"?compactList():timeline()}
 function vRounds(){var x=CONFIG.x?'<a href="'+esc(CONFIG.x)+'" target="_blank" rel="noopener">Follow on X</a>':'Follow on X (link at launch)';
@@ -334,7 +334,7 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;box.cla
       return '<li class="sxr wr'+(i?'':' lead')+'"><span class="st-rk">'+(i+1)+'</span><span class="st-who">'+logo(x.m)+'<b>'+nm(x.m)+'</b></span><span class="crs">'+(won.length?won.map(function(r,j){var sh=r.win.indexOf(" & ")>-1;
         return '<a class="cr'+(sh?' crh':'')+'" style="--d:'+(j*80)+'ms" href="#/round/'+r.n+'" title="Round '+r.n+', '+esc(r.co)+(sh?' (shared)':'')+'" aria-label="Round '+r.n+' '+esc(r.co)+(sh?', shared':'')+'">'+CROWN+'</a>'}).join(""):'<span class="cr0">No wins yet</span>')+'</span><span class="st-v"><b>'+x.txt+'</b><small>'+esc(x.sub)+'</small></span></li>'}).join("")+'</ol>';
   if(anim&&!reduce)$$(".cr",box).forEach(function(c){c.classList.add("pop")})}
-function statsHTML(){return '<section class="blk" aria-labelledby="stH">'+(X1?xsh(X2?"03":"02","The stats","Stats","Pick a measure. The card flips to it.",false,"stH"):'<div class="hh"><h2 id="stH">The stats</h2></div>')+
+function statsHTML(){return '<section class="blk" aria-labelledby="stH">'+(X1?xsh(X2?"03":"02","The stats","Stats",X2?"Pick a stat. No vibes, just numbers.":"Pick a measure. The card flips to it.",false,"stH"):'<div class="hh"><h2 id="stH">The stats</h2></div>')+
   '<div class="lsw rsw'+(X2?' rsw2':'')+'" role="group" aria-label="Rank the AIs by">'+RKEYS.map(function(k){return '<button type="button" data-rk="'+k+'" aria-pressed="'+(k===RCUR)+'">'+(X1?'<i class="skd" aria-hidden="true"></i>':'')+RMET[k].t+'</button>'}).join("")+'</div>'+
   '<div class="rflip sflip'+(X1?' sx1':'')+(X2?' sx2':'')+'" id="rflip"><div class="rf-in">'+[0,1].map(function(i){return '<div class="rf-face'+(i?' back':'')+'"'+(i?' aria-hidden="true"':'')+'><div class="st-box"></div><p class="rf-sub"></p></div>'}).join("")+'</div></div></section>'}
 function wireStats(root){var fl=$("#rflip",root);if(!fl)return;var faces=$$(".rf-face",fl),front=0,seen=false;
@@ -439,7 +439,7 @@ function callGrid(){var R=ROUNDS;
   var most=RK.slice().sort(function(a,b){return tally[b].w-tally[a].w})[0],elig=RK.filter(function(m){return tally[m].n>=FMIN}),
       worst=elig.slice().sort(function(a,b){return (tally[b].n-tally[b].ok)/tally[b].n-(tally[a].n-tally[a].ok)/tally[a].n})[0],
       take='<p class="cg-take"><b>'+nm(most)+' has the most crowns: '+tally[most].w+' of '+R.length+' rounds.</b>'+(worst&&worst!==most?' '+nm(worst)+' has the most red: wrong on '+(tally[worst].n-tally[worst].ok)+' of '+tally[worst].n+'.':'')+'</p>';
-  return '<section class="blk xsec cgs" aria-labelledby="cgH">'+xsh("02","Every call","Every call, one square","Each column is a round, newest on the right. Tap a square for the full card.",false,"cgH")+take+
+  return '<section class="blk xsec cgs" aria-labelledby="cgH">'+xsh("02","Every call","Every call, one square","Every call they ever made, on the record. Newest on the right. Tap a square for the full card.",false,"cgH")+take+
     '<div class="cg-wrap" tabindex="0" aria-label="Every call, scrolls sideways"><div class="cg" role="table" aria-label="Every call, one square" style="--n:'+R.length+'">'+h+'</div></div>'+
     '<p class="legend cg-k"><span><i class="foil"></i>Won the round</span><span><i class="k-g"></i>Right way</span><span><i class="k-r"></i>Wrong way</span><span><i style="background:var(--field)"></i>No call yet</span></p></section>'}
 /* What the record shows: patterns in the calls so far, each with its sample size. A pattern only shows once it rests on
@@ -477,7 +477,7 @@ function findings(){var R=ROUNDS,cards=[];
     if(inv/lo.n>.5)cards.push(card("Just for fun",'Inverse '+nm(lo.m),'Betting against every '+nm(lo.m)+' call would have been right '+(NUMW[inv]||inv)+' times out of '+lo.n+'. '+(inv/lo.n>=hi.ok/hi.n?'That ties the best AI. ':'')+'It\'s a joke. '+nm(lo.m)+' has been informed.',
       [stat(inv+' of '+lo.n,'right, betting against '+nm(lo.m))],lo.n+' rounds','fun'))}
   if(!cards.length)return '';
-  return '<section class="blk xsec fdgs" aria-labelledby="fdgH">'+xsh("04","Findings","Unusual findings","What stands out in the calls so far. Small samples, so these will change with every round. Not advice.",false,"fdgH")+
+  return '<section class="blk xsec fdgs" aria-labelledby="fdgH">'+xsh("04","Findings","Unusual findings","Weird patterns in the calls so far. Small samples, so these will flip as rounds come in. Not alpha. Not advice.",false,"fdgH")+
     '<div class="fdg-g">'+cards.join("")+'</div></section>'}
 /* Results, X2: every round as one row. The calls with the winner in gold, the market's move, and a tag when nobody won. */
 function roundList(){var ns=ROUNDS.filter(function(r){return inF(r.n,RF)}).slice().reverse();
@@ -500,11 +500,11 @@ function wireRlx(root){if(RLX_IO)RLX_IO.disconnect();if(reduce||!("IntersectionO
   $$(".rlx-v video",root).forEach(function(v){v.addEventListener("playing",function(){if(v===cur)v.parentNode.classList.add("on")});RLX_IO.observe(v)});
   var t;addEventListener("scroll",function(){clearTimeout(t);t=setTimeout(pick,120)},{passive:true})}
 function vModels(){
-  return (X1?xsh("01","Leaderboard","Current standings","Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
+  return (X1?xsh("01","Leaderboard",X2?"Who's cooking":"Current standings",X2?"Ranked by rounds won, then by the smaller average miss. Top AI gets the pot.":"Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
     '<p class="lbn"><b>Hit rate</b>: calls right on direction. <b>Avg miss</b>: points off the real move. <b>ROI</b>: '+usd(STAKE)+' rolled through every call. Simulated, before fees.</p>'+
-    (X2?callGrid():'')+statsHTML()+(X2?findings()+'<section class="blk xsec" aria-labelledby="recH">'+xsh("05","Records","Record holders","Who holds the three records that matter. Tap one for the story.",false,"recH")+'<div class="hls hls3">'+records()+'</div></section>':'')+
+    (X2?callGrid():'')+statsHTML()+(X2?findings()+'<section class="blk xsec" aria-labelledby="recH">'+xsh("05","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recH")+'<div class="hls hls3">'+records()+'</div></section>':'')+
     (X2?'':'<section class="blk" aria-labelledby="recH">'+(X1?xsh("03","Highlights","Record book","Tap a record for the story behind it.",false,"recH"):'<div class="hh"><h2 id="recH">Highlights</h2></div>')+'<div class="hls">'+records()+'</div></section>')}
 function wireModels(root){wireStats(root);var g=$(".cg-wrap",root);if(g)requestAnimationFrame(function(){g.scrollLeft=g.scrollWidth})}
 function vModel(m){if(!CAR[m])return null;var C=CAR[m],calls=C.hist.filter(function(h){return !h.none});
