@@ -699,49 +699,49 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
 addEventListener("hashchange",route);
 route();
 
-/* ---------- X2 Overview, the proof: How close (the targets) first and by default, showing every call so far. A small
-   "Replay last round" button wipes the targets with a short static flicker, then the last round plays: each AI's shot
-   flies in one after the other with a trail and an impact ripple and its call labelled; the winner's target lights up.
-   "Show every call" brings the season back. ---------- */
+/* ---------- X2 Overview, the proof: How close (the targets) first and by default, showing every call so far. "Replay
+   last round" (beside the card title) wipes the targets with a short static flicker, then the AIs shoot one at a time,
+   slowly: each shot lands with a ripple and says how far off it was. When all have shot, the round and the real move
+   appear, then "<AI> wins" pops at the top right of the winner's target. "Show every call" brings the season back. ---------- */
 if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist");if(!sw||!sd)return;
   sw.parentNode.insertBefore(sd,sw);sd.click();
   var box=$("#lxDist");if(!box)return;var grid=$(".tg-grid",box);if(!grid)return;
   var RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,L=ROUNDS[ROUNDS.length-1],NS="http://www.w3.org/2000/svg";
   var wins=L.win?L.win.split(" & "):[];
+  var head=$("#lqDist .lq-t");
+  var go=document.createElement("button");go.type="button";go.className="tgx-go";if(head){head.classList.add("tgx-head");head.appendChild(go)}else box.insertBefore(go,box.firstChild);
   var bar=document.createElement("div");bar.className="tgx-bar";
-  bar.innerHTML='<p class="tgx-cap"><span class="tgx-all">Every call so far. The bullseye is what the stock did.</span><span class="tgx-one" hidden><small>Last round</small> <b>'+esc(L.co)+'</b> <span class="'+(L.a<0?'dn':'up')+'">'+(L.a<0?'▼ ':'▲ ')+esc(String(L.out).replace(/^[+−-]/,""))+'</span></span></p>'+
-    '<button type="button" class="tgx-go"><span aria-hidden="true">▶</span> Replay last round</button>';
+  bar.innerHTML='<p class="tgx-cap"><span class="tgx-all">Every call so far. The bullseye is what the stock did.</span><span class="tgx-one" hidden><small>Last round</small> <b>'+esc(L.co)+'</b> <span class="'+(L.a<0?'dn':'up')+'">'+(L.a<0?'▼ ':'▲ ')+esc(String(L.out).replace(/^[+−-]/,""))+'</span></span></p>';
   box.insertBefore(bar,box.firstChild);
-  var go=$(".tgx-go",bar),all=$(".tgx-all",bar),one=$(".tgx-one",bar),timers=[],mode="all";
+  var all=$(".tgx-all",bar),one=$(".tgx-one",bar),timers=[],mode="all";
   function later(f,ms){timers.push(setTimeout(f,ms))}
-  function clean(){timers.forEach(clearTimeout);timers=[];$$(".tgx-fx",grid).forEach(function(e){e.remove()});
+  function clean(){timers.forEach(clearTimeout);timers=[];$$(".tgx-fx",grid).forEach(function(e){e.remove()});one.classList.remove("in");
     $$(".tg",grid).forEach(function(f){f.classList.remove("tgx-dim","tgx-win","tgx-noise")});$$(".tg-d",grid).forEach(function(g){g.classList.remove("tgx-off","tgx-hit","tgx-last","tgx-gone")})}
-  function shot(f,c,t0){var g=$('.tg-d[data-n="'+L.n+'"]',f),sv=$("svg",f);
+  function shot(f,c,t0){var g=$('.tg-d[data-n="'+L.n+'"]',f),sv=$(":scope > svg",f);
     var lab=document.createElement("div");lab.className="tgx-fx tgx-lab";
-    lab.innerHTML=c?'<b class="'+(c.dn?'dn':'up')+'">'+(c.dn?'▼ ':'▲ ')+esc(c.mag)+'</b><span>'+(c.ok?c.off.toFixed(2)+' pts off':'wrong way')+'</span>':'<span>no call</span>';
+    lab.innerHTML=c?(c.ok?'<b>Off by '+c.off.toFixed(2)+'%</b>':'<b class="dn">Wrong way</b>')+'<span>called '+(c.dn?'▼ ':'▲ ')+esc(c.mag)+'</span>':'<span>no call</span>';
     f.appendChild(lab);
     if(!g||!sv){later(function(){lab.classList.add("in")},t0);return}
-    var x=+g.dataset.x,y=+g.dataset.y,sx=x+70,sy=y-130;
-    var tr=document.createElementNS(NS,"line");tr.setAttribute("class","tgx-fx tgx-tr");tr.setAttribute("x1",sx);tr.setAttribute("y1",sy);tr.setAttribute("x2",x);tr.setAttribute("y2",y);
-    var len=Math.hypot(x-sx,y-sy);tr.style.strokeDasharray=len;tr.style.strokeDashoffset=len;sv.appendChild(tr);
-    var rp=document.createElementNS(NS,"circle");rp.setAttribute("class","tgx-fx tgx-rp"+(c&&!c.ok?" bad":""));rp.setAttribute("cx",x);rp.setAttribute("cy",y);rp.setAttribute("r",6);sv.appendChild(rp);
-    later(function(){tr.classList.add("go")},t0);
-    later(function(){g.classList.remove("tgx-off");g.classList.add("tgx-hit","tgx-last");rp.classList.add("go");lab.classList.add("in")},t0+(RM?0:360));
-    later(function(){tr.classList.add("fade")},t0+(RM?0:900))}
-  function showAll(){clean();mode="all";all.hidden=false;one.hidden=true;go.innerHTML='<span aria-hidden="true">▶</span> Replay last round'}
-  function replay(){clean();mode="one";all.hidden=true;one.hidden=false;go.innerHTML='<span aria-hidden="true">↺</span> Show every call';
+    var rp=document.createElementNS(NS,"circle");rp.setAttribute("class","tgx-fx tgx-rp"+(c&&!c.ok?" bad":""));rp.setAttribute("cx",g.dataset.x);rp.setAttribute("cy",g.dataset.y);rp.setAttribute("r",6);sv.appendChild(rp);
+    later(function(){g.classList.remove("tgx-off");g.classList.add("tgx-hit","tgx-last");rp.classList.add("go")},t0);
+    later(function(){lab.classList.add("in")},t0+(RM?0:350))}
+  function label(){go.innerHTML=mode==="all"?'<span aria-hidden="true">▶</span> Replay last round':'<span aria-hidden="true">↺</span> Show every call'}
+  function showAll(){clean();mode="all";all.hidden=false;one.hidden=true;label()}
+  function replay(){clean();mode="one";all.hidden=true;one.hidden=false;label();
     var figs=$$(".tg",grid),calls=parsed(L);
-    /* the wipe: a short burst of static on every target, then only the last round's shots are left to come */
-    figs.forEach(function(f){f.classList.add("tgx-noise");var sv=$("svg",f),n=document.createElement("i");n.className="tgx-fx tgx-static";
+    figs.forEach(function(f){f.classList.add("tgx-noise");var sv=$(":scope > svg",f),n=document.createElement("i");n.className="tgx-fx tgx-static";
       if(sv){var d=sv.getBoundingClientRect(),fr=f.getBoundingClientRect(),k=Math.min(d.width,d.height)*.88;n.style.cssText="left:"+(d.left-fr.left+(d.width-k)/2)+"px;top:"+(d.top-fr.top+(d.height-k)/2)+"px;width:"+k+"px;height:"+k+"px"}f.appendChild(n)});
     later(function(){$$(".tg-d",grid).forEach(function(g){g.classList.add(+g.dataset.n===L.n?"tgx-off":"tgx-gone")})},RM?0:220);
     later(function(){figs.forEach(function(f){f.classList.remove("tgx-noise")});$$(".tgx-static",grid).forEach(function(e){e.remove()})},RM?0:520);
-    var t=RM?0:700,STEP=RM?0:650;
+    var t=RM?0:900,STEP=RM?0:1150;
     figs.forEach(function(f){var m=f.getAttribute("data-m"),c=calls.filter(function(x){return x.m===m})[0];shot(f,c,t);t+=STEP});
+    /* after everyone has shot: what the stock did, then who won */
+    later(function(){one.classList.add("in")},t+(RM?0:100));
     later(function(){figs.forEach(function(f){f.classList.add(wins.indexOf(f.getAttribute("data-m"))>-1?"tgx-win":"tgx-dim")});
-      if(wins.length)figs.forEach(function(f){if(wins.indexOf(f.getAttribute("data-m"))<0)return;var pop=document.createElement("div");pop.className="tgx-fx tgx-pop";pop.innerHTML=CROWN+'<span>'+nm(f.getAttribute("data-m"))+' wins</span>';
+      if(wins.length)figs.forEach(function(f){if(wins.indexOf(f.getAttribute("data-m"))<0)return;var sv=$(":scope > svg",f),pop=document.createElement("div");pop.className="tgx-fx tgx-pop";pop.innerHTML=CROWN+'<span>'+nm(f.getAttribute("data-m"))+' wins</span>';
+        var ring=sv&&$("circle.rg",sv);if(ring){var d=ring.getBoundingClientRect(),fr=f.getBoundingClientRect(),cx=d.left+d.width/2-fr.left,cy=d.top+d.height/2-fr.top,r=d.width/2;pop.style.left=(cx+r*.55)+"px";pop.style.top=(cy-r*.78)+"px"}
         f.appendChild(pop);requestAnimationFrame(function(){pop.classList.add("in")})});
-      else{var pop=document.createElement("p");pop.className="tgx-fx tgx-none";pop.textContent="No winner: every AI got the direction wrong";bar.appendChild(pop)}},t+(RM?0:300))}
-  grid.style.position="relative";
+      else{var pop=document.createElement("p");pop.className="tgx-fx tgx-none";pop.textContent="No winner: every AI got the direction wrong";bar.appendChild(pop)}},t+(RM?0:900))}
+  label();grid.style.position="relative";
   go.addEventListener("click",function(){mode==="all"?replay():showAll()});
 })();
