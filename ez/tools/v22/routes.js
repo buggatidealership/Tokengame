@@ -648,3 +648,32 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
   firstR=false}
 addEventListener("hashchange",route);
 route();
+
+/* ---------- X2 Overview, the proof: How close (the targets) first and by default, then Direction. A Replay button
+   plays the season round by round: each AI's shot lands on its own target one after the other, then the round's
+   winner pops in the middle. ---------- */
+if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist");if(!sw||!sd)return;
+  sw.parentNode.insertBefore(sd,sw);sd.click();
+  var box=$("#lxDist");if(!box)return;var grid=$(".tg-grid",box);if(!grid)return;
+  var red=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var bar=document.createElement("div");bar.className="tgx-bar";bar.innerHTML='<button type="button" class="tgx-go"><span aria-hidden="true">▶</span> Replay the season</button><span class="tgx-st" aria-live="polite"></span>';
+  box.insertBefore(bar,box.firstChild);
+  var stage=document.createElement("div");stage.className="tgx-pop";stage.hidden=true;grid.style.position="relative";grid.appendChild(stage);
+  var go=$(".tgx-go",bar),st=$(".tgx-st",bar),timers=[],running=false;
+  function later(f,ms){timers.push(setTimeout(f,ms))}
+  function dots(){return $$(".tg-d",grid)}
+  function stop(){timers.forEach(clearTimeout);timers=[];running=false;dots().forEach(function(g){g.classList.remove("tgx-off","tgx-hit")});stage.hidden=true;st.textContent="";go.innerHTML='<span aria-hidden="true">▶</span> Replay the season'}
+  go.addEventListener("click",function(){if(running){stop();return}
+    running=true;go.innerHTML='<span aria-hidden="true">■</span> Stop';dots().forEach(function(g){g.classList.add("tgx-off");g.classList.remove("tgx-hit")});
+    var t=300,SHOT=red?0:260,HOLD=red?700:1300;
+    ROUNDS.forEach(function(r){var order=$$(".tg",grid);
+      later(function(){st.textContent="Round "+r.n+" · "+r.co;stage.hidden=true},t);
+      order.forEach(function(f){var g=$('.tg-d[data-n="'+r.n+'"]',f);if(!g)return;t+=SHOT;
+        later(function(){g.classList.remove("tgx-off");g.classList.add("tgx-hit")},t)});
+      t+=red?100:420;
+      later(function(){var w=r.win?r.win.split(" & "):[];
+        stage.innerHTML='<small>Round '+r.n+' · '+esc(r.co)+'</small>'+(w.length?'<span>Winner</span><b>'+w.map(function(m){return logo(m)+nm(m)}).join(" & ")+'</b>':'<span>No winner</span><b>All wrong</b>');
+        stage.hidden=false;stage.classList.remove("in");stage.offsetWidth;stage.classList.add("in")},t);
+      t+=HOLD});
+    later(function(){stage.hidden=true;st.textContent="Season so far: "+ROUNDS.length+" rounds";running=false;go.innerHTML='<span aria-hidden="true">▶</span> Replay the season';dots().forEach(function(g){g.classList.remove("tgx-hit")})},t+200)});
+})();

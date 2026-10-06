@@ -2600,6 +2600,25 @@ a.cg-c:hover{transform:translateY(-2px)}
 .x2 .pf-bt,.x2 .pf-bl{fill:#9aa3bd}.x2 .pf-bl.me{fill:#fff}
 .x2 .pf-bal line{stroke:#9aa3bd}.x2 .pf-bal polyline{stroke:#9aa3bd}.x2 .pf-bal polyline[stroke-width="3.5"]{stroke:#ffc72c}.x2 .pf-bal circle{fill:#101a3a;stroke:#ffc72c}
 .x2 .pf-key i.c{background:#ebe3d3}
+/* X2 Overview targets: softer rings (cream and a light red), and the replay */
+.x2 #learn .tg .rg{fill:#f7f2e8;stroke:color-mix(in srgb,var(--ink) 22%,transparent);stroke-width:1}
+.x2 #learn .tg .rg.alt{fill:#f3d3cc}
+.tgx-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;margin:0 0 18px}
+.tgx-go{min-height:44px;padding:0 18px;border-radius:999px;background:var(--ink);color:var(--yel);font:800 13px/1 var(--fb);text-transform:uppercase;letter-spacing:.04em;box-shadow:3px 3px 0 var(--yel)}
+.tgx-go:hover{background:var(--slab)}
+.tgx-st{font:700 13px/1.2 var(--fm);color:var(--ink2)}
+.tg-d.tgx-off{opacity:0}
+.tg-d.tgx-hit .dot{animation:tgx-shot .32s cubic-bezier(.2,1.4,.4,1) both;transform-box:fill-box;transform-origin:center}
+.tg-d.tgx-hit .dot{fill:var(--ink)!important}
+@keyframes tgx-shot{0%{transform:scale(3.2);opacity:0}60%{opacity:1}100%{transform:scale(1);opacity:1}}
+.tgx-pop{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;display:grid;justify-items:center;gap:2px;padding:14px 22px;border-radius:18px;background:var(--slab);color:#fff;box-shadow:0 0 0 2px var(--ink),4px 5px 0 var(--yel);text-align:center;pointer-events:none;min-width:200px}
+.tgx-pop small{font:700 11px/1.2 var(--fm);letter-spacing:.06em;text-transform:uppercase;opacity:.75}
+.tgx-pop span{font:800 12px/1 var(--fm);letter-spacing:.12em;text-transform:uppercase;color:var(--yel);margin-top:4px}
+.tgx-pop b{display:flex;align-items:center;gap:8px;font:400 34px/1 var(--fd);text-transform:uppercase}
+.tgx-pop b .lg{font-size:26px}
+.tgx-pop.in{animation:tgx-pop .38s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes tgx-pop{0%{transform:translate(-50%,-50%) scale(.6);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.tg-d.tgx-hit .dot,.tgx-pop.in{animation:none}}
 </style>
 </head>
 <body>
@@ -2661,7 +2680,7 @@ a.cg-c:hover{transform:translateY(-2px)}
   </section>
 
   <section class="sec" id="learn" aria-labelledby="lrnH">
-    <div class="sh"><div class="tx"><span class="no">02</span><span class="eb">The test</span><h2 id="lrnH">Getting smarter or just lucky?</h2></div>
+    <div class="sh"><div class="tx"><span class="no">02</span><span class="eb">The proof</span><h2 id="lrnH">Getting smarter or just lucky?</h2></div>
       <p class="lede" id="lrnLede"></p></div>
     <div class="lsw" role="group" aria-label="Pick a chart"><button type="button" id="swDir" aria-pressed="true" aria-controls="lqDir">Direction</button><button type="button" id="swDist" aria-pressed="false" aria-controls="lqDist">How close</button></div>
     <div class="lrn lflip" id="lflip"><div class="lf-in">
@@ -2670,8 +2689,8 @@ a.cg-c:hover{transform:translateY(-2px)}
       <div class="lq" id="lqDist" role="region" aria-labelledby="lqDistH"><div class="lq-t"><h3 id="lqDistH">Right way. But how close?</h3></div>
         <div class="tgv" id="lxDist"></div></div>
     </div></div>
-    <h3 class="fol-x">Copytrade the bots: WAGMI?</h3>
-    <p class="lede fol-sub" id="folH">Each AI starts with $100,000 and apes all of it into every call.</p>
+    <h3 class="fol-x">$100K on each AI, now worth</h3>
+    <p class="lede fol-sub" id="folH">Each AI started with $100,000 on its first call and bet it all on every call since.</p>
     <div class="fol" id="fol" aria-labelledby="folH">
       
       <ol class="fol-l" id="folL"></ol>
@@ -3097,7 +3116,7 @@ if(window.EZLearn&&NR){
   /* one plain line under the heading, computed */
   var GP=ROUNDS.reduce(function(a,r){return a+r.calls.length},0);
   /* one line: don't trust us, check */
-  $("#lrnLede").textContent="Don't trust. Verify.";
+  $("#lrnLede").textContent="Don't trust us. Verify it.";
   /* the verdict, computed */
   var SM=EZLearn.summary(),BL=EZLearn.baselines();
   function grp(a,one,many){if(!a.length)return "";var v=a.length>1?many:one;
@@ -3519,7 +3538,7 @@ var FOLLOW_NOTE="Simulated, before fees. Buy on an up call, short on a down call
   L.innerHTML=FOLLOW.map(function(o,i){var up=o.bal>=STAKE;
     return '<li class="ft'+(i?'':' lead')+'"><span class="ft-w">'+logo(o.m)+'<span>'+nm(o.m)+(o.n<NR?'<small>'+o.n+' rounds</small>':'')+'</span></span>'+
       spark(o,up)+'<span class="ft-v"><b class="ft-bal">'+usd(o.bal)+'</b><span class="ft-pill '+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(o.bal).replace(/^[+−]/,"")+'</span></span></li>'}).join("");
-  $("#folH").textContent="Each AI starts with "+usd(STAKE)+" and apes all of it into every call.";$("#folF").textContent=FOLLOW_NOTE})();
+  $("#folH").textContent="Each AI started with "+usd(STAKE)+" on its first call and bet it all on every call since.";$("#folF").textContent=FOLLOW_NOTE})();
 window.EZ_EXP="";
 
 /* ================= V22 · SEASON LIVE: pages =================
@@ -4171,6 +4190,35 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
   firstR=false}
 addEventListener("hashchange",route);
 route();
+
+/* ---------- X2 Overview, the proof: How close (the targets) first and by default, then Direction. A Replay button
+   plays the season round by round: each AI's shot lands on its own target one after the other, then the round's
+   winner pops in the middle. ---------- */
+if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist");if(!sw||!sd)return;
+  sw.parentNode.insertBefore(sd,sw);sd.click();
+  var box=$("#lxDist");if(!box)return;var grid=$(".tg-grid",box);if(!grid)return;
+  var red=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var bar=document.createElement("div");bar.className="tgx-bar";bar.innerHTML='<button type="button" class="tgx-go"><span aria-hidden="true">▶</span> Replay the season</button><span class="tgx-st" aria-live="polite"></span>';
+  box.insertBefore(bar,box.firstChild);
+  var stage=document.createElement("div");stage.className="tgx-pop";stage.hidden=true;grid.style.position="relative";grid.appendChild(stage);
+  var go=$(".tgx-go",bar),st=$(".tgx-st",bar),timers=[],running=false;
+  function later(f,ms){timers.push(setTimeout(f,ms))}
+  function dots(){return $$(".tg-d",grid)}
+  function stop(){timers.forEach(clearTimeout);timers=[];running=false;dots().forEach(function(g){g.classList.remove("tgx-off","tgx-hit")});stage.hidden=true;st.textContent="";go.innerHTML='<span aria-hidden="true">▶</span> Replay the season'}
+  go.addEventListener("click",function(){if(running){stop();return}
+    running=true;go.innerHTML='<span aria-hidden="true">■</span> Stop';dots().forEach(function(g){g.classList.add("tgx-off");g.classList.remove("tgx-hit")});
+    var t=300,SHOT=red?0:260,HOLD=red?700:1300;
+    ROUNDS.forEach(function(r){var order=$$(".tg",grid);
+      later(function(){st.textContent="Round "+r.n+" · "+r.co;stage.hidden=true},t);
+      order.forEach(function(f){var g=$('.tg-d[data-n="'+r.n+'"]',f);if(!g)return;t+=SHOT;
+        later(function(){g.classList.remove("tgx-off");g.classList.add("tgx-hit")},t)});
+      t+=red?100:420;
+      later(function(){var w=r.win?r.win.split(" & "):[];
+        stage.innerHTML='<small>Round '+r.n+' · '+esc(r.co)+'</small>'+(w.length?'<span>Winner</span><b>'+w.map(function(m){return logo(m)+nm(m)}).join(" & ")+'</b>':'<span>No winner</span><b>All wrong</b>');
+        stage.hidden=false;stage.classList.remove("in");stage.offsetWidth;stage.classList.add("in")},t);
+      t+=HOLD});
+    later(function(){stage.hidden=true;st.textContent="Season so far: "+ROUNDS.length+" rounds";running=false;go.innerHTML='<span aria-hidden="true">▶</span> Replay the season';dots().forEach(function(g){g.classList.remove("tgx-hit")})},t+200)});
+})();
 })();
 </script>
 </body>
