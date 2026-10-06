@@ -2736,6 +2736,8 @@ a.cg-c:hover{transform:translateY(-2px)}
 #lqDist .lq-t.tgx-head h3{display:block!important;text-wrap:wrap!important}
 #lqDist .lq-t.tgx-head h3 .tgx-go{display:inline-flex;vertical-align:.3em;margin:0 0 0 8px;white-space:nowrap}
 #lqDist .lq-t.tgx-head .tgx-go{top:auto!important;right:auto!important}
+@media (max-width:760px){.x2 .live{max-width:46vw;min-width:0}.x2 #liveTxt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.x2 #liveTxt .tkn{display:none}}
+@media (min-width:761px){.x2 .live{max-width:300px;min-width:0}.x2 #liveTxt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 </style>
 </head>
 <body>
@@ -4401,11 +4403,14 @@ if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist");if(!sw||!sd)return;
     later(function(){figs.forEach(function(f){f.classList.add(wins.indexOf(f.getAttribute("data-m"))>-1?"tgx-win":"tgx-dim")});
       if(wins.length)figs.forEach(function(f){if(wins.indexOf(f.getAttribute("data-m"))<0)return;var sv=$(":scope > svg",f),pop=document.createElement("div");pop.className="tgx-fx tgx-pop";pop.innerHTML=CROWN+'<span>'+nm(f.getAttribute("data-m"))+' wins</span>';
         var ring=sv&&$("circle.rg",sv);if(ring){var d=ring.getBoundingClientRect(),fr=f.getBoundingClientRect(),cx=d.left+d.width/2-fr.left,cy=d.top+d.height/2-fr.top,r=d.width/2;pop.style.left=(cx+r*.55)+"px";pop.style.top=(cy-r*.78)+"px"}
-        f.appendChild(pop);requestAnimationFrame(function(){pop.classList.add("in")})});
+        f.appendChild(pop);var lim=(box.closest(".lq")||box).getBoundingClientRect().right-10,pr=pop.getBoundingClientRect();if(pr.right>lim)pop.style.left=(parseFloat(pop.style.left)-(pr.right-lim))+"px";requestAnimationFrame(function(){pop.classList.add("in")})});
       else{var pop=document.createElement("p");pop.className="tgx-fx tgx-none";pop.textContent="No winner: every AI got the direction wrong";bar.appendChild(pop)}},t+(RM?0:1800))}
   label();grid.style.position="relative";
   go.addEventListener("click",function(){mode==="all"?replay():showAll()});
 })();
+
+/* X2 phones: the top-bar chip uses the ticker so it fits beside the brand ("In play: STZ") */
+if(X2&&typeof TARGET!=="undefined"&&TARGET&&window.matchMedia&&matchMedia("(max-width:760px)").matches){var lt=$("#liveTxt");if(lt)lt.textContent=(typeof P0!=="undefined"&&P0?"In play: ":"Next: ")+String(TARGET.ticker||TARGET.co).replace(/\..*$/,"")}
 })();
 </script>
 </body>
