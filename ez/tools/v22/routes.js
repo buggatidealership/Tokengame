@@ -252,7 +252,7 @@ function formDots(C){return C.hist.slice(-5).map(function(h){var cls=h.none?"n":
 function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=STAKE;
   return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.won>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
     '<span class="rk" role="cell"><sup>#</sup>'+rkOf(m)+'</span>'+
-    '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3>'+(X1?nm(m):'<a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a>')+'</h3><small>'+esc(MODELS[m].ver||'')+'</small></span></span>'+
+    '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3>'+(X1&&!X2?nm(m):'<a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a>')+'</h3><small>'+esc(MODELS[m].ver||'')+'</small></span></span>'+
     '<span class="lb-c" role="cell"><b>'+(C.g?pctOf(C.right,C.g)+'%':'n/a')+'</b><small>'+C.right+' of '+C.g+'</small></span>'+
     '<span class="lb-c" role="cell"><b>'+(C.avg==null?'n/a':C.avg.toFixed(2))+'</b><small>points</small></span>'+
     '<span class="lb-c roi '+(b==null?'':up?'pu':'pd')+'" role="cell"><b>'+(b==null?'n/a':pctTxt(b))+'</b><small>'+(b==null?'':usd(b))+'</small></span>'+
@@ -500,10 +500,10 @@ function wireRlx(root){if(RLX_IO)RLX_IO.disconnect();if(reduce||!("IntersectionO
   $$(".rlx-v video",root).forEach(function(v){v.addEventListener("playing",function(){if(v===cur)v.parentNode.classList.add("on")});RLX_IO.observe(v)});
   var t;addEventListener("scroll",function(){clearTimeout(t);t=setTimeout(pick,120)},{passive:true})}
 function vModels(){
-  return (X1?xsh("01","Leaderboard",X2?"Race for the pot":"Current standings",X2?"Ranked by rounds won, then by the smaller average miss. Whoever is on top trades the pot.":"Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
+  return (X1?xsh("01","Leaderboard",X2?"Current standings":"Current standings",X2?"Ranked by rounds won, then by the smaller average miss. Whoever is on top trades the pot. Tap an AI for every call it made.":"Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
-    '<p class="lbn"><b>Hit rate</b>: calls right on direction. <b>Avg miss</b>: points off the real move. <b>ROI</b>: '+usd(STAKE)+' rolled through every call. Simulated, before fees.</p>'+
+    '<p class="lbn">'+(X2?'<b>A call</b>: up or down, plus how much, locked before the report. ':'')+'<b>Hit rate</b>: calls right on direction'+(X2?' (up or down), whatever the size':'')+'. <b>Avg miss</b>: points off the real move. <b>ROI</b>: '+usd(STAKE)+' rolled through every call. Simulated, before fees.</p>'+
     (X2?callGrid():'')+statsHTML()+(X2?findings()+'<section class="blk xsec" aria-labelledby="recH">'+xsh("05","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recH")+'<div class="hls hls3">'+records()+'</div></section>':'')+
     (X2?'':'<section class="blk" aria-labelledby="recH">'+(X1?xsh("03","Highlights","Record book","Tap a record for the story behind it.",false,"recH"):'<div class="hh"><h2 id="recH">Highlights</h2></div>')+'<div class="hls">'+records()+'</div></section>')}
 function wireModels(root){wireStats(root);var g=$(".cg-wrap",root);if(g)requestAnimationFrame(function(){g.scrollLeft=g.scrollWidth})}
@@ -520,8 +520,16 @@ function vModel(m){if(!CAR[m])return null;var C=CAR[m],calls=C.hist.filter(funct
       C.hist.map(function(h){var cls=h.none?"n":h.win?"w":h.ok?"g":"r",lab=h.none?"no call":h.win?"won":h.ok?"right way":"wrong way";
         return '<li><a href="#/round/'+h.n+'" aria-label="Round '+h.n+': '+lab+'"><span class="dt '+cls+'" aria-hidden="true">'+(h.win?CROWN:h.none?'·':h.ok?'✓':'✗')+'</span><small aria-hidden="true">R'+h.n+'</small></a></li>'}).join("")+'</ol>'+
       '<p class="legend"><span><i style="background:var(--ez-gold)"></i>Won</span><span><i style="background:var(--ez-green)"></i>Right way</span><span><i style="background:var(--ez-red)"></i>Wrong way</span><span><i style="background:var(--card)"></i>No call</span></p></section>'+
+    (X2?mcalls(m,calls):'')+
     '<section class="blk" aria-labelledby="bwH"><div class="hh"><h2 id="bwH">Best and worst</h2></div><div class="bw">'+callCard(best,"Best call · smallest miss, right way")+callCard(worst,"Worst call · biggest miss")+'</div></section>'+
     '<section class="blk" aria-labelledby="tgH"><div class="hh"><h2 id="tgH">How close</h2></div><div class="tgv tg1" id="tg1"></div></section>'}
+/* X2: every call the AI made, newest first: what it said, what the stock did, right or wrong way, points off */
+function mcalls(m,calls){return '<section class="blk" aria-labelledby="mclH"><div class="hh"><h2 id="mclH">Every call</h2><p>Filed before the report, never edited. Right way means it got up or down right; points off is how far its number was from the real move.</p></div>'+
+  '<ol class="mcl">'+calls.slice().reverse().map(function(h){var r=h.r,dn=/^DOWN/.test(h.said),amt=h.said.replace(/^\w+\s*/,""),w=h.win;
+    return '<li><a href="#/round/'+r.n+'"><span class="mcl-r">R'+r.n+'</span><span class="mcl-c">'+coTkn(r)+'</span>'+
+      '<span class="mcl-s"><small>Called</small><b class="'+(dn?'dn':'up')+'">'+(dn?'▼ ':'▲ ')+esc(amt)+'</b></span>'+
+      '<span class="mcl-s"><small>Stock did</small><b class="'+(r.a<0?'dn':'up')+'">'+(r.a<0?'▼ ':'▲ ')+esc(String(r.out).replace(/^[+−-]/,""))+'</b></span>'+
+      '<span class="mcl-v '+(w?'w':h.ok?'g':'r')+'">'+(w?CROWN+' Won':h.ok?'Right way':'Wrong way')+'<small>'+h.off.toFixed(2)+' pts off</small></span></a></li>'}).join("")+'</ol></section>'}
 function wireModel(root,m){var el=$("#tg1",root);if(el)targets(el,[m])}
 
 /* ---------- buyback: the scoreboard that only means something after launch (the pot, $EZ bought back),
@@ -544,7 +552,7 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
       if(curSec==="upcoming"&&!view.hidden){if(openN)openRound(openN);return}
       html=vRounds();wire=wireRounds}
     else if(p[0]==="buyback"){html=vBuyback();sec="buyback"}
-    else if(p[0]==="model"&&p[1]&&X1){html=vModels();sec="leaderboard";wire=wireModels}
+    else if(p[0]==="model"&&p[1]&&X1&&!X2){html=vModels();sec="leaderboard";wire=wireModels}
     else if(p[0]==="model"&&p[1]){var m=String(p[1]).toUpperCase();html=vModel(m);sec="leaderboard";wire=function(r){wireModel(r,m)}}
     else if(p[0]==="models"||p[0]==="leaderboard"){html=vModels();sec="leaderboard";wire=wireModels}}
   closeRound();

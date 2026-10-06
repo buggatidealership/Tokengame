@@ -46,5 +46,12 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         # X1: the last round beside the standings (like Season); model pages come after launch, so names are plain text
         page=page.replace('var BAND_RIGHT="next"','var BAND_RIGHT="last"')
         L="""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3></span>'"""
-        assert page.count(L)==1; page=page.replace(L,"""'<span class="pc-t"><h3>'+nm(T.m)+'</h3></span>'""")
+        assert page.count(L)==1
+        if exp=="x1": page=page.replace(L,"""'<span class="pc-t"><h3>'+nm(T.m)+'</h3></span>'""")
+    if exp=="x2":
+        # the standings say what the number counts: "8 of 12 right (up or down)", and each name opens every call
+        S="""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'hit rate')+'</small>"""
+        assert page.count(S)==1; page=page.replace(S,"""<b>'+C.right+'<span class="pc-of">/'+C.g+'</span></b><small>right up/down</small>""")
+        D='<div class="bflip" id="bflip">'
+        assert page.count(D)==1; page=page.replace(D,'<p class="pc-def">A call is up or down plus how much, locked before the report. The score counts calls that got up or down right. Tap a name for every call.</p>'+D)
     open(out,'w').write(page); print("ok",out,len(page))
