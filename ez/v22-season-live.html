@@ -2580,6 +2580,26 @@ a.cg-c:hover{transform:translateY(-2px)}
 .pc-best{display:inline-block;margin-top:3px;font:800 10.5px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--yel);padding:3px 6px;border-radius:5px;white-space:nowrap}
 #roster li{position:relative}
 #roster .pc-best{position:absolute;top:-9px;right:12px;margin:0;z-index:2;box-shadow:0 0 0 2px var(--field)}
+/* ---------- X2 surfaces (owner, 2026-10-06, after the surface research): no white. Secondary modules are kraft;
+   data modules (standings and leaderboard rows except the leader, the AI page's comparisons, calls and chart) are navy,
+   where the brand green, red and yellow read at full strength. ---------- */
+.x2{--card:#ebe3d3}
+.x2 li.pc:not(.lead):not(.r1){background:#101a3a;color:#f6f2e8}
+.x2 li.pc:not(.lead):not(.r1) h3,.x2 li.pc:not(.lead):not(.r1) h3 a,.x2 li.pc:not(.lead):not(.r1) b,.x2 li.pc:not(.lead):not(.r1) .rk,.x2 li.pc:not(.lead):not(.r1) .lb-c b{color:#fff}
+.x2 li.pc:not(.lead):not(.r1) small,.x2 li.pc:not(.lead):not(.r1) .pc-s small,.x2 li.pc:not(.lead):not(.r1) .pc-w span,.x2 li.pc:not(.lead):not(.r1) .lb-c small,.x2 li.pc:not(.lead):not(.r1) .lb-m small{color:#9aa3bd}
+.x2 li.pc:not(.lead):not(.r1) .lb-c.roi.pu b{color:#1fcf6b}.x2 li.pc:not(.lead):not(.r1) .lb-c.roi.pd b{color:#ff6b61}
+.x2 .pf-cmp,.x2 .pf-calls a,.x2 .pf-bal,.x2 .pf-bw{background:#101a3a;color:#f6f2e8}
+.x2 .pf-cmp h3,.x2 .pf-cmp li b,.x2 .pf-cn,.x2 .pf-co b,.x2 .pf-bw b{color:#fff}
+.x2 .pf-cmp p,.x2 .pf-co small,.x2 .pf-rn,.x2 .pf-v small,.x2 .pf-bw p,.x2 .pf-cn em{color:#9aa3bd}
+.x2 .pf-cmp li .pf-cb{background:rgba(255,255,255,.12)}.x2 .pf-cmp li .pf-cb i{background:#5d6687}.x2 .pf-cmp li.me .pf-cb i{background:#ffc72c}
+.x2 .pf-v.g{color:#1fcf6b}.x2 .pf-v.r{color:#ff6b61}.x2 .pf-v.w{color:#ffc72c}
+.x2 .pf-bw.g small{color:#1fcf6b}.x2 .pf-bw.r small{color:#ff6b61}
+.x2 .pf-line line[stroke="var(--ink)"]{stroke:#fff}
+.x2 .pf-line circle[fill="var(--card)"]{fill:#101a3a;stroke:#fff}.x2 .pf-line circle[fill="var(--ink)"]{fill:#fff}
+.x2 .pf-ta{fill:#fff}.x2 .pf-tc{fill:#9aa3bd}
+.x2 .pf-bt,.x2 .pf-bl{fill:#9aa3bd}.x2 .pf-bl.me{fill:#fff}
+.x2 .pf-bal line{stroke:#9aa3bd}.x2 .pf-bal polyline{stroke:#9aa3bd}.x2 .pf-bal polyline[stroke-width="3.5"]{stroke:#ffc72c}.x2 .pf-bal circle{fill:#101a3a;stroke:#ffc72c}
+.x2 .pf-key i.c{background:#ebe3d3}
 </style>
 </head>
 <body>
@@ -2598,7 +2618,7 @@ a.cg-c:hover{transform:translateY(-2px)}
   <section class="hero" aria-label="Intro">
     <div class="hero-t">
       <h1>We're putting buybacks<br> <span class="hl">in the hands of an <span class="lc">AI</span>.</span></h1>
-      <p class="sub" id="heroSub">AI models call stocks before earnings. The one on top takes the $EZ fee pot and trades NVIDIA's earnings with leverage on Hyperliquid. Win, it buys back $EZ. Lose, the pot gets rekt.</p>
+      <p class="sub" id="heroSub">AIs predict how a stock moves by the next close after earnings. The one on top takes a share of all fees since launch and bets it on NVIDIA's earnings with leverage on Hyperliquid. Win, it buys back $EZ. Lose, the pot gets rekt.</p>
     </div>
     <div class="bflip" id="bflip"><div class="bf-in">
     <div class="bf-face bf-front" id="bfFront">
@@ -2757,7 +2777,7 @@ var NR=ROUNDS.length,UPS=ROUNDS.filter(function(r){return r.a>0}).length;
 /* the line under the headline: the model count from the data (MODEL_KEYS with a MODELS entry) */
 var NUMW=["No","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve"];
 var NM=MODEL_KEYS.filter(function(m){return MODELS[m]}).length;
-$("#heroSub").textContent=(NUMW[NM]||String(NM))+" AI model"+(NM===1?"":"s")+" call"+(NM===1?"s":"")+" stocks before earnings. The one on top takes the $EZ fee pot and trades NVIDIA's earnings at "+(SIM.leverage!=null?SIM.leverage:5)+"x on Hyperliquid. Win, it buys back $EZ. Lose, the pot gets rekt.";
+$("#heroSub").textContent=(NUMW[NM]||String(NM))+" AI"+(NM===1?"":"s")+" predict how a stock moves by the next close after earnings. The one on top takes "+Math.round((SIM.poolShare!=null?SIM.poolShare:.69)*100)+"% of all fees since launch and bets it on NVIDIA's earnings at "+(SIM.leverage!=null?SIM.leverage:5)+"x on Hyperliquid. Win, it buys back $EZ. Lose, the pot gets rekt.";
 /* rounds whose calls are in, soonest answer first (then by round) */
 var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});
 /* rounds still to call, soonest calls first (then by round) */
@@ -3580,7 +3600,7 @@ var DAYS=(function(){var m={};ALLN.forEach(function(n){var v=rv(n),d=dayOf(v),k=
    gallery) and Upcoming only for what's ahead; "x2" = X1 plus the call grid, the findings and the round list (below). */
 var EXP=window.EZ_EXP||"";
 /* X2 = X1 plus: every call as one square (Leaderboard), what the record shows (Leaderboard), the round list (Results). */
-var X1=EXP==="x1"||EXP==="x2",X2=EXP==="x2";
+var X1=EXP==="x1"||EXP==="x2",X2=EXP==="x2";if(X2)document.documentElement.classList.add("x2");
 var TODAYK=dkey(new Date()),RBIG=false,RF="all",UF="all",US="",RLOOK="brand";
 function xsh(no,eb,title,sub,h1,id,side){var tag=h1?"h1":"h2";return '<div class="xsh'+(side?' wside':'')+'"><div class="xsh-t"><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="no">'+no+'</span><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(side||'')+'</div>'}
 /* a company's colour (CO_LOGOS.c, from tools/fetch_logos.py) and the ink that reads on it */
