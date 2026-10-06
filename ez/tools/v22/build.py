@@ -49,9 +49,13 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         assert page.count(L)==1
         if exp=="x1": page=page.replace(L,"""'<span class="pc-t"><h3>'+nm(T.m)+'</h3></span>'""")
     if exp=="x2":
-        # the standings say what the number counts: "8 of 12 right (up or down)", and each name opens every call
+        # standings: one number people care about. The percentage of calls right on direction; the leader's reads
+        # "buyback odds" (its call decides the NVIDIA bet); the best eligible record gets a "Most accurate" tag.
+        H="var STAND_STAT=\"right\",FOL_EARLY=null;"
+        assert page.count(H)==1
+        page=page.replace(H,H+"function EZ_FULL(m){return career(m).g>=ROUNDS.length/2}function EZ_BEST(){var b=null,bv=-1;ROWS.forEach(function(T){var C=career(T.m);if(!EZ_FULL(T.m))return;var v=C.right/C.g;if(v>bv){bv=v;b=T.m}});return b}function EZ_LEAD(){return ROWS[0]&&ROWS[0].won>0?ROWS[0].m:null}")
         S="""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'hit rate')+'</small>"""
-        assert page.count(S)==1; page=page.replace(S,"""<b>'+C.right+'<span class="pc-of">/'+C.g+'</span></b><small>right up/down</small>""")
-        D='<div class="bflip" id="bflip">'
-        assert page.count(D)==1; page=page.replace(D,'<p class="pc-def">A call is up or down plus how much, locked before the report. The score counts calls that got up or down right. Tap a name for every call.</p>'+D)
+        assert page.count(S)==1; page=page.replace(S,"""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':m===EZ_LEAD()?'buyback odds':'hit rate')+'</small>""")
+        L2="""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3></span>'"""
+        assert page.count(L2)==1; page=page.replace(L2,"""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_BEST()?'<small class="pc-best">Most accurate</small>':'')+'</span>'""")
     open(out,'w').write(page); print("ok",out,len(page))
