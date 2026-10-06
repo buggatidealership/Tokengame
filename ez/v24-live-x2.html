@@ -2637,6 +2637,32 @@ a.cg-c:hover{transform:translateY(-2px)}
 .tgx-none{flex-basis:100%;font:800 13px/1.3 var(--fb);color:var(--red)}
 #lxDist .tg-grid{margin-top:22px}
 @media (prefers-reduced-motion:reduce){.tg-d.tgx-hit .dot,.tgx-rp.go{animation:none}.tgx-tr{display:none}}
+/* X2 call grid: the number in a won square sits at the same height as every other square */
+.x2 .cg-c.w span{margin-top:0}
+.lbr{position:relative}
+.lbr .pc-best{position:absolute;top:-9px;right:14px;margin:0;z-index:2;box-shadow:0 0 0 2px var(--field)}
+/* ---------- X2 highlights: moment first, receipts last; navy body so the cards stand off the page ---------- */
+.hx2s{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:0;padding:0}
+.hx2{display:flex;flex-direction:column;height:100%;border-radius:18px;overflow:hidden;background:#101a3a;color:#f6f2e8;text-decoration:none;box-shadow:0 0 0 2px var(--ink),4px 5px 0 0 var(--ink);transition:transform .2s ease}
+.hx2:hover{transform:translateY(-3px)}
+.hx2-a{position:relative;display:block;aspect-ratio:16/10;overflow:hidden;background:#0b1129}
+.hx2-a img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hx2-a::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,#101a3a)}
+.hx2-k{position:absolute;left:12px;top:12px;z-index:1;background:var(--yel);color:var(--ink);font:800 11px/1 var(--fm);letter-spacing:.08em;text-transform:uppercase;padding:6px 9px;border-radius:999px;box-shadow:0 0 0 2px var(--ink)}
+.hx2-w{position:absolute;right:10px;top:10px;z-index:1;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font:700 11px/1 var(--fb);font-style:normal}
+.hx2-t{display:flex;flex-direction:column;gap:8px;padding:4px 16px 16px;flex:1}
+.hx2-h{font:400 italic 27px/1.08 'Instrument Serif',Georgia,serif;color:#fff}
+.hx2-p{font:500 14px/1.45 var(--fb);color:#c9cfdf}
+.hx2-r{margin-top:auto;padding-top:10px;border-top:1px dashed rgba(255,255,255,.2);display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hx2-r span{display:flex;flex-direction:column;gap:3px}
+.hx2-r b{font:400 26px/1 var(--fd);color:var(--yel);font-variant-numeric:tabular-nums;white-space:nowrap}
+.hx2-r small{font:600 11.5px/1.25 var(--fb);color:#9aa3bd}
+@media (max-width:1000px){.hx2s{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.hx2s{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding:4px 4px 12px;margin:0 -4px}.hx2s>li{flex:0 0 82%;scroll-snap-align:start}}
+/* ---------- X2 findings: the headline in an editorial serif; numbers read as plain words ---------- */
+.x2 .fdg h3{font:400 italic clamp(30px,3.4vw,38px)/1.02 'Instrument Serif',Georgia,serif;text-transform:none;letter-spacing:-.005em}
+.x2 .fdg-s b{font-size:28px}
+.x2 .fdg-s small{font-size:12.5px}
 </style>
 </head>
 <body>
@@ -2913,7 +2939,7 @@ var ROWS=LD.concat(bench.map(function(m){return {m:m,won:0}}));
 function rankOf(T){return 1+ROWS.filter(function(U){return U.won>T.won}).length}
 $("#roster").innerHTML=ROWS.map(function(T,i){
   return '<li class="pc'+(i?'':' lead')+(rankOf(T)===1&&T.won>0?' r1':'')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
-    '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_BEST()?'<small class="pc-best">Most accurate</small>':'')+'</span>'+pcStats(T.m)+
+    '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">Bets on NVIDIA</small>':'')+'</span>'+pcStats(T.m)+
     '<p class="pc-w"><b>'+T.won+'</b><span>'+(T.won===1?'win':'wins')+'</span></p></li>'}).join("");
 /* a model's record over the graded rounds: calls, right way, average miss, wins, streak */
 function career(m){var g=0,right=0,err=0,won=0,hist=[];
@@ -3637,7 +3663,7 @@ var DAYS=(function(){var m={};ALLN.forEach(function(n){var v=rv(n),d=dayOf(v),k=
    gallery) and Upcoming only for what's ahead; "x2" = X1 plus the call grid, the findings and the round list (below). */
 var EXP=window.EZ_EXP||"";
 /* X2 = X1 plus: every call as one square (Leaderboard), what the record shows (Leaderboard), the round list (Results). */
-var X1=EXP==="x1"||EXP==="x2",X2=EXP==="x2";if(X2)document.documentElement.classList.add("x2");
+var X1=EXP==="x1"||EXP==="x2",X2=EXP==="x2";if(X2){document.documentElement.classList.add("x2");(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap";document.head.appendChild(l)})()}
 var TODAYK=dkey(new Date()),RBIG=false,RF="all",UF="all",US="",RLOOK="brand";
 function xsh(no,eb,title,sub,h1,id,side){var tag=h1?"h1":"h2";return '<div class="xsh'+(side?' wside':'')+'"><div class="xsh-t"><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="no">'+no+'</span><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(side||'')+'</div>'}
 /* a company's colour (CO_LOGOS.c, from tools/fetch_logos.py) and the ink that reads on it */
@@ -3699,7 +3725,7 @@ function wireGallery(root){if(!matchMedia("(hover:hover)").matches||reduce)retur
   root.addEventListener("mouseout",function(e){var a=e.target.closest&&e.target.closest(".gt");if(!a||a.contains(e.relatedTarget))return;var v=$("video",a);if(v){v.pause();v.classList.remove("on")}})}
 /* the shelf: rounds that hold a record, worked out from ROUNDS */
 function RS(){return ROUNDS.filter(function(r){return !RBIG||isBig(r.ticker)})}
-function shelf(){var RR=ROUNDS;if(!RR.length)return '';var calls=[];RR.forEach(function(r){r.calls.forEach(function(c){calls.push({m:c[0],r:r,off:parseFloat(c[2])})})});
+function shelf(){if(X2)return shelfX2();var RR=ROUNDS;if(!RR.length)return '';var calls=[];RR.forEach(function(r){r.calls.forEach(function(c){calls.push({m:c[0],r:r,off:parseFloat(c[2])})})});
   function avgOff(r){var o=r.calls.map(function(c){return parseFloat(c[2])});return o.reduce(function(a,b){return a+b},0)/o.length}
   function dirWord(r){return r.a>0?"rose":"fell"}
   var close=calls.slice().sort(function(a,b){return a.off-b.off})[0];
@@ -3726,6 +3752,33 @@ function shelf(){var RR=ROUNDS;if(!RR.length)return '';var calls=[];RR.forEach(f
     f("Biggest move",big,esc(big.co)+' '+(big.a>0?'jumped':'dropped')+' <b>'+big.out.replace(/^[+−-]/,"")+'</b> after its earnings, '+x(Math.abs(big.a)/avgMv)+' the average move. '+story(big),(big.a>0?'▲':'▼')+Math.abs(big.a)+'%')+
     (wrong?f("Everyone was wrong",wrong,(same?'Every AI said '+esc(wrong.co)+' would '+(same==="down"?'fall':'rise')+'. It '+dirWord(wrong)+' <b>'+wrong.out.replace(/^[+−-]/,"")+'</b>.':'Nobody got '+esc(wrong.co)+' right. It '+dirWord(wrong)+' <b>'+wrong.out.replace(/^[+−-]/,"")+'</b>.')+
       ' '+none.length+' of '+RR.length+' rounds had no winner'+(others.length?', with '+and(others):'')+'.','0<small>of '+wrong.calls.length+' right</small>'):'')+'</ul>'}
+/* X2 highlights: the film on top with what kind of moment it is; then the moment in one plain, slightly cheeky
+   sentence; then what happened; then the receipts (the numbers, each with what it means). */
+function shelfX2(){var RR=ROUNDS;if(!RR.length)return '';var calls=[];RR.forEach(function(r){r.calls.forEach(function(c){calls.push({m:c[0],r:r,off:parseFloat(c[2])})})});
+  function avgOff(r){var o=r.calls.map(function(c){return parseFloat(c[2])});return o.reduce(function(a,b){return a+b},0)/o.length}
+  function mv(r){return (r.a>0?'▲ ':'▼ ')+String(r.out).replace(/^[+−-]/,"")}
+  function x(v){return v>=10?Math.round(v)+"x":v.toFixed(1).replace(/\.0$/,"")+"x"}
+  var close=calls.slice().sort(function(a,b){return a.off-b.off})[0],tight=RR.map(function(r){return {r:r,v:avgOff(r)}}).sort(function(a,b){return a.v-b.v})[0],
+      big=RR.slice().sort(function(a,b){return Math.abs(b.a)-Math.abs(a.a)})[0],none=RR.filter(function(r){return !r.win}),used=[close.r,tight.r,big];
+  var wrong=none.filter(function(r){return used.indexOf(r)<0}).sort(function(a,b){return avgOff(b)-avgOff(a)})[0]||none[none.length-1];
+  var avgAll=calls.reduce(function(a,c){return a+c.off},0)/calls.length,avgRnd=RR.reduce(function(a,r){return a+avgOff(r)},0)/RR.length,avgMv=RR.reduce(function(a,r){return a+Math.abs(r.a)},0)/RR.length;
+  function dirs(r){var d=r.calls.map(function(c){return isDn(c)});return d.every(function(v){return v===d[0]})?(d[0]?"down":"up"):null}
+  function card(kick,r,head,body,rec){return '<li><a class="hx2" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'" aria-label="'+kick+': open round '+r.n+', '+esc(r.co)+'">'+
+    '<span class="hx2-a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">':'')+'<span class="hx2-k">'+kick+'</span>'+(r.film?'<i class="hx2-w" aria-hidden="true">▶</i>':'')+'</span>'+
+    '<span class="hx2-t"><span class="hx2-h">'+head+'</span><span class="hx2-p">'+body+'</span><span class="hx2-r">'+rec.map(function(q){return '<span><b>'+q[0]+'</b><small>'+q[1]+'</small></span>'}).join("")+'</span></span></a></li>'}
+  var cc=callOf(close.r,close.m),out='<ul class="hx2s">';
+  out+=card("Closest call",close.r,nm(close.m)+' basically read '+esc(close.r.co)+'\'s mind.','It called '+callAmt(cc)+'. '+esc(close.r.co)+' moved '+mv(close.r)+'.',
+    [[close.off.toFixed(2)+' pts','off the real move'],[x(avgAll/close.off),'closer than a typical call']]);
+  var td=dirs(tight.r);
+  out+=card("Tightest race",tight.r,'All '+String(NUMW[tight.r.calls.length]||tight.r.calls.length).toLowerCase()+' AIs huddled around '+esc(tight.r.co)+'.',esc(tight.r.co)+' moved '+mv(tight.r)+'. Every call landed within a few points of it'+(td?', all calling '+td:'')+'.',
+    [[tight.v.toFixed(2)+' pts','average miss that round'],[avgRnd.toFixed(1)+' pts','in a normal round']]);
+  var bd=dirs(big);
+  out+=card("Biggest move",big,esc(big.co)+(big.a>0?' went vertical.':' fell off a cliff.'),esc(big.co)+' moved '+mv(big)+' after earnings'+(bd&&(bd==="down")!==(big.a<0)?', and every AI called it '+bd+'. Ouch.':'.'),
+    [[mv(big),'in one day'],[x(Math.abs(big.a)/avgMv),'a normal earnings move']]);
+  if(wrong){var wd=dirs(wrong);
+    out+=card("Everyone was wrong",wrong,esc(wrong.co)+' fooled all '+String(NUMW[wrong.calls.length]||wrong.calls.length).toLowerCase()+'.',(wd?'Every AI said '+(wd==="down"?'down':'up')+'. ':'')+esc(wrong.co)+' moved '+mv(wrong)+'. Nobody won the round.',
+      [['0 of '+wrong.calls.length,'got the direction right'],[none.length+' of '+RR.length,'rounds with no winner']])}
+  return out+'</ul>'}
 function hero(){var RR=RS(),r=RR[RR.length-1];if(!r)return '';var v=rv(r.n);
   return '<a class="hero2" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'"><span class="h2a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="">':'')+(r.film&&!reduce?'<video muted loop playsinline autoplay preload="metadata" aria-hidden="true"'+(r.poster?' poster="'+MEDIA+r.poster+'.jpg"':'')+'><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video>':'')+'</span>'+
     '<span class="h2t"><small>Latest result · '+fmtDate(r.resolves)+'</small><b>Round '+r.n+' · '+esc(r.co)+(hasTk(v)?' <span class="tk">('+esc(r.ticker)+')</span>':'')+'</b><span class="h2m '+(r.a<0?'d':'u')+'">'+(r.a<0?'▼':'▲')+esc(r.out.replace(/^[+−-]/,""))+'</span>'+
@@ -3809,8 +3862,10 @@ var CROWN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V8l5 4 4-8 
 function fbal(m){var o=FOLLOW.filter(function(f){return f.m===m})[0];return o?o.bal:null}
 function formDots(C){return C.hist.slice(-5).map(function(h){var cls=h.none?"n":h.win?"w":h.ok?"g":"r",lab=h.none?"no call":h.win?"won":h.ok?"right way":"wrong way";
   return '<a class="fd '+cls+'" href="#/round/'+h.n+'" title="Round '+h.n+': '+lab+'" aria-label="Round '+h.n+': '+lab+'">'+(h.win?CROWN:h.none?'':h.ok?'✓':'✗')+'</a>'}).join("")}
+/* X2: the best direction record among AIs that have called at least half the rounds */
+function lbBest(){var b=null,bv=-1;RK.forEach(function(k){var C=CAR[k];if(C.g<ROUNDS.length/2)return;var v=C.right/C.g;if(v>bv){bv=v;b=k}});return b}
 function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=STAKE;
-  return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.won>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
+  return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.won>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+(X2&&m===lbBest()?'<small class="pc-best">Most accurate</small>':'')+
     '<span class="rk" role="cell"><sup>#</sup>'+rkOf(m)+'</span>'+
     '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3>'+(X1&&!X2?nm(m):'<a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a>')+'</h3><small>'+esc(MODELS[m].ver||'')+'</small></span></span>'+
     '<span class="lb-c" role="cell"><b>'+(C.g?pctOf(C.right,C.g)+'%':'n/a')+'</b><small>'+C.right+' of '+C.g+'</small></span>'+
@@ -4017,25 +4072,25 @@ function findings(){var R=ROUNDS,cards=[];
     if(P&&P.calls.length>1){var ps=P.calls.reduce(function(t,c){return t+(c.dir==="DOWN"?-1:1)},0);
       if(Math.abs(ps)===P.calls.length)now='<p class="fdg-now">Right now: all '+(NUMW[P.calls.length]||P.calls.length)+' say '+(ps>0?'up':'down')+' on '+esc(plainCo(P))+'.</p>'}
     cards.push(card("When they all agree",a<.5?"When they all agree, they're usually wrong":a===.5?"When they all agree, it's a coin flip":"When they all agree, they're usually right",
-      'In '+(NUMW[ag.n]||ag.n)+' rounds every AI called the same direction. They were right in '+(NUMW[ag.ok]||ag.ok)+' of them.'+(sp.n?(b>a?' When they disagreed, going with the majority worked better.':' When they disagreed, the majority did no better.'):''),
-      [stat(ag.ok+' of '+ag.n,'right when all agree')].concat(sp.n?[stat(sp.ok+' of '+sp.n,'majority right when split')]:[]),ag.n+sp.n+' rounds',now?'hot':'',now))}
+      (function(w){w=String(w);return w.charAt(0).toUpperCase()+w.slice(1)})(NUMW[ag.n]||ag.n)+' times, all four AIs picked the same direction. They were right only '+String(NUMW[ag.ok]||ag.ok).toLowerCase()+' times. '+(sp.n&&b>a?'When they argued, siding with the majority worked far better.':'Agreement means nothing here.'),
+      [stat(ag.ok+' of '+ag.n,'times right when all four agreed')].concat(sp.n?[stat(sp.ok+' of '+sp.n,'times the majority was right when they split')]:[]),ag.n+sp.n+' rounds so far',now?'hot':'',now))}
   /* 2 up calls vs down calls, all AIs together */
   var up={n:0,ok:0},dn={n:0,ok:0};R.forEach(function(r){r.calls.forEach(function(c){var o=isDn(c)?dn:up;o.n++;if(isDn(c)===(r.a<0))o.ok++})});
   if(up.n>=FMIN&&dn.n>=FMIN){var u=pct(up.ok,up.n),d=pct(dn.ok,dn.n);
     cards.push(card("Up calls vs down calls",u-d>=.2?"Good at calling ups. Bad at calling downs.":d-u>=.2?"Better at calling drops than gains":"Up or down, the same hit rate",
-      'When an AI says a stock will rise, it '+(u>.5?'usually does':'often doesn\'t')+'. When it says the stock will fall, it\'s '+(d>.5?'usually right':'usually wrong')+'.',
-      [stat('▲ '+up.ok+' of '+up.n,'up calls right'),stat('▼ '+dn.ok+' of '+dn.n,'down calls right')],(up.n+dn.n)+' calls'))}
+      'When an AI says up, believe it'+(u>.5?'':' less')+'. When it says down, '+(d>.5?'it\'s usually right too':'it\'s usually wrong')+'.',
+      [stat('▲ '+Math.round(u*10)+' in 10','"up" calls came true'),stat('▼ '+Math.round(d*10)+' in 10','"down" calls came true')],(up.n+dn.n)+' calls so far'))}
   /* 3 the size of the move: the AI whose average call is furthest from the average real move in its rounds */
   var sz=RK.map(function(m){var n=0,ca=0,ma=0;R.forEach(function(r){var c=callOf(r,m);if(!c)return;n++;ca+=parseFloat(c[1].split(" ")[1]);ma+=Math.abs(r.a)});return n>=FMIN?{m:m,n:n,c:ca/n,a:ma/n}:null})
     .filter(Boolean).sort(function(x,y){return Math.abs(y.c-y.a)-Math.abs(x.c-x.a)})[0];
   if(sz&&Math.abs(sz.c-sz.a)>=.5)cards.push(card("How big",nm(sz.m)+(sz.c<sz.a?' plays it too safe':' swings too big'),
-    nm(sz.m)+'\'s calls expect '+(sz.c<sz.a?'smaller':'bigger')+' moves than the market makes. Right or wrong on direction, it '+(sz.c<sz.a?'undersells':'oversells')+' how far the stock goes.',
-    [stat(sz.c.toFixed(1)+'%','its average call'),stat(sz.a.toFixed(1)+'%','average real move')],sz.n+' rounds'))
+    nm(sz.m)+' keeps '+(sz.c<sz.a?'lowballing':'overhyping')+' how far a stock will run after earnings.',
+    [stat(sz.c.toFixed(1)+'%','what it predicts, on average'),stat(sz.a.toFixed(1)+'%','what stocks actually move')],sz.n+' rounds so far'))
   /* 4 just for fun: betting against the AI with the lowest hit rate */
   var hr=RK.map(function(m){var n=0,ok=0;R.forEach(function(r){var c=callOf(r,m);if(!c)return;n++;if(isDn(c)===(r.a<0))ok++});return n>=FMIN?{m:m,n:n,ok:ok}:null}).filter(Boolean);
   if(hr.length>1){var lo=hr.slice().sort(function(a,b){return a.ok/a.n-b.ok/b.n})[0],hi=hr.slice().sort(function(a,b){return b.ok/b.n-a.ok/a.n})[0],inv=lo.n-lo.ok;
     if(inv/lo.n>.5)cards.push(card("Just for fun",'Inverse '+nm(lo.m),'Betting against every '+nm(lo.m)+' call would have been right '+(NUMW[inv]||inv)+' times out of '+lo.n+'. '+(inv/lo.n>=hi.ok/hi.n?'That ties the best AI. ':'')+'It\'s a joke. '+nm(lo.m)+' has been informed.',
-      [stat(inv+' of '+lo.n,'right, betting against '+nm(lo.m))],lo.n+' rounds','fun'))}
+      [stat(inv+' of '+lo.n,'times the opposite of '+nm(lo.m)+' was right')],lo.n+' rounds so far','fun'))}
   if(!cards.length)return '';
   return '<section class="blk xsec fdgs" aria-labelledby="fdgH">'+xsh("04","Findings","Unusual findings","Weird patterns in the calls so far. Small samples, so these will flip as rounds come in. Not alpha. Not advice.",false,"fdgH")+
     '<div class="fdg-g">'+cards.join("")+'</div></section>'}

@@ -57,5 +57,5 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         S="""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'hit rate')+'</small>"""
         assert page.count(S)==1; page=page.replace(S,"""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':m===EZ_LEAD()?'buyback odds':'hit rate')+'</small>""")
         L2="""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3></span>'"""
-        assert page.count(L2)==1; page=page.replace(L2,"""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_BEST()?'<small class="pc-best">Most accurate</small>':'')+'</span>'""")
+        assert page.count(L2)==1; page=page.replace(L2,"""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">Bets on NVIDIA</small>':'')+'</span>'""")
     open(out,'w').write(page); print("ok",out,len(page))
