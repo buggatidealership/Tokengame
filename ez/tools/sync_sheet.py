@@ -55,6 +55,19 @@ def clean(v):
 # even while the row is still in the sheet.
 VOID = {("STZ", "10/06/26"): "calls were submitted after the earnings report (owner, 2026-10-07)"}
 
+def day(d):
+    """A call date as (year, month, day), however it is typed: 10/06/26, 10/6/26, 10/06/2026 or 2026-10-06."""
+    d = (d or "").strip()
+    m = re.match(r"^(\d{4})-(\d{1,2})-(\d{1,2})", d)
+    if m:
+        return (int(m.group(1)) % 100, int(m.group(2)), int(m.group(3)))
+    m = re.match(r"^(\d{1,2})/(\d{1,2})/(\d{2,4})", d)
+    if m:
+        return (int(m.group(3)) % 100, int(m.group(1)), int(m.group(2)))
+    return d
+
+VOID_KEYS = {(t, day(d)): why for (t, d), why in VOID.items()}
+
 
 def main():
     args = sys.argv[1:]
@@ -100,8 +113,8 @@ def main():
             if mt.group(1).upper() not in tickers:
                 warnings.append("R%s ticker cell '%s': used %s; add the name to TICKERS" % (rn, g("TICKER").strip(), tk.upper()))
         tk = tk.upper()
-        if (tk, g("CALL DATE (T-1)").strip()) in VOID:
-            print("VOID: %s (call date %s) is struck from the record: %s. Skipped." % (tk, g("CALL DATE (T-1)").strip(), VOID[(tk, g("CALL DATE (T-1)").strip())])); continue
+        if (tk, day(g("CALL DATE (T-1)"))) in VOID_KEYS:
+            print("VOID: %s (call date %s) is struck from the record: %s. Skipped." % (tk, g("CALL DATE (T-1)").strip(), VOID_KEYS[(tk, day(g("CALL DATE (T-1)")))])); continue
         if not rn and not tk:
             continue
         if not re.match(r"^\d+$", rn) or not tk:
@@ -169,7 +182,7 @@ def main():
             report.append("UPDATED    R%s %s: %s" % (r[0], r[1], "; ".join("%s %r -> %r" % d for d in diffs)))
     for rn in oldby:
         if rn not in {r[0] for r in new}:
-            if (oldby[rn][1], oldby[rn][2]) in VOID:
+            if (oldby[rn][1], day(oldby[rn][2])) in VOID_KEYS:
                 report.append("VOIDED     R%s %s: removed from the site" % (rn, oldby[rn][1]))
             else:
                 problems.append("R%s is in the site but missing from the sheet" % rn)
@@ -212,7 +225,7 @@ def main():
         print("\nNothing written. Fix the problems above (or confirm record edits with --allow-edits).")
         sys.exit(1)
     if write and report or write and "--allow-edits" in args:
-        body_js = "[\n" + ",\n".join(" " + json.dumps(r, ensure_ascii=False).replace(", ", ",") for r in new) + "\n]"
+        body_js = "[\n" + ",\n".join(" " + json.dumps(r, ensure_ascii=False, separators=(",", ":")) for r in new) + "\n]"
         src2 = src[:sheet_m.start(1)] + body_js + src[sheet_m.end(1):]
         open(DATA, "w", encoding="utf8").write(src2)
         print("\nWROTE ez-data.js")
