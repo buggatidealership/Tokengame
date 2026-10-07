@@ -12,7 +12,7 @@ import re
 rep('<title>','<title>',1)
 src=re.sub(r'<title>[^<]*</title>','<title>EZ Season Live</title>',src,1)
 # css
-i=src.rindex('</style>'); src=src[:i]+css+src[i:]
+i=src.rindex('</style>',0,src.find('<!--WSJ:') if '<!--WSJ:' in src else len(src)); src=src[:i]+css+src[i:]
 # header: brand to the board, the route nav
 rep('<a class="brand" href="#top"','<a class="brand" href="#/"')
 rep('<nav class="nav" aria-label="Sections"><a href="#upnext">Up next</a><a href="#record">The record</a><a href="#learn">Learning</a><a href="#bet">The buyback</a><a href="#calc">The math</a><a href="#road">What\'s next</a></nav>',
@@ -41,6 +41,8 @@ NAV5='<nav class="nav" aria-label="Main"><a href="#/" data-r="board">Overview</a
 for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1.html","x1","EZ Live X1"),("v24-live-x2.html","x2","EZ Live X2")]:
     page=base[:i]+'window.EZ_EXP="'+exp+'";\n'+js+base[i:]
     page=re.sub(r'<title>[^<]*</title>','<title>'+title+'</title>',page,1)
+    if exp=="x1": page=re.sub(r'<!--WSJ:.*?<!--/WSJ-->\n','',page,flags=re.S)
+    if exp=="x1": page=page.replace("<h1>We’re putting","<h1>We're putting")
     if exp in ("x1","x2"):
         assert page.count(NAV4)==1; page=page.replace(NAV4,NAV5)
         # X1: the last round beside the standings (like Season); model pages come after launch, so names are plain text
