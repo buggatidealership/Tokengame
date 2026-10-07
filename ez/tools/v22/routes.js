@@ -277,15 +277,18 @@ function fbal(m){var o=FOLLOW.filter(function(f){return f.m===m})[0];return o?o.
 function formDots(C){return C.hist.slice(-5).map(function(h){var cls=h.none?"n":h.win?"w":h.ok?"g":"r",lab=h.none?"no call":h.win?"won":h.ok?"right way":"wrong way";
   return '<a class="fd '+cls+'" href="#/round/'+h.n+'" title="Round '+h.n+': '+lab+'" aria-label="Round '+h.n+': '+lab+'">'+(h.win?CROWN:h.none?'':h.ok?'✓':'✗')+'</a>'}).join("")}
 /* X2: the best direction record among AIs that have called at least half the rounds */
+/* X2 leaderboard: the last five calls as plain squares, green right way, red wrong way (owner, 2026-10-07) */
+function formSq(C){return '<span class="fq">'+C.hist.slice(-5).map(function(h){var cls=h.none?"n":h.ok?"g":"r",lab=h.none?"no call":h.ok?"right way":"wrong way";
+  return '<i class="'+cls+'" title="Round '+h.n+': '+lab+'"></i>'}).join("")+'<span class="sr">Last five calls: '+C.hist.slice(-5).map(function(h){return h.none?"no call":h.ok?"right":"wrong"}).join(", ")+'</span></span>'}
 function lbBest(){var b=null,bv=-1;RK.forEach(function(k){var C=CAR[k];if(C.g<ROUNDS.length/2)return;var v=C.right/C.g;if(v>bv){bv=v;b=k}});return b}
 function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=STAKE;
   return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.won>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+(X2&&m===lbBest()?'<small class="pc-best">Most accurate</small>':'')+
     '<span class="rk" role="cell"><sup>#</sup>'+rkOf(m)+'</span>'+
-    '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3>'+(X1&&!X2?nm(m):'<a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a>')+'</h3><small>'+esc(MODELS[m].ver||'')+'</small></span></span>'+
+    '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3>'+(X1&&!X2?nm(m):'<a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a>')+'</h3><small>'+esc(MODELS[m].ver||'')+'</small>'+(X2?'<span class="lb-f2" aria-hidden="true">'+formSq(C)+'</span>':'')+'</span></span>'+
     '<span class="lb-c" role="cell"><b>'+(C.g?pctOf(C.right,C.g)+'%':'n/a')+'</b><small>'+C.right+' of '+C.g+'</small></span>'+
     '<span class="lb-c" role="cell"><b>'+(C.avg==null?'n/a':C.avg.toFixed(2))+'</b><small>points</small></span>'+
     '<span class="lb-c roi '+(b==null?'':up?'pu':'pd')+'" role="cell"><b>'+(b==null?'n/a':pctTxt(b))+'</b><small>'+(b==null?'':usd(b))+'</small></span>'+
-    '<span class="lb-f" role="cell">'+formDots(C)+'</span>'+
+    '<span class="lb-f" role="cell">'+(X2?formSq(C):formDots(C))+'</span>'+
     '<span class="lb-w pc-w" role="cell"><b>'+C.won+'</b><span>'+(C.won===1?'win':'wins')+'</span></span></li>'}
 /* ---------- the stats: four ways to rank the AIs (wins, hit rate, average miss, ROI). A switch picks one and the card
    flips to it, like "Are they learning?". One row per AI: rank, a bar (longer is always better), the number, one line
@@ -467,7 +470,7 @@ function callGrid(){var R=ROUNDS;
   /* the takeaway: who collects the crowns, and who is wrong most often (at least FMIN calls) */
   var most=RK.slice().sort(function(a,b){return tally[b].w-tally[a].w})[0],elig=RK.filter(function(m){return tally[m].n>=FMIN}),
       worst=elig.slice().sort(function(a,b){return (tally[b].n-tally[b].ok)/tally[b].n-(tally[a].n-tally[a].ok)/tally[a].n})[0],
-      take='<p class="cg-take"><b>'+nm(most)+' has the most crowns: '+tally[most].w+' of '+R.length+' rounds.</b>'+(worst&&worst!==most?' '+nm(worst)+' has the most red: wrong on '+(tally[worst].n-tally[worst].ok)+' of '+tally[worst].n+'.':'')+'</p>';
+      take=X2?'':'<p class="cg-take"><b>'+nm(most)+' has the most crowns: '+tally[most].w+' of '+R.length+' rounds.</b>'+(worst&&worst!==most?' '+nm(worst)+' has the most red: wrong on '+(tally[worst].n-tally[worst].ok)+' of '+tally[worst].n+'.':'')+'</p>';
   return '<section class="blk xsec cgs" aria-labelledby="cgH">'+xsh("02","Every call","Every call, one square","Every call they ever made, on the record. Newest on the right. Tap a square for the full card.",false,"cgH")+take+
     '<div class="cg-wrap" tabindex="0" aria-label="Every call, scrolls sideways"><div class="cg" role="table" aria-label="Every call, one square" style="--n:'+R.length+'">'+h+'</div></div>'+
     '<p class="legend cg-k"><span><i class="foil"></i>Won the round</span><span><i class="k-g"></i>Right way</span><span><i class="k-r"></i>Wrong way</span><span><i style="background:var(--field)"></i>No call yet</span></p></section>'}
@@ -637,7 +640,7 @@ function vProfile(m){if(!CAR[m])return null;
     labs.map(function(l){return '<text x="'+(CW-R0+8)+'" y="'+(l.y+4).toFixed(1)+'" class="pf-bl'+(l.k===m?' me':'')+'">'+nm(l.k)+' '+kfmt(l.v)+'</text>'}).join("")+
     '<text x="'+cx(1)+'" y="'+(CH-6)+'" class="pf-bt" text-anchor="middle">R1</text><text x="'+cx(G)+'" y="'+(CH-6)+'" class="pf-bt" text-anchor="middle">R'+ROUNDS[G-1].n+'</text></svg>';
   var balS='<section class="pf-sec" aria-labelledby="pfMH"><h2 id="pfMH">If you had copied it</h2><p class="pf-sub">'+usd(STAKE)+' in on every call: buy on an up call, short on a down call, out at the next close. '+nmM+' in black, the others in grey. Simulated, before fees.</p>'+chart+'</section>';
-  return '<nav class="mnav" aria-label="Models"><a class="back" href="#/leaderboard">← Leaderboard</a>'+RK.map(function(k){return '<a href="#/model/'+k.toLowerCase()+'"'+(k===m?' aria-current="page"':'')+'>'+logo(k)+nm(k)+'</a>'}).join("")+'</nav>'+
+  return '<nav class="mnav" aria-label="Models"><a class="back" href="#/leaderboard" aria-label="Back to the leaderboard" title="Back to the leaderboard"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>'+RK.map(function(k){return '<a href="#/model/'+k.toLowerCase()+'"'+(k===m?' aria-current="page"':'')+'>'+logo(k)+nm(k)+'</a>'}).join("")+'</nav>'+
     '<div class="pf">'+cap+form+cmp+balS+list+bwS+nav+'</div>'}
 function wireModel(root,m){var el=$("#tg1",root);if(el)targets(el,[m])}
 
