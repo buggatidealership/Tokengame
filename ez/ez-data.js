@@ -11,7 +11,6 @@ var CONFIG={ca:"",buyUrl:"",chain:"",x:"",tg:"",pool:"",poolUrl:"",betDate:"",
 /* The prompt every model gets, every round. verbatim:false = the shape only (pages say so);
    paste the exact text and set verbatim:true to publish it word for word. */
 var PROMPT={verbatim:false,lines:["Company <i>X</i> reports on <i>date</i>.","Full freedom: use any tool you like.","Answer: <i>up or down</i>, and <i>by how much</i>."]};
-var SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/1Y9pKNsyB6NL_LGqUrEUydrt3R0cAwnGVllIRwk7CsLc/export?format=csv&gid=352731177";
 var SHEET_HEADER=["ROUND","TICKER","CALL DATE (T-1)","GPT DIR","GPT MAG (%)","KIMI DIR","KIMI MAG (%)","CLAUDE DIR","CLAUDE MAG (%)","GROK DIR","GROK MAG (%)","RESOLUTION DATE/TIME","ACTUAL MOVE (%)","REPORT TIME","SECTOR","INDUSTRY GROUP","THEMES","MAG 7"];
 var SHEET=[
  ["1","GME","09/08/26","UP","1","UP","4","UP","2","","","09/09/26","5.95","","Consumer Discretionary","Consumer Discretionary Distribution & Retail","Gaming","FALSE"],

@@ -2,7 +2,7 @@
 
 The owner updates their private Google Sheet. A separate public sheet ("EZ public", shared
 "Anyone with the link: Viewer") pulls only the needed columns from it with IMPORTRANGE.
-Its link lives in `SHEET_CSV_URL` in `ez/ez-data.js`. The site never reads the sheet live:
+Its link lives in `ez/tools/sheet_url.txt` (kept out of `ez-data.js`, which ships with every published page; the sheet also holds the prompts). The site never reads the sheet live:
 we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterwards.
 
 ## Routine
@@ -37,6 +37,9 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    and what to QA.
 
 ## Notes
+- **Struck rounds.** A round that must not count (e.g. calls sent after the report) goes in `VOID` in `ez/tools/sync_sheet.py`,
+  keyed by ticker and call date. The sync then skips it whatever its ROUND cell says. R14 Constellation Brands (STZ, called 10/06/26)
+  is struck (owner, 2026-10-07).
 - Optional sheet column **REPORT TIME** (when the company reported): `BMO` (before the open), `AMC` (after the close) or `DURING`
   (market hours). Words like "after close" or "pre-market" are accepted too. It is shown on the round cards where a page supports it.
   Filling it in for a graded round is a detail, not a record edit, so it doesn't need `--allow-edits`.

@@ -5,8 +5,9 @@
     python3 ez/tools/sync_sheet.py --write    # same, then rewrite the SHEET block in ez-data.js
     python3 ez/tools/sync_sheet.py --file x.csv [--write]   # use a local CSV instead of the URL
 
-The CSV comes from SHEET_CSV_URL in ez-data.js (a Google Sheet shared "anyone with the link: viewer";
-the script turns a normal sheet link into its CSV export link). Columns are matched by header name,
+The CSV link lives in ez/tools/sheet_url.txt (a Google Sheet shared "anyone with the link: viewer";
+the script turns a normal sheet link into its CSV export link). It is kept out of ez-data.js on purpose:
+ez-data.js ships with every published page, and the sheet also holds the prompts. Columns are matched by header name,
 so column order and extra columns (e.g. PROMPT) don't matter; extra columns are never copied.
 Exit code 0 = fine, 1 = blocked (nothing written), 2 = written but with warnings worth a look.
 """
@@ -24,8 +25,10 @@ def js_array(src, name):
         sys.exit("could not find var %s in ez-data.js" % name)
     return json.loads(m.group(1)), m
 
+URL_FILE = os.path.join(HERE, "sheet_url.txt")
+
 def csv_url(src, override=None):
-    u = override or re.search(r'var SHEET_CSV_URL="([^"]*)"', src).group(1)
+    u = override or (open(URL_FILE, encoding="utf8").read().strip() if os.path.exists(URL_FILE) else "")
     if not u:
         return ""
     m = re.search(r"docs\.google\.com/spreadsheets/d/([A-Za-z0-9_-]{20,})", u)
@@ -48,8 +51,9 @@ def clean(v):
     v = (v or "").strip().replace("−", "-").replace("%", "").replace(",", ".").strip()
     return v[1:] if v.startswith("+") else v
 
-# Rounds struck from the record: skipped even if the row is still in the sheet.
-VOID = {("14", "STZ"): "calls were submitted after the earnings report (owner, 2026-10-07)"}
+# Rounds struck from the record, by (ticker, call date): skipped whatever the ROUND cell says,
+# even while the row is still in the sheet.
+VOID = {("STZ", "10/06/26"): "calls were submitted after the earnings report (owner, 2026-10-07)"}
 
 
 def main():
@@ -66,7 +70,7 @@ def main():
     else:
         u = csv_url(src, args[args.index("--url") + 1] if "--url" in args else None)
         if not u:
-            sys.exit("BLOCKED: SHEET_CSV_URL in ez-data.js is empty. Paste the public sheet link there first.")
+            sys.exit("BLOCKED: ez/tools/sheet_url.txt is missing or empty. Paste the public sheet link there first.")
         body = fetch(u); where = u
 
     rows = list(csv.reader(io.StringIO(body)))
@@ -96,12 +100,12 @@ def main():
             if mt.group(1).upper() not in tickers:
                 warnings.append("R%s ticker cell '%s': used %s; add the name to TICKERS" % (rn, g("TICKER").strip(), tk.upper()))
         tk = tk.upper()
+        if (tk, g("CALL DATE (T-1)").strip()) in VOID:
+            print("VOID: %s (call date %s) is struck from the record: %s. Skipped." % (tk, g("CALL DATE (T-1)").strip(), VOID[(tk, g("CALL DATE (T-1)").strip())])); continue
         if not rn and not tk:
             continue
         if not re.match(r"^\d+$", rn) or not tk:
             warnings.append("skipped a row that has no round number or ticker: %s" % r[:3]); continue
-        if (rn, tk) in VOID:
-            print("VOID: R%s %s is struck from the record (%s); skipped." % (rn, tk, VOID[(rn, tk)])); continue
         if rn in seen:
             problems.append("round %s appears twice" % rn)
         seen.add(rn)
@@ -165,7 +169,7 @@ def main():
             report.append("UPDATED    R%s %s: %s" % (r[0], r[1], "; ".join("%s %r -> %r" % d for d in diffs)))
     for rn in oldby:
         if rn not in {r[0] for r in new}:
-            if (rn, oldby[rn][1]) in VOID:
+            if (oldby[rn][1], oldby[rn][2]) in VOID:
                 report.append("VOIDED     R%s %s: removed from the site" % (rn, oldby[rn][1]))
             else:
                 problems.append("R%s is in the site but missing from the sheet" % rn)
