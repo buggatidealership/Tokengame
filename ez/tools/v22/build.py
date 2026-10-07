@@ -43,6 +43,9 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
     page=re.sub(r'<title>[^<]*</title>','<title>'+title+'</title>',page,1)
     if exp=="x1": page=re.sub(r'<!--WSJ:.*?<!--/WSJ-->\n','',page,flags=re.S)
     if exp=="x1": page=page.replace("<h1>We’re putting","<h1>We're putting")
+    if exp=="x1":  # X1 is locked: keep its chip and roadmap as they were
+        page=re.sub(r'[ \t]*/\*NX1\{\*/.*?/\*\}NX1\*/\n?','',page,flags=re.S)
+        page=page.replace('["🤖","More models","Next into the arena, in order: Gemini, Qwen, Mistral and NVIDIA\'s Nemotron."]','["🤖","More models","Max plans on each AI\'s newest model. Gemini and Qwen are next, then Mistral and NVIDIA\'s Nemotron."]').replace('["⚙️","Engineering the pipeline so it runs itself","Calls, films and site updates run on their own. A human signs off."]','["⚙️","The pipeline runs itself","Calls, films and site updates run on their own. A human signs off."]')
     if exp in ("x1","x2"):
         assert page.count(NAV4)==1; page=page.replace(NAV4,NAV5)
         # X1: the last round beside the standings (like Season); model pages come after launch, so names are plain text
