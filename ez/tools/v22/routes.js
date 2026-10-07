@@ -756,5 +756,7 @@ if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist");if(!sw||!sd)return;
   go.addEventListener("click",function(){mode==="all"?replay():showAll()});
 })();
 
-/* X2 phones: the top-bar chip uses the ticker so it fits beside the brand ("In play: STZ") */
-if(X2&&typeof TARGET!=="undefined"&&TARGET&&window.matchMedia&&matchMedia("(max-width:760px)").matches){var lt=$("#liveTxt");if(lt)lt.textContent=(typeof P0!=="undefined"&&P0?"In play: ":"Next: ")+String(TARGET.ticker||TARGET.co).replace(/\..*$/,"")}
+/* X2 phones: the top-bar chip uses the ticker so it fits beside the brand ("In play: PEP"); a number-only ticker
+   (005930.KS) means nothing to a reader, so those show a short company name instead ("In play: Samsung") */
+if(X2&&typeof TARGET!=="undefined"&&TARGET&&window.matchMedia&&matchMedia("(max-width:760px)").matches){var lt=$("#liveTxt");if(lt){var tkS=String(TARGET.ticker||"").replace(/\..*$/,""),coS=String(TARGET.co||"").split(" ")[0];
+  lt.textContent=(typeof P0!=="undefined"&&P0?"In play: ":"Next: ")+(!tkS||/^\d+$/.test(tkS)?coS:tkS)}}

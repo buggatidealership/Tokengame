@@ -48,6 +48,10 @@ def clean(v):
     v = (v or "").strip().replace("−", "-").replace("%", "").replace(",", ".").strip()
     return v[1:] if v.startswith("+") else v
 
+# Rounds struck from the record: skipped even if the row is still in the sheet.
+VOID = {("14", "STZ"): "calls were submitted after the earnings report (owner, 2026-10-07)"}
+
+
 def main():
     args = sys.argv[1:]
     write = "--write" in args
@@ -96,6 +100,8 @@ def main():
             continue
         if not re.match(r"^\d+$", rn) or not tk:
             warnings.append("skipped a row that has no round number or ticker: %s" % r[:3]); continue
+        if (rn, tk) in VOID:
+            print("VOID: R%s %s is struck from the record (%s); skipped." % (rn, tk, VOID[(rn, tk)])); continue
         if rn in seen:
             problems.append("round %s appears twice" % rn)
         seen.add(rn)
@@ -159,7 +165,10 @@ def main():
             report.append("UPDATED    R%s %s: %s" % (r[0], r[1], "; ".join("%s %r -> %r" % d for d in diffs)))
     for rn in oldby:
         if rn not in {r[0] for r in new}:
-            problems.append("R%s is in the site but missing from the sheet" % rn)
+            if (rn, oldby[rn][1]) in VOID:
+                report.append("VOIDED     R%s %s: removed from the site" % (rn, oldby[rn][1]))
+            else:
+                problems.append("R%s is in the site but missing from the sheet" % rn)
     for r in new:
         if r[act] != "" and r[0] not in films:
             warnings.append("R%s %s is graded but has no film yet (site shows 'Film soon')" % (r[0], r[1]))
