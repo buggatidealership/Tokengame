@@ -511,8 +511,8 @@ function findings(){var R=ROUNDS,cards=[];
 /* Results, X2: every round as one row. The calls with the winner in gold, the market's move, and a tag when nobody won. */
 function roundList(){var ns=ROUNDS.filter(function(r){return inF(r.n,RF)}).slice().reverse();
   if(!ns.length)return '<p class="rfoot">No graded rounds here yet.</p>';
-  /* one card per round, same grid every time: header (company, round, date, film); two equal tiles (what the stock
-     did, who won); then one equal column per AI in a fixed order (its call, and how far off or wrong way) */
+  /* one card per round, same grid every time: header (company, round, date, film); one equal column per AI in a fixed
+     order (its call, and how far off or wrong way); then two equal tiles (what the stock did, who won) */
   return '<ol class="rx3">'+ns.map(function(r){var W=wonBy(r),up=r.a>0,mv=String(r.out).replace(/^[+−-]/,"");
     var th=r.poster?'<span class="rlx-v rx3-v" aria-hidden="true"><img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">'+(r.film&&!reduce?'<video muted loop playsinline preload="none" poster="'+MEDIA+r.poster+'.jpg"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video>':'')+'<i>▶</i></span>':'<span class="rx3-v rx3-nv"></span>';
     var cols=RK.map(function(m){var c=callOf(r,m);if(!c)return '<span class="rx3-c n"><span class="rx3-ai">'+logo(m)+'<b>'+nm(m)+'</b></span><span class="rx3-cv">–</span><small>no call</small></span>';
@@ -520,9 +520,9 @@ function roundList(){var ns=ROUNDS.filter(function(r){return inF(r.n,RF)}).slice
       return '<span class="rx3-c '+(w?'w':ok?'g':'r')+'"><span class="rx3-ai">'+logo(m)+'<b>'+nm(m)+'</b></span><span class="rx3-cv">'+(dn?'▼':'▲')+String(callAmt(c)).replace(/^[▲▼]\s*/,"")+'</span><small>'+(w?CROWN+' won':ok?parseFloat(c[2]).toFixed(2)+' off':'wrong way')+'</small></span>'}).join("");
     return '<li><a class="rx3-r" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(plainCo(r))+': stock '+r.out+', '+(W.length?W.map(nm).join(" and ")+' won':'no winner')+'">'+
       '<span class="rx3-h">'+coMark(r.ticker)+'<span class="rx3-t"><b>'+esc(r.co)+'</b><small>'+esc(String(r.ticker).replace(/\..*$/,""))+' · Round '+r.n+' · '+fmtDate(r.resolves)+'</small></span>'+th+'</span>'+
+      '<span class="rx3-g">'+cols+'</span>'+
       '<span class="rx3-s"><span class="rx3-k '+(up?'up':'dn')+'"><small>Stock moved</small><b>'+(up?'▲ ':'▼ ')+mv+'</b></span>'+
-        '<span class="rx3-k '+(W.length?'win':'none')+(W.length>1?' two':'')+'"><small>'+(W.length>1?'Winners (tie)':'Winner')+'</small><b>'+(W.length?W.map(function(m){return logo(m)+nm(m)}).join(" & "):'Nobody')+'</b></span></span>'+
-      '<span class="rx3-g">'+cols+'</span></a></li>'}).join("")+'</ol>'}
+        '<span class="rx3-k '+(W.length?'win':'none')+(W.length>1?' two':'')+'"><small>'+(W.length>1?'Winners (tie)':'Winner')+'</small><b>'+(W.length?W.map(function(m){return logo(m)+nm(m)}).join(" & "):'Nobody')+'</b></span></span></a></li>'}).join("")+'</ol>'}
 /* play the round films in the list only while they are on screen; nothing loads until a row is visible */
 var RLX_IO=null;
 function wireRlx(root){if(RLX_IO)RLX_IO.disconnect();if(reduce||!("IntersectionObserver" in window))return;
