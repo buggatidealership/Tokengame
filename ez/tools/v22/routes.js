@@ -727,7 +727,7 @@ if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist");if(!sw||!sd)return;
     $$(".tg",grid).forEach(function(f){f.classList.remove("tgx-dim","tgx-win","tgx-noise")});$$(".tg-d",grid).forEach(function(g){g.classList.remove("tgx-off","tgx-hit","tgx-last","tgx-gone")})}
   function shot(f,c,t0){var g=$('.tg-d[data-n="'+L.n+'"]',f),sv=$(":scope > svg",f);
     var lab=document.createElement("div");lab.className="tgx-fx tgx-lab";
-    lab.innerHTML=c?(c.ok?'<b>Off by '+c.off.toFixed(2)+'%</b>':'<b class="dn">Wrong way</b>')+'<span>called '+(c.dn?'▼ ':'▲ ')+esc(c.mag)+'</span>':'<span>no call</span>';
+    lab.innerHTML=c?(c.ok?'<b>Off by '+c.off.toFixed(2)+'%</b>':'<b class="dn">Wrong way</b>'):'<span>no call</span>';
     f.appendChild(lab);
     if(!g||!sv){later(function(){lab.classList.add("in")},t0);return}
     var rp=document.createElementNS(NS,"circle");rp.setAttribute("class","tgx-fx tgx-rp"+(c&&!c.ok?" bad":""));rp.setAttribute("cx",g.dataset.x);rp.setAttribute("cy",g.dataset.y);rp.setAttribute("r",6);sv.appendChild(rp);
