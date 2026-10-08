@@ -3085,7 +3085,7 @@ function pendingCard(u,i){
     '<div class="art slabart"><span class="stamp"><i aria-hidden="true"></i>Calls are in</span><ul class="pcalls">'+
     u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<span class="nm">'+nm(c.m)+'</span><b class="'+(up?'u':'d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'Up':'Down')+'</span> '+c.mag+'%</b></li>'}).join("")+
     '</ul></div>'+
-    '<div class="cwin"><small>The market answers</small><span class="wv"><span class="wn">'+fmtDate(u.resolves)+'</span></span></div>'+
+    '<div class="cwin"><small>The market answers</small><span class="wv"><span class="wn">'+(u.resolves?fmtDate(u.resolves):'Date to come')+'</span></span></div>'+
     '<p class="cnote"><span><b>Locked <span class="nw">'+fmtDate(u.called)+'</span>, before the report.</b> No edits.</span>'+(tm?'<span>'+tm+'.</span>':'')+'</p></div></div></div></article>';
 }
 function sealedCard(u,i){
@@ -3094,7 +3094,7 @@ function sealedCard(u,i){
     '<div class="face front"><div class="fin">'+topBar(u,false,true)+
     '<div class="art sealart"><span class="mark" aria-hidden="true"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span><span class="sl">Sealed</span></div>'+
     '<div class="cwin"><small>Calls</small><span class="wv"><span class="wn">'+fmtDate(u.called)+'</span></span></div>'+
-    '<p class="cnote"><span>No calls yet. <b>The market answers <span class="nw">'+fmtDate(u.resolves)+'.</span></b></span>'+(tm?'<span>'+tm+'.</span>':'')+'</p></div></div></div></article>';
+    '<p class="cnote"><span>No calls yet.'+(u.resolves?' <b>The market answers <span class="nw">'+fmtDate(u.resolves)+'.</span></b>':'')+'</span>'+(tm?'<span>'+tm+'.</span>':'')+'</p></div></div></div></article>';
 }
 
 /* flip behaviour for any graded .card */
@@ -3633,7 +3633,7 @@ function shData(s){var d=s.d,v={n:d.n,co:d.co,ticker:d.ticker,called:d.called,re
   return v}
 function shText(v){var t="Round "+v.n+" · "+plainCo(v);
   if(v.k==="g")return t+" moved "+v.out+". "+(v.win.length?v.win.map(nm).join(" and ")+(v.win.length>1?" share the round.":" wins the round."):"Every AI got the direction wrong.")+" Four AIs called it before the report. The market graded it. $EZ";
-  if(v.k==="p")return t+". The AIs have made their calls. The market answers "+fmtDate(v.resolves)+". $EZ";
+  if(v.k==="p")return t+". The AIs have made their calls."+(v.resolves?" The market answers "+fmtDate(v.resolves)+".":"")+" $EZ";
   return t+". Four AIs call it on "+fmtDate(v.called)+". $EZ"}
 function shURL(n){return location.href.replace(/#.*$/,"")+"#round-"+n}
 function drawShare(cv,v,img){var c=cv.getContext("2d"),W=SH.W;cv.width=W;cv.height=W;
@@ -4258,8 +4258,8 @@ function findings(){var R=ROUNDS,cards=[];
     if(P&&P.calls.length>1){var ps=P.calls.reduce(function(t,c){return t+(c.dir==="DOWN"?-1:1)},0);
       if(Math.abs(ps)===P.calls.length)now='<p class="fdg-now">Right now: all '+(NUMW[P.calls.length]||P.calls.length)+' say '+(ps>0?'up':'down')+' on '+esc(plainCo(P))+'.</p>'}
     cards.push(card("When they all agree",a<.5?"When they all agree, they're usually wrong":a===.5?"When they all agree, it's a coin flip":"When they all agree, they're usually right",
-      (function(w){w=String(w);return w.charAt(0).toUpperCase()+w.slice(1)})(NUMW[ag.n]||ag.n)+' times, all four AIs picked the same direction. They were right only '+String(NUMW[ag.ok]||ag.ok).toLowerCase()+' times. '+(sp.n&&b>a?'When they argued, siding with the majority worked far better.':'Agreement means nothing here.'),
-      [stat(ag.ok+' of '+ag.n,'times right when all four agreed')].concat(sp.n?[stat(sp.ok+' of '+sp.n,'times the majority was right when they split')]:[]),ag.n+sp.n+' rounds so far',now?'hot':'',now))}
+      (function(w){w=String(w);return w.charAt(0).toUpperCase()+w.slice(1)})(NUMW[ag.n]||ag.n)+' times, every AI that called picked the same direction. They were right '+(a>.5?'':'only ')+String(NUMW[ag.ok]||ag.ok).toLowerCase()+' times. '+(sp.n&&b>a?'When they argued, siding with the majority worked better.':'Agreement means nothing here.'),
+      [stat(ag.ok+' of '+ag.n,'times right when they all agreed')].concat(sp.n?[stat(sp.ok+' of '+sp.n,'times the majority was right when they split')]:[]),R.length+' rounds so far',now?'hot':'',now))}
   /* 2 up calls vs down calls, all AIs together */
   var up={n:0,ok:0},dn={n:0,ok:0};R.forEach(function(r){r.calls.forEach(function(c){var o=isDn(c)?dn:up;o.n++;if(isDn(c)===(r.a<0))o.ok++})});
   if(up.n>=FMIN&&dn.n>=FMIN){var u=pct(up.ok,up.n),d=pct(dn.ok,dn.n);

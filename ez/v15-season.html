@@ -1548,7 +1548,7 @@ function pendingCard(u,i){
     '<div class="art slabart"><span class="stamp"><i aria-hidden="true"></i>Calls are in</span><ul class="pcalls">'+
     u.calls.map(function(c){var up=c.dir==="UP";return '<li>'+logo(c.m)+'<span class="nm">'+nm(c.m)+'</span><b class="'+(up?'u':'d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'Up':'Down')+'</span> '+c.mag+'%</b></li>'}).join("")+
     '</ul></div>'+
-    '<div class="cwin"><small>The market answers</small><span class="wv"><span class="wn">'+fmtDate(u.resolves)+'</span></span></div>'+
+    '<div class="cwin"><small>The market answers</small><span class="wv"><span class="wn">'+(u.resolves?fmtDate(u.resolves):'Date to come')+'</span></span></div>'+
     '<p class="cnote"><span><b>Locked <span class="nw">'+fmtDate(u.called)+'</span>, before the report.</b> No edits.</span>'+(tm?'<span>'+tm+'.</span>':'')+'</p></div></div></div></article>';
 }
 function sealedCard(u,i){
@@ -1557,7 +1557,7 @@ function sealedCard(u,i){
     '<div class="face front"><div class="fin">'+topBar(u,false,true)+
     '<div class="art sealart"><span class="mark" aria-hidden="true"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span><span class="sl">Sealed</span></div>'+
     '<div class="cwin"><small>Calls</small><span class="wv"><span class="wn">'+fmtDate(u.called)+'</span></span></div>'+
-    '<p class="cnote"><span>No calls yet. <b>The market answers <span class="nw">'+fmtDate(u.resolves)+'.</span></b></span>'+(tm?'<span>'+tm+'.</span>':'')+'</p></div></div></div></article>';
+    '<p class="cnote"><span>No calls yet.'+(u.resolves?' <b>The market answers <span class="nw">'+fmtDate(u.resolves)+'.</span></b>':'')+'</span>'+(tm?'<span>'+tm+'.</span>':'')+'</p></div></div></div></article>';
 }
 
 /* flip behaviour for any graded .card */
@@ -2097,7 +2097,7 @@ function shData(s){var d=s.d,v={n:d.n,co:d.co,ticker:d.ticker,called:d.called,re
   return v}
 function shText(v){var t="Round "+v.n+" · "+plainCo(v);
   if(v.k==="g")return t+" moved "+v.out+". "+(v.win.length?v.win.map(nm).join(" and ")+(v.win.length>1?" share the round.":" wins the round."):"Every AI got the direction wrong.")+" Four AIs called it before the report. The market graded it. $EZ";
-  if(v.k==="p")return t+". The AIs have made their calls. The market answers "+fmtDate(v.resolves)+". $EZ";
+  if(v.k==="p")return t+". The AIs have made their calls."+(v.resolves?" The market answers "+fmtDate(v.resolves)+".":"")+" $EZ";
   return t+". Four AIs call it on "+fmtDate(v.called)+". $EZ"}
 function shURL(n){return location.href.replace(/#.*$/,"")+"#round-"+n}
 function drawShare(cv,v,img){var c=cv.getContext("2d"),W=SH.W;cv.width=W;cv.height=W;
