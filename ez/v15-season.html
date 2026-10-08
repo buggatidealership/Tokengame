@@ -1300,15 +1300,12 @@ body.lmod-on{overflow:hidden}
 .gpu-t{margin:14px 2px 4px;font-size:clamp(16px,2.1vw,19px);line-height:1.45;max-width:46em}
 .gpu-n{margin:0 2px;font-size:14px;opacity:.75}
 </style>
-<!--WSJ: newspaper headline type for the hero and section heads (owner, 2026-10-07). Stripped from X1 by build.py.-->
-<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Condensed:wght@700&display=swap" rel="stylesheet">
+<!--WSJ: one size for the text under every head (owner, 2026-10-07). The newspaper headline font was tried and reverted
+     on 2026-10-08: titles are back in the site's own display type. Stripped from X1 by build.py.-->
 <style>
-:root{--fh:"Libre Caslon Condensed",Georgia,"Times New Roman",serif;--lede:500 clamp(15px,1.3vw,17px)/1.55 var(--fb)}
-h1{font:700 clamp(40px,5.4vw,70px)/1 var(--fh);text-transform:none;letter-spacing:-.01em}
-.sh h2{font:700 clamp(32px,4.2vw,50px)/1.02 var(--fh);text-transform:none;letter-spacing:-.005em}
-.sh h2 .mark{font-size:.9em}
+:root{--lede:500 clamp(15px,1.3vw,17px)/1.55 var(--fb)}
 .hero .sub,.lede{font:var(--lede)}
-@media(max-width:640px){h1{font-size:min(calc((100vw - 32px) / 9.6),56px);line-height:1.06}.sh h2{font-size:clamp(28px,8vw,34px)}.hero .sub,.lede{font-size:15px;line-height:1.5}}
+@media(max-width:640px){.hero .sub,.lede{font-size:15px;line-height:1.5}}
 </style>
 <!--/WSJ-->
 </head>
@@ -1582,7 +1579,8 @@ var STAND_STAT="right",FOL_EARLY=null;
 var LD=LADDER.filter(function(T){return MODELS[T.m]});
 var bench=ACTIVE.filter(function(m){return !LD.some(function(T){return T.m===m})});
 var ROWS=LD.concat(bench.map(function(m){return {m:m,won:0}}));
-function rankOf(T){return 1+ROWS.filter(function(U){return U.won>T.won}).length}
+/* rank = wins, then the smaller average miss (owner, 2026-10-08): equal wins no longer share a place */
+function rankOf(T){var a=parseFloat(T.avg);return 1+ROWS.filter(function(U){var b=parseFloat(U.avg);return U.won>T.won||(U.won===T.won&&!isNaN(b)&&(isNaN(a)||b<a))}).length}
 $("#roster").innerHTML=ROWS.map(function(T,i){
   return '<li class="pc'+(i?'':' lead')+(rankOf(T)===1&&T.won>0?' r1':'')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
     '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<span class="pc-t"><h3>'+nm(T.m)+'</h3></span>'+pcStats(T.m)+

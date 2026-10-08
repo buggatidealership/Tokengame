@@ -2788,10 +2788,9 @@ a.cg-c:hover{transform:translateY(-2px)}
 @media (max-width:560px){.rx3-t b{font-size:23px}.rx3-t small{font-size:11.5px}}
 .rx3-k.two b{font-size:18px;gap:4px}.rx3-k.two b .lg{font-size:15px}
 @media (max-width:340px){.rx3-k.two b{font-size:15px}}
-/* X2 tab heads: same newspaper headline type and subtext size as the Overview (owner, 2026-10-07) */
-.x2 #view .xsh h1,.x2 #view .xsh h2{font:700 clamp(32px,4.2vw,50px)/1.02 var(--fh);text-transform:none;letter-spacing:-.005em}
+/* X2 tab heads: same subtext size as the Overview (owner, 2026-10-07; the headline font was reverted 2026-10-08) */
 .x2 .xsh p{font:var(--lede)}
-@media(max-width:640px){.x2 #view .xsh h1,.x2 #view .xsh h2{font-size:clamp(28px,8vw,34px)}.x2 .xsh p{font-size:15px;line-height:1.5}}
+@media(max-width:640px){.x2 .xsh p{font-size:15px;line-height:1.5}}
 /* calls first, then the outcome; the winner logo's ring was clipped by the ellipsis box */
 .rx3-k b{padding:3px 0 3px 3px;margin:-3px 0 -3px -3px}
 /* X2 How close (owner, 2026-10-07): one column so the four targets sit in the middle of the card; the line about
@@ -2837,15 +2836,12 @@ a.cg-c:hover{transform:translateY(-2px)}
 @media(max-width:560px){.x2 .rmod .cwin small{font-size:24px}.x2 .rmod .cwin .wn{font-size:26px}}
 .x2 .rmod .cwin .wv{flex:1 0 auto}
 </style>
-<!--WSJ: newspaper headline type for the hero and section heads (owner, 2026-10-07). Stripped from X1 by build.py.-->
-<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Condensed:wght@700&display=swap" rel="stylesheet">
+<!--WSJ: one size for the text under every head (owner, 2026-10-07). The newspaper headline font was tried and reverted
+     on 2026-10-08: titles are back in the site's own display type. Stripped from X1 by build.py.-->
 <style>
-:root{--fh:"Libre Caslon Condensed",Georgia,"Times New Roman",serif;--lede:500 clamp(15px,1.3vw,17px)/1.55 var(--fb)}
-h1{font:700 clamp(40px,5.4vw,70px)/1 var(--fh);text-transform:none;letter-spacing:-.01em}
-.sh h2{font:700 clamp(32px,4.2vw,50px)/1.02 var(--fh);text-transform:none;letter-spacing:-.005em}
-.sh h2 .mark{font-size:.9em}
+:root{--lede:500 clamp(15px,1.3vw,17px)/1.55 var(--fb)}
 .hero .sub,.lede{font:var(--lede)}
-@media(max-width:640px){h1{font-size:min(calc((100vw - 32px) / 9.6),56px);line-height:1.06}.sh h2{font-size:clamp(28px,8vw,34px)}.hero .sub,.lede{font-size:15px;line-height:1.5}}
+@media(max-width:640px){.hero .sub,.lede{font-size:15px;line-height:1.5}}
 </style>
 <!--/WSJ-->
 </head>
@@ -3120,7 +3116,8 @@ var STAND_STAT="right",FOL_EARLY=null;
 var LD=LADDER.filter(function(T){return MODELS[T.m]});
 var bench=ACTIVE.filter(function(m){return !LD.some(function(T){return T.m===m})});
 var ROWS=LD.concat(bench.map(function(m){return {m:m,won:0}}));
-function rankOf(T){return 1+ROWS.filter(function(U){return U.won>T.won}).length}
+/* rank = wins, then the smaller average miss (owner, 2026-10-08): equal wins no longer share a place */
+function rankOf(T){var a=parseFloat(T.avg);return 1+ROWS.filter(function(U){var b=parseFloat(U.avg);return U.won>T.won||(U.won===T.won&&!isNaN(b)&&(isNaN(a)||b<a))}).length}
 $("#roster").innerHTML=ROWS.map(function(T,i){
   return '<li class="pc'+(i?'':' lead')+(rankOf(T)===1&&T.won>0?' r1':'')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
     '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3></span>'+pcStats(T.m)+
