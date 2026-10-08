@@ -162,8 +162,23 @@ def main():
     oldby = {r[0]: r for r in old}
     act = want.index("ACTUAL MOVE (%)")
     report = []
+    # a round that only changed its number (same ticker and call date, old number no longer in the sheet) is a move,
+    # not a new round plus a missing one. Moving an ungraded round is fine; a graded one stays a record edit.
+    newnums = {r[0] for r in new}
+    oldbyday = {(o[1], day(o[2])): o for o in old if o[0] not in newnums}
+    moved = set()
     for r in new:
         o = oldby.get(r[0])
+        if not o and (r[1], day(r[2])) in oldbyday:
+            o = oldbyday[(r[1], day(r[2]))]; moved.add(o[0])
+            rest = [(want[i], o[i] if i < len(o) else "", r[i]) for i in range(1, len(want)) if want[i] not in OPTIONAL and (o[i] if i < len(o) else "") != r[i]]
+            if o[act] != "":
+                problems.append("RECORD EDIT: R%s %s was already graded and moved to R%s%s  (round links change; confirm on purpose, then rerun with --allow-edits)"
+                                % (o[0], r[1], r[0], (": " + "; ".join("%s %r -> %r" % d for d in rest)) if rest else ""))
+            else:
+                report.append("MOVED      R%s -> R%s %s%s" % (o[0], r[0], r[1], ("; result in: market %s%%" % r[act]) if r[act] != "" and o[act] == "" else "")
+                              + ("".join("; %s %r -> %r" % d for d in rest if d[0] != "ACTUAL MOVE (%)")))
+            continue
         if not o:
             report.append("NEW ROUND R%s %s" % (r[0], r[1])); continue
         diffs = [(want[i], o[i] if i < len(o) else "", r[i]) for i in range(len(want)) if (o[i] if i < len(o) else "") != r[i]]
@@ -181,7 +196,7 @@ def main():
         else:
             report.append("UPDATED    R%s %s: %s" % (r[0], r[1], "; ".join("%s %r -> %r" % d for d in diffs)))
     for rn in oldby:
-        if rn not in {r[0] for r in new}:
+        if rn not in newnums and rn not in moved:
             if (oldby[rn][1], day(oldby[rn][2])) in VOID_KEYS:
                 report.append("VOIDED     R%s %s: removed from the site" % (rn, oldby[rn][1]))
             else:
