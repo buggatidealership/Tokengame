@@ -9,7 +9,7 @@ The CSV link lives in ez/tools/sheet_url.txt (a Google Sheet shared "anyone with
 the script turns a normal sheet link into its CSV export link). It is kept out of ez-data.js on purpose:
 ez-data.js ships with every published page, and the sheet also holds the prompts. Columns are matched by header name,
 so column order and extra columns (e.g. PROMPT) don't matter; extra columns are never copied.
-Exit code 0 = fine, 1 = blocked (nothing written), 2 = written but with warnings worth a look.
+Exit code 0 = fine, 1 = blocked (nothing written), 2 = finished with warnings worth a look (written or not).
 """
 import csv, io, json, re, sys, urllib.request, os, ssl
 
@@ -70,7 +70,7 @@ def _scan(text, i, close):
     return -1
 
 def find_map(src, name):
-    m = re.search(r"var " + name + r"=\{", src)
+    m = re.search(r"\b(?:var|let|const)\s+" + name + r"\s*=\s*\{", src)
     if not m: return None
     a = m.end() - 1; b = _scan(src, a, "}")
     return (a + 1, b) if b > 0 else None
@@ -108,18 +108,37 @@ def clean(v):
 # even while the row is still in the sheet.
 VOID = {("STZ", "10/06/26"): "calls were submitted after the earnings report (owner, 2026-10-07)"}
 
+MONTHS = {m: i + 1 for i, m in enumerate(("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"))}
+
 def day(d):
-    """A call date as (year, month, day), however it is typed: 10/06/26, 10/6/26, 10/06/2026 or 2026-10-06."""
+    """A call date as (year, month, day), however it is typed: 10/06/26, 10/6/26, 10-06-26, 10.06.2026, 2026-10-06,
+    Oct 6, 2026 or 6 Oct 2026 (month first, as the sheet uses). "" for an empty cell, None if it cannot be read."""
     d = (d or "").strip()
-    m = re.match(r"^(\d{4})-(\d{1,2})-(\d{1,2})", d)
+    if not d:
+        return ""
+    m = re.match(r"^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$", d)
     if m:
         return (int(m.group(1)) % 100, int(m.group(2)), int(m.group(3)))
-    m = re.match(r"^(\d{1,2})/(\d{1,2})/(\d{2,4})", d)
+    m = re.match(r"^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2}|\d{4})$", d)
     if m:
         return (int(m.group(3)) % 100, int(m.group(1)), int(m.group(2)))
-    return d
+    m = re.match(r"^([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2}),?\s+(\d{2}|\d{4})$", d)
+    if m and m.group(1).lower() in MONTHS:
+        return (int(m.group(3)) % 100, MONTHS[m.group(1).lower()], int(m.group(2)))
+    m = re.match(r"^(\d{1,2})\s+([A-Za-z]{3})[a-z]*\.?,?\s+(\d{2}|\d{4})$", d)
+    if m and m.group(2).lower() in MONTHS:
+        return (int(m.group(3)) % 100, MONTHS[m.group(2).lower()], int(m.group(1)))
+    return None
+
+def _days(t):
+    import datetime
+    try:
+        return datetime.date(2000 + t[0], t[1], t[2]).toordinal()
+    except ValueError:
+        return None
 
 VOID_KEYS = {(t, day(d)): why for (t, d), why in VOID.items()}
+VOID_TICKERS = {t for (t, d) in VOID}
 
 
 def main():
@@ -162,13 +181,22 @@ def main():
         mt = re.match(r"^([^\s(]+)\s*\((.*)\)\s*$", tk)
         if mt:
             tk = mt.group(1)
-            if mt.group(1).upper() not in tickers:
-                warnings.append("R%s ticker cell '%s': used %s; add the name to TICKERS" % (rn, g("TICKER").strip(), tk.upper()))
         tk = tk.upper()
-        if (tk, day(g("CALL DATE (T-1)"))) in VOID_KEYS:
-            print("VOID: %s (call date %s) is struck from the record: %s. Skipped." % (tk, g("CALL DATE (T-1)").strip(), VOID_KEYS[(tk, day(g("CALL DATE (T-1)")))])); continue
+        cd = g("CALL DATE (T-1)").strip(); dd = day(cd)
+        if (tk, dd) in VOID_KEYS:
+            print("VOID: %s (call date %s) is struck from the record: %s. Skipped." % (tk, cd, VOID_KEYS[(tk, dd)])); continue
         if not rn and not tk:
             continue
+        if dd is None:
+            problems.append("R%s %s call date '%s' is not a date the sync can read (use MM/DD/YY)" % (rn, tk, cd)); continue
+        if tk in VOID_TICKERS and dd:
+            reads = [dd] + ([(dd[0], dd[2], dd[1])] if dd[2] <= 12 else [])   # also day-first, in case it was typed 06/10/26
+            near = [vd for (vt, vd) in VOID_KEYS if vt == tk and isinstance(vd, tuple)
+                    for x in reads if _days(x) is not None and abs(_days(x) - _days(vd)) <= 31]
+            if near:
+                problems.append("R%s %s called %s looks like the struck %s round; check the date, or remove the row" % (rn, tk, cd, tk)); continue
+        if mt and mt.group(1).upper() not in tickers:
+            warnings.append("R%s ticker cell '%s': used %s; add the name to TICKERS" % (rn, g("TICKER").strip(), tk))
         if not re.match(r"^\d+$", rn) or not tk:
             warnings.append("skipped a row that has no round number or ticker: %s" % r[:3]); continue
         rn = str(int(rn))
@@ -224,16 +252,16 @@ def main():
     # is compared with the old row under that number, as an edit.
     ident = lambda row: (row[1], day(row[2]))
     # the same round (ticker + call date) twice is a copy-paste slip, never a move: block it (--allow-edits cannot)
-    for rows_, where in ((new, "the sheet"), (old, "the site")):
+    for rows_, place in ((new, "the sheet"), (old, "the site")):
         byid = {}
         for row in rows_:
             byid.setdefault(ident(row), []).append(row[0])
         for (t, d), ns in byid.items():
             if len(ns) > 1:
-                problems.append("SAME ROUND TWICE in %s: R%s are all %s called %s; delete the extra row" % (where, " and R".join(ns), t, "%d/%d/%02d" % (d[1], d[2], d[0]) if isinstance(d, tuple) else d))
+                problems.append("SAME ROUND TWICE in %s: R%s are all %s called %s; delete the extra row" % (place, " and R".join(ns), t, "%d/%d/%02d" % (d[1], d[2], d[0]) if isinstance(d, tuple) else d))
     oldbyid = {ident(o): o for o in old}
     newids = {ident(r) for r in new}
-    renum, consumed = {}, set()
+    renum, consumed, leftover = {}, set(), []
     for r in new:
         o = oldbyid.get(ident(r))
         if o and o[0] != r[0]:
@@ -248,10 +276,10 @@ def main():
             continue
         if not o:
             oo = oldby.get(r[0])
-            if oo and ident(oo) not in newids:
+            if oo and ident(oo) not in newids and oo[0] not in consumed:
                 o = oo                       # same number, new identity: an edit of that round
             else:
-                report.append("NEW ROUND R%s %s" % (r[0], r[1])); continue
+                leftover.append(r); continue
         consumed.add(o[0])
         diffs = [(want[i], o[i] if i < len(o) else "", r[i]) for i in range(len(want)) if (o[i] if i < len(o) else "") != r[i]]
         meta = [d for d in diffs if d[0] in OPTIONAL]
@@ -267,6 +295,23 @@ def main():
             report.append("RESULT IN  R%s %s: market %s%%" % (r[0], r[1], r[act]))
         else:
             report.append("UPDATED    R%s %s: %s" % (r[0], r[1], "; ".join("%s %r -> %r" % d for d in diffs)))
+    # a round that moved AND had its call date (or ticker) fixed in the same edit: pair what is left by ticker, but only
+    # when the ticker leaves exactly one candidate on each side; everything else is a new round or a missing one
+    olds_left = [o for o in old if o[0] not in consumed and ident(o) not in VOID_KEYS]
+    for r in leftover:
+        cands = [o for o in olds_left if o[1] == r[1]]
+        if len(cands) == 1 and sum(1 for x in leftover if x[1] == r[1]) == 1:
+            o = cands[0]; olds_left.remove(o); consumed.add(o[0])
+            if o[0] != r[0]:
+                renum[o[0]] = r[0]
+            ch = [(want[i], o[i] if i < len(o) else "", r[i]) for i in range(1, len(want)) if want[i] not in OPTIONAL and (o[i] if i < len(o) else "") != r[i]]
+            what = ("R%s -> R%s %s" % (o[0], r[0], r[1])) if o[0] != r[0] else ("R%s %s" % (r[0], r[1]))
+            if o[act] != "":
+                problems.append("RECORD EDIT: %s was already graded and changed: %s  (confirm on purpose, then rerun with --allow-edits)" % (what, "; ".join("%s %r -> %r" % d for d in ch)))
+            else:
+                report.append("MOVED+EDIT %s: %s" % (what, "; ".join("%s %r -> %r" % d for d in ch)))
+        else:
+            report.append("NEW ROUND R%s %s" % (r[0], r[1]))
     for o in old:
         if o[0] not in consumed:
             if ident(o) in VOID_KEYS:
@@ -274,14 +319,24 @@ def main():
             else:
                 problems.append("R%s %s is in the site but missing from the sheet" % (o[0], o[1]))
     # every round-keyed map follows its round when it moves; an entry whose round is gone is dropped (and reported)
-    remaps, gone = {}, []
+    remaps, gone, spans = {}, [], []
+    targets = set(renum.values())
     for name in ROUND_MAPS:
         span = find_map(src, name)
-        if not span: continue
-        items = split_map(src[span[0]:span[1]])
+        if not span:
+            if renum and re.search(r"\b" + name + r"\s*=", src):
+                problems.append("%s in ez-data.js has a format the sync cannot re-number safely; move its entries by hand" % name)
+            continue
+        body_ = src[span[0]:span[1]]
+        odd = re.search(r"\n\s*(?:var|let|const|function)\s", body_) or any(not (b2 <= span[0] or a2 >= span[1]) for a2, b2 in spans)
+        spans.append(span)
+        items = None if odd else split_map(body_)
         if items is None:
             if renum: problems.append("%s in ez-data.js has a format the sync cannot re-number safely; move its entries by hand" % name)
             continue
+        for k, _ in items:
+            if k not in oldby and k in targets and k not in renum:
+                problems.append("%s has an entry on R%s, which no round holds; a moved round would inherit it. Remove or move it by hand" % (name, k))
         out = {}
         for k, v in items:
             if k in renum: nk = renum[k]
@@ -294,9 +349,14 @@ def main():
             remaps[name] = (span, out, "\n" in src[span[0]:span[1]])
         for k, _ in items:
             if k in renum: report.append("%-10s R%s -> R%s" % (name, k, renum[k]))
+    will_write = write and not [p for p in problems if not ("--allow-edits" in args and p.startswith("RECORD EDIT"))]
     for name, k in gone:
-        warnings.append("%s entry for old R%s has no round any more; it %s dropped" % (name, k, "is" if write else "would be"))
-    films = set((dict((n, o) for n, (sp, o, nl) in remaps.items()).get("FILMS") or dict(split_map(src[find_map(src, "FILMS")[0]:find_map(src, "FILMS")[1]]) or [])).keys())
+        warnings.append("%s entry for old R%s has no round any more; it %s dropped" % (name, k, "is" if will_write else "would be"))
+    if "FILMS" in remaps:
+        films = set(remaps["FILMS"][1])
+    else:
+        fs = find_map(src, "FILMS")
+        films = set(k for k, _ in (split_map(src[fs[0]:fs[1]]) or [])) if fs else set()
     for r in new:
         if r[act] != "" and r[0] not in films:
             warnings.append("R%s %s is graded but has no film yet (site shows 'Film soon')" % (r[0], r[1]))
@@ -323,7 +383,8 @@ def main():
     print("Source:", where)
     print("Rows in sheet:", len(new), "| graded:", sum(1 for r in new if r[act] != ""))
     edits = any(p.startswith("RECORD EDIT") for p in problems)
-    print("\nChanges:" if report else ("\nChanges: only the record edit below" if edits else "\nChanges: none (site already matches the sheet)"))
+    blocked = [p for p in problems if not ("--allow-edits" in args and p.startswith("RECORD EDIT"))]
+    print("\nChanges:" if report else ("\nChanges: only the record edit below" if edits else ("\nChanges: blocked, see PROBLEM below" if blocked else "\nChanges: none (site already matches the sheet)")))
     for x in report: print("  " + x)
     if tally:
         print("\nStandings after this update (rounds won | right direction | avg miss):")
