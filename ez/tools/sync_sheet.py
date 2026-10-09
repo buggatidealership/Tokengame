@@ -137,8 +137,13 @@ def _days(t):
     except ValueError:
         return None
 
+# Owner-set round numbers, by (ticker, call date), used until the sheet carries them itself. Once the sheet has the
+# same number the override is a no-op and can be removed. Printed on every run so it is never silent.
+ROUND_OVERRIDES = {("LEVI", "10/07/26"): 15, ("APLD", "10/07/26"): 16, ("PEP", "10/07/26"): 17, ("DAL", "10/08/26"): 18}   # owner, 2026-10-09: Levi is 15, APLD 16 (films say so); PEP 17 and DAL 18 follow the confirmed renumber
+
 VOID_KEYS = {(t, day(d)): why for (t, d), why in VOID.items()}
 VOID_TICKERS = {t for (t, d) in VOID}
+OVERRIDE_KEYS = {(t, day(d)): n for (t, d), n in ROUND_OVERRIDES.items()}
 
 
 def main():
@@ -200,6 +205,9 @@ def main():
         if not re.match(r"^\d+$", rn) or not tk:
             warnings.append("skipped a row that has no round number or ticker: %s" % r[:3]); continue
         rn = str(int(rn))
+        if (tk, dd) in OVERRIDE_KEYS and str(OVERRIDE_KEYS[(tk, dd)]) != rn:
+            print("OVERRIDE: %s (call date %s) is R%s in the sheet; the site uses R%s (owner). Drop the override once the sheet says R%s." % (tk, cd, rn, OVERRIDE_KEYS[(tk, dd)], OVERRIDE_KEYS[(tk, dd)]))
+            rn = str(OVERRIDE_KEYS[(tk, dd)])
         if rn in seen:
             problems.append("round %s appears twice (%s and %s); give one of them another number" % (rn, seen[rn], tk.upper()))
         seen[rn] = tk.upper()
