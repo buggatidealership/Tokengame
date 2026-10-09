@@ -37,6 +37,11 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    and what to QA.
 
 ## Notes
+- **Renumbering.** The sync matches rounds by ticker + call date, not by number. A renumbered sheet shows up as
+  `MOVED` lines; FILMS, PREFILMS, RECEIPTS and CARDS follow their round automatically on `--write`. Moving a graded
+  round changes its public link, so it is a `RECORD EDIT` (confirm with the owner, then `--allow-edits`). The same round
+  entered twice (`SAME ROUND TWICE`) and a number used twice always block, whatever the flags. Rows are written in
+  round order, and the new ez-data.js is syntax-checked with node before it is saved.
 - **Struck rounds.** A round that must not count (e.g. calls sent after the report) goes in `VOID` in `ez/tools/sync_sheet.py`,
   keyed by ticker and call date. The sync then skips it whatever its ROUND cell says. R14 Constellation Brands (STZ, called 10/06/26)
   is struck (owner, 2026-10-07).

@@ -47,6 +47,59 @@ def fetch(u):
     return body
 
 NUM = re.compile(r"^[+-]?\d+(\.\d+)?$")
+
+# ---- round-keyed maps in ez-data.js (FILMS, PREFILMS, RECEIPTS, CARDS): found and split with a scanner that knows
+# strings and nesting, so a value with braces or commas inside is never cut. Anything it cannot read safely (a
+# comment inside the map, a key that is not a round number) makes it refuse to rewrite that map.
+ROUND_MAPS = ("FILMS", "PREFILMS", "RECEIPTS", "CARDS")
+
+def _scan(text, i, close):
+    """index of the bracket that closes at depth 0 starting at text[i], or -1"""
+    depth, q = 0, None
+    while i < len(text):
+        c = text[i]
+        if q:
+            if c == "\\": i += 2; continue
+            if c == q: q = None
+        elif c in "\"'`": q = c
+        elif c in "{[(": depth += 1
+        elif c in "}])":
+            depth -= 1
+            if depth == 0: return i
+        i += 1
+    return -1
+
+def find_map(src, name):
+    m = re.search(r"var " + name + r"=\{", src)
+    if not m: return None
+    a = m.end() - 1; b = _scan(src, a, "}")
+    return (a + 1, b) if b > 0 else None
+
+def split_map(body):
+    """[(key, value_text)] or None when the map holds something the sync should not touch"""
+    parts, depth, q, cur, i = [], 0, None, "", 0
+    while i < len(body):
+        c = body[i]
+        if q:
+            cur += c
+            if c == "\\" and i + 1 < len(body): cur += body[i + 1]; i += 2; continue
+            if c == q: q = None
+        elif c in "\"'`": q = c; cur += c
+        elif body.startswith("/*", i) or body.startswith("//", i): return None
+        elif c in "{[(": depth += 1; cur += c
+        elif c in "}])": depth -= 1; cur += c
+        elif c == "," and depth == 0: parts.append(cur); cur = ""
+        else: cur += c
+        i += 1
+    parts.append(cur)
+    out = []
+    for p in parts:
+        if not p.strip(): continue
+        m = re.match(r"^\s*[\"']?(\d+)[\"']?\s*:(.*)$", p, re.S)
+        if not m: return None
+        out.append((str(int(m.group(1))), m.group(2).strip()))
+    return out
+
 def clean(v):
     v = (v or "").strip().replace("−", "-").replace("%", "").replace(",", ".").strip()
     return v[1:] if v.startswith("+") else v
@@ -76,7 +129,6 @@ def main():
     header, _ = js_array(src, "SHEET_HEADER")
     old, sheet_m = js_array(src, "SHEET")
     tickers = set(re.findall(r'"?([\w.]+)"?:"', re.search(r"var TICKERS=\{(.*?)\};", src).group(1)))
-    films = set(re.findall(r"(\d+):\{f:", re.search(r"var FILMS=\{(.*?)\};", src, re.S).group(1)))
 
     if "--file" in args:
         body = open(args[args.index("--file") + 1], encoding="utf8").read(); where = "local file"
@@ -102,7 +154,7 @@ def main():
             print("NOTE: the sheet has no %s column yet (optional)." % h)
 
     problems, warnings, new = [], [], []
-    seen = set()
+    seen = {}
     for r in rows[hi + 1:]:
         g = lambda h: (r[col[h]] if col[h] < len(r) else "") if h in col else ""
         rn, tk = g("ROUND").strip(), g("TICKER").strip()
@@ -119,9 +171,10 @@ def main():
             continue
         if not re.match(r"^\d+$", rn) or not tk:
             warnings.append("skipped a row that has no round number or ticker: %s" % r[:3]); continue
+        rn = str(int(rn))
         if rn in seen:
-            problems.append("round %s appears twice" % rn)
-        seen.add(rn)
+            problems.append("round %s appears twice (%s and %s); give one of them another number" % (rn, seen[rn], tk.upper()))
+        seen[rn] = tk.upper()
         out = []
         for h in want:
             v = g(h).strip()
@@ -143,6 +196,8 @@ def main():
                     problems.append("R%s REPORT TIME is '%s' (use BMO, AMC or DURING)" % (rn, v[1:]))
             elif h == "TICKER":
                 v = tk
+            elif h == "ROUND":
+                v = rn
             out.append(v)
         for m in ("GPT", "KIMI", "CLAUDE", "GROK"):
             if m + " DIR" in col:
@@ -167,15 +222,22 @@ def main():
     # with the round that used to hold it. Moving an ungraded round is fine; moving a graded one changes its public
     # link, so it is a record edit. If the identity changed but the number stayed (e.g. a ticker typo fixed), the row
     # is compared with the old row under that number, as an edit.
-    newnums = {r[0] for r in new}
     ident = lambda row: (row[1], day(row[2]))
+    # the same round (ticker + call date) twice is a copy-paste slip, never a move: block it (--allow-edits cannot)
+    for rows_, where in ((new, "the sheet"), (old, "the site")):
+        byid = {}
+        for row in rows_:
+            byid.setdefault(ident(row), []).append(row[0])
+        for (t, d), ns in byid.items():
+            if len(ns) > 1:
+                problems.append("SAME ROUND TWICE in %s: R%s are all %s called %s; delete the extra row" % (where, " and R".join(ns), t, "%d/%d/%02d" % (d[1], d[2], d[0]) if isinstance(d, tuple) else d))
     oldbyid = {ident(o): o for o in old}
     newids = {ident(r) for r in new}
-    moved, renum, consumed = set(), {}, set()
+    renum, consumed = {}, set()
     for r in new:
         o = oldbyid.get(ident(r))
         if o and o[0] != r[0]:
-            moved.add(o[0]); renum[o[0]] = r[0]; consumed.add(o[0])
+            renum[o[0]] = r[0]; consumed.add(o[0])
             rest = [(want[i], o[i] if i < len(o) else "", r[i]) for i in range(1, len(want)) if want[i] not in OPTIONAL and (o[i] if i < len(o) else "") != r[i]]
             if o[act] != "":
                 problems.append("RECORD EDIT: R%s %s was already graded and moved to R%s%s  (round links change; confirm on purpose, then rerun with --allow-edits)"
@@ -186,7 +248,7 @@ def main():
             continue
         if not o:
             oo = oldby.get(r[0])
-            if oo and ident(oo) not in newids and oo[0] not in consumed:
+            if oo and ident(oo) not in newids:
                 o = oo                       # same number, new identity: an edit of that round
             else:
                 report.append("NEW ROUND R%s %s" % (r[0], r[1])); continue
@@ -211,26 +273,30 @@ def main():
                 report.append("VOIDED     R%s %s: removed from the site" % (o[0], o[1]))
             else:
                 problems.append("R%s %s is in the site but missing from the sheet" % (o[0], o[1]))
-    # films follow their round when it moves; a film whose round is gone is dropped (and reported)
-    film_src = re.search(r"var FILMS=\{(.*?)\};", src, re.S)
-    film_items = re.findall(r"(\d+):(\{[^}]*\})", film_src.group(1))
-    newfilms, gone = {}, []
-    for k, v in film_items:
-        if k in renum:
-            nk = renum[k]
-        elif k in oldby and k not in consumed:
-            gone.append(k); continue
-        else:
-            nk = k
-        if nk in newfilms:
-            problems.append("two films would land on R%s (film for old R%s collides); fix the round numbers first" % (nk, k))
-        newfilms[nk] = v
-    for k in sorted(renum, key=int):
-        if k in dict(film_items):
-            report.append("FILM MOVED R%s -> R%s" % (k, renum[k]))
-    for k in gone:
-        warnings.append("the film for old R%s has no round any more; it was dropped from FILMS" % k)
-    films = set(newfilms)
+    # every round-keyed map follows its round when it moves; an entry whose round is gone is dropped (and reported)
+    remaps, gone = {}, []
+    for name in ROUND_MAPS:
+        span = find_map(src, name)
+        if not span: continue
+        items = split_map(src[span[0]:span[1]])
+        if items is None:
+            if renum: problems.append("%s in ez-data.js has a format the sync cannot re-number safely; move its entries by hand" % name)
+            continue
+        out = {}
+        for k, v in items:
+            if k in renum: nk = renum[k]
+            elif k in oldby and k not in consumed: gone.append((name, k)); continue
+            else: nk = k
+            if nk in out:
+                problems.append("%s: two entries would land on R%s (old R%s collides); check the round numbers and %s" % (name, nk, k, name))
+            out[nk] = v
+        if [k for k, _ in items] != list(out) or any(renum.get(k) for k, _ in items):
+            remaps[name] = (span, out, "\n" in src[span[0]:span[1]])
+        for k, _ in items:
+            if k in renum: report.append("%-10s R%s -> R%s" % (name, k, renum[k]))
+    for name, k in gone:
+        warnings.append("%s entry for old R%s has no round any more; it %s dropped" % (name, k, "is" if write else "would be"))
+    films = set((dict((n, o) for n, (sp, o, nl) in remaps.items()).get("FILMS") or dict(split_map(src[find_map(src, "FILMS")[0]:find_map(src, "FILMS")[1]]) or [])).keys())
     for r in new:
         if r[act] != "" and r[0] not in films:
             warnings.append("R%s %s is graded but has no film yet (site shows 'Film soon')" % (r[0], r[1]))
@@ -270,11 +336,25 @@ def main():
         print("\nNothing written. Fix the problems above (or confirm record edits with --allow-edits).")
         sys.exit(1)
     if write and report or write and "--allow-edits" in args:
-        body_js = "[\n" + ",\n".join(" " + json.dumps(r, ensure_ascii=False, separators=(",", ":")) for r in new) + "\n]"
-        src2 = src[:sheet_m.start(1)] + body_js + src[sheet_m.end(1):]
-        if renum or gone:
-            films_js = ",".join("%s:%s" % (k, newfilms[k]) for k in sorted(newfilms, key=int))
-            src2 = re.sub(r"var FILMS=\{.*?\};", lambda m: "var FILMS={" + films_js + "};", src2, count=1, flags=re.S)
+        src2 = src
+        for name, (span, out, nl) in sorted(remaps.items(), key=lambda kv: -kv[1][0][0]):
+            keys = sorted(out, key=int)
+            body = ("\n" + ",\n".join(" %s:%s" % (k, out[k]) for k in keys) + "\n") if nl else ",".join("%s:%s" % (k, out[k]) for k in keys)
+            src2 = src2[:span[0]] + body + src2[span[1]:]
+        m2 = re.search(r"var SHEET=(\[[^\n]*\]);", src2) or re.search(r"var SHEET=(\[.*?\n\]);", src2, re.S)
+        rows_sorted = sorted(new, key=lambda r: int(r[0]))
+        body_js = "[\n" + ",\n".join(" " + json.dumps(r, ensure_ascii=False, separators=(",", ":")) for r in rows_sorted) + "\n]"
+        src2 = src2[:m2.start(1)] + body_js + src2[m2.end(1):]
+        # never write a file the pages cannot load: check it with node when node is there
+        import shutil, subprocess, tempfile
+        if shutil.which("node"):
+            with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf8") as tf:
+                tf.write(src2); tmp = tf.name
+            ok = subprocess.run(["node", "--check", tmp], capture_output=True, text=True)
+            os.unlink(tmp)
+            if ok.returncode != 0:
+                print("\nPROBLEM: the new ez-data.js would not load (%s). Nothing written." % ok.stderr.strip().splitlines()[-1:])
+                sys.exit(1)
         open(DATA, "w", encoding="utf8").write(src2)
         print("\nWROTE ez-data.js")
     elif write:
