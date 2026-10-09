@@ -139,7 +139,7 @@ def _days(t):
 
 # Owner-set round numbers, by (ticker, call date), used until the sheet carries them itself. Once the sheet has the
 # same number the override is a no-op and can be removed. Printed on every run so it is never silent.
-ROUND_OVERRIDES = {("LEVI", "10/07/26"): 15, ("APLD", "10/07/26"): 16, ("PEP", "10/07/26"): 17, ("DAL", "10/08/26"): 18}   # owner, 2026-10-09: Levi is 15, APLD 16 (films say so); PEP 17 and DAL 18 follow the confirmed renumber
+ROUND_OVERRIDES = {}   # e.g. {("LEVI", "10/07/26"): 15}; the 2026-10-09 ones were dropped once "EZ Official 2" carried the numbers
 
 VOID_KEYS = {(t, day(d)): why for (t, d), why in VOID.items()}
 VOID_TICKERS = {t for (t, d) in VOID}
@@ -300,7 +300,8 @@ def main():
             problems.append("RECORD EDIT: R%s was already graded and changed: %s  (the site promises 'never edited'; confirm on purpose, then rerun with --allow-edits)"
                             % (r[0], "; ".join("%s %r -> %r" % d for d in diffs)))
         elif r[act] != "":
-            report.append("RESULT IN  R%s %s: market %s%%" % (r[0], r[1], r[act]))
+            other = [d for d in diffs if d[0] != "ACTUAL MOVE (%)"]
+            report.append("RESULT IN  R%s %s: market %s%%%s" % (r[0], r[1], r[act], "".join("; %s %r -> %r" % d for d in other)))
         else:
             report.append("UPDATED    R%s %s: %s" % (r[0], r[1], "; ".join("%s %r -> %r" % d for d in diffs)))
     # a round that moved AND had its call date (or ticker) fixed in the same edit: pair what is left by ticker, but only

@@ -2,7 +2,7 @@
 
 The owner updates their private Google Sheet. A separate public sheet ("EZ public", shared
 "Anyone with the link: Viewer") pulls only the needed columns from it with IMPORTRANGE.
-Its link lives in `ez/tools/sheet_url.txt` (kept out of `ez-data.js`, which ships with every published page; the sheet also holds the prompts). The site never reads the sheet live:
+Its link lives in `ez/tools/sheet_url.txt` (since 2026-10-09 the owner's sheet "EZ Official 2", rounds tab) (kept out of `ez-data.js`, which ships with every published page; the sheet also holds the prompts). The site never reads the sheet live:
 we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterwards.
 
 ## Routine
