@@ -162,15 +162,20 @@ def main():
     oldby = {r[0]: r for r in old}
     act = want.index("ACTUAL MOVE (%)")
     report = []
-    # a round that only changed its number (same ticker and call date, old number no longer in the sheet) is a move,
-    # not a new round plus a missing one. Moving an ungraded round is fine; a graded one stays a record edit.
+    # Rounds are matched by identity (ticker + call date), not by number, so a renumbered sheet is read as moves:
+    # each round keeps its own data and its own film. A number that is reused for a different round is never mixed up
+    # with the round that used to hold it. Moving an ungraded round is fine; moving a graded one changes its public
+    # link, so it is a record edit. If the identity changed but the number stayed (e.g. a ticker typo fixed), the row
+    # is compared with the old row under that number, as an edit.
     newnums = {r[0] for r in new}
-    oldbyday = {(o[1], day(o[2])): o for o in old if o[0] not in newnums}
-    moved = set()
+    ident = lambda row: (row[1], day(row[2]))
+    oldbyid = {ident(o): o for o in old}
+    newids = {ident(r) for r in new}
+    moved, renum, consumed = set(), {}, set()
     for r in new:
-        o = oldby.get(r[0])
-        if not o and (r[1], day(r[2])) in oldbyday:
-            o = oldbyday[(r[1], day(r[2]))]; moved.add(o[0])
+        o = oldbyid.get(ident(r))
+        if o and o[0] != r[0]:
+            moved.add(o[0]); renum[o[0]] = r[0]; consumed.add(o[0])
             rest = [(want[i], o[i] if i < len(o) else "", r[i]) for i in range(1, len(want)) if want[i] not in OPTIONAL and (o[i] if i < len(o) else "") != r[i]]
             if o[act] != "":
                 problems.append("RECORD EDIT: R%s %s was already graded and moved to R%s%s  (round links change; confirm on purpose, then rerun with --allow-edits)"
@@ -180,7 +185,12 @@ def main():
                               + ("".join("; %s %r -> %r" % d for d in rest if d[0] != "ACTUAL MOVE (%)")))
             continue
         if not o:
-            report.append("NEW ROUND R%s %s" % (r[0], r[1])); continue
+            oo = oldby.get(r[0])
+            if oo and ident(oo) not in newids and oo[0] not in consumed:
+                o = oo                       # same number, new identity: an edit of that round
+            else:
+                report.append("NEW ROUND R%s %s" % (r[0], r[1])); continue
+        consumed.add(o[0])
         diffs = [(want[i], o[i] if i < len(o) else "", r[i]) for i in range(len(want)) if (o[i] if i < len(o) else "") != r[i]]
         meta = [d for d in diffs if d[0] in OPTIONAL]
         diffs = [d for d in diffs if d[0] not in OPTIONAL]
@@ -195,12 +205,32 @@ def main():
             report.append("RESULT IN  R%s %s: market %s%%" % (r[0], r[1], r[act]))
         else:
             report.append("UPDATED    R%s %s: %s" % (r[0], r[1], "; ".join("%s %r -> %r" % d for d in diffs)))
-    for rn in oldby:
-        if rn not in newnums and rn not in moved:
-            if (oldby[rn][1], day(oldby[rn][2])) in VOID_KEYS:
-                report.append("VOIDED     R%s %s: removed from the site" % (rn, oldby[rn][1]))
+    for o in old:
+        if o[0] not in consumed:
+            if ident(o) in VOID_KEYS:
+                report.append("VOIDED     R%s %s: removed from the site" % (o[0], o[1]))
             else:
-                problems.append("R%s is in the site but missing from the sheet" % rn)
+                problems.append("R%s %s is in the site but missing from the sheet" % (o[0], o[1]))
+    # films follow their round when it moves; a film whose round is gone is dropped (and reported)
+    film_src = re.search(r"var FILMS=\{(.*?)\};", src, re.S)
+    film_items = re.findall(r"(\d+):(\{[^}]*\})", film_src.group(1))
+    newfilms, gone = {}, []
+    for k, v in film_items:
+        if k in renum:
+            nk = renum[k]
+        elif k in oldby and k not in consumed:
+            gone.append(k); continue
+        else:
+            nk = k
+        if nk in newfilms:
+            problems.append("two films would land on R%s (film for old R%s collides); fix the round numbers first" % (nk, k))
+        newfilms[nk] = v
+    for k in sorted(renum, key=int):
+        if k in dict(film_items):
+            report.append("FILM MOVED R%s -> R%s" % (k, renum[k]))
+    for k in gone:
+        warnings.append("the film for old R%s has no round any more; it was dropped from FILMS" % k)
+    films = set(newfilms)
     for r in new:
         if r[act] != "" and r[0] not in films:
             warnings.append("R%s %s is graded but has no film yet (site shows 'Film soon')" % (r[0], r[1]))
@@ -242,6 +272,9 @@ def main():
     if write and report or write and "--allow-edits" in args:
         body_js = "[\n" + ",\n".join(" " + json.dumps(r, ensure_ascii=False, separators=(",", ":")) for r in new) + "\n]"
         src2 = src[:sheet_m.start(1)] + body_js + src[sheet_m.end(1):]
+        if renum or gone:
+            films_js = ",".join("%s:%s" % (k, newfilms[k]) for k in sorted(newfilms, key=int))
+            src2 = re.sub(r"var FILMS=\{.*?\};", lambda m: "var FILMS={" + films_js + "};", src2, count=1, flags=re.S)
         open(DATA, "w", encoding="utf8").write(src2)
         print("\nWROTE ez-data.js")
     elif write:
