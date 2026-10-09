@@ -106,7 +106,11 @@ def clean(v):
 
 # Rounds struck from the record, by (ticker, call date): skipped whatever the ROUND cell says,
 # even while the row is still in the sheet.
-VOID = {("STZ", "10/06/26"): "calls were submitted after the earnings report (owner, 2026-10-07)"}
+VOID = {("STZ", "10/06/26"): "calls were submitted after the earnings report (owner, 2026-10-07)",
+        # a stray second TSMC row (no calls, resolution date before its call date); TSMC's Q3 round is 2330.TW (call 10/14, report 10/15)
+        ("TSMC", "10/08/26"): "duplicate of the 2330.TW (TSMC Q3) round (2026-10-09)",
+        ("TSMC", "10/15/26"): "duplicate of the 2330.TW (TSMC Q3) round (2026-10-09)",
+        ("TSMC", "10/14/26"): "duplicate of the 2330.TW (TSMC Q3) round (2026-10-09)"}
 
 MONTHS = {m: i + 1 for i, m in enumerate(("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"))}
 
