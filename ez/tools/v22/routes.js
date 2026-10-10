@@ -312,7 +312,40 @@ function statRows(k){return RK.map(function(m){var C=CAR[m],calls=C.hist.filter(
     if(k==="miss")return {m:m,v:C.avg,txt:C.avg==null?"n/a":C.avg.toFixed(2),sub:bestC?"Best: "+bestC.off.toFixed(2)+" on "+bestC.r.co:""};
     return {m:m,v:b==null?0:(b/STAKE-1)*100,txt:b==null?"n/a":pctTxt(b),sub:b==null?"":usd(b)}})
   .filter(function(x){return x.v!=null}).sort(function(a,b){return k==="miss"?a.v-b.v:b.v-a.v})}
-function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;box.classList.toggle("sgx",k==="sector");var R=statRows(k);
+/* X2, by sector (owner bug report, 2026-10-10): on phones the six sector columns ran off the card, and up to eleven
+   sectors are coming. The grid is drawn AIs-as-rows first (like the other stats); if that does not fit the card it is
+   drawn turned on its side: one row per sector (the dimension that grows, down the page) and the four AIs across, so
+   every sector stays in view with no sideways scrolling (NN/g, mobile tables and horizontal scrolling; data.europa.eu,
+   changing chart orientation). Redrawn when the width changes. */
+function sgMq(){return ["(max-width:640px)","(max-width:400px)"].map(function(q){return matchMedia(q).matches?1:0}).join("")}
+function sectorX2(face,box,cols,rows,cnt,SH,cell,anim){
+  function rnd(c){return cnt[c]+' round'+(cnt[c]>1?'s':'')}
+  var none=rows.some(function(m){return cols.some(function(c){return cell(m,c).indexOf("sgr-c none")>-1})});
+  var key='<p class="sgr-k"><span><i class="hi"></i>2 in 3 or better</span><span><i class="md"></i>in between</span><span><i class="lo"></i>1 in 3 or worse</span>'+(none?'<span><i class="none"></i>no call</span>':'')+'</p>';
+  /* AIs as rows, sectors across (sm: smaller sector heads, tried before turning the grid) */
+  function wide(sm){return '<div class="sgr'+(sm?' sgr-sm':'')+'" role="table" aria-label="Right calls by sector" style="--cols:'+cols.length+';--rows:'+rows.length+'"><div class="sgr-r sgr-h" role="row"><span role="columnheader"></span>'+cols.map(function(c){return '<span role="columnheader"><b>'+esc(SH[c]||c)+'</b><small>'+rnd(c)+'</small></span>'}).join("")+'</div>'+
+    rows.map(function(m){return '<div class="sgr-r" role="row"><span class="st-who" role="rowheader">'+logo(m)+'<b>'+nm(m)+'</b></span>'+cols.map(function(c){return cell(m,c)}).join("")+'</div>'}).join("")+'</div>'}
+  /* turned: one row per sector, the AIs across. d (dense): short rows, the round count beside the name */
+  function tall(d,lo){return '<div class="sgr sgt'+(d?' sgt-d':'')+(lo?' sgt-lo':'')+'" role="table" aria-label="Right calls by sector" style="--cols:'+rows.length+';--rows:'+cols.length+'"><div class="sgr-r sgr-h" role="row"><span role="columnheader" class="sgt-rh"><small>Sector</small>'+(d?'<small>Rounds</small>':'')+'</span>'+rows.map(function(m){return '<span role="columnheader">'+logo(m)+'<b>'+nm(m)+'</b></span>'}).join("")+'</div>'+
+    cols.map(function(c){return '<div class="sgr-r" role="row"><span class="st-sec" role="rowheader"><b>'+esc(SH[c]||c)+'</b><small>'+(d?cnt[c]+'<span class="sr"> rounds</span>':rnd(c))+'</small></span>'+rows.map(function(m){return cell(m,c)}).join("")+'</div>'}).join("")+'</div>'}
+  /* fits across: nothing wider than the grid, no head, name, count or label box overflowing, no cell past the box */
+  function overX(){var g=$(".sgr",box),R=box.getBoundingClientRect().right;return g.scrollWidth>g.clientWidth+1||$$(".sgr-h b,.st-sec,.sgt-rh,.st-who",g).some(function(b){return b.clientWidth>1&&b.scrollWidth>b.clientWidth+1})||$$(".sgr-c,.sgr-h span",g).some(function(c){return c.getBoundingClientRect().right>R+1})}
+  function overY(){return box.scrollHeight>box.clientHeight+1}
+  /* the first that fits across and down wins; else the first that fits across, and the card grows to fit it down.
+     Only if none fits across (a very narrow screen or a wide fallback font) do the AI heads drop their names */
+  face.classList.remove("sg-grow");
+  var tries=[wide(false),wide(true),tall(cols.length>8),tall(true)],fitX=-1,i=0;
+  for(;i<tries.length;i++){box.innerHTML=tries[i]+key;var x=!overX();if(x&&!overY())break;if(x&&fitX<0)fitX=i}
+  if(i===tries.length){box.innerHTML=(fitX>=0?tries[fitX]:tall(true,true))+key;if(overY())face.classList.add("sg-grow")}
+  box.dataset.w=String(box.clientWidth);box.dataset.mq=sgMq();
+  if(anim&&!reduce)$$(".sgr-c",box).forEach(function(c,i){c.style.animationDelay=(i*25)+"ms";c.classList.add("pop")});
+  /* the fit is measured in the site's own type: draw again once the fonts are in, and when the width changes */
+  if(!sectorX2.on){sectorX2.on=true;var t=null;
+    /* any width change counts: crossing 640px or 400px also changes the card height and the type sizes */
+    function again(force){$$('.rf-face[data-k="sector"]').forEach(function(f){if(f.getAttribute("aria-hidden")==="true")return;var b=$(".st-box",f);if(b&&b.firstChild&&(force||b.clientWidth!==+b.dataset.w||sgMq()!==b.dataset.mq))drawStats(f,"sector",false)})}
+    if(document.fonts&&document.fonts.status!=="loaded")document.fonts.ready.then(function(){again(true)});
+    addEventListener("resize",function(){clearTimeout(t);t=setTimeout(function(){again(false)},150)})}}
+function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;if(X2)face.classList.remove("sg-grow");box.classList.toggle("sgx",k==="sector");var R=statRows(k);
   /* X1, hit rate: the direction chart from "Are they learning?" (hit rate round by round, one line per AI) */
   if(k==="hit"&&X1&&window.EZLearn){box.innerHTML='<div class="lxv hx"></div>';EZLearn.together($(".hx",box),{pctOnly:true,noCoin:true,ver:true});return}
   /* X1, ROI: the balance over the rounds, like a trading app's portfolio chart. the stake at the start, one line per AI. */
@@ -333,8 +366,11 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;box.cla
     if(!cols.length){box.innerHTML='<p class="empty">No sectors in the sheet yet.</p>';return}
     var rows=RK.filter(function(m){return CAR[m]&&CAR[m].g});
     function cell(m,sec){var rs=ROUNDS.filter(function(r){return secOf(r)===sec}),n=0,ok=0;rs.forEach(function(r){var c=callOf(r,m);if(c){n++;if(callOk(r,c))ok++}});
-      if(!n)return '<span class="sgr-c none" role="cell">–</span>';var q=ok/n;
-      return '<span class="sgr-c '+(q>=.67?'hi':q>=.34?'md':'lo')+'" role="cell" title="'+nm(m)+', '+esc(sec)+': '+ok+' of '+n+' right"><b>'+ok+'/'+n+'</b></span>'}
+      if(!n)return X2?'<span class="sgr-c none" role="cell" title="'+nm(m)+', '+esc(sec)+': no call"><span class="sr">no call</span></span>':'<span class="sgr-c none" role="cell">–</span>';var q=ok/n;
+      /* X2: whole-number tests, so the colour says what the key says (2 of 3 was yellow under "2 of 3 or better") */
+      var band=X2?(3*ok>=2*n?'hi':3*ok<=n?'lo':'md'):(q>=.67?'hi':q>=.34?'md':'lo');
+      return '<span class="sgr-c '+band+'" role="cell" title="'+nm(m)+', '+esc(sec)+': '+ok+' of '+n+' right"><b>'+ok+'/'+n+'</b></span>'}
+    if(X2){sectorX2(face,box,cols,rows,cnt,SH,cell,anim);return}
     box.innerHTML='<div class="sgr" role="table" aria-label="Right calls by sector" style="--cols:'+cols.length+';--rows:'+rows.length+'"><div class="sgr-r sgr-h" role="row"><span role="columnheader"></span>'+cols.map(function(c){return '<span role="columnheader"><b>'+esc(SH[c]||c)+'</b><small>'+cnt[c]+' round'+(cnt[c]>1?'s':'')+'</small></span>'}).join("")+'</div>'+
       rows.map(function(m){return '<div class="sgr-r" role="row"><span class="st-who" role="rowheader">'+logo(m)+'<b>'+nm(m)+'</b></span>'+cols.map(function(c){return cell(m,c)}).join("")+'</div>'}).join("")+'</div>'+
       '<p class="sgr-k"><span><i class="hi"></i>2 of 3 or better</span><span><i class="md"></i>about half</span><span><i class="lo"></i>under a third</span></p>';
