@@ -2829,6 +2829,15 @@ a.cg-c:hover{transform:translateY(-2px)}
 .x2 .rmod .cwin small{flex:0 1 auto;min-width:0}
 @media(max-width:560px){.x2 .rmod .cwin small{font-size:24px}.x2 .rmod .cwin .wn{font-size:26px}}
 .x2 .rmod .cwin .wv{flex:1 0 auto}
+/* X2 Overview, the proof (owner, 2026-10-10): ROI is the first face, the Leaderboard's ROI chart inside the proof card;
+   the leader wears the same foil as on the Leaderboard */
+.x2 #lqDist.lq-roi .lq-t{margin-bottom:16px}
+.x2 .lq-roi .st-box{min-width:0}
+.x2 .lq-roi .pnl-k li.lead{background:var(--foil-grad);background-size:300% 100%;animation:foil var(--foil-speed) linear infinite;box-shadow:inset 0 0 0 2px var(--ink)}
+@media(prefers-reduced-motion:reduce){.x2 .lq-roi .pnl-k li.lead{animation:none}}
+.x2 #lqDist.lq-roi p.lq-roi-n{margin:4px 0 0;max-width:none;font:600 13px/1.5 var(--fb);color:var(--ink2)}
+/* the side turned away folds flat once the flip is over, so the card is as tall as the side you see */
+.x2 .lflip[data-rest] .lf-in>.lq[aria-hidden=true]{height:0;padding-top:0;padding-bottom:0;overflow:hidden;visibility:hidden;box-shadow:none}
 </style>
 </head>
 <body>
@@ -4459,53 +4468,30 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
 addEventListener("hashchange",route);
 route();
 
-/* ---------- X2 Overview, the proof: How close (the targets) first and by default, showing every call so far. "Replay
-   last round" (beside the card title) wipes the targets with a short static flicker, then the AIs shoot one at a time,
-   slowly: each shot lands with a ripple and says how far off it was. When all have shot, the round and the real move
-   appear, then "<AI> wins" pops at the top right of the winner's target. "Show every call" brings the season back. ---------- */
-if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist");if(!sw||!sd)return;
-  sw.parentNode.insertBefore(sd,sw);sd.click();
-  var box=$("#lxDist");if(!box)return;var grid=$(".tg-grid",box);if(!grid)return;
-  var RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,L=ROUNDS[ROUNDS.length-1],NS="http://www.w3.org/2000/svg";
-  var wins=L.win?L.win.split(" & "):[];
-  var head=$("#lqDist .lq-t");
-  var go=document.createElement("button");go.type="button";go.className="tgx-go";if(head){head.classList.add("tgx-head");var hh=$("h3",head);(hh||head).appendChild(go)}else box.insertBefore(go,box.firstChild);
-  var bar=document.createElement("div");bar.className="tgx-bar";
-  bar.innerHTML='<p class="tgx-cap"><span class="tgx-all">Every call so far. The bullseye is what the stock did.</span><span class="tgx-one" hidden><small>Last round</small> <b>'+esc(L.co)+'</b> <span class="'+(L.a<0?'dn':'up')+'">'+(L.a<0?'▼ ':'▲ ')+esc(String(L.out).replace(/^[+−-]/,""))+'</span></span></p>';
-  box.insertBefore(bar,box.firstChild);
-  var all=$(".tgx-all",bar),one=$(".tgx-one",bar),timers=[],mode="all";
-  function later(f,ms){timers.push(setTimeout(f,ms))}
-  function clean(){timers.forEach(clearTimeout);timers=[];$$(".tgx-fx",grid).forEach(function(e){e.remove()});one.classList.remove("in");
-    $$(".tg",grid).forEach(function(f){f.classList.remove("tgx-dim","tgx-win","tgx-noise")});$$(".tg-d",grid).forEach(function(g){g.classList.remove("tgx-off","tgx-hit","tgx-last","tgx-gone")})}
-  function shot(f,c,t0){var g=$('.tg-d[data-n="'+L.n+'"]',f),sv=$(":scope > svg",f);
-    var lab=document.createElement("div");lab.className="tgx-fx tgx-lab";
-    lab.innerHTML=c?(c.ok?'<b>Off by '+c.off.toFixed(2)+'%</b>':'<b class="dn">Wrong way</b>'):'<span>no call</span>';
-    f.appendChild(lab);
-    if(!g||!sv){later(function(){lab.classList.add("in")},t0);return}
-    var rp=document.createElementNS(NS,"circle");rp.setAttribute("class","tgx-fx tgx-rp"+(c&&!c.ok?" bad":""));rp.setAttribute("cx",g.dataset.x);rp.setAttribute("cy",g.dataset.y);rp.setAttribute("r",6);sv.appendChild(rp);
-    later(function(){g.classList.remove("tgx-off");g.classList.add("tgx-hit","tgx-last");rp.classList.add("go")},t0);
-    later(function(){lab.classList.add("in")},t0+(RM?0:450))}
-  function label(){go.innerHTML=mode==="all"?'<span aria-hidden="true">▶</span>Replay':'<span aria-hidden="true">↺</span>All calls';go.setAttribute("aria-label",mode==="all"?"Replay the last round":"Show every call");go.title=go.getAttribute("aria-label")}
-  function showAll(){clean();mode="all";all.hidden=false;one.hidden=true;label()}
-  function replay(){clean();mode="one";all.hidden=true;one.hidden=false;label();
-    var figs=$$(".tg",grid),calls=parsed(L);
-    figs.forEach(function(f){f.classList.add("tgx-noise");var sv=$(":scope > svg",f),n=document.createElement("i");n.className="tgx-fx tgx-static";
-      if(sv){var d=sv.getBoundingClientRect(),fr=f.getBoundingClientRect(),k=Math.min(d.width,d.height)*.88;n.style.cssText="left:"+(d.left-fr.left+(d.width-k)/2)+"px;top:"+(d.top-fr.top+(d.height-k)/2)+"px;width:"+k+"px;height:"+k+"px"}f.appendChild(n)});
-    later(function(){$$(".tg-d",grid).forEach(function(g){g.classList.add(+g.dataset.n===L.n?"tgx-off":"tgx-gone")})},RM?0:220);
-    later(function(){figs.forEach(function(f){f.classList.remove("tgx-noise")});$$(".tgx-static",grid).forEach(function(e){e.remove()})},RM?0:520);
-    /* pacing: the eye needs ~250ms to move to a new spot and ~200-300ms per word to read, so each shot gets ~2.2s:
-       land (~0.6s), its label after the landing (+0.45s), then time to read and compare before the next one */
-    var t=RM?0:1100,STEP=RM?0:2200;
-    figs.forEach(function(f){var m=f.getAttribute("data-m"),c=calls.filter(function(x){return x.m===m})[0];shot(f,c,t);t+=STEP});
-    /* after everyone has shot: what the stock did, then who won */
-    later(function(){one.classList.add("in")},t+(RM?0:300));
-    later(function(){figs.forEach(function(f){f.classList.add(wins.indexOf(f.getAttribute("data-m"))>-1?"tgx-win":"tgx-dim")});
-      if(wins.length)figs.forEach(function(f){if(wins.indexOf(f.getAttribute("data-m"))<0)return;var sv=$(":scope > svg",f),pop=document.createElement("div");pop.className="tgx-fx tgx-pop";pop.innerHTML=CROWN+'<span>'+nm(f.getAttribute("data-m"))+' wins</span>';
-        var ring=sv&&$("circle.rg",sv);if(ring){var d=ring.getBoundingClientRect(),fr=f.getBoundingClientRect(),cx=d.left+d.width/2-fr.left,cy=d.top+d.height/2-fr.top,r=d.width/2;pop.style.left=(cx+r*.55)+"px";pop.style.top=(cy-r*.78)+"px"}
-        f.appendChild(pop);var lim=(box.closest(".lq")||box).getBoundingClientRect().right-10,pr=pop.getBoundingClientRect();if(pr.right>lim)pop.style.left=(parseFloat(pop.style.left)-(pr.right-lim))+"px";requestAnimationFrame(function(){pop.classList.add("in")})});
-      else{var pop=document.createElement("p");pop.className="tgx-fx tgx-none";pop.textContent="No winner: every AI got the direction wrong";bar.appendChild(pop)}},t+(RM?0:1800))}
-  label();grid.style.position="relative";
-  go.addEventListener("click",function(){mode==="all"?replay():showAll()});
+/* ---------- X2 Overview, the proof (owner, 2026-10-10): ROI first and by default, the same chart as the Leaderboard's
+   ROI stat (the balance round by round, one line per AI, the AIs ranked above it); Direction is the other face. How
+   close is off the Overview (it stays in the Leaderboard's stats as Avg miss). The back face (#lqDist) carries ROI, so
+   the flip, the switch and the inert face from "Getting smarter or just lucky?" work as before. The "$100K on each AI,
+   now worth" list under the card showed the same balances, so it is gone from the X2 Overview; its note moves into
+   the card (owner, 2026-10-10). ---------- */
+if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist"),q=$("#lqDist"),box=$("#lxDist");if(!sw||!sd||!q||!box)return;
+  sd.textContent=RMET.roi.t;sw.parentNode.insertBefore(sd,sw);
+  var h=$("#lqDistH");if(h)h.textContent="What would "+usd(STAKE)+" be worth now?";
+  q.classList.add("lq-roi");box.className="st-box";box.innerHTML="";
+  var note=document.createElement("p");note.className="lq-roi-n";note.textContent="Each AI started with "+usd(STAKE)+" on its first call and bet it all on every call since. "+(typeof FOLLOW_NOTE!=="undefined"?FOLLOW_NOTE:"Simulated, before fees.");box.parentNode.appendChild(note);
+  ["#fol","#folH","#learn .fol-x"].forEach(function(sel){var e=$(sel);if(e)e.remove()});
+  function draw(anim){drawStats(q,"roi",anim&&!reduce)}
+  draw(false);sd.click();
+  /* draw the lines in when the card first comes into view, and again each time ROI is picked (after the flip; a
+     click on ROI while it already shows does nothing, like the Leaderboard's stats) */
+  var fl=$("#lflip"),seen=false,onRoi=true,rT=null;
+  if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.disconnect();seen=true;if(fl.classList.contains("flipped"))draw(true)}})},{threshold:.35});io.observe(fl)}else seen=true;
+  /* the card takes the height of the side you see: the side turned away folds flat once the flip is over (both
+     sides stand while it turns), so Direction does not sit in a card as tall as ROI */
+  function rest(){clearTimeout(rT);fl.removeAttribute("data-rest");rT=setTimeout(function(){fl.setAttribute("data-rest","")},reduce?0:760)}
+  fl.setAttribute("data-rest","");
+  sd.addEventListener("click",function(){if(onRoi)return;onRoi=true;rest();if(seen)setTimeout(function(){draw(true)},reduce?0:380)});
+  sw.addEventListener("click",function(){if(!onRoi)return;onRoi=false;rest()});
 })();
 
 /* X2 phones: the top-bar chip uses the ticker so it fits beside the brand ("In play: PEP"); a number-only ticker
