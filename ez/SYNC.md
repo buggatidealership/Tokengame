@@ -21,11 +21,18 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    F=<ffmpeg>; SRC=<upload>; N=round-7-jefferies
    $F -y -i "$SRC" -vf "scale=1080:1080:flags=lanczos,fps=60" -c:v libx264 -preset slow -crf 23 -pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 96k ez/media/$N-hd.mp4
    $F -y -i "$SRC" -vf "scale=1080:1080:flags=lanczos,fps=60" -c:v libvpx-vp9 -crf 33 -b:v 0 -row-mt 1 -deadline good -cpu-used 4 -c:a libopus -b:a 80k ez/media/$N-hd.webm
-   $F -y -ss 18 -i "$SRC" -frames:v 1 -vf scale=1080:1080 -q:v 3 ez/media/$N-hd-poster.jpg
+   $F -y -sseof -0.3 -i "$SRC" -frames:v 1 -vf scale=1080:1080:flags=lanczos -q:v 3 ez/media/$N-hd-poster.jpg
    ```
    (ffmpeg: `python3 -c "import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())"`; `pip install imageio-ffmpeg` if missing.)
+   The poster is the last frame (the end card with the result, the $EZ badge and the motto).
+   Zoom: the cards show the full height of the film but only 63 to 90% of its width (63% on a 320px phone, 75 to 90% elsewhere).
+   If the owner's frame has wide empty margins, zoom by putting `crop=S:S:X:Y,` before `scale=` in all three commands
+   (e.g. `crop=2034:2034:130:65` on a 2160 film is 1.06x). If the board already fills the frame, do not zoom: it cuts the
+   board's edges on phones. Look at the card with the poster at 366, 428 and 1280px before publishing; the badge and the motto must show.
+   A changed film gets a new file name (e.g. `round-16-apld-wide-hd`) so no one sees a cached old one.
    Then add `7:{f:"round-7-jefferies-hd",p:"round-7-jefferies-hd-poster"}` to `FILMS` in ez-data.js.
-   Check every number on screen in the film against the sheet before publishing.
+   Check every number on screen in the film against the sheet before publishing, and the move against the official closes
+   (last close before the report to the first close after it; e.g. Nasdaq's historical prices).
    Until a film exists the round still counts everywhere and shows "Film soon".
 5. **Check.** `node ez/tools/check_pages.js` must print `OK` for every page, with the expected
    round count and standings. Fix anything it reports.
