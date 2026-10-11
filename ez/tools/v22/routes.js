@@ -77,7 +77,8 @@ var DAYS=(function(){var m={};ALLN.forEach(function(n){var v=rv(n),d=dayOf(v),k=
    gallery) and Upcoming only for what's ahead; "x2" = X1 plus the call grid, the findings and the round list (below). */
 var EXP=window.EZ_EXP||"";
 /* X2 = X1 plus: every call as one square (Leaderboard), what the record shows (Leaderboard), the round list (Results). */
-var X1=EXP==="x1"||EXP==="x2",X2=EXP==="x2";if(X2){document.documentElement.classList.add("x2");(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap";document.head.appendChild(l)})()}
+/* X3 = X2 plus the Overview re-ordered for launchpad and Fomo hunters (see the X3 block at the end) */
+var X1=EXP==="x1"||EXP==="x2"||EXP==="x3",X2=EXP==="x2"||EXP==="x3",X3=EXP==="x3";if(X2){document.documentElement.classList.add("x2");if(X3)document.documentElement.classList.add("x3");(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap";document.head.appendChild(l)})()}
 var TODAYK=dkey(new Date()),RBIG=false,RF="all",UF="all",US="",RLOOK="brand";
 function xsh(no,eb,title,sub,h1,id,side){var tag=h1?"h1":"h2";return '<div class="xsh'+(side?' wside':'')+'"><div class="xsh-t"><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="no">'+no+'</span><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(side||'')+'</div>'}
 /* a company's colour (CO_LOGOS.c, from tools/fetch_logos.py) and the ink that reads on it */
@@ -773,3 +774,136 @@ if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist"),q=$("#lqDist"),box=$("#lxDi
    (005930.KS) means nothing to a reader, so those show a short company name instead ("In play: Samsung") */
 if(X2&&typeof TARGET!=="undefined"&&TARGET&&window.matchMedia&&matchMedia("(max-width:760px)").matches){var lt=$("#liveTxt");if(lt){var tkS=String(TARGET.ticker||"").replace(/\..*$/,""),coS=String(TARGET.co||"").split(" ")[0];
   lt.textContent=(typeof P0!=="undefined"&&P0?"In play: ":"Next: ")+(!tkS||/^\d+$/.test(tkS)?coS:tkS)}}
+
+/* ---------- X3 (EZ Live X3, 2026-10-11): the Overview re-ordered for launchpad and Fomo hunters, from the owner proposal
+   (research: NN/g on the first 10 seconds and progressive disclosure, Segel & Heer's martini glass, Fomo's own guide on
+   checking a token's site). Screen 1 is the thesis, the race, the NVIDIA bet date and the token checks. Then: 01 the
+   buyback (when, and where the money goes), 02 the leaderboard (who makes the call), 03 the last round as a receipt,
+   04 the proof, 05 the record, 06 get $EZ. One word per idea: earnings, round, call, win, #1, the pot, the NVIDIA bet,
+   10x leverage. Every number comes from ez-data.js. What the owner has not set yet (fee size, chain, CA, X, pot wallet)
+   is said plainly as "at launch", never made up. ---------- */
+if(X3)(function(){
+  var bet=$("#bet");if(!bet)return;var main=bet.parentNode,hero=$("section.hero",main);if(!hero)return;
+  var LEV=SIM.leverage!=null?SIM.leverage:10;
+  var RKS=ROWS.slice().sort(function(a,b){return rankOf(a)-rankOf(b)});
+  /* the NVIDIA bet: the same moment the chip counts to (the close before NVIDIA reports) */
+  function md(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null}
+  function nyClose(y,m,d){var f=new Date(Date.UTC(y,2,1)).getUTCDay(),a=Date.UTC(y,2,8+(7-f)%7),g=new Date(Date.UTC(y,10,1)).getUTCDay(),b=Date.UTC(y,10,1+(7-g)%7),t=Date.UTC(y,m,d);return Date.UTC(y,m,d,t>=a&&t<b?20:21)}
+  var BT=null,bd=md(SIM.betDate||CONFIG.betDate);
+  if(bd)BT=nyClose(bd[0],bd[1],bd[2]);
+  else{var nv=[].concat(typeof UPCOMING!=="undefined"?UPCOMING:[],typeof PENDING!=="undefined"?PENDING:[]).filter(function(u){return u.ticker==="NVDA"})[0],c0=nv&&md(nv.called);
+    if(c0){var dt=new Date(Date.UTC(c0[0],c0[1],c0[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);BT=nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate())}}
+  var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],betDay=BT?MON[new Date(BT).getUTCMonth()]+" "+new Date(BT).getUTCDate():"";
+  function left(){var s=Math.max(0,Math.floor((BT-Date.now())/1e3));return {d:Math.floor(s/86400),h:Math.floor(s%86400/3600),m:Math.floor(s%3600/60)}}
+  function xUrl(v){v=String(v||"").trim();return !v?"":/^https?:/.test(v)?v:"https://x.com/"+v.replace(/^@/,"")}
+  function tgUrl(v){v=String(v||"").trim();return !v?"":/^https?:/.test(v)?v:"https://t.me/"+v.replace(/^@/,"")}
+  var X_=xUrl(CONFIG.x),TG_=tgUrl(CONFIG.tg);
+  function socials(cls){return (X_?'<a class="'+cls+'" href="'+esc(X_)+'" target="_blank" rel="noopener">X</a>':'')+(TG_?'<a class="'+cls+'" href="'+esc(TG_)+'" target="_blank" rel="noopener">Telegram</a>':'')}
+
+  /* ===== HERO: the thesis in three lines, the race, the bet date, the token checks ===== */
+  var sub=$("#heroSub",hero);
+  if(sub){var L3=document.createElement("div");L3.className="x3-lines";
+    var nw=String(NUMW[ACTIVE.length]||ACTIVE.length);nw=nw.charAt(0).toUpperCase()+nw.slice(1);
+    L3.innerHTML='<p>'+nw+' AIs call stocks before earnings. Most wins is #1.</p>'+
+      '<p>Every $EZ trade fee feeds a pot. Before NVIDIA reports, we bet the whole pot on #1\'s call. '+LEV+'x leverage, long or short.</p>'+
+      '<p>Right call: the profits buy back $EZ. Wrong call: the pot gets rekt.</p>';
+    sub.replaceWith(L3)}
+  var side=document.createElement("div");side.className="x3-side";
+  var race='<div class="x3-race" role="list" aria-label="Wins so far">'+RKS.map(function(T,i){var one=rankOf(T)===1;
+      return '<div class="x3-rc'+(one?' lead':'')+'" role="listitem">'+(one?'<small class="x3-tag">#1</small>':'')+logo(T.m)+'<b>'+nm(T.m)+'</b><strong>'+T.won+'</strong><small>'+(T.won===1?'win':'wins')+'</small></div>'}).join("")+'</div>';
+  var betL=BT?'<p class="x3-bet"><span class="x3-dot" aria-hidden="true"></span><span>NVIDIA bet <b>'+betDay+'</b></span><span class="x3-left" id="x3Left"></span></p>':'';
+  var tok;
+  if(CONFIG.ca){var ca=String(CONFIG.ca);
+    tok='<div class="x3-tok"><span class="x3-ch">$EZ'+(CONFIG.chain?' on '+esc(CONFIG.chain):'')+'</span><code title="'+esc(ca)+'">'+esc(ca.slice(0,4)+"…"+ca.slice(-4))+'</code><button type="button" class="x3-copy" id="x3Copy">Copy CA</button>'+socials("x3-sl")+'</div>'}
+  else{
+    tok='<div class="x3-tok pre"><p><b>No CA yet.</b> Any CA you see before launch is fake.</p>'+socials("x3-sl")+'</div>'}
+  side.innerHTML=race+betL+tok+'<p class="x3-safe">This site never asks you to connect a wallet.</p>';
+  var bfl=$("#bflip",hero);hero.insertBefore(side,bfl||null);if(bfl)bfl.hidden=true;
+  var cp=$("#x3Copy",side);if(cp)cp.addEventListener("click",function(){var t=String(CONFIG.ca);
+    function ok(){cp.textContent="Copied"}function fb(){var r=document.createRange(),c=$("code",side);if(c){r.selectNodeContents(c);var s=getSelection();s.removeAllRanges();s.addRange(r)}cp.textContent="Selected"}
+    try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}});
+  /* the header chip says what everyone is waiting for */
+  /* the chip goes to the bet: a fresh node drops X2's jump to the next round (verified 2026-10-11) */
+  var lc=$("#liveChip");if(lc&&BT){var nc=lc.cloneNode(true);lc.replaceWith(nc);lc=nc;lc.setAttribute("href","#bet")}
+  var lt=$("#liveTxt");
+  function tick(){if(!BT)return;var l=left();var e=$("#x3Left");if(e)e.textContent=l.d+"d "+l.h+"h "+l.m+"m";if(lt)lt.textContent="NVIDIA bet · "+l.d+"d"}
+  tick();setInterval(tick,30000);
+  if(lc&&BT)lc.addEventListener("click",function(e){e.preventDefault();var go=function(){bet.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"})};if(location.hash&&location.hash!=="#/"){location.hash="#/";setTimeout(go,120)}else go()});
+
+  /* ===== a section shell like the page's own ===== */
+  function sec(id,no,eb,h2,lede,body){var s=document.createElement("section");s.className="sec x3-sec";s.id=id;s.setAttribute("aria-labelledby",id+"H");
+    s.innerHTML='<div class="sh"><div class="tx"><span class="no">'+no+'</span><span class="eb">'+eb+'</span><h2 id="'+id+'H">'+h2+'</h2></div>'+(lede?'<p class="lede">'+lede+'</p>':'')+'</div>'+body;return s}
+
+  /* ===== 01 THE BUYBACK: moved up; the chip says what it counts to; the bet said once, with the details ===== */
+  var gpu=$("#gpu",bet);
+  if(gpu&&BT){var cd=document.createElement("p");cd.className="x3-cd";cd.textContent="Until the NVIDIA bet · "+betDay;gpu.insertBefore(cd,gpu.firstChild)}
+  var gt=$(".gpu-t",bet);if(gt)gt.innerHTML='At zero, we take #1\'s NVIDIA call: up or down. We open it on Hyperliquid at <b>'+LEV+'x</b> leverage, with the whole pot. A human clicks the button for now.';
+  var pb=$("#bbf .mt-br.pot .mt-box p",bet);if(pb)pb.textContent="Gets aped into the NVIDIA bet.";
+  var ow=$("#bbf .mt-o.w",bet),ol=$("#bbf .mt-o.l",bet),nx=$("#bbf .mt-next b",bet);if(ow)ow.textContent="Right call";if(ol)ol.textContent="Wrong call";if(nx)nx.textContent="After";
+  /* the roadmap folds away: the money flow stays one glance */
+  var rl0=$("#roadL",bet);if(rl0){var dz=document.createElement("details");dz.className="x3-road";dz.innerHTML='<summary>What\'s next</summary>';rl0.parentNode.insertBefore(dz,rl0);dz.appendChild(rl0);
+    var rp=dz.previousElementSibling;if(rp&&rp.tagName==="P")rp.textContent="Keeps the lights on, then pays for what's next."}
+  var top=$("#bbf .mt-top",bet);if(top){var fee=document.createElement("p");fee.className="x3-fee";
+    fee.innerHTML=SIM.feePct!=null?'Fee: <b>'+esc(SIM.feePct)+'%</b> of every trade.':'Fee size and the pot wallet go up here at launch.';$("#bbf",bet).appendChild(fee)}
+  if(CONFIG.pool){var pw=document.createElement("p");pw.className="x3-fee";var pool=String(CONFIG.pool);
+    pw.innerHTML='Pot wallet: '+(CONFIG.poolUrl?'<a href="'+esc(CONFIG.poolUrl)+'" target="_blank" rel="noopener">':'')+esc(pool.slice(0,4)+"…"+pool.slice(-4))+(CONFIG.poolUrl?' ↗</a>':'');var mt=$("#bbf",bet);mt.appendChild(pw)}
+
+  /* ===== 02 THE LEADERBOARD: who makes the call; wins big, right way small, one tag ===== */
+  var tw=ROWS.reduce(function(a,T){return a+(T.won||0)},0),nob=ROUNDS.filter(function(r){return !r.win}).length,shr=ROUNDS.filter(function(r){return r.win&&r.win.indexOf(" & ")>-1}).length;
+  var note=[];
+  if(tw!==ROUNDS.length)note.push(tw+' wins in '+ROUNDS.length+' rounds: '+[nob?nob+(nob>1?' had':' had')+' no winner':'',shr?shr+(shr>1?' were':' was')+' shared':''].filter(Boolean).join(', ')+'.');
+  RKS.forEach(function(T){var C=career(T.m);if(C.g<ROUNDS.length){var f=ROUNDS.filter(function(r){return callOf(r,T.m)})[0];if(f)note.push(nm(T.m)+' joined at round '+f.n+', so '+C.g+' calls, not '+ROUNDS.length+'.')}});
+  var lbBody='<ol class="x3-lb">'+RKS.map(function(T){var C=career(T.m),one=rankOf(T)===1;
+      return '<li class="x3-lr'+(one?' lead':'')+'"><span class="x3-rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+
+        '<span class="x3-nm"><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a>'+(one?'<small class="x3-tag2">In line for the NVIDIA call</small>':'')+'</span>'+
+        '<span class="x3-w"><b>'+T.won+'</b><small>'+(T.won===1?'win':'wins')+'</small></span></li>'}).join("")+'</ol>'+
+    (note.length?'<p class="x3-note">'+note.map(esc).join(' ')+'</p>':'')+'<a class="x3-more" href="#/leaderboard">Full leaderboard →</a>';
+  var lbSec=sec("x3lb","02","The leaderboard","Who makes the NVIDIA call",
+    'Most wins is #1. When the timer hits zero, we take #1\'s NVIDIA call. Same wins? The one closer on average ranks higher.',lbBody);
+
+  /* ===== 03 LAST ROUND: a receipt, not a tutorial. Generated from the latest graded round ===== */
+  var lastSec=null,L=ROUNDS[ROUNDS.length-1];
+  if(L){var cs=parsed(L),wins=L.win?L.win.split(" & "):[],up=L.a>0;
+    cs.sort(function(a,b){var wa=wins.indexOf(a.m)>-1,wb=wins.indexOf(b.m)>-1;if(wa!==wb)return wa?-1:1;if(a.ok!==b.ok)return b.ok-a.ok;return a.off-b.off});
+    var w0=cs.filter(function(c){return wins.indexOf(c.m)>-1})[0];
+    var near=w0?cs.filter(function(c){return !c.ok&&c.off<w0.off}).sort(function(a,b){return a.off-b.off})[0]:null;
+    var head=!wins.length?'Nobody takes '+esc(L.co):wins.length>1?wins.map(nm).join(' and ')+' split '+esc(L.co):nm(wins[0])+' takes '+esc(L.co);
+    var say=!wins.length?'Every AI called it the wrong way. Nobody wins.':wins.length>1?wins.map(nm).join(' and ')+' were equally close. Both get the win.':
+      near?nm(near.m)+' was closer, but called it the wrong way. '+nm(w0.m)+' wins.':nm(w0.m)+' was the closest call that got the direction right.';
+    var rows='<ul class="x3-crs">'+cs.map(function(c){var win=wins.indexOf(c.m)>-1;
+        return '<li class="x3-cr '+(win?'w':c.ok?'r':'x')+'">'+logo(c.m)+'<b>'+nm(c.m)+'</b><span class="x3-call">'+(c.dn?'Down ':'Up ')+esc(c.mag)+'</span><span class="x3-v">'+(win?'👑 Wins':c.ok?'Right way, '+c.off.toFixed(2)+' off':'Out: wrong way')+'</span></li>'}).join("")+'</ul>';
+    var out='<p class="x3-out"><span>'+esc(L.co)+' at the first close after earnings</span><b class="'+(up?'up':'dn')+'">'+(up?'▲ ':'▼ ')+esc(String(L.out).replace(/^[+−-]/,""))+'</b></p>';
+    var F=typeof FILMS!=="undefined"&&FILMS[L.n];
+    var acts='<div class="x3-acts">'+(F?'<a class="x3-film" href="#/round/'+L.n+'"><img src="media/'+esc(F.p)+'.jpg" alt="" loading="lazy" width="44" height="44">Watch the film</a>':'')+'<a class="x3-more" href="#/results">All '+ROUNDS.length+' rounds →</a></div>';
+    var card='<div class="x3-card"><p class="x3-meta">Round '+L.n+' · '+esc(L.co)+(L.ticker?' ('+esc(L.ticker)+')':'')+' · calls filed '+fmtDate(L.called)+' · graded at the '+fmtDate(L.resolves)+' close</p>'+rows+out+
+      '<p class="x3-say">'+say+'</p><p class="x3-rule">Wrong way? Out. No partial credit. Closest right-way call wins. All wrong? Nobody wins. No participation trophies.</p>'+acts+'</div>';
+    lastSec=sec("x3last","03","Last round",head,'',card)}
+
+  /* ===== 04 THE PROOF (X2's ROI and Direction): the method above the chart, in plain words ===== */
+  var learn=$("#learn");
+  if(learn){var ll=$("#lrnLede");if(ll)ll.textContent="Wins only count the closest call. These count every call.";
+    var qh=$("#lqDistH");if(qh)qh.textContent="If each AI had bet "+usd(STAKE)+" on its own calls";
+    var dh=$("#lqDirH");if(dh)dh.textContent="Up or down: who gets it right?";
+    var nt=$("#lqDist .lq-roi-n"),bx=$("#lxDist");if(nt&&bx){nt.textContent="Paper money. Long the ups, short the downs. In before earnings, out at the next close. Before fees. Not the pot.";bx.parentNode.insertBefore(nt,bx)}}
+  /* ===== 05 THE RECORD: what the receipts are ===== */
+  var rec=$("#record"),rl=rec&&$(".sh .lede",rec);
+  if(rl)rl.innerHTML=ROUNDS.length+' rounds, same rules. Every call filed before earnings. Graded on TradingView\'s close. Nobody here picks the price, so nobody can make shit up. Us included.';
+  /* ===== 06 GET $EZ: check the CA against X; buy; what's next ===== */
+  var get=$("#get");
+  if(get){var bxs=$$(".gbox",get);
+    if(bxs[0]){$("h3",bxs[0]).textContent="Check the CA";if(!CONFIG.ca){var cae=$("#ca",bxs[0]);if(cae)cae.textContent="Not posted yet. It appears here"+(CONFIG.x?" and in our X bio":", and only here,")+" at launch. Anyone DMing you a CA before that is a scammer."}
+      else if(CONFIG.x){var cx=document.createElement("p");cx.textContent="Same CA as our X bio. If they don't match, don't buy.";bxs[0].appendChild(cx)}}
+    if(bxs[1]){$("h3",bxs[1]).textContent="Buy";}
+    if(bxs[2]){$("h3",bxs[2]).textContent="Watch the next rounds";var up2=(typeof UPCOMING!=="undefined"?UPCOMING:[]).filter(function(u){return u.called}).slice().sort(function(a,b){return dkey2(a.called)-dkey2(b.called)});
+      var nt2=$("#nextTxt2");if(nt2&&up2.length){var d0=up2[0].called,same=up2.filter(function(u){return u.called===d0});
+        nt2.textContent=same.length>1?up2[0].co+' and '+(same.length-1)+' more file their calls '+fmtDate(d0)+'.':up2[0].co+' files its calls '+fmtDate(d0)+'.'}}}
+  function dkey2(s){var m=md(s);return m?Date.UTC(m[0],m[1],m[2]):0}
+  /* footer: one word for the report; the project's links once they exist */
+  var fs=$("footer small");if(fs)fs.innerHTML=fs.innerHTML.replace("BEFORE THE PRINT","BEFORE EARNINGS");
+  if(X_||TG_){var fl=document.createElement("p");fl.className="x3-fsl";fl.innerHTML=socials("x3-sl");var ft=$("footer");if(ft)ft.insertBefore(fl,$(".ftl",ft)||null)}
+
+  /* ===== the order and the numbers ===== */
+  var order=[bet,lbSec,lastSec,learn,rec,get].filter(Boolean),ref=hero;
+  order.forEach(function(s){ref.after(s);ref=s});
+  [[bet,"01"],[learn,"04"],[rec,"05"],[get,"06"]].forEach(function(p){var n=p[0]&&$(".sh .no",p[0]);if(n)n.textContent=p[1]});
+})();
