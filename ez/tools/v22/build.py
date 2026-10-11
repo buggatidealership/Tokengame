@@ -70,4 +70,14 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         assert page.count(S)==1; page=page.replace(S,"""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':m===EZ_LEAD()?'"""+("buyback odds" if exp=="x2" else "hit rate")+"""':'hit rate')+'</small>""")
         L2="""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3></span>'"""
         assert page.count(L2)==1; page=page.replace(L2,"""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">Bets on NVIDIA</small>':'')+'</span>'""")
+    if exp=="x3":
+        # X3 re-skin (owner, 2026-10-11): its own stylesheet and fonts, so X1 and X2 stay byte for byte
+        SKIN=open(sys.argv[1]+'/skin-x3.css').read()
+        FONTS='<link id="x3-fonts" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400..700&family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap" rel="stylesheet">\n'
+        assert page.count('</head>')==1; page=page.replace('</head>',FONTS+'<style id="x3-skin">\n'+SKIN+'\n</style>\n</head>')
+        # X3 sets no text in Barlow, Anton, Archivo, Chivo Mono or Instrument Serif: drop those font requests
+        page,n1=re.subn(r'<link id="pt-fonts"[^>]*>\n','',page)
+        page,n2=re.subn(r'<link[^>]*family=Anton[^>]*>\n','',page)
+        IS='(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap";document.head.appendChild(l)})()'
+        assert (n1,n2)==(1,1) and page.count(IS)==1,(n1,n2,page.count(IS)); page=page.replace(IS,'void 0')
     open(out,'w').write(page); print("ok",out,len(page))

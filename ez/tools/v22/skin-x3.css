@@ -1,0 +1,1270 @@
+/* EZ Live X3 skin (owner, 2026-10-11: the sticker look read as "cartoonish"). Inlined by build.py into v41-live-x3.html only.
+   Base: the "Exchange" skin (dark layered surfaces, small radii, no ink rings or offset shadows), then a merge layer at the end:
+   Instrument Sans (heads at width 75, weight 700, capitals; body at width 100) + Geist Mono for data, the same type as the hype film;
+   one yellow accent (hero punchline, the #1 marker, the countdown); #1 is a yellow bar on a raised surface. Every rule is scoped to html.x3. */
+/* EZ Live X3 · skin "Exchange": a dark trading-app re-skin (Hyperliquid / Polymarket / pump.fun lineage).
+   Everything is scoped to html.x3. Load after the page's <style> blocks; ez-learn.js appends two <style>s at render
+   time, so every rule here wins on specificity (html.x3 = 0,1,1 on top of the original selector), not source order.
+   Type: Geist (UI, heads, figures, tabular) + Geist Mono (small data figures). Two families, both on Google Fonts.
+   Radius: 4px chips, 6px buttons/tiles, 8px cards. No ink rings, no offset shadows: depth = surface steps.
+   One accent: EZ yellow. Green / red only for up / down, always with a sign or arrow. */
+
+/* ---------- 0. TOKENS ---------- */
+html.x3{
+  color-scheme:dark;
+  /* surfaces, darkest to lightest */
+  --x-bg:#0b0e14;--x-s1:#12161e;--x-s2:#1a1e27;--x-s3:#222733;
+  /* text: 17.5:1, 8.4:1, 6.2:1 on bg (4.8:1 on s3) */
+  --x-tx:#f2f4f7;--x-tx2:#a4abb8;--x-tx3:#8b92a1;
+  --x-line:rgba(255,255,255,.07);--x-line2:rgba(255,255,255,.13);
+  --x-yel:#ffc72c;--x-yel-t:rgba(255,199,44,.10);--x-yel-l:rgba(255,199,44,.45);
+  --x-up:#3fd68b;--x-dn:#ff5a6a;--x-up-t:rgba(63,214,139,.14);--x-dn-t:rgba(255,90,106,.14);
+  /* the page's own palette names, remapped (beats :root, .pt and .x2) */
+  --field:var(--x-bg);--field2:var(--x-s1);--card:var(--x-s1);
+  --ink:var(--x-tx);--ink2:var(--x-tx2);--dim:var(--x-tx3);
+  --yel:var(--x-yel);--red:#e5384a;--grn:var(--x-up);--cob:var(--x-yel);--gold:var(--x-yel);--tbc:var(--x-tx2);
+  --up:var(--x-up);--dn:var(--x-dn);
+  --slab:var(--x-s2);--slab2:var(--x-s1);--slabA:var(--x-s3);--slabB:var(--x-s2);--slabC:var(--x-s3);
+  --on-slab:var(--x-tx);--on-slab2:var(--x-tx2);--on-slab3:var(--x-tx);--dn-hi:var(--x-dn);
+  --ez-gold:var(--x-yel);--ez-green:var(--x-up);--ez-red:var(--x-dn);--on-ez:#0b0e14;
+  --mark-s:var(--x-yel);--mark-e:var(--x-tx);--mark-z:var(--x-tx);
+  /* foil and hazard become flat tints */
+  --foil-grad:linear-gradient(var(--x-yel-t),var(--x-yel-t));--win-grad:linear-gradient(var(--x-yel-t),var(--x-yel-t));
+  --hazard:linear-gradient(var(--x-dn-t),var(--x-dn-t));--pop:none;
+  --mod2:var(--x-s1);   /* the calls grid surface (routes.css :root{--mod2}) */
+  /* type */
+  --fd:'Geist',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --fb:'Geist',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --fm:'Geist',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --x-mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --lede:400 clamp(15px,1.3vw,17px)/1.55 var(--fb);
+  background:var(--x-bg);
+}
+html.x3 body{background:var(--x-bg);background-image:none;color:var(--x-tx);font-weight:400;
+  font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1,"lnum" 1}
+html.x3 ::selection{background:var(--x-yel);color:#0b0e14}
+
+/* ---------- 1. GLOBAL FLATTEN: no rings, no offset shadows, no text outlines ---------- */
+html.x3 *,html.x3 *::before,html.x3 *::after{box-shadow:none!important;text-shadow:none!important}
+/* focus: one yellow ring, 2px, offset */
+html.x3 :is(button,a,[tabindex]):focus-visible{outline:2px solid var(--x-yel);outline-offset:2px}
+/* the striped bands and the marker highlights */
+html.x3 :is(h1 .hl,.mk,.hlx){background:none}
+
+/* ================= 2. GENERATED: radius remap (pills -> 4px, cards -> 8px), thick borders -> 1px, font weights ================= */
+html.x3 body{font-stretch:100%}
+html.x3 .lg.nob{font-weight:700}
+html.x3 .mark{font-weight:700;letter-spacing:-.005em}
+html.x3 .top{border-bottom:1px solid var(--x-line2)}
+html.x3 .brand .mark{border-radius:6px}
+html.x3 .brand b{font-weight:700;font-stretch:100%}
+html.x3 .brand b small{font-weight:600}
+html.x3 .nav a{border-radius:4px;font-weight:700;font-stretch:100%}
+html.x3 .live{font-weight:600;border-radius:4px}
+html.x3 .tick{border-bottom:1px solid var(--x-line2)}
+html.x3 .tick .tl{font-weight:600}
+html.x3 .tick .tc>span{font-weight:600}
+html.x3 .sh .no{font-weight:700;letter-spacing:-.005em}
+html.x3 .eb{font-weight:600}
+html.x3 h2{font-weight:700;letter-spacing:-.022em}
+html.x3 .btn{border-radius:8px;font-weight:700;font-stretch:100%}
+html.x3 h1{font-weight:700;letter-spacing:-.022em}
+html.x3 .bf-in{transition:transform .7s cubic-bezier(.16,1,.3,1)}
+html.x3 .bf-back{border-radius:8px}
+html.x3 .bf-back h2{font-weight:700;letter-spacing:-.022em}
+html.x3 .how li::before{border-radius:6px;font-weight:700;letter-spacing:-.022em}
+html.x3 .howb{border-radius:4px}
+html.x3 .st-h h2{font-weight:700;letter-spacing:-.022em}
+html.x3 .st-h span{font-weight:600}
+html.x3 .pc{border-radius:8px}
+html.x3 .pc .rk{font-weight:700;letter-spacing:-.022em}
+html.x3 .pc h3{font-weight:700;letter-spacing:-.022em}
+html.x3 .pc-w b{font-weight:700;letter-spacing:-.022em}
+html.x3 .pc-w span{font-weight:600}
+html.x3 .crown{font-weight:600;border-radius:4px}
+html.x3 .up-p{border-radius:8px}
+html.x3 .up-p .nm{font-weight:700;letter-spacing:-.005em}
+html.x3 .cc li{border-radius:6px}
+html.x3 .cc .n{font-weight:700;letter-spacing:-.005em}
+html.x3 .cc b.u,html.x3 .bk-r .pd.u{color:var(--x-up)}
+html.x3 .cc b.d,html.x3 .bk-r .pd.d{color:var(--x-dn)}
+html.x3 .cc b{font-weight:600;border-radius:6px}
+html.x3 .un-seal{border-radius:6px}
+html.x3 .un-seal .mark{border-radius:6px}
+html.x3 .un-seal b{font-weight:700;letter-spacing:-.022em;border-radius:6px}
+html.x3 .due{border-radius:6px}
+html.x3 .due small{font-weight:600}
+html.x3 .due b{font-weight:700;letter-spacing:-.022em}
+html.x3 .un-more{border-radius:4px;font-weight:600}
+html.x3 .un-more::after{font-weight:700}
+html.x3 .ua-h{font-weight:600}
+html.x3 .up-s{border-radius:8px}
+html.x3 .up-s .nm{font-weight:700;letter-spacing:-.005em}
+html.x3 .up-s .nm small{font-weight:600}
+html.x3 .cp b{font-weight:600}
+@media(max-width:640px){html.x3 .bf-back{border-radius:8px}}
+@media(max-width:640px){html.x3 .pc{border-radius:6px}}
+@media(max-width:640px){html.x3 .up-p{border-radius:8px}}
+@media(max-width:640px){html.x3 .cc li{border-radius:6px}}
+@media(max-width:640px){html.x3 .due{border-radius:6px}}
+@media(max-width:640px){html.x3 .up-s{border-radius:6px}}
+html.x3 .co-mark{font-weight:700;letter-spacing:-.005em}
+html.x3 .car-cap{border-radius:6px;font-weight:600}
+html.x3 .arw{font-weight:700}
+html.x3 .chip{border-radius:6px;font-weight:600}
+html.x3 .cin{transition:transform .7s cubic-bezier(.16,1,.3,1)}
+html.x3 .face{border-radius:8px}
+html.x3 .fin{border-radius:8px}
+html.x3 .ctop{border-bottom:1px solid var(--x-line2);font-weight:700;letter-spacing:-.005em}
+html.x3 .art{border-bottom:1px solid var(--x-line2)}
+html.x3 .art .soon{font-weight:700;letter-spacing:-.022em}
+html.x3 .art .soon small{font-weight:600}
+html.x3 .cwin{border-radius:8px}
+html.x3 .cwin small{font-weight:700;letter-spacing:-.022em}
+html.x3 .cwin .wn{font-weight:700;letter-spacing:-.022em}
+html.x3 .cwin .amp{font-weight:700;letter-spacing:-.022em}
+html.x3 .flipb{border-radius:6px;font-weight:700;font-stretch:100%}
+html.x3 .bk-h{border-bottom:1px solid var(--x-line2)}
+html.x3 .bk-h h4{font-weight:700;letter-spacing:-.005em}
+html.x3 .bk-h p{font-weight:600}
+html.x3 .bk-sec{font-weight:600}
+html.x3 .bk-r{border-radius:6px}
+html.x3 .bk-r .rk{font-weight:700;letter-spacing:-.022em}
+html.x3 .bk-r.no .rk span[aria-hidden]{font-weight:700}
+html.x3 .bk-r .who{font-weight:700;font-stretch:100%}
+html.x3 .bk-r .pd{font-weight:600;border-radius:6px}
+html.x3 .bk-out{border-radius:6px}
+html.x3 .bk-out small{font-weight:700;letter-spacing:-.022em}
+html.x3 .bk-out b{font-weight:600;border-radius:6px}
+html.x3 .stamp{font-weight:700;letter-spacing:-.005em;border-radius:6px}
+html.x3 .pcalls li{border-radius:6px}
+html.x3 .pcalls .nm{font-weight:700;letter-spacing:-.005em}
+html.x3 .pcalls b{font-weight:600;border-radius:6px}
+html.x3 .pend .cwin small,html.x3 .seal .cwin small{font-weight:600}
+html.x3 .sealart .mark{border-radius:8px}
+html.x3 .sealart span.sl{font-weight:600;border-radius:4px}
+@media(max-width:759px){html.x3 .face{border-radius:8px}}
+@media(max-width:759px){html.x3 .fin{border-radius:6px}}
+@media(max-width:759px){html.x3 .cwin{border-radius:6px}}
+@media(max-width:759px){html.x3 .flipb{border-radius:6px}}
+@media(max-width:759px){html.x3 .bk-r{border-radius:6px}}
+@media(max-width:759px){html.x3 .bk-out{border-radius:6px}}
+@media(max-width:759px){html.x3 .pcalls li{border-radius:6px}}
+@media(max-width:759px){html.x3 .sealart .mark{border-radius:6px}}
+html.x3 .lq{border-radius:8px}
+html.x3 .lq h3{font-weight:700;letter-spacing:-.022em}
+html.x3 .verdict{border-radius:8px}
+html.x3 .verdict small{font-weight:600}
+html.x3 .tg-h{font-weight:700;font-stretch:100%}
+html.x3 .tg .rl{font-weight:600}
+html.x3 .tg-n{font-weight:600}
+html.x3 .tg-tip{border-radius:6px}
+html.x3 .lsw{border-radius:8px}
+html.x3 .lsw button{border-radius:6px;font-weight:700;font-stretch:100%}
+html.x3 .mach{border-radius:8px}
+@media(max-width:700px){html.x3 .mach{border-radius:8px}}
+html.x3 .m-big{font-weight:700;letter-spacing:-.005em}
+html.x3 .m-pot-t{font-weight:700;letter-spacing:-.005em}
+html.x3 .m-out-t{font-weight:700;letter-spacing:-.005em}
+html.x3 .m-coin-t{font-weight:700;letter-spacing:-.005em}
+@media(prefers-reduced-motion:no-preference){html.x3 .mach.play .m-coin-g{animation:mcoin .6s 3.2s cubic-bezier(.16,1,.3,1) both}}
+html.x3 .sc{border-radius:8px}
+html.x3 .sc small{font-weight:600}
+html.x3 .sc b{font-weight:700;letter-spacing:-.022em}
+@media(max-width:560px){html.x3 .sc{border-radius:8px}}
+html.x3 .mx{border-radius:8px}
+html.x3 .mx-q{font-weight:700}
+html.x3 .mx-n{border-radius:6px;font-weight:700;letter-spacing:-.005em}
+html.x3 .mcb{border-radius:8px;font-weight:700;letter-spacing:-.022em}
+html.x3 .gauge>small{font-weight:600}
+html.x3 .g-tank{border-radius:6px 6px 8px 8px}
+html.x3 .g-tank i{border-radius:0 0 8px 8px}
+html.x3 .g-tank b{font-weight:600}
+html.x3 .mx-out{border-radius:8px}
+html.x3 .mx-k{font-weight:700}
+html.x3 .mx-big{font-weight:700;letter-spacing:-.022em}
+html.x3 .mx-of{font-weight:700;letter-spacing:-.022em}
+html.x3 .coins i{animation:coin .35s cubic-bezier(.16,1,.3,1) both}
+html.x3 .mx-lose{border-radius:6px}
+@media(max-width:560px){html.x3 .mx{border-radius:8px}}
+@media(max-width:560px){html.x3 .mcb{border-radius:6px}}
+@media(max-width:560px){html.x3 .mx-out{border-radius:8px}}
+html.x3 .big.pop,html.x3 .mx-big.pop{animation:bigpop .5s cubic-bezier(.16,1,.3,1)}
+html.x3 .rs.done .ic::after{font-weight:700}
+html.x3 .rs b{font-weight:700}
+html.x3 .now{font-weight:600;border-radius:4px}
+html.x3 .rp span{border-radius:4px}
+html.x3 .rp small{font-weight:600}
+html.x3 .tbcl{font-weight:600}
+html.x3 .gbox{border-radius:8px}
+html.x3 .gbox .n{font-weight:700;letter-spacing:-.005em}
+html.x3 .gbox h3{font-weight:700;letter-spacing:-.005em}
+html.x3 .ca{font-weight:600;border:1px dashed var(--x-line2);border-radius:6px}
+html.x3 .risk{font-weight:600}
+html.x3 footer{border-top:1px solid var(--x-line2)}
+html.x3 .motto{font-weight:700;letter-spacing:-.022em}
+html.x3 .badge{border-radius:8px}
+html.x3 footer small{font-weight:600}
+html.x3 .ftl a:hover{border-radius:6px}
+html.x3 .cfoot .shr{border-radius:6px}
+@media(max-width:640px){html.x3 .cfoot .shr{border-radius:6px}}
+html.x3 .shp{border-radius:8px}
+html.x3 .shp img{border-radius:6px}
+html.x3 .shp-a button{border-radius:6px;font-weight:700}
+html.x3 .pc-s.pu b{color:var(--x-up)}
+html.x3 .pc-s.pd b{color:var(--x-dn)}
+html.x3 .pc-s b{font-weight:700;letter-spacing:-.022em}
+html.x3 .pc-s small{font-weight:600}
+html.x3 .fol{border-radius:8px}
+html.x3 .fol-h h3{font-weight:700;letter-spacing:-.022em}
+html.x3 .fol-h p{font-weight:600}
+html.x3 .fol-r{border-radius:8px}
+html.x3 .fol-w{font-weight:700;letter-spacing:-.005em}
+html.x3 .fol-w small{font-weight:600}
+html.x3 .fol-w .bi{font-weight:700}
+html.x3 .fol-t .b{border-radius:4px}
+html.x3 .fol-v b{font-weight:700;letter-spacing:-.022em}
+html.x3 .fol-v span{font-weight:600}
+html.x3 .fol-v .pu{color:var(--x-up)}
+html.x3 .fol-v .pd{color:var(--x-dn)}
+html.x3 .fol-h h3{font-weight:700;letter-spacing:-.022em}
+html.x3 .fol-h p{font-weight:600}
+html.x3 .fol-c{border-radius:8px}
+html.x3 .fol-n{font-weight:700;letter-spacing:-.005em}
+html.x3 .fol-n small{font-weight:600}
+html.x3 .fol-b{font-weight:700;letter-spacing:-.022em}
+html.x3 .fol-p{font-weight:600}
+html.x3 .fol-p.pu{color:var(--x-up)}
+html.x3 .fol-p.pd{color:var(--x-dn)}
+html.x3 .how2{border-radius:8px}
+html.x3 .h2-track button{border-radius:8px}
+html.x3 .h2-l{font-weight:700;letter-spacing:-.005em}
+html.x3 .h2-l small{font-weight:600}
+html.x3 .h2-card{border-radius:8px}
+html.x3 .h2-step{font-weight:600}
+html.x3 .h2-card h3{font-weight:700;letter-spacing:-.022em}
+html.x3 .h2-out{border-radius:4px}
+html.x3 .h2-out button{border-radius:4px;font-weight:700}
+html.x3 .h2-nav button{border-radius:4px;font-weight:700}
+html.x3 .h2-nums small{font-weight:600}
+html.x3 .h2-nums b{font-weight:700;letter-spacing:-.022em}
+html.x3 .lf-in{transition:transform .7s cubic-bezier(.16,1,.3,1)}
+html.x3 .car-cap{border-radius:4px;font-weight:600}
+html.x3 .ft{border-radius:8px}
+html.x3 .ft-w{font-weight:700;letter-spacing:-.005em}
+html.x3 .ft-w small{font-weight:600}
+html.x3 .ft-p{font-weight:700;letter-spacing:-.022em}
+html.x3 .ft-p.pu{color:var(--x-up)}
+html.x3 .ft-p.pd{color:var(--x-dn)}
+html.x3 .ft-b{font-weight:600}
+html.x3 .ft-s .pu{stroke:var(--x-up)}
+html.x3 .ft-s .pd{stroke:var(--x-dn)}
+html.x3 .lr-art{border-radius:6px}
+html.x3 .lr-tap{border-radius:4px;font-weight:600}
+html.x3 .lr-w{border-radius:6px}
+html.x3 .lr-w small{font-weight:700;letter-spacing:-.005em}
+html.x3 .lr-w b{font-weight:700;letter-spacing:-.005em}
+html.x3 .lmod-x{font-weight:700}
+@media(max-width:759px){html.x3 .lmod .bk-r{border-radius:6px}}
+html.x3 .st-h h2 .lr-d{font-weight:600}
+html.x3 .bk-d small{font-weight:600}
+html.x3 .bk-d b{font-weight:700;letter-spacing:-.022em}
+html.x3 .gstamp{font-weight:700;letter-spacing:-.005em}
+html.x3 .gstamp i{font-weight:700}
+@media(max-width:759px){html.x3 .gstamp{border-width:1px}}
+html.x3 .ft-bal{font-weight:700;letter-spacing:-.022em}
+html.x3 .ft-pill{border-radius:4px;font-weight:700}
+html.x3 #learn .lsw{border-radius:8px}
+html.x3 #learn .fol{border-radius:8px}
+html.x3 .bbs{border-radius:8px}
+html.x3 .bbs:not(:last-child)::after{font-weight:700}
+html.x3 .bbs-t small{font-weight:600}
+html.x3 .bbs-t b{font-weight:700;letter-spacing:-.022em}
+html.x3 .bbs-o i{font-weight:700;border-radius:6px}
+html.x3 .calc-h{font-weight:700;letter-spacing:-.022em}
+html.x3 .wt-q{border-radius:8px;font-weight:700;letter-spacing:-.022em}
+html.x3 .wt-q small,html.x3 .wt-b small{font-weight:600}
+html.x3 .wt-a{font-weight:700}
+html.x3 .wt-b em{font-weight:700;letter-spacing:-.005em;border-radius:4px}
+html.x3 .wt-b p{border-radius:8px}
+html.x3 .wt-b p b{font-weight:700;letter-spacing:-.005em}
+html.x3 .mt-top{border-radius:8px;font-weight:700;letter-spacing:-.022em}
+html.x3 .mt-a{font-weight:700}
+html.x3 .mt-br>em{font-weight:700;letter-spacing:-.005em;border-radius:4px}
+html.x3 .mt-box{border-radius:8px}
+html.x3 .mt-box h3{font-weight:700;letter-spacing:-.022em}
+html.x3 .mt-out p{border-radius:8px}
+html.x3 .mt-out p b{font-weight:700;letter-spacing:-.005em}
+html.x3 .ls-m{font-weight:700}
+html.x3 .ls-t b{font-weight:700;letter-spacing:-.005em}
+html.x3 .ls-t b em{font-weight:700;border-radius:4px}
+html.x3 .mt-split::before{border:1px solid var(--x-line2);border-radius:8px 8px 0 0}
+html.x3 .mt-br{border-radius:8px}
+@media(max-width:760px){html.x3 .mt-br{border-radius:8px}}
+@media(max-width:760px){html.x3 .mt-box{border-radius:8px}}
+@media(max-width:760px){html.x3 .mt-out p{border-radius:6px}}
+html.x3 .est{border-radius:4px;font-weight:700}
+html.x3 .mt-how{font-weight:700;letter-spacing:-.022em}
+html.x3 .lr-st{border-radius:8px}
+html.x3 .lr-r{border-radius:6px}
+html.x3 .lr-r b{font-weight:700;letter-spacing:-.005em}
+html.x3 .lr-r i{font-weight:600}
+html.x3 .lr-r i.lrv-u{color:var(--x-up)}
+html.x3 .lr-r i.lrv-d{color:var(--x-dn)}
+html.x3 .lr-r em{font-weight:600}
+html.x3 .lr-r.no em{color:var(--x-dn)}
+html.x3 .lr-mv small{font-weight:600}
+html.x3 .lr-mv b{font-weight:700;letter-spacing:-.022em}
+html.x3 .lr-mv b.lrv-u{color:var(--x-up)}
+html.x3 .lr-mv b.lrv-d{color:var(--x-dn)}
+html.x3 .tg-x{font-weight:600;color:var(--x-dn);border-radius:4px}
+html.x3 .tg-key .k-x{color:var(--x-dn);font-weight:700}
+html.x3 .fol-x{font-weight:700;letter-spacing:-.022em}
+@media(max-width:640px){html.x3 .lr-bk .bk-r{border-radius:6px}}
+@media(max-width:640px){html.x3 .lr-bk .bk-out{border-radius:6px}}
+html.x3 .up-p.lrc{border-radius:8px}
+html.x3 .lr-card{border-radius:8px}
+@media(max-width:640px){html.x3 .lr-card{border-radius:8px}}
+@media(max-width:640px){html.x3 .lr-card .gstamp{border-width:1px}}
+@media(max-width:640px){html.x3 .lr-cb .bk-r{border-radius:6px}}
+@media(max-width:640px){html.x3 .lr-cb .bk-out{border-radius:6px}}
+html.x3 .mt-pc b{font-weight:700;letter-spacing:-.022em}
+html.x3 .mt-pc span{font-weight:700;letter-spacing:-.022em}
+html.x3 .gstamp{border:1px solid var(--ez-green)}
+html.x3 .gstamp::after{border:1px solid currentColor}
+@media(max-width:759px){html.x3 .lr-card .gstamp{border-width:1px}}
+html.x3 .mt-flow::before{border:1px solid var(--x-line2);border-radius:6px 6px 0 0}
+html.x3 .mt-col>p{border-radius:8px}
+html.x3 .mt-o{font-weight:700;letter-spacing:-.005em}
+html.x3 .mt-join::before{border:1px solid var(--x-line2);border-radius:0 0 6px 6px}
+html.x3 .mt-next{border-radius:8px}
+html.x3 .mt-next b{font-weight:700;letter-spacing:-.005em}
+@media(max-width:760px){html.x3 .mt-o{border-radius:6px}}
+@media(max-width:760px){html.x3 .mt-col>p{border-radius:6px}}
+@media(max-width:760px){html.x3 .mt-next{border-radius:6px}}
+html.x3 .gpu-c{border:1px solid var(--x-line2);border-radius:8px}
+html.x3 .gc-eng{font-weight:700;letter-spacing:-.022em}
+@media(max-width:760px){html.x3 .nav{border-top:1px solid var(--x-line2)}}
+html.x3 .st-more{font-weight:600}
+html.x3 .cfoot a.rpl{border-radius:6px;font-weight:700;font-stretch:100%}
+@media(max-width:640px){html.x3 .cfoot a.rpl{border-radius:6px}}
+html.x3 #view .box{border-radius:8px}
+html.x3 #view .pill{font-weight:600;border-radius:6px}
+html.x3 #view .tag{font-weight:600;border-radius:4px}
+html.x3 #view .grp-h,html.x3 #view h2.grp-h{font-weight:600}
+html.x3 #view .empty{border-radius:8px}
+html.x3 .flt button{border-radius:4px;font-weight:600}
+html.x3 .pt-a{border-radius:8px}
+html.x3 .pt-h small{font-weight:600}
+html.x3 .pt-f b.ttl{font-weight:700;letter-spacing:-.022em}
+html.x3 .pt-a.soon .fs{font-weight:600;border-radius:4px}
+html.x3 .rnav a{border-radius:4px;font-weight:600}
+html.x3 .rfilm{border-radius:8px}
+html.x3 .rfilm .fp{border-radius:4px;font-weight:700}
+html.x3 .rfilm .seal .mark{border-radius:8px}
+html.x3 .rfilm .seal .sl{font-weight:600;border-radius:4px}
+html.x3 .cr li{border-radius:8px}
+html.x3 .cr .rk{font-weight:700;letter-spacing:-.022em}
+html.x3 .cr .rk .x{font-weight:700}
+html.x3 .cr .who{font-weight:700;letter-spacing:-.005em}
+html.x3 .cr .off{font-weight:600}
+html.x3 .outr{border-radius:8px}
+html.x3 .outr small{font-weight:700;letter-spacing:-.022em}
+html.x3 .winr{border-radius:8px}
+html.x3 .winr small{font-weight:700;letter-spacing:-.022em}
+html.x3 .winr .wn{font-weight:700;letter-spacing:-.022em}
+html.x3 .facts div{border-radius:6px}
+html.x3 .facts small{font-weight:600}
+html.x3 .facts b{font-weight:700;letter-spacing:-.022em}
+html.x3 .rcpt{border-radius:8px;border-left:1px solid var(--yel)}
+html.x3 .rcpt small{font-weight:600}
+html.x3 .share canvas{border-radius:8px}
+html.x3 .linkbox{border-radius:6px;border:1px solid var(--x-line2)}
+html.x3 .mcard>b{font-weight:700;letter-spacing:-.022em}
+html.x3 .mcard dl{font-weight:600}
+html.x3 .mnav a{border-radius:4px;font-weight:600}
+html.x3 .tiles>div{border-radius:8px}
+html.x3 .tiles small{font-weight:600}
+html.x3 .tiles b{font-weight:700;letter-spacing:-.022em}
+html.x3 .strip a{border-radius:6px}
+html.x3 .strip .dt{font-weight:700}
+html.x3 .strip small{font-weight:600}
+html.x3 .bw small{font-weight:600}
+html.x3 .bw b{font-weight:700;letter-spacing:-.022em}
+html.x3 .cd span{border-radius:8px}
+html.x3 .cd b{font-weight:700;letter-spacing:-.022em}
+html.x3 .cd small{font-weight:600}
+html.x3 .cal h3{font-weight:700;letter-spacing:-.022em}
+html.x3 .ur{border-radius:8px}
+html.x3 .ur .t b{font-weight:700;letter-spacing:-.005em}
+html.x3 .ur .t small{font-weight:600}
+html.x3 .ur .dd{border-radius:6px}
+html.x3 .ur .dd small{font-weight:600}
+html.x3 .ur .dd b{font-weight:700;letter-spacing:-.022em}
+html.x3 #view .mo-h{font-weight:700;letter-spacing:-.022em}
+html.x3 .season{border-radius:8px}
+html.x3 .s-nowt{font-weight:600}
+html.x3 .s-n{font-weight:600}
+@media(max-width:640px){html.x3 .season{border-radius:8px}}
+html.x3 .seg{border-radius:4px}
+html.x3 .seg button{border-radius:4px;font-weight:700}
+html.x3 .rc{border-radius:8px}
+html.x3 .rc-art{border-radius:6px 6px 0 0}
+html.x3 .rc-soon small{font-weight:600}
+html.x3 .rc-b{border-radius:0 0 6px 6px}
+html.x3 .rc-t small{font-weight:600}
+html.x3 .rc-t b{font-weight:700;letter-spacing:-.005em}
+@media(max-width:640px){html.x3 .rc{border-radius:8px}}
+html.x3 #view .shr.rsh{border-radius:4px;font-weight:600}
+html.x3 .ssn{border-radius:8px}
+html.x3 #view .ssn-h h2{font-weight:700;letter-spacing:-.022em}
+html.x3 .ssn-h span{font-weight:600}
+html.x3 .ssn-bar{border-radius:4px}
+html.x3 .st small{font-weight:600}
+html.x3 .st-x{font-weight:700}
+html.x3 .st-d{font-weight:700;letter-spacing:-.022em}
+html.x3 .rc-n{font-weight:600}
+html.x3 .rc-w{border-top:1px dashed var(--x-line2)}
+html.x3 .rc-w small{font-weight:600}
+html.x3 .rc-w b{font-weight:700;letter-spacing:-.005em}
+html.x3 .rt small{font-weight:600}
+html.x3 .rt b{font-weight:700;letter-spacing:-.005em}
+html.x3 .star{color:var(--x-yel)}
+html.x3 .rmod-x{font-weight:700}
+html.x3 .lbw{border-radius:8px}
+html.x3 .lb th{font-weight:600;border-bottom:1px solid var(--x-line2)}
+html.x3 .lb td{border-bottom:1px solid var(--field2);font-weight:600}
+html.x3 .lb .rk{font-weight:700;letter-spacing:-.022em}
+html.x3 .lb .w{font-weight:700;letter-spacing:-.022em}
+html.x3 .lb .who b{font-weight:700;letter-spacing:-.005em}
+html.x3 .lbh{font-weight:600}
+html.x3 .lb-c b{font-weight:700;letter-spacing:-.022em}
+html.x3 .lb-c small{font-weight:600}
+html.x3 .lb-c.roi.pu b{color:var(--x-up)}
+html.x3 .lb-c.roi.pd b{color:var(--x-dn)}
+html.x3 .fd{font-weight:700}
+html.x3 .rhd{border-bottom:1px solid var(--x-line2)}
+html.x3 .rday{border-left:1px solid var(--x-line2)}
+html.x3 #view .rdh h2{font-weight:700;letter-spacing:-.022em}
+html.x3 .rdw{font-weight:600}
+html.x3 .rdh .nx{border-radius:4px;font-weight:600}
+html.x3 .rds{font-weight:600}
+html.x3 .rcd{border-radius:8px;transition:transform .16s cubic-bezier(.16,1,.3,1),box-shadow .16s}
+html.x3 .rcd-a{border-bottom:1px solid var(--x-line2)}
+html.x3 .rcd-b em{font-weight:600}
+html.x3 .rcd-t small{font-weight:600}
+html.x3 .rcd-t b{font-weight:700;letter-spacing:-.005em}
+html.x3 .rcd-c b{font-weight:600}
+html.x3 .rcd-c .cu{color:var(--x-up)}
+html.x3 .rcd-c .cd{color:var(--x-dn)}
+html.x3 .rtl{border-radius:8px}
+html.x3 .rf-in{transition:transform .7s cubic-bezier(.16,1,.3,1)}
+html.x3 .rf-face{border-radius:8px}
+html.x3 .rcd-t{font-weight:600}
+html.x3 .rcd-f>small{font-weight:600}
+html.x3 .rcd-w b{font-weight:700;letter-spacing:-.005em}
+html.x3 .rcd.graded .rcd-f{border-radius:6px}
+html.x3 .bbn>div{border-radius:8px}
+html.x3 .bbn small{font-weight:600}
+html.x3 .bbn b{font-weight:700;letter-spacing:-.022em}
+@media(max-width:759px){html.x3 .rmod .bk-r{border-radius:6px}}
+html.x3 .rcd-f>small{font-weight:700;letter-spacing:-.005em}
+html.x3 .sxr{border-radius:8px}
+html.x3 .st-rk{font-weight:700;letter-spacing:-.022em}
+html.x3 .st-who b{font-weight:700;letter-spacing:-.005em}
+html.x3 .sb{border-radius:4px}
+html.x3 .sb i{border-radius:4px}
+html.x3 .st-v b{font-weight:700;letter-spacing:-.022em}
+html.x3 .st-v b.pu{color:var(--x-up)}
+html.x3 .st-v b.pd{color:var(--x-dn)}
+html.x3 .look{font-weight:600}
+html.x3 .look button{border-radius:4px}
+html.x3 .look-brand .rtl::after{font-weight:700;letter-spacing:-.022em}
+html.x3 .look-brand .rcd .rcd-t{border-top:1px solid var(--bc)}
+html.x3 .cday.next{border-radius:6px}
+html.x3 .cd-d b{font-weight:700;letter-spacing:-.005em}
+html.x3 .cd-d small{font-weight:600}
+html.x3 .cd-d .nx{border-radius:4px;font-weight:600}
+html.x3 .cch{border-radius:4px}
+html.x3 .cch b{font-weight:700;letter-spacing:-.005em}
+html.x3 .cc-r{font-weight:600}
+html.x3 .cc-r.u{color:var(--x-up)}
+html.x3 .cc-r.d{color:var(--x-dn)}
+html.x3 .mxr li{border-radius:8px}
+html.x3 .mxr span{font-weight:700;letter-spacing:-.005em}
+html.x3 .mxr b{font-weight:700;letter-spacing:-.005em}
+html.x3 .mxr strong{font-weight:700;letter-spacing:-.022em}
+html.x3 .mxr small{font-weight:600}
+html.x3 .rc-up{border-bottom:1px solid var(--x-line2)}
+html.x3 .rcx i{border:1px solid var(--x-line2)}
+html.x3 .rc-up i{border-radius:6px 6px 0 0}
+html.x3 .rc-dn i{border-radius:0 0 6px 6px}
+html.x3 .rc-l{font-weight:700;letter-spacing:-.022em}
+html.x3 .rc-l.pu{color:var(--x-up)}
+html.x3 .rc-l.pd{color:var(--x-dn)}
+html.x3 .rc-who b{font-weight:700;letter-spacing:-.005em}
+html.x3 .rc-who small{font-weight:600}
+html.x3 .rcx.lead .rc-who b{border-radius:4px}
+html.x3 .rc-base{font-weight:600}
+html.x3 .cr{border-radius:6px}
+html.x3 .cr.pop{animation:crPop .45s cubic-bezier(.16,1,.3,1) both}
+html.x3 .hlt{border-radius:8px}
+html.x3 .hl-k{font-weight:700;letter-spacing:-.022em}
+html.x3 .hl-v b{font-weight:700;letter-spacing:-.022em}
+html.x3 .hl-v i{font-weight:600}
+html.x3 .hl-r{font-weight:600}
+html.x3 .rcd-t small{font-weight:600}
+html.x3 .rcd-t b{font-weight:700;letter-spacing:-.005em}
+html.x3 .gt{border-radius:8px;transition:transform .16s cubic-bezier(.16,1,.3,1),box-shadow .16s}
+html.x3 .gt-a{border-bottom:1px solid var(--bc)}
+html.x3 .gt-mv{border-radius:6px;font-weight:600}
+html.x3 .gt-b>small{font-weight:600}
+html.x3 .gt-b>b{font-weight:700;letter-spacing:-.022em}
+html.x3 .gt-w{border-radius:6px}
+html.x3 .gt-w small{font-weight:700;letter-spacing:-.005em}
+html.x3 .gt-w b{font-weight:700;letter-spacing:-.005em}
+html.x3 #view .gh{font-weight:700;letter-spacing:-.022em}
+html.x3 #view .nxh{border-top:1px solid var(--x-line2)}
+html.x3 .hl-hold small{font-weight:600}
+html.x3 .hl-hold b{font-weight:700;letter-spacing:-.005em}
+html.x3 .hl-hold strong{font-weight:700;letter-spacing:-.022em}
+html.x3 .hl-hold i{font-weight:600}
+@media(max-width:640px){html.x3 .hlt.rec2{border-radius:8px}}
+html.x3 .gt-l{font-weight:700;letter-spacing:-.005em}
+html.x3 .gt-l small{font-weight:600}
+html.x3 .hero2{border-radius:8px}
+html.x3 .h2a{border-right:1px solid var(--bc)}
+html.x3 .h2t>small{font-weight:600}
+html.x3 .h2t>b{font-weight:700;letter-spacing:-.022em}
+html.x3 .h2m{border-radius:6px;font-weight:600}
+@media(max-width:640px){html.x3 .h2a{border-bottom:1px solid var(--bc)}}
+html.x3 .shf{border-radius:8px}
+html.x3 .shf-t small{font-weight:600}
+html.x3 .shf-t b{font-weight:700;letter-spacing:-.005em}
+html.x3 .xsh .no{font-weight:700;letter-spacing:-.005em}
+html.x3 #view .xsh h1,html.x3 #view .xsh h2{font-weight:700;letter-spacing:-.022em}
+html.x3 #view .xrhd h1{font-weight:700;letter-spacing:-.022em}
+html.x3 .bseg button b{border-radius:4px;font-weight:700}
+html.x3 .rxm{border-radius:8px}
+html.x3 .rxm-k{font-weight:700;letter-spacing:-.022em}
+html.x3 .rxm-h{border-radius:8px}
+html.x3 .rxm-h b{font-weight:700;letter-spacing:-.005em}
+html.x3 .rxm-h strong{font-weight:700;letter-spacing:-.022em}
+html.x3 .rxm-h i{font-weight:600}
+html.x3 .rxt{border-radius:8px}
+html.x3 .rxt-b small{font-weight:600}
+html.x3 .rxt-b b{font-weight:700;letter-spacing:-.005em}
+html.x3 .rxt-c{border-radius:6px;font-weight:600}
+html.x3 .shf-a{border-bottom:1px solid var(--bc)}
+html.x3 .shf-k{font-weight:700;letter-spacing:-.022em}
+html.x3 .shf-c{font-weight:700;letter-spacing:-.005em}
+html.x3 .shf-s{font-weight:700;letter-spacing:-.005em}
+html.x3 .sflip .rf-sub{border-top:1px solid var(--field2)}
+html.x3 .st-box.cmp .tg-h{border-radius:8px}
+html.x3 .tg-r{font-weight:700;letter-spacing:-.005em}
+html.x3 .st-box.cmp .tg-h strong{font-weight:700;letter-spacing:-.005em}
+html.x3 .st-box.cmp .tg-h strong small{font-weight:600}
+html.x3 .pnl-k li{border-radius:8px}
+html.x3 .pk-r{font-weight:700;letter-spacing:-.005em}
+html.x3 .pk-n{font-weight:700;letter-spacing:-.005em}
+html.x3 .pnl-k strong{font-weight:700;letter-spacing:-.022em}
+html.x3 .pnl-k em{font-weight:700;border-radius:4px}
+html.x3 .pnl-z{border-top:1px dashed var(--x-line2)}
+html.x3 .pnl-z small{font-weight:600}
+html.x3 .pnl-x{font-weight:600}
+html.x3 .udr{border-radius:8px}
+html.x3 .udb{border-radius:6px}
+html.x3 .udb i{font-weight:700}
+html.x3 .sx1 .rf-face .pnl-k li,html.x3 .sx1 .rf-face .udr:not(.mkt),html.x3 .sx1 .st-box.cmp .tg-h{background:var(--x-s2)}
+html.x3 .rxn-mast{border-bottom:1px solid var(--yel);font-weight:600}
+html.x3 .rxn-mast b{font-weight:700;letter-spacing:-.005em}
+html.x3 .rxm .rxn-h{font-weight:700;letter-spacing:-.022em}
+html.x3 .rxn .rxm-h span:not(.lg){font-weight:600}
+html.x3 .rxn-f div{border-radius:6px}
+html.x3 .rxn-f dt{font-weight:600}
+html.x3 .rxn-f dd{font-weight:700;letter-spacing:-.005em}
+html.x3 .rxn-b{border-top:1px solid var(--field2)}
+html.x3 .rxn-ch{border-radius:6px}
+html.x3 .rxn-s{font-weight:600}
+html.x3 [data-rk=hit] .skd{background:var(--x-tx3)}
+html.x3 .sgr-h b{font-weight:700;letter-spacing:-.005em}
+html.x3 .sgr-h small{font-weight:600}
+html.x3 .sgr-r .st-who{border-radius:6px;background:var(--x-s2)}
+html.x3 .sgr-c{border-radius:6px;font-weight:700;letter-spacing:-.005em}
+html.x3 .sgr-c.pop{animation:crPop .4s cubic-bezier(.16,1,.3,1) both}
+html.x3 .hcd{border-radius:8px;border-top:1px solid var(--bc);transition:transform .16s cubic-bezier(.16,1,.3,1)}
+html.x3 .hcd-k{font-weight:600}
+html.x3 .hcd-h{font-weight:700;letter-spacing:-.022em}
+html.x3 .hcd-f{font-weight:600}
+html.x3 .hcd-f i{border-radius:4px}
+html.x3 .hcd-k{font-weight:700;letter-spacing:-.022em}
+html.x3 .hcd-h{font-weight:700;letter-spacing:-.022em}
+html.x3 .ufs select{border-radius:4px;font-weight:700}
+html.x3 .st-box.sgx .sgr-c{border-radius:8px}
+html.x3 .st-box.sgx .sgr-r .st-who{border-radius:8px}
+html.x3 .st-box.sgx .sgr-r .st-who b{font-weight:700;letter-spacing:-.005em}
+html.x3 .hcd-w{font-weight:700}
+html.x3 .ufg .ufs{border-left:1px solid var(--x-line2)}
+html.x3 .hl-wm{font-weight:700;letter-spacing:-.022em}
+html.x3 .rec2 .hl-hold{border-top:1px solid color-mix(in srgb,currentColor 25%,transparent)}
+html.x3 .hcl{border-bottom:1px solid var(--x-line2)}
+html.x3 .hcd-k{border-bottom:1px solid var(--bc)}
+html.x3 .ufc button,html.x3 .ufc .ufs select{border-radius:8px;font-weight:700}
+html.x3 .ufc button b{font-weight:600;border-radius:4px}
+html.x3 .cg-wrap{border-radius:8px}
+html.x3 .cg-c{border-radius:6px}
+html.x3 .cg-mk .cg-m{font-weight:700;letter-spacing:-.005em}
+html.x3 .cg-mk{border-top:1px solid var(--x-line2)}
+@media(max-width:640px){html.x3 .cg-c{border-radius:6px}}
+html.x3 .fdg{border-radius:8px}
+html.x3 .fdg b{font-weight:700;letter-spacing:-.022em}
+html.x3 .fdg .fdg-now{border-radius:6px}
+html.x3 .rlx-r{border-radius:8px}
+html.x3 .rlx-t b{font-weight:700;letter-spacing:-.005em}
+html.x3 .rlx-t em.nw{border-radius:4px}
+html.x3 .rlx-c>span{border-radius:6px;font-weight:700;letter-spacing:-.005em}
+html.x3 .rlx-m{border-left:1px solid var(--x-line2);font-weight:700;letter-spacing:-.022em}
+html.x3 .rlx-v{border-radius:6px}
+@media(max-width:860px){html.x3 .rlx-v{border-radius:6px}}
+html.x3 .hfx{border-radius:8px}
+html.x3 .hfx-big{font-weight:700;letter-spacing:-.022em}
+html.x3 .hfx-t{border-top:1px solid var(--bc)}
+html.x3 .hfx-k{font-weight:700;letter-spacing:-.022em}
+html.x3 .fdg h3{font-weight:700;letter-spacing:-.022em}
+html.x3 .fdg-s span{border-radius:6px}
+html.x3 .fdg-s b{font-weight:700;letter-spacing:-.022em}
+html.x3 .rtc-c>span{border-radius:6px}
+html.x3 .cg-sum{border-radius:6px}
+html.x3 .cg-sum b{font-weight:700;letter-spacing:-.005em}
+html.x3 .pf-hero{background:var(--slab,var(--x-s1));color:var(--x-tx);border:1px solid var(--x-line2);border-radius:8px}
+html.x3 .pf-id .lg.pf-lg{border-radius:8px}
+html.x3 .pf-rk{font-weight:600;border-radius:4px}
+html.x3 .pf-hero h1{font-weight:700;letter-spacing:-.022em}
+html.x3 .pf-read{color:var(--x-tx)}
+html.x3 .pf-k{border-radius:8px}
+html.x3 .pf-k small{font-weight:600}
+html.x3 .pf-k b{font-weight:700;letter-spacing:-.022em}
+html.x3 .pf-sec h2{font-weight:700;letter-spacing:-.022em}
+html.x3 .pf-fl{border:1px solid var(--c,#ccc)}
+html.x3 .pf-form small{font-weight:600}
+html.x3 .pf-cmp{border:1px solid var(--x-line2);border-radius:8px}
+html.x3 .pf-cmp h3{font-weight:700;letter-spacing:-.022em}
+html.x3 .pf-key i.c{border:1px solid var(--x-line2)}
+html.x3 .pf-calls a{border:1px solid var(--x-line2);border-radius:8px}
+html.x3 .pf-rn{font-weight:600}
+html.x3 .pf-co>img,html.x3 .pf-co>span:first-child{border-radius:6px}
+html.x3 .pf-v{font-weight:700}
+html.x3 .pf-v.w{color:var(--x-yel)}
+html.x3 .pf-bw{border:1px solid var(--x-line2);border-radius:8px}
+html.x3 .pf-bw small{font-weight:600}
+html.x3 .pf-bw b{font-weight:700;letter-spacing:-.022em}
+html.x3 .pf-pn a{border:1px solid var(--x-line2);border-radius:8px;font-weight:700;letter-spacing:-.022em}
+html.x3 .pf-pn small{font-weight:600}
+html.x3 .pf-pn .lg{border-radius:6px}
+html.x3 .pf-verdict{font-weight:700;letter-spacing:-.022em}
+html.x3 .pf-arr p{color:var(--x-tx)}
+html.x3 .pf-tag{border-radius:4px}
+html.x3 .pf-bal{border:1px solid var(--x-line2);border-radius:8px}
+html.x3 .pc-best{font-weight:600;border-radius:4px}
+html.x3.x2 li.pc:not(.lead):not(.r1){background:var(--x-s1);color:var(--x-tx)}
+html.x3.x2 li.pc:not(.lead):not(.r1) small,html.x3.x2 li.pc:not(.lead):not(.r1) .pc-s small,html.x3.x2 li.pc:not(.lead):not(.r1) .pc-w span,html.x3.x2 li.pc:not(.lead):not(.r1) .lb-c small,html.x3.x2 li.pc:not(.lead):not(.r1) .lb-m small{color:var(--x-tx2)}
+html.x3.x2 li.pc:not(.lead):not(.r1) .lb-c.roi.pu b{color:var(--x-up)}
+html.x3.x2 li.pc:not(.lead):not(.r1) .lb-c.roi.pd b{color:var(--x-dn)}
+html.x3.x2 .pf-cmp,html.x3.x2 .pf-calls a,html.x3.x2 .pf-bal,html.x3.x2 .pf-bw{background:var(--x-s1);color:var(--x-tx)}
+html.x3.x2 .pf-cmp p,html.x3.x2 .pf-co small,html.x3.x2 .pf-rn,html.x3.x2 .pf-v small,html.x3.x2 .pf-bw p,html.x3.x2 .pf-cn em{color:var(--x-tx2)}
+html.x3.x2 .pf-cmp li .pf-cb i{background:var(--x-s3)}
+html.x3.x2 .pf-v.g{color:var(--x-up)}
+html.x3.x2 .pf-v.r{color:var(--x-dn)}
+html.x3.x2 .pf-bw.g small{color:var(--x-up)}
+html.x3.x2 .pf-bw.r small{color:var(--x-dn)}
+html.x3.x2 .pf-line circle[fill="var(--card)"]{fill:var(--x-s1)}
+html.x3.x2 .pf-tc{fill:var(--x-tx2)}
+html.x3.x2 .pf-bt,html.x3.x2 .pf-bl{fill:var(--x-tx2)}
+html.x3.x2 .pf-bal line{stroke:var(--x-tx2)}
+html.x3.x2 .pf-bal polyline{stroke:var(--x-tx2)}
+html.x3.x2 .pf-bal circle{fill:var(--x-s1)}
+html.x3.x2 .pf-key i.c{background:var(--x-s1)}
+html.x3 .tgx-cap small{font-weight:600}
+html.x3 .tgx-cap b{font-weight:700;letter-spacing:-.022em}
+html.x3 .tgx-cap span{font-weight:700}
+html.x3 .tgx-go{border-radius:4px;font-weight:700}
+html.x3 .tg{transition:opacity .45s ease,filter .45s ease,transform .45s cubic-bezier(.16,1,.3,1)}
+html.x3 .tg-d.tgx-hit .dot{animation:tgx-land .42s cubic-bezier(.16,1,.3,1) both}
+html.x3 .tgx-lab{transition:opacity .3s ease,transform .35s cubic-bezier(.16,1,.3,1)}
+html.x3 .tgx-lab b{font-weight:700}
+html.x3 .tgx-lab span{font-weight:600}
+html.x3 .tgx-pop{border-radius:4px;transition:transform .45s cubic-bezier(.16,1,.3,1),opacity .25s ease}
+html.x3 .tgx-pop span{font-weight:600}
+html.x3 .tgx-none{font-weight:700}
+html.x3 .hx2{border-radius:8px;background:var(--x-s1);color:var(--x-tx)}
+html.x3 .hx2-a{background:var(--x-s2)}
+html.x3 .hx2-a::after{background:linear-gradient(180deg,transparent 45%,var(--x-s1))}
+html.x3 .hx2-k{font-weight:600;border-radius:4px}
+html.x3 .hx2-h{font-family:var(--fd);font-style:normal;font-weight:700;letter-spacing:-.03em}
+html.x3 .hx2-p{color:var(--x-tx2)}
+html.x3 .hx2-r b{font-weight:700;letter-spacing:-.022em}
+html.x3 .hx2-r small{color:var(--x-tx2)}
+html.x3.x2 .fdg h3{font-family:var(--fd);font-style:normal;font-weight:700;letter-spacing:-.03em}
+html.x3 .pool{border-radius:8px;background:var(--x-s1);color:var(--x-tx)}
+html.x3 .pool>small{font-weight:600}
+html.x3 .pool>b{font-weight:700;letter-spacing:-.022em}
+html.x3 .pool-ld{color:var(--x-tx2)}
+html.x3 .pool-a{color:var(--x-tx2)}
+html.x3 .pool-r small{font-weight:600;color:var(--x-tx2)}
+html.x3 .pool-r b{font-weight:700;letter-spacing:-.022em}
+html.x3 .tgx-one small{font-weight:600}
+html.x3 .tgx-one b{font-weight:700;letter-spacing:-.022em}
+html.x3 .tgx-lab b{font-weight:700}
+html.x3 .tgx-pop span{font-weight:700}
+html.x3 .tgx-pop span{border-radius:4px}
+html.x3 #lqDist .lq-t.tgx-head .tgx-go{border-radius:4px;font-weight:700}
+html.x3 .tgx-lab{transition:opacity .45s ease,transform .5s cubic-bezier(.16,1,.3,1)}
+html.x3 .rx3-r{border-radius:8px}
+html.x3 .rx3-t b{font-weight:700;letter-spacing:-.022em}
+html.x3 .rx3-v{border-radius:6px;background:var(--x-s2)}
+html.x3 .rx3-k{border-radius:8px;background:var(--x-s1)}
+html.x3 .rx3-k small{font-weight:600;color:var(--x-tx2)}
+html.x3 .rx3-k b{font-weight:700;letter-spacing:-.022em}
+html.x3 .rx3-k.up b{color:var(--x-up)}
+html.x3 .rx3-k.dn b{color:var(--x-dn)}
+html.x3 .rx3-k.none b{color:var(--x-tx2)}
+html.x3 .rx3-c{border-radius:8px}
+html.x3 .rx3-ai b{font-weight:700}
+html.x3 .rx3-cv{font-weight:700;letter-spacing:-.022em}
+html.x3 .rx3-c.r small{color:var(--x-dn)}
+html.x3 .rx3-h>.rx3-v{border-radius:6px}
+html.x3 .fq i.g{background:var(--x-up)}
+html.x3 .fq i.r{background:var(--x-dn)}
+html.x3.x2 .sgt .sgr-h b{font-weight:700;letter-spacing:-.005em}
+html.x3.x2 .sgt .sgt-rh small{font-weight:600}
+html.x3.x2 .sgt .st-sec{border-radius:6px;background:var(--x-s2)}
+html.x3.x2 .sgt .st-sec b{font-weight:700;letter-spacing:-.005em}
+html.x3.x2 .sgt .st-sec small{font-weight:600}
+html.x3.x2 .st-box.sgx .sgt .sgr-c{border-radius:6px}
+html.x3 .x3-rc{border-radius:8px}
+html.x3 .x3-rc b{font-weight:700;letter-spacing:-.005em}
+html.x3 .x3-rc strong{font-weight:700;letter-spacing:-.022em}
+html.x3 .x3-rc small{font-weight:600}
+html.x3 .x3-rc.lead .x3-tag{border-radius:4px;font-weight:700}
+html.x3 .x3-bet{border-radius:8px}
+html.x3 .x3-bet b{font-weight:700;letter-spacing:-.005em}
+html.x3 .x3-left{font-weight:600}
+html.x3 .x3-tok{border-radius:8px}
+html.x3 .x3-tok code{font-weight:600;border-radius:6px}
+html.x3 .x3-ch{font-weight:700;letter-spacing:-.005em}
+html.x3 .x3-copy,html.x3 .x3-sl{border-radius:6px;font-weight:700}
+html.x3 .x3-cd{font-weight:700}
+html.x3 .x3-lr{border-radius:8px}
+html.x3 .x3-rk{font-weight:700;letter-spacing:-.022em}
+html.x3 .x3-nm a{font-weight:700;letter-spacing:-.022em}
+html.x3 .x3-lr.lead .x3-tag2,html.x3 .x3-tag2{border-radius:4px;font-weight:700}
+html.x3 .x3-w b{font-weight:700;letter-spacing:-.022em}
+html.x3 .x3-rw b{font-weight:700;letter-spacing:-.005em}
+html.x3 .x3-w small,html.x3 .x3-rw small{font-weight:600}
+html.x3 .x3-more{font-weight:700}
+html.x3 .x3-card{border-radius:8px}
+html.x3 .x3-meta{font-weight:600}
+html.x3 .x3-cr{border-radius:8px}
+html.x3 .x3-cr b{font-weight:700;letter-spacing:-.005em}
+html.x3 .x3-v{font-weight:700}
+html.x3 .x3-cr.x .x3-v{color:var(--x-dn)}
+html.x3 .x3-out{border-radius:8px}
+html.x3 .x3-out b{font-weight:700;letter-spacing:-.022em}
+html.x3 .x3-film{border-radius:8px;font-weight:700}
+html.x3 .x3-film img{border-radius:6px}
+html.x3 .x3-road summary{font-weight:700}
+
+/* ================= 3. COMPONENTS (hand-tuned, after the generated remaps) ================= */
+
+/* ---------- type roles ---------- */
+/* <b> with no rule of its own: 600, not the browser's "bolder" (which turns 600 text into 900) */
+:where(html.x3) :where(b,strong){font-weight:600}
+html.x3 :is(h1,h2,h3,h4){text-transform:none}
+html.x3 h1{font:700 clamp(30px,4vw,48px)/1.05 var(--fd);letter-spacing:-.035em}
+html.x3 .hero h1{font-size:clamp(29px,4.3vw,54px);line-height:1.02;letter-spacing:-.04em;color:var(--x-tx3)}
+@media(max-width:640px){html.x3 .hero h1{font-size:min(32px,8.2vw)}}
+html.x3 .hero h1 .hl{color:var(--x-tx)}
+html.x3 h2{font:700 clamp(26px,3.4vw,40px)/1.08 var(--fd);letter-spacing:-.032em;margin-top:10px}
+html.x3 .lede,html.x3 .hero .sub{color:var(--x-tx2)}
+html.x3 .lede b{color:var(--x-tx);font-weight:600}
+/* small data figures: Geist Mono, tabular */
+/* small data figures only (countdown, % chips, round chips, section index, the CA); words and hero figures stay in Geist */
+html.x3 :is(.x3-left,.x3-tok code,.chip,.pnl-k em,.fol-p,.fol-v span,.sh .no,.xsh .no,.gbox .n){font-family:var(--x-mono);font-variant-numeric:tabular-nums slashed-zero}
+/* mono never for prose: the page used --fm (a label face) for these paragraphs */
+html.x3 :is(.risk,.ca,footer small,.x3-meta){font-family:var(--fb)}
+
+/* ---------- header ---------- */
+html.x3 .top{background:color-mix(in srgb,var(--x-bg) 88%,transparent);border-bottom:1px solid var(--x-line)}
+html.x3 .brand .mark,html.x3 .badge.mark,html.x3 .sealart .mark{background:var(--x-yel);color:#0b0e14;border-radius:6px;font-weight:700;letter-spacing:-.03em}
+html.x3 .brand .mark{font-size:20px;padding:7px 8px 6px}
+html.x3 :is(.brand .mark,.badge.mark,.sealart .mark) :is(.s,.e,.z){color:#0b0e14}
+html.x3 .brand b{font:600 15px/1.1 var(--fb);letter-spacing:-.015em;text-transform:none;word-spacing:0}
+html.x3 .brand b small{font:500 12px/1.3 var(--fb);letter-spacing:0;text-transform:none;color:var(--x-tx3)}
+html.x3 .nav a{font:500 14px/1 var(--fb);letter-spacing:-.005em;text-transform:none;word-spacing:0;color:var(--x-tx2);border-radius:6px;background:none}
+html.x3 .nav a:hover{background:var(--x-s2);color:var(--x-tx)}
+html.x3 .nav a[aria-current=page]{color:var(--x-tx);background:linear-gradient(var(--x-yel),var(--x-yel)) left 10px right 10px bottom 0/calc(100% - 20px) 2px no-repeat;border-radius:0}
+html.x3 .live{background:var(--x-yel-t);color:var(--x-yel);border:1px solid rgba(255,199,44,.32);border-radius:6px;font:600 12px/1 var(--fb);letter-spacing:0}
+html.x3 .live:hover{background:var(--x-s2);color:var(--x-yel)}
+html.x3 .live i{background:var(--x-dn)}
+@media(max-width:760px){
+  html.x3 .nav{border-top:1px solid var(--x-line)}
+  html.x3 .nav a,html.x3 .nav:has(a:nth-child(5)) a{font-size:13px;padding:0 6px}
+  html.x3 .nav a[aria-current=page]{background-position:left 6px bottom 0;background-size:calc(100% - 12px) 2px}
+}
+@media(max-width:374px){html.x3 .nav a,html.x3 .nav:has(a:nth-child(5)) a{font-size:12px;padding:0 4px;letter-spacing:-.01em}}
+/* the Leaderboard tab's score ticker */
+html.x3 .tick{background:var(--x-s1);border-bottom:1px solid var(--x-line)}
+html.x3 .tick .tl{background:var(--x-s2);color:var(--x-yel);font:600 11px/1 var(--fb);letter-spacing:.08em}
+html.x3 .tick .tc>span{font:500 13px/1 var(--fb);letter-spacing:0;text-transform:none;border-right-color:var(--x-line)}
+html.x3 .tick .tp{background:var(--x-s2);border-left-color:var(--x-line)}
+
+/* ---------- section heads: "01  THE BUYBACK" as a quiet eyebrow, then the head ---------- */
+html.x3 :is(.sh,.xsh) .no{background:none;color:var(--x-yel);padding:0;margin-right:10px;font:500 13px/1 var(--x-mono);letter-spacing:0;border:0}
+html.x3 .eb{background:none;color:var(--x-tx2);padding:0;font:600 12px/1 var(--fb);letter-spacing:.08em}
+
+/* ---------- buttons ---------- */
+html.x3 .btn{background:var(--x-yel);color:#0b0e14;border-radius:8px;font:600 15px/1 var(--fb);letter-spacing:-.005em;text-transform:none;transition:background .15s}
+html.x3 .btn:hover{background:#ffd457;color:#0b0e14;transform:none}
+html.x3 .btn:active{transform:none}
+html.x3 .btn.lt{background:var(--x-s2);color:var(--x-tx)}
+html.x3 .btn.lt:hover{background:var(--x-s3)}
+html.x3 :is(.btn[disabled],.btn.off){background:var(--x-s2);color:var(--x-tx3);outline:0;border:1px dashed var(--x-line2)}
+
+/* ---------- hero ---------- */
+html.x3 .x3-lines p{color:var(--x-tx2);font-weight:400}
+html.x3 .x3-lines p:first-child{color:var(--x-tx);font-weight:600}
+html.x3 .x3-rc{background:var(--x-s1);border:1px solid var(--x-line);border-radius:8px;gap:6px;padding:14px 4px 12px}
+html.x3 .x3-rc.lead{background:linear-gradient(var(--x-yel-t),var(--x-yel-t)),var(--x-s1);border-color:var(--x-yel-l)}
+html.x3 .x3-rc.lead .x3-tag{background:var(--x-yel);color:#0b0e14;border-radius:4px;font:600 11px/1 var(--fb);padding:4px 7px;top:-10px}
+html.x3 .x3-rc b{font:600 14px/1 var(--fb);letter-spacing:-.01em;text-transform:none}
+html.x3 .x3-rc strong{font:600 36px/.95 var(--fd);letter-spacing:-.04em}
+html.x3 .x3-rc.lead strong{color:var(--x-yel)}
+html.x3 .x3-rc small,html.x3 .x3-rc.lead small{font:500 11px/1 var(--fb);letter-spacing:.06em;color:var(--x-tx3)}
+html.x3 .x3-rc .lg,html.x3 .lg{border:1px solid var(--x-line2)}
+html.x3 .x3-bet{background:var(--x-s1);border:1px solid var(--x-line);border-radius:8px;color:var(--x-tx);font:500 14px/1.2 var(--fb)}
+html.x3 .x3-bet b{font:600 14px/1 var(--fb);color:var(--x-tx);letter-spacing:0;text-transform:none}
+html.x3 .x3-left{font:600 15px/1 var(--x-mono);color:var(--x-yel);letter-spacing:-.01em}
+html.x3 .x3-tok{background:var(--x-s1);border:1px solid var(--x-line);border-radius:8px}
+html.x3 .x3-tok p{font:400 14px/1.45 var(--fb);color:var(--x-tx2)}
+html.x3 .x3-tok p b{color:var(--x-tx);font-weight:600}
+html.x3 .x3-tok code{background:var(--x-s2);border-radius:4px}
+html.x3 :is(.x3-copy,.x3-sl){background:var(--x-s3);color:var(--x-tx);border-radius:6px;font:600 13px/1 var(--fb);text-transform:none;letter-spacing:0}
+html.x3 .x3-safe{color:var(--x-tx3);font:400 13px/1.45 var(--fb)}
+
+/* ---------- 01 the buyback: GPU photo, then where the fee goes ---------- */
+html.x3 .x3-cd{font:600 12px/1 var(--fb);letter-spacing:.08em;color:var(--x-tx2)}
+html.x3 .gpu-img{border-radius:8px}
+html.x3 .gc-eng{letter-spacing:.1em;font-weight:700}
+html.x3 .gpu-t{color:var(--x-tx2)}
+html.x3 .gpu-t b{color:var(--x-tx);font-weight:600}
+html.x3 .mt-top{background:none;border:0;padding:0 0 4px;font:600 clamp(17px,2vw,21px)/1.3 var(--fb);letter-spacing:-.015em;text-transform:none;color:var(--x-tx);text-align:center}
+html.x3 .mt-top b{font-weight:600}
+html.x3 .mt-top>span{display:none}
+html.x3 .mt-split::before{border:1px solid var(--x-line2);border-bottom:0;border-radius:6px 6px 0 0}
+html.x3 :is(.mt-flow)::before{border:1px solid var(--x-line2);border-bottom:0;border-radius:6px 6px 0 0}
+html.x3 .mt-join::before{border:1px solid var(--x-line2);border-top:0;border-radius:0 0 6px 6px}
+html.x3 :is(.mt-split,.mt-flow,.mt-join)::after,html.x3 .mt-v{width:1px;margin-left:-.5px;background:var(--x-line2)}
+html.x3 .mt-v{margin-left:0}
+html.x3 .mt-br{border-radius:8px;border:1px solid var(--x-line)}
+html.x3 .mt-br.pot{background:linear-gradient(var(--x-yel-t),var(--x-yel-t)),var(--x-s1);border-color:rgba(255,199,44,.28)}
+html.x3 .mt-br.lab{background:var(--x-s1)}
+html.x3 .mt-pc b{color:var(--x-tx);font-weight:600;letter-spacing:-.04em}
+html.x3 .mt-br.pot .mt-pc b{color:var(--x-yel)}
+html.x3 .mt-pc span{font:600 12px/1 var(--fb);letter-spacing:.08em;text-transform:uppercase;color:var(--x-tx2)}
+html.x3 .mt-box{background:var(--x-s2);border-radius:6px}
+html.x3 .mt-box>p,html.x3 .mt-box p{color:var(--x-tx2)}
+html.x3 .mt-col>p{border-radius:6px}
+html.x3 .mt-o{font:600 13px/1.1 var(--fb);letter-spacing:0;text-transform:none}
+html.x3 .mt-o.w{background:var(--x-up-t);color:var(--x-up);border:1px solid rgba(63,214,139,.3)}
+html.x3 .mt-o.l{background:var(--x-dn-t);color:var(--x-dn);border:1px solid rgba(255,90,106,.3)}
+html.x3 .mt-r{background:var(--x-s2);color:var(--x-tx);font-weight:500}
+html.x3 .mt-next{background:var(--x-s2);color:var(--x-tx2);border-radius:6px;font-weight:400}
+html.x3 .mt-next b{font:600 14px/1.2 var(--fb);letter-spacing:0;text-transform:none;color:var(--x-tx)}
+html.x3 .x3-road summary{font:600 13px/1 var(--fb);letter-spacing:0;text-transform:none;color:var(--x-tx)}
+html.x3 .ls-m{background:var(--x-s3);color:var(--x-tx);font:600 12px/1 var(--x-mono)}
+html.x3 .ls.done .ls-m{background:var(--x-up-t);color:var(--x-up)}
+html.x3 .ls.cur .ls-m{background:var(--x-yel);color:#0b0e14}
+html.x3 .ls-t b{font:600 14px/1.25 var(--fb);letter-spacing:-.01em;text-transform:none}
+html.x3 .ls-t b em{background:var(--x-s3);color:var(--x-tx2);border-radius:4px;font:600 10px/1 var(--fb)}
+html.x3 :is(.m-fine,.x3-fee){color:var(--x-tx2)}
+
+/* ---------- 02 leaderboard rows ---------- */
+html.x3 .x3-lr{background:var(--x-s1);border:1px solid var(--x-line);border-radius:8px}
+html.x3 .x3-lr.lead{background:linear-gradient(var(--x-yel-t),var(--x-yel-t)),var(--x-s1);border-color:var(--x-yel-l)}
+html.x3 .x3-rk{font:500 15px/1 var(--x-mono);color:var(--x-tx3);letter-spacing:0}
+html.x3 .x3-rk sup{font-size:1em;vertical-align:baseline}
+html.x3 .x3-lr.lead .x3-rk{color:var(--x-yel)}
+html.x3 .x3-nm a{font:600 19px/1 var(--fb);letter-spacing:-.02em;text-transform:none}
+html.x3 :is(.x3-tag2,.x3-lr.lead .x3-tag2){background:var(--x-yel-t);color:var(--x-yel);border-radius:4px;font:600 10.5px/1.1 var(--fb);letter-spacing:.04em;padding:4px 6px}
+html.x3 .x3-w b{font:600 32px/.95 var(--fd);letter-spacing:-.04em}
+html.x3 .x3-lr.lead .x3-w b{color:var(--x-yel)}
+html.x3 :is(.x3-w,.x3-rw) small,html.x3 .x3-lr.lead small{font:500 11px/1 var(--fb);letter-spacing:.06em;color:var(--x-tx3)}
+html.x3 .x3-note{font:400 14px/1.5 var(--fb);color:var(--x-tx2)}
+html.x3 .x3-more{font:600 14px/1 var(--fb);text-transform:none;letter-spacing:0;color:var(--x-tx);background:var(--x-s2);border-radius:6px;padding:0 14px;min-height:40px;margin-top:12px;text-decoration:none}
+html.x3 .x3-more:hover{background:var(--x-s3)}
+
+/* ---------- 03 last round, a receipt ---------- */
+html.x3 .x3-card{background:var(--x-s1);border:1px solid var(--x-line);border-radius:8px}
+html.x3 .x3-meta{font:500 12px/1.4 var(--fb);letter-spacing:.04em;color:var(--x-tx3)}
+html.x3 .x3-cr{background:var(--x-s2);border-radius:6px;border:1px solid transparent}
+html.x3 .x3-cr.w{background:linear-gradient(var(--x-yel-t),var(--x-yel-t)),var(--x-s2);border-color:var(--x-yel-l)}
+html.x3 .x3-cr b{font:600 15px/1 var(--fb);letter-spacing:-.01em;text-transform:none}
+html.x3 .x3-call{font:500 14px/1 var(--fb);color:var(--x-tx2)}
+html.x3 .x3-v{font:600 11.5px/1.25 var(--fb);letter-spacing:.04em}
+html.x3 .x3-cr.w .x3-v{color:var(--x-yel)}
+html.x3 .x3-cr.x .x3-v{color:var(--x-dn)}
+html.x3 .x3-out{background:var(--x-s2);border-radius:6px;font:500 14px/1.3 var(--fb);color:var(--x-tx2)}
+html.x3 .x3-out b{font:600 24px/1 var(--fd);letter-spacing:-.03em}
+html.x3 .x3-out b.up{color:var(--x-up)}html.x3 .x3-out b.dn{color:var(--x-dn)}
+html.x3 .x3-say{font:600 15px/1.45 var(--fb);color:var(--x-tx)}
+html.x3 .x3-rule{font:400 14px/1.5 var(--fb);color:var(--x-tx2)}
+html.x3 .x3-film{background:var(--x-s2);border-radius:8px;font:600 14px/1 var(--fb);text-transform:none;letter-spacing:0;color:var(--x-tx)}
+html.x3 .x3-film:hover{background:var(--x-s3)}
+html.x3 .x3-film img{border-radius:6px}
+html.x3 .x3-acts a:not(.x3-film){font:600 14px/1 var(--fb);text-transform:none;letter-spacing:0;color:var(--x-tx);text-underline-offset:4px;text-decoration-color:var(--x-line2)}
+
+/* ---------- 04 the proof ---------- */
+html.x3 .lsw,html.x3 #learn .lsw{background:var(--x-s1);border:1px solid var(--x-line);border-radius:8px;padding:3px;gap:3px}
+html.x3 .lsw button,html.x3 #learn .lsw button{border-radius:6px;font:600 14px/1 var(--fb);letter-spacing:-.005em;text-transform:none;color:var(--x-tx2)}
+html.x3 .lsw button:hover{background:var(--x-s2);color:var(--x-tx)}
+html.x3 .lsw button[aria-pressed=true]{background:var(--x-s3);color:var(--x-tx)}
+html.x3 .lq{background:var(--x-s1);border:1px solid var(--x-line);border-radius:8px}
+html.x3 .lq h3{font:600 clamp(18px,2vw,22px)/1.2 var(--fd);letter-spacing:-.02em;text-transform:none}
+html.x3 .lq p{color:var(--x-tx2);font-weight:400}
+html.x3 .pnl-k li{background:var(--x-s2);border-radius:8px;border:1px solid transparent}
+html.x3.x2 .lq-roi .pnl-k li.lead,html.x3 .pnl-k li.lead{background:linear-gradient(var(--x-yel-t),var(--x-yel-t)),var(--x-s2);border-color:var(--x-yel-l);animation:none}
+html.x3 .pnl-k strong{font-weight:600;letter-spacing:-.03em}
+html.x3 .pnl-k em{border-radius:4px;font-weight:500}
+html.x3 .pnl-k em.pu{background:var(--x-up-t);color:var(--x-up)}
+html.x3 .pnl-k em.pd{background:var(--x-dn-t);color:var(--x-dn)}
+html.x3 .pnl svg path{stroke-width:2px}
+html.x3 .pnl svg path[style*="#111"]{stroke:#c9ced8!important}
+html.x3 .pnl-d[style*="#111"]{background:#c9ced8!important}
+html.x3 svg [stroke="#111"]{stroke:#c9ced8}
+html.x3 svg [fill="#111"]{fill:#c9ced8}
+html.x3 .pnl-z{border-top:1px dashed rgba(255,255,255,.28);opacity:1}
+html.x3 .pnl-z small,html.x3 .pnl-x small{color:var(--x-tx2);font:500 11px/1 var(--fb);letter-spacing:.04em}
+
+/* ---------- 05 the record: the card loses its yellow frame and becomes a plain panel ---------- */
+html.x3 .face{background:var(--x-s1);padding:0;border:1px solid var(--x-line2);border-radius:8px}
+html.x3 :is(.f-none,.pend,.seal) .face{background:var(--x-s1)}
+html.x3 .fin{background:var(--x-s1);border-radius:8px}
+html.x3 .ctop{background:var(--x-s1);border-bottom:1px solid var(--x-line);font:600 15px/1.1 var(--fb);letter-spacing:-.01em;text-transform:none}
+html.x3 .rd{color:var(--x-tx3)}
+html.x3 .art{border-bottom:1px solid var(--x-line);background:var(--x-s2)}
+html.x3 .cwin{background:var(--x-s2);border-radius:6px}
+html.x3 .cwin small{font:600 12px/1 var(--fb);letter-spacing:.08em;color:var(--x-yel)}
+html.x3 .cwin .wn{font:600 24px/1 var(--fb);letter-spacing:-.03em;text-transform:none}
+html.x3 .f-none .cwin{background:var(--x-dn-t)}
+html.x3 .f-none .cwin small{color:var(--x-dn)}
+html.x3 .flipb{background:var(--x-s2);color:var(--x-tx);border-radius:6px;font:600 14px/1 var(--fb);letter-spacing:0;text-transform:none}
+html.x3 .flipb:hover,html.x3 .flipb:focus-visible{background:var(--x-s3);color:var(--x-tx)}
+html.x3 .sealart{background:var(--x-s2)}
+html.x3 .sealart span.sl{background:var(--x-s3);color:var(--x-tx2);border-radius:4px;font:600 11px/1 var(--fb)}
+html.x3 .seal .cwin{background:var(--x-s2)}
+html.x3 .slabart{background:var(--x-s2)}
+html.x3 .art .soon{background:var(--x-s2)}
+html.x3 .stamp{background:var(--x-yel);color:#0b0e14;border-radius:4px;font:600 13px/1 var(--fb);text-transform:none}
+html.x3 .pcalls li{background:var(--x-s3);border-radius:6px}
+html.x3 .bk-h{background:var(--x-s2);border-bottom:1px solid var(--x-line)}
+html.x3 .bk-h h4{font:600 16px/1.15 var(--fb);text-transform:none;letter-spacing:-.01em}
+html.x3 .bk-r{background:var(--x-s2);border-radius:6px}
+html.x3 .bk-r.ok{background:linear-gradient(var(--x-up-t),var(--x-up-t)),var(--x-s2)}
+html.x3 .bk-r.win{background:linear-gradient(var(--x-yel-t),var(--x-yel-t)),var(--x-s2);border:1px solid var(--x-yel-l)}
+html.x3 .bk-r .who{font:600 15px/1 var(--fb);text-transform:none}
+html.x3 .bk-out{background:var(--x-s2);border-radius:6px}
+html.x3 .bk-out small{font:600 14px/1 var(--fb);text-transform:none}
+html.x3 .crown{background:var(--x-yel);color:#0b0e14;border-radius:4px;font:600 11px/1 var(--fb);transform:none}
+html.x3 .crown>i{display:none}
+/* carousel controls: R1, R2 ... as plain tabs; the two ends as ghost buttons */
+html.x3 .chip{background:var(--x-s1);color:var(--x-tx2);border:1px solid var(--x-line);border-radius:6px;font-weight:500;font-size:13px}
+html.x3 .chip:hover{background:var(--x-s2);color:var(--x-tx)}
+html.x3 .chip.p{background:var(--x-s1);color:var(--x-yel);border-style:dashed;border-color:rgba(255,199,44,.4)}
+html.x3 .chip.s{background:var(--x-bg);color:var(--x-tx3)}
+html.x3 .chip[aria-current=true]{background:var(--x-s3);color:var(--x-tx);border-color:var(--x-yel)}
+html.x3 .car-cap,html.x3 .car-cap.up{background:none;color:var(--x-tx2);border:1px solid var(--x-line2);border-radius:6px;font:600 12px/1 var(--fb);letter-spacing:0;text-transform:none;padding:0 10px;animation:none}
+html.x3 .car-cap:hover{background:var(--x-s2);color:var(--x-tx)}
+html.x3 .car-cap[disabled]{color:var(--x-tx3);border-color:var(--x-line)}
+html.x3 .arw{background:var(--x-s2);color:var(--x-tx)}
+
+/* ---------- 06 get $EZ ---------- */
+html.x3 .gbox{background:var(--x-s1);border:1px solid var(--x-line);border-radius:8px}
+html.x3 .gbox .n{font:500 13px/1 var(--x-mono);color:var(--x-yel)}
+html.x3 .gbox h3{font:600 20px/1.2 var(--fd);letter-spacing:-.02em;text-transform:none}
+html.x3 .gbox p{color:var(--x-tx2);font-weight:400}
+html.x3 .ca{border:1px dashed var(--x-line2);border-radius:6px;color:var(--x-tx2);font:400 13.5px/1.5 var(--fb)}
+html.x3 .risk{font:400 13px/1.6 var(--fb);color:var(--x-tx2)}
+
+/* ---------- $EZ in section heads: the ticker in the accent, no outline ---------- */
+html.x3 .ezb{color:var(--x-yel);letter-spacing:-.03em}
+html.x3 .ezb :is(.s,.e,.z){color:inherit}
+
+/* ---------- footer ---------- */
+html.x3 footer{background:var(--x-s1);border-top:1px solid var(--x-line);color:var(--x-tx)}
+html.x3 .motto{font:700 clamp(28px,5vw,56px)/1.05 var(--fd);letter-spacing:-.04em;text-transform:none}
+html.x3 .motto :is(.e,.z){color:var(--x-yel)}
+html.x3 .badge.mark{font-size:22px;padding:8px 12px 7px}
+html.x3 footer small{font:500 11.5px/1.7 var(--fb);letter-spacing:.06em;color:var(--x-tx3)}
+html.x3 .ftl a{color:var(--x-tx2);font-weight:500}
+html.x3 .ftl a:hover{background:var(--x-s2);color:var(--x-tx)}
+
+/* ---------- direction and up / down ---------- */
+html.x3 .u{background:var(--x-up-t);color:var(--x-up)}
+html.x3 .d{background:var(--x-dn-t);color:var(--x-dn)}
+
+/* ---------- calm motion ---------- */
+html.x3 :is(.btn,.hlt,.hx2,.rx3-r):is(:hover,:active,:focus-visible){transform:none}
+html.x3 :is(.pc.r1,.cg-c.w,.cg-k i.foil,.rx3-c.w){animation:none;background-size:100% 100%}
+html.x3 .cin{transition:transform .5s cubic-bezier(.16,1,.3,1)}
+
+/* ---------- footer link: .ftl is also a 4-column grid elsewhere on the page; here it is one centred line ---------- */
+html.x3 footer .ftl{display:block}
+
+/* ---------- record card title: two lines allowed instead of an ellipsis (Geist is wider than the condensed face) ---------- */
+html.x3 .ctop h3{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.15}
+@media(max-width:759px){html.x3 .ctop{font-size:13px}}
+
+/* ================= LEADERBOARD TAB (#view) ================= */
+html.x3 #view :is(.xsh h1,.xsh h2,h1){text-transform:none;color:var(--x-tx);font-weight:700;letter-spacing:-.035em}
+html.x3 #view .xsh :is(h1,h2){font-size:clamp(26px,3.4vw,40px);line-height:1.08}
+html.x3 .lbh{color:var(--x-tx3)}
+html.x3 .lbh :is(span,small,b){font-weight:500;letter-spacing:.06em;color:var(--x-tx3)}
+html.x3 .lbr.pc{background:var(--x-s1);border:1px solid var(--x-line);border-radius:8px}
+html.x3 .lbr.pc.lead,html.x3 .lbr.pc.r1{background:linear-gradient(var(--x-yel-t),var(--x-yel-t)),var(--x-s1);border-color:var(--x-yel-l);animation:none}
+html.x3 .lbr .crown{display:none}
+html.x3 .pc-best,html.x3 .x2 .lbr .pc-best,html.x3 .lbr .pc-best{background:var(--x-s3);color:var(--x-yel);border:1px solid var(--x-yel-l);border-radius:4px;font:600 10px/1 var(--fb);letter-spacing:.05em;padding:3px 6px}
+html.x3 .lbr .rk{font:500 15px/1 var(--x-mono);letter-spacing:0;color:var(--x-tx3)}
+html.x3 .lbr .rk sup{font-size:1em;vertical-align:baseline}
+html.x3 .lbr.lead .rk,html.x3 .lbr.r1 .rk{color:var(--x-yel)}
+html.x3 .lbr .pc-t h3{font:600 16px/1.1 var(--fb);letter-spacing:-.015em;text-transform:none}
+html.x3 .lbr .lb-c b{font-weight:600;letter-spacing:-.02em}
+html.x3 .lbr .pc-w b{font-weight:600;letter-spacing:-.03em}
+html.x3 .lbr.lead .pc-w b,html.x3 .lbr.r1 .pc-w b{color:var(--x-yel)}
+html.x3 :is(.lbr .lb-c small,.lbr .lb-m small,.lbr .pc-w span,.lbr.lead .lb-c small,.lbr.r1 .lb-c small){color:var(--x-tx3);font-weight:500}
+html.x3 .fq i{border-radius:2px;background:var(--x-s3)}
+html.x3 .fq i.g{background:var(--x-up)}html.x3 .fq i.r{background:var(--x-dn)}
+/* every call, one square */
+html.x3 .cg-wrap{background:var(--x-s1);border:1px solid var(--x-line);border-radius:8px}
+html.x3 .cg-c{color:var(--x-tx);border-radius:6px;border:1px solid transparent}
+html.x3 .cg-c.g{background:rgba(63,214,139,.20)}
+html.x3 .cg-c.r{background:rgba(255,90,106,.18)}
+html.x3 .cg-c.w{background:rgba(255,199,44,.16);border-color:var(--x-yel-l);color:var(--x-tx)}
+html.x3 .cg-c.n{background:var(--x-s2);color:var(--x-tx3)}
+html.x3 .cg-k i.foil{background:rgba(255,199,44,.4)!important}
+html.x3 .cg-k i.k-g{background:rgba(63,214,139,.45)!important}
+html.x3 .cg-k i.k-r{background:rgba(255,90,106,.4)!important}
+html.x3 .co-mark{border:1px solid var(--x-line2)}
+/* stats switch and chart */
+html.x3 .rsw2 button[aria-pressed=true] .skd{box-shadow:none!important}
+/* findings */
+html.x3 .fdg{background:var(--x-s1);border:1px solid var(--x-line);border-radius:8px}
+html.x3 .fdg.fun{background:var(--x-s1)}
+html.x3 .fdg.fun h3{color:var(--x-tx)}
+html.x3 .fdg h3,html.x3.x2 .fdg h3{font-size:clamp(22px,2.6vw,28px);line-height:1.12}
+html.x3 .fdg-s span,html.x3 .fdg.fun .fdg-s span{background:var(--x-s2);border-radius:6px}
+html.x3 .fdg-s b,html.x3 .fdg.fun .fdg-s b{font-weight:600;letter-spacing:-.03em;color:var(--x-tx);text-transform:none}
+html.x3 .fdg .fdg-now{background:var(--x-yel-t);color:var(--x-yel)}
+html.x3 .fdg-n{border-top:1px solid var(--x-line);color:var(--x-tx3)}
+/* hall of fame (and shame): flat panels, the kind in its colour, no emoji */
+html.x3 .hlt.rec2{background:var(--x-s1);color:var(--x-tx);border:1px solid var(--x-line)}
+html.x3 .rec2 .hl-k{font:600 19px/1.15 var(--fb);letter-spacing:-.015em;text-transform:none}
+html.x3 .rk-win .hl-k{color:var(--x-yel)}html.x3 .rk-close .hl-k{color:var(--x-up)}html.x3 .rk-miss .hl-k{color:var(--x-dn)}
+html.x3 .hl-ic{display:none}
+html.x3 .hl-wm{opacity:.06;font-weight:700;letter-spacing:-.05em}
+html.x3 .rec2 .hl-hold{border-top:1px solid var(--x-line)}
+html.x3 .rec2 :is(.hl-hold small,.hl-hold i){color:var(--x-tx3);opacity:1}
+html.x3 .rec2 :is(.hl-h,.hl-s){color:var(--x-tx2);opacity:1}
+html.x3 .hl-hold b{font-weight:600;text-transform:none;letter-spacing:-.01em}
+html.x3 .hl-hold strong{font-weight:600;letter-spacing:-.03em}
+html.x3 .hx2-k{background:var(--x-yel);color:#0b0e14;border-radius:4px}
+/* stats card: one flat surface for every metric (was tinted blue / green / yellow / purple per metric) */
+html.x3 .rf-face,html.x3 :is(.sx1,.sx2,.sflip) .rf-face[class]{background:var(--x-s1);color:var(--x-tx);border:1px solid var(--x-line);border-radius:8px}
+html.x3 .sx1 .rf-face :is(.pnl-k li,.udr:not(.mkt)),html.x3 .sx1 .st-box.cmp .tg-h{background:var(--x-s2)}
+/* the chart legend's open circle ("wrong way") is drawn with an inset ring: keep that one */
+html.x3 :is(.lx-leg,.lx2-leg) .d0{box-shadow:inset 0 0 0 2px var(--lx-mute,var(--x-tx2))!important;background:none}
+/* sector grid: tinted cells instead of full green / yellow / red fills */
+html.x3 .sgr-c{color:var(--x-tx);border-radius:6px}
+html.x3 .sgr-c.hi{background:rgba(63,214,139,.22)}
+html.x3 .sgr-c.md{background:rgba(255,199,44,.18)}
+html.x3 .sgr-c.lo{background:rgba(255,90,106,.2)}
+html.x3 .sgr-c.none{background:none;border:1px dashed var(--x-line2);color:var(--x-tx3)}
+html.x3 .sgr-k i{border:1px solid var(--x-line2)}
+html.x3 .sgr-k .hi{background:rgba(63,214,139,.45)}html.x3 .sgr-k .md{background:rgba(255,199,44,.4)}html.x3 .sgr-k .lo{background:rgba(255,90,106,.45)}
+html.x3 .sgr-r .st-who{background:var(--x-s2);color:var(--x-tx)}
+html.x3 .sgr-r .st-who small{color:var(--x-tx3)}
+html.x3 .cg-k i{border:1px solid var(--x-line2)}
+/* roadmap: later steps keep a visible marker */
+html.x3 .ls.todo .ls-m{background:var(--x-s2);border:1px solid var(--x-line2);opacity:1}
+/* the graded stamp: upright, no rubber-stamp tilt */
+html.x3 .gstamp{transform:none;border-width:1px}
+html.x3 .gstamp::after{display:none}
+/* spacing: a little denser than the poster layout */
+html.x3 .sec{padding-top:96px}
+@media(max-width:640px){html.x3 .sec{padding-top:80px}}
+html.x3 :is(.x3-rk,.lbr .rk) sup{margin:0;letter-spacing:0}
+/* logo tiles keep their app-icon rounding, capped at the card radius */
+html.x3 .lg{border-radius:min(22.5%,8px)}
+html.x3 .co-mark{border-radius:min(24%,8px)}
+
+/* ================= OTHER TABS (Results, Upcoming, Buyback): same rules, lighter touch ================= */
+/* filter counts */
+html.x3 :is(.ufc,.bseg) button b{background:var(--x-s3);color:var(--x-tx2);border-radius:4px}
+html.x3 :is(.ufc,.bseg) button[aria-pressed=true] b{background:var(--x-yel);color:#0b0e14}
+/* results: the four call cells on each round */
+html.x3 .rx3-c{border:1px solid transparent;border-radius:6px}
+html.x3 .rx3-c.g{background:rgba(63,214,139,.16)}html.x3 .rx3-c.r{background:rgba(255,90,106,.14)}
+html.x3 .rx3-c small,html.x3 .rx3-c.r small,html.x3 .rx3-c.w small{color:var(--x-tx)}
+html.x3 .rx3-c.w{border-color:var(--x-yel-l)}
+html.x3 .rx3-c.n{opacity:1}html.x3 .rx3-c.n small{color:var(--x-tx3)}
+html.x3 .rx3-k.win{background:var(--x-yel-t);color:var(--x-tx)}html.x3 .rx3-k.win small{color:var(--x-yel)}
+/* upcoming: the "Next" day badge */
+html.x3 .rdh .nx{background:var(--x-yel);color:#0b0e14;border-radius:4px;font-weight:600}
+html.x3 #view .rdh h2{text-transform:none;letter-spacing:-.03em}
+/* buyback: the bag calculator as one panel, not a yellow poster */
+html.x3 .mx{background:var(--x-s1);color:var(--x-tx);border:1px solid var(--x-line);border-radius:8px}
+html.x3 .mx-q{color:var(--x-tx);font-weight:600}
+html.x3 .mx-n{background:var(--x-s3);color:var(--x-yel);font:500 14px/1 var(--x-mono)}
+html.x3 .mcb{background:var(--x-s2);color:var(--x-tx);border-radius:6px;font-weight:600;letter-spacing:-.02em}
+html.x3 .mcb:hover{background:var(--x-s3)}
+html.x3 .mcb[aria-pressed=true]{background:var(--x-s3);color:var(--x-yel);border:1px solid var(--x-yel)}
+html.x3 .mcb:active{transform:none}
+html.x3 .gauge>small{color:var(--x-tx2);font-weight:600}
+html.x3 .g-tank{background:var(--x-s2);border:1px solid var(--x-line2);border-radius:6px}
+html.x3 .g-tank i{border-radius:0 0 5px 5px;background:rgba(255,199,44,.55)}
+html.x3 .g-tank b{background:var(--x-s3);color:var(--x-tx);border-radius:4px}
+html.x3 .mx-out{background:var(--x-s2);color:var(--x-tx);border-radius:8px}
+html.x3 :is(.mx-k,.mx-of){color:var(--x-tx2);text-transform:none}
+html.x3 .mx-big{color:var(--x-yel);font-weight:600;letter-spacing:-.04em}
+html.x3 .coins{display:none}
+html.x3 .mx-lose{background:var(--x-dn-t);color:var(--x-dn);border-radius:6px}
+html.x3 .calc-h{text-transform:none}
+html.x3 :is(.flt,.seg,.ufc,.bseg) button b{opacity:1}
+/* upcoming: brand-colour tiles become dark tiles tinted with the company colour (white text stays readable on every brand) */
+html.x3 .look-brand .rtl{background:linear-gradient(color-mix(in srgb,var(--bc) 30%,transparent),color-mix(in srgb,var(--bc) 30%,transparent)),var(--x-s1);color:var(--x-tx);border:1px solid color-mix(in srgb,var(--bc) 45%,transparent);border-radius:8px}
+html.x3 .look-brand .rtl::after{opacity:.07;font-weight:700}
+html.x3 .rtl .rt b{font-weight:600;text-transform:none;letter-spacing:-.015em}
+html.x3 .rtl .rt small,html.x3 .rtl .rt>span{color:var(--x-tx2)}
+html.x3 .rtl:hover,html.x3 .rtl:focus-visible{transform:none}
+@media(max-width:640px){html.x3 .mcb{font-size:15px;letter-spacing:-.03em}}
+/* no 800 weights left on the page: the font request stays at Geist 400-700 + Geist Mono 500-600 */
+html.x3 .lx2 .lab tspan.v,html.x3 .how b{font-weight:700}
+
+/* ================= MERGE LAYER (2026-10-11): Exchange's surfaces + Terminal's mood + one type system with the hype film =================
+   Type: Instrument Sans (heads at width 75, weight 700, capitals; body at width 100) + Geist Mono for data. Both on Google Fonts.
+   Accent budget on screen 1: the hero punchline, the #1 marker, the countdown. #1 is a yellow bar on a raised surface, not a tint. */
+html.x3{
+  --fd:'Instrument Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --fb:'Instrument Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --fm:'Instrument Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --x-mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --x-yel-t:rgba(255,199,44,.05);
+  --x-cond:75%;
+}
+/* heads: condensed capitals, tight but not crushed */
+html.x3 :is(h1,h2,#view .xsh h1,#view .xsh h2,#view h1,.bf-back h2,.st-h h2,.motto){font-family:var(--fd);font-stretch:var(--x-cond);font-weight:700;text-transform:uppercase;letter-spacing:.002em}
+html.x3 h1{line-height:.96}
+html.x3 .hero h1{font-size:clamp(40px,5.6vw,72px);line-height:.94;color:var(--x-tx);letter-spacing:.004em}
+@media(max-width:640px){html.x3 .hero h1{font-size:min(40px,10.4vw)}}
+html.x3 .hero h1{text-wrap:balance}
+html.x3 :is(.x3-lines p,.lede,p){text-wrap:pretty}
+html.x3 .hero h1 .hl{color:var(--x-yel)}
+html.x3 h2{font-size:clamp(32px,4vw,52px);line-height:.98;letter-spacing:.004em}
+html.x3 #view .xsh :is(h1,h2){font-size:clamp(32px,4vw,52px);line-height:.98}
+html.x3 .motto{font-size:clamp(34px,5.4vw,64px);line-height:.98;letter-spacing:.004em}
+/* big numbers set like the heads; small data stays mono */
+html.x3 :is(.x3-rc strong,.x3-w b,.mt-pc b,.x3-out b,.pnl-k strong,.cwin .wn){font-family:var(--fd);font-stretch:var(--x-cond);font-weight:700;letter-spacing:0;font-variant-numeric:tabular-nums}
+html.x3 .x3-rc strong{font-size:44px;line-height:.9}
+html.x3 .x3-w b{font-size:40px;line-height:.9}
+/* section kickers: a hairline above, a mono index in yellow, a tracked label */
+html.x3 .sec>.sh{border-top:1px solid var(--x-line2);padding-top:22px}
+html.x3 :is(.sh,.xsh) .no{font:500 13px/1 var(--x-mono);color:var(--x-yel);letter-spacing:.02em}
+html.x3 .eb{font:600 12px/1 var(--x-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--x-tx2)}
+/* header: the live chip is neutral (the countdown carries the yellow); the brand mark keeps its three colours on an ink tile */
+html.x3 .live{background:var(--x-s1);color:var(--x-tx);border:1px solid var(--x-line2);font:500 12px/1 var(--x-mono);letter-spacing:.02em}
+html.x3 .brand .mark,html.x3 .badge.mark,html.x3 .sealart .mark{background:#05070b;border:1px solid var(--x-line2);border-radius:4px;font-family:var(--fd);font-stretch:var(--x-cond);font-weight:700;letter-spacing:.01em}
+html.x3 :is(.brand .mark,.badge.mark,.sealart .mark) .s{color:var(--x-yel)}
+html.x3 :is(.brand .mark,.badge.mark,.sealart .mark) .e{color:#2fd26f}
+html.x3 :is(.brand .mark,.badge.mark,.sealart .mark) .z{color:#ff4d4f}
+html.x3 .brand .mark{font-size:24px;padding:6px 8px 5px}
+html.x3 .brand b{font:700 15px/1.1 var(--fd);font-stretch:var(--x-cond);letter-spacing:.06em;text-transform:uppercase}
+html.x3 .brand b small{font:500 11px/1.3 var(--x-mono);letter-spacing:.06em;text-transform:uppercase}
+/* $EZ inside heads: a yellow $ and plain EZ, no outline */
+html.x3 .ezb{color:inherit}
+html.x3 .ezb .s{color:var(--x-yel)}
+/* #1: a raised surface and a yellow bar, never an olive tint */
+html.x3 .x3-rc.lead{background:var(--x-s2);border-color:var(--x-line2);box-shadow:inset 0 2px 0 var(--x-yel)!important}
+html.x3 .x3-rc.lead strong{color:var(--x-yel)}
+html.x3 .x3-rc.lead .x3-tag{font:600 11px/1 var(--x-mono);letter-spacing:.04em}
+html.x3 :is(.x3-lr.lead,.x3-cr.w,.lbr.pc.lead,.lbr.pc.r1,.bk-r.win){background:var(--x-s2);border-color:var(--x-line2);box-shadow:inset 3px 0 0 var(--x-yel)!important}
+html.x3.x2 .lq-roi .pnl-k li.lead,html.x3 .pnl-k li.lead{background:var(--x-s3);border-color:var(--x-line2);box-shadow:inset 0 2px 0 var(--x-yel)!important}
+html.x3 .mt-br.pot{background:var(--x-s1);border-color:var(--x-line2);box-shadow:inset 0 2px 0 var(--x-yel)!important}
+html.x3 :is(.x3-tag2,.x3-lr.lead .x3-tag2){background:none;color:var(--x-yel);border:1px solid rgba(255,199,44,.45);font:500 10.5px/1.1 var(--x-mono);letter-spacing:.04em}
+/* hero bet bar: date in plain text, the countdown in yellow mono */
+html.x3 .x3-bet b{font:700 15px/1 var(--fd);font-stretch:var(--x-cond);letter-spacing:.04em;text-transform:uppercase}
+html.x3 .x3-bet b span,html.x3 .x3-bet b em{color:var(--x-tx)}
+/* the fee head gets its panel back, so the bracket below hangs from something */
+html.x3 .mt-top{background:var(--x-s1);border:1px solid var(--x-line2);border-radius:6px;padding:14px 16px;font:700 clamp(20px,2.4vw,26px)/1.05 var(--fd);font-stretch:var(--x-cond);letter-spacing:.01em;text-transform:uppercase}
+html.x3 .mt-pc span{font:500 12px/1 var(--x-mono);letter-spacing:.06em}
+/* names keep one case everywhere */
+html.x3 :is(.pnl-k b,.pnl-k li>span,.cwin .wn){text-transform:none}
+/* Leaderboard tab: the "Most accurate" badge sits in its row, not on the header above it */
+html.x3 .pc-best,html.x3 .lbr .pc-best{position:absolute;top:-9px;left:12px;right:auto;margin:0;background:var(--x-bg);color:var(--x-yel);border:1px solid rgba(255,199,44,.45);border-radius:3px;font:500 10px/1 var(--x-mono);letter-spacing:.04em;padding:3px 5px}
+/* outcome labels never wrap */
+html.x3 .mt-o{white-space:nowrap}
+
+/* ================= REVIEW FIXES (2026-10-11, three-lens check: visual, behaviour, brand) ================= */
+/* model profile: ink on the yellow rank badge and Wins tile (white on yellow was 1.4:1) */
+html.x3 :is(.pf-rk,.pf-k.gold,.pf-k.gold b,.pf-k.gold small,.pf-k.gold .pf-tag){color:#0b0e14}
+/* model profile: the wrong-way rings were drawn with box-shadow, which the global flatten removed */
+html.x3 .pf-arr i.r,html.x3 .pf-dots i.r,html.x3 .pf-lg2 i.r{box-shadow:inset 0 0 0 2px var(--x-dn)!important;background:none}
+/* model profile: comparison bars readable again; this AI's bar is the bright one */
+html.x3.x2 .pf-cmp li .pf-cb{background:var(--x-s3)}
+html.x3.x2 .pf-cmp li .pf-cb i{background:var(--x-tx3)}
+html.x3.x2 .pf-cmp li.me .pf-cb i{background:var(--x-tx)}
+html.x3 .pf-cmp li b span{opacity:1;color:var(--x-tx3)}
+html.x3 .pf-rn{opacity:1;color:var(--x-tx3)}
+html.x3 .pf-fc{background:var(--x-s3);border:1px solid var(--x-line2)}
+/* 320: no sideways scroll, the whole countdown in the chip */
+@media(max-width:374px){html.x3 .nav a,html.x3 .nav:has(a:nth-child(5)) a{padding:0 3px}html.x3 .live{font-size:11px;letter-spacing:0}}
+/* 320: the verdict wraps instead of running into the call */
+@media(max-width:374px){html.x3 .x3-cr .x3-v{max-width:7.5em}}
+/* names fit: condensed like the heads */
+html.x3 :is(.rx3-t b,.rx3-k b,.lbr .pc-t h3,.rtl .rt b){font-stretch:var(--x-cond)}
+@media(max-width:400px){html.x3 .rtl .rt small{white-space:nowrap;letter-spacing:.02em}}
+/* Leaderboard: the "Leads" tag stays for screen readers (it was display:none); the look is the yellow bar */
+html.x3 .lbr .crown{display:inline-flex;position:absolute;width:1px;height:1px;padding:0;margin:-1px;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+/* crown art in Results cells: no sticker; Upcoming labels on brand tints were below 4.5:1 */
+html.x3 .rx3-c.w small svg{display:none}
+html.x3 .look-brand .rtl :is(.rt small,.rt>span){color:var(--x-tx)}
+/* red is for down only: the live and next dots take the countdown's yellow */
+html.x3 :is(.live i,.x3-dot),html.x3 .rday.next::before{background:var(--x-yel)}
+/* Upcoming tiles: neutral surface; the brand lives in the logo tile (no red, green or olive cards) */
+html.x3 .look-brand .rtl{background:var(--x-s1);border:1px solid var(--x-line)}
+html.x3 .look-brand .rtl:hover{border-color:var(--x-line2)}
+html.x3 .look-brand .rtl::after{opacity:.05}
+/* one display face for big words and figures; no Geist-era negative tracking on Instrument Sans */
+html.x3 :is(.rx3-t b,.rx3-k b,.pool>b,.pool-r b,.mx-big,.hx2-r b){font-stretch:var(--x-cond);font-weight:700;letter-spacing:.004em}
+html.x3 :is(.pool>b,.pool-r b){text-transform:uppercase}
+html.x3 :is(.hx2-h,.fdg h3,.lq h3,.gbox h3,.calc-h,.mx-of,.mcb,.x3-nm a,.x3-cr b,.lbr h3 a,.rtl .rt b,.hl-k,.fdg-s b,.ls-t b,.hl-hold strong){letter-spacing:0}
+/* data in Geist Mono, like the film's stamps */
+html.x3 :is(.x3-call,.rx3-cv,.lbr .lb-c b,.tick .tc>span){font-family:var(--x-mono);font-weight:500;letter-spacing:0}
+html.x3 .lbr .lb-c b{font-size:15px}
+html.x3 .rx3-cv{font-size:18px}
+html.x3 .x3-meta{font:500 11px/1.5 var(--x-mono);letter-spacing:.04em;text-transform:uppercase}
+html.x3 .x3-bet>span:nth-child(2){font:500 12px/1 var(--x-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--x-tx2)}
+html.x3 .x3-bet b{font:inherit;color:var(--x-tx)}
+/* accent budget off the hero too: yellow stays for the punchline, #1 and the countdown (not for upside figures) */
+html.x3 :is(.sh,.xsh) .no,html.x3 .gbox .n{color:var(--x-tx3)}
+html.x3 .tick .tl{color:var(--x-tx2)}
+html.x3 :is(.ufc,.bseg) button[aria-pressed=true] b{background:var(--x-tx);color:#0b0e14}
+html.x3 :is(.hx2-r b,.mx-big){color:var(--x-tx)}
+html.x3 .pool>small{color:var(--x-tx2)}
+html.x3 .g-tank i{background:var(--x-s3);box-shadow:inset 0 2px 0 var(--x-yel)!important}
+/* hero: the film's two-line lockup */
+html.x3 .hero h1{font-size:clamp(40px,4.8vw,63px)}
+@media(max-width:640px){html.x3 .hero h1{font-size:min(40px,9.4vw)}}
+/* logo tile: the canonical brand green and red (as in the film), not a third pair */
+html.x3 :is(.brand .mark,.badge.mark,.sealart .mark) .e{color:#1fcf6b}
+html.x3 :is(.brand .mark,.badge.mark,.sealart .mark) .z{color:#ff4136}
+/* Upcoming Sector select: the chevron was navy on navy */
+html.x3 .ufs select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23a4abb8' stroke-width='2'/%3E%3C/svg%3E")}
