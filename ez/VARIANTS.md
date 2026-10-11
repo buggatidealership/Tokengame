@@ -97,3 +97,6 @@ Brief: same content, but each build is a place people come back to: a screen for
 - v39 Transit (`ez/v39-transit.html`) https://claude.ai/artifact/41TmFAwKtbjjEbjoCRuCNk: a transit map. Each AI is a line, each round a station; a wrong call drops the line to the lower track; winners get an interchange ring; Foxconn is "You are here"; future rounds are under construction.
 - v40 The Museum (`ez/v40-museum.html`) https://claude.ai/artifact/Tbr1Bes291vwsyM5XHhxQZ: each graded round is an exhibit with its film and wall label; AI halls, Side by side, Library, Coming soon, Endowment (buyback), Gift shop (Get $EZ).
 Published with MP4 films only, in two batches.
+
+## Round 13: EZ Live X3 (2026-10-11)
+- v41 EZ Live X3 (`ez/v41-live-x3.html`) https://claude.ai/artifact/4J3oqRt4mxzHKFi3bHuQip: X2 with the Overview re-ordered for launchpad and memecoin hunters (the owner proposal of 2026-10-11). Hero: three lines (what it is, where the money goes, right call vs wrong call), the race, the NVIDIA bet countdown and the CA bar. Then 01 the buyback, 02 who makes the NVIDIA call, 03 the last round as a receipt, 04 the proof (ROI default), 05 the record, 06 get $EZ. Built by build.py (exp "x3"), gated behind `X3` in routes.js so X1 and X2 are unchanged. Films copied server side from X2.
