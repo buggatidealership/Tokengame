@@ -158,10 +158,10 @@ function coMark(t,cls){t=String(t||"").toUpperCase();var L=CO_LOGOS[t],f=L&&(L.f
    feePct: % of each $EZ trade that becomes fees we collect · leverage: the bet's leverage · volPct: example daily volume as % of market cap
    betDate: MM/DD/YY of the NVIDIA bet (also CONFIG.betDate) */
 /* poolShare: the share of fees that goes to the pot (the rest runs operations). Read by the story pages (v25-v27). */
-/* leverage is a minimum: the bet uses at least this (owner, 2026-10-12, was 10).
-   leadHours: #1 is fixed this many hours before NVIDIA reports (owner, 2026-10-12).
+/* leverage: the bet uses exactly this (owner, 2026-10-12: "just do 10x leverage, not at least 5x"; the same morning it was briefly "at least 5x").
+   leadHours: the leaderboard freezes this many hours before NVIDIA reports, and the AI in first place makes the call (owner, 2026-10-12).
    stopLoss: none for now (owner, 2026-10-12); null = no stop loss, so a wrong call can wipe out the pot. */
-var SIM={feePct:null,leverage:5,volPct:25,betDate:null,poolShare:.69,leadHours:24,stopLoss:null};
+var SIM={feePct:null,leverage:10,volPct:25,betDate:null,poolShare:.69,leadHours:24,stopLoss:null};
 /* the round films: webm/mp4/poster in media/, tall = 9:16 */
 /* all rounds: 1080x1080 at 60fps ("-hd"); the original files stay for Variant 1.
    pan: for 9:16 films shown in a square, [second, vertical position %] keyframes so the frame follows the action */
