@@ -1154,12 +1154,21 @@ html[data-theme="dark"] .x5theme .moon{display:none}
 .x5strip span{display:block;font:600 12.5px/1.22 var(--fb);color:var(--ink2)}
 .x5strip li.hot{background:var(--yel);box-shadow:0 0 0 2px var(--line,var(--ink)),3px 4px 0 0 var(--shadow,var(--ink))}
 .x5strip li.hot :is(small,b,span){color:var(--x5-on-y,var(--on-ez))}
-/* the fee split along the pot tile's bottom edge: the share of every trading fee that goes to the $ pot (SIM.poolShare,
-   dark) and the rest (light). A meter, not a balance: there is no pot yet. It sits in the tile's bottom padding, so it
-   adds no height. */
-.x5strip li.hot{position:relative;overflow:hidden}
-.x5strip .x5split{position:absolute;left:0;right:0;bottom:0;display:block;height:5px;background:color-mix(in srgb,var(--x5-on-y,var(--on-ez)) 25%,var(--yel))}
-.x5strip .x5split>i{display:block;height:100%;background:var(--x5-on-y,var(--on-ez))}
+/* the third kicker stays on one line, so the three numbers share a line: "Leaderboard freezes" from 600 px, "Board
+   freezes" from 375 px, "Freeze" below (81 and 39 px of the 89 and 71 px a kicker has at 375 and 320; row 1, right
+   under the strip, spells it out) */
+.x5strip small>span{display:none;font:inherit;color:inherit}
+.x5strip small>.x5k-l{display:inline}
+@media(max-width:599px){.x5strip small>.x5k-l{display:none}.x5strip small>.x5k-m{display:inline}}
+@media(max-width:374px){.x5strip small>.x5k-m{display:none}.x5strip small>.x5k-s{display:inline}}
+/* the fee split across the pot tile's foot, labelled: the share of every trading fee that goes to the $ pot
+   (SIM.poolShare, dark, "69¢") and the rest (light, "31¢"). A meter, not a balance: there is no pot yet. The tile's
+   bottom padding grows by the bar's height less the old gap. */
+.x5strip li.hot{position:relative;overflow:hidden;padding-bottom:20px}
+.x5strip .x5split{position:absolute;left:0;right:0;bottom:0;display:flex;height:15px;background:color-mix(in srgb,var(--x5-on-y,var(--on-ez)) 22%,var(--yel))}
+.x5strip .x5split>i{display:flex;align-items:center;flex:0 0 auto;height:100%;background:var(--x5-on-y,var(--on-ez))}
+.x5strip .x5split em{display:block;padding:0 0 0 10px;font:700 10px/1 var(--fm);font-style:normal;letter-spacing:0;color:var(--yel);white-space:nowrap}
+.x5strip .x5split>em{flex:1 1 auto;align-self:center;padding:0;text-align:center;color:var(--x5-on-y,var(--on-ez))}
 
 /* A: four rows under the chip */
 .x5rows{list-style:none;margin:0;padding:6px 16px;border-radius:18px;background:var(--card);box-shadow:0 0 0 2.5px var(--line,var(--ink))}
@@ -1230,6 +1239,8 @@ html[data-theme="dark"] .x5theme .moon{display:none}
   .x5a .x5strip small{grid-row:1;grid-column:1/-1}
   .x5a .x5strip b{grid-row:2;grid-column:1;font-size:46px;margin:0}
   .x5a .x5strip span{grid-row:2;grid-column:2;padding-bottom:5px}
+  .x5a .x5strip li.hot{padding-bottom:24px}
+  .x5a .x5strip .x5split em{padding-left:16px}
   .x5lb .roster{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none}   /* X2 sets 4 rows for 4 cards in one column */
   .x5up .rtls{grid-template-columns:repeat(3,minmax(0,1fr))}
   #get .get.x5get{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px;padding:6px 22px}
@@ -1318,8 +1329,11 @@ html.x5[data-theme="dark"] .pf-k>span,html.x5[data-theme="dark"] .pf-k small{opa
 html.x5[data-theme="dark"] .rx3-k.win small{color:var(--ink2)}
 /* up / down figures on the #1 row's gold foil: its darkest stop (#c08f35) needs deeper green and red (4.7:1) */
 html.x5[data-theme="dark"] :is(.pc.r1,.pc.lead){--up:#05351a;--dn:#5e0a0a}
-/* the "Biggest miss" record keeps X2's red: dark text on it */
-html.x5[data-theme="dark"] .rk-miss{--rki:#1d1c1a}
+/* the Hall of Fame cards (Leaderboard tab): X2's bright yellow, green and red were the only raw brights left in dark C.
+   Brass with dark text, the palette's green with dark text, and the deep red fill with white text (5.9:1) */
+html.x5[data-theme="dark"] .rk-win{--rkc:#e2b250;--rki:#1d1c1a}
+html.x5[data-theme="dark"] .rk-close{--rkc:#4fcf8a;--rki:#1d1c1a}
+html.x5[data-theme="dark"] .rk-miss{--rkc:#b23b2b;--rki:#fff}
 /* Grok's chart colour: #111 (MODELS.GROK.c) and #555 (ez-learn.js) are the light warm grey in dark, so Grok stays
    visible on every chart */
 html.x5[data-theme="dark"] svg [style*="#111"],html.x5[data-theme="dark"] svg [stroke="#111"],html.x5[data-theme="dark"] svg [stroke="#555"]{stroke:#d9d2c3!important}
@@ -1334,3 +1348,33 @@ html.x5[data-theme="dark"] svg [fill="#111"],html.x5[data-theme="dark"] svg [fil
 html.x5[data-theme="dark"] [style*="--bc:#12131a"]{--bc:#36342f!important}
 /* focus: the gold ring; inside a gold surface it is near-black so it still shows */
 :where(html.x5[data-theme="dark"]) :is(.calc .mx,.f-win .face,.f-tie .face){--cob:#1d1c1a}
+
+/* 5d. round 1 verification fixes (2026-10-12) */
+/* Leaderboard tab, phones: font H's wider mono made the #1 row's "Most accurate" tag (and its 2 px ring) run into the
+   "Hit rate" column head at 360 and 320 px; the head moves up clear of it (no layout change). At 320 the hit-rate
+   sub-label ("11 of 18") ran under the last form square: smaller squares and gaps end the strip inside its column. */
+@media(max-width:380px){html.pt.x5 .lbx .lbh{transform:translateY(-8px)}}
+@media(max-width:340px){html.pt.x5 .lbr .fq{gap:2px}html.pt.x5 .lbr .fq i{width:7px;height:7px}}
+/* 320 px: in font H these lines were cut with "…" ("Applied D…", "Accent…", "JPM · Result…"): they wrap to two lines */
+@media(max-width:339px){
+  /* model pages, "Every call": a two-word name takes two lines; one long word fits at 14 px beside a 26 px logo
+     ("Accenture", "BlackBerry"), and a longer one breaks rather than being cut */
+  html.x5 .pf-co{gap:8px}html.x5 .pf-co>img,html.x5 .pf-co>span:first-child{width:26px;height:26px}
+  html.x5 .pf-co b{font-size:14px;line-height:1.15;white-space:normal;overflow:hidden;text-overflow:clip;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  html.x5 .x5up .rtl .rt>span{white-space:normal;overflow:visible;text-overflow:clip}
+  /* the model pages' AI switcher: "Claude" was 4 px wider than its pill */
+  html.x5 .mnav a:not(.back){padding:0 2px 0 3px;gap:3px;letter-spacing:-.02em}
+}
+/* the footer link on one line: Geist bold does not fit the half-width grid cell X2's face fitted (phones); centred, like
+   the motto, the badge and the line above it (on wide screens it sat alone at the left edge) */
+html.x5 footer .ftl a{grid-column:1/-1;justify-self:center;white-space:nowrap}
+/* dark: the flip button's focus ring on a won round's card face was page colour on the dark face; the cream text colour
+   shows round the gold button */
+html.x5[data-theme="dark"] :is(.f-win,.f-tie) .face .flipb:focus-visible{outline-color:var(--x5-tx)}
+/* dark: the Leaderboard's stat switch. X2's solid fills (a 280 px royal-blue bar at 1280) were the loudest thing on the
+   graphite page: the pressed stat is a tint of its own colour with a ring of it, and its dot keeps the colour */
+html.x5[data-theme="dark"] .rsw2 button[aria-pressed=true]{--x5sk:#6f9ef0;background:color-mix(in srgb,var(--x5sk) 20%,var(--x5-s1))!important;color:var(--x5-tx)!important;box-shadow:inset 0 0 0 1.5px var(--x5sk)}
+html.x5[data-theme="dark"] .rsw2 button[data-rk=miss][aria-pressed=true]{--x5sk:#4fcf8a}
+html.x5[data-theme="dark"] .rsw2 button[data-rk=roi][aria-pressed=true]{--x5sk:#e2b250}
+html.x5[data-theme="dark"] .rsw2 button[data-rk=sector][aria-pressed=true]{--x5sk:#a98bf8}
+html.x5[data-theme="dark"] .rsw2 button[aria-pressed=true] .skd{background:var(--x5sk)!important}

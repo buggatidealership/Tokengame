@@ -928,6 +928,8 @@ function EZ5_BET(){function md(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)
 function EZ5_DAY(t){return new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"}).replace(" ","\u00a0")}
 /* the freeze: SIM.leadHours before the bet (the leaderboard freezes, the AI in first place makes the call) */
 function EZ5_FREEZE(){var T=EZ5_BET();return T&&SIM.leadHours!=null?EZ5_DAY(T-SIM.leadHours*3600e3):""}
+/* past the freeze, the copy says so ("Leaderboard frozen", "Makes the call") */
+function EZ5_FROZEN(){var T=EZ5_BET();return !!(T&&SIM.leadHours!=null&&Date.now()>=T-SIM.leadHours*3600e3)}
 /* company colours (the upcoming tiles, round chips and cards): X2 picks white or ink text on a company's colour with a
    rough brightness cut, which leaves white on bright greens and blues (2.0:1 on Robinhood's green). X5 takes whichever
    of the two reads better (WCAG contrast), and darkens the few mid-tone colours where neither reaches 4.5:1 until white
@@ -944,7 +946,7 @@ if(X5)(function(){
   if(!hero||!rec||!bet||!get)return;
   function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
   var POOL=Math.round((SIM.poolShare!=null?SIM.poolShare:typeof ASSUME!=="undefined"&&ASSUME.poolShare||0)*100),OPS=100-POOL;
-  var LEV=SIM.leverage,LEAD=SIM.leadHours,BT=EZ5_BET(),betDay=BT?EZ5_DAY(BT):"",frzDay=EZ5_FREEZE();
+  var LEV=SIM.leverage,LEAD=SIM.leadHours,BT=EZ5_BET(),betDay=BT?EZ5_DAY(BT):"",frzDay=EZ5_FREEZE(),FROZEN=EZ5_FROZEN();
   var nR=ROUNDS.length,firstDay=(function(){var d=mmdd(ROUNDS[0]&&ROUNDS[0].called);return d?d.toLocaleDateString("en-US",{month:"short",day:"numeric"}).replace(" ","\u00a0"):""})();
   var NV=UPCOMING.filter(function(u){return u.ticker==="NVDA"})[0],nUp=UPCOMING.length,nBefore=NV?UPCOMING.filter(function(u){return u.n<NV.n}).length:nUp;
   var leader=LADDER[0]?nm(LADDER[0].m):"";
@@ -1000,14 +1002,16 @@ if(X5)(function(){
   function sec(id,cls,html){var s=el("section","sec x5sec"+(cls?" "+cls:""),html);s.id=id;return s}
 
   /* ===== 2. HOW THE BUYBACK WORKS: three numbers, then four steps in time order ===== */
-  var bar=POOL?'<i class="x5split" aria-hidden="true"><i style="width:'+POOL+'%"></i></i>':'';
+  /* the fee split as a labelled bar along the pot tile's foot: the $ pot's share | the rest (the tile's text says it in
+     words, so the bar is hidden from screen readers) */
+  var bar=POOL?'<i class="x5split" aria-hidden="true"><i style="width:'+POOL+'%"><em>'+POOL+'¢</em></i><em>'+OPS+'¢</em></i>':'';
   var how=sec("x5how","",shead("The buyback","One AI, one job: buy back "+EZM,null)+
     '<div class="x5a"><ul class="x5strip x5num" aria-label="The bet in three numbers">'+
       '<li class="hot"><small>The $\u00a0pot</small><b>'+POOL+'¢</b><span>of every $1 in trading fees</span>'+bar+'</li>'+
       (LEV!=null?'<li><small>Leverage</small><b>'+LEV+'x</b><span>on the NVIDIA bet</span></li>':'')+
-      (LEAD!=null?'<li><small>Leaderboard freezes</small><b>'+LEAD+'h</b><span>before NVIDIA reports</span></li>':'')+'</ul>'+
+      (LEAD!=null?'<li><small><span class="x5k-l">Leaderboard freezes</span><span class="x5k-m">Board freezes</span><span class="x5k-s">Freeze</span></small><b>'+LEAD+'h</b><span>before NVIDIA reports</span></li>':'')+'</ul>'+
     '<ol class="x5rows">'+
-      (frzDay?'<li><span class="m">1</span><div><h3>'+frzDay+' <i>·</i> Leaderboard freezes</h3><p>#1 makes the call: up or down.'+(leader?' <span class="x5now">#1 now: '+esc(leader)+'</span>':'')+'</p></div></li>':'')+
+      (frzDay?'<li><span class="m">1</span><div><h3>'+frzDay+' <i>·</i> Leaderboard '+(FROZEN?'frozen':'freezes')+'</h3><p>'+(FROZEN&&leader?esc(leader)+' makes the call: up or down.':'#1 makes the call: up or down.'+(leader?' <span class="x5now">#1 now: '+esc(leader)+'</span>':''))+'</p></div></li>':'')+
       '<li><span class="m">'+(frzDay?2:1)+'</span><div><h3>'+(betDay?betDay+' close <i>·</i> ':'')+'The bet</h3><p>A human bets the $\u00a0pot on Hyperliquid.</p></div></li>'+
       '<li><span class="m w" role="img" aria-label="Right call">✓</span><div><h3>Right call</h3><p>The profits buy back $EZ.</p></div></li>'+
       '<li><span class="m l" role="img" aria-label="Wrong call">✗</span><div><h3>Wrong call</h3><p>The $\u00a0pot can be wiped out.</p></div></li></ol></div>'+
@@ -1028,6 +1032,11 @@ if(X5)(function(){
      home() on the next frame): centre the current chip again */
   function chipsHome(){var cs=$("#chips"),c=cs&&$('.chip[aria-current="true"]',cs);if(!c)return;var b=cs.style.scrollBehavior;cs.style.scrollBehavior="auto";cs.scrollLeft=c.offsetLeft-(cs.clientWidth-c.offsetWidth)/2;cs.style.scrollBehavior=b}
   chipsHome();requestAnimationFrame(chipsHome);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(chipsHome);
+  /* opened on another tab first: the board was hidden when X2 centred the record, so it would open at round 1. The first
+     time the board shows, the latest result is centred (X2 has the same issue; fixed here for X5 only) */
+  if(boardEl.hidden){var reHome=function(){if(boardEl.hidden)return;removeEventListener("hashchange",reHome);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){if(typeof go==="function"&&typeof START==="number")go(START,false);chipsHome()})})};
+    addEventListener("hashchange",reHome)}
 
   /* ===== 4. WHO'S LEADING: X2's standings, full width ===== */
   var lb=sec("x5lb","x5lb",shead("The leaderboard","Who's leading now",null)+
@@ -1050,7 +1059,7 @@ if(X5)(function(){
     tl.appendChild(day);
     var shown=Math.min(2,lis.length);
     if(NV&&nBefore>shown)tl.insertAdjacentHTML("beforeend",'<p class="x5gap">+ '+(nBefore-shown)+' more rounds</p>')}
-  if(NV)tl.insertAdjacentHTML("beforeend",'<section class="rday bet"><div class="rdh"><h2>'+(betDay||fmtDate(NV.called))+'</h2><b class="nx">The bet</b>'+(frzDay?'<span class="rds">Leaderboard freezes '+frzDay+'</span>':'')+'</div><ul class="rtls">'+rtile(NV.n)+'</ul></section>');
+  if(NV)tl.insertAdjacentHTML("beforeend",'<section class="rday bet"><div class="rdh"><h2>'+(betDay||fmtDate(NV.called))+'</h2><b class="nx">The bet</b>'+(frzDay?'<span class="rds">Leaderboard '+(FROZEN?'frozen ':'freezes ')+frzDay+'</span>':'')+'</div><ul class="rtls">'+rtile(NV.n)+'</ul></section>');
   nx.appendChild(tl);
   nx.insertAdjacentHTML("beforeend",'<div class="x5more"><a class="btn" href="#/upcoming">All '+nUp+' upcoming rounds →</a></div>');
   lb.after(nx);
@@ -1094,21 +1103,32 @@ if(X5)(function(){
   var done=typeof WeakSet!=="undefined"?new WeakSet():null;
   function type1(e){if(done){if(done.has(e))return;done.add(e)}if(e.closest&&e.closest(".gpu-img"))return;
     var s=getComputedStyle(e),f=s.fontFamily,fs=parseFloat(s.fontSize);
+    /* heads: width 75 asked for here too, so if the pinned EZD file ever fails, the <link>'s Mona Sans stays condensed
+       (it would render at width 100, the wide setting the owner rejected). Written after the pass (typeAll), so these
+       writes do not force a style recalculation per element. */
+    if(/EZD/.test(f)&&s.fontStretch!=="75%")fx.push(e);
     if(/EZM/.test(f)){if((parseFloat(s.letterSpacing)||0)>.04*fs+.01)e.style.setProperty("letter-spacing",".04em","important");e.style.setProperty("word-spacing","-.2em","important")}
     else if(/EZB|EZD|EZN/.test(f)&&(parseFloat(s.wordSpacing)||0)<0)e.style.setProperty("word-spacing","normal","important")}
-  function typeAll(r){if(r.nodeType!==1)return;type1(r);var a=r.getElementsByTagName("*");for(var i=0;i<a.length;i++)type1(a[i])}
-  /* charts: on phones X2's round labels under a chart (R1, R2 ... R19) run into each other (10 of 19 touch at 390 px):
-     keep the first, then each one that clears the last one kept (positions and font size in the chart's own units) */
+  var fx=[];
+  function typeAll(r){if(r.nodeType!==1)return;type1(r);var a=r.getElementsByTagName("*");for(var i=0;i<a.length;i++)type1(a[i]);
+    fx.forEach(function(e){e.style.setProperty("font-stretch","75%","important")});fx=[]}
+  /* charts: on phones X2's round labels under a chart (R1, R2 ... R19) run into each other (10 of 19 touch at 390 px).
+     The latest graded round (the last label not marked .f, "still to come") is always kept; then, from the left, each
+     label that clears the last one kept and the latest round's label (positions and font size in the chart's units) */
   function thin(r){var sv=r.matches&&r.matches(".lx svg")?[r]:r.querySelectorAll?[].slice.call(r.querySelectorAll(".lx svg")):[];
-    sv.forEach(function(g){var last=-1e9;[].filter.call(g.querySelectorAll("text.lx-ax"),function(t){return /^R\d+$/.test(t.textContent)})
-      .sort(function(a,b){return a.getAttribute("x")-b.getAttribute("x")}).forEach(function(t){var x=+t.getAttribute("x"),hw=t.textContent.length*(parseFloat(getComputedStyle(t).fontSize)||9)*.31;
-        if(x-hw<last+3)t.style.visibility="hidden";else{t.style.visibility="";last=x+hw}})})}
+    sv.forEach(function(g){var ts=[].filter.call(g.querySelectorAll("text.lx-ax"),function(t){return /^R\d+$/.test(t.textContent)})
+      .sort(function(a,b){return a.getAttribute("x")-b.getAttribute("x")});if(!ts.length)return;
+      var fs=parseFloat(getComputedStyle(ts[0]).fontSize)||9;function hw(t){return t.textContent.length*fs*.31}
+      var gr=ts.filter(function(t){return !t.classList.contains("f")}),a=gr.length?gr[gr.length-1]:null,ax=a?+a.getAttribute("x"):1e9,al=a?ax-hw(a):1e9,last=-1e9;
+      ts.forEach(function(t){var x=+t.getAttribute("x"),h=hw(t);
+        if(t===a){t.style.visibility="";last=x+h;return}
+        if(x-h<last+3||(x<ax&&x+h>al-3))t.style.visibility="hidden";else{t.style.visibility="";last=x+h}})})}
   typeAll(document.body);thin(document.body);
   if(window.MutationObserver){var q=[],qt=0;new MutationObserver(function(ms){ms.forEach(function(m){for(var i=0;i<m.addedNodes.length;i++)if(m.addedNodes[i].nodeType===1)q.push(m.addedNodes[i])});
     if(q.length&&!qt)qt=requestAnimationFrame(function(){qt=0;var w=q;q=[];w.forEach(function(n){if(n.isConnected){typeAll(n);thin(n)}})})}).observe(document.body,{childList:true,subtree:true})}
 
   /* the tab title says which page this is (X2's router writes "EZ Season Live") */
-  function title(){if(/EZ Season Live/.test(document.title))document.title=document.title.replace("EZ Season Live","EZ Live X5")}
+  function title(){var t=document.title.replace("EZ Season Live","EZ Live X5").replace(/^\d\d(?=[A-Z])/,"");if(t!==document.title)document.title=t}   // and no "01" glued to the head
   title();addEventListener("hashchange",title);
 })();
 /*}X5*/

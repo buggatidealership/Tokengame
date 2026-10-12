@@ -73,7 +73,7 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         S="""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'hit rate')+'</small>"""
         assert page.count(S)==1; page=page.replace(S,"""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':m===EZ_LEAD()?'"""+("buyback odds" if exp in ("x2","x4") else "hit rate")+"""':'hit rate')+'</small>""")
         L2="""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3></span>'"""
-        assert page.count(L2)==1; page=page.replace(L2,"""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">'+(SIM.leadHours!=null?"""+("(EZ5_FREEZE()?'Makes the call if #1 on '+EZ5_FREEZE():'In line for the call')" if exp=="x5" else "'In line for the call'")+""":'Bets on NVIDIA')+'</small>':'')+'</span>'""")
+        assert page.count(L2)==1; page=page.replace(L2,"""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">'+(SIM.leadHours!=null?"""+("(EZ5_FROZEN()?'Makes the call':EZ5_FREEZE()?'Makes the call if #1 on '+EZ5_FREEZE():'In line for the call')" if exp=="x5" else "'In line for the call'")+""":'Bets on NVIDIA')+'</small>':'')+'</span>'""")
         # the NVIDIA call, leverage and loss copy (owner, 2026-10-12): 24 hours before NVIDIA reports the leaderboard freezes
         # and the AI in first place makes the call; leverage is exactly SIM.leverage; no stop loss, so a wrong call can wipe
         # out the pot. Hours and leverage come from SIM; with SIM.leadHours unset the old copy shows. X1 and Season Live keep theirs.
@@ -139,6 +139,11 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         assert (n1,n2)==(1,1),(n1,n2)
         # "lock" is kept off X5, where the leaderboard freezes: the AIs' calls are "filed" before the report, as the footer says
         for a,b,n in [(' up or down, plus how much, locked before the report. ',' up or down, plus how much, filed before the report. ',1),
-                      ('<b>Locked <span class="nw">','<b>Filed <span class="nw">',2)]:
+                      ('<b>Locked <span class="nw">','<b>Filed <span class="nw">',2),
+                      # the model page's chart: this AI's line is highlighted (yellow in light, gold in dark), not black
+                      ("+nmM+' in black, the others in grey.","+nmM+' highlighted, the others in grey.",1),
+                      # the Leaderboard tab's records head had the Overview record's id (recH): its own id on X5
+                      ('<section class="blk xsec" aria-labelledby="recH">\'+xsh("05","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recH")',
+                       '<section class="blk xsec" aria-labelledby="recBk">\'+xsh("05","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recBk")',1)]:
             assert page.count(a)==n,a; page=page.replace(a,b)
     open(out,'w').write(page); print("ok",out,len(page))
