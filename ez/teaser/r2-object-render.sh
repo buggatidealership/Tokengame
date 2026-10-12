@@ -15,10 +15,12 @@
 # Steps (each resumable: existing frames are skipped):
 #   0. gates: the bet date, SIM.stopLoss null, SIM.leverage / leadHours / poolShare set, CONFIG.launched false, the disk
 #   1. plates: every frame once (WebGL; subframes averaged in the page: 2,771 renders at 60 fps), PAR processes
-#   2. sound: ez-r2-object-audio.js from the page's own timing table, two cycles (the second kept), then a two-pass loudnorm to
+#   2. sound: ez-r2-object-audio.js from the page's own timing table and picture events (rendered from a 270 px plate page, where the
+#      coin landings, the pour and the LED steps are computed), two cycles (the second kept), then a two-pass loudnorm to
 #      -14 LUFS / -1 dBTP (linear only; the script stops if loudnorm falls back to dynamic)
 #   3. type: each unique type state once per variant (transparent PNGs, the FCA band in the uk type layer, so it is always on top)
-#   4. composite and encode: plate + seeded grain (plates only, against banding in the porcelain) + type; H.264 High, yuv420p, crf 18,
+#   4. composite and encode: plate + seeded STATIC grain (plates only, against banding in the porcelain; static, because x264 smooths a
+#      temporal grain in inter frames and it then pops at every keyframe, the loop point included) + type; H.264 High, yuv420p, crf 18,
 #      BT.709 tagged, AAC 192k, faststart. Posters from frame 0 (the poster frame: the hero, the glass $ pot, the $EZ plinth).
 #      nonuk has no FCA band: never where UK viewers can see it (so not on X). uk carries the band on every frame: the file for X.
 #   5. QA (qa.txt): frames, duration, loudness, true peak, the 300 Hz phone test, the loop seam (sound and picture), the payoff halves,
@@ -58,7 +60,8 @@ T1=$(date +%s); echo "plates: done ($(( (T1-T0)/60 )) min)"
 
 # --- 2. sound ---
 if [ ! -f "$OUT/sound/audio-14lufs.wav" ]; then
-  PAGE="ez-r2-object.html?pass=type&variant=uk&$Q" READY_MS=60000 node teaser/render.js audio "$OUT/sound"
+  # the sound is rendered from a plate page at 270 px: the coin landings, the pour and the LED steps are computed with the 3D set
+  PAGE="ez-r2-object.html?pass=plate&res=270&asof=$ASOF&fps=$FPS&led=$LED" READY_MS=120000 node teaser/render.js audio "$OUT/sound"
   "$FF" -hide_banner -nostats -i "$OUT/sound/audio.wav" -af loudnorm=I=-14:TP=-1:LRA=11:print_format=json -f null - 2>&1 | sed -n '/^{/,/^}/p' > "$OUT/sound/pass1.json"
   JV(){ node -e "console.log(JSON.parse(require('fs').readFileSync('$OUT/sound/pass1.json','utf8'))['$1'])"; }
   LN="loudnorm=I=-14:TP=-1:LRA=11:measured_I=$(JV input_i):measured_TP=$(JV input_tp):measured_LRA=$(JV input_lra):measured_thresh=$(JV input_thresh):offset=$(JV target_offset):linear=true:print_format=json"
@@ -78,9 +81,9 @@ for V in uk nonuk; do
   mkdir -p "$OUT/seq/$V"; i=0; while read -r n; do ln -sf "$TD/frames/$n.png" "$OUT/seq/$V/$(printf %04d $i).png"; i=$((i+1)); done < "$TD/names.txt"
   NM="ez-r2-object-$V"
   "$FF" -y -loglevel error -framerate $FPS -i "$OUT/seq/plates/%04d.png" -framerate $FPS -i "$OUT/seq/$V/%04d.png" -i "$OUT/sound/audio-14lufs.wav" \
-    -filter_complex "[0:v]scale=1080:1080:flags=lanczos,format=gbrp,noise=alls=3:allf=t:all_seed=20261012[p];[1:v]format=rgba[t];[p][t]overlay=0:0:format=gbrp,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p[v]" \
+    -filter_complex "[0:v]scale=1080:1080:flags=lanczos,format=gbrp,noise=alls=3:allf=u:all_seed=20261012[p];[1:v]format=rgba[t];[p][t]overlay=0:0:format=gbrp,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p[v]" \
     -map "[v]" -map 2:a -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
-    -c:v libx264 -profile:v high -crf 18 -preset slow -r $FPS -c:a aac -b:a 192k -ar 48000 -movflags +faststart -shortest "$OUT/$NM.mp4"
+    -c:v libx264 -profile:v high -crf 18 -preset slow -tune grain -r $FPS -c:a aac -b:a 192k -ar 48000 -movflags +faststart -shortest "$OUT/$NM.mp4"
   "$FF" -y -loglevel error -i "$OUT/$NM.mp4" -vf "select=eq(n\,0)" -frames:v 1 -q:v 2 "$OUT/$NM-poster.jpg"
   if [ -n "$DELIVER" ]; then cp "$OUT/$NM.mp4" "$EZ/media/ez-r2-object-$DELIVER-$V.mp4"; cp "$OUT/$NM-poster.jpg" "$EZ/media/ez-r2-object-$DELIVER-$V-poster.jpg"; fi
 done
@@ -125,7 +128,7 @@ for V in ['uk','nonuk']:
     for k,F in stream(mp):
         n+=1;sm=F[::4,::4].astype(np.float32);lum.append(float(sm.mean()/255));red.append(float((((sm[...,0]/np.maximum(sm.sum(-1),1))>=0.8)&(sm[...,0]>100)).mean()))
         if V=='uk':band.append(F[828:980,30:1050].astype(np.int16))
-        else:low.append(float(np.percentile(np.abs(F[804:1080:2,::2].astype(np.int16)-GROUND).max(-1),99.5)))
+        else:z=F[804:1080:2,::2].astype(np.int16);low.append(float(np.percentile(np.abs(z-np.median(z,axis=1,keepdims=True)).max(-1),99.9)))
         g=F[::2,::2].astype(np.int16)
         if prev is not None:diffs.append(float(np.abs(g-prev).mean()))
         prev=g
@@ -137,7 +140,7 @@ for V in ['uk','nonuk']:
         b0=band[0];worst=max(float(np.abs(b-b0).max()) for b in band);meanw=max(float(np.abs(b-b0).mean()) for b in band)
         check(meanw<1.0,'uk: the FCA band region is identical on every frame (worst mean diff %.3f, worst pixel %.0f after H.264)'%(meanw,worst))
         ink=float((np.abs(b0.astype(np.int16)-255).max(-1)>120).mean());check(ink>0.05,'uk: band text present (ink %.3f)'%ink)
-    else:check(max(low)<=18,'nonuk: y 804..1080 is clean floor on every frame (worst 99.5th pct diff %.1f)'%max(low))
+    else:check(max(low)<=10,'nonuk: y 804..1080 is clean floor on every frame (worst 99.9th pct deviation from the row median %.1f: grain only)'%max(low))
     def flashes(v,th):
         ev=[];lastd=None
         for k in range(1,len(v)):
@@ -149,9 +152,13 @@ for V in ['uk','nonuk']:
         for k in range(len(ev)):w=max(w,sum(1 for e in ev if ev[k]<=e<ev[k]+FPS)//2)
         return w
     check(flashes(lum,0.10)<=3,'general flashes: at most %d per second (<= 3)'%flashes(lum,0.10));check(flashes(red,0.2)<=3,'red flashes: at most %d per second'%flashes(red,0.2))
-# payoff equality on the plate at the first split frame (17.00 s)
+# payoff equality on the plate at the first split frame (17.00 s); the loop seam on the source plates (the encode adds keyframe noise)
 from PIL import Image
-names=open(os.path.join(PL,'names.txt')).read().split();im=np.asarray(Image.open(os.path.join(PL,'frames',names[17*FPS]+'.png')).convert('L'),np.float32)[0:744]
+names=open(os.path.join(PL,'names.txt')).read().split()
+Pp=lambda f:np.asarray(Image.open(os.path.join(PL,'frames',names[f]+'.png')).convert('RGB'),np.int16)
+sd=float(np.abs(Pp(N-1)-Pp(0)).mean());nd=[float(np.abs(Pp(f+1)-Pp(f)).mean()) for f in (0,1,2,N-3,N-2)]
+check(sd<=1.5*max(nd),'plate loop seam: f%d -> f0 mean diff %.2f; neighbouring steps %s'%(N-1,sd,', '.join('%.2f'%x for x in nd)))
+im=np.asarray(Image.open(os.path.join(PL,'frames',names[17*FPS]+'.png')).convert('L'),np.float32)[0:744]
 a_,b_=im[:,:538].mean(),im[:,542:].mean();check(abs(a_-b_)/max(a_,b_)<=0.10,'payoff halves at f%d: mean luminance %.1f vs %.1f (within 10%%)'%(17*FPS,a_,b_))
 # contact sheet: every 30th frame of the uk film
 T=216;cols=8;fr=[F for k,F in stream(os.path.join(OUT,'ez-r2-object-uk.mp4'),30)];rows=(len(fr)+cols-1)//cols

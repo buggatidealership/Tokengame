@@ -128,8 +128,8 @@ def mp4_mode(f, rep, ff):
     raw = subprocess.run([ff, '-hide_banner', '-loglevel', 'error', '-i', f, '-vn', '-ac', '1', '-ar', '48000', '-af', 'highpass=f=1500:poles=2', '-f', 'f32le', '-'], capture_output=True).stdout
     x = np.frombuffer(raw, dtype='<f4'); SR = 48000; hop = 96
     out = {}
-    for name, t in [('slam at frame 0 (cycle start)', 0.0), ('69% slam', 5.0), ('the freeze clack', 10.0), ('the hit', 12.0), ('the pair clack', 14.0)]:
-        i0 = max(0, int((t - 0.03) * SR)); i1 = int((t + 0.06) * SR)
+    for name, t in [('69% slam', 5.0), ('the freeze clack', 10.0), ('the hit', 12.0), ('the B8 rewrite', 19.0), ('LED second tick', 21.0)]:
+        i0 = int((t - 0.008) * SR); i1 = int((t + 0.06) * SR)
         e = np.array([np.sqrt((x[j:j + hop] ** 2).mean()) + 1e-7 for j in range(i0 - hop, i1, hop)])
         d = np.diff(20 * np.log10(e)); k = int(np.argmax(d))
         out[name] = round((i0 + k * hop) / SR - t, 4)
