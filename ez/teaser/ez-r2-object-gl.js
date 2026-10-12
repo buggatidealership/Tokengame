@@ -287,13 +287,15 @@ const hdrTex=cvTex(Math.round(SW*SPX),Math.round(SD*SPX),(g,c)=>{const W=c.width
 const HDR=new THREE.Mesh(new THREE.PlaneGeometry(SW-0.01,SD-0.01),new THREE.MeshStandardMaterial({map:hdrTex,transparent:true,roughness:0.5,metalness:0,depthWrite:false}));
 HDR.rotation.x=-Math.PI/2;HDR.position.y=SHh/2+0.0009;SLABS[0].G.add(HDR);
 const SLEEVE=new THREE.Group();STACK.add(SLEEVE);
-const SLW=SW+0.12,SLD=SD+0.12,SLH=4*SHh+3*SG+0.07;
+/* fix r2: the rim sits 0.02 above the #1 slab's top face (was 0.07), so its back edge stays under the B4 caption (verify r2 must-fix 1) */
+const SLW=SW+0.12,SLD=SD+0.12,SLH=4*SHh+3*SG+0.02;
 /* fix r1: lighter frost (the ranks under it keep about 5:1), a navy hairline on every edge and a contact shadow, so the frozen stack is not
-   white on white at feed size */
-{const frost=(sd)=>{const m=new THREE.MeshPhysicalMaterial({color:0xffffff,roughness:0.55,metalness:0,transparent:true,opacity:0.3,side:sd,depthWrite:false,envMapIntensity:0.6});return m};
+   white on white at feed size. fix r2: the materials are kept so the frost and the hairlines fade in where the sleeve stands */
+const SLMATS=[];
+{const frost=(sd)=>{const m=new THREE.MeshPhysicalMaterial({color:0xffffff,roughness:0.55,metalness:0,transparent:true,opacity:0.3,side:sd,depthWrite:false,envMapIntensity:0.6});m.userData.op=0.3;SLMATS.push(m);return m};
   const parts=[[SLW,SLH,0.012,0,SLH/2,SLD/2],[SLW,SLH,0.012,0,SLH/2,-SLD/2],[0.012,SLH,SLD,-SLW/2,SLH/2,0],[0.012,SLH,SLD,SLW/2,SLH/2,0]].map(([w,h,d,x,y,z])=>{const g=new RoundedBoxGeometry(w,h,d,2,0.005);g.translate(x,y,z);return g});
   const g=mergeGeometries(parts);[THREE.BackSide,THREE.FrontSide].forEach((sd,i)=>{const m=new THREE.Mesh(g,frost(sd));m.renderOrder=10+i*2;SLEEVE.add(m)});
-  const RW=0.0042,em=new THREE.MeshBasicMaterial({color:0x101a3a,transparent:true,opacity:0.6,toneMapped:false}),rods=[];
+  const RW=0.0042,em=new THREE.MeshBasicMaterial({color:0x101a3a,transparent:true,opacity:0.6,toneMapped:false}),rods=[];em.userData.op=0.6;SLMATS.push(em);
   [-1,1].forEach(sx=>[-1,1].forEach(sz=>{const v=new THREE.BoxGeometry(RW,SLH,RW);v.translate(sx*SLW/2,SLH/2,sz*SLD/2);rods.push(v)}));
   [0,SLH].forEach(y=>{[-1,1].forEach(sz=>{const h=new THREE.BoxGeometry(SLW,RW,RW);h.translate(0,y,sz*SLD/2);rods.push(h)});[-1,1].forEach(sx=>{const d=new THREE.BoxGeometry(RW,RW,SLD);d.translate(sx*SLW/2,y,0);rods.push(d)})});
   const e=new THREE.Mesh(mergeGeometries(rods),em);e.renderOrder=13;SLEEVE.add(e)}
@@ -328,6 +330,7 @@ function place(o,half){const el=o.el*D2R,az=o.az*D2R,[tx,ty,tz]=o.tgt;cam.fov=o.
 const lerpCam=(a,b,u)=>{const o={};for(const k of ['dist','el','az','fov','sx','sy','pk'])o[k]=mix(a[k]||0,b[k]||0,u);o.tgt=a.tgt.map((v,i)=>mix(v,b.tgt[i],u));return o};
 const camKey=o=>[...o.tgt,o.dist,o.el,o.az,o.fov,o.sx,o.sy,o.pk||0].map(r4).join(',');
 const drift=(o,rate,dt)=>Object.assign({},o,{dist:o.dist*(1-rate*dt)});
+const P5R=0.02,P5PAN=6,H6R=0.02;   /* fix r2: the B5 and B6 push rates (B5 was 3 %/s); B5's slow pan left, px a second */
 /* poses (tuned against the style frames) */
 const CAM=Q.get('cam')?JSON.parse(Q.get('cam')):{};
 const P0=Object.assign({tgt:[POTX,0.70,0],dist:7.5,el:11,az:20,fov:22,sx:900,sy:368,pk:0},CAM.P0||{});
@@ -340,6 +343,8 @@ const S4a=Object.assign({tgt:[STACKP.x,0.42,0],dist:6.6,el:18,az:-12,fov:22,sx:5
 const S4b=Object.assign({tgt:[STACKP.x,0.42,0],dist:6.8,el:16,az:0,fov:22,sx:540,sy:510,pk:0.35},CAM.S4b||{});
 /* fix r1: B4b eases back a little as #1 rises, so #1 and the direction tiles stay under "ON HYPERLIQUID" (y 204 to 260) */
 const S4c=Object.assign({},S4b,{dist:8.0,sy:548},CAM.S4c||{});
+/* fix r2: the freeze framing (from 10.50 to the cut): S4c's distance and height, reached by T.lid1 (see camB4) */
+const S4f=Object.assign({},S4c,CAM.S4f||{});
 /* fix r1: B5 framed wider and lower right (dist 9.3 -> 10.6, sx 670 -> 756, sy 530 -> 579): nothing above y 470 at x < 600, under the 10x pair */
 const P5=Object.assign({tgt:[0.05,0.55,0.1],dist:10.6,el:8,az:14,fov:26,sx:756,sy:579,pk:0},CAM.P5||{});
 /* fix r1: B6 framed wider and lower (dist 8.9 -> 9.8, sy 528 -> 550) under the raised captions: the heap and the arcs stay below y 380 */
@@ -347,7 +352,7 @@ const H6=Object.assign({tgt:[PAYP.x,0.32,-0.2],dist:9.8,el:24,az:0,fov:22,sx:270
 const M7=Object.assign({tgt:[CHIPP.x+0.15,0.2,-0.35],dist:5.2,el:24,az:6,fov:22,sx:540,sy:520,pk:0.5},CAM.M7||{});
 chip.updateMatrixWorld(true);const LEDW=new THREE.Vector3(PX(1010),CT,PZ(707)).applyMatrix4(chip.matrixWorld);
 const C7=Object.assign({tgt:[LEDW.x,LEDW.y,LEDW.z],dist:3.45,el:56,az:2,fov:22,sx:585,sy:404,pk:1},CAM.C7||{});
-window.R2_CAMS={P0,A2,B2H,C3,S4a,S4b,S4c,P5,H6,M7,C7};
+window.R2_CAMS={P0,A2,B2H,C3,S4a,S4b,S4c,S4f,P5,H6,M7,C7};
 /* B1 push-in: 3 %/s, from rest (so the loop seam has no jump); B7 pull-back arrives at P0 at rest on the last frame */
 const b1Cam=t=>{const s=t-0.6*(1-Math.exp(-t/0.6));return Object.assign({},P0,{dist:P0.dist*(1-0.03*s)})};
 
@@ -448,17 +453,27 @@ function payState(t,left){PTRAY.pivot.position.set(TRW/2,0,0);PTRAY.body.positio
 PIC.payL=[17.18,17.4,17.62,17.85].map(x=>x+PO);PIC.payR=[17.12,17.35,17.6,17.85].map(x=>x+PO);
 /* the leaderboard stack */
 const FAN=[[-0.05,-0.035],[0.045,0.03],[0.06,-0.025],[-0.035,0.04]];
-function stackState(t){const sq=EIO(lin(t,11.55,T.lid1)),nm=EOUT(lin(t,T.nm0,T.nm1));
+/* fix r2: the fan squares up right after the names leave (10.80 to 11.30), before the frost forms, so no slab corner pokes through a wall */
+const SQ0=10.8,SQ1=11.3,FR0=11.15,FR1=11.9,SETTLE=0.04;
+function stackState(t){const sq=EIO(lin(t,SQ0,SQ1)),nm=EOUT(lin(t,T.nm0,T.nm1));
   SLABS.forEach((s,i)=>{const fan=1-sq;s.G.position.set(FAN[i][0]*fan,(3-i)*(SHh+SG)+SHh/2,0);s.G.rotation.y=FAN[i][1]*fan;
     s.fn.material.opacity=1-nm;s.fr.material.opacity=nm});
   /* names out: the named face stays as the slab's base colour; the rank face covers it */
   SLABS.forEach(s=>{s.fn.visible=nm<0.999;s.fr.visible=nm>0.001});
-  const ly=(1-EIO(lin(t,T.lid0,T.lid1)))*1.25;SLEEVE.position.y=ly;SLEEVE.visible=t>=T.lid0-0.001;
-  sleeveSh.visible=SLEEVE.visible;sleeveSh.material.opacity=sleeveSh.userData.op*sm(cl(1-ly/0.5));HDR.material.opacity=1-nm;HDR.visible=nm<0.999;
+  /* fix r2 (verify r2 must-fix 1): the sleeve no longer drops in from above the frame through the caption. It frosts in place (frost,
+     hairlines and contact shadow fade in over FR0..FR1) with a SETTLE-unit settle that seats at T.lid1, on the seal */
+  const fu=EOUT(lin(t,FR0,FR1)),ly=SETTLE*(1-EIO(lin(t,FR0,T.lid1)));SLEEVE.position.y=ly;SLEEVE.visible=t>=FR0;
+  SLMATS.forEach(m=>{m.opacity=m.userData.op*fu});
+  sleeveSh.visible=SLEEVE.visible;sleeveSh.material.opacity=sleeveSh.userData.op*fu;HDR.material.opacity=1-nm;HDR.visible=nm<0.999;
   /* B4b: #1 lifts out of the sleeve; the two direction tiles rise either side */
   const lu=EA(lin(t,T.b4b,T.lift1));const s0=SLABS[0];s0.G.position.y+=0.42*lu;s0.G.position.z+=0.06*lu;
   const tu=EA(lin(t,T.b4b+0.1,T.lift1+0.05));DIRT.forEach((g,j)=>{const sc=EOUT(lin(tu,0,0.35));g.scale.setScalar(Math.max(sc,0.001));g.position.set((j?1:-1)*(SW/2+0.18),mix(0.17,s0.G.position.y+0.02,tu),0.14);g.visible=tu>0.001;g.rotation.y=(j?-1:1)*0.12})}
-const camB4=t=>{const o=lerpCam(S4a,S4b,EIO(lin(t,T.b4,T.b4b)));return t<T.b4b-0.1?o:lerpCam(S4b,S4c,EIO(lin(t,T.b4b-0.1,T.lift1+0.1)))};
+/* fix r2 (verify r2 must-fix 1): the names hold keeps S4a -> S4b; from S4F0 the camera eases back to the freeze framing S4f, there by S4F1
+   (before the frost starts at FR0), and keeps a slow pull-back (S4R a second, eased in) through B4b, so the sleeve's back rim and the slabs
+   sit under "the leaderboard freezes." (in from 10.90) and the rising #1 and the tiles stay under "ON HYPERLIQUID" */
+const S4R=0.02,S4F0=10.1,S4F1=11.3;
+const s4fAt=t=>{const s=Math.max(0,t-S4F0),e=s-0.5*(1-Math.exp(-s/0.5));return Object.assign({},S4f,{dist:S4f.dist*(1+S4R*e)})};
+const camB4=t=>{const o=lerpCam(S4a,S4b,EIO(lin(t,T.b4,T.b4b)));return t<S4F0?o:lerpCam(o,s4fAt(t),EIO(lin(t,S4F0,S4F1)))};
 /* the state */
 function setState(t){NC=0;SPLIT=null;const s=shotOf(t);setSets(s);SWP.amp.value=0;
   POTW.rotation.z=0;POTW.updateMatrixWorld(true);PLINTH.updateMatrixWorld(true);TRAY.G.updateMatrixWorld(true);
@@ -475,11 +490,16 @@ function setState(t){NC=0;SPLIT=null;const s=shotOf(t);setSets(s);SWP.amp.value=
     let pi=0,di=0;for(let i=0;i<STN;i++){const p=toPot(i);forkCoin(i,t,pi,di);if(p)pi++;else di++}}
   else if(s===3){o=Object.assign({},C3,{az:C3.az+6*(t-T.b3)});CARD.userData.piv.rotation.y=Math.PI*EA(lin(t,T.flip0,T.flip1))}
   else if(s===4){o=camB4(t);stackState(t)}
-  else if(s===5){o=drift(P5,0.03,t-T.hit);pourCoins(t);led=ledAt(t);}
-  else if(s===6){SPLIT={t};o=H6}
+  /* fix r2: the push is 2 %/s (was 3) with a slow pan left (P5PAN px a second, so almost none during the pour, when the lip is nearest the
+     10x pair): the plinth's right edge ends at about x 1061, inside the frame (verify r2 should-fix 6) */
+  else if(s===5){o=drift(P5,P5R,t-T.hit);o.sx=P5.sx-P5PAN*(t-T.hit);pourCoins(t);led=ledAt(t);}
+  /* fix r2: a slow 2 %/s push, so the payoff is not a still frame for 1.75 s (verify r2 should-fix 1); both halves use the same pose */
+  else if(s===6){o=drift(H6,H6R,t-T.b6);SPLIT={t,o}}
   else{/* B7 + B8: mid shot -> push into the dies -> hold -> pull back to P0 (at rest on the last frame) */
     if(t<T.push1)o=lerpCam(M7,C7,EA(lin(t,T.b7,T.push1)));else if(t<T.pull0)o=drift(C7,0.03,t-T.push1);
-    else{const u=lin(t,T.pull0,DUR-1/FPS);const e=EIO(u);const from=drift(C7,0.03,T.pull0-T.push1);o=lerpCam(from,P0,e);o.pk=mix(from.pk,0,sm(Math.min(1,u*1.6)))}
+    /* fix r2: the pull-back lands on P0 at T.b8 (was the last frame), so the chip has stopped before the hero resolves; P0 then holds at rest
+       (B1's push starts from rest at f0, so the loop has no jump) */
+    else{const u=lin(t,T.pull0,T.b8);const e=EIO(u);const from=drift(C7,0.03,T.pull0-T.push1);o=lerpCam(from,P0,e);o.pk=mix(from.pk,0,sm(Math.min(1,u*1.6)))}
     led=ledAt(t);if(t<T.trayOut)trayHeap(TRAY,TRAY_SL.length);
     if(t>=T.refill)streamPot(t-DUR)}
   if(led!=null)setLED(led);glowMat.opacity=ledGlowAt(t);
@@ -487,7 +507,7 @@ function setState(t){NC=0;SPLIT=null;const s=shotOf(t);setSets(s);SWP.amp.value=
   return o}
 function render(t){const o=setState(t);
   if(SPLIT){const W=RES/2;R.setScissorTest(true);
-    [[true,0],[false,W]].forEach(([left,x])=>{NC=0;payState(t,left);endCoins();place(H6,true);R.setViewport(x,0,W,RES);R.setScissor(x,0,W,RES);R.render(scene,cam)});
+    [[true,0],[false,W]].forEach(([left,x])=>{NC=0;payState(t,left);endCoins();place(SPLIT.o,true);R.setViewport(x,0,W,RES);R.setScissor(x,0,W,RES);R.render(scene,cam)});
     R.setScissorTest(false);R.setViewport(0,0,RES,RES)}
   else R.render(scene,cam)}
 
@@ -496,6 +516,7 @@ function nsAt(t){if(NSQ)return NSQ;const s=shotOf(t);
   if(s===1)return 2;if(s===2)return t<T.b2b?3:t<T.crane1+0.02?8:2;if(s===3)return (t>=T.flip0-0.02&&t<T.flip1+0.04)?4:1;
   if(s===4)return ((t>=T.lid0&&t<T.lid1+0.04)||(t>=T.b4b&&t<T.lift1+0.08))?2:1;
   if(s===5)return t<T.pour1+0.12?7:2;if(s===6)return (t>=T.pay0&&t<T.pay0+1.25)?3:1;
+  if(t>=T.pull0&&t<T.b8)return 3;   /* fix r2: the pull-back is 1.5 s (was 2.0) */
   return t>=T.refill?2:1}
 const acc=new Uint16Array(1080*1080*4);
 function plate(t){const s=shotOf(t),ns=nsAt(t),a=SHOTS[s-1],b=SHOTS[s]-1e-4;
@@ -505,11 +526,14 @@ function plate(t){const s=shotOf(t),ns=nsAt(t),a=SHOTS[s-1],b=SHOTS[s]-1e-4;
 window.R2_NS=f=>nsAt(f/FPS);
 window.renderAt=t=>{const f=Math.min(N-1,Math.max(0,Math.round(t*FPS))),tc=f/FPS;plate(tc);if(PASS==='both')C.applyType(tc);return f};
 const PLKEY=hash(JSON.stringify([VERSION,DATAKEY,RES,MARKS,FRONT,LEDC,D0,NSQ,FPS,Q.get('cam')||'']));
-window.frameName=i=>PASS==='plate'?'p'+String(i).padStart(4,'0')+'-'+PLKEY+'-n'+nsAt(i/FPS):String(i).padStart(4,'0');
+/* fix r2: plates whose picture changed in fix round 2 carry '-r2' (B4 from 10.50, B5, B6, the B7/B8 pull-back), so SKIP_EXISTING re-renders
+   exactly those and reuses every other fix-r1 plate */
+const REV2=t=>(t>=S4F0&&t<T.b7)||t>=T.pull0;
+window.frameName=i=>PASS==='plate'?'p'+String(i).padStart(4,'0')+'-'+PLKEY+'-n'+nsAt(i/FPS)+(REV2(i/FPS)?'-r2':''):String(i).padStart(4,'0');
 /* QA: screen bounds of the visible objects (the reserve zone), the LED digit height, the payoff equality */
 window.R2_LED=f=>{setState(f/FPS);const c0=CELLS[0],c6=CELLS[30];chip.updateMatrixWorld(true);const a=new THREE.Vector3(c0.x,LEDY,c0.z-CSZ/2000).applyMatrix4(chip.matrixWorld).project(cam),b=new THREE.Vector3(c6.x,LEDY,c6.z+CSZ/2000).applyMatrix4(chip.matrixWorld).project(cam);return Math.round(Math.abs(a.y-b.y)/2*1080)};
 window.R2_CAMAT=f=>{setState(f/FPS);return camNow?camKey(camNow):'split'};
-window.R2_PROJ=(f,pts)=>{const o=setState(f/FPS);if(SPLIT)place(H6,true);return pts.map(p=>{V3.set(...p).project(cam);return [Math.round((V3.x+1)/2*(SPLIT?540:1080)),Math.round((1-V3.y)/2*1080)]})};
+window.R2_PROJ=(f,pts)=>{const o=setState(f/FPS);if(SPLIT)place(SPLIT.o,true);return pts.map(p=>{V3.set(...p).project(cam);return [Math.round((V3.x+1)/2*(SPLIT?540:1080)),Math.round((1-V3.y)/2*1080)]})};
 window.renderAt(0);
 window.__ready=true;
 }

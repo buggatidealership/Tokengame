@@ -147,10 +147,12 @@ function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math
 /* =================== THE TIMING TABLE (seconds; picture and sound both read it) =================== */
 /* fix r1: 26.0 s. B1 to B4b unchanged; B5 14.00 to 17.50 (the 10x pair held 3.5 s); B6 17.50 to 20.50 (the payoff held 3.0 s);
    B7 20.50 to 25.25 (unchanged length: the disclaimer keeps 285 frames); B8 25.25 to 26.00 (the hero gets 3.75 s on repeats).
-   The refill stream starts at DUR + B1S0 = 24.25, so frame 0 is unchanged. 26 s = 13 bars at 120 BPM: the loop stays on the grid. */
+   The refill stream starts at DUR + B1S0 = 24.25, so frame 0 is unchanged. 26 s = 13 bars at 120 BPM: the loop stays on the grid.
+   fix r2: the B7 pull-back runs 23.75 to T.b8 (was 24.00 to the last frame), so the chip is at rest before the hero resolves. No sound cue
+   reads pull0. */
 const T={b1:0,b2a:3,dock:3.15,sheds:[3.25,3.5,3.75,4.0],b2b:4.5,crane1:5.0,l69:4.75,l31:4.875,b3:6.5,flip0:7.7,flip1:8.05,
   b4:9.25,nm0:10.5,nm1:10.75,lid0:11.0,lid1:12.0,lp0:11.7,b4b:12.5,lift1:13.25,q0:13.6,hit:14.0,tip1:14.4,pour0:14.05,pour1:14.7,right1:14.8,
-  b6:17.5,pay0:17.6,pay1:18.35,b7:20.5,trayOut:22.9,push1:23.0,pull0:24.0,refill:24.25,b8:25.25,end:26};
+  b6:17.5,pay0:17.6,pay1:18.35,b7:20.5,trayOut:22.9,push1:23.0,pull0:23.75,refill:24.25,b8:25.25,end:26};
 const SHOTS=[0,3,6.5,9.25,14,T.b6,T.b7,DUR];
 const shotOf=t=>t<3?1:t<6.5?2:t<9.25?3:t<14?4:t<T.b6?5:t<T.b7?6:7;
 window.R2_T=T;
@@ -246,10 +248,18 @@ const L69=line('big',SHARE+'%',56,214,T.l69,T.b3,{src:'SIM.poolShare ('+PS+')',w
 const L69b=line('kick','→ $ pot',66,452,T.l69,T.b3,{html:ARR(50)+' <span class="w dol">$</span><span class="w"> pot</span>',src:'fixed: the $ pot (a plain $ at cap height, fix r1: the coin glyph read as a dot at feed size)'});
 const L31=line('kick',OPS+'% → runs EZ',0,0,T.l31-0.175,T.b3,{html:'<span class="w">'+OPS+'%</span> '+ARR(50)+'<span class="w"> runs EZ</span>',src:'1 - SIM.poolShare'});
 /* B3 */
-/* fix r1: what they compete on and how a round is won (step 2), in a left column beside the card */
-line('st','Four AIs',64,100,T.b3,T.b4,{src:'MODEL_KEYS.length ('+MODEL_KEYS.length+')'});
-line('st','call earnings.',64,188,T.b3+0.12,T.b4,{src:'fixed (the AIs call stocks before earnings)'});
-line('st','Closest wins.',64,276,T.flip0-0.2,T.b4,{src:'fixed (the closest right-way call wins the round; the card back dims the wrong-way calls)'});
+/* fix r1: what they compete on and how a round is won (step 2), in a left column beside the card.
+   fix r2 (verify r2 must-fix 3): the rule is the owner's, "the closest right-way call wins the round" ("Closest wins." was wrong: in R18 Delta
+   GROK was closest but called the wrong way, and KIMI won). "Closest right-way" is 622 px at 76 px and would run into the card (x 577), so
+   the sentence takes three lines; "right-way call" (479 px, x 64 to 543) stays whole. The two sentences are 20 px apart. Every B3 line is in
+   by 6.93 and goes off hard on the cut to B4 (9.25): the rule holds 2.32 s, at least 0.6 s + 0.33 s a word even counting "right-way" as two */
+const B3S={src:'fixed (owner rule: the closest right-way call wins the round; a wrong-direction call never wins)',cut:true};
+line('st','Four AIs',64,100,T.b3,T.b4,{src:'MODEL_KEYS.length ('+MODEL_KEYS.length+')',cut:true});
+line('st','call earnings.',64,188,T.b3+0.06,T.b4,{src:'fixed (the AIs call stocks before earnings)',cut:true});
+line('st','Closest',64,296,T.b3+0.12,T.b4,B3S);
+line('st','right-way call',64,384,T.b3+0.15,T.b4,B3S);
+line('st','wins.',64,472,T.b3+0.18,T.b4,B3S);
+S('Closest right-way call wins.','the B3 rule, as one sentence (set on three lines above)',T.b3+0.12,T.b4,'story');
 /* B4 */
 line('st',LEAD+' hours before',64,100,T.b4,T.b4b-0.08,{src:'SIM.leadHours ('+LEAD+')',wbw:true});
 line('st','NVIDIA reports,',64,188,T.b4+0.18,T.b4b-0.08,{wbw:true,src:'fixed (owner sentence)'});
@@ -283,8 +293,11 @@ E.legal=el('','Not affiliated with NVIDIA, OpenAI, Moonshot AI, xAI, Anthropic<b
 S(LEGAL,'fixed (brief; LABS[MODEL_KEYS] checked against it)',0,DUR,'compliance');S('AD','fixed, every frame',0,DUR,'compliance');
 if(VAR==='uk'){E.band=el('',null,null,'band');const p=document.createElement('p');p.textContent='Don’t invest unless you’re prepared to lose all the money you invest. This is a high-risk investment and you should not expect to be protected if something goes wrong.';E.band.appendChild(p);
   S(p.textContent,'FCA COBS 4.12A.11R(1)(d), exact text and style of ez-hype.html; every frame (uk)',0,DUR,'compliance')}
-const STAMPS=[[0,T.b2a,'FEES FROM LAUNCH','CONFIG.launched false'],[T.b3,T.b4,ASOFLAB+' · ROUND '+LAST.n,'asof; latest graded round'],[T.b4,T.nm0,'WINS · AFTER ROUND '+LAST.n,'LADDER; latest graded ROUNDS[].n'],
-  [T.b4b,T.b6,'PLANNED · ON HYPERLIQUID','fixed (X2: on Hyperliquid)'],[T.b7,T.b8,'PLANNED '+BETLAB+' · '+ASOFLAB,'BET ('+betSrc+'); asof'],[T.b8,DUR,'FEES FROM LAUNCH','CONFIG.launched false']];
+/* fix r2: B3 says AFTER ROUND n (the card is the showcase round, an earlier one); B1 and B8 set FEES FROM LAUNCH left, beside the $EZ tile ('L'),
+   where no coin or object passes (the stream falls at x 840 to 940 at the top right). B7's stamp gets the title card's porcelain backing ('B'):
+   the push-in brings the chip's gold rim under it, where grey on gold was about 2.6:1 (verify-viewer r2 should-fix 1); no coin passes there */
+const STAMPS=[[0,T.b2a,'FEES FROM LAUNCH','CONFIG.launched false','L'],[T.b3,T.b4,ASOFLAB+' · AFTER ROUND '+LAST.n,'asof; latest graded round'],[T.b4,T.nm0,'WINS · AFTER ROUND '+LAST.n,'LADDER; latest graded ROUNDS[].n'],
+  [T.b4b,T.b6,'PLANNED · ON HYPERLIQUID','fixed (X2: on Hyperliquid)'],[T.b7,T.b8,'PLANNED '+BETLAB+' · '+ASOFLAB,'BET ('+betSrc+'); asof','B'],[T.b8,DUR,'FEES FROM LAUNCH','CONFIG.launched false','L']];
 STAMPS.forEach(s=>{S(s[2],s[3],s[0],s[1],'label');checkStr(s[2])});
 S('LED countdown DD HH MM SS (B1, B8: D = bet - asof; B7: D + ceil('+T.b8+' - t))','BET - asof ('+D0+' s)',0,DUR,'data');
 CALLS.forEach(c=>S(c.name+' '+(c.dir==='UP'?'▲':'▼')+c.mag,'ROUND '+SHOW.n+' .calls ('+showRule+')',T.b3,T.flip1,'data'));
@@ -305,22 +318,26 @@ function setW(L,t){/* resolve from a 12 px blur and 0 opacity, word by word for 
     const o=u*(t0===L.ret?1:fade);w.style.opacity=o.toFixed(3);w.style.filter=u<0.999?'blur('+((1-u)*12).toFixed(2)+'px)':'none';k.push(o.toFixed(3)+(u<0.999?'b'+(1-u).toFixed(3):''))});
   return k.join(',')}
 let typeKey='';
-function applyType(t){const s=shotOf(t),K=[VAR,VERSION,hash(DATAKEY)];
+const TYPEV='ty2';   /* fix r2: the type states' own version (layout changes the key would not see); plates keep VERSION */
+function applyType(t){const s=shotOf(t),K=[VAR,VERSION,TYPEV,hash(DATAKEY)];
   LINES.forEach(L=>K.push(setW(L,t)));
   /* B2 labels that sit by objects (fixed screen positions, measured from the hold poses) */
   FEEL.e.style.left='604px';FEEL.e.style.top='468px';
   const fv=t>=T.b2a&&t<T.b2b?1-lin(t,T.b2b-0.2,T.b2b):0;FEEH.style.left='560px';FEEH.style.top='495px';FEEH.style.width='36px';FEEH.style.height='2px';FEEH.style.opacity=(0.55*fv).toFixed(3);FEEH.style.visibility=fv>0?'visible':'hidden';K.push(fv.toFixed(3));
   L31.e.style.left=LAY.l31x+'px';L31.e.style.top=LAY.l31y+'px';
-  /* B6 halves: on hard at the cut, words resolve like every other line */
+  /* B6 halves: on hard at the cut (kickers and lines, fix r2) */
   const hv=s===6;[HL,HR,DIV].forEach(e=>e.style.visibility=hv?'visible':'hidden');
-  if(hv){/* fix r1: the kickers on hard with the cut (no empty first frame), the lines resolve over 0.25 s */
-    [hk1,hk2,hl1,hl2].forEach((e,i)=>{const uu=i<2?1:EOUT(lin(t,T.b6,T.b6+0.25));e.style.opacity=uu.toFixed(3);e.style.filter=uu<0.999?'blur('+((1-uu)*12).toFixed(2)+'px)':'none'});
-    const fo=1-lin(t,T.b7-0.2,T.b7);HL.style.opacity=HR.style.opacity=fo.toFixed(3);K.push('h'+EOUT(lin(t,T.b6,T.b6+0.25)).toFixed(3)+','+fo.toFixed(3))}
+  if(hv){/* fix r1: the kickers on hard with the cut. fix r2 (verify-viewer r2 should-fix 2): the payoff lines too, so both halves read
+       for the whole 3.0 s */
+    [hk1,hk2,hl1,hl2].forEach(e=>{e.style.opacity='1';e.style.filter='none'});
+    const fo=1-lin(t,T.b7-0.2,T.b7);HL.style.opacity=HR.style.opacity=fo.toFixed(3);K.push('h1,'+fo.toFixed(3))}
   /* the disclaimer and the title card: on hard at T.b7, off hard at T.b8 (fix r1: no dissolve over the returning hero) */
   const dv=t>=T.b7&&t<T.b8?1:0;DISC.style.visibility=dv>0?'visible':'hidden';DISC.style.opacity=dv.toFixed(3);K.push('d'+dv.toFixed(3));
   const tv=dv;TTL.style.visibility=tv>0?'visible':'hidden';TTL.style.opacity=tv.toFixed(3);K.push('c'+tv.toFixed(3));
   /* the rail stamp */
-  let st='';STAMPS.forEach(x=>{if(t>=x[0]&&t<x[1])st=x[2]});E.stamp.textContent=st;K.push(st);
+  let st='',sl=false,sb=false;STAMPS.forEach(x=>{if(t>=x[0]&&t<x[1]){st=x[2];sl=x[4]==='L';sb=x[4]==='B'}});E.stamp.textContent=st;
+  E.stamp.style.left=sl?'190px':'';E.stamp.style.right=sl?'auto':'';E.stamp.style.textAlign=sl?'left':'';
+  E.stamp.style.background=sb?'#fbfaf7':'';E.stamp.style.border=sb?'1px solid rgba(16,26,58,.22)':'';E.stamp.style.borderRadius=sb?'6px':'';K.push(st+(sl?'@L':sb?'@B':''));
   return K.join('|')}
 
 /* =================== LAYOUT: screen positions shared by the plate (camera framing) and the type =================== */

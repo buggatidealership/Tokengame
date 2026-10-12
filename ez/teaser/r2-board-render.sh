@@ -21,6 +21,8 @@
 # stream (found from the source frames), so the last frames and f0 are coded alike; one slice per macroblock row stops intra
 # prediction from carrying the moving coin's difference across the frame (without slices the I-frames f0 and f(N-3) differed by
 # about 1.2 levels everywhere). QA reads the same timing file.
+# FIX R2 (2026-10-12): same recipe and length. timing.json now also carries the text holds of both variants (R2B_HOLDS, from the page's
+# event table), which r2-board-qa.py checks against 0.6 s + 0.33 s a word. Run it under nice when another film renders on the machine.
 set -e
 OUT=${1:?usage: r2-board-render.sh OUTDIR}
 ASOF=${ASOF:-2026-10-12T16:00:00Z}; JOBS=${JOBS:-2}; VARIANTS=${VARIANTS:-"uk nonuk"}; DELIVER=${DELIVER-v1}
@@ -32,6 +34,10 @@ T0=$(date +%s)
 node teaser/r2-board-timing.js "$OUT/timing.json" "v=uk&asof=$ASOF" || { echo "the page did not load"; exit 4; }
 N=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$OUT/timing.json','utf8')).N)")
 X264="keyint=$N:min-keyint=$N:scenecut=0:ipratio=1.0:pbratio=1.0:slice-max-mbs=68"
+# FIX R2: AAC LC 192k 48 kHz as before, with perceptual noise substitution off. With PNS on, the encoder swapped the disc clicks' noisy
+# bands for noise the DECODER generates, so the decoded peak depended on the decoder: ffmpeg's decode of the r2 sound read -0.7 dBTP
+# (an encoder burst at 1.76 s, 18 dB more error than around it) from a -3.0 dBTP master. PNS off: -2.3 dBTP, as round 1.
+AAC="-aac_pns 0"
 
 # --- the bet date gate ---
 BET=$(node -e "const vm=require('vm'),fs=require('fs');const c={};vm.createContext(c);vm.runInContext(fs.readFileSync('ez-data.js','utf8')+';this.b=(SIM.betDate||CONFIG.betDate||\"\")',c);console.log(c.b)")
@@ -50,7 +56,7 @@ grep -q '"normalization_type" : "linear"' "$OUT/sound/pass2.log" || { echo "loud
 T1=$(date +%s)
 if [ "$REMUX" = "1" ]; then
   for V in $VARIANTS; do MP4="$OUT/ez-r2-board-v1-$V.mp4"; [ -f "$MP4" ] || { echo "REMUX: no $MP4"; exit 8; }
-    "$FF" -y -loglevel error -i "$MP4" -i "$OUT/sound/audio-14lufs.wav" -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -ar 48000 -movflags +faststart -shortest "$MP4.tmp.mp4"
+    "$FF" -y -loglevel error -i "$MP4" -i "$OUT/sound/audio-14lufs.wav" -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -ar 48000 $AAC -movflags +faststart -shortest "$MP4.tmp.mp4"
     mv "$MP4.tmp.mp4" "$MP4"; [ -n "$DELIVER" ] && cp "$MP4" "$EZ/media/ez-r2-board-$DELIVER-$V.mp4"
     python3 teaser/r2-board-qa.py mp4 "$MP4" "$OUT/qa-$V-mp4.json" "$OUT/timing.json"; done
   echo "remuxed sound in $(( $(date +%s)-T0 )) s"; exit 0
@@ -87,7 +93,7 @@ PY
   "$FF" -y -loglevel error -framerate 60 -i "$OUT/$V/frames/%04d.png" -i "$OUT/sound/audio-14lufs.wav" -map 0:v -map 1:a \
     -vf "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p" -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
     -c:v libx264 -profile:v high -pix_fmt yuv420p -qp 16 -preset slow -r 60 -x264-params "$X264" -force_key_frames "$KF" \
-    -c:a aac -b:a 192k -ar 48000 -movflags +faststart -shortest "$MP4"
+    -c:a aac -b:a 192k -ar 48000 $AAC -movflags +faststart -shortest "$MP4"
   "$FF" -y -loglevel error -i "$OUT/$V/frames/0000.png" -q:v 2 "$OUT/ez-r2-board-v1-$V-poster.jpg"
   python3 teaser/r2-board-qa.py frames "$OUT/$V/frames" "$V" "$OUT/qa-$V.json" "$OUT/contact-$V.png" "$OUT/timing.json"
   python3 teaser/r2-board-qa.py mp4 "$MP4" "$OUT/qa-$V-mp4.json" "$OUT/timing.json"

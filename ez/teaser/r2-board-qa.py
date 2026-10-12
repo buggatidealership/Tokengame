@@ -3,7 +3,7 @@
   python3 r2-board-qa.py frames FRAMEDIR uk|nonuk REPORT.json CONTACT.png TIMING.json   (before the frame dump is deleted)
   python3 r2-board-qa.py mp4 FILE.mp4 REPORT.json TIMING.json [FFMPEG]                  (the encoded film: tags, frames, sound)
 TIMING.json comes from r2-board-timing.js (N, FPS and the page's T table), so no frame number is hard-coded here.
-Checks (spec-board.md section 13, plus verify round 1): the compliance strips and (uk) the FCA band are pixel-identical on every
+Checks (spec-board.md section 13, plus verify rounds 1 and 2; FIX R2 adds the text holds from TIMING.json): the compliance strips and (uk) the FCA band are pixel-identical on every
 frame; nonuk has no story pixel in the bottom 96 px; the disclaimer is on exactly T.card0..T.card1; the loop seam is no bigger than its
 neighbours' frame changes; WCAG 2.3.1 (at most 3 general flashes and no red flash in any 1 s, 25% of the frame as the area threshold);
 NO GOLD STEPS (FIX R1): outside the 69% slam, the hit, the race snaps and the paying-trade ripples (all designed, listed in TIMING.json),
@@ -53,6 +53,24 @@ def b0_motion(grey300, J):
     """grey300: list of the B0 frames' 300 px grey arrays (story band only)."""
     v = [float((np.abs(grey300[i] - grey300[i - 1]) > 12).mean() * 100) for i in range(1, len(grey300))]
     v = np.array(v); return v, float((v >= 1).mean())
+
+# FIX R2: text holds, measured on the page's event table (R2B_HOLDS in TIMING.json): a line is complete on the first frame where all its
+# discs have settled, gone on the first frame where any shows another face; the rule is 0.6 s + 0.33 s a word. The hero (first play) and
+# the 10x pair are kept short on the 2 s bar grid by the owner's call (fix-r1.md), so they are reported, not checked.
+HOLD_REPORT_ONLY = ('hero (first play)', '10x pair')
+def holds_check(J, var, chk, R):
+    H = (J.get('holds') or {}).get(var)
+    if not H:
+        chk('text holds (TIMING.json has none for %s)' % var, False, 'run r2-board-timing.js'); return
+    bad = []; info = {}
+    for h in H:
+        info[h['name']] = '%.3f s (needs %.2f)' % (h['held'], h['need'])
+        if h['name'] in HOLD_REPORT_ONLY: continue
+        if h['held'] + 1e-9 < h['need'] or (h['name'].startswith('chip') and h['held'] <= 0): bad.append(h['name'])
+    dis = [h for h in H if h['name'].startswith('disclaimer')][0]
+    if dis['held'] < 4.5: bad.append('disclaimer under 4.5 s')
+    chk('text holds meet 0.6 s + 0.33 s a word (hero and 10x pair reported only)', not bad, bad if bad else info)
+    R['holds'] = H
 
 def frames_mode(d, var, rep, contact, tj):
     J = json.load(open(tj)); N = J['N']; T = J['T']; FPS = J['FPS']
@@ -133,6 +151,7 @@ def frames_mode(d, var, rep, contact, tj):
     chk('no gold steps outside the designed events (69% slam, hit, race snaps, paying ripples)', not st, st[:12] if st else 'none (max |step| outside the exempt frames: %d px of %d)' % (max(abs(gold[i] - gold[i - 1]) for i in range(1, len(gold)) if i not in exempt_frames(J)), 216 * 216))
     v, share = b0_motion(b0, J)
     chk('B0 motion at 300 px: >= 1%% of story pixels change on >= half the frames f0..f%d' % (nb1 - 1), share >= 0.5, '%.0f%% of frames (median %.2f%%, min %.2f%%)' % (share * 100, np.median(v), v.min()))
+    holds_check(J, var, chk, R)
     R['median_frame_diff'] = med; R['seam_diff'] = seam; R['gold'] = gold; R['b0_motion'] = [round(x, 3) for x in v.tolist()]
     cols = 8; rows = (len(small) + cols - 1) // cols
     sheet = Image.new('RGB', (cols * 244, rows * 244), (255, 255, 255))

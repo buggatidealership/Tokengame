@@ -128,7 +128,7 @@ C.ez=S("$EZ","fixed (the coin)");
 C.fromLaunch=S("FROM LAUNCH,","CONFIG.launched=false (ca empty)");
 C.sell=S("SELL ▼","fixed (tape)");C.buy=S("BUY ▲","fixed (tape)");C.fee=S("FEE","fixed");
 C.pool=S(D.pool+"%","SIM.poolShare ("+SIM.poolShare+")");
-C.ofFees=S("OF FEES","fixed (69% of every $EZ trading fee)");
+C.ofFees=S("OF $EZ FEES","fixed (69% of every $EZ trading fee; FIX R2: names the coin, so the fees are not read as stock-trade fees)");
 C.toPot=S("→ THE $ POT","fixed (gold $ glyph)");
 C.ops=S(D.ops+"% RUNS EZ","100 - SIM.poolShare");
 C.four=[S(MODEL_KEYS.length+" AIs CALL","MODEL_KEYS.length"),S("EARNINGS.","fixed")];
@@ -289,12 +289,22 @@ var PALN={1:"#f3ede0",2:"#ffc72c",3:"#1fcf6b",4:"#ff4136",5:"#7681b6",6:"#a9b1e2
    glintH: one glint across the ticket heap in B6; capClear: the lane captions flip off before the disclaimer card lands. */
 var T={b0:0,coin0:{every:0.5,first:-0.5,last:2.5},ripple:[0.5,1.5,2.5],b1:3.0,mv1:[3.0,3.375],lockRead:[3.375,5.625],coins1:[3.75,4.25,4.75,5.25],
   mv2:[5.625,6.0],card:5.625,b2:6.0,pot:6.125,ops:6.25,
-  b3:9.0,settle:9.75,b4:11.0,words:[11.0,11.125,11.25,11.375],open:[11.25,12.0],freeze:12.0,frameTrace:[12.0,12.2],glintF:[12.1,12.7],quiet:[13.6,14.0],
-  b5:14.0,punch:[14.0,14.6],ticket:14.75,pour:[15.0,15.5],ratchet:[15.25,16.0],b6:16.0,glintH:[17.0,17.8],b7:19.0,lanes:[19.25,20.0],capClear:20.875,
-  b8:21.0,dis1:[21.75,22.25],glintC:[23.0,24.5],dis2:[25.5,25.75],b9:25.75,end:26.0};
-T.card0=Math.round(T.b8*FPS);T.card1=Math.round(T.b9*FPS)-1;   /* the disclaimer: f1260..f1544, 285 frames */
+  b3:9.0,settle:9.75,b4:11.0,open:[11.25,12.0],freeze:12.0,frameTrace:[12.0,12.2],glintF:[12.1,12.7],callIn:13.325,quiet:[13.6,14.0],
+  b5:14.0,punch:[14.0,14.6],ticket:14.75,pour:[15.0,15.5],ratchet:[15.25,16.0],b6:16.0,glintH:[17.0,17.8],b7:19.0,lanes:[19.25,20.0],capClear:21.1,
+  b8:21.0,dis1:[21.4,21.9],glintC:[23.0,24.5],dis2:[25.5,25.75],b9:25.75,end:26.0};
+/* FIX R2 (films-r2/board/fix-r2.md), clarity holds by the rule 0.6 s + 0.33 s a word:
+   callIn: "THE #1 AI MAKES / THE CALL." clacks in over the frozen card at 13.325 s (it came with the hit at 14.0 and held 1.97 s; it
+     needs 2.58 s). The head of the freeze card now lands in one clack at T.b4 (it was typed word by word until 11.375 s), so it still
+     holds 2.25 s or more. No beat moves: the hit stays at 14.0, the pair at 16.0.
+   capClear: BUYBACK | WIPEOUT stay until 21.1 s (they held 1.70 s; the lane read needs 1.92 s): the B8 radial rewrite leaves their
+     rows, they clack off at T.capClear (21.1 s) and the disclaimer card lands on the cleared rows after that flip (card0 below).
+   dis1: the chip dissolve ends at 21.9 s, before the first LED tick at 22.0 s (the tick landed mid-dissolve). */
+T.card0=Math.ceil((T.capClear+3/60)*FPS-1e-9);T.card1=Math.round(T.b9*FPS)-1;   /* the disclaimer: f1269..f1544, 276 frames (4.6 s) */
+if(T.card0<Math.round(T.b8*FPS))throw new Error("the disclaimer card must not land before B8");
+if(T.dis1[1]>T.b8+1)throw new Error("the chip dissolve must end before the first LED tick");
+if(!(T.callIn>T.freeze&&T.callIn<T.quiet[0]))throw new Error("the call line must land inside the freeze's still stretch, before the quiet");
 if(T.end!==DUR)throw new Error("T.end ("+T.end+") must equal DUR ("+DUR+")");
-if(T.card1-T.card0+1<270)throw new Error("the disclaimer must hold 4.5 s or more");
+if(T.card1-T.card0+1<274)throw new Error("the disclaimer must hold 4.5 s or more (and 4.56 s, the hold rule for its 12 words)");
 window.R2B_T=T;
 
 /* =====================================================================================================
@@ -329,7 +339,9 @@ var VB=makeVessel(32,48),VBc=60,VBr=R(23);
   L.text(C.fromLaunch,43,-11,IV,{name:"FROM LAUNCH (top)"});
   /* the gate */
   for(var r=-2;r<=6;r++)L.set(76,r,IV);
-  L.text(C.fee,80,7,IV,{name:"FEE"});   /* ivory: it is the mechanic, not a label */
+  /* ivory: it is the mechanic, not a label. FIX R2: at column 83 (was 80), 4 discs clear of the coin channel (columns 74..78), more
+     than the face's word space (3), so the falling gold $ never sits beside it as a "$FEE" cashtag */
+  MK.feeCol=83;L.text(C.fee,MK.feeCol,7,IV,{name:"FEE"});
   LAYS.b1=L})();
 MK.gateCol=76;MK.tapeRow=-1;
 /* ---- B2 card ---- */
@@ -369,10 +381,10 @@ LAYS.b3=[raceLay(null,"B3 names")].concat(D.states.map(function(s,k){return race
 /* ---- B4 freeze ---- */
 var FZ={bars:[52,57,62,67].map(R),blkC0:3,barC0:9,frame:[1,R(50),94,R(71)]};
 (function(){var L=new Lay("B4 freeze words");
-  LAYS.b4w=[];var words=[["24 HOURS",0],["BEFORE",0],["NVIDIA",1],["REPORTS,",1]];
+  LAYS.b4w=[];
   var l1=C.freeze[0],l2=C.freeze[1];
-  /* build word by word: each step is a layout with one more word */
-  var acc=new Lay("B4 w0");var parts=[l1.split(" "),l2.split(" ")];
+  /* build word by word: each step is a layout with one more word (FIX R2: only the last step, the full head, is used now) */
+  var parts=[l1.split(" "),l2.split(" ")];
   var steps=[[parts[0].slice(0,2).join(" "),null],[l1,null],[l1,parts[1][0]],[l1,l2]];
   steps.forEach(function(st,k){var Lw=new Lay("B4 words "+(k+1));Lw.text(st[0],3,R(15),IV,{name:"fl1"});if(st[1])Lw.text(st[1],3,R(24),IV,{name:"fl2"});LAYS.b4w.push(Lw)});
   /* the four-line card plus the frame */
@@ -381,14 +393,17 @@ var FZ={bars:[52,57,62,67].map(R),blkC0:3,barC0:9,frame:[1,R(50),94,R(71)]};
   checkLay(Lf);LAYS.b4f=Lf})();
 /* ---- B5 call ---- */
 var CALL={};
-(function(){var L=new Lay("B5 call");L.text(C.call[0],3,R(15),IV,{name:"c1"});L.text(C.call[1],3,R(25),IV,{name:"c2"});
+/* FIX R2: the call's second line sits at row 24 (was 25), the freeze card's pitch: it lands at T.callIn over the frozen card (lines 3 and 4
+   start at row 33) and stays put through the hit */
+CALL.r=[R(15),R(24)];
+(function(){var L=new Lay("B5 call");L.text(C.call[0],3,CALL.r[0],IV,{name:"c1"});L.text(C.call[1],3,CALL.r[1],IV,{name:"c2"});
   var g1=bigText("#1",24);var x=L.mask(g1,3,R(34)-g1.capTop,GO,"#1 big");
   var up=polyMask(UPT,18,16),dn=polyMask(DNT,18,16);var ax=Math.max(x+6,44),r0=R(34)+4;
   L.mask(up,ax,r0,GR,"up",'sel');L.mask(dn,ax+26,r0,RD,"dn",'sel');
   CALL.bigSel=[[ax-2,r0-2,ax+18+1,r0+16+1],[ax+26-2,r0-2,ax+26+18+1,r0+16+1]];
   checkLay(L);LAYS.b5a=L;
   /* 12.75: the vessel (left) and the call ticket (right) */
-  var L2=new Lay("B5 ticket");L2.text(C.call[0],3,R(15),IV,{name:"c1"});L2.text(C.call[1],3,R(25),IV,{name:"c2"});
+  var L2=new Lay("B5 ticket");L2.text(C.call[0],3,CALL.r[0],IV,{name:"c1"});L2.text(C.call[1],3,CALL.r[1],IV,{name:"c2"});
   CALL.V=makeVessel(20,28);CALL.vc=3;CALL.vr=R(44);CALL.level=0.5;
   drawVessel(L2,CALL.V,CALL.vc,CALL.vr,CALL.level,"vessel small");
   var bx=[46,R(44),92,R(71)];CALL.box=bx;L2.frame(bx[0],bx[1],bx[2],bx[3],IV);L2.reserve("ticket",bx[0],bx[1],bx[2],bx[3],"ticket");
@@ -448,7 +463,9 @@ var C2={c0:70,c1:79,burst:40,spray:[63,86,32,41]};
 (function(){function chk(L,r0,r1,c0,c1){for(var r=r0;r<=r1;r++)for(var c=c0;c<=c1;c++)if(L.f[ix(c,r)]&&!(L===LAYS.b1&&c===76&&r<=6))throw new Error("coin channel holds a story disc in "+L.name+" at c"+c+" r"+r)}
   chk(LAYS.b0,14,C2.burst,C2.c0,C2.c1);chk(LAYS.b0,C2.spray[2],C2.spray[3],C2.spray[0],C2.spray[1]);
   for(var c=C2.spray[0];c<=C2.spray[1];c++)if(LAYS.b0.f[ix(c,C2.spray[3]+1)])throw new Error("the B0 spray zone touches a story disc at c"+c);
-  chk(LAYS.b1,7,VBr+VB.topRim-1,73,79);chk(LAYS.b2c,14,VBr+VB.topRim-1,73,79)})();
+  chk(LAYS.b1,7,VBr+VB.topRim-1,73,79);chk(LAYS.b2c,14,VBr+VB.topRim-1,73,79);
+  /* FIX R2: "FEE" keeps more than a word space (3 discs) from the coin's right edge (column 78), so no "$FEE" cashtag forms */
+  if(MK.feeCol-79<4)throw new Error("FEE sits "+(MK.feeCol-79)+" discs from the coin channel; it needs 4 or more")})();
 
 /* =====================================================================================================
    6. TRANSITIONS (base layouts with waves) and MOVING ELEMENTS
@@ -480,22 +497,29 @@ D.states.forEach(function(s,k){tr(raceT[k],LAYS.b3[k+1],wLR(0,1600,JIT*.3),[R(34
 T.race=raceT;
 /* B4: words and bars */
 var W4;
-(function(){var base=LAYS.b3[LAYS.b3.length-1];
-  var Lc=new Lay("B4 compact");Lc.text("24 HOURS",3,R(15),IV,{noReserve:true});LAYS.b4c=Lc;
-  W4=tr(T.b4,Lc,wTB(R(14),320,JIT));
-  LAYS.b4w.slice(1).forEach(function(Lw,k){tr(T.words[k+1],Lw,wLR(0,500,JIT*.3),[R(14),R(31)])});
-  tr(T.freeze,LAYS.b4f,wClack(),[R(32),R(49)])})();
+(function(){
+  /* FIX R2: the head "24 HOURS BEFORE / NVIDIA REPORTS," lands in one clack at T.b4 (rows 14..31; it was typed word by word until
+     11.375 s, complete at about 11.6 s); the race below still clears with the top-to-bottom wave. The head is then complete from
+     about 11.05 s, which gives the call line (T.callIn) its 2.58 s and still leaves the head 2.25 s. */
+  var Lc=LAYS.b4w[LAYS.b4w.length-1];LAYS.b4c=Lc;var wb=wTB(R(14),320,JIT);
+  W4=tr(T.b4,Lc,function(c,r,i){return r<=R(31)?0:wb(c,r,i)});
+  tr(T.freeze,LAYS.b4f,wClack(),[R(32),R(49)]);
+  /* FIX R2: the call line replaces the head over the frozen board at T.callIn, in one clack (rows 14..31 of the B5 layout: the two call
+     lines); the hit at T.b5 then brings the giant #1, the selector and the punch-in, and the call lines do not flip again */
+  tr(T.callIn,LAYS.b5a,wClack(),[R(14),R(31)])})();
 /* B5 */
 var W5=tr(T.b5,LAYS.b5a,wClack());
 var WT=tr(T.ticket,LAYS.b5b,wTB(R(34),260,JIT),[R(34),R(71)]);
 /* B6: the pair in one clack on the same frame */
 tr(T.b6,LAYS.b6,wClack(),[R(14),R(43)]);
 /* B7 */
-var W7=tr(T.b7,LAYS.b7,wTB(R(14),380,JIT));
-/* the lane captions flip off just before the disclaimer card lands on their rows (uk card y 690..800) */
-tr(T.capClear,(function(){var L=new Lay("B7 captions cleared",LAYS.b7);L.clear(R(58),R(68));return L})(),wRad(48,R(63),900,JIT*.3),[R(58),R(68)]);
-/* B8 radial rewrite from the centre */
-var W8=tr(T.b8,LAYS.b8,wRad(48,R(42),330,JIT*.5));
+/* FIX R2: 500 rows/s (was 380), so BUYBACK | WIPEOUT are written about 2 frames sooner */
+var W7=tr(T.b7,LAYS.b7,wTB(R(14),500,JIT));
+/* B8 radial rewrite from the centre. FIX R2: it leaves the caption rows (58..68: BUYBACK | WIPEOUT and the divider's foot), which
+   clack off at T.capClear; the disclaimer card lands on those rows once that flip is done (T.card0; uk card y 690..814) */
+var CAPROWS=[R(58),R(68)],w8=wRad(48,R(42),330,JIT*.5);
+var W8=tr(T.b8,LAYS.b8,function(c,r,i){return (r>=CAPROWS[0]&&r<=CAPROWS[1])?Infinity:w8(c,r,i)});
+tr(T.capClear,(function(){var L=new Lay("B7 captions cleared",LAYS.b7);L.clear(CAPROWS[0],CAPROWS[1]);return L})(),wClack(),CAPROWS);
 /* B9 seam: back to the poster, top to bottom, rows 14..86 in 9 frames, settled 3 frames before the end */
 var SEAMV=72/(9/60);
 var W9=tr(T.b9,LAYS.b0,wTB(14,SEAMV,JIT*.3));
@@ -712,6 +736,36 @@ function discAt(i,t){var ev=EV[i];if(!ev)return [INIT[i],INIT[i],1];var k=t*TICK
   while(lo<=hi){var m=(lo+hi)>>1;if(ev[m*3]<=k+1e-6){n=m;lo=m+1}else hi=m-1}
   if(n<0)return [INIT[i],INIT[i],1];var b=ev[n*3+1],a=n?ev[n*3-2]:INIT[i],dur=ev[n*3+2]?FLIPD:FLIPT,p=(t-ev[n*3]/TICK)/dur;return [a,b,p>=1?1:p]}
 
+/* FIX R2: hold measures from the event table, with the verifiers' convention: a line is complete on the first frame where every one of
+   its discs has settled on its face, and gone on the first frame where any of them shows another face (past half a flip); held =
+   (gone - complete) / FPS. need = 0.6 s + 0.33 s per word (words: tokens with a letter or digit; the ✓ ✗ ▲ ▼ glyphs do not count).
+   Exposed as R2B_HOLDS (r2-board-timing.js writes it to timing.json; r2-board-qa.py checks it). */
+function cellsOf(L,name){var id=-1;L.ids.forEach(function(x,k){if(x.name===name)id=k});if(id<0)throw new Error("no element "+name+" in "+L.name);
+  var a=[];for(var i=0;i<NC;i++)if(L.own[i]===id&&L.f[i])a.push(i);if(!a.length)throw new Error("element "+name+" has no lit disc");return a}
+function holdOf(name,L,names,text,t0){var cells=[],face=[];names.forEach(function(nm){cellsOf(L,nm).forEach(function(i){cells.push(i);face.push(L.f[i])})});
+  var f=Math.max(0,Math.round(t0*FPS)),fc=-1,fg=-1;
+  function shows(i,k,t){var st=discAt(i,t);return (st[2]>=.5?st[1]:st[0])===face[k]}
+  function settled(i,k,t){var st=discAt(i,t);return st[2]>=1&&st[1]===face[k]}
+  for(;f<NFULL;f++){var t=f/FPS,ok=true;for(var k=0;k<cells.length&&ok;k++)ok=settled(cells[k],k,t);if(ok){fc=f;break}}
+  if(fc<0)throw new Error("hold "+name+": never complete");
+  for(f=fc+1;f<NFULL;f++){var t2=f/FPS,all=true;for(var k2=0;k2<cells.length&&all;k2++)all=shows(cells[k2],k2,t2);if(!all){fg=f;break}}
+  if(fg<0)fg=NFULL;
+  var words=text.split(/\s+/).filter(function(w){return /[A-Za-z0-9]/.test(w)}).length;
+  return {name:name,text:text,words:words,need:+(0.6+0.33*words).toFixed(2),complete:fc,gone:fg,held:+((fg-fc)/FPS).toFixed(3)}}
+var HOLDS=[
+  holdOf("hero (first play)",LAYS.b0,["hero0","hero1","hero2"],C.hero.join(" "),0),
+  holdOf("69% card: OF $EZ FEES",LAYS.b2a,["OF FEES"],C.ofFees,T.b2),
+  holdOf("freeze head",LAYS.b4f,["fl1","fl2"],C.freeze[0]+" "+C.freeze[1],T.b4),
+  holdOf("freeze lines 3-4",LAYS.b4f,["fl3","fl4"],C.freeze[2]+" "+C.freeze[3],T.freeze),
+  holdOf("call line",LAYS.b5a,["c1","c2"],C.call.join(" "),T.callIn),
+  holdOf("10x pair",LAYS.b6,["pair0","pair1","pair2"],C.pair.join(" "),T.b6),
+  holdOf("lane labels",LAYS.b7,["right","wrong"],C.lanes[0]+" "+C.lanes[1],T.b7),
+  holdOf("lane captions (lane read, 4 words)",LAYS.b7,["BUYBACK","WIPEOUT"],C.lanes.join(" "),T.b7),
+  holdOf("bet lines",LAYS.b8,["bet1","bet2"],C.bet.join(" "),T.b8)];
+HOLDS.push({name:"disclaimer card (DOM)",text:C.card,words:12,need:+(0.6+0.33*12).toFixed(2),complete:T.card0,gone:T.card1+1,held:+((T.card1-T.card0+1)/FPS).toFixed(3)});
+HOLDS.push({name:"chip solid before the first LED tick",text:"",words:0,need:0,complete:Math.round(T.dis1[1]*FPS),gone:Math.round((T.b8+1)*FPS),held:+(T.b8+1-T.dis1[1]).toFixed(3)});
+window.R2B_HOLDS=HOLDS;
+
 /* events for the sound (pictures first; the sound lands one frame after) */
 var EVS={flips:Array.from(FLIPS),flipCol:Array.from(FLIPSC).map(function(s,f){return FLIPS[f]?s/FLIPS[f]:48}),dynFlips:Array.from(FLIPSD),
   coins:COINS.map(function(cn){var steps=[],y=Math.floor(coinY(0,cn.y0));for(var t=cn.t0;t<cn.tb;t+=1/240){var yy=Math.floor(coinY(t-cn.t0,cn.y0));if(yy!==y){steps.push([t,yy]);y=yy}}
@@ -728,7 +782,7 @@ var EVS={flips:Array.from(FLIPS),flipCol:Array.from(FLIPSC).map(function(s,f){re
   race:raceT.slice(),raceBlocks:D.states.map(function(s){return MODEL_KEYS.reduce(function(a,m){return a+(s.has[m]?s.won[m]:0)},0)}),
   bars:BAR_T.slice(1,4),sel:(function(){var a=[];for(var t=T.b5+0.5;t<T.b7-1e-6;t+=0.5)a.push(t);return a})(),
   led:(function(){var a=[];for(var t=T.b8+1;t<T.b9-1e-6;t+=1)a.push(t);return a})(),
-  hits:{slam:0,cascade1:T.b1,slam69:T.b2,pot:T.pot,ops:T.ops,cascade3:T.b3,settle:T.settle,cascade4:T.b4,words:T.words.slice(),freeze:T.freeze,hit:T.b5,ticket:T.ticket,
+  hits:{slam:0,cascade1:T.b1,slam69:T.b2,pot:T.pot,ops:T.ops,cascade3:T.b3,settle:T.settle,cascade4:T.b4,callIn:T.callIn,freeze:T.freeze,hit:T.b5,ticket:T.ticket,
     pour:T.pour[0],clack:T.b6,lanes:T.b7,capClear:T.capClear,radial:T.b8,dis1:T.dis1[0],dis2:T.dis2[0],seam:T.b9},
   T:T};
 window.R2B_EVENTS=EVS;
