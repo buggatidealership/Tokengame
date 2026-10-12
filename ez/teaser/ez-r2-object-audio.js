@@ -15,7 +15,7 @@ window.renderAudio=function(o){return window.__r2objAudio(o)};
 window.__r2objAudio=function(opts){
   var STEM=opts&&opts.stem;
   var P=window.R2_PIC,T=P.T,FPS=P.FPS,SR=48000,dur=P.N/P.FPS,CYC=2,TAIL=0.5,PO=T.b6-17;   /* PO: B6 cues were authored against B6 at 17.00 */
-  var MIX={pluck:.20,ting:.14,clink:.075,tap:.17,shaker:.03,bass:.17,pshk:.035,seal:.20,hit:.42,slide:.10,led:.10,pad:.0065,rise:.03,endt:.05,pay:.16,limT:-18,compT:-24};
+  var MIX={pluck:.20,ting:.14,clink:.075,tap:.17,shaker:.03,bass:.17,pshk:.035,seal:.20,hit:.38,slide:.10,led:.10,pad:.0065,rise:.03,endt:.05,pay:.16,limT:-18,compT:-24};
   if(window.R2_MIX_TEST)for(var mk in window.R2_MIX_TEST)MIX[mk]=window.R2_MIX_TEST[mk];
   var ctx=new OfflineAudioContext(2,Math.round(SR*(CYC*dur+TAIL)),SR);
   var bus=ctx.createGain();bus.gain.value=.8;
