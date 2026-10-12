@@ -1,0 +1,499 @@
+<!doctype html>
+<!--
+EZ ARENA (concept C, exploration 2026-10-12): the four AIs as contenders on a clean broadcast set.
+1:1, 1080 x 1080, 30 s, loops (the last 0.5 s returns to frame 0).
+Shots: S1 poster (the NVIDIA card in front of the four contenders, hero line) . S2 the bout (the latest real round:
+the round card rises, each contender shows its call, the card flips to the move, the closest right-way call wins)
+. S3 the season (timing tower re-sorts through every graded round) . S4 the freeze (#2..#4 fall back, #1 steps out)
+. S5 the final (#1 stands behind the NVIDIA card, countdown to zero, the card flips to the bet ticket)
+. S6 two scenarios on identical split viewports . S7 the close (disclaimer) and the return to frame 0.
+Every number and name comes from ../../../ez-data.js at render time. window.renderAt(t) is a pure function of t (seconds).
+Params:  res=540|1080 (WebGL resolution; the DOM layer follows the device scale)  marks=0 (names only, no AI lab marks)
+         asof=ISO (the stated render moment, default 2026-10-12T16:00:00Z; the LEDs show the time left to the bet then)
+Sound: window.renderAudio() returns a base64 16-bit WAV of the temp score (events read from window.ARENA_T).
+-->
+<html lang="en"><head><meta charset="utf-8"><title>EZ Arena</title><meta name="viewport" content="width=1080">
+<style>
+@font-face{font-family:IS;src:url(../../fonts/instrument-sans-latin-wdth-normal.woff2) format('woff2');font-weight:400 700;font-stretch:75% 100%}
+@font-face{font-family:GM;src:url(../../fonts/geist-mono-latin-wght-normal.woff2) format('woff2');font-weight:100 900}
+:root{--ground:#08090c;--ink:#f2f4f7;--ink2:#9aa3b2;--legal:#8b93a1;--yel:#ffc72c;--up:#1fcf6b;--dn:#ff4136;--line:rgba(242,244,247,.14)}
+html,body{margin:0;background:var(--ground)}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:var(--ground)}
+#gl{position:absolute;left:0;top:0;width:1080px;height:1080px}
+#ov{position:absolute;inset:0;pointer-events:none}
+.ab{position:absolute}
+#bfade{left:0;top:0;width:1080px;height:1080px;background:linear-gradient(to bottom,rgba(8,9,12,0) 0,rgba(8,9,12,0) 770px,#08090c 836px,#08090c 1080px)}
+#tfade{left:0;top:0;width:1080px;height:110px;background:linear-gradient(to bottom,rgba(8,9,12,.85) 0,rgba(8,9,12,.6) 50px,rgba(8,9,12,0) 110px)}
+#ad{left:32px;top:30px;font:500 28px/1 GM;letter-spacing:.06em;color:var(--ink);padding:7px 9px 6px;border:1px solid rgba(242,244,247,.42);border-radius:4px}
+#brand{left:102px;top:28px;font-family:IS;font-weight:700;font-stretch:75%;font-size:40px;line-height:44px;letter-spacing:.01em}
+#asof{right:32px;top:38px;font:500 28px/1 GM;letter-spacing:.06em;color:var(--ink2);white-space:nowrap}
+.s{color:var(--yel)}.e{color:var(--up)}.z{color:var(--dn)}
+#hero{left:0;right:0;top:812px;text-align:center;font-family:IS;font-weight:700;font-stretch:75%;font-size:84px;line-height:86px;letter-spacing:.005em;color:var(--ink);white-space:nowrap}
+#hero .y{color:var(--yel)}
+.cap{left:0;right:0;top:836px;text-align:center;font-family:IS;font-weight:600;font-stretch:100%;font-size:58px;line-height:68px;letter-spacing:-.015em;color:var(--ink);white-space:nowrap}
+.sub{left:0;right:0;top:922px;text-align:center;font:500 28px/1 GM;letter-spacing:.07em;color:var(--ink2);white-space:nowrap}
+#foot{left:0;right:0;top:1034px;text-align:center;font-family:IS;font-weight:500;font-stretch:100%;font-size:28px;line-height:28px;color:var(--legal);white-space:nowrap}
+#veil{left:0;top:0;width:1080px;height:1080px;background:var(--ground)}
+#end{left:0;top:0;width:1080px;height:1080px}
+#end .mk{position:absolute;left:0;right:0;top:250px;text-align:center;font-family:IS;font-weight:700;font-stretch:75%;font-size:230px;line-height:230px;letter-spacing:.01em}
+#end .nm{position:absolute;left:0;right:0;top:500px;text-align:center;font:500 34px/1 GM;letter-spacing:.14em;color:var(--ink)}
+#end .dc{position:absolute;left:0;right:0;top:640px;text-align:center;font-family:IS;font-weight:600;font-stretch:100%;font-size:50px;line-height:66px;letter-spacing:-.01em;color:var(--ink);white-space:nowrap}
+#end .ln{position:absolute;left:0;right:0;top:820px;text-align:center;font:500 34px/1 GM;letter-spacing:.06em;color:var(--ink2)}
+</style>
+<script type="importmap">{"imports":{"three":"../../vendor/three@0.170.0/build/three.module.js","three/addons/":"../../vendor/three@0.170.0/examples/jsm/"}}</script>
+<script src="../../../ez-data.js"></script>
+</head><body>
+<div id="stage"><canvas id="gl" width="1080" height="1080"></canvas><div id="ov">
+  <div class="ab" id="bfade"></div><div class="ab" id="tfade"></div>
+  <div class="ab" id="hero"></div>
+  <div class="ab cap" id="cap"></div><div class="ab sub" id="sub"></div>
+  <div class="ab" id="veil"></div>
+  <div class="ab" id="end"><div class="mk"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></div><div class="nm">EARNINGS ZEASON</div><div class="dc"></div><div class="ln"></div></div>
+  <div class="ab" id="ad">AD</div><div class="ab" id="brand"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></div><div class="ab" id="asof"></div>
+  <div class="ab" id="foot">Not affiliated with NVIDIA, OpenAI, Moonshot AI, xAI or Anthropic.</div>
+</div></div>
+<script type="module">
+import * as THREE from 'three';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+window.__ready=false;const DUR=30,FPS=30,N=DUR*FPS;window.N=N;window.FPS=FPS;
+const fail=m=>{window.__err=String(m);throw new Error(m)};
+try{
+const Q=new URLSearchParams(location.search);
+const RES=Math.max(270,Math.min(2160,+(Q.get('res')||1080))),MARKS=Q.get('marks')!=='0';
+const MEDIA_DIR='../../../media/';
+
+/* =================== DATA (ez-data.js only, never typed) =================== */
+const md=s=>{const m=String(s||'').match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null};
+const isoD=s=>{const m=String(s||'').match(/^(\d{4})-(\d\d)-(\d\d)/);return m?[+m[1],+m[2]-1,+m[3]]:null};
+function nyClose(y,m,d){const f=new Date(Date.UTC(y,2,1)).getUTCDay(),a=Date.UTC(y,2,8+(7-f)%7),g=new Date(Date.UTC(y,10,1)).getUTCDay(),b=Date.UTC(y,10,1+(7-g)%7),t=Date.UTC(y,m,d);return Date.UTC(y,m,d,t>=a&&t<b?20:21)}
+const NVROW=[].concat(UPCOMING||[],PENDING||[]).filter(u=>u.ticker==='NVDA')[0]||null;
+if(!NVROW)fail('no NVDA row in UPCOMING / PENDING');
+let BET=null,betSrc='';
+{const raw=SIM.betDate||CONFIG.betDate,b=md(raw)||isoD(raw);
+  if(b){BET=nyClose(...b);betSrc='SIM/CONFIG betDate '+raw}
+  else{const c=md(NVROW.called);let dt=new Date(Date.UTC(...c));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()%6===0);
+    BET=nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate());betSrc='NVDA row '+NVROW.n+' CALL DATE '+NVROW.called+' + 1 weekday, 16:00 New York'}}
+if(SIM.stopLoss!=null)fail('SIM.stopLoss is set: the wiped-out line needs a re-plan');
+if([SIM.leverage,SIM.leadHours,SIM.poolShare].some(v=>v==null))fail('SIM.leverage, leadHours or poolShare is null');
+const ASOF=Date.parse(Q.get('asof')||'2026-10-12T16:00:00Z');if(!isFinite(ASOF))fail('asof is not a date');
+const R0=Math.max(0,Math.floor((BET-ASOF)/1000));
+const MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const ASOFLAB='AS OF '+MON[new Date(ASOF).getUTCMonth()]+' '+new Date(ASOF).getUTCDate();
+const LEV=SIM.leverage,LEAD=SIM.leadHours,SHARE=Math.round(SIM.poolShare*100),LAUNCHED=!!CONFIG.launched;
+const KEYS=MODEL_KEYS.slice();if(KEYS.length!==4)fail('the arena is laid out for 4 models, MODEL_KEYS has '+KEYS.length);
+const RS=ROUNDS.slice().sort((a,b)=>a.n-b.n);if(!RS.length)fail('no graded rounds');
+const LAST=RS[RS.length-1];
+const dirOf=s=>/^DOWN/i.test(s)?-1:1,magOf=s=>String(s).replace(/^(UP|DOWN)\s*/i,'');
+const winsOf=r=>r.win?r.win.split(' & '):[];
+/* the bout's grades: the closest right-way call wins; wrong way is out; the rest show how far off they were */
+function grades(r){const W=winsOf(r);return KEYS.map(m=>{const c=r.calls.find(x=>x[0]===m);if(!c)return {m,none:1};
+  const d=dirOf(c[1]),ok=(d>0)===(r.a>0);return {m,d,mag:magOf(c[1]),off:c[2],ok,win:W.includes(m)}})}
+const BOUT=grades(LAST);
+/* the season, lap by lap: the ladder rule (wins, then the smaller average miss; equal wins never share a place) */
+const LAPS=[];{const T={};KEYS.forEach(m=>T[m]={won:0,n:0,err:0});
+  RS.forEach(r=>{const W=winsOf(r);r.calls.forEach(c=>{const X=T[c[0]];if(!X)return;X.n++;X.err+=parseFloat(c[2]);if(W.includes(c[0]))X.won++});
+    const ord=KEYS.slice().sort((a,b)=>{const A=T[a],B=T[b];if(!A.n!==!B.n)return A.n?-1:1;return (B.won-A.won)||((A.n?A.err/A.n:0)-(B.n?B.err/B.n:0))||KEYS.indexOf(a)-KEYS.indexOf(b)});
+    LAPS.push({r,ord,won:Object.fromEntries(KEYS.map(m=>[m,T[m].won])),n:Object.fromEntries(KEYS.map(m=>[m,T[m].n]))})})}
+{const F=LAPS[LAPS.length-1];if(F.ord.join()!==LADDER.map(l=>l.m).join()||LADDER.some(l=>F.won[l.m]!==l.won))fail('lap replay does not end on LADDER: '+F.ord.join()+' vs '+LADDER.map(l=>l.m).join())}
+const LATE=KEYS.filter(m=>LAPS[0].n[m]===0).map(m=>({m,from:(LAPS.find(L=>L.n[m]>0)||{r:{n:0}}).r.n}));   /* who joined later (Grok: round 9) */
+const NAME=m=>(MODELS[m]&&MODELS[m].name)||m;
+const coName=r=>r.co,mdate=s=>{const d=md(s);return d?MON[d[1]]+' '+d[2]:''};
+window.ARENA_DATA={bet:new Date(BET).toISOString(),betSrc,asof:new Date(ASOF).toISOString(),R0,bout:LAST.n+' '+LAST.ticker+' '+LAST.out+' win '+LAST.win,
+  ladder:LADDER.map(l=>l.m+' '+l.won+'/'+l.avg).join(', '),laps:LAPS.length,late:LATE};
+window.HYPE_DATA={betSrc};
+
+/* =================== TIMING (seconds; picture and sound both read it) =================== */
+const T={
+  s1:0, heroOut:2.9,
+  s2:3.2, mv2:[3.2,4.6], rise:[3.75,4.55], calls:[4.45,4.85], cap2:[3.85,6.45], flip:[6.6,7.2], grade:[7.2,7.6], cap3:[7.35,9.55],
+  s3:9.6, mv3:[9.6,14.9], laps0:9.85, cap4:[13.55,15.1], sub4:[13.7,15.1],
+  s4:15.0, cap5:[15.15,17.75], lock:15.35, recede:[15.55,15.8,16.05], recDur:0.5, anon:[16.55,16.95], exit:[17.15,17.6],
+  s5:17.6, enter:[17.6,18.45], cap6:[17.85,19.6], cap7:[20.15,22.75], ff:[[18.3,7*86400],[18.6,86400],[18.85,3600],[19.05,60],[19.25,0]], flip2:[19.6,20.25], mv5:[19.55,20.8],
+  s6:22.8, panels:[22.8,23.3], act:[23.5,25.0], seat:[24.95,25.35],
+  s7:26.1, endIn:[26.1,26.4], disc:[26.35,29.55], endOut:29.55, ret:[29.45,30]
+};
+/* lap timing: the first lap and the last three at reading pace, the middle fast; every stop still lands */
+{const n=LAPS.length,d=[];for(let i=0;i<n;i++)d.push(i===0?0.5:i>=n-1?0.55:i>=n-3?0.32:0.15);let x=T.laps0;T.lapAt=d.map(v=>{const a=x;x+=v;return a});T.lapsEnd=x}
+if(T.lapsEnd>T.cap4[0]+0.2)fail('laps run into the "Most wins" caption: '+T.lapsEnd.toFixed(2));
+window.ARENA_T=T;window.ARENA_DUR=DUR;
+const shotOf=t=>t<T.s2?1:t<T.s3?2:t<T.s4?3:t<T.s5?4:t<T.s6?5:t<T.s7?6:7;
+
+/* =================== EASING: one move, then a hold; no bounce =================== */
+const cl=(x,a=0,b=1)=>x<a?a:x>b?b:x,lin=(t,a,b)=>cl((t-a)/(b-a)),mix=(a,b,u)=>a+(b-a)*u;
+function bez(x1,y1,x2,y2){const cx=3*x1,bx=3*(x2-x1)-cx,ax=1-cx-bx,cy=3*y1,by=3*(y2-y1)-cy,ay=1-cy-by;
+  const X=t=>((ax*t+bx)*t+cx)*t,Y=t=>((ay*t+by)*t+cy)*t,DX=t=>(3*ax*t+2*bx)*t+cx;
+  return x=>{if(x<=0)return 0;if(x>=1)return 1;let t=x;for(let i=0;i<10;i++){const d=DX(t);if(Math.abs(d)<1e-7)break;t-=(X(t)-x)/d;t=cl(t)}return Y(t)}}
+const EM=bez(.33,0,.15,1),EOUT=bez(0,0,.2,1),EIN=bez(.4,0,1,1);   /* EM: peak speed near 1/3, slow-down about 2x the speed-up */
+const fadeIn=(t,a,n=.4)=>EOUT(lin(t,a,a+n)),fadeOut=(t,b,n=.3)=>1-EIN(lin(t,b-n,b));
+const win=(t,a,b,ni=.4,no=.3)=>Math.min(fadeIn(t,a,ni),fadeOut(t,b,no));
+
+/* =================== RENDERER, SET =================== */
+const GROUNDC='#08090c';
+const cv=document.getElementById('gl');
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true,alpha:false});
+R.setPixelRatio(1);R.setSize(RES,RES,false);cv.style.width=cv.style.height='1080px';
+R.outputColorSpace=THREE.SRGBColorSpace;R.toneMapping=THREE.NeutralToneMapping;R.toneMappingExposure=1.0;
+const scene=new THREE.Scene();scene.background=new THREE.Color(GROUNDC);scene.fog=new THREE.Fog(new THREE.Color(GROUNDC),11,26);
+{const pm=new THREE.PMREMGenerator(R);scene.environment=pm.fromScene(new RoomEnvironment(),0.04).texture;scene.environmentIntensity=0.32;pm.dispose()}
+const key=new THREE.DirectionalLight(0xf4f6ff,1.7);key.position.set(1.5,6,4.5);scene.add(key);
+const rim=new THREE.DirectionalLight(0xffffff,2.2);rim.position.set(-3,2.2,-5);scene.add(rim);
+scene.add(new THREE.HemisphereLight(0xdfe6f2,0x08090c,0.18));
+const cam=new THREE.PerspectiveCamera(26,1,0.05,80);
+/* window.__INLINE (the self-contained build) maps a media path to a data: URL */
+const loadImg=src=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error('image '+src));i.src=(window.__INLINE&&window.__INLINE[src])||src});
+const ANISO=R.capabilities.getMaxAnisotropy();
+const cvTex=(w,h,draw,cs=THREE.SRGBColorSpace)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');if(draw)draw(g,c);const t=new THREE.CanvasTexture(c);t.colorSpace=cs;t.anisotropy=ANISO;t.userData={c,g};return t};
+await Promise.all(['600 60px IS','700 60px IS','500 60px IS','700 condensed 300px IS','500 30px GM','700 30px GM'].map(s=>document.fonts.load(s)));
+await document.fonts.ready;
+if(!document.fonts.check('700 condensed 300px IS')||!document.fonts.check('500 30px GM'))fail('fonts did not load');
+
+/* the floor: the ground colour, a slightly lifted arena disc with two hairline rings, fog melts the horizon */
+{const g=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshBasicMaterial({color:GROUNDC,toneMapped:false}));g.rotation.x=-Math.PI/2;scene.add(g)}
+function floorDisc(x,z,rad,rings){const S=2048,t=cvTex(S,S,g=>{const gr=g.createRadialGradient(S/2,S/2,0,S/2,S/2,S/2);
+    gr.addColorStop(0,'rgba(255,255,255,.075)');gr.addColorStop(.55,'rgba(255,255,255,.035)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,S,S);
+    (rings||[]).forEach(([r,a])=>{g.strokeStyle='rgba(255,255,255,'+a+')';g.lineWidth=3;g.beginPath();g.arc(S/2,S/2,r*S/2,0,7);g.stroke()})});
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(rad*2,rad*2),new THREE.MeshBasicMaterial({map:t,transparent:true,depthWrite:false,toneMapped:false}));
+  m.rotation.x=-Math.PI/2;m.position.set(x,0.0006,z);scene.add(m);return m}
+floorDisc(0,0.9,5.2,[[.5,.10],[.515,.05],[.86,.07]]);floorDisc(-9.8,0.2,4.6,[[.8,.05]]);floorDisc(10,0,3.4,[[.8,.05]]);
+const POOLT=cvTex(256,256,g=>{const gr=g.createRadialGradient(128,128,0,128,128,128);for(let k=0;k<=16;k++){const u=k/16,q=Math.round(255*Math.pow(Math.cos(u*Math.PI/2),2));gr.addColorStop(u,'rgb('+q+','+q+','+q+')')}g.fillStyle=gr;g.fillRect(0,0,256,256)},THREE.NoColorSpace);
+function pool(x,z,rx,rz,op){const m=new THREE.Mesh(new THREE.PlaneGeometry(rx*2,rz*2),new THREE.MeshBasicMaterial({color:0xdfe6ff,alphaMap:POOLT,transparent:true,opacity:op,depthWrite:false,toneMapped:false,fog:false,blending:THREE.AdditiveBlending}));
+  m.rotation.x=-Math.PI/2;m.position.set(x,0.0012,z);m.renderOrder=1;m.userData.op=op;scene.add(m);return m}
+function shadowPlane(w,h,blur,op,r=0.02){const c=document.createElement('canvas'),S=512,pad=blur*2.4;c.width=c.height=S;const g=c.getContext('2d');
+  const sx=(S-2*pad)/Math.max(w,h);g.fillStyle='#000';g.fillRect(0,0,S,S);g.filter='blur('+blur+'px)';g.fillStyle='#fff';const W=w*sx,H=h*sx;
+  g.beginPath();g.roundRect((S-W)/2,(S-H)/2,W,H,r*sx);g.fill();const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.NoColorSpace;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(S/sx,S/sx),new THREE.MeshBasicMaterial({color:0x000000,alphaMap:t,transparent:true,opacity:op,depthWrite:false,toneMapped:false,fog:false}));
+  m.rotation.x=-Math.PI/2;m.renderOrder=2;m.userData.op=op;return m}
+
+/* =================== DRAWING HELPERS (canvas faces) =================== */
+const C={face:'#12151c',face2:'#161a22',line:'rgba(242,244,247,.12)',ink:'#f2f4f7',ink2:'#9aa3b2',yel:'#ffc72c',up:'#1fcf6b',dn:'#ff4136'};
+function F(g,w,px,fam,cond){g.fontStretch='normal';g.font=w+' '+px+'px '+(fam||'IS');if(cond)g.fontStretch='condensed'}
+function baseFace(g,W,H,r){g.clearRect(0,0,W,H);g.fillStyle=C.face;g.beginPath();g.roundRect(0,0,W,H,r);g.fill();
+  const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'rgba(255,255,255,.035)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fill();
+  g.strokeStyle=C.line;g.lineWidth=4;g.beginPath();g.roundRect(14,14,W-28,H-28,Math.max(2,r-10));g.stroke()}
+/* a model's mark as the site draws it (app-icon tile, the lab's own path, unaltered); MARKS=0 draws nothing */
+function tile(g,m,x,y,S){const M=MODELS[m];if(!MARKS||!M||!M.d)return false;g.save();g.fillStyle=M.bg;g.beginPath();g.roundRect(x,y,S,S,S*0.225);g.fill();
+  if(/^#0{3,6}$/.test(M.bg)){g.strokeStyle='rgba(242,244,247,.24)';g.lineWidth=Math.max(2,S/60);g.stroke()}
+  g.translate(x+S*0.19,y+S*0.19);g.scale(S*0.62/24,S*0.62/24);g.fillStyle=M.fg;g.fill(new Path2D(M.d),M.fr||'nonzero');if(M.dot){g.fillStyle=M.dotc||M.fg;g.fill(new Path2D(M.dot))}g.restore();return true}
+const COIMG={};
+function coTile(g,tk,x,y,S){const L=CO_LOGOS[tk],im=COIMG[tk];g.save();g.fillStyle=L&&L.dark?'#1d2129':'#ffffff';g.beginPath();g.roundRect(x,y,S,S,S*0.18);g.fill();
+  if(im){const p=S*0.14,w=S-2*p,k=Math.min(w/im.width,w/im.height),iw=im.width*k,ih=im.height*k;g.drawImage(im,x+(S-iw)/2,y+(S-ih)/2,iw,ih)}
+  else{F(g,700,S*0.26,'GM');g.fillStyle='#12151c';g.textAlign='center';g.textBaseline='middle';g.fillText(tk.slice(0,4),x+S/2,y+S/2)}g.restore()}
+function tri(g,x,y,s,dir,col){g.save();g.fillStyle=col;g.beginPath();if(dir>0){g.moveTo(x,y+s*0.86);g.lineTo(x+s,y+s*0.86);g.lineTo(x+s/2,y)}else{g.moveTo(x,y);g.lineTo(x+s,y);g.lineTo(x+s/2,y+s*0.86)}g.closePath();g.fill();g.restore()}
+function fitText(g,txt,maxW,w,px,fam,cond){let p=px;F(g,w,p,fam,cond);while(g.measureText(txt).width>maxW&&p>10){p-=4;F(g,w,p,fam,cond)}return p}
+await Promise.all([...new Set(RS.map(r=>r.ticker).concat(['NVDA']))].map(async tk=>{const L=CO_LOGOS[tk];if(L&&(L.f||L))try{COIMG[tk]=await loadImg(MEDIA_DIR+(L.f||L))}catch(e){}}));
+
+/* card mesh: a matte graphite slab with a canvas face (and optionally a back) */
+const bodyMat=()=>new THREE.MeshPhysicalMaterial({color:0x1a1e27,roughness:0.46,metalness:0.25,clearcoat:0.5,clearcoatRoughness:0.2,transparent:true});
+function faceMat(tex){return new THREE.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:0.62,roughness:0.62,metalness:0,transparent:true})}
+function slab(W,H,T,front,back,rad=0.012){const grp=new THREE.Group();const bm=bodyMat();const body=new THREE.Mesh(new RoundedBoxGeometry(W,H,T,4,rad),bm);grp.add(body);
+  const fm=faceMat(front);const f=new THREE.Mesh(new THREE.PlaneGeometry(W-0.004,H-0.004),fm);f.position.z=T/2+0.0008;grp.add(f);
+  let b=null,bkm=null;if(back){bkm=faceMat(back);b=new THREE.Mesh(new THREE.PlaneGeometry(W-0.004,H-0.004),bkm);b.rotation.y=Math.PI;b.position.z=-T/2-0.0008;grp.add(b)}
+  grp.userData={W,H,T,bm,fm,bkm,mats:[bm,fm].concat(bkm?[bkm]:[])};scene.add(grp);return grp}
+function setOp(grp,o){grp.visible=o>0.002;grp.userData.mats.forEach(m=>{m.opacity=o;m.depthWrite=o>0.98})}
+function setDim(grp,k){grp.userData.fm.emissiveIntensity=0.62*k;grp.userData.fm.color.setScalar(0.35+0.65*k);if(grp.userData.bkm){grp.userData.bkm.emissiveIntensity=0.62*k;grp.userData.bkm.color.setScalar(0.35+0.65*k)}}
+const yelMat=()=>new THREE.MeshStandardMaterial({color:0xffc72c,roughness:0.4,metalness:0,emissive:0xffc72c,emissiveIntensity:0.45,transparent:true});
+
+/* =================== 1. THE NVIDIA CARD (media/ez-gpu2.jpg, rights confirmed) with the site's LED countdown =================== */
+const photo=await loadImg(MEDIA_DIR+'ez-gpu2.jpg');
+const CW=1.834,CD=1.362,CT=0.05,HOVER=0.04,CZ=1.75,PX=px=>(px-999)/1000,PZ=py=>(py-744)/1000;
+const chip=new THREE.Group();chip.position.set(0,HOVER,CZ);scene.add(chip);
+{const body=new THREE.Mesh(new RoundedBoxGeometry(CW+0.002,CT,CD+0.002,4,0.006),new THREE.MeshPhysicalMaterial({color:0x1a1e26,metalness:0.6,roughness:0.5}));body.position.y=CT/2;chip.add(body)}
+const ptex=new THREE.Texture(photo);ptex.colorSpace=THREE.SRGBColorSpace;ptex.anisotropy=ANISO;ptex.repeat.set(1834/2000,1362/1500);ptex.offset.set(82/2000,75/1500);ptex.needsUpdate=true;
+const mrTex=(()=>{const W=1024,H=Math.round(1024*1362/1834),c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d',{willReadFrequently:true});
+  g.drawImage(photo,82,63,1834,1362,0,0,W,H);const d=g.getImageData(0,0,W,H),a=d.data;
+  for(let i=0;i<a.length;i+=4){const r=a[i],gg=a[i+1],b=a[i+2],mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),sat=mx?(mx-mn)/mx:0,lum=(r+gg+b)/3;
+    const goldK=cl((r-b-40)/50)*cl((lum-70)/50)*(r>=gg?1:0.3),dieK=(1-goldK)*cl((sat-0.12)/0.2)*cl((lum-80)/60);
+    a[i]=0;a[i+1]=Math.round((0.6-0.34*goldK-0.38*dieK)*255);a[i+2]=Math.round((goldK+0.55*dieK)*255);a[i+3]=255}
+  g.putImageData(d,0,0);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.NoColorSpace;t.anisotropy=ANISO;return t})();
+{const top=new THREE.Mesh(new THREE.PlaneGeometry(CW-0.004,CD-0.004),new THREE.MeshPhysicalMaterial({map:ptex,emissiveMap:ptex,emissive:0xffffff,emissiveIntensity:0.2,roughness:1,metalness:1,roughnessMap:mrTex,metalnessMap:mrTex,clearcoat:0.4,clearcoatRoughness:0.22}));
+  top.rotation.x=-Math.PI/2;top.position.y=CT+0.0006;chip.add(top)}
+const chipSh=[shadowPlane(CW*0.99,CD*0.99,7,0.6),shadowPlane(CW*1.06,CD*1.1,38,0.45)];chipSh.forEach(s=>{s.position.set(0,0.0018,CZ+0.04);scene.add(s)});
+const chipPool=pool(0,CZ,2.0,1.6,0.10);
+const F5={0:"01110100011000110001100011000101110",1:"00100011000010000100001000010001110",2:"01110100010000100010001000100011111",3:"11110000010000101110000010000111110",
+  4:"00010001100101010010111110001000010",5:"11111100001111000001000011000101110",6:"00110010001000011110100011000101110",7:"11111000010001000100010000100001000",
+  8:"01110100011000101110100011000101110",9:"01110100011000101111000010001001100"};
+const PANELS=[{x:478,u:['DAYS','HRS']},{x:1078,u:['MIN','SEC']}],PY=628,P=17.2,CS=13.6,TOP=CT+0.0012,LEDY=TOP+0.0046;
+const blkMat=new THREE.MeshPhysicalMaterial({color:0x0d0f13,metalness:0.1,roughness:0.42,clearcoat:0.5,clearcoatRoughness:0.12,envMapIntensity:0.5});
+const CELLS=[],LABS=[];
+PANELS.forEach(pn=>{for(let q=0;q<2;q++){const gx=pn.x+19+q*(12*P+30),bw=10*P+CS+14,bh=6*P+CS+14;
+  const b=new THREE.Mesh(new RoundedBoxGeometry(bw/1000,0.0036,bh/1000,2,0.0016),blkMat);b.position.set(PX(gx-7+bw/2),TOP+0.0018,PZ(PY+14+bh/2));chip.add(b);
+  for(let dg=0;dg<2;dg++)for(let r=0;r<7;r++)for(let c=0;c<5;c++)CELLS.push({x:PX(gx+(dg*6+c)*P+CS/2),z:PZ(PY+21+r*P+CS/2),dig:CELLS.length/35|0,k:r*5+c});
+  LABS.push({x:gx+5*P+CS/2,t:pn.u[q]})}});
+const COLONS=[];PANELS.forEach(pn=>{const cx=pn.x+19+(10*P+CS+12*P+30)/2;[2,4].forEach(rr=>COLONS.push({x:PX(cx),z:PZ(PY+21+rr*P+CS/2)}))});
+const cellGeo=new RoundedBoxGeometry(CS/1000,0.0016,CS/1000,2,0.0007);
+const onMat=new THREE.MeshBasicMaterial({color:0xffcf3d,toneMapped:false}),offMat=new THREE.MeshStandardMaterial({color:0x22252c,roughness:0.55,metalness:0,envMapIntensity:0.3});
+const onI=new THREE.InstancedMesh(cellGeo,onMat,CELLS.length),offI=new THREE.InstancedMesh(cellGeo,offMat,CELLS.length);chip.add(onI,offI);
+{const colI=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.0048,0.0048,0.0016,20),onMat,COLONS.length),o=new THREE.Object3D();
+  COLONS.forEach((c,i)=>{o.position.set(c.x,LEDY,c.z);o.updateMatrix();colI.setMatrixAt(i,o.matrix)});chip.add(colI)}
+{const X0=400,X1=1700,W=2048,H=160,sx=W/(X1-X0);const t=cvTex(W,H,g=>{g.font='700 '+Math.round(46*sx)+'px GM';g.textAlign='center';g.textBaseline='middle';g.lineJoin='round';g.letterSpacing=Math.round(6*sx)+'px';
+    LABS.forEach(L=>{const x=(L.x-X0)*sx;g.strokeStyle='#0b0b0d';g.lineWidth=Math.round(9*sx);g.strokeText(L.t,x,H/2);g.fillStyle='#f2efe6';g.fillText(L.t,x,H/2)})});
+  const m=new THREE.Mesh(new THREE.PlaneGeometry((X1-X0)/1000,(X1-X0)/1000*H/W),new THREE.MeshBasicMaterial({map:t,transparent:true,toneMapped:false,depthWrite:false}));
+  m.rotation.x=-Math.PI/2;m.position.set(PX((X0+X1)/2),TOP+0.0008,PZ(PY+176));chip.add(m)}
+const GLX0=400,GLY0=600,GLW=1300,GLH=200,GS=0.5;
+const glowT=cvTex(GLW*GS,GLH*GS);const glowMat=new THREE.MeshBasicMaterial({map:glowT,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:0.55,toneMapped:false});
+{const m=new THREE.Mesh(new THREE.PlaneGeometry(GLW/1000,GLH/1000),glowMat);m.rotation.x=-Math.PI/2;m.position.set(PX(GLX0+GLW/2),TOP+0.006,PZ(GLY0+GLH/2));chip.add(m)}
+const dm=new THREE.Object3D();let ledKey='';
+function setLED(sec){sec=Math.max(0,Math.floor(sec));const v=[Math.min(99,Math.floor(sec/86400)),Math.floor(sec%86400/3600),Math.floor(sec%3600/60),sec%60];
+  const digs=v.flatMap(n=>{const s=String(n).padStart(2,'0');return [+s[0],+s[1]]}),k=digs.join('');if(k===ledKey)return k;ledKey=k;
+  const g=glowT.userData.g;g.clearRect(0,0,GLW*GS,GLH*GS);g.filter='blur(7px)';g.fillStyle='#ffc72c';let a=0,b=0;
+  CELLS.forEach(c=>{const on=F5[digs[c.dig]][c.k]==='1';dm.position.set(c.x,LEDY,c.z);dm.updateMatrix();
+    if(on){onI.setMatrixAt(a++,dm.matrix);const px=(c.x*1000+999-GLX0)*GS,pz=(c.z*1000+744-GLY0)*GS;g.fillRect(px-CS*GS/2-1,pz-CS*GS/2-1,CS*GS+2,CS*GS+2)}else offI.setMatrixAt(b++,dm.matrix)});
+  COLONS.forEach(c=>{const px=(c.x*1000+999-GLX0)*GS,pz=(c.z*1000+744-GLY0)*GS;g.beginPath();g.arc(px,pz,6*GS,0,7);g.fill()});g.filter='none';
+  onI.count=a;offI.count=b;onI.instanceMatrix.needsUpdate=offI.instanceMatrix.needsUpdate=true;glowT.needsUpdate=true;return k}
+
+/* =================== 2. THE CONTENDERS: four identical cards, sheet order (no ranking implied) =================== */
+const KW=0.62,KH=0.87,KT=0.03,KP=0.68,KX=KEYS.map((m,i)=>(i-(KEYS.length-1)/2)*KP);
+const TW=1024,THh=Math.round(1024*KH/KW);
+function drawContender(g,m,st){const W=TW,H=THh;baseFace(g,W,H,40);g.textBaseline='alphabetic';g.letterSpacing='0px';
+  /* lay 0: the select screen (big mark, name under it, centred); lay 1: the bout (mark top-left, name, then the call) */
+  const u=st.lay,S=mix(440,230,u),hasT=tile(g,m,mix((W-440)/2,72,u),mix(300,72,u),S);
+  F(g,700,190,'IS',true);g.fillStyle=C.ink;const nm=NAME(m).toUpperCase(),nw=g.measureText(nm).width;
+  g.fillText(nm,mix((W-nw)/2,72,u),hasT?mix(1010,500,u):mix(780,300,u));
+  if(st.call>0&&st.b){const b=st.b;g.save();g.globalAlpha=st.call;g.translate(0,(1-st.call)*30);
+    g.fillStyle=C.line;g.fillRect(72,590,W-144,4);
+    F(g,500,96,'GM');g.letterSpacing='8px';g.fillStyle=C.ink2;g.fillText(b.none?'NO CALL':'CALL',72,730);g.letterSpacing='0px';
+    if(!b.none){tri(g,72,820,190,b.d,b.d>0?C.up:C.dn);F(g,700,330,'IS',true);g.fillStyle=C.ink;g.fillText(b.mag,300,1000)}
+    g.restore()}
+  if(st.grade>0&&st.b&&!st.b.none){const b=st.b;g.save();g.globalAlpha=st.grade;F(g,700,104,'GM');g.letterSpacing='6px';
+    g.fillStyle=b.win?C.yel:C.ink2;g.fillText(b.win?'WINS':b.ok?'OFF '+b.off:'WRONG WAY',72,1250);g.restore()}}
+const CN=KEYS.map((m,i)=>{const tex=cvTex(TW,THh);const grp=slab(KW,KH,KT,tex,null);grp.position.set(KX[i],0.015+KH/2,0);
+  const bar=new THREE.Mesh(new RoundedBoxGeometry(KW-0.004,0.016,KT+0.004,2,0.005),yelMat());bar.position.set(0,KH/2+0.008,0);grp.add(bar);
+  const sh=shadowPlane(KW*1.02,KT*5,8,0.7,0.01);sh.position.set(KX[i],0.0018,0.01);scene.add(sh);
+  const pl=pool(KX[i],0.22,0.55,0.5,0.16);
+  return {m,i,grp,tex,bar,sh,pl,key:'',b:BOUT.find(x=>x.m===m)}});
+
+/* =================== 3. THE ROUND CARD (front: the stock; back: the move) =================== */
+const RW=1.8,RH=0.72,RT=0.03,RTW=2048,RTH=Math.round(2048*RH/RW);
+function roundHeader(g,r){F(g,500,92,'GM');g.letterSpacing='8px';g.fillStyle=C.ink2;g.textAlign='left';g.fillText('ROUND '+r.n,110,170);g.textAlign='right';g.fillText(mdate(r.resolves||r.called),RTW-110,170);g.textAlign='left';g.letterSpacing='0px'}
+function roundCo(g,r){coTile(g,r.ticker,110,280,300);const p=fitText(g,coName(r),980,600,210,'IS');g.fillStyle=C.ink;g.fillText(coName(r),470,480);F(g,500,104,'GM');g.letterSpacing='6px';g.fillStyle=C.ink2;g.fillText(r.ticker,476,610);g.letterSpacing='0px'}
+const rcFront=cvTex(RTW,RTH,g=>{baseFace(g,RTW,RTH,40);g.textBaseline='alphabetic';roundHeader(g,LAST);roundCo(g,LAST);
+  F(g,500,92,'GM');g.letterSpacing='8px';g.fillStyle=C.ink2;g.textAlign='right';g.fillText('MOVE',RTW-110,330);g.letterSpacing='0px';
+  F(g,700,330,'IS',true);g.fillStyle='rgba(242,244,247,.5)';g.fillText('?',RTW-110,640);g.textAlign='left'});
+const rcBack=cvTex(RTW,RTH,g=>{baseFace(g,RTW,RTH,40);g.textBaseline='alphabetic';roundHeader(g,LAST);roundCo(g,LAST);
+  F(g,500,92,'GM');g.letterSpacing='8px';g.fillStyle=C.ink2;g.textAlign='right';g.fillText('MOVED',RTW-110,330);g.letterSpacing='0px';
+  const s=LAST.out.replace(/^[+−-]/,'');F(g,700,300,'IS',true);const w=g.measureText(s).width;g.fillStyle=C.ink;g.fillText(s,RTW-110,640);
+  tri(g,RTW-110-w-200,450,170,LAST.a>0?1:-1,LAST.a>0?C.up:C.dn);g.textAlign='left'});
+const RC=slab(RW,RH,RT,rcFront,rcBack);const RCY=1.42;
+const rcSh=shadowPlane(RW*0.9,0.12,24,0.0,0.02);rcSh.position.set(0,0.0018,-0.05);scene.add(rcSh);
+
+/* =================== 4. THE TIMING TOWER and the lap card (separate corner of the set) =================== */
+const TX=-10.7,LX=-8.65,ROWW=2.0,ROWH=0.36,ROWT=0.09,ROWP=0.42,ROWY=[1.74,1.32,0.90,0.48],HDY=2.12,HDH=0.24;
+const RTWr=2048,RTHr=Math.round(2048*ROWH/ROWW);
+function drawRow(g,m,st){const W=RTWr,H=RTHr;baseFace(g,W,H,30);g.textBaseline='alphabetic';g.letterSpacing='0px';
+  const rk=st.rank;F(g,500,150,'GM');g.fillStyle=rk===1?C.yel:C.ink2;if(!st.anon)g.fillText(String(rk),70,H/2+54);
+  if(st.mv){tri(g,180,H/2-30,58,st.mv,st.mv>0?C.up:C.dn)}
+  const hasT=!st.anon&&tile(g,m,280,(H-220)/2,220);
+  F(g,700,190,'IS',true);g.fillStyle=C.ink;
+  if(st.anon){F(g,700,220,'IS',true);g.fillStyle=C.yel;g.fillText('#1',70,H/2+78)}else g.fillText(NAME(m).toUpperCase(),hasT?560:300,H/2+68);
+  if(!st.anon){F(g,700,290,'IS',true);g.textAlign='right';g.fillStyle=st.n?C.ink:'rgba(242,244,247,.32)';g.fillText(String(st.won),W-80,H/2+104);g.textAlign='left'}}
+const ROWS=KEYS.map(m=>{const tex=cvTex(RTWr,RTHr);const grp=slab(ROWW,ROWH,ROWT,tex,null,0.01);grp.position.set(TX,1,0);
+  const bar=new THREE.Mesh(new RoundedBoxGeometry(0.018,ROWH-0.006,ROWT+0.004,2,0.006),yelMat());bar.position.set(-ROWW/2-0.006,0,0);grp.add(bar);
+  return {m,grp,tex,bar,key:''}});
+const hdTex=cvTex(RTWr,Math.round(2048*HDH/ROWW));const HD=slab(ROWW,HDH,ROWT,hdTex,null,0.01);HD.position.set(TX,HDY,0);let hdKey='';
+function drawHead(lapN,frozen){const k=lapN+'|'+frozen;if(k===hdKey)return k;hdKey=k;const g=hdTex.userData.g,W=hdTex.userData.c.width,H=hdTex.userData.c.height;
+  g.clearRect(0,0,W,H);g.textBaseline='alphabetic';F(g,500,96,'GM');g.letterSpacing='8px';g.fillStyle=C.ink2;
+  g.fillText(lapN?'AFTER ROUND '+lapN:'STANDINGS',30,H/2+34);g.textAlign='right';g.fillText('WINS',W-80,H/2+34);g.textAlign='left';hdTex.needsUpdate=true;return k}
+HD.userData.fm.transparent=true;HD.children[0].visible=false;   /* the header is type on the set, no slab */
+const LPW=1.5,LPH=1.25,LTW=1536,LTH=Math.round(1536*LPH/LPW);
+const lapTex=cvTex(LTW,LTH);const LP=slab(LPW,LPH,0.035,lapTex,null);LP.position.set(LX,1.27,0);let lapKey='';
+function drawLap(i){const k='L'+i;if(k===lapKey)return k;lapKey=k;const g=lapTex.userData.g,W=LTW,H=LTH,r=LAPS[i].r;baseFace(g,W,H,34);g.textBaseline='alphabetic';
+  F(g,500,112,'GM');g.letterSpacing='8px';g.fillStyle=C.ink2;g.fillText('ROUND '+r.n,90,190);g.letterSpacing='0px';
+  coTile(g,r.ticker,90,270,250);fitText(g,coName(r),W-90-390,600,150,'IS');g.fillStyle=C.ink;g.fillText(coName(r),390,450);
+  g.fillStyle=C.line;g.fillRect(90,600,W-180,4);
+  const s=r.out.replace(/^[+−-]/,'');tri(g,90,690,150,r.a>0?1:-1,r.a>0?C.up:C.dn);F(g,700,250,'IS',true);g.fillStyle=C.ink;g.fillText(s,290,870);
+  const W2=winsOf(r);F(g,500,112,'GM');g.letterSpacing='6px';
+  if(!W2.length){g.fillStyle=C.ink2;g.fillText('NO WINNER',90,1240)}
+  else{let x=90;W2.forEach(m=>{if(tile(g,m,x,1130,140))x+=170});g.fillStyle=C.yel;g.fillText((W2.length>1?'TIE':W2.map(NAME).join('')).toUpperCase(),x+10,1240)}
+  lapTex.needsUpdate=true;return k}
+const towerSh=shadowPlane(ROWW*1.05,0.5,30,0.5,0.04);towerSh.position.set(TX,0.0018,0.05);scene.add(towerSh);
+const lapSh=shadowPlane(LPW*1.02,0.15,14,0.6,0.02);lapSh.position.set(LX,0.0018,0.02);scene.add(lapSh);
+pool(TX,0.4,1.7,1.0,0.12);pool(LX,0.35,1.1,0.9,0.12);
+
+/* =================== 5. #1 (S5): a card that says only "#1" (the call belongs to whoever is #1 at the freeze); its back is the bet ticket =================== */
+const NW=0.86,NH=1.2,NT=0.035,NTW=1024,NTH=Math.round(1024*NH/NW);
+const n1Front=cvTex(NTW,NTH,g=>{baseFace(g,NTW,NTH,40);g.textBaseline='alphabetic';F(g,500,96,'GM');g.letterSpacing='8px';g.fillStyle=C.ink2;g.fillText('THE FINAL',80,170);g.letterSpacing='0px';
+  F(g,700,560,'IS',true);g.fillStyle=C.ink;g.textAlign='center';g.fillText('#1',NTW/2,930);g.textAlign='left'});
+const n1Back=cvTex(NTW,NTH,g=>{baseFace(g,NTW,NTH,40);g.textBaseline='alphabetic';
+  coTile(g,'NVDA',80,110,200);F(g,700,250,'IS',true);g.fillStyle=C.ink;g.fillText(NVROW.ticker,320,290);
+  F(g,500,84,'GM');g.letterSpacing='6px';g.fillStyle=C.ink2;g.fillText("#1\u2019S CALL",80,480);g.letterSpacing='0px';
+  tri(g,NTW-80-150-24-70,418,70,1,C.up);tri(g,NTW-80-70,424,70,-1,C.dn);              /* up or down: the only colour here is direction */
+  g.fillStyle=C.line;g.fillRect(80,560,NTW-160,4);
+  F(g,600,124,'IS');g.fillStyle=C.ink;g.fillText('At least '+LEV+'x.',80,760);g.fillText('The pot can be',80,920);g.fillText('wiped out.',80,1064)});
+const N1=slab(NW,NH,NT,n1Front,n1Back);const n1bar=new THREE.Mesh(new RoundedBoxGeometry(NW-0.004,0.018,NT+0.004,2,0.006),yelMat());n1bar.position.set(0,NH/2+0.009,0);N1.add(n1bar);
+const N1Z=0.78,n1Sh=shadowPlane(NW*1.02,NT*5,8,0.7,0.01);n1Sh.position.set(0,0.0018,N1Z);scene.add(n1Sh);
+
+/* =================== 6. SCENARIOS: one slab, drawn as A or B per half (identical framing by construction) =================== */
+const SW=0.94,SH=1.2,SX=10,STW=1024,STH=Math.round(1024*SH/SW);
+const scTex=[cvTex(STW,STH),cvTex(STW,STH)];const SC=[slab(SW,SH,0.035,scTex[0],null),slab(SW,SH,0.035,scTex[1],null)];
+SC.forEach(s=>s.position.set(SX,0.02+SH/2,0));const scSh=shadowPlane(SW*1.02,0.15,10,0.7,0.02);scSh.position.set(SX,0.0018,0.02);scene.add(scSh);pool(SX,0.3,1.2,0.9,0.14);
+const scKey=['',''];
+function drawScenario(k,act,seat){const key=k+'|'+act.toFixed(3)+'|'+seat.toFixed(3);if(scKey[k]===key)return key;scKey[k]=key;const g=scTex[k].userData.g,W=STW,H=STH;
+  baseFace(g,W,H,36);g.textBaseline='alphabetic';F(g,500,88,'GM');g.letterSpacing='10px';g.fillStyle=C.ink2;g.fillText('SCENARIO '+(k?'B':'A'),80,170);g.letterSpacing='0px';
+  F(g,600,136,'IS');g.fillStyle=C.ink;g.fillText(k?'Wrong call':'Right call',80,370);
+  /* the pot: the same track in both; A pours into the $EZ badge, B drains to zero (same frames, same badge size) */
+  const tx=80,ty=470,tw=W-160,th=190,bw=250;g.fillStyle='#0b0d12';g.beginPath();g.roundRect(tx,ty,tw,th,12);g.fill();g.strokeStyle=C.line;g.lineWidth=4;g.stroke();
+  F(g,500,60,'GM');g.letterSpacing='5px';g.fillStyle=C.ink2;g.fillText('THE POT',tx,ty+th+90);g.letterSpacing='0px';
+  const full=tw-bw-20,base=full*0.62;g.fillStyle='#dfe3ea';
+  if(!k){g.beginPath();g.roundRect(tx+8,ty+8,base-8,th-16,8);g.fill();
+    const grow=EM(cl(act/0.5)),pour=EM(cl((act-0.5)/0.5)),p0=base+6+(full-base-6)*pour,p1=base+6+(full-base-6)*grow;
+    if(p1-p0>2){g.fillStyle='#dfe3ea';g.beginPath();g.roundRect(tx+p0+4,ty+8,p1-p0-4,th-16,8);g.fill();g.fillStyle='#0b0d12';g.fillRect(tx+p0+4,ty+8,8,th-16)}}
+  else{const lvl=base*(1-EM(act));if(lvl>10){g.beginPath();g.roundRect(tx+8,ty+8,lvl-8,th-16,8);g.fill()}}
+  g.fillStyle=C.line;g.fillRect(tx+tw-bw-4,ty+20,4,th-40);
+  const bx=tx+tw-bw,ba=EOUT(seat);g.save();g.globalAlpha=ba;F(g,700,150,'IS',true);
+  if(!k){const sw=[['$',C.yel],['E',C.up],['Z',C.dn]];let ww=0;sw.forEach(([c])=>ww+=g.measureText(c).width);let x=bx+(bw-ww)/2;sw.forEach(([c,col])=>{g.fillStyle=col;g.fillText(c,x,ty+th/2+54);x+=g.measureText(c).width})}
+  else{g.fillStyle=C.ink2;g.textAlign='center';g.fillText('0',bx+bw/2,ty+th/2+54);g.textAlign='left'}g.restore();
+  F(g,600,112,'IS');g.fillStyle=C.ink;const y=960;
+  if(!k){g.fillText('Profits buy',80,y);let x=80;g.fillText('back ',x,y+136);x+=g.measureText('back ').width;[['$',C.yel],['E',C.up],['Z',C.dn]].forEach(([c,col])=>{g.fillStyle=col;g.fillText(c,x,y+136);x+=g.measureText(c).width});g.fillStyle=C.ink;g.fillText('.',x,y+136)}
+  else{g.fillText('The pot can be',80,y);g.fillText('wiped out.',80,y+136)}
+  scTex[k].needsUpdate=true;return key}
+
+/* =================== CAMERAS =================== */
+const D2R=Math.PI/180;
+function camFrom(tgt,dist,el,az,fov){const e=el*D2R,a=az*D2R;return {p:[tgt[0]+dist*Math.cos(e)*Math.sin(a),tgt[1]+dist*Math.sin(e),tgt[2]+dist*Math.cos(e)*Math.cos(a)],t:tgt,f:fov||26}}
+const CAM={
+  c1a:camFrom([0,0.16,1.12],6.9,25,0),c1b:camFrom([0,0.16,1.12],6.35,24,0),
+  c2:camFrom([0,0.70,0],6.25,5,0),
+  c3a:camFrom([-9.98,0.98,0.1],9.4,9,-20),c3b:camFrom([-9.98,0.98,0.1],8.8,8,-15),c4:camFrom([-10.45,1.05,0.0],7.6,7,-13),
+  c5a:camFrom([0,0.30,1.40],6.1,22,0),c5b:camFrom([0,0.36,1.12],4.75,15,0),
+  c6:camFrom([SX,0.37,0],4.9,3,0)};
+const lerp3=(a,b,u)=>a.map((v,i)=>v+(b[i]-v)*u);
+function camLerp(A,B,u){return {p:lerp3(A.p,B.p,u),t:lerp3(A.t,B.t,u),f:mix(A.f,B.f,u)}}
+function camAt(t,s){if(s===1)return camLerp(CAM.c1a,CAM.c1b,EM(lin(t,0,3.0)));
+  if(s===2)return camLerp(CAM.c1b,CAM.c2,EM(lin(t,...T.mv2)));
+  if(s===3)return camLerp(CAM.c3a,CAM.c3b,EM(lin(t,...T.mv3)));
+  if(s===4)return camLerp(CAM.c3b,CAM.c4,EM(lin(t,T.s4+0.3,T.s4+1.7)));
+  if(s===5)return camLerp(CAM.c5a,CAM.c5b,EM(lin(t,...T.mv5)));
+  if(s===6)return CAM.c6;
+  return CAM.c1a}
+function applyCam(c,aspect){cam.position.set(...c.p);cam.lookAt(new THREE.Vector3(...c.t));cam.fov=c.f;cam.aspect=aspect||1;cam.updateProjectionMatrix()}
+
+/* =================== THE FRAME (a pure function of t) =================== */
+const $=id=>document.getElementById(id);
+const E={hero:$('hero'),cap:$('cap'),sub:$('sub'),veil:$('veil'),end:$('end'),brand:$('brand'),asof:$('asof'),foot:$('foot'),bfade:$('bfade'),tfade:$('tfade')};
+E.hero.innerHTML='WE’RE PUTTING BUYBACKS<br><span class="y">IN THE HANDS OF AN AI.</span>';
+E.asof.textContent=ASOFLAB;
+E.end.querySelector('.dc').innerHTML='$EZ is a memecoin. Not financial advice.<br>The pot can be wiped out.';
+{const link=CONFIG.x||CONFIG.buyUrl||'';E.end.querySelector('.ln').textContent=link.replace(/^https?:\/\//,'')}
+const CAPS={7:'The pot: '+SHARE+'% of $EZ fees.',2:'Four AIs call stocks|before earnings.',3:'Closest right-way call wins.',4:'Most wins is #1.',5:'Frozen '+LEAD+' hours|before NVIDIA reports.',6:'#1 calls NVIDIA.'};
+const SUBS={7:(LAUNCHED?'':'AT LAUNCH \u00b7 ')+'NO STOP LOSS',4:LATE.map(x=>NAME(x.m).toUpperCase()+' JOINED AT ROUND '+x.from).join(' · '),2:'SAME STOCK · SAME MOMENT · SAME PROMPT'};
+function vis(e,o,dy){o=cl(o);e.style.opacity=o.toFixed(3);e.style.visibility=o>0.001?'visible':'hidden';e.style.transform=dy?'translateY('+dy.toFixed(1)+'px)':'';return o.toFixed(2)}
+let lastCap='';
+function setCap(txt){if(txt!==lastCap){E.cap.innerHTML='';txt.split('|').forEach((l,i)=>{if(i)E.cap.appendChild(document.createElement('br'));E.cap.appendChild(document.createTextNode(l))});
+  E.cap.style.top=(txt.includes('|')?812:836)+'px';E.sub.style.top=(txt.includes('|')?962:922)+'px';lastCap=txt}}
+let lastSub='';function setSub(txt){if(txt!==lastSub){E.sub.textContent=txt;lastSub=txt}}
+
+function contenderState(c,t){const st={lay:EM(lin(t,T.rise[0],T.rise[0]+0.65)),call:fadeIn(t,T.calls[0],T.calls[1]-T.calls[0]),grade:fadeIn(t,T.grade[0],T.grade[1]-T.grade[0]),b:c.b};
+  const k=st.lay.toFixed(3)+'|'+st.call.toFixed(2)+'|'+st.grade.toFixed(2);if(k!==c.key){c.key=k;drawContender(c.tex.userData.g,c.m,st);c.tex.needsUpdate=true}
+  return st}
+function lapIndex(t){let i=-1;T.lapAt.forEach((a,j)=>{if(t>=a)i=j});return i}
+function rowsAt(t){/* each row's y slides to its new place over min(0.12 s, lap) */
+  const i=lapIndex(t);const L=i<0?null:LAPS[i],P=i<1?null:LAPS[i-1];
+  return KEYS.map(m=>{const rk=L?L.ord.indexOf(m):KEYS.indexOf(m),rk0=P?P.ord.indexOf(m):rk;const a=i<0?0:T.lapAt[i],dur=Math.min(0.12,(T.lapAt[i+1]||a+0.5)-a);
+    const u=EM(lin(t,a,a+dur));return {m,rank:rk+1,y:mix(ROWY[rk0],ROWY[rk],u),won:L?L.won[m]:0,n:L?L.n[m]:0,mv:L&&P&&rk!==rk0?(rk<rk0?1:-1):0}})}
+
+window.renderAt=function(t){t=((t%DUR)+DUR)%DUR;let s=shotOf(t);
+  /* S7's veil covers the set; underneath, the set is already back at frame 0 for the return */
+  const early7=s===7&&t<T.endIn[1]+0.05,tt=s===7?(early7?T.s7-0.001:0):t,ss=s===7?(early7?6:1):s;const K=[];
+  /* --- contenders + round card (S1, S2) --- */
+  const showC=ss<=2;CN.forEach(c=>{setOp(c.grp,showC?1:0);c.sh.visible=c.pl.visible=showC;if(!showC)return;
+    const st=contenderState(c,tt);const isWin=c.b&&c.b.win,g=fadeIn(tt,T.grade[0],0.4);
+    c.bar.visible=isWin&&g>0.01;c.bar.material.opacity=g;setDim(c.grp,c.b&&!c.b.none&&!c.b.win?1-0.42*g:1);c.pl.material.opacity=c.pl.userData.op*(isWin?1+1.6*g:1-0.5*g)});
+  {const u=EM(lin(tt,...T.rise)),f=EM(lin(tt,...T.flip));const o=showC?cl(u*1.4):0;setOp(RC,o);RC.position.set(0,mix(0.40,RCY,u),mix(-0.3,-0.02,u));RC.rotation.y=Math.PI*f;
+    rcSh.material.opacity=0.35*u*(showC?1:0)}
+  /* --- the NVIDIA card --- */
+  const showChip=ss===1||ss===2||ss===5;chip.visible=showChip;chipSh.forEach(x=>x.visible=showChip);chipPool.visible=showChip;
+  if(ss===5){const ff=T.ff;let v=R0-tt;if(tt>=ff[0][0]){v=ff[0][1];ff.forEach(([a,val])=>{if(tt>=a)v=val})}K.push(setLED(v))}else K.push(setLED(R0-tt));
+  /* --- the tower (S3, S4) --- */
+  const showT=ss===3||ss===4;
+  const rows=rowsAt(tt);const frozen=ss===4;
+  ROWS.forEach((r,j)=>{const st=rows[j];setOp(r.grp,showT?1:0);if(!showT)return;
+    let y=st.y,z=0,o=1;const rk=st.rank;
+    if(frozen&&rk>1){const k=LADDER.length-rk;const a=T.recede[k]!=null?T.recede[k]:T.recede[T.recede.length-1];const u=EM(lin(tt,a,a+T.recDur));z=-0.9*u;y-=0.18*u;o=1-0.72*u}
+    const anon=frozen&&rk===1&&tt>=(T.anon[0]+T.anon[1])/2;
+    if(frozen&&rk===1){const u=EIN(lin(tt,...T.exit));r.grp.position.x=TX+5.0*u;y+=0.05*u}else r.grp.position.x=TX;
+    r.grp.position.y=y;r.grp.position.z=z;setOp(r.grp,o);
+    const a1=frozen&&rk===1?Math.min(1,Math.abs(tt-(T.anon[0]+T.anon[1])/2)/((T.anon[1]-T.anon[0])/2)):1;   /* the swap to "#1" dips through a quick fade */
+    r.grp.userData.fm.opacity=o*a1;
+    r.bar.visible=rk===1&&st.n>0;
+    const kk=[st.rank,st.won,st.n,st.mv,anon?1:0].join('|');if(kk!==r.key){r.key=kk;drawRow(r.tex.userData.g,r.m,{rank:st.rank,won:st.won,n:st.n,mv:st.mv,anon});r.tex.needsUpdate=true}});
+  setOp(HD,showT?1:0);HD.children[0].visible=false;
+  const li=Math.max(0,lapIndex(tt));if(showT){K.push(drawHead(lapIndex(tt)<0?0:LAPS[li].r.n,frozen?1:0));K.push(drawLap(li))}
+  {const lo=showT?(frozen?1-EM(lin(tt,T.recede[0],T.recede[0]+0.5)):fadeIn(tt,T.s3,0.3)):0;setOp(LP,lo*(frozen?1:fadeIn(tt,T.laps0-0.12,0.2)));lapSh.material.opacity=0.6*lo}
+  towerSh.visible=showT;
+  /* --- #1 on the NVIDIA card (S5) --- */
+  const show1=ss===5;setOp(N1,show1?1:0);n1Sh.visible=show1;
+  if(show1){const u=EOUT(lin(tt,...T.enter));N1.position.set(mix(-3.4,0,u),0.02+NH/2,N1Z);N1.rotation.y=Math.PI*EM(lin(tt,...T.flip2));n1Sh.position.x=N1.position.x}
+  /* --- scenarios (S6) --- */
+  const show6=ss===6;SC.forEach(x=>setOp(x,0));scSh.visible=show6;
+  let pin=0,act=0,seat=0;if(show6){pin=EOUT(lin(tt,...T.panels));act=lin(tt,...T.act);seat=lin(tt,...T.seat);K.push(drawScenario(0,act,seat),drawScenario(1,act,seat))}
+
+  /* --- render --- */
+  if(show6){R.setScissorTest(true);[0,1].forEach(k=>{SC.forEach((x,j)=>setOp(x,j===k?pin:0));SC[k].position.y=0.02+SH/2-0.06*(1-pin);
+      applyCam(CAM.c6,0.5);const W=RES/2;R.setViewport(k*W,0,W,RES);R.setScissor(k*W,0,W,RES);R.render(scene,cam)});
+    R.setScissorTest(false);R.setViewport(0,0,RES,RES)}
+  else{applyCam(camAt(tt,ss));R.render(scene,cam)}
+
+  /* --- the type layer --- */
+  const P=(e,o,dy)=>K.push(vis(e,o,dy));
+  P(E.hero,s===1?(t<T.heroOut?1:fadeOut(t,T.heroOut+0.3,0.3)):s===7?fadeIn(t,T.endOut+0.05,0.38):0);
+  let cap='',co=0,sub='',so=0;
+  if(s===2){if(t<T.cap3[0]-0.05){cap=CAPS[2];co=win(t,...T.cap2);sub=SUBS[2];so=win(t,T.cap2[0]+0.25,T.cap2[1])}else{cap=CAPS[3];co=win(t,...T.cap3)}}
+  else if(s===3){cap=CAPS[4];co=fadeIn(t,T.cap4[0]);sub=SUBS[4];so=sub?fadeIn(t,T.sub4[0]):0}
+  else if(s===4){if(t<T.cap4[1]){cap=CAPS[4];co=fadeOut(t,T.cap4[1],0.15);sub=SUBS[4];so=sub?fadeOut(t,T.cap4[1],0.15):0}else{cap=CAPS[5];co=win(t,...T.cap5)}}
+  else if(s===5){if(t<T.cap7[0]-0.05){cap=CAPS[6];co=win(t,...T.cap6)}else{cap=CAPS[7];co=win(t,...T.cap7);sub=SUBS[7];so=win(t,T.cap7[0]+0.2,T.cap7[1])}}
+  setCap(cap);P(E.cap,co,(1-co)*10);setSub(sub);P(E.sub,so);K.push(cap,sub);
+  /* the close: the end card holds the disclaimer >= 3.1 s, leaves first, then the veil lifts onto frame 0 (no double exposure) */
+  P(E.veil,s===7?(t<T.endOut?fadeIn(t,T.endIn[0],0.3):fadeOut(t,T.ret[1],0.42)):0);
+  P(E.end,s===7?win(t,T.disc[0],T.endOut,0.35,0.25):0);
+  /* $EZ pulses at chapter turns (off-centre, small) */
+  const pulses=[[0,3.0],[T.s3,T.s3+1.6],[T.s5,T.s5+1.6],[T.s6,T.s6+1.6],[T.ret[0],DUR+0.3]];
+  P(E.brand,Math.max(...pulses.map(([a,b])=>a===0?(t<b?1:fadeOut(t,b+0.3)):win(t,a,b,0.3,0.3))));
+  P(E.asof,s===1||s===3||s===4||(s===7&&t>=T.ret[0])?1:0.0);
+  P(E.foot,1);
+  window.__lastKey=K.join(';');return window.__lastKey};
+
+window.frameName=i=>String(i).padStart(4,'0');
+window.__ready=true;
+}catch(e){if(!window.__err)window.__err=String(e&&e.stack||e);console.error(e)}
+</script>
+<script>
+/* =================== TEMP SOUND (synthesized, offline; every hit marks a change of state, 300 Hz..5 kHz) =================== */
+window.renderAudio=async function(){const T=window.ARENA_T,DUR=window.ARENA_DUR,SR=48000;
+  const ctx=new OfflineAudioContext(2,SR*DUR,SR);const bus=ctx.createGain();bus.gain.value=0.9;
+  const comp=ctx.createDynamicsCompressor();comp.threshold.value=-18;comp.ratio.value=3;comp.attack.value=0.005;comp.release.value=0.2;
+  bus.connect(comp);comp.connect(ctx.destination);
+  const hz=n=>440*Math.pow(2,(n-69)/12);
+  function tone(t,f,dur,amp,type,harm){[1,2,3].forEach((h,i)=>{const k=[1,(harm||0)*0.5,(harm||0)*0.25][i];if(!k)return;const o=ctx.createOscillator();o.type=type||'sine';o.frequency.value=f*h;
+    const g=ctx.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(amp*k,t+0.006);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(g);g.connect(bus);o.start(t);o.stop(t+dur+0.05)})}
+  const nb=ctx.createBuffer(1,SR,SR);{const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+  function tick(t,f,amp,dur){const s=ctx.createBufferSource();s.buffer=nb;const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=f;bp.Q.value=6;
+    const g=ctx.createGain();g.gain.setValueAtTime(amp,t);g.gain.exponentialRampToValueAtTime(0.0001,t+(dur||0.05));s.connect(bp);bp.connect(g);g.connect(bus);s.start(t,0,0.2)}
+  function pad(a,b,notes,amp){notes.forEach(n=>{[0,-6,6].forEach(dt=>{const o=ctx.createOscillator();o.type='triangle';o.frequency.value=hz(n);o.detune.value=dt;const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1800;
+    const g=ctx.createGain();g.gain.setValueAtTime(0,a);g.gain.linearRampToValueAtTime(amp,a+0.5);g.gain.setValueAtTime(amp,Math.max(a+0.5,b-0.4));g.gain.linearRampToValueAtTime(0,b);o.connect(lp);lp.connect(g);g.connect(bus);o.start(a);o.stop(b+0.05)})})}
+  /* the bed: one soft chord per chapter (A, F#m, D, E, A) with a quiet pulse in eighths at 96 BPM */
+  const ch=[[0,T.s3,[57,64,69,73]],[T.s3,T.s5,[54,61,66,69]],[T.s5,T.s6,[50,57,62,66]],[T.s6,T.s7,[52,59,64,68]],[T.s7,DUR,[57,64,69,76]]];
+  ch.forEach(([a,b,n])=>pad(a,b,n,0.012));
+  const beat=60/96/2;for(let t=0,i=0;t<DUR-0.05;t+=beat,i++){const c=ch.find(([a,b])=>t>=a&&t<b);if(t>=T.s7+0.2&&t<T.ret[0])continue;tone(t,hz(c[2][0]+12),0.12,i%4===0?0.035:0.018,'sine',1)}
+  /* events */
+  tone(T.rise[1]-0.1,hz(81),0.5,0.07,'sine',1);                              /* the round card arrives */
+  tone(T.calls[0]+0.05,hz(88),0.25,0.06,'sine',1);                           /* the four calls land together */
+  tick(T.flip[1],2400,0.5,0.06);tone(T.flip[1],hz(76),0.35,0.09,'sine',1);   /* the flip lands */
+  tone(T.grade[0]+0.05,hz(83),0.9,0.08,'sine',1);tone(T.grade[0]+0.12,hz(88),0.9,0.06,'sine',1);   /* graded: one neutral two-note chime */
+  T.lapAt.forEach((a,i)=>tick(a,1600+i*40,i===0||i>=T.lapAt.length-3?0.32:0.18,0.04));          /* a lap tick per round */
+  tone(T.lock,hz(69),1.0,0.07,'sine',1);tone(T.lock,hz(73),1.0,0.05,'sine',1);tone(T.lock,hz(76),1.0,0.05,'sine',1);   /* the freeze */
+  T.recede.forEach((a,i)=>tone(a,hz(62-i*2),0.45,0.06,'sine',1));
+  tone(T.enter[1]-0.05,hz(57),0.5,0.09,'sine',1);tick(T.enter[1]-0.05,900,0.25,0.06);           /* #1 lands */
+  T.ff.forEach(([a],i)=>{if(i<T.ff.length-1)tone(a,hz(76+i),0.18,0.06,'sine',1)});
+  tick(T.flip2[1],2400,0.5,0.06);tone(T.flip2[1],hz(69),0.6,0.08,'sine',1);tone(T.flip2[1]+0.08,hz(76),0.6,0.06,'sine',1);   /* the ticket */
+  tone(T.panels[1]-0.1,hz(76),0.6,0.07,'sine',1);tone(T.seat[0],hz(71),0.8,0.07,'sine',1);       /* scenarios: one shared neutral tone, A and B together */
+  tone(T.endIn[0]+0.2,hz(69),1.6,0.08,'sine',1);tone(T.endIn[0]+0.2,hz(76),1.6,0.05,'sine',1);
+  const buf=await ctx.startRendering();
+  const L=buf.getChannelData(0),Rr=buf.getChannelData(1),n=L.length,out=new DataView(new ArrayBuffer(44+n*4));
+  const W=(o,s)=>{for(let i=0;i<s.length;i++)out.setUint8(o+i,s.charCodeAt(i))};
+  W(0,'RIFF');out.setUint32(4,36+n*4,true);W(8,'WAVE');W(12,'fmt ');out.setUint32(16,16,true);out.setUint16(20,1,true);out.setUint16(22,2,true);out.setUint32(24,SR,true);out.setUint32(28,SR*4,true);out.setUint16(32,4,true);out.setUint16(34,16,true);W(36,'data');out.setUint32(40,n*4,true);
+  let pk=0;for(let i=0;i<n;i++)pk=Math.max(pk,Math.abs(L[i]),Math.abs(Rr[i]));const gain=pk>0?0.89/pk:1;
+  for(let i=0;i<n;i++){out.setInt16(44+i*4,Math.round(Math.max(-1,Math.min(1,L[i]*gain))*32767),true);out.setInt16(46+i*4,Math.round(Math.max(-1,Math.min(1,Rr[i]*gain))*32767),true)}
+  const u8=new Uint8Array(out.buffer);let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s)};
+</script>
+</body></html>
