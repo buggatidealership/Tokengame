@@ -977,6 +977,12 @@ if(X5)(function(){
   btn.type="button";
   btn.addEventListener("click",function(){setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark",true)});
   var lc=$("#liveChip");(lc&&lc.parentNode?lc.parentNode:$(".top-in")).appendChild(btn);
+  /* X2 shortens the header chip once, at load, on phones ("Next: JPM"). After a rotation or a resize across 760 px the
+     long label stayed and pushed the switch onto a second row: re-apply X2's rule each time the width crosses 760 px */
+  if(typeof TARGET!=="undefined"&&TARGET&&window.matchMedia){var cq=matchMedia("(max-width:760px)"),cPre=typeof P0!=="undefined"&&P0?"In play: ":"Next: ",
+    cTk=String(TARGET.ticker||"").replace(/\..*$/,""),cCo=String(TARGET.co||"").split(" ")[0];
+    var chipW=function(){var lt=$("#liveTxt");if(!lt)return;if(cq.matches)lt.textContent=cPre+(!cTk||/^\d+$/.test(cTk)?cCo:cTk);else lt.innerHTML=cPre+coName(TARGET)};
+    if(cq.addEventListener)cq.addEventListener("change",chipW);else if(cq.addListener)cq.addListener(chipW)}
   /* X2 turns the round film's sound on at the first tap anywhere (its first-tap rule skips only .snd and .shr). A tap or
      a key on the switch is not a request for sound: those events stop at window, before X2's document listener. The
      button still works: its click is a separate event, and Enter and Space still press it. */
@@ -997,7 +1003,7 @@ if(X5)(function(){
   chip.appendChild(el("p","x5lab",'<span class="eb">Countdown</span><b>Until the NVIDIA bet</b>'));
   /* NVIDIA has not announced its date: until SIM.betDate is set the line says the day is planned (the films say
      "PLANNED · NOV 18"), in words that stay on one line from 360 px */
-  if(gpu){chip.appendChild(gpu);var gt=$(".gpu-t",gpu);if(gt&&betDay)gt.innerHTML=EZ5_SET()?'<b>'+betDay+' close,</b> right before NVIDIA reports.':'Planned: <b>'+betDay+' close,</b> then NVIDIA reports.'}
+  if(gpu){chip.appendChild(gpu);var gt=$(".gpu-t",gpu);if(gt&&betDay)gt.innerHTML=EZ5_SET()?'<b>'+betDay+' close,</b> right before NVIDIA reports.':'Planned: <b>'+betDay+' close,</b> then NVIDIA&nbsp;reports.'}
   hero.insertBefore(chip,bflip||null);
   if(bflip)bflip.remove();
 
@@ -1047,7 +1053,7 @@ if(X5)(function(){
     '<details class="x5d"><summary><u>How ranks work</u></summary><ul class="x5kv"><li><b>First</b><span>Most round wins.</span></li><li><b>Same wins</b><span>The smaller average miss ranks higher.</span></li></ul></details>');
   /* the race, beside "How ranks work": how far #2 is behind #1 (FOMO, honestly: the real gap from the standings) */
   var R0=ROWS[0],R1=ROWS[1],dW=R0&&R1?R0.won-R1.won:-1,hd=$(".x5d",lb);
-  if(hd&&R0&&R0.won>0&&dW>=0){var race=el("p","x5race",'<b>'+esc(nm(R1.m))+'</b> '+(dW?dW+(dW===1?' win':' wins')+' behind':'level on wins'));
+  if(hd&&R0&&R0.won>0&&dW>=0&&!FROZEN){var race=el("p","x5race",'<b>'+esc(nm(R1.m))+'</b> '+(dW?dW+(dW===1?' win':' wins')+' behind':'level on wins'));
     var hw=el("div","x5lbh");hd.parentNode.insertBefore(hw,hd);hw.appendChild(hd);hw.appendChild(race)}
   var band=el("div","band");if(stand)band.appendChild(stand);lb.appendChild(band);
   lb.insertAdjacentHTML("beforeend",'<div class="x5more"><a class="btn" href="#/leaderboard">Full leaderboard and ROI →</a></div>');
