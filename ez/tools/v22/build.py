@@ -132,16 +132,21 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
                'm=document.querySelector(\'meta[name="theme-color"]\');if(m)m.setAttribute("content",getComputedStyle(d).getPropertyValue("--field").trim()||m.getAttribute("content"))})()</script>\n')
         for a,b in [('<html lang="en" class="pt">','<html lang="en" class="pt x5">'),('</head>',FONTS+'<style id="x5-skin">\n'+SKIN+'\n</style>\n'+THEME+'</head>')]:
             assert page.count(a)==1,a; page=page.replace(a,b)
-        # X5 sets no text in Barlow, Anton, Archivo or Chivo Mono (font H covers every role; X2's Instrument Serif findings
-        # heads stay, loaded by routes.js): drop those two render-blocking font requests, as X3 does
+        # X5 sets no text in Barlow, Anton, Archivo, Chivo Mono or Instrument Serif (font H covers every role; X2's serif
+        # findings and highlight heads take the head face in skin-x5.css): drop those font requests, as X3 does
         page,n1=re.subn(r'<link id="pt-fonts"[^>]*>\n','',page)
         page,n2=re.subn(r'<link[^>]*family=Anton[^>]*>\n','',page)
-        assert (n1,n2)==(1,1),(n1,n2)
+        IS5='(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap";document.head.appendChild(l)})()'
+        assert (n1,n2)==(1,1) and page.count(IS5)==1,(n1,n2,page.count(IS5)); page=page.replace(IS5,'void 0')
         # "lock" is kept off X5, where the leaderboard freezes: the AIs' calls are "filed" before the report, as the footer says
         for a,b,n in [(' up or down, plus how much, locked before the report. ',' up or down, plus how much, filed before the report. ',1),
                       ('<b>Locked <span class="nw">','<b>Filed <span class="nw">',2),
-                      # the model page's chart: this AI's line is highlighted (yellow in light, gold in dark), not black
-                      ("+nmM+' in black, the others in grey.","+nmM+' highlighted, the others in grey.",1),
+                      # the model page's chart caption: X2's "GPT in black, the others in grey." is wrong in X5 (the line is
+                      # yellow, gold in dark) and the chart names every line at its end: the caption keeps the method only
+                      ("'+nmM+' in black, the others in grey. Simulated,","Simulated,",1),
+                      # the model page's legend: each item stays whole ("wrong / way" broke at 360 px in font H)
+                      ('<span class="pf-lg2"><i class="w"></i>won the round <i class="g"></i>right way <i class="r"></i>wrong way</span>',
+                       '<span class="pf-lg2"><span class="x5lg"><i class="w"></i>won the round</span> <span class="x5lg"><i class="g"></i>right way</span> <span class="x5lg"><i class="r"></i>wrong way</span></span>',1),
                       # the Leaderboard tab's records head had the Overview record's id (recH): its own id on X5
                       ('<section class="blk xsec" aria-labelledby="recH">\'+xsh("05","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recH")',
                        '<section class="blk xsec" aria-labelledby="recBk">\'+xsh("05","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recBk")',1)]:

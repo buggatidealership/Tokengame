@@ -2,7 +2,10 @@
 <!--
 EZ FILM, ROUND 2: "THE BIG BOARD" (slug board, night). Spec: scratchpad/films-r2/spec-board.md (2026-10-12).
 One physical flip-disc board, one take, writes the story in clattering waves while the words sit still.
-Square 1080, 60 fps, 24.0 s = 1440 frames, 120 BPM. Loops to frame 0 in picture and sound.
+Square 1080, 60 fps, 26.0 s = 1560 frames, 120 BPM. Loops to frame 0 in picture and sound.
+FIX R1 (2026-10-12, films-r2/board/fix-r1.md): one more 2 s bar for the fee story (B1 3.0..6.0, B2 6.0..9.0, all later beats +2.0 s);
+  the money layers flip with the board's waves per disc; a 2x coin stream and a $EZ flip ripple in B0; paying trades fire;
+  "69% OF FEES"; "THE #1 AI MAKES THE CALL."; every time derives from the T table.
 CONTRACT (teaser/render.js): window.N, window.FPS, window.renderAt(t) (pure in t), window.renderAudio() (base64 WAV),
   window.__ready / window.__err, a 1080 #stage.
 URL: v=uk|nonuk (alias variant=), asof=ISO (required), theme=night|day, marks=1|0 (AI logo flaps), big=mona|instrument,
@@ -32,7 +35,7 @@ html,body{margin:0;background:#060b20}
 #ad{font:700 30px/1 "GM";letter-spacing:.04em;color:#f3ede0;border:2px solid #f3ede0;border-radius:4px;padding:5px 10px 5px 12px}
 #brand{font:500 24px/1 "GM";letter-spacing:.06em;color:rgba(243,237,224,.88);white-space:nowrap}
 #stamp{right:48px;top:34px;font:500 28px/1 "GM";letter-spacing:0;color:rgba(243,237,224,.86);text-align:right;white-space:nowrap}
-#legal{left:48px;top:84px;font-family:"IS";font-weight:600;font-stretch:100%;font-size:26px;line-height:1.2;color:rgba(243,237,224,.86);white-space:nowrap}
+#legal{left:48px;top:82px;font-family:"IS";font-weight:600;font-stretch:100%;font-size:28px;line-height:1.2;color:rgba(243,237,224,.86);white-space:nowrap}
 #band{left:24px;right:24px;bottom:96px;height:160px;background:#fff;border-radius:4px;box-sizing:border-box}
 #band::before{content:"";position:absolute;inset:4px;border:2px solid #000;border-radius:2px}
 #band p{position:absolute;left:20px;right:20px;top:50%;transform:translateY(-50%);margin:0;font-family:"IS";font-weight:700;font-stretch:100%;font-size:36px;line-height:1.18;color:#000}
@@ -54,7 +57,7 @@ function main(){
 var Q=new URLSearchParams(location.search);
 var VAR=Q.get("v")||Q.get("variant")||"uk",UK=VAR==="uk";
 if(VAR!=="uk"&&VAR!=="nonuk")throw new Error("v must be uk or nonuk");
-var FPS=60,NFULL=1440,DUR=24;
+var FPS=60,DUR=26.0,NFULL=Math.round(DUR*FPS);   /* T.end must equal DUR (checked below) */
 var N=Q.get("upto")?Math.round(+Q.get("upto")*FPS):NFULL;
 window.FPS=FPS;window.N=N;
 var NSQ=Q.get("ns")?+Q.get("ns"):null,DAY=Q.get("theme")==="day",MARKS=Q.get("marks")!=="0",BIGF=Q.get("big")==="instrument"?"instrument":"mona",
@@ -125,13 +128,15 @@ C.ez=S("$EZ","fixed (the coin)");
 C.fromLaunch=S("FROM LAUNCH,","CONFIG.launched=false (ca empty)");
 C.sell=S("SELL ▼","fixed (tape)");C.buy=S("BUY ▲","fixed (tape)");C.fee=S("FEE","fixed");
 C.pool=S(D.pool+"%","SIM.poolShare ("+SIM.poolShare+")");
+C.ofFees=S("OF FEES","fixed (69% of every $EZ trading fee)");
 C.toPot=S("→ THE $ POT","fixed (gold $ glyph)");
 C.ops=S(D.ops+"% RUNS EZ","100 - SIM.poolShare");
 C.four=[S(MODEL_KEYS.length+" AIs CALL","MODEL_KEYS.length"),S("EARNINGS.","fixed")];
+C.wins=S("WINS","fixed (the count column: rounds won)");
 C.names={};MODEL_KEYS.forEach(function(m){C.names[m]=S(MODELS[m].name.toUpperCase(),"MODELS["+m+"].name")});
 D.states.forEach(function(s,k){S("STATE "+(k+1)+" after round "+s.n+": "+s.order.map(function(m){return m+" "+(s.has[m]?s.won[m]:"(no calls yet)")}).join(", ")+"; #1 "+s.lead,"ROUNDS[].win tally, site rank rule")});
-C.freeze=[S(D.lead+" HOURS BEFORE","SIM.leadHours ("+D.lead+")"),S("NVIDIA REPORTS,","fixed"),S("THE LEADERBOARD","fixed"),S("FREEZES. ❄","fixed")];
-C.call=[S("#1 MAKES","fixed"),S("THE CALL.","fixed")];
+C.freeze=[S(D.lead+" HOURS BEFORE","SIM.leadHours ("+D.lead+")"),S("NVIDIA REPORTS,","fixed"),S("THE LEADERBOARD","fixed"),S("FREEZES.","fixed (the snowflake read as an asterisk: dropped)")];
+C.call=[S("THE #1 AI MAKES","fixed (X2: the AI in first place makes the call)"),S("THE CALL.","fixed")];
 C.nvda=S(D.nv.ticker,"UPCOMING NVDA row (round "+D.nv.n+")");
 C.pair=[S(D.lev+"x LEVERAGE.","SIM.leverage ("+D.lev+")"),S("THE POT CAN","fixed (paired with leverage)"),S("BE WIPED OUT.","fixed (paired with leverage)")];
 C.lanes=[S("✓ RIGHT","fixed"),S("✗ WRONG","fixed"),S("BUYBACK","fixed"),S("WIPEOUT","fixed")];
@@ -174,7 +179,7 @@ Q:"01110 10001 10001 10001 10101 10010 01101",R:"11110 10001 10001 11110 10100 1
 T:"11111 00100 00100 00100 00100 00100 00100",U:"10001 10001 10001 10001 10001 10001 01110",V:"10001 10001 10001 10001 10001 01010 00100",
 W:"10001 10001 10001 10101 10101 10101 01010",X:"10001 10001 01010 00100 01010 10001 10001",Y:"10001 10001 01010 00100 00100 00100 00100",
 Z:"11111 00001 00010 00100 01000 10000 11111",x:"00000 00000 10001 01010 00100 01010 10001",s:"00000 00000 01111 10000 01110 00001 11110",
-".":"0 0 0 0 0 0 1",",":"00 00 00 00 00 01 10",":":"0 0 1 0 0 1 0","%":"11001 11010 00010 00100 01000 01011 10011",
+".":"0 0 0 0 0 0 1",",":"00 00 00 00 00 01 01 10",":":"0 0 1 0 0 1 0","%":"11001 11010 00010 00100 01000 01011 10011",
 "$":"00100 01111 10100 01110 00101 11110 00100","'":"1 1 0 0 0 0 0","#":"01010 01010 11111 01010 11111 01010 01010","?":"01110 10001 00001 00010 00100 00000 00100",
 "·":"0 0 0 1 0 0 0",
 "▲":"0001000 0011100 0011100 0111110 0111110 1111111 1111111","▼":"1111111 1111111 0111110 0111110 0011100 0011100 0001000",
@@ -279,10 +284,17 @@ var PALN={1:"#f3ede0",2:"#ffc72c",3:"#1fcf6b",4:"#ff4136",5:"#7681b6",6:"#a9b1e2
 /* =====================================================================================================
    4. THE TIMELINE (one table, read by picture and sound). Seconds.
    ===================================================================================================== */
-var T={b0:0,b1:3.0,mv1:[3.0,3.375],lockRead:[3.375,4.625],coins1:[3.75,4.0,4.25,4.5],mv2:[4.625,5.0],card:4.625,b2:5.0,pot:5.125,ops:5.25,
-  b3:7.0,settle:7.75,b4:9.0,words:[9.0,9.125,9.25,9.375],open:[9.25,10.0],freeze:10.0,frameTrace:[10.0,10.2],glintF:[10.1,10.7],quiet:[11.6,12.0],
-  b5:12.0,punch:[12.0,12.6],ticket:12.75,pour:[13.0,13.5],ratchet:[13.25,14.0],b6:14.0,b7:17.0,lanes:[17.1,17.85],b8:19.0,dis1:[19.75,20.25],
-  glintC:[21.0,22.5],dis2:[23.5,23.75],card0:1140,card1:1424,b9:23.75,end:24.0};
+/* FIX R1: the fee story has one more 2 s bar (B1 3.0..6.0 with a 2.25 s locked read, B2 6.0..9.0); every later beat is +2.0 s, so
+   the downbeats and the sound stay on the bar grid. coin0: B0's 2x coin stream (one every 0.5 s); ripple: the $EZ flip ripples;
+   glintH: one glint across the ticket heap in B6; capClear: the lane captions flip off before the disclaimer card lands. */
+var T={b0:0,coin0:{every:0.5,first:-0.5,last:2.5},ripple:[0.5,1.5,2.5],b1:3.0,mv1:[3.0,3.375],lockRead:[3.375,5.625],coins1:[3.75,4.25,4.75,5.25],
+  mv2:[5.625,6.0],card:5.625,b2:6.0,pot:6.125,ops:6.25,
+  b3:9.0,settle:9.75,b4:11.0,words:[11.0,11.125,11.25,11.375],open:[11.25,12.0],freeze:12.0,frameTrace:[12.0,12.2],glintF:[12.1,12.7],quiet:[13.6,14.0],
+  b5:14.0,punch:[14.0,14.6],ticket:14.75,pour:[15.0,15.5],ratchet:[15.25,16.0],b6:16.0,glintH:[17.0,17.8],b7:19.0,lanes:[19.25,20.0],capClear:20.875,
+  b8:21.0,dis1:[21.75,22.25],glintC:[23.0,24.5],dis2:[25.5,25.75],b9:25.75,end:26.0};
+T.card0=Math.round(T.b8*FPS);T.card1=Math.round(T.b9*FPS)-1;   /* the disclaimer: f1260..f1544, 285 frames */
+if(T.end!==DUR)throw new Error("T.end ("+T.end+") must equal DUR ("+DUR+")");
+if(T.card1-T.card0+1<270)throw new Error("the disclaimer must hold 4.5 s or more");
 window.R2B_T=T;
 
 /* =====================================================================================================
@@ -317,27 +329,33 @@ var VB=makeVessel(32,48),VBc=60,VBr=R(23);
   L.text(C.fromLaunch,43,-11,IV,{name:"FROM LAUNCH (top)"});
   /* the gate */
   for(var r=-2;r<=6;r++)L.set(76,r,IV);
-  L.text(C.fee,80,7,SL,{name:"FEE"});
+  L.text(C.fee,80,7,IV,{name:"FEE"});   /* ivory: it is the mechanic, not a label */
   LAYS.b1=L})();
 MK.gateCol=76;MK.tapeRow=-1;
 /* ---- B2 card ---- */
 var B2={};
 (function(){var L=new Lay("B2 card");drawVessel(L,VB,VBc,VBr,0.12,"vessel");
   var t=L.text(C.fromLaunch,3,R(15),IV,{name:"FROM LAUNCH card"});B2.fl=t;
-  var g69=bigText(C.pool,UK?24:24);L.mask(g69,3,R(24)-g69.capTop,GO,"69%");B2.g69=g69;B2.r69=R(24)-g69.capTop;
+  /* FIX R1: "69%" at cap 18 (rows 24..41) and "OF FEES" under it (rows 44..50), so the card reads
+     "FROM LAUNCH, 69% OF FEES -> THE $ POT. 31% RUNS EZ." Everything stays in columns 3..58, clear of the vessel at column 60. */
+  var g69=bigText(C.pool,18);L.mask(g69,3,R(24)-g69.capTop,GO,"69%");B2.g69=g69;B2.r69=R(24)-g69.capTop;
+  var tf=L.text(C.ofFees,3,R(44),IV,{name:"OF FEES"});B2.of=tf;
   LAYS.b2a=L;
   var L2=new Lay("B2 card +pot",L);
-  L2.text(C.toPot,3,R(51),function(ch){return ch==="$"?GO:IV},{name:"THE $ POT",gapBefore:function(ch){return ch==="$"}});
+  var tp=L2.text(C.toPot,3,R(53),function(ch){return ch==="$"?GO:IV},{name:"THE $ POT",gapBefore:function(ch){return ch==="$"}});
   LAYS.b2b=L2;
-  var L3=new Lay("B2 card +ops",L2);var o=L3.text(C.ops,3,R(62),SB,{name:"31% RUNS EZ"});
+  var L3=new Lay("B2 card +ops",L2);var o=L3.text(C.ops,3,R(63),SB,{name:"31% RUNS EZ"});
+  /* the vessel's box starts at column 60; the reservations (1-disc margins) already keep the text off the $ itself */
+  [3+g69.w-1,tf.c1,tp.c1,o.c1].forEach(function(c){if(c>59)throw new Error("B2 card text passes column 59 (the vessel box is at 60): "+c)});
   /* the 31% lands at the end of its own line (a tray glyph read as a letter in the first styleframes) */
-  B2.tray=[o.c1+2,o.c1+2,R(62),R(66)];
+  B2.tray=[o.c1+2,o.c1+2,R(63),R(67)];
   checkLay(L3);LAYS.b2c=L3})();
 /* ---- B3 race ---- */
 var RACE={rows:[35,44,53,62].map(R),logoC:15,nameC:24,blkC:62,cntC:88};
 RACE.bw=D.maxWon>7?2:3;RACE.bstep=RACE.bw+1;
 function raceLay(state,name,base){var L=new Lay(name);
   L.text(C.four[0],3,R(15),IV,{name:"head1"});L.text(C.four[1],3,R(25),IV,{name:"head2"});
+  L.text(C.wins,RACE.cntC+5-tw(C.wins),R(25),SB,{name:"WINS"});   /* labels the count column (right edge = a 1-digit count's) */
   var order=state?state.order:MODEL_KEYS;
   order.forEach(function(m,k){var r=RACE.rows[k],ranked=state&&state.has[m];
     if(ranked)L.text("#"+(k+1),3,r,k===0?GO:SL,{name:"rank"+k});
@@ -423,9 +441,14 @@ var CD={c0:18,r0:R(40)};CD.blocks=[CD.c0,CD.c0+14,CD.c0+35,CD.c0+49];CD.lab=CD.r
   checkLay(L);LAYS.b8=L})();
 /* the coin glyph */
 var COIN=G5["$"];
-/* channel check: B0 cols 73..79 rows 14..34 hold only the coin; B1/B2 the fall path (rows 7..neck-1) */
-(function(){function chk(L,r0,r1){for(var r=r0;r<=r1;r++)for(var c=73;c<=79;c++)if(L.f[ix(c,r)]&&!(L===LAYS.b1&&c===76&&r<=6))throw new Error("coin channel holds a story disc in "+L.name+" at c"+c+" r"+r)}
-  chk(LAYS.b0,14,34);chk(LAYS.b1,7,VBr+VB.topRim-1);chk(LAYS.b2c,14,VBr+VB.topRim-1)})();
+/* channel check: B0 columns 70..79 rows 14..40 hold only the 2x coin stream, and its spray zone (columns 63..86, rows 32..41) is clear
+   with a free row under it (the hero starts at row 47 in uk, 55 in nonuk);
+   B1/B2 columns 73..79 the fall path (rows 7..neck-1) */
+var C2={c0:70,c1:79,burst:40,spray:[63,86,32,41]};
+(function(){function chk(L,r0,r1,c0,c1){for(var r=r0;r<=r1;r++)for(var c=c0;c<=c1;c++)if(L.f[ix(c,r)]&&!(L===LAYS.b1&&c===76&&r<=6))throw new Error("coin channel holds a story disc in "+L.name+" at c"+c+" r"+r)}
+  chk(LAYS.b0,14,C2.burst,C2.c0,C2.c1);chk(LAYS.b0,C2.spray[2],C2.spray[3],C2.spray[0],C2.spray[1]);
+  for(var c=C2.spray[0];c<=C2.spray[1];c++)if(LAYS.b0.f[ix(c,C2.spray[3]+1)])throw new Error("the B0 spray zone touches a story disc at c"+c);
+  chk(LAYS.b1,7,VBr+VB.topRim-1,73,79);chk(LAYS.b2c,14,VBr+VB.topRim-1,73,79)})();
 
 /* =====================================================================================================
    6. TRANSITIONS (base layouts with waves) and MOVING ELEMENTS
@@ -438,84 +461,137 @@ function wRad(c0,r0,speed,jit){return function(c,r,i){return Math.hypot(c-c0,r-r
 function wClack(){return function(){return 0}}
 function wRows(r0,r1,fn){return function(c,r,i){return (r>=r0&&r<=r1)?fn(c,r,i):Infinity}}
 var TR=[];   /* {t, lay, d(c,r,i) -> delay; rows: [r0,r1] limit (others untouched)} */
-function tr(t,lay,d,rows,cols){TR.push({t:t,lay:lay,d:d,rows:rows||null,cols:cols||null})}
+function tr(t,lay,d,rows,cols){var x={t:t,lay:lay,d:d,rows:rows||null,cols:cols||null};TR.push(x);return x}
 var JIT=1.2/60;
-tr(T.b1,LAYS.b1,wTB(-24,300,JIT));
-tr(T.card,LAYS.b2a,wLR(0,220,JIT),[R(14),R(22)]);       /* "FROM LAUNCH," + 69% card flips in (69% is off until 5.0: see below) */
+/* the waves that the moving money layers follow (FIX R1): a layer's old face stays at a disc until that disc's flip starts, and the
+   next beat's moving faces start there only once its flip has finished (flipStart + 3/60) */
+var W1=tr(T.b1,LAYS.b1,wTB(-24,300,JIT));
+tr(T.card,LAYS.b2a,wLR(0,220,JIT),[R(14),R(22)]);       /* "FROM LAUNCH," of the 69% card flips in during move 2 (69% waits for T.b2) */
 TR[TR.length-1].lay=(function(){var L=new Lay("B2 FROM LAUNCH only",LAYS.b1);L.text(C.fromLaunch,3,R(15),IV,{noReserve:true});return L})();
-tr(T.b2,LAYS.b2a,wRad(3+B2.g69.w/2,B2.r69+12,190,JIT*.5),[R(23),R(49)]);
-tr(T.pot,LAYS.b2b,wLR(0,400,JIT*.5),[R(50),R(58)]);
-tr(T.ops,LAYS.b2c,wLR(0,400,JIT*.5),[R(59),R(71)]);
-/* B2 -> clear the top section once out of frame */
-tr(5.0,(function(){var L=new Lay("B2 top cleared",LAYS.b2c);L.clear(-24,13);return L})(),wClack(),[-24,13]);
+tr(T.b2,LAYS.b2a,wRad(3+B2.g69.w/2,B2.r69+9,190,JIT*.5),[R(23),R(51)]);   /* 69% OF FEES */
+tr(T.pot,LAYS.b2b,wLR(0,400,JIT*.5),[R(52),R(60)]);
+tr(T.ops,LAYS.b2c,wLR(0,400,JIT*.5),[R(61),R(71)]);
+/* B2 -> clear the top section once out of frame (the camera is back at the poster pose at T.b2) */
+tr(T.b2,(function(){var L=new Lay("B2 top cleared",LAYS.b2c);L.clear(-24,13);return L})(),wClack(),[-24,13]);
 /* B3 */
-tr(T.b3,LAYS.b3[0],wLR(0,260,JIT));
-var raceT=D.states.map(function(s,k){return D.states.length>1?7.25+k*(0.5/(D.states.length-1)):7.75});
+var W3=tr(T.b3,LAYS.b3[0],wLR(0,260,JIT));
+var raceT=D.states.map(function(s,k){return D.states.length>1?T.b3+0.25+k*((T.settle-T.b3-0.25)/(D.states.length-1)):T.settle});
 D.states.forEach(function(s,k){tr(raceT[k],LAYS.b3[k+1],wLR(0,1600,JIT*.3),[R(34),R(70)])});
 T.race=raceT;
 /* B4: words and bars */
+var W4;
 (function(){var base=LAYS.b3[LAYS.b3.length-1];
   var Lc=new Lay("B4 compact");Lc.text("24 HOURS",3,R(15),IV,{noReserve:true});LAYS.b4c=Lc;
-  tr(T.b4,Lc,wTB(R(14),320,JIT));
+  W4=tr(T.b4,Lc,wTB(R(14),320,JIT));
   LAYS.b4w.slice(1).forEach(function(Lw,k){tr(T.words[k+1],Lw,wLR(0,500,JIT*.3),[R(14),R(31)])});
   tr(T.freeze,LAYS.b4f,wClack(),[R(32),R(49)])})();
 /* B5 */
-tr(T.b5,LAYS.b5a,wClack());
-tr(T.ticket,LAYS.b5b,wTB(R(34),260,JIT),[R(34),R(71)]);
+var W5=tr(T.b5,LAYS.b5a,wClack());
+var WT=tr(T.ticket,LAYS.b5b,wTB(R(34),260,JIT),[R(34),R(71)]);
 /* B6: the pair in one clack on the same frame */
 tr(T.b6,LAYS.b6,wClack(),[R(14),R(43)]);
 /* B7 */
-tr(T.b7,LAYS.b7,wTB(R(14),380,JIT));
+var W7=tr(T.b7,LAYS.b7,wTB(R(14),380,JIT));
+/* the lane captions flip off just before the disclaimer card lands on their rows (uk card y 690..800) */
+tr(T.capClear,(function(){var L=new Lay("B7 captions cleared",LAYS.b7);L.clear(R(58),R(68));return L})(),wRad(48,R(63),900,JIT*.3),[R(58),R(68)]);
 /* B8 radial rewrite from the centre */
-tr(T.b8,LAYS.b8,wRad(48,R(42),330,JIT*.5));
-/* B9 seam: back to the poster, top to bottom, settled by f1437 */
-tr(T.b9,LAYS.b0,wTB(14,72/((1434-1425)/60),JIT*.3));
+var W8=tr(T.b8,LAYS.b8,wRad(48,R(42),330,JIT*.5));
+/* B9 seam: back to the poster, top to bottom, rows 14..86 in 9 frames, settled 3 frames before the end */
+var SEAMV=72/(9/60);
+var W9=tr(T.b9,LAYS.b0,wTB(14,SEAMV,JIT*.3));
 TR.sort(function(a,b){return a.t-b.t});
 /* effective start per disc (monotonic per disc) */
 TR.forEach(function(x,j){x.eff=new Float32Array(NC);for(var r=-RO;r<H-RO;r++)for(var c=0;c<W;c++){var i=ix(c,r),inr=(!x.rows||(r>=x.rows[0]&&r<=x.rows[1]))&&(!x.cols||(c>=x.cols[0]&&c<=x.cols[1]));
   x.eff[i]=inr?x.t+x.d(c,r,i):Infinity;
   if(inr&&j)for(var q=j-1;q>=0;q--){var pe=TR[q].eff[i];if(pe<Infinity){if(pe>x.eff[i])x.eff[i]=pe+1e-4;break}}}});
+/* per-disc gates on a wave X: old(X) keeps a layer's face until the disc's flip starts; nu(X) starts one when the flip is done */
+var FLIPT0=3/60;
+function waveOld(X,c,r,t){return t<X.eff[ix(c,r)]}
+function waveNew(X,c,r,t){return t>=X.eff[ix(c,r)]+FLIPT0}
+/* a put that only lands between two waves (either may be null) */
+function gated(put,t,Xin,Xout){return function(c,r,face,md){if(c<0||c>=W||r<-RO||r>=H-RO)return;if(Xin&&!waveNew(Xin,c,r,t))return;if(Xout&&!waveOld(Xout,c,r,t))return;put(c,r,face,md)}}
 /* B1/B2 rows outside a transition's limits keep their previous face: handled by Infinity (never applied) */
 
 /* ---------- moving elements, each a pure function of t writing into the state ---------- */
+/* put(c, r, face, md): md 0 = a board flip (3 frames, heard as a click); md 1 = a grain (lands only on an off disc; fast 1.5-frame
+   flips, sounded by its own event); md 2 = a moving object (fast flips, its own sound, drawn over anything). FIX R1: every layer here
+   is gated per disc on the waves that bracket its beat (gated(put, t, waveIn, waveOut)), so nothing pops off or on ahead of the board. */
 var DYN=[];
 function coinAt(put,c0,top,face,mode){var g=COIN;for(var y=0;y<7;y++)for(var x=0;x<5;x++)if(g.r[y][x]==="1")put(c0+x,top+y,face,mode)}
-/* the drip (B0, and the seam): one row every 9 frames, top row 8 at f-4 */
-function dripTop(f){return f<0?14-Math.ceil(-f/2):14+Math.floor(f/12.5)}
-var B1CLEAR=T.b1+(28+24)/300;  /* the B1 wave reaches the coin's rows */
-DYN.push(function(t,put){var f=t*60;
-  if(t<B1CLEAR){var top=dripTop(f);if(t>=T.b1&&top>=0)top=Math.min(top,dripTop(179));coinAt(put,74,top,GO,0)}
-  else if(f>=1426){coinAt(put,74,dripTop(f-1440),GO,0)}});
-/* B1 tape: SELL v | gate | BUY ^ alternating, scrolls left 30 col/s until 3.375, then still */
-var TAPE=(function(){var items=[],x=0;var a=tw(C.sell),b=tw(C.buy),gap=7;for(var k=0;k<8;k++){items.push({s:k%2?C.buy:C.sell,x:x});x+=(k%2?b:a)+gap}
-  /* rest: the SELL item index 2 ends at col 72 */
-  var off=72-(items[2].x+a-1);return {items:items,off:off,period:x,sellArrow:items[2].x+off+a-7,buyArrow:items[3].x+off+b-7}})();
-var TAPE_ON=T.b1+(-1+24)/300,TAPE_OFF=4.75;
-DYN.push(function(t,put){if(t<TAPE_ON||t>=TAPE_OFF)return;var sh=t<T.mv1[1]?Math.floor(30*(T.mv1[1]-t)):0;
-  TAPE.items.forEach(function(it){var x=it.x+TAPE.off+sh;Array.from(it.s).reduce(function(cx,ch){if(ch===" ")return cx+2;var g=G5[ch];
-    var fc=ch==="▼"?RD:ch==="▲"?GR:IV;
-    /* the paying trade's arrow brightens for 2 frames */
-    if((ch==="▼"||ch==="▲")&&t>=T.lockRead[0]){T.coins1.forEach(function(tc,k){var sellPays=k%2===0;if(t>=tc&&t<tc+2/60&&((ch==="▼")===sellPays)&&cx===(sellPays?TAPE.sellArrow:TAPE.buyArrow))fc=IV})}
-    for(var y=0;y<7;y++)for(var xx=0;xx<g.w;xx++)if(g.r[y][xx]==="1"){var cc=cx+xx;if(cc>=0&&cc<W&&!(cc>=73&&cc<=79))put(cc,MK.tapeRow+y,fc,0)}
-    return cx+g.w+1},x)})});
-/* FROM LAUNCH header leaves at 4.75 (out of frame by then) */
-/* coins: from the gate (top row 7) down the channel, accelerating, bursting into grains at the neck */
+
+/* ---- B0: the $EZ flip ripple at T.ripple: a diagonal wave across the mark only. Each disc turns a full 360 degrees in 6 frames
+   (its face edge-on to the dark back over 3 frames, then back over 3); the wave crosses the mark in RIPX. The hero stays still. ---- */
+var RIPX=24/60;   /* the ripple crosses the mark in 24 frames (a soft rolling wave: few discs edge-on at once) */
+var EZC=(function(){var a=[];for(var r=14;r<=MK.ezBot;r++)for(var c=0;c<MK.ezEnd;c++){var v=LAYS.b0.f[ix(c,r)];if(v===GO||v===GR||v===RD)a.push([c,r])}
+  var u=a.map(function(p){return p[0]+(p[1]-14)*0.6}),u0=Math.min.apply(null,u),u1=Math.max.apply(null,u);
+  return a.map(function(p,k){return [p[0],p[1],(u[k]-u0)/(u1-u0)*RIPX]})})();
+DYN.push(function(t,put){if(t>=T.b1)return;T.ripple.forEach(function(t0){if(t<t0||t>=t0+RIPX+2*FLIPT0+0.02)return;
+  EZC.forEach(function(p){var a=t-t0-p[2];if(a>=0&&a<FLIPT0)put(p[0],p[1],OFF,0)})})});
+
+/* ---- B0: the 2x coin stream. The 5x7 "$" doubled to 10 x 14 discs in columns C2.c0..C2.c1. A coin leaves the strip (rows -1..12,
+   hidden) every T.coin0.every s, falls with B1's acceleration (22 rows/s plus 60 rows/s^2: 1 row per 2.7 frames, about 1 a frame at the
+   floor) and shreds at row C2.burst (40): each coin row that reaches the floor turns into gold grains (one per disc) that spray out and go
+   dark within 5 to 8 frames, above the hero. Frame 0 shows the coin that left at -0.5 s whole (rows 17..30). The coin that leaves at DUR-0.5 s comes in
+   behind the B9 wave, so the last frame runs into frame 0. ---- */
+var COIN2=(function(){var g=G5["$"],m=[];for(var y=0;y<14;y++){var row=[];for(var x=0;x<10;x++)row.push(g.r[y>>1][x>>1]==="1");m.push(row)}return m})();
+var C2V0=22,C2A=60,C2G=320;
+function c2Top(dt){return Math.floor(C2V0*dt+0.5*C2A*dt*dt)-1}
+function c2TimeAt(d){return (-C2V0+Math.sqrt(C2V0*C2V0+2*C2A*d))/C2A}   /* when the fall reaches d rows (c2Top = d - 1) */
+var C2SPAWN=[];for(var q0=0;T.coin0.first+q0*T.coin0.every<=T.coin0.last+1e-9;q0++)C2SPAWN.push(T.coin0.first+q0*T.coin0.every);
+var C2SEAM=DUR+T.coin0.first;
+var C2GR=(function(){var out=[],k=0;for(var y=13;y>=0;y--){var dt=c2TimeAt(C2.burst+1-y);   /* coin row y reaches the floor */
+    for(var x=0;x<10;x++)if(COIN2[y][x]){out.push({dt:dt+hash(1030+k*3)*0.012,c:C2.c0+x,vx:(x-4.5)*9+(hash(900+k*17)-.5)*12,vy:-(20+hash(950+k*13)*30),life:(5+Math.floor(hash(990+k*7)*4))/60});k++}}
+  return out})();
+var C2SHRED=[c2TimeAt(C2.burst+1-13),c2TimeAt(C2.burst+1)];   /* the bottom row, then the top row, reach the floor */
+(function(){/* the spray must stay in its zone */var z=C2.spray;C2GR.forEach(function(g){for(var a=0;a<g.life;a+=1/240){var c=Math.round(g.c+g.vx*a),r=Math.round(C2.burst+g.vy*a+0.5*C2G*a*a);
+  if(c<z[0]||c>z[1]||r<z[2]||r>z[3])throw new Error("a B0 grain leaves its spray zone at c"+c+" r"+r)}})})();
+function c2Draw(put,t,ts){var dt=t-ts;if(dt<0||dt>C2SHRED[1]+0.12)return;var top=c2Top(dt);
+  for(var y=0;y<14;y++){var r=top+y;if(r>=C2.burst)continue;for(var x=0;x<10;x++)if(COIN2[y][x])put(C2.c0+x,r,GO,2)}
+  C2GR.forEach(function(g){var a=dt-g.dt;if(a<0||a>=g.life)return;put(Math.round(g.c+g.vx*a),Math.round(C2.burst+g.vy*a+0.5*C2G*a*a),GO,1)})}
+DYN.push(function(t,put){
+  if(t<T.b1+0.3){var gp=gated(put,t,null,W1);C2SPAWN.forEach(function(ts){c2Draw(gp,t,ts)})}
+  if(t>=T.b9){var gs=gated(put,t,W9,null);c2Draw(gs,t,C2SEAM);c2Draw(gs,t,DUR)}});   /* (the DUR coin only exists at t = DUR, i.e. frame 0) */
+
+/* ---- B1/B2 coins: from the gate (top row 7) down the channel, accelerating, bursting into grains at the neck ---- */
 var NECK=VBr+VB.topRim;      /* first rim row of the vessel */
 var GV0=22,GA=60;            /* rows/s, rows/s^2 */
 function coinY(dt,y0){return y0+GV0*dt+0.5*GA*dt*dt}
 function coinBurstT(y0){var d=NECK-7-y0;return (-GV0+Math.sqrt(GV0*GV0+2*GA*d))/GA}   /* coin bottom (top+6) reaches NECK-1 */
+/* B1 tape: SELL v | gate | BUY ^ alternating, scrolls left 30 col/s until the lock, then still */
+var TAPE=(function(){var items=[],x=0;var a=tw(C.sell),b=tw(C.buy),gap=7;for(var k=0;k<8;k++){items.push({s:k%2?C.buy:C.sell,x:x});x+=(k%2?b:a)+gap}
+  /* rest: the SELL item index 2 ends at col 72 */
+  var off=72-(items[2].x+a-1);return {items:items,off:off,period:x,sellArrow:items[2].x+off+a-7,buyArrow:items[3].x+off+b-7}})();
+/* the tape stays until the top section is cleared at T.b2 (out of frame then); paying cues only while the tape is in full view */
+var TAPE_ON=T.b1+(-1+24)/300,TAPE_OFF=T.b2,CUE_END=T.mv2[0]+0.125;
 var COINS=[];T.coins1.forEach(function(tc,k){COINS.push({t0:tc,y0:7,beat:"B1",pay:k%2?"BUY":"SELL"})});
-for(var k2=0;k2<8;k2++)COINS.push({t0:4.75+k2*0.25-(coinBurstT(7)),y0:7,beat:"B2",pay:k2%2?"BUY":"SELL"});
-COINS.forEach(function(cn){cn.tb=cn.t0+coinBurstT(cn.y0)});
+/* B2: a coin every 0.25 s from T.mv2[0]+0.125 until 0.5 s before B3 (an even number, so BUY and SELL stay equal) */
+var B2C0=T.mv2[0]+0.125,B2N=Math.floor((T.b3-0.5-B2C0)/0.25+1e-9)+1;if(B2N%2)B2N--;
+for(var k2=0;k2<B2N;k2++)COINS.push({t0:B2C0+k2*0.25-(coinBurstT(7)),y0:7,beat:"B2",pay:k2%2?"BUY":"SELL"});
+COINS.forEach(function(cn){cn.tb=cn.t0+coinBurstT(cn.y0);cn.cue=cn.t0+1/60<CUE_END});
+(function(){var s=0,b=0;COINS.forEach(function(cn){if(cn.pay==="SELL")s++;else b++});if(s!==b)throw new Error("BUY and SELL coins are not equal: "+s+" / "+b)})();
+/* the paying trade (FIX R1): 6 frames before its coin, the whole paying item ("SELL ▼" or "BUY ▲") ripples gold toward the gate
+   (each disc gold for one 3-frame flip, the wave crossing the item in 3 frames), then the gate bar flashes gold for 4 frames as the
+   coin leaves it */
+var CUES=COINS.filter(function(cn){return cn.cue}).map(function(cn){return {t0:cn.t0,item:cn.pay==="SELL"?2:3}});
+DYN.push(function(t,put){if(t<TAPE_ON||t>=TAPE_OFF)return;var sh=t<T.mv1[1]?Math.floor(30*(T.mv1[1]-t)):0;
+  TAPE.items.forEach(function(it,ii){var x=it.x+TAPE.off+sh,w=tw(it.s),isSell=it.s===C.sell,cue=null;
+    if(!sh)CUES.forEach(function(q){if(q.item===ii&&t>=q.t0-6/60&&t<q.t0+1/60)cue=q});
+    Array.from(it.s).reduce(function(cx,ch){if(ch===" ")return cx+2;var g=G5[ch];
+      var fc=ch==="▼"?RD:ch==="▲"?GR:IV;
+      for(var y=0;y<7;y++)for(var xx=0;xx<g.w;xx++)if(g.r[y][xx]==="1"){var cc=cx+xx;if(cc<0||cc>=W||(cc>=73&&cc<=79))continue;var f2=fc;
+        if(cue){var fr=isSell?(cc-x)/Math.max(1,w-1):(x+w-1-cc)/Math.max(1,w-1),a=t-(cue.t0-6/60)-fr*3/60;if(a>=0&&a<FLIPT0)f2=GO}
+        put(cc,MK.tapeRow+y,f2,0)}
+      return cx+g.w+1},x)});
+  CUES.forEach(function(q){if(t>=q.t0-2/60&&t<q.t0+2/60)for(var r=-2;r<=6;r++)put(MK.gateCol,r,GO,2)})});
 /* grains: each lit disc of a coin becomes one grain at the burst. B1: all into the $. B2: Bresenham on SIM.poolShare */
 var GRAINS=[],acc=0,nGold=0,nSlate=0;
 var VB_NECKC=VB.neck.map(function(x){return VBc+x});
 COINS.forEach(function(cn,ci){var k=0;for(var y=0;y<7;y++)for(var x=0;x<5;x++)if(COIN.r[y][x]==="1"){
   var gold=true;if(cn.beat==="B2"){var nb=Math.floor((acc+1)*SIM.poolShare+1e-9)-Math.floor(acc*SIM.poolShare+1e-9);gold=nb===1;acc++;if(gold)nGold++;else nSlate++}
   GRAINS.push({t0:cn.tb+(6-y)*0.012+hash(ci*31+k)*0.02,c:74+x,r:cn.tb?coinY(cn.tb-cn.t0,cn.y0)+y:0,gold:gold,beat:cn.beat,k:k++})}});
-if(nGold+nSlate){var share=nGold/(nGold+nSlate);if(Math.abs(nGold-Math.round((nGold+nSlate)*SIM.poolShare))>1)throw new Error("grain split is not "+D.pool+"/"+D.ops)}
+if(nGold+nSlate){if(Math.abs(nGold-Math.round((nGold+nSlate)*SIM.poolShare))>1)throw new Error("grain split is not "+D.pool+"/"+D.ops)}
 T.grainSplit=[nGold,nSlate];
-/* the level: B1 coins 0.10 -> 0.12, B2 gold grains 0.12 -> 0.45 */
+/* the level: B1 coins 0.10 -> 0.13, B2 gold grains 0.13 -> 0.55 */
 var LV={b1:[0.10,0.13],b2:[0.13,0.55]};var GRV0=20,GRA=200;
 /* gold grains fall inside the $ (centre columns) to the level surface; slate grains slide down the left gutter to the tray */
 var VCOL=VBc+Math.round(VB.w/2)-1;
@@ -526,10 +602,8 @@ function surfaceRow(frac){return VBr+vLevelRow(VB,frac)}
       g.col=VCOL+((g.k%3)-1);var tgt=surfaceRow(fr)-1;g.r0=NECK;g.r1=tgt;g.v0=GRV0;g.dur=(-g.v0+Math.sqrt(g.v0*g.v0+2*GRA*Math.max(0,tgt-NECK)))/GRA;g.t1=g.t0+g.dur;landed[g.beat]++;g.n=landed[g.beat]}
     else{g.path=B2.tray;g.dur=0.55;g.t1=g.t0+g.dur}})})();
 function levelAt(t){/* B1 then B2, from landed gold grains */
-  var lv=0.10,b1=0,b2=0,n1=0,n2=0;GRAINS.forEach(function(g){if(!g.gold)return;if(g.beat==="B1"){n1++;if(t>=g.t1)b1++}else{n2++;if(t>=g.t1)b2++}});
+  var b1=0,b2=0,n1=0,n2=0;GRAINS.forEach(function(g){if(!g.gold)return;if(g.beat==="B1"){n1++;if(t>=g.t1)b1++}else{n2++;if(t>=g.t1)b2++}});
   if(n2&&b2)return LV.b2[0]+(LV.b2[1]-LV.b2[0])*b2/n2;return LV.b1[0]+(LV.b1[1]-LV.b1[0])*(n1?b1/n1:0)}
-/* precompute level steps for speed */
-var LVL_T=GRAINS.filter(function(g){return g.gold}).map(function(g){return g.t1}).sort(function(a,b){return a-b});
 var gutter=(function(){/* from the neck's left edge out and down, two discs outside the left side of the $, into the tray */
   var lm=[];for(var y=0;y<VB.h;y++){var c=null;for(var x=0;x<VB.w;x++)if(VB.m[y*VB.w+x]){c=VBc+x;break}lm.push(c)}
   var pts=[[VB_NECKC[0]-2,NECK-1]],last=VB_NECKC[0]-2,endC=B2.tray[0],endR=B2.tray[3]-1;
@@ -540,39 +614,39 @@ function polyAt(pts,u){var segs=[],tot=0;for(var i=1;i<pts.length;i++){var l=Mat
   var d=u*tot;for(var j=0;j<segs.length;j++){if(d<=segs[j]||j===segs.length-1){var f=segs[j]?Math.min(1,d/segs[j]):1;return [pts[j][0]+(pts[j+1][0]-pts[j][0])*f,pts[j][1]+(pts[j+1][1]-pts[j][1])*f]}d-=segs[j]}}
 /* coins in flight */
 DYN.push(function(t,put){COINS.forEach(function(cn){if(t<cn.t0||t>=cn.tb)return;var top=Math.floor(coinY(t-cn.t0,cn.y0));coinAt(put,74,top,GO,0)})});
-/* grains in flight + vessel level */
-var B1END=T.b3;
-DYN.push(function(t,put){if(t<T.b1||t>=B1END)return;
-  /* the level inside the vessel (B1, B2) */
+/* grains in flight + the vessel level (B1, B2): from the B1 wave's flip at each disc until the B3 wave's */
+DYN.push(function(t,put){if(t<T.b1||t>=T.b3+0.6)return;var gp=gated(put,t,W1,W3);
   var lv=levelAt(t),lr=vLevelRow(VB,lv);
-  if(t>=T.b1+(VBr+24)/300+0.05){for(var y=0;y<VB.h;y++)for(var x=0;x<VB.w;x++){var i=y*VB.w+x;if(VB.inn[i])put(VBc+x,VBr+y,y>=lr-1e-9?GO:OFF,0)}}
+  for(var y=0;y<VB.h;y++)for(var x=0;x<VB.w;x++){var i=y*VB.w+x;if(VB.inn[i])gp(VBc+x,VBr+y,y>=lr-1e-9?GO:OFF,0)}
   GRAINS.forEach(function(g){if(t<g.t0||t>=g.t1)return;var dt=t-g.t0;
-    if(g.gold){var r=Math.floor(g.r0+g.v0*dt+GRA/2*dt*dt);put(g.col,r,GO,1)}
-    else{var p=polyAt(g.path===B2.tray?gutter:g.path,Math.min(1,dt/g.dur)*(1-(1-dt/g.dur)*0.0));put(Math.round(p[0]),Math.round(p[1]),SL,1)}})});
+    if(g.gold){var r=Math.floor(g.r0+g.v0*dt+GRA/2*dt*dt);gp(g.col,r,GO,1)}
+    else{var p=polyAt(gutter,Math.min(1,dt/g.dur));gp(Math.round(p[0]),Math.round(p[1]),SL,1)}})});
 /* the tray fills with slate as the 31% lands */
-DYN.push(function(t,put){if(t<T.ops||t>=B1END)return;var n=GRAINS.filter(function(g){return !g.gold&&t>=g.t1}).length,cap=(B2.tray[1]-B2.tray[0]-1)*3,fill=Math.min(cap,Math.round(n*cap/Math.max(1,nSlate)*0.9));
-  var k=0;for(var r=B2.tray[3]-1;r>=B2.tray[3]-3&&k<fill;r--)for(var c=B2.tray[0]+1;c<B2.tray[1]&&k<fill;c++,k++)put(c,r,SL,0)});
+DYN.push(function(t,put){if(t<T.ops||t>=T.b3+0.6)return;var gp=gated(put,t,null,W3);var n=GRAINS.filter(function(g){return !g.gold&&t>=g.t1}).length,cap=(B2.tray[1]-B2.tray[0]-1)*3,fill=Math.min(cap,Math.round(n*cap/Math.max(1,nSlate)*0.9));
+  var k=0;for(var r=B2.tray[3]-1;r>=B2.tray[3]-3&&k<fill;r--)for(var c=B2.tray[0]+1;c<B2.tray[1]&&k<fill;c++,k++)gp(c,r,SL,0)});
 /* B3: nothing moves but the waves. B4: bars and the #1 block */
 var BARS=(function(){var fin=D.fin,base=MODEL_KEYS.map(function(){return 0});var s=D.fin.order.map(function(m){return 12+6*fin.won[m]});
   var seq=[s];var rng=12345;function rr(){rng=(rng*1103515245+12345)>>>0;return rng/4294967296}
   for(var k=0;k<3;k++){seq.push(s.map(function(v){return 14+Math.round(rr()*62)}))}
   var last=s.map(function(v){return 14+Math.round(rr()*58)}).sort(function(a,b){return b-a});last[0]=Math.max(last[0],last[1]+6);seq.push(last);return seq})();
-var BAR_T=[T.b4+0.06,9.25,9.5,9.75,T.freeze];
-DYN.push(function(t,put){if(t<BAR_T[0]||t>=T.b5)return;var k=0;for(var j=0;j<BAR_T.length;j++)if(t>=BAR_T[j])k=j;var L=BARS[k];
+var BAR_T=[T.b4+0.06,T.b4+0.25,T.b4+0.5,T.b4+0.75,T.freeze];
+DYN.push(function(t,put){if(t<BAR_T[0]||t>=T.b5)return;var gp=gated(put,t,W4,W5);var k=0;for(var j=0;j<BAR_T.length;j++)if(t>=BAR_T[j])k=j;var L=BARS[k];
   var lead=0;for(var q=1;q<4;q++)if(L[q]>L[lead])lead=q;if(t>=T.freeze)lead=0;
   /* grow/shrink from the previous lengths over 4 frames for a clatter, never after the freeze */
   var prev=k?BARS[k-1]:L.map(function(){return 0}),u=Math.min(1,(t-BAR_T[k])/(4/60));
   for(var b=0;b<4;b++){var len=Math.round(prev[b]+(L[b]-prev[b])*(t>=T.freeze?1:u)),r0=FZ.bars[b];
-    for(var r=r0;r<r0+4;r++)for(var c=FZ.barC0;c<FZ.barC0+len;c++)put(c,r,SL,0);
-    if(b===lead)for(var r2=r0;r2<r0+4;r2++)for(var c2=FZ.blkC0;c2<FZ.blkC0+4;c2++)put(c2,r2,GO,0)}
-  /* the frame traces 10.0 .. 10.2, then stays */
+    for(var r=r0;r<r0+4;r++)for(var c=FZ.barC0;c<FZ.barC0+len;c++)gp(c,r,SL,0);
+    if(b===lead)for(var r2=r0;r2<r0+4;r2++)for(var c2=FZ.blkC0;c2<FZ.blkC0+4;c2++)gp(c2,r2,GO,0)}
+  /* the frame traces from the freeze for 0.2 s, then stays */
   if(t>=T.freeze){var fr=FZ.frame,per=[];for(var c3=fr[0];c3<=fr[2];c3++)per.push([c3,fr[1]]);for(var r3=fr[1]+1;r3<=fr[3];r3++)per.push([fr[2],r3]);
     for(var c4=fr[2]-1;c4>=fr[0];c4--)per.push([c4,fr[3]]);for(var r4=fr[3]-1;r4>fr[1];r4--)per.push([fr[0],r4]);
-    var n=Math.floor(per.length*Math.min(1,(t-T.frameTrace[0])/(T.frameTrace[1]-T.frameTrace[0])));for(var p=0;p<n;p++)put(per[p][0],per[p][1],IV,0)}});
-/* B5/B6: the selector hops between up and down on quarter notes (the call is not made) */
+    var n=Math.floor(per.length*Math.min(1,(t-T.frameTrace[0])/(T.frameTrace[1]-T.frameTrace[0])));for(var p=0;p<n;p++)gp(per[p][0],per[p][1],IV,0)}});
+/* B5/B6: the selector hops between up and down on quarter notes (the call is not made): the big one until the ticket wave, the small one
+   from the ticket wave until B7's */
 function selIndex(t){return Math.floor((t-T.b5)/0.5+1e-9)%2}
-DYN.push(function(t,put){if(t<T.b5||t>=T.b7)return;var big=t<T.ticket,s=selIndex(t),bx=big?CALL.bigSel[s]:CALL.sel[s];
-  for(var c=bx[0];c<=bx[2];c++){put(c,bx[1],IV,1);put(c,bx[3],IV,1)}for(var r=bx[1];r<=bx[3];r++){put(bx[0],r,IV,1);put(bx[2],r,IV,1)}});
+DYN.push(function(t,put){if(t<T.b5||t>=T.b7+0.4)return;var s=selIndex(t);
+  [[CALL.bigSel[s],gated(put,t,W5,WT)],[CALL.sel[s],gated(put,t,WT,W7)]].forEach(function(q){var bx=q[0],p=q[1];
+    for(var c=bx[0];c<=bx[2];c++){p(c,bx[1],IV,1);p(c,bx[3],IV,1)}for(var r=bx[1];r<=bx[3];r++){p(bx[0],r,IV,1);p(bx[2],r,IV,1)}})});
 /* B5: the pour. The whole gold content lifts out as one arcing stream into the ticket; the vessel ends empty (no stop loss) */
 var POUR=(function(){var V=CALL.V,nIn=0;var lr=vLevelRow(V,CALL.level);for(var i=0;i<V.w*V.h;i++)if(V.inn[i]&&Math.floor(i/V.w)>=lr)nIn++;
   var ng=90,gs=[];var p0=[CALL.vc+V.neck[Math.floor(V.neck.length/2)],CALL.vr+V.top-1],p3=[CALL.box[2]-4,CALL.heap.rTop+3],p1=[p0[0]+16,R(30)],p2=[p3[0]+1,R(30)];
@@ -581,34 +655,31 @@ var POUR=(function(){var V=CALL.V,nIn=0;var lr=vLevelRow(V,CALL.level);for(var i
 function bez3(P,u){var a=(1-u)*(1-u)*(1-u),b=3*u*(1-u)*(1-u),c=3*u*u*(1-u),d=u*u*u;return [a*P[0][0]+b*P[1][0]+c*P[2][0]+d*P[3][0],a*P[0][1]+b*P[1][1]+c*P[2][1]+d*P[3][1]]}
 function pourFrac(t){var n=0;POUR.gs.forEach(function(g){if(t>=g.t0)n++});return n/POUR.n}
 function heapFrac(t){var n=0;POUR.gs.forEach(function(g){if(t>=g.t1)n++});return n/POUR.n}
-DYN.push(function(t,put){if(t<T.ticket||t>=T.b7)return;
+DYN.push(function(t,put){if(t<T.ticket||t>=T.b7+0.4)return;var gp=gated(put,t,WT,W7),ga=gated(put,t,null,W7);
   /* vessel content: level falls from CALL.level to 0 over the pour */
   var V=CALL.V,lv=CALL.level*(1-pourFrac(t)),lr=vLevelRow(V,lv);
-  if(t>=T.ticket+0.12)for(var y=0;y<V.h;y++)for(var x=0;x<V.w;x++){var i=y*V.w+x;if(V.inn[i])put(CALL.vc+x,CALL.vr+y,y>=lr-1e-9&&lv>0.001?GO:OFF,0)}
-  POUR.gs.forEach(function(g){if(t<g.t0||t>=g.t1)return;var u=(t-g.t0)/(g.t1-g.t0),p=bez3(POUR.p,u*u*(3-2*u)*0.3+u*0.7);var px=Math.round(p[0]+(g.j-.5)*1.2),py=Math.round(p[1]);put(px,py,GO,1);put(px,py+1,GO,1)});
-  heapCells(CALL.heap,heapFrac(t)).forEach(function(p){put(p[0],p[1],GO,0)})});
+  for(var y=0;y<V.h;y++)for(var x=0;x<V.w;x++){var i=y*V.w+x;if(V.inn[i])gp(CALL.vc+x,CALL.vr+y,y>=lr-1e-9&&lv>0.001?GO:OFF,0)}
+  POUR.gs.forEach(function(g){if(t<g.t0||t>=g.t1)return;var u=(t-g.t0)/(g.t1-g.t0),p=bez3(POUR.p,u*u*(3-2*u)*0.3+u*0.7);var px=Math.round(p[0]+(g.j-.5)*1.2),py=Math.round(p[1]);ga(px,py,GO,1);ga(px,py+1,GO,1)});
+  heapCells(CALL.heap,heapFrac(t)).forEach(function(p){gp(p[0],p[1],GO,0)})});
 /* B5: the ratchet, 10 cells flip gold one by one, accelerating (no numerals) */
 var RATCHET_T=[];for(var q=0;q<10;q++)RATCHET_T.push(T.ratchet[0]+(T.ratchet[1]-T.ratchet[0])*(1-Math.pow(1-(q+1)/10,1.7))*0.97);
-DYN.push(function(t,put){if(t<T.ratchet[0]||t>=T.b7)return;CALL.ratchet.forEach(function(rc,k){if(t>=RATCHET_T[k])for(var r=rc[1];r<=rc[3];r++)for(var c=rc[0];c<=rc[2];c++)put(c,r,GO,0)})});
-/* B7: two equal lanes, the same 45 frames */
+DYN.push(function(t,put){if(t<T.ratchet[0]||t>=T.b7+0.4)return;var gp=gated(put,t,WT,W7);CALL.ratchet.forEach(function(rc,k){if(t>=RATCHET_T[k])for(var r=rc[1];r<=rc[3];r++)for(var c=rc[0];c<=rc[2];c++)gp(c,r,GO,0)})});
+/* B7: two equal lanes, the same 45 frames; their objects appear behind the B7 wave and leave with the B8 wave */
 var LANE_N=Math.round((T.lanes[1]-T.lanes[0])*60);
-DYN.push(function(t,put){if(t<T.lanes[0]-0.0001||t>=T.b8)return;var u=Math.max(0,Math.min(1,(t-T.lanes[0])/(T.lanes[1]-T.lanes[0])));
+DYN.push(function(t,put){if(t<T.b7||t>=T.b8+0.4)return;var gp=gated(put,t,W7,W8);var u=Math.max(0,Math.min(1,(t-T.lanes[0])/(T.lanes[1]-T.lanes[0])));
   /* left: the heap streams up into the $EZ mark, which lights bottom-up */
   var hl=heapCells(LN.hl,1-u);
-  hl.forEach(function(p){put(p[0],p[1],GO,0)});
-  var lit=LN.ezBot+1-(LN.ezBot-LN.ezTop+1)*u;LN.ez.forEach(function(p){if(p[1]>=lit-1e-9)put(p[0],p[1],p[2],0)});
-  if(u>0&&u<1){var sc=Math.round((LN.hl.c0+LN.hl.c1)/2);for(var k=0;k<3;k++){var ph=((t*60+k*5)%15)/15,r=Math.round(LN.hl.rTop-1-(LN.hl.rTop-1-lit)*ph);put(sc+(k%2),r,GO,1)}}
+  hl.forEach(function(p){gp(p[0],p[1],GO,0)});
+  var lit=LN.ezBot+1-(LN.ezBot-LN.ezTop+1)*u;LN.ez.forEach(function(p){if(p[1]>=lit-1e-9)gp(p[0],p[1],p[2],0)});
+  if(u>0&&u<1){var sc=Math.round((LN.hl.c0+LN.hl.c1)/2);for(var k=0;k<3;k++){var ph=((t*60+k*5)%15)/15,r=Math.round(LN.hl.rTop-1-(LN.hl.rTop-1-lit)*ph);gp(sc+(k%2),r,GO,1)}}
   /* right: the same gold flips off top-down, leaving the empty $ vessel */
-  var V=LN.V,lr=vLevelRow(V,1-u);for(var y=0;y<V.h;y++)for(var x=0;x<V.w;x++){var i=y*V.w+x;if(V.inn[i]&&y>=lr-1e-9&&u<1)put(LN.vc+x,LN.vr+y,GO,0)}});
-/* B8: the countdown ticks once per film second; only changed digits flip */
+  var V=LN.V,lr=vLevelRow(V,1-u);for(var y=0;y<V.h;y++)for(var x=0;x<V.w;x++){var i=y*V.w+x;if(V.inn[i]&&y>=lr-1e-9&&u<1)gp(LN.vc+x,LN.vr+y,GO,0)}});
+/* B8: the countdown ticks once per film second; only changed digits flip. Each digit disc appears behind the B8 wave and leaves with
+   the B9 wave */
 function cdVal(t){var s=Math.max(0,D.secs-Math.floor(Math.max(0,t-T.b8)));return [Math.floor(s/86400),Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60]}
-var CD_ON=T.b8+0.0;
-var CD_OFF=T.b9+(CD.r0-14)/(72/((1434-1425)/60));
-DYN.push(function(t,put){if(t<CD_ON||t>=CD_OFF)return;var v=cdVal(t);
-  /* the radial rewrite reaches the digits: each block appears with the wave */
+DYN.push(function(t,put){if(t<T.b8)return;var gp=gated(put,t,W8,W9),v=cdVal(t);
   v.forEach(function(n,b){var s=(n<10?"0":"")+Math.min(n,99);for(var d=0;d<2;d++){var g=G5[s[d]],c0=CD.blocks[b]+d*6;
-    var dl=T.b8+Math.hypot(c0+2-48,CD.r0+3-R(42))/330;if(t<dl)continue;
-    for(var y=0;y<7;y++)for(var x=0;x<5;x++)if(g.r[y][x]==="1")put(c0+x,CD.r0+y,IV,0)}})});
+    for(var y=0;y<7;y++)for(var x=0;x<5;x++)if(g.r[y][x]==="1")gp(c0+x,CD.r0+y,IV,0)}})});
 
 /* =====================================================================================================
    7. THE EVENT TABLE: every flip of every disc, 240 ticks a second
@@ -625,7 +696,7 @@ var tptr=new Int32Array(NC),B0F=LAYS.b0.f;
 function stateAt(t){for(var i=0;i<NC;i++){var o=TLo[i],p=tptr[i],end=TLo[i+1]-o;while(p<end&&TLe[o+p]<=t)p++;tptr[i]=p;
     var v=p?TR[TLj[o+p-1]].lay.f[i]:B0F[i];cur[i]=v;base[i]=v;mode[i]=0}
   for(var d=0;d<DYN.length;d++)DYN[d](t,put)}
-function put(c,r,face,md){if(c<0||c>=W||r<-RO||r>=H-RO)return;var i=ix(c,r);if(md===1&&base[i]!==OFF)return;cur[i]=face;mode[i]=md===1?2:1}
+function put(c,r,face,md){if(c<0||c>=W||r<-RO||r>=H-RO)return;var i=ix(c,r);if(md===1&&base[i]!==OFF)return;cur[i]=face;mode[i]=md>=1?2:1}
 var INIT=new Uint8Array(NC);
 (function build(){var t0=performance.now();stateAt(0);INIT.set(cur);prev.set(cur);pdyn.set(mode);
   for(var k=1;k<=KN;k++){stateAt(k/TICK);var fr=Math.min(NFULL-1,Math.floor(k/4));
@@ -645,14 +716,20 @@ function discAt(i,t){var ev=EV[i];if(!ev)return [INIT[i],INIT[i],1];var k=t*TICK
 var EVS={flips:Array.from(FLIPS),flipCol:Array.from(FLIPSC).map(function(s,f){return FLIPS[f]?s/FLIPS[f]:48}),dynFlips:Array.from(FLIPSD),
   coins:COINS.map(function(cn){var steps=[],y=Math.floor(coinY(0,cn.y0));for(var t=cn.t0;t<cn.tb;t+=1/240){var yy=Math.floor(coinY(t-cn.t0,cn.y0));if(yy!==y){steps.push([t,yy]);y=yy}}
     return {t0:cn.t0,tb:cn.tb,beat:cn.beat,pay:cn.pay,steps:steps}}),
-  drip:(function(){var a=[];for(var f=1;f<180;f++)if(dripTop(f)!==dripTop(f-1))a.push(f/60);for(var f2=1426;f2<1440;f2++)if(dripTop(f2-1440)!==dripTop(f2-1441)&&dripTop(f2-1440)+6>=14)a.push(f2/60);return a})(),
+  /* B0's coin stream: per coin its row steps (while any of it shows below the strip), its shred window and its grains, as the picture
+     shows them (the coin that leaves at -0.5 s from t = 0; the seam coin behind the B9 wave) */
+  b0coins:C2SPAWN.concat([C2SEAM]).map(function(ts){var seam=ts===C2SEAM,ok=function(t){return seam?(t>=T.b9+0.06&&t<DUR):(t>=0&&t<T.b1)},steps=[],prev=c2Top(0);
+    for(var k=1;k<=Math.ceil(C2SHRED[1]*240)+2;k++){var dt=k/240,tp=c2Top(dt);if(tp!==prev){prev=tp;if(tp>=1&&tp<C2.burst&&ok(ts+dt))steps.push([ts+dt,tp])}}
+    var sh=[ts+C2SHRED[0],ts+C2SHRED[1]];
+    return {ts:ts,steps:steps,shred:ok(sh[0])?sh:null,grains:C2GR.map(function(g){return ts+g.dt}).filter(ok)}}),
+  ripple:T.ripple.slice(),cues:CUES.map(function(q){return q.t0}),
   grains:GRAINS.map(function(g){return [g.t1,g.gold?1:0,g.beat==="B1"?1:2]}),
   pour:POUR.gs.map(function(g){return [g.t0,g.t1]}),ratchet:RATCHET_T.slice(),
   race:raceT.slice(),raceBlocks:D.states.map(function(s){return MODEL_KEYS.reduce(function(a,m){return a+(s.has[m]?s.won[m]:0)},0)}),
   bars:BAR_T.slice(1,4),sel:(function(){var a=[];for(var t=T.b5+0.5;t<T.b7-1e-6;t+=0.5)a.push(t);return a})(),
   led:(function(){var a=[];for(var t=T.b8+1;t<T.b9-1e-6;t+=1)a.push(t);return a})(),
   hits:{slam:0,cascade1:T.b1,slam69:T.b2,pot:T.pot,ops:T.ops,cascade3:T.b3,settle:T.settle,cascade4:T.b4,words:T.words.slice(),freeze:T.freeze,hit:T.b5,ticket:T.ticket,
-    pour:T.pour[0],clack:T.b6,lanes:T.b7,radial:T.b8,dis1:T.dis1[0],dis2:T.dis2[0],seam:T.b9},
+    pour:T.pour[0],clack:T.b6,lanes:T.b7,capClear:T.capClear,radial:T.b8,dis1:T.dis1[0],dis2:T.dis2[0],seam:T.b9},
   T:T};
 window.R2B_EVENTS=EVS;
 
@@ -714,6 +791,9 @@ var YMIN=150,YMAX=UK?824:1080;
 function glint(t,u,v){var g=0;
   if(t<1.25){var ph=t/1.25,d=(u+v)/192-ph*1.6+0.3;g=Math.max(g,Math.exp(-d*d*90)*.22*(1-ph*0.3))}
   if(t>=T.glintF[0]&&t<T.glintF[1]&&v>=FZ.frame[1]-0.5&&v<=FZ.frame[3]+1.5){var ph2=(t-T.glintF[0])/(T.glintF[1]-T.glintF[0]),d2=(u*1.0+(v-60)*0.6)/110-ph2*1.4+0.2;g=Math.max(g,Math.exp(-d2*d2*120)*.38)}
+  /* B6: one glint across the gold heap in the ticket (the pot sits on the call) */
+  var hp=CALL.heap;if(t>=T.glintH[0]&&t<T.glintH[1]&&u>=hp.c0-1&&u<=hp.c1+2&&v>=hp.rTop-1&&v<=hp.rBot+1.5){var ph3=(t-T.glintH[0])/(T.glintH[1]-T.glintH[0]),w3=hp.c1-hp.c0+1,
+    d3=((u-hp.c0)+(v-hp.rTop)*0.7)/(w3+(hp.rBot-hp.rTop)*0.7)-ph3*1.5+0.25;g=Math.max(g,Math.exp(-d3*d3*40)*.42)}
   return g}
 var IMG={};
 function drawBoard(t,P,ctx,sc){var pr=mkProj(P),c0=Math.floor(P.tu-60),c1=Math.ceil(P.tu+60),r0=Math.floor(P.tv-60),r1=Math.ceil(P.tv+60);
@@ -754,7 +834,8 @@ function drawChip(t,ctx,sc){var a=chipAlpha(t);if(a<=0)return;var img=IMG.chip,k
   ctx.save();ctx.globalAlpha=a;ctx.beginPath();ctx.rect(0,y0,1080*sc,y1-y0);ctx.clip();
   ctx.imageSmoothingQuality="high";ctx.drawImage(img,ox0,oy0,2000*k,1500*k);
   /* the soft gold glint 21.0..22.5 */
-  if(t>=T.glintC[0]&&t<T.glintC[1]){var ph=(t-T.glintC[0])/(T.glintC[1]-T.glintC[0]),gx=(-0.2+ph*1.4)*1080*sc;var gr=ctx.createLinearGradient(gx-160*sc,y0,gx+160*sc,y1);
+  /* FIX R1: a vertical band that starts and ends fully off the frame (the slanted band was still on the lower pads when it ended) */
+  if(t>=T.glintC[0]&&t<T.glintC[1]){var ph=(t-T.glintC[0])/(T.glintC[1]-T.glintC[0]),gx=(-160+ph*(1080+320))*sc;var gr=ctx.createLinearGradient(gx-160*sc,0,gx+160*sc,0);
     gr.addColorStop(0,"rgba(255,240,200,0)");gr.addColorStop(.5,"rgba(255,240,200,.16)");gr.addColorStop(1,"rgba(255,240,200,0)");ctx.globalCompositeOperation="soft-light";ctx.fillStyle=gr;ctx.fillRect(0,y0,1080*sc,y1-y0);
     ctx.globalCompositeOperation="lighter";ctx.globalAlpha=a*.35;ctx.fillRect(0,y0,1080*sc,y1-y0);ctx.globalCompositeOperation="source-over";ctx.globalAlpha=a}
   /* soft edges on the band */
@@ -768,8 +849,9 @@ function drawChip(t,ctx,sc){var a=chipAlpha(t);if(a<=0)return;var img=IMG.chip,k
     for(var d=0;d<2;d++){var f=F[s[d]];for(var rr=0;rr<7;rr++)for(var cc=0;cc<5;cc++){var on=f[rr*5+cc]==="1",x=(cb+d*6+cc+.5)*pit-cs/2,y=(CD.r0+rr+.5)*pit-cs/2;
       ctx.save();if(on){ctx.shadowColor="#ff2a1f";ctx.shadowBlur=4*k*1.6}ctx.fillStyle=on?"#ff3b2f":"#26282d";ctx.strokeStyle=on?"#ff9a8f":"#34363c";ctx.lineWidth=(on?.8:1)*k;
       ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,cs,cs,2*k);else ctx.rect(x,y,cs,cs);ctx.fill();ctx.restore();ctx.lineWidth=(on?.8:1)*k;ctx.strokeStyle=on?"#ff9a8f":"#34363c";ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,cs,cs,2*k);else ctx.rect(x,y,cs,cs);ctx.stroke()}}
-    ctx.font="800 "+(25*k)+"px GM";ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.lineJoin="round";ctx.lineWidth=4*k;ctx.strokeStyle="#0b0b0d";ctx.fillStyle="#f2efe6";
-    if(ctx.letterSpacing!==undefined)ctx.letterSpacing=(25*k*.32)+"px";var lx=(cb+5.5)*pit,ly=(CD.r0+.5)*pit-cs/2+(180-21)*k;ctx.strokeText(C.units[b],lx,ly);ctx.fillText(C.units[b],lx,ly);if(ctx.letterSpacing!==undefined)ctx.letterSpacing="0px"});
+    /* FIX R1: the unit labels at 28 px (1080 scale), so DAYS HRS MIN SEC still read at feed size */
+    var LF=28*sc;ctx.font="800 "+LF+"px GM";ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.lineJoin="round";ctx.lineWidth=5*sc;ctx.strokeStyle="#0b0b0d";ctx.fillStyle="#f2efe6";
+    if(ctx.letterSpacing!==undefined)ctx.letterSpacing=(LF*.12)+"px";var lx=(cb+5.5)*pit,ly=(CD.r0+7)*pit+LF*1.05;ctx.strokeText(C.units[b],lx,ly);ctx.fillText(C.units[b],lx,ly);if(ctx.letterSpacing!==undefined)ctx.letterSpacing="0px"});
   [CD.c0+12,CD.c0+47].forEach(function(c){[2,4].forEach(function(rr){ctx.save();ctx.shadowColor="#ff2a1f";ctx.shadowBlur=4*k;ctx.fillStyle="#ff3b2f";ctx.beginPath();ctx.arc((c+.5)*pit,(CD.r0+rr+.5)*pit,5*k,0,7);ctx.fill();ctx.restore()})});
   ctx.restore()}
 function nsAt(f){if(NSQ)return NSQ;var t=f/60;
@@ -801,7 +883,9 @@ E.below=h("below");   /* both variants: a solid strip over the bottom 96 px (X's
 if(UK){E.band=h("band","<p>"+esc(C.fca)+"</p>")}
 E.card=h("card",C.card.split(/(?<=\.) /).map(function(s){return '<span style="white-space:nowrap">'+esc(s)+"</span>"}).join(" "));
 E.card.style.top=(UK?690:856)+"px";E.card.style.display="none";
-function stampAt(t){if(t<T.b1||t>=T.b9)return C.st.fees;if(t>=T.b3&&t<T.b4){var k=-1;raceT.forEach(function(rt,j){if(t>=rt)k=j});return k>=0?C.st.race[k]:""}
+/* FIX R1: FEES FROM LAUNCH stays up through B1 and B2 (the fee story); each race stamp switches when its board wave has landed */
+var STAMP_LAG=0.12;
+function stampAt(t){if(t<T.b3||t>=T.b9)return C.st.fees;if(t>=T.b3&&t<T.b4){var k=-1;raceT.forEach(function(rt,j){if(t>=rt+STAMP_LAG)k=j});return k>=0?C.st.race[k]:""}
   if(t>=T.b5&&t<T.b7)return C.st.hl;if(t>=T.b8&&t<T.b9)return C.st.end;return ""}
 var STAMP_FS=28,STAMP_MIN=22,STAMP_GAP=16;
 function fitStamp(txt){E.stamp.textContent=txt;E.stamp.style.display=txt?"":"none";if(!txt)return;var rr=document.getElementById("rail").getBoundingClientRect().right;

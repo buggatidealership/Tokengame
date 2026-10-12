@@ -925,6 +925,8 @@ function EZ5_BET(){function md(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)
   var nv=[].concat(typeof UPCOMING!=="undefined"?UPCOMING:[],typeof PENDING!=="undefined"?PENDING:[]).filter(function(u){return u.ticker==="NVDA"})[0],c=nv&&md(nv.called);
   if(!c)return null;var dt=new Date(Date.UTC(c[0],c[1],c[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);
   return nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate())}
+/* the bet day is set (SIM/CONFIG.betDate); without it the day comes from the rule above and the copy says "Planned" */
+function EZ5_SET(){return /\d+\/\d+\/\d+/.test(String(SIM.betDate||CONFIG.betDate||""))}
 function EZ5_DAY(t){return new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"}).replace(" ","\u00a0")}
 /* the freeze: SIM.leadHours before the bet (the leaderboard freezes, the AI in first place makes the call) */
 function EZ5_FREEZE(){var T=EZ5_BET();return T&&SIM.leadHours!=null?EZ5_DAY(T-SIM.leadHours*3600e3):""}
@@ -965,7 +967,7 @@ if(X5)(function(){
     root.style.colorScheme=t;
     var m=$('meta[name="theme-color"]');if(m)m.setAttribute("content",getComputedStyle(root).getPropertyValue("--field").trim()||(t==="dark"?"#1d1c1a":"#f4efe6"));
     m=$('meta[name="color-scheme"]');if(m)m.setAttribute("content",t);
-    var b=$(".x5theme");if(b){var l=$(".x5t-l",b);if(l)l.textContent=w;b.title="Switch to "+w.toLowerCase()+" mode";b.removeAttribute("aria-pressed")}}
+    var b=$(".x5theme");if(b){var l=$(".x5t-l",b);if(l)l.textContent=w;b.removeAttribute("title");b.removeAttribute("aria-pressed")}}   // no title: it repeated the name
   function setTheme(t,keep){mine=t;root.setAttribute("data-theme",t);if(keep){try{localStorage.setItem("ez-theme",t)}catch(e){}}sync();
     document.dispatchEvent(new CustomEvent("x5theme",{detail:{theme:t}}))}
   window.X5theme=function(t){if(t==="system"){try{localStorage.removeItem("ez-theme")}catch(e){}setTheme(sys(),false)}else if(t==="light"||t==="dark")setTheme(t,true);return root.getAttribute("data-theme")};
@@ -993,7 +995,9 @@ if(X5)(function(){
   var bflip=$("#bflip"),stand=$("#stand"),gpu=$("#gpu");
   var chip=el("div","x5chip");
   chip.appendChild(el("p","x5lab",'<span class="eb">Countdown</span><b>Until the NVIDIA bet</b>'));
-  if(gpu){chip.appendChild(gpu);var gt=$(".gpu-t",gpu);if(gt&&betDay)gt.innerHTML='<b>'+betDay+' close,</b> right before NVIDIA reports.'}
+  /* NVIDIA has not announced its date: until SIM.betDate is set the line says the day is planned (the films say
+     "PLANNED · NOV 18"), in words that stay on one line from 360 px */
+  if(gpu){chip.appendChild(gpu);var gt=$(".gpu-t",gpu);if(gt&&betDay)gt.innerHTML=EZ5_SET()?'<b>'+betDay+' close,</b> right before NVIDIA reports.':'Planned: <b>'+betDay+' close,</b> then NVIDIA reports.'}
   hero.insertBefore(chip,bflip||null);
   if(bflip)bflip.remove();
 
@@ -1086,12 +1090,14 @@ if(X5)(function(){
 
   /* ===== the $ pot: when the copy names the pot, it shows it as money (owner, 2026-10-12) ===== */
   var POT=[["fills this pool.","fills the $\u00a0pot."],["the whole pool on","the whole $\u00a0pot on"],["the pool gets rekt.","the $\u00a0pot gets rekt."],["<small>In the pool</small>","<small>In the $\u00a0pot</small>"],
-    ["The pool address appears","The $\u00a0pot's address appears"],["The pot can be wiped out.","The $\u00a0pot can be wiped out."],["the pot can be wiped out.","the $\u00a0pot can be wiped out."]];
+    ["The pool address appears","The $\u00a0pot's address appears"],["The pot can be wiped out.","The $\u00a0pot can be wiped out."],["the pot can be wiped out.","the $\u00a0pot can be wiped out."],
+    ["NVIDIA earnings · ","NVIDIA earnings\u00a0·\u00a0"]];   // "Next bet": "· 10x" never sits alone on a line
   function pot$(h){POT.forEach(function(p){h=h.split(p[0]).join(p[1])});return h}
   var vb=vBuybackX2;vBuybackX2=function(){return pot$(vb.apply(this,arguments))};
   var cH=$("#calcH");if(cH&&cH.firstChild&&cH.firstChild.nodeType===3)cH.firstChild.textContent=cH.firstChild.textContent.replace("the bag","the $\u00a0pot");
   var gL=$("#gLbl");if(gL&&gL.textContent==="The pot")gL.textContent="The $\u00a0pot";
   $$(".mx-lose").forEach(function(p){p.innerHTML=pot$(p.innerHTML)});
+  $$(".mx-k").forEach(function(p){p.textContent=p.textContent.replace("buys back","buys\u00a0back")});   // "back" never alone on a line
   /* opened straight on the Buyback tab, the view already holds the live calculator: put it back home before the view
      is re-written (else a dead copy stays behind), then wire the view again and move the calculator in */
   if(curSec==="buyback"&&!view.hidden){calcHome();view.innerHTML=pot$(view.innerHTML);wirePool(view);calcAway(view)}

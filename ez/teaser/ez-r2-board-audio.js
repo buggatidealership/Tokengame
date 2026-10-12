@@ -6,15 +6,16 @@
    selector ticks, the pour, the ratchet, the two lanes, LED seconds, the riser into the seam).
    Rules (spec-board.md section 12): every hit lands one frame after its picture event; BUY and SELL make the same sound;
    no slot bells, ka-ching, jackpot arpeggios, cheers, fanfare or sting; no sub drops, so a 300 Hz high-pass loses 6 LU or
-   less (phone speakers); the bed ducks 4 dB under the four big hits; near-silence 11.6 to 12.0; tape-stop into silence at 10.0.
-   Loop: two identical cycles are rendered (every event at t and t + 24 s, the seed reset per cycle) plus a tail; only the
-   second cycle is kept, so 23.999 s runs straight into 0.000 s. Loudness (-14 LUFS, -1 dBTP) is set in r2-board-render.sh.
+   less (phone speakers); the bed ducks 4 dB under the four big hits; near-silence T.quiet (13.6 to 14.0); tape-stop into silence at T.freeze (12.0).
+   Loop: two identical cycles are rendered (every event at t and t + DUR, the seed reset per cycle) plus a tail; only the
+   second cycle is kept, so the last sample runs straight into 0.000 s. FIX R1: DUR comes from the page's T table (26.0 s, 13 bars);
+   B0's 2x coin stream has its own soft tick run and shred spray; the drip is gone. Loudness (-14 LUFS, -1 dBTP) is set in r2-board-render.sh.
    opts.part: "all" (default), "fx" (clicks and event sounds only), "bed" (music only), "laneL", "laneR" (the two lane sounds). */
 (function(){
 "use strict";
 window.__r2bAudio=function(opts){
   opts=opts||{};var PART=opts.part||"all";
-  var E=window.R2B_EVENTS,T=E.T,SR=48000,DUR=24,FPS=60,CYC=2,TAIL=.6,PRE=.5,NS=Math.round(SR*(PRE+CYC*DUR+TAIL)),F1=1/FPS;
+  var E=window.R2B_EVENTS,T=E.T,SR=48000,DUR=T.end,FPS=60,CYC=2,TAIL=.6,PRE=.5,NS=Math.round(SR*(PRE+CYC*DUR+TAIL)),F1=1/FPS;
   var MIX={click:.085,patter:.05,bass:.2,clap:.16,pad:.018,stab:.2,fx:1,lim:-6,comp:-18};
   if(window.R2B_MIX_TEST)for(var k0 in window.R2B_MIX_TEST)MIX[k0]=window.R2B_MIX_TEST[k0];
   var seed=1;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
@@ -68,10 +69,14 @@ window.__r2bAudio=function(opts){
       add(CLK[(s*7)%24],OFF+t+F1+.002,MIX.patter*acc*bedLevel(t),((s%4)-1.5)*.25)}
     /* B8: patter hats only (the bed thins to a pad) */
     for(var s2=0;s2<DUR*8;s2++){var t2=s2/8;if(t2<T.b8||t2>=T.b9)continue;add(CLK[(s2*5)%24],OFF+t2+F1+.002,MIX.patter*(s2%2?.6:1.1),((s2%4)-1.5)*.3)}
-    /* 3. the drip: one soft tick per row */
-    E.drip.forEach(function(t){add(tick(3200,.006,.3),OFF+hit(t),.09,.35)});
+    /* 3. B0's coin stream: a soft descending tick on every other row step, a clink when the coin hits the floor, sand for its spray */
+    var TK=[];for(var q=0;q<24;q++)TK.push(tick(3400*Math.pow(2,-q/24),.005,.35));
+    E.b0coins.forEach(function(cn){cn.steps.forEach(function(st,k){if(k%2===0)add(TK[Math.min(23,Math.max(0,st[1]-12))],OFF+hit(st[0]),.045,.45)});
+      if(cn.shred)add(CLINK,OFF+hit(cn.shred[0]),.1,.45);
+      cn.grains.forEach(function(t,k){add(GG[k%8],OFF+hit(t),.035,.3+(k%5)*.08)})});
     /* 4. coins: the gate tk (same for BUY and SELL), a descending click run (a semitone per row), the clink at the neck */
-    E.coins.forEach(function(cn){var vis=cn.beat==="B1";add(GATE,OFF+hit(cn.t0),vis?.32:.12,.25);
+    var CUE=E.cues||[];
+    E.coins.forEach(function(cn){var vis=cn.beat==="B1"||CUE.some(function(c){return Math.abs(c-cn.t0)<1e-6});add(GATE,OFF+hit(cn.t0),vis?.32:.12,.25);
       cn.steps.forEach(function(st,k){add(tick(2400*Math.pow(2,-k/12),.007,.5),OFF+hit(st[0]),vis?.16:.07,.25)});
       add(CLINK,OFF+hit(cn.tb),vis?.28:.16,.3)});
     /* 5. grains: gold rises with the level, slate is drier and lower */
@@ -100,7 +105,7 @@ window.__r2bAudio=function(opts){
   function fxEnd(OFF){
     /* 10. the chip: one LED tick (2 kHz) on each second */
     E.led.forEach(function(t){add(tick(2000,.01,.2),OFF+hit(t),.13,.2)});
-    /* 11. the riser into the seam: click density swelling 23.25 .. 24.0 */
+    /* 11. the riser into the seam: click density swelling from T.b9 - 0.5 to DUR */
     for(var q=0;q<60;q++){var u=q/60,t3=T.b9-.5+.75*Math.pow(u,.6);add(CLK[q%24],OFF+t3,MIX.click*.6*(.3+u),(rnd()-.5)*1.2)}
   }
   /* bed level by time (0..1): full, half, off */
@@ -125,7 +130,9 @@ window.__r2bAudio=function(opts){
   var DOBED=PART==="all"||PART==="bed",DOFX=PART==="all"||PART==="fx",DOCLK=PART!=="bed";
   if(DOCLK){var cs=ctx.createBufferSource();cs.buffer=clickBuf;cs.connect(master);cs.start(0,LAT)}
   var NT={D2:73.42,F2:87.31,G2:98,A2:110,Bb2:116.54,C3:130.81,D3:146.83,F3:174.61,A3:220,Bb3:233.08,C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,A4:440,Bb4:466.16,C5:523.25,D5:587.33,E5:659.26,F5:698.46,A5:880,D6:1174.66};
-  var CH=[["D2","D3","A2","D3"],["D2","D3","F2","D3"],["Bb2","Bb2","F2","Bb2"],["C3","C3","G2","C3"],["D2","D3","A2","D3"],null,["D2","D3","A2","D3"],["Bb2","Bb2","F2","Bb2"],["C3","C3","G2","C3"],["D2","D3","A2","D3"],null,null];
+  /* one chord per 2 s bar (13 bars for 26 s). FIX R1 added bar 3 (6..8 s, under the 69% slam: D minor) for the fee story */
+  var CH=[["D2","D3","A2","D3"],["D2","D3","F2","D3"],["Bb2","Bb2","F2","Bb2"],["D2","D3","A2","D3"],["C3","C3","G2","C3"],["D2","D3","A2","D3"],null,["D2","D3","A2","D3"],["Bb2","Bb2","F2","Bb2"],["C3","C3","G2","C3"],["D2","D3","A2","D3"],null,null];
+  if(CH.length*2<DUR)throw new Error("the bass has fewer bars than the film");
   function pluck(t,f,g){var o=ctx.createOscillator(),o2=ctx.createOscillator(),lp=ctx.createBiquadFilter(),ga=ctx.createGain(),g2=ctx.createGain();
     o.type="sawtooth";o2.type="square";o.frequency.value=f;o2.frequency.value=f*2;g2.gain.value=.55;
     lp.type="lowpass";lp.Q.value=5;lp.frequency.setValueAtTime(2800,t);lp.frequency.exponentialRampToValueAtTime(520,t+.13);
@@ -160,11 +167,11 @@ window.__r2bAudio=function(opts){
       bedG.gain.setValueAtTime(.63,OFF+F1);bedG.gain.linearRampToValueAtTime(1,OFF+.18);
       bedG.gain.setValueAtTime(1,OFF+T.lockRead[0]);bedG.gain.linearRampToValueAtTime(.45,OFF+T.lockRead[0]+.08);bedG.gain.setValueAtTime(.45,OFF+T.lockRead[1]);bedG.gain.linearRampToValueAtTime(1,OFF+T.lockRead[1]+.1);
       bedG.gain.setValueAtTime(1,OFF+T.b2+F1-.001);bedG.gain.setValueAtTime(.63,OFF+T.b2+F1);bedG.gain.linearRampToValueAtTime(1,OFF+T.b2+.2);
-      /* the tape-stop into silence at 10.0 (150 ms): the bed's filter falls and the bed stops; a pad only after that */
+      /* the tape-stop into silence at T.freeze (150 ms): the bed's filter falls and the bed stops; a pad only after that */
       bedF.frequency.setValueAtTime(16000,OFF+T.freeze-.15);bedF.frequency.exponentialRampToValueAtTime(180,OFF+T.freeze);bedF.frequency.setValueAtTime(1800,OFF+T.freeze+.01);
       bedG.gain.setValueAtTime(1,OFF+T.freeze-.15);bedG.gain.linearRampToValueAtTime(.0001,OFF+T.freeze+F1*.5);
       bedG.gain.setValueAtTime(.0001,OFF+T.freeze+.15);bedG.gain.linearRampToValueAtTime(.5,OFF+T.freeze+.6);
-      /* near-silence 11.6 .. 12.0 (bed -40 dB) */
+      /* near-silence T.quiet (bed -40 dB) */
       bedG.gain.setValueAtTime(.5,OFF+T.quiet[0]-.15);bedG.gain.linearRampToValueAtTime(.01,OFF+T.quiet[0]);
       bedF.frequency.setValueAtTime(1800,OFF+T.b5);bedF.frequency.setValueAtTime(16000,OFF+T.b5+F1);
       bedG.gain.setValueAtTime(.01,OFF+T.b5+F1-.001);bedG.gain.setValueAtTime(.63,OFF+T.b5+F1);bedG.gain.linearRampToValueAtTime(1,OFF+T.b5+.25);
@@ -179,27 +186,27 @@ window.__r2bAudio=function(opts){
       for(var b=0;b<DUR*2;b++){var tb=b/2;if(b%2===0)continue;if(bedLevel(tb)<.5||(tb>=T.lockRead[0]&&tb<T.lockRead[1]))continue;clap(OFF+tb+F1,MIX.clap)}
       /* pads: the freeze (Dm add9, dark and still) and the chip (Dm add9 to Bb add9) */
       pad(OFF+T.freeze+.15,OFF+T.b5+.05,["D4","F4","A4","E5"],MIX.pad,1300);
-      pad(OFF+T.b8,OFF+21.8,["D4","F4","A4","E5"],MIX.pad*1.6,2200);pad(OFF+21.3,OFF+DUR+.05,["D4","F4","Bb4","C5"],MIX.pad*1.6,2200);
+      pad(OFF+T.b8,OFF+T.b8+2.8,["D4","F4","A4","E5"],MIX.pad*1.6,2200);pad(OFF+T.b8+2.3,OFF+DUR+.05,["D4","F4","Bb4","C5"],MIX.pad*1.6,2200);
     }
     if(DOFX){
       /* f0: the board slam: an 80 ms click burst, a D pluck and a clap on the downbeat */
       burst(OFF+F1,.35,.08,2400);stab(OFF+F1,["D4","A4","D5"],MIX.stab*.7,.35);clap(OFF+F1,MIX.clap*1.2,hitBus);
       /* the rewrite cascades come from the flips */
-      /* 5.0: the 69% slam: click burst, clap, D minor stab, mid-forward */
+      /* T.b2: the 69% slam: click burst, clap, D minor stab, mid-forward */
       burst(OFF+T.b2+F1,.3,.08,2600);clap(OFF+T.b2+F1,MIX.clap*1.2,hitBus);stab(OFF+T.b2+F1,["D4","F4","A4","D5"],MIX.stab,.5);
-      /* 7.75: the settle stab */
+      /* T.settle: the settle stab */
       stab(OFF+T.settle+F1,["F4","A4","D5"],MIX.stab*.55,.3);
-      /* 9.25 .. 10.0: a filtered riser under the clatter */
+      /* T.open: a filtered riser under the clatter */
       riser(OFF+T.open[0],OFF+T.freeze,700,5200,.12);
-      /* 10.0: one crisp clack for the frame */
+      /* T.freeze: one crisp clack for the frame */
       burst(OFF+T.freeze+F1,.42,.05,2900);
-      /* 12.0: THE HIT. Dm add9 voiced 294 to 1175 Hz, full-board click cascade, a clap. No sub boom. */
+      /* T.b5: THE HIT. Dm add9 voiced 294 to 1175 Hz, full-board click cascade, a clap. No sub boom. */
       stab(OFF+T.b5+F1,["D4","A4","D5","E5","F5","A5","D6"],MIX.stab*1.5,1.2);burst(OFF+T.b5+F1,.45,.12,2300);clap(OFF+T.b5+F1,MIX.clap*1.4,hitBus);
-      /* 12.75: the ticket rewrite is in the flips. 14.0: one synchronous clack and a clean stab */
+      /* T.ticket: the ticket rewrite is in the flips. T.b6: one synchronous clack and a clean stab */
       burst(OFF+T.b6+F1,.5,.06,2700);stab(OFF+T.b6+F1,["D4","A4","D5","F5"],MIX.stab*.9,.45);
-      /* 19.75: a soft power-on swell under the dissolve (no hum below 300 Hz) */
+      /* T.dis1: a soft power-on swell under the dissolve (no hum below 300 Hz) */
       riser(OFF+T.dis1[0],OFF+T.dis1[1],500,1900,.05);
-      /* 23.25 .. 24.0: the riser into the seam */
+      /* T.b9 - 0.5 .. DUR: the riser into the seam */
       riser(OFF+T.b9-.5,OFF+DUR,900,4200,.07)}
   }
   for(var c3=0;c3<CYC;c3++)cycleBed(PRE+c3*DUR-LAT);   /* the kept cycle is scheduled LAT early: the compressors' look-ahead puts it back on time */

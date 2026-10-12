@@ -1,9 +1,10 @@
 /* EZ films round 2, "The Object": the sound (Web Audio, synthesised offline, 48 kHz stereo, 32-bit float WAV, base64 for render.js).
-   120 BPM, 24 s = 12 bars, D major. Felt, glass and coins; one 16th-note pulse drives the fee set piece, the card and the stack; the
+   120 BPM, 26 s = 13 bars (fix r1: was 24 s), D major. Felt, glass and coins; one 16th-note pulse drives the fee set piece, the card and the stack; the
    freeze low-passes and stops it; near-silence; ONE big chord on the pour; two equal outcomes; LED clicks and an end tone into the loop.
    - Every event comes from window.R2_PIC (the page's own timing table and picture events); every hit lands one frame after its picture
      (hit()), with the compressor and limiter look-ahead removed (chainLatency, as ez-film30-audio.js).
-   - Loop seam: two identical cycles are scheduled and only the second is kept, so 23.999 s runs into 0.000 s with the tails carried.
+   - Loop seam: two identical cycles are scheduled and only the second is kept, so the last sample runs into 0.000 s with the tails carried.
+   - fix r1: every cue after the hit is placed from the timing table (T.b6, T.b7, T.b8), not from fixed seconds.
    - Phone speakers: every voice has its body in 300 Hz..6 kHz; the pulse bass (73..147 Hz) carries strong 2nd..5th harmonics; no sub.
      A 300 Hz high-pass must lose 6 LU or less (checked by r2-object-render.sh).
    - Never: bells as reward, "ka-ching", jackpot arpeggios, crowd sound, a fanfare on the right call or a sting on the wrong one.
@@ -13,7 +14,7 @@
 window.renderAudio=function(o){return window.__r2objAudio(o)};
 window.__r2objAudio=function(opts){
   var STEM=opts&&opts.stem;
-  var P=window.R2_PIC,T=P.T,FPS=P.FPS,SR=48000,dur=24,CYC=2,TAIL=0.5;
+  var P=window.R2_PIC,T=P.T,FPS=P.FPS,SR=48000,dur=P.N/P.FPS,CYC=2,TAIL=0.5,PO=T.b6-17;   /* PO: B6 cues were authored against B6 at 17.00 */
   var MIX={pluck:.20,ting:.14,clink:.075,tap:.17,shaker:.03,bass:.17,pshk:.035,seal:.20,hit:.42,slide:.10,led:.10,pad:.0065,rise:.03,endt:.05,pay:.16,limT:-18,compT:-24};
   if(window.R2_MIX_TEST)for(var mk in window.R2_MIX_TEST)MIX[mk]=window.R2_MIX_TEST[mk];
   var ctx=new OfflineAudioContext(2,Math.round(SR*(CYC*dur+TAIL)),SR);
@@ -35,7 +36,7 @@ window.__r2objAudio=function(opts){
     var NB=(function(){var b=ctx.createBuffer(1,SR*2,SR),d=b.getChannelData(0),s=7;for(var i=0;i<d.length;i++){s=(s*16807)%2147483647;d[i]=s/1073741823.5-1}return b})();
     var NOTE={B1:61.74,D2:73.42,E2:82.41,Fs2:92.5,G2:98,A2:110,B2:123.47,D3:146.83,Fs3:185,G3:196,A3:220,B3:246.94,Cs4:277.18,D4:293.66,E4:329.63,Fs4:369.99,G4:392,A4:440,B4:493.88,
       Cs5:554.37,D5:587.33,E5:659.25,Fs5:739.99,G5:783.99,A5:880,B5:987.77,D6:1174.66};
-    /* the pulse filter: one shared low-pass (8 kHz; 1.2 kHz into the seal) and one gain (on 3.0..12.0, half from 14.5 to 19.0) */
+    /* the pulse filter: one shared low-pass (8 kHz; 1.2 kHz into the seal) and one gain (on 3.0..12.0, half from 14.5 to T.b7) */
     var pf=ctx.createBiquadFilter();pf.type="lowpass";pf.Q.value=.7;var pg=ctx.createGain();pf.connect(pg);pg.connect(bus);
     pf.frequency.setValueAtTime(8000,0);pg.gain.setValueAtTime(0,0);
     for(var cy=0;cy<CYC;cy++){OFF=cy*dur;cycle(cy===CYC-1)}
@@ -72,10 +73,10 @@ window.__r2objAudio=function(opts){
       tap(hit(T.dock),1200,MIX.tap);tap(hit(T.dock)+.06,1600,MIX.tap*.8);ev(T.dock,"two taps: the tags dock");
       P.sheds.forEach(function(t,i){clink(hit(t),MIX.clink*1.4,0.95,0);tone(hit(t),NOTE.A5,MIX.clink*.6,.002,.12,[[1,1],[2,.2]],7000);ev(t,"coin pop (shed "+(i%2?"SELL":"BUY")+", identical)")});
       /* the pulse: muted plucked bass on 16ths, root and octave; D (3..5), Bm (5..7), G (7..9), A (9..12); returns at half level 14.5..19 */
-      var PROG=[[3,5,NOTE.D2],[5,7,NOTE.B1*2],[7,9,NOTE.G2],[9,12.02,NOTE.A2],[14.5,17,NOTE.D2],[17,19,NOTE.G2]];
+      var PROG=[[3,5,NOTE.D2],[5,7,NOTE.B1*2],[7,9,NOTE.G2],[9,12.02,NOTE.A2],[14.5,T.b6,NOTE.D2],[T.b6,T.b7,NOTE.G2]];
       if(STEM!=="hits"){
         pg.gain.setValueAtTime(0,OFF+2.99);pg.gain.linearRampToValueAtTime(1,OFF+3.02);pg.gain.setValueAtTime(1,OFF+12.0);pg.gain.linearRampToValueAtTime(0,OFF+12.08);
-        pg.gain.setValueAtTime(0,OFF+14.49);pg.gain.linearRampToValueAtTime(.5,OFF+14.6);pg.gain.setValueAtTime(.5,OFF+18.9);pg.gain.linearRampToValueAtTime(0,OFF+19.0);
+        pg.gain.setValueAtTime(0,OFF+14.49);pg.gain.linearRampToValueAtTime(.5,OFF+14.6);pg.gain.setValueAtTime(.5,OFF+T.b7-0.1);pg.gain.linearRampToValueAtTime(0,OFF+T.b7);
         pf.frequency.setValueAtTime(8000,OFF+11.7);pf.frequency.exponentialRampToValueAtTime(1200,OFF+12.0);pf.frequency.setValueAtTime(8000,OFF+14.4);
         PROG.forEach(function(seg){for(var t=seg[0];t<seg[1]-1e-6;t+=.125){var j=Math.round((t-seg[0])/.125);var f=seg[2]*(j%4===2?2:1);bass(OFF+t,f,MIX.bass*(j%4===0?1:j%2?.55:.78));shaker(OFF+t+.0625,MIX.pshk*(j%2?1:.6),pf)}});
         ev(3,"the 16th pulse starts");ev(11.7,"the pulse low-passes 8 kHz -> 1.2 kHz into the seal");ev(14.5,"the pulse returns at half level")}
@@ -99,17 +100,17 @@ window.__r2objAudio=function(opts){
       for(var g=0;g<26;g++){var gt=T.pour0+g*0.025;noise(hit(gt),1500+((g*1931)%4500),4,MIX.slide*(1-g/34),.002,.06+(g%3)*.02,((g%5)-2)*.08)}ev(T.pour0,"the coin slide (granular metal, 1..6 kHz)");
       P.pourLand.slice(-6).concat([14.72,14.8,14.9]).forEach(function(t,j){clink(hit(t),MIX.clink*(0.7-j*0.05),0.9+(j%3)*.05,((j%3)-1)*.15)});
       /* ---------- B6: two equal halves (left: three rising glass clinks into a soft chord; right: a descending slide into a muted thud) ---------- */
-      [17.18,17.40,17.62].forEach(function(t,j){clink(hit(t),MIX.pay*.7,1+j*.12,-.15)});chord(hit(17.85),[NOTE.A4,NOTE.D5,NOTE.Fs5],MIX.pay*1.15,1.0,null,4800,-.15);ev(17.18,"left: three rising clinks into a soft chord (15% left)");
-      for(var s2=0;s2<14;s2++){var st=17.12+s2*0.045;noise(hit(st),5200-s2*280,4,MIX.pay*.42*(1-s2/22),.002,.05,.15)}
-      tone(hit(17.85),NOTE.D3,MIX.pay*1.1,.004,.45,[[1,.4],[2,1],[3,.6],[4,.3]],1400,.15);noise(hit(17.85),600,1.2,MIX.pay*.5,.003,.12,.15);ev(17.12,"right: descending slide into a muted low-mid thud (15% right)");
-      /* ---------- B7: the pulse is gone; a pad (G, then D at 21.0); a click per LED second; refill clinks; the end tone into the loop ---------- */
-      if(STEM!=="hits"){[[T.b7,21.0,[NOTE.G3,NOTE.B3,NOTE.D4,NOTE.Fs4]],[21.0,24.4,[NOTE.D4,NOTE.Fs4,NOTE.A4,NOTE.E5]]].forEach(function(sg){sg[2].forEach(function(f,q){
+      [17.18+PO,17.40+PO,17.62+PO].forEach(function(t,j){clink(hit(t),MIX.pay*.7,1+j*.12,-.15)});chord(hit(17.85+PO),[NOTE.A4,NOTE.D5,NOTE.Fs5],MIX.pay*1.15,1.0,null,4800,-.15);ev(17.18+PO,"left: three rising clinks into a soft chord (15% left)");
+      for(var s2=0;s2<14;s2++){var st=17.12+PO+s2*0.045;noise(hit(st),5200-s2*280,4,MIX.pay*.42*(1-s2/22),.002,.05,.15)}
+      tone(hit(17.85+PO),NOTE.D3,MIX.pay*1.1,.004,.45,[[1,.4],[2,1],[3,.6],[4,.3]],1400,.15);noise(hit(17.85+PO),600,1.2,MIX.pay*.5,.003,.12,.15);ev(17.12+PO,"right: descending slide into a muted low-mid thud (15% right)");
+      /* ---------- B7: the pulse is gone; a pad (G, then D 2 s in); a click per LED second; refill clinks; the end tone into the loop ---------- */
+      if(STEM!=="hits"){[[T.b7,T.b7+2,[NOTE.G3,NOTE.B3,NOTE.D4,NOTE.Fs4]],[T.b7+2,dur+0.4,[NOTE.D4,NOTE.Fs4,NOTE.A4,NOTE.E5]]].forEach(function(sg){sg[2].forEach(function(f,q){
           var o=ctx.createOscillator(),o2=ctx.createOscillator(),gg=ctx.createGain(),g2=ctx.createGain(),lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=2400;o.type=o2.type="sine";o.frequency.value=f;o2.frequency.value=f*2;o.detune.value=q%2?3:-3;g2.gain.value=.4;
           var t0=OFF+sg[0],t1=OFF+sg[1];gg.gain.setValueAtTime(0,t0);gg.gain.linearRampToValueAtTime(MIX.pad,t0+.4);gg.gain.setValueAtTime(MIX.pad,t1-.4);gg.gain.linearRampToValueAtTime(0,t1);
           o.connect(gg);o2.connect(g2);g2.connect(gg);gg.connect(lp);lp.connect(bus);o.start(t0);o2.start(t0);o.stop(t1+.05);o2.stop(t1+.05)})});
-        ev(T.b7,"pad (G), the pulse stops");ev(21.0,"the chord resolves (D add9)")}
+        ev(T.b7,"pad (G), the pulse stops");ev(T.b7+2,"the chord resolves (D add9)")}
       P.led.forEach(function(t){tone(hit(t),3000,MIX.led,.0008,.03,[[1,1],[1.5,.3]],9000);noise(hit(t),3200,3,MIX.led*.5,.0005,.01,0);ev(t,"LED click")});
-      chord(hit(23.5),[NOTE.D5,NOTE.A5],MIX.endt,3.2,[[1,1],[2,.25],[2.76,.18]],7000);ting(hit(23.5),MIX.ting*.35);ev(23.5,"end tone (rings into frame 0)");
+      chord(hit(T.b8-0.25),[NOTE.D5,NOTE.A5],MIX.endt,3.2,[[1,1],[2,.25],[2.76,.18]],7000);ting(hit(T.b8-0.25),MIX.ting*.35);ev(T.b8-0.25,"end tone (rings into frame 0)");
     }
     function render(){return ctx.startRendering().then(function(buf){
       var k0=Math.round(SR*dur*(CYC-1)),n=Math.round(SR*dur);

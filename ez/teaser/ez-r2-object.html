@@ -1,7 +1,8 @@
 <!doctype html>
 <!--
 EZ FILMS ROUND 2, "THE OBJECT: one glass $ pot, one call" (slug object, treatment T2). Spec: scratchpad/films-r2/spec-object.md.
-24.0 s, 1080 x 1080, 60 fps (fps=30 fallback), loops to frame 0 in picture and sound.
+26.0 s, 1080 x 1080, 60 fps (fps=30 fallback), loops to frame 0 in picture and sound. (v1 was 24.0 s; fix round 1 holds the
+payoff 3.0 s and the 10x pair 3.5 s: films-r2/object/fix-r1.md.)
 One sentence: an AI makes one call; the whole $ pot rides on it.
 A porcelain set, a smoked-glass $ pot with a gold $ inlay on the navy $EZ plinth, gold $ coins. Every $EZ trade (buy or sell) sheds
 a $ coin at a FEE gate, a glass Y splits the coins exactly SIM.poolShare : 1 - SIM.poolShare (Bresenham), the round card flips from
@@ -47,8 +48,8 @@ html.tp,html.tp body{background:transparent}
 #ad{left:32px;top:24px;height:52px;box-sizing:border-box;font:600 28px/1 GM;letter-spacing:.06em;color:var(--ink);padding:11px 10px 0 12px;border:1.5px solid var(--ink);border-radius:4px;background:var(--ground)}
 #tile{left:110px;top:24px;height:52px;box-sizing:border-box;padding:0 10px;border-radius:6px;background:var(--ink);font:800 40px/52px MS;font-stretch:75%;letter-spacing:.01em}
 #tile .s{color:#ffc72c}#tile .e{color:#1fcf6b}#tile .z{color:#ff4136}
-#stamp{right:32px;top:30px;font:600 28px/1 GM;letter-spacing:.04em;color:var(--ink2);white-space:nowrap;text-align:right;background:var(--ground);padding:6px 8px 6px;border-radius:4px}
-#legal{left:0;right:0;top:746px;text-align:center;font-family:G;font-weight:500;font-size:26px;line-height:27px;color:var(--ink2);white-space:nowrap}
+#stamp{right:32px;top:30px;font:600 28px/1 GM;letter-spacing:.04em;color:var(--ink2);white-space:nowrap;text-align:right;padding:6px 8px 6px}
+#legal{left:0;right:0;top:742px;text-align:center;font-family:G;font-weight:500;font-size:28px;line-height:29px;color:var(--ink2);white-space:nowrap}
 #band{left:24px;right:24px;bottom:96px;height:160px;background:#fff;border-radius:4px;box-sizing:border-box}
 #band::before{content:"";position:absolute;inset:4px;border:2px solid #000;border-radius:2px}
 #band p{position:absolute;left:20px;right:20px;top:50%;transform:translateY(-50%);margin:0;font-family:"IS";font-weight:700;font-stretch:100%;font-size:36px;line-height:1.18;color:#000}
@@ -56,11 +57,12 @@ html.tp,html.tp body{background:transparent}
 #disc{left:64px;right:64px;top:560px;height:180px;box-sizing:border-box;background:#fbfaf7;border:1px solid rgba(16,26,58,.22);border-radius:8px;
   font-family:G;font-weight:600;font-size:44px;line-height:52px;letter-spacing:-.01em;color:var(--ink);text-align:center;padding-top:12px}
 .half{top:0;width:538px;text-align:center}
-.half .kick{position:absolute;left:0;right:0;top:112px}
-.half .l{position:absolute;left:0;right:0;top:186px;font-family:G;font-weight:600;font-size:60px;line-height:70px;letter-spacing:-.015em;color:var(--ink);white-space:nowrap}
+.half .kick{position:absolute;left:0;right:0;top:86px}
+.half .l{position:absolute;left:0;right:0;top:160px;font-family:G;font-weight:600;font-size:60px;line-height:70px;letter-spacing:-.015em;color:var(--ink);white-space:nowrap}
 #divider{left:538px;top:0;width:4px;height:744px;background:var(--ground)}
 .fee{font-family:GM;font-weight:600;font-size:56px;line-height:56px;letter-spacing:.06em;color:var(--ink);white-space:nowrap}
 .hair{background:var(--ink);opacity:.55}
+.dol{font-family:MS;font-weight:800;font-stretch:75%;font-size:66px;letter-spacing:0;color:var(--ink)}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three@0.170.0/build/three.module.js","three/addons/":"./vendor/three@0.170.0/examples/jsm/"}}</script>
 <script src="../ez-data.js"></script>
@@ -77,12 +79,12 @@ window.__ready=false;
 const fail=m=>{window.__err=String(m);throw new Error(m)};
 try{
 const Q=new URLSearchParams(location.search);
-const PASS=Q.get('pass')||'both',VAR=Q.get('variant')==='uk'?'uk':'nonuk',FPS=Q.get('fps')==='30'?30:60,DUR=24,N=DUR*FPS;
+const PASS=Q.get('pass')||'both',VAR=Q.get('variant')==='uk'?'uk':'nonuk',FPS=Q.get('fps')==='30'?30:60,DUR=26,N=DUR*FPS;
 const RES=Math.max(270,Math.min(1080,+(Q.get('res')||1080))),NSQ=Q.get('ns')!=null?Math.max(1,+Q.get('ns')):null;
 const MARKS=Q.get('marks')!=='0',FRONT=Q.get('front')==='film'?'film':'clean',LEDC=Q.get('led')==='gold'?'gold':'red',POTGLYPH=Q.get('potGlyph')==='1';
 window.N=N;window.FPS=FPS;
 if(PASS==='type')document.documentElement.classList.add('tp');
-const VERSION='o1';
+const VERSION='o2';
 
 /* =================== DATA: ez-data.js only, never typed =================== */
 const STR=[];const S=(text,src,t0,t1,kind)=>{STR.push({text,src,t:[t0,t1],kind});return text};
@@ -143,11 +145,14 @@ function hash(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 
 /* =================== THE TIMING TABLE (seconds; picture and sound both read it) =================== */
+/* fix r1: 26.0 s. B1 to B4b unchanged; B5 14.00 to 17.50 (the 10x pair held 3.5 s); B6 17.50 to 20.50 (the payoff held 3.0 s);
+   B7 20.50 to 25.25 (unchanged length: the disclaimer keeps 285 frames); B8 25.25 to 26.00 (the hero gets 3.75 s on repeats).
+   The refill stream starts at DUR + B1S0 = 24.25, so frame 0 is unchanged. 26 s = 13 bars at 120 BPM: the loop stays on the grid. */
 const T={b1:0,b2a:3,dock:3.15,sheds:[3.25,3.5,3.75,4.0],b2b:4.5,crane1:5.0,l69:4.75,l31:4.875,b3:6.5,flip0:7.7,flip1:8.05,
   b4:9.25,nm0:10.5,nm1:10.75,lid0:11.0,lid1:12.0,lp0:11.7,b4b:12.5,lift1:13.25,q0:13.6,hit:14.0,tip1:14.4,pour0:14.05,pour1:14.7,right1:14.8,
-  b6:17.0,pay0:17.1,pay1:17.85,b7:19.0,trayOut:21.4,push1:21.5,pull0:22.5,refill:22.25,b8:23.75,end:24};
-const SHOTS=[0,3,6.5,9.25,14,17,19,24];
-const shotOf=t=>t<3?1:t<6.5?2:t<9.25?3:t<14?4:t<17?5:t<19?6:7;
+  b6:17.5,pay0:17.6,pay1:18.35,b7:20.5,trayOut:22.9,push1:23.0,pull0:24.0,refill:24.25,b8:25.25,end:26};
+const SHOTS=[0,3,6.5,9.25,14,T.b6,T.b7,DUR];
+const shotOf=t=>t<3?1:t<6.5?2:t<9.25?3:t<14?4:t<T.b6?5:t<T.b7?6:7;
 window.R2_T=T;
 
 /* =================== COINS: deterministic piles and paths =================== */
@@ -178,7 +183,8 @@ const N2=170;                                                                   
 const POT_B2=pile(N2+60,21,(()=>{let k=0;const R2=rng(22);return R=>{k++;return k<=N2?[(R()*2-1)*PH,(R()*2-1)*PH]:[gauss(R2)*0.05,gauss(R2)*0.05]}})(),0.46);
 const NB5=230;const POT_B5=pile(NB5,31,R=>[(R()*2-1)*PH,(R()*2-1)*PH],0.46,{repose:30});                                            /* B5: heaped (illustrative, no digits) */
 /* the bet tray's top: 1.0 x 0.56 usable; a mound */
-const TRAY_SL=pile(NB5,41,R=>[gauss(R)*0.14,gauss(R)*0.09],0.64,{lim:0.50,limZ:0.27,repose:44});
+/* fix r1: flatter (repose 44 -> 34, a wider spread): the apex drops from 0.58 to 0.37 above the tray, so the heap stays clear of the type */
+const TRAY_SL=pile(NB5,41,R=>[gauss(R)*0.26,gauss(R)*0.15],0.64,{lim:0.50,limZ:0.27,repose:34});
 /* the ops dish (31%): small */
 const DISH_SL=pile(40,51,R=>[gauss(R)*0.04,gauss(R)*0.04],0.2,{lim:0.08,maxTilt:0.35,repose:26});
 const ND2=6;
@@ -204,9 +210,10 @@ const PAYP=new THREE.Vector3(8,0,0);
 const B1F=0.75,B1RATE=4,B1S0=-1.75;
 const b1Start=k=>B1S0+k/B1RATE,b1Land=k=>b1Start(k)+B1F;
 /* B2: the 4 shed coins (BUY, SELL, BUY, SELL) then 16 a second from the gate, all through the fork */
-const STRATE=16,ST0=4.10;
-const stSpawn=i=>i<4?T.sheds[i]:ST0+(i-4)/STRATE;
-const STN=Math.ceil((6.5-ST0)*STRATE)+4+4;
+/* fix r1: 8 a second in the close-up and the crane (to 4.85 s), then 16 a second; at 16 from 4.10 the column under the gate read as a stack */
+const STRATE=16,ST0=4.10,SLOWN=7,SLOWR=8;
+const stSpawn=i=>i<4?T.sheds[i]:i-4<SLOWN?ST0+(i-4)/SLOWR:ST0+SLOWN/SLOWR+(i-4-SLOWN)/STRATE;
+const STN=4+SLOWN+Math.ceil((6.5-ST0-SLOWN/SLOWR)*STRATE)+4;
 const PIC={N,FPS,T,b1:[],b2pot:[],b2dish:[],sheds:T.sheds.slice(),flip:T.flip1,lid:T.lid1,hit:T.hit,pourLand:[],payL:[],payR:[],led:[]};
 window.R2_PIC=PIC;
 
@@ -226,27 +233,32 @@ const T1=T.b2a,TEND=DUR;
 /* text lines: [element, on, off, words-by-word] */
 const LINES=[];
 function line(cls,text,x,y,t0,t1,opt={}){const e=el(cls,opt.html||words(text),Object.assign({left:x+'px',top:y+'px'},opt.css||{}));checkStr(text);
-  const L={late:opt.late,e,t0,t1,wbw:opt.wbw!=null?opt.wbw:text.split(' ').length>=5,dur:opt.dur||0.25,keep0:opt.keep0,ret:opt.ret,kind:opt.kind||'story',text,ws:opt.html?[e]:[...e.querySelectorAll('.w')]};LINES.push(L);
+  const L={late:opt.late,hard:opt.hard,cut:opt.cut,e,t0,t1,wbw:opt.wbw!=null?opt.wbw:text.split(' ').length>=5,dur:opt.dur||0.25,keep0:opt.keep0,ret:opt.ret,kind:opt.kind||'story',text,ws:opt.html?[e]:[...e.querySelectorAll('.w')]};LINES.push(L);
   S(text,opt.src||'fixed copy',t0,t1,L.kind);return L}
 /* B1: the hero (top left, in the negative space), resolves again from 23.75 */
 const HERO=['We’re putting','buybacks in the','hands of an AI.'];
 HERO.forEach((s,i)=>line('hero',s,64,128+i*80,0,T.b2a,{keep0:true,ret:T.b8,src:'owner copy (CLAUDE.md, EZ Season hero)'}));
 /* B2 */
-const FL=line('kick','FROM LAUNCH',66,120,T.dock,T.b3,{src:'CONFIG.launched is false (fees start at launch)',kind:'story'});
+const FL=line('kick','FEES FROM LAUNCH',66,120,T.dock,T.b3,{src:'CONFIG.launched is false (fees start at launch); "FEES" ties 69% to the fee after FEE leaves (fix r1)',kind:'story'});
 const FEEL=line('fee','FEE',0,0,T.b2a,T.b2b,{src:'fixed label (X2: Every $EZ trade pays a fee.)',kind:'label'});
 const FEEH=el('hair',null,{left:'0',top:'0',width:'2px',height:'40px'});
 const L69=line('big',SHARE+'%',56,214,T.l69,T.b3,{src:'SIM.poolShare ('+PS+')',wbw:false});
-const L69b=line('kick','→ $ pot',66,452,T.l69,T.b3,{html:ARR(50)+' '+COINI(54)+'<span class="w"> pot</span>',src:'fixed: the $ pot (inline coin glyph)'});
-const L31=line('kick',OPS+'% → runs EZ',0,0,T.l31,T.b3,{html:'<span class="w">'+OPS+'%</span> '+ARR(50)+'<span class="w"> runs EZ</span>',src:'1 - SIM.poolShare'});
+const L69b=line('kick','→ $ pot',66,452,T.l69,T.b3,{html:ARR(50)+' <span class="w dol">$</span><span class="w"> pot</span>',src:'fixed: the $ pot (a plain $ at cap height, fix r1: the coin glyph read as a dot at feed size)'});
+const L31=line('kick',OPS+'% → runs EZ',0,0,T.l31-0.175,T.b3,{html:'<span class="w">'+OPS+'%</span> '+ARR(50)+'<span class="w"> runs EZ</span>',src:'1 - SIM.poolShare'});
 /* B3 */
-line('st','Four AIs call the move.',64,100,T.b3,T.b4,{src:'MODEL_KEYS.length ('+MODEL_KEYS.length+')'});
+/* fix r1: what they compete on and how a round is won (step 2), in a left column beside the card */
+line('st','Four AIs',64,100,T.b3,T.b4,{src:'MODEL_KEYS.length ('+MODEL_KEYS.length+')'});
+line('st','call earnings.',64,188,T.b3+0.12,T.b4,{src:'fixed (the AIs call stocks before earnings)'});
+line('st','Closest wins.',64,276,T.flip0-0.2,T.b4,{src:'fixed (the closest right-way call wins the round; the card back dims the wrong-way calls)'});
 /* B4 */
-line('st',LEAD+' hours before',64,100,T.b4,T.b4b,{src:'SIM.leadHours ('+LEAD+')',wbw:true});
-line('st','NVIDIA reports,',64,188,T.b4+0.18,T.b4b,{wbw:true,src:'fixed (owner sentence)'});
-line('st','the leaderboard freezes.',64,276,T.lid0,T.b4b,{wbw:false,src:'fixed (owner sentence)'});
+line('st',LEAD+' hours before',64,100,T.b4,T.b4b-0.08,{src:'SIM.leadHours ('+LEAD+')',wbw:true});
+line('st','NVIDIA reports,',64,188,T.b4+0.18,T.b4b-0.08,{wbw:true,src:'fixed (owner sentence)'});
+line('st','the leaderboard freezes.',64,276,T.lid0-0.1,T.b4b-0.08,{wbw:false,src:'fixed (owner sentence)'});
 
 /* B4b and B5: "#1 makes the call." then the 10x pair, the same face, size and weight */
-const CALL=line('pair','#1 makes the call.',64,100,T.b4b,T.b6,{wbw:false,src:'fixed: LADDER[0] at the freeze makes the call'});
+const CALL=line('pair','First place makes the call.',64,100,T.b4b-0.1,T.b6,{wbw:false,src:'fixed (owner: the AI in first place makes the call): LADDER[0] at the freeze'});
+/* fix r1: the venue in story type while #1 rises; off hard at the cut to the pour, where the pair takes its place */
+line('kick','ON HYPERLIQUID',66,204,T.b4b+0.15,T.hit,{cut:true,src:'fixed (X2: the bet is placed on Hyperliquid)'});
 const LEVL=line('pair',LEV+'x leverage.',64,188,T.hit,T.b6,{wbw:false,dur:0.12,src:'SIM.leverage ('+LEV+')'});
 const WIPE=line('pair','The pot can be wiped out.',64,276,T.hit,T.b6,{wbw:false,dur:0.12,src:'fixed guardrail (paired with 10x; set on two lines so the pour has the right half)',
   html:(POTGLYPH?'<span class="w">The</span><span class="w"> </span>'+COINI(64)+'<span class="w"> pot can</span>':words('The pot can'))+'<br>'+words('be wiped out.')});
@@ -260,8 +272,8 @@ S('WRONG CALL','fixed',T.b6,T.b7,'story');S('The pot can be wiped out.','fixed g
 const DIV=el('',null,null,'divider');
 /* B7 */
 const TTL=el('',null,null,'ttl');
-line('st','Until the NVIDIA bet',96,114,T.b7,T.b8,{late:true,css:{fontSize:'64px',lineHeight:'72px'},wbw:false,src:'fixed: the planned bet (NVIDIA has not announced its date)'});
-const PLN=line('k40','PLANNED · '+BETLAB,98,196,T.b7,T.b8,{late:true,wbw:false,src:'BET: '+betSrc,kind:'label'});
+line('st','Until the NVIDIA bet',96,114,T.b7,T.b8,{hard:true,cut:true,css:{fontSize:'64px',lineHeight:'72px'},wbw:false,src:'fixed: the planned bet (NVIDIA has not announced its date)'});
+const PLN=line('k40','PLANNED · '+BETLAB,98,196,T.b7,T.b8,{hard:true,cut:true,wbw:false,src:'BET: '+betSrc,kind:'label'});
 const DISC=el('','$EZ is a memecoin.<br>Not financial advice.<br>The pot can be wiped out.',null,'disc');
 S('$EZ is a memecoin. Not financial advice. The pot can be wiped out.','fixed disclaimer (once, '+(T.b8-T.b7).toFixed(2)+' s)',T.b7,T.b8,'compliance');
 /* the rail: AD, the $EZ tile, the stamp; the legal lines; the band */
@@ -274,20 +286,22 @@ if(VAR==='uk'){E.band=el('',null,null,'band');const p=document.createElement('p'
 const STAMPS=[[0,T.b2a,'FEES FROM LAUNCH','CONFIG.launched false'],[T.b3,T.b4,ASOFLAB+' · ROUND '+LAST.n,'asof; latest graded round'],[T.b4,T.nm0,'WINS · AFTER ROUND '+LAST.n,'LADDER; latest graded ROUNDS[].n'],
   [T.b4b,T.b6,'PLANNED · ON HYPERLIQUID','fixed (X2: on Hyperliquid)'],[T.b7,T.b8,'PLANNED '+BETLAB+' · '+ASOFLAB,'BET ('+betSrc+'); asof'],[T.b8,DUR,'FEES FROM LAUNCH','CONFIG.launched false']];
 STAMPS.forEach(s=>{S(s[2],s[3],s[0],s[1],'label');checkStr(s[2])});
-S('LED countdown DD HH MM SS (B1, B8: D = bet - asof; B5, B7: D + ceil(23.75 - t))','BET - asof ('+D0+' s)',0,DUR,'data');
+S('LED countdown DD HH MM SS (B1, B8: D = bet - asof; B7: D + ceil('+T.b8+' - t))','BET - asof ('+D0+' s)',0,DUR,'data');
 CALLS.forEach(c=>S(c.name+' '+(c.dir==='UP'?'▲':'▼')+c.mag,'ROUND '+SHOW.n+' .calls ('+showRule+')',T.b3,T.flip1,'data'));
 S('ROUND '+SHOW.n+' · '+SHOW.co.toUpperCase(),'showcase round .n .co',T.b3,T.flip1,'data');
 S('REAL MOVE '+(SHOWUP?'▲':'▼')+' '+OUTMAG,'showcase round .out',T.flip1,T.b4,'data');
+S('WINS','card back: the yellow tag under the winner\'s row ('+SHOWWIN.join(' & ')+', SHOW.win; fix r1)',T.flip1,T.b4,'data');S('WINS','stack: the column header on the top slab, above LADDER[].won (fix r1)',T.b4,T.nm1,'label');
 LADDER.forEach((L,i)=>S('#'+(i+1)+' '+MODELS[L.m].name+' '+L.won,'LADDER['+i+'] (wins, then the smaller average miss)',T.b4,T.nm1,'data'));
 STR.forEach(s=>checkStr(s.text));checkStr(LEGAL);
 window.R2_STRINGS=STR;
 
-function setW(L,t){/* resolve from a 12 px blur and 0 opacity, word by word for lines of 5 words or more; exits fade over 0.2 s */
-  let on=0,blur=0;const ws=L.ws;const fade=L.t1>=DUR?1:L.late?1-lin(t,L.t1,L.t1+0.1):1-lin(t,L.t1-0.2,L.t1);
+function setW(L,t){/* resolve from a 12 px blur and 0 opacity, word by word for lines of 5 words or more; exits fade over 0.2 s.
+  hard: on at full with its card (no resolve); cut: off hard at t1 (on a cut, or where the next text replaces it in place) */
+  let on=0,blur=0;const ws=L.ws;const fade=L.t1>=DUR||L.cut?1:L.late?1-lin(t,L.t1,L.t1+0.1):1-lin(t,L.t1-0.2,L.t1);
   const inRange=(t>=L.t0&&t<L.t1+(L.late?0.1:0))||(L.ret!=null&&t>=L.ret);
   if(!inRange){L.e.style.visibility='hidden';return '0'}
   L.e.style.visibility='visible';const t0=(L.ret!=null&&t>=L.ret)?L.ret:L.t0;const k=[];
-  ws.forEach((w,i)=>{let u;if(L.keep0&&t0===0)u=1;else{const d=L.wbw&&!(L.ret!=null&&t>=L.ret)?0.06*Math.floor(i/2):0;u=EOUT(lin(t,t0+d,t0+d+L.dur))}
+  ws.forEach((w,i)=>{let u;if((L.keep0&&t0===0)||(L.hard&&t0===L.t0))u=1;else{const d=L.wbw&&!(L.ret!=null&&t>=L.ret)?0.06*Math.floor(i/2):0;u=EOUT(lin(t,t0+d,t0+d+L.dur))}
     const o=u*(t0===L.ret?1:fade);w.style.opacity=o.toFixed(3);w.style.filter=u<0.999?'blur('+((1-u)*12).toFixed(2)+'px)':'none';k.push(o.toFixed(3)+(u<0.999?'b'+(1-u).toFixed(3):''))});
   return k.join(',')}
 let typeKey='';
@@ -299,11 +313,12 @@ function applyType(t){const s=shotOf(t),K=[VAR,VERSION,hash(DATAKEY)];
   L31.e.style.left=LAY.l31x+'px';L31.e.style.top=LAY.l31y+'px';
   /* B6 halves: on hard at the cut, words resolve like every other line */
   const hv=s===6;[HL,HR,DIV].forEach(e=>e.style.visibility=hv?'visible':'hidden');
-  if(hv){const u=EOUT(lin(t,T.b6,T.b6+0.25));[hk1,hk2,hl1,hl2].forEach((e,i)=>{const uu=i<2?u:EOUT(lin(t,T.b6+0.06,T.b6+0.31));e.style.opacity=uu.toFixed(3);e.style.filter=uu<0.999?'blur('+((1-uu)*12).toFixed(2)+'px)':'none'});
-    const fo=1-lin(t,T.b7-0.2,T.b7);HL.style.opacity=HR.style.opacity=fo.toFixed(3);K.push('h'+u.toFixed(3)+','+fo.toFixed(3))}
-  /* the disclaimer: on hard at f1140, off at f1425 (fades over 0.1 s from 23.75) */
-  const dv=t>=T.b7&&t<T.b8?1:(t>=T.b8&&t<T.b8+0.1?1-lin(t,T.b8,T.b8+0.1):0);DISC.style.visibility=dv>0?'visible':'hidden';DISC.style.opacity=dv.toFixed(3);K.push('d'+dv.toFixed(3));
-  const tv=t>=T.b7&&t<T.b8?1:(t>=T.b8&&t<T.b8+0.1?1-lin(t,T.b8,T.b8+0.1):0);TTL.style.visibility=tv>0?'visible':'hidden';TTL.style.opacity=tv.toFixed(3);K.push('c'+tv.toFixed(3));
+  if(hv){/* fix r1: the kickers on hard with the cut (no empty first frame), the lines resolve over 0.25 s */
+    [hk1,hk2,hl1,hl2].forEach((e,i)=>{const uu=i<2?1:EOUT(lin(t,T.b6,T.b6+0.25));e.style.opacity=uu.toFixed(3);e.style.filter=uu<0.999?'blur('+((1-uu)*12).toFixed(2)+'px)':'none'});
+    const fo=1-lin(t,T.b7-0.2,T.b7);HL.style.opacity=HR.style.opacity=fo.toFixed(3);K.push('h'+EOUT(lin(t,T.b6,T.b6+0.25)).toFixed(3)+','+fo.toFixed(3))}
+  /* the disclaimer and the title card: on hard at T.b7, off hard at T.b8 (fix r1: no dissolve over the returning hero) */
+  const dv=t>=T.b7&&t<T.b8?1:0;DISC.style.visibility=dv>0?'visible':'hidden';DISC.style.opacity=dv.toFixed(3);K.push('d'+dv.toFixed(3));
+  const tv=dv;TTL.style.visibility=tv>0?'visible':'hidden';TTL.style.opacity=tv.toFixed(3);K.push('c'+tv.toFixed(3));
   /* the rail stamp */
   let st='';STAMPS.forEach(x=>{if(t>=x[0]&&t<x[1])st=x[2]});E.stamp.textContent=st;K.push(st);
   return K.join('|')}

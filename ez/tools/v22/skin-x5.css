@@ -1155,12 +1155,12 @@ html[data-theme="dark"] .x5theme .moon{display:none}
 .x5strip li.hot{background:var(--yel);box-shadow:0 0 0 2px var(--line,var(--ink)),3px 4px 0 0 var(--shadow,var(--ink))}
 .x5strip li.hot :is(small,b,span){color:var(--x5-on-y,var(--on-ez))}
 /* the third kicker stays on one line, so the three numbers share a line: "Leaderboard freezes" from 600 px, "Board
-   freezes" from 375 px, "Freeze" below (81 and 39 px of the 89 and 71 px a kicker has at 375 and 320; row 1, right
-   under the strip, spells it out) */
+   freezes" from 356 px (81.4 px of the 82.7 px a kicker has there, 84 at 360, the most common Android width; it fits
+   from 353), "Freeze" below (39 px of 71 at 320; row 1, right under the strip, spells it out) */
 .x5strip small>span{display:none;font:inherit;color:inherit}
 .x5strip small>.x5k-l{display:inline}
 @media(max-width:599px){.x5strip small>.x5k-l{display:none}.x5strip small>.x5k-m{display:inline}}
-@media(max-width:374px){.x5strip small>.x5k-m{display:none}.x5strip small>.x5k-s{display:inline}}
+@media(max-width:355px){.x5strip small>.x5k-m{display:none}.x5strip small>.x5k-s{display:inline}}
 /* the fee split across the pot tile's foot, labelled: the share of every trading fee that goes to the $ pot
    (SIM.poolShare, dark, "69¢") and the rest (light, "31¢"). A meter, not a balance: there is no pot yet. The tile's
    bottom padding grows by the bar's height less the old gap. */
@@ -1182,8 +1182,9 @@ html[data-theme="dark"] .x5theme .moon{display:none}
 .x5rows p{margin-top:3px;font:500 15px/1.35 var(--fb);color:var(--ink2);text-wrap:pretty}
 .x5rows p b{color:var(--ink)}
 .x5rows .x5now{display:inline-block;margin-left:2px;padding:2px 6px 3px;border-radius:5px;background:var(--slab);color:var(--on-slab);font:700 11px/1.2 var(--fm);letter-spacing:.06em;text-transform:uppercase;vertical-align:1px}
-/* "#1 now: GPT" (the live leader; the next section names it too): on phones it would wrap row 1 to two lines */
-@media(max-width:599px){.x5rows .x5now{display:none}}
+/* "#1 now: GPT" (the live leader; the next section names it too): under 430 px it would wrap row 1 to two lines (+20 px,
+   over the 3,740 px cap at 390); from 430 px it fits on row 1's one line */
+@media(max-width:429px){.x5rows .x5now{display:none}}
 
 /* 3. the record */
 #record .hlx{white-space:nowrap}
@@ -1242,6 +1243,9 @@ html[data-theme="dark"] .x5theme .moon{display:none}
   .x5a .x5strip li.hot{padding-bottom:24px}
   .x5a .x5strip .x5split em{padding-left:16px}
   .x5lb .roster{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none}   /* X2 sets 4 rows for 4 cards in one column */
+  /* the two-column cards are 55 px tall (X2's are 100): the #1 tag ("Makes the call if #1 on Nov 17", top -9 px) sat on
+     the top of "61%"; a little more room above the stats clears it, the content stays centred */
+  html.pt.x5 .x5lb .roster .pc{padding-top:15px;padding-bottom:13px}
   .x5up .rtls{grid-template-columns:repeat(3,minmax(0,1fr))}
   #get .get.x5get{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px;padding:6px 22px}
   #get .x5get .gbox+.gbox{border-top:0}
@@ -1378,3 +1382,31 @@ html.x5[data-theme="dark"] .rsw2 button[data-rk=miss][aria-pressed=true]{--x5sk:
 html.x5[data-theme="dark"] .rsw2 button[data-rk=roi][aria-pressed=true]{--x5sk:#e2b250}
 html.x5[data-theme="dark"] .rsw2 button[data-rk=sector][aria-pressed=true]{--x5sk:#a98bf8}
 html.x5[data-theme="dark"] .rsw2 button[aria-pressed=true] .skd{background:var(--x5sk)!important}
+
+/* 5e. round 2 verification fixes (2026-10-12) */
+/* dark: the $EZ mark's 8-way outline in the cream text colour, as on the dark C / font H board (x5r2/fonts/work/raw/
+   H-C-top.png). The generated rule maps X2's var(--ink) outline to the 20% gold ring, and eight stacked copies of it
+   made a soft tan halo. Light keeps X2's ink outline. */
+html.x5[data-theme="dark"] .ezb{text-shadow:-2px -2px 0 var(--x5-tx),2px -2px 0 var(--x5-tx),-2px 2px 0 var(--x5-tx),2px 2px 0 var(--x5-tx),0 2px 0 var(--x5-tx),0 -2px 0 var(--x5-tx),2px 0 0 var(--x5-tx),-2px 0 0 var(--x5-tx)}
+/* the header from 761 to 959 px: X2's tablet header (routes.css, 761 px) puts the tabs on row 2. The switch keeps the
+   top right of row 1, as on the boards (it sat beside the Next chip, and from 900 to 959 px its pill wrapped alone to
+   the left of an extra row); the tabs take row 2, right-aligned */
+@media (min-width:761px) and (max-width:959.98px){
+  html.pt.x5 .top-in .x5theme{order:1;margin-left:auto;flex-direction:column;gap:3px;width:44px;height:44px;padding:0;border-radius:12px}
+  html.pt.x5 .top-in .x5theme .x5t-l{font-size:11px}
+  html.pt.x5 .top-in .nav{order:3;flex:1 0 100%;display:flex;justify-content:flex-end;margin-left:0}
+}
+/* dark: the calculator's coin stack. Its ring was the 20% gold line, so the brass coins washed out on the green result;
+   they take the panel's own dark ink, as X2's coins take its ink in light */
+html.x5[data-theme="dark"] .coins i{box-shadow:inset 0 0 0 2px #1d1c1a}
+/* model pages, "Every call", up to 380 px: "Applied Digital", "Levi Strauss" and "General Mills" were cut with "…" from
+   340 to 360 px (X2 is clean there): a name that does not fit takes two lines (under 340 px it is also set at 14 px,
+   with tighter lines) */
+/* model pages: the legend's items ("won the round", "right way", "wrong way") each stay whole (build.py wraps them) */
+html.x5 .pf-lg2 .x5lg{white-space:nowrap}
+@media(max-width:380px){html.x5 .pf-co b{white-space:normal;overflow:hidden;text-overflow:clip;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}}
+/* the findings heads (Leaderboard tab) and the Results highlights: X2 sets them in Instrument Serif italic, a third face
+   outside font H, and the owner took the serif off heads on 2026-10-08. The findings heads go back to the site's own
+   rule (routes.css .fdg h3: the head face, capitals), the highlights follow; build.py drops the serif's font request */
+html.pt.x5 .fdg h3{font:400 clamp(26px,3vw,32px)/1 var(--fd);font-stretch:75%;text-transform:uppercase;letter-spacing:normal}
+html.pt.x5 .hx2-h{font:400 24px/1.04 var(--fd);font-stretch:75%;text-transform:uppercase;letter-spacing:normal}

@@ -4115,12 +4115,12 @@ html[data-theme="dark"] .x5theme .moon{display:none}
 .x5strip li.hot{background:var(--yel);box-shadow:0 0 0 2px var(--line,var(--ink)),3px 4px 0 0 var(--shadow,var(--ink))}
 .x5strip li.hot :is(small,b,span){color:var(--x5-on-y,var(--on-ez))}
 /* the third kicker stays on one line, so the three numbers share a line: "Leaderboard freezes" from 600 px, "Board
-   freezes" from 375 px, "Freeze" below (81 and 39 px of the 89 and 71 px a kicker has at 375 and 320; row 1, right
-   under the strip, spells it out) */
+   freezes" from 356 px (81.4 px of the 82.7 px a kicker has there, 84 at 360, the most common Android width; it fits
+   from 353), "Freeze" below (39 px of 71 at 320; row 1, right under the strip, spells it out) */
 .x5strip small>span{display:none;font:inherit;color:inherit}
 .x5strip small>.x5k-l{display:inline}
 @media(max-width:599px){.x5strip small>.x5k-l{display:none}.x5strip small>.x5k-m{display:inline}}
-@media(max-width:374px){.x5strip small>.x5k-m{display:none}.x5strip small>.x5k-s{display:inline}}
+@media(max-width:355px){.x5strip small>.x5k-m{display:none}.x5strip small>.x5k-s{display:inline}}
 /* the fee split across the pot tile's foot, labelled: the share of every trading fee that goes to the $ pot
    (SIM.poolShare, dark, "69¢") and the rest (light, "31¢"). A meter, not a balance: there is no pot yet. The tile's
    bottom padding grows by the bar's height less the old gap. */
@@ -4142,8 +4142,9 @@ html[data-theme="dark"] .x5theme .moon{display:none}
 .x5rows p{margin-top:3px;font:500 15px/1.35 var(--fb);color:var(--ink2);text-wrap:pretty}
 .x5rows p b{color:var(--ink)}
 .x5rows .x5now{display:inline-block;margin-left:2px;padding:2px 6px 3px;border-radius:5px;background:var(--slab);color:var(--on-slab);font:700 11px/1.2 var(--fm);letter-spacing:.06em;text-transform:uppercase;vertical-align:1px}
-/* "#1 now: GPT" (the live leader; the next section names it too): on phones it would wrap row 1 to two lines */
-@media(max-width:599px){.x5rows .x5now{display:none}}
+/* "#1 now: GPT" (the live leader; the next section names it too): under 430 px it would wrap row 1 to two lines (+20 px,
+   over the 3,740 px cap at 390); from 430 px it fits on row 1's one line */
+@media(max-width:429px){.x5rows .x5now{display:none}}
 
 /* 3. the record */
 #record .hlx{white-space:nowrap}
@@ -4202,6 +4203,9 @@ html[data-theme="dark"] .x5theme .moon{display:none}
   .x5a .x5strip li.hot{padding-bottom:24px}
   .x5a .x5strip .x5split em{padding-left:16px}
   .x5lb .roster{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none}   /* X2 sets 4 rows for 4 cards in one column */
+  /* the two-column cards are 55 px tall (X2's are 100): the #1 tag ("Makes the call if #1 on Nov 17", top -9 px) sat on
+     the top of "61%"; a little more room above the stats clears it, the content stays centred */
+  html.pt.x5 .x5lb .roster .pc{padding-top:15px;padding-bottom:13px}
   .x5up .rtls{grid-template-columns:repeat(3,minmax(0,1fr))}
   #get .get.x5get{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px;padding:6px 22px}
   #get .x5get .gbox+.gbox{border-top:0}
@@ -4338,6 +4342,34 @@ html.x5[data-theme="dark"] .rsw2 button[data-rk=miss][aria-pressed=true]{--x5sk:
 html.x5[data-theme="dark"] .rsw2 button[data-rk=roi][aria-pressed=true]{--x5sk:#e2b250}
 html.x5[data-theme="dark"] .rsw2 button[data-rk=sector][aria-pressed=true]{--x5sk:#a98bf8}
 html.x5[data-theme="dark"] .rsw2 button[aria-pressed=true] .skd{background:var(--x5sk)!important}
+
+/* 5e. round 2 verification fixes (2026-10-12) */
+/* dark: the $EZ mark's 8-way outline in the cream text colour, as on the dark C / font H board (x5r2/fonts/work/raw/
+   H-C-top.png). The generated rule maps X2's var(--ink) outline to the 20% gold ring, and eight stacked copies of it
+   made a soft tan halo. Light keeps X2's ink outline. */
+html.x5[data-theme="dark"] .ezb{text-shadow:-2px -2px 0 var(--x5-tx),2px -2px 0 var(--x5-tx),-2px 2px 0 var(--x5-tx),2px 2px 0 var(--x5-tx),0 2px 0 var(--x5-tx),0 -2px 0 var(--x5-tx),2px 0 0 var(--x5-tx),-2px 0 0 var(--x5-tx)}
+/* the header from 761 to 959 px: X2's tablet header (routes.css, 761 px) puts the tabs on row 2. The switch keeps the
+   top right of row 1, as on the boards (it sat beside the Next chip, and from 900 to 959 px its pill wrapped alone to
+   the left of an extra row); the tabs take row 2, right-aligned */
+@media (min-width:761px) and (max-width:959.98px){
+  html.pt.x5 .top-in .x5theme{order:1;margin-left:auto;flex-direction:column;gap:3px;width:44px;height:44px;padding:0;border-radius:12px}
+  html.pt.x5 .top-in .x5theme .x5t-l{font-size:11px}
+  html.pt.x5 .top-in .nav{order:3;flex:1 0 100%;display:flex;justify-content:flex-end;margin-left:0}
+}
+/* dark: the calculator's coin stack. Its ring was the 20% gold line, so the brass coins washed out on the green result;
+   they take the panel's own dark ink, as X2's coins take its ink in light */
+html.x5[data-theme="dark"] .coins i{box-shadow:inset 0 0 0 2px #1d1c1a}
+/* model pages, "Every call", up to 380 px: "Applied Digital", "Levi Strauss" and "General Mills" were cut with "…" from
+   340 to 360 px (X2 is clean there): a name that does not fit takes two lines (under 340 px it is also set at 14 px,
+   with tighter lines) */
+/* model pages: the legend's items ("won the round", "right way", "wrong way") each stay whole (build.py wraps them) */
+html.x5 .pf-lg2 .x5lg{white-space:nowrap}
+@media(max-width:380px){html.x5 .pf-co b{white-space:normal;overflow:hidden;text-overflow:clip;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}}
+/* the findings heads (Leaderboard tab) and the Results highlights: X2 sets them in Instrument Serif italic, a third face
+   outside font H, and the owner took the serif off heads on 2026-10-08. The findings heads go back to the site's own
+   rule (routes.css .fdg h3: the head face, capitals), the highlights follow; build.py drops the serif's font request */
+html.pt.x5 .fdg h3{font:400 clamp(26px,3vw,32px)/1 var(--fd);font-stretch:75%;text-transform:uppercase;letter-spacing:normal}
+html.pt.x5 .hx2-h{font:400 24px/1.04 var(--fd);font-stretch:75%;text-transform:uppercase;letter-spacing:normal}
 
 </style>
 <script>/* X5 theme before the first paint (try/catch: storage can be blocked) */(function(){var d=document.documentElement,s=null,h=d.getAttribute("data-theme"),t;try{s=localStorage.getItem("ez-theme")}catch(e){}d.setAttribute("data-x5host",h||"");t=s==="light"||s==="dark"?s:h==="light"||h==="dark"?h:window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";d.setAttribute("data-theme",t);d.style.colorScheme=t;var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute("content",t);m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",getComputedStyle(d).getPropertyValue("--field").trim()||m.getAttribute("content"))})()</script>
@@ -5344,7 +5376,7 @@ var EXP=window.EZ_EXP||"";
 /* X2 = X1 plus: every call as one square (Leaderboard), what the record shows (Leaderboard), the round list (Results). */
 /* X3 = X2 plus the Overview re-ordered for launchpad and Fomo hunters (see the X3 block at the end) */
 /* X5 = X2 plus its own Overview, a light/dark switch and font H (see the X5 block at the end) */
-var X1=EXP==="x5"||EXP==="x1"||EXP==="x2"||EXP==="x3"||EXP==="x4",X2=EXP==="x5"||EXP==="x2"||EXP==="x3"||EXP==="x4",X3=EXP==="x3";if(X2){document.documentElement.classList.add("x2");if(X3)document.documentElement.classList.add("x3");if(EXP==="x4")document.documentElement.classList.add("x4");(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap";document.head.appendChild(l)})()}
+var X1=EXP==="x5"||EXP==="x1"||EXP==="x2"||EXP==="x3"||EXP==="x4",X2=EXP==="x5"||EXP==="x2"||EXP==="x3"||EXP==="x4",X3=EXP==="x3";if(X2){document.documentElement.classList.add("x2");if(X3)document.documentElement.classList.add("x3");if(EXP==="x4")document.documentElement.classList.add("x4");void 0}
 var TODAYK=dkey(new Date()),RBIG=false,RF="all",UF="all",US="",RLOOK="brand";
 function xsh(no,eb,title,sub,h1,id,side){var tag=h1?"h1":"h2";return '<div class="xsh'+(side?' wside':'')+'"><div class="xsh-t"><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="no">'+no+'</span><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(side||'')+'</div>'}
 /* a company's colour (CO_LOGOS.c, from tools/fetch_logos.py) and the ink that reads on it */
@@ -5923,7 +5955,7 @@ function vProfile(m){if(!CAR[m])return null;
   var cap='<header class="pf-hero"><div class="pf-id">'+logo(m,"pf-lg")+'<div><span class="pf-rk">#'+rk+' of '+N+'</span><h1 tabindex="-1">'+nmM+'</h1><p class="pf-ver">'+esc(MODELS[m].ver||'')+'</p></div></div>'+
     '<p class="pf-verdict">'+verdictLine+'</p>'+
     '<div class="pf-arr" role="img" aria-label="'+C.right+' of '+C.g+' calls got the direction right, '+C.won+' of them won the round"><div class="pf-dots">'+dots.map(function(c){return '<i class="'+c+'"></i>'}).join("")+'</div>'+
-      '<p><b>'+C.right+' of '+C.g+'</b> calls got up or down right <span>('+pctOf(C.right,C.g)+'%)</span>. <span class="pf-lg2"><i class="w"></i>won the round <i class="g"></i>right way <i class="r"></i>wrong way</span></p></div>'+
+      '<p><b>'+C.right+' of '+C.g+'</b> calls got up or down right <span>('+pctOf(C.right,C.g)+'%)</span>. <span class="pf-lg2"><span class="x5lg"><i class="w"></i>won the round</span> <span class="x5lg"><i class="g"></i>right way</span> <span class="x5lg"><i class="r"></i>wrong way</span></span></p></div>'+
     '<div class="pf-kpi"><div class="pf-k gold"><small>Wins</small><b>'+C.won+'</b><span>'+rankTag(place(m,function(k){return CAR[k].won},function(a,b){return a>b}))+'</span></div>'+
     '<div class="pf-k"><small>Right way</small><b>'+C.right+'<span>/'+C.g+'</span></b><span>'+rankTag(hR)+'</span></div>'+
     '<div class="pf-k"><small>Average miss</small><b>'+(C.avg==null?'n/a':C.avg.toFixed(2))+'<span> pts</span></b><span>'+rankTag(mR)+'</span></div>'+
@@ -5942,7 +5974,7 @@ function vProfile(m){if(!CAR[m])return null;
       x.pts.slice(1).map(function(p){var r=ROUNDS[p[0]-1];return '<circle cx="'+cx(p[0]).toFixed(1)+'" cy="'+cy(p[1]).toFixed(1)+'" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="2"><title>After round '+r.n+' ('+esc(r.co)+'): '+usd(p[1])+'</title></circle>'}).join("")}).join("")+
     labs.map(function(l){return '<text x="'+(CW-R0+8)+'" y="'+(l.y+4).toFixed(1)+'" class="pf-bl'+(l.k===m?' me':'')+'">'+nm(l.k)+' '+kfmt(l.v)+'</text>'}).join("")+
     '<text x="'+cx(1)+'" y="'+(CH-6)+'" class="pf-bt" text-anchor="middle">R1</text><text x="'+cx(G)+'" y="'+(CH-6)+'" class="pf-bt" text-anchor="middle">R'+ROUNDS[G-1].n+'</text></svg>';
-  var balS='<section class="pf-sec" aria-labelledby="pfMH"><h2 id="pfMH">If you had copied it</h2><p class="pf-sub">'+usd(STAKE)+' in on every call: buy on an up call, short on a down call, out at the next close. '+nmM+' highlighted, the others in grey. Simulated, before fees.</p>'+chart+'</section>';
+  var balS='<section class="pf-sec" aria-labelledby="pfMH"><h2 id="pfMH">If you had copied it</h2><p class="pf-sub">'+usd(STAKE)+' in on every call: buy on an up call, short on a down call, out at the next close. Simulated, before fees.</p>'+chart+'</section>';
   return '<nav class="mnav" aria-label="Models"><a class="back" href="#/leaderboard" aria-label="Back to the leaderboard" title="Back to the leaderboard"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>'+RK.map(function(k){return '<a href="#/model/'+k.toLowerCase()+'"'+(k===m?' aria-current="page"':'')+'>'+logo(k)+nm(k)+'</a>'}).join("")+'</nav>'+
     '<div class="pf">'+cap+form+cmp+balS+list+bwS+nav+'</div>'}
 function wireModel(root,m){var el=$("#tg1",root);if(el)targets(el,[m])}
@@ -6190,6 +6222,8 @@ function EZ5_BET(){function md(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)
   var nv=[].concat(typeof UPCOMING!=="undefined"?UPCOMING:[],typeof PENDING!=="undefined"?PENDING:[]).filter(function(u){return u.ticker==="NVDA"})[0],c=nv&&md(nv.called);
   if(!c)return null;var dt=new Date(Date.UTC(c[0],c[1],c[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);
   return nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate())}
+/* the bet day is set (SIM/CONFIG.betDate); without it the day comes from the rule above and the copy says "Planned" */
+function EZ5_SET(){return /\d+\/\d+\/\d+/.test(String(SIM.betDate||CONFIG.betDate||""))}
 function EZ5_DAY(t){return new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"}).replace(" ","\u00a0")}
 /* the freeze: SIM.leadHours before the bet (the leaderboard freezes, the AI in first place makes the call) */
 function EZ5_FREEZE(){var T=EZ5_BET();return T&&SIM.leadHours!=null?EZ5_DAY(T-SIM.leadHours*3600e3):""}
@@ -6230,7 +6264,7 @@ if(X5)(function(){
     root.style.colorScheme=t;
     var m=$('meta[name="theme-color"]');if(m)m.setAttribute("content",getComputedStyle(root).getPropertyValue("--field").trim()||(t==="dark"?"#1d1c1a":"#f4efe6"));
     m=$('meta[name="color-scheme"]');if(m)m.setAttribute("content",t);
-    var b=$(".x5theme");if(b){var l=$(".x5t-l",b);if(l)l.textContent=w;b.title="Switch to "+w.toLowerCase()+" mode";b.removeAttribute("aria-pressed")}}
+    var b=$(".x5theme");if(b){var l=$(".x5t-l",b);if(l)l.textContent=w;b.removeAttribute("title");b.removeAttribute("aria-pressed")}}   // no title: it repeated the name
   function setTheme(t,keep){mine=t;root.setAttribute("data-theme",t);if(keep){try{localStorage.setItem("ez-theme",t)}catch(e){}}sync();
     document.dispatchEvent(new CustomEvent("x5theme",{detail:{theme:t}}))}
   window.X5theme=function(t){if(t==="system"){try{localStorage.removeItem("ez-theme")}catch(e){}setTheme(sys(),false)}else if(t==="light"||t==="dark")setTheme(t,true);return root.getAttribute("data-theme")};
@@ -6258,7 +6292,9 @@ if(X5)(function(){
   var bflip=$("#bflip"),stand=$("#stand"),gpu=$("#gpu");
   var chip=el("div","x5chip");
   chip.appendChild(el("p","x5lab",'<span class="eb">Countdown</span><b>Until the NVIDIA bet</b>'));
-  if(gpu){chip.appendChild(gpu);var gt=$(".gpu-t",gpu);if(gt&&betDay)gt.innerHTML='<b>'+betDay+' close,</b> right before NVIDIA reports.'}
+  /* NVIDIA has not announced its date: until SIM.betDate is set the line says the day is planned (the films say
+     "PLANNED · NOV 18"), in words that stay on one line from 360 px */
+  if(gpu){chip.appendChild(gpu);var gt=$(".gpu-t",gpu);if(gt&&betDay)gt.innerHTML=EZ5_SET()?'<b>'+betDay+' close,</b> right before NVIDIA reports.':'Planned: <b>'+betDay+' close,</b> then NVIDIA reports.'}
   hero.insertBefore(chip,bflip||null);
   if(bflip)bflip.remove();
 
@@ -6351,12 +6387,14 @@ if(X5)(function(){
 
   /* ===== the $ pot: when the copy names the pot, it shows it as money (owner, 2026-10-12) ===== */
   var POT=[["fills this pool.","fills the $\u00a0pot."],["the whole pool on","the whole $\u00a0pot on"],["the pool gets rekt.","the $\u00a0pot gets rekt."],["<small>In the pool</small>","<small>In the $\u00a0pot</small>"],
-    ["The pool address appears","The $\u00a0pot's address appears"],["The pot can be wiped out.","The $\u00a0pot can be wiped out."],["the pot can be wiped out.","the $\u00a0pot can be wiped out."]];
+    ["The pool address appears","The $\u00a0pot's address appears"],["The pot can be wiped out.","The $\u00a0pot can be wiped out."],["the pot can be wiped out.","the $\u00a0pot can be wiped out."],
+    ["NVIDIA earnings · ","NVIDIA earnings\u00a0·\u00a0"]];   // "Next bet": "· 10x" never sits alone on a line
   function pot$(h){POT.forEach(function(p){h=h.split(p[0]).join(p[1])});return h}
   var vb=vBuybackX2;vBuybackX2=function(){return pot$(vb.apply(this,arguments))};
   var cH=$("#calcH");if(cH&&cH.firstChild&&cH.firstChild.nodeType===3)cH.firstChild.textContent=cH.firstChild.textContent.replace("the bag","the $\u00a0pot");
   var gL=$("#gLbl");if(gL&&gL.textContent==="The pot")gL.textContent="The $\u00a0pot";
   $$(".mx-lose").forEach(function(p){p.innerHTML=pot$(p.innerHTML)});
+  $$(".mx-k").forEach(function(p){p.textContent=p.textContent.replace("buys back","buys\u00a0back")});   // "back" never alone on a line
   /* opened straight on the Buyback tab, the view already holds the live calculator: put it back home before the view
      is re-written (else a dead copy stays behind), then wire the view again and move the calculator in */
   if(curSec==="buyback"&&!view.hidden){calcHome();view.innerHTML=pot$(view.innerHTML);wirePool(view);calcAway(view)}

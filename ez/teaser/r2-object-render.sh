@@ -1,5 +1,5 @@
 #!/bin/bash
-# EZ films round 2, "The Object" (ez-r2-object.html): production render. 24 s, 1080 x 1080, 60 fps (FPS=30 fallback), uk + nonuk.
+# EZ films round 2, "The Object" (ez-r2-object.html): production render. 26 s (fix r1; v1 was 24 s), 1080 x 1080, 60 fps (FPS=30 fallback), uk + nonuk.
 # Needs the static server on :8765 serving ez/ (cd ez && python3 -m http.server 8765).
 #   teaser/r2-object-render.sh OUTDIR ASOF
 #     ASOF  REQUIRED: the stated render date, ISO (e.g. 2026-10-12T16:00:00Z). The rail stamps say AS OF that day and the LED dies
@@ -14,7 +14,7 @@
 #        DELIVER=v1   also copy to ez/media as ez-r2-object-v1-uk.mp4 / -nonuk.mp4 (+ -poster.jpg)
 # Steps (each resumable: existing frames are skipped):
 #   0. gates: the bet date, SIM.stopLoss null, SIM.leverage / leadHours / poolShare set, CONFIG.launched false, the disk
-#   1. plates: every frame once (WebGL; subframes averaged in the page: 2,771 renders at 60 fps), PAR processes
+#   1. plates: every frame once (WebGL; subframes averaged in the page: about 3,200 renders at 60 fps), PAR processes
 #   2. sound: ez-r2-object-audio.js from the page's own timing table and picture events (rendered from a 270 px plate page, where the
 #      coin landings, the pour and the LED steps are computed), two cycles (the second kept), then a two-pass loudnorm to
 #      -14 LUFS / -1 dBTP (linear only; the script stops if loudnorm falls back to dynamic)
@@ -30,7 +30,7 @@ OUT=${1:?usage: r2-object-render.sh OUTDIR ASOF}; ASOF=${2:?the stated render da
 EZ=$(cd "$(dirname "$0")/.." && pwd)
 FF=${FFMPEG:-/usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2}
 PAR=${PAR:-3}; FPS=${FPS:-60}; RES=${RES:-1080}; LED=${LED:-red}; MIN_FREE_MB=${MIN_FREE_MB:-2500}
-N=$((24*FPS)); mkdir -p "$OUT"; OUT=$(cd "$OUT" && pwd); cd "$EZ"
+DUR=26; N=$((DUR*FPS)); mkdir -p "$OUT"; OUT=$(cd "$OUT" && pwd); cd "$EZ"
 node -e "if(!isFinite(Date.parse('$ASOF')))process.exit(1)" || { echo "ASOF is not a date: $ASOF"; exit 2; }
 Q="asof=$ASOF&fps=$FPS&led=$LED$([ "$RES" = "1080" ] || echo "&res=$RES")"
 PL="$OUT/plates$([ "$RES" = "1080" ] || echo "-r$RES")-$FPS"
@@ -90,10 +90,11 @@ done
 T2=$(date +%s); echo "type, sound, encodes: $(( (T2-T1)/60 )) min; total $(( (T2-T0)/60 )) min"
 
 # --- 5. QA ---
-python3 -I - "$OUT" "$FF" "$FPS" "$PL" <<'PY'
+python3 -I - "$OUT" "$FF" "$FPS" "$PL" "$DUR" <<'PY'
 import sys,os,re,subprocess,json
 import numpy as np
-OUT,FF,FPS,PL=sys.argv[1],sys.argv[2],int(sys.argv[3]),sys.argv[4];N=24*FPS;lines=[];fails=[]
+OUT,FF,FPS,PL,DUR=sys.argv[1],sys.argv[2],int(sys.argv[3]),sys.argv[4],float(sys.argv[5]);N=int(DUR*FPS);lines=[];fails=[]
+B6,B7=17.5,20.5   # the payoff split (T.b6, T.b7 in ez-r2-object.html)
 def log(s):print(s,flush=True);lines.append(s)
 def check(ok,s):log(('PASS ' if ok else 'FAIL ')+s);(None if ok else fails.append(s))
 def ebur(path,af=''):
@@ -105,7 +106,7 @@ Ih,_=ebur(WAV,'highpass=f=300,highpass=f=300');check(I-Ih<=6.0,'phone speakers: 
 raw=subprocess.run([FF,'-v','error','-i',WAV,'-f','f32le','-ac','2','-ar','48000','-'],capture_output=True).stdout;st=np.frombuffer(raw,np.float32).reshape(-1,2);a=st.mean(1);SR=48000
 d=20*np.log10(abs(float(np.mean(a[-480:])-np.mean(a[:480])))+1e-12);step=abs(float(a[-1]-a[0]));slope=float(np.median(np.abs(np.diff(a[-480:]))))+1e-6
 check(step<=max(0.01,4*slope),'audio loop seam: last-to-first sample step %.4f (local slope %.4f); 10 ms mean difference %.1f dBFS'%(step,slope,d))
-L=st[int(17.0*SR):int(19.0*SR),0];R=st[int(17.0*SR):int(19.0*SR),1];dl=20*np.log10(np.sqrt((L**2).mean())/np.sqrt((R**2).mean()))
+L=st[int(B6*SR):int(B7*SR),0];R=st[int(B6*SR):int(B7*SR),1];dl=20*np.log10(np.sqrt((L**2).mean())/np.sqrt((R**2).mean()))
 check(abs(dl)<=1.0,'payoff halves: L - R %.2f dB (<= 1)'%dl)
 sil=np.abs(a[int(13.62*SR):int(13.98*SR)]).max();log('near-silence 13.62..13.98 s: peak %.4f'%sil)
 def probe(p):
@@ -152,14 +153,18 @@ for V in ['uk','nonuk']:
         for k in range(len(ev)):w=max(w,sum(1 for e in ev if ev[k]<=e<ev[k]+FPS)//2)
         return w
     check(flashes(lum,0.10)<=3,'general flashes: at most %d per second (<= 3)'%flashes(lum,0.10));check(flashes(red,0.2)<=3,'red flashes: at most %d per second'%flashes(red,0.2))
-# payoff equality on the plate at the first split frame (17.00 s); the loop seam on the source plates (the encode adds keyframe noise)
+# payoff equality on the plates over the whole split (T.b6 to T.b7); the loop seam on the source plates (the encode adds keyframe noise)
 from PIL import Image
 names=open(os.path.join(PL,'names.txt')).read().split()
 Pp=lambda f:np.asarray(Image.open(os.path.join(PL,'frames',names[f]+'.png')).convert('RGB'),np.int16)
 sd=float(np.abs(Pp(N-1)-Pp(0)).mean());nd=[float(np.abs(Pp(f+1)-Pp(f)).mean()) for f in (0,1,2,N-3,N-2)]
 check(sd<=1.5*max(nd),'plate loop seam: f%d -> f0 mean diff %.2f; neighbouring steps %s'%(N-1,sd,', '.join('%.2f'%x for x in nd)))
-im=np.asarray(Image.open(os.path.join(PL,'frames',names[17*FPS]+'.png')).convert('L'),np.float32)[0:744]
-a_,b_=im[:,:538].mean(),im[:,542:].mean();check(abs(a_-b_)/max(a_,b_)<=0.10,'payoff halves at f%d: mean luminance %.1f vs %.1f (within 10%%)'%(17*FPS,a_,b_))
+worst=(0,0,0,0)
+for f in range(int(B6*FPS),int(B7*FPS)):
+    im=np.asarray(Image.open(os.path.join(PL,'frames',names[f]+'.png')).convert('L'),np.float32)[0:744]
+    a_,b_=im[:,:538].mean(),im[:,542:].mean();r=abs(a_-b_)/max(a_,b_)
+    if r>worst[0]:worst=(r,f,a_,b_)
+check(worst[0]<=0.10,'payoff halves f%d..f%d: worst mean luminance difference %.1f%% (f%d: %.1f vs %.1f; within 10%%)'%(int(B6*FPS),int(B7*FPS)-1,100*worst[0],worst[1],worst[2],worst[3]))
 # contact sheet: every 30th frame of the uk film
 T=216;cols=8;fr=[F for k,F in stream(os.path.join(OUT,'ez-r2-object-uk.mp4'),30)];rows=(len(fr)+cols-1)//cols
 sh=Image.new('RGB',(cols*T,rows*(T+18)),'#1b1b1b')

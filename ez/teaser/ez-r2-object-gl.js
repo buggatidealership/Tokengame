@@ -49,7 +49,9 @@ const loadImg=src=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);
 const cvTex=(w,h,draw,cs=THREE.SRGBColorSpace)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');draw(g,c);const t=new THREE.CanvasTexture(c);t.colorSpace=cs;t.anisotropy=ANISO;t.userData={c,g};return t};
 function F(g,w,px,fam,stretch){g.font=(stretch?'condensed ':'')+w+' '+px+'px '+(fam||'G');g.fontStretch=stretch||'normal'}
 const tri=(g,x,y,s,up,col)=>{g.fillStyle=col;g.beginPath();if(up){g.moveTo(x,y+s*0.88);g.lineTo(x+s,y+s*0.88);g.lineTo(x+s/2,y)}else{g.moveTo(x,y);g.lineTo(x+s,y);g.lineTo(x+s/2,y+s*0.88)}g.closePath();g.fill()};
-function tilePath(g,M,x,y,S){g.save();g.fillStyle=M.bg;g.beginPath();g.roundRect(x,y,S,S,S*0.18);g.fill();if(/^#(000|000000)$/i.test(M.bg)){g.strokeStyle='rgba(16,26,58,.25)';g.lineWidth=2;g.stroke()}else{g.strokeStyle='rgba(16,26,58,.22)';g.lineWidth=2;g.stroke()}
+function tilePath(g,M,x,y,S){/* fix r1: the same navy hairline (about 1.5 px on screen) on all four tiles, so each mark has the same footprint */
+  g.save();g.fillStyle=M.bg;g.beginPath();g.roundRect(x,y,S,S,S*0.18);g.fill();const lw=Math.max(3,S*0.036);g.strokeStyle='rgba(16,26,58,.9)';g.lineWidth=lw;
+  g.beginPath();g.roundRect(x+lw/2,y+lw/2,S-lw,S-lw,S*0.18-lw/2);g.stroke();
   g.translate(x+S*0.18,y+S*0.18);g.scale(S*0.64/24,S*0.64/24);g.fillStyle=M.fg;g.fill(new Path2D(M.d),M.fr||'nonzero');if(M.dot){g.fillStyle=M.dotc||'#1e80ff';g.fill(new Path2D(M.dot))}g.restore()}
 const INK='#101a3a',INK2='#5b6273',PORC=0xf7f6f2;
 
@@ -67,11 +69,12 @@ function glassMat(side,tint=0x3a4256,alpha=0.09,edge=0.85){const m=new THREE.Mes
         'float band=uSwA*exp(-pow((dot(vWP,uSw.xyz)-uSw.w)/0.06,2.0));vec3 edgeC=vec3(0.86,0.886,0.918)*fr*0.18;'+
         'vec3 dk=vec3(0.03,0.04,0.07);gl_FragColor=vec4(mix(totalDiffuse,dk,fr)*a+totalSpecular*2.2*(1.0-0.7*fr)+edgeC+band*vec3(0.9,0.94,1.0)*0.3*(0.3+fr),clamp(a+band*0.08,0.0,1.0));')};
   m.customProgramCacheKey=()=>'glass'+side+'-'+edge;return m}
-const goldInlay=()=>{const m=new THREE.MeshPhysicalMaterial({color:0xe2b250,metalness:1,roughness:0.3,clearcoat:0.3,clearcoatRoughness:0.25,envMapIntensity:1.1});
+/* fix r1: the coin gold (#E2B250, sweep highlight #FFD873), part metal, with a little self-light, so it reads gold, not brown, at feed size */
+const goldInlay=()=>{const m=new THREE.MeshPhysicalMaterial({color:0xe2b250,metalness:0.45,roughness:0.3,clearcoat:0.5,clearcoatRoughness:0.2,envMapIntensity:1.0,emissive:0xe2b250,emissiveIntensity:0.22});
   m.onBeforeCompile=sh=>{sh.uniforms.uSw=SWP.dir;sh.uniforms.uSwA=SWP.amp;
     sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;').replace('#include <project_vertex>','#include <project_vertex>\nvWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
     sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;uniform vec4 uSw;uniform float uSwA;')
-      .replace('#include <opaque_fragment>','outgoingLight+=uSwA*exp(-pow((dot(vWP,uSw.xyz)-uSw.w)/0.07,2.0))*vec3(1.0,0.84,0.5)*0.9;\n#include <opaque_fragment>')};
+      .replace('#include <opaque_fragment>','outgoingLight+=uSwA*exp(-pow((dot(vWP,uSw.xyz)-uSw.w)/0.07,2.0))*vec3(1.0,0.847,0.451)*0.9;\n#include <opaque_fragment>')};
   m.customProgramCacheKey=()=>'inlay';return m};
 
 /* =================== THE $ COIN =================== */
@@ -117,8 +120,7 @@ const svgShapes=(d)=>{const data=new SVGLoader().parse('<svg xmlns="http://www.w
 {const sh=svgShapes(DOLLAR),s=0.64/900;
   const g=new THREE.ExtrudeGeometry(sh,{depth:12,bevelEnabled:true,bevelThickness:6,bevelSize:5,bevelSegments:3,curveSegments:10});g.translate(-224.5,-365,0);g.scale(s,s,s);
   const inl=new THREE.Mesh(g,goldInlay());inl.position.set(0,0.52,0.5+0.006);POTI.add(inl);
-  const k=new THREE.ExtrudeGeometry(sh,{depth:2,bevelEnabled:true,bevelThickness:1,bevelSize:13,bevelSegments:1,curveSegments:10});k.translate(-224.5,-365,0);k.scale(s,s,s);
-  const key=new THREE.Mesh(k,new THREE.MeshStandardMaterial({color:0x101a3a,roughness:0.5}));key.position.set(0,0.52,0.5+0.002);POTI.add(key)}
+}
 const PLINTH=new THREE.Group();PLINTH.position.set(POTX,0,0);scene.add(PLINTH);
 {const b=new THREE.Mesh(new RoundedBoxGeometry(1.16,PLH,1.16,3,0.02),navyMat());b.position.y=PLH/2;PLINTH.add(b);
   const t=cvTex(1160,300,g=>{F(g,800,190,'MS','75%');g.textBaseline='alphabetic';const parts=[['$','#ffc72c'],['E','#1fcf6b'],['Z','#ff4136']];
@@ -221,6 +223,8 @@ function setLED(sec){sec=Math.max(0,Math.floor(sec));const v=[Math.min(99,Math.f
   COLONS.forEach(c=>{const px=(c.x*1000+999-GLX0)*GS,pz=(c.z*1000+744-GLY0)*GS;g.beginPath();g.arc(px,pz,6*GS,0,7);g.fill()});g.filter='none';
   onI.count=a;offI.count=b;onI.instanceMatrix.needsUpdate=offI.instanceMatrix.needsUpdate=true;glowT.needsUpdate=true;return k}
 const ledAt=t=>{const s=shotOf(t);if(s===1)return D0;if(t>=T.b8)return D0;return D0+Math.ceil(T.b8-t)};
+/* fix r1: the LED glow flares on each tick in B7 (the digit change), then settles */
+const ledGlowAt=t=>{if(shotOf(t)!==7||t>=T.b8)return 0.5;const tk=T.b8-Math.ceil(T.b8-t);if(tk<T.b7)return 0.5;return 0.5+0.5*Math.exp(-(t-tk)/0.14)};
 PIC.led=[];for(let k=Math.ceil(T.b7);k<T.b8;k++)PIC.led.push(k+(T.b8-Math.floor(T.b8)));   /* the LED steps in B7 (sound: a click per second) */
 
 /* =================== THE ROUND CARD (porcelain; front = the calls, back = the real move) =================== */
@@ -241,15 +245,20 @@ const cardFront=cvTex(Math.round(CW*CPX),Math.round(CH*CPX),(g,c)=>{const W=c.wi
     if(i<3){g.fillStyle='rgba(16,26,58,.10)';g.fillRect(76,y+rh-1,W-152,2)}})});
 const cardBack=cvTex(Math.round(CW*CPX),Math.round(CH*CPX),(g,c)=>{const W=c.width,H=c.height;g.fillStyle='#fbfaf7';g.fillRect(0,0,W,H);
   g.strokeStyle='rgba(16,26,58,.35)';g.lineWidth=4;g.beginPath();g.roundRect(18,18,W-36,H-36,26);g.stroke();
-  F(g,600,112,'GM');g.letterSpacing='6px';g.fillStyle=INK2;g.textBaseline='alphabetic';g.fillText('REAL MOVE',76,160);
-  F(g,600,300,'G');g.letterSpacing='-6px';g.fillStyle=INK;const mw=g.measureText(OUTMAG).width;const s=230;tri(g,76,262,s,SHOWUP,SHOWUP?'#1fcf6b':'#ff4136');g.fillStyle=INK;g.fillText(OUTMAG,76+s+40,480);
-  const y0=600,rh=(H-y0-60)/4;g.fillStyle='rgba(16,26,58,.16)';g.fillRect(76,y0-24,W-152,3);
-  CALLS.forEach((c,i)=>{const y=y0+i*rh,dim=!c.ok,a=dim?0.45:1;g.globalAlpha=a;const M=MODELS[c.m];const ts=120;
-    if(c.win){g.globalAlpha=1;g.fillStyle='#ffc72c';g.fillRect(40,y+14,16,rh-28)}
-    if(MARKS)tilePath(g,M,76,y+(rh-ts)/2,ts);F(g,650,112);g.letterSpacing='0px';g.fillStyle=INK;g.textBaseline='middle';g.fillText(c.name,76+(MARKS?ts+30:0),y+rh/2+3);
-    if(c.win){F(g,600,72,'GM');g.letterSpacing='4px';const nw=(()=>{F(g,650,112);return g.measureText(c.name).width})();F(g,600,72,'GM');g.fillStyle=INK;g.fillText('WINS',76+(MARKS?ts+30:0)+nw+28,y+rh/2+3)}
-    F(g,650,112,'GM');g.letterSpacing='0px';const txt=c.has?c.mag:'NO CALL';const tw=g.measureText(txt).width;g.fillStyle=INK;g.fillText(txt,W-76-tw,y+rh/2+3);
-    if(c.has){const ss=66;tri(g,W-76-tw-ss-18,y+rh/2-ss*0.44,ss,c.dir==='UP',c.dir==='UP'?'#1fcf6b':'#ff4136')}g.globalAlpha=1})});
+  F(g,600,96,'GM');g.letterSpacing='6px';g.fillStyle=INK2;g.textBaseline='alphabetic';g.fillText('REAL MOVE',76,150);
+  F(g,600,260,'G');g.letterSpacing='-5px';const s=196;tri(g,76,206,s,SHOWUP,SHOWUP?'#1fcf6b':'#ff4136');g.fillStyle=INK;g.fillText(OUTMAG,76+s+36,384);
+  /* fix r1: the winner's row carries a yellow WINS pill under it (170 px here, about 57 px on screen); the other right-way row at 70% ink,
+     wrong-way rows at 40%, so one row reads as the winner */
+  const y0=452,EX=240,nW=CALLS.filter(c=>c.win).length,rh=(H-y0-46-nW*EX)/CALLS.length,ts=112,nx=76+(MARKS?ts+30:0);
+  g.fillStyle='rgba(16,26,58,.16)';g.fillRect(76,y0-22,W-152,3);let y=y0;
+  CALLS.forEach(c=>{const M=MODELS[c.m],zh=rh+(c.win?EX:0);
+    if(c.win){g.globalAlpha=1;g.fillStyle='#ffc72c';g.fillRect(40,y+14,16,zh-28)}
+    g.globalAlpha=c.win?1:c.ok?0.7:0.4;if(MARKS)tilePath(g,M,76,y+(rh-ts)/2,ts);F(g,650,104);g.letterSpacing='0px';g.fillStyle=INK;g.textBaseline='middle';g.fillText(c.name,nx,y+rh/2+3);
+    F(g,650,104,'GM');g.letterSpacing='0px';const txt=c.has?c.mag:'NO CALL';const tw=g.measureText(txt).width;g.fillStyle=INK;g.fillText(txt,W-76-tw,y+rh/2+3);
+    if(c.has){const ss=62;tri(g,W-76-tw-ss-18,y+rh/2-ss*0.44,ss,c.dir==='UP',c.dir==='UP'?'#1fcf6b':'#ff4136')}
+    if(c.win){g.globalAlpha=1;F(g,600,170,'GM');g.letterSpacing='12px';const pw=g.measureText('WINS').width-12+2*52,ph=EX-30,py=y+rh-8;
+      g.fillStyle='#ffc72c';g.beginPath();g.roundRect(nx-8,py,pw,ph,26);g.fill();g.fillStyle=INK;g.textBaseline='middle';g.fillText('WINS',nx-8+52,py+ph/2+8)}
+    g.globalAlpha=1;y+=zh})});
 {const b=new THREE.Mesh(new RoundedBoxGeometry(CW,CH,0.036,3,0.016),porcelain(0xfbfaf7));b.position.y=CH/2;CARD.userData.body=b;
   const piv=new THREE.Group();piv.position.y=0;CARD.add(piv);piv.add(b);
   const f=new THREE.Mesh(new THREE.PlaneGeometry(CW-0.012,CH-0.012),new THREE.MeshStandardMaterial({map:cardFront,roughness:0.5,metalness:0}));f.position.set(0,CH/2,0.018+0.0008);piv.add(f);
@@ -270,20 +279,32 @@ const SLABS=LADDER.map((L,i)=>{const G=new THREE.Group();STACK.add(G);const b=ne
   const fr=new THREE.Mesh(new THREE.PlaneGeometry(SW-0.01,SHh-0.01),new THREE.MeshStandardMaterial({map:slabTex(i,false),roughness:0.5,metalness:0,transparent:true,opacity:0,depthWrite:false}));fr.position.z=SD/2+0.0012;G.add(fr);
   let bar=null;if(i===0){bar=new THREE.Mesh(new RoundedBoxGeometry(0.028,SHh-0.02,0.012,2,0.004),new THREE.MeshStandardMaterial({color:0xffc72c,roughness:0.4,emissive:0xffc72c,emissiveIntensity:0.3}));bar.position.set(-SW/2+0.03,0,SD/2+0.004);G.add(bar)}
   return {G,fn,fr,bar}});
-/* WINS column header on the top slab's top face (read at the elevation) */
+/* fix r1: the WINS column header, printed on the top slab's top face above the number column. The face is seen at about 15 degrees, so the
+   letters are stretched 3.7x in depth to read upright from the B4 camera. It leaves with the names (10.50 to 10.75). */
+const HDRK=3.7;
+const hdrTex=cvTex(Math.round(SW*SPX),Math.round(SD*SPX),(g,c)=>{const W=c.width,H=c.height;g.clearRect(0,0,W,H);F(g,700,186,'GM');g.letterSpacing='10px';
+  const tw=g.measureText('WINS').width-10;g.save();g.translate(W-120-tw,H*0.9);g.scale(1,HDRK);g.fillStyle=INK;g.textBaseline='alphabetic';g.fillText('WINS',0,0);g.restore()});
+const HDR=new THREE.Mesh(new THREE.PlaneGeometry(SW-0.01,SD-0.01),new THREE.MeshStandardMaterial({map:hdrTex,transparent:true,roughness:0.5,metalness:0,depthWrite:false}));
+HDR.rotation.x=-Math.PI/2;HDR.position.y=SHh/2+0.0009;SLABS[0].G.add(HDR);
 const SLEEVE=new THREE.Group();STACK.add(SLEEVE);
 const SLW=SW+0.12,SLD=SD+0.12,SLH=4*SHh+3*SG+0.07;
-{const frost=(sd)=>{const m=new THREE.MeshPhysicalMaterial({color:0xffffff,roughness:0.55,metalness:0,transparent:true,opacity:0.6,side:sd,depthWrite:false,envMapIntensity:0.6});return m};
+/* fix r1: lighter frost (the ranks under it keep about 5:1), a navy hairline on every edge and a contact shadow, so the frozen stack is not
+   white on white at feed size */
+{const frost=(sd)=>{const m=new THREE.MeshPhysicalMaterial({color:0xffffff,roughness:0.55,metalness:0,transparent:true,opacity:0.3,side:sd,depthWrite:false,envMapIntensity:0.6});return m};
   const parts=[[SLW,SLH,0.012,0,SLH/2,SLD/2],[SLW,SLH,0.012,0,SLH/2,-SLD/2],[0.012,SLH,SLD,-SLW/2,SLH/2,0],[0.012,SLH,SLD,SLW/2,SLH/2,0]].map(([w,h,d,x,y,z])=>{const g=new RoundedBoxGeometry(w,h,d,2,0.005);g.translate(x,y,z);return g});
   const g=mergeGeometries(parts);[THREE.BackSide,THREE.FrontSide].forEach((sd,i)=>{const m=new THREE.Mesh(g,frost(sd));m.renderOrder=10+i*2;SLEEVE.add(m)});
-  const eg=new THREE.EdgesGeometry(new THREE.BoxGeometry(SLW,SLH,SLD));const e=new THREE.LineSegments(eg,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.9}));e.position.y=SLH/2;SLEEVE.add(e)}
+  const RW=0.0042,em=new THREE.MeshBasicMaterial({color:0x101a3a,transparent:true,opacity:0.6,toneMapped:false}),rods=[];
+  [-1,1].forEach(sx=>[-1,1].forEach(sz=>{const v=new THREE.BoxGeometry(RW,SLH,RW);v.translate(sx*SLW/2,SLH/2,sz*SLD/2);rods.push(v)}));
+  [0,SLH].forEach(y=>{[-1,1].forEach(sz=>{const h=new THREE.BoxGeometry(SLW,RW,RW);h.translate(0,y,sz*SLD/2);rods.push(h)});[-1,1].forEach(sx=>{const d=new THREE.BoxGeometry(RW,RW,SLD);d.translate(sx*SLW/2,y,0);rods.push(d)})});
+  const e=new THREE.Mesh(mergeGeometries(rods),em);e.renderOrder=13;SLEEVE.add(e)}
+const sleeveSh=shadowPlane(SLW,SLD,4,0.32);sleeveSh.position.set(0,0.0014,0);STACK.add(sleeveSh);
 const DIRT=[true,false].map(up=>{const G=new THREE.Group();STACK.add(G);const b=new THREE.Mesh(new RoundedBoxGeometry(0.32,0.32,0.05,3,0.014),porcelain(0xfbfaf7));G.add(b);
   const t=cvTex(512,512,g=>{tri(g,96,110,320,up,up?'#1fcf6b':'#ff4136')});const f=new THREE.Mesh(new THREE.PlaneGeometry(0.31,0.31),new THREE.MeshStandardMaterial({map:t,transparent:true,roughness:0.45}));f.position.z=0.0262;G.add(f);return G});
 const stackSh=shadows(STACK,SW+0.14,SD+0.14,0,0,1.0);
 
 /* =================== THE PAYOFF SET (the same tray and heap, a navy $EZ tile behind) =================== */
 const PAY=new THREE.Group();PAY.position.copy(PAYP);scene.add(PAY);
-const PTRAY=makeTray();PAY.add(PTRAY.G);shadows(PAY,TRW,TRD,0,0);
+const PTRAY=makeTray();PAY.add(PTRAY.G);const PSH=shadows(PAY,TRW,TRD,0,0);
 const PTILE=new THREE.Group();PTILE.position.set(0.50,0,-0.62);PAY.add(PTILE);
 const tileGlow={value:0};
 {const b=new THREE.Mesh(new RoundedBoxGeometry(0.5,0.5,0.07,3,0.018),navyMat());b.position.y=0.25+0.16;PTILE.add(b);
@@ -292,8 +313,9 @@ const tileGlow={value:0};
     const w=parts.reduce((s,p)=>s+g.measureText(p[0]).width,0)+12;let x=(620-w)/2;parts.forEach(p=>{g.fillStyle=p[1];g.fillText(p[0],x,430);x+=g.measureText(p[0]).width+6})});
   const mm=new THREE.MeshStandardMaterial({map:t,transparent:true,roughness:0.45,emissive:0xffffff,emissiveMap:t,emissiveIntensity:0.1});PTILE.userData.mm=mm;
   const m=new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.5),mm);m.position.set(0,0.41,0.0355);PTILE.add(m);shadows(PTILE,0.5,0.12,0,0,0.7);
-  const ht=cvTex(256,256,g=>{const gr=g.createRadialGradient(128,128,20,128,128,128);gr.addColorStop(0,'rgba(255,214,110,1)');gr.addColorStop(0.45,'rgba(255,199,44,.45)');gr.addColorStop(1,'rgba(255,199,44,0)');g.fillStyle=gr;g.fillRect(0,0,256,256)});
-  const halo=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.1),new THREE.MeshBasicMaterial({map:ht,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:0,toneMapped:false}));halo.position.set(0,0.41,-0.06);halo.renderOrder=5;PTILE.add(halo);PTILE.userData.halo=halo}
+  /* fix r1: the tile lights with a crisp yellow rim (the #1 marker's yellow) instead of a soft additive halo, which read as a smudge */
+  const rt=cvTex(256,256,g=>{g.filter='blur(5px)';g.fillStyle='#ffc72c';g.beginPath();g.roundRect(14,14,228,228,34);g.fill();g.filter='none';g.beginPath();g.roundRect(22,22,212,212,28);g.fill()});
+  const rim=new THREE.Mesh(new THREE.PlaneGeometry(0.66,0.66),new THREE.MeshBasicMaterial({map:rt,transparent:true,depthWrite:false,opacity:0,toneMapped:false}));rim.position.set(0,0.41,-0.045);rim.renderOrder=5;PTILE.add(rim);PTILE.userData.rim=rim}
 
 /* =================== CAMERA: long lens, lens shift (verticals straight), pk = how much of the elevation is real pitch =================== */
 const cam=new THREE.PerspectiveCamera(22,1,0.05,80);const V3=new THREE.Vector3();
@@ -310,16 +332,22 @@ const drift=(o,rate,dt)=>Object.assign({},o,{dist:o.dist*(1-rate*dt)});
 const CAM=Q.get('cam')?JSON.parse(Q.get('cam')):{};
 const P0=Object.assign({tgt:[POTX,0.70,0],dist:7.5,el:11,az:20,fov:22,sx:900,sy:368,pk:0},CAM.P0||{});
 const A2=Object.assign({tgt:[XI,YR-0.16,0],dist:4.95,el:7,az:-10,fov:18,sx:540,sy:430,pk:0},CAM.A2||{});
-const B2H=Object.assign({tgt:[XI,1.72,0],dist:8.2,el:4,az:0,fov:20,sx:805,sy:200,pk:0},CAM.B2H||{});
-const C3=Object.assign({tgt:[CARDP.x,CH/2,0],dist:5.05,el:5,az:-8,fov:22,sx:540,sy:452,pk:0.3},CAM.C3||{});
+/* fix r1: B2b a little wider (dist 8.2 -> 9.3, sx 805 -> 815): the 31% dish is in frame and the $ pot clears the legend */
+const B2H=Object.assign({tgt:[XI,1.72,0],dist:9.3,el:4,az:0,fov:20,sx:815,sy:200,pk:0},CAM.B2H||{});
+/* fix r1: the card in a right column (sx 540 -> 800, dist 5.05 -> 5.2), the caption in a left column beside it */
+const C3=Object.assign({tgt:[CARDP.x,CH/2,0],dist:5.2,el:5,az:-8,fov:22,sx:800,sy:452,pk:0.3},CAM.C3||{});
 const S4a=Object.assign({tgt:[STACKP.x,0.42,0],dist:6.6,el:18,az:-12,fov:22,sx:540,sy:500,pk:0.35},CAM.S4a||{});
 const S4b=Object.assign({tgt:[STACKP.x,0.42,0],dist:6.8,el:16,az:0,fov:22,sx:540,sy:510,pk:0.35},CAM.S4b||{});
-const P5=Object.assign({tgt:[0.05,0.55,0.1],dist:9.3,el:8,az:14,fov:26,sx:670,sy:530,pk:0},CAM.P5||{});
-const H6=Object.assign({tgt:[PAYP.x,0.32,-0.2],dist:8.9,el:24,az:0,fov:22,sx:270,sy:528,pk:0.35},CAM.H6||{});
+/* fix r1: B4b eases back a little as #1 rises, so #1 and the direction tiles stay under "ON HYPERLIQUID" (y 204 to 260) */
+const S4c=Object.assign({},S4b,{dist:8.0,sy:548},CAM.S4c||{});
+/* fix r1: B5 framed wider and lower right (dist 9.3 -> 10.6, sx 670 -> 742, sy 530 -> 574): nothing above y 470 at x < 600, under the 10x pair */
+const P5=Object.assign({tgt:[0.05,0.55,0.1],dist:10.6,el:8,az:14,fov:26,sx:742,sy:574,pk:0},CAM.P5||{});
+/* fix r1: B6 framed wider and lower (dist 8.9 -> 9.8, sy 528 -> 550) under the raised captions: the heap and the arcs stay below y 380 */
+const H6=Object.assign({tgt:[PAYP.x,0.32,-0.2],dist:9.8,el:24,az:0,fov:22,sx:270,sy:550,pk:0.35},CAM.H6||{});
 const M7=Object.assign({tgt:[CHIPP.x+0.15,0.2,-0.35],dist:5.2,el:24,az:6,fov:22,sx:540,sy:520,pk:0.5},CAM.M7||{});
 chip.updateMatrixWorld(true);const LEDW=new THREE.Vector3(PX(1010),CT,PZ(707)).applyMatrix4(chip.matrixWorld);
 const C7=Object.assign({tgt:[LEDW.x,LEDW.y,LEDW.z],dist:3.45,el:56,az:2,fov:22,sx:585,sy:404,pk:1},CAM.C7||{});
-window.R2_CAMS={P0,A2,B2H,C3,S4a,S4b,P5,H6,M7,C7};
+window.R2_CAMS={P0,A2,B2H,C3,S4a,S4b,S4c,P5,H6,M7,C7};
 /* B1 push-in: 3 %/s, from rest (so the loop seam has no jump); B7 pull-back arrives at P0 at rest on the last frame */
 const b1Cam=t=>{const s=t-0.6*(1-Math.exp(-t/0.6));return Object.assign({},P0,{dist:P0.dist*(1-0.03*s)})};
 
@@ -327,14 +355,14 @@ const b1Cam=t=>{const s=t-0.6*(1-Math.exp(-t/0.6));return Object.assign({},P0,{d
 const vis=(o,v)=>{o.visible=v};
 const QA=new THREE.Quaternion(),QB=new THREE.Quaternion();const PV=new THREE.Vector3(),PW=new THREE.Vector3(),PU=new THREE.Vector3();
 let SPLIT=null,camNow=null;
-function setSets(s){vis(POTW,s===1||s===2||s===5||s===7);vis(PLINTH,s===1||s===2||s===5||s===7);vis(TRAY.G,s===1||s===5||s===7);vis(chip,s===1||s===5||s===7);chip.userData.sh.forEach(m=>vis(m,s===1||s===5||s===7));
+function setSets(s){vis(POTW,s===1||s===2||s===5||s===7);vis(PLINTH,s===1||s===2||s===5||s===7);vis(TRAY.G,s===1||s===5||s===7);vis(chip,s===1||s===7);chip.userData.sh.forEach(m=>vis(m,s===1||s===7));
   vis(DISH,s===2);vis(FEE,s===2);vis(FORK,s===2);vis(CARD,s===3);vis(STACK,s===4);vis(PAY,s===6)}
 /* falling into the pot from the wide arm (B1, the refill): from above the frame to the slot */
 function fallCoin(k,tt,slot,spawn){/* tt = time since start, F = duration */const u=cl(tt/B1F);const p=potSlot(slot).clone();
   const R0=rng(1000+k);const sx=POTX-0.5+0.5+(R0()-0.5)*0.12,sz=(R0()-0.5)*0.12;const y0=1.95;
   PV.set(mix(sx,p.x,EIO(u)),mix(y0,p.y,0.45*u+0.55*u*u),mix(sz,p.z,EIO(u)));QA.copy(tumble(k,tt));const qs=new THREE.Quaternion().setFromEuler(new THREE.Euler(0,0,0));
   QB.copy(slot.q).premultiply(POTI.getWorldQuaternion(qs));QA.slerp(QB,sm(lin(u,0.82,1)));putCoin(PV,QA)}
-function streamPot(t,cycle){/* B1 (cycle time t) and the refill (t-24): coins 0.. landing in POT_B1 */
+function streamPot(t,cycle){/* B1 (cycle time t) and the refill (t-DUR): coins 0.. landing in POT_B1 */
   for(let k=0;k<POT_B1.length;k++){const s0=b1Start(k);if(s0>t)break;const tt=t-s0;if(tt>=B1F){CV.copy(potSlot(POT_B1[k]));putCoin(CV.clone(),QB.copy(POT_B1[k].q))}else fallCoin(k,tt,POT_B1[k])}}
 /* the fork path of stream coin i at time t (B2) */
 const FA=0.26,FB=0.16,FCW=0.10,FCN0=0.03,FCN1=0.19,FDW=0.36,FDN=0.12;
@@ -346,7 +374,8 @@ function forkCoin(i,t,potIdx,dishIdx){const s0=stSpawn(i);const pre=i<4?0.34:0;c
   let x=tt-pre;const pot=toPot(i);const jx=(R0()-0.5)*0.12;
   const wideX=XD-WWID/2+(R0()-0.5)*(WWID-2*COIN_R-0.04);
   const spin=QB.setFromAxisAngle(new THREE.Vector3(0,0,1),-(x*2.6)/COIN_R*0.25);
-  if(x<FA){const u=x/FA;PV.set(XI+jx*Math.min(1,u*1.6),mix(YFUN1,YIN,0.6*u+0.4*u*u),0);QA.copy(QFACE).premultiply(spin);putCoin(PV,QA);return}x-=FA;
+  if(x<FA){const u=x/FA;PV.set(XI+jx*Math.min(1,u*1.6),mix(YFUN1,YIN,0.6*u+0.4*u*u),0);QA.copy(QFACE).premultiply(spin);
+    if(i>=4)QA.premultiply(QB.setFromAxisAngle(new THREE.Vector3(1,0,0),(0.55+0.4*R0())*(i%2?1:-1)*Math.sin(Math.PI*Math.min(1,u*1.15))));putCoin(PV,QA);return}x-=FA;
   const xc=pot?wideX:XNC0;
   if(x<FB){const u=x/FB;PV.set(mix(XI+jx,xc,sm(u)),mix(YIN,YSPLIT,u),0);QA.copy(QFACE).premultiply(spin);putCoin(PV,QA);return}x-=FB;
   if(pot){if(x<FCW){const u=x/FCW;PV.set(xc,mix(YSPLIT,YEXITW,u),0);QA.copy(QFACE).premultiply(spin);putCoin(PV,QA);return}x-=FCW;
@@ -360,13 +389,13 @@ function forkCoin(i,t,potIdx,dishIdx){const s0=stSpawn(i);const pre=i<4?0.34:0;c
   putCoin(PV.copy(PU),sl.q)}
 const STL=(()=>{/* landing times of the stream (sound + QA) */let pi=0,di=0;const out=[];for(let i=0;i<STN;i++){const pot=toPot(i);const s=stSpawn(i)+(i<4?0.34:0)+FA+FB+(pot?FCW+FDW:FCN0+FCN1+FDN);out.push({i,pot,land:s,idx:pot?pi++:di++})}return out})();
 STL.forEach(o=>{if(o.land<6.5)(o.pot?PIC.b2pot:PIC.b2dish).push([o.land,o.pot?(N2+o.idx)/(N2+60):0])});
-for(let k=0;k<POT_B1.length;k++){const l=b1Land(k);if(l>=0&&l<3)PIC.b1.push(l);const l2=l+24;if(l2>=T.refill&&l2<24)PIC.b1.push(l2)}
+for(let k=0;k<POT_B1.length;k++){const l=b1Land(k);if(l>=0&&l<3)PIC.b1.push(l);const l2=l+DUR;if(l2>=T.refill&&l2<DUR)PIC.b1.push(l2)}
 /* the pour (B5): each coin of POT_B5 rides the tipping pot, slides to the lip, flies onto TRAY_SL in release order */
-const TIPA=38*D2R;const tipAt=t=>t<T.tip1?TIPA*EA(lin(t,T.hit,T.tip1)):TIPA*(1-EIO(lin(t,T.tip1,T.right1)));
+const TIPA=(+(Q.get('tipa')||54))*D2R;   /* fix r1: 38 -> 54 degrees: the lip drops below the type band (y 470) and the pour reads stronger */const tipAt=t=>t<T.tip1?TIPA*EA(lin(t,T.hit,T.tip1)):TIPA*(1-EIO(lin(t,T.tip1,T.right1)));
 const POUR=(()=>{const n=POT_B5.length,ymax=Math.max(...POT_B5.map(s=>s.p.y));const R0=rng(77);
   const ord=POT_B5.map((s,k)=>({k,score:(1-s.p.y/ymax)*0.75+(s.p.x+0.46)/0.92*0.25+R0()*0.05})).sort((a,b)=>a.score-b.score);
   const rel=new Array(n),tray=new Array(n);ord.forEach((o,r)=>{rel[o.k]=T.pour0+0.30*r/n+0.01*R0();tray[o.k]=r});return {rel,tray}})();
-const SLA=0.07,FLY=0.27;
+const SLA=0.07,FLY=0.27,POURB=+(Q.get('pourb')||0.03);
 for(let k=0;k<POT_B5.length;k+=12)PIC.pourLand.push(POUR.rel[k]+SLA+FLY);
 const potMatAt=(t)=>{POTW.rotation.z=tipAt(t);POTW.updateMatrixWorld(true);return POTI.matrixWorld.clone()};
 function pourCoins(t){const Mt=potMatAt(t);const qPot=new THREE.Quaternion().setFromRotationMatrix(Mt);
@@ -374,30 +403,49 @@ function pourCoins(t){const Mt=potMatAt(t);const qPot=new THREE.Quaternion().set
     if(t<r){PV.set(s.p.x,WALL+s.p.y,s.p.z).applyMatrix4(Mt);QA.copy(s.q).premultiply(qPot);putCoin(PV,QA);continue}
     const Mr=potMatAt(Math.min(t,r+SLA));const lipL=PU.set(-0.47,1.0,s.p.z*0.8).applyMatrix4(Mr).clone();
     if(t<r+SLA){const u=(t-r)/SLA;PV.set(mix(s.p.x,-0.47,u*u),mix(WALL+s.p.y,1.0,u),mix(s.p.z,s.p.z*0.8,u)).applyMatrix4(Mr);const qr=new THREE.Quaternion().setFromRotationMatrix(Mr);QA.copy(s.q).premultiply(qr);putCoin(PV,QA);continue}
-    traySlot(TRAY,ts,PW);const u=cl((t-r-SLA)/FLY);if(u<1){const e=u;PV.set(mix(lipL.x,PW.x,e),mix(lipL.y,PW.y,e)+0.18*Math.sin(Math.PI*e)*(1-e)-0.0*e,mix(lipL.z,PW.z,e));
+    traySlot(TRAY,ts,PW);const u=cl((t-r-SLA)/FLY);if(u<1){const e=u;PV.set(mix(lipL.x,PW.x,e),mix(lipL.y,PW.y,e)+POURB*Math.sin(Math.PI*e)*(1-e),mix(lipL.z,PW.z,e));
       QA.copy(tumble(k,t-r));QA.slerp(ts.q,sm(lin(u,0.75,1)));putCoin(PV,QA);continue}
     putCoin(PW,ts.q)}
   potMatAt(t)}
 function trayHeap(tr,n,s=1){for(let k=0;k<n;k++){traySlot(tr,TRAY_SL[k],PW);QA.copy(TRAY_SL[k].q).premultiply(tr.body.getWorldQuaternion(QB));putCoin(PW,QA,s)}}
 /* the payoff: left, the top layer (the profit) arcs into the $EZ tile; right, the tray tips back and the heap slides off its rear edge */
-const PROF=(()=>{const idx=TRAY_SL.map((s,k)=>k).sort((a,b)=>TRAY_SL[b].p.y-TRAY_SL[a].p.y).slice(0,26);return new Set(idx)})();
+/* fix r1: B6 runs T.b6 to T.b7 (3.0 s). PO shifts the payoff's sound cues, authored against B6 at 17.00. */
+const PO=T.b6-17;
+/* left (right call): the top PROFN coins (the profit layer) arc into the $EZ tile, which lights and stays lit; the rest stays */
+const PROFN=44,ARC=0.28;
+const PROF=(()=>{const idx=TRAY_SL.map((s,k)=>k).sort((a,b)=>TRAY_SL[b].p.y-TRAY_SL[a].p.y).slice(0,PROFN);return new Set(idx)})();
 const profOrder=[...PROF];
-function payState(t,left){PTRAY.pivot.position.set(0,0,-TRD/2);PTRAY.body.position.set(0,0,TRD/2);
-  const tip=left?0:(-24*D2R)*(t<17.4?EA(lin(t,T.pay0,17.4)):1-EIO(lin(t,17.55,T.pay1)));PTRAY.pivot.rotation.x=tip;PAY.updateMatrixWorld(true);
+/* right (wrong call): the tray tips PTIP on its outer (right) bottom edge, which stays on the floor, so the ▲ ▼ face keeps the same light
+   as the left half; the heap slides off that end, drops to the floor and slides out of frame; the tray settles back, empty. The contact
+   shadow follows the lift: the core shrinks toward the grounded edge and fades, the soft part fades; never darker than at rest. */
+const PTIP=16*D2R,PSLIDE=0.34,PG=7.5;
+const tipPay=t=>PTIP*(t<T.pay0+0.5?EA(lin(t,T.pay0,T.pay0+0.32)):1-EIO(lin(t,T.pay0+0.5,T.pay1)));
+const PE=new THREE.Vector3(),PE2=new THREE.Vector3(),PVv=new THREE.Vector3();
+function slideLocal(ts,u,out){const ex=TRW/2+0.07;out.set(mix(ts.p.x,ex,Math.pow(u,1.6)),TRH+mix(ts.p.y,COIN_T/2+0.012,sm(Math.min(1,u*1.5)))+0.08*sm(lin(u,0.72,1)),ts.p.z);return out}
+function payState(t,left){PTRAY.pivot.position.set(TRW/2,0,0);PTRAY.body.position.set(-TRW/2,0,0);
+  const tip=left?0:tipPay(t);PTRAY.pivot.rotation.z=-tip;PAY.updateMatrixWorld(true);
+  {/* k: the lifted end's height over 0.15 (QA: opacity x (1 - lift/0.15)); a thin strip stays at the grounded edge */
+    const k=Math.min(1,TRW*Math.sin(tip)/0.15),[a,b]=PSH;const f=1-0.92*k;a.scale.x=f;a.position.x=TRW/2*(1-f);a.material.opacity=a.userData.op*Math.max(0.15,1-k);
+    b.scale.x=1+0.1*k;b.position.x=TRW/2*0.05*k;b.material.opacity=b.userData.op*(1-0.6*k)}
   const tq=PTRAY.body.getWorldQuaternion(new THREE.Quaternion());
-  {const u=lin(t,17.62,17.98),L=left?sm(u)*0.8+0.7*Math.sin(Math.PI*u):0;PTILE.userData.mm.emissiveIntensity=0.1+L;PTILE.userData.halo.material.opacity=0.55*Math.min(1,L);PTILE.userData.halo.visible=L>0.001}
+  {const u=lin(t,17.62+PO,17.98+PO),L=left?sm(u)*0.85+0.6*Math.sin(Math.PI*u):0;PTILE.userData.mm.emissiveIntensity=0.1+0.8*L;PTILE.userData.rim.material.opacity=Math.min(1,L);PTILE.userData.rim.visible=L>0.001}
   const tileP=new THREE.Vector3(0.50,0.41,-0.62+0.05).add(PAYP);
   for(let k=0;k<TRAY_SL.length;k++){const ts=TRAY_SL[k];traySlot(PTRAY,ts,PW);
     if(left){if(!PROF.has(k)){QA.copy(ts.q).premultiply(tq);putCoin(PW,QA);continue}
-      const r=profOrder.indexOf(k),t0=T.pay0+0.32*r/profOrder.length,u=cl((t-t0)/0.42);if(u<=0){QA.copy(ts.q).premultiply(tq);putCoin(PW,QA);continue}if(u>=1)continue;
-      const e=EIO(u);PV.set(mix(PW.x,tileP.x,e),mix(PW.y,tileP.y,e)+0.32*Math.sin(Math.PI*e),mix(PW.z,tileP.z,e));QA.copy(ts.q).slerp(QFACE,e);putCoin(PV,QA,1-sm(lin(u,0.75,1)));continue}
-    /* right: slide toward the rear edge once the tip passes 10 degrees, then drop and vanish behind the tray */
-    const rk=(ts.p.z+0.3)/0.6,t0=17.18+0.22*(1-rk)+0.06*((k*37)%11)/11,u=cl((t-t0)/0.34);
-    if(u<=0){QA.copy(ts.q).premultiply(tq);putCoin(PW,QA);continue}if(u>=1)continue;
-    const lp=PU.set(ts.p.x,TRH+ts.p.y,ts.p.z-(ts.p.z+TRD/2+0.06)*Math.min(1,u*1.6)).applyMatrix4(PTRAY.body.matrixWorld);const drop=Math.max(0,u-0.55)/0.45;
-    PV.set(lp.x,lp.y-0.5*drop*drop,lp.z-0.1*drop);QA.copy(ts.q).premultiply(tq);putCoin(PV,QA,1-sm(lin(drop,0.3,1)))}
+      const r=profOrder.indexOf(k),t0=T.pay0+0.36*r/PROFN,u=cl((t-t0)/0.42);if(u<=0){QA.copy(ts.q).premultiply(tq);putCoin(PW,QA);continue}if(u>=1)continue;
+      const e=EIO(u);PV.set(mix(PW.x,tileP.x,e),mix(PW.y,tileP.y,e)+ARC*Math.sin(Math.PI*e),mix(PW.z,tileP.z,e));QA.copy(ts.q).slerp(QFACE,e);putCoin(PV,QA,1-sm(lin(u,0.72,1)));continue}
+    const t0=T.pay0+0.12+0.14*(0.5-ts.p.x)-0.15*ts.p.y+0.03*((k*37)%11)/11,dt=t-t0;
+    if(dt<=0){QA.copy(ts.q).premultiply(tq);putCoin(PW,QA);continue}
+    if(dt<PSLIDE){slideLocal(ts,dt/PSLIDE,PV).applyMatrix4(PTRAY.body.matrixWorld);QA.copy(ts.q).premultiply(tq);putCoin(PV,QA);continue}
+    /* off the end: the exit point and velocity (finite difference at the end of the slide), then gravity, then a floor slide out of frame */
+    slideLocal(ts,1,PE).applyMatrix4(PTRAY.body.matrixWorld);slideLocal(ts,0.97,PE2).applyMatrix4(PTRAY.body.matrixWorld);
+    PVv.subVectors(PE,PE2).multiplyScalar(1/(0.03*PSLIDE));const df=dt-PSLIDE,yf=COIN_T/2+0.002,vy=PVv.y;
+    const tl=(vy+Math.sqrt(vy*vy+2*PG*Math.max(0,PE.y-yf)))/PG;let x,y,z;
+    if(df<tl){x=PE.x+PVv.x*df;y=PE.y+vy*df-0.5*PG*df*df;z=PE.z+PVv.z*df*0.3;QA.copy(tumble(k,df*0.5)).slerp(ts.q,0.5)}
+    else{const d2=df-tl,tau=0.45,vx=Math.max(1.2,PVv.x);x=PE.x+PVv.x*tl+vx*tau*(1-Math.exp(-d2/tau));y=yf;z=PE.z+PVv.z*tl*0.3;QA.copy(ts.q).slerp(QB.identity(),0.8)}
+    if(x-PAYP.x>1.6)continue;PV.set(x,y,z);putCoin(PV,QA)}
 }
-PIC.payL=[17.18,17.4,17.62,17.85];PIC.payR=[17.12,17.35,17.6,17.85];
+PIC.payL=[17.18,17.4,17.62,17.85].map(x=>x+PO);PIC.payR=[17.12,17.35,17.6,17.85].map(x=>x+PO);
 /* the leaderboard stack */
 const FAN=[[-0.05,-0.035],[0.045,0.03],[0.06,-0.025],[-0.035,0.04]];
 function stackState(t){const sq=EIO(lin(t,11.55,T.lid1)),nm=EOUT(lin(t,T.nm0,T.nm1));
@@ -406,10 +454,11 @@ function stackState(t){const sq=EIO(lin(t,11.55,T.lid1)),nm=EOUT(lin(t,T.nm0,T.n
   /* names out: the named face stays as the slab's base colour; the rank face covers it */
   SLABS.forEach(s=>{s.fn.visible=nm<0.999;s.fr.visible=nm>0.001});
   const ly=(1-EIO(lin(t,T.lid0,T.lid1)))*1.25;SLEEVE.position.y=ly;SLEEVE.visible=t>=T.lid0-0.001;
+  sleeveSh.visible=SLEEVE.visible;sleeveSh.material.opacity=sleeveSh.userData.op*sm(cl(1-ly/0.5));HDR.material.opacity=1-nm;HDR.visible=nm<0.999;
   /* B4b: #1 lifts out of the sleeve; the two direction tiles rise either side */
   const lu=EA(lin(t,T.b4b,T.lift1));const s0=SLABS[0];s0.G.position.y+=0.42*lu;s0.G.position.z+=0.06*lu;
   const tu=EA(lin(t,T.b4b+0.1,T.lift1+0.05));DIRT.forEach((g,j)=>{const sc=EOUT(lin(tu,0,0.35));g.scale.setScalar(Math.max(sc,0.001));g.position.set((j?1:-1)*(SW/2+0.18),mix(0.17,s0.G.position.y+0.02,tu),0.14);g.visible=tu>0.001;g.rotation.y=(j?-1:1)*0.12})}
-const camB4=t=>{const o=lerpCam(S4a,S4b,EIO(lin(t,T.b4,T.b4b)));return o};
+const camB4=t=>{const o=lerpCam(S4a,S4b,EIO(lin(t,T.b4,T.b4b)));return t<T.b4b-0.1?o:lerpCam(S4b,S4c,EIO(lin(t,T.b4b-0.1,T.lift1+0.1)))};
 /* the state */
 function setState(t){NC=0;SPLIT=null;const s=shotOf(t);setSets(s);SWP.amp.value=0;
   POTW.rotation.z=0;POTW.updateMatrixWorld(true);PLINTH.updateMatrixWorld(true);TRAY.G.updateMatrixWorld(true);
@@ -418,7 +467,9 @@ function setState(t){NC=0;SPLIT=null;const s=shotOf(t);setSets(s);SWP.amp.value=
     const u=lin(t,0.5,1.7);SWP.amp.value=Math.sin(Math.PI*u)*1.0;SWP.dir.value.w=mix(-0.7,2.4,EIO(u))}
   else if(s===2){if(t<T.b2b)o=drift(A2,0.01,t-T.b2a);else{const u=EA(lin(t,T.b2b,T.crane1));o=lerpCam(drift(A2,0.01,1.5),B2H,u);if(t>T.crane1)o=drift(B2H,0.03,t-T.crane1)}
     /* tags slide in, dock, shed */
-    const du=EOUT(lin(t,T.b2a,T.dock));TAGB.position.set(XI-mix(1.7,TAGX,du),YR-0.11,0);TAGS.position.set(XI+mix(1.7,TAGX,du),YR-0.11,0);
+    const du=0.85+0.15*EOUT(lin(t,T.b2a,T.dock));TAGB.position.set(XI-mix(1.7,TAGX,du),YR-0.11,0);TAGS.position.set(XI+mix(1.7,TAGX,du),YR-0.11,0);
+    {let pb=0,ps=0;T.sheds.forEach((ts0,i)=>{const d=t-ts0,v=d>=0&&d<0.22?Math.sin(Math.PI*d/0.22):0;if(i%2)ps=Math.max(ps,v);else pb=Math.max(pb,v)});
+      TAGB.scale.setScalar(1+0.07*pb);TAGS.scale.setScalar(1+0.07*ps)}
     for(let k=0;k<N2;k++)putCoin(PV.copy(potSlot(POT_B2[k])),POT_B2[k].q);
     for(let k=0;k<ND2;k++){dishSlot(DISH_SL[k],PU);putCoin(PU,DISH_SL[k].q)}
     let pi=0,di=0;for(let i=0;i<STN;i++){const p=toPot(i);forkCoin(i,t,pi,di);if(p)pi++;else di++}}
@@ -427,11 +478,11 @@ function setState(t){NC=0;SPLIT=null;const s=shotOf(t);setSets(s);SWP.amp.value=
   else if(s===5){o=drift(P5,0.03,t-T.hit);pourCoins(t);led=ledAt(t);}
   else if(s===6){SPLIT={t};o=H6}
   else{/* B7 + B8: mid shot -> push into the dies -> hold -> pull back to P0 (at rest on the last frame) */
-    if(t<T.push1)o=lerpCam(M7,C7,EA(lin(t,T.b7,T.push1)));else if(t<T.pull0)o=drift(C7,0.015,t-T.push1);
-    else{const u=lin(t,T.pull0,DUR-1/FPS);const e=EIO(u);const from=drift(C7,0.015,T.pull0-T.push1);o=lerpCam(from,P0,e);o.pk=mix(from.pk,0,sm(Math.min(1,u*1.6)))}
+    if(t<T.push1)o=lerpCam(M7,C7,EA(lin(t,T.b7,T.push1)));else if(t<T.pull0)o=drift(C7,0.03,t-T.push1);
+    else{const u=lin(t,T.pull0,DUR-1/FPS);const e=EIO(u);const from=drift(C7,0.03,T.pull0-T.push1);o=lerpCam(from,P0,e);o.pk=mix(from.pk,0,sm(Math.min(1,u*1.6)))}
     led=ledAt(t);if(t<T.trayOut)trayHeap(TRAY,TRAY_SL.length);
-    if(t>=T.refill)streamPot(t-24)}
-  if(led!=null)setLED(led);
+    if(t>=T.refill)streamPot(t-DUR)}
+  if(led!=null)setLED(led);glowMat.opacity=ledGlowAt(t);
   camNow=o;if(!SPLIT){place(o);endCoins()}
   return o}
 function render(t){const o=setState(t);
@@ -442,9 +493,9 @@ function render(t){const o=setState(t);
 
 /* =================== SUBFRAMES AND THE PLATE =================== */
 function nsAt(t){if(NSQ)return NSQ;const s=shotOf(t);
-  if(s===1)return 2;if(s===2)return t<T.crane1?3:2;if(s===3)return (t>=T.flip0-0.02&&t<T.flip1+0.04)?4:1;
+  if(s===1)return 2;if(s===2)return t<T.b2b?3:t<T.crane1+0.02?8:2;if(s===3)return (t>=T.flip0-0.02&&t<T.flip1+0.04)?4:1;
   if(s===4)return ((t>=T.lid0&&t<T.lid1+0.04)||(t>=T.b4b&&t<T.lift1+0.08))?2:1;
-  if(s===5)return t<T.pour1+0.12?7:2;if(s===6)return (t>=T.pay0&&t<T.pay1+0.06)?3:1;
+  if(s===5)return t<T.pour1+0.12?7:2;if(s===6)return (t>=T.pay0&&t<T.pay0+1.25)?3:1;
   return t>=T.refill?2:1}
 const acc=new Uint16Array(1080*1080*4);
 function plate(t){const s=shotOf(t),ns=nsAt(t),a=SHOTS[s-1],b=SHOTS[s]-1e-4;
