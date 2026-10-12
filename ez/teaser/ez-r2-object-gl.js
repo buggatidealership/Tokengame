@@ -340,8 +340,8 @@ const S4a=Object.assign({tgt:[STACKP.x,0.42,0],dist:6.6,el:18,az:-12,fov:22,sx:5
 const S4b=Object.assign({tgt:[STACKP.x,0.42,0],dist:6.8,el:16,az:0,fov:22,sx:540,sy:510,pk:0.35},CAM.S4b||{});
 /* fix r1: B4b eases back a little as #1 rises, so #1 and the direction tiles stay under "ON HYPERLIQUID" (y 204 to 260) */
 const S4c=Object.assign({},S4b,{dist:8.0,sy:548},CAM.S4c||{});
-/* fix r1: B5 framed wider and lower right (dist 9.3 -> 10.6, sx 670 -> 748, sy 530 -> 574): nothing above y 470 at x < 600, under the 10x pair */
-const P5=Object.assign({tgt:[0.05,0.55,0.1],dist:10.6,el:8,az:14,fov:26,sx:748,sy:574,pk:0},CAM.P5||{});
+/* fix r1: B5 framed wider and lower right (dist 9.3 -> 10.6, sx 670 -> 756, sy 530 -> 579): nothing above y 470 at x < 600, under the 10x pair */
+const P5=Object.assign({tgt:[0.05,0.55,0.1],dist:10.6,el:8,az:14,fov:26,sx:756,sy:579,pk:0},CAM.P5||{});
 /* fix r1: B6 framed wider and lower (dist 8.9 -> 9.8, sy 528 -> 550) under the raised captions: the heap and the arcs stay below y 380 */
 const H6=Object.assign({tgt:[PAYP.x,0.32,-0.2],dist:9.8,el:24,az:0,fov:22,sx:270,sy:550,pk:0.35},CAM.H6||{});
 const M7=Object.assign({tgt:[CHIPP.x+0.15,0.2,-0.35],dist:5.2,el:24,az:6,fov:22,sx:540,sy:520,pk:0.5},CAM.M7||{});
