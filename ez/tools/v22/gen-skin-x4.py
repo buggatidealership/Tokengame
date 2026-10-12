@@ -21,7 +21,7 @@ What it does, colour only (it never emits a size, radius, spacing, width, offset
      tiles) set dark --ink / --ink2 / --dim / --on-ez / --on-slab and dark text; paper, washes, navy and foil set the
      light ones back; a fill removed again inherits them. X2's selected states (navy pill, white text) become X3's
      pressed state: its raised surface (#222733) with light text; X2's rainbow foil (#1) X3's raised surface with a yellow ring; X2's yellow shimmer (wins) X3's yellow tint
-     with a yellow-edged ring (X3: .cg-c.w); X2's colour washes X3's tint strength; X2's sunburst X3's plain surface.
+     with a yellow-edged ring (X3: .cg-c.w); X2's colour washes X3's tint strength; X2's sunburst keeps its rays in X3's yellow at 30%.
   5. where X3 gives one of X2's elements a colour treatment of its own, X4 takes X3's colours (X3_SAME below), and the
      fee diagram's short connector lines, which X2 fills with ink, take the line colour like the brackets they hang
      from (STEMS below).
@@ -274,11 +274,11 @@ def tint(v):
     return re.sub(r'color-mix\(in srgb,\s*#2f7fe0\s+\d+%,\s*var\(--card\)\)', 'var(--x-s2)', v)
 
 def rays(v):
-    """the sunburst on sealed and upcoming rounds: X3 draws a plain raised surface there (skin-x3.css: .sealart),
-    so each layer (the disc, the rays) becomes a flat layer of X3's --x-s2; the layer count stays X2's, so the per-layer
-    background lists (clip, origin, attachment) are unchanged"""
+    """the sunburst on sealed and upcoming rounds: X2's geometry (the disc, the rays) stays, only the colours change.
+    The yellow rays become X3's yellow at 30% on the card colour, alternating with the card; the disc stays the card.
+    (A flat surface here removed a visible X2 element, which X4 must not do.)"""
     if 'repeating-conic-gradient(' not in v: return v
-    return ','.join('linear-gradient(var(--x-s2),var(--x-s2))' for _ in split_top(v, ','))
+    return re.sub(r'var\(--yel\)|#ffc72c', 'color-mix(in srgb,var(--x-yel) 30%,var(--card))', v)
 
 def map_decl(lh, v, ctx):
     """X4 value for one colour longhand, or None when it does not change"""
