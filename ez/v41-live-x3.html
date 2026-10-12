@@ -4311,12 +4311,12 @@ html.x3 .ufs select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
   <section class="sec" id="bet" aria-labelledby="betH">
     <div class="sh"><div class="tx"><span class="no">03</span><span class="eb">The buyback</span><h2 id="betH">One AI, one job: buy back <span class="mark ezb"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span></h2></div>
       </div>
-    <div class="gpu" id="gpu" hidden><div class="gpu-c"><div class="gpu-img"><img src="media/ez-gpu2.jpg" srcset="media/ez-gpu2-1200.jpg 1200w, media/ez-gpu2.jpg 2000w" sizes="(max-width:800px) 100vw, 900px" width="2000" height="1500" loading="lazy" decoding="async" alt="A GPU package with a live countdown to NVIDIA's earnings lit up in its cores"><svg class="gpu-core" id="gpuCore" viewBox="0 0 2000 1500" role="timer" aria-hidden="true"></svg><span class="sr" id="gpuSr"></span></div></div><p class="gpu-t">When the timer hits zero, we place a bet on NVIDIA's earnings at <b id="gpuLev"></b> leverage on Hyperliquid. The call comes from the AI on top of the leaderboard at that moment.</p></div>
+    <div class="gpu" id="gpu" hidden><div class="gpu-c"><div class="gpu-img"><img src="media/ez-gpu2.jpg" srcset="media/ez-gpu2-1200.jpg 1200w, media/ez-gpu2.jpg 2000w" sizes="(max-width:800px) 100vw, 900px" width="2000" height="1500" loading="lazy" decoding="async" alt="A GPU package with a live countdown to NVIDIA's earnings lit up in its cores"><svg class="gpu-core" id="gpuCore" viewBox="0 0 2000 1500" role="timer" aria-hidden="true"></svg><span class="sr" id="gpuSr"></span></div></div><p class="gpu-t">When the timer hits zero, we place a bet on NVIDIA's earnings at <b id="gpuLev"></b> leverage on Hyperliquid. <span id="gpuCall">The call comes from the AI on top of the leaderboard at that moment.</span></p></div>
     <div class="mt" id="bbf" role="group" aria-label="Where the money goes">
       <p class="mt-top"><span aria-hidden="true">💱</span><b>Every $EZ trade pays a fee. Here's where it goes.</b></p>
       <div class="mt-split">
         <div class="mt-br pot"><p class="mt-pc"><b id="mtP"></b><span>The pot</span></p>
-          <div class="mt-box"><p>Whichever AI is #1 on the leaderboard takes the pot and apes it into NVIDIA's earnings at <b id="mtLev"></b> leverage on Hyperliquid.</p></div>
+          <div class="mt-box"><p><span id="mtWho">Whichever AI is #1 on the leaderboard</span> takes the pot and apes it into NVIDIA's earnings at <b id="mtLev"></b> leverage on Hyperliquid.</p></div>
           <div class="mt-flow"><div class="mt-col"><p class="mt-o w">Winning trade</p><i class="mt-v" aria-hidden="true"></i><p class="mt-r">The profits buy back $EZ.</p></div>
             <div class="mt-col"><p class="mt-o l">Losing trade</p><i class="mt-v" aria-hidden="true"></i><p class="mt-r">The pot gets rekt.</p></div></div>
           <div class="mt-join" aria-hidden="true"></div>
@@ -4343,7 +4343,7 @@ html.x3 .ufs select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
             <b class="mx-big" id="oWin"></b>
             <p class="mx-of">of $EZ</p>
             <div class="coins" id="coins" aria-hidden="true"></div>
-            <p class="mx-lose">If it's wrong, the pot bleeds. With leverage, fast.</p>
+            <p class="mx-lose">If it's wrong, the pot can be wiped out.</p>
           </div>
         </div>
       </div>
@@ -4506,7 +4506,7 @@ var ROWS=LD.concat(bench.map(function(m){return {m:m,won:0}}));
 function rankOf(T){var a=parseFloat(T.avg);return 1+ROWS.filter(function(U){var b=parseFloat(U.avg);return U.won>T.won||(U.won===T.won&&!isNaN(b)&&(isNaN(a)||b<a))}).length}
 $("#roster").innerHTML=ROWS.map(function(T,i){
   return '<li class="pc'+(i?'':' lead')+(rankOf(T)===1&&T.won>0?' r1':'')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
-    '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">Bets on NVIDIA</small>':'')+'</span>'+pcStats(T.m)+
+    '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">'+(SIM.leadHours!=null?'In line for the call':'Bets on NVIDIA')+'</small>':'')+'</span>'+pcStats(T.m)+
     '<p class="pc-w"><b>'+T.won+'</b><span>'+(T.won===1?'win':'wins')+'</span></p></li>'}).join("");
 /* a model's record over the graded rounds: calls, right way, average miss, wins, streak */
 function career(m){var g=0,right=0,err=0,won=0,hist=[];
@@ -4829,7 +4829,7 @@ ezCalc.ASSUME=ASSUME;ezCalc.A=A;ezCalc.MCAPS=MCAPS;ezCalc.LEVS=LEVS;
 ezCalc.current=function(){return ezCalc(ST)};
 window.EZCalc=ezCalc;
 $("#pMc").innerHTML=MCAPS.map(function(v){return '<button type="button" class="mcb" data-mc="'+v+'" aria-pressed="false">'+money(v)+'</button>'}).join("");
-$("#pLv").innerHTML=LEVS.map(function(v){return '<button type="button" class="mcb" data-lev="'+v+'" aria-pressed="false">'+v+'x</button>'}).join("");
+if(SIM.leverage!=null)$("#lLv").lastChild.textContent="Leverage";$("#pLv").innerHTML=(SIM.leverage!=null?[LEV0]:LEVS).map(function(v){return '<button type="button" class="mcb" data-lev="'+v+'" aria-pressed="false">'+v+'x</button>'}).join("");
 $("#pMc").style.setProperty("--n",MCAPS.length);$("#pLv").style.setProperty("--n",LEVS.length);
 /* still open with the owner: one quiet line, only the items not decided in SIM / CONFIG */
 var todo=[SIM.feePct==null&&"fee",SIM.leverage==null&&"leverage",!betD&&"bet date","payout"].filter(Boolean);
@@ -4930,7 +4930,7 @@ function machSVG(tall){
   else{var all=[].concat(typeof UPCOMING!=="undefined"?UPCOMING:[],typeof PENDING!=="undefined"?PENDING:[]),r=all.filter(function(u){return u.ticker==="NVDA"})[0],c=r&&md(r.called);
     if(c){var dt=new Date(Date.UTC(c[0],c[1],c[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);T=nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate())}}
   if(!T)return;el.hidden=false;
-  $("#gpuLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x";
+  $("#gpuLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x";if(SIM.leadHours!=null)$("#gpuCall").textContent=SIM.leadHours+" hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down.";
   var lead=LADDER&&LADDER[0]?nm(LADDER[0].m):"";
   var when=new Date(T).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"});
   var F={0:"01110100011000110001100011000101110",1:"00100011000010000100001000010001110",2:"01110100010000100010001000100011111",3:"11110000010000101110000010000111110",
@@ -4957,7 +4957,7 @@ function machSVG(tall){
     $("#gpuSr").textContent=v[0]+" days, "+v[1]+" hours, "+v[2]+" minutes left";
     if(s>0)setTimeout(tick,1000-Date.now()%1000)}
   tick()})();
-(function(){var P=Math.round((typeof ASSUME!=="undefined"&&ASSUME.poolShare||.69)*100);if($("#mtP"))$("#mtP").textContent=P+"%";if($("#mtL"))$("#mtL").textContent=(100-P)+"%";if($("#mtLev"))$("#mtLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x"})();
+(function(){var P=Math.round((typeof ASSUME!=="undefined"&&ASSUME.poolShare||.69)*100);if($("#mtP"))$("#mtP").textContent=P+"%";if($("#mtL"))$("#mtL").textContent=(100-P)+"%";if($("#mtLev"))$("#mtLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x";if(SIM.leadHours!=null&&$("#mtWho"))$("#mtWho").textContent="Whichever AI is #1 when the leaderboard freezes"})();
 var machEl=$("#mach");
 if(machEl){machEl.innerHTML=machSVG(false)+machSVG(true);
   if(!reduce&&"IntersectionObserver" in window){machEl.classList.add("arm");
@@ -5728,7 +5728,7 @@ function wireRlx(root){if(RLX_IO)RLX_IO.disconnect();if(reduce||!("IntersectionO
   $$(".rlx-v video",root).forEach(function(v){v.addEventListener("playing",function(){if(v===cur)v.parentNode.classList.add("on")});RLX_IO.observe(v)});
   var t;addEventListener("scroll",function(){clearTimeout(t);t=setTimeout(pick,120)},{passive:true})}
 function vModels(){
-  return (X1?xsh("01","Leaderboard",X2?"Current standings":"Current standings",X2?"Ranked by rounds won, then by the smaller average miss. Whoever is on top trades the pot. Tap an AI for every call it made.":"Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
+  return (X1?xsh("01","Leaderboard",X2?"Current standings":"Current standings",X2?"Ranked by rounds won, then by the smaller average miss. "+(SIM.leadHours!=null?"The leaderboard freezes "+SIM.leadHours+"h before NVIDIA reports. #1 makes the call.":"Whoever is on top trades the pot.")+" Tap an AI for every call it made.":"Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
     '<p class="lbn">'+(X2?'<b>A call</b>: up or down, plus how much, locked before the report. ':'')+'<b>Hit rate</b>: calls right on direction'+(X2?' (up or down), whatever the size':'')+'. <b>Avg miss</b>: points off the real move. <b>ROI</b>: '+usd(STAKE)+' rolled through every call. Simulated, before fees.</p>'+
@@ -5845,7 +5845,7 @@ function calcHome(){if(CALC&&CALC_MARK&&CALC.parentNode!==CALC_MARK.parentNode)C
 /* X2 Buyback: the pool first. Until launch there is no address; once CONFIG.pool (address) and CONFIG.chain are set,
    the balance is read live from a public RPC and refreshed every 30s, with a link to the explorer. */
 function vBuybackX2(){var addr=CONFIG.pool||"",ch=String(CONFIG.chain||"").toLowerCase(),url=CONFIG.poolUrl||"";
-  return '<h1 tabindex="-1">Buyback</h1><p class="sub">Every $EZ trade pays a fee. '+Math.round((SIM.poolShare!=null?SIM.poolShare:.69)*100)+'% of it fills this pool. The AI on top bets it on NVIDIA\'s earnings at '+(SIM.leverage!=null?SIM.leverage:5)+'x. Win, it buys back $EZ. Lose, the pool gets rekt.</p>'+
+  return '<h1 tabindex="-1">Buyback</h1><p class="sub">Every $EZ trade pays a fee. '+Math.round((SIM.poolShare!=null?SIM.poolShare:.69)*100)+'% of it fills this pool. '+(SIM.leadHours!=null?SIM.leadHours+' hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down. We bet the whole pool on that call'+(SIM.leverage!=null?' at '+SIM.leverage+'x':'')+'.':'The AI on top bets it on NVIDIA\'s earnings at '+(SIM.leverage!=null?SIM.leverage:5)+'x.')+' Win, it buys back $EZ. Lose, the pool gets rekt.</p>'+
     '<div class="pool"><small>In the pool</small><b id="poolBal">'+(addr?'<span class="pool-ld">Reading the chain…</span>':'Opens at launch')+'</b>'+
     (addr?'<p class="pool-a"><span>'+esc(addr.slice(0,6)+'…'+addr.slice(-4))+'</span>'+(url?'<a href="'+esc(url)+'" target="_blank" rel="noopener">See it on the explorer ↗</a>':'')+'</p>':'<p class="pool-a">The pool address appears here, and only here, at launch. Every fee lands in it, on chain, for anyone to check.</p>')+
     '<div class="pool-r"><div><small>Bought back so far</small><b>'+(CONFIG.boughtBack?esc(CONFIG.boughtBack):'Nothing yet')+'</b></div><div><small>Next bet</small><b>NVIDIA earnings · '+(SIM.leverage!=null?SIM.leverage:5)+'x</b></div></div></div>'+
@@ -5991,7 +5991,7 @@ if(X3)(function(){
   /* ===== 01 THE BUYBACK: moved up; the chip says what it counts to; the bet said once, with the details ===== */
   var gpu=$("#gpu",bet);
   if(gpu&&BT){var cd=document.createElement("p");cd.className="x3-cd";cd.textContent="Until the NVIDIA bet · "+betDay;gpu.insertBefore(cd,gpu.firstChild)}
-  var gt=$(".gpu-t",bet);if(gt)gt.innerHTML='At zero, we take #1\'s NVIDIA call: up or down. We open it on Hyperliquid at <b>'+LEV+'x</b> leverage, with the whole pot. A human clicks the button for now.';
+  var gt=$(".gpu-t",bet);if(gt)gt.innerHTML=(SIM.leadHours!=null?SIM.leadHours+' hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down. At zero, we open the trade':'At zero, we take #1\'s NVIDIA call: up or down. We open it')+' on Hyperliquid at <b>'+LEV+'x</b> leverage, with the whole pot. A human clicks the button for now.';
   var pb=$("#bbf .mt-br.pot .mt-box p",bet);if(pb)pb.textContent="Gets aped into the NVIDIA bet.";
   var ow=$("#bbf .mt-o.w",bet),ol=$("#bbf .mt-o.l",bet),nx=$("#bbf .mt-next b",bet);if(ow)ow.textContent="Right call";if(ol)ol.textContent="Wrong call";if(nx)nx.textContent="After";
   /* the roadmap folds away: the money flow stays one glance */
@@ -6013,7 +6013,7 @@ if(X3)(function(){
         '<span class="x3-w"><b>'+T.won+'</b><small>'+(T.won===1?'win':'wins')+'</small></span></li>'}).join("")+'</ol>'+
     (note.length?'<p class="x3-note">'+note.map(esc).join(' ')+'</p>':'')+'<a class="x3-more" href="#/leaderboard">Full leaderboard →</a>';
   var lbSec=sec("x3lb","02","The leaderboard","Who makes the NVIDIA call",
-    'Most wins is #1. When the timer hits zero, we take #1\'s NVIDIA call. Same wins? The one closer on average ranks higher.',lbBody);
+    'Most wins is #1. '+(SIM.leadHours!=null?SIM.leadHours+' hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down.':'When the timer hits zero, we take #1\'s NVIDIA call.')+' Same wins? The one closer on average ranks higher.',lbBody);
 
   /* ===== 03 LAST ROUND: a receipt, not a tutorial. Generated from the latest graded round ===== */
   var lastSec=null,L=ROUNDS[ROUNDS.length-1];

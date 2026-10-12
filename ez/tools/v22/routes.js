@@ -78,7 +78,8 @@ var DAYS=(function(){var m={};ALLN.forEach(function(n){var v=rv(n),d=dayOf(v),k=
 var EXP=window.EZ_EXP||"";
 /* X2 = X1 plus: every call as one square (Leaderboard), what the record shows (Leaderboard), the round list (Results). */
 /* X3 = X2 plus the Overview re-ordered for launchpad and Fomo hunters (see the X3 block at the end) */
-var X1=EXP==="x1"||EXP==="x2"||EXP==="x3"||EXP==="x4",X2=EXP==="x2"||EXP==="x3"||EXP==="x4",X3=EXP==="x3";if(X2){document.documentElement.classList.add("x2");if(X3)document.documentElement.classList.add("x3");if(EXP==="x4")document.documentElement.classList.add("x4");(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap";document.head.appendChild(l)})()}
+/*X5{*//* X5 = X2 plus its own Overview, a light/dark switch and font H (see the X5 block at the end) *//*}X5*/
+var X1=/*X5{*/EXP==="x5"||/*}X5*/EXP==="x1"||EXP==="x2"||EXP==="x3"||EXP==="x4",X2=/*X5{*/EXP==="x5"||/*}X5*/EXP==="x2"||EXP==="x3"||EXP==="x4",X3=EXP==="x3";if(X2){document.documentElement.classList.add("x2");if(X3)document.documentElement.classList.add("x3");if(EXP==="x4")document.documentElement.classList.add("x4");(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap";document.head.appendChild(l)})()}
 var TODAYK=dkey(new Date()),RBIG=false,RF="all",UF="all",US="",RLOOK="brand";
 function xsh(no,eb,title,sub,h1,id,side){var tag=h1?"h1":"h2";return '<div class="xsh'+(side?' wside':'')+'"><div class="xsh-t"><'+tag+(id?' id="'+id+'"':'')+(h1?' tabindex="-1"':'')+'><span class="no">'+no+'</span><span class="mk">'+title+'</span></'+tag+'>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(side||'')+'</div>'}
 /* a company's colour (CO_LOGOS.c, from tools/fetch_logos.py) and the ink that reads on it */
@@ -907,3 +908,207 @@ if(X3)(function(){
   order.forEach(function(s){ref.after(s);ref=s});
   [[bet,"01"],[learn,"04"],[rec,"05"],[get,"06"]].forEach(function(p){var n=p[0]&&$(".sh .no",p[0]);if(n)n.textContent=p[1]});
 })();
+/*X5{*/
+/* ---------- X5 (EZ Live X5, 2026-10-12): X2 with the Overview in the owner's order and no paragraphs under the heads,
+   a light/dark switch, Mona Sans + Geist. The owner's picks from the round 2 boards: layout A ("four steps under the
+   chip"), dark C (graphite and gold), font H. Light is X2's cream and navy. Everything outside the Overview is X2's,
+   restyled by tools/v22/skin-x5.css. The Overview order: 1 the countdown and how the buyback works, 2 the record you
+   can check, 3 who's leading, 4 what's next, then get $EZ and the one disclaimer. Every number comes from ez-data.js.
+   This block and the X5 parts of the flag line sit between X5 markers: build.py strips them from every other page, so
+   X1, X2, X3, X4 and Season Live stay byte for byte. ---------- */
+var X5=EXP==="x5";
+/* the NVIDIA bet: the chip's own moment (SIM/CONFIG.betDate, else the NVIDIA round: calls the day before, the report
+   the next weekday, at the close, New York time) */
+function EZ5_BET(){function md(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null}
+  function nyClose(y,m,d){var f=new Date(Date.UTC(y,2,1)).getUTCDay(),a=Date.UTC(y,2,8+(7-f)%7),g=new Date(Date.UTC(y,10,1)).getUTCDay(),b=Date.UTC(y,10,1+(7-g)%7),t=Date.UTC(y,m,d);return Date.UTC(y,m,d,t>=a&&t<b?20:21)}
+  var b=md(SIM.betDate||CONFIG.betDate);if(b)return nyClose(b[0],b[1],b[2]);
+  var nv=[].concat(typeof UPCOMING!=="undefined"?UPCOMING:[],typeof PENDING!=="undefined"?PENDING:[]).filter(function(u){return u.ticker==="NVDA"})[0],c=nv&&md(nv.called);
+  if(!c)return null;var dt=new Date(Date.UTC(c[0],c[1],c[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);
+  return nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate())}
+function EZ5_DAY(t){return new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"}).replace(" ","\u00a0")}
+/* the freeze: SIM.leadHours before the bet (the leaderboard freezes, the AI in first place makes the call) */
+function EZ5_FREEZE(){var T=EZ5_BET();return T&&SIM.leadHours!=null?EZ5_DAY(T-SIM.leadHours*3600e3):""}
+/* company colours (the upcoming tiles, round chips and cards): X2 picks white or ink text on a company's colour with a
+   rough brightness cut, which leaves white on bright greens and blues (2.0:1 on Robinhood's green). X5 takes whichever
+   of the two reads better (WCAG contrast), and darkens the few mid-tone colours where neither reaches 4.5:1 until white
+   does. These two declarations replace X2's bcol() and onCol() in X5 only (the later function declaration wins). */
+function EZ5_LUM(h){var c=parseInt(String(h).slice(1),16),f=function(v){v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};return .2126*f(c>>16&255)+.7152*f(c>>8&255)+.0722*f(c&255)}
+function EZ5_CR(a,b){var x=EZ5_LUM(a),y=EZ5_LUM(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)}
+function bcol(t){var L=CO_LOGOS[String(t||"").toUpperCase()],h=L&&L.c||"#12131a";if(!/^#[0-9a-f]{6}$/i.test(h))return h;
+  var c=parseInt(h.slice(1),16),r=c>>16&255,g=c>>8&255,b=c&255,k=0,x=h;
+  while(Math.max(EZ5_CR(x,"#ffffff"),EZ5_CR(x,"#12131a"))<4.5&&k<20){k++;x="#"+[r,g,b].map(function(v){return ("0"+Math.round(v*(1-.04*k)).toString(16)).slice(-2)}).join("")}
+  return x}
+function onCol(h){return EZ5_CR(h,"#ffffff")>=EZ5_CR(h,"#12131a")?"#ffffff":"#12131a"}
+if(X5)(function(){
+  var root=document.documentElement,hero=$("section.hero"),rec=$("#record"),learn=$("#learn"),bet=$("#bet"),get=$("#get");
+  if(!hero||!rec||!bet||!get)return;
+  function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+  var POOL=Math.round((SIM.poolShare!=null?SIM.poolShare:typeof ASSUME!=="undefined"&&ASSUME.poolShare||0)*100),OPS=100-POOL;
+  var LEV=SIM.leverage,LEAD=SIM.leadHours,BT=EZ5_BET(),betDay=BT?EZ5_DAY(BT):"",frzDay=EZ5_FREEZE();
+  var nR=ROUNDS.length,firstDay=(function(){var d=mmdd(ROUNDS[0]&&ROUNDS[0].called);return d?d.toLocaleDateString("en-US",{month:"short",day:"numeric"}).replace(" ","\u00a0"):""})();
+  var NV=UPCOMING.filter(function(u){return u.ticker==="NVDA"})[0],nUp=UPCOMING.length,nBefore=NV?UPCOMING.filter(function(u){return u.n<NV.n}).length:nUp;
+  var leader=LADDER[0]?nm(LADDER[0].m):"";
+  var EZM='<span class="mark ezb"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span>';
+
+  /* ===== the light/dark switch, top right of the header =====
+     An action button: the word says what a tap does ("Dark" in light, "Light" in dark), a screen reader hears "Switch to
+     dark mode" (the visible word is part of the name, WCAG 2.5.3) and there is no aria-pressed, because the name
+     changes with the state (WAI-ARIA APG, button). The page opens in: the viewer's saved choice ('ez-theme'), else the
+     host's data-theme on <html>, else the phone's setting, else light (the <head> script in build.py, before the first
+     paint). A tap is saved; storage can be blocked, so every access sits in try/catch. */
+  function saved(){var s=null;try{s=localStorage.getItem("ez-theme")}catch(e){}return s==="light"||s==="dark"?s:null}
+  function sys(){return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+  var mine=root.getAttribute("data-theme");
+  function sync(){var t=root.getAttribute("data-theme")==="dark"?"dark":"light",w=t==="dark"?"Light":"Dark";
+    root.style.colorScheme=t;
+    var m=$('meta[name="theme-color"]');if(m)m.setAttribute("content",getComputedStyle(root).getPropertyValue("--field").trim()||(t==="dark"?"#1d1c1a":"#f4efe6"));
+    m=$('meta[name="color-scheme"]');if(m)m.setAttribute("content",t);
+    var b=$(".x5theme");if(b){var l=$(".x5t-l",b);if(l)l.textContent=w;b.title="Switch to "+w.toLowerCase()+" mode";b.removeAttribute("aria-pressed")}}
+  function setTheme(t,keep){mine=t;root.setAttribute("data-theme",t);if(keep){try{localStorage.setItem("ez-theme",t)}catch(e){}}sync();
+    document.dispatchEvent(new CustomEvent("x5theme",{detail:{theme:t}}))}
+  window.X5theme=function(t){if(t==="system"){try{localStorage.removeItem("ez-theme")}catch(e){}setTheme(sys(),false)}else if(t==="light"||t==="dark")setTheme(t,true);return root.getAttribute("data-theme")};
+  var btn=el("button","x5theme",'<svg class="moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.4 14.6A8.5 8.5 0 0 1 9.4 3.6a.6.6 0 0 0-.8-.7A9.5 9.5 0 1 0 21.1 15.4a.6.6 0 0 0-.7-.8z"/></svg>'+
+    '<svg class="sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.6" fill="currentColor"/><g stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 1.8v2.6M12 19.6v2.6M1.8 12h2.6M19.6 12h2.6M4.8 4.8l1.8 1.8M17.4 17.4l1.8 1.8M4.8 19.2l1.8-1.8M17.4 6.6l1.8-1.8"/></g></svg>'+
+    '<span class="sr">Switch to </span><span class="x5t-l">Dark</span><span class="sr"> mode</span>');
+  btn.type="button";
+  btn.addEventListener("click",function(){setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark",true)});
+  var lc=$("#liveChip");(lc&&lc.parentNode?lc.parentNode:$(".top-in")).appendChild(btn);
+  /* X2 turns the round film's sound on at the first tap anywhere (its first-tap rule skips only .snd and .shr). A tap or
+     a key on the switch is not a request for sound: those events stop at window, before X2's document listener. The
+     button still works: its click is a separate event, and Enter and Space still press it. */
+  ["pointerdown","keydown","touchend"].forEach(function(t){window.addEventListener(t,function(e){if(e.target&&e.target.closest&&e.target.closest(".x5theme"))e.stopImmediatePropagation()},{capture:true})});
+  /* a host that sets data-theme later is followed unless the viewer chose; the phone's setting is followed live until a tap */
+  var hostT=root.getAttribute("data-x5host");
+  if(window.MutationObserver)new MutationObserver(function(){var t=root.getAttribute("data-theme");if(t===mine)return;var s=saved();
+    if(s&&s!==t){root.setAttribute("data-theme",s);return}mine=hostT=t==="dark"?"dark":"light";if(t!==mine)root.setAttribute("data-theme",mine);sync()}).observe(root,{attributes:true,attributeFilter:["data-theme"]});
+  if(window.matchMedia){var mq=matchMedia("(prefers-color-scheme: dark)");
+    var onSys=function(){if(!saved()&&!(hostT==="light"||hostT==="dark"))setTheme(sys(),false)};if(mq.addEventListener)mq.addEventListener("change",onSys);else if(mq.addListener)mq.addListener(onSys)}
+  sync();
+
+  /* ===== 1. THE HOOK: the headline, then the GPU chip counting down to the bet, then one line ===== */
+  hero.classList.add("x5h");
+  var hs=$("#heroSub");if(hs)hs.remove();
+  var bflip=$("#bflip"),stand=$("#stand"),gpu=$("#gpu");
+  var chip=el("div","x5chip");
+  chip.appendChild(el("p","x5lab",'<span class="eb">Countdown</span><b>Until the NVIDIA bet</b>'));
+  if(gpu){chip.appendChild(gpu);var gt=$(".gpu-t",gpu);if(gt&&betDay)gt.innerHTML='<b>'+betDay+' close,</b> right before NVIDIA reports.'}
+  hero.insertBefore(chip,bflip||null);
+  if(bflip)bflip.remove();
+
+  /* a section shell like the page's own: a label, the head, at most one short caption */
+  function shead(eb,h,cap){return '<div class="sh"><div class="tx"><span class="no">00</span><span class="eb">'+eb+'</span><h2>'+h+'</h2></div>'+(cap?'<p class="lede x5cap">'+cap+'</p>':'')+'</div>'}
+  function sec(id,cls,html){var s=el("section","sec x5sec"+(cls?" "+cls:""),html);s.id=id;return s}
+
+  /* ===== 2. HOW THE BUYBACK WORKS: three numbers, then four steps in time order ===== */
+  var bar=POOL?'<i class="x5split" aria-hidden="true"><i style="width:'+POOL+'%"></i></i>':'';
+  var how=sec("x5how","",shead("The buyback","One AI, one job: buy back "+EZM,null)+
+    '<div class="x5a"><ul class="x5strip x5num" aria-label="The bet in three numbers">'+
+      '<li class="hot"><small>The $\u00a0pot</small><b>'+POOL+'¢</b><span>of every $1 in trading fees</span>'+bar+'</li>'+
+      (LEV!=null?'<li><small>Leverage</small><b>'+LEV+'x</b><span>on the NVIDIA bet</span></li>':'')+
+      (LEAD!=null?'<li><small>Leaderboard freezes</small><b>'+LEAD+'h</b><span>before NVIDIA reports</span></li>':'')+'</ul>'+
+    '<ol class="x5rows">'+
+      (frzDay?'<li><span class="m">1</span><div><h3>'+frzDay+' <i>·</i> Leaderboard freezes</h3><p>#1 makes the call: up or down.'+(leader?' <span class="x5now">#1 now: '+esc(leader)+'</span>':'')+'</p></div></li>':'')+
+      '<li><span class="m">'+(frzDay?2:1)+'</span><div><h3>'+(betDay?betDay+' close <i>·</i> ':'')+'The bet</h3><p>A human bets the $\u00a0pot on Hyperliquid.</p></div></li>'+
+      '<li><span class="m w" role="img" aria-label="Right call">✓</span><div><h3>Right call</h3><p>The profits buy back $EZ.</p></div></li>'+
+      '<li><span class="m l" role="img" aria-label="Wrong call">✗</span><div><h3>Wrong call</h3><p>The $\u00a0pot can be wiped out.</p></div></li></ol></div>'+
+    '<details class="x5d"><summary><u>Where the other '+OPS+'¢ goes</u></summary><ul class="x5kv">'+
+      '<li><b>'+OPS+'¢</b><span>Keeps the lights on.</span></li>'+
+      '<li><b class="x5now">Now</b><span>More AIs: Gemini, Qwen, Mistral, Nemotron.</span></li>'+
+      '<li><b>Later</b><span>The pipeline runs itself. A human signs off.</span></li>'+
+      '<li><b>Later</b><span>The AI places its own bet.</span></li></ul></details>');
+  hero.after(how);
+
+  /* ===== 3. THE RECORD: every round, swipe through them ===== */
+  var reb=$(".sh .eb",rec);if(reb)reb.textContent="The record · since "+firstDay;
+  var nRec=Object.keys(typeof RECEIPTS!=="undefined"&&RECEIPTS||{}).length,rh=$("#recH");
+  if(rh)rh.textContent=nR+" rounds in. "+(nRec?"Check every one.":"See every one.");   // "check" once RECEIPTS has links
+  var rl=$(".sh .lede",rec);if(rl){rl.classList.add("x5cap");rl.innerHTML='Called before the report. Graded at the <b class="hlx">first close after</b>, on TradingView.'}
+  how.after(rec);
+  /* moving the section stops X2's scroll of the round picker to the current round (the cards are put back by X2's own
+     home() on the next frame): centre the current chip again */
+  function chipsHome(){var cs=$("#chips"),c=cs&&$('.chip[aria-current="true"]',cs);if(!c)return;var b=cs.style.scrollBehavior;cs.style.scrollBehavior="auto";cs.scrollLeft=c.offsetLeft-(cs.clientWidth-c.offsetWidth)/2;cs.style.scrollBehavior=b}
+  chipsHome();requestAnimationFrame(chipsHome);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(chipsHome);
+
+  /* ===== 4. WHO'S LEADING: X2's standings, full width ===== */
+  var lb=sec("x5lb","x5lb",shead("The leaderboard","Who's leading now",null)+
+    '<details class="x5d"><summary><u>How ranks work</u></summary><ul class="x5kv"><li><b>First</b><span>Most round wins.</span></li><li><b>Same wins</b><span>The smaller average miss ranks higher.</span></li></ul></details>');
+  /* the race, beside "How ranks work": how far #2 is behind #1 (FOMO, honestly: the real gap from the standings) */
+  var R0=ROWS[0],R1=ROWS[1],dW=R0&&R1?R0.won-R1.won:-1,hd=$(".x5d",lb);
+  if(hd&&R0&&R0.won>0&&dW>=0){var race=el("p","x5race",'<b>'+esc(nm(R1.m))+'</b> '+(dW?dW+(dW===1?' win':' wins')+' behind':'level on wins'));
+    var hw=el("div","x5lbh");hd.parentNode.insertBefore(hw,hd);hw.appendChild(hd);hw.appendChild(race)}
+  var band=el("div","band");if(stand)band.appendChild(stand);lb.appendChild(band);
+  lb.insertAdjacentHTML("beforeend",'<div class="x5more"><a class="btn" href="#/leaderboard">Full leaderboard and ROI →</a></div>');
+  rec.after(lb);
+
+  /* ===== 5. WHAT'S NEXT: today's calls, the gap, the bet day ===== */
+  var nx=sec("x5up","x5up",shead("Upcoming",nBefore+" rounds, then NVIDIA","Calls drop before each report."));
+  var tl=el("div","rtline look-brand"),tmp=el("div","",timeline()),day=$(".rday.next",tmp)||$(".rday",tmp);
+  if(day){var lis=$$(".rtls>li",day);lis.slice(2).forEach(function(li){li.remove()});
+    var rds=$(".rdh .rds",day),rdw=$(".rdh .rdw",day),n0=rds&&(rds.textContent.match(/(\d+)\s*$/)||[])[1],today=rdw&&/today/i.test(rdw.textContent);
+    if(rds&&n0)rds.textContent=n0+(n0==="1"?" round ":" rounds ")+(today?"today":"that day");   // X2: "Calls come in · 8" (rounds, each with every AI's call)
+    if(today)rdw.remove();
+    tl.appendChild(day);
+    var shown=Math.min(2,lis.length);
+    if(NV&&nBefore>shown)tl.insertAdjacentHTML("beforeend",'<p class="x5gap">+ '+(nBefore-shown)+' more rounds</p>')}
+  if(NV)tl.insertAdjacentHTML("beforeend",'<section class="rday bet"><div class="rdh"><h2>'+(betDay||fmtDate(NV.called))+'</h2><b class="nx">The bet</b>'+(frzDay?'<span class="rds">Leaderboard freezes '+frzDay+'</span>':'')+'</div><ul class="rtls">'+rtile(NV.n)+'</ul></section>');
+  nx.appendChild(tl);
+  nx.insertAdjacentHTML("beforeend",'<div class="x5more"><a class="btn" href="#/upcoming">All '+nUp+' upcoming rounds →</a></div>');
+  lb.after(nx);
+
+  /* ===== 6. GET $EZ: two rows, then the one disclaimer ===== */
+  nx.after(get);
+  var g=$(".get",get);
+  if(g){g.classList.add("x5get");var gb=$$(".gbox",g);
+    if(gb[0]){var h0=$("h3",gb[0]);if(h0)h0.textContent="Check the address";
+      if(!CONFIG.ca){var ca=$("#ca",gb[0]);if(ca)ca.innerHTML='Posted here at launch. <b>Nowhere else.</b>';gb[0].insertAdjacentHTML("beforeend",'<span class="x5warn">CA in your DMs = scam</span>')}}
+    if(gb[1]){var h1=$("h3",gb[1]);if(h1)h1.textContent="Buy with this page's link";var gp=$("p",gb[1]);if(gp)gp.remove()}
+    if(gb[2])gb[2].remove()}                    // "Watch the next print" repeats what's next, right above
+  var risk=$(".risk",get);
+  if(risk){var rt=risk.textContent.replace("Best case, an AI buys back $EZ with its winnings.","Best case, the bet wins and the profits buy back $EZ."),
+      sn=rt.match(/[^.]+\.(\s|$)/g);
+    /* the same words, three short lines: best case / worst case / what $EZ is */
+    if(sn&&sn.length===5){sn=sn.map(function(x){return x.trim()});risk.innerHTML=[sn.slice(0,1),sn.slice(1,3),sn.slice(3)].map(function(x){return '<span>'+esc(x.join(" "))+'</span>'}).join("")}
+    else risk.textContent=rt}
+
+  /* every other section is a full-width band: hook plain, buyback band, record plain, leaders band, next plain, get band */
+  [how,lb,get].forEach(function(s){s.classList.add("x5band")});
+  if(learn)learn.hidden=true;                 // the ROI and Direction proof lives on the Leaderboard tab
+  bet.hidden=true;                            // its chip and fee split moved up (the calculator still travels to the Buyback tab)
+
+  /* ===== the $ pot: when the copy names the pot, it shows it as money (owner, 2026-10-12) ===== */
+  var POT=[["fills this pool.","fills the $\u00a0pot."],["the whole pool on","the whole $\u00a0pot on"],["the pool gets rekt.","the $\u00a0pot gets rekt."],["<small>In the pool</small>","<small>In the $\u00a0pot</small>"],
+    ["The pool address appears","The $\u00a0pot's address appears"],["The pot can be wiped out.","The $\u00a0pot can be wiped out."],["the pot can be wiped out.","the $\u00a0pot can be wiped out."]];
+  function pot$(h){POT.forEach(function(p){h=h.split(p[0]).join(p[1])});return h}
+  var vb=vBuybackX2;vBuybackX2=function(){return pot$(vb.apply(this,arguments))};
+  var cH=$("#calcH");if(cH&&cH.firstChild&&cH.firstChild.nodeType===3)cH.firstChild.textContent=cH.firstChild.textContent.replace("the bag","the $\u00a0pot");
+  var gL=$("#gLbl");if(gL&&gL.textContent==="The pot")gL.textContent="The $\u00a0pot";
+  $$(".mx-lose").forEach(function(p){p.innerHTML=pot$(p.innerHTML)});
+  /* opened straight on the Buyback tab, the view already holds the live calculator: put it back home before the view
+     is re-written (else a dead copy stays behind), then wire the view again and move the calculator in */
+  if(curSec==="buyback"&&!view.hidden){calcHome();view.innerHTML=pot$(view.innerHTML);wirePool(view);calcAway(view)}
+
+  /* ===== font H: Mona Sans heads, Geist text, Geist Mono labels (the board's spacing) =====
+     The label face is a monospace: X2 tracks its labels .06 to .1em for a condensed face, so a mono label keeps at most
+     .04em, and its .6em space comes down by .2em. Text and heads never inherit a negative word space from a label. Run
+     on every element once, then on whatever a route or a re-render adds. */
+  var done=typeof WeakSet!=="undefined"?new WeakSet():null;
+  function type1(e){if(done){if(done.has(e))return;done.add(e)}if(e.closest&&e.closest(".gpu-img"))return;
+    var s=getComputedStyle(e),f=s.fontFamily,fs=parseFloat(s.fontSize);
+    if(/EZM/.test(f)){if((parseFloat(s.letterSpacing)||0)>.04*fs+.01)e.style.setProperty("letter-spacing",".04em","important");e.style.setProperty("word-spacing","-.2em","important")}
+    else if(/EZB|EZD|EZN/.test(f)&&(parseFloat(s.wordSpacing)||0)<0)e.style.setProperty("word-spacing","normal","important")}
+  function typeAll(r){if(r.nodeType!==1)return;type1(r);var a=r.getElementsByTagName("*");for(var i=0;i<a.length;i++)type1(a[i])}
+  /* charts: on phones X2's round labels under a chart (R1, R2 ... R19) run into each other (10 of 19 touch at 390 px):
+     keep the first, then each one that clears the last one kept (positions and font size in the chart's own units) */
+  function thin(r){var sv=r.matches&&r.matches(".lx svg")?[r]:r.querySelectorAll?[].slice.call(r.querySelectorAll(".lx svg")):[];
+    sv.forEach(function(g){var last=-1e9;[].filter.call(g.querySelectorAll("text.lx-ax"),function(t){return /^R\d+$/.test(t.textContent)})
+      .sort(function(a,b){return a.getAttribute("x")-b.getAttribute("x")}).forEach(function(t){var x=+t.getAttribute("x"),hw=t.textContent.length*(parseFloat(getComputedStyle(t).fontSize)||9)*.31;
+        if(x-hw<last+3)t.style.visibility="hidden";else{t.style.visibility="";last=x+hw}})})}
+  typeAll(document.body);thin(document.body);
+  if(window.MutationObserver){var q=[],qt=0;new MutationObserver(function(ms){ms.forEach(function(m){for(var i=0;i<m.addedNodes.length;i++)if(m.addedNodes[i].nodeType===1)q.push(m.addedNodes[i])});
+    if(q.length&&!qt)qt=requestAnimationFrame(function(){qt=0;var w=q;q=[];w.forEach(function(n){if(n.isConnected){typeAll(n);thin(n)}})})}).observe(document.body,{childList:true,subtree:true})}
+
+  /* the tab title says which page this is (X2's router writes "EZ Season Live") */
+  function title(){if(/EZ Season Live/.test(document.title))document.title=document.title.replace("EZ Season Live","EZ Live X5")}
+  title();addEventListener("hashchange",title);
+})();
+/*}X5*/

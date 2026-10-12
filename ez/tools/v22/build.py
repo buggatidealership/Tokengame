@@ -38,8 +38,12 @@ rep("function targets(el){\n  el.innerHTML='<div class=\"tg-grid\">'+ACTIVE.map(
 i=src.rindex('})();\n</script>'); base=src
 NAV4='<nav class="nav" aria-label="Main"><a href="#/" data-r="board">Overview</a><a href="#/leaderboard" data-r="leaderboard">Leaderboard</a><a href="#/upcoming" data-r="upcoming">Upcoming</a><a href="#/buyback" data-r="buyback">Buyback</a></nav>'
 NAV5='<nav class="nav" aria-label="Main"><a href="#/" data-r="board">Overview</a><a href="#/leaderboard" data-r="leaderboard">Leaderboard</a><a href="#/results" data-r="results">Results</a><a href="#/upcoming" data-r="upcoming">Upcoming</a><a href="#/buyback" data-r="buyback">Buyback</a></nav>'
-for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1.html","x1","EZ Live X1"),("v24-live-x2.html","x2","EZ Live X2"),("v41-live-x3.html","x3","EZ Live X3"),("v42-live-x4.html","x4","EZ Live X4")]:
-    page=base[:i]+'window.EZ_EXP="'+exp+'";\n'+js+base[i:]
+# X5's code and its part of the flag line sit between X5 markers in routes.js: kept (markers dropped) for X5, removed
+# with the markers for every other page, so X1, X2, X3, X4 and Season Live stay byte for byte
+X5M=re.compile(r'[ \t]*/\*X5\{\*/.*?/\*\}X5\*/\n?',re.S)
+for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1.html","x1","EZ Live X1"),("v24-live-x2.html","x2","EZ Live X2"),("v41-live-x3.html","x3","EZ Live X3"),("v42-live-x4.html","x4","EZ Live X4"),("v43-live-x5.html","x5","EZ Live X5")]:
+    jx=js.replace('/*X5{*/','').replace('/*}X5*/','') if exp=="x5" else X5M.sub('',js)
+    page=base[:i]+'window.EZ_EXP="'+exp+'";\n'+jx+base[i:]
     page=re.sub(r'<title>[^<]*</title>','<title>'+title+'</title>',page,1)
     if exp=="x1": page=re.sub(r'<!--WSJ:.*?<!--/WSJ-->\n','',page,flags=re.S)
     if exp=="x1": page=page.replace("<h1>We’re putting","<h1>We're putting")
@@ -53,14 +57,14 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         page=page.replace('if(v.k==="p")return t+". The AIs have made their calls."+(v.resolves?" The market answers "+fmtDate(v.resolves)+".":"")+" $EZ";','if(v.k==="p")return t+". The AIs have made their calls. The market answers "+fmtDate(v.resolves)+". $EZ";')
         page=page.replace('/* rank = wins, then the smaller average miss (owner, 2026-10-08): equal wins no longer share a place */\nfunction rankOf(T){var a=parseFloat(T.avg);return 1+ROWS.filter(function(U){var b=parseFloat(U.avg);return U.won>T.won||(U.won===T.won&&!isNaN(b)&&(isNaN(a)||b<a))}).length}','function rankOf(T){return 1+ROWS.filter(function(U){return U.won>T.won}).length}')
         page=page.replace('["🤖","More models","Next into the arena, in order: Gemini, Qwen, Mistral and NVIDIA\'s Nemotron."]','["🤖","More models","Max plans on each AI\'s newest model. Gemini and Qwen are next, then Mistral and NVIDIA\'s Nemotron."]').replace('["⚙️","Engineering the pipeline so it runs itself","Calls, films and site updates run on their own. A human signs off."]','["⚙️","The pipeline runs itself","Calls, films and site updates run on their own. A human signs off."]')
-    if exp in ("x1","x2","x3","x4"):
+    if exp in ("x1","x2","x3","x4","x5"):
         assert page.count(NAV4)==1; page=page.replace(NAV4,NAV5)
         # X1: the last round beside the standings (like Season); model pages come after launch, so names are plain text
         page=page.replace('var BAND_RIGHT="next"','var BAND_RIGHT="last"')
         L="""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3></span>'"""
         assert page.count(L)==1
         if exp=="x1": page=page.replace(L,"""'<span class="pc-t"><h3>'+nm(T.m)+'</h3></span>'""")
-    if exp in ("x2","x3","x4"):  # X4 = X2 exactly, only the colours change (skin-x4.css below)
+    if exp in ("x2","x3","x4","x5"):  # X4 = X2 exactly, only the colours change (skin-x4.css below); X5 = X2 plus its own Overview
         # standings: one number people care about. The percentage of calls right on direction; the leader's reads
         # "buyback odds" (its call decides the NVIDIA bet); the best eligible record gets a "Most accurate" tag.
         H="var STAND_STAT=\"right\",FOL_EARLY=null;"
@@ -69,7 +73,27 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         S="""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'hit rate')+'</small>"""
         assert page.count(S)==1; page=page.replace(S,"""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':m===EZ_LEAD()?'"""+("buyback odds" if exp in ("x2","x4") else "hit rate")+"""':'hit rate')+'</small>""")
         L2="""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3></span>'"""
-        assert page.count(L2)==1; page=page.replace(L2,"""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">Bets on NVIDIA</small>':'')+'</span>'""")
+        assert page.count(L2)==1; page=page.replace(L2,"""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">'+(SIM.leadHours!=null?"""+("(EZ5_FREEZE()?'Makes the call if #1 on '+EZ5_FREEZE():'In line for the call')" if exp=="x5" else "'In line for the call'")+""":'Bets on NVIDIA')+'</small>':'')+'</span>'""")
+        # the NVIDIA call, leverage and loss copy (owner, 2026-10-12): 24 hours before NVIDIA reports the leaderboard freezes
+        # and the AI in first place makes the call; leverage is exactly SIM.leverage; no stop loss, so a wrong call can wipe
+        # out the pot. Hours and leverage come from SIM; with SIM.leadHours unset the old copy shows. X1 and Season Live keep theirs.
+        for a,b in [
+            # the chip's line (Overview)
+            ('on Hyperliquid. The call comes from the AI on top of the leaderboard at that moment.</p>','on Hyperliquid. <span id="gpuCall">The call comes from the AI on top of the leaderboard at that moment.</span></p>'),
+            ('$("#gpuLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x";','$("#gpuLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x";if(SIM.leadHours!=null)$("#gpuCall").textContent=SIM.leadHours+" hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down.";'),
+            # where the money goes (Overview)
+            ('<div class="mt-box"><p>Whichever AI is #1 on the leaderboard takes the pot','<div class="mt-box"><p><span id="mtWho">Whichever AI is #1 on the leaderboard</span> takes the pot'),
+            ('if($("#mtLev"))$("#mtLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x"})();','if($("#mtLev"))$("#mtLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x";if(SIM.leadHours!=null&&$("#mtWho"))$("#mtWho").textContent="Whichever AI is #1 when the leaderboard freezes"})();'),
+            # the calculator (Buyback tab): the leverage is set, not picked; the loss is the whole pot
+            ("""$("#pLv").innerHTML=LEVS.map(function(v){""","""if(SIM.leverage!=null)$("#lLv").lastChild.textContent="Leverage";$("#pLv").innerHTML=(SIM.leverage!=null?[LEV0]:LEVS).map(function(v){"""),
+            ("<p class=\"mx-lose\">If it's wrong, the pot bleeds. With leverage, fast.</p>","<p class=\"mx-lose\">If it's wrong, the pot can be wiped out.</p>"),
+            # Leaderboard tab
+            ('Ranked by rounds won, then by the smaller average miss. Whoever is on top trades the pot. Tap an AI for every call it made."',
+             'Ranked by rounds won, then by the smaller average miss. "+(SIM.leadHours!=null?"The leaderboard freezes "+SIM.leadHours+"h before NVIDIA reports. #1 makes the call.":"Whoever is on top trades the pot.")+" Tap an AI for every call it made."'),
+            # Buyback tab
+            ("""of it fills this pool. The AI on top bets it on NVIDIA\\'s earnings at '+(SIM.leverage!=null?SIM.leverage:5)+'x. Win,""",
+             """of it fills this pool. '+(SIM.leadHours!=null?SIM.leadHours+' hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down. We bet the whole pool on that call'+(SIM.leverage!=null?' at '+SIM.leverage+'x':'')+'.':'The AI on top bets it on NVIDIA\\'s earnings at '+(SIM.leverage!=null?SIM.leverage:5)+'x.')+' Win,""")]:
+            assert page.count(a)==1,a; page=page.replace(a,b)
     if exp=="x3":
         # X3 re-skin (owner, 2026-10-11): its own stylesheet and fonts, so X1 and X2 stay byte for byte
         SKIN=open(sys.argv[1]+'/skin-x3.css').read()
@@ -80,6 +104,13 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         page,n2=re.subn(r'<link[^>]*family=Anton[^>]*>\n','',page)
         IS='(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap";document.head.appendChild(l)})()'
         assert (n1,n2)==(1,1) and page.count(IS)==1,(n1,n2,page.count(IS)); page=page.replace(IS,'void 0')
+        # X3's own lines on the NVIDIA call follow X2's (owner, 2026-10-12): the leaderboard freezes SIM.leadHours before NVIDIA reports
+        for a,b in [
+            ("""gt.innerHTML='At zero, we take #1\\'s NVIDIA call: up or down. We open it on Hyperliquid at <b>'""",
+             """gt.innerHTML=(SIM.leadHours!=null?SIM.leadHours+' hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down. At zero, we open the trade':'At zero, we take #1\\'s NVIDIA call: up or down. We open it')+' on Hyperliquid at <b>'"""),
+            ("""'Most wins is #1. When the timer hits zero, we take #1\\'s NVIDIA call. Same wins?""",
+             """'Most wins is #1. '+(SIM.leadHours!=null?SIM.leadHours+' hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down.':'When the timer hits zero, we take #1\\'s NVIDIA call.')+' Same wins?""")]:
+            assert page.count(a)==1,a; page=page.replace(a,b)
     if exp=="x4":
         # X4 (owner, 2026-10-12): X2's layout, type and geometry, in X3's colours. Colour only: tools/v22/skin-x4.css,
         # generated by tools/v22/gen-skin-x4.py (rerun it after a CSS change). The class is on <html> from the first paint.
@@ -87,4 +118,27 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         for a,b in [('<html lang="en" class="pt">','<html lang="en" class="pt x4">'),('<meta name="color-scheme" content="light">','<meta name="color-scheme" content="dark">'),
                     ('<meta name="theme-color" content="#ffffff">','<meta name="theme-color" content="#0b0e14">'),('</head>','<style id="x4-skin">\n'+SKIN+'\n</style>\n</head>')]:
             assert page.count(a)==1,a; page=page.replace(a,b)
+    if exp=="x5":
+        # X5 (owner's picks, 2026-10-12): layout A, dark C, font H. Its own stylesheet (tools/v22/skin-x5.css: font H,
+        # the X5 Overview, and dark C on every route, generated by tools/v22/gen-skin-x5.py: rerun it after a CSS change),
+        # the fonts' link, and a small script that sets the theme before the first paint: the viewer's saved choice, else
+        # the host's data-theme on <html>, else the phone's setting, else light.
+        SKIN=open(sys.argv[1]+'/skin-x5.css').read()
+        FONTS='<link id="x5-fonts" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&family=Mona+Sans:wdth,wght@75..125,200..900&display=swap" rel="stylesheet">\n'
+        THEME=('<script>/* X5 theme before the first paint (try/catch: storage can be blocked) */(function(){var d=document.documentElement,s=null,h=d.getAttribute("data-theme"),t;'
+               'try{s=localStorage.getItem("ez-theme")}catch(e){}d.setAttribute("data-x5host",h||"");'
+               't=s==="light"||s==="dark"?s:h==="light"||h==="dark"?h:window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";'
+               'd.setAttribute("data-theme",t);d.style.colorScheme=t;var m=document.querySelector(\'meta[name="color-scheme"]\');if(m)m.setAttribute("content",t);'
+               'm=document.querySelector(\'meta[name="theme-color"]\');if(m)m.setAttribute("content",getComputedStyle(d).getPropertyValue("--field").trim()||m.getAttribute("content"))})()</script>\n')
+        for a,b in [('<html lang="en" class="pt">','<html lang="en" class="pt x5">'),('</head>',FONTS+'<style id="x5-skin">\n'+SKIN+'\n</style>\n'+THEME+'</head>')]:
+            assert page.count(a)==1,a; page=page.replace(a,b)
+        # X5 sets no text in Barlow, Anton, Archivo or Chivo Mono (font H covers every role; X2's Instrument Serif findings
+        # heads stay, loaded by routes.js): drop those two render-blocking font requests, as X3 does
+        page,n1=re.subn(r'<link id="pt-fonts"[^>]*>\n','',page)
+        page,n2=re.subn(r'<link[^>]*family=Anton[^>]*>\n','',page)
+        assert (n1,n2)==(1,1),(n1,n2)
+        # "lock" is kept off X5, where the leaderboard freezes: the AIs' calls are "filed" before the report, as the footer says
+        for a,b,n in [(' up or down, plus how much, locked before the report. ',' up or down, plus how much, filed before the report. ',1),
+                      ('<b>Locked <span class="nw">','<b>Filed <span class="nw">',2)]:
+            assert page.count(a)==n,a; page=page.replace(a,b)
     open(out,'w').write(page); print("ok",out,len(page))
