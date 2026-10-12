@@ -1,0 +1,341 @@
+<!doctype html>
+<!--
+EZ FILMS ROUND 2, "THE OBJECT: one glass $ pot, one call" (slug object, treatment T2). Spec: scratchpad/films-r2/spec-object.md.
+24.0 s, 1080 x 1080, 60 fps (fps=30 fallback), loops to frame 0 in picture and sound.
+One sentence: an AI makes one call; the whole $ pot rides on it.
+A porcelain set, a smoked-glass $ pot with a gold $ inlay on the navy $EZ plinth, gold $ coins. Every $EZ trade (buy or sell) sheds
+a $ coin at a FEE gate, a glass Y splits the coins exactly SIM.poolShare : 1 - SIM.poolShare (Bresenham), the round card flips from
+the calls to the real move, the leaderboard freezes under a frosted cover, #1 rises between up and down, the whole $ pot pours onto
+the call (10x leverage, the pot can be wiped out), two equal outcomes, then the NVIDIA chip counts down to the planned bet.
+Params:
+  pass=plate|type|both   plate = WebGL only (subframes averaged in the page); type = DOM type on transparent; both = preview
+  variant=uk|nonuk       uk adds the FCA risk band (exact text and style of ez-hype.html) on every frame (type layer)
+  asof=ISO               REQUIRED: the stated render date (AS OF stamps, the countdown D)
+  marks=1|0              the AI labs' marks on the card and the stack (identifiers only, all four the same; default 1)
+  front=clean|film       film: a frame of the showcase round's film as the card front inset (needs TEX=dir with r17.jpg)
+  led=red|gold           the countdown LEDs (red: X2's own countdown, default after style frame SF7; gold: X3's accent)
+  potGlyph=0|1           1: a [$] coin glyph inside "The [$] pot can be wiped out." in the 10x pair (owner decision; default 0)
+  fps=60|30  res=1080|540  ns=N (force subframes)
+Every number comes from ../ez-data.js at render time (window.R2_STRINGS lists each string and its source). renderAt(t) is pure in t.
+window.frameName(i) keys a plate by everything it is drawn from (render.js SKIP_EXISTING resumes). Sound: ez-r2-object-audio.js
+reads window.R2_PIC (the same timing table the picture uses).
+The $ glyph outline below is Mona Sans (SIL OFL) at wdth 75, wght 800, extracted with fontTools (instancer + SVGPathPen).
+-->
+<html lang="en"><head><meta charset="utf-8"><title>EZ Object Film</title><meta name="viewport" content="width=1080">
+<style>
+@font-face{font-family:G;src:url(r2-geist-wght.woff2) format('woff2');font-weight:100 900}
+@font-face{font-family:GM;src:url(fonts/geist-mono-latin-wght-normal.woff2) format('woff2');font-weight:100 900}
+@font-face{font-family:MS;src:url(r2-mona-sans-wdth.woff2) format('woff2');font-weight:200 900;font-stretch:75% 125%}
+@font-face{font-family:IS;src:url(fonts/instrument-sans-latin-wdth-normal.woff2) format('woff2');font-weight:400 700;font-stretch:75% 100%}
+:root{--ground:#f5f4f0;--ink:#101a3a;--ink2:#5b6273;--gold:#e2b250;--up:#1fcf6b;--dn:#ff4136;--yel:#ffc72c}
+html,body{margin:0;background:var(--ground)}
+html.tp,html.tp body{background:transparent}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:var(--ground)}
+.tp #stage{background:transparent}
+#out{position:absolute;left:0;top:0;width:1080px;height:1080px}
+#gl{position:absolute;left:0;top:0;width:1080px;height:1080px;visibility:hidden}
+#ov{position:absolute;inset:0}
+.ab{position:absolute}
+.st{font-family:G;font-weight:600;font-size:76px;line-height:88px;letter-spacing:-.015em;color:var(--ink);white-space:nowrap}
+.hero{font-family:G;font-weight:600;font-size:72px;line-height:80px;letter-spacing:-.015em;color:var(--ink);white-space:nowrap}
+.pair{font-family:G;font-weight:650;font-size:76px;line-height:88px;letter-spacing:-.015em;color:var(--ink);white-space:nowrap}
+.kick{font-family:GM;font-weight:600;font-size:56px;line-height:56px;letter-spacing:.06em;color:var(--ink);white-space:nowrap}
+.k40{font-family:GM;font-weight:600;font-size:40px;line-height:40px;letter-spacing:.06em;color:var(--ink2);white-space:nowrap}
+.big{font-family:G;font-weight:600;font-size:220px;line-height:220px;letter-spacing:-.03em;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.w{display:inline-block;white-space:pre}
+.ico{display:inline-block;vertical-align:-.12em}
+#ad{left:32px;top:24px;height:52px;box-sizing:border-box;font:600 28px/1 GM;letter-spacing:.06em;color:var(--ink);padding:11px 10px 0 12px;border:1.5px solid var(--ink);border-radius:4px;background:var(--ground)}
+#tile{left:110px;top:24px;height:52px;box-sizing:border-box;padding:0 10px;border-radius:6px;background:var(--ink);font:800 40px/52px MS;font-stretch:75%;letter-spacing:.01em}
+#tile .s{color:#ffc72c}#tile .e{color:#1fcf6b}#tile .z{color:#ff4136}
+#stamp{right:32px;top:30px;font:600 28px/1 GM;letter-spacing:.04em;color:var(--ink2);white-space:nowrap;text-align:right;background:var(--ground);padding:6px 8px 6px;border-radius:4px}
+#legal{left:0;right:0;top:746px;text-align:center;font-family:G;font-weight:500;font-size:26px;line-height:27px;color:var(--ink2);white-space:nowrap}
+#band{left:24px;right:24px;bottom:96px;height:160px;background:#fff;border-radius:4px;box-sizing:border-box}
+#band::before{content:"";position:absolute;inset:4px;border:2px solid #000;border-radius:2px}
+#band p{position:absolute;left:20px;right:20px;top:50%;transform:translateY(-50%);margin:0;font-family:"IS";font-weight:700;font-stretch:100%;font-size:36px;line-height:1.18;color:#000}
+#ttl{left:64px;right:64px;top:100px;height:150px;box-sizing:border-box;background:#fbfaf7;border:1px solid rgba(16,26,58,.22);border-radius:8px}
+#disc{left:64px;right:64px;top:560px;height:180px;box-sizing:border-box;background:#fbfaf7;border:1px solid rgba(16,26,58,.22);border-radius:8px;
+  font-family:G;font-weight:600;font-size:44px;line-height:52px;letter-spacing:-.01em;color:var(--ink);text-align:center;padding-top:12px}
+.half{top:0;width:538px;text-align:center}
+.half .kick{position:absolute;left:0;right:0;top:112px}
+.half .l{position:absolute;left:0;right:0;top:186px;font-family:G;font-weight:600;font-size:60px;line-height:70px;letter-spacing:-.015em;color:var(--ink);white-space:nowrap}
+#divider{left:538px;top:0;width:4px;height:744px;background:var(--ground)}
+.fee{font-family:GM;font-weight:600;font-size:56px;line-height:56px;letter-spacing:.06em;color:var(--ink);white-space:nowrap}
+.hair{background:var(--ink);opacity:.55}
+</style>
+<script type="importmap">{"imports":{"three":"./vendor/three@0.170.0/build/three.module.js","three/addons/":"./vendor/three@0.170.0/examples/jsm/"}}</script>
+<script src="../ez-data.js"></script>
+<script src="ez-r2-object-audio.js"></script>
+</head><body>
+<div id="stage"><canvas id="out" width="1080" height="1080"></canvas><canvas id="gl" width="1080" height="1080"></canvas><div id="ov"></div></div>
+<script type="module">
+import * as THREE from 'three';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+import {SVGLoader} from 'three/addons/loaders/SVGLoader.js';
+import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
+window.__ready=false;
+const fail=m=>{window.__err=String(m);throw new Error(m)};
+try{
+const Q=new URLSearchParams(location.search);
+const PASS=Q.get('pass')||'both',VAR=Q.get('variant')==='uk'?'uk':'nonuk',FPS=Q.get('fps')==='30'?30:60,DUR=24,N=DUR*FPS;
+const RES=Math.max(270,Math.min(1080,+(Q.get('res')||1080))),NSQ=Q.get('ns')!=null?Math.max(1,+Q.get('ns')):null;
+const MARKS=Q.get('marks')!=='0',FRONT=Q.get('front')==='film'?'film':'clean',LEDC=Q.get('led')==='gold'?'gold':'red',POTGLYPH=Q.get('potGlyph')==='1';
+window.N=N;window.FPS=FPS;
+if(PASS==='type')document.documentElement.classList.add('tp');
+const VERSION='o1';
+
+/* =================== DATA: ez-data.js only, never typed =================== */
+const STR=[];const S=(text,src,t0,t1,kind)=>{STR.push({text,src,t:[t0,t1],kind});return text};
+const LABS={GPT:'OpenAI',KIMI:'Moonshot AI',CLAUDE:'Anthropic',GROK:'xAI'};
+const LEGAL='Not affiliated with NVIDIA, OpenAI, Moonshot AI, xAI, Anthropic or any company shown.';
+if(MODEL_KEYS.length!==4)fail('MODEL_KEYS must be exactly 4, got '+MODEL_KEYS.length);
+MODEL_KEYS.forEach(m=>{if(!LABS[m])fail('no lab for model '+m)});
+{const set=new Set(MODEL_KEYS.map(m=>LABS[m]));if(set.size!==4||!['OpenAI','Moonshot AI','xAI','Anthropic'].every(l=>set.has(l)))fail('the lab set differs from the fixed non-affiliation line')}
+if(SIM.leverage==null||SIM.leadHours==null||SIM.poolShare==null)fail('SIM.leverage, SIM.leadHours or SIM.poolShare is null');
+if(SIM.stopLoss!=null)fail('SIM.stopLoss is set: the pour with nothing held back is no longer true');
+if(CONFIG.launched)fail('CONFIG.launched is true: the pre-launch copy (FROM LAUNCH) needs review');
+const RS=ROUNDS.slice().sort((a,b)=>a.n-b.n),LAST=RS[RS.length-1];
+if(!LAST)fail('no graded round');
+{const gap=[].concat(PENDING,UPCOMING).filter(u=>u.n<LAST.n);if(gap.length)fail('round(s) '+gap.map(u=>u.n).join(',')+' ungraded below the latest graded round '+LAST.n)}
+/* the ROUNDS tally must agree with LADDER (wins, then the smaller average miss; no shared places) */
+{const tal={};MODEL_KEYS.forEach(m=>tal[m]={won:0,n:0,err:0});
+  RS.forEach(r=>{r.calls.forEach(c=>{tal[c[0]].n++;tal[c[0]].err+=parseFloat(c[2])});(r.win?r.win.split(' & '):[]).forEach(m=>tal[m].won++)});
+  const ord=MODEL_KEYS.filter(m=>tal[m].n).sort((x,y)=>(tal[y].won-tal[x].won)||(parseFloat((tal[x].err/tal[x].n).toFixed(2))-parseFloat((tal[y].err/tal[y].n).toFixed(2))));
+  if(ord.length!==LADDER.length||ord.some((m,i)=>LADDER[i].m!==m||LADDER[i].won!==tal[m].won))fail('the ROUNDS tally disagrees with LADDER: '+ord.join(',')+' vs '+LADDER.map(l=>l.m).join(','))}
+if(LADDER.length!==4)fail('LADDER must have 4 rows (the stack has four slabs)');
+/* showcase round: ez-hype.html's rule (latest graded round with all calls, a winner and >= 2 right-way calls) */
+let SHOW=null,showRule='latest graded round with all '+MODEL_KEYS.length+' calls, a winner and at least two right-way calls (ez-hype.html hypeData rule)';
+for(let k=RS.length-1;k>=0&&!SHOW;k--){const r=RS[k],up=r.a>0,right=r.calls.filter(c=>(c[1].split(' ')[0]==='UP')===up).length;if(r.calls.length===MODEL_KEYS.length&&r.win&&right>=2)SHOW=r}
+if(!SHOW){SHOW=LAST;showRule='fallback: latest graded round (no round met the showcase rule)'}
+const SHOWUP=SHOW.a>0,SHOWWIN=SHOW.win?SHOW.win.split(' & '):[];
+const CALLS=MODEL_KEYS.map(m=>{const c=SHOW.calls.find(c=>c[0]===m);const dir=c?c[1].split(' ')[0]:null,mag=c?c[1].split(' ')[1]:'';return {m,name:MODELS[m].name,dir,mag,has:!!c,ok:c?((dir==='UP')===SHOWUP):false,win:SHOWWIN.includes(m)}});
+const OUTMAG=String(SHOW.out).replace(/^[+−-]/,'');
+/* the bet moment: SIM.betDate || CONFIG.betDate, else the NVDA row's call date + 1 weekday, 16:00 New York (the site's nyClose) */
+const md=s=>{const m=String(s||'').match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null};
+const isoD=s=>{const m=String(s||'').match(/^(\d{4})-(\d\d)-(\d\d)/);return m?[+m[1],+m[2]-1,+m[3]]:null};
+function nyClose(y,m,d){const f=new Date(Date.UTC(y,2,1)).getUTCDay(),a=Date.UTC(y,2,8+(7-f)%7),g=new Date(Date.UTC(y,10,1)).getUTCDay(),b=Date.UTC(y,10,1+(7-g)%7),t=Date.UTC(y,m,d);return Date.UTC(y,m,d,t>=a&&t<b?20:21)}
+const NVROW=[].concat(UPCOMING,PENDING).filter(u=>u.ticker==='NVDA')[0]||null;
+let BET=null,betSrc='';
+{const raw=SIM.betDate||CONFIG.betDate,b=md(raw)||isoD(raw);
+  if(b){BET=nyClose(...b);betSrc=(SIM.betDate?'SIM.betDate':'CONFIG.betDate')+' ('+raw+'), 16:00 New York'}
+  else{const c=NVROW&&md(NVROW.called);if(c){let dt=new Date(Date.UTC(...c));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()%6===0);
+    BET=nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate());betSrc='fallback: NVDA row (round '+NVROW.n+') CALL DATE '+NVROW.called+' + 1 weekday, 16:00 New York (planned)'}}}
+if(BET==null)fail('no bet date and no NVDA row to fall back on');
+if(!Q.get('asof'))fail('asof=ISO is required (the stated render date)');
+const ASOF=Date.parse(Q.get('asof'));if(!isFinite(ASOF))fail('asof is not a date');
+if(ASOF>BET-SIM.leadHours*3600e3)fail('asof is later than the freeze (bet minus SIM.leadHours)');
+const D0=Math.floor((BET-ASOF)/1000);
+const MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const betD=new Date(BET),BETLAB=MON[betD.getUTCMonth()]+' '+betD.getUTCDate(),asD=new Date(ASOF),ASOFLAB='AS OF '+MON[asD.getUTCMonth()]+' '+asD.getUTCDate();
+const LEV=SIM.leverage,LEAD=SIM.leadHours,SHARE=Math.round(SIM.poolShare*100),OPS=100-SHARE,PS=SIM.poolShare;
+const DATAKEY=JSON.stringify([LADDER,LAST.n,LEV,LEAD,PS,SHOW.n,SHOW.out,SHOW.calls,SHOW.win,BET,MARKS]);
+window.R2_DATA={bet:new Date(BET).toISOString(),betSrc,asof:new Date(ASOF).toISOString(),D0,show:SHOW.n+' '+SHOW.co,showRule,ladder:LADDER.map(l=>l.m+' '+l.won+' / '+l.avg),graded:LAST.n};
+window.HYPE_DATA={betSrc};
+
+/* =================== EASING =================== */
+const cl=(x,a=0,b=1)=>x<a?a:x>b?b:x,lin=(t,a,b)=>cl((t-a)/(b-a)),mix=(a,b,u)=>a+(b-a)*u,sm=u=>u*u*(3-2*u);
+function bez(x1,y1,x2,y2){const cx=3*x1,bx=3*(x2-x1)-cx,ax=1-cx-bx,cy=3*y1,by=3*(y2-y1)-cy,ay=1-cy-by;
+  const X=t=>((ax*t+bx)*t+cx)*t,Y=t=>((ay*t+by)*t+cy)*t,DX=t=>(3*ax*t+2*bx)*t+cx;
+  return x=>{if(x<=0)return 0;if(x>=1)return 1;let t=x;for(let i=0;i<12;i++){const d=DX(t);if(Math.abs(d)<1e-7)break;t-=(X(t)-x)/d;t=cl(t)}return Y(t)}}
+const EA=bez(.33,0,.15,1),EOUT=bez(0,0,.2,1),EIN=bez(.45,0,1,1),EIO=bez(.42,0,.58,1);
+const r4=x=>Math.round(x*1e4)/1e4;
+function hash(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(16).padStart(8,'0')}
+function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+
+/* =================== THE TIMING TABLE (seconds; picture and sound both read it) =================== */
+const T={b1:0,b2a:3,dock:3.15,sheds:[3.25,3.5,3.75,4.0],b2b:4.5,crane1:5.0,l69:4.75,l31:4.875,b3:6.5,flip0:7.7,flip1:8.05,
+  b4:9.25,nm0:10.5,nm1:10.75,lid0:11.0,lid1:12.0,lp0:11.7,b4b:12.5,lift1:13.25,q0:13.6,hit:14.0,tip1:14.4,pour0:14.05,pour1:14.7,right1:14.8,
+  b6:17.0,pay0:17.1,pay1:17.85,b7:19.0,trayOut:21.4,push1:21.5,pull0:22.5,refill:22.25,b8:23.75,end:24};
+const SHOTS=[0,3,6.5,9.25,14,17,19,24];
+const shotOf=t=>t<3?1:t<6.5?2:t<9.25?3:t<14?4:t<17?5:t<19?6:7;
+window.R2_T=T;
+
+/* =================== COINS: deterministic piles and paths =================== */
+const COIN_R=0.1,COIN_T=0.028;
+const QY=new THREE.Vector3(0,1,0);
+function pile(n,seed,sample,half,opt={}){/* a heightmap pile: each coin walks downhill while the surface falls faster than tan(repose), rests on the
+  surface at its centre (tilted to the local slope), then adds a cosine bump of its own volume (packing about 0.6); coins never float */
+  const G=72,cell=2*half/G,hm=new Float32Array(G*G),R=rng(seed),out=[],lim=opt.lim!=null?opt.lim:half-COIN_R-0.01,limZ=opt.limZ!=null?opt.limZ:lim,TR=Math.tan((opt.repose||32)*Math.PI/180);
+  const H=(x,z)=>{const fx=cl((x+half)/cell-0.5,0,G-1.001),fz=cl((z+half)/cell-0.5,0,G-1.001),i=Math.floor(fx),k=Math.floor(fz),u=fx-i,v=fz-k;
+    return (hm[k*G+i]*(1-u)+hm[k*G+i+1]*u)*(1-v)+(hm[(k+1)*G+i]*(1-u)+hm[(k+1)*G+i+1]*u)*v};
+  const BR=COIN_R*1.55,AMP=(Math.PI*COIN_R*COIN_R*COIN_T/0.6)/(Math.PI*BR*BR*(1-4/(Math.PI*Math.PI)));
+  for(let k=0;k<n;k++){let [x,z]=sample(R);x=cl(x,-lim,lim);z=cl(z,-limZ,limZ);const st=COIN_R*0.45;
+    for(let it=0;it<60;it++){const h0=H(x,z);let best=null,bh=h0-TR*st;
+      for(let d=0;d<8;d++){const a=d*Math.PI/4+R()*0.5,nx=x+Math.cos(a)*st,nz=z+Math.sin(a)*st;if(Math.abs(nx)>lim||Math.abs(nz)>limZ)continue;const hh=H(nx,nz);if(hh<bh){bh=hh;best=[nx,nz]}}
+      if(!best)break;x=best[0];z=best[1]}
+    const e=COIN_R*0.7,gx=(H(x+e,z)-H(x-e,z))/(2*e),gz=(H(x,z+e)-H(x,z-e))/(2*e),tl=opt.maxTilt||0.5;
+    const tx=cl(gx,-tl,tl)+(R()-0.5)*0.25,tz=cl(gz,-tl,tl)+(R()-0.5)*0.25;
+    const nrm=new THREE.Vector3(-tx,1,-tz).normalize();const q=new THREE.Quaternion().setFromUnitVectors(QY,nrm).multiply(new THREE.Quaternion().setFromAxisAngle(QY,R()*6.283));
+    const y=H(x,z)+COIN_T/2+0.002;
+    for(let kz=0;kz<G;kz++)for(let kx=0;kx<G;kx++){const cx=-half+(kx+0.5)*cell,cz=-half+(kz+0.5)*cell,d=Math.hypot(cx-x,cz-z);if(d<BR)hm[kz*G+kx]+=AMP*(0.5+0.5*Math.cos(Math.PI*d/BR))}
+    out.push({p:new THREE.Vector3(x,y,z),q})}
+  return out}
+const gauss=(R)=>{let u=0;for(let i=0;i<4;i++)u+=R();return (u-2)*1.732};   /* about N(0,1) */
+/* the $ pot's interior: 0.92 x 0.92, floor at local y 0; coins centre within +-0.34 */
+const PH=0.34;
+const POT_B1=pile(40,11,R=>[gauss(R)*0.07,gauss(R)*0.07],0.46,{repose:30});                    /* B1 and the refill: a mound under the stream */
+const N2=170;                                                                                              /* B2b: a bed of N2, then a cone under the wide arm */
+const POT_B2=pile(N2+60,21,(()=>{let k=0;const R2=rng(22);return R=>{k++;return k<=N2?[(R()*2-1)*PH,(R()*2-1)*PH]:[gauss(R2)*0.05,gauss(R2)*0.05]}})(),0.46);
+const NB5=230;const POT_B5=pile(NB5,31,R=>[(R()*2-1)*PH,(R()*2-1)*PH],0.46,{repose:30});                                            /* B5: heaped (illustrative, no digits) */
+/* the bet tray's top: 1.0 x 0.56 usable; a mound */
+const TRAY_SL=pile(NB5,41,R=>[gauss(R)*0.14,gauss(R)*0.09],0.64,{lim:0.50,limZ:0.27,repose:44});
+/* the ops dish (31%): small */
+const DISH_SL=pile(40,51,R=>[gauss(R)*0.04,gauss(R)*0.04],0.2,{lim:0.08,maxTilt:0.35,repose:26});
+const ND2=6;
+/* Bresenham on SIM.poolShare: coin i goes to the $ pot iff floor((i+1)p) > floor(ip): exactly 69 of every 100 */
+const toPot=i=>Math.floor((i+1)*PS+1e-9)>Math.floor(i*PS+1e-9);
+{let c=0;for(let i=0;i<100;i++)c+=toPot(i)?1:0;if(c!==SHARE)fail('Bresenham split gives '+c+' of 100, expected '+SHARE)}
+
+/* =================== WORLD LAYOUT =================== */
+const POTX=0.75,PLH=0.30,POTS=1.0,WALL=0.04,POTFLOOR=PLH+WALL;           /* the pot: outer 1.0 cube on a 0.30 plinth */
+const TRAYP=new THREE.Vector3(-0.86,0,-0.30),TRW=1.24,TRH=0.30,TRD=0.78;   /* the bet tray (front left of the pot) */
+const CHIPP=new THREE.Vector3(-2.12,0,-0.40);                             /* the NVIDIA chip, lying flat behind the tray */
+const DISHP=new THREE.Vector3(1.48,0,0),DISHY=0.96;                       /* the ops dish on a column, under the narrow arm */
+const XD=1.026,WWID=0.552,NWID=0.248,DIVW=0.04,XI=(XD-WWID+XD+DIVW+NWID)/2,YSPLIT=1.70,YEXITW=1.42,YIN=2.00,YINB=1.86;
+const NSLX=0.29,NSLY=0.50,YNK=1.64,YEXITN=YNK-NSLY;                      /* the narrow arm's 30 degree slant */
+const XNC0=XD+DIVW+NWID/2,XNC1=XNC0+NSLX;                                 /* narrow centreline x, top and exit */
+const YR=2.55,YFUN0=2.50,YFUN1=2.30,TAGX=0.44;                           /* the rail, the funnel (the FEE gate) */
+const CARDP=new THREE.Vector3(-8,0,0),CW=0.84,CH=0.92,CTH=0.024;
+const STACKP=new THREE.Vector3(-16,0,0),SW=1.4,SHh=0.17,SD=0.45,SG=0.022;
+const PAYP=new THREE.Vector3(8,0,0);
+
+/* =================== PICTURE EVENTS (the sound reads these) =================== */
+/* B1 / refill stream: 4 coins a second; coin k starts at -0.75 + 0.25k (cycle time) and lands 0.75 s later, so one lands on f0 */
+const B1F=0.75,B1RATE=4,B1S0=-1.75;
+const b1Start=k=>B1S0+k/B1RATE,b1Land=k=>b1Start(k)+B1F;
+/* B2: the 4 shed coins (BUY, SELL, BUY, SELL) then 16 a second from the gate, all through the fork */
+const STRATE=16,ST0=4.10;
+const stSpawn=i=>i<4?T.sheds[i]:ST0+(i-4)/STRATE;
+const STN=Math.ceil((6.5-ST0)*STRATE)+4+4;
+const PIC={N,FPS,T,b1:[],b2pot:[],b2dish:[],sheds:T.sheds.slice(),flip:T.flip1,lid:T.lid1,hit:T.hit,pourLand:[],payL:[],payR:[],led:[]};
+window.R2_PIC=PIC;
+
+/* =================== STRINGS AND CHECKS (both passes) =================== */
+const BANNED=[/\block(s|ed)?\b/i,/at least/i,/—/,/–/,/10X/,/jackpot/i,/guaranteed/i];
+function checkStr(s){BANNED.forEach(re=>{if(re.test(s))fail('banned string "'+re+'" in: '+s)});if(/\b10x\b/.test(s)&&!/10x leverage/.test(s))fail('"10x" without "leverage": '+s)}
+
+/* =================== TYPE LAYER (DOM) =================== */
+const ov=document.getElementById('ov');
+const el=(cls,html,css,id,par)=>{const e=document.createElement('div');e.className='ab '+(cls||'');if(html!=null)e.innerHTML=html;if(css)Object.assign(e.style,css);if(id)e.id=id;(par||ov).appendChild(e);return e};
+const TRI=(up,px,col)=>'<svg class="ico" width="'+px+'" height="'+px+'" viewBox="0 0 10 10" aria-hidden="true"><path d="'+(up?'M5 .9 9.6 9.1H.4Z':'M.4 .9h9.2L5 9.1Z')+'" fill="'+(col||(up?'var(--up)':'var(--dn)'))+'"/></svg>';
+const ARR=px=>'<svg class="ico" width="'+Math.round(px*1.1)+'" height="'+px+'" viewBox="0 0 11 10" aria-hidden="true" style="vertical-align:-.06em"><path d="M.6 5h8.4M5.8 1.6 9.4 5 5.8 8.4" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="square"/></svg>';
+const COINI=px=>'<svg class="ico" width="'+px+'" height="'+px+'" viewBox="0 0 20 20" aria-hidden="true" style="vertical-align:-.14em"><defs><radialGradient id="cg'+px+'" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#ffe7a0"/><stop offset=".55" stop-color="#e2b250"/><stop offset="1" stop-color="#9a7024"/></radialGradient></defs><circle cx="10" cy="10" r="9.4" fill="url(#cg'+px+')"/><circle cx="10" cy="10" r="7.6" fill="none" stroke="#8a6420" stroke-width=".7" opacity=".7"/><text x="10" y="14.6" text-anchor="middle" font-family="MS" font-weight="800" font-stretch="75%" font-size="13" fill="#7a5618">$</text></svg>';
+const words=s=>s.split(' ').map(w=>'<span class="w">'+w+'</span>').join('<span class="w"> </span>');
+const E={};
+const T1=T.b2a,TEND=DUR;
+/* text lines: [element, on, off, words-by-word] */
+const LINES=[];
+function line(cls,text,x,y,t0,t1,opt={}){const e=el(cls,opt.html||words(text),Object.assign({left:x+'px',top:y+'px'},opt.css||{}));checkStr(text);
+  const L={late:opt.late,e,t0,t1,wbw:opt.wbw!=null?opt.wbw:text.split(' ').length>=5,dur:opt.dur||0.25,keep0:opt.keep0,ret:opt.ret,kind:opt.kind||'story',text,ws:opt.html?[e]:[...e.querySelectorAll('.w')]};LINES.push(L);
+  S(text,opt.src||'fixed copy',t0,t1,L.kind);return L}
+/* B1: the hero (top left, in the negative space), resolves again from 23.75 */
+const HERO=['We’re putting','buybacks in the','hands of an AI.'];
+HERO.forEach((s,i)=>line('hero',s,64,128+i*80,0,T.b2a,{keep0:true,ret:T.b8,src:'owner copy (CLAUDE.md, EZ Season hero)'}));
+/* B2 */
+const FL=line('kick','FROM LAUNCH',66,120,T.dock,T.b3,{src:'CONFIG.launched is false (fees start at launch)',kind:'story'});
+const FEEL=line('fee','FEE',0,0,T.b2a,T.b2b,{src:'fixed label (X2: Every $EZ trade pays a fee.)',kind:'label'});
+const FEEH=el('hair',null,{left:'0',top:'0',width:'2px',height:'40px'});
+const L69=line('big',SHARE+'%',56,214,T.l69,T.b3,{src:'SIM.poolShare ('+PS+')',wbw:false});
+const L69b=line('kick','→ $ pot',66,452,T.l69,T.b3,{html:ARR(50)+' '+COINI(54)+'<span class="w"> pot</span>',src:'fixed: the $ pot (inline coin glyph)'});
+const L31=line('kick',OPS+'% → runs EZ',0,0,T.l31,T.b3,{html:'<span class="w">'+OPS+'%</span> '+ARR(50)+'<span class="w"> runs EZ</span>',src:'1 - SIM.poolShare'});
+/* B3 */
+line('st','Four AIs call the move.',64,100,T.b3,T.b4,{src:'MODEL_KEYS.length ('+MODEL_KEYS.length+')'});
+/* B4 */
+line('st',LEAD+' hours before',64,100,T.b4,T.b4b,{src:'SIM.leadHours ('+LEAD+')',wbw:true});
+line('st','NVIDIA reports,',64,188,T.b4+0.18,T.b4b,{wbw:true,src:'fixed (owner sentence)'});
+line('st','the leaderboard freezes.',64,276,T.lid0,T.b4b,{wbw:false,src:'fixed (owner sentence)'});
+
+/* B4b and B5: "#1 makes the call." then the 10x pair, the same face, size and weight */
+const CALL=line('pair','#1 makes the call.',64,100,T.b4b,T.b6,{wbw:false,src:'fixed: LADDER[0] at the freeze makes the call'});
+const LEVL=line('pair',LEV+'x leverage.',64,188,T.hit,T.b6,{wbw:false,dur:0.12,src:'SIM.leverage ('+LEV+')'});
+const WIPE=line('pair','The pot can be wiped out.',64,276,T.hit,T.b6,{wbw:false,dur:0.12,src:'fixed guardrail (paired with 10x; set on two lines so the pour has the right half)',
+  html:(POTGLYPH?'<span class="w">The</span><span class="w"> </span>'+COINI(64)+'<span class="w"> pot can</span>':words('The pot can'))+'<br>'+words('be wiped out.')});
+/* B6: two equal halves */
+const HL=el('half',null,{left:'0'}),HR=el('half',null,{left:'542px'});
+const hk1=el('kick','RIGHT CALL',{position:'absolute'},null,HL),hk2=el('kick','WRONG CALL',{position:'absolute'},null,HR);
+hk1.className='kick';hk2.className='kick';
+const hl1=el('l','Profit buys<br>back $EZ.',null,null,HL),hl2=el('l','The pot can<br>be wiped out.',null,null,HR);hl1.className='l';hl2.className='l';
+S('RIGHT CALL','fixed',T.b6,T.b7,'story');S('Profit buys back $EZ.','fixed (owner copy, "the" dropped to fit a half)',T.b6,T.b7,'story');
+S('WRONG CALL','fixed',T.b6,T.b7,'story');S('The pot can be wiped out.','fixed guardrail',T.b6,T.b7,'story');
+const DIV=el('',null,null,'divider');
+/* B7 */
+const TTL=el('',null,null,'ttl');
+line('st','Until the NVIDIA bet',96,114,T.b7,T.b8,{late:true,css:{fontSize:'64px',lineHeight:'72px'},wbw:false,src:'fixed: the planned bet (NVIDIA has not announced its date)'});
+const PLN=line('k40','PLANNED · '+BETLAB,98,196,T.b7,T.b8,{late:true,wbw:false,src:'BET: '+betSrc,kind:'label'});
+const DISC=el('','$EZ is a memecoin.<br>Not financial advice.<br>The pot can be wiped out.',null,'disc');
+S('$EZ is a memecoin. Not financial advice. The pot can be wiped out.','fixed disclaimer (once, '+(T.b8-T.b7).toFixed(2)+' s)',T.b7,T.b8,'compliance');
+/* the rail: AD, the $EZ tile, the stamp; the legal lines; the band */
+E.ad=el('','AD',null,'ad');E.tile=el('','<span class="s">$</span><span class="e">E</span><span class="z">Z</span>',null,'tile');
+E.stamp=el('','',null,'stamp');
+E.legal=el('','Not affiliated with NVIDIA, OpenAI, Moonshot AI, xAI, Anthropic<br>or any company shown.',null,'legal');
+S(LEGAL,'fixed (brief; LABS[MODEL_KEYS] checked against it)',0,DUR,'compliance');S('AD','fixed, every frame',0,DUR,'compliance');
+if(VAR==='uk'){E.band=el('',null,null,'band');const p=document.createElement('p');p.textContent='Don’t invest unless you’re prepared to lose all the money you invest. This is a high-risk investment and you should not expect to be protected if something goes wrong.';E.band.appendChild(p);
+  S(p.textContent,'FCA COBS 4.12A.11R(1)(d), exact text and style of ez-hype.html; every frame (uk)',0,DUR,'compliance')}
+const STAMPS=[[0,T.b2a,'FEES FROM LAUNCH','CONFIG.launched false'],[T.b3,T.b4,ASOFLAB+' · ROUND '+LAST.n,'asof; latest graded round'],[T.b4,T.nm0,'WINS · AFTER ROUND '+LAST.n,'LADDER; latest graded ROUNDS[].n'],
+  [T.b4b,T.b6,'PLANNED · ON HYPERLIQUID','fixed (X2: on Hyperliquid)'],[T.b7,T.b8,'PLANNED '+BETLAB+' · '+ASOFLAB,'BET ('+betSrc+'); asof'],[T.b8,DUR,'FEES FROM LAUNCH','CONFIG.launched false']];
+STAMPS.forEach(s=>{S(s[2],s[3],s[0],s[1],'label');checkStr(s[2])});
+S('LED countdown DD HH MM SS (B1, B8: D = bet - asof; B5, B7: D + ceil(23.75 - t))','BET - asof ('+D0+' s)',0,DUR,'data');
+CALLS.forEach(c=>S(c.name+' '+(c.dir==='UP'?'▲':'▼')+c.mag,'ROUND '+SHOW.n+' .calls ('+showRule+')',T.b3,T.flip1,'data'));
+S('ROUND '+SHOW.n+' · '+SHOW.co.toUpperCase(),'showcase round .n .co',T.b3,T.flip1,'data');
+S('REAL MOVE '+(SHOWUP?'▲':'▼')+' '+OUTMAG,'showcase round .out',T.flip1,T.b4,'data');
+LADDER.forEach((L,i)=>S('#'+(i+1)+' '+MODELS[L.m].name+' '+L.won,'LADDER['+i+'] (wins, then the smaller average miss)',T.b4,T.nm1,'data'));
+STR.forEach(s=>checkStr(s.text));checkStr(LEGAL);
+window.R2_STRINGS=STR;
+
+function setW(L,t){/* resolve from a 12 px blur and 0 opacity, word by word for lines of 5 words or more; exits fade over 0.2 s */
+  let on=0,blur=0;const ws=L.ws;const fade=L.t1>=DUR?1:L.late?1-lin(t,L.t1,L.t1+0.1):1-lin(t,L.t1-0.2,L.t1);
+  const inRange=(t>=L.t0&&t<L.t1+(L.late?0.1:0))||(L.ret!=null&&t>=L.ret);
+  if(!inRange){L.e.style.visibility='hidden';return '0'}
+  L.e.style.visibility='visible';const t0=(L.ret!=null&&t>=L.ret)?L.ret:L.t0;const k=[];
+  ws.forEach((w,i)=>{let u;if(L.keep0&&t0===0)u=1;else{const d=L.wbw&&!(L.ret!=null&&t>=L.ret)?0.06*Math.floor(i/2):0;u=EOUT(lin(t,t0+d,t0+d+L.dur))}
+    const o=u*(t0===L.ret?1:fade);w.style.opacity=o.toFixed(3);w.style.filter=u<0.999?'blur('+((1-u)*12).toFixed(2)+'px)':'none';k.push(o.toFixed(3)+(u<0.999?'b'+(1-u).toFixed(3):''))});
+  return k.join(',')}
+let typeKey='';
+function applyType(t){const s=shotOf(t),K=[VAR,VERSION,hash(DATAKEY)];
+  LINES.forEach(L=>K.push(setW(L,t)));
+  /* B2 labels that sit by objects (fixed screen positions, measured from the hold poses) */
+  FEEL.e.style.left='604px';FEEL.e.style.top='468px';
+  const fv=t>=T.b2a&&t<T.b2b?1-lin(t,T.b2b-0.2,T.b2b):0;FEEH.style.left='560px';FEEH.style.top='495px';FEEH.style.width='36px';FEEH.style.height='2px';FEEH.style.opacity=(0.55*fv).toFixed(3);FEEH.style.visibility=fv>0?'visible':'hidden';K.push(fv.toFixed(3));
+  L31.e.style.left=LAY.l31x+'px';L31.e.style.top=LAY.l31y+'px';
+  /* B6 halves: on hard at the cut, words resolve like every other line */
+  const hv=s===6;[HL,HR,DIV].forEach(e=>e.style.visibility=hv?'visible':'hidden');
+  if(hv){const u=EOUT(lin(t,T.b6,T.b6+0.25));[hk1,hk2,hl1,hl2].forEach((e,i)=>{const uu=i<2?u:EOUT(lin(t,T.b6+0.06,T.b6+0.31));e.style.opacity=uu.toFixed(3);e.style.filter=uu<0.999?'blur('+((1-uu)*12).toFixed(2)+'px)':'none'});
+    const fo=1-lin(t,T.b7-0.2,T.b7);HL.style.opacity=HR.style.opacity=fo.toFixed(3);K.push('h'+u.toFixed(3)+','+fo.toFixed(3))}
+  /* the disclaimer: on hard at f1140, off at f1425 (fades over 0.1 s from 23.75) */
+  const dv=t>=T.b7&&t<T.b8?1:(t>=T.b8&&t<T.b8+0.1?1-lin(t,T.b8,T.b8+0.1):0);DISC.style.visibility=dv>0?'visible':'hidden';DISC.style.opacity=dv.toFixed(3);K.push('d'+dv.toFixed(3));
+  const tv=t>=T.b7&&t<T.b8?1:(t>=T.b8&&t<T.b8+0.1?1-lin(t,T.b8,T.b8+0.1):0);TTL.style.visibility=tv>0?'visible':'hidden';TTL.style.opacity=tv.toFixed(3);K.push('c'+tv.toFixed(3));
+  /* the rail stamp */
+  let st='';STAMPS.forEach(x=>{if(t>=x[0]&&t<x[1])st=x[2]});E.stamp.textContent=st;K.push(st);
+  return K.join('|')}
+
+/* =================== LAYOUT: screen positions shared by the plate (camera framing) and the type =================== */
+const LAY={l31x:66,l31y:560};
+
+/* =================== QA hooks shared by both passes =================== */
+window.R2_LINES=()=>LINES.map(L=>({text:L.text,t:[L.t0,L.t1],kind:L.kind}));
+
+if(PASS==='type'){
+  await Promise.all(['600 76px G','650 76px G','500 26px G','600 56px GM','600 28px GM','800 40px MS','700 36px IS'].map(s=>document.fonts.load(s)));await document.fonts.ready;
+  document.getElementById('out').style.display='none';document.getElementById('gl').style.display='none';
+  window.renderAt=t=>{const f=Math.min(N-1,Math.max(0,Math.round(t*FPS)));typeKey=applyType(f/FPS);return f};
+  window.frameName=i=>'t-'+hash(applyType(i/FPS));
+  window.R2_TYPECHECK=typeCheck;
+  window.renderAt(0);window.__ready=true;
+}else{
+  await import('./ez-r2-object-gl.js').then(m=>m.init({THREE,RoomEnvironment,RoundedBoxGeometry,SVGLoader,mergeGeometries,
+    Q,PASS,VAR,FPS,DUR,N,RES,NSQ,MARKS,FRONT,LEDC,POTGLYPH,VERSION,DATAKEY,fail,cl,lin,mix,sm,bez,EA,EOUT,EIN,EIO,r4,hash,rng,T,SHOTS,shotOf,
+    COIN_R,COIN_T,POT_B1,POT_B2,N2,POT_B5,TRAY_SL,DISH_SL,ND2,toPot,PH,POTX,PLH,POTS,WALL,POTFLOOR,TRAYP,TRW,TRH,TRD,CHIPP,DISHP,DISHY,
+    XD,WWID,NWID,DIVW,XI,YSPLIT,YEXITW,YIN,YINB,NSLX,NSLY,YNK,YEXITN,XNC0,XNC1,YR,YFUN0,YFUN1,TAGX,CARDP,CW,CH,CTH,STACKP,SW,SHh,SD,SG,PAYP,
+    B1F,B1RATE,B1S0,b1Start,b1Land,STRATE,ST0,stSpawn,STN,PIC,CALLS,SHOW,SHOWUP,OUTMAG,LADDER,LAST,D0,LEV,SHARE,MODELS,applyType,LAY}));
+  if(PASS==='plate')ov.style.display='none';
+  window.R2_TYPECHECK=typeCheck;
+}
+/* per frame (DOM): "10x" only with "The pot can be wiped out." at the same computed size and weight; "#1 makes the call." matches */
+function typeCheck(f){applyType(f/FPS);const vis=L=>L.e.style.visibility==='visible'&&L.ws.some(w=>+w.style.opacity>0.01);
+  const cs=e=>{const c=getComputedStyle(e);return c.fontSize+'/'+c.fontWeight+'/'+c.fontFamily};
+  const bad=[];if(vis(LEVL)&&!vis(WIPE))bad.push('10x without the wipe-out line');
+  if(vis(LEVL)&&cs(LEVL.e)!==cs(WIPE.e))bad.push('pair size or weight differs');if(vis(LEVL)&&vis(CALL)&&cs(CALL.e)!==cs(LEVL.e))bad.push('#1 line differs from the pair');
+  return bad}
+}catch(e){window.__err=window.__err||String(e&&e.stack||e)}
+</script>
+</body></html>
