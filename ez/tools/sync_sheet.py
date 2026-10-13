@@ -107,10 +107,12 @@ def clean(v):
 # Rounds struck from the record, by (ticker, call date): skipped whatever the ROUND cell says,
 # even while the row is still in the sheet.
 VOID = {("STZ", "10/06/26"): "calls were submitted after the earnings report (owner, 2026-10-07)",
-        # a stray second TSMC row (no calls, resolution date before its call date); TSMC's Q3 round is 2330.TW (call 10/14, report 10/15)
-        ("TSMC", "10/08/26"): "duplicate of the 2330.TW (TSMC Q3) round (2026-10-09)",
-        ("TSMC", "10/15/26"): "duplicate of the 2330.TW (TSMC Q3) round (2026-10-09)",
-        ("TSMC", "10/14/26"): "duplicate of the 2330.TW (TSMC Q3) round (2026-10-09)"}
+        # owner, 2026-10-13: TSMC's Q3 round is now the sheet's "TSMC" row (call 10/14); the 2330.TW row is gone, so the
+        # old voids of the "TSMC" rows (2026-10-09, when TSMC was a stray duplicate of 2330.TW) are dropped. Aeon and Alcoa
+        # were removed from the sheet on purpose. None of the three had calls.
+        ("2330.TW", "10/14/26"): "replaced by the sheet's TSMC row (owner, 2026-10-13)",
+        ("8267.T", "10/12/26"): "removed from the sheet by the owner (2026-10-13)",
+        ("AA", "10/15/26"): "removed from the sheet by the owner (2026-10-13)"}
 
 MONTHS = {m: i + 1 for i, m in enumerate(("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"))}
 
