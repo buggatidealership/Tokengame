@@ -3,31 +3,49 @@
    at the end of routes.js. Headline, then the NVIDIA chip and the bet in bullets, then Every call, Current standings,
    Getting smarter or just lucky? and Get $EZ. X2's own type, ink and yellow throughout. ===== */
 
-/* the chip, right under the headline, then its line and the bullets, all three in one column. On a wide screen the
-   column's width follows the window's height, so the chip never fills the first screen and its line and the first
-   bullets show above the fold (NN/g: no full-screen hero, show that there is more below). It never goes under 440 px
-   (or the column's own width, if that is less), so a phone held sideways or a short laptop window still shows the chip
-   and its countdown. Its line is the text under the headline, so it takes X2's one size for that (--lede), in ink. */
+/* the chip, right under the headline, then the four bullets. Phones and tablets (under 1024 px): one column, the
+   chip then the bullets, all of it in a phone's first screen (390 x 844). On a tablet the column's width follows the
+   window's height, so the chip never fills the first screen and the bullets show above the fold (NN/g: no full-screen
+   hero, show that there is more below); it never goes under 440 px (or the column's own width, if that is less).
+   1024 px and wider: chip left, bullets right, the chip's height again set by the window's, so the headline, the chip
+   and the bullets fit one laptop screen (1280 x 800) */
 .x2o-bet{max-width:900px;margin-top:28px}
 .x2o-bet .gpu{margin:0}
-.x2o-bet .gpu-t{font:var(--lede);line-height:1.5;color:var(--ink);margin:12px 0 0;text-wrap:pretty}
 .x2o-bet .x2o-ul{max-width:none}
-@media(min-width:641px){.x2o-bet{max-width:clamp(440px,calc((100svh - 400px) * 1834 / 1362),900px)}}
+@media(min-width:641px) and (max-width:1023px){.x2o-bet{max-width:clamp(440px,calc((100svh - 340px) * 1834 / 1362),900px)}}
 @media(max-width:640px){.x2o-bet{margin-top:18px}}
+@media(min-width:1024px){
+  .x2o-bet{max-width:none;display:grid;grid-template-columns:minmax(0,min(62%,max(400px,calc((100svh - 290px) * 1834 / 1362)))) minmax(0,1fr);gap:0 44px;align-items:center}
+  .x2o-bet .x2o-ul{max-width:40ch;gap:14px}
+}
 
 /* the bullets: one idea per line, X2's text size under a head (--lede), a small yellow square in an ink ring as the
    bullet (the section numbers' yellow and ink), the numbers in bold ink */
 .x2o-ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font:var(--lede);color:var(--ink2);max-width:46ch}
-.x2o-ul li{position:relative;padding-left:24px;line-height:1.5;text-wrap:pretty}
+.x2o-ul li{position:relative;padding-left:24px;line-height:1.5;text-wrap:balance}
 .x2o-ul li::before{content:"";position:absolute;left:1px;top:calc(.75em - 5px);width:10px;height:10px;border-radius:3px;background:var(--yel);box-shadow:0 0 0 1.5px var(--ink)}
 .x2o-ul b{color:var(--ink);font-weight:800}
 .x2o-bet .x2o-ul{margin-top:18px}
+@media(min-width:1024px){.x2o-bet .x2o-ul{margin-top:0}}
 @media(max-width:640px){.x2o-ul{font-size:15px;gap:7px}.x2o-ul li{padding-left:21px}.x2o-ul li::before{width:9px;height:9px;top:calc(.75em - 4.5px)}.x2o-bet .x2o-ul{margin-top:14px}}
 
-/* Every call: the bullets take the place of the line under the head, under the head at every width (as in "Getting
-   smarter or just lucky?"), then the record's cards as before */
+/* Every call: three bullets take the place of the line under the head, under the head at every width, then the
+   record's cards as before. "before the company reports" and "first market close after earnings" wear the same marker
+   (.hlx, X2's own) */
 #record .sh:has(.x2o-rec){grid-template-columns:minmax(0,1fr);gap:14px}
 #record .x2o-rec{max-width:46ch}
+/* 1024 px and wider: the head and its three bullets on the left, the cards and their pager on the right (the cards'
+   own 600 px column, as before), so the whole section fits one laptop screen (1280 x 800: the record card's foot and
+   the round pager sat 111 px under the fold, one above the other). NN/g, Scrolling and Attention (2018): attention
+   drops sharply at the fold, so the cards and the way through them belong above it. Phones and tablets keep the head
+   above the cards. A class (.x2o-rc, set by the X2 block), not #record:has(...): with :has the card changes restyled
+   the section and cut short the round pager's glide to the latest round, so it sat on R1 */
+@media(min-width:1024px){
+  #record.x2o-rc{display:grid;grid-template-columns:minmax(0,1fr) 600px;grid-template-areas:"sh car" "sh ctl";column-gap:48px;align-items:start}
+  #record.x2o-rc>.sh{grid-area:sh;margin:0}
+  #record.x2o-rc>.car{grid-area:car;margin:0;max-width:none}
+  #record.x2o-rc>.car-ctl{grid-area:ctl;margin:2px 0 0;max-width:none}
+}
 
 /* Current standings: X2's standings rows, one column, the section head in place of the column's own head. The #1 row's
    tags ("Leads", "In line for the call") stand 12 to 15 px above the row, so the rows start far enough under the head
@@ -38,8 +56,35 @@
 .x2o-band .roster{grid-template-rows:none;grid-auto-rows:minmax(var(--rh),auto);margin-top:24px}
 @media(min-width:641px){.x2o-band .roster{margin-top:32px}}
 @media(min-width:900px){.x2o-band{--rh:84px}}
+/* the one line under the rows: X2's text size under a head (--lede) */
+.x2o-st .x2o-stn{margin:18px 0 0;max-width:640px;color:var(--ink2);text-wrap:balance}
+@media(min-width:641px){.x2o-st .x2o-stn{margin-top:22px}}
+
+/* Getting smarter or just lucky? (owner, 2026-10-13: switching ROI to Direction shortened the card). One card of one
+   size: both faces stand in the card's one grid cell, so the card is as tall as the taller face whichever shows, and
+   the page below never moves. routes.css folds the face turned away once the flip is over (".x2 .lflip[data-rest]");
+   here it keeps its height and padding (28 px, 20 px under 901 px: the card's own, v15). Both faces put the title on
+   top and the chart under it; the ROI chart is a little shorter than before, and the Direction chart is drawn taller
+   into the room left (below), so neither face reads as empty. */
+#learn .lflip[data-rest] .lf-in>.lq[aria-hidden=true]{height:auto;padding-top:28px;padding-bottom:28px}
+@media(max-width:900px){#learn .lflip[data-rest] .lf-in>.lq[aria-hidden=true]{padding-top:20px;padding-bottom:20px}}
+#learn #lqDir{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);row-gap:0}
+#learn #lqDir>.lq-t{margin-bottom:16px}               /* as ROI's title (routes.css) */
+#learn #lqDir>.lxv{align-self:center}
+/* the Direction chart is drawn taller to fill the room the ROI face leaves (routes.js, X2 block: fitDir). To find that
+   room the X2 block measures each face at its own height for a moment, with this class on */
+#learn .lflip.x2o-meas .lf-in>.lq{align-self:start}
+#learn .lq-roi .pnl{height:180px}
+@media(max-width:640px){#learn .lq-roi .pnl{height:140px}}
+/* "Simulated" beside the ROI title: one quiet word in an ink ring, so the dollars never read as real returns. It holds
+   on to the title's last word (.x2o-nw), so on a phone the two wrap together and the tag never starts a line */
+.x2o-nw{white-space:nowrap}
+.x2o-sim{display:inline-block;vertical-align:.2em;margin-left:2px;padding:4px 7px 3px;border-radius:5px;font:800 10.5px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);box-shadow:inset 0 0 0 1.5px currentColor;white-space:nowrap}
 
 /* phones of 320 to 343 px: X2's five tabs (Overview ... Buyback) need 343 px and ran 23 px past the screen at 320 px,
    so every X2 page scrolled sideways there (it did before this change too; X3, X4 and X5 share it and keep it for
    now). Less padding between the tabs fits all five. */
 @media(max-width:343px){.nav:has(a:nth-child(5)) a{padding:0 4px;font-size:10px}}
+
+/* Get $EZ: two steps after the X2 block's trim, side by side from 861 px (v15's .get is three columns there) */
+@media(min-width:861px){.get{grid-template-columns:repeat(2,minmax(0,1fr))}}

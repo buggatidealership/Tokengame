@@ -1148,41 +1148,57 @@ if(X5)(function(){
 /* ---------- X2's Overview (owner, 2026-10-13), for EZ Live X2 alone (EXP==="x2"). X3, X4 and X5 share X2's code but
    not this block: build.py keeps it (markers dropped) for X2 and strips it, markers and all, from every other page, so
    Season Live, X1, X3, X4 and X5 stay byte for byte. Its styles are tools/v22/x2-overview.css, put in X2 alone.
-   Top to bottom: the headline alone; the NVIDIA Blackwell chip counting down to the bet, with its line; the bet as short
-   bullets; 01 Every call (the record, how a call is graded as bullets above the cards); 02 Current standings (the
-   standings that sat in the hero); 03 Getting smarter or just lucky?; 04 Get $EZ and the one disclaimer. The hero's
-   line, "Last round" and "How we grade" leave the hero; the fee split, operations and the roadmap leave the Overview
-   (the Buyback tab keeps the fee share, the pool and the calculator). Every number comes from ez-data.js. The board is
-   never re-rendered by the router (it is shown and hidden), but the order is checked again each time the Overview
-   shows: nothing that is already in place moves, so the record keeps its scroll position. ---------- */
+   Top to bottom: the headline alone; the NVIDIA Blackwell chip counting down to the bet (no line under it: the bullets
+   say what the timer counts to); the bet in four short bullets; 01 Every call (the record, how a call is graded as three
+   bullets above the cards); 02 Current standings (the standings that sat in the hero, and one line: #1 makes the NVIDIA
+   call); 03 Getting smarter or just lucky? (ROI and Direction, one card of one size); 04 Get $EZ and the one
+   disclaimer. Each section is one phone screen at most (owner, 2026-10-13: "each section needs to be one scroll").
+   The hero's line, "Last round" and "How we grade" leave the hero; the fee split, operations and the roadmap leave the
+   Overview (the Buyback tab keeps the fee share, the pool and the calculator). Every number comes from ez-data.js. The
+   board is never re-rendered by the router (it is shown and hidden), but the order is checked again each time the
+   Overview shows: nothing that is already in place moves, so the record keeps its scroll position. ---------- */
 if(EXP==="x2")(function(){
-  var hero=$("section.hero"),rec=$("#record"),learn=$("#learn"),bet=$("#bet"),get=$("#get"),gpu=$("#gpu"),stand=$("#stand"),gcall=$("#gpuCall"),ro=$("#roster");   // found now: they move out of the page for a moment below
+  var hero=$("section.hero"),rec=$("#record"),learn=$("#learn"),bet=$("#bet"),get=$("#get"),gpu=$("#gpu"),stand=$("#stand"),ro=$("#roster");   // found now: they move out of the page for a moment below
   if(!hero||!rec||!bet||!get)return;
   function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
   function bullets(cls,lines){return '<ul class="x2o-ul'+(cls?' '+cls:'')+'">'+lines.map(function(l){return '<li>'+l+'</li>'}).join("")+'</ul>'}
   var POOL=Math.round((SIM.poolShare!=null?SIM.poolShare:typeof ASSUME!=="undefined"&&ASSUME.poolShare||0)*100),LEV=SIM.leverage,LEAD=SIM.leadHours,
     NAI=typeof NM!=="undefined"&&NM?NM:ACTIVE.length;
 
-  /* 2 + 3. THE BET: the chip and its countdown (X2's own, moved up from the buyback section), its first line (what
-     the timer counts to; the freeze is said in the bullets, so the chip's second line goes), then the bet in bullets */
+  /* 2 + 3. THE BET: the chip and its countdown (X2's own, moved up from the buyback section), then the bet in four
+     bullets (owner, 2026-10-13: three to four at most, short words). The chip's line ("When the timer hits zero, we place
+     a bet ... at 10x leverage on Hyperliquid") goes: the bullets right beside or under it say the same, the venue
+     included. The AIs call before each report (Every call says so), so the first bullet says "on earnings", never
+     "after". Phones: chip, then bullets, all in the first screen; 1024 px and wider: chip left, bullets right
+     (x2-overview.css) */
   var top=el("section","x2o-bet");top.setAttribute("aria-label","The NVIDIA bet");
   top.insertAdjacentHTML("beforeend",bullets("",[
-    '<b>'+NAI+' AIs</b> call how stocks move after earnings, all season long.',
-    'From launch, '+(POOL?'<b>'+POOL+'%</b> of':'part of')+' $EZ trading fees go into the pot.',
-    (LEAD!=null?'<b>'+LEAD+'h</b> before NVIDIA reports':'Right before NVIDIA reports')+', the AI on top of the leaderboard makes the call.',
-    'We bet the pot on that call'+(LEV!=null?': <b>'+LEV+'x</b> on Hyperliquid.':' on Hyperliquid.'),
-    '<b>Right:</b> the profits buy back $EZ.',
-    '<b>Wrong:</b> the pot shrinks, and it can be wiped out.',
-    'Then it starts again next earnings season.']));
-  if(gpu){top.insertBefore(gpu,top.firstChild);var im=$(".gpu-img img",gpu);if(im)im.loading="eager"}   // first screen now: no lazy load
+    '<b>'+NAI+' AIs</b> call stock moves on earnings, all season.',
+    'From launch, '+(POOL?'<b>'+POOL+'%</b> of':'part of')+' $EZ fees fill the pot.',
+    (LEAD!=null?'<b>'+LEAD+'h</b> before NVIDIA reports':'Right before NVIDIA reports')+', the #1 AI calls it. We bet the pot'+(LEV!=null?', <b>'+LEV+'x</b> on Hyperliquid.':' on Hyperliquid.'),
+    '<b>Right:</b> profits buy back $EZ. <b>Wrong:</b> the pot shrinks or gets wiped out.']));
+  if(gpu){top.insertBefore(gpu,top.firstChild);var im=$(".gpu-img img",gpu);if(im)im.loading="eager";   // first screen now: no lazy load
+    var gt=$(".gpu-t",gpu);if(gt)gt.remove();                     // the chip's line and its hidden second line (#gpuCall)
+    /* without that line a screen reader would hear "37 days, 13 hours, 23 minutes left" with nothing to say of what */
+    var sr=$("#gpuSr",gpu);if(sr)sr.insertAdjacentHTML("beforebegin",'<span class="sr">Until the NVIDIA bet: </span>')}
 
-  /* 4. EVERY CALL: the record's head and cards; how a call is graded, as bullets, in place of the line under the head */
+  /* 4. EVERY CALL: the record's head and cards; how a call is graded, as three bullets in place of the line under the
+     head, the two moments marked the same way (owner, 2026-10-13) */
   var rl=$(".sh .lede",rec),rb=el("div","",bullets("lede x2o-rec",[
-    'Every call is made before the company reports.',
+    'Every call is made <b class="hlx">before the company reports</b>.',
     'Graded at the <b class="hlx">first market close after earnings</b>.',
-    'Closing prices come from TradingView, so the AI can\'t make them up.',
     'Don\'t trust us. Verify every call below.'])).firstChild;
   if(rl)rl.replaceWith(rb);else{var sh=$(".sh",rec);if(sh)sh.appendChild(rb)}
+  rec.classList.add("x2o-rc");                                    // 1024 px and wider: head left, cards right (x2-overview.css)
+  /* the round pager opens on the latest round. The shared code glides it there on load; next to the head (1024 px and
+     wider) that glide never started and the pager sat on R1, so once the page has its layout, and whenever the row
+     changes size, the current round is put back in view if it is out of it */
+  var chs=$("#chips",rec);
+  function chipIn(){var a=chs&&$(".chip[aria-current]",chs);if(!a||!chs.clientWidth)return;var l=a.offsetLeft,r=l+a.offsetWidth;
+    if(l<chs.scrollLeft||r>chs.scrollLeft+chs.clientWidth)chs.scrollLeft=l-(chs.clientWidth-a.offsetWidth)/2}
+  if(chs){if(window.ResizeObserver)new ResizeObserver(chipIn).observe(chs);
+    requestAnimationFrame(function(){requestAnimationFrame(chipIn)});addEventListener("load",chipIn);
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(chipIn)}
 
   /* 5. CURRENT STANDINGS: the standings from the hero, in a section of their own. The head names them, so the
      column's own head ("Standings" and the "How we grade" button, which turned the hero's card) is hidden */
@@ -1191,12 +1207,72 @@ if(EXP==="x2")(function(){
   var band=el("div","band x2o-band");band.style.setProperty("--rows",Math.max(1,ROWS.length));st.appendChild(band);
   if(stand)band.appendChild(stand);
   if(ro)ro.setAttribute("aria-labelledby","x2stH");
+  /* under the rows: what the top spot is for (owner, 2026-10-13) */
+  st.appendChild(el("p","lede x2o-stn","The model on top of the leaderboard makes the NVIDIA call."));
+
+  /* 6. GETTING SMARTER OR JUST LUCKY? (owner, 2026-10-13): no line under the head (Every call already says "Don't
+     trust us. Verify"); the ROI card loses its note at the bottom (the stake, all in, before fees, the method) and keeps
+     one word of it in its title, "Simulated", so its dollars never read as real returns; ROI and Direction are one card
+     of one size (x2-overview.css), so switching never moves the page */
+  var ll=$("#lrnLede");if(ll)ll.remove();
+  var rn=$("#lqDist .lq-roi-n");if(rn)rn.remove();
+  /* the tag holds on to the title's last word, so on a phone it never starts a line of its own */
+  var rh=$("#lqDistH");if(rh){var rt=rh.textContent.replace(/\s+$/,""),ri=rt.lastIndexOf(" "),nw=el("span","x2o-nw");
+    rh.textContent=rt.slice(0,ri+1);nw.textContent=rt.slice(ri+1)+" ";nw.appendChild(el("span","x2o-sim","Simulated"));rh.appendChild(nw)}
+
+  /* the Direction face fills its card. The card is as tall as the ROI face (taller on phones: its four tiles), and the
+     Direction chart (ez-learn.js, shared, drawn at a fixed height) floated in the middle of up to 120 px of empty card.
+     So the chart is drawn taller here, into the room the ROI face leaves: its plot is stretched top to bottom (the
+     points, lines and grid move; the type, dots and strokes keep their size) and the round labels move down with the
+     axis. And the round labels thin out to every 2nd or 3rd, counted back from the last graded round, where they
+     would overlap (phones: R1 to R19 ran together). Redone each time the chart is redrawn and on resize. */
+  var lxd=$("#lxDir"),lqd=$("#lqDir"),lqr=$("#lqDist"),lfl=$("#lflip");
+  function fitDir(){
+    var svg=lxd&&$("svg",lxd);if(!svg||!lqr||!lfl||!lfl.offsetHeight)return;
+    if(!svg._o){var gl=$$("line.lx-gl,line.lx-ref",svg).map(function(l){return +l.getAttribute("y1")});
+      svg._o={H:+svg.getAttribute("height"),W:+svg.getAttribute("width"),T:Math.min.apply(null,gl),P:Math.max.apply(null,gl)};
+      $$("line,text,rect,circle,path",svg).forEach(function(e){e._o={};["y","y1","y2","cy","height","d"].forEach(function(k){var v=e.getAttribute(k);if(v!=null)e._o[k]=v})})}
+    var o=svg._o;if(!(o.P>o.T))return;
+    function geo(H2){var k=(H2-o.H+o.P-o.T)/(o.P-o.T),f=function(y){return y<=o.P+.5?o.T+(y-o.T)*k:y+H2-o.H},n=function(v){return (+v).toFixed(1)};
+      svg.setAttribute("height",n(H2));svg.setAttribute("viewBox","0 0 "+o.W+" "+n(H2));
+      $$("line,text,rect,circle,path",svg).forEach(function(e){var a=e._o;if(!a)return;
+        if(a.y1!=null){e.setAttribute("y1",n(f(+a.y1)));e.setAttribute("y2",n(f(+a.y2)))}
+        if(a.cy!=null)e.setAttribute("cy",n(f(+a.cy)));
+        if(a.y!=null&&e.tagName==="text")e.setAttribute("y",n(f(+a.y-4)+4));        // its middle follows the plot, not its baseline
+        if(a.y!=null&&e.tagName==="rect"){e.setAttribute("y",n(f(+a.y)));e.setAttribute("height",n(f(+a.y+(+a.height))-f(+a.y)))}
+        if(a.d!=null)e.setAttribute("d",a.d.replace(/([ML])(-?[\d.]+) (-?[\d.]+)/g,function(m,c,x,y){return c+x+" "+n(f(+y))}))})}
+    geo(o.H);
+    /* each face's own height, then the room the Direction chart can take (1 px kept in hand, so the card never grows) */
+    /* layout sizes (getComputedStyle), not the box on screen: the card can be mid-way through its scale-in */
+    function hz(e,k){return parseFloat(getComputedStyle(e)[k])||0}
+    lfl.classList.add("x2o-meas");var rH=hz(lqr,"height"),dH=hz(lqd,"height");lfl.classList.remove("x2o-meas");
+    var sw=hz(svg,"width")||o.W,room=Math.floor(rH-dH-1)*o.W/sw;
+    if(room>4)geo(o.H+Math.min(room,(o.P-o.T)*.8));
+    /* the round labels: every one that fits, counted back from the last graded round */
+    var lab=$$("text.lx-ax[text-anchor=middle]",svg);lab.forEach(function(t){t.style.display=""});
+    if(lab.length>1){var cw=(+lab[lab.length-1].getAttribute("x")-+lab[0].getAttribute("x"))/(lab.length-1),mw=0;
+      lab.forEach(function(t){try{mw=Math.max(mw,t.getBBox().width)}catch(e){}});
+      var step=Math.max(1,Math.ceil((mw+5)/cw)),last=0;lab.forEach(function(t,i){if(!t.classList.contains("f"))last=i});
+      if(step>1)lab.forEach(function(t,i){if(((last-i)%step+step)%step)t.style.display="none"})}}
+  /* when to redo it: the chart is redrawn (resize), or either face's content changes size (fonts landing, the ROI
+     tiles drawn). Only what does not move with the chart is watched (ROI's parts, Direction's title and legend), so
+     fitting never sets itself off again */
+  var fdF=0;function fitSoon(){if(!fdF)fdF=requestAnimationFrame(function(){fdF=0;fitDir()})}
+  var fdRO=window.ResizeObserver?new ResizeObserver(fitSoon):null;
+  function watch(){if(!fdRO)return;fdRO.disconnect();
+    [].concat(lqr?[].slice.call(lqr.children):[],$$("#lqDir>.lq-t,#lxDir .lx2-leg")).forEach(function(e){fdRO.observe(e)})}
+  if(lxd&&window.MutationObserver)new MutationObserver(function(){fitDir();watch()}).observe(lxd,{childList:true});
+  if(lqr&&window.MutationObserver)new MutationObserver(watch).observe(lqr,{childList:true});
+  watch();
+  var fdT;addEventListener("resize",function(){clearTimeout(fdT);fdT=setTimeout(fitDir,250)});
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitSoon);
+  addEventListener("load",fitSoon);
+  fitSoon();
 
   /* 1. THE HERO: the headline alone (its line, the standings card, "Last round" and "How we grade" go) */
   function apply(){
     var hs=$("#heroSub");if(hs)hs.remove();
     var bf=$("#bflip");if(bf)bf.remove();
-    if(gcall)gcall.hidden=true;
     bet.hidden=true;                                  // its chip moved up; the calculator still travels to the Buyback tab
     /* the order: each section right after the one before it (hidden sections skipped); only what is out of place moves */
     var seq=[hero,top,rec,st,learn,get].filter(function(s){return s&&!s.hidden}),prev=seq[0];
@@ -1205,6 +1281,17 @@ if(EXP==="x2")(function(){
     /* the section numbers follow the order */
     var k=0;[rec,st,learn,get].forEach(function(s){if(!s||s.hidden)return;var no=$(".sh .no",s);k++;if(no)no.textContent=(k<10?"0":"")+k})}
   apply();
-  addEventListener("hashchange",function(){if(!boardEl.hidden)apply()});
+  addEventListener("hashchange",function(){if(!boardEl.hidden){apply();fitSoon()}});
+
+  /* the tab title names this page (the shared router writes "EZ Season Live"), with no section number glued to the
+     head ("01Current standings"); as X5 does for itself */
+  /* 04 GET $EZ says each thing once: step 02's line ("Only through the link on this page.") repeats its own title, and step
+     03 ("Watch the next print: Next up ...") repeats the header's Next pill and is not a step to get $EZ. Two steps left;
+     two columns from 861 px (x2-overview.css). #nextTxt2 is written once at start-up, before this block, so removing it
+     is safe. */
+  (function(){var bx=$$(".gbox",get);if(bx[1]){var p1=$("p",bx[1]);if(p1&&/only through the link/i.test(p1.textContent))p1.remove()}if(bx[2])bx[2].remove()})();
+
+  function title(){var t=document.title.replace("EZ Season Live","EZ Live X2").replace(/^\d\d(?=[A-Z])/,"");if(t!==document.title)document.title=t}
+  title();addEventListener("hashchange",title);
 })();
 /*}X2*/
