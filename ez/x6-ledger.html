@@ -4,370 +4,188 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>EZ Public Ledger</title>
-<meta name="description" content="EZ as a public statement: four AIs call stocks before earnings and are graded in public. Once, before NVIDIA reports, the AI in first place calls NVIDIA up or down with the whole pot at 10x.">
+<meta name="description" content="Four AIs call stocks. The top AI calls NVIDIA up or down with the whole pot at 10x leverage. Right: profits buy back $EZ. Wrong: the pot can be wiped out.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400..800&family=Public+Sans:ital,wght@0,400..800;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400..800&family=Public+Sans:wght@400..800&display=swap">
 <script>
 /* theme: the viewer's saved choice, else the system setting (the CSS handles that) */
 (function(){var t=null;try{t=localStorage.getItem("ez-ledger-theme")}catch(e){}if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)})();
 </script>
 <style>
 /* =====================================================================
-   EZ X6 "The Ledger": the page is a public statement of the experiment.
-   Light = the top copy: white paper, black ink, the green-bar band is the only colour.
-   Dark  = the carbon copy: neutral carbon sheet, pale ink.
-   Type: Public Sans 800 for heads, Public Sans for sentences, Chivo Mono for labels, figures and leaders.
-   One prop (the tear-off stub), one flat stamp. Green and red only mark direction.
-   Every number is read from ez-data.js at load. Nothing is typed by hand.
+   EZ X6 "The Ledger", 5-second cut (2026-10-13).
+   One printed statement: white paper and black ink (light), a carbon copy (dark).
+   Public Sans 800 for heads, Chivo Mono for labels and figures.
+   Pictures and numbers carry the meaning; words only label them.
+   Green and red only mark direction. Every number is read from ez-data.js at load.
    ===================================================================== */
 :root{
   --bg:#e8e9e5; --paper:#fdfdfb; --ink:#151515; --ink2:#444444; --ink3:#5a5a5a;
   --rule:#a7aaa6; --rule2:#dadbd7; --band:#e3eee4; --up:#0f6b37; --down:#ad2319;
-  --shade:rgba(21,21,21,.05); --hatch:rgba(21,21,21,.18); --mark-ring:transparent;
+  --hatch:rgba(21,21,21,.22); --mark-ring:transparent;
   --mono:"Chivo Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  --lede:17px;
+  --mast:57px;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --bg:#0a0a0a; --paper:#141414; --ink:#ececec; --ink2:#c4c4c4; --ink3:#a9a9a9;
     --rule:#4f4f4f; --rule2:#2d2d2d; --band:#18231b; --up:#6fd69a; --down:#ff8e82;
-    --shade:rgba(236,236,236,.05); --hatch:rgba(236,236,236,.22); --mark-ring:#4f4f4f;
+    --hatch:rgba(236,236,236,.26); --mark-ring:#4f4f4f;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0a0a0a; --paper:#141414; --ink:#ececec; --ink2:#c4c4c4; --ink3:#a9a9a9;
   --rule:#4f4f4f; --rule2:#2d2d2d; --band:#18231b; --up:#6fd69a; --down:#ff8e82;
-  --shade:rgba(236,236,236,.05); --hatch:rgba(236,236,236,.22); --mark-ring:#4f4f4f;
+  --hatch:rgba(236,236,236,.26); --mark-ring:#4f4f4f;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font:400 var(--lede)/1.45 var(--sans);font-variant-numeric:tabular-nums}
-a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.45 var(--sans);font-variant-numeric:tabular-nums}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:4px}
 a:hover{text-decoration-thickness:2px}
 :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-b,strong{font-weight:700}
 .up{color:var(--up)} .down{color:var(--down)}
-.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg{display:block}
 
 /* ---------- the sheet: plain paper on a grey desk on wide screens ---------- */
-.sheet{max-width:1100px;margin:0 auto;padding:0 16px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
 @media (min-width:1000px){
   body{background:var(--bg)}
-  .feed{max-width:1180px;margin:28px auto 40px;background:var(--paper);box-shadow:0 0 0 1px var(--rule2)}
-  .sheet{padding:0 48px}
+  .feed{max-width:1180px;margin:0 auto 40px;background:var(--paper);box-shadow:0 0 0 1px var(--rule2)}
+  .wrap{padding:0 48px}
 }
 
-/* ---------- masthead ---------- */
-.mast{display:flex;align-items:center;gap:12px;min-height:56px;border-bottom:1px solid var(--rule2)}
-.brand{display:flex;align-items:baseline;gap:10px;text-decoration:none;font:800 18px/1 var(--mono);letter-spacing:-.01em}
-.brand small{font:600 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
-@media (max-width:359px){.brand small{display:none}}
-.mast nav{margin-left:auto;display:flex;align-items:center;gap:14px;font:600 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase}
-.mast nav a{color:var(--ink2);text-decoration:none}
-.mast nav a:hover{color:var(--ink);text-decoration:underline}
-.mast .x2{display:none}
-@media (min-width:720px){.mast .x2{display:inline}}
-/* the theme switch: two boxes on a form, one ticked */
-.theme{display:inline-flex;border:1.5px solid var(--ink);border-radius:2px}
-.theme button{display:inline-flex;align-items:center;gap:6px;font:700 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:transparent;border:0;border-radius:0;padding:0 10px;min-height:36px;cursor:pointer}
-.theme button+button{border-left:1.5px solid var(--ink)}
-.theme button::before{content:"";width:9px;height:9px;border:1.5px solid currentColor;flex:none}
-.theme button[aria-pressed="true"]::before{background:currentColor}
-.theme button:hover{text-decoration:underline;text-underline-offset:3px}
+/* ---------- header: the brand and a small light/dark icon, nothing else ---------- */
+.mast{display:flex;align-items:center;justify-content:space-between;gap:12px;height:var(--mast);border-bottom:1px solid var(--rule2)}
+.brand{font:800 19px/1 var(--mono);letter-spacing:-.01em;text-decoration:none}
+.theme{display:inline-grid;place-items:center;width:40px;height:40px;margin-right:-8px;padding:0;border:0;background:transparent;color:var(--ink3);cursor:pointer;border-radius:50%}
+.theme:hover{color:var(--ink)}
+.theme .sun{display:none}
+.theme[aria-pressed="true"] .sun{display:block}
+.theme[aria-pressed="true"] .moon{display:none}
 
-/* ---------- shared type ---------- */
-.lbl{font:700 12px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
-h1,h2,h3{font-family:var(--sans);font-weight:800;letter-spacing:-.02em;margin:0;text-wrap:balance}
-h1{font-size:33px;line-height:1.05}
-h2{font-size:25px;line-height:1.12;margin:12px 0 8px}
-h3{font-size:17px;line-height:1.3;letter-spacing:-.01em;margin:6px 0 0}
-.lede{font-size:var(--lede);line-height:1.45;margin:0 0 10px;max-width:60ch}
-.cap{font:400 14px/1.45 var(--sans);color:var(--ink3);margin:8px 0 0;max-width:68ch}
-.cap b{color:var(--ink);font-weight:650}
-@media (min-width:720px){h1{font-size:54px;line-height:1.02}h2{font-size:36px;line-height:1.08}h3{font-size:19px}:root{--lede:18px}}
-@media (max-width:359px){h1{font-size:29px}h2{font-size:22.5px}:root{--lede:16px}}
-
-/* section head: the accounting double rule, a reference number, the kind of entry */
-.sec{padding:34px 0 6px}
-.sh{border-top:4px double var(--ink);padding-top:9px;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;font:700 12px/1.35 var(--mono);letter-spacing:.08em;text-transform:uppercase}
-.sh .when{margin-left:auto;color:var(--ink3);font-weight:600}
-
-/* the one stamp on the page: flat, in ink */
-.stamp{display:inline-block;font:800 13px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);border:2px solid var(--ink);outline:1px solid var(--ink);outline-offset:2px;padding:7px 10px 6px;border-radius:1px;background:var(--paper);white-space:nowrap}
-
-/* dot-leader rows: item ........ value (status box, the stub) */
-.dl{margin:0}
-.dl .row{display:flex;align-items:baseline;gap:6px;font:500 14px/1.5 var(--mono);padding:2px 0}
-.dl dt{flex:0 1 auto;color:var(--ink2);white-space:nowrap}
-.dl .dots{flex:1 1 12px;min-width:12px;border-bottom:2px dotted var(--rule);transform:translateY(-.32em)}
-.dl dd{margin:0;font-weight:700;text-align:right;flex:0 1 auto;max-width:74%}
-.dl dd a{font-weight:800}
-
-/* ---------- 0. the statement head ---------- */
-.head{padding:18px 0 4px}
-.meta{display:flex;flex-wrap:wrap;gap:2px 14px;margin:0 0 12px}
-.head .lede{margin:12px 0 0}
-.gloss{margin:8px 0 0;font:400 14.5px/1.45 var(--sans);color:var(--ink2);max-width:60ch}
-.gloss b{font:700 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-right:6px}
-.pairs{margin:16px 0 0;display:grid;gap:12px;border-top:1px solid var(--rule2);padding-top:14px}
-.pair{display:grid;gap:3px}
-.pair dt{font:700 12px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
-.pair dd{margin:0;font-size:var(--lede);line-height:1.42}
-.pair dd>span{display:block}
-.pair.mission dd{font:800 19px/1.25 var(--sans);letter-spacing:-.015em}
-.pair.bet dd{font-weight:600}
-/* the bet in one line: fees, pot, freeze, call, then the two endings at equal size */
-.flow{margin:16px 0 0}
-.flow>.lbl{display:block}
-.chain{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1.5px solid var(--ink)}
-.chain li{position:relative;padding:8px 7px 9px 10px;border-left:1px solid var(--ink);min-width:0}
-.chain li:first-child{border-left:0;padding-left:9px}
-.chain li+li::before{content:"\25B8";position:absolute;left:-6px;top:50%;transform:translateY(-50%);font:700 12px/1 var(--mono);background:var(--paper);padding:3px 0}
-.chain b{display:block;font:800 13px/1.2 var(--mono);letter-spacing:.04em;text-transform:uppercase}
-.chain span{display:block;font:500 12px/1.35 var(--mono);letter-spacing:-.02em;color:var(--ink2);margin-top:3px}
-@media (max-width:359px){.chain{grid-template-columns:1fr 1fr}.chain li:nth-child(3){border-left:0;padding-left:9px}.chain li:nth-child(3)::before{display:none}.chain li:nth-child(n+3){border-top:1px solid var(--ink)}}
-.fork.mini{padding:26px 0 0}
-.fork.mini::before{top:8px;height:18px}
-.fork.mini::after{content:"";position:absolute;left:50%;top:0;height:8px;border-left:1.5px solid var(--ink)}
-.fork.mini .end p{font-size:15px;line-height:1.42}
-.fork.mini .end b.h{display:flex;align-items:center;gap:6px;font:800 13px/1.25 var(--mono);letter-spacing:.06em;text-transform:uppercase;margin:0 0 5px}
-@media (max-width:379px){.fork.mini .two{grid-template-columns:1fr}.fork.mini::before{left:25%;right:25%}}
-.sum{position:relative;margin:26px 0 0;border:1.5px solid var(--ink);padding:12px 14px 10px}
-.sum>.lbl{display:block;margin-bottom:6px;color:var(--ink)}
-.sum .stamp{position:absolute;right:10px;top:-16px}
-@media (max-width:399px){.sum{padding:12px 10px 10px}}
-.toc{margin:16px 0 0;padding:10px 0 0;border-top:1px solid var(--rule2);display:flex;flex-wrap:wrap;gap:4px 16px;font:600 13px/1.6 var(--mono)}
-.toc span{color:var(--ink3);letter-spacing:.06em;text-transform:uppercase}
-.toc a{text-decoration:none;border-bottom:1px solid var(--rule);display:inline-block;padding:2px 0 1px}
-.toc a:hover{border-bottom-color:var(--ink)}
-@media (min-width:720px){
-  .head{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);grid-template-rows:auto auto 1fr;gap:0 48px;padding-top:30px}
-  .head .left{grid-column:1;grid-row:1 / span 3}
-  .head .right{grid-column:2;grid-row:1;padding-top:34px}
-  .head .flow{grid-column:2;grid-row:2;margin-top:24px}
-  .head .toc{grid-column:2;grid-row:3;align-self:start;display:grid;justify-items:start;gap:2px;border-top:0;margin-top:18px}
-  .pair{grid-template-columns:7.5em 1fr;gap:14px}
-  .pair.mission dd{font-size:22px}
-  .sum{margin-top:0}
-}
-
-/* ---------- 1. how a round is graded ---------- */
-.parties{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--rule)}
-.parties li{display:flex;align-items:center;gap:10px;padding:9px 6px 9px 0;border-bottom:1px solid var(--rule)}
-.parties b{font:700 14.5px/1.2 var(--mono);display:block}
-.parties small{font:500 12.5px/1.3 var(--mono);color:var(--ink3);white-space:nowrap}
-.lg{display:inline-grid;place-items:center;width:30px;height:30px;flex:none;border-radius:4px;vertical-align:middle;box-shadow:0 0 0 1px var(--mark-ring)}
+/* ---------- marks ---------- */
+.lg{display:inline-grid;place-items:center;width:28px;height:28px;flex:none;border-radius:4px;box-shadow:0 0 0 1px var(--mark-ring)}
 .lg svg{width:62%;height:62%}
 .lg.sm{width:22px;height:22px;border-radius:3px}
-.lg.xs{width:18px;height:18px;border-radius:3px}
-.co-mark{display:inline-grid;place-items:center;width:22px;height:22px;flex:none;border-radius:3px;background:#fff;box-shadow:0 0 0 1px var(--rule2);overflow:hidden;vertical-align:middle;font:700 8px/1 var(--mono);color:#151515}
-.co-mark img{width:84%;height:84%;object-fit:contain}
-.co-mark.dk{background:#121212}
-.defs{margin:14px 0 0;display:grid;gap:7px}
-.defs div{display:grid;grid-template-columns:4.6em 1fr;gap:10px;align-items:baseline}
-.defs dt{font:700 12.5px/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase}
-.defs dd{margin:0;font-size:15.5px;line-height:1.42}
-.entry{margin:22px 0 0;border:1.5px solid var(--ink)}
-.entry-h{padding:10px 12px;border-bottom:1.5px solid var(--ink)}
-.entry-h .t{font:750 15px/1.3 var(--mono);display:flex;align-items:center;gap:8px}
-.entry-h .facts{display:block;font:500 12.5px/1.5 var(--mono);color:var(--ink2);margin-top:4px}
-.entry table{width:100%;border-collapse:collapse;font:500 14px/1.35 var(--mono)}
-.entry th{font:700 12px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);text-align:left;padding:8px 5px;border-bottom:1px solid var(--rule)}
-.entry td{padding:8px 5px;border-bottom:1px solid var(--rule2);vertical-align:middle}
-.entry tbody tr:nth-child(even) td{background:var(--band)}
-.entry td:first-child,.entry th:first-child{padding-left:10px}
-.entry td:last-child,.entry th:last-child{padding-right:10px}
-.entry .num{text-align:right}
-.entry .who{display:flex;align-items:center;gap:6px;font-weight:700}
-.entry .res{font-weight:700;white-space:nowrap}
-.entry .res .w{font-weight:800;outline:1.5px solid var(--ink);outline-offset:1px;padding:0 4px;letter-spacing:.05em}
-.entry .res .x{color:var(--ink3);font-weight:500}
-.entry .call{white-space:nowrap}
-.entry .note{margin:0;padding:10px 12px;font:400 15px/1.45 var(--sans);border-top:1.5px solid var(--ink)}
-@media (max-width:359px){.entry td,.entry th{padding-left:4px;padding-right:4px}.entry td:first-child,.entry th:first-child{padding-left:8px}.entry td:last-child,.entry th:last-child{padding-right:8px}.entry .lg.xs{display:none}
-  .entry .dw{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
-/* the round on one line */
-.ruler1{margin:16px 0 0}
-.r1{position:relative;height:152px;margin:0 8px}
-.r1 .side{position:absolute;top:58px;height:40px;background:repeating-linear-gradient(135deg,var(--hatch) 0 1.5px,transparent 1.5px 7px)}
-.r1 .side.ok{background:none}
-.r1 .side span{position:absolute;top:78px;font:600 12px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);white-space:nowrap}
-.r1 .axis{position:absolute;left:0;right:0;top:80px;border-top:1.5px solid var(--ink)}
-.r1 .tick{position:absolute;top:80px;height:7px;border-left:1px solid var(--ink)}
-.r1 .tl{position:absolute;top:99px;transform:translateX(-50%);font:500 12px/1 var(--mono);color:var(--ink3)}
-.r1 .zero{position:absolute;top:54px;height:42px;border-left:1.5px solid var(--ink)}
-.r1 .call{position:absolute;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
-.r1 .call .v{display:flex;align-items:center;gap:3px;font:700 12px/1 var(--mono);white-space:nowrap;padding:2px 3px;background:var(--paper)}
-.r1 .call .stem{width:0;border-left:1px dashed var(--ink2)}
-.r1 .call.won .v{outline:1.5px solid var(--ink)}
-.r1 .act{position:absolute;top:64px;height:30px;border-left:3px solid var(--ink);transform:translateX(-1.5px)}
-.r1 .actl{position:absolute;top:115px;transform:translateX(-50%);font:700 12px/1.25 var(--mono);white-space:nowrap;text-align:center;background:var(--paper);padding:0 3px}
-.attach{display:none}
-@media (min-width:900px){
-  .g1{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:0 44px;align-items:start}
-  .g1 .entry{margin-top:16px}
-  .attach{display:flex;gap:12px;align-items:flex-start;margin:16px 0 0;padding:12px 0 0;border-top:1px dashed var(--rule)}
-  .attach img{width:84px;height:84px;object-fit:cover;flex:none;border:1px solid var(--rule);filter:grayscale(1)}
-  .attach .cap{margin:0}
-  .attach .lbl{display:block;margin-bottom:4px}
-}
+.ico{color:var(--ink);flex:none}
 
-/* ---------- 2. standings and the record ---------- */
-.tb{width:100%;border-collapse:collapse;margin:12px 0 0;font:500 14px/1.35 var(--mono)}
-.tb th{font:700 12px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);text-align:left;padding:8px 8px;border-bottom:1.5px solid var(--ink)}
-.tb td{padding:9px 8px;border-bottom:1px solid var(--rule2);vertical-align:middle}
-.tb tbody tr:nth-child(even) td{background:var(--band)}
-.tb .pl{font:800 18px/1 var(--mono);width:2.2em}
-.tb .ai{display:flex;align-items:center;gap:8px;font-weight:750}
-.tb .ai small{display:block;font-weight:500;font-size:12px;color:var(--ink3)}
-.tb .num{text-align:right;white-space:nowrap}
-.tb .wins{display:flex;align-items:center;gap:8px;justify-content:flex-end}
-.tb .wins b{font-size:18px;font-weight:800;min-width:1.2em;text-align:right}
-.tally{display:inline-flex;gap:5px;color:var(--ink)}
-.tally svg{display:block}
-@media (max-width:599px){
-  .tb thead{display:none}
-  .tb tbody tr{display:grid;grid-template-columns:2em 1fr auto;grid-template-areas:"pl ai wins" "pl dir avg";column-gap:8px;padding:9px 6px;border-bottom:1px solid var(--rule2)}
-  .tb tbody tr:nth-child(even){background:var(--band)}
-  .tb tbody td{padding:0;border:0;background:none!important}
-  .tb .pl{grid-area:pl;align-self:center}
-  .tb .ai{grid-area:ai}
-  .tb .wn{grid-area:wins}
-  .tb .dr{grid-area:dir;font-size:14px;color:var(--ink2);text-align:left;padding-top:4px}
-  .tb .av{grid-area:avg;font-size:14px;color:var(--ink2);padding-top:4px}
-  .tb .dr::before{content:"Right way "}
-  .tb .av::before{content:"Avg miss "}
-}
+/* ---------- 0. the first screen: the line, the strip that forks, the honest note.
+   On a phone it fills the screen less a 44px strip, so the next block's double rule
+   shows at the bottom (no empty band, no chevron); extra height goes into the strip. ---------- */
+.hero{display:flex;flex-direction:column;padding:24px 0 22px;min-height:calc(100svh - var(--mast) - 44px)}
+h1,h2{font-family:var(--sans);font-weight:800;margin:0;text-wrap:balance}
+h1{font-size:42px;line-height:1.02;letter-spacing:-.03em;max-width:13em}
+.tape{margin:26px 0 0;flex:1;display:flex;flex-direction:column}
+/* the strip: three entries, read top to bottom on a phone, left to right on a wide screen */
+.chain{list-style:none;margin:0;padding:0;border:1.5px solid var(--ink);flex:1;display:flex;flex-direction:column}
+.chain li{position:relative;display:grid;grid-template-columns:104px minmax(0,1fr);align-items:stretch;min-height:88px;flex:1 1 auto}
+.chain li+li{border-top:1px solid var(--ink)}
+.chain li+li::before{content:"";position:absolute;left:44px;top:-1px;border:8px solid transparent;border-top-color:var(--ink);border-bottom:0;z-index:1}
+.pic{display:flex;align-items:center;justify-content:center;gap:4px;border-right:1px solid var(--rule)}
+.chain b{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:7px;padding:10px 12px;font:700 18px/1.25 var(--mono);letter-spacing:-.01em}
+.tag{display:inline-block;font-weight:800;border:1.5px solid var(--ink);padding:4px 7px 3px;line-height:1;white-space:nowrap}
+.marks{display:grid;grid-template-columns:repeat(2,30px);gap:5px}
+.marks .lg{width:30px;height:30px}
+.ud{display:flex;flex-direction:column;gap:3px}
+/* the fork: the strip splits into two equal endings */
+.fork{position:relative;padding-top:34px}
+.fork::before{content:"";position:absolute;left:50%;top:0;height:16px;border-left:1.5px solid var(--ink)}
+.fork::after{content:"";position:absolute;top:16px;left:calc(25% - 3px);right:calc(25% - 3px);border-top:1.5px solid var(--ink)}
+.ends{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.end{position:relative;border:1.5px solid var(--ink);padding:14px 12px 16px;display:flex;align-items:center}
+.end::before{content:"";position:absolute;left:50%;top:-19px;height:11px;border-left:1.5px solid var(--ink)}
+.end::after{content:"";position:absolute;left:calc(50% - 6px);top:-9px;border:6px solid transparent;border-top-color:var(--ink);border-bottom:0}
+.end b{font:700 16px/1.3 var(--mono);letter-spacing:-.01em}
+.end b em{display:block;font-style:normal;font-weight:800;font-size:18px;margin-bottom:3px}
+.honest{margin:22px 0 0;display:flex;align-items:center;gap:10px;font:600 14px/1.35 var(--mono);color:var(--ink2)}
+.honest::before{content:"";width:11px;height:11px;border:1.5px solid currentColor;flex:none;background:repeating-linear-gradient(135deg,currentColor 0 1.5px,transparent 1.5px 4px)}
 @media (max-width:359px){
-  .tb tbody tr{grid-template-areas:"pl ai wins" "pl dir dir" "pl avg avg"}
-  .tb .av{text-align:left;padding-top:1px}
+  h1{font-size:35px}
+  .chain li{grid-template-columns:84px minmax(0,1fr)}
+  .chain li+li::before{left:34px}
+  .chain b{font-size:15.5px;padding:8px 10px}
+  .end{padding:10px}
+  .end b{font-size:14.5px}.end b em{font-size:16px}
+  .honest{font-size:12.5px;gap:8px}
 }
-.limits{margin:14px 0 0;padding:10px 12px;border-left:3px solid var(--ink);background:var(--shade);font-size:15.5px;line-height:1.42}
-@media (min-width:900px){.g2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:0 44px;align-items:start}.g2 .limits{margin-top:12px}}
-/* the general ledger: every graded round */
-details.gl{margin:20px 0 0;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
-details.gl>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 2px;font:750 14.5px/1.3 var(--mono)}
-details.gl>summary::-webkit-details-marker{display:none}
-details.gl>summary .pm{margin-left:auto;font:700 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;border:1.5px solid var(--ink);padding:7px 9px;border-radius:2px;white-space:nowrap}
-details.gl[open]>summary .pm .o{display:none}
-details.gl:not([open])>summary .pm .c{display:none}
-.glw{padding:0 0 14px}
-.glt{width:100%;border-collapse:collapse;font:500 13.5px/1.3 var(--mono);display:none}
-.glt th{font:700 12px/1.2 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink2);text-align:left;padding:7px 6px;border-bottom:1px solid var(--rule);white-space:nowrap}
-.glt td{padding:7px 6px;border-bottom:1px solid var(--rule2);white-space:nowrap}
-.glt tbody tr:nth-child(odd) td{background:var(--band)}
-.glt .co{display:flex;align-items:center;gap:7px}
-.glt .won{font-weight:800;outline:1.5px solid var(--ink);outline-offset:1px;padding:0 3px}
-.glt .wr{color:var(--ink3)}
-.gll{list-style:none;margin:0;padding:0}
-.gll li{padding:10px 6px;border-bottom:1px solid var(--rule2)}
-.gll li:nth-child(odd){background:var(--band)}
-.gll .l0{font:500 12px/1.3 var(--mono);color:var(--ink3);margin:0 0 4px}
-.gll .l1{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font:700 14px/1.4 var(--mono)}
-.gll .l1 .mv{margin-left:auto}
-.gll .l2{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:7px 0 0;font:500 14px/1.35 var(--mono)}
-.gll .l2>span{display:flex;flex-direction:column;gap:1px}
-.gll .l2 i{font-style:normal;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3)}
-.gll .l2 .won b{outline:1.5px solid var(--ink);outline-offset:1px;padding:0 2px;font-weight:800;align-self:flex-start}
-.gll .l2 .wr b,.gll .l2 .none b{color:var(--ink3);font-weight:500}
-.gll .l3{margin:7px 0 0;font:500 13px/1.45 var(--mono);color:var(--ink2);display:flex;flex-wrap:wrap;gap:2px 14px}
-@media (min-width:900px){.glt{display:table}.gll{display:none}}
-.legend{font:500 12px/1.5 var(--mono);color:var(--ink3);margin:10px 0 0}
-.next{margin:16px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font:500 14px/1.45 var(--mono)}
-.next .lbl{flex-basis:100%}
-.next a{font-weight:700}
+@media (min-width:720px){h1{font-size:56px;max-width:none}}
+@media (min-width:900px){
+  .hero{min-height:0;padding:56px 0 44px}
+  h1{font-size:76px;line-height:.98}
+  .tape{margin-top:44px;display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1.75fr);align-items:stretch}
+  .chain{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .chain li{grid-template-columns:none;grid-template-rows:124px auto;min-height:0}
+  .chain li+li{border-top:0;border-left:1px solid var(--ink)}
+  .chain li+li::before{left:-1px;top:54px;border:8px solid transparent;border-left-color:var(--ink);border-right:0}
+  .pic{border-right:0;border-bottom:1px solid var(--rule);gap:6px}
+  .chain b{justify-content:flex-start;padding:16px 18px 20px;font-size:22px;gap:10px}
+  .marks{grid-template-columns:repeat(4,40px);gap:8px}
+  .marks .lg{width:40px;height:40px;border-radius:6px}
+  .pic>.lg{width:40px;height:40px;border-radius:6px}
+  .pic>.ico{width:52px;height:57px}
+  .ud svg{width:20px;height:16px}
+  .fork{padding:0 0 0 56px;display:flex}
+  .fork::before{left:0;top:50%;width:28px;height:0;border-left:0;border-top:1.5px solid var(--ink)}
+  .fork::after{left:28px;right:auto;top:25%;bottom:25%;border-top:0;border-left:1.5px solid var(--ink)}
+  .ends{grid-template-columns:1fr;gap:16px;flex:1}
+  .end{padding:14px 18px}
+  .end::before{left:-29px;top:50%;width:21px;height:0;border-left:0;border-top:1.5px solid var(--ink)}
+  .end::after{left:-9px;top:calc(50% - 5px);border:6px solid transparent;border-left-color:var(--ink);border-right:0}
+  .end b{font-size:20px}.end b em{font-size:22px}
+  .honest{margin-top:30px;font-size:15px}
+}
 
-/* ---------- 3. the bet ---------- */
-.sched{position:relative;margin:22px 0 0;border:1.5px solid var(--ink)}
-.sched-h{padding:12px 12px 10px;border-bottom:1.5px solid var(--ink)}
-.sched-h h3{margin:4px 0 0;max-width:44ch}
-.key{margin:8px 0 0;font:500 12.5px/1.5 var(--mono);color:var(--ink2)}
-.key b{color:var(--ink)}
-.key .pk{font-style:normal;font-weight:700;color:var(--ink);text-transform:uppercase;text-decoration:underline dotted 1.5px;text-underline-offset:3px}
-.steps{list-style:none;margin:0;padding:0}
-.step{position:relative;padding:10px 12px 11px 34px;border-bottom:1px solid var(--rule2)}
-.step:nth-child(even){background:var(--band)}
-.step::before{content:"";position:absolute;left:16px;top:0;bottom:0;border-left:1.5px solid var(--ink)}
-.step:first-child::before{top:16px}
-.step::after{content:"";position:absolute;left:11px;top:13px;width:11px;height:11px;background:var(--paper);border:1.5px solid var(--ink)}
-.step .pl{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;font:700 12px/1.4 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink2);margin:0 0 3px}
-.step .pl em{font-style:normal;color:var(--ink);text-decoration:underline dotted 1.5px;text-underline-offset:3px}
-.step .pl .st{margin-left:auto}
-.step .what{display:block;font-size:15.5px;line-height:1.42;max-width:72ch}
-.step .what>b:first-child{font:750 13.5px/1.4 var(--mono);letter-spacing:.02em;text-transform:uppercase;margin-right:4px}
-.st{font:800 12px/1.4 var(--mono);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;color:var(--ink)}
-.st i{font-style:normal;display:inline-block;width:.75em;height:.75em;margin-right:5px;border:1.5px solid currentColor;vertical-align:-.05em;background:repeating-linear-gradient(135deg,currentColor 0 1.5px,transparent 1.5px 4px)}
-.step .who{display:flex;align-items:center;gap:6px;margin-top:4px;font:600 13px/1.3 var(--mono);color:var(--ink2)}
-.cents-wrap{display:flex;gap:12px;align-items:center;margin:8px 0 2px}
-.cents{display:grid;grid-template-columns:repeat(10,9px);gap:2px;flex:none}
-.cents i{width:9px;height:9px;border:1px solid var(--ink)}
-.cents i.p{background:var(--ink)}
-.cents i.o{background:var(--paper)}
-.ckey{display:grid;gap:4px;font:600 12px/1.35 var(--mono);min-width:0}
-.ckey span{display:flex;align-items:baseline;gap:7px}
-.ckey i{width:10px;height:10px;border:1px solid var(--ink);flex:none;transform:translateY(1px)}
-.ckey i.p{background:var(--ink)}
-.ckey i.o{background:var(--paper)}
-.fork{position:relative;padding:22px 10px 22px}
-.fork::before{content:"";position:absolute;top:0;left:25%;right:25%;height:22px;border:1.5px solid var(--ink);border-bottom:0}
-.fork .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media (min-width:900px){.sched .fork{padding-left:34px;padding-right:34px}.fork .two{gap:24px}.sched .fork .end{padding:12px 16px}.fnote,.sooner{max-width:80ch}}
-.fork .end{border:1.5px solid var(--ink);padding:10px 10px;background:var(--paper)}
-.fork .end h4{margin:0 0 6px;font:800 13px/1.25 var(--mono);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
-.fork .end p{margin:0;font-size:15px;line-height:1.42}
-.fork .end p+p{margin-top:6px}
-.fnote{margin:10px 0 0;font:400 13.5px/1.45 var(--sans);color:var(--ink3)}
-.fnote b{color:var(--ink);font-weight:650}
-.ex{width:100%;border-collapse:collapse;margin:8px 0;font:700 13.5px/1.3 var(--mono)}
-.ex th{font:700 12px/1.2 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--ink2);text-align:left;padding:3px 0;border-bottom:1px solid var(--rule)}
-.ex th+th,.ex td+td{text-align:right}
-.ex td{padding:4px 0;border-bottom:1px solid var(--rule2)}
-.ex .gone{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--down)}
-.sooner{margin:8px 0 0;padding:0 0 0 10px;border-left:3px solid var(--ink);font-size:14.5px;line-height:1.42}
-/* attachment: the NVIDIA photo, printed in ink, then the clocks */
-.att{margin:26px 0 0;border-top:1px dashed var(--rule);padding-top:14px}
-@media (min-width:900px){.att{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 44px;align-items:start}.att>.lbl{grid-column:1 / -1}.att .clocks{margin-top:8px}}
-.att figure{margin:8px 0 0}
-.att img{display:block;width:100%;height:auto;aspect-ratio:2/1;object-fit:cover;object-position:50% 50%;border:1px solid var(--rule);filter:grayscale(1) contrast(1.06)}
-.clocks{margin:12px 0 0;border-top:1.5px solid var(--ink)}
-.clock{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:9px 0;border-bottom:1px solid var(--rule2);align-items:baseline}
-.clock .what{font:700 13.5px/1.35 var(--mono)}
-.clock .left{font:800 19px/1.2 var(--mono);text-align:right;white-space:nowrap}
-.clock .at{grid-column:1 / -1;font:500 12.5px/1.45 var(--mono);color:var(--ink2)}
-.clock .at em{font-style:normal;color:var(--ink);font-weight:700;text-decoration:underline dotted 1.5px;text-underline-offset:3px}
+/* ---------- blocks: a heading, at most one line, then a picture or live data ---------- */
+.blk{padding:30px 0 34px;border-top:4px double var(--ink)}
+#win{padding-top:48px}
+h2{font-size:30px;line-height:1.08;letter-spacing:-.025em}
+.line{margin:8px 0 0;font:600 16px/1.4 var(--mono);color:var(--ink2)}
+@media (min-width:900px){
+  .blk,#win{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:0 56px;align-items:start;padding:40px 0 44px}
+  h2{font-size:38px}
+  .blk>.body{grid-column:2;grid-row:1 / span 3}
+}
 
-/* ---------- 4. not decided yet: a numbered ledger ---------- */
-.oi{list-style:none;margin:12px 0 0;padding:0;border-top:1.5px solid var(--ink);counter-reset:oi}
-.oi li{display:grid;grid-template-columns:2.4em minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;padding:8px 6px;border-bottom:1px solid var(--rule2);font:500 14px/1.45 var(--mono)}
-.oi li:nth-child(even){background:var(--band)}
-.oi .no{color:var(--ink3);font-weight:600}
-.oi .ss{font:800 12px/1.45 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:right;white-space:nowrap}
-@media (max-width:359px){.oi li{grid-template-columns:2.2em minmax(0,1fr)}.oi .ss{grid-column:2;text-align:left}}
-@media (min-width:900px){.oi{columns:2;column-gap:44px}.oi li{break-inside:avoid}}
+/* who's winning: rank, mark, name, wins */
+.board{list-style:none;margin:18px 0 0;padding:0;border-top:1.5px solid var(--ink)}
+.board li{display:grid;grid-template-columns:28px 22px minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--rule2)}
+.board li:nth-child(even){background:var(--band)}
+.board li:first-child{outline:1.5px solid var(--ink);outline-offset:-1.5px}
+.board .pl{font:800 19px/1 var(--mono)}
+.board .nm{font:700 17px/1.2 var(--mono)}
+.board .w{font:800 22px/1 var(--mono);text-align:right}
+.check{display:inline-flex;align-items:center;gap:8px;margin:16px 0 0;font:700 15px/1.3 var(--mono);padding:6px 0}
 
-/* ---------- 5. get $EZ: the tear-off stub ---------- */
-.perf{margin:40px 0 0;height:14px;background:radial-gradient(circle,var(--rule) 0 2.6px,transparent 3px) 0 50%/14px 14px repeat-x}
-.perf-l{margin:6px 0 0;font:700 12px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);text-align:center}
-.stub{padding:14px 0 6px}
-.stub .dl{margin:10px 0 0}
-.stub .ca{margin:10px 0 0;font-size:15.5px;line-height:1.45}
-.caddr{margin:10px 0 0;padding:8px 10px;border:1.5px solid var(--ink)}
-.caddr .lbl{display:block;margin-bottom:4px}
-.caddr code{display:block;font:700 14px/1.45 var(--mono);word-break:break-all}
-.disc{margin:16px 0 0;padding:12px 14px;border:1.5px solid var(--ink);font-size:var(--lede);line-height:1.45;max-width:68ch}
-.disc b{font-weight:750}
-@media (min-width:900px){.g5{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:0 44px;align-items:start}.g5 .disc{margin-top:40px}}
+/* fees fill the pot: one bar, the split drawn to scale */
+.bar{display:grid;grid-template-columns:calc(var(--p) * 1%) minmax(0,1fr);margin:18px 0 0;border:1.5px solid var(--ink)}
+.seg{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 12px;min-height:72px}
+.seg.pot{background:var(--band);border-right:1.5px solid var(--ink)}
+.seg.ops{background:repeating-linear-gradient(135deg,var(--hatch) 0 1.5px,transparent 1.5px 7px)}
+.seg .n{font:800 32px/1 var(--mono);letter-spacing:-.02em}
+.seg.ops .n{background:var(--paper);padding:2px 3px;margin-left:-3px}
+.lbl{display:flex;justify-content:space-between;gap:12px;margin:8px 0 0;font:700 15px/1.25 var(--mono)}
 
-/* ---------- footer ---------- */
-.foot{margin:26px 0 0;padding:14px 0 28px;border-top:4px double var(--ink);font:500 12.5px/1.6 var(--mono);color:var(--ink2);display:grid;gap:8px}
-.foot nav{display:flex;flex-wrap:wrap;gap:4px 16px}
-.foot nav a{font-weight:700;color:var(--ink)}
-.foot p{margin:0}
+/* when: the countdown lit in the chip's dies, then the two dates */
+.chip{margin:18px 0 0;background:#000;border:1.5px solid var(--ink)}
+.chip svg{width:100%;height:auto}
+.gc-bg{fill:#0b0b0b;fill-opacity:.82}
+.gc{fill:#2b2b2b}
+.gc.on{fill:#fff}
+.gc-u{font:800 36px var(--mono);letter-spacing:.18em;fill:#e6e6e6}
+.dates{margin:16px 0 0;border-top:1.5px solid var(--ink)}
+.dates .r{display:flex;align-items:baseline;gap:8px;padding:12px 0;border-bottom:1px solid var(--rule2);font:600 16px/1.3 var(--mono)}
+.dates .r .dots{flex:1 1 12px;min-width:12px;border-bottom:2px dotted var(--rule);transform:translateY(-.3em)}
+.dates .r b{font-weight:800;font-size:18px;white-space:nowrap}
+
+/* ---------- footer: the one disclaimer ---------- */
+.foot{border-top:4px double var(--ink);padding:18px 0 32px}
+.foot p{margin:0;font:500 14px/1.5 var(--mono);color:var(--ink2);max-width:62ch}
 
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
@@ -375,168 +193,84 @@ details.gl:not([open])>summary .pm .c{display:none}
 </head>
 <body>
 <div class="feed">
-<div class="sheet" id="doc">
+<div class="wrap">
 
 <header class="mast">
-  <a class="brand" href="#top" aria-label="EZ public ledger, back to the top">$EZ <small>Public ledger</small></a>
-  <nav aria-label="Page">
-    <a class="x2" href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#leaderboard">Leaderboard</a>
-    <a class="x2" href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#results">Results</a>
-    <div class="theme" id="theme" role="group" aria-label="Theme"><button type="button" data-t="light" aria-pressed="false">Light</button><button type="button" data-t="dark" aria-pressed="false">Dark</button></div>
-  </nav>
+  <a class="brand" href="#top">$EZ</a>
+  <button class="theme" id="theme" type="button" aria-label="Dark mode" aria-pressed="false">
+    <svg class="moon" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M16.5 12.6A7 7 0 0 1 7.4 3.5a7 7 0 1 0 9.1 9.1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    <svg class="sun" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 1.5v2.2M10 16.3v2.2M1.5 10h2.2M16.3 10h2.2M4 4l1.6 1.6M14.4 14.4L16 16M4 16l1.6-1.6M14.4 5.6L16 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
 </header>
 
 <main>
-<!-- ============ 0. statement head: what this is, the test, the bet, the status today ============ -->
-<section class="head" id="top" aria-labelledby="h1">
-  <div class="left">
-    <p class="meta lbl"><span>Statement of a public experiment</span><span>Record as of <time id="asof"></time> (latest graded round)</span></p>
-    <h1 id="h1">Four AIs call stocks before earnings. In public. Graded after.</h1>
-    <p class="lede">It's an experiment. <b>$EZ</b> is the memecoin attached to it, <span id="launch-line">and it has not launched.</span></p>
-    <p class="gloss"><b>Earnings</b>A company's quarterly results. The stock often jumps or drops after the report.</p>
-    <dl class="pairs">
-      <div class="pair"><dt>The test</dt><dd>Can an AI earn one real trade by calling earnings in public first?</dd></div>
-      <div class="pair mission"><dt>The mission</dt><dd>We're putting $EZ buybacks in the hands of an AI. It has to earn the job in public.</dd></div>
-      <div class="pair bet"><dt>The bet</dt><dd><span>Once, before NVIDIA reports, the AI in first place calls NVIDIA up or down.</span><span>The whole pot goes on that call, at <span class="levx"></span>.</span></dd></div>
-    </dl>
-  </div>
-  <div class="flow" id="flow" role="group" aria-labelledby="flow-h"></div>
-  <div class="right">
-    <div class="sum" role="group" aria-labelledby="sum-h">
-      <span class="lbl" id="sum-h">Status today</span>
-      <span class="stamp" id="stamp1" aria-hidden="true">Not launched</span>
-      <dl class="dl" id="sum"></dl>
+<!-- ============ 0. first screen: the line, the strip that forks, one honest note ============ -->
+<section class="hero" id="top" aria-labelledby="h1">
+  <h1 id="h1">We're putting buybacks in the hands of an AI.</h1>
+  <figure class="tape" style="margin-left:0;margin-right:0" aria-label="How the bet works">
+    <ol class="chain">
+      <li><span class="pic" id="pic-ais"></span><b><span><span id="n-ai"></span> AIs call stocks</span></b></li>
+      <li><span class="pic" id="pic-nv"></span><b><span>Top AI calls NVIDIA</span><span class="tag" id="bet-day" hidden></span></b></li>
+      <li><span class="pic" id="pic-pot"></span><b><span>Whole fee pot</span><span class="tag" id="lev1"></span></b></li>
+    </ol>
+    <div class="fork">
+      <div class="ends">
+        <div class="end"><b><em>Right:</em> profits buy back $EZ</b></div>
+        <div class="end"><b><em>Wrong:</em> pot can be wiped out</b></div>
+      </div>
     </div>
-  </div>
-  <nav class="toc" aria-label="In this statement"><span>In this statement</span><a href="#s1">01 How a round is graded</a><a href="#s2">02 Standings</a><a href="#s3">03 The bet, step by step</a><a href="#s4">04 Not decided yet</a><a href="#s5">05 Get $EZ</a></nav>
+  </figure>
+  <p class="honest" id="honest">An experiment. $EZ isn't live yet.</p>
 </section>
 
-<!-- ============ 1. how a round is graded: the latest entry, itemized ============ -->
-<section class="sec" id="s1" aria-labelledby="h-s1">
-  <div class="sh"><span>01</span><span>How a round is graded</span><span class="when" id="s1-when"></span></div>
-  <div class="g1">
-    <div>
-      <h2 id="h-s1">Direction first. Then the closest call wins.</h2>
-      <ul class="parties" id="parties" aria-label="The four AIs"></ul>
-      <p class="cap"><b>The four AIs.</b> A round is one company's earnings report. All four get the same stock, at the same moment, with the same prompt. <span id="joined"></span></p>
-      <dl class="defs">
-        <div><dt>Call</dt><dd>Up or down, and by how much, filed before the report. Not an options call.</dd></div>
-        <div><dt>Miss</dt><dd>How far the call was from the real move, in percentage points.</dd></div>
-        <div><dt>Win</dt><dd>A wrong-way call can't win. Of the rest, the smallest miss wins. Two right-way calls equally close share the round.</dd></div>
-      </dl>
-    </div>
-    <div>
-      <div class="entry" id="entry"></div>
-      <figure class="ruler1" id="ruler1" style="margin-left:0;margin-right:0"></figure>
-      <div class="attach" id="attach"></div>
-    </div>
+<!-- ============ 1. who's winning: live standings ============ -->
+<section class="blk" id="win" aria-labelledby="h-win">
+  <h2 id="h-win">Who's winning</h2>
+  <p class="line" id="rounds"></p>
+  <div class="body">
+    <ol class="board" id="board" aria-label="Standings, by wins"></ol>
+    <a class="check" href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#results">Check every call <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9L9 3M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></a>
   </div>
 </section>
 
-<!-- ============ 2. standings: the balance of the race, then the full record ============ -->
-<section class="sec" id="s2" aria-labelledby="h-s2">
-  <div class="sh"><span>02</span><span>Standings</span><span class="when" id="s2-when"></span></div>
-  <h2 id="h-s2"></h2>
-  <p class="lede" id="s2-lede"></p>
-  <div class="g2">
-    <div>
-      <table class="tb" id="tb"></table>
-      <p class="cap" id="tb-cap"></p>
-    </div>
-    <p class="limits" id="limits"></p>
-  </div>
-  <details class="gl" id="gl">
-    <summary><span id="gl-sum"></span><span class="pm"><span class="o">Open</span><span class="c">Close</span></span></summary>
-    <div class="glw">
-      <p class="cap" id="gl-cap" style="margin:0 0 10px"></p>
-      <table class="glt" id="glt"></table>
-      <ul class="gll" id="gll"></ul>
-      <p class="legend">Boxed = won the round. Grey = wrong direction. A dot = that AI was not playing yet.</p>
-    </div>
-  </details>
-  <p class="next" id="next"></p>
+<!-- ============ 2. where the $ comes from: one bar ============ -->
+<section class="blk" id="fees" aria-labelledby="h-fees">
+  <h2 id="h-fees">Fees fill the pot</h2>
+  <p class="line">Every $EZ trade fee:</p>
+  <div class="body"><div class="bar" id="bar" role="img" aria-label="Fee split"></div><p class="lbl"><span>to the pot</span><span>operations</span></p></div>
 </section>
 
-<!-- ============ 3. the bet: one dated schedule, what 10x does, then NVIDIA ============ -->
-<section class="sec" id="s3" aria-labelledby="h-s3">
-  <div class="sh"><span>03</span><span>The bet: one scheduled trade</span><span class="when" id="s3-when"></span></div>
-  <h2 id="h-s3"></h2>
-  <p class="lede" id="s3-lede"></p>
-  <div class="sched" id="sched"></div>
-  <div class="att" id="att"></div>
-</section>
-
-<!-- ============ 4. open items: what is not decided yet ============ -->
-<section class="sec" id="s4" aria-labelledby="h-s4">
-  <div class="sh"><span>04</span><span>Open items</span><span class="when">Listed so nothing is hidden</span></div>
-  <h2 id="h-s4">What is not decided yet.</h2>
-  <ol class="oi" id="oi" aria-label="Open items"></ol>
-  <p class="cap" id="oi-cap"></p>
-</section>
-
-<!-- ============ 5. get $EZ: the tear-off stub, and the one disclaimer ============ -->
-<div class="perf" aria-hidden="true"></div>
-<p class="perf-l" aria-hidden="true">Tear-off stub</p>
-<section class="stub" id="s5" aria-labelledby="h-s5">
-  <div class="g5">
-    <div>
-      <span class="lbl">05 · Get $EZ</span>
-      <h2 id="h-s5"></h2>
-      <dl class="dl" id="stub"></dl>
-      <div id="caddr"></div>
-      <p class="ca" id="ca-note"></p>
-    </div>
-    <p class="disc" id="disc"></p>
-  </div>
+<!-- ============ 3. when: the countdown on the chip, then the two dates ============ -->
+<section class="blk" id="when" aria-labelledby="h-when">
+  <h2 id="h-when">Countdown to the bet</h2>
+  <div class="body" id="when-body"></div>
 </section>
 </main>
 
 <footer class="foot">
-  <nav aria-label="More on EZ Live X2"><span>More:</span><a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#leaderboard">Full leaderboard</a><a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#results">All results</a><a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#upcoming">Upcoming rounds</a></nav>
-  <p id="printed"></p>
+  <p data-disclaimer>$EZ is a memecoin. Not financial advice.</p>
 </footer>
 
 </div>
 </div>
-<noscript><p style="padding:16px;font:16px/1.5 sans-serif">This statement is built from the record when the page loads. Turn on JavaScript to see the figures.</p></noscript>
+<noscript><p style="padding:16px;font:16px/1.5 sans-serif">Turn on JavaScript to see the live numbers.</p></noscript>
 
 <script src="ez-data.js"></script>
 <script>
 (function(){
 "use strict";
-/* ---------- helpers ---------- */
 function $(s){return document.querySelector(s)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function nm(m){var M=MODELS[m];if(!M)return m;var n=M.name;return n.length<=3?n:n.charAt(0)+n.slice(1).toLowerCase()}
-function ver(m){return MODELS[m]?MODELS[m].ver:""}
 function mark(m,cls){return logo(m,cls||"").replace('title="','aria-hidden="true" data-name="')}
-function plural(n,w){return n+" "+w+(n===1?"":"s")}
-function ordinal(n){return n+(["th","st","nd","rd"][(n%100>10&&n%100<14)?0:n%10]||"th")}
-function dirOf(c){return /^DOWN/i.test(c[1])?"down":"up"}
-function magOf(c){return String(c[1]).replace(/^\w+\s*/,"").replace("%","")}
-function valOf(c){return (dirOf(c)==="down"?-1:1)*parseFloat(magOf(c))}
-function sgn(v){return (v<0?"−":"+")+Math.abs(v)}
-function arrow(d){return d==="down"?"▼":"▲"}
 function mdy(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?new Date(Date.UTC(2000+(+m[3]%100),+m[1]-1,+m[2])):null}
-function yahoo(t){t=String(t);if(/^[A-Z]+\.[A-Z]$/.test(t))t=t.replace(".","-");return "https://finance.yahoo.com/quote/"+encodeURIComponent(t)+"/history/"}
-function pct(a){return Math.abs(a).toFixed(2).replace(/\.?0+$/,"")+"%"}
-function winners(r){return r.win?r.win.split(" & "):[]}
-function names(list){return list.map(nm).join(" and ")}
 
 /* ---------- the record ---------- */
-var nR=ROUNDS.length, FIRST=ROUNDS[0], LAST=ROUNDS[nR-1];
-var firstDay=FIRST?fmtDate(FIRST.called):"", lastDay=LAST?fmtDate(LAST.resolves):"";
-var LEV=SIM.leverage, POOL=Math.round(SIM.poolShare*100), OPS=100-POOL, LEAD=SIM.leadHours;
-var WIPE=+(100/LEV).toFixed(1);
+var nR=ROUNDS.length, LEV=SIM.leverage, POOL=Math.round(SIM.poolShare*100), OPS=100-POOL, LEAD=SIM.leadHours;
 var LAUNCHED=!!(CONFIG.launched||CONFIG.ca);
-var FEE_SET=SIM.feePct!=null;
-var STOP=SIM.stopLoss;
-function nOf(L){return parseInt(String(L.dir).split("/")[1],10)}
-function rightOf(L){return parseInt(String(L.dir).split("/")[0],10)}
-function joinedAt(m){for(var i=0;i<ROUNDS.length;i++){if(ROUNDS[i].calls.some(function(c){return c[0]===m}))return ROUNDS[i].n}return null}
 
 /* ---------- the NVIDIA dates: SIM/CONFIG.betDate, else the NVIDIA round's call date moved to the next weekday,
-   at the New York close (the site's rule, as on X5). Every date says "planned" until a date is set. ---------- */
+   at the New York close (the site's rule). "Planned" until a date is set. ---------- */
 function nyClose(y,m,d){var f=new Date(Date.UTC(y,2,1)).getUTCDay(),a=Date.UTC(y,2,8+(7-f)%7),g=new Date(Date.UTC(y,10,1)).getUTCDay(),b=Date.UTC(y,10,1+(7-g)%7),t=Date.UTC(y,m,d);return Date.UTC(y,m,d,t>=a&&t<b?20:21)}
 function betTime(){var b=mdy(SIM.betDate||CONFIG.betDate);if(b)return nyClose(b.getUTCFullYear(),b.getUTCMonth(),b.getUTCDate());
   var nv=[].concat(UPCOMING,PENDING).filter(function(u){return u.ticker==="NVDA"})[0],c=nv&&mdy(nv.called);if(!c)return null;
@@ -545,241 +279,77 @@ function betTime(){var b=mdy(SIM.betDate||CONFIG.betDate);if(b)return nyClose(b.
 var BT=betTime(), FT=(BT!=null&&LEAD!=null)?BT-LEAD*3600e3:null;
 var PLANNED=!/\d+\/\d+\/\d+/.test(String(SIM.betDate||CONFIG.betDate||""));
 function dNY(t){return new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"})}
-function hNY(t){return new Date(t).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/New_York"}).replace(":00","").replace(" AM"," am").replace(" PM"," pm")}
-var betDay=BT?dNY(BT):"", frzDay=FT?dNY(FT):"", betHr=BT?hNY(BT):"", frzHr=FT?hNY(FT):"";
-var NOW=Date.now(), FRZ_PAST=FT!=null&&NOW>=FT, FROZEN=FRZ_PAST&&!PLANNED, PASSED=BT!=null&&NOW>=BT;
-/* today's date in New York, to tell a coming report date from one that has passed */
-var TODAY=(function(){var p=new Date(NOW).toLocaleDateString("en-US",{timeZone:"America/New_York",year:"numeric",month:"numeric",day:"numeric"}).split("/");return Date.UTC(+p[2],+p[0]-1,+p[1])})();
-var BET_STATE=PASSED?(PLANNED?"Planned time passed":"Bet time passed"):(PLANNED?"Planned, not placed":"Date set, not placed");
 
-/* rounds still to come before NVIDIA */
-var NV=[].concat(UPCOMING,PENDING).filter(function(u){return u.ticker==="NVDA"})[0];
-var AHEAD=[].concat(PENDING,UPCOMING).filter(function(u){return !NV||u.n<NV.n}).sort(function(a,b){return a.n-b.n});
-var L0=LADDER[0],L1=LADDER[1];
+/* ---------- small pictures (no words inside) ---------- */
+var TRI_UP='<svg width="16" height="13" viewBox="0 0 16 13" aria-hidden="true"><path d="M8 0l8 13H0z" fill="var(--up)"/></svg>';
+var TRI_DN='<svg width="16" height="13" viewBox="0 0 16 13" aria-hidden="true"><path d="M0 0h16L8 13z" fill="var(--down)"/></svg>';
+/* the pot: a jar with a dollar sign on it */
+function jar(s){s=s||40;return '<svg class="ico" width="'+s+'" height="'+(s*1.1)+'" viewBox="0 0 40 44" aria-hidden="true">'+
+  '<rect x="11" y="2" width="18" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>'+
+  '<path d="M13 7v3C7 12 5 15 5 20v16c0 3.3 2.7 6 6 6h18c3.3 0 6-2.7 6-6V20c0-5-2-8-8-10V7" fill="none" stroke="currentColor" stroke-width="2"/>'+
+  '<path d="M25.2 21.6c-.9-1.7-2.8-2.7-5.1-2.7-2.9 0-4.9 1.5-4.9 3.6 0 5.1 10.4 2.7 10.4 8.1 0 2.2-2.1 3.8-5.2 3.8-2.4 0-4.4-1-5.4-2.9M20 16v21.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/>'+
+  '</svg>'}
 
-/* ---------- 0. the statement head ---------- */
-$("#asof").textContent=lastDay;
-$("#launch-line").textContent=LAUNCHED?"and it is live.":"and it has not launched.";
-document.querySelectorAll(".levx").forEach(function(e){e.textContent=LEV+"x"});
-function dlRows(rows){return rows.map(function(r){return '<div class="row"><dt>'+esc(r[0])+'</dt><span class="dots" aria-hidden="true"></span><dd>'+(r[2]?r[1]:esc(r[1]))+'</dd></div>'}).join("")}
-/* the bet in one line, then the two endings at equal size */
-$("#flow").innerHTML='<span class="lbl" id="flow-h">The bet, in order · '+esc(BET_STATE.toLowerCase())+'</span>'+
-  '<ol class="chain">'+
-    '<li><b>Fees</b><span>'+POOL+'% to the pot</span></li>'+
-    '<li><b>Pot</b><span>'+(LAUNCHED?"Filling":"Empty today")+'</span></li>'+
-    '<li><b>Freeze</b><span>'+LEAD+'h before NVIDIA</span></li>'+
-    '<li><b>Call</b><span>Up or down, '+LEV+'x</span></li>'+
-  '</ol>'+
-  '<div class="fork mini"><div class="two">'+
-    '<div class="end"><b class="h"><span class="up" aria-hidden="true">\u25B2</span>Right call</b><p>The pot gains '+LEV+'% for every 1% NVIDIA moves its way. The profit buys back $EZ on the open market.</p></div>'+
-    '<div class="end"><b class="h"><span class="down" aria-hidden="true">\u25BC</span>Wrong call</b><p>It loses '+LEV+'% for every 1% against. Less than '+WIPE+'% against can wipe it out.'+(STOP==null?' No stop loss.':'')+'</p></div>'+
-  '</div></div>';
-$("#sum").innerHTML=dlRows([
-  ["Rounds graded",nR+", since "+firstDay],
-  ["$EZ",LAUNCHED?"Live":"Not launched"],
-  ["The pot",LAUNCHED?"Filling from fees":"Empty until launch"],
-  ["Filled by",POOL+"% of fees"],
-  ["The bet",BET_STATE],
-  ["If right","Profit buys back $EZ"],
-  ["If wrong","Can wipe out the pot"]
-]);
-if(LAUNCHED)$("#stamp1").remove();
+/* ---------- 0. the strip ---------- */
+$("#n-ai").textContent=MODEL_KEYS.length;
+$("#lev1").textContent=LEV+"x leverage";
+/* the first screen names no date (the planned date is labelled in the When block); the tag says the call instead */
+(function(){var bd=$("#bet-day");bd.textContent="\u25B2 or \u25BC";bd.hidden=false})();
+$("#pic-ais").innerHTML='<span class="marks" role="img" aria-label="'+esc(MODEL_KEYS.map(nm).join(", "))+'">'+MODEL_KEYS.map(function(m){return mark(m)}).join("")+'</span>';
+$("#pic-nv").innerHTML=nvLogo().replace('title="','aria-hidden="true" data-name="')+'<span class="ud" role="img" aria-label="up or down">'+TRI_UP+TRI_DN+'</span>';
+$("#pic-pot").innerHTML=jar(40);
+$("#honest").textContent=LAUNCHED?"An experiment. $EZ is live.":"An experiment. $EZ isn't live yet.";
 
-/* ---------- 1. the four AIs and the latest entry ---------- */
-$("#s1-when").textContent="Latest entry: round "+LAST.n+", "+lastDay;
-$("#parties").innerHTML=MODEL_KEYS.map(function(m){return '<li>'+mark(m)+'<span><b>'+esc(nm(m))+'</b><small>'+esc(ver(m))+'</small></span></li>'}).join("");
-$("#joined").textContent=MODEL_KEYS.map(function(m){return [m,joinedAt(m)]}).filter(function(x){return x[1]&&x[1]>1}).map(function(x){return nm(x[0])+" joined at round "+x[1]+"."}).join(" ");
+/* ---------- 1. who's winning: rank = wins, then the smaller average miss (LADDER's order); no shared places ---------- */
+$("#rounds").textContent="Wins after "+nR+" rounds";
+$("#board").innerHTML=LADDER.map(function(L,i){
+  return '<li><span class="pl">'+(i+1)+'</span>'+mark(L.m,"sm")+'<span class="nm">'+esc(nm(L.m))+'</span><span class="w" aria-label="'+L.won+' wins">'+L.won+'</span></li>'}).join("");
 
+/* ---------- 2. fees fill the pot: the split drawn to scale ---------- */
+$("#bar").style.setProperty("--p",POOL);$("#bar").setAttribute("aria-label",POOL+"% to the pot, "+OPS+"% to operations");
+$("#bar").innerHTML='<div class="seg pot"><span class="n">'+POOL+'%</span>'+jar(28)+'</div><div class="seg ops"><span class="n">'+OPS+'%</span></div>';
+
+/* ---------- 3. when: the countdown lit in the chip's two dies (days, hours | minutes, seconds), then the dates.
+   NVIDIA is first shown here. Image coordinates are the photo's own (2000 x 1500); the view crops to the dies. ---------- */
 (function(){
-  var r=LAST, a=r.a, up=a>0, W=winners(r), adir=up?"up":"down";
-  var rows=r.calls.slice().sort(function(x,y){return parseFloat(x[2])-parseFloat(y[2])});
-  var closest=rows[0];
-  var head='<div class="entry-h"><span class="t">'+coMark(r.ticker)+'<span>Round '+r.n+' · '+esc(r.co)+' ('+esc(r.ticker)+')</span></span>'+
-    '<span class="facts">Calls filed '+fmtDate(r.called)+' · Graded '+fmtDate(r.resolves)+' · Real move <b class="'+adir+'">'+arrow(adir)+' '+adir+' '+pct(a)+'</b> · Sorted by miss, smallest first</span></div>';
-  var body=rows.map(function(c,i){var d=dirOf(c),ok=d===adir,w=W.indexOf(c[0])>-1;
-    var res=w?'<span class="w">Won</span>':(ok?'Right way':'<span class="x">Wrong way</span>');
-    return '<tr><td><span class="who">'+mark(c[0],"xs")+esc(nm(c[0]))+'</span></td>'+
-      '<td class="call"><span class="'+d+'" aria-hidden="true">'+arrow(d)+'</span> <span class="dw">'+d+' </span>'+esc(magOf(c))+'%</td>'+
-      '<td class="num">'+esc(c[2])+'</td><td class="res">'+res+'</td></tr>'}).join("");
-  var note;
-  if(!W.length)note="Every AI called the wrong direction, so nobody won this round.";
-  else if(W.indexOf(closest[0])<0)note="<b>"+esc(nm(closest[0]))+"'s number was the closest.</b> But "+esc(nm(closest[0]))+" said "+dirOf(closest)+", and "+esc(r.co)+" went "+adir+". Direction comes first, so "+esc(names(W))+" won.";
-  else note="<b>"+esc(names(W))+"</b> called the right direction and came closest, so "+(W.length>1?"they share the round.":"won the round.");
-  $("#entry").innerHTML=head+'<table><caption class="sr">Round '+r.n+': each AI’s call, sorted by miss, smallest first</caption><thead><tr><th scope="col">AI</th><th scope="col">Call</th><th scope="col" class="num">Miss</th><th scope="col">Result</th></tr></thead><tbody>'+body+'</tbody></table>'+
-    '<p class="note">'+note+'</p>';
-
-  /* the round on one line: where each call sat, and where the stock really went */
-  var pts=r.calls.map(function(c){return {c:c,v:valOf(c)}}).sort(function(x,y){return x.v-y.v});
-  var R=Math.max(5,Math.ceil(Math.max.apply(null,pts.map(function(o){return Math.abs(o.v)}).concat([Math.abs(a)]))+0.5));
-  function px(v){return ((v+R)/(2*R)*100).toFixed(2)+"%"}
-  var Wpx=document.getElementById("ruler1").clientWidth||340, gap=64/Wpx*100, ends=[];
-  pts.forEach(function(o){var x=(o.v+R)/(2*R)*100,k=0;while(ends[k]!=null&&x-ends[k]<gap)k++;ends[k]=x;o.row=k});
-  var step=R>6?2:1,lab=R>6?4:5,ticks="";
-  for(var t=-R;t<=R;t++){if(t%step)continue;ticks+='<span class="tick" style="left:'+px(t)+'"></span>'+((t%lab===0)?'<span class="tl" style="left:'+px(t)+'">'+(t===0?"0":sgn(t))+'</span>':'')}
-  var calls=pts.map(function(o){var top=6+o.row*22,w=W.indexOf(o.c[0])>-1;
-    return '<span class="call'+(w?' won':'')+'" style="left:'+px(o.v)+';top:'+top+'px"><span class="v">'+mark(o.c[0],"xs")+sgn(o.v)+'</span><span class="stem" style="height:'+Math.max(4,80-top-17)+'px"></span></span>'}).join("");
-  $("#ruler1").innerHTML='<div class="r1" aria-hidden="true">'+
-    '<span class="side" style="left:'+(up?0:50)+'%;width:50%"><span style="'+(up?'left:2px':'right:2px')+'">Wrong way</span></span>'+
-    '<span class="side ok" style="left:'+(up?50:0)+'%;width:50%"><span style="'+(up?'right:2px':'left:2px')+'">Right way</span></span>'+
-    '<span class="axis"></span>'+ticks+'<span class="zero" style="left:50%"></span>'+calls+
-    '<span class="act" style="left:'+px(a)+'"></span><span class="actl" style="left:'+px(a)+'">'+esc(r.co)+' '+(a>0?"+":"−")+pct(a)+'</span></div>'+
-    '<figcaption class="cap"><b>Round '+r.n+' on one line.</b> Each AI’s call, in percent, and the bold line where '+esc(r.co)+' really moved. Calls on the hatched side of zero went the wrong way, so they can’t win, however close.</figcaption>';
-
-  var F=FILMS[r.n];
-  if(F)$("#attach").innerHTML='<a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#round/'+r.n+'" tabindex="-1" aria-hidden="true"><img src="'+MEDIA+esc(F.p)+'.jpg" alt="" width="84" height="84" loading="lazy"></a>'+
-    '<p class="cap"><span class="lbl">Attachment · round '+r.n+' film</span>The same round as a short film: the four calls and what '+esc(r.co)+' really did. <a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#round/'+r.n+'">Watch it on EZ Live X2</a>.</p>';
+  var body=$("#when-body"),fl=(PLANNED?"Planned ":"")+"bet";
+  if(!BT){body.innerHTML='<div class="dates"><div class="r"><span>The bet</span><span class="dots" aria-hidden="true"></span><b>Date not set</b></div></div>';return}
+  body.innerHTML='<figure class="chip" style="margin-left:0;margin-right:0"><svg id="core" viewBox="400 380 1200 680" role="img" aria-label="NVIDIA chip">'+
+      '<defs><filter id="gs" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncR type="linear" slope=".8"/><feFuncG type="linear" slope=".8"/><feFuncB type="linear" slope=".8"/></feComponentTransfer></filter></defs>'+
+      '<image href="'+MEDIA+'ez-gpu2-1200.jpg" x="0" y="0" width="2000" height="1500" filter="url(#gs)" preserveAspectRatio="none"/></svg></figure>'+
+    '<div class="dates">'+
+      (FT!=null?'<div class="r"><span id="flbl">Leaderboard freezes</span><span class="dots" aria-hidden="true"></span><b>'+esc(dNY(FT))+'</b></div>':'')+
+      '<div class="r"><span>'+fl.charAt(0).toUpperCase()+fl.slice(1)+'</span><span class="dots" aria-hidden="true"></span><b>'+esc(dNY(BT))+'</b></div></div>';
+  var F={0:"01110100011000110001100011000101110",1:"00100011000010000100001000010001110",2:"01110100010000100010001000100011111",3:"11110000010000101110000010000111110",
+    4:"00010001100101010010111110001000010",5:"11111100001111000001000011000101110",6:"00110010001000011110100011000101110",7:"11111000010001000100010000100001000",
+    8:"01110100011000101110100011000101110",9:"01110100011000101111000010001001100"};
+  var NS="http://www.w3.org/2000/svg",sv=$("#core"),cells=[];
+  function mk(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);sv.appendChild(e);return e}
+  /* each die (x 413-987 and 1013-1587) gets one dark panel in its open middle with two 2-digit groups */
+  var P=21,CS=16,GW=10*P+CS,GAP=40,DIES=[{x:413,u:["DAYS","HRS"]},{x:1013,u:["MIN","SEC"]}],PY=590;
+  DIES.forEach(function(d){var pw=2*GW+GAP+52,px=d.x+(574-pw)/2;
+    mk("rect",{x:px,y:PY,width:pw,height:236,rx:8,"class":"gc-bg"});
+    for(var q=0;q<2;q++){var gx=px+26+q*(GW+GAP);
+      for(var dg=0;dg<2;dg++){var cs=[];for(var r=0;r<7;r++)for(var c=0;c<5;c++)cs.push(mk("rect",{x:gx+(dg*6+c)*P,y:PY+22+r*P,width:CS,height:CS,rx:2,"class":"gc"}));cells.push(cs)}
+      var t=mk("text",{x:gx+GW/2,y:PY+214,"text-anchor":"middle","class":"gc-u"});t.textContent=d.u[q]}});
+  function put(i,n){var f=F[n];cells[i].forEach(function(e,k){e.setAttribute("class",f[k]==="1"?"gc on":"gc")})}
+  function two(n){return n<10?"0"+n:String(Math.min(n,99))}
+  var said="";
+  function tick(){var s=Math.max(0,Math.floor((BT-Date.now())/1e3)),v=[Math.floor(s/86400),Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60];
+    v.forEach(function(n,i){var t=two(n);put(i*2,+t[0]);put(i*2+1,+t[1])});
+    var l=s>0?"NVIDIA chip, "+v[0]+" days "+v[1]+" hours "+v[2]+" minutes to the bet":(PLANNED?"Planned time passed":"Time passed");
+    if(l!==said){said=l;sv.setAttribute("aria-label",l)}
+    if(FT!=null&&Date.now()>=FT&&$("#flbl"))$("#flbl").textContent="Leaderboard froze";
+    if(s>0)setTimeout(tick,1000-Date.now()%1000)}
+  tick();
 })();
 
-/* ---------- 2. standings ---------- */
-$("#s2-when").textContent="After "+plural(nR,"round");
+/* ---------- the light / dark icon: pressed = dark ---------- */
 (function(){
-  if(!L0)return;
-  var gap=L1?L0.won-L1.won:0;
-  $("#h-s2").textContent=FROZEN?(nm(L0.m)+" finished first. "+nm(L0.m)+" makes the NVIDIA call."):(nm(L0.m)+" is in first place."+(L1?(gap>0?" "+nm(L1.m)+" is "+plural(gap,"win")+" behind.":" "+nm(L1.m)+" has the same wins."):""));
-  $("#s2-lede").textContent=FROZEN?"The leaderboard is frozen.":(FRZ_PAST?"Planned freeze time passed. Waiting on the real date.":"First place when the leaderboard freezes, "+LEAD+" hours before NVIDIA reports, makes the NVIDIA call.");
-  function tally(n){var s="",g=Math.floor(n/5),k=n%5,i;
-    for(i=0;i<g;i++)s+='<svg width="24" height="18" viewBox="0 0 24 18" aria-hidden="true"><g stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M3 2v14M8 2v14M13 2v14M18 2v14M0 14L22 4"/></g></svg>';
-    if(k){var w=k*5+2,p="";for(i=0;i<k;i++)p+="M"+(3+i*5)+" 2v14";s+='<svg width="'+w+'" height="18" viewBox="0 0 '+w+' 18" aria-hidden="true"><path d="'+p+'" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>'}
-    return '<span class="tally">'+s+'</span>'}
-  var body=LADDER.map(function(L,i){var j=joinedAt(L.m);
-    return '<tr><td class="pl">'+(i+1)+'</td><td><span class="ai">'+mark(L.m,"sm")+'<span>'+esc(nm(L.m))+(j>1?'<small>Since round '+j+'</small>':'')+'</span></span></td>'+
-      '<td class="num wn"><span class="wins">'+tally(L.won)+'<b>'+L.won+'</b></span></td><td class="num dr">'+rightOf(L)+' / '+nOf(L)+'</td><td class="num av">'+esc(L.avg)+'</td></tr>'}).join("");
-  $("#tb").innerHTML='<caption class="sr">Standings after '+nR+' rounds</caption><thead><tr><th scope="col">Place</th><th scope="col">AI</th><th scope="col" class="num">Wins</th><th scope="col" class="num">Right way</th><th scope="col" class="num">Avg miss</th></tr></thead><tbody>'+body+'</tbody>';
-  var minAvg=LADDER.slice().sort(function(x,y){return parseFloat(x.avg)-parseFloat(y.avg)})[0];
-  var avgNote=(minAvg&&minAvg!==L0)?" "+nm(minAvg.m)+" has the smallest average miss but fewer wins, so it is "+ordinal(LADDER.indexOf(minAvg)+1)+".":"";
-  $("#tb-cap").innerHTML=(FROZEN?"<b>The leaderboard at the freeze.</b>":"<b>Who would make the NVIDIA call if the leaderboard froze today.</b>")+" Tally marks: rounds won. Places: most wins, then the smaller average miss. No shared places."+esc(avgNote);
-  var fewer=LADDER.filter(function(L){return nOf(L)<nR}).map(function(L){return nm(L.m)+" has "+nOf(L)+" graded calls, not "+nR+"."}).join(" ");
-  $("#limits").innerHTML="<b>"+nR+" rounds is a small sample.</b> One NVIDIA call can go either way, whatever the record."+(fewer?" "+esc(fewer):"");
-})();
-
-/* the general ledger: every graded round, newest first, each one checkable */
-(function(){
-  var rs=ROUNDS.slice().reverse();
-  $("#gl-sum").textContent="All "+nR+" graded rounds, call by call";
-  $("#gl-cap").innerHTML="<b>Every graded call since "+firstDay+", newest first.</b> Check any line: the round page shows the calls, and the price history shows the stock's prices around the report. How each real move is measured (which prices, at which times) is not published yet.";
-  function cell(r,m){var c=callOf(r,m);if(!c)return {t:'·<span class="sr">not playing yet</span>',k:"none"};
-    var d=dirOf(c),ok=d===(r.a>0?"up":"down"),w=winners(r).indexOf(m)>-1;
-    var t='<span class="'+d+'" aria-hidden="true">'+arrow(d)+'</span><span class="sr">'+d+' </span>'+esc(magOf(c))+(w?'<span class="sr"> (won)</span>':ok?'':'<span class="sr"> (wrong way)</span>');
-    return {t:t,k:w?"won":ok?"ok":"wr"}}
-  var head='<caption class="sr">Every graded round</caption><thead><tr><th scope="col">No.</th><th scope="col">Stock</th><th scope="col">Filed</th><th scope="col">Graded</th><th scope="col">Real move</th>'+MODEL_KEYS.map(function(m){return '<th scope="col">'+esc(nm(m))+'</th>'}).join("")+'<th scope="col">Won by</th><th scope="col">Check it</th></tr></thead>';
-  function wonBy(r){var W=winners(r);return W.length?esc(W.map(nm).join(" & ")):"Nobody"}
-  function links(r,long){return '<a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#round/'+r.n+'">'+(long?"Round page":"Round")+'</a> · <a href="'+yahoo(r.ticker)+'" target="_blank" rel="noopener">'+(long?"Price history":"Price")+'<span class="sr"> for '+esc(r.co)+' (opens in a new tab)</span></a>'}
-  $("#glt").innerHTML=head+'<tbody>'+rs.map(function(r){var d=r.a>0?"up":"down";
-    return '<tr><td>'+r.n+'</td><td><span class="co">'+coMark(r.ticker)+esc(r.co)+'</span></td><td>'+fmtDate(r.called)+'</td><td>'+fmtDate(r.resolves)+'</td>'+
-      '<td><span class="'+d+'" aria-hidden="true">'+arrow(d)+'</span> <span class="sr">'+d+' </span>'+pct(r.a)+'</td>'+
-      MODEL_KEYS.map(function(m){var x=cell(r,m);return '<td>'+(x.k==="won"?'<span class="won">'+x.t+'</span>':x.k==="ok"?x.t:'<span class="wr">'+x.t+'</span>')+'</td>'}).join("")+
-      '<td>'+wonBy(r)+'</td><td>'+links(r)+'</td></tr>'}).join("")+'</tbody>';
-  $("#gll").innerHTML=rs.map(function(r){var d=r.a>0?"up":"down";
-    return '<li><p class="l0">Round '+r.n+' · filed '+fmtDate(r.called)+' · graded '+fmtDate(r.resolves)+'</p><div class="l1">'+coMark(r.ticker)+'<span>'+esc(r.co)+'</span><span class="mv"><span class="'+d+'" aria-hidden="true">'+arrow(d)+'</span> '+d+' '+pct(r.a)+'</span></div>'+
-      '<div class="l2">'+MODEL_KEYS.map(function(m){var x=cell(r,m);return '<span class="'+x.k+'"><i>'+esc(nm(m))+'</i><b>'+x.t+'</b></span>'}).join("")+'</div>'+
-      '<p class="l3"><span>Won by: <b style="color:var(--ink)">'+wonBy(r)+'</b></span><span>'+links(r,1)+'</span></p></li>'}).join("");
-})();
-
-/* scheduled: what comes next, in one line. Keyed on the report dates; a report date that has passed
-   with no grade in the record says "waiting to be graded", so a lagging sheet never reads as current. */
-(function(){
-  if(!AHEAD.length){$("#next").remove();return}
-  var u=AHEAD[0],batch=AHEAD.filter(function(x){return x.called===u.called});
-  var ds=batch.map(function(x){return mdy(x.resolves)}).filter(Boolean).sort(function(a,b){return a-b});
-  function md(d){return d.toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"UTC"})}
-  var who='<span style="display:inline-flex;align-items:center;gap:6px">'+coMark(u.ticker)+esc(u.co)+'</span>'+(batch.length>1?' and '+(batch.length-1)+' more':'');
-  var line,cd=mdy(u.called);
-  if(!ds.length){line=(cd&&cd<TODAY)?"Calls were due "+fmtDate(u.called)+". Not in the record yet: "+who+".":"Next: "+who+", calls "+fmtDate(u.called)+"."}
-  else{var d0=ds[0],d1=ds[ds.length-1];
-    var range=d0.getTime()===d1.getTime()?md(d0):(d0.getUTCMonth()===d1.getUTCMonth()?md(d0)+" to "+d1.getUTCDate():md(d0)+" to "+md(d1));
-    var verb=batch.length>1?"report":"reports";
-    if(d1<TODAY)line=who+' reported '+range+'. Waiting to be graded.';
-    else if(d0<TODAY)line='Next: '+who+' '+verb+' '+range+'. Those already reported are waiting to be graded.';
-    else line='Next: '+who+' '+verb+' '+range+'.'}
-  $("#next").innerHTML='<span class="lbl">Scheduled, not graded yet</span><span>'+plural(AHEAD.length,"more round")+' before NVIDIA'+(NV?' (round '+NV.n+')':'')+'.</span><span>'+line+'</span><a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#upcoming">All upcoming</a>';
-})();
-
-/* ---------- 3. the bet ---------- */
-$("#s3-when").textContent=BET_STATE;
-$("#h-s3").textContent="One AI. One call. NVIDIA up or down. The whole pot, at "+LEV+"x.";
-$("#s3-lede").textContent="It happens once. Below, in time order: from the fees to the two possible endings.";
-(function(){
-  /* only the exceptions get a tag: a step with no tag is a fixed rule */
-  function st(open){return open?'<span class="st"><i></i>'+esc(open)+'</span>':''}
-  function usd(v){return (v>0?"+":"\u2212")+"$"+Math.abs(v).toFixed(2)}
-  function ex(sg){var x=WIPE/2,y=WIPE;return '<table class="ex"><caption class="sr">Example per $1 in the pot</caption><thead><tr><th scope="col">NVIDIA</th><th scope="col">Per $1</th></tr></thead><tbody>'+
-    '<tr><td>'+(sg>0?"+":"\u2212")+x+'%</td><td>'+usd(sg*x*LEV/100)+'</td></tr><tr><td>'+(sg>0?"+":"\u2212")+y+'%</td><td>'+usd(sg*y*LEV/100)+(sg<0&&y*LEV>=100?' <span class="gone">gone</span>':'')+'</td></tr></tbody></table>'}
-  var cents="";for(var i=0;i<100;i++)cents+='<i class="'+(i<POOL?"p":"o")+'"></i>';
-  var who=L0&&!FROZEN?'<span class="who">If it froze today: '+mark(L0.m,"xs")+esc(nm(L0.m))+'</span>':(L0?'<span class="who">Frozen: '+mark(L0.m,"xs")+esc(nm(L0.m))+'</span>':'');
-  var pl=PLANNED?' <em>planned</em>':'';
-  var S=[
-    ['From launch',st(FEE_SET?"":"Fee size not set"),'<b>The money</b> Every $EZ trade pays a fee. '+POOL+' of every 100 cents go into the pot. '+OPS+' run the project.'+
-      '<span class="cents-wrap"><span class="cents" role="img" aria-label="'+POOL+' of 100 squares filled: the pot\u2019s share of each fee">'+cents+'</span><span class="ckey"><span><i class="p"></i>'+POOL+' to the pot</span><span><i class="o"></i>'+OPS+' run the project</span></span></span>'],
-    ['Until the freeze',LAUNCHED?'':st("Empty today"),'<b>The pot</b> fills from those fees. '+(LAUNCHED?"":"There is no pot until launch.")],
-    [(FT?frzDay+', '+frzHr+' NY':LEAD+'h before the report')+pl,'','<b>Who decides</b> The leaderboard freezes, '+LEAD+' hours before NVIDIA reports. The AI in first place makes the call.'+who],
-    [(FT?frzDay:'')+pl,'','<b>The call</b> NVIDIA up or down. Nothing else.'],
-    [(BT?betDay+', at the close':'Before the report')+pl,st("Market not picked"),'<b>The size</b> The whole pot, at '+LEV+'x, on Hyperliquid, a crypto exchange where NVIDIA\u2019s price can be traded with leverage. '+(STOP==null?"No stop loss.":"")],
-    [(BT?betDay+', at the close':'')+pl,'','<b>Who trades</b> A human places the trade, for now. The AI only makes the call.'],
-    ['After the close'+pl,'','<b>NVIDIA reports</b> earnings. The stock moves. The call is right or wrong.']
-  ];
-  $("#sched").innerHTML='<div class="sched-h"><span class="lbl">Schedule of the bet · in time order</span><h3>Where the fee money goes, and how one call can grow the pot or wipe it out.</h3>'+
-    '<p class="key"><b>Key:</b> a step with no tag is a fixed rule. A <span class="st"><i></i></span>tag marks what is still open. <em class="pk">Planned</em>: the date can move until NVIDIA announces it.</p></div>'+
-    '<ol class="steps">'+S.map(function(s){return '<li class="step"><span class="pl"><span>'+s[0]+'</span>'+s[1]+'</span><span class="what">'+s[2]+'</span></li>'}).join("")+'</ol>'+
-    '<div class="fork"><div class="two">'+
-      '<div class="end"><h4><span class="up" aria-hidden="true">\u25B2</span>Right call</h4><p>NVIDIA moves the way the AI called it. The pot gains '+LEV+'% for each 1%.</p>'+ex(1)+'<p>The profit buys back $EZ on the open market.</p></div>'+
-      '<div class="end"><h4><span class="down" aria-hidden="true">\u25BC</span>Wrong call</h4><p>NVIDIA moves against the call. The pot loses '+LEV+'% for each 1%.</p>'+ex(-1)+'<p>No stop loss. A move of less than '+WIPE+'% can wipe it out.</p></div>'+
-    '</div><p class="fnote"><b>Example, not a forecast:</b> per $1 in the pot, before fees and funding. It does not say which way NVIDIA will move.</p>'+
-    '<p class="sooner">The exchange can close a losing trade sooner, after a smaller move. How much smaller depends on the NVIDIA market, which is not decided yet.</p>'+
-    '<p class="fnote">Also not decided: when the trade is closed, and whether bought-back $EZ is burned or held.</p></div>';
-})();
-
-/* attachment: the NVIDIA photo (first shown here, after the bet is explained), then the real clocks */
-(function(){
-  var cap=PLANNED?("It reports earnings after the close on "+betDay+", planned. NVIDIA has not announced the date."):("It reports earnings after the close on "+betDay+".");
-  $("#att").innerHTML='<span class="lbl">Attachment · the stock the bet is on</span>'+
-    '<figure><img src="'+MEDIA+'ez-gpu2-1200.jpg" alt="Close-up photo of an NVIDIA data-centre chip" width="1200" height="900" loading="lazy">'+
-    '<figcaption class="cap"><b>NVIDIA, the stock the whole pot goes on.</b> '+esc(cap)+' The photo shows the company, not a result.</figcaption></figure>'+
-    (BT?'<div class="clocks" role="group" aria-label="Countdowns to the planned times">'+
-      '<div class="clock"><span class="what">Leaderboard freezes in</span><span class="left" id="c1"></span><span class="at">'+esc(frzDay)+', '+esc(frzHr)+' New York'+(PLANNED?' · <em>planned</em>':'')+'. First place makes the call.</span></div>'+
-      '<div class="clock"><span class="what">Bet placed in</span><span class="left" id="c2"></span><span class="at">'+esc(betDay)+', at the close, '+esc(betHr)+' New York'+(PLANNED?' · <em>planned</em>':'')+'. The whole pot, '+LEV+'x.</span></div>'+
-      '<p class="cap">Counting in real time to the '+(PLANNED?'planned ':'')+'times above. If NVIDIA announces another date, both clocks move when we update the date.</p></div>':'');
-  function left(t){var d=t-Date.now();if(d<=0)return null;var m=Math.floor(d/6e4),D=Math.floor(m/1440),H=Math.floor(m%1440/60),M=m%60;return D+"d "+("0"+H).slice(-2)+"h "+("0"+M).slice(-2)+"m"}
-  function tick(){var a=$("#c1"),b=$("#c2");if(a)a.textContent=left(FT)||(PLANNED?"Planned time passed":"Frozen");if(b)b.textContent=left(BT)||(PLANNED?"Planned time passed":"Time passed")}
-  tick();setInterval(tick,15000);
-})();
-
-/* ---------- 4. open items ---------- */
-(function(){
-  var O=[];
-  if(!LAUNCHED)O.push(["Launch date and contract address","Not set"]);
-  if(!FEE_SET)O.push(["Fee size","Not set"]);
-  if(PLANNED&&BT)O.push(["NVIDIA’s report date","Planned: "+betDay]);
-  O.push(["What happens after the bet","Not decided"]);
-  O.push(["Bought-back $EZ: burn or hold","Not decided"]);
-  O.push(["When the NVIDIA trade is closed","Not decided"]);
-  O.push(["Which NVIDIA market on Hyperliquid","Not decided"]);
-  O.push(["Who holds the pot’s keys","Not decided"]);
-  O.push(["Whether the trading account is public","Not decided"]);
-  if(!Object.keys(RECEIPTS||{}).length)O.push(["Public, timestamped posts of the calls","Not linked yet"]);
-  if(PROMPT&&!PROMPT.verbatim)O.push(["The exact prompt","Shape only"]);
-  O.push(["How each real move is measured","Not published"]);
-  $("#oi").innerHTML=O.map(function(o,i){return '<li><span class="no">'+(i<9?"0":"")+(i+1)+'</span><span class="it">'+esc(o[0])+'</span><span class="ss">'+esc(o[1])+'</span></li>'}).join("");
-  var shape=PROMPT&&!PROMPT.verbatim?' <b>The prompt’s shape:</b> “'+esc(PROMPT.lines.map(function(l){return l.replace(/<[^>]+>/g,"")}).join(" "))+'”':'';
-  $("#oi-cap").innerHTML='<b>Each line changes here when it is decided.</b> The NVIDIA market sets how soon the exchange can close a losing trade.'+shape;
-})();
-
-/* ---------- 5. get $EZ, and the one disclaimer ---------- */
-var CA=String(CONFIG.ca||""),WHERE="on this site"+(CONFIG.x?" and in our X bio":"");
-$("#h-s5").textContent=LAUNCHED?(CA?"Live. Check the address below.":"Live."):"Not yet. $EZ has not launched.";
-$("#stub").innerHTML=dlRows([["Contract address",CA?"Below":"Not posted"],
-  CONFIG.buyUrl?["Buy link",'<a href="'+esc(CONFIG.buyUrl)+'" target="_blank" rel="noopener">Open<span class="sr"> the buy link (opens in a new tab)</span></a>',1]:["Buy link","Opens at launch"],
-  ["The pot today",LAUNCHED?"Filling from fees":"Empty"]]);
-if(CA)$("#caddr").innerHTML='<p class="caddr"><span class="lbl">Contract address'+(CONFIG.chain?' · '+esc(CONFIG.chain):'')+'</span><code>'+esc(CA)+'</code></p>';
-$("#ca-note").textContent=LAUNCHED?"The contract address is posted "+WHERE+". A contract address sent to you in DMs is not from us.":"The contract address will be posted "+WHERE+" at launch. A contract address sent to you in DMs is not from us.";
-$("#disc").innerHTML="<b>Read this before you buy.</b> $EZ is a memecoin and an experiment, not financial advice. AIs can be wrong, and past rounds do not predict the NVIDIA call. The bet uses "+LEV+"x leverage with no stop loss. The pot can be wiped out. Only buy what you can afford to lose.";
-$("#printed").textContent="Every figure on this statement is read from the record when the page loads. Printed "+new Date(NOW).toLocaleString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})+" (your time).";
-
-/* ---------- the light / dark switch: two fixed labels, the ticked one is aria-pressed ---------- */
-(function(){
-  var btns=[].slice.call(document.querySelectorAll("#theme button")),root=document.documentElement,mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;
+  var btn=$("#theme"),root=document.documentElement,mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;
   function cur(){var t=root.getAttribute("data-theme");return t||(mq&&mq.matches?"dark":"light")}
-  function paint(){var c=cur();btns.forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-t")===c))})}
-  btns.forEach(function(b){b.addEventListener("click",function(){var t=b.getAttribute("data-t");root.setAttribute("data-theme",t);try{localStorage.setItem("ez-ledger-theme",t)}catch(e){}paint()})});
+  function paint(){btn.setAttribute("aria-pressed",String(cur()==="dark"))}
+  btn.addEventListener("click",function(){var t=cur()==="dark"?"light":"dark";root.setAttribute("data-theme",t);try{localStorage.setItem("ez-ledger-theme",t)}catch(e){}paint()});
   if(mq&&mq.addEventListener)mq.addEventListener("change",paint);
   paint();
 })();
