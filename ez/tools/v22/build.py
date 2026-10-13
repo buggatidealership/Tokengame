@@ -41,8 +41,13 @@ NAV5='<nav class="nav" aria-label="Main"><a href="#/" data-r="board">Overview</a
 # X5's code and its part of the flag line sit between X5 markers in routes.js: kept (markers dropped) for X5, removed
 # with the markers for every other page, so X1, X2, X3, X4 and Season Live stay byte for byte
 X5M=re.compile(r'[ \t]*/\*X5\{\*/.*?/\*\}X5\*/\n?',re.S)
+# X2's own Overview (owner, 2026-10-13): its code sits between /*X2{*/ and /*}X2*/ in routes.js, kept (markers dropped)
+# for X2 alone and removed with the markers from every other page (X3, X4 and X5 share X2's code but not this); its
+# styles are tools/v22/x2-overview.css, put in X2 alone (below). So Season Live, X1, X3, X4 and X5 stay byte for byte.
+X2M=re.compile(r'[ \t]*/\*X2\{\*/.*?/\*\}X2\*/\n?',re.S)
 for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1.html","x1","EZ Live X1"),("v24-live-x2.html","x2","EZ Live X2"),("v41-live-x3.html","x3","EZ Live X3"),("v42-live-x4.html","x4","EZ Live X4"),("v43-live-x5.html","x5","EZ Live X5")]:
     jx=js.replace('/*X5{*/','').replace('/*}X5*/','') if exp=="x5" else X5M.sub('',js)
+    jx=jx.replace('/*X2{*/','').replace('/*}X2*/','') if exp=="x2" else X2M.sub('',jx)
     page=base[:i]+'window.EZ_EXP="'+exp+'";\n'+jx+base[i:]
     page=re.sub(r'<title>[^<]*</title>','<title>'+title+'</title>',page,1)
     if exp=="x1": page=re.sub(r'<!--WSJ:.*?<!--/WSJ-->\n','',page,flags=re.S)
@@ -94,6 +99,10 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
             ("""of it fills this pool. The AI on top bets it on NVIDIA\\'s earnings at '+(SIM.leverage!=null?SIM.leverage:5)+'x. Win,""",
              """of it fills this pool. '+(SIM.leadHours!=null?SIM.leadHours+' hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down. We bet the whole pool on that call'+(SIM.leverage!=null?' at '+SIM.leverage+'x':'')+'.':'The AI on top bets it on NVIDIA\\'s earnings at '+(SIM.leverage!=null?SIM.leverage:5)+'x.')+' Win,""")]:
             assert page.count(a)==1,a; page=page.replace(a,b)
+    if exp=="x2":
+        # X2's Overview order (owner, 2026-10-13): its styles, after the page's own (the code is the X2 block in routes.js)
+        X2CSS=open(sys.argv[1]+'/x2-overview.css').read()
+        assert page.count('</head>')==1; page=page.replace('</head>','<style id="x2-overview">\n'+X2CSS+'\n</style>\n</head>')
     if exp=="x3":
         # X3 re-skin (owner, 2026-10-11): its own stylesheet and fonts, so X1 and X2 stay byte for byte
         SKIN=open(sys.argv[1]+'/skin-x3.css').read()

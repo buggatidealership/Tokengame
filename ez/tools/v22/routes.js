@@ -1144,3 +1144,67 @@ if(X5)(function(){
   title();addEventListener("hashchange",title);
 })();
 /*}X5*/
+/*X2{*/
+/* ---------- X2's Overview (owner, 2026-10-13), for EZ Live X2 alone (EXP==="x2"). X3, X4 and X5 share X2's code but
+   not this block: build.py keeps it (markers dropped) for X2 and strips it, markers and all, from every other page, so
+   Season Live, X1, X3, X4 and X5 stay byte for byte. Its styles are tools/v22/x2-overview.css, put in X2 alone.
+   Top to bottom: the headline alone; the NVIDIA Blackwell chip counting down to the bet, with its line; the bet as short
+   bullets; 01 Every call (the record, how a call is graded as bullets above the cards); 02 Current standings (the
+   standings that sat in the hero); 03 Getting smarter or just lucky?; 04 Get $EZ and the one disclaimer. The hero's
+   line, "Last round" and "How we grade" leave the hero; the fee split, operations and the roadmap leave the Overview
+   (the Buyback tab keeps the fee share, the pool and the calculator). Every number comes from ez-data.js. The board is
+   never re-rendered by the router (it is shown and hidden), but the order is checked again each time the Overview
+   shows: nothing that is already in place moves, so the record keeps its scroll position. ---------- */
+if(EXP==="x2")(function(){
+  var hero=$("section.hero"),rec=$("#record"),learn=$("#learn"),bet=$("#bet"),get=$("#get"),gpu=$("#gpu"),stand=$("#stand"),gcall=$("#gpuCall"),ro=$("#roster");   // found now: they move out of the page for a moment below
+  if(!hero||!rec||!bet||!get)return;
+  function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+  function bullets(cls,lines){return '<ul class="x2o-ul'+(cls?' '+cls:'')+'">'+lines.map(function(l){return '<li>'+l+'</li>'}).join("")+'</ul>'}
+  var POOL=Math.round((SIM.poolShare!=null?SIM.poolShare:typeof ASSUME!=="undefined"&&ASSUME.poolShare||0)*100),LEV=SIM.leverage,LEAD=SIM.leadHours,
+    NAI=typeof NM!=="undefined"&&NM?NM:ACTIVE.length;
+
+  /* 2 + 3. THE BET: the chip and its countdown (X2's own, moved up from the buyback section), its first line (what
+     the timer counts to; the freeze is said in the bullets, so the chip's second line goes), then the bet in bullets */
+  var top=el("section","x2o-bet");top.setAttribute("aria-label","The NVIDIA bet");
+  top.insertAdjacentHTML("beforeend",bullets("",[
+    '<b>'+NAI+' AIs</b> call how stocks move after earnings, all season long.',
+    'From launch, '+(POOL?'<b>'+POOL+'%</b> of':'part of')+' $EZ trading fees go into the pot.',
+    (LEAD!=null?'<b>'+LEAD+'h</b> before NVIDIA reports':'Right before NVIDIA reports')+', the AI on top of the leaderboard makes the call.',
+    'We bet the pot on that call'+(LEV!=null?': <b>'+LEV+'x</b> on Hyperliquid.':' on Hyperliquid.'),
+    '<b>Right:</b> the profits buy back $EZ.',
+    '<b>Wrong:</b> the pot shrinks, and it can be wiped out.',
+    'Then it starts again next earnings season.']));
+  if(gpu){top.insertBefore(gpu,top.firstChild);var im=$(".gpu-img img",gpu);if(im)im.loading="eager"}   // first screen now: no lazy load
+
+  /* 4. EVERY CALL: the record's head and cards; how a call is graded, as bullets, in place of the line under the head */
+  var rl=$(".sh .lede",rec),rb=el("div","",bullets("lede x2o-rec",[
+    'Every call is made before the company reports.',
+    'Graded at the <b class="hlx">first market close after earnings</b>.',
+    'Closing prices come from TradingView, so the AI can\'t make them up.',
+    'Don\'t trust us. Verify every call below.'])).firstChild;
+  if(rl)rl.replaceWith(rb);else{var sh=$(".sh",rec);if(sh)sh.appendChild(rb)}
+
+  /* 5. CURRENT STANDINGS: the standings from the hero, in a section of their own. The head names them, so the
+     column's own head ("Standings" and the "How we grade" button, which turned the hero's card) is hidden */
+  var st=el("section","sec x2o-st",'<div class="sh"><div class="tx"><span class="no">02</span><span class="eb">The leaderboard</span><h2 id="x2stH">Current standings</h2></div></div>');
+  st.id="standings";st.setAttribute("aria-labelledby","x2stH");
+  var band=el("div","band x2o-band");band.style.setProperty("--rows",Math.max(1,ROWS.length));st.appendChild(band);
+  if(stand)band.appendChild(stand);
+  if(ro)ro.setAttribute("aria-labelledby","x2stH");
+
+  /* 1. THE HERO: the headline alone (its line, the standings card, "Last round" and "How we grade" go) */
+  function apply(){
+    var hs=$("#heroSub");if(hs)hs.remove();
+    var bf=$("#bflip");if(bf)bf.remove();
+    if(gcall)gcall.hidden=true;
+    bet.hidden=true;                                  // its chip moved up; the calculator still travels to the Buyback tab
+    /* the order: each section right after the one before it (hidden sections skipped); only what is out of place moves */
+    var seq=[hero,top,rec,st,learn,get].filter(function(s){return s&&!s.hidden}),prev=seq[0];
+    function nextVis(e){var n=e.nextElementSibling;while(n&&n.hidden)n=n.nextElementSibling;return n}
+    seq.slice(1).forEach(function(s){if(nextVis(prev)!==s)prev.after(s);prev=s});
+    /* the section numbers follow the order */
+    var k=0;[rec,st,learn,get].forEach(function(s){if(!s||s.hidden)return;var no=$(".sh .no",s);k++;if(no)no.textContent=(k<10?"0":"")+k})}
+  apply();
+  addEventListener("hashchange",function(){if(!boardEl.hidden)apply()});
+})();
+/*}X2*/
