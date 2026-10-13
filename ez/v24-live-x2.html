@@ -6151,8 +6151,22 @@ if(X3)(function(){
    Overview (the Buyback tab keeps the fee share, the pool and the calculator). Every number comes from ez-data.js. The
    board is never re-rendered by the router (it is shown and hidden), but the order is checked again each time the
    Overview shows: nothing that is already in place moves, so the record keeps its scroll position. ---------- */
+/* a graded round with no film yet opens on its stats, not "Film soon" (owner, 2026-10-13: "makes more sense to show data").
+   The card is built turned to its back, with no turn to an empty front: no "See the stats" on the front, no "See the film"
+   on the back. Rounds with a film are built exactly as before. This later declaration replaces v15's gradedCard in X2
+   alone (the block is stripped from every other page), so the record, the round pages and the Last round modal all
+   follow it. The record's start-up turns every card to its front once; the X2 block below turns these back. */
+function gradedCard(r,i){
+  var nf=!r.film,bk=backFace(r);
+  if(nf)bk=bk.replace('<div class="face back" aria-hidden="true">','<div class="face back" aria-hidden="false">').replace('<button type="button" class="flipb" data-flip>\u21bb See the film</button>','').replace('<button type="button" class="flipb" data-flip>↻ See the film</button>','');
+  return '<article class="card '+frame(r)+(nf?' flipped nofilm':'')+'" data-i="'+i+'" data-n="'+r.n+'" data-k="g" role="group" aria-roledescription="card" aria-label="'+plain(r)+'"><div class="cin">'+
+    '<div class="face front"'+(nf?' aria-hidden="true" inert':'')+'><div class="fin">'+topBar(r,!!r.film)+art(r)+winBar(r)+
+    (nf?'':'<div class="cfoot"><button type="button" class="flipb" data-flip>See the stats ↻</button></div>')+'</div></div>'+
+    bk+'</div></article>';
+}
 if(EXP==="x2")(function(){
-  var hero=$("section.hero"),rec=$("#record"),learn=$("#learn"),bet=$("#bet"),get=$("#get"),gpu=$("#gpu"),stand=$("#stand"),ro=$("#roster");   // found now: they move out of the page for a moment below
+  var hero=$("section.hero"),rec=$("#record"),learn=$("#learn"),bet=$("#bet"),get=$("#get"),gpu=$("#gpu"),stand=$("#stand"),ro=$("#roster");
+  $$(".card.nofilm").forEach(function(c){c.classList.add("flipped");setFaces(c,true)});   // found now: they move out of the page for a moment below
   if(!hero||!rec||!bet||!get)return;
   function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
   function bullets(cls,lines){return '<ul class="x2o-ul'+(cls?' '+cls:'')+'">'+lines.map(function(l){return '<li>'+l+'</li>'}).join("")+'</ul>'}
