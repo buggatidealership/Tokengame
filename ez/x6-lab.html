@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EZ Lab Paper</title>
+<meta name="description" content="EZ written up as a running experiment: four AIs call stocks before earnings, in public. The question, the method, the record, and the one NVIDIA bet at the end, with every figure captioned.">
+<!-- X6 concept "lab" (2026-10-12): the Overview as a working paper. Paper (light) and Carbon (dark), black ink with blue-pen notes.
+     Every number is read from ez-data.js at load. -->
+<script>try{var t=localStorage.getItem("ez-lab-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens: Paper (light) and Carbon (dark, a carbon copy) ---------- */
+:root{
+  --paper:#fbfbf8;--plate:#ffffff;--ink:#18181b;--ink2:#46474e;--ink3:#5f6068;
+  --hair:#cfd0c9;--rule:#18181b;--gmin:#eff2f6;--gmaj:#dfe5ed;
+  --note:#1f4ab5;--note-bg:#e8eefb;--up:#17723a;--down:#b42318;--hatch:rgba(24,24,27,.32);
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Source Code Pro",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#121419;--plate:#181b22;--ink:#e9ebf0;--ink2:#b8bdc8;--ink3:#979dab;
+    --hair:#2f343e;--rule:#e9ebf0;--gmin:#1c1f27;--gmaj:#252a34;
+    --note:#93b4ff;--note-bg:#1f2b45;--up:#5fcf86;--down:#ff8a80;--hatch:rgba(233,235,240,.30);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#121419;--plate:#181b22;--ink:#e9ebf0;--ink2:#b8bdc8;--ink3:#979dab;
+  --hair:#2f343e;--rule:#e9ebf0;--gmin:#1c1f27;--gmaj:#252a34;
+  --note:#93b4ff;--note-bg:#1f2b45;--up:#5fcf86;--down:#ff8a80;--hatch:rgba(233,235,240,.30);
+  color-scheme:dark;
+}
+
+/* ---------- base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.5 var(--serif);font-optical-sizing:auto;overflow-x:hidden}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:2px solid var(--note);outline-offset:2px}
+p{margin:0 0 .6em}
+b,strong{font-weight:600}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mono{font-family:var(--mono)}
+.up{color:var(--up)}.dn{color:var(--down)}
+.lg{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;flex:none;vertical-align:middle}
+.lg svg{width:62%;height:62%}
+.co-mark{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;background:#fff;border:1px solid var(--hair);overflow:hidden;flex:none;vertical-align:middle;font:600 8px var(--mono);color:#18181b}
+.co-mark img{width:80%;height:80%;object-fit:contain}
+.co-mark.dk{background:#18181b}
+
+/* ---------- running head ---------- */
+.head{border-bottom:1px solid var(--hair)}
+.head .in{max-width:1188px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand .ez{font:600 17px var(--mono);letter-spacing:-.01em}
+.brand .nm{font:400 13px/1.2 var(--sans);color:var(--ink2);white-space:nowrap}
+.brand .nm .lg2{display:none}
+@media (min-width:640px){.brand .nm .lg2{display:inline}}
+.theme{display:flex;border:1px solid var(--ink3);border-radius:3px;overflow:hidden;flex:none}
+.theme button{font:600 12.5px var(--sans);letter-spacing:.02em;color:var(--ink2);background:transparent;border:0;padding:0 10px;min-height:32px;min-width:36px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.theme button svg{width:14px;height:14px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.theme button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+@media (max-width:359px){.theme button .tw{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.theme button{padding:0 9px}}
+
+/* ---------- page grid ---------- */
+.page{max-width:1204px;margin:0 auto;padding:0 16px}
+.toc{display:none}
+.blk{max-width:640px}
+.row2{max-width:640px}
+.row2 > .side{margin-top:4px}
+@media (min-width:1000px){
+  .page{display:block}
+  .doc{max-width:948px;margin:0 auto}
+  .blk{max-width:640px}
+  .row2{max-width:none;display:grid;grid-template-columns:minmax(0,640px) 260px;column-gap:48px;align-items:start}
+  .row2 > .side{margin-top:0;grid-column:2}
+  .row2 > .main{grid-column:1}
+  .row2 > .status{grid-column:2;grid-row:1}
+  .row2.flip > .main{grid-row:1}
+}
+@media (min-width:1240px){
+  .page{display:grid;grid-template-columns:184px minmax(0,948px);column-gap:40px;justify-content:center}
+  .doc{margin:0}
+  .toc{display:block;position:sticky;top:0;align-self:start;padding-top:36px;max-height:100vh;overflow:auto}
+  .toc p{font:600 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin:0 0 10px}
+  .toc ol{list-style:none;margin:0;padding:0;border-left:1px solid var(--hair)}
+  .toc a{display:block;padding:5px 0 5px 12px;margin-left:-1px;border-left:2px solid transparent;font:400 14px/1.3 var(--sans);color:var(--ink2);text-decoration:none}
+  .toc a:hover{color:var(--ink)}
+  .toc a[aria-current="true"]{border-left-color:var(--ink);color:var(--ink);font-weight:600}
+  .toc .n{font-family:var(--mono);font-size:12px;color:var(--ink3);margin-right:6px}
+}
+
+/* ---------- title block ---------- */
+.title{padding:18px 0 6px}
+.kick{font:600 11.5px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin:0 0 8px}
+.kick .live{color:var(--note)}
+h1{font:700 31px/1.08 var(--sans);letter-spacing:-.012em;margin:0 0 12px;max-width:820px}
+.deck{font:400 19px/1.36 var(--serif);color:var(--ink);margin:0 0 14px;max-width:640px}
+.who{display:flex;align-items:center;flex-wrap:wrap;gap:6px 6px;margin:-4px 0 12px;font:400 14px/1.3 var(--sans);color:var(--ink2)}
+.who .lg{width:22px;height:22px}
+.who span.t{margin-left:4px}
+.status{margin:0 0 14px;padding:10px 0;border-top:2px solid var(--rule);border-bottom:1px solid var(--hair);display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.status div{min-width:0}
+.status dt{font:600 10.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.status dd{margin:2px 0 0;font:400 14.5px/1.3 var(--sans);color:var(--ink)}
+@media (max-width:999px){
+  .status{grid-template-columns:66px minmax(0,1fr);gap:6px 12px;padding:9px 0}
+  .status div{display:contents}
+  .status dt{line-height:1.6}
+  .status dd{margin:0;line-height:1.35}
+}
+.abs{margin:0 0 4px}
+.abs .lab{font:700 13px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;margin:0 0 7px;display:flex;align-items:baseline;gap:8px}
+.abs .lab span{font:400 12.5px var(--sans);letter-spacing:0;text-transform:none;color:var(--ink3)}
+.abs dl{margin:0;display:grid;grid-template-columns:66px minmax(0,1fr);gap:7px 12px;font-size:16px;line-height:1.42}
+.abs dt{font:600 13px/1.6 var(--sans);color:var(--ink2)}
+.abs dd{margin:0}
+.abs .betdd{font-weight:600}
+@media (min-width:1000px){
+  .title{padding:40px 0 10px}
+  h1{font-size:46px;line-height:1.05;margin-bottom:16px}
+  .deck{font-size:23px;margin-bottom:22px}
+  .status{grid-template-columns:1fr;border-top-width:2px;padding:12px 0;gap:12px}
+  .abs dl{font-size:17px;grid-template-columns:78px minmax(0,1fr)}
+}
+
+/* ---------- sections ---------- */
+.sec{padding:22px 0 2px;border-top:1px solid var(--hair);margin-top:18px}
+h2{font:700 23px/1.15 var(--sans);letter-spacing:-.006em;margin:0 0 12px;display:flex;gap:10px;align-items:baseline}
+h2 .n{font:600 15px var(--mono);color:var(--ink3);min-width:16px}
+h3{font:700 17px/1.25 var(--sans);margin:22px 0 8px}
+.lede{font-size:18px;line-height:1.42}
+@media (min-width:1000px){h2{font-size:28px}.sec{padding-top:34px;margin-top:28px}}
+.list{margin:0 0 14px;padding:0;list-style:none}
+.list li{position:relative;padding-left:18px;margin:0 0 7px}
+.list li::before{content:"";position:absolute;left:2px;top:.72em;width:7px;height:1.5px;background:var(--ink)}
+.rules{margin:4px 0 16px;padding:0;list-style:none;counter-reset:r}
+.rules li{position:relative;padding:7px 0 7px 36px;border-top:1px solid var(--hair)}
+.rules li:last-child{border-bottom:1px solid var(--hair)}
+.rules li::before{content:attr(data-n);position:absolute;left:0;top:7px;font:600 13px/1.75 var(--mono);color:var(--ink3)}
+.side{font:400 14.5px/1.42 var(--sans);color:var(--ink2);border-left:2px solid var(--note);padding:2px 0 2px 12px;margin:6px 0 16px}
+.side b{color:var(--ink)}
+.side .tag{display:block;font:600 10.5px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--note);margin-bottom:2px}
+.ref{font:600 11px var(--mono);vertical-align:super;line-height:0;margin-left:1px}
+.ref a{text-decoration:none;color:var(--note)}
+
+/* ---------- figures, tables, captions ---------- */
+.fig{margin:16px 0 18px}
+.plate{background:var(--plate);border:1px solid var(--hair);padding:14px 12px;position:relative}
+.gp{background-color:var(--plate);background-image:linear-gradient(var(--gmaj) 1px,transparent 1px),linear-gradient(90deg,var(--gmaj) 1px,transparent 1px),linear-gradient(var(--gmin) 1px,transparent 1px),linear-gradient(90deg,var(--gmin) 1px,transparent 1px);background-size:40px 40px,40px 40px,8px 8px,8px 8px;background-position:-1px -1px}
+.gp-light{background-image:linear-gradient(var(--gmin) 1px,transparent 1px),linear-gradient(90deg,var(--gmin) 1px,transparent 1px);background-size:16px 16px;background-position:-1px -1px}
+figcaption,.cap{font:400 14.5px/1.4 var(--sans);color:var(--ink2);margin-top:9px}
+figcaption .fn,.cap .fn,caption .fn{font:600 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:2px}
+figcaption .t,caption .t{display:block;font:700 15.5px/1.3 var(--sans);color:var(--ink);margin-bottom:4px}
+figcaption .sh,figcaption .ns{display:block;margin-top:2px}
+figcaption .sh i,figcaption .ns i{font-style:normal;font-weight:600;color:var(--ink)}
+@media (min-width:1000px){
+  .fig.cap-side{display:grid;grid-template-columns:minmax(0,640px) 260px;column-gap:48px;align-items:end}
+  .fig.cap-side figcaption{margin-top:0}
+  .fig.wide .plate{max-width:none}
+}
+table.bk{width:100%;border-collapse:collapse;font:400 15px/1.35 var(--sans);font-variant-numeric:tabular-nums}
+table.bk caption{text-align:left;caption-side:top;padding-bottom:8px;font:400 14.5px/1.4 var(--sans);color:var(--ink2)}
+table.bk thead th{border-top:2px solid var(--rule);border-bottom:1px solid var(--rule);font:600 11px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);text-align:left;padding:8px 6px 6px}
+table.bk td,table.bk tbody th{padding:8px 6px;border-bottom:1px solid var(--hair);text-align:left;vertical-align:middle;font-weight:400}
+table.bk tbody tr:last-child td,table.bk tbody tr:last-child th{border-bottom:2px solid var(--rule)}
+table.bk .r{text-align:right}
+table.bk td.m{font-family:var(--mono);font-size:14px}
+table.bk .ai{display:flex;align-items:center;gap:8px;font-weight:600}
+table.bk .ver{font-size:13.5px;color:var(--ink2)}
+table.bk tr.lead td,table.bk tr.lead th{background:var(--note-bg)}
+@media (max-width:420px){table.bk{font-size:14px}table.bk td,table.bk tbody th,table.bk thead th{padding-left:4px;padding-right:4px}table.bk td.m{font-size:13px}}
+
+/* Fig 1: the experiment in one drawing */
+.ga{font:400 13.5px/1.35 var(--sans);color:var(--ink)}
+.ga b{font-weight:700}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lane-h{font:600 10.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid var(--ink)}
+.steps{list-style:none;margin:0;padding:0}
+.steps > li{position:relative;padding:0 0 12px 16px;border-left:1.5px solid var(--ink);margin-left:5px}
+.steps > li::before{content:"";position:absolute;left:-5px;top:3px;width:8px;height:8px;background:var(--plate);border:1.5px solid var(--ink);border-radius:50%}
+.steps > li:last-child{padding-bottom:4px}
+.when{display:block;font:600 10.5px/1.3 var(--mono);letter-spacing:.04em;color:var(--note);margin-bottom:2px}
+.ga .sub{display:block;color:var(--ink2);font-size:12.5px;margin-top:2px}
+.ga .marks{display:flex;gap:4px;margin:4px 0}
+.ga .marks .lg{width:20px;height:20px}
+.minib{margin:5px 0 0;display:grid;grid-template-columns:auto 1fr auto;gap:3px 6px;align-items:center;font:400 11.5px/1 var(--mono)}
+.minib i{display:block;height:7px;background:var(--ink);border-radius:0 2px 2px 0}
+.conn{display:block;width:100%;height:30px;overflow:visible}
+.conn path{fill:none;stroke:var(--ink);stroke-width:1.5}
+.conn .ah{fill:var(--ink);stroke:none}
+.chain{list-style:none;margin:0;padding:0}
+.chain > li{position:relative;padding:0 0 12px 16px;border-left:1.5px solid var(--ink);margin-left:5px;max-width:520px}
+.chain > li::before{content:"";position:absolute;left:-5px;top:3px;width:8px;height:8px;background:var(--plate);border:1.5px solid var(--ink);border-radius:50%}
+.chain > li.key::before{background:var(--ink)}
+.chain .big{font:700 15.5px/1.3 var(--sans)}
+.ga .x10{font:600 15px var(--mono)}
+.outs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.out{border:1.5px solid var(--ink);padding:9px 10px;background:var(--plate)}
+.out .h{display:flex;align-items:center;gap:6px;font:700 14px/1.2 var(--sans);margin-bottom:4px}
+.out .h .g{font:700 14px var(--mono)}
+.ga .lanes-stack{display:none}
+.ga .arrow-only{display:none;text-align:left;font:600 14px var(--mono);margin:2px 0 6px 2px}
+@media (max-width:359px){
+  .lanes{grid-template-columns:1fr;gap:6px}
+  .conn{display:none}
+  .lanes .lane + .lane{margin-top:6px}
+  .outs{grid-template-columns:1fr}
+  .ga .arrow-only{display:block}
+}
+@media (min-width:1000px){.ga{font-size:14.5px}.lanes{gap:28px}.outs{gap:28px}.ga .sub{font-size:13.5px}}
+
+/* Fig 2 + Fig 5: drawn at the real width */
+.plot{width:100%}
+.plot svg{display:block;width:100%;height:auto;overflow:visible}
+.plot text{font-family:var(--sans);fill:var(--ink)}
+.plot .t-mono{font-family:var(--mono)}
+.plot .muted{fill:var(--ink2)}
+.plot .faint{fill:var(--ink3)}
+.plot .ax{stroke:var(--ink3);stroke-width:1}
+.plot .hair{stroke:var(--hair);stroke-width:1}
+
+/* Fig 3: the record, every call */
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font:400 12.5px/1.3 var(--sans);color:var(--ink2);margin:0 0 10px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.cell{display:inline-block;width:11px;height:11px;flex:none}
+.cell.w{background:var(--ink)}
+.cell.r{border:1.5px solid var(--ink);position:relative}
+.cell.r::after{content:"";position:absolute;inset:2.5px;background:var(--ink)}
+.cell.x{border:1.5px solid var(--ink3)}
+.cell.na{height:1.5px;background:var(--ink3);width:8px}
+table.mx{width:100%;border-collapse:collapse;table-layout:fixed;font:400 11px/1 var(--mono)}
+table.mx th,table.mx td{padding:0;text-align:center;height:22px}
+table.mx thead th{font:600 10px/1 var(--mono);color:var(--ink3);height:20px;vertical-align:bottom;padding-bottom:4px}
+table.mx tbody th{text-align:left;font:600 12px/1 var(--sans);color:var(--ink);white-space:nowrap;overflow:hidden}
+table.mx td.tot,table.mx th.tot{font:600 12px var(--mono);text-align:right}
+table.mx thead th.tot{letter-spacing:0}
+table.mx col.lab{width:50px}table.mx col.tot{width:34px}
+table.mx .sel{background:var(--note-bg)}
+table.mx button{all:unset;cursor:pointer;display:block;width:100%;height:100%}
+table.mx button:focus-visible{outline:2px solid var(--note)}
+table.mx .tri{font-size:9px}
+@media (min-width:520px){table.mx col.lab{width:64px}table.mx thead th{font-size:10.5px}table.mx th,table.mx td{height:26px}.cell{width:13px;height:13px}}
+.step{display:flex;align-items:center;gap:8px;margin:14px 0 8px;border-top:1px solid var(--hair);padding-top:12px}
+.step button{font:600 14px var(--sans);min-width:44px;min-height:40px;border:1px solid var(--ink3);background:var(--plate);color:var(--ink);border-radius:3px;cursor:pointer}
+.step button:disabled{opacity:.4;cursor:default}
+.step .rd{flex:1;min-width:0;font:700 15px/1.25 var(--sans);display:flex;align-items:center;gap:8px}
+.step .rd span{min-width:0}
+.det{font:400 14px/1.4 var(--sans);color:var(--ink2);margin:0 0 6px}
+.rline{font:700 15px/1.35 var(--sans);color:var(--ink);margin:0 0 4px}
+/* the round slider: one 44 px target under the grid; the thumb sits under the picked column */
+.scrub{padding:0 34px 0 50px;margin:2px 0 0}
+@media (min-width:520px){.scrub{padding-left:64px}}
+.scrub input{-webkit-appearance:none;appearance:none;display:block;background:transparent;height:44px;margin:0 0 0 calc(50% / var(--n) - 10px);width:calc(100% - 100% / var(--n) + 20px);cursor:pointer}
+.scrub input::-webkit-slider-runnable-track{height:2px;background:var(--ink3)}
+.scrub input::-moz-range-track{height:2px;background:var(--ink3)}
+.scrub input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:26px;margin-top:-12px;border:2px solid var(--note);border-radius:2px;background:var(--plate);box-shadow:inset 0 0 0 2px var(--plate),inset 0 0 0 20px var(--note-bg)}
+.scrub input::-moz-range-thumb{width:16px;height:22px;border:2px solid var(--note);border-radius:2px;background:var(--note-bg)}
+.scrub input:focus-visible{outline:2px solid var(--note);outline-offset:0}
+
+
+.subj{list-style:none;margin:0 0 6px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 14px;border-top:2px solid var(--rule);border-bottom:2px solid var(--rule)}
+.subj li{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--hair);min-width:0}
+.subj li:nth-last-child(-n+2){border-bottom:0}
+.subj .lg{width:26px;height:26px}
+.subj b{display:block;font:700 14.5px/1.2 var(--sans)}
+.subj span.v{display:block;font:400 13px/1.25 var(--sans);color:var(--ink2)}
+.cos-names{display:block;font-size:13px;color:var(--ink2);margin-top:4px}
+/* Box 1: the bet, preregistered */
+.blunt{font:700 25px/1.15 var(--sans);letter-spacing:-.01em;margin:4px 0 12px}
+@media (min-width:1000px){.blunt{font-size:32px}}
+.box{border:2px solid var(--rule);background:var(--plate);margin:20px 0 22px}
+.box .bh{padding:10px 12px;border-bottom:1px solid var(--rule)}
+.box .bh .fn{display:block;font:600 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.box .bh .t{display:block;font:700 17px/1.25 var(--sans);margin-top:2px}
+.box .bh .s{display:block;font:400 13.5px/1.35 var(--sans);color:var(--ink2);margin-top:3px}
+.box ol{list-style:none;margin:0;padding:0}
+.box li{display:grid;grid-template-columns:28px minmax(0,1fr);align-content:start;padding:8px 12px 8px 8px;border-bottom:1px solid var(--hair)}
+.box li:last-child{border-bottom:0}
+.box li .q{font:700 13.5px/1 var(--sans);color:var(--ink);margin-right:2px}
+.box li .no{font:600 12.5px/1.9 var(--mono);color:var(--ink3)}
+.box li .a{grid-column:2;font-size:16px;line-height:1.4;margin-top:1px}
+.box .pair{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.box .pair li{border-bottom:0}
+.box .pair li + li{border-left:1px solid var(--hair)}
+@media (max-width:519px){.box .pair{grid-template-columns:1fr}.box .pair li + li{border-left:0;border-top:1px solid var(--hair)}}
+
+/* the 100-cent grid inside Figure 1 */
+.ia{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;width:min(100%,150px);margin:6px 0 3px}
+.ia i{display:block;aspect-ratio:1;border:1.25px solid var(--ink3)}
+.ia i.f{background:var(--note);border-color:var(--note)}
+@media (min-width:1000px){.ia{width:180px}}
+
+/* Fig 5: the NVIDIA plate */
+.nv{display:block;width:100%;height:auto;aspect-ratio:2/1;object-position:50% 45%;object-fit:cover;filter:grayscale(1) contrast(1.05);border:1px solid var(--hair)}
+@media (min-width:1000px){.nv{aspect-ratio:16/9}}
+
+/* §5 two lists */
+.two{display:grid;gap:4px 40px}
+@media (min-width:760px){.two{grid-template-columns:1fr 1fr}}
+.open{list-style:none;margin:0 0 12px;padding:0}
+.open li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--hair);font:400 15px/1.35 var(--sans)}
+.open li:first-child{border-top:2px solid var(--rule)}
+.open .st{font:600 11.5px/1.6 var(--mono);color:var(--note);white-space:nowrap;text-align:right}
+.risk{list-style:none;margin:0 0 12px;padding:0;counter-reset:k}
+.risk li{counter-increment:k;display:grid;grid-template-columns:26px minmax(0,1fr);padding:7px 0;border-bottom:1px solid var(--hair);font:400 15px/1.38 var(--sans)}
+.risk li:first-child{border-top:2px solid var(--rule)}
+.risk li::before{content:counter(k);font:600 12px/1.7 var(--mono);color:var(--ink3)}
+.risk b{font-weight:700}
+.lh{font:600 11.5px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin:16px 0 8px}
+
+/* Fig 6: timeline to the final test */
+.tl{list-style:none;margin:0;padding:0}
+.tl > li{display:grid;grid-template-columns:76px minmax(0,1fr);gap:0 14px;position:relative;padding-bottom:13px}
+.tl > li::after{content:"";position:absolute;left:86px;top:6px;bottom:-6px;border-left:1.5px solid var(--ink)}
+.tl > li:last-child::after{display:none}
+.tl .d{font:600 12px/1.35 var(--mono);color:var(--ink2);text-align:right;padding-top:1px}
+.tl .d small{display:block;font-weight:400;font-size:11px;color:var(--note)}
+.tl .e{position:relative;padding-left:14px;font:400 14.5px/1.4 var(--sans)}
+.tl .e::before{content:"";position:absolute;left:-9px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--plate);border:1.5px solid var(--ink);z-index:1}
+.tl .past .e::before{background:var(--ink3);border-color:var(--ink3)}
+.tl .past .e{color:var(--ink2)}
+.tl .key .e::before{background:var(--ink)}
+.tl .e b{font-weight:700;color:var(--ink)}
+.tl .cos{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 0}
+.tl .cos span{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--ink2)}
+@media (min-width:1000px){.tl > li{grid-template-columns:110px minmax(0,1fr)}.tl > li::after{left:120px}}
+
+/* the one live countdown, set as an instrument reading after Box 1 */
+.clock{border-top:2px solid var(--rule);border-bottom:1px solid var(--hair);padding:10px 0 12px;margin:0 0 22px}
+.clock .ck-h{font:600 12px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin:0 0 2px}
+.clock .ck-h .pl{color:var(--note)}
+.clock .cd-n{display:block;font:600 27px/1.2 var(--mono);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.01em}
+.clock .ck-s{font:400 14.5px/1.4 var(--sans);color:var(--ink2);margin:4px 0 0}
+@media (min-width:1000px){.clock .cd-n{font-size:34px}}
+.clock .cd-n.passed{white-space:normal;font-size:18px;line-height:1.3}
+
+/* get $EZ + the one disclaimer */
+.get{border-top:2px solid var(--rule);border-bottom:1px solid var(--hair);padding:12px 0;margin:8px 0 18px;font:400 15.5px/1.42 var(--sans)}
+.get p{margin:0 0 6px}
+.get .st{font:600 12px var(--mono);color:var(--note);letter-spacing:.04em}
+.get code{font:600 14px/1.4 var(--mono);word-break:break-all;background:var(--note-bg);padding:1px 4px}
+.get .cp{font:600 13px var(--sans);min-height:36px;padding:0 12px;margin-left:6px;border:1px solid var(--ink3);background:var(--plate);color:var(--ink);border-radius:3px;cursor:pointer}
+.disc{border:2px solid var(--rule);padding:12px 14px;margin:0 0 10px;font:400 16px/1.45 var(--serif);background:var(--plate)}
+.disc p{margin:0 0 4px}
+.disc .fn{display:block;font:600 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.disc .wipe{font-weight:600}
+
+/* explore + references + footer */
+.explore{list-style:none;margin:6px 0 14px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.explore li{border-bottom:1px solid var(--hair)}
+.explore a{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 0;font:600 15px var(--sans);text-decoration:none;min-height:44px}
+.explore a span{font:400 12.5px var(--sans);color:var(--ink3)}
+.explore a:hover{text-decoration:underline}
+@media (max-width:359px){.explore{grid-template-columns:1fr}}
+.refs{margin:0;padding:0 0 0 22px;font:400 14px/1.45 var(--sans);color:var(--ink2)}
+.refs li{margin-bottom:6px;padding-left:2px;max-width:66ch}
+.refs li::marker{font:600 12px var(--mono);color:var(--note)}
+.foot{border-top:1px solid var(--hair);margin-top:30px;padding:16px 0 40px;font:400 13px/1.5 var(--sans);color:var(--ink3)}
+.foot p{margin:0 0 4px}
+/* no label under 12 px, at any width (status labels, lane heads, figure numbers, table heads, timeline tags) */
+.kick,.status dt,.lane-h,.when,figcaption .fn,.cap .fn,caption .fn,.box .bh .fn,.disc .fn,.side .tag,.lh,.open .st,.toc p,
+table.bk thead th,.tl .d small,.minib,table.mx thead th,table.mx td.tot,.ref,.get .st{font-size:12px}
+.status dt{letter-spacing:.06em}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+@media print{.theme,.toc{display:none}}
+</style>
+</head>
+<body>
+<div class="head"><div class="in">
+  <div class="brand"><span class="ez">$EZ</span><span class="nm">Earnings Zeason<span class="lg2"> · the experiment, written up</span></span></div>
+  <div class="theme" role="group" aria-label="Colour theme">
+    <button type="button" data-t="light" aria-pressed="false" aria-label="Paper, the light theme" title="Paper (light)"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3.05 3.05l1.13 1.13M11.82 11.82l1.13 1.13M3.05 12.95l1.13-1.13M11.82 4.18l1.13-1.13"/></svg><span class="tw">Paper</span></button>
+    <button type="button" data-t="dark" aria-pressed="false" aria-label="Carbon, the dark theme" title="Carbon (dark)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.6 10.2A6 6 0 0 1 5.8 2.4a6 6 0 1 0 7.8 7.8z"/></svg><span class="tw">Carbon</span></button>
+  </div>
+</div></div>
+
+<div class="page">
+<nav class="toc" aria-label="Contents">
+  <p>Contents</p>
+  <ol>
+    <li><a href="#top">Abstract</a></li>
+    <li><a href="#s1"><span class="n">1</span>Method</a></li>
+    <li><a href="#s2"><span class="n">2</span>Results so far</a></li>
+    <li><a href="#s3"><span class="n">3</span>The final test</a></li>
+    <li><a href="#s4"><span class="n">4</span>Risks, and not decided</a></li>
+    <li><a href="#s5"><span class="n">5</span>What happens next</a></li>
+    <li><a href="#data">Explore the data</a></li>
+  </ol>
+</nav>
+
+<main class="doc" id="top">
+<!-- ===== title block: what EZ is, that it is an experiment, the mission, the bet in words ===== -->
+<header class="title">
+  <p class="kick"><span class="live">Live experiment</span> · <span data-v="today"></span></p>
+  <h1>EZ is a public experiment: four AIs call stocks before earnings.</h1>
+  <p class="deck">We're putting $EZ buybacks in the hands of an AI. It has to earn the job in public.</p>
+  <p class="who" id="who"></p>
+  <div class="row2 flip">
+    <dl class="status" aria-label="Status today">
+      <div><dt>Status</dt><dd>Running. <span data-v="rounds"></span> rounds graded since <span data-v="since"></span>. Latest graded <span data-v="asof"></span>.</dd></div>
+      <div><dt>$EZ</dt><dd id="st-ez">A memecoin. Not launched yet.</dd></div>
+      <div><dt>The pot</dt><dd id="st-pot">None yet. Trading fees fill it from launch.</dd></div>
+      <div><dt>The bet</dt><dd id="st-bet">Not placed. Explained below.</dd></div>
+    </dl>
+    <section class="abs main" aria-labelledby="abs-h">
+      <p class="lab" id="abs-h">Abstract <span>the whole thing in four lines</span></p>
+      <dl>
+        <dt>Why</dt><dd>Can an AI earn a real trade with a public record? One call can't prove it. We're running it anyway, in the open.</dd>
+        <dt>The bet</dt><dd class="betdd">Once, before NVIDIA reports earnings, the AI in first place calls NVIDIA up or down. The whole pot rides on it, at <span data-v="lev"></span>x.</dd>
+        <dt>If right</dt><dd>The pot gains <span data-v="lev"></span>% for every 1% with the call. The profit buys back $EZ.</dd>
+        <dt>If wrong</dt><dd>The pot loses <span data-v="lev"></span>% for every 1% against. Less than <span data-v="wipe"></span>% against can wipe it out. No&nbsp;stop&nbsp;loss.</dd>
+      </dl>
+    </section>
+  </div>
+</header>
+
+<!-- ===== Figure 1: graphical abstract ===== -->
+<figure class="fig cap-side wide" id="fig1">
+  <div class="plate gp-light">
+    <div class="ga" id="ga">
+      <div class="lanes">
+        <div class="lane">
+          <p class="lane-h">The record</p>
+          <ol class="steps">
+            <li><span class="when">Every round</span><span class="marks" id="ga-marks"></span><b>Four AIs call one stock</b> before its earnings report.<span class="sub">Earnings: a company's quarterly results. The stock often jumps or drops after.</span></li>
+            <li><span class="when">After the report</span><b>Every call is graded.</b><span class="sub">Right direction first, then the closest.</span></li>
+            <li><span class="when">Today</span><b>The leaderboard</b><span class="minib" id="ga-bars"></span></li>
+          </ol>
+        </div>
+        <span class="arrow-only" aria-hidden="true">+</span>
+        <div class="lane">
+          <p class="lane-h">The money</p>
+          <ol class="steps">
+            <li><span class="when" data-v="fromLaunch"></span><b>Every $EZ trade pays a fee.</b><span class="sub" data-v="feeLine"></span></li>
+            <li><b><span data-v="share"></span> of every 100 cents</b> go to the pot.<span class="ia" id="ia" role="img"></span><span class="sub"><span data-v="rest"></span> run the project. One square, one cent.</span></li>
+            <li><b>The pot.</b><span class="sub" data-v="potLine"></span></li>
+          </ol>
+        </div>
+      </div>
+      <svg class="conn" id="merge" aria-hidden="true"></svg>
+      <span class="arrow-only" aria-hidden="true">↓</span>
+      <ol class="chain" id="chain">
+        <li><span class="when"><span data-v="lead"></span> hours before NVIDIA reports</span><b class="big">The leaderboard freezes.</b></li>
+        <li><b class="big">The AI in first place calls NVIDIA: <span class="up">▲ up</span> or <span class="dn">▼ down</span>.</b><span class="sub">Nothing else. One call.</span></li>
+        <li class="key"><b class="big">The whole pot goes on that call, at <span class="x10"><span data-v="lev"></span>x</span>.</b><span class="sub">On Hyperliquid. A human places the trade.</span></li>
+      </ol>
+      <svg class="conn" id="split" aria-hidden="true"></svg>
+      <div class="outs">
+        <div class="out"><div class="h"><span class="g up">✓</span>Right call</div>The pot gains <span data-v="lev"></span>% for every 1% NVIDIA moves with the call. The profit buys back $EZ.</div>
+        <div class="out"><div class="h"><span class="g dn">✗</span>Wrong call</div>The pot loses <span data-v="lev"></span>% for every 1% NVIDIA moves against. It can be wiped out.</div>
+      </div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="fn">Figure 1 · the experiment in one drawing</span>
+    <span class="t">The record picks the AI. The fees fill the pot. They meet once, at NVIDIA.</span>
+    <span class="sh"><i>Shows:</i> the order things happen in, from the first round to the bet.</span>
+    <span class="ns"><i>Not shown:</i> sizes or odds, or a pot balance<span data-v="noBal"></span>. Dates are in §3 and §5.</span>
+  </figcaption>
+</figure>
+
+<!-- ===== 1 method ===== -->
+<section class="sec" id="s1" aria-labelledby="s1h">
+  <h2 id="s1h"><span class="n">1</span>Method: how a round is graded</h2>
+  <div class="blk">
+    <p class="lede">A round is one company's earnings report.</p>
+    <p>Before the report, all four AIs answer the same prompt at the same moment.</p>
+  </div>
+  <div class="row2" style="margin-top:12px">
+    <div class="main">
+      <p class="cap" style="margin:0 0 6px"><span class="fn" style="font-family:var(--mono);font-weight:600;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);display:block">Table 1 · the subjects</span>The four AIs and the exact model in play. Same stock, same moment, same prompt, every round.</p>
+      <ul class="subj" id="subj"></ul>
+    </div>
+    <aside class="side" id="prompt-note"><span class="tag">The prompt</span><span id="prompt-lines"></span><span id="prompt-v" style="display:block;margin-top:6px"></span></aside>
+  </div>
+
+  <h3>The rules</h3>
+  <ol class="rules blk">
+    <li data-n="1.1">A <b>call</b> is up or down, and by how much. Not an options call.</li>
+    <li data-n="1.2">Calls are filed before the report and graded after it, against the stock's real move.</li>
+    <li data-n="1.3"><b>Direction comes first.</b> A wrong-way call never wins, however close.</li>
+    <li data-n="1.4">Of the right-way calls, the closest wins. All wrong? Nobody wins.</li>
+    <li data-n="1.5">Two right-way calls exactly as close? Both win that round.</li>
+    <li data-n="1.6"><b>Rank:</b> most wins first. Equal wins: the smaller average miss ranks higher. Two AIs never share a place.</li>
+  </ol>
+</section>
+
+<!-- ===== 2 results, with the worked example inside the record ===== -->
+<section class="sec" id="s2" aria-labelledby="s2h">
+  <h2 id="s2h"><span class="n">2</span>Results so far</h2>
+  <div class="row2">
+    <div class="main">
+      <p class="lede" data-v="froze"></p>
+      <table class="bk" id="t2">
+        <caption><span class="fn">Table 2 · the standings</span>Who would make the NVIDIA call if the leaderboard froze today.</caption>
+        <thead><tr><th scope="col">#</th><th scope="col">AI</th><th scope="col" class="r">Wins</th><th scope="col" class="r">Right way</th><th scope="col" class="r">Avg miss</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <aside class="side"><span class="tag">Read this with the table</span><span data-v="sample"></span> One NVIDIA call can go either way, whatever the record.</aside>
+  </div>
+
+  <figure class="fig cap-side" id="fig2">
+    <div class="plate">
+      <div class="legend" aria-hidden="true">
+        <span><i class="cell w"></i>won</span>
+        <span><i class="cell r"></i>right way</span>
+        <span><i class="cell x"></i>wrong way</span>
+        <span><i class="cell na"></i>not in yet</span>
+      </div>
+      <table class="mx" id="mx"></table>
+      <div class="scrub" id="scrub"><label class="sr" for="rs">Pick a round</label><input type="range" id="rs" min="0" step="1"></div>
+      <div class="step">
+        <button type="button" id="prev" aria-label="Previous round">◀</button>
+        <div class="rd" id="rd" aria-live="polite"></div>
+        <button type="button" id="next" aria-label="Next round">▶</button>
+      </div>
+      <p class="det" id="det"></p>
+      <p class="rline" id="rline"></p>
+      <div class="plot gp" id="rplot" style="padding:6px 0 2px"></div>
+      <div class="sr"><table id="rtable"></table></div>
+    </div>
+    <figcaption>
+      <span class="fn">Figure 2 · every graded call</span>
+      <span class="t" id="fig2-t"></span>
+      <span class="sh"><i>Shows:</i> each AI's result in each round. Below: the round you pick, four calls against the real move.</span>
+      <span class="ns"><i>Miss:</i> how far a call was from the real move, in points.</span>
+      <span class="ns"><i>Real move:</i> the stock's change after the report, from the EZ record. Which prices and times: not published here yet.</span>
+    </figcaption>
+  </figure>
+</section>
+
+<!-- ===== 3 the final test ===== -->
+<section class="sec" id="s3" aria-labelledby="s3h">
+  <h2 id="s3h"><span class="n">3</span>The final test: one bet on NVIDIA</h2>
+  <div class="blk">
+    <p class="blunt">One AI. One call. NVIDIA up or down. The whole pot, at <span data-v="lev"></span>x.</p>
+    <p>Once, before NVIDIA reports earnings, the AI in first place calls NVIDIA up or down. The whole pot rides on that call.</p>
+  </div>
+
+  <div class="box blk" id="box1">
+    <div class="bh">
+      <span class="fn">Box 1 · the bet, written down before it happens</span>
+      <span class="t">Nine questions, answered now.</span>
+      <span class="s">A preregistration answers a study's questions before it runs. These are adapted from AsPredicted's.<span class="ref"><a href="#ref2">2</a></span> Unlike a real one, this has no public timestamp yet.</span>
+    </div>
+    <ol>
+      <li><span class="no">1</span><span class="a"><b class="q">Has it happened yet?</b> No. Planned for <span data-v="betDay"></span>, at the close.</span></li>
+      <li><span class="no">2</span><span class="a"><b class="q">Who decides?</b> The AI in first place when the leaderboard freezes, <span data-v="lead"></span> hours before NVIDIA reports. Today: <span data-v="leaderName"></span>.</span></li>
+      <li><span class="no">3</span><span class="a"><b class="q">What is the call?</b> NVIDIA up or down. Nothing else.</span></li>
+      <li><span class="no">4</span><span class="a"><b class="q">With what money?</b> <span data-v="q4"></span></span></li>
+      <li><span class="no">5</span><span class="a"><b class="q">How big?</b> <span data-v="lev"></span>x. Every 1% NVIDIA moves is <span data-v="lev"></span>% of the pot, either way.</span></li>
+      <li><span class="no">6</span><span class="a"><b class="q">Who trades, and where?</b> A human, for now. On Hyperliquid, a crypto exchange that trades NVIDIA's price with leverage.</span></li>
+    </ol>
+    <ol class="pair">
+      <li><span class="no">7</span><span class="a"><b class="q">If right?</b> The pot grows <span data-v="lev"></span>% for every 1% with the call. The profit buys $EZ on the market: a buyback.</span></li>
+      <li><span class="no">8</span><span class="a"><b class="q">If wrong?</b> The pot shrinks <span data-v="lev"></span>% for every 1% against. Less than <span data-v="wipe"></span>% against can wipe it out: the exchange closes a losing trade before the move gets that far. No stop loss.</span></li>
+    </ol>
+    <ol>
+      <li><span class="no">9</span><span class="a"><b class="q">Sample size?</b> n&nbsp;=&nbsp;1: one call, so luck can decide it. A good record does not make it safe.</span></li>
+    </ol>
+  </div>
+
+  <div class="clock blk" id="clock" hidden>
+    <p class="ck-h"><span data-v="ckLabel"></span></p>
+    <span class="cd-n" data-cd=""></span>
+    <p class="ck-s" data-v="ckSub"></p>
+  </div>
+
+  <figure class="fig cap-side" id="fig3">
+    <div class="plate gp" style="padding:10px 10px 4px">
+      <div class="plot" id="fig3-plot"></div>
+    </div>
+    <figcaption>
+      <span class="fn">Figure 3 · what <span data-v="lev"></span>x does to the pot. Example, not a forecast</span>
+      <span class="t">Every 1% NVIDIA moves is <span data-v="lev"></span>% of the pot. Both ways.</span>
+      <span class="sh"><i>Shows:</i> the pot's change after the call, for the same moves up and down. Same bars, both sides.</span>
+      <span class="ns"><i>Not shown:</i> fees and funding, which cost money. An earnings gap can also jump past the closing point.</span>
+      <span class="ns"><i>Shaded:</i> where the exchange can close a losing trade before the pot hits zero. How much sooner depends on the NVIDIA market, which is not chosen yet.<span class="ref"><a href="#ref1">1</a></span> No stop loss.</span>
+    </figcaption>
+  </figure>
+
+  <figure class="fig cap-side" id="fig4">
+    <img class="nv" src="media/ez-gpu2-1200.jpg" alt="Photo of an NVIDIA chip, printed in black and white." width="1200" height="900" loading="lazy">
+    <figcaption>
+      <span class="fn">Figure 4 · the stock the bet is on</span>
+      <span class="t" data-v="nvT"></span>
+      <span class="sh"><i>Shows:</i> <span data-v="nvSh"></span></span>
+      <span class="ns"><i>Not shown:</i> which way the AI will call it. Nobody knows yet.</span>
+    </figcaption>
+  </figure>
+</section>
+
+<!-- ===== 4 risks and limits, not decided ===== -->
+<section class="sec" id="s4" aria-labelledby="s4h">
+  <h2 id="s4h"><span class="n">4</span>What can go wrong, and what is not decided</h2>
+  <div class="two">
+    <div>
+      <p class="lh">Risks and limits</p>
+      <ol class="risk">
+        <li><span><b>Closed early.</b> The exchange can close a losing trade before the move against reaches <span data-v="wipe"></span>%. How much sooner depends on the NVIDIA market.<span class="ref"><a href="#ref1">1</a></span></span></li>
+        <li><span><b>No stop loss.</b> Nothing cuts the loss early on purpose.</span></li>
+        <li><span><b>One call.</b> <span data-v="sampleShort"></span></span></li>
+        <li><span><b>Proof of timing.</b> Calls are on this page with dates. Public timestamped posts are not linked yet.</span></li>
+        <li><span><b>The prompt.</b> <span data-v="promptState"></span></span></li>
+      </ol>
+    </div>
+    <div>
+      <p class="lh">Not decided yet</p>
+      <ul class="open" id="open">
+        <li id="op-launch"><span>Launch date and contract address</span><span class="st">not decided yet</span></li>
+        <li id="op-fee"><span>Fee size</span><span class="st">not decided yet</span></li>
+        <li id="op-date"><span>NVIDIA's report date</span><span class="st" data-v="betState"></span></li>
+        <li><span>Burn or hold the bought-back $EZ</span><span class="st">not decided yet</span></li>
+        <li><span>When the trade is closed</span><span class="st">not decided yet</span></li>
+        <li><span>Which NVIDIA market on Hyperliquid</span><span class="st">not decided yet</span></li>
+        <li><span>Who holds the pot's keys</span><span class="st">not decided yet</span></li>
+        <li><span>A public trading account</span><span class="st">not decided yet</span></li>
+        <li><span>What happens after the bet</span><span class="st">not decided yet</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 5 what happens next ===== -->
+<section class="sec" id="s5" aria-labelledby="s5h">
+  <h2 id="s5h"><span class="n">5</span>What happens next</h2>
+  <figure class="fig cap-side" id="fig5">
+    <div class="plate gp-light">
+      <ol class="tl" id="tl"></ol>
+    </div>
+    <figcaption>
+      <span class="fn">Figure 5 · the road to the final test</span>
+      <span class="t" data-v="roadT"></span>
+      <span class="sh"><i>Shows:</i> real dates from the record, New York time.</span>
+      <span class="ns"><i>Planned:</i> freeze and bet dates follow NVIDIA's expected date. They move when we update that date.</span>
+    </figcaption>
+  </figure>
+
+  <h3 id="get">Get $EZ</h3>
+  <div class="get blk" id="getbox">
+    <p class="st">NOT LAUNCHED YET</p>
+    <p>There is no contract address yet. It will be posted on this site at launch.</p>
+    <p>An address sent to you anywhere else before then is not ours.</p>
+  </div>
+  <div class="disc blk" role="note" aria-label="Disclaimer">
+    <span class="fn">Read this before you buy</span>
+    <p>$EZ is a memecoin and an experiment, not financial advice.</p>
+    <p>Nothing here promises value, returns or payouts.</p>
+    <p>AIs can be wrong. Past rounds do not predict the NVIDIA call.</p>
+    <p>The bet uses <span data-v="lev"></span>x leverage with no stop loss. <span class="wipe">The pot can be wiped out.</span></p>
+    <p>Only buy what you can afford to lose.</p>
+  </div>
+</section>
+
+<!-- ===== explore (the bowl of the martini glass) ===== -->
+<section class="sec" id="data" aria-labelledby="dh">
+  <h2 id="dh"><span class="n">A</span>Explore the data</h2>
+  <ul class="explore blk">
+    <li><a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#leaderboard">Leaderboard <span>full stats</span></a></li>
+    <li><a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#results">Results <span>every round</span></a></li>
+    <li><a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#upcoming">Upcoming <span>next calls</span></a></li>
+    <li><a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#buyback">Buyback <span>the bet</span></a></li>
+  </ul>
+  <p class="lh" id="refs-h">References</p>
+  <ol class="refs blk" aria-labelledby="refs-h">
+    <li id="ref1">Hyperliquid docs, <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/trading/liquidations" rel="noopener">Liquidations</a>: a trade is closed when its margin falls below the maintenance margin, half the initial margin at the market's max leverage. <span data-v="ref1x"></span></li>
+    <li id="ref2">AsPredicted, <a href="https://aspredicted.org/" rel="noopener">pre-registration</a>: questions answered before a study runs.</li>
+  </ol>
+  <div class="foot">
+    <p>EZ (Earnings Zeason). Every number on this page loads from the EZ record (ez-data.js) when the page opens. Record as of <span data-v="asof"></span>, the latest graded round.</p>
+  </div>
+</section>
+</main>
+</div>
+
+<script src="ez-data.js"></script>
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var REDUCE=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- theme switch (Paper / Carbon) ---------- */
+function curTheme(){var t=document.documentElement.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+function paintTheme(){var t=curTheme();$$(".theme button").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-t")===t))})}
+$$(".theme button").forEach(function(b){b.addEventListener("click",function(){var t=b.getAttribute("data-t");document.documentElement.setAttribute("data-theme",t);try{localStorage.setItem("ez-lab-theme",t)}catch(e){}paintTheme()})});
+if(window.matchMedia)try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",paintTheme)}catch(e){}
+paintTheme();
+
+/* ---------- data helpers (everything comes from ez-data.js) ---------- */
+var MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function md(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null}
+function dShort(s){var d=md(s);return d?MN[d[1]]+" "+d[2]:String(s||"")}
+function cm(t){return coMark(t).replace(' loading="lazy"','')}
+function nm(m){return m==="GPT"?"GPT":m.charAt(0)+m.slice(1).toLowerCase()}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function pct(v,dp){var a=Math.abs(v),s=(dp==null?(a%1?String(+a.toFixed(2)):String(a)):a.toFixed(dp));return (v<0?"−":v>0?"+":"")+s+"%"}
+/* the NVIDIA bet moment: the same rule as the main site (SIM/CONFIG.betDate, else the NVIDIA round's call date
+   moved to the next weekday, at the New York close). Without a set date every label says "planned". */
+function nyClose(y,m,d){var f=new Date(Date.UTC(y,2,1)).getUTCDay(),a=Date.UTC(y,2,8+(7-f)%7),g=new Date(Date.UTC(y,10,1)).getUTCDay(),b=Date.UTC(y,10,1+(7-g)%7),t=Date.UTC(y,m,d);return Date.UTC(y,m,d,t>=a&&t<b?20:21)}
+function betT(){var b=md(SIM.betDate||CONFIG.betDate);if(b)return nyClose(b[0],b[1],b[2]);
+  var nv=[].concat(UPCOMING||[],PENDING||[]).filter(function(u){return u.ticker==="NVDA"})[0],c=nv&&md(nv.called);if(!c)return null;
+  var dt=new Date(Date.UTC(c[0],c[1],c[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);
+  return nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate())}
+var SET=/\d+\/\d+\/\d+/.test(String(SIM.betDate||CONFIG.betDate||""));
+function dKey(s){var d=md(s);return d?d[0]*1e4+(d[1]+1)*100+d[2]:0}
+function nyToday(){var p=new Date().toLocaleDateString("en-US",{year:"numeric",month:"2-digit",day:"2-digit",timeZone:"America/New_York"}).split("/");return +p[2]*1e4+ +p[0]*100+ +p[1]}
+function nyDay(t){return new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"})}
+function nyTime(t){return new Date(t).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/New_York"}).replace(":00","").replace(" AM","\u00a0am").replace(" PM","\u00a0pm")}
+
+var L=SIM.leverage,LEAD=SIM.leadHours,SHARE=Math.round(SIM.poolShare*100),REST=100-SHARE;
+/* WIPE: the plain arithmetic wipe-out move. EARLY: Hyperliquid's earliest close at this leverage, which holds only if the
+   NVIDIA market's max leverage equals the bet's (maintenance margin = half the initial margin at max leverage). The market
+   is not chosen, so EARLY is only ever stated as a condition (reference 1), never as the page's own number. */
+var WIPE=Math.round(100/L*10)/10, EARLY=Math.round(100/(2*L)*10)/10;
+var LAST=ROUNDS[ROUNDS.length-1],FIRST=ROUNDS[0];
+var BT=betT(),FT=BT&&LEAD!=null?BT-LEAD*3600e3:null;
+var NOW=Date.now(),TODAY=nyToday();
+/* launch state: everything below reads CONFIG and SIM, so a sync after launch updates the page */
+var LAUNCHED=!!(CONFIG.launched||CONFIG.ca),CHAIN=String(CONFIG.chain||"");
+var FEE=SIM.feePct!=null&&SIM.feePct!==""?+SIM.feePct:null;
+function xUrl(x){x=String(x||"").trim();if(!x)return "";return /^https?:\/\//.test(x)?x:"https://x.com/"+x.replace(/^@/,"")}
+var XU=xUrl(CONFIG.x);
+var nvRound=[].concat(UPCOMING,PENDING).filter(function(u){return u.ticker==="NVDA"})[0];
+var LEFT=[].concat(UPCOMING,PENDING).filter(function(u){return !nvRound||u.n<nvRound.n}).length;
+function callsOf(r){return r.calls.map(function(c){var p=c[1].split(" "),dir=p[0],mag=parseFloat(p[1]);var v=(dir==="DOWN"?-1:1)*mag;
+  return {m:c[0],dir:dir,mag:mag,v:v,off:parseFloat(c[2]),ok:(v>0)===(r.a>0),won:!!r.win&&r.win.split(" & ").indexOf(c[0])>-1}})}
+function joinedAt(m){for(var i=0;i<ROUNDS.length;i++){if(ROUNDS[i].calls.some(function(c){return c[0]===m}))return ROUNDS[i].n}return null}
+var LD=LADDER.map(function(x){var p=x.dir.split("/");return {m:x.m,won:x.won,right:+p[0],n:+p[1],avg:x.avg}});
+var lead0=LD[0],lead1=LD[1];
+var fewest=LD.slice().sort(function(a,b){return a.n-b.n})[0],most=LD.slice().sort(function(a,b){return b.n-a.n})[0];
+function andList(a){return a.length<3?a.join(" and "):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
+var NUMW=["no","one","two","three","four"];
+
+/* ---------- text tokens ---------- */
+var V={};
+V.today=nyDay(NOW);
+V.rounds=ROUNDS.length;V.since=dShort(FIRST.called);V.asof=dShort(LAST.resolves);
+V.lev=L;V.share=SHARE;V.rest=REST;V.lead=LEAD;V.wipe=WIPE;V.leaderName=nm(lead0.m);
+var gap=lead0.won-lead1.won;
+V.froze="If the leaderboard froze today, "+nm(lead0.m)+" would make the NVIDIA call. "+(gap>0?nm(lead1.m)+" is "+gap+" win"+(gap===1?"":"s")+" behind.":nm(lead1.m)+" has as many wins, and a bigger average miss.")+" "+LEFT+" rounds to go.";
+V.sample=ROUNDS.length+" rounds is a small sample."+(fewest.n<most.n?" "+nm(fewest.m)+" joined at round "+joinedAt(fewest.m)+", so it has "+fewest.n+" graded calls, not "+most.n+".":"");
+V.sampleShort="The bet is n = 1: one call, so luck can decide it. A record of "+ROUNDS.length+" rounds does not make one call safe.";
+V.promptState=PROMPT.verbatim?"Published word for word in §1.":"Only its shape is public. The exact text is not published yet.";
+V.betDay=BT?nyDay(BT):"not set";
+V.betState=SET?"set: "+V.betDay:"planned: "+V.betDay;
+V.roadT=LEFT+" more rounds, then the leaderboard freezes and one AI makes the call.";
+V.fromLaunch=LAUNCHED?"Since launch":"From launch";
+V.feeLine=FEE!=null?"Fee size: "+FEE+"% of every trade.":"Fee size: not set yet.";
+V.potLine=LAUNCHED?"Fills with every trade.":"Empty until launch.";
+V.noBal=LAUNCHED?"":": there is none until launch";
+V.q4="The whole pot: "+SHARE+"% of every $EZ trading fee, "+(LAUNCHED?"since launch.":"from launch. No pot yet.");
+V.nvT=BT?(SET?"NVIDIA. Reports "+V.betDay+", after the close.":"NVIDIA. Planned report: "+V.betDay+", after the close."):"NVIDIA. Report date: not set yet.";
+V.nvSh=SET?"an NVIDIA chip. The date is set.":"an NVIDIA chip. NVIDIA has not announced its date yet, so the day is planned.";
+V.ref1x="With a "+L+"x top, that is about a "+EARLY+"% move against; the higher the top, the closer to "+WIPE+"%. The NVIDIA market is not chosen yet.";
+$$("[data-v]").forEach(function(e){var k=e.getAttribute("data-v");if(V[k]!=null)e.textContent=V[k]});
+
+/* ---------- status strip, open items, Get $EZ: launch state from CONFIG / SIM ---------- */
+$("#st-ez").textContent=LAUNCHED?"A memecoin. Live"+(CHAIN?" on "+CHAIN:"")+".":"A memecoin. Not launched yet.";
+$("#st-pot").textContent=LAUNCHED?"Filling from trading fees since launch.":"None yet. Trading fees fill it from launch.";
+$("#st-bet").textContent=!BT||NOW<BT?"Not placed. Explained below.":(SET?"Planned time passed. Not recorded here yet.":"Planned time passed; waiting on the real date.");
+if(CONFIG.ca)$("#op-launch").remove();
+if(FEE!=null)$("#op-fee").remove();
+if(SET)$("#op-date").remove();
+(function(){var gb=$("#getbox");
+  if(CONFIG.ca){
+    gb.innerHTML='<p class="st">LIVE'+(CHAIN?' · '+esc(CHAIN.toUpperCase()):'')+'</p>'+
+      '<p>Contract address: <code id="ca">'+esc(CONFIG.ca)+'</code><button type="button" class="cp" id="cp">Copy</button></p>'+
+      (CONFIG.buyUrl?'<p><a href="'+esc(CONFIG.buyUrl)+'" target="_blank" rel="noopener">Buy $EZ</a></p>':'')+
+      '<p>Check the address on this site'+(XU?' and in our <a href="'+esc(XU)+'" target="_blank" rel="noopener">X bio</a>':'')+' before you buy. If they don\'t match, don\'t buy.</p>';
+    $("#cp").addEventListener("click",function(){var b=this;try{navigator.clipboard.writeText(String(CONFIG.ca)).then(function(){b.textContent="Copied"},function(){b.textContent="Select it to copy"})}catch(e){b.textContent="Select it to copy"}});
+  }else if(LAUNCHED){
+    gb.innerHTML='<p class="st">LAUNCHED</p><p>The contract address is not posted on this site yet. It will be posted here'+(XU?' and in our X bio':'')+'.</p><p>An address sent to you anywhere else is not ours.</p>';
+  }else{
+    gb.innerHTML='<p class="st">NOT LAUNCHED YET</p><p>There is no contract address yet. It will be posted on this site'+(XU?' and in our <a href="'+esc(XU)+'" target="_blank" rel="noopener">X bio</a>':'')+' at launch.</p><p>An address sent to you anywhere else before then is not ours.</p>';
+  }
+})();
+
+/* ---------- Figure 1: marks, mini standings, connectors ---------- */
+$("#ga-marks").innerHTML=MODEL_KEYS.map(function(m){return logo(m)}).join("");
+$("#who").innerHTML=MODEL_KEYS.map(function(m){return logo(m)}).join("")+'<span class="t">The four: '+MODEL_KEYS.map(nm).join(", ")+'.</span>';
+var maxW=Math.max.apply(null,LD.map(function(x){return x.won}))||1;
+$("#ga-bars").innerHTML=LD.map(function(x){return '<span>'+nm(x.m)+'</span><i style="width:'+Math.max(4,x.won/maxW*100)+'%"></i><span>'+x.won+(x.won===1?' win':' wins')+'</span>'}).join("");
+function drawConn(){
+  var ga=$("#ga");if(!ga)return;var gr=ga.getBoundingClientRect();
+  var lanes=$$(".lane .steps",ga),chain=$("#chain"),outs=$$(".out",ga);
+  var merge=$("#merge"),split=$("#split");
+  if(getComputedStyle(merge).display==="none"){split.style.display="none";return}
+  split.style.display="";
+  var W=Math.round(gr.width),H=30,x1=lanes[0].getBoundingClientRect().left-gr.left+5.5,x2=lanes[1].getBoundingClientRect().left-gr.left+5.5,x0=chain.getBoundingClientRect().left-gr.left+5.5;
+  merge.setAttribute("viewBox","0 0 "+W+" "+H);
+  merge.innerHTML='<path d="M'+x1+' 0 V'+(H-6)+'"/><path d="M'+x2+' 0 C'+x2+' '+(H*.7)+' '+x0+' '+(H*.3)+' '+x0+' '+(H-6)+'"/><path class="ah" d="M'+(x0-4)+' '+(H-7)+' L'+(x0+4)+' '+(H-7)+' L'+x0+' '+H+' Z"/>';
+  var c1=outs[0].getBoundingClientRect(),c2=outs[1].getBoundingClientRect(),o1=c1.left-gr.left+c1.width/2,o2=c2.left-gr.left+c2.width/2;
+  split.setAttribute("viewBox","0 0 "+W+" "+H);
+  split.innerHTML='<path d="M'+x0+' 0 C'+x0+' '+(H*.6)+' '+o1+' '+(H*.3)+' '+o1+' '+(H-6)+'"/><path d="M'+x0+' 0 C'+x0+' '+(H*.6)+' '+o2+' '+(H*.3)+' '+o2+' '+(H-6)+'"/>'+
+    '<path class="ah" d="M'+(o1-4)+' '+(H-7)+' L'+(o1+4)+' '+(H-7)+' L'+o1+' '+H+' Z"/><path class="ah" d="M'+(o2-4)+' '+(H-7)+' L'+(o2+4)+' '+(H-7)+' L'+o2+' '+H+' Z"/>';
+}
+
+/* ---------- Table 1: the subjects ---------- */
+$("#subj").innerHTML=MODEL_KEYS.map(function(m){var j=joinedAt(m),v=MODELS[m].ver;return '<li>'+logo(m)+'<span style="min-width:0"><b>'+nm(m)+'</b><span class="v">'+esc(v)+(v.toUpperCase().indexOf(nm(m).toUpperCase())<0?' ('+esc(MODELS[m].app)+')':'')+(j&&j>1?' · from round '+j:'')+'</span></span></li>'}).join("");
+$("#prompt-lines").innerHTML=PROMPT.lines.map(function(l){return '<span style="display:block">'+l+'</span>'}).join("");
+$("#prompt-v").textContent=PROMPT.verbatim?"This is the exact text.":"This is its shape. The exact text is not published yet.";
+
+/* ---------- Figure 2 (lower half): one round up close, drawn at the real width ---------- */
+function NS(){return 'xmlns="http://www.w3.org/2000/svg"'}
+function txt(x,y,s,cls,anchor,extra){return '<text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'"'+(cls?' class="'+cls+'"':'')+(anchor?' text-anchor="'+anchor+'"':'')+(extra||'')+'>'+s+'</text>'}
+function tri(x,y,up,s,fill,stroke){var h=s*0.9;return up?'<path d="M'+(x-s)+' '+(y+h*0.6)+' L'+(x+s)+' '+(y+h*0.6)+' L'+x+' '+(y-h*1.1)+' Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.6" stroke-linejoin="round"/>':'<path d="M'+(x-s)+' '+(y-h*0.6)+' L'+(x+s)+' '+(y-h*0.6)+' L'+x+' '+(y+h*1.1)+' Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.6" stroke-linejoin="round"/>'}
+var css=function(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()};
+var sel=ROUNDS.length-1;
+function drawRound(){
+  var host=$("#rplot"),W=Math.round(host.clientWidth);if(!W)return;
+  var r=ROUNDS[sel],cs=callsOf(r),a=r.a;
+  var lim=Math.max(1,Math.ceil(Math.max.apply(null,cs.map(function(c){return Math.abs(c.v)}).concat([Math.abs(a)]))+0.4));
+  var step=lim>6?2:1;if(step===2)lim=Math.ceil(lim/2)*2;
+  var gl=W<360?74:92,gr=10,top=50,rowH=58,bot=36,H=top+rowH*cs.length+bot;
+  var X=function(v){return gl+(v+lim)/(2*lim)*(W-gl-gr)};
+  var every=(W-gl-gr)/(2*lim/step)>=34;
+  var UP=css("--up"),DN=css("--down"),INK=css("--ink"),NOTE=css("--note"),PL=css("--plate"),INK3=css("--ink3");
+  var s='<svg '+NS()+' viewBox="0 0 '+W+' '+H+'" role="img" aria-labelledby="rline">';
+  for(var v=-lim;v<=lim;v+=step){var xx=X(v);s+='<line class="'+(v===0?'ax':'hair')+'" x1="'+xx+'" x2="'+xx+'" y1="'+(top-8)+'" y2="'+(H-bot+4)+'"/>';
+    if(every||v%(2*step)===0)s+=txt(xx,H-bot+19,(v>0?"+":v<0?"−":"")+Math.abs(v)+(v===0?"":"%"),"t-mono faint","middle",' font-size="12"')}
+  s+=txt(gl,top-22,"◀\u00a0down","faint","start",' font-size="12"')+txt(W-gr,top-22,"up\u00a0▶","faint","end",' font-size="12"');
+  s+=txt(gl+(W-gl-gr)/2,H-5,"Call or move, in %","faint","middle",' font-size="12"');
+  var xa=X(a);
+  cs.forEach(function(c,i){var y=top+i*rowH;
+    if(i>0)s+='<line class="hair" x1="0" x2="'+W+'" y1="'+y+'" y2="'+y+'"/>';
+    var up=c.v>0,col=up?UP:DN,xc=X(c.v),yc=y+33;
+    s+=txt(0,y+18,nm(c.m),"","start",' font-size="14" font-weight="700"');
+    s+='<text x="0" y="'+(y+36)+'" class="t-mono" font-size="12"><tspan fill="'+col+'">'+(up?"▲":"▼")+'</tspan><tspan class="muted"> '+(up?"up ":"down ")+c.mag+'%</tspan></text>';
+    var st=c.won?"wins":(c.ok?"right way":"wrong way");
+    s+=txt(W-gr,y+18,st,c.won?"":"muted","end",' font-size="12.5" font-weight="'+(c.won?700:400)+'"'+(c.won?' style="fill:'+NOTE+'"':''));
+    var x1=Math.min(xc,xa),x2=Math.max(xc,xa);
+    if(x2-x1>2){s+='<line x1="'+x1+'" x2="'+x2+'" y1="'+(yc+11)+'" y2="'+(yc+11)+'" stroke="'+INK3+'" stroke-width="1"/><line x1="'+xc+'" x2="'+xc+'" y1="'+(yc+7)+'" y2="'+(yc+15)+'" stroke="'+INK3+'"/>';}
+    var lab="miss "+c.off.toFixed(2),lw=lab.length*7.2,mx=(x1+x2)/2;
+    if(x2-x1<lw+6){mx=xc<xa?Math.max(gl+lw/2,x1-lw/2-6):Math.min(W-gr-lw/2,x2+lw/2+6)}
+    s+=txt(mx,yc+24,lab,"t-mono muted","middle",' font-size="12"');
+    if(c.won)s+='<circle cx="'+xc+'" cy="'+yc+'" r="11" fill="none" stroke="'+NOTE+'" stroke-width="2"/>';
+    s+=tri(xc,yc,up,6.5,c.ok?col:PL,col);
+  });
+  s+='<line x1="'+xa+'" x2="'+xa+'" y1="'+(top-6)+'" y2="'+(H-bot+4)+'" stroke="'+INK+'" stroke-width="2"/>';
+  var al=esc(r.co)+" moved "+pct(a),aw=al.length*6.9;var ax=Math.min(Math.max(xa,gl+aw/2),W-gr-aw/2);
+  s+='<rect x="'+(ax-aw/2-4)+'" y="'+(top-48)+'" width="'+(aw+8)+'" height="19" fill="'+PL+'"/>'+txt(ax,top-34,al,"","middle",' font-size="13" font-weight="700"');
+  s+='</svg>';host.innerHTML=s;
+}
+/* the plain-words reading of one round: why the winner won */
+function roundLine(r){var cs=callsOf(r),way=r.a>0?"up":"down",n=NUMW[cs.length]||String(cs.length);
+  var closest=cs.slice().sort(function(x,y){return x.off-y.off})[0],winners=cs.filter(function(c){return c.won}),wn=winners.map(function(c){return nm(c.m)});
+  if(!winners.length)return "All "+n+" called the wrong direction. "+r.co+" went "+way+", so nobody won.";
+  if(!closest.won&&!closest.ok)return nm(closest.m)+" was closest, but said "+(closest.v>0?"up":"down")+". "+r.co+" went "+way+", so "+andList(wn)+" won.";
+  if(winners.length>1){var same=winners.every(function(c){return c.v===winners[0].v});
+    return andList(wn)+(same?" made the same call, the closest right-way call, so "+(winners.length>2?"all":"both")+" won the round.":" were equally close in the right direction, so "+(winners.length>2?"all":"both")+" won the round.")}
+  return wn[0]+" called the right way and came closest, so it won."}
+
+/* ---------- Table 2: standings ---------- */
+$("#t2 tbody").innerHTML=LD.map(function(x,i){return '<tr'+(i===0?' class="lead"':'')+'><td class="m">'+(i+1)+'</td><th scope="row"><span class="ai">'+logo(x.m)+nm(x.m)+'</span></th><td class="m r"><b>'+x.won+'</b></td><td class="m r">'+x.right+' / '+x.n+'</td><td class="m r">'+x.avg+'</td></tr>'}).join("");
+
+/* ---------- Figure 2 (upper half): every graded call ---------- */
+(function(){var noWin=ROUNDS.filter(function(r){return !r.win}).length,sharedR=ROUNDS.filter(function(r){return r.win&&r.win.indexOf("&")>-1});
+  var t=ROUNDS.length+" rounds, "+ROUNDS.reduce(function(s,r){return s+r.calls.length},0)+" calls. "+(noWin===0?"Every round had a winner.":noWin===1?"One round had no winner.":"Nobody won "+noWin+" of them.");
+  if(sharedR.length===1){var r=sharedR[0],w=callsOf(r).filter(function(c){return c.won}),same=w.every(function(c){return c.v===w[0].v});
+    t+=" In round "+r.n+", "+andList(w.map(function(c){return nm(c.m)}))+(same?" made the same call and "+(w.length>2?"all":"both")+" won.":" were equally close and "+(w.length>2?"all":"both")+" won.")}
+  else if(sharedR.length>1)t+=" In "+sharedR.length+" rounds, two AIs were equally close and both won.";
+  $("#fig2-t").textContent=t})();
+function cellOf(r,m){var c=callsOf(r).filter(function(c){return c.m===m})[0];if(!c)return {k:"na",t:"not in yet"};return c.won?{k:"w",t:"won"}:c.ok?{k:"r",t:"right way"}:{k:"x",t:"wrong way"}}
+var RS=$("#rs");RS.max=String(ROUNDS.length-1);$("#scrub").style.setProperty("--n",ROUNDS.length);
+RS.addEventListener("input",function(){sel=+RS.value;showRound()});
+function buildMx(){
+  var narrow=window.innerWidth<480,h='<caption class="sr">Every graded call: rows are AIs, columns are rounds</caption><colgroup><col class="lab">'+ROUNDS.map(function(){return '<col>'}).join("")+'<col class="tot"></colgroup>';
+  h+='<thead><tr><th scope="col"><span class="sr">AI</span></th>'+ROUNDS.map(function(r,i){var show=!narrow||r.n===1||r.n%3===0||i===ROUNDS.length-1;return '<th scope="col" data-i="'+i+'"><button type="button" data-i="'+i+'" aria-label="Round '+r.n+', '+esc(r.co)+'">'+(show?r.n:'<span class="sr">'+r.n+'</span>')+'</button></th>'}).join("")+'<th scope="col" class="tot">Wins</th></tr></thead><tbody>';
+  h+='<tr><th scope="row">Stock</th>'+ROUNDS.map(function(r,i){var up=r.a>0;return '<td data-i="'+i+'"><button type="button" data-i="'+i+'" tabindex="-1" aria-hidden="true"><span class="tri '+(up?"up":"dn")+'">'+(up?"▲":"▼")+'</span></button></td>'}).join("")+'<td></td></tr>';
+  LD.forEach(function(x){h+='<tr><th scope="row">'+nm(x.m)+'</th>'+ROUNDS.map(function(r,i){var c=cellOf(r,x.m);return '<td data-i="'+i+'"><button type="button" data-i="'+i+'" tabindex="-1" aria-hidden="true"><i class="cell '+c.k+'"></i></button><span class="sr">Round '+r.n+': '+c.t+'</span></td>'}).join("")+'<td class="tot">'+x.won+'</td></tr>'});
+  $("#mx").innerHTML=h+'</tbody>';
+  $$("#mx button").forEach(function(b){b.addEventListener("click",function(){sel=+b.getAttribute("data-i");showRound()})});
+  showRound();
+}
+function showRound(){
+  var r=ROUNDS[sel],cs=callsOf(r);
+  $$("#mx [data-i]").forEach(function(e){if(e.tagName!=="BUTTON")e.classList.toggle("sel",+e.getAttribute("data-i")===sel)});
+  RS.value=String(sel);RS.setAttribute("aria-valuetext","Round "+r.n+", "+r.co);
+  $("#rd").innerHTML=cm(r.ticker)+'<span>Round '+r.n+' · '+esc(r.co)+' <span class="mono" style="font-weight:400;font-size:13px;color:var(--ink2)">'+esc(r.ticker)+'</span></span>';
+  $("#prev").disabled=sel===0;$("#next").disabled=sel===ROUNDS.length-1;
+  $("#det").innerHTML='Called '+dShort(r.called)+' · graded '+dShort(r.resolves)+' · real move <b class="'+(r.a>0?"up":"dn")+'">'+(r.a>0?"▲ ":"▼ ")+pct(r.a)+'</b> · <a href="https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL#round/'+r.n+'">on the main site</a>';
+  $("#rline").textContent=roundLine(r);
+  $("#rtable").innerHTML='<caption>Round '+r.n+', '+esc(r.co)+': the four calls</caption><tr><th>AI</th><th>Call</th><th>Way</th><th>Miss</th><th>Result</th></tr>'+cs.map(function(c){return '<tr><td>'+nm(c.m)+'</td><td>'+(c.v>0?"up ":"down ")+c.mag+'%</td><td>'+(c.ok?"right":"wrong")+'</td><td>'+c.off.toFixed(2)+'</td><td>'+(c.won?"wins":"")+'</td></tr>'}).join("")+'<tr><td colspan="5">Real move '+pct(r.a)+'</td></tr>';
+  drawRound();
+}
+$("#prev").addEventListener("click",function(){if(sel>0){sel--;showRound()}});
+$("#next").addEventListener("click",function(){if(sel<ROUNDS.length-1){sel++;showRound()}});
+
+/* ---------- Figure 1: 100 cents ---------- */
+var ia=$("#ia"),cells="";for(var i=0;i<100;i++)cells+='<i'+(i<SHARE?' class="f"':'')+'></i>';ia.innerHTML=cells;
+ia.setAttribute("aria-label",SHARE+" of 100 squares filled: "+SHARE+" cents of every dollar in fees go to the pot, "+REST+" run the project.");
+
+/* ---------- Figure 3: what the leverage does. The same moves both ways, equal bars (example only) ---------- */
+function drawLev(){
+  var host=$("#fig3-plot"),W=Math.round(host.clientWidth);if(!W)return;
+  var M=100/L,moves=[M,M/2,M/5].map(function(v){return Math.round(v*10)/10});
+  var gl=W<360?58:76,gr=6,top=30,rh=27,gh=20,H=top+2*gh+6*rh+14+26;
+  var cx=gl+(W-gl-gr)/2,hw=(W-gl-gr)/2,room=W<360?40:48,len=function(p){return Math.abs(p)/100*(hw-room)};
+  var INK=css("--ink"),PL=css("--plate"),HT=css("--hatch");
+  var s='<svg '+NS()+' viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Example. With the call: NVIDIA '+moves.map(function(v){return "+"+v+"% gives pot +"+(v*L)+"%"}).join(", ")+'. Against the call: '+moves.slice().reverse().map(function(v){return "−"+v+"% gives pot −"+(v*L)+"%"}).join(", ")+', and the pot is gone. Shaded, with no hard edge: where the exchange can close a losing trade before the pot hits zero. Where exactly depends on the NVIDIA market.">';
+  var hx0=cx-len(100),hx1=cx-len(EARLY*L);
+  s+='<defs><pattern id="hx" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="'+HT+'" stroke-width="2"/></pattern>'+
+     '<linearGradient id="hf" gradientUnits="userSpaceOnUse" x1="'+hx1.toFixed(1)+'" x2="'+hx0.toFixed(1)+'" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".75" stop-color="#fff" stop-opacity="1"/></linearGradient>'+
+     '<mask id="hm" maskUnits="userSpaceOnUse" x="0" y="0" width="'+W+'" height="'+H+'"><rect x="0" y="0" width="'+W+'" height="'+H+'" fill="url(#hf)"/></mask></defs>';
+  s+=txt(cx-8,top-12,"◀\u00a0pot loses","muted","end",' font-size="12"')+txt(cx+8,top-12,"pot gains\u00a0▶","muted","start",' font-size="12"');
+  var y=top,yNegTop;
+  function grp(lab){s+=txt(0,y+14,lab,"t-mono faint","start",' font-size="12" letter-spacing=".04em"');y+=gh}
+  function row(v,sign){var p=sign*v*L,w=len(p),x=sign>0?cx:cx-w,yy=y+rh/2;
+    s+='<text x="0" y="'+(yy+4)+'" class="t-mono" font-size="12.5"><tspan fill="'+(sign>0?css("--up"):css("--down"))+'">'+(sign>0?"▲":"▼")+'</tspan> '+(sign>0?"+":"−")+v+'%</text>';
+    s+='<rect x="'+x.toFixed(1)+'" y="'+(yy-7)+'" width="'+w.toFixed(1)+'" height="14" rx="2" fill="'+INK+'"/>';
+    var lab=(sign>0?"+":"−")+Math.abs(p)+"%";
+    if(sign<0&&Math.abs(p)>=100){s+=txt(x+6,yy+4,"pot gone","","start",' font-size="12" font-weight="700" style="fill:'+PL+'"');s+='<rect x="'+(x-6-lab.length*7.3-2).toFixed(1)+'" y="'+(yy-9)+'" width="'+(lab.length*7.3+4).toFixed(1)+'" height="17" fill="'+PL+'"/>'+txt(x-6,yy+4,lab,"t-mono","end",' font-size="12"')}
+    else{var lw=lab.length*7.3+4;s+=(sign<0?'<rect x="'+(x-6-lw+2).toFixed(1)+'" y="'+(yy-9)+'" width="'+lw.toFixed(1)+'" height="17" fill="'+PL+'"/>':'')+txt(sign>0?x+w+6:x-6,yy+4,lab,"t-mono","",' font-size="12" text-anchor="'+(sign>0?"start":"end")+'"')}
+    y+=rh}
+  grp("WITH THE CALL");moves.forEach(function(v){row(v,1)});
+  grp("AGAINST THE CALL");yNegTop=y;moves.slice().reverse().forEach(function(v){row(v,-1)});
+  /* the zone where the exchange can close the trade before zero: it fades in, with no hard or labelled edge, because
+     where it starts depends on the NVIDIA market (not chosen yet). It covers only the rows whose bars reach into it. */
+  s='<svg'+s.slice(4).replace('</defs>','</defs><rect x="'+hx0.toFixed(1)+'" y="'+(yNegTop+rh-2)+'" width="'+(hx1-hx0).toFixed(1)+'" height="'+(2*rh+4)+'" fill="url(#hx)" mask="url(#hm)"/>');
+  s+='<line class="ax" x1="'+cx+'" x2="'+cx+'" y1="'+(top-4)+'" y2="'+y+'"/>';
+  s+='<rect x="0" y="'+(y+8)+'" width="12" height="12" fill="url(#hx)" stroke="'+css("--ink3")+'" stroke-width="1"/>'+txt(18,y+18,"where the exchange can close the trade","muted","start",' font-size="12"');
+  s+='</svg>';host.innerHTML=s;
+}
+
+/* ---------- §3: the one live countdown ---------- */
+if(FT){var ck=$("#clock");ck.hidden=false;
+  $(".ck-h",ck).innerHTML='The leaderboard freezes in'+(SET?'':' <span class="pl">(planned)</span>');
+  $(".cd-n",ck).setAttribute("data-cd",String(FT));
+  $(".ck-s",ck).textContent=(SET?"":"Planned: ")+nyDay(FT)+", "+nyTime(FT)+" New York."+(SET?" Then the AI in first place makes the call.":" NVIDIA has not announced its date; this moves when we update it.")}
+
+/* ---------- Figure 5: the road to the final test ---------- */
+(function(){
+  var rest=UPCOMING.filter(function(u){return u.ticker!=="NVDA"});
+  var overdue=rest.filter(function(u){return dKey(u.called)<TODAY}),future=rest.filter(function(u){return dKey(u.called)>=TODAY});
+  function logos(list){var k=list.slice(0,8);return '<span class="cos">'+k.map(function(u){return cm(u.ticker)}).join("")+'</span><span class="cos-names">'+k.map(function(u){return esc(u.co)}).join(", ")+(list.length>8?' and '+(list.length-8)+' more':'')+'</span>'}
+  var li=[];
+  li.push('<li class="past"><span class="d">'+dShort(LAST.resolves)+'</span><span class="e">Latest result: round '+LAST.n+', '+esc(LAST.co)+'.</span></li>');
+  if(PENDING.length)li.push('<li><span class="d">now</span><span class="e"><b>Calls are in for '+PENDING.length+' round'+(PENDING.length>1?"s":"")+'.</b> Graded after each report.</span></li>');
+  function then(k){var r=LEFT-k-PENDING.length;return r>0?' Then '+r+' more round'+(r>1?'s':'')+' before NVIDIA.':' Then NVIDIA.'}
+  function span(a,b){return a===b?a:a+' to '+b}
+  if(overdue.length){
+    /* the call date has passed, but the calls are not in the record yet (the sheet lags). Never show it as a deadline:
+       key the row on the report dates when every one is known, else on the call dates. */
+    var co=overdue.length+' compan'+(overdue.length>1?'ies':'y');
+    var rk=overdue.map(function(u){return u.resolves}).filter(function(d){return md(d)}).sort(function(a,b){return dKey(a)-dKey(b)});
+    if(rk.length===overdue.length){var r0=dShort(rk[0]),r1=dShort(rk[rk.length-1]),fut=dKey(rk[0])>=TODAY;
+      li.push('<li><span class="d">'+r0+'<small>report</small></span><span class="e"><b>'+(fut?co+(overdue.length>1?' report ':' reports ')+span(r0,r1):co+', report dates '+span(r0,r1))+'.</b> Their calls are not in the record yet.'+then(overdue.length)+logos(overdue)+'</span></li>');
+    }else{var ck=overdue.map(function(u){return u.called}).sort(function(a,b){return dKey(a)-dKey(b)}),c0=dShort(ck[0]),c1=dShort(ck[ck.length-1]);
+      li.push('<li><span class="d">'+c0+'<small>called</small></span><span class="e"><b>'+co+', call dates '+span(c0,c1)+'.</b> Their calls are not in the record yet.'+then(overdue.length)+logos(overdue)+'</span></li>');}
+  }else if(future.length){
+    var nd=future[0].called,next=future.filter(function(u){return u.called===nd}),isToday=dKey(nd)===TODAY;
+    li.push('<li><span class="d">'+dShort(nd)+'<small>'+(isToday?"today":"next")+'</small></span><span class="e"><b>'+next.length+' compan'+(next.length>1?'ies get':'y gets')+' called.</b>'+then(next.length)+logos(next)+'</span></li>');
+  }
+  if(FT)li.push('<li class="key"><span class="d">'+nyDay(FT)+'<small>'+(SET?nyTime(FT):"planned")+'</small></span><span class="e"><b>The leaderboard freezes.</b> The AI in first place makes the call. '+nyTime(FT)+' New York. The countdown is in §3.</span></li>');
+  if(BT)li.push('<li class="key"><span class="d">'+nyDay(BT)+'<small>'+(SET?nyTime(BT):"planned")+'</small></span><span class="e"><b>The bet is placed</b> at the close, '+LEAD+' hours later. NVIDIA is expected to report after it.</span></li>');
+  li.push('<li><span class="d">after</span><span class="e">The trade is closed. When: not decided yet.</span></li>');
+  $("#tl").innerHTML=li.join("");
+})();
+function two(n){return (n<10?"0":"")+n}
+function tick(){var now=Date.now();$$("[data-cd]").forEach(function(e){var t=+e.getAttribute("data-cd");if(!t)return;var d=t-now;
+  if(d<=0){e.textContent=SET?"Passed":"Planned time passed; waiting on the real date";e.classList.add("passed");return}
+  var D=Math.floor(d/864e5),Hh=Math.floor(d/36e5)%24,Mm=Math.floor(d/6e4)%60,Ss=Math.floor(d/1e3)%60;
+  e.textContent=D+"d "+two(Hh)+"h "+two(Mm)+"m"+(REDUCE?"":" "+two(Ss)+"s")})}
+tick();setInterval(tick,REDUCE?30000:1000);
+
+/* ---------- contents highlight (desktop): the last section whose top has passed 35% of the screen ---------- */
+var tocLinks=$$(".toc a"),tocIds=["s1","s2","s3","s4","s5","data"],tocQ=false;
+function tocMark(){tocQ=false;var cur="top",lim=innerHeight*0.35;tocIds.forEach(function(id){var e=document.getElementById(id);if(e&&e.getBoundingClientRect().top<=lim)cur=id});
+  tocLinks.forEach(function(a){a.setAttribute("aria-current",String(a.getAttribute("href")==="#"+cur))})}
+if(tocLinks.length){window.addEventListener("scroll",function(){if(!tocQ){tocQ=true;requestAnimationFrame(tocMark)}},{passive:true});tocMark()}
+
+/* ---------- draw, and redraw on resize or theme change ---------- */
+function drawAll(){drawConn();drawRound();drawLev()}
+buildMx();drawAll();
+var rt,lastW=window.innerWidth;window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){if((window.innerWidth<480)!==(lastW<480))buildMx();lastW=window.innerWidth;drawAll()},120)});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawAll);
+new MutationObserver(function(){drawAll()}).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+if(window.matchMedia)try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawAll)}catch(e){}
+})();
+</script>
+</body>
+</html>
