@@ -113,7 +113,10 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
                't=s==="light"||s==="dark"?s:h==="light"||h==="dark"?h:window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";'
                'd.setAttribute("data-theme",t);d.style.colorScheme=t;m=document.querySelector(\'meta[name="color-scheme"]\');if(m)m.setAttribute("content",t);'
                'm=document.querySelector(\'meta[name="theme-color"]\');if(m){m.setAttribute("data-x2tc",m.getAttribute("content"));if(t==="dark")m.setAttribute("content",getComputedStyle(d).getPropertyValue("--field").trim()||"#1d1c1a")}})()</script>\n')
-        for a,b in [('<html lang="en" class="pt">','<html lang="en" class="pt x2d">'),
+        # the model page's chart caption: "GPT in black, the others in grey." was wrong in X2 too (the line is yellow, gold in
+        # dark) and the chart names every line at its end: the caption keeps the method only, as on X5
+        for a,b in [("'+nmM+' in black, the others in grey. Simulated,","Simulated,"),
+                    ('<html lang="en" class="pt">','<html lang="en" class="pt x2d">'),
                     ('</head>','<style id="x2-overview">\n'+X2CSS+'\n</style>\n<style id="x2-dark">\n'+DARK+'\n</style>\n'+THEME+'</head>')]:
             assert page.count(a)==1,a; page=page.replace(a,b)
     if exp=="x3":
