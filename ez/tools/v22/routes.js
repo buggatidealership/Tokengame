@@ -1294,4 +1294,92 @@ if(EXP==="x2")(function(){
   function title(){var t=document.title.replace("EZ Season Live","EZ Live X2").replace(/^\d\d(?=[A-Z])/,"");if(t!==document.title)document.title=t}
   title();addEventListener("hashchange",title);
 })();
+/* ---------- X2's light/dark switch (owner, 2026-10-13: "Can we have the dark mode for EZ Live X2?"): X5's switch, top
+   right of the header, and X5's dark C (graphite and gold), colour only; X2 keeps its own type, layout and copy. Light
+   is X2 as it was. The colours are tools/v22/skin-x2dark.css; build.py puts it in v24 alone, with the class x2d on
+   <html> and a <head> script that sets the theme before the first paint: the viewer's saved choice ('ez-theme'), else
+   the host's data-theme on <html>, else the phone's setting, else light. A tap is saved; storage can be blocked, so
+   every access sits in try/catch. An action button: the word says what a tap does ("Dark" in light, "Light" in dark),
+   a screen reader hears "Switch to dark mode" (the visible word is part of the name, WCAG 2.5.3), no aria-pressed,
+   because the name changes with the state (WAI-ARIA APG, button). ---------- */
+if(EXP==="x2")(function(){
+  var root=document.documentElement,tc=$('meta[name="theme-color"]'),tc0=tc?tc.getAttribute("data-x2tc")||tc.getAttribute("content"):"";
+  function saved(){var s=null;try{s=localStorage.getItem("ez-theme")}catch(e){}return s==="light"||s==="dark"?s:null}
+  function sys(){return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+  var mine=root.getAttribute("data-theme");
+  /* the browser's bar: X2's own colour in light (unchanged), the graphite page colour in dark */
+  function sync(){var t=root.getAttribute("data-theme")==="dark"?"dark":"light",w=t==="dark"?"Light":"Dark";
+    root.style.colorScheme=t;
+    if(tc)tc.setAttribute("content",t==="dark"?getComputedStyle(root).getPropertyValue("--field").trim()||"#1d1c1a":tc0);
+    var m=$('meta[name="color-scheme"]');if(m)m.setAttribute("content",t);
+    var b=$(".x2theme"),l=b&&$(".x2t-l",b);if(l)l.textContent=w}
+  function setTheme(t,keep){mine=t;root.setAttribute("data-theme",t);if(keep){try{localStorage.setItem("ez-theme",t)}catch(e){}}sync();
+    document.dispatchEvent(new CustomEvent("x2theme",{detail:{theme:t}}))}
+  window.X2theme=function(t){if(t==="system"){try{localStorage.removeItem("ez-theme")}catch(e){}setTheme(sys(),false)}else if(t==="light"||t==="dark")setTheme(t,true);return root.getAttribute("data-theme")};
+  var btn=document.createElement("button");btn.className="x2theme";btn.type="button";
+  btn.innerHTML='<svg class="moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.4 14.6A8.5 8.5 0 0 1 9.4 3.6a.6.6 0 0 0-.8-.7A9.5 9.5 0 1 0 21.1 15.4a.6.6 0 0 0-.7-.8z"/></svg>'+
+    '<svg class="sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.6" fill="currentColor"/><g stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 1.8v2.6M12 19.6v2.6M1.8 12h2.6M19.6 12h2.6M4.8 4.8l1.8 1.8M17.4 17.4l1.8 1.8M4.8 19.2l1.8-1.8M17.4 6.6l1.8-1.8"/></g></svg>'+
+    /* the word sits in a box as wide as the wider of "Dark" and "Light" (skin-x2dark.css), so the pill keeps one width
+       in both themes and the tabs beside it do not move at a tap */
+    '<span class="sr">Switch to </span><span class="x2t-w"><span class="x2t-l">Dark</span></span><span class="sr"> mode</span>';
+  btn.addEventListener("click",function(){setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark",true)});
+  var lc=$("#liveChip"),tin=lc&&lc.parentNode?lc.parentNode:$(".top-in"),brd=$(".brand",tin);tin.appendChild(btn);
+  /* The switch stays on the header's first row. The Next chip's text comes from the sheet and changes ("Next: JPM",
+     "In play: SOFTBANK"), so the header is fitted to it, step by step, until the switch sits on row 1 (the styles are
+     in skin-x2dark.css, part 2):
+     761 px and wider: the pill at the end of the one row; else the 44 px button (.x2t-c); else a tighter row (.x2t-cc:
+     6 px gaps, less padding in the brand tile and the chip, a 34 px button), so the row holds from where X2's own row
+     did (917 px with today's chip); else two rows (.x2t-2: the switch top right, the tabs on row 2, where X2 puts them
+     when they wrap).
+     Phones: X2's row as it is; else 8 px gaps (.x2t-p1); else 6 px gaps, less padding in the brand tile and the chip and
+     a 34 px switch (.x2t-p2); else 4 px gaps and the chip's label 1 px smaller, same words (.x2t-p3); a label still too
+     long (a 320 px phone, "In play: SOFTBANK") moves the chip to a row of its own under the brand and the switch, as X2
+     already did for those labels (.x2t-p4); the switch never leaves row 1 and no word is cut.
+     Checked at load, on resize, when the fonts land and when the chip's text changes. */
+  var FITS=["x2t-c","x2t-cc","x2t-2","x2t-p1","x2t-p2","x2t-p3","x2t-p4"],
+    STEPS={desk:[["x2t-c"],["x2t-c","x2t-cc"],["x2t-2"]],phone:[["x2t-p1"],["x2t-p2"],["x2t-p2","x2t-p3"],["x2t-p4"]]};
+  function fit(){if(!tin||!brd)return;FITS.forEach(function(c){tin.classList.remove(c)});
+    var off=function(){return btn.offsetTop-brd.offsetTop>20},st=STEPS[innerWidth<761?"phone":"desk"],i,prev=[];
+    for(i=0;i<st.length&&off();i++){prev.forEach(function(c){tin.classList.remove(c)});st[i].forEach(function(c){tin.classList.add(c)});prev=st[i]}}
+  fit();var fitF=0;function fitSoon(){if(!fitF)fitF=requestAnimationFrame(function(){fitF=0;fit()})}
+  addEventListener("resize",fitSoon);addEventListener("load",fitSoon);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitSoon);
+  var lt0=$("#liveTxt");if(lt0&&window.MutationObserver)new MutationObserver(fitSoon).observe(lt0,{childList:true,characterData:true,subtree:true});
+  /* X2 shortens the header chip once, at load, on phones ("Next: JPM"). After a rotation or a resize across 760 px the
+     long label stayed and pushed the switch onto a second row: X2's rule is applied again each time the width crosses
+     760 px (as on X5) */
+  if(typeof TARGET!=="undefined"&&TARGET&&window.matchMedia){var cq=matchMedia("(max-width:760px)"),cPre=typeof P0!=="undefined"&&P0?"In play: ":"Next: ",
+    cTk=String(TARGET.ticker||"").replace(/\..*$/,""),cCo=String(TARGET.co||"").split(" ")[0];
+    var chipW=function(){var lt=$("#liveTxt");if(!lt)return;if(cq.matches)lt.textContent=cPre+(!cTk||/^\d+$/.test(cTk)?cCo:cTk);else lt.innerHTML=cPre+coName(TARGET)};
+    if(cq.addEventListener)cq.addEventListener("change",chipW);else if(cq.addListener)cq.addListener(chipW)}
+  /* X2 turns the round film's sound on at the first tap anywhere (its first-tap rule skips only .snd and .shr). A tap or
+     a key that presses the switch (Enter, Space) is not a request for sound: those events stop at window, before X2's
+     document listener. The button still works: its click is a separate event. Every other key goes on as before, so
+     Escape still closes a round or a record card while the switch has focus. */
+  ["pointerdown","keydown","touchend"].forEach(function(t){window.addEventListener(t,function(e){if(t==="keydown"&&!/^(Enter| |Spacebar)$/.test(e.key))return;
+    if(e.target&&e.target.closest&&e.target.closest(".x2theme"))e.stopImmediatePropagation()},{capture:true})});
+  /* a host that sets data-theme later is followed unless the viewer chose; the phone's setting is followed live until a tap */
+  var hostT=root.getAttribute("data-x2host");
+  if(window.MutationObserver)new MutationObserver(function(){var t=root.getAttribute("data-theme");if(t===mine)return;var s=saved();
+    if(s&&s!==t){root.setAttribute("data-theme",s);return}mine=hostT=t==="dark"?"dark":"light";if(t!==mine)root.setAttribute("data-theme",mine);sync()}).observe(root,{attributes:true,attributeFilter:["data-theme"]});
+  if(window.matchMedia){var mq=matchMedia("(prefers-color-scheme: dark)");
+    var onSys=function(){if(!saved()&&!(hostT==="light"||hostT==="dark"))setTheme(sys(),false)};if(mq.addEventListener)mq.addEventListener("change",onSys);else if(mq.addListener)mq.addListener(onSys)}
+  sync();
+  /* company colours (the upcoming tiles, round cards): X2 picks white or ink text on a company's colour with a rough
+     brightness cut, which leaves white on bright greens and blues (2.2:1 on Robinhood's green). Dark follows X5's rule
+     there: X2's text colour where it reads (4.5:1), else whichever of white and ink reads better, and a mid-tone colour
+     where neither reaches 4.5:1 is darkened until white does. The element keeps X2's colours (--bc, --bi) and gets the
+     dark ones beside them (--x2d-bc, --x2d-bi), which skin-x2dark.css uses in dark alone: light is unchanged. X2's
+     navy-black (no company colour) is left to the skin (the raised surface). */
+  function lum(h){var c=parseInt(String(h).slice(1),16),f=function(v){v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};return .2126*f(c>>16&255)+.7152*f(c>>8&255)+.0722*f(c&255)}
+  function cr(a,b){var x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)}
+  function co1(e){var h=e.style.getPropertyValue("--bc").trim().toLowerCase(),i=e.style.getPropertyValue("--bi").trim().toLowerCase();
+    if(!/^#[0-9a-f]{6}$/.test(h)||h==="#12131a"||e.style.getPropertyValue("--x2d-bc"))return;
+    var x=h,c=parseInt(h.slice(1),16),r=c>>16&255,g=c>>8&255,b=c&255,k=0;
+    while(Math.max(cr(x,"#ffffff"),cr(x,"#12131a"))<4.5&&k<20){k++;x="#"+[r,g,b].map(function(v){return ("0"+Math.round(v*(1-.04*k)).toString(16)).slice(-2)}).join("")}
+    var t=/^#[0-9a-f]{6}$/.test(i)&&x===h&&cr(x,i)>=4.5?i:cr(x,"#ffffff")>=cr(x,"#12131a")?"#ffffff":"#12131a";
+    e.style.setProperty("--x2d-bc",x);e.style.setProperty("--x2d-bi",t)}
+  function coAll(n){if(n.nodeType!==1)return;if(n.matches('[style*="--bi:"]'))co1(n);[].forEach.call(n.querySelectorAll('[style*="--bi:"]'),co1)}
+  coAll(document.body);
+  if(window.MutationObserver)new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,coAll)})}).observe(document.body,{childList:true,subtree:true});
+})();
 /*}X2*/
