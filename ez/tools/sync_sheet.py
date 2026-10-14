@@ -112,7 +112,8 @@ VOID = {("STZ", "10/06/26"): "calls were submitted after the earnings report (ow
         # were removed from the sheet on purpose. None of the three had calls.
         ("2330.TW", "10/14/26"): "replaced by the sheet's TSMC row (owner, 2026-10-13)",
         ("8267.T", "10/12/26"): "removed from the sheet by the owner (2026-10-13)",
-        ("AA", "10/15/26"): "removed from the sheet by the owner (2026-10-13)"}
+        ("AA", "10/15/26"): "removed from the sheet by the owner (2026-10-13)",
+        ("9602.T", "10/14/26"): "Toho: no calls made (predictions cost money); removed from the sheet by the owner (2026-10-14)"}
 
 MONTHS = {m: i + 1 for i, m in enumerate(("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"))}
 
