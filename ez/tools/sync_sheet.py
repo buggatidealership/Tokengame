@@ -146,10 +146,14 @@ def _days(t):
 # Owner-set round numbers, by (ticker, call date), used until the sheet carries them itself. Once the sheet has the
 # same number the override is a no-op and can be removed. Printed on every run so it is never silent.
 ROUND_OVERRIDES = {}   # e.g. {("LEVI", "10/07/26"): 15}; the 2026-10-09 ones were dropped once "EZ Official 2" carried the numbers
+# Graded values the owner chose to keep after the sheet changed them, by (ticker, call date) and column. While the sheet
+# differs, the sync prints a KEEP note and writes the kept value instead of raising a RECORD EDIT on every run.
+KEEP = {("GS", "10/12/26"): {"ACTUAL MOVE (%)": ("-0.27", "owner, 2026-10-14: keep -0.27; the sheet reads -0.21")}}
 
 VOID_KEYS = {(t, day(d)): why for (t, d), why in VOID.items()}
 VOID_TICKERS = {t for (t, d) in VOID}
 OVERRIDE_KEYS = {(t, day(d)): n for (t, d), n in ROUND_OVERRIDES.items()}
+KEEP_KEYS = {(t, day(d)): c for (t, d), c in KEEP.items()}
 
 
 def main():
@@ -240,6 +244,10 @@ def main():
                 v = tk
             elif h == "ROUND":
                 v = rn
+            kept = KEEP_KEYS.get((tk, dd), {}).get(h)
+            if kept and v != kept[0]:
+                print("KEEP: R%s %s %s is %r in the sheet; the site keeps %r (%s)." % (rn, tk, h, v, kept[0], kept[1]))
+                v = kept[0]
             out.append(v)
         for m in ("GPT", "KIMI", "CLAUDE", "GROK"):
             if m + " DIR" in col:

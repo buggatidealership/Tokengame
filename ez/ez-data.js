@@ -38,7 +38,7 @@ var SHEET=[
  ["23","WFC","10/12/26","UP","4.3","UP","0.5","DOWN","2.5","UP","1.25","10/13/26","-3.11","","Financials","Banks","","FALSE"],
  ["24","C","10/12/26","UP","3.1","UP","2.5","UP","1.5","UP","1.75","10/13/26","-5.6","","Financials","Banks","","FALSE"],
  ["25","DPZ","10/12/26","DOWN","4.1","UP","1.5","DOWN","2","DOWN","2","10/13/26","-4.75","","Consumer Discretionary","Consumer Services","Food & beverages","FALSE"],
- ["26","ASML.AS","10/13/26","","","UP","2.5","","","","","10/14/26","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors","FALSE"],
+ ["26","ASML.AS","10/13/26","UP","1","DOWN","2","DOWN","3","UP","1.7","10/14/26","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors","FALSE"],
  ["27","BAC","10/13/26","DOWN","2.6","UP","1.5","DOWN","2.4","DOWN","1.1","10/14/26","","","Financials","Banks","","FALSE"],
  ["28","MS","10/13/26","UP","0.5","UP","2","UP","2.5","DOWN","0.9","10/14/26","","","Financials","Financial Services","","FALSE"],
  ["29","BLK","10/13/26","UP","0.4","UP","2.5","UP","3","UP","1.2","10/14/26","","","Financials","Financial Services","","FALSE"],
