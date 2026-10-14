@@ -1148,13 +1148,14 @@ if(X5)(function(){
 /* ---------- X2's Overview (owner, 2026-10-13), for EZ Live X2 alone (EXP==="x2"). X3, X4 and X5 share X2's code but
    not this block: build.py keeps it (markers dropped) for X2 and strips it, markers and all, from every other page, so
    Season Live, X1, X3, X4 and X5 stay byte for byte. Its styles are tools/v22/x2-overview.css, put in X2 alone.
-   Top to bottom: the headline alone; the NVIDIA Blackwell chip counting down to the bet (no line under it: the lines
-   beside it say what the timer counts to); the bet in three short lines (owner, 2026-10-14: X3's lines in the owner's
-   words, in the four bullets' place; v15's heroLines(), the lines under EZ Season's and X4's headline); 01 Every call
+   Top to bottom: the headline; the bet in three bullets (owner, 2026-10-14: X3's lines in the owner's words, in the
+   four bullets' place; v15's heroLines(), the bullets under EZ Season's and X4's headline; above the chip at every
+   width, owner, 2026-10-14, later); the NVIDIA Blackwell chip counting down to the bet (no line under it: the bullets
+   above it say what the timer counts to); 01 Every call
    (the record, how a call is graded as three bullets above the cards); 02 Current standings (the standings that sat
    in the hero, and one line: #1 makes the NVIDIA call); 03 Getting smarter or just lucky? (ROI and Direction, one card
    of one size); 04 Get $EZ and the one disclaimer. Each section is one phone screen at most (owner, 2026-10-13: "each
-   section needs to be one scroll"). The hero's lines (beside the chip instead), "Last round" and "How we grade" leave
+   section needs to be one scroll"). The hero's lines (above the chip instead), "Last round" and "How we grade" leave
    the hero; the fee split, operations and the roadmap leave the Overview (the Buyback tab keeps the fee share, the
    pool and the calculator). Every number comes from ez-data.js. The board is never re-rendered by the router (it is
    shown and hidden), but the order is checked again each time the Overview shows: nothing that is already in place
@@ -1179,15 +1180,15 @@ if(EXP==="x2")(function(){
   function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
   function bullets(cls,lines){return '<ul class="x2o-ul'+(cls?' '+cls:'')+'">'+lines.map(function(l){return '<li>'+l+'</li>'}).join("")+'</ul>'}
 
-  /* 2 + 3. THE BET: the chip and its countdown (X2's own, moved up from the buyback section), then the bet in three
-     short lines, the ones under EZ Season's headline (owner, 2026-10-14: "take the language of EZ Live X3 ... instead
-     of the bullet points"; v15's heroLines(), so the wording lives in one place; lines, not bullets). The chip's line
-     ("When the timer hits zero, we place a bet ... at 10x leverage on Hyperliquid") goes: the lines right beside or
-     under it say what the timer counts to. Phones: chip, then the lines, all in the first screen; 1024 px and wider:
-     chip left, lines right (x2-overview.css) */
+  /* 2 + 3. THE BET: the bet in three bullets, the ones under EZ Season's headline (owner, 2026-10-14: "take the
+     language of EZ Live X3 ... instead of the bullet points"; v15's heroLines(), so the wording lives in one place;
+     later that day: "bullet points", in the format of the Every call bullets below), then the chip and its countdown
+     (X2's own, moved up from the buyback section). The owner, later that day: the bullets go above the chip, at every
+     width (they were beside it from 1024 px). The chip's line ("When the timer hits zero, we place a bet ... at 10x
+     leverage on Hyperliquid") goes: the bullets right above it say what the timer counts to (x2-overview.css) */
   var top=el("section","x2o-bet");top.setAttribute("aria-label","The NVIDIA bet");
-  top.insertAdjacentHTML("beforeend",'<p class="x2o-lines">'+heroLines()+'</p>');
-  if(gpu){top.insertBefore(gpu,top.firstChild);var im=$(".gpu-img img",gpu);if(im)im.loading="eager";   // first screen now: no lazy load
+  top.insertAdjacentHTML("beforeend",'<ul class="x2o-ul x2o-lines">'+heroLines()+'</ul>');
+  if(gpu){top.appendChild(gpu);var im=$(".gpu-img img",gpu);if(im)im.loading="eager";   // first screen now: no lazy load
     var gt=$(".gpu-t",gpu);if(gt)gt.remove();                     // the chip's line and its hidden second line (#gpuCall)
     /* without that line a screen reader would hear "37 days, 13 hours, 23 minutes left" with nothing to say of what */
     var sr=$("#gpuSr",gpu);if(sr)sr.insertAdjacentHTML("beforebegin",'<span class="sr">Until the NVIDIA bet: </span>')}

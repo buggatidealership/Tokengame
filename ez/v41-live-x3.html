@@ -2956,15 +2956,22 @@ a.cg-c:hover{transform:translateY(-2px)}
 @media(max-width:640px){.hero .sub,.lede{font-size:15px;line-height:1.5}}
 </style>
 <!--/WSJ-->
-<!--HL: the three lines under the headline (owner, 2026-10-14), written by heroLines() in the script. One line each, a
-     gap between them of about 60% of the text size (Practical Typography: 50 to 100%), so a line that wraps still reads
-     as one line. Each line is short (one to three rows), so its rows are balanced: no "#1 spot." left on a row of its
-     own, and on a phone "Wrong call:" starts the second row (browsers without it wrap as usual). Text size and colour
-     stay the hero line's (--lede). X2 puts the same lines beside its chip (tools/v22/x2-overview.css).
-     Stripped from X1 by build.py.-->
+<!--HL: the three lines under the headline (owner, 2026-10-14), written by heroLines() in the script, as bullets
+     (owner, 2026-10-14, later: "bullet points", in the format of X2's "Every call" bullets). A list (<ul>), so a screen
+     reader hears three items. Each bullet is short (one to three rows), so its rows are balanced: no "#1 spot." left on
+     a row of its own (browsers without it wrap as usual). Text size and colour stay the hero line's (--lede). The marker
+     is a small square in the page's yellow with a 1 px ink ring, a bit smaller than the text (owner: the markers were
+     "bigger than the text itself"): about 55% of the text size, under the capitals' height (about 72%), whole pixels so
+     its edges stay sharp, and centred on the first row a little under the middle of the capitals (fonts.com, Fontology,
+     "Bullets": when every item starts with a capital, centre the bullet on the cap height or slightly lower; Barlow:
+     ascent 1.0 em, descent 0.2 em, x-height 0.53 em, capitals 0.72 em). X2 builds its own list
+     from the same lines (tools/v22/x2-overview.css). Stripped from X1 by build.py.-->
 <style>
-.hero-ln{display:block;text-wrap:balance}
-.hero-ln+.hero-ln{margin-top:.6em}
+.hero-ul{list-style:none;display:grid;gap:8px}
+.hero-ul>li{position:relative;padding-left:19px;text-wrap:balance}
+.hero-ul>li::before{content:"";position:absolute;left:1px;top:calc(.58em + 1px);width:calc(.55em - 2px);height:calc(.55em - 2px);border-radius:1px;background:var(--yel);box-shadow:0 0 0 1px var(--ink)}
+@supports (width:round(1.5px,1px)){.hero-ul>li::before{top:round(calc(.58em + 1px),1px);width:round(calc(.55em - 2px),1px);height:round(calc(.55em - 2px),1px)}}
+@media(max-width:640px){.hero-ul{gap:7px}.hero-ul>li{padding-left:17px}}
 </style>
 <!--/HL-->
 <link id="x3-fonts" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400..700&family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap" rel="stylesheet">
@@ -4258,7 +4265,7 @@ html.x3 .ufs select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http:
   <section class="hero" aria-label="Intro">
     <div class="hero-t">
       <h1>We’re putting buybacks<br> <span class="hl">in the hands of an <span class="lc">AI</span>.</span></h1>
-      <p class="sub" id="heroSub"><span class="hero-ln">AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</span><span class="hero-ln">Part of every $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader's call.</span><span class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</span></p>
+      <ul class="sub hero-ul" id="heroSub"><li class="hero-ln">AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</li><li class="hero-ln">Part of every $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader's call.</li><li class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</li></ul>
     </div>
     <div class="bflip" id="bflip"><div class="bf-in">
     <div class="bf-face bf-front" id="bfFront">
@@ -4418,17 +4425,18 @@ var NR=ROUNDS.length,UPS=ROUNDS.filter(function(r){return r.a>0}).length;
 var NUMW=["No","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve"];
 var NM=MODEL_KEYS.filter(function(m){return MODELS[m]}).length;
 /* the three lines under the headline (owner, 2026-10-14: EZ Live X3's lines, in the owner's own words, on EZ Season, X2
-   and X4). The wording lives here alone: EZ Season and X4 show it under the headline, X2 beside its chip (the X2 block
-   in tools/v22/routes.js). The model count, the pot's share of the fees (SIM.poolShare) and the leverage (SIM.leverage)
-   come from the data; with no share set the line says "Part of", with no leverage the leverage sentence goes. Each line
-   is a block span (.hero-ln, the HL styles in <head>), so the <p> stays valid. No-break spaces keep "before earnings",
-   "#1 spot", "10x leverage" and the two labels whole when a line wraps. The <p> in the page holds the same lines
-   without the numbers, for the moment before the data loads (so the hero does not jump): a change here goes there too.
+   and X4), as three bullets (owner, 2026-10-14, later). The wording lives here alone: EZ Season and X4 show it under the
+   headline, X2 between its headline and its chip (the X2 block in tools/v22/routes.js). The model count, the pot's share
+   of the fees (SIM.poolShare) and the leverage (SIM.leverage) come from the data; with no share set the line says "Part
+   of", with no leverage the leverage sentence goes. heroLines() returns the three <li> (.hero-ln) for a <ul>: #heroSub
+   here (.hero-ul, the HL styles in <head>), X2's own list there. No-break spaces keep "before earnings", "#1 spot",
+   "10x leverage" and the two labels whole when a line wraps. The <ul> in the page holds the same bullets without the
+   numbers, for the moment before the data loads (so the hero does not jump): a change here goes there too.
    X3 and X5 replace #heroSub with their own lines. */
 function heroLines(){var n=String(NUMW[NM]||NM),P=SIM.poolShare!=null?Math.round(SIM.poolShare*100):null,L=SIM.leverage;
-  return '<span class="hero-ln">'+n.charAt(0).toUpperCase()+n.slice(1)+' AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</span>'+
-    '<span class="hero-ln">'+(P!=null?'<b>'+P+'%</b> of every':'Part of every')+' $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader\'s call.'+(L!=null?' <b>'+L+'x</b>&nbsp;leverage, long or short.':'')+'</span>'+
-    '<span class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</span>'}
+  return '<li class="hero-ln">'+n.charAt(0).toUpperCase()+n.slice(1)+' AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</li>'+
+    '<li class="hero-ln">'+(P!=null?'<b>'+P+'%</b> of every':'Part of every')+' $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader\'s call.'+(L!=null?' <b>'+L+'x</b>&nbsp;leverage, long or short.':'')+'</li>'+
+    '<li class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</li>'}
 $("#heroSub").innerHTML=heroLines();
 /* rounds whose calls are in, soonest answer first (then by round) */
 var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});

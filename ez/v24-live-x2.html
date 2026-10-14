@@ -2958,15 +2958,22 @@ a.cg-c:hover{transform:translateY(-2px)}
 @media(max-width:640px){.hero .sub,.lede{font-size:15px;line-height:1.5}}
 </style>
 <!--/WSJ-->
-<!--HL: the three lines under the headline (owner, 2026-10-14), written by heroLines() in the script. One line each, a
-     gap between them of about 60% of the text size (Practical Typography: 50 to 100%), so a line that wraps still reads
-     as one line. Each line is short (one to three rows), so its rows are balanced: no "#1 spot." left on a row of its
-     own, and on a phone "Wrong call:" starts the second row (browsers without it wrap as usual). Text size and colour
-     stay the hero line's (--lede). X2 puts the same lines beside its chip (tools/v22/x2-overview.css).
-     Stripped from X1 by build.py.-->
+<!--HL: the three lines under the headline (owner, 2026-10-14), written by heroLines() in the script, as bullets
+     (owner, 2026-10-14, later: "bullet points", in the format of X2's "Every call" bullets). A list (<ul>), so a screen
+     reader hears three items. Each bullet is short (one to three rows), so its rows are balanced: no "#1 spot." left on
+     a row of its own (browsers without it wrap as usual). Text size and colour stay the hero line's (--lede). The marker
+     is a small square in the page's yellow with a 1 px ink ring, a bit smaller than the text (owner: the markers were
+     "bigger than the text itself"): about 55% of the text size, under the capitals' height (about 72%), whole pixels so
+     its edges stay sharp, and centred on the first row a little under the middle of the capitals (fonts.com, Fontology,
+     "Bullets": when every item starts with a capital, centre the bullet on the cap height or slightly lower; Barlow:
+     ascent 1.0 em, descent 0.2 em, x-height 0.53 em, capitals 0.72 em). X2 builds its own list
+     from the same lines (tools/v22/x2-overview.css). Stripped from X1 by build.py.-->
 <style>
-.hero-ln{display:block;text-wrap:balance}
-.hero-ln+.hero-ln{margin-top:.6em}
+.hero-ul{list-style:none;display:grid;gap:8px}
+.hero-ul>li{position:relative;padding-left:19px;text-wrap:balance}
+.hero-ul>li::before{content:"";position:absolute;left:1px;top:calc(.58em + 1px);width:calc(.55em - 2px);height:calc(.55em - 2px);border-radius:1px;background:var(--yel);box-shadow:0 0 0 1px var(--ink)}
+@supports (width:round(1.5px,1px)){.hero-ul>li::before{top:round(calc(.58em + 1px),1px);width:round(calc(.55em - 2px),1px);height:round(calc(.55em - 2px),1px)}}
+@media(max-width:640px){.hero-ul{gap:7px}.hero-ul>li{padding-left:17px}}
 </style>
 <!--/HL-->
 <style id="x2-overview">
@@ -2975,38 +2982,38 @@ a.cg-c:hover{transform:translateY(-2px)}
    at the end of routes.js. Headline, then the NVIDIA chip and the bet in three lines, then Every call, Current standings,
    Getting smarter or just lucky? and Get $EZ. X2's own type, ink and yellow throughout. ===== */
 
-/* the chip, right under the headline, then the three lines. Phones and tablets (under 1024 px): one column, the
-   chip then the lines, all of it in a phone's first screen (390 x 844). On a tablet the column's width follows the
-   window's height, so the chip never fills the first screen and the lines show above the fold (NN/g: no full-screen
-   hero, show that there is more below); it never goes under 440 px (or the column's own width, if that is less).
-   1024 px and wider: chip left, lines right, the chip's height again set by the window's, so the headline, the chip
-   and the lines fit one laptop screen (1280 x 800) */
-.x2o-bet{max-width:900px;margin-top:28px}
-.x2o-bet .gpu{margin:0}
-@media(min-width:641px) and (max-width:1023px){.x2o-bet{max-width:clamp(440px,calc((100svh - 340px) * 1834 / 1362),900px)}}
-@media(max-width:640px){.x2o-bet{margin-top:18px}}
-@media(min-width:1024px){
-  .x2o-bet{max-width:none;display:grid;grid-template-columns:minmax(0,min(62%,max(400px,calc((100svh - 290px) * 1834 / 1362)))) minmax(0,1fr);gap:0 44px;align-items:center}
-}
+/* the bet, right under the headline: three bullets, then the chip and its countdown, one column at every width (owner,
+   2026-10-14: the bullets go above the chip; they were beside it from 1024 px). Phones: the column's width. Tablets
+   and laptops: the chip's width follows the window's height, so the headline, the bullets and the chip's countdown (its
+   dies sit at about 40 to 55% of its height) show in the first screen and the chip's foot runs a little past the fold,
+   a cue that there is more below (NN/g, "Illusion of Completeness": a page that looks finished at the fold is not
+   scrolled); never under 440 px (or the column, if that is less) and never wider than the headline's line (760 px) */
+.x2o-bet{max-width:900px;margin-top:18px}
+.x2o-bet .gpu{margin:24px 0 0}
+@media(min-width:641px){.x2o-bet .gpu{max-width:clamp(440px,calc((100svh - 430px) * 1834 / 1362 / .8),760px)}}
+@media(max-width:640px){.x2o-bet{margin-top:12px}.x2o-bet .gpu{margin-top:18px}}
 
-/* the bet in three lines (owner, 2026-10-14: X3's lines in the owner's words, in place of the four bullets): the lines
-   under EZ Season's headline (v15's heroLines(), one block span each, .hero-ln, a gap of .6em between them). Lines,
-   not bullets: no marker, X2's text size and line height under a head as the bullets had (--lede, 15 px on phones),
-   the numbers and "Right call:" / "Wrong call:" in bold ink. At most 60 characters a line under the chip (EZ Season's
-   hero line: 50 to 70 reads best), so a tablet's wide column does not stretch them; beside the chip (1024 px and wider)
-   the column stays as narrow as the bullets' was, with the bullets' 14 px between lines */
-.x2o-lines{margin:18px 0 0;font:var(--lede);line-height:1.5;color:var(--ink2);max-width:60ch}
-.x2o-lines b{color:var(--ink);font-weight:800}
-@media(max-width:640px){.x2o-lines{font-size:15px;margin-top:14px}}
-@media(min-width:1024px){.x2o-lines{margin-top:0;max-width:40ch}.x2o-lines .hero-ln+.hero-ln{margin-top:14px}}
+/* the bet in three bullets (owner, 2026-10-14: X3's lines in the owner's words; later that day, "bullet points" in the
+   format of the Every call bullets below): v15's heroLines(), the bullets under EZ Season's headline, in X2's list
+   (.x2o-ul, below). X2's text size under a head (--lede, 15 px on phones), the numbers and "Right call:" / "Wrong
+   call:" in bold ink. At most 60 characters a line (EZ Season's hero line: 50 to 70 reads best), so a wide column does
+   not stretch them */
+.x2o-ul.x2o-lines{max-width:60ch}
 
-/* the bullets (Every call): one idea per line, X2's text size under a head (--lede), a small yellow square in an ink
-   ring as the bullet (the section numbers' yellow and ink), the numbers in bold ink */
+/* the bullets (the bet, Every call): one idea per line, X2's text size under a head (--lede), a small yellow square in
+   a 1 px ink ring as the marker (the section numbers' yellow and ink), the numbers in bold ink. The marker is a bit
+   smaller than the text (owner, 2026-10-14: the markers were "bigger than the text itself"; they were 13 px with their
+   ring, as tall as the capitals): about 55% of the text size (8 px with its ring at 15 px, 9 px at 16 to 17 px), under
+   the capitals' height (72%), in whole pixels so its edges stay sharp, and centred on the first row a little under the
+   middle of the capitals, toward the middle of the lowercase letters (fonts.com, Fontology, "Bullets": centre a bullet
+   on the cap height or x-height; when every item starts with a capital, on the cap height or slightly lower; ours all
+   do. Barlow: ascent 1.0 em, descent 0.2 em, x-height 0.53 em, capitals 0.72 em; a row of 1.5 em) */
 .x2o-ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font:var(--lede);color:var(--ink2);max-width:46ch}
-.x2o-ul li{position:relative;padding-left:24px;line-height:1.5;text-wrap:balance}
-.x2o-ul li::before{content:"";position:absolute;left:1px;top:calc(.75em - 5px);width:10px;height:10px;border-radius:3px;background:var(--yel);box-shadow:0 0 0 1.5px var(--ink)}
+.x2o-ul li{position:relative;padding-left:19px;line-height:1.5;text-wrap:balance}
+.x2o-ul li::before{content:"";position:absolute;left:1px;top:calc(.565em + 1px);width:calc(.55em - 2px);height:calc(.55em - 2px);border-radius:1px;background:var(--yel);box-shadow:0 0 0 1px var(--ink)}
+@supports (width:round(1.5px,1px)){.x2o-ul li::before{top:round(calc(.565em + 1px),1px);width:round(calc(.55em - 2px),1px);height:round(calc(.55em - 2px),1px)}}
 .x2o-ul b{color:var(--ink);font-weight:800}
-@media(max-width:640px){.x2o-ul{font-size:15px;gap:7px}.x2o-ul li{padding-left:21px}.x2o-ul li::before{width:9px;height:9px;top:calc(.75em - 4.5px)}}
+@media(max-width:640px){.x2o-ul{font-size:15px;gap:7px}.x2o-ul li{padding-left:17px}}
 
 /* Every call: three bullets take the place of the line under the head, under the head at every width, then the
    record's cards as before. "before the company reports" and "first market close after earnings" wear the same marker
@@ -3035,6 +3042,18 @@ a.cg-c:hover{transform:translateY(-2px)}
 .x2o-band .roster{grid-template-rows:none;grid-auto-rows:minmax(var(--rh),auto);margin-top:24px}
 @media(min-width:641px){.x2o-band .roster{margin-top:32px}}
 @media(min-width:900px){.x2o-band{--rh:84px}}
+/* the rows rank by direction (owner, 2026-10-14: "it makes more sense to go with the most accurate model"; the order
+   is build.py's, X2 alone): no wins (the number and its label go), the percentage "on direction" at the row's end, in a
+   column of one width so the numbers line up, and each AI's last five calls by its name, the Leaderboard tab's squares
+   (formSq: a tick is the right way, a cross the wrong way, a dash no call; colour is never the only signal, WCAG 1.4.1).
+   Beside the name from 761 px (the name's box as wide as CLAUDE, the longest today, so the squares line up from row to
+   row; a longer name pushes them along), under it below that (as on the Leaderboard tab), so they never reach the
+   numbers. Screen readers hear "Last five calls: ..." (the squares' own hidden line) after the name */
+.x2o-band .pc-s{flex:none;min-width:8.2em}
+.x2o-band .lb-f2{display:block;line-height:0}
+@media(min-width:761px){.x2o-band .pc-t{display:flex;align-items:center;gap:14px}.x2o-band .pc-t h3{flex:0 1 auto;min-width:3.1em}.x2o-band .lb-f2{flex:none;margin:0}}
+@media(max-width:760px){.x2o-band .lb-f2{margin-top:6px}}
+@media(max-width:640px){.x2o-band .pc-s{min-width:7.2em}.x2o-band .lb-f2{margin-top:5px}}
 /* the one line under the rows: X2's text size under a head (--lede) */
 .x2o-st .x2o-stn{margin:18px 0 0;max-width:640px;color:var(--ink2);text-wrap:balance}
 @media(min-width:641px){.x2o-st .x2o-stn{margin-top:22px}}
@@ -3068,13 +3087,15 @@ a.cg-c:hover{transform:translateY(-2px)}
 /* Get $EZ: two steps after the X2 block's trim, side by side from 861 px (v15's .get is three columns there) */
 @media(min-width:861px){.get{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+/* Leaderboard, no Wins column (owner, 2026-10-14: X2 ranks by direction; build.py drops the cell and its head), so each
+   grid below has one column fewer than routes.css's. */
 /* Leaderboard, last five calls (owner, 2026-10-13: "put those next to the model name"): the squares sit beside the
    name, each one marked: a tick is the right way, a cross the wrong way, a dash no call. Ticks and crosses are the
    record cards' own marks, so colour is never the only signal (WCAG 1.4.1), and there is no "W", which form guides
    read as a win. The "Last 5" column goes; screen readers still read it there (the squares by the name are hidden
    from them). Below 761 px CLAUDE and five squares do not fit beside each other, so the squares go under the name
    (phones: under the logo and the name together). */
-.x2 .lbx{--lbc:44px minmax(240px,1.7fr) repeat(3,minmax(70px,1fr)) 86px}
+.x2 .lbx{--lbc:44px minmax(240px,1.7fr) repeat(3,minmax(70px,1fr))}
 .x2 .lbx .lb-f{display:block!important;position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .x2 .lbr.pc .lb-f2{display:block;margin:0;line-height:0}
 @media(min-width:761px){
@@ -3088,9 +3109,9 @@ a.cg-c:hover{transform:translateY(-2px)}
 .x2 .lb-f2 .fq i.g{--fqm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.7 5.4l2.2 2.2 4.4-5' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
 .x2 .lb-f2 .fq i.r{--fqm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2.3 2.3l5.4 5.4M7.7 2.3l-5.4 5.4' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")}
 .x2 .lb-f2 .fq i.n{color:var(--ink2);--fqm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2.6 5h4.8' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")}
-@media(max-width:900px){.x2 .lbx{--lbc:30px minmax(0,2fr) repeat(3,minmax(0,1fr)) 58px}.x2 .lb-f2 .fq{gap:3px}.x2 .lb-f2 .fq i{width:16px;height:16px;border-radius:3.5px}}
-@media(max-width:760px){.x2 .lbx{--lbc:30px minmax(0,1.4fr) repeat(3,minmax(0,1fr)) 58px}.x2 .lbr.pc .lb-f2{margin-top:6px}.x2 .lb-f2 .fq i{width:14px;height:14px;border-radius:3px}}
-@media(max-width:640px){.x2 .lbx{--lbc:20px minmax(0,1.45fr) repeat(3,minmax(0,.85fr)) 32px}
+@media(max-width:900px){.x2 .lbx{--lbc:30px minmax(0,2fr) repeat(3,minmax(0,1fr))}.x2 .lb-f2 .fq{gap:3px}.x2 .lb-f2 .fq i{width:16px;height:16px;border-radius:3.5px}}
+@media(max-width:760px){.x2 .lbx{--lbc:30px minmax(0,1.4fr) repeat(3,minmax(0,1fr))}.x2 .lbr.pc .lb-f2{margin-top:6px}.x2 .lb-f2 .fq i{width:14px;height:14px;border-radius:3px}}
+@media(max-width:640px){.x2 .lbx{--lbc:20px minmax(0,1.45fr) repeat(3,minmax(0,.85fr))}
   .x2 .lbr.pc .lb-m{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:6px}
   .x2 .lbr.pc .pc-t{display:contents}
   .x2 .lbr.pc .pc-t h3{grid-area:1/2;min-width:0}
@@ -3108,6 +3129,13 @@ a.cg-c:hover{transform:translateY(-2px)}
   .x2 .card .cwin .wn,.x2 .card[data-k="g"] .cwin small{font-size:10.2cqi}
   .x2 .card .cwin .wn .lg{font-size:10.6cqi}
   .x2 .card .cwin .amp{font-size:7.6cqi}}
+
+/* "Getting smarter or just lucky?", ROI (2026-10-14): the standings rank by direction now, so the money tiles lose their
+   rank numbers and the leader's foil (a gold "1 GPT" one scroll under "#1 Claude" read as a second leader). They keep
+   the money order and the up/down pills. */
+#lqDist.lq-roi .pnl-k .pk-r{display:none}
+#lqDist.lq-roi .pnl-k li{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"l n" "v v" "p p"}
+#lqDist.lq-roi .pnl-k li.lead{background:var(--field);animation:none;box-shadow:none}
 
 </style>
 <style id="x2-dark">
@@ -4179,16 +4207,16 @@ html:where(.x2d[data-theme="dark"]){--ink:var(--x2d-tx);--ink2:var(--x2d-tx2);--
 :where(html.x2d[data-theme="dark"]) .x3-out b.dn{color:var(--ez-red)}
 :where(html.x2d[data-theme="dark"]) .x3-rule{color:var(--ink2)}
 :where(html.x2d[data-theme="dark"]) .x3-film{box-shadow:inset 0 0 0 2px var(--x2d-ring);color:var(--ink)}
-:where(html.x2d[data-theme="dark"]) .x2o-lines{color:var(--ink2)}
-:where(html.x2d[data-theme="dark"]) .x2o-lines b{color:var(--ink)}
+:where(html.x2d[data-theme="dark"]) .hero-ul>li::before{box-shadow:0 0 0 1px var(--x2d-ring);--ink:#1d1c1a;--ink2:#3e3420;--dim:#4c412b;--on-ez:#1d1c1a;--on-slab:#1d1c1a;--on-slab2:#3e3420;--on-slab3:#4c412b;--up:#0b4a22;--dn:#7d1010;color:var(--ink)}
 :where(html.x2d[data-theme="dark"]) .x2o-ul{color:var(--ink2)}
-:where(html.x2d[data-theme="dark"]) .x2o-ul li::before{box-shadow:0 0 0 1.5px var(--x2d-ring);--ink:#1d1c1a;--ink2:#3e3420;--dim:#4c412b;--on-ez:#1d1c1a;--on-slab:#1d1c1a;--on-slab2:#3e3420;--on-slab3:#4c412b;--up:#0b4a22;--dn:#7d1010;color:var(--ink)}
+:where(html.x2d[data-theme="dark"]) .x2o-ul li::before{box-shadow:0 0 0 1px var(--x2d-ring);--ink:#1d1c1a;--ink2:#3e3420;--dim:#4c412b;--on-ez:#1d1c1a;--on-slab:#1d1c1a;--on-slab2:#3e3420;--on-slab3:#4c412b;--up:#0b4a22;--dn:#7d1010;color:var(--ink)}
 :where(html.x2d[data-theme="dark"]) .x2o-ul b{color:var(--ink)}
 :where(html.x2d[data-theme="dark"]) .x2o-st .x2o-stn{color:var(--ink2)}
 :where(html.x2d[data-theme="dark"]) .x2o-sim{box-shadow:inset 0 0 0 1.5px currentColor;color:var(--ink2)}
 .x2:where(.x2d[data-theme="dark"]) .lb-f2 .fq i{color:#16140f}
 .x2:where(.x2d[data-theme="dark"]) .lb-f2 .fq i::before{background-color:currentColor}
 .x2:where(.x2d[data-theme="dark"]) .lb-f2 .fq i.n{color:var(--ink2)}
+:where(html.x2d[data-theme="dark"]) #lqDist.lq-roi .pnl-k li.lead{--ink:var(--x2d-tx);--ink2:var(--x2d-tx2);--dim:var(--x2d-tx3);--on-ez:var(--x2d-tx);--up:var(--x2d-up);--dn:var(--x2d-dn);background-color:var(--field);box-shadow:none}
 /* ===== END GENERATED ===== */
 
 /* ---------- 2. THE SWITCH, top right of the header, both modes (X5's .x5theme, in X2's own text face): icon over the
@@ -4395,7 +4423,7 @@ html.x2d[data-theme="dark"] .st-box.cmp .tg.lead .tg-h{--ink2:#352c1a;--on-slab2
   <section class="hero" aria-label="Intro">
     <div class="hero-t">
       <h1>We’re putting buybacks<br> <span class="hl">in the hands of an <span class="lc">AI</span>.</span></h1>
-      <p class="sub" id="heroSub"><span class="hero-ln">AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</span><span class="hero-ln">Part of every $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader's call.</span><span class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</span></p>
+      <ul class="sub hero-ul" id="heroSub"><li class="hero-ln">AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</li><li class="hero-ln">Part of every $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader's call.</li><li class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</li></ul>
     </div>
     <div class="bflip" id="bflip"><div class="bf-in">
     <div class="bf-face bf-front" id="bfFront">
@@ -4555,17 +4583,18 @@ var NR=ROUNDS.length,UPS=ROUNDS.filter(function(r){return r.a>0}).length;
 var NUMW=["No","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve"];
 var NM=MODEL_KEYS.filter(function(m){return MODELS[m]}).length;
 /* the three lines under the headline (owner, 2026-10-14: EZ Live X3's lines, in the owner's own words, on EZ Season, X2
-   and X4). The wording lives here alone: EZ Season and X4 show it under the headline, X2 beside its chip (the X2 block
-   in tools/v22/routes.js). The model count, the pot's share of the fees (SIM.poolShare) and the leverage (SIM.leverage)
-   come from the data; with no share set the line says "Part of", with no leverage the leverage sentence goes. Each line
-   is a block span (.hero-ln, the HL styles in <head>), so the <p> stays valid. No-break spaces keep "before earnings",
-   "#1 spot", "10x leverage" and the two labels whole when a line wraps. The <p> in the page holds the same lines
-   without the numbers, for the moment before the data loads (so the hero does not jump): a change here goes there too.
+   and X4), as three bullets (owner, 2026-10-14, later). The wording lives here alone: EZ Season and X4 show it under the
+   headline, X2 between its headline and its chip (the X2 block in tools/v22/routes.js). The model count, the pot's share
+   of the fees (SIM.poolShare) and the leverage (SIM.leverage) come from the data; with no share set the line says "Part
+   of", with no leverage the leverage sentence goes. heroLines() returns the three <li> (.hero-ln) for a <ul>: #heroSub
+   here (.hero-ul, the HL styles in <head>), X2's own list there. No-break spaces keep "before earnings", "#1 spot",
+   "10x leverage" and the two labels whole when a line wraps. The <ul> in the page holds the same bullets without the
+   numbers, for the moment before the data loads (so the hero does not jump): a change here goes there too.
    X3 and X5 replace #heroSub with their own lines. */
 function heroLines(){var n=String(NUMW[NM]||NM),P=SIM.poolShare!=null?Math.round(SIM.poolShare*100):null,L=SIM.leverage;
-  return '<span class="hero-ln">'+n.charAt(0).toUpperCase()+n.slice(1)+' AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</span>'+
-    '<span class="hero-ln">'+(P!=null?'<b>'+P+'%</b> of every':'Part of every')+' $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader\'s call.'+(L!=null?' <b>'+L+'x</b>&nbsp;leverage, long or short.':'')+'</span>'+
-    '<span class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</span>'}
+  return '<li class="hero-ln">'+n.charAt(0).toUpperCase()+n.slice(1)+' AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</li>'+
+    '<li class="hero-ln">'+(P!=null?'<b>'+P+'%</b> of every':'Part of every')+' $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader\'s call.'+(L!=null?' <b>'+L+'x</b>&nbsp;leverage, long or short.':'')+'</li>'+
+    '<li class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</li>'}
 $("#heroSub").innerHTML=heroLines();
 /* rounds whose calls are in, soonest answer first (then by round) */
 var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});
@@ -4651,23 +4680,29 @@ function flip(c){var f=!c.classList.contains("flipped"),had=c.contains(document.
   if(had){var b=$((f?".face.back":".face.front")+" [data-flip]",c);if(b)b.focus({preventScroll:true})}
   syncFilms()}
 
-/* ---------- hero: the standings, a leaderboard of rounds won ----------
-   Order and tie-breaks come from LADDER (ez-data.js: wins, then the smaller average miss). Ties share the rank number.
-   The crown goes to LADDER[0]. A model with calls but none graded yet (Grok) joins the table below them with 0 wins. */
+/* ---------- hero: the standings. On X2 (build.py, owner 2026-10-14) ROWS starts in LADDER's order (ez-data.js:
+   wins, then the smaller average miss) and is sorted by direction below, before anything is drawn. The crown goes
+   to ROWS[0]. A model with calls but none graded yet joins below the others. */
 /* next to each name, one number. STAND_STAT picks it:
    "roi"   the return on the stake that followed every call (the "If you'd followed" panel, hypothetical, before fees)
    "right" hit rate: the share of calls that got the direction right (the default)
    To try ROI again, change "right" to "roi". Nothing else depends on it. */
-var STAND_STAT="right",FOL_EARLY=null;function EZ_FULL(m){return career(m).g>=ROUNDS.length/2}function EZ_BEST(){var b=null,bv=-1;ROWS.forEach(function(T){var C=career(T.m);if(!EZ_FULL(T.m))return;var v=C.right/C.g;if(v>bv){bv=v;b=T.m}});return b}function EZ_LEAD(){return ROWS[0]&&ROWS[0].won>0?ROWS[0].m:null}
+var STAND_STAT="right",FOL_EARLY=null;function EZ_FULL(m){return career(m).g>=ROUNDS.length/2}function EZ_LEAD(){return ROWS[0]&&career(ROWS[0].m).g>0?ROWS[0].m:null}
 var LD=LADDER.filter(function(T){return MODELS[T.m]});
 var bench=ACTIVE.filter(function(m){return !LD.some(function(T){return T.m===m})});
 var ROWS=LD.concat(bench.map(function(m){return {m:m,won:0}}));
-/* rank = wins, then the smaller average miss (owner, 2026-10-08): equal wins no longer share a place */
-function rankOf(T){var a=parseFloat(T.avg);return 1+ROWS.filter(function(U){var b=parseFloat(U.avg);return U.won>T.won||(U.won===T.won&&!isNaN(b)&&(isNaN(a)||b<a))}).length}
+/* X2: rank = direction (owner, 2026-10-14). Hit rate = calls right on direction / calls made; AIs that called at least half
+   the graded rounds first, by hit rate (compared as whole numbers, right x calls), a tie going to the smaller average
+   miss; then the rest the same way; an AI with no graded call last. No shared places: the place is the row's position.
+   WINS_ORDER keeps LADDER's order (wins, then the smaller average miss) from before the sort: the "Longest winning
+   streak" record breaks a tie with it, as on the other pages, so the ranking never moves a record. */
+var WINS_ORDER=ROWS.map(function(T){return T.m});
+ROWS.sort(function(x,y){var a=career(x.m),b=career(y.m),fa=a.g>0&&a.g>=ROUNDS.length/2,fb=b.g>0&&b.g>=ROUNDS.length/2;
+  if(fa!==fb)return fa?-1:1;if(!a.g||!b.g)return (b.g?1:0)-(a.g?1:0);return (b.right*a.g-a.right*b.g)||(a.avg-b.avg)});
+function rankOf(T){return ROWS.indexOf(T)+1}
 $("#roster").innerHTML=ROWS.map(function(T,i){
-  return '<li class="pc'+(i?'':' lead')+(rankOf(T)===1&&T.won>0?' r1':'')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
-    '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">'+(SIM.leadHours!=null?'In line for the call':'Bets on NVIDIA')+'</small>':'')+'</span>'+pcStats(T.m)+
-    '<p class="pc-w"><b>'+T.won+'</b><span>'+(T.won===1?'win':'wins')+'</span></p></li>'}).join("");
+  return '<li class="pc'+(i?'':' lead')+(rankOf(T)===1&&career(T.m).g>0?' r1':'')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
+    '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3><span class="lb-f2 x2o-f">'+formSq(career(T.m))+'</span>'+(T.m===EZ_LEAD()?'<small class="pc-best">'+(SIM.leadHours!=null?'In line for the call':'Bets on NVIDIA')+'</small>':'')+'</span>'+pcStats(T.m)+'</li>'}).join("");
 /* a model's record over the graded rounds: calls, right way, average miss, wins, streak */
 function career(m){var g=0,right=0,err=0,won=0,hist=[];
   ROUNDS.forEach(function(r){var c=callOf(r,m),wn=r.win?r.win.split(" & "):[];if(!c){hist.push({n:r.n,none:true});return}
@@ -4678,11 +4713,11 @@ function career(m){var g=0,right=0,err=0,won=0,hist=[];
 function pcStats(m){if(STAND_STAT==="roi"){var o=(FOL_EARLY=FOL_EARLY||followAll()).filter(function(f){return f.m===m})[0];
     if(o){var pc=(o.bal/STAKE-1)*100;return '<span class="pc-s roi '+(o.bal>=STAKE?'pu':'pd')+'" title="Hypothetical: '+usd(STAKE)+' that followed every '+nm(m)+' call, all in, before fees, is now '+usd(o.bal)+'"><b>'+pctTxt(o.bal)+'</b><small>ROI if followed</small></span>'}}
   var C=career(m);if(!C.g)return '<span class="pc-s"><b>n/a</b><small>No calls yet</small></span>';
-  return '<span class="pc-s" title="'+C.right+' of '+C.g+' calls the right way"><b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':m===EZ_LEAD()?'buyback odds':'hit rate')+'</small></span>'}
+  return '<span class="pc-s" title="'+C.right+' of '+C.g+' calls the right way"><b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':'on direction')+'</small></span>'}
 var P0=PS[0]||null;
 /* ---------- the score bar (Primetime's ticker): the standings, every graded round, then the rounds to come ---------- */
 (function(){var tt=$("#tt"),tick=$("#tick"),tp=$("#tickP");if(!tt)return;
-  var sp=[ '<b>Leaderboard</b> '+ROWS.map(function(T){return nm(T.m)+' '+T.won}).join(' · ') ];
+  var sp=[ '<b>Leaderboard</b> On direction: '+ROWS.map(function(T){var C=career(T.m);return nm(T.m)+' '+(!C.g?'n/a':EZ_FULL(T.m)?Math.round(C.right/C.g*100)+'%':C.right+' of '+C.g)}).join(' · ') ];
   ROUNDS.forEach(function(r){var w=r.win?r.win.split(" & ").map(nm).join(" & ")+(r.win.indexOf(" & ")>-1?" win":" wins"):"No winner";
     sp.push('R'+r.n+' '+r.co+' <span class="'+(r.a>0?'up':'dn')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span>'+r.out+'</span> · '+w)});
   PS.forEach(function(u){sp.push('R'+u.n+' '+u.co+' · <b>Calls are in</b> · '+RESOLVE_WORD+' '+fmtDate(u.resolves))});
@@ -5091,7 +5126,6 @@ function machSVG(tall){
     if(c){var dt=new Date(Date.UTC(c[0],c[1],c[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);T=nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate())}}
   if(!T)return;el.hidden=false;
   $("#gpuLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x";if(SIM.leadHours!=null)$("#gpuCall").textContent=SIM.leadHours+" hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down.";
-  var lead=LADDER&&LADDER[0]?nm(LADDER[0].m):"";
   var when=new Date(T).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"});
   var F={0:"01110100011000110001100011000101110",1:"00100011000010000100001000010001110",2:"01110100010000100010001000100011111",3:"11110000010000101110000010000111110",
     4:"00010001100101010010111110001000010",5:"11111100001111000001000011000101110",6:"00110010001000011110100011000101110",7:"11111000010001000100010000100001000",
@@ -5584,27 +5618,24 @@ document.addEventListener("click",function(e){var a=e.target.closest&&e.target.c
 function shURL(n){return location.href.replace(/#.*$/,"")+"#/round/"+n}
 
 /* ---------- leaderboard: the standings' own rows, with more columns. Hit rate first, then the average miss,
-   then the return on the stake, the last five rounds, and wins (what the ranking is decided on) on the far right.
+   then the return on the stake and the last five calls. X2: no wins column, the rows ranked by direction (build.py).
    Under it: the title race, head to head, and the season's records. Every number comes from ROUNDS. ---------- */
 var GCROWN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V8l5 4 4-8 4 8 5-4v11z" fill="#ffc72c" stroke="#12131a" stroke-width="2" stroke-linejoin="round"/></svg>';
 var CROWN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V8l5 4 4-8 4 8 5-4v11z" fill="#12131a"/></svg>';
 function fbal(m){var o=FOLLOW.filter(function(f){return f.m===m})[0];return o?o.bal:null}
 function formDots(C){return C.hist.slice(-5).map(function(h){var cls=h.none?"n":h.win?"w":h.ok?"g":"r",lab=h.none?"no call":h.win?"won":h.ok?"right way":"wrong way";
   return '<a class="fd '+cls+'" href="#/round/'+h.n+'" title="Round '+h.n+': '+lab+'" aria-label="Round '+h.n+': '+lab+'">'+(h.win?CROWN:h.none?'':h.ok?'✓':'✗')+'</a>'}).join("")}
-/* X2: the best direction record among AIs that have called at least half the rounds */
 /* X2 leaderboard: the last five calls as plain squares, green right way, red wrong way (owner, 2026-10-07) */
 function formSq(C){return '<span class="fq">'+C.hist.slice(-5).map(function(h){var cls=h.none?"n":h.ok?"g":"r",lab=h.none?"no call":h.ok?"right way":"wrong way";
   return '<i class="'+cls+'" title="Round '+h.n+': '+lab+'"></i>'}).join("")+'<span class="sr">Last five calls: '+C.hist.slice(-5).map(function(h){return h.none?"no call":h.ok?"right":"wrong"}).join(", ")+'</span></span>'}
-function lbBest(){var b=null,bv=-1;RK.forEach(function(k){var C=CAR[k];if(C.g<ROUNDS.length/2)return;var v=C.right/C.g;if(v>bv){bv=v;b=k}});return b}
 function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=STAKE;
-  return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.won>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+(X2&&m===lbBest()?'<small class="pc-best">Most accurate</small>':'')+
+  return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.g>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+''+
     '<span class="rk" role="cell"><sup>#</sup>'+rkOf(m)+'</span>'+
     '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3>'+(X1&&!X2?nm(m):'<a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a>')+'</h3><small>'+esc(MODELS[m].ver||'')+'</small>'+(X2?'<span class="lb-f2" aria-hidden="true">'+formSq(C)+'</span>':'')+'</span></span>'+
-    '<span class="lb-c" role="cell"><b>'+(C.g?pctOf(C.right,C.g)+'%':'n/a')+'</b><small>'+C.right+' of '+C.g+'</small></span>'+
+    '<span class="lb-c" role="cell"><b>'+(C.g?pctOf(C.right,C.g)+'%':'n/a')+'</b><small>'+(!C.g?'No calls yet':C.g>=ROUNDS.length/2?'on direction':C.right+' of '+C.g+' calls')+'</small></span>'+
     '<span class="lb-c" role="cell"><b>'+(C.avg==null?'n/a':C.avg.toFixed(2))+'</b><small>points</small></span>'+
     '<span class="lb-c roi '+(b==null?'':up?'pu':'pd')+'" role="cell"><b>'+(b==null?'n/a':pctTxt(b))+'</b><small>'+(b==null?'':usd(b))+'</small></span>'+
-    '<span class="lb-f" role="cell">'+(X2?formSq(C):formDots(C))+'</span>'+
-    '<span class="lb-w pc-w" role="cell"><b>'+C.won+'</b><span>'+(C.won===1?'win':'wins')+'</span></span></li>'}
+    '<span class="lb-f" role="cell">'+(X2?formSq(C):formDots(C))+'</span></li>'}
 /* ---------- the stats: four ways to rank the AIs (wins, hit rate, average miss, ROI). A switch picks one and the card
    flips to it, like "Are they learning?". One row per AI: rank, a bar (longer is always better), the number, one line
    of detail. Every number is worked out from ROUNDS here. ---------- */
@@ -5743,7 +5774,7 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
   function run(m,f,breakOnNone){var cur=[],bestR=[];ROUNDS.forEach(function(r){var c=callOf(r,m);
       if(c&&f(r,c)){cur.push(r);if(cur.length>bestR.length)bestR=cur.slice()}else if(c||breakOnNone)cur=[]});return {m:m,rs:bestR}}
   function winF(r,c){return r.win&&r.win.split(" & ").indexOf(c[0])>-1}
-  var wr=RK.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length})[0],
+  var wr=WINS_ORDER.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length})[0],
       rr=RK.map(function(m){return run(m,function(r,c){return callOk(r,c)},false)}).sort(function(a,b){return b.rs.length-a.rs.length})[0];
   function word(k){return ["","one","two","three","four","five","six","seven","eight","nine","ten"][k]||String(k)}
   function cos(rs){return rs.map(function(r){return r.co}).join(", ")}
@@ -5766,7 +5797,7 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
     return {facts:[["Called",said(c.r,c.m)],["Moved",c.r.out],["Off by",c.off.toFixed(2)+" pts"]],
       chase:nx?(worstWay?"Next worst from the others: ":"Best of the rest: ")+nm(nx.m)+", "+nx.off.toFixed(2)+" off on "+nx.r.co+".":"",
       story:worstWay?"Nobody wants this one. It only changes hands if a call misses by more than "+c.off.toFixed(2)+" points.":"To take it, a call has to land within "+c.off.toFixed(2)+" points of the real move."}}
-  var wl=RK.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length}),
+  var wl=WINS_ORDER.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length}),
       rl=RK.map(function(m){return run(m,function(r,c){return callOk(r,c)},false)}).sort(function(a,b){return b.rs.length-a.rs.length});
   var out='';
   if(wr.rs.length>1)out+=tile(X1?"Longest winning streak":"Most wins in a row",wr.rs.length===2?nm(wr.m)+" goes back to back: "+cos(wr.rs):wr.rs.length===3?nm(wr.m)+" goes three for three: "+cos(wr.rs):nm(wr.m)+" is on a heater: "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n,wr.rs,nm(wr.m)+" won "+word(wr.rs.length)+" rounds in a row. A win takes the right direction and the closest size of the four.",undefined,streakMore(wl,wr,winF,true,"in a row","Win"));
@@ -5811,12 +5842,12 @@ function callAmt(c){return (isDn(c)?"▼":"▲")+c[1].split(" ")[1]}
 function callGrid(){var R=ROUNDS;
   var h='<div class="cg-r cg-hd" role="row"><span class="cg-l" role="columnheader"><span class="sr">AI</span></span>'+R.map(function(r){
       return '<a class="cg-co" role="columnheader" href="#/round/'+r.n+'" title="Round '+r.n+' · '+esc(plainCo(r))+'">'+coMark(r.ticker)+'<small>R'+r.n+'</small></a>'}).join("")+'</div>';
-  h=h.replace(/<\/div>$/,'<span class="cg-sh" role="columnheader">Wins<br>Right</span></div>');
+  h=h.replace(/<\/div>$/,'<span class="cg-sh" role="columnheader">Right<br>way</span></div>');
   var tally={};RK.forEach(function(m){var t={n:0,ok:0,w:0};R.forEach(function(r){var c=callOf(r,m);if(!c)return;t.n++;if(isDn(c)===(r.a<0))t.ok++;if(wonBy(r).indexOf(m)>-1)t.w++});tally[m]=t});
   RK.forEach(function(m){var t=tally[m];h+='<div class="cg-r" role="row"><span class="cg-l" role="rowheader">'+logo(m)+'<b>'+nm(m)+'</b></span>'+R.map(function(r){var c=callOf(r,m);
       if(!c)return '<span class="cg-c n" role="cell" title="Round '+r.n+': '+nm(m)+' had not joined yet"><span class="sr">No call</span></span>';
       var ok=isDn(c)===(r.a<0),w=wonBy(r).indexOf(m)>-1,lab=w?"won the round":ok?"right way":"wrong way";
-      return '<a class="cg-c '+(w?'w':ok?'g':'r')+'" role="cell" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(plainCo(r))+': '+nm(m)+' called '+callAmt(c)+', '+lab+'">'+(w?GCROWN:'')+'<span>'+callAmt(c)+'</span></a>'}).join("")+'<span class="cg-sum" role="cell"><b>'+GCROWN+t.w+'</b><small>'+t.ok+'/'+t.n+'</small></span></div>'});
+      return '<a class="cg-c '+(w?'w':ok?'g':'r')+'" role="cell" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(plainCo(r))+': '+nm(m)+' called '+callAmt(c)+', '+lab+'">'+(w?GCROWN:'')+'<span>'+callAmt(c)+'</span></a>'}).join("")+'<span class="cg-sum" role="cell"><b>'+(t.n?pctOf(t.ok,t.n)+'%':'n/a')+'</b><small>'+t.ok+'/'+t.n+'</small></span></div>'});
   h+='<div class="cg-r cg-mk" role="row"><span class="cg-l" role="rowheader"><b>Market</b></span>'+R.map(function(r){return '<span class="cg-m '+(r.a<0?'xd':'xu')+'" role="cell" title="Market '+r.out+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a).toFixed(1)+'</span>'}).join("")+'<span class="cg-sum mk" role="cell"><small>▲'+R.filter(function(r){return r.a>0}).length+' ▼'+R.filter(function(r){return r.a<0}).length+'</small></span></div>';
   /* the takeaway: who collects the crowns, and who is wrong most often (at least FMIN calls) */
   var most=RK.slice().sort(function(a,b){return tally[b].w-tally[a].w})[0],elig=RK.filter(function(m){return tally[m].n>=FMIN}),
@@ -5888,8 +5919,8 @@ function wireRlx(root){if(RLX_IO)RLX_IO.disconnect();if(reduce||!("IntersectionO
   $$(".rlx-v video",root).forEach(function(v){v.addEventListener("playing",function(){if(v===cur)v.parentNode.classList.add("on")});RLX_IO.observe(v)});
   var t;addEventListener("scroll",function(){clearTimeout(t);t=setTimeout(pick,120)},{passive:true})}
 function vModels(){
-  return (X1?xsh("01","Leaderboard",X2?"Current standings":"Current standings",X2?"Ranked by rounds won, then by the smaller average miss. "+(SIM.leadHours!=null?"The leaderboard freezes "+SIM.leadHours+"h before NVIDIA reports. #1 makes the call.":"Whoever is on top trades the pot.")+" Tap an AI for every call it made.":"Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
-    '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
+  return (X1?xsh("01","Leaderboard",X2?"Current standings":"Current standings",X2?"Ranked by how often each AI calls the direction right (up or down). A tie goes to the smaller average miss. "+(RK.some(function(k){return CAR[k].g<ROUNDS.length/2})?"AIs that called fewer than half the rounds rank below the rest. ":"")+(SIM.leadHours!=null?"The leaderboard freezes "+SIM.leadHours+"h before NVIDIA reports. #1 makes the call.":"Whoever is on top trades the pot.")+" Tap an AI for every call it made.":"Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
+    '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
     '<p class="lbn">'+(X2?'<b>A call</b>: up or down, plus how much, locked before the report. ':'')+'<b>Hit rate</b>: calls right on direction'+(X2?' (up or down), whatever the size':'')+'. <b>Avg miss</b>: points off the real move. <b>ROI</b>: '+usd(STAKE)+' rolled through every call. Simulated, before fees.</p>'+
     (X2?callGrid():'')+statsHTML()+(X2?findings()+'<section class="blk xsec" aria-labelledby="recH">'+xsh("05","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recH")+'<div class="hls hls3">'+records()+'</div></section>':'')+
@@ -5923,12 +5954,10 @@ function vProfile(m){if(!CAR[m])return null;
   var hR=place(m,hit,function(a,b){return a>b}),mR=place(m,miss,function(a,b){return a<b}),fR=place(m,bal,function(a,b){return a>b});
   var NW=["","one","two","three","four","five","six"][N]||N,rk=rkOf(m),nmM=nm(m),ord=["","first","second","third","fourth","fifth"];
   /* the headline: one sentence that steers what people remember (a chart's title drives recall), then the sample size */
-  var me=full.indexOf(m)>-1,pos=rk===1?nmM+' leads with '+C.won+' '+(C.won===1?'win':'wins'):nmM+' is '+ord[rk]+' with '+C.won+' '+(C.won===1?'win':'wins'),tail='';
-  if(me&&hR===1)tail=' and the best hit rate';
-  else if(me&&mR===1)tail=' and the closest calls';
-  else if(me&&hR===full.length)tail=', but the worst hit rate';
+  var me=full.indexOf(m)>-1,pos=nmM+(rk===1?' leads':' is '+ord[rk])+(C.g?', right on direction '+C.right+' of '+C.g+' times':', with no graded call yet'),tail='';
+  if(me&&mR===1)tail=', with the closest calls';
   else if(me&&mR===full.length)tail=', but misses by the most';
-  else if(!me)tail=' from '+C.g+' calls since joining late';
+  else if(!me&&C.g)tail=' since joining late';
   var verdictLine=pos+tail+'.';
   var sample=C.g+' calls so far, a small sample, so ranks can still swing.'+(C.streak?' Right now: '+C.streak.k+' '+(C.streak.ok?'right':'wrong')+' in a row.':'');
   var O2=['','1st','2nd','3rd','4th','5th','6th'];function rankTag(r){return r?'<em class="pf-tag">'+O2[r]+' place</em>':'<em class="pf-tag">not ranked yet</em>'}
@@ -5972,8 +6001,8 @@ function vProfile(m){if(!CAR[m])return null;
     '<p class="pf-verdict">'+verdictLine+'</p>'+
     '<div class="pf-arr" role="img" aria-label="'+C.right+' of '+C.g+' calls got the direction right, '+C.won+' of them won the round"><div class="pf-dots">'+dots.map(function(c){return '<i class="'+c+'"></i>'}).join("")+'</div>'+
       '<p><b>'+C.right+' of '+C.g+'</b> calls got up or down right <span>('+pctOf(C.right,C.g)+'%)</span>. <span class="pf-lg2"><i class="w"></i>won the round <i class="g"></i>right way <i class="r"></i>wrong way</span></p></div>'+
-    '<div class="pf-kpi"><div class="pf-k gold"><small>Wins</small><b>'+C.won+'</b><span>'+rankTag(place(m,function(k){return CAR[k].won},function(a,b){return a>b}))+'</span></div>'+
-    '<div class="pf-k"><small>Right way</small><b>'+C.right+'<span>/'+C.g+'</span></b><span>'+rankTag(hR)+'</span></div>'+
+    '<div class="pf-kpi"><div class="pf-k gold"><small>Right way</small><b>'+C.right+'<span>/'+C.g+'</span></b><span>'+rankTag(hR)+'</span></div>'+
+    '<div class="pf-k"><small>Wins</small><b>'+C.won+'</b><span>'+rankTag(place(m,function(k){return CAR[k].won},function(a,b){return a>b}))+'</span></div>'+
     '<div class="pf-k"><small>Average miss</small><b>'+(C.avg==null?'n/a':C.avg.toFixed(2))+'<span> pts</span></b><span>'+rankTag(mR)+'</span></div>'+
     '<div class="pf-k"><small>'+usd(STAKE)+' copied</small><b>'+usd(bal(m))+'</b><span>'+rankTag(fR)+' '+pctTxt(bal(m))+'</span></div></div>'+
     '<p class="pf-sample">'+sample+'</p></header>';
@@ -6225,13 +6254,14 @@ if(X3)(function(){
 /* ---------- X2's Overview (owner, 2026-10-13), for EZ Live X2 alone (EXP==="x2"). X3, X4 and X5 share X2's code but
    not this block: build.py keeps it (markers dropped) for X2 and strips it, markers and all, from every other page, so
    Season Live, X1, X3, X4 and X5 stay byte for byte. Its styles are tools/v22/x2-overview.css, put in X2 alone.
-   Top to bottom: the headline alone; the NVIDIA Blackwell chip counting down to the bet (no line under it: the lines
-   beside it say what the timer counts to); the bet in three short lines (owner, 2026-10-14: X3's lines in the owner's
-   words, in the four bullets' place; v15's heroLines(), the lines under EZ Season's and X4's headline); 01 Every call
+   Top to bottom: the headline; the bet in three bullets (owner, 2026-10-14: X3's lines in the owner's words, in the
+   four bullets' place; v15's heroLines(), the bullets under EZ Season's and X4's headline; above the chip at every
+   width, owner, 2026-10-14, later); the NVIDIA Blackwell chip counting down to the bet (no line under it: the bullets
+   above it say what the timer counts to); 01 Every call
    (the record, how a call is graded as three bullets above the cards); 02 Current standings (the standings that sat
    in the hero, and one line: #1 makes the NVIDIA call); 03 Getting smarter or just lucky? (ROI and Direction, one card
    of one size); 04 Get $EZ and the one disclaimer. Each section is one phone screen at most (owner, 2026-10-13: "each
-   section needs to be one scroll"). The hero's lines (beside the chip instead), "Last round" and "How we grade" leave
+   section needs to be one scroll"). The hero's lines (above the chip instead), "Last round" and "How we grade" leave
    the hero; the fee split, operations and the roadmap leave the Overview (the Buyback tab keeps the fee share, the
    pool and the calculator). Every number comes from ez-data.js. The board is never re-rendered by the router (it is
    shown and hidden), but the order is checked again each time the Overview shows: nothing that is already in place
@@ -6256,15 +6286,15 @@ if(EXP==="x2")(function(){
   function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
   function bullets(cls,lines){return '<ul class="x2o-ul'+(cls?' '+cls:'')+'">'+lines.map(function(l){return '<li>'+l+'</li>'}).join("")+'</ul>'}
 
-  /* 2 + 3. THE BET: the chip and its countdown (X2's own, moved up from the buyback section), then the bet in three
-     short lines, the ones under EZ Season's headline (owner, 2026-10-14: "take the language of EZ Live X3 ... instead
-     of the bullet points"; v15's heroLines(), so the wording lives in one place; lines, not bullets). The chip's line
-     ("When the timer hits zero, we place a bet ... at 10x leverage on Hyperliquid") goes: the lines right beside or
-     under it say what the timer counts to. Phones: chip, then the lines, all in the first screen; 1024 px and wider:
-     chip left, lines right (x2-overview.css) */
+  /* 2 + 3. THE BET: the bet in three bullets, the ones under EZ Season's headline (owner, 2026-10-14: "take the
+     language of EZ Live X3 ... instead of the bullet points"; v15's heroLines(), so the wording lives in one place;
+     later that day: "bullet points", in the format of the Every call bullets below), then the chip and its countdown
+     (X2's own, moved up from the buyback section). The owner, later that day: the bullets go above the chip, at every
+     width (they were beside it from 1024 px). The chip's line ("When the timer hits zero, we place a bet ... at 10x
+     leverage on Hyperliquid") goes: the bullets right above it say what the timer counts to (x2-overview.css) */
   var top=el("section","x2o-bet");top.setAttribute("aria-label","The NVIDIA bet");
-  top.insertAdjacentHTML("beforeend",'<p class="x2o-lines">'+heroLines()+'</p>');
-  if(gpu){top.insertBefore(gpu,top.firstChild);var im=$(".gpu-img img",gpu);if(im)im.loading="eager";   // first screen now: no lazy load
+  top.insertAdjacentHTML("beforeend",'<ul class="x2o-ul x2o-lines">'+heroLines()+'</ul>');
+  if(gpu){top.appendChild(gpu);var im=$(".gpu-img img",gpu);if(im)im.loading="eager";   // first screen now: no lazy load
     var gt=$(".gpu-t",gpu);if(gt)gt.remove();                     // the chip's line and its hidden second line (#gpuCall)
     /* without that line a screen reader would hear "37 days, 13 hours, 23 minutes left" with nothing to say of what */
     var sr=$("#gpuSr",gpu);if(sr)sr.insertAdjacentHTML("beforebegin",'<span class="sr">Until the NVIDIA bet: </span>')}
