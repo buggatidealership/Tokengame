@@ -36,9 +36,8 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    Until a film exists the round still counts everywhere and shows "Film soon".
 5. **Check.** `node ez/tools/check_pages.js` must print `OK` for every page, with the expected
    round count and standings. Fix anything it reports.
-6. **Commit and publish.** (While the experiments X1 and X2 exist, `build.py` also rebuilds `v23-live-x1.html` and `v24-live-x2.html`; republish those too, same file paths, and include any new film or logo files.) Commit, push the branch, rebuild Season Live (`python3 ez/tools/v22/build.py ez/tools/v22` from `ez/`), and republish the two preview pages (same file paths keep the same links):
+6. **Commit and publish.** (While the experiments X1 and X2 exist, `build.py` also rebuilds `v23-live-x1.html` and `v24-live-x2.html`; republish those too, same file paths, and include any new film or logo files.) Commit, push the branch, rebuild the built pages (`python3 tools/v22/build.py tools/v22` from `ez/`), and republish the pages below (same file paths keep the same links):
    - EZ Season: https://claude.ai/artifact/XxQqLLfSx18hzSV9qawyeN (`ez/v15-season.html`)
-   - EZ Season Live: https://claude.ai/artifact/3FJq71NA8CwsLN2rZZxNa8 (`ez/v22-season-live.html`)
    - EZ Live X2 (main page): https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL (`ez/v24-live-x2.html`)
    - EZ Live X3: https://claude.ai/artifact/4J3oqRt4mxzHKFi3bHuQip (`ez/v41-live-x3.html`)
    - EZ Live X4: https://claude.ai/artifact/K7xzLYcpomVXNtk6K2oioG (`ez/v42-live-x4.html`)
