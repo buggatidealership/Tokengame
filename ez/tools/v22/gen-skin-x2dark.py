@@ -75,6 +75,8 @@ def x2_css():
     css = open(os.path.join(S, 'routes.css')).read()
     i = src.rindex('</style>', 0, src.find('<!--WSJ:') if '<!--WSJ:' in src else len(src))
     src = src[:i] + css + src[i:]
+    # build.py strips v15's RANK styles from X2 (X2 has its own, in x2-overview.css)
+    src = re.sub(r'<!--RANK:.*?<!--/RANK-->\n', '', src, flags=re.S)
     head = src[:src.index('</head>')]
     # X2's own Overview (build.py puts it before </head>, after the page's own styles, in v24 alone)
     return re.findall(r'<style[^>]*>(.*?)</style>', head, re.S) + [open(os.path.join(S, 'x2-overview.css')).read()]

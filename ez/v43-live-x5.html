@@ -185,7 +185,8 @@ h1 .hl{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:cl
 .st-h h2{font:400 24px/1 var(--fd);margin:0}
 .st-h span{font:700 11px/1.3 var(--fm);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
 
-/* standings: one row per model. Rank, logo, name, wins. The leader (LADDER[0]) is lime and wears the crown. */
+/* standings: one row per model. Rank, logo, name, how often it called the direction right (ranked by it: the RANK
+   styles, ROWS in the script). The leader (ROWS[0]) is lime and wears the crown. */
 /* the standings span the band's body and its button row, so their bottom lines up with the All upcoming button */
 .roster{list-style:none;grid-row:2/-1;display:grid;grid-template-rows:repeat(var(--rows,4),minmax(var(--rh),1fr));gap:var(--rg,12px);min-width:0}
 .pc{position:relative;display:flex;align-items:center;gap:14px;min-width:0;padding:8px 18px 8px 14px;border-radius:16px;background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--ink),3px 4px 0 0 var(--ink)}
@@ -770,7 +771,7 @@ footer small{display:block;margin-top:14px;font:700 11px/1.6 var(--fm);letter-sp
 .shp-a svg{width:14px;height:14px}
 .shp-m{min-height:1.3em;margin-top:8px;font:600 12px/1.3 var(--fb);color:var(--ink2);overflow-wrap:anywhere}
 
-/* standings: the name on the logo's line, then how often it called the direction right, then the wins */
+/* standings: the name on the logo's line, then how often it called the direction right (no wins since 2026-10-14) */
 .pc .pc-t{flex:1;min-width:0}
 .pc .pc-t h3{display:block}
 .pc-s{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-variant-numeric:tabular-nums}
@@ -2974,6 +2975,23 @@ a.cg-c:hover{transform:translateY(-2px)}
 @media(max-width:640px){.hero-ul{gap:7px}.hero-ul>li{padding-left:17px}}
 </style>
 <!--/HL-->
+<!--RANK: the standings rank by direction (owner, 2026-10-14: "rank them by accuracy as well", after EZ Live X2; the
+     order is ROWS's, sorted in the script). No wins in the standings: each row ends with how often the AI called the
+     direction right, "on direction" (an AI under half the rounds: "x of y calls"), where the wins were, in a column of
+     one width so the numbers line up. EZ Live X3, X4 and X5 build from this page: their Leaderboard tab loses its Wins
+     column (routes.css's grids, one column fewer; build.py drops the cell and its head) and the Overview's ROI tiles
+     their rank numbers and the leader's gold (build.py drops them; one grid area fewer here). Stripped from X1 (it ranks
+     by wins) and X2 (its own rules in tools/v22/x2-overview.css) by build.py.-->
+<style>
+.pc-s{flex:none;min-width:7.6em}
+@media(max-width:640px){.pc-s{min-width:0}}
+.lbx{--lbc:44px minmax(150px,1.3fr) repeat(3,minmax(70px,1fr)) 132px}
+@media(max-width:900px){.lbx{--lbc:30px minmax(0,1.2fr) repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){.lbx{--lbc:20px minmax(0,1.45fr) repeat(3,minmax(0,.85fr))}}
+#lqDist .pnl-k li{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"l n" "v v" "p p"}
+.pf-k b span{opacity:.8}
+</style>
+<!--/RANK-->
 <link id="x5-fonts" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&family=Mona+Sans:wdth,wght@75..125,200..900&display=swap" rel="stylesheet">
 <style id="x5-skin">
 /* EZ Live X5 skin (owner's picks, 2026-10-12, from the round 2 boards): layout A, dark C (graphite and gold), font H
@@ -4179,6 +4197,7 @@ html[data-theme="dark"] .x5theme .moon{display:none}
 .x5lbh{position:relative}
 .x5race{position:absolute;right:0;top:0;height:44px;display:flex;align-items:center;gap:6px;margin:0;font:700 11px/1 var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);white-space:nowrap;pointer-events:none}
 .x5race b{color:var(--ink)}
+@media(max-width:340px){.x5race{letter-spacing:.02em}}   /* a two-digit gap ("12 points back") beside the toggle at 320 px */
 
 /* 5. up next */
 .x5up .rdh h2{font:var(--fdw,800) 26px/1 var(--fd);text-transform:uppercase;margin:0}
@@ -4435,7 +4454,7 @@ html.pt.x5 .hx2-h{font:400 24px/1.04 var(--fd);font-stretch:75%;text-transform:u
         <li><b>Direction first.</b> Call the wrong way and you're out. No partial credit.</li>
         <li><b>Then size.</b> Of the AIs that got the direction right, the closest to the real move takes the round.</li>
         <li><b>Everyone wrong, nobody wins.</b> No participation trophies.</li>
-        <li><b>Ties.</b> Same wins? The one closer on average ranks higher.</li>
+        <li id="howRk"><b>Ranks.</b> Most accurate is #1. A tie goes to the smaller average miss.</li>
       </ol>
       <button type="button" class="howback" id="howBack"><span aria-hidden="true">←</span> <span class="ul">Back</span></button>
     </div>
@@ -4669,23 +4688,35 @@ function flip(c){var f=!c.classList.contains("flipped"),had=c.contains(document.
   if(had){var b=$((f?".face.back":".face.front")+" [data-flip]",c);if(b)b.focus({preventScroll:true})}
   syncFilms()}
 
-/* ---------- hero: the standings, a leaderboard of rounds won ----------
-   Order and tie-breaks come from LADDER (ez-data.js: wins, then the smaller average miss). Ties share the rank number.
-   The crown goes to LADDER[0]. A model with calls but none graded yet (Grok) joins the table below them with 0 wins. */
+/* ---------- hero: the standings, ranked by direction (owner, 2026-10-14) ----------
+   ROWS starts in LADDER's order (ez-data.js: wins, then the smaller average miss) and is sorted by direction below,
+   before anything is drawn, so one rule decides #1 everywhere: the rows, the crown, the foil and the scores bar (and,
+   on EZ Live X3, X4 and X5, which build from this page, every place that names a rank or the leader). A model with
+   calls but none graded yet joins below the others. Each round's winner stays on its card. */
 /* next to each name, one number. STAND_STAT picks it:
    "roi"   the return on the stake that followed every call (the "If you'd followed" panel, hypothetical, before fees)
    "right" hit rate: the share of calls that got the direction right (the default)
    To try ROI again, change "right" to "roi". Nothing else depends on it. */
-var STAND_STAT="right",FOL_EARLY=null;function EZ_FULL(m){return career(m).g>=ROUNDS.length/2}function EZ_BEST(){var b=null,bv=-1;ROWS.forEach(function(T){var C=career(T.m);if(!EZ_FULL(T.m))return;var v=C.right/C.g;if(v>bv){bv=v;b=T.m}});return b}function EZ_LEAD(){return ROWS[0]&&ROWS[0].won>0?ROWS[0].m:null}
+var STAND_STAT="right",FOL_EARLY=null;function EZ_FULL(m){return career(m).g>=ROUNDS.length/2}function EZ_LEAD(){return ROWS[0]&&career(ROWS[0].m).g>0?ROWS[0].m:null}
 var LD=LADDER.filter(function(T){return MODELS[T.m]});
 var bench=ACTIVE.filter(function(m){return !LD.some(function(T){return T.m===m})});
 var ROWS=LD.concat(bench.map(function(m){return {m:m,won:0}}));
-/* rank = wins, then the smaller average miss (owner, 2026-10-08): equal wins no longer share a place */
-function rankOf(T){var a=parseFloat(T.avg);return 1+ROWS.filter(function(U){var b=parseFloat(U.avg);return U.won>T.won||(U.won===T.won&&!isNaN(b)&&(isNaN(a)||b<a))}).length}
+/* rank = direction (owner, 2026-10-14: "you don't care about how many wins ... it makes more sense to go with the most
+   accurate model"; EZ Live X2 first, then "rank them by accuracy as well"). Hit rate = calls right on direction / calls
+   made over the graded rounds. AIs that called at least half the graded rounds rank first, by hit rate (compared as
+   whole numbers, right x calls), a tie going to the smaller average miss; then the rest the same way; an AI with no
+   graded call last. No shared places: the place is the row's position (a full tie keeps LADDER's order). WINS_ORDER
+   keeps LADDER's order from before the sort: the Leaderboard tab's "Longest winning streak" record breaks a tie with
+   it (EZ Live X3, X4 and X5, build.py), so the ranking never moves a record. "How we grade" says the rule; the sentence
+   on AIs under half the rounds only when one is. */
+var WINS_ORDER=ROWS.map(function(T){return T.m});
+ROWS.sort(function(x,y){var a=career(x.m),b=career(y.m),fa=a.g>0&&a.g>=ROUNDS.length/2,fb=b.g>0&&b.g>=ROUNDS.length/2;
+  if(fa!==fb)return fa?-1:1;if(!a.g||!b.g)return (b.g?1:0)-(a.g?1:0);return (b.right*a.g-a.right*b.g)||(a.avg-b.avg)});
+function rankOf(T){return ROWS.indexOf(T)+1}
+(function(){var h=$("#howRk");if(h&&ROWS.some(function(T){var g=career(T.m).g;return g>0&&g<ROUNDS.length/2}))h.insertAdjacentHTML("beforeend"," Called under half the rounds? Ranked after the rest.")})();
 $("#roster").innerHTML=ROWS.map(function(T,i){
-  return '<li class="pc'+(i?'':' lead')+(rankOf(T)===1&&T.won>0?' r1':'')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
-    '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">'+(SIM.leadHours!=null?(EZ5_FROZEN()?'Makes the call':EZ5_FREEZE()?'Makes the call if #1 on '+EZ5_FREEZE():'In line for the call'):'Bets on NVIDIA')+'</small>':'')+'</span>'+pcStats(T.m)+
-    '<p class="pc-w"><b>'+T.won+'</b><span>'+(T.won===1?'win':'wins')+'</span></p></li>'}).join("");
+  return '<li class="pc'+(i?'':' lead')+(rankOf(T)===1&&career(T.m).g>0?' r1':'')+'">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+
+    '<span class="rk"><sup>#</sup>'+rankOf(T)+'</span>'+logo(T.m)+'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">'+(SIM.leadHours!=null?(EZ5_FROZEN()?'Makes the call':EZ5_FREEZE()?'Makes the call if #1 on '+EZ5_FREEZE():'In line for the call'):'Bets on NVIDIA')+'</small>':'')+'</span>'+pcStats(T.m)+'</li>'}).join("");
 /* a model's record over the graded rounds: calls, right way, average miss, wins, streak */
 function career(m){var g=0,right=0,err=0,won=0,hist=[];
   ROUNDS.forEach(function(r){var c=callOf(r,m),wn=r.win?r.win.split(" & "):[];if(!c){hist.push({n:r.n,none:true});return}
@@ -4696,11 +4727,11 @@ function career(m){var g=0,right=0,err=0,won=0,hist=[];
 function pcStats(m){if(STAND_STAT==="roi"){var o=(FOL_EARLY=FOL_EARLY||followAll()).filter(function(f){return f.m===m})[0];
     if(o){var pc=(o.bal/STAKE-1)*100;return '<span class="pc-s roi '+(o.bal>=STAKE?'pu':'pd')+'" title="Hypothetical: '+usd(STAKE)+' that followed every '+nm(m)+' call, all in, before fees, is now '+usd(o.bal)+'"><b>'+pctTxt(o.bal)+'</b><small>ROI if followed</small></span>'}}
   var C=career(m);if(!C.g)return '<span class="pc-s"><b>n/a</b><small>No calls yet</small></span>';
-  return '<span class="pc-s" title="'+C.right+' of '+C.g+' calls the right way"><b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':m===EZ_LEAD()?'hit rate':'hit rate')+'</small></span>'}
+  return '<span class="pc-s" title="'+C.right+' of '+C.g+' calls the right way"><b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':'on direction')+'</small></span>'}
 var P0=PS[0]||null;
 /* ---------- the score bar (Primetime's ticker): the standings, every graded round, then the rounds to come ---------- */
 (function(){var tt=$("#tt"),tick=$("#tick"),tp=$("#tickP");if(!tt)return;
-  var sp=[ '<b>Leaderboard</b> '+ROWS.map(function(T){return nm(T.m)+' '+T.won}).join(' · ') ];
+  var sp=[ '<b>Leaderboard</b> On direction: '+ROWS.map(function(T){var C=career(T.m);return nm(T.m)+' '+(!C.g?'n/a':EZ_FULL(T.m)?Math.round(C.right/C.g*100)+'%':C.right+' of '+C.g)}).join(' · ') ];
   ROUNDS.forEach(function(r){var w=r.win?r.win.split(" & ").map(nm).join(" & ")+(r.win.indexOf(" & ")>-1?" win":" wins"):"No winner";
     sp.push('R'+r.n+' '+r.co+' <span class="'+(r.a>0?'up':'dn')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span>'+r.out+'</span> · '+w)});
   PS.forEach(function(u){sp.push('R'+u.n+' '+u.co+' · <b>Calls are in</b> · '+RESOLVE_WORD+' '+fmtDate(u.resolves))});
@@ -5109,7 +5140,6 @@ function machSVG(tall){
     if(c){var dt=new Date(Date.UTC(c[0],c[1],c[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);T=nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate())}}
   if(!T)return;el.hidden=false;
   $("#gpuLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x";if(SIM.leadHours!=null)$("#gpuCall").textContent=SIM.leadHours+" hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down.";
-  var lead=LADDER&&LADDER[0]?nm(LADDER[0].m):"";
   var when=new Date(T).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"});
   var F={0:"01110100011000110001100011000101110",1:"00100011000010000100001000010001110",2:"01110100010000100010001000100011111",3:"11110000010000101110000010000111110",
     4:"00010001100101010010111110001000010",5:"11111100001111000001000011000101110",6:"00110010001000011110100011000101110",7:"11111000010001000100010000100001000",
@@ -5320,13 +5350,15 @@ function usd(v){return "$"+Math.round(v).toLocaleString("en-US")}
 function pctTxt(b){var pc=(b/STAKE-1)*100;return (pc>=0?"+":"−")+Math.abs(pc).toFixed(1)+"%"}
 var FOLLOW_NOTE="Simulated, before fees. Buy on an up call, short on a down call. In before the report, out at the next close.";
 (function(){var L=$("#folL");if(!L||!FOLLOW.length){var f=$("#fol");if(f)f.hidden=true;return}
-  /* one tile per AI: the return big, the dollars under it, and its path from the stake (dashed) round by round */
+  /* one tile per AI, in money order: the return big, the dollars under it, and its path from the stake (dashed) round by
+     round. No gold on the first (owner, 2026-10-14): the standings rank by direction, and a gold money leader one scroll
+     under them read as a second #1 */
   var all=[].concat.apply([],FOLLOW.map(function(o){return o.path})),lo=Math.min.apply(null,all.concat([STAKE])),hi=Math.max.apply(null,all.concat([STAKE])),pad=(hi-lo)*.12||STAKE*.05;lo-=pad;hi+=pad;
   function spark(o,up){var W=120,H=30,n=o.path.length-1;function X(k){return (2+k/(n||1)*(W-6)).toFixed(1)}function Y(v){return (H-3-(v-lo)/(hi-lo)*(H-6)).toFixed(1)}
     return '<svg class="ft-s" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="'+W+'" y1="'+Y(STAKE)+'" y2="'+Y(STAKE)+'" class="z"/><path d="'+o.path.map(function(v,k){return (k?"L":"M")+X(k)+","+Y(v)}).join("")+'" class="'+(up?'pu':'pd')+'"/></svg>'}
   L.className="ftl";
   L.innerHTML=FOLLOW.map(function(o,i){var up=o.bal>=STAKE;
-    return '<li class="ft'+(i?'':' lead')+'"><span class="ft-w">'+logo(o.m)+'<span>'+nm(o.m)+(o.n<NR?'<small>'+o.n+' rounds</small>':'')+'</span></span>'+
+    return '<li class="ft"><span class="ft-w">'+logo(o.m)+'<span>'+nm(o.m)+(o.n<NR?'<small>'+o.n+' rounds</small>':'')+'</span></span>'+
       spark(o,up)+'<span class="ft-v"><b class="ft-bal">'+usd(o.bal)+'</b><span class="ft-pill '+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(o.bal).replace(/^[+−]/,"")+'</span></span></li>'}).join("");
   $("#folH").textContent="Each AI started with "+usd(STAKE)+" on its first call and bet it all on every call since.";$("#folF").textContent=FOLLOW_NOTE})();
 window.EZ_EXP="x5";
@@ -5603,27 +5635,24 @@ document.addEventListener("click",function(e){var a=e.target.closest&&e.target.c
 function shURL(n){return location.href.replace(/#.*$/,"")+"#/round/"+n}
 
 /* ---------- leaderboard: the standings' own rows, with more columns. Hit rate first, then the average miss,
-   then the return on the stake, the last five rounds, and wins (what the ranking is decided on) on the far right.
+   then the return on the stake and the last five calls. X2: no wins column, the rows ranked by direction (build.py).
    Under it: the title race, head to head, and the season's records. Every number comes from ROUNDS. ---------- */
 var GCROWN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V8l5 4 4-8 4 8 5-4v11z" fill="#ffc72c" stroke="#12131a" stroke-width="2" stroke-linejoin="round"/></svg>';
 var CROWN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V8l5 4 4-8 4 8 5-4v11z" fill="#12131a"/></svg>';
 function fbal(m){var o=FOLLOW.filter(function(f){return f.m===m})[0];return o?o.bal:null}
 function formDots(C){return C.hist.slice(-5).map(function(h){var cls=h.none?"n":h.win?"w":h.ok?"g":"r",lab=h.none?"no call":h.win?"won":h.ok?"right way":"wrong way";
   return '<a class="fd '+cls+'" href="#/round/'+h.n+'" title="Round '+h.n+': '+lab+'" aria-label="Round '+h.n+': '+lab+'">'+(h.win?CROWN:h.none?'':h.ok?'✓':'✗')+'</a>'}).join("")}
-/* X2: the best direction record among AIs that have called at least half the rounds */
 /* X2 leaderboard: the last five calls as plain squares, green right way, red wrong way (owner, 2026-10-07) */
 function formSq(C){return '<span class="fq">'+C.hist.slice(-5).map(function(h){var cls=h.none?"n":h.ok?"g":"r",lab=h.none?"no call":h.ok?"right way":"wrong way";
   return '<i class="'+cls+'" title="Round '+h.n+': '+lab+'"></i>'}).join("")+'<span class="sr">Last five calls: '+C.hist.slice(-5).map(function(h){return h.none?"no call":h.ok?"right":"wrong"}).join(", ")+'</span></span>'}
-function lbBest(){var b=null,bv=-1;RK.forEach(function(k){var C=CAR[k];if(C.g<ROUNDS.length/2)return;var v=C.right/C.g;if(v>bv){bv=v;b=k}});return b}
 function lbRow(m,i){var C=CAR[m],b=fbal(m),up=b!=null&&b>=STAKE;
-  return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.won>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+(X2&&m===lbBest()?'<small class="pc-best">Most accurate</small>':'')+
+  return '<li class="lbr pc'+(i?'':' lead')+(rkOf(m)===1&&C.g>0?' r1':'')+'" role="row">'+(i?'':'<span class="crown"><i aria-hidden="true">👑</i><span class="cw">Leads</span></span>')+''+
     '<span class="rk" role="cell"><sup>#</sup>'+rkOf(m)+'</span>'+
     '<span class="lb-m" role="rowheader">'+logo(m)+'<span class="pc-t"><h3>'+(X1&&!X2?nm(m):'<a href="#/model/'+m.toLowerCase()+'">'+nm(m)+'</a>')+'</h3><small>'+esc(MODELS[m].ver||'')+'</small>'+(X2?'<span class="lb-f2" aria-hidden="true">'+formSq(C)+'</span>':'')+'</span></span>'+
-    '<span class="lb-c" role="cell"><b>'+(C.g?pctOf(C.right,C.g)+'%':'n/a')+'</b><small>'+C.right+' of '+C.g+'</small></span>'+
+    '<span class="lb-c" role="cell"><b>'+(C.g?pctOf(C.right,C.g)+'%':'n/a')+'</b><small>'+(!C.g?'No calls yet':C.g>=ROUNDS.length/2?'on direction':C.right+' of '+C.g+' calls')+'</small></span>'+
     '<span class="lb-c" role="cell"><b>'+(C.avg==null?'n/a':C.avg.toFixed(2))+'</b><small>points</small></span>'+
     '<span class="lb-c roi '+(b==null?'':up?'pu':'pd')+'" role="cell"><b>'+(b==null?'n/a':pctTxt(b))+'</b><small>'+(b==null?'':usd(b))+'</small></span>'+
-    '<span class="lb-f" role="cell">'+(X2?formSq(C):formDots(C))+'</span>'+
-    '<span class="lb-w pc-w" role="cell"><b>'+C.won+'</b><span>'+(C.won===1?'win':'wins')+'</span></span></li>'}
+    '<span class="lb-f" role="cell">'+(X2?formSq(C):formDots(C))+'</span></li>'}
 /* ---------- the stats: four ways to rank the AIs (wins, hit rate, average miss, ROI). A switch picks one and the card
    flips to it, like "Are they learning?". One row per AI: rank, a bar (longer is always better), the number, one line
    of detail. Every number is worked out from ROUNDS here. ---------- */
@@ -5687,7 +5716,7 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;if(X2)f
         ROUNDS.forEach(function(r,i){var c=callOf(r,x.m);if(!c)return;if(st==null){st=i;pts.push([i,bal])}bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,bal])});return {m:x.m,pts:pts,bal:bal,x:x}}),
       vs=[].concat.apply([STAKE],F.map(function(f){return f.pts.map(function(p){return p[1]})})),lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STAKE*.05;lo-=pd;hi+=pd;
     function X(i){return i/N*100}function Y(v){return (hi-v)/(hi-lo)*100}
-    box.innerHTML='<ol class="pnl-k">'+F.map(function(f,i){var up=f.bal>=STAKE;return '<li'+(i?'':' class="lead"')+'><span class="pk-r">'+(i+1)+'</span>'+logo(f.m)+'<b class="pk-n">'+nm(f.m)+'</b><strong>'+usd(f.bal)+'</strong><em class="'+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(f.bal).replace(/^[+−]/,"")+'</em></li>'}).join("")+'</ol>'+
+    box.innerHTML='<ol class="pnl-k">'+F.map(function(f,i){var up=f.bal>=STAKE;return (face.id==="lqDist"?'<li>':'<li'+(i?'':' class="lead"')+'><span class="pk-r">'+(i+1)+'</span>')+logo(f.m)+'<b class="pk-n">'+nm(f.m)+'</b><strong>'+usd(f.bal)+'</strong><em class="'+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(f.bal).replace(/^[+−]/,"")+'</em></li>'}).join("")+'</ol>'+
       '<div class="pnl"><span class="pnl-z" style="top:'+Y(STAKE).toFixed(2)+'%"><small>Start '+usd(STAKE)+'</small></span>'+
       '<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+F.slice().reverse().map(function(f){return '<path d="'+f.pts.map(function(p,j){return (j?"L":"M")+X(p[0]).toFixed(2)+","+Y(p[1]).toFixed(2)}).join("")+'" style="stroke:'+MODELS[f.m].c+'"/>'}).join("")+'</svg>'+
       F.map(function(f){var p=f.pts[f.pts.length-1];return '<i class="pnl-d" style="left:'+X(p[0]).toFixed(2)+'%;top:'+Y(p[1]).toFixed(2)+'%;background:'+MODELS[f.m].c+'"></i>'}).join("")+
@@ -5762,7 +5791,7 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
   function run(m,f,breakOnNone){var cur=[],bestR=[];ROUNDS.forEach(function(r){var c=callOf(r,m);
       if(c&&f(r,c)){cur.push(r);if(cur.length>bestR.length)bestR=cur.slice()}else if(c||breakOnNone)cur=[]});return {m:m,rs:bestR}}
   function winF(r,c){return r.win&&r.win.split(" & ").indexOf(c[0])>-1}
-  var wr=RK.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length})[0],
+  var wr=WINS_ORDER.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length})[0],
       rr=RK.map(function(m){return run(m,function(r,c){return callOk(r,c)},false)}).sort(function(a,b){return b.rs.length-a.rs.length})[0];
   function word(k){return ["","one","two","three","four","five","six","seven","eight","nine","ten"][k]||String(k)}
   function cos(rs){return rs.map(function(r){return r.co}).join(", ")}
@@ -5785,7 +5814,7 @@ function records(){var all=[];ROUNDS.forEach(function(r){r.calls.forEach(functio
     return {facts:[["Called",said(c.r,c.m)],["Moved",c.r.out],["Off by",c.off.toFixed(2)+" pts"]],
       chase:nx?(worstWay?"Next worst from the others: ":"Best of the rest: ")+nm(nx.m)+", "+nx.off.toFixed(2)+" off on "+nx.r.co+".":"",
       story:worstWay?"Nobody wants this one. It only changes hands if a call misses by more than "+c.off.toFixed(2)+" points.":"To take it, a call has to land within "+c.off.toFixed(2)+" points of the real move."}}
-  var wl=RK.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length}),
+  var wl=WINS_ORDER.map(function(m){return run(m,winF,true)}).sort(function(a,b){return b.rs.length-a.rs.length}),
       rl=RK.map(function(m){return run(m,function(r,c){return callOk(r,c)},false)}).sort(function(a,b){return b.rs.length-a.rs.length});
   var out='';
   if(wr.rs.length>1)out+=tile(X1?"Longest winning streak":"Most wins in a row",wr.rs.length===2?nm(wr.m)+" goes back to back: "+cos(wr.rs):wr.rs.length===3?nm(wr.m)+" goes three for three: "+cos(wr.rs):nm(wr.m)+" is on a heater: "+word(wr.rs.length)+" straight",wr.m,wr.rs.length,"in a row",wr.rs[wr.rs.length-1].n,wr.rs,nm(wr.m)+" won "+word(wr.rs.length)+" rounds in a row. A win takes the right direction and the closest size of the four.",undefined,streakMore(wl,wr,winF,true,"in a row","Win"));
@@ -5830,12 +5859,12 @@ function callAmt(c){return (isDn(c)?"▼":"▲")+c[1].split(" ")[1]}
 function callGrid(){var R=ROUNDS;
   var h='<div class="cg-r cg-hd" role="row"><span class="cg-l" role="columnheader"><span class="sr">AI</span></span>'+R.map(function(r){
       return '<a class="cg-co" role="columnheader" href="#/round/'+r.n+'" title="Round '+r.n+' · '+esc(plainCo(r))+'">'+coMark(r.ticker)+'<small>R'+r.n+'</small></a>'}).join("")+'</div>';
-  h=h.replace(/<\/div>$/,'<span class="cg-sh" role="columnheader">Wins<br>Right</span></div>');
+  h=h.replace(/<\/div>$/,'<span class="cg-sh" role="columnheader">Right<br>way</span></div>');
   var tally={};RK.forEach(function(m){var t={n:0,ok:0,w:0};R.forEach(function(r){var c=callOf(r,m);if(!c)return;t.n++;if(isDn(c)===(r.a<0))t.ok++;if(wonBy(r).indexOf(m)>-1)t.w++});tally[m]=t});
   RK.forEach(function(m){var t=tally[m];h+='<div class="cg-r" role="row"><span class="cg-l" role="rowheader">'+logo(m)+'<b>'+nm(m)+'</b></span>'+R.map(function(r){var c=callOf(r,m);
       if(!c)return '<span class="cg-c n" role="cell" title="Round '+r.n+': '+nm(m)+' had not joined yet"><span class="sr">No call</span></span>';
       var ok=isDn(c)===(r.a<0),w=wonBy(r).indexOf(m)>-1,lab=w?"won the round":ok?"right way":"wrong way";
-      return '<a class="cg-c '+(w?'w':ok?'g':'r')+'" role="cell" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(plainCo(r))+': '+nm(m)+' called '+callAmt(c)+', '+lab+'">'+(w?GCROWN:'')+'<span>'+callAmt(c)+'</span></a>'}).join("")+'<span class="cg-sum" role="cell"><b>'+GCROWN+t.w+'</b><small>'+t.ok+'/'+t.n+'</small></span></div>'});
+      return '<a class="cg-c '+(w?'w':ok?'g':'r')+'" role="cell" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(plainCo(r))+': '+nm(m)+' called '+callAmt(c)+', '+lab+'">'+(w?GCROWN:'')+'<span>'+callAmt(c)+'</span></a>'}).join("")+'<span class="cg-sum" role="cell"><b>'+(t.n?pctOf(t.ok,t.n)+'%':'n/a')+'</b><small>'+t.ok+'/'+t.n+'</small></span></div>'});
   h+='<div class="cg-r cg-mk" role="row"><span class="cg-l" role="rowheader"><b>Market</b></span>'+R.map(function(r){return '<span class="cg-m '+(r.a<0?'xd':'xu')+'" role="cell" title="Market '+r.out+'">'+(r.a<0?'▼':'▲')+Math.abs(r.a).toFixed(1)+'</span>'}).join("")+'<span class="cg-sum mk" role="cell"><small>▲'+R.filter(function(r){return r.a>0}).length+' ▼'+R.filter(function(r){return r.a<0}).length+'</small></span></div>';
   /* the takeaway: who collects the crowns, and who is wrong most often (at least FMIN calls) */
   var most=RK.slice().sort(function(a,b){return tally[b].w-tally[a].w})[0],elig=RK.filter(function(m){return tally[m].n>=FMIN}),
@@ -5907,8 +5936,8 @@ function wireRlx(root){if(RLX_IO)RLX_IO.disconnect();if(reduce||!("IntersectionO
   $$(".rlx-v video",root).forEach(function(v){v.addEventListener("playing",function(){if(v===cur)v.parentNode.classList.add("on")});RLX_IO.observe(v)});
   var t;addEventListener("scroll",function(){clearTimeout(t);t=setTimeout(pick,120)},{passive:true})}
 function vModels(){
-  return (X1?xsh("01","Leaderboard",X2?"Current standings":"Current standings",X2?"Ranked by rounds won, then by the smaller average miss. "+(SIM.leadHours!=null?"The leaderboard freezes "+SIM.leadHours+"h before NVIDIA reports. #1 makes the call.":"Whoever is on top trades the pot.")+" Tap an AI for every call it made.":"Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
-    '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
+  return (X1?xsh("01","Leaderboard",X2?"Current standings":"Current standings",X2?"Ranked by how often each AI calls the direction right (up or down). A tie goes to the smaller average miss. "+(RK.some(function(k){return CAR[k].g<ROUNDS.length/2})?"AIs that called fewer than half the rounds rank below the rest. ":"")+(SIM.leadHours!=null?"The leaderboard freezes "+SIM.leadHours+"h before NVIDIA reports. #1 makes the call.":"Whoever is on top trades the pot.")+" Tap an AI for every call it made.":"Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
+    '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
     '<p class="lbn">'+(X2?'<b>A call</b>: up or down, plus how much, filed before the report. ':'')+'<b>Hit rate</b>: calls right on direction'+(X2?' (up or down), whatever the size':'')+'. <b>Avg miss</b>: points off the real move. <b>ROI</b>: '+usd(STAKE)+' rolled through every call. Simulated, before fees.</p>'+
     (X2?callGrid():'')+statsHTML()+(X2?findings()+'<section class="blk xsec" aria-labelledby="recBk">'+xsh("05","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recBk")+'<div class="hls hls3">'+records()+'</div></section>':'')+
@@ -5942,12 +5971,10 @@ function vProfile(m){if(!CAR[m])return null;
   var hR=place(m,hit,function(a,b){return a>b}),mR=place(m,miss,function(a,b){return a<b}),fR=place(m,bal,function(a,b){return a>b});
   var NW=["","one","two","three","four","five","six"][N]||N,rk=rkOf(m),nmM=nm(m),ord=["","first","second","third","fourth","fifth"];
   /* the headline: one sentence that steers what people remember (a chart's title drives recall), then the sample size */
-  var me=full.indexOf(m)>-1,pos=rk===1?nmM+' leads with '+C.won+' '+(C.won===1?'win':'wins'):nmM+' is '+ord[rk]+' with '+C.won+' '+(C.won===1?'win':'wins'),tail='';
-  if(me&&hR===1)tail=' and the best hit rate';
-  else if(me&&mR===1)tail=' and the closest calls';
-  else if(me&&hR===full.length)tail=', but the worst hit rate';
+  var me=full.indexOf(m)>-1,pos=nmM+(rk===1?' leads':' is '+ord[rk])+(C.g?', right on direction '+C.right+' of '+C.g+' times':', with no graded call yet'),tail='';
+  if(me&&mR===1)tail=', with the closest calls';
   else if(me&&mR===full.length)tail=', but misses by the most';
-  else if(!me)tail=' from '+C.g+' calls since joining late';
+  else if(!me&&C.g)tail=' since joining late';
   var verdictLine=pos+tail+'.';
   var sample=C.g+' calls so far, a small sample, so ranks can still swing.'+(C.streak?' Right now: '+C.streak.k+' '+(C.streak.ok?'right':'wrong')+' in a row.':'');
   var O2=['','1st','2nd','3rd','4th','5th','6th'];function rankTag(r){return r?'<em class="pf-tag">'+O2[r]+' place</em>':'<em class="pf-tag">not ranked yet</em>'}
@@ -5991,8 +6018,8 @@ function vProfile(m){if(!CAR[m])return null;
     '<p class="pf-verdict">'+verdictLine+'</p>'+
     '<div class="pf-arr" role="img" aria-label="'+C.right+' of '+C.g+' calls got the direction right, '+C.won+' of them won the round"><div class="pf-dots">'+dots.map(function(c){return '<i class="'+c+'"></i>'}).join("")+'</div>'+
       '<p><b>'+C.right+' of '+C.g+'</b> calls got up or down right <span>('+pctOf(C.right,C.g)+'%)</span>. <span class="pf-lg2"><span class="x5lg"><i class="w"></i>won the round</span> <span class="x5lg"><i class="g"></i>right way</span> <span class="x5lg"><i class="r"></i>wrong way</span></span></p></div>'+
-    '<div class="pf-kpi"><div class="pf-k gold"><small>Wins</small><b>'+C.won+'</b><span>'+rankTag(place(m,function(k){return CAR[k].won},function(a,b){return a>b}))+'</span></div>'+
-    '<div class="pf-k"><small>Right way</small><b>'+C.right+'<span>/'+C.g+'</span></b><span>'+rankTag(hR)+'</span></div>'+
+    '<div class="pf-kpi"><div class="pf-k gold"><small>Right way</small><b>'+C.right+'<span>/'+C.g+'</span></b><span>'+rankTag(hR)+'</span></div>'+
+    '<div class="pf-k"><small>Wins</small><b>'+C.won+'</b><span>'+rankTag(place(m,function(k){return CAR[k].won},function(a,b){return a>b}))+'</span></div>'+
     '<div class="pf-k"><small>Average miss</small><b>'+(C.avg==null?'n/a':C.avg.toFixed(2))+'<span> pts</span></b><span>'+rankTag(mR)+'</span></div>'+
     '<div class="pf-k"><small>'+usd(STAKE)+' copied</small><b>'+usd(bal(m))+'</b><span>'+rankTag(fR)+' '+pctTxt(bal(m))+'</span></div></div>'+
     '<p class="pf-sample">'+sample+'</p></header>';
@@ -6283,7 +6310,7 @@ if(X5)(function(){
   var LEV=SIM.leverage,LEAD=SIM.leadHours,BT=EZ5_BET(),betDay=BT?EZ5_DAY(BT):"",frzDay=EZ5_FREEZE(),FROZEN=EZ5_FROZEN();
   var nR=ROUNDS.length,firstDay=(function(){var d=mmdd(ROUNDS[0]&&ROUNDS[0].called);return d?d.toLocaleDateString("en-US",{month:"short",day:"numeric"}).replace(" ","\u00a0"):""})();
   var NV=UPCOMING.filter(function(u){return u.ticker==="NVDA"})[0],nUp=UPCOMING.length,nBefore=NV?UPCOMING.filter(function(u){return u.n<NV.n}).length:nUp;
-  var leader=LADDER[0]?nm(LADDER[0].m):"";
+  var leader=ROWS[0]&&career(ROWS[0].m).g?nm(ROWS[0].m):"";   // #1 by direction (v15 sorts ROWS; owner, 2026-10-14)
   var EZM='<span class="mark ezb"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span>';
 
   /* ===== the light/dark switch, top right of the header =====
@@ -6381,11 +6408,18 @@ if(X5)(function(){
     addEventListener("hashchange",reHome)}
 
   /* ===== 4. WHO'S LEADING: X2's standings, full width ===== */
+  /* ranked by direction (owner, 2026-10-14: "rank them by accuracy as well"): the rows are v15's, in ROWS's order */
+  var late=ROWS.some(function(T){var g=career(T.m).g;return g>0&&g<nR/2});
   var lb=sec("x5lb","x5lb",shead("The leaderboard","Who's leading now",null)+
-    '<details class="x5d"><summary><u>How ranks work</u></summary><ul class="x5kv"><li><b>First</b><span>Most round wins.</span></li><li><b>Same wins</b><span>The smaller average miss ranks higher.</span></li></ul></details>');
-  /* the race, beside "How ranks work": how far #2 is behind #1 (FOMO, honestly: the real gap from the standings) */
-  var R0=ROWS[0],R1=ROWS[1],dW=R0&&R1?R0.won-R1.won:-1,hd=$(".x5d",lb);
-  if(hd&&R0&&R0.won>0&&dW>=0&&!FROZEN){var race=el("p","x5race",'<b>'+esc(nm(R1.m))+'</b> '+(dW?dW+(dW===1?' win':' wins')+' behind':'level on wins'));
+    '<details class="x5d"><summary><u>How ranks work</u></summary><ul class="x5kv"><li><b>First</b><span>Right on direction most often.</span></li><li><b>Same rate</b><span>The smaller average miss ranks higher.</span></li>'+
+      (late?'<li><b>Joined late</b><span>Under half the rounds called: ranked after the rest.</span></li>':'')+'</ul></details>');
+  /* the race, beside "How ranks work": how far #2 is behind #1 (FOMO, honestly: the real gap from the standings), in
+     points of the percentages the rows show ("7 points back", a standings table's words, as long as "4 wins behind"
+     was, so it still fits beside the toggle at 320 px); the same rounded share is "neck and neck" (the smaller average
+     miss splits them); only between two AIs that called at least half the rounds */
+  var R0=ROWS[0],R1=ROWS[1],C0=R0&&career(R0.m),C1=R1&&career(R1.m),full=function(C){return !!C&&C.g>0&&C.g>=nR/2},
+      dP=full(C0)&&full(C1)?Math.round(C0.right/C0.g*100)-Math.round(C1.right/C1.g*100):-1,hd=$(".x5d",lb);
+  if(hd&&dP>=0&&!FROZEN){var race=el("p","x5race",'<b>'+esc(nm(R1.m))+'</b> '+(dP?dP+(dP===1?' point':' points')+' back':'neck and neck'));
     var hw=el("div","x5lbh");hd.parentNode.insertBefore(hw,hd);hw.appendChild(hd);hw.appendChild(race)}
   var band=el("div","band");if(stand)band.appendChild(stand);lb.appendChild(band);
   lb.insertAdjacentHTML("beforeend",'<div class="x5more"><a class="btn" href="#/leaderboard">Full leaderboard and ROI →</a></div>');

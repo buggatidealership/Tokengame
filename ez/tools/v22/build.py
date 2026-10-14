@@ -45,12 +45,56 @@ X5M=re.compile(r'[ \t]*/\*X5\{\*/.*?/\*\}X5\*/\n?',re.S)
 # for X2 alone and removed with the markers from every other page (X3, X4 and X5 share X2's code but not this); its
 # styles are tools/v22/x2-overview.css, put in X2 alone (below). So Season Live, X1, X3, X4 and X5 stay byte for byte.
 X2M=re.compile(r'[ \t]*/\*X2\{\*/.*?/\*\}X2\*/\n?',re.S)
+# EZ Season ranks by direction (owner, 2026-10-14: "rank them by accuracy as well", after X2), in v15-season.html itself:
+# the RANK styles, the rule in "How we grade", the standings' script (ROWS sorted by direction, no wins in the rows, the
+# scores bar) and the money list without gold. X3, X4 and X5 build from it (their extras: the x2..x5, x3 and X5 parts
+# below). X1 is locked and ranks by wins: V15_BOTH and V15_X1 put v15's earlier text back, (today's text, X1's) in
+# pairs, a regex where a comment is long. X2 ranked by direction first and keeps its text byte for byte: the RANK styles
+# go (it has its own in x2-overview.css), and the parts it never shows ("How we grade" leaves its hero, the money list
+# its Overview) and two style comments keep their earlier text (V15_BOTH); its standings' comments are X2's own (the x2
+# branch).
+RANK_CSS=re.compile(r'<!--RANK:.*?<!--/RANK-->\n',re.S)
+V15_BOTH=[
+    ('/* standings: one row per model. Rank, logo, name, how often it called the direction right (ranked by it: the RANK\n   styles, ROWS in the script). The leader (ROWS[0]) is lime and wears the crown. */',
+     '/* standings: one row per model. Rank, logo, name, wins. The leader (LADDER[0]) is lime and wears the crown. */'),
+    ("/* standings: the name on the logo's line, then how often it called the direction right (no wins since 2026-10-14) */",
+     "/* standings: the name on the logo's line, then how often it called the direction right, then the wins */"),
+    ('<li id="howRk"><b>Ranks.</b> Most accurate is #1. A tie goes to the smaller average miss.</li>',
+     '<li><b>Ties.</b> Same wins? The one closer on average ranks higher.</li>'),
+    (re.compile(r'  /\* one tile per AI, in money order: .*?\*/\n',re.S),
+     '  /* one tile per AI: the return big, the dollars under it, and its path from the stake (dashed) round by round */\n'),
+    ("""    return '<li class="ft"><span class="ft-w">'""","""    return '<li class="ft'+(i?'':' lead')+'"><span class="ft-w">'""")]
+V15_X1=[
+    (re.compile(r'/\* ---------- hero: the standings, ranked by direction \(owner, 2026-10-14\) ----------\n.*?\*/\n',re.S),
+     "/* ---------- hero: the standings, a leaderboard of rounds won ----------\n"
+     "   Order and tie-breaks come from LADDER (ez-data.js: wins, then the smaller average miss). Ties share the rank number.\n"
+     "   The crown goes to LADDER[0]. A model with calls but none graded yet (Grok) joins the table below them with 0 wins. */\n"),
+    (re.compile(r'/\* rank = direction \(owner, 2026-10-14: .*?Ranked after the rest\."\)\}\)\(\);\n',re.S),
+     "/* rank = wins, then the smaller average miss (owner, 2026-10-08): equal wins no longer share a place */\n"
+     "function rankOf(T){var a=parseFloat(T.avg);return 1+ROWS.filter(function(U){var b=parseFloat(U.avg);return U.won>T.won||(U.won===T.won&&!isNaN(b)&&(isNaN(a)||b<a))}).length}\n"),
+    ("(rankOf(T)===1&&career(T.m).g>0?' r1':'')","(rankOf(T)===1&&T.won>0?' r1':'')"),
+    ("pcStats(T.m)+'</li>'}).join(\"\");","pcStats(T.m)+\n    '<p class=\"pc-w\"><b>'+T.won+'</b><span>'+(T.won===1?'win':'wins')+'</span></p></li>'}).join(\"\");"),
+    ("<small>'+(C.g<ROUNDS.length/2?C.right+' of '+C.g+' calls':'on direction')+'</small>","<small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'hit rate')+'</small>"),
+    ("'<b>Leaderboard</b> On direction: '+ROWS.map(function(T){var C=career(T.m);return nm(T.m)+' '+(!C.g?'n/a':C.g>=ROUNDS.length/2?Math.round(C.right/C.g*100)+'%':C.right+' of '+C.g)}).join(' · ')",
+     "'<b>Leaderboard</b> '+ROWS.map(function(T){return nm(T.m)+' '+T.won}).join(' · ')"),
+    ('$("#gpuLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x";\n  var when=',
+     '$("#gpuLev").textContent=(SIM.leverage!=null?SIM.leverage:5)+"x";\n  var lead=LADDER&&LADDER[0]?nm(LADDER[0].m):"";\n  var when=')]
+def swap(page,pairs):   # each pair once: a string, or a regex (a long comment)
+    for a,b in pairs:
+        if isinstance(a,str): assert page.count(a)==1,a[:90]; page=page.replace(a,b)
+        else: page,n=a.subn(lambda m:b,page,count=2); assert n==1,(n,a.pattern[:60])
+    return page
 for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1.html","x1","EZ Live X1"),("v24-live-x2.html","x2","EZ Live X2"),("v41-live-x3.html","x3","EZ Live X3"),("v42-live-x4.html","x4","EZ Live X4"),("v43-live-x5.html","x5","EZ Live X5")]:
     jx=js.replace('/*X5{*/','').replace('/*}X5*/','') if exp=="x5" else X5M.sub('',js)
     jx=jx.replace('/*X2{*/','').replace('/*}X2*/','') if exp=="x2" else X2M.sub('',jx)
     page=base[:i]+'window.EZ_EXP="'+exp+'";\n'+jx+base[i:]
     page=re.sub(r'<title>[^<]*</title>','<title>'+title+'</title>',page,1)
     if exp=="x1": page=re.sub(r'<!--WSJ:.*?<!--/WSJ-->\n','',page,flags=re.S)
+    if exp=="":  # Season Live is retired (2026-10-14) and keeps its Wins column: v15's RANK grids would break its rows
+        page,n=RANK_CSS.subn('',page); assert n==1,n
+    if exp in ("x1","x2"):  # X1 ranks by wins; X2 keeps its own text (V15_BOTH, V15_X1, above)
+        page,n=RANK_CSS.subn('',page); assert n==1,n
+        page=swap(page,V15_BOTH+(V15_X1 if exp=="x1" else []))
     if exp=="x1":  # X1 is locked: its one line under the headline as it was (v15's three lines, heroLines(), 2026-10-14;
         # bullets in a <ul>, later that day)
         page,n1=re.subn(r'<!--HL:.*?<!--/HL-->\n','',page,count=1,flags=re.S)
@@ -76,14 +120,16 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         assert page.count(L)==1
         if exp=="x1": page=page.replace(L,"""'<span class="pc-t"><h3>'+nm(T.m)+'</h3></span>'""")
     if exp in ("x2","x3","x4","x5"):  # X4 = X2 exactly, only the colours change (skin-x4.css below); X5 = X2 plus its own Overview
-        # standings: one number people care about. The percentage of calls right on direction; the leader's reads
-        # "buyback odds" (its call decides the NVIDIA bet); the best eligible record gets a "Most accurate" tag.
-        # X2 changes these again (ranked by direction, owner, 2026-10-14): see the x2 branch below.
+        # standings: one number people care about, the percentage of calls right on direction: "on direction", or "x of y
+        # calls" for an AI that called under half the rounds (EZ_FULL). The rows are ranked by it (v15, owner 2026-10-14),
+        # so #1 is the most accurate AI (EZ_LEAD, the AI with graded calls on top) and its row says it makes the NVIDIA
+        # call. The same rule decides every rank and leader mark on the routes (the ranking block below).
         H="var STAND_STAT=\"right\",FOL_EARLY=null;"
         assert page.count(H)==1
-        page=page.replace(H,H+"function EZ_FULL(m){return career(m).g>=ROUNDS.length/2}function EZ_BEST(){var b=null,bv=-1;ROWS.forEach(function(T){var C=career(T.m);if(!EZ_FULL(T.m))return;var v=C.right/C.g;if(v>bv){bv=v;b=T.m}});return b}function EZ_LEAD(){return ROWS[0]&&ROWS[0].won>0?ROWS[0].m:null}")
-        S="""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(C.g<ROUNDS.length?C.right+' of '+C.g+' right':'hit rate')+'</small>"""
-        assert page.count(S)==1; page=page.replace(S,"""<b>'+Math.round(C.right/C.g*100)+'%</b><small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':m===EZ_LEAD()?'"""+("buyback odds" if exp in ("x2","x4") else "hit rate")+"""':'hit rate')+'</small>""")
+        page=page.replace(H,H+"function EZ_FULL(m){return career(m).g>=ROUNDS.length/2}function EZ_LEAD(){return ROWS[0]&&career(ROWS[0].m).g>0?ROWS[0].m:null}")
+        for a,b in [("""<small>'+(C.g<ROUNDS.length/2?C.right+' of '+C.g+' calls':'on direction')+'</small>""","""<small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':'on direction')+'</small>"""),
+                    ("(!C.g?'n/a':C.g>=ROUNDS.length/2?","(!C.g?'n/a':EZ_FULL(T.m)?")]:   # the scores strip
+            assert page.count(a)==1,a; page=page.replace(a,b)
         L2="""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3></span>'"""
         assert page.count(L2)==1; page=page.replace(L2,"""'<span class="pc-t"><h3><a href="#/model/'+T.m.toLowerCase()+'">'+nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?'<small class="pc-best">'+(SIM.leadHours!=null?"""+("(EZ5_FROZEN()?'Makes the call':EZ5_FREEZE()?'Makes the call if #1 on '+EZ5_FREEZE():'In line for the call')" if exp=="x5" else "'In line for the call'")+""":'Bets on NVIDIA')+'</small>':'')+'</span>'""")
         # the NVIDIA call, leverage and loss copy (owner, 2026-10-12): 24 hours before NVIDIA reports the leaderboard freezes
@@ -106,38 +152,19 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
             ("""of it fills this pool. The AI on top bets it on NVIDIA\\'s earnings at '+(SIM.leverage!=null?SIM.leverage:5)+'x. Win,""",
              """of it fills this pool. '+(SIM.leadHours!=null?SIM.leadHours+' hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down. We bet the whole pool on that call'+(SIM.leverage!=null?' at '+SIM.leverage+'x':'')+'.':'The AI on top bets it on NVIDIA\\'s earnings at '+(SIM.leverage!=null?SIM.leverage:5)+'x.')+' Win,""")]:
             assert page.count(a)==1,a; page=page.replace(a,b)
-    if exp=="x2":
-        # X2 ranks by direction (owner, 2026-10-14: "most people care about accuracy on directional calls ... it makes
-        # more sense to go with the most accurate model"). Hit rate = calls right on direction / calls made. AIs that called
-        # at least half the graded rounds rank first, by hit rate, a tie going to the smaller average miss; then the rest,
-        # the same way; no shared places (a full tie keeps LADDER's order: wins, then the smaller average miss). ROWS is
-        # sorted once, before anything is drawn,
-        # so this one rule decides #1 everywhere on X2: the Overview's standings, the Leaderboard tab, the Leads crown, "In
-        # line for the call", the scores strip, the model pages and their order. Wins leave the standings rows (the number,
-        # the label and the Leaderboard tab's column); each round's winner stays on its card. The "Most accurate" tag goes
-        # (the top spot is the most accurate now). The percentage reads "on direction"; an AI under half the rounds keeps
-        # "x of y calls". The Overview's rows get the last five calls (formSq, as on the Leaderboard tab; x2-overview.css).
-        # X3, X4 and X5 keep ranking by wins. Every number comes from ez-data.js.
+        # ranked by direction (owner, 2026-10-14: X2 first, "most people care about accuracy on directional calls ... it
+        # makes more sense to go with the most accurate model"; then "rank them by accuracy as well" for EZ Season, X3, X4
+        # and X5). Hit rate = calls right on direction / calls made. AIs that called at least half the graded rounds rank
+        # first, by hit rate, a tie going to the smaller average miss; then the rest, the same way; no shared places (a
+        # full tie keeps LADDER's order: wins, then the smaller average miss). ROWS is sorted once in v15, before anything
+        # is drawn, so this one rule decides #1 everywhere: the Overview's standings, the Leaderboard tab, the Leads crown,
+        # "In line for the call", the scores strip, the model pages and their order (and X3's race and leaderboard, the x3
+        # branch; X5's "Who's leading now", its block in routes.js). Wins leave the standings rows (the number, the label and the Leaderboard tab's
+        # column; the RANK styles in v15 take the column out of routes.css's grids, X2's own in x2-overview.css); each
+        # round's winner stays on its card. The "Most accurate" tag goes (the top spot is the most accurate now). The
+        # percentage reads "on direction"; an AI under half the rounds keeps "x of y calls". Every number comes from
+        # ez-data.js.
         for a,b in [
-            ('/* rank = wins, then the smaller average miss (owner, 2026-10-08): equal wins no longer share a place */\nfunction rankOf(T){var a=parseFloat(T.avg);return 1+ROWS.filter(function(U){var b=parseFloat(U.avg);return U.won>T.won||(U.won===T.won&&!isNaN(b)&&(isNaN(a)||b<a))}).length}',
-             '/* X2: rank = direction (owner, 2026-10-14). Hit rate = calls right on direction / calls made; AIs that called at least half\n'
-             '   the graded rounds first, by hit rate (compared as whole numbers, right x calls), a tie going to the smaller average\n'
-             '   miss; then the rest the same way; an AI with no graded call last. No shared places: the place is the row\'s position.\n'
-             '   WINS_ORDER keeps LADDER\'s order (wins, then the smaller average miss) from before the sort: the "Longest winning\n'
-             '   streak" record breaks a tie with it, as on the other pages, so the ranking never moves a record. */\n'
-             'var WINS_ORDER=ROWS.map(function(T){return T.m});\n'
-             'ROWS.sort(function(x,y){var a=career(x.m),b=career(y.m),fa=a.g>0&&a.g>=ROUNDS.length/2,fb=b.g>0&&b.g>=ROUNDS.length/2;\n'
-             '  if(fa!==fb)return fa?-1:1;if(!a.g||!b.g)return (b.g?1:0)-(a.g?1:0);return (b.right*a.g-a.right*b.g)||(a.avg-b.avg)});\n'
-             'function rankOf(T){return ROWS.indexOf(T)+1}'),
-            ("function EZ_LEAD(){return ROWS[0]&&ROWS[0].won>0?ROWS[0].m:null}","function EZ_LEAD(){return ROWS[0]&&career(ROWS[0].m).g>0?ROWS[0].m:null}"),
-            # the Overview's standings: no wins; "on direction"; the last five calls by the name
-            ("<small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':m===EZ_LEAD()?'buyback odds':'hit rate')+'</small>","<small>'+(!EZ_FULL(m)?C.right+' of '+C.g+' calls':'on direction')+'</small>"),
-            ("'<li class=\"pc'+(i?'':' lead')+(rankOf(T)===1&&T.won>0?' r1':'')+'\">'","'<li class=\"pc'+(i?'':' lead')+(rankOf(T)===1&&career(T.m).g>0?' r1':'')+'\">'"),
-            ("nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?","nm(T.m)+'</a></h3><span class=\"lb-f2 x2o-f\">'+formSq(career(T.m))+'</span>'+(T.m===EZ_LEAD()?"),
-            ("pcStats(T.m)+\n    '<p class=\"pc-w\"><b>'+T.won+'</b><span>'+(T.won===1?'win':'wins')+'</span></p></li>'}).join(\"\");","pcStats(T.m)+'</li>'}).join(\"\");"),
-            # the scores strip
-            ("'<b>Leaderboard</b> '+ROWS.map(function(T){return nm(T.m)+' '+T.won}).join(' · ')",
-             "'<b>Leaderboard</b> On direction: '+ROWS.map(function(T){var C=career(T.m);return nm(T.m)+' '+(!C.g?'n/a':EZ_FULL(T.m)?Math.round(C.right/C.g*100)+'%':C.right+' of '+C.g)}).join(' · ')"),
             # the Leaderboard tab: the rule in plain words, no Wins column, no "Most accurate", "on direction"
             ('"Ranked by rounds won, then by the smaller average miss. "+(SIM.leadHours',
              '"Ranked by how often each AI calls the direction right (up or down). A tie goes to the smaller average miss. "+(RK.some(function(k){return CAR[k].g<ROUNDS.length/2})?"AIs that called fewer than half the rounds rank below the rest. ":"")+(SIM.leadHours'),
@@ -170,25 +197,42 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
              "h=h.replace(/<\\/div>$/,'<span class=\"cg-sh\" role=\"columnheader\">Right<br>way</span></div>');"),
             ("'<span class=\"cg-sum\" role=\"cell\"><b>'+GCROWN+t.w+'</b><small>'+t.ok+'/'+t.n+'</small></span></div>'",
              "'<span class=\"cg-sum\" role=\"cell\"><b>'+(t.n?pctOf(t.ok,t.n)+'%':'n/a')+'</b><small>'+t.ok+'/'+t.n+'</small></span></div>'"),
-            # stale on X2 (the ranking is by direction): comments, and what nothing calls any more (the chip's leader by wins,
-            # the best direction record for the "Most accurate" tag)
-            ("/* ---------- hero: the standings, a leaderboard of rounds won ----------\n"
-             "   Order and tie-breaks come from LADDER (ez-data.js: wins, then the smaller average miss). Ties share the rank number.\n"
-             "   The crown goes to LADDER[0]. A model with calls but none graded yet (Grok) joins the table below them with 0 wins. */",
-             "/* ---------- hero: the standings. On X2 (build.py, owner 2026-10-14) ROWS starts in LADDER's order (ez-data.js:\n"
-             "   wins, then the smaller average miss) and is sorted by direction below, before anything is drawn. The crown goes\n"
-             "   to ROWS[0]. A model with calls but none graded yet joins below the others. */"),
+            # stale now (the ranking is by direction): the comment, and the best direction record for the "Most accurate" tag
             ("the return on the stake, the last five rounds, and wins (what the ranking is decided on) on the far right.\n",
              "the return on the stake and the last five calls. X2: no wins column, the rows ranked by direction (build.py).\n"),
-            ("  var lead=LADDER&&LADDER[0]?nm(LADDER[0].m):\"\";\n",""),
-            ("function EZ_BEST(){var b=null,bv=-1;ROWS.forEach(function(T){var C=career(T.m);if(!EZ_FULL(T.m))return;var v=C.right/C.g;if(v>bv){bv=v;b=T.m}});return b}",""),
             ("/* X2: the best direction record among AIs that have called at least half the rounds */\n",""),
             ("function lbBest(){var b=null,bv=-1;RK.forEach(function(k){var C=CAR[k];if(C.g<ROUNDS.length/2)return;var v=C.right/C.g;if(v>bv){bv=v;b=k}});return b}\n","")]:
             assert page.count(a)==1,a[:90]; page=page.replace(a,b)
-        # the "Longest winning streak" record: a tie goes to LADDER's order (WINS_ORDER, above), as on the other pages and
-        # as before the ranking changed (it fell to RK, which follows the direction ranking on X2)
+        # the "Longest winning streak" record: a tie goes to LADDER's order (WINS_ORDER, v15), as on the other pages and
+        # as before the ranking changed (it fell to RK, which follows the direction ranking)
         a="RK.map(function(m){return run(m,winF,true)})"
         assert page.count(a)==2,page.count(a); page=page.replace(a,"WINS_ORDER.map(function(m){return run(m,winF,true)})")
+    if exp in ("x3","x4","x5"):
+        # "Getting smarter or just lucky?", ROI (owner, 2026-10-14): the standings rank by direction, so the Overview's money
+        # tiles lose their rank numbers and the leader's gold (a gold "1 GPT" one scroll under "#1 Grok" read as a second
+        # leader); they keep the money order and the up/down pills. X2 hides them in its styles (x2-overview.css); here the
+        # Overview's tiles (#lqDist) are drawn without them, one grid area fewer (v15's RANK styles). The Leaderboard tab's
+        # ROI stat keeps its numbers: it ranks by money. (X5's Overview has no ROI tiles; its Leaderboard tab is the same.)
+        a="""return '<li'+(i?'':' class="lead"')+'><span class="pk-r">'+(i+1)+'</span>'+logo(f.m)"""
+        assert page.count(a)==1; page=page.replace(a,"""return (face.id==="lqDist"?'<li>':'<li'+(i?'':' class="lead"')+'><span class="pk-r">'+(i+1)+'</span>')+logo(f.m)""")
+    if exp=="x2":
+        # X2 ranked by direction first (owner, 2026-10-14; the rule is v15's since EZ Season followed, the routes' parts are
+        # the x2..x5 block above). X2 keeps its text byte for byte: its own comments on the standings, no "How we grade"
+        # sentence (the rule is said on its Leaderboard tab), and the Overview's rows get the last five calls (formSq, as
+        # on the Leaderboard tab; x2-overview.css), X2 alone.
+        page=swap(page,[
+            (re.compile(r'/\* ---------- hero: the standings, ranked by direction \(owner, 2026-10-14\) ----------\n.*?\*/\n',re.S),
+             "/* ---------- hero: the standings. On X2 (build.py, owner 2026-10-14) ROWS starts in LADDER's order (ez-data.js:\n"
+             "   wins, then the smaller average miss) and is sorted by direction below, before anything is drawn. The crown goes\n"
+             "   to ROWS[0]. A model with calls but none graded yet joins below the others. */\n"),
+            (re.compile(r'/\* rank = direction \(owner, 2026-10-14: .*?\*/\n',re.S),
+             '/* X2: rank = direction (owner, 2026-10-14). Hit rate = calls right on direction / calls made; AIs that called at least half\n'
+             '   the graded rounds first, by hit rate (compared as whole numbers, right x calls), a tie going to the smaller average\n'
+             '   miss; then the rest the same way; an AI with no graded call last. No shared places: the place is the row\'s position.\n'
+             '   WINS_ORDER keeps LADDER\'s order (wins, then the smaller average miss) from before the sort: the "Longest winning\n'
+             '   streak" record breaks a tie with it, as on the other pages, so the ranking never moves a record. */\n'),
+            (re.compile(r'\(function\(\)\{var h=\$\("#howRk"\).*?\n'),''),
+            ("nm(T.m)+'</a></h3>'+(T.m===EZ_LEAD()?","nm(T.m)+'</a></h3><span class=\"lb-f2 x2o-f\">'+formSq(career(T.m))+'</span>'+(T.m===EZ_LEAD()?")])
         # X2's Overview order (owner, 2026-10-13): its styles, after the page's own (the code is the X2 block in routes.js)
         X2CSS=open(sys.argv[1]+'/x2-overview.css').read()
         # X2's dark mode (owner, 2026-10-13): X5's switch and dark C, colour only. tools/v22/skin-x2dark.css (dark C on
@@ -222,9 +266,30 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         for a,b in [
             ("""gt.innerHTML='At zero, we take #1\\'s NVIDIA call: up or down. We open it on Hyperliquid at <b>'""",
              """gt.innerHTML=(SIM.leadHours!=null?SIM.leadHours+' hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down. At zero, we open the trade':'At zero, we take #1\\'s NVIDIA call: up or down. We open it')+' on Hyperliquid at <b>'"""),
-            ("""'Most wins is #1. When the timer hits zero, we take #1\\'s NVIDIA call. Same wins?""",
-             """'Most wins is #1. '+(SIM.leadHours!=null?SIM.leadHours+' hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down.':'When the timer hits zero, we take #1\\'s NVIDIA call.')+' Same wins?""")]:
+            # ranked by direction (owner, 2026-10-14), so wins no longer decide #1: the line says the rule in X3's words
+            ("""'Most wins is #1. When the timer hits zero, we take #1\\'s NVIDIA call. Same wins? The one closer on average ranks higher.',lbBody);""",
+             """'Most accurate is #1. '+(SIM.leadHours!=null?SIM.leadHours+' hours before NVIDIA reports, the leaderboard freezes. The AI in first place makes the call: up or down.':'When the timer hits zero, we take #1\\'s NVIDIA call.')+' Same rate? The one closer on average ranks higher.'+(ROWS.some(function(T){var g=career(T.m).g;return g>0&&g<ROUNDS.length/2})?' Called under half the rounds? Ranked after the rest.':''),lbBody);""")]:
             assert page.count(a)==1,a; page=page.replace(a,b)
+        # X3 ranks by direction too (owner, 2026-10-14: "rank them by accuracy as well"; the order is v15's ROWS, so the
+        # race, the #1 tags and the leaderboard follow it). Its standings figure is the share of calls right on direction,
+        # "on direction" ("x of y calls" under half the rounds), not wins: the hero's line and race, and the leaderboard's
+        # rows. The note under the rows keeps the late joiner's call count (its share is of fewer calls) and drops the
+        # wins tally. The last round's card keeps its winner.
+        for a,b in [
+            ("' AIs call stocks before earnings. Most wins is #1.</p>'","' AIs call stocks before earnings. Most accurate is #1.</p>'"),
+            ("""var race='<div class="x3-race" role="list" aria-label="Wins so far">'+RKS.map(function(T,i){var one=rankOf(T)===1;""",
+             """var race='<div class="x3-race" role="list" aria-label="Right on direction so far">'+RKS.map(function(T,i){var one=rankOf(T)===1,C=career(T.m);"""),
+            ("""'<b>'+nm(T.m)+'</b><strong>'+T.won+'</strong><small>'+(T.won===1?'win':'wins')+'</small></div>'}).join("")+'</div>';""",
+             """'<b>'+nm(T.m)+'</b><strong>'+(C.g?pctOf(C.right,C.g)+'%':'n/a')+'</strong><small>'+(!C.g?'no calls yet':C.g>=ROUNDS.length/2?'on direction':C.right+' of '+C.g+' calls')+'</small></div>'}).join("")+'</div>';"""),
+            ("/* ===== 02 THE LEADERBOARD: who makes the call; wins big, right way small, one tag ===== */",
+             "/* ===== 02 THE LEADERBOARD: who makes the call; right on direction big, one tag (X3: ranked by direction, build.py) ===== */"),
+            ("""  var tw=ROWS.reduce(function(a,T){return a+(T.won||0)},0),nob=ROUNDS.filter(function(r){return !r.win}).length,shr=ROUNDS.filter(function(r){return r.win&&r.win.indexOf(" & ")>-1}).length;\n"""
+             """  var note=[];\n"""
+             """  if(tw!==ROUNDS.length)note.push(tw+' wins in '+ROUNDS.length+' rounds: '+[nob?nob+(nob>1?' had':' had')+' no winner':'',shr?shr+(shr>1?' were':' was')+' shared':''].filter(Boolean).join(', ')+'.');\n""",
+             """  var note=[];\n"""),
+            ("""'<span class="x3-w"><b>'+T.won+'</b><small>'+(T.won===1?'win':'wins')+'</small></span></li>'""",
+             """'<span class="x3-w"><b>'+(C.g?pctOf(C.right,C.g)+'%':'n/a')+'</b><small>'+(!C.g?'no calls yet':C.g>=ROUNDS.length/2?'on direction':C.right+' of '+C.g+' calls')+'</small></span></li>'""")]:
+            assert page.count(a)==1,a[:90]; page=page.replace(a,b)
     if exp=="x4":
         # X4 (owner, 2026-10-12): X2's layout, type and geometry, in X3's colours. Colour only: tools/v22/skin-x4.css,
         # generated by tools/v22/gen-skin-x4.py (rerun it after a CSS change). The class is on <html> from the first paint.

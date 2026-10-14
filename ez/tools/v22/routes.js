@@ -951,7 +951,7 @@ if(X5)(function(){
   var LEV=SIM.leverage,LEAD=SIM.leadHours,BT=EZ5_BET(),betDay=BT?EZ5_DAY(BT):"",frzDay=EZ5_FREEZE(),FROZEN=EZ5_FROZEN();
   var nR=ROUNDS.length,firstDay=(function(){var d=mmdd(ROUNDS[0]&&ROUNDS[0].called);return d?d.toLocaleDateString("en-US",{month:"short",day:"numeric"}).replace(" ","\u00a0"):""})();
   var NV=UPCOMING.filter(function(u){return u.ticker==="NVDA"})[0],nUp=UPCOMING.length,nBefore=NV?UPCOMING.filter(function(u){return u.n<NV.n}).length:nUp;
-  var leader=LADDER[0]?nm(LADDER[0].m):"";
+  var leader=ROWS[0]&&career(ROWS[0].m).g?nm(ROWS[0].m):"";   // #1 by direction (v15 sorts ROWS; owner, 2026-10-14)
   var EZM='<span class="mark ezb"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span>';
 
   /* ===== the light/dark switch, top right of the header =====
@@ -1049,11 +1049,18 @@ if(X5)(function(){
     addEventListener("hashchange",reHome)}
 
   /* ===== 4. WHO'S LEADING: X2's standings, full width ===== */
+  /* ranked by direction (owner, 2026-10-14: "rank them by accuracy as well"): the rows are v15's, in ROWS's order */
+  var late=ROWS.some(function(T){var g=career(T.m).g;return g>0&&g<nR/2});
   var lb=sec("x5lb","x5lb",shead("The leaderboard","Who's leading now",null)+
-    '<details class="x5d"><summary><u>How ranks work</u></summary><ul class="x5kv"><li><b>First</b><span>Most round wins.</span></li><li><b>Same wins</b><span>The smaller average miss ranks higher.</span></li></ul></details>');
-  /* the race, beside "How ranks work": how far #2 is behind #1 (FOMO, honestly: the real gap from the standings) */
-  var R0=ROWS[0],R1=ROWS[1],dW=R0&&R1?R0.won-R1.won:-1,hd=$(".x5d",lb);
-  if(hd&&R0&&R0.won>0&&dW>=0&&!FROZEN){var race=el("p","x5race",'<b>'+esc(nm(R1.m))+'</b> '+(dW?dW+(dW===1?' win':' wins')+' behind':'level on wins'));
+    '<details class="x5d"><summary><u>How ranks work</u></summary><ul class="x5kv"><li><b>First</b><span>Right on direction most often.</span></li><li><b>Same rate</b><span>The smaller average miss ranks higher.</span></li>'+
+      (late?'<li><b>Joined late</b><span>Under half the rounds called: ranked after the rest.</span></li>':'')+'</ul></details>');
+  /* the race, beside "How ranks work": how far #2 is behind #1 (FOMO, honestly: the real gap from the standings), in
+     points of the percentages the rows show ("7 points back", a standings table's words, as long as "4 wins behind"
+     was, so it still fits beside the toggle at 320 px); the same rounded share is "neck and neck" (the smaller average
+     miss splits them); only between two AIs that called at least half the rounds */
+  var R0=ROWS[0],R1=ROWS[1],C0=R0&&career(R0.m),C1=R1&&career(R1.m),full=function(C){return !!C&&C.g>0&&C.g>=nR/2},
+      dP=full(C0)&&full(C1)?Math.round(C0.right/C0.g*100)-Math.round(C1.right/C1.g*100):-1,hd=$(".x5d",lb);
+  if(hd&&dP>=0&&!FROZEN){var race=el("p","x5race",'<b>'+esc(nm(R1.m))+'</b> '+(dP?dP+(dP===1?' point':' points')+' back':'neck and neck'));
     var hw=el("div","x5lbh");hd.parentNode.insertBefore(hw,hd);hw.appendChild(hd);hw.appendChild(race)}
   var band=el("div","band");if(stand)band.appendChild(stand);lb.appendChild(band);
   lb.insertAdjacentHTML("beforeend",'<div class="x5more"><a class="btn" href="#/leaderboard">Full leaderboard and ROI →</a></div>');
