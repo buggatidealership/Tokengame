@@ -52,8 +52,8 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
   0.01 to 0.04). The owner's number stands ("keep as is"); report the gap, but do not hold a film for it. The owner will
   wait longer after the close for future rounds.
 - **Kept values (`KEEP` in `ez/tools/sync_sheet.py`).** A graded value the owner chose to keep after the sheet changed
-  it. The sync prints a KEEP note and writes the kept value, with no RECORD EDIT. Since 2026-10-14: R22 GS move stays
-  -0.27 (the sheet reads -0.21; owner: "leave Goldman"). Drop the entry if the owner changes their mind or fixes the sheet.
+  it. The sync prints a KEEP note and writes the kept value, with no RECORD EDIT. Empty now: R22 GS used it (-0.27) until
+  the owner chose the sheet's -0.21 on 2026-10-14, which matches the round's film (official close-to-close -0.23).
 - **R26 ASML (2026-10-14):** Kimi's call changed in the sheet after the site had shown it (UP 2.5 -> DOWN 2). The owner
   confirmed the change and the other three calls were made before the earnings cutoff, so the sheet's calls stand.
 - **Renumbering.** The sync matches rounds by ticker + call date, not by number. A renumbered sheet shows up as

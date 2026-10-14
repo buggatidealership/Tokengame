@@ -148,7 +148,7 @@ def _days(t):
 ROUND_OVERRIDES = {}   # e.g. {("LEVI", "10/07/26"): 15}; the 2026-10-09 ones were dropped once "EZ Official 2" carried the numbers
 # Graded values the owner chose to keep after the sheet changed them, by (ticker, call date) and column. While the sheet
 # differs, the sync prints a KEEP note and writes the kept value instead of raising a RECORD EDIT on every run.
-KEEP = {("GS", "10/12/26"): {"ACTUAL MOVE (%)": ("-0.27", "owner, 2026-10-14: keep -0.27; the sheet reads -0.21")}}
+KEEP = {}   # e.g. {("GS", "10/12/26"): {"ACTUAL MOVE (%)": ("-0.27", "why")}}; R22 GS used it until the owner chose the sheet's -0.21 (2026-10-14)
 
 VOID_KEYS = {(t, day(d)): why for (t, d), why in VOID.items()}
 VOID_TICKERS = {t for (t, d) in VOID}
