@@ -47,6 +47,9 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    and what to QA.
 
 ## Notes
+- **The film is final (owner, 2026-10-14: "whatever the animation says, that's what it should be").** If a round's film
+  and the sheet or the site disagree on a number, the site follows the film: do not ask. If the sheet differs, pin the
+  film's value with `KEEP` in `ez/tools/sync_sheet.py` and tell the owner in one line that the sheet still differs.
 - **Small gaps to the official close (owner, 2026-10-14).** The owner reads the closing price just after the bell, so a
   move can differ from the official close by a few hundredths (R19 JPM -0.78 vs -0.86 official; R21 UNH, R23 WFC, R25 DPZ
   0.01 to 0.04). The owner's number stands ("keep as is"); report the gap, but do not hold a film for it. The owner will
