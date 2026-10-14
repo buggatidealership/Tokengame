@@ -48,6 +48,14 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    and what to QA.
 
 ## Notes
+- **Small gaps to the official close (owner, 2026-10-14).** The owner reads the closing price just after the bell, so a
+  move can differ from the official close by a few hundredths (R19 JPM -0.78 vs -0.86 official; R21 UNH, R23 WFC, R25 DPZ
+  0.01 to 0.04). The owner's number stands ("keep as is"); report the gap, but do not hold a film for it. The owner will
+  wait longer after the close for future rounds.
+- **Held on 2026-10-14 (until the owner says otherwise):** R22 GS stays at -0.27 on the site though the sheet reads -0.21
+  (owner: "keep as is"), and R26 ASML stays as published (Kimi UP 2.5, the others blank) because Kimi's call changed in the
+  sheet after it was published (to DOWN 2) and ASML reported on the morning of Oct 14. Both show up as differences in a dry
+  run; sync around them with a patched CSV (`--file`) or ask the owner, never with a blind `--allow-edits`.
 - **Renumbering.** The sync matches rounds by ticker + call date, not by number. A renumbered sheet shows up as
   `MOVED` lines; FILMS, PREFILMS, RECEIPTS and CARDS follow their round automatically on `--write`. Moving a graded
   round changes its public link, so it is a `RECORD EDIT` (confirm with the owner, then `--allow-edits`). The same round
