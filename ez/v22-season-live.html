@@ -2958,6 +2958,17 @@ a.cg-c:hover{transform:translateY(-2px)}
 @media(max-width:640px){.hero .sub,.lede{font-size:15px;line-height:1.5}}
 </style>
 <!--/WSJ-->
+<!--HL: the three lines under the headline (owner, 2026-10-14), written by heroLines() in the script. One line each, a
+     gap between them of about 60% of the text size (Practical Typography: 50 to 100%), so a line that wraps still reads
+     as one line. Each line is short (one to three rows), so its rows are balanced: no "#1 spot." left on a row of its
+     own, and on a phone "Wrong call:" starts the second row (browsers without it wrap as usual). Text size and colour
+     stay the hero line's (--lede). X2 puts the same lines beside its chip (tools/v22/x2-overview.css).
+     Stripped from X1 by build.py.-->
+<style>
+.hero-ln{display:block;text-wrap:balance}
+.hero-ln+.hero-ln{margin-top:.6em}
+</style>
+<!--/HL-->
 </head>
 <body>
 <header class="top"><div class="top-in">
@@ -2975,7 +2986,7 @@ a.cg-c:hover{transform:translateY(-2px)}
   <section class="hero" aria-label="Intro">
     <div class="hero-t">
       <h1>We’re putting buybacks<br> <span class="hl">in the hands of an <span class="lc">AI</span>.</span></h1>
-      <p class="sub" id="heroSub">AIs predict how stocks move after earnings. The one on top bets the fee pool on NVIDIA. Win, it buys back $EZ. Here's who's on top, and how the last round went.</p>
+      <p class="sub" id="heroSub"><span class="hero-ln">AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</span><span class="hero-ln">Part of every $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader's call.</span><span class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</span></p>
     </div>
     <div class="bflip" id="bflip"><div class="bf-in">
     <div class="bf-face bf-front" id="bfFront">
@@ -3134,7 +3145,19 @@ var NR=ROUNDS.length,UPS=ROUNDS.filter(function(r){return r.a>0}).length;
 /* the line under the headline: the model count from the data (MODEL_KEYS with a MODELS entry) */
 var NUMW=["No","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve"];
 var NM=MODEL_KEYS.filter(function(m){return MODELS[m]}).length;
-$("#heroSub").textContent=(NUMW[NM]||String(NM))+" AIs predict how stocks move after earnings. The one on top bets the fee pool on NVIDIA at "+(SIM.leverage!=null?SIM.leverage:5)+"x. Win, it buys back $EZ. Here's who's on top, and how the last round went.";
+/* the three lines under the headline (owner, 2026-10-14: EZ Live X3's lines, in the owner's own words, on EZ Season, X2
+   and X4). The wording lives here alone: EZ Season and X4 show it under the headline, X2 beside its chip (the X2 block
+   in tools/v22/routes.js). The model count, the pot's share of the fees (SIM.poolShare) and the leverage (SIM.leverage)
+   come from the data; with no share set the line says "Part of", with no leverage the leverage sentence goes. Each line
+   is a block span (.hero-ln, the HL styles in <head>), so the <p> stays valid. No-break spaces keep "before earnings",
+   "#1 spot", "10x leverage" and the two labels whole when a line wraps. The <p> in the page holds the same lines
+   without the numbers, for the moment before the data loads (so the hero does not jump): a change here goes there too.
+   X3 and X5 replace #heroSub with their own lines. */
+function heroLines(){var n=String(NUMW[NM]||NM),P=SIM.poolShare!=null?Math.round(SIM.poolShare*100):null,L=SIM.leverage;
+  return '<span class="hero-ln">'+n.charAt(0).toUpperCase()+n.slice(1)+' AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</span>'+
+    '<span class="hero-ln">'+(P!=null?'<b>'+P+'%</b> of every':'Part of every')+' $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader\'s call.'+(L!=null?' <b>'+L+'x</b>&nbsp;leverage, long or short.':'')+'</span>'+
+    '<span class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</span>'}
+$("#heroSub").innerHTML=heroLines();
 /* rounds whose calls are in, soonest answer first (then by round) */
 var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});
 /* rounds still to call, soonest calls first (then by round) */

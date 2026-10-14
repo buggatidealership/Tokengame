@@ -51,6 +51,11 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
     page=base[:i]+'window.EZ_EXP="'+exp+'";\n'+jx+base[i:]
     page=re.sub(r'<title>[^<]*</title>','<title>'+title+'</title>',page,1)
     if exp=="x1": page=re.sub(r'<!--WSJ:.*?<!--/WSJ-->\n','',page,flags=re.S)
+    if exp=="x1":  # X1 is locked: its one line under the headline as it was (v15's three lines, heroLines(), 2026-10-14)
+        page,n1=re.subn(r'<!--HL:.*?<!--/HL-->\n','',page,count=1,flags=re.S)
+        page,n2=re.subn(r'<p class="sub" id="heroSub">.*?</p>',lambda m:'<p class="sub" id="heroSub">AIs predict how stocks move after earnings. The one on top bets the fee pool on NVIDIA. Win, it buys back $EZ. Here\'s who\'s on top, and how the last round went.</p>',page,count=1,flags=re.S)
+        page,n3=re.subn(r'/\* the three lines under the headline \(owner, 2026-10-14.*?\$\("#heroSub"\)\.innerHTML=heroLines\(\);\n',lambda m:'$("#heroSub").textContent=(NUMW[NM]||String(NM))+" AIs predict how stocks move after earnings. The one on top bets the fee pool on NVIDIA at "+(SIM.leverage!=null?SIM.leverage:5)+"x. Win, it buys back $EZ. Here\'s who\'s on top, and how the last round went.";\n',page,count=1,flags=re.S)
+        assert (n1,n2,n3)==(1,1,1),(n1,n2,n3); assert 'heroLines' not in page and 'hero-ln' not in page
     if exp=="x1": page=page.replace("<h1>We’re putting","<h1>We're putting")
     if exp=="x1":  # X1 is locked: keep its chip and roadmap as they were
         CN='  /* no colon between hours and minutes on the gap between the two dies (owner, 2026-10-11); X1 keeps it (build.py) */\n'

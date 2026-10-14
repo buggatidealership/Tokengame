@@ -2958,37 +2958,55 @@ a.cg-c:hover{transform:translateY(-2px)}
 @media(max-width:640px){.hero .sub,.lede{font-size:15px;line-height:1.5}}
 </style>
 <!--/WSJ-->
+<!--HL: the three lines under the headline (owner, 2026-10-14), written by heroLines() in the script. One line each, a
+     gap between them of about 60% of the text size (Practical Typography: 50 to 100%), so a line that wraps still reads
+     as one line. Each line is short (one to three rows), so its rows are balanced: no "#1 spot." left on a row of its
+     own, and on a phone "Wrong call:" starts the second row (browsers without it wrap as usual). Text size and colour
+     stay the hero line's (--lede). X2 puts the same lines beside its chip (tools/v22/x2-overview.css).
+     Stripped from X1 by build.py.-->
+<style>
+.hero-ln{display:block;text-wrap:balance}
+.hero-ln+.hero-ln{margin-top:.6em}
+</style>
+<!--/HL-->
 <style id="x2-overview">
 /* ===== X2's Overview (owner, 2026-10-13), EZ Live X2 alone: build.py puts this file in v24-live-x2.html only (X3, X4
    and X5 share routes.css but not this, and gen-skin-x4.py and gen-skin-x5.py never read it). The code is the X2 block
-   at the end of routes.js. Headline, then the NVIDIA chip and the bet in bullets, then Every call, Current standings,
+   at the end of routes.js. Headline, then the NVIDIA chip and the bet in three lines, then Every call, Current standings,
    Getting smarter or just lucky? and Get $EZ. X2's own type, ink and yellow throughout. ===== */
 
-/* the chip, right under the headline, then the four bullets. Phones and tablets (under 1024 px): one column, the
-   chip then the bullets, all of it in a phone's first screen (390 x 844). On a tablet the column's width follows the
-   window's height, so the chip never fills the first screen and the bullets show above the fold (NN/g: no full-screen
+/* the chip, right under the headline, then the three lines. Phones and tablets (under 1024 px): one column, the
+   chip then the lines, all of it in a phone's first screen (390 x 844). On a tablet the column's width follows the
+   window's height, so the chip never fills the first screen and the lines show above the fold (NN/g: no full-screen
    hero, show that there is more below); it never goes under 440 px (or the column's own width, if that is less).
-   1024 px and wider: chip left, bullets right, the chip's height again set by the window's, so the headline, the chip
-   and the bullets fit one laptop screen (1280 x 800) */
+   1024 px and wider: chip left, lines right, the chip's height again set by the window's, so the headline, the chip
+   and the lines fit one laptop screen (1280 x 800) */
 .x2o-bet{max-width:900px;margin-top:28px}
 .x2o-bet .gpu{margin:0}
-.x2o-bet .x2o-ul{max-width:none}
 @media(min-width:641px) and (max-width:1023px){.x2o-bet{max-width:clamp(440px,calc((100svh - 340px) * 1834 / 1362),900px)}}
 @media(max-width:640px){.x2o-bet{margin-top:18px}}
 @media(min-width:1024px){
   .x2o-bet{max-width:none;display:grid;grid-template-columns:minmax(0,min(62%,max(400px,calc((100svh - 290px) * 1834 / 1362)))) minmax(0,1fr);gap:0 44px;align-items:center}
-  .x2o-bet .x2o-ul{max-width:40ch;gap:14px}
 }
 
-/* the bullets: one idea per line, X2's text size under a head (--lede), a small yellow square in an ink ring as the
-   bullet (the section numbers' yellow and ink), the numbers in bold ink */
+/* the bet in three lines (owner, 2026-10-14: X3's lines in the owner's words, in place of the four bullets): the lines
+   under EZ Season's headline (v15's heroLines(), one block span each, .hero-ln, a gap of .6em between them). Lines,
+   not bullets: no marker, X2's text size and line height under a head as the bullets had (--lede, 15 px on phones),
+   the numbers and "Right call:" / "Wrong call:" in bold ink. At most 60 characters a line under the chip (EZ Season's
+   hero line: 50 to 70 reads best), so a tablet's wide column does not stretch them; beside the chip (1024 px and wider)
+   the column stays as narrow as the bullets' was, with the bullets' 14 px between lines */
+.x2o-lines{margin:18px 0 0;font:var(--lede);line-height:1.5;color:var(--ink2);max-width:60ch}
+.x2o-lines b{color:var(--ink);font-weight:800}
+@media(max-width:640px){.x2o-lines{font-size:15px;margin-top:14px}}
+@media(min-width:1024px){.x2o-lines{margin-top:0;max-width:40ch}.x2o-lines .hero-ln+.hero-ln{margin-top:14px}}
+
+/* the bullets (Every call): one idea per line, X2's text size under a head (--lede), a small yellow square in an ink
+   ring as the bullet (the section numbers' yellow and ink), the numbers in bold ink */
 .x2o-ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font:var(--lede);color:var(--ink2);max-width:46ch}
 .x2o-ul li{position:relative;padding-left:24px;line-height:1.5;text-wrap:balance}
 .x2o-ul li::before{content:"";position:absolute;left:1px;top:calc(.75em - 5px);width:10px;height:10px;border-radius:3px;background:var(--yel);box-shadow:0 0 0 1.5px var(--ink)}
 .x2o-ul b{color:var(--ink);font-weight:800}
-.x2o-bet .x2o-ul{margin-top:18px}
-@media(min-width:1024px){.x2o-bet .x2o-ul{margin-top:0}}
-@media(max-width:640px){.x2o-ul{font-size:15px;gap:7px}.x2o-ul li{padding-left:21px}.x2o-ul li::before{width:9px;height:9px;top:calc(.75em - 4.5px)}.x2o-bet .x2o-ul{margin-top:14px}}
+@media(max-width:640px){.x2o-ul{font-size:15px;gap:7px}.x2o-ul li{padding-left:21px}.x2o-ul li::before{width:9px;height:9px;top:calc(.75em - 4.5px)}}
 
 /* Every call: three bullets take the place of the line under the head, under the head at every width, then the
    record's cards as before. "before the company reports" and "first market close after earnings" wear the same marker
@@ -4161,6 +4179,8 @@ html:where(.x2d[data-theme="dark"]){--ink:var(--x2d-tx);--ink2:var(--x2d-tx2);--
 :where(html.x2d[data-theme="dark"]) .x3-out b.dn{color:var(--ez-red)}
 :where(html.x2d[data-theme="dark"]) .x3-rule{color:var(--ink2)}
 :where(html.x2d[data-theme="dark"]) .x3-film{box-shadow:inset 0 0 0 2px var(--x2d-ring);color:var(--ink)}
+:where(html.x2d[data-theme="dark"]) .x2o-lines{color:var(--ink2)}
+:where(html.x2d[data-theme="dark"]) .x2o-lines b{color:var(--ink)}
 :where(html.x2d[data-theme="dark"]) .x2o-ul{color:var(--ink2)}
 :where(html.x2d[data-theme="dark"]) .x2o-ul li::before{box-shadow:0 0 0 1.5px var(--x2d-ring);--ink:#1d1c1a;--ink2:#3e3420;--dim:#4c412b;--on-ez:#1d1c1a;--on-slab:#1d1c1a;--on-slab2:#3e3420;--on-slab3:#4c412b;--up:#0b4a22;--dn:#7d1010;color:var(--ink)}
 :where(html.x2d[data-theme="dark"]) .x2o-ul b{color:var(--ink)}
@@ -4375,7 +4395,7 @@ html.x2d[data-theme="dark"] .st-box.cmp .tg.lead .tg-h{--ink2:#352c1a;--on-slab2
   <section class="hero" aria-label="Intro">
     <div class="hero-t">
       <h1>We’re putting buybacks<br> <span class="hl">in the hands of an <span class="lc">AI</span>.</span></h1>
-      <p class="sub" id="heroSub">AIs predict how stocks move after earnings. The one on top bets the fee pool on NVIDIA. Win, it buys back $EZ. Here's who's on top, and how the last round went.</p>
+      <p class="sub" id="heroSub"><span class="hero-ln">AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</span><span class="hero-ln">Part of every $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader's call.</span><span class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</span></p>
     </div>
     <div class="bflip" id="bflip"><div class="bf-in">
     <div class="bf-face bf-front" id="bfFront">
@@ -4534,7 +4554,19 @@ var NR=ROUNDS.length,UPS=ROUNDS.filter(function(r){return r.a>0}).length;
 /* the line under the headline: the model count from the data (MODEL_KEYS with a MODELS entry) */
 var NUMW=["No","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve"];
 var NM=MODEL_KEYS.filter(function(m){return MODELS[m]}).length;
-$("#heroSub").textContent=(NUMW[NM]||String(NM))+" AIs predict how stocks move after earnings. The one on top bets the fee pool on NVIDIA at "+(SIM.leverage!=null?SIM.leverage:5)+"x. Win, it buys back $EZ. Here's who's on top, and how the last round went.";
+/* the three lines under the headline (owner, 2026-10-14: EZ Live X3's lines, in the owner's own words, on EZ Season, X2
+   and X4). The wording lives here alone: EZ Season and X4 show it under the headline, X2 beside its chip (the X2 block
+   in tools/v22/routes.js). The model count, the pot's share of the fees (SIM.poolShare) and the leverage (SIM.leverage)
+   come from the data; with no share set the line says "Part of", with no leverage the leverage sentence goes. Each line
+   is a block span (.hero-ln, the HL styles in <head>), so the <p> stays valid. No-break spaces keep "before earnings",
+   "#1 spot", "10x leverage" and the two labels whole when a line wraps. The <p> in the page holds the same lines
+   without the numbers, for the moment before the data loads (so the hero does not jump): a change here goes there too.
+   X3 and X5 replace #heroSub with their own lines. */
+function heroLines(){var n=String(NUMW[NM]||NM),P=SIM.poolShare!=null?Math.round(SIM.poolShare*100):null,L=SIM.leverage;
+  return '<span class="hero-ln">'+n.charAt(0).toUpperCase()+n.slice(1)+' AIs call stocks before&nbsp;earnings, fighting for the #1&nbsp;spot.</span>'+
+    '<span class="hero-ln">'+(P!=null?'<b>'+P+'%</b> of every':'Part of every')+' $EZ trading fee goes into a pot. Before NVIDIA reports, we bet the whole pot on&nbsp;the&nbsp;leader\'s call.'+(L!=null?' <b>'+L+'x</b>&nbsp;leverage, long or short.':'')+'</span>'+
+    '<span class="hero-ln"><b>Right&nbsp;call:</b> profits buy back $EZ. <b>Wrong&nbsp;call:</b> the pot can get wiped out.</span>'}
+$("#heroSub").innerHTML=heroLines();
 /* rounds whose calls are in, soonest answer first (then by round) */
 var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});
 /* rounds still to call, soonest calls first (then by round) */
@@ -6193,15 +6225,17 @@ if(X3)(function(){
 /* ---------- X2's Overview (owner, 2026-10-13), for EZ Live X2 alone (EXP==="x2"). X3, X4 and X5 share X2's code but
    not this block: build.py keeps it (markers dropped) for X2 and strips it, markers and all, from every other page, so
    Season Live, X1, X3, X4 and X5 stay byte for byte. Its styles are tools/v22/x2-overview.css, put in X2 alone.
-   Top to bottom: the headline alone; the NVIDIA Blackwell chip counting down to the bet (no line under it: the bullets
-   say what the timer counts to); the bet in four short bullets; 01 Every call (the record, how a call is graded as three
-   bullets above the cards); 02 Current standings (the standings that sat in the hero, and one line: #1 makes the NVIDIA
-   call); 03 Getting smarter or just lucky? (ROI and Direction, one card of one size); 04 Get $EZ and the one
-   disclaimer. Each section is one phone screen at most (owner, 2026-10-13: "each section needs to be one scroll").
-   The hero's line, "Last round" and "How we grade" leave the hero; the fee split, operations and the roadmap leave the
-   Overview (the Buyback tab keeps the fee share, the pool and the calculator). Every number comes from ez-data.js. The
-   board is never re-rendered by the router (it is shown and hidden), but the order is checked again each time the
-   Overview shows: nothing that is already in place moves, so the record keeps its scroll position. ---------- */
+   Top to bottom: the headline alone; the NVIDIA Blackwell chip counting down to the bet (no line under it: the lines
+   beside it say what the timer counts to); the bet in three short lines (owner, 2026-10-14: X3's lines in the owner's
+   words, in the four bullets' place; v15's heroLines(), the lines under EZ Season's and X4's headline); 01 Every call
+   (the record, how a call is graded as three bullets above the cards); 02 Current standings (the standings that sat
+   in the hero, and one line: #1 makes the NVIDIA call); 03 Getting smarter or just lucky? (ROI and Direction, one card
+   of one size); 04 Get $EZ and the one disclaimer. Each section is one phone screen at most (owner, 2026-10-13: "each
+   section needs to be one scroll"). The hero's lines (beside the chip instead), "Last round" and "How we grade" leave
+   the hero; the fee split, operations and the roadmap leave the Overview (the Buyback tab keeps the fee share, the
+   pool and the calculator). Every number comes from ez-data.js. The board is never re-rendered by the router (it is
+   shown and hidden), but the order is checked again each time the Overview shows: nothing that is already in place
+   moves, so the record keeps its scroll position. ---------- */
 /* a graded round with no film yet opens on its stats, not "Film soon" (owner, 2026-10-13: "makes more sense to show data").
    The card is built turned to its back, with no turn to an empty front: no "See the stats" on the front, no "See the film"
    on the back. Rounds with a film are built exactly as before. This later declaration replaces v15's gradedCard in X2
@@ -6221,21 +6255,15 @@ if(EXP==="x2")(function(){
   if(!hero||!rec||!bet||!get)return;
   function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
   function bullets(cls,lines){return '<ul class="x2o-ul'+(cls?' '+cls:'')+'">'+lines.map(function(l){return '<li>'+l+'</li>'}).join("")+'</ul>'}
-  var POOL=Math.round((SIM.poolShare!=null?SIM.poolShare:typeof ASSUME!=="undefined"&&ASSUME.poolShare||0)*100),LEV=SIM.leverage,LEAD=SIM.leadHours,
-    NAI=typeof NM!=="undefined"&&NM?NM:ACTIVE.length;
 
-  /* 2 + 3. THE BET: the chip and its countdown (X2's own, moved up from the buyback section), then the bet in four
-     bullets (owner, 2026-10-13: three to four at most, short words). The chip's line ("When the timer hits zero, we place
-     a bet ... at 10x leverage on Hyperliquid") goes: the bullets right beside or under it say the same, the venue
-     included. The AIs call before each report (Every call says so), so the first bullet says "on earnings", never
-     "after". Phones: chip, then bullets, all in the first screen; 1024 px and wider: chip left, bullets right
-     (x2-overview.css) */
+  /* 2 + 3. THE BET: the chip and its countdown (X2's own, moved up from the buyback section), then the bet in three
+     short lines, the ones under EZ Season's headline (owner, 2026-10-14: "take the language of EZ Live X3 ... instead
+     of the bullet points"; v15's heroLines(), so the wording lives in one place; lines, not bullets). The chip's line
+     ("When the timer hits zero, we place a bet ... at 10x leverage on Hyperliquid") goes: the lines right beside or
+     under it say what the timer counts to. Phones: chip, then the lines, all in the first screen; 1024 px and wider:
+     chip left, lines right (x2-overview.css) */
   var top=el("section","x2o-bet");top.setAttribute("aria-label","The NVIDIA bet");
-  top.insertAdjacentHTML("beforeend",bullets("",[
-    '<b>'+NAI+' AIs</b> call stock moves on earnings, all season.',
-    'From launch, '+(POOL?'<b>'+POOL+'%</b> of':'part of')+' $EZ fees fill the pot.',
-    (LEAD!=null?'<b>'+LEAD+'h</b> before NVIDIA reports':'Right before NVIDIA reports')+', the #1 AI calls it. We bet the pot'+(LEV!=null?', <b>'+LEV+'x</b> on Hyperliquid.':' on Hyperliquid.'),
-    '<b>Right:</b> profits buy back $EZ. <b>Wrong:</b> the pot shrinks or gets wiped out.']));
+  top.insertAdjacentHTML("beforeend",'<p class="x2o-lines">'+heroLines()+'</p>');
   if(gpu){top.insertBefore(gpu,top.firstChild);var im=$(".gpu-img img",gpu);if(im)im.loading="eager";   // first screen now: no lazy load
     var gt=$(".gpu-t",gpu);if(gt)gt.remove();                     // the chip's line and its hidden second line (#gpuCall)
     /* without that line a screen reader would hear "37 days, 13 hours, 23 minutes left" with nothing to say of what */
