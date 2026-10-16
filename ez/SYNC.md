@@ -57,14 +57,11 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
 - **Kept values (`KEEP` in `ez/tools/sync_sheet.py`).** A graded value the owner chose to keep after the sheet changed
   it. The sync prints a KEEP note and writes the kept value, with no RECORD EDIT. Empty now: R22 GS used it (-0.27) until
   the owner chose the sheet's -0.21 on 2026-10-14, which matches the round's film (official close-to-close -0.23).
-- **R30 TSMC (2026-10-15), result held:** the sheet's -2.01% is the Taipei close Oct 14 -> Oct 15 (2490 -> 2440), but
-  TSMC released its results with its 14:00 Taipei call on Oct 15, after that close. The first close after the results is
-  TSM in New York on Oct 15 or Taipei on Oct 16; the owner picks the listing. Until then the calls are published and the
-  result is left out (sync with a patched CSV that blanks R30's move). Still -2.01 in the sheet on Oct 16, so still held.
-  Official closes: Taipei 2490 (Oct 14), 2440 (Oct 15), 2420 (Oct 16): -0.82% after the report (Grok wins). TSM in New
-  York 430.00 (Oct 14), 422.25 (Oct 15): -1.80% (Kimi wins). The sheet's -2.01% gives Claude. All four called down, so
-  every window is right on direction for all four and the accuracy standings are the same; only the round winner moves. Check a report's time against the close for
-  Asian listings: Taipei closes at 13:30, Seoul at 15:30, Tokyo at 15:30 local time.
+- **R30 TSMC (2026-10-15), graded -2.01% (owner, 2026-10-16):** the owner grades TSMC on the Taiwan close of the
+  sheet's outcome date (2490 Oct 14 -> 2440 Oct 15), although TSMC released its results with its 14:00 Taipei call,
+  after that 13:30 close. The sheet's number stands for the close window too: mention a timing concern once, in one
+  line, and do not hold the result. (For the record, after the report: Taipei Oct 16 -0.82%, TSM in New York Oct 15
+  -1.80%.)
 - **R26 ASML (2026-10-14):** Kimi's call changed in the sheet after the site had shown it (UP 2.5 -> DOWN 2). The owner
   confirmed the change and the other three calls were made before the earnings cutoff, so the sheet's calls stand.
 - **Renumbering.** The sync matches rounds by ticker + call date, not by number. A renumbered sheet shows up as
