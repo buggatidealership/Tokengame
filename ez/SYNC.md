@@ -60,7 +60,10 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
 - **R30 TSMC (2026-10-15), result held:** the sheet's -2.01% is the Taipei close Oct 14 -> Oct 15 (2490 -> 2440), but
   TSMC released its results with its 14:00 Taipei call on Oct 15, after that close. The first close after the results is
   TSM in New York on Oct 15 or Taipei on Oct 16; the owner picks the listing. Until then the calls are published and the
-  result is left out (sync with a patched CSV that blanks R30's move). Check a report's time against the close for
+  result is left out (sync with a patched CSV that blanks R30's move). Still -2.01 in the sheet on Oct 16, so still held.
+  Official closes: Taipei 2490 (Oct 14), 2440 (Oct 15), 2420 (Oct 16): -0.82% after the report (Grok wins). TSM in New
+  York 430.00 (Oct 14), 422.25 (Oct 15): -1.80% (Kimi wins). The sheet's -2.01% gives Claude. All four called down, so
+  every window is right on direction for all four and the accuracy standings are the same; only the round winner moves. Check a report's time against the close for
   Asian listings: Taipei closes at 13:30, Seoul at 15:30, Tokyo at 15:30 local time.
 - **R26 ASML (2026-10-14):** Kimi's call changed in the sheet after the site had shown it (UP 2.5 -> DOWN 2). The owner
   confirmed the change and the other three calls were made before the earnings cutoff, so the sheet's calls stand.
