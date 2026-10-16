@@ -43,7 +43,7 @@ var SHEET=[
  ["28","MS","10/13/26","UP","0.5","UP","2","UP","2.5","DOWN","0.9","10/14/26","-2.75","","Financials","Financial Services","","FALSE"],
  ["29","BLK","10/13/26","UP","0.4","UP","2.5","UP","3","UP","1.2","10/14/26","0.72","","Financials","Financial Services","","FALSE"],
  ["30","TSMC","10/14/26","DOWN","0.3","DOWN","1.5","DOWN","2.5","DOWN","1.1","10/15/26","-2.01","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors","FALSE"],
- ["31","IBKR","10/15/26","DOWN","1.5","DOWN","2","DOWN","3","DOWN","1.4","10/16/26","","","Financials","Financial Services","Crypto","FALSE"],
+ ["31","IBKR","10/15/26","DOWN","1.5","DOWN","2","DOWN","3","DOWN","1.4","10/16/26","-3.87","","Financials","Financial Services","Crypto","FALSE"],
  ["32","GE","10/20/26","","","","","","","","","","","","Industrials","Capital Goods","Defense","FALSE"],
  ["33","NFLX","10/20/26","","","","","","","","","","","","Communication Services","Media & Entertainment","Media","FALSE"],
  ["34","IBM","10/21/26","","","","","","","","","","","","Information Technology","Software & Services","AI; Cloud; Cybersecurity","FALSE"],
