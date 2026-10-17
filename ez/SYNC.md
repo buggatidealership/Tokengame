@@ -57,6 +57,10 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
 - **Kept values (`KEEP` in `ez/tools/sync_sheet.py`).** A graded value the owner chose to keep after the sheet changed
   it. The sync prints a KEEP note and writes the kept value, with no RECORD EDIT. Empty now: R22 GS used it (-0.27) until
   the owner chose the sheet's -0.21 on 2026-10-14, which matches the round's film (official close-to-close -0.23).
+- **Artifact size cap (2026-10-17).** One artifact version holds at most 256 MiB. X2 reached it with round 30: films 26
+  to 30 were encoded at crf 25 (mp4) and crf 35 (webm), and unused files were removed (old round-19-jpmorgan-hd.*,
+  ez-gpu.jpg, ez-gpu-1200.jpg). Each new film adds about 4 to 9 MB, so the next films will not fit until the pages
+  load films from somewhere else or older films are re-encoded smaller. Ask the owner before choosing.
 - **R30 TSMC (2026-10-15), graded -2.01% (owner, 2026-10-16):** the owner grades TSMC on the Taiwan close of the
   sheet's outcome date (2490 Oct 14 -> 2440 Oct 15), although TSMC released its results with its 14:00 Taipei call,
   after that 13:30 close. The sheet's number stands for the close window too: mention a timing concern once, in one
