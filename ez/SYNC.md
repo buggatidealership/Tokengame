@@ -57,6 +57,11 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
 - **Kept values (`KEEP` in `ez/tools/sync_sheet.py`).** A graded value the owner chose to keep after the sheet changed
   it. The sync prints a KEEP note and writes the kept value, with no RECORD EDIT. Empty now: R22 GS used it (-0.27) until
   the owner chose the sheet's -0.21 on 2026-10-14, which matches the round's film (official close-to-close -0.23).
+- **Live site (2026-10-17).** The public site is X2 on Cloudflare Pages, built from the `site/` folder at the repo root
+  (production branch: this working branch; build command: none; output directory: `site`). After every sync or film,
+  from ez/: `python3 tools/v22/build.py tools/v22 && python3 tools/site/make_site.py`, then commit `site/` and push;
+  Cloudflare redeploys in about a minute. `site/` only changes when make_site.py runs, so other pushes do not change
+  the live site. Keep publishing the artifacts as previews (data only once a film no longer fits).
 - **Artifact size cap (2026-10-17).** One artifact version holds at most 256 MiB. X2 reached it with round 30: films 26
   to 30 were encoded at crf 25 (mp4) and crf 35 (webm), and unused files were removed (old round-19-jpmorgan-hd.*,
   ez-gpu.jpg, ez-gpu-1200.jpg). Each new film adds about 4 to 9 MB, so the next films will not fit until the pages
