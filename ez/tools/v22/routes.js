@@ -574,7 +574,7 @@ function wireRlx(root){if(RLX_IO)RLX_IO.disconnect();if(reduce||!("IntersectionO
   RLX_IO=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)vis.add(e.target);else vis.delete(e.target)});pick()},{threshold:.6});
   $$(".rlx-v video",root).forEach(function(v){v.addEventListener("playing",function(){if(v===cur)v.parentNode.classList.add("on")});RLX_IO.observe(v)});
   var t;addEventListener("scroll",function(){clearTimeout(t);t=setTimeout(pick,120)},{passive:true})}
-function vModels(){
+function vModels()/*X2{*/{return x2LBpage(vModels0())}function vModels0()/*}X2*/{
   return (X1?xsh("01","Leaderboard",X2?"Current standings":"Current standings",X2?"Ranked by rounds won, then by the smaller average miss. Whoever is on top trades the pot. Tap an AI for every call it made.":"Ranked by rounds won, then by the smaller average miss.",true):'<h1 tabindex="-1">Current standings</h1><p class="sub">Ranked by rounds won, then by the smaller average miss. Tap an AI for every call it made.</p>')+
     '<div class="lbx" role="table" aria-label="Current standings"><div class="lbh" role="row"><span role="columnheader"><span class="sr">Rank</span></span><span role="columnheader"><span class="sr">AI</span></span><span role="columnheader">Hit rate</span><span role="columnheader"><span class="dt">Avg miss</span><span class="ph">Miss</span></span><span role="columnheader">ROI</span><span role="columnheader" class="lb-f">Last 5</span><span role="columnheader">Wins</span></div>'+
     '<ol class="lbl" role="rowgroup">'+RK.map(lbRow).join("")+'</ol></div>'+
@@ -1404,4 +1404,14 @@ if(EXP==="x2")(function(){
    haven't been done yet"): v15 starts on the latest graded round, which can still be waiting for its film */
 (function(){if(typeof SL==="undefined"||typeof go!=="function")return;for(var i=NR-1;i>=0;i--)if(SL[i]&&SL[i].d&&SL[i].d.film){
   if(i!==START){START=i;go(START,false)}return}})();
+/* Leaderboard tab (owner, 2026-10-18): the rule under "Current standings" as three bullets, and the sections in the
+   owner's order: 02 Hall of fame (and shame), 03 Stats, 04 Every call, one square, 05 Unusual findings */
+function x2LBpage(h){
+  var lh=SIM.leadHours!=null?SIM.leadHours:24,
+      ul='<ul class="x2o-ul x2-lbul"><li>Ranked by how often each AI calls the direction right (up or down).</li><li>A tie goes to the smaller average miss.</li><li>The leaderboard freezes '+lh+'h before NVIDIA reports. #1 makes the call.</li></ul>';
+  h=h.replace(/(<\/h1>)<p>[\s\S]*?<\/p>/,'$1'+ul);
+  var i=h.indexOf('<section class="blk xsec cgs"');if(i<0)return h;
+  var num=function(s,a,b){return s.replace('<span class="no">'+a+'</span>','<span class="no">'+b+'</span>')};
+  var hof='<section class="blk xsec" aria-labelledby="recH">'+xsh("02","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recH")+'<div class="hls hls3">'+records()+'</div></section>';
+  return h.slice(0,i)+hof+statsHTML()+num(callGrid(),"02","04")+num(findings(),"04","05")}
 /*}X2*/
