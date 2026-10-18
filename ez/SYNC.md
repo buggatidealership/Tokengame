@@ -87,3 +87,5 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
 - Variant 1 (`ez/v1-binder.html`) is frozen and uses its own copies of the original films. Do not touch it.
 - Going live on GitHub Pages needs push access to the repository that hosts the site.
   The old site lives at buggatidealership.github.io/EZ (so, most likely, the `buggatidealership/EZ` repo).
+
+- **X6 artifact size (2026-10-18):** X6 (https://claude.ai/artifact/PA6WGQyb1j7pXHboKaeTLt) holds about 265 MB of the 268 MB (256 MiB) cap. It has no low-res round 3 to 6 films (only Variant 1 uses those). Send media in publishes of under 64 MiB each (one publish is refused above that). Like X2, new films go to the live site once the artifact is full.
