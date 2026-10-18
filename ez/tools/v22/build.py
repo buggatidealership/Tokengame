@@ -241,6 +241,9 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         # the theme before the first paint: the viewer's saved choice, else the host's data-theme on <html>, else the
         # phone's setting, else light. In light the page is X2 as it was (the browser bar keeps X2's colour too).
         DARK=open(sys.argv[1]+'/skin-x2dark.css').read()
+        # the logo look (owner, 2026-10-18), X2 only, dark mode only: tools/v22/skin-x2logo.css after the dark skin, with Kalam
+        LOGO=('<link id="x2-logo-fonts" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">\n'
+              '<style id="x2-logo">\n'+open(sys.argv[1]+'/skin-x2logo.css').read()+'\n</style>\n')
         THEME=('<script>/* X2 theme before the first paint (try/catch: storage can be blocked) */(function(){var d=document.documentElement,s=null,h=d.getAttribute("data-theme"),t,m;'
                'try{s=localStorage.getItem("ez-theme")}catch(e){}d.setAttribute("data-x2host",h||"");'
                't=s==="light"||s==="dark"?s:h==="light"||h==="dark"?h:window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";'
@@ -250,7 +253,7 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
         # dark) and the chart names every line at its end: the caption keeps the method only, as on X5
         for a,b in [("'+nmM+' in black, the others in grey. Simulated,","Simulated,"),
                     ('<html lang="en" class="pt">','<html lang="en" class="pt x2d">'),
-                    ('</head>','<style id="x2-overview">\n'+X2CSS+'\n</style>\n<style id="x2-dark">\n'+DARK+'\n</style>\n'+THEME+'</head>')]:
+                    ('</head>','<style id="x2-overview">\n'+X2CSS+'\n</style>\n<style id="x2-dark">\n'+DARK+'\n</style>\n'+LOGO+THEME+'</head>')]:
             assert page.count(a)==1,a; page=page.replace(a,b)
     if exp=="x3":
         # X3 re-skin (owner, 2026-10-11): its own stylesheet and fonts, so X1 and X2 stay byte for byte
