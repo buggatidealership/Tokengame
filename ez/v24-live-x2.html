@@ -6576,15 +6576,16 @@ if(EXP==="x2")(function(){
 (function(){if(typeof SL==="undefined"||typeof go!=="function")return;for(var i=NR-1;i>=0;i--)if(SL[i]&&SL[i].d&&SL[i].d.film){
   if(i!==START){START=i;go(START,false)}return}})();
 /* Leaderboard tab (owner, 2026-10-18): the rule under "Current standings" as three bullets, and the sections in the
-   owner's order: 02 Hall of fame (and shame), 03 Stats, 04 Every call, one square, 05 Unusual findings */
+   order a visitor asks: who leads, why (02 Stats, 03 Every call, one square), then 04 Hall of fame (and shame) and
+   05 Unusual findings */
 function x2LBpage(h){
   var lh=SIM.leadHours!=null?SIM.leadHours:24,
       ul='<ul class="x2o-ul x2-lbul"><li>Ranked by how often each AI calls the direction right (up or down).</li><li>A tie goes to the smaller average miss.</li><li>The leaderboard freezes '+lh+'h before NVIDIA reports. #1 makes the call.</li></ul>';
   h=h.replace(/(<\/h1>)<p>[\s\S]*?<\/p>/,'$1'+ul);
   var i=h.indexOf('<section class="blk xsec cgs"');if(i<0)return h;
   var num=function(s,a,b){return s.replace('<span class="no">'+a+'</span>','<span class="no">'+b+'</span>')};
-  var hof='<section class="blk xsec" aria-labelledby="recH">'+xsh("02","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recH")+'<div class="hls hls3">'+records()+'</div></section>';
-  return h.slice(0,i)+hof+statsHTML()+num(callGrid(),"02","04")+num(findings(),"04","05")}
+  var hof='<section class="blk xsec" aria-labelledby="recH">'+xsh("04","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recH")+'<div class="hls hls3">'+records()+'</div></section>';
+  return h.slice(0,i)+num(statsHTML(),"03","02")+num(callGrid(),"02","03")+hof+num(findings(),"04","05")}
 
 })();
 </script>
