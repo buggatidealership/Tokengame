@@ -334,3 +334,21 @@ for out,exp,title in [("v22-season-live.html","","EZ Season Live"),("v23-live-x1
                        '<section class="blk xsec" aria-labelledby="recBk">\'+xsh("05","Records","Hall of fame (and shame)","The three records that matter. Tap one for the story.",false,"recBk")',1)]:
             assert page.count(a)==n,a; page=page.replace(a,b)
     open(out,'w').write(page); print("ok",out,len(page))
+
+# EZ Live X6 (owner, 2026-10-18: "Create a new X6 for it"): X2's page as built above, plus tools/v22/skin-x6.css (the logo's
+# cel/anime look in dark mode, Dela Gothic One heads) and tools/v22/x6.js (the Overview reworded around "the tryout" and put
+# in a newcomer's order). X2's handwriting trial (x2-logo) is left out. Every other page is untouched.
+p6=open("v24-live-x2.html").read()
+for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X6</title>'),
+            # X2's Overview keeps its sections in order each time it shows: X6's order puts the standings before the record
+            ('var seq=[hero,top,rec,st,learn,get]','var seq=[hero,top,st,rec,learn,get]'),
+            ('var k=0;[rec,st,learn,get].forEach','var k=0;[st,rec,learn,get].forEach')]:
+    assert p6.count(a)==1,a; p6=p6.replace(a,b)
+p6,k1=re.subn(r'<link id="x2-logo-fonts"[^>]*>\n','',p6)
+p6,k2=re.subn(r'<style id="x2-logo">.*?</style>\n','',p6,flags=re.S)
+assert (k1,k2)==(1,1),(k1,k2)
+X6CSS=open(sys.argv[1]+'/skin-x6.css').read(); X6JS=open(sys.argv[1]+'/x6.js').read()
+assert p6.count('</head>')==1 and p6.count('</body>')==1
+p6=p6.replace('</head>','<link id="x6-fonts" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">\n<style id="x6-skin">\n'+X6CSS+'\n</style>\n</head>')
+p6=p6.replace('</body>','<script id="x6-words">\n'+X6JS+'\n</script>\n</body>')
+open("v44-live-x6.html",'w').write(p6); print("ok v44-live-x6.html",len(p6))
