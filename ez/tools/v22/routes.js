@@ -1400,4 +1400,8 @@ if(EXP==="x2")(function(){
   coAll(document.body);
   if(window.MutationObserver)new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,coAll)})}).observe(document.body,{childList:true,subtree:true});
 })();
+/* the record opens on the latest round that has a film (owner, 2026-10-18: "never film soon or a card where the calls
+   haven't been done yet"): v15 starts on the latest graded round, which can still be waiting for its film */
+(function(){if(typeof SL==="undefined"||typeof go!=="function")return;for(var i=NR-1;i>=0;i--)if(SL[i]&&SL[i].d&&SL[i].d.film){
+  if(i!==START){START=i;go(START,false)}return}})();
 /*}X2*/
