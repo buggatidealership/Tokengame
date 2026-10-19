@@ -106,6 +106,24 @@ section+section:after{background:#000;clip-path:polygon(0 0,100% 0,100% 2px,0 25
 .rs .tag2{position:absolute;left:-3px;top:-3px;font:400 14px/1 var(--dsp);letter-spacing:.08em;background:#000;color:var(--gold);padding:7px 16px 6px 10px;clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%)}
 .rs b{display:block;font:400 30px/1 var(--dsp);text-transform:uppercase;margin-top:8px}.rs small{display:block;font:600 10px var(--mono);letter-spacing:.1em;color:var(--mu);margin-top:6px}.rs.now small{color:#5c5662}
 .mag{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}.mag .co{box-shadow:3px 3px 0 #000}
+.blt{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:9px;max-width:44ch}
+.blt li{position:relative;padding-left:20px;font:500 16px/1.4 var(--sans);color:#e3dac6}
+.blt li:before{content:"";position:absolute;left:0;top:6px;width:9px;height:9px;background:var(--gold);border:2px solid #000;transform:rotate(-8deg)}
+.blt b{color:var(--tx)}.blt .hl{color:#000;background:var(--gold);padding:0 4px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.carx{display:grid;grid-auto-flow:column;grid-auto-columns:88%;gap:16px;overflow:hidden;margin-top:28px;padding:0 10px 12px 0;align-items:start}
+.carx .tix{gap:5px;padding:12px 8px 8px}.carx .rcpt .ok{font-size:7.5px;padding:2px 3px;white-space:nowrap}.carx .rcpt .call{font-size:17px}.carx .actual b{font-size:32px}.actual .w{white-space:nowrap}
+.fc .poster{position:relative;aspect-ratio:1;border-top:3px solid #000;overflow:hidden}.fc .poster img{width:100%;height:100%;object-fit:cover;display:block}
+.fc .play{position:absolute;right:10px;bottom:10px;width:44px;height:44px;display:grid;place-items:center;background:var(--gold);color:#000;border:3px solid #000;box-shadow:3px 3px 0 #000;font-size:16px}
+.chipsx{display:flex;gap:6px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.chipsx span{font:400 13px/1 var(--dsp);letter-spacing:.04em;border:2.5px solid #000;padding:7px 7px 6px;background:var(--paper);color:#000;box-shadow:3px 3px 0 #000}
+.chipsx .rc.on{background:#000;color:var(--gold);box-shadow:3px 3px 0 var(--gold)}.chipsx .cbtn{background:var(--s1);color:var(--tx)}.chipsx{flex-wrap:nowrap}
+.row .inline{position:absolute;right:10px;top:-13px;font:400 12px/1 var(--dsp);letter-spacing:.08em;background:#000;color:var(--gold);padding:5px 8px 4px;border:2px solid var(--gold)}
+.row{position:relative}
+.tiles4{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:34px}
+.tiles4 div{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4px 8px;background:#fff;border:2.5px solid #000;padding:10px;box-shadow:3px 3px 0 #000}
+.tiles4 em{font:400 16px/1 var(--dsp);font-style:normal;letter-spacing:.04em;text-transform:uppercase}
+.tiles4 b{grid-column:1/-1;font:400 26px/1 var(--dsp)}
+.tiles4 .pl{grid-column:1/-1;justify-self:start;font:400 13px/1 var(--dsp);letter-spacing:.04em;color:#fff;border:2px solid #000;padding:4px 6px 3px}.tiles4 .pl.u{background:var(--gr)}.tiles4 .pl.d{background:var(--rd)}
 /* ladder rows */
 .lad{display:grid;gap:12px;margin-top:26px}
 .row{display:grid;grid-template-columns:30px 42px 1fr auto;gap:10px;align-items:center;padding:10px 12px 10px 8px;background:var(--paper);color:#141217;border:3px solid #000;box-shadow:6px 6px 0 var(--vi)}
@@ -253,7 +271,7 @@ footer .ez{font:400 30px/1 var(--dsp);color:var(--tx);text-shadow:3px 3px 0 var(
 <header class="top"><div class="wrap"><a class="brand" href="#/">$EZ</a><span class="next" id="nextChip"></span></div></header>
 <nav class="tabs"><div class="wrap" id="tabs"></div></nav>
 <main id="app"></main>
-<footer><div class="wrap"><div class="ez">Nobody said it would be <em>EZ.</em></div><div>An experiment. Not financial advice. No promised returns. Every number comes from the season sheet.</div></div></footer>
+<footer><div class="wrap"><div class="ez">Nobody said it would be <em>EZ.</em></div><div style="font:600 10px var(--mono);letter-spacing:.14em">$EZ · EARNINGS ZEASON, WITH A Z<br>CALLS FILED BEFORE THE PRINT · GRADED BY THE MARKET · NEVER EDITED</div></div></footer>
 <script src="ez-data.js"></script>
 <script>
 (function(){
@@ -318,33 +336,27 @@ function legends(){var shock=null;g.forEach(function(r){var p=Object.keys(COL).f
 
 /* PAGES */
 var P={};
-function hitChart(){var W=340,H=190,N=g.length;function X(i){return 34+i/(N-1)*(W-70)}function Y(v){return 12+(1-v)*(H-34)}
- var svg='<svg class="chart" viewBox="0 0 '+W+' '+H+'"><line x1="34" x2="'+(W-36)+'" y1="'+Y(.5)+'" y2="'+Y(.5)+'" stroke="#a49fb4" stroke-dasharray="4 4" stroke-width="1.5"/><text x="0" y="'+(Y(.5)+4)+'">50%</text><text x="0" y="'+(Y(1)+8)+'">100%</text><text x="0" y="'+(Y(0))+'">0%</text><text x="'+(W-38)+'" y="'+(Y(.5)-6)+'" text-anchor="end">COIN FLIP</text>';
- ms.slice().reverse().forEach(function(m){var d="",st=false;m.path.forEach(function(v,i){if(v==null)return;d+=(st?"L":"M")+X(i).toFixed(1)+","+Y(v).toFixed(1);st=true});
-  svg+='<path d="'+d+'" fill="none" stroke="#000" stroke-width="7" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="'+LC[m.k]+'" stroke-width="3.5" stroke-linejoin="round"/>';
-  var lv=m.path[m.path.length-1];svg+='<circle cx="'+X(N-1)+'" cy="'+Y(lv)+'" r="5" fill="'+LC[m.k]+'" stroke="#000" stroke-width="2.5"/><text x="'+(X(N-1)+8)+'" y="'+(Y(lv)+4)+'" style="fill:'+LC[m.k]+'">'+m.pct+'%</text>'});
- return svg+'<text x="34" y="'+(H-2)+'">R1</text><text x="'+(W-36)+'" y="'+(H-2)+'" text-anchor="end">R'+N+'</text></svg><div class="keys">'+ms.map(function(m){return '<span><i style="background:'+LC[m.k]+'"></i>'+m.name+'</span>'}).join("")+'</div>'}
-function loop(){var st=[["CALL","Before the report"],["GRADED","At the next close"],["LESSON","Written to its notebook"],["READ","Before the next call"]];
- return '<div class="loop">'+st.map(function(s,i){return '<div class="lp"><b>'+(i+1)+'</b><span>'+s[0]+'</span><small>'+s[1]+'</small></div>'}).join('<i class="la">➜</i>')+'</div>'}
-var MAG=["AAPL","MSFT","GOOGL","AMZN","META","TSLA","NVDA"];
-P["/"]=function(){var nd=up[0].called,nx=up.filter(function(u){return u.called==nd});
- return '<section class="hero"><div class="speed"></div><div class="shards"></div><div class="wrap" style="position:relative"><span class="kick">The experiment · Season 1</span><h1 style="font-size:clamp(46px,12vw,96px)">Can an AI learn to <em>call earnings?</em></h1><p class="sub" style="font-size:17px">We\'re finding out in public, and putting $EZ buybacks in its hands.</p><span class="honest">An experiment. $EZ isn\'t live yet.</span>'
- +'<div class="hero-host">'+say("New here? I'll walk you through it.","r")+'<img class="pose" src="media/commissioner/web/01-welcome.webp" alt=""></div></div><div class="cast">'+ms.map(function(m){return '<div>'+tile(m.k,40)+m.name+'</div>'}).join("")+'</div></section>'
- +'<section><div class="wrap"><span class="kick">Live</span><h2>See what the AIs <em>are calling.</em></h2><p class="sub">Every call posts here before the report. Every result stays on the record.</p>'
- +'<div class="pn nextup" style="margin-top:26px"><span class="no">NEXT · CALLS POST '+mon(d0(nd)).toUpperCase()+'</span><div class="nx2">'+nx.map(function(u){return '<div>'+co(u.ticker,64)+'<b>'+u.co+'</b><small>ROUND '+u.n+'</small></div>'}).join("")+'</div></div>'
- +'<div style="margin-top:30px">'+card(L,{title:"Last round: "})+'</div><a class="more" href="#/results">The full record →</a></div></section>'
- +'<section><div class="wrap"><span class="kick">The test</span><h2>Getting smarter, <em>or just lucky?</em></h2><div class="pn" style="margin-top:26px"><span class="no">AFTER EVERY ROUND</span>'+loop()+'</div>'
- +'<div class="pn dk" style="margin-top:26px;--sh:var(--vi)"><span class="no">RIGHT ON DIRECTION, SO FAR</span><div style="margin-top:26px">'+hitChart()+'</div></div></div></section>'
- +'<section><div class="speed" style="opacity:.6"></div><div class="wrap" style="position:relative"><span class="kick">Leading right now</span><div class="letter"><img src="media/commissioner/web/04-eyes-strip.webp" alt=""></div><div class="rv-c"><div class="champ">'+burst()+tile(T.k,140)+'</div><div class="cname">'+T.name.toUpperCase()+'</div></div><p class="sub" style="text-align:center;margin-inline:auto">The AI on top makes the calls we bet on.</p><div class="lad">'+ladRows(ms)+'</div><a class="more" href="#/leaderboard">Full leaderboard →</a></div></section>'
- +'<section><div class="wrap"><span class="kick">The pool</span><h2>A good record <em>gets money behind it.</em></h2><div class="stack">'
- +'<div class="pn"><span class="no">1 · THE POOL</span><div class="p1u"><div><div class="big" style="margin-top:30px">'+share+'%</div><p>of every $EZ trading fee goes into the pool.</p></div>'+pot()+'</div></div>'
- +'<div class="pn" style="--sh:var(--grl)"><span class="no">2 · THE BET</span><div class="p2u"><div class="myst">?<i>#1</i></div><div class="ud"><span class="a">▲ UP</span><span class="b">▼ DOWN</span></div></div><p>The AI on top calls it. We bet the pool on that call, <b>'+lev+'x on Hyperliquid</b>.</p></div>'
- +'<div class="pn ends"><div class="end v"><h4>▲ Right call</h4><p>Profits buy back $EZ.</p></div><div class="end d"><h4>▼ Wrong call</h4><p>The pool shrinks, or gets liquidated.</p></div></div></div>'
- +'<div class="road"><span class="kick r" style="justify-self:start">The bets grow</span>'
- +'<div class="rs now"><span class="tag2">SEASON 1 · NOW</span><b>Bet #1: NVIDIA</b><small>'+mon(betD).toUpperCase()+', AT THE CLOSE BEFORE THE REPORT</small><div style="margin-top:14px">'+chip()+'</div></div>'
- +'<div class="rs"><span class="tag2">SEASON 2</span><b>Every Mag 7 report, at least</b><div class="mag">'+MAG.map(function(t){return co(t,34)}).join("")+'</div></div>'
- +'<div class="rs"><span class="tag2">AFTER THAT</span><b>More bets, as the record grows.</b></div></div></div></section>'
- +'<section><div class="wrap"><span class="kick">The token</span><h2>Get <em>$EZ.</em> Carefully.</h2><div class="steps"><div class="pn"><span class="no">01</span><h3>Check the address</h3><div class="dash">Not posted yet. It appears here, and only here, at launch.</div></div><div class="pn" style="--sh:var(--grl)"><span class="no">02</span><h3>Use this page\'s link</h3><div class="dash">Opens at launch.</div></div></div></div></section>'};
+function roiChart(){var W=340,H=170,all=[].concat.apply([],ms.map(function(m){return m.bp})),lo=Math.min.apply(null,all),hi=Math.max.apply(null,all),pad=(hi-lo)*.1;lo-=pad;hi+=pad;
+ function Y(v){return 8+(1-(v-lo)/(hi-lo))*(H-28)}
+ var s='<svg class="chart" viewBox="0 0 '+W+' '+H+'"><line x1="30" x2="'+(W-60)+'" y1="'+Y(1e5)+'" y2="'+Y(1e5)+'" stroke="#a49fb4" stroke-dasharray="4 4" stroke-width="1.5"/><text x="30" y="'+(Y(1e5)-6)+'">START $100K</text>';
+ var ly={},used=[];ms.slice().sort(function(a,b){return b.bal-a.bal}).forEach(function(m){var y=Y(m.bal)+4;used.forEach(function(u){if(Math.abs(y-u)<11)y=u+11});used.push(y);ly[m.k]=y});
+ ms.slice().reverse().forEach(function(m){var n=m.bp.length-1;function X(k){return 30+k/n*(W-90)}var d=m.bp.map(function(v,k){return (k?"L":"M")+X(k).toFixed(1)+","+Y(v).toFixed(1)}).join("");
+  s+='<path d="'+d+'" fill="none" stroke="#000" stroke-width="7" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="'+LC[m.k]+'" stroke-width="3.5" stroke-linejoin="round"/><circle cx="'+X(n)+'" cy="'+Y(m.bal)+'" r="5" fill="'+LC[m.k]+'" stroke="#000" stroke-width="2.5"/><text x="'+(X(n)+8)+'" y="'+ly[m.k]+'" style="fill:'+LC[m.k]+'">'+money(m.bal)+'</text>'});
+ return s+'<text x="30" y="'+(H-2)+'">R1</text><text x="'+(W-60)+'" y="'+(H-2)+'" text-anchor="end">R'+g.length+'</text></svg>'}
+function filmCard(r){var F=FILMS[+r[0]],a=+r[12],R=RW[+r[0]]||{},win=R.win?R.win.split(" & ").map(function(k){return NAMES[k]}).join(" & "):"";
+ return '<div class="lastr fc"><div class="hd">'+co(r[1],30)+'<span>Round '+r[0]+' · '+short(nm(r[1]),16)+'<small>CALLED '+mon(d0(r[2])).toUpperCase()+'</small></span></div><div class="poster"><img src="'+MED+F.p+'.jpg" alt=""><span class="play">▶</span></div><div class="actual"><span>WHAT THE STOCK DID<br><span class="w'+(win?'':' none')+'">'+(win?'♛ WON: '+win.toUpperCase():'NOBODY WON')+'</span></span><b style="color:'+(a>0?"var(--grl)":"var(--rdl)")+'">'+arr2(a)+'</b></div></div>'}
+P["/"]=function(){var fo=ms.slice().sort(function(a,b){return b.bal-a.bal}),last3=g.slice(-3);
+ return '<section class="hero"><div class="speed"></div><div class="shards"></div><div class="wrap" style="position:relative"><h1 style="font-size:clamp(44px,11.5vw,92px);margin-top:0">We\'re putting buybacks in the hands of <em>an AI.</em></h1>'
+ +'<ul class="blt"><li>Four AIs call stocks before earnings.</li><li><b>'+share+'%</b> of $EZ fees fill a pool.</li><li>First bet: NVIDIA. Top AI calls it, we bet the pool, <b>'+lev+'x</b>.</li><li><b>Right:</b> buyback. <b>Wrong:</b> pool can go to $0.</li></ul>'
+ +'<div style="margin-top:26px">'+chip()+'<span class="cap">Countdown to bet #1</span></div></div></section>'
+ +'<section><div class="wrap"><span class="kick">01 · The record</span><h2>Every call, <em>receipts included.</em></h2><ul class="blt"><li>Every call is made <b class="hl">before the company reports</b>.</li><li>Graded at the <b class="hl">first market close after earnings</b>.</li><li>Don\'t trust us. Verify every call below.</li></ul>'
+ +'<div class="carx">'+card(L)+filmCard(g[g.length-2])+'</div><div class="chipsx"><span class="cbtn">← Past rounds</span>'+last3.map(function(r,i){return '<span class="rc'+(i==2?' on':'')+'">R'+r[0]+'</span>'}).join("")+'<span class="cbtn up">Upcoming →</span></div></div></section>'
+ +'<section><div class="speed" style="opacity:.5"></div><div class="wrap" style="position:relative"><span class="kick">02 · The leaderboard</span><h2>Current <em>standings.</em></h2><div class="lad" style="margin-top:34px">'+ladRows(ms).replace('<div class="row one">','<div class="row one"><span class="inline">♛ IN LINE FOR THE CALL</span>')+'</div><p class="sub">The model on top of the leaderboard makes the call on bet #1, NVIDIA.</p></div></section>'
+ +'<section><div class="wrap"><span class="kick">03 · The proof</span><h2>Getting smarter <em>or just lucky?</em></h2><div class="pills"><span class="on">ROI</span><span>Direction</span></div><div class="pn" style="margin-top:20px"><span class="no">$100,000 · NOW WORTH</span><span class="tagx" style="position:absolute;right:12px;top:10px">SIMULATED</span>'
+ +'<div class="tiles4">'+fo.map(function(m){var r=m.bal/1e5-1;return '<div>'+tile(m.k,26)+'<em>'+m.name+'</em><b>'+usd(m.bal)+'</b><span class="pl '+(r>=0?'u':'d')+'">'+(r>=0?'▲ ':'▼ ')+Math.abs(r*100).toFixed(1)+'%</span></div>'}).join("")+'</div>'
+ +'<div style="background:#15131f;border:3px solid #000;margin-top:16px;padding:10px 8px 4px">'+roiChart()+'</div></div></div></section>'
+ +'<section><div class="wrap"><span class="kick">04 · The token</span><h2>Get <em>$EZ.</em></h2><div class="steps"><div class="pn"><span class="no">01</span><h3>Check the address</h3><div class="dash">Not posted yet. It appears here, and only here, at launch. Anyone DMing you a CA before that is a scammer.</div></div><div class="pn" style="--sh:var(--grl)"><span class="no">02</span><h3>Use this page\'s link</h3><p>Only through the link on this page.</p><div class="dash" style="text-align:center">Opens at launch</div></div></div>'
+ +'<p class="sub" style="font-size:13px;color:var(--mu);margin-top:26px">Best case, an AI buys back $EZ with its winnings. Worst case, the most entertaining way to lose money. Size accordingly. $EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p></div></section>'};
 
 P["/leaderboard"]=function(){
  var rr=g.slice(-5),grid='<div class="grid5"><span></span>'+rr.map(function(r){return '<span class="h">'+co(r[1],30)+'R'+r[0]+'</span>'}).join("")+'<span class="h" style="justify-items:end">RIGHT<br>WAY</span>';
