@@ -352,3 +352,32 @@ assert p6.count('</head>')==1 and p6.count('</body>')==1
 p6=p6.replace('</head>','<link id="x6-fonts" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">\n<style id="x6-skin">\n'+X6CSS+'\n</style>\n</head>')
 p6=p6.replace('</body>','<script id="x6-words">\n'+X6JS+'\n</script>\n</body>')
 open("v44-live-x6.html",'w').write(p6); print("ok v44-live-x6.html",len(p6))
+
+# EZ Live X2+ (owner, 2026-10-19: "Can you do a X2 plus"): X2's page as built above, every tab and route as it is, in X7's
+# anime cel look (tools/v22/skin-x2plus.css), night only, with the owner's first-screen words of 2026-10-19
+# (tools/v22/x2plus.js: the concept in four bullets, "Countdown to bet #1 · NVIDIA" under the chip, "pool"). The record
+# opens on the newest round, with the card before it half in view on the left, so the swipe is obvious (owner, 2026-10-19).
+# X2's handwriting trial (x2-logo) is left out, as on X6. X2 itself is untouched.
+pp=open("v24-live-x2.html").read()
+for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
+            ('<html lang="en" class="pt x2d">','<html lang="en" class="pt x2d x2p" data-theme="dark">'),
+            # night only: the theme is dark before the first paint and stays dark (the switch is hidden in the skin)
+            ('t=s==="light"||s==="dark"?s:h==="light"||h==="dark"?h:window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";','t="dark";'),
+            ('function saved(){var s=null;try{s=localStorage.getItem("ez-theme")}catch(e){}return s==="light"||s==="dark"?s:null}','function saved(){return "dark"}'),
+            ('function sys(){return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}','function sys(){return "dark"}'),
+            # the record: each card lands with half of the card before it in view on the left
+            ('function target(i){var s=slides[i];return s.offsetLeft-(car.clientWidth-s.offsetWidth)/2}',
+             'function X2PK(){var s=slides[0];return s?(parseFloat(getComputedStyle(car).columnGap)||10)+s.offsetWidth/2:0}\nfunction target(i){var s=slides[i];return s.offsetLeft-X2PK()}'),
+            ('var mid=car.scrollLeft+car.clientWidth/2,best=0,bd=1e9;','var mid=car.scrollLeft+X2PK()+(slides[0]?slides[0].offsetWidth/2:0),best=0,bd=1e9;'),
+            # it opens on the newest round (its stats), not on the newest round with a film
+            ('(function(){if(typeof SL==="undefined"||typeof go!=="function")return;for(var i=NR-1;i>=0;i--)if(SL[i]&&SL[i].d&&SL[i].d.film){',
+             '(function(){return;for(var i=NR-1;i>=0;i--)if(SL[i]&&SL[i].d&&SL[i].d.film){')]:
+    assert pp.count(a)==1,a; pp=pp.replace(a,b)
+pp,k1=re.subn(r'<link id="x2-logo-fonts"[^>]*>\n','',pp)
+pp,k2=re.subn(r'<style id="x2-logo">.*?</style>\n','',pp,flags=re.S)
+assert (k1,k2)==(1,1),(k1,k2)
+XPCSS=open(sys.argv[1]+'/skin-x2plus.css').read(); XPJS=open(sys.argv[1]+'/x2plus.js').read()
+assert pp.count('</head>')==1 and pp.count('</body>')==1
+pp=pp.replace('</head>','<style id="x2plus-skin">\n'+XPCSS+'\n</style>\n</head>')
+pp=pp.replace('</body>','<script id="x2plus-words">\n'+XPJS+'\n</script>\n</body>')
+open("v46-live-x2plus.html",'w').write(pp); print("ok v46-live-x2plus.html",len(pp))

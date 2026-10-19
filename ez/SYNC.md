@@ -42,6 +42,7 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    - EZ Live X3: https://claude.ai/artifact/4J3oqRt4mxzHKFi3bHuQip (`ez/v41-live-x3.html`)
    - EZ Live X4: https://claude.ai/artifact/K7xzLYcpomVXNtk6K2oioG (`ez/v42-live-x4.html`)
    - EZ Live X5: https://claude.ai/artifact/V5MQDmHsrRQkzrHfK9KQC6 (`ez/v43-live-x5.html`)
+   - EZ Live X2+: https://claude.ai/artifact/9dPsU3tcgmC9RAzQZy9Mg5 (`ez/v46-live-x2plus.html`, built by build.py after X6)
    Include `ez-data.js`, and any new `media/` files, in the publish. (Primetime and Primetime Kraft previews were deleted on 2026-10-03; their source files are kept.)
 7. **Report to the owner** in plain words: what changed, the new standings, any warnings,
    and what to QA.
@@ -89,3 +90,4 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
   The old site lives at buggatidealership.github.io/EZ (so, most likely, the `buggatidealership/EZ` repo).
 
 - **X6 artifact size (2026-10-18):** X6 (https://claude.ai/artifact/PA6WGQyb1j7pXHboKaeTLt) holds about 265 MB of the 268 MB (256 MiB) cap. It has no low-res round 3 to 6 films (only Variant 1 uses those). Send media in publishes of under 64 MiB each (one publish is refused above that). Like X2, new films go to the live site once the artifact is full.
+- **X2+ artifact size (2026-10-19):** X2+ (https://claude.ai/artifact/9dPsU3tcgmC9RAzQZy9Mg5) holds the same 218 files as X6 (about 253 MiB of the 256 MiB cap), sent in five publishes of under 64 MiB. A new film may not fit: then it goes to the live site only, as with X2 and X6.
