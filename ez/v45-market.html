@@ -1,10 +1,11 @@
 <title>EZ Live X7</title>
-<meta name="description" content="Four AIs call stocks before earnings. The top AI makes one call on NVIDIA. We bet the pot on it.">
+<meta name="description" content="Four AIs call stocks before earnings. The leader makes one call on NVIDIA, and we bet the pot on it.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap">
 <style>
-/* EZ Live X7. Night only, by design: the cinematic look is the brand. */
-:root{color-scheme:dark;--bg:#08080b;--s1:#101016;--s2:#16161e;--tx:#efe7d4;--mu:#9a95a3;--hl:rgba(239,226,198,.12);--gold:#e6b955;--gr:#1f8a5a;--grl:#5fe0a0;--rd:#d0413c;--rdl:#ff6b62;--cr:#efe2c6;
+/* EZ Live X7. Night only, by design. Anime cel UI: ink outlines, flat two-tone fills with one hard shadow band,
+   hard offset shadows (no blur), angled title slabs, speed lines on splash moments. Body text and numbers stay straight. */
+:root{color-scheme:dark;--bg:#0b0a14;--bg2:#12101e;--tx:#f3ead6;--mu:#a49fb4;--ink:#000;--paper:#f3e6c8;--gold:#f2b632;--gold2:#b9800f;--gr:#11714a;--grl:#4fe39a;--rd:#b3261e;--rdl:#ff6158;--vi:#2a2350;
   --dsp:"Anton",Impact,"Arial Narrow",sans-serif;--sans:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Geist Mono",ui-monospace,Menlo,monospace}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -12,111 +13,165 @@ body{margin:0;background:var(--bg);color:var(--tx);font:400 16px/1.5 var(--sans)
 a{color:inherit}
 img{max-width:100%}
 .wrap{max-width:1120px;margin:0 auto;padding-inline:18px}
-body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
-.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(8,8,11,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--hl)}
-.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:54px;gap:12px}
-.brand{font:400 22px/1 var(--dsp);letter-spacing:.05em;text-decoration:none}
-.nav nav{display:flex;gap:18px;font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
-.nav nav a{text-decoration:none}.nav nav a:hover{color:var(--tx)}
-.tag{font:600 10px var(--mono);letter-spacing:.16em;color:var(--mu);border:1px solid var(--hl);padding:5px 9px;border-radius:2px;white-space:nowrap}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:#000;border-bottom:3px solid var(--gold)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:52px;gap:12px}
+.brand{font:400 22px/1 var(--dsp);letter-spacing:.04em;text-decoration:none;background:var(--gold);color:#000;padding:5px 14px 4px 10px;clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%)}
+.nav nav{display:flex;gap:18px;font:400 15px var(--dsp);letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
+.nav nav a{text-decoration:none}.nav nav a:hover{color:var(--gold)}
+.tag{font:600 10px var(--mono);letter-spacing:.16em;color:var(--gold);white-space:nowrap}
 @media(max-width:760px){.nav nav{display:none}}
-.kick{font:600 11px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
-h1,h2{font-family:var(--dsp);font-weight:400;text-transform:uppercase;line-height:.93;letter-spacing:.005em;margin:.25em 0 0;text-wrap:balance}
-h2{font-size:clamp(40px,8vw,70px)}
-h1 em,h2 em{font-style:normal;color:var(--gold)}
-.lede{font-size:16px;line-height:1.5;color:#cfc7b4;max-width:50ch;margin:14px 0 0}
-section{position:relative;padding:76px 0;border-top:1px solid var(--hl);overflow:hidden}
+/* titles: a tilted slab for the kicker, ink-shadowed capitals for the head */
+.kick{display:inline-block;font:400 15px/1 var(--dsp);letter-spacing:.1em;text-transform:uppercase;background:var(--gold);color:#000;padding:7px 16px 6px 10px;transform:rotate(-2deg);clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%)}
+h1,h2{font-family:var(--dsp);font-weight:400;text-transform:uppercase;line-height:.95;letter-spacing:.01em;margin:.32em 0 0;text-wrap:balance;text-shadow:.05em .05em 0 var(--vi)}
+h2{font-size:clamp(40px,8vw,72px)}
+h1 em,h2 em{font-style:normal;color:var(--gold);text-shadow:.05em .05em 0 var(--rd)}
+section{position:relative;padding:80px 0;overflow:hidden}
+section:nth-of-type(even){background:var(--bg2)}
+section+section:before,section+section:after{content:"";position:absolute;left:0;right:0;top:0;height:30px;pointer-events:none}
+section+section:before{background:var(--gold);clip-path:polygon(0 0,100% 0,100% 6px,0 30px)}
+section+section:after{background:#000;clip-path:polygon(0 0,100% 0,100% 2px,0 25px)}
 .split{display:grid;gap:34px;align-items:center}
 .split>*{min-width:0}
 @media(min-width:920px){.split{grid-template-columns:1fr 1fr;gap:56px}.split.flip>:first-child{order:2}}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.tile{display:inline-grid;place-items:center;border-radius:22%;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.tile{display:inline-grid;place-items:center;border-radius:22%;flex:none;border:2.5px solid #000}
 .tile svg{width:58%;height:58%}
-.co{display:inline-grid;place-items:center;background:#fff;border-radius:22%;flex:none}.co img{width:76%}
-/* the host's speech: a postage stamp (his own head) with a name tab, not a chat bubble */
+.co{display:inline-grid;place-items:center;background:#fff;border-radius:22%;flex:none;border:2px solid #000}.co img{width:76%}
+/* speed lines for splash moments */
+.speed{position:absolute;inset:-60%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(243,234,214,.11) 0 .8deg,transparent .8deg 5deg);-webkit-mask:radial-gradient(circle,transparent 14%,#000 42%);mask:radial-gradient(circle,transparent 14%,#000 42%);animation:spin 200s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* the host: ink outline around the cut-out, then a green/red rim like his stripes */
+.pose{display:block;pointer-events:none;user-select:none;height:auto;filter:drop-shadow(2px 0 0 #000) drop-shadow(-2px 0 0 #000) drop-shadow(0 2px 0 #000) drop-shadow(0 -2px 0 #000) drop-shadow(-6px 0 0 rgba(31,138,90,.75)) drop-shadow(6px 0 0 rgba(208,65,60,.65))}
+/* his speech: a postage stamp (his own head) with a name tab */
 .say{position:relative;display:inline-block;filter:drop-shadow(5px 6px 0 #000);max-width:min(330px,100%)}
-.say .st{position:relative;background:linear-gradient(90deg,transparent 0 11px,var(--gr) 11px 16px,transparent 16px calc(100% - 16px),var(--rd) calc(100% - 16px) calc(100% - 11px),transparent calc(100% - 11px)),var(--cr);
+.say .st{position:relative;background:linear-gradient(90deg,transparent 0 11px,var(--gr) 11px 16px,transparent 16px calc(100% - 16px),var(--rd) calc(100% - 16px) calc(100% - 11px),transparent calc(100% - 11px)),var(--paper);
   color:#121214;padding:18px 26px 15px 28px;font:600 15px/1.38 var(--sans);
   -webkit-mask:radial-gradient(circle 4.5px at 0 7px,transparent 95%,#000) 0 0/51% 14px repeat-y,radial-gradient(circle 4.5px at 100% 7px,transparent 95%,#000) 100% 0/51% 14px repeat-y;
           mask:radial-gradient(circle 4.5px at 0 7px,transparent 95%,#000) 0 0/51% 14px repeat-y,radial-gradient(circle 4.5px at 100% 7px,transparent 95%,#000) 100% 0/51% 14px repeat-y}
 .say .st b{color:var(--rd)}.say .st em{font-style:normal;color:var(--gr)}
-.say .nm{position:absolute;left:26px;top:-11px;z-index:2;background:#0b0b0c;color:var(--gold);font:600 9.5px var(--mono);letter-spacing:.18em;padding:4px 8px;border:1px solid var(--gold)}
-.say .tl{position:absolute;width:22px;height:18px;background:var(--cr);bottom:-16px;clip-path:polygon(0 0,100% 0,30% 100%)}
+.say .nm{position:absolute;left:26px;top:-11px;z-index:2;background:#000;color:var(--gold);font:600 9.5px var(--mono);letter-spacing:.18em;padding:4px 8px;border:1px solid var(--gold)}
+.say .tl{position:absolute;width:22px;height:18px;background:var(--paper);bottom:-16px;clip-path:polygon(0 0,100% 0,30% 100%)}
 .say.l .tl{left:34px}.say.r .tl{right:34px;clip-path:polygon(0 0,100% 0,70% 100%)}
-.say.up .tl{top:-16px;bottom:auto;clip-path:polygon(30% 0,100% 100%,0 100%)}
-.pose{display:block;pointer-events:none;user-select:none;height:auto}
-.rim{filter:drop-shadow(-5px 0 0 rgba(31,138,90,.6)) drop-shadow(6px 0 0 rgba(208,65,60,.5))}
-.speed{position:absolute;inset:-60%;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(239,226,198,.08) 0 1deg,transparent 1deg 6deg);-webkit-mask:radial-gradient(circle,transparent 16%,#000 44%);mask:radial-gradient(circle,transparent 16%,#000 44%);animation:spin 160s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.rv{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+/* motion */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
 .rv.in{opacity:1;transform:none}
 .d1{transition-delay:.12s}.d2{transition-delay:.24s}.d3{transition-delay:.36s}.d4{transition-delay:.5s}
-.pop{opacity:0;transform:translateY(10px) scale(.92) rotate(-1.5deg);transition:opacity .45s ease,transform .6s cubic-bezier(.3,1.6,.5,1)}
+.pop{opacity:0;transform:translateY(10px) scale(.9) rotate(-3deg);transition:opacity .35s ease,transform .5s cubic-bezier(.3,1.7,.5,1)}
 .pop.in{opacity:1;transform:rotate(-1deg)}
+/* panel: the cel building block. Paper fill, ink line, one hard shadow band, halftone in a corner, hard offset shadow */
+.pn{position:relative;background:var(--paper);color:#141217;border:3px solid #000;box-shadow:8px 8px 0 var(--sh,var(--gold));padding:22px 20px 20px;isolation:isolate;overflow:hidden;min-width:0}
+.pn:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(115deg,transparent 0 66%,rgba(150,95,20,.15) 66%)}
+.pn:after{content:"";position:absolute;right:0;top:0;width:50%;height:55%;z-index:-1;background:radial-gradient(rgba(0,0,0,.2) 1.2px,transparent 1.7px) 0 0/7px 7px;-webkit-mask:linear-gradient(215deg,#000,transparent 62%);mask:linear-gradient(215deg,#000,transparent 62%)}
+.pn.dk{background:#15131f;color:var(--tx)}.pn.dk:before{background:linear-gradient(115deg,transparent 0 66%,rgba(0,0,0,.3) 66%)}.pn.dk:after{background:radial-gradient(rgba(255,255,255,.1) 1.2px,transparent 1.7px) 0 0/7px 7px}
+.pn .no{position:absolute;left:-3px;top:-3px;z-index:3;background:#000;color:var(--gold);font:400 15px/1 var(--dsp);letter-spacing:.08em;padding:8px 18px 7px 12px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.pn h3{margin:26px 0 0;font:400 clamp(26px,3.6vw,34px)/1 var(--dsp);text-transform:uppercase;letter-spacing:.01em}
+.pn p{margin:10px 0 0;font:500 15.5px/1.45 var(--sans)}
+.pn p.s{font-size:13.5px;color:#5c5662}.pn.dk p.s{color:var(--mu)}
 /* HERO */
-.hero{padding:44px 0 0;border-top:0;min-height:calc(100svh - 54px);display:flex;flex-direction:column}
+.hero{padding:40px 0 0;min-height:calc(100svh - 52px);display:flex;flex-direction:column}
 .hero .wrap{position:relative;flex:1;display:grid;align-items:end}
-.hero .shards{position:absolute;inset:0;pointer-events:none;background:linear-gradient(112deg,transparent 0 58%,rgba(31,138,90,.10) 58% 70%,transparent 70%),linear-gradient(112deg,transparent 0 72%,rgba(208,65,60,.10) 72% 80%,transparent 80%)}
-.giant{white-space:nowrap;font:400 clamp(86px,22vw,200px)/.82 var(--dsp);color:var(--gold);text-shadow:0 0 40px rgba(230,185,85,.3);letter-spacing:-.005em}
-.hero h1{font-size:clamp(32px,6.4vw,58px);max-width:12ch}
-.lines{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:9px;max-width:44ch}
-.lines li{position:relative;padding-left:18px;font:500 15.5px/1.38 var(--sans);color:#ddd5c2}
-.lines li:before{content:"";position:absolute;left:0;top:7px;width:7px;height:7px;background:var(--gold)}
-.lines b{color:var(--tx)}
-.hero .honest{font:600 11px var(--mono);letter-spacing:.12em;color:var(--mu);margin-top:18px;text-transform:uppercase}
+.hero .shards{position:absolute;inset:0;pointer-events:none;background:linear-gradient(112deg,transparent 0 58%,rgba(31,138,90,.16) 58% 70%,transparent 70%),linear-gradient(112deg,transparent 0 72%,rgba(208,65,60,.16) 72% 80%,transparent 80%)}
+.giant{white-space:nowrap;font:400 clamp(86px,22vw,200px)/.82 var(--dsp);color:var(--gold);-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:.04em .04em 0 var(--rd);letter-spacing:.005em}
+.hero h1{font-size:clamp(34px,6.6vw,62px);max-width:12ch}
+.hero .honest{display:inline-block;font:600 11px var(--mono);letter-spacing:.12em;color:var(--mu);margin-top:20px;text-transform:uppercase}
 .hero-grid{display:grid;gap:10px;position:relative;z-index:2}
 @media(min-width:920px){.hero-grid{grid-template-columns:1.1fr .9fr;align-items:end}.giant{font-size:clamp(110px,12.5vw,168px)}}
 .hero-host{position:relative;justify-self:end;width:min(360px,80vw)}
 .hero-host .say{position:absolute;left:-18%;top:2%;z-index:3}
-@media(max-width:919px){.hero-host{margin-top:34px}.hero-host .say{left:-4%;top:-10%}}
-.logos{position:relative;z-index:3;display:grid;grid-template-columns:repeat(4,1fr);background:#000;border-top:1px solid var(--hl);margin-top:-2px}
-.logos div{display:grid;justify-items:center;gap:6px;padding:16px 4px 14px;font:600 9.5px var(--mono);letter-spacing:.14em;color:var(--mu);text-transform:uppercase;text-align:center}
-.logos div+div{border-left:1px solid var(--hl)}
-.logos b{font:500 20px var(--mono);color:var(--tx);letter-spacing:0}.logos .one b{color:var(--gold)}
-.logos small{display:block;font:500 9px var(--mono);letter-spacing:.08em;color:var(--mu);text-transform:none}
-/* the money */
-.flow{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:10px}
-.flow li{display:grid;grid-template-columns:54px 1fr;gap:14px;align-items:center;background:var(--s1);border:1px solid var(--hl);border-radius:6px;padding:14px}
-.flow .n{font:400 34px/1 var(--dsp);color:var(--gold);text-align:center}
-.flow b{display:block;font:600 16px/1.3 var(--sans)}.flow span{display:block;font:400 14px/1.45 var(--sans);color:var(--mu);margin-top:3px}
-.flow li.arrow{position:relative}
-.meter{margin-top:18px;border:1px solid var(--hl);border-radius:6px;overflow:hidden}
-.meter .bar{display:flex;height:46px;font:600 12px var(--mono);letter-spacing:.1em}
-.meter .bar div{display:flex;align-items:center;justify-content:center}
-.meter .a{background:var(--gold);color:#111}.meter .b{background:#24242c;color:var(--mu)}
-.meter p{margin:0;padding:10px 12px;font:500 13px/1.45 var(--sans);color:var(--mu)}
-/* the record + films */
-.player{position:relative;border-radius:6px;overflow:hidden;box-shadow:0 0 0 1px var(--hl),0 40px 80px rgba(0,0,0,.6);aspect-ratio:1;background:#000;max-width:560px}
-.player video{width:100%;height:100%;object-fit:cover;display:block}
-.player .ep{position:absolute;left:10px;top:10px;background:#000;font:600 10px var(--mono);letter-spacing:.16em;padding:6px 8px;z-index:2}
-.player .snd{position:absolute;right:10px;bottom:10px;z-index:2;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:99px;padding:7px 12px;font:600 11px var(--mono);letter-spacing:.1em;cursor:pointer}
-.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;max-width:560px}
-.strip button{position:relative;aspect-ratio:1;border-radius:4px;overflow:hidden;border:0;padding:0;cursor:pointer;background:#141419;box-shadow:0 0 0 1px var(--hl)}
-.strip button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--gold)}
-.strip img.p{width:100%;height:100%;object-fit:cover;display:block}
-.strip span{position:absolute;left:4px;bottom:4px;font:600 8.5px var(--mono);letter-spacing:.1em;background:#000;color:var(--tx);padding:2px 4px}
-.strip .co{position:absolute;right:4px;top:4px;width:20px;height:20px}
-.presenter{display:flex;align-items:flex-end;gap:4px;margin-top:26px}
-.presenter img{width:min(190px,46%);flex:none}
-.presenter .say{margin-bottom:110px}
-/* a round */
-.how3{list-style:none;padding:0;margin:20px 0 0;border-top:1px solid var(--hl)}
-.how3 li{display:grid;grid-template-columns:40px 1fr;gap:10px;padding:12px 0;border-bottom:1px solid var(--hl);font:500 15px/1.45 var(--sans)}
-.how3 b{font:400 26px/1 var(--dsp);color:var(--gold)}
-.lastr{margin-top:22px;background:var(--s1);border:1px solid var(--hl);border-radius:8px;overflow:hidden;position:relative}
-.lastr .hd{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--hl)}
-.lastr .hd .who{display:flex;align-items:center;gap:10px;font:600 15px var(--sans)}
-.lastr .hd{padding-right:100px;min-height:64px}.lastr .hd small{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.tix{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px 12px 6px;position:relative}
-.rcpt{background:var(--cr);color:#0b0b0c;padding:13px 4px 11px;display:grid;justify-items:center;gap:5px;font:600 9.5px var(--mono);letter-spacing:.08em;text-align:center;
+@media(max-width:919px){.hero-host{margin-top:44px}.hero-host .say{left:-4%;top:-12%}}
+.cast{position:relative;z-index:3;display:grid;grid-template-columns:repeat(4,1fr);background:#000;border-top:3px solid var(--gold)}
+.cast div{display:grid;justify-items:center;gap:8px;padding:16px 4px 14px;font:400 18px/1 var(--dsp);letter-spacing:.06em;text-transform:uppercase}
+.cast div+div{border-left:2px solid #24202f}
+.cast .tile{border-color:var(--paper)}
+.cast small{font:600 9px var(--mono);letter-spacing:.14em;color:var(--mu)}
+/* HOW THE BUYBACK WORKS: four panels */
+.manga{display:grid;gap:26px;margin-top:34px}
+@media(min-width:920px){.manga{grid-template-columns:1.1fr 1fr;gap:30px}.manga .wide{grid-column:1/-1}
+  .pn.sl{transform:skewX(-3deg)}.pn.sl>.u{transform:skewX(3deg)}}
+.p1 .u{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.p1 .big{position:relative;font:400 clamp(84px,13vw,120px)/.85 var(--dsp);color:var(--gold);-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:5px 5px 0 #000;margin-top:30px}
+.pot{width:clamp(130px,30vw,190px);height:auto;overflow:visible}
+.pot .cn{animation:drop 2.4s cubic-bezier(.5,0,.8,.6) infinite}
+.pot .cn:nth-of-type(2){animation-delay:.8s}.pot .cn:nth-of-type(3){animation-delay:1.6s}
+@keyframes drop{0%{transform:translateY(-60px);opacity:0}15%{opacity:1}70%{transform:translateY(58px);opacity:1}80%,100%{transform:translateY(64px);opacity:0}}
+.p2{--sh:var(--grl)}
+.p2 .u{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;margin-top:30px}
+.myst{position:relative;width:104px;height:104px;border-radius:22%;background:#000;border:3px solid #000;box-shadow:0 0 0 3px var(--gold);display:grid;place-items:center;font:400 72px/1 var(--dsp);color:var(--gold)}
+.myst i{position:absolute;top:-16px;right:-18px;font:400 14px/1 var(--dsp);font-style:normal;background:var(--gold);color:#000;border:2.5px solid #000;padding:5px 7px 4px;transform:rotate(8deg)}
+.ud{display:grid;gap:8px}
+.ud span{font:400 26px/1 var(--dsp);letter-spacing:.04em;color:#fff;border:3px solid #000;padding:7px 12px 6px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);width:max-content}
+.ud .a{background:var(--gr)}.ud .b{background:var(--rd)}
+.ud small{font:600 10px var(--mono);letter-spacing:.14em;color:#5c5662}
+.p3{--sh:var(--rd);background:#15131f;color:var(--tx)}
+.p3:before{background:linear-gradient(115deg,transparent 0 66%,rgba(0,0,0,.3) 66%)}.p3:after{background:radial-gradient(rgba(255,255,255,.08) 1.2px,transparent 1.7px) 0 0/7px 7px}
+.p3 .u{display:grid;gap:22px;align-items:center;margin-top:28px}
+@media(min-width:920px){.p3 .u{grid-template-columns:1.15fr 1fr;gap:34px}}
+.p3 .ten{font:400 clamp(90px,14vw,150px)/.8 var(--dsp);color:var(--gold);-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:6px 6px 0 var(--rd)}
+.p3 .ten small{display:block;font-size:.3em;line-height:1;margin-top:.25em;color:var(--tx);text-shadow:none;-webkit-text-stroke:0;letter-spacing:.06em}
+.p3 p{color:#e3dac6;font-size:18px;max-width:30ch}.p3 p.s{font-size:14px;color:var(--mu)}
+.gpu-img{position:relative;aspect-ratio:1834/1362;overflow:hidden;border:3px solid #000;box-shadow:6px 6px 0 #000,0 30px 80px rgba(118,185,0,.14)}
+.gpu-img img,.gpu-img .gpu-core{position:absolute;left:-4.471%;top:-4.626%;width:109.051%;height:110.132%;max-width:none}
+.gc-bg{fill:none}.gc-blk{fill:#141518;stroke:#3a3c42;stroke-width:2}
+.gc{fill:#26282d;stroke:#34363c;stroke-width:1}
+.gc.gc-on{fill:#ff3b2f;stroke:#ff9a8f;stroke-width:.8;filter:drop-shadow(0 0 4px #ff2a1f)}
+.gc-u{font:800 25px ui-monospace,Menlo,monospace;letter-spacing:.32em;fill:#f2efe6;paint-order:stroke;stroke:#0b0b0d;stroke-width:4px;stroke-linejoin:round}
+.gc-eng{font:400 50px/1 var(--dsp);letter-spacing:.1em;fill:#5a4512;fill-opacity:.9;stroke:#f6e6a8;stroke-opacity:.5;stroke-width:1.2px;paint-order:stroke}
+.gpu-cap{display:inline-block;margin-top:12px;font:400 15px/1 var(--dsp);letter-spacing:.1em;text-transform:uppercase;background:var(--rd);color:#fff;padding:7px 14px 6px 10px;clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%)}
+.p4{padding:0;--sh:#000;background:#000}
+.p4:before,.p4:after{display:none}
+.p4 .u{display:grid}
+@media(min-width:700px){.p4 .u{grid-template-columns:1fr 1fr}}
+.end{position:relative;padding:54px 22px 24px;color:#fff;overflow:hidden;isolation:isolate}
+.end:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(115deg,transparent 0 62%,rgba(0,0,0,.22) 62%)}
+.end.v{background:var(--gr)}.end.d{background:var(--rd)}
+@media(min-width:700px){.end.v{clip-path:polygon(0 0,100% 0,calc(100% - 26px) 100%,0 100%);margin-right:-26px;padding-right:44px}.end.d{padding-left:44px}}
+.end h4{margin:0;font:400 clamp(40px,6vw,58px)/.9 var(--dsp);text-transform:uppercase;text-shadow:4px 4px 0 #000;letter-spacing:.01em}
+.end p{margin:12px 0 0;font:600 17px/1.4 var(--sans);max-width:30ch}
+/* THE LEADER + LADDER */
+.reveal{text-align:center}
+.letter{position:relative;height:clamp(120px,24vw,230px);background:#000;overflow:hidden;max-width:900px;margin:26px auto 0;border:3px solid #000;box-shadow:8px 8px 0 var(--gold)}
+.letter img{width:100%;height:100%;object-fit:cover}
+.letter:before,.letter:after{content:"";position:absolute;left:0;right:0;height:50%;background:#000;z-index:2;transition:height .9s cubic-bezier(.7,0,.2,1) .2s}
+.letter:before{top:0}.letter:after{bottom:0}
+.in .letter:before,.in .letter:after{height:0}
+.reveal .cap{margin-top:18px;font:400 clamp(24px,4vw,34px)/1 var(--dsp);letter-spacing:.04em;text-transform:uppercase;color:#fff;opacity:0;transition:opacity .6s 1.1s}
+.in .cap{opacity:1}
+.champ{position:relative;display:inline-block;margin-top:80px;opacity:0;transform:scale(.6) rotate(-8deg);transition:all .7s cubic-bezier(.2,1.6,.4,1) 1.5s}
+.in .champ{opacity:1;transform:rotate(-3deg)}
+.champ .burst{position:absolute;left:50%;top:50%;width:270px;height:270px;transform:translate(-50%,-50%);z-index:-1}
+.champ .tile{border-width:4px;box-shadow:10px 10px 0 var(--gold)}
+.champ-name{font:400 clamp(60px,11vw,110px)/1 var(--dsp);letter-spacing:.04em;margin-top:22px;color:var(--gold);-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:.04em .04em 0 var(--rd)}
+.ladwrap{display:grid;gap:30px;margin-top:46px;text-align:left;align-items:end}
+@media(min-width:920px){.ladwrap{grid-template-columns:1.3fr 1fr;gap:50px}}
+.lad{display:grid;gap:12px}
+.row{display:grid;grid-template-columns:34px 44px 1fr auto;gap:12px;align-items:center;padding:10px 14px 10px 10px;background:var(--paper);color:#141217;border:3px solid #000;box-shadow:6px 6px 0 var(--vi)}
+.row .p{font:400 28px/1 var(--dsp);text-align:center}
+.row .nm{font:400 22px/1 var(--dsp);letter-spacing:.04em;text-transform:uppercase}
+.row .nm small{display:flex;gap:3px;margin-top:6px}
+.row .pc{font:400 34px/1 var(--dsp);text-align:right}.row .pc small{display:block;font:600 10px var(--mono);color:#5c5662;margin-top:3px}
+.row.one{background:var(--gold);box-shadow:6px 6px 0 var(--rd)}.row.one .pc small{color:#3a2a05}
+.sq{width:13px;height:13px;border-radius:2px;display:inline-block;border:1.5px solid #000}.sq.y{background:var(--grl)}.sq.x{background:var(--rdl)}.sq.z{background:#bdb5a5}
+.frz{font:500 14px/1.5 var(--sans);color:var(--mu);margin:4px 0 0}
+.heckle{display:flex;flex-direction:column;align-items:flex-start;max-width:400px;justify-self:center}
+.heckle .say{margin:0 0 24px}
+@media(max-width:919px){.heckle img{max-width:300px}}
+/* A ROUND */
+.how3{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:12px}
+.how3 li{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;font:500 16px/1.45 var(--sans)}
+.how3 b{display:grid;place-items:center;width:44px;height:44px;background:var(--gold);color:#000;border:3px solid #000;font:400 24px/1 var(--dsp);transform:rotate(-4deg)}
+.lastr{margin-top:26px;background:#15131f;border:3px solid #000;box-shadow:8px 8px 0 var(--gold);position:relative}
+.lastr .hd{display:flex;align-items:center;gap:10px;padding:12px 100px 12px 14px;min-height:64px;border-bottom:3px solid #000;background:#000;font:400 19px/1.1 var(--dsp);letter-spacing:.04em;text-transform:uppercase}
+.lastr .hd small{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tix{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px 12px 8px;position:relative}
+.rcpt{background:var(--paper);color:#0b0b0c;padding:13px 4px 11px;display:grid;justify-items:center;gap:5px;font:600 9.5px var(--mono);letter-spacing:.08em;text-align:center;
   -webkit-mask:radial-gradient(circle 5px at 50% 0,transparent 98%,#000) top/14px 51% repeat-x,radial-gradient(circle 5px at 50% 100%,transparent 98%,#000) bottom/14px 51% repeat-x;mask:radial-gradient(circle 5px at 50% 0,transparent 98%,#000) top/14px 51% repeat-x,radial-gradient(circle 5px at 50% 100%,transparent 98%,#000) bottom/14px 51% repeat-x}
-.rcpt .call{font:700 15px/1 var(--mono);letter-spacing:0}
+.rcpt .call{font:400 21px/1 var(--dsp);letter-spacing:.02em}
 .rcpt .call.UP{color:var(--gr)}.rcpt .call.DOWN{color:var(--rd)}
 .rcpt .ok{font:700 9px var(--mono);padding:2px 5px;color:#fff}.rcpt .ok.y{background:var(--gr)}.rcpt .ok.n{background:var(--rd)}
-.actual{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-top:1px solid var(--hl)}
-.actual span{font:600 10px var(--mono);letter-spacing:.14em;color:var(--mu)}
-.actual b{font:500 30px var(--mono)}
-.pm{position:absolute;right:8px;top:-14px;width:88px;color:var(--rd);opacity:0;transform:scale(2.6) rotate(-40deg);z-index:3;pointer-events:none}
+.actual{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-top:3px solid #000}
+.actual span{font:600 10px/1.5 var(--mono);letter-spacing:.14em;color:var(--mu)}
+.actual b{font:400 42px/1 var(--dsp);white-space:nowrap;-webkit-text-stroke:2px #000;paint-order:stroke fill;text-shadow:3px 3px 0 #000}
+.pm{position:absolute;right:8px;top:-14px;width:88px;color:var(--rdl);opacity:0;transform:scale(2.6) rotate(-40deg);z-index:3;pointer-events:none}
 .in .pm{animation:slam .5s .6s cubic-bezier(.2,.9,.3,1.3) forwards}
 @keyframes slam{0%{opacity:0;transform:scale(2.6) rotate(-40deg)}70%{opacity:.95;transform:scale(.92) rotate(-12deg)}100%{opacity:.9;transform:scale(1) rotate(-14deg)}}
 .in .tix{animation:shake .35s .95s ease}
@@ -124,87 +179,57 @@ section{position:relative;padding:76px 0;border-top:1px solid var(--hl);overflow
 .stamper{display:flex;flex-direction:column;align-items:flex-end;max-width:440px;justify-self:center}
 .stamper .say{margin:0 0 24px}
 @media(max-width:919px){.stamper img{max-width:330px}}
-/* the leader */
-.reveal{text-align:center}
-.letter{position:relative;height:clamp(120px,24vw,230px);background:#000;overflow:hidden;max-width:900px;margin:22px auto 0}
-.letter img{width:100%;height:100%;object-fit:cover}
-.letter:before,.letter:after{content:"";position:absolute;left:0;right:0;height:50%;background:#000;z-index:2;transition:height .9s cubic-bezier(.7,0,.2,1) .2s}
-.letter:before{top:0}.letter:after{bottom:0}
-.in .letter:before,.in .letter:after{height:0}
-.reveal .cap{margin-top:14px;font:700 17px/1.3 var(--sans);color:#fff;-webkit-text-stroke:3px #000;paint-order:stroke;opacity:0;transition:opacity .6s 1.1s}
-.in .cap{opacity:1}
-.champ{position:relative;display:inline-block;margin-top:26px;opacity:0;transform:scale(.6);filter:blur(10px);transition:all .9s cubic-bezier(.2,.9,.3,1.2) 1.5s}
-.in .champ{opacity:1;transform:none;filter:none}
-.champ .ghost{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:400 clamp(120px,30vw,260px)/.8 var(--dsp);color:transparent;-webkit-text-stroke:1px rgba(230,185,85,.35);white-space:nowrap;z-index:-1}
-.champ .tile{box-shadow:0 0 0 2px var(--gold),12px 12px 0 rgba(230,185,85,.3),0 30px 80px rgba(230,185,85,.3)}
-.champ-name{font:400 clamp(54px,10vw,96px)/1 var(--dsp);letter-spacing:.04em;margin-top:18px}
-.why1{font:500 15px/1.5 var(--sans);color:#cfc7b4;max-width:46ch;margin:10px auto 0}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);max-width:520px;margin:18px auto 0;background:var(--s1);border:1px solid var(--hl);border-radius:6px;text-align:left}
-.stats div{padding:14px;font:600 10px var(--mono);letter-spacing:.12em;color:var(--mu)}.stats div+div{border-left:1px solid var(--hl)}
-.stats b{display:block;font:500 26px var(--mono);color:var(--tx);letter-spacing:0;margin-bottom:3px}
-.stats .f{grid-column:1/-1;border-left:0!important;border-top:1px solid var(--hl);display:flex;gap:6px;align-items:center}
-.sq{width:14px;height:14px;border-radius:3px;display:inline-block}.sq.y{background:var(--gr)}.sq.x{background:var(--rd)}.sq.z{background:#33333b}
-/* ladder */
-.lad{border-top:1px solid var(--hl);margin-top:20px}
-.row{display:grid;grid-template-columns:22px 40px 1fr auto;gap:12px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--hl)}
-.row .p{font:500 13px var(--mono);color:var(--mu)}.row .nm{font:600 16px var(--sans)}.row .nm small{display:flex;gap:3px;margin-top:5px}.row .nm .sq{width:11px;height:11px}
-.row .pc{font:500 24px var(--mono);text-align:right}.row .pc small{display:block;font:500 10px var(--mono);color:var(--mu)}
-.row.one{background:linear-gradient(90deg,rgba(230,185,85,.15),transparent)}.row.one .p,.row.one .pc{color:var(--gold)}
-.frz{font:500 14px/1.5 var(--sans);color:var(--mu);margin-top:12px}
-.heckle{display:flex;flex-direction:column;align-items:flex-start;max-width:400px;justify-self:center}
-.heckle .say{margin:0 0 24px}
-@media(max-width:919px){.heckle img{max-width:300px}}
-/* hall of legends: three highlight cards */
-.legends{display:grid;gap:14px;margin-top:26px}
-@media(min-width:900px){.legends{grid-template-columns:repeat(3,1fr)}}
-.lg{position:relative;border-radius:8px;overflow:hidden;border:1px solid rgba(230,185,85,.45);min-height:340px;display:flex;flex-direction:column;justify-content:flex-end;padding:18px;isolation:isolate}
-.lg .bg{position:absolute;inset:0;z-index:-2}.lg .bg img{width:100%;height:100%;object-fit:cover;filter:saturate(.8) brightness(.8)}
-.lg:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(8,8,11,.55),rgba(8,8,11,.88) 40%,rgba(8,8,11,.98))}
-.lg .big .ar{font-size:.42em;vertical-align:.5em;margin-right:.12em}.lg .big{white-space:nowrap}
-.lg .ticks{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}.lg .ticks i{width:24px;height:24px;display:grid;place-items:center;background:#1f8a5a;color:#fff;font:700 13px var(--sans);font-style:normal;border-radius:3px}
-.lg.plain{background:radial-gradient(90% 70% at 70% 20%,rgba(230,185,85,.22),var(--s1) 70%)}
-.lg .lab{position:absolute;left:14px;top:14px;font:600 10px var(--mono);letter-spacing:.18em;color:#111;background:var(--gold);padding:5px 8px}
-.lg .big{font:400 clamp(54px,8vw,74px)/.9 var(--dsp);color:var(--gold)}
-.lg h3{margin:8px 0 0;font:700 19px/1.25 var(--sans)}
-.lg p{margin:8px 0 0;font:500 14px/1.5 var(--sans);color:#d6cebb}
-.lg .who{display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
-.lg .mini{display:inline-flex;align-items:center;gap:5px;background:rgba(0,0,0,.6);border:1px solid var(--hl);border-radius:99px;padding:3px 9px 3px 3px;font:600 11px var(--mono)}
-.lg .mini.n{border-color:rgba(255,107,98,.5)}.lg .mini.y{border-color:rgba(95,224,160,.5)}
-/* the final: X2's chip, timer in the dies */
-.gpu-img{position:relative;aspect-ratio:1834/1362;overflow:hidden;border-radius:6px;box-shadow:0 0 0 1px var(--hl),0 40px 90px rgba(118,185,0,.12)}
-.gpu-img img,.gpu-img .gpu-core{position:absolute;left:-4.471%;top:-4.626%;width:109.051%;height:110.132%;max-width:none}
-.gc-bg{fill:none}.gc-blk{fill:#141518;stroke:#3a3c42;stroke-width:2}
-.gc{fill:#26282d;stroke:#34363c;stroke-width:1}
-.gc.gc-on,circle.gc-on{fill:#ff3b2f;stroke:#ff9a8f;stroke-width:.8;filter:drop-shadow(0 0 4px #ff2a1f)}
-.gc-u{font:800 25px ui-monospace,Menlo,monospace;letter-spacing:.32em;fill:#f2efe6;paint-order:stroke;stroke:#0b0b0d;stroke-width:4px;stroke-linejoin:round}
-.gc-eng{font:400 50px/1 var(--dsp);letter-spacing:.1em;fill:#5a4512;fill-opacity:.9;stroke:#f6e6a8;stroke-opacity:.5;stroke-width:1.2px;paint-order:stroke}
-.gpu-t{font:500 15px/1.5 var(--sans);color:#cfc7b4;margin:14px 2px 0}
-.steps2{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:10px}
-.steps2 li{display:grid;grid-template-columns:34px 1fr;gap:12px;font:500 15px/1.5 var(--sans);color:#ddd5c2}
-.steps2 b{font:400 24px/1 var(--dsp);color:var(--gold)}
-.steps2 strong{color:var(--tx)}
-.ends{display:grid;gap:10px;margin-top:18px}
-@media(min-width:560px){.ends{grid-template-columns:1fr 1fr}}
-.end{border-radius:8px;padding:16px;border:1px solid}
-.end h3{margin:0;font:400 28px/1 var(--dsp);letter-spacing:.05em}
-.end p{margin:8px 0 0;font:500 14.5px/1.5 var(--sans)}
-.end.v{border-color:rgba(95,224,160,.5);background:linear-gradient(160deg,rgba(31,138,90,.25),var(--s1))}.end.v h3{color:var(--grl)}
-.end.d{border-color:rgba(255,107,98,.5);background:linear-gradient(160deg,rgba(208,65,60,.25),var(--s1))}.end.d h3{color:var(--rdl)}
-.ctas{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px;border-radius:4px;font:600 14px var(--sans);text-decoration:none;border:1px solid var(--hl);background:var(--s1);color:var(--tx);text-align:center}
-.btn.gold{background:var(--gold);color:#111;border:0}
-.btn[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+/* FILMS */
+.player{position:relative;overflow:hidden;border:3px solid #000;box-shadow:8px 8px 0 var(--gold);aspect-ratio:1;background:#000;max-width:560px}
+.player video{width:100%;height:100%;object-fit:cover;display:block}
+.player .ep{position:absolute;left:-3px;top:-3px;background:#000;color:var(--gold);font:400 14px/1 var(--dsp);letter-spacing:.08em;padding:8px 18px 7px 12px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);z-index:2}
+.player .snd{position:absolute;right:10px;bottom:10px;z-index:2;background:var(--gold);border:2.5px solid #000;color:#000;padding:7px 12px 6px;font:400 13px/1 var(--dsp);letter-spacing:.08em;cursor:pointer;box-shadow:3px 3px 0 #000}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;max-width:560px}
+.strip button{position:relative;aspect-ratio:1;overflow:hidden;border:2.5px solid #000;padding:0;cursor:pointer;background:#141419;box-shadow:4px 4px 0 var(--vi)}
+.strip button[aria-pressed="true"]{box-shadow:4px 4px 0 var(--gold);outline:2px solid var(--gold);outline-offset:-5px}
+.strip img.p{width:100%;height:100%;object-fit:cover;display:block}
+.strip span{position:absolute;left:0;bottom:0;font:400 11px/1 var(--dsp);letter-spacing:.08em;background:#000;color:var(--tx);padding:4px 7px 3px 5px}
+.strip .co{position:absolute;right:4px;top:4px;width:22px;height:22px}
+.presenter{display:flex;align-items:flex-end;gap:4px;margin-top:26px}
+.presenter img{width:min(190px,46%);flex:none}
+.presenter .say{margin-bottom:110px}
+.lede{font-size:16px;line-height:1.5;color:#d6cebb;max-width:46ch;margin:16px 0 0}
+/* HALL OF LEGENDS */
+.legends{display:grid;gap:26px;margin-top:34px}
+@media(min-width:900px){.legends{grid-template-columns:repeat(3,1fr);gap:24px}}
+.lg{position:relative;overflow:hidden;border:3px solid #000;box-shadow:8px 8px 0 var(--sh,var(--gold));min-height:350px;display:flex;flex-direction:column;justify-content:flex-end;padding:20px;isolation:isolate;background:#15131f}
+.lg.g{--sh:var(--grl)}.lg.r{--sh:var(--rd)}
+.lg .bg{position:absolute;inset:0;z-index:-2}.lg .bg img{width:100%;height:100%;object-fit:cover;filter:saturate(.8) brightness(.75)}
+.lg:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,10,20,.55),rgba(11,10,20,.9) 42%,rgba(11,10,20,.98))}
+.lg.plain:before{background:repeating-conic-gradient(from 0deg at 30% 30%,rgba(242,182,50,.12) 0 1deg,transparent 1deg 6deg),radial-gradient(90% 70% at 30% 30%,rgba(242,182,50,.18),transparent 70%)}
+.lg .lab{position:absolute;left:-3px;top:-3px;font:400 15px/1 var(--dsp);letter-spacing:.08em;color:#000;background:var(--sh,var(--gold));padding:8px 18px 7px 12px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.lg.r .lab{color:#fff}
+.lg .big{font:400 clamp(58px,8vw,78px)/.9 var(--dsp);color:var(--gold);white-space:nowrap;-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:5px 5px 0 #000}
+.lg .big .ar{font-size:.5em;vertical-align:.45em;margin-right:.1em}
+.lg h3{margin:10px 0 0;font:700 19px/1.25 var(--sans)}
+.lg p{margin:8px 0 0;font:500 14.5px/1.5 var(--sans);color:#d6cebb}
+.lg .who{display:flex;gap:6px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.lg .mini{display:inline-flex;align-items:center;gap:5px;background:#000;border:2px solid #000;padding:2px 8px 2px 2px;font:400 13px/1 var(--dsp);letter-spacing:.06em}
+.lg .mini.n{color:var(--rdl)}.lg .mini.y{color:var(--grl)}
+.lg .ticks{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}.lg .ticks i{width:24px;height:24px;display:grid;place-items:center;background:var(--grl);color:#000;border:2px solid #000;font:700 13px var(--sans);font-style:normal}
+/* END */
+.last{text-align:center}
+.last h2{margin-inline:auto}
+.ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:220px;padding:16px 22px 15px;font:400 19px/1 var(--dsp);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border:3px solid #000;background:var(--paper);color:#000;box-shadow:6px 6px 0 var(--vi)}
+.btn.gold{background:var(--gold);box-shadow:6px 6px 0 var(--rd)}
+.btn[aria-disabled="true"]{cursor:not-allowed;filter:saturate(.5);opacity:.8}
 .btn svg{width:16px;height:16px}
-footer{padding:40px 0 60px;border-top:1px solid var(--hl);font:500 12.5px/1.6 var(--sans);color:var(--mu)}
-footer .wrap{display:grid;gap:10px}
+footer{padding:40px 0 60px;border-top:3px solid var(--gold);background:#000;font:500 12.5px/1.6 var(--sans);color:var(--mu)}
+footer .wrap{display:grid;gap:8px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.rv,.pop,.champ,.reveal .cap{opacity:1!important;transform:none!important;filter:none!important}.pm{opacity:.9!important;transform:rotate(-14deg)!important}.letter:before,.letter:after{height:0!important}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.rv,.pop,.champ,.reveal .cap{opacity:1!important;transform:none!important}.pm{opacity:.9!important;transform:rotate(-14deg)!important}.letter:before,.letter:after{height:0!important}.pot .cn{opacity:0!important}}
 </style>
 
 <header class="nav"><div class="wrap">
  <a class="brand" href="#top">$EZ</a>
- <nav><a href="#money">The pot</a><a href="#record">The record</a><a href="#ladder">Ladder</a><a href="#final">NVIDIA</a></nav>
- <span class="tag">SEASON 1 · <span id="navRound"></span></span>
+ <nav><a href="#pot">The pot</a><a href="#leader">The ladder</a><a href="#round">A round</a><a href="#legends">Legends</a></nav>
+ <span class="tag" id="navRound"></span>
 </div></header>
 
 <main id="top">
@@ -215,79 +240,91 @@ footer .wrap{display:grid;gap:10px}
    <div class="rv">
     <div class="giant">SEASON 1</div>
     <h1>We're putting buybacks in the hands of <em>an AI.</em></h1>
-    <ul class="lines" id="heroLines"></ul>
     <p class="honest">An experiment. $EZ isn't live yet.</p>
    </div>
    <div class="hero-host rv d2">
     <div class="say r pop d4"><span class="nm">$EZ</span><div class="st">New here? I'll walk you through it.</div><i class="tl"></i></div>
-    <img class="pose rim" src="media/commissioner/web/01-welcome.webp" alt="The $EZ host, a man with a postage-stamp head in a cream suit, holding out a hand" width="600" height="600">
+    <img class="pose" src="media/commissioner/web/01-welcome.webp" alt="The $EZ host, a man with a postage-stamp head in a cream suit, holding out a hand" width="600" height="600">
    </div>
   </div>
  </div>
- <div class="logos" id="logos"></div>
+ <div class="cast" id="cast"></div>
 </section>
 
-<section id="money"><div class="wrap split">
+<section id="pot"><div class="wrap">
  <div class="rv">
   <div class="kick">How the buyback works</div>
-  <h2>Every trade feeds <em>the pot.</em></h2>
-  <ol class="flow" id="flow"></ol>
+  <h2>One call on NVIDIA. <em>The whole pot.</em></h2>
  </div>
- <div class="rv d2">
-  <div class="meter"><div class="bar" id="meterBar"></div><p id="meterTxt"></p></div>
-  <div class="ends" style="margin-top:14px">
-   <div class="end v"><h3>Right call</h3><p>The bet makes money. The profit buys $EZ on the open market.</p></div>
-   <div class="end d"><h3>Wrong call</h3><p>The bet loses money. The pot shrinks, or goes to $0.</p></div>
-  </div>
+ <div class="manga">
+  <div class="pn sl p1 rv"><span class="no">1 · THE FEES</span><div class="u">
+   <div><div class="big" id="share"></div><p id="feeTxt"></p><p class="s">The pot starts at $0 on launch day.</p></div>
+   <svg class="pot" viewBox="0 0 200 210" aria-hidden="true">
+    <g class="cn"><ellipse cx="100" cy="40" rx="13" ry="6" fill="#f2b632" stroke="#000" stroke-width="3"/></g>
+    <g class="cn"><ellipse cx="84" cy="30" rx="13" ry="6" fill="#f2b632" stroke="#000" stroke-width="3"/></g>
+    <g class="cn"><ellipse cx="116" cy="34" rx="13" ry="6" fill="#f2b632" stroke="#000" stroke-width="3"/></g>
+    <path d="M42 112h116c4 44-22 86-58 86s-62-42-58-86z" fill="#2d2a38" stroke="#000" stroke-width="4"/>
+    <path d="M112 112h46c4 44-22 86-58 86 30-10 15-52 12-86z" fill="#1b1924"/>
+    <g stroke="#000" stroke-width="2.6" fill="#f2b632"><ellipse cx="70" cy="104" rx="15" ry="7"/><ellipse cx="100" cy="98" rx="15" ry="7"/><ellipse cx="128" cy="104" rx="15" ry="7"/><ellipse cx="86" cy="92" rx="15" ry="7"/><ellipse cx="115" cy="90" rx="15" ry="7"/><ellipse cx="100" cy="82" rx="15" ry="7"/></g>
+    <rect x="30" y="106" width="140" height="16" rx="4" fill="#3d3a4a" stroke="#000" stroke-width="4"/>
+    <path d="M30 122q-14 6-12 20" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/><path d="M170 122q14 6 12 20" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/>
+    <g transform="rotate(-6 100 156)"><rect x="66" y="140" width="68" height="30" fill="#f3e6c8" stroke="#000" stroke-width="3"/><rect x="69" y="140" width="4" height="30" fill="#11714a"/><rect x="127" y="140" width="4" height="30" fill="#b3261e"/><text x="100" y="163" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="20" fill="#000">POT</text></g>
+   </svg>
+  </div></div>
+  <div class="pn sl p2 rv d1"><span class="no" id="frzNo"></span><div class="u">
+   <div class="myst" aria-hidden="true">?<i>#1</i></div>
+   <div class="ud" aria-hidden="true"><span class="a">▲ UP</span><span class="b">▼ DOWN</span><small>ONE CALL. NO TAKE-BACKS.</small></div>
+  </div><p id="callTxt"></p></div>
+  <div class="pn p3 wide rv"><span class="no" id="betNo"></span><div class="u">
+   <div><div class="gpu-img" id="gpu"><img src="media/ez-gpu2-1200.jpg" alt="An NVIDIA chip with a live countdown lit up in its cores" width="1200" height="900"><svg class="gpu-core" id="gpuCore" viewBox="0 0 2000 1500" aria-hidden="true"></svg><span class="sr" id="gpuSr" role="timer"></span></div><span class="gpu-cap">Countdown to the bet</span></div>
+   <div><div class="ten" id="ten"></div><p id="betTxt"></p><p class="s" id="levTxt"></p></div>
+  </div></div>
+  <div class="pn p4 wide rv"><div class="u">
+   <div class="end v"><h4>▲ Right call</h4><p>The profit buys back $EZ on the open market.</p></div>
+   <div class="end d"><h4>▼ Wrong call</h4><p>No stop loss. The pot can be wiped out.</p></div>
+  </div></div>
  </div>
 </div></section>
 
-<section id="record"><div class="wrap split">
+<section class="reveal" id="leader"><div class="speed" aria-hidden="true" style="opacity:.7"></div><div class="wrap">
  <div class="rv">
-  <div class="kick">On the record</div>
-  <h2>Every call is <em>on record.</em></h2>
-  <p class="lede">We post every AI's prediction before the company reports, and grade it at the next close. The big rounds also get a film.</p>
-  <div class="presenter"><img class="pose rim" src="media/commissioner/web/02-presenter.webp" alt="The $EZ host pointing like a TV presenter" width="500" height="500"><div class="say l pop d2" id="say3"></div></div>
+  <div class="kick">Leading right now</div>
+  <div class="letter"><img src="media/commissioner/web/04-eyes-strip.webp" alt="Close-up of the $EZ host's eyes"></div>
+  <div class="cap">And the leader is…</div>
+  <div class="champ" id="champ"></div>
+  <div class="champ-name" id="champName"></div>
  </div>
- <div class="rv d1">
-  <div class="player"><video id="vid" playsinline muted loop preload="metadata"></video><span class="ep" id="vidEp"></span><button class="snd" id="snd" type="button">SOUND OFF</button></div>
-  <div class="strip" id="strip"></div>
+ <div class="ladwrap">
+  <div class="rv"><div class="lad" id="lad"></div><p class="frz" id="frz"></p></div>
+  <div class="heckle rv d2">
+   <div class="say l pop d3" id="say6"></div>
+   <img class="pose" src="media/commissioner/web/05-heckle.webp" alt="The $EZ host with arms crossed" width="500" height="500">
+  </div>
  </div>
 </div></section>
 
 <section id="round"><div class="wrap split flip">
- <div class="rv" id="roundBox">
+ <div class="rv">
   <div class="kick">How a round works</div>
   <h2>Four AIs. One stock. <em>The market grades it.</em></h2>
-  <ol class="how3"><li><b>1</b>The day before a company reports its earnings, each AI predicts: will the stock go up or down, and by how much?</li><li><b>2</b>We post all four predictions before the report comes out.</li><li><b>3</b>The first market close after the report decides who got the direction right.</li></ol>
+  <ol class="how3"><li><b>1</b>The day before a company reports earnings, each AI calls the stock: up or down, and by how much.</li><li><b>2</b>The first market close after the report decides who got the direction right.</li></ol>
   <div class="lastr" id="lastr"></div>
  </div>
  <div class="stamper rv d2">
-  <div class="say r pop d3"><span class="nm">$EZ</span><div class="st">Every prediction gets stamped before the report. <em>No edits after.</em></div><i class="tl"></i></div>
-  <img class="pose rim" src="media/commissioner/web/03-stamping.webp" alt="The $EZ host stamping a ticket" width="500" height="500">
+  <div class="say r pop d3"><span class="nm">$EZ</span><div class="st">Every call gets stamped before the report. <em>No edits after.</em></div><i class="tl"></i></div>
+  <img class="pose" src="media/commissioner/web/03-stamping.webp" alt="The $EZ host stamping a ticket" width="500" height="500">
  </div>
 </div></section>
 
-<section class="reveal" id="leader"><div class="speed" aria-hidden="true" style="opacity:.6"></div><div class="wrap rv">
- <div class="kick">Leading right now</div>
- <div class="letter"><img src="media/commissioner/web/04-eyes-strip.webp" alt="Close-up of the $EZ host's eyes"></div>
- <div class="cap">And the AI in first place is…</div>
- <div class="champ" id="champ"></div>
- <div class="champ-name" id="champName"></div>
- <p class="why1" id="why1"></p>
- <div class="stats" id="stats"></div>
-</div></section>
-
-<section id="ladder"><div class="wrap split">
+<section id="films"><div class="wrap split">
  <div class="rv">
-  <div class="kick">The ladder</div>
-  <h2>Whoever is #1 <em>makes the NVIDIA call.</em></h2>
-  <div class="lad" id="lad"></div>
-  <p class="frz" id="frz"></p>
+  <div class="kick">On film</div>
+  <h2>The big rounds <em>get a film.</em></h2>
+  <div class="presenter"><img class="pose" src="media/commissioner/web/02-presenter.webp" alt="The $EZ host pointing like a TV presenter" width="500" height="500"><div class="say l pop d2" id="say3"></div></div>
  </div>
- <div class="heckle rv d2">
-  <div class="say l pop d3" id="say6"></div>
-  <img class="pose rim" src="media/commissioner/web/05-heckle.webp" alt="The $EZ host with arms crossed" width="500" height="500">
+ <div class="rv d1">
+  <div class="player"><video id="vid" playsinline muted loop preload="metadata"></video><span class="ep" id="vidEp"></span><button class="snd" id="snd" type="button">SOUND OFF</button></div>
+  <div class="strip" id="strip"></div>
  </div>
 </div></section>
 
@@ -299,39 +336,29 @@ footer .wrap{display:grid;gap:10px}
  <div class="legends" id="legendsGrid"></div>
 </div></section>
 
-<section id="final"><div class="wrap split">
- <div class="rv">
-  <div class="gpu-img" id="gpu"><img src="media/ez-gpu2-1200.jpg" alt="An NVIDIA chip with a live countdown lit up in its cores" width="1200" height="900"><svg class="gpu-core" id="gpuCore" viewBox="0 0 2000 1500" aria-hidden="true"></svg><span class="sr" id="gpuSr" role="timer"></span></div>
-  <p class="gpu-t" id="gpuT"></p>
- </div>
- <div class="rv d1">
-  <div class="kick">The final</div>
-  <h2>One call on NVIDIA. <em>The whole pot.</em></h2>
-  <ol class="steps2" id="steps2"></ol>
-  <div class="ends">
-   <div class="end v"><h3>If it's right</h3><p id="endV"></p></div>
-   <div class="end d"><h3>If it's wrong</h3><p id="endD"></p></div>
-  </div>
-  <div class="ctas"><a class="btn" id="ctaX" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span>Follow on X</span></a><a class="btn gold" id="ctaBuy">Get $EZ</a></div>
- </div>
+<section class="last"><div class="speed" aria-hidden="true" style="opacity:.5"></div><div class="wrap rv">
+ <h2>Watch the call <em>happen.</em></h2>
+ <div class="ctas"><a class="btn" id="ctaX" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span>Follow on X</span></a><a class="btn gold" id="ctaBuy">Get $EZ</a></div>
 </div></section>
 </main>
 
 <footer><div class="wrap">
- <div><b style="color:var(--tx)">An experiment.</b> $EZ isn't live yet. Nothing here is financial advice and nothing here promises a return. The bet uses 10x leverage with no stop loss: a wrong call can wipe out the pot.</div>
+ <div>Nothing here is financial advice, and nothing here promises a return.</div>
  <div id="foot"></div>
 </div></footer>
 
 <script src="ez-data.js"></script>
 <script>
 (function(){
-var COL={GPT:3,KIMI:5,CLAUDE:7,GROK:9},NAMES={GPT:"GPT",KIMI:"Kimi",CLAUDE:"Claude",GROK:"Grok"},MED="media/",NOW=new Date();
+var COL={GPT:3,KIMI:5,CLAUDE:7,GROK:9},NAMES={GPT:"GPT",KIMI:"Kimi",CLAUDE:"Claude",GROK:"Grok"},MED="media/";
 function $(id){return document.getElementById(id)}
 function set(id,h){var e=$(id);if(e)e.innerHTML=h}
 function tile(k,s){var M=MODELS[k];return '<span class="tile" style="width:'+s+'px;height:'+s+'px;background:'+M.bg+'" title="'+M.app+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="'+M.fg+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+' d="'+M.d+'"/>'+(M.dot?'<path fill="'+M.dotc+'" d="'+M.dot+'"/>':'')+'</svg></span>'}
 function co(t,s){var c=CO_LOGOS[t];if(!c)return '<span class="co" style="width:'+s+'px;height:'+s+'px;font:700 9px var(--mono);color:#000">'+t+'</span>';return '<span class="co" style="width:'+s+'px;height:'+s+'px'+(c.dark?';background:'+c.c:'')+'"><img src="'+MED+c.f+'" alt="'+(TICKERS[t]||t)+'"></span>'}
-function say(t,side,up){return '<span class="nm">$EZ</span><div class="st">'+t+'</div><i class="tl"></i>'}
+function say(t){return '<span class="nm">$EZ</span><div class="st">'+t+'</div><i class="tl"></i>'}
 function sq(f){return '<i class="sq '+(f>0?"y":f<0?"x":"z")+'"></i>'}
+/* one sign convention: an arrow and an unsigned number on cards; a signed number only inside sentences */
+function arr(x){return (x>0?"▲ ":"▼ ")+Math.abs(x).toFixed(2)+"%"}
 function pc(x){return (x>0?"+":"")+x.toFixed(2)+"%"}
 function md(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null}
 function d0(s){var a=md(s);return new Date(Date.UTC(a[0],a[1],a[2],16))}
@@ -354,17 +381,33 @@ if(bd)BT=nyClose(bd[0],bd[1],bd[2]);else{var nv=SHEET.filter(function(r){return 
 var betD=new Date(BT),frzD=new Date(BT-SIM.leadHours*36e5);
 var up=SHEET.filter(function(r){return r[12]===""});
 
-set("navRound",g.length+" ROUNDS");
-set("heroLines",'<li>'+ms.length+' AIs call stocks before earnings.</li><li><b>'+share+'%</b> of $EZ trading fees fill a pot.</li><li>We bet the pot, <b>'+lev+'x</b>, on the top AI’s NVIDIA call.</li><li><b>Right:</b> profits buy back $EZ. <b>Wrong:</b> the pot can go to $0.</li>');
-set("logos",ms.map(function(m,i){return '<div class="'+(i==0?"one":"")+'">'+tile(m.k,40)+'<b class="num">'+m.pct+'%</b><span>#'+(i+1)+' '+m.name+'</span><small>right on direction</small></div>'}).join(""));
+set("navRound","SEASON 1 · "+g.length+" ROUNDS");
+set("cast",ms.map(function(m){return '<div>'+tile(m.k,44)+m.name+'</div>'}).join(""));
 
-/* the money */
-set("flow",'<li><span class="n">1</span><div><b>Every $EZ trade pays a small fee</b><span>From launch day, on every buy and every sell.</span></div></li>'
- +'<li><span class="n">2</span><div><b>'+share+'% of those fees go into the pot</b><span>The pot starts at $0. It grows with trading until the final.</span></div></li>'
- +'<li><span class="n">3</span><div><b>The pot is bet on one NVIDIA call</b><span>The AI in first place calls it. We bet the whole pot, '+lev+'x, on Hyperliquid.</span></div></li>'
- +'<li><span class="n">4</span><div><b>A right call buys back $EZ</b><span>The profit is used to buy $EZ on the open market.</span></div></li>');
-set("meterBar",'<div class="a" style="width:'+share+'%">'+share+'% · THE POT</div><div class="b" style="width:'+(100-share)+'%">'+(100-share)+'%</div>');
-set("meterTxt",'Of every $1 in trading fees, '+share+'¢ goes into the pot. The rest runs the project.');
+/* how the buyback works: each fact once */
+set("share",share+'%');
+set("feeTxt",'of every $EZ trading fee drops into the pot.');
+set("frzNo",'2 · '+mon(frzD).toUpperCase());
+set("callTxt",'The ladder freezes. The AI in first place calls NVIDIA: <b>up or down</b> after its earnings.');
+set("betNo",'3 · '+mon(betD).toUpperCase()+' · THE BET');
+set("ten",lev+'x<small>ON HYPERLIQUID</small>');
+set("betTxt",'At the close, right before NVIDIA reports, the whole pot goes on that call.');
+set("levTxt",'Leverage: when NVIDIA moves 1%, the pot moves about '+lev+'%.');
+
+/* the leader + ladder */
+set("champ",'<svg class="burst" viewBox="0 0 100 100" aria-hidden="true"><polygon fill="#f2b632" stroke="#000" stroke-width="1.2" points="'+(function(){var p=[];for(var i=0;i<28;i++){var a=i*Math.PI/14,r=i%2?30:48;p.push((50+r*Math.cos(a)).toFixed(1)+","+(50+r*Math.sin(a)).toFixed(1))}return p.join(" ")})()+'"/></svg>'+tile(T.k,160));
+set("champName",T.name.toUpperCase());
+set("lad",ms.map(function(m,i){return '<div class="row'+(i==0?" one":"")+'"><span class="p">'+(i+1)+'</span>'+tile(m.k,44)+'<div class="nm">'+m.name+'<small>'+m.form.map(sq).join("")+'</small></div><div class="pc">'+m.pct+'%<small>'+m.hit+' OF '+m.n+' RIGHT</small></div></div>'}).join(""));
+set("frz",'Ranked by how often each AI gets the direction right. Squares: the last five calls.');
+set("say6",say(low.pct<50?low.name+' is right '+low.pct+'% of the time. <b>A coin flip gets 50%.</b>':T.name+' leads with '+T.pct+'%. Everyone else is chasing.'));
+
+/* the last round, with the real calls */
+var picks=Object.keys(COL).filter(function(k){return L[COL[k]]}).map(function(k){var v=signed(L,k);return {k:k,d:L[COL[k]],v:v,ok:(Lmove>0)==(v>0)}});
+var okN=picks.filter(function(p){return p.ok}).length;
+set("lastr",'<div class="hd">'+co(L[1],30)+'<span>Last round: '+nm(L[1])+'</span><small>Round '+L[0]+', called '+mon(d0(L[2]))+'</small></div>'
+ +'<div class="tix">'+picks.map(function(p){return '<div class="rcpt">'+tile(p.k,32)+NAMES[p.k].toUpperCase()+'<span class="call '+p.d+'">'+arr(p.v)+'</span><span class="ok '+(p.ok?"y":"n")+'">'+(p.ok?"RIGHT WAY":"WRONG WAY")+'</span></div>'}).join("")
+ +'<svg class="pm" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="pmc" d="M50 50 m-38 0 a38 38 0 1 1 76 0 a38 38 0 1 1 -76 0"/></defs><circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="1.4"/><text font-family="Geist Mono" font-size="8.2" font-weight="600" letter-spacing="1.5" fill="currentColor"><textPath href="#pmc">POSTED BEFORE THE REPORT · $EZ · </textPath></text><text x="50" y="48" text-anchor="middle" font-family="Anton" font-size="15" fill="currentColor">'+mon(d0(L[2])).toUpperCase()+'</text><text x="50" y="61" text-anchor="middle" font-family="Geist Mono" font-size="7" font-weight="600" fill="currentColor">ROUND '+L[0]+'</text></svg></div>'
+ +'<div class="actual"><span>WHAT THE STOCK DID<br>'+okN+' OF '+picks.length+' GOT THE DIRECTION RIGHT</span><b style="color:'+(Lmove>0?"var(--grl)":"var(--rdl)")+'">'+arr(Lmove)+'</b></div>');
 
 /* films */
 var eps=Object.keys(FILMS).map(Number).sort(function(a,b){return b-a}).slice(0,4).map(function(r){var row=SHEET[r-1];return {r:r,t:row[1],f:FILMS[r].f,p:FILMS[r].p,row:row}});
@@ -375,30 +418,11 @@ function load(e,play){vid.poster=MED+e.p+".jpg";vid.innerHTML='<source src="'+ME
   set("say3",say('Round '+e.r+', '+nm(e.t)+': <em>'+NAMES[c.k]+'</em> came closest, off by '+c.m.toFixed(2)+' points.'));
   [].forEach.call(document.querySelectorAll(".strip button"),function(b){b.setAttribute("aria-pressed",b.dataset.r==e.r)});
   if(play)vid.play().catch(function(){})}
-set("strip",eps.map(function(e){return '<button type="button" data-r="'+e.r+'" aria-label="Play the film of round '+e.r+', '+nm(e.t)+'"><img class="p" src="'+MED+e.p+'.jpg" alt="" loading="lazy">'+co(e.t,20)+'<span>ROUND '+e.r+'</span></button>'}).join(""));
+set("strip",eps.map(function(e){return '<button type="button" data-r="'+e.r+'" aria-label="Play the film of round '+e.r+', '+nm(e.t)+'"><img class="p" src="'+MED+e.p+'.jpg" alt="" loading="lazy">'+co(e.t,22)+'<span>ROUND '+e.r+'</span></button>'}).join(""));
 [].forEach.call(document.querySelectorAll(".strip button"),function(b){b.addEventListener("click",function(){load(eps.filter(function(x){return x.r==b.dataset.r})[0],true)})});
 load(eps[0],false);
 snd.addEventListener("click",function(){vid.muted=!vid.muted;snd.textContent=vid.muted?"SOUND OFF":"SOUND ON";if(!vid.muted)vid.play().catch(function(){})});
 if("IntersectionObserver" in window)new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting)vid.play().catch(function(){});else vid.pause()})},{threshold:.5}).observe(vid);
-
-/* the last round, with the real predictions */
-var picks=Object.keys(COL).filter(function(k){return L[COL[k]]}).map(function(k){var v=signed(L,k);return {k:k,d:L[COL[k]],v:v,ok:(Lmove>0)==(v>0)}});
-var okN=picks.filter(function(p){return p.ok}).length;
-set("lastr",'<div class="hd"><span class="who">'+co(L[1],30)+'<span>Last round: '+nm(L[1])+'</span></span><small>ROUND '+L[0]+'<br>PREDICTED '+mon(d0(L[2])).toUpperCase()+'</small></div>'
- +'<div class="tix">'+picks.map(function(p){return '<div class="rcpt">'+tile(p.k,32)+NAMES[p.k].toUpperCase()+'<span class="call '+p.d+'">'+(p.v>0?"▲ ":"▼ ")+pc(p.v)+'</span><span class="ok '+(p.ok?"y":"n")+'">'+(p.ok?"RIGHT WAY":"WRONG WAY")+'</span></div>'}).join("")
- +'<svg class="pm" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="pmc" d="M50 50 m-38 0 a38 38 0 1 1 76 0 a38 38 0 1 1 -76 0"/></defs><circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="1.4"/><text font-family="Geist Mono" font-size="8.2" font-weight="600" letter-spacing="1.5" fill="currentColor"><textPath href="#pmc">POSTED BEFORE THE REPORT · $EZ · </textPath></text><text x="50" y="48" text-anchor="middle" font-family="Anton" font-size="15" fill="currentColor">'+mon(d0(L[2])).toUpperCase()+'</text><text x="50" y="61" text-anchor="middle" font-family="Geist Mono" font-size="7" font-weight="600" fill="currentColor">ROUND '+L[0]+'</text></svg></div>'
- +'<div class="actual"><span>WHAT THE STOCK DID<br>'+okN+' OF '+picks.length+' GOT THE DIRECTION RIGHT</span><b class="num" style="color:'+(Lmove>0?"var(--grl)":"var(--rdl)")+'">'+(Lmove>0?"▲ ":"▼ ")+pc(Lmove)+'</b></div>');
-
-/* the leader */
-set("champ",'<span class="ghost">'+T.name.toUpperCase()+'</span>'+tile(T.k,170));
-set("champName",T.name.toUpperCase());
-set("why1",T.name+' has called the direction right '+T.hit+' times out of '+T.n+(T.streak>=3?', including the last '+T.streak+' in a row':'')+'. If it is still first on '+mon(frzD)+', it makes the NVIDIA call.');
-set("stats",'<div><b class="num">'+T.pct+'%</b>RIGHT ON DIRECTION</div><div><b class="num">'+T.hit+'/'+T.n+'</b>CALLS RIGHT</div><div><b class="num">'+T.streak+'</b>IN A ROW</div><div class="f">LAST 5 &nbsp;'+T.form.map(sq).join("")+'</div>');
-
-/* ladder */
-set("lad",ms.map(function(m,i){return '<div class="row'+(i==0?" one":"")+'"><span class="p">'+(i+1)+'</span>'+tile(m.k,40)+'<div class="nm">'+m.name+'<small>'+m.form.map(sq).join("")+'</small></div><div class="pc num">'+m.pct+'%<small>'+m.hit+' of '+m.n+' right</small></div></div>'}).join(""));
-set("frz",'Ranked by how often each AI calls the direction right. The ladder freezes on '+mon(frzD)+', 24 hours before the bet. The AI in first place then makes the NVIDIA call.');
-set("say6",say(low.pct<50?low.name+' is right '+low.pct+'% of the time. <b>A coin flip gets 50%.</b>':T.name+' leads with '+T.pct+'%. Everyone else is chasing.'));
 
 /* hall of legends */
 var shock=null;g.forEach(function(r){var p=Object.keys(COL).filter(function(k){return r[COL[k]]});if(p.length&&p.every(function(k){return (+r[12]>0)!=(r[COL[k]]=="UP")})&&(!shock||Math.abs(+r[12])>Math.abs(+shock[12])))shock=r});
@@ -406,19 +430,13 @@ var best=null;g.forEach(function(r){Object.keys(COL).forEach(function(k){if(!r[C
 var stTop=ms.slice().sort(function(a,b){return b.streak-a.streak})[0];
 function bg(r){var f=FILMS[+r[0]];return f?'<div class="bg"><img src="'+MED+f.p+'.jpg" alt="" loading="lazy"></div>':''}
 var cards=[];
-cards.push('<article class="lg plain rv"><span class="lab">LONGEST STREAK</span><div class="who">'+tile(stTop.k,46)+'</div><div class="ticks" aria-hidden="true">'+new Array(stTop.streak+1).join('<i>✓</i>')+'</div><div class="big num">'+stTop.streak+' IN A ROW</div><h3>'+stTop.name+' has called the direction right '+stTop.streak+' rounds running.</h3><p>Still going. Its next call: '+(up[0]?nm(up[0][1])+', '+mon(d0(up[0][2])):'the next round')+'.</p></article>');
+cards.push('<article class="lg plain rv"><span class="lab">LONGEST STREAK</span><div class="who">'+tile(stTop.k,46)+'</div><div class="ticks" aria-hidden="true">'+new Array(stTop.streak+1).join('<i>✓</i>')+'</div><div class="big">'+stTop.streak+' IN A ROW</div><h3>'+stTop.name+' has called the direction right '+stTop.streak+' rounds running.</h3><p>Still going. Its next call: '+(up[0]?nm(up[0][1])+', '+mon(d0(up[0][2])):'the next round')+'.</p></article>');
 if(shock){var sp=Object.keys(COL).filter(function(k){return shock[COL[k]]}),dirs=sp.map(function(k){return shock[COL[k]]}),same=dirs.every(function(d){return d==dirs[0]}),mv=+shock[12];
- cards.push('<article class="lg rv d1">'+bg(shock)+'<span class="lab">BIGGEST UPSET</span><div class="who">'+co(shock[1],34)+sp.map(function(k){return '<span class="mini n">'+tile(k,20)+'✗</span>'}).join("")+'</div><div class="big num"><span class="ar">'+(mv>0?"▲":"▼")+'</span>'+pc(mv)+'</div><h3>'+nm(shock[1])+', round '+shock[0]+'.</h3><p>'+(same?'All '+sp.length+' AIs said the stock would go '+dirs[0].toLowerCase()+'.':'Every AI called the direction wrong.')+' It '+(mv>0?'jumped':'fell')+' '+Math.abs(mv).toFixed(2)+'% instead'+(g.every(function(r){return Math.abs(+r[12])<=Math.abs(mv)})?', the biggest move of the season':'')+'.</p></article>')}
-if(best)cards.push('<article class="lg rv d2">'+bg(best.r)+'<span class="lab">CLOSEST CALL</span><div class="who">'+co(best.r[1],34)+'<span class="mini y">'+tile(best.k,20)+NAMES[best.k]+'</span></div><div class="big num">'+best.m.toFixed(2)+' OFF</div><h3>'+NAMES[best.k]+' on '+nm(best.r[1])+', round '+best.r[0]+'.</h3><p>It called '+pc(best.v)+'. The stock moved '+pc(+best.r[12])+'. Off by just '+best.m.toFixed(2)+' points.</p></article>');
+ cards.push('<article class="lg r rv d1">'+bg(shock)+'<span class="lab">BIGGEST UPSET</span><div class="who">'+co(shock[1],34)+sp.map(function(k){return '<span class="mini n">'+tile(k,20)+'✗</span>'}).join("")+'</div><div class="big"><span class="ar">'+(mv>0?"▲":"▼")+'</span>'+Math.abs(mv).toFixed(2)+'%</div><h3>'+nm(shock[1])+', round '+shock[0]+'.</h3><p>'+(same?'All '+sp.length+' AIs said the stock would go '+dirs[0].toLowerCase()+'.':'Every AI called the direction wrong.')+' It '+(mv>0?'jumped':'fell')+' '+Math.abs(mv).toFixed(2)+'% instead'+(g.every(function(r){return Math.abs(+r[12])<=Math.abs(mv)})?', the biggest move of the season':'')+'.</p></article>')}
+if(best)cards.push('<article class="lg g rv d2">'+bg(best.r)+'<span class="lab">CLOSEST CALL</span><div class="who">'+co(best.r[1],34)+'<span class="mini y">'+tile(best.k,20)+NAMES[best.k]+'</span></div><div class="big">'+best.m.toFixed(2)+' OFF</div><h3>'+NAMES[best.k]+' on '+nm(best.r[1])+', round '+best.r[0]+'.</h3><p>It called '+pc(best.v)+'. The stock moved '+pc(+best.r[12])+'. Off by just '+best.m.toFixed(2)+' points.</p></article>');
 set("legendsGrid",cards.join(""));
 
-/* the final */
-set("gpuT",'Live countdown to the bet: the market close on '+mon(betD)+', right before NVIDIA reports its earnings.');
-set("steps2",'<li><b>1</b><span>On <strong>'+mon(frzD)+'</strong>, the ladder freezes. The AI in first place makes one call: will NVIDIA’s stock go <strong>up or down</strong> after its earnings?</span></li>'
- +'<li><b>2</b><span>When the timer hits zero, we bet the <strong>whole pot</strong> on that call, with <strong>'+lev+'x leverage</strong> on Hyperliquid.</span></li>'
- +'<li><b>3</b><span>'+lev+'x means every 1% NVIDIA moves, the pot moves about '+lev+'%, up or down.</span></li>');
-set("endV",'NVIDIA moves the way the AI called. The bet makes a profit, and the profit buys $EZ on the open market.');
-set("endD",'NVIDIA moves the other way. The bet loses. There is no stop loss, so a move of less than 10% against the call can wipe out the pot.');
+/* end */
 var x=$("ctaX");if(CONFIG.x){x.href=CONFIG.x}else{x.removeAttribute("href");x.setAttribute("aria-disabled","true");x.querySelector("span").textContent="X account soon"}
 var buy=$("ctaBuy");if(CONFIG.launched&&CONFIG.buyUrl){buy.href=CONFIG.buyUrl;buy.target="_blank";buy.rel="noopener"}else{buy.setAttribute("aria-disabled","true");buy.textContent="$EZ isn’t live yet"}
 set("foot",'Data: '+g.length+' graded rounds. Next up: '+(up[0]?nm(up[0][1])+', '+mon(d0(up[0][2])):'TBA')+'. Every number on this page comes from the season sheet.');
