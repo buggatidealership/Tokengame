@@ -47,7 +47,9 @@
     "/leaderboard":function(){var lbx=$("#view .lbx");if(!lbx)return false;var rows=[].slice.call(lbx.querySelectorAll("li.lbr")),top=rows[0];
       var xsh=lbx.parentNode.querySelector(".xsh"),h1=xsh&&xsh.querySelector("h1"),ul=xsh&&xsh.querySelector(".x2-lbul");
       /* (owner, 2026-10-20, third pass) one rule on the front; the rest is behind "How we rank", kept plain */
-      if(ul)[].forEach.call(ul.querySelectorAll("li"),function(li,i){if(i)li.remove();else li.textContent="Ranked by how often they get the direction right."});
+      /* (owner, 2026-10-20, fourth pass) two rules under the board, beside him; the rest is behind "How we rank" */
+      var B=["Ranked by how often they get the direction right.","Tie? The smaller average miss wins."];
+      if(ul)[].forEach.call(ul.querySelectorAll("li"),function(li,i){if(B[i])li.textContent=B[i];else li.remove()});
       var a=top&&top.querySelector(".pc-t a"),nm=a?a.textContent.trim():"",pc=top&&top.querySelector(".lb-c b"),pct=pc?pc.textContent.trim():"";
       var lbn=lbx.nextElementSibling&&lbx.nextElementSibling.classList.contains("lbn")?lbx.nextElementSibling:null;
       var roi=lbn&&/<b>ROI<\/b>:([^<]*)/.exec(lbn.innerHTML);
@@ -69,10 +71,10 @@
         btn.setAttribute("aria-expanded",on?"true":"false");btn.querySelector("span").textContent=on?"Back to the board":"How we rank";btn.querySelector("i").textContent=on?"×":"i";
         if(on){lbx.setAttribute("inert","");lbx.setAttribute("aria-hidden","true");bk.removeAttribute("inert");bk.removeAttribute("aria-hidden")}
         else{bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");lbx.removeAttribute("inert");lbx.removeAttribute("aria-hidden")}});
-      var r=row("x2p-row-r x2p-row-top");
+      var r=row("x2p-row-r x2p-row-foot");
       if(nm)r.appendChild(say("As it stands, we follow <em>"+nm+"</em> on our next bet."));
-      r.appendChild(img("05-heckle.webp",100,""));fl.parentNode.insertBefore(r,fl);
-      if(ul)ul.classList.add("x2p-lbrules")
+      r.appendChild(img("05-heckle.webp",78,""));
+      var ft=document.createElement("div");ft.className="x2p-lbfoot";if(ul){ul.classList.add("x2p-lbrules");ft.appendChild(ul)}ft.appendChild(r);fl.after(ft)
       var secs=[].slice.call(document.querySelectorAll("#view section.blk")),find=function(re){return secs.filter(function(s){var m=s.querySelector(".mk");return m&&re.test(m.textContent)})[0]};
       var hall=find(/hall of fame/i),grid=find(/one square/i);
       if(hall&&grid&&hall.compareDocumentPosition(grid)&Node.DOCUMENT_POSITION_PRECEDING){grid.parentNode.insertBefore(hall,grid)}

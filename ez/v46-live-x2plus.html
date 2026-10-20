@@ -4700,6 +4700,20 @@ html.x2p .x2p-bk{display:flex;flex-direction:column;justify-content:center}
 @media(min-width:760px){html.x2p .x2p-bk{padding:22px 28px}html.x2p .x2p-bk h3{font-size:30px;margin-bottom:14px}html.x2p .x2p-bk ol{gap:11px}
  html.x2p .x2p-bk li{font-size:17px;line-height:1.35;padding-left:34px}html.x2p .x2p-bk li::before{width:23px;height:23px;font-size:13px}
  html.x2p .x2p-bk p{font-size:14px;margin-top:16px;padding-top:12px}}
+/* Leaderboard, fourth pass (owner's sketch, 2026-10-20): under the board, the two rules on the left and a smaller host
+   with a smaller ticket on the right, on one level */
+html.x2p .x2p-lbfoot{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;margin-top:18px}
+html.x2p .x2p-lbfoot .x2p-lbrules{margin:0!important;flex:1 1 auto;min-width:0}
+html.x2p .x2p-row-foot{flex:none;margin:0;gap:6px;align-items:flex-end}
+html.x2p .x2p-row-foot .x2p-say{margin-bottom:30px;max-width:190px}
+html.x2p .x2p-row-foot .x2p-say .st{font-size:12px;padding:10px 15px 8px 17px}
+html.x2p .x2p-row-foot .x2p-say .tl{right:16px}
+/* phones: the ticket over the two rules on the left, him on the right, one block */
+@media(max-width:759px){html.x2p .x2p-lbfoot{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"say hz" "rules hz";gap:12px 6px;align-items:end}
+ html.x2p .x2p-row-foot{display:contents}html.x2p .x2p-row-foot .x2p-say{grid-area:say;margin:0;max-width:none;justify-self:start}
+ html.x2p .x2p-row-foot .x2p-say .tl{right:-10px;bottom:auto;top:50%;width:12px;height:14px;margin-top:-7px;clip-path:polygon(0 0,100% 50%,0 100%)}
+ html.x2p .x2p-row-foot .x2p-hz{grid-area:hz;width:70px!important;align-self:center}
+ html.x2p .x2p-lbfoot .x2p-lbrules{grid-area:rules}html.x2p .x2p-lbfoot .x2p-lbrules li{font-size:13.5px}}
 
 </style>
 </head>
@@ -6864,7 +6878,9 @@ function x2LBpage(h){
     "/leaderboard":function(){var lbx=$("#view .lbx");if(!lbx)return false;var rows=[].slice.call(lbx.querySelectorAll("li.lbr")),top=rows[0];
       var xsh=lbx.parentNode.querySelector(".xsh"),h1=xsh&&xsh.querySelector("h1"),ul=xsh&&xsh.querySelector(".x2-lbul");
       /* (owner, 2026-10-20, third pass) one rule on the front; the rest is behind "How we rank", kept plain */
-      if(ul)[].forEach.call(ul.querySelectorAll("li"),function(li,i){if(i)li.remove();else li.textContent="Ranked by how often they get the direction right."});
+      /* (owner, 2026-10-20, fourth pass) two rules under the board, beside him; the rest is behind "How we rank" */
+      var B=["Ranked by how often they get the direction right.","Tie? The smaller average miss wins."];
+      if(ul)[].forEach.call(ul.querySelectorAll("li"),function(li,i){if(B[i])li.textContent=B[i];else li.remove()});
       var a=top&&top.querySelector(".pc-t a"),nm=a?a.textContent.trim():"",pc=top&&top.querySelector(".lb-c b"),pct=pc?pc.textContent.trim():"";
       var lbn=lbx.nextElementSibling&&lbx.nextElementSibling.classList.contains("lbn")?lbx.nextElementSibling:null;
       var roi=lbn&&/<b>ROI<\/b>:([^<]*)/.exec(lbn.innerHTML);
@@ -6886,10 +6902,10 @@ function x2LBpage(h){
         btn.setAttribute("aria-expanded",on?"true":"false");btn.querySelector("span").textContent=on?"Back to the board":"How we rank";btn.querySelector("i").textContent=on?"×":"i";
         if(on){lbx.setAttribute("inert","");lbx.setAttribute("aria-hidden","true");bk.removeAttribute("inert");bk.removeAttribute("aria-hidden")}
         else{bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");lbx.removeAttribute("inert");lbx.removeAttribute("aria-hidden")}});
-      var r=row("x2p-row-r x2p-row-top");
+      var r=row("x2p-row-r x2p-row-foot");
       if(nm)r.appendChild(say("As it stands, we follow <em>"+nm+"</em> on our next bet."));
-      r.appendChild(img("05-heckle.webp",100,""));fl.parentNode.insertBefore(r,fl);
-      if(ul)ul.classList.add("x2p-lbrules")
+      r.appendChild(img("05-heckle.webp",78,""));
+      var ft=document.createElement("div");ft.className="x2p-lbfoot";if(ul){ul.classList.add("x2p-lbrules");ft.appendChild(ul)}ft.appendChild(r);fl.after(ft)
       var secs=[].slice.call(document.querySelectorAll("#view section.blk")),find=function(re){return secs.filter(function(s){var m=s.querySelector(".mk");return m&&re.test(m.textContent)})[0]};
       var hall=find(/hall of fame/i),grid=find(/one square/i);
       if(hall&&grid&&hall.compareDocumentPosition(grid)&Node.DOCUMENT_POSITION_PRECEDING){grid.parentNode.insertBefore(hall,grid)}
