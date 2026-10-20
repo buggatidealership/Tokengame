@@ -46,8 +46,8 @@
        Hall of fame third; three findings. The glossary line under the board moves onto its back. */
     "/leaderboard":function(){var lbx=$("#view .lbx");if(!lbx)return false;var rows=[].slice.call(lbx.querySelectorAll("li.lbr")),top=rows[0];
       var xsh=lbx.parentNode.querySelector(".xsh"),h1=xsh&&xsh.querySelector("h1"),ul=xsh&&xsh.querySelector(".x2-lbul");
-      var B=["Ranked by how often they get the direction right.","Tie? The smaller average miss wins.","Freezes 24h before NVIDIA. #1 calls it."];
-      if(ul)[].forEach.call(ul.querySelectorAll("li"),function(li,i){if(B[i])li.textContent=B[i]});
+      /* (owner, 2026-10-20, third pass) one rule on the front; the rest is behind "How we rank", kept plain */
+      if(ul)[].forEach.call(ul.querySelectorAll("li"),function(li,i){if(i)li.remove();else li.textContent="Ranked by how often they get the direction right."});
       var a=top&&top.querySelector(".pc-t a"),nm=a?a.textContent.trim():"",pc=top&&top.querySelector(".lb-c b"),pct=pc?pc.textContent.trim():"";
       var lbn=lbx.nextElementSibling&&lbx.nextElementSibling.classList.contains("lbn")?lbx.nextElementSibling:null;
       var roi=lbn&&/<b>ROI<\/b>:([^<]*)/.exec(lbn.innerHTML);
@@ -58,12 +58,11 @@
       var fin=document.createElement("div");fin.className="x2p-fin";
       var bk=document.createElement("div");bk.className="x2p-bk";bk.id="x2pHow";bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");bk.tabIndex=-1;
       bk.innerHTML='<h3>How we rank</h3><ol>'+
-        '<li><b>The call.</b> Up or down, and by how much, before the company reports.</li>'+
-        '<li><b>The grade.</b> At the next close: did the stock move that way? Size doesn’t count.</li>'+
-        '<li><b>The rank.</b> Calls right ÷ calls made'+(nm&&pct?'. Now: <em>'+nm+'</em>, '+pct+'.':'.')+'</li>'+
-        '<li><b>Ties.</b> The smaller average miss wins.</li>'+
-        '<li><b>Skipped rounds.</b> Called fewer than half? Ranked after the rest.</li>'+
-        '<li><b>The freeze.</b> 24h before NVIDIA reports. #1 makes the call on bet #1.</li></ol>'+
+        '<li>Ranked by how often they get the direction right.</li>'+
+        '<li>Tie? The smaller average miss wins.</li>'+
+        '<li>Every call is made before the company reports and graded at the next market close.</li>'+
+        '<li>Called fewer than half the rounds? Ranked after the rest.</li>'+
+        '<li>The board freezes 24h before each bet. We follow #1’s call.</li></ol>'+
         (roi?'<p><b>ROI</b>:'+roi[1]+'</p>':'');
       lbx.parentNode.insertBefore(fl,lbx);fl.appendChild(fin);fin.appendChild(lbx);fin.appendChild(bk);if(lbn)lbn.remove();
       btn.addEventListener("click",function(){var on=!fl.classList.contains("on");fl.classList.toggle("on",on);
@@ -73,7 +72,7 @@
       var r=row("x2p-row-r x2p-row-top");
       if(nm)r.appendChild(say("As it stands, we follow <em>"+nm+"</em> on our next bet."));
       r.appendChild(img("05-heckle.webp",100,""));fl.parentNode.insertBefore(r,fl);
-      if(ul){ul.classList.add("x2p-lbrules");fl.after(ul)}
+      if(ul)ul.classList.add("x2p-lbrules")
       var secs=[].slice.call(document.querySelectorAll("#view section.blk")),find=function(re){return secs.filter(function(s){var m=s.querySelector(".mk");return m&&re.test(m.textContent)})[0]};
       var hall=find(/hall of fame/i),grid=find(/one square/i);
       if(hall&&grid&&hall.compareDocumentPosition(grid)&Node.DOCUMENT_POSITION_PRECEDING){grid.parentNode.insertBefore(hall,grid)}
@@ -83,6 +82,8 @@
     /* Results: beside the selector, pointing at the rounds (owner, 2026-10-20: he took too much room); the newest
        round's closest call where the screen has room for it */
     "/results":function(){var seg=$("#view .seg.bseg");if(!seg)return false;var box=seg.parentNode;box.classList.add("x2p-segbox");
+      /* Highlights: no "Everyone was wrong" card (owner, 2026-10-20: no need for it) */
+      [].forEach.call(document.querySelectorAll("#view a.hx2"),function(h){var k=h.querySelector(".hx2-k");if(k&&/everyone was wrong/i.test(k.textContent)){var li=h.closest("li");(li||h).remove()}});
       var h=img("02-presenter.webp",86,"");h.classList.add("x2p-hz-seg");h.setAttribute("data-x2p-host","");box.appendChild(h);
       var R=ROUNDS[ROUNDS.length-1];if(R&&R.win){var w=R.win.split(" & ").map(nmM).join(" & "),s=say("Round "+R.n+": <em>"+w+"</em> came closest.");s.classList.add("x2p-say-seg");box.appendChild(s)}
       return true},
