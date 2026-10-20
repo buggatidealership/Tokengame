@@ -377,6 +377,26 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
 pp,k1=re.subn(r'<link id="x2-logo-fonts"[^>]*>\n','',pp)
 pp,k2=re.subn(r'<style id="x2-logo">.*?</style>\n','',pp,flags=re.S)
 assert (k1,k2)==(1,1),(k1,k2)
+# Highlights in plain words (owner, 2026-10-20: "nobody understands points"): percentages and counts only, one sentence
+# anyone gets, and a number worth caring about. All from the sheet, as X2 builds them.
+HL=[("""  var cc=callOf(close.r,close.m),out='<ul class="hx2s">';""",
+     """  var cc=callOf(close.r,close.m),out='<ul class="hx2s">';
+  function rt(r){return r.calls.filter(function(c){return isDn(c)===(r.a<0)}).length}function amt(r){return String(r.out).replace(/^[+−-]/,"")}
+  function said(c){return isDn(c)?'fall':'rise'}function did(r){return r.a>0?'rose':'fell'}"""),
+    ("""  out+=card("Closest call",close.r,nm(close.m)+' basically read '+esc(close.r.co)+'\\'s mind.','It called '+callAmt(cc)+'. '+esc(close.r.co)+' moved '+mv(close.r)+'.',
+    [[close.off.toFixed(2)+' pts','off the real move'],[x(avgAll/close.off),'closer than a typical call']]);""",
+     """  out+=card("Closest call",close.r,nm(close.m)+' basically read '+esc(close.r.co)+'\\'s mind.',nm(close.m)+' said '+esc(close.r.co)+' would '+said(cc)+' '+cc[1].split(" ")[1]+'. It '+did(close.r)+' '+amt(close.r)+'.',
+    [[x(avgAll/close.off),'closer than a typical call'],['#1','closest of '+calls.length+' calls']]);"""),
+    ("""  out+=card("Tightest race",tight.r,'All '+String(NUMW[tight.r.calls.length]||tight.r.calls.length).toLowerCase()+' AIs huddled around '+esc(tight.r.co)+'.',esc(tight.r.co)+' moved '+mv(tight.r)+'. Every call landed within a few points of it'+(td?', all calling '+td:'')+'.',
+    [[tight.v.toFixed(2)+' pts','average miss that round'],[avgRnd.toFixed(1)+' pts','in a normal round']]);""",
+     """  out+=card("Tightest race",tight.r,'All '+String(NUMW[tight.r.calls.length]||tight.r.calls.length).toLowerCase()+' AIs huddled around '+esc(tight.r.co)+'.',esc(tight.r.co)+' '+did(tight.r)+' '+amt(tight.r)+'. '+(td?'All '+String(NUMW[tight.r.calls.length]||tight.r.calls.length).toLowerCase()+' said it would '+(td==="down"?'fall':'rise')+', and all of them were close.':'Every call landed close.'),
+    [[rt(tight.r)+' of '+tight.r.calls.length,'called the direction right'],[x(avgRnd/tight.v),'closer than a normal round']]);"""),
+    ("""  out+=card("Biggest move",big,esc(big.co)+(big.a>0?' went vertical.':' fell off a cliff.'),esc(big.co)+' moved '+mv(big)+' after earnings'+(bd&&(bd==="down")!==(big.a<0)?', and every AI called it '+bd+'. Ouch.':'.'),
+    [[mv(big),'in one day'],[x(Math.abs(big.a)/avgMv),'a normal earnings move']]);""",
+     """  out+=card("Biggest move",big,esc(big.co)+(big.a>0?' went vertical.':' fell off a cliff.'),esc(big.co)+' '+(big.a>0?'jumped ':'dropped ')+amt(big)+' in one day.'+(bd&&(bd==="down")!==(big.a<0)?' Every AI said it would '+(bd==="down"?'fall':'rise')+'. Ouch.':''),
+    [[x(Math.abs(big.a)/avgMv),'a normal earnings move'],[rt(big)+' of '+big.calls.length,'AIs saw it coming']]);""")]
+for a,b in HL:
+    assert pp.count(a)==1,a[:80]; pp=pp.replace(a,b)
 XPCSS=open(sys.argv[1]+'/skin-x2plus.css').read(); XPJS=open(sys.argv[1]+'/x2plus.js').read()
 assert pp.count('</head>')==1 and pp.count('</body>')==1
 pp=pp.replace('</head>','<style id="x2plus-skin">\n'+XPCSS+'\n</style>\n</head>')
