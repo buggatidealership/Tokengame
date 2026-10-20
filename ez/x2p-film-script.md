@@ -1,46 +1,31 @@
-# X2+ explainer film: scripts (draft 2, 2026-10-20)
+# X2+ explainer film: script (draft 3, owner's words, 2026-10-20)
 
-Place: Overview, directly above the countdown and the NVIDIA chip. 30 s, square or 4:5. The $EZ host talks to camera.
-Built for sound off: plays muted on its own while on screen (`autoplay muted playsinline`), captions burned in (one sentence
-per card, at most 42 characters a line), tap for sound, a pause control, and a play button on the poster for reduced motion
-or when autoplay is refused. Poster: the host pointing down, "How it works · 0:30".
-No live numbers (standings, leverage, dates), no Hyperliquid, no freeze, no seasons: at most four ideas in 30 s.
-The last 4 s are a separate clip, so it can be swapped once bet #1 is placed.
-Voice: a real person (the owner on a phone is fine); a flat synthetic voice loses the benefit of a host.
-Needs: a pointing-down pose (paper hands).
+Place: Overview, directly above the countdown and the NVIDIA chip. About 45 s, square or 4:5. The $EZ host talks to camera.
+Plain words for people who don't trade stocks (owner, 2026-10-20). Built for sound off: plays muted on its own while on
+screen (`autoplay muted playsinline`), captions burned in (one sentence per card, at most 42 characters a line), tap for
+sound, a pause control, a play button on the poster. Poster: the host pointing down, "How it works".
+No live numbers (standings, leverage, dates). The last clip ("first bet is NVIDIA") is separate, so it can be swapped.
+Voice: a real person. Needs: a pointing-down pose (paper hands).
 
-## A. The game (recommended), about 63 words
-| Time | Picture | He says (caption = the same words) |
+| # | Picture | He says (caption = the same words) |
 |---|---|---|
-| 0:00-0:03 | Host pops in, the four AI logos orbit his head | "Four AIs. One pool. Here's the game." |
-| 0:03-0:08 | Each logo drops a ▲ or ▼ card on a stock ticket before a "REPORT" bell | "Before a company reports, each AI calls the stock." |
-| 0:08-0:12 | Closing bell; he stamps ✓ and ✗ (optional 2 s cutaway: Accenture, four ▼, the price rockets, he winces) | "The next close grades them. Every call is public." |
-| 0:12-0:15 | The board shuffles; #1 slides onto gold (logos only) | "The best record tops the board." |
-| 0:15-0:20 | $EZ trades tick by; coins drop into the pool; "69%" stamped on it | "69% of $EZ fees fill a pool. We bet it on the top AI's call." |
-| 0:20-0:26 | Split: smug stamp with $EZ going up / calm sweat beside burning bills | "Right: profits buy back $EZ. Wrong: the pool can get wiped out." |
-| 0:26-0:30 | He points down; the chip's top edge peeks in at the bottom | "Now the first bet is NVIDIA. Check it out below." |
+| 1 | He pops in; four AI logos square up like fighters | "Can AI predict the stock market? We've got four AIs battling it out." |
+| 2 | A familiar company logo with a "RESULTS" sheet; its price line jumps, then drops | "Every three months, companies report their earnings. On that news, the stock can jump or drop hard." |
+| 3 | Each AI holds up a card: ▲ or ▼ with a size | "Before the report, each AI picks: up or down, and by how much." |
+| 4 | The price lands; he stamps ✓ and ✗ | "Right after, we check who was right." |
+| 5 | The leaderboard shuffles; #1 slides onto gold | "The AI that's right most often is #1 on the leaderboard." |
+| 6 | Real round tickets scroll by; he taps one, smug | "Every call is tracked and public. Don't trust us. Verify it on the site." |
+| 7 | $EZ trades tick by; coins drop into the pool; "69%" stamped on it | "69% of the fees from every $EZ trade go into a pool." |
+| 8 | The pool slides behind #1's logo | "We bet that pool on the #1 AI's pick." |
+| 9 | Split: smug stamp with $EZ going up / calm sweat beside burning bills | "Right: the profit buys back $EZ. Wrong: the pool shrinks, or gets wiped out." |
+| 10 | He points down; the chip's top edge peeks in | "Now the first bet is NVIDIA. Check it out below." |
 
-## B. Cold open on a real miss, about 62 words
-| Time | Picture | He says |
-|---|---|---|
-| 0:00-0:04 | Ticket slams in: four ▼, then the price rockets; he winces | "All four AIs said Accenture would fall. It jumped 16%." |
-| 0:04-0:08 | He shrugs, logos behind him | "So can an AI get good at this? We keep score." |
-| 0:08-0:13 | Calls stamped before the bell, ✓/✗ at the close | "Every call goes up before the report. The next close grades it." |
-| 0:13-0:16 | #1 onto gold | "The best record leads." |
-| 0:16-0:21 | Coins into the pool, "69%" | "69% of $EZ fees fill a pool. We bet it on the leader's call." |
-| 0:21-0:26 | Right/wrong split | "Right: profits buy back $EZ. Wrong: the pool can get wiped out." |
-| 0:26-0:30 | Point down | "Now the first bet is NVIDIA. Check it out below." |
-Accenture +16.02%, all four called it down (sheet). A dated number in the first second ages once newer rounds exist.
+About 119 words: about 45 s at a comfortable 150 to 160 words a minute (also the caption reading limit).
 
-## C. The stakes first, about 58 words
-| Time | Picture | He says |
-|---|---|---|
-| 0:00-0:03 | He hugs a glowing pool jar | "This pool rides on one AI's call." |
-| 0:03-0:07 | $EZ trades drip coins into it, "69%" | "69% of every $EZ trading fee lands here." |
-| 0:07-0:13 | Four logos in a ring, call cards, bell, ✓/✗ | "Four AIs call stocks before earnings. The market grades every call." |
-| 0:13-0:17 | #1 crowned | "The best record earns the call." |
-| 0:17-0:24 | Right/wrong split | "Right: profits buy back $EZ. Wrong: the pool can get wiped out." |
-| 0:24-0:30 | Point down | "Now the first bet is NVIDIA. Check it out below." |
-Most FOMO, but closest to sounding like a return pitch, and the AIs' record (the product) comes second.
+Shorter cut, about 103 words (about 40 s): 1 "Can AI predict the stock market? Four AIs are battling it out." / 3 "Before that, each AI picks: up or
+down, and by how much." / 5 "Right most often? You're #1 on the leaderboard." / 6 "Every call is tracked. Don't trust us. Verify
+it." / 7 "69% of every $EZ trading fee goes into a pool." / 8 "We bet it on #1's pick." / 9 "Right: profit buys back $EZ.
+Wrong: the pool shrinks or gets wiped out." (2, 4 and 10 as above.)
 
-Research notes and sources: the session's script-research.md (summarised in chat, 2026-10-20).
+Checked against the sheet: of the 31 rounds with both dates, 26 are graded the day after the AIs pick, 2 the same day and 3 a few
+days later (weekends), so line 4 says "Right after", which is always true.
