@@ -103,4 +103,7 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
   The old site lives at buggatidealership.github.io/EZ (so, most likely, the `buggatidealership/EZ` repo).
 
 - **X6 artifact size (2026-10-18):** X6 (https://claude.ai/artifact/PA6WGQyb1j7pXHboKaeTLt) holds about 265 MB of the 268 MB (256 MiB) cap. It has no low-res round 3 to 6 films (only Variant 1 uses those). Send media in publishes of under 64 MiB each (one publish is refused above that). Like X2, new films go to the live site once the artifact is full.
+- **Previews full (2026-10-20):** X2, X4, X5 and X6 are at the 256 MiB cap; from round 31 (IBKR) their films go to the live
+  site only (they keep their last ez-data.js). X2+ made room by dropping files the page never loads (host poses 06, 08, 14,
+  19) and round 6's WebM (the page falls back to its MP4; the live site keeps both). EZ Season, X3 and X7 still take films.
 - **X2+ artifact size (2026-10-19):** X2+ (https://claude.ai/artifact/9dPsU3tcgmC9RAzQZy9Mg5) holds the same 218 files as X6 (about 253 MiB of the 256 MiB cap), sent in five publishes of under 64 MiB. A new film may not fit: then it goes to the live site only, as with X2 and X6.
