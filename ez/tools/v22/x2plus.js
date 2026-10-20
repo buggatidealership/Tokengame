@@ -37,44 +37,43 @@
   /* the Overview stays in the page (hidden) while a tab shows in #view: look for a host only where this route renders */
   function mine(){var s=route()==="/"?$("#top"):$("#view");return s&&s.querySelector("[data-x2p-host]")}
   var PLACE={
-    /* Overview: smug, fixing his cuff, on the chip's corner, beside "Countdown to bet #1" (owner, 2026-10-20: arrogant,
-       welcoming the first bet; the watch pose was cut at the side) */
+    /* Overview: beside "Countdown to bet #1", pointing at you, welcoming the first bet (owner, 2026-10-20: arrogant; the
+       watch pose was cut at the side, the 13 to 18 busts' heads read as off, the head alone did not work) */
     "/":function(){var cap=$(".x2p-cap"),gi=$("#gpu .gpu-img");if(!cap||!gi)return false;
-      /* (owner, 2026-10-20, second pass) the head only, from the first poses: the later busts' heads read as off */
-      var h=img("19-head-smirk.webp",78,"");h.classList.add("x2p-hz-watch");h.setAttribute("data-x2p-host","");cap.parentNode.insertBefore(h,cap);return true},
-    /* Leaderboard (owner, 2026-10-20): he names the leader as it stands; the rules in three one-line bullets; Hall of fame
-       third; three findings. "How we rank" turns the board over to say the rule in full (the metric, when a call is
-       graded, ties, the half-the-rounds rule, the freeze); the glossary line under the board moves onto its back. */
+      var h=img("01-welcome.webp",96,"");h.classList.add("x2p-hz-watch");h.setAttribute("data-x2p-host","");cap.parentNode.insertBefore(h,cap);return true},
+    /* Leaderboard (owner, 2026-10-20, second pass): the head with a small "How we rank" beside it; he names the leader
+       above the board; the board turns over to the rule in full, at the board's own size; the three rules sit under it.
+       Hall of fame third; three findings. The glossary line under the board moves onto its back. */
     "/leaderboard":function(){var lbx=$("#view .lbx");if(!lbx)return false;var rows=[].slice.call(lbx.querySelectorAll("li.lbr")),top=rows[0];
-      var B=["Ranked by how often they call up/down right.","Tie? The smaller average miss wins.","Freezes 24h before NVIDIA. #1 calls it."];
-      [].forEach.call(document.querySelectorAll("#view .x2-lbul li"),function(li,i){if(B[i])li.textContent=B[i]});
+      var xsh=lbx.parentNode.querySelector(".xsh"),h1=xsh&&xsh.querySelector("h1"),ul=xsh&&xsh.querySelector(".x2-lbul");
+      var B=["Ranked by how often they get the direction right.","Tie? The smaller average miss wins.","Freezes 24h before NVIDIA. #1 calls it."];
+      if(ul)[].forEach.call(ul.querySelectorAll("li"),function(li,i){if(B[i])li.textContent=B[i]});
       var a=top&&top.querySelector(".pc-t a"),nm=a?a.textContent.trim():"",pc=top&&top.querySelector(".lb-c b"),pct=pc?pc.textContent.trim():"";
       var lbn=lbx.nextElementSibling&&lbx.nextElementSibling.classList.contains("lbn")?lbx.nextElementSibling:null;
       var roi=lbn&&/<b>ROI<\/b>:([^<]*)/.exec(lbn.innerHTML);
       var fl=document.createElement("div");fl.className="x2p-flip";
-      var bar=document.createElement("div");bar.className="x2p-flipbar";
-      bar.innerHTML='<button type="button" class="x2p-flipbtn" aria-expanded="false" aria-controls="x2pHow"><i aria-hidden="true">i</i><span>How we rank</span></button>';
+      var btn=document.createElement("button");btn.type="button";btn.className="x2p-flipbtn";btn.setAttribute("aria-expanded","false");btn.setAttribute("aria-controls","x2pHow");
+      btn.innerHTML='<i aria-hidden="true">i</i><span>How we rank</span>';
+      if(h1){var hd=document.createElement("div");hd.className="x2p-lbhead";h1.parentNode.insertBefore(hd,h1);hd.appendChild(h1);hd.appendChild(btn)}
       var fin=document.createElement("div");fin.className="x2p-fin";
-      var bk=document.createElement("div");bk.className="x2p-bk";bk.id="x2pHow";bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");
+      var bk=document.createElement("div");bk.className="x2p-bk";bk.id="x2pHow";bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");bk.tabIndex=-1;
       bk.innerHTML='<h3>How we rank</h3><ol>'+
-        '<li><b>The call.</b> Before a company reports, each AI says up or down, and by how much.</li>'+
-        '<li><b>The grade.</b> At the next market close: did the stock move the way it said? Size doesn’t count here.</li>'+
-        '<li><b>The rank.</b> Calls right ÷ calls made. Highest goes first'+(nm&&pct?'. Now: <em>'+nm+'</em>, right on '+pct+' of its calls.':'.')+'</li>'+
-        '<li><b>Ties.</b> The smaller average miss wins: how many points the call was off the real move.</li>'+
-        '<li><b>Skipped rounds.</b> An AI that called fewer than half the rounds ranks after the rest.</li>'+
-        '<li><b>The freeze.</b> 24h before NVIDIA reports, the board locks. The AI in first place makes the call on bet #1.</li></ol>'+
+        '<li><b>The call.</b> Up or down, and by how much, before the company reports.</li>'+
+        '<li><b>The grade.</b> At the next close: did the stock move that way? Size doesn’t count.</li>'+
+        '<li><b>The rank.</b> Calls right ÷ calls made'+(nm&&pct?'. Now: <em>'+nm+'</em>, '+pct+'.':'.')+'</li>'+
+        '<li><b>Ties.</b> The smaller average miss wins.</li>'+
+        '<li><b>Skipped rounds.</b> Called fewer than half? Ranked after the rest.</li>'+
+        '<li><b>The freeze.</b> 24h before NVIDIA reports. #1 makes the call on bet #1.</li></ol>'+
         (roi?'<p><b>ROI</b>:'+roi[1]+'</p>':'');
-      lbx.parentNode.insertBefore(fl,lbx);fl.appendChild(bar);fl.appendChild(fin);fin.appendChild(lbx);fin.appendChild(bk);if(lbn)lbn.remove();
-      var btn=bar.querySelector("button");btn.addEventListener("click",function(){var on=!fl.classList.contains("on");fl.classList.toggle("on",on);
-        btn.setAttribute("aria-expanded",on?"true":"false");btn.querySelector("span").textContent=on?"Back to the board":"How we rank";
+      lbx.parentNode.insertBefore(fl,lbx);fl.appendChild(fin);fin.appendChild(lbx);fin.appendChild(bk);if(lbn)lbn.remove();
+      btn.addEventListener("click",function(){var on=!fl.classList.contains("on");fl.classList.toggle("on",on);
+        btn.setAttribute("aria-expanded",on?"true":"false");btn.querySelector("span").textContent=on?"Back to the board":"How we rank";btn.querySelector("i").textContent=on?"×":"i";
         if(on){lbx.setAttribute("inert","");lbx.setAttribute("aria-hidden","true");bk.removeAttribute("inert");bk.removeAttribute("aria-hidden")}
-        else{bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");lbx.removeAttribute("inert");lbx.removeAttribute("aria-hidden")}
-        fit()});
-      /* the card is as tall as the face that shows; the back sits out of flow */
-      function fit(){fin.style.minHeight=fl.classList.contains("on")?bk.offsetHeight+"px":""}addEventListener("resize",fit);
-      var r=row("x2p-row-r");
+        else{bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");lbx.removeAttribute("inert");lbx.removeAttribute("aria-hidden")}});
+      var r=row("x2p-row-r x2p-row-top");
       if(nm)r.appendChild(say("As it stands, we follow <em>"+nm+"</em> on our next bet."));
-      r.appendChild(img("05-heckle.webp",118,""));fl.after(r);
+      r.appendChild(img("05-heckle.webp",100,""));fl.parentNode.insertBefore(r,fl);
+      if(ul){ul.classList.add("x2p-lbrules");fl.after(ul)}
       var secs=[].slice.call(document.querySelectorAll("#view section.blk")),find=function(re){return secs.filter(function(s){var m=s.querySelector(".mk");return m&&re.test(m.textContent)})[0]};
       var hall=find(/hall of fame/i),grid=find(/one square/i);
       if(hall&&grid&&hall.compareDocumentPosition(grid)&Node.DOCUMENT_POSITION_PRECEDING){grid.parentNode.insertBefore(hall,grid)}
