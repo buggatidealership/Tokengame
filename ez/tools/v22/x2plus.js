@@ -9,12 +9,36 @@
      buyback; then the countdown to bet #1 as a headline above the chip, the risk in one line under it */
   var ul=$(".x2o-lines");
   if(ul&&!$(".x2p-steps")){
-    var lg=function(t){var e=document.querySelector('#top .lg[title="'+t+'"]');return e?e.outerHTML:''};
-    var ais=["ChatGPT","Claude","Grok","Kimi"].map(lg).join('');
     /* (owner, 2026-10-20, second pass: "more headline-focused") each step is a headline; the verb a small label above it */
-    var S=[["Predict",'4 AIs call the stock <b>before earnings</b>.','<span class="x2p-si x2p-si-ai">'+ais+'</span>'],
-      ["Grade",'The <b>next close</b> says who was right.','<span class="x2p-si x2p-si-gr"><i class="ok">✓</i><i class="no">✗</i></span>'],
-      ["Rank",'The best AI <b>tops the board</b>.','<span class="x2p-si x2p-si-rk"><i>#1</i></span>'],
+    /* (owner, 2026-10-20, third pass: the pictures, not the words) steps 1 to 3 each show the real thing, and follow one
+       real round through: its four calls, the same calls graded by the close, then the season's board. The round is the
+       newest graded one with both right and wrong calls, so the grade shows both marks. All from ez-data.js. */
+    var arw=function(v){return (v<0?"▼ ":"▲ ")+Math.abs(v).toFixed(2).replace(/\.?0+$/,"")+"%"};
+    var V=["","",""];
+    try{
+      var R0=null;for(var i=ROUNDS.length-1;i>=0&&!R0;i--){var rr=ROUNDS[i],ok=rr.calls.filter(function(c){return (c[1].indexOf("DOWN")<0)===(rr.a>0)}).length;if(ok&&ok<rr.calls.length)R0=rr}
+      R0=R0||ROUNDS[ROUNDS.length-1];
+      var cl=R0.calls.map(function(c){var p=c[1].split(" "),v=(p[0]==="DOWN"?-1:1)*parseFloat(p[1]);return {m:c[0],v:v,ok:(v>0)===(R0.a>0)}});
+      var co=R0.co.length>18?R0.ticker:R0.co,dir=function(v){return v<0?"x2p-d":"x2p-u"};
+      var chip=function(c,g){return '<span class="x2p-cc'+(g?(c.ok?" ok":" no"):"")+'">'+logo(c.m)+'<b class="'+dir(c.v)+'">'+arw(c.v)+'</b>'+(g?'<i>'+(c.ok?"✓":"✗")+'</i>':'')+'</span>'};
+      var nm=function(m){var n=(MODELS[m]&&MODELS[m].name)||m;return n.length<=3?n:n.charAt(0)+n.slice(1).toLowerCase()};
+      var said=cl.map(function(c){return nm(c.m)+" "+(c.v<0?"down ":"up ")+Math.abs(c.v)+"%"}).join(", ");
+      V[0]='<div class="x2p-viz x2p-vz-call" role="img" aria-label="Round '+R0.n+', '+R0.co+': '+said+'"><span class="cap">'+co+' · <em>round '+R0.n+'</em></span><span class="row">'+cl.map(function(c){return chip(c,0)}).join("")+'</span></div>';
+      var nr=cl.filter(function(c){return c.ok}).length;
+      V[1]='<div class="x2p-viz x2p-vz-grade" role="img" aria-label="'+R0.co+' moved '+(R0.a<0?"down ":"up ")+Math.abs(R0.a)+'%. '+nr+' of '+cl.length+' called the direction right."><span class="cap">'+co+' closed <b class="'+dir(R0.a)+'">'+arw(R0.a)+'</b></span><span class="row">'+cl.map(function(c){return chip(c,1)}).join("")+'</span></div>';
+      /* the board in X2's order (as the Leaderboard tab): calls right on direction among AIs that called at least half
+         the graded rounds, ties to the smaller average miss, the rest after them */
+      var CAR={};ROUNDS.forEach(function(r){r.calls.forEach(function(c){var C=CAR[c[0]]=CAR[c[0]]||{g:0,right:0,err:0};
+        C.g++;C.err+=parseFloat(c[2]);if((c[1].indexOf("DOWN")<0)===(r.a>0))C.right++})});
+      var RK=Object.keys(CAR).sort(function(x,y){var X=CAR[x],Y=CAR[y],fx=X.g>=ROUNDS.length/2,fy=Y.g>=ROUNDS.length/2;
+        return (fy-fx)||(Y.right/Y.g-X.right/X.g)||(X.err/X.g-Y.err/Y.g)});
+      var bd=RK.slice(0,4).map(function(m,k){var C=CAR[m],pc=C.g?Math.round(100*C.right/C.g):0;
+        return '<li'+(k?'':' class="top"')+'><i>'+(k+1)+'</i>'+logo(m)+'<s style="--w:'+pc+'%"></s><b>'+pc+'%</b></li>'}).join("");
+      V[2]='<div class="x2p-viz x2p-vz-board" role="img" aria-label="The board, by calls right on direction: '+RK.slice(0,4).map(function(m){var C=CAR[m];return nm(m)+" "+Math.round(100*C.right/C.g)+"%"}).join(", ")+'"><span class="cap">The board · <em>right on direction</em></span><ol>'+bd+'</ol></div>';
+    }catch(e){console.warn("x2p steps",e)}
+    var S=[["Predict",'4 AIs call the stock <b>before earnings</b>.',V[0]],
+      ["Grade",'The <b>next close</b> says who was right.',V[1]],
+      ["Rank",'The best AI <b>tops the board</b>.',V[2]],
       ["Buy back",'<b>'+P+'% of fees</b> ride on its call. Profits <b>buy back $EZ</b>.','<span class="x2p-si x2p-si-ez">$EZ</span>']];
     var ol=document.createElement("ol");ol.className="x2p-steps";ol.setAttribute("aria-label","How $EZ works");
     ol.innerHTML=S.map(function(x,k){return '<li'+(k===3?' class="pay"':'')+'><span class="n">0'+(k+1)+'</span>'+x[2]+'<span class="t"><b class="h">'+x[0]+'</b><span class="l">'+x[1]+'</span></span></li>'}).join('');
