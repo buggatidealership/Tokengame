@@ -4583,6 +4583,32 @@ html.x2p.x2d[data-theme="dark"] a.pf-bw{border:3px solid #000!important;border-r
 html.x2p.x2d[data-theme="dark"] footer{background:#000!important;border-top:3px solid #f2b632!important}
 html.x2p.x2d[data-theme="dark"] footer .motto{font-family:Anton,Impact,sans-serif!important;font-weight:400!important;text-shadow:.05em .05em 0 #2a2350}
 
+/* the $EZ host, the mascot (owner, 2026-10-20): one per tab, small, ink-outlined with the stamp's green and red rim,
+   tucked at the edge of a module, never over a number; a stamp-shaped line on two tabs (x2plus.js places him) */
+.x2p-hz{display:block;height:auto;max-width:none;pointer-events:none;user-select:none;
+ filter:drop-shadow(2px 0 0 #000) drop-shadow(-2px 0 0 #000) drop-shadow(0 2px 0 #000) drop-shadow(0 -2px 0 #000) drop-shadow(-5px 0 0 rgba(31,138,90,.7)) drop-shadow(5px 0 0 rgba(208,65,60,.6))}
+.x2p-say{position:relative;flex:0 1 auto;max-width:230px;filter:drop-shadow(4px 5px 0 #000)}
+.x2p-say .st{background:linear-gradient(90deg,transparent 0 9px,#11714a 9px 13px,transparent 13px calc(100% - 13px),#b3261e calc(100% - 13px) calc(100% - 9px),transparent calc(100% - 9px)),#f3e6c8;
+ color:#121214;padding:13px 19px 11px 21px;font:600 13px/1.35 Barlow,sans-serif;
+ -webkit-mask:radial-gradient(circle 3.5px at 0 6px,transparent 95%,#000) 0 0/51% 12px repeat-y,radial-gradient(circle 3.5px at 100% 6px,transparent 95%,#000) 100% 0/51% 12px repeat-y;
+ mask:radial-gradient(circle 3.5px at 0 6px,transparent 95%,#000) 0 0/51% 12px repeat-y,radial-gradient(circle 3.5px at 100% 6px,transparent 95%,#000) 100% 0/51% 12px repeat-y}
+.x2p-say .st b{color:#b3261e}.x2p-say .st em{font-style:normal;color:#11714a}
+.x2p-say .nm{position:absolute;left:19px;top:-9px;z-index:2;background:#000;color:#f2b632;font:700 8px/1 "Chivo Mono",ui-monospace,monospace;letter-spacing:.16em;padding:3px 6px;border:1px solid #f2b632}
+.x2p-say .tl{position:absolute;width:16px;height:13px;background:#f3e6c8;bottom:-12px;right:24px;clip-path:polygon(0 0,100% 0,70% 100%)}
+.x2p-row{display:flex;align-items:flex-end;gap:8px;margin:20px 0 4px}
+.x2p-row-r{justify-content:flex-end}.x2p-row-r .x2p-say{margin-bottom:70px}
+.x2p-row-l .x2p-say{margin-bottom:62px}.x2p-row-l .x2p-say .tl{right:auto;left:24px;clip-path:polygon(0 0,100% 0,30% 100%)}
+/* Overview: on the chip's lower right corner, beside "Countdown to bet #1"; the risk line keeps clear of him */
+#gpu{position:relative}
+.x2p-hz-watch{position:absolute;right:-4px;z-index:3;margin-top:-30px}
+html.x2p .x2p-risk{padding-right:118px}
+/* Upcoming: beside "the calls drop before each report" */
+.x2p-beside{position:relative;padding-right:92px!important;min-height:64px}
+.x2p-hz-side{position:absolute;right:-6px;top:-14px}
+/* Buyback: stamping on the pool card's top corner */
+html.x2p .pool.x2p-stamped{position:relative;margin-top:104px!important;overflow:visible!important}
+.x2p-hz-stamp{position:absolute;right:6px;top:-90px;z-index:3}
+
 </style>
 </head>
 <body>
@@ -6723,6 +6749,44 @@ function x2LBpage(h){
   if(window.MutationObserver){var busy=false;new MutationObserver(function(ms){if(busy)return;busy=true;
     ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1)fix(x);else if(x.nodeType===3&&x.parentNode)fix(x.parentNode)})});busy=false})
     .observe(document.body,{childList:true,subtree:true})}
+}catch(e){}})();
+/* the $EZ host, the mascot (owner, 2026-10-20: "one on each tab, not more", subtle, never in your face). Small, ink-outlined,
+   tucked at the edge of a module that matches what he does; at most one short line, built from the sheet, on two tabs.
+   He never covers a number: each sits in space made for him. Placed when a tab renders; nothing on model or round pages. */
+(function(){try{
+  var $=function(s,r){return (r||document).querySelector(s)},M="media/commissioner/web/";
+  function img(f,w,alt){var i=document.createElement("img");i.className="x2p-hz";i.src=M+f;i.alt=alt||"";i.width=w;i.style.width=w+"px";i.loading="lazy";i.decoding="async";return i}
+  function say(html){var d=document.createElement("div");d.className="x2p-say";d.innerHTML='<span class="nm">$EZ</span><div class="st">'+html+'</div><i class="tl"></i>';return d}
+  function row(cls){var d=document.createElement("div");d.className="x2p-row "+(cls||"");d.setAttribute("data-x2p-host","");return d}
+  function nmM(k){var n=(MODELS[k]&&MODELS[k].name)||k;return n.length<=3?n:n.charAt(0)+n.slice(1).toLowerCase()}
+  /* the Overview stays in the page (hidden) while a tab shows in #view: look for a host only where this route renders */
+  function mine(){var s=route()==="/"?$("#top"):$("#view");return s&&s.querySelector("[data-x2p-host]")}
+  var PLACE={
+    /* Overview: checking his watch, on the chip's corner, beside "Countdown to bet #1" */
+    "/":function(){var cap=$(".x2p-cap"),gi=$("#gpu .gpu-img");if(!cap||!gi)return false;
+      var h=img("08-watch.webp",112,"");h.classList.add("x2p-hz-watch");h.setAttribute("data-x2p-host","");cap.parentNode.insertBefore(h,cap);return true},
+    /* Leaderboard: arms crossed under the standings, with one dry line from the sheet */
+    "/leaderboard":function(){var lbx=$("#view .lbx");if(!lbx)return false;var rows=[].slice.call(lbx.querySelectorAll("li.lbr")),last=rows[rows.length-1];
+      var after=lbx.nextElementSibling&&lbx.nextElementSibling.tagName==="P"?lbx.nextElementSibling:lbx,r=row("x2p-row-r");
+      var pct=last?(last.textContent.match(/(\d+)%/)||[])[1]:null,a=last&&last.querySelector(".pc-t a"),nm=a?a.textContent.trim():"";
+      if(pct&&nm&&+pct<50)r.appendChild(say(nm+" is right "+pct+"% of the time. <b>A coin flip gets 50%.</b>"));
+      r.appendChild(img("05-heckle.webp",118,""));after.after(r);return true},
+    /* Results: pointing at the list of rounds, with the newest round's closest call */
+    "/results":function(){var hs=document.querySelectorAll("#view .xsh");var hd=hs[1]||hs[0];if(!hd)return false;
+      var R=ROUNDS[ROUNDS.length-1],r=row("x2p-row-l");r.appendChild(img("02-presenter.webp",104,""));
+      if(R&&R.win){var w=R.win.split(" & ").map(nmM).join(" & ");r.appendChild(say("Round "+R.n+": <em>"+w+"</em> came closest."))}
+      hd.after(r);return true},
+    /* Upcoming: looking over his shoulder, beside "the calls drop before each report" */
+    "/upcoming":function(){var p=$("#view .ufn");if(!p)return false;p.classList.add("x2p-beside");var h=img("11-over-shoulder.webp",86,"");h.classList.add("x2p-hz-side");h.setAttribute("data-x2p-host","");p.appendChild(h);return true},
+    /* Buyback: stamping on the top corner of the pool card */
+    "/buyback":function(){var pool=$("#view .pool");if(!pool)return false;pool.classList.add("x2p-stamped");var h=img("03-stamping.webp",104,"");h.classList.add("x2p-hz-stamp");h.setAttribute("data-x2p-host","");pool.appendChild(h);return true}
+  };
+  function route(){var h=location.hash.replace(/^#/,"")||"/";if(h.indexOf("/")!==0)h="/";return h.split("?")[0]}
+  var tries=0;
+  function place(){var f=PLACE[route()];if(!f||mine())return;if(!f()&&tries++<30)setTimeout(place,100)}
+  addEventListener("hashchange",function(){tries=0;setTimeout(place,60)});
+  if(document.readyState==="complete")place();else addEventListener("load",place);
+  setTimeout(place,300);
 }catch(e){}})();
 
 </script>
