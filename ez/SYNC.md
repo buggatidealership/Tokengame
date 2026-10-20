@@ -67,6 +67,10 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
   test folder without touching site/. Deploys go by a Cloudflare API token (CLOUDFLARE_API_TOKEN and
   CLOUDFLARE_ACCOUNT_ID in the environment settings, never in chat) with wrangler direct upload to the Pages project
   `earningszn`; production deploys and domain changes only on the owner's go. The 2026-10-17 note below is history.
+  **Caching (2026-10-20):** Cloudflare's zone setting (Browser Cache TTL, 4 hours) overrides `_headers` for .js files, so a
+  sync once showed up in Chrome but not in Brave. make_site.py now loads ez-data.js and ez-learn.js as `?v=<content hash>`;
+  the page itself refreshes within a minute, so every sync is live on the next reload. Check the live site without a
+  cache-busting query (the stamped address is what visitors get).
 - **Live site (2026-10-17).** The public site is X2 on Cloudflare Pages, built from the `site/` folder at the repo root
   (production branch: this working branch; build command: none; output directory: `site`). After every sync or film,
   from ez/: `python3 tools/v22/build.py tools/v22 && python3 tools/site/make_site.py`, then commit `site/` and push;

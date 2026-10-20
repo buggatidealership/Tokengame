@@ -26,6 +26,13 @@ doc = re.sub(r'<title>[^<]*</title>', '<title>$EZ \u00b7 Earnings Zeason</title>
 meta = ('<link rel="canonical" href="' + URL + '">\n<meta property="og:type" content="website">\n<meta property="og:url" content="' + URL + '">\n'
         '<meta property="og:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:card" content="summary_large_image">\n')
 doc = doc.replace('</head>', meta + '</head>', 1)
+# Cloudflare's zone setting keeps .js files in browsers for 4 hours whatever _headers says (owner, 2026-10-20: a sync did not
+# show up). The page itself refreshes within a minute, so it asks for each script by a version stamped from its content.
+import hashlib
+for f in ('ez-data.js', 'ez-learn.js'):
+    v = hashlib.sha256(open(os.path.join(EZ, f), 'rb').read()).hexdigest()[:10]
+    doc, n = re.subn(r'src="' + re.escape(f) + '"', 'src="' + f + '?v=' + v + '"', doc)
+    assert n, f + ' is not loaded by the page'
 open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(doc)
 for f in ('ez-data.js', 'ez-learn.js'):
     shutil.copy2(os.path.join(EZ, f), OUT)
