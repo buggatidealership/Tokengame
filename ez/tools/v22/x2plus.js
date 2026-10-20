@@ -103,21 +103,35 @@
     /* Upcoming: looking over his shoulder, beside "the calls drop before each report" */
     "/upcoming":function(){var p=$("#view .ufn");if(!p)return false;p.classList.add("x2p-beside");var h=img("11-over-shoulder.webp",86,"");h.classList.add("x2p-hz-side");h.setAttribute("data-x2p-host","");p.appendChild(h);return true},
     /* Buyback: stamping on the top corner of the pool card */
-    "/buyback":function(){var pool=$("#view .pool");if(!pool)return false;pool.classList.add("x2p-stamped");var h=img("03-stamping.webp",104,"");h.classList.add("x2p-hz-stamp");h.setAttribute("data-x2p-host","");pool.appendChild(h);
-      /* How the buyback works, X7's four cel panels (owner, 2026-10-20), about every bet: NVIDIA only as bet #1. They say
-         what the paragraph under the head said, so it goes. */
-      var sub=$("#view p.sub"),P=SIM.poolShare!=null?Math.round(SIM.poolShare*100):69,L=SIM.leverage||10,H=SIM.leadHours||24;
+    "/buyback":function(){var pool=$("#view .pool");if(!pool)return false;
+      /* (owner, 2026-10-20) no "Buyback" title: the tab already says it; kept for screen readers and focus */
+      var h1=$("#view h1");if(h1)h1.classList.add("x2p-sr");
+      /* How the buyback works, X7's four cel panels (owner, 2026-10-20), about every bet: Season 1 is one bet, NVIDIA, then
+         the pool fills for the next; Season 2 brings more bets. They say what the paragraph under the head said, so it goes.
+         The host stands beside right call (buying back $EZ) and wrong call (burning the cash, calm about it). */
+      var sub=$("#view p.sub"),P=SIM.poolShare!=null?Math.round(SIM.poolShare*100):69,L=SIM.leverage||5,H=SIM.leadHours||24;
       var pot='<svg class="x2p-pot" viewBox="0 0 200 210" aria-hidden="true"><g class="x2p-cn"><ellipse cx="100" cy="40" rx="13" ry="6" fill="#f2b632" stroke="#000" stroke-width="3"/></g><g class="x2p-cn"><ellipse cx="84" cy="30" rx="13" ry="6" fill="#f2b632" stroke="#000" stroke-width="3"/></g><g class="x2p-cn"><ellipse cx="116" cy="34" rx="13" ry="6" fill="#f2b632" stroke="#000" stroke-width="3"/></g>'+
         '<path d="M42 112h116c4 44-22 86-58 86s-62-42-58-86z" fill="#2d2a38" stroke="#000" stroke-width="4"/><path d="M112 112h46c4 44-22 86-58 86 30-10 15-52 12-86z" fill="#1b1924"/>'+
         '<g stroke="#000" stroke-width="2.6" fill="#f2b632"><ellipse cx="70" cy="104" rx="15" ry="7"/><ellipse cx="100" cy="98" rx="15" ry="7"/><ellipse cx="128" cy="104" rx="15" ry="7"/><ellipse cx="86" cy="92" rx="15" ry="7"/><ellipse cx="115" cy="90" rx="15" ry="7"/><ellipse cx="100" cy="82" rx="15" ry="7"/></g>'+
         '<rect x="30" y="106" width="140" height="16" rx="4" fill="#3d3a4a" stroke="#000" stroke-width="4"/><path d="M30 122q-14 6-12 20" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/><path d="M170 122q14 6 12 20" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/>'+
         '<g transform="rotate(-6 100 156)"><rect x="62" y="140" width="76" height="30" fill="#f3e6c8" stroke="#000" stroke-width="3"/><rect x="65" y="140" width="4" height="30" fill="#11714a"/><rect x="131" y="140" width="4" height="30" fill="#b3261e"/><text x="100" y="163" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="20" fill="#000">POOL</text></g></svg>';
+      /* props drawn in the cel style: $EZ tokens going up; a pile of cash on fire */
+      var coins='<svg class="x2p-prop x2p-coins" viewBox="0 0 90 110" aria-hidden="true">'+[[45,80,0],[24,52,.5],[62,30,1]].map(function(c){return '<g class="x2p-tok" style="animation-delay:'+c[2]+'s"><circle cx="'+c[0]+'" cy="'+c[1]+'" r="17" fill="#f2b632" stroke="#000" stroke-width="3"/><circle cx="'+c[0]+'" cy="'+c[1]+'" r="11.5" fill="none" stroke="#b9800f" stroke-width="2"/><text x="'+c[0]+'" y="'+(c[1]+4.5)+'" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="11" fill="#000">$EZ</text></g>'}).join('')+'</svg>';
+      var fire='<svg class="x2p-prop x2p-fire" viewBox="0 0 110 120" aria-hidden="true">'+
+        '<g class="x2p-fl"><path d="M55 8c10 22 34 30 30 62-3 24-22 34-30 34s-29-9-31-33c-2-22 12-28 14-44 9 10 8 22 13 24 4-14-4-28 4-43z" fill="#ff7a1a" stroke="#000" stroke-width="3.5" stroke-linejoin="round"/>'+
+        '<path d="M56 44c5 12 16 18 14 34-2 12-9 18-15 18s-14-6-15-17c-1-10 6-14 8-22 5 6 4 12 7 13 2-8-2-16 1-26z" fill="#ffd23f"/></g>'+
+        '<g stroke="#000" stroke-width="3" stroke-linejoin="round"><rect x="10" y="88" width="56" height="22" rx="2" fill="#4fae6b" transform="rotate(-8 38 99)"/><rect x="44" y="90" width="56" height="22" rx="2" fill="#3f9a5a" transform="rotate(7 72 101)"/><rect x="26" y="96" width="58" height="20" rx="2" fill="#5cbf78"/></g>'+
+        '<text x="55" y="111" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="15" fill="#0b3b1e">$</text></svg>';
       var sec=document.createElement("section");sec.className="x2p-how";sec.setAttribute("aria-labelledby","x2pHowH");
       sec.innerHTML='<div class="x2p-kick">How the buyback works</div><h2 id="x2pHowH" class="x2p-h2">One call. <em>The whole pool.</em></h2><div class="x2p-manga">'+
         '<div class="x2p-pn x2p-p1 x2p-sl"><span class="x2p-no">1 · The fees</span><div class="x2p-u"><div><div class="x2p-big">'+P+'%</div><p>of every $EZ trading fee drops into the pool.</p><p class="x2p-s">It starts at $0 on launch day.</p></div>'+pot+'</div></div>'+
         '<div class="x2p-pn x2p-p2 x2p-sl"><span class="x2p-no">2 · The call</span><div class="x2p-u"><div class="x2p-myst" aria-hidden="true">?<i>#1</i></div><div class="x2p-ud" aria-hidden="true"><span class="x2p-up">▲ Up</span><span class="x2p-dn">▼ Down</span><small>One call. No take-backs.</small></div></div><p>'+H+'h before each bet, the board freezes. The AI in first place calls it.</p></div>'+
-        '<div class="x2p-pn x2p-p3 x2p-wide"><span class="x2p-no">3 · The bet</span><div class="x2p-u"><div class="x2p-ten">'+L+'x<small>on Hyperliquid</small></div><div><p>The whole pool goes on that call, right before the company reports.</p><p class="x2p-s">When the stock moves 1%, the pool moves about '+L+'%. Bet #1 is NVIDIA. More bets come each season.</p></div></div></div>'+
-        '<div class="x2p-pn x2p-p4 x2p-wide"><div class="x2p-u"><div class="x2p-end x2p-ev"><h4>▲ Right call</h4><p>The profit buys back $EZ on the open market.</p></div><div class="x2p-end x2p-ed"><h4>▼ Wrong call</h4><p>No stop loss. The pool can be wiped out.</p></div></div></div></div>';
+        '<div class="x2p-pn x2p-p3 x2p-wide"><span class="x2p-no">3 · The bet</span><div class="x2p-u"><div class="x2p-ten">'+L+'x<small>on Hyperliquid</small></div><div><p>The whole pool goes on that call, right before the company reports.</p><p class="x2p-s">When the stock moves 1%, the pool moves about '+L+'%.</p></div></div>'+
+          '<ol class="x2p-seasons"><li class="on"><b>Season 1</b><span>One bet: NVIDIA</span></li><li><b>Then</b><span>The pool fills up again</span></li><li><b>Season 2</b><span>More bets</span></li></ol></div>'+
+        '<div class="x2p-pn x2p-p4 x2p-wide"><div class="x2p-u">'+
+          '<div class="x2p-end x2p-ev"><div class="x2p-cast"><img class="x2p-hz" data-x2p-host src="'+M+'06-cheer.webp" alt="" width="104" loading="lazy" decoding="async">'+coins+'</div><div><h4>▲ Right call</h4><p>The profit buys back $EZ on the open market.</p></div></div>'+
+          '<div class="x2p-end x2p-ed"><div class="x2p-cast"><img class="x2p-hz" src="'+M+'07-sweat.webp" alt="" width="104" loading="lazy" decoding="async">'+fire+'</div><div><h4>▼ Wrong call</h4><p>No stop loss. The pool can be wiped out.</p></div></div>'+
+        '</div></div></div>';
       var at=sub||pool;at.parentNode.insertBefore(sec,at);if(sub)sub.remove();
       return true}
   };
