@@ -4922,6 +4922,15 @@ html.x2p .x2p-risk{margin-top:12px}
 @media(min-width:900px){html.x2p .x2p-steps li{grid-template-columns:auto minmax(0,1fr)}html.x2p .x2p-steps .x2p-si{justify-self:start;margin-left:6px}
  html.x2p .x2p-steps li:not(:last-child)::before{right:-12px;top:20px}}
 html.x2p .x2p-cdh i{color:#f3ead6}
+/* the steps as headlines (owner, 2026-10-20, second pass): the verb a small gold label, the line a headline */
+html.x2p .x2p-steps .h{font:400 13px/1 Anton,Impact,sans-serif!important;letter-spacing:.16em;color:#f2b632!important}
+html.x2p .x2p-steps .l{font:400 clamp(23px,6.4vw,30px)/1.02 Anton,Impact,sans-serif!important;text-transform:uppercase;letter-spacing:.01em;color:#f3ead6!important;text-shadow:.05em .05em 0 #000;text-wrap:balance}
+html.x2p .x2p-steps .l b{color:#f2b632!important;font-weight:400}
+html.x2p .x2p-steps .t{gap:6px}
+html.x2p .x2p-steps li .n{font-size:26px;padding-top:0}
+html.x2p .x2p-steps li.pay .h{color:#7a5a12!important}
+html.x2p .x2p-steps li.pay .l{color:#141217!important;text-shadow:none}html.x2p .x2p-steps li.pay .l b{color:#11714a!important}
+@media(min-width:900px){html.x2p .x2p-steps .l{font-size:clamp(24px,2.3vw,32px)}html.x2p .x2p-steps li .n{font-size:30px}}
 
 </style>
 </head>
@@ -7052,10 +7061,11 @@ function x2LBpage(h){
   if(ul&&!$(".x2p-steps")){
     var lg=function(t){var e=document.querySelector('#top .lg[title="'+t+'"]');return e?e.outerHTML:''};
     var ais=["ChatGPT","Claude","Grok","Kimi"].map(lg).join('');
-    var S=[["Predict",'4 AIs call a stock’s move <b>before</b> it reports earnings.','<span class="x2p-si x2p-si-ai">'+ais+'</span>'],
-      ["Grade",'The <b>next market close</b> grades every call. Each AI logs its lessons.','<span class="x2p-si x2p-si-gr"><i class="ok">✓</i><i class="no">✗</i></span>'],
-      ["Rank",'Every call stays on the record. The leaderboard keeps score.','<span class="x2p-si x2p-si-rk"><i>#1</i></span>'],
-      ["Buy back",'<b>'+P+'%</b> of $EZ fees go on the top AI’s call. Profits <b>buy back $EZ</b>.','<span class="x2p-si x2p-si-ez">$EZ</span>']];
+    /* (owner, 2026-10-20, second pass: "more headline-focused") each step is a headline; the verb a small label above it */
+    var S=[["Predict",'4 AIs call the stock <b>before earnings</b>.','<span class="x2p-si x2p-si-ai">'+ais+'</span>'],
+      ["Grade",'The <b>next close</b> says who was right.','<span class="x2p-si x2p-si-gr"><i class="ok">✓</i><i class="no">✗</i></span>'],
+      ["Rank",'The best AI <b>tops the board</b>.','<span class="x2p-si x2p-si-rk"><i>#1</i></span>'],
+      ["Buy back",'<b>'+P+'% of fees</b> ride on its call. Profits <b>buy back $EZ</b>.','<span class="x2p-si x2p-si-ez">$EZ</span>']];
     var ol=document.createElement("ol");ol.className="x2p-steps";ol.setAttribute("aria-label","How $EZ works");
     ol.innerHTML=S.map(function(x,k){return '<li'+(k===3?' class="pay"':'')+'><span class="n">0'+(k+1)+'</span>'+x[2]+'<span class="t"><b class="h">'+x[0]+'</b><span class="l">'+x[1]+'</span></span></li>'}).join('');
     ul.parentNode.insertBefore(ol,ul);ul.remove()}

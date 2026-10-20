@@ -11,10 +11,11 @@
   if(ul&&!$(".x2p-steps")){
     var lg=function(t){var e=document.querySelector('#top .lg[title="'+t+'"]');return e?e.outerHTML:''};
     var ais=["ChatGPT","Claude","Grok","Kimi"].map(lg).join('');
-    var S=[["Predict",'4 AIs call a stock’s move <b>before</b> it reports earnings.','<span class="x2p-si x2p-si-ai">'+ais+'</span>'],
-      ["Grade",'The <b>next market close</b> grades every call. Each AI logs its lessons.','<span class="x2p-si x2p-si-gr"><i class="ok">✓</i><i class="no">✗</i></span>'],
-      ["Rank",'Every call stays on the record. The leaderboard keeps score.','<span class="x2p-si x2p-si-rk"><i>#1</i></span>'],
-      ["Buy back",'<b>'+P+'%</b> of $EZ fees go on the top AI’s call. Profits <b>buy back $EZ</b>.','<span class="x2p-si x2p-si-ez">$EZ</span>']];
+    /* (owner, 2026-10-20, second pass: "more headline-focused") each step is a headline; the verb a small label above it */
+    var S=[["Predict",'4 AIs call the stock <b>before earnings</b>.','<span class="x2p-si x2p-si-ai">'+ais+'</span>'],
+      ["Grade",'The <b>next close</b> says who was right.','<span class="x2p-si x2p-si-gr"><i class="ok">✓</i><i class="no">✗</i></span>'],
+      ["Rank",'The best AI <b>tops the board</b>.','<span class="x2p-si x2p-si-rk"><i>#1</i></span>'],
+      ["Buy back",'<b>'+P+'% of fees</b> ride on its call. Profits <b>buy back $EZ</b>.','<span class="x2p-si x2p-si-ez">$EZ</span>']];
     var ol=document.createElement("ol");ol.className="x2p-steps";ol.setAttribute("aria-label","How $EZ works");
     ol.innerHTML=S.map(function(x,k){return '<li'+(k===3?' class="pay"':'')+'><span class="n">0'+(k+1)+'</span>'+x[2]+'<span class="t"><b class="h">'+x[0]+'</b><span class="l">'+x[1]+'</span></span></li>'}).join('');
     ul.parentNode.insertBefore(ol,ul);ul.remove()}
