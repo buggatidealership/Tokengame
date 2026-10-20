@@ -78,7 +78,8 @@
       var r=row("x2p-row-r x2p-row-foot");
       if(nm)r.appendChild(say("As it stands, we follow <em>"+nm+"</em> on our next bet."));
       r.appendChild(img("05-heckle.webp",78,""));
-      var ft=document.createElement("div");ft.className="x2p-lbfoot";if(ul){ul.classList.add("x2p-lbrules");ft.appendChild(ul)}ft.appendChild(r);fl.after(ft)
+      /* the two rules are behind the ⓘ now (owner, 2026-10-20: no repetition); under the board only his line */
+      var ft=document.createElement("div");ft.className="x2p-lbfoot";if(ul)ul.remove();ft.appendChild(r);fl.after(ft)
       var secs=[].slice.call(document.querySelectorAll("#view section.blk")),find=function(re){return secs.filter(function(s){var m=s.querySelector(".mk");return m&&re.test(m.textContent)})[0]};
       var hall=find(/hall of fame/i),grid=find(/one square/i);
       if(hall&&grid&&hall.compareDocumentPosition(grid)&Node.DOCUMENT_POSITION_PRECEDING){grid.parentNode.insertBefore(hall,grid)}
@@ -121,11 +122,15 @@
         '<g transform="rotate(-6 100 156)"><rect x="62" y="140" width="76" height="30" fill="#f3e6c8" stroke="#000" stroke-width="3"/><rect x="65" y="140" width="4" height="30" fill="#11714a"/><rect x="131" y="140" width="4" height="30" fill="#b3261e"/><text x="100" y="163" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="20" fill="#000">POOL</text></g></svg>';
       /* props drawn in the cel style: $EZ tokens going up; a pile of cash on fire */
       var coins='<svg class="x2p-prop x2p-coins" viewBox="0 0 90 110" aria-hidden="true">'+[[45,80,0],[24,52,.5],[62,30,1]].map(function(c){return '<g class="x2p-tok" style="animation-delay:'+c[2]+'s"><circle cx="'+c[0]+'" cy="'+c[1]+'" r="17" fill="#f2b632" stroke="#000" stroke-width="3"/><circle cx="'+c[0]+'" cy="'+c[1]+'" r="11.5" fill="none" stroke="#b9800f" stroke-width="2"/><text x="'+c[0]+'" y="'+(c[1]+4.5)+'" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="11" fill="#000">$EZ</text></g>'}).join('')+'</svg>';
-      var fire='<svg class="x2p-prop x2p-fire" viewBox="0 0 110 120" aria-hidden="true">'+
-        '<g class="x2p-fl"><path d="M55 8c10 22 34 30 30 62-3 24-22 34-30 34s-29-9-31-33c-2-22 12-28 14-44 9 10 8 22 13 24 4-14-4-28 4-43z" fill="#ff7a1a" stroke="#000" stroke-width="3.5" stroke-linejoin="round"/>'+
-        '<path d="M56 44c5 12 16 18 14 34-2 12-9 18-15 18s-14-6-15-17c-1-10 6-14 8-22 5 6 4 12 7 13 2-8-2-16 1-26z" fill="#ffd23f"/></g>'+
-        '<g stroke="#000" stroke-width="3" stroke-linejoin="round"><rect x="10" y="88" width="56" height="22" rx="2" fill="#4fae6b" transform="rotate(-8 38 99)"/><rect x="44" y="90" width="56" height="22" rx="2" fill="#3f9a5a" transform="rotate(7 72 101)"/><rect x="26" y="96" width="58" height="20" rx="2" fill="#5cbf78"/></g>'+
-        '<text x="55" y="111" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="15" fill="#0b3b1e">$</text></svg>';
+      var bill=function(x,y,r,ch){return '<g transform="translate('+x+' '+y+') rotate('+r+')"><rect x="-34" y="-15" width="68" height="30" rx="1.5" fill="#d9e6cf" stroke="#1d2a1d" stroke-width="2"/>'+
+          '<rect x="-30" y="-11" width="60" height="22" fill="none" stroke="#5f7d5a" stroke-width="1.2"/><path d="M-30 -6h60M-30 6h60" stroke="#a9c09f" stroke-width=".8"/>'+
+          '<ellipse cx="0" cy="0" rx="9" ry="10" fill="#c2d6b6" stroke="#4d6b48" stroke-width="1.2"/><text x="0" y="4" text-anchor="middle" font-family="Georgia,serif" font-size="11" font-weight="700" fill="#2f4a2b">$</text>'+
+          '<text x="-26" y="-3" font-family="Georgia,serif" font-size="7" font-weight="700" fill="#3d5a38">100</text><text x="14" y="10" font-family="Georgia,serif" font-size="7" font-weight="700" fill="#3d5a38">100</text>'+
+          (ch?'<path d="M-34 -15h68v9c-8 4-14-3-22 2s-15-4-22 1-12-2-24 3z" fill="#3b2a1a" opacity=".85"/><path d="M-34 -15h68v4c-9 3-14-2-22 1s-15-3-22 0-12-1-24 2z" fill="#140c06"/>':'')+'</g>'};
+      var fire='<svg class="x2p-prop x2p-fire" viewBox="0 0 140 130" aria-hidden="true">'+
+        '<g class="x2p-fl"><path d="M70 6c12 24 40 34 35 70-4 27-26 38-35 38s-34-10-36-37c-2-25 14-31 16-49 10 11 9 25 15 27 5-16-5-32 5-49z" fill="#ff7a1a" stroke="#000" stroke-width="3.5" stroke-linejoin="round"/>'+
+        '<path d="M71 46c6 14 19 21 16 39-2 13-10 20-17 20s-16-7-17-19c-1-12 7-16 9-25 6 7 5 14 8 15 2-9-2-18 1-30z" fill="#ffd23f"/></g>'+
+        bill(52,104,-9,0)+bill(90,108,8,0)+bill(70,96,-2,1)+'</svg>';
       var sec=document.createElement("section");sec.className="x2p-how";sec.setAttribute("aria-labelledby","x2pHowH");
       sec.innerHTML='<div class="x2p-kick">How the buyback works</div><h2 id="x2pHowH" class="x2p-h2">One call. <em>The whole pool.</em></h2><div class="x2p-manga">'+
         '<div class="x2p-pn x2p-p1 x2p-sl"><span class="x2p-no">1 · The pool</span><div class="x2p-u"><div><div class="x2p-big">'+P+'%</div><p>of every $EZ trading fee drops into the pool.</p><p class="x2p-s">It starts at $0 on launch day.</p></div>'+pot+'</div></div>'+
@@ -133,7 +138,7 @@
         '<div class="x2p-pn x2p-p3 x2p-wide"><span class="x2p-no">3 · The bet</span><div class="x2p-u"><div class="x2p-ten">'+L+'x<small>on Hyperliquid</small></div><div><p>The whole pool goes on that call, right before the company reports.</p><p class="x2p-s">When the stock moves 1%, the pool moves about '+L+'%.</p></div></div>'+
           '<ol class="x2p-seasons"><li class="on"><b>Season 1</b><span>One bet: NVIDIA</span></li><li><b>Then</b><span>The pool fills up again</span></li><li><b>Season 2</b><span>Mag 7 + more</span></li></ol></div>'+
         '<div class="x2p-pn x2p-p4 x2p-wide"><div class="x2p-u">'+
-          '<div class="x2p-end x2p-ev"><div class="x2p-cast"><img class="x2p-hz" data-x2p-host src="'+M+'06-cheer.webp" alt="" width="104" loading="lazy" decoding="async">'+coins+'</div><div><h4>▲ Right call</h4><p>The profit buys back $EZ on the open market.</p></div></div>'+
+          '<div class="x2p-end x2p-ev"><div class="x2p-cast"><img class="x2p-hz" data-x2p-host src="'+M+'03-stamping.webp" alt="" width="104" loading="lazy" decoding="async">'+coins+'</div><div><h4>▲ Right call</h4><p>The profit buys back $EZ on the open market.</p></div></div>'+
           '<div class="x2p-end x2p-ed"><div class="x2p-cast"><img class="x2p-hz" src="'+M+'07-sweat.webp" alt="" width="104" loading="lazy" decoding="async">'+fire+'</div><div><h4>▼ Wrong call</h4><p>No stop loss. The pool can be wiped out.</p></div></div>'+
         '</div></div></div>';
       var at=sub||pool;at.parentNode.insertBefore(sec,at);if(sub)sub.remove();
