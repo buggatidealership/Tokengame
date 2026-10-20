@@ -254,7 +254,13 @@ def main():
             if m + " DIR" in col:
                 d, mg = out[want.index(m + " DIR")], out[want.index(m + " MAG (%)")]
                 if bool(d) != bool(mg):
-                    problems.append("R%s %s has a direction or a size but not both" % (rn, m))
+                    # a half-typed call in a round not graded yet is a call still being entered (owner, 2026-10-20):
+                    # leave it out until both cells are filled, and say so. In a graded round it stays a problem.
+                    if not out[want.index("ACTUAL MOVE (%)")]:
+                        out[want.index(m + " DIR")] = out[want.index(m + " MAG (%)")] = ""
+                        warnings.append("R%s %s has a direction or a size but not both: left out until both are filled" % (rn, m))
+                    else:
+                        problems.append("R%s %s has a direction or a size but not both" % (rn, m))
         if tk not in tickers:
             warnings.append("R%s ticker %s has no company name in TICKERS (add it once)" % (rn, tk))
         new.append(out)
