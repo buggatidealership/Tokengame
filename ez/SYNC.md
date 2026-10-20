@@ -14,6 +14,9 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
      so ask the owner to confirm it is intentional; only then use `--allow-edits`.
    - `WARNING:` lines (new ticker without a company name, graded round without a film) are fine
      to publish, but mention them.
+   - A call with a direction but no size (or the reverse) in a round **not graded yet** is a call still being typed in:
+     the sync leaves it out with a `WARNING` and the next sync picks it up (owner, 2026-10-20: "the sheet is the most up to
+     date; the page must reflect it"). In a graded round it is still a `PROBLEM`.
 2. **Write.** `python3 ez/tools/sync_sheet.py --write` (only the `SHEET` rows in ez-data.js change).
 3. **New ticker?** Add its company name once to `TICKERS` in ez-data.js (e.g. `CCL:"Carnival"`). Then fetch its logo: `pip install pillow` once, then `python3 ez/tools/fetch_logos.py` (adds the file to `ez/media/logos/` and rewrites `CO_LOGOS`). Look at the new logo: the source is sometimes wrong; replace the file by hand if so. Publish new logo files with the pages.
 4. **New film?** Put the owner's file (square, ideally 1080x1080 or larger, 60 fps) through:
