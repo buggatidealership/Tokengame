@@ -4816,6 +4816,31 @@ html.x2p .x2p-tok{animation:x2ptok 2.4s ease-in-out infinite;transform-box:fill-
 html.x2p .x2p-fl{animation:x2pfl .5s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
 @keyframes x2pfl{from{transform:scale(1,1)}to{transform:scale(.94,1.07)}}
 @media(prefers-reduced-motion:reduce){html.x2p .x2p-tok,html.x2p .x2p-fl{animation:none}}
+/* ---- round 7 (owner, 2026-10-20) ---- */
+/* a lowercase s in "AIs" where a heading forces capitals (x2plus.js wraps it) */
+html.x2p .x2p-lc{text-transform:none}
+/* Highlights: the two numbers first, the sentence under them */
+html.x2p #view .hx2-r{margin-top:4px!important;padding-top:0!important;border-top:0!important}
+html.x2p #view .hx2-p{margin-top:auto;padding-top:9px;border-top:1px dashed rgba(255,255,255,.22)}
+/* Leaderboard: "As it stands" on a torn receipt, not a cream strip like the standings rows */
+html.x2p .x2p-row-foot .x2p-say{transform:rotate(-1.4deg);filter:drop-shadow(3px 4px 0 #000)}
+html.x2p .x2p-row-foot .x2p-say .st{background:repeating-linear-gradient(180deg,transparent 0 19px,rgba(40,70,140,.13) 19px 20px),radial-gradient(rgba(0,0,0,.05) 1px,transparent 1.4px) 0 0/5px 5px,#fbf7ec!important;
+ color:#1b1916;font:500 12.5px/20px "Chivo Mono",ui-monospace,monospace!important;padding:14px 16px 18px!important;
+ -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 7px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/12px 7px repeat-x;
+ mask:linear-gradient(#000 0 0) top/100% calc(100% - 7px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/12px 7px repeat-x}
+html.x2p .x2p-row-foot .x2p-say .st em{color:#1b1916;font-weight:700;background:#f2b632;padding:0 3px}
+html.x2p .x2p-row-foot .x2p-say .tl{display:none}
+/* Results: each round on a paper ticket. Stub notches on both sides (a circle in the page's colour, the classic
+   ticket-stub trick), a dashed tear line under the company; the winner box goes neutral so it stays apart from the
+   winning call */
+html.x2p.x2d[data-theme="dark"] #view a.rx3-r{position:relative;background:radial-gradient(rgba(0,0,0,.05) 1px,transparent 1.4px) 0 0/5px 5px,linear-gradient(115deg,transparent 0 66%,rgba(150,95,20,.12) 66%),#f3e6c8!important;color:#141217!important;box-shadow:6px 6px 0 0 #000!important;border-radius:3px!important;overflow:visible}
+html.x2p #view a.rx3-r .rx3-h{position:relative;padding-bottom:12px;border-bottom:2px dashed rgba(0,0,0,.35)}
+html.x2p #view a.rx3-r .rx3-h::before,html.x2p #view a.rx3-r .rx3-h::after{content:"";position:absolute;bottom:-14px;width:26px;height:26px;border-radius:50%;background:#0b0a14;border:3px solid #000;z-index:2;box-sizing:border-box}
+html.x2p #view a.rx3-r .rx3-h::before{left:-30px;clip-path:inset(0 0 0 50%)}html.x2p #view a.rx3-r .rx3-h::after{right:-30px;clip-path:inset(0 50% 0 0)}
+html.x2p #view a.rx3-r .rx3-t b{color:#141217!important}html.x2p #view a.rx3-r .rx3-t small{color:#5c5662!important}
+html.x2p.x2d[data-theme="dark"] #view .rx3-k.win{background:#fffaf0!important;color:#141217!important}
+html.x2p.x2d[data-theme="dark"] #view .rx3-k.win small{color:#5c5662!important}
+html.x2p.x2d[data-theme="dark"] #view .rx3-k.win b{color:#141217!important}
 
 </style>
 </head>
@@ -5941,7 +5966,7 @@ function shelfX2(){var RR=ROUNDS;if(!RR.length)return '';var calls=[];RR.forEach
   function dirs(r){var d=r.calls.map(function(c){return isDn(c)});return d.every(function(v){return v===d[0]})?(d[0]?"down":"up"):null}
   function card(kick,r,head,body,rec){return '<li><a class="hx2" href="#/round/'+r.n+'" style="--bc:'+bcol(r.ticker)+'" aria-label="'+kick+': open round '+r.n+', '+esc(r.co)+'">'+
     '<span class="hx2-a">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy">':'')+'<span class="hx2-k">'+kick+'</span>'+(r.film?'<i class="hx2-w" aria-hidden="true">▶</i>':'')+'</span>'+
-    '<span class="hx2-t"><span class="hx2-h">'+head+'</span><span class="hx2-p">'+body+'</span><span class="hx2-r">'+rec.map(function(q){return '<span><b>'+q[0]+'</b><small>'+q[1]+'</small></span>'}).join("")+'</span></span></a></li>'}
+    '<span class="hx2-t"><span class="hx2-h">'+head+'</span><span class="hx2-r">'+rec.map(function(q){return '<span><b>'+q[0]+'</b><small>'+q[1]+'</small></span>'}).join("")+'</span><span class="hx2-p">'+body+'</span></span></a></li>'}
   var cc=callOf(close.r,close.m),out='<ul class="hx2s">';
   function rt(r){return r.calls.filter(function(c){return isDn(c)===(r.a<0)}).length}function amt(r){return String(r.out).replace(/^[+−-]/,"")}
   function said(c){return isDn(c)?'fall':'rise'}function did(r){return r.a>0?'rose':'fell'}
@@ -5951,7 +5976,7 @@ function shelfX2(){var RR=ROUNDS;if(!RR.length)return '';var calls=[];RR.forEach
   out+=card("Tightest race",tight.r,'All '+String(NUMW[tight.r.calls.length]||tight.r.calls.length).toLowerCase()+' AIs huddled around '+esc(tight.r.co)+'.',esc(tight.r.co)+' '+did(tight.r)+' '+amt(tight.r)+'. '+(td?'All '+String(NUMW[tight.r.calls.length]||tight.r.calls.length).toLowerCase()+' said it would '+(td==="down"?'fall':'rise')+', and all of them were close.':'Every call landed close.'),
     [[rt(tight.r)+' of '+tight.r.calls.length,'called the direction right'],[x(avgRnd/tight.v),'closer than a normal round']]);
   var bd=dirs(big);
-  out+=card("Biggest move",big,esc(big.co)+(big.a>0?' went vertical.':' fell off a cliff.'),esc(big.co)+' '+(big.a>0?'jumped ':'dropped ')+amt(big)+' in one day.'+(bd&&(bd==="down")!==(big.a<0)?' Every AI said it would '+(bd==="down"?'fall':'rise')+'. Ouch.':''),
+  out+=card("Biggest move",big,esc(big.co)+(rt(big)===0?' fooled everyone.':big.a>0?' went vertical.':' fell off a cliff.'),esc(big.co)+' '+(big.a>0?'jumped ':'dropped ')+amt(big)+' in one day.'+(bd&&(bd==="down")!==(big.a<0)?' Every AI said it would '+(bd==="down"?'fall':'rise')+'. Ouch.':''),
     [[x(Math.abs(big.a)/avgMv),'a normal earnings move'],[rt(big)+' of '+big.calls.length,'AIs saw it coming']]);
   if(wrong){var wd=dirs(wrong);
     out+=card("Everyone was wrong",wrong,esc(wrong.co)+' fooled all '+String(NUMW[wrong.calls.length]||wrong.calls.length).toLowerCase()+'.',(wd?'Every AI said '+(wd==="down"?'down':'up')+'. ':'')+esc(wrong.co)+' moved '+mv(wrong)+'. Nobody won the round.',
@@ -6954,7 +6979,11 @@ function x2LBpage(h){
   function fix(root){if(!root||root.nodeType!==1)return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n;
     while(n=w.nextNode()){var t=n.textContent,u=t;if(!/pot|Pot|POT|NEVER|never edited|ext bet|EXT BET|hit streak/.test(t))continue;
       if(n.parentNode&&/^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName))continue;
-      RE.forEach(function(p){u=u.replace(p[0],p[1])});if(u!==t)n.textContent=u}}
+      RE.forEach(function(p){u=u.replace(p[0],p[1])});if(u!==t)n.textContent=u}
+    var w2=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),m,hit=[];while(m=w2.nextNode())if(/\bAIs\b/.test(m.textContent)&&m.parentNode&&m.parentNode.nodeType===1&&!m.parentNode.closest("script,style,.x2p-lc"))hit.push(m);
+    hit.forEach(function(n){if(getComputedStyle(n.parentNode).textTransform!=="uppercase")return;var f=document.createDocumentFragment();
+      n.textContent.split(/(\bAIs\b)/).forEach(function(x){if(x==="AIs"){f.appendChild(document.createTextNode("AI"));var sp=document.createElement("span");sp.className="x2p-lc";sp.textContent="s";f.appendChild(sp)}else if(x)f.appendChild(document.createTextNode(x))});
+      n.parentNode.replaceChild(f,n)})}
   fix(document.body);
   if(window.MutationObserver){var busy=false;new MutationObserver(function(ms){if(busy)return;busy=true;
     ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1)fix(x);else if(x.nodeType===3&&x.parentNode)fix(x.parentNode)})});busy=false})
@@ -7059,15 +7088,17 @@ function x2LBpage(h){
         '<text x="55" y="111" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="15" fill="#0b3b1e">$</text></svg>';
       var sec=document.createElement("section");sec.className="x2p-how";sec.setAttribute("aria-labelledby","x2pHowH");
       sec.innerHTML='<div class="x2p-kick">How the buyback works</div><h2 id="x2pHowH" class="x2p-h2">One call. <em>The whole pool.</em></h2><div class="x2p-manga">'+
-        '<div class="x2p-pn x2p-p1 x2p-sl"><span class="x2p-no">1 · The fees</span><div class="x2p-u"><div><div class="x2p-big">'+P+'%</div><p>of every $EZ trading fee drops into the pool.</p><p class="x2p-s">It starts at $0 on launch day.</p></div>'+pot+'</div></div>'+
-        '<div class="x2p-pn x2p-p2 x2p-sl"><span class="x2p-no">2 · The call</span><div class="x2p-u"><div class="x2p-myst" aria-hidden="true">?<i>#1</i></div><div class="x2p-ud" aria-hidden="true"><span class="x2p-up">▲ Up</span><span class="x2p-dn">▼ Down</span><small>One call. No take-backs.</small></div></div><p>'+H+'h before each bet, the board freezes. The AI in first place calls it.</p></div>'+
+        '<div class="x2p-pn x2p-p1 x2p-sl"><span class="x2p-no">1 · The pool</span><div class="x2p-u"><div><div class="x2p-big">'+P+'%</div><p>of every $EZ trading fee drops into the pool.</p><p class="x2p-s">It starts at $0 on launch day.</p></div>'+pot+'</div></div>'+
+        '<div class="x2p-pn x2p-p2 x2p-sl"><span class="x2p-no">2 · The pick</span><div class="x2p-u"><div class="x2p-myst" aria-hidden="true">?<i>#1</i></div><div class="x2p-ud" aria-hidden="true"><span class="x2p-up">▲ Up</span><span class="x2p-dn">▼ Down</span><small>One call. No take-backs.</small></div></div><p>'+H+'h before each bet, the board freezes. The AI on top makes the pick.</p></div>'+
         '<div class="x2p-pn x2p-p3 x2p-wide"><span class="x2p-no">3 · The bet</span><div class="x2p-u"><div class="x2p-ten">'+L+'x<small>on Hyperliquid</small></div><div><p>The whole pool goes on that call, right before the company reports.</p><p class="x2p-s">When the stock moves 1%, the pool moves about '+L+'%.</p></div></div>'+
-          '<ol class="x2p-seasons"><li class="on"><b>Season 1</b><span>One bet: NVIDIA</span></li><li><b>Then</b><span>The pool fills up again</span></li><li><b>Season 2</b><span>More bets</span></li></ol></div>'+
+          '<ol class="x2p-seasons"><li class="on"><b>Season 1</b><span>One bet: NVIDIA</span></li><li><b>Then</b><span>The pool fills up again</span></li><li><b>Season 2</b><span>Mag 7 + more</span></li></ol></div>'+
         '<div class="x2p-pn x2p-p4 x2p-wide"><div class="x2p-u">'+
           '<div class="x2p-end x2p-ev"><div class="x2p-cast"><img class="x2p-hz" data-x2p-host src="'+M+'06-cheer.webp" alt="" width="104" loading="lazy" decoding="async">'+coins+'</div><div><h4>▲ Right call</h4><p>The profit buys back $EZ on the open market.</p></div></div>'+
           '<div class="x2p-end x2p-ed"><div class="x2p-cast"><img class="x2p-hz" src="'+M+'07-sweat.webp" alt="" width="104" loading="lazy" decoding="async">'+fire+'</div><div><h4>▼ Wrong call</h4><p>No stop loss. The pool can be wiped out.</p></div></div>'+
         '</div></div></div>';
       var at=sub||pool;at.parentNode.insertBefore(sec,at);if(sub)sub.remove();
+      /* "How big could the bag get?" comes off for now (owner, 2026-10-20) */
+      var calc=$("#view #bbCalc");if(calc)calc.remove();
       return true}
   };
   function route(){var h=location.hash.replace(/^#/,"")||"/";if(h.indexOf("/")!==0)h="/";return h.split("?")[0]}

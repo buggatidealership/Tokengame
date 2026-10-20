@@ -379,7 +379,9 @@ pp,k2=re.subn(r'<style id="x2-logo">.*?</style>\n','',pp,flags=re.S)
 assert (k1,k2)==(1,1),(k1,k2)
 # Highlights in plain words (owner, 2026-10-20: "nobody understands points"): percentages and counts only, one sentence
 # anyone gets, and a number worth caring about. All from the sheet, as X2 builds them.
-HL=[("""  var cc=callOf(close.r,close.m),out='<ul class="hx2s">';""",
+HL=[("""'<span class="hx2-t"><span class="hx2-h">'+head+'</span><span class="hx2-p">'+body+'</span><span class="hx2-r">'+rec.map(function(q){return '<span><b>'+q[0]+'</b><small>'+q[1]+'</small></span>'}).join("")+'</span></span></a></li>'}""",
+     """'<span class="hx2-t"><span class="hx2-h">'+head+'</span><span class="hx2-r">'+rec.map(function(q){return '<span><b>'+q[0]+'</b><small>'+q[1]+'</small></span>'}).join("")+'</span><span class="hx2-p">'+body+'</span></span></a></li>'}"""),
+    ("""  var cc=callOf(close.r,close.m),out='<ul class="hx2s">';""",
      """  var cc=callOf(close.r,close.m),out='<ul class="hx2s">';
   function rt(r){return r.calls.filter(function(c){return isDn(c)===(r.a<0)}).length}function amt(r){return String(r.out).replace(/^[+−-]/,"")}
   function said(c){return isDn(c)?'fall':'rise'}function did(r){return r.a>0?'rose':'fell'}"""),
@@ -393,7 +395,7 @@ HL=[("""  var cc=callOf(close.r,close.m),out='<ul class="hx2s">';""",
     [[rt(tight.r)+' of '+tight.r.calls.length,'called the direction right'],[x(avgRnd/tight.v),'closer than a normal round']]);"""),
     ("""  out+=card("Biggest move",big,esc(big.co)+(big.a>0?' went vertical.':' fell off a cliff.'),esc(big.co)+' moved '+mv(big)+' after earnings'+(bd&&(bd==="down")!==(big.a<0)?', and every AI called it '+bd+'. Ouch.':'.'),
     [[mv(big),'in one day'],[x(Math.abs(big.a)/avgMv),'a normal earnings move']]);""",
-     """  out+=card("Biggest move",big,esc(big.co)+(big.a>0?' went vertical.':' fell off a cliff.'),esc(big.co)+' '+(big.a>0?'jumped ':'dropped ')+amt(big)+' in one day.'+(bd&&(bd==="down")!==(big.a<0)?' Every AI said it would '+(bd==="down"?'fall':'rise')+'. Ouch.':''),
+     """  out+=card("Biggest move",big,esc(big.co)+(rt(big)===0?' fooled everyone.':big.a>0?' went vertical.':' fell off a cliff.'),esc(big.co)+' '+(big.a>0?'jumped ':'dropped ')+amt(big)+' in one day.'+(bd&&(bd==="down")!==(big.a<0)?' Every AI said it would '+(bd==="down"?'fall':'rise')+'. Ouch.':''),
     [[x(Math.abs(big.a)/avgMv),'a normal earnings move'],[rt(big)+' of '+big.calls.length,'AIs saw it coming']]);""")]
 for a,b in HL:
     assert pp.count(a)==1,a[:80]; pp=pp.replace(a,b)
