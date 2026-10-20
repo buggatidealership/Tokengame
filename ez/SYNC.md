@@ -58,6 +58,12 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
 - **Kept values (`KEEP` in `ez/tools/sync_sheet.py`).** A graded value the owner chose to keep after the sheet changed
   it. The sync prints a KEEP note and writes the kept value, with no RECORD EDIT. Empty now: R22 GS used it (-0.27) until
   the owner chose the sheet's -0.21 on 2026-10-14, which matches the round's film (official close-to-close -0.23).
+- **earningszn.xyz (owner, 2026-10-20).** The live page is now **X2+** (v46), on the owner's domain earningszn.xyz
+  (registered at GoDaddy; nameservers move to Cloudflare). make_site.py builds X2+ with the host's poses
+  (media/commissioner/web), canonical and share tags, security headers and robots.txt; `SITE_OUT=<dir>` builds into a
+  test folder without touching site/. Deploys go by a Cloudflare API token (CLOUDFLARE_API_TOKEN and
+  CLOUDFLARE_ACCOUNT_ID in the environment settings, never in chat) with wrangler direct upload to the Pages project
+  `earningszn`; production deploys and domain changes only on the owner's go. The 2026-10-17 note below is history.
 - **Live site (2026-10-17).** The public site is X2 on Cloudflare Pages, built from the `site/` folder at the repo root
   (production branch: this working branch; build command: none; output directory: `site`). After every sync or film,
   from ez/: `python3 tools/v22/build.py tools/v22 && python3 tools/site/make_site.py`, then commit `site/` and push;

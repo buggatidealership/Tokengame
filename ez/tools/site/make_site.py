@@ -1,13 +1,16 @@
-"""Build the live site (Cloudflare Pages) into ../site from the built X2 page.
+"""Build the live site (Cloudflare Pages, earningszn.xyz) into ../site from the built X2+ page.
 
 Run from ez/:  python3 tools/v22/build.py tools/v22 && python3 tools/site/make_site.py
-Copies only what X2 can load: the page, ez-data.js, ez-learn.js, every media file named in
-ez-data.js or the page, all ticker logos, and the caching rules (_headers).
+Copies only what the page can load: the page, ez-data.js, ez-learn.js, every media file named in
+ez-data.js or the page, the host's poses it names (media/commissioner/web), all ticker logos, and the
+caching and security rules (_headers). SITE_OUT=<dir> builds elsewhere (a test build that leaves site/ alone).
+The live page was X2 (v24) until 2026-10-20; the owner chose X2+ (v46) for earningszn.xyz.
 """
 import os, re, shutil, sys
 EZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-OUT = os.path.join(os.path.dirname(EZ), 'site')
-page = open(os.path.join(EZ, 'v24-live-x2.html'), encoding='utf-8').read()
+OUT = os.environ.get('SITE_OUT') or os.path.join(os.path.dirname(EZ), 'site')
+URL = 'https://earningszn.xyz/'
+page = open(os.path.join(EZ, 'v46-live-x2plus.html'), encoding='utf-8').read()
 data = open(os.path.join(EZ, 'ez-data.js'), encoding='utf-8').read()
 if os.path.isdir(OUT):
     shutil.rmtree(OUT)
@@ -19,6 +22,10 @@ if re.search(r'<html[\s>]', page[:2000], re.I):
 else:
     doc = head + '</head>\n<body>\n' + page + '\n</body>\n</html>\n'
 doc = re.sub(r'<title>[^<]*</title>', '<title>$EZ \u00b7 Earnings Zeason</title>', doc, count=1)
+# what a public page needs and an artifact did not: the canonical address and share tags (a share image comes next)
+meta = ('<link rel="canonical" href="' + URL + '">\n<meta property="og:type" content="website">\n<meta property="og:url" content="' + URL + '">\n'
+        '<meta property="og:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:card" content="summary_large_image">\n')
+doc = doc.replace('</head>', meta + '</head>', 1)
 open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(doc)
 for f in ('ez-data.js', 'ez-learn.js'):
     shutil.copy2(os.path.join(EZ, f), OUT)
@@ -32,6 +39,11 @@ for f in os.listdir(media):
         if f in names or stem in names:
             shutil.copy2(p, os.path.join(OUT, 'media', f)); n += 1
 shutil.copytree(os.path.join(media, 'logos'), os.path.join(OUT, 'media', 'logos'))
+# the host's poses live in a subfolder the loop above does not look into
+cw = os.path.join(media, 'commissioner', 'web'); os.makedirs(os.path.join(OUT, 'media', 'commissioner', 'web'))
+for f in sorted(os.listdir(cw)):
+    if f in page:
+        shutil.copy2(os.path.join(cw, f), os.path.join(OUT, 'media', 'commissioner', 'web', f)); n += 1
 open(os.path.join(OUT, '_headers'), 'w').write("""/media/*
   Cache-Control: public, max-age=31536000, immutable
 /ez-data.js
@@ -40,7 +52,13 @@ open(os.path.join(OUT, '_headers'), 'w').write("""/media/*
   Cache-Control: public, max-age=60
 /index.html
   Cache-Control: public, max-age=60
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-Frame-Options: SAMEORIGIN
 """)
+open(os.path.join(OUT, 'robots.txt'), 'w').write("User-agent: *\nAllow: /\n")
 total = sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(OUT) for f in fs)
 big = [f for r, _, fs in os.walk(OUT) for f in fs if os.path.getsize(os.path.join(r, f)) > 25 * 2**20]
 print('site/: %d media files + logos, %.1f MB total%s' % (n, total / 1e6, ('; OVER 25 MiB: ' + str(big)) if big else ''))
