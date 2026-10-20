@@ -2,9 +2,8 @@
 
 **Date:** 2026-10-20 (Cloudflare setup run)
 
-**Result (owner's go, 2026-10-20 evening): X2+ is in production on https://earningszn.pages.dev.** earningszn.xyz
-and www.earningszn.xyz are attached to the Pages project but **wait on two DNS records** (see the end): Claude's
-attempt to add them was blocked by the session's permission rules.
+**Result: X2+ is live on https://earningszn.xyz and https://www.earningszn.xyz** (owner's go, 2026-10-20; both
+domains active with certificates at about 22:45 UTC). Also on https://earningszn.pages.dev.
 
 Production build: the working branch `claude/bugatti-dealership-redesign-845i5j` at ad72501 (X2+ with the
 four-step first screen, built in a separate checkout; build.py output matched the committed page). It went to
@@ -13,7 +12,7 @@ preview first (https://7d05ba49.earningszn.pages.dev), was checked, then the sam
 
 **Zone earningszn.xyz is active** (Cloudflare activated it at 19:31 UTC on 2026-10-20; checked 21:17 UTC).
 Public DNS (Google, Cloudflare) now returns its nameservers, `bella.ns.cloudflare.com` and `noah.ns.cloudflare.com`.
-The domain serves nothing yet: it has no DNS records until the site is attached.
+DNS records: the two CNAMEs below (added by Claude with the owner's go).
 
 ## What happened
 
@@ -21,7 +20,7 @@ The domain serves nothing yet: it has no DNS records until the site is attached.
    account-owned token, so the usual check (`/user/tokens/verify`) answers "Invalid API Token". The account check
    (`/accounts/<id>/tokens/verify`) answers success, status active. Scripts must use the account endpoint.
 2. **Zone earningszn.xyz: added** (owner's go, 2026-10-20), Free plan. The owner set the nameservers at GoDaddy and
-   the zone went **active** at 19:31 UTC. No DNS records or zone settings were added or changed.
+   the zone went **active** at 19:31 UTC. Zone settings were not changed.
 3. **Pages project `earningszn`: created** (production branch `main`) after the owner added Pages: Edit to the token.
    The first try had failed with "Authentication error" (code 10000) until then.
 4. **Build: OK.** X2+ built and the site was written to a scratch folder (/tmp/ezsite; the repo's `site/` was not
@@ -39,20 +38,22 @@ The domain serves nothing yet: it has no DNS records until the site is attached.
 6. **Production: OK.** On https://earningszn.pages.dev: `/` 200 (785 KB), `/ez-data.js` 200, the welcome pose 200,
    round 30 film 200 (video/mp4), no `noindex`. Headless Chromium at phone width on the same build: renders,
    0 failed requests, 0 script errors.
-7. **Custom domains: attached, pending.** Cloudflare reports "CNAME record not set" for both. The zone has no
-   DNS records; the API attach does not create them (the dashboard flow does).
+7. **Custom domains: active.** Attached through the API, which does not create DNS records (the dashboard flow
+   does), so they waited on "CNAME record not set" until the owner gave Claude full permissions and it added:
 
-## What the owner needs to do
+   | Type  | Name | Target                 | Proxy   |
+   |-------|------|------------------------|---------|
+   | CNAME | `@`  | `earningszn.pages.dev` | Proxied |
+   | CNAME | `www`| `earningszn.pages.dev` | Proxied |
 
-Add two DNS records in Cloudflare (earningszn.xyz > DNS > Records > Add record), or open Workers & Pages >
-earningszn > Custom domains and use the button there that sets them up:
+   The bare domain served within a minute; both turned active, certificates included, within about 10 minutes.
+   On both: the page 200 (title "$EZ · Earnings Zeason"), `/ez-data.js` 200, the welcome pose 200, round 30
+   film 200, no `noindex`. www shows the same page (no redirect); the page's canonical tag names earningszn.xyz.
 
-| Type  | Name | Target                 | Proxy   |
-|-------|------|------------------------|---------|
-| CNAME | `@`  | `earningszn.pages.dev` | Proxied |
-| CNAME | `www`| `earningszn.pages.dev` | Proxied |
+## Updating the live site
 
-Cloudflare then verifies both domains and issues their certificates, usually within minutes. Or allow Claude to
-create DNS records in the session's permission settings and say so.
-
-Zone settings were not changed.
+Sheet syncs and new films do not reach the live site on their own. From ez/ on the working branch:
+`python3 tools/v22/build.py tools/v22 && SITE_OUT=/tmp/ezsite python3 tools/site/make_site.py`, then
+`npx -y wrangler@3 pages deploy /tmp/ezsite --project-name earningszn --branch preview --commit-dirty=true`,
+check the preview, then the same command with `--branch main`. The repo's `site/` folder (old X2) does not feed
+this project.
