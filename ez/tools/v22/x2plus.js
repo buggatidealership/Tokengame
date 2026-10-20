@@ -19,9 +19,8 @@
   var g=$("#gpu");
   if(g&&!$(".x2p-cdh")){var c=document.createElement("div");c.className="x2p-cdh";c.innerHTML='<span class="k">Countdown to</span><b>Bet #1<i>:</i> <em>NVIDIA</em></b>';
     g.parentNode.insertBefore(c,g);
-    /* the risk now sits in the red box above, so the row under the chip is only his spot */
-    var gc=$("#gpu .gpu-c")||$(".gpu-img"),r=document.createElement("div");r.className="x2p-risk";r.setAttribute("aria-hidden","true");
-    if(gc)gc.after(r)}
+    /* the risk sits in the red box above; he stands beside this head (owner, 2026-10-20), so nothing goes under the chip */
+  }
   /* the record section's first two bullets said what steps 1 and 2 now say: keep only the dare */
   var rec=$(".x2o-rec");if(rec&&rec.children.length===3){rec.children[0].remove();rec.children[0].remove()}
   var sn=$(".x2o-stn");if(sn)sn.textContent="The model on top of the leaderboard makes the call on bet #1, NVIDIA.";
@@ -54,8 +53,9 @@
   var PLACE={
     /* Overview: beside "Countdown to bet #1", pointing at you, welcoming the first bet (owner, 2026-10-20: arrogant; the
        watch pose was cut at the side, the 13 to 18 busts' heads read as off, the head alone did not work) */
-    "/":function(){var cap=$(".x2p-risk"),gi=$("#gpu .gpu-img");if(!cap||!gi)return false;
-      var h=img("01-welcome.webp",96,"");h.classList.add("x2p-hz-watch");h.setAttribute("data-x2p-host","");cap.parentNode.insertBefore(h,cap);return true},
+    "/":function(){var cd=$(".x2p-cdh");if(!cd)return false;
+      /* (owner, 2026-10-20) beside "Countdown to Bet #1: NVIDIA", not under the chip, where he served no purpose */
+      var h=img("01-welcome.webp",96,"");h.classList.add("x2p-hz-cd");h.setAttribute("data-x2p-host","");cd.appendChild(h);return true},
     /* Leaderboard (owner, 2026-10-20, second pass): the head with a small "How we rank" beside it; he names the leader
        above the board; the board turns over to the rule in full, at the board's own size; the three rules sit under it.
        Hall of fame third; three findings. The glossary line under the board moves onto its back. */
@@ -112,7 +112,13 @@
        round's closest call where the screen has room for it */
     "/results":function(){var seg=$("#view .seg.bseg");if(!seg)return false;var box=seg.parentNode;box.classList.add("x2p-segbox");
       /* Highlights: no "Everyone was wrong" card (owner, 2026-10-20: no need for it) */
-      [].forEach.call(document.querySelectorAll("#view a.hx2"),function(h){var k=h.querySelector(".hx2-k");if(k&&/everyone was wrong/i.test(k.textContent)){var li=h.closest("li");(li||h).remove()}});
+      [].forEach.call(document.querySelectorAll("#view a.hx2"),function(h){var k=h.querySelector(".hx2-k");if(k&&/everyone was wrong/i.test(k.textContent)){var li=h.closest("li");(li||h).remove()}
+        /* (owner, 2026-10-20) compact rows, so the graded rounds and the first ticket show on landing: the label moves
+           beside the title, one number stays; the sentence is on the round's own card */
+        else if(k){var t=h.querySelector(".hx2-t");if(t)t.insertBefore(k,t.firstChild)}});
+      var hs=$("#view .hx2s"),hsec=hs&&hs.closest("section");if(hsec)hsec.classList.add("x2p-hl-sec");
+      [].forEach.call(document.querySelectorAll("#view .xsh h2 .mk"),function(m){if(!/^every round$/i.test(m.textContent.trim()))return;m.textContent="Every graded round";
+        var p=m.closest(".xsh-t");p=p&&p.querySelector("p");if(p)p.textContent="Every W and every L. Newest first."});
       var h=img("02-presenter.webp",86,"");h.classList.add("x2p-hz-seg");h.setAttribute("data-x2p-host","");box.appendChild(h);
       var R=ROUNDS[ROUNDS.length-1];if(R&&R.win){var w=R.win.split(" & ").map(nmM).join(" & "),s=say("Round "+R.n+": <em>"+w+"</em> came closest.");s.classList.add("x2p-say-seg");box.appendChild(s)}
       return true},
