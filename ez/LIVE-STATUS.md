@@ -6,17 +6,17 @@
 Preview: **https://preview.earningszn.pages.dev** (this deployment: https://5002e4ca.earningszn.pages.dev).
 Nothing is in production yet: https://earningszn.pages.dev answers 404 and the domain is not attached.
 
-**Set these two nameservers at GoDaddy** (replacing ns53/ns54.domaincontrol.com):
-- `bella.ns.cloudflare.com`
-- `noah.ns.cloudflare.com`
+**Zone earningszn.xyz is active** (Cloudflare activated it at 19:31 UTC on 2026-10-20; checked 21:17 UTC).
+Public DNS (Google, Cloudflare) now returns its nameservers, `bella.ns.cloudflare.com` and `noah.ns.cloudflare.com`.
+The domain serves nothing yet: it has no DNS records until the site is attached.
 
 ## What happened
 
 1. **Token: works, with a catch.** Both variables are set (token 53 characters, account ID 32). It is an
    account-owned token, so the usual check (`/user/tokens/verify`) answers "Invalid API Token". The account check
    (`/accounts/<id>/tokens/verify`) answers success, status active. Scripts must use the account endpoint.
-2. **Zone earningszn.xyz: added** (owner's go, 2026-10-20), Free plan, status **pending** until GoDaddy points to
-   the two nameservers above. No DNS records or zone settings were added or changed.
+2. **Zone earningszn.xyz: added** (owner's go, 2026-10-20), Free plan. The owner set the nameservers at GoDaddy and
+   the zone went **active** at 19:31 UTC. No DNS records or zone settings were added or changed.
 3. **Pages project `earningszn`: created** (production branch `main`) after the owner added Pages: Edit to the token.
    The first try had failed with "Authentication error" (code 10000) until then.
 4. **Build: OK.** X2+ built and the site was written to a scratch folder (/tmp/ezsite; the repo's `site/` was not
@@ -34,11 +34,8 @@ Nothing is in production yet: https://earningszn.pages.dev answers 404 and the d
 ## What the owner needs to do
 
 1. **Check the preview** on your phone: https://preview.earningszn.pages.dev
-2. **Set the two nameservers at GoDaddy** (Domain > DNS > Nameservers > "I'll use my own nameservers"). The zone
-   turns active once Cloudflare sees them, usually within hours. Safe to do now: the domain today only has GoDaddy's
-   parking addresses (A 13.248.243.5 and 76.223.105.230, www pointing to the bare domain), no email (MX) or TXT
-   records. The new zone has no records yet, so the domain shows nothing until the site is attached.
+2. ~~Set the nameservers at GoDaddy~~: done, zone active.
 3. **Say go for production** when ready: Claude then deploys to `main` and attaches earningszn.xyz (and www) to the
-   Pages project, which adds the DNS records. The domain only serves once the zone is active (step 2).
+   Pages project, which adds the DNS records.
 
 Production deploy, custom domain, DNS records and zone settings were not touched and still wait for your go.
