@@ -365,6 +365,10 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
             ('t=s==="light"||s==="dark"?s:h==="light"||h==="dark"?h:window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";','t="dark";'),
             ('function saved(){var s=null;try{s=localStorage.getItem("ez-theme")}catch(e){}return s==="light"||s==="dark"?s:null}','function saved(){return "dark"}'),
             ('function sys(){return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}','function sys(){return "dark"}'),
+            # Hall of fame (owner, 2026-10-20): the record that counts is calls right on direction, not wins: the
+            # winning streak goes, the right-way streak (X1's hit streak, off on X2) comes in; x2plus.js names it
+            ('if(wr.rs.length>1)out+=tile(X1?"Longest winning streak"','if(false&&wr.rs.length>1)out+=tile(X1?"Longest winning streak"'),
+            ('if(rr.rs.length>1&&!X2)out+=tile(','if(rr.rs.length>1)out+=tile('),
             # the record opens on the newest round (its stats), centred as on X2 (owner, 2026-10-20: symmetry first), not
             # on the newest round with a film
             ('(function(){if(typeof SL==="undefined"||typeof go!=="function")return;for(var i=NR-1;i>=0;i--)if(SL[i]&&SL[i].d&&SL[i].d.film){',

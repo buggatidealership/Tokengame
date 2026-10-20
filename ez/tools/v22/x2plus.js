@@ -15,9 +15,9 @@
     g.after(c);c.after(r)}
   var sn=$(".x2o-stn");if(sn)sn.textContent="The model on top of the leaderboard makes the call on bet #1, NVIDIA.";
   /* words, on every route as it renders: pot becomes pool; NVIDIA's bet is the first one; no "never edited" */
-  var RE=[[/\bpot\b/g,"pool"],[/\bPot\b/g,"Pool"],[/\bPOT\b/g,"POOL"],[/ · NEVER EDITED/g,""],[/, never edited\./g,"."],[/\bNext bet\b/g,"Bet #1"],[/\bNEXT BET\b/g,"BET #1"]];
+  var RE=[[/\bpot\b/g,"pool"],[/\bPot\b/g,"Pool"],[/\bPOT\b/g,"POOL"],[/ · NEVER EDITED/g,""],[/, never edited\./g,"."],[/\bNext bet\b/g,"Bet #1"],[/\bNEXT BET\b/g,"BET #1"],[/Longest hit streak/g,"Longest right-way streak"]];
   function fix(root){if(!root||root.nodeType!==1)return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n;
-    while(n=w.nextNode()){var t=n.textContent,u=t;if(!/pot|Pot|POT|NEVER|never edited|ext bet|EXT BET/.test(t))continue;
+    while(n=w.nextNode()){var t=n.textContent,u=t;if(!/pot|Pot|POT|NEVER|never edited|ext bet|EXT BET|hit streak/.test(t))continue;
       if(n.parentNode&&/^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName))continue;
       RE.forEach(function(p){u=u.replace(p[0],p[1])});if(u!==t)n.textContent=u}}
   fix(document.body);
@@ -37,20 +37,31 @@
   /* the Overview stays in the page (hidden) while a tab shows in #view: look for a host only where this route renders */
   function mine(){var s=route()==="/"?$("#top"):$("#view");return s&&s.querySelector("[data-x2p-host]")}
   var PLACE={
-    /* Overview: checking his watch, on the chip's corner, beside "Countdown to bet #1" */
+    /* Overview: smug, fixing his cuff, on the chip's corner, beside "Countdown to bet #1" (owner, 2026-10-20: arrogant,
+       welcoming the first bet; the watch pose was cut at the side) */
     "/":function(){var cap=$(".x2p-cap"),gi=$("#gpu .gpu-img");if(!cap||!gi)return false;
-      var h=img("08-watch.webp",112,"");h.classList.add("x2p-hz-watch");h.setAttribute("data-x2p-host","");cap.parentNode.insertBefore(h,cap);return true},
-    /* Leaderboard: arms crossed under the standings, with one dry line from the sheet */
-    "/leaderboard":function(){var lbx=$("#view .lbx");if(!lbx)return false;var rows=[].slice.call(lbx.querySelectorAll("li.lbr")),last=rows[rows.length-1];
+      var h=img("14-smug-cuff-bust.webp",92,"");h.classList.add("x2p-hz-watch");h.setAttribute("data-x2p-host","");cap.parentNode.insertBefore(h,cap);return true},
+    /* Leaderboard (owner, 2026-10-20): he names the leader as it stands; the rules in three one-line bullets; Hall of fame
+       third; three findings */
+    "/leaderboard":function(){var lbx=$("#view .lbx");if(!lbx)return false;var rows=[].slice.call(lbx.querySelectorAll("li.lbr")),top=rows[0];
+      var B=["Ranked by calls right on direction.","Tie? The smaller average miss wins.","Freezes 24h before NVIDIA. #1 calls it."];
+      [].forEach.call(document.querySelectorAll("#view .x2-lbul li"),function(li,i){if(B[i])li.textContent=B[i]});
       var after=lbx.nextElementSibling&&lbx.nextElementSibling.tagName==="P"?lbx.nextElementSibling:lbx,r=row("x2p-row-r");
-      var pct=last?(last.textContent.match(/(\d+)%/)||[])[1]:null,a=last&&last.querySelector(".pc-t a"),nm=a?a.textContent.trim():"";
-      if(pct&&nm&&+pct<50)r.appendChild(say(nm+" is right "+pct+"% of the time. <b>A coin flip gets 50%.</b>"));
-      r.appendChild(img("05-heckle.webp",118,""));after.after(r);return true},
-    /* Results: pointing at the list of rounds, with the newest round's closest call */
-    "/results":function(){var hs=document.querySelectorAll("#view .xsh");var hd=hs[1]||hs[0];if(!hd)return false;
-      var R=ROUNDS[ROUNDS.length-1],r=row("x2p-row-l");r.appendChild(img("02-presenter.webp",104,""));
-      if(R&&R.win){var w=R.win.split(" & ").map(nmM).join(" & ");r.appendChild(say("Round "+R.n+": <em>"+w+"</em> came closest."))}
-      hd.after(r);return true},
+      var a=top&&top.querySelector(".pc-t a"),nm=a?a.textContent.trim():"";
+      if(nm)r.appendChild(say("As it stands, we follow <em>"+nm+"</em> on our next bet."));
+      r.appendChild(img("05-heckle.webp",118,""));after.after(r);
+      var secs=[].slice.call(document.querySelectorAll("#view section.blk")),find=function(re){return secs.filter(function(s){var m=s.querySelector(".mk");return m&&re.test(m.textContent)})[0]};
+      var hall=find(/hall of fame/i),grid=find(/one square/i);
+      if(hall&&grid&&hall.compareDocumentPosition(grid)&Node.DOCUMENT_POSITION_PRECEDING){grid.parentNode.insertBefore(hall,grid)}
+      document.querySelectorAll("#view section.blk").forEach(function(s,i){var n=s.querySelector(".xsh .no, .no");if(n)n.textContent=("0"+(i+2)).slice(-2)});
+      [].forEach.call(document.querySelectorAll("#view .fdg"),function(f){var k=f.querySelector("small,span,p");if(k&&/^how big/i.test(k.textContent.trim()))f.remove()});
+      return true},
+    /* Results: beside the selector, pointing at the rounds (owner, 2026-10-20: he took too much room); the newest
+       round's closest call where the screen has room for it */
+    "/results":function(){var seg=$("#view .seg.bseg");if(!seg)return false;var box=seg.parentNode;box.classList.add("x2p-segbox");
+      var h=img("02-presenter.webp",86,"");h.classList.add("x2p-hz-seg");h.setAttribute("data-x2p-host","");box.appendChild(h);
+      var R=ROUNDS[ROUNDS.length-1];if(R&&R.win){var w=R.win.split(" & ").map(nmM).join(" & "),s=say("Round "+R.n+": <em>"+w+"</em> came closest.");s.classList.add("x2p-say-seg");box.appendChild(s)}
+      return true},
     /* Upcoming: looking over his shoulder, beside "the calls drop before each report" */
     "/upcoming":function(){var p=$("#view .ufn");if(!p)return false;p.classList.add("x2p-beside");var h=img("11-over-shoulder.webp",86,"");h.classList.add("x2p-hz-side");h.setAttribute("data-x2p-host","");p.appendChild(h);return true},
     /* Buyback: stamping on the top corner of the pool card */
