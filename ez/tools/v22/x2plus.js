@@ -59,13 +59,13 @@
       if(h1){var hd=document.createElement("div");hd.className="x2p-lbhead";h1.parentNode.insertBefore(hd,h1);hd.appendChild(h1);hd.appendChild(btn)}
       var fin=document.createElement("div");fin.className="x2p-fin";
       var bk=document.createElement("div");bk.className="x2p-bk";bk.id="x2pHow";bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");bk.tabIndex=-1;
-      bk.innerHTML='<h3>How we rank</h3><ol>'+
+      bk.innerHTML='<h3>How we rank</h3><p class="x2p-why">Why it matters: <b>#1 makes the call</b> on the next bet.</p><ol>'+
         '<li>Ranked by how often they get the direction right.</li>'+
         '<li>Tie? The smaller average miss wins.</li>'+
         '<li>Every call is made before the company reports and graded at the next market close.</li>'+
         '<li>Called fewer than half the rounds? Ranked after the rest.</li>'+
-        '<li>The board freezes 24h before each bet. We follow #1’s call.</li></ol>'+
-        (roi?'<p><b>ROI</b>:'+roi[1]+'</p>':'');
+        '<li>The board freezes 24h before each bet.</li></ol>'+
+        (roi?'<p class="x2p-roi"><b>ROI</b>:'+roi[1]+'</p>':'');
       lbx.parentNode.insertBefore(fl,lbx);fl.appendChild(fin);fin.appendChild(lbx);fin.appendChild(bk);if(lbn)lbn.remove();
       btn.addEventListener("click",function(){var on=!fl.classList.contains("on");fl.classList.toggle("on",on);
         btn.setAttribute("aria-expanded",on?"true":"false");btn.querySelector("span").textContent=on?"Back to the board":"How we rank";btn.querySelector("i").textContent=on?"×":"i";
@@ -79,7 +79,18 @@
       var hall=find(/hall of fame/i),grid=find(/one square/i);
       if(hall&&grid&&hall.compareDocumentPosition(grid)&Node.DOCUMENT_POSITION_PRECEDING){grid.parentNode.insertBefore(hall,grid)}
       document.querySelectorAll("#view section.blk").forEach(function(s,i){var n=s.querySelector(".xsh .no, .no");if(n)n.textContent=("0"+(i+2)).slice(-2)});
-      [].forEach.call(document.querySelectorAll("#view .fdg"),function(f){var k=f.querySelector("small,span,p");if(k&&/^how big/i.test(k.textContent.trim()))f.remove()});
+      /* Unusual findings (owner, 2026-10-20: too much text, too big, give a reason to care): each one becomes a small tile,
+         a question a trader would ask, then the numbers with one dot per call or round, like a betting app's hit-rate card */
+      var HOOK=[[/agree/i,"Follow the crowd?"],[/up calls|down calls/i,"Bulls or bears?"]];
+      [].forEach.call(document.querySelectorAll("#view .fdg"),function(f){var k=f.querySelector(".fdg-k"),kt=k?k.textContent.trim():"";
+        if(/^how big/i.test(kt)){f.remove();return}
+        var h3=f.querySelector("h3"),hk=HOOK.filter(function(q){return q[0].test(kt)})[0],hook=hk?hk[1]:(h3?h3.textContent.trim():kt),fun=f.classList.contains("fun");
+        var rows=[].map.call(f.querySelectorAll(".fdg-s span"),function(sp){var b=sp.querySelector("b"),sm=sp.querySelector("small"),t=b?b.textContent.trim():"",m=/(\d+)\s*(?:of|in)\s*(\d+)/i.exec(t),d="";
+          if(m&&+m[2]<=40)for(var i=0;i<+m[2];i++)d+='<i'+(i<+m[1]?' class="on"':'')+'></i>';
+          return '<div class="x2p-fr"><b>'+t+'</b>'+(d?'<span class="x2p-dots" aria-hidden="true">'+d+'</span>':'')+'<small>'+(sm?sm.textContent.trim():'')+'</small></div>'});
+        if(!rows.length)return;
+        f.innerHTML=(fun?'<span class="x2p-fk">Just for fun</span>':'')+'<h3>'+hook+'</h3>'+rows.join('');f.classList.add("x2p-ft")});
+      var fs=find(/unusual findings/i),fp=fs&&fs.querySelector(".xsh-t p");if(fp)fp.textContent="Patterns so far. Small samples, so they can flip. Not advice.";
       return true},
     /* Results: beside the selector, pointing at the rounds (owner, 2026-10-20: he took too much room); the newest
        round's closest call where the screen has room for it */
@@ -92,7 +103,23 @@
     /* Upcoming: looking over his shoulder, beside "the calls drop before each report" */
     "/upcoming":function(){var p=$("#view .ufn");if(!p)return false;p.classList.add("x2p-beside");var h=img("11-over-shoulder.webp",86,"");h.classList.add("x2p-hz-side");h.setAttribute("data-x2p-host","");p.appendChild(h);return true},
     /* Buyback: stamping on the top corner of the pool card */
-    "/buyback":function(){var pool=$("#view .pool");if(!pool)return false;pool.classList.add("x2p-stamped");var h=img("03-stamping.webp",104,"");h.classList.add("x2p-hz-stamp");h.setAttribute("data-x2p-host","");pool.appendChild(h);return true}
+    "/buyback":function(){var pool=$("#view .pool");if(!pool)return false;pool.classList.add("x2p-stamped");var h=img("03-stamping.webp",104,"");h.classList.add("x2p-hz-stamp");h.setAttribute("data-x2p-host","");pool.appendChild(h);
+      /* How the buyback works, X7's four cel panels (owner, 2026-10-20), about every bet: NVIDIA only as bet #1. They say
+         what the paragraph under the head said, so it goes. */
+      var sub=$("#view p.sub"),P=SIM.poolShare!=null?Math.round(SIM.poolShare*100):69,L=SIM.leverage||10,H=SIM.leadHours||24;
+      var pot='<svg class="x2p-pot" viewBox="0 0 200 210" aria-hidden="true"><g class="x2p-cn"><ellipse cx="100" cy="40" rx="13" ry="6" fill="#f2b632" stroke="#000" stroke-width="3"/></g><g class="x2p-cn"><ellipse cx="84" cy="30" rx="13" ry="6" fill="#f2b632" stroke="#000" stroke-width="3"/></g><g class="x2p-cn"><ellipse cx="116" cy="34" rx="13" ry="6" fill="#f2b632" stroke="#000" stroke-width="3"/></g>'+
+        '<path d="M42 112h116c4 44-22 86-58 86s-62-42-58-86z" fill="#2d2a38" stroke="#000" stroke-width="4"/><path d="M112 112h46c4 44-22 86-58 86 30-10 15-52 12-86z" fill="#1b1924"/>'+
+        '<g stroke="#000" stroke-width="2.6" fill="#f2b632"><ellipse cx="70" cy="104" rx="15" ry="7"/><ellipse cx="100" cy="98" rx="15" ry="7"/><ellipse cx="128" cy="104" rx="15" ry="7"/><ellipse cx="86" cy="92" rx="15" ry="7"/><ellipse cx="115" cy="90" rx="15" ry="7"/><ellipse cx="100" cy="82" rx="15" ry="7"/></g>'+
+        '<rect x="30" y="106" width="140" height="16" rx="4" fill="#3d3a4a" stroke="#000" stroke-width="4"/><path d="M30 122q-14 6-12 20" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/><path d="M170 122q14 6 12 20" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/>'+
+        '<g transform="rotate(-6 100 156)"><rect x="62" y="140" width="76" height="30" fill="#f3e6c8" stroke="#000" stroke-width="3"/><rect x="65" y="140" width="4" height="30" fill="#11714a"/><rect x="131" y="140" width="4" height="30" fill="#b3261e"/><text x="100" y="163" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="20" fill="#000">POOL</text></g></svg>';
+      var sec=document.createElement("section");sec.className="x2p-how";sec.setAttribute("aria-labelledby","x2pHowH");
+      sec.innerHTML='<div class="x2p-kick">How the buyback works</div><h2 id="x2pHowH" class="x2p-h2">One call. <em>The whole pool.</em></h2><div class="x2p-manga">'+
+        '<div class="x2p-pn x2p-p1 x2p-sl"><span class="x2p-no">1 · The fees</span><div class="x2p-u"><div><div class="x2p-big">'+P+'%</div><p>of every $EZ trading fee drops into the pool.</p><p class="x2p-s">It starts at $0 on launch day.</p></div>'+pot+'</div></div>'+
+        '<div class="x2p-pn x2p-p2 x2p-sl"><span class="x2p-no">2 · The call</span><div class="x2p-u"><div class="x2p-myst" aria-hidden="true">?<i>#1</i></div><div class="x2p-ud" aria-hidden="true"><span class="x2p-up">▲ Up</span><span class="x2p-dn">▼ Down</span><small>One call. No take-backs.</small></div></div><p>'+H+'h before each bet, the board freezes. The AI in first place calls it.</p></div>'+
+        '<div class="x2p-pn x2p-p3 x2p-wide"><span class="x2p-no">3 · The bet</span><div class="x2p-u"><div class="x2p-ten">'+L+'x<small>on Hyperliquid</small></div><div><p>The whole pool goes on that call, right before the company reports.</p><p class="x2p-s">When the stock moves 1%, the pool moves about '+L+'%. Bet #1 is NVIDIA. More bets come each season.</p></div></div></div>'+
+        '<div class="x2p-pn x2p-p4 x2p-wide"><div class="x2p-u"><div class="x2p-end x2p-ev"><h4>▲ Right call</h4><p>The profit buys back $EZ on the open market.</p></div><div class="x2p-end x2p-ed"><h4>▼ Wrong call</h4><p>No stop loss. The pool can be wiped out.</p></div></div></div></div>';
+      var at=sub||pool;at.parentNode.insertBefore(sec,at);if(sub)sub.remove();
+      return true}
   };
   function route(){var h=location.hash.replace(/^#/,"")||"/";if(h.indexOf("/")!==0)h="/";return h.split("?")[0]}
   var tries=0;
