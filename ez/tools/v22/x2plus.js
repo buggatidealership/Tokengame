@@ -40,16 +40,41 @@
     /* Overview: smug, fixing his cuff, on the chip's corner, beside "Countdown to bet #1" (owner, 2026-10-20: arrogant,
        welcoming the first bet; the watch pose was cut at the side) */
     "/":function(){var cap=$(".x2p-cap"),gi=$("#gpu .gpu-img");if(!cap||!gi)return false;
-      var h=img("14-smug-cuff-bust.webp",92,"");h.classList.add("x2p-hz-watch");h.setAttribute("data-x2p-host","");cap.parentNode.insertBefore(h,cap);return true},
+      /* (owner, 2026-10-20, second pass) the head only, from the first poses: the later busts' heads read as off */
+      var h=img("19-head-smirk.webp",78,"");h.classList.add("x2p-hz-watch");h.setAttribute("data-x2p-host","");cap.parentNode.insertBefore(h,cap);return true},
     /* Leaderboard (owner, 2026-10-20): he names the leader as it stands; the rules in three one-line bullets; Hall of fame
-       third; three findings */
+       third; three findings. "How we rank" turns the board over to say the rule in full (the metric, when a call is
+       graded, ties, the half-the-rounds rule, the freeze); the glossary line under the board moves onto its back. */
     "/leaderboard":function(){var lbx=$("#view .lbx");if(!lbx)return false;var rows=[].slice.call(lbx.querySelectorAll("li.lbr")),top=rows[0];
-      var B=["Ranked by calls right on direction.","Tie? The smaller average miss wins.","Freezes 24h before NVIDIA. #1 calls it."];
+      var B=["Ranked by how often they call up/down right.","Tie? The smaller average miss wins.","Freezes 24h before NVIDIA. #1 calls it."];
       [].forEach.call(document.querySelectorAll("#view .x2-lbul li"),function(li,i){if(B[i])li.textContent=B[i]});
-      var after=lbx.nextElementSibling&&lbx.nextElementSibling.tagName==="P"?lbx.nextElementSibling:lbx,r=row("x2p-row-r");
-      var a=top&&top.querySelector(".pc-t a"),nm=a?a.textContent.trim():"";
+      var a=top&&top.querySelector(".pc-t a"),nm=a?a.textContent.trim():"",pc=top&&top.querySelector(".lb-c b"),pct=pc?pc.textContent.trim():"";
+      var lbn=lbx.nextElementSibling&&lbx.nextElementSibling.classList.contains("lbn")?lbx.nextElementSibling:null;
+      var roi=lbn&&/<b>ROI<\/b>:([^<]*)/.exec(lbn.innerHTML);
+      var fl=document.createElement("div");fl.className="x2p-flip";
+      var bar=document.createElement("div");bar.className="x2p-flipbar";
+      bar.innerHTML='<button type="button" class="x2p-flipbtn" aria-expanded="false" aria-controls="x2pHow"><i aria-hidden="true">i</i><span>How we rank</span></button>';
+      var fin=document.createElement("div");fin.className="x2p-fin";
+      var bk=document.createElement("div");bk.className="x2p-bk";bk.id="x2pHow";bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");
+      bk.innerHTML='<h3>How we rank</h3><ol>'+
+        '<li><b>The call.</b> Before a company reports, each AI says up or down, and by how much.</li>'+
+        '<li><b>The grade.</b> At the next market close: did the stock move the way it said? Size doesn’t count here.</li>'+
+        '<li><b>The rank.</b> Calls right ÷ calls made. Highest goes first'+(nm&&pct?'. Now: <em>'+nm+'</em>, right on '+pct+' of its calls.':'.')+'</li>'+
+        '<li><b>Ties.</b> The smaller average miss wins: how many points the call was off the real move.</li>'+
+        '<li><b>Skipped rounds.</b> An AI that called fewer than half the rounds ranks after the rest.</li>'+
+        '<li><b>The freeze.</b> 24h before NVIDIA reports, the board locks. The AI in first place makes the call on bet #1.</li></ol>'+
+        (roi?'<p><b>ROI</b>:'+roi[1]+'</p>':'');
+      lbx.parentNode.insertBefore(fl,lbx);fl.appendChild(bar);fl.appendChild(fin);fin.appendChild(lbx);fin.appendChild(bk);if(lbn)lbn.remove();
+      var btn=bar.querySelector("button");btn.addEventListener("click",function(){var on=!fl.classList.contains("on");fl.classList.toggle("on",on);
+        btn.setAttribute("aria-expanded",on?"true":"false");btn.querySelector("span").textContent=on?"Back to the board":"How we rank";
+        if(on){lbx.setAttribute("inert","");lbx.setAttribute("aria-hidden","true");bk.removeAttribute("inert");bk.removeAttribute("aria-hidden")}
+        else{bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");lbx.removeAttribute("inert");lbx.removeAttribute("aria-hidden")}
+        fit()});
+      /* the card is as tall as the face that shows; the back sits out of flow */
+      function fit(){fin.style.minHeight=fl.classList.contains("on")?bk.offsetHeight+"px":""}addEventListener("resize",fit);
+      var r=row("x2p-row-r");
       if(nm)r.appendChild(say("As it stands, we follow <em>"+nm+"</em> on our next bet."));
-      r.appendChild(img("05-heckle.webp",118,""));after.after(r);
+      r.appendChild(img("05-heckle.webp",118,""));fl.after(r);
       var secs=[].slice.call(document.querySelectorAll("#view section.blk")),find=function(re){return secs.filter(function(s){var m=s.querySelector(".mk");return m&&re.test(m.textContent)})[0]};
       var hall=find(/hall of fame/i),grid=find(/one square/i);
       if(hall&&grid&&hall.compareDocumentPosition(grid)&Node.DOCUMENT_POSITION_PRECEDING){grid.parentNode.insertBefore(hall,grid)}
