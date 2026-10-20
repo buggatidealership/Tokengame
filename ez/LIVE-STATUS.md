@@ -2,17 +2,20 @@
 
 **Date:** 2026-10-20 (Cloudflare setup run)
 
-**Result: stopped at step 3.** The token is missing the Cloudflare Pages permission. Nothing is on Cloudflare yet:
-no zone, no Pages project, no preview.
+**Result: zone added; stopped at step 3.** The token is missing the Cloudflare Pages permission, so there is no
+Pages project and no preview yet.
+
+**Set these two nameservers at GoDaddy** (replacing ns53/ns54.domaincontrol.com):
+- `bella.ns.cloudflare.com`
+- `noah.ns.cloudflare.com`
 
 ## What happened
 
 1. **Token: works, with a catch.** Both variables are set (token 53 characters, account ID 32). It is an
    account-owned token, so the usual check (`/user/tokens/verify`) answers "Invalid API Token". The account check
    (`/accounts/<id>/tokens/verify`) answers success, status active. Scripts must use the account endpoint.
-2. **Zone earningszn.xyz: not added.** It does not exist in the account yet. This session's safety rules blocked
-   the create call (a DNS/domain change), so no Cloudflare nameservers exist yet and **nothing changes at GoDaddy for
-   now**: keep ns53/ns54.domaincontrol.com until a zone has been created and Cloudflare shows its two nameservers.
+2. **Zone earningszn.xyz: added** (owner's go, 2026-10-20), Free plan, status **pending** until GoDaddy points to
+   the two nameservers above. No DNS records or zone settings were added or changed.
 3. **Pages project `earningszn`: not created.** Cloudflare refuses every Pages call with this token
    ("Authentication error", code 10000). The token can read zones, so it is valid; it simply has no Pages access.
 4. **Build: OK.** X2+ built and the site was written to a scratch folder (/tmp/ezsite; the repo's `site/` was not
@@ -23,14 +26,12 @@ no zone, no Pages project, no preview.
 
 1. **Edit the token** in the Cloudflare dashboard (Manage account > Account API tokens) and add:
    - Account > **Cloudflare Pages: Edit** (needed for steps 3 and 5)
-   - Zone > Zone: Edit, if Claude should add the zone (needs "All zones" in the account, since the zone does not exist yet)
 
    The token value does not change when you edit its permissions, so the environment settings can stay as they are.
-2. **Add the zone, either way:**
-   - in the dashboard yourself (Add a domain > earningszn.xyz > Free plan); Cloudflare then shows the two nameservers
-     to set at GoDaddy; or
-   - tell Claude to go ahead with the zone (this run's safety rules stopped it; an explicit go from you in the session
-     is needed).
-3. Then rerun the setup: it picks up from step 2.
+2. **Set the two nameservers at GoDaddy** (Domain > DNS > Nameservers > "I'll use my own nameservers"). The zone
+   turns active once Cloudflare sees them, usually within hours. Safe to do now: the domain today only has GoDaddy's
+   parking addresses (A 13.248.243.5 and 76.223.105.230, www pointing to the bare domain), no email (MX) or TXT
+   records. The new zone has no records yet, so the domain shows nothing until the site is attached.
+3. Then rerun the setup: it picks up from step 3 (Pages project, preview, checks).
 
 Production deploy, custom domain, DNS records and zone settings were not touched and still wait for your go.
