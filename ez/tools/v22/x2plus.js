@@ -4,15 +4,27 @@
 (function(){try{
   var $=function(s,r){return (r||document).querySelector(s)};
   var P=SIM.poolShare!=null?Math.round(SIM.poolShare*100):69;
-  /* the first screen: four bullets, one line each from 320 px */
-  var T=['4 AIs predict stock moves after earnings.','Every call is posted <b>before the report</b>.',
-    'Graded at the <b>next close</b>. Lessons learned.','<b>'+P+'%</b> of trading fees bet on the <b>top AI’s call</b>.'];
-  [].forEach.call(document.querySelectorAll(".x2o-lines li"),function(e,i){if(T[i])e.innerHTML=T[i]});
-  /* under the chip: what it counts down to, then the risk in one line */
-  var g=$("#gpu .gpu-c")||$(".gpu-img");
-  if(g&&!$(".x2p-cap")){var c=document.createElement("div");c.className="x2p-cap";c.textContent="Countdown to bet #1 · NVIDIA";
-    var r=document.createElement("p");r.className="x2p-risk";r.innerHTML="<b>Right:</b> profits buy back $EZ. <b>Wrong:</b> the pool can be wiped out.";
-    g.after(c);c.after(r)}
+  /* the first screen (owner, 2026-10-20: "explain the process in very simple ways, but in a nice way"; the buyback
+     understood at the end): four numbered steps, each a verb and one short line with a small picture, ending on the
+     buyback; then the countdown to bet #1 as a headline above the chip, the risk in one line under it */
+  var ul=$(".x2o-lines");
+  if(ul&&!$(".x2p-steps")){
+    var lg=function(t){var e=document.querySelector('#top .lg[title="'+t+'"]');return e?e.outerHTML:''};
+    var ais=["ChatGPT","Claude","Grok","Kimi"].map(lg).join('');
+    var S=[["Predict",'4 AIs call a stock’s move <b>before</b> it reports earnings.','<span class="x2p-si x2p-si-ai">'+ais+'</span>'],
+      ["Grade",'The <b>next market close</b> grades every call. Each AI logs its lessons.','<span class="x2p-si x2p-si-gr"><i class="ok">✓</i><i class="no">✗</i></span>'],
+      ["Rank",'Every call stays on the record. The leaderboard keeps score.','<span class="x2p-si x2p-si-rk"><i>#1</i></span>'],
+      ["Buy back",'<b>'+P+'%</b> of $EZ fees go on the top AI’s call. Profits <b>buy back $EZ</b>.','<span class="x2p-si x2p-si-ez">$EZ</span>']];
+    var ol=document.createElement("ol");ol.className="x2p-steps";ol.setAttribute("aria-label","How $EZ works");
+    ol.innerHTML=S.map(function(x,k){return '<li'+(k===3?' class="pay"':'')+'><span class="n">0'+(k+1)+'</span>'+x[2]+'<span class="t"><b class="h">'+x[0]+'</b><span class="l">'+x[1]+'</span></span></li>'}).join('');
+    ul.parentNode.insertBefore(ol,ul);ul.remove()}
+  var g=$("#gpu");
+  if(g&&!$(".x2p-cdh")){var c=document.createElement("div");c.className="x2p-cdh";c.innerHTML='<span class="k">Countdown to</span><b>Bet #1<i>:</i> <em>NVIDIA</em></b>';
+    g.parentNode.insertBefore(c,g);
+    var gc=$("#gpu .gpu-c")||$(".gpu-img"),r=document.createElement("p");r.className="x2p-risk";r.innerHTML="<b>Wrong call:</b> the pool can be wiped out.";
+    if(gc)gc.after(r)}
+  /* the record section's first two bullets said what steps 1 and 2 now say: keep only the dare */
+  var rec=$(".x2o-rec");if(rec&&rec.children.length===3){rec.children[0].remove();rec.children[0].remove()}
   var sn=$(".x2o-stn");if(sn)sn.textContent="The model on top of the leaderboard makes the call on bet #1, NVIDIA.";
   /* words, on every route as it renders: pot becomes pool; NVIDIA's bet is the first one; no "never edited" */
   var RE=[[/\bpot\b/g,"pool"],[/\bPot\b/g,"Pool"],[/\bPOT\b/g,"POOL"],[/ · NEVER EDITED/g,""],[/, never edited\./g,"."],[/\bNext bet\b/g,"Bet #1"],[/\bNEXT BET\b/g,"BET #1"],[/Longest hit streak/g,"Longest right-way streak"]];
@@ -43,7 +55,7 @@
   var PLACE={
     /* Overview: beside "Countdown to bet #1", pointing at you, welcoming the first bet (owner, 2026-10-20: arrogant; the
        watch pose was cut at the side, the 13 to 18 busts' heads read as off, the head alone did not work) */
-    "/":function(){var cap=$(".x2p-cap"),gi=$("#gpu .gpu-img");if(!cap||!gi)return false;
+    "/":function(){var cap=$(".x2p-risk"),gi=$("#gpu .gpu-img");if(!cap||!gi)return false;
       var h=img("01-welcome.webp",96,"");h.classList.add("x2p-hz-watch");h.setAttribute("data-x2p-host","");cap.parentNode.insertBefore(h,cap);return true},
     /* Leaderboard (owner, 2026-10-20, second pass): the head with a small "How we rank" beside it; he names the leader
        above the board; the board turns over to the rule in full, at the board's own size; the three rules sit under it.
