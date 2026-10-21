@@ -5169,6 +5169,10 @@ html.x2p #record .card .fx .zl .zb{gap:5px;font-size:6.5px}html.x2p #record .car
 @media (max-width:380px){html.x2p #record .card .fx .zl .zb>i{width:20px}html.x2p #record .card .fx .zl .zb{gap:4px}}
 /* the back keeps the foil when the card flips (owner, 2026-10-21): full on the frame and label, lighter over the stats, which carry their own wash */
 html.x2p #record .card .face.back .x2p-foil{-webkit-mask-image:linear-gradient(#000 0,#000 calc(var(--at,84px) - 14px),rgba(0,0,0,.4) calc(var(--at,84px) + 26px),rgba(0,0,0,.4) calc(var(--ab,72%) - 26px),#000 calc(var(--ab,72%) + 14px));mask-image:linear-gradient(#000 0,#000 calc(var(--at,84px) - 14px),rgba(0,0,0,.4) calc(var(--at,84px) + 26px),rgba(0,0,0,.4) calc(var(--ab,72%) - 26px),#000 calc(var(--ab,72%) + 14px))}
+/* the EZ grade (rubric v1, owner 2026-10-21): one number, and on the back the reason in one line where the front has the barcode */
+html.x2p #record .card .fx .zr .gr{font-variant-numeric:tabular-nums}
+html.x2p #record .card .fx .zl .zb.zwhy{display:block;font:800 8.5px/1.1 'Barlow Condensed',Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#5d564a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.x2p #record .card .fx.perfect .zl .zb.zwhy{color:#3b2a08}
 
 </style>
 <link rel="canonical" href="https://earningszn.xyz/">
@@ -7336,14 +7340,23 @@ function x2LBpage(h){
   window.__x2pSlab=function(root){[].forEach.call((root||document).querySelectorAll("#record .card[data-n]"),function(c){if(c.querySelector(".fx"))return;
     var n=+c.getAttribute("data-n"),g=null,q=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===n)g=ROUNDS[i];if(!g)for(i=0;i<PENDING.length;i++)if(PENDING[i].n===n)q=PENDING[i];var u=null;if(!g&&!q)for(i=0;i<UPCOMING.length;i++)if(UPCOMING[i].n===n)u=UPCOMING[i];
     var r=g||q||u;if(!r)return;var hit=g?g.calls.filter(function(x){return (x[1].indexOf("DOWN")<0)===(g.a>0)}).length:0,nc=g?g.calls.length:0,d=md(r.called);
-    var ds=hit===nc?"Perfect":hit===0?"Rekt":hit/nc>=.75?"Strong":hit/nc>=.5?"Split":"Rough";
+    /* the EZ grade, rubric v1 (owner, 2026-10-21): direction sets the band and the word (all right 8-10 Perfect, most 6-7.5 Strong, half 4-5.5 Split,
+       some 2-3.5 Rough, none 1 Rekt); closeness of the AIs that called the direction moves it up the band; a 10 (gold label, foil) = all right,
+       average miss 1.5% or less and under half the move (else 9.5); Pristine = a 10 under 1% */
+    var gr=0,ds="",why="",pr=false;if(g){var rw=g.calls.filter(function(x){return (x[1].indexOf("DOWN")<0)===(g.a>0)}).map(function(x){return +x[2]}),f=hit/nc,
+      av=rw.length?rw.reduce(function(a,b){return a+b},0)/rw.length:0,mv=Math.abs(g.a),pt=av<=1.5?2:av<=2?1.5:av<=2.5?1:av<=3?.5:0;
+      /* half points (owner, 2026-10-21, later): closeness adds 0 to 2 in steps of .5 (1.5% or less: 2, 2%: 1.5, 2.5%: 1, 3%: .5); below "all right" a band tops out at .5 under the next */
+      if(f===1){gr=8+pt;if(gr===10&&!(av<mv/2))gr=9.5;ds=gr===10?((pr=av<1)?"Pristine":"Gem"):"Perfect"}else if(f>=.66){gr=6+Math.min(pt,1.5);ds="Strong"}else if(f>=.5){gr=4+Math.min(pt,1.5);ds="Split"}else if(f>0){gr=2+Math.min(pt,1.5);ds="Rough"}else{gr=1;ds="Rekt"}
+      why=hit===0?"0 of "+nc+" right":hit+" of "+nc+" right \u00b7 "+av.toFixed(2)+"% off on avg"}
     var h='<div class="zlab"><div class="zl"><span class="y">'+d.y+' <span class="s">$</span><span class="e">E</span><span class="z">Z</span> Season 1</span><span class="nm"><b>'+esc2(r.co)+'</b>'+(r.ticker?' <small>('+esc2(r.ticker)+')</small>':'')+'</span><span class="zb"><i></i>'+String(n).padStart(8,"0")+'<span class="holo"><i class="s">$</i><i class="e">E</i><i class="z">Z</i></span></span></div>'+
-      '<div class="zr"><span class="no">#'+n+'</span>'+(g?'<span class="ds">'+ds+'</span><span class="gr">'+hit+'<small>/'+nc+'</small></span>':(q?'<span class="ds">At grading</span><span class="gr">'+md(r.resolves).t.toUpperCase()+'</span>':'<span class="ds">Calls due</span><span class="gr">'+md(r.called).t.toUpperCase()+'</span>'))+'</div>'+
+      '<div class="zr"><span class="no">#'+n+'</span>'+(g?'<span class="ds">'+ds+'</span><span class="gr">'+gr+'</span>':(q?'<span class="ds">At grading</span><span class="gr">'+md(r.resolves).t.toUpperCase()+'</span>':'<span class="ds">Calls due</span><span class="gr">'+md(r.called).t.toUpperCase()+'</span>'))+'</div>'+
       '</div>';
-    [].forEach.call(c.querySelectorAll(".face"),function(f){var o=document.createElement("div");o.className="fx"+(g&&hit===nc?" perfect":"");o.setAttribute("aria-hidden","true");o.innerHTML=h;f.appendChild(o);
-      /* (owner, 2026-10-21) a perfect round gets the rolling foil on both faces (owner: it should not vanish when the card flips): rainbow bands that roll across without end; a sibling of .fx so it lights the film too */
-      if(g&&hit===nc){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);foilFit(f);if(FRO)FRO.observe(f)}});if(window.__x2pNmFit)window.__x2pNmFit();
-    var lab=(g?ds+", "+hit+" of "+nc+" called the direction":q?"calls in, graded "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
+    [].forEach.call(c.querySelectorAll(".face"),function(f){var o=document.createElement("div");o.className="fx"+(gr===10?" perfect":"")+(pr?" pristine":"");o.setAttribute("aria-hidden","true");o.innerHTML=h;f.appendChild(o);
+      /* the back says why, in one line, where the barcode sits on the front */
+      if(g&&f.classList.contains("back")){var zb=o.querySelector(".zb");zb.className="zb zwhy";zb.textContent=why}
+      /* (owner, 2026-10-21) a 10 gets the rolling foil on both faces (owner: it should not vanish when the card flips): rainbow bands that roll across without end; a sibling of .fx so it lights the film too */
+      if(gr===10){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);foilFit(f);if(FRO)FRO.observe(f)}});if(window.__x2pNmFit)window.__x2pNmFit();
+    var lab=(g?ds+" "+gr+" of 10, "+why.replace(" \u00b7",",").replace("off on avg","off on average"):q?"calls in, graded "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
   /* (owner, 2026-10-21, later) the foil stays light over the film: the mask needs the film's top and bottom inside the face */
   function foilFit(f){var fl=f.querySelector(".x2p-foil"),a=f.querySelector(f.classList.contains("back")?".fin":".art");if(!fl||!a||!a.offsetHeight)return;var t=0,e=a;while(e&&e!==f){t+=e.offsetTop;e=e.offsetParent}
     fl.style.setProperty("--at",t+"px");fl.style.setProperty("--ab",(t+a.offsetHeight)+"px")}
