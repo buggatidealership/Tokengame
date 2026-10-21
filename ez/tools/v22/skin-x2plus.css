@@ -627,12 +627,14 @@ html.x2p #record .card .fx.perfect .zlab{background:#0f0e13;color:#f2b632;box-sh
  @keyframes zsheen{0%{background-position:100% 0}100%{background-position:0 100%}}
  html.x2p #record .card .face.back .fin{position:relative}
  html.x2p #record .card .face.back .bk-r{position:relative}
- /* holo, no glitter (owner, 2026-10-21): one soft iridescent wash that drifts across the card, light enough to read through */
- html.x2p #record .card .face.back:has(.bk-rows):not(:has(.bk-r.no)) .fin::before,
- html.x2p #record .card .face.back:has(.bk-r.no) .bk-r:is(.win,.ok)::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;border-radius:inherit;
+ /* holo, no glitter (owner, 2026-10-21): one soft iridescent wash that drifts across the card, light enough to read through. Three levels
+    (owner, later the same day: a 9.5 looked too much like a 10): a 10 washes the whole stats side; every other round lights only the rows that
+    called the direction, so an all-right 9.5 lights all four rows (between a 10 and a 3.5, which lights one) */
+ html.x2p #record .card .face.back:has(.bk-rows):has(.fx.perfect) .fin::before,
+ html.x2p #record .card .face.back:has(.bk-rows):not(:has(.fx.perfect)) .bk-r:is(.win,.ok)::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;border-radius:inherit;
    background:linear-gradient(120deg,rgba(255,111,174,0) 0%,rgba(255,111,174,.9) 18%,rgba(242,182,50,.9) 30%,rgba(159,240,196,.9) 42%,rgba(111,211,255,.9) 54%,rgba(196,155,255,.9) 66%,rgba(255,111,174,0) 84%);
    background-size:260% 260%;mix-blend-mode:soft-light;opacity:.55;animation:zsheen 6s ease-in-out infinite alternate}
- html.x2p #record .card .face.back:has(.bk-r.no) .bk-r:is(.win,.ok)::before{opacity:.7}
+ html.x2p #record .card .face.back:has(.bk-rows):not(:has(.fx.perfect)) .bk-r:is(.win,.ok)::before{opacity:.7}
  @media (prefers-reduced-motion:reduce){html.x2p #record .card .face.back .fin::before,html.x2p #record .card .face.back .bk-r::before{animation:none!important;background-position:50% 50%}}
 html.x2p #record .card:not(.pend):not(:has(.bk-rows)) .fx .zr .gr{font-size:17px;margin-top:2px}
 /* the slab, tighter (owner, 2026-10-21: the record plus the round picker must fit one screen; "#32", "Round 32" and
@@ -751,3 +753,15 @@ html.x2p #view ul.hx2s[data-x2p]{display:none!important}
 html.x2p #record .card .fx .zl .nm{align-items:center!important;line-height:1!important;transform:translateY(-1.75px)}
 html.x2p #record .card .fx .zl .nm b{line-height:1!important}
 html.x2p #record .card .fx .zl .nm small{line-height:1!important;transform:translateY(-.5px)}
+/* the middle level (owner, 2026-10-21): an all-right round that is not a 10 also gets a faint wash over the whole stats side (.25,
+   against a 10's .55 and its foil), on top of its four lit rows */
+html.x2p #record .card .face.back:has(.bk-rows):not(:has(.bk-r.no)):not(:has(.fx.perfect)) .fin::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;border-radius:inherit;
+  background:linear-gradient(120deg,rgba(255,111,174,0) 0%,rgba(255,111,174,.9) 18%,rgba(242,182,50,.9) 30%,rgba(159,240,196,.9) 42%,rgba(111,211,255,.9) 54%,rgba(196,155,255,.9) 66%,rgba(255,111,174,0) 84%);
+  background-size:260% 260%;mix-blend-mode:soft-light;opacity:.25;animation:zsheen 6s ease-in-out infinite alternate}
+/* the GRADED mark as an ink stamp (owner, 2026-10-21): turned a little to the right, double ring, ink that did not take everywhere */
+html.x2p #record .card .face.back .bk-h .gstamp{transform:rotate(11deg) scale(.82);transform-origin:center;border:3px double currentColor;
+  background:radial-gradient(circle,rgba(61,220,132,.1),rgba(61,220,132,0) 70%);box-shadow:0 0 0 1.5px rgba(61,220,132,.25);letter-spacing:.1em;opacity:.92;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.7 1.75'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23n)'/%3E%3C/svg%3E") center/80px 80px;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.7 1.75'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23n)'/%3E%3C/svg%3E") center/80px 80px}
+html.x2p #record .card .face.back .bk-h .gstamp i{transform:rotate(-4deg)}
+@media (prefers-reduced-motion:reduce){html.x2p #record .card .face.back .fin::before{animation:none!important}}
