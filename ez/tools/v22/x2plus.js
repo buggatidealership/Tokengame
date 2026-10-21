@@ -21,6 +21,20 @@
     g.parentNode.insertBefore(c,g);
     /* the risk sits in the red box above; he stands beside this head (owner, 2026-10-20), so nothing goes under the chip */
   }
+  /* following on X (owner, 2026-10-21: followers are the number one goal; "the subtle art of the sell", not a car
+     salesman): each prompt sits where X gives something the page can't, the calls before the report and the result the
+     moment it lands, and says that, not "follow us"; plus a quiet icon in the header and a line in the footer */
+  var XU=CONFIG.x?(/^https?:/.test(CONFIG.x)?CONFIG.x:"https://x.com/"+String(CONFIG.x).replace(/^@/,"")):"";
+  if(XU){var XH="@"+XU.replace(/\/+$/,"").split("/").pop(),
+    XS='<svg class="x2p-xg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+    xa=function(cls,html,label){var a=document.createElement("a");a.className=cls;a.href=XU;a.target="_blank";a.rel="noopener";a.innerHTML=html;if(label)a.setAttribute("aria-label",label);a.addEventListener("click",function(e){e.stopPropagation()});return a};
+    var lc=$("#liveChip");if(lc&&!$(".x2p-xhd"))lc.after(xa("x2p-xhd",XS,"Follow $EZ on X, "+XH));
+    var gc2=$("#gpu .gpu-c")||$(".gpu-img");if(gc2&&!$(".x2p-xline")){var xl=document.createElement("p");xl.className="x2p-xline";
+      xl.innerHTML="Get the NVIDIA call on X the moment it's made. ";xl.appendChild(xa("x2p-xlink",XS+"<span>Follow "+XH+"</span>"));gc2.after(xl)}
+    var ftl=$("footer .ftl");if(ftl&&!$(".x2p-xft"))ftl.appendChild(xa("x2p-xft",XS+"<span>"+XH+" on X</span>"));
+    window.__x2pX=function(root){[].forEach.call((root||document).querySelectorAll(".card.pend .cnote"),function(n){if(n.querySelector(".x2p-xr"))return;
+      n.appendChild(xa("x2p-xr",XS+"<span>Get the result on X</span>"))})};
+    window.__x2pX(document)}
   /* the record section's first two bullets said what steps 1 and 2 now say: keep only the dare */
   var rec=$(".x2o-rec");if(rec&&rec.children.length===3){rec.children[0].remove();rec.children[0].remove()}
   var sn=$(".x2o-stn");if(sn)sn.textContent="The model on top of the leaderboard makes the call on bet #1, NVIDIA.";
@@ -36,7 +50,7 @@
       n.parentNode.replaceChild(f,n)})}
   fix(document.body);
   if(window.MutationObserver){var busy=false;new MutationObserver(function(ms){if(busy)return;busy=true;
-    ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1)fix(x);else if(x.nodeType===3&&x.parentNode)fix(x.parentNode)})});busy=false})
+    ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1){fix(x);if(window.__x2pX)window.__x2pX(x)}else if(x.nodeType===3&&x.parentNode)fix(x.parentNode)})});busy=false})
     .observe(document.body,{childList:true,subtree:true})}
 }catch(e){}})();
 /* the $EZ host, the mascot (owner, 2026-10-20: "one on each tab, not more", subtle, never in your face). Small, ink-outlined,

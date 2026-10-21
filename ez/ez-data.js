@@ -3,7 +3,7 @@
    Mirrors the ARENA sheet cell for cell. Edit here once; all variants follow.
    Winners, distances, direction, ladder: derived, never typed.
    ===================================================================== */
-var CONFIG={ca:"",buyUrl:"",chain:"",x:"",tg:"",pool:"",poolUrl:"",betDate:"",
+var CONFIG={ca:"",buyUrl:"",chain:"",x:"https://x.com/earningszn",tg:"",pool:"",poolUrl:"",betDate:"",
   /* the buyback scoreboard: "$EZ bought back" (text, e.g. "$12.4K"); empty = "Opens at launch" */
   boughtBack:"",
   /* the road: launch comes after launchAt graded rounds; set launched:true once $EZ is live */
