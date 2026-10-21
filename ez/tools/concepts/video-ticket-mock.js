@@ -5,7 +5,7 @@ window.__vt=function(mode){
  .vt::before{content:"";position:absolute;inset:0;transform:translate(6px,6px);background:#000;z-index:-1;
   -webkit-mask:radial-gradient(circle 7px at 0 9px,#0000 96%,#000) 0 0/51% 18px repeat-y,radial-gradient(circle 7px at 100% 9px,#0000 96%,#000) 100% 0/51% 18px repeat-y;
   mask:radial-gradient(circle 7px at 0 9px,#0000 96%,#000) 0 0/51% 18px repeat-y,radial-gradient(circle 7px at 100% 9px,#0000 96%,#000) 100% 0/51% 18px repeat-y}
- .vt-p{position:relative;padding:12px 34px 12px 34px;border-top:3px solid #000;border-bottom:3px solid #000;
+ .vt-p{position:relative;padding:12px 34px 14px 34px;border-top:3px solid #000;border-bottom:3px solid #000;
   background:linear-gradient(90deg,#1f7a45 0 16px,transparent 16px 22px,#1f7a45 22px 28px,transparent 28px),
    linear-gradient(270deg,#c8372a 0 16px,transparent 16px 22px,#c8372a 22px 28px,transparent 28px),
    radial-gradient(rgba(60,40,10,.06) 1px,transparent 1.4px) 0 0/4px 4px,
@@ -39,7 +39,7 @@ window.__vt=function(mode){
  const html=`<div class="vt${mode==='H'?' host':''}"><div class="vt-p"><i class="vt-st"></i>
   <div class="vt-h"><b>How it works</b><small><i></i>Playing · 1:07</small></div>
   <div class="vt-f"><img src="${P}" alt=""><span class="vt-snd">🔇</span><span class="vt-tap">Tap for sound</span><span class="vt-bar"><i></i></span></div>
-  <div class="vt-ft"><a href="#read">Rather read? The 20-second version ↓</a><span class="no">2026 $EZ · S1 · ADMIT ONE</span></div>
+
  </div>${mode==='H'?`<span class="vt-say">Give me a minute. I'll explain the whole thing.</span><img class="vt-host" src="media/commissioner/web/02-presenter.webp" alt="">`:''}</div>`;
  const w=document.createElement('div');w.innerHTML=html;t3.replaceWith(...w.childNodes);
  if(mode==='D'){const hero=document.querySelector('section.hero'),vt=bet.querySelector('.vt');const g=document.createElement('div');g.className='vm-d';hero.before(g);g.append(hero,vt)}
