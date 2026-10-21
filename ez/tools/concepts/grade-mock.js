@@ -43,6 +43,11 @@ const css=`${FONTS}*{box-sizing:border-box}body{margin:0;background:#0d0b12;colo
 .face.empty{place-items:center;font:400 22px/1 Anton;color:#a49fb4;letter-spacing:.06em;background:repeating-linear-gradient(45deg,#15131d 0 12px,#1b1825 12px 24px)}
 .cap{margin-top:12px;font:600 13px/1.35 Barlow;color:#a49fb4;max-width:250px}.cap b{color:#f3ead6}
 .box{background:#15131d;border:2px solid #000;box-shadow:5px 6px 0 #000;padding:18px 20px}
+.lab{position:absolute}.r{align-content:center!important;justify-items:end;gap:2px}.r .ds{font-size:10px}.r .gr{font-size:34px}.r .gr.dt{font-size:22px;line-height:1}
+.l .vr{color:#5d564a!important;letter-spacing:.08em}.lab .l .vr{font-size:8.5px}
+.lab .holo{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:34px;height:13px;border-radius:2px;display:grid;place-items:center;font:400 8px/1 Anton;letter-spacing:.06em;color:rgba(20,18,23,.85);
+ background:linear-gradient(100deg,#9ff0c4,#f7e7a8 28%,#ffb3ae 52%,#c9d8ff 70%,#f2b632 88%,#9ff0c4);box-shadow:0 0 0 1px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.5)}
+.lab.blk .r .ds,.lab.blk .r .gr,.lab.blk .l .vr{color:#141217!important}
 table{border-collapse:collapse;width:100%;font:500 14px/1.2 Barlow}th{font:800 11px/1 'Barlow Condensed';letter-spacing:.14em;text-transform:uppercase;color:#a49fb4;text-align:left;padding:6px 8px;border-bottom:1.5px solid #3a3546}
 td{padding:7px 8px;border-bottom:1px solid #2a2633}td.g{font:400 24px/1 Anton;width:52px}td.w{font:800 14px/1 'Barlow Condensed';letter-spacing:.08em;color:#f2b632}td.h{color:#a49fb4;font-size:13px}td.p{font:400 20px/1 Anton;text-align:right}
 .bars{display:grid;grid-template-columns:repeat(10,1fr);gap:10px;align-items:end;height:200px;margin-top:12px}
@@ -57,17 +62,19 @@ td{padding:7px 8px;border-bottom:1px solid #2a2633}td.g{font:400 24px/1 Anton;wi
 .ok{color:#11714a}.no{color:#c8372d}
 .pill{display:inline-block;padding:3px 8px;border:2px solid #000;font:800 11px/1 'Barlow Condensed';letter-spacing:.1em;background:#4fe39a;color:#03140a}`;
 function slab(o){const g=o.g;const cls=o.pr?'lab blk':(o.state?'lab sub2':'lab');
- const right=o.state?`<span class="no">#${o.n}</span><span class="st">${o.state}</span>`:
-   `<span class="no">#${o.n}</span><span class="ds">${o.pr?'PRISTINE':WORD[g]}</span><span class="gr">${g}</span>`;
- return `<div><div class="slab"><div class="${cls}"><div class="l"><span class="y">2026 <i class="s">$</i><i class="e">E</i><i class="z">Z</i> SEASON 1</span><span class="nm">${o.co}${o.tk?` <small>(${o.tk})</small>`:""}</span>${o.vr?`<span class="vr">${o.vr}</span>`:''}<span class="cb"><i></i>${String(o.n).padStart(8,'0')}<em></em></span></div><div class="r">${right}</div></div>
+ /* (owner, 2026-10-21) the grade sits centred top to bottom in the right column; "#n" moves to the left column's third line;
+    the $EZ hologram sits dead centre at the bottom of the label, like PSA's; a ticker equal to the name is not repeated */
+ const right=o.state?`<span class="ds">${o.state[0]}</span><span class="gr dt">${o.state[1]}</span>`:`<span class="ds">${o.pr?'PRISTINE':WORD[g]}</span><span class="gr">${g}</span>`;
+ const tk=o.tk&&o.tk.toUpperCase()!==o.co.toUpperCase()?` <small>(${o.tk})</small>`:'';
+ return `<div><div class="slab"><div class="${cls}"><div class="l"><span class="y">2026 <i class="s">$</i><i class="e">E</i><i class="z">Z</i> SEASON 1</span><span class="nm">${o.co}${tk}</span><span class="vr">#${o.n}${o.vr?' · '+o.vr:''}</span><span class="cb"><i></i>${String(o.n).padStart(8,'0')}</span></div><div class="r">${right}</div><span class="holo">$EZ</span></div>
  ${o.img?`<div class="face"><img src="media/${o.img}.jpg"></div>`:`<div class="face empty">${o.empty||''}</div>`}</div><p class="cap">${o.cap}</p></div>`}
 const poster=n=>FILMS[n]&&FILMS[n].p;
 const pick=[30,32,31,27,28,10];
 const caps={30:'All four right, every call within 2%. <b>Pristine 10</b>: the gold label.',32:'All four right, average miss 1.2%. <b>Gem 10.</b>',31:'All four right, average miss 1.9%. <b>9</b>: right, not close enough for the 10.',27:'3 of 4 right. <b>7.</b>',28:'1 of 4 right. <b>3.</b> Sealed forever.',10:'Nobody called it. A 16% jump. <b>1</b>, with SHOCK MOVE on the label.'};
 let s1=pick.map(n=>{const x=by(n);return slab({n,co:x.r.co,tk:x.r.ticker,g:x.g,pr:x.pr,img:poster(n),vr:n===10?'SHOCK MOVE':'',cap:caps[n]})}).join('');
 const P=PENDING.find(p=>p.ticker==='NFLX'),U=UPCOMING[0];
-s1+=slab({n:P.n,co:P.co,tk:P.ticker,state:'IN GRADING<br>CLOSE '+md(P.resolves).toUpperCase(),empty:'CALLS LOCKED',cap:'Calls in, waiting for the close. Was "At grading".'});
-s1+=slab({n:U.n,co:U.co,tk:U.ticker,state:'NOT YET<br>SUBMITTED',empty:'SEALED',cap:'Calls due '+md(U.called)+'. Was "Calls due".'});
+s1+=slab({n:P.n,co:P.co,tk:P.ticker,state:['GRADED BY',md(P.resolves).toUpperCase()],empty:'CALLS LOCKED',cap:'Calls in, waiting for the close. <b>Graded by Oct 21</b> (was "At grading").'});
+s1+=slab({n:U.n,co:U.co,tk:U.ticker,state:['CALLS DUE',md(U.called).toUpperCase()],empty:'SEALED',cap:'Not submitted yet. <b>Calls due '+md(U.called)+'</b>.'});
 const page1=`<div class="pg"><div class="ttl"><b>The EZ grade</b><span>Option: one number, 1 to 10, like a graded card</span></div>
 <p class="sub">Every round gets a grade the moment the market closes. Direction decides the band, being close adds a point. A 10 needs all four right and an average miss of 1.5% or less. Pristine needs every single call within 2%. Real rounds, real grades.</p>
 <div class="row">${s1}</div></div>`;
@@ -90,3 +97,4 @@ const page2=`<div class="pg"><div class="ttl"><b>The system around it</b><span>S
 <dt>Calls</dt><dd>${ge.r.calls.map(c=>nm(c[0])+' '+c[1].replace('DOWN','▼').replace('UP','▲')+' <span class="ok">✓</span>').join(' · ')}</dd><dt>Population</dt><dd>${pop[10]} rounds at 10 · ${nPr} pristine · none higher</dd></dl></div></div>`;
 for(const [f,b] of [['p1.html',page1],['p2.html',page2]])fs.writeFileSync(path.join(R,f),`<!doctype html><meta charset="utf-8"><style>${css}</style>${b}`);
 console.log(JSON.stringify(pop),nPr);
+
