@@ -32,7 +32,8 @@
     /* (owner, 2026-10-21) the record section's second bullet, worded as the visitor's job to be done (Christensen): see
        every call before the report without having to come back and check; it replaces the line under the chip */
     var rb=$(".x2o-rec");if(rb&&!$(".x2p-xli")){var li=document.createElement("li");li.className="x2p-xli";
-      li.innerHTML="Get every call before the report, straight to your feed. ";li.appendChild(xa("x2p-xlink",XS+"<span>Follow "+XH+"</span>"));rb.appendChild(li)}
+      /* (owner, 2026-10-21) "to your feed on X", the X highlighted as the link; no handle */
+      li.appendChild(document.createTextNode("Get every call before the report, straight to your feed on "));li.appendChild(xa("x2p-xlink x2p-xword","X","Follow "+XH+" on X"));li.appendChild(document.createTextNode("."));rb.appendChild(li)}
     var ftl=$("footer .ftl");if(ftl&&!$(".x2p-xft"))ftl.appendChild(xa("x2p-xft",XS+"<span>"+XH+" on X</span>"));
     window.__x2pX=function(root){[].forEach.call((root||document).querySelectorAll(".card.pend .cnote"),function(n){if(n.querySelector(".x2p-xr"))return;
       n.appendChild(xa("x2p-xr",XS+"<span>Get the result on X</span>"))})};
