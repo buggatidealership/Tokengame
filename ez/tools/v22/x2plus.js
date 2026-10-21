@@ -86,7 +86,7 @@
       return {n:m?+m[1]:0,tag:q(".hx2-k")?q(".hx2-k").textContent:"",head:q(".hx2-h")?q(".hx2-h").innerHTML:"",body:q(".hx2-p")?q(".hx2-p").textContent:"",
         rec:[].map.call(li.querySelectorAll(".hx2-r>span"),function(sp){return [(sp.querySelector("b")||{}).textContent||"",(sp.querySelector("small")||{}).textContent||""]})}});
     var cards=[];items.forEach(function(it){if(/everyone was wrong/i.test(it.tag))return;/* dropped on X2+ (owner, 2026-10-20) */var r=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===it.n)r=ROUNDS[i];var o=r&&src.querySelector('.card[data-n="'+it.n+'"]');if(!o)return;
-      var c=o.cloneNode(true),E=ezGrade(r),k=it.tag.toLowerCase();c.classList.remove("flipped","cur");c.removeAttribute("data-i");
+      var c=o.cloneNode(true),E=ezGrade(r),k=it.tag.toLowerCase(),nf=c.classList.contains("nofilm");c.classList.remove("flipped","cur");c.removeAttribute("data-i");
       var fb=c.querySelector(".face.front [data-flip]");if(fb)fb.textContent="See why ↻";
       var why=it.body;if(/closest/.test(k))why="Every AI guesses how much a stock will move after the company reports. "+why+" No guess this season came closer.";
       else if(/tight/.test(k))why+=" On average, they were off by "+E.av.toFixed(2)+"%.";
@@ -95,8 +95,9 @@
       var fin=c.querySelector(".face.back .fin");if(fin)fin.innerHTML='<div class="x2p-hb"><h4>'+it.head+'</h4><div class="x2p-hcs">'+calls+'</div>'+
         '<div class="x2p-ho">Stock moved<b class="'+(r.a>0?"u":"d")+'">'+(r.a>0?"▲":"▼")+" "+Math.abs(r.a).toFixed(2)+'%</b></div>'+
         '<div class="x2p-ho">Winner<b class="w">'+(r.win?esc2(nm1(r.win)):"Nobody")+'</b></div>'+
-        '<p class="x2p-hw">'+esc2(why)+'<em>'+esc2(gradeLine(E))+'</em></p><button type="button" class="flipb" data-flip>↻ See the film</button></div>';
-      setFaces2(c,false);var w=document.createElement("div");w.className="x2p-hi";var tg=document.createElement("span");tg.className="x2p-htag";tg.textContent=it.tag;w.appendChild(tg);w.appendChild(c);cards.push(w)});
+        '<p class="x2p-hw">'+esc2(why)+'<em>'+esc2(gradeLine(E))+'</em></p>'+(nf?'':'<button type="button" class="flipb" data-flip>↻ See the film</button>')+'</div>';
+      /* (owner, 2026-10-21) no film yet: the card opens on its story and stays there; "Film soon" is never the face we show */
+      if(nf)c.classList.add("flipped");setFaces2(c,nf);var w=document.createElement("div");w.className="x2p-hi";var tg=document.createElement("span");tg.className="x2p-htag";tg.textContent=it.tag;w.appendChild(tg);w.appendChild(c);cards.push(w)});
     if(!cards.length)return;var old=document.getElementById("x2pHl");if(old)old.remove();
     var box=document.createElement("div");box.id="x2pHl";box.className="x2p-hlc";box.setAttribute("role","region");box.setAttribute("aria-roledescription","carousel");box.setAttribute("aria-label","Highlights");
     var tr=document.createElement("div");tr.className="x2p-hlt";tr.tabIndex=0;cards.forEach(function(w){tr.appendChild(w)});
@@ -109,22 +110,26 @@
     function films(){cards.forEach(function(w,i){var c=w.querySelector(".card"),v=w.querySelector("video");if(!v)return;
       if(i===cur&&vis&&!reduce&&!c.classList.contains("flipped")){v.muted=muted;v.preload="auto";var p=v.play();if(p&&p.then)p.then(function(){v.classList.add("on")}).catch(function(){})}else if(!v.paused)v.pause()})}
     function go(i){i=Math.max(0,Math.min(cards.length-1,i));var w=cards[i];tr.scrollTo({left:w.offsetLeft+w.offsetWidth/2-tr.clientWidth/2,behavior:reduce?"auto":"smooth"})}
-    var raf=0;tr.addEventListener("scroll",function(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;var n=near();if(n!==cur){var oc=cards[cur]&&cards[cur].querySelector(".card");if(oc&&oc.classList.contains("flipped")){oc.classList.remove("flipped");setFaces2(oc,false)}cur=n;mark();films()}})},{passive:true});
+    var raf=0;tr.addEventListener("scroll",function(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;var n=near();if(n!==cur){var oc=cards[cur]&&cards[cur].querySelector(".card");if(oc&&oc.classList.contains("flipped")&&!oc.classList.contains("nofilm")){oc.classList.remove("flipped");setFaces2(oc,false)}cur=n;mark();films()}})},{passive:true});
     tr.addEventListener("keydown",function(e){if(e.key==="ArrowLeft"){e.preventDefault();go(cur-1)}else if(e.key==="ArrowRight"){e.preventDefault();go(cur+1)}});
     tr.addEventListener("click",function(e){var w=e.target.closest(".x2p-hi");if(!w)return;var i=cards.indexOf(w),c=w.querySelector(".card");
       var sb=e.target.closest(".shr");if(sb){e.preventDefault();e.stopPropagation();if(typeof window.shareRound==="function")window.shareRound(sb);return}
       var sd=e.target.closest(".snd");if(sd){e.preventDefault();e.stopPropagation();muted=!muted;var v=w.querySelector("video");if(v)v.muted=muted;
         [].forEach.call(box.querySelectorAll(".snd"),function(b){b.dataset.on=muted?"0":"1";b.setAttribute("aria-label",muted?"Sound off":"Sound on");if(window.SND_ON&&window.SND_OFF)b.innerHTML=muted?window.SND_OFF:window.SND_ON});return}
       if(e.target.closest("a"))return;e.preventDefault();if(i!==cur){go(i);return}
-      var f=!c.classList.contains("flipped");c.classList.toggle("flipped",f);setFaces2(c,f);films()});
+      if(c.classList.contains("nofilm"))return;var f=!c.classList.contains("flipped");c.classList.toggle("flipped",f);setFaces2(c,f);films()});
     if("IntersectionObserver" in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;films()},{threshold:.3}).observe(tr);
-    mark();requestAnimationFrame(function(){tr.scrollLeft=0;cur=near();mark();films()})}
+    function eqH(){var cs=cards.map(function(w){return w.querySelector(".card")});cs.forEach(function(c){c.style.height=""});var m=0;cs.forEach(function(c){m=Math.max(m,c.offsetHeight)});if(m)cs.forEach(function(c){c.style.height=m+"px"})}
+    var eqT;window.addEventListener("resize",function(){clearTimeout(eqT);eqT=setTimeout(eqH,150)});if(document.fonts&&document.fonts.ready)document.fonts.ready.then(eqH);
+    mark();requestAnimationFrame(function(){eqH();tr.scrollLeft=0;cur=near();mark();films()})}
   function tkStamp(){[].forEach.call(document.querySelectorAll("ol.rx3>li"),function(li){if(li.querySelector(".x2p-tg"))return;var a=li.querySelector("a.rx3-r"),m=a&&(a.getAttribute("href")||"").match(/round\/(\d+)/);if(!m)return;
       var r=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===+m[1])r=ROUNDS[i];if(!r)return;var E=ezGrade(r),s=document.createElement("span");
       s.className="x2p-tg"+(E.gr===10?" gold":"");s.setAttribute("aria-hidden","true");s.innerHTML="<b>"+E.gr+"</b><small>"+E.ds+"</small>";li.appendChild(s);
       a.setAttribute("aria-label",(a.getAttribute("aria-label")||"")+". Grade: "+E.ds+" "+E.gr+" of 10");
       var v=li.querySelector(".rx3-v"),im=v&&v.querySelector("img");if(v&&im)v.style.setProperty("--bg",'url("'+im.getAttribute("src")+'")')})}
   function x2pResults(){try{hlSlabs();tkStamp()}catch(e){}}
+  /* the Overview record: a no-film card opens on its stats (the page does that); a tap no longer turns it to "Film soon" */
+  document.addEventListener("click",function(e){var c=e.target.closest&&e.target.closest("#record .card.nofilm.cur");if(!c||e.target.closest(".shr,.snd,a,video[controls]"))return;e.stopPropagation();e.preventDefault()},true);
   x2pResults();var resT;window.__x2pResults=function(){clearTimeout(resT);resT=setTimeout(x2pResults,30)};
   /* the name and its ticker fit the label: a long name steps down from 15px until it fits (never below 10px), on load, resize and tab change */
   function nmFit(){[].forEach.call(document.querySelectorAll("#record .fx .zl .nm, #x2pHl .fx .zl .nm"),function(el){var b=el.firstChild;if(!b||!el.offsetWidth)return;el.style.fontSize="";var z=parseFloat(getComputedStyle(el).fontSize);while(b.scrollWidth>b.clientWidth+.5&&z>10){z-=.5;el.style.fontSize=z+"px"}})}
