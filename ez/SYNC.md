@@ -77,7 +77,7 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
   from ez/: `python3 tools/v22/build.py tools/v22 && python3 tools/site/make_site.py`, then commit `site/` and push;
   Cloudflare redeploys in about a minute. `site/` only changes when make_site.py runs, so other pushes do not change
   the live site. Keep publishing the artifacts as previews (data only once a film no longer fits).
-- **X2+ preview at its cap (2026-10-21).** To fit the R33 Netflix film, the preview dropped `media/round-9-micron-hd.webm` (the page falls back to the mp4, as round 6 already does). For R34 SpaceX the preview took only the mp4 and poster (no webm) and dropped `round-4-generalmills-hd.webm` and `round-13-rpm-hd.webm`. The next film needs the same treatment (`files: {"media/<old>.webm": null}`); the live site keeps everything.
+- **X2+ preview at its cap (2026-10-21).** To fit the R33 Netflix film, the preview dropped `media/round-9-micron-hd.webm` (the page falls back to the mp4, as round 6 already does). For R34 SpaceX the preview took only the mp4 and poster (no webm) and dropped `round-4-generalmills-hd.webm` and `round-13-rpm-hd.webm`. For R35 PM, again mp4 and poster only, dropping `round-7-jefferies-hd.webm` and `round-5-blackberry-hd.webm`. The next film needs the same treatment (`files: {"media/<old>.webm": null}`); the live site keeps everything.
 - **Artifact size cap (2026-10-17).** One artifact version holds at most 256 MiB. X2 reached it with round 30: films 26
   to 30 were encoded at crf 25 (mp4) and crf 35 (webm), and unused files were removed (old round-19-jpmorgan-hd.*,
   ez-gpu.jpg, ez-gpu-1200.jpg). Each new film adds about 4 to 9 MB, so the next films will not fit until the pages
