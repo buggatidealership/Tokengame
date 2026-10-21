@@ -44,12 +44,12 @@
     var n=+c.getAttribute("data-n"),g=null,q=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===n)g=ROUNDS[i];if(!g)for(i=0;i<PENDING.length;i++)if(PENDING[i].n===n)q=PENDING[i];var u=null;if(!g&&!q)for(i=0;i<UPCOMING.length;i++)if(UPCOMING[i].n===n)u=UPCOMING[i];
     var r=g||q||u;if(!r)return;var hit=g?g.calls.filter(function(x){return (x[1].indexOf("DOWN")<0)===(g.a>0)}).length:0,nc=g?g.calls.length:0,d=md(r.called);
     var ds=hit===nc?"Perfect":hit===0?"Rekt":hit/nc>=.75?"Strong":hit/nc>=.5?"Split":"Rough";
-    var h='<div class="zlab"><div class="zl"><span class="y">'+d.y+' <span class="s">$</span><span class="e">E</span><span class="z">Z</span> Season 1</span><span class="nm">'+esc2(r.co)+'</span><span class="zb"><i></i>'+String(n).padStart(8,"0")+'<span class="holo"></span></span></div>'+
+    var h='<div class="zlab"><div class="zl"><span class="y">'+d.y+' <span class="s">$</span><span class="e">E</span><span class="z">Z</span> Season 1</span><span class="nm"><b>'+esc2(r.co)+'</b>'+(r.ticker?' <small>('+esc2(r.ticker)+')</small>':'')+'</span><span class="zb"><i></i>'+String(n).padStart(8,"0")+'<span class="holo"><i class="s">$</i><i class="e">E</i><i class="z">Z</i></span></span></div>'+
       '<div class="zr"><span class="no">#'+n+'</span>'+(g?'<span class="ds">'+ds+'</span><span class="gr">'+hit+'<small>/'+nc+'</small></span>':(q?'<span class="ds">At grading</span><span class="gr">'+md(r.resolves).t.toUpperCase()+'</span>':'<span class="ds">Calls due</span><span class="gr">'+md(r.called).t.toUpperCase()+'</span>'))+'</div>'+
       '</div>';
     [].forEach.call(c.querySelectorAll(".face"),function(f){var o=document.createElement("div");o.className="fx"+(g&&hit===nc?" perfect":"");o.setAttribute("aria-hidden","true");o.innerHTML=h;f.appendChild(o);
       /* (owner, 2026-10-21) a perfect round's front gets the rolling foil: rainbow bands that roll across without end; a sibling of .fx so it lights the film too */
-      if(g&&hit===nc&&f.classList.contains("front")){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);foilFit(f);if(FRO)FRO.observe(f)}});
+      if(g&&hit===nc&&f.classList.contains("front")){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);foilFit(f);if(FRO)FRO.observe(f)}});if(window.__x2pNmFit)window.__x2pNmFit();
     var lab=(g?ds+", "+hit+" of "+nc+" called the direction":q?"calls in, graded "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
   /* (owner, 2026-10-21, later) the foil stays light over the film: the mask needs the film's top and bottom inside the face */
   function foilFit(f){var fl=f.querySelector(".x2p-foil"),a=f.querySelector(".art");if(!fl||!a||!a.offsetHeight)return;var t=0,e=a;while(e&&e!==f){t+=e.offsetTop;e=e.offsetParent}
@@ -57,6 +57,9 @@
   var FRO=window.ResizeObserver?new ResizeObserver(function(es){es.forEach(function(x){foilFit(x.target)})}):null;
   function esc2(t){return String(t).replace(/[&<>"]/g,function(x){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[x]})}
   window.__x2pSlab(document);
+  /* the name and its ticker fit the label: a long name steps down from 15px until it fits (never below 10px), on load, resize and tab change */
+  function nmFit(){[].forEach.call(document.querySelectorAll("#record .fx .zl .nm"),function(el){var b=el.firstChild;if(!b||!el.offsetWidth)return;el.style.fontSize="";var z=parseFloat(getComputedStyle(el).fontSize);while(b.scrollWidth>b.clientWidth+.5&&z>10){z-=.5;el.style.fontSize=z+"px"}})}
+  var nmT;function nmLater(){clearTimeout(nmT);nmT=setTimeout(nmFit,120)}nmFit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(nmFit);window.addEventListener("resize",nmLater);window.addEventListener("hashchange",nmLater);window.__x2pNmFit=nmLater;
   /* the record section's first two bullets said what steps 1 and 2 now say: keep only the dare */
   var rec=$(".x2o-rec"),own=rec?[].filter.call(rec.children,function(c){return !c.classList.contains("x2p-xli")}):[];if(own.length===3){own[0].remove();own[1].remove()}
   var sn=$(".x2o-stn");if(sn)sn.textContent="The model on top of the leaderboard makes the call on bet #1, NVIDIA.";
