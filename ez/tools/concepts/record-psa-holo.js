@@ -45,24 +45,16 @@ const fx=d=>`<div class="zlab"><div class="zl"><span class="y">2026 <span class=
  <div class="zb"><i></i>${String(d.n).padStart(8,'0')}<span class="holo"></span></div></div><i class="zgl"></i>`;
 
 const HOLO=`
- @keyframes zsheen{0%{background-position:0% 0%}100%{background-position:100% 100%}}
- @keyframes ztw{0%,100%{opacity:.25}50%{opacity:.9}}
+ @keyframes zsheen{0%{background-position:100% 0}100%{background-position:0 100%}}
  html.x2p #record .card .face.back .fin{position:relative}
  html.x2p #record .card .face.back .bk-r{position:relative}
- /* the foil: a soft rainbow sheen in the site's own hues, screened over the dark card, drifting slowly like a tilted holo */
+ /* holo, no glitter (owner, 2026-10-21): one soft iridescent wash that drifts across the card, light enough to read through */
  html.x2p #record .card .face.back:has(.bk-rows):not(:has(.bk-r.no)) .fin::before,
  html.x2p #record .card .face.back:has(.bk-r.no) .bk-r:is(.win,.ok)::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;border-radius:inherit;
-   background:linear-gradient(115deg,#ff6fae 0%,#f2b632 14%,#9ff0c4 28%,#6fd3ff 42%,#c49bff 56%,#ff6fae 70%,#f2b632 84%,#9ff0c4 100%);background-size:300% 300%;
-   mix-blend-mode:screen;opacity:.1;animation:zsheen 7s ease-in-out infinite alternate}
- /* the glitter: two layers of tiny sparkles that twinkle out of step */
- html.x2p #record .card .face.back:has(.bk-rows):not(:has(.bk-r.no)) .fin::after,
- html.x2p #record .card .face.back:has(.bk-r.no) .bk-r:is(.win,.ok)::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;border-radius:inherit;
-   background:radial-gradient(circle,#fff 0 .6px,transparent 1.1px) 3px 5px/53px 47px,radial-gradient(circle,#fff6d8 0 .8px,transparent 1.4px) 21px 11px/71px 61px,radial-gradient(circle,#d9fff0 0 .55px,transparent 1px) 37px 29px/43px 67px,radial-gradient(circle,#ffd9ef 0 .7px,transparent 1.2px) 11px 41px/89px 37px,radial-gradient(circle,#fff 0 1px,transparent 1.8px) 61px 19px/127px 109px;
-   mix-blend-mode:screen;opacity:.75;animation:ztw 2.6s ease-in-out infinite}
- html.x2p #record .card .face.back:has(.bk-r.no) .bk-r:is(.win,.ok)::before{opacity:.2}
- html.x2p #record .card .face.back:has(.bk-r.no) .bk-r:is(.win,.ok)::after{background-size:23px 19px,31px 27px,17px 29px,41px 23px,61px 47px;opacity:.6}
- html.x2p #record .card .face.back:has(.bk-r.no) .bk-r.win::before{opacity:.45;mix-blend-mode:soft-light}
- @media (prefers-reduced-motion:reduce){html.x2p #record .card .face.back .fin::before,html.x2p #record .card .face.back .fin::after,html.x2p #record .card .face.back .bk-r::before,html.x2p #record .card .face.back .bk-r::after{animation:none!important}}`;
+   background:linear-gradient(120deg,rgba(255,111,174,0) 0%,rgba(255,111,174,.9) 18%,rgba(242,182,50,.9) 30%,rgba(159,240,196,.9) 42%,rgba(111,211,255,.9) 54%,rgba(196,155,255,.9) 66%,rgba(255,111,174,0) 84%);
+   background-size:260% 260%;mix-blend-mode:soft-light;opacity:.55;animation:zsheen 6s ease-in-out infinite alternate}
+ html.x2p #record .card .face.back:has(.bk-r.no) .bk-r:is(.win,.ok)::before{opacity:.7}
+ @media (prefers-reduced-motion:reduce){html.x2p #record .card .face.back .fin::before,html.x2p #record .card .face.back .bk-r::before{animation:none!important;background-position:50% 50%}}`;
 const V={holo:{css:LAB+BLACK+HOLO,fx}};
 (async()=>{const b=await chromium.launch();
  for(const k of Object.keys(V)){
