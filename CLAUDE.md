@@ -1,6 +1,7 @@
 # Tokengame
 
 ## EZ landing page (`ez/`)
+- **Only two pages now (owner, 2026-10-21: "never update any other site anymore"):** EZ Live X2+ (`ez/v46-live-x2plus.html`, the preview artifact) and the main website (earningszn.xyz, built from X2+ by `ez/tools/site/make_site.py`). Do not republish or change EZ Season, X2, X3, X4, X5, X6, X7 or any other page, on syncs or otherwise; older lines below that say to republish them are history. build.py may still write their files.
 - When the owner says **"sheet has been updated"** (or sends a new round film), follow `ez/SYNC.md` step by step.
 - All numbers come from `ez/ez-data.js` (a checked snapshot of the owner's sheet). Never type results by hand anywhere else.
 - `ez/v1-binder.html` is "Variant 1" and is frozen: do not edit it or the original media files it uses.

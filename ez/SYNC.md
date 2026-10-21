@@ -39,7 +39,8 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    Until a film exists the round still counts everywhere and shows "Film soon".
 5. **Check.** `node ez/tools/check_pages.js` must print `OK` for every page, with the expected
    round count and standings. Fix anything it reports.
-6. **Commit and publish.** (While the experiments X1 and X2 exist, `build.py` also rebuilds `v23-live-x1.html` and `v24-live-x2.html`; republish those too, same file paths, and include any new film or logo files.) Commit, push the branch, rebuild the built pages (`python3 tools/v22/build.py tools/v22` from `ez/`), and republish the pages below (same file paths keep the same links):
+6. **Commit and publish (owner, 2026-10-21: only two pages now).** Rebuild (`python3 tools/v22/build.py tools/v22` from `ez/`), republish only EZ Live X2+ (https://claude.ai/artifact/9dPsU3tcgmC9RAzQZy9Mg5, with `ez-data.js` and any new media; it is near its 256 MiB cap), then `python3 tools/site/make_site.py` and deploy `site/` to the main website (see the earningszn.xyz note). Do not republish any other page. The rest of this step is history:
+   6. **Commit and publish.** (While the experiments X1 and X2 exist, `build.py` also rebuilds `v23-live-x1.html` and `v24-live-x2.html`; republish those too, same file paths, and include any new film or logo files.) Commit, push the branch, rebuild the built pages (`python3 tools/v22/build.py tools/v22` from `ez/`), and republish the pages below (same file paths keep the same links):
    - EZ Season: https://claude.ai/artifact/XxQqLLfSx18hzSV9qawyeN (`ez/v15-season.html`)
    - EZ Live X2 (main page): https://claude.ai/artifact/1HuRhevBKLrUfzBR5UUaZL (`ez/v24-live-x2.html`)
    - EZ Live X3: https://claude.ai/artifact/4J3oqRt4mxzHKFi3bHuQip (`ez/v41-live-x3.html`)
