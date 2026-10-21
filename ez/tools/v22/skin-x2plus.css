@@ -678,3 +678,13 @@ html.x2p #record .card.pend .face.front .ctop{top:12px;right:10px}
 html.x2p #record .card.pend .face.front .ctop button{width:30px;height:30px}
 /* no glare streak on the slab (owner, 2026-10-21: cleaner) */html.x2p #record .card .fx .zgl{display:none}
 /* a flat label, no print texture (owner, 2026-10-21) */html.x2p #record .card .fx .zlab,html.x2p #record .card .fx.perfect .zlab{background-image:none!important}
+
+/* rolling foil on a perfect round's front (owner, 2026-10-21, "Rolling foil, C stronger"): soft rainbow bands roll diagonally without end,
+   blended over the label and the film; moved by transform only, still for reduced motion. One period = 130px across the bands, 143.44px along x */
+html.x2p #record .card .face.front:has(.x2p-foil){isolation:isolate}
+html.x2p #record .card .face.front .x2p-foil{position:absolute;inset:0;border-radius:12px;overflow:hidden;pointer-events:none;z-index:7;mix-blend-mode:overlay}
+html.x2p #record .card .face.front .x2p-foil>i{position:absolute;top:-60%;bottom:-60%;right:-60%;left:calc(-60% - 143.44px);will-change:transform;
+  background:repeating-linear-gradient(115deg,rgba(255,111,174,.9) 0,rgba(242,182,50,.9) 26.0px,rgba(159,240,196,.9) 52.0px,rgba(111,211,255,.9) 78.0px,rgba(196,155,255,.9) 104.0px,rgba(255,111,174,.9) 130px);
+  animation:x2pfoil 3.8s linear infinite}
+@keyframes x2pfoil{to{transform:translateX(143.44px)}}
+@media (prefers-reduced-motion:reduce){html.x2p #record .card .face.front .x2p-foil>i{animation:none}}
