@@ -403,4 +403,7 @@ XPCSS=open(sys.argv[1]+'/skin-x2plus.css').read(); XPJS=open(sys.argv[1]+'/x2plu
 assert pp.count('</head>')==1 and pp.count('</body>')==1
 pp=pp.replace('</head>','<style id="x2plus-skin">\n'+XPCSS+'\n</style>\n</head>')
 pp=pp.replace('</body>','<script id="x2plus-words">\n'+XPJS+'\n</script>\n</body>')
+# (owner, 2026-10-21) the Results highlights are slabs too (x2plus.js builds them in #x2pHl): every "#record .card" style
+# also matches there, same specificity; only inside <style>, so the page's own scripts still see the Overview's cards alone
+pp=re.sub(r'<style[^>]*>.*?</style>',lambda m:m.group(0).replace('#record .card',':is(#record,#x2pHl) .card'),pp,flags=re.S)
 open("v46-live-x2plus.html",'w').write(pp); print("ok v46-live-x2plus.html",len(pp))
