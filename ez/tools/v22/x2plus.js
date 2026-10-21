@@ -46,7 +46,7 @@
     var ds=hit===nc?"Perfect":hit===0?"Rekt":hit/nc>=.75?"Strong":hit/nc>=.5?"Split":"Rough";
     var h='<div class="zlab"><div class="zl"><span class="y">'+d.y+' <span class="s">$</span><span class="e">E</span><span class="z">Z</span> Season 1</span><span class="nm">'+esc2(r.co)+'</span><span class="zb"><i></i>'+String(n).padStart(8,"0")+'<span class="holo"></span></span></div>'+
       '<div class="zr"><span class="no">#'+n+'</span>'+(g?'<span class="ds">'+ds+'</span><span class="gr">'+hit+'<small>/'+nc+'</small></span>':(q?'<span class="ds">At grading</span><span class="gr">'+md(r.resolves).t.toUpperCase()+'</span>':'<span class="ds">Calls due</span><span class="gr">'+md(r.called).t.toUpperCase()+'</span>'))+'</div>'+
-      '</div><i class="zgl"></i>';
+      '</div>';
     [].forEach.call(c.querySelectorAll(".face"),function(f){var o=document.createElement("div");o.className="fx"+(g&&hit===nc?" perfect":"");o.setAttribute("aria-hidden","true");o.innerHTML=h;f.appendChild(o)});
     var lab=(g?ds+", "+hit+" of "+nc+" called the direction":q?"calls in, graded "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
   function esc2(t){return String(t).replace(/[&<>"]/g,function(x){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[x]})}
