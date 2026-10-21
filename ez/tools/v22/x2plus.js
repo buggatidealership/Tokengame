@@ -49,8 +49,12 @@
       '</div>';
     [].forEach.call(c.querySelectorAll(".face"),function(f){var o=document.createElement("div");o.className="fx"+(g&&hit===nc?" perfect":"");o.setAttribute("aria-hidden","true");o.innerHTML=h;f.appendChild(o);
       /* (owner, 2026-10-21) a perfect round's front gets the rolling foil: rainbow bands that roll across without end; a sibling of .fx so it lights the film too */
-      if(g&&hit===nc&&f.classList.contains("front")){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl)}});
+      if(g&&hit===nc&&f.classList.contains("front")){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);foilFit(f);if(FRO)FRO.observe(f)}});
     var lab=(g?ds+", "+hit+" of "+nc+" called the direction":q?"calls in, graded "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
+  /* (owner, 2026-10-21, later) the foil stays light over the film: the mask needs the film's top and bottom inside the face */
+  function foilFit(f){var fl=f.querySelector(".x2p-foil"),a=f.querySelector(".art");if(!fl||!a||!a.offsetHeight)return;var t=0,e=a;while(e&&e!==f){t+=e.offsetTop;e=e.offsetParent}
+    fl.style.setProperty("--at",t+"px");fl.style.setProperty("--ab",(t+a.offsetHeight)+"px")}
+  var FRO=window.ResizeObserver?new ResizeObserver(function(es){es.forEach(function(x){foilFit(x.target)})}):null;
   function esc2(t){return String(t).replace(/[&<>"]/g,function(x){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[x]})}
   window.__x2pSlab(document);
   /* the record section's first two bullets said what steps 1 and 2 now say: keep only the dare */
