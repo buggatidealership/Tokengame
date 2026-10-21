@@ -36,7 +36,7 @@ window.__mk=function(mode){
  const mini=(r,wrap)=>{const x=G(r),gold=x.g===10;return `<div class="mk-s${gold?' gold':''}"><div class="mk-l"><span class="t"><span class="no">#${r.n}</span><span class="c">${r.co}</span></span><span><span class="w">${x.w}</span><span class="g">${x.g}</span></span></div>${poster(r)?`<div class="mk-f"><img src="${poster(r)}"></div>`:`<div class="mk-f none">NO FILM</div>`}</div>`};
  const tens=ROUNDS.filter(r=>G(r).g===10).sort((a,b)=>b.n-a.n);
  const hlSec=document.querySelector('.x2p-hl-sec'),ul=hlSec.querySelector('ul.hx2s');
- if(mode!=='D'){const h2=hlSec.querySelector('h2');[...h2.childNodes].filter(n=>n.nodeType===3).forEach(n=>n.textContent='');const t=h2.querySelector('.x2p-lc, span:last-child');
+ if(mode!=='D'&&mode!=='C-only'){const h2=hlSec.querySelector('h2');[...h2.childNodes].filter(n=>n.nodeType===3).forEach(n=>n.textContent='');const t=h2.querySelector('.x2p-lc, span:last-child');
    h2.lastChild.textContent='The 10s';
    const sub=document.createElement('p');sub.className='mk-sub';sub.innerHTML=`Only <b>${tens.length} of ${ROUNDS.length}</b> rounds graded a 10.`;
    const row=document.createElement('div');row.className='mk-row';row.innerHTML=tens.map(r=>mini(r)).join('');const tap=document.createElement('p');tap.className='mk-tap';tap.textContent='Tap a card';
@@ -47,7 +47,7 @@ window.__mk=function(mode){
    const pop=document.createElement('p');pop.className='mk-pop';pop.textContent='Pristine 10 · 1 of 3 tens';const s2=document.createElement('p');s2.className='mk-story';
    s2.innerHTML=`TSMC fell 2.01%. All four said it would fall, off by just 0.91% on average.<small>Closest: ${x.best[0][0]+x.best[0].slice(1).toLowerCase()} said down 2.5%, off by ${x.best[2]}%. Tap the card for the stats.</small>`;
    sh.querySelector('.mk-cardwrap').append(pop,s2);document.body.append(sc,sh)}
- if(mode==='C'){const ol=document.querySelector('ol.rx3');const g=document.createElement('div');g.className='mk-grid';g.innerHTML=ROUNDS.slice().sort((a,b)=>b.n-a.n).map(r=>mini(r)).join('');ol.replaceWith(g)}
+ if(mode==='C'||mode==='C-only'){const ol=document.querySelector('ol.rx3');const g=document.createElement('div');g.className='mk-grid';g.innerHTML=ROUNDS.slice().sort((a,b)=>b.n-a.n).map(r=>mini(r)).join('');ol.replaceWith(g)}
  if(mode==='D'){document.querySelectorAll('ol.rx3>li').forEach(li=>{const n=+((li.querySelector('[data-n]')||li).getAttribute('data-n')||0)||+((li.textContent.match(/Round (\d+)/)||[])[1]||0);const r=ROUNDS.find(r=>r.n===n);if(!r)return;const x=G(r);
    const s=document.createElement('div');s.className='mk-seal'+(x.g===10?' gold':'');s.innerHTML=`<b>${x.g}</b><span>${x.w}</span>`;li.style.position=li.style.position||'';li.appendChild(s);
    const v=li.querySelector('.rx3-v');if(v){v.classList.add('mk-fixv');v.style.setProperty('--bg',`url(${poster(r)})`)}})}
