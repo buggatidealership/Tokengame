@@ -43,10 +43,9 @@ const css=`${FONTS}*{box-sizing:border-box}body{margin:0;background:#0d0b12;colo
 .face.empty{place-items:center;font:400 22px/1 Anton;color:#a49fb4;letter-spacing:.06em;background:repeating-linear-gradient(45deg,#15131d 0 12px,#1b1825 12px 24px)}
 .cap{margin-top:12px;font:600 13px/1.35 Barlow;color:#a49fb4;max-width:250px}.cap b{color:#f3ead6}
 .box{background:#15131d;border:2px solid #000;box-shadow:5px 6px 0 #000;padding:18px 20px}
-.lab{position:absolute}.r{align-content:center!important;justify-items:end;gap:2px}.r .ds{font-size:10px}.r .gr{font-size:34px}.r .gr.dt{font-size:22px;line-height:1}
-.l .vr{color:#5d564a!important;letter-spacing:.08em}.lab .l .vr{font-size:8.5px}
-.lab .holo{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:34px;height:13px;border-radius:2px;display:grid;place-items:center;font:400 8px/1 Anton;letter-spacing:.06em;color:rgba(20,18,23,.85);
- background:linear-gradient(100deg,#9ff0c4,#f7e7a8 28%,#ffb3ae 52%,#c9d8ff 70%,#f2b632 88%,#9ff0c4);box-shadow:0 0 0 1px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.5)}
+.r .gr.dt{font-size:20px;line-height:1}.r .ds{margin-top:2px}
+.l .nm.lg2{font-size:12px;letter-spacing:0}.l .nm.lg2 small{font-size:9.5px}.l .nm .hn{color:#b8262a;font-size:13px;margin-right:1px}.lab.blk .l .nm.lg2{font-size:12px;letter-spacing:0}.l .nm.lg2 small{font-size:9.5px}.l .nm .hn{color:#141217}
+.l .cb em{font:400 6.5px/9px Anton;font-style:normal;text-align:center;color:rgba(20,18,23,.8);width:24px}
 .lab.blk .r .ds,.lab.blk .r .gr,.lab.blk .l .vr{color:#141217!important}
 table{border-collapse:collapse;width:100%;font:500 14px/1.2 Barlow}th{font:800 11px/1 'Barlow Condensed';letter-spacing:.14em;text-transform:uppercase;color:#a49fb4;text-align:left;padding:6px 8px;border-bottom:1.5px solid #3a3546}
 td{padding:7px 8px;border-bottom:1px solid #2a2633}td.g{font:400 24px/1 Anton;width:52px}td.w{font:800 14px/1 'Barlow Condensed';letter-spacing:.08em;color:#f2b632}td.h{color:#a49fb4;font-size:13px}td.p{font:400 20px/1 Anton;text-align:right}
@@ -62,11 +61,9 @@ td{padding:7px 8px;border-bottom:1px solid #2a2633}td.g{font:400 24px/1 Anton;wi
 .ok{color:#11714a}.no{color:#c8372d}
 .pill{display:inline-block;padding:3px 8px;border:2px solid #000;font:800 11px/1 'Barlow Condensed';letter-spacing:.1em;background:#4fe39a;color:#03140a}`;
 function slab(o){const g=o.g;const cls=o.pr?'lab blk':(o.state?'lab sub2':'lab');
- /* (owner, 2026-10-21) the grade sits centred top to bottom in the right column; "#n" moves to the left column's third line;
-    the $EZ hologram sits dead centre at the bottom of the label, like PSA's; a ticker equal to the name is not repeated */
+ /* (owner, 2026-10-21) the earlier layout, with "#n" in front of the company name and the ticker after it */
  const right=o.state?`<span class="ds">${o.state[0]}</span><span class="gr dt">${o.state[1]}</span>`:`<span class="ds">${o.pr?'PRISTINE':WORD[g]}</span><span class="gr">${g}</span>`;
- const tk=o.tk&&o.tk.toUpperCase()!==o.co.toUpperCase()?` <small>(${o.tk})</small>`:'';
- return `<div><div class="slab"><div class="${cls}"><div class="l"><span class="y">2026 <i class="s">$</i><i class="e">E</i><i class="z">Z</i> SEASON 1</span><span class="nm">${o.co}${tk}</span><span class="vr">#${o.n}${o.vr?' · '+o.vr:''}</span><span class="cb"><i></i>${String(o.n).padStart(8,'0')}</span></div><div class="r">${right}</div><span class="holo">$EZ</span></div>
+ return `<div><div class="slab"><div class="${cls}"><div class="l"><span class="y">2026 <i class="s">$</i><i class="e">E</i><i class="z">Z</i> SEASON 1</span><span class="nm${(o.co+o.tk).length>20?' lg2':''}"><span class="hn">#${o.n}</span> ${o.co}${o.tk?` <small>(${o.tk})</small>`:''}</span>${o.vr?`<span class="vr">${o.vr}</span>`:''}<span class="cb"><i></i>${String(o.n).padStart(8,'0')}<em>$EZ</em></span></div><div class="r">${right}</div></div>
  ${o.img?`<div class="face"><img src="media/${o.img}.jpg"></div>`:`<div class="face empty">${o.empty||''}</div>`}</div><p class="cap">${o.cap}</p></div>`}
 const poster=n=>FILMS[n]&&FILMS[n].p;
 const pick=[30,32,31,27,28,10];
