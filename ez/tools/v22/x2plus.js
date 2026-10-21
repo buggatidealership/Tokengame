@@ -37,6 +37,20 @@
       li.appendChild(document.createTextNode("Every call straight to your "));li.appendChild(xa("x2p-xlink x2p-xword","X","Follow "+XH+" on X"));li.appendChild(document.createTextNode(" feed."));rb.appendChild(li)}
     /* (owner, 2026-10-21) for now only two: the record bullet and the header icon; the card and footer links are off */
   }
+  /* the record cards as graded slabs (owner, 2026-10-21): each face gets the PSA-style label; the grade is how many AIs
+     called the direction (from the sheet); a perfect round gets the black label (and, by CSS, the holo stats side) */
+  var MO=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],md=function(s){var m=String(s).match(/(\d+)\/(\d+)\/(\d+)/);return m?{t:MO[+m[1]]+" "+(+m[2]),y:2000+(+m[3])}:{t:"",y:""}};
+  window.__x2pSlab=function(root){[].forEach.call((root||document).querySelectorAll("#record .card[data-n]"),function(c){if(c.querySelector(".fx"))return;
+    var n=+c.getAttribute("data-n"),g=null,q=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===n)g=ROUNDS[i];if(!g)for(i=0;i<PENDING.length;i++)if(PENDING[i].n===n)q=PENDING[i];var u=null;if(!g&&!q)for(i=0;i<UPCOMING.length;i++)if(UPCOMING[i].n===n)u=UPCOMING[i];
+    var r=g||q||u;if(!r)return;var hit=g?g.calls.filter(function(x){return (x[1].indexOf("DOWN")<0)===(g.a>0)}).length:0,nc=g?g.calls.length:0,d=md(r.called);
+    var ds=hit===nc?"Perfect":hit===0?"Rekt":hit/nc>=.75?"Strong":hit/nc>=.5?"Split":"Rough";
+    var h='<div class="zlab"><div class="zl"><span class="y">'+d.y+' <span class="s">$</span><span class="e">E</span><span class="z">Z</span> Season 1</span><span class="nm">'+esc2(r.co)+'</span><span class="v">Round '+n+' · '+esc2(r.ticker)+' earnings</span></div>'+
+      '<div class="zr"><span class="no">#'+n+'</span>'+(g?'<span class="ds">'+ds+'</span><span class="gr">'+hit+'<small>/'+nc+'</small></span>':(q?'<span class="ds">At grading</span><span class="gr">'+md(r.resolves).t.toUpperCase()+'</span>':'<span class="ds">Calls due</span><span class="gr">'+md(r.called).t.toUpperCase()+'</span>'))+'</div>'+
+      '<div class="zb"><i></i>'+String(n).padStart(8,"0")+'<span class="holo"></span></div></div><i class="zgl"></i>';
+    [].forEach.call(c.querySelectorAll(".face"),function(f){var o=document.createElement("div");o.className="fx"+(g&&hit===nc?" perfect":"");o.setAttribute("aria-hidden","true");o.innerHTML=h;f.appendChild(o)});
+    var lab=(g?ds+", "+hit+" of "+nc+" called the direction":q?"calls in, graded "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
+  function esc2(t){return String(t).replace(/[&<>"]/g,function(x){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[x]})}
+  window.__x2pSlab(document);
   /* the record section's first two bullets said what steps 1 and 2 now say: keep only the dare */
   var rec=$(".x2o-rec"),own=rec?[].filter.call(rec.children,function(c){return !c.classList.contains("x2p-xli")}):[];if(own.length===3){own[0].remove();own[1].remove()}
   var sn=$(".x2o-stn");if(sn)sn.textContent="The model on top of the leaderboard makes the call on bet #1, NVIDIA.";
@@ -52,7 +66,7 @@
       n.parentNode.replaceChild(f,n)})}
   fix(document.body);
   if(window.MutationObserver){var busy=false;new MutationObserver(function(ms){if(busy)return;busy=true;
-    ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1)fix(x);else if(x.nodeType===3&&x.parentNode)fix(x.parentNode)})});busy=false})
+    ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1){fix(x);if(window.__x2pSlab)window.__x2pSlab(x.closest&&x.closest("#record")?x.closest("#record"):x)}else if(x.nodeType===3&&x.parentNode)fix(x.parentNode)})});busy=false})
     .observe(document.body,{childList:true,subtree:true})}
 }catch(e){}})();
 /* the $EZ host, the mascot (owner, 2026-10-20: "one on each tab, not more", subtle, never in your face). Small, ink-outlined,
