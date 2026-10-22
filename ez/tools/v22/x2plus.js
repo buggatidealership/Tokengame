@@ -727,6 +727,8 @@
     x[2].forEach(function(t){var li=d.createElement("li");li.innerHTML=t;ul.appendChild(li)});
     /* each list on its broadcast strap with a bug (owner, 2026-10-22: C3; "The stats" on the proof); X3+ shows the same lists as neon */
     var sp=d.createElement("div");sp.className="x2p-strap";sp.innerHTML='<span class="x2p-bug" aria-hidden="true">'+x[3]+'</span>';sp.appendChild(ul);sh.appendChild(sp)});
+  /* (owner, 2026-10-22) the record's two bullets on a strap too, like the other sections; its X link keeps its tap area */
+  var rcl=$("#record .x2o-rec");if(rcl&&!rcl.closest(".x2p-strap")){var rsp=d.createElement("div");rsp.className="x2p-strap";rsp.innerHTML='<span class="x2p-bug" aria-hidden="true">Receipts</span>';rcl.parentNode.insertBefore(rsp,rcl);rsp.appendChild(rcl)}
   [["#standings","01"],["#record","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
   /* the highlights land on Tightest race (the middle card), its film first (owner, 2026-10-22: with "Flip a card for the
      story" under the head, the animation shows first; it replaced the story side up), once the Overview is on screen */
