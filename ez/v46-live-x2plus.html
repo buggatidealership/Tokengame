@@ -5373,6 +5373,9 @@ html.x2p .x2p-vt .vt-bar{display:none!important}
 /* (owner, 2026-10-22) the disc on the middle of the desk front in the poster: its centre at 89% of the film's height at every
    width (it was 86% on phones, 91% on desktop), never closer than 6px to the film's foot */
 html.x2p .x2p-vt .vt-play{bottom:auto;top:min(calc(89% - 16px),calc(100% - 38px))}
+/* (owner, 2026-10-22) the standings head in one column like the proof's: its two bullets under the head (in X2's second
+   column they pushed the ⓘ to the middle of the page on desktop), the ⓘ back at the head's right end */
+html.x2p-launch #standings .sh{grid-template-columns:1fr}
 
 </style>
 </head>
@@ -8119,7 +8122,8 @@ function x2LBpage(h){
     P+' section.x2o-bet:has(>.x2p-vt){padding-top:6px;margin-top:8px}',
     P+' .x2p-vt{margin:28px 0 0;max-width:none;overflow-x:clip}',
     P+' .x2p-vt .vt-tag{left:16px}',
-    P+' .x2p-bt{margin:24px 14px 0;max-width:none;overflow-x:clip}',
+    /* (owner, 2026-10-22, later) the ticket as wide as the film on phones too (from 600px both were already 560px) */
+    P+' .x2p-bt{margin:24px 0 0;max-width:none;overflow-x:clip}',
     P+' section.x2o-bet + section.x2o-rc{padding-top:22px}',
     '}'
   ].join('\n');
@@ -8201,9 +8205,16 @@ function x2LBpage(h){
   var tp=d.createElement("template");tp.innerHTML=R.vResults();var hs=tp.content.querySelector("section.xsec");
   if(hs&&window.__x2pHlSlabs){var h2=d.createElement("div");h2.hidden=true;d.body.appendChild(h2);h2.appendChild(hs);window.__x2pHlSlabs();
     if($("#x2pHl",hs)){hs.id="highlights";hs.classList.add("sec","x2p-hl-sec");hs.setAttribute("aria-labelledby","x2hlH");
-      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">The rounds that stood out</h2></div>';
+      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">The predictions that shocked us</h2></div>';
       var xh=$(".xsh",hs);if(xh)hs.replaceChild(sh,xh);else hs.insertBefore(sh,hs.firstChild);ln.parentNode.insertBefore(hs,ln.nextSibling)}
     h2.remove()}
+  /* two bullets under the standings and the proof heads, the record's style (owner, 2026-10-22: "a bit dry"); the count
+     comes from the sheet */
+  var gN=(typeof SHEET!=="undefined"?SHEET:[]).filter(function(r){return r[12]!==""&&r[12]!=null}).length;
+  [["#standings","x2p-stb",["Four AIs. Same stocks. Same deadline.","Ranked by how often they call up or down right."]],
+   ["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."]]].forEach(function(x){
+    var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
+    x[2].forEach(function(t){var li=d.createElement("li");li.textContent=t;ul.appendChild(li)});sh.appendChild(ul)});
   [["#standings","01"],["#record","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
   /* the highlights land on Tightest race (the middle card), its story side up, once the Overview is on screen */
   var landed=false;function land(){if(landed||!window.__x2pHlGo)return;var ws=$$("#x2pHl .x2p-hi"),i=1;
