@@ -25,50 +25,79 @@
     var vt=document.createElement("div");vt.className="x2p-vt";
     /* (owner, 2026-10-21, round 2: option 4) the film is the ticket: no paper, the scallops cut the film and the bands print over its edges;
        "How it works" is mockup A's tilted gold tag across the top edge, with the time left */
-    vt.innerHTML='<span class="vt-tag">How it works<small class="vt-s">1:07</small></span><div class="vt-p"><i class="vt-st" aria-hidden="true"></i>'+
+    /* (2026-10-22, review) the tag is the module's heading (h2) for screen readers; the time beside it is decoration */
+    vt.innerHTML='<h2 class="vt-tag">How it works<small class="vt-s" aria-hidden="true">1:07</small></h2><div class="vt-p"><i class="vt-st" aria-hidden="true"></i>'+
       '<div class="vt-f"><video class="vt-v" playsinline preload="metadata" poster="media/ez-landing-hd-poster.jpg" aria-label="How EZ works, one minute"><source src="media/ez-landing-v2.mp4" type="video/mp4"><source src="media/ez-landing-v2.webm" type="video/webm"></video>'+
-      '<button type="button" class="vt-snd" aria-label="Sound off" title="Sound off"></button><button type="button" class="vt-tap">Tap for sound</button><button type="button" class="vt-play"><i aria-hidden="true"></i>Tap to play</button><span class="vt-bar" aria-hidden="true"><i></i></span></div></div>';
+      '<button type="button" class="vt-snd"></button><button type="button" class="vt-tap">Tap for sound</button><button type="button" class="vt-play"><i aria-hidden="true"></i><span>Tap to play</span></button><span class="vt-bar" aria-hidden="true"><i></i></span></div></div>';
     T3.parentNode.insertBefore(vt,T3);T3.hidden=true;T3.setAttribute("data-x2p-kept","buyback");
-    (function(){var v=vt.querySelector(".vt-v"),snd=vt.querySelector(".vt-snd"),tap=vt.querySelector(".vt-tap"),play=vt.querySelector(".vt-play"),bar=vt.querySelector(".vt-bar>i"),st=vt.querySelector(".vt-s"),f=vt.querySelector(".vt-f");
+    (function(){var v=vt.querySelector(".vt-v"),snd=vt.querySelector(".vt-snd"),tap=vt.querySelector(".vt-tap"),play=vt.querySelector(".vt-play"),pl=play.querySelector("span"),bar=vt.querySelector(".vt-bar>i"),st=vt.querySelector(".vt-s"),f=vt.querySelector(".vt-f");
       var SON='<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3 6h3l4-3.5v11L6 10H3z" fill="currentColor"/><path d="M12 5.5a3.5 3.5 0 0 1 0 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
       var SOFF='<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3 6h3l4-3.5v11L6 10H3z" fill="currentColor"/><path d="M11.5 5.5l4 4M15.5 5.5l-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
-      var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches,started=false,ended=false,mini=null,rolling=false,nosrc=false;
+      var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches,started=false,ended=false,mini=null,rolling=false,nosrc=false,userMuted=false,tapAt=0;
       function fmt(t){t=Math.max(0,Math.round(t));return Math.floor(t/60)+":"+("0"+t%60).slice(-2)}
-      function ui(){snd.innerHTML=v.muted?SOFF:SON;snd.setAttribute("aria-label",v.muted?"Sound off":"Sound on");snd.title=snd.getAttribute("aria-label");tap.hidden=!(rolling&&v.muted);
-        /* (owner, 2026-10-21: "the video doesn't play when I click on it") the state follows real playback, not v.paused: a play() still waiting
-           for data, or for a file that isn't there, leaves paused false while nothing rolls; then the play button stays */
-        vt.classList.toggle("playing",rolling);play.hidden=rolling||(!v.paused&&!nosrc)?true:false;if(!v.paused)st.textContent=fmt(v.duration?v.duration-v.currentTime:67);else if(!started||v.ended)st.textContent=fmt(v.duration||67)}
-      function pauseRounds(){[].forEach.call(document.querySelectorAll("#record video, #x2pHl video"),function(r){if(!r.paused)r.pause()})}
-      /* the page's round films: when one starts, this one stops */
-      /* precedence: while the explainer talks, a round film that autoplays (the record scrolling into view) is paused again; a round film
-         started by a tap on its card (a real gesture in the last second) takes over and the explainer stops */
-      var lastTap=0;document.addEventListener("pointerdown",function(e){if(e.target.closest&&e.target.closest("#record, #x2pHl, .rx3"))lastTap=Date.now()},true);
-      document.addEventListener("play",function(e){var t=e.target;if(!t||t===v||t.classList&&t.classList.contains("vt-v")||t.tagName!=="VIDEO")return;
-        if(v.paused||v.ended)return;if(Date.now()-lastTap<1200){v.pause();hideMini()}else t.pause()},true);
-      /* and the other way round: whenever this one starts, by tap or by script, the round films stop */
+      function loading(){return !v.paused&&!v.ended&&!rolling&&!nosrc}
+      /* the state follows real playback (the playing event), not v.paused: a play() still waiting for data, or for a file that isn't there,
+         leaves paused false while nothing rolls (owner, 2026-10-21: "the video doesn't play when I click on it"). One button, .vt-play, carries
+         every state: "Tap to play", "Loading" while it fetches, and "Pause" while it rolls (then invisible to touch, shown on keyboard focus) */
+      function ui(){var ld=loading(),t;snd.innerHTML=v.muted?SOFF:SON;snd.setAttribute("aria-label",v.muted?"Unmute":"Mute");snd.title=v.muted?"Sound off":"Sound on";
+        if(mini){var ms=mini.querySelector(".m-snd");ms.innerHTML=v.muted?SOFF:SON;ms.setAttribute("aria-label",v.muted?"Unmute":"Mute")}
+        /* "Tap for sound" only when the browser refused sound (not after a deliberate mute), and only for 3 s: it sits on the captions */
+        tap.hidden=!(rolling&&v.muted&&!userMuted&&Date.now()-tapAt<3000);
+        vt.classList.toggle("playing",rolling);vt.classList.toggle("loading",ld);t=rolling?"Pause":ld?"Loading":"Tap to play";if(pl.textContent!==t)pl.textContent=t;
+        t=!v.paused?fmt(v.duration?v.duration-v.currentTime:67):(!started||v.ended)?fmt(v.duration||67):st.textContent;if(st.textContent!==t)st.textContent=t}
+      function pauseRounds(){[].forEach.call(document.querySelectorAll("#record video, #x2pHl video, .rx3 video"),function(r){if(r!==v&&!r.paused)r.pause()})}
+      /* precedence with the round films (2026-10-22, review: a thumb scroll over the record stopped the explainer, because every touch scroll
+         starts with a pointerdown and the record and the highlights call play() on gestures and on coming into view). While the explainer is on
+         (playing, loading, or just touched), a round film that asks to play by itself waits: its play() returns a promise that never settles, so
+         the record neither plays nor falls back to "sound off". Only a click on a card (browsers never fire one for a scroll; Enter and Space do)
+         lets a round film start, and then the explainer stops. When the explainer stops, the record's centred film and the highlight resume. */
+      var nativePlay=HTMLMediaElement.prototype.play,lastClick=0,armed=0,held=false;
+      function active(){return (!v.paused&&!v.ended&&!nosrc)||Date.now()-armed<1500}
+      document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#record, #x2pHl, .rx3"))lastClick=Date.now()},true);
+      document.addEventListener("pointerdown",function(e){if(e.target.closest&&e.target.closest(".x2p-vt, .x2p-vmini"))armed=Date.now()},true);
+      HTMLMediaElement.prototype.play=function(){if(this!==v&&this.tagName==="VIDEO"&&active()&&Date.now()-lastClick>1200){held=true;return new Promise(function(){})}
+        return nativePlay.apply(this,arguments)};
+      document.addEventListener("play",function(e){var t=e.target;if(!t||t===v||t.tagName!=="VIDEO")return;if(v.paused||v.ended)return;
+        if(Date.now()-lastClick<1200){v.pause();hideMini()}else t.pause()},true);
+      function resume(){if(!held)return;held=false;
+        var c=document.querySelector("#record .card.cur"),r=c&&c.querySelector("video");
+        if(r&&r.paused&&!reduce&&!c.classList.contains("flipped")){var bx=c.getBoundingClientRect(),seen=Math.min(bx.bottom,innerHeight)-Math.max(bx.top,0);
+          if(bx.height&&seen>bx.height*.3){var sb=document.querySelector("#record .snd");r.muted=!(sb&&sb.dataset.on==="1");
+            nativePlay.call(r).then(function(){r.classList.add("on")}).catch(function(){r.muted=true;nativePlay.call(r).then(function(){r.classList.add("on")}).catch(function(){})})}}
+        if(window.__x2pHlFilms)window.__x2pHlFilms()}
+      /* and the other way round: whenever this one starts, the round films stop */
       v.addEventListener("play",pauseRounds);
-      function go(withSound){if(nosrc){nosrc=false;v.load()}if(withSound){v.muted=false}pauseRounds();var p=v.play();
-        /* only a refusal to play with sound falls back to muted; a missing file just shows the play button again */
-        if(p&&p.then)p.then(function(){started=true;ui()}).catch(function(e){if(!nosrc&&e&&e.name==="NotAllowedError"&&!v.muted){v.muted=true;v.play().then(function(){started=true;ui()}).catch(ui)}else ui()})}
+      function go(withSound){if(nosrc){nosrc=false;v.load()}if(withSound)v.muted=false;pauseRounds();var p=v.play();
+        /* only a refusal to play with sound falls back to muted (with "Tap for sound" for 3 s); a missing file shows the play button again */
+        if(p&&p.then)p.then(function(){started=true;ui()}).catch(function(e){if(!nosrc&&e&&e.name==="NotAllowedError"&&!v.muted){v.muted=true;tapAt=Date.now();setTimeout(ui,3100);v.play().then(function(){started=true;ui()}).catch(ui)}else ui()});ui()}
       var srcs=v.querySelectorAll("source");srcs[srcs.length-1].addEventListener("error",function(){nosrc=true;rolling=false;v.pause();ui()});
       v.addEventListener("playing",function(){rolling=true;ui()});v.addEventListener("waiting",function(){rolling=false;ui()});
-      /* the sound button only switches the sound; it never starts the film */
-      snd.addEventListener("click",function(e){e.stopPropagation();v.muted=!v.muted;ui()});
-      tap.addEventListener("click",function(e){e.stopPropagation();v.muted=false;if(v.paused)go(true);ui()});
-      play.addEventListener("click",function(e){e.stopPropagation();go(true)});
-      /* a tap on the film: muted and rolling, sound on (what "Tap for sound" says); paused, play with sound; playing with sound, pause. It never turns over */
-      f.addEventListener("click",function(e){if(e.target.closest("button"))return;if(rolling&&v.muted){v.muted=false;ui()}else if(v.paused||nosrc)go(true);else{v.pause();ui()}});
-      v.addEventListener("timeupdate",function(){if(v.duration)bar.style.width=(100*v.currentTime/v.duration)+"%";ui();if(mini)mini.querySelector("i").style.width=bar.style.width});
-      v.addEventListener("play",ui);v.addEventListener("pause",function(){rolling=false;ui();if(mini&&v.paused&&!v.ended)hideMini()});v.addEventListener("ended",function(){ended=true;rolling=false;ui();hideMini()});
+      /* the sound button only switches the sound, never starts the film; a mute chosen before play is kept (the film then starts muted) */
+      snd.addEventListener("click",function(e){e.stopPropagation();v.muted=!v.muted;userMuted=v.muted;ui()});
+      tap.addEventListener("click",function(e){e.stopPropagation();v.muted=false;userMuted=false;tapAt=0;if(v.paused)go(true);ui()});
+      play.addEventListener("click",function(e){e.stopPropagation();if(loading())return;if(rolling){v.pause();ui()}else go(!userMuted)});
+      /* a tap on the film (owner's rule): rolling muted, sound on; paused, play (muted only if the visitor chose mute); playing, pause;
+         loading, nothing. It never turns over */
+      f.addEventListener("click",function(e){if(e.target.closest("button"))return;if(loading())return;if(rolling&&v.muted){v.muted=false;userMuted=false;tapAt=0;ui()}else if(v.paused||nosrc)go(!userMuted);else{v.pause();ui()}});
+      v.addEventListener("timeupdate",function(){if(v.duration)bar.style.width=(100*v.currentTime/v.duration)+"%";ui();if(mini)mini.querySelector(".m-bar i").style.width=bar.style.width});
+      v.addEventListener("play",ui);v.addEventListener("pause",function(){rolling=false;ui();if(mini&&v.paused&&!v.ended)hideMini();setTimeout(resume,60)});
+      v.addEventListener("ended",function(){ended=true;rolling=false;ui();hideMini();setTimeout(resume,60)});
       /* the corner player while you scroll on: the same video element, moved into a fixed box, so the sound never stops */
-      var hold=null;function showMini(){if(mini||v.paused||v.ended||nosrc)return;mini=document.createElement("div");mini.className="x2p-vmini";mini.innerHTML='<button type="button" class="m-snd" aria-label="Sound"></button><button type="button" class="m-x" aria-label="Close">\u2715</button><span class="m-bar" aria-hidden="true"><i></i></span>';
+      var hold=null;function showMini(){if(mini||v.paused||v.ended||nosrc)return;mini=document.createElement("div");mini.className="x2p-vmini";mini.setAttribute("role","region");mini.setAttribute("aria-label","How it works film");
+        mini.innerHTML='<button type="button" class="m-x" aria-label="Stop the film">✕</button><button type="button" class="m-snd"></button><button type="button" class="m-back">Back to the film</button><span class="m-bar" aria-hidden="true"><i></i></span>';
         hold=document.createElement("div");hold.className="vt-hold";f.insertBefore(hold,v);mini.insertBefore(v,mini.firstChild);document.body.appendChild(mini);
-        mini.querySelector(".m-snd").innerHTML=v.muted?SOFF:SON;
-        mini.querySelector(".m-snd").addEventListener("click",function(e){e.stopPropagation();v.muted=!v.muted;mini.querySelector(".m-snd").innerHTML=v.muted?SOFF:SON;ui()});
-        mini.querySelector(".m-x").addEventListener("click",function(e){e.stopPropagation();v.pause();hideMini()});
-        mini.addEventListener("click",function(e){if(e.target.closest("button"))return;vt.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"})})}
+        mini.querySelector(".m-snd").addEventListener("click",function(e){e.stopPropagation();v.muted=!v.muted;userMuted=v.muted;ui()});
+        mini.querySelector(".m-x").addEventListener("click",function(e){e.stopPropagation();var had=mini.contains(document.activeElement);v.pause();hideMini();if(had)play.focus({preventScroll:true})});
+        /* back to the film, from any tab: the Overview first, then the ticket */
+        function back(){var had=mini&&mini.contains(document.activeElement);var r=location.hash.replace(/^#/,"")||"/";
+          function to(){vt.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});if(had)setTimeout(function(){play.focus({preventScroll:true})},reduce?0:400)}
+          if(r!=="/"){location.hash="#/";setTimeout(to,120)}else to()}
+        mini.querySelector(".m-back").addEventListener("click",function(e){e.stopPropagation();back()});
+        mini.addEventListener("click",function(e){if(e.target.closest("button"))return;back()});ui()}
       function hideMini(){if(!mini)return;f.insertBefore(v,f.firstChild);if(hold){hold.remove();hold=null}mini.remove();mini=null;ui()}
-      if("IntersectionObserver" in window)new IntersectionObserver(function(es){var on=es[0].isIntersecting;if(!on&&!v.paused&&!v.ended)showMini();else if(on&&mini)hideMini()},{threshold:.25}).observe(vt);
+      /* the film counts as out of view once it is under the sticky header, not only once it leaves the screen; the newest entry wins */
+      if("IntersectionObserver" in window){var hd=document.querySelector(".top"),hh=hd?Math.round(hd.getBoundingClientRect().height):0;
+        new IntersectionObserver(function(es){var on=es[es.length-1].isIntersecting;if(!on&&!v.paused&&!v.ended)showMini();else if(on&&mini)hideMini()},{threshold:.25,rootMargin:"-"+hh+"px 0px 0px 0px"}).observe(vt)}
       /* the film files are v2 (2026-10-22): the master's audio carried 269 duplicate packets squeezed to one tick at each ~8.4 s cut; players that play
          every packet (the owner's phone) repeated up to 1 s at each cut and ran 5.65 s late by the end. v2 drops them; new names because /media is cached as immutable */
       /* arrival (owner, 2026-10-22: "Video shouldn't start by default"): the poster with "Tap to play"; it starts with sound on the tap */
@@ -168,6 +197,7 @@
     /* one sound switch for the whole page: the page keeps it to itself but marks every .snd (these copies too) with data-on */
     function pageSound(){var b=document.querySelector("#record .snd");return !!(b&&b.dataset.on==="1")}
     document.addEventListener("pointerdown",function(){setTimeout(films,400)},{passive:true,capture:true});
+    window.__x2pHlFilms=function(){films()};
     function films(){cards.forEach(function(w,i){var c=w.querySelector(".card"),v=w.querySelector("video");if(!v)return;
       if(i===cur&&vis&&!reduce&&!c.classList.contains("flipped")){v.muted=!pageSound();v.preload="auto";var p=v.play();if(p&&p.then)p.then(function(){v.classList.add("on")}).catch(function(){})}else if(!v.paused)v.pause()})}
     function go(i){i=Math.max(0,Math.min(cards.length-1,i));var w=cards[i];tr.scrollTo({left:w.offsetLeft+w.offsetWidth/2-tr.clientWidth/2,behavior:reduce?"auto":"smooth"})}
