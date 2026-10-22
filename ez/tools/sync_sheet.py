@@ -107,6 +107,7 @@ def clean(v):
 # Rounds struck from the record, by (ticker, call date): skipped whatever the ROUND cell says,
 # even while the row is still in the sheet.
 VOID = {("STZ", "10/06/26"): "calls were submitted after the earnings report (owner, 2026-10-07)",
+        ("SAP", "10/21/26"): "calls came in around 6 pm, after SAP released its results in Europe (owner, 2026-10-22; SAP released at 22:05 CEST, 16:05 New York); removed from the sheet, LMT and SPOT moved down to R41 and R42",
         # owner, 2026-10-13: TSMC's Q3 round is now the sheet's "TSMC" row (call 10/14); the 2330.TW row is gone, so the
         # old voids of the "TSMC" rows (2026-10-09, when TSMC was a stray duplicate of 2330.TW) are dropped. Aeon and Alcoa
         # were removed from the sheet on purpose. None of the three had calls.

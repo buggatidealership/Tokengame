@@ -98,7 +98,7 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
   round order, and the new ez-data.js is syntax-checked with node before it is saved.
 - **Struck rounds.** A round that must not count (e.g. calls sent after the report) goes in `VOID` in `ez/tools/sync_sheet.py`,
   keyed by ticker and call date. The sync then skips it whatever its ROUND cell says. R14 Constellation Brands (STZ, called 10/06/26)
-  is struck (owner, 2026-10-07).
+  is struck (owner, 2026-10-07). SAP (called 10/21/26, graded +3.21%) is struck too (owner, 2026-10-22: the calls came in around 6 pm, after SAP's results in Europe; SAP released at 22:05 CEST, 16:05 New York, so this holds if the calls were after 16:05 New York time); the owner removed its row and renumbered, so LMT and SPOT moved from R42 and R43 to R41 and R42 (record edits, confirmed).
 - Optional sheet column **REPORT TIME** (when the company reported): `BMO` (before the open), `AMC` (after the close) or `DURING`
   (market hours). Words like "after close" or "pre-market" are accepted too. It is shown on the round cards where a page supports it.
   Filling it in for a graded round is a detail, not a record edit, so it doesn't need `--allow-edits`.
