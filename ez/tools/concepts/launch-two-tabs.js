@@ -61,21 +61,42 @@ await p.evaluate(({tpl,tplH})=>{const drop=t=>{const a=t.split(' ');return inner
 // the model and the small labels under it
 await p.addStyleTag({content:'html.x2p #standings li.lbr .pc-t small{font-size:'+(W<600?'9.5px':'11px')+'!important;line-height:1!important;opacity:.8;margin-top:3px}html.x2p #standings li.lbr .pc-t h3{line-height:1!important}'});
 await p.waitForTimeout(150);
-await p.evaluate(()=>{document.querySelectorAll('#standings li.lbr').forEach(li=>{
-  const R=e=>e.getBoundingClientRect(),row=R(li),cs=getComputedStyle(li);
-  const mid=row.top+parseFloat(cs.borderTopWidth)+(row.height-parseFloat(cs.borderTopWidth)-parseFloat(cs.borderBottomWidth))/2;
-  const at=(el,ref)=>{const r=R(ref);el.style.transform='translateY('+(Math.round((mid-(r.top+r.bottom)/2)*2)/2)+'px)'};
-  at(li.querySelector('.rk'),li.querySelector('.rk'));at(li.querySelector('.lg'),li.querySelector('.lg'));
-  at(li.querySelector('.pc-t'),li.querySelector('.pc-t h3'));at(li.querySelector('.mk-f2'),li.querySelector('.mk-f2 .fq'));
-  li.querySelectorAll('.lb-c').forEach(c=>at(c,c.querySelector('b')))})});
+// (owner, round 5) centre what the eye sees: the ink of the letters and digits (cap height, not the line box), the logo
+// square and the five boxes, each on the strip's middle (its border box: equal 3px ink top and bottom). The five boxes
+// sit halfway between the longest name and the hit rate, the same shift on every row.
+await p.evaluate((W)=>{window.__mkInk=W<600?.7:0;},W);await p.evaluate(()=>{const cv=document.createElement('canvas').getContext('2d');
+  const R=e=>e.getBoundingClientRect();
+  function ink(el){// the ink's vertical middle of el's own text: baseline from a probe, ascent/descent from canvas
+    const cs=getComputedStyle(el);let t=[...el.childNodes].filter(n=>n.nodeType===3).map(n=>n.nodeValue).join('').trim();if(!t)t=el.textContent.trim();
+    if(cs.textTransform==='uppercase')t=t.toUpperCase();cv.font=cs.font;const m=cv.measureText(t);
+    const pr=document.createElement('i');pr.style.cssText='display:inline-block;width:0;height:0;vertical-align:baseline';el.appendChild(pr);const base=R(pr).top;pr.remove();
+    return base-(m.actualBoundingBoxAscent-m.actualBoundingBoxDescent)/2+window.__mkInk}
+  const rows=[...document.querySelectorAll('#standings li.lbr')];
+  rows.forEach(li=>{const row=R(li),mid=(row.top+row.bottom)/2;
+    const mv=(el,y)=>{const d=Math.round((mid-y)*4)/4;el.style.transform='translateY('+d+'px)'};
+    mv(li.querySelector('.lg'),(R(li.querySelector('.lg')).top+R(li.querySelector('.lg')).bottom)/2);
+    mv(li.querySelector('.pc-t'),ink(li.querySelector('.pc-t h3 .x2p-mn')||li.querySelector('.pc-t h3')));
+    const fq=li.querySelector('.mk-f2 .fq');mv(li.querySelector('.mk-f2'),(R(fq).top+R(fq).bottom)/2);
+    li.querySelectorAll('.lb-c').forEach(c=>mv(c,ink(c.querySelector('b'))));
+    mv(li.querySelector('.rk'),ink(li.querySelector('.rk')))});
+  // the five boxes halfway between the longest name and the leftmost hit-rate digit
+  const tr=n=>{const r=document.createRange();r.selectNodeContents(n);return r.getBoundingClientRect()};
+  const nameR=Math.max(...rows.map(li=>tr(li.querySelector('.pc-t h3')).right)),hitL=Math.min(...rows.map(li=>tr(li.querySelector('.lb-c b')).left));
+  rows.forEach(li=>{const f=li.querySelector('.mk-f2'),fr=R(f.querySelector('.fq')),dx=Math.round(((nameR+hitL)/2-(fr.left+fr.right)/2)*4)/4;
+    f.style.transform+=' translateX('+dx+'px)'});
+  window.__mkGap=[nameR,hitL]});
 await p.waitForTimeout(100);
 // highlights land on the middle card (Tightest race), its back showing
 await p.evaluate(()=>{const tr=document.querySelector('#x2pHl .x2p-hlt'),w=tr.children[1];tr.scrollLeft=w.offsetLeft+w.offsetWidth/2-tr.clientWidth/2});
 await p.waitForTimeout(600);
 await p.evaluate(()=>{const c=document.querySelector('#x2pHl .x2p-hlt').children[1].querySelector('.card');c.querySelector('.face.front').dispatchEvent(new MouseEvent('click',{bubbles:true}))});
 await p.waitForTimeout(1200);
-await p.evaluate((x)=>{const c=document.querySelector('#car');if(c.scrollLeft!==x)c.scrollLeft=x;window.scrollTo(0,0)},car0);console.log('car0',car0);console.log(await p.evaluate(()=>{const li=document.querySelector('#standings li.lbr');const cs=getComputedStyle(li);return 'LI '+cs.display+' cols['+cs.gridTemplateColumns+'] areas['+cs.gridTemplateAreas+']\n'+[...li.children].map(c=>{const s=getComputedStyle(c),r=c.getBoundingClientRect();return c.className+' d:'+s.display+' gc:'+s.gridColumn+' ga:'+s.gridArea+' pos:'+s.position+' x:'+Math.round(r.left)+' w:'+Math.round(r.width)}).join('\n')+'\nLBM: '+[...li.querySelector('.lb-m').children].map(c=>c.className+' '+getComputedStyle(c).display+' x:'+Math.round(c.getBoundingClientRect().left)+' w:'+Math.round(c.getBoundingClientRect().width)).join(' | ')+' lbm-d:'+getComputedStyle(li.querySelector('.lb-m')).display}));await p.waitForTimeout(300);
+await p.evaluate((x)=>{const c=document.querySelector('#car');if(c.scrollLeft!==x)c.scrollLeft=x;window.scrollTo(0,0)},car0);console.log('car0',car0);console.log(await p.evaluate(()=>{const L0=document.querySelector('#standings li.lbr'),c0=getComputedStyle(L0),b0=getComputedStyle(L0,'::before'),a0=getComputedStyle(L0,'::after');return 'LISTYLE border:'+c0.borderTopWidth+'/'+c0.borderBottomWidth+' pad:'+c0.paddingTop+'/'+c0.paddingBottom+' shadow:'+c0.boxShadow+' before:'+b0.content+' '+b0.inset+' '+b0.transform+' after:'+a0.content+' '+a0.inset+' rect:'+JSON.stringify(L0.getBoundingClientRect())}));console.log(await p.evaluate(()=>{const li=document.querySelector('#standings li.lbr');const cs=getComputedStyle(li);return 'LI '+cs.display+' cols['+cs.gridTemplateColumns+'] areas['+cs.gridTemplateAreas+']\n'+[...li.children].map(c=>{const s=getComputedStyle(c),r=c.getBoundingClientRect();return c.className+' d:'+s.display+' gc:'+s.gridColumn+' ga:'+s.gridArea+' pos:'+s.position+' x:'+Math.round(r.left)+' w:'+Math.round(r.width)}).join('\n')+'\nLBM: '+[...li.querySelector('.lb-m').children].map(c=>c.className+' '+getComputedStyle(c).display+' x:'+Math.round(c.getBoundingClientRect().left)+' w:'+Math.round(c.getBoundingClientRect().width)).join(' | ')+' lbm-d:'+getComputedStyle(li.querySelector('.lb-m')).display}));await p.waitForTimeout(300);
 await p.screenshot({path:OUT+'-full.png',fullPage:true});
+const boxes=await p.evaluate(()=>{const R=e=>{const r=e.getBoundingClientRect();return [r.left+scrollX,r.top+scrollY,r.right+scrollX,r.bottom+scrollY]};
+  return [...document.querySelectorAll('#standings li.lbr')].map(li=>({row:R(li),lg:R(li.querySelector('.lg')),nm:R(li.querySelector('.pc-t h3')),fq:R(li.querySelector('.mk-f2 .fq')),
+    hit:R(li.querySelector('.lb-c b')),roi:R([...li.querySelectorAll('.lb-c b')].pop()),f2x:(()=>{const r=li.querySelector('.mk-f2 .fq').getBoundingClientRect();return [r.left,r.right]})(),gap:window.__mkGap}))});
+require('fs').writeFileSync(OUT+'-boxes.json',JSON.stringify(boxes));
 const pos=await p.evaluate(()=>['#standings','#record','#learn','#highlights','#get'].map(s=>{const e=document.querySelector(s);return [s,Math.round(e.getBoundingClientRect().top+scrollY),Math.round(e.getBoundingClientRect().height)]}));
 console.log(await p.evaluate(()=>[...document.querySelectorAll('#standings li.lbr')].map(li=>{const mid=e=>{const r=li.querySelector(e).getBoundingClientRect();return Math.round((r.top+r.bottom)/2)};const r=li.getBoundingClientRect();const f=[...li.querySelectorAll('.mk-f2 .fq i')];return li.querySelector('h3').textContent+' row:'+Math.round((r.top+r.bottom)/2)+' boxL:'+Math.round(f[0].getBoundingClientRect().left)+' boxR:'+Math.round(f[f.length-1].getBoundingClientRect().right)+' logo:'+mid('.lg')+' rank:'+mid('.rk')+' name:'+mid('h3')+' boxes:'+mid('.mk-f2 .fq')+' num:'+mid('.lb-c b')+' roi:'+(()=>{const c=li.querySelectorAll('.lb-c b');const r=c[c.length-1].getBoundingClientRect();return Math.round((r.top+r.bottom)/2)})()}).join(' | ')));console.log(await p.evaluate(()=>[...document.querySelectorAll('#learn .rsw2 button')].map(b=>b.dataset.rk+(b.getAttribute('aria-pressed')==='true'?'*':'')).join(' ')),JSON.stringify(pos),'flipped:',await p.evaluate(()=>document.querySelector('#x2pHl .x2p-hlt').children[1].querySelector('.card').classList.contains('flipped')),errs.length?errs:'no errors');
 await b.close()})();
