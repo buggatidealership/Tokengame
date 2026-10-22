@@ -689,7 +689,9 @@
       o.ft.classList.add("x2p-astf");o.ft.innerHTML='<div class="x2p-ast"><div class="tk"><i class="fb l" aria-hidden="true"></i><i class="fb r" aria-hidden="true"></i><span class="ink">'+esc(bf.trim())+'</span> <em data-t="'+esc(em.textContent.trim())+'">'+esc(em.textContent.trim())+'</em> <span class="ink">'+esc(af.trim())+'</span></div></div>'+
         '<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="x2pInk" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale=".8" xChannelSelector="R" yChannelSelector="G"/></filter></svg>'}
     var lbh=$(".lbh",o.fl);if(lbh){[].slice.call(lbh.children).forEach(function(h){if(/miss/i.test(h.textContent))h.remove()});
-      var hc=d.createElement("span");hc.setAttribute("aria-hidden","true");lbh.insertBefore(hc,lbh.children[2]||null)}
+      /* "Last 5" over the boxes, once, in the header like Hit rate and ROI (owner, 2026-10-22: L2); the header's own "Last 5"
+         stays for screen readers, so this one is for the eye only */
+      var hc=d.createElement("span");hc.setAttribute("aria-hidden","true");hc.className="x2p-l5h";hc.textContent="Last 5";lbh.insertBefore(hc,lbh.children[2]||null)}
     $$("li.lbr",o.fl).forEach(function(li){var c=$$(".lb-c",li);if(c.length>2)c[1].remove();
       var f2=$(".lb-f2",li),c0=$(".lb-c",li);if(f2&&c0){f2.classList.add("x2p-l5");li.insertBefore(f2,c0)}});
     /* Grok in NVIDIA's gold (owner, 2026-10-22: "use this one"): the bet ticket's own rules for its name, re-aimed at this ticket */
@@ -730,7 +732,10 @@
       var fq=$(".x2p-l5 .fq",li);if(fq)mv($(".x2p-l5",li),box(fq));$$(".lb-c",li).forEach(function(c){var b=$("b",c);if(b)mv(c,ink(b))});var rk=$(".rk",li);if(rk)mv(rk,ink(rk))});
     var tr=function(n){var x=d.createRange();x.selectNodeContents(n);return x.getBoundingClientRect()};
     var nameR=Math.max.apply(null,rows.map(function(li){return tr($(".pc-t h3",li)).right})),hitL=Math.min.apply(null,rows.map(function(li){return tr($(".lb-c b",li)).left}));
-    rows.forEach(function(li){var f=$(".x2p-l5",li),fq=f&&$(".fq",f);if(!fq)return;var q=fq.getBoundingClientRect();f.style.transform+=" translateX("+Math.round(((nameR+hitL)/2-(q.left+q.right)/2)*4)/4+"px)"})}
+    rows.forEach(function(li){var f=$(".x2p-l5",li),fq=f&&$(".fq",f);if(!fq)return;var q=fq.getBoundingClientRect();f.style.transform+=" translateX("+Math.round(((nameR+hitL)/2-(q.left+q.right)/2)*4)/4+"px)"});
+    /* the header's "Last 5" sits over the middle of the boxes */
+    var l5h=$("#standings .x2p-l5h"),fq0=$(".x2p-l5 .fq",rows[0]);if(l5h&&fq0){l5h.style.transform="";var a=l5h.getBoundingClientRect(),b=fq0.getBoundingClientRect();
+      l5h.style.transform="translateX("+Math.round(((b.left+b.right)/2-(a.left+a.right)/2)*4)/4+"px)"}}
   /* the hit-rate chart: on a narrow screen the round labels (R1 ... R35, 7px apart) run into each other; keep R1 and every
      fifth so each has room */
   function thin(){$$("#learn svg").forEach(function(sv){var t=$$("text",sv).filter(function(x){return /^R\d+$/.test(x.textContent.trim())});if(t.length<3)return;
