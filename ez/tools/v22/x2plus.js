@@ -713,17 +713,21 @@
       var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">The predictions that shocked us</h2></div>';
       var xh=$(".xsh",hs);if(xh)hs.replaceChild(sh,xh);else hs.insertBefore(sh,hs.firstChild);ln.parentNode.insertBefore(hs,ln.nextSibling)}
     h2.remove()}
-  /* two bullets under the standings and the proof heads, the record's style (owner, 2026-10-22: "a bit dry"); the count
-     comes from the sheet */
+  /* bullets under the standings, proof and highlights heads, the record's style (owner, 2026-10-22: "a bit dry"); the
+     standings in the owner's words, for visitors who skip the film (no buyback lines for now); the count comes from the sheet;
+     the highlights name their three kinds from the cards' own tags */
   var gN=(typeof SHEET!=="undefined"?SHEET:[]).filter(function(r){return r[12]!==""&&r[12]!=null}).length;
-  [["#standings","x2p-stb",["Four AIs. Same stocks. Same deadline.","Ranked by how often they call up or down right."]],
-   ["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."]]].forEach(function(x){
+  var hk=$$("#x2pHl .x2p-htag").map(function(t){t=t.textContent.trim().toLowerCase();return t.charAt(0).toUpperCase()+t.slice(1)+"."}).join(" ");
+  [["#standings","x2p-stb",["4 AIs call each stock before it reports.","Graded at the next market close after earnings.","In public, every earnings season."]],
+   ["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."]],
+   ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[]]].forEach(function(x){if(!x[2].length)return;
     var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
     x[2].forEach(function(t){var li=d.createElement("li");li.textContent=t;ul.appendChild(li)});sh.appendChild(ul)});
   [["#standings","01"],["#record","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
-  /* the highlights land on Tightest race (the middle card), its story side up, once the Overview is on screen */
+  /* the highlights land on Tightest race (the middle card), its film first (owner, 2026-10-22: with "Flip a card for the
+     story" under the head, the animation shows first; it replaced the story side up), once the Overview is on screen */
   var landed=false;function land(){if(landed||!window.__x2pHlGo)return;var ws=$$("#x2pHl .x2p-hi"),i=1;
-    ws.forEach(function(w,j){var t=$(".x2p-htag",w);if(t&&/tight/i.test(t.textContent))i=j});if(window.__x2pHlGo(i,true))landed=true}
+    ws.forEach(function(w,j){var t=$(".x2p-htag",w);if(t&&/tight/i.test(t.textContent))i=j});if(window.__x2pHlGo(i,false))landed=true}
   /* the standings: rank, logo, name, the last five, hit rate and ROI on each strip's middle by what the eye sees (the ink of
      the letters and digits, not their line boxes; owner: "a freak when it comes to symmetry"), and the last five halfway
      between the longest name and the leftmost hit rate, the same on every row */

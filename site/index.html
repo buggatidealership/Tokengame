@@ -5373,6 +5373,23 @@ html.x2p .x2p-vt .vt-bar{display:none!important}
 /* (owner, 2026-10-22) the disc on the middle of the desk front in the poster: its centre at 89% of the film's height at every
    width (it was 86% on phones, 91% on desktop), never closer than 6px to the film's foot */
 html.x2p .x2p-vt .vt-play{bottom:auto;top:min(calc(89% - 16px),calc(100% - 38px))}
+/* (owner, 2026-10-22) the standings head in one column like the proof's: its two bullets under the head (in X2's second
+   column they pushed the ⓘ to the middle of the page on desktop), the ⓘ back at the head's right end */
+html.x2p-launch :is(#standings,#highlights) .sh{grid-template-columns:1fr}
+/* (owner, 2026-10-22: "when you click on See why for the TSMC one, it's missing the holo") the highlight's story side keeps the
+   record's three holo levels: the record's wash needs the stats rows, which the story replaces, so the same wash is aimed here.
+   A 10 washes the whole story side (.55, with its foil); an all-right round a faint .25 plus its calls; any other round lights
+   only the calls that got the direction */
+html.x2p #x2pHl .card .face.back:has(.x2p-hb) .fin{position:relative}
+html.x2p #x2pHl .card .face.back:has(.x2p-hb):has(.fx.perfect) .fin::before,
+html.x2p #x2pHl .card .face.back:has(.x2p-hb):not(:has(.fx.perfect)):not(:has(.x2p-hc.no)) .fin::before,
+html.x2p #x2pHl .card .face.back:has(.x2p-hb):not(:has(.fx.perfect)) .x2p-hc.ok::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;border-radius:inherit;
+  background:linear-gradient(120deg,rgba(255,111,174,0) 0%,rgba(255,111,174,.9) 18%,rgba(242,182,50,.9) 30%,rgba(159,240,196,.9) 42%,rgba(111,211,255,.9) 54%,rgba(196,155,255,.9) 66%,rgba(255,111,174,0) 84%);
+  background-size:260% 260%;mix-blend-mode:soft-light;opacity:.55;animation:zsheen 6s ease-in-out infinite alternate}
+html.x2p #x2pHl .card .face.back:has(.x2p-hb):not(:has(.fx.perfect)):not(:has(.x2p-hc.no)) .fin::before{opacity:.25}
+html.x2p #x2pHl .card .face.back:has(.x2p-hb):not(:has(.fx.perfect)) .x2p-hc.ok{position:relative}
+html.x2p #x2pHl .card .face.back:has(.x2p-hb):not(:has(.fx.perfect)) .x2p-hc.ok::before{opacity:.7}
+@media (prefers-reduced-motion:reduce){html.x2p #x2pHl .card .face.back .fin::before,html.x2p #x2pHl .card .face.back .x2p-hc::before{animation:none!important;background-position:50% 50%}}
 
 </style>
 <link rel="canonical" href="https://earningszn.xyz/">
@@ -8124,7 +8141,8 @@ function x2LBpage(h){
     P+' section.x2o-bet:has(>.x2p-vt){padding-top:6px;margin-top:8px}',
     P+' .x2p-vt{margin:28px 0 0;max-width:none;overflow-x:clip}',
     P+' .x2p-vt .vt-tag{left:16px}',
-    P+' .x2p-bt{margin:24px 14px 0;max-width:none;overflow-x:clip}',
+    /* (owner, 2026-10-22, later) the ticket as wide as the film on phones too (from 600px both were already 560px) */
+    P+' .x2p-bt{margin:24px 0 0;max-width:none;overflow-x:clip}',
     P+' section.x2o-bet + section.x2o-rc{padding-top:22px}',
     '}'
   ].join('\n');
@@ -8206,13 +8224,24 @@ function x2LBpage(h){
   var tp=d.createElement("template");tp.innerHTML=R.vResults();var hs=tp.content.querySelector("section.xsec");
   if(hs&&window.__x2pHlSlabs){var h2=d.createElement("div");h2.hidden=true;d.body.appendChild(h2);h2.appendChild(hs);window.__x2pHlSlabs();
     if($("#x2pHl",hs)){hs.id="highlights";hs.classList.add("sec","x2p-hl-sec");hs.setAttribute("aria-labelledby","x2hlH");
-      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">The rounds that stood out</h2></div>';
+      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">The predictions that shocked us</h2></div>';
       var xh=$(".xsh",hs);if(xh)hs.replaceChild(sh,xh);else hs.insertBefore(sh,hs.firstChild);ln.parentNode.insertBefore(hs,ln.nextSibling)}
     h2.remove()}
+  /* bullets under the standings, proof and highlights heads, the record's style (owner, 2026-10-22: "a bit dry"); the
+     standings in the owner's words, for visitors who skip the film (no buyback lines for now); the count comes from the sheet;
+     the highlights name their three kinds from the cards' own tags */
+  var gN=(typeof SHEET!=="undefined"?SHEET:[]).filter(function(r){return r[12]!==""&&r[12]!=null}).length;
+  var hk=$$("#x2pHl .x2p-htag").map(function(t){t=t.textContent.trim().toLowerCase();return t.charAt(0).toUpperCase()+t.slice(1)+"."}).join(" ");
+  [["#standings","x2p-stb",["4 AIs call each stock before it reports.","Graded at the next market close after earnings.","In public, every earnings season."]],
+   ["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."]],
+   ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[]]].forEach(function(x){if(!x[2].length)return;
+    var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
+    x[2].forEach(function(t){var li=d.createElement("li");li.textContent=t;ul.appendChild(li)});sh.appendChild(ul)});
   [["#standings","01"],["#record","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
-  /* the highlights land on Tightest race (the middle card), its story side up, once the Overview is on screen */
+  /* the highlights land on Tightest race (the middle card), its film first (owner, 2026-10-22: with "Flip a card for the
+     story" under the head, the animation shows first; it replaced the story side up), once the Overview is on screen */
   var landed=false;function land(){if(landed||!window.__x2pHlGo)return;var ws=$$("#x2pHl .x2p-hi"),i=1;
-    ws.forEach(function(w,j){var t=$(".x2p-htag",w);if(t&&/tight/i.test(t.textContent))i=j});if(window.__x2pHlGo(i,true))landed=true}
+    ws.forEach(function(w,j){var t=$(".x2p-htag",w);if(t&&/tight/i.test(t.textContent))i=j});if(window.__x2pHlGo(i,false))landed=true}
   /* the standings: rank, logo, name, the last five, hit rate and ROI on each strip's middle by what the eye sees (the ink of
      the letters and digits, not their line boxes; owner: "a freak when it comes to symmetry"), and the last five halfway
      between the longest name and the leftmost hit rate, the same on every row */
