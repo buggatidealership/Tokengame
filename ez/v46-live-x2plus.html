@@ -4456,6 +4456,7 @@ html.x2d[data-theme="dark"] .st-box.cmp .tg.lead .tg-h{--ink2:#352c1a;--on-slab2
 
 </style>
 <script>/* X2 theme before the first paint (try/catch: storage can be blocked) */(function(){var d=document.documentElement,s=null,h=d.getAttribute("data-theme"),t,m;try{s=localStorage.getItem("ez-theme")}catch(e){}d.setAttribute("data-x2host",h||"");t="dark";d.setAttribute("data-theme",t);d.style.colorScheme=t;m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute("content",t);m=document.querySelector('meta[name="theme-color"]');if(m){m.setAttribute("data-x2tc",m.getAttribute("content"));if(t==="dark")m.setAttribute("content",getComputedStyle(d).getPropertyValue("--field").trim()||"#1d1c1a")}})()</script>
+<link id="x2p-strap-font" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,62..100,800..900&display=swap" rel="stylesheet">
 <style id="x2plus-skin">
 /* EZ Live X2+ (owner, 2026-10-19: "Can you do a X2 plus"): X2's build, every tab and route as it is, in X7's anime cel
    look. Night only (the cel look is a night look; build.py pins the theme to dark and hides the switch). Built on X2's
@@ -5390,6 +5391,18 @@ html.x2p #x2pHl .card .face.back:has(.x2p-hb):not(:has(.fx.perfect)):not(:has(.x
 html.x2p #x2pHl .card .face.back:has(.x2p-hb):not(:has(.fx.perfect)) .x2p-hc.ok{position:relative}
 html.x2p #x2pHl .card .face.back:has(.x2p-hb):not(:has(.fx.perfect)) .x2p-hc.ok::before{opacity:.7}
 @media (prefers-reduced-motion:reduce){html.x2p #x2pHl .card .face.back .fin::before,html.x2p #x2pHl .card .face.back .x2p-hc::before{animation:none!important;background-position:50% 50%}}
+/*STRAP{*/
+/* the section bullets as fight-night broadcast straps (owner, 2026-10-22: C3 of round 9, with "The stats" on the proof; the
+   numbered blocks read like the board's #1 to #4, so no markers at all): one strap per section (standings, proof, highlights),
+   a red bug on its corner, the lines split by gold rules, condensed italic capitals. build.py swaps this block for X3+'s neon */
+html.x2p .x2p-strap{position:relative;max-width:620px;margin:12px 0 0 6px;background:#141217;border:2px solid #000;border-left:9px solid #f2b632;box-shadow:5px 5px 0 #000;padding:20px 12px 6px 13px;transform:skewX(-6deg)}
+html.x2p .x2p-strap::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:4px;background:linear-gradient(90deg,#1f7a45 50%,#c8372a 50%)}
+html.x2p .x2p-strap .x2p-bug{position:absolute;top:-11px;left:-9px;background:#c8372a;color:#f3ead6;border:2px solid #000;padding:3px 9px 2px;font:italic 900 11.5px/1 Archivo,sans-serif;font-stretch:62%;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+html.x2p.x2d[data-theme] .x2p-strap .x2o-ul{display:block;max-width:none}
+html.x2p.x2d[data-theme] .x2p-strap .x2o-ul li{padding:6px 0 7px;border-top:1px solid rgba(242,182,50,.32);font:italic 800 16.5px/1.12 Archivo,sans-serif;font-stretch:62%;text-transform:uppercase;letter-spacing:.01em;color:#f3ead6!important;transform:skewX(6deg);text-wrap:balance}
+html.x2p.x2d[data-theme] .x2p-strap .x2o-ul li:first-child{border-top:0}
+html.x2p.x2d[data-theme] .x2p-strap .x2o-ul li::before{display:none!important}
+/*}STRAP*/
 
 </style>
 </head>
@@ -8227,11 +8240,13 @@ function x2LBpage(h){
      the highlights name their three kinds from the cards' own tags */
   var gN=(typeof SHEET!=="undefined"?SHEET:[]).filter(function(r){return r[12]!==""&&r[12]!=null}).length;
   var hk=$$("#x2pHl .x2p-htag").map(function(t){t=t.textContent.trim().toLowerCase();return t.charAt(0).toUpperCase()+t.slice(1)+"."}).join(" ");
-  [["#standings","x2p-stb",["4 AIs call each stock before it reports.","Graded at the next market close after earnings.","In public, every earnings season."]],
-   ["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."]],
-   ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[]]].forEach(function(x){if(!x[2].length)return;
+  [["#standings","x2p-stb",["4 AIs call each stock before it reports.","Graded at the next market close after earnings.","In public, every earnings season."],"The rules"],
+   ["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
+   ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[],"Replays"]].forEach(function(x){if(!x[2].length)return;
     var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
-    x[2].forEach(function(t){var li=d.createElement("li");li.textContent=t;ul.appendChild(li)});sh.appendChild(ul)});
+    x[2].forEach(function(t){var li=d.createElement("li");li.textContent=t;ul.appendChild(li)});
+    /* each list on its broadcast strap with a bug (owner, 2026-10-22: C3; "The stats" on the proof); X3+ shows the same lists as neon */
+    var sp=d.createElement("div");sp.className="x2p-strap";sp.innerHTML='<span class="x2p-bug" aria-hidden="true">'+x[3]+'</span>';sp.appendChild(ul);sh.appendChild(sp)});
   [["#standings","01"],["#record","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
   /* the highlights land on Tightest race (the middle card), its film first (owner, 2026-10-22: with "Flip a card for the
      story" under the head, the animation shows first; it replaced the story side up), once the Overview is on screen */

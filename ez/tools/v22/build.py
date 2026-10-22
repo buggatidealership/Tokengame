@@ -411,9 +411,21 @@ for a,b in HL:
     assert pp.count(a)==1,a[:80]; pp=pp.replace(a,b)
 XPCSS=open(sys.argv[1]+'/skin-x2plus.css').read(); XPJS=open(sys.argv[1]+'/x2plus.js').read()
 assert pp.count('</head>')==1 and pp.count('</body>')==1
+# (owner, 2026-10-22) the bullet straps' condensed italic (Archivo has no italic in the page's own font link)
+STRAPFONT='<link id="x2p-strap-font" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,62..100,800..900&display=swap" rel="stylesheet">'
+pp=pp.replace('</head>',STRAPFONT+'\n</head>')
 pp=pp.replace('</head>','<style id="x2plus-skin">\n'+XPCSS+'\n</style>\n</head>')
 pp=pp.replace('</body>','<script id="x2plus-words">\n'+XPJS+'\n</script>\n</body>')
 # (owner, 2026-10-21) the Results highlights are slabs too (x2plus.js builds them in #x2pHl): every "#record .card" style
 # also matches there, same specificity; only inside <style>, so the page's own scripts still see the Overview's cards alone
 pp=re.sub(r'<style[^>]*>.*?</style>',lambda m:m.group(0).replace('#record .card',':is(#record,#x2pHl) .card'),pp,flags=re.S)
 open("v46-live-x2plus.html",'w').write(pp); print("ok v46-live-x2plus.html",len(pp))
+# EZ Live X3+ (owner, 2026-10-22: "a complete replica, but just with neon sign"): X2+ whose section bullets are neon tubes
+# (tools/v22/skin-x3plus.css in place of the straps' block, Tilt Neon in place of the straps' font)
+X3N=open(sys.argv[1]+'/skin-x3plus.css').read()
+x3=re.sub(r'/\*STRAP\{\*/.*?/\*\}STRAP\*/',lambda m:X3N,pp,count=1,flags=re.S)
+assert x3!=pp and x3.count(STRAPFONT)==1
+x3=x3.replace(STRAPFONT,'<link id="x3p-neon-font" href="https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap" rel="stylesheet">')
+assert x3.count('<title>EZ Live X2+</title>')==1
+x3=x3.replace('<title>EZ Live X2+</title>','<title>EZ Live X3+</title>')
+open("v47-live-x3plus.html",'w').write(x3); print("ok v47-live-x3plus.html",len(x3))

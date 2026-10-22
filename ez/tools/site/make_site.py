@@ -10,7 +10,8 @@ import os, re, shutil, sys
 EZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.environ.get('SITE_OUT') or os.path.join(os.path.dirname(EZ), 'site')
 URL = 'https://earningszn.xyz/'
-page = open(os.path.join(EZ, 'v46-live-x2plus.html'), encoding='utf-8').read()
+# SITE_PAGE=<file> builds another page (2026-10-22: X3+ on its own preview branch); the live site is always X2+
+page = open(os.path.join(EZ, os.environ.get('SITE_PAGE') or 'v46-live-x2plus.html'), encoding='utf-8').read()
 data = open(os.path.join(EZ, 'ez-data.js'), encoding='utf-8').read()
 if os.path.isdir(OUT):
     shutil.rmtree(OUT)
