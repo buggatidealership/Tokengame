@@ -683,12 +683,15 @@
     var sy=$(".x2p-say .st",o.ft),em=sy&&$("em",sy);
     if(sy&&em){var bf="",af="",past=false;[].forEach.call(sy.childNodes,function(n){if(n===em){past=true;return}var t=n.nodeType===3?n.nodeValue:(n.classList&&n.classList.contains("nm")?"":n.textContent);if(past)af+=t;else bf+=t});
       var esc=function(t){return t.replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c]})};
-      o.ft.classList.add("x2p-astf");o.ft.innerHTML='<div class="x2p-ast"><div class="tk"><i class="fb l" aria-hidden="true"></i><i class="fb r" aria-hidden="true"></i><span class="ink">'+esc(bf.trim())+'</span> <em>'+esc(em.textContent.trim())+'</em> <span class="ink">'+esc(af.trim())+'</span></div></div>'+
+      o.ft.classList.add("x2p-astf");o.ft.innerHTML='<div class="x2p-ast"><div class="tk"><i class="fb l" aria-hidden="true"></i><i class="fb r" aria-hidden="true"></i><span class="ink">'+esc(bf.trim())+'</span> <em data-t="'+esc(em.textContent.trim())+'">'+esc(em.textContent.trim())+'</em> <span class="ink">'+esc(af.trim())+'</span></div></div>'+
         '<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="x2pInk" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale=".8" xChannelSelector="R" yChannelSelector="G"/></filter></svg>'}
     var lbh=$(".lbh",o.fl);if(lbh){[].slice.call(lbh.children).forEach(function(h){if(/miss/i.test(h.textContent))h.remove()});
       var hc=d.createElement("span");hc.setAttribute("aria-hidden","true");lbh.insertBefore(hc,lbh.children[2]||null)}
     $$("li.lbr",o.fl).forEach(function(li){var c=$$(".lb-c",li);if(c.length>2)c[1].remove();
       var f2=$(".lb-f2",li),c0=$(".lb-c",li);if(f2&&c0){f2.classList.add("x2p-l5");li.insertBefore(f2,c0)}});
+    /* Grok in NVIDIA's gold (owner, 2026-10-22: "use this one"): the bet ticket's own rules for its name, re-aimed at this ticket */
+    var bcss=d.getElementById("x2pbt-css");if(bcss&&$(".x2p-ast",st)){var gold=bcss.textContent.split("\n").filter(function(l){return l.indexOf(" .bt-b .x2p-cdh b em")>-1}).map(function(l){return l.split("html.x2p.x2d.x2pbt .bt-b .x2p-cdh b em").join("html.x2p #standings .x2p-ast .tk em")}).join("\n");
+      if(gold){var gs=d.createElement("style");gs.id="x2p-ast-gold";gs.textContent=gold;d.head.appendChild(gs)}}
     rec.parentNode.insertBefore(st,rec)}
   var sw=$(".rsw2",hold),rf=$("#rflip",hold);
   if(sw&&rf){$$(".lsw,.lrn",ln).forEach(function(e){if(e.parentNode===ln)e.remove()});ln.appendChild(sw);ln.appendChild(rf);
