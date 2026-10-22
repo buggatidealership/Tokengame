@@ -9,7 +9,7 @@ await p.goto('http://127.0.0.1:8897/v46-live-x2plus.html#/');await p.waitForTime
 const car0=await p.evaluate(()=>{const c=document.querySelector('#car');return c.scrollLeft});
 await p.evaluate(()=>{location.hash='#/leaderboard'});await p.waitForTimeout(2500);
 await p.evaluate(()=>{const hold=document.createElement('div');hold.id='mockHold';hold.hidden=true;document.body.appendChild(hold);
-  ['#view .x2p-flipbtn','#view .x2p-flip','#view .x2p-lbfoot'].forEach(s=>hold.appendChild(document.querySelector(s)));location.hash='#/results'});
+  ['#view .x2p-flipbtn','#view .x2p-flip','#view .x2p-lbfoot','#view .rsw2','#view #rflip'].forEach(s=>hold.appendChild(document.querySelector(s)));location.hash='#/results'});
 await p.waitForTimeout(2500);
 await p.evaluate(()=>{document.getElementById('mockHold').appendChild(document.querySelector('#view .x2p-hl-sec'));location.hash='#/'});
 await p.waitForTimeout(2000);
@@ -26,6 +26,11 @@ const info=await p.evaluate(()=>{const $=s=>document.querySelector(s),hold=$('#m
   const tpl=getComputedStyle(fl.querySelector('li.lbr')).gridTemplateColumns,tplH=getComputedStyle(lbh).gridTemplateColumns,areas=getComputedStyle(fl.querySelector('li.lbr')).gridTemplateAreas;
   hs[mi].remove();fl.querySelectorAll('li.lbr').forEach(li=>{const c=li.querySelectorAll('.lb-c');if(c[1])c[1].remove()});
   const rec=$('#record');rec.parentNode.insertBefore(st,rec);
+  // 03 the proof: the Leaderboard's four stats, in the owner's order (hit rate, ROI, avg miss, by sector)
+  const ln=$('#learn');ln.querySelectorAll(':scope>.lsw,:scope>.lrn').forEach(e=>e.remove());
+  const sw=hold.querySelector('.rsw2'),rf=hold.querySelector('#rflip');ln.appendChild(sw);ln.appendChild(rf);
+  ['hit','roi','miss','sector'].forEach(k=>{const bt=sw.querySelector('[data-rk="'+k+'"]');if(bt)sw.appendChild(bt)});
+  const hb=sw.querySelector('[data-rk="hit"]');if(hb&&hb.getAttribute('aria-pressed')!=='true')hb.click();
   // 04 highlights after the proof
   const hl=hold.querySelector('.x2p-hl-sec'),learn=$('#learn');hl.classList.add('sec','mk-hl');hl.id='highlights';learn.after(hl);
   const xh=hl.querySelector('.xsh');const nh=document.createElement('div');nh.className='sh';nh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2>The rounds CT would screenshot</h2></div>';xh.replaceWith(nh);
@@ -38,11 +43,26 @@ await p.addStyleTag({content:`
 html.x2p #standings .mk-sh .tx{position:relative}
 html.x2p #standings .x2p-flipbtn{position:absolute!important;right:0;bottom:2px;background:none!important;border:0!important;box-shadow:none!important;padding:8px!important;margin:0!important;min-width:0!important;transform:none!important}
 html.x2p #standings .x2p-flipbtn span{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+/* the last five beside the name, the model under it, at every width */
+html.x2p #standings li.lbr .pc-t{display:grid!important;grid-template-columns:max-content max-content;justify-content:start;column-gap:8px;row-gap:1px;align-items:center;min-width:0}
+html.x2p #standings li.lbr .pc-t h3{grid-column:1;grid-row:1;margin:0;overflow:visible!important;text-overflow:clip!important;max-width:none!important}
+html.x2p #standings li.lbr .pc-t .lb-f2{grid-column:2;grid-row:1;display:block!important;margin:0!important}
+html.x2p #standings li.lbr .pc-t small{grid-column:1/-1;grid-row:2;display:block!important}
 html.x2p #standings .x2p-flipbtn i{width:20px!important;height:20px!important;font-size:12px!important;opacity:.85}
 `});
 // columns without Avg miss: drop the 4th track (rank, AI, hit rate, [miss], ROI, last 5)
-await p.evaluate(({tpl,tplH})=>{const drop=t=>{const a=t.split(' ');return a[0]+' minmax(0,1fr) 88px 88px'};
+await p.evaluate(({tpl,tplH})=>{const drop=t=>{const a=t.split(' ');return innerWidth<600?a[0]+' minmax(0,1fr) 64px 64px':a[0]+' minmax(0,1.4fr) 1fr 1fr'};
   document.querySelectorAll('#standings li.lbr').forEach(li=>li.style.gridTemplateColumns=drop(tpl));const h=document.querySelector('#standings .lbh');h.style.gridTemplateColumns=drop(tplH)},info);
+// name + last five on the line of the big numbers; the model under it, smaller, on the line of "on direction"
+const al=await p.evaluate(()=>{const li=document.querySelector('#standings li.lbr'),c=li.querySelector('.lb-c'),b=c.querySelector('b'),sm=c.querySelector('small');
+  const bh=b.getBoundingClientRect().height,sh=sm.getBoundingClientRect().height,gap=sm.getBoundingClientRect().top-b.getBoundingClientRect().bottom;
+  const st=document.createElement('style');st.textContent=`html.x2p #standings li.lbr .pc-t{grid-template-rows:${bh}px ${sh}px!important;row-gap:${Math.max(0,gap)}px!important;align-self:center!important}
+   html.x2p #standings li.lbr .lb-c{align-self:center!important}
+   html.x2p #standings li.lbr .pc-t h3,html.x2p #standings li.lbr .pc-t .lb-f2{align-self:center!important;line-height:1!important}
+   html.x2p #standings li.lbr .pc-t small{align-self:center!important;font-size:${Math.round(parseFloat(getComputedStyle(li.querySelector('.pc-t small')).fontSize)*0.86*10)/10}px!important;line-height:1!important;opacity:.8}`;
+  document.head.appendChild(st);return {bh,sh,gap}});
+console.log('align',JSON.stringify(al));
+await p.waitForTimeout(200);
 // highlights land on the middle card (Tightest race), its back showing
 await p.evaluate(()=>{const tr=document.querySelector('#x2pHl .x2p-hlt'),w=tr.children[1];tr.scrollLeft=w.offsetLeft+w.offsetWidth/2-tr.clientWidth/2});
 await p.waitForTimeout(600);
@@ -51,5 +71,5 @@ await p.waitForTimeout(1200);
 await p.evaluate((x)=>{const c=document.querySelector('#car');if(c.scrollLeft!==x)c.scrollLeft=x;window.scrollTo(0,0)},car0);console.log('car0',car0);await p.waitForTimeout(300);
 await p.screenshot({path:OUT+'-full.png',fullPage:true});
 const pos=await p.evaluate(()=>['#standings','#record','#learn','#highlights','#get'].map(s=>{const e=document.querySelector(s);return [s,Math.round(e.getBoundingClientRect().top+scrollY),Math.round(e.getBoundingClientRect().height)]}));
-console.log(JSON.stringify(pos),'flipped:',await p.evaluate(()=>document.querySelector('#x2pHl .x2p-hlt').children[1].querySelector('.card').classList.contains('flipped')),errs.length?errs:'no errors');
+console.log(await p.evaluate(()=>[...document.querySelectorAll('#standings li.lbr')].map(li=>{const mid=e=>{const r=li.querySelector(e).getBoundingClientRect();return Math.round((r.top+r.bottom)/2)};return li.querySelector('h3').textContent+' name:'+mid('h3')+' boxes:'+mid('.lb-f2 .fq')+' num:'+mid('.lb-c b')+' model:'+mid('.pc-t small')+' sub:'+mid('.lb-c small')}).join(' | ')));console.log(await p.evaluate(()=>[...document.querySelectorAll('#learn .rsw2 button')].map(b=>b.dataset.rk+(b.getAttribute('aria-pressed')==='true'?'*':'')).join(' ')),JSON.stringify(pos),'flipped:',await p.evaluate(()=>document.querySelector('#x2pHl .x2p-hlt').children[1].querySelector('.card').classList.contains('flipped')),errs.length?errs:'no errors');
 await b.close()})();
