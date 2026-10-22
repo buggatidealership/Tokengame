@@ -24,7 +24,9 @@ const info=await p.evaluate(()=>{const $=s=>document.querySelector(s),hold=$('#m
   // no Avg miss column
   const lbh=fl.querySelector('.lbh'),hs=[...lbh.children];const mi=hs.findIndex(e=>/miss/i.test(e.textContent));
   const tpl=getComputedStyle(fl.querySelector('li.lbr')).gridTemplateColumns,tplH=getComputedStyle(lbh).gridTemplateColumns,areas=getComputedStyle(fl.querySelector('li.lbr')).gridTemplateAreas;
-  hs[mi].remove();fl.querySelectorAll('li.lbr').forEach(li=>{const c=li.querySelectorAll('.lb-c');if(c[1])c[1].remove()});
+  hs[mi].remove();fl.querySelectorAll('li.lbr').forEach(li=>{const c=li.querySelectorAll('.lb-c');if(c[1])c[1].remove();
+    const f2=li.querySelector('.lb-f2');f2.classList.add('mk-f2');li.insertBefore(f2,li.querySelector('.lb-c'))});
+  const hc=document.createElement('span');hc.setAttribute('aria-hidden','true');lbh.insertBefore(hc,lbh.children[2]);
   const rec=$('#record');rec.parentNode.insertBefore(st,rec);
   // 03 the proof: the Leaderboard's four stats, in the owner's order (hit rate, ROI, avg miss, by sector)
   const ln=$('#learn');ln.querySelectorAll(':scope>.lsw,:scope>.lrn').forEach(e=>e.remove());
@@ -43,47 +45,37 @@ await p.addStyleTag({content:`
 html.x2p #standings .mk-sh .tx{position:relative}
 html.x2p #standings .x2p-flipbtn{position:absolute!important;right:0;bottom:2px;background:none!important;border:0!important;box-shadow:none!important;padding:8px!important;margin:0!important;min-width:0!important;transform:none!important}
 html.x2p #standings .x2p-flipbtn span{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-/* the last five beside the name, the model under it, at every width */
-html.x2p #standings li.lbr .pc-t{display:grid!important;grid-template-columns:max-content max-content;justify-content:start;column-gap:8px;row-gap:1px;align-items:center;min-width:0}
-html.x2p #standings li.lbr .pc-t h3{grid-column:1;grid-row:1;margin:0;overflow:visible!important;text-overflow:clip!important;max-width:none!important}
-html.x2p #standings li.lbr .pc-t .lb-f2{grid-column:2;grid-row:1;display:block!important;margin:0!important}
-html.x2p #standings li.lbr .pc-t small{grid-column:1/-1;grid-row:2;display:block!important}
+/* name over model; the last five in their own column, centred in it, so every row's first and last box line up */
+html.x2p #standings li.lbr .pc-t{display:grid!important;grid-template-columns:max-content;justify-content:start;min-width:0}
+html.x2p #standings li.lbr .pc-t h3{grid-area:auto!important;grid-row:1!important;grid-column:1!important;margin:0;overflow:visible!important;text-overflow:clip!important;max-width:none!important}
+html.x2p #standings li.lbr .pc-t small{display:block!important;grid-area:auto!important;grid-row:2!important;grid-column:1!important}
+html.x2p #standings li.lbr .mk-f2{display:block!important;justify-self:center;margin:0!important;grid-area:auto!important;grid-row:1!important;grid-column:3!important}
+html.x2p #standings li.lbr>.rk{grid-row:1!important;grid-column:1!important}html.x2p #standings li.lbr>.lb-m{grid-row:1!important;grid-column:2!important}
+html.x2p #standings li.lbr>.lb-c{grid-row:1!important;grid-column:4!important}html.x2p #standings li.lbr>.lb-c.roi{grid-column:5!important}
 html.x2p #standings .x2p-flipbtn i{width:20px!important;height:20px!important;font-size:12px!important;opacity:.85}
 `});
 // columns without Avg miss: drop the 4th track (rank, AI, hit rate, [miss], ROI, last 5)
-await p.evaluate(({tpl,tplH})=>{const drop=t=>{const a=t.split(' ');return innerWidth<600?a[0]+' minmax(0,1fr) 64px 64px':a[0]+' minmax(0,1.4fr) 1fr 1fr'};
+await p.evaluate(({tpl,tplH})=>{const drop=t=>{const a=t.split(' ');return innerWidth<600?a[0]+' minmax(0,1fr) auto 60px 60px':a[0]+' minmax(0,1fr) 1fr 1fr 1fr'};
   document.querySelectorAll('#standings li.lbr').forEach(li=>li.style.gridTemplateColumns=drop(tpl));const h=document.querySelector('#standings .lbh');h.style.gridTemplateColumns=drop(tplH)},info);
-// name + last five on the line of the big numbers; the model under it, smaller, on the line of "on direction"
-const al=await p.evaluate(()=>{const li=document.querySelector('#standings li.lbr'),c=li.querySelector('.lb-c'),b=c.querySelector('b'),sm=c.querySelector('small');
-  const bh=b.getBoundingClientRect().height,sh=sm.getBoundingClientRect().height,gap=sm.getBoundingClientRect().top-b.getBoundingClientRect().bottom;
-  const st=document.createElement('style');st.textContent=`html.x2p #standings li.lbr .pc-t{grid-template-rows:${bh}px ${sh}px!important;row-gap:${Math.max(0,gap)}px!important;align-self:center!important}
-   html.x2p #standings li.lbr .lb-c{align-self:center!important}
-   html.x2p #standings li.lbr .pc-t h3,html.x2p #standings li.lbr .pc-t .lb-f2{align-self:center!important;line-height:1!important}
-   html.x2p #standings li.lbr .pc-t small{align-self:center!important;font-size:${Math.round(parseFloat(getComputedStyle(li.querySelector('.pc-t small')).fontSize)*0.86*10)/10}px!important;line-height:1!important;opacity:.8}`;
-  document.head.appendChild(st);return {bh,sh,gap}});
-console.log('align',JSON.stringify(al));
-// (owner, round 3) the logo is the anchor: rank, name, the five boxes and both numbers on the logo's middle line; the model
-// and the small labels hang under it; the whole group centred in the row
+// (owner, round 4) symmetry: rank, logo, name, the five boxes, hit rate and ROI on the strip's exact middle line;
+// the model and the small labels under it
+await p.addStyleTag({content:'html.x2p #standings li.lbr .pc-t small{font-size:'+(W<600?'9.5px':'11px')+'!important;line-height:1!important;opacity:.8;margin-top:3px}html.x2p #standings li.lbr .pc-t h3{line-height:1!important}'});
+await p.waitForTimeout(150);
 await p.evaluate(()=>{document.querySelectorAll('#standings li.lbr').forEach(li=>{
-  const R=e=>e.getBoundingClientRect(),row=R(li),lg=li.querySelector('.lg'),nm=li.querySelector('.pc-t h3'),rk=li.querySelector('.rk');
-  const L=R(lg),N=R(nm),cs=[...li.querySelectorAll('.lb-c')],tb=li.querySelector('.pc-t');
-  const subB=Math.max(R(tb).bottom,...cs.map(c=>R(c).bottom)),nameMid=(N.top+N.bottom)/2;
-  // group: logo centred on the name line, text as is; then centre the group in the row
-  const lgTop=nameMid-L.height/2,top=Math.min(lgTop,N.top),bot=Math.max(lgTop+L.height,subB);
-  const cs2=getComputedStyle(li),inTop=row.top+parseFloat(cs2.paddingTop)+parseFloat(cs2.borderTopWidth),inBot=row.bottom-parseFloat(cs2.paddingBottom)-parseFloat(cs2.borderBottomWidth);
-  const shift=((inTop+inBot)/2)-((top+bot)/2);// move everything by this to centre the group
-  const mv=(e,dy)=>{e.style.transform='translateY('+(Math.round(dy*2)/2)+'px)'};
-  mv(lg,lgTop-L.top+shift);mv(tb,shift);cs.forEach(c=>mv(c,shift));
-  const K=R(rk);mv(rk,nameMid+shift-(K.top+K.bottom)/2)})});
+  const R=e=>e.getBoundingClientRect(),row=R(li),cs=getComputedStyle(li);
+  const mid=row.top+parseFloat(cs.borderTopWidth)+(row.height-parseFloat(cs.borderTopWidth)-parseFloat(cs.borderBottomWidth))/2;
+  const at=(el,ref)=>{const r=R(ref);el.style.transform='translateY('+(Math.round((mid-(r.top+r.bottom)/2)*2)/2)+'px)'};
+  at(li.querySelector('.rk'),li.querySelector('.rk'));at(li.querySelector('.lg'),li.querySelector('.lg'));
+  at(li.querySelector('.pc-t'),li.querySelector('.pc-t h3'));at(li.querySelector('.mk-f2'),li.querySelector('.mk-f2 .fq'));
+  li.querySelectorAll('.lb-c').forEach(c=>at(c,c.querySelector('b')))})});
 await p.waitForTimeout(100);
-await p.waitForTimeout(200);
 // highlights land on the middle card (Tightest race), its back showing
 await p.evaluate(()=>{const tr=document.querySelector('#x2pHl .x2p-hlt'),w=tr.children[1];tr.scrollLeft=w.offsetLeft+w.offsetWidth/2-tr.clientWidth/2});
 await p.waitForTimeout(600);
 await p.evaluate(()=>{const c=document.querySelector('#x2pHl .x2p-hlt').children[1].querySelector('.card');c.querySelector('.face.front').dispatchEvent(new MouseEvent('click',{bubbles:true}))});
 await p.waitForTimeout(1200);
-await p.evaluate((x)=>{const c=document.querySelector('#car');if(c.scrollLeft!==x)c.scrollLeft=x;window.scrollTo(0,0)},car0);console.log('car0',car0);await p.waitForTimeout(300);
+await p.evaluate((x)=>{const c=document.querySelector('#car');if(c.scrollLeft!==x)c.scrollLeft=x;window.scrollTo(0,0)},car0);console.log('car0',car0);console.log(await p.evaluate(()=>{const li=document.querySelector('#standings li.lbr');const cs=getComputedStyle(li);return 'LI '+cs.display+' cols['+cs.gridTemplateColumns+'] areas['+cs.gridTemplateAreas+']\n'+[...li.children].map(c=>{const s=getComputedStyle(c),r=c.getBoundingClientRect();return c.className+' d:'+s.display+' gc:'+s.gridColumn+' ga:'+s.gridArea+' pos:'+s.position+' x:'+Math.round(r.left)+' w:'+Math.round(r.width)}).join('\n')+'\nLBM: '+[...li.querySelector('.lb-m').children].map(c=>c.className+' '+getComputedStyle(c).display+' x:'+Math.round(c.getBoundingClientRect().left)+' w:'+Math.round(c.getBoundingClientRect().width)).join(' | ')+' lbm-d:'+getComputedStyle(li.querySelector('.lb-m')).display}));await p.waitForTimeout(300);
 await p.screenshot({path:OUT+'-full.png',fullPage:true});
 const pos=await p.evaluate(()=>['#standings','#record','#learn','#highlights','#get'].map(s=>{const e=document.querySelector(s);return [s,Math.round(e.getBoundingClientRect().top+scrollY),Math.round(e.getBoundingClientRect().height)]}));
-console.log(await p.evaluate(()=>[...document.querySelectorAll('#standings li.lbr')].map(li=>{const mid=e=>{const r=li.querySelector(e).getBoundingClientRect();return Math.round((r.top+r.bottom)/2)};return li.querySelector('h3').textContent+' logo:'+mid('.lg')+' rank:'+mid('.rk')+' name:'+mid('h3')+' boxes:'+mid('.lb-f2 .fq')+' num:'+mid('.lb-c b')+' roi:'+(()=>{const c=li.querySelectorAll('.lb-c b');const r=c[c.length-1].getBoundingClientRect();return Math.round((r.top+r.bottom)/2)})()}).join(' | ')));console.log(await p.evaluate(()=>[...document.querySelectorAll('#learn .rsw2 button')].map(b=>b.dataset.rk+(b.getAttribute('aria-pressed')==='true'?'*':'')).join(' ')),JSON.stringify(pos),'flipped:',await p.evaluate(()=>document.querySelector('#x2pHl .x2p-hlt').children[1].querySelector('.card').classList.contains('flipped')),errs.length?errs:'no errors');
+console.log(await p.evaluate(()=>[...document.querySelectorAll('#standings li.lbr')].map(li=>{const mid=e=>{const r=li.querySelector(e).getBoundingClientRect();return Math.round((r.top+r.bottom)/2)};const r=li.getBoundingClientRect();const f=[...li.querySelectorAll('.mk-f2 .fq i')];return li.querySelector('h3').textContent+' row:'+Math.round((r.top+r.bottom)/2)+' boxL:'+Math.round(f[0].getBoundingClientRect().left)+' boxR:'+Math.round(f[f.length-1].getBoundingClientRect().right)+' logo:'+mid('.lg')+' rank:'+mid('.rk')+' name:'+mid('h3')+' boxes:'+mid('.mk-f2 .fq')+' num:'+mid('.lb-c b')+' roi:'+(()=>{const c=li.querySelectorAll('.lb-c b');const r=c[c.length-1].getBoundingClientRect();return Math.round((r.top+r.bottom)/2)})()}).join(' | ')));console.log(await p.evaluate(()=>[...document.querySelectorAll('#learn .rsw2 button')].map(b=>b.dataset.rk+(b.getAttribute('aria-pressed')==='true'?'*':'')).join(' ')),JSON.stringify(pos),'flipped:',await p.evaluate(()=>document.querySelector('#x2pHl .x2p-hlt').children[1].querySelector('.card').classList.contains('flipped')),errs.length?errs:'no errors');
 await b.close()})();
