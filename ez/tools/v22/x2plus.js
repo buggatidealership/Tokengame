@@ -340,7 +340,9 @@
     /* Upcoming: looking over his shoulder, beside "the calls drop before each report" */
     "/upcoming":function(){var p=$("#view .ufn");if(!p)return false;
       /* (owner, 2026-10-21) only two follow prompts for now: X2's "Follow on X to see them first" comes off this line */
-      if(/Follow on X/.test(p.textContent))p.textContent="The calls drop before each report.";p.classList.add("x2p-beside");var h=img("11-over-shoulder.webp",86,"");h.classList.add("x2p-hz-side");h.setAttribute("data-x2p-host","");p.appendChild(h);return true},
+      if(/Follow on X/.test(p.textContent))p.textContent="The calls drop before each report.";
+      /* no host here any more (owner, 2026-10-22: he left too much space between the filter and the first day) */
+      return true},
     /* Buyback: stamping on the top corner of the pool card */
     "/buyback":function(){var pool=$("#view .pool");if(!pool)return false;
       /* (owner, 2026-10-20) no "Buyback" title: the tab already says it; kept for screen readers and focus */
@@ -684,13 +686,16 @@
     rec.parentNode.insertBefore(st,rec)}
   var sw=$(".rsw2",hold),rf=$("#rflip",hold);
   if(sw&&rf){$$(".lsw,.lrn",ln).forEach(function(e){if(e.parentNode===ln)e.remove()});ln.appendChild(sw);ln.appendChild(rf);
-    ["hit","roi","miss","sector"].forEach(function(k){var b=$('[data-rk="'+k+'"]',sw);if(b)sw.appendChild(b)})}
+    ["hit","roi","miss","sector"].forEach(function(k){var b=$('[data-rk="'+k+'"]',sw);if(b)sw.appendChild(b)});
+    /* the page's own handler marks the pressed button among the buttons where it first drew them (out of sight, now empty),
+       so Hit rate stayed lit (owner, 2026-10-22): mark them here */
+    sw.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-rk]");if(!b)return;$$("[data-rk]",sw).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))})})}
   hold.remove();
   /* 04 highlights: the Results page's first section, built into slabs by hlSlabs, placed after the proof */
   var tp=d.createElement("template");tp.innerHTML=R.vResults();var hs=tp.content.querySelector("section.xsec");
   if(hs&&window.__x2pHlSlabs){var h2=d.createElement("div");h2.hidden=true;d.body.appendChild(h2);h2.appendChild(hs);window.__x2pHlSlabs();
     if($("#x2pHl",hs)){hs.id="highlights";hs.classList.add("sec","x2p-hl-sec");hs.setAttribute("aria-labelledby","x2hlH");
-      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">The rounds CT would screenshot</h2></div>';
+      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">The rounds that stood out</h2></div>';
       var xh=$(".xsh",hs);if(xh)hs.replaceChild(sh,xh);else hs.insertBefore(sh,hs.firstChild);ln.parentNode.insertBefore(hs,ln.nextSibling)}
     h2.remove()}
   [["#standings","01"],["#record","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
@@ -719,9 +724,13 @@
   function thin(){$$("#learn svg").forEach(function(sv){var t=$$("text",sv).filter(function(x){return /^R\d+$/.test(x.textContent.trim())});if(t.length<3)return;
     var gap=Math.abs(parseFloat(t[1].getAttribute("x"))-parseFloat(t[0].getAttribute("x")))||99,step=1;while(gap*step<16)step=step===1?5:step*2;
     t.forEach(function(x){var n=+x.textContent.trim().slice(1);x.style.display=(step===1||n===1||n%step===0)?"":"none"})})}
-  if(window.MutationObserver){var lt;new MutationObserver(function(){clearTimeout(lt);lt=setTimeout(thin,30)}).observe(ln,{childList:true,subtree:true})}
-  function later(){setTimeout(function(){centre();land();thin()},80)}
+  /* By sector: every row shares one first column (a long name pushed its row's squares off line: "Industrials"); a name that
+     does not fit steps down from the page's size, half a pixel at a time, never below 10px */
+  function fitSec(){$$("#learn .st-sec").forEach(function(c){var b=$("b",c);if(!b||!c.offsetWidth)return;b.style.fontSize="";var z=parseFloat(getComputedStyle(b).fontSize),n=0;
+    while(c.scrollWidth>c.clientWidth+.5&&z>10&&n++<30){z-=.5;b.style.fontSize=z+"px"}})}
+  if(window.MutationObserver){var lt;new MutationObserver(function(){clearTimeout(lt);lt=setTimeout(function(){thin();fitSec()},30)}).observe(ln,{childList:true,subtree:true})}
+  function later(){setTimeout(function(){centre();land();thin();fitSec()},80)}
   requestAnimationFrame(function(){requestAnimationFrame(function(){centre();land();thin()})});
   if(d.fonts&&d.fonts.ready)d.fonts.ready.then(later);addEventListener("load",later);addEventListener("hashchange",later);
-  var rt;addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(centre,150)});
+  var rt;addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){centre();fitSec()},150)});
 }catch(e){}})();
