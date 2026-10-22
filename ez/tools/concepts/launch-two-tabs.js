@@ -62,6 +62,20 @@ const al=await p.evaluate(()=>{const li=document.querySelector('#standings li.lb
    html.x2p #standings li.lbr .pc-t small{align-self:center!important;font-size:${Math.round(parseFloat(getComputedStyle(li.querySelector('.pc-t small')).fontSize)*0.86*10)/10}px!important;line-height:1!important;opacity:.8}`;
   document.head.appendChild(st);return {bh,sh,gap}});
 console.log('align',JSON.stringify(al));
+// (owner, round 3) the logo is the anchor: rank, name, the five boxes and both numbers on the logo's middle line; the model
+// and the small labels hang under it; the whole group centred in the row
+await p.evaluate(()=>{document.querySelectorAll('#standings li.lbr').forEach(li=>{
+  const R=e=>e.getBoundingClientRect(),row=R(li),lg=li.querySelector('.lg'),nm=li.querySelector('.pc-t h3'),rk=li.querySelector('.rk');
+  const L=R(lg),N=R(nm),cs=[...li.querySelectorAll('.lb-c')],tb=li.querySelector('.pc-t');
+  const subB=Math.max(R(tb).bottom,...cs.map(c=>R(c).bottom)),nameMid=(N.top+N.bottom)/2;
+  // group: logo centred on the name line, text as is; then centre the group in the row
+  const lgTop=nameMid-L.height/2,top=Math.min(lgTop,N.top),bot=Math.max(lgTop+L.height,subB);
+  const cs2=getComputedStyle(li),inTop=row.top+parseFloat(cs2.paddingTop)+parseFloat(cs2.borderTopWidth),inBot=row.bottom-parseFloat(cs2.paddingBottom)-parseFloat(cs2.borderBottomWidth);
+  const shift=((inTop+inBot)/2)-((top+bot)/2);// move everything by this to centre the group
+  const mv=(e,dy)=>{e.style.transform='translateY('+(Math.round(dy*2)/2)+'px)'};
+  mv(lg,lgTop-L.top+shift);mv(tb,shift);cs.forEach(c=>mv(c,shift));
+  const K=R(rk);mv(rk,nameMid+shift-(K.top+K.bottom)/2)})});
+await p.waitForTimeout(100);
 await p.waitForTimeout(200);
 // highlights land on the middle card (Tightest race), its back showing
 await p.evaluate(()=>{const tr=document.querySelector('#x2pHl .x2p-hlt'),w=tr.children[1];tr.scrollLeft=w.offsetLeft+w.offsetWidth/2-tr.clientWidth/2});
@@ -71,5 +85,5 @@ await p.waitForTimeout(1200);
 await p.evaluate((x)=>{const c=document.querySelector('#car');if(c.scrollLeft!==x)c.scrollLeft=x;window.scrollTo(0,0)},car0);console.log('car0',car0);await p.waitForTimeout(300);
 await p.screenshot({path:OUT+'-full.png',fullPage:true});
 const pos=await p.evaluate(()=>['#standings','#record','#learn','#highlights','#get'].map(s=>{const e=document.querySelector(s);return [s,Math.round(e.getBoundingClientRect().top+scrollY),Math.round(e.getBoundingClientRect().height)]}));
-console.log(await p.evaluate(()=>[...document.querySelectorAll('#standings li.lbr')].map(li=>{const mid=e=>{const r=li.querySelector(e).getBoundingClientRect();return Math.round((r.top+r.bottom)/2)};return li.querySelector('h3').textContent+' name:'+mid('h3')+' boxes:'+mid('.lb-f2 .fq')+' num:'+mid('.lb-c b')+' model:'+mid('.pc-t small')+' sub:'+mid('.lb-c small')}).join(' | ')));console.log(await p.evaluate(()=>[...document.querySelectorAll('#learn .rsw2 button')].map(b=>b.dataset.rk+(b.getAttribute('aria-pressed')==='true'?'*':'')).join(' ')),JSON.stringify(pos),'flipped:',await p.evaluate(()=>document.querySelector('#x2pHl .x2p-hlt').children[1].querySelector('.card').classList.contains('flipped')),errs.length?errs:'no errors');
+console.log(await p.evaluate(()=>[...document.querySelectorAll('#standings li.lbr')].map(li=>{const mid=e=>{const r=li.querySelector(e).getBoundingClientRect();return Math.round((r.top+r.bottom)/2)};return li.querySelector('h3').textContent+' logo:'+mid('.lg')+' rank:'+mid('.rk')+' name:'+mid('h3')+' boxes:'+mid('.lb-f2 .fq')+' num:'+mid('.lb-c b')+' roi:'+(()=>{const c=li.querySelectorAll('.lb-c b');const r=c[c.length-1].getBoundingClientRect();return Math.round((r.top+r.bottom)/2)})()}).join(' | ')));console.log(await p.evaluate(()=>[...document.querySelectorAll('#learn .rsw2 button')].map(b=>b.dataset.rk+(b.getAttribute('aria-pressed')==='true'?'*':'')).join(' ')),JSON.stringify(pos),'flipped:',await p.evaluate(()=>document.querySelector('#x2pHl .x2p-hlt').children[1].querySelector('.card').classList.contains('flipped')),errs.length?errs:'no errors');
 await b.close()})();
