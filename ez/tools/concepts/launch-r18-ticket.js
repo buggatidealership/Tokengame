@@ -3,7 +3,7 @@
 // ticket is printed on it: each ticket carries its own field labels like a real ticket's printed boxes, the values are pressed into
 // the card in ink, the logos are printed onto the paper (multiplied, no digital outline), the last five are ticks stamped into
 // printed boxes, #1's stub is gold foil pressed into the card. P: all printed. S: the same, the hit rate hand-stamped.
-// node launch-r18-ticket.js <option> <outdir> [width]   option: now T P S
+// node launch-r18-ticket.js <option> <outdir> [width]   option: now P S H
 const { chromium } = require('playwright');const fs=require('fs');
 const V=process.argv[2]||'P',OUT=process.argv[3]||'.',W=+process.argv[4]||390;
 const G='https://fonts.googleapis.com/css2?';
@@ -61,12 +61,12 @@ const FILTERS=`<svg width="0" height="0" style="position:absolute" aria-hidden="
  <filter id="tkInk" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="5" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale=".55" xChannelSelector="R" yChannelSelector="G" result="d"/>
   <feTurbulence type="fractalNoise" baseFrequency="2.4" numOctaves="1" seed="8" result="s"/><feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.6 1.95" result="m"/><feComposite in="d" in2="m" operator="in"/></filter>
  <filter id="tkWorn" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="2" seed="3" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.9 1.75" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter></svg>`;
-const ticket=(d,hit)=>`<div class="q-tw q-${d.rank}"><div class="q-tk"><span class="q-st"><i>Admit one</i><small>No.</small><b>${d.rank}</b></span>
-  <span class="q-f q-ai"><small>AI</small><span>${d.lg}<span class="q-nm"><b>${d.name}</b><span>${d.model}</span></span></span></span>
-  <span class="q-f"><small>Last 5</small><span class="q-bx" aria-hidden="true">${d.l5.map(c=>'<i class="'+c+'"></i>').join('')}</span></span>
-  <span class="q-f"><small>Hit rate</small>${hit(d)}</span>
-  <span class="q-f"><small>ROI</small><b class="q-v r tnum">${d.roi}</b><span class="tnum">${d.usd}</span></span></div></div>`;
-const board=(D,hit)=>`<div class="q q-K">${FILTERS}${D.map(d=>ticket(d,hit)).join('')}<div class="q-fine"><b>Terms.</b> ${RULES.join(' ')}</div></div>`;
+const ticket=(d,hit,nl)=>`<div class="q-tw q-${d.rank}"><div class="q-tk"><span class="q-st"><i>Admit one</i><small>No.</small><b>${d.rank}</b></span>
+  <span class="q-f q-ai">${nl?'':'<small>AI</small>'}<span>${d.lg}<span class="q-nm"><b>${d.name}</b><span>${d.model}</span></span></span></span>
+  <span class="q-f q-l5f">${nl?'':'<small>Last 5</small>'}<span class="q-bx" aria-hidden="true">${d.l5.map(c=>'<i class="'+c+'"></i>').join('')}</span></span>
+  <span class="q-f">${nl?'':'<small>Hit rate</small>'}${hit(d)}</span>
+  <span class="q-f">${nl?'':'<small>ROI</small>'}<b class="q-v r tnum">${d.roi}</b><span class="tnum">${d.usd}</span></span></div></div>`;
+const board=(D,hit,nl)=>`<div class="q q-K${nl?' q-H':''}">${FILTERS}${nl?'<div class="q-hd" aria-hidden="true"><span></span><span></span><span>Last 5</span><span>Hit rate</span><span>ROI</span></div>':''}${D.map(d=>ticket(d,hit,nl)).join('')}<div class="q-fine"><b>Terms.</b> ${RULES.join(' ')}</div></div>`;
 const O={
  now:{fonts:[],css:'',build:null},
  // P: all printed: the hit rate pressed into the card in ink like every other field (#1's in red ink)
@@ -78,6 +78,31 @@ const O={
   ${S} .q-K .q-sp span{white-space:nowrap;font:italic 900 6.5px/1 Archivo,sans-serif;font-stretch:62%;letter-spacing:.04em;text-transform:uppercase}
   ${S} .q-K .q-1 .q-sp{color:rgba(186,38,28,.9)}${S} .q-K .q-1 .q-sp b{font-size:22px}`,
   build:D=>board(D,d=>`<span class="q-sp tnum" style="--a:${[-5,3,-2,4][d.rank-1]||0}deg"><b>${d.hit}</b><span>on direction</span></span>`)},
+ // H (owner, 2026-10-22: "I do like the printed into the ticket"): P with the labels taken off the tickets and set once above them,
+ // in today's header type and place (Last 5, Hit rate, ROI over their columns; no "AI"), the values centred under them, and the
+ // logo a touch larger, centred on the name and model beside it
+ H:{fonts:[],css:TK+`
+  ${S} .q-K.q-H{gap:10px}
+  ${S} .q-K.q-H .q-tk{grid-template-columns:46px minmax(0,1fr) 68px 66px 64px}
+  ${S} .q-K .q-hd{display:grid;grid-template-columns:46px minmax(0,1fr) 68px 66px 64px;margin-bottom:-4px;font:700 8.5px/10.2px "Barlow Condensed",sans-serif;letter-spacing:.17px;text-transform:uppercase;color:rgb(214,206,187)}
+  ${S} .q-K .q-hd span{text-align:center;padding:0 6px}
+  ${S} .q-K .q-hd span:nth-child(3),${S} .q-K.q-H .q-l5f{padding:0 2px}
+  ${S} .q-K.q-H .q-bx i{width:9px;height:10px}
+  ${S} .q-K.q-H .q-f:not(.q-ai){justify-items:center;text-align:center}
+  ${S} .q-K.q-H .q-f:last-child,${S} .q-K .q-hd span:last-child{padding-right:9px}
+  ${S} .q-K.q-H .q-ai>span{gap:9px}
+  ${S} .q-K.q-H .lg{width:31px;height:31px;border-radius:6px}
+  ${S} .q-K.q-H .q-1 .lg{width:34px;height:34px}
+  /* narrow phones (under 380px): a smaller stub, logo and type so the names keep clear of the boxes */
+  @media (max-width:379px){
+   ${S} .q-K.q-H .q-tk,${S} .q-K .q-hd{grid-template-columns:40px minmax(0,1fr) 64px 60px 58px}
+   ${S} .q-K.q-H .q-tk::before{left:46px}
+   ${S} .q-K.q-H .q-ai{padding-left:8px}${S} .q-K.q-H .q-ai>span{gap:7px}
+   ${S} .q-K.q-H .lg{width:26px;height:26px}${S} .q-K.q-H .q-1 .lg{width:29px;height:29px}
+   ${S} .q-K.q-H .q-nm b{font-size:15px}${S} .q-K.q-H .q-1 .q-nm b{font-size:17px}
+   ${S} .q-K.q-H .q-v.h{font-size:20px}${S} .q-K.q-H .q-1 .q-v.h{font-size:23px}${S} .q-K.q-H .q-v.r{font-size:13px}
+   ${S} .q-K.q-H .q-st b{font-size:24px}${S} .q-K.q-H .q-1 .q-st b{font-size:29px}}`,
+  build:D=>board(D,d=>`<b class="q-v h tnum">${d.hit}</b><span>on direction</span>`,true)},
 };
 (async()=>{const o=O[V];const b=await chromium.launch({args:['--ignore-certificate-errors-spki-list='+fs.readFileSync(process.env.SPKI_FILE||'spki.txt','utf8').trim()]});
 const p=await b.newPage({viewport:{width:W,height:900},deviceScaleFactor:2});const errs=[];p.on('pageerror',e=>errs.push(e.message));
@@ -103,4 +128,8 @@ const c=await p.evaluate(()=>{const a=document.querySelector('#standings .sh').g
 await p.screenshot({path:`${OUT}/r18-${V}-${W}.png`,clip:c,fullPage:true});
 const m=await p.evaluate(()=>{const a=document.querySelector('#standings .sh').getBoundingClientRect(),q=document.querySelector('#standings .q')||document.querySelector('#standings .x2p-flip'),z=document.querySelector('#standings .x2p-astf').getBoundingClientRect();
  return 'board top '+Math.round(q.getBoundingClientRect().top-a.top)+'px under the head, section '+Math.round(z.bottom-a.top)+'px, page width '+document.documentElement.scrollWidth});
+if(V==='H')console.log('centres (label, value):',JSON.stringify(await p.evaluate(()=>{const c=e=>{const r=e.getBoundingClientRect();return Math.round((r.left+r.right)/2*10)/10};
+  const tx=e=>{const g=document.createRange();g.selectNodeContents(e);const r=g.getBoundingClientRect();return Math.round((r.left+r.right)/2*10)/10};
+  const h=[...document.querySelectorAll('#standings .q-hd span')].slice(2),t=document.querySelectorAll('#standings .q-tw');
+  return [...t].map(tw=>[['bx','.q-bx'],['hit','.q-v.h'],['roi','.q-v.r']].map(([k,s],i)=>k+' '+tx(h[i])+'/'+c(tw.querySelector(s))).join('  '))})));
 console.log(V,W,m,errs.length?'ERR '+errs.join('|'):'');await b.close()})();
