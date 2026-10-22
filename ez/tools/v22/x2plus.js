@@ -718,11 +718,12 @@
      the highlights name their three kinds from the cards' own tags */
   var gN=(typeof SHEET!=="undefined"?SHEET:[]).filter(function(r){return r[12]!==""&&r[12]!=null}).length;
   var hk=$$("#x2pHl .x2p-htag").map(function(t){t=t.textContent.trim().toLowerCase();return t.charAt(0).toUpperCase()+t.slice(1)+"."}).join(" ");
-  [["#standings","x2p-stb",["4 AIs call each stock before it reports.","Graded at the next market close after earnings.","In public, every earnings season."],"The rules"],
+  /* (owner, 2026-10-22) "predict", not "call each stock" (they don't call every stock); "before" and "after" in gold */
+  [["#standings","x2p-stb",['4 AIs predict a stock\'s move <b class="x2p-kw">before</b> it reports.','Graded at the next market close <b class="x2p-kw">after</b> earnings.',"In public, every earnings season."],"The rules"],
    ["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
-   ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[],"Replays"]].forEach(function(x){if(!x[2].length)return;
+   ["#highlights","x2p-hlb",hk?[hk.replace(/[&<>]/g,""),"Swipe for more. Flip a card for the story."]:[],"Replays"]].forEach(function(x){if(!x[2].length)return;
     var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
-    x[2].forEach(function(t){var li=d.createElement("li");li.textContent=t;ul.appendChild(li)});
+    x[2].forEach(function(t){var li=d.createElement("li");li.innerHTML=t;ul.appendChild(li)});
     /* each list on its broadcast strap with a bug (owner, 2026-10-22: C3; "The stats" on the proof); X3+ shows the same lists as neon */
     var sp=d.createElement("div");sp.className="x2p-strap";sp.innerHTML='<span class="x2p-bug" aria-hidden="true">'+x[3]+'</span>';sp.appendChild(ul);sh.appendChild(sp)});
   [["#standings","01"],["#record","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});

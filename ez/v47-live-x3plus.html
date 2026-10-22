@@ -5403,6 +5403,8 @@ html.x2p.x2d[data-theme] .x2p-strap .x2o-ul li:nth-child(3n+2){--g:79,227,154;co
 html.x2p.x2d[data-theme] .x2p-strap .x2o-ul li:nth-child(3n){--g:255,97,88;color:#fff0ee!important}
 html.x2p.x2d[data-theme] .x2p-strap .x2o-ul li::before{left:3px!important;top:calc(.62em - 4px)!important;width:8px!important;height:8px!important;border-radius:2px!important;transform:none!important;
   background:#fff!important;box-shadow:0 0 3px rgb(var(--g)),0 0 9px rgba(var(--g),.95),0 0 18px rgba(var(--g),.5)!important}
+/* (owner, 2026-10-22) "before" and "after" in gold with a lit underline tube, so they stand out on any line's colour (gold on the gold line read as no highlight) */
+html.x2p.x2d[data-theme] .x2p-strap .x2o-ul li b.x2p-kw{--g:242,182,50;font-weight:inherit;color:#ffe7a8!important;text-decoration:underline 2px #f2b632;text-underline-offset:5px;text-shadow:0 0 2px #fff,0 0 7px rgb(var(--g)),0 0 16px rgba(var(--g),.95),0 0 34px rgba(var(--g),.6)}
 
 
 </style>
@@ -8241,11 +8243,12 @@ function x2LBpage(h){
      the highlights name their three kinds from the cards' own tags */
   var gN=(typeof SHEET!=="undefined"?SHEET:[]).filter(function(r){return r[12]!==""&&r[12]!=null}).length;
   var hk=$$("#x2pHl .x2p-htag").map(function(t){t=t.textContent.trim().toLowerCase();return t.charAt(0).toUpperCase()+t.slice(1)+"."}).join(" ");
-  [["#standings","x2p-stb",["4 AIs call each stock before it reports.","Graded at the next market close after earnings.","In public, every earnings season."],"The rules"],
+  /* (owner, 2026-10-22) "predict", not "call each stock" (they don't call every stock); "before" and "after" in gold */
+  [["#standings","x2p-stb",['4 AIs predict a stock\'s move <b class="x2p-kw">before</b> it reports.','Graded at the next market close <b class="x2p-kw">after</b> earnings.',"In public, every earnings season."],"The rules"],
    ["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
-   ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[],"Replays"]].forEach(function(x){if(!x[2].length)return;
+   ["#highlights","x2p-hlb",hk?[hk.replace(/[&<>]/g,""),"Swipe for more. Flip a card for the story."]:[],"Replays"]].forEach(function(x){if(!x[2].length)return;
     var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
-    x[2].forEach(function(t){var li=d.createElement("li");li.textContent=t;ul.appendChild(li)});
+    x[2].forEach(function(t){var li=d.createElement("li");li.innerHTML=t;ul.appendChild(li)});
     /* each list on its broadcast strap with a bug (owner, 2026-10-22: C3; "The stats" on the proof); X3+ shows the same lists as neon */
     var sp=d.createElement("div");sp.className="x2p-strap";sp.innerHTML='<span class="x2p-bug" aria-hidden="true">'+x[3]+'</span>';sp.appendChild(ul);sh.appendChild(sp)});
   [["#standings","01"],["#record","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
