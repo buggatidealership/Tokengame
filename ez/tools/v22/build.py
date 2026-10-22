@@ -420,12 +420,14 @@ pp=pp.replace('</body>','<script id="x2plus-words">\n'+XPJS+'\n</script>\n</body
 # also matches there, same specificity; only inside <style>, so the page's own scripts still see the Overview's cards alone
 pp=re.sub(r'<style[^>]*>.*?</style>',lambda m:m.group(0).replace('#record .card',':is(#record,#x2pHl) .card'),pp,flags=re.S)
 open("v46-live-x2plus.html",'w').write(pp); print("ok v46-live-x2plus.html",len(pp))
-# EZ Live X3+ (owner, 2026-10-22: "a complete replica, but just with neon sign"): X2+ whose section bullets are neon tubes
-# (tools/v22/skin-x3plus.css in place of the straps' block, Tilt Neon in place of the straps' font)
+# EZ Live X3+ (owner, 2026-10-22: "a complete replica", first with neon bullets, then the same day "for X3 plus, can you do the
+# letterpress"): X2+ whose broadcast straps are cream card with the words pressed in (tools/v22/skin-x3plus.css in place of X2+'s
+# origami block; its __PAPER__ is the "As it stands" ticket's own texture, so the two papers always match)
 X3N=open(sys.argv[1]+'/skin-x3plus.css').read()
-x3=re.sub(r'/\*STRAP\{\*/.*?/\*\}STRAP\*/',lambda m:X3N,pp,count=1,flags=re.S)
-assert x3!=pp and x3.count(STRAPFONT)==1
-x3=x3.replace(STRAPFONT,'<link id="x3p-neon-font" href="https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap" rel="stylesheet">')
+PAPER=re.search(r'html\.x2p #standings \.x2p-ast \.tk\{.*?(url\("data:image/svg\+xml[^"]*"\))',XPCSS,re.S).group(1)
+X3N=X3N.replace('__PAPER__',PAPER)
+x3=re.sub(r'/\*ORIGAMI\{\*/.*?/\*\}ORIGAMI\*/',lambda m:X3N,pp,count=1,flags=re.S)
+assert x3!=pp and '__PAPER__' not in x3
 assert x3.count('<title>EZ Live X2+</title>')==1
 x3=x3.replace('<title>EZ Live X2+</title>','<title>EZ Live X3+</title>')
 open("v47-live-x3plus.html",'w').write(x3); print("ok v47-live-x3plus.html",len(x3))
