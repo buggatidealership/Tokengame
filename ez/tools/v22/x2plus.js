@@ -603,19 +603,30 @@
     /* the photo printed on the stock: a static paper tooth and a faint ivory wash between the photo and the live digits (normal blend, no filter) */
     P+' .bt-s #gpu .gpu-img::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:'+PTOOTH+' 0 0/160px 160px,linear-gradient(rgba(239,228,200,.06),rgba(239,228,200,.06))}',
     P+' .bt-s #gpu .gpu-img .gpu-core{z-index:2}',
-    /* ---- phones: hero on two lines, the film and the bet ticket full bleed, a gap of about 20px between them ---- */
+    /* ---- phones: hero on two lines; the film 16px in from each edge (in line with the headline), the bet ticket 30px in,
+       so it reads smaller than the film (owner, 2026-10-22, option A: "touching the edges", "the video takes center stage").
+       The first screen holds the headline, the film, the ticket and only the record's "01" tag: the section grows to the
+       screen's height (100svh, the browser bars showing) less 52px for that tag, and the spare space goes evenly above
+       the film, between the two and under the ticket. --x2pbt-top is the section's top on the page, set by fit() below;
+       on a short screen there is nothing to spare and the plain gaps hold. ---- */
     '@media (max-width:599.98px){',
     P+'[data-theme] section.hero{padding-top:14px}',
     P+'[data-theme] section.hero h1{font-size:calc((100vw - 32px) / 10)!important;line-height:.94!important}',
-    P+' section.x2o-bet:has(>.x2p-vt){padding-top:6px;margin-top:8px}',
-    P+' .x2p-vt{margin:22px -16px 0;max-width:none;overflow-x:clip}',
+    P+' section.x2o-bet:has(>.x2p-vt){padding-top:6px;margin-top:8px;display:flex;flex-direction:column;justify-content:space-evenly;box-sizing:border-box;'+
+      'min-height:calc(100vh - var(--x2pbt-top,100vh) - 52px);min-height:calc(100svh - var(--x2pbt-top,100svh) - 52px)}',
+    P+' .x2p-vt{margin:28px 0 0;max-width:none;overflow-x:clip}',
     P+' .x2p-vt .vt-tag{left:16px}',
-    P+' .x2p-bt{margin:16px -16px 0;max-width:none;overflow-x:clip}',
+    P+' .x2p-bt{margin:24px 14px 0;max-width:none;overflow-x:clip}',
     P+' section.x2o-bet + section.x2o-rc{padding-top:22px}',
     '}'
   ].join('\n');
   if(F.rough!==0)H.classList.add('x2pbt-rough');
   var st=d.createElement('style');st.id='x2pbt-css';st.textContent=css;d.head.appendChild(st);
+  var fit=function(){var sb=d.querySelector('section.x2o-bet');if(!sb||!sb.offsetParent)return;
+    sb.style.setProperty('--x2pbt-top',Math.round(sb.getBoundingClientRect().top+(window.scrollY||0))+'px')};
+  fit();window.addEventListener('resize',fit);window.addEventListener('load',fit);window.addEventListener('hashchange',function(){setTimeout(fit,0)});
+  if(d.fonts&&d.fonts.ready)d.fonts.ready.then(fit);
+  if(window.ResizeObserver){var ro=new ResizeObserver(fit);[d.querySelector('header.top'),d.querySelector('section.hero')].forEach(function(e){if(e)ro.observe(e)})}
   var g=d.getElementById('gpu'),h=d.querySelector('.x2p-cdh');if(!g||!h)return 'missing';
   var mk=function(tag,cls,html){var e=d.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e};
   var hid=function(e){e.setAttribute('aria-hidden','true');return e};
