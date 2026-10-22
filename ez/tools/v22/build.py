@@ -430,4 +430,8 @@ x3=re.sub(r'/\*ORIGAMI\{\*/.*?/\*\}ORIGAMI\*/',lambda m:X3N,pp,count=1,flags=re.
 assert x3!=pp and '__PAPER__' not in x3
 assert x3.count('<title>EZ Live X2+</title>')==1
 x3=x3.replace('<title>EZ Live X2+</title>','<title>EZ Live X3+</title>')
+# (owner, 2026-10-22) X3+ only: the ticket rip mockup (an Admit One ticket over the first screen that scrolling tears open)
+RIPC=open(sys.argv[1]+'/x3plus-rip.css').read().replace('__PAPER__',PAPER); RIPJ=open(sys.argv[1]+'/x3plus-rip.js').read()
+assert x3.count('</head>')==1 and x3.count('</body>')==1
+x3=x3.replace('</head>','<style id="x3plus-rip">\n'+RIPC+'\n</style>\n</head>').replace('</body>','<script id="x3plus-rip">\n'+RIPJ+'\n</script>\n</body>')
 open("v47-live-x3plus.html",'w').write(x3); print("ok v47-live-x3plus.html",len(x3))
