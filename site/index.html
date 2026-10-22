@@ -7506,7 +7506,7 @@ function x2LBpage(h){
       v.addEventListener("play",ui);v.addEventListener("pause",function(){rolling=false;ui();if(mini&&v.paused&&!v.ended)hideMini();setTimeout(resume,60)});
       v.addEventListener("ended",function(){ended=true;rolling=false;ui();hideMini();setTimeout(resume,60)});
       /* the corner player while you scroll on: the same video element, moved into a fixed box, so the sound never stops */
-      var hold=null;function showMini(){if(mini||v.paused||v.ended||nosrc)return;mini=document.createElement("div");mini.className="x2p-vmini";mini.setAttribute("role","region");mini.setAttribute("aria-label","How it works film");
+      var hold=null;function showMini(){if(mini||v.paused||v.ended||nosrc)return;if(window.__x2pTrack)window.__x2pTrack("film",{a:"corner"},"film-corner");mini=document.createElement("div");mini.className="x2p-vmini";mini.setAttribute("role","region");mini.setAttribute("aria-label","How it works film");
         mini.innerHTML='<button type="button" class="m-x" aria-label="Stop the film">✕</button><button type="button" class="m-snd"></button><button type="button" class="m-back">Back to the film</button><span class="m-bar" aria-hidden="true"><i></i></span>';
         hold=document.createElement("div");hold.className="vt-hold";f.insertBefore(hold,v);mini.insertBefore(v,mini.firstChild);document.body.appendChild(mini);
         mini.querySelector(".m-snd").addEventListener("click",function(e){e.stopPropagation();v.muted=!v.muted;userMuted=v.muted;ui()});
@@ -7800,6 +7800,53 @@ function x2LBpage(h){
   addEventListener("hashchange",function(){tries=0;setTimeout(place,60)});
   if(document.readyState==="complete")place();else addEventListener("load",place);
   setTimeout(place,300);
+}catch(e){}})();
+
+/* visitor analytics (owner, 2026-10-22: "we need to start adding analytics to the page"): Umami Cloud, cookieless (no consent banner),
+   on the live domain only, and off until UMAMI_ID holds the site's Website ID (a public ID: it sits in the page source anyway).
+   Page views are sent by hand (the tabs live in the URL's #), plus a few events: which sections a visit reaches, the explainer film
+   (play, 25/50/75%, end, corner player, sound), the record (a swipe to another round, a tap on a card), and taps on the X links. Each event goes once
+   per page load, so a visit costs about 10 to 15 of the free plan's 100,000 a month. Every visitor gets a lasting bucket, a or b, sent as
+   the tag, for the planned split test of the Overview's order. localStorage "ez-track-debug" = 1 logs events to the console instead. */
+(function(){try{
+  var UMAMI_ID="";
+  var live=/^(www\.)?earningszn\.xyz$/.test(location.hostname),dbg=false,b="a";
+  try{dbg=localStorage.getItem("ez-track-debug")==="1"}catch(e){}
+  try{b=localStorage.getItem("ez-ab");if(b!=="a"&&b!=="b"){b=Math.random()<.5?"a":"b";localStorage.setItem("ez-ab",b)}}catch(e){b="a"}
+  window.__x2pBucket=b;
+  var on=dbg||(live&&!!UMAMI_ID),sent={},q=[];
+  function url(){return location.pathname+location.hash}
+  function send(n,d){if(dbg){console.log("[ez-track]",n||"pageview",d||{},url(),"tag="+b);return}
+    if(window.umami&&umami.track){if(n)umami.track(n,d);else umami.track(function(p){p.url=url();return p})}else q.push([n,d])}
+  /* once: the key keeps an event to one send per page load */
+  window.__x2pTrack=function(n,d,once){if(!on)return;if(once){if(sent[once])return;sent[once]=1}send(n,d)};
+  if(!on)return;
+  if(!dbg){var sc=document.createElement("script");sc.defer=true;sc.src="https://cloud.umami.is/script.js";
+    sc.setAttribute("data-website-id",UMAMI_ID);sc.setAttribute("data-domains","earningszn.xyz,www.earningszn.xyz");
+    sc.setAttribute("data-auto-pageview","false");sc.setAttribute("data-tag",b);
+    sc.onload=function(){var x;while(x=q.shift())send(x[0],x[1])};document.head.appendChild(sc)}
+  var T=window.__x2pTrack;
+  /* page views: on load and on every tab change */
+  T();addEventListener("hashchange",function(){Object.keys(sent).forEach(function(k){if(k.indexOf("sec-")===0)delete sent[k]});T()});
+  /* sections reached: once each, when 40% of one is on screen (the Overview's own sections; the others render inside #view) */
+  var SEC=[[".x2p-vt","film"],["#gpu","bet"],["#record","record"],["#standings","standings"],["#learn","stats"],["#x2pHl","highlights"],["#get","get"]];
+  if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&e.target.offsetParent!==null)T("section",{s:e.target.getAttribute("data-x2p-sec")},"sec-"+e.target.getAttribute("data-x2p-sec"))})},{threshold:.4});
+    var seen=function(){SEC.forEach(function(x){var el=document.querySelector(x[0]);if(el&&!el.hasAttribute("data-x2p-sec")){el.setAttribute("data-x2p-sec",x[1]);io.observe(el)}})};
+    seen();addEventListener("hashchange",function(){setTimeout(seen,400)});setTimeout(seen,1500)}
+  /* the explainer film */
+  var ex=window.__x2pExplainer,v=ex&&ex.video;
+  if(v){var mk={};v.addEventListener("play",function(){T("film",{a:"play"},"film-play")});
+    v.addEventListener("timeupdate",function(){if(!v.duration)return;var f=v.currentTime/v.duration;[25,50,75].forEach(function(m){if(f>=m/100&&!mk[m]){mk[m]=1;T("film",{a:String(m)},"film-"+m)}})});
+    v.addEventListener("ended",function(){T("film",{a:"end"},"film-end")});
+    v.addEventListener("volumechange",function(){T("film",{a:v.muted?"mute":"unmute"},"film-snd-"+(v.muted?"off":"on"))})}
+  /* the record: a swipe to another round, a flip, a round's film started by a tap */
+  var car=document.getElementById("car");
+  if(car){var cn=function(){var c=car.querySelector(".card.cur");return c&&c.getAttribute("data-n")},c0=cn(),st=0;
+    car.addEventListener("scroll",function(){clearTimeout(st);st=setTimeout(function(){var n=cn();if(c0===null)c0=n;else if(n&&n!==c0)T("record",{a:"swipe"},"rec-swipe")},300)},{passive:true})}
+  document.addEventListener("click",function(e){var t=e.target;if(!t.closest)return;
+    var x=t.closest('a[href*="x.com/"]');if(x){T("follow",{where:x.classList.contains("x2p-xhd")?"header":x.classList.contains("x2p-xlink")?"record":"other"});return}
+    if(t.closest("#record .card")){T("record",{a:"tap"},"rec-tap")}
+    if(t.closest("#x2pHl .card")){T("highlights",{a:"tap"},"hl-tap")}},true);
 }catch(e){}})();
 
 </script>
