@@ -229,7 +229,13 @@
   var sn=$(".x2o-stn");if(sn)sn.textContent="The model on top of the leaderboard makes the call on bet #1, NVIDIA.";
   /* words, on every route as it renders: pot becomes pool; NVIDIA's bet is the first one; no "never edited" */
   var RE=[[/\bpot\b/g,"pool"],[/\bPot\b/g,"Pool"],[/\bPOT\b/g,"POOL"],[/ · NEVER EDITED/g,""],[/, never edited\./g,"."],[/\bNext bet\b/g,"Bet #1"],[/\bNEXT BET\b/g,"BET #1"],[/Longest hit streak/g,"Longest right-way streak"]];
-  function fix(root){if(!root||root.nodeType!==1)return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n;
+  /* no model pages for now (owner, 2026-10-22: "remove the being able to click into a model for now"): every link to one becomes plain
+     text, as the page renders, and an address that points at one goes to the Overview. The pages stay in the build for later. */
+  function noModelLinks(root){var as=root.matches&&root.matches('a[href^="#/model/"]')?[root]:[].slice.call(root.querySelectorAll?root.querySelectorAll('a[href^="#/model/"]'):[]);
+    as.forEach(function(a){if(!a.parentNode)return;var sp=document.createElement("span");sp.className="x2p-mn";while(a.firstChild)sp.appendChild(a.firstChild);a.parentNode.replaceChild(sp,a)})}
+  function noModelRoute(){if(/^#\/model\//.test(location.hash))location.replace("#/")}
+  noModelRoute();addEventListener("hashchange",noModelRoute);
+  function fix(root){if(!root||root.nodeType!==1)return;noModelLinks(root);var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n;
     while(n=w.nextNode()){var t=n.textContent,u=t;if(!/pot|Pot|POT|NEVER|never edited|ext bet|EXT BET|hit streak/.test(t))continue;
       if(n.parentNode&&/^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName))continue;
       RE.forEach(function(p){u=u.replace(p[0],p[1])});if(u!==t)n.textContent=u}
