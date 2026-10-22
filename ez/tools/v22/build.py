@@ -374,6 +374,11 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
             ('(function(){if(typeof SL==="undefined"||typeof go!=="function")return;for(var i=NR-1;i>=0;i--)if(SL[i]&&SL[i].d&&SL[i].d.film){',
              '(function(){return;for(var i=NR-1;i>=0;i--)if(SL[i]&&SL[i].d&&SL[i].d.film){')]:
     assert pp.count(a)==1,a; pp=pp.replace(a,b)
+# two-tab launch (owner, 2026-10-22): the Overview builds its standings, stats and highlights from the Leaderboard and
+# Results pages (x2plus.js), whose renderers live inside the page script: hand x2plus.js those three on X2+ only
+a='addEventListener("hashchange",route);\nroute();'
+assert pp.count(a)==1,a
+pp=pp.replace(a,'window.__x2pR={vModels:vModels,wireModels:wireModels,vResults:vResults};'+a)
 pp,k1=re.subn(r'<link id="x2-logo-fonts"[^>]*>\n','',pp)
 pp,k2=re.subn(r'<style id="x2-logo">.*?</style>\n','',pp,flags=re.S)
 assert (k1,k2)==(1,1),(k1,k2)

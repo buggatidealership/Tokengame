@@ -5299,6 +5299,32 @@ html.x2p.x2d[data-theme="dark"] .x2p-vt h2.vt-tag,html.x2p .x2p-vt h2.vt-tag{col
 html.x2p .x2p-vt.playing .vt-play i{border:0;width:9px;height:11px;background:linear-gradient(90deg,#141217 0 3px,transparent 3px 6px,#141217 6px 9px)}
 /* model names are plain text while the model pages are off (owner, 2026-10-22) */
 html.x2p .x2p-mn{color:inherit;text-decoration:none;cursor:default}
+/* ---- two-tab launch (owner, 2026-10-22): x2plus.js builds the Overview's standings from the Leaderboard's board ---- */
+html.x2p-launch .nav{justify-content:flex-start!important;gap:22px}
+/* the ⓘ alone, no box and no words (owner: "without the module around it"); its words stay for screen readers */
+html.x2p #standings .sh .tx{position:relative}
+html.x2p #standings .x2p-flipbtn{position:absolute!important;right:0;bottom:2px;background:none!important;border:0!important;box-shadow:none!important;padding:8px!important;margin:0!important;min-width:0!important;transform:none!important}
+html.x2p #standings .x2p-flipbtn span{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+html.x2p #standings .x2p-flipbtn i{width:20px!important;height:20px!important;font-size:12px!important;opacity:.85}
+html.x2p #standings .x2p-flip{margin-top:14px}
+/* columns: rank, the model, its last five, hit rate, ROI (no avg miss); the header gets an empty cell over the last five */
+html.x2p #standings li.lbr,html.x2p #standings .lbh{grid-template-columns:20px minmax(0,1fr) auto 60px 60px!important}
+@media (min-width:600px){html.x2p #standings li.lbr,html.x2p #standings .lbh{grid-template-columns:20px minmax(0,1fr) 1fr 1fr 1fr!important}}
+@media (min-width:760px){html.x2p #standings li.lbr,html.x2p #standings .lbh{grid-template-columns:30px minmax(0,1fr) 1fr 1fr 1fr!important}}
+@media (min-width:1024px){html.x2p #standings li.lbr,html.x2p #standings .lbh{grid-template-columns:44px minmax(0,1fr) 1fr 1fr 1fr!important}}
+html.x2p #standings li.lbr>.rk{grid-row:1!important;grid-column:1!important}
+html.x2p #standings li.lbr>.lb-m{grid-row:1!important;grid-column:2!important}
+html.x2p #standings li.lbr>.x2p-l5{display:block!important;justify-self:center;margin:0!important;grid-area:auto!important;grid-row:1!important;grid-column:3!important}
+html.x2p #standings li.lbr>.lb-c{grid-row:1!important;grid-column:4!important}
+html.x2p #standings li.lbr>.lb-c.roi{grid-column:5!important}
+/* the name over its model, the model a touch smaller; x2plus.js then centres rank, logo, name, last five, hit rate and ROI on
+   each strip's middle by their ink, and puts the last five halfway between the longest name and the hit rate */
+html.x2p #standings li.lbr .pc-t{display:grid!important;grid-template-columns:max-content;justify-content:start;min-width:0}
+html.x2p #standings li.lbr .pc-t h3{grid-area:auto!important;grid-row:1!important;grid-column:1!important;margin:0;line-height:1!important;overflow:visible!important;text-overflow:clip!important;max-width:none!important}
+html.x2p #standings li.lbr .pc-t small{display:block!important;grid-area:auto!important;grid-row:2!important;grid-column:1!important;font-size:9.5px!important;line-height:1!important;opacity:.8;margin-top:3px}
+@media (min-width:600px){html.x2p #standings li.lbr .pc-t small{font-size:11px!important}}
+/* the highlights on the Overview: the Results card copy is not needed under the head */
+html.x2p #highlights .xsh-t>p{display:none}
 
 </style>
 </head>
@@ -6982,7 +7008,7 @@ function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=nul
   document.title=onBoard?"EZ Season Live":(($("h1",view)||{}).textContent||"EZ")+" · EZ Season Live";
   if(openN)setTimeout(function(){openRound(openN)},60);
   firstR=false}
-addEventListener("hashchange",route);
+window.__x2pR={vModels:vModels,wireModels:wireModels,vResults:vResults};addEventListener("hashchange",route);
 route();
 
 /* ---------- X2 Overview, the proof (owner, 2026-10-10): ROI first and by default, the same chart as the Leaderboard's
@@ -7629,13 +7655,19 @@ function x2LBpage(h){
     if("IntersectionObserver" in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;films()},{threshold:.3}).observe(tr);
     function eqH(){var cs=cards.map(function(w){return w.querySelector(".card")});cs.forEach(function(c){c.style.height=""});var m=0;cs.forEach(function(c){m=Math.max(m,c.offsetHeight)});if(m)cs.forEach(function(c){c.style.height=m+"px"})}
     var eqT;window.addEventListener("resize",function(){clearTimeout(eqT);eqT=setTimeout(eqH,150)});if(document.fonts&&document.fonts.ready)document.fonts.ready.then(eqH);
-    mark();requestAnimationFrame(function(){eqH();tr.scrollLeft=0;cur=near();mark();films()})}
+    mark();requestAnimationFrame(function(){eqH();tr.scrollLeft=0;cur=near();mark();films()});
+    /* (owner, 2026-10-22, two-tab launch) the Overview's highlights land on a chosen card with its story side up; false while
+       the carousel is out of view (no width yet), so the caller tries again when the Overview shows */
+    window.__x2pHlGo=function(i,back){if(!tr.clientWidth)return false;eqH();var w=cards[Math.max(0,Math.min(cards.length-1,i))];
+      tr.scrollLeft=w.offsetLeft+w.offsetWidth/2-tr.clientWidth/2;cur=near();mark();var c=w.querySelector(".card");
+      if(back&&c&&!c.classList.contains("nofilm")&&!c.classList.contains("flipped")){c.classList.add("flipped");setFaces2(c,true)}films();return true}}
   function tkStamp(){[].forEach.call(document.querySelectorAll("ol.rx3>li"),function(li){if(li.querySelector(".x2p-tg"))return;var a=li.querySelector("a.rx3-r"),m=a&&(a.getAttribute("href")||"").match(/round\/(\d+)/);if(!m)return;
       var r=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===+m[1])r=ROUNDS[i];if(!r)return;var E=ezGrade(r),s=document.createElement("span");
       s.className="x2p-tg"+(E.gr===10?" gold":"");s.setAttribute("aria-hidden","true");s.innerHTML="<b>"+E.gr+"</b><small>"+E.ds+"</small>";li.appendChild(s);
       a.setAttribute("aria-label",(a.getAttribute("aria-label")||"")+". Grade: "+E.ds+" "+E.gr+" of 10");
       var v=li.querySelector(".rx3-v"),im=v&&v.querySelector("img");if(v&&im)v.style.setProperty("--bg",'url("'+im.getAttribute("src")+'")')})}
   function x2pResults(){try{hlSlabs();tkStamp()}catch(e){}}
+  window.__x2pHlSlabs=hlSlabs;
   /* the Overview record: a no-film card opens on its stats (the page does that); a tap no longer turns it to "Film soon" */
   document.addEventListener("click",function(e){var c=e.target.closest&&e.target.closest("#record .card.nofilm.cur");if(!c||e.target.closest(".shr,.snd,a,video[controls]"))return;e.stopPropagation();e.preventDefault()},true);
   x2pResults();var resT;window.__x2pResults=function(){clearTimeout(resT);resT=setTimeout(x2pResults,30)};
@@ -7677,25 +7709,16 @@ function x2LBpage(h){
   function nmM(k){var n=(MODELS[k]&&MODELS[k].name)||k;return n.length<=3?n:n.charAt(0)+n.slice(1).toLowerCase()}
   /* the Overview stays in the page (hidden) while a tab shows in #view: look for a host only where this route renders */
   function mine(){var s=route()==="/"?$("#top"):$("#view");return s&&s.querySelector("[data-x2p-host]")}
-  var PLACE={
-    /* Overview: no host (owner, 2026-10-22: he is in the explainer film above, "no need to keep him there"); he stood
-       beside "Countdown to Bet #1: NVIDIA" from 2026-10-20 */
-    /* Leaderboard (owner, 2026-10-20, second pass): the head with a small "How we rank" beside it; he names the leader
-       above the board; the board turns over to the rule in full, at the board's own size; the three rules sit under it.
-       Hall of fame third; three findings. The glossary line under the board moves onto its back. */
-    "/leaderboard":function(){var lbx=$("#view .lbx");if(!lbx)return false;var rows=[].slice.call(lbx.querySelectorAll("li.lbr")),top=rows[0];
-      var xsh=lbx.parentNode.querySelector(".xsh"),h1=xsh&&xsh.querySelector("h1"),ul=xsh&&xsh.querySelector(".x2-lbul");
-      /* (owner, 2026-10-20, third pass) one rule on the front; the rest is behind "How we rank", kept plain */
-      /* (owner, 2026-10-20, fourth pass) two rules under the board, beside him; the rest is behind "How we rank" */
-      var B=["Ranked by how often they get the direction right.","Tie? The smaller average miss wins."];
-      if(ul)[].forEach.call(ul.querySelectorAll("li"),function(li,i){if(B[i])li.textContent=B[i];else li.remove()});
+  /* the board turned into a card with "How we rank" on its back, and the "As it stands" ticket under it. The Leaderboard tab
+     used it first; since the two-tab launch (owner, 2026-10-22) the Overview's standings build from it too. The caller
+     places the button. */
+  function lbFlip(lbx){var rows=[].slice.call(lbx.querySelectorAll("li.lbr")),top=rows[0];
       var a=top&&top.querySelector(".pc-t a,.pc-t .x2p-mn"),nm=a?a.textContent.trim():"",pc=top&&top.querySelector(".lb-c b"),pct=pc?pc.textContent.trim():"";
       var lbn=lbx.nextElementSibling&&lbx.nextElementSibling.classList.contains("lbn")?lbx.nextElementSibling:null;
       var roi=lbn&&/<b>ROI<\/b>:([^<]*)/.exec(lbn.innerHTML);
       var fl=document.createElement("div");fl.className="x2p-flip";
       var btn=document.createElement("button");btn.type="button";btn.className="x2p-flipbtn";btn.setAttribute("aria-expanded","false");btn.setAttribute("aria-controls","x2pHow");
       btn.innerHTML='<i aria-hidden="true">i</i><span>How we rank</span>';
-      if(h1){var hd=document.createElement("div");hd.className="x2p-lbhead";h1.parentNode.insertBefore(hd,h1);hd.appendChild(h1);hd.appendChild(btn)}
       var fin=document.createElement("div");fin.className="x2p-fin";
       var bk=document.createElement("div");bk.className="x2p-bk";bk.id="x2pHow";bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");bk.tabIndex=-1;
       bk.innerHTML='<h3>How we rank</h3><p class="x2p-why">Why it matters: <b>#1 makes the call</b> on the next bet.</p><ol>'+
@@ -7714,7 +7737,19 @@ function x2LBpage(h){
       if(nm)r.appendChild(say("As it stands, we follow <em>"+nm+"</em> on our next bet."));
       /* no host here any more (owner, 2026-10-22: "remove him from the Leaderboard tab"); his line stays on its ticket */
       /* the two rules are behind the ⓘ now (owner, 2026-10-20: no repetition); under the board only his line */
-      var ft=document.createElement("div");ft.className="x2p-lbfoot";if(ul)ul.remove();ft.appendChild(r);fl.after(ft)
+      var ft=document.createElement("div");ft.className="x2p-lbfoot";ft.appendChild(r);fl.after(ft);return {fl:fl,btn:btn,ft:ft}}
+  window.__x2pLbFlip=lbFlip;
+  var PLACE={
+    /* Overview: no host (owner, 2026-10-22: he is in the explainer film above, "no need to keep him there"); he stood
+       beside "Countdown to Bet #1: NVIDIA" from 2026-10-20 */
+    /* Leaderboard (owner, 2026-10-20, second pass): the head with a small "How we rank" beside it; he names the leader
+       above the board; the board turns over to the rule in full, at the board's own size; the three rules sit under it.
+       Hall of fame third; three findings. The glossary line under the board moves onto its back. */
+    "/leaderboard":function(){var lbx=$("#view .lbx");if(!lbx)return false;
+      var xsh=lbx.parentNode.querySelector(".xsh"),h1=xsh&&xsh.querySelector("h1"),ul=xsh&&xsh.querySelector(".x2-lbul");
+      var o=lbFlip(lbx);if(h1){var hd=document.createElement("div");hd.className="x2p-lbhead";h1.parentNode.insertBefore(hd,h1);hd.appendChild(h1);hd.appendChild(o.btn)}
+      /* the two rules are behind the ⓘ now (owner, 2026-10-20: no repetition) */
+      if(ul)ul.remove();
       var secs=[].slice.call(document.querySelectorAll("#view section.blk")),find=function(re){return secs.filter(function(s){var m=s.querySelector(".mk");return m&&re.test(m.textContent)})[0]};
       var hall=find(/hall of fame/i),grid=find(/one square/i);
       if(hall&&grid&&hall.compareDocumentPosition(grid)&Node.DOCUMENT_POSITION_PRECEDING){grid.parentNode.insertBefore(hall,grid)}
@@ -7821,8 +7856,10 @@ function x2LBpage(h){
     sc.setAttribute("data-auto-pageview","false");sc.setAttribute("data-tag",b);
     sc.onload=function(){var x;while(x=q.shift())send(x[0],x[1])};document.head.appendChild(sc)}
   var T=window.__x2pTrack;
-  /* page views: on load and on every tab change */
-  T();addEventListener("hashchange",function(){Object.keys(sent).forEach(function(k){if(k.indexOf("sec-")===0)delete sent[k]});T()});
+  /* page views: on load and on every tab change; not for an address that only sends you on to the Overview (model pages, and
+     since the two-tab launch the Leaderboard, Results and Buyback tabs), so those don't count twice */
+  var gone=function(){return /^#\/(leaderboard|models?|results|buyback)(\/|$)/.test(location.hash)};
+  if(!gone())T();addEventListener("hashchange",function(){if(gone())return;Object.keys(sent).forEach(function(k){if(k.indexOf("sec-")===0)delete sent[k]});T()});
   /* sections reached: once each, when 40% of one is on screen (the Overview's own sections; the others render inside #view) */
   var SEC=[[".x2p-vt","film"],["#gpu","bet"],["#record","record"],["#standings","standings"],["#learn","stats"],["#x2pHl","highlights"],["#get","get"]];
   if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&e.target.offsetParent!==null)T("section",{s:e.target.getAttribute("data-x2p-sec")},"sec-"+e.target.getAttribute("data-x2p-sec"))})},{threshold:.4});
@@ -8064,6 +8101,74 @@ function x2LBpage(h){
   p.appendChild(hid(mk('div','bt-st bt-ft','<span class="l">Admit one</span><span class="r e"><span class="bt-no">'+num+'</span></span>')));
   var im=g.querySelector('img');if(im){im.loading='eager'}
   return 'ok'};run()}catch(e){}})();
+/* ---- two-tab launch (owner, 2026-10-22): only Overview and Upcoming. The Overview reads: the first screen, 01 current
+   standings (the Leaderboard tab's board: hit rate and ROI, no avg miss; a bare ⓘ turns it to "How we rank"; the "As it
+   stands" ticket under it), 02 the record, 03 the proof (the Leaderboard's four stats in the owner's order: hit rate, ROI,
+   avg miss, by sector), 04 the Results highlights (landing on the middle card, Tightest race, its story side up), 05 Get $EZ.
+   The Leaderboard, Results and Buyback tabs are off and their addresses go to the Overview; "Every graded round" comes later.
+   build.py hands this block the page's own renderers (window.__x2pR) on X2+ only. ---- */
+(function(){try{
+  var d=document,R=window.__x2pR,$=function(s,r){return (r||d).querySelector(s)},$$=function(s,r){return [].slice.call((r||d).querySelectorAll(s))};
+  var st=$("#standings"),rec=$("#record"),ln=$("#learn");if(!R||!st||!rec||!ln)return;
+  d.documentElement.classList.add("x2p-launch");
+  /* tabs: Overview and Upcoming */
+  $$(".nav a").forEach(function(a){if(/^(leaderboard|results|buyback)$/.test(a.dataset.r||""))a.remove()});
+  function offRoute(){if(/^#\/(leaderboard|models|results|buyback)(\/|$)/.test(location.hash))location.replace("#/")}
+  offRoute();addEventListener("hashchange",offRoute);
+  /* 01 standings and 03 stats come from the Leaderboard page, rendered once out of sight */
+  var hold=d.createElement("div");hold.hidden=true;d.body.appendChild(hold);hold.innerHTML=R.vModels();R.wireModels(hold);
+  var lbx=$(".lbx",hold);
+  if(lbx&&window.__x2pLbFlip){var o=window.__x2pLbFlip(lbx);
+    $$(".band,.lede",st).forEach(function(e){if(e.parentNode===st)e.remove()});
+    ($(".sh .tx",st)||$(".sh",st)||st).appendChild(o.btn);st.appendChild(o.fl);st.appendChild(o.ft);
+    var lbh=$(".lbh",o.fl);if(lbh){[].slice.call(lbh.children).forEach(function(h){if(/miss/i.test(h.textContent))h.remove()});
+      var hc=d.createElement("span");hc.setAttribute("aria-hidden","true");lbh.insertBefore(hc,lbh.children[2]||null)}
+    $$("li.lbr",o.fl).forEach(function(li){var c=$$(".lb-c",li);if(c.length>2)c[1].remove();
+      var f2=$(".lb-f2",li),c0=$(".lb-c",li);if(f2&&c0){f2.classList.add("x2p-l5");li.insertBefore(f2,c0)}});
+    rec.parentNode.insertBefore(st,rec)}
+  var sw=$(".rsw2",hold),rf=$("#rflip",hold);
+  if(sw&&rf){$$(".lsw,.lrn",ln).forEach(function(e){if(e.parentNode===ln)e.remove()});ln.appendChild(sw);ln.appendChild(rf);
+    ["hit","roi","miss","sector"].forEach(function(k){var b=$('[data-rk="'+k+'"]',sw);if(b)sw.appendChild(b)})}
+  hold.remove();
+  /* 04 highlights: the Results page's first section, built into slabs by hlSlabs, placed after the proof */
+  var tp=d.createElement("template");tp.innerHTML=R.vResults();var hs=tp.content.querySelector("section.xsec");
+  if(hs&&window.__x2pHlSlabs){var h2=d.createElement("div");h2.hidden=true;d.body.appendChild(h2);h2.appendChild(hs);window.__x2pHlSlabs();
+    if($("#x2pHl",hs)){hs.id="highlights";hs.classList.add("sec","x2p-hl-sec");hs.setAttribute("aria-labelledby","x2hlH");
+      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">The rounds CT would screenshot</h2></div>';
+      var xh=$(".xsh",hs);if(xh)hs.replaceChild(sh,xh);else hs.insertBefore(sh,hs.firstChild);ln.parentNode.insertBefore(hs,ln.nextSibling)}
+    h2.remove()}
+  [["#standings","01"],["#record","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
+  /* the highlights land on Tightest race (the middle card), its story side up, once the Overview is on screen */
+  var landed=false;function land(){if(landed||!window.__x2pHlGo)return;var ws=$$("#x2pHl .x2p-hi"),i=1;
+    ws.forEach(function(w,j){var t=$(".x2p-htag",w);if(t&&/tight/i.test(t.textContent))i=j});if(window.__x2pHlGo(i,true))landed=true}
+  /* the standings: rank, logo, name, the last five, hit rate and ROI on each strip's middle by what the eye sees (the ink of
+     the letters and digits, not their line boxes; owner: "a freak when it comes to symmetry"), and the last five halfway
+     between the longest name and the leftmost hit rate, the same on every row */
+  var cv=d.createElement("canvas").getContext("2d");
+  function ink(el){var cs=getComputedStyle(el),t=[].filter.call(el.childNodes,function(n){return n.nodeType===3}).map(function(n){return n.nodeValue}).join("").trim()||el.textContent.trim();
+    if(cs.textTransform==="uppercase")t=t.toUpperCase();cv.font=cs.font;var m=cv.measureText(t);
+    var pr=d.createElement("i");pr.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";el.appendChild(pr);var base=pr.getBoundingClientRect().top;pr.remove();
+    /* +.5: the browser draws the ink about half a pixel lower than the metrics say (measured on the pixels, phone and desktop) */
+    return base-((m.actualBoundingBoxAscent||0)-(m.actualBoundingBoxDescent||0))/2+.5}
+  function centre(){var rows=$$("#standings li.lbr");if(!rows.length||!rows[0].offsetParent)return;
+    rows.forEach(function(li){[".rk",".lg",".pc-t",".x2p-l5"].forEach(function(s){var e=$(s,li);if(e)e.style.transform=""});$$(".lb-c",li).forEach(function(e){e.style.transform=""})});
+    rows.forEach(function(li){var r=li.getBoundingClientRect(),mid=(r.top+r.bottom)/2,mv=function(e,y){if(e)e.style.transform="translateY("+Math.round((mid-y)*4)/4+"px)"},box=function(e){var q=e.getBoundingClientRect();return (q.top+q.bottom)/2};
+      var lg=$(".lg",li);if(lg)mv(lg,box(lg));var nm=$(".pc-t h3 .x2p-mn",li)||$(".pc-t h3",li);if(nm)mv($(".pc-t",li),ink(nm));
+      var fq=$(".x2p-l5 .fq",li);if(fq)mv($(".x2p-l5",li),box(fq));$$(".lb-c",li).forEach(function(c){var b=$("b",c);if(b)mv(c,ink(b))});var rk=$(".rk",li);if(rk)mv(rk,ink(rk))});
+    var tr=function(n){var x=d.createRange();x.selectNodeContents(n);return x.getBoundingClientRect()};
+    var nameR=Math.max.apply(null,rows.map(function(li){return tr($(".pc-t h3",li)).right})),hitL=Math.min.apply(null,rows.map(function(li){return tr($(".lb-c b",li)).left}));
+    rows.forEach(function(li){var f=$(".x2p-l5",li),fq=f&&$(".fq",f);if(!fq)return;var q=fq.getBoundingClientRect();f.style.transform+=" translateX("+Math.round(((nameR+hitL)/2-(q.left+q.right)/2)*4)/4+"px)"})}
+  /* the hit-rate chart: on a narrow screen the round labels (R1 ... R35, 7px apart) run into each other; keep R1 and every
+     fifth so each has room */
+  function thin(){$$("#learn svg").forEach(function(sv){var t=$$("text",sv).filter(function(x){return /^R\d+$/.test(x.textContent.trim())});if(t.length<3)return;
+    var gap=Math.abs(parseFloat(t[1].getAttribute("x"))-parseFloat(t[0].getAttribute("x")))||99,step=1;while(gap*step<16)step=step===1?5:step*2;
+    t.forEach(function(x){var n=+x.textContent.trim().slice(1);x.style.display=(step===1||n===1||n%step===0)?"":"none"})})}
+  if(window.MutationObserver){var lt;new MutationObserver(function(){clearTimeout(lt);lt=setTimeout(thin,30)}).observe(ln,{childList:true,subtree:true})}
+  function later(){setTimeout(function(){centre();land();thin()},80)}
+  requestAnimationFrame(function(){requestAnimationFrame(function(){centre();land();thin()})});
+  if(d.fonts&&d.fonts.ready)d.fonts.ready.then(later);addEventListener("load",later);addEventListener("hashchange",later);
+  var rt;addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(centre,150)});
+}catch(e){}})();
 
 </script>
 </body>
