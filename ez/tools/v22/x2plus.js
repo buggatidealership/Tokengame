@@ -679,6 +679,12 @@
   if(lbx&&window.__x2pLbFlip){var o=window.__x2pLbFlip(lbx);
     $$(".band,.lede",st).forEach(function(e){if(e.parentNode===st)e.remove()});
     ($(".sh .tx",st)||$(".sh",st)||st).appendChild(o.btn);st.appendChild(o.fl);st.appendChild(o.ft);
+    /* the "As it stands" line on its new ticket (owner, 2026-10-22: the film ticket's layout, real paper; the words stay) */
+    var sy=$(".x2p-say .st",o.ft),em=sy&&$("em",sy);
+    if(sy&&em){var bf="",af="",past=false;[].forEach.call(sy.childNodes,function(n){if(n===em){past=true;return}var t=n.nodeType===3?n.nodeValue:(n.classList&&n.classList.contains("nm")?"":n.textContent);if(past)af+=t;else bf+=t});
+      var esc=function(t){return t.replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c]})};
+      o.ft.classList.add("x2p-astf");o.ft.innerHTML='<div class="x2p-ast"><div class="tk"><i class="fb l" aria-hidden="true"></i><i class="fb r" aria-hidden="true"></i><span class="ink">'+esc(bf.trim())+'</span> <em>'+esc(em.textContent.trim())+'</em> <span class="ink">'+esc(af.trim())+'</span></div></div>'+
+        '<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="x2pInk" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale=".8" xChannelSelector="R" yChannelSelector="G"/></filter></svg>'}
     var lbh=$(".lbh",o.fl);if(lbh){[].slice.call(lbh.children).forEach(function(h){if(/miss/i.test(h.textContent))h.remove()});
       var hc=d.createElement("span");hc.setAttribute("aria-hidden","true");lbh.insertBefore(hc,lbh.children[2]||null)}
     $$("li.lbr",o.fl).forEach(function(li){var c=$$(".lb-c",li);if(c.length>2)c[1].remove();
