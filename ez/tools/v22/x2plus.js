@@ -671,6 +671,9 @@
   d.documentElement.classList.add("x2p-launch");
   /* tabs: Overview and Upcoming */
   $$(".nav a").forEach(function(a){if(/^(leaderboard|results|buyback)$/.test(a.dataset.r||""))a.remove()});
+  /* a third tab that says what comes next (owner, 2026-10-22: "Buybacks (soon)", option B): the tabs' own font (an <a> with no
+     address, so it takes the same styles and goes nowhere), dimmed, a small gold "Soon" tag; it lights up when the buyback ships */
+  var nav=$(".nav");if(nav&&!$(".x2p-soon",nav)){var sn=d.createElement("a");sn.className="x2p-soon";sn.setAttribute("aria-disabled","true");sn.innerHTML='Buybacks <small aria-hidden="true">Soon</small><span class="sr"> (coming soon)</span>';nav.appendChild(sn)}
   function offRoute(){if(/^#\/(leaderboard|models|results|buyback)(\/|$)/.test(location.hash))location.replace("#/")}
   offRoute();addEventListener("hashchange",offRoute);
   /* 01 standings and 03 stats come from the Leaderboard page, rendered once out of sight */
