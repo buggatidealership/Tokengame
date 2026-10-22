@@ -699,6 +699,10 @@
     /* Grok in NVIDIA's gold (owner, 2026-10-22: "use this one"): the bet ticket's own rules for its name, re-aimed at this ticket */
     var bcss=d.getElementById("x2pbt-css");if(bcss&&$(".x2p-ast",st)){var gold=bcss.textContent.split("\n").filter(function(l){return l.indexOf(" .bt-b .x2p-cdh b em")>-1}).map(function(l){return l.split("html.x2p.x2d.x2pbt .bt-b .x2p-cdh b em").join("html.x2p #standings .x2p-ast .tk em")}).join("\n");
       if(gold){var gs=d.createElement("style");gs.id="x2p-ast-gold";gs.textContent=gold;d.head.appendChild(gs)}}
+    /* the standings as printed tickets (owner, 2026-10-22; CSS: the TICKETS block of skin-x2plus.css); the stamped ticks' worn ink */
+    st.classList.add("x2p-tix");
+    if(!d.getElementById("x2pWorn")){var wsv=d.createElementNS("http://www.w3.org/2000/svg","svg");wsv.setAttribute("width","0");wsv.setAttribute("height","0");wsv.setAttribute("aria-hidden","true");wsv.style.position="absolute";
+      wsv.innerHTML='<filter id="x2pWorn" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="2" seed="3" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.9 1.75" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>';st.appendChild(wsv)}
     rec.parentNode.insertBefore(st,rec)}
   var sw=$(".rsw2",hold),rf=$("#rflip",hold);
   if(sw&&rf){$$(".lsw,.lrn",ln).forEach(function(e){if(e.parentNode===ln)e.remove()});ln.appendChild(sw);ln.appendChild(rf);
@@ -721,8 +725,11 @@
   /* (owner, 2026-10-22) one colour each, the same as its card's tag, so the three read as the top three: closest gold, tightest green, biggest red */
   var hk=$$("#x2pHl .x2p-htag").map(function(t){var k=(t.className.match(/x2p-h-(\w)/)||[])[1]||"c";t=t.textContent.trim().toLowerCase().replace(/[&<>]/g,"");return '<b class="x2p-hk x2p-h-'+k+'">'+t.charAt(0).toUpperCase()+t.slice(1)+'.</b>'}).join(" ");
   /* (owner, 2026-10-22) "predict", not "call each stock" (they don't call every stock); "before" and "after" in gold */
-  [["#standings","x2p-stb",['4 AIs predict a stock\'s move <b class="x2p-kw">before</b> it reports.','Graded at the next market close <b class="x2p-kw">after</b> earnings.',"In public, every earnings season."],"The rules"],
-   ["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
+  /* the standings' three rules are the tickets' small print under the board now (owner, 2026-10-22: the board first, the
+     rules secondary); they were the "The rules" strap above it */
+  var sfl=$("#standings .x2p-flip");if(sfl&&!$("#standings .x2p-terms")){var tm=d.createElement("p");tm.className="x2p-terms";
+    tm.innerHTML='<b>Terms.</b> 4 AI<span class="x2p-lc">s</span> predict a stock\'s move <em>before</em> it reports. Graded at the next market close <em>after</em> earnings. In public, every earnings season.';sfl.after(tm)}
+  [["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
    ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[],"Replays"]].forEach(function(x){if(!x[2].length)return;
     var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
     x[2].forEach(function(t){var li=d.createElement("li");li.innerHTML=t;ul.appendChild(li)});
@@ -746,7 +753,7 @@
     var pr=d.createElement("i");pr.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";el.appendChild(pr);var base=pr.getBoundingClientRect().top;pr.remove();
     /* +.5: the browser draws the ink about half a pixel lower than the metrics say (measured on the pixels, phone and desktop) */
     return base-((m.actualBoundingBoxAscent||0)-(m.actualBoundingBoxDescent||0))/2+.5}
-  function centre(){var rows=$$("#standings li.lbr");if(!rows.length||!rows[0].offsetParent)return;
+  function centre(){var rows=$$("#standings li.lbr");if(!rows.length||!rows[0].offsetParent||$("#standings.x2p-tix"))return;
     rows.forEach(function(li){[".rk",".lg",".pc-t",".x2p-l5"].forEach(function(s){var e=$(s,li);if(e)e.style.transform=""});$$(".lb-c",li).forEach(function(e){e.style.transform=""})});
     rows.forEach(function(li){var r=li.getBoundingClientRect(),mid=(r.top+r.bottom)/2,mv=function(e,y){if(e)e.style.transform="translateY("+Math.round((mid-y)*4)/4+"px)"},box=function(e){var q=e.getBoundingClientRect();return (q.top+q.bottom)/2};
       var lg=$(".lg",li);if(lg)mv(lg,box(lg));var nm=$(".pc-t h3 .x2p-mn",li)||$(".pc-t h3",li);if(nm)mv($(".pc-t",li),ink(nm));

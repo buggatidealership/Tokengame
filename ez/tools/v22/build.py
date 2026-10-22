@@ -410,6 +410,8 @@ HL=[("""'<span class="hx2-t"><span class="hx2-h">'+head+'</span><span class="hx2
 for a,b in HL:
     assert pp.count(a)==1,a[:80]; pp=pp.replace(a,b)
 XPCSS=open(sys.argv[1]+'/skin-x2plus.css').read(); XPJS=open(sys.argv[1]+'/x2plus.js').read()
+# (owner, 2026-10-22) the standings tickets are cut from the "As it stands" ticket's own card: __PAPER__ in the TICKETS block
+XPCSS=XPCSS.replace('__PAPER__',re.search(r'html\.x2p #standings \.x2p-ast \.tk\{.*?(url\("data:image/svg\+xml[^"]*"\))',XPCSS,re.S).group(1))
 assert pp.count('</head>')==1 and pp.count('</body>')==1
 # (owner, 2026-10-22) the bullet straps' condensed italic (Archivo has no italic in the page's own font link)
 STRAPFONT='<link id="x2p-strap-font" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,62..100,800..900&display=swap" rel="stylesheet">'
