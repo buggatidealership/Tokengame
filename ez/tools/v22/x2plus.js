@@ -28,17 +28,17 @@
        "How it works" is mockup A's tilted gold tag across the top edge, with the time left */
     vt.innerHTML='<span class="vt-tag">How it works<small class="vt-s">1:07</small></span><div class="vt-p"><i class="vt-st" aria-hidden="true"></i>'+
       '<div class="vt-f"><video class="vt-v" playsinline preload="metadata" poster="media/ez-landing-hd-poster.jpg" aria-label="How EZ works, one minute"><source src="media/ez-landing-hd.mp4" type="video/mp4"><source src="media/ez-landing-hd.webm" type="video/webm"></video>'+
-      '<button type="button" class="vt-snd" aria-label="Sound off" title="Sound off"></button><button type="button" class="vt-tap">Tap for sound</button><button type="button" class="vt-play" aria-label="Play"></button><span class="vt-bar" aria-hidden="true"><i></i></span></div></div>';
+      '<button type="button" class="vt-snd" aria-label="Sound off" title="Sound off"></button><button type="button" class="vt-tap">Tap for sound</button><button type="button" class="vt-play"><i aria-hidden="true"></i>Tap to play</button><span class="vt-bar" aria-hidden="true"><i></i></span></div></div>';
     T3.parentNode.insertBefore(vt,T3);T3.hidden=true;T3.setAttribute("data-x2p-kept","buyback");
     (function(){var v=vt.querySelector(".vt-v"),snd=vt.querySelector(".vt-snd"),tap=vt.querySelector(".vt-tap"),play=vt.querySelector(".vt-play"),bar=vt.querySelector(".vt-bar>i"),st=vt.querySelector(".vt-s"),f=vt.querySelector(".vt-f");
       var SON='<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3 6h3l4-3.5v11L6 10H3z" fill="currentColor"/><path d="M12 5.5a3.5 3.5 0 0 1 0 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
       var SOFF='<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3 6h3l4-3.5v11L6 10H3z" fill="currentColor"/><path d="M11.5 5.5l4 4M15.5 5.5l-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
-      var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches,con=navigator.connection||{},thin=!!(con.saveData||/2g/.test(con.effectiveType||"")),started=false,ended=false,mini=null,rolling=false,nosrc=false;
+      var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches,started=false,ended=false,mini=null,rolling=false,nosrc=false;
       function fmt(t){t=Math.max(0,Math.round(t));return Math.floor(t/60)+":"+("0"+t%60).slice(-2)}
       function ui(){snd.innerHTML=v.muted?SOFF:SON;snd.setAttribute("aria-label",v.muted?"Sound off":"Sound on");snd.title=snd.getAttribute("aria-label");tap.hidden=!(rolling&&v.muted);
         /* (owner, 2026-10-21: "the video doesn't play when I click on it") the state follows real playback, not v.paused: a play() still waiting
            for data, or for a file that isn't there, leaves paused false while nothing rolls; then the play button stays */
-        vt.classList.toggle("playing",rolling);play.hidden=rolling||(!v.paused&&!nosrc)?true:false;if(!v.paused)st.textContent=fmt(v.duration?v.duration-v.currentTime:67);else if(!started)st.textContent="1:07"}
+        vt.classList.toggle("playing",rolling);play.hidden=rolling||(!v.paused&&!nosrc)?true:false;if(!v.paused)st.textContent=fmt(v.duration?v.duration-v.currentTime:67);else if(!started||v.ended)st.textContent=fmt(v.duration||67)}
       function pauseRounds(){[].forEach.call(document.querySelectorAll("#record video, #x2pHl video"),function(r){if(!r.paused)r.pause()})}
       /* the page's round films: when one starts, this one stops */
       /* precedence: while the explainer talks, a round film that autoplays (the record scrolling into view) is paused again; a round film
@@ -53,7 +53,8 @@
         if(p&&p.then)p.then(function(){started=true;ui()}).catch(function(e){if(!nosrc&&e&&e.name==="NotAllowedError"&&!v.muted){v.muted=true;v.play().then(function(){started=true;ui()}).catch(ui)}else ui()})}
       var srcs=v.querySelectorAll("source");srcs[srcs.length-1].addEventListener("error",function(){nosrc=true;rolling=false;v.pause();ui()});
       v.addEventListener("playing",function(){rolling=true;ui()});v.addEventListener("waiting",function(){rolling=false;ui()});
-      snd.addEventListener("click",function(e){e.stopPropagation();v.muted=!v.muted;if(v.paused)go(!v.muted);ui()});
+      /* the sound button only switches the sound; it never starts the film */
+      snd.addEventListener("click",function(e){e.stopPropagation();v.muted=!v.muted;ui()});
       tap.addEventListener("click",function(e){e.stopPropagation();v.muted=false;if(v.paused)go(true);ui()});
       play.addEventListener("click",function(e){e.stopPropagation();go(true)});
       /* a tap on the film: muted and rolling, sound on (what "Tap for sound" says); paused, play with sound; playing with sound, pause. It never turns over */
@@ -69,8 +70,8 @@
         mini.addEventListener("click",function(e){if(e.target.closest("button"))return;vt.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"})})}
       function hideMini(){if(!mini)return;f.insertBefore(v,f.firstChild);if(hold){hold.remove();hold=null}mini.remove();mini=null;ui()}
       if("IntersectionObserver" in window)new IntersectionObserver(function(es){var on=es[0].isIntersecting;if(!on&&!v.paused&&!v.ended)showMini();else if(on&&mini)hideMini()},{threshold:.25}).observe(vt);
-      /* arrival: muted autoplay when the connection allows and motion is fine; otherwise the poster with a play button */
-      ui();if(!reduce&&!thin){v.muted=true;v.preload="auto";go(false)}
+      /* arrival (owner, 2026-10-22: "Video shouldn't start by default"): the poster with "Tap to play"; it starts with sound on the tap */
+      ui();
       window.__x2pExplainer={video:v}})()}
   var g=$("#gpu");
   if(g&&!$(".x2p-cdh")){var c=document.createElement("div");c.className="x2p-cdh";c.innerHTML='<span class="k">Countdown to</span><b>Bet #1<i>:</i> <em>NVIDIA</em></b>';
@@ -222,11 +223,8 @@
   /* the Overview stays in the page (hidden) while a tab shows in #view: look for a host only where this route renders */
   function mine(){var s=route()==="/"?$("#top"):$("#view");return s&&s.querySelector("[data-x2p-host]")}
   var PLACE={
-    /* Overview: beside "Countdown to bet #1", pointing at you, welcoming the first bet (owner, 2026-10-20: arrogant; the
-       watch pose was cut at the side, the 13 to 18 busts' heads read as off, the head alone did not work) */
-    "/":function(){var cd=$(".x2p-cdh");if(!cd)return false;
-      /* (owner, 2026-10-20) beside "Countdown to Bet #1: NVIDIA", not under the chip, where he served no purpose */
-      var h=img("01-welcome.webp",96,"");h.classList.add("x2p-hz-cd");h.setAttribute("data-x2p-host","");cd.appendChild(h);return true},
+    /* Overview: no host (owner, 2026-10-22: he is in the explainer film above, "no need to keep him there"); he stood
+       beside "Countdown to Bet #1: NVIDIA" from 2026-10-20 */
     /* Leaderboard (owner, 2026-10-20, second pass): the head with a small "How we rank" beside it; he names the leader
        above the board; the board turns over to the rule in full, at the board's own size; the three rules sit under it.
        Hall of fame third; three findings. The glossary line under the board moves onto its back. */
