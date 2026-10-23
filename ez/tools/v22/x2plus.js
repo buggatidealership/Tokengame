@@ -715,6 +715,102 @@
     /* the page's own handler marks the pressed button among the buttons where it first drew them (out of sight, now empty),
        so Hit rate stayed lit (owner, 2026-10-22): mark them here */
     sw.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-rk]");if(!b)return;$$("[data-rk]",sw).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))})})}
+  /* 03 the proof on the bet ticket's card (owner, 2026-10-23, rounds 22 and 23; mockups ez/tools/concepts/launch-r23-ticket.js): four
+     views (ROI first, it opens there; Hit rate; Avg miss; Sector) on one printed ticket, every mark printed on it: lines in ink that
+     lets the card through, the view's leader foil-stamped (gold only for the leader of the view on show; the open tab is a solid ink
+     box), logos printed onto the stock, numbers pressed in ink. All four views take the height of the tallest, so a switch never moves
+     the page: the chart or the grid fills the room. ROI and Hit rate print the ranks 1 to 4 in each line's colour and name the model
+     where each line ends (no connector on Hit rate; owner: "too much noise"); Hit rate starts every line at 50/50 ((right + 1) /
+     (calls + 2)); Avg miss is target practice. The numbers are the page's own: the same rounds, the same ROI sum, the same ranking
+     rule and sector bands. The page's switch stays in the DOM, out of sight. The live site keeps that switch until the owner says so:
+     make_site.py sets window.__x2pClassicProof there (SITE_TIX=1 builds with the ticket). CSS: the PROOF block of skin-x2plus.css. */
+  function x2pProof(ln,sw,rf){
+    /* the page's stake ($100,000, the same as its own ROI view); its variable is not global on this page */
+    var STK=typeof STAKE!=="undefined"?STAKE:100000;
+    var MK=Object.keys(MODELS).filter(function(m){return ROUNDS.some(function(r){return callOf(r,m)})}),N=ROUNDS.length;if(!MK.length||!N)return;
+    var COL={};MK.forEach(function(m){COL[m]=m==="GROK"?"#141217":MODELS[m].c});
+    /* the page's short sector names (routes.js SECT_SHORT, not global on this page) */
+    var SH=(typeof SECT_SHORT!=="undefined"&&SECT_SHORT)||{"Information Technology":"Tech","Consumer Discretionary":"Consumer","Consumer Staples":"Staples","Financials":"Finance","Industrials":"Industrials","Communication Services":"Media & telecom","Health Care":"Health","Materials":"Materials","Energy":"Energy","Utilities":"Utilities","Real Estate":"Real estate"};
+    /* per AI, from the graded rounds in order: calls, right, average miss, the running hit rate from 50/50, the $100,000 balance */
+    var S={};MK.forEach(function(m){var n=0,k=0,off=0,run=[],roi=[],bal=STK,calls=[];
+      ROUNDS.forEach(function(r,i){var c=callOf(r,m);if(!c)return;var dn=/^DOWN/.test(c[1]),ok=(dn?-1:1)>0===(r.a>0),o=parseFloat(c[2])||0;
+        if(!n){run.push([i,50]);roi.push([i,bal])}n++;if(ok)k++;off+=o;calls.push({ok:ok,off:o});run.push([i+1,(k+1)/(n+2)*100]);bal*=1+(dn?-1:1)*r.a/100;roi.push([i+1,bal])});
+      S[m]={m:m,n:n,k:k,hit:n?k/n:0,miss:n?off/n:0,run:run,roi:roi,bal:bal,calls:calls}});
+    var byHit=MK.slice().sort(function(a,b){var qa=S[a].n>=N/2,qb=S[b].n>=N/2;return qa!==qb?(qa?-1:1):(S[b].hit-S[a].hit)||(S[a].miss-S[b].miss)}),
+      byRoi=MK.slice().sort(function(a,b){return S[b].bal-S[a].bal}),byMiss=MK.slice().sort(function(a,b){return S[a].miss-S[b].miss});
+    var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})},
+      fo=function(t){return '<em class="pt-fo" data-t="'+esc(t)+'">'+esc(t)+'</em>'},usd=function(v){return "$"+Math.round(v).toLocaleString("en-US")},
+      ver=function(m){return (MODELS[m]&&MODELS[m].ver)||m},no=String(N).padStart(6,"0");
+    var row=function(i,m,v,c){return '<div class="pt-r" style="--c:'+COL[m]+'"><b>'+(i?i+1:fo("1"))+'</b>'+logo(m)+'<span class="pt-nm">'+(i?esc(m):fo(m))+'</span>'+v+c+'</div>'};
+    var ax=function(a,k){return '<div class="pt-ax"><span>'+a+'</span><span class="pt-k">'+k+'</span><span>R'+N+'</span></div>'};
+    /* the four views: the band words, the body, and what to draw once it is in place */
+    var V={
+      roi:{t:"ROI",top:"$100,000 on every call",bot:"Simulated · before fees",
+        html:function(){return '<div class="lp">'+byRoi.map(function(m,i){var b=S[m].bal,up=b>=STK,p=Math.abs(b/STK*100-100).toFixed(1)+"%";
+          return row(i,m,'<span class="pt-v tnum">'+usd(b)+'</span>','<span class="pt-c tnum '+(up?'pt-u':'pt-d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'up':'down')+'</span> '+p+'</span>')}).join("")+'</div>'+
+          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Start: "+usd(STK))+'</div><p class="pt-cp"><b>What would '+usd(STK)+' be worth now?</b> Buy on an up call, short on a down call.</p>'},
+        draw:function(el,h){var vs=[STK];MK.forEach(function(m){S[m].roi.forEach(function(p){vs.push(p[1])})});var lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STK*.05;lo-=pd;hi+=pd;
+          chart(el,h,byRoi.map(function(m,i){return {m:m,rank:i+1,pts:S[m].roi.map(function(p){return [p[0]/N*100,(hi-p[1])/(hi-lo)*100]})}}),(hi-STK)/(hi-lo)*100,{lead:true})}},
+      hit:{t:"Hit rate",top:"Right on direction",bot:"Up or down only",
+        html:function(){return '<div class="lp">'+byHit.map(function(m,i){var s=S[m];return row(i,m,'<span class="pt-v sm tnum">'+s.k+' of '+s.n+'</span>','<span class="pt-c big tnum">'+Math.round(s.hit*100)+'%</span>')}).join("")+'</div>'+
+          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("Start","Coin flip: 50%")+'</div><p class="pt-cp"><b>How often were they right about the direction?</b> Every line starts at 50/50 and moves with each call. Up or down only.</p>'},
+        draw:function(el,h){var LO=30,HI=80,y=function(v){return (HI-Math.max(LO,Math.min(HI,v)))/(HI-LO)*100};
+          chart(el,h,byHit.map(function(m,i){return {m:m,rank:i+1,pts:S[m].run.map(function(p){return [p[0]/N*100,y(p[1])]})}}),y(50),{left:24,grid:[80,70,60,40,30].map(function(v){return [y(v),v+"%"]})})}},
+      miss:{t:"Avg miss",top:"How close they got",bot:"Closer is better",
+        html:function(){return '<div class="pt-tg lp">'+byMiss.map(function(m,i){return '<figure><figcaption style="--c:'+COL[m]+'"><i>'+(i?i+1:fo("1"))+'</i>'+logo(m)+(i?esc(m):fo(m))+'<small>'+S[m].miss.toFixed(2)+'% off</small></figcaption>'+target(m,i)+'</figure>'}).join("")+'</div>'+
+          '<p class="pt-cp"><b>How close did they get?</b> The bullseye is what the stock did; the numbers are % off. One hole per call; a red dot outside missed the direction.</p>'}},
+      sector:{t:"Sector",top:"Where they are sharpest",bot:"Small samples · it fills in",
+        html:function(){var sec=function(r){return ((typeof RMETA!=="undefined"&&RMETA[r.n])||{}).sector||""},cnt={};ROUNDS.forEach(function(r){var x=sec(r);if(x)cnt[x]=(cnt[x]||0)+1});
+          var secs=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
+          var cell=function(m,x){var n=0,ok=0;ROUNDS.forEach(function(r){if(sec(r)!==x)return;var c=callOf(r,m);if(c){n++;if((/^DOWN/.test(c[1])?-1:1)>0===(r.a>0))ok++}});
+            if(!n)return '<td class="tnum">–</td>';return '<td class="tnum '+(3*ok>=2*n?'hi':3*ok<=n?'lo':'md')+'">'+ok+'/'+n+'</td>'};
+          return '<div class="pt-fl"><table class="pt-sg lp"><colgroup><col style="width:30%">'+byHit.map(function(){return '<col>'}).join("")+'</colgroup><tr><th scope="col">Sector</th>'+byHit.map(function(m){return '<th scope="col">'+logo(m)+esc(m)+'</th>'}).join("")+'</tr>'+
+            secs.map(function(x){return '<tr><th scope="row">'+esc(SH[x]||x)+'<small>'+cnt[x]+' round'+(cnt[x]>1?'s':'')+'</small></th>'+byHit.map(function(m){return cell(m,x)}).join("")+'</tr>'}).join("")+'</table></div>'+
+            '<div class="pt-lgd" aria-hidden="true"><span><i class="hi"></i>2 in 3 or better</span><span><i class="md"></i>In between</span><span><i class="lo"></i>1 in 3 or worse</span></div><p class="pt-cp"><b>Where are they sharpest?</b> Right calls by sector.</p>'}}};
+    var ORDER=["roi","hit","miss","sector"],cur="roi";
+    /* a chart in real pixels: each line in its colour, ink multiplied into the card; the leader foil-stamped (the NVIDIA recipe: a
+       satin gold with grain, a dark wall above, a pale lip below) and the thickest; logo and model where each line ends */
+    var cid=0;function chart(el,h,ser,yz,o){var W=el.clientWidth,H=h||el.clientHeight||180,G=96,L=o.left||0,pw=W-G-L,pad=6,ih=H-2*pad;el.style.height=H+"px";if(pw<40)return;
+      var id="xpt"+(++cid),sx=function(x){return L+x/100*pw},sy=function(y){return pad+y/100*ih},P=function(s){return s.pts.map(function(p,i){return (i?"L":"M")+sx(p[0]).toFixed(1)+","+sy(p[1]).toFixed(1)}).join("")};
+      var FL='filterUnits="userSpaceOnUse" x="-10" y="-10" width="'+(W+20)+'" height="'+(H+20)+'"',ln=function(dd,c,w,x){return '<path d="'+dd+'" fill="none" stroke="'+c+'" stroke-width="'+w+'" stroke-linejoin="round" stroke-linecap="round"'+(x||"")+'/>'};
+      var defs='<defs><linearGradient id="'+id+'g" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="54" y2="20" spreadMethod="reflect"><stop offset="0" stop-color="#f6dc93"/><stop offset=".3" stop-color="#e4b54a"/><stop offset=".52" stop-color="#c99227"/><stop offset=".7" stop-color="#e7bd5b"/><stop offset="1" stop-color="#bf8a22"/></linearGradient>'+
+        '<filter id="'+id+'n" '+FL+'><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feColorMatrix in="n" type="saturate" values="0" result="g"/><feComponentTransfer in="g" result="h"><feFuncR type="linear" slope=".38" intercept=".7"/><feFuncG type="linear" slope=".38" intercept=".7"/><feFuncB type="linear" slope=".38" intercept=".7"/></feComponentTransfer><feBlend in="SourceGraphic" in2="h" mode="multiply" result="b"/><feComposite in="b" in2="SourceGraphic" operator="in"/></filter>'+
+        '<filter id="'+id+'s" '+FL+'><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="3" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale=".9" xChannelSelector="R" yChannelSelector="G"/></filter></defs>';
+      var win=ser.filter(function(s){return s.rank===1})[0],ink=(o.grid||[]).map(function(g){return '<path d="M'+L+','+sy(g[0]).toFixed(1)+'H'+(L+pw)+'" stroke="rgba(20,18,23,.18)" stroke-width=".8"/>'}).join("")+'<path d="M'+L+','+sy(yz).toFixed(1)+'H'+(L+pw)+'" stroke="rgba(20,18,23,.5)" stroke-width="1.1" stroke-dasharray="5 4"/>';
+      ser.forEach(function(s){if(s!==win)ink+=ln(P(s),COL[s.m],2,' filter="url(#'+id+'s)" opacity=".92"')});
+      var top=ln(P(win),"rgba(255,250,232,.85)",3.8,' transform="translate(0,1.1)"')+ln(P(win),"rgba(70,42,6,.55)",3.8,' transform="translate(0,-.9)"')+ln(P(win),"url(#"+id+"g)",3.8,' filter="url(#'+id+'n)"');
+      var ends=ser.map(function(s){var p=s.pts[s.pts.length-1];return {s:s,y0:sy(p[1]),y:sy(p[1]),x:sx(p[0])}}).sort(function(a,b){return a.y-b.y});
+      for(var i=1;i<ends.length;i++)if(ends[i].y-ends[i-1].y<19)ends[i].y=ends[i-1].y+19;var ov=ends[ends.length-1].y-(H-9);if(ov>0)ends.forEach(function(e){e.y-=ov});
+      if(o.lead)ends.forEach(function(e){ink+='<path d="M'+(e.x+2).toFixed(1)+','+e.y0.toFixed(1)+'L'+(L+pw+8).toFixed(1)+','+e.y.toFixed(1)+'" fill="none" stroke="rgba(20,18,23,.62)" stroke-width=".9"/>'});
+      el.innerHTML='<svg class="ink" width="'+W+'" height="'+H+'" aria-hidden="true" focusable="false">'+defs+ink+'</svg><svg width="'+W+'" height="'+H+'" aria-hidden="true" focusable="false">'+defs.replace(/id="/g,'id="t')+top.replace(/url\(#/g,"url(#t")+'</svg>'+
+        ends.map(function(e){var w=e.s.rank===1,t=ver(e.s.m);return '<div class="pt-lb" aria-hidden="true" style="left:'+(L+pw+(o.lead?11:6))+'px;top:'+e.y.toFixed(1)+'px;--c:'+COL[e.s.m]+'">'+logo(e.s.m)+'<b'+(w?' class="pt-fo" data-t="'+esc(t)+'"':'')+'>'+esc(t)+'</b></div>'}).join("")+
+        (o.grid||[]).map(function(g){return '<span class="pt-yl" aria-hidden="true" style="top:'+sy(g[0]).toFixed(1)+'px">'+g[1]+'</span>'}).join("")}
+    /* target practice: rings every 3% off in white ink and red ink (with the card's grain), the % off in each ring, a crosshair;
+       each call a bullet hole placed by how far off it was; a call that missed the direction a red dot outside the target */
+    function target(m,j){var R=60,C=73,ga=Math.PI*(3-Math.sqrt(5)),holes="",out="",id="xptg"+j;
+      S[m].calls.forEach(function(c,i){var a=i*ga;if(c.ok){var r=Math.min(c.off,12)/12*R;holes+='<circle cx="'+(C+r*Math.cos(a)).toFixed(1)+'" cy="'+(C+r*Math.sin(a)).toFixed(1)+'" r="2.6" fill="#1b1613" stroke="rgba(255,250,236,.9)" stroke-width=".8"/>'}
+        else{var q=R+4.5+(i%3)*1.8;out+='<circle cx="'+(C+q*Math.cos(a)).toFixed(1)+'" cy="'+(C+q*Math.sin(a)).toFixed(1)+'" r="2" fill="rgba(200,45,35,.9)"/>'}});
+      var rings=[4,3,2,1].map(function(k,i){return '<circle cx="'+C+'" cy="'+C+'" r="'+(k/4*R).toFixed(1)+'" fill="'+(i%2?"rgba(196,38,30,.9)":"#fbf8f0")+'" stroke="rgba(60,20,16,.55)" stroke-width=".7"/>'}).join("");
+      var nums=[[3,1],[6,2],[9,3],[12,4]].map(function(v,i){return '<text x="'+(C+(v[1]-.5)/4*R).toFixed(1)+'" y="'+(C+2)+'" font-size="5.6" font-family="Barlow Condensed,sans-serif" font-weight="700" text-anchor="middle" fill="'+(i%2?"rgba(196,38,30,.95)":"rgba(255,246,232,.95)")+'">'+v[0]+'</text>'}).join("");
+      return '<svg viewBox="0 0 146 146" aria-hidden="true" focusable="false"><defs><filter id="'+id+'" x="0" y="0" width="146" height="146" filterUnits="userSpaceOnUse"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="'+(j+3)+'" result="n"/><feColorMatrix in="n" type="saturate" values="0" result="g"/><feComponentTransfer in="g" result="h"><feFuncR type="linear" slope=".25" intercept=".8"/><feFuncG type="linear" slope=".25" intercept=".8"/><feFuncB type="linear" slope=".25" intercept=".8"/></feComponentTransfer><feBlend in="SourceGraphic" in2="h" mode="multiply" result="b"/><feComposite in="b" in2="SourceGraphic" operator="in"/></filter></defs>'+
+        '<g filter="url(#'+id+')">'+rings+'<path d="M'+(C-R-2)+','+C+'H'+(C+R+2)+'M'+C+','+(C-R-2)+'V'+(C+R+2)+'" stroke="rgba(60,20,16,.35)" stroke-width=".5"/>'+nums+'</g>'+out+holes+'</svg>'}
+    var tk=d.createElement("div");tk.className="x2p-pt";
+    tk.innerHTML='<div class="pt-cd"><div class="pt-bd g"><span><i aria-hidden="true">★</i> <span class="pt-top"></span> <i aria-hidden="true">★</i></span><span>Season 1</span></div><div class="pt-in">'+
+      '<div class="pt-tb" role="group" aria-label="Show the AIs by">'+ORDER.map(function(k){return '<button type="button" data-pt="'+k+'" aria-pressed="'+(k===cur)+'">'+V[k].t+'</button>'}).join("")+'</div><div class="pt-body"></div></div>'+
+      '<div class="pt-bd r"><span class="pt-bot"></span><span>Nº '+no+'</span></div></div>';
+    ln.insertBefore(tk,sw);ln.classList.add("x2p-ptk");
+    var body=$(".pt-body",tk),inn=$(".pt-in",tk);
+    /* put a view in place; natural: at its own height (to measure), else at the ticket's one height, the chart or grid filling it */
+    function show(k,natural){var v=V[k];$(".pt-top",tk).textContent=v.top;$(".pt-bot",tk).textContent=v.bot;body.innerHTML=v.html();
+      $$("[data-pt]",tk).forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.pt===k))});
+      var ch=$(".pt-ch",body);if(ch&&v.draw)v.draw(ch,natural?180:0);
+      var t=$(".pt-sg",body);if(t&&!natural){var fl=t.parentNode,hd=t.rows[0].getBoundingClientRect().height,n=t.rows.length-1,hh=(fl.clientHeight-hd-8)/n;if(hh>0)for(var i=1;i<=n;i++)t.rows[i].style.height=hh.toFixed(1)+"px"}}
+    var lastW=0;function fit(force){if(!tk.offsetWidth)return;if(!force&&tk.offsetWidth===lastW)return;lastW=tk.offsetWidth;tk.style.removeProperty("--tin");var mx=0;
+      ORDER.forEach(function(k){show(k,true);mx=Math.max(mx,inn.getBoundingClientRect().height)});tk.style.setProperty("--tin",Math.ceil(mx)+"px");show(cur,false)}
+    $(".pt-tb",tk).addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-pt]");if(!b||b.dataset.pt===cur)return;cur=b.dataset.pt;show(cur,false)});
+    fit(true);if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){fit(true)});addEventListener("load",function(){fit(true)});
+    var ptT;addEventListener("resize",function(){clearTimeout(ptT);ptT=setTimeout(function(){fit(false)},150)});addEventListener("hashchange",function(){setTimeout(function(){fit(true)},80)})}
+  if(!window.__x2pClassicProof&&sw&&rf)try{x2pProof(ln,sw,rf)}catch(e){window.__x2pPtErr=String(e&&e.stack||e)}
   hold.remove();
   /* 04 highlights: the Results page's first section, built into slabs by hlSlabs, placed after the proof */
   var tp=d.createElement("template");tp.innerHTML=R.vResults();var hs=tp.content.querySelector("section.xsec");
