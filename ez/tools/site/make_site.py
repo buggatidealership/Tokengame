@@ -27,10 +27,10 @@ doc = re.sub(r'<title>[^<]*</title>', '<title>$EZ \u00b7 Earnings Zeason</title>
 meta = ('<link rel="canonical" href="' + URL + '">\n<meta property="og:type" content="website">\n<meta property="og:url" content="' + URL + '">\n'
         '<meta property="og:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:card" content="summary_large_image">\n')
 doc = doc.replace('</head>', meta + '</head>', 1)
-# (owner, 2026-10-22) the standings as printed tickets stay on the X2+ preview until the owner says so: the live site keeps today's
-# board (x2plus.js reads window.__x2pClassicBoard). The same for the proof on the ticket (owner, 2026-10-23: "push that to Easy
-# Live X2 Plus"): the live site keeps the page's own stats switch (window.__x2pClassicProof). SITE_TIX=1 builds with both (the preview branch).
-if os.environ.get('SITE_TIX') != '1':
+# The standings as printed tickets and the proof on the ticket kept production on today's board and stats switch (2026-10-22/23,
+# window.__x2pClassicBoard / __x2pClassicProof, which x2plus.js still honours). Both live since 2026-10-23 (owner: "Everything"), so
+# production is X2+ as it is; SITE_CLASSIC=1 builds the old board and switch again if they are ever needed.
+if os.environ.get('SITE_CLASSIC') == '1':
     doc = doc.replace('</head>', '<script>window.__x2pClassicBoard=1;window.__x2pClassicProof=1</script>\n</head>', 1)
 # Cloudflare's zone setting keeps .js files in browsers for 4 hours whatever _headers says (owner, 2026-10-20: a sync did not
 # show up). The page itself refreshes within a minute, so it asks for each script by a version stamped from its content.
