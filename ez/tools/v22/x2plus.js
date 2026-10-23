@@ -179,7 +179,7 @@
       var why=it.body;if(/closest/.test(k))why="Every AI guesses how much a stock will move after the company reports. "+why+" No guess this season came closer.";
       else if(/tight/.test(k))why+=" On average, they were off by "+E.av.toFixed(2)+"%.";
       else if(/big/.test(k)){it.rec.forEach(function(x){if(/normal/.test(x[1])&&/x$/.test(x[0]))why+=" That’s about "+x[0].replace(/x$/,"")+" times a normal move."})}
-      var calls=r.calls.map(function(x){var up=x[1].indexOf("DOWN")<0,ok=up===(r.a>0);return '<span class="x2p-hc '+(ok?"ok":"no")+'">'+esc2(nm1(x[0]))+'<b>'+(up?"▲":"▼")+" "+esc2(x[1].replace(/^(UP|DOWN)\s*/,""))+" "+(ok?"✓":"✗")+'</b></span>'}).join("");
+      var calls=r.calls.map(function(x){var up=x[1].indexOf("DOWN")<0,ok=up===(r.a>0);return '<span class="x2p-hc '+(ok?"ok":"no")+'">'+esc2(nm1(x[0]))+'<b>'+(up?"▲":"▼")+esc2(x[1].replace(/^(UP|DOWN)\s*/,""))+" "+(ok?"✓":"✗")+'</b></span>'}).join("");
       var fin=c.querySelector(".face.back .fin");if(fin)fin.innerHTML='<div class="x2p-hb"><h4>'+it.head+'</h4><div class="x2p-hcs">'+calls+'</div>'+
         '<div class="x2p-ho">Stock moved<b class="'+(r.a>0?"u":"d")+'">'+(r.a>0?"▲":"▼")+" "+Math.abs(r.a).toFixed(2)+'%</b></div>'+
         '<div class="x2p-ho">Winner<b class="w">'+(r.win?esc2(nm1(r.win)):"Nobody")+'</b></div>'+
@@ -210,7 +210,17 @@
       if(e.target.closest("a"))return;e.preventDefault();if(i!==cur){go(i);return}
       if(c.classList.contains("nofilm"))return;var f=!c.classList.contains("flipped");c.classList.toggle("flipped",f);setFaces2(c,f);films()});
     if("IntersectionObserver" in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;films()},{threshold:.3}).observe(tr);
-    function eqH(){var cs=cards.map(function(w){return w.querySelector(".card")});cs.forEach(function(c){c.style.height=""});var m=0;cs.forEach(function(c){m=Math.max(m,c.offsetHeight)});if(m)cs.forEach(function(c){c.style.height=m+"px"})}
+    /* every card one height: the record card's (owner, 2026-10-23: the record's trading-card shape), else the tallest; then the story
+       side's paragraph steps down half a pixel at a time (never below 10px) until it fits */
+    function eqH(){var cs=cards.map(function(w){return w.querySelector(".card")});cs.forEach(function(c){c.style.height=""});var m=0;cs.forEach(function(c){m=Math.max(m,c.offsetHeight)});
+      var rc=document.querySelector("#record .card"),t=rc&&rc.offsetHeight;if(t)m=t;if(m)cs.forEach(function(c){c.style.height=m+"px"});
+      cs.forEach(function(c){var hb=c.querySelector(".x2p-hb"),p=hb&&hb.querySelector(".x2p-hw");if(!p)return;
+        // the four call chips share one size, stepped down until the widest fits its box (CLAUDE ▼2.5% ✓ on a 360px phone)
+        var hc=[].slice.call(hb.querySelectorAll(".x2p-hc"));hc.forEach(function(e){e.style.fontSize=""});var y=hc[0]&&parseFloat(getComputedStyle(hc[0]).fontSize),k=0;
+        while(y&&hc.some(function(e){return e.scrollWidth>e.clientWidth+.5})&&y>8.5&&k++<12){y-=.5;hc.forEach(function(e){e.style.fontSize=y+"px"})}
+        p.style.fontSize="";var z=parseFloat(getComputedStyle(p).fontSize),n=0;
+        while(hb.scrollHeight>hb.clientHeight+1&&z>10&&n++<20){z-=.5;p.style.fontSize=z+"px"}})}
+    window.addEventListener("load",function(){setTimeout(eqH,120)});
     var eqT;window.addEventListener("resize",function(){clearTimeout(eqT);eqT=setTimeout(eqH,150)});if(document.fonts&&document.fonts.ready)document.fonts.ready.then(eqH);
     mark();requestAnimationFrame(function(){eqH();tr.scrollLeft=0;cur=near();mark();films()});
     /* (owner, 2026-10-22, two-tab launch) the Overview's highlights land on a chosen card with its story side up; false while
