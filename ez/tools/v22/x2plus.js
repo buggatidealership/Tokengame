@@ -756,8 +756,8 @@
     /* the four views: the band words, the body, and what to draw once it is in place */
     var V={
       roi:{t:"ROI",top:"$100,000 on every call",bot:"Simulated · before fees",
-        html:function(){return '<div class="lp">'+byRoi.map(function(m,i){var b=S[m].bal,up=b>=STK,p=Math.abs(b/STK*100-100).toFixed(1)+"%";
-          return row(i,m,'<span class="pt-v tnum '+(up?'pt-u':'pt-d')+'">'+usd(b)+'</span>','<span class="pt-c tnum '+(up?'pt-u':'pt-d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'up':'down')+'</span> '+p+'</span>')}).join("")+'</div>'+
+        html:function(){return '<div class="lp pt-3"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Now</span><span>Profit</span><span>ROI</span></div>'+byRoi.map(function(m,i){var b=S[m].bal,up=b>=STK,cl=up?'pt-u':'pt-d',p=Math.abs(b/STK*100-100).toFixed(1)+"%";
+          return row(i,m,'<span class="pt-v tnum '+cl+'"><span class="sr">now </span>'+usd(b)+'</span><span class="pt-v tnum '+cl+'"><span class="sr">profit </span>'+(up?'+':'−')+usd(Math.abs(b-STK))+'</span>','<span class="pt-c tnum '+cl+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">ROI '+(up?'up':'down')+'</span> '+p+'</span>')}).join("")+'</div>'+
           '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Start: "+usd(STK))+'</div><p class="pt-cp"><b>What would '+usd(STK)+' be worth now?</b> Buy on an up call, short on a down call.</p>'},
         draw:function(el,h){var vs=[STK];MK.forEach(function(m){S[m].roi.forEach(function(p){vs.push(p[1])})});var lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STK*.05;lo-=pd;hi+=pd;
           chart(el,h,byRoi.map(function(m,i){return {m:m,rank:i+1,pts:S[m].roi.map(function(p){return [p[0]/N*100,(hi-p[1])/(hi-lo)*100]})}}),(hi-STK)/(hi-lo)*100,{lead:true})}},
@@ -782,7 +782,7 @@
        satin gold with grain, a dark wall above, a pale lip below), as thin as the rest; logo and model where each line ends */
     var cid=0;function chart(el,h,ser,yz,o){var W=el.clientWidth,H=h||el.clientHeight||180,G=96,L=o.left||0,pw=W-G-L,pad=6,ih=H-2*pad;el.style.height=H+"px";if(pw<40)return;
       var id="xpt"+(++cid),sx=function(x){return L+x/100*pw},sy=function(y){return pad+y/100*ih},P=function(s){return s.pts.map(function(p,i){return (i?"L":"M")+sx(p[0]).toFixed(1)+","+sy(p[1]).toFixed(1)}).join("")};
-      var FL='filterUnits="userSpaceOnUse" x="-10" y="-10" width="'+(W+20)+'" height="'+(H+20)+'"',ln=function(dd,c,w,x){return '<path d="'+dd+'" fill="none" stroke="'+c+'" stroke-width="'+w+'" stroke-linejoin="round" stroke-linecap="round"'+(x||"")+'/>'};
+      var FL='filterUnits="userSpaceOnUse" x="-10" y="-10" width="'+(W+20)+'" height="'+(H+20)+'"',ln=function(dd,c,w,x){return '<path class="pt-dr" pathLength="1" d="'+dd+'" fill="none" stroke="'+c+'" stroke-width="'+w+'" stroke-linejoin="round" stroke-linecap="round"'+(x||"")+'/>'};
       var defs='<defs><linearGradient id="'+id+'g" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="54" y2="20" spreadMethod="reflect"><stop offset="0" stop-color="#f6dc93"/><stop offset=".3" stop-color="#e4b54a"/><stop offset=".52" stop-color="#c99227"/><stop offset=".7" stop-color="#e7bd5b"/><stop offset="1" stop-color="#bf8a22"/></linearGradient>'+
         '<filter id="'+id+'n" '+FL+'><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feColorMatrix in="n" type="saturate" values="0" result="g"/><feComponentTransfer in="g" result="h"><feFuncR type="linear" slope=".38" intercept=".7"/><feFuncG type="linear" slope=".38" intercept=".7"/><feFuncB type="linear" slope=".38" intercept=".7"/></feComponentTransfer><feBlend in="SourceGraphic" in2="h" mode="multiply" result="b"/><feComposite in="b" in2="SourceGraphic" operator="in"/></filter>'+
         '<filter id="'+id+'s" '+FL+'><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="3" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale=".9" xChannelSelector="R" yChannelSelector="G"/></filter></defs>';
@@ -793,7 +793,7 @@
       var top=ln(P(win),"rgba(255,250,232,.85)",2,' transform="translate(0,.55)"')+ln(P(win),"rgba(70,42,6,.55)",2,' transform="translate(0,-.45)"')+ln(P(win),"url(#"+id+"g)",2,' filter="url(#'+id+'n)"');
       var ends=ser.map(function(s){var p=s.pts[s.pts.length-1];return {s:s,y0:sy(p[1]),y:sy(p[1]),x:sx(p[0])}}).sort(function(a,b){return a.y-b.y});
       for(var i=1;i<ends.length;i++)if(ends[i].y-ends[i-1].y<19)ends[i].y=ends[i-1].y+19;var ov=ends[ends.length-1].y-(H-9);if(ov>0)ends.forEach(function(e){e.y-=ov});
-      if(o.lead)ends.forEach(function(e){ink+='<path d="M'+(e.x+2).toFixed(1)+','+e.y0.toFixed(1)+'L'+(L+pw+8).toFixed(1)+','+e.y.toFixed(1)+'" fill="none" stroke="rgba(20,18,23,.62)" stroke-width=".9"/>'});
+      if(o.lead)ends.forEach(function(e){ink+='<path d="M'+(e.x+2).toFixed(1)+','+e.y0.toFixed(1)+'L'+(L+pw+8).toFixed(1)+','+e.y.toFixed(1)+'" class="pt-cn" fill="none" stroke="rgba(20,18,23,.62)" stroke-width=".9"/>'});
       el.innerHTML='<svg class="ink" width="'+W+'" height="'+H+'" aria-hidden="true" focusable="false">'+defs+ink+'</svg><svg width="'+W+'" height="'+H+'" aria-hidden="true" focusable="false">'+defs.replace(/id="/g,'id="t')+top.replace(/url\(#/g,"url(#t")+'</svg>'+
         ends.map(function(e){var w=e.s.rank===1,t=ver(e.s.m);return '<div class="pt-lb" aria-hidden="true" style="left:'+(L+pw+(o.lead?11:6))+'px;top:'+e.y.toFixed(1)+'px;--c:'+COL[e.s.m]+'">'+logo(e.s.m)+'<b'+(w?' class="pt-fo" data-t="'+esc(t)+'"':'')+'>'+esc(t)+'</b></div>'}).join("")+
         (o.grid||[]).map(function(g){return '<span class="pt-yl" aria-hidden="true" style="top:'+sy(g[0]).toFixed(1)+'px">'+g[1]+'</span>'}).join("")}
@@ -819,7 +819,17 @@
       var t=$(".pt-sg",body);if(t&&!natural){var fl=t.parentNode,hd=t.rows[0].getBoundingClientRect().height,n=t.rows.length-1,hh=(fl.clientHeight-hd-8)/n;if(hh>0)for(var i=1;i<=n;i++)t.rows[i].style.height=hh.toFixed(1)+"px"}}
     var lastW=0;function fit(force){if(!tk.offsetWidth)return;if(!force&&tk.offsetWidth===lastW)return;lastW=tk.offsetWidth;tk.style.removeProperty("--tin");var mx=0;
       ORDER.forEach(function(k){show(k,true);mx=Math.max(mx,inn.getBoundingClientRect().height)});tk.style.setProperty("--tin",Math.ceil(mx)+"px");show(cur,false)}
-    $(".pt-tb",tk).addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-pt]");if(!b||b.dataset.pt===cur)return;cur=b.dataset.pt;show(cur,false)});
+    /* the motion (owner, 2026-10-23: "like switching folders... very smooth", after the cinematic reference): the open page fades and
+       sinks back in 120ms, the new one comes forward in 280ms (Material's shared axis: a quick exit, about 300ms in, standard easing),
+       then its lines draw from the start and the rows step in; never with reduced motion */
+    var still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,swT,anT;
+    function animate(){if(still)return;tk.classList.remove("pt-anim");void tk.offsetWidth;tk.classList.add("pt-anim");clearTimeout(anT);anT=setTimeout(function(){tk.classList.remove("pt-anim")},1500)}
+    function swap(k){$$("[data-pt]",tk).forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.pt===k))});
+      if(still){show(k,false);return}body.classList.add("pt-out");clearTimeout(swT);
+      swT=setTimeout(function(){show(k,false);body.classList.remove("pt-out");body.classList.add("pt-pre");void body.offsetWidth;animate();body.classList.remove("pt-pre")},120)}
+    $(".pt-tb",tk).addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-pt]");if(!b||b.dataset.pt===cur)return;cur=b.dataset.pt;swap(cur)});
+    /* the first time the ticket comes into view its lines draw in once */
+    if(!still&&window.IntersectionObserver){var seen=new IntersectionObserver(function(es){if(!es.some(function(e){return e.isIntersecting}))return;seen.disconnect();animate();show(cur,false)},{threshold:.35});seen.observe(tk)}
     fit(true);if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){fit(true)});addEventListener("load",function(){fit(true)});
     var ptT;addEventListener("resize",function(){clearTimeout(ptT);ptT=setTimeout(function(){fit(false)},150)});addEventListener("hashchange",function(){setTimeout(function(){fit(true)},80)})}
   if(!window.__x2pClassicProof&&sw&&rf)try{x2pProof(ln,sw,rf)}catch(e){window.__x2pPtErr=String(e&&e.stack||e)}
