@@ -1,14 +1,16 @@
 /* f2 "More room for the film" (round 31). The bet ticket has left (as f1), and f1's tighter gap to the standings is kept.
    Phones: the film is bound by the 16px gutters (358px wide at 390), so it cannot grow; more height would only add empty night
    ground (the full-screen stretch was rejected on 2026-10-22 as "too spacious"), so the phone screen is f1's.
-   From 600px: the film grows to the standings board's width (860px at 1280, in line with the board and the "As it stands" ticket
+   From 600px: the film grows to the standings board's width (860px at 1280x900; less on a short laptop screen, in line with the board and the "As it stands" ticket
    below) and the whole ticket frame scales with it: --u is one pixel of today's 560px frame, so the bands, scallops, ink rules,
    staple, tag, sound button and play disc keep their proportions, and the disc's centre stays on the desk at 89% of the height. */
 html.x2p.r31-f2 section.x2o-bet + section#standings{padding-top:48px}
 @media (min-width:600px){
  html.x2p.r31-f2 section.x2o-bet + section#standings{padding-top:72px}
  html.x2p.r31-f2 section.x2o-bet{container-type:inline-size}
- html.x2p.r31-f2 .x2p-vt{--u:max(1px,calc(min(860px,100cqw) / 560));width:min(860px,100cqw);max-width:none;margin-top:calc(22 * var(--u))}
+ /* as wide as the board (860px), the column, or what the screen's height leaves under the hero (so a 768px-tall laptop still sees
+    the whole film), never narrower than today's 560px */
+ html.x2p.r31-f2 .x2p-vt{--fw:min(860px,100cqw,max(560px,calc((100svh - 350px) * 16 / 9)));--u:max(1px,calc(var(--fw) / 560));width:var(--fw);max-width:none;margin-top:calc(22 * var(--u))}
  html.x2p.r31-f2 .x2p-vt::before{transform:translate(calc(6 * var(--u)),calc(6 * var(--u)));
   -webkit-mask:radial-gradient(circle calc(7 * var(--u)) at 0 calc(9 * var(--u)),#0000 96%,#000) 0 0/51% calc(18 * var(--u)) repeat-y,radial-gradient(circle calc(7 * var(--u)) at 100% calc(9 * var(--u)),#0000 96%,#000) 100% 0/51% calc(18 * var(--u)) repeat-y;
   mask:radial-gradient(circle calc(7 * var(--u)) at 0 calc(9 * var(--u)),#0000 96%,#000) 0 0/51% calc(18 * var(--u)) repeat-y,radial-gradient(circle calc(7 * var(--u)) at 100% calc(9 * var(--u)),#0000 96%,#000) 100% 0/51% calc(18 * var(--u)) repeat-y}

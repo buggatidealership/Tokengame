@@ -10,10 +10,10 @@ if(!sec){
   sec=d.createElement('section');sec.className='sec x2p-r31';sec.id='x2pBet';sec.setAttribute('aria-labelledby','x2pBetH');
   sec.innerHTML='<div class="sh"><div class="tx"><span class="no">05</span><span class="eb">The bet</span><h2 id="x2pBetH">The first of many</h2></div>'+
     '<div class="x2p-strap"><span class="x2p-bug" aria-hidden="true">The stakes</span><ul class="x2o-ul lede x2p-r31b">'+
-      '<li>We bet our pool on the top AI’s call.</li>'+
+      '<li>We bet our pool on the top AI’<span class="x2p-lc">s</span> call.</li>'+
       '<li><b class="x2p-hk x2p-h-t">Right call:</b> profits buy back $EZ.</li>'+
       '<li><b class="x2p-hk x2p-h-b">Wrong call:</b> the pool can be wiped out.</li></ul></div></div>'+
-    '<div class="r31-roll"></div>'+
+    '<div class="r31-clip"><div class="r31-roll"></div></div>'+
     '<p class="r31-more">Season 2: a bet on every Mag 7 report, and more.</p>';
   get.parentNode.insertBefore(sec,get);
 }
@@ -42,4 +42,14 @@ var si=$('.x2p-bt .bt-mk i');if(si){var bi=getComputedStyle(si).backgroundImage;
 var fix=function(){var g=$('#get'),s=$('#x2pBet');if(!g||!s)return;if(s.nextElementSibling!==g)g.parentNode.insertBefore(s,g);var n=$('.sh .no',g);if(n)n.textContent='06'};
 fix();
 if(!window.__r31roll){window.__r31roll=1;addEventListener('hashchange',function(){setTimeout(fix,0)})}
+/* the strap's three lines one line each (the standings strap's fitRules idea): all three step down together by half a pixel
+   until the strap fits its column (no-wrap text widens the grid column, so the strap's own width tells) */
+var fitStrap=function(){var sh=$('#x2pBet .sh'),st=$('#x2pBet .x2p-strap');if(!sh||!st||!st.offsetWidth)return;var lis=[].slice.call(st.querySelectorAll('li'));
+  lis.forEach(function(li){li.style.removeProperty('font-size')});var fs=parseFloat(getComputedStyle(lis[0]).fontSize),ml=parseFloat(getComputedStyle(st).marginLeft)||0;
+  while(fs>11&&st.offsetWidth+ml>sh.clientWidth+.5){fs-=.5;lis.forEach(function(li){li.style.setProperty('font-size',fs+'px','important')})}};
+/* the strip may run to the window's right edge and no further: the clip box reaches exactly that edge (no sideways scroll) */
+var bleed=function(){var c=$('#x2pBet .r31-clip');if(!c)return;c.style.setProperty('--r31-bleed','0px');var g=d.documentElement.clientWidth-c.getBoundingClientRect().right;c.style.setProperty('--r31-bleed',Math.max(0,Math.floor(g))+'px')};
+var both=function(){bleed();fitStrap()};
+both();if(d.fonts&&d.fonts.ready)d.fonts.ready.then(both);
+if(!window.__r31rollFit){window.__r31rollFit=1;var ft;addEventListener('resize',function(){clearTimeout(ft);ft=setTimeout(both,120)});addEventListener('load',both)}
 window.__r31={shot:'#x2pBet'};

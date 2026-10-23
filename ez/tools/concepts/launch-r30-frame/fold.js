@@ -36,12 +36,12 @@ function draw(){
   clip(q('x r'),[[Rx+hm-j*.6,0],[Rx+hm-j*.6+sh,0],[Rx+hm+sh,B],[Rx+hm,B]]);
   clip(q('x b'),[[L,B+hm],[W,B+hm-j*.5],[W,B+hm-j*.5+sh],[L,B+hm+sh]]);
   /* the tucks: where a strip's edge lies on the next one's end, the step (k), and where the light falls past it, its shadow (ks) */
-  box(q('k k1'),0,T,L-hm,T+th);            /* top strip's lower edge on the left strip */
-  box(q('k k2'),Rx-th,0,Rx,T-hm);           /* right strip's inner edge on the top strip's end */
-  box(q('k k3'),Rx+hm,B-th,W,B);            /* bottom strip's upper edge on the right strip's end */
+  box(q('k k1'),0,T,L,T+th);            /* top strip's lower edge on the left strip */
+  box(q('k k2'),Rx-th,0,Rx,T);           /* right strip's inner edge on the top strip's end */
+  box(q('k k3'),Rx,B-th,W,B);               /* bottom strip's upper edge on the right strip's end */
   box(q('k k4'),L,B,L+th,Hh);               /* left strip's inner edge on the bottom strip's end */
-  box(q('ks ks1'),0,T,L-hm,T+sh);
-  box(q('ks ks4'),L,B+hm,L+sh,Hh);
+  box(q('ks ks1'),0,T,L,T+sh);
+  box(q('ks ks4'),L,B,L+sh,Hh);
 }
 draw();
 if(!vt.__r30fo){vt.__r30fo=new ResizeObserver(draw);vt.__r30fo.observe(vp);if(D.fonts)D.fonts.ready.then(draw)}
