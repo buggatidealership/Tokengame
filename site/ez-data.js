@@ -57,7 +57,7 @@ var SHEET=[
  ["42","SPOT","10/22/26","UP","3","DOWN","1.5","UP","3.5","DOWN","2.9","10/22/26","11.1","","Communication Services","Media & Entertainment","Media","FALSE"],
  ["43","BE","10/22/26","UP","3","UP","2.5","DOWN","5","DOWN","3.1","10/23/26","","","Industrials","Capital Goods","AI; Power & electrification","FALSE"],
  ["44","WDC","10/22/26","DOWN","3","DOWN","1.5","DOWN","5","DOWN","3.6","10/23/26","","","Information Technology","Technology Hardware & Equipment","AI","FALSE"],
- ["45","AXP","10/23/26","","","","","","","","","10/24/26","","","Financials","Financial Services","Payments","FALSE"],
+ ["45","AXP","10/23/26","DOWN","1","DOWN","1.5","DOWN","2.5","DOWN","2.1","10/24/26","","","Financials","Financial Services","Payments","FALSE"],
  ["46","000660.KS","10/26/26","","","","","","","","","","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors","FALSE"],
  ["47","BA","10/26/26","","","","","","","","","","","","Industrials","Capital Goods","Defense; Space","FALSE"],
  ["48","GLW","10/26/26","","","","","","","","","","","","Information Technology","Technology Hardware & Equipment","AI","FALSE"],
