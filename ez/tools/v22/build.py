@@ -409,6 +409,11 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
             # no sound button; the card keeps its front and turns like a film card, and its back offers the picture
             ("function art(r){\n  if(!r.film)return '<div class=\"art\"><div class=\"soon\">",
              "function art(r){\n  if(!r.film&&r.still)return '<div class=\"art still\"><img src=\"'+MEDIA+r.still+'.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\"'+(r.stillx!=null?' style=\"object-position:'+r.stillx+'% 50%\"':'')+'></div>';\n  if(!r.film)return '<div class=\"art\"><div class=\"soon\">"),
+            # a film whose board is not in the middle takes the same STILLX crop (R44, 2026-10-23): poster and video alike
+            ('''<div class="art">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy" decoding="async">':'')+
+    '<video playsinline muted loop preload="none" aria-label="Round '+r.n+' film">''',
+             '''<div class="art">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy" decoding="async"'+(r.stillx!=null?' style="object-position:'+r.stillx+'% 50%"':'')+'>':'')+
+    '<video playsinline muted loop preload="none"'+(r.stillx!=null?' style="object-position:'+r.stillx+'% 50%"':'')+' aria-label="Round '+r.n+' film">'''),
             ('var nf=!r.film,bk=backFace(r);','var nf=!r.film&&!r.still,bk=backFace(r);if(r.still&&!r.film)bk=bk.replace("\u21bb See the film","\u21bb See the picture");')]:
     assert pp.count(a)==1,a; pp=pp.replace(a,b)
 # two-tab launch (owner, 2026-10-22): the Overview builds its standings, stats and highlights from the Leaderboard and
