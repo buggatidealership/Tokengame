@@ -755,28 +755,28 @@
     var ax=function(a,k){return '<div class="pt-ax"><span>'+a+'</span><span class="pt-k">'+k+'</span><span>R'+N+'</span></div>'};
     /* the four views: the band words, the body, and what to draw once it is in place */
     var V={
-      roi:{t:"ROI",top:"$100,000 on every call",bot:"Simulated · before fees",
+      roi:{t:"ROI",top:"Would following them have made you money?",bot:"Simulated · before fees",
         html:function(){return '<div class="lp pt-3"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Now</span><span>Profit</span><span>ROI</span></div>'+byRoi.map(function(m,i){var b=S[m].bal,up=b>=STK,cl=up?'pt-u':'pt-d',p=Math.abs(b/STK*100-100).toFixed(1)+"%";
           return row(i,m,'<span class="pt-v tnum '+cl+'"><span class="sr">now </span>'+usd(b)+'</span><span class="pt-v tnum '+cl+'"><span class="sr">profit </span>'+(up?'+':'−')+usd(Math.abs(b-STK))+'</span>','<span class="pt-c tnum '+cl+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">ROI '+(up?'up':'down')+'</span> '+p+'</span>')}).join("")+'</div>'+
-          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Start: "+usd(STK))+'</div><p class="pt-cp"><b>What would '+usd(STK)+' be worth now?</b> Buy on an up call, short on a down call.</p>'},
+          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Start: "+usd(STK))+'</div><p class="pt-cp">'+usd(STK)+' to start, then the whole balance on every call, so wins and losses carry over. Buy on up, short on down. No leverage.</p>'},
         draw:function(el,h){var vs=[STK];MK.forEach(function(m){S[m].roi.forEach(function(p){vs.push(p[1])})});var lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STK*.05;lo-=pd;hi+=pd;
           chart(el,h,byRoi.map(function(m,i){return {m:m,rank:i+1,pts:S[m].roi.map(function(p){return [p[0]/N*100,(hi-p[1])/(hi-lo)*100]})}}),(hi-STK)/(hi-lo)*100,{lead:true})}},
-      hit:{t:"Hit rate",top:"Right on direction",bot:"Up or down only",
+      hit:{t:"Hit rate",top:"How often were they right about the direction?",bot:"Up or down only",
         html:function(){return '<div class="lp">'+byHit.map(function(m,i){var s=S[m];return row(i,m,'<span class="pt-v sm tnum">'+s.k+' of '+s.n+'</span>','<span class="pt-c big tnum">'+Math.round(s.hit*100)+'%</span>')}).join("")+'</div>'+
-          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("Start","Coin flip: 50%")+'</div><p class="pt-cp"><b>How often were they right about the direction?</b> Every line starts at 50/50 and moves with each call. Up or down only.</p>'},
+          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("Start","Coin flip: 50%")+'</div><p class="pt-cp">Every line starts at 50/50 and moves with each call.</p>'},
         draw:function(el,h){var LO=30,HI=80,y=function(v){return (HI-Math.max(LO,Math.min(HI,v)))/(HI-LO)*100};
           chart(el,h,byHit.map(function(m,i){return {m:m,rank:i+1,pts:S[m].run.map(function(p){return [p[0]/N*100,y(p[1])]})}}),y(50),{left:24,grid:[80,70,60,40,30].map(function(v){return [y(v),v+"%"]})})}},
-      miss:{t:"Avg miss",top:"How close they got",bot:"Closer is better",
+      miss:{t:"Avg miss",top:"How close did they get to the real move?",bot:"Closer is better",
         html:function(){return '<div class="pt-tg lp">'+byMiss.map(function(m,i){return '<figure><figcaption style="--c:'+COL[m]+'"><i>'+(i?i+1:fo("1"))+'</i>'+logo(m)+(i?esc(m):fo(m))+'<small>'+S[m].miss.toFixed(2)+'% off</small></figcaption>'+target(m,i)+'</figure>'}).join("")+'</div>'+
-          '<p class="pt-cp"><b>How close did they get?</b> The bullseye is what the stock did; the numbers are % off. One hole per call; a red dot outside missed the direction.</p>'}},
-      sector:{t:"Sector",top:"Where they are sharpest",bot:"Small samples · it fills in",
+          '<p class="pt-cp">The bullseye is what the stock did; the numbers are % off. One hole per call; a red dot outside missed the direction.</p>'}},
+      sector:{t:"Sector",top:"Which industries do they call best?",bot:"Small samples · it fills in",
         html:function(){var sec=function(r){return ((typeof RMETA!=="undefined"&&RMETA[r.n])||{}).sector||""},cnt={};ROUNDS.forEach(function(r){var x=sec(r);if(x)cnt[x]=(cnt[x]||0)+1});
           var secs=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
           var cell=function(m,x){var n=0,ok=0;ROUNDS.forEach(function(r){if(sec(r)!==x)return;var c=callOf(r,m);if(c){n++;if((/^DOWN/.test(c[1])?-1:1)>0===(r.a>0))ok++}});
             if(!n)return '<td class="tnum">–</td>';return '<td class="tnum '+(3*ok>=2*n?'hi':3*ok<=n?'lo':'md')+'">'+ok+'/'+n+'</td>'};
           return '<div class="pt-fl"><table class="pt-sg lp"><colgroup><col style="width:30%">'+byHit.map(function(){return '<col>'}).join("")+'</colgroup><tr><th scope="col">Sector</th>'+byHit.map(function(m){return '<th scope="col">'+logo(m)+esc(m)+'</th>'}).join("")+'</tr>'+
             secs.map(function(x){return '<tr><th scope="row">'+esc(SH[x]||x)+'<small>'+cnt[x]+' round'+(cnt[x]>1?'s':'')+'</small></th>'+byHit.map(function(m){return cell(m,x)}).join("")+'</tr>'}).join("")+'</table></div>'+
-            '<div class="pt-lgd" aria-hidden="true"><span><i class="hi"></i>2 in 3 or better</span><span><i class="md"></i>In between</span><span><i class="lo"></i>1 in 3 or worse</span></div><p class="pt-cp"><b>Where are they sharpest?</b> Right calls by sector.</p>'}}};
+            '<div class="pt-lgd" aria-hidden="true"><span><i class="hi"></i>2 in 3 or better</span><span><i class="md"></i>In between</span><span><i class="lo"></i>1 in 3 or worse</span></div><p class="pt-cp">Right calls out of calls made, by sector.</p>'}}};
     var ORDER=["roi","hit","miss","sector"],cur="roi";
     /* a chart in real pixels: each line in its colour, ink multiplied into the card; the leader foil-stamped (the NVIDIA recipe: a
        satin gold with grain, a dark wall above, a pale lip below), as thin as the rest; logo and model where each line ends */
@@ -807,13 +807,15 @@
       return '<svg viewBox="0 0 146 146" aria-hidden="true" focusable="false"><defs><filter id="'+id+'" x="0" y="0" width="146" height="146" filterUnits="userSpaceOnUse"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="'+(j+3)+'" result="n"/><feColorMatrix in="n" type="saturate" values="0" result="g"/><feComponentTransfer in="g" result="h"><feFuncR type="linear" slope=".25" intercept=".8"/><feFuncG type="linear" slope=".25" intercept=".8"/><feFuncB type="linear" slope=".25" intercept=".8"/></feComponentTransfer><feBlend in="SourceGraphic" in2="h" mode="multiply" result="b"/><feComposite in="b" in2="SourceGraphic" operator="in"/></filter></defs>'+
         '<g filter="url(#'+id+')">'+rings+'<path d="M'+(C-R-2)+','+C+'H'+(C+R+2)+'M'+C+','+(C-R-2)+'V'+(C+R+2)+'" stroke="rgba(60,20,16,.35)" stroke-width=".5"/>'+nums+'</g>'+out+holes+'</svg>'}
     var tk=d.createElement("div");tk.className="x2p-pt";
-    tk.innerHTML='<div class="pt-cd"><div class="pt-bd g"><span><i aria-hidden="true">★</i> <span class="pt-top"></span> <i aria-hidden="true">★</i></span><span>Season 1</span></div><div class="pt-in">'+
+    tk.innerHTML='<div class="pt-cd"><div class="pt-bd g"><span class="pt-top"></span></div><div class="pt-in">'+
       '<div class="pt-tb" role="group" aria-label="Show the AIs by">'+ORDER.map(function(k){return '<button type="button" data-pt="'+k+'" aria-pressed="'+(k===cur)+'">'+V[k].t+'</button>'}).join("")+'</div><div class="pt-body"></div></div>'+
       '<div class="pt-bd r"><span class="pt-bot"></span><span>Nº '+no+'</span></div></div>';
     ln.insertBefore(tk,sw);ln.classList.add("x2p-ptk");
     var body=$(".pt-body",tk),inn=$(".pt-in",tk);
     /* put a view in place; natural: at its own height (to measure), else at the ticket's one height, the chart or grid filling it */
-    function show(k,natural){var v=V[k];$(".pt-top",tk).textContent=v.top;$(".pt-bot",tk).textContent=v.bot;body.innerHTML=v.html();
+    function show(k,natural){var v=V[k],q=$(".pt-top",tk);q.textContent=v.top;q.style.fontSize="";
+      /* the question on one line: down in half pixels until it fits, never below 11px */
+      var z=parseFloat(getComputedStyle(q).fontSize);while(q.scrollWidth>q.clientWidth+.5&&z>11){z-=.5;q.style.fontSize=z+"px"}$(".pt-bot",tk).textContent=v.bot;body.innerHTML=v.html();
       $$("[data-pt]",tk).forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.pt===k))});
       var ch=$(".pt-ch",body);if(ch&&v.draw)v.draw(ch,natural?180:0);
       var t=$(".pt-sg",body);if(t&&!natural){var fl=t.parentNode,hd=t.rows[0].getBoundingClientRect().height,n=t.rows.length-1,hh=(fl.clientHeight-hd-8)/n;if(hh>0)for(var i=1;i<=n;i++)t.rows[i].style.height=hh.toFixed(1)+"px"}}
