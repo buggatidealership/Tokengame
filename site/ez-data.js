@@ -92,7 +92,7 @@ var SHEET=[
  ["77","SNDK","10/28/26","","","","","","","","","","","","Information Technology","Technology Hardware & Equipment","AI; Semiconductors","FALSE"],
  ["78","VOW3.DE","10/28/26","","","","","","","","","","","","Consumer Discretionary","Automobiles & Components","Automotive","FALSE"],
  ["79","CVX","10/29/26","","","","","","","","","","","","Energy","Energy","","FALSE"],
- ["80","INTC","10/22/26","","","","","","","","","10/23/26","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors","FALSE"],
+ ["80","INTC","10/29/26","","","","","","","","","10/30/26","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors","FALSE"],
  ["81","XOM","10/29/26","","","","","","","","","","","","Energy","Energy","","FALSE"],
  ["82","SHEL.L","10/29/26","","","","","","","","","","","","Energy","Energy","","FALSE"],
  ["83","AZN.L","10/30/26","","","","","","","","","","","","Health Care","Pharmaceuticals, Biotechnology & Life Sciences","Healthcare","FALSE"],
