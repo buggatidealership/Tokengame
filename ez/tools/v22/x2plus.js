@@ -33,7 +33,7 @@
   /* the explainer film (owner, 2026-10-21: "C is my favorite", on the $EZ ticket, no footer, no host): it replaces the three bullets and
      the right/wrong boxes. Since 2026-10-22 it waits for "Tap to play" (owner: no autoplay) and starts with sound; it keeps talking in a
      corner player when you scroll past it. The round films pause while it plays, and it pauses when one of them starts.
-     The bullets stay in the file for the Buyback tab. ez-landing-v3.mp4 is 18.7 MB (the owner's new cut, 2026-10-23); only its metadata loads before the tap. */
+     The bullets stay in the file for the Buyback tab. ez-landing-v4.mp4 is 18.7 MB (the owner's cut with smaller captions, 2026-10-23); only its metadata loads before the tap. */
   var T3=$(".x2p-t3");
   if(T3&&!$(".x2p-vt")){
     var vt=document.createElement("div");vt.className="x2p-vt";
@@ -41,7 +41,7 @@
        "How it works" is mockup A's tilted gold tag across the top edge, with the time left */
     /* (2026-10-22, review) the tag is the module's heading (h2) for screen readers; the time beside it is decoration */
     vt.innerHTML='<h2 class="vt-tag">How it works<small class="vt-s" aria-hidden="true">1:20</small></h2><div class="vt-p"><i class="vt-st" aria-hidden="true"></i>'+
-      '<div class="vt-f"><video class="vt-v" playsinline preload="metadata" poster="media/ez-landing-v3-poster.jpg" aria-label="How EZ works, a minute and 20 seconds"><source src="media/ez-landing-v3.mp4" type="video/mp4"><source src="media/ez-landing-v3.webm" type="video/webm"></video>'+
+      '<div class="vt-f"><video class="vt-v" playsinline preload="metadata" poster="media/ez-landing-v4-poster.jpg" aria-label="How EZ works, a minute and 20 seconds"><source src="media/ez-landing-v4.mp4" type="video/mp4"><source src="media/ez-landing-v4.webm" type="video/webm"></video>'+
       '<button type="button" class="vt-snd"></button><button type="button" class="vt-tap">Tap for sound</button><button type="button" class="vt-play"><i aria-hidden="true"></i><span>Tap to play</span></button><span class="vt-bar" aria-hidden="true"><i></i></span></div></div>';
     T3.parentNode.insertBefore(vt,T3);T3.hidden=true;T3.setAttribute("data-x2p-kept","buyback");
     (function(){var v=vt.querySelector(".vt-v"),snd=vt.querySelector(".vt-snd"),tap=vt.querySelector(".vt-tap"),play=vt.querySelector(".vt-play"),pl=play.querySelector("span"),bar=vt.querySelector(".vt-bar>i"),st=vt.querySelector(".vt-s"),f=vt.querySelector(".vt-f");
