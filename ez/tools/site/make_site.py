@@ -30,10 +30,10 @@ doc = doc.replace('</head>', meta + '</head>', 1)
 # The standings as printed tickets and the proof on the ticket kept production on today's board and stats switch (2026-10-22/23,
 # window.__x2pClassicBoard / __x2pClassicProof, which x2plus.js still honours). Both live since 2026-10-23 (owner: "Everything"), so
 # production is X2+ as it is; SITE_CLASSIC=1 builds the old board and switch again if they are ever needed.
-# What waits for the owner's go on production (2026-10-23: the fight-night Upcoming, its tickets opening the record's slab,
-# the logos printed into the paper): make_site.py sets window.__x2pHold and x2plus.js leaves those off; SITE_UP=1 (the
-# preview branches) builds them. Drop this once the owner says go.
-if os.environ.get('SITE_UP') != '1':
+# The fight-night Upcoming, rounds opening as the record's slab and the logos printed into the paper went live on 2026-10-23
+# (owner: "push pls"), so production is X2+ as it is again. SITE_HOLD=1 sets window.__x2pHold, which x2plus.js still honours,
+# to keep the next held changes off a production build.
+if os.environ.get('SITE_HOLD') == '1':
     doc = doc.replace('</head>', '<script>window.__x2pHold=1</script>\n</head>', 1)
 if os.environ.get('SITE_CLASSIC') == '1':
     doc = doc.replace('</head>', '<script>window.__x2pClassicBoard=1;window.__x2pClassicProof=1</script>\n</head>', 1)
