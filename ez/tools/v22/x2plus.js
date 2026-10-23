@@ -678,6 +678,9 @@
   var nav=$(".nav");if(nav&&!$(".x2p-soon",nav)){var sn=d.createElement("a");sn.className="x2p-soon";sn.setAttribute("aria-disabled","true");sn.innerHTML='Buybacks <small aria-hidden="true">Soon</small><span class="sr"> (coming soon)</span>';nav.appendChild(sn)}
   function offRoute(){if(/^#\/(leaderboard|models|results|buyback)(\/|$)/.test(location.hash))location.replace("#/")}
   offRoute();addEventListener("hashchange",offRoute);
+  /* the standings as printed tickets (owner, 2026-10-22) are on the X2+ preview; the live site keeps today's board until the
+     owner says so: make_site.py sets window.__x2pClassicBoard there (SITE_TIX=1 builds with the tickets) */
+  var TIX=!window.__x2pClassicBoard;
   /* 01 standings and 03 stats come from the Leaderboard page, rendered once out of sight */
   var hold=d.createElement("div");hold.hidden=true;d.body.appendChild(hold);hold.innerHTML=R.vModels();R.wireModels(hold);
   var lbx=$(".lbx",hold);
@@ -700,8 +703,8 @@
     var bcss=d.getElementById("x2pbt-css");if(bcss&&$(".x2p-ast",st)){var gold=bcss.textContent.split("\n").filter(function(l){return l.indexOf(" .bt-b .x2p-cdh b em")>-1}).map(function(l){return l.split("html.x2p.x2d.x2pbt .bt-b .x2p-cdh b em").join("html.x2p #standings .x2p-ast .tk em")}).join("\n");
       if(gold){var gs=d.createElement("style");gs.id="x2p-ast-gold";gs.textContent=gold;d.head.appendChild(gs)}}
     /* the standings as printed tickets (owner, 2026-10-22; CSS: the TICKETS block of skin-x2plus.css); the stamped ticks' worn ink */
-    st.classList.add("x2p-tix");
-    if(!d.getElementById("x2pWorn")){var wsv=d.createElementNS("http://www.w3.org/2000/svg","svg");wsv.setAttribute("width","0");wsv.setAttribute("height","0");wsv.setAttribute("aria-hidden","true");wsv.style.position="absolute";
+    if(TIX)st.classList.add("x2p-tix");
+    if(TIX&&!d.getElementById("x2pWorn")){var wsv=d.createElementNS("http://www.w3.org/2000/svg","svg");wsv.setAttribute("width","0");wsv.setAttribute("height","0");wsv.setAttribute("aria-hidden","true");wsv.style.position="absolute";
       wsv.innerHTML='<filter id="x2pWorn" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="2" seed="3" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.9 1.75" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>';st.appendChild(wsv)}
     rec.parentNode.insertBefore(st,rec)}
   var sw=$(".rsw2",hold),rf=$("#rflip",hold);
@@ -715,7 +718,7 @@
   var tp=d.createElement("template");tp.innerHTML=R.vResults();var hs=tp.content.querySelector("section.xsec");
   if(hs&&window.__x2pHlSlabs){var h2=d.createElement("div");h2.hidden=true;d.body.appendChild(h2);h2.appendChild(hs);window.__x2pHlSlabs();
     if($("#x2pHl",hs)){hs.id="highlights";hs.classList.add("sec","x2p-hl-sec");hs.setAttribute("aria-labelledby","x2hlH");
-      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">The predictions that shocked us</h2></div>';
+      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Memorable predictions</span><h2 id="x2hlH">Hall of fame (and shame)</h2></div>';
       var xh=$(".xsh",hs);if(xh)hs.replaceChild(sh,xh);else hs.insertBefore(sh,hs.firstChild);ln.parentNode.insertBefore(hs,ln.nextSibling)}
     h2.remove()}
   /* bullets under the standings, proof and highlights heads, the record's style (owner, 2026-10-22: "a bit dry"); the
@@ -727,10 +730,11 @@
   /* (owner, 2026-10-22) "predict", not "call each stock" (they don't call every stock); "before" and "after" in gold */
   /* the standings' three rules are the tickets' small print under the board now (owner, 2026-10-22: the board first, the
      rules secondary); they were the "The rules" strap above it */
-  var sfl=$("#standings .x2p-flip");if(sfl&&!$("#standings .x2p-terms")){var tm=d.createElement("p");tm.className="x2p-terms";
+  var sfl=$("#standings .x2p-flip");if(TIX&&sfl&&!$("#standings .x2p-terms")){var tm=d.createElement("p");tm.className="x2p-terms";
     tm.innerHTML='<b>Terms.</b> 4 AI<span class="x2p-lc">s</span> predict a stock\'s move <em>before</em> it reports. Graded at the next market close <em>after</em> earnings. In public, every earnings season.';sfl.after(tm)}
+  [].concat(TIX?[]:[["#standings","x2p-stb",['4 AIs predict a stock\'s move <b class="x2p-kw">before</b> it reports.','Graded at the next market close <b class="x2p-kw">after</b> earnings.',"In public, every earnings season."],"The rules"]],
   [["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
-   ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[],"Replays"]].forEach(function(x){if(!x[2].length)return;
+   ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[],"Replays"]]).forEach(function(x){if(!x[2].length)return;
     var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
     x[2].forEach(function(t){var li=d.createElement("li");li.innerHTML=t;ul.appendChild(li)});
     /* each list on its broadcast strap with a bug (owner, 2026-10-22: C3; "The stats" on the proof); X3+ shows the same lists as neon */
@@ -764,6 +768,15 @@
     /* the header's "Last 5" sits over the middle of the boxes */
     var l5h=$("#standings .x2p-l5h"),fq0=$(".x2p-l5 .fq",rows[0]);if(l5h&&fq0){l5h.style.transform="";var a=l5h.getBoundingClientRect(),b=fq0.getBoundingClientRect();
       l5h.style.transform="translateX("+Math.round(((b.left+b.right)/2-(a.left+a.right)/2)*4)/4+"px)"}}
+  /* the standings' three rules one line each (owner, 2026-10-23: "Graded at the next market close after earnings." on one line):
+     the three step down together, half a pixel at a time, until the longest fits; never below 12px (narrower: the full size, wrapped) */
+  function fitRules(){var ls=$$("#standings .x2p-strap li");if(!ls.length||!ls[0].offsetWidth)return;ls.forEach(function(l){l.style.fontSize=""});
+    /* the lines each one draws (the strap's grid column grows with no-wrap text, so a line's own width cannot tell) */
+    var nl=function(l){var g=d.createRange();g.selectNodeContents(l);var t=[];[].forEach.call(g.getClientRects(),function(r){if(r.width&&!t.some(function(x){return Math.abs(x-r.top)<4}))t.push(r.top)});return t.length};
+    var z=parseFloat(getComputedStyle(ls[0]).fontSize),n=0;
+    while(ls.some(function(l){return nl(l)>1})&&z>12&&n++<40){z-=.5;ls.forEach(function(l){l.style.fontSize=z+"px"})}
+    /* too narrow even at 12px (a 320px phone): keep the full size and let them wrap, as before */
+    if(ls.some(function(l){return nl(l)>1}))ls.forEach(function(l){l.style.fontSize=""})}
   /* the hit-rate chart: on a narrow screen the round labels (R1 ... R35, 7px apart) run into each other; keep R1 and every
      fifth so each has room */
   function thin(){$$("#learn svg").forEach(function(sv){var t=$$("text",sv).filter(function(x){return /^R\d+$/.test(x.textContent.trim())});if(t.length<3)return;
@@ -774,8 +787,8 @@
   function fitSec(){$$("#learn .st-sec").forEach(function(c){var b=$("b",c);if(!b||!c.offsetWidth)return;b.style.fontSize="";var z=parseFloat(getComputedStyle(b).fontSize),n=0;
     while(c.scrollWidth>c.clientWidth+.5&&z>10&&n++<30){z-=.5;b.style.fontSize=z+"px"}})}
   if(window.MutationObserver){var lt;new MutationObserver(function(){clearTimeout(lt);lt=setTimeout(function(){thin();fitSec()},30)}).observe(ln,{childList:true,subtree:true})}
-  function later(){setTimeout(function(){centre();land();thin();fitSec()},80)}
-  requestAnimationFrame(function(){requestAnimationFrame(function(){centre();land();thin()})});
+  function later(){setTimeout(function(){fitRules();centre();land();thin();fitSec()},80)}
+  requestAnimationFrame(function(){requestAnimationFrame(function(){fitRules();centre();land();thin()})});
   if(d.fonts&&d.fonts.ready)d.fonts.ready.then(later);addEventListener("load",later);addEventListener("hashchange",later);
-  var rt;addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){centre();fitSec()},150)});
+  var rt;addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){fitRules();centre();fitSec()},150)});
 }catch(e){}})();

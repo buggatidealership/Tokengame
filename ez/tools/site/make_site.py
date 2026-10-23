@@ -27,6 +27,10 @@ doc = re.sub(r'<title>[^<]*</title>', '<title>$EZ \u00b7 Earnings Zeason</title>
 meta = ('<link rel="canonical" href="' + URL + '">\n<meta property="og:type" content="website">\n<meta property="og:url" content="' + URL + '">\n'
         '<meta property="og:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:card" content="summary_large_image">\n')
 doc = doc.replace('</head>', meta + '</head>', 1)
+# (owner, 2026-10-22) the standings as printed tickets stay on the X2+ preview until the owner says so: the live site keeps today's
+# board (x2plus.js reads window.__x2pClassicBoard). SITE_TIX=1 builds with the tickets (the preview branch).
+if os.environ.get('SITE_TIX') != '1':
+    doc = doc.replace('</head>', '<script>window.__x2pClassicBoard=1</script>\n</head>', 1)
 # Cloudflare's zone setting keeps .js files in browsers for 4 hours whatever _headers says (owner, 2026-10-20: a sync did not
 # show up). The page itself refreshes within a minute, so it asks for each script by a version stamped from its content.
 import hashlib
