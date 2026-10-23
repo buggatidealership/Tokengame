@@ -681,6 +681,8 @@
   /* the standings as printed tickets (owner, 2026-10-22) are on the X2+ preview; the live site keeps today's board until the
      owner says so: make_site.py sets window.__x2pClassicBoard there (SITE_TIX=1 builds with the tickets) */
   var TIX=!window.__x2pClassicBoard;
+  /* the same switch marks the page as a preview: the PRINTED block of skin-x2plus.css (names foil-stamped into the tickets) waits for the owner too */
+  if(TIX)d.documentElement.classList.add("x2p-pv");
   /* 01 standings and 03 stats come from the Leaderboard page, rendered once out of sight */
   var hold=d.createElement("div");hold.hidden=true;d.body.appendChild(hold);hold.innerHTML=R.vModels();R.wireModels(hold);
   var lbx=$(".lbx",hold);
@@ -728,11 +730,9 @@
   /* (owner, 2026-10-22) one colour each, the same as its card's tag, so the three read as the top three: closest gold, tightest green, biggest red */
   var hk=$$("#x2pHl .x2p-htag").map(function(t){var k=(t.className.match(/x2p-h-(\w)/)||[])[1]||"c";t=t.textContent.trim().toLowerCase().replace(/[&<>]/g,"");return '<b class="x2p-hk x2p-h-'+k+'">'+t.charAt(0).toUpperCase()+t.slice(1)+'.</b>'}).join(" ");
   /* (owner, 2026-10-22) "predict", not "call each stock" (they don't call every stock); "before" and "after" in gold */
-  /* the standings' three rules are the tickets' small print under the board now (owner, 2026-10-22: the board first, the
-     rules secondary); they were the "The rules" strap above it */
-  var sfl=$("#standings .x2p-flip");if(TIX&&sfl&&!$("#standings .x2p-terms")){var tm=d.createElement("p");tm.className="x2p-terms";
-    tm.innerHTML='<b>Terms.</b> 4 AI<span class="x2p-lc">s</span> predict a stock\'s move <em>before</em> it reports. Graded at the next market close <em>after</em> earnings. In public, every earnings season.';sfl.after(tm)}
-  [].concat(TIX?[]:[["#standings","x2p-stb",['4 AIs predict a stock\'s move <b class="x2p-kw">before</b> it reports.','Graded at the next market close <b class="x2p-kw">after</b> earnings.',"In public, every earnings season."],"The rules"]],
+  /* the standings' three rules on the "The rules" strap above the board, with the tickets too (owner, 2026-10-23: "in the same
+     format as we have it on the current live site"; they were the tickets' small print under the board for a day) */
+  [].concat([["#standings","x2p-stb",['4 AIs predict a stock\'s move <b class="x2p-kw">before</b> it reports.','Graded at the next market close <b class="x2p-kw">after</b> earnings.',"In public, every earnings season."],"The rules"]],
   [["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
    ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[],"Replays"]]).forEach(function(x){if(!x[2].length)return;
     var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
