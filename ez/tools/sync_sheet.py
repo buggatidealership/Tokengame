@@ -153,6 +153,8 @@ ROUND_OVERRIDES = {}   # e.g. {("LEVI", "10/07/26"): 15}; the 2026-10-09 ones we
 KEEP = {}   # e.g. {("GS", "10/12/26"): {"ACTUAL MOVE (%)": ("-0.27", "why")}}; R22 GS used it until the owner chose the sheet's -0.21 (2026-10-14)
 # Not only graded values: R80 Intel keeps its corrected dates until row 80 in the sheet says the same (then the key no longer matches).
 KEEP[("INTC", "10/22/26")] = {"CALL DATE (T-1)": ("10/29/26", "Intel reports 29 Oct after the close, its own release; owner, 2026-10-23: row 80 is wrong, change it"), "RESOLUTION DATE/TIME": ("10/30/26", "Intel reports 29 Oct after the close, its own release; owner, 2026-10-23: row 80 is wrong, change it")}
+# R45 AmEx reported Friday 23 Oct before the open (its 8-K), so it is graded at that day's close, not Saturday 24 Oct (owner, 2026-10-23: "It needs to resolve today").
+KEEP[("AXP", "10/23/26")] = {"RESOLUTION DATE/TIME": ("10/23/26", "AmEx reported 23 Oct before the open; graded at that close (owner, 2026-10-23)")}
 
 VOID_KEYS = {(t, day(d)): why for (t, d), why in VOID.items()}
 VOID_TICKERS = {t for (t, d) in VOID}
