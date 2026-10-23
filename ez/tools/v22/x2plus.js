@@ -142,14 +142,14 @@
        average miss 1.5% or less and under half the move (else 9.5); Pristine = a 10 under 1% */
     var E=g?ezGrade(g):null,gr=E?E.gr:0,ds=E?E.ds:"",why=E?E.why:"",pr=E?E.pr:false;
     var h='<div class="zlab"><div class="zl"><span class="y">'+d.y+' <span class="s">$</span><span class="e">E</span><span class="z">Z</span> Season 1</span><span class="nm"><b>'+esc2(r.co)+'</b>'+(r.ticker?' <small>('+esc2(r.ticker)+')</small>':'')+'</span><span class="zb"><i></i>'+String(n).padStart(8,"0")+'<span class="holo"><i class="s">$</i><i class="e">E</i><i class="z">Z</i></span></span></div>'+
-      '<div class="zr"><span class="no">#'+n+'</span>'+(g?'<span class="ds">'+ds+'</span><span class="gr">'+gr+'</span>':(q?'<span class="ds">Graded on</span><span class="gr">'+md(r.resolves).t.toUpperCase()+'</span>':'<span class="ds">Calls due</span><span class="gr">'+md(r.called).t.toUpperCase()+'</span>'))+'</div>'+
+      '<div class="zr"><span class="no">#'+n+'</span>'+(g?'<span class="ds">'+ds+'</span><span class="gr">'+gr+'</span>':(q?'<span class="ds">Final grade on</span><span class="gr">'+md(r.resolves).t.toUpperCase()+'</span>':'<span class="ds">Calls due</span><span class="gr">'+md(r.called).t.toUpperCase()+'</span>'))+'</div>'+
       '</div>';
     [].forEach.call(c.querySelectorAll(".face"),function(f){var o=document.createElement("div");o.className="fx"+(gr===10?" perfect":"")+(pr?" pristine":"");o.setAttribute("aria-hidden","true");o.innerHTML=h;f.appendChild(o);
       /* the back says why, in one line, where the barcode sits on the front */
       if(g&&f.classList.contains("back")){var zb=o.querySelector(".zb");zb.className="zb zwhy";zb.textContent=why}
       /* (owner, 2026-10-21) a 10 gets the rolling foil on both faces (owner: it should not vanish when the card flips): rainbow bands that roll across without end; a sibling of .fx so it lights the film too */
       if(gr===10){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);foilFit(f);if(FRO)FRO.observe(f)}});if(window.__x2pNmFit)window.__x2pNmFit();
-    var lab=(g?ds+" "+gr+" of 10, "+why.replace(" \u00b7",",").replace("off on avg","off on average"):q?"calls in, graded "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
+    var lab=(g?ds+" "+gr+" of 10, "+why.replace(" \u00b7",",").replace("off on avg","off on average"):q?"calls in, final grade on "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
   /* (owner, 2026-10-21, later) the foil stays light over the film: the mask needs the film's top and bottom inside the face */
   function foilFit(f){var fl=f.querySelector(".x2p-foil"),a=f.querySelector(f.classList.contains("back")?".fin":".art");if(!fl||!a||!a.offsetHeight)return;var t=0,e=a;while(e&&e!==f){t+=e.offsetTop;e=e.offsetParent}
     fl.style.setProperty("--at",t+"px");fl.style.setProperty("--ab",(t+a.offsetHeight)+"px")}
@@ -287,14 +287,20 @@
       var btn=document.createElement("button");btn.type="button";btn.className="x2p-flipbtn";btn.setAttribute("aria-expanded","false");btn.setAttribute("aria-controls","x2pHow");
       btn.innerHTML='<i aria-hidden="true">i</i><span>How we rank</span>';
       var fin=document.createElement("div");fin.className="x2p-fin";
-      var bk=document.createElement("div");bk.className="x2p-bk";bk.id="x2pHow";bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");bk.tabIndex=-1;
-      bk.innerHTML='<h3>How we rank</h3><p class="x2p-why">Why it matters: <b>#1 makes the call</b> on the next bet.</p><ol>'+
+      var bk=document.createElement("div");bk.className="x2p-bk x2p-tkb";bk.id="x2pHow";bk.setAttribute("inert","");bk.setAttribute("aria-hidden","true");bk.tabIndex=-1;
+      /* (owner, 2026-10-23: the back still had "this old-school design... it needs to have a ticket looking like approach") the board
+         turns over to a ticket: the proof ticket's card stock and scallops, the title in the green band in white ink between gold
+         stars, the rules printed in ink in a double frame, "#1 makes the call" in gold foil, the ROI line as fine print, a red band */
+      var nG=(typeof ROUNDS!=="undefined"?ROUNDS.length:0),ko=function(t,c){return '<span class="bk-ko'+(c?' '+c:'')+'" data-t="'+t+'">'+t+'</span>'};
+      bk.innerHTML='<div class="bk-s"><div class="bk-t"><div class="bk-bd g"><h3><em class="bk-st" aria-hidden="true">★</em>'+ko("How we rank")+'<em class="bk-st" aria-hidden="true">★</em></h3></div>'+
+        '<div class="bk-in"><p class="x2p-why">Why it matters: <b class="bk-fo" data-t="#1 makes the call">#1 makes the call</b> on the next bet.</p><ol>'+
         '<li>Ranked by how often they get the direction right.</li>'+
         '<li>Tie? The smaller average miss wins.</li>'+
         '<li>Every call is made before the company reports and graded at the next market close.</li>'+
         '<li>Called fewer than half the rounds? Ranked after the rest.</li>'+
         '<li>The board freezes 24h before each bet.</li></ol>'+
-        (roi?'<p class="x2p-roi"><b>ROI</b>:'+roi[1]+'</p>':'');
+        (roi?'<p class="x2p-roi">ROI:'+roi[1]+'</p>':'')+'</div>'+
+        '<div class="bk-bd r" aria-hidden="true">'+ko("Season 1")+ko("Nº "+String(nG).padStart(6,"0"))+'</div></div></div>';
       lbx.parentNode.insertBefore(fl,lbx);fl.appendChild(fin);fin.appendChild(lbx);fin.appendChild(bk);if(lbn)lbn.remove();
       btn.addEventListener("click",function(){var on=!fl.classList.contains("on");fl.classList.toggle("on",on);
         btn.setAttribute("aria-expanded",on?"true":"false");btn.querySelector("span").textContent=on?"Back to the board":"How we rank";btn.querySelector("i").textContent=on?"×":"i";
@@ -326,11 +332,20 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     var big=function(u){return /\d/.test(u.ticker)?u.co:String(u.ticker).replace(/\..*$/,"")},sml=function(u){return /\d/.test(u.ticker)?u.ticker:u.co};
     var call=function(c){var dn=c.dir==="DOWN";return '<span class="'+(dn?'dn':'up')+'"><span class="sr">'+ue(nmM(c.m))+': '+(dn?'down ':'up ')+ue(c.mag)+'%</span><span aria-hidden="true">'+logo(c.m)+'<b>'+(dn?'▼':'▲')+ue(c.mag)+'%</b></span></span>'};
     var stub=function(u){return '<span class="tk-s"><small>No.</small><b>'+u.n+'</b>'+(m7(u.n)?'<em>Mag 7</em>':'')+'</span>'};
+    var SH={"Information Technology":"Tech","Consumer Discretionary":"Consumer","Consumer Staples":"Staples","Financials":"Finance","Industrials":"Industrials","Communication Services":"Media & telecom","Health Care":"Health","Materials":"Materials","Energy":"Energy","Utilities":"Utilities","Real Estate":"Real estate"},
+      sec=function(n){var x=((RMETA[n]||{}).sector)||"";return SH[x]||x};
+    /* (owner, 2026-10-23: "a lot of space on the side... SK Hynix and then the ticker, so it fills up the space") the company and its ticker
+       on one line, as on the slab's label ("SK HYNIX (000660.KS)"); the sector under it; the logo bigger */
+    var nmT=function(u){var t=String(u.ticker||""),same=!t||t.replace(/\..*$/,"").toUpperCase()===String(u.co).toUpperCase();
+      return '<b><span class="tk-co">'+ue(u.co)+'</span>'+(same?'':'<small class="tk-tk">('+ue(t)+')</small>')+'</b>'};
     /* a ticket: the stub, the company printed on the card; with its calls once they are in */
-    var tk=function(u,bigT){var inn=u.calls&&u.calls.length;
-      return '<li><a class="x2p-tk'+(bigT?' big':'')+(m7(u.n)?' m7':'')+'" href="#/round/'+u.n+'">'+stub(u)+'<span class="tk-b"><span class="tk-m">'+tkBadge(u.ticker)+'<span class="tk-n"><b>'+ue(bigT?u.co:big(u))+'</b><small>'+
-        ue(bigT?(String(u.ticker).replace(/\..*$/,"")!==u.co?u.ticker+' · ':'')+(inn?'calls filed '+wd(D(u.called),{month:"short",day:"numeric"}):'calls due '+wd(D(u.called),{month:"short",day:"numeric"})):sml(u))+'</small></span></span>'+
+    var tk=function(u,bigT){var inn=u.calls&&u.calls.length,dt=wd(D(u.called),{month:"short",day:"numeric"});
+      return '<li><a class="x2p-tk'+(bigT?' big':'')+(m7(u.n)?' m7':'')+'" href="#/round/'+u.n+'">'+stub(u)+'<span class="tk-b"><span class="tk-m">'+tkBadge(u.ticker)+'<span class="tk-n">'+nmT(u)+'<small>'+
+        ue(bigT?(inn?'calls filed '+dt:'calls due '+dt):sec(u.n))+'</small></span></span>'+
         (inn?'<span class="tk-c">'+u.calls.map(call).join("")+'</span>':'')+'</span></a></li>'};
+    /* a long name steps down in half pixels until it fits beside its ticker, never below 13px (then it trims) */
+    var fitN=function(r){$$(".tk-n>b",r).forEach(function(b){b.style.fontSize="";var co=b.firstChild,z=parseFloat(getComputedStyle(b).fontSize),k=0;
+      while(co&&co.scrollWidth>co.clientWidth+.5&&z>13&&k++<24){z-=.5;b.style.fontSize=z+"px"}})};
     /* tonight: the rounds graded at the next close (calls in), else the next day's rounds */
     var P=PENDING.slice().sort(function(a,b){return K(a.resolves).localeCompare(K(b.resolves))||a.n-b.n}),spK=P.length?K(P[0].resolves):null,
       sp=P.filter(function(u){return K(u.resolves)===spK}),rest=P.filter(function(u){return K(u.resolves)!==spK});
@@ -360,9 +375,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       return ks.map(function(k){var dd=D(by[k][0].calls&&by[k][0].calls.length?by[k][0].resolves:by[k][0].called),n=by[k].length;
         return '<section class="ul-dy" data-k="'+k+'" aria-label="'+ue(wd(dd,{weekday:"long",month:"long",day:"numeric"}))+'"><div class="dy-h"><b>'+ue(k===nyK?"Today":wd(dd,{weekday:"long"}))+'</b><em>'+ue(wd(dd,{month:"short",day:"numeric"}))+'</em><small>'+n+' on the card</small></div>'+
           '<ul class="x2p-tks">'+by[k].map(function(u){return tk(u,false)}).join("")+'</ul></section>'}).join("")}
-    $(".ul-d",root).innerHTML=days();
+    $(".ul-d",root).innerHTML=days();fitN(root);
     $(".ul-f",root).addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-uf2]");if(!b||b.dataset.uf2===F)return;F=b.dataset.uf2;
-      $$("[data-uf2]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$(".ul-d",root).innerHTML=days()});
+      $$("[data-uf2]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$(".ul-d",root).innerHTML=days();fitN(root)});
+    var lw=innerWidth;addEventListener("resize",function(){if(!root.isConnected||innerWidth===lw)return;lw=innerWidth;fitN(root)});
+    if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){if(root.isConnected)fitN(root)});
     /* the time to the bell, once a minute */
     if(close){var cd=$(".sp-cd",root),ct=$(".sp-t",root),iv=setInterval(function(){if(!cd.isConnected){clearInterval(iv);return}cd.textContent=left();ct.textContent=tail()},3e4)}}
   var PLACE={
@@ -819,7 +836,15 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   var lbx=$(".lbx",hold);
   if(lbx&&window.__x2pLbFlip){var o=window.__x2pLbFlip(lbx);
     $$(".band,.lede",st).forEach(function(e){if(e.parentNode===st)e.remove()});
-    ($(".sh .tx",st)||$(".sh",st)||st).appendChild(o.btn);st.appendChild(o.fl);st.appendChild(o.ft);
+    /* the ⓘ sits on the head, at the top right of its last letter (owner, 2026-10-23: "top right of the S", smaller; it sat higher
+       than the head at the far right); capTop() lines the circle's top up with the capitals' top, measured */
+    var h2=$(".sh .tx h2",st);if(h2){var hw=d.createElement("div");hw.className="x2p-hdw";h2.parentNode.insertBefore(hw,h2);hw.appendChild(h2);hw.appendChild(o.btn);
+      var capTop=function(){var i=$("i",o.btn);if(!i||!h2.offsetHeight)return;o.btn.style.removeProperty("margin-top");var p=d.createElement("span");p.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";h2.appendChild(p);
+        var base=p.getBoundingClientRect().top;p.remove();var cs=getComputedStyle(h2),cv=d.createElement("canvas").getContext("2d");cv.font=cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;
+        var cap=base-cv.measureText("S").actualBoundingBoxAscent,top=i.getBoundingClientRect().top;o.btn.style.setProperty("margin-top",(parseFloat(getComputedStyle(o.btn).marginTop)+cap-top).toFixed(2)+"px","important")};
+      capTop();if(d.fonts&&d.fonts.ready)d.fonts.ready.then(capTop);addEventListener("load",capTop);addEventListener("resize",capTop)}
+    else ($(".sh .tx",st)||$(".sh",st)||st).appendChild(o.btn);
+    st.appendChild(o.fl);st.appendChild(o.ft);
     /* the "As it stands" line on its new ticket (owner, 2026-10-22: the film ticket's layout, real paper; the words stay) */
     var sy=$(".x2p-say .st",o.ft),em=sy&&$("em",sy);
     if(sy&&em){var bf="",af="",past=false;[].forEach.call(sy.childNodes,function(n){if(n===em){past=true;return}var t=n.nodeType===3?n.nodeValue:(n.classList&&n.classList.contains("nm")?"":n.textContent);if(past)af+=t;else bf+=t});
