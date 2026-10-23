@@ -44,7 +44,7 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    card and its back says "See the picture"; it is also the round's poster (share image, thumbnails). Check every number against the
    sheet, and the crown against the site's winner: the site's rule is "all wrong? nobody wins", so a crown on a round where every AI
    called the wrong way (R36 IBM's first picture crowned Kimi) contradicts the card's own Winner bar; hold that picture and ask the owner.
-   The same width rule as films: the cards show 63 to 90% of the width, so the board must sit in the middle.
+   The same width rule as films: the cards show 71 to 84% of the width (measured 2026-10-23 at 360, 390 and 1280 px), so the board must sit in the middle; a board at one side gets a `STILLX` entry in ez-data.js (`<n>:100` shows the right edge, `<n>:0` the left) so the card's crop moves onto it. Media are cached for a year: a replaced picture gets a new name (`-2`).
 5. **Check.** `node ez/tools/check_pages.js` must print `OK` for every page, with the expected
    round count and standings. Fix anything it reports.
 6. **Commit and publish (owner, 2026-10-21: only two pages now).** Rebuild (`python3 tools/v22/build.py tools/v22` from `ez/`), republish only EZ Live X2+ (https://claude.ai/artifact/9dPsU3tcgmC9RAzQZy9Mg5, with `ez-data.js` and any new media; it is near its 256 MiB cap), then `python3 tools/site/make_site.py` and deploy `site/` to the main website (see the earningszn.xyz note). Do not republish any other page. The rest of this step is history:
