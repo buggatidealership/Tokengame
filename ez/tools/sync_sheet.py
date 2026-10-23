@@ -48,10 +48,10 @@ def fetch(u):
 
 NUM = re.compile(r"^[+-]?\d+(\.\d+)?$")
 
-# ---- round-keyed maps in ez-data.js (FILMS, PREFILMS, RECEIPTS, CARDS): found and split with a scanner that knows
+# ---- round-keyed maps in ez-data.js (FILMS, STILLS, PREFILMS, RECEIPTS, CARDS): found and split with a scanner that knows
 # strings and nesting, so a value with braces or commas inside is never cut. Anything it cannot read safely (a
 # comment inside the map, a key that is not a round number) makes it refuse to rewrite that map.
-ROUND_MAPS = ("FILMS", "PREFILMS", "RECEIPTS", "CARDS")
+ROUND_MAPS = ("FILMS", "STILLS", "PREFILMS", "RECEIPTS", "CARDS")
 
 def _scan(text, i, close):
     """index of the bracket that closes at depth 0 starting at text[i], or -1"""
@@ -151,10 +151,7 @@ ROUND_OVERRIDES = {}   # e.g. {("LEVI", "10/07/26"): 15}; the 2026-10-09 ones we
 # Graded values the owner chose to keep after the sheet changed them, by (ticker, call date) and column. While the sheet
 # differs, the sync prints a KEEP note and writes the kept value instead of raising a RECORD EDIT on every run.
 KEEP = {}   # e.g. {("GS", "10/12/26"): {"ACTUAL MOVE (%)": ("-0.27", "why")}}; R22 GS used it until the owner chose the sheet's -0.21 (2026-10-14)
-# Not only graded values: R80 Intel keeps its corrected dates until row 80 in the sheet says the same (then the key no longer matches).
-KEEP[("INTC", "10/22/26")] = {"CALL DATE (T-1)": ("10/29/26", "Intel reports 29 Oct after the close, its own release; owner, 2026-10-23: row 80 is wrong, change it"), "RESOLUTION DATE/TIME": ("10/30/26", "Intel reports 29 Oct after the close, its own release; owner, 2026-10-23: row 80 is wrong, change it")}
-# R45 AmEx reported Friday 23 Oct before the open (its 8-K), so it is graded at that day's close, not Saturday 24 Oct (owner, 2026-10-23: "It needs to resolve today").
-KEEP[("AXP", "10/23/26")] = {"RESOLUTION DATE/TIME": ("10/23/26", "AmEx reported 23 Oct before the open; graded at that close (owner, 2026-10-23)")}
+# (2026-10-23: R80 Intel and R45 AmEx were kept here until the owner fixed rows 80 and 45 in the sheet the same day.)
 
 VOID_KEYS = {(t, day(d)): why for (t, d), why in VOID.items()}
 VOID_TICKERS = {t for (t, d) in VOID}
@@ -387,14 +384,15 @@ def main():
     will_write = write and not [p for p in problems if not ("--allow-edits" in args and p.startswith("RECORD EDIT"))]
     for name, k in gone:
         warnings.append("%s entry for old R%s has no round any more; it %s dropped" % (name, k, "is" if will_write else "would be"))
-    if "FILMS" in remaps:
-        films = set(remaps["FILMS"][1])
-    else:
-        fs = find_map(src, "FILMS")
-        films = set(k for k, _ in (split_map(src[fs[0]:fs[1]]) or [])) if fs else set()
+    def keys(name):
+        if name in remaps: return set(remaps[name][1])
+        fs = find_map(src, name)
+        return set(k for k, _ in (split_map(src[fs[0]:fs[1]]) or [])) if fs else set()
+    # a round has its film (FILMS) or, for the smaller names, a picture (STILLS; owner, 2026-10-23)
+    films = keys("FILMS") | keys("STILLS")
     for r in new:
         if r[act] != "" and r[0] not in films:
-            warnings.append("R%s %s is graded but has no film yet (site shows 'Film soon')" % (r[0], r[1]))
+            warnings.append("R%s %s is graded but has no film or picture yet (the card opens on its stats)" % (r[0], r[1]))
 
     # standings after the update (same rules as the site)
     tally = {}

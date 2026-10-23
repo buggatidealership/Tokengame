@@ -5841,6 +5841,7 @@ function sndBtn(){return '<button type="button" class="snd" data-on="'+(soundOn?
 function topBar(r,snd,sealed){return '<div class="ctop"><h3>'+coTitle(r)+'</h3>'+(snd?sndBtn():'')+(sealed?'':shareBtn(r.n))+'</div>'}
 function frame(r){return !r.win?"f-none":r.win.indexOf(" & ")>-1?"f-tie":"f-win"}
 function art(r){
+  if(!r.film&&r.still)return '<div class="art still"><img src="'+MEDIA+r.still+'.jpg" alt="" loading="lazy" decoding="async"></div>';
   if(!r.film)return '<div class="art"><div class="soon"><div>Film soon<small>'+coName(r)+'</small></div></div></div>';
   return '<div class="art">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy" decoding="async">':'')+
     '<video playsinline muted loop preload="none" aria-label="Round '+r.n+' film"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video></div>';
@@ -7499,7 +7500,7 @@ if(X3)(function(){
    alone (the block is stripped from every other page), so the record, the round pages and the Last round modal all
    follow it. The record's start-up turns every card to its front once; the X2 block below turns these back. */
 function gradedCard(r,i){
-  var nf=!r.film,bk=backFace(r);
+  var nf=!r.film&&!r.still,bk=backFace(r);if(r.still&&!r.film)bk=bk.replace("↻ See the film","↻ See the picture");
   if(nf)bk=bk.replace('<div class="face back" aria-hidden="true">','<div class="face back" aria-hidden="false">').replace('<button type="button" class="flipb" data-flip>\u21bb See the film</button>','').replace('<button type="button" class="flipb" data-flip>↻ See the film</button>','');
   return '<article class="card '+frame(r)+(nf?' flipped nofilm':'')+'" data-i="'+i+'" data-n="'+r.n+'" data-k="g" role="group" aria-roledescription="card" aria-label="'+plain(r)+'"><div class="cin">'+
     '<div class="face front"'+(nf?' aria-hidden="true" inert':'')+'><div class="fin">'+topBar(r,!!r.film)+art(r)+winBar(r)+
@@ -7930,7 +7931,7 @@ function x2LBpage(h){
       var fin=c.querySelector(".face.back .fin");if(fin)fin.innerHTML='<div class="x2p-hb"><h4>'+it.head+'</h4><div class="x2p-hcs">'+calls+'</div>'+
         '<div class="x2p-ho">Stock moved<b class="'+(r.a>0?"u":"d")+'">'+(r.a>0?"▲":"▼")+" "+Math.abs(r.a).toFixed(2)+'%</b></div>'+
         '<div class="x2p-ho">Winner<b class="w">'+(r.win?esc2(nm1(r.win)):"Nobody")+'</b></div>'+
-        '<p class="x2p-hw">'+esc2(why)+'<em>'+esc2(gradeLine(E))+'</em></p>'+(nf?'':'<button type="button" class="flipb" data-flip>↻ See the film</button>')+'</div>';
+        '<p class="x2p-hw">'+esc2(why)+'<em>'+esc2(gradeLine(E))+'</em></p>'+(nf?'':'<button type="button" class="flipb" data-flip>↻ See the '+(c.querySelector(".art.still")?'picture':'film')+'</button>')+'</div>';
       /* (owner, 2026-10-21) no film yet: the card opens on its story and stays there; "Film soon" is never the face we show */
       if(nf)c.classList.add("flipped");setFaces2(c,nf);var w=document.createElement("div");w.className="x2p-hi";var tg=document.createElement("span");tg.className="x2p-htag x2p-h-"+(/closest/i.test(it.tag)?"c":/tight/i.test(it.tag)?"t":"b");tg.textContent=it.tag;w.appendChild(tg);w.appendChild(c);cards.push(w)});
     if(!cards.length)return;var old=document.getElementById("x2pHl");if(old)old.remove();

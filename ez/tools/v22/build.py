@@ -372,7 +372,12 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
             # the record opens on the newest round (its stats), centred as on X2 (owner, 2026-10-20: symmetry first), not
             # on the newest round with a film
             ('(function(){if(typeof SL==="undefined"||typeof go!=="function")return;for(var i=NR-1;i>=0;i--)if(SL[i]&&SL[i].d&&SL[i].d.film){',
-             '(function(){return;for(var i=NR-1;i>=0;i--)if(SL[i]&&SL[i].d&&SL[i].d.film){')]:
+             '(function(){return;for(var i=NR-1;i>=0;i--)if(SL[i]&&SL[i].d&&SL[i].d.film){'),
+            # a round with a picture instead of a film (STILLS in ez-data.js; owner, 2026-10-23): the picture where the film goes,
+            # no sound button; the card keeps its front and turns like a film card, and its back offers the picture
+            ("function art(r){\n  if(!r.film)return '<div class=\"art\"><div class=\"soon\">",
+             "function art(r){\n  if(!r.film&&r.still)return '<div class=\"art still\"><img src=\"'+MEDIA+r.still+'.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\"></div>';\n  if(!r.film)return '<div class=\"art\"><div class=\"soon\">"),
+            ('var nf=!r.film,bk=backFace(r);','var nf=!r.film&&!r.still,bk=backFace(r);if(r.still&&!r.film)bk=bk.replace("\u21bb See the film","\u21bb See the picture");')]:
     assert pp.count(a)==1,a; pp=pp.replace(a,b)
 # two-tab launch (owner, 2026-10-22): the Overview builds its standings, stats and highlights from the Leaderboard and
 # Results pages (x2plus.js), whose renderers live inside the page script: hand x2plus.js those three on X2+ only

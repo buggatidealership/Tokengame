@@ -183,7 +183,7 @@
       var fin=c.querySelector(".face.back .fin");if(fin)fin.innerHTML='<div class="x2p-hb"><h4>'+it.head+'</h4><div class="x2p-hcs">'+calls+'</div>'+
         '<div class="x2p-ho">Stock moved<b class="'+(r.a>0?"u":"d")+'">'+(r.a>0?"▲":"▼")+" "+Math.abs(r.a).toFixed(2)+'%</b></div>'+
         '<div class="x2p-ho">Winner<b class="w">'+(r.win?esc2(nm1(r.win)):"Nobody")+'</b></div>'+
-        '<p class="x2p-hw">'+esc2(why)+'<em>'+esc2(gradeLine(E))+'</em></p>'+(nf?'':'<button type="button" class="flipb" data-flip>↻ See the film</button>')+'</div>';
+        '<p class="x2p-hw">'+esc2(why)+'<em>'+esc2(gradeLine(E))+'</em></p>'+(nf?'':'<button type="button" class="flipb" data-flip>↻ See the '+(c.querySelector(".art.still")?'picture':'film')+'</button>')+'</div>';
       /* (owner, 2026-10-21) no film yet: the card opens on its story and stays there; "Film soon" is never the face we show */
       if(nf)c.classList.add("flipped");setFaces2(c,nf);var w=document.createElement("div");w.className="x2p-hi";var tg=document.createElement("span");tg.className="x2p-htag x2p-h-"+(/closest/i.test(it.tag)?"c":/tight/i.test(it.tag)?"t":"b");tg.textContent=it.tag;w.appendChild(tg);w.appendChild(c);cards.push(w)});
     if(!cards.length)return;var old=document.getElementById("x2pHl");if(old)old.remove();
