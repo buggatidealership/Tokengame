@@ -364,6 +364,10 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
             # (owner, 2026-10-23: "I want the current page to be the only page, not the makeover") the page arrives covered (x2p-cur) and
             # x2plus.js lifts the cover once the X2+ page is built; only a small $EZ mark shows meanwhile (skin-x2plus.css, CURTAIN)
             ('<html lang="en" class="pt x2d">','<html lang="en" class="pt x2d x2p x2p-cur" data-theme="dark">'),
+            # the browser's own colours are the night ones from the first byte (a phone's top bar and the canvas before the first paint
+            # were white until X2's script switched them)
+            ('<meta name="color-scheme" content="light">','<meta name="color-scheme" content="dark">'),
+            ('<meta name="theme-color" content="#ffffff">','<meta name="theme-color" content="#0b0a14">'),
             # the first screen's fonts are asked for at once (window.__x2pF; x2plus.js waits for them before it lifts the cover), not when
             # the page first lays them out; the cover comes off by itself after 20 s whatever happens, and at once without scripts
             ('<body>','<body>\n<div id="x2pLoad" aria-hidden="true">'+XPMARK+'</div>\n'
