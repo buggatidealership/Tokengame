@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="pt x2d x2p" data-theme="dark">
+<html lang="en" class="pt x2d x2p x2p-cur" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -4475,10 +4475,14 @@ html.x2p.x2d[data-theme="dark"],html.x2p.x2d[data-theme="dark"] body{
  --ez-gold:#f2b632;--ez-green:#4fe39a;--ez-red:#ff6158;--mod2:#12101e;--row:#15131f;--row-tx:#f3ead6;--row-sm:#a49fb4;
  --line:#000;--shadow:#000;--pop:0 0 0 3px #000,7px 7px 0 0 #2a2350;--x2d-ring:#f2b632;
  --x2p-paper:#f3e6c8;--x2p-ink:#141217;--x2p-vi:#2a2350;--x2p-gold:#f2b632;--x2p-rd:#b3261e;--x2p-gr:#11714a}
-html.x2p.x2d[data-theme="dark"] body{background:
+/* the speed lines stay put while the page scrolls, as before, but on their own fixed layer (2026-10-23, speed): a fixed background on the
+   body made every scroll frame repaint the whole screen (about 10 frames a second on the test phone; 54 with this) */
+html.x2p{background:#0b0a14}
+html.x2p.x2d[data-theme="dark"] body{background:transparent !important;color:#f3ead6}
+html.x2p.x2d[data-theme="dark"] body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:
  repeating-conic-gradient(from 0deg at 50% -10%,rgba(243,234,214,.045) 0 .8deg,transparent .8deg 5deg),
  linear-gradient(112deg,transparent 0 62%,rgba(31,138,90,.13) 62% 72%,transparent 72% 78%,rgba(208,65,60,.12) 78% 85%,transparent 85%),
- #0b0a14 !important;background-attachment:fixed !important;color:#f3ead6}
+ #0b0a14}
 html.x2p .x2theme{display:none!important}
 
 /* heads: Anton capitals with an ink drop; the highlighted part in gold with a red drop */
@@ -5836,6 +5840,29 @@ html.x2p .x2p-tkb .x2p-roi{margin:0!important;padding:7px 2px 0!important;border
   background:linear-gradient(rgba(20,18,23,.55),rgba(20,18,23,.55)) 0 0/100% 1px no-repeat,linear-gradient(rgba(20,18,23,.4),rgba(20,18,23,.4)) 0 3px/100% .7px no-repeat}
 @media (min-width:760px){html.x2p .x2p-tkb .bk-in{margin:10px 18px;padding:14px 18px 12px}html.x2p .x2p-tkb .bk-bd h3{font-size:17px}}
 /*}HOWTICKET*/
+/*CURTAIN{*/
+/* only the finished page is ever shown (owner, 2026-10-23: "I want the current page to be the only page, not the makeover"): the page
+   arrives covered (html.x2p-cur, set in the HTML) and x2plus.js lifts the cover once the X2+ page is built, fading it in (x2p-rv, 0.2 s);
+   meanwhile the $EZ mark breathes on the night ground (body::before), from the very first paint. The safety nets are in build.py
+   (a 20 s timer, a <noscript> rule) and x2plus.js (9.5 s). */
+html.x2p-cur body>*:not(#x2pLoad){opacity:0!important}
+html.x2p-rv body>*:not(#x2pLoad){transition:opacity .2s ease-out}
+#x2pLoad{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;pointer-events:none;
+  opacity:.9;animation:x2pBreathe 1.4s ease-in-out infinite alternate}
+#x2pLoad svg{display:block;height:46px;width:auto}
+@keyframes x2pBreathe{to{opacity:.45}}
+@media (prefers-reduced-motion:reduce){#x2pLoad{animation:none}}
+html:not(.x2p-cur) #x2pLoad{display:none}
+/* the mark fades out as the page fades in, so no frame is empty */
+html.x2p-rv #x2pLoad{display:flex;animation:x2pOut .2s ease-out forwards}
+@keyframes x2pOut{from{opacity:.7}to{opacity:0}}
+/*}CURTAIN*/
+/*SPEED{*/
+/* only the card in front moves (2026-10-23, speed): the holo shine and foil on the cards off to the sides, and on their unseen backs, hold
+   still (94 shine loops ran at once and kept a phone's processor busy while the visitor just read) */
+html.x2p :is(#record,#x2pHl,#x2pRm) .card:not(.cur),html.x2p :is(#record,#x2pHl,#x2pRm) .card:not(.cur) *,html.x2p :is(#record,#x2pHl,#x2pRm) .card:not(.cur) *::before,html.x2p :is(#record,#x2pHl,#x2pRm) .card:not(.cur) *::after,
+html.x2p #x2pHl .x2p-hi:not(.on) *,html.x2p #x2pHl .x2p-hi:not(.on) *::before,html.x2p #x2pHl .x2p-hi:not(.on) *::after{animation-play-state:paused!important}
+/*}SPEED*/
 
 </style>
 <style id="x3plus-rip">
@@ -5883,6 +5910,9 @@ html.x2p .x2p-vt.x3r-pulse .vt-play{animation:x3rPulse 1.8s ease-out 2}
 </style>
 </head>
 <body>
+<div id="x2pLoad" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="24 -1770 2581 1893" aria-hidden="true"><path fill="#f2b632" transform="translate(0 0) scale(1 -1)" d="M384 -113V36Q196 58 115 168.0Q34 278 34 488V543H382V501Q382 347 479 347Q521 347 540.5 373.0Q560 399 560 434Q560 496 497 560L210 849Q52 1007 52 1192Q52 1292 97.5 1368.5Q143 1445 218.5 1493.5Q294 1542 384 1558V1679H557V1561Q728 1539 817 1420.0Q906 1301 906 1105H549V1170Q549 1213 526 1236.0Q503 1259 465 1259Q423 1259 402 1238.0Q381 1217 381 1182Q381 1132 480 1034L760 758Q822 697 866.5 610.0Q911 523 911 413Q911 248 810 149.5Q709 51 557 34V-113Z"/><path fill="#1f9a5e" transform="translate(946 0) scale(1 -1)" d="M78 0V1760H782V1420H436V1077H768V746H436V343H805V0Z"/><path fill="#d0413c" transform="translate(1789 0) scale(1 -1)" d="M32 0V320L435 1436H71V1760H806V1452L396 324H789V0Z"/></svg></div>
+<noscript><style>html.x2p-cur body>*:not(#x2pLoad):not(#x2pNs){opacity:1!important}#x2pLoad{display:none}</style></noscript>
+<script>(function(d){try{if(d.fonts&&d.fonts.load)window.__x2pF=Promise.all(["400 1em Anton","800 1em 'Barlow Condensed'","800 1em Barlow","700 1em Barlow","500 1em Barlow"].map(function(f){return d.fonts.load(f)}))}catch(e){}setTimeout(function(){d.documentElement.classList.remove("x2p-cur")},20000)})(document)</script>
 <header class="top"><div class="top-in">
   <a class="brand" href="#/" aria-label="Earnings Zeason, back to top"><span class="mark"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span><b>Earnings Zeason<small>Zeason one</small></b></a>
   <nav class="nav" aria-label="Main"><a href="#/" data-r="board">Overview</a><a href="#/leaderboard" data-r="leaderboard">Leaderboard</a><a href="#/results" data-r="results">Results</a><a href="#/upcoming" data-r="upcoming">Upcoming</a><a href="#/buyback" data-r="buyback">Buyback</a></nav>
@@ -6650,12 +6680,14 @@ $("#roadL").innerHTML=STEPS.map(function(s,i){var st=i<CUR?"done":i===CUR?"cur":
 /* ---------- long tickers ($005930.KS): a title that does not fit its box steps its font down (to 72% at most),
    then may wrap. The cashtag keeps the title's own size. Re-run when fonts load and on resize. ---------- */
 var FIT=".ctop h3,.bk-h h4,#unB .nm,.up-all .nm";
-function fitTitles(){$$(FIT).forEach(function(e){e.style.fontSize="";e.style.whiteSpace="";e.style.overflowWrap="";
-  if(e.scrollWidth<=e.clientWidth+1||!e.clientWidth)return;var f0=parseFloat(getComputedStyle(e).fontSize),f=f0;
-  while(e.scrollWidth>e.clientWidth+1&&f>f0*.72){f-=.5;e.style.fontSize=f+"px"}
-  if(e.scrollWidth>e.clientWidth+1){e.style.whiteSpace="normal";e.style.overflowWrap="anywhere"}})}
+function fitTitles(){var L=$$(FIT);L.forEach(function(e){e.style.fontSize="";e.style.whiteSpace="";e.style.overflowWrap=""});
+  var M=L.map(function(e){var c=e.clientWidth;return c>8?[e,e.scrollWidth,c,parseFloat(getComputedStyle(e).fontSize)]:null}).filter(Boolean);
+  M.forEach(function(m){if(m[1]>m[2]+1)m[0].style.fontSize=Math.max(m[3]*.72,Math.floor(m[3]*m[2]/m[1]*2)/2)+"px"});
+  M.forEach(function(m){var e=m[0];if(!e.style.fontSize||e.scrollWidth<=e.clientWidth+1)return;var f=parseFloat(e.style.fontSize);
+    while(e.scrollWidth>e.clientWidth+1&&f>m[3]*.72){f-=.5;e.style.fontSize=f+"px"}
+    if(e.scrollWidth>e.clientWidth+1){e.style.whiteSpace="normal";e.style.overflowWrap="anywhere"}})}
 fitTitles();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitTitles);
-var fitT=null;addEventListener("resize",function(){clearTimeout(fitT);fitT=setTimeout(fitTitles,140)});
+var fitT=null,fitW=innerWidth;addEventListener("resize",function(){if(innerWidth===fitW)return;fitW=innerWidth;clearTimeout(fitT);fitT=setTimeout(fitTitles,140)});
 if(unMore)unMore.addEventListener("click",function(){setTimeout(fitTitles,0)});
 
 /* ---------- get ---------- */
@@ -7997,6 +8029,20 @@ function x2LBpage(h){
 })();
 </script>
 <script id="x2plus-words">
+/* the cover comes off once the X2+ page is built (owner, 2026-10-23: "I want the current page to be the only page, not the makeover"):
+   the new tabs (x2p-launch), the film ticket and the bet ticket on the Overview, or the Upcoming tab when that is the address (a shared
+   round opens there too); then the first screen's fonts, which the page asked for as soon as it started (window.__x2pF, build.py), at
+   most 1.5 s more, so the type does not swap in front of the visitor. If the page is never built, it shows itself 9.5 s after this
+   script started; build.py adds a last net (20 s) and a <noscript> rule. */
+(function(){var H=document.documentElement;if(!H.classList.contains("x2p-cur"))return;var t0=Date.now(),okAt=0,fok=!window.__x2pF;
+  if(window.__x2pF)window.__x2pF.then(function(){fok=true},function(){fok=true});
+  function built(){var h=location.hash||"";if(/^#\/(upcoming|rounds?)\b/.test(h))return !!document.querySelector(".x2p-up");
+    return H.classList.contains("x2p-launch")&&H.classList.contains("x2pbt")&&!!document.querySelector(".x2p-vt")}
+  function lift(){if(!H.classList.contains("x2p-cur"))return;H.classList.add("x2p-rv");H.classList.remove("x2p-cur");setTimeout(function(){H.classList.remove("x2p-rv")},400);try{performance.mark("x2p-shown")}catch(e){}}
+  (function tick(){if(!H.classList.contains("x2p-cur"))return;
+    if(built()){if(!okAt)okAt=Date.now();if(fok||Date.now()-okAt>1500){requestAnimationFrame(lift);return}}
+    else if(Date.now()-t0>9500){lift();return}
+    setTimeout(tick,40)})()})();
 /* EZ Live X2+ (owner, 2026-10-19): X2's words, with the decisions of 2026-10-19 on top. Runs after X2 has built the page.
    The first screen explains the concept, not the bet; NVIDIA sits under the chip as bet #1; "pool", not "pot"; the brand
    line drops "never edited" (a call changed after it was shown, 2026-10-14, as on X6). Numbers from ez-data.js (SIM). */
@@ -8147,12 +8193,16 @@ function x2LBpage(h){
       /* the back says why, in one line, where the barcode sits on the front */
       if(g&&f.classList.contains("back")){var zb=o.querySelector(".zb");zb.className="zb zwhy";zb.textContent=why}
       /* (owner, 2026-10-21) a 10 gets the rolling foil on both faces (owner: it should not vanish when the card flips): rainbow bands that roll across without end; a sibling of .fx so it lights the film too */
-      if(gr===10){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);foilFit(f);if(FRO)FRO.observe(f)}});if(window.__x2pNmFit)window.__x2pNmFit();
+      if(gr===10){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);if(FRO)FRO.observe(f);else foilFit(f)}});if(window.__x2pNmFit)window.__x2pNmFit();
     var lab=(g?ds+" "+gr+" of 10, "+why.replace(" \u00b7",",").replace("off on avg","off on average"):q?"calls in, final grade on "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
   /* (owner, 2026-10-21, later) the foil stays light over the film: the mask needs the film's top and bottom inside the face */
-  function foilFit(f){var fl=f.querySelector(".x2p-foil"),a=f.querySelector(f.classList.contains("back")?".fin":".art");if(!fl||!a||!a.offsetHeight)return;var t=0,e=a;while(e&&e!==f){t+=e.offsetTop;e=e.offsetParent}
-    fl.style.setProperty("--at",t+"px");fl.style.setProperty("--ab",(t+a.offsetHeight)+"px")}
-  var FRO=window.ResizeObserver?new ResizeObserver(function(es){es.forEach(function(x){foilFit(x.target)})}):null;
+  /* (speed, 2026-10-23) every face is measured first and written after, so the page is laid out once, not once per face; the faces are
+     fitted by the ResizeObserver, which reports them all together once the page is laid out */
+  function foilGet(f){var fl=f.querySelector(".x2p-foil"),a=f.querySelector(f.classList.contains("back")?".fin":".art");if(!fl||!a||!a.offsetHeight)return null;var t=0,e=a;while(e&&e!==f){t+=e.offsetTop;e=e.offsetParent}
+    return [fl,t,t+a.offsetHeight]}
+  function foilAll(fs){fs.map(foilGet).forEach(function(x){if(x){x[0].style.setProperty("--at",x[1]+"px");x[0].style.setProperty("--ab",x[2]+"px")}})}
+  function foilFit(f){foilAll([f])}
+  var FRO=window.ResizeObserver?new ResizeObserver(function(es){foilAll(es.map(function(x){return x.target}))}):null;
   function esc2(t){return String(t).replace(/[&<>"]/g,function(x){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[x]})}
   window.__x2pSlab(document);
 
@@ -8190,7 +8240,7 @@ function x2LBpage(h){
     var tr=document.createElement("div");tr.className="x2p-hlt";tr.tabIndex=0;cards.forEach(function(w){tr.appendChild(w)});
     var dots=document.createElement("div");dots.className="x2p-hld";cards.forEach(function(w,i){var d=document.createElement("button");d.type="button";d.setAttribute("aria-label","Highlight "+(i+1)+" of "+cards.length);d.addEventListener("click",function(){go(i)});dots.appendChild(d)});
     box.appendChild(tr);box.appendChild(dots);ul.setAttribute("data-x2p","1");ul.hidden=true;ul.parentNode.insertBefore(box,ul.nextSibling);
-    [].forEach.call(box.querySelectorAll(".face"),function(f){if(f.querySelector(".x2p-foil")){foilFit(f);if(FRO)FRO.observe(f)}});
+    [].forEach.call(box.querySelectorAll(".face"),function(f){if(f.querySelector(".x2p-foil")){if(FRO)FRO.observe(f);else foilFit(f)}});
     var cur=0,vis=false,reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
     function near(){var mid=tr.scrollLeft+tr.clientWidth/2,b=0,bd=1e9;cards.forEach(function(w,i){var d=Math.abs(w.offsetLeft+w.offsetWidth/2-mid);if(d<bd){bd=d;b=i}});return b}
     function mark(){[].forEach.call(dots.children,function(d,i){d.classList.toggle("on",i===cur);d.setAttribute("aria-current",i===cur?"true":"false")});cards.forEach(function(w,i){w.classList.toggle("on",i===cur)})}
@@ -8238,7 +8288,12 @@ function x2LBpage(h){
   document.addEventListener("click",function(e){var c=e.target.closest&&e.target.closest("#record .card.nofilm.cur");if(!c||e.target.closest(".shr,.snd,a,video[controls]"))return;e.stopPropagation();e.preventDefault()},true);
   x2pResults();var resT;window.__x2pResults=function(){clearTimeout(resT);resT=setTimeout(x2pResults,30)};
   /* the name and its ticker fit the label: a long name steps down from 15px until it fits (never below 10px), on load, resize and tab change */
-  function nmFit(){[].forEach.call(document.querySelectorAll("#record .fx .zl .nm, #x2pHl .fx .zl .nm"),function(el){var b=el.firstChild;if(!b||!el.offsetWidth)return;el.style.fontSize="";var z=parseFloat(getComputedStyle(el).fontSize);while(b.scrollWidth>b.clientWidth+.5&&z>10){z-=.5;el.style.fontSize=z+"px"}})}
+  /* (speed, 2026-10-23) all the labels step down together: measured, then written, round by round, so the page is laid out once a round
+     (at most ten), not once per label and step */
+  function nmFit(){var els=[].filter.call(document.querySelectorAll("#record .fx .zl .nm, #x2pHl .fx .zl .nm"),function(el){return el.firstChild&&el.offsetWidth}),st=[];
+    els.forEach(function(el){el.style.fontSize=""});
+    els.forEach(function(el){var b=el.firstChild;if(b.scrollWidth>b.clientWidth+.5)st.push({el:el,b:b,z:parseFloat(getComputedStyle(el).fontSize)})});
+    while(st.length){st=st.filter(function(x){return x.z>10});st.forEach(function(x){x.z-=.5;x.el.style.fontSize=x.z+"px"});st=st.filter(function(x){return x.b.scrollWidth>x.b.clientWidth+.5})}}
   var nmT;function nmLater(){clearTimeout(nmT);nmT=setTimeout(nmFit,120)}nmFit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(nmFit);window.addEventListener("resize",nmLater);window.addEventListener("hashchange",nmLater);window.__x2pNmFit=nmLater;
   /* the record section's first two bullets said what steps 1 and 2 now say: keep only the dare */
   var rec=$(".x2o-rec"),own=rec?[].filter.call(rec.children,function(c){return !c.classList.contains("x2p-xli")}):[];if(own.length===3){own[0].remove();own[1].remove()}
@@ -8471,9 +8526,14 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   };
   function route(){var h=location.hash.replace(/^#/,"")||"/";if(h.indexOf("/")!==0)h="/";return h.split("?")[0]}
   var tries=0;
-  function place(){var f=PLACE[route()];if(!f||mine())return;if(!f()&&tries++<30)setTimeout(place,100)}
+  /* a shared round (#/round/43) opens on the Upcoming tab with its card up: it gets the fight-night tab too (it showed X2's own list
+     under the card, and after it closed). Upcoming is built as soon as the page is parsed, not at "load" (every image), so a visitor
+     who arrives there is not kept waiting behind the cover (2026-10-23). */
+  function place(){var r=route();if(/^\/round\//.test(r)&&document.documentElement.getAttribute("data-sec")==="upcoming")r="/upcoming";
+    var f=PLACE[r];if(!f||mine())return;if(!f()&&tries++<30)setTimeout(place,100)}
   addEventListener("hashchange",function(){tries=0;setTimeout(place,60)});
-  if(document.readyState==="complete")place();else addEventListener("load",place);
+  if(document.readyState==="complete")place();else{addEventListener("load",place);
+    document.addEventListener("DOMContentLoaded",function(){if(/^\/(upcoming|round\/)/.test(route()))place()})}
   setTimeout(place,300);
 }catch(e){}})();
 
@@ -9091,7 +9151,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   var ox='calc(50% + '+pts[N][0].toFixed(1)+'px)';
   var face='<div class="x3r-band g">★ $EZ · Season 1 ★</div><div class="x3r-body"><div class="x3r-ad">Admit one</div><div class="x3r-ru"></div>'+
     '<div class="x3r-hl">We\'re putting buybacks <em>in the hands of an AI.</em></div><div class="x3r-ru"></div>'+
-    '<div class="x3r-mt"><span>The explainer</span><span>1:07</span></div><div class="x3r-no"><i></i><b>Nº 000001</b></div></div>'+
+    '<div class="x3r-mt"><span>The explainer</span><span>1:20</span></div><div class="x3r-no"><i></i><b>Nº 000001</b></div></div>'+
     '<div class="x3r-band r">✂ Tear here ✂</div>';
   var half=function(s,clip,fib){return '<div class="x3r-half '+s+'" style="--ox:'+ox+';--s:'+(s==='l'?-1:1)+'"><div class="x3r-tug">'+
     '<div class="x3r-fib" style="clip-path:'+fib+'"></div><div class="x3r-face" style="clip-path:'+clip+'">'+face+'</div></div></div>'};

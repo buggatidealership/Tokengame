@@ -21,7 +21,7 @@
   var ox='calc(50% + '+pts[N][0].toFixed(1)+'px)';
   var face='<div class="x3r-band g">★ $EZ · Season 1 ★</div><div class="x3r-body"><div class="x3r-ad">Admit one</div><div class="x3r-ru"></div>'+
     '<div class="x3r-hl">We\'re putting buybacks <em>in the hands of an AI.</em></div><div class="x3r-ru"></div>'+
-    '<div class="x3r-mt"><span>The explainer</span><span>1:07</span></div><div class="x3r-no"><i></i><b>Nº 000001</b></div></div>'+
+    '<div class="x3r-mt"><span>The explainer</span><span>1:20</span></div><div class="x3r-no"><i></i><b>Nº 000001</b></div></div>'+
     '<div class="x3r-band r">✂ Tear here ✂</div>';
   var half=function(s,clip,fib){return '<div class="x3r-half '+s+'" style="--ox:'+ox+';--s:'+(s==='l'?-1:1)+'"><div class="x3r-tug">'+
     '<div class="x3r-fib" style="clip-path:'+fib+'"></div><div class="x3r-face" style="clip-path:'+clip+'">'+face+'</div></div></div>'};

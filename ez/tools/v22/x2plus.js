@@ -1,3 +1,17 @@
+/* the cover comes off once the X2+ page is built (owner, 2026-10-23: "I want the current page to be the only page, not the makeover"):
+   the new tabs (x2p-launch), the film ticket and the bet ticket on the Overview, or the Upcoming tab when that is the address (a shared
+   round opens there too); then the first screen's fonts, which the page asked for as soon as it started (window.__x2pF, build.py), at
+   most 1.5 s more, so the type does not swap in front of the visitor. If the page is never built, it shows itself 9.5 s after this
+   script started; build.py adds a last net (20 s) and a <noscript> rule. */
+(function(){var H=document.documentElement;if(!H.classList.contains("x2p-cur"))return;var t0=Date.now(),okAt=0,fok=!window.__x2pF;
+  if(window.__x2pF)window.__x2pF.then(function(){fok=true},function(){fok=true});
+  function built(){var h=location.hash||"";if(/^#\/(upcoming|rounds?)\b/.test(h))return !!document.querySelector(".x2p-up");
+    return H.classList.contains("x2p-launch")&&H.classList.contains("x2pbt")&&!!document.querySelector(".x2p-vt")}
+  function lift(){if(!H.classList.contains("x2p-cur"))return;H.classList.add("x2p-rv");H.classList.remove("x2p-cur");setTimeout(function(){H.classList.remove("x2p-rv")},400);try{performance.mark("x2p-shown")}catch(e){}}
+  (function tick(){if(!H.classList.contains("x2p-cur"))return;
+    if(built()){if(!okAt)okAt=Date.now();if(fok||Date.now()-okAt>1500){requestAnimationFrame(lift);return}}
+    else if(Date.now()-t0>9500){lift();return}
+    setTimeout(tick,40)})()})();
 /* EZ Live X2+ (owner, 2026-10-19): X2's words, with the decisions of 2026-10-19 on top. Runs after X2 has built the page.
    The first screen explains the concept, not the bet; NVIDIA sits under the chip as bet #1; "pool", not "pot"; the brand
    line drops "never edited" (a call changed after it was shown, 2026-10-14, as on X6). Numbers from ez-data.js (SIM). */
@@ -148,12 +162,16 @@
       /* the back says why, in one line, where the barcode sits on the front */
       if(g&&f.classList.contains("back")){var zb=o.querySelector(".zb");zb.className="zb zwhy";zb.textContent=why}
       /* (owner, 2026-10-21) a 10 gets the rolling foil on both faces (owner: it should not vanish when the card flips): rainbow bands that roll across without end; a sibling of .fx so it lights the film too */
-      if(gr===10){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);foilFit(f);if(FRO)FRO.observe(f)}});if(window.__x2pNmFit)window.__x2pNmFit();
+      if(gr===10){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);if(FRO)FRO.observe(f);else foilFit(f)}});if(window.__x2pNmFit)window.__x2pNmFit();
     var lab=(g?ds+" "+gr+" of 10, "+why.replace(" \u00b7",",").replace("off on avg","off on average"):q?"calls in, final grade on "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
   /* (owner, 2026-10-21, later) the foil stays light over the film: the mask needs the film's top and bottom inside the face */
-  function foilFit(f){var fl=f.querySelector(".x2p-foil"),a=f.querySelector(f.classList.contains("back")?".fin":".art");if(!fl||!a||!a.offsetHeight)return;var t=0,e=a;while(e&&e!==f){t+=e.offsetTop;e=e.offsetParent}
-    fl.style.setProperty("--at",t+"px");fl.style.setProperty("--ab",(t+a.offsetHeight)+"px")}
-  var FRO=window.ResizeObserver?new ResizeObserver(function(es){es.forEach(function(x){foilFit(x.target)})}):null;
+  /* (speed, 2026-10-23) every face is measured first and written after, so the page is laid out once, not once per face; the faces are
+     fitted by the ResizeObserver, which reports them all together once the page is laid out */
+  function foilGet(f){var fl=f.querySelector(".x2p-foil"),a=f.querySelector(f.classList.contains("back")?".fin":".art");if(!fl||!a||!a.offsetHeight)return null;var t=0,e=a;while(e&&e!==f){t+=e.offsetTop;e=e.offsetParent}
+    return [fl,t,t+a.offsetHeight]}
+  function foilAll(fs){fs.map(foilGet).forEach(function(x){if(x){x[0].style.setProperty("--at",x[1]+"px");x[0].style.setProperty("--ab",x[2]+"px")}})}
+  function foilFit(f){foilAll([f])}
+  var FRO=window.ResizeObserver?new ResizeObserver(function(es){foilAll(es.map(function(x){return x.target}))}):null;
   function esc2(t){return String(t).replace(/[&<>"]/g,function(x){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[x]})}
   window.__x2pSlab(document);
 
@@ -191,7 +209,7 @@
     var tr=document.createElement("div");tr.className="x2p-hlt";tr.tabIndex=0;cards.forEach(function(w){tr.appendChild(w)});
     var dots=document.createElement("div");dots.className="x2p-hld";cards.forEach(function(w,i){var d=document.createElement("button");d.type="button";d.setAttribute("aria-label","Highlight "+(i+1)+" of "+cards.length);d.addEventListener("click",function(){go(i)});dots.appendChild(d)});
     box.appendChild(tr);box.appendChild(dots);ul.setAttribute("data-x2p","1");ul.hidden=true;ul.parentNode.insertBefore(box,ul.nextSibling);
-    [].forEach.call(box.querySelectorAll(".face"),function(f){if(f.querySelector(".x2p-foil")){foilFit(f);if(FRO)FRO.observe(f)}});
+    [].forEach.call(box.querySelectorAll(".face"),function(f){if(f.querySelector(".x2p-foil")){if(FRO)FRO.observe(f);else foilFit(f)}});
     var cur=0,vis=false,reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
     function near(){var mid=tr.scrollLeft+tr.clientWidth/2,b=0,bd=1e9;cards.forEach(function(w,i){var d=Math.abs(w.offsetLeft+w.offsetWidth/2-mid);if(d<bd){bd=d;b=i}});return b}
     function mark(){[].forEach.call(dots.children,function(d,i){d.classList.toggle("on",i===cur);d.setAttribute("aria-current",i===cur?"true":"false")});cards.forEach(function(w,i){w.classList.toggle("on",i===cur)})}
@@ -239,7 +257,12 @@
   document.addEventListener("click",function(e){var c=e.target.closest&&e.target.closest("#record .card.nofilm.cur");if(!c||e.target.closest(".shr,.snd,a,video[controls]"))return;e.stopPropagation();e.preventDefault()},true);
   x2pResults();var resT;window.__x2pResults=function(){clearTimeout(resT);resT=setTimeout(x2pResults,30)};
   /* the name and its ticker fit the label: a long name steps down from 15px until it fits (never below 10px), on load, resize and tab change */
-  function nmFit(){[].forEach.call(document.querySelectorAll("#record .fx .zl .nm, #x2pHl .fx .zl .nm"),function(el){var b=el.firstChild;if(!b||!el.offsetWidth)return;el.style.fontSize="";var z=parseFloat(getComputedStyle(el).fontSize);while(b.scrollWidth>b.clientWidth+.5&&z>10){z-=.5;el.style.fontSize=z+"px"}})}
+  /* (speed, 2026-10-23) all the labels step down together: measured, then written, round by round, so the page is laid out once a round
+     (at most ten), not once per label and step */
+  function nmFit(){var els=[].filter.call(document.querySelectorAll("#record .fx .zl .nm, #x2pHl .fx .zl .nm"),function(el){return el.firstChild&&el.offsetWidth}),st=[];
+    els.forEach(function(el){el.style.fontSize=""});
+    els.forEach(function(el){var b=el.firstChild;if(b.scrollWidth>b.clientWidth+.5)st.push({el:el,b:b,z:parseFloat(getComputedStyle(el).fontSize)})});
+    while(st.length){st=st.filter(function(x){return x.z>10});st.forEach(function(x){x.z-=.5;x.el.style.fontSize=x.z+"px"});st=st.filter(function(x){return x.b.scrollWidth>x.b.clientWidth+.5})}}
   var nmT;function nmLater(){clearTimeout(nmT);nmT=setTimeout(nmFit,120)}nmFit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(nmFit);window.addEventListener("resize",nmLater);window.addEventListener("hashchange",nmLater);window.__x2pNmFit=nmLater;
   /* the record section's first two bullets said what steps 1 and 2 now say: keep only the dare */
   var rec=$(".x2o-rec"),own=rec?[].filter.call(rec.children,function(c){return !c.classList.contains("x2p-xli")}):[];if(own.length===3){own[0].remove();own[1].remove()}
@@ -472,9 +495,14 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   };
   function route(){var h=location.hash.replace(/^#/,"")||"/";if(h.indexOf("/")!==0)h="/";return h.split("?")[0]}
   var tries=0;
-  function place(){var f=PLACE[route()];if(!f||mine())return;if(!f()&&tries++<30)setTimeout(place,100)}
+  /* a shared round (#/round/43) opens on the Upcoming tab with its card up: it gets the fight-night tab too (it showed X2's own list
+     under the card, and after it closed). Upcoming is built as soon as the page is parsed, not at "load" (every image), so a visitor
+     who arrives there is not kept waiting behind the cover (2026-10-23). */
+  function place(){var r=route();if(/^\/round\//.test(r)&&document.documentElement.getAttribute("data-sec")==="upcoming")r="/upcoming";
+    var f=PLACE[r];if(!f||mine())return;if(!f()&&tries++<30)setTimeout(place,100)}
   addEventListener("hashchange",function(){tries=0;setTimeout(place,60)});
-  if(document.readyState==="complete")place();else addEventListener("load",place);
+  if(document.readyState==="complete")place();else{addEventListener("load",place);
+    document.addEventListener("DOMContentLoaded",function(){if(/^\/(upcoming|round\/)/.test(route()))place()})}
   setTimeout(place,300);
 }catch(e){}})();
 

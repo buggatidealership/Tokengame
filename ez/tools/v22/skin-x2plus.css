@@ -15,10 +15,14 @@ html.x2p.x2d[data-theme="dark"],html.x2p.x2d[data-theme="dark"] body{
  --ez-gold:#f2b632;--ez-green:#4fe39a;--ez-red:#ff6158;--mod2:#12101e;--row:#15131f;--row-tx:#f3ead6;--row-sm:#a49fb4;
  --line:#000;--shadow:#000;--pop:0 0 0 3px #000,7px 7px 0 0 #2a2350;--x2d-ring:#f2b632;
  --x2p-paper:#f3e6c8;--x2p-ink:#141217;--x2p-vi:#2a2350;--x2p-gold:#f2b632;--x2p-rd:#b3261e;--x2p-gr:#11714a}
-html.x2p.x2d[data-theme="dark"] body{background:
+/* the speed lines stay put while the page scrolls, as before, but on their own fixed layer (2026-10-23, speed): a fixed background on the
+   body made every scroll frame repaint the whole screen (about 10 frames a second on the test phone; 54 with this) */
+html.x2p{background:#0b0a14}
+html.x2p.x2d[data-theme="dark"] body{background:transparent !important;color:#f3ead6}
+html.x2p.x2d[data-theme="dark"] body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:
  repeating-conic-gradient(from 0deg at 50% -10%,rgba(243,234,214,.045) 0 .8deg,transparent .8deg 5deg),
  linear-gradient(112deg,transparent 0 62%,rgba(31,138,90,.13) 62% 72%,transparent 72% 78%,rgba(208,65,60,.12) 78% 85%,transparent 85%),
- #0b0a14 !important;background-attachment:fixed !important;color:#f3ead6}
+ #0b0a14}
 html.x2p .x2theme{display:none!important}
 
 /* heads: Anton capitals with an ink drop; the highlighted part in gold with a red drop */
@@ -1375,3 +1379,26 @@ html.x2p .x2p-tkb .x2p-roi{margin:0!important;padding:7px 2px 0!important;border
   background:linear-gradient(rgba(20,18,23,.55),rgba(20,18,23,.55)) 0 0/100% 1px no-repeat,linear-gradient(rgba(20,18,23,.4),rgba(20,18,23,.4)) 0 3px/100% .7px no-repeat}
 @media (min-width:760px){html.x2p .x2p-tkb .bk-in{margin:10px 18px;padding:14px 18px 12px}html.x2p .x2p-tkb .bk-bd h3{font-size:17px}}
 /*}HOWTICKET*/
+/*CURTAIN{*/
+/* only the finished page is ever shown (owner, 2026-10-23: "I want the current page to be the only page, not the makeover"): the page
+   arrives covered (html.x2p-cur, set in the HTML) and x2plus.js lifts the cover once the X2+ page is built, fading it in (x2p-rv, 0.2 s);
+   meanwhile the $EZ mark breathes on the night ground (body::before), from the very first paint. The safety nets are in build.py
+   (a 20 s timer, a <noscript> rule) and x2plus.js (9.5 s). */
+html.x2p-cur body>*:not(#x2pLoad){opacity:0!important}
+html.x2p-rv body>*:not(#x2pLoad){transition:opacity .2s ease-out}
+#x2pLoad{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;pointer-events:none;
+  opacity:.9;animation:x2pBreathe 1.4s ease-in-out infinite alternate}
+#x2pLoad svg{display:block;height:46px;width:auto}
+@keyframes x2pBreathe{to{opacity:.45}}
+@media (prefers-reduced-motion:reduce){#x2pLoad{animation:none}}
+html:not(.x2p-cur) #x2pLoad{display:none}
+/* the mark fades out as the page fades in, so no frame is empty */
+html.x2p-rv #x2pLoad{display:flex;animation:x2pOut .2s ease-out forwards}
+@keyframes x2pOut{from{opacity:.7}to{opacity:0}}
+/*}CURTAIN*/
+/*SPEED{*/
+/* only the card in front moves (2026-10-23, speed): the holo shine and foil on the cards off to the sides, and on their unseen backs, hold
+   still (94 shine loops ran at once and kept a phone's processor busy while the visitor just read) */
+html.x2p #record .card:not(.cur),html.x2p #record .card:not(.cur) *,html.x2p #record .card:not(.cur) *::before,html.x2p #record .card:not(.cur) *::after,
+html.x2p #x2pHl .x2p-hi:not(.on) *,html.x2p #x2pHl .x2p-hi:not(.on) *::before,html.x2p #x2pHl .x2p-hi:not(.on) *::after{animation-play-state:paused!important}
+/*}SPEED*/

@@ -359,8 +359,32 @@ open("v44-live-x6.html",'w').write(p6); print("ok v44-live-x6.html",len(p6))
 # opens on the newest round, centred (owner, 2026-10-20).
 # X2's handwriting trial (x2-logo) is left out, as on X6. X2 itself is untouched.
 pp=open("v24-live-x2.html").read()
+XPMARK=open(sys.argv[1]+'/x2p-mark.svg').read().strip()   # the $EZ mark in Anton's own outlines (no font to wait for), for the cover
 for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
-            ('<html lang="en" class="pt x2d">','<html lang="en" class="pt x2d x2p" data-theme="dark">'),
+            # (owner, 2026-10-23: "I want the current page to be the only page, not the makeover") the page arrives covered (x2p-cur) and
+            # x2plus.js lifts the cover once the X2+ page is built; only a small $EZ mark shows meanwhile (skin-x2plus.css, CURTAIN)
+            ('<html lang="en" class="pt x2d">','<html lang="en" class="pt x2d x2p x2p-cur" data-theme="dark">'),
+            # the first screen's fonts are asked for at once (window.__x2pF; x2plus.js waits for them before it lifts the cover), not when
+            # the page first lays them out; the cover comes off by itself after 20 s whatever happens, and at once without scripts
+            ('<body>','<body>\n<div id="x2pLoad" aria-hidden="true">'+XPMARK+'</div>\n'
+             '<noscript><style>html.x2p-cur body>*:not(#x2pLoad):not(#x2pNs){opacity:1!important}#x2pLoad{display:none}</style></noscript>\n'
+             '<script>(function(d){try{if(d.fonts&&d.fonts.load)window.__x2pF=Promise.all(["400 1em Anton","800 1em \'Barlow Condensed\'","800 1em Barlow","700 1em Barlow","500 1em Barlow"]'
+             '.map(function(f){return d.fonts.load(f)}))}catch(e){}setTimeout(function(){d.documentElement.classList.remove("x2p-cur")},20000)})(document)</script>'),
+            # speed (2026-10-23): fitTitles re-measured the whole page about 1,500 times per run, mostly on titles X2+ hides (1px wide for
+            # screen readers). On X2+: skip those, read every title before writing any, size each in one step (then a check), and refit
+            # only when the width changes (phones fire a resize when the address bar hides). Same sizes, give or take half a pixel.
+            ('''function fitTitles(){$$(FIT).forEach(function(e){e.style.fontSize="";e.style.whiteSpace="";e.style.overflowWrap="";
+  if(e.scrollWidth<=e.clientWidth+1||!e.clientWidth)return;var f0=parseFloat(getComputedStyle(e).fontSize),f=f0;
+  while(e.scrollWidth>e.clientWidth+1&&f>f0*.72){f-=.5;e.style.fontSize=f+"px"}
+  if(e.scrollWidth>e.clientWidth+1){e.style.whiteSpace="normal";e.style.overflowWrap="anywhere"}})}''',
+             '''function fitTitles(){var L=$$(FIT);L.forEach(function(e){e.style.fontSize="";e.style.whiteSpace="";e.style.overflowWrap=""});
+  var M=L.map(function(e){var c=e.clientWidth;return c>8?[e,e.scrollWidth,c,parseFloat(getComputedStyle(e).fontSize)]:null}).filter(Boolean);
+  M.forEach(function(m){if(m[1]>m[2]+1)m[0].style.fontSize=Math.max(m[3]*.72,Math.floor(m[3]*m[2]/m[1]*2)/2)+"px"});
+  M.forEach(function(m){var e=m[0];if(!e.style.fontSize||e.scrollWidth<=e.clientWidth+1)return;var f=parseFloat(e.style.fontSize);
+    while(e.scrollWidth>e.clientWidth+1&&f>m[3]*.72){f-=.5;e.style.fontSize=f+"px"}
+    if(e.scrollWidth>e.clientWidth+1){e.style.whiteSpace="normal";e.style.overflowWrap="anywhere"}})}'''),
+            ('var fitT=null;addEventListener("resize",function(){clearTimeout(fitT);fitT=setTimeout(fitTitles,140)});',
+             'var fitT=null,fitW=innerWidth;addEventListener("resize",function(){if(innerWidth===fitW)return;fitW=innerWidth;clearTimeout(fitT);fitT=setTimeout(fitTitles,140)});'),
             # night only: the theme is dark before the first paint and stays dark (the switch is hidden in the skin)
             ('t=s==="light"||s==="dark"?s:h==="light"||h==="dark"?h:window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";','t="dark";'),
             ('function saved(){var s=null;try{s=localStorage.getItem("ez-theme")}catch(e){}return s==="light"||s==="dark"?s:null}','function saved(){return "dark"}'),
