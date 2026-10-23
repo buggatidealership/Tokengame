@@ -757,7 +757,7 @@
     var V={
       roi:{t:"ROI",top:"$100,000 on every call",bot:"Simulated · before fees",
         html:function(){return '<div class="lp">'+byRoi.map(function(m,i){var b=S[m].bal,up=b>=STK,p=Math.abs(b/STK*100-100).toFixed(1)+"%";
-          return row(i,m,'<span class="pt-v tnum">'+usd(b)+'</span>','<span class="pt-c tnum '+(up?'pt-u':'pt-d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'up':'down')+'</span> '+p+'</span>')}).join("")+'</div>'+
+          return row(i,m,'<span class="pt-v tnum '+(up?'pt-u':'pt-d')+'">'+usd(b)+'</span>','<span class="pt-c tnum '+(up?'pt-u':'pt-d')+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">'+(up?'up':'down')+'</span> '+p+'</span>')}).join("")+'</div>'+
           '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Start: "+usd(STK))+'</div><p class="pt-cp"><b>What would '+usd(STK)+' be worth now?</b> Buy on an up call, short on a down call.</p>'},
         draw:function(el,h){var vs=[STK];MK.forEach(function(m){S[m].roi.forEach(function(p){vs.push(p[1])})});var lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STK*.05;lo-=pd;hi+=pd;
           chart(el,h,byRoi.map(function(m,i){return {m:m,rank:i+1,pts:S[m].roi.map(function(p){return [p[0]/N*100,(hi-p[1])/(hi-lo)*100]})}}),(hi-STK)/(hi-lo)*100,{lead:true})}},
