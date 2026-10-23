@@ -306,6 +306,65 @@
       /* the two rules are behind the ⓘ now (owner, 2026-10-20: no repetition); under the board only his line */
       var ft=document.createElement("div");ft.className="x2p-lbfoot";ft.appendChild(r);fl.after(ft);return {fl:fl,btn:btn,ft:ft}}
   window.__x2pLbFlip=lbFlip;
+  /* Upcoming as fight night (owner, 2026-10-23: of the round 25 mockups "my favorite one was graded at the close. I also like the
+     ticket approach... tonight, Friday night, graded at the close, that gets the competitive element out again"): tonight's rounds
+     under one warm light, each an Admit One ticket with its four calls stamped in and the time to the bell; then every round still
+     to come as a ticket, day by day, "on the card". Mag 7 stubs in gold foil. Tickets open the round's card, as X2's tiles did. */
+  function upTab(v){if(!v||$(".x2p-up",v)||typeof UPCOMING==="undefined")return;var d=document,$$=function(q,r){return [].slice.call((r||d).querySelectorAll(q))};
+    var ue=function(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+    /* X2's date helpers live inside routes.js, so the same logic here: m/d/yy dates, a day key, the US close (4pm New York) */
+    var D=function(x){var m=String(x||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?new Date(2000+(+m[3]%100),+m[1]-1,+m[2]):null},
+      dkey=function(t){return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0")},K=function(x){var t=D(x);return t?dkey(t):"9999"},
+      NYF=null;try{NYF=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",hourCycle:"h23",year:"numeric",month:"numeric",day:"numeric",hour:"numeric",minute:"numeric",second:"numeric"})}catch(e){}
+    var nyParts=function(t){var o={};if(!NYF){var g=new Date(t-4*36e5);return {y:g.getUTCFullYear(),mo:g.getUTCMonth()+1,d:g.getUTCDate(),h:g.getUTCHours(),mi:g.getUTCMinutes(),s:g.getUTCSeconds()}}
+        NYF.formatToParts(new Date(t)).forEach(function(q){o[q.type]=+q.value});return {y:o.year,mo:o.month,d:o.day,h:o.hour%24,mi:o.minute,s:o.second}},
+      nyOff=function(t){var q=nyParts(t);return (Date.UTC(q.y,q.mo-1,q.d,q.h,q.mi,q.s)-Math.floor(t/1000)*1000)/6e4},
+      closeOn=function(t){var g=Date.UTC(t.getFullYear(),t.getMonth(),t.getDate(),16,0),u=g-nyOff(g)*6e4;return g-nyOff(u)*6e4},
+      tkBadge=function(t){if(CO_LOGOS[String(t||"").toUpperCase()])return coMark(t);var x=String(t||"").split(".")[0].slice(0,5);return '<span class="co-mark tkb" aria-hidden="true">'+x+'</span>'};
+    var
+wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !!((RMETA[n]||{}).mag7)},ai=function(n){return ((RMETA[n]||{}).themes||[]).indexOf("AI")>-1};
+    var big=function(u){return /\d/.test(u.ticker)?u.co:String(u.ticker).replace(/\..*$/,"")},sml=function(u){return /\d/.test(u.ticker)?u.ticker:u.co};
+    var call=function(c){var dn=c.dir==="DOWN";return '<span class="'+(dn?'dn':'up')+'"><span class="sr">'+ue(nmM(c.m))+': '+(dn?'down ':'up ')+ue(c.mag)+'%</span><span aria-hidden="true">'+logo(c.m)+'<b>'+(dn?'▼':'▲')+ue(c.mag)+'%</b></span></span>'};
+    var stub=function(u){return '<span class="tk-s"><small>No.</small><b>'+u.n+'</b>'+(m7(u.n)?'<em>Mag 7</em>':'')+'</span>'};
+    /* a ticket: the stub, the company printed on the card; with its calls once they are in */
+    var tk=function(u,bigT){var inn=u.calls&&u.calls.length;
+      return '<li><a class="x2p-tk'+(bigT?' big':'')+(m7(u.n)?' m7':'')+'" href="#/round/'+u.n+'">'+stub(u)+'<span class="tk-b"><span class="tk-m">'+tkBadge(u.ticker)+'<span class="tk-n"><b>'+ue(bigT?u.co:big(u))+'</b><small>'+
+        ue(bigT?(String(u.ticker).replace(/\..*$/,"")!==u.co?u.ticker+' · ':'')+(inn?'calls filed '+wd(D(u.called),{month:"short",day:"numeric"}):'calls due '+wd(D(u.called),{month:"short",day:"numeric"})):sml(u))+'</small></span></span>'+
+        (inn?'<span class="tk-c">'+u.calls.map(call).join("")+'</span>':'')+'</span></a></li>'};
+    /* tonight: the rounds graded at the next close (calls in), else the next day's rounds */
+    var P=PENDING.slice().sort(function(a,b){return K(a.resolves).localeCompare(K(b.resolves))||a.n-b.n}),spK=P.length?K(P[0].resolves):null,
+      sp=P.filter(function(u){return K(u.resolves)===spK}),rest=P.filter(function(u){return K(u.resolves)!==spK});
+    var U=UPCOMING.slice().sort(function(a,b){return K(a.called).localeCompare(K(b.called))||a.n-b.n});
+    var calls=!!sp.length;if(!calls&&U.length){spK=K(U[0].called);sp=U.filter(function(u){return K(u.called)===spK});U=U.filter(function(u){return K(u.called)!==spK})}
+    var spD=sp.length?D(calls?sp[0].resolves:sp[0].called):null,ny=nyParts(Date.now()),nyK=ny.y+"-"+String(ny.mo).padStart(2,"0")+"-"+String(ny.d).padStart(2,"0");
+    var close=spD&&calls?closeOn(spD):0;
+    var kick=!spD?"":(spK===nyK&&calls?"Tonight · "+wd(spD,{weekday:"short",month:"short",day:"numeric"}).replace(/,/g,""):(spK===nyK?"Today · ":wd(spD,{weekday:"long"})+" · ")+wd(spD,{month:"short",day:"numeric"}));
+    var shut=function(){return close&&Date.now()>=close},left=function(){var ms=close-Date.now();if(ms<=0)return "The bell has rung";var m=Math.ceil(ms/6e4),d=Math.floor(m/1440),h=Math.floor(m%1440/60),mi=m%60;
+      return "In "+(d?d+"d "+h+"h":h?h+"h"+(mi?" "+mi+"m":""):mi+"m")},tail=function(){return calls?(shut()?" · results soon":" · calls locked"):" · the calls drop before each report"};
+    var h1=$("h1",v),root=d.createElement("div");root.className="x2p-up";root.setAttribute("data-x2p-up","");
+    root.innerHTML=(sp.length?'<section class="x2p-sp" aria-labelledby="x2pSpH"><p class="sp-k">'+ue(kick)+'</p><h2 id="x2pSpH" class="sp-h">'+(calls?'Graded at the close':'Next on the card')+'</h2>'+
+        '<p class="sp-s">'+(calls?'<span class="sp-cd" role="timer">'+left()+'</span> · ':'')+sp.length+' round'+(sp.length>1?'s':'')+'<span class="sp-t">'+tail()+'</span></p>'+
+        '<ul class="x2p-tks sp-l">'+sp.map(function(u){return tk(u,true)}).join("")+'</ul></section>':'')+
+      '<section class="x2p-ul" aria-labelledby="x2pUlH"><div class="ul-hd"><h2 id="x2pUlH">Coming up</h2><div class="ul-f" role="group" aria-label="Which rounds"></div></div><p class="ul-l">The calls drop before each report. Graded at the next close.</p><div class="ul-d"></div></section>';
+    if(h1){h1.classList.add("x2p-sr");root.insertBefore(h1,root.firstChild)}
+    v.insertBefore(root,v.firstChild);v.classList.add("x2p-upv");
+    /* X2's timeline scrolled to its next day before this replaced it: the tab opens on tonight's card */
+    if(/^#\/(upcoming|rounds)\b/.test(location.hash))try{window.scrollTo({top:0,behavior:"instant"})}catch(e){window.scrollTo(0,0)}
+    /* the rest of the card, day by day; a filter like X2's (All, Mag 7, AI) */
+    var L=rest.map(function(u){return {u:u,k:K(u.resolves)}}).concat(U.map(function(u){return {u:u,k:K(u.called)}})),F="all";
+    var ok=function(x){return F==="mag7"?m7(x.u.n):F==="ai"?ai(x.u.n):true};
+    $(".ul-f",root).innerHTML=[["all","All"],["mag7","Mag 7"],["ai","AI"]].map(function(f){var n=L.filter(function(x){return f[0]==="mag7"?m7(x.u.n):f[0]==="ai"?ai(x.u.n):true}).length;
+      return '<button type="button" data-uf2="'+f[0]+'" aria-pressed="'+(f[0]===F)+'">'+f[1]+' <b>'+n+'</b></button>'}).join("");
+    function days(){var by={},ks=[];L.filter(ok).forEach(function(x){if(!by[x.k]){by[x.k]=[];ks.push(x.k)}by[x.k].push(x.u)});ks.sort();
+      if(!ks.length)return '<p class="ul-e">Nothing in this filter yet.</p>';
+      return ks.map(function(k){var dd=D(by[k][0].calls&&by[k][0].calls.length?by[k][0].resolves:by[k][0].called),n=by[k].length;
+        return '<section class="ul-dy" data-k="'+k+'" aria-label="'+ue(wd(dd,{weekday:"long",month:"long",day:"numeric"}))+'"><div class="dy-h"><b>'+ue(k===nyK?"Today":wd(dd,{weekday:"long"}))+'</b><em>'+ue(wd(dd,{month:"short",day:"numeric"}))+'</em><small>'+n+' on the card</small></div>'+
+          '<ul class="x2p-tks">'+by[k].map(function(u){return tk(u,false)}).join("")+'</ul></section>'}).join("")}
+    $(".ul-d",root).innerHTML=days();
+    $(".ul-f",root).addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-uf2]");if(!b||b.dataset.uf2===F)return;F=b.dataset.uf2;
+      $$("[data-uf2]",root).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});$(".ul-d",root).innerHTML=days()});
+    /* the time to the bell, once a minute */
+    if(close){var cd=$(".sp-cd",root),ct=$(".sp-t",root),iv=setInterval(function(){if(!cd.isConnected){clearInterval(iv);return}cd.textContent=left();ct.textContent=tail()},3e4)}}
   var PLACE={
     /* Overview: no host (owner, 2026-10-22: he is in the explainer film above, "no need to keep him there"); he stood
        beside "Countdown to Bet #1: NVIDIA" from 2026-10-20 */
@@ -353,6 +412,7 @@
       /* (owner, 2026-10-21) only two follow prompts for now: X2's "Follow on X to see them first" comes off this line */
       if(/Follow on X/.test(p.textContent))p.textContent="The calls drop before each report.";
       /* no host here any more (owner, 2026-10-22: he left too much space between the filter and the first day) */
+      if(!window.__x2pClassicUp)upTab($("#view"));
       return true},
     /* Buyback: stamping on the top corner of the pool card */
     "/buyback":function(){var pool=$("#view .pool");if(!pool)return false;
