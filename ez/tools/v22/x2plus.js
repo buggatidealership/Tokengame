@@ -1,11 +1,11 @@
 /* the cover comes off once the X2+ page is built (owner, 2026-10-23: "I want the current page to be the only page, not the makeover"):
-   the new tabs (x2p-launch), the film ticket and the bet ticket on the Overview, or the Upcoming tab when that is the address (a shared
-   round opens there too); then the first screen's fonts, which the page asked for as soon as it started (window.__x2pF, build.py), at
+   the new tabs (x2p-launch), the film ticket and the bet ticket on the Overview, or the fight-night Upcoming when X2's router shows that
+   tab (data-sec; a shared round still to come opens there, a graded one over the Overview); then the first screen's fonts, which the page asked for as soon as it started (window.__x2pF, build.py), at
    most 1.5 s more, so the type does not swap in front of the visitor. If the page is never built, it shows itself 9.5 s after this
    script started; build.py adds a last net (20 s) and a <noscript> rule. */
 (function(){var H=document.documentElement;if(!H.classList.contains("x2p-cur"))return;var t0=Date.now(),okAt=0,fok=!window.__x2pF;
   if(window.__x2pF)window.__x2pF.then(function(){fok=true},function(){fok=true});
-  function built(){var h=location.hash||"";if(/^#\/(upcoming|rounds?)\b/.test(h))return !!document.querySelector(".x2p-up");
+  function built(){if(H.getAttribute("data-sec")==="upcoming")return !!document.querySelector(".x2p-up");
     return H.classList.contains("x2p-launch")&&H.classList.contains("x2pbt")&&!!document.querySelector(".x2p-vt")}
   function lift(){if(!H.classList.contains("x2p-cur"))return;H.classList.add("x2p-rv");H.classList.remove("x2p-cur");setTimeout(function(){H.classList.remove("x2p-rv")},400);try{performance.mark("x2p-shown")}catch(e){}}
   (function tick(){if(!H.classList.contains("x2p-cur"))return;

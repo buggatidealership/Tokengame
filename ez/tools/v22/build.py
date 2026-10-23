@@ -364,6 +364,10 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
             # (owner, 2026-10-23: "I want the current page to be the only page, not the makeover") the page arrives covered (x2p-cur) and
             # x2plus.js lifts the cover once the X2+ page is built; only a small $EZ mark shows meanwhile (skin-x2plus.css, CURTAIN)
             ('<html lang="en" class="pt x2d">','<html lang="en" class="pt x2d x2p x2p-cur" data-theme="dark">'),
+            # a shared link to a graded round (#/round/43) opened X2's Results tab under its card, a tab X2+ does not have at launch, so
+            # the cover waited 9.5 s and closing the card left the visitor there; on X2+ it opens over the Overview, where the record is
+            ('if(X1&&(p[0]==="results"||(p[0]==="round"&&findR(+p[1])))){sec="results";if(p[0]==="round")openN=+p[1];',
+             'if(p[0]==="round"&&findR(+p[1])){openN=+p[1]}\n    else if(X1&&(p[0]==="results"||(p[0]==="round"&&findR(+p[1])))){sec="results";if(p[0]==="round")openN=+p[1];'),
             # the browser's own colours are the night ones from the first byte (a phone's top bar and the canvas before the first paint
             # were white until X2's script switched them)
             ('<meta name="color-scheme" content="light">','<meta name="color-scheme" content="dark">'),

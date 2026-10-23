@@ -5283,7 +5283,7 @@ html.x2p .x2p-vt .vt-tag{margin:0;text-shadow:none;position:absolute;top:-15px;l
 html.x2p .x2p-vt .vt-tag small{font:800 11px/1 'Barlow Condensed',Barlow,sans-serif;letter-spacing:.08em;margin-left:6px;opacity:.8;font-variant-numeric:tabular-nums}
 html.x2p .x2p-vt .vt-st{position:absolute;right:46px;top:-2px;width:5px;height:24px;border-radius:3px;background:linear-gradient(90deg,#6d6f73,#d5d7da 45%,#7d7f83);transform:rotate(-38deg);box-shadow:0 0 0 1px rgba(0,0,0,.35);z-index:4}
 html.x2p .x2p-vt .vt-f{position:relative;background:#000;overflow:hidden;aspect-ratio:16/9}
-html.x2p .x2p-vt .vt-f video,html.x2p .x2p-vt .vt-hold{display:block;width:100%;height:100%;object-fit:cover;background:#000 url(media/ez-landing-v3-poster.jpg) center/cover}
+html.x2p .x2p-vt .vt-f video,html.x2p .x2p-vt .vt-hold{display:block;width:100%;height:100%;object-fit:cover;background:#000 url(media/ez-landing-v4-poster.jpg) center/cover}
 /* (owner, 2026-10-22) the sound button small, in the film's top right corner; the staple moves left to make room */
 html.x2p .x2p-vt .vt-snd{position:absolute;top:8px;right:25px;z-index:4;width:20px;height:20px;min-height:0;padding:0;border:0;border-radius:50%;background:rgba(13,11,18,.6);box-shadow:0 0 0 1px rgba(243,234,214,.3);display:grid;place-items:center;color:#f3ead6;cursor:pointer}
 /* (2026-10-22, review) the tap area reaches the film's corner, about 59x44, so a near miss switches sound instead of starting the film */
@@ -6007,7 +6007,7 @@ html.x2p #x2pHl .x2p-hi:not(.on) *,html.x2p #x2pHl .x2p-hi:not(.on) *::before,ht
 <main id="view" class="wrap" tabindex="-1" hidden></main>
 <footer><div class="motto">Nobody said it would <span style="white-space:nowrap">be <span class="e">E</span><span class="z">Z</span></span></div><div class="badge mark"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></div><small>$EZ · EARNINGS ZEASON, WITH A Z<br>CALLS FILED BEFORE THE PRINT · GRADED BY THE MARKET · NEVER EDITED</small><p class="ftl"><a href="#" data-todo="philosophy page">How we think about this →</a></p></footer>
 
-<script src="ez-data.js?v=2788e4ade1"></script>
+<script src="ez-data.js?v=dc93872aad"></script>
 <script src="ez-learn.js?v=831ec77111"></script>
 <script>
 (function(){
@@ -7527,7 +7527,8 @@ function vBuyback(){if(X2)return vBuybackX2();function v(x){return x?esc(x):'<sp
 var boardEl=$("#top"),view=$("#view"),firstR=true,curSec=null;
 function route(){var h=location.hash,p=h.replace(/^#\/?/,"").split("/"),html=null,sec="board",wire=null,openN=null,ck=null;
   if(/^#\//.test(h)){
-    if(X1&&(p[0]==="results"||(p[0]==="round"&&findR(+p[1])))){sec="results";if(p[0]==="round")openN=+p[1];
+    if(p[0]==="round"&&findR(+p[1])){openN=+p[1]}
+    else if(X1&&(p[0]==="results"||(p[0]==="round"&&findR(+p[1])))){sec="results";if(p[0]==="round")openN=+p[1];
       if(curSec==="results"&&!view.hidden){if(openN)openRound(openN);return}
       html=vResults();wire=wireResults}
     else if((p[0]==="round"&&/^\d+$/.test(p[1]||""))||p[0]==="rounds"||p[0]==="upcoming"){sec="upcoming";
@@ -7991,13 +7992,13 @@ function x2LBpage(h){
 </script>
 <script id="x2plus-words">
 /* the cover comes off once the X2+ page is built (owner, 2026-10-23: "I want the current page to be the only page, not the makeover"):
-   the new tabs (x2p-launch), the film ticket and the bet ticket on the Overview, or the Upcoming tab when that is the address (a shared
-   round opens there too); then the first screen's fonts, which the page asked for as soon as it started (window.__x2pF, build.py), at
+   the new tabs (x2p-launch), the film ticket and the bet ticket on the Overview, or the fight-night Upcoming when X2's router shows that
+   tab (data-sec; a shared round still to come opens there, a graded one over the Overview); then the first screen's fonts, which the page asked for as soon as it started (window.__x2pF, build.py), at
    most 1.5 s more, so the type does not swap in front of the visitor. If the page is never built, it shows itself 9.5 s after this
    script started; build.py adds a last net (20 s) and a <noscript> rule. */
 (function(){var H=document.documentElement;if(!H.classList.contains("x2p-cur"))return;var t0=Date.now(),okAt=0,fok=!window.__x2pF;
   if(window.__x2pF)window.__x2pF.then(function(){fok=true},function(){fok=true});
-  function built(){var h=location.hash||"";if(/^#\/(upcoming|rounds?)\b/.test(h))return !!document.querySelector(".x2p-up");
+  function built(){if(H.getAttribute("data-sec")==="upcoming")return !!document.querySelector(".x2p-up");
     return H.classList.contains("x2p-launch")&&H.classList.contains("x2pbt")&&!!document.querySelector(".x2p-vt")}
   function lift(){if(!H.classList.contains("x2p-cur"))return;H.classList.add("x2p-rv");H.classList.remove("x2p-cur");setTimeout(function(){H.classList.remove("x2p-rv")},400);try{performance.mark("x2p-shown")}catch(e){}}
   (function tick(){if(!H.classList.contains("x2p-cur"))return;
@@ -8025,7 +8026,7 @@ function x2LBpage(h){
   /* the explainer film (owner, 2026-10-21: "C is my favorite", on the $EZ ticket, no footer, no host): it replaces the three bullets and
      the right/wrong boxes. Since 2026-10-22 it waits for "Tap to play" (owner: no autoplay) and starts with sound; it keeps talking in a
      corner player when you scroll past it. The round films pause while it plays, and it pauses when one of them starts.
-     The bullets stay in the file for the Buyback tab. ez-landing-v3.mp4 is 18.7 MB (the owner's new cut, 2026-10-23); only its metadata loads before the tap. */
+     The bullets stay in the file for the Buyback tab. ez-landing-v4.mp4 is 18.7 MB (the owner's cut with smaller captions, 2026-10-23); only its metadata loads before the tap. */
   var T3=$(".x2p-t3");
   if(T3&&!$(".x2p-vt")){
     var vt=document.createElement("div");vt.className="x2p-vt";
@@ -8033,7 +8034,7 @@ function x2LBpage(h){
        "How it works" is mockup A's tilted gold tag across the top edge, with the time left */
     /* (2026-10-22, review) the tag is the module's heading (h2) for screen readers; the time beside it is decoration */
     vt.innerHTML='<h2 class="vt-tag">How it works<small class="vt-s" aria-hidden="true">1:20</small></h2><div class="vt-p"><i class="vt-st" aria-hidden="true"></i>'+
-      '<div class="vt-f"><video class="vt-v" playsinline preload="metadata" poster="media/ez-landing-v3-poster.jpg" aria-label="How EZ works, a minute and 20 seconds"><source src="media/ez-landing-v3.mp4" type="video/mp4"><source src="media/ez-landing-v3.webm" type="video/webm"></video>'+
+      '<div class="vt-f"><video class="vt-v" playsinline preload="metadata" poster="media/ez-landing-v4-poster.jpg" aria-label="How EZ works, a minute and 20 seconds"><source src="media/ez-landing-v4.mp4" type="video/mp4"><source src="media/ez-landing-v4.webm" type="video/webm"></video>'+
       '<button type="button" class="vt-snd"></button><button type="button" class="vt-tap">Tap for sound</button><button type="button" class="vt-play"><i aria-hidden="true"></i><span>Tap to play</span></button><span class="vt-bar" aria-hidden="true"><i></i></span></div></div>';
     T3.parentNode.insertBefore(vt,T3);T3.hidden=true;T3.setAttribute("data-x2p-kept","buyback");
     (function(){var v=vt.querySelector(".vt-v"),snd=vt.querySelector(".vt-snd"),tap=vt.querySelector(".vt-tap"),play=vt.querySelector(".vt-play"),pl=play.querySelector("span"),bar=vt.querySelector(".vt-bar>i"),st=vt.querySelector(".vt-s"),f=vt.querySelector(".vt-f");
