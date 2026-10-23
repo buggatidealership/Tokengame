@@ -681,8 +681,8 @@
   /* the standings as printed tickets (owner, 2026-10-22) are on the X2+ preview; the live site keeps today's board until the
      owner says so: make_site.py sets window.__x2pClassicBoard there (SITE_TIX=1 builds with the tickets) */
   var TIX=!window.__x2pClassicBoard;
-  /* the same switch marks the page as a preview: the PRINTED block of skin-x2plus.css (names foil-stamped into the tickets) waits for the owner too */
-  if(TIX)d.documentElement.classList.add("x2p-pv");
+  /* the PRINTED block of skin-x2plus.css (names foil-stamped into the tickets) is on everywhere, production too (owner, 2026-10-23) */
+  d.documentElement.classList.add("x2p-prt");
   /* 01 standings and 03 stats come from the Leaderboard page, rendered once out of sight */
   var hold=d.createElement("div");hold.hidden=true;d.body.appendChild(hold);hold.innerHTML=R.vModels();R.wireModels(hold);
   var lbx=$(".lbx",hold);
