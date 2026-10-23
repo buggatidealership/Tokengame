@@ -30,10 +30,11 @@ doc = doc.replace('</head>', meta + '</head>', 1)
 # The standings as printed tickets and the proof on the ticket kept production on today's board and stats switch (2026-10-22/23,
 # window.__x2pClassicBoard / __x2pClassicProof, which x2plus.js still honours). Both live since 2026-10-23 (owner: "Everything"), so
 # production is X2+ as it is; SITE_CLASSIC=1 builds the old board and switch again if they are ever needed.
-# The fight-night Upcoming (owner's pick, 2026-10-23) waits for the owner's go on production: until then make_site.py sets
-# window.__x2pClassicUp and x2plus.js keeps X2's timeline; SITE_UP=1 (the preview branch) builds the new tab.
+# What waits for the owner's go on production (2026-10-23: the fight-night Upcoming, its tickets opening the record's slab,
+# the logos printed into the paper): make_site.py sets window.__x2pHold and x2plus.js leaves those off; SITE_UP=1 (the
+# preview branches) builds them. Drop this once the owner says go.
 if os.environ.get('SITE_UP') != '1':
-    doc = doc.replace('</head>', '<script>window.__x2pClassicUp=1</script>\n</head>', 1)
+    doc = doc.replace('</head>', '<script>window.__x2pHold=1</script>\n</head>', 1)
 if os.environ.get('SITE_CLASSIC') == '1':
     doc = doc.replace('</head>', '<script>window.__x2pClassicBoard=1;window.__x2pClassicProof=1</script>\n</head>', 1)
 # Cloudflare's zone setting keeps .js files in browsers for 4 hours whatever _headers says (owner, 2026-10-20: a sync did not

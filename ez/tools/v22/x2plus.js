@@ -412,7 +412,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       /* (owner, 2026-10-21) only two follow prompts for now: X2's "Follow on X to see them first" comes off this line */
       if(/Follow on X/.test(p.textContent))p.textContent="The calls drop before each report.";
       /* no host here any more (owner, 2026-10-22: he left too much space between the filter and the first day) */
-      if(!window.__x2pClassicUp)upTab($("#view"));
+      if(!window.__x2pHold&&!window.__x2pClassicUp)upTab($("#view"));
       return true},
     /* Buyback: stamping on the top corner of the pool card */
     "/buyback":function(){var pool=$("#view .pool");if(!pool)return false;
@@ -460,6 +460,67 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   if(document.readyState==="complete")place();else addEventListener("load",place);
   setTimeout(place,300);
 }catch(e){}})();
+
+/* logos printed into the paper (owner, 2026-10-23: "make it look like the logos are part of the environment and not just slapped
+   on... like it's on the back of a paper", wherever a logo sits on paper): on the tickets (standings, the proof, Upcoming) an AI's
+   logo loses its app-icon square and its mark is printed in one ink (the icon's dark ground for GPT, Kimi and Grok, Claude's orange;
+   Kimi's dot keeps its blue), multiplied into the stock with a slightly rough, uneven ink (#x2pPrint); a company's logo is
+   printed the same way, a light logo meant for a dark ground in black ink. Held off production until the owner's go. */
+(function(){try{if(window.__x2pHold)return;var d=document;d.documentElement.classList.add("x2p-plogo");
+  var lum=function(h){h=String(h||"").replace("#","");if(h.length===3)h=h.replace(/./g,"$&$&");var c=parseInt(h,16);return isNaN(c)?1:(0.2126*(c>>16&255)+0.7152*(c>>8&255)+0.0722*(c&255))/255};
+  var INK={};Object.keys(MODELS).forEach(function(k){var M=MODELS[k];INK[M.app]=lum(M.bg)<.5?(lum(M.bg)<.1?"#1b181c":M.bg):M.fg});
+  function ink(root){[].forEach.call((root||d).querySelectorAll(".lg[title]"),function(l){var c=INK[l.getAttribute("title")];if(c&&!l.style.getPropertyValue("--lgi"))l.style.setProperty("--lgi",c)})}
+  var sv=d.createElementNS("http://www.w3.org/2000/svg","svg");sv.setAttribute("width","0");sv.setAttribute("height","0");sv.setAttribute("aria-hidden","true");sv.style.position="absolute";
+  /* ink, not pixels: the edge pushed about by the paper's tooth, the coverage a little uneven */
+  sv.innerHTML='<filter id="x2pPrint" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="2" seed="13" result="n"/>'+
+    '<feDisplacementMap in="SourceGraphic" in2="n" scale="0.9" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="2.3" numOctaves="1" seed="21" result="g"/>'+
+    '<feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.9 1.3" result="m"/><feComposite in="d" in2="m" operator="in"/></filter>';
+  function go(){d.body.appendChild(sv);ink(d);if(window.MutationObserver)new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1)ink(x)})})}).observe(d.body,{childList:true,subtree:true})}
+  if(d.body)go();else d.addEventListener("DOMContentLoaded",go)}catch(e){}})();
+
+/* a round opened over the page is the record's own slab (owner, 2026-10-23: a ticket opened "the old dark X2 card"; "we need to change
+   that so it becomes sort of a pre-graded PSA card... so it remains consistent"): when X2 opens a round (routes.js openRound, the
+   .rmod layer), its card is swapped for a copy of that round's card from the record, slab and label included ("Calls due", "Graded
+   on", or its grade), laid out at the record card's exact size and zoomed to fill the screen. X2's layer stays underneath, hidden,
+   so Escape, the address and focus keep working as before; closing goes through its own close button. Held off production. */
+(function(){try{if(window.__x2pHold)return;var d=document,still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,WH=null,cur=null;
+  addEventListener("resize",function(){WH=null});
+  /* the record card's size; on another tab the Overview is hidden, so it is shown for one measure, off screen and invisible */
+  function recSize(){var c=d.querySelector("#record .card[data-n]");if(!c)return null;var r=c.getBoundingClientRect();if(r.width)return {w:r.width,h:r.height};
+    var top=d.getElementById("top");if(!top||!top.hidden)return null;var st=top.getAttribute("style");
+    top.style.cssText=(st||"")+";position:absolute;left:-300vw;top:0;width:100%;visibility:hidden";top.hidden=false;r=c.getBoundingClientRect();top.hidden=true;
+    if(st==null)top.removeAttribute("style");else top.setAttribute("style",st);return r.width?{w:r.width,h:r.height}:null}
+  var ON="M12 5.2a4 4 0 0 1 0 5.6M13.9 3.3a6.6 6.6 0 0 1 0 9.4",OFF="M11.5 5.5l4 4M15.5 5.5l-4 4";
+  function faces(c,f){var fr=c.querySelector(".face.front"),bk=c.querySelector(".face.back");if(!fr||!bk)return;fr.setAttribute("aria-hidden",f?"true":"false");bk.setAttribute("aria-hidden",f?"false":"true");if("inert" in fr){fr.inert=f;bk.inert=!f}}
+  function open(rm){var c0=rm.querySelector(".card[data-n]"),n=c0&&c0.getAttribute("data-n"),src=n&&d.querySelector('#record .card[data-n="'+n+'"]');if(!src||!src.querySelector(".fx"))return;
+    var sz=WH||(WH=recSize());if(!sz)return;
+    var c=src.cloneNode(true);c.classList.remove("flipped");c.classList.add("cur");c.removeAttribute("data-i");c.style.width=sz.w+"px";c.style.height=sz.h+"px";c.style.flex="none";
+    [].forEach.call(c.querySelectorAll("video"),function(v){v.classList.remove("on")});
+    var o=d.createElement("div");o.id="x2pRm";o.className="x2p-rm";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");o.setAttribute("aria-label",rm.getAttribute("aria-label")||"Round "+n);
+    o.innerHTML='<div class="x2p-rmc"><button type="button" class="x2p-rmx" aria-label="Close">✕</button><div class="x2p-rmz"></div></div>';
+    var z=o.querySelector(".x2p-rmz"),rc=o.querySelector(".x2p-rmc");z.appendChild(c);
+    var k=Math.max(1,Math.min((innerWidth-32)/sz.w,(innerHeight-112)/sz.h,1.6));z.style.zoom=k;rc.style.width=Math.round(sz.w*k)+"px";
+    /* X2's own layer stays underneath, hidden, its film stopped */
+    rm.classList.add("x2p-rmh");rm.setAttribute("aria-hidden","true");[].forEach.call(rm.querySelectorAll("video"),function(v){try{v.pause()}catch(e){}v.preload="none"});
+    d.body.appendChild(o);cur={o:o,rm:rm};
+    var nf=c.classList.contains("nofilm")||!c.querySelector(".face.back"),f0=c.classList.contains("nofilm")&&!!c.querySelector(".face.back");if(f0)c.classList.add("flipped");faces(c,f0);
+    var v=c.querySelector(".face.front video");
+    if(v&&!f0){v.muted=true;v.loop=true;v.preload="auto";v.addEventListener("playing",function(){v.classList.add("on")});var pp=v.play();if(pp&&pp.catch)pp.catch(function(){})}
+    o.addEventListener("click",function(e){if(e.target===o||e.target.closest(".x2p-rmx")){var x=rm.querySelector(".rmod-x");if(x)x.click();return}
+      var sd=e.target.closest(".snd");if(sd){if(v){v.muted=!v.muted;sd.dataset.on=v.muted?"0":"1";sd.setAttribute("aria-label",v.muted?"Unmute":"Mute");var ps=sd.querySelectorAll("path");if(ps.length>1)ps[ps.length-1].setAttribute("d",v.muted?OFF:ON);if(!v.muted&&v.paused){var q=v.play();if(q&&q.catch)q.catch(function(){})}}return}
+      var sb=e.target.closest(".shr");if(sb){var xs=rm.querySelector('.shr[data-share="'+sb.getAttribute("data-share")+'"]')||rm.querySelector(".shr");if(xs)xs.click();return}
+      if(e.target.closest("a"))return;
+      if(!nf&&e.target.closest(".card")&&c.getAttribute("data-k")==="g"){var f=!c.classList.contains("flipped");c.classList.toggle("flipped",f);faces(c,f);if(v){if(f)v.pause();else{var q2=v.play();if(q2&&q2.catch)q2.catch(function(){})}}
+        var fb=c.querySelector((f?".face.back":".face.front")+" [data-flip]");if(fb&&o.contains(d.activeElement))fb.focus({preventScroll:true})}});
+    if(!still&&rc.animate){rc.animate([{transform:"translateY(14px) scale(.94)",opacity:0},{transform:"none",opacity:1}],{duration:320,easing:"cubic-bezier(.2,0,0,1)"});o.animate([{opacity:0},{opacity:1}],{duration:220,easing:"ease-out"})}
+    o.querySelector(".x2p-rmx").focus({preventScroll:true})}
+  function shut(){if(!cur)return;[].forEach.call(cur.o.querySelectorAll("video"),function(v){try{v.pause()}catch(e){}});cur.o.remove();cur=null}
+  function init(){new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.classList.contains("rmod")){shut();open(x)}});
+    [].forEach.call(m.removedNodes,function(x){if(cur&&x===cur.rm)shut()})})}).observe(d.body,{childList:true})}
+  if(d.body)init();else d.addEventListener("DOMContentLoaded",init);
+  /* keep the focus inside while it is open (X2's close hands focus back to the ticket once its layer is gone: let it) */
+  d.addEventListener("focusin",function(e){if(!cur)return;if(!d.body.contains(cur.rm)){shut();return}if(!cur.o.contains(e.target)){var x=cur.o.querySelector(".x2p-rmx");if(x)x.focus({preventScroll:true})}});
+}catch(e){window.__x2pRmErr=e}})();
 
 /* visitor analytics (owner, 2026-10-22: "we need to start adding analytics to the page"): Umami Cloud, cookieless (no consent banner),
    on the live domain only, and off until UMAMI_ID holds the site's Website ID (a public ID: it sits in the page source anyway).
