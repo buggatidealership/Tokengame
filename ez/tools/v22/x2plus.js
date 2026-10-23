@@ -718,7 +718,7 @@
   var tp=d.createElement("template");tp.innerHTML=R.vResults();var hs=tp.content.querySelector("section.xsec");
   if(hs&&window.__x2pHlSlabs){var h2=d.createElement("div");h2.hidden=true;d.body.appendChild(h2);h2.appendChild(hs);window.__x2pHlSlabs();
     if($("#x2pHl",hs)){hs.id="highlights";hs.classList.add("sec","x2p-hl-sec");hs.setAttribute("aria-labelledby","x2hlH");
-      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Memorable predictions</span><h2 id="x2hlH">Hall of fame (and shame)</h2></div>';
+      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">Memorable predictions</h2></div>';
       var xh=$(".xsh",hs);if(xh)hs.replaceChild(sh,xh);else hs.insertBefore(sh,hs.firstChild);ln.parentNode.insertBefore(hs,ln.nextSibling)}
     h2.remove()}
   /* bullets under the standings, proof and highlights heads, the record's style (owner, 2026-10-22: "a bit dry"); the
