@@ -213,7 +213,7 @@
     /* every card one height: the record card's (owner, 2026-10-23: the record's trading-card shape), else the tallest; then the story
        side's paragraph steps down half a pixel at a time (never below 10px) until it fits */
     function eqH(){var cs=cards.map(function(w){return w.querySelector(".card")});cs.forEach(function(c){c.style.height=""});var m=0;cs.forEach(function(c){m=Math.max(m,c.offsetHeight)});
-      var rc=document.querySelector("#record .card"),t=rc&&rc.offsetHeight;if(t)m=t;if(m)cs.forEach(function(c){c.style.height=m+"px"});
+      var rc=document.querySelector("#record .card"),t=rc&&rc.getBoundingClientRect().height;if(t)m=t;if(m)cs.forEach(function(c){c.style.height=m+"px"});
       cs.forEach(function(c){var hb=c.querySelector(".x2p-hb"),p=hb&&hb.querySelector(".x2p-hw");if(!p)return;
         // the four call chips share one size, stepped down until the widest fits its box (CLAUDE ▼2.5% ✓ on a 360px phone)
         var hc=[].slice.call(hb.querySelectorAll(".x2p-hc"));hc.forEach(function(e){e.style.fontSize=""});var y=hc[0]&&parseFloat(getComputedStyle(hc[0]).fontSize),k=0;
@@ -874,6 +874,13 @@
     /* the header's "Last 5" sits over the middle of the boxes */
     var l5h=$("#standings .x2p-l5h"),fq0=$(".x2p-l5 .fq",rows[0]);if(l5h&&fq0){l5h.style.transform="";var a=l5h.getBoundingClientRect(),b=fq0.getBoundingClientRect();
       l5h.style.transform="translateX("+Math.round(((b.left+b.right)/2-(a.left+a.right)/2)*4)/4+"px)"}}
+  /* the ticket board's columns (owner, 2026-10-23: "the last 5 needs to be more in the middle... give it a bit of room to breathe"):
+     the AI field is as wide as the longest name or model plus 16px of air, the last five take the rest with their boxes in its
+     middle (the TICKETS block reads --x2p-aiw; without it the AI field takes the rest as before) */
+  function tixCols(){var st=$("#standings.x2p-tix"),rows=st?$$("li.lbr",st):[];if(!rows.length||!rows[0].offsetParent)return;var e=0;
+    rows.forEach(function(li){var m=$(".lb-m",li);if(!m)return;var L=m.getBoundingClientRect().left;
+      $$(".pc-t h3,.pc-t small",li).forEach(function(t){var x=d.createRange();x.selectNodeContents(t);var q=x.getBoundingClientRect();if(q.width)e=Math.max(e,q.right-L)})});
+    if(e)st.style.setProperty("--x2p-aiw",Math.ceil(e+16)+"px")}
   /* the standings' three rules one line each (owner, 2026-10-23: "Graded at the next market close after earnings." on one line):
      the three step down together, half a pixel at a time, until the longest fits; never below 12px (narrower: the full size, wrapped) */
   function fitRules(){var ls=$$("#standings .x2p-strap li");if(!ls.length||!ls[0].offsetWidth)return;ls.forEach(function(l){l.style.fontSize=""});
@@ -893,8 +900,8 @@
   function fitSec(){$$("#learn .st-sec").forEach(function(c){var b=$("b",c);if(!b||!c.offsetWidth)return;b.style.fontSize="";var z=parseFloat(getComputedStyle(b).fontSize),n=0;
     while(c.scrollWidth>c.clientWidth+.5&&z>10&&n++<30){z-=.5;b.style.fontSize=z+"px"}})}
   if(window.MutationObserver){var lt;new MutationObserver(function(){clearTimeout(lt);lt=setTimeout(function(){thin();fitSec()},30)}).observe(ln,{childList:true,subtree:true})}
-  function later(){setTimeout(function(){fitRules();centre();land();thin();fitSec()},80)}
-  requestAnimationFrame(function(){requestAnimationFrame(function(){fitRules();centre();land();thin()})});
+  function later(){setTimeout(function(){fitRules();tixCols();centre();land();thin();fitSec()},80)}
+  requestAnimationFrame(function(){requestAnimationFrame(function(){fitRules();tixCols();centre();land();thin()})});
   if(d.fonts&&d.fonts.ready)d.fonts.ready.then(later);addEventListener("load",later);addEventListener("hashchange",later);
-  var rt;addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){fitRules();centre();fitSec()},150)});
+  var rt;addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){fitRules();tixCols();centre();fitSec()},150)});
 }catch(e){}})();
