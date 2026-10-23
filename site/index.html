@@ -8946,7 +8946,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
             '<div class="pt-lgd" aria-hidden="true"><span><i class="hi"></i>2 in 3 or better</span><span><i class="md"></i>In between</span><span><i class="lo"></i>1 in 3 or worse</span></div><p class="pt-cp">Right calls out of calls made, by sector.</p>'}}};
     var ORDER=["roi","hit","miss","sector"],cur="roi";
     /* a chart in real pixels: each line in its colour, ink multiplied into the card; the leader foil-stamped (the NVIDIA recipe: a
-       satin gold with grain, a dark wall above, a pale lip below), as thin as the rest; logo and model where each line ends */
+       satin gold with grain, a dark wall above, a pale lip below), as thin as the rest; the model where each line ends */
     var cid=0;function chart(el,h,ser,yz,o){var W=el.clientWidth,H=h||el.clientHeight||180,G=96,L=o.left||0,pw=W-G-L,pad=6,ih=H-2*pad;el.style.height=H+"px";if(pw<40)return;
       var id="xpt"+(++cid),sx=function(x){return L+x/100*pw},sy=function(y){return pad+y/100*ih},P=function(s){return s.pts.map(function(p,i){return (i?"L":"M")+sx(p[0]).toFixed(1)+","+sy(p[1]).toFixed(1)}).join("")};
       var FL='filterUnits="userSpaceOnUse" x="-10" y="-10" width="'+(W+20)+'" height="'+(H+20)+'"',ln=function(dd,c,w,x){return '<path class="pt-dr" pathLength="1" d="'+dd+'" fill="none" stroke="'+c+'" stroke-width="'+w+'" stroke-linejoin="round" stroke-linecap="round"'+(x||"")+'/>'};
@@ -8960,9 +8960,10 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       var top=ln(P(win),"rgba(255,250,232,.85)",2,' transform="translate(0,.55)"')+ln(P(win),"rgba(70,42,6,.55)",2,' transform="translate(0,-.45)"')+ln(P(win),"url(#"+id+"g)",2,' filter="url(#'+id+'n)"');
       var ends=ser.map(function(s){var p=s.pts[s.pts.length-1];return {s:s,y0:sy(p[1]),y:sy(p[1]),x:sx(p[0])}}).sort(function(a,b){return a.y-b.y});
       for(var i=1;i<ends.length;i++)if(ends[i].y-ends[i-1].y<19)ends[i].y=ends[i-1].y+19;var ov=ends[ends.length-1].y-(H-9);if(ov>0)ends.forEach(function(e){e.y-=ov});
-      if(o.lead)ends.forEach(function(e){ink+='<path d="M'+(e.x+2).toFixed(1)+','+e.y0.toFixed(1)+'L'+(L+pw+8).toFixed(1)+','+e.y.toFixed(1)+'" class="pt-cn" fill="none" stroke="rgba(20,18,23,.62)" stroke-width=".9"/>'});
+      /* (owner, 2026-10-23) no logo and no connector line at the line ends: the rows above carry the logos, and each name sits at its
+         line's height in the line's colour (moved apart only where two ends would touch) */
       el.innerHTML='<svg class="ink" width="'+W+'" height="'+H+'" aria-hidden="true" focusable="false">'+defs+ink+'</svg><svg width="'+W+'" height="'+H+'" aria-hidden="true" focusable="false">'+defs.replace(/id="/g,'id="t')+top.replace(/url\(#/g,"url(#t")+'</svg>'+
-        ends.map(function(e){var w=e.s.rank===1,t=ver(e.s.m);return '<div class="pt-lb" aria-hidden="true" style="left:'+(L+pw+(o.lead?11:6))+'px;top:'+e.y.toFixed(1)+'px;--c:'+COL[e.s.m]+'">'+logo(e.s.m)+'<b'+(w?' class="pt-fo" data-t="'+esc(t)+'"':'')+'>'+esc(t)+'</b></div>'}).join("")+
+        ends.map(function(e){var w=e.s.rank===1,t=ver(e.s.m);return '<div class="pt-lb" aria-hidden="true" style="left:'+(L+pw+6)+'px;top:'+e.y.toFixed(1)+'px;--c:'+COL[e.s.m]+'"><b'+(w?' class="pt-fo" data-t="'+esc(t)+'"':'')+'>'+esc(t)+'</b></div>'}).join("")+
         (o.grid||[]).map(function(g){return '<span class="pt-yl" aria-hidden="true" style="top:'+sy(g[0]).toFixed(1)+'px">'+g[1]+'</span>'}).join("")}
     /* target practice: rings every 3% off in white ink and red ink (with the card's grain), the % off in each ring, a crosshair;
        each call a bullet hole placed by how far off it was; a call that missed the direction a red dot outside the target */
