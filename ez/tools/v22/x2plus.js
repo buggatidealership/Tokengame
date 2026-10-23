@@ -930,8 +930,10 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     /* the four views: the band words, the body, and what to draw once it is in place */
     var V={
       roi:{t:"ROI",top:"Would following them have made you money?",bot:"Simulated · before fees",
-        html:function(){return '<div class="lp pt-3"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Now</span><span>Profit</span><span>ROI</span></div>'+byRoi.map(function(m,i){var b=S[m].bal,up=b>=STK,cl=up?'pt-u':'pt-d',p=Math.abs(b/STK*100-100).toFixed(1)+"%";
-          return row(i,m,'<span class="pt-v tnum '+cl+'"><span class="sr">now </span>'+usd(b)+'</span><span class="pt-v tnum '+cl+'"><span class="sr">profit </span>'+(up?'+':'−')+usd(Math.abs(b-STK))+'</span>','<span class="pt-c tnum '+cl+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span><span class="sr">ROI '+(up?'up':'down')+'</span> '+p+'</span>')}).join("")+'</div>'+
+        /* (owner, 2026-10-23) Start, ROI, Now: the start in short ("$100K"), the ROI with a small + or − in place of the triangle, both
+           the same small size; Now the biggest figure; each label centred over its numbers */
+        html:function(){var k="$"+Math.round(STK/1000)+"K";return '<div class="lp pt-3"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Start</span><span>ROI</span><span>Now</span></div>'+byRoi.map(function(m,i){var b=S[m].bal,up=b>=STK,cl=up?'pt-u':'pt-d',p=Math.abs(b/STK*100-100).toFixed(1)+"%";
+          return row(i,m,'<span class="pt-v pt-st tnum"><span class="sr">started with </span>'+k+'</span><span class="pt-v tnum '+cl+'"><span class="sr">ROI '+(up?'up ':'down ')+'</span><span class="pt-sg" aria-hidden="true">'+(up?'+':'−')+'</span>'+p+'</span>','<span class="pt-c tnum '+cl+'"><span class="sr">now </span>'+usd(b)+'</span>')}).join("")+'</div>'+
           '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Start: "+usd(STK))+'</div><p class="pt-cp">'+usd(STK)+' to start. The whole balance on every call. Wins and losses carry over. Buy on up, short on down. No leverage.</p>'},
         draw:function(el,h){var vs=[STK];MK.forEach(function(m){S[m].roi.forEach(function(p){vs.push(p[1])})});var lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STK*.05;lo-=pd;hi+=pd;
           chart(el,h,byRoi.map(function(m,i){return {m:m,rank:i+1,pts:S[m].roi.map(function(p){return [p[0]/N*100,(hi-p[1])/(hi-lo)*100]})}}),(hi-STK)/(hi-lo)*100,{lead:true})}},
