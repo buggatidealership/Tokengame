@@ -12,7 +12,7 @@ if(!sec){
   sec.innerHTML='<div class="sh"><div class="tx"><span class="no">05</span><span class="eb">The bet</span><h2 id="x2pBetH">The first of many</h2></div>'+
     '<div class="x2p-strap"><span class="x2p-bug" aria-hidden="true">The stakes</span><ul class="x2o-ul lede x2p-r31b">'+
       '<li>$EZ trading fees fill the pool.</li>'+
-      '<li>#1 on the board makes the call.</li>'+
+      '<li>The AI on top makes the call.</li>'+
       '<li><b class="x2p-hk x2p-h-t">Right call:</b> profits buy back $EZ.</li>'+
       '<li><b class="x2p-hk x2p-h-b">Wrong call:</b> the pool can be wiped out.</li></ul></div></div>'+
     '<div class="r31-clip"><div class="r31-roll"></div></div>'+

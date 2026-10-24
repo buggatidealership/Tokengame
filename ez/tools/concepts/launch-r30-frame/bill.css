@@ -1,57 +1,61 @@
-/* Round 30, concept "bill": a letterpress fight-night handbill. The film is the bout's picture, printed on a bill of the site's
-   card stock; "How it works" in wood type above it in two passes ("How it" in black ink, "works" in the brand red, the red pass a hair
-   out of register); a rule row of small type between red brass rules; the sheet torn top and bottom and pasted on the night wall
-   with the site's hard ink shadow. Nothing lies over the picture. */
+/* Round 30, concept "bill": a letterpress fight-night handbill. The film is the bill's picture, printed to the trimmed edge of the sheet
+   (bled at the sides, so the sheet sits exactly on the page's column, in line with the headline and the bet ticket, and the film keeps
+   its full width). "How it works" is pressed above it in the bet ticket's own ink; "Running time" sits in the foot between short red
+   Oxford rules (a thick and a thin line, printed in red ink on the card). The sheet is trimmed square and pasted flat on the night wall
+   with the bet ticket's hard offset shadow (4px 4px, no blur). Nothing lies over the picture. */
 
-/* ---- the sheet ---- */
-html.x2p.x2d.x2pbt.r30bill .x2p-vt{--rx:.55px;--ry:-.4px;--ink:rgba(20,18,23,.9);--red:#c8372a;
-  position:relative;isolation:isolate;box-sizing:border-box;overflow:visible;
-  /* the picture stays on the page's column (560px, in line with the headline and the bet ticket) and the paper hangs 24px into the
-     gutter; where the gutter is narrower (the page's wrap is 1180px with 16px sides) it hangs out less, never closer than 10px to
-     the screen's edge (4px of slack for a desktop scrollbar inside 100vw) */
-  --o:clamp(6px,calc((100vw - 1180px) / 2 - 4px),24px);
-  max-width:608px;margin:18px 0 10px calc(-1 * var(--o));padding:15px 24px 18px}
+/* ---- the sheet: the page's column, no side padding (the picture bleeds to the trim) ---- */
+html.x2p.x2d.x2pbt.r30bill .x2p-vt{--ink:rgba(20,18,23,.88);--red:#c8372a;
+  position:relative;isolation:isolate;box-sizing:border-box;overflow:visible;max-width:560px;margin:20px 0 0;padding:0}
 html.x2p.x2d.x2pbt.r30bill .x2p-vt::before{display:none}
 html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-bl{position:absolute;inset:0;z-index:-1;pointer-events:none}
 html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-bl i{position:absolute;inset:0}
-/* pasted flat on the wall: the hard ink shadow, drawn by its own layer (no filter over the playing film) */
-html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-bl .sh{background:#000;transform:translate(3px,4px)}
-/* the fibre rim: where the sheet tore, the paper's paler core shows a hair proud of the printed face */
-html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-bl .rim{background:linear-gradient(rgba(255,253,247,.72),rgba(255,253,247,.72)),var(--r30-paper) 0 0/240px 240px,#fbf7ec;background-blend-mode:normal,multiply}
+/* pasted flat: the bet ticket's hard offset (.bt-hs: 4px 4px), drawn by its own layer, so no filter sits over the playing film */
+html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-bl .sh{background:#000;transform:translate(4px,4px)}
 /* the face: the site's card stock as the tickets use it */
 html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-bl .pa{background:var(--r30-paper) 0 0/240px 240px,#efe4c8}
 
-/* ---- the head: wood type in two passes, pressed into the stock (the site's ink: lets the card through, a pale lip below) ---- */
-html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag{position:relative!important;top:auto!important;left:auto!important;z-index:1;transform:none!important;
-  display:block;text-align:center;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;
-  font:400 36px/1 Anton,Impact,sans-serif!important;letter-spacing:.06em!important;text-transform:uppercase;white-space:nowrap;
-  color:var(--ink)!important;-webkit-text-fill-color:currentColor!important;text-shadow:0 1px 0 rgba(255,251,238,.75),0 -.6px 0 rgba(0,0,0,.2)!important}
-html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag .r30-hw{display:inline-block;filter:url(#r30bInk);mix-blend-mode:multiply}
-html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag .r30-hw.k{white-space:pre}
-html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag .r30-hw.r{color:var(--red)!important;transform:translate(var(--rx),var(--ry))}
+/* ---- the head: wood-type capitals pressed in the bet ticket's ink (ink that lets the card through, a pale lip below each stroke,
+   a faint dark wall above), the same h2 ---- */
+html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag{position:relative!important;top:auto!important;left:auto!important;z-index:auto;transform:none!important;
+  display:block;text-align:center;margin:0!important;padding:11px 12px 9px!important;background:none!important;border:0!important;box-shadow:none!important;
+  font:400 30px/.9 Anton,Impact,sans-serif!important;letter-spacing:.045em!important;margin-right:-.045em!important;text-transform:uppercase;white-space:nowrap;
+  color:var(--ink)!important;-webkit-text-fill-color:currentColor!important;text-shadow:0 1px 0 rgba(255,251,238,.75),0 -.7px 0 rgba(0,0,0,.2)!important}
+/* the press: the bet ticket's own roughening (#btRough), when the page uses it for "Bet #1:" */
+html.x2p.x2d.x2pbt.x2pbt-rough.r30bill[data-theme] .x2p-vt h2.vt-tag :is(.r30-hd,.r30-k){filter:url(#btRough)}
+html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag .r30-lk{position:relative;display:inline-block}
+html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag .r30-hd{display:inline-block}
+/* "$EZ presents": the promoter's line, stacked to the head's cap height, flush right, hanging in the margin left of the centred head
+   (a wood-type lockup that adds no height), in the red pass. Each line is trimmed to its capitals (Anton: caps .86em under a 1.18em ascent; Barlow Condensed: .71em under 1em), so
+   "$EZ" starts at the head's cap line and "presents" sits on its baseline. */
+html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag .r30-k{position:absolute;right:100%;top:.0157em;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;
+  box-sizing:border-box;height:.86em;margin:0 .32em 0 0;color:var(--red);text-shadow:0 .8px 0 rgba(255,251,238,.7);letter-spacing:0!important}
+html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag .r30-k b{display:block;font-weight:400}
+html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag .r30-k b:first-child{font:400 .62em/1 Anton,Impact,sans-serif;letter-spacing:.07em;margin:-.065em -.07em -.075em 0}
+html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag .r30-k b:last-child{font:800 .35em/1 'Barlow Condensed',Barlow,sans-serif;letter-spacing:.17em;margin:-.19em -.17em -.1em 0}
 
-/* ---- the rule row: a thick and a thin brass rule in the red pass, small type in black ---- */
-html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-rr{position:relative;display:flex;align-items:center;gap:10px;margin:7px 0 7px;padding:5px 1px 4px;
-  font:800 11px/1 'Barlow Condensed',Barlow,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);white-space:nowrap;
-  text-shadow:0 1px 0 rgba(255,251,238,.7)}
-html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-rr::before,html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-rr::after{content:"";position:absolute;left:0;right:0;mix-blend-mode:multiply;filter:url(#r30bInk);transform:translate(var(--rx),var(--ry))}
-html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-rr::before{top:0;border-top:2px solid var(--red)}
-html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-rr::after{bottom:0;border-top:.75px solid var(--red)}
-html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-rr .r30-rl{flex:1;height:0}
-html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-rr em{font-style:normal}
-html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-rr .vt-s{font:inherit;letter-spacing:.12em;margin-left:.35em;opacity:1;font-variant-numeric:tabular-nums}
-
-/* ---- the picture: printed on the bill, nothing over it ---- */
+/* ---- the picture: printed to the trim, nothing over it ---- */
 html.x2p.x2d.x2pbt.r30bill .x2p-vt .vt-p{-webkit-mask:none;mask:none;border:0;background:none;padding:0}
 html.x2p.x2d.x2pbt.r30bill .x2p-vt .vt-p::after,html.x2p.x2d.x2pbt.r30bill .x2p-vt .vt-st{display:none}
 html.x2p.x2d.x2pbt.r30bill .x2p-vt .vt-f{background:#1b181c}
-/* the sound button in the film's top right corner, in the bill's ink */
+/* the sound button in the film's top right corner, in the bill's ink; its tap area reaches the corner */
 html.x2p.x2d.x2pbt.r30bill .x2p-vt .vt-snd{top:8px;right:8px;background:#1b181c;box-shadow:0 0 0 1px rgba(239,228,200,.55);color:#efe4c8}
 html.x2p.x2d.x2pbt.r30bill .x2p-vt .vt-snd::before{top:-8px;right:-8px;bottom:-16px;left:-16px}
 
-/* ---- phones: the sheet 14px in from the screen's edges, the film 9px inside it ---- */
+/* ---- the foot: the running time, centred between short red Oxford rules ---- */
+html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-ft{position:relative;display:flex;align-items:center;justify-content:center;gap:11px;padding:8px 12px 9px;
+  font:800 11px/1 'Barlow Condensed',Barlow,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);white-space:nowrap;
+  text-shadow:0 1px 0 rgba(255,251,238,.7)}
+html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-ft>i{display:block;width:64px;height:4.5px;opacity:.94;
+  background:linear-gradient(var(--red) 0 2px,#c8372a00 2px 3.6px,var(--red) 3.6px 4.5px)}
+html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-ft .t{display:block;margin-right:-.2em}
+html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-ft em{font-style:normal}
+html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-ft .vt-s{font:inherit;letter-spacing:inherit;margin:0 0 0 .3em;opacity:1;font-variant-numeric:tabular-nums}
+
+/* ---- phones: the sheet on the column (16px in, like the headline and the ticket), a smaller head ---- */
 @media (max-width:599.98px){
-  html.x2p.x2d.x2pbt.r30bill .x2p-vt{margin:12px -2px 0;padding:10px 9px 13px;max-width:none}
-  html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag{font-size:27px!important}
-  html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-rr{font-size:9.5px;margin:5px 0 6px;padding:4px 1px 3px;gap:8px}
+  html.x2p.x2d.x2pbt.r30bill .x2p-vt{margin:10px 0 0;max-width:none}
+  html.x2p.x2d.x2pbt.r30bill[data-theme] .x2p-vt h2.vt-tag{font-size:23px!important;padding:8px 10px 7px!important}
+  html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-ft{font-size:9.5px;padding:5px 10px 6px;gap:9px}
+  html.x2p.x2d.x2pbt.r30bill .x2p-vt .r30-ft>i{width:44px;height:4px;background:linear-gradient(var(--red) 0 1.6px,#c8372a00 1.6px 3.1px,var(--red) 3.1px 4px)}
 }

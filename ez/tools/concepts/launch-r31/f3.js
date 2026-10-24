@@ -25,7 +25,7 @@ if(vt&&f&&v&&snd&&!vt.querySelector('.r31-big')){
   function play(){if(v.paused){var pb=vt.querySelector('.vt-play');if(pb)pb.click()}}
   /* the theatre (desktop) and, for the mockup's phone shots only, a stand-in for the browser's full screen (.r31-fs, the same rules) */
   function close(){
-    if(vt.classList.contains('r31-fs')){vt.classList.remove('r31-fs');H.classList.remove('r31-thon');label(false);d.removeEventListener('keydown',key,true);return}
+    if(vt.classList.contains('r31-fs')){vt.classList.remove('r31-fs');if(hold){hold.replaceWith(vt);hold=null}H.classList.remove('r31-thon');label(false);d.removeEventListener('keydown',key,true);return}
     if(!th)return;hold.replaceWith(vt);th.remove();th=null;hold=null;H.classList.remove('r31-thon');
     d.removeEventListener('keydown',key,true);if(back&&back.focus)back.focus({preventScroll:true});back=null}
   function key(e){if(e.key==='Escape'){e.preventDefault();close()}
@@ -33,9 +33,10 @@ if(vt&&f&&v&&snd&&!vt.querySelector('.r31-big')){
     if(e.key==='Tab'&&th){var fs=[].filter.call(th.querySelectorAll('button'),function(b){return b.offsetParent&&!b.hidden&&getComputedStyle(b).visibility!=='hidden'});if(!fs.length)return;
       var i=fs.indexOf(d.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();fs[fs.length-1].focus()}else if(!e.shiftKey&&i===fs.length-1){e.preventDefault();fs[0].focus()}}}
   window.__r31open=function(mode,start,kb){if(th||vt.classList.contains('r31-fs'))return;mode=mode||(coarse?'full':'theatre');back=kb?d.activeElement:null;
-    if(mode==='full'){vt.classList.add('r31-fs');H.classList.add('r31-thon');label(true);d.addEventListener('keydown',key,true);if(start)play();return}
     var r=vt.getBoundingClientRect(),cs=getComputedStyle(vt);
     hold=d.createElement('div');hold.className='r31-vhold';hold.setAttribute('aria-hidden','true');hold.style.height=r.height+'px';hold.style.margin=cs.margin;
+    /* the stand-in sits on the body, as the browser's top layer would (inside the page a sticky header would draw over it) */
+    if(mode==='full'){vt.replaceWith(hold);d.body.appendChild(vt);vt.classList.add('r31-fs');H.classList.add('r31-thon');label(true);d.addEventListener('keydown',key,true);if(start)play();return}
     th=d.createElement('div');th.className='r31-th';th.setAttribute('role','dialog');th.setAttribute('aria-modal','true');th.setAttribute('aria-label','How it works, the big view');
     th.innerHTML='<button type="button" class="r31-x" aria-label="Close the big view"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg></button><div class="r31-thf"></div>';
     vt.replaceWith(hold);th.querySelector('.r31-thf').appendChild(vt);d.body.appendChild(th);H.classList.add('r31-thon');

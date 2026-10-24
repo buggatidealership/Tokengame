@@ -1,31 +1,44 @@
 /* Round 31, bet section "The season strip" (the most minimal of the three bet concepts): the NVIDIA ticket leaves the first screen
    for its own section at the foot of the Overview, 05 "The bet", between the highlights and Get $EZ (which becomes 06). The ticket
-   itself is moved, not copied, so its countdown keeps running. The section is: a native head, the stakes on a strap (where the pool
-   comes from, right call, wrong call), the ticket, and under it one printed strip of three stubs on one perforated strip: Season 1
-   (one bet, NVIDIA; stamped "Now" in the record's worn red ink), Season 2 (every Mag 7 report), Then (more). Nothing else.
-   Idempotent. */
+   itself is moved, not copied, so its countdown keeps running. The section is: a native head ("We bet the pool on the top AI": who
+   makes the call and what is at stake; the ticket already says "Bet #1" and the strip "Season 1", so no third "first"), the stakes
+   on a strap (where the pool comes from, right call, wrong call), the ticket, and under it one printed strip of three stubs on the
+   ticket's own stock: Season 1 (now) printed like the ticket itself, a green band on top and a red one at the foot, the other two
+   seasons in ink only. Every stub reads the same way: the season, one big word, one small line (NVIDIA / one bet, Mag 7 / every
+   report, More / bets to come). Nothing else. Idempotent. */
 var d=document,$=function(s,r){return (r||d).querySelector(s)};
 var bt=$('.x2p-bt'),get=$('#get');
 if(!bt||!get)return;
 var sec=$('#x2pSs');
 if(!sec){
   sec=d.createElement('section');sec.className='sec x2p-ss-sec';sec.id='x2pSs';sec.setAttribute('aria-labelledby','x2pSsH');
-  sec.innerHTML='<div class="sh"><div class="tx"><span class="no">05</span><span class="eb">The bet</span><h2 id="x2pSsH">Our pool, the top AI’<span class="x2p-lc">s</span> call</h2></div>'+
+  sec.innerHTML='<div class="sh"><div class="tx"><span class="no">05</span><span class="eb">The bet</span><h2 id="x2pSsH">We bet the pool on the top AI</h2></div>'+
     '<div class="x2p-strap"><span class="x2p-bug" aria-hidden="true">The stakes</span><ul class="x2o-ul lede x2p-ssb">'+
       '<li>$EZ trading fees fill the pool.</li>'+
-      '<li><b class="x2p-hk x2p-h-t">Right call:</b> profits buy back $EZ.</li>'+
-      '<li><b class="x2p-hk x2p-h-b">Wrong call:</b> the pool can be wiped out.</li></ul></div></div>'+
+      '<li><b class="ss-r">Right call:</b> profits buy back $EZ.</li>'+
+      '<li><b class="ss-w">Wrong call:</b> the pool can be wiped out.</li></ul></div></div>'+
     '<div class="x2p-ssk"></div>'+
-    /* the strip: one card, die-cut (corner bites, a notch top and bottom at each perforation, the perforations' holes), three stubs */
+    /* the strip: one card on the ticket's stock, die-cut as the ticket is (corner bites, a notch top and bottom at each perforation,
+       the perforations' holes), the ticket's double rule round it, three stubs */
     '<div class="x2p-ssw"><ol class="x2p-ss" aria-label="The bets, season by season">'+
-      '<li class="ss-now"><span class="ss-k">Season 1</span><span class="ss-v"><b>One bet</b><small>NVIDIA</small></span><span class="sr"> (this season)</span><i class="ss-st" aria-hidden="true">Now</i></li>'+
-      '<li><span class="ss-k">Season 2</span><span class="ss-v"><b>Every&nbsp;Mag&nbsp;7 report</b></span></li>'+
-      '<li><span class="ss-k">Then</span><span class="ss-v"><b>More</b></span></li>'+
+      '<li class="ss-now"><span class="ss-k">Season 1 · Now<span class="sr"> (this season)</span></span><b class="ss-b">NVIDIA</b><span class="ss-s">One bet</span></li>'+
+      '<li><span class="ss-k">Season 2</span><b class="ss-b">Mag 7</b><span class="ss-s">Every report</span></li>'+
+      '<li><span class="ss-k">Then</span><b class="ss-b">More</b><span class="ss-s">Bets to come</span></li>'+
     '</ol></div>';
   get.parentNode.insertBefore(sec,get);
 }
 var slot=$('.x2p-ssk',sec);
 if(bt.parentNode!==slot)slot.appendChild(bt);
+/* the strip is printed on the ticket's own stock: its grain, fibres and mottle are read from the ticket's paper layer (the same
+   static data-URI svgs), so the two can never drift apart */
+if(!sec.style.getPropertyValue('--ss-grain')){
+  var pp=$('.bt-pp',bt),bi=pp?getComputedStyle(pp).backgroundImage:'',urls=bi.match(/url\("data:image\/svg\+xml[^"]*"\)/g)||[];
+  urls.forEach(function(u){var s='';try{s=decodeURIComponent(u.slice(5,-2))}catch(e){return}
+    if(/width='200' height='200'/.test(s)&&/baseFrequency='1\.7'/.test(s))sec.style.setProperty('--ss-grain',u);
+    else if(/width='300' height='200'/.test(s)&&/<path/.test(s))sec.style.setProperty('--ss-fib',u);
+    else if(/width='560' height='180'/.test(s))sec.style.setProperty('--ss-mottle',u);
+    else if(/width='360' height='360'/.test(s))sec.style.setProperty('--ss-scuff',u);
+    else if(/width='180' height='180'/.test(s)&&/seed='21'/.test(s))sec.style.setProperty('--ss-void',u)})}
 /* the film's section is the film alone now */
 var fs=$('section.x2o-bet');if(fs)fs.setAttribute('aria-label','How it works');
 /* numbers: Get $EZ follows as 06. X2's order routine re-runs on every tab change and puts Get $EZ straight after the highlights,
