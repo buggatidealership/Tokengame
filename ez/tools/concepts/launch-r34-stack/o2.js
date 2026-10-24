@@ -14,13 +14,13 @@ function draw(){tabs.forEach(function(t){t.remove()});tabs=[];var o=R.order(),H=
     bw.appendChild(t);tabs.push(t)})}
 draw();
 function pull(before,after){var X=after[0],W=bw.offsetWidth,out=[],i0=before.indexOf(X);
-  out.push(R.anim(X,[{p:P[i0],z:9-i0,e:'cubic-bezier(.3,0,.4,1)'},{p:{x:-W*.5,y:-4,r:-6,s:1.02,b:.9},o:.42,z:9-i0},{p:{x:-W*.48,y:-6,r:-5,s:1.03,b:1},o:.48,z:20,e:'cubic-bezier(.34,1.25,.64,1)'},{p:P[0],z:20}],{duration:660}));
-  after.slice(1).forEach(function(c,k){var i=k+1,j=before.indexOf(c);out.push(R.anim(c,[{p:P[j],z:10-j},{p:P[i],z:10-i}],{duration:380,delay:120,easing:'cubic-bezier(.2,0,0,1)'}))});
+  out.push(R.anim(X,[{p:P[i0],z:9-i0,e:'cubic-bezier(.3,0,.4,1)'},{p:{x:-W*.5,y:-4,r:-6,s:1.02,b:.9},o:.42,z:9-i0},{p:{x:-W*.48,y:-6,r:-5,s:1.03,b:1},o:.48,z:20,e:'cubic-bezier(.34,1.25,.64,1)'},{p:P[0],z:20}],{duration:540}));
+  after.slice(1).forEach(function(c,k){var i=k+1,j=before.indexOf(c);out.push(R.anim(c,[{p:P[j],z:10-j},{p:P[i],z:10-i}],{duration:310,delay:120,easing:'cubic-bezier(.2,0,0,1)'}))});
   tabs.forEach(function(t){out.push(t.animate([{opacity:1},{opacity:0}],{duration:120,fill:'both'}))});
   R.tick(nEl,R.num());var s=R.shine(X,330);if(s)out.push(s);
-  setTimeout(function(){draw();tabs.forEach(function(t,k){R.play(t,[{transform:'translateX(14px)',opacity:0},{transform:'translateX(0)',opacity:1}],{duration:320,delay:k*70,easing:'cubic-bezier(.34,1.56,.64,1)'})})},560);
+  setTimeout(function(){draw();tabs.forEach(function(t,k){R.play(t,[{transform:'translateX(14px)',opacity:0},{transform:'translateX(0)',opacity:1}],{duration:260,delay:k*70,easing:'cubic-bezier(.34,1.56,.64,1)'})})},560);
   return out}
 R.firstView(function(){if(R.reduce)return;var o=R.order();
-  o.slice(1).forEach(function(c,k){R.play(c,R.kf([{p:P[0]},{p:P[k+1]}]),{duration:520,delay:k*90,easing:'cubic-bezier(.34,1.4,.64,1)'})});
-  tabs.forEach(function(t,k){R.play(t,[{transform:'translateX(22px)',opacity:0},{transform:'translateX(-4px)',opacity:1,offset:.7},{transform:'translateX(0)',opacity:1}],{duration:460,delay:420+k*120,easing:'cubic-bezier(.2,0,0,1)'})})});
+  o.slice(1).forEach(function(c,k){R.play(c,R.kf([{p:P[0]},{p:P[k+1]}]),{duration:430,delay:k*90,easing:'cubic-bezier(.34,1.4,.64,1)'})});
+  tabs.forEach(function(t,k){R.play(t,[{transform:'translateX(22px)',opacity:0},{transform:'translateX(-4px)',opacity:1,offset:.7},{transform:'translateX(0)',opacity:1}],{duration:380,delay:420+k*120,easing:'cubic-bezier(.2,0,0,1)'})})});
 R.next=function(){return [tabs[0]]};R.toFirst=function(){var c=R.dom[0],i=R.order().indexOf(c);return [tabs[i-1]]};
