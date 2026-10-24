@@ -10,7 +10,9 @@ btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-label','See all
 var nums=R.dom.map(function(c,i){var e=document.createElement('span');e.className='r34-num';e.textContent=(i+1)+'';bw.appendChild(e);return e});
 var spread=false;
 function fanPose(i){var W=bw.offsetWidth,n=R.n,m=(n-1)/2,k=i-m;return {x:k*W*.4,y:Math.abs(k)*22+20,r:k*11,s:.56,b:1}}
-function open(){if(spread||R.busy||R.reduce&&false)return;spread=true;bw.classList.add('r34-spread');btn.setAttribute('aria-expanded','true');var top=R.top(),W=bw.offsetWidth,Hh=bw.offsetHeight;
+/* the page makes the cards behind inert (out of reach); a spread hand puts all three within reach, closing puts that back */
+function reach(all){R.order().forEach(function(c,i){var off=!all&&i>0;if('inert' in c)c.inert=off;c.setAttribute('aria-hidden',off?'true':'false')})}
+function open(){if(spread||R.busy||R.reduce&&false)return;spread=true;bw.classList.add('r34-spread');btn.setAttribute('aria-expanded','true');reach(true);var top=R.top(),W=bw.offsetWidth,Hh=bw.offsetHeight;
   R.dom.forEach(function(c,i){var from=R.pose(R.order().indexOf(c)),to=fanPose(i);c.style.zIndex=String(c===top?14:11+i);c.classList.toggle('r34-cur',c===top);
     if(R.reduce)R.put(c,to);else{R.anim(c,[{p:from},{p:to}],{duration:420,delay:i*45,easing:'cubic-bezier(.34,1.4,.64,1)'}).finished.then(function(a){R.put(c,to);c.getAnimations().forEach(function(x){x.cancel()})})}
     var e=nums[i];e.style.left=(W/2+to.x-6)+'px';R.play(e,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'translateY(0)'}],{duration:260,delay:R.reduce?0:300+i*45,fill:'forwards'})});
@@ -18,7 +20,7 @@ function open(){if(spread||R.busy||R.reduce&&false)return;spread=true;bw.classLi
 function close(pick){if(!spread)return;spread=false;bw.classList.remove('r34-spread');btn.setAttribute('aria-expanded','false');btn.innerHTML=btn.innerHTML.replace('Close','See all '+R.n);
   nums.forEach(function(e){e.getAnimations().forEach(function(x){x.cancel()});e.style.opacity=0});
   var from={};R.dom.forEach(function(c,i){from[i]=fanPose(i);c.classList.remove('r34-cur')});
-  var steps=pick?R.slot(pick):0;
+  var steps=pick?R.slot(pick):0;reach(false);
   if(!steps){R.apply();if(!R.reduce)R.order().forEach(function(c,j){R.play(c,R.kf([{p:from[R.dom.indexOf(c)]},{p:P[j]}]),{duration:400,delay:j*40,easing:'cubic-bezier(.2,0,0,1)'})});return}
   R.deal(steps,function(before,after){return after.map(function(c,j){var f=from[R.dom.indexOf(c)];
     return j===0?R.anim(c,[{p:f,z:20},{p:{y:-8,s:1.025},o:.7},{p:P[0],z:20}],{duration:460,easing:'cubic-bezier(.34,1.35,.64,1)'})
