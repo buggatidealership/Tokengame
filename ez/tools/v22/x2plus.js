@@ -948,7 +948,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     /* Round 35 (owner, 2026-10-24; CSS: the FIVE block of skin-x2plus.css). The lab's country printed on each stub under the rank
        ("subtle... integrated"; drawn for its size, never emoji, which Windows shows as two letters): GPT (OpenAI), Claude
        (Anthropic) and Grok (xAI) the United States, Kimi (Moonshot AI) China. Then the No. 5 ticket in place of "As it stands":
-       "Next challenger" in red on one line with "In tryouts" smaller and black under it (owner), the ticket the others' size, the stub "No. 5" in the red of "No." with only the ? in black under it (owner: the ? stays, "that's where the model logo is going to appear once
+       "Next models / in tryouts" in red, centred in its field, on kraft card (owner, round 36), the ticket the others' size, the stub "No. 5" in the red of "No." with only the ? in black under it (owner: the ? stays, "that's where the model logo is going to appear once
        we decide who is going to make it into the league"), the three in tryouts in the owner's order with the flag the owner
        gave each: Qwen (Alibaba, China), Mistral (Mistral AI, the European flag), Gemini (Google, United States). Their marks are
        the labs' own one-colour marks (Simple Icons, CC0, for Gemini; LobeHub's icons, MIT, for Qwen and Mistral), each printed
@@ -972,9 +972,9 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       var ol=$("ol.lbl",o.fl);if(!ol||$("li.x2p-n5",ol))return;
       var C5=[{n:"Qwen",lab:"Alibaba",cc:"CN",c:"#5b4fe0",fr:1,d:"M12.604 1.34c.393.69.784 1.382 1.174 2.075a.18.18 0 00.157.091h5.552c.174 0 .322.11.446.327l1.454 2.57c.19.337.24.478.024.837-.26.43-.513.864-.76 1.3l-.367.658c-.106.196-.223.28-.04.512l2.652 4.637c.172.301.111.494-.043.77-.437.785-.882 1.564-1.335 2.34-.159.272-.352.375-.68.37-.777-.016-1.552-.01-2.327.016a.099.099 0 00-.081.05 575.097 575.097 0 01-2.705 4.74c-.169.293-.38.363-.725.364-.997.003-2.002.004-3.017.002a.537.537 0 01-.465-.271l-1.335-2.323a.09.09 0 00-.083-.049H4.982c-.285.03-.553-.001-.805-.092l-1.603-2.77a.543.543 0 01-.002-.54l1.207-2.12a.198.198 0 000-.197 550.951 550.951 0 01-1.875-3.272l-.79-1.395c-.16-.31-.173-.496.095-.965.465-.813.927-1.625 1.387-2.436.132-.234.304-.334.584-.335a338.3 338.3 0 012.589-.001.124.124 0 00.107-.063l2.806-4.895a.488.488 0 01.422-.246c.524-.001 1.053 0 1.583-.006L11.704 1c.341-.003.724.032.9.34zm-3.432.403a.06.06 0 00-.052.03L6.254 6.788a.157.157 0 01-.135.078H3.253c-.056 0-.07.025-.041.074l5.81 10.156c.025.042.013.062-.034.063l-2.795.015a.218.218 0 00-.2.116l-1.32 2.31c-.044.078-.021.118.068.118l5.716.008c.046 0 .08.02.104.061l1.403 2.454c.046.081.092.082.139 0l5.006-8.76.783-1.382a.055.055 0 01.096 0l1.424 2.53a.122.122 0 00.107.062l2.763-.02a.04.04 0 00.035-.02.041.041 0 000-.04l-2.9-5.086a.108.108 0 010-.113l.293-.507 1.12-1.977c.024-.041.012-.062-.035-.062H9.2c-.059 0-.073-.026-.043-.077l1.434-2.505a.107.107 0 000-.114L9.225 1.774a.06.06 0 00-.053-.031zm6.29 8.02c.046 0 .058.02.034.06l-.832 1.465-2.613 4.585a.056.056 0 01-.05.029.058.058 0 01-.05-.029L8.498 9.841c-.02-.034-.01-.052.028-.054l.216-.012 6.722-.012z"},{n:"Mistral",lab:"Mistral AI",cc:"EU",c:"#f05a14",fr:1,d:"M3.428 3.4h3.429v3.428h3.429v3.429h-.002 3.431V6.828h3.427V3.4h3.43v13.714H24v3.429H13.714v-3.428h-3.428v-3.429h-3.43v3.428h3.43v3.429H0v-3.429h3.428V3.4zm10.286 13.715h3.428v-3.429h-3.427v3.429z"},{n:"Gemini",lab:"Google",cc:"US",c:"",d:"M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81"}];
       var li=d.createElement("li");li.className="x2p-n5";
-      li.innerHTML='<span class="n5-st" aria-hidden="true"><i>No. 5</i><b>?</b></span><span class="n5-w" aria-hidden="true"><b>Next challenger</b><i>In tryouts</i></span>'+
+      li.innerHTML='<span class="n5-st" aria-hidden="true"><i>No. 5</i><b>?</b></span><span class="n5-w" aria-hidden="true"><b>Next models<br>in tryouts</b></span>'+
         C5.map(function(m){return '<span class="n5-c" aria-hidden="true"><span class="n5-lg" style="--c:'+(m.c||"#1b181c")+'"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path'+(m.fr?' fill-rule="evenodd"':'')+(m.c?'':' fill="url(#x2pGem)"')+' d="'+m.d+'"/></svg></span><b>'+m.n+'</b><i class="n5-fw">'+flag(m.cc)+'</i></span>'}).join("")+
-        '<span class="sr">Number 5 is still open. Next challenger, in tryouts: '+C5.map(function(m){return m.n+" ("+m.lab+", "+NM[m.cc]+")"}).join(", ").replace(/, ([^,]+)$/," or $1")+'.</span>';
+        '<span class="sr">Number 5 is still open. Next models in tryouts: '+C5.map(function(m){return m.n+" ("+m.lab+", "+NM[m.cc]+")"}).join(", ").replace(/, ([^,]+)$/," or $1")+'.</span>';
       ol.appendChild(li)})();
     if(TIX&&!d.getElementById("x2pWorn")){var wsv=d.createElementNS("http://www.w3.org/2000/svg","svg");wsv.setAttribute("width","0");wsv.setAttribute("height","0");wsv.setAttribute("aria-hidden","true");wsv.style.position="absolute";
       wsv.innerHTML='<filter id="x2pWorn" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="2" seed="3" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.9 1.75" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>';st.appendChild(wsv)}
@@ -1162,15 +1162,13 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     rows.forEach(function(li){var m=$(".lb-m",li);if(!m)return;var L=m.getBoundingClientRect().left;
       $$(".pc-t h3,.pc-t small",li).forEach(function(t){var x=d.createRange();x.selectNodeContents(t);var q=x.getBoundingClientRect();if(q.width)e=Math.max(e,q.right-L)})});
     if(e)st.style.setProperty("--x2p-aiw",Math.ceil(e+16)+"px");n5fit()}
-  /* the No. 5 ticket's "Next challenger" on one line (owner, 2026-10-24), its ink at least 4px clear of the field's line: at the
-     names' size where it fits, else stepped down half a pixel at a time; below 12px it reads "Next model" instead (owner: "if next
-     challenger just doesn't fit, you can just have next model"). Measured by the text's own box, not scrollWidth (Safari lets
-     text run into the padding without growing it) */
-  function n5fit(){var w=$("#standings li.x2p-n5 .n5-w"),b=w&&$("b",w);if(!b||!w.offsetWidth)return;
+  /* the No. 5 ticket's "Next models / in tryouts" (owner, 2026-10-24: "next models in tryouts", centred in its field) at the names'
+     size, stepped down half a pixel at a time until its longer line clears the field's line by 4px (never below 9px). Measured by
+     the text's own box, not scrollWidth (Safari lets text run into the padding without growing it) */
+  function n5fit(){var w=$("#standings li.x2p-n5 .n5-w"),b=w&&$("b",w);if(!b||!w.offsetWidth)return;b.style.fontSize="";
     var cs=getComputedStyle(w),av=w.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-4,
-      tw=function(){var r=d.createRange();r.selectNodeContents(b);return r.getBoundingClientRect().width},
-      fit=function(t,lo){b.textContent=t;b.style.fontSize="";var z=parseFloat(getComputedStyle(b).fontSize),n=0;while(tw()>av&&z>lo&&n++<40){z-=.5;b.style.fontSize=z+"px"}return tw()<=av};
-    if(!fit("Next challenger",12))fit("Next model",8)}
+      tw=function(){var r=d.createRange();r.selectNodeContents(b);return r.getBoundingClientRect().width},z=parseFloat(getComputedStyle(b).fontSize),n=0;
+    while(tw()>av&&z>9&&n++<40){z-=.5;b.style.fontSize=z+"px"}}
   /* a late web font (Anton arriving after the first fit) widens the words: fit again whenever a font finishes loading */
   if(d.fonts&&d.fonts.addEventListener)d.fonts.addEventListener("loadingdone",function(){setTimeout(n5fit,30)});
   /* the standings' three rules one line each (owner, 2026-10-23: "Graded at the next market close after earnings." on one line):
