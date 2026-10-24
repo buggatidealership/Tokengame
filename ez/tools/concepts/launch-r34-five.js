@@ -33,7 +33,10 @@ for(const W of WS){
    out.lines=[...c.querySelectorAll('[data-line]')].map(e=>{const g=document.createRange();g.selectNodeContents(e);const t=[];[...g.getClientRects()].forEach(r=>{if(r.width&&!t.some(q=>Math.abs(q-r.top)<4))t.push(r.top)});return t.length+':'+e.textContent.trim().slice(0,40)+' @'+getComputedStyle(e).fontSize});
    out.text=c.innerText.replace(/\s+/g,' ').slice(0,400);const next=document.getElementById('record');out.gapToRecord=+(next.getBoundingClientRect().top-cr.bottom).toFixed(1);return out});
  m.rowsSame=JSON.stringify(before.rows)===JSON.stringify(after.rows);m.aiwSame=before.aiw===after.aiw;m.aiw=after.aiw;
- const sec=await p.$('#standings');await sec.scrollIntoViewIfNeeded();await p.waitForTimeout(300);await sec.screenshot({path:OUT+id+'-'+W+'.png'});
+ // the section from its head to whichever ends lower, the board or the new card (an element shot of the section trimmed the card's foot)
+ const clip=await p.evaluate(()=>{const s=document.getElementById('standings'),c=s.querySelector('.r34f-card'),r=s.getBoundingClientRect(),bt=Math.max(r.bottom,c?c.getBoundingClientRect().bottom:0);
+   return {x:0,y:Math.max(0,r.top+scrollY-8),width:innerWidth,height:Math.ceil(bt-r.top+24)}});
+ await p.screenshot({path:OUT+id+'-'+W+'.png',clip,fullPage:true});
  // the ⓘ flip: turns, the back fills the board, turns back
  try{await p.evaluate(()=>document.querySelector('#standings .x2p-flipbtn').click());await p.waitForTimeout(400);
    m.flip=await p.evaluate(()=>{const f=document.querySelector('#standings .x2p-flip'),bk=document.getElementById('x2pHow'),fin=f.querySelector('.x2p-fin');const a=bk.getBoundingClientRect(),z=fin.getBoundingClientRect();return {on:f.classList.contains('on'),backH:+a.height.toFixed(1),boardH:+z.height.toFixed(1),over:bk.scrollHeight>bk.clientHeight+1}});

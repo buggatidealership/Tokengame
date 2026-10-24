@@ -12,7 +12,7 @@ function shoe(before,after){var A=before[0],B=after[0],C=after[1]===A?null:after
   out.push(R.anim(A,[{p:P[0],z:20,op:1,e:'cubic-bezier(.4,0,.8,.6)'},{p:{x:W*.3,y:Hh*.16,r:13,s:.93},o:.42,z:20,op:0},{p:{x:10,y:28,r:6,s:.96,b:.46},o:.5,z:1,op:0,e:'cubic-bezier(.2,0,0,1)'},{p:P[2],z:1,op:1}],{duration:640}));
   out.push(R.anim(B,[{p:P[1],z:9},{p:{y:-9,r:.4,s:1.03},o:.58},{p:P[0],z:10}],{duration:460,delay:120,easing:'cubic-bezier(.34,1.35,.64,1)'}));
   if(C)out.push(R.anim(C,[{p:P[2],z:8},{p:P[1],z:9}],{duration:360,delay:200,easing:'cubic-bezier(.2,0,0,1)'}));
-  R.tick(chip,R.num());label();var s=R.shine(B,380);if(s)out.push(s);return out}
+  R.tick(chip,R.num());label();var s=R.shine(B,300);if(s)out.push(s);return out}
 chip.addEventListener('click',function(e){if(!bw.classList.contains('on'))return;e.preventDefault();e.stopPropagation();R.deal(1,shoe)});
 R.firstView(function(){if(R.reduce)return;var k=0;R.play(say,[{opacity:0,transform:'translateY(4px)'},{opacity:1,transform:'translateY(0)',offset:.12},{opacity:1,offset:.88},{opacity:0}],{duration:3400});
   (function step(){if(k++>=R.n||!bw.classList.contains('on'))return;R.deal(1,shoe);setTimeout(step,1000)})();

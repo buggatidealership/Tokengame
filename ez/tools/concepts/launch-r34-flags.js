@@ -18,7 +18,7 @@ async function inject(p,id){if(id==='now')return;const css=fs.readFileSync(path.
   await p.evaluate(({common,css,js})=>{(new Function(common))();const s=document.createElement('style');s.textContent=css;document.head.appendChild(s);(new Function(js))()},{common,css,js});
   await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(350);await p.evaluate(()=>window.r34g&&r34g.aiw());await p.waitForTimeout(150)}
 for(const id of ids){res[id]={};
- for(const W of [320,390,1280]){const {ctx,p,errs}=await open(W);await inject(p,id);
+ for(const W of [320,360,390,1280]){const {ctx,p,errs}=await open(W);await inject(p,id);
   await p.$eval('#standings .lbl',e=>e.scrollIntoView({block:'center'}));await p.waitForTimeout(300);
   const m=await p.evaluate(()=>{const st=document.querySelector('#standings.x2p-tix'),rows=[...st.querySelectorAll('li.lbr')],hdr=st.querySelector('.lbh');
    const R=e=>e.getBoundingClientRect(),c=r=>(r.left+r.right)/2;

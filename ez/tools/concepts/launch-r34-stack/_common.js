@@ -24,16 +24,21 @@ R.kf=function(fr){return fr.map(function(f){var k=R.css(f.p);if(f.o!=null)k.offs
 R.anim=function(c,fr,opt){return c.animate(R.kf(fr),Object.assign({fill:'both'},opt))};
 /* a one-off animation that lets go of its element when it ends */
 R.play=function(el,kf,opt){var a=el.animate(kf,Object.assign({fill:'both'},opt));a.finished.then(function(){a.cancel()},function(){});return a};
-R.deal=function(steps,anim){if(R.busy||!bw.classList.contains('on')||!steps)return false;R.busy=true;var before=R.order(),t0=performance.now();
+/* a tap during a deal finishes it at once and starts the next, so quick taps never get lost */
+R.cur=[];R.id=0;
+R.deal=function(steps,anim){if(!bw.classList.contains('on')||!steps)return false;if(R.busy)R.cur.forEach(function(a){try{a.finish()}catch(e){}});
+  var id=++R.id;R.busy=true;var before=R.order(),t0=performance.now();
   for(var k=0;k<steps;k++)bt.click();
   var after=R.order();R.apply();
-  var anims=R.reduce?[]:((anim&&anim(before,after,steps))||[]);
+  var anims=R.reduce?[]:((anim&&anim(before,after,steps))||[]).filter(Boolean);R.cur=anims;
   R.hooks.forEach(function(f){f(before,after)});
-  Promise.all(anims.map(function(a){return a.finished})).then(function(){anims.forEach(function(a){a.cancel()});R.busy=false;R.log.push({steps:steps,ms:Math.round(performance.now()-t0)})});
+  var cards=anims.filter(function(a){return !a.r34fx});
+  Promise.all(cards.map(function(a){return a.finished})).then(function(){if(id===R.id)R.lastCards=Math.round(performance.now()-t0)},function(){});
+  Promise.all(anims.map(function(a){return a.finished})).then(function(){anims.forEach(function(a){a.cancel()});if(id!==R.id)return;R.busy=false;R.log.push({steps:steps,cards:R.lastCards,ms:Math.round(performance.now()-t0)})},function(){});
   return true};
 R.shine=function(c,delay){var z=c.querySelector('.face.front .zlab');if(!z||R.reduce)return null;var s=document.createElement('i');s.className='r34-shine';z.appendChild(s);
-  var a=s.animate([{transform:'translateX(-130%) skewX(-18deg)',opacity:0},{opacity:1,offset:.3},{transform:'translateX(290%) skewX(-18deg)',opacity:0}],{duration:600,delay:delay||0,easing:'cubic-bezier(.2,0,0,1)',fill:'both'});
-  a.finished.then(function(){s.remove()});return a};
+  var a=s.animate([{transform:'translateX(-130%) skewX(-18deg)',opacity:0},{opacity:1,offset:.3},{transform:'translateX(290%) skewX(-18deg)',opacity:0}],{duration:380,delay:delay||0,easing:'cubic-bezier(.2,0,0,1)',fill:'both'});
+  a.r34fx=true;a.finished.then(function(){s.remove()},function(){s.remove()});return a};
 R.tick=function(el,n){var d=el&&el.querySelector('.r34-dg');if(!d)return;var o=d.querySelector('b'),nb=document.createElement('b');nb.textContent=n;d.appendChild(nb);
   if(R.reduce||!o){if(o)o.remove();return}
   o.animate([{transform:'translateY(0)',opacity:1},{transform:'translateY(-105%)',opacity:0}],{duration:220,easing:'cubic-bezier(.3,0,.8,.15)',fill:'forwards'}).finished.then(function(){o.remove()});

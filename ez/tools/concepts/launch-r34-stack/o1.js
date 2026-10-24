@@ -11,7 +11,7 @@ function tuck(before,after){var A=before[0],B=after[0],C=after[1]===A?null:after
   out.push(R.anim(A,[{p:P[0],z:20,e:'cubic-bezier(.2,0,.4,1)'},{p:{x:W*.34,y:-26,r:10,s:1.05},o:.4,z:20,e:'cubic-bezier(.5,0,.6,1)'},{p:{x:W*.36,y:-16,r:9,s:1,b:.75},o:.52,z:1,e:'cubic-bezier(.2,0,0,1)'},{p:P[2],z:1}],{duration:620}));
   out.push(R.anim(B,[{p:P[1],z:9},{p:{y:-6,r:.5,s:1.022},o:.6},{p:P[0],z:10}],{duration:440,delay:170,easing:'cubic-bezier(.34,1.3,.64,1)'}));
   if(C)out.push(R.anim(C,[{p:P[2],z:8},{p:P[1],z:9}],{duration:380,delay:230,easing:'cubic-bezier(.2,0,0,1)'}));
-  R.tick(pill,R.num());label();var s=R.shine(B,430);if(s)out.push(s);return out}
+  R.tick(pill,R.num());label();var s=R.shine(B,330);if(s)out.push(s);return out}
 pill.addEventListener('click',function(e){if(!bw.classList.contains('on'))return;e.preventDefault();e.stopPropagation();R.deal(1,tuck)});
 R.firstView(function(){if(R.reduce)return;var o=R.order(),W=bw.offsetWidth,hold=function(p){return [{p:p.a},{p:p.b,o:.36,e:'cubic-bezier(.2,0,0,1)'},{p:p.b,o:.68},{p:p.a}]};
   R.play(o[1],R.kf(hold({a:P[1],b:{x:-W*.22,y:10,r:-11,s:.97,b:.82}})).map(function(k,i){if(i===0)k.easing='cubic-bezier(.34,1.45,.64,1)';return k}),{duration:1500});
