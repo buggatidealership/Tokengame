@@ -221,13 +221,35 @@
         extra:b.off.toFixed(2)+"% off. Only "+B.length+" of "+nC+" calls this season landed within 0.1%."})}).filter(Boolean);
       if(!cs.length)return;var tg=bw.querySelector(".x2p-htag");tg.textContent="Bullseye";tg.setAttribute("data-k","Bullseyes");
       [].forEach.call(bw.querySelectorAll(":scope>.card"),function(c){c.remove()});cs.forEach(function(c){bw.appendChild(c)});cs[0].classList.add("x2p-s0");
-      if(cs.length<2)return;bw.classList.add("x2p-stk");var order=cs.slice(),bt=document.createElement("button");bt.type="button";bt.className="x2p-stkb";bw.appendChild(bt);
-      function lay(){order.forEach(function(c,i){c.classList.remove("x2p-s0","x2p-s1","x2p-s2");c.classList.add("x2p-s"+Math.min(i,2));c.setAttribute("aria-hidden",i?"true":"false");if("inert" in c)c.inert=!!i});
-        bt.textContent="×"+order.length;bt.setAttribute("aria-label","Bullseye "+(cs.indexOf(order[0])+1)+" of "+order.length+". Show the next one")}
+      if(cs.length<2)return;bw.classList.add("x2p-stk");var order=cs.slice(),bt=document.createElement("button");bt.type="button";bt.className="x2p-stkb";bt.setAttribute("aria-expanded","false");bw.appendChild(bt);
+      /* spread the hand (owner, 2026-10-24: "spread the hand is probably the best one", also the lighter of the two measured): the
+         corner says "See all 3"; a tap fans the three out side by side and smaller, numbered under them, the top one outlined in
+         gold; a tap on one closes the hand onto it, the button or the carousel moving on closes it onto the top one. While spread
+         all three take taps (the cards behind are otherwise inert). Poses are CSS variables on the individual transform
+         properties, so only translate, rotate, scale and brightness move (the BULLSEYE block). Mockup: launch-r34-stack o4. */
+      var spread=false,nums=cs.map(function(c,i){var e=document.createElement("span");e.className="x2p-spn";e.setAttribute("aria-hidden","true");e.textContent=String(i+1);bw.appendChild(e);return e});
+      var FAN='<svg viewBox="0 0 16 12" aria-hidden="true" focusable="false"><rect x="1.5" y="2" width="6" height="9" rx="1" transform="rotate(-14 4.5 6.5)" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="8.5" y="2" width="6" height="9" rx="1" transform="rotate(14 11.5 6.5)" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="5" y="1" width="6" height="10" rx="1" fill="#1b181c" stroke="currentColor" stroke-width="1.4"/></svg>';
+      var PV=["--t","--r","--s","--b","--dl"];
+      function lay(){order.forEach(function(c,i){c.classList.remove("x2p-s0","x2p-s1","x2p-s2");c.classList.add("x2p-s"+Math.min(i,2));var off=!spread&&!!i;c.setAttribute("aria-hidden",off?"true":"false");if("inert" in c)c.inert=off});
+        bt.innerHTML=FAN+(spread?"Close":"See all "+order.length);bt.setAttribute("aria-expanded",String(spread));
+        bt.setAttribute("aria-label",spread?"Close. Bullseye "+(cs.indexOf(order[0])+1)+" of "+order.length+" stays on top":"Bullseye "+(cs.indexOf(order[0])+1)+" of "+order.length+". See all "+order.length)}
+      function open(){if(spread)return;spread=true;bw.classList.add("x2p-spr");var W=bw.offsetWidth,n=cs.length;
+        cs.forEach(function(c,i){var k=i-(n-1)/2,x=k*W*.4;c.style.setProperty("--t",x.toFixed(1)+"px "+(Math.abs(k)*22+20)+"px");c.style.setProperty("--r",(k*11)+"deg");c.style.setProperty("--s",".56");c.style.setProperty("--b","1");c.style.setProperty("--dl",(i*45)+"ms");
+          c.style.zIndex=String(c===order[0]?14:11+i);c.classList.toggle("x2p-cur",c===order[0]);nums[i].style.left=(W/2+x-5).toFixed(1)+"px"});lay()}
+      function close(pick){if(!spread)return;spread=false;bw.classList.remove("x2p-spr");cs.forEach(function(c){PV.forEach(function(v){c.style.removeProperty(v)});c.style.zIndex="";c.classList.remove("x2p-cur")});
+        while(pick&&order[0]!==pick){var t=order.shift();if(t.classList.contains("flipped")&&!t.classList.contains("nofilm")){t.classList.remove("flipped");setFaces2(t,false)}var v=t.querySelector("video");if(v&&!v.paused)v.pause();order.push(t)}
+        lay();films()}
       lay();
-      bt.addEventListener("click",function(e){if(!bw.classList.contains("on"))return;/* off centre: the carousel brings the stack in first */e.preventDefault();e.stopPropagation();
-        var t=order.shift();if(t.classList.contains("flipped")&&!t.classList.contains("nofilm")){t.classList.remove("flipped");setFaces2(t,false)}var v=t.querySelector("video");if(v&&!v.paused)v.pause();
-        order.push(t);lay();films()})})();
+      bt.addEventListener("click",function(e){if(!bw.classList.contains("on"))return;/* off centre: the carousel brings the stack in first */e.preventDefault();e.stopPropagation();if(spread)close(null);else open()});
+      bw.addEventListener("click",function(e){if(!spread)return;var c=e.target.closest(".card");if(!c||c.parentNode!==bw)return;e.preventDefault();e.stopPropagation();close(c)},true);
+      bw.addEventListener("keydown",function(e){if(spread&&e.key==="Escape"){e.preventDefault();close(null);bt.focus()}});
+      if(window.MutationObserver)new MutationObserver(function(){if(spread&&!bw.classList.contains("on"))close(null)}).observe(bw,{attributes:true,attributeFilter:["class"]});
+      /* the cue, once: the first time the stack sits centred and whole on screen, the cards behind fan out a little and back and
+         the corner button wiggles (not with reduced motion) */
+      if(!(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)&&"IntersectionObserver" in window){var cued=false,cue=function(){if(cued||spread||!bw.classList.contains("on"))return;var r=bw.getBoundingClientRect();
+          if(r.top<0||r.bottom>innerHeight+30||r.left<-2||r.right>innerWidth+2)return;cued=true;setTimeout(function(){bw.classList.add("x2p-cue");setTimeout(function(){bw.classList.remove("x2p-cue")},420)},380)},
+        cio=new IntersectionObserver(function(){cue();if(cued)cio.disconnect()},{threshold:[.5,.8,1]});cio.observe(bw);
+        if(window.MutationObserver){var cmo=new MutationObserver(function(){cue();if(cued)cmo.disconnect()});cmo.observe(bw,{attributes:true,attributeFilter:["class"]})}}})();
     if(!cards.length)return;var old=document.getElementById("x2pHl");if(old)old.remove();
     var box=document.createElement("div");box.id="x2pHl";box.className="x2p-hlc";box.setAttribute("role","region");box.setAttribute("aria-roledescription","carousel");box.setAttribute("aria-label","Highlights");
     var tr=document.createElement("div");tr.className="x2p-hlt";tr.tabIndex=0;cards.forEach(function(w){tr.appendChild(w)});
@@ -923,6 +945,37 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       if(gold){var gs=d.createElement("style");gs.id="x2p-ast-gold";gs.textContent=gold;d.head.appendChild(gs)}}
     /* the standings as printed tickets (owner, 2026-10-22; CSS: the TICKETS block of skin-x2plus.css); the stamped ticks' worn ink */
     if(TIX)st.classList.add("x2p-tix");
+    /* Round 35 (owner, 2026-10-24; CSS: the FIVE block of skin-x2plus.css). The lab's country printed on each stub under the rank
+       ("subtle... integrated"; drawn for its size, never emoji, which Windows shows as two letters): GPT (OpenAI), Claude
+       (Anthropic) and Grok (xAI) the United States, Kimi (Moonshot AI) China. Then the No. 5 ticket in place of "As it stands":
+       "Next challenger / In tryouts", the stub "No. 5" in the red of "No." with only the ? in black under it (owner: the ? stays, "that's where the model logo is going to appear once
+       we decide who is going to make it into the league"), the three in tryouts in the owner's order with the flag the owner
+       gave each: Qwen (Alibaba, China), Mistral (Mistral AI, the European flag), Gemini (Google, United States). Their marks are
+       the labs' own one-colour marks (Simple Icons, CC0, for Gemini; LobeHub's icons, MIT, for Qwen and Mistral), each printed
+       in one ink. Naming them on the page is a public promise. */
+    if(TIX)(function(){var RED="#b3261c",NAVY="#22356a",YEL="#f0c02c";
+      var star=function(cx,cy,r){var q=[];for(var i=0;i<10;i++){var a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.42:r;q.push((cx+rr*Math.cos(a)).toFixed(2)+","+(cy+rr*Math.sin(a)).toFixed(2))}return q.join(" ")};
+      var flag=function(cc){var v='<svg class="x2p-fl" viewBox="0 0 16 10" preserveAspectRatio="none" aria-hidden="true" focusable="false">',i;
+        if(cc==="US"){for(i=0;i<7;i+=2)v+='<rect y="'+(i*10/7).toFixed(3)+'" width="16" height="'+(10/7).toFixed(3)+'" fill="'+RED+'"/>';v+='<rect width="6.6" height="'+(40/7).toFixed(3)+'" fill="'+NAVY+'"/>';
+          [[1.3,1.25],[3.3,1.25],[5.3,1.25],[1.3,3.4],[3.3,3.4],[5.3,3.4]].forEach(function(q){v+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r=".62" fill="#fff"/>'})}
+        else if(cc==="CN"){v+='<rect width="16" height="10" fill="'+RED+'"/><polygon points="'+star(3.2,3,2.15)+'" fill="'+YEL+'"/>';[[6.2,1.1],[7.2,2.2],[7.2,3.7],[6.2,4.8]].forEach(function(q){v+='<polygon points="'+star(q[0],q[1],.72)+'" fill="'+YEL+'"/>'})}
+        else{v+='<rect width="16" height="10" fill="'+NAVY+'"/>';for(i=0;i<12;i++){var a=i*Math.PI/6;v+='<circle cx="'+(8+3.3*Math.cos(a)).toFixed(2)+'" cy="'+(5+3.3*Math.sin(a)).toFixed(2)+'" r=".55" fill="'+YEL+'"/>'}}
+        return v+'</svg>'};
+      var NM={US:"United States",CN:"China",EU:"Europe"},LAB={GPT:"US",CLAUDE:"US",GROK:"US",KIMI:"CN"};
+      if(!d.getElementById("x2pFlInk")){var fsv=d.createElementNS("http://www.w3.org/2000/svg","svg");fsv.setAttribute("width","0");fsv.setAttribute("height","0");fsv.setAttribute("aria-hidden","true");fsv.style.position="absolute";
+        fsv.innerHTML='<filter id="x2pFlInk" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="2.2" numOctaves="1" seed="7" result="n"/>'+
+          '<feDisplacementMap in="SourceGraphic" in2="n" scale="0.45" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="3" numOctaves="1" seed="19" result="g"/>'+
+          '<feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.55 1.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter>'+
+          '<linearGradient id="x2pGem" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3f86d8"/><stop offset=".55" stop-color="#8a6fc4"/><stop offset="1" stop-color="#c85f6e"/></linearGradient>';st.appendChild(fsv)}
+      $$("li.lbr",o.fl).forEach(function(li){var rk=$(".rk",li),h=$(".pc-t h3",li);if(!rk||$(".x2p-sfw",rk))return;var cc=LAB[(h?h.textContent:"").trim().toUpperCase()]||"US";
+        rk.insertAdjacentHTML("beforeend",'<i class="x2p-sfw" aria-hidden="true">'+flag(cc)+'</i><span class="sr">'+NM[cc]+'</span>')});
+      var ol=$("ol.lbl",o.fl);if(!ol||$("li.x2p-n5",ol))return;
+      var C5=[{n:"Qwen",lab:"Alibaba",cc:"CN",c:"#5b4fe0",fr:1,d:"M12.604 1.34c.393.69.784 1.382 1.174 2.075a.18.18 0 00.157.091h5.552c.174 0 .322.11.446.327l1.454 2.57c.19.337.24.478.024.837-.26.43-.513.864-.76 1.3l-.367.658c-.106.196-.223.28-.04.512l2.652 4.637c.172.301.111.494-.043.77-.437.785-.882 1.564-1.335 2.34-.159.272-.352.375-.68.37-.777-.016-1.552-.01-2.327.016a.099.099 0 00-.081.05 575.097 575.097 0 01-2.705 4.74c-.169.293-.38.363-.725.364-.997.003-2.002.004-3.017.002a.537.537 0 01-.465-.271l-1.335-2.323a.09.09 0 00-.083-.049H4.982c-.285.03-.553-.001-.805-.092l-1.603-2.77a.543.543 0 01-.002-.54l1.207-2.12a.198.198 0 000-.197 550.951 550.951 0 01-1.875-3.272l-.79-1.395c-.16-.31-.173-.496.095-.965.465-.813.927-1.625 1.387-2.436.132-.234.304-.334.584-.335a338.3 338.3 0 012.589-.001.124.124 0 00.107-.063l2.806-4.895a.488.488 0 01.422-.246c.524-.001 1.053 0 1.583-.006L11.704 1c.341-.003.724.032.9.34zm-3.432.403a.06.06 0 00-.052.03L6.254 6.788a.157.157 0 01-.135.078H3.253c-.056 0-.07.025-.041.074l5.81 10.156c.025.042.013.062-.034.063l-2.795.015a.218.218 0 00-.2.116l-1.32 2.31c-.044.078-.021.118.068.118l5.716.008c.046 0 .08.02.104.061l1.403 2.454c.046.081.092.082.139 0l5.006-8.76.783-1.382a.055.055 0 01.096 0l1.424 2.53a.122.122 0 00.107.062l2.763-.02a.04.04 0 00.035-.02.041.041 0 000-.04l-2.9-5.086a.108.108 0 010-.113l.293-.507 1.12-1.977c.024-.041.012-.062-.035-.062H9.2c-.059 0-.073-.026-.043-.077l1.434-2.505a.107.107 0 000-.114L9.225 1.774a.06.06 0 00-.053-.031zm6.29 8.02c.046 0 .058.02.034.06l-.832 1.465-2.613 4.585a.056.056 0 01-.05.029.058.058 0 01-.05-.029L8.498 9.841c-.02-.034-.01-.052.028-.054l.216-.012 6.722-.012z"},{n:"Mistral",lab:"Mistral AI",cc:"EU",c:"#f05a14",fr:1,d:"M3.428 3.4h3.429v3.428h3.429v3.429h-.002 3.431V6.828h3.427V3.4h3.43v13.714H24v3.429H13.714v-3.428h-3.428v-3.429h-3.43v3.428h3.43v3.429H0v-3.429h3.428V3.4zm10.286 13.715h3.428v-3.429h-3.427v3.429z"},{n:"Gemini",lab:"Google",cc:"US",c:"",d:"M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81"}];
+      var li=d.createElement("li");li.className="x2p-n5";
+      li.innerHTML='<span class="n5-st" aria-hidden="true"><i>No. 5</i><b>?</b></span><span class="n5-w" aria-hidden="true"><i>Next challenger</i><b>In tryouts</b></span>'+
+        C5.map(function(m){return '<span class="n5-c" aria-hidden="true"><span class="n5-lg" style="--c:'+(m.c||"#1b181c")+'"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path'+(m.fr?' fill-rule="evenodd"':'')+(m.c?'':' fill="url(#x2pGem)"')+' d="'+m.d+'"/></svg></span><b>'+m.n+'</b><i class="n5-fw">'+flag(m.cc)+'</i></span>'}).join("")+
+        '<span class="sr">Number 5 is still open. Next challenger, in tryouts: '+C5.map(function(m){return m.n+" ("+m.lab+", "+NM[m.cc]+")"}).join(", ").replace(/, ([^,]+)$/," or $1")+'.</span>';
+      ol.appendChild(li)})();
     if(TIX&&!d.getElementById("x2pWorn")){var wsv=d.createElementNS("http://www.w3.org/2000/svg","svg");wsv.setAttribute("width","0");wsv.setAttribute("height","0");wsv.setAttribute("aria-hidden","true");wsv.style.position="absolute";
       wsv.innerHTML='<filter id="x2pWorn" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="2" seed="3" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.9 1.75" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>';st.appendChild(wsv)}
     rec.parentNode.insertBefore(st,rec)}
@@ -1007,15 +1060,18 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       el.innerHTML='<svg class="ink" width="'+W+'" height="'+H+'" aria-hidden="true" focusable="false">'+defs+ink+'</svg><svg width="'+W+'" height="'+H+'" aria-hidden="true" focusable="false">'+defs.replace(/id="/g,'id="t')+top.replace(/url\(#/g,"url(#t")+'</svg>'+
         ends.map(function(e){var w=e.s.rank===1,t=ver(e.s.m);return '<div class="pt-lb" aria-hidden="true" style="left:'+(L+pw+6)+'px;top:'+e.y.toFixed(1)+'px;--c:'+COL[e.s.m]+'"><b'+(w?' class="pt-fo" data-t="'+esc(t)+'"':'')+'>'+esc(t)+'</b></div>'}).join("")+
         (o.grid||[]).map(function(g){return '<span class="pt-yl" aria-hidden="true" style="top:'+sy(g[0]).toFixed(1)+'px">'+g[1]+'</span>'}).join("")}
-    /* target practice: rings every 3% off in white ink and red ink (with the card's grain), the % off in each ring, a crosshair;
-       each call a bullet hole placed by how far off it was; a call that missed the direction a red dot outside the target */
-    function target(m,j){var R=60,C=73,ga=Math.PI*(3-Math.sqrt(5)),holes="",out="",id="xptg"+j;
+    /* target practice: rings every 3% off, the % off in each ring, a crosshair; each call a bullet hole placed by how far off it
+       was; a call that missed the direction a red dot outside the target. Printed into the card (owner, 2026-10-24: "just do the
+       white and the red... part of the environment. Just like you do with grok", take B of tools/concepts/launch-r33-avgmiss
+       ink/press): each band is its own ring of ink (nothing laid on top of another, no outlines), white ink and red ink that let
+       the card's grain through, the ticket's rough press (#xptInk); the PROOF block presses them in like GROK (.pt-wi, .pt-ri) */
+    function target(m,j){var R=60,C=73,ga=Math.PI*(3-Math.sqrt(5)),holes="",out="";
       S[m].calls.forEach(function(c,i){var a=i*ga;if(c.ok){var r=Math.min(c.off,12)/12*R;holes+='<circle cx="'+(C+r*Math.cos(a)).toFixed(1)+'" cy="'+(C+r*Math.sin(a)).toFixed(1)+'" r="2.6" fill="#1b1613" stroke="rgba(255,250,236,.9)" stroke-width=".8"/>'}
         else{var q=R+4.5+(i%3)*1.8;out+='<circle cx="'+(C+q*Math.cos(a)).toFixed(1)+'" cy="'+(C+q*Math.sin(a)).toFixed(1)+'" r="2" fill="rgba(200,45,35,.9)"/>'}});
-      var rings=[4,3,2,1].map(function(k,i){return '<circle cx="'+C+'" cy="'+C+'" r="'+(k/4*R).toFixed(1)+'" fill="'+(i%2?"rgba(196,38,30,.9)":"#fbf8f0")+'" stroke="rgba(60,20,16,.55)" stroke-width=".7"/>'}).join("");
+      var band=function(r0,r1,col){return r0?'<circle cx="'+C+'" cy="'+C+'" r="'+((r0+r1)/2)+'" fill="none" stroke="'+col+'" stroke-width="'+(r1-r0)+'"/>':'<circle cx="'+C+'" cy="'+C+'" r="'+r1+'" fill="'+col+'"/>'};
+      var rings='<g class="pt-wi" opacity=".62">'+band(R/4,R/2,"#fffbf1")+band(3*R/4,R,"#fffbf1")+'</g><g class="pt-ri" opacity=".86" style="mix-blend-mode:multiply">'+band(0,R/4,"#c2261d")+band(R/2,3*R/4,"#c2261d")+'</g>';
       var nums=[[3,1],[6,2],[9,3],[12,4]].map(function(v,i){return '<text x="'+(C+(v[1]-.5)/4*R).toFixed(1)+'" y="'+(C+2)+'" font-size="5.6" font-family="Barlow Condensed,sans-serif" font-weight="700" text-anchor="middle" fill="'+(i%2?"rgba(196,38,30,.95)":"rgba(255,246,232,.95)")+'">'+v[0]+'</text>'}).join("");
-      return '<svg viewBox="0 0 146 146" aria-hidden="true" focusable="false"><defs><filter id="'+id+'" x="0" y="0" width="146" height="146" filterUnits="userSpaceOnUse"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="'+(j+3)+'" result="n"/><feColorMatrix in="n" type="saturate" values="0" result="g"/><feComponentTransfer in="g" result="h"><feFuncR type="linear" slope=".25" intercept=".8"/><feFuncG type="linear" slope=".25" intercept=".8"/><feFuncB type="linear" slope=".25" intercept=".8"/></feComponentTransfer><feBlend in="SourceGraphic" in2="h" mode="multiply" result="b"/><feComposite in="b" in2="SourceGraphic" operator="in"/></filter></defs>'+
-        '<g filter="url(#'+id+')">'+rings+'<path d="M'+(C-R-2)+','+C+'H'+(C+R+2)+'M'+C+','+(C-R-2)+'V'+(C+R+2)+'" stroke="rgba(60,20,16,.35)" stroke-width=".5"/>'+nums+'</g>'+out+holes+'</svg>'}
+      return '<svg viewBox="0 0 146 146" aria-hidden="true" focusable="false"><g filter="url(#xptInk)">'+rings+'<path d="M'+(C-R)+','+C+'H'+(C+R)+'M'+C+','+(C-R)+'V'+(C+R)+'" stroke="rgba(40,16,12,.28)" stroke-width=".5" style="mix-blend-mode:multiply"/>'+nums+'</g>'+out+holes+'</svg>'}
     var tk=d.createElement("div");tk.className="x2p-pt";
     tk.innerHTML='<div class="pt-cd"><div class="pt-bd g"><span class="pt-q"><em class="pt-fo pt-st" data-t="★" aria-hidden="true">★</em><span class="pt-top pt-ko"></span><em class="pt-fo pt-st" data-t="★" aria-hidden="true">★</em></span></div><div class="pt-in">'+
       '<div class="pt-tb" role="group" aria-label="Show the AIs by">'+ORDER.map(function(k){return '<button type="button" data-pt="'+k+'" aria-pressed="'+(k===cur)+'">'+V[k].t+'</button>'}).join("")+'</div><div class="pt-body"></div></div>'+
