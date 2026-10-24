@@ -8414,7 +8414,10 @@ function x2LBpage(h){
     box.appendChild(tr);box.appendChild(dots);ul.setAttribute("data-x2p","1");ul.hidden=true;ul.parentNode.insertBefore(box,ul.nextSibling);
     [].forEach.call(box.querySelectorAll(".face"),function(f){if(f.querySelector(".x2p-foil")){if(FRO)FRO.observe(f);else foilFit(f)}});
     var cur=0,vis=false,reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
-    function near(){var mid=tr.scrollLeft+tr.clientWidth/2,b=0,bd=1e9;cards.forEach(function(w,i){var d=Math.abs(w.offsetLeft+w.offsetWidth/2-mid);if(d<bd){bd=d;b=i}});return b}
+    /* a card's place in the track's scroll (its offsetLeft counts from the page, which is the track's start only on phones: on
+       desktop the track starts 340px in, so the carousel landed on the wrong card; fixed 2026-10-24) */
+    function ox(w){return w.getBoundingClientRect().left-tr.getBoundingClientRect().left-tr.clientLeft+tr.scrollLeft}
+    function near(){var mid=tr.scrollLeft+tr.clientWidth/2,b=0,bd=1e9;cards.forEach(function(w,i){var d=Math.abs(ox(w)+w.offsetWidth/2-mid);if(d<bd){bd=d;b=i}});return b}
     function mark(){[].forEach.call(dots.children,function(d,i){d.classList.toggle("on",i===cur);d.setAttribute("aria-current",i===cur?"true":"false")});cards.forEach(function(w,i){w.classList.toggle("on",i===cur)})}
     /* one sound switch for the whole page: the page keeps it to itself but marks every .snd (these copies too) with data-on */
     function pageSound(){var b=document.querySelector("#record .snd");return !!(b&&b.dataset.on==="1")}
@@ -8422,7 +8425,7 @@ function x2LBpage(h){
     window.__x2pHlFilms=function(){films()};
     function films(){cards.forEach(function(w,i){var c=w.querySelector(".card"),v=w.querySelector("video");if(!v)return;
       if(i===cur&&vis&&!reduce&&!c.classList.contains("flipped")){v.muted=!pageSound();v.preload="auto";var p=v.play();if(p&&p.then)p.then(function(){v.classList.add("on")}).catch(function(){})}else if(!v.paused)v.pause()})}
-    function go(i){i=Math.max(0,Math.min(cards.length-1,i));var w=cards[i];tr.scrollTo({left:w.offsetLeft+w.offsetWidth/2-tr.clientWidth/2,behavior:reduce?"auto":"smooth"})}
+    function go(i){i=Math.max(0,Math.min(cards.length-1,i));var w=cards[i];tr.scrollTo({left:ox(w)+w.offsetWidth/2-tr.clientWidth/2,behavior:reduce?"auto":"smooth"})}
     var raf=0;tr.addEventListener("scroll",function(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;var n=near();if(n!==cur){var oc=cards[cur]&&cards[cur].querySelector(".card");if(oc&&oc.classList.contains("flipped")&&!oc.classList.contains("nofilm")){oc.classList.remove("flipped");setFaces2(oc,false)}cur=n;mark();films()}})},{passive:true});
     tr.addEventListener("keydown",function(e){if(e.key==="ArrowLeft"){e.preventDefault();go(cur-1)}else if(e.key==="ArrowRight"){e.preventDefault();go(cur+1)}});
     tr.addEventListener("click",function(e){var w=e.target.closest(".x2p-hi");if(!w)return;var i=cards.indexOf(w),c=w.querySelector(".card");
@@ -8447,7 +8450,7 @@ function x2LBpage(h){
     /* (owner, 2026-10-22, two-tab launch) the Overview's highlights land on a chosen card with its story side up; false while
        the carousel is out of view (no width yet), so the caller tries again when the Overview shows */
     window.__x2pHlGo=function(i,back){if(!tr.clientWidth)return false;eqH();var w=cards[Math.max(0,Math.min(cards.length-1,i))];
-      tr.scrollLeft=w.offsetLeft+w.offsetWidth/2-tr.clientWidth/2;cur=near();mark();var c=w.querySelector(".card");
+      tr.scrollLeft=ox(w)+w.offsetWidth/2-tr.clientWidth/2;cur=near();mark();var c=w.querySelector(".card");
       if(back&&c&&!c.classList.contains("nofilm")&&!c.classList.contains("flipped")){c.classList.add("flipped");setFaces2(c,true)}films();return true}}
   function tkStamp(){[].forEach.call(document.querySelectorAll("ol.rx3>li"),function(li){if(li.querySelector(".x2p-tg"))return;var a=li.querySelector("a.rx3-r"),m=a&&(a.getAttribute("href")||"").match(/round\/(\d+)/);if(!m)return;
       var r=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===+m[1])r=ROUNDS[i];if(!r)return;var E=ezGrade(r),s=document.createElement("span");

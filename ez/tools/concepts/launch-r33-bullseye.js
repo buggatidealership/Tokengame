@@ -56,21 +56,25 @@ for(const [W,opt] of sizes){
    const tagEl=w&&w.querySelector('.x2p-htag'),tr=tagEl&&tagEl.getBoundingClientRect();
    return {record:{w:+rc.width.toFixed(3),h:+rc.height.toFixed(3)},cards:hl,equal:hl.every(c=>Math.abs(c.w-rc.width)<.01&&Math.abs(c.h-rc.height)<.01),
      issues:[...new Set(issues)].slice(0,12),tagInView:tr?tr.left>=0&&tr.right<=innerWidth:null,hscroll:document.documentElement.scrollWidth>innerWidth+1,err:window.__r33err||null}},tg||cfg.tag);
+ /* the turned card, shot inside the viewport: a full-page shot resizes the window for a moment, and the page's scroll handler
+    turns the card back */
+ const shootBack=async(t,file)=>{await p.evaluate(t=>{const w=[...document.querySelectorAll('#x2pHl .x2p-hi')].find(w=>w.querySelector('.x2p-htag').textContent===t);
+     const r=w.getBoundingClientRect();let hb=0;document.querySelectorAll('header,nav,.top,.hdr').forEach(h=>{const cs=getComputedStyle(h),q=h.getBoundingClientRect();if((cs.position==='sticky'||cs.position==='fixed')&&q.top<=1)hb=Math.max(hb,q.bottom)});scrollBy(0,r.top-hb-44)},t);await p.waitForTimeout(300);
+   await p.evaluate(t=>{const w=[...document.querySelectorAll('#x2pHl .x2p-hi')].find(w=>w.querySelector('.x2p-htag').textContent===t);const c=w&&w.querySelector(':scope>.card');
+     if(c&&!c.classList.contains('flipped')){c.classList.add('flipped');const f=c.querySelector('.face.front'),k=c.querySelector('.face.back');if(f)f.setAttribute('aria-hidden','true');if(k)k.setAttribute('aria-hidden','false')}},t);
+   await p.waitForTimeout(900);
+   const cc=await p.evaluate(t=>{const w=[...document.querySelectorAll('#x2pHl .x2p-hi')].find(w=>w.querySelector('.x2p-htag').textContent===t);const r=w.getBoundingClientRect(),c=w.querySelector(':scope>.card').getBoundingClientRect();
+     return {x:Math.max(0,Math.round(r.left-14)),y:Math.max(0,Math.round(r.top-24)),width:Math.round(r.width+28),height:Math.round(c.bottom-r.top+40)}},t);
+   await p.screenshot({path:file,clip:cc})};
  const m=await meas();
  const clip=await p.evaluate(()=>{const s=document.querySelector('#highlights').getBoundingClientRect(),h=document.querySelector('#x2pHl').getBoundingClientRect();return {x:0,y:Math.round(s.top+scrollY),width:innerWidth,height:Math.round(h.bottom-s.top+8)}});
  await p.screenshot({path:OUT+id+'-'+W+'.png',clip,fullPage:true});
- if(W!=='320'){await p.evaluate(t=>{const w=[...document.querySelectorAll('#x2pHl .x2p-hi')].find(w=>w.querySelector('.x2p-htag').textContent===t);const c=w&&w.querySelector(':scope>.card');if(c&&!c.classList.contains('flipped'))c.click()},cfg.tag);
-   await p.waitForTimeout(900);m.back=await meas();
-   const cc=await p.evaluate(t=>{const w=[...document.querySelectorAll('#x2pHl .x2p-hi')].find(w=>w.querySelector('.x2p-htag').textContent===t);const r=w.getBoundingClientRect(),c=w.querySelector(':scope>.card').getBoundingClientRect();return {x:Math.max(0,Math.round(r.left-14)),y:Math.round(r.top+scrollY-24),width:Math.round(r.width+28),height:Math.round(c.bottom-r.top+40)}},cfg.tag);
-   await p.screenshot({path:OUT+id+'-'+W+'-back.png',clip:cc,fullPage:true})}
+ if(W!=='320'){await shootBack(cfg.tag,OUT+id+'-'+W+'-back.png');m.back=await meas()}
  /* a second new card (option 3's streak): its front in the carousel and its back */
- if(cfg.also){await p.evaluate(()=>{const c=document.querySelector('#x2pHl .x2p-hi .card.flipped');if(c)c.click()});if(!await landOn(cfg.also))errs.push('could not land on '+cfg.also);
+ if(cfg.also){await p.evaluate(()=>{document.querySelectorAll('#x2pHl .x2p-hi .card.flipped').forEach(c=>c.classList.remove('flipped'))});if(!await landOn(cfg.also))errs.push('could not land on '+cfg.also);
    const cl2=await p.evaluate(()=>{const h=document.querySelector('#x2pHl').getBoundingClientRect();return {x:0,y:Math.round(h.top+scrollY),width:innerWidth,height:Math.round(h.height)}});
    await p.screenshot({path:OUT+id+'-'+W+'-also.png',clip:cl2,fullPage:true});
-   await p.evaluate(t=>{const w=[...document.querySelectorAll('#x2pHl .x2p-hi')].find(w=>w.querySelector('.x2p-htag').textContent===t);const c=w&&w.querySelector(':scope>.card');if(c&&!c.classList.contains('flipped'))c.click()},cfg.also);
-   await p.waitForTimeout(900);m.alsoBack=await meas(cfg.also);
-   const cc=await p.evaluate(t=>{const w=[...document.querySelectorAll('#x2pHl .x2p-hi')].find(w=>w.querySelector('.x2p-htag').textContent===t);const r=w.getBoundingClientRect(),c=w.querySelector(':scope>.card').getBoundingClientRect();return {x:Math.max(0,Math.round(r.left-14)),y:Math.round(r.top+scrollY-24),width:Math.round(r.width+28),height:Math.round(c.bottom-r.top+40)}},cfg.also);
-   await p.screenshot({path:OUT+id+'-'+W+'-also-back.png',clip:cc,fullPage:true})}
+   await shootBack(cfg.also,OUT+id+'-'+W+'-also-back.png');m.alsoBack=await meas(cfg.also)}
  m.errors=errs;res[W]=m;await ctx.close()}
 fs.writeFileSync(OUT+id+'.json',JSON.stringify(res,null,1));
 for(const W in res){const r=res[W];console.log(id,W,r.alsoBack?'also-back '+JSON.stringify(r.alsoBack.issues):'','equal',r.equal,'rec',r.record.w+'x'+r.record.h,'hscroll',r.hscroll,'issues',JSON.stringify(r.issues),'back',r.back?JSON.stringify(r.back.issues)+' eq '+r.back.equal:'-','errs',JSON.stringify(r.errors))}
