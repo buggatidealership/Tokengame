@@ -34,7 +34,7 @@ for(const W of WS){
    // one-line texts (data-line) and the lines each draws
    out.lines=[...c.querySelectorAll('[data-line]')].map(e=>{const g=document.createRange();g.selectNodeContents(e);const t=[];[...g.getClientRects()].forEach(r=>{if(r.width&&!t.some(q=>Math.abs(q-r.top)<4))t.push(r.top)});return t.length+':'+e.textContent.trim().slice(0,40)+' @'+getComputedStyle(e).fontSize});
    out.text=c.innerText.replace(/\s+/g,' ').slice(0,400);const next=document.getElementById('record');out.gapToRecord=+(next.getBoundingClientRect().top-cr.bottom).toFixed(1);return out});
- m.rowsSame=JSON.stringify(before.rows)===JSON.stringify(after.rows);m.aiwSame=before.aiw===after.aiw;m.aiw=after.aiw;
+ m.rowsSame=JSON.stringify(before.rows)===JSON.stringify(after.rows);if(!m.rowsSame)console.log("ROWS",JSON.stringify(before.rows),JSON.stringify(after.rows));m.aiwSame=before.aiw===after.aiw;m.aiw=after.aiw;
  // the section from its head to whichever ends lower, the board or the new card (an element shot of the section trimmed the card's foot)
  const clip=await p.evaluate(()=>{const s=document.getElementById('standings'),c=s.querySelector('.r34f-card'),r=s.getBoundingClientRect(),bt=Math.max(r.bottom,c?c.getBoundingClientRect().bottom:0);
    return {x:0,y:Math.max(0,r.top+scrollY-8),width:innerWidth,height:Math.ceil(bt-r.top+24)}});
