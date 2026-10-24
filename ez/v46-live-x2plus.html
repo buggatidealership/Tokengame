@@ -19,7 +19,7 @@
    Contrast rule: on light surfaces (card, field, --yel) text is --ink/--ink2; on dark surfaces (--slab, --red)
    text is --on-slab. Up / down and win / lose are --ez-green / --ez-red fills with --on-ez text (classes .u / .d).
    Every state (hover, focus, pressed, flipped, disabled) keeps that pair. */
-:root{color-scheme:light;
+:root{color-scheme:dark;color-scheme:only dark;
   /* PALETTE (tools/palettes.py swaps this block) */
   --field:#f4efe6;--field2:#e3dccf;--ink:#12131a;--ink2:#4a4c58;--dim:#62646f;--card:#ffffff;
   --yel:#ffc72c;--red:#e5262d;--grn:#15803d;--cob:#2443b8;--gold:#7a5200;--tbc:#9c1c6b;
@@ -3223,7 +3223,7 @@ html.x2d[data-theme="dark"],html.x2d[data-theme="dark"] body{
   --line:rgba(240,215,160,.2);--shadow:rgba(0,0,0,.55);--pop:0 0 0 2.5px var(--line),6px 8px 0 0 var(--shadow);--x2d-oy:#1d1c1a;
   /* keyframes cannot be scoped: the generated ones read these, and fall back to X2's ink in light */
   --x2dk-ring:var(--x2d-ring);--x2dk-sh:rgba(0,0,0,.55)}
-html.x2d[data-theme="dark"]{color-scheme:dark}
+html.x2d[data-theme="dark"]{color-scheme:dark;color-scheme:only dark}@media (prefers-color-scheme:dark){html.x2d{color-scheme:only dark}}
 html.x2d[data-theme="dark"] ::selection{background:#e2b250;color:#1d1c1a}
 /* charts drawn by ez-learn.js outside .lxv (its defaults are navy on white) */
 html.x2d[data-theme="dark"] .lx:not(.lxv){--lx-ink:var(--x2d-tx);--lx-text:var(--x2d-tx);--lx-mute:var(--x2d-tx2);--lx-grid:color-mix(in srgb,var(--x2d-tx) 14%,var(--x2d-s1));--lx-surface:var(--x2d-s1);--lx-tipbg:var(--x2d-s3);--lx-tipfg:var(--x2d-tx)}
@@ -4455,7 +4455,7 @@ html.x2d[data-theme="dark"] .st-box.cmp .tg.lead .tg-h{--ink2:#352c1a;--on-slab2
    on every route at 320, 360, 390, 768 and 1280 px. ---------- */
 
 </style>
-<script>/* X2 theme before the first paint (try/catch: storage can be blocked) */(function(){var d=document.documentElement,s=null,h=d.getAttribute("data-theme"),t,m;try{s=localStorage.getItem("ez-theme")}catch(e){}d.setAttribute("data-x2host",h||"");t="dark";d.setAttribute("data-theme",t);d.style.colorScheme=t;m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute("content",t);m=document.querySelector('meta[name="theme-color"]');if(m){m.setAttribute("data-x2tc",m.getAttribute("content"));if(t==="dark")m.setAttribute("content",getComputedStyle(d).getPropertyValue("--field").trim()||"#1d1c1a")}})()</script>
+<script>/* X2 theme before the first paint (try/catch: storage can be blocked) */(function(){var d=document.documentElement,s=null,h=d.getAttribute("data-theme"),t,m;try{s=localStorage.getItem("ez-theme")}catch(e){}d.setAttribute("data-x2host",h||"");t="dark";d.setAttribute("data-theme",t);d.style.colorScheme="only dark";m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute("content",t);m=document.querySelector('meta[name="theme-color"]');if(m){m.setAttribute("data-x2tc",m.getAttribute("content"));if(t==="dark")m.setAttribute("content",getComputedStyle(d).getPropertyValue("--field").trim()||"#1d1c1a")}})()</script>
 <link id="x2p-strap-font" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,62..100,800..900&display=swap" rel="stylesheet">
 <style id="x2plus-skin">
 /* EZ Live X2+ (owner, 2026-10-19: "Can you do a X2 plus"): X2's build, every tab and route as it is, in X7's anime cel
@@ -8122,7 +8122,7 @@ if(EXP==="x2")(function(){
   var mine=root.getAttribute("data-theme");
   /* the browser's bar: X2's own colour in light (unchanged), the graphite page colour in dark */
   function sync(){var t=root.getAttribute("data-theme")==="dark"?"dark":"light",w=t==="dark"?"Light":"Dark";
-    root.style.colorScheme=t;
+    root.style.colorScheme=t==="dark"?"only dark":t;
     if(tc)tc.setAttribute("content",t==="dark"?getComputedStyle(root).getPropertyValue("--field").trim()||"#1d1c1a":tc0);
     var m=$('meta[name="color-scheme"]');if(m)m.setAttribute("content",t);
     var b=$(".x2theme"),l=b&&$(".x2t-l",b);if(l)l.textContent=w}

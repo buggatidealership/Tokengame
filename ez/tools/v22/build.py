@@ -372,6 +372,15 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
             # were white until X2's script switched them)
             ('<meta name="color-scheme" content="light">','<meta name="color-scheme" content="dark">'),
             ('<meta name="theme-color" content="#ffffff">','<meta name="theme-color" content="#0b0a14">'),
+            # forced dark (2026-10-24: a visitor's Android phone repainted the page, ink on the tickets turned cream on cream, the gold
+            # went brown and the printed logos vanished; Samsung Internet's dark mode and other forced-dark browsers darken a page they
+            # take for a light one): the page says dark, and only dark, everywhere it states its colours, never light (X2's base sheet
+            # opened with light), with a prefers-color-scheme rule as well, which older Samsung Internet looks for
+            (':root{color-scheme:light;',':root{color-scheme:dark;color-scheme:only dark;'),
+            ('html.x2d[data-theme="dark"]{color-scheme:dark}',
+             'html.x2d[data-theme="dark"]{color-scheme:dark;color-scheme:only dark}@media (prefers-color-scheme:dark){html.x2d{color-scheme:only dark}}'),
+            ('d.style.colorScheme=t;','d.style.colorScheme="only dark";'),
+            ('root.style.colorScheme=t;','root.style.colorScheme=t==="dark"?"only dark":t;'),
             # the first screen's fonts are asked for at once (window.__x2pF; x2plus.js waits for them before it lifts the cover), not when
             # the page first lays them out; the cover comes off by itself after 20 s whatever happens, and at once without scripts
             ('<body>','<body>\n<div id="x2pLoad" aria-hidden="true">'+XPMARK+'</div>\n'
