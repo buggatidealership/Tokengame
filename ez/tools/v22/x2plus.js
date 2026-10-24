@@ -948,7 +948,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     /* Round 35 (owner, 2026-10-24; CSS: the FIVE block of skin-x2plus.css). The lab's country printed on each stub under the rank
        ("subtle... integrated"; drawn for its size, never emoji, which Windows shows as two letters): GPT (OpenAI), Claude
        (Anthropic) and Grok (xAI) the United States, Kimi (Moonshot AI) China. Then the No. 5 ticket in place of "As it stands":
-       "Next challenger" big with "In tryouts" under it (owner: "next challenger should be bigger than in tryouts"), the ticket the others' size, the stub "No. 5" in the red of "No." with only the ? in black under it (owner: the ? stays, "that's where the model logo is going to appear once
+       "Next challenger" in red on one line with "In tryouts" smaller and black under it (owner), the ticket the others' size, the stub "No. 5" in the red of "No." with only the ? in black under it (owner: the ? stays, "that's where the model logo is going to appear once
        we decide who is going to make it into the league"), the three in tryouts in the owner's order with the flag the owner
        gave each: Qwen (Alibaba, China), Mistral (Mistral AI, the European flag), Gemini (Google, United States). Their marks are
        the labs' own one-colour marks (Simple Icons, CC0, for Gemini; LobeHub's icons, MIT, for Qwen and Mistral), each printed
@@ -1162,11 +1162,10 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     rows.forEach(function(li){var m=$(".lb-m",li);if(!m)return;var L=m.getBoundingClientRect().left;
       $$(".pc-t h3,.pc-t small",li).forEach(function(t){var x=d.createRange();x.selectNodeContents(t);var q=x.getBoundingClientRect();if(q.width)e=Math.max(e,q.right-L)})});
     if(e)st.style.setProperty("--x2p-aiw",Math.ceil(e+16)+"px");n5fit()}
-  /* the No. 5 ticket's "Next challenger" at the names' size: on one line where it fits, else on two lines ("Next / challenger")
-     at that size, stepped down half a pixel at a time only if even "challenger" does not fit (never below 11px) */
-  function n5fit(){var w=$("#standings li.x2p-n5 .n5-w"),b=w&&$("b",w);if(!b||!w.offsetWidth)return;b.style.fontSize="";b.classList.remove("n5-2l");
-    if(w.scrollWidth<=w.clientWidth+.5)return;b.classList.add("n5-2l");var z=parseFloat(getComputedStyle(b).fontSize),n=0;
-    while(w.scrollWidth>w.clientWidth+.5&&z>11&&n++<30){z-=.5;b.style.fontSize=z+"px"}}
+  /* the No. 5 ticket's "Next challenger" on one line (owner, 2026-10-24): at the names' size where it fits, else stepped down
+     half a pixel at a time until it does (never below 8px) */
+  function n5fit(){var w=$("#standings li.x2p-n5 .n5-w"),b=w&&$("b",w);if(!b||!w.offsetWidth)return;b.style.fontSize="";
+    var z=parseFloat(getComputedStyle(b).fontSize),n=0;while(w.scrollWidth>w.clientWidth+.5&&z>8&&n++<40){z-=.5;b.style.fontSize=z+"px"}}
   /* the standings' three rules one line each (owner, 2026-10-23: "Graded at the next market close after earnings." on one line):
      the three step down together, half a pixel at a time, until the longest fits; never below 12px (narrower: the full size, wrapped) */
   function fitRules(){var ls=$$("#standings .x2p-strap li");if(!ls.length||!ls[0].offsetWidth)return;ls.forEach(function(l){l.style.fontSize=""});
