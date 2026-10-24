@@ -17,4 +17,4 @@ window.__r33back=function(card,n){var F=__r33F(n);if(!F)return;var e=F.esc,nc=F.
     '<div class="fn-dc"><p>The decision</p><span>'+e(dec)+'</span>'+(str?'<small>'+e(str)+'</small>':'')+'</div>'+
     (belt?'<div class="fn-bt"><p>The belt</p><span>'+e(belt)+'</span></div>':'')+'<span class="fn-st"></span>');
   if(r.K.stamp)r.el.querySelector('.fn-st').appendChild(r.K.stamp);
-  var go=function(){var w=r.el.clientWidth;__r33grow(r.el,r.el.querySelector('.fn-dc span'),w*.054,w*.085)};go();if(document.fonts)document.fonts.ready.then(go)};
+  var go=function(){var w=r.el.clientWidth;__r33grow(r.el,r.el.querySelector('.fn-dc span'),Math.min(w*.054,14),Math.min(w*.085,19))};go();if(document.fonts)document.fonts.ready.then(go)};

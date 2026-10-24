@@ -31,7 +31,7 @@ function strip(m,j,lead,W,H){var s=A.S[m],ww=Math.max(34,W*.13),gap=5,sw=(W-ww-g
     '<g class="xam-sn">'+nums+'</g><text class="xam-wn" x="'+(wx+ww/2).toFixed(2)+'" y="8.2">Wrong way</text></g>'+
     /* the punches: the night through the hole, the cut edge's pale fibres below, its wall in shadow above */
     '<g fill="rgba(255,248,230,.95)" transform="translate(.25,.85)">'+holes+'</g><g fill="rgba(58,38,16,.7)" transform="translate(-.15,-.5)">'+holes+'</g><g fill="#0b0a14">'+holes+'</g><g fill="none" stroke="rgba(255,255,255,.07)" stroke-width=".5">'+holes+'</g>'+car+'</svg>'}
-function draw(){var w=A.body.clientWidth||300,H=Math.max(38,Math.min(60,Math.floor((A.body.clientHeight-66-4*33)/4)));
+function draw(){var w=A.body.clientWidth||300,H=Math.max(38,Math.min(68,Math.floor((A.body.clientHeight-66-4*33)/4)));
   A.put('xam-punch','<div class="xam-ph"><span>One punch per call</span><span>Stage = % off</span></div>'+A.byMiss.map(function(m,i){var s=A.S[m];
       return '<div class="xam-row"><div class="xam-rh">'+A.who(m,i)+'<span class="xam-av"><span class="xam-k">avg</span>'+(i?A.pct(s.miss)+' off':A.fo(A.pct(s.miss)+' off'))+'</span></div>'+strip(m,i,!i,Math.floor(w),H)+'</div>'}).join('')+
     '<p class="pt-cp">Stage 2 means 2 to 3% off. Each AI punches its own shape. The caret is its average.</p>')}

@@ -24,4 +24,4 @@ window.__r33back=function(card,n){var F=__r33F(n);if(!F)return;var e=F.esc,co=e(
     '<p class="pa-ld">'+pick+' '+bell+' '+verdict+'</p>'+
     '<div class="pa-bx"><p>Box score</p><ul>'+box+'</ul>'+(after?'<p class="pa-af">'+e(after)+'</p>':'')+'</div>');
   if(r.K.stamp)r.el.querySelector('.pa-st').appendChild(r.K.stamp);
-  var go=function(){var w=r.el.clientWidth;__r33grow(r.el,r.el.querySelector('.pa-ld'),w*.052,w*.075)};go();if(document.fonts)document.fonts.ready.then(go)};
+  var go=function(){var w=r.el.clientWidth;__r33grow(r.el,r.el.querySelector('.pa-ld'),Math.min(w*.052,13),Math.min(w*.075,15))};go();if(document.fonts)document.fonts.ready.then(go)};

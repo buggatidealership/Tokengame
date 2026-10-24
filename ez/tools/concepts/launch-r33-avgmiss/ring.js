@@ -12,9 +12,9 @@ function target(m,j,lead){var s=A.S[m],id='xamr'+j,hits='',outs='';
   /* the die: four rings and the centre, each a groove (a faint darkening), a dark wall above it and a pale lip below it */
   var rings=[1,2,3,4].map(function(k){return k/4*R}).concat([R/12]),groove='',wall='',lip='';
   rings.forEach(function(r){var c='cx="'+C+'" cy="'+C+'" r="'+r.toFixed(2)+'"';
-    groove+='<circle '+c+' fill="none" stroke="rgba(120,86,40,.16)" stroke-width="2.4"/>';
-    wall+='<circle '+c+' fill="none" stroke="rgba(52,34,12,.42)" stroke-width=".75" transform="translate(0,-.65)"/>';
-    lip+='<circle '+c+' fill="none" stroke="rgba(255,252,238,.95)" stroke-width=".85" transform="translate(0,.75)"/>'});
+    groove+='<circle '+c+' fill="none" stroke="rgba(120,86,40,.24)" stroke-width="3.2"/>';
+    wall+='<circle '+c+' fill="none" stroke="rgba(52,34,12,.58)" stroke-width="1.05" transform="translate(0,-.85)"/>';
+    lip+='<circle '+c+' fill="none" stroke="rgba(255,252,238,1)" stroke-width="1.15" transform="translate(0,1)"/>'});
   var nums=[3,6,9,12].map(function(v,i){return '<text x="'+(C+(i+1)/4*R-3.2).toFixed(1)+'" y="'+(C+2.1)+'" text-anchor="end">'+v+'</text>'}).join('');
   var av=Math.min(s.miss,12)/12*R,ring;
   if(lead)ring='<circle cx="'+C+'" cy="'+C+'" r="'+av.toFixed(2)+'" fill="none" stroke="rgba(255,250,232,.9)" stroke-width="1.6" transform="translate(0,.55)"/>'+

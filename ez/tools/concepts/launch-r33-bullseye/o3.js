@@ -15,7 +15,7 @@ var c=wS.querySelector('.card'),rec=document.querySelector('#record');
 B.slice(1).forEach(function(x,k){var o=rec.querySelector('.card[data-n="'+x.n+'"]');if(!o)return;var f=o.cloneNode(true);f.classList.remove('flipped','cur');f.removeAttribute('data-i');
   [].forEach.call(f.querySelectorAll('video,button'),function(e){e.remove()});f.setAttribute('aria-hidden','true');
   var dv=document.createElement('div');dv.className='r33-fan r33-f'+k;dv.appendChild(f);wS.appendChild(dv)});   /* after the card, under it by z-index: the page's eqH sizes the wrapper's first .card */
-var cnt=document.createElement('span');cnt.className='r33-cnt';cnt.setAttribute('aria-hidden','true');cnt.innerHTML='<b>1</b>/'+nB;wS.appendChild(cnt);
+var cnt=document.createElement('span');cnt.className='r33-cnt';cnt.setAttribute('aria-hidden','true');cnt.innerHTML='<b>×</b>'+nB;wS.appendChild(cnt);
 var cw=c.querySelector('.face.front .cwin');if(cw){var lg=cw.querySelector('.lg');cw.innerHTML='<small class="r33-off">'+top.miss.toFixed(2)+'% off</small><span class="wv"><span class="wn">'+Z.esc(Z.nm(top.m))+(lg&&top.m===rT.win?lg.outerHTML:'')+'</span></span>'}
 /* the set's back: the three, one line each, then how rare they are */
 var next=Z.right.filter(function(x){return x.h>10}).sort(function(a,b){return a.h-b.h})[0];

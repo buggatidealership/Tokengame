@@ -42,9 +42,9 @@ var rows=Z.M.slice().sort(function(a,b){return Z.by[b].bulls-Z.by[a].bulls||Z.by
 var bzl=bk.querySelector('.zl');if(bzl){bzl.querySelector('.nm').innerHTML='<b>Bullseyes</b><small>(Season 1)</small>';var bzb=bzl.querySelector('.zb');if(bzb)bzb.textContent=nR+' of '+nC+' calls on the board'}
 var bzr=bk.querySelector('.zr');if(bzr){bzr.querySelector('.no').textContent='S1';bzr.querySelector('.ds').textContent='Bulls';bzr.querySelector('.gr').textContent=String(nB)}
 bk.querySelector('.x2p-hb').innerHTML='<h4>'+nB+' bullseyes in '+nC+' calls.</h4>'+
-  '<div class="r33-tb"><span class="h"><i></i><b>Bull</b><b>0.5%</b><b>1%</b></span>'+rows.map(function(m){var y=Z.by[m];
-    return '<span><i style="--c:'+col[m]+'">'+Z.esc(Z.nm(m))+'</i><b class="'+(y.bulls?'on':'')+'">'+y.bulls+'</b><b>'+y.in05+'</b><b>'+y.in1+'</b></span>'}).join('')+'</div>'+
-  '<p class="x2p-hw">Every dart is a call that got the direction right, placed by how close it came. The bull: within 0.1%.'+
+  '<div class="r33-tb"><span class="h"><i></i><b>Bull</b><b>0.5%</b><b>1%</b><b>Run</b></span>'+rows.map(function(m){var y=Z.by[m];
+    return '<span><i style="--c:'+col[m]+'">'+Z.esc(Z.nm(m))+'</i><b class="'+(y.bulls?'on':'')+'">'+y.bulls+'</b><b>'+y.in05+'</b><b>'+y.in1+'</b><b class="'+(m===Z.streak.m?'rn':'')+'">'+y.streak+'</b></span>'}).join('')+'</div>'+
+  '<p class="x2p-hw">Every dart is a call that got the direction right, placed by how close it came. Bull: within 0.1%. Run: most in a row within 1%.'+
   '<em>'+(nC-nR)+' wrong-way calls missed the board.</em></p><button type="button" class="flipb" data-flip>↻ See the board</button>';
 Z.strap([['c','Closest call'],['t','Tightest race'],['b','Biggest move'],['y','Bullseyes']]);
 window.__r33cfg={tag:'Bullseyes'};

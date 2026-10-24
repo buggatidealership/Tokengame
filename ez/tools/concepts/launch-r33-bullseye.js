@@ -27,7 +27,18 @@ for(const [W,opt] of sizes){
  await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(700);
  await p.$eval('#highlights',e=>e.scrollIntoView({block:'start'}));await p.waitForTimeout(500);
  const cfg=await p.evaluate(()=>window.__r33cfg||{});
- await p.evaluate(t=>{window.__r33&&window.__r33.land(t,false)},cfg.tag);await p.waitForTimeout(900);
+ /* the page lands its highlights on Tightest race once they are on screen, which can come after ours: land until the new card is
+    the centred one */
+ /* (the page's own go() and near() measure offsetLeft from the positioned ancestor, not the track: from 760px they centre one card
+    and light another, live too. For these shots the harness centres the card by its real position and lights it.) */
+ const landOn=async t=>{for(let i=0;i<6;i++){await p.evaluate(t=>{window.__r33&&window.__r33.land(t,false)},t);await p.waitForTimeout(500);
+   await p.evaluate(t=>{const tr=document.querySelector('#x2pHl .x2p-hlt'),ws=[...tr.children],w=ws.find(w=>w.querySelector('.x2p-htag').textContent===t);if(!w)return;
+     const a=tr.getBoundingClientRect(),r=w.getBoundingClientRect();tr.scrollLeft+=r.left+r.width/2-(a.left+a.width/2)},t);await p.waitForTimeout(500);
+   await p.evaluate(t=>{const tr=document.querySelector('#x2pHl .x2p-hlt'),ws=[...tr.children],k=ws.findIndex(w=>w.querySelector('.x2p-htag').textContent===t);
+     ws.forEach((w,i)=>w.classList.toggle('on',i===k));[...document.querySelectorAll('#x2pHl .x2p-hld button')].forEach((d,i)=>d.classList.toggle('on',i===k))},t);
+   if(await p.evaluate(t=>{const tr=document.querySelector('#x2pHl .x2p-hlt'),a=tr.getBoundingClientRect(),o=document.querySelector('#x2pHl .x2p-hi.on'),r=o&&o.getBoundingClientRect();
+     return !!o&&o.querySelector('.x2p-htag').textContent===t&&Math.abs(r.left+r.width/2-(a.left+a.width/2))<2},t))return true}return false};
+ const landed=await landOn(cfg.tag);if(!landed)errs.push('could not land on '+cfg.tag);
  const meas=async(tg)=>p.evaluate(tag=>{const q=s=>document.querySelector(s);const rc=q('#record .card').getBoundingClientRect();
    const hl=[...document.querySelectorAll('#x2pHl .x2p-hi')].map(w=>{const c=w.querySelector(':scope>.card').getBoundingClientRect();return {tag:w.querySelector('.x2p-htag').textContent,w:+c.width.toFixed(3),h:+c.height.toFixed(3)}});
    const w=[...document.querySelectorAll('#x2pHl .x2p-hi')].find(w=>w.querySelector('.x2p-htag').textContent===tag);const issues=[];
@@ -50,7 +61,7 @@ for(const [W,opt] of sizes){
    const cc=await p.evaluate(t=>{const w=[...document.querySelectorAll('#x2pHl .x2p-hi')].find(w=>w.querySelector('.x2p-htag').textContent===t);const r=w.getBoundingClientRect(),c=w.querySelector(':scope>.card').getBoundingClientRect();return {x:Math.max(0,Math.round(r.left-14)),y:Math.round(r.top+scrollY-24),width:Math.round(r.width+28),height:Math.round(c.bottom-r.top+40)}},cfg.tag);
    await p.screenshot({path:OUT+id+'-'+W+'-back.png',clip:cc,fullPage:true})}
  /* a second new card (option 3's streak): its front in the carousel and its back */
- if(cfg.also){await p.evaluate(t=>{const c=document.querySelector('#x2pHl .x2p-hi .card.flipped');if(c)c.click();window.__r33.land(t,false)},cfg.also);await p.waitForTimeout(900);
+ if(cfg.also){await p.evaluate(()=>{const c=document.querySelector('#x2pHl .x2p-hi .card.flipped');if(c)c.click()});if(!await landOn(cfg.also))errs.push('could not land on '+cfg.also);
    const cl2=await p.evaluate(()=>{const h=document.querySelector('#x2pHl').getBoundingClientRect();return {x:0,y:Math.round(h.top+scrollY),width:innerWidth,height:Math.round(h.height)}});
    await p.screenshot({path:OUT+id+'-'+W+'-also.png',clip:cl2,fullPage:true});
    await p.evaluate(t=>{const w=[...document.querySelectorAll('#x2pHl .x2p-hi')].find(w=>w.querySelector('.x2p-htag').textContent===t);const c=w&&w.querySelector(':scope>.card');if(c&&!c.classList.contains('flipped'))c.click()},cfg.also);

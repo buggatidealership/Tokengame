@@ -7,7 +7,7 @@ var Z=window.__r33,M=Z.M.slice().sort(function(a,b){return Z.by[a].avg-Z.by[b].a
 var best=Z.right.filter(function(x){return x.m===top}).sort(function(a,b){return a.h-b.h||b.n-a.n})[0],rB=Z.round(best.n);
 var ul=document.querySelector('ul.hx2s');
 ul.appendChild(Z.item({n:best.n,tag:'Sharpshooter',head:Z.esc(Z.nm(top))+'’s sharpest: '+Z.esc(rB.co)+', '+best.miss.toFixed(2)+'% off.',
-  body:'When they get the direction right, how close do they land? '+Z.nm(top)+': '+T.avg.toFixed(2)+'% off on average, the closest of the four. Its best: '+rB.co+', '+(best.c<0?'called ':'called +')+best.c+'%, moved '+best.a+'%.',
+  body:'When they get the direction right, how close do they land? '+Z.nm(top)+': '+T.avg.toFixed(2)+'% off on average, the closest of the four. Its best: '+rB.co+'. It said a '+Math.abs(best.c)+'% '+(best.c<0?'fall':'rise')+'; '+rB.co+' '+(best.a<0?'fell ':'rose ')+Math.abs(best.a).toFixed(2)+'%.',
   rec:[[T.avg.toFixed(2)+'%','off when right'],[T.in1+' of '+T.right,'within 1%']]}));
 Z.rebuild();
 var w=Z.card('Sharpshooter'),c=w.querySelector(':scope>.card'),fr=c.querySelector('.face.front'),bk=c.querySelector('.face.back');
