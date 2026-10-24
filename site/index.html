@@ -6071,6 +6071,25 @@ html.x2p .s2t .s2t-tba b:first-child{opacity:.75}
     background:radial-gradient(circle,#0b0a12 1.35px,rgba(11,10,18,0) 1.75px) 50% 0/100% 6.5px repeat-y}
 }
 /*}BETSEC*/
+/*BULLSEYE{*/
+/* Bullseyes stacked in one slot (owner, 2026-10-24; x2plus.js hlSlabs): the cards share one grid cell, the top one in front, the
+   others fanned behind it, darker, out of reach; a tap on "×3" deals the next to the top */
+html.x2p #x2pHl .x2p-hi.x2p-stk{display:grid}
+html.x2p #x2pHl .x2p-hi.x2p-stk>.card{grid-area:1/1;transition:transform .32s cubic-bezier(.2,0,0,1),filter .32s}
+html.x2p #x2pHl .x2p-hi.x2p-stk>.card.x2p-s0{z-index:3}
+html.x2p #x2pHl .x2p-hi.x2p-stk>.card.x2p-s1{z-index:2;transform:rotate(-3.5deg) translate(-7px,4px)!important;filter:brightness(.58)}
+html.x2p #x2pHl .x2p-hi.x2p-stk>.card.x2p-s2{z-index:1;transform:rotate(3.5deg) translate(7px,6px)!important;filter:brightness(.46)}
+html.x2p #x2pHl .x2p-hi.x2p-stk>.card:not(.x2p-s0){pointer-events:none}
+html.x2p #x2pHl .x2p-hi.x2p-stk:not(.on)>.card:not(.x2p-s0){visibility:hidden}
+/* the count: an ink pill with a gold rim on the stack's corner, the tag's hard shadow; its tap area about 44px */
+html.x2p #x2pHl .x2p-stkb{position:absolute;z-index:21;top:-13px;right:-8px;margin:0;padding:4px 8px 5px;background:#1b181c;color:#f2b632;border:2px solid #f2b632;border-radius:999px;
+  font:400 15px/1 Anton,Impact,sans-serif;letter-spacing:.04em;transform:rotate(4deg);box-shadow:2px 2px 0 #000;cursor:pointer}
+html.x2p #x2pHl .x2p-stkb::before{content:"";position:absolute;inset:-12px}
+html.x2p #x2pHl .x2p-hi:not(.on) .x2p-stkb{opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){html.x2p #x2pHl .x2p-hi.x2p-stk>.card{transition:none}}
+/* "MVPs (Most valuable predictions)": the plural's s stays lowercase under the capitals, the words in brackets smaller beside it */
+html.x2p h2.x2p-mvp small{font-size:.42em;letter-spacing:.03em;vertical-align:.32em;white-space:nowrap;margin-left:.1em;opacity:.9}
+/*}BULLSEYE*/
 
 </style>
 <link rel="canonical" href="https://earningszn.xyz/">
@@ -8394,10 +8413,11 @@ function x2LBpage(h){
     var items=[].map.call(ul.querySelectorAll(":scope>li"),function(li){var a=li.querySelector("a.hx2"),m=a&&(a.getAttribute("href")||"").match(/round\/(\d+)/),q=function(c){var e=li.querySelector(c);return e?e:null};
       return {n:m?+m[1]:0,tag:q(".hx2-k")?q(".hx2-k").textContent:"",head:q(".hx2-h")?q(".hx2-h").innerHTML:"",body:q(".hx2-p")?q(".hx2-p").textContent:"",
         rec:[].map.call(li.querySelectorAll(".hx2-r>span"),function(sp){return [(sp.querySelector("b")||{}).textContent||"",(sp.querySelector("small")||{}).textContent||""]})}});
-    var cards=[];items.forEach(function(it){if(/everyone was wrong/i.test(it.tag))return;/* dropped on X2+ (owner, 2026-10-20) */var r=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===it.n)r=ROUNDS[i];var o=r&&src.querySelector('.card[data-n="'+it.n+'"]');if(!o)return;
+    var cards=[];function mk(it){if(/everyone was wrong/i.test(it.tag))return null;/* dropped on X2+ (owner, 2026-10-20) */var r=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===it.n)r=ROUNDS[i];var o=r&&src.querySelector('.card[data-n="'+it.n+'"]');if(!o)return null;
       var c=o.cloneNode(true),E=ezGrade(r),k=it.tag.toLowerCase(),nf=c.classList.contains("nofilm");c.classList.remove("flipped","cur");c.removeAttribute("data-i");
       var fb=c.querySelector(".face.front [data-flip]");if(fb)fb.textContent="See why ↻";
       var why=it.body;if(/closest/.test(k))why="Every AI guesses how much a stock will move after the company reports. "+why+" No guess this season came closer.";
+      else if(/bull/.test(k))why+=" "+(it.extra||"");
       else if(/tight/.test(k))why+=" On average, they were off by "+E.av.toFixed(2)+"%.";
       else if(/big/.test(k)){it.rec.forEach(function(x){if(/normal/.test(x[1])&&/x$/.test(x[0]))why+=" That’s about "+x[0].replace(/x$/,"")+" times a normal move."})}
       var calls=r.calls.map(function(x){var up=x[1].indexOf("DOWN")<0,ok=up===(r.a>0);return '<span class="x2p-hc '+(ok?"ok":"no")+'">'+esc2(nm1(x[0]))+'<b>'+(up?"▲":"▼")+esc2(x[1].replace(/^(UP|DOWN)\s*/,""))+" "+(ok?"✓":"✗")+'</b></span>'}).join("");
@@ -8406,7 +8426,29 @@ function x2LBpage(h){
         '<div class="x2p-ho">Winner<b class="w">'+(r.win?esc2(nm1(r.win)):"Nobody")+'</b></div>'+
         '<p class="x2p-hw">'+esc2(why)+'<em>'+esc2(gradeLine(E))+'</em></p>'+(nf?'':'<button type="button" class="flipb" data-flip>↻ See the '+(c.querySelector(".art.still")?'picture':'film')+'</button>')+'</div>';
       /* (owner, 2026-10-21) no film yet: the card opens on its story and stays there; "Film soon" is never the face we show */
-      if(nf)c.classList.add("flipped");setFaces2(c,nf);var w=document.createElement("div");w.className="x2p-hi";var tg=document.createElement("span");tg.className="x2p-htag x2p-h-"+(/closest/i.test(it.tag)?"c":/tight/i.test(it.tag)?"t":"b");tg.textContent=it.tag;w.appendChild(tg);w.appendChild(c);cards.push(w)});
+      if(nf)c.classList.add("flipped");setFaces2(c,nf);return c}
+    items.forEach(function(it){var c=mk(it);if(!c)return;var w=document.createElement("div");w.className="x2p-hi";var tg=document.createElement("span");tg.className="x2p-htag x2p-h-"+(/closest/i.test(it.tag)?"c":/tight/i.test(it.tag)?"t":"b");tg.textContent=it.tag;w.appendChild(tg);w.appendChild(c);cards.push(w)});
+    /* Bullseyes (owner, 2026-10-24: "add the Tesla card on top of the Philip Morris one", "times three, so you can then see all of
+       them"; "Grok hits the bullseye on Tesla"): every call that got the direction right and landed within 0.1% of the move, stacked
+       in the Closest call's place under the tag "Bullseye" (the closest call of the season is always one of them), the closest on
+       top (a tie: the newer first, so Tesla over Philip Morris), "×3" on the stack; a tap on it deals the next card to the top. Each
+       card's back is the story side as before. Computed from ROUNDS; with none, the Closest call card stays as it was. */
+    (function(){var bw=null;cards.forEach(function(w){var t=w.querySelector(".x2p-htag");if(t&&/closest/i.test(t.textContent))bw=w});if(!bw)return;
+      var B=[],nC=0;ROUNDS.forEach(function(r){if(typeof r.a!=="number"||isNaN(r.a))return;r.calls.forEach(function(x){nC++;var up=x[1].indexOf("DOWN")<0,mg=parseFloat(x[1].replace(/^(UP|DOWN)\s*/,"")),cv=up?mg:-mg;
+        if(up===(r.a>0)&&Math.round(Math.abs(cv-r.a)*100)<=10)B.push({r:r,m:x[0],up:up,mg:mg,off:Math.abs(cv-r.a)})})});
+      if(!B.length)return;B.sort(function(a,b){return Math.round(a.off*100)-Math.round(b.off*100)||b.r.n-a.r.n});
+      var cs=B.map(function(b){var co=b.r.co;return mk({n:b.r.n,tag:"Bullseye",head:esc2(nm1(b.m))+" hits the bullseye on "+esc2(co)+".",rec:[],
+        body:nm1(b.m)+" said "+co+" would "+(b.up?"rise ":"fall ")+(Math.round(b.mg*100)/100)+"%. It "+(b.r.a>0?"rose ":"fell ")+Math.abs(b.r.a).toFixed(2)+"%.",
+        extra:b.off.toFixed(2)+"% off. Only "+B.length+" of "+nC+" calls this season landed within 0.1%."})}).filter(Boolean);
+      if(!cs.length)return;var tg=bw.querySelector(".x2p-htag");tg.textContent="Bullseye";tg.setAttribute("data-k","Bullseyes");
+      [].forEach.call(bw.querySelectorAll(":scope>.card"),function(c){c.remove()});cs.forEach(function(c){bw.appendChild(c)});cs[0].classList.add("x2p-s0");
+      if(cs.length<2)return;bw.classList.add("x2p-stk");var order=cs.slice(),bt=document.createElement("button");bt.type="button";bt.className="x2p-stkb";bw.appendChild(bt);
+      function lay(){order.forEach(function(c,i){c.classList.remove("x2p-s0","x2p-s1","x2p-s2");c.classList.add("x2p-s"+Math.min(i,2));c.setAttribute("aria-hidden",i?"true":"false");if("inert" in c)c.inert=!!i});
+        bt.textContent="×"+order.length;bt.setAttribute("aria-label","Bullseye "+(cs.indexOf(order[0])+1)+" of "+order.length+". Show the next one")}
+      lay();
+      bt.addEventListener("click",function(e){if(!bw.classList.contains("on"))return;/* off centre: the carousel brings the stack in first */e.preventDefault();e.stopPropagation();
+        var t=order.shift();if(t.classList.contains("flipped")&&!t.classList.contains("nofilm")){t.classList.remove("flipped");setFaces2(t,false)}var v=t.querySelector("video");if(v&&!v.paused)v.pause();
+        order.push(t);lay();films()})})();
     if(!cards.length)return;var old=document.getElementById("x2pHl");if(old)old.remove();
     var box=document.createElement("div");box.id="x2pHl";box.className="x2p-hlc";box.setAttribute("role","region");box.setAttribute("aria-roledescription","carousel");box.setAttribute("aria-label","Highlights");
     var tr=document.createElement("div");tr.className="x2p-hlt";tr.tabIndex=0;cards.forEach(function(w){tr.appendChild(w)});
@@ -8417,18 +8459,19 @@ function x2LBpage(h){
     /* a card's place in the track's scroll (its offsetLeft counts from the page, which is the track's start only on phones: on
        desktop the track starts 340px in, so the carousel landed on the wrong card; fixed 2026-10-24) */
     function ox(w){return w.getBoundingClientRect().left-tr.getBoundingClientRect().left-tr.clientLeft+tr.scrollLeft}
+    function topc(w){return w.querySelector(":scope>.card.x2p-s0")||w.querySelector(".card")}
     function near(){var mid=tr.scrollLeft+tr.clientWidth/2,b=0,bd=1e9;cards.forEach(function(w,i){var d=Math.abs(ox(w)+w.offsetWidth/2-mid);if(d<bd){bd=d;b=i}});return b}
     function mark(){[].forEach.call(dots.children,function(d,i){d.classList.toggle("on",i===cur);d.setAttribute("aria-current",i===cur?"true":"false")});cards.forEach(function(w,i){w.classList.toggle("on",i===cur)})}
     /* one sound switch for the whole page: the page keeps it to itself but marks every .snd (these copies too) with data-on */
     function pageSound(){var b=document.querySelector("#record .snd");return !!(b&&b.dataset.on==="1")}
     document.addEventListener("pointerdown",function(){setTimeout(films,400)},{passive:true,capture:true});
     window.__x2pHlFilms=function(){films()};
-    function films(){cards.forEach(function(w,i){var c=w.querySelector(".card"),v=w.querySelector("video");if(!v)return;
+    function films(){cards.forEach(function(w,i){var c=topc(w),v=c&&c.querySelector("video");[].forEach.call(w.querySelectorAll("video"),function(x){if(x!==v&&!x.paused)x.pause()});if(!v)return;
       if(i===cur&&vis&&!reduce&&!c.classList.contains("flipped")){v.muted=!pageSound();v.preload="auto";var p=v.play();if(p&&p.then)p.then(function(){v.classList.add("on")}).catch(function(){})}else if(!v.paused)v.pause()})}
     function go(i){i=Math.max(0,Math.min(cards.length-1,i));var w=cards[i];tr.scrollTo({left:ox(w)+w.offsetWidth/2-tr.clientWidth/2,behavior:reduce?"auto":"smooth"})}
     var raf=0;tr.addEventListener("scroll",function(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;var n=near();if(n!==cur){var oc=cards[cur]&&cards[cur].querySelector(".card");if(oc&&oc.classList.contains("flipped")&&!oc.classList.contains("nofilm")){oc.classList.remove("flipped");setFaces2(oc,false)}cur=n;mark();films()}})},{passive:true});
     tr.addEventListener("keydown",function(e){if(e.key==="ArrowLeft"){e.preventDefault();go(cur-1)}else if(e.key==="ArrowRight"){e.preventDefault();go(cur+1)}});
-    tr.addEventListener("click",function(e){var w=e.target.closest(".x2p-hi");if(!w)return;var i=cards.indexOf(w),c=w.querySelector(".card");
+    tr.addEventListener("click",function(e){var w=e.target.closest(".x2p-hi");if(!w)return;var i=cards.indexOf(w),c=topc(w);
       var sb=e.target.closest(".shr");if(sb){e.preventDefault();e.stopPropagation();if(typeof window.shareRound==="function")window.shareRound(sb);return}
       var sd=e.target.closest(".snd");if(sd){e.preventDefault();e.stopPropagation();var rs=document.querySelector("#record .snd");if(rs)rs.click();setTimeout(films,60);return}
       if(e.target.closest("a"))return;e.preventDefault();if(i!==cur){go(i);return}
@@ -8436,7 +8479,7 @@ function x2LBpage(h){
     if("IntersectionObserver" in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;films()},{threshold:.3}).observe(tr);
     /* every card one height: the record card's (owner, 2026-10-23: the record's trading-card shape), else the tallest; then the story
        side's paragraph steps down half a pixel at a time (never below 10px) until it fits */
-    function eqH(){var cs=cards.map(function(w){return w.querySelector(".card")});cs.forEach(function(c){c.style.height=""});var m=0;cs.forEach(function(c){m=Math.max(m,c.offsetHeight)});
+    function eqH(){var cs=[];cards.forEach(function(w){[].forEach.call(w.querySelectorAll(":scope>.card"),function(c){cs.push(c)})});cs.forEach(function(c){c.style.height=""});var m=0;cs.forEach(function(c){m=Math.max(m,c.offsetHeight)});
       var rc=document.querySelector("#record .card"),t=rc&&rc.getBoundingClientRect().height;if(t)m=t;if(m)cs.forEach(function(c){c.style.height=m+"px"});
       cs.forEach(function(c){var hb=c.querySelector(".x2p-hb"),p=hb&&hb.querySelector(".x2p-hw");if(!p)return;
         // the four call chips share one size, stepped down until the widest fits its box (CLAUDE ▼2.5% ✓ on a 360px phone)
@@ -8450,7 +8493,7 @@ function x2LBpage(h){
     /* (owner, 2026-10-22, two-tab launch) the Overview's highlights land on a chosen card with its story side up; false while
        the carousel is out of view (no width yet), so the caller tries again when the Overview shows */
     window.__x2pHlGo=function(i,back){if(!tr.clientWidth)return false;eqH();var w=cards[Math.max(0,Math.min(cards.length-1,i))];
-      tr.scrollLeft=ox(w)+w.offsetWidth/2-tr.clientWidth/2;cur=near();mark();var c=w.querySelector(".card");
+      tr.scrollLeft=ox(w)+w.offsetWidth/2-tr.clientWidth/2;cur=near();mark();var c=topc(w);
       if(back&&c&&!c.classList.contains("nofilm")&&!c.classList.contains("flipped")){c.classList.add("flipped");setFaces2(c,true)}films();return true}}
   function tkStamp(){[].forEach.call(document.querySelectorAll("ol.rx3>li"),function(li){if(li.querySelector(".x2p-tg"))return;var a=li.querySelector("a.rx3-r"),m=a&&(a.getAttribute("href")||"").match(/round\/(\d+)/);if(!m)return;
       var r=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===+m[1])r=ROUNDS[i];if(!r)return;var E=ezGrade(r),s=document.createElement("span");
@@ -9229,7 +9272,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   var tp=d.createElement("template");tp.innerHTML=R.vResults();var hs=tp.content.querySelector("section.xsec");
   if(hs&&window.__x2pHlSlabs){var h2=d.createElement("div");h2.hidden=true;d.body.appendChild(h2);h2.appendChild(hs);window.__x2pHlSlabs();
     if($("#x2pHl",hs)){hs.id="highlights";hs.classList.add("sec","x2p-hl-sec");hs.setAttribute("aria-labelledby","x2hlH");
-      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">Memorable predictions</h2></div>';
+      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH" class="x2p-mvp">MVP<span class="x2p-lc">s</span> <small>(Most valuable predictions)</small></h2></div>';
       var xh=$(".xsh",hs);if(xh)hs.replaceChild(sh,xh);else hs.insertBefore(sh,hs.firstChild);ln.parentNode.insertBefore(hs,ln.nextSibling)}
     h2.remove()}
   /* bullets under the standings, proof and highlights heads, the record's style (owner, 2026-10-22: "a bit dry"); the
@@ -9237,7 +9280,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
      the highlights name their three kinds from the cards' own tags */
   var gN=(typeof SHEET!=="undefined"?SHEET:[]).filter(function(r){return r[12]!==""&&r[12]!=null}).length;
   /* (owner, 2026-10-22) one colour each, the same as its card's tag, so the three read as the top three: closest gold, tightest green, biggest red */
-  var hk=$$("#x2pHl .x2p-htag").map(function(t){var k=(t.className.match(/x2p-h-(\w)/)||[])[1]||"c";t=t.textContent.trim().toLowerCase().replace(/[&<>]/g,"");return '<b class="x2p-hk x2p-h-'+k+'">'+t.charAt(0).toUpperCase()+t.slice(1)+'.</b>'}).join(" ");
+  var hk=$$("#x2pHl .x2p-htag").map(function(t){var k=(t.className.match(/x2p-h-(\w)/)||[])[1]||"c";t=(t.getAttribute("data-k")||t.textContent).trim().toLowerCase().replace(/[&<>]/g,"");return '<b class="x2p-hk x2p-h-'+k+'">'+t.charAt(0).toUpperCase()+t.slice(1)+'.</b>'}).join(" ");
   /* (owner, 2026-10-22) "predict", not "call each stock" (they don't call every stock); "before" and "after" in gold */
   /* the standings' three rules on the "The rules" strap above the board, with the tickets too (owner, 2026-10-23: "in the same
      format as we have it on the current live site"; they were the tickets' small print under the board for a day) */
