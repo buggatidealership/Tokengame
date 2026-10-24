@@ -1162,10 +1162,17 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     rows.forEach(function(li){var m=$(".lb-m",li);if(!m)return;var L=m.getBoundingClientRect().left;
       $$(".pc-t h3,.pc-t small",li).forEach(function(t){var x=d.createRange();x.selectNodeContents(t);var q=x.getBoundingClientRect();if(q.width)e=Math.max(e,q.right-L)})});
     if(e)st.style.setProperty("--x2p-aiw",Math.ceil(e+16)+"px");n5fit()}
-  /* the No. 5 ticket's "Next challenger" on one line (owner, 2026-10-24): at the names' size where it fits, else stepped down
-     half a pixel at a time until it does (never below 8px) */
-  function n5fit(){var w=$("#standings li.x2p-n5 .n5-w"),b=w&&$("b",w);if(!b||!w.offsetWidth)return;b.style.fontSize="";
-    var z=parseFloat(getComputedStyle(b).fontSize),n=0;while(w.scrollWidth>w.clientWidth+.5&&z>8&&n++<40){z-=.5;b.style.fontSize=z+"px"}}
+  /* the No. 5 ticket's "Next challenger" on one line (owner, 2026-10-24), its ink at least 4px clear of the field's line: at the
+     names' size where it fits, else stepped down half a pixel at a time; below 12px it reads "Next model" instead (owner: "if next
+     challenger just doesn't fit, you can just have next model"). Measured by the text's own box, not scrollWidth (Safari lets
+     text run into the padding without growing it) */
+  function n5fit(){var w=$("#standings li.x2p-n5 .n5-w"),b=w&&$("b",w);if(!b||!w.offsetWidth)return;
+    var cs=getComputedStyle(w),av=w.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-4,
+      tw=function(){var r=d.createRange();r.selectNodeContents(b);return r.getBoundingClientRect().width},
+      fit=function(t,lo){b.textContent=t;b.style.fontSize="";var z=parseFloat(getComputedStyle(b).fontSize),n=0;while(tw()>av&&z>lo&&n++<40){z-=.5;b.style.fontSize=z+"px"}return tw()<=av};
+    if(!fit("Next challenger",12))fit("Next model",8)}
+  /* a late web font (Anton arriving after the first fit) widens the words: fit again whenever a font finishes loading */
+  if(d.fonts&&d.fonts.addEventListener)d.fonts.addEventListener("loadingdone",function(){setTimeout(n5fit,30)});
   /* the standings' three rules one line each (owner, 2026-10-23: "Graded at the next market close after earnings." on one line):
      the three step down together, half a pixel at a time, until the longest fits; never below 12px (narrower: the full size, wrapped) */
   function fitRules(){var ls=$$("#standings .x2p-strap li");if(!ls.length||!ls[0].offsetWidth)return;ls.forEach(function(l){l.style.fontSize=""});
