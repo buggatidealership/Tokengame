@@ -35,7 +35,10 @@ for(const [W,opt] of sizes){
    await p.evaluate(t=>{const tr=document.querySelector('#x2pHl .x2p-hlt'),ws=[...tr.children],w=ws.find(w=>w.querySelector('.x2p-htag').textContent===t);if(!w)return;
      const a=tr.getBoundingClientRect(),r=w.getBoundingClientRect();tr.scrollLeft+=r.left+r.width/2-(a.left+a.width/2)},t);await p.waitForTimeout(500);
    await p.evaluate(t=>{const tr=document.querySelector('#x2pHl .x2p-hlt'),ws=[...tr.children],k=ws.findIndex(w=>w.querySelector('.x2p-htag').textContent===t);
-     ws.forEach((w,i)=>w.classList.toggle('on',i===k));[...document.querySelectorAll('#x2pHl .x2p-hld button')].forEach((d,i)=>d.classList.toggle('on',i===k))},t);
+     ws.forEach((w,i)=>{w.classList.toggle('on',i===k);w.classList.toggle('r33-on',i===k)});[...document.querySelectorAll('#x2pHl .x2p-hld button')].forEach((d,i)=>d.classList.toggle('on',i===k));
+     /* a full-page shot resizes the window for a moment and the page's handler lights its own pick again: pin the lit card */
+     tr.classList.add('r33-fix');if(!document.getElementById('r33fix')){const st=document.createElement('style');st.id='r33fix';
+       st.textContent='html.x2p #x2pHl .x2p-hlt.r33-fix .x2p-hi{opacity:.5!important}html.x2p #x2pHl .x2p-hlt.r33-fix .x2p-hi.r33-on{opacity:1!important}';document.head.appendChild(st)}},t);
    if(await p.evaluate(t=>{const tr=document.querySelector('#x2pHl .x2p-hlt'),a=tr.getBoundingClientRect(),o=document.querySelector('#x2pHl .x2p-hi.on'),r=o&&o.getBoundingClientRect();
      return !!o&&o.querySelector('.x2p-htag').textContent===t&&Math.abs(r.left+r.width/2-(a.left+a.width/2))<2},t))return true}return false};
  const landed=await landOn(cfg.tag);if(!landed)errs.push('could not land on '+cfg.tag);
