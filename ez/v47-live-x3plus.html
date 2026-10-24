@@ -5913,7 +5913,8 @@ html.x2p.x2d.x2pbt.x2pbill .x2p-vt::before{display:none}
 html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl{position:absolute;inset:0;z-index:-1;pointer-events:none}
 html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl i{position:absolute;inset:0}
 /* pasted flat: the bet ticket's hard offset (.bt-hs: 4px 4px), drawn by its own layer, so no filter sits over the playing film */
-html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .sh{background:#000;transform:translate(4px,4px)}
+html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .vb-sh{   /* not .sh: the site's section heads, whose bottom margin cut this layer short */
+  background:#000;transform:translate(4px,4px)}
 /* the face: the site's card stock as the tickets use it */
 html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8}
 
@@ -9280,7 +9281,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   /* the standings' three rules on the "The rules" strap above the board, with the tickets too (owner, 2026-10-23: "in the same
      format as we have it on the current live site"; they were the tickets' small print under the board for a day) */
   [].concat([["#standings","x2p-stb",['4 AIs predict a stock\'s move <b class="x2p-kw">before</b> it reports.','Graded at the next market close <b class="x2p-kw">after</b> earnings.',"In public, every earnings season."],"The rules"]],
-  [["#learn","x2p-lrb",["One lucky call proves nothing. The trend does.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
+  [["#learn","x2p-lrb",["Do not trust the models. Verify the trend.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
    ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[],"Replays"]]).forEach(function(x){if(!x[2].length)return;
     var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
     x[2].forEach(function(t){var li=d.createElement("li");li.innerHTML=t;ul.appendChild(li)});
@@ -9365,7 +9366,7 @@ H.classList.add('x2pbill');
 var tag=vt.querySelector('.vt-tag'),vs=vt.querySelector('.vt-s'),v=vt.querySelector('video');
 /* the sheet: shadow and printed face (aria-hidden, behind the film) */
 var bl=vt.querySelector(':scope>.vb-bl');
-if(!bl){bl=D.createElement('div');bl.className='vb-bl';bl.setAttribute('aria-hidden','true');bl.innerHTML='<i class="sh"></i><i class="pa"></i>';vt.insertBefore(bl,vt.firstChild)}
+if(!bl){bl=D.createElement('div');bl.className='vb-bl';bl.setAttribute('aria-hidden','true');bl.innerHTML='<i class="vb-sh"></i><i class="pa"></i>';vt.insertBefore(bl,vt.firstChild)}
 /* the foot: the running time between two gold-foil stars (the time element itself moves here; it was already aria-hidden) */
 var ft=vt.querySelector(':scope>.vb-ft');
 if(!ft){ft=D.createElement('div');ft.className='vb-ft';ft.setAttribute('aria-hidden','true');ft.innerHTML='<b class="st" data-t="★">★</b><span class="t"><em class="tl">Running time</em></span><b class="st" data-t="★">★</b>';vt.appendChild(ft)}
@@ -9404,8 +9405,8 @@ if(!sec){
   sec=d.createElement('section');sec.className='sec x2p-bs s2t-va';sec.id='x2pSt';sec.setAttribute('aria-labelledby','x2pStH');
   sec.innerHTML='<div class="sh"><div class="tx"><span class="no">05</span><span class="eb">The bet</span><h2 id="x2pStH">The first of many</h2></div>'+
     '<div class="x2p-strap"><span class="x2p-bug" aria-hidden="true">The stakes</span><ul class="x2o-ul lede">'+
-      '<li>$EZ trading fees fill the pool.</li>'+
-      '<li>The AI on top makes the call.</li>'+
+      '<li>69% of $EZ creator fees fill the pool.</li>'+
+      '<li>The AI on top makes the call we trust.</li>'+
       '<li><b class="x2p-hk s2t-ok">Right call:</b> profits buy back $EZ.</li>'+
       '<li><b class="x2p-hk s2t-ng">Wrong call:</b> the pool can be wiped out.</li></ul></div></div>'+
     '<div class="bs-clip"><div class="bs-roll"></div></div>'+
@@ -9466,17 +9467,19 @@ var fitLogo=function(img){var box=img.parentNode;if(!img.naturalWidth||!box||!bo
   var s=Math.min(W/m.w,Hh/m.h,Math.sqrt(W*Hh*.42/(m.w*m.h*Math.sqrt(m.c))));
   img.style.cssText='position:absolute;max-width:none;width:'+(nw*s).toFixed(2)+'px;height:'+(nh*s).toFixed(2)+'px;left:'+(W/2-(m.x0+m.w/2)*s).toFixed(2)+'px;top:'+(Hh/2-(m.y0+m.h/2)*s).toFixed(2)+'px'};
 var fitLogos=function(){$$('#x2pSt .s2t-lg img').forEach(function(im){if(im.complete&&im.naturalWidth)fitLogo(im);else if(!im.__s2L){im.__s2L=1;im.addEventListener('load',function(){fitLogo(im)})}})};
-/* the strap's four lines one line each (the standings strap's rule): all four step down together, half a pixel at a time,
-   until none wraps; too narrow even at 12px (a 320px phone): the full size, wrapped */
-var fitStrap=function(){var ls=$$('#x2pSt .x2p-strap li');if(!ls.length||!ls[0].offsetWidth)return;ls.forEach(function(l){l.style.fontSize=''});
+/* a strap's lines one line each (the standings strap's rule): all step down together, half a pixel at a time, until none
+   wraps; too narrow even at 12px (a 320px phone): the full size, wrapped. This section's strap and the proof's ("The stats";
+   owner, 2026-10-24: "it always needs to be one line") */
+var fitLines=function(sel){var ls=$$(sel+' .x2p-strap li');if(!ls.length||!ls[0].offsetWidth)return;ls.forEach(function(l){l.style.fontSize=''});
   var nl=function(l){var g=d.createRange();g.selectNodeContents(l);var t=[];[].forEach.call(g.getClientRects(),function(r){if(r.width&&!t.some(function(q){return Math.abs(q-r.top)<4}))t.push(r.top)});return t.length};
   var z=parseFloat(getComputedStyle(ls[0]).fontSize),n=0;
   while(ls.some(function(l){return nl(l)>1})&&z>12&&n++<40){z-=.5;ls.forEach(function(l){l.style.fontSize=z+'px'})}
   if(ls.some(function(l){return nl(l)>1}))ls.forEach(function(l){l.style.fontSize=''})};
 /* the fitting measures the page (a full layout each time), so it waits until the section is about a screen away: on arrival the
    section is far below the first screen and the cover would wait for it */
-var near=!window.IntersectionObserver,all=function(){fix();if(near){fitStrap();fitLogos()}};
+var lrn=$('#learn'),near=!window.IntersectionObserver,nearL=near,all=function(){fix();if(near){fitLines('#x2pSt');fitLogos()}if(nearL)fitLines('#learn')};
 if(!near&&!sec.__x2pIo){sec.__x2pIo=1;var io=new IntersectionObserver(function(es){if(!es.some(function(e){return e.isIntersecting}))return;io.disconnect();near=true;all()},{rootMargin:'900px 0px'});io.observe(sec)}
+if(!nearL&&lrn&&!lrn.__x2pIo){lrn.__x2pIo=1;var io2=new IntersectionObserver(function(es){if(!es.some(function(e){return e.isIntersecting}))return;io2.disconnect();nearL=true;fitLines('#learn')},{rootMargin:'900px 0px'});io2.observe(lrn)}
 all();if(d.fonts&&d.fonts.ready)d.fonts.ready.then(all);
 if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resize',function(){if(innerWidth===lw)return;lw=innerWidth;clearTimeout(ft);ft=setTimeout(all,120)});addEventListener('load',all);
   addEventListener('hashchange',function(){setTimeout(all,0)})}
