@@ -1179,7 +1179,7 @@ html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-r{height:29px}
 html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-r :is(.pt-v,.pt-c){justify-self:center;white-space:nowrap}
 html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-r .pt-v{font-size:13px}html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-r .pt-c{font-size:17px}
 html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-r .pt-st{color:rgba(20,18,23,.74)}
-html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-sg{display:inline-block;width:.62em;text-align:center;font-size:.78em;position:relative;top:-.06em}
+html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-pm{display:inline-block;width:.62em;text-align:center;font-size:.78em;position:relative;top:-.06em}
 html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-hd{display:grid;align-items:end;column-gap:7px;padding:0 0 4px;font:700 8.5px/1 "Barlow Condensed",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(20,18,23,.55)}
 html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-hd span{text-align:center;margin-right:-.16em}html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-hd span:last-child{color:rgba(20,18,23,.78)}
 @media (max-width:379.98px){html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-r,html.x2p.x2d[data-theme] #learn .x2p-pt .lp.pt-3 .pt-hd{grid-template-columns:11px 17px minmax(0,1fr) 40px 47px 70px;column-gap:5px}
@@ -1408,7 +1408,19 @@ html.x2p-rv #x2pLoad{display:flex;animation:x2pOut .2s ease-out forwards}
 /*}CURTAIN*/
 /*SPEED{*/
 /* only the card in front moves (2026-10-23, speed): the holo shine and foil on the cards off to the sides, and on their unseen backs, hold
-   still (94 shine loops ran at once and kept a phone's processor busy while the visitor just read) */
-html.x2p #record .card:not(.cur),html.x2p #record .card:not(.cur) *,html.x2p #record .card:not(.cur) *::before,html.x2p #record .card:not(.cur) *::after,
+   still (94 shine loops ran at once and kept a phone's processor busy while the visitor just read). The record's cards are named by
+   #car, not "#record .card": build.py widens that phrase to the highlights and the pop-up, whose cards never carry .cur, and every
+   highlight held still (found in the 2026-10-23 code review: TSMC's rolling foil and the story side's holo had stopped) */
+html.x2p #car .card:not(.cur),html.x2p #car .card:not(.cur) *,html.x2p #car .card:not(.cur) *::before,html.x2p #car .card:not(.cur) *::after,
 html.x2p #x2pHl .x2p-hi:not(.on) *,html.x2p #x2pHl .x2p-hi:not(.on) *::before,html.x2p #x2pHl .x2p-hi:not(.on) *::after{animation-play-state:paused!important}
+/* (2026-10-23, code review) the rule above stopped only the cards to the sides: the front card's own back, out of sight until it is
+   turned, kept its holo loops running (five background-position loops, style work every frame), and so did the #1 foil and the crowns
+   while the visitor was elsewhere on the page. Now the unseen back of the front card holds still until it is turned (a no-film card
+   always shows its back, so it is left alone), and a whole section holds still while it is off screen (x2plus.js sets .x2p-offs, with
+   200px of warning, so a loop is already running when it scrolls into view). Measured on a 4x slower phone: about 1.9 s of page work
+   in every 2.5 s with nothing touched before, the loops' share gone after. Nothing on screen changes. */
+html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back,html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back *,
+html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back *::before,html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back *::after,
+html.x2p :is(#record,#x2pHl) .card.flipped .face.front *,html.x2p :is(#record,#x2pHl) .card.flipped .face.front *::before,html.x2p :is(#record,#x2pHl) .card.flipped .face.front *::after,
+html.x2p .x2p-offs,html.x2p .x2p-offs *,html.x2p .x2p-offs *::before,html.x2p .x2p-offs *::after{animation-play-state:paused!important}
 /*}SPEED*/

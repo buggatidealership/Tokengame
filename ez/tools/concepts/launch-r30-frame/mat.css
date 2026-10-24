@@ -1,64 +1,77 @@
 /* Round 30, concept "mat": the film behind a window mat (passe-partout) cut from the site's card stock.
-   A framer's 45 degree bevel shows the board's white core around the picture; the window's bevels behave like a recess under the
-   site's light from the top left (top and left bevels in shade, bottom and right catching the light). "How it works" is pressed into
-   the board's top margin in ink, the running time small to its right. The board sits on the night page with the site's hard ink shadow.
-   Nothing lies over the picture: the bevel ends at the picture's edge. */
+   A framer's 45 degree bevel shows the board's white core around the picture; the window is a recess under the site's light from the
+   top left, so the top and left bevels sit in the core's shade and the bottom and right catch the light, all four in the white-core
+   family. The mat is bottom weighted, as framers do: "How it works" is pressed into the bottom margin in ink (letterpress, the bet
+   ticket's "BET #1:" recipe), centred on the picture, its running time hanging to the right like a numbering machine's serial.
+   The board sits on the night page with the site's hard ink shadow. Nothing lies over the picture: the bevel ends at its edge; only
+   the encoder's black last rows are tucked under the bottom bevel (one pixel).
+   Selectors carry [data-theme] so they outrank the phone rules x2plus.js injects at run time (x2pbt-css). */
 
 /* ---- the board ---- */
-html.x2p.x2d.x2pbt .x2p-vt{
-  --bv:3px;            /* bevel width (the white core showing) */
-  --ms:8px;            /* board beside the window */
-  --mt:31px;           /* top margin, carries the heading */
-  --mb:12px;           /* bottom margin */
+html.x2p.x2d.x2pbt[data-theme] .x2p-vt{
+  --bv:2px;            /* bevel width: the white core showing (about 1:25 of a real mat's margin; a hair on a phone) */
+  --ms:8px;            /* board beside and above the window */
+  --mb:31px;           /* bottom margin: the heavier one, carries the title */
+  --wash:.42;          /* the stock's relief calmed: mat board is pressed smoother than ticket card */
   position:relative;isolation:isolate;box-sizing:border-box;
-  margin:18px 0 0;padding:0 var(--ms) var(--mb);
+  display:flex;flex-direction:column;
+  margin:18px 0 0;max-width:none;padding:var(--ms) var(--ms) 0;
   background:
-    /* the board's cut edges: the top edge catches the light, the bottom shows the board's thickness (the bet ticket's recipe) */
-    linear-gradient(180deg,rgba(255,255,255,.55) 0 1px,rgba(150,112,58,.10) 1px,#0000 6px),
-    linear-gradient(0deg,rgba(60,40,14,.45) 0 1.2px,rgba(120,90,45,.14) 1.2px,#0000 7px),
-    linear-gradient(90deg,rgba(255,255,255,.4) 0 .8px,rgba(150,112,58,.12) .8px,#0000 6px),
-    linear-gradient(270deg,rgba(78,54,22,.3) 0 1px,rgba(150,112,58,.12) 1px,#0000 6px),
-    /* light across the board, slightly brighter top left */
-    linear-gradient(168deg,rgba(255,255,255,.1),rgba(255,255,255,0) 42%,rgba(110,80,35,.07)),
-    /* mat board is pressed smoother than ticket card: the same stock with its relief calmed */
-    linear-gradient(rgba(238,229,206,.42),rgba(238,229,206,.42)),
+    /* the cut edges: the top and left catch the light; the bottom and right show the white core of a square cut, the board's
+       thickness is the hard shadow under it */
+    linear-gradient(180deg,rgba(255,255,255,.55) 0 1px,rgba(150,112,58,.08) 1px,#0000 5px),
+    linear-gradient(90deg,rgba(255,255,255,.4) 0 .8px,rgba(150,112,58,.08) .8px,#0000 5px),
+    linear-gradient(0deg,rgba(250,248,242,.8) 0 1px,rgba(120,90,45,.1) 1px,#0000 6px),
+    linear-gradient(270deg,rgba(250,248,242,.8) 0 1px,rgba(150,112,58,.1) 1px,#0000 6px),
+    /* the room's light across the board, a touch brighter top left */
+    linear-gradient(168deg,rgba(255,255,255,.1),rgba(255,255,255,0) 42%,rgba(110,80,35,.06)),
+    linear-gradient(rgba(238,229,206,var(--wash)),rgba(238,229,206,var(--wash))),
     var(--r30-paper) 0 0/240px 240px,#efe4c8;
   box-shadow:4px 4px 0 #000;
   overflow:visible}
-html.x2p.x2d.x2pbt .x2p-vt::before{display:none}
+html.x2p.x2d.x2pbt[data-theme] .x2p-vt::before{display:none}
 
-/* ---- the heading pressed into the top margin: ink that lets the board through, a pale lip under each stroke ---- */
-html.x2p.x2d.x2pbt[data-theme] .x2p-vt h2.vt-tag,html.x2p.x2d.x2pbt .x2p-vt h2.vt-tag{
+/* ---- the window: the 45 degree bevel round the picture; the mitred corners come from the four border colours ---- */
+html.x2p.x2d.x2pbt[data-theme] .x2p-vt .vt-p{order:0;position:relative;padding:0;background:#000;
+  border:var(--bv) solid;border-color:#d3cdbf #f2efe8 #fbfaf5 #e0dbcf;
+  -webkit-mask:none;mask:none}
+html.x2p.x2d.x2pbt[data-theme] .x2p-vt .vt-p::after{display:none}
+html.x2p.x2d.x2pbt[data-theme] .x2p-vt .vt-st{display:none}
+/* the poster's and the frames' last row or two are encoder black (rows 1078 and 1079 of 1080); the bottom bevel laps the picture by
+   one pixel, the picture tucked under the window by a hair (half a pixel did not cover them on a phone's grid) */
+html.x2p.x2d.x2pbt[data-theme] .x2p-vt .vt-f::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;z-index:3;pointer-events:none;background:#fbfaf5}
+
+/* ---- the title pressed into the bottom margin: ink that lets the board through, a pale lip under each stroke, the press's rough edge.
+   Three columns: an empty one, the title, the time; the outer two are equal, so the title alone sits on the picture's axis ---- */
+html.x2p.x2d.x2pbt[data-theme] .x2p-vt h2.vt-tag{order:1;
   position:relative!important;top:auto!important;left:auto!important;transform:none!important;z-index:1;
-  display:flex;align-items:baseline;justify-content:center;gap:9px;box-sizing:border-box;height:var(--mt);margin:0;padding:10px 1px 0;
+  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:baseline;box-sizing:border-box;
+  height:var(--mb);margin:0;padding:8px 0 0;
   background:none!important;border:0!important;box-shadow:none!important;pointer-events:none;
   font:400 15px/1 Anton,Impact,sans-serif!important;letter-spacing:.06em!important;text-transform:uppercase;white-space:nowrap;
   color:rgba(20,18,23,.88)!important;-webkit-text-fill-color:rgba(20,18,23,.88)!important;
-  text-shadow:0 1px 0 rgba(255,251,238,.75),0 -.6px 0 rgba(0,0,0,.2)!important}
-html.x2p.x2d.x2pbt .x2p-vt h2.vt-tag small.vt-s{margin:0;opacity:1;
-  font:800 12px/1 'Barlow Condensed',Barlow,sans-serif;letter-spacing:.06em;font-variant-numeric:tabular-nums lining-nums;color:rgba(20,18,23,.72);-webkit-text-fill-color:rgba(20,18,23,.72)}
+  text-shadow:0 .9px 0 rgba(255,251,238,.75)!important}
+/* the press's rough edge, as on "BET #1:" (the same filter, on the same switch) */
+html.x2pbt-rough.x2p.x2d.x2pbt[data-theme] .x2p-vt h2.vt-tag{filter:url(#btRough)}
+html.x2p.x2d.x2pbt[data-theme] .x2p-vt h2.vt-tag::before{content:"";grid-column:1}
+/* the time changes from one impression to the next, so it is set like the bet ticket's numbering-machine serial: ink a shade lighter,
+   wide figures, a hair off the line */
+html.x2p.x2d.x2pbt[data-theme] .x2p-vt h2.vt-tag small.vt-s{grid-column:3;justify-self:start;margin:0 0 0 9px;opacity:1;
+  font:800 12px/1 'Barlow Condensed',Barlow,sans-serif;letter-spacing:.12em;font-variant-numeric:tabular-nums lining-nums;
+  color:rgba(20,18,23,.86);-webkit-text-fill-color:rgba(20,18,23,.86);display:inline-block;transform:translate(.6px,-.4px) rotate(-.6deg)}
 
-/* ---- the window: a 45 degree bevel round the picture, the core showing; mitred corners come from the four border colours ---- */
-html.x2p.x2d.x2pbt .x2p-vt .vt-p{position:relative;padding:0;background:#000;
-  border:var(--bv) solid;border-color:#b7af9f #f0ede5 #fcfbf6 #cfc9bc;
-  -webkit-mask:none;mask:none}
-html.x2p.x2d.x2pbt .x2p-vt .vt-p::after{display:none}
-html.x2p.x2d.x2pbt .x2p-vt .vt-st{display:none}
+/* ---- the sound button: the film's own corner, no bands to clear any more ---- */
+html.x2p.x2d.x2pbt[data-theme] .x2p-vt .vt-snd{top:8px;right:8px}
+html.x2p.x2d.x2pbt[data-theme] .x2p-vt .vt-snd::before{top:-8px;right:-8px;bottom:-16px;left:-16px}
 
-/* ---- the sound button: the film's corner, no bands to clear any more ---- */
-html.x2p.x2d.x2pbt .x2p-vt .vt-snd{top:8px;right:8px}
-html.x2p.x2d.x2pbt .x2p-vt .vt-snd::before{top:-8px;right:-8px;bottom:-16px;left:-16px}
-
-/* ---- phones: the board as wide as the bet ticket under it (16px in, the page's gutter) ---- */
-@media (max-width:599.98px){
-  html.x2p.x2d.x2pbt .x2p-vt{margin:18px 0 0;max-width:none;overflow-x:visible}
-}
-
-/* ---- desktop: the film stays 560px, the board grows round it ---- */
+/* ---- tablets and small desktops: the board as wide as the bet ticket under it (560px), the film a little smaller inside it ---- */
 @media (min-width:600px){
-  /* the board's left edge stays on the page's column (the headline's and the bet ticket's); the film keeps its 560px, so the board is 60px wider than the ticket */
-  html.x2p.x2d.x2pbt .x2p-vt{--bv:5px;--ms:25px;--mt:52px;--mb:30px;max-width:calc(560px + 2 * (var(--ms) + var(--bv)));margin:22px 0 0}
-  html.x2p.x2d.x2pbt[data-theme] .x2p-vt h2.vt-tag,html.x2p.x2d.x2pbt .x2p-vt h2.vt-tag{padding-top:17px;font-size:22px!important;gap:12px}
-  html.x2p.x2d.x2pbt .x2p-vt h2.vt-tag small.vt-s{font-size:15px}
+  html.x2p.x2d.x2pbt[data-theme] .x2p-vt{--bv:3px;--ms:20px;--mb:50px;--wash:.55;max-width:560px;margin:22px 0 0}
+  html.x2p.x2d.x2pbt[data-theme] .x2p-vt h2.vt-tag{padding-top:15.5px;font-size:21px!important}
+  html.x2p.x2d.x2pbt[data-theme] .x2p-vt h2.vt-tag small.vt-s{font-size:15px;margin-left:12px}
 }
-
+/* ---- wide screens: the film keeps its 560px and the mat hangs into the gutter, so the picture lines up with the headline and the bet
+   ticket and the board overhangs both sides evenly ---- */
+@media (min-width:1240px){
+  html.x2p.x2d.x2pbt[data-theme] .x2p-vt{max-width:calc(560px + 2 * (var(--ms) + var(--bv)));margin-left:calc(-1 * (var(--ms) + var(--bv)))}
+}

@@ -239,7 +239,7 @@
         p.style.fontSize="";var z=parseFloat(getComputedStyle(p).fontSize),n=0;
         while(hb.scrollHeight>hb.clientHeight+1&&z>10&&n++<20){z-=.5;p.style.fontSize=z+"px"}})}
     window.addEventListener("load",function(){setTimeout(eqH,120)});
-    var eqT;window.addEventListener("resize",function(){clearTimeout(eqT);eqT=setTimeout(eqH,150)});if(document.fonts&&document.fonts.ready)document.fonts.ready.then(eqH);
+    var eqT,eqW=innerWidth;window.addEventListener("resize",function(){if(innerWidth===eqW)return;eqW=innerWidth;clearTimeout(eqT);eqT=setTimeout(eqH,150)});if(document.fonts&&document.fonts.ready)document.fonts.ready.then(eqH);
     mark();requestAnimationFrame(function(){eqH();tr.scrollLeft=0;cur=near();mark();films()});
     /* (owner, 2026-10-22, two-tab launch) the Overview's highlights land on a chosen card with its story side up; false while
        the carousel is out of view (no width yet), so the caller tries again when the Overview shows */
@@ -263,7 +263,7 @@
     els.forEach(function(el){el.style.fontSize=""});
     els.forEach(function(el){var b=el.firstChild;if(b.scrollWidth>b.clientWidth+.5)st.push({el:el,b:b,z:parseFloat(getComputedStyle(el).fontSize)})});
     while(st.length){st=st.filter(function(x){return x.z>10});st.forEach(function(x){x.z-=.5;x.el.style.fontSize=x.z+"px"});st=st.filter(function(x){return x.b.scrollWidth>x.b.clientWidth+.5})}}
-  var nmT;function nmLater(){clearTimeout(nmT);nmT=setTimeout(nmFit,120)}nmFit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(nmFit);window.addEventListener("resize",nmLater);window.addEventListener("hashchange",nmLater);window.__x2pNmFit=nmLater;
+  var nmT;function nmLater(){clearTimeout(nmT);nmT=setTimeout(nmFit,120)}nmFit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(nmFit);var nmW=innerWidth;window.addEventListener("resize",function(){if(innerWidth===nmW)return;nmW=innerWidth;nmLater()});window.addEventListener("hashchange",nmLater);window.__x2pNmFit=nmLater;
   /* the record section's first two bullets said what steps 1 and 2 now say: keep only the dare */
   var rec=$(".x2o-rec"),own=rec?[].filter.call(rec.children,function(c){return !c.classList.contains("x2p-xli")}):[];if(own.length===3){own[0].remove();own[1].remove()}
   var sn=$(".x2o-stn");if(sn)sn.textContent="The model on top of the leaderboard makes the call on bet #1, NVIDIA.";
@@ -616,6 +616,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     if(t.closest("#x2pHl .card")){T("highlights",{a:"tap"},"hl-tap")}},true);
 }catch(e){}})();
 
+/* (2026-10-23, code review) a section off screen holds its looping animations still (skin-x2plus.css, after SPEED): the Overview's
+   sections are watched with 200px of warning; a section on a hidden tab counts as off screen */
+(function(){try{if(!window.IntersectionObserver)return;var io=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle("x2p-offs",!e.isIntersecting)})},{rootMargin:"200px 0px"});
+  function watch(){["#standings","#record","#learn","#highlights","#get"].forEach(function(q){var el=document.querySelector(q);if(el&&!el.hasAttribute("data-x2p-io")){el.setAttribute("data-x2p-io","");io.observe(el)}})}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch);else watch();addEventListener("load",watch);setTimeout(watch,2000)}catch(e){}})();
 /* ---- the bet ticket (owner, 2026-10-22): Admit One's format with Fight Night's colours and words, under the explainer film ---- */
 /* v4 "Admit One x Fight Night" (owner, 2026-10-22: "I sort of like the ticket format more from Admit One, but I prefer ... the colors
    in general, the layout of the colors and how everything is written, more from Fight Night").
@@ -870,7 +875,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       var capTop=function(){var i=$("i",o.btn);if(!i||!h2.offsetHeight)return;o.btn.style.removeProperty("margin-top");var p=d.createElement("span");p.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";h2.appendChild(p);
         var base=p.getBoundingClientRect().top;p.remove();var cs=getComputedStyle(h2),cv=d.createElement("canvas").getContext("2d");cv.font=cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;
         var cap=base-cv.measureText("S").actualBoundingBoxAscent,top=i.getBoundingClientRect().top;o.btn.style.setProperty("margin-top",(parseFloat(getComputedStyle(o.btn).marginTop)+cap-top).toFixed(2)+"px","important")};
-      capTop();if(d.fonts&&d.fonts.ready)d.fonts.ready.then(capTop);addEventListener("load",capTop);addEventListener("resize",capTop)}
+      capTop();if(d.fonts&&d.fonts.ready)d.fonts.ready.then(capTop);addEventListener("load",capTop);var ctW=innerWidth,ctT;addEventListener("resize",function(){if(innerWidth===ctW)return;ctW=innerWidth;clearTimeout(ctT);ctT=setTimeout(capTop,150)})}
     else ($(".sh .tx",st)||$(".sh",st)||st).appendChild(o.btn);
     st.appendChild(o.fl);st.appendChild(o.ft);
     /* the "As it stands" line on its new ticket (owner, 2026-10-22: the film ticket's layout, real paper; the words stay) */
@@ -933,7 +938,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
         /* (owner, 2026-10-23) Start, ROI, Now: the start in short ("$100K"), the ROI with a small + or − in place of the triangle, both
            the same small size; Now the biggest figure; each label centred over its numbers */
         html:function(){var k="$"+Math.round(STK/1000)+"K";return '<div class="lp pt-3"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Start</span><span>ROI</span><span>Now</span></div>'+byRoi.map(function(m,i){var b=S[m].bal,up=b>=STK,cl=up?'pt-u':'pt-d',p=Math.abs(b/STK*100-100).toFixed(1)+"%";
-          return row(i,m,'<span class="pt-v pt-st tnum"><span class="sr">started with </span>'+k+'</span><span class="pt-v tnum '+cl+'"><span class="sr">ROI '+(up?'up ':'down ')+'</span><span class="pt-sg" aria-hidden="true">'+(up?'+':'−')+'</span>'+p+'</span>','<span class="pt-c tnum '+cl+'"><span class="sr">now </span>'+usd(b)+'</span>')}).join("")+'</div>'+
+          return row(i,m,'<span class="pt-v pt-st tnum"><span class="sr">started with </span>'+k+'</span><span class="pt-v tnum '+cl+'"><span class="sr">ROI '+(up?'up ':'down ')+'</span><span class="pt-pm" aria-hidden="true">'+(up?'+':'−')+'</span>'+p+'</span>','<span class="pt-c tnum '+cl+'"><span class="sr">now </span>'+usd(b)+'</span>')}).join("")+'</div>'+
           '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Start: "+usd(STK))+'</div><p class="pt-cp">'+usd(STK)+' to start. The whole balance on every call. Wins and losses carry over. Buy on up, short on down. No leverage.</p>'},
         draw:function(el,h){var vs=[STK];MK.forEach(function(m){S[m].roi.forEach(function(p){vs.push(p[1])})});var lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STK*.05;lo-=pd;hi+=pd;
           chart(el,h,byRoi.map(function(m,i){return {m:m,rank:i+1,pts:S[m].roi.map(function(p){return [p[0]/N*100,(hi-p[1])/(hi-lo)*100]})}}),(hi-STK)/(hi-lo)*100,{lead:true})}},
@@ -1095,5 +1100,5 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   function later(){setTimeout(function(){fitRules();tixCols();centre();land();thin();fitSec()},80)}
   requestAnimationFrame(function(){requestAnimationFrame(function(){fitRules();tixCols();centre();land();thin()})});
   if(d.fonts&&d.fonts.ready)d.fonts.ready.then(later);addEventListener("load",later);addEventListener("hashchange",later);
-  var rt;addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){fitRules();tixCols();centre();fitSec()},150)});
+  var rt,rtW=innerWidth;addEventListener("resize",function(){if(innerWidth===rtW)return;rtW=innerWidth;clearTimeout(rt);rt=setTimeout(function(){fitRules();tixCols();centre();fitSec()},150)});
 }catch(e){}})();
