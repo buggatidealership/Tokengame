@@ -423,8 +423,10 @@ assert pp.count(a)==1,a
 pp=pp.replace(a,'window.__x2pR={vModels:vModels,wireModels:wireModels,vResults:vResults};'+a)
 # ... and X2's Overview order, which the page re-applies on every tab change, follows the launch order: standings,
 # record, proof, highlights (x2plus.js adds #highlights), Get $EZ; the section numbers follow it
-for a,b in [('var seq=[hero,top,rec,st,learn,get]','var seq=[hero,top,st,rec,learn,document.getElementById("highlights"),get]'),
-            ('var k=0;[rec,st,learn,get]','var k=0;[st,rec,learn,document.getElementById("highlights"),get]')]:
+for a,b in [('var seq=[hero,top,rec,st,learn,get]','var seq=[hero,top,st,rec,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get]'),
+            ('var k=0;[rec,st,learn,get]','var k=0;[st,rec,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get]'),
+            # the NVIDIA chip sits in the bet section at the foot of the Overview since 2026-10-24 (x2plus.js BETSEC): it loads when reached
+            ('if(im)im.loading="eager";','if(im)im.loading="lazy";')]:
     assert pp.count(a)==1,a; pp=pp.replace(a,b)
 pp,k1=re.subn(r'<link id="x2-logo-fonts"[^>]*>\n','',pp)
 pp,k2=re.subn(r'<style id="x2-logo">.*?</style>\n','',pp,flags=re.S)

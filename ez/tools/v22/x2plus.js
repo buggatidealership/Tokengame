@@ -6,7 +6,8 @@
 (function(){var H=document.documentElement;if(!H.classList.contains("x2p-cur"))return;var t0=Date.now(),okAt=0,fok=!window.__x2pF;
   if(window.__x2pF)window.__x2pF.then(function(){fok=true},function(){fok=true});
   function built(){if(H.getAttribute("data-sec")==="upcoming")return !!document.querySelector(".x2p-up");
-    return H.classList.contains("x2p-launch")&&H.classList.contains("x2pbt")&&!!document.querySelector(".x2p-vt")}
+    return H.classList.contains("x2p-launch")&&H.classList.contains("x2pbt")&&!!document.querySelector(".x2p-vt")&&
+      (H.classList.contains("x2pst")||!!window.__x2pBetErr)}   /* and the bet ticket moved to the foot (BETSEC), or that block gave up */
   function lift(){if(!H.classList.contains("x2p-cur"))return;H.classList.add("x2p-rv");H.classList.remove("x2p-cur");setTimeout(function(){H.classList.remove("x2p-rv")},400);try{performance.mark("x2p-shown")}catch(e){}}
   (function tick(){if(!H.classList.contains("x2p-cur"))return;
     if(built()){if(!okAt)okAt=Date.now();if(fok||Date.now()-okAt>1500){requestAnimationFrame(lift);return}}
@@ -840,7 +841,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   var num='N<u>o</u> '+'000001'.split('').map(function(c,i){return '<s style="opacity:'+ink[i]+';top:'+dy[i]+'px">'+c+'</s>'}).join('');
   p.appendChild(hid(mk('div','bt-st bt-hd','<span class="l"><i></i>$EZ main event<i></i></span><span class="r">Season 1</span>')));
   p.appendChild(hid(mk('div','bt-st bt-ft','<span class="l">Admit one</span><span class="r e"><span class="bt-no">'+num+'</span></span>')));
-  var im=g.querySelector('img');if(im){im.loading='eager'}
+  var im=g.querySelector('img');if(im){im.loading='lazy'}   /* at the foot of the Overview since 2026-10-24: loads when reached */
   return 'ok'};run()}catch(e){}})();
 /* ---- two-tab launch (owner, 2026-10-22): only Overview and Upcoming. The Overview reads: the first screen, 01 current
    standings (the Leaderboard tab's board: hit rate and ROI, no avg miss; a bare ⓘ turns it to "How we rank"; the "As it
@@ -1102,3 +1103,141 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   if(d.fonts&&d.fonts.ready)d.fonts.ready.then(later);addEventListener("load",later);addEventListener("hashchange",later);
   var rt,rtW=innerWidth;addEventListener("resize",function(){if(innerWidth===rtW)return;rtW=innerWidth;clearTimeout(rt);rt=setTimeout(function(){fitRules();tixCols();centre();fitSec()},150)});
 }catch(e){}})();
+
+/*BETSEC{*/
+/* ---- the explainer film's frame and the bet at the foot of the Overview (owner, 2026-10-24; CSS in the BETSEC block of
+   skin-x2plus.css): the fight-night bill in the brand's colours round the film, and section 05 The bet with the NVIDIA ticket and
+   the Season 2 ticket. Runs in the same pass as the bet ticket and the launch blocks, so the cover never shows the ticket in its
+   old place. A failure is kept in window.__x2pBetErr. ---- */
+(function(){var tries=0;function go(){try{
+  if(!document.querySelector('.x2p-vt')||!document.querySelector('.x2p-bt')||!document.getElementById('get')){if(tries++<50)setTimeout(go,100);else window.__x2pBetErr='parts missing';return}
+  (function(){/* The film's frame: round 30's fight-night bill in the brand's colours, take c3 "bands" (owner, 2026-10-24: "the colors
+   should be ours... And the dollar sign EZ should be in our color as well"; "I would go with the green and red bands"). The film is the
+   picture, bled to the trimmed sheet, nothing over it; a green band across the top with "How it works" knocked out of the ink (the bare
+   card shows through); "$EZ presents" in a gap of bare card left in the green ($ gold foil, E green ink, Z red ink); a red band at the
+   foot with the running time knocked out between two gold-foil stars ("Time left" while it plays). The bet ticket leaves the first
+   screen (the next block). Idempotent: a second run reuses the layer, the head spans and the foot. */
+var D=document,H=D.documentElement,vt=D.querySelector('.x2p-vt');if(!vt)return;
+H.classList.add('x2pbill');
+var tag=vt.querySelector('.vt-tag'),vs=vt.querySelector('.vt-s'),v=vt.querySelector('video');
+/* the sheet: shadow and printed face (aria-hidden, behind the film) */
+var bl=vt.querySelector(':scope>.vb-bl');
+if(!bl){bl=D.createElement('div');bl.className='vb-bl';bl.setAttribute('aria-hidden','true');bl.innerHTML='<i class="sh"></i><i class="pa"></i>';vt.insertBefore(bl,vt.firstChild)}
+/* the foot: the running time between two gold-foil stars (the time element itself moves here; it was already aria-hidden) */
+var ft=vt.querySelector(':scope>.vb-ft');
+if(!ft){ft=D.createElement('div');ft.className='vb-ft';ft.setAttribute('aria-hidden','true');ft.innerHTML='<b class="st" data-t="★">★</b><span class="t"><em class="tl">Running time</em></span><b class="st" data-t="★">★</b>';vt.appendChild(ft)}
+var slot=ft.querySelector('.t');if(vs&&vs.parentNode!==slot)slot.appendChild(vs);
+/* the head: its words in one span (data-t feeds the foil layer), and "$EZ presents" stacked small before it, hanging in the margin so the
+   head itself stays centred on the bill; the stack is decoration, so the h2 still reads "How it works" */
+if(tag&&!tag.querySelector('.vb-lk')){var t='';for(var n=tag.firstChild;n;){var nx=n.nextSibling;if(n.nodeType===3){t+=n.nodeValue;tag.removeChild(n)}n=nx}
+  var lk=D.createElement('span'),k=D.createElement('span'),hd=D.createElement('span');lk.className='vb-lk';k.className='vb-k';hd.className='vb-hd';
+  k.setAttribute('aria-hidden','true');k.innerHTML='<b class="ez"><i class="s" data-t="$">$</i><i class="e">E</i><i class="z">Z</i></b><b>presents</b>';
+  hd.textContent=t.replace(/\s+/g,' ').trim();hd.setAttribute('data-t',hd.textContent);
+  lk.appendChild(k);lk.appendChild(hd);tag.insertBefore(lk,tag.firstChild)}
+/* "Running time 1:20" before and after; "Time left 0:58" while it counts down */
+var full=function(){var d=v&&isFinite(v.duration)&&v.duration?v.duration:80;d=Math.round(d);return Math.floor(d/60)+':'+('0'+d%60).slice(-2)};
+var lab=function(){var tl=ft.querySelector('.tl'),s=vs?vs.textContent:'',w=s&&s!==full()?'Time left':'Running time';if(tl.textContent!==w)tl.textContent=w};
+if(vs&&!vs.__x2pVb){vs.__x2pVb=1;new MutationObserver(lab).observe(vs,{childList:true,characterData:true,subtree:true});if(v)v.addEventListener('loadedmetadata',lab)}
+lab();
+})();
+  (function(){/* 05 The bet (owner, 2026-10-24: rounds 31 and 32, "a combination of the ticket roll and the fight card", then "season 2
+   ticket"): after the highlights, "The first of many", the stakes on a strap, the NVIDIA ticket as it is (the live element itself,
+   moved, so its countdown keeps running), and joined to it at a perforation, as on a roll, the Season 2 ticket: the bet ticket's own
+   die and stock (bands, double rule, serial No 000002), "Season 2 / ticket" on the stub, its window printed with the coming bets: four
+   logos in one ink, one per report day this season (Meta and Tesla reported the same day, Alphabet and Microsoft, Apple and Amazon;
+   NVIDIA alone), in the order they reported, "& more" in red ink, then "Q4 2026 earnings / Next earnings season". No months: the owner
+   ("if they would read Jan to Feb, they'd think, oh, they'll do nothing else after the NVIDIA earnings"); the calls, the graded cards
+   and the X posts go on in between. Stacked on narrow columns, side by side once the column holds two. Get $EZ becomes 06.
+   Idempotent. */
+var d=document,H=d.documentElement,$=function(s,r){return (r||d).querySelector(s)},$$=function(s,r){return [].slice.call((r||d).querySelectorAll(s))};
+var bt=$('.x2p-bt'),get=$('#get');
+if(!bt||!get)return;
+var esc=function(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+/* the four, in the order they reported this season (ez-data.js: TSLA 10/21, GOOGL 10/27, AAPL 10/28, NVDA 11/17) */
+var PICK=['TSLA','GOOGL','AAPL','NVDA'];
+var name=function(t){return (typeof TICKERS!=='undefined'&&TICKERS[t])||t};
+var sec=$('#x2pSt');
+if(!sec){
+  sec=d.createElement('section');sec.className='sec x2p-bs s2t-va';sec.id='x2pSt';sec.setAttribute('aria-labelledby','x2pStH');
+  sec.innerHTML='<div class="sh"><div class="tx"><span class="no">05</span><span class="eb">The bet</span><h2 id="x2pStH">The first of many</h2></div>'+
+    '<div class="x2p-strap"><span class="x2p-bug" aria-hidden="true">The stakes</span><ul class="x2o-ul lede">'+
+      '<li>$EZ trading fees fill the pool.</li>'+
+      '<li>The AI on top makes the call.</li>'+
+      '<li><b class="x2p-hk s2t-ok">Right call:</b> profits buy back $EZ.</li>'+
+      '<li><b class="x2p-hk s2t-ng">Wrong call:</b> the pool can be wiped out.</li></ul></div></div>'+
+    '<div class="bs-clip"><div class="bs-roll"></div></div>'+
+    '<p class="sr">'+'Season 2 ticket. Season 2, the next earnings season (Q4 2026 earnings), brings more bets: '+PICK.map(name).join(', ')+' and more.</p>';
+  get.parentNode.insertBefore(sec,get);
+}
+var roll=$('.bs-roll',sec);
+if(bt.parentNode!==roll)roll.insertBefore(bt,roll.firstChild);
+/* the film's section is the film alone now: it takes its name from the film's own tag (an h2), not a second label */
+var fs=$('section.x2o-bet'),tag=fs&&$('.vt-tag',fs);
+if(fs&&tag){if(!tag.id)tag.id='x2pVtTag';fs.removeAttribute('aria-label');fs.setAttribute('aria-labelledby',tag.id)}
+H.classList.add('x2pst');
+/* the Season 2 ticket: the bet ticket's own die line, stock, bands, frame and numbering (its classes) */
+if(!$('.bs-tail',roll)){
+  var ink=[1,.84,.95,.88,1,.9],dy=[0,.3,-.2,.2,-.3,.1];
+  var serial=function(n){return 'N<u>o</u> '+n.split('').map(function(c,i){return '<s style="opacity:'+ink[i]+';top:'+dy[i]+'px">'+c+'</s>'}).join('')};
+  var media=typeof MEDIA!=='undefined'?MEDIA:'media/';
+  var cells=PICK.map(function(t){var L=(typeof CO_LOGOS!=='undefined'&&CO_LOGOS[t])||null,f=L&&(L.f||L);
+    return '<li><span class="s2t-lg'+(L&&L.dark?' dk':'')+'">'+(f?'<img src="'+media+f+'" alt="" loading="lazy" decoding="async">':'')+'</span><b>'+esc(t)+'</b></li>'}).join('')+
+    '<li class="s2t-more"><span class="s2t-lg s2t-amp">&amp;</span><b>More</b></li>';
+  var stub=
+    '<div class="s2t-lab"><b class="s2t-in">Season 2</b><b class="s2t-in s2t-rd">ticket</b></div><div class="bt-mk"><i></i><i></i><i></i></div>';
+  var tail=d.createElement('div');tail.className='bs-tail';tail.setAttribute('aria-hidden','true');
+  tail.innerHTML='<div class="bs-nx s2t"><div class="bt-sh"><i></i></div><div class="bt-hs"></div><div class="bt-p">'+
+    '<div class="bt-pp"><i class="bt-pl"></i><i class="bt-r1"></i><i class="bt-r2"></i></div>'+
+    '<div class="bt-b">'+stub+'</div>'+
+    '<div class="bt-s"><div class="s2t-win"><ul class="s2t-row">'+cells+'</ul><span class="s2t-tba"><b>Q4 2026 earnings</b><b>Next earnings season</b></span></div></div>'+
+    '<div class="bt-st bt-hd"><span class="l"><i></i>$EZ main event<i></i></span><span class="r">Season 2</span></div>'+
+    '<div class="bt-st bt-ft"><span class="l">Admit one</span><span class="r e"><span class="bt-no">'+serial('000002')+'</span></span></div>'+
+    '<i class="bs-perf"></i></div></div>';
+  /* the inks: a logo in one ink (a logo made for a light ground: its white stays paper; one made for a dark ground: all of it
+     ink), and the press's slight unevenness (the PRINTLOGO block's #x2pPrint, copied so this works on its own) */
+  var sv=d.createElementNS('http://www.w3.org/2000/svg','svg');sv.setAttribute('width','0');sv.setAttribute('height','0');sv.setAttribute('focusable','false');sv.style.cssText='position:absolute;width:0;height:0';
+  sv.innerHTML='<filter id="s2tInkL" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">'+
+      '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -1.063 -3.576 -0.361 5 0" result="a"/>'+
+      '<feComposite in="a" in2="SourceAlpha" operator="in" result="m"/><feFlood flood-color="#1b181c" flood-opacity=".94"/><feComposite in2="m" operator="in"/></filter>'+
+    '<filter id="s2tInkD" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feFlood flood-color="#1b181c" flood-opacity=".94"/><feComposite in2="SourceAlpha" operator="in"/></filter>'+
+    '<filter id="s2tPrint" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="2" seed="13" result="n"/>'+
+      '<feDisplacementMap in="SourceGraphic" in2="n" scale="0.9" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="2.3" numOctaves="1" seed="21" result="g"/>'+
+      '<feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.9 1.3" result="m"/><feComposite in="d" in2="m" operator="in"/></filter>';
+  tail.appendChild(sv);
+  roll.appendChild(tail);
+}
+/* numbers: Get $EZ follows as 06. X2's order routine (patched by build.py to include this section) re-runs on every return to the
+   Overview; this is its safety net */
+var fix=function(){var g=$('#get'),s=$('#x2pSt');if(!g||!s)return;if(s.nextElementSibling!==g)g.parentNode.insertBefore(s,g);var k=0;['#standings','#record','#learn','#highlights','#x2pSt','#get'].forEach(function(q){var e=$(q);if(!e||e.hidden)return;k++;var n=$('.sh .no',e);if(n)n.textContent=(k<10?'0':'')+k})};
+fix();
+/* each logo at the same optical size: its ink measured from the file itself (the white of a logo made for a light ground is
+   paper, not ink), scaled so every mark carries about the same weight, and centred on its ink, not on its file's box
+   (the fight card's fitLogo) */
+var fitLogo=function(img){var box=img.parentNode;if(!img.naturalWidth||!box||!box.offsetWidth)return;
+  var W=box.clientWidth,Hh=box.clientHeight,nw=img.naturalWidth,nh=img.naturalHeight,dk=box.classList.contains('dk');
+  var m=img.__s2Ink;if(!m){try{var c=d.createElement('canvas');c.width=nw;c.height=nh;var x=c.getContext('2d');x.drawImage(img,0,0);var px=x.getImageData(0,0,nw,nh).data,x0=nw,y0=nh,x1=-1,y1=-1,sum=0;
+      for(var y=0;y<nh;y++)for(var i=0;i<nw;i++){var o=(y*nw+i)*4,a=px[o+3]/255,l=(.2126*px[o]+.7152*px[o+1]+.0722*px[o+2])/255,k=dk?a:a*Math.max(0,Math.min(1,5*(1-l)));
+        if(k>.25){if(i<x0)x0=i;if(i>x1)x1=i;if(y<y0)y0=y;if(y>y1)y1=y}sum+=k}
+      m=img.__s2Ink=x1<0?null:{x0:x0,y0:y0,w:x1-x0+1,h:y1-y0+1,c:sum/((x1-x0+1)*(y1-y0+1))}}catch(e){m=null}}
+  if(!m){img.style.cssText='';return}
+  var s=Math.min(W/m.w,Hh/m.h,Math.sqrt(W*Hh*.42/(m.w*m.h*Math.sqrt(m.c))));
+  img.style.cssText='position:absolute;max-width:none;width:'+(nw*s).toFixed(2)+'px;height:'+(nh*s).toFixed(2)+'px;left:'+(W/2-(m.x0+m.w/2)*s).toFixed(2)+'px;top:'+(Hh/2-(m.y0+m.h/2)*s).toFixed(2)+'px'};
+var fitLogos=function(){$$('#x2pSt .s2t-lg img').forEach(function(im){if(im.complete&&im.naturalWidth)fitLogo(im);else if(!im.__s2L){im.__s2L=1;im.addEventListener('load',function(){fitLogo(im)})}})};
+/* the strap's four lines one line each (the standings strap's rule): all four step down together, half a pixel at a time,
+   until none wraps; too narrow even at 12px (a 320px phone): the full size, wrapped */
+var fitStrap=function(){var ls=$$('#x2pSt .x2p-strap li');if(!ls.length||!ls[0].offsetWidth)return;ls.forEach(function(l){l.style.fontSize=''});
+  var nl=function(l){var g=d.createRange();g.selectNodeContents(l);var t=[];[].forEach.call(g.getClientRects(),function(r){if(r.width&&!t.some(function(q){return Math.abs(q-r.top)<4}))t.push(r.top)});return t.length};
+  var z=parseFloat(getComputedStyle(ls[0]).fontSize),n=0;
+  while(ls.some(function(l){return nl(l)>1})&&z>12&&n++<40){z-=.5;ls.forEach(function(l){l.style.fontSize=z+'px'})}
+  if(ls.some(function(l){return nl(l)>1}))ls.forEach(function(l){l.style.fontSize=''})};
+/* the fitting measures the page (a full layout each time), so it waits until the section is about a screen away: on arrival the
+   section is far below the first screen and the cover would wait for it */
+var near=!window.IntersectionObserver,all=function(){fix();if(near){fitStrap();fitLogos()}};
+if(!near&&!sec.__x2pIo){sec.__x2pIo=1;var io=new IntersectionObserver(function(es){if(!es.some(function(e){return e.isIntersecting}))return;io.disconnect();near=true;all()},{rootMargin:'900px 0px'});io.observe(sec)}
+all();if(d.fonts&&d.fonts.ready)d.fonts.ready.then(all);
+if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resize',function(){if(innerWidth===lw)return;lw=innerWidth;clearTimeout(ft);ft=setTimeout(all,120)});addEventListener('load',all);
+  addEventListener('hashchange',function(){setTimeout(all,0)})}
+
+})();
+}catch(e){window.__x2pBetErr=String(e&&e.stack||e)}}go()})();
+/*}BETSEC*/
