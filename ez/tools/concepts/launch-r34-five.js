@@ -9,7 +9,9 @@ const S='/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8
 const id=process.argv[2]||'now',OUT=process.argv[3]||S+'r34f/',WS=(process.argv[4]||'320,390,1280').split(',').map(Number),DIR=path.join(__dirname,'launch-r34-five');
 const BASE=process.env.BASE||'http://127.0.0.1:8899/v46-live-x2plus.html';
 const rd=f=>fs.existsSync(path.join(DIR,f))?fs.readFileSync(path.join(DIR,f),'utf8'):'';
-const css=id==='now'?'':rd('_base.css')+'\n'+rd(id+'.css'),js=id==='now'?'':rd('_data.js')+'\n'+rd(id+'.js');
+/* round 2 (owner, 2026-10-24): the r2* options sit on the board with the picked flags on the stub (launch-r34-flags o2) and the stub a touch wider */
+const R2=id.indexOf('r2')===0,FL=path.join(__dirname,'launch-r34-flags'),rf=f=>fs.readFileSync(path.join(FL,f),'utf8');
+const css=id==='now'?'':rd('_base.css')+'\n'+(R2?rf('o2.css')+'\n'+rd('_r2.css')+'\n':'')+rd(id+'.css'),js=id==='now'?'':rd('_data.js')+'\n'+(R2?rf('_flags.js')+'\n'+rf('o2.js')+'\n'+rd('_r2.js')+'\n':'')+rd(id+'.js');
 (async()=>{const b=await chromium.launch({args:['--proxy-server='+process.env.HTTPS_PROXY,'--proxy-bypass-list=127.0.0.1;localhost','--ignore-certificate-errors-spki-list='+fs.readFileSync(S+'x2p/spki.txt','utf8').trim()]});
 const res={};
 for(const W of WS){
