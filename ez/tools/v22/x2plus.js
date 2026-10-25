@@ -1112,6 +1112,14 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   if(hs&&window.__x2pHlSlabs){var h2=d.createElement("div");h2.hidden=true;d.body.appendChild(h2);h2.appendChild(hs);window.__x2pHlSlabs();
     if($("#x2pHl",hs)){hs.id="highlights";hs.classList.add("sec","x2p-hl-sec");hs.setAttribute("aria-labelledby","x2hlH");
       var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH" class="x2p-mvp">MVP<span class="x2p-lc">s</span> <small>(Most valuable predictions)</small></h2></div>';
+      /* "MVPs" and "(Most valuable predictions)" on one line (owner, 2026-10-25): the brackets step down until the head fits
+         its column; if even .45em does not fit (a 320px phone), they wrap at full size as before */
+      (function(){var fit=function(){var h=d.querySelector("h2.x2p-mvp"),s=h&&h.querySelector("small");if(!s||!h.clientWidth)return;s.style.fontSize="";h.style.whiteSpace="nowrap";
+          var r=d.createRange();r.selectNodeContents(h);var av=h.clientWidth-1,z=1,n=0;while(r.getBoundingClientRect().width>av&&z>.45&&n++<40){z-=.025;s.style.fontSize=z.toFixed(3)+"em"}
+          if(r.getBoundingClientRect().width>av){s.style.fontSize="";h.style.whiteSpace=""}},w=0;
+        if(d.fonts){d.fonts.ready.then(fit);if(d.fonts.addEventListener)d.fonts.addEventListener("loadingdone",function(){setTimeout(fit,30)})}
+        addEventListener("resize",function(){if(innerWidth!==w){w=innerWidth;fit()}});
+        if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting)fit()},{rootMargin:"600px 0px"});setTimeout(function(){var h=d.querySelector("h2.x2p-mvp");if(h)io.observe(h)},0)}else fit()})();
       var xh=$(".xsh",hs);if(xh)hs.replaceChild(sh,xh);else hs.insertBefore(sh,hs.firstChild);ln.parentNode.insertBefore(hs,ln.nextSibling)}
     h2.remove()}
   /* bullets under the standings, proof and highlights heads, the record's style (owner, 2026-10-22: "a bit dry"); the
@@ -1257,10 +1265,10 @@ if(!sec){
   sec=d.createElement('section');sec.className='sec x2p-bs s2t-va';sec.id='x2pSt';sec.setAttribute('aria-labelledby','x2pStH');
   sec.innerHTML='<div class="sh"><div class="tx"><span class="no">05</span><span class="eb">The bet</span><h2 id="x2pStH">The first of many</h2></div>'+
     '<div class="x2p-strap"><span class="x2p-bug" aria-hidden="true">The stakes</span><ul class="x2o-ul lede">'+
+      /* three lines at most (owner, 2026-10-25): right and wrong share the last line */
       '<li>69% of $EZ creator fees fill the pool.</li>'+
-      '<li>The AI on top makes the call we trust.</li>'+
-      '<li><b class="x2p-hk s2t-ok">Right call:</b> profits buy back $EZ.</li>'+
-      '<li><b class="x2p-hk s2t-ng">Wrong call:</b> the pool can be wiped out.</li></ul></div></div>'+
+      '<li>The pool gets bet on the top AI\'s call.</li>'+
+      '<li><b class="x2p-hk s2t-ok">Right:</b> $EZ buyback. <b class="x2p-hk s2t-ng">Wrong:</b> pool can be wiped out.</li></ul></div></div>'+
     '<div class="bs-clip"><div class="bs-roll"></div></div>'+
     '<p class="sr">'+'Season 2 ticket. Season 2, the next earnings season (Q4 2026 earnings), brings more bets: '+PICK.map(name).join(', ')+' and more.</p>';
   get.parentNode.insertBefore(sec,get);
@@ -1322,14 +1330,14 @@ var fitLogos=function(){$$('#x2pSt .s2t-lg img').forEach(function(im){if(im.comp
 /* a strap's lines one line each (the standings strap's rule): all step down together, half a pixel at a time, until none
    wraps; too narrow even at 12px (a 320px phone): the full size, wrapped. This section's strap and the proof's ("The stats";
    owner, 2026-10-24: "it always needs to be one line") */
-var fitLines=function(sel){var ls=$$(sel+' .x2p-strap li');if(!ls.length||!ls[0].offsetWidth)return;ls.forEach(function(l){l.style.fontSize=''});
+var fitLines=function(sel,mn){mn=mn||12;var ls=$$(sel+' .x2p-strap li');if(!ls.length||!ls[0].offsetWidth)return;ls.forEach(function(l){l.style.fontSize=''});
   var nl=function(l){var g=d.createRange();g.selectNodeContents(l);var t=[];[].forEach.call(g.getClientRects(),function(r){if(r.width&&!t.some(function(q){return Math.abs(q-r.top)<4}))t.push(r.top)});return t.length};
   var z=parseFloat(getComputedStyle(ls[0]).fontSize),n=0;
-  while(ls.some(function(l){return nl(l)>1})&&z>12&&n++<40){z-=.5;ls.forEach(function(l){l.style.fontSize=z+'px'})}
+  while(ls.some(function(l){return nl(l)>1})&&z>mn&&n++<40){z-=.5;ls.forEach(function(l){l.style.fontSize=z+'px'})}
   if(ls.some(function(l){return nl(l)>1}))ls.forEach(function(l){l.style.fontSize=''})};
 /* the fitting measures the page (a full layout each time), so it waits until the section is about a screen away: on arrival the
    section is far below the first screen and the cover would wait for it */
-var lrn=$('#learn'),near=!window.IntersectionObserver,nearL=near,all=function(){fix();if(near){fitLines('#x2pSt');fitLogos()}if(nearL)fitLines('#learn')};
+var lrn=$('#learn'),near=!window.IntersectionObserver,nearL=near,all=function(){fix();if(near){fitLines('#x2pSt',11);fitLogos()}if(nearL)fitLines('#learn')};
 if(!near&&!sec.__x2pIo){sec.__x2pIo=1;var io=new IntersectionObserver(function(es){if(!es.some(function(e){return e.isIntersecting}))return;io.disconnect();near=true;all()},{rootMargin:'900px 0px'});io.observe(sec)}
 if(!nearL&&lrn&&!lrn.__x2pIo){lrn.__x2pIo=1;var io2=new IntersectionObserver(function(es){if(!es.some(function(e){return e.isIntersecting}))return;io2.disconnect();nearL=true;fitLines('#learn')},{rootMargin:'900px 0px'});io2.observe(lrn)}
 all();if(d.fonts&&d.fonts.ready)d.fonts.ready.then(all);
