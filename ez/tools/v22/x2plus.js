@@ -149,6 +149,117 @@
       av=hit?rw.reduce(function(a,b){return a+b},0)/hit:0,mv=Math.abs(g.a),pt=av<=1.5?2:av<=2?1.5:av<=2.5?1:av<=3?.5:0,gr,ds,pr=false;
     if(f===1){gr=8+pt;if(gr===10&&!(av<mv/2))gr=9.5;ds=gr===10?((pr=av<1)?"Pristine":"Gem"):"Perfect"}else if(f>=.66){gr=6+Math.min(pt,1.5);ds="Strong"}else if(f>=.5){gr=4+Math.min(pt,1.5);ds="Split"}else if(f>0){gr=2+Math.min(pt,1.5);ds="Rough"}else{gr=1;ds="Rekt"}
     return {gr:gr,ds:ds,pr:pr,hit:hit,nc:nc,av:av,why:hit===0?"0 of "+nc+" right":hit+" of "+nc+" right \u00b7 "+av.toFixed(2)+"% off on avg"}}
+  /* the certificate (owner, 2026-10-25, round 50: "do the logo stamp. Put that one on the Easy Life X2 Plus, and then put the seal hot
+     stamped on Easy Life X3 Plus"): a graded record card's stats side becomes round 47's certificate as the owner fixed it in rounds 49
+     and 50. ★ Certificate ★ and the round's number; what they predicted, ranked 1 to 4 (right calls by closeness, then wrong ones), each
+     with PASS or FAIL in a small worn cartouche between the name and the call, the winner's line in antique gold with a gold PASS; the
+     market's move; at the foot Calls filed, Graded on and the stamp (no date in it), "See the film" small under the dates. The stamp
+     is a hologram with the EZ. logo struck into the foil (the letters a second foil angle with a raised edge, the slashes and the dot in
+     tinted foils): the logo stamp on X2+ (an oil-slick disc, two foil rings, GRADED · BY THE MARKET CLOSE round it), the certificate
+     seal hot-stamped on X3+ (build.py sets window.__x2pStampKind). Mockups: tools/concepts/launch-r40-recback/_r50.js (round 43 at
+     390px). Drawn at that phone's size and scaled to the card by CSS (viewport units, the CERT block). The foils drift only on the card
+     in front with its stats side up (xlive, xstep); every other stamp holds one still frame (t = 1.6 s, the boards' frame); certificates
+     and stamps are drawn only for the cards near the front one. The PASS/FAIL cartouches share four worn-ink filters (#x2pcw0 to 3) in one hidden svg. */
+  var XLG={e:'M116.8,88.0 L86.2,152.0 L102.1,152.0 L55.0,274.5 L154.2,274.5 L188.5,225.8 L128.7,225.8 L137.5,204.0 L170.2,203.5 L193.2,162.0 L149.1,162.0 L154.8,145.0 L143.4,138.5 L217.9,138.2 L192.2,182.0 L234.9,182.0 L181.5,250.8 L136.0,315.8 L272.5,315.8 L292.5,265.0 L230.4,265.0 L328.2,130.8 L225.1,130.8 L253.0,87.8 Z',g:'M146.2,287.0 L133.0,287.0 L106.5,327.2 L119.0,326.5 Z M86.8,169.5 L74.8,169.5 L29.5,282.2 L43.7,282.2 Z M105.8,92.5 L89.5,95.8 L55.5,169.2 L69.0,169.2 Z',r:'M304.5,259.0 L300.5,269.5 L313.0,268.2 L317.0,258.8 Z M361.5,126.0 L344.0,126.5 L269.5,235.8 L256.0,257.5 L276.2,257.0 Z M279.0,87.8 L266.7,87.5 L251.5,117.2 L262.2,119.0 Z',y:'M334.2,281.2 L302.0,281.2 L288.2,315.8 L321.0,315.5 Z'},
+    XSPEC=['#eef1f6','#ffc6e2','#ffe6a0','#c2f3c6','#a2e7ff','#c8b6ff','#eef1f6'],XOIL=['#120d1f','#3a2a74','#11524c','#6a2747','#28205a','#0f3a46','#120d1f'],
+    XGT=['#c9f7dd','#5fd99b','#e9fff3','#2fbf7a','#a8f0c9','#c9f7dd'],XRT=['#ffd1cc','#ff6b5e','#fff0ee','#e0443a','#ffb3aa','#ffd1cc'],XYT=['#ffefb8','#f7c24a','#fff8dc','#e0a422','#ffe08a','#ffefb8'],
+    XK=0,xid=function(){return "x2c"+(++XK)},XKIND=window.__x2pStampKind==="seal"?"seal":"badge",
+    XRM=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
+  function xlogo(cx,cy,w,f){var k=w/331.3;return '<g transform="translate('+(cx-195.9*k).toFixed(2)+' '+(cy-207.4*k).toFixed(2)+') scale('+k.toFixed(4)+')">'+
+    (f.e?'<path d="'+XLG.e+'" fill="'+f.e+'"/>':'')+(f.g?'<path d="'+XLG.g+'" fill="'+f.g+'"/>':'')+(f.r?'<path d="'+XLG.r+'" fill="'+f.r+'"/>':'')+(f.y?'<path d="'+XLG.y+'" fill="'+f.y+'"/>':'')+'</g>'}
+  /* a foil: repeating bands that drift on one 6 s clock */
+  function xhx(id,a,x2,y2,dx){return '<linearGradient id="'+id+'" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="'+x2+'" y2="'+y2+'" spreadMethod="repeat">'+
+    a.map(function(c,i){return '<stop offset="'+(i/(a.length-1)).toFixed(3)+'" stop-color="'+c+'"/>'}).join("")+
+    '<animateTransform attributeName="gradientTransform" type="translate" values="0 0;'+dx+' '+(dx*y2/x2/3).toFixed(1)+'" dur="6s" repeatCount="indefinite"/></linearGradient>'}
+  /* the light catching it now and then, and the fine diffraction grooves */
+  function xglint(id,op){return '<linearGradient id="'+id+'" gradientUnits="userSpaceOnUse" x1="-70" y1="-10" x2="-36" y2="14"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity="'+op+'"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>'+
+    '<animateTransform attributeName="gradientTransform" type="translate" values="0 0;230 0;230 0" keyTimes="0;.55;1" dur="6s" repeatCount="indefinite"/></linearGradient>'}
+  function xgroove(id,per,ang,op){return '<pattern id="'+id+'" patternUnits="userSpaceOnUse" width="'+per+'" height="'+per+'" patternTransform="rotate('+ang+')"><rect width="'+(per*.45).toFixed(2)+'" height="'+per+'" fill="#fff" fill-opacity="'+op+'"/></pattern>'}
+  /* hot-stamped foil follows the card's fibres: its grain multiplied through the foil */
+  function xgrain(id,s){return '<filter id="'+id+'" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="1.05" numOctaves="3" seed="'+s+'" result="n"/><feColorMatrix in="n" type="saturate" values="0" result="g"/>'+
+    '<feComponentTransfer in="g" result="t"><feFuncR type="linear" slope=".36" intercept=".72"/><feFuncG type="linear" slope=".36" intercept=".72"/><feFuncB type="linear" slope=".36" intercept=".72"/></feComponentTransfer>'+
+    '<feComposite in="t" in2="SourceGraphic" operator="in" result="tm"/><feBlend in="SourceGraphic" in2="tm" mode="multiply"/></filter>'}
+  function xarc(id,r,top){return '<path id="'+id+'" d="M '+(50-r)+',50 A '+r+','+r+' 0 0 '+(top?1:0)+' '+(50+r)+',50"/>'}
+  function xring(id,r){return '<path id="'+id+'" d="M 50,'+(50+r)+' a '+r+','+r+' 0 1,1 0.01,0"/>'}
+  function xtp(pid,txt,fs,fill,ls,len){return '<text text-rendering="geometricPrecision" font-family="Archivo, sans-serif" font-weight="900" font-size="'+fs+'" letter-spacing="'+ls+'" fill="'+fill+'"><textPath href="#'+pid+'" xlink:href="#'+pid+'" startOffset="50%" text-anchor="middle"'+
+    (len?' textLength="'+len.toFixed(1)+'" lengthAdjust="spacing"':'')+'>'+txt+'</textPath></text>'}
+  /* the logo in the foil: the letters in a second, broader foil drifting the other way, the slashes and the dot in green, red and gold
+     tinted foils, a raised edge (light above and left, dark below and right) and a fine keyline */
+  function xmark(id,cx,cy,w,o){var d=.6,k=w/331.3,one=function(f){return xlogo(cx,cy,w,{e:f,g:f,r:f,y:f})};
+    return {defs:xhx(id+"b",o.pal,-78,96,-78)+xhx(id+"g",XGT,40,52,40)+xhx(id+"r",XRT,40,52,40)+xhx(id+"y",XYT,40,52,40),
+      body:'<g transform="translate('+d+' '+(d*1.15).toFixed(2)+')" fill-opacity="'+o.sd+'">'+one("#1c1830")+'</g>'+
+      '<g transform="translate('+(-d*.8).toFixed(2)+' '+(-d*.9).toFixed(2)+')" fill-opacity="'+o.lt+'">'+one("#ffffff")+'</g>'+
+      xlogo(cx,cy,w,{e:"url(#"+id+"b)",g:"url(#"+id+"g)",r:"url(#"+id+"r)",y:"url(#"+id+"y)"})+
+      '<g fill="none" stroke="#24203a" stroke-opacity=".38" stroke-linejoin="round" transform="translate('+(cx-195.9*k).toFixed(2)+' '+(cy-207.4*k).toFixed(2)+') scale('+k.toFixed(4)+')"><path d="'+XLG.e+'" stroke-width="'+(.5/k).toFixed(2)+'"/></g>'}}
+  function xsv(defs,body){return '<svg class="xc-s" viewBox="0 0 100 100" role="img" aria-label="EZ hologram: graded by the market close" focusable="false"><defs>'+defs+'</defs>'+body+'</svg>'}
+  /* X3+: the certificate seal, hot-stamped (flush in the card, the grain through the foil, its edge pressed) */
+  function xseal(){var id=xid(),p="";for(var i=0;i<56;i++){var a=i/56*Math.PI*2,r=i%2?44.5:49;p+=(i?"L":"M")+(50+r*Math.cos(a)).toFixed(2)+","+(50+r*Math.sin(a)).toFixed(2)}p+="Z";
+    var m=xmark(id+"m",50,52,46,{pal:["#dfe6ef","#9fe0ff","#f6b6dc","#fff0b0","#b6f2c8","#c3b0ff","#dfe6ef"],sd:.62,lt:.9});
+    return xsv(xhx(id+"h",XSPEC,46,26,46)+xglint(id+"l",.6)+xgroove(id+"q",1.6,62,.1)+xgrain(id+"n",13)+'<clipPath id="'+id+'c"><path d="'+p+'"/></clipPath>'+m.defs+xarc(id+"a",33.2,1)+xarc(id+"z",38.4,0),
+      '<g clip-path="url(#'+id+'c)"><g filter="url(#'+id+'n)"><rect width="100" height="100" fill="url(#'+id+'h)"/></g><rect width="100" height="100" fill="url(#'+id+'q)"/></g>'+
+      '<path d="'+p+'" fill="none" stroke="#4d5160" stroke-opacity=".45" stroke-width=".6"/><circle cx="50" cy="50" r="40.6" fill="none" stroke="#3b3f4b" stroke-opacity=".42" stroke-width=".6"/>'+
+      xtp(id+"a","GRADED",6.6,"#262a35",1.6)+xtp(id+"z","BY THE MARKET CLOSE",4.6,"#262a35",.5)+
+      m.body+'<g clip-path="url(#'+id+'c)"><rect width="100" height="100" fill="url(#'+id+'l)"/></g>')}
+  /* X2+: the logo stamp (the oil-slick disc, two foil rings, the legend round it, the logo small and in foil inside) */
+  function xbadge(){var id=xid(),m=xmark(id+"m",50,51,40,{pal:XSPEC,sd:.6,lt:.35});
+    return xsv(xhx(id+"h",XOIL,44,30,44)+xhx(id+"k",XSPEC,30,18,30)+xglint(id+"l",.4)+xgroove(id+"q",1.4,90,.06)+'<clipPath id="'+id+'c"><circle cx="50" cy="50" r="47"/></clipPath>'+m.defs+xring(id+"t",36.1),
+      '<g clip-path="url(#'+id+'c)"><rect width="100" height="100" fill="url(#'+id+'h)"/><rect width="100" height="100" fill="url(#'+id+'q)"/></g>'+
+      '<circle cx="50" cy="50" r="44.4" fill="none" stroke="url(#'+id+'k)" stroke-width="2"/><circle cx="50" cy="50" r="33.4" fill="none" stroke="url(#'+id+'k)" stroke-width=".9"/>'+
+      xtp(id+"t","GRADED · BY THE MARKET CLOSE ·",5.2,"url(#"+id+"k)",.6,2*Math.PI*36.1*.965)+m.body+
+      '<g clip-path="url(#'+id+'c)"><rect width="100" height="100" fill="url(#'+id+'l)"/></g><circle cx="50" cy="50" r="47" fill="none" stroke="#000" stroke-opacity=".45" stroke-width=".6"/>')}
+  /* a stamp holds the boards' frame until it is the one in front */
+  function xstill(s){try{s.pauseAnimations();s.setCurrentTime(1.6)}catch(e){}}
+  function xstamp(c){var st=c.querySelector(".xc-st");if(!st||st.firstChild)return;st.innerHTML=XKIND==="seal"?xseal():xbadge();xstill(st.firstChild)}
+  /* the four worn-ink filters of the PASS/FAIL cartouches, once for the page */
+  function xdefs(){if(document.getElementById("x2pcw0")||!document.body)return;var sv=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    sv.setAttribute("width","0");sv.setAttribute("height","0");sv.setAttribute("aria-hidden","true");sv.style.position="absolute";
+    sv.innerHTML=[21,22,23,24].map(function(s,i){return '<filter id="x2pcw'+i+'" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="2" seed="'+s+'" result="n"/>'+
+      '<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.9" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>'}).join("");document.body.appendChild(sv)}
+  function xmini(w,c,rot,i){return '<svg class="xc-m" viewBox="0 0 29 13" width="29" height="13" style="--rot:'+rot+'deg" role="img" aria-label="'+w+'" focusable="false"><g filter="url(#x2pcw'+i+')" stroke="'+c+'" fill="'+c+'">'+
+    '<path d="M4 1H25L28 4V9L25 12H4L1 9V4Z" fill="none" stroke-width="1.4"/><text x="14.5" y="9.09" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="7.2" letter-spacing=".5" stroke="none">'+w+'</text></g></svg>'}
+  function xnm(m){return m==="GPT"?"GPT":m.charAt(0)+m.slice(1).toLowerCase()}
+  function xsvg(m){try{var h=typeof logo==="function"?logo(m):"",x=h.match(/<svg[\s\S]*<\/svg>/);return x?x[0]:""}catch(e){return ""}}
+  function xmove(a){var dn=a<0;return '<span aria-hidden="true">'+(dn?"▼":"▲")+'</span><span class="sr">'+(dn?"Down ":"Up ")+'</span>'+Math.abs(a).toFixed(2)+"%"}
+  /* builds (or, on a copy such as the round opened over the page, rebuilds with fresh ids) a graded card's certificate */
+  function certify(c,g,re){var fin=c.querySelector(".face.back .fin");if(!fin)return;var old=fin.querySelector(".xc");if(old&&!re)return;xdefs();
+    var wn=g.win?g.win.split(" & "):[],up0=g.a>0,R=g.calls.map(function(x){var up=x[1].indexOf("DOWN")<0,mg=parseFloat(String(x[1]).replace(/^(UP|DOWN)\s*/,""));
+      return {m:x[0],up:up,mg:Math.round(mg*100)/100,ok:up===up0,off:+x[2],win:wn.indexOf(x[0])>-1}}),by=function(a,b){return a.off-b.off};
+    R=R.filter(function(x){return x.ok}).sort(by).concat(R.filter(function(x){return !x.ok}).sort(by));
+    var rows=R.map(function(x,i){var gd=x.win,cl=gd?" xc-g":" lp";
+      return '<div class="xc-r '+(gd?"win wg":x.ok?"ok":"no")+'"><b class="xc-rk'+cl+'">'+(i+1)+'</b><span class="xc-mk" aria-hidden="true">'+xsvg(x.m)+'</span><span class="xc-nm'+cl+'">'+xnm(x.m)+'</span>'+
+        xmini(x.ok?"PASS":"FAIL",gd?"#a98329":x.ok?"#1f6b3f":"#a8231a",[-6,-4,-7,-5][i%4],i%4)+
+        '<span class="xc-cl'+(gd?" xc-g":" lp "+(x.up?"up":"dn"))+'"><span aria-hidden="true">'+(x.up?"▲":"▼")+'</span><span class="sr">'+(x.up?"Up ":"Down ")+'</span>'+x.mg+'%</span></div>'}).join("");
+    var fb=(old||fin).querySelector("[data-flip]"),h4=(old||fin).querySelector("h4");
+    var x=document.createElement("div");x.className="xc";
+    x.innerHTML='<div class="xc-fr" aria-hidden="true"></div><div class="xc-hd"><p class="xc-t"><i class="xc-sr xc-g" aria-hidden="true">★</i><span class="lp">Certificate</span><i class="xc-sr xc-g" aria-hidden="true">★</i></p><p class="xc-no lp">No. '+String(g.n).padStart(4,"0")+'</p></div>'+
+      '<p class="xc-sec"><span class="lp">What they predicted</span></p><div class="xc-rows">'+rows+'</div>'+
+      '<div class="xc-out"><small class="lp">Market</small><b class="lp '+(g.a<0?"dn":"up")+'">'+xmove(g.a)+'</b></div>'+
+      '<div class="xc-ft"><div class="xc-fl"><div class="xc-dt"><p class="xc-d"><small class="lp">Calls filed</small><b class="lp">'+md(g.called).t+'</b></p><p class="xc-d"><small class="lp">Graded on</small><b class="lp">'+md(g.resolves).t+'</b></p></div></div>'+
+      '<div class="xc-st" style="--xr:'+(XKIND==="seal"?7:6)+'deg"></div></div>';
+    if(h4){h4.className="sr";x.insertBefore(h4,x.firstChild)}
+    if(fb){fb.classList.add("lp","xc-film");x.querySelector(".xc-fl").appendChild(fb)}
+    /* the page's own stats side stays under it, hidden: on a 350px phone and narrower it still sets the card's height (CERT block) */
+    if(old)old.remove();fin.appendChild(x);
+    if(re)xstamp(c)}
+  /* the stamp in front: drawn for the front card and its neighbours, the foil moving only on the front card with its stats side
+     up (or on the round opened over the page), while its section is on screen; never with reduced motion */
+  /* the foils are stepped by script, 20 times a second, on a paused SMIL clock (setCurrentTime): measured on a 4x slower CPU, SMIL's own
+     60 updates a second cost the page 2.1 s of work in 4 s and dropped it to 35 frames a second; 20 steps cost 1.0 s and keep 48 */
+  var XLIVE=null,XQ=0,XT=0,XL=0;
+  function xstep(ts){if(!XLIVE||!XLIVE.isConnected){XT=0;return}if(!XL||ts-XL>=50){try{XLIVE.setCurrentTime(XLIVE.getCurrentTime()+(XL?Math.min(ts-XL,200):50)/1000)}catch(e){}XL=ts}XT=requestAnimationFrame(xstep)}
+  /* a card gets its certificate when it comes within two places of the front card (built for all 45 at load, it cost the first build
+     about 1 s on a 4x slower CPU); a card further off keeps the page's own stats side, which no one sees */
+  var XG=null;function xg(n){if(!XG){XG={};ROUNDS.forEach(function(r){XG[r.n]=r})}return XG[n]}
+  function xnear(c){if(c.getAttribute("data-k")!=="g")return;if(!c.querySelector(".xc")){var g=xg(+c.getAttribute("data-n"));if(!g)return;try{certify(c,g)}catch(e){window.__x2pCertErr=e;return}}xstamp(c)}
+  function xlive(){XQ=0;var car=document.getElementById("car"),rec=document.getElementById("record"),want=null,pm=document.querySelector("#x2pRm .card[data-k=g]");
+    if(car){var cs=[].slice.call(car.querySelectorAll(".card[data-n]")),i=-1;cs.forEach(function(c,j){if(c.classList.contains("cur"))i=j});
+      if(i>-1)for(var j=Math.max(0,i-2);j<=Math.min(cs.length-1,i+2);j++)xnear(cs[j])}
+    if(pm)xstamp(pm);
+    if(!XRM&&!document.hidden){if(pm){if(pm.classList.contains("flipped"))want=pm.querySelector(".xc-s")}
+      else if(rec&&!rec.classList.contains("x2p-offs")){var cc=rec.querySelector(".card.cur[data-k=g]");if(cc&&(cc.classList.contains("flipped")||cc.classList.contains("nofilm")))want=cc.querySelector(".xc-s")}}
+    if(want===XLIVE)return;XLIVE=want;XL=0;if(want&&!XT)XT=requestAnimationFrame(xstep)}
+  window.__x2pCertLive=function(){if(!XQ)XQ=requestAnimationFrame(xlive)};
+  window.__x2pCertCopy=function(c){var g=xg(+c.getAttribute("data-n"));if(g&&c.getAttribute("data-k")==="g")try{certify(c,g,true)}catch(e){window.__x2pCertErr=e}};
   window.__x2pSlab=function(root){[].forEach.call((root||document).querySelectorAll("#record .card[data-n]"),function(c){if(c.querySelector(".fx"))return;
     var n=+c.getAttribute("data-n"),g=null,q=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===n)g=ROUNDS[i];if(!g)for(i=0;i<PENDING.length;i++)if(PENDING[i].n===n)q=PENDING[i];var u=null;if(!g&&!q)for(i=0;i<UPCOMING.length;i++)if(UPCOMING[i].n===n)u=UPCOMING[i];
     var r=g||q||u;if(!r)return;var hit=g?g.calls.filter(function(x){return (x[1].indexOf("DOWN")<0)===(g.a>0)}).length:0,nc=g?g.calls.length:0,d=md(r.called);
@@ -161,7 +272,9 @@
       '</div>';
     [].forEach.call(c.querySelectorAll(".face"),function(f){var o=document.createElement("div");o.className="fx"+(gr===10?" perfect":"")+(pr?" pristine":"");o.setAttribute("aria-hidden","true");o.innerHTML=h;f.appendChild(o);
       /* the back says why, in one line, where the barcode sits on the front */
-      if(g&&f.classList.contains("back")){var zb=o.querySelector(".zb");zb.className="zb zwhy";zb.textContent=why}
+      if(g&&f.classList.contains("back")){var zb=o.querySelector(".zb");zb.className="zb zwhy";
+        /* (owner, rounds 40 and 41, 2026-10-25) the result first, in the label's head type; the miss after it, smaller */
+        zb.innerHTML="<b>"+E.hit+" of "+E.nc+" right</b>"+(E.hit?" <small>\u00b7 "+E.av.toFixed(2)+"% off<em> on avg</em></small>":"")}
       /* (owner, 2026-10-21) a 10 gets the rolling foil on both faces (owner: it should not vanish when the card flips): rainbow bands that roll across without end; a sibling of .fx so it lights the film too */
       if(gr===10){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);if(FRO)FRO.observe(f);else foilFit(f)}});if(window.__x2pNmFit)window.__x2pNmFit();
     var lab=(g?ds+" "+gr+" of 10, "+why.replace(" \u00b7",",").replace("off on avg","off on average"):q?"calls in, final grade on "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
@@ -175,6 +288,10 @@
   var FRO=window.ResizeObserver?new ResizeObserver(function(es){foilAll(es.map(function(x){return x.target}))}):null;
   function esc2(t){return String(t).replace(/[&<>"]/g,function(x){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[x]})}
   window.__x2pSlab(document);
+  /* the certificates' stamps follow the front card */
+  try{(function(){var car=document.getElementById("car"),rec=document.getElementById("record");
+    if(window.MutationObserver){var mo=new MutationObserver(window.__x2pCertLive);if(car)mo.observe(car,{subtree:true,attributes:true,attributeFilter:["class"]});if(rec)mo.observe(rec,{attributes:true,attributeFilter:["class"]})}
+    document.addEventListener("visibilitychange",window.__x2pCertLive);window.__x2pCertLive()})()}catch(e){window.__x2pCertErr=e}
 
   /* Results (owner, 2026-10-21, later): the highlights become full-size slabs you swipe through, like the record on the Overview.
      Front: the round's slab with its highlight tag; "See why" flips it. Back: the calls, how the stock moved (plain green or red,
@@ -639,6 +756,8 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   function open(rm){var c0=rm.querySelector(".card[data-n]"),n=c0&&c0.getAttribute("data-n"),src=n&&d.querySelector('#record .card[data-n="'+n+'"]');if(!src||!src.querySelector(".fx"))return;
     var sz=WH||(WH=recSize());if(!sz)return;
     var c=src.cloneNode(true);c.classList.remove("flipped");c.classList.add("cur");c.removeAttribute("data-i");c.style.width=sz.w+"px";c.style.height=sz.h+"px";c.style.flex="none";
+    /* the certificate on its back is drawn again for the copy (its stamp and ids its own) */
+    if(window.__x2pCertCopy)window.__x2pCertCopy(c);
     [].forEach.call(c.querySelectorAll("video"),function(v){v.classList.remove("on")});
     var o=d.createElement("div");o.id="x2pRm";o.className="x2p-rm";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");o.setAttribute("aria-label",rm.getAttribute("aria-label")||"Round "+n);
     o.innerHTML='<div class="x2p-rmc"><button type="button" class="x2p-rmx" aria-label="Close">✕</button><div class="x2p-rmz"></div></div>';
@@ -647,18 +766,18 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     /* X2's own layer stays underneath, hidden, its film stopped */
     rm.classList.add("x2p-rmh");rm.setAttribute("aria-hidden","true");[].forEach.call(rm.querySelectorAll("video"),function(v){try{v.pause()}catch(e){}v.preload="none"});
     d.body.appendChild(o);cur={o:o,rm:rm};
-    var nf=c.classList.contains("nofilm")||!c.querySelector(".face.back"),f0=c.classList.contains("nofilm")&&!!c.querySelector(".face.back");if(f0)c.classList.add("flipped");faces(c,f0);
+    var nf=c.classList.contains("nofilm")||!c.querySelector(".face.back"),f0=c.classList.contains("nofilm")&&!!c.querySelector(".face.back");if(f0)c.classList.add("flipped");faces(c,f0);if(window.__x2pCertLive)window.__x2pCertLive();
     var v=c.querySelector(".face.front video");
     if(v&&!f0){v.muted=true;v.loop=true;v.preload="auto";v.addEventListener("playing",function(){v.classList.add("on")});var pp=v.play();if(pp&&pp.catch)pp.catch(function(){})}
     o.addEventListener("click",function(e){if(e.target===o||e.target.closest(".x2p-rmx")){var x=rm.querySelector(".rmod-x");if(x)x.click();return}
       var sd=e.target.closest(".snd");if(sd){if(v){v.muted=!v.muted;sd.dataset.on=v.muted?"0":"1";sd.setAttribute("aria-label",v.muted?"Unmute":"Mute");var ps=sd.querySelectorAll("path");if(ps.length>1)ps[ps.length-1].setAttribute("d",v.muted?OFF:ON);if(!v.muted&&v.paused){var q=v.play();if(q&&q.catch)q.catch(function(){})}}return}
       var sb=e.target.closest(".shr");if(sb){var xs=rm.querySelector('.shr[data-share="'+sb.getAttribute("data-share")+'"]')||rm.querySelector(".shr");if(xs)xs.click();return}
       if(e.target.closest("a"))return;
-      if(!nf&&e.target.closest(".card")&&c.getAttribute("data-k")==="g"){var f=!c.classList.contains("flipped");c.classList.toggle("flipped",f);faces(c,f);if(v){if(f)v.pause();else{var q2=v.play();if(q2&&q2.catch)q2.catch(function(){})}}
+      if(!nf&&e.target.closest(".card")&&c.getAttribute("data-k")==="g"){var f=!c.classList.contains("flipped");c.classList.toggle("flipped",f);faces(c,f);if(window.__x2pCertLive)window.__x2pCertLive();if(v){if(f)v.pause();else{var q2=v.play();if(q2&&q2.catch)q2.catch(function(){})}}
         var fb=c.querySelector((f?".face.back":".face.front")+" [data-flip]");if(fb&&o.contains(d.activeElement))fb.focus({preventScroll:true})}});
     if(!still&&rc.animate){rc.animate([{transform:"translateY(14px) scale(.94)",opacity:0},{transform:"none",opacity:1}],{duration:320,easing:"cubic-bezier(.2,0,0,1)"});o.animate([{opacity:0},{opacity:1}],{duration:220,easing:"ease-out"})}
     o.querySelector(".x2p-rmx").focus({preventScroll:true})}
-  function shut(){if(!cur)return;[].forEach.call(cur.o.querySelectorAll("video"),function(v){try{v.pause()}catch(e){}});cur.o.remove();cur=null}
+  function shut(){if(!cur)return;[].forEach.call(cur.o.querySelectorAll("video"),function(v){try{v.pause()}catch(e){}});cur.o.remove();cur=null;if(window.__x2pCertLive)window.__x2pCertLive()}
   function init(){new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.classList.contains("rmod")){shut();open(x)}});
     [].forEach.call(m.removedNodes,function(x){if(cur&&x===cur.rm)shut()})})}).observe(d.body,{childList:true})}
   if(d.body)init();else d.addEventListener("DOMContentLoaded",init);
