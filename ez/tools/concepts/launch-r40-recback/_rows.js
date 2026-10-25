@@ -98,3 +98,65 @@ var R43=(function(){var E=R40.esc,M=R41;
       '<text font-family="Archivo, sans-serif" font-weight="900" font-size="6.4" letter-spacing="1" fill="#4a3f2c" fill-opacity=".45"><textPath href="#'+id+'b" startOffset="50%" text-anchor="middle" dominant-baseline="hanging">GRADED '+E(D.graded.toUpperCase())+'</textPath></text></svg>'}
   return {build:build,wax:wax,ink:ink,emboss:emboss}})();
 window.R43=R43;
+
+/* Round 44 (owner, 2026-10-25): the stamp must be part of the card, not laid on it, and it is our own: an "EZ" mark (no $).
+   The EZ monogram: the E and the Z share their top and bottom bars (82 x 60 units). Every stamp is drawn the way the real thing
+   marks paper: ink with uneven pressure, the grain through it and a slight bleed, multiplied into the stock; or the paper itself
+   changed (embossed, punched, debossed foil). */
+var R44=(function(){var E=R40.esc,K=0;function uid(){return 'x44'+(++K)+Math.random().toString(36).slice(2,6)}
+  var MONO='M0 0H82V11H0Z M0 49H82V60H0Z M0 0H13V60H0Z M0 24.5H32V35.5H0Z M66 11H82L50 49H34Z';
+  var MONO_E='M0 0H41V11H0Z M0 49H41V60H0Z M0 0H13V60H0Z M0 24.5H32V35.5H0Z',MONO_Z='M41 0H82V11H41Z M41 49H82V60H41Z M66 11H82L50 49H34Z';
+  function inside(x,y){if(y<0||y>60||x<0||x>82)return false;if(y<11||y>49||x<13)return true;if(y>=24.5&&y<=35.5&&x<32)return true;var l=66-32*(y-11)/38;return x>=l&&x<=l+16}
+  function mono(cx,cy,w,d){var k=w/82;return '<path transform="translate('+(cx-41*k).toFixed(2)+' '+(cy-30*k).toFixed(2)+') scale('+k.toFixed(4)+')" d="'+(d||MONO)+'"/>'}
+  /* ink as a rubber stamp leaves it: speckle where the rubber missed, a slow pressure change across the strike, a slight bleed */
+  function ink(id,seed,fine,press){return '<filter id="'+id+'" x="-12%" y="-12%" width="124%" height="124%" color-interpolation-filters="sRGB">'+
+    '<feTurbulence type="fractalNoise" baseFrequency="'+(fine||1.1)+'" numOctaves="2" seed="'+seed+'" result="f"/><feColorMatrix in="f" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.9 1.75" result="fm"/>'+
+    '<feTurbulence type="fractalNoise" baseFrequency=".022" numOctaves="1" seed="'+(seed+7)+'" result="c"/><feColorMatrix in="c" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 '+(press||-1.5)+' 1.45" result="cm"/>'+
+    '<feComposite in="fm" in2="cm" operator="arithmetic" k1="1" result="m"/><feGaussianBlur in="SourceGraphic" stdDeviation=".32" result="b"/><feComposite in="b" in2="m" operator="in"/></filter>'}
+  function rim(id,r1,r2){return '<path id="'+id+'t" d="M '+(50-r1)+',50 A '+r1+','+r1+' 0 0 1 '+(50+r1)+',50"/><path id="'+id+'b" d="M '+(50-r2)+',50 A '+r2+','+r2+' 0 0 0 '+(50+r2)+',50"/>'}
+  function rimText(id,top,bot,fs){return '<text font-family="Archivo, sans-serif" font-weight="900" font-size="'+(fs||7)+'" letter-spacing="1.1"><textPath href="#'+id+'t" startOffset="50%" text-anchor="middle">'+E(top)+'</textPath></text>'+
+    '<text font-family="Archivo, sans-serif" font-weight="900" font-size="'+((fs||7)-.6)+'" letter-spacing="1"><textPath href="#'+id+'b" startOffset="50%" text-anchor="middle" dominant-baseline="hanging">'+E(bot)+'</textPath></text>'}
+  var date=function(D){return D.graded.toUpperCase()+' 2026'};
+  /* 1 the ink seal: round, the EZ mark in the middle, struck over the frame's corner like a real stamp catching the border */
+  function inkSeal(D,o){o=o||{};var id=uid(),c=o.c||'#b3261c';return '<svg class="x44 x44-ink" viewBox="0 0 100 100" role="img" aria-label="EZ graded '+E(date(D))+' by the market close"><defs>'+ink(id+'f',o.seed||11)+rim(id,36,38)+'</defs>'+
+    '<g filter="url(#'+id+'f)" fill="'+c+'" stroke="'+c+'"><circle cx="50" cy="50" r="46" fill="none" stroke-width="2.6"/><circle cx="50" cy="50" r="41.5" fill="none" stroke-width="1"/><circle cx="50" cy="50" r="28" fill="none" stroke-width="1"/>'+
+    '<g stroke="none">'+rimText(id,'EZ GRADED','BY THE MARKET CLOSE',7.2)+mono(50,45,30)+'<text x="50" y="66" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="900" font-size="6.2" letter-spacing=".6">'+E(date(D))+'</text></g></g></svg>'}
+  /* 2 two inks: the E in green, the Z in red, struck from two blocks a hair out of register, as two-colour stamps print */
+  function twoInk(D){var id=uid();return '<svg class="x44 x44-two" viewBox="0 0 124 62" role="img" aria-label="EZ graded '+E(date(D))+' by the market close"><defs>'+ink(id+'a',21,1.1)+ink(id+'b',29,1.1)+'</defs>'+
+    '<g filter="url(#'+id+'b)" fill="#b3261c" stroke="#b3261c"><rect x="1.5" y="1.5" width="121" height="59" rx="4" fill="none" stroke-width="2.2"/><rect x="5" y="5" width="114" height="52" rx="2" fill="none" stroke-width=".8"/>'+mono(30,31,38,MONO_Z)+
+    '<g stroke="none"><text x="88" y="25" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="15" letter-spacing="1">GRADED</text><text x="88" y="38" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="900" font-size="7" letter-spacing=".6">'+E(date(D))+'</text>'+
+    '<text x="88" y="49" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="800" font-size="4.7" letter-spacing=".3">BY THE MARKET CLOSE</text></g></g>'+
+    '<g filter="url(#'+id+'a)" fill="#1f6b3f" transform="translate(.8 -.6)">'+mono(30,31,38,MONO_E)+'</g><path d="M56 12V50" stroke="#b3261c" stroke-width=".8" filter="url(#'+id+'b)"/></svg>'}
+  /* 3 the embosser: a notary's crimp seal pressed into the card, no ink; only the paper's own light and shadow show it */
+  function crimp(D){var id=uid(),p='';for(var i=0;i<72;i++){var a=i/72*Math.PI*2,r=i%2?43.5:47;p+=(i?'L':'M')+(50+r*Math.cos(a)).toFixed(2)+','+(50+r*Math.sin(a)).toFixed(2)}p+='Z';
+    var g='<path d="'+p+'" fill="none" stroke-width="1.3"/><circle cx="50" cy="50" r="39" fill="none" stroke-width="1.1"/><circle cx="50" cy="50" r="28.5" fill="none" stroke-width=".9"/>'+
+      '<g stroke="none" fill-opacity="1">'+rimText(id,'EZ GRADED','BY THE MARKET CLOSE',7)+mono(50,46,30)+'<text x="50" y="66" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="900" font-size="6" letter-spacing=".6">'+E(date(D))+'</text></g>';
+    return '<svg class="x44 x44-emb" viewBox="0 0 100 100" role="img" aria-label="Embossed EZ seal, graded '+E(date(D))+'"><defs>'+rim(id,33,35)+
+      '<mask id="'+id+'m" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100"><rect width="100" height="100" fill="#fff"/><g fill="#000" stroke="#000">'+g+'</g></mask></defs>'+
+      '<g mask="url(#'+id+'m)"><g fill="#fffbef" stroke="#fffbef" opacity=".95" transform="translate(.75 .85)">'+g+'</g><g fill="#3d3324" stroke="#3d3324" opacity=".42" transform="translate(-.7 -.8)">'+g+'</g></g>'+
+      '<g fill="#3d3324" stroke="#3d3324" opacity=".05">'+g+'</g></svg>'}
+  /* 4 the perfin: EZ punched through the card in holes, as banks cancelled cheques and firms marked their stamps; the date in red ink */
+  function perfin(D){var id=uid(),h='',s=5.6;for(var y=s/2;y<60;y+=s)for(var x=s/2;x<82;x+=s)if(inside(x,y))h+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="1.85"/>';
+    return '<svg class="x44 x44-pf" viewBox="-14 -4 110 84" role="img" aria-label="EZ punched through the card, graded '+E(date(D))+'"><defs>'+ink(id+'f',31)+'</defs>'+
+      '<g fill="#fffaee" opacity=".85" transform="translate(.45 .55)">'+h+'</g><g fill="#120f17">'+h+'</g><g fill="#000" opacity=".5" transform="translate(-.25 -.3)" style="mix-blend-mode:multiply">'+h+'</g>'+
+      '<g filter="url(#'+id+'f)" fill="#b3261c"><text x="41" y="75" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="900" font-size="7.6" letter-spacing=".6">GRADED '+E(date(D))+'</text></g></svg>'}
+  /* 5 red foil, debossed: the seal pressed into the card through red foil; the press leaves a wall above and a lip below */
+  function foil(D){var id=uid();var face='<circle cx="50" cy="50" r="40"/>';
+    return '<svg class="x44 x44-foil" viewBox="0 0 100 100" role="img" aria-label="EZ foil seal, graded '+E(date(D))+'"><defs>'+rim(id,31,33)+
+      '<linearGradient id="'+id+'g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e5584b"/><stop offset=".38" stop-color="#a8231a"/><stop offset=".55" stop-color="#d9463a"/><stop offset=".78" stop-color="#8e1b13"/><stop offset="1" stop-color="#c33a2e"/></linearGradient>'+
+      '<filter id="'+id+'n" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="5" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 -.1" result="a"/><feComposite in="a" in2="SourceGraphic" operator="in"/></filter></defs>'+
+      '<linearGradient id="'+id+'w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c0d06" stop-opacity=".85"/><stop offset=".45" stop-color="#1c0d06" stop-opacity="0"/><stop offset=".6" stop-color="#fff4e0" stop-opacity="0"/><stop offset="1" stop-color="#fff4e0" stop-opacity=".9"/></linearGradient>'+
+      '<circle cx="50" cy="50" r="40" fill="url(#'+id+'g)"/><circle cx="50" cy="50" r="40" fill="#000" filter="url(#'+id+'n)" opacity=".7"/>'+
+      '<circle cx="50" cy="50" r="39" fill="none" stroke="url(#'+id+'w)" stroke-width="2.4"/><circle cx="50" cy="50" r="41.2" fill="none" stroke="url(#'+id+'w)" stroke-width="1" opacity=".6" transform="rotate(180 50 50)"/>'+
+      '<circle cx="50" cy="50" r="35.5" fill="none" stroke="#5e0f0a" stroke-width="1" opacity=".75"/><circle cx="50.5" cy="50.6" r="35.5" fill="none" stroke="#ff9a8c" stroke-width=".6" opacity=".5"/>'+
+      '<g fill="#ff9a8c" opacity=".55" transform="translate(.45 .5)">'+rimText(id,'EZ GRADED',date(D),6.6)+mono(50,49,32)+'</g><g fill="#4e0c08" opacity=".9">'+rimText(id,'EZ GRADED',date(D),6.6)+mono(50,49,32)+'</g></svg>'}
+  /* 6 wax pressed into the card: thin at its edge so the grain shows through, and the oil it leaves in the paper around it */
+  function wax(D){var id=uid(),p='',n=44;for(var i=0;i<n;i++){var a=i/n*Math.PI*2,r=43+((i*37)%7)*0.8-(i%5===0?2.5:0)+(i%9===0?2:0);p+=(i?'L':'M')+(50+r*Math.cos(a)).toFixed(1)+','+(50+r*Math.sin(a)).toFixed(1)}p+='Z';
+    return '<svg class="x44 x44-wax" viewBox="0 0 100 100" role="img" aria-label="EZ wax seal, graded '+E(date(D))+'"><defs>'+rim(id,24,26)+
+      '<radialGradient id="'+id+'g" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#c8392d"/><stop offset=".6" stop-color="#a8231a"/><stop offset=".9" stop-color="#7a160f"/><stop offset="1" stop-color="#7a160f" stop-opacity=".55"/></radialGradient>'+
+      '<filter id="'+id+'h" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter></defs>'+
+      '<path d="'+p+'" transform="translate(50 50) scale(1.08) translate(-50 -50)" fill="#7a4a1c" opacity=".16" filter="url(#'+id+'h)"/>'+
+      '<path d="'+p+'" fill="url(#'+id+'g)"/><circle cx="50" cy="50" r="31" fill="#9c2017"/><circle cx="50" cy="50" r="31" fill="none" stroke="#5e0f0a" stroke-width="1.3" opacity=".8"/><circle cx="50.6" cy="50.7" r="31" fill="none" stroke="#e0564a" stroke-width=".8" opacity=".55"/>'+
+      '<g fill="#e0564a" opacity=".7" transform="translate(-.5 -.55)">'+rimText(id,'EZ GRADED',date(D),5.8)+mono(50,49,26)+'</g><g fill="#5e0f0a" opacity=".9">'+rimText(id,'EZ GRADED',date(D),5.8)+mono(50,49,26)+'</g></svg>'}
+  return {mono:mono,inkSeal:inkSeal,twoInk:twoInk,crimp:crimp,perfin:perfin,foil:foil,wax:wax}})();
+window.R44=R44;

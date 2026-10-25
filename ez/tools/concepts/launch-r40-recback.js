@@ -6,7 +6,7 @@ const S='/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8
 const IDS=process.argv[2].split(','),OUT=process.argv[3],WS=(process.argv[4]||'390').split(',').map(Number),N=+(process.argv[5]||43),D=path.join(__dirname,'launch-r40-recback');
 const rd=f=>fs.existsSync(path.join(D,f))?fs.readFileSync(path.join(D,f),'utf8'):'';
 (async()=>{const b=await chromium.launch({args:['--proxy-server='+process.env.HTTPS_PROXY,'--proxy-bypass-list=127.0.0.1;localhost','--ignore-certificate-errors-spki-list='+fs.readFileSync(S+'x2p/spki.txt','utf8').trim()]});
-for(const W of WS)for(const id of IDS){const c=await b.newContext(W<700?{viewport:{width:W,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{viewport:{width:W,height:900},deviceScaleFactor:2,reducedMotion:'reduce'});
+for(const W of WS)for(const id of IDS){const c=await b.newContext(W<700?{viewport:{width:W,height:844},deviceScaleFactor:+(process.env.DSF||2),isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{viewport:{width:W,height:900},deviceScaleFactor:+(process.env.DSF||2),reducedMotion:'reduce'});
  const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(String(e)));
  await p.goto(process.env.BASE||'http://127.0.0.1:8897/v46-live-x2plus.html');await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:30000});
  await p.evaluate(()=>{const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Special+Elite&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,700;0,8..60,900;1,8..60,400&family=Pirata+One&family=Caveat:wght@600;700&display=block';document.head.appendChild(l)});
