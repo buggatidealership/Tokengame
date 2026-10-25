@@ -121,5 +121,5 @@ var R49=(function(){var E=R40.esc,M=R41,Z=R45,K=0;function uid(){return 'x49'+(+
     var el=R40.over(D.face,h,'x46 x47 x49 x49-'+o.stamp+' '+(o.cls||''));
     /* hold the foils still at one moment for the boards (the page would let them drift) */
     el.querySelectorAll('svg.x49s').forEach(function(s){try{s.pauseAnimations();s.setCurrentTime(o.t==null?1.6:o.t)}catch(e){}});return el}
-  return {build:build,ST:ST,logo:logo,avatar:avatar,LG:LG,LC:LC}})();
+  return {build:build,ST:ST,logo:logo,avatar:avatar,ol:ol,LG:LG,LC:LC,PAL:PAL,hg:hg,glint:glint,grooves:grooves,grain:grain,heavy:heavy,arc:arc,ring:ring,tp:tp,t:t}})();
 window.R49=R49;

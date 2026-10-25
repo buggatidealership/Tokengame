@@ -11,11 +11,11 @@ const rd=f=>fs.readFileSync(path.join(D,f),'utf8');
   await p.evaluate(async()=>{window.R40N=43;const c=document.querySelector('#record .card[data-n="43"]');c.scrollIntoView({block:'center',inline:'center'});await new Promise(r=>setTimeout(r,900));
     if(!c.classList.contains('cur')){c.click();await new Promise(r=>setTimeout(r,900))}if(!c.classList.contains('flipped')){c.click();await new Promise(r=>setTimeout(r,1100))}await document.fonts.ready});
   await p.evaluate(({css,base,js})=>{const s=document.createElement('style');s.textContent=css;document.head.appendChild(s);(new Function(base))();const D=R40.data(R40.N);R40.label(D);window.__r40D=D;(new Function(js))()},
-   {css:rd('_base.css'),base:rd('_base.js')+'\n'+rd('_rows.js')+'\nwindow.R40rows=R40rows;\n'+rd('_r48.js')+'\n'+rd('_r49.js'),js:rd(id+'.js')});
+   {css:rd('_base.css'),base:rd('_base.js')+'\n'+rd('_rows.js')+'\nwindow.R40rows=R40rows;\n'+rd('_r48.js')+'\n'+rd('_r49.js')+'\n'+rd('_r50.js'),js:rd(id+'.js')});
   await p.waitForTimeout(600);const box=await p.evaluate(()=>{const f=document.querySelector('.r40p .x46-ft').getBoundingClientRect(),o=document.querySelector('.r40p').getBoundingClientRect();
     return {x:o.left,y:f.top-12,width:o.width,height:o.bottom-f.top+12}});
   fs.mkdirSync(OUT+id,{recursive:true});const N=Math.round(SEC*FPS);
-  for(let i=0;i<N;i++){await p.evaluate(t=>{document.querySelectorAll('.r40p svg.x49s').forEach(s=>{try{s.pauseAnimations();s.setCurrentTime(t)}catch(e){}})},i/FPS);
+  for(let i=0;i<N;i++){await p.evaluate(t=>{document.querySelectorAll('.r40p svg.x49s,.r40p svg.x50s').forEach(s=>{try{s.pauseAnimations();s.setCurrentTime(t)}catch(e){}})},i/FPS);
    await p.screenshot({path:OUT+id+'/f'+String(i).padStart(4,'0')+'.png',clip:box})}
   console.log(id,N,'frames',JSON.stringify(box));await c.close()}
  await b.close()})();
