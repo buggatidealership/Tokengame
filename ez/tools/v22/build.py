@@ -491,8 +491,7 @@ assert x3.count('<title>EZ Live X2+</title>')==1
 x3=x3.replace('<title>EZ Live X2+</title>','<title>EZ Live X3+</title>')
 # (owner, 2026-10-25: "do the logo stamp. Put that one on the Easy Life X2 Plus, and then put the seal hot stamped on Easy Life X3
 # Plus") the certificate's hologram: x2plus.js draws the logo stamp unless the page says seal
-assert x3.count('<script id="x2plus-words">')==1
-x3=x3.replace('<script id="x2plus-words">','<script>window.__x2pStampKind="seal"</script>\n<script id="x2plus-words">',1)
+# (later the same day) both pages follow one rule instead: the seal on perfect rounds, the logo stamp on the rest (x2plus.js xkind)
 # (owner, 2026-10-22) X3+ only: the ticket rip mockup (an Admit One ticket over the first screen that scrolling tears open)
 RIPC=open(sys.argv[1]+'/x3plus-rip.css').read().replace('__PAPER__',PAPER); RIPJ=open(sys.argv[1]+'/x3plus-rip.js').read()
 assert x3.count('</head>')==1 and x3.count('</body>')==1
