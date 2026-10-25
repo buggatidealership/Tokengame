@@ -381,6 +381,9 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
              'html.x2d[data-theme="dark"]{color-scheme:dark;color-scheme:only dark}@media (prefers-color-scheme:dark){html.x2d{color-scheme:only dark}}'),
             ('d.style.colorScheme=t;','d.style.colorScheme="only dark";'),
             ('root.style.colorScheme=t;','root.style.colorScheme=t==="dark"?"only dark":t;'),
+            # the close is the market's word (owner, 2026-10-25: "instead of outcome, it should be market... across the entire website"):
+            # the record back's close row, and everywhere else bkOut() draws it, reads Market on X2+ (v15 and the locked pages keep Outcome)
+            ('const ACTUAL_WORD = "Outcome";','const ACTUAL_WORD = "Market";'),
             # the first screen's fonts are asked for at once (window.__x2pF; x2plus.js waits for them before it lifts the cover), not when
             # the page first lays them out; the cover comes off by itself after 20 s whatever happens, and at once without scripts
             ('<body>','<body>\n<div id="x2pLoad" aria-hidden="true">'+XPMARK+'</div>\n'

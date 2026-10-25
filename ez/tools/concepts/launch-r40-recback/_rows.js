@@ -52,3 +52,49 @@ var R42=(function(){var E=R40.esc,M=R41;
     return el}
   return {build:build,seal:seal}})();
 window.R42=R42;
+
+/* Round 43 (owner, 2026-10-25): round 42's option 2 (Certificate, gold winning line, hallmark PASS/FAIL) with slim date boxes,
+   no "Direction", no verify line, "Market" for "Outcome", and the stamp of approval at the foot, right, turned to the right.
+   o.stamp(D) returns the stamp's markup; o.win as in R42 ('gold' or 'crown'). */
+var R43=(function(){var E=R40.esc,M=R41;
+  function build(D,o){var v=function(x,i){return M.mini({shape:'cart',word:x.ok?'PASS':'FAIL',c:x.ok?'#1f6b3f':'#a8231a',rot:0,seed:i+21,w:34,h:16,fs:8.6,wf:1.2})};
+    var rows=D.rows.map(function(x,i){var w=x.win,rk=w&&o.win==='crown'?M.crown('xcf-cr'):'<b class="xcf-rk">'+(x.ok?x.rk:'')+'</b>';
+      return '<div class="xcf-r '+(w?'win w-'+o.win:x.ok?'ok':'no')+'">'+rk+'<span class="r40mk xcf-mk">'+x.svg+'</span><span class="xcf-nm">'+E(x.n)+'</span><span class="xcf-cl '+(x.up?'up':'dn')+'">'+E(x.call)+'</span>'+v(x,i)+'</div>'}).join('');
+    var h='<div class="xcf-fr"></div><div class="xcf-hd"><p class="xcf-t"><i class="r41fd">★</i><span>'+E(o.head||'Certificate')+'</span><i class="r41fd">★</i></p><p class="xcf-no">No. '+String(D.n).padStart(4,'0')+'</p></div>'+
+     '<div class="x43-ds"><p><small>Calls filed</small><b>'+E(D.called)+'</b></p><p><small>Graded</small><b>'+E(D.graded)+'</b></p></div>'+
+     '<p class="xcf-sec"><span>What they predicted</span></p><div class="xcf-rows x43-rows">'+rows+'</div>'+
+     '<div class="xcf-out x43-out"><small>Market</small><b class="'+(D.dn?'dn':'up')+'">'+E(D.move)+'</b></div>'+
+     '<div class="x43-ft">'+(D.film?'<p class="xcf-fl">↻ See the film</p>':'')+'</div><div class="x43-st">'+o.stamp(D)+'</div>';
+    var el=R40.over(D.face,h,'xcf x43 '+(o.cls||''));
+    if(o.win==='gold')[].forEach.call(el.querySelectorAll('.xcf-r.win .xcf-rk,.xcf-r.win .xcf-nm,.xcf-r.win .xcf-cl'),function(e){e.classList.add('r41fd')});
+    return el}
+  var K=0;function uid(){return 'x43'+(++K)+Math.random().toString(36).slice(2,6)}
+  /* sealing wax: a poured blob (uneven rim), the matrix pressed in ($EZ), a gloss; optional ribbon tails under it */
+  function wax(D,o){o=o||{};var id=uid(),p='',n=40;for(var i=0;i<n;i++){var a=i/n*Math.PI*2,r=44+((i*37)%7)*0.9-(i%5===0?3:0)+(i%9===0?2.5:0);p+=(i?'L':'M')+(50+r*Math.cos(a)).toFixed(1)+','+(50+r*Math.sin(a)).toFixed(1)}p+='Z';
+    var c=o.c||['#e0564a','#b3261c','#6e140c'];
+    var rib=o.ribbon?'<path d="M40 70 18 122 27 115 33 126 54 76Z" fill="#1f6b3f"/><path d="M48 76 66 126 72 115 82 122 60 70Z" fill="#a8231a"/><path d="M40 70 18 122 27 115 33 126 54 76Z" fill="url(#'+id+'s)"/><path d="M48 76 66 126 72 115 82 122 60 70Z" fill="url(#'+id+'s)"/>':'';
+    return '<svg class="x43-wax'+(o.ribbon?' rb':'')+'" viewBox="0 0 100 '+(o.ribbon?128:100)+'" aria-label="Sealed: graded '+E(D.graded)+'" role="img"><defs>'+
+      '<radialGradient id="'+id+'g" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="'+c[0]+'"/><stop offset=".55" stop-color="'+c[1]+'"/><stop offset="1" stop-color="'+c[2]+'"/></radialGradient>'+
+      '<radialGradient id="'+id+'i" cx="60%" cy="65%" r="70%"><stop offset="0" stop-color="'+c[0]+'"/><stop offset=".6" stop-color="'+c[1]+'"/><stop offset="1" stop-color="'+c[2]+'"/></radialGradient>'+
+      '<linearGradient id="'+id+'s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".25"/><stop offset=".5" stop-color="#fff" stop-opacity=".12"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient>'+
+      '<path id="'+id+'t" d="M 27,50 A 23,23 0 0 1 73,50"/><path id="'+id+'b" d="M 25,50 A 25,25 0 0 0 75,50"/></defs>'+rib+
+      '<path d="'+p+'" fill="url(#'+id+'g)"/>'+
+      '<circle cx="50" cy="50" r="32" fill="url(#'+id+'i)"/><circle cx="50" cy="50" r="32" fill="none" stroke="'+c[2]+'" stroke-opacity=".7" stroke-width="1.6"/><circle cx="50.6" cy="50.8" r="32" fill="none" stroke="'+c[0]+'" stroke-opacity=".55" stroke-width=".9"/>'+
+      '<circle cx="50" cy="50" r="27" fill="none" stroke="'+c[2]+'" stroke-opacity=".55" stroke-width=".8"/>'+
+      '<g font-family="Archivo, sans-serif" font-weight="900" letter-spacing=".9"><text font-size="6.4" fill="'+c[2]+'" fill-opacity=".75"><textPath href="#'+id+'t" startOffset="50%" text-anchor="middle">GRADED</textPath></text>'+
+      '<text font-size="6" fill="'+c[2]+'" fill-opacity=".75"><textPath href="#'+id+'b" startOffset="50%" text-anchor="middle" dominant-baseline="hanging">'+E(D.graded.toUpperCase())+' 2026</textPath></text></g>'+
+      '<text x="49.2" y="56.2" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="20" fill="#ff9a8c" fill-opacity=".85">$EZ</text>'+
+      '<text x="50.9" y="57.9" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="20" fill="'+c[2]+'">$EZ</text>'+
+      '<text x="50" y="57" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="20" fill="'+c[1]+'">$EZ</text>'+
+      '<ellipse cx="36" cy="30" rx="10" ry="5" transform="rotate(-30 36 30)" fill="#fff" opacity=".22"/></svg>'}
+  /* a rubber stamp in ink, round, rim words */
+  function ink(D,o){return R40.stamp({c:o.c||'#a8231a',top:o.top||'$EZ GRADING',bot:o.bot||'BY THE MARKET CLOSE',mid:'GRADED',ms:14,date:D.graded.toUpperCase()+' 2026',rot:0,cls:'x43-ink',seed:o.seed||5})}
+  /* blind emboss: the verified-badge rosette pressed into the card with no ink (light from top left) */
+  function emboss(D){var id=uid(),p='';for(var i=0;i<24;i++){var a=i/24*Math.PI*2,r=i%2?40:46;p+=(i?'L':'M')+(50+r*Math.cos(a)).toFixed(1)+','+(50+r*Math.sin(a)).toFixed(1)}p+='Z';
+    var g='<path d="'+p+'"/><path d="M33 51 45 63 68 37" fill="none" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>';
+    var e='<path d="'+p+'" fill="none" stroke-width="1.6"/><circle cx="50" cy="50" r="33" fill="none" stroke-width="1.2"/><path d="M34 51 45 62 67 38" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>';
+    return '<svg class="x43-emb" viewBox="0 0 100 100" aria-label="Embossed: graded '+E(D.graded)+'" role="img"><defs><path id="'+id+'b" d="M 21,50 A 29,29 0 0 0 79,50"/></defs>'+
+      '<g stroke="#4a3f2c" stroke-opacity=".42" transform="translate(-.8 -.9)">'+e+'</g><g stroke="#fffdf4" stroke-opacity=".95" transform="translate(.8 .9)">'+e+'</g>'+
+      '<text font-family="Archivo, sans-serif" font-weight="900" font-size="6.4" letter-spacing="1" fill="#4a3f2c" fill-opacity=".45"><textPath href="#'+id+'b" startOffset="50%" text-anchor="middle" dominant-baseline="hanging">GRADED '+E(D.graded.toUpperCase())+'</textPath></text></svg>'}
+  return {build:build,wax:wax,ink:ink,emboss:emboss}})();
+window.R43=R43;
