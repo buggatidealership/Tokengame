@@ -216,7 +216,7 @@
   /* the four worn-ink filters of the PASS/FAIL cartouches, once for the page */
   function xdefs(){if(document.getElementById("x2pcw0")||!document.body)return;var sv=document.createElementNS("http://www.w3.org/2000/svg","svg");
     sv.setAttribute("width","0");sv.setAttribute("height","0");sv.setAttribute("aria-hidden","true");sv.style.position="absolute";
-    sv.innerHTML='<filter id="x2pcInk" x="-6%" y="-12%" width="112%" height="124%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.1" xChannelSelector="R" yChannelSelector="G"/></filter>'+[21,22,23,24].map(function(s,i){return '<filter id="x2pcw'+i+'" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="2" seed="'+s+'" result="n"/>'+
+    sv.innerHTML='<filter id="x2pcL" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="2" seed="21" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.2 1.6" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter><filter id="x2pcInk" x="-6%" y="-12%" width="112%" height="124%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.1" xChannelSelector="R" yChannelSelector="G"/></filter>'+[21,22,23,24].map(function(s,i){return '<filter id="x2pcw'+i+'" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="2" seed="'+s+'" result="n"/>'+
       '<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.9" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>'}).join("");document.body.appendChild(sv)}
   function xmini(w,c,rot,i){return '<svg class="xc-m" viewBox="0 0 29 13" width="29" height="13" style="--rot:'+rot+'deg" role="img" aria-label="'+w+'" focusable="false"><g filter="url(#x2pcw'+i+')" stroke="'+c+'" fill="'+c+'">'+
     '<path d="M4 1H25L28 4V9L25 12H4L1 9V4Z" fill="none" stroke-width="1.4"/><text x="14.5" y="9.09" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="7.2" letter-spacing=".5" stroke="none">'+w+'</text></g></svg>'}
@@ -228,10 +228,10 @@
     var wn=g.win?g.win.split(" & "):[],up0=g.a>0,R=g.calls.map(function(x){var up=x[1].indexOf("DOWN")<0,mg=parseFloat(String(x[1]).replace(/^(UP|DOWN)\s*/,""));
       return {m:x[0],up:up,mg:Math.round(mg*100)/100,ok:up===up0,off:+x[2],win:wn.indexOf(x[0])>-1}}),by=function(a,b){return a.off-b.off};
     R=R.filter(function(x){return x.ok}).sort(by).concat(R.filter(function(x){return !x.ok}).sort(by));
-    /* (owner, 2026-10-25) the winner's line is black like the rest; only a small printed "Winner" tag with a gold crown marks it, on the
-       line's top rule at the right, as the live site's crown and Winner tab sit */
+    /* (owner, 2026-10-25) the winner's line is black like the rest; a "Winner" cartouche in the PASS stamp's style marks it, above the
+       name, its crown in gold ink (an emoji cannot be printed) */
     var rows=R.map(function(x,i){var gd=x.win;
-      return '<div class="xc-r '+(gd?"win":x.ok?"ok":"no")+'">'+(gd?'<span class="xc-wn"><i aria-hidden="true">\ud83d\udc51</i><b class="lp">Winner</b></span>':'')+
+      return '<div class="xc-r '+(gd?"win":x.ok?"ok":"no")+'">'+(gd?'<span class="xc-wn"><svg viewBox="0 0 44 12" width="44" height="12" aria-hidden="true" focusable="false"><path d="M3.5 1H40.5L43 3.5V8.5L40.5 11H3.5L1 8.5V3.5Z" fill="none" stroke="#1d1a1e" stroke-width="1.2"/><path class="cr" d="M4.6 9.2L4 4L6.6 6.1L8.3 2.9L10 6.1L12.6 4L12 9.2Z" fill="#a87a1c"/><text x="28" y="8.6" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="7" letter-spacing=".7" fill="#1d1a1e">WINNER</text></svg><span class="sr">Winner</span></span>':'')+
         '<b class="xc-rk lp">'+(i+1)+'</b><span class="xc-mk" data-m="'+x.m+'" aria-hidden="true">'+xsvg(x.m)+'</span><span class="xc-nm lp">'+xnm(x.m)+'</span>'+
         xmini(x.ok?"PASS":"FAIL",x.ok?"#1f6b3f":"#a8231a",[-6,-4,-7,-5][i%4],i%4)+
         '<span class="xc-cl lp '+(x.up?"up":"dn")+'" style="--rot:'+[-2.5,-1.5,-3,-2][i%4]+'deg"><span aria-hidden="true">'+(x.up?"▲":"▼")+'</span><span class="sr">'+(x.up?"Up ":"Down ")+'</span>'+x.mg+'%</span></div>'}).join("");
@@ -240,10 +240,10 @@
     x.innerHTML='<div class="xc-fr" aria-hidden="true"></div><div class="xc-hd"><p class="xc-t"><i class="xc-sr xc-g" aria-hidden="true">★</i><span class="lp">Certificate</span><i class="xc-sr xc-g" aria-hidden="true">★</i></p><p class="xc-no lp">No. '+String(g.n).padStart(4,"0")+'</p></div>'+
       '<p class="xc-sec"><span class="lp">What they predicted</span></p><div class="xc-rows">'+rows+'</div>'+
       '<div class="xc-out"><small class="lp">Market</small><b class="lp '+(g.a<0?"dn":"up")+'">'+xmove(g.a)+'</b></div>'+
-      /* (owner, 2026-10-25) the dates sit exactly halfway between the market box and "See the film", a touch smaller and tilted left, the
-         stamp beside them, up from the corner; "See the film" alone at the foot */
-      '<div class="xc-mid"><div class="xc-dt"><p class="xc-d"><small class="lp">Calls filed</small><b class="lp">'+md(g.called).t+'</b></p><p class="xc-d"><small class="lp">Graded on</small><b class="lp">'+md(g.resolves).t+'</b></p></div>'+
-      '<div class="xc-st" data-k="'+xkind(g)+'" style="--xr:'+(xkind(g)==="seal"?7:6)+'deg"></div></div><div class="xc-ft"></div>';
+      /* (owner, 2026-10-25, round 5) Calls filed and Graded on side by side, upright, the stamp level with them, the pair as far from
+         the market box as from "See the film" under it */
+      '<div class="xc-mid"><div class="xc-lc"><div class="xc-dt"><p class="xc-d"><small class="lp">Calls filed</small><b class="lp">'+md(g.called).t+'</b></p><p class="xc-d"><small class="lp">Graded on</small><b class="lp">'+md(g.resolves).t+'</b></p></div>'+
+      '<div class="xc-st" data-k="'+xkind(g)+'" style="--xr:'+(xkind(g)==="seal"?7:6)+'deg"></div></div><div class="xc-ft"></div></div>';
     if(h4){h4.className="sr";x.insertBefore(h4,x.firstChild)}
     if(fb){fb.classList.add("lp","xc-film");x.querySelector(".xc-ft").appendChild(fb)}
     /* the page's own stats side stays under it, hidden: on a 350px phone and narrower it still sets the card's height (CERT block) */
