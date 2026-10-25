@@ -199,11 +199,15 @@
       else if(/bull/.test(k))why+=" "+(it.extra||"");
       else if(/tight/.test(k))why+=" On average, they were off by "+E.av.toFixed(2)+"%.";
       else if(/big/.test(k)){it.rec.forEach(function(x){if(/normal/.test(x[1])&&/x$/.test(x[0]))why+=" That’s about "+x[0].replace(/x$/,"")+" times a normal move."})}
-      var calls=r.calls.map(function(x){var up=x[1].indexOf("DOWN")<0,ok=up===(r.a>0);return '<span class="x2p-hc '+(ok?"ok":"no")+'">'+esc2(nm1(x[0]))+'<b>'+(up?"▲":"▼")+esc2(x[1].replace(/^(UP|DOWN)\s*/,""))+" "+(ok?"✓":"✗")+'</b></span>'}).join("");
-      var fin=c.querySelector(".face.back .fin");if(fin)fin.innerHTML='<div class="x2p-hb"><h4>'+it.head+'</h4><div class="x2p-hcs">'+calls+'</div>'+
-        '<div class="x2p-ho">Stock moved<b class="'+(r.a>0?"u":"d")+'">'+(r.a>0?"▲":"▼")+" "+Math.abs(r.a).toFixed(2)+'%</b></div>'+
-        '<div class="x2p-ho">Winner<b class="w">'+(r.win?esc2(nm1(r.win)):"Nobody")+'</b></div>'+
-        '<p class="x2p-hw">'+esc2(why)+'<em>'+esc2(gradeLine(E))+'</em></p>'+(nf?'':'<button type="button" class="flipb" data-flip>↻ See the '+(c.querySelector(".art.still")?'picture':'film')+'</button>')+'</div>';
+      var calls=r.calls.map(function(x){var up=x[1].indexOf("DOWN")<0,ok=up===(r.a>0);return '<span class="x2p-hc '+(ok?"ok":"no")+'">'+esc2(nm1(x[0]))+'<b><span class="'+(up?"x2p-cup":"x2p-cdn")+'">'+(up?"▲":"▼")+esc2(x[1].replace(/^(UP|DOWN)\s*/,""))+'</span> <i>'+(ok?"✓":"✗")+'</i></b></span>'}).join("");
+      /* the story side as the fight program's recap page (owner, 2026-10-25: "I like the recap", round 37 M4): black card with the
+         paper's grain and a gold inset rule, a red "Recap" bug with the round and its close date, then in the owner's order the
+         headline, the story right under it, the four calls, the bell (the stock's move) and the decision (the winner), the grade last */
+      var fin=c.querySelector(".face.back .fin");if(fin)fin.innerHTML='<div class="x2p-hb x2p-rc"><div class="x2p-rch"><span class="x2p-rbug">Recap</span><small>Round '+r.n+(r.resolves?" · "+md(r.resolves).t:"")+'</small></div>'+
+        '<h4>'+it.head+'</h4><p class="x2p-hw">'+esc2(why)+'</p><div class="x2p-hcs">'+calls+'</div>'+
+        '<div class="x2p-ho"><small>The bell</small><b class="'+(r.a>0?"u":"d")+'">'+(r.a>0?"▲":"▼")+" "+Math.abs(r.a).toFixed(2)+'%</b></div>'+
+        '<div class="x2p-ho"><small>Decision</small><b class="w">'+(r.win?esc2(nm1(r.win)):"Nobody")+'</b></div>'+
+        '<p class="x2p-hg">'+esc2(gradeLine(E))+'</p>'+(nf?'':'<button type="button" class="flipb" data-flip>↻ See the '+(c.querySelector(".art.still")?'picture':'film')+'</button>')+'</div>';
       /* (owner, 2026-10-21) no film yet: the card opens on its story and stays there; "Film soon" is never the face we show */
       if(nf)c.classList.add("flipped");setFaces2(c,nf);return c}
     items.forEach(function(it){var c=mk(it);if(!c)return;var w=document.createElement("div");w.className="x2p-hi";var tg=document.createElement("span");tg.className="x2p-htag x2p-h-"+(/closest/i.test(it.tag)?"c":/tight/i.test(it.tag)?"t":"b");tg.textContent=it.tag;w.appendChild(tg);w.appendChild(c);cards.push(w)});
