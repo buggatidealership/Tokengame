@@ -34,7 +34,7 @@ function data(n){var c=d.querySelector('#record .card[data-n="'+n+'"]'),r=rnd(n)
   return {card:c,face:b,n:n,co:r.co,tk:r.ticker,a:r.a,called:md(r.called),graded:md(r.resolves),rows:rows,hit:hit,nc:rows.length,av:av,film:!c.classList.contains('nofilm'),
     move:(r.a<0?'▼':'▲')+Math.abs(r.a).toFixed(2)+'%',dn:r.a<0}}
 /* the label, as the owner picked: the result as the headline, the miss after it, smaller (on the back's label only) */
-function label(D){var w=D.face.querySelector('.zwhy');if(!w)return;w.innerHTML='<b>'+D.hit+' of '+D.nc+' right</b> <small>· '+D.av.toFixed(2)+'% off on avg</small>';w.classList.add('r40why')}
+function label(D){var w=D.face.querySelector('.zwhy');if(!w)return;w.innerHTML='<b>'+D.hit+' of '+D.nc+' right</b>'+(D.hit?' <small>· '+D.av.toFixed(2)+'% off on avg</small>':'');w.classList.add('r40why')}
 function over(face,html,cls){var fin=face.querySelector('.fin');var fr=fin.getBoundingClientRect(),br=face.getBoundingClientRect();var el=d.createElement('div');el.className='r40p '+cls;
   el.style.cssText='position:absolute;z-index:40;left:'+(fr.left-br.left)+'px;top:'+(fr.top-br.top)+'px;width:'+fr.width+'px;height:'+fr.height+'px';el.innerHTML=html;face.appendChild(el);fin.style.visibility='hidden';fin.style.opacity='0';return el}
 window.R40={stamp:stamp,guil:guil,data:data,label:label,over:over,esc:esc,N:window.R40N||43};
