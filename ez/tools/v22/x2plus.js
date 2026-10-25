@@ -152,7 +152,7 @@
   /* the certificate (owner, 2026-10-25, round 50: "do the logo stamp. Put that one on the Easy Life X2 Plus, and then put the seal hot
      stamped on Easy Life X3 Plus"): a graded record card's stats side becomes round 47's certificate as the owner fixed it in rounds 49
      and 50. ★ Certificate ★ and the round's number; what they predicted, ranked 1 to 4 (right calls by closeness, then wrong ones), each
-     with PASS or FAIL in a small worn cartouche between the name and the call, the winner's line in antique gold with a gold PASS; the
+     with PASS or FAIL in a small worn cartouche between the name and the call, the winner marked by a printed crown-and-Winner tag; the
      market's move; at the foot Calls filed, Graded on and the stamp (no date in it), "See the film" small under the dates. The stamp
      is a hologram with the EZ. logo struck into the foil (the letters a second foil angle with a raised edge, the slashes and the dot in
      tinted foils): the logo stamp on X2+ (an oil-slick disc, two foil rings, GRADED · BY THE MARKET CLOSE round it), the certificate
@@ -195,14 +195,14 @@
   /* X3+: the certificate seal, hot-stamped (flush in the card, the grain through the foil, its edge pressed) */
   function xseal(){var id=xid(),p="";for(var i=0;i<56;i++){var a=i/56*Math.PI*2,r=i%2?44.5:49;p+=(i?"L":"M")+(50+r*Math.cos(a)).toFixed(2)+","+(50+r*Math.sin(a)).toFixed(2)}p+="Z";
     var m=xmark(id+"m",50,52,46,{pal:["#dfe6ef","#9fe0ff","#f6b6dc","#fff0b0","#b6f2c8","#c3b0ff","#dfe6ef"],sd:.62,lt:.9});
-    return xsv(xhx(id+"h",XSPEC,46,26,46)+xglint(id+"l",.6)+xgroove(id+"q",1.6,62,.1)+xgrain(id+"n",13)+'<clipPath id="'+id+'c"><path d="'+p+'"/></clipPath>'+m.defs+xarc(id+"a",33.2,1)+xarc(id+"z",38.4,0),
+    return xsv(xhx(id+"h",XSPEC,46,26,46)+xglint(id+"l",.26)+xgroove(id+"q",1.6,62,.1)+xgrain(id+"n",13)+'<clipPath id="'+id+'c"><path d="'+p+'"/></clipPath>'+m.defs+xarc(id+"a",33.2,1)+xarc(id+"z",38.4,0),
       '<g clip-path="url(#'+id+'c)"><g filter="url(#'+id+'n)"><rect width="100" height="100" fill="url(#'+id+'h)"/></g><rect width="100" height="100" fill="url(#'+id+'q)"/></g>'+
       '<path d="'+p+'" fill="none" stroke="#4d5160" stroke-opacity=".45" stroke-width=".6"/><circle cx="50" cy="50" r="40.6" fill="none" stroke="#3b3f4b" stroke-opacity=".42" stroke-width=".6"/>'+
       xtp(id+"a","GRADED",6.6,"#262a35",1.6)+xtp(id+"z","BY THE MARKET CLOSE",4.6,"#262a35",.5)+
       m.body+'<g clip-path="url(#'+id+'c)"><rect width="100" height="100" fill="url(#'+id+'l)"/></g>')}
   /* X2+: the logo stamp (the oil-slick disc, two foil rings, the legend round it, the logo small and in foil inside) */
   function xbadge(){var id=xid(),m=xmark(id+"m",50,51,40,{pal:XSPEC,sd:.6,lt:.35});
-    return xsv(xhx(id+"h",XOIL,44,30,44)+xhx(id+"k",XSPEC,30,18,30)+xglint(id+"l",.4)+xgroove(id+"q",1.4,90,.06)+'<clipPath id="'+id+'c"><circle cx="50" cy="50" r="47"/></clipPath>'+m.defs+xring(id+"t",36.1),
+    return xsv(xhx(id+"h",XOIL,44,30,44)+xhx(id+"k",XSPEC,30,18,30)+xglint(id+"l",.18)+xgroove(id+"q",1.4,90,.06)+'<clipPath id="'+id+'c"><circle cx="50" cy="50" r="47"/></clipPath>'+m.defs+xring(id+"t",36.1),
       '<g clip-path="url(#'+id+'c)"><rect width="100" height="100" fill="url(#'+id+'h)"/><rect width="100" height="100" fill="url(#'+id+'q)"/></g>'+
       '<circle cx="50" cy="50" r="44.4" fill="none" stroke="url(#'+id+'k)" stroke-width="2"/><circle cx="50" cy="50" r="33.4" fill="none" stroke="url(#'+id+'k)" stroke-width=".9"/>'+
       xtp(id+"t","GRADED · BY THE MARKET CLOSE ·",5.2,"url(#"+id+"k)",.6,2*Math.PI*36.1*.965)+m.body+
@@ -225,10 +225,13 @@
     var wn=g.win?g.win.split(" & "):[],up0=g.a>0,R=g.calls.map(function(x){var up=x[1].indexOf("DOWN")<0,mg=parseFloat(String(x[1]).replace(/^(UP|DOWN)\s*/,""));
       return {m:x[0],up:up,mg:Math.round(mg*100)/100,ok:up===up0,off:+x[2],win:wn.indexOf(x[0])>-1}}),by=function(a,b){return a.off-b.off};
     R=R.filter(function(x){return x.ok}).sort(by).concat(R.filter(function(x){return !x.ok}).sort(by));
-    var rows=R.map(function(x,i){var gd=x.win,cl=gd?" xc-g":" lp";
-      return '<div class="xc-r '+(gd?"win wg":x.ok?"ok":"no")+'"><b class="xc-rk'+cl+'">'+(i+1)+'</b><span class="xc-mk" aria-hidden="true">'+xsvg(x.m)+'</span><span class="xc-nm'+cl+'">'+xnm(x.m)+'</span>'+
-        xmini(x.ok?"PASS":"FAIL",gd?"#a98329":x.ok?"#1f6b3f":"#a8231a",[-6,-4,-7,-5][i%4],i%4)+
-        '<span class="xc-cl'+(gd?" xc-g":" lp "+(x.up?"up":"dn"))+'"><span aria-hidden="true">'+(x.up?"▲":"▼")+'</span><span class="sr">'+(x.up?"Up ":"Down ")+'</span>'+x.mg+'%</span></div>'}).join("");
+    /* (owner, 2026-10-25) the winner's line is black like the rest; only a small printed "Winner" tag with a gold crown marks it, on the
+       line's top rule at the right, as the live site's crown and Winner tab sit */
+    var rows=R.map(function(x,i){var gd=x.win;
+      return '<div class="xc-r '+(gd?"win":x.ok?"ok":"no")+'">'+(gd?'<span class="xc-wn"><span class="xc-crw" aria-hidden="true"><i class="xc-cr"></i></span><b class="lp">Winner</b></span>':'')+
+        '<b class="xc-rk lp">'+(i+1)+'</b><span class="xc-mk" aria-hidden="true">'+xsvg(x.m)+'</span><span class="xc-nm lp">'+xnm(x.m)+'</span>'+
+        xmini(x.ok?"PASS":"FAIL",x.ok?"#1f6b3f":"#a8231a",[-6,-4,-7,-5][i%4],i%4)+
+        '<span class="xc-cl lp '+(x.up?"up":"dn")+'"><span aria-hidden="true">'+(x.up?"▲":"▼")+'</span><span class="sr">'+(x.up?"Up ":"Down ")+'</span>'+x.mg+'%</span></div>'}).join("");
     var fb=(old||fin).querySelector("[data-flip]"),h4=(old||fin).querySelector("h4");
     var x=document.createElement("div");x.className="xc";
     x.innerHTML='<div class="xc-fr" aria-hidden="true"></div><div class="xc-hd"><p class="xc-t"><i class="xc-sr xc-g" aria-hidden="true">★</i><span class="lp">Certificate</span><i class="xc-sr xc-g" aria-hidden="true">★</i></p><p class="xc-no lp">No. '+String(g.n).padStart(4,"0")+'</p></div>'+
@@ -245,8 +248,10 @@
      up (or on the round opened over the page), while its section is on screen; never with reduced motion */
   /* the foils are stepped by script, 20 times a second, on a paused SMIL clock (setCurrentTime): measured on a 4x slower CPU, SMIL's own
      60 updates a second cost the page 2.1 s of work in 4 s and dropped it to 35 frames a second; 20 steps cost 1.0 s and keep 48 */
+  /* (owner, 2026-10-25: the white stripe passing through was "a tiny bit too much... more subtle, rather slower, and less") the clock runs at
+     half speed, so the light crosses every 12 s, and the glint is under half as bright as on the boards */
   var XLIVE=null,XQ=0,XT=0,XL=0;
-  function xstep(ts){if(!XLIVE||!XLIVE.isConnected){XT=0;return}if(!XL||ts-XL>=50){try{XLIVE.setCurrentTime(XLIVE.getCurrentTime()+(XL?Math.min(ts-XL,200):50)/1000)}catch(e){}XL=ts}XT=requestAnimationFrame(xstep)}
+  function xstep(ts){if(!XLIVE||!XLIVE.isConnected){XT=0;return}if(!XL||ts-XL>=50){try{XLIVE.setCurrentTime(XLIVE.getCurrentTime()+(XL?Math.min(ts-XL,200):50)/2000)}catch(e){}XL=ts}XT=requestAnimationFrame(xstep)}
   /* a card gets its certificate when it comes within two places of the front card (built for all 45 at load, it cost the first build
      about 1 s on a 4x slower CPU); a card further off keeps the page's own stats side, which no one sees */
   var XG=null;function xg(n){if(!XG){XG={};ROUNDS.forEach(function(r){XG[r.n]=r})}return XG[n]}
