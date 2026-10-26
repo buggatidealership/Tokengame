@@ -487,6 +487,8 @@ X3N=open(sys.argv[1]+'/skin-x3plus.css').read()
 PAPER=re.search(r'html\.x2p #standings \.x2p-ast \.tk\{.*?(url\("data:image/svg\+xml[^"]*"\))',XPCSS,re.S).group(1)
 X3N=X3N.replace('__PAPER__',PAPER)
 x3=re.sub(r'/\*ORIGAMI\{\*/.*?/\*\}ORIGAMI\*/',lambda m:X3N,pp,count=1,flags=re.S)
+# (owner, 2026-10-26) the clean certificate (the CERTU2 block) is X2+'s; X3+ keeps its own certificate C
+x3=re.sub(r'/\*CERTU2\{.*?/\*\}CERTU2\*/','',x3,count=1,flags=re.S)
 assert x3!=pp and '__PAPER__' not in x3
 assert x3.count('<title>EZ Live X2+</title>')==1
 x3=x3.replace('<title>EZ Live X2+</title>','<title>EZ Live X3+</title>')

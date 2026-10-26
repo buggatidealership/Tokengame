@@ -222,7 +222,7 @@
     '<path d="M4 1H25L28 4V9L25 12H4L1 9V4Z" fill="none" stroke-width="1.4"/><text x="14.5" y="9.09" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="7.2" letter-spacing=".5" stroke="none">'+w+'</text></g></svg>'}
   function xnm(m){return m==="GPT"?"GPT":m.charAt(0)+m.slice(1).toLowerCase()}
   function xsvg(m){try{var h=typeof logo==="function"?logo(m):"",x=h.match(/<svg[\s\S]*<\/svg>/);return x?x[0]:""}catch(e){return ""}}
-  function xmove(a){var dn=a<0;return '<span aria-hidden="true">'+(dn?"▼":"▲")+'</span><span class="sr">'+(dn?"Down ":"Up ")+'</span>'+Math.abs(a).toFixed(2)+"%"}
+  function xmove(a){var dn=a<0;return '<span aria-hidden="true">'+(dn?"−":"+")+'</span><span class="sr">'+(dn?"Down ":"Up ")+'</span>'+Math.abs(a).toFixed(2)+"%"}
   /* builds (or, on a copy such as the round opened over the page, rebuilds with fresh ids) a graded card's certificate */
   window.__x2pXdefs=xdefs;   /* the standings and the proof print in these inks too (LIGHTINK, skin-x2plus.css) */
   function certify(c,g,re){var fin=c.querySelector(".face.back .fin");if(!fin)return;var old=fin.querySelector(".xc");if(old&&!re)return;xdefs();
@@ -235,7 +235,7 @@
       return '<div class="xc-r '+(gd?"win":x.ok?"ok":"no")+'">'+(gd?'<span class="xc-wn"><svg viewBox="0 0 44 12" width="44" height="12" aria-hidden="true" focusable="false"><path d="M3.5 1H40.5L43 3.5V8.5L40.5 11H3.5L1 8.5V3.5Z" fill="none" stroke="#1d1a1e" stroke-width="1.2"/><path class="cr" d="M4.6 9.2L4 4L6.6 6.1L8.3 2.9L10 6.1L12.6 4L12 9.2Z" fill="#a87a1c"/><text x="28" y="8.6" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="7" letter-spacing=".7" fill="#1d1a1e">WINNER</text></svg><span class="sr">Winner</span></span>':'')+
         '<b class="xc-rk lp">'+(i+1)+'</b><span class="xc-mk" data-m="'+x.m+'" aria-hidden="true">'+xsvg(x.m)+'</span><span class="xc-nm lp">'+xnm(x.m)+'</span>'+
         xmini(x.ok?"PASS":"FAIL",x.ok?"#1f6b3f":"#a8231a",[-6,-4,-7,-5][i%4],i%4)+
-        '<span class="xc-cl lp '+(x.up?"up":"dn")+'" style="--rot:'+[-2.5,-1.5,-3,-2][i%4]+'deg"><span aria-hidden="true">'+(x.up?"▲":"▼")+'</span><span class="sr">'+(x.up?"Up ":"Down ")+'</span>'+x.mg+'%</span></div>'}).join("");
+        '<span class="xc-cl lp '+(x.up?"up":"dn")+'" style="--rot:'+[-2.5,-1.5,-3,-2][i%4]+'deg"><span aria-hidden="true">'+(x.up?"+":"−")+'</span><span class="sr">'+(x.up?"Up ":"Down ")+'</span>'+x.mg+'%</span></div>'}).join("");
     var fb=(old||fin).querySelector("[data-flip]"),h4=(old||fin).querySelector("h4");
     var x=document.createElement("div");x.className="xc";
     x.innerHTML='<div class="xc-fr" aria-hidden="true"></div><div class="xc-hd"><p class="xc-t"><i class="xc-sr xc-g" aria-hidden="true">★</i><span class="lp">Certificate</span><i class="xc-sr xc-g" aria-hidden="true">★</i></p><p class="xc-no lp">No. '+String(g.n).padStart(4,"0")+'</p></div>'+
