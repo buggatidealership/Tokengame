@@ -15,5 +15,5 @@
     d.innerHTML='<p class="lv-fb-h"><span class="lv-fr-st lv-fr-sm">As of<b>'+lvE(day)+'</b>close</span><span>'+(moved?moved+' AIs changed places':'Same order as before')+' · '+L.graded+' rounds</span></p>'+
       '<p class="lv-fb-r">'+per.map(function(x){return '<span>'+lvE(L.nm(x.t.m))+' <b class="'+(x.ok===x.n?'lv-ok':x.ok?'':'lv-no')+'">'+x.ok+'/'+x.n+'</b></span>'}).join("")+'</p>'+
       '<p class="lv-fb-need"><span>Synced 6:42 pm ET</span><em>Not true yet: needs SYNCED_AT written by sync_sheet.py</em></p>';
-    ol.parentNode.insertBefore(d,ol)}
+    var hd=ol.previousElementSibling&&/lbh/.test(ol.previousElementSibling.className)?ol.previousElementSibling:ol;hd.parentNode.insertBefore(d,hd)}
 })();

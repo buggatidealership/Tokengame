@@ -31,7 +31,7 @@ async function inject(p,opt){const css=fs.readFileSync(D+'_common.css','utf8')+(
 /* overflow: the page must not scroll sideways; every lv- element must sit inside the viewport; in the header, the pill
    must not overlap the brand, the X icon or the tabs */
 async function measure(p){return p.evaluate(()=>{const W=innerWidth,o={sw:document.documentElement.scrollWidth,W:W,bad:[]};
-  document.querySelectorAll('[class*="lv-"]').forEach(e=>{if(e.parentElement&&e.parentElement.closest('.lv-crawl,.lv-scroll'))return;const r=e.getBoundingClientRect();if(!r.width)return;if(r.left<-0.5||r.right>W+0.5)o.bad.push(e.className+' '+Math.round(r.left)+'..'+Math.round(r.right));
+  document.querySelectorAll('[class*="lv-"]').forEach(e=>{if(e.parentElement&&e.parentElement.closest('.lv-crawl,.lv-scroll,#car'))return;const r=e.getBoundingClientRect();if(!r.width)return;if(r.left<-0.5||r.right>W+0.5)o.bad.push(e.className+' '+Math.round(r.left)+'..'+Math.round(r.right));
     if(e.scrollWidth>e.clientWidth+1&&!/lv-scroll|lv-crawl/.test(e.className)&&getComputedStyle(e).overflow!=='visible')o.bad.push('clip '+e.className+' '+e.scrollWidth+'>'+e.clientWidth)});
   const pill=document.querySelector('.lv-pill');if(pill){const r=pill.getBoundingClientRect();o.pill=[Math.round(r.left),Math.round(r.top),Math.round(r.width),Math.round(r.height)];
     ['.brand','.x2p-xhd','.nav'].forEach(s=>{const e=document.querySelector(s);if(!e)return;const q=e.getBoundingClientRect();if(!q.width)return;
@@ -49,6 +49,7 @@ const PILLS=['NOW','A','B','C','D','E'],PAGES=['P1','P2','P3','P4'];
      console.log(opt,m,w,JSON.stringify(r),p.errs.join('|'));await p.context().close()}))}}
  if(mode==='page'){for(const opt of PAGES){if(only&&opt!==only)continue;const spec=require(D+opt+'.shot.js');
    for(const m of spec.moments){for(const w of [390,320,1280]){const p=await open(b,w,m);await inject(p,opt);
+     if(spec.pre&&spec.pre[m]){await p.evaluate(spec.pre[m]);await p.waitForTimeout(1200)}
      const r=await measure(p);
      if(w===390||spec.all)for(const [i,sel,dy] of spec.shots.map((s,i)=>[i,s[0],s[1]])){
        const y=await p.evaluate(([sel,dy])=>{const e=document.querySelector(sel);if(!e)return 0;const t=e.getBoundingClientRect().top+scrollY+dy;scrollTo({top:Math.max(0,t),behavior:'instant'});return t},[sel,dy]);
