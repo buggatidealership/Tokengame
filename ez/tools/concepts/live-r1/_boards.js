@@ -11,7 +11,7 @@ const PAGE=[
  ['P1','The wire','A slim strip under the header (scrolls away with the page): today\'s card lit gold, the last close\'s results with the winner and how far off, the season count. Swiped by a thumb, never moves by itself.',[['page-P1-mon-390-0.png',0,560],['page-P1-fri-390-0.png',0,560]],['Mon 1:09 pm','Fri 1:09 pm (rebuilt)']],
  ['P2','Freshness lines','A red date stamp on the record ("Graded through Fri Oct 23 close", from the newest resolves date) and on the board (what that close did: each AI\'s calls that day, whether the order changed). The sync time is shown dashed: it needs SYNCED_AT in ez-data.js before it can go on the page.',[['page-P2-mon-390-0.png',90,650],['page-P2-mon-390-1.png',150,710]],['The record, Mon','The standings, Mon']],
  ['P3','Stamps on the cards','Rubber stamps on the record cards whose state changed at the last close or changes today: "Fresh · Graded · Fri close" (green), "Bell in 2h 51m" on cards with calls in, "Today · Calls due" on today\'s rounds. Worked out from the dates, so they come off by themselves.',[['page-P3-mon-390-0.png',90,650],['page-P3-fri-390-0.png',90,650]],['Mon: R45 graded Fri','Fri 1:09 pm: R43 at the bell']],
- ['P4','The week on the card','Five day stubs under the film, Mon to Fri of this week, with each day\'s rounds (by call date): past days show what is graded, today is lit, and a season count closes it (45 graded, 0 with calls in, 71 to come).',[['page-P4-mon-390-0.png',380,940],['page-P4-fri-390-0.png',380,940]],['Mon: 39 rounds this week','Fri 1:09 pm (rebuilt)']]];
+ ['P4','The week on the card','Five day stubs under the film, Mon to Fri of this week, with each day\'s rounds (by call date): past days show what is graded, today is lit, and a season count closes it (45 graded, 0 with calls in, 71 to come).',[['page-P4-mon-390-0.png',150,700],['page-P4-fri-390-0.png',150,700]],['Mon: 39 rounds this week','Fri 1:09 pm (rebuilt)']]];
 const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const CSS=`body{margin:0;background:#e9e4d8;font:15px/1.4 Barlow,system-ui,sans-serif;color:#1b181c}
 .b{padding:28px 32px 36px}h1{font:400 34px/1 Anton,Impact,sans-serif;letter-spacing:.02em;margin:0 0 6px;text-transform:uppercase}
@@ -33,7 +33,7 @@ module.exports=async function(b,S,EZ){
   let g=`<div class="b"><h1>Live, round 1 · page-wide elements</h1><p class="sub">Four ways to show the season moving, each in place on the real page at 390px, from ez-data.js and the clock only. Left: Mon Oct 26 1:09 pm ET as the data stands; right: Fri Oct 23 1:09 pm ET rebuilt from the sheet (R43 to R45 with calls in) unless labelled. Measured at 320, 390 and 1280px: no sideways scroll.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">`;
   for(const [k,n,d,shots,labs] of PAGE){g+=`<section class="o"><h2><i>${k}</i>${esc(n)}</h2><p>${esc(d)}</p><div class="r">`+shots.map((s,i)=>bg(s[0],0,s[1],390,s[2]-s[1],labs[i],390)).join('')+`</div></section>`}
   g+='</div></div>';
-  await shoot(b,g,EZ+'x2p-live-r1-page.png',1700);
+  await shoot(b,g,EZ+'x2p-live-r1-page.png',1820);
 };
 async function shoot(b,html,out,W){const p=await b.newPage({viewport:{width:W,height:900},deviceScaleFactor:2});
   const f='/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8/scratchpad/lv/board-'+require('path').basename(out,'.png')+'.html';
