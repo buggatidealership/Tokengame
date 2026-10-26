@@ -33,10 +33,7 @@ doc = doc.replace('</head>', meta + '</head>', 1)
 # The fight-night Upcoming, rounds opening as the record's slab and the logos printed into the paper went live on 2026-10-23
 # (owner: "push pls"), so production is X2+ as it is again. SITE_HOLD=1 sets window.__x2pHold, which x2plus.js still honours,
 # to keep the next held changes off a production build.
-# (2026-10-26) the proof in the lighter ink (the PROOFLI block of skin-x2plus.css) is on X2+ only until the owner says to push it;
-# SITE_PROOFLI=1 builds production with it
-if os.environ.get('SITE_PROOFLI') != '1':
-    doc = re.sub(r'/\*PROOFLI\{\*/.*?/\*\}PROOFLI\*/', '', doc, count=1, flags=re.S)
+# (2026-10-26) the proof's lighter ink (the PROOFLI block) went live with the owner's "push everything to production"; no hold left
 if os.environ.get('SITE_HOLD') == '1':
     doc = doc.replace('</head>', '<script>window.__x2pHold=1</script>\n</head>', 1)
 if os.environ.get('SITE_CLASSIC') == '1':
