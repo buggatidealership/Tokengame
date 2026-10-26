@@ -1258,13 +1258,22 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
         draw:function(el,h){var vs=[STK];MK.forEach(function(m){S[m].roi.forEach(function(p){vs.push(p[1])})});var lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STK*.05;lo-=pd;hi+=pd;
           chart(el,h,byRoi.map(function(m,i){return {m:m,rank:i+1,pts:S[m].roi.map(function(p){return [p[0]/N*100,(hi-p[1])/(hi-lo)*100]})}}),(hi-STK)/(hi-lo)*100,{lead:true,lab:function(m){var PL=window.__x2pPnl&&window.__x2pPnl();return PL&&PL.A[m]?PL.pc(PL.A[m].pct):ver(m)}})}},
       hit:{t:"Accuracy",top:"How often were they right about the direction?",bot:"Up or down only",
-        html:function(){return '<div class="lp">'+byHit.map(function(m,i){var s=S[m];return row(i,m,'<span class="pt-v sm tnum">'+s.k+' of '+s.n+'</span>','<span class="pt-c big tnum">'+Math.round(s.hit*100)+'%</span>')}).join("")+'</div>'+
+        /* (owner, 2026-10-26, later) the rows as a trader's record: trades, W and L (no "25 of 37"); the hit rate moves to where each
+           line ends on the chart, as the P&L view prints its P&L % there */
+        html:function(){return '<div class="lp pt-3 pn-acc"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Trades</span><span class="pn-w">W</span><span class="pn-l">L</span></div>'+
+          byHit.map(function(m,i){var s=S[m];return row(i,m,'<span class="pt-v tnum pn-tr"><span class="sr">'+Math.round(s.hit*100)+'% right. Trades </span>'+s.n+'</span><span class="pt-v tnum pt-u pn-wv"><span class="sr">won </span>'+s.k+'</span>','<span class="pt-v tnum pt-d pn-lv"><span class="sr">lost </span>'+(s.n-s.k)+'</span>')}).join("")+'</div>'+
           '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("Start","Coin flip: 50%")+'</div><p class="pt-cp">Every line starts at 50/50 and moves with each call.</p>'},
         draw:function(el,h){var LO=30,HI=80,y=function(v){return (HI-Math.max(LO,Math.min(HI,v)))/(HI-LO)*100};
-          chart(el,h,byHit.map(function(m,i){return {m:m,rank:i+1,pts:S[m].run.map(function(p){return [p[0]/N*100,y(p[1])]})}}),y(50),{left:24,grid:[80,70,60,40,30].map(function(v){return [y(v),v+"%"]})})}},
-      miss:{t:"Avg miss",top:"How close did they get to the real move?",bot:"Closer is better",
-        html:function(){return '<div class="pt-tg lp">'+byMiss.map(function(m,i){return '<figure><figcaption style="--c:'+COL[m]+'"><i>'+(i?i+1:fo("1"))+'</i>'+logo(m)+(i?esc(m):fo(m))+'<small>'+S[m].miss.toFixed(2)+'% off</small></figcaption>'+target(m,i)+'</figure>'}).join("")+'</div>'+
-          '<p class="pt-cp">The bullseye is what the stock did. The numbers are % off. One hole per call. A red dot outside missed the direction.</p>'}},
+          chart(el,h,byHit.map(function(m,i){return {m:m,rank:i+1,pts:S[m].run.map(function(p){return [p[0]/N*100,y(p[1])]})}}),y(50),{lab:function(m){return Math.round(S[m].hit*100)+"%"},left:24,grid:[80,70,60,40,30].map(function(v){return [y(v),v+"%"]})})}},
+      /* (owner, 2026-10-26, later: "change the average miss to target hits") no average miss: under each target its bullseyes
+         (right way, within 0.1%), its shots within 1% (bullseyes included) and its shots off target (the wrong way, the red dots
+         outside); ranked by bullseyes, then within 1%, then fewer off target */
+      miss:{t:"Target hits",top:"How close did they get to the real move?",bot:"Closer is better",
+        html:function(){var T={};MK.forEach(function(m){var c=S[m].calls;T[m]={b:c.filter(function(x){return x.ok&&x.off<=.1}).length,w:c.filter(function(x){return x.ok&&x.off<=1}).length,o:c.filter(function(x){return !x.ok}).length}});
+          var byT=MK.slice().sort(function(a,b){return (T[b].b-T[a].b)||(T[b].w-T[a].w)||(T[a].o-T[b].o)});
+          return '<div class="pt-tg lp">'+byT.map(function(m,i){var t=T[m];return '<figure><figcaption style="--c:'+COL[m]+'"><i>'+(i?i+1:fo("1"))+'</i>'+logo(m)+(i?esc(m):fo(m))+'</figcaption>'+target(m,i)+
+            '<div class="pt-ts"><span><b>'+t.b+'</b>Bullseye'+(t.b===1?'':'s')+'</span><span><b>'+t.w+'</b>Within 1%</span><span><b class="pt-ot">'+t.o+'</b>Off target</span></div></figure>'}).join("")+'</div>'+
+          '<p class="pt-cp">The bullseye is what the stock did. One hole per call. Bullseye: within 0.1%. A red dot outside: the wrong way.</p>'}},
       sector:{t:"Sector",top:"Which industries do they call best?",bot:"Small samples · it fills in",
         html:function(){var sec=function(r){return ((typeof RMETA!=="undefined"&&RMETA[r.n])||{}).sector||""},cnt={};ROUNDS.forEach(function(r){var x=sec(r);if(x)cnt[x]=(cnt[x]||0)+1});
           var secs=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
