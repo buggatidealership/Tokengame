@@ -216,7 +216,7 @@
   /* the four worn-ink filters of the PASS/FAIL cartouches, once for the page */
   function xdefs(){if(document.getElementById("x2pcw0")||!document.body)return;var sv=document.createElementNS("http://www.w3.org/2000/svg","svg");
     sv.setAttribute("width","0");sv.setAttribute("height","0");sv.setAttribute("aria-hidden","true");sv.style.position="absolute";
-    sv.innerHTML='<filter id="x2pcM" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="2" seed="21" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.7 1.75" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter><filter id="x2pcL" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="2" seed="21" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.2 1.6" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter><filter id="x2pcInk" x="-6%" y="-12%" width="112%" height="124%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.1" xChannelSelector="R" yChannelSelector="G"/></filter>'+[21,22,23,24].map(function(s,i){return '<filter id="x2pcw'+i+'" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="2" seed="'+s+'" result="n"/>'+
+    sv.innerHTML='<filter id="x2pcM" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="2" seed="21" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.45 1.675" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter><filter id="x2pcL" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="2" seed="21" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.2 1.6" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter><filter id="x2pcInk" x="-6%" y="-12%" width="112%" height="124%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.1" xChannelSelector="R" yChannelSelector="G"/></filter>'+[21,22,23,24].map(function(s,i){return '<filter id="x2pcw'+i+'" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="2" seed="'+s+'" result="n"/>'+
       '<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.9" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>'}).join("");document.body.appendChild(sv)}
   function xmini(w,c,rot,i){return '<svg class="xc-m" viewBox="0 0 29 13" width="29" height="13" style="--rot:'+rot+'deg" role="img" aria-label="'+w+'" focusable="false"><g filter="url(#x2pcw'+i+')" stroke="'+c+'" fill="'+c+'">'+
     '<path d="M4 1H25L28 4V9L25 12H4L1 9V4Z" fill="none" stroke-width="1.4"/><text x="14.5" y="9.09" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="7.2" letter-spacing=".5" stroke="none">'+w+'</text></g></svg>'}
@@ -1156,7 +1156,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       ol.appendChild(li)})();
     if(TIX&&!d.getElementById("x2pWorn")){var wsv=d.createElementNS("http://www.w3.org/2000/svg","svg");wsv.setAttribute("width","0");wsv.setAttribute("height","0");wsv.setAttribute("aria-hidden","true");wsv.style.position="absolute";
       wsv.innerHTML='<filter id="x2pWorn" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.5" numOctaves="2" seed="3" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.9 1.75" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>';st.appendChild(wsv)}
-    rec.parentNode.insertBefore(st,rec)}
+    rec.after(st)}   /* the standings come second, after the record (owner, 2026-10-26: "the record section as the number one section") */
   var sw=$(".rsw2",hold),rf=$("#rflip",hold);
   if(sw&&rf){$$(".lsw,.lrn",ln).forEach(function(e){if(e.parentNode===ln)e.remove()});ln.appendChild(sw);ln.appendChild(rf);
     ["hit","roi","miss","sector"].forEach(function(k){var b=$('[data-rk="'+k+'"]',sw);if(b)sw.appendChild(b)});
@@ -1316,7 +1316,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   /* (owner, 2026-10-22) the record's first line names the graded cards: "graded" and "card" must be there */
   var rl1=$("#record .x2o-rec li:not(.x2p-xli)");if(rl1)rl1.textContent="Don't trust us. Verify every graded card.";
   var rcl=$("#record .x2o-rec");if(rcl&&!rcl.closest(".x2p-strap")){var rsp=d.createElement("div");rsp.className="x2p-strap";rsp.innerHTML='<span class="x2p-bug" aria-hidden="true">Receipts</span>';rcl.parentNode.insertBefore(rsp,rcl);rsp.appendChild(rcl)}
-  [["#standings","01"],["#record","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
+  [["#record","01"],["#standings","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
   /* the highlights land on Tightest race (the middle card), its film first (owner, 2026-10-22: with "Flip a card for the
      story" under the head, the animation shows first; it replaced the story side up), once the Overview is on screen */
   var landed=false;function land(){if(landed||!window.__x2pHlGo)return;var ws=$$("#x2pHl .x2p-hi"),i=1;
@@ -1486,7 +1486,7 @@ if(!$('.bs-tail',roll)){
 }
 /* numbers: Get $EZ follows as 06. X2's order routine (patched by build.py to include this section) re-runs on every return to the
    Overview; this is its safety net */
-var fix=function(){var g=$('#get'),s=$('#x2pSt');if(!g||!s)return;if(s.nextElementSibling!==g)g.parentNode.insertBefore(s,g);var k=0;['#standings','#record','#learn','#highlights','#x2pSt','#get'].forEach(function(q){var e=$(q);if(!e||e.hidden)return;k++;var n=$('.sh .no',e);if(n)n.textContent=(k<10?'0':'')+k})};
+var fix=function(){var g=$('#get'),s=$('#x2pSt');if(!g||!s)return;if(s.nextElementSibling!==g)g.parentNode.insertBefore(s,g);var k=0;['#record','#standings','#learn','#highlights','#x2pSt','#get'].forEach(function(q){var e=$(q);if(!e||e.hidden)return;k++;var n=$('.sh .no',e);if(n)n.textContent=(k<10?'0':'')+k})};
 fix();
 /* each logo at the same optical size: its ink measured from the file itself (the white of a logo made for a light ground is
    paper, not ink), scaled so every mark carries about the same weight, and centred on its ink, not on its file's box

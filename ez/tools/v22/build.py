@@ -433,10 +433,11 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
 a='addEventListener("hashchange",route);\nroute();'
 assert pp.count(a)==1,a
 pp=pp.replace(a,'window.__x2pR={vModels:vModels,wireModels:wireModels,vResults:vResults};'+a)
-# ... and X2's Overview order, which the page re-applies on every tab change, follows the launch order: standings,
-# record, proof, highlights (x2plus.js adds #highlights), Get $EZ; the section numbers follow it
-for a,b in [('var seq=[hero,top,rec,st,learn,get]','var seq=[hero,top,st,rec,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get]'),
-            ('var k=0;[rec,st,learn,get]','var k=0;[st,rec,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get]'),
+# ... and X2's Overview order, which the page re-applies on every tab change, follows the launch order: record (owner,
+# 2026-10-26: "the record section as the number one section", the standings second; the standings came first from
+# 2026-10-22), standings, proof, highlights (x2plus.js adds #highlights), the bet, Get $EZ; the section numbers follow it
+for a,b in [('var seq=[hero,top,rec,st,learn,get]','var seq=[hero,top,rec,st,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get]'),
+            ('var k=0;[rec,st,learn,get]','var k=0;[rec,st,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get]'),
             # the NVIDIA chip sits in the bet section at the foot of the Overview since 2026-10-24 (x2plus.js BETSEC): it loads when reached
             ('if(im)im.loading="eager";','if(im)im.loading="lazy";')]:
     assert pp.count(a)==1,a; pp=pp.replace(a,b)
