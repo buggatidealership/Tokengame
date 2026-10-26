@@ -1238,7 +1238,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       roi:{t:"P&L",top:"Would following them have made you money?",bot:"Simulated · before fees",
         /* (owner, 2026-10-23) Start, ROI, Now: the start in short ("$100K"), the ROI with a small + or − in place of the triangle, both
            the same small size; Now the biggest figure; each label centred over its numbers */
-        html:function(){var k="$"+Math.round(STK/1000)+"K",PL=window.__x2pPnl&&window.__x2pPnl();if(PL&&MK.every(function(m){return PL.A[m]}))return '<div class="lp pt-3"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Biggest W</span><span>P&amp;L</span><span>Biggest L</span></div>'+
+        html:function(){var k="$"+Math.round(STK/1000)+"K",PL=window.__x2pPnl&&window.__x2pPnl();if(PL&&MK.every(function(m){return PL.A[m]}))return '<div class="lp pt-3"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Biggest <i class="pn-w">W</i></span><span>P&amp;L</span><span>Biggest <i class="pn-l">L</i></span></div>'+
           byRoi.map(function(m,i){var t=PL.A[m],up=t.pnl>=0;return row(i,m,'<span class="pt-v tnum pn-bw"><span class="sr">biggest win </span>'+PL.usd(t.bw,1)+'</span><span class="pt-v tnum pn-pl '+(up?'pt-u':'pt-d')+'"><span class="sr">P&amp;L </span>'+PL.usd(t.pnl)+'</span>',
             '<span class="pt-c tnum pn-bl"><span class="sr">biggest loss </span>'+PL.usd(t.bl,1)+'</span>')}).join("")+'</div>'+
           '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Start: "+usd(STK))+'</div><p class="pt-cp">'+usd(STK)+' to start. The whole balance on every call. Wins and losses carry over. Buy on up, short on down. No leverage.</p>';
