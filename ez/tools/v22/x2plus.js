@@ -574,12 +574,13 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
       var nG=(typeof ROUNDS!=="undefined"?ROUNDS.length:0),ko=function(t,c){return '<span class="bk-ko'+(c?' '+c:'')+'" data-t="'+t+'">'+t+'</span>'};
       bk.innerHTML='<div class="bk-s"><div class="bk-t"><div class="bk-bd g"><h3><em class="bk-st" aria-hidden="true">★</em>'+ko("How we rank")+'<em class="bk-st" aria-hidden="true">★</em></h3></div>'+
         '<div class="bk-in"><p class="x2p-why">Why it matters: <b class="bk-fo" data-t="#1 makes the call">#1 makes the call</b> on the next bet.</p><ol>'+
-        '<li>Ranked by how often they get the direction right.</li>'+
-        '<li>Tie? The smaller average miss wins.</li>'+
+        /* (owner, 2026-10-26: "just focus on P&L for now, because that's usually whoever everybody wants to follow") ranked by P&L */
+        '<li>Ranked by P&amp;L: $100,000 each, the whole balance on every call.</li>'+
+        '<li>Buy on up, short on down. No leverage.</li>'+
         '<li>Every call is made before the company reports and graded at the next market close.</li>'+
         '<li>Called fewer than half the rounds? Ranked after the rest.</li>'+
         '<li>The board freezes 24h before each bet.</li></ol>'+
-        (roi?'<p class="x2p-roi">ROI:'+roi[1]+'</p>':'')+'</div>'+
+        '<p class="x2p-roi">P&amp;L: simulated, before fees.</p></div>'+
         '<div class="bk-bd r" aria-hidden="true">'+ko("Season 1")+ko("Nº "+String(nG).padStart(6,"0"))+'</div></div></div>';
       lbx.parentNode.insertBefore(fl,lbx);fl.appendChild(fin);fin.appendChild(lbx);fin.appendChild(bk);if(lbn)lbn.remove();
       btn.addEventListener("click",function(){var on=!fl.classList.contains("on");fl.classList.toggle("on",on);
@@ -1195,7 +1196,16 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       $$("li.lbr",o.fl).forEach(function(li){var h=$(".pc-t h3",li),m=(h?h.textContent:"").trim().toUpperCase(),t=P.A[m];if(!t)return;li.classList.add("x2p-pnr");
         var f=$(".x2p-l5 .fq",li);if(f)f.outerHTML='<span class="pn-rec"><span class="sr">Record: '+t.W+' right, '+t.L+' wrong. Streak: '+t.streak.slice(1)+(t.streak[0]==="W"?" right":" wrong")+' in a row. </span>'+
           '<span aria-hidden="true"><b class="w">'+t.W+'</b><i>–</i><b class="l">'+t.L+'</b><small class="'+(t.streak[0]==="W"?"w":"l")+'">'+t.streak+'</small></span></span>';
-        var r=$(".lb-c.roi",li);if(r){var b=$("b",r),sm=$("small",r);if(b)b.textContent=P.usd(t.pnl);if(sm)sm.textContent=P.pc(t.pct);r.classList.toggle("pu",t.pnl>=0);r.classList.toggle("pd",t.pnl<0)}})})();
+        var r=$(".lb-c.roi",li);if(r){var b=$("b",r),sm=$("small",r);if(b)b.textContent=P.usd(t.pnl);if(sm)sm.textContent=P.pc(t.pct);r.classList.toggle("pu",t.pnl>=0);r.classList.toggle("pd",t.pnl<0)}});
+      /* ranked by P&L (owner, 2026-10-26, later: "the one with the biggest P&L should be at the top"; the P&L leader makes the
+         buyback call); an AI that called fewer than half the graded rounds still goes after the rest, as before */
+      var ol=$("ol.lbl",o.fl),G=ROUNDS.filter(function(g){return typeof g.a==="number"&&!isNaN(g.a)}).length,n5=ol&&$("li.x2p-n5",ol),
+        nm=function(li){var h=$(".pc-t h3",li);return (h?h.textContent:"").trim().toUpperCase()},
+        rows=$$("li.lbr",o.fl).filter(function(li){return P.A[nm(li)]}),crown=$(".crown",o.fl);
+      rows.sort(function(a,b){var A=P.A[nm(a)],B=P.A[nm(b)],qa=A.W+A.L>=G/2,qb=B.W+B.L>=G/2;return qa!==qb?(qa?-1:1):B.pnl-A.pnl});
+      if(ol)rows.forEach(function(li,i){ol.insertBefore(li,n5||null);li.classList.remove("lead","r1","r2","r3","r4");li.classList.add("r"+(i+1));if(!i)li.classList.add("lead");
+        var rk=$(".rk",li),tn=rk&&[].filter.call(rk.childNodes,function(x){return x.nodeType===3&&/\d/.test(x.nodeValue)})[0];if(tn)tn.nodeValue=String(i+1)});
+      if(crown&&rows[0])rows[0].insertBefore(crown,rows[0].firstChild);st.classList.add("x2p-pnrank")})();
     rec.after(st)}   /* the standings come second, after the record (owner, 2026-10-26: "the record section as the number one section") */
   var sw=$(".rsw2",hold),rf=$("#rflip",hold);
   if(sw&&rf){$$(".lsw,.lrn",ln).forEach(function(e){if(e.parentNode===ln)e.remove()});ln.appendChild(sw);ln.appendChild(rf);
@@ -1355,7 +1365,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   /* (owner, 2026-10-22) "predict", not "call each stock" (they don't call every stock); "before" and "after" in gold */
   /* the standings' three rules on the "The rules" strap above the board, with the tickets too (owner, 2026-10-23: "in the same
      format as we have it on the current live site"; they were the tickets' small print under the board for a day) */
-  [].concat([["#standings","x2p-stb",['4 AI<span class="x2p-lc">s</span> paper-trade every earnings report.',"$100K account each. Graded at the close.","Top accuracy makes the buyback call."],"The rules"]],
+  [].concat([["#standings","x2p-stb",['4 AI<span class="x2p-lc">s</span> paper-trade every earnings report.',"$100K account each. Graded at the close.","Top P&amp;L makes the buyback call."],"The rules"]],
   [["#learn","x2p-lrb",["Do not trust the models. Verify the trend.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
    ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[],"Replays"]]).forEach(function(x){if(!x[2].length)return;
     var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
