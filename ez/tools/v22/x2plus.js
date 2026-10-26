@@ -224,6 +224,7 @@
   function xsvg(m){try{var h=typeof logo==="function"?logo(m):"",x=h.match(/<svg[\s\S]*<\/svg>/);return x?x[0]:""}catch(e){return ""}}
   function xmove(a){var dn=a<0;return '<span aria-hidden="true">'+(dn?"▼":"▲")+'</span><span class="sr">'+(dn?"Down ":"Up ")+'</span>'+Math.abs(a).toFixed(2)+"%"}
   /* builds (or, on a copy such as the round opened over the page, rebuilds with fresh ids) a graded card's certificate */
+  window.__x2pXdefs=xdefs;   /* the standings and the proof print in these inks too (LIGHTINK, skin-x2plus.css) */
   function certify(c,g,re){var fin=c.querySelector(".face.back .fin");if(!fin)return;var old=fin.querySelector(".xc");if(old&&!re)return;xdefs();
     var wn=g.win?g.win.split(" & "):[],up0=g.a>0,R=g.calls.map(function(x){var up=x[1].indexOf("DOWN")<0,mg=parseFloat(String(x[1]).replace(/^(UP|DOWN)\s*/,""));
       return {m:x[0],up:up,mg:Math.round(mg*100)/100,ok:up===up0,off:+x[2],win:wn.indexOf(x[0])>-1}}),by=function(a,b){return a.off-b.off};
@@ -1531,3 +1532,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   if(m){m.className="mark x2p-lg";m.innerHTML='<svg viewBox="0 0 400 400" aria-hidden="true" focusable="false"><circle cx="198.7" cy="199.4" r="198.2" fill="#04070e"/><path fill="#f8f0d9" d="M116.8,88.0 L86.2,152.0 L102.1,152.0 L55.0,274.5 L154.2,274.5 L188.5,225.8 L128.7,225.8 L137.5,204.0 L170.2,203.5 L193.2,162.0 L149.1,162.0 L154.8,145.0 L143.4,138.5 L217.9,138.2 L192.2,182.0 L234.9,182.0 L181.5,250.8 L136.0,315.8 L272.5,315.8 L292.5,265.0 L230.4,265.0 L328.2,130.8 L225.1,130.8 L253.0,87.8 Z"/><path fill="#03c870" d="M146.2,287.0 L133.0,287.0 L106.5,327.2 L119.0,326.5 Z M86.8,169.5 L74.8,169.5 L29.5,282.2 L43.7,282.2 Z M105.8,92.5 L89.5,95.8 L55.5,169.2 L69.0,169.2 Z"/><path fill="#ff3a31" d="M304.5,259.0 L300.5,269.5 L313.0,268.2 L317.0,258.8 Z M361.5,126.0 L344.0,126.5 L269.5,235.8 L256.0,257.5 L276.2,257.0 Z M279.0,87.8 L266.7,87.5 L251.5,117.2 L262.2,119.0 Z"/><path fill="#fdbc2a" d="M334.2,281.2 L302.0,281.2 L288.2,315.8 L321.0,315.5 Z"/></svg>'}
   if(t)t.innerHTML='<span class="x2p-be">E</span>arnings <span class="x2p-bz">Z</span>eason'}
   if(d.body)go();else d.addEventListener("DOMContentLoaded",go)}catch(e){}})();
+
+/* the certificate's inks for the standings and the proof (owner, 2026-10-26, the LIGHTINK block of skin-x2plus.css): the filters exist
+   from the start, not only once a certificate has been drawn */
+(function(){try{function go(){if(window.__x2pXdefs)window.__x2pXdefs()}if(document.body)go();else document.addEventListener("DOMContentLoaded",go)}catch(e){}})();
