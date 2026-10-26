@@ -1260,11 +1260,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       hit:{t:"Accuracy",top:"How often were they right about the direction?",bot:"Up or down only",
         /* (owner, 2026-10-26, later) the rows as a trader's record: trades, W and L (no "25 of 37"); the hit rate moves to where each
            line ends on the chart, as the P&L view prints its P&L % there */
-        html:function(){return '<div class="lp pt-3 pn-acc"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Trades</span><span class="pn-w">W</span><span class="pn-l">L</span></div>'+
-          byHit.map(function(m,i){var s=S[m];return row(i,m,'<span class="pt-v tnum pn-tr"><span class="sr">'+Math.round(s.hit*100)+'% right. Trades </span>'+s.n+'</span><span class="pt-v tnum pt-u pn-wv"><span class="sr">won </span>'+s.k+'</span>','<span class="pt-v tnum pt-d pn-lv"><span class="sr">lost </span>'+(s.n-s.k)+'</span>')}).join("")+'</div>'+
+        html:function(){return '<div class="lp pt-3 pn-acc"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Trades</span><span class="pn-w">W</span><span class="pn-l">L</span><span>Accuracy</span></div>'+
+          byHit.map(function(m,i){var s=S[m];return row(i,m,'<span class="pt-v tnum pn-tr"><span class="sr">'+Math.round(s.hit*100)+'% right. Trades </span>'+s.n+'</span><span class="pt-v tnum pt-u pn-wv"><span class="sr">won </span>'+s.k+'</span><span class="pt-v tnum pt-d pn-lv"><span class="sr">lost </span>'+(s.n-s.k)+'</span>','<span class="pt-c tnum pn-hv'+(i?'':' pn-hg')+'" aria-hidden="true">'+Math.round(s.hit*100)+'%</span>')}).join("")+'</div>'+
           '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("Start","Coin flip: 50%")+'</div><p class="pt-cp">Every line starts at 50/50 and moves with each call.</p>'},
         draw:function(el,h){var LO=30,HI=80,y=function(v){return (HI-Math.max(LO,Math.min(HI,v)))/(HI-LO)*100};
-          chart(el,h,byHit.map(function(m,i){return {m:m,rank:i+1,pts:S[m].run.map(function(p){return [p[0]/N*100,y(p[1])]})}}),y(50),{lab:function(m){return Math.round(S[m].hit*100)+"%"},left:24,grid:[80,70,60,40,30].map(function(v){return [y(v),v+"%"]})})}},
+          chart(el,h,byHit.map(function(m,i){return {m:m,rank:i+1,pts:S[m].run.map(function(p){return [p[0]/N*100,y(p[1])]})}}),y(50),{left:24,grid:[80,70,60,40,30].map(function(v){return [y(v),v+"%"]})})}},
       /* (owner, 2026-10-26, later: "change the average miss to target hits") no average miss: under each target its bullseyes
          (right way, within 0.1%), its shots within 1% (bullseyes included) and its shots off target (the wrong way, the red dots
          outside); ranked by bullseyes, then within 1%, then fewer off target */
@@ -1272,8 +1272,8 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
         html:function(){var T={};MK.forEach(function(m){var c=S[m].calls;T[m]={b:c.filter(function(x){return x.ok&&x.off<=.1}).length,w:c.filter(function(x){return x.ok&&x.off<=1}).length,o:c.filter(function(x){return !x.ok}).length}});
           var byT=MK.slice().sort(function(a,b){return (T[b].b-T[a].b)||(T[b].w-T[a].w)||(T[a].o-T[b].o)});
           return '<div class="pt-tg lp">'+byT.map(function(m,i){var t=T[m];return '<figure><figcaption style="--c:'+COL[m]+'"><i>'+(i?i+1:fo("1"))+'</i>'+logo(m)+(i?esc(m):fo(m))+'</figcaption>'+target(m,i)+
-            '<div class="pt-ts"><span><b>'+t.b+'</b>Bullseye'+(t.b===1?'':'s')+'</span><span><b>'+t.w+'</b>Within 1%</span><span><b class="pt-ot">'+t.o+'</b>Off target</span></div></figure>'}).join("")+'</div>'+
-          '<p class="pt-cp">The bullseye is what the stock did. One hole per call. Bullseye: within 0.1%. A red dot outside: the wrong way.</p>'}},
+            '<div class="pt-ts"><span><b class="pt-bu">'+t.b+'</b>Bullseye'+(t.b===1?'':'s')+'</span><span><b class="pt-w1">'+t.w+'</b>Within 1%</span><span><b class="pt-ot">'+t.o+'</b>Off target</span></div></figure>'}).join("")+'</div>'+
+          '<p class="pt-cp">The bullseye is what the stock did. One hole per call. Bullseye: within 0.1%. Off target: the wrong way.</p>'}},
       sector:{t:"Sector",top:"Which industries do they call best?",bot:"Small samples · it fills in",
         html:function(){var sec=function(r){return ((typeof RMETA!=="undefined"&&RMETA[r.n])||{}).sector||""},cnt={};ROUNDS.forEach(function(r){var x=sec(r);if(x)cnt[x]=(cnt[x]||0)+1});
           var secs=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
@@ -1314,7 +1314,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
        the card's grain through, the ticket's rough press (#xptInk); the PROOF block presses them in like GROK (.pt-wi, .pt-ri) */
     function target(m,j){var R=60,C=73,ga=Math.PI*(3-Math.sqrt(5)),holes="",out="";
       S[m].calls.forEach(function(c,i){var a=i*ga;if(c.ok){var r=Math.min(c.off,12)/12*R;holes+='<circle cx="'+(C+r*Math.cos(a)).toFixed(1)+'" cy="'+(C+r*Math.sin(a)).toFixed(1)+'" r="2.6" fill="#1b1613" stroke="rgba(255,250,236,.9)" stroke-width=".8"/>'}
-        else{var q=R+4.5+(i%3)*1.8;out+='<circle cx="'+(C+q*Math.cos(a)).toFixed(1)+'" cy="'+(C+q*Math.sin(a)).toFixed(1)+'" r="2" fill="rgba(200,45,35,.9)"/>'}});
+      });   /* (owner, 2026-10-26, later) no red dots outside for the wrong-way calls ("too much noise"): Off target counts them */
       var band=function(r0,r1,col){return r0?'<circle cx="'+C+'" cy="'+C+'" r="'+((r0+r1)/2)+'" fill="none" stroke="'+col+'" stroke-width="'+(r1-r0)+'"/>':'<circle cx="'+C+'" cy="'+C+'" r="'+r1+'" fill="'+col+'"/>'};
       var rings='<g class="pt-wi" opacity=".62">'+band(R/4,R/2,"#fffbf1")+band(3*R/4,R,"#fffbf1")+'</g><g class="pt-ri" opacity=".86" style="mix-blend-mode:multiply">'+band(0,R/4,"#c2261d")+band(R/2,3*R/4,"#c2261d")+'</g>';
       var nums=[[3,1],[6,2],[9,3],[12,4]].map(function(v,i){return '<text x="'+(C+(v[1]-.5)/4*R).toFixed(1)+'" y="'+(C+2)+'" font-size="5.6" font-family="Barlow Condensed,sans-serif" font-weight="700" text-anchor="middle" fill="'+(i%2?"rgba(196,38,30,.95)":"rgba(255,246,232,.95)")+'">'+v[0]+'</text>'}).join("");
