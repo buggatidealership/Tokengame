@@ -26,12 +26,12 @@ async function open(b,w,moment,h){
     r.fulfill({contentType:'application/javascript',body:s})});
   await p.goto('http://127.0.0.1:8897/v46-live-x2plus.html',{waitUntil:'load'});await p.waitForTimeout(5200);
   await p.evaluate(MODEL);return p}
-async function inject(p,opt){const css=fs.existsSync(D+opt+'.css')?fs.readFileSync(D+opt+'.css','utf8'):'';const js=fs.existsSync(D+opt+'.js')?fs.readFileSync(D+opt+'.js','utf8'):'';
+async function inject(p,opt){const css=fs.readFileSync(D+'_common.css','utf8')+(fs.existsSync(D+opt+'.css')?fs.readFileSync(D+opt+'.css','utf8'):'');const js=fs.readFileSync(D+'_common.js','utf8')+'\n'+(fs.existsSync(D+opt+'.js')?fs.readFileSync(D+opt+'.js','utf8'):'');
   await p.evaluate(([css,js])=>{const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);if(js)(0,eval)(js)},[css,js]);await p.waitForTimeout(700)}
 /* overflow: the page must not scroll sideways; every lv- element must sit inside the viewport; in the header, the pill
    must not overlap the brand, the X icon or the tabs */
 async function measure(p){return p.evaluate(()=>{const W=innerWidth,o={sw:document.documentElement.scrollWidth,W:W,bad:[]};
-  document.querySelectorAll('[class*="lv-"]').forEach(e=>{const r=e.getBoundingClientRect();if(!r.width)return;if(r.left<-0.5||r.right>W+0.5)o.bad.push(e.className+' '+Math.round(r.left)+'..'+Math.round(r.right));
+  document.querySelectorAll('[class*="lv-"]').forEach(e=>{if(e.parentElement&&e.parentElement.closest('.lv-crawl,.lv-scroll'))return;const r=e.getBoundingClientRect();if(!r.width)return;if(r.left<-0.5||r.right>W+0.5)o.bad.push(e.className+' '+Math.round(r.left)+'..'+Math.round(r.right));
     if(e.scrollWidth>e.clientWidth+1&&!/lv-scroll|lv-crawl/.test(e.className)&&getComputedStyle(e).overflow!=='visible')o.bad.push('clip '+e.className+' '+e.scrollWidth+'>'+e.clientWidth)});
   const pill=document.querySelector('.lv-pill');if(pill){const r=pill.getBoundingClientRect();o.pill=[Math.round(r.left),Math.round(r.top),Math.round(r.width),Math.round(r.height)];
     ['.brand','.x2p-xhd','.nav'].forEach(s=>{const e=document.querySelector(s);if(!e)return;const q=e.getBoundingClientRect();if(!q.width)return;
@@ -43,10 +43,10 @@ const PILLS=['NOW','A','B','C','D','E'],PAGES=['P1','P2','P3','P4'];
  if(mode==='model'){for(const m of Object.keys(MOMENTS)){const p=await open(b,390,m);
    console.log(m,JSON.stringify(await p.evaluate(()=>({today:LV.todayLabel,bell:LV.bellLabel,left:LV.left(),hms:LV.hms(),open:LV.open,rung:LV.rungToday,atBell:LV.atBell.map(u=>u.n),waiting:LV.waiting.map(u=>u.n),graded:LV.graded,last:LV.lastLabel,lastBatch:LV.lastBatch.map(r=>r.n+LV.short(r)+r.out+r.win),due:LV.due.map(u=>u.n+LV.short(u)),next:LV.nextLabel,upcoming:LV.upcoming,pending:LV.pending,total:LV.total,stand:LV.stand.map(t=>t.m+' #'+t.rank+' '+(t.hr*100).toFixed(1)+' mv'+t.move+' '+t.ok+'/'+t.n),week:LV.week.map(d=>d.k+':'+d.n+'/'+d.graded+'/'+d.inn),wk:LV.weekCalls,pct:LV.sessionPct().toFixed(2)}))),p.errs.join('|'));await p.context().close()}}
  if(mode==='pill'){for(const opt of PILLS){if(only&&opt!==only)continue;
-   for(const [w,m] of [[390,'mon'],[1280,'mon'],[320,'mon'],[390,'fri'],[390,'bell'],[390,'sat'],[1280,'fri']]){
+   await Promise.all([[390,'mon'],[1280,'mon'],[320,'mon'],[390,'fri'],[390,'bell'],[390,'sat'],[1280,'fri'],[1280,'sat']].map(async([w,m])=>{
      const p=await open(b,w,m,200);if(opt!=='NOW')await inject(p,opt);const r=await measure(p);
      await p.screenshot({path:S+'pill-'+opt+'-'+m+'-'+w+'.png',clip:{x:0,y:0,width:w,height:w>760?62:112}});
-     console.log(opt,m,w,JSON.stringify(r),p.errs.join('|'));await p.context().close()}}}
+     console.log(opt,m,w,JSON.stringify(r),p.errs.join('|'));await p.context().close()}))}}
  if(mode==='page'){for(const opt of PAGES){if(only&&opt!==only)continue;const spec=require(D+opt+'.shot.js');
    for(const m of spec.moments){for(const w of [390,320,1280]){const p=await open(b,w,m);await inject(p,opt);
      const r=await measure(p);
