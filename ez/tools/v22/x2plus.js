@@ -284,8 +284,10 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
     if(want===XLIVE)return;XLIVE=want;XL=0;if(want&&!XT)XT=requestAnimationFrame(xstep)}
   window.__x2pCertLive=function(){if(!XQ)XQ=requestAnimationFrame(xlive)};
   window.__x2pCertCopy=function(c){var g=xg(+c.getAttribute("data-n"));if(g&&c.getAttribute("data-k")==="g")try{certify(c,g,true)}catch(e){window.__x2pCertErr=e}};
-  window.__x2pSlab=function(root){[].forEach.call((root||document).querySelectorAll("#record .card[data-n]"),function(c){if(c.querySelector(".fx"))return;
-    var n=+c.getAttribute("data-n"),g=null,q=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===n)g=ROUNDS[i];if(!g)for(i=0;i<PENDING.length;i++)if(PENDING[i].n===n)q=PENDING[i];var u=null;if(!g&&!q)for(i=0;i<UPCOMING.length;i++)if(UPCOMING[i].n===n)u=UPCOMING[i];
+  window.__x2pSlab=function(root){var late=[];[].forEach.call((root||document).querySelectorAll("#record .card[data-n]"),function(c){var fs=[].filter.call(c.querySelectorAll(".face"),function(f){return !f.querySelector(":scope>.fx")});if(!fs.length)return;
+    /* (speed, 2026-10-27) the back of a far graded card is put in later (build.py, the record): it gets its label then, fitted on its own;
+       the card's aria-label is added once */
+    var fresh=!c.querySelector(".fx"),n=+c.getAttribute("data-n"),g=null,q=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===n)g=ROUNDS[i];if(!g)for(i=0;i<PENDING.length;i++)if(PENDING[i].n===n)q=PENDING[i];var u=null;if(!g&&!q)for(i=0;i<UPCOMING.length;i++)if(UPCOMING[i].n===n)u=UPCOMING[i];
     var r=g||q||u;if(!r)return;var hit=g?g.calls.filter(function(x){return (x[1].indexOf("DOWN")<0)===(g.a>0)}).length:0,nc=g?g.calls.length:0,d=md(r.called);
     /* the EZ grade, rubric v1 (owner, 2026-10-21): direction sets the band and the word (all right 8-10 Perfect, most 6-7.5 Strong, half 4-5.5 Split,
        some 2-3.5 Rough, none 1 Rekt); closeness of the AIs that called the direction moves it up the band; a 10 (gold label, foil) = all right,
@@ -294,14 +296,15 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
     var h='<div class="zlab"><div class="zl"><span class="y">'+d.y+' <span class="s">$</span><span class="e">E</span><span class="z">Z</span> Season 1</span><span class="nm"><b>'+esc2(r.co)+'</b>'+(r.ticker?' <small>('+esc2(r.ticker)+')</small>':'')+'</span><span class="zb"><i></i>'+String(n).padStart(8,"0")+'<span class="holo"><i class="s">$</i><i class="e">E</i><i class="z">Z</i></span></span></div>'+
       '<div class="zr"><span class="no">#'+n+'</span>'+(g?'<span class="ds">'+ds+'</span><span class="gr">'+gr+'</span>':(q?'<span class="ds">Final grade on</span><span class="gr">'+md(r.resolves).t.toUpperCase()+'</span>':'<span class="ds">Calls due</span><span class="gr">'+md(r.called).t.toUpperCase()+'</span>'))+'</div>'+
       '</div>';
-    [].forEach.call(c.querySelectorAll(".face"),function(f){var o=document.createElement("div");o.className="fx"+(gr===10?" perfect":"")+(pr?" pristine":"");o.setAttribute("aria-hidden","true");o.innerHTML=h;f.appendChild(o);
+    fs.forEach(function(f){var o=document.createElement("div");o.className="fx"+(gr===10?" perfect":"")+(pr?" pristine":"");o.setAttribute("aria-hidden","true");o.innerHTML=h;f.appendChild(o);
       /* the back says why, in one line, where the barcode sits on the front */
       if(g&&f.classList.contains("back")){var zb=o.querySelector(".zb");zb.className="zb zwhy";
         /* (owner, rounds 40 and 41, 2026-10-25) the result first, in the label's head type; the miss after it, smaller */
         zb.innerHTML="<b>"+E.hit+" of "+E.nc+" right</b>"+(E.hit?" <small>\u00b7 "+E.av.toFixed(2)+"% off<em> on avg</em></small>":"")}
       /* (owner, 2026-10-21) a 10 gets the rolling foil on both faces (owner: it should not vanish when the card flips): rainbow bands that roll across without end; a sibling of .fx so it lights the film too */
-      if(gr===10){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);if(FRO)FRO.observe(f);else foilFit(f)}});if(window.__x2pNmFit)window.__x2pNmFit();
-    var lab=(g?ds+" "+gr+" of 10, "+why.replace(" \u00b7",",").replace("off on avg","off on average"):q?"calls in, final grade on "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")})};
+      if(gr===10){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);if(FRO)FRO.observe(f);else foilFit(f)}});if(!fresh){late.push.apply(late,fs);return}if(window.__x2pNmFit)window.__x2pNmFit();
+    var lab=(g?ds+" "+gr+" of 10, "+why.replace(" \u00b7",",").replace("off on avg","off on average"):q?"calls in, final grade on "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")});
+    if(late.length&&window.__x2pNmFitIn)window.__x2pNmFitIn(late)};
   /* (owner, 2026-10-21, later) the foil stays light over the film: the mask needs the film's top and bottom inside the face */
   /* (speed, 2026-10-23) every face is measured first and written after, so the page is laid out once, not once per face; the faces are
      fitted by the ResizeObserver, which reports them all together once the page is laid out */
@@ -343,7 +346,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
         mean:G.reduce(function(a,g){return a+Math.abs(g.a)},0)/G.length,bulls:R.filter(function(c){return Math.round(c.off*100)<=10}).length,ds:ds,
         four:f4.length,none4:f4.filter(function(g){return !C.some(function(c){return c.g===g&&c.ok})}).length,indep:Math.round(1/Math.pow(pw,4)),
         worst:function(g,k){return C.slice().sort(function(a,b){return b.off-a.off}).slice(0,k).every(function(c){return c.g===g})}};return SF}
-    var cards=[];function mk(it){if(/everyone was wrong/i.test(it.tag))return null;/* dropped on X2+ (owner, 2026-10-20) */var r=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===it.n)r=ROUNDS[i];var o=r&&src.querySelector('.card[data-n="'+it.n+'"]');if(!o)return null;
+    var cards=[];function mk(it){if(/everyone was wrong/i.test(it.tag))return null;/* dropped on X2+ (owner, 2026-10-20) */var r=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===it.n)r=ROUNDS[i];if(r&&window.__x2pRecFill)window.__x2pRecFill(it.n);/* its back, if it waits (build.py) */var o=r&&src.querySelector('.card[data-n="'+it.n+'"]');if(!o)return null;
       var c=o.cloneNode(true),E=ezGrade(r),k=it.tag.toLowerCase(),nf=c.classList.contains("nofilm");c.classList.remove("flipped","cur");c.removeAttribute("data-i");
       var fb=c.querySelector(".face.front [data-flip]");if(fb)fb.textContent="See why ↻";
       /* the story side (owner, 2026-10-25, round 38): the tabloid's words ("The $EZ Tape", option A) in the ringside recap's look
@@ -516,11 +519,14 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
   /* the name and its ticker fit the label: a long name steps down from 15px until it fits (never below 10px), on load, resize and tab change */
   /* (speed, 2026-10-23) all the labels step down together: measured, then written, round by round, so the page is laid out once a round
      (at most ten), not once per label and step */
-  function nmFit(){var els=[].filter.call(document.querySelectorAll("#record .fx .zl .nm, #x2pHl .fx .zl .nm"),function(el){return el.firstChild&&el.offsetWidth}),st=[];
+  /* (speed, 2026-10-27) roots: fit only the labels inside these (a card back put in later); each label is fitted on its own measure, so
+     the result is the one the whole-page pass gives */
+  function nmFit(roots){var L=roots&&roots.length?[].concat.apply([],roots.map(function(r){return [].slice.call(r.querySelectorAll(".fx .zl .nm"))})):document.querySelectorAll("#record .fx .zl .nm, #x2pHl .fx .zl .nm");
+    var els=[].filter.call(L,function(el){return el.firstChild&&el.offsetWidth}),st=[];
     els.forEach(function(el){el.style.fontSize=""});
     els.forEach(function(el){var b=el.firstChild;if(b.scrollWidth>b.clientWidth+.5)st.push({el:el,b:b,z:parseFloat(getComputedStyle(el).fontSize)})});
     while(st.length){st=st.filter(function(x){return x.z>10});st.forEach(function(x){x.z-=.5;x.el.style.fontSize=x.z+"px"});st=st.filter(function(x){return x.b.scrollWidth>x.b.clientWidth+.5})}}
-  var nmT;function nmLater(){clearTimeout(nmT);nmT=setTimeout(nmFit,120)}nmFit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(nmFit);var nmW=innerWidth;window.addEventListener("resize",function(){if(innerWidth===nmW)return;nmW=innerWidth;nmLater()});window.addEventListener("hashchange",nmLater);window.__x2pNmFit=nmLater;
+  var nmT;function nmLater(){clearTimeout(nmT);nmT=setTimeout(nmFit,120)}nmFit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){nmFit()});window.__x2pNmFitIn=nmFit;var nmW=innerWidth;window.addEventListener("resize",function(){if(innerWidth===nmW)return;nmW=innerWidth;nmLater()});window.addEventListener("hashchange",nmLater);window.__x2pNmFit=nmLater;
   /* the record section's first two bullets said what steps 1 and 2 now say: keep only the dare */
   var rec=$(".x2o-rec"),own=rec?[].filter.call(rec.children,function(c){return !c.classList.contains("x2p-xli")}):[];if(own.length===3){own[0].remove();own[1].remove()}
   var sn=$(".x2o-stn");if(sn)sn.textContent="The model on top of the leaderboard makes the call on bet #1, NVIDIA.";
@@ -795,7 +801,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     if(st==null)top.removeAttribute("style");else top.setAttribute("style",st);return r.width?{w:r.width,h:r.height}:null}
   var ON="M12 5.2a4 4 0 0 1 0 5.6M13.9 3.3a6.6 6.6 0 0 1 0 9.4",OFF="M11.5 5.5l4 4M15.5 5.5l-4 4";
   function faces(c,f){var fr=c.querySelector(".face.front"),bk=c.querySelector(".face.back");if(!fr||!bk)return;fr.setAttribute("aria-hidden",f?"true":"false");bk.setAttribute("aria-hidden",f?"false":"true");if("inert" in fr){fr.inert=f;bk.inert=!f}}
-  function open(rm){var c0=rm.querySelector(".card[data-n]"),n=c0&&c0.getAttribute("data-n"),src=n&&d.querySelector('#record .card[data-n="'+n+'"]');if(!src||!src.querySelector(".fx"))return;
+  function open(rm){var c0=rm.querySelector(".card[data-n]"),n=c0&&c0.getAttribute("data-n");if(n&&window.__x2pRecFill)window.__x2pRecFill(n);/* its back, if it waits (build.py) */var src=n&&d.querySelector('#record .card[data-n="'+n+'"]');if(!src||!src.querySelector(".fx"))return;
     var sz=WH||(WH=recSize());if(!sz)return;
     var c=src.cloneNode(true);c.classList.remove("flipped");c.classList.add("cur");c.removeAttribute("data-i");c.style.width=sz.w+"px";c.style.height=sz.h+"px";c.style.flex="none";
     /* the certificate on its back is drawn again for the copy (its stamp and ids its own) */
