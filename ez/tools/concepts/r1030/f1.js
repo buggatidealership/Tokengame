@@ -1,0 +1,7 @@
+/* F1: the live board as it is, stitched (r1029 A4), with each AI's P&L line under its P&L (the balance after every graded round) */
+(function(){var G=ROUNDS.filter(function(r){return typeof r.a==="number"&&!isNaN(r.a)});
+ document.querySelectorAll('#standings ol.lbl>li').forEach(function(li){var t=li.textContent.toUpperCase(),m=['GROK','CLAUDE','GPT','KIMI'].filter(function(k){return t.indexOf(k)>=0})[0],f=li.querySelector('.lb-c.roi');if(!m||!f||f.querySelector('.f1s'))return;
+  var b=100000,s=[b];G.forEach(function(r){var c=(r.calls||[]).filter(function(x){return x[0]===m})[0];if(c)b*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;s.push(b)});
+  var w=62,h=15,lo=Math.min.apply(0,s.concat([1e5])),hi=Math.max.apply(0,s.concat([1e5])),y=function(v){return (1.5+(h-3)*(1-(v-lo)/(hi-lo))).toFixed(2)},x=function(i){return (w*i/(s.length-1)).toFixed(2)},c=b>=1e5?'#0f8a4c':'#c8302a';
+  f.insertAdjacentHTML('beforeend','<svg class="f1s" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" aria-hidden="true" style="display:block;margin:3px auto 0"><line x1="0" x2="'+w+'" y1="'+y(1e5)+'" y2="'+y(1e5)+'" stroke="rgba(4,7,14,.35)" stroke-width=".8" stroke-dasharray="2.5 2.5"/><path d="'+s.map(function(v,i){return (i?'L':'M')+x(i)+' '+y(v)}).join(' ')+'" fill="none" stroke="'+c+'" stroke-width="1.5" stroke-linejoin="round"/><circle cx="'+x(s.length-1)+'" cy="'+y(b)+'" r="1.8" fill="'+c+'"/></svg>')});
+ if(window.__ajDraw)window.__ajDraw()})();
