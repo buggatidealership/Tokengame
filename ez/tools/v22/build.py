@@ -479,7 +479,18 @@ pp=pp.replace('</body>','<script id="x2plus-words">\n'+XPJS+'\n</script>\n</body
 # opened over the page (#x2pRm, the record's own slab): every "#record .card" style
 # also matches there, same specificity; only inside <style>, so the page's own scripts still see the Overview's cards alone
 pp=re.sub(r'<style[^>]*>.*?</style>',lambda m:m.group(0).replace('#record .card',':is(#record,#x2pHl,#x2pRm) .card'),pp,flags=re.S)
-open("v46-live-x2plus.html",'w').write(pp); print("ok v46-live-x2plus.html",len(pp))
+# (owner, 2026-10-27: "logo cream flat... everywhere", "the gold from 5") X2+ only: every paper is the logo's cream with no grain (one
+# texture shared by every ticket and card; lit flat, it renders as #f8f0d9), the gold foils in the logo's gold family; the film's
+# bill keeps today's grainy paper ("he's like the market. He's gone through a lot"); the certificate's own stock goes white so it
+# shows the same cream. X3+ (written from pp below) keeps its grain for the letterpress.
+GRAINP="lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'"
+CREAMP="lighting-color='%23f8f0d9' surfaceScale='0'%3E%3CfeDistantLight azimuth='225' elevation='90'"
+assert pp.count(GRAINP)>30
+_i=pp.find(GRAINP);GRAIN=pp[pp.rfind('url("',0,_i):pp.find('")',_i)+2]
+px=pp.replace(GRAINP,CREAMP)
+for _a,_c in [(r'#f6dc93|#fbe8a8|#f6d77c','#fed98a'),(r'#e4b54a|#e7bd5b|#efc24a','#fdbc2a'),(r'#c99227|#bf8a22|#d39c1c|#c98a12','#d99a12')]:px=re.sub(_a,_c,px,flags=re.I)
+px=px.replace('</head>','<style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>\n</head>',1)
+open("v46-live-x2plus.html",'w').write(px); print("ok v46-live-x2plus.html",len(px))
 # EZ Live X3+ (owner, 2026-10-22: "a complete replica", first with neon bullets, then the same day "for X3 plus, can you do the
 # letterpress"): X2+ whose broadcast straps are cream card with the words pressed in (tools/v22/skin-x3plus.css in place of X2+'s
 # origami block; its __PAPER__ is the "As it stands" ticket's own texture, so the two papers always match)
