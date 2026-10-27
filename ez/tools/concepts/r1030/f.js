@@ -27,7 +27,7 @@
    R.map(function(r,i){return '<div class="tq'+(i?'':' qg')+'" data-m="'+r.m+'"><span class="tq-stub"><small>No.</small><b>'+(i+1)+'</b></span>'+
     '<span class="tq-ai"><span class="tq-lo">'+r.logo+'</span>'+nmBlock(r)+'</span><span class="tq-v">'+wl(r)+'</span><span class="tq-v">'+r.hit+'%</span>'+
     '<span class="tq-pl"><b class="'+(r.pnl<0?'dn':'up')+'">'+usd(r.pnl)+'</b>'+(V==='F2'?'<span class="tq-pc">'+pc(r.pct)+'</span>'+spark(r.s,78,18):'<span class="tq-pc">'+pc(r.pct)+'</span>')+'</span>'+
-    (V==='F5'?'<span class="tq-ch"><span class="tq-chl">P&amp;L, round by round · dashed: the $100K start</span>'+spark(r.s,262,30,{fill:1,sw:1.6,dot:2.2})+'<span class="tq-chx"><i>R1</i><i>$100K</i><i>R'+last+'</i></span></span>':'')+'</div>'}).join('')+
+    (V==='F5'?'<span class="tq-ch"><span class="tq-chl">P&amp;L, round by round · dashed: the $100K start</span>'+spark(r.s,262,30,{fill:1,sw:1.6,dot:2.2})+'<span class="tq-chx"><i>R1</i><i>R'+last+'</i></span></span>':'')+'</div>'}).join('')+
    '<div class="tq qk5"><span class="tq-stub"><small>No. 5</small><b>?</b></span><span class="tq-5t">Models<br>in tryouts</span><span class="tq-5n">'+TRY.map(function(t){return '<span>'+t+'</span>'}).join('')+'</span></div></div>'}
  if(V==='F3'||V==='F4'){ /* the digital ticket on the logo's cream */
   var rows=R.map(function(r,i){return '<div class="qe-r'+(i?'':' qg')+'" data-m="'+r.m+'"><span class="qe-pos">'+(i+1)+'</span><span class="qe-bar" style="background:'+(i?r.mc:'#fdbc2a')+'"></span>'+
