@@ -27,6 +27,18 @@ doc = re.sub(r'<title>[^<]*</title>', '<title>$EZ \u00b7 Earnings Zeason</title>
 meta = ('<link rel="canonical" href="' + URL + '">\n<meta property="og:type" content="website">\n<meta property="og:url" content="' + URL + '">\n'
         '<meta property="og:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:card" content="summary_large_image">\n')
 doc = doc.replace('</head>', meta + '</head>', 1)
+# (overnight, 2026-10-27) the share card and the icons: a link to the site on X showed a bare text card and browsers a blank tab.
+# The card is media/share-b.png (the explainer's host, the hero line, the logo; options a to c from ez/tools/concepts/share/share.js);
+# a new card needs a new file name (media is cached for a year, and X keeps a card for days). The icons are the EZ. logo.
+SHARE = 'share-b.png'
+DESC = '4 AIs paper-trade every earnings report. $100K account each. Graded at the close. Top P&L makes the buyback call.'
+meta2 = ('<meta name="description" content="' + DESC + '">\n<meta property="og:description" content="' + DESC + '">\n'
+         '<meta property="og:image" content="' + URL + 'media/' + SHARE + '">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n'
+         '<meta property="og:image:alt" content="We\u2019re putting buybacks in the hands of an AI. The EZ. logo and the host at his desk.">\n'
+         '<meta name="twitter:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:description" content="' + DESC + '">\n<meta name="twitter:image" content="' + URL + 'media/' + SHARE + '">\n'
+         '<link rel="icon" href="media/icon.svg" type="image/svg+xml">\n<link rel="icon" href="media/icon-32.png" sizes="32x32" type="image/png">\n<link rel="apple-touch-icon" href="media/icon-180.png">\n')
+doc = re.sub(r'<meta name="description"[^>]*>\n?', '', doc)  # the page's own older line (it still said "Zeason one")
+doc = doc.replace('</head>', meta2 + '</head>', 1)
 # The standings as printed tickets and the proof on the ticket kept production on today's board and stats switch (2026-10-22/23,
 # window.__x2pClassicBoard / __x2pClassicProof, which x2plus.js still honours). Both live since 2026-10-23 (owner: "Everything"), so
 # production is X2+ as it is; SITE_CLASSIC=1 builds the old board and switch again if they are ever needed.
@@ -57,6 +69,8 @@ for f in os.listdir(media):
         stem = re.sub(r'\.(mp4|webm|jpg|jpeg|png|webp)$', '', f)
         if f in names or stem in names:
             shutil.copy2(p, os.path.join(OUT, 'media', f)); n += 1
+for f in (SHARE, 'icon.svg', 'icon-32.png', 'icon-180.png', 'icon-512.png'):
+    shutil.copy2(os.path.join(media, f), os.path.join(OUT, 'media', f)); n += 1
 shutil.copytree(os.path.join(media, 'logos'), os.path.join(OUT, 'media', 'logos'))
 # the host's poses live in a subfolder the loop above does not look into
 cw = os.path.join(media, 'commissioner', 'web'); os.makedirs(os.path.join(OUT, 'media', 'commissioner', 'web'))
