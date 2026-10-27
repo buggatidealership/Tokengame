@@ -1407,7 +1407,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   /* the standings: rank, logo, name, the last five, hit rate and ROI on each strip's middle by what the eye sees (the ink of
      the letters and digits, not their line boxes; owner: "a freak when it comes to symmetry"), and the last five halfway
      between the longest name and the leftmost hit rate, the same on every row */
-  var cv=d.createElement("canvas").getContext("2d");
+  /* the ink's top and bottom above the baseline, from the text itself drawn at 10x and scanned (font metrics alone left it 1 to 2px off) */
+ var IK={};function inkOf(cs,txt){var fz=parseFloat(cs.fontSize),key=cs.fontFamily+"|"+cs.fontWeight+"|"+cs.fontStyle+"|"+fz+"|"+txt;if(IK[key])return IK[key];
+  var c=d.createElement("canvas"),x=c.getContext("2d"),F=fz*10;c.width=Math.ceil(F*txt.length*.9+40);c.height=Math.ceil(F*2);x.font=cs.fontStyle+" "+cs.fontWeight+" "+F+"px "+cs.fontFamily;x.textBaseline="alphabetic";x.fillText(txt,10,F*1.4);
+  var dt=x.getImageData(0,0,c.width,c.height).data,top=-1,bot=-1;for(var y=0;y<c.height;y++){for(var i=0;i<c.width;i++)if(dt[(y*c.width+i)*4+3]>100){if(top<0)top=y;bot=y;break}}
+  return IK[key]=top<0?[fz*.72,0]:[(F*1.4-top)/10,(F*1.4-bot-1)/10]}
   function ink(el){var cs=getComputedStyle(el),t=[].filter.call(el.childNodes,function(n){return n.nodeType===3}).map(function(n){return n.nodeValue}).join("").trim()||el.textContent.trim();
     if(cs.textTransform==="uppercase")t=t.toUpperCase();cv.font=cs.font;var m=cv.measureText(t);
     var pr=d.createElement("i");pr.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";el.appendChild(pr);var base=pr.getBoundingClientRect().top;pr.remove();
@@ -1854,12 +1858,16 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
     (before that: "what's in the win and loss box needs to be exactly in the middle... the top of the numbers [and] the bottom
     at the same distance"; the P&L is fine) the W-L and the hit rate sit with their ink centred in the ticket: the digits' cap top and
     baseline measured (canvas metrics of the figure's own font), moved by a transform on the figures only, so the field lines stay */
- var cv=d.createElement("canvas").getContext("2d");
+ /* the ink's top and bottom above the baseline, from the text itself drawn at 10x and scanned (font metrics alone left it 1 to 2px off) */
+ var IK={};function inkOf(cs,txt){var fz=parseFloat(cs.fontSize),key=cs.fontFamily+"|"+cs.fontWeight+"|"+cs.fontStyle+"|"+fz+"|"+txt;if(IK[key])return IK[key];
+  var c=d.createElement("canvas"),x=c.getContext("2d"),F=fz*10;c.width=Math.ceil(F*txt.length*.9+40);c.height=Math.ceil(F*2);x.font=cs.fontStyle+" "+cs.fontWeight+" "+F+"px "+cs.fontFamily;x.textBaseline="alphabetic";x.fillText(txt,10,F*1.4);
+  var dt=x.getImageData(0,0,c.width,c.height).data,top=-1,bot=-1;for(var y=0;y<c.height;y++){for(var i=0;i<c.width;i++)if(dt[(y*c.width+i)*4+3]>100){if(top<0)top=y;bot=y;break}}
+  return IK[key]=top<0?[fz*.72,0]:[(F*1.4-top)/10,(F*1.4-bot-1)/10]}
  function level(ol){[].slice.call(ol.querySelectorAll("li.lbr")).forEach(function(li){var R=li.getBoundingClientRect(),mid=R.top+R.height/2;
    [li.querySelector(".lb-f2 .pn-rec"),li.querySelector(".lb-c:not(.roi)>b"),li.querySelector(".lb-c.roi>b")].forEach(function(c){if(!c)return;c.style.removeProperty("transform");var b=c.tagName==="B"?c:c.querySelector("b");if(!b)return;
     var p=d.createElement("span");p.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";b.appendChild(p);var base=p.getBoundingClientRect().top;p.remove();
-    var cs=getComputedStyle(b);cv.font=cs.fontStyle+" "+cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;var asc=cv.measureText("0123456789").actualBoundingBoxAscent||parseFloat(cs.fontSize)*.72;
-    var dy=mid-(base-asc/2);if(Math.abs(dy)>.05)c.style.setProperty("transform","translateY("+dy.toFixed(2)+"px)","important")})})}
+    var cs=getComputedStyle(b),k=inkOf(cs,b.textContent.replace(/\s+/g,"")),asc=k[0]-k[1];
+    var dy=mid-(base-k[1]-asc/2);if(Math.abs(dy)>.05)c.style.setProperty("transform","translateY("+dy.toFixed(2)+"px)","important")})})}
  var cur=null,lw=0,raf=0;function run(){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){var ol=d.querySelector("#standings.x2p-tix ol.lbl");if(ol){d.documentElement.classList.add("x2p-stitch");try{[].slice.call(ol.querySelectorAll(".xs-sp")).forEach(function(e){e.remove()});level(ol)}catch(e){window.__x2pStitchErr=e}draw(ol);watch(ol)}})}
  var mo=window.MutationObserver&&new MutationObserver(function(ms){if(ms.some(function(m){return [].slice.call(m.addedNodes).concat([].slice.call(m.removedNodes)).some(function(n){return n.nodeType===1&&!n.classList.contains("xs-j")})}))run()});
  function watch(ol){if(ol===cur||!mo)return;cur=ol;mo.observe(ol,{childList:true})}
