@@ -534,6 +534,8 @@ x3=re.sub(r'/\*ORIGAMI\{\*/.*?/\*\}ORIGAMI\*/',lambda m:X3N,pp,count=1,flags=re.
 x3=re.sub(r'/\*CERTU2\{.*?/\*\}CERTU2\*/','',x3,count=1,flags=re.S)
 # (owner, 2026-10-27) and the certificate in the logo's look (CERTL1) too
 x3=re.sub(r'/\*CERTL1\{.*?/\*\}CERTL1\*/','',x3,count=1,flags=re.S)
+# (owner, 2026-10-27, night) C1, the lighter-ink certificate, is X2+'s; X3+ keeps its certificate C
+x3=re.sub(r'/\*CERTC1\{.*?/\*\}CERTC1\*/','',x3,count=1,flags=re.S)
 # (owner, 2026-10-27, night) X3+ takes the lighter ink, not X2+'s stamped one; and the Kanit + Saira link X2+ has (the tower, the
 # proof and the tickets are set in them)
 x3=re.sub(r'/\*INKS\{\*/.*?/\*\}INKS\*/','',x3,count=1,flags=re.S)
