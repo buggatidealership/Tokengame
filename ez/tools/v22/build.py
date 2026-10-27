@@ -426,7 +426,33 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
     '<video playsinline muted loop preload="none" aria-label="Round '+r.n+' film">''',
              '''<div class="art">'+(r.poster?'<img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy" decoding="async"'+(r.stillx!=null?' style="object-position:'+r.stillx+'% 50%"':'')+'>':'')+
     '<video playsinline muted loop preload="none"'+(r.stillx!=null?' style="object-position:'+r.stillx+'% 50%"':'')+' aria-label="Round '+r.n+' film">'''),
-            ('var nf=!r.film,bk=backFace(r);','var nf=!r.film&&!r.still,bk=backFace(r);if(r.still&&!r.film)bk=bk.replace("\u21bb See the film","\u21bb See the picture");')]:
+            ('var nf=!r.film,bk=backFace(r);','var nf=!r.film&&!r.still,bk=backFace(r);if(r.still&&!r.film)bk=bk.replace("\u21bb See the film","\u21bb See the picture");'),
+            # speed (2026-10-27): the record's cards were all built whole at load, both faces, and their ~10,000 elements made up three
+            # quarters of the page, so every style and layout pass before the cover lifted cost about 1 s each on a 4x slower phone.
+            # The back of a graded card is unseen until that card is in front and turned, and from 351px wide it has no say in the
+            # card's height (contain:size, skin-x2plus.css), so the backs of cards more than three places from the front are kept as
+            # text and put in when the front card comes within three places (setCur), when a highlight or the round pop-up copies the
+            # card (window.__x2pRecFill, x2plus.js), and all at once if the page narrows to 350px or less. A no-film card shows its back,
+            # so it is always built whole. Once put in, a back is exactly what it was (x2plus.js labels it as before). Meanwhile the card
+            # carries .x2p-bkw, so the one rule that told an upcoming card by its missing back rows (the grade's size, skin-x2plus.css)
+            # still reads it as graded. Checked: every computed style of the cards and their fronts unchanged, and with every back put
+            # in, the page's DOM is the old one. Never select a card by what its back holds without allowing for .x2p-bkw.
+            ('car.innerHTML=SL.map(function(s,i){return s.k==="g"?gradedCard(s.d,i):s.k==="p"?pendingCard(s.d,i):sealedCard(s.d,i)}).join("");',
+             'var RBK={},RMQ=window.matchMedia?matchMedia("(min-width:351px)"):null;\n'
+             'car.innerHTML=SL.map(function(s,i){var h=s.k==="g"?gradedCard(s.d,i):s.k==="p"?pendingCard(s.d,i):sealedCard(s.d,i);\n'
+             '  if(s.k==="g"&&RMQ&&RMQ.matches&&Math.abs(i-START)>3&&!/^<article class="[^"]*\\bnofilm\\b/.test(h)){var a=h.indexOf(\'<div class="face back"\'),e="</div></article>";\n'
+             '    if(a>0&&h.slice(-e.length)===e){RBK[i]=h.slice(a,h.length-e.length);h=h.slice(0,a).replace(\'<article class="card \',\'<article class="card x2p-bkw \')+e}}\n'
+             '  return h}).join("");'),
+            ('slides.forEach(function(c){c.classList.remove("flipped");setFaces(c,false)});',
+             'slides.forEach(function(c){c.classList.remove("flipped");setFaces(c,false)});\n'
+             '/* a card whose back waits: its front as setFaces leaves it (setFaces stops when there is no back) */\n'
+             'Object.keys(RBK).forEach(function(i){var fr=$(".face.front",slides[i]);if(fr){fr.setAttribute("aria-hidden","false");if("inert" in fr)fr.inert=false}});\n'
+             'function recFill(i){var h=RBK[i],c=slides[i];if(h==null||!c)return false;delete RBK[i];$(".cin",c).insertAdjacentHTML("beforeend",h);c.classList.remove("x2p-bkw");setFaces(c,c.classList.contains("flipped"));return true}\n'
+             'function recNear(i){var any=false;for(var j=i-3;j<=i+3;j++)if(recFill(j))any=true;if(any&&window.__x2pSlab)window.__x2pSlab(car)}\n'
+             '/* n: a round number, or "all" */\n'
+             'window.__x2pRecFill=function(n){var any=false;slides.forEach(function(c,i){if((n==="all"||+c.getAttribute("data-n")===+n)&&recFill(i))any=true});if(any&&window.__x2pSlab)window.__x2pSlab(car)};\n'
+             'if(RMQ){var rmqF=function(){if(!RMQ.matches)window.__x2pRecFill("all")};if(RMQ.addEventListener)RMQ.addEventListener("change",rmqF);else if(RMQ.addListener)RMQ.addListener(rmqF)}'),
+            ('function setCur(i){if(i===cur)return;cur=i;','function setCur(i){if(i===cur)return;cur=i;recNear(i);')]:
     assert pp.count(a)==1,a; pp=pp.replace(a,b)
 # two-tab launch (owner, 2026-10-22): the Overview builds its standings, stats and highlights from the Leaderboard and
 # Results pages (x2plus.js), whose renderers live inside the page script: hand x2plus.js those three on X2+ only
