@@ -1841,6 +1841,9 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   if(T.length<2)return;var O=ol.getBoundingClientRect();if(!O.width)return;
   function add(c,css){var e=d.createElement("span");e.className="xs-j "+c;e.setAttribute("aria-hidden","true");e.style.cssText=css;ol.appendChild(e)}
   var f0=T[0].getBoundingClientRect(),fz=T[T.length-1].getBoundingClientRect();
+  /* the Season 1 bar sits on ticket No. 1 with the same join (SEASONBAR below): holes, bites, the crossing hole at the stub's perforation */
+  var hb=ol.previousElementSibling;if(hb&&hb.classList.contains("x2p-sb")){var a0=hb.getBoundingClientRect(),y0=(a0.bottom+f0.top)/2-O.top,L0=f0.left-O.left,W0=f0.width,rk0=T[0].querySelector(".rk"),sx0=rk0?rk0.getBoundingClientRect().right-O.left:L0+52;
+   add("xs-p","left:"+(L0+10)+"px;width:"+(W0-20)+"px;top:"+(y0-1.9)+"px");add("xs-b","left:"+(L0-10)+"px;top:"+(y0-10)+"px");add("xs-b","left:"+(L0+W0-10)+"px;top:"+(y0-10)+"px");add("xs-h","left:"+(sx0-6)+"px;top:"+(y0-6)+"px")}
   for(var i=1;i<T.length;i++){var a=T[i-1].getBoundingClientRect(),b=T[i].getBoundingClientRect(),y=(a.bottom+b.top)/2-O.top,L=b.left-O.left,W=b.width,rk=T[i].querySelector(".rk"),sx=rk?rk.getBoundingClientRect().right-O.left:L+52;
    add("xs-p","left:"+(L+10)+"px;width:"+(W-20)+"px;top:"+(y-1.9)+"px");add("xs-b","left:"+(L-10)+"px;top:"+(y-10)+"px");add("xs-b","left:"+(L+W-10)+"px;top:"+(y-10)+"px");add("xs-h","left:"+(sx-6)+"px;top:"+(y-6)+"px")}}
  /* (owner, same night: "remove the green and the red... it looks very cheaply done") the joins keep only the holes, the bites and the
@@ -1868,7 +1871,29 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
     var p=d.createElement("span");p.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";b.appendChild(p);var base=p.getBoundingClientRect().top;p.remove();
     var cs=getComputedStyle(b),k=inkOf(cs,b.textContent.replace(/\s+/g,"")),asc=k[0]-k[1];
     var dy=mid-(base-k[1]-asc/2);if(Math.abs(dy)>.05)c.style.setProperty("transform","translateY("+dy.toFixed(2)+"px)","important")})})}
- var cur=null,lw=0,raf=0;function run(){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){var ol=d.querySelector("#standings.x2p-tix ol.lbl");if(ol){d.documentElement.classList.add("x2p-stitch");try{[].slice.call(ol.querySelectorAll(".xs-sp")).forEach(function(e){e.remove()});level(ol)}catch(e){window.__x2pStitchErr=e}draw(ol);watch(ol)}})}
+ /* SEASONBAR (owner, 2026-10-27, night: "I prefer M3"; "connect the season one card... seamless"; Live "the same style that we have
+    across the entire leaderboard"): the board's header row becomes a bar in the proof band's green, lightly aged, perforated along its
+    top, a cream double frame inset, joined to ticket No. 1 by the tickets' own join (draw above): "Season 1" and an honest Live / Off
+    air on the left (Live = calls due or a round graded today in New York, on a weekday), W-L / Hit rate / P&L over their columns;
+    every piece centred by its ink on the bar's middle and each label over its column's figure. Everything in the lighter ink. */
+ function isLive(){try{var p={};new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"2-digit",month:"numeric",day:"numeric",weekday:"short"}).formatToParts(new Date()).forEach(function(x){p[x.type]=x.value});
+  if(p.weekday==="Sat"||p.weekday==="Sun")return false;var t=+p.month+"/"+(+p.day)+"/"+p.year,nd=function(v){var q=String(v||"").split("/");return q.length===3?(+q[0])+"/"+(+q[1])+"/"+q[2].slice(-2):""};
+  return [].concat(window.ROUNDS||[],window.PENDING||[],window.UPCOMING||[]).some(function(r){return nd(r.called)===t||nd(r.resolves)===t})}catch(e){return false}}
+ function sbar(ol){var h=ol.previousElementSibling;if(!h||!h.classList.contains("lbh"))return;
+  if(!h.classList.contains("x2p-sb")){var lv=isLive(),s=d.createElement("span");s.className="sb-s";s.setAttribute("aria-hidden","true");
+    s.innerHTML='<b class="hk">Season 1</b><span class="hv'+(lv?' on':'')+'"><i></i><b>'+(lv?"Live":"Off air")+'</b></span>';h.appendChild(s);
+   [].slice.call(h.children).forEach(function(c){if(c===s||c.querySelector(".hk"))return;var t=c.textContent.trim();
+    if(t==="W-L")c.innerHTML='<span class="hk"><i class="g">W</i>-<i class="r">L</i></span>';else if(t==="P&L")c.innerHTML='<span class="hk"><i class="g">P</i>&amp;<i class="r">L</i></span>';else if(t==="Hit rate")c.innerHTML='<span class="hk">Hit rate</span>'});
+   h.classList.add("x2p-sb")}
+  var K=[].slice.call(h.querySelectorAll(".hk,.hv"));K.forEach(function(e){e.style.removeProperty("transform")});
+  var li=ol.querySelector("li.lbr"),R=h.getBoundingClientRect(),mid=R.top+R.height/2,map=[["W-L",".lb-f2 .pn-rec"],["Hit rate",".lb-c:not(.roi)>b"],["P&L",".lb-c.roi>b"]],dx=[];
+  if(li)[].slice.call(h.children).forEach(function(c){var k=c.querySelector(":scope>.hk");if(!k||c.classList.contains("sb-s"))return;var t=c.textContent.trim(),m=map.filter(function(x){return t===x[0]})[0],f=m&&li.querySelector(m[1]);if(!f)return;
+   var a=k.getBoundingClientRect(),r=f.getBoundingClientRect();k.__dx=(r.left+r.width/2)-(a.left+a.width/2)});
+  K.forEach(function(e){var cy,a=e.getBoundingClientRect();if(e.classList.contains("hv"))cy=a.top+a.height/2;
+    else{var p=d.createElement("span");p.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";e.appendChild(p);var base=p.getBoundingClientRect().top;p.remove();
+     var cs=getComputedStyle(e),k=inkOf(cs,(cs.textTransform==="uppercase"?e.textContent.toUpperCase():e.textContent).replace(/\s+/g,""));cy=base-(k[0]+k[1])/2}
+    e.style.setProperty("transform","translate("+(e.__dx||0).toFixed(2)+"px,"+(mid-cy).toFixed(2)+"px)","important")})}
+ var cur=null,lw=0,raf=0;function run(){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){var ol=d.querySelector("#standings.x2p-tix ol.lbl");if(ol){d.documentElement.classList.add("x2p-stitch");try{[].slice.call(ol.querySelectorAll(".xs-sp")).forEach(function(e){e.remove()});level(ol)}catch(e){window.__x2pStitchErr=e}try{sbar(ol)}catch(e){window.__x2pSbErr=e}draw(ol);watch(ol)}})}
  var mo=window.MutationObserver&&new MutationObserver(function(ms){if(ms.some(function(m){return [].slice.call(m.addedNodes).concat([].slice.call(m.removedNodes)).some(function(n){return n.nodeType===1&&!n.classList.contains("xs-j")})}))run()});
  function watch(ol){if(ol===cur||!mo)return;cur=ol;mo.observe(ol,{childList:true})}
  addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run()}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(run);addEventListener("load",run);addEventListener("hashchange",function(){setTimeout(run,120)});
