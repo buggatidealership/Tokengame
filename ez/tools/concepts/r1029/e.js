@@ -15,4 +15,4 @@
   for(const li of document.querySelectorAll('.rz-r:not(.rz-5)')){var b=li.querySelector('.rz-ai b'),m=b.textContent.trim().toUpperCase(),mine=G.map(function(r){return (r.calls||[]).filter(function(c){return c[0]===m})[0]}).filter(Boolean);
    var h=await sha(JSON.stringify(mine)),bar=li.querySelector('.rz-bar');li.style.setProperty('--mc',getComputedStyle(bar).backgroundColor);
    if(!li.querySelector('.ez-sig'))li.querySelector('.rz-nmw').insertAdjacentHTML('beforeend','<span class="ez-sig">'+mine.length+' calls · sig '+h.slice(0,6)+'…'+h.slice(-4)+'</span>');
-   if(!li.querySelector('.ez-mq'))li.querySelector('.rz-pl').insertAdjacentHTML('afterbegin','<span class="ez-mq">'+code(h,22)+'</span>')}}})();
+}}})();

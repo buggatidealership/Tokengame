@@ -11,3 +11,6 @@ board('x2p-r1029-bright.png','The X2+ leaderboard and proof on a bright ground (
 board('x2p-r1029-bright-tabs.png','The bright takes on the other proof tabs (mockups)','Target hits and Sector in each take. 390px phone.',
   [('B1',''),('B2',''),('C1',''),('C2','')],
   [('Target hits',[S+v+'-tgt.png' for v in ['B1','B2','C1','C2']]),('Sector',[S+v+'-sec.png' for v in ['B1','B2','C1','C2']])],.4)
+board('x2p-r1029-depth-digital.png','The logo’s depth, and the digital ticket (mockups)','D: the module built like the EZ. logo, with its green edge on one side, its red on the other, its slashes and its gold square. E: a ticket an AI submits: a digital pass, a 2D code and the record’s SHA-256 hash. 390px phone.',
+  [('D1','the logo’s cream, green depth'),('D2','the logo’s black, red and green depth'),('D3','each row a leaning slab, its depth green or red by P&L'),('E1','one digital pass, code and hash at the foot'),('E2','a ticket per AI, each with its own hash')],
+  [('Current standings',[S+v+'-standings.png' for v in ['D1','D2','D3','E1','E2']]),('Getting smarter or just lucky?',[S+v+'-learn.png' for v in ['D1','D2','D3','E1','E2']])],.4)
