@@ -3,7 +3,7 @@
    in its ink "like the Tesla Google Apple"; Season 1 has the bet's look, Season 2 will get a new one). The board rebuilt from the page's
    own rows with the bet ticket's own classes (.bs-nx vars, .bt-sh/.bt-hs/.bt-p/.bt-pp/.bt-r1/.bt-r2/.bt-st), so stock, strips, die,
    holes and rules are the bet's, not copies. window.__sV = 'A' one ticket + the tryouts ticket torn off it; 'B' a roll, one ticket per AI. */
-(function(){var V=window.__sV||'A',d=document,ol=d.querySelector('#standings ol.lbl'),hd=d.querySelector('#standings .lbh');if(!ol)return;
+(function(){var V0=window.__sV||'A',V=V0.charAt(0),d=document,ol=d.querySelector('#standings ol.lbl'),hd=d.querySelector('#standings .lbh');if(!ol)return;
  var rows=[].slice.call(ol.querySelectorAll('li.lbr')).map(function(li){var t=function(q){var e=li.querySelector(q);return e?e.textContent.trim():''};
   var sm=li.querySelector('.pc-t small'),fl=sm&&sm.querySelector('svg');
   return {rk:t('.rk b')||t('.rk').replace(/\D/g,''),nm:t('.pc-t h3'),ver:sm?(sm.querySelector('span')||sm).textContent.trim():'',flag:fl?fl.outerHTML:'',logo:(li.querySelector('.lg')||{}).innerHTML||'',
@@ -34,12 +34,22 @@
  else{h=rows.map(function(r,i){return tk('r38-one'+(i?'':' r38-first'),'<div class="r38-in">'+row(r,i)+'</div>',
     i?'<span class="r38-sl">Season 1</span><span class="r38-sb r38-cl"><span></span><span>W-L</span><span>Hit rate</span><span>P&amp;L</span></span>':'<span class="r38-sl">Season 1</span><span class="r38-sb r38-cl"><span>'+lv+'</span><span>W-L</span><span>Hit rate</span><span>P&amp;L</span></span>',
     '<span class="r38-sl">Admit one</span><span class="r38-sb sp"><span>'+(i?'':star+'$EZ main event'+star)+'</span><span class="bt-no">'+num('00000'+r.rk)+'</span></span>',i>0)}).join('')+tryT}
- var box=d.createElement('div');box.className='r38-roll r38-'+V;box.innerHTML=h;
+ var box=d.createElement('div');box.className='r38-roll r38-'+V0;box.innerHTML=h;
  var lbx=ol.closest('.lbx')||ol.parentNode;lbx.parentNode.insertBefore(box,lbx);lbx.style.display='none';
  /* each label over its figure's ink (as the live Season 1 bar does): A from the first row, B from its own ticket's row */
  function align(){var ink=function(e){var g=d.createRange();g.selectNodeContents(e);return g.getBoundingClientRect()},map=[['W-L','.r38-wl'],['Hit rate','.r38-hr'],['P&L','.r38-pl']];
   [].slice.call(box.querySelectorAll('.r38-t')).forEach(function(t){var row=t.querySelector('.r38-r')||box.querySelector('.r38-r');
    [].slice.call(t.querySelectorAll('.r38-cols span,.bt-st .r38-cl>span')).forEach(function(l){var m=map.filter(function(x){return l.textContent.trim()===x[0]})[0];if(!m)return;l.style.transform='';
     var f=ink(row.querySelector(m[1])),a=ink(l);l.style.transform='translateX('+((f.left+f.width/2)-(a.left+a.width/2)).toFixed(2)+'px)'})})}
+ /* A2/B2 (owner, 2026-10-27, night: between the tickets "the red section and the green section should essentially just be the same
+    color as the background of the main part of the ticket"; only the top keeps Season 1 and its green band, the foot its red one):
+    the strips between tickets are taken out of each ticket's own paper layer (the bet's green, red and their squeeze edges set to
+    none, layer by layer, so the stock, fibres and grain stay exactly the bet's), and their words go with them */
+ if(V0.length>1){var T=[].slice.call(box.querySelectorAll('.r38-t'));
+  function layers(v){var o=[],dp=0,st=0;for(var i=0;i<v.length;i++){var c=v[i];if(c==='(')dp++;else if(c===')')dp--;else if(c===','&&!dp){o.push(v.slice(st,i).trim());st=i+1}}o.push(v.slice(st).trim());return o}
+  T.forEach(function(t,i){var pp=t.querySelector('.bt-pp'),L=layers(getComputedStyle(pp).backgroundImage);if(L.length<27||!/31, 122, 69/.test(L[19])||!/200, 55, 42/.test(L[21])){window.__r38err='layers '+L.length;return}
+   var top=i>0,bot=i<T.length-1;if(top){L[17]='none';L[18]='none';L[19]='none';var h=t.querySelector('.bt-hd');if(h)h.remove()}
+   if(bot){L[20]='none';L[21]='none';var f=t.querySelector('.bt-ft');if(f)f.remove()}pp.style.backgroundImage=L.join(', ')});
+  if(V0==='B2')[].slice.call(box.querySelectorAll('.r38-t')).forEach(function(t,i){if(i){var c=t.querySelector('.r38-cols');if(c)c.remove()}})}
  align();if(d.fonts)d.fonts.ready.then(align);addEventListener('resize',align);
 })();
