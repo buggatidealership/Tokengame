@@ -1784,10 +1784,14 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
    for(var i=1;i<T.length;i++){var a=T[i-1].getBoundingClientRect(),b=T[i].getBoundingClientRect(),y=(a.bottom+b.top)/2-O.top,L=b.left-O.left,W=b.width,sx=T[i].querySelector(".tq-stub").getBoundingClientRect().right-O.left;
     add("qjr","left:"+L+"px;width:"+W+"px;top:"+(y-6)+"px");add("qjg","left:"+L+"px;width:"+W+"px;top:"+y+"px");
     add("qjp","left:"+(L+10)+"px;width:"+(W-20)+"px;top:"+(y-1.9)+"px");add("qjb","left:"+(L-10)+"px;top:"+(y-10)+"px");add("qjb","left:"+(L+W-10)+"px;top:"+(y-10)+"px");add("qjh","left:"+(sx-6)+"px;top:"+(y-6)+"px")}}
-  joins();var lw=0;if(window.ResizeObserver)new ResizeObserver(function(){var w=list.offsetWidth;if(w&&w!==lw){lw=w;joins()}}).observe(list);
-  if(d.fonts&&d.fonts.ready)d.fonts.ready.then(joins);
+  /* each P&L line as wide as its own figure, starting under its first character (owner, 2026-10-27: it ran out to the left) */
+  function sparks(){[].slice.call(list.querySelectorAll(".tq-pl")).forEach(function(c,i){var b=c.querySelector("b"),sv=c.querySelector(".qs"),w=b&&b.getBoundingClientRect().width;if(!w||!R[i])return;
+   var t=d.createElement("span");t.innerHTML=spark(R[i].s,Math.round(w),18);sv.replaceWith(t.firstChild)})}
+  function lay(){sparks();joins()}
+  lay();var lw=0;if(window.ResizeObserver)new ResizeObserver(function(){var w=list.offsetWidth;if(w&&w!==lw){lw=w;lay()}}).observe(list);
+  if(d.fonts&&d.fonts.ready)d.fonts.ready.then(lay);
   /* "How we rank" (R1028's ⓘ) shows in place of the tickets, at their height */
-  var how=tw.querySelector(".rz-how");if(how&&window.MutationObserver)new MutationObserver(function(){if(!how.hidden)how.style.minHeight=box.offsetHeight+"px";box.hidden=!how.hidden;if(how.hidden)joins()}).observe(how,{attributes:true,attributeFilter:["hidden"]});
+  var how=tw.querySelector(".rz-how");if(how&&window.MutationObserver)new MutationObserver(function(){if(!how.hidden)how.style.minHeight=box.offsetHeight+"px";box.hidden=!how.hidden;if(how.hidden)lay()}).observe(how,{attributes:true,attributeFilter:["hidden"]});
   /* the proof on the ticket stock: red head band, the stitch right under it, the four views, the stitch, the green foot band */
   var last=G[G.length-1],tb=pf.querySelector(".rz-tb");pf.classList.add("pq","P2");
   pf.insertAdjacentHTML("afterbegin",'<div class="pq-band r" aria-hidden="true"><span>Admit one</span><span>Season 1 · Nº '+("000000"+last.n).slice(-6)+'</span></div><div class="pq-stitch t" aria-hidden="true"></div>');
