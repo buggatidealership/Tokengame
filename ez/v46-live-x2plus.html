@@ -6944,6 +6944,14 @@ html.x2p .f30 .tq-pl b.up,html.x2p .f30 .qw{color:#0f8a4c}html.x2p .f30 .tq-pl b
 html.x2p .rz-pf.pq svg path[transform]{display:none}
 /* the P&L figure and its line share one left edge */
 html.x2p .f30 .tq-pl{justify-items:start;justify-content:center;grid-template-columns:max-content}
+/* marks without the black disc (owner, 2026-10-27), printed in ink on the card: Grok and GPT in the ink black (GPT's green mark read
+   as off-brand; its white would vanish on cream), Claude in its orange, Kimi in its blue */
+html.x2p .f30 .tq-lo{background:none;box-shadow:none;width:26px;height:26px}html.x2p .f30 .tq-lo svg{width:24px!important;height:24px!important}
+html.x2p :is(.f30 .tq-lo,.rz-pf.pq .rz-dc) svg path:is([fill="#f8f0d9"],[fill="#10a37f"]){fill:#1b181c}
+html.x2p .rz-pf.pq .rz-dc{background:none;box-shadow:none}html.x2p .rz-pf.pq .rz-dc svg{transform:scale(1.5)}
+@media (max-width:379.98px){html.x2p .f30 .tq-lo{width:22px;height:22px}html.x2p .f30 .tq-lo svg{width:20px!important;height:20px!important}}
+/* the leader's line gold at the others' thickness (owner, 2026-10-27) */
+html.x2p .rz-pf.pq .rz-ln.ld{stroke-width:1.8;filter:none}
 /*}R1030*/
 
 </style>
@@ -9216,7 +9224,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
       ui();
       window.__x2pExplainer={video:v}})()}
   var g=$("#gpu");
-  if(g&&!$(".x2p-cdh")){var c=document.createElement("div");c.className="x2p-cdh";c.innerHTML='<span class="k">Countdown to</span><b>Bet #1<i>:</i> <em>NVIDIA</em></b>';
+  if(g&&!$(".x2p-cdh")){var c=document.createElement("div");c.className="x2p-cdh";c.innerHTML='<span class="k">Countdown to</span><b>Season 1<i></i> <em>NVIDIA</em></b>';
     g.parentNode.insertBefore(c,g);
     /* the risk sits in the red box above; he stands beside this head (owner, 2026-10-20), so nothing goes under the chip */
   }
@@ -10865,6 +10873,8 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   /* the bet's join on every join */
   function joins(){[].slice.call(list.querySelectorAll(".qj")).forEach(function(e){e.remove()});var O=list.getBoundingClientRect(),T=[].slice.call(list.querySelectorAll(".tq"));if(!O.width)return;
    function add(c,css){var e=d.createElement("span");e.className="qj "+c;e.setAttribute("aria-hidden","true");e.style.cssText=css;list.appendChild(e)}
+   /* the board's own ends carry the bands too (owner, 2026-10-27: green on top, red at the bottom, so #1 and the last ticket sit in the same frame as the rest) */
+   var f0=T[0].getBoundingClientRect(),fz=T[T.length-1].getBoundingClientRect();add("qjg","left:"+(f0.left-O.left)+"px;width:"+f0.width+"px;top:"+(f0.top-O.top)+"px");add("qjr","left:"+(fz.left-O.left)+"px;width:"+fz.width+"px;top:"+(fz.bottom-O.top-6)+"px");
    for(var i=1;i<T.length;i++){var a=T[i-1].getBoundingClientRect(),b=T[i].getBoundingClientRect(),y=(a.bottom+b.top)/2-O.top,L=b.left-O.left,W=b.width,sx=T[i].querySelector(".tq-stub").getBoundingClientRect().right-O.left;
     add("qjr","left:"+L+"px;width:"+W+"px;top:"+(y-6)+"px");add("qjg","left:"+L+"px;width:"+W+"px;top:"+y+"px");
     add("qjp","left:"+(L+10)+"px;width:"+(W-20)+"px;top:"+(y-1.9)+"px");add("qjb","left:"+(L-10)+"px;top:"+(y-10)+"px");add("qjb","left:"+(L+W-10)+"px;top:"+(y-10)+"px");add("qjh","left:"+(sx-6)+"px;top:"+(y-6)+"px")}}
@@ -10880,6 +10890,14 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   var last=G[G.length-1],tb=pf.querySelector(".rz-tb");pf.classList.add("pq","P2");
   pf.insertAdjacentHTML("afterbegin",'<div class="pq-band r" aria-hidden="true"><span>Admit one</span><span>Season 1 · Nº '+("000000"+last.n).slice(-6)+'</span></div><div class="pq-stitch t" aria-hidden="true"></div>');
   pf.insertAdjacentHTML("beforeend",'<div class="pq-stitch b" aria-hidden="true"></div><div class="pq-band g" aria-hidden="true"><span>★ The proof ★</span><span>Graded at the close</span></div>');
+  /* switching views (owner, 2026-10-27: "some type of nice smooth motion"): the new view comes forward from 10px below at 98.5% in 280ms,
+     its lines draw from the start in 700ms, then the end labels; the round's earlier folder swap's timings. Not with reduced motion. */
+  var rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  [].slice.call(pf.querySelectorAll(".rz-tb button")).forEach(function(bn){bn.addEventListener("click",function(){if(rm)return;var v=pf.querySelector('.rz-pv[data-v="'+bn.getAttribute("data-v")+'"]');if(!v||!v.animate)return;
+   v.animate([{opacity:0,transform:"translateY(10px) scale(.985)"},{opacity:1,transform:"none"}],{duration:280,easing:"cubic-bezier(.2,0,0,1)"});
+   [].slice.call(v.querySelectorAll(".rz-ln")).forEach(function(l){var L=l.getTotalLength&&l.getTotalLength();if(!L)return;l.animate([{strokeDasharray:L+" "+L,strokeDashoffset:L},{strokeDasharray:L+" "+L,strokeDashoffset:0}],{duration:700,delay:90,easing:"cubic-bezier(.3,0,.2,1)",fill:"backwards"})});
+   [].slice.call(v.querySelectorAll(".rz-ch svg text[fill]:not([fill^='rgba'])")).forEach(function(t){t.animate([{opacity:0},{opacity:1}],{duration:220,delay:700,fill:"backwards"})});
+   [].slice.call(v.querySelectorAll(".rz-tg figure, .rz-g > *, .rz-sg > *")).forEach(function(e,j){e.animate([{opacity:0},{opacity:1}],{duration:220,delay:Math.min(j,24)*14,fill:"backwards"})})})});
   return true}
  function tryGo(n){var ok=false;try{ok=go()}catch(e){window.__x2pTqErr=e;return}if(!ok&&n<120)setTimeout(function(){tryGo(n+1)},100)}
  if(d.body)tryGo(0);else d.addEventListener("DOMContentLoaded",function(){tryGo(0)})}catch(e){window.__x2pTqErr=e}})();
