@@ -16,7 +16,9 @@ async function shot(p,sel,path){const el=await p.$(sel);await el.scrollIntoViewI
    if(v!=='now'){await p.evaluate(x=>{window.__aj=x},v==='A1'?1:2);await p.evaluate(rd(D+'a.js'))}await p.waitForTimeout(300);
    await shot(p,'#standings',S+v+'-standings.png');console.log(v,p.errs.join('|')||'ok',await p.evaluate(()=>document.documentElement.scrollWidth));await p.context().close()}}
  if(mode==='x2p'){for(const v of (only||'now,B1,B2,C1,C2').split(',')){const p=await open(b,'http://127.0.0.1:8897/v46-live-x2plus.html');
-   if(v!=='now'){await p.addStyleTag({content:rd(D+'light.css')+rd(D+v.toLowerCase()+'.css')});const js=rd(D+v.toLowerCase()+'.js')||(v==='C2'?rd(D+'c1.js'):'');if(v==='C2')await p.addStyleTag({content:rd(D+'c1.css').replace(/html\.x2p \.rz-tw[^}]*\}/g,'')});if(js)await p.evaluate(js)}
+   if(/^[BC]/.test(v)){await p.addStyleTag({content:rd(D+'light.css')+rd(D+v.toLowerCase()+'.css')});const js=rd(D+v.toLowerCase()+'.js')||(v==='C2'?rd(D+'c1.js'):'');if(v==='C2')await p.addStyleTag({content:rd(D+'c1.css').replace(/html\.x2p \.rz-tw[^}]*\}/g,'')});if(js)await p.evaluate(js)}
+   if(/^D/.test(v)){await p.addStyleTag({content:(v==='D1'?rd(D+'light.css'):'')+rd(D+'d-base.css')+rd(D+v.toLowerCase()+'.css')});await p.evaluate(rd(D+'d.js'))}
+   if(/^E/.test(v)){await p.addStyleTag({content:rd(D+'e1.css')+(v==='E2'?rd(D+'e2.css'):'')});await p.evaluate(x=>{window.__eV=x},v==='E2'?2:1);await p.evaluate(rd(D+'e.js'));await p.waitForTimeout(300)}
    await p.waitForTimeout(400);await shot(p,'#standings',S+v+'-standings.png');await shot(p,'#learn',S+v+'-learn.png');
    for(const k of ['tgt','sec']){await p.evaluate(k=>document.querySelector('.rz-tb button[data-v="'+k+'"]').click(),k);await p.waitForTimeout(200);await shot(p,'.rz-pf',S+v+'-'+k+'.png')}
    console.log(v,p.errs.join('|')||'ok',await p.evaluate(()=>document.documentElement.scrollWidth));await p.context().close()}}
