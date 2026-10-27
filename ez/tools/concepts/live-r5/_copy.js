@@ -29,3 +29,17 @@ module.exports.K6={html:module.exports.C6.html,css:LC,fonts:'family=Kanit:ital,w
   G3:{html:'4 '+A+' trade earnings,<br> <span class="hl">the winner calls our buybacks.</span>'},
   G4:{html:'4 '+A+' trade earnings<br> <span class="hl">to win control of our buybacks.</span>'},
   G5:{html:'4 '+A+' trade earnings,<br> <span class="hl">and the best one runs our buybacks.</span>'}})})();
+/* r1028d (owner, 2026-10-27, night: "4 AIs trade earnings for the right to run our buybacks... not on 2 lines... make some plays on the
+   colors... the font of that section more aligned with our EZ logo on the top left"): one sentence that wraps where it wraps, in the logo's
+   heavy italic (Kanit 900, capitals), at one size; colour plays in the logo's own cream, green, red and gold; the logo's gold square as the
+   full stop. The page's own fitter is left behind (fresh h1). */
+(function(){const X=module.exports,AI='AI<span style="text-transform:none">s</span>',DOT='<i class="kd"></i>';
+ const base='html.x2p.x2d[data-theme] body .hero h1.lvh.lvh{font-family:Kanit,sans-serif!important;font-style:italic!important;font-weight:900!important;text-transform:uppercase;letter-spacing:-.012em!important;line-height:1!important;font-size:clamp(30px,8.6vw,64px)!important;color:#f8f0d9!important;text-shadow:none!important;white-space:normal!important;text-wrap:balance;margin:0}'+
+  'html.x2p.x2d[data-theme] body .hero h1.lvh.lvh .kd{display:inline-block;width:.2em;height:.2em;background:#fdbc2a;transform:skewX(-14deg);margin-left:.04em}html.x2p.x2d[data-theme] body .hero h1.lvh.lvh .g{color:#03c870}html.x2p.x2d[data-theme] body .hero h1.lvh.lvh .r{color:#ff3a31}html.x2p.x2d[data-theme] body .hero h1.lvh.lvh .y{color:#fdbc2a}'+
+  'html.x2p.x2d[data-theme] body .hero h1.lvh.lvh .sl{display:inline-block;width:.11em;height:.72em;margin:0 .1em -.02em 0;transform:skewX(-22deg);vertical-align:baseline}';
+ const F='family=Kanit:ital,wght@1,900';
+ Object.assign(X,{
+  K1:{fresh:1,nofit:1,fonts:F,css:base,html:'4 '+AI+' trade earnings for the right to run our <span class="y">buybacks</span>'+DOT},
+  K2:{fresh:1,nofit:1,fonts:F,css:base,html:'4 '+AI+' <span class="g">trade earnings</span> for the right to run our <span class="y">buybacks</span>'+DOT},
+  K3:{fresh:1,nofit:1,fonts:F,css:base,html:'<span class="sl" style="background:#03c870"></span>4 '+AI+' trade <span class="g">E</span>arnings for the right to run our <span class="y">buybacks</span>'+DOT},
+  K4:{fresh:1,nofit:1,fonts:F,css:base,html:'4 '+AI+' trade earnings for <span class="g">the right</span> to run our <span class="y">buybacks</span>'+DOT+'<span class="sl" style="background:#ff3a31;margin-left:.12em"></span>'}})})();

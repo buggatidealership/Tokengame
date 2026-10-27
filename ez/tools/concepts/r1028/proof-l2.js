@@ -37,12 +37,12 @@ function card(k,q,sub,body){return '<div class="r2v" id="r2pv-'+k+'"><div class=
 var pnl=card("pnl","Would following them have made you money?","$100K each. All in on every call. No leverage.",
  '<div class="r2v-ch" data-k="pnl">'+chart(BAL,byP[0],CO.pnl)+'</div>'+
  '<div class="r2v-g r2v-gp"><span class="r2v-cap">#</span><span></span><span class="r2v-cap">AI</span><span class="r2v-cap r">Top <span class="w">W</span></span><span class="r2v-cap r">Top <span class="l">L</span></span><span class="r2v-cap r r2v-plh">P&amp;L</span>'+
- byP.map(function(m,i){var s=S[m];return '<span class="r2v-lx r2v-n">'+(i+1)+'</span>'+disc(m,24)+lx(NM[m],i?'':'gd')+'<span class="r2v-sm r up">'+usd(s.bw,1)+'</span><span class="r2v-sm r dn">'+usd(s.bl,1)+'</span><span class="r r2v-plv">'+lx(usd(s.pnl),s.pnl<0?'dn':'up')+'</span>'}).join('')+'</div>');
+ byP.map(function(m,i){var s=S[m];return '<span class="r2v-lx r2v-n'+(i?'':' gd')+'">'+(i+1)+'</span>'+disc(m,24)+lx(NM[m],i?'':'gd')+'<span class="r2v-sm r up">'+usd(s.bw,1)+'</span><span class="r2v-sm r dn">'+usd(s.bl,1)+'</span><span class="r r2v-plv">'+lx(usd(s.pnl),i?(s.pnl<0?'dn':'up'):'gd')+'</span>'}).join('')+'</div>');
 /* Accuracy: the running hit rate from 50/50 (as the page draws it), Trades · W · L · Accuracy */
 var acc=card("acc","How often were they right about the direction?","Every line starts at 50/50 and moves with each call.",
  '<div class="r2v-ch" data-k="acc">'+chart(RUN,byH[0],CO.acc)+'</div>'+
  '<div class="r2v-g r2v-ga"><span class="r2v-cap">#</span><span></span><span class="r2v-cap">AI</span><span class="r2v-cap c">Trades</span><span class="r2v-cap c"><span class="w">W</span></span><span class="r2v-cap c"><span class="l">L</span></span><span class="r2v-cap c">Accuracy</span>'+
- byH.map(function(m,i){var s=S[m];return '<span class="r2v-lx r2v-n">'+(i+1)+'</span>'+disc(m,24)+lx(NM[m],i?'':'gd')+'<span class="r2v-sm c">'+s.n+'</span><span class="r2v-sm c up">'+s.k+'</span><span class="r2v-sm c dn">'+(s.n-s.k)+'</span><span class="c">'+lx(Math.round(s.hit*100)+'%',i?'':'gd')+'</span>'}).join('')+'</div>');
+ byH.map(function(m,i){var s=S[m];return '<span class="r2v-lx r2v-n'+(i?'':' gd')+'">'+(i+1)+'</span>'+disc(m,24)+lx(NM[m],i?'':'gd')+'<span class="r2v-sm c">'+s.n+'</span><span class="r2v-sm c up">'+s.k+'</span><span class="r2v-sm c dn">'+(s.n-s.k)+'</span><span class="c">'+lx(Math.round(s.hit*100)+'%',i?'':'gd')+'</span>'}).join('')+'</div>');
 /* Target hits: one target per AI, rings every 3% off, a hole per right-way call at its miss (angle fixed per call), the counts under it */
 function target(m,lead){var R=46,C=50,sc=R/12,h='<svg viewBox="0 0 100 100" width="100%" aria-hidden="true">';
  for(var r=4;r>=1;r--)h+='<circle cx="'+C+'" cy="'+C+'" r="'+(r*3*sc).toFixed(1)+'" fill="'+(r%2?'#ff3a31':'#16131c')+'" stroke="rgba(248,240,217,.18)" stroke-width=".5"/>';
@@ -50,7 +50,7 @@ function target(m,lead){var R=46,C=50,sc=R/12,h='<svg viewBox="0 0 100 100" widt
  S[m].calls.forEach(function(c){if(!c.ok)return;var a=((c.n*137.508+m.length*53)%360)*Math.PI/180,d=Math.min(c.off,12)*sc;h+='<circle cx="'+(C+d*Math.cos(a)).toFixed(2)+'" cy="'+(C+d*Math.sin(a)).toFixed(2)+'" r="1.9" fill="#f8f0d9" stroke="#04070e" stroke-width=".7"/>'});
  return h+'</svg>'}
 var tgt=card("tgt","How close did they get to the real move?","The bullseye is what the stock did. One hole per call.",
- '<div class="r2v-tg">'+byT.map(function(m,i){var s=S[m];return '<figure><figcaption><span class="r2v-lx r2v-n">'+(i+1)+'</span>'+disc(m,20)+lx(NM[m],i?'':'gd')+'</figcaption>'+target(m)+
+ '<div class="r2v-tg">'+byT.map(function(m,i){var s=S[m];return '<figure><figcaption><span class="r2v-lx r2v-n'+(i?'':' gd')+'">'+(i+1)+'</span>'+disc(m,20)+lx(NM[m],i?'':'gd')+'</figcaption>'+target(m)+
   '<div class="r2v-ts"><span><b class="gd">'+s.bu+'</b>Bullseye'+(s.bu===1?'':'s')+'</span><span><b class="up">'+s.w1+'</b>Within 1%</span><span><b class="dn">'+s.ot+'</b>Off target</span></div></figure>'}).join('')+'</div>'+
  '<p class="r2v-sm r2v-note">Bullseye: within 0.1%. Off target: the wrong way.</p>');
 /* Sector: right/made per sector per AI, the page's bands (2 in 3 or better green, 1 in 3 or worse red), a crown on each row's best */

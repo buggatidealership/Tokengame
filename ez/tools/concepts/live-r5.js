@@ -30,8 +30,8 @@ async function measure(p){return p.evaluate(()=>{const W=innerWidth,o={sw:docume
  if(mode==='copy'||mode==='type'){const spec=require(D+(mode==='copy'?'_copy.js':'_type.js'));
    for(const k of Object.keys(spec)){if(only&&k!==only)continue;
      await Promise.all([[390,'mon'],[320,'mon'],[1280,'mon']].map(async([w,m])=>{const p=await open(b,w,m,w>760?900:844);
-       await p.evaluate(([html,css,fonts,nofit])=>{if(fonts){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?'+fonts+'&display=swap';document.head.appendChild(l)}
-         const st=document.createElement('style');st.textContent=css||'';document.head.appendChild(st);const h=document.querySelector('h1');if(html)h.innerHTML=html;h.classList.add('lvh');if(nofit)h.classList.add('nofit')},[spec[k].html,spec[k].css,spec[k].fonts,spec[k].nofit]);
+       await p.evaluate(([html,css,fonts,nofit,fresh])=>{if(fresh){const h0=document.querySelector('h1');const h1=h0.cloneNode(false);h1.removeAttribute('style');h1.className='';h0.replaceWith(h1)}if(fonts){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?'+fonts+'&display=swap';document.head.appendChild(l)}
+         const st=document.createElement('style');st.textContent=css||'';document.head.appendChild(st);const h=document.querySelector('h1');if(html)h.innerHTML=html;h.classList.add('lvh');if(nofit)h.classList.add('nofit')},[spec[k].html,spec[k].css,spec[k].fonts,spec[k].nofit,spec[k].fresh]);
        await p.waitForTimeout(1500);
        const fs2=await p.evaluate(()=>{const h=document.querySelector('h1');const P=h.parentElement,cs=getComputedStyle(P),T=P.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
          if(!h.classList.contains('nofit')){h.style.setProperty('white-space','nowrap','important');h.style.setProperty('width','max-content','important');h.style.setProperty('max-width','none','important');let f=parseFloat(getComputedStyle(h).fontSize);const f0=f;
