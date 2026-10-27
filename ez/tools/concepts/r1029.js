@@ -9,6 +9,7 @@ async function open(b,url){const c=await b.newContext({viewport:{width:390,heigh
 async function shot(p,sel,path){const el=await p.$(sel);await el.scrollIntoViewIfNeeded();await p.waitForTimeout(500);
  /* the section from its head to the bottom of its last child, in page coordinates (an element shot of #learn cut the proof short) */
  const r=await p.evaluate(s=>{const e=document.querySelector(s);let b=e.getBoundingClientRect().bottom;e.querySelectorAll('*').forEach(c=>{const q=c.getBoundingClientRect();if(q.height&&q.bottom>b)b=q.bottom});const t=e.getBoundingClientRect().top;return {y:t+scrollY,h:b-t}},sel);
+ await p.addStyleTag({content:'header.top,header{position:relative!important;top:auto!important}'});await p.waitForTimeout(200);
  await p.screenshot({path,fullPage:true,clip:{x:0,y:r.y,width:390,height:Math.min(r.h,3000)}})}
 (async()=>{const b=await chromium.launch();const mode=process.argv[2],only=process.argv[3];
  if(mode==='live'){for(const v of ['now','A1','A2']){if(only&&!only.split(',').includes(v))continue;const p=await open(b,'https://earningszn.xyz/');
