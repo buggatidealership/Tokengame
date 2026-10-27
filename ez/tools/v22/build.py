@@ -517,7 +517,7 @@ px=pp.replace(GRAINP,CREAMP)
 for _a,_c in [(r'#f6dc93|#fbe8a8|#f6d77c','#fed98a'),(r'#e4b54a|#e7bd5b|#efc24a','#fdbc2a'),(r'#c99227|#bf8a22|#d39c1c|#c98a12','#d99a12')]:px=re.sub(_a,_c,px,flags=re.I)
 px=px.replace('</head>','<style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>\n</head>',1)
 # (owner, 2026-10-27) the certificate's Kanit (the logo's lettering), X2+ only
-px=px.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&display=swap" rel="stylesheet">\n</head>',1)
+px=px.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&display=swap" rel="stylesheet">\n</head>',1)
 open("v46-live-x2plus.html",'w').write(px); print("ok v46-live-x2plus.html",len(px))
 # EZ Live X3+ (owner, 2026-10-22: "a complete replica", first with neon bullets, then the same day "for X3 plus, can you do the
 # letterpress"): X2+ whose broadcast straps are cream card with the words pressed in (tools/v22/skin-x3plus.css in place of X2+'s

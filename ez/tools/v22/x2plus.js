@@ -1620,10 +1620,131 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
    the most in line with what we actually do"; mockups ez/x2p-r1028-headlines-2.png, option 3): the two lines step down together in half
    pixels until the wider one fits the column, refitted on fonts and on width changes only */
 (function(){try{function go(){var h=document.querySelector(".hero h1");if(!h)return;
-  h.innerHTML='4 AI<span class="x2p-lc">s</span> trade earnings<br> <span class="hl">for the right to bet our pool.</span>';h.classList.add("x2p-h1");
+  /* (owner, 2026-10-27, later: "I like the M3"; the font "more aligned with our EZ logo"; the highlighted words green and gold with "that
+     little edge" of the logo's E) "4 AIs trade earnings / to run our buybacks." in Kanit, the logo's gold square for the full stop */
+  h.innerHTML='4 AI<span class="x2p-lc">s</span> <span class="rz-eg">trade earnings</span><br>to run our <span class="rz-ey">buybacks</span><i class="rz-kd" aria-hidden="true"></i><span class="sr">.</span>';h.classList.add("x2p-h1","rz-h1");
   var lw=0;function fit(){var w=h.clientWidth;if(!w||w===lw)return;lw=w;h.style.removeProperty("font-size");h.style.whiteSpace="nowrap";
     var f=parseFloat(getComputedStyle(h).fontSize);while(h.scrollWidth>h.clientWidth+.5&&f>18){f-=.5;h.style.setProperty("font-size",f+"px","important")}}
   fit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){lw=0;fit()});
   if(document.fonts&&document.fonts.addEventListener)document.fonts.addEventListener("loadingdone",function(){lw=0;fit()});
   addEventListener("resize",fit)}
  if(document.body)go();else document.addEventListener("DOMContentLoaded",go)}catch(e){}})();
+
+/* R1028 (owner, 2026-10-27, night: "remove the cards, like the sort of ticket style from everywhere... we only need the ticket at the end,
+   the first of many... the bet is the ticket"; "push it to EZ Live X2+"): the standings become the timing tower (the terminal's live tag,
+   a P&L line under each P&L, the flag on the model line, the tryouts as row "5?") and the proof becomes L2 Speed (the logo's black, Kanit,
+   the leader in shiny gold, its line too; Top W / Top L; a red and white target). Mockups: ez/x2p-r1028-*.png. The page's own board and
+   proof ticket are still built underneath, out of sight, so nothing that reads them breaks. Numbers: window.__x2pPnl() (the same accounts as
+   before), ROUNDS, RMETA; the rules as x2pProof's (the same ranking, the 50/50 start, the sector bands). */
+(function(){try{var d=document,TRY=[["Qwen","CN"],["Mistral","EU"],["Gemini","US"]];
+ var NM={GPT:"GPT",KIMI:"Kimi",CLAUDE:"Claude",GROK:"Grok"},MC={GPT:"#10a37f",KIMI:"#1e80ff",CLAUDE:"#d97757",GROK:"#f8f0d9"},CC={GPT:"US",CLAUDE:"US",GROK:"US",KIMI:"CN"};
+ var SH={"Information Technology":"Tech","Consumer Discretionary":"Consumer","Consumer Staples":"Staples","Financials":"Finance","Industrials":"Industrials","Communication Services":"Media & telecom","Health Care":"Health","Materials":"Materials","Energy":"Energy","Utilities":"Utilities","Real Estate":"Real estate"};
+ function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+ function mark(m,fill,sz){var M=MODELS[m];return '<svg viewBox="0 0 24 24" width="'+sz+'" height="'+sz+'" aria-hidden="true" focusable="false"><path fill="'+fill+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+' d="'+M.d+'"/></svg>'}
+ function disc(m,sz){return '<span class="rz-dc" style="width:'+sz+'px;height:'+sz+'px">'+mark(m,MC[m],Math.round(sz*.54))+'</span>'}
+ function star(cx,cy,r){var q=[];for(var i=0;i<10;i++){var a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.42:r;q.push((cx+rr*Math.cos(a)).toFixed(2)+","+(cy+rr*Math.sin(a)).toFixed(2))}return q.join(" ")}
+ function flag(cc,w){var h=(w*10/16).toFixed(1),v='<svg class="rz-fl" viewBox="0 0 16 10" width="'+w+'" height="'+h+'" preserveAspectRatio="none" role="img" aria-label="'+({US:"United States",CN:"China",EU:"Europe"}[cc])+'">',i,RED="#d0262f",NAVY="#253f8a",YEL="#ffd23a";
+  if(cc==="US"){v+='<rect width="16" height="10" fill="#fff"/>';for(i=0;i<7;i+=2)v+='<rect y="'+(i*10/7).toFixed(3)+'" width="16" height="'+(10/7).toFixed(3)+'" fill="'+RED+'"/>';v+='<rect width="6.6" height="'+(40/7).toFixed(3)+'" fill="'+NAVY+'"/>';
+   [[1.3,1.25],[3.3,1.25],[5.3,1.25],[1.3,3.4],[3.3,3.4],[5.3,3.4]].forEach(function(q){v+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r=".62" fill="#fff"/>'})}
+  else if(cc==="CN"){v+='<rect width="16" height="10" fill="'+RED+'"/><polygon points="'+star(3.2,3,2.15)+'" fill="'+YEL+'"/>';[[6.2,1.1],[7.2,2.2],[7.2,3.7],[6.2,4.8]].forEach(function(q){v+='<polygon points="'+star(q[0],q[1],.72)+'" fill="'+YEL+'"/>'})}
+  else{v+='<rect width="16" height="10" fill="'+NAVY+'"/>';for(i=0;i<12;i++){var a=i*Math.PI/6;v+='<circle cx="'+(8+3.3*Math.cos(a)).toFixed(2)+'" cy="'+(5+3.3*Math.sin(a)).toFixed(2)+'" r=".55" fill="'+YEL+'"/>'}}
+  return v+'</svg>'}
+ function usd(v,k){var s=v<0?"−":"+",a=Math.abs(v);if(k&&a>=1000)return s+"$"+(a/1000).toFixed(1)+"K";return s+"$"+Math.round(a).toLocaleString("en-US")}
+ function pc(v){return (v<0?"−":"+")+Math.abs(v).toFixed(1)+"%"}
+ function lx(t,c){return '<b class="rz-lx '+(c||'')+'">'+t+'</b>'}
+ function data(){var P=window.__x2pPnl(),A=P.A,MK=Object.keys(A),G=ROUNDS.filter(function(r){return typeof r.a==="number"&&!isNaN(r.a)}),N=G.length,S={};
+  function callOf(r,m){return (r.calls||[]).filter(function(c){return c[0]===m})[0]}
+  MK.forEach(function(m){var n=0,k=0,off=0,run=[50],bal=100000,b=[bal],calls=[];G.forEach(function(r){var c=callOf(r,m);if(c){var dn=/^DOWN/.test(c[1]),ok=((dn?-1:1)>0)===(r.a>0),o=parseFloat(c[2])||0;n++;if(ok)k++;off+=o;calls.push({ok:ok,off:o,n:r.n});
+    run.push((k+1)/(n+2)*100);bal*=1+(dn?-1:1)*r.a/100}else run.push(run[run.length-1]);b.push(bal)});
+   S[m]={m:m,n:n,k:k,hit:n?k/n:0,miss:n?off/n:0,run:run,bal:b,calls:calls,bu:calls.filter(function(c){return c.ok&&c.off<=.1}).length,w1:calls.filter(function(c){return c.ok&&c.off<=1}).length,ot:calls.filter(function(c){return !c.ok}).length,
+    pnl:A[m].pnl,pct:A[m].pct,bw:A[m].bw,bl:A[m].bl,W:A[m].W,L:A[m].L,ver:A[m].ver}});
+  var half=function(m){return S[m].n>=N/2};
+  return {A:A,MK:MK,G:G,N:N,S:S,callOf:callOf,
+   byP:MK.slice().sort(function(a,b){return half(a)!==half(b)?(half(a)?-1:1):S[b].pnl-S[a].pnl}),
+   byH:MK.slice().sort(function(a,b){return half(a)!==half(b)?(half(a)?-1:1):(S[b].hit-S[a].hit)||(S[a].miss-S[b].miss)}),
+   byT:MK.slice().sort(function(a,b){return (S[b].bu-S[a].bu)||(S[b].w1-S[a].w1)||(S[a].ot-S[b].ot)})}}
+ /* on air: a round's calls are due today or it is graded at today's close (New York), on a weekday */
+ function onAir(){try{var p={};new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"2-digit",month:"numeric",day:"numeric",weekday:"short"}).formatToParts(new Date()).forEach(function(x){p[x.type]=x.value});
+   if(p.weekday==="Sat"||p.weekday==="Sun")return false;var t=+p.month+"/"+(+p.day)+"/"+p.year,nd=function(s){var q=String(s||"").split("/");return q.length===3?(+q[0])+"/"+(+q[1])+"/"+q[2].slice(-2):""};
+   return [].concat(ROUNDS,PENDING,UPCOMING).some(function(r){return nd(r.called)===t||nd(r.resolves)===t})}catch(e){return false}}
+ /* ---- the timing tower ---- */
+ function tower(D){var G=D.G,S=D.S,lead=D.byP[0],live=onAir();
+  function spark(m,w,h){var s=S[m].bal,lo=Math.min.apply(0,s),hi=Math.max.apply(0,s),f=function(v){return (2+(h-4)*(1-(v-lo)/(hi-lo||1))).toFixed(1)},pth=s.map(function(v,i){return (i?'L':'M')+(w*i/(s.length-1)).toFixed(1)+' '+f(v)}).join(' '),c=s[s.length-1]>=100000?'#03c870':'#ff3a31';
+   return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" aria-hidden="true" focusable="false"><line x1="0" x2="'+w+'" y1="'+f(100000)+'" y2="'+f(100000)+'" stroke="rgba(255,255,255,.18)" stroke-dasharray="2 2"/><path d="'+pth+'" fill="none" stroke="'+c+'" stroke-width="1.3" stroke-linejoin="round"/></svg>'}
+  var h='<div class="rz-tw"><div class="rz-hd"><span>Season 1 · Round '+G[G.length-1].n+'</span><span class="rz-live'+(live?'':' off')+'"><i aria-hidden="true"></i>'+(live?'Live':'Off air')+'</span></div>'+
+   '<div class="rz-cols" aria-hidden="true"><span>Pos</span><span></span><span>AI</span><span>W-L</span><span>Hit rate</span><span class="rz-plh">P&amp;L</span></div><ol class="rz-rows">'+
+   D.byP.map(function(m,i){var s=S[m];return '<li class="rz-r'+(i?'':' rz-1')+'"><span class="rz-pos">'+(i+1)+'</span><span class="rz-bar" style="background:'+(i?(m==="GROK"?"#e9e9ee":MC[m]):"#fdbc2a")+'"></span>'+
+    '<span class="rz-ai"><span class="rz-lo">'+mark(m,MC[m],14)+'</span><span class="rz-nmw"><b>'+NM[m]+'</b><small>'+esc(String(s.ver||"").replace(/^GPT-/,""))+flag(CC[m],12)+'</small></span></span>'+
+    '<span class="rz-v"><span class="sr">Record </span><span class="up">'+s.W+'</span>-<span class="dn">'+s.L+'</span></span><span class="rz-v"><span class="sr">Hit rate </span>'+Math.round(s.hit*100)+'%</span>'+
+    '<span class="rz-pl"><b class="'+(s.pnl<0?'dn':'up')+'"><span class="sr">P&amp;L </span>'+usd(s.pnl)+'</b>'+spark(m,70,16)+'</span></li>'}).join('')+
+   '<li class="rz-r rz-5"><span class="rz-pos">5?</span><span class="rz-bar"></span><span class="rz-5t">In tryouts</span><span class="rz-5n">'+TRY.map(function(t){return '<span>'+t[0]+flag(t[1],12)+'</span>'}).join('')+'</span></li></ol>'+
+   '<div class="rz-how" hidden><p class="rz-why">Why it matters: <b>#1 makes the call</b> on the next bet.</p><ol><li>Ranked by P&amp;L: $100,000 each, the whole balance on every call.</li><li>Buy on up, short on down. No leverage.</li>'+
+   '<li>Every call is made before the company reports and graded at the next market close.</li><li>Called fewer than half the rounds? Ranked after the rest.</li><li>The board freezes 24h before each bet.</li></ol><p class="rz-fine">P&amp;L: simulated, before fees.</p></div></div>';
+  return h}
+ /* ---- the proof in L2 Speed ---- */
+ var GID=0;
+ function chart(D,series,lead,o){var MK=D.MK,N=D.N,G=D.G,W=330,H=o.H||170,pad=o.ends?[8,46,16,30]:[8,30,16,2],all=[];MK.forEach(function(m){all=all.concat(series[m])});
+  var lo=o.lo!=null?o.lo:Math.floor(Math.min.apply(0,all)/o.step)*o.step,hi=o.hi!=null?o.hi:Math.ceil(Math.max.apply(0,all)/o.step)*o.step;
+  var x=function(i){return pad[3]+(W-pad[1]-pad[3])*i/N},y=function(v){return pad[0]+(H-pad[0]-pad[2])*(1-(Math.max(lo,Math.min(hi,v))-lo)/(hi-lo))},g='',T=function(xx,yy,t,a){return '<text x="'+xx+'" y="'+yy+'"'+(a?' text-anchor="'+a+'"':'')+' font-size="8.5" font-style="italic" font-weight="700" fill="rgba(248,240,217,.45)" font-family="Kanit">'+t+'</text>'};
+  for(var v=lo;v<=hi+1e-9;v+=o.step){var yv=y(v).toFixed(1);g+='<line x1="'+pad[3]+'" x2="'+(W-pad[1])+'" y1="'+yv+'" y2="'+yv+'" stroke="rgba(248,240,217,'+(v===o.base?.35:.08)+')"'+(v===o.base?' stroke-dasharray="4 4"':'')+'/>'+(o.ends?T(pad[3]-4,(+yv+3).toFixed(1),o.fmt(v),'end'):T(W-pad[1]+4,(+yv+3).toFixed(1),o.fmt(v)))}
+  var gid='rzG'+(++GID),ls='<defs><linearGradient id="'+gid+'" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="'+W+'" y2="0"><stop offset="0" stop-color="#b8860b"/><stop offset=".35" stop-color="#fdbc2a"/><stop offset=".6" stop-color="#fff1b8"/><stop offset=".8" stop-color="#fdbc2a"/><stop offset="1" stop-color="#ffe08a"/></linearGradient></defs>';
+  MK.filter(function(m){return m!==lead}).concat([lead]).forEach(function(m){var pth=series[m].map(function(v,i){return (i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)}).join(' '),c=m===lead?'url(#'+gid+')':MC[m];
+   ls+='<path d="'+pth+'" transform="translate(-5 2)" fill="none" stroke="'+c+'" stroke-opacity=".25" stroke-width="1.4"/><path class="rz-ln'+(m===lead?' ld':'')+'" d="'+pth+'" fill="none" stroke="'+c+'" stroke-width="'+(m===lead?2.6:1.8)+'" stroke-linejoin="round"/>'});
+  var en='';if(o.ends){var es=MK.map(function(m){return {m:m,y:y(series[m][N])}}).sort(function(a,b){return a.y-b.y});for(var j=1;j<es.length;j++)if(es[j].y-es[j-1].y<11)es[j].y=es[j-1].y+11;
+   es.forEach(function(e){en+='<text x="'+(x(N)+6)+'" y="'+(e.y+3).toFixed(1)+'" font-size="9.5" font-style="italic" font-weight="900" fill="'+(e.m===lead?'#fdbc2a':MC[e.m])+'" font-family="Kanit">'+o.ends(e.m)+'</text>'})}
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block" aria-hidden="true" focusable="false">'+g+ls+en+T(pad[3],H-3,o.x0||'R1')+T(W-pad[1],H-3,'R'+G[N-1].n,'end')+'</svg>'}
+ var TABS=[["pnl","P&amp;L"],["acc","Accuracy"],["tgt","Target hits"],["sec","Sector"]];
+ function proof(D){var S=D.S,MK=D.MK,G=D.G,N=D.N,BAL={},RUN={};MK.forEach(function(m){BAL[m]=S[m].bal;RUN[m]=S[m].run});
+  var CO={pnl:{step:20000,base:100000,fmt:function(v){return (v/1000)+'K'},ends:function(m){return pc(S[m].pct)}},acc:{lo:30,hi:80,step:10,base:50,x0:'Start',fmt:function(v){return v+'%'}}};
+  function card(k,q,sub,body){return '<div class="rz-pv" data-v="'+k+'" role="tabpanel" aria-label="'+q+'"><p class="rz-q">'+lx(q)+'</p><p class="rz-sm rz-sub">'+sub+'</p>'+body+'</div>'}
+  var pnl=card("pnl","Would following them have made you money?","$100K each. All in on every call. No leverage.",'<div class="rz-ch" data-k="pnl">'+chart(D,BAL,D.byP[0],CO.pnl)+'</div>'+
+   '<div class="rz-g rz-gp"><span class="rz-cap">#</span><span></span><span class="rz-cap">AI</span><span class="rz-cap c">Top <span class="w">W</span></span><span class="rz-cap c">Top <span class="l">L</span></span><span class="rz-cap c">P&amp;L</span>'+
+   D.byP.map(function(m,i){var s=S[m];return '<span class="rz-lx rz-n'+(i?'':' gd')+'">'+(i+1)+'</span>'+disc(m,24)+lx(NM[m],i?'':'gd')+'<span class="rz-sm c up"><span class="sr">Top win </span>'+usd(s.bw,1)+'</span><span class="rz-sm c dn"><span class="sr">Top loss </span>'+usd(s.bl,1)+'</span><span class="c">'+lx('<span class="sr">P&amp;L </span>'+usd(s.pnl),i?(s.pnl<0?'dn':'up'):'gd')+'</span>'}).join('')+'</div>');
+  var acc=card("acc","How often were they right about the direction?","Every line starts at 50/50 and moves with each call.",'<div class="rz-ch" data-k="acc">'+chart(D,RUN,D.byH[0],CO.acc)+'</div>'+
+   '<div class="rz-g rz-ga"><span class="rz-cap">#</span><span></span><span class="rz-cap">AI</span><span class="rz-cap c">Trades</span><span class="rz-cap c"><span class="w">W</span></span><span class="rz-cap c"><span class="l">L</span></span><span class="rz-cap c">Accuracy</span>'+
+   D.byH.map(function(m,i){var s=S[m];return '<span class="rz-lx rz-n'+(i?'':' gd')+'">'+(i+1)+'</span>'+disc(m,24)+lx(NM[m],i?'':'gd')+'<span class="rz-sm c">'+s.n+'</span><span class="rz-sm c up">'+s.k+'</span><span class="rz-sm c dn">'+(s.n-s.k)+'</span><span class="c">'+lx(Math.round(s.hit*100)+'%',i?'':'gd')+'</span>'}).join('')+'</div>');
+  function target(m){var R=46,C=50,sc=R/12,h='<svg viewBox="0 0 100 100" width="100%" aria-hidden="true" focusable="false">';
+   for(var r=4;r>=1;r--)h+='<circle cx="'+C+'" cy="'+C+'" r="'+(r*3*sc).toFixed(1)+'" fill="'+(r%2?'#ff3a31':'#f8f0d9')+'"/>';
+   h+='<circle cx="'+C+'" cy="'+C+'" r="'+(0.6*sc+.6).toFixed(1)+'" fill="#fdbc2a"/><line x1="'+(C-R)+'" x2="'+(C+R)+'" y1="'+C+'" y2="'+C+'" stroke="rgba(4,7,14,.25)" stroke-width=".4"/><line y1="'+(C-R)+'" y2="'+(C+R)+'" x1="'+C+'" x2="'+C+'" stroke="rgba(4,7,14,.25)" stroke-width=".4"/>';
+   S[m].calls.forEach(function(c){if(!c.ok)return;var a=((c.n*137.508+m.length*53)%360)*Math.PI/180,dd=Math.min(c.off,12)*sc;h+='<circle cx="'+(C+dd*Math.cos(a)).toFixed(2)+'" cy="'+(C+dd*Math.sin(a)).toFixed(2)+'" r="1.9" fill="#04070e" stroke="#f8f0d9" stroke-width=".7"/>'});
+   return h+'</svg>'}
+  var tgt=card("tgt","How close did they get to the real move?","The bullseye is what the stock did. One hole per call.",'<div class="rz-tg">'+D.byT.map(function(m,i){var s=S[m];
+   return '<figure><figcaption><span class="rz-lx rz-n'+(i?'':' gd')+'">'+(i+1)+'</span>'+lx(NM[m],i?'':'gd')+'</figcaption>'+target(m)+'<div class="rz-ts"><span><b class="gdf">'+s.bu+'</b>Bullseye'+(s.bu===1?'':'s')+'</span><span><b class="up">'+s.w1+'</b>Within 1%</span><span><b class="dn">'+s.ot+'</b>Off target</span></div></figure>'}).join('')+'</div>'+
+   '<p class="rz-sm rz-note">Bullseye: within 0.1%. Off target: the wrong way.</p>');
+  var secs={};G.forEach(function(r){var x=((RMETA[r.n]||{}).sector)||"";if(!x)return;x=SH[x]||x;(secs[x]=secs[x]||{n:0,r:[]}).n++;secs[x].r.push(r)});
+  var order=Object.keys(secs).sort(function(a,b){return secs[b].n-secs[a].n});
+  var sec=card("sec","Which industries do they call best?","Right calls out of calls made, by sector.",'<div class="rz-sg"><span class="rz-cap">Sector</span>'+D.byH.map(function(m){return '<span class="rz-sh">'+disc(m,20)+'<span class="rz-cap">'+NM[m]+'</span></span>'}).join('')+
+   order.map(function(x){var cells=D.byH.map(function(m){var n=0,k=0;secs[x].r.forEach(function(r){var c=D.callOf(r,m);if(!c)return;n++;if(((/^DOWN/.test(c[1])?-1:1)>0)===(r.a>0))k++});return {n:n,k:k,v:n?k/n:-1}});
+    var best=Math.max.apply(0,cells.map(function(c){return c.v})),all=cells.every(function(c){return c.v===best});
+    return '<span class="rz-sx">'+lx(esc(x))+'<small>'+secs[x].n+' round'+(secs[x].n===1?'':'s')+'</small></span>'+cells.map(function(c,j){var b=c.v<0?'na':c.v>=2/3?'hi':c.v<=1/3?'lo':'md',top=c.v===best&&!all&&c.v>=0;
+     return '<span class="rz-c '+b+(top?' top':(!all?' dim':''))+'"><span class="sr">'+NM[D.byH[j]]+' </span>'+(c.n?c.k+'/'+c.n:'–')+'</span>'}).join('')}).join('')+'</div>'+
+   '<div class="rz-lgd rz-sm" aria-hidden="true"><span><i class="hi"></i>2 in 3 or better</span><span><i class="md"></i>In between</span><span><i class="lo"></i>1 in 3 or worse</span></div>');
+  return {html:'<div class="rz-pf"><div class="rz-tb" role="group" aria-label="Show the AIs by">'+TABS.map(function(t,i){return '<button type="button" data-v="'+t[0]+'" aria-pressed="'+(i?'false':'true')+'">'+t[1]+'</button>'}).join('')+'</div><div class="rz-pvs">'+pnl+acc+tgt+sec+'</div></div>',
+   redraw:function(k,H){var o=Object.assign({},CO[k]);o.H=H;return chart(D,k==='pnl'?BAL:RUN,k==='pnl'?D.byP[0]:D.byH[0],o)}}}
+ function go(){var st=d.querySelector("#standings"),fl=st&&st.querySelector(".x2p-flip"),lp=d.querySelector("#learn .x2p-pt");
+  if(!fl||!lp||!window.__x2pPnl||typeof MODELS==="undefined")return false;if(d.querySelector(".rz-tw"))return true;var D=data();
+  /* standings */
+  var tw=d.createElement("div");tw.className="rz-twr";tw.innerHTML=tower(D);fl.parentNode.insertBefore(tw,fl);d.documentElement.classList.add("x2p-rz");
+  var rows=tw.querySelector(".rz-rows"),how=tw.querySelector(".rz-how"),btn=st.querySelector(".x2p-flipbtn");
+  if(btn)btn.addEventListener("click",function(e){e.stopImmediatePropagation();var on=how.hidden;how.style.minHeight=rows.offsetHeight+"px";how.hidden=!on;rows.hidden=on;
+   btn.setAttribute("aria-expanded",on?"true":"false");btn.setAttribute("aria-controls","rzHow");var s=btn.querySelector("span"),ii=btn.querySelector("i");if(s)s.textContent=on?"Back to the board":"How we rank";if(ii)ii.textContent=on?"×":"i"},true);
+  how.id="rzHow";
+  /* the P&L label over the middle of its figures */
+  function plc(){var h=tw.querySelector(".rz-plh");if(!h)return;h.style.paddingRight="";var fw=Math.max.apply(0,[].slice.call(tw.querySelectorAll(".rz-pl b")).map(function(b){return b.getBoundingClientRect().width})),r=d.createRange();r.selectNodeContents(h);
+   h.style.paddingRight=Math.max(0,(fw-r.getBoundingClientRect().width)/2).toFixed(2)+"px"}
+  /* proof */
+  var P=proof(D),pw=d.createElement("div");pw.className="rz-pw";pw.innerHTML=P.html;lp.parentNode.insertBefore(pw,lp);
+  var pvs=[].slice.call(pw.querySelectorAll(".rz-pv")),bts=[].slice.call(pw.querySelectorAll(".rz-tb button")),cur="pnl";
+  function show(k){cur=k;pvs.forEach(function(p){p.hidden=p.getAttribute("data-v")!==k});bts.forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-v")===k))})}
+  bts.forEach(function(b){b.addEventListener("click",function(){show(b.getAttribute("data-v"))})});
+  /* all four the tallest one's height; the charts grow to fill it */
+  var lw=0;function fit(force){var w=pw.offsetWidth;if(!w||(!force&&w===lw))return;lw=w;plc();
+   pvs.forEach(function(p){p.hidden=false;p.style.minHeight=""});[].slice.call(pw.querySelectorAll(".rz-ch")).forEach(function(ch){ch.innerHTML=P.redraw(ch.getAttribute("data-k"),170)});
+   var mx=Math.max.apply(0,pvs.map(function(p){return p.offsetHeight}));
+   [].slice.call(pw.querySelectorAll(".rz-ch")).forEach(function(ch){var p=ch.closest(".rz-pv"),gap=mx-p.offsetHeight;if(gap>2)ch.innerHTML=P.redraw(ch.getAttribute("data-k"),170+gap*330/ch.offsetWidth)});
+   pvs.forEach(function(p){p.style.minHeight=mx+"px"});show(cur)}
+  fit(true);addEventListener("resize",function(){fit(false)});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){fit(true)});
+  if(d.fonts&&d.fonts.addEventListener)d.fonts.addEventListener("loadingdone",function(){fit(true)});
+  return true}
+ function tryGo(n){var ok=false;try{ok=go()}catch(e){window.__x2pRzErr=e;return}if(!ok&&n<100)setTimeout(function(){tryGo(n+1)},100)}
+ if(d.body)tryGo(0);else d.addEventListener("DOMContentLoaded",function(){tryGo(0)})}catch(e){window.__x2pRzErr=e}})();
