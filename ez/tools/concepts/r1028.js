@@ -12,14 +12,14 @@ async function open(b,w,h){const c=await b.newContext({viewport:{width:w,height:
 async function to(p,sel,off){await p.evaluate(([s,o])=>{const e=document.querySelector(s);const hd=document.querySelector('header,.top');const h=hd?hd.getBoundingClientRect().height:0;const t=e.querySelector('h2')||e;scrollTo(0,t.getBoundingClientRect().top+scrollY-h-(o==null?62:o))},[sel,off]);await p.waitForTimeout(1000)}
 const mode=process.argv[2],only=process.argv[3];
 (async()=>{const b=await chromium.launch();
- if(mode==='cert'){for(const id of (only||'today,CA,CB').split(','))for(const w of [390]){const p=await open(b,w,900);
+ if(mode==='cert'){for(const id of (only||'today,CA,CB').split(','))for(const w of (process.env.WS||'390').split(',').map(Number)){const p=await open(b,w,900);
    if(id!=='today'){await p.addStyleTag({content:rd(D+'cert.css')+(id==='CB'?rd(D+'cert-b.css'):'')})}
    for(const r of ['R45','R43','R4']){
     await p.evaluate(r=>{const c=[...document.querySelectorAll('#record button,#record a')].find(e=>e.textContent.trim()===r);if(c)c.click();document.querySelector('#record').scrollIntoView()},r);await p.waitForTimeout(1600);
     await p.evaluate(()=>document.querySelector('#car .card.cur').click());await p.waitForTimeout(1600);
     if(id!=='today'){await p.evaluate(rd(D+'cert.js'));await p.waitForTimeout(300)}
     const o=await p.evaluate(()=>{const c=document.querySelector('#car .card.cur .xc');if(!c)return 'no xc';const R=c.getBoundingClientRect(),bad=[];c.querySelectorAll('*').forEach(e=>{const r=e.getBoundingClientRect();if(r.width&&(r.right>R.right+.5||r.left<R.left-.5))bad.push(e.className.baseVal!=null?e.className.baseVal:e.className)});return bad.slice(0,6)});
-    const c=await p.$('#car .card.cur');await c.screenshot({path:S+'cert-'+id+'-'+r+'.png'});console.log(id,r,JSON.stringify(o),p.errs.join('|')||'ok');
+    const c=await p.$('#car .card.cur');await c.screenshot({path:S+'cert-'+id+(w===390?'':'-'+w)+'-'+r+'.png'});console.log(id,r,JSON.stringify(o),p.errs.join('|')||'ok');
     await p.evaluate(()=>document.querySelector('#car .card.cur').click());await p.waitForTimeout(900)}
    await p.context().close()}}
  if(mode==='proof'){for(const id of (only||'today,PI').split(',')){const p=await open(b,390,844);

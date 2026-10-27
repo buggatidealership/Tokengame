@@ -516,6 +516,8 @@ _i=pp.find(GRAINP);GRAIN=pp[pp.rfind('url("',0,_i):pp.find('")',_i)+2]
 px=pp.replace(GRAINP,CREAMP)
 for _a,_c in [(r'#f6dc93|#fbe8a8|#f6d77c','#fed98a'),(r'#e4b54a|#e7bd5b|#efc24a','#fdbc2a'),(r'#c99227|#bf8a22|#d39c1c|#c98a12','#d99a12')]:px=re.sub(_a,_c,px,flags=re.I)
 px=px.replace('</head>','<style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>\n</head>',1)
+# (owner, 2026-10-27) the certificate's Kanit (the logo's lettering), X2+ only
+px=px.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&display=swap" rel="stylesheet">\n</head>',1)
 open("v46-live-x2plus.html",'w').write(px); print("ok v46-live-x2plus.html",len(px))
 # EZ Live X3+ (owner, 2026-10-22: "a complete replica", first with neon bullets, then the same day "for X3 plus, can you do the
 # letterpress"): X2+ whose broadcast straps are cream card with the words pressed in (tools/v22/skin-x3plus.css in place of X2+'s
@@ -526,6 +528,8 @@ X3N=X3N.replace('__PAPER__',PAPER)
 x3=re.sub(r'/\*ORIGAMI\{\*/.*?/\*\}ORIGAMI\*/',lambda m:X3N,pp,count=1,flags=re.S)
 # (owner, 2026-10-26) the clean certificate (the CERTU2 block) is X2+'s; X3+ keeps its own certificate C
 x3=re.sub(r'/\*CERTU2\{.*?/\*\}CERTU2\*/','',x3,count=1,flags=re.S)
+# (owner, 2026-10-27) and the certificate in the logo's look (CERTL1) too
+x3=re.sub(r'/\*CERTL1\{.*?/\*\}CERTL1\*/','',x3,count=1,flags=re.S)
 assert x3!=pp and '__PAPER__' not in x3
 assert x3.count('<title>EZ Live X2+</title>')==1
 x3=x3.replace('<title>EZ Live X2+</title>','<title>EZ Live X3+</title>')
