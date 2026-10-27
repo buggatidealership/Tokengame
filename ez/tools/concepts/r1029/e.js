@@ -8,7 +8,7 @@
   for(var y=0;y<n;y++)for(var x=0;x<n;x++){if((x<8&&y<8)||(x>12&&y<8)||(x<8&&y>12))continue;if(bits[(k++)%bits.length])s+='<rect x="'+(x*c).toFixed(2)+'" y="'+(y*c).toFixed(2)+'" width="'+c.toFixed(2)+'" height="'+c.toFixed(2)+'" fill="#04070e"/>'}
   fnd(0,0);fnd(14,0);fnd(0,14);return s+'</svg>'}
  var all=await sha(JSON.stringify(G.map(function(r){return [r.n,r.ticker,r.called,r.resolves,r.calls,r.a]})));
- var foot=function(lbl){return '<div class="ez-ft"><span class="ez-qr">'+code(all,58)+'</span><span class="ez-meta"><b>'+ID+'</b><span>'+lbl+'</span><span>SHA-256 '+all.slice(0,8)+'…'+all.slice(-6)+'</span></span><span class="ez-adm">Admit<br>the market<br>close</span></div>'};
+ var foot=function(lbl){return '<div class="ez-ft"><span class="ez-meta"><b>'+ID+'</b><span>'+lbl+'</span><span>SHA-256 '+all.slice(0,8)+'…'+all.slice(-6)+'</span></span><span class="ez-adm">Admit<br>the market<br>close</span></div>'};
  var tw=document.querySelector('.rz-tw');if(tw&&!tw.querySelector('.ez-ft')){tw.querySelector('.rz-cols').insertAdjacentHTML('beforebegin','<div class="ez-perf" aria-hidden="true"></div>');tw.insertAdjacentHTML('beforeend','<div class="ez-perf" aria-hidden="true"></div>'+foot('Issued by the market close · 4 AIs · '+G.length+' rounds'))}
  var pf=document.querySelector('.rz-pf');if(pf&&!pf.querySelector('.ez-ft')){pf.querySelector('.rz-tb').insertAdjacentHTML('afterend','<div class="ez-perf" aria-hidden="true"></div>');pf.insertAdjacentHTML('beforeend','<div class="ez-perf" aria-hidden="true"></div>'+foot('Every call before the report · graded at the close'))}
  if(V===2){var NM={GROK:1,CLAUDE:1,GPT:1,KIMI:1};

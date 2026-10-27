@@ -12,8 +12,8 @@ async function shot(p,sel,path){const el=await p.$(sel);await el.scrollIntoViewI
  await p.addStyleTag({content:'header.top,header{position:relative!important;top:auto!important}'});await p.waitForTimeout(200);
  await p.screenshot({path,fullPage:true,clip:{x:0,y:r.y,width:390,height:Math.min(r.h,3000)}})}
 (async()=>{const b=await chromium.launch();const mode=process.argv[2],only=process.argv[3];
- if(mode==='live'){for(const v of ['now','A1','A2']){if(only&&!only.split(',').includes(v))continue;const p=await open(b,'https://earningszn.xyz/');
-   if(v!=='now'){await p.evaluate(x=>{window.__aj=x},v==='A1'?1:2);await p.evaluate(rd(D+'a.js'))}await p.waitForTimeout(300);
+ if(mode==='live'){for(const v of ['now','A1','A2','A3','A4']){if(only&&!only.split(',').includes(v))continue;const p=await open(b,'https://earningszn.xyz/');
+   if(v!=='now'){await p.evaluate(x=>{window.__aj=x},+v.slice(1));await p.evaluate(rd(D+'a.js'))}await p.waitForTimeout(300);
    await shot(p,'#standings',S+v+'-standings.png');console.log(v,p.errs.join('|')||'ok',await p.evaluate(()=>document.documentElement.scrollWidth));await p.context().close()}}
  if(mode==='x2p'){for(const v of (only||'now,B1,B2,C1,C2').split(',')){const p=await open(b,'http://127.0.0.1:8897/v46-live-x2plus.html');
    if(/^[BC]/.test(v)){await p.addStyleTag({content:rd(D+'light.css')+rd(D+v.toLowerCase()+'.css')});const js=rd(D+v.toLowerCase()+'.js')||(v==='C2'?rd(D+'c1.js'):'');if(v==='C2')await p.addStyleTag({content:rd(D+'c1.css').replace(/html\.x2p \.rz-tw[^}]*\}/g,'')});if(js)await p.evaluate(js)}
