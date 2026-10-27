@@ -35,5 +35,5 @@ const mode=process.argv[2],only=process.argv[3];
    await p.addScriptTag({content:'window.__r28="'+id+'";'+rd(D+'board.js')});await p.waitForTimeout(600);
    await to(p,'#standings');await p.screenshot({path:S+'std-'+id+'.png'});
    if(id==='L2'){await to(p,'#learn');await p.screenshot({path:S+'proof-'+id+'.png'})}
-   console.log(id,JSON.stringify(await p.evaluate(()=>[window.__r28Ok,document.documentElement.scrollWidth,window.__rtPl,(document.querySelector('.rt-cols span:last-child')||{}).style?.paddingRight])),p.errs.join('|')||'ok');await p.context().close()}}
+   console.log(id,JSON.stringify(await p.evaluate(()=>[window.__r28Ok,document.documentElement.scrollWidth,window.__rtPl,window.__rtGap,(document.querySelector('.rt-cols span:last-child')||{}).style?.paddingRight])),p.errs.join('|')||'ok');await p.context().close()}}
  await b.close()})();

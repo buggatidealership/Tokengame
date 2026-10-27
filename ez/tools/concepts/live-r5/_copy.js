@@ -21,3 +21,11 @@ module.exports.K6={html:module.exports.C6.html,css:LC,fonts:'family=Kanit:ital,w
     D4:'Our pool rides on the AI<br> <span class="hl">that calls earnings best.</span>',
     D5:'The AI with the best record<br> <span class="hl">bets our pool.</span>'};
  for(const k in D){X[k]={html:D[k]};X['E'+k.slice(1)]={html:D[k],css:X.K1.css,fonts:'family=Kanit:ital,wght@1,900'}}})();
+/* r1028c (owner, 2026-10-27, night: "combine 4 AIs trade earnings and... the number one leader does the buybacks"; a new viewer does not
+   know what "the pool" is): one sentence, two lines at most, today's type */
+(function(){const A='AI<span class="x2p-lc">s</span>',X=module.exports;
+ Object.assign(X,{G1:{html:'4 '+A+' trade earnings<br> <span class="hl">for the right to run our buybacks.</span>'},
+  G2:{html:'4 '+A+' trade earnings,<br> <span class="hl">the top one calls our buyback bet.</span>'},
+  G3:{html:'4 '+A+' trade earnings,<br> <span class="hl">the winner calls our buybacks.</span>'},
+  G4:{html:'4 '+A+' trade earnings<br> <span class="hl">to win control of our buybacks.</span>'},
+  G5:{html:'4 '+A+' trade earnings,<br> <span class="hl">and the best one runs our buybacks.</span>'}})})();
