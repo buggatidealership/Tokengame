@@ -1850,16 +1850,17 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
    var w=Math.round(b.getBoundingClientRect().width),old=c.querySelector(".xs-sp");if(!w||(old&&+old.getAttribute("width")===w))return;var t=d.createElement("span");t.innerHTML=spark(Q[m],w,15);if(old)old.replaceWith(t.firstChild);else c.appendChild(t.firstChild)})}
  /* (owner, same night: "the height... is completely off": the P&L figure sat high over its line, the hit rate low) the W-L and the
     hit rate are moved onto the P&L figure's baseline, measured per ticket (a transform on the figures only, so the printed field lines stay) */
- /* (owner, same night, then: "what's in the win and loss box needs to be exactly in the middle... the top of the numbers [and] the bottom
+ /* (owner, same night, then: "remove the chart... we're trying to pack too much into one thing": no P&L line, so the P&L figure is centred too)
+    (before that: "what's in the win and loss box needs to be exactly in the middle... the top of the numbers [and] the bottom
     at the same distance"; the P&L is fine) the W-L and the hit rate sit with their ink centred in the ticket: the digits' cap top and
     baseline measured (canvas metrics of the figure's own font), moved by a transform on the figures only, so the field lines stay */
  var cv=d.createElement("canvas").getContext("2d");
  function level(ol){[].slice.call(ol.querySelectorAll("li.lbr")).forEach(function(li){var R=li.getBoundingClientRect(),mid=R.top+R.height/2;
-   [li.querySelector(".lb-f2 .pn-rec"),li.querySelector(".lb-c:not(.roi)>b")].forEach(function(c){if(!c)return;c.style.removeProperty("transform");var b=c.tagName==="B"?c:c.querySelector("b");if(!b)return;
+   [li.querySelector(".lb-f2 .pn-rec"),li.querySelector(".lb-c:not(.roi)>b"),li.querySelector(".lb-c.roi>b")].forEach(function(c){if(!c)return;c.style.removeProperty("transform");var b=c.tagName==="B"?c:c.querySelector("b");if(!b)return;
     var p=d.createElement("span");p.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";b.appendChild(p);var base=p.getBoundingClientRect().top;p.remove();
     var cs=getComputedStyle(b);cv.font=cs.fontStyle+" "+cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;var asc=cv.measureText("0123456789").actualBoundingBoxAscent||parseFloat(cs.fontSize)*.72;
     var dy=mid-(base-asc/2);if(Math.abs(dy)>.05)c.style.setProperty("transform","translateY("+dy.toFixed(2)+"px)","important")})})}
- var cur=null,lw=0,raf=0;function run(){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){var ol=d.querySelector("#standings.x2p-tix ol.lbl");if(ol){d.documentElement.classList.add("x2p-stitch");try{lines(ol);level(ol)}catch(e){window.__x2pStitchErr=e}draw(ol);watch(ol)}})}
+ var cur=null,lw=0,raf=0;function run(){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){var ol=d.querySelector("#standings.x2p-tix ol.lbl");if(ol){d.documentElement.classList.add("x2p-stitch");try{[].slice.call(ol.querySelectorAll(".xs-sp")).forEach(function(e){e.remove()});level(ol)}catch(e){window.__x2pStitchErr=e}draw(ol);watch(ol)}})}
  var mo=window.MutationObserver&&new MutationObserver(function(ms){if(ms.some(function(m){return [].slice.call(m.addedNodes).concat([].slice.call(m.removedNodes)).some(function(n){return n.nodeType===1&&!n.classList.contains("xs-j")})}))run()});
  function watch(ol){if(ol===cur||!mo)return;cur=ol;mo.observe(ol,{childList:true})}
  addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run()}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(run);addEventListener("load",run);addEventListener("hashchange",function(){setTimeout(run,120)});

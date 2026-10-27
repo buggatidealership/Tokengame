@@ -516,6 +516,8 @@ _i=pp.find(GRAINP);GRAIN=pp[pp.rfind('url("',0,_i):pp.find('")',_i)+2]
 px=pp.replace(GRAINP,CREAMP)
 # (owner, 2026-10-27, night) the inks: X2+ stamped (INKS), X3+ the lighter ink (INKL)
 px=re.sub(r'/\*INKL\{\*/.*?/\*\}INKL\*/','',px,count=1,flags=re.S)
+# (owner, 2026-10-27, night: "the [certificate] that is currently on the live website... I just prefer it") X2+ keeps CERTU2, not CERTL1
+px=re.sub(r'/\*CERTL1\{.*?/\*\}CERTL1\*/','',px,count=1,flags=re.S)
 for _a,_c in [(r'#f6dc93|#fbe8a8|#f6d77c','#fed98a'),(r'#e4b54a|#e7bd5b|#efc24a','#fdbc2a'),(r'#c99227|#bf8a22|#d39c1c|#c98a12','#d99a12')]:px=re.sub(_a,_c,px,flags=re.I)
 px=px.replace('</head>','<style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>\n</head>',1)
 # (owner, 2026-10-27) the certificate's Kanit (the logo's lettering), X2+ only
