@@ -24,7 +24,8 @@ const mode=process.argv[2],only=process.argv[3];
    await p.context().close()}}
  if(mode==='proof'){for(const id of (only||'today,PI').split(',')){const p=await open(b,390,844);
    if(id!=='today'){await p.addStyleTag({content:rd(D+'proof.css')});await p.evaluate(rd(D+'proof.js'))}
-   for(const k of ['roi','hit','miss','sector']){await p.evaluate(k=>{const t=document.querySelector('#learn [data-pt="'+k+'"]');if(t)t.click()},k);await p.waitForTimeout(900);
+   if(id==='PW'||id==='PT'){await p.evaluate(w=>{window.__wlWord=w},id==='PW'?'Biggest':'Top');await p.evaluate(rd(D+'proofwl.js'))}
+   for(const k of (/^P[WT]$/.test(id)?['roi']:['roi','hit','miss','sector'])){await p.evaluate(k=>{const t=document.querySelector('#learn [data-pt="'+k+'"]');if(t)t.click()},k);await p.waitForTimeout(900);
     await to(p,'#learn .x2p-pt',70);const el=await p.$('#learn .x2p-pt');await el.screenshot({path:S+'proof-'+id+'-'+k+'.png'});}
    console.log(id,p.errs.join('|')||'ok',await p.evaluate(()=>document.documentElement.scrollWidth));await p.context().close()}}
  if(mode==='std'){for(const id of (only||'L2,TT').split(',')){const p=await open(b,390,844);

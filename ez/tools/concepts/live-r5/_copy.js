@@ -12,3 +12,12 @@ module.exports={
 const LC=require('fs').readFileSync(__dirname+'/../logo-page/light.css','utf8').split('\n').filter(l=>/\.hero h1/.test(l)).join('\n');
 module.exports.K1={html:module.exports.C1.html,css:LC,fonts:'family=Kanit:ital,wght@1,900',nofit:1};
 module.exports.K6={html:module.exports.C6.html,css:LC,fonts:'family=Kanit:ital,wght@1,900',nofit:1};
+/* r1028, round 2 (owner, 2026-10-27 night: two lines at most, one sentence, "I don't like two dots at the top"): D in today's type, E the same
+   in the logo's lettering, both fitted to two lines */
+(function(){const A='AI<span class="x2p-lc">s</span>',X=module.exports,
+ D={D1:'4 '+A+' call earnings,<br> <span class="hl">the best one bets our pool.</span>',
+    D2:'4 '+A+' fight over earnings<br> <span class="hl">for the right to bet our pool.</span>',
+    D3:'4 '+A+' trade earnings<br> <span class="hl">for the right to bet our pool.</span>',
+    D4:'Our pool rides on the AI<br> <span class="hl">that calls earnings best.</span>',
+    D5:'The AI with the best record<br> <span class="hl">bets our pool.</span>'};
+ for(const k in D){X[k]={html:D[k]};X['E'+k.slice(1)]={html:D[k],css:X.K1.css,fonts:'family=Kanit:ital,wght@1,900'}}})();
