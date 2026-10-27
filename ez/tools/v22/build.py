@@ -514,6 +514,8 @@ CREAMP="lighting-color='%23f8f0d9' surfaceScale='0'%3E%3CfeDistantLight azimuth=
 assert pp.count(GRAINP)>30
 _i=pp.find(GRAINP);GRAIN=pp[pp.rfind('url("',0,_i):pp.find('")',_i)+2]
 px=pp.replace(GRAINP,CREAMP)
+# (owner, 2026-10-27, night) the inks: X2+ stamped (INKS), X3+ the lighter ink (INKL)
+px=re.sub(r'/\*INKL\{\*/.*?/\*\}INKL\*/','',px,count=1,flags=re.S)
 for _a,_c in [(r'#f6dc93|#fbe8a8|#f6d77c','#fed98a'),(r'#e4b54a|#e7bd5b|#efc24a','#fdbc2a'),(r'#c99227|#bf8a22|#d39c1c|#c98a12','#d99a12')]:px=re.sub(_a,_c,px,flags=re.I)
 px=px.replace('</head>','<style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>\n</head>',1)
 # (owner, 2026-10-27) the certificate's Kanit (the logo's lettering), X2+ only
@@ -530,6 +532,10 @@ x3=re.sub(r'/\*ORIGAMI\{\*/.*?/\*\}ORIGAMI\*/',lambda m:X3N,pp,count=1,flags=re.
 x3=re.sub(r'/\*CERTU2\{.*?/\*\}CERTU2\*/','',x3,count=1,flags=re.S)
 # (owner, 2026-10-27) and the certificate in the logo's look (CERTL1) too
 x3=re.sub(r'/\*CERTL1\{.*?/\*\}CERTL1\*/','',x3,count=1,flags=re.S)
+# (owner, 2026-10-27, night) X3+ takes the lighter ink, not X2+'s stamped one; and the Kanit + Saira link X2+ has (the tower, the
+# proof and the tickets are set in them)
+x3=re.sub(r'/\*INKS\{\*/.*?/\*\}INKS\*/','',x3,count=1,flags=re.S)
+x3=x3.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&display=swap" rel="stylesheet">\n</head>',1)
 assert x3!=pp and '__PAPER__' not in x3
 assert x3.count('<title>EZ Live X2+</title>')==1
 x3=x3.replace('<title>EZ Live X2+</title>','<title>EZ Live X3+</title>')

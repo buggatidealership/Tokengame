@@ -6953,6 +6953,18 @@ html.x2p .rz-pf.pq .rz-dc{background:none;box-shadow:none}html.x2p .rz-pf.pq .rz
 /* the leader's line gold at the others' thickness (owner, 2026-10-27) */
 html.x2p .rz-pf.pq .rz-ln.ld{stroke-width:1.8;filter:none}
 /*}R1030*/
+/*INKS{*/
+/* X2+ only (owner, 2026-10-27, night: "the stamp one across live X2 plus"; build.py strips it from X3+): every element of the standings
+   tickets and the proof stamped into the card: full ink, a pale lip under each stroke and a dark wall above, as the stubs' numbers
+   (r1031 S; mockup ez/x2p-r1031-ink.png) */
+html.x2p .f30 .tq :is(b,small,span,i):not(.tq-lo):not(.tq-pl):not(.qn):not(.tq-ai),html.x2p .rz-pf.pq :is(b,span,p,button,small,figcaption,div):not(.rz-pv):not(.rz-pvs):not(.rz-tg):not(.rz-sg):not(.rz-g):not(.gd){
+ text-shadow:0 1px 0 rgba(255,255,255,.6),0 -1px 0 rgba(0,0,0,.2)!important}
+html.x2p .f30 .tq :is(.tq-lo svg,.qs,.qn small svg),html.x2p .rz-pf.pq :is(.rz-ch svg,.rz-tg svg,.rz-dc svg){filter:drop-shadow(0 1px 0 rgba(255,255,255,.6)) drop-shadow(0 -1px 0 rgba(0,0,0,.22))!important}
+/* the gold names are clipped gold: a text-shadow shows through the clear glyphs and washes them out, so they press with filters */
+html.x2p .rz-pf.pq .rz-lx.gd{text-shadow:none!important;filter:drop-shadow(0 1px 0 rgba(255,255,255,.6)) drop-shadow(0 -1px 0 rgba(0,0,0,.22))!important}
+html.x2p .rz-pf.pq .rz-c{box-shadow:inset 0 1px 0 rgba(0,0,0,.12),inset 0 -1px 0 rgba(255,255,255,.5)}
+/*}INKS*/
+
 
 </style>
 <style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>
@@ -10890,6 +10902,17 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   var last=G[G.length-1],tb=pf.querySelector(".rz-tb");pf.classList.add("pq","P2");
   pf.insertAdjacentHTML("afterbegin",'<div class="pq-band r" aria-hidden="true"><span>Admit one</span><span>Season 1 · Nº '+("000000"+last.n).slice(-6)+'</span></div><div class="pq-stitch t" aria-hidden="true"></div>');
   pf.insertAdjacentHTML("beforeend",'<div class="pq-stitch b" aria-hidden="true"></div><div class="pq-band g" aria-hidden="true"><span>★ The proof ★</span><span>Graded at the close</span></div>');
+  /* Target hits as the earlier paper target (owner, 2026-10-27: "go with T1"): rings in red and white ink with the % off printed in
+     each (3, 6, 9, 12), a fine crosshair, and one bullet hole per right-way call on a golden-angle spiral, so no two holes share a spot */
+  (function(){var ga=Math.PI*(3-Math.sqrt(5));[].slice.call(pf.querySelectorAll(".rz-tg figure")).forEach(function(f){var c0=f.querySelector("figcaption .rz-lx:not(.rz-n)"),sv=f.querySelector("svg");if(!c0||!sv)return;
+   var m=c0.textContent.trim().toUpperCase(),calls=[];G.forEach(function(r){var c=(r.calls||[]).filter(function(x){return x[0]===m})[0];if(c)calls.push({ok:((/^DOWN/.test(c[1])?-1:1)>0)===(r.a>0),off:parseFloat(c[2])||0})});
+   var R=60,C=73,band=function(r0,r1,col){return r0?'<circle cx="'+C+'" cy="'+C+'" r="'+((r0+r1)/2)+'" fill="none" stroke="'+col+'" stroke-width="'+(r1-r0)+'"/>':'<circle cx="'+C+'" cy="'+C+'" r="'+r1+'" fill="'+col+'"/>'};
+   var h='<svg viewBox="0 0 146 146" width="100%" aria-hidden="true" focusable="false">'+band(0,R/4,"#c2261d")+band(R/4,R/2,"#fffbf1")+band(R/2,3*R/4,"#c2261d")+band(3*R/4,R,"#fffbf1")+
+    '<circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="none" stroke="rgba(40,16,12,.35)" stroke-width=".6"/><path d="M'+(C-R)+','+C+'H'+(C+R)+'M'+C+','+(C-R)+'V'+(C+R)+'" stroke="rgba(40,16,12,.28)" stroke-width=".5"/>'+
+    [[3,1],[6,2],[9,3],[12,4]].map(function(v,i){return '<text x="'+(C+(v[1]-.5)/4*R).toFixed(1)+'" y="'+(C+2)+'" font-size="5.6" font-family="Barlow Condensed,sans-serif" font-weight="700" text-anchor="middle" fill="'+(i%2?"rgba(196,38,30,.95)":"rgba(255,246,232,.95)")+'">'+v[0]+'%</text>'}).join("");
+   calls.forEach(function(c,i){if(!c.ok)return;var a=i*ga,r=Math.min(c.off,12)/12*R,x=(C+r*Math.cos(a)).toFixed(1),y=(C+r*Math.sin(a)).toFixed(1);
+    h+='<circle cx="'+x+'" cy="'+y+'" r="3.1" fill="rgba(255,250,236,.85)"/><circle cx="'+x+'" cy="'+y+'" r="2.3" fill="#1b1613"/><circle cx="'+(x-.6).toFixed(1)+'" cy="'+(y-.6).toFixed(1)+'" r=".7" fill="rgba(255,255,255,.25)"/>'});
+   sv.outerHTML=h+'</svg>'})})();
   /* switching views (owner, 2026-10-27: "some type of nice smooth motion"): the new view comes forward from 10px below at 98.5% in 280ms,
      its lines draw from the start in 700ms, then the end labels; the round's earlier folder swap's timings. Not with reduced motion. */
   var rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;

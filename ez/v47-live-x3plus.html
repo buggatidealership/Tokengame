@@ -6886,7 +6886,17 @@ html.x2p .rz-pf.pq .rz-dc{background:none;box-shadow:none}html.x2p .rz-pf.pq .rz
 html.x2p .rz-pf.pq .rz-ln.ld{stroke-width:1.8;filter:none}
 /*}R1030*/
 
+/*INKL{*/
+/* X3+ only (owner, same night: "lighter ink for live X3 plus"; build.py strips it from X2+): every printed element of the standings
+   tickets and the proof in the lighter ink (#x2pcL: flat ink, a light worn speckle, multiplied into the card; r1031 L) */
+html.x2p .f30 .tq>*,html.x2p .f30 .tq-list>.qj:not(.qjb):not(.qjh):not(.qjp),
+html.x2p .rz-pf.pq>*:not(.pq-stitch){filter:url(#x2pcL)!important;mix-blend-mode:multiply}
+html.x2p .f30 .tq *,html.x2p .rz-pf.pq *{text-shadow:none!important}
+html.x2p .rz-pf.pq .rz-lx.gd{filter:none!important}
+/*}INKL*/
+
 </style>
+<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <style id="x3plus-rip">
 /* EZ Live X3+ only (owner, 2026-10-22: "a mock-up for the scroll-driven" ticket rip, "on X3 plus, because we won't use that one
    in production"): the first thing a visitor sees is an Admit One ticket; scrolling tears it down its perforation and the two halves
@@ -10863,6 +10873,17 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   var last=G[G.length-1],tb=pf.querySelector(".rz-tb");pf.classList.add("pq","P2");
   pf.insertAdjacentHTML("afterbegin",'<div class="pq-band r" aria-hidden="true"><span>Admit one</span><span>Season 1 · Nº '+("000000"+last.n).slice(-6)+'</span></div><div class="pq-stitch t" aria-hidden="true"></div>');
   pf.insertAdjacentHTML("beforeend",'<div class="pq-stitch b" aria-hidden="true"></div><div class="pq-band g" aria-hidden="true"><span>★ The proof ★</span><span>Graded at the close</span></div>');
+  /* Target hits as the earlier paper target (owner, 2026-10-27: "go with T1"): rings in red and white ink with the % off printed in
+     each (3, 6, 9, 12), a fine crosshair, and one bullet hole per right-way call on a golden-angle spiral, so no two holes share a spot */
+  (function(){var ga=Math.PI*(3-Math.sqrt(5));[].slice.call(pf.querySelectorAll(".rz-tg figure")).forEach(function(f){var c0=f.querySelector("figcaption .rz-lx:not(.rz-n)"),sv=f.querySelector("svg");if(!c0||!sv)return;
+   var m=c0.textContent.trim().toUpperCase(),calls=[];G.forEach(function(r){var c=(r.calls||[]).filter(function(x){return x[0]===m})[0];if(c)calls.push({ok:((/^DOWN/.test(c[1])?-1:1)>0)===(r.a>0),off:parseFloat(c[2])||0})});
+   var R=60,C=73,band=function(r0,r1,col){return r0?'<circle cx="'+C+'" cy="'+C+'" r="'+((r0+r1)/2)+'" fill="none" stroke="'+col+'" stroke-width="'+(r1-r0)+'"/>':'<circle cx="'+C+'" cy="'+C+'" r="'+r1+'" fill="'+col+'"/>'};
+   var h='<svg viewBox="0 0 146 146" width="100%" aria-hidden="true" focusable="false">'+band(0,R/4,"#c2261d")+band(R/4,R/2,"#fffbf1")+band(R/2,3*R/4,"#c2261d")+band(3*R/4,R,"#fffbf1")+
+    '<circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="none" stroke="rgba(40,16,12,.35)" stroke-width=".6"/><path d="M'+(C-R)+','+C+'H'+(C+R)+'M'+C+','+(C-R)+'V'+(C+R)+'" stroke="rgba(40,16,12,.28)" stroke-width=".5"/>'+
+    [[3,1],[6,2],[9,3],[12,4]].map(function(v,i){return '<text x="'+(C+(v[1]-.5)/4*R).toFixed(1)+'" y="'+(C+2)+'" font-size="5.6" font-family="Barlow Condensed,sans-serif" font-weight="700" text-anchor="middle" fill="'+(i%2?"rgba(196,38,30,.95)":"rgba(255,246,232,.95)")+'">'+v[0]+'%</text>'}).join("");
+   calls.forEach(function(c,i){if(!c.ok)return;var a=i*ga,r=Math.min(c.off,12)/12*R,x=(C+r*Math.cos(a)).toFixed(1),y=(C+r*Math.sin(a)).toFixed(1);
+    h+='<circle cx="'+x+'" cy="'+y+'" r="3.1" fill="rgba(255,250,236,.85)"/><circle cx="'+x+'" cy="'+y+'" r="2.3" fill="#1b1613"/><circle cx="'+(x-.6).toFixed(1)+'" cy="'+(y-.6).toFixed(1)+'" r=".7" fill="rgba(255,255,255,.25)"/>'});
+   sv.outerHTML=h+'</svg>'})})();
   /* switching views (owner, 2026-10-27: "some type of nice smooth motion"): the new view comes forward from 10px below at 98.5% in 280ms,
      its lines draw from the start in 700ms, then the end labels; the round's earlier folder swap's timings. Not with reduced motion. */
   var rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
