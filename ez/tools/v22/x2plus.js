@@ -1748,3 +1748,50 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   return true}
  function tryGo(n){var ok=false;try{ok=go()}catch(e){window.__x2pRzErr=e;return}if(!ok&&n<100)setTimeout(function(){tryGo(n+1)},100)}
  if(d.body)tryGo(0);else d.addEventListener("DOMContentLoaded",function(){tryGo(0)})}catch(e){window.__x2pRzErr=e}})();
+/* R1030 (owner, 2026-10-27, night: "F2, tickets spaced like E1, stitched... remove the +42.1%" and "P2... the stitch just under the
+   Admit one band, so P&L, Accuracy, Target hits and Sector are under the stitch"): the standings as the board's paper tickets spaced like
+   E1 (no lines inside a ticket, one typeface for the figures, the flag on the model line, headers once above), each with its P&L line,
+   joined as the bet's two tickets are (punched holes, half-round bites at the edges, a hole where the stub's perforation crosses, the red
+   foot band meeting the green head band); the proof on the same ticket stock with the bet's red head band and green foot band, a stitch
+   under the one and over the other. Built over R1028's tower and proof (their rows, the ⓘ and the four views stay as they are).
+   Mockups: ez/x2p-r1030-*.png (F2, P2). */
+(function(){try{var d=document;
+ function go(){var tw=d.querySelector("#standings .rz-tw"),pf=d.querySelector("#learn .rz-pf");if(!tw||!pf||!window.__x2pPnl)return false;if(tw.querySelector(".tq30"))return true;
+  var P=window.__x2pPnl(),A=P.A,G=ROUNDS.filter(function(r){return typeof r.a==="number"&&!isNaN(r.a)});
+  var S={};Object.keys(A).forEach(function(m){var b=100000,s=[b];G.forEach(function(r){var c=(r.calls||[]).filter(function(x){return x[0]===m})[0];if(c)b*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;s.push(b)});S[m]=s});
+  /* marks, flags and order from the tower (ranked by P&L) */
+  var R=[].slice.call(tw.querySelectorAll(".rz-r:not(.rz-5)")).map(function(li){var nm=li.querySelector(".rz-nmw b").textContent.trim(),m=nm.toUpperCase(),sm=li.querySelector(".rz-nmw small"),fl=sm.querySelector("svg"),t=A[m];
+   return {m:m,nm:nm,ver:sm.textContent.trim(),flag:fl?fl.outerHTML:"",logo:li.querySelector(".rz-lo").innerHTML,W:t.W,L:t.L,hit:Math.round(t.W/(t.W+t.L)*100),pnl:t.pnl,s:S[m]}});
+  var TRY=[].slice.call(tw.querySelectorAll(".rz-5n>span")).map(function(s){return s.innerHTML});
+  var usd=function(v){return (v>=0?"+$":"−$")+Math.round(Math.abs(v)).toLocaleString("en-US")};
+  /* the P&L line: the balance after every graded round, the $100K start dashed; green in profit, red at a loss */
+  function spark(s,w,h){var lo=Math.min.apply(0,s.concat([1e5])),hi=Math.max.apply(0,s.concat([1e5])),f=function(v){return (2+(h-4)*(1-(v-lo)/(hi-lo||1))).toFixed(2)},x=function(i){return (w*i/(s.length-1)).toFixed(2)},c=s[s.length-1]>=1e5?"#0f8a4c":"#c8302a",z=f(1e5);
+   return '<svg class="qs" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" aria-hidden="true" focusable="false"><line x1="0" x2="'+w+'" y1="'+z+'" y2="'+z+'" stroke="rgba(4,7,14,.35)" stroke-width=".8" stroke-dasharray="2.5 2.5"/>'+
+    '<path d="'+s.map(function(v,i){return (i?"L":"M")+x(i)+" "+f(v)}).join(" ")+'" fill="none" stroke="'+c+'" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+x(s.length-1)+'" cy="'+f(s[s.length-1])+'" r="1.9" fill="'+c+'"/></svg>'}
+  var box=d.createElement("div");box.className="f30 tq30";
+  box.innerHTML='<div class="tq-cols" aria-hidden="true"><span></span><span>AI</span><span>W-L</span><span>Hit rate</span><span>P&amp;L</span></div><ol class="tq-list">'+
+   R.map(function(r,i){return '<li class="tq'+(i?'':' qg')+'"><span class="tq-stub"><small>No.</small><b>'+(i+1)+'</b></span>'+
+    '<span class="tq-ai"><span class="tq-lo">'+r.logo+'</span><span class="qn"><b>'+r.nm+'</b><small>'+r.ver+r.flag+'</small></span></span>'+
+    '<span class="tq-v"><span class="sr">Record </span><span class="qw">'+r.W+'</span><span class="qd">-</span><span class="ql">'+r.L+'</span></span>'+
+    '<span class="tq-v"><span class="sr">Hit rate </span>'+r.hit+'%</span>'+
+    '<span class="tq-pl"><b class="'+(r.pnl<0?'dn':'up')+'"><span class="sr">P&amp;L </span>'+usd(r.pnl)+'</b>'+spark(r.s,78,18)+'</span></li>'}).join("")+
+   '<li class="tq qk5"><span class="tq-stub"><small>No. 5</small><b>?</b></span><span class="tq-5t">Models<br>in tryouts</span><span class="tq-5n">'+TRY.map(function(t){return '<span>'+t+'</span>'}).join("")+'</span></li></ol>';
+  var rows=tw.querySelector(".rz-rows");rows.parentNode.insertBefore(box,rows);d.documentElement.classList.add("x2p-tq");
+  var list=box.querySelector(".tq-list");
+  /* the bet's join on every join */
+  function joins(){[].slice.call(list.querySelectorAll(".qj")).forEach(function(e){e.remove()});var O=list.getBoundingClientRect(),T=[].slice.call(list.querySelectorAll(".tq"));if(!O.width)return;
+   function add(c,css){var e=d.createElement("span");e.className="qj "+c;e.setAttribute("aria-hidden","true");e.style.cssText=css;list.appendChild(e)}
+   for(var i=1;i<T.length;i++){var a=T[i-1].getBoundingClientRect(),b=T[i].getBoundingClientRect(),y=(a.bottom+b.top)/2-O.top,L=b.left-O.left,W=b.width,sx=T[i].querySelector(".tq-stub").getBoundingClientRect().right-O.left;
+    add("qjr","left:"+L+"px;width:"+W+"px;top:"+(y-6)+"px");add("qjg","left:"+L+"px;width:"+W+"px;top:"+y+"px");
+    add("qjp","left:"+(L+10)+"px;width:"+(W-20)+"px;top:"+(y-1.9)+"px");add("qjb","left:"+(L-10)+"px;top:"+(y-10)+"px");add("qjb","left:"+(L+W-10)+"px;top:"+(y-10)+"px");add("qjh","left:"+(sx-6)+"px;top:"+(y-6)+"px")}}
+  joins();var lw=0;if(window.ResizeObserver)new ResizeObserver(function(){var w=list.offsetWidth;if(w&&w!==lw){lw=w;joins()}}).observe(list);
+  if(d.fonts&&d.fonts.ready)d.fonts.ready.then(joins);
+  /* "How we rank" (R1028's ⓘ) shows in place of the tickets, at their height */
+  var how=tw.querySelector(".rz-how");if(how&&window.MutationObserver)new MutationObserver(function(){if(!how.hidden)how.style.minHeight=box.offsetHeight+"px";box.hidden=!how.hidden;if(how.hidden)joins()}).observe(how,{attributes:true,attributeFilter:["hidden"]});
+  /* the proof on the ticket stock: red head band, the stitch right under it, the four views, the stitch, the green foot band */
+  var last=G[G.length-1],tb=pf.querySelector(".rz-tb");pf.classList.add("pq","P2");
+  pf.insertAdjacentHTML("afterbegin",'<div class="pq-band r" aria-hidden="true"><span>Admit one</span><span>Season 1 · Nº '+("000000"+last.n).slice(-6)+'</span></div><div class="pq-stitch t" aria-hidden="true"></div>');
+  pf.insertAdjacentHTML("beforeend",'<div class="pq-stitch b" aria-hidden="true"></div><div class="pq-band g" aria-hidden="true"><span>★ The proof ★</span><span>Graded at the close</span></div>');
+  return true}
+ function tryGo(n){var ok=false;try{ok=go()}catch(e){window.__x2pTqErr=e;return}if(!ok&&n<120)setTimeout(function(){tryGo(n+1)},100)}
+ if(d.body)tryGo(0);else d.addEventListener("DOMContentLoaded",function(){tryGo(0)})}catch(e){window.__x2pTqErr=e}})();
