@@ -1,0 +1,10 @@
+/* r1036: node r1036.js -> scratchpad/r1036/ : standings now, S1 (fixed), HC, HD, HE at 390 */
+const fs=require('fs');const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('./live-r1/_fonts.js');
+const S='/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8/scratchpad/r1036/';fs.mkdirSync(S,{recursive:true});const rd=f=>fs.readFileSync(__dirname+'/r1036/'+f,'utf8');
+(async()=>{const b=await chromium.launch();for(const v of (process.argv[2]||'HA,HB,HC,HD,HE').split(',')){const W=+(process.env.W||390);
+ const p=await (await b.newContext({viewport:{width:W,height:844},deviceScaleFactor:3,reducedMotion:'reduce'})).newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await FONTS(p);
+ await p.goto('http://127.0.0.1:8897/v46-live-x2plus.html',{waitUntil:'networkidle',timeout:90000}).catch(()=>{});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:40000});await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(2500);
+ await p.addStyleTag({content:'header.top,header{position:relative!important;top:auto!important}'});
+ if(v==='S1')await p.evaluate(rd('s1.js'));if(v[0]==='H'){await p.evaluate(x=>{window.__hV=x},v[1]);await p.evaluate(rd('h.js'));await p.evaluate(()=>dispatchEvent(new Event('resize')))}
+ await p.waitForTimeout(800);const r=await p.evaluate(()=>{const e=document.querySelector('#standings .x2p-strap')||document.querySelector('#standings');e.scrollIntoView();const lx=document.querySelector('#standings .lbx');const q=lx.getBoundingClientRect();let bt=q.bottom;lx.querySelectorAll('*').forEach(c=>{const z=c.getBoundingClientRect();if(z.height&&z.bottom>bt&&getComputedStyle(c).display!=='none')bt=z.bottom});return {y:q.top+scrollY-10,h:bt-q.top+24}});
+ await p.screenshot({path:S+v+'-'+W+'.png',fullPage:true,clip:{x:0,y:r.y,width:W,height:r.h}});console.log(v,W,errs.join('|')||'ok',await p.evaluate(()=>document.documentElement.scrollWidth));await p.context().close()}await b.close()})();
