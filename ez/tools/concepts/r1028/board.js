@@ -81,6 +81,10 @@ B.TT=function(){function spark(m,w,h){var s=S[m],lo=Math.min.apply(0,s),hi=Math.
 var o=B[V]();var st=document.createElement('style');st.textContent=BASE+o.css+'#standings .x2p-flip'+(o.proof?',#learn .x2p-pt':'')+'{display:none!important}';document.head.appendChild(st);
 var fl=document.querySelector('#standings .x2p-flip');var w=document.createElement('div');w.innerHTML=o.std;fl.parentNode.insertBefore(w,fl.nextSibling);
 if(o.proof){var pt=document.querySelector('#learn .x2p-pt');var w2=document.createElement('div');w2.innerHTML=o.proof;pt.parentNode.insertBefore(w2,pt.nextSibling)}
+/* the P&L label centred over its figures (owner, 2026-10-27, later) */
+var plh=document.querySelector('.rt-cols span:last-child');if(plh){var fw=Math.max.apply(0,[].slice.call(document.querySelectorAll('.rt-pl b')).map(function(b){return b.getBoundingClientRect().width}));var r0=document.createRange();r0.selectNodeContents(plh);plh.style.paddingRight=Math.max(0,(fw-r0.getBoundingClientRect().width)/2).toFixed(2)+'px';
+ var fr=[].slice.call(document.querySelectorAll('.rt-pl b')).map(function(b){return b.getBoundingClientRect()}),fc=(Math.min.apply(0,fr.map(function(q){return q.left}))+Math.max.apply(0,fr.map(function(q){return q.right})))/2,lr=plh.getBoundingClientRect();
+ var rg=document.createRange();rg.selectNodeContents(plh);var tr=rg.getBoundingClientRect();window.__rtPl=Math.round(((tr.left+tr.right)/2-fc)*10)/10}
 /* no row may run past its box */
 var bad=[];document.querySelectorAll('.r2w *,.r2p *,.rtw *').forEach(function(e){var p=e.closest('.r2-in,.rt-r,.r2-lr,.r2-lh,.rt-cols,.r2-h');if(!p||e===p)return;var a=e.getBoundingClientRect(),b=p.getBoundingClientRect();if(a.width&&(a.right>b.right+1||a.left<b.left-1))bad.push((e.className.baseVal!=null?e.className.baseVal:e.className)+' '+Math.round(a.right-b.right))});
 window.__r28Ok=bad.slice(0,8)})();
