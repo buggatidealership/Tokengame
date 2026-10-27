@@ -36,6 +36,7 @@ meta2 = ('<meta name="description" content="' + DESC + '">\n<meta property="og:d
          '<meta property="og:image" content="' + URL + 'media/' + SHARE + '">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n'
          '<meta property="og:image:alt" content="We\u2019re putting buybacks in the hands of an AI. The EZ. logo and the host at his desk.">\n'
          '<meta name="twitter:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:description" content="' + DESC + '">\n<meta name="twitter:image" content="' + URL + 'media/' + SHARE + '">\n'
+         '<meta property="og:site_name" content="Earnings Zeason">\n<meta name="twitter:site" content="@earningszn">\n'
          '<link rel="icon" href="media/icon.svg" type="image/svg+xml">\n<link rel="icon" href="media/icon-32.png" sizes="32x32" type="image/png">\n<link rel="apple-touch-icon" href="media/icon-180.png">\n')
 doc = re.sub(r'<meta name="description"[^>]*>\n?', '', doc)  # the page's own older line (it still said "Zeason one")
 doc = doc.replace('</head>', meta2 + '</head>', 1)
@@ -90,8 +91,12 @@ open(os.path.join(OUT, '_headers'), 'w').write("""/media/*
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   X-Frame-Options: SAMEORIGIN
+  Strict-Transport-Security: max-age=31536000
 """)
 open(os.path.join(OUT, 'robots.txt'), 'w').write("User-agent: *\nAllow: /\n")
+# (overnight 2026-10-27, launch audit) a missing path answered with the page itself and a 200, which Cloudflare then cached under
+# /media for a year (R43, 2026-10-24); with a 404.html Pages answers a missing file with this page and a real 404
+open(os.path.join(OUT, '404.html'), 'w', encoding='utf-8').write('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Not found \u00b7 Earnings Zeason</title><meta name="robots" content="noindex"><link rel="icon" href="/media/icon.svg" type="image/svg+xml"><style>html{color-scheme:dark}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0a14;color:#f8f0d9;font:600 18px/1.4 system-ui,sans-serif;text-align:center;padding:16px}a{color:#fdbc2a}img{width:96px;height:96px;display:block;margin:0 auto 18px}</style></head><body><main><img src="/media/icon.svg" alt="EZ."><p>Nothing here.</p><p><a href="/">Back to Earnings Zeason</a></p></main></body></html>\n')
 total = sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(OUT) for f in fs)
 big = [f for r, _, fs in os.walk(OUT) for f in fs if os.path.getsize(os.path.join(r, f)) > 25 * 2**20]
 print('site/: %d media files + logos, %.1f MB total%s' % (n, total / 1e6, ('; OVER 25 MiB: ' + str(big)) if big else ''))

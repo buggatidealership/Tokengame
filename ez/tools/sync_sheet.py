@@ -255,6 +255,11 @@ def main():
         for m in ("GPT", "KIMI", "CLAUDE", "GROK"):
             if m + " DIR" in col:
                 d, mg = out[want.index(m + " DIR")], out[want.index(m + " MAG (%)")]
+                # (2026-10-27) the direction carries the sign: a size typed with a minus ("DOWN", "-1.2", R53 and R54 Grok) would read
+                # as UP when graded; keep the size alone and say so
+                if d and mg.strip()[:1] in ("-", "\u2212"):
+                    mg = mg.strip()[1:].strip(); out[want.index(m + " MAG (%)")] = mg
+                    warnings.append("R%s %s size has a minus sign in the sheet (%s %s): the site keeps %s; the direction gives the sign" % (rn, m, d, "-" + mg, mg))
                 if bool(d) != bool(mg):
                     # a half-typed call in a round not graded yet is a call still being entered (owner, 2026-10-20):
                     # leave it out until both cells are filled, and say so. In a graded round it stays a problem.

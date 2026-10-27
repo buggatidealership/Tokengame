@@ -65,8 +65,8 @@ var SHEET=[
  ["50","KO","10/26/26","","","","","","","","","","","","Consumer Staples","Food, Beverage & Tobacco","Food & beverages","FALSE"],
  ["51","PYPL","10/26/26","","","","","","","","","","","","Financials","Financial Services","Payments; Crypto","FALSE"],
  ["52","UPS","10/26/26","","","","","","","","","","","","Industrials","Transportation","","FALSE"],
- ["53","NOVN.SW","10/26/26","DOWN","1.5","UP","1","DOWN","2","DOWN","-1.2","","","","Health Care","Pharmaceuticals, Biotechnology & Life Sciences","Healthcare","FALSE"],
- ["54","HSBA.L","10/26/26","UP","0.8","UP","1.5","DOWN","2.5","DOWN","-1.8","","","","Financials","Banks","","FALSE"],
+ ["53","NOVN.SW","10/26/26","DOWN","1.5","UP","1","DOWN","2","DOWN","1.2","","","","Health Care","Pharmaceuticals, Biotechnology & Life Sciences","Healthcare","FALSE"],
+ ["54","HSBA.L","10/26/26","UP","0.8","UP","1.5","DOWN","2.5","DOWN","1.8","","","","Financials","Banks","","FALSE"],
  ["55","STX","10/27/26","","","","","","","","","","","","Information Technology","Technology Hardware & Equipment","AI","FALSE"],
  ["56","HOOD","10/27/26","","","","","","","","","","","","Financials","Financial Services","Crypto","FALSE"],
  ["57","373220.KS","10/27/26","","","","","","","","","","","","Industrials","Capital Goods","Automotive; Power & electrification","FALSE"],
@@ -204,7 +204,7 @@ function build(header,rows){
   rows.forEach(function(r){
     var n=+g(r,"ROUND"),t=g(r,"TICKER").toUpperCase();if(!n||!t)return;
     var co=TICKERS[t]||t,act=g(r,"ACTUAL MOVE (%)"),calls=[];
-    MODEL_KEYS.forEach(function(m){var d=g(r,m+" DIR").toUpperCase(),mg=g(r,m+" MAG (%)");if(d&&mg!=="")calls.push({m:m,dir:d,mag:mg,v:(d==="DOWN"?-1:1)*parseFloat(mg)})});
+    MODEL_KEYS.forEach(function(m){var d=g(r,m+" DIR").toUpperCase(),mg=String(g(r,m+" MAG (%)")).replace(/^\s*[-\u2212]\s*/,"");if(d&&mg!=="")calls.push({m:m,dir:d,mag:mg,v:(d==="DOWN"?-1:1)*parseFloat(mg)})});
     /* details from the sheet (never part of the graded record): sector, industry group, themes, Mag 7 */
     RMETA[n]={sector:g(r,"SECTOR"),group:g(r,"INDUSTRY GROUP"),themes:g(r,"THEMES").split(";").map(function(x){return x.trim()}).filter(Boolean),mag7:/^(TRUE|YES|1|X)$/i.test(g(r,"MAG 7"))};
     var base={n:n,ticker:t,co:co,called:g(r,"CALL DATE (T-1)"),resolves:g(r,"RESOLUTION DATE/TIME"),timing:g(r,"REPORT TIME").toUpperCase(),card:CARDS[n]||{}};
