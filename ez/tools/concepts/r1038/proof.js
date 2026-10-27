@@ -7,7 +7,7 @@
  cd.insertAdjacentHTML('afterbegin','<div class="bt-sh"><i></i></div><div class="bt-hs"></div><div class="bt-pp"><i class="bt-r1"></i><i class="bt-r2"></i></div>'+
   '<div class="bt-st bt-hd"><span class="r38-sb sp"><span>Season 1</span><span><i></i>The proof<i></i></span><span>Graded at the close</span></span></div>'+
   '<div class="bt-st bt-ft"><span class="r38-sb sp"><span>Admit one</span><span>Simulated · before fees</span><span class="bt-no">'+num+'</span></span></div>');
- if(window.__pV==='P2'){ /* P2 (owner, same night): the question stays where it is on the live site, in the green band at the top, the band as tall as it needs */
+ if(window.__pV==='P2'||window.__pV==='P3'){if(window.__pV==='P3')cd.classList.add('r38p3'); /* P2 (owner, same night): the question stays where it is on the live site, in the green band at the top, the band as tall as it needs */
   cd.classList.add('r38p2');var hd=cd.querySelector('.bt-hd');hd.innerHTML='<span class="r38-q2"><i></i><b></b><i></i></span>';
   var b=hd.querySelector('b'),srcq=cd.querySelector('.pt-top');var sy=function(){b.textContent=srcq?srcq.textContent.trim():''};sy();
   if(srcq&&window.MutationObserver)new MutationObserver(sy).observe(cd.querySelector('.pt-q')||srcq,{subtree:true,childList:true,characterData:true});return}

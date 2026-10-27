@@ -15,10 +15,10 @@
  var lip='',star='<i></i>',num=function(s){var ink=[1,.84,.95,.88,1,.9],dy=[0,.3,-.2,.2,-.3,.1];return 'N<u>o</u> '+s.split('').map(function(c,i){return '<s style="opacity:'+ink[i]+';top:'+dy[i]+'px">'+c+'</s>'}).join('')};
  var foil=function(t){return '<span class="bt-b r38-fo"><span class="x2p-cdh"><b><em data-t="'+t+'">'+t+'</em></b></span></span>'};
  var graded=(d.querySelector('#learn .pt-bd.r .pt-ko:last-child')||{}).textContent||'';var ser=(graded.match(/\d{6}/)||['000046'])[0];
- function tk(cls,inner,head,foot,j){return '<div class="bs-nx r38-t '+cls+'"><div class="bt-sh"><i></i></div><div class="bt-hs"></div><div class="bt-p">'+
+ function tk(cls,inner,head,foot,j){return '<div class="bs-nx r38-t '+cls+'"'+(V0==='A3'?' style="--px:-80px"':'')+'><div class="bt-sh"><i></i></div><div class="bt-hs"></div><div class="bt-p">'+
    '<div class="bt-pp"><i class="bt-pl"></i><i class="bt-r1"></i><i class="bt-r2"></i></div>'+inner+
    '<div class="bt-st bt-hd">'+head+'</div><div class="bt-st bt-ft">'+foot+'</div>'+(j?'<i class="bs-perf"></i>':'')+'</div></div>'}
- var cols='<div class="r38-cols"><span></span><span>AI</span><span>W-L</span><span>Hit rate</span><span>P&amp;L</span></div>';
+ var cols='<div class="r38-cols"><span></span><span>'+(V0==='A3'?'Model':'AI')+'</span><span>W-L</span><span>Hit rate</span><span>P&amp;L</span></div>';
  function row(r,i){return '<div class="r38-r'+(i?'':' r38-1')+'"><span class="r38-rk"><small>No.</small><b>'+r.rk+'</b></span>'+
    '<span class="r38-ai"><span class="r38-lg">'+r.logo+'</span><span class="r38-nm">'+(i?'<b>'+r.nm+'</b>':foil(r.nm.toUpperCase()))+'<small>'+r.ver+'<span class="r38-fl">'+r.flag+'</span></small></span></span>'+
    '<span class="r38-wl"><i class="g">'+r.w+'</i>-<i class="r">'+r.l+'</i></span><span class="r38-hr">'+r.hit+'</span><span class="r38-pl '+(/^[-−]/.test(r.pl)?'dn':'up')+'">'+r.pl+'</span></div>'}
@@ -26,10 +26,11 @@
  var tryT=tk('r38-try','<div class="r38-in r38-tin"><span class="r38-rk"><small>No. 5</small><b class="rd">?</b></span><span class="r38-tl"><b>Models</b><b class="rd">in tryouts</b></span>'+
    TRY.map(function(c){return '<span class="r38-tc"><span class="r38-lg">'+c.lg+'</span><b>'+c.nm.toUpperCase()+'</b><span class="r38-fl">'+c.flag+'</span></span>'}).join('')+'</div>',
    '<span class="r38-sl">No. 5</span><span class="r38-sb"><span>'+star+'Next challengers'+star+'</span></span>',
-   '<span class="r38-sl"></span><span class="r38-sb sp"><span>Not signed yet</span><span class="bt-no">'+num('000005')+'</span></span>',1);
+   V0==='A3'?'<span class="r38-ko">Not signed yet</span><span class="bt-no">'+num('000005')+'</span>':'<span class="r38-sl"></span><span class="r38-sb sp"><span>Not signed yet</span><span class="bt-no">'+num('000005')+'</span></span>',1);
  var h='';
+ var ant='<span class="r38-air'+(live?' on':'')+'"><svg viewBox="0 0 20 22" aria-hidden="true"><path class="w" d="M4.2 3.6a8 8 0 0 0 0 11.3M15.8 3.6a8 8 0 0 1 0 11.3M6.9 6.3a4.2 4.2 0 0 0 0 5.9M13.1 6.3a4.2 4.2 0 0 1 0 5.9"/><path class="m" d="M10 9.3 6.6 21.2M10 9.3l3.4 11.9M7.6 17.6h4.8M8.6 14h2.8"/><circle class="d" cx="10" cy="9.3" r="2.1"/></svg><b>'+(live?'Live':'Off air')+'</b></span>';
  if(V==='A'){h=tk('r38-board','<div class="r38-in">'+cols+rows.map(row).join('')+'</div>',
-    '<span class="r38-sl">Season 1</span><span class="r38-sb sp"><span>'+star+'$EZ main event'+star+'</span>'+lv+'</span>',
+    V0==='A3'?'<span class="r38-ko r38-s1">Season 1</span>'+ant:'<span class="r38-sl">Season 1</span><span class="r38-sb sp"><span>'+star+'$EZ main event'+star+'</span>'+lv+'</span>',
     '<span class="r38-sl">Admit one</span><span class="r38-sb sp"><span>Ranked by P&amp;L</span><span class="bt-no">'+num(ser)+'</span></span>')+tryT}
  else{h=rows.map(function(r,i){return tk('r38-one'+(i?'':' r38-first'),'<div class="r38-in">'+row(r,i)+'</div>',
     i?'<span class="r38-sl">Season 1</span><span class="r38-sb r38-cl"><span></span><span>W-L</span><span>Hit rate</span><span>P&amp;L</span></span>':'<span class="r38-sl">Season 1</span><span class="r38-sb r38-cl"><span>'+lv+'</span><span>W-L</span><span>Hit rate</span><span>P&amp;L</span></span>',
@@ -48,8 +49,12 @@
  if(V0.length>1){var T=[].slice.call(box.querySelectorAll('.r38-t'));
   function layers(v){var o=[],dp=0,st=0;for(var i=0;i<v.length;i++){var c=v[i];if(c==='(')dp++;else if(c===')')dp--;else if(c===','&&!dp){o.push(v.slice(st,i).trim());st=i+1}}o.push(v.slice(st).trim());return o}
   T.forEach(function(t,i){var pp=t.querySelector('.bt-pp'),L=layers(getComputedStyle(pp).backgroundImage);if(L.length<27||!/31, 122, 69/.test(L[19])||!/200, 55, 42/.test(L[21])){window.__r38err='layers '+L.length;return}
+   L[24]='none';L[25]='none'; /* the bet's sunburst sits behind its label column; on the board it only lightened the rank column */
    var top=i>0,bot=i<T.length-1;if(top){L[17]='none';L[18]='none';L[19]='none';var h=t.querySelector('.bt-hd');if(h)h.remove()}
    if(bot){L[20]='none';L[21]='none';var f=t.querySelector('.bt-ft');if(f)f.remove()}pp.style.backgroundImage=L.join(', ')});
   if(V0==='B2')[].slice.call(box.querySelectorAll('.r38-t')).forEach(function(t,i){if(i){var c=t.querySelector('.r38-cols');if(c)c.remove()}})}
+ if(V0==='A3'){var pp0=box.querySelector('.bt-pp'),L0=pp0?(function(v){var o=[],dp=0,st=0;for(var i=0;i<v.length;i++){var c=v[i];if(c==='(')dp++;else if(c===')')dp--;else if(c===','&&!dp){o.push(v.slice(st,i).trim());st=i+1}}o.push(v.slice(st).trim());return o})(getComputedStyle(pp0).backgroundImage):[];
+  /* the words in the strips knocked out of the ink: the ticket's own stock (its grain and fibres, read from its paper layer) shows through */
+  if(L0.length>23)[].slice.call(box.querySelectorAll('.r38-ko,.r38-air b')).forEach(function(e){e.style.backgroundImage=L0[23]+','+L0[22];e.style.backgroundSize='200px 200px,300px 200px';e.style.backgroundColor='#ece1c4'})}
  align();if(d.fonts)d.fonts.ready.then(align);addEventListener('resize',align);
 })();
