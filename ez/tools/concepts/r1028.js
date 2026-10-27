@@ -28,9 +28,9 @@ const mode=process.argv[2],only=process.argv[3];
    for(const k of (/^P[WT]$/.test(id)?['roi']:['roi','hit','miss','sector'])){await p.evaluate(k=>{const t=document.querySelector('#learn [data-pt="'+k+'"]');if(t)t.click()},k);await p.waitForTimeout(900);
     await to(p,'#learn .x2p-pt',70);const el=await p.$('#learn .x2p-pt');await el.screenshot({path:S+'proof-'+id+'-'+k+'.png'});}
    console.log(id,p.errs.join('|')||'ok',await p.evaluate(()=>document.documentElement.scrollWidth));await p.context().close()}}
- if(mode==='l2p'){for(const w of (process.env.WS||'390').split(',').map(Number)){const p=await open(b,w,844);await p.evaluate(rd(D+'proof-l2.js'));await p.waitForTimeout(400);
+ if(mode==='l2p'){for(const w of (process.env.WS||'390').split(',').map(Number)){const p=await open(b,w,844);if(process.env.TGT)await p.evaluate(v=>{window.__tgtV=v},process.env.TGT);await p.evaluate(rd(D+'proof-l2.js'));await p.waitForTimeout(400);
    console.log(w,JSON.stringify(await p.evaluate(()=>window.__r2vOk)),p.errs.join('|')||'ok','sw',await p.evaluate(()=>document.documentElement.scrollWidth));
-   for(const k of ['pnl','acc','tgt','sec']){const el=await p.$('#r2pv-'+k);await el.scrollIntoViewIfNeeded();await el.screenshot({path:S+'l2p-'+k+(w===390?'':'-'+w)+'.png'})}await p.context().close()}}
+   for(const k of ['pnl','acc','tgt','sec']){const el=await p.$('#r2pv-'+k);await el.scrollIntoViewIfNeeded();await el.screenshot({path:S+'l2p-'+k+(process.env.TGT&&k==='tgt'?'-'+process.env.TGT:'')+(w===390?'':'-'+w)+'.png'})}await p.context().close()}}
  if(mode==='std'){for(const id of (only||'L2,TT').split(',')){const p=await open(b,390,844);
    await p.addScriptTag({content:'window.__r28="'+id+'";'+rd(D+'board.js')});await p.waitForTimeout(600);
    await to(p,'#standings');await p.screenshot({path:S+'std-'+id+'.png'});

@@ -43,3 +43,16 @@ module.exports.K6={html:module.exports.C6.html,css:LC,fonts:'family=Kanit:ital,w
   K2:{fresh:1,nofit:1,fonts:F,css:base,html:'4 '+AI+' <span class="g">trade earnings</span> for the right to run our <span class="y">buybacks</span>'+DOT},
   K3:{fresh:1,nofit:1,fonts:F,css:base,html:'<span class="sl" style="background:#03c870"></span>4 '+AI+' trade <span class="g">E</span>arnings for the right to run our <span class="y">buybacks</span>'+DOT},
   K4:{fresh:1,nofit:1,fonts:F,css:base,html:'4 '+AI+' trade earnings for <span class="g">the right</span> to run our <span class="y">buybacks</span>'+DOT+'<span class="sl" style="background:#ff3a31;margin-left:.12em"></span>'}})})();
+/* r1028e (owner, 2026-10-27, night: two lines at most; the highlighted words keep green and gold but get "that little edge" of the logo's E,
+   whose green sliver on its left makes it look 3D): the logo's lettering, fitted to two lines. M1/M2 the full sentence, M3 a shorter one. */
+(function(){const X=module.exports,AI='AI<span style="text-transform:none">s</span>',DOT='<i class="kd"></i>',F='family=Kanit:ital,wght@1,900';
+ const S='html.x2p.x2d[data-theme] body .hero h1.lvh.lvh';
+ const base=S+'{font-family:Kanit,sans-serif!important;font-style:italic!important;font-weight:900!important;text-transform:uppercase;letter-spacing:-.012em!important;line-height:1.02!important;font-size:clamp(36px,6.2vw,76px)!important;color:#f8f0d9!important;text-shadow:none!important;margin:0}'+
+  S+' .kd{display:inline-block;width:.2em;height:.2em;background:#fdbc2a;transform:skewX(-14deg);margin-left:.04em;box-shadow:-.07em .02em 0 #03c870}'+
+  /* the edge: a sliver of a second colour set behind the letters, offset to one side, as on the logo's E */
+  S+' .eg{color:#03c870;text-shadow:.07em .025em 0 #ff3a31}'+S+' .ey{color:#fdbc2a;text-shadow:-.07em .025em 0 #03c870}'+
+  S+' .eg2{color:#03c870;text-shadow:-.07em .025em 0 #f8f0d9}'+S+' .ey2{color:#fdbc2a;text-shadow:-.07em .025em 0 #03c870}';
+ Object.assign(X,{
+  M1:{fresh:1,fonts:F,css:base,html:'4 '+AI+' <span class="eg">trade earnings</span> for the right<br>to run our <span class="ey">buybacks</span>'+DOT},
+  M2:{fresh:1,fonts:F,css:base,html:'4 '+AI+' <span class="eg2">trade earnings</span> for the right<br>to run our <span class="ey2">buybacks</span>'+DOT},
+  M3:{fresh:1,fonts:F,css:base,html:'4 '+AI+' <span class="eg">trade earnings</span><br>to run our <span class="ey">buybacks</span>'+DOT}})})();
