@@ -6912,6 +6912,9 @@ html.x2p #standings.x2p-tix li.lbr .pc-t small .x2p-mfl svg{display:block;width:
 /* the proof's P&L view: Top W in the proof's green ink, Top L in its red (owner, same night); by class, since pt-u/pt-d also place a cell */
 html.x2p.x2d[data-theme] body #learn .x2p-pt .pn-bw.pn-bw.pn-bw.pn-bw.pn-bw.pn-bw.pn-bw.pn-bw{color:rgba(29,107,60,.95)!important;-webkit-text-fill-color:currentColor!important}
 html.x2p.x2d[data-theme] body #learn .x2p-pt .pn-bl.pn-bl.pn-bl.pn-bl.pn-bl.pn-bl.pn-bl.pn-bl{color:rgba(163,34,26,.95)!important;-webkit-text-fill-color:currentColor!important}
+/* (owner, same night) the hit rate alone, no "on direction"; the P&L figure with its line under it, no % */
+html.x2p-stitch #standings.x2p-tix li.lbr>.lb-c:not(.roi)>small,html.x2p-stitch #standings.x2p-tix li.lbr>.lb-c.roi>small{display:none!important}
+html.x2p #standings.x2p-tix li.lbr>.lb-c.roi>.xs-sp{display:block;margin:3px auto 0;overflow:visible}
 /*}STITCH*/
 
 </style>
@@ -10931,11 +10934,18 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   if(T.length<2)return;var O=ol.getBoundingClientRect();if(!O.width)return;
   function add(c,css){var e=d.createElement("span");e.className="xs-j "+c;e.setAttribute("aria-hidden","true");e.style.cssText=css;ol.appendChild(e)}
   var f0=T[0].getBoundingClientRect(),fz=T[T.length-1].getBoundingClientRect();
-  add("xs-g","left:"+(f0.left-O.left)+"px;width:"+f0.width+"px;top:"+(f0.top-O.top)+"px");add("xs-r","left:"+(fz.left-O.left)+"px;width:"+fz.width+"px;top:"+(fz.bottom-O.top-6)+"px");
   for(var i=1;i<T.length;i++){var a=T[i-1].getBoundingClientRect(),b=T[i].getBoundingClientRect(),y=(a.bottom+b.top)/2-O.top,L=b.left-O.left,W=b.width,rk=T[i].querySelector(".rk"),sx=rk?rk.getBoundingClientRect().right-O.left:L+52;
-   add("xs-r","left:"+L+"px;width:"+W+"px;top:"+(y-6)+"px");add("xs-g","left:"+L+"px;width:"+W+"px;top:"+y+"px");
    add("xs-p","left:"+(L+10)+"px;width:"+(W-20)+"px;top:"+(y-1.9)+"px");add("xs-b","left:"+(L-10)+"px;top:"+(y-10)+"px");add("xs-b","left:"+(L+W-10)+"px;top:"+(y-10)+"px");add("xs-h","left:"+(sx-6)+"px;top:"+(y-6)+"px")}}
- var cur=null,lw=0,raf=0;function run(){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){var ol=d.querySelector("#standings.x2p-tix ol.lbl");if(ol){d.documentElement.classList.add("x2p-stitch");draw(ol);watch(ol)}})}
+ /* (owner, same night: "remove the green and the red... it looks very cheaply done") the joins keep only the holes, the bites and the
+    crossing hole, no bands; and the P&L takes its line, as on the F2 tickets: the balance after every graded round, the $100K start
+    dashed, green in profit and red at a loss, exactly as wide as the figure above it (the % under the figure goes) */
+ var S=null;function series(){if(S)return S;S={};var G=ROUNDS.filter(function(r){return typeof r.a==="number"&&!isNaN(r.a)});
+  ["GPT","KIMI","CLAUDE","GROK"].forEach(function(m){var b=1e5,s=[b];G.forEach(function(r){var c=(r.calls||[]).filter(function(x){return x[0]===m})[0];if(c)b*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;s.push(b)});S[m]=s});return S}
+ function spark(s,w,h){var lo=Math.min.apply(0,s.concat([1e5])),hi=Math.max.apply(0,s.concat([1e5])),f=function(v){return (1.6+(h-3.2)*(1-(v-lo)/(hi-lo||1))).toFixed(2)},x=function(i){return (w*i/(s.length-1)).toFixed(2)},c=s[s.length-1]>=1e5?"#0f8a4c":"#c8302a",z=f(1e5);
+  return '<svg class="xs-sp" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" aria-hidden="true" focusable="false"><line x1="0" x2="'+w+'" y1="'+z+'" y2="'+z+'" stroke="rgba(4,7,14,.35)" stroke-width=".8" stroke-dasharray="2.5 2.5"/><path d="'+s.map(function(v,i){return (i?"L":"M")+x(i)+" "+f(v)}).join(" ")+'" fill="none" stroke="'+c+'" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+x(s.length-1)+'" cy="'+f(s[s.length-1])+'" r="1.8" fill="'+c+'"/></svg>'}
+ function lines(ol){var Q=series();[].slice.call(ol.querySelectorAll("li.lbr")).forEach(function(li){var h=li.querySelector(".pc-t h3"),c=li.querySelector(".lb-c.roi"),b=c&&c.querySelector("b"),m=h&&h.textContent.trim().toUpperCase();if(!b||!Q[m])return;
+   var w=Math.round(b.getBoundingClientRect().width),old=c.querySelector(".xs-sp");if(!w||(old&&+old.getAttribute("width")===w))return;var t=d.createElement("span");t.innerHTML=spark(Q[m],w,15);if(old)old.replaceWith(t.firstChild);else c.appendChild(t.firstChild)})}
+ var cur=null,lw=0,raf=0;function run(){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){var ol=d.querySelector("#standings.x2p-tix ol.lbl");if(ol){d.documentElement.classList.add("x2p-stitch");try{lines(ol)}catch(e){window.__x2pStitchErr=e}draw(ol);watch(ol)}})}
  var mo=window.MutationObserver&&new MutationObserver(function(ms){if(ms.some(function(m){return [].slice.call(m.addedNodes).concat([].slice.call(m.removedNodes)).some(function(n){return n.nodeType===1&&!n.classList.contains("xs-j")})}))run()});
  function watch(ol){if(ol===cur||!mo)return;cur=ol;mo.observe(ol,{childList:true})}
  addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run()}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(run);addEventListener("load",run);addEventListener("hashchange",function(){setTimeout(run,120)});
