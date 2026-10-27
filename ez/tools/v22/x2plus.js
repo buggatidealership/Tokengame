@@ -1332,9 +1332,12 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       var z=parseFloat(getComputedStyle(q).fontSize);while(q.scrollWidth>q.clientWidth+.5&&z>11){z-=.5;q.style.fontSize=z+"px"}body.innerHTML=v.html();
       $$("[data-pt]",tk).forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.pt===k))});
       var ch=$(".pt-ch",body);if(ch&&v.draw)v.draw(ch,natural?180:0);
-      var t=$(".pt-sg",body);if(t&&!natural){var fl=t.parentNode,hd=t.rows[0].getBoundingClientRect().height,n=t.rows.length-1,hh=(fl.clientHeight-hd-8)/n;if(hh>0)for(var i=1;i<=n;i++)t.rows[i].style.height=hh.toFixed(1)+"px"}}
+      var t=$(".pt-sg",body);if(t&&!natural){var fl=t.parentNode,hd=t.rows[0].getBoundingClientRect().height,n=t.rows.length-1,hh=(fl.clientHeight-hd-8)/n;if(hh>0)for(var i=1;i<=n;i++)t.rows[i].style.height=hh.toFixed(1)+"px"}if(k==="roi")plc()}
     var lastW=0;function fit(force){if(!tk.offsetWidth)return;if(!force&&tk.offsetWidth===lastW)return;lastW=tk.offsetWidth;tk.style.removeProperty("--tin");var mx=0;
       ORDER.forEach(function(k){show(k,true);mx=Math.max(mx,inn.getBoundingClientRect().height)});tk.style.setProperty("--tin",Math.ceil(mx)+"px");show(cur,false)}
+    /* (owner, 2026-10-27: the P&L label "needs to be above the number") the label sits centred over the widest P&L figure, not flush right */
+    function plc(){var w=tk.querySelector(".pt-hd i.pn-w");if(!w)return;var l=w.parentNode.nextElementSibling;if(!l)return;l.style.marginRight="";var mw=0;
+      tk.querySelectorAll(".pn-pl").forEach(function(v){mw=Math.max(mw,v.getBoundingClientRect().width)});var lw=l.getBoundingClientRect().width;if(mw&&lw)l.style.marginRight=Math.max(0,(mw-lw)/2).toFixed(2)+"px"}
     /* the motion (owner, 2026-10-23: "like switching folders... very smooth", after the cinematic reference): the open page fades and
        sinks back in 120ms, the new one comes forward in 280ms (Material's shared axis: a quick exit, about 300ms in, standard easing),
        then its lines draw from the start and the rows step in; never with reduced motion */
