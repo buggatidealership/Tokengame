@@ -359,7 +359,7 @@ open("v44-live-x6.html",'w').write(p6); print("ok v44-live-x6.html",len(p6))
 # opens on the newest round, centred (owner, 2026-10-20).
 # X2's handwriting trial (x2-logo) is left out, as on X6. X2 itself is untouched.
 pp=open("v24-live-x2.html").read()
-XPMARK=open(sys.argv[1]+'/x2p-mark.svg').read().strip()   # the $EZ mark in Anton's own outlines (no font to wait for), for the cover
+XPMARK=open(sys.argv[1]+'/x2p-logo.svg').read().strip()   # the EZ. logo (the X avatar, traced; 2026-10-28: it was the $EZ mark, x2p-mark.svg), for the cover
 for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
             # (owner, 2026-10-23: "I want the current page to be the only page, not the makeover") the page arrives covered (x2p-cur) and
             # x2plus.js lifts the cover once the X2+ page is built; only a small $EZ mark shows meanwhile (skin-x2plus.css, CURTAIN)

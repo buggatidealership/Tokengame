@@ -2332,11 +2332,11 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
    of the hard shadow's layer (same die cut), kept in step with it; the light is a wide gradient moved by transform on a view timeline. */
 (function(){
  function sync(hs,ed){ed.style.cssText=hs.style.cssText;ed.style.setProperty("transform","translate(.6px,2.4px)","important")}
- function one(t){if(t.hasAttribute("data-ppr"))return;var hs=t.querySelector(":scope>.bt-hs"),pp=t.querySelector(":scope>.bt-p");if(!hs||!pp)return;
+ function one(t){if(t.hasAttribute("data-ppr"))return;var hs=t.querySelector(":scope>.bt-hs"),pp=t.querySelector(":scope>.bt-p")||t.querySelector(".bt-pp");if(!hs||!pp)return;/* the proof keeps its paper deeper (2026-10-28) */
   t.setAttribute("data-ppr","");var ed=hs.cloneNode(false);ed.className="bt-hs bt-edge";ed.setAttribute("aria-hidden","true");sync(hs,ed);hs.after(ed);
   new MutationObserver(function(){sync(hs,ed)}).observe(hs,{attributes:true,attributeFilter:["style"]});
   var lt=document.createElement("i");lt.className="bt-rake";lt.setAttribute("aria-hidden","true");(pp.querySelector(":scope>.bt-pp")||pp).appendChild(lt)}
- var q=0;function all(){q=0;[].forEach.call(document.querySelectorAll(".bs-nx:not([data-ppr])"),one)}
+ var q=0;function all(){q=0;[].forEach.call(document.querySelectorAll(":is(.bs-nx,.x2p-bt):not([data-ppr])"),one)}
  function soon(){if(!q)q=requestAnimationFrame(all)}
  all();new MutationObserver(soon).observe(document.body,{childList:true,subtree:true});
 })();

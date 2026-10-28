@@ -11,6 +11,12 @@ const EZ=path.resolve(__dirname,'..','..','..');
   const P=window.__x2pPnl(),u=ROUNDS.find(u=>u.n==n);const pn=u.calls.filter(c=>c[1]).map(c=>[c[0],P.A[c[0]].per[n].v]).sort((a,b)=>b[1]-a[1]);
   const sea={};['GROK','CLAUDE','GPT','KIMI'].forEach(m=>{let s=0;for(const [k,x] of Object.entries(P.A[m].per))if(+k<=n)s+=x.v;sea[m]=s});
   return {c:{x:c.left,y:c.top,w:c.width,h:c.height},v:{x:v.left-c.left,y:v.top-c.top,w:v.width,h:v.height},op:vs.objectPosition,u:{n:u.n,co:u.co,a:u.a,win:u.win,calls:u.calls},pn,sea,film:FILMS[n]&&FILMS[n].f}},N);
+ /* v3: the site's own season ticket, as people will see it when they land */
+ if(process.env.V3){const q=await b.newPage({viewport:{width:390,height:844},deviceScaleFactor:3});await FONTS(q);await q.goto('http://localhost:8897/v46-live-x2plus.html',{waitUntil:'load'});
+  await q.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});await q.waitForTimeout(2500);
+  await q.evaluate(()=>document.querySelector('#standings .stx-board').scrollIntoView({block:'center'}));await q.waitForTimeout(1500);
+  const r=await q.evaluate(()=>{const e=document.querySelector('#standings .stx-board').getBoundingClientRect();return {x:e.left-2,y:e.top-2,width:e.width+10,height:e.height+10}});
+  fs.writeFileSync(path.join(TMP,'std.png'),await q.screenshot({clip:r}));await q.close()}
  const pad=0;const card=await p.screenshot({clip:{x:info.c.x-pad,y:info.c.y-pad,width:info.c.w+2*pad,height:info.c.h+2*pad}});fs.writeFileSync(path.join(TMP,'card.png'),card);
  /* v2 (owner, 2026-10-28: no spoilers): the same card before the film reveals the market: winner and grade a question mark */
  await p.evaluate(()=>{const f=document.querySelector('#x2pRm .card .face.front');const wv=f.querySelector('.cwin .wv');if(wv)wv.innerHTML='<span class="wn">?</span>';
@@ -21,7 +27,7 @@ const EZ=path.resolve(__dirname,'..','..','..');
  const NM={GPT:'GPT',KIMI:'Kimi',CLAUDE:'Claude',GROK:'Grok'};const money=v=>(v<0?'−$':'+$')+Math.abs(Math.round(v)).toLocaleString('en-US');
  const u=info.u,mv=(u.a<0?'−':'+')+Math.abs(u.a).toFixed(2)+'%',w=String(u.win).split(/\s*&\s*/).filter(Boolean);
  const wc=u.calls.find(c=>c[0]===w[0]);const ord=Object.entries(info.sea).sort((a,b)=>b[1]-a[1]);
- const html=`<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Kanit:ital,wght@1,900&family=Saira+Condensed:wght@600;700&family=Barlow+Condensed:wght@800&display=swap">
+ let html=`<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Kanit:ital,wght@1,900&family=Saira+Condensed:wght@600;700&family=Barlow+Condensed:wght@800&display=swap">
 <style>*{box-sizing:border-box;margin:0}body{width:1080px;height:1080px;background:#0b0a14;position:relative;overflow:hidden;color:#f3ead6}
 body::before{content:"";position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 25% 50%,rgba(255,255,255,.035) 0 2deg,transparent 2deg 9deg)}
 body::after{content:"";position:absolute;left:0;right:0;bottom:0;height:16px;background:linear-gradient(90deg,#03c870 0 50%,#ff3a31 50%)}
@@ -44,6 +50,15 @@ body::after{content:"";position:absolute;left:0;right:0;bottom:0;height:16px;bac
  const calls=u.calls.filter(c=>c[1]).map(c=>{const up=/UP/.test(c[1]),v=c[1].replace(/^(UP|DOWN)\s*/,'');return `<i>${NM[c[0]]}</i><span class="${up?'u':'d'}">${up?'+':'−'}${v}</span>`}).join('');
  const htmlA=html.replace('src="card.png"','src="cardA.png"').replace(/<div class="mv[\s\S]*?<div class="ft">/,`<div class="k">The calls, locked before the report</div><div class="tb">${calls}</div><div class="ln" style="margin-top:14px">The market answers at the close.</div><div class="ft">`);
  fs.writeFileSync(path.join(TMP,'frameA.html'),htmlA);
+ if(process.env.V3){const pn=info.pn,bw=pn[0],bl=pn[pn.length-1];
+  const v3=`<div class="mv ${u.a<0?'d':'u'}" style="font-size:72px">${mv}</div>
+<div class="wl"><span><i>Biggest W</i><b>${NM[bw[0]]}</b><em class="${bw[1]<0?'d':'u'}">${money(bw[1])}</em></span><span><i>Biggest L</i><b>${NM[bl[0]]}</b><em class="${bl[1]<0?'d':'u'}">${money(bl[1])}</em></span></div>
+<div class="ln" style="font-size:23px">Closest call: <b>${w.map(m=>NM[m]).join(' and ')}</b>, ${wc?(+wc[2]).toFixed(2).replace(/\.?0+$/,''):''}% off.</div>
+<div class="k" style="margin-top:8px">Season standings now</div><img class="std" src="std.png">
+<div class="ft">earningszn.xyz/r/${u.n}</div>`;
+  const css=`<style>.wl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}.wl span{background:#15131d;border:1px solid #2c2836;padding:10px 12px;display:grid;gap:4px}.wl i{font:700 14px/1 "Saira Condensed",sans-serif;font-style:normal;letter-spacing:.14em;text-transform:uppercase;color:#f2b632}.wl b{font:400 24px/1 Anton,sans-serif;font-weight:400}.wl em{font:400 30px/1 Anton,sans-serif;font-style:normal}.std{width:100%;display:block;margin-top:2px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.5))}.tx{top:52px!important;gap:10px!important}.eb{margin-top:10px!important}.ft{margin-top:auto}</style>`;
+  html=html.replace(/<div class="mv[\s\S]*?<div class="ft">earningszn[^<]*<\/div><\/div>/,v3+'</div>')+css;
+  fs.writeFileSync(path.join(TMP,'frame.html'),html)}
  fs.writeFileSync(path.join(TMP,'frame.html'),html);
  const f=await b.newPage({viewport:{width:1080,height:1080}});await FONTS(f);await f.goto('file://'+path.join(TMP,'frame.html'));await f.evaluate(()=>document.fonts.ready);await f.waitForTimeout(500);
  await f.evaluate(()=>{const e=document.querySelector('.co'),m=document.querySelector('.tx').clientWidth;let s=46;while(e.scrollWidth>m&&s>24){s-=2;e.style.fontSize=s+'px'}});
