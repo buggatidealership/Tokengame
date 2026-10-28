@@ -1922,7 +1922,9 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
     e.style.setProperty("mask-composite",full(cs.maskComposite,n).concat(["intersect","intersect"]).join(", "));e.style.setProperty("mask-origin",full(cs.maskOrigin,n).concat(["border-box","border-box"]).join(", "));e.style.setProperty("mask-clip",full(cs.maskClip,n).concat(["border-box","border-box"]).join(", "))});
    var cs=getComputedStyle(pp),nb=L.length;pp.style.backgroundImage=[tone("0"),tone("100%")].concat(L).join(", ");pp.style.backgroundSize=["100% "+p+"px","100% "+p+"px"].concat(full(cs.backgroundSize,nb)).join(", ");
    pp.style.backgroundPosition=["0 50%","0 50%"].concat(full(cs.backgroundPosition,nb)).join(", ");pp.style.backgroundRepeat=["repeat-y","repeat-y"].concat(full(cs.backgroundRepeat,nb)).join(", ")}
-  [].slice.call(t.querySelectorAll(".stx-ko,.stx-sw i")).forEach(function(e){e.style.backgroundImage=grain;e.style.backgroundSize="200px 200px"});return grain}
+  [].slice.call(t.querySelectorAll(".stx-ko")).forEach(function(e){e.style.backgroundImage=grain;e.style.backgroundSize="200px 200px"});
+  /* the band stars: the certificate star's gold with the card's grain multiplied in */
+  [].slice.call(t.querySelectorAll(".stx-sw i")).forEach(function(e){e.style.backgroundImage=grain+",linear-gradient(135deg,#cfae5c,#a98329 40%,#c9a453 62%,#93701f)";e.style.backgroundSize="200px 200px,100% 100%";e.style.backgroundBlendMode="multiply,normal"});return grain}
  function isLive(){try{var p={};new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"2-digit",month:"numeric",day:"numeric",weekday:"short"}).formatToParts(new Date()).forEach(function(x){p[x.type]=x.value});
   if(p.weekday==="Sat"||p.weekday==="Sun")return false;var t=+p.month+"/"+(+p.day)+"/"+p.year,nd=function(v){var q=String(v||"").split("/");return q.length===3?(+q[0])+"/"+(+q[1])+"/"+q[2].slice(-2):""};
   return [].concat(window.ROUNDS||[],window.PENDING||[],window.UPCOMING||[]).some(function(r){return nd(r.called)===t||nd(r.resolves)===t})}catch(e){return false}}
