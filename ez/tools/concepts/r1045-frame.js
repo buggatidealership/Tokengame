@@ -12,7 +12,7 @@ const IDS=(process.argv[2]||'now,A,B,C,D,E').split(','),WS=(process.argv[3]||'32
  for(const id of IDS)for(const W of WS){
   const ctx=await b.newContext({viewport:{width:W,height:W>700?900:844},deviceScaleFactor:W>700?2:3,isMobile:W<700,hasTouch:W<700});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await FONTS(p);
   await p.goto('http://127.0.0.1:8897/v46-live-x2plus.html',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:40000});await p.waitForTimeout(2500);
-  if(id!=='now'){const css=(rd(D+'_base.css')+rd(D+id+'.css')).split('§').join(SEL),js=rd(D+'_base.js')+'\n'+rd(D+id+'.js');
+  if(id!=='now'){const css=(rd(D+'_base.css')+(/^E\d/.test(id)?rd(D+'_e2.css'):'')+rd(D+id+'.css')).split('§').join(SEL),js=rd(D+'_base.js')+'\n'+rd(D+id+'.js');
    await p.evaluate(([css,js])=>{const st=document.createElement('style');st.id='f45css';st.textContent=css;document.head.appendChild(st);(0,eval)(js)},[css,js])}
   await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(900);await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(300);
   const m=await p.evaluate(()=>{const vt=document.querySelector('.x2p-vt'),f=vt.querySelector('.vt-f'),fr=f.getBoundingClientRect(),W=innerWidth,o={sw:document.documentElement.scrollWidth,bad:[]};
