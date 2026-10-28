@@ -2280,7 +2280,7 @@ function build(card){var fin=card.querySelector('.face.back .fin'),hb=fin&&fin.q
   var el=d.createElement('div');el.className='b45-g2';el.setAttribute('role','group');el.setAttribute('aria-label','Certificate of record'+(tag?': '+tag:''));
   el.innerHTML='<i class="b45-fr" aria-hidden="true"></i><div class="b45-hd"><div class="b45-lb b45-t">★ Certificate of record ★</div><b class="b45-k">'+E(tag)+'</b><div class="b45-lb b45-no">No. '+no4(rch[1]||'')+(rch[2]?' · '+E(rch[2]):'')+'</div></div>'+
    '<div class="b45-bd"><div class="b45-lb b45-cf">This certifies that</div><h4 class="b45-h">'+h4.innerHTML+'</h4>'+(q('.x2p-dk')?'<p class="b45-dk">'+E(T(q('.x2p-dk')))+'</p>':'')+'</div><div class="b45-sp"></div>'+
-   '<div class="b45-stub"><div class="b45-sl"><span class="b45-lb">'+E(lab)+'</span>'+(star&&ct[1]?'<span class="b45-who">'+E(ct[0])+' · '+E(ct[1])+'</span>':'')+
+   '<div class="b45-stub"><div class="b45-sl">'+(star?'':'<span class="b45-lb">'+E(lab)+'</span>')+(star&&ct[1]?'<span class="b45-who">'+E(ct[0])+' · '+E(ct[1])+'</span>':'')+
      '<b class="b45-big '+(/^\+/.test(big)?'b45-ok':'b45-no2')+'">'+E(big)+'</b></div><div class="b45-sr">'+st+'</div></div><div class="b45-sp"></div>'+
    (T(q('.pn-pun'))?'<p class="b45-pu">'+E(T(q('.pn-pun')))+'</p><div class="b45-sp"></div>':'')+
    '<div class="b45-ft"><div class="b45-fl"><span class="b45-lb">'+E(T(q('.pn-cs')))+'</span><span class="b45-lb">'+E(T(q('.pn-sim')))+'</span></div>'+(rarT?seal(rarT,'b45g2s'+(n++)):'')+'</div>';
