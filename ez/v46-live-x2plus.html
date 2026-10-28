@@ -7309,6 +7309,17 @@ html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] .x2p-ls-fr .x2p-ls-big{font-size:calc(20px
 html.x2p.x2d.x2pbt .x2p-ls .x2p-ls-mid{display:flex;flex-direction:column;align-items:center;gap:calc(7px*var(--k))}
 html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] .x2p-ls-fr .x2p-ls-pn{font-size:calc(21px*var(--k))}
 html.x2p.x2d.x2pbt .x2p-ls .x2p-ls-fr .x2p-ls-lgs.g4 .x2p-ls-lg:last-child:nth-child(odd){grid-column:1 / -1;justify-self:center}
+/* (owner, 2026-10-28, on EF) On air as tall as "Last round" and "Next today" beside it and nearly the frame's width: the burst
+   stretched wide, "On air" on one line; it breathes instead of turning (a wide burst turning would leave its row) */
+html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] .x2p-ls-td .x2p-ls-a{grid-row:1;align-self:stretch;justify-self:stretch;display:flex;align-items:stretch;justify-content:center}
+html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] .x2p-ls-fr .x2p-ls-bu.x2p-ls-wb{width:100%;max-width:calc(118px*var(--k));height:auto;min-height:calc(36px*var(--k));clip-path:polygon(50.0% 0.0%,56.9% 10.6%,67.1% 3.0%,70.0% 15.4%,82.1% 11.7%,80.6% 24.3%,93.3% 25.0%,87.6% 36.3%,99.2% 41.3%,90.0% 50.0%,99.2% 58.7%,87.6% 63.7%,93.3% 75.0%,80.6% 75.7%,82.1% 88.3%,70.0% 84.6%,67.1% 97.0%,56.9% 89.4%,50.0% 100.0%,43.1% 89.4%,32.9% 97.0%,30.0% 84.6%,17.9% 88.3%,19.4% 75.7%,6.7% 75.0%,12.4% 63.7%,0.8% 58.7%,10.0% 50.0%,0.8% 41.3%,12.4% 36.3%,6.7% 25.0%,19.4% 24.3%,17.9% 11.7%,30.0% 15.4%,32.9% 3.0%,43.1% 10.6%)}
+html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] .x2p-ls-fr .x2p-ls-bu.x2p-ls-wb b{font-size:calc(15px*var(--k));white-space:nowrap;transform:rotate(-4deg);animation:none}
+html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] .x2p-ls-fr .x2p-ls-bu.x2p-ls-wb.on{animation:none}
+@media (prefers-reduced-motion:no-preference){html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] .x2p-ls-fr .x2p-ls-bu.x2p-ls-wb.on{animation:x2plswb 2.4s ease-in-out infinite}}
+@keyframes x2plswb{50%{transform:scale(1.045)}}
+/* the logo grids: two rows' room even with one row, so the grids of On air and Next sit on the same band; "+n more" sits above the count */
+html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] .x2p-ls-fr .x2p-ls-lgs.g4{grid-template-rows:repeat(2,calc(var(--lg)*.9*var(--k)))}
+html.x2p.x2d.x2pbt .x2p-ls .x2p-ls-dd{display:flex;flex-direction:column;align-items:center;gap:calc(5px*var(--k))}
 /*}LSE*/
 
 </style>
@@ -11531,7 +11542,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   var nxs=UPCOMING.map(function(u){return K(u.called)}).filter(function(k){return k>today}).sort(),nk=nxs[0]||null,nR=UPCOMING.filter(function(u){return K(u.called)===nk});
   /* (audit, 2026-10-28) a day with predictions due shows them, with the rounds graded at today's close as a line under them (the bell
      used to win and hide a day of 15 predictions) */
-  var s=due.length&&trading(today)?{k:"due",on:1,R:due,B:atBell}:atBell.length?{k:"bell",on:1,R:atBell}:waiting.length?{k:"rung",on:0,R:waiting}:{k:"off",on:0,R:[]};
+  var s=due.length&&trading(today)?{k:"due",on:1,R:due,B:atBell,W:waiting}:atBell.length?{k:"bell",on:1,R:atBell}:waiting.length?{k:"rung",on:0,R:waiting}:{k:"off",on:0,R:[]};
   /* the last round: the newest graded day, its biggest company; the winner, what that call made, and the winner's season P&L */
   var lk=ROUNDS.reduce(function(a,u){var k=K(u.resolves);return k!=="9999"&&k>a?k:a},"0000"),r=big(ROUNDS.filter(function(u){return K(u.resolves)===lk}))[0];
   var P=P0(),wins=String(r&&r.win||"").split(/\s*&\s*/).filter(Boolean),who=wins[0];
@@ -11568,7 +11579,14 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
      other frames' logos; On air = the resolutions at today's close; a day's predictions still due show under Next ("Next / Today") */
   if(V==="EF"){L=r?row(big1("Last","round"),"",'<span class="x2p-ls-mid"><span class="x2p-ls-who">'+ai(m.who)+'<b>'+esc(nm(m.who))+(m.won?" won":" · top P&amp;L")+'</b></span>'+
      '<span class="x2p-ls-pn '+(m.pn>=0?"up":"dn")+'">'+m.usd(m.pn,true)+'</span></span>','<span class="x2p-ls-on">on '+logo(r,"x2p-ls-bg")+'</span>'):row("","","","");
-   if(s.k==="due"&&s.B&&s.B.length){C=row(burst,"",grid(s.B,4),cnt(s.B.length,"resolution"));N=row(big1("Next","Today"),"",grid(s.R,4),cnt(s.R.length,"prediction"))}}
+   if(s.k==="due"){N=row(big1("Next","Today"),"",grid(s.R,4),cnt(s.R.length,"prediction"));   /* today's predictions never in On air */
+    C=s.B&&s.B.length?row(burst,"",grid(s.B,4),cnt(s.B.length,"resolution")):s.W&&s.W.length?row(burst,"",grid(s.W,4),'<span class="x2p-ls-s">Results soon</span>'):row(burst,"",'<span class="x2p-ls-x">No results today</span>',"")}
+   /* (owner, 2026-10-28, on EF) the logos of On air and Next on one band in the middle: "+n more" leaves the middle for the foot,
+      above the count, and On air is as tall as the big labels beside it (one wide burst, "On air" on one line) */
+   var mv=function(x){var k=x.match(/<span class="x2p-ls-more">[^<]*<\/span>/);return k?[x.replace(k[0],""),k[0]]:[x,""]};
+   [C,N]=[C,N].map(function(h){var c=h.match(/<span class="x2p-ls-c">([\s\S]*?)<\/span><span class="x2p-ls-d">([\s\S]*)<\/span>$/);if(!c)return h;var q=mv(c[1]);if(!q[1])return h;
+    return h.slice(0,c.index)+'<span class="x2p-ls-c">'+q[0]+'</span><span class="x2p-ls-d"><span class="x2p-ls-dd">'+q[1]+c[2]+'</span></span>'});
+   C=C.replace('<span class="x2p-ls-bu','<span class="x2p-ls-bu x2p-ls-wb').replace(/On<br>air/,"On air").replace(/Off<br>air/,"Off air")}
   var g=(m.graded/m.total*100).toFixed(2),t=((s.k==="bell"?s.R.length:s.k==="due"?s.B.length:0)/m.total*100).toFixed(2);
   var inner='<div class="r39-in x2p-ls-fs"><div class="x2p-ls-fr x2p-ls-l">'+L+'</div><div class="x2p-ls-fr x2p-ls-td">'+C+'</div><div class="x2p-ls-fr x2p-ls-nx'+(on?"":" dim")+'">'+N+'</div></div>';
   var head='<b class="x2p-ls-bw">Season 1 · Week '+m.wk+'</b>',foot='<b class="x2p-ls-bw">Season 1</b><span class="x2p-ls-bar"><i class="g" style="width:'+g+'%"></i><i class="t" style="left:'+g+'%;width:'+t+'%"></i></span><b class="x2p-ls-bw"><u>'+m.graded+'</u>/'+m.total+' · NVDA ★</b>';

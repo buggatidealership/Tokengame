@@ -2082,7 +2082,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   var nxs=UPCOMING.map(function(u){return K(u.called)}).filter(function(k){return k>today}).sort(),nk=nxs[0]||null,nR=UPCOMING.filter(function(u){return K(u.called)===nk});
   /* (audit, 2026-10-28) a day with predictions due shows them, with the rounds graded at today's close as a line under them (the bell
      used to win and hide a day of 15 predictions) */
-  var s=due.length&&trading(today)?{k:"due",on:1,R:due,B:atBell}:atBell.length?{k:"bell",on:1,R:atBell}:waiting.length?{k:"rung",on:0,R:waiting}:{k:"off",on:0,R:[]};
+  var s=due.length&&trading(today)?{k:"due",on:1,R:due,B:atBell,W:waiting}:atBell.length?{k:"bell",on:1,R:atBell}:waiting.length?{k:"rung",on:0,R:waiting}:{k:"off",on:0,R:[]};
   /* the last round: the newest graded day, its biggest company; the winner, what that call made, and the winner's season P&L */
   var lk=ROUNDS.reduce(function(a,u){var k=K(u.resolves);return k!=="9999"&&k>a?k:a},"0000"),r=big(ROUNDS.filter(function(u){return K(u.resolves)===lk}))[0];
   var P=P0(),wins=String(r&&r.win||"").split(/\s*&\s*/).filter(Boolean),who=wins[0];
@@ -2119,7 +2119,14 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
      other frames' logos; On air = the resolutions at today's close; a day's predictions still due show under Next ("Next / Today") */
   if(V==="EF"){L=r?row(big1("Last","round"),"",'<span class="x2p-ls-mid"><span class="x2p-ls-who">'+ai(m.who)+'<b>'+esc(nm(m.who))+(m.won?" won":" · top P&amp;L")+'</b></span>'+
      '<span class="x2p-ls-pn '+(m.pn>=0?"up":"dn")+'">'+m.usd(m.pn,true)+'</span></span>','<span class="x2p-ls-on">on '+logo(r,"x2p-ls-bg")+'</span>'):row("","","","");
-   if(s.k==="due"&&s.B&&s.B.length){C=row(burst,"",grid(s.B,4),cnt(s.B.length,"resolution"));N=row(big1("Next","Today"),"",grid(s.R,4),cnt(s.R.length,"prediction"))}}
+   if(s.k==="due"){N=row(big1("Next","Today"),"",grid(s.R,4),cnt(s.R.length,"prediction"));   /* today's predictions never in On air */
+    C=s.B&&s.B.length?row(burst,"",grid(s.B,4),cnt(s.B.length,"resolution")):s.W&&s.W.length?row(burst,"",grid(s.W,4),'<span class="x2p-ls-s">Results soon</span>'):row(burst,"",'<span class="x2p-ls-x">No results today</span>',"")}
+   /* (owner, 2026-10-28, on EF) the logos of On air and Next on one band in the middle: "+n more" leaves the middle for the foot,
+      above the count, and On air is as tall as the big labels beside it (one wide burst, "On air" on one line) */
+   var mv=function(x){var k=x.match(/<span class="x2p-ls-more">[^<]*<\/span>/);return k?[x.replace(k[0],""),k[0]]:[x,""]};
+   [C,N]=[C,N].map(function(h){var c=h.match(/<span class="x2p-ls-c">([\s\S]*?)<\/span><span class="x2p-ls-d">([\s\S]*)<\/span>$/);if(!c)return h;var q=mv(c[1]);if(!q[1])return h;
+    return h.slice(0,c.index)+'<span class="x2p-ls-c">'+q[0]+'</span><span class="x2p-ls-d"><span class="x2p-ls-dd">'+q[1]+c[2]+'</span></span>'});
+   C=C.replace('<span class="x2p-ls-bu','<span class="x2p-ls-bu x2p-ls-wb').replace(/On<br>air/,"On air").replace(/Off<br>air/,"Off air")}
   var g=(m.graded/m.total*100).toFixed(2),t=((s.k==="bell"?s.R.length:s.k==="due"?s.B.length:0)/m.total*100).toFixed(2);
   var inner='<div class="r39-in x2p-ls-fs"><div class="x2p-ls-fr x2p-ls-l">'+L+'</div><div class="x2p-ls-fr x2p-ls-td">'+C+'</div><div class="x2p-ls-fr x2p-ls-nx'+(on?"":" dim")+'">'+N+'</div></div>';
   var head='<b class="x2p-ls-bw">Season 1 · Week '+m.wk+'</b>',foot='<b class="x2p-ls-bw">Season 1</b><span class="x2p-ls-bar"><i class="g" style="width:'+g+'%"></i><i class="t" style="left:'+g+'%;width:'+t+'%"></i></span><b class="x2p-ls-bw"><u>'+m.graded+'</u>/'+m.total+' · NVDA ★</b>';
