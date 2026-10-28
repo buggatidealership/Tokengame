@@ -1,3 +1,5 @@
+/* the EZ. logo's markup, shared by the header and the film's presents box */
+var X2P_LOGO='<svg viewBox="0 0 400 400" aria-hidden="true" focusable="false"><circle cx="198.7" cy="199.4" r="198.2" fill="#04070e"/><path fill="#f8f0d9" d="M116.8,88.0 L86.2,152.0 L102.1,152.0 L55.0,274.5 L154.2,274.5 L188.5,225.8 L128.7,225.8 L137.5,204.0 L170.2,203.5 L193.2,162.0 L149.1,162.0 L154.8,145.0 L143.4,138.5 L217.9,138.2 L192.2,182.0 L234.9,182.0 L181.5,250.8 L136.0,315.8 L272.5,315.8 L292.5,265.0 L230.4,265.0 L328.2,130.8 L225.1,130.8 L253.0,87.8 Z"/><path fill="#03c870" d="M146.2,287.0 L133.0,287.0 L106.5,327.2 L119.0,326.5 Z M86.8,169.5 L74.8,169.5 L29.5,282.2 L43.7,282.2 Z M105.8,92.5 L89.5,95.8 L55.5,169.2 L69.0,169.2 Z"/><path fill="#ff3a31" d="M304.5,259.0 L300.5,269.5 L313.0,268.2 L317.0,258.8 Z M361.5,126.0 L344.0,126.5 L269.5,235.8 L256.0,257.5 L276.2,257.0 Z M279.0,87.8 L266.7,87.5 L251.5,117.2 L262.2,119.0 Z"/><path fill="#fdbc2a" d="M334.2,281.2 L302.0,281.2 L288.2,315.8 L321.0,315.5 Z"/></svg>';
 /* (audit, 2026-10-28) "GPT, Claude and Grok", not "GPT and Claude and Grok" */
 function x2pAnd(a){return a.length<3?a.join(" and "):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
 /* the cover comes off once the X2+ page is built (owner, 2026-10-23: "I want the current page to be the only page, not the makeover"):
@@ -1577,7 +1579,7 @@ var slot=ft.querySelector('.t');if(vs&&vs.parentNode!==slot)slot.appendChild(vs)
    head itself stays centred on the bill; the stack is decoration, so the h2 still reads "How it works" */
 if(tag&&!tag.querySelector('.vb-lk')){var t='';for(var n=tag.firstChild;n;){var nx=n.nextSibling;if(n.nodeType===3){t+=n.nodeValue;tag.removeChild(n)}n=nx}
   var lk=D.createElement('span'),k=D.createElement('span'),hd=D.createElement('span');lk.className='vb-lk';k.className='vb-k';hd.className='vb-hd';
-  k.setAttribute('aria-hidden','true');k.innerHTML='<b class="ez"><i class="s" data-t="$">$</i><i class="e">E</i><i class="z">Z</i></b><b>presents</b>';
+  k.setAttribute('aria-hidden','true');k.innerHTML='<b class="vb-lg">'+X2P_LOGO+'</b><b class="ez"><i class="s" data-t="$">$</i><i class="e">E</i><i class="z">Z</i></b><b>presents</b>';
   hd.textContent=t.replace(/\s+/g,' ').trim();hd.setAttribute('data-t',hd.textContent);
   lk.appendChild(k);lk.appendChild(hd);tag.insertBefore(lk,tag.firstChild)}
 /* "Running time 1:20" before and after; "Time left 0:58" while it counts down */
@@ -1696,7 +1698,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
    skin-x2plus.css. The link's aria-label still names the site. */
 (function(){try{var d=document;function go(){var b=d.querySelector(".brand");if(!b||b.querySelector(".x2p-lg"))return;
   var m=b.querySelector(".mark"),t=b.querySelector("b");
-  if(m){m.className="mark x2p-lg";m.innerHTML='<svg viewBox="0 0 400 400" aria-hidden="true" focusable="false"><circle cx="198.7" cy="199.4" r="198.2" fill="#04070e"/><path fill="#f8f0d9" d="M116.8,88.0 L86.2,152.0 L102.1,152.0 L55.0,274.5 L154.2,274.5 L188.5,225.8 L128.7,225.8 L137.5,204.0 L170.2,203.5 L193.2,162.0 L149.1,162.0 L154.8,145.0 L143.4,138.5 L217.9,138.2 L192.2,182.0 L234.9,182.0 L181.5,250.8 L136.0,315.8 L272.5,315.8 L292.5,265.0 L230.4,265.0 L328.2,130.8 L225.1,130.8 L253.0,87.8 Z"/><path fill="#03c870" d="M146.2,287.0 L133.0,287.0 L106.5,327.2 L119.0,326.5 Z M86.8,169.5 L74.8,169.5 L29.5,282.2 L43.7,282.2 Z M105.8,92.5 L89.5,95.8 L55.5,169.2 L69.0,169.2 Z"/><path fill="#ff3a31" d="M304.5,259.0 L300.5,269.5 L313.0,268.2 L317.0,258.8 Z M361.5,126.0 L344.0,126.5 L269.5,235.8 L256.0,257.5 L276.2,257.0 Z M279.0,87.8 L266.7,87.5 L251.5,117.2 L262.2,119.0 Z"/><path fill="#fdbc2a" d="M334.2,281.2 L302.0,281.2 L288.2,315.8 L321.0,315.5 Z"/></svg>'}
+  if(m){m.className="mark x2p-lg";m.innerHTML=X2P_LOGO}
   if(t)t.innerHTML='<span class="x2p-be">E</span>arnings <span class="x2p-bz">Z</span>eason'}
   if(d.body)go();else d.addEventListener("DOMContentLoaded",go)}catch(e){}})();
 
