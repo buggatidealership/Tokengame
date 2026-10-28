@@ -1695,7 +1695,8 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
 (function(){try{function go(){var h=document.querySelector(".hero h1");if(!h)return;
   /* (owner, 2026-10-27, later: "I like the M3"; the font "more aligned with our EZ logo"; the highlighted words green and gold with "that
      little edge" of the logo's E) "4 AIs trade earnings / to run our buybacks." in Kanit, the logo's gold square for the full stop */
-  h.innerHTML='4 AI<span class="x2p-lc">s</span> <span class="rz-eg">trade earnings</span><br>to run our <span class="rz-ey">buybacks<span class="sr">.</span></span><i class="rz-kd" aria-hidden="true"></i>';h.classList.add("x2p-h1","rz-h1");
+  /* (owner, 2026-10-28) "trade earnings" in the logo's red, "to run our buybacks" in its green, no gold square for the full stop */
+  h.innerHTML='4 AI<span class="x2p-lc">s</span> <span class="rz-eg">trade earnings</span><br><span class="rz-ey">to run our buybacks<span class="sr">.</span></span>';h.classList.add("x2p-h1","rz-h1");
   var lw=0;function fit(){var w=h.clientWidth;if(!w||w===lw)return;lw=w;h.style.removeProperty("font-size");h.style.whiteSpace="nowrap";
     var f=parseFloat(getComputedStyle(h).fontSize);while(h.scrollWidth>h.clientWidth+.5&&f>18){f-=.5;h.style.setProperty("font-size",f+"px","important")}}
   fit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){lw=0;fit()});
