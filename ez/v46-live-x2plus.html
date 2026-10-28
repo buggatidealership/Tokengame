@@ -7239,6 +7239,7 @@ html.x2p #liveChip #liveTxt{font:italic 900 12px/1 Kanit,"Barlow Condensed",sans
 html.x2p #liveChip .x2p-ip{font:inherit;color:#f8f0d9;text-shadow:.7px .7px 0 #03c870,1.4px 1.4px 0 #ff3a31}
 html.x2p #liveChip .x2p-ic{color:#fdbc2a;margin-left:.2em}
 html.x2p #liveChip>i{background:#ff3a31;box-shadow:0 0 6px 1px rgba(255,70,45,.85)}
+html.x2p #liveChip .x2p-ic .tk,html.x2p #liveChip .x2p-ic small{color:rgba(248,240,217,.62)!important}
 /*}PILL*/
 /*PENDCERT{ a pending round's certificate (owner, 2026-10-28: "calls are in before it becomes a certificate... that doesn't have the graded
    stamp yet"): x2plus.js pendify() lays the graded certificate's layout over the pending card's one face; the old panel stays under it,
@@ -7572,9 +7573,9 @@ function pcStats(m){if(STAND_STAT==="roi"){var o=(FOL_EARLY=FOL_EARLY||followAll
 var P0=PS[0]||null;
 /* ---------- the score bar (Primetime's ticker): the standings, every graded round, then the rounds to come ---------- */
 (function(){var tt=$("#tt"),tick=$("#tick"),tp=$("#tickP");if(!tt)return;
-  var sp=[ '<b>Leaderboard</b> On direction: '+ROWS.map(function(T){var C=career(T.m);return nm(T.m)+' '+(!C.g?'n/a':EZ_FULL(T.m)?Math.round(C.right/C.g*100)+'%':C.right+' of '+C.g)}).join(' · ') ];
+  var sp=[ '<b>P&amp;L</b> '+(function(){var A={};ROUNDS.forEach(function(r){if(typeof r.a!=="number"||isNaN(r.a))return;r.calls.forEach(function(x){A[x[0]]=(A[x[0]]||100000)*(1+(/^DOWN/.test(x[1])?-1:1)*r.a/100)})});return Object.keys(A).sort(function(a,b){return A[b]-A[a]}).map(function(m){var v=A[m]-100000;return nm(m)+' '+(v>=0?'+$':'−$')+(Math.abs(v)/1000).toFixed(1)+'K'}).join(' · ')})() ];
   ROUNDS.forEach(function(r){var w=r.win?r.win.split(" & ").map(nm).join(" & ")+(r.win.indexOf(" & ")>-1?" win":" wins"):"No winner";
-    sp.push('R'+r.n+' '+r.co+' <span class="'+(r.a>0?'up':'dn')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span>'+r.out+'</span> · '+w)});
+    sp.push('R'+r.n+' '+r.co+' <span class="'+(r.a>0?'up':'dn')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span>'+r.out.replace(/^[+−-]/,"")+'</span> · '+w)});
   PS.forEach(function(u){sp.push('R'+u.n+' '+u.co+' · <b>Calls are in</b> · '+RESOLVE_WORD+' '+fmtDate(u.resolves))});
   US.forEach(function(u){sp.push('R'+u.n+' '+u.co+' · Calls '+fmtDate(u.called))});
   var one=sp.map(function(x){return '<span>'+x+'</span>'}).join("");
@@ -9389,6 +9390,8 @@ function x2LBpage(h){
 })();
 </script>
 <script id="x2plus-words">
+/* (audit, 2026-10-28) "GPT, Claude and Grok", not "GPT and Claude and Grok" */
+function x2pAnd(a){return a.length<3?a.join(" and "):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
 /* the cover comes off once the X2+ page is built (owner, 2026-10-23: "I want the current page to be the only page, not the makeover"):
    the new tabs (x2p-launch), the film ticket and the bet ticket on the Overview, or the fight-night Upcoming when X2's router shows that
    tab (data-sec; a shared round still to come opens there, a graded one over the Overview); then the first screen's fonts, which the page asked for as soon as it started (window.__x2pF, build.py), at
@@ -9660,6 +9663,14 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
      where we can have calls are in before it becomes a certificate... that doesn't have the graded stamp yet") the same certificate on a
      pending card's one face: the calls in the order filed, no ranks, no PASS/FAIL yet, the market still to answer, and where the graded
      stamp goes a stamp of its own. Variant by window.__x2pPendV (mockups); the build ships one */
+  /* (audit, 2026-10-28) a stock listed abroad is graded at its own exchange's close: Seoul and Tokyo 15:30 (06:30 UTC), Taipei 13:30
+     (05:30 UTC), Hong Kong 16:00 (08:00 UTC), London 16:30 and the euro exchanges 17:30 local (European summer time to the last
+     Sunday of October) */
+  function xcloseAt(s,tk){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);if(!m)return null;var y=2000+(+m[3]),mo=+m[1],d=+m[2],x=(String(tk||"").match(/\.([A-Z]+)$/)||[])[1];
+    if(x==="KS"||x==="KQ"||x==="T")return Date.UTC(y,mo-1,d,6,30);if(x==="TW")return Date.UTC(y,mo-1,d,5,30);if(x==="HK")return Date.UTC(y,mo-1,d,8);
+    if(x==="L"||x==="AS"||x==="DE"||x==="SW"||x==="PA"||x==="MI"||x==="MC"){var ls=function(mm){var t=new Date(Date.UTC(y,mm,0));return t.getUTCDate()-t.getUTCDay()},
+      su=(mo>3&&mo<10)||(mo===3&&d>=ls(3))||(mo===10&&d<ls(10)),h=(x==="L"?16:17)-1-(su?1:0);return Date.UTC(y,mo-1,d,h+(x==="L"?1:0),30)}
+    return xclose(s)}
   function xclose(s){if(!s)return null;var m=String(s).match(/(\d+)\/(\d+)\/(\d+)/);if(!m)return null;
     /* 4 pm in New York that day: 20:00 UTC in daylight time, 21:00 in standard time (from the first Sunday of November) */
     var y=2000+(+m[3]),mo=+m[1],d=+m[2],nov=new Date(Date.UTC(y,10,1)),fs=1+(7-nov.getUTCDay())%7,mar=new Date(Date.UTC(y,2,1)),ss=1+(7-mar.getUTCDay())%7+7;
@@ -9678,7 +9689,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
     return '<svg class="xc-m" viewBox="0 0 29 13" width="29" height="13" style="--rot:0deg" aria-hidden="true" focusable="false"><path d="M4 1H25L28 4V9L25 12H4L1 9V4Z" fill="none" stroke="#6b645b" stroke-width="1" stroke-dasharray="2.2 1.6"/></svg>'}
   var XPN=0;
   function pendify(c,u,re){var fin=c.querySelector(".face.front .fin");if(!fin)return;var old=fin.querySelector(".xc");if(old&&!re)return;xdefs();
-    var v=window.__x2pPendV||"D",id="xp"+(++XPN),cl=xclose(u.resolves),now=Date.now();
+    var v=window.__x2pPendV||"D",id="xp"+(++XPN),cl=xcloseAt(u.resolves,u.ticker),now=Date.now();
     var rows=u.calls.map(function(x,i){var up=x.dir==="UP";
       return '<div class="xc-r pd"><b class="xc-rk lp" aria-hidden="true"></b><span class="xc-mk" data-m="'+x.m+'" aria-hidden="true">'+xsvg(x.m)+'</span><span class="xc-nm lp">'+xnm(x.m)+'</span>'+xopen(v,i)+
         '<span class="xc-cl lp '+(up?"up":"dn")+'" style="--rot:'+[-2.5,-1.5,-3,-2][i%4]+'deg"><span aria-hidden="true">'+(up?"+":"−")+'</span><span class="sr">'+(up?"Up ":"Down ")+'</span>'+x.mag+'%</span></div>'}).join("");
@@ -9699,7 +9710,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
      60 updates a second cost the page 2.1 s of work in 4 s and dropped it to 35 frames a second; 20 steps cost 1.0 s and keep 48 */
   /* (owner, 2026-10-25: the white stripe passing through was "a tiny bit too much... more subtle, rather slower, and less") the clock runs at
      half speed, and (later: "remove that white thing") the light sweep is gone */
-  var XLIVE=null,XQ=0,XT=0,XL=0;
+  var XLIVE=null,XQ=0,XT=0,XL=0,XTI=-2;
   function xstep(ts){if(!XLIVE||!XLIVE.isConnected){XT=0;return}if(!XL||ts-XL>=50){try{XLIVE.setCurrentTime(XLIVE.getCurrentTime()+(XL?Math.min(ts-XL,200):50)/2000)}catch(e){}XL=ts}XT=requestAnimationFrame(xstep)}
   /* a card gets its certificate when it comes within two places of the front card (built for all 45 at load, it cost the first build
      about 1 s on a 4x slower CPU); a card further off keeps the page's own stats side, which no one sees */
@@ -9707,7 +9718,16 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
   function xnear(c){if(c.getAttribute("data-k")==="p"){if(!c.querySelector(".xc"))window.__x2pPendCopy(c);return}if(c.getAttribute("data-k")!=="g")return;if(!c.querySelector(".xc")){var g=xg(+c.getAttribute("data-n"));if(!g)return;try{certify(c,g)}catch(e){window.__x2pCertErr=e;return}}xstamp(c)}
   function xlive(){XQ=0;var car=document.getElementById("car"),rec=document.getElementById("record"),want=null,pm=document.querySelector("#x2pRm .card[data-k=g]");
     if(car){var cs=[].slice.call(car.querySelectorAll(".card[data-n]")),i=-1;cs.forEach(function(c,j){if(c.classList.contains("cur"))i=j});
-      if(i>-1)for(var j=Math.max(0,i-2);j<=Math.min(cs.length-1,i+2);j++)xnear(cs[j])}
+      if(i>-1)for(var j=Math.max(0,i-2);j<=Math.min(cs.length-1,i+2);j++)xnear(cs[j]);
+      /* (audit, 2026-10-28) a keyboard went through 170 "See the stats" buttons before the standings: only the card in front takes
+         focus; the round picker and the arrows reach the others */
+      /* the round picker: one tab stop (the chip of the card in front); the arrow keys, Home and End move along it */
+      var chs=document.querySelector("#record .chips");if(chs){[].forEach.call(chs.querySelectorAll("button.chip"),function(b){b.tabIndex=b.getAttribute("aria-current")==="true"?0:-1});
+        if(!chs.__x2pKb){chs.__x2pKb=1;chs.addEventListener("keydown",function(e){var bs=[].slice.call(chs.querySelectorAll("button.chip")),k=bs.indexOf(document.activeElement);if(k<0)return;
+          var t=e.key==="ArrowRight"||e.key==="ArrowDown"?k+1:e.key==="ArrowLeft"||e.key==="ArrowUp"?k-1:e.key==="Home"?0:e.key==="End"?bs.length-1:null;if(t==null)return;e.preventDefault();
+          t=Math.max(0,Math.min(bs.length-1,t));bs.forEach(function(b,j){b.tabIndex=j===t?0:-1});bs[t].focus()})}}
+      if(i!==XTI){XTI=i;cs.forEach(function(c,j){[].forEach.call(c.querySelectorAll("button,a[href]"),function(b){if(j===i){if(b.hasAttribute("data-x2ptb")){b.removeAttribute("tabindex");b.removeAttribute("data-x2ptb")}}
+        else if(!b.hasAttribute("tabindex")){b.setAttribute("tabindex","-1");b.setAttribute("data-x2ptb","")}})})}}
     if(pm)xstamp(pm);
     if(!XRM&&!document.hidden){if(pm){if(pm.classList.contains("flipped"))want=pm.querySelector(".xc-s")}
       else if(rec&&!rec.classList.contains("x2p-offs")){var cc=rec.querySelector(".card.cur[data-k=g]");if(cc&&(cc.classList.contains("flipped")||cc.classList.contains("nofilm")))want=cc.querySelector(".xc-s")}}
@@ -9793,7 +9813,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
         if(bc){var bull=bc.off<=.1,riv=per.filter(function(p){return !p.ok}).map(function(p){return p.m});
           H=esc2(bc.m)+(bull?" calls it <em>to the decimal</em>":" gets <em>closest</em>");
           D="Said "+co+" "+(bc.up?"+":"−")+(Math.round(bc.mg*100)/100)+"%. It "+(r.a>0?"rose":"fell")+" "+mv+"%.";
-          B=riv.length?"<b>"+esc2(riv.join(" and "))+" said "+(r.a>0?"down":"up")+".</b> "+esc2(bc.m)+" said "+(r.a>0?"up":"down")+", and nailed it.":"<b>All "+(kw[per.length]||per.length).toLowerCase()+" got the direction.</b> Only "+esc2(bc.m)+" "+(bull?"hit the bullseye.":"got this close.");
+          B=riv.length?"<b>"+esc2(x2pAnd(riv))+" said "+(r.a>0?"down":"up")+".</b> "+esc2(bc.m)+" said "+(r.a>0?"up":"down")+", and nailed it.":"<b>All "+(kw[per.length]||per.length).toLowerCase()+" got the direction.</b> Only "+esc2(bc.m)+" "+(bull?"hit the bullseye.":"got this close.");
           TK="Guess a stranger's height. A typical AI call this season is off by <b>"+hgt(S.med)+"</b>. "+esc2(bc.m)+" was off by <b>"+hgt(bc.off)+"</b>.";
           T=[esc2(bc.m)+" missed by",bc.off.toFixed(2)+"%","g","Typical miss",S.med.toFixed(2)+"%","r"];
           if(bull){RA="1 in "+Math.round(S.n/S.bulls);RL=S.bulls+" of "+S.n+" calls this season landed this close"}else{RA="1 in "+S.n;RL="The closest of "+S.n+" calls"}}}
@@ -9828,7 +9848,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
           sum=rows.reduce(function(a,x){return a+x.v},0),big=hs?hs.v:sum,mvs=(r.a>0?"+":"−")+Math.abs(r.a).toFixed(2)+"%",
           side=function(x){return (x.dn?"Short ":"Long ")+esc2(tk)};
         pun=bk==="big"?(rt?rt+" of "+rows.length+" caught it.":"They all got wrecked."):bk==="tight"&&!wr.length?"Everyone right. Everyone got paid.":
-          hs?(wr.length?esc2(wr.map(function(x){return x.nm}).join(" and "))+" went "+(wr[0].dn?"short":"long")+". They paid for it.":"Everyone right. Only "+esc2(hs.nm)+" this close."):B;
+          hs?(wr.length?esc2(x2pAnd(wr.map(function(x){return x.nm})))+" went "+(wr[0].dn?"short":"long")+". They paid for it.":"Everyone right. Only "+esc2(hs.nm)+" this close."):B;
         if(rows.length)pnl='<div class="pn"><div class="pn-card '+(big>=0?"ok":"no")+'"><div class="pn-ct"><span>'+(hs?esc2(hs.nm)+" · "+side(hs):"All "+rows.length+" AIs · "+esc2(tk))+'</span><em>'+(hs?"Its P&amp;L":"Combined P&amp;L")+'</em></div>'+
           '<b class="pn-big">'+PL.usd(big)+'</b><div class="pn-cs">'+(hs?"Called "+(hs.dn?"−":"+")+(Math.round(hs.mg*100)/100)+"% · It moved "+mvs:"The stock moved "+mvs)+'</div></div>'+
           '<div class="pn-strip">'+rows.filter(function(x){return x!==hs}).map(function(x){return '<span class="'+(x.ok?"ok":"no")+'">'+esc2(x.nm)+'<b>'+PL.usd(x.v,1)+'</b></span>'}).join("")+'</div>'+
@@ -10091,10 +10111,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       if(!ks.length)return '<p class="ul-e">Nothing in this filter yet.</p>';
       /* a round with calls in but no grading date yet (2026-10-28, R59 GE Vernova) groups last under "Date to come" (wd(null) threw and
          left the whole list empty) */
+      /* (audit, 2026-10-28) a day already gone whose rounds have no calls in the sheet says so, not "6 on the card" */
       return ks.map(function(k){var dd=D(by[k][0].calls&&by[k][0].calls.length?by[k][0].resolves:by[k][0].called),n=by[k].length;
         if(!dd)return '<section class="ul-dy" data-k="'+k+'" aria-label="Date to come"><div class="dy-h"><b>Date to come</b><em></em><small>'+n+' on the card</small></div>'+
           '<ul class="x2p-tks">'+by[k].map(function(u){return tk(u,false)}).join("")+'</ul></section>';
-        return '<section class="ul-dy" data-k="'+k+'" aria-label="'+ue(wd(dd,{weekday:"long",month:"long",day:"numeric"}))+'"><div class="dy-h"><b>'+ue(k===nyK?"Today":wd(dd,{weekday:"long"}))+'</b><em>'+ue(wd(dd,{month:"short",day:"numeric"}))+'</em><small>'+n+' on the card</small></div>'+
+        return '<section class="ul-dy" data-k="'+k+'" aria-label="'+ue(wd(dd,{weekday:"long",month:"long",day:"numeric"}))+'"><div class="dy-h"><b>'+ue(k===nyK?"Today":wd(dd,{weekday:"long"}))+'</b><em>'+ue(wd(dd,{month:"short",day:"numeric"}))+'</em><small>'+(k<nyK&&!(by[k][0].calls&&by[k][0].calls.length)?"Calls not in yet":n+' on the card')+'</small></div>'+
           '<ul class="x2p-tks">'+by[k].map(function(u){return tk(u,false)}).join("")+'</ul></section>'}).join("")}
     $(".ul-d",root).innerHTML=days();fitN(root);
     $(".ul-f",root).addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-uf2]");if(!b||b.dataset.uf2===F)return;F=b.dataset.uf2;
@@ -11030,9 +11051,9 @@ var fitLines=function(sel,mn){mn=mn||12;var ls=$$(sel+' .x2p-strap li');if(!ls.l
   if(ls.some(function(l){return nl(l)>1}))ls.forEach(function(l){l.style.fontSize=''})};
 /* the fitting measures the page (a full layout each time), so it waits until the section is about a screen away: on arrival the
    section is far below the first screen and the cover would wait for it */
-var lrn=$('#learn'),near=!window.IntersectionObserver,nearL=near,all=function(){fix();if(near){fitLines('#x2pSt',11);fitLogos()}if(nearL)fitLines('#learn')};
+var lrn=$('#learn'),near=!window.IntersectionObserver,nearL=near,all=function(){fix();if(near){fitLines('#x2pSt',11);fitLogos()}if(nearL){fitLines('#learn');fitLines('#highlights',11)}fitLines('#record',11)};   /* (audit, 2026-10-28) Receipts and Replays wrapped at 320 and 360 px: every strap one line */
 if(!near&&!sec.__x2pIo){sec.__x2pIo=1;var io=new IntersectionObserver(function(es){if(!es.some(function(e){return e.isIntersecting}))return;io.disconnect();near=true;all()},{rootMargin:'900px 0px'});io.observe(sec)}
-if(!nearL&&lrn&&!lrn.__x2pIo){lrn.__x2pIo=1;var io2=new IntersectionObserver(function(es){if(!es.some(function(e){return e.isIntersecting}))return;io2.disconnect();nearL=true;fitLines('#learn')},{rootMargin:'900px 0px'});io2.observe(lrn)}
+if(!nearL&&lrn&&!lrn.__x2pIo){lrn.__x2pIo=1;var io2=new IntersectionObserver(function(es){if(!es.some(function(e){return e.isIntersecting}))return;io2.disconnect();nearL=true;fitLines('#learn');fitLines('#highlights',11)},{rootMargin:'900px 0px'});io2.observe(lrn)}
 all();if(d.fonts&&d.fonts.ready)d.fonts.ready.then(all);
 if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resize',function(){if(innerWidth===lw)return;lw=innerWidth;clearTimeout(ft);ft=setTimeout(all,120)});addEventListener('load',all);
   addEventListener('hashchange',function(){setTimeout(all,0)})}
@@ -11061,7 +11082,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
 (function(){try{function go(){var h=document.querySelector(".hero h1");if(!h)return;
   /* (owner, 2026-10-27, later: "I like the M3"; the font "more aligned with our EZ logo"; the highlighted words green and gold with "that
      little edge" of the logo's E) "4 AIs trade earnings / to run our buybacks." in Kanit, the logo's gold square for the full stop */
-  h.innerHTML='4 AI<span class="x2p-lc">s</span> <span class="rz-eg">trade earnings</span><br>to run our <span class="rz-ey">buybacks</span><i class="rz-kd" aria-hidden="true"></i><span class="sr">.</span>';h.classList.add("x2p-h1","rz-h1");
+  h.innerHTML='4 AI<span class="x2p-lc">s</span> <span class="rz-eg">trade earnings</span><br>to run our <span class="rz-ey">buybacks<span class="sr">.</span></span><i class="rz-kd" aria-hidden="true"></i>';h.classList.add("x2p-h1","rz-h1");
   var lw=0;function fit(){var w=h.clientWidth;if(!w||w===lw)return;lw=w;h.style.removeProperty("font-size");h.style.whiteSpace="nowrap";
     var f=parseFloat(getComputedStyle(h).fontSize);while(h.scrollWidth>h.clientWidth+.5&&f>18){f-=.5;h.style.setProperty("font-size",f+"px","important")}}
   fit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){lw=0;fit()});
@@ -11438,7 +11459,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  var big=function(L){return L.map(function(u,i){return {u:u,i:i,c:cap(u)}}).sort(function(a,b){return (b.c-a.c)||(a.i-b.i)}).map(function(x){return x.u})};
  var logo=function(u,cls){var t=String(u.ticker).toUpperCase(),L=(window.CO_LOGOS||{})[t],f=L&&(L.f||L);
   return f?'<span class="x2p-ls-lg '+(cls||"")+(L.dark?" dk":"")+'"><img src="'+MEDIA+f+'" alt="'+esc(u.co)+'" title="'+esc(u.co)+'"></span>':'<span class="x2p-ls-lg x2p-ls-tx '+(cls||"")+'">'+esc(t.slice(0,4))+'</span>'};
- var logos=function(R,n){var B=big(R),s=B.slice(0,n),k=B.length-s.length;return '<span class="x2p-ls-lgs">'+s.map(function(u){return logo(u)}).join("")+(k>0?'<span class="x2p-ls-k">+'+k+'</span>':'')+'</span>'};
+ var logos=function(R,n){var B=big(R);if(B.length>n)n=Math.min(n,2);var s=B.slice(0,n),k=B.length-s.length;return '<span class="x2p-ls-lgs">'+s.map(function(u){return logo(u)}).join("")+(k>0?'<span class="x2p-ls-k">+'+k+'</span>':'')+'</span>'};
  var INK={GPT:"#1b181c",KIMI:"#1b181c",GROK:"#1b181c",CLAUDE:"#d97757"};
  var ai=function(m){var M=MODELS[m];return M?'<svg class="x2p-ls-ai" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="'+(M.fr||"nonzero")+'" fill="'+(INK[m]||"#1b181c")+'" d="'+M.d+'"/></svg>':""};
  /* where the season stands right now */
@@ -11447,7 +11468,9 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   var atBell=PENDING.filter(function(u){return K(u.resolves)===today&&bk===today}),waiting=PENDING.filter(function(u){return K(u.resolves)!=="9999"&&(K(u.resolves)<today||K(u.resolves)===today&&rung)});
   var due=UPCOMING.filter(function(u){return K(u.called)===today});
   var nxs=UPCOMING.map(function(u){return K(u.called)}).filter(function(k){return k>today}).sort(),nk=nxs[0]||null,nR=UPCOMING.filter(function(u){return K(u.called)===nk});
-  var s=atBell.length?{k:"bell",on:1,R:atBell}:due.length&&trading(today)?{k:"due",on:1,R:due}:waiting.length?{k:"rung",on:0,R:waiting}:{k:"off",on:0,R:[]};
+  /* (audit, 2026-10-28) a day with predictions due shows them, with the rounds graded at today's close as a line under them (the bell
+     used to win and hide a day of 15 predictions) */
+  var s=due.length&&trading(today)?{k:"due",on:1,R:due,B:atBell}:atBell.length?{k:"bell",on:1,R:atBell}:waiting.length?{k:"rung",on:0,R:waiting}:{k:"off",on:0,R:[]};
   /* the last round: the newest graded day, its biggest company; the winner, what that call made, and the winner's season P&L */
   var lk=ROUNDS.reduce(function(a,u){var k=K(u.resolves);return k!=="9999"&&k>a?k:a},"0000"),r=big(ROUNDS.filter(function(u){return K(u.resolves)===lk}))[0];
   var P=P0(),wins=String(r&&r.win||"").split(/\s*&\s*/).filter(Boolean),who=wins[0];
@@ -11463,11 +11486,11 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
     '<span class="x2p-ls-s">S1 P&amp;L <b class="'+(m.tot>=0?"up":"dn")+'">'+m.usd(m.tot,true)+'</b></span>'):row("","","","","");
   var burst='<span class="x2p-ls-bu'+(on?" on":"")+'"><b>'+(on?"On<br>air":"Off<br>air")+'</b></span>',C;
   if(s.k==="bell")C=row(burst,logos(s.R,3),'<span class="x2p-ls-n">'+s.R.length+'</span>','<span class="x2p-ls-w">'+pl(s.R.length,"Resolution")+'</span>','<span class="x2p-ls-s">At the close · '+left(m.bell-Date.now())+'</span>');
-  else if(s.k==="due")C=row(burst,logos(s.R,3),'<span class="x2p-ls-n">'+s.R.length+'</span>','<span class="x2p-ls-w">'+pl(s.R.length,"Prediction")+'</span>','<span class="x2p-ls-s">Before the reports</span>');
+  else if(s.k==="due")C=row(burst,logos(s.R,3),'<span class="x2p-ls-n">'+s.R.length+'</span>','<span class="x2p-ls-w">'+pl(s.R.length,"Prediction")+'</span>','<span class="x2p-ls-s">'+(s.B.length&&m.bell>Date.now()?s.B.length+" graded at the close":"Before the reports")+'</span>');
   else if(s.k==="rung")C=row(burst,logos(s.R,3),'<span class="x2p-ls-n">'+s.R.length+'</span>','<span class="x2p-ls-w">'+pl(s.R.length,"Resolution")+'</span>','<span class="x2p-ls-s">Results soon</span>');
   else C=row(burst,'<span class="x2p-ls-lgs"></span>','<span class="x2p-ls-x">'+(m.nk?"Back "+kfmt(m.nk):"Off air")+'</span>','<span class="x2p-ls-w"></span>','<span class="x2p-ls-s">'+(m.nk?m.nR.length+" "+pl(m.nR.length,"prediction").toLowerCase():"")+'</span>');
   var N=m.nk?row('<b class="x2p-ls-lb">Next · '+kfmt(m.nk)+'</b>',logos(m.nR,2),'<span class="x2p-ls-n">'+m.nR.length+'</span>','<span class="x2p-ls-w">'+pl(m.nR.length,"Prediction")+'</span>','<span class="x2p-ls-s">'+kfmt(m.nk,true)+'</span>'):row('<b class="x2p-ls-lb">Next</b>',"","","",'<span class="x2p-ls-s">Dates to come</span>');
-  var g=(m.graded/m.total*100).toFixed(2),t=((s.k==="bell"||s.k==="due"?s.R.length:0)/m.total*100).toFixed(2);
+  var g=(m.graded/m.total*100).toFixed(2),t=((s.k==="bell"?s.R.length:s.k==="due"?s.B.length:0)/m.total*100).toFixed(2);
   var inner='<div class="r39-in x2p-ls-fs"><div class="x2p-ls-fr x2p-ls-l">'+L+'</div><div class="x2p-ls-fr x2p-ls-td">'+C+'</div><div class="x2p-ls-fr x2p-ls-nx'+(on?"":" dim")+'">'+N+'</div></div>';
   var head='<b class="x2p-ls-bw">Season 1 · Week '+m.wk+'</b>',foot='<b class="x2p-ls-bw">Season 1</b><span class="x2p-ls-bar"><i class="g" style="width:'+g+'%"></i><i class="t" style="left:'+g+'%;width:'+t+'%"></i></span><b class="x2p-ls-bw"><u>'+m.graded+'</u>/'+m.total+' · NVDA ★</b>';
   return '<div class="bs-nx x2p-ls-t"><div class="bt-sh"><i></i></div><div class="bt-hs"></div><div class="bt-p"><div class="bt-pp"><i class="bt-pl"></i><i class="bt-r1"></i><i class="bt-r2"></i></div>'+inner+
@@ -11512,7 +11535,13 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
    module; "In play" in the logo's raised style). The page writes the words (v15, the next card); this wraps "In play:" so the CSS can set
    it in the logo's heavy italic with a green and a red step behind it. CSS in the PILL block of skin-x2plus.css. */
 (function(){try{var d=document;function wrap(){var lt=d.querySelector("#liveTxt");if(!lt||lt.querySelector(".x2p-ip"))return;var h=lt.innerHTML,m=/^\s*(In play:)\s*/i.exec(h);if(!m)return;
-  lt.innerHTML='<b class="x2p-ip">'+m[1]+'</b> <span class="x2p-ic">'+h.slice(m[0].length)+'</span>'}
+  var rest=h.slice(m[0].length);
+  /* (audit, 2026-10-28) on phones the page shortens a company with a numeric ticker to its first word: "SK" for SK Hynix reads as another
+     company (SK Group); a first word of two letters or fewer takes the next word too */
+  var lng=null;try{[].concat(PENDING,UPCOMING).some(function(u){var w=String(u.co||"").split(" ");if(w.length>1&&w[0].length<=2&&rest.trim()===w[0]){lng=w[0]+" "+w[1];return true}})}catch(e){}
+  lt.innerHTML='<b class="x2p-ip">'+m[1]+'</b> <span class="x2p-ic">'+rest+'</span>';
+  /* the longer name only where the header keeps its rows (at 390 to 412 px "SK Hynix" pushed the X icon onto a row of its own) */
+  if(lng){var hd=d.querySelector("header"),h0=hd?hd.offsetHeight:0,ic=lt.querySelector(".x2p-ic");ic.textContent=lng;if(hd&&hd.offsetHeight>h0)ic.innerHTML=rest}}
  function hook(){var lt=d.querySelector("#liveTxt");if(!lt)return false;wrap();if(window.MutationObserver)new MutationObserver(wrap).observe(lt,{childList:true,characterData:true,subtree:true});return true}
  if(!hook()){var n=0;(function p(){if(!hook()&&++n<40)setTimeout(p,250)})()}}catch(e){}})();
 /*}PILL*/

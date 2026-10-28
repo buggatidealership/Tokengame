@@ -388,6 +388,13 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
             # over the rounds graded today; it goes after every dated round (Infinity), so the pill shows the next close
             ('var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});',
              'var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||Infinity)-(mmdd(b.resolves)||Infinity))||(a.n-b.n)});'),
+            # (audit, 2026-10-28) the Upcoming score bar still led with "On direction" after the board moved to P&L, and printed an arrow
+            # and a sign together ("▲+5.95%"): on X2+ it leads with each AI's P&L (the same account as the board: $100,000, the whole
+            # balance on every call), and the move keeps its arrow only
+            ("""'<b>Leaderboard</b> On direction: '+ROWS.map(function(T){var C=career(T.m);return nm(T.m)+' '+(!C.g?'n/a':EZ_FULL(T.m)?Math.round(C.right/C.g*100)+'%':C.right+' of '+C.g)}).join(' · ')""",
+             """'<b>P&amp;L</b> '+(function(){var A={};ROUNDS.forEach(function(r){if(typeof r.a!=="number"||isNaN(r.a))return;r.calls.forEach(function(x){A[x[0]]=(A[x[0]]||100000)*(1+(/^DOWN/.test(x[1])?-1:1)*r.a/100)})});return Object.keys(A).sort(function(a,b){return A[b]-A[a]}).map(function(m){var v=A[m]-100000;return nm(m)+' '+(v>=0?'+$':'−$')+(Math.abs(v)/1000).toFixed(1)+'K'}).join(' · ')})()"""),
+            ("""<span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span>'+r.out+'</span> · '+w)""",
+             """<span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span>'+r.out.replace(/^[+−-]/,"")+'</span> · '+w)"""),
             # the first screen's fonts are asked for at once (window.__x2pF; x2plus.js waits for them before it lifts the cover), not when
             # the page first lays them out; the cover comes off by itself after 20 s whatever happens, and at once without scripts
             ('<body>','<body>\n<div id="x2pLoad" aria-hidden="true">'+XPMARK+'</div>\n'
