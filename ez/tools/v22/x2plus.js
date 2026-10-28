@@ -2105,6 +2105,16 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   else if(s.k==="rung")C=row(burst,"",logos(s.R,3),'<span class="x2p-ls-s">Results soon</span>');
   else C=row(burst,"",'<span class="x2p-ls-x">'+(m.nk?"Back "+kfmt(m.nk):"Off air")+'</span>','<span class="x2p-ls-s">'+(m.nk?m.nR.length+" "+pl(m.nR.length,"prediction").toLowerCase():"")+'</span>');
   var N=m.nk?row('<b class="x2p-ls-lb">Next · '+kfmt(m.nk)+'</b>',"",logos(m.nR,3),cnt(m.nR.length,"prediction")):row('<b class="x2p-ls-lb">Next</b>',"","",'<span class="x2p-ls-s">Dates to come</span>');
+  /* (owner, 2026-10-28, mockups E1 to E3) Last round and Next the biggest words in their frames; On air smaller and higher; the logos in
+     the middle: two, or four in two rows, with "+n more" under them; the logos in their own colours */
+  var V=String(window.__x2pLsV||"");if(/^E/.test(V)){var two=V==="E3",tg=V!=="E1";
+   var grid=function(R,n){var B=big(R),sh=B.slice(0,n),k=B.length-sh.length;return '<span class="x2p-ls-lgw"><span class="x2p-ls-lgs'+(n>2?" g4":"")+'">'+sh.map(function(u){return logo(u)}).join("")+'</span>'+(k>0?'<span class="x2p-ls-more">+'+k+' more</span>':'')+'</span>'};
+   var big1=function(t,b){return '<b class="x2p-ls-lb x2p-ls-big">'+(two?t+'<br>'+b:t+(b?' '+b:''))+'</b>'};
+   L=r?row(big1("Last","round"),'<span class="x2p-ls-who">'+ai(m.who)+'<b>'+esc(nm(m.who))+(m.won?" won":" · top P&amp;L")+'</b></span>',
+    '<span class="x2p-ls-pn '+(m.pn>=0?"up":"dn")+'">'+m.usd(m.pn,true)+'</span>','<span class="x2p-ls-on">on '+logo(r,"x2p-ls-bg")+'</span>'):row("","","","");
+   if(s.k==="bell"||s.k==="due")C=row(burst,"",grid(s.R,tg?4:2),cnt(s.R.length,s.k==="bell"?"resolution":"prediction"));
+   else if(s.k==="rung")C=row(burst,"",grid(s.R,tg?4:2),'<span class="x2p-ls-s">Results soon</span>');
+   N=m.nk?row(big1("Next",(two?"":"· ")+kfmt(m.nk)),"",grid(m.nR,4),cnt(m.nR.length,"prediction")):row(big1("Next",""),"","",'<span class="x2p-ls-s">Dates to come</span>')}
   var g=(m.graded/m.total*100).toFixed(2),t=((s.k==="bell"?s.R.length:s.k==="due"?s.B.length:0)/m.total*100).toFixed(2);
   var inner='<div class="r39-in x2p-ls-fs"><div class="x2p-ls-fr x2p-ls-l">'+L+'</div><div class="x2p-ls-fr x2p-ls-td">'+C+'</div><div class="x2p-ls-fr x2p-ls-nx'+(on?"":" dim")+'">'+N+'</div></div>';
   var head='<b class="x2p-ls-bw">Season 1 · Week '+m.wk+'</b>',foot='<b class="x2p-ls-bw">Season 1</b><span class="x2p-ls-bar"><i class="g" style="width:'+g+'%"></i><i class="t" style="left:'+g+'%;width:'+t+'%"></i></span><b class="x2p-ls-bw"><u>'+m.graded+'</u>/'+m.total+' · NVDA ★</b>';
@@ -2130,7 +2140,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  var box=null,last="";function size(){var vt=d.querySelector(".x2p-vt");if(!vt||!box)return;var c=getComputedStyle(vt);box.style.width=vt.getBoundingClientRect().width+"px";box.style.marginLeft=c.marginLeft;box.style.marginRight=c.marginRight}
  function draw(force){var vt=d.querySelector(".x2p-vt");if(!vt||!H.classList.contains("x2pbt"))return false;
   if(!box){box=d.createElement("div");box.className="x2p-ls";box.setAttribute("role","region");box.setAttribute("aria-label","Live this week");if(window.__x2pLsV)box.setAttribute("data-v",window.__x2pLsV);vt.after(box)}else if(box.previousElementSibling!==vt)vt.after(box);
-  size();var h=html(model());if(h!==last||force){last=h;box.innerHTML=h;solid(box);var t=box.querySelector(".x2p-ls-t");if(t)paper(t)}return true}   /* (speed, 2026-10-28) the paper only when the strip or the width changed: redone every 250 ms it restyled the page */
+  size();var h=html(model());if(h!==last||force){last=h;box.innerHTML=h;solid(box);bigfit();var t=box.querySelector(".x2p-ls-t");if(t)paper(t)}return true}   /* (speed, 2026-10-28) the paper only when the strip or the width changed: redone every 250 ms it restyled the page */
  /* a logo drawn on a tile (SK Hynix on white) prints as a block in one ink: when all four corners are opaque and the same colour, that
     colour is cut out on a canvas (same-origin image) and the logo then prints in ink like the rest; a logo whose shapes reach the corners
     in different colours (Microsoft) is left as it is */
@@ -2145,6 +2155,9 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
      x.putImageData(D,0,0);if(crop){var c2=d.createElement("canvas"),q=Math.max(cw,ch);c2.width=cw;c2.height=ch;c2.getContext("2d").drawImage(c,x0,y0,cw,ch,0,0,cw,ch);c=c2}
      KEY[s]=c.toDataURL("image/png");im.src=KEY[s]}catch(e){KEY[s]=null}};
    if(im.complete&&im.naturalWidth)test();else im.addEventListener("load",test,{once:true})})}
+ /* the big labels (E takes) step down until they fit their frame */
+ function bigfit(){[].forEach.call(box.querySelectorAll(".x2p-ls-big"),function(b){b.style.fontSize="";var f=b.closest(".x2p-ls-fr");if(!f)return;var cs=getComputedStyle(f),w=f.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-2,z=parseFloat(getComputedStyle(b).fontSize),n=0;
+   while(b.scrollWidth>w&&z>9&&n++<30){z-=.5;b.style.fontSize=z+"px"}})}
  function go(force){try{draw(force)}catch(e){window.__x2pLsErr=e}}
  var lw=0;addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;go(1)}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){go(1)});addEventListener("load",function(){go(1)});
  setInterval(function(){go(0)},60000);var n=0;(function poll(){go(0);if(++n<40)setTimeout(poll,250)})()}catch(e){window.__x2pLsErr=e}})();
