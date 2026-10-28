@@ -1979,3 +1979,112 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run(1)}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){run(1)});addEventListener("load",function(){run(1)});addEventListener("hashchange",function(){setTimeout(run,150)});
  var n=0;(function poll(){run();if(++n<40)setTimeout(poll,250)})()}catch(e){window.__x2pTixErr=e}})();
 /*}SEASONTIX*/
+/*LIVESTRIP{*/
+/* The live strip under the film (owner, 2026-10-28: E of ez/tools/concepts/r1043, "E would be one I'd be willing to ship with", with the
+   owner's fixes: the company logos are what matters, so they sit big with the counts smaller under them; the labels at the top of each
+   frame; every row level across the three frames (label, logos or the winner, the figure, its word, the line under it); the last round as
+   who won, what they made on that call (the company's logo, no ticker) and their season P&L; the next frame as bright as the others while
+   on air, dimmed only off air; the corner stars the same on every frame). A ticket from the bet ticket's own classes: the green band and
+   the red band are the film's two edges with sprocket holes punched along them, the three frames parted by the ticket's perforations.
+   Everything comes from ez-data.js and the New York clock; it redraws once a minute. CSS in the LIVESTRIP block of skin-x2plus.css. */
+(function(){try{var d=document,H=d.documentElement,P0=window.__x2pPnl;if(typeof ROUNDS==="undefined"||!P0)return;
+ var esc=function(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+ /* the New York clock */
+ var NYF=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",hourCycle:"h23",year:"numeric",month:"numeric",day:"numeric",hour:"numeric",minute:"numeric",second:"numeric"});
+ function ny(t){var o={};NYF.formatToParts(new Date(t)).forEach(function(q){o[q.type]=+q.value});return {y:o.year,mo:o.month,d:o.day,h:o.hour%24,mi:o.minute,s:o.second}}
+ function off(t){var q=ny(t);return (Date.UTC(q.y,q.mo-1,q.d,q.h,q.mi,q.s)-Math.floor(t/1000)*1000)/6e4}
+ function at(y,mo,dd,h,mi){var g=Date.UTC(y,mo-1,dd,h,mi||0),u=g-off(g)*6e4;return g-off(u)*6e4}
+ function key(y,mo,dd){return y+"-"+String(mo).padStart(2,"0")+"-"+String(dd).padStart(2,"0")}
+ function K(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?key(2000+(+m[3]%100),+m[1],+m[2]):"9999"}
+ /* NYSE 2026-27: full closures and 1pm early closes (nyse.com/markets/hours-calendars) */
+ var HOL={"2026-11-26":1,"2026-12-25":1,"2027-01-01":1,"2027-01-18":1,"2027-02-15":1},EARLY={"2026-11-27":13,"2026-12-24":13};
+ var WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+ function kdate(k){var p=k.split("-");return new Date(Date.UTC(+p[0],+p[1]-1,+p[2]))}
+ function kadd(k,n){var t=new Date(kdate(k).getTime()+n*864e5);return key(t.getUTCFullYear(),t.getUTCMonth()+1,t.getUTCDate())}
+ function trading(k){var w=kdate(k).getUTCDay();return w>0&&w<6&&!HOL[k]}
+ function bellOf(k){var p=k.split("-");return at(+p[0],+p[1],+p[2],EARLY[k]||16,0)}
+ function kfmt(k,full){var t=kdate(k);return WD[t.getUTCDay()]+(full?" "+MON[t.getUTCMonth()]+" "+t.getUTCDate():"")}
+ function left(ms){if(ms<=0)return "0m";var m=Math.ceil(ms/6e4),dd=Math.floor(m/1440),h=Math.floor(m%1440/60),mi=m%60;return dd?dd+"d "+h+"h":h?h+"h "+String(mi).padStart(2,"0")+"m":mi+"m"}
+ var nm=function(m){return {GPT:"GPT",KIMI:"Kimi",CLAUDE:"Claude",GROK:"Grok"}[m]||m};
+ var cap=function(u){return (window.CAPS||{})[String(u.ticker).toUpperCase()]||0};
+ var big=function(L){return L.map(function(u,i){return {u:u,i:i,c:cap(u)}}).sort(function(a,b){return (b.c-a.c)||(a.i-b.i)}).map(function(x){return x.u})};
+ var logo=function(u,cls){var t=String(u.ticker).toUpperCase(),L=(window.CO_LOGOS||{})[t],f=L&&(L.f||L);
+  return f?'<span class="x2p-ls-lg '+(cls||"")+(L.dark?" dk":"")+'"><img src="'+MEDIA+f+'" alt="'+esc(u.co)+'" title="'+esc(u.co)+'"></span>':'<span class="x2p-ls-lg x2p-ls-tx '+(cls||"")+'">'+esc(t.slice(0,4))+'</span>'};
+ var logos=function(R,n){var B=big(R),s=B.slice(0,n),k=B.length-s.length;return '<span class="x2p-ls-lgs">'+s.map(function(u){return logo(u)}).join("")+(k>0?'<span class="x2p-ls-k">+'+k+'</span>':'')+'</span>'};
+ var INK={GPT:"#1b181c",KIMI:"#1b181c",GROK:"#1b181c",CLAUDE:"#d97757"};
+ var ai=function(m){var M=MODELS[m];return M?'<svg class="x2p-ls-ai" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="'+(M.fr||"nonzero")+'" fill="'+(INK[m]||"#1b181c")+'" d="'+M.d+'"/></svg>':""};
+ /* where the season stands right now */
+ function model(){var now=Date.now(),q=ny(now),today=key(q.y,q.mo,q.d),all=[].concat(ROUNDS,PENDING,UPCOMING);
+  var bk=today;for(var i=0;i<10;i++){if(trading(bk)&&bellOf(bk)>now)break;bk=kadd(bk,1)}var bell=bellOf(bk),rung=trading(today)&&now>=bellOf(today);
+  var atBell=PENDING.filter(function(u){return K(u.resolves)===today&&bk===today}),waiting=PENDING.filter(function(u){return K(u.resolves)!=="9999"&&(K(u.resolves)<today||K(u.resolves)===today&&rung)});
+  var due=UPCOMING.filter(function(u){return K(u.called)===today});
+  var nxs=UPCOMING.map(function(u){return K(u.called)}).filter(function(k){return k>today}).sort(),nk=nxs[0]||null,nR=UPCOMING.filter(function(u){return K(u.called)===nk});
+  var s=atBell.length?{k:"bell",on:1,R:atBell}:due.length&&trading(today)?{k:"due",on:1,R:due}:waiting.length?{k:"rung",on:0,R:waiting}:{k:"off",on:0,R:[]};
+  /* the last round: the newest graded day, its biggest company; the winner, what that call made, and the winner's season P&L */
+  var lk=ROUNDS.reduce(function(a,u){var k=K(u.resolves);return k!=="9999"&&k>a?k:a},"0000"),r=big(ROUNDS.filter(function(u){return K(u.resolves)===lk}))[0];
+  var P=P0(),wins=String(r&&r.win||"").split(/\s*&\s*/).filter(Boolean),who=wins[0];
+  if(r&&!who)who=r.calls.map(function(c){return c[0]}).sort(function(a,b){return P.A[b].per[r.n].v-P.A[a].per[r.n].v})[0];
+  var first=ROUNDS.map(function(u){return K(u.called)}).sort()[0],mon=function(k){var t=kdate(k),w=t.getUTCDay();return t.getTime()-((w+6)%7)*864e5},wk=first?Math.floor((mon(today)-mon(first))/(7*864e5))+1:1;
+  var graded=ROUNDS.length;
+  return {s:s,bell:bell,today:today,r:r,who:who,won:wins.length>0,pn:r&&who?P.A[who].per[r.n].v:0,tot:who?P.A[who].pnl:0,usd:P.usd,nk:nk,nR:nR,wk:wk,graded:graded,total:all.length}}
+ var pl=function(n,w){return w+(n===1?"":"s")};
+ function html(m){var s=m.s,r=m.r,on=s.on;
+  var row=function(a,b,c,dd,e){return '<span class="x2p-ls-a">'+a+'</span><span class="x2p-ls-b">'+b+'</span><span class="x2p-ls-c">'+c+'</span><span class="x2p-ls-d">'+dd+'</span><span class="x2p-ls-e">'+e+'</span>'};
+  var L=r?row('<b class="x2p-ls-lb">Last round</b>','<span class="x2p-ls-who">'+ai(m.who)+'<b>'+esc(nm(m.who))+(m.won?" won":" · top P&amp;L")+'</b></span>',
+    '<span class="x2p-ls-pn '+(m.pn>=0?"up":"dn")+'">'+m.usd(m.pn,true)+'</span>','<span class="x2p-ls-on">on '+logo(r,"x2p-ls-sm")+'</span>',
+    '<span class="x2p-ls-s">S1 P&amp;L <b class="'+(m.tot>=0?"up":"dn")+'">'+m.usd(m.tot,true)+'</b></span>'):row("","","","","");
+  var burst='<span class="x2p-ls-bu'+(on?" on":"")+'"><b>'+(on?"On<br>air":"Off<br>air")+'</b></span>',C;
+  if(s.k==="bell")C=row(burst,logos(s.R,3),'<span class="x2p-ls-n">'+s.R.length+'</span>','<span class="x2p-ls-w">'+pl(s.R.length,"Resolution")+'</span>','<span class="x2p-ls-s">At the close · '+left(m.bell-Date.now())+'</span>');
+  else if(s.k==="due")C=row(burst,logos(s.R,3),'<span class="x2p-ls-n">'+s.R.length+'</span>','<span class="x2p-ls-w">'+pl(s.R.length,"Prediction")+'</span>','<span class="x2p-ls-s">Before the reports</span>');
+  else if(s.k==="rung")C=row(burst,logos(s.R,3),'<span class="x2p-ls-n">'+s.R.length+'</span>','<span class="x2p-ls-w">'+pl(s.R.length,"Resolution")+'</span>','<span class="x2p-ls-s">Results soon</span>');
+  else C=row(burst,'<span class="x2p-ls-lgs"></span>','<span class="x2p-ls-x">'+(m.nk?"Back "+kfmt(m.nk):"Off air")+'</span>','<span class="x2p-ls-w"></span>','<span class="x2p-ls-s">'+(m.nk?m.nR.length+" "+pl(m.nR.length,"prediction").toLowerCase():"")+'</span>');
+  var N=m.nk?row('<b class="x2p-ls-lb">Next · '+kfmt(m.nk)+'</b>',logos(m.nR,2),'<span class="x2p-ls-n">'+m.nR.length+'</span>','<span class="x2p-ls-w">'+pl(m.nR.length,"Prediction")+'</span>','<span class="x2p-ls-s">'+kfmt(m.nk,true)+'</span>'):row('<b class="x2p-ls-lb">Next</b>',"","","",'<span class="x2p-ls-s">Dates to come</span>');
+  var g=(m.graded/m.total*100).toFixed(2),t=((s.k==="bell"||s.k==="due"?s.R.length:0)/m.total*100).toFixed(2);
+  var inner='<div class="r39-in x2p-ls-fs"><div class="x2p-ls-fr x2p-ls-l">'+L+'</div><div class="x2p-ls-fr x2p-ls-td">'+C+'</div><div class="x2p-ls-fr x2p-ls-nx'+(on?"":" dim")+'">'+N+'</div></div>';
+  var head='<b class="x2p-ls-bw">Season 1 · Week '+m.wk+'</b>',foot='<b class="x2p-ls-bw">Season 1</b><span class="x2p-ls-bar"><i class="g" style="width:'+g+'%"></i><i class="t" style="left:'+g+'%;width:'+t+'%"></i></span><b class="x2p-ls-bw"><u>'+m.graded+'</u>/'+m.total+' · NVDA ★</b>';
+  return '<div class="bs-nx x2p-ls-t"><div class="bt-sh"><i></i></div><div class="bt-hs"></div><div class="bt-p"><div class="bt-pp"><i class="bt-pl"></i><i class="bt-r1"></i><i class="bt-r2"></i></div>'+inner+
+   '<div class="bt-st bt-hd">'+head+'</div><div class="bt-st bt-ft">'+foot+'</div></div></div>'}
+ /* the paper: the bet's layers with the fibres (22) and the sunburst (24, 25) off; sprocket holes along both bands and a perforation in
+   each gap between the frames (measured), each an SVG pattern put first in the die's mask list and XORed onto it */
+ var lst=function(v){var o=[],dp=0,st=0;for(var i=0;i<v.length;i++){var c=v[i];if(c==="(")dp++;else if(c===")")dp--;else if(c===","&&!dp){o.push(v.slice(st,i).trim());st=i+1}}o.push(v.slice(st).trim());return o};
+ var full=function(v,n){var a=lst(v),o=[];for(var i=0;i<n;i++)o.push(a[i%a.length]);return o};
+ var svg=function(s){return "url(\"data:image/svg+xml,"+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg'><defs>"+s+"</defs><rect width='100%' height='100%' fill='url(#p)'/></svg>")+"\")"};
+ var ROW=svg("<pattern id='p' width='13' height='7' patternUnits='userSpaceOnUse'><rect x='3.5' width='6' height='7' rx='1.3'/></pattern>"),COL=svg("<pattern id='p' width='8' height='6.5' patternUnits='userSpaceOnUse'><circle cx='4' cy='3.25' r='1.75'/></pattern>");
+ var PROPS=["background-image","mask-image","mask-size","mask-position","mask-repeat","mask-composite","mask-origin","mask-clip"];
+ function paper(t){var pp=t.querySelector(".bt-pp"),els=[pp,t.querySelector(".bt-sh>i"),t.querySelector(".bt-hs")];els.forEach(function(e){if(e)PROPS.forEach(function(p){e.style.removeProperty(p)})});
+  var Lb=lst(getComputedStyle(pp).backgroundImage);if(Lb.length<27)return;Lb[22]=Lb[24]=Lb[25]="none";pp.style.backgroundImage=Lb.join(", ");
+  var fs=t.querySelector(".x2p-ls-fs"),T=t.getBoundingClientRect(),F=[].slice.call(fs.querySelectorAll(".x2p-ls-fr")).map(function(x){return x.getBoundingClientRect()});
+  var cols=[0,1].map(function(i){return ((F[i].right+F[i+1].left)/2-T.left).toFixed(1)+"px"});
+  var Lx=[{i:ROW,s:"calc(100% - 26px) 7px",p:"13px 5px"},{i:ROW,s:"calc(100% - 26px) 7px",p:"13px calc(100% - 5px)"}].concat(cols.map(function(x){return {i:COL,s:"8px calc(100% - var(--st) - var(--sb) - 6px)",p:"calc("+x+" - 4px) calc(var(--st) + 3px)"}}));
+  els.forEach(function(e){if(!e)return;var cs=getComputedStyle(e),im=lst(cs.maskImage),n=im.length,Pf=function(p){return full(cs[p],n)},g=function(k){return Lx.map(function(l){return l[k]})},c=function(v){return Lx.map(function(){return v})};
+   e.style.setProperty("mask-image",g("i").concat(im).join(", "));e.style.setProperty("mask-size",g("s").concat(Pf("maskSize")).join(", "));e.style.setProperty("mask-position",g("p").concat(Pf("maskPosition")).join(", "));
+   e.style.setProperty("mask-repeat",c("no-repeat").concat(Pf("maskRepeat")).join(", "));e.style.setProperty("mask-composite",c("exclude").concat(Pf("maskComposite")).join(", "));
+   e.style.setProperty("mask-origin",c("border-box").concat(Pf("maskOrigin")).join(", "));e.style.setProperty("mask-clip",c("border-box").concat(Pf("maskClip")).join(", "))})}
+ /* as wide as the film, under it */
+ var box=null,last="";function size(){var vt=d.querySelector(".x2p-vt");if(!vt||!box)return;var c=getComputedStyle(vt);box.style.width=vt.getBoundingClientRect().width+"px";box.style.marginLeft=c.marginLeft;box.style.marginRight=c.marginRight}
+ function draw(force){var vt=d.querySelector(".x2p-vt");if(!vt||!H.classList.contains("x2pbt"))return false;
+  if(!box){box=d.createElement("div");box.className="x2p-ls";box.setAttribute("role","region");box.setAttribute("aria-label","Live this week");vt.after(box)}else if(box.previousElementSibling!==vt)vt.after(box);
+  size();var h=html(model());if(h!==last||force){last=h;box.innerHTML=h;solid(box)}var t=box.querySelector(".x2p-ls-t");if(t)paper(t);return true}
+ /* a logo drawn on a tile (SK Hynix on white) prints as a block in one ink: when all four corners are opaque and the same colour, that
+    colour is cut out on a canvas (same-origin image) and the logo then prints in ink like the rest; a logo whose shapes reach the corners
+    in different colours (Microsoft) is left as it is */
+ var KEY={};function solid(r){[].slice.call(r.querySelectorAll(".x2p-ls-lg img")).forEach(function(im){var s=im.getAttribute("src");if(/^data:/.test(s))return;
+   if(KEY[s]!==undefined){if(KEY[s])im.src=KEY[s];return}var test=function(){try{var c=d.createElement("canvas"),w=c.width=im.naturalWidth,h=c.height=im.naturalHeight;if(!w||!h)return;var x=c.getContext("2d");x.drawImage(im,0,0);
+     var D=x.getImageData(0,0,w,h),a=D.data,px=function(X,Y){var o=(Y*w+X)*4;return [a[o],a[o+1],a[o+2],a[o+3]]},C=[px(1,1),px(w-2,1),px(1,h-2),px(w-2,h-2)],dist=function(p,q){return Math.abs(p[0]-q[0])+Math.abs(p[1]-q[1])+Math.abs(p[2]-q[2])};
+     if(!C.every(function(p){return p[3]>200&&dist(p,C[0])<30})){KEY[s]=null;return}
+     for(var o=0;o<a.length;o+=4){var e=Math.abs(a[o]-C[0][0])+Math.abs(a[o+1]-C[0][1])+Math.abs(a[o+2]-C[0][2]);if(e<60)a[o+3]=0;else if(e<120)a[o+3]=Math.round(a[o+3]*(e-60)/60)}
+     x.putImageData(D,0,0);KEY[s]=c.toDataURL("image/png");im.src=KEY[s]}catch(e){KEY[s]=null}};
+   if(im.complete&&im.naturalWidth)test();else im.addEventListener("load",test,{once:true})})}
+ function go(force){try{draw(force)}catch(e){window.__x2pLsErr=e}}
+ var lw=0;addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;go(1)}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){go(1)});addEventListener("load",function(){go(1)});
+ setInterval(function(){go(0)},60000);var n=0;(function poll(){go(0);if(++n<40)setTimeout(poll,250)})()}catch(e){window.__x2pLsErr=e}})();
+/*}LIVESTRIP*/
+/*PILL{*/
+/* The "In play" pill (owner, 2026-10-28: keep "In play: <company>" and its glowing dot, "a sign that the site is alive"; not gold, a square
+   module; "In play" in the logo's raised style). The page writes the words (v15, the next card); this wraps "In play:" so the CSS can set
+   it in the logo's heavy italic with a green and a red step behind it. CSS in the PILL block of skin-x2plus.css. */
+(function(){try{var d=document;function wrap(){var lt=d.querySelector("#liveTxt");if(!lt||lt.querySelector(".x2p-ip"))return;var h=lt.innerHTML,m=/^\s*(In play:)\s*/i.exec(h);if(!m)return;
+  lt.innerHTML='<b class="x2p-ip">'+m[1]+'</b> <span class="x2p-ic">'+h.slice(m[0].length)+'</span>'}
+ function hook(){var lt=d.querySelector("#liveTxt");if(!lt)return false;wrap();if(window.MutationObserver)new MutationObserver(wrap).observe(lt,{childList:true,characterData:true,subtree:true});return true}
+ if(!hook()){var n=0;(function p(){if(!hook()&&++n<40)setTimeout(p,250)})()}}catch(e){}})();
+/*}PILL*/

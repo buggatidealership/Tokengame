@@ -392,7 +392,7 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
             # the page first lays them out; the cover comes off by itself after 20 s whatever happens, and at once without scripts
             ('<body>','<body>\n<div id="x2pLoad" aria-hidden="true">'+XPMARK+'</div>\n'
              '<noscript><style>html.x2p-cur body>*:not(#x2pLoad):not(#x2pNs){opacity:1!important}#x2pLoad{display:none}</style></noscript>\n'
-             '<script>(function(d){try{if(d.fonts&&d.fonts.load)window.__x2pF=Promise.all(["400 1em Anton","800 1em \'Barlow Condensed\'","800 1em Barlow","700 1em Barlow","500 1em Barlow"]'
+             '<script>(function(d){try{if(d.fonts&&d.fonts.load)window.__x2pF=Promise.all(["400 1em Anton","800 1em \'Barlow Condensed\'","800 1em Barlow","700 1em Barlow","500 1em Barlow","400 1em \'Alfa Slab One\'"]'
              '.map(function(f){return d.fonts.load(f)}))}catch(e){}setTimeout(function(){d.documentElement.classList.remove("x2p-cur")},20000)})(document)</script>'),
             # speed (2026-10-23): fitTitles re-measured the whole page about 1,500 times per run, mostly on titles X2+ hides (1px wide for
             # screen readers). On X2+: skip those, read every title before writing any, size each in one step (then a check), and refit
@@ -525,7 +525,7 @@ px=re.sub(r'/\*CERTL1\{.*?/\*\}CERTL1\*/','',px,count=1,flags=re.S)
 for _a,_c in [(r'#f6dc93|#fbe8a8|#f6d77c','#fed98a'),(r'#e4b54a|#e7bd5b|#efc24a','#fdbc2a'),(r'#c99227|#bf8a22|#d39c1c|#c98a12','#d99a12')]:px=re.sub(_a,_c,px,flags=re.I)
 px=px.replace('</head>','<style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>\n</head>',1)
 # (owner, 2026-10-27) the certificate's Kanit (the logo's lettering), X2+ only
-px=px.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&display=swap" rel="stylesheet">\n</head>',1)
+px=px.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&family=Alfa+Slab+One&display=swap" rel="stylesheet">\n</head>',1)
 open("v46-live-x2plus.html",'w').write(px); print("ok v46-live-x2plus.html",len(px))
 # EZ Live X3+ (owner, 2026-10-22: "a complete replica", first with neon bullets, then the same day "for X3 plus, can you do the
 # letterpress"): X2+ whose broadcast straps are cream card with the words pressed in (tools/v22/skin-x3plus.css in place of X2+'s
@@ -543,7 +543,7 @@ x3=re.sub(r'/\*CERTC1\{.*?/\*\}CERTC1\*/','',x3,count=1,flags=re.S)
 # (owner, 2026-10-27, night) X3+ takes the lighter ink, not X2+'s stamped one; and the Kanit + Saira link X2+ has (the tower, the
 # proof and the tickets are set in them)
 x3=re.sub(r'/\*INKS\{\*/.*?/\*\}INKS\*/','',x3,count=1,flags=re.S)
-x3=x3.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&display=swap" rel="stylesheet">\n</head>',1)
+x3=x3.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&family=Alfa+Slab+One&display=swap" rel="stylesheet">\n</head>',1)
 assert x3!=pp and '__PAPER__' not in x3
 assert x3.count('<title>EZ Live X2+</title>')==1
 x3=x3.replace('<title>EZ Live X2+</title>','<title>EZ Live X3+</title>')
