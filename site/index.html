@@ -7609,6 +7609,9 @@ html.x2p.x2d[data-theme] body #learn .x2p-strap .x2o-ul.x2o-ul>li,html.x2p.x2d[d
 /*SCROLLFIX{ the MVP carousel scrolls sideways only: the fanned Bullseye stack overflowed it by 1 to 5px downwards, which made it a vertical scroller too, so a finger or wheel over a card scrolled the carousel instead of the page (owner, 2026-10-28) */
 html.x2p .x2p-hlt{overflow-y:hidden}
 /*}SCROLLFIX*/
+/*LSX{ (2026-10-28) the strip's text-only states wrap inside their frame ("No results today" ran across all three frames at 14px, nowrap) */
+html.x2p.x2d.x2pbt .x2p-ls .x2p-ls-fr .x2p-ls-x{white-space:normal;text-align:center;display:block;max-width:100%;overflow-wrap:anywhere}
+/*}LSX*/
 
 </style>
 <style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>
@@ -11881,10 +11884,12 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   var bk=today;for(var i=0;i<10;i++){if(trading(bk)&&bellOf(bk)>now)break;bk=kadd(bk,1)}var bell=bellOf(bk),rung=trading(today)&&now>=bellOf(today);
   var atBell=PENDING.filter(function(u){return K(u.resolves)===today&&bk===today}),waiting=PENDING.filter(function(u){return K(u.resolves)!=="9999"&&(K(u.resolves)<today||K(u.resolves)===today&&rung)});
   var due=UPCOMING.filter(function(u){return K(u.called)===today});
+  /* (2026-10-28) rounds already graded at today's close stay today's resolutions: once the sheet had them, On air fell back to "No results today" */
+  var gT=trading(today)?ROUNDS.filter(function(u){return K(u.resolves)===today}):[];atBell=atBell.concat(gT);
   var nxs=UPCOMING.map(function(u){return K(u.called)}).filter(function(k){return k>today}).sort(),nk=nxs[0]||null,nR=UPCOMING.filter(function(u){return K(u.called)===nk});
   /* (audit, 2026-10-28) a day with predictions due shows them, with the rounds graded at today's close as a line under them (the bell
      used to win and hide a day of 15 predictions) */
-  var s=due.length&&trading(today)?{k:"due",on:1,R:due,B:atBell,W:waiting}:atBell.length?{k:"bell",on:1,R:atBell}:waiting.length?{k:"rung",on:0,R:waiting}:{k:"off",on:0,R:[]};
+  var s=due.length&&trading(today)?{k:"due",on:1,R:due,B:atBell,W:waiting}:atBell.length?{k:"bell",on:atBell.length>gT.length?1:0,R:atBell}:waiting.length?{k:"rung",on:0,R:waiting}:{k:"off",on:0,R:[]};
   /* the last round: the newest graded day, its biggest company; the winner, what that call made, and the winner's season P&L */
   var lk=ROUNDS.reduce(function(a,u){var k=K(u.resolves);return k!=="9999"&&k>a?k:a},"0000"),r=big(ROUNDS.filter(function(u){return K(u.resolves)===lk}))[0];
   var P=P0(),wins=String(r&&r.win||"").split(/\s*&\s*/).filter(Boolean),who=wins[0];

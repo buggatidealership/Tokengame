@@ -2114,10 +2114,12 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   var bk=today;for(var i=0;i<10;i++){if(trading(bk)&&bellOf(bk)>now)break;bk=kadd(bk,1)}var bell=bellOf(bk),rung=trading(today)&&now>=bellOf(today);
   var atBell=PENDING.filter(function(u){return K(u.resolves)===today&&bk===today}),waiting=PENDING.filter(function(u){return K(u.resolves)!=="9999"&&(K(u.resolves)<today||K(u.resolves)===today&&rung)});
   var due=UPCOMING.filter(function(u){return K(u.called)===today});
+  /* (2026-10-28) rounds already graded at today's close stay today's resolutions: once the sheet had them, On air fell back to "No results today" */
+  var gT=trading(today)?ROUNDS.filter(function(u){return K(u.resolves)===today}):[];atBell=atBell.concat(gT);
   var nxs=UPCOMING.map(function(u){return K(u.called)}).filter(function(k){return k>today}).sort(),nk=nxs[0]||null,nR=UPCOMING.filter(function(u){return K(u.called)===nk});
   /* (audit, 2026-10-28) a day with predictions due shows them, with the rounds graded at today's close as a line under them (the bell
      used to win and hide a day of 15 predictions) */
-  var s=due.length&&trading(today)?{k:"due",on:1,R:due,B:atBell,W:waiting}:atBell.length?{k:"bell",on:1,R:atBell}:waiting.length?{k:"rung",on:0,R:waiting}:{k:"off",on:0,R:[]};
+  var s=due.length&&trading(today)?{k:"due",on:1,R:due,B:atBell,W:waiting}:atBell.length?{k:"bell",on:atBell.length>gT.length?1:0,R:atBell}:waiting.length?{k:"rung",on:0,R:waiting}:{k:"off",on:0,R:[]};
   /* the last round: the newest graded day, its biggest company; the winner, what that call made, and the winner's season P&L */
   var lk=ROUNDS.reduce(function(a,u){var k=K(u.resolves);return k!=="9999"&&k>a?k:a},"0000"),r=big(ROUNDS.filter(function(u){return K(u.resolves)===lk}))[0];
   var P=P0(),wins=String(r&&r.win||"").split(/\s*&\s*/).filter(Boolean),who=wins[0];
