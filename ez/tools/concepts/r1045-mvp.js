@@ -20,7 +20,7 @@ for(const W of WS){const c=await b.newContext(W<700?{viewport:{width:W,height:84
      const w=ws[i],card=w.querySelector(':scope>.card.x2p-s0')||w.querySelector('.card');document.querySelectorAll('.b45').forEach(e=>e.remove());
      document.querySelectorAll('#x2pHl .x2p-hb').forEach(h=>h.style.visibility='');
      const D=B45.data(w,card);if(id==='now')return {kind:D.kind};const el=B45.mount(card,id,B45.R[id](D,id+i));await document.fonts.ready;await new Promise(r=>setTimeout(r,250));
-     let f=B45.fit(el);if(K!=null){el.style.setProperty('--k',K);f={k:K,over:B45.over(el)}}return {kind:D.kind,k:f.k,over:f.over,h:Math.round(el.clientHeight),sh:el.scrollHeight}},{id,i,K});
+     let f=B45.fit(el);if(K!=null){el.style.setProperty('--k',K);f={k:K,over:B45.over(el)}}return {kind:D.kind,k:f.k,over:f.over,h:Math.round(el.clientHeight),sh:el.scrollHeight}},{id,i,K:pass?K:null});
    if(pass===0){K=K==null?m.k:Math.min(K,m.k);if(i===2)console.log(id,W,'row k',K);continue}
    const el=await p.evaluateHandle(i=>document.querySelectorAll('#x2pHl .x2p-hi')[i],i);
    await el.screenshot({path:OUT+id+'-'+m.kind+'-'+W+'.png'});console.log(id,m.kind,W,JSON.stringify(m));report.push([id,m.kind,W,m])}}
