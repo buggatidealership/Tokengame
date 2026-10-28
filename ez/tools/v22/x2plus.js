@@ -1499,7 +1499,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   /* the highlights land on Tightest race (the middle card), its film first (owner, 2026-10-22: with "Flip a card for the
      story" under the head, the animation shows first; it replaced the story side up), once the Overview is on screen */
   var landed=false;function land(){if(landed||!window.__x2pHlGo)return;var ws=$$("#x2pHl .x2p-hi"),i=1;
-    ws.forEach(function(w,j){var t=$(".x2p-htag",w);if(t&&/tight/i.test(t.textContent))i=j});if(window.__x2pHlGo(i,true))landed=true}
+    ws.forEach(function(w,j){var t=$(".x2p-htag",w);if(t&&/tight/i.test(t.textContent))i=j});/* (owner, 2026-10-28, night: "by default, we need to have the first card be the video", so the line "Flip a card for the story" holds; the back-first landing of the same evening is undone) */if(window.__x2pHlGo(i))landed=true}
   /* the standings: rank, logo, name, the last five, hit rate and ROI on each strip's middle by what the eye sees (the ink of
      the letters and digits, not their line boxes; owner: "a freak when it comes to symmetry"), and the last five halfway
      between the longest name and the leftmost hit rate, the same on every row */
