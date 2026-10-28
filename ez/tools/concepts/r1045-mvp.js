@@ -14,12 +14,14 @@ for(const W of WS){const c=await b.newContext(W<700?{viewport:{width:W,height:84
  await p.evaluate(js=>(new Function(js))(),rd('_base.js'));await p.addStyleTag({content:rd('_base.css')});
  for(const id of IDS){
   if(id!=='now'){await p.addStyleTag({content:rd(id.toUpperCase()+'.css')});await p.evaluate(js=>(new Function(js))(),rd(id.toUpperCase()+'.js'))}
-  for(let i=0;i<3;i++){
-   const m=await p.evaluate(async({id,i})=>{const ws=[...document.querySelectorAll('#x2pHl .x2p-hi')];window.__x2pHlGo(i,true);await new Promise(r=>setTimeout(r,900));
+  /* two passes: each card's own fit, then all three shot at the smallest (one type size across the row, as a carousel needs) */
+  let K=null;for(const pass of id==='now'?[1]:[0,1])for(let i=0;i<3;i++){
+   const m=await p.evaluate(async({id,i,K})=>{const ws=[...document.querySelectorAll('#x2pHl .x2p-hi')];window.__x2pHlGo(i,true);await new Promise(r=>setTimeout(r,900));
      const w=ws[i],card=w.querySelector(':scope>.card.x2p-s0')||w.querySelector('.card');document.querySelectorAll('.b45').forEach(e=>e.remove());
      document.querySelectorAll('#x2pHl .x2p-hb').forEach(h=>h.style.visibility='');
      const D=B45.data(w,card);if(id==='now')return {kind:D.kind};const el=B45.mount(card,id,B45.R[id](D,id+i));await document.fonts.ready;await new Promise(r=>setTimeout(r,250));
-     const f=B45.fit(el);return {kind:D.kind,k:f.k,over:f.over,h:Math.round(el.clientHeight),sh:el.scrollHeight}},{id,i});
+     let f=B45.fit(el);if(K!=null){el.style.setProperty('--k',K);f={k:K,over:B45.over(el)}}return {kind:D.kind,k:f.k,over:f.over,h:Math.round(el.clientHeight),sh:el.scrollHeight}},{id,i,K});
+   if(pass===0){K=K==null?m.k:Math.min(K,m.k);if(i===2)console.log(id,W,'row k',K);continue}
    const el=await p.evaluateHandle(i=>document.querySelectorAll('#x2pHl .x2p-hi')[i],i);
    await el.screenshot({path:OUT+id+'-'+m.kind+'-'+W+'.png'});console.log(id,m.kind,W,JSON.stringify(m));report.push([id,m.kind,W,m])}}
  console.log(W,'errors',errs.length?errs:0);await c.close()}
