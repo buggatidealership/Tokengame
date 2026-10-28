@@ -13,7 +13,7 @@ const GF='https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,600;1,700;1
   for(const s of ['#record','#standings','#learn','#highlights','#x2pSt']){await p.evaluate(s=>document.querySelector(s).scrollIntoView(),s);await p.waitForTimeout(500)}
   await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(1200);
   if(id!=='now'){await p.evaluate(u=>new Promise(r=>{const l=document.createElement('link');l.rel='stylesheet';l.href=u;l.onload=r;l.onerror=r;document.head.appendChild(l)}),GF);
-   await p.evaluate(rd(D+'_copy.js'));await p.evaluate(rd(D+'_base.js'));await p.addStyleTag({content:rd(D+'_base.css')+rd(D+id+'.css')});if(rd(D+id+'.js'))await p.evaluate(rd(D+id+'.js'));}
+   await p.evaluate(rd(D+'_copy.js'));await p.evaluate(rd(D+'_base.js'));await p.addStyleTag({content:(id[0]==='M'?rd(D+'_base.css').split('\n').filter(l=>l.indexOf('.x2p-strap')<0).join('\n')+rd(D+'_m.css'):rd(D+'_base.css'))+rd(D+id+'.css')});if(rd(D+id+'.js'))await p.evaluate(rd(D+id+'.js'));}
   await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(800);if(id!=='now')await p.evaluate(()=>{window.H45&&H45.info()});
   await p.evaluate(rd(D+'_fit.js'));const fit=id==='now'?null:await p.evaluate(()=>window.__h45fit());await p.waitForTimeout(400);
   const m=await p.evaluate(()=>{const W=innerWidth,o={sw:document.documentElement.scrollWidth,secs:{}};const R=e=>{const r=e.getBoundingClientRect();return {l:+r.left.toFixed(1),r:+r.right.toFixed(1),t:+(r.top+scrollY).toFixed(1),b:+(r.bottom+scrollY).toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1)}};
