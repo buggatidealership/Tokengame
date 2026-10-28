@@ -7356,7 +7356,12 @@ html.x2p.x2d.x2pbt .x2p-ls .x2p-ls-bar{height:6px;border-radius:3px;background:r
 html.x2p.x2d.x2pbt .x2p-ls .x2p-ls-bar .g{background-color:#e4d8b8;background-blend-mode:multiply;box-shadow:inset 0 1.5px 1px rgba(60,30,10,.55)}
 html.x2p.x2d.x2pbt .x2p-ls .x2p-ls-bar .t{box-shadow:inset 0 1.5px 1px rgba(90,40,0,.5)}
 /* the middle row a little taller, so Next's logos can move down with On air's and keep clear of "+n more" */
-html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] .x2p-ls-fr>.x2p-ls-c{padding-block:calc(6px*var(--k))}
+html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] .x2p-ls-fr>.x2p-ls-c{padding-block:0}
+/* (owner, same day: "remove the +11 more"; Next's logos "slightly higher... too much space between Next today and the first logos"):
+   no "+n more" and no extra row height; the counts sit on the middle of the foot row, level with "on Coca-Cola", instead of its
+   floor, so On air's even spacing (band()) needs less push and both logo grids rise */
+html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] .x2p-ls-more{display:none}
+html.x2p.x2d.x2pbt .x2p-ls[data-v=EF] :is(.x2p-ls-td,.x2p-ls-nx)>.x2p-ls-d{align-self:center}
 /*}STRIPSTAMP*/
 
 /*VTSMALL{ the film's buttons smaller (owner, 2026-10-28: the play button "a little bit smaller"; the sound icon "a bit more in the top
@@ -7379,6 +7384,10 @@ html.x2p.x2d.x2pbt .x2p-vt:not(.loading):not(.playing) .vt-play i{margin-left:1.
 html.x2p.x2d.x2pbt .x2p-vt.loading .vt-play i{width:6px;height:6px;border-width:1.4px}
 html.x2p.x2d.x2pbt .x2p-vt.playing .vt-play i{width:6px;height:7px;background:linear-gradient(90deg,#141217 0 2px,transparent 2px 4px,#141217 4px 6px)}
 /*}VTSMALL*/
+/* the proof's targets a touch smaller (owner, 2026-10-28: the charts "take a hell of a lot of space... shrink it a tiny bit"): Target hits is the
+   tallest view and sets the ticket's one height, so smaller targets make the P&L and Accuracy charts shorter too */
+html.x2p.x2d[data-theme] #learn .x2p-pt .pt-tg figure>svg{max-width:126px}
+
 
 </style>
 <style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>
@@ -10880,7 +10889,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     var ORDER=["roi","hit","miss","sector"],cur="roi";
     /* a chart in real pixels: each line in its colour, ink multiplied into the card; the leader foil-stamped (the NVIDIA recipe: a
        satin gold with grain, a dark wall above, a pale lip below), as thin as the rest; the model where each line ends */
-    var cid=0;function chart(el,h,ser,yz,o){var W=el.clientWidth,H=h||el.clientHeight||180,G=96,L=o.left||0,pw=W-G-L,pad=6,ih=H-2*pad;el.style.height=H+"px";if(pw<40)return;
+    /* the room on the right is the widest end label's, not a fixed 96px (owner, 2026-10-28: "extend the charts a bit to the right"),
+       so the lines run as far right as the names after them allow */
+    var cid=0;function chart(el,h,ser,yz,o){var W=el.clientWidth,H=h||el.clientHeight||180,L=o.left||0,pad=6,ih=H-2*pad;el.style.height=H+"px";
+      var G=0;el.innerHTML="";ser.forEach(function(s){var t=o.lab?o.lab(s.m):ver(s.m),q=d.createElement("div");q.className="pt-lb";q.style.cssText="visibility:hidden;left:0;top:0";q.innerHTML='<b'+(s.rank===1?' class="pt-fo"':'')+'>'+esc(t)+'</b>';el.appendChild(q);G=Math.max(G,q.getBoundingClientRect().width)});
+      G=Math.min(96,Math.max(40,Math.ceil(G)+10));var pw=W-G-L;if(pw<40)return;var axr=el.parentNode&&el.parentNode.querySelector(".pt-ax");if(axr)axr.style.marginRight=G+"px";
       var id="xpt"+(++cid),sx=function(x){return L+x/100*pw},sy=function(y){return pad+y/100*ih},P=function(s){return s.pts.map(function(p,i){return (i?"L":"M")+sx(p[0]).toFixed(1)+","+sy(p[1]).toFixed(1)}).join("")};
       var FL='filterUnits="userSpaceOnUse" x="-10" y="-10" width="'+(W+20)+'" height="'+(H+20)+'"',ln=function(dd,c,w,x){return '<path class="pt-dr" pathLength="1" d="'+dd+'" fill="none" stroke="'+c+'" stroke-width="'+w+'" stroke-linejoin="round" stroke-linecap="round"'+(x||"")+'/>'};
       var defs='<defs><linearGradient id="'+id+'g" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="54" y2="20" spreadMethod="reflect"><stop offset="0" stop-color="#fed98a"/><stop offset=".3" stop-color="#fdbc2a"/><stop offset=".52" stop-color="#d99a12"/><stop offset=".7" stop-color="#fdbc2a"/><stop offset="1" stop-color="#d99a12"/></linearGradient>'+

@@ -1362,7 +1362,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     var ORDER=["roi","hit","miss","sector"],cur="roi";
     /* a chart in real pixels: each line in its colour, ink multiplied into the card; the leader foil-stamped (the NVIDIA recipe: a
        satin gold with grain, a dark wall above, a pale lip below), as thin as the rest; the model where each line ends */
-    var cid=0;function chart(el,h,ser,yz,o){var W=el.clientWidth,H=h||el.clientHeight||180,G=96,L=o.left||0,pw=W-G-L,pad=6,ih=H-2*pad;el.style.height=H+"px";if(pw<40)return;
+    /* the room on the right is the widest end label's, not a fixed 96px (owner, 2026-10-28: "extend the charts a bit to the right"),
+       so the lines run as far right as the names after them allow */
+    var cid=0;function chart(el,h,ser,yz,o){var W=el.clientWidth,H=h||el.clientHeight||180,L=o.left||0,pad=6,ih=H-2*pad;el.style.height=H+"px";
+      var G=0;el.innerHTML="";ser.forEach(function(s){var t=o.lab?o.lab(s.m):ver(s.m),q=d.createElement("div");q.className="pt-lb";q.style.cssText="visibility:hidden;left:0;top:0";q.innerHTML='<b'+(s.rank===1?' class="pt-fo"':'')+'>'+esc(t)+'</b>';el.appendChild(q);G=Math.max(G,q.getBoundingClientRect().width)});
+      G=Math.min(96,Math.max(40,Math.ceil(G)+10));var pw=W-G-L;if(pw<40)return;var axr=el.parentNode&&el.parentNode.querySelector(".pt-ax");if(axr)axr.style.marginRight=G+"px";
       var id="xpt"+(++cid),sx=function(x){return L+x/100*pw},sy=function(y){return pad+y/100*ih},P=function(s){return s.pts.map(function(p,i){return (i?"L":"M")+sx(p[0]).toFixed(1)+","+sy(p[1]).toFixed(1)}).join("")};
       var FL='filterUnits="userSpaceOnUse" x="-10" y="-10" width="'+(W+20)+'" height="'+(H+20)+'"',ln=function(dd,c,w,x){return '<path class="pt-dr" pathLength="1" d="'+dd+'" fill="none" stroke="'+c+'" stroke-width="'+w+'" stroke-linejoin="round" stroke-linecap="round"'+(x||"")+'/>'};
       var defs='<defs><linearGradient id="'+id+'g" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="54" y2="20" spreadMethod="reflect"><stop offset="0" stop-color="#f6dc93"/><stop offset=".3" stop-color="#e4b54a"/><stop offset=".52" stop-color="#c99227"/><stop offset=".7" stop-color="#e7bd5b"/><stop offset="1" stop-color="#bf8a22"/></linearGradient>'+
