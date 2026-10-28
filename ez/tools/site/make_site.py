@@ -28,13 +28,13 @@ meta = ('<link rel="canonical" href="' + URL + '">\n<meta property="og:type" con
         '<meta property="og:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:card" content="summary_large_image">\n')
 doc = doc.replace('</head>', meta + '</head>', 1)
 # (overnight, 2026-10-27) the share card and the icons: a link to the site on X showed a bare text card and browsers a blank tab.
-# The card is media/share-b.png (the explainer's host, the hero line, the logo; options a to c from ez/tools/concepts/share/share.js);
+# The card is media/share-d.png (since 2026-10-28: the live headline "4 AIs trade earnings to run our buybacks." over the host; options a to d from ez/tools/concepts/share/share.js);
 # a new card needs a new file name (media is cached for a year, and X keeps a card for days). The icons are the EZ. logo.
-SHARE = 'share-b.png'
+SHARE = 'share-d.png'
 DESC = '4 AIs paper-trade every earnings report. $100K account each. Graded at the close. Top P&L makes the buyback call.'
 meta2 = ('<meta name="description" content="' + DESC + '">\n<meta property="og:description" content="' + DESC + '">\n'
          '<meta property="og:image" content="' + URL + 'media/' + SHARE + '">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n'
-         '<meta property="og:image:alt" content="We\u2019re putting buybacks in the hands of an AI. The EZ. logo and the host at his desk.">\n'
+         '<meta property="og:image:alt" content="4 AIs trade earnings to run our buybacks. The EZ. logo and the host at his desk.">\n'
          '<meta name="twitter:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:description" content="' + DESC + '">\n<meta name="twitter:image" content="' + URL + 'media/' + SHARE + '">\n'
          '<meta property="og:site_name" content="Earnings Zeason">\n<meta name="twitter:site" content="@earningszn">\n'
          '<link rel="icon" href="media/icon.svg" type="image/svg+xml">\n<link rel="icon" href="media/icon-32.png" sizes="32x32" type="image/png">\n<link rel="apple-touch-icon" href="media/icon-180.png">\n')
