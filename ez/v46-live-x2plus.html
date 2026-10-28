@@ -7253,6 +7253,11 @@ html.x2p .xc.xc.xc.xc.xc-pend:is([data-v=B],[data-v=D]) .xc-stp{width:calc(54*va
 html.x2p .xc.xc.xc.xc.xc-pend .xc-lk{display:block;width:100%;height:100%;mix-blend-mode:multiply}
 html.x2p .xc.xc.xc.xc.xc-pend .xc-out .xc-ci{font:800 calc(7.5*var(--u))/1 Archivo,sans-serif;font-style:normal;letter-spacing:.12em;text-transform:uppercase;margin-right:calc(4*var(--u));vertical-align:calc(2*var(--u))}
 /*}PENDCERT*/
+/*SPEED2{ (2026-10-28, the owner: "the site is quite slow when you scroll") the 👑 that nods on the page's own stats sides (under each record
+   card's certificate) and on the board under the season ticket is never seen, but its animation ran on the main thread and made the browser
+   re-plan the whole page's layers every frame: 1.1 s of every 4 s with nothing touched, measured. It stops where it cannot be seen */
+html.x2p #record .crown i,html.x2p #standings .crown i{animation:none}
+/*}SPEED2*/
 
 </style>
 <style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>
@@ -9686,7 +9691,8 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
       '<text font-family="Archivo,sans-serif" font-weight="800" font-size="6.2" fill="#1d1a1e" stroke="none"><textPath href="#'+id+'c" startOffset="0" textLength="222" lengthAdjust="spacing">STAMPED AT THE CLOSE · STAMPED AT THE CLOSE ·</textPath></text>'+
       '<text x="50" y="54" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="13" fill="#1d1a1e" stroke="none" opacity=".55">?</text></g>')+'</svg>'}
   function xopen(v,i){if(v==="B")return xmini("LOCKED","#1d1a1e",[-6,-4,-7,-5][i%4],i%4).replace('font-size="7.2" letter-spacing=".5"','font-size="6.2" letter-spacing=".3"');
-    return '<svg class="xc-m" viewBox="0 0 29 13" width="29" height="13" style="--rot:0deg" aria-hidden="true" focusable="false"><path d="M4 1H25L28 4V9L25 12H4L1 9V4Z" fill="none" stroke="#6b645b" stroke-width="1" stroke-dasharray="2.2 1.6"/></svg>'}
+    /* (owner, 2026-10-28, a phone screenshot circling them: no empty boxes on a card still to be graded) an empty slot keeps the calls in their column */
+    return '<span class="xc-m" aria-hidden="true"></span>'}
   var XPN=0;
   function pendify(c,u,re){var fin=c.querySelector(".face.front .fin");if(!fin)return;var old=fin.querySelector(".xc");if(old&&!re)return;xdefs();
     var v=window.__x2pPendV||"D",id="xp"+(++XPN),cl=xcloseAt(u.resolves,u.ticker),now=Date.now();
@@ -11346,7 +11352,10 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
     else{var p=d.createElement("span");p.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";e.appendChild(p);var base=p.getBoundingClientRect().top;p.remove();
      var cs=getComputedStyle(e),k=inkOf(cs,(cs.textTransform==="uppercase"?e.textContent.toUpperCase():e.textContent).replace(/\s+/g,""));cy=base-(k[0]+k[1])/2}
     e.style.setProperty("transform","translate("+(e.__dx||0).toFixed(2)+"px,"+(mid-cy).toFixed(2)+"px)","important")})}
- var cur=null,lw=0,raf=0;function run(){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){var ol=d.querySelector("#standings.x2p-tix ol.lbl");if(ol){d.documentElement.classList.add("x2p-stitch");try{[].slice.call(ol.querySelectorAll(".xs-sp")).forEach(function(e){e.remove()});level(ol)}catch(e){window.__x2pStitchErr=e}try{sbar(ol)}catch(e){window.__x2pSbErr=e}draw(ol);watch(ol)}})}
+ var cur=null,lw=0,raf=0;function run(){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){var ol=d.querySelector("#standings.x2p-tix ol.lbl");
+   /* (speed, 2026-10-28) the season ticket draws the board now; the page's own board under it is hidden (.stx-sr), so no measuring it:
+      levelling it measured every figure on canvas each time a row changed (3.3 s of a throttled scroll) */
+   if(ol&&ol.closest(".stx-sr"))return;if(ol){d.documentElement.classList.add("x2p-stitch");try{[].slice.call(ol.querySelectorAll(".xs-sp")).forEach(function(e){e.remove()});level(ol)}catch(e){window.__x2pStitchErr=e}try{sbar(ol)}catch(e){window.__x2pSbErr=e}draw(ol);watch(ol)}})}
  var mo=window.MutationObserver&&new MutationObserver(function(ms){if(ms.some(function(m){return [].slice.call(m.addedNodes).concat([].slice.call(m.removedNodes)).some(function(n){return n.nodeType===1&&!n.classList.contains("xs-j")})}))run()});
  function watch(ol){if(ol===cur||!mo)return;cur=ol;mo.observe(ol,{childList:true})}
  addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run()}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(run);addEventListener("load",run);addEventListener("hashchange",function(){setTimeout(run,120)});
@@ -11408,7 +11417,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  function dress(){if(!roll)return;var T=[].slice.call(roll.querySelectorAll(".stx-t"));T.forEach(function(t,i){paper(t,{noTop:i>0,noBot:i<T.length-1})});align()}
  /* ---- the proof ---- */
  var pcd=null;
- function proof(){var pt=d.querySelector("#learn .x2p-pt"),cd=pt&&pt.querySelector(".pt-cd");if(!cd)return;if(cd===pcd){paper(cd,{teeth:1});gap(cd);return}pcd=cd;
+ function proof(force){var pt=d.querySelector("#learn .x2p-pt"),cd=pt&&pt.querySelector(".pt-cd");if(!cd)return;if(cd===pcd){if(force){paper(cd,{teeth:1});gap(cd)}return}pcd=cd;
   var ser=((cd.querySelector(".pt-bd.r .pt-ko:last-child")||{}).textContent||"").match(/\d{6}/);ser=ser?ser[0]:"";
   var star=d.querySelector(".x2p-bt .bt-st span i");if(star)cd.style.setProperty("--stx-star",getComputedStyle(star).backgroundImage);
   cd.classList.add("bs-nx","stx-p");pt.classList.add("stx-pt");
@@ -11424,7 +11433,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  /* the rule under the folder tabs, drawn with a gap under the open one */
  function gap(cd){var tb=cd.querySelector(".pt-tb"),on=tb&&tb.querySelector('[aria-pressed="true"]');if(!on)return;var R=tb.getBoundingClientRect(),o=on.getBoundingClientRect(),a=(o.left-R.left).toFixed(1),b=(o.right-R.left).toFixed(1),ink="rgba(20,18,23,.75)";
   tb.style.setProperty("border-bottom-color","transparent","important");tb.style.setProperty("background","linear-gradient(90deg,"+ink+" 0 "+a+"px,transparent "+a+"px "+b+"px,"+ink+" "+b+"px 100%) 0 100%/100% 1.5px no-repeat","important")}
- var lw=0,raf=0;function run(force){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){if(!H.classList.contains("x2pbt"))return;try{board();if(force)dress();proof()}catch(e){window.__x2pTixErr=e}})}
+ var lw=0,raf=0;function run(force){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){if(!H.classList.contains("x2pbt"))return;try{board();if(force)dress();proof(force)}catch(e){window.__x2pTixErr=e}})}
  addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run(1)}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){run(1)});addEventListener("load",function(){run(1)});addEventListener("hashchange",function(){setTimeout(run,150)});
  var n=0;(function poll(){run();if(++n<40)setTimeout(poll,250)})()}catch(e){window.__x2pTixErr=e}})();
 /*}SEASONTIX*/
@@ -11515,7 +11524,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  var box=null,last="";function size(){var vt=d.querySelector(".x2p-vt");if(!vt||!box)return;var c=getComputedStyle(vt);box.style.width=vt.getBoundingClientRect().width+"px";box.style.marginLeft=c.marginLeft;box.style.marginRight=c.marginRight}
  function draw(force){var vt=d.querySelector(".x2p-vt");if(!vt||!H.classList.contains("x2pbt"))return false;
   if(!box){box=d.createElement("div");box.className="x2p-ls";box.setAttribute("role","region");box.setAttribute("aria-label","Live this week");vt.after(box)}else if(box.previousElementSibling!==vt)vt.after(box);
-  size();var h=html(model());if(h!==last||force){last=h;box.innerHTML=h;solid(box)}var t=box.querySelector(".x2p-ls-t");if(t)paper(t);return true}
+  size();var h=html(model());if(h!==last||force){last=h;box.innerHTML=h;solid(box);var t=box.querySelector(".x2p-ls-t");if(t)paper(t)}return true}   /* (speed, 2026-10-28) the paper only when the strip or the width changed: redone every 250 ms it restyled the page */
  /* a logo drawn on a tile (SK Hynix on white) prints as a block in one ink: when all four corners are opaque and the same colour, that
     colour is cut out on a canvas (same-origin image) and the logo then prints in ink like the rest; a logo whose shapes reach the corners
     in different colours (Microsoft) is left as it is */
