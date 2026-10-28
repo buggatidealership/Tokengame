@@ -13,7 +13,7 @@ for(const W of WS){const c=await b.newContext(W<700?{viewport:{width:W,height:84
    for(const f of ['16px Anton','italic 900 16px Archivo','700 16px "Barlow Condensed"','italic 600 16px "Barlow Condensed"'])await document.fonts.load(f)});await p.waitForTimeout(900);
  await p.evaluate(js=>(new Function(js))(),rd('_base.js'));await p.addStyleTag({content:rd('_base.css')});
  for(const id of IDS){
-  if(id!=='now'){const dep={A2:'A',F:'A'}[id.toUpperCase()];if(dep){await p.addStyleTag({content:rd(dep+'.css')});await p.evaluate(js=>(new Function(js))(),rd(dep+'.js'))}
+  if(id!=='now'){for(const dep of ({A2:['A'],F:['A'],A3:['A','A2'],G:['A','A2','F']})[id.toUpperCase()]||[]){await p.addStyleTag({content:rd(dep+'.css')});await p.evaluate(js=>(new Function(js))(),rd(dep+'.js'))}
    await p.addStyleTag({content:rd(id.toUpperCase()+'.css')});await p.evaluate(js=>(new Function(js))(),rd(id.toUpperCase()+'.js'))}
   /* two passes: each card's own fit, then all three shot at the smallest (one type size across the row, as a carousel needs) */
   let K=null;for(const pass of id==='now'?[1]:[0,1])for(let i=0;i<3;i++){

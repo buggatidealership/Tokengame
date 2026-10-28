@@ -35,7 +35,7 @@ function fit(el){var k=1;el.style.setProperty('--k',k);var o=over(el);while(o.le
   if(!o.length){var sp=function(){return [].reduce.call(el.querySelectorAll(':scope>.b45-sp'),function(a,e){return a+e.getBoundingClientRect().height},0)};
     while(k<1.24){var k2=Math.round((k+.03)*100)/100;el.style.setProperty('--k',k2);if(over(el).length||sp()<el.clientHeight*.06){el.style.setProperty('--k',k);break}k=k2}o=over(el)}
   return {k:k,over:o.slice(0,5)}}
-window.B45={CLS:{a2:'b45-a',f:'b45-a'},E:E,data:data,mount:mount,fit:fit,over:over,mark:mark,R:{}};
+window.B45={CLS:{a2:'b45-a',f:'b45-a',a3:'b45-a b45-a2',g:'b45-a'},E:E,data:data,mount:mount,fit:fit,over:over,mark:mark,R:{}};
 })();
 /* a round rubber stamp: a double rim, words round it, a star and the odds in the middle; struck in PASS's worn ink */
 B45.seal=function(top,mid,uid,col,w){col=col||'#a8231a';var id='b45s'+uid;

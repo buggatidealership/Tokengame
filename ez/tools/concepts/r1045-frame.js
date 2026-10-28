@@ -12,7 +12,7 @@ const IDS=(process.argv[2]||'now,A,B,C,D,E').split(','),WS=(process.argv[3]||'32
  for(const id of IDS)for(const W of WS){
   const ctx=await b.newContext({viewport:{width:W,height:W>700?900:844},deviceScaleFactor:W>700?2:3,isMobile:W<700,hasTouch:W<700});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await FONTS(p);
   await p.goto('http://127.0.0.1:8897/v46-live-x2plus.html',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:40000});await p.waitForTimeout(2500);
-  if(id!=='now'){const css=(rd(D+'_base.css')+(/^E\d/.test(id)?rd(D+'_e2.css'):'')+rd(D+id+'.css')).split('§').join(SEL),js=rd(D+'_base.js')+'\n'+rd(D+id+'.js');
+  if(id!=='now'){const css=(rd(D+'_base.css')+(/^E[23]$/.test(id)?rd(D+'_e2.css'):/^E[45]$/.test(id)?rd(D+'_today.css'):'')+rd(D+id+'.css')).split('§').join(SEL),js=rd(D+'_base.js')+'\n'+(/^E[45]$/.test(id)?rd(D+'_today.js')+'\n':'')+rd(D+id+'.js');
    await p.evaluate(([css,js])=>{const st=document.createElement('style');st.id='f45css';st.textContent=css;document.head.appendChild(st);(0,eval)(js)},[css,js])}
   await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(900);await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(300);
   const m=await p.evaluate(()=>{const vt=document.querySelector('.x2p-vt'),f=vt.querySelector('.vt-f'),fr=f.getBoundingClientRect(),W=innerWidth,o={sw:document.documentElement.scrollWidth,bad:[]};
@@ -25,6 +25,8 @@ const IDS=(process.argv[2]||'now,A,B,C,D,E').split(','),WS=(process.argv[3]||'32
     const pl=vt.querySelector('.vt-play').getBoundingClientRect(),sn=vt.querySelector('.vt-snd').getBoundingClientRect(),ls=document.querySelector('.x2p-ls').getBoundingClientRect();
     Object.assign(o,{film:[fr.left,fr.top,fr.width,fr.height].map(x=>+x.toFixed(1)),frame:[L,T,R-L,B-T].map(x=>+x.toFixed(1)),gutters:[+L.toFixed(1),+(W-R).toFixed(1)],
       play:+(((pl.top+pl.height/2)-fr.top)/fr.height*100).toFixed(1),sndIn:sn.right<=fr.right+.5&&sn.top>=fr.top-.5,stripTop:+ls.top.toFixed(1),gapToStrip:+(ls.top-B).toFixed(1),stripBottom:+ls.bottom.toFixed(1)});
+    const vo=vt.getBoundingClientRect(),g=s=>{const e=vt.querySelector(s);if(!e||getComputedStyle(e).display==='none')return null;const q=e.getBoundingClientRect();return [q.left-vo.left,q.top-vo.top,q.width,q.height].map(x=>+x.toFixed(2))};
+    o.geo={h2:g('h2.vt-tag'),k:g('.vb-k'),hd:g('.vb-hd'),ft:g('.vb-ft'),f:g('.vt-f')};
     /* the play button still answers a tap at its centre */
     const pc=document.elementFromPoint(pl.left+pl.width/2,pl.top+pl.height/2);o.playHit=!!(pc&&pc.closest('.vt-play'));return o});
   await p.screenshot({path:S+id+'-'+W+'.png'});
