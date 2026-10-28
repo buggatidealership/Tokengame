@@ -407,6 +407,10 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
         mean:G.reduce(function(a,g){return a+Math.abs(g.a)},0)/G.length,bulls:R.filter(function(c){return Math.round(c.off*100)<=10}).length,ds:ds,
         four:f4.length,none4:f4.filter(function(g){return !C.some(function(c){return c.g===g&&c.ok})}).length,indep:Math.round(1/Math.pow(pw,4)),
         worst:function(g,k){return C.slice().sort(function(a,b){return b.off-a.off}).slice(0,k).every(function(c){return c.g===g})}};return SF}
+    if(window.__x2pWL)(function(){var P=window.__x2pPnl&&window.__x2pPnl();if(!P)return;var all=[],m,n;for(m in P.A)for(n in P.A[m].per)all.push({m:m,n:+n,v:P.A[m].per[n].v});if(!all.length)return;
+      all.sort(function(a,b){return b.v-a.v});var w=all[0],l=all[all.length-1],bi=-1;items.forEach(function(it,i){if(/big/i.test(it.tag))bi=i});
+      var W={n:w.n,tag:"Biggest W",call:{m:w.m},head:"",body:"",rec:[]},L={n:l.n,tag:"Biggest L",call:{m:l.m},head:"",body:"",rec:[]};
+      if(bi>=0)items.splice(bi,1,W,L);else items.push(W,L)})();
     var cards=[];function mk(it){if(/everyone was wrong/i.test(it.tag))return null;/* dropped on X2+ (owner, 2026-10-20) */var r=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===it.n)r=ROUNDS[i];if(r&&window.__x2pRecFill)window.__x2pRecFill(it.n);/* its back, if it waits (build.py) */var o=r&&src.querySelector('.card[data-n="'+it.n+'"]');if(!o)return null;
       var c=o.cloneNode(true),E=ezGrade(r),k=it.tag.toLowerCase(),nf=c.classList.contains("nofilm");c.classList.remove("flipped","cur");c.removeAttribute("data-i");
       var fb=c.querySelector(".face.front [data-flip]");if(fb)fb.textContent="See why ↻";
@@ -415,7 +419,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
          the rarity as on an old trading card (a star and "1 in N", bottom right). Every number from ROUNDS through sf(). */
       var S=sf(),kw=["","One","Two","Three","Four","Five"],co=esc2(r.co),mv=Math.abs(r.a).toFixed(2),dirW=r.a>0?"rise":"fall",
         per=r.calls.map(function(x){var up=x[1].indexOf("DOWN")<0,mg=parseFloat(x[1].replace(/^(UP|DOWN)\s*/,""));return {m:nm1(x[0]),raw:x[0],up:up,mg:mg,ok:up===(r.a>0),off:+x[2]}}),
-        H="",D="",B="",T=null,RA="",RL="",bk=/bull|closest/.test(k)?"bull":/tight/.test(k)?"tight":/big/.test(k)?"big":"";
+        H="",D="",B="",T=null,RA="",RL="",bk=/bull|closest/.test(k)?"bull":/tight/.test(k)?"tight":/biggest w$/.test(k)?"w":/biggest l$/.test(k)?"l":/big/.test(k)?"big":"";
       /* (owner, 2026-10-25, later) context over numbers: the key facts highlighted in the story, then "Think of it this way" with an
          everyday comparison worked out from the same numbers (a miss is a share of the stock's price, so it scales to a stranger's
          height of 1.80 m; a winning margin to a 100 m race) */
@@ -443,6 +447,13 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
           (!rt&&per.length===4&&S.none4/S.four>1/S.indep?" And they keep failing together, like four students who “studied alone” and hand in <b>the same wrong answer</b>.":"");
         T=[co+" moved",(up?"▲":"▼")+mv+"%",up?"u":"r","Times a normal move",x+"x","g"];
         RA="1 in "+S.rounds;RL="The biggest move of "+S.rounds+" rounds"}
+      /* Biggest W and Biggest L (owner, 2026-10-28, a mockup behind window.__x2pWL: "geared towards crypto people... which model had
+         the best round in P&L... which one got wrecked the most"): the season's biggest single-call win and loss in the P&L view's
+         accounts, told around that one AI in the traders' own words */
+      else if((bk==="w"||bk==="l")&&it.call){var sc=per.filter(function(p){return p.raw===it.call.m})[0];if(sc){var su=r.a>0;
+        H=bk==="w"?esc2(sc.m)+" "+(sc.up?"longs":"shorts")+" "+co+". <em>Prints.</em>":esc2(sc.m)+" gets <em>rekt</em> on "+co;
+        D=esc2(sc.m)+" went "+(sc.up?"long":"short")+". "+co+" "+(su?"ripped":"dumped")+" "+mv+"%.";
+        RA="1 in "+S.n;RL="The biggest "+(bk==="w"?"win":"loss")+" of "+S.n+" calls"}}
       /* (owner, 2026-10-25, later: "instead of showing numbers") the comparison lives in the analogy now, so no tale-of-the-tape box */
       T=null;
       if(!H){H=it.head;B=esc2(it.body)}
@@ -455,10 +466,10 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
       var PL=window.__x2pPnl&&window.__x2pPnl(),pnl="",pun="";
       if(PL){var tk=/^\d/.test(r.ticker)||String(r.ticker).indexOf(".")>-1?r.co.split(" ")[0]:r.ticker,
           rows=r.calls.map(function(x){var t=PL.A[x[0]],q=t&&t.per[r.n];return q&&{raw:x[0],nm:nm1(x[0]),dn:q.dn,mg:q.mg,v:q.v,ok:q.v>0}}).filter(Boolean).sort(function(a,b){return b.v-a.v}),
-          wr=rows.filter(function(x){return !x.ok}),rt=rows.length-wr.length,hs=bk==="bull"&&bc?rows.filter(function(x){return x.raw===bc.raw})[0]:null,
+          wr=rows.filter(function(x){return !x.ok}),rt=rows.length-wr.length,hs=bk==="bull"&&bc?rows.filter(function(x){return x.raw===bc.raw})[0]:(bk==="w"||bk==="l")&&it.call?rows.filter(function(x){return x.raw===it.call.m})[0]:null,
           sum=rows.reduce(function(a,x){return a+x.v},0),big=hs?hs.v:sum,mvs=(r.a>0?"+":"−")+Math.abs(r.a).toFixed(2)+"%",
           side=function(x){return (x.dn?"Short ":"Long ")+esc2(tk)};
-        pun=bk==="big"?(rt?rt+" of "+rows.length+" caught it.":"They all got wrecked."):bk==="tight"&&!wr.length?"Everyone right. Everyone got paid.":
+        pun=bk==="w"?"The biggest W of the season. One call.":bk==="l"?(!rt?"All "+rows.length+" went "+(rows[0].dn?"short":"long")+". "+(hs?esc2(hs.nm):"One")+" lost the most.":"The biggest L of the season. One call."):bk==="big"?(rt?rt+" of "+rows.length+" caught it.":"They all got wrecked."):bk==="tight"&&!wr.length?"Everyone right. Everyone got paid.":
           hs?(wr.length?esc2(x2pAnd(wr.map(function(x){return x.nm})))+" went "+(wr[0].dn?"short":"long")+". They paid for it.":"Everyone right. Only "+esc2(hs.nm)+" this close."):B;
         if(rows.length)pnl='<div class="pn"><div class="pn-card '+(big>=0?"ok":"no")+'"><div class="pn-ct"><span>'+(hs?esc2(hs.nm)+" · "+side(hs):"All "+rows.length+" AIs · "+esc2(tk))+'</span><em>'+(hs?"Its P&amp;L":"Combined P&amp;L")+'</em></div>'+
           '<b class="pn-big">'+PL.usd(big)+'</b><div class="pn-cs">'+(hs?"Called "+(hs.dn?"−":"+")+(Math.round(hs.mg*100)/100)+"% · It moved "+mvs:"The stock moved "+mvs)+'</div></div>'+
@@ -471,7 +482,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
         (RA?'<span class="x2p-rar" role="note" aria-label="Rarity: '+RA+'. '+RL+'" title="'+RL+'"><b aria-hidden="true">★</b><span aria-hidden="true">'+RA+'</span></span>':'')+'</div></div>';
       /* (owner, 2026-10-21) no film yet: the card opens on its story and stays there; "Film soon" is never the face we show */
       if(nf)c.classList.add("flipped");setFaces2(c,nf);return c}
-    items.forEach(function(it){var c=mk(it);if(!c)return;var w=document.createElement("div");w.className="x2p-hi";var tg=document.createElement("span");tg.className="x2p-htag x2p-h-"+(/closest/i.test(it.tag)?"c":/tight/i.test(it.tag)?"t":"b");tg.textContent=it.tag;w.appendChild(tg);w.appendChild(c);cards.push(w)});
+    items.forEach(function(it){var c=mk(it);if(!c)return;var w=document.createElement("div");w.className="x2p-hi";var tg=document.createElement("span");tg.className="x2p-htag x2p-h-"+(/closest/i.test(it.tag)?"c":/tight|biggest w$/i.test(it.tag)?"t":"b");tg.textContent=it.tag;w.appendChild(tg);w.appendChild(c);cards.push(w)});
     /* Bullseyes (owner, 2026-10-24: "add the Tesla card on top of the Philip Morris one", "times three, so you can then see all of
        them"; "Grok hits the bullseye on Tesla"): every call that got the direction right and landed within 0.1% of the move, stacked
        in the Closest call's place under the tag "Bullseye" (the closest call of the season is always one of them), the closest on
@@ -1469,7 +1480,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
      the highlights name their three kinds from the cards' own tags */
   var gN=(typeof SHEET!=="undefined"?SHEET:[]).filter(function(r){return r[12]!==""&&r[12]!=null}).length;
   /* (owner, 2026-10-22) one colour each, the same as its card's tag, so the three read as the top three: closest gold, tightest green, biggest red */
-  var hk=$$("#x2pHl .x2p-htag").map(function(t){var k=(t.className.match(/x2p-h-(\w)/)||[])[1]||"c";t=(t.getAttribute("data-k")||t.textContent).trim().toLowerCase().replace(/[&<>]/g,"");return '<b class="x2p-hk x2p-h-'+k+'">'+t.charAt(0).toUpperCase()+t.slice(1)+'.</b>'}).join(" ");
+  var hk=$$("#x2pHl .x2p-htag").map(function(t){var k=(t.className.match(/x2p-h-(\w)/)||[])[1]||"c";t=(t.getAttribute("data-k")||t.textContent).trim().toLowerCase().replace(/[&<>]/g,"");t=t.replace(/ (w|l)$/,function(x){return x.toUpperCase()});return '<b class="x2p-hk x2p-h-'+k+'">'+t.charAt(0).toUpperCase()+t.slice(1)+'.</b>'}).join(" ");
   /* (owner, 2026-10-22) "predict", not "call each stock" (they don't call every stock); "before" and "after" in gold */
   /* the standings' three rules on the "The rules" strap above the board, with the tickets too (owner, 2026-10-23: "in the same
      format as we have it on the current live site"; they were the tickets' small print under the board for a day) */
