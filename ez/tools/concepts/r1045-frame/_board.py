@@ -20,4 +20,4 @@ SUB2='Round 2 (E picked): the EZ. logo, "presents" and "How it works" up top as 
 board(390,.5,len(N),EZ+'x2p-r1045-frame'+X+'.png','The film\'s frame in the EZ. logo\'s style · 390x844 first screen (rendered at 3x, shown at half)',
       SUB2 if R2 else 'The thumbnail is the ticket inside; the Season 1 strip under it is unchanged. Each frame: "Earnings Zeason presents", "How it works", the running time (counts down while playing). Nothing over the picture.')
 board(1280,.5,2 if R2 else 3,EZ+'x2p-r1045-frame'+X+'-desktop.png','The film\'s frame in the EZ. logo\'s style · 1280x900 first screen (rendered at 2x, shown at half)',
-      'Same five options and today\'s bill. The frame stays 560px wide on desktop, left in the column as today.')
+      ('Today, E, E2 and E3.' if R2 else 'Same five options and today\'s bill.')+' The frame stays 560px wide on desktop, left in the column as today.')
