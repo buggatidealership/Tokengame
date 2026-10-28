@@ -661,7 +661,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       return '<button type="button" data-uf2="'+f[0]+'" aria-pressed="'+(f[0]===F)+'">'+f[1]+' <b>'+n+'</b></button>'}).join("");
     function days(){var by={},ks=[];L.filter(ok).forEach(function(x){if(!by[x.k]){by[x.k]=[];ks.push(x.k)}by[x.k].push(x.u)});ks.sort();
       if(!ks.length)return '<p class="ul-e">Nothing in this filter yet.</p>';
+      /* a round with calls in but no grading date yet (2026-10-28, R59 GE Vernova) groups last under "Date to come" (wd(null) threw and
+         left the whole list empty) */
       return ks.map(function(k){var dd=D(by[k][0].calls&&by[k][0].calls.length?by[k][0].resolves:by[k][0].called),n=by[k].length;
+        if(!dd)return '<section class="ul-dy" data-k="'+k+'" aria-label="Date to come"><div class="dy-h"><b>Date to come</b><em></em><small>'+n+' on the card</small></div>'+
+          '<ul class="x2p-tks">'+by[k].map(function(u){return tk(u,false)}).join("")+'</ul></section>';
         return '<section class="ul-dy" data-k="'+k+'" aria-label="'+ue(wd(dd,{weekday:"long",month:"long",day:"numeric"}))+'"><div class="dy-h"><b>'+ue(k===nyK?"Today":wd(dd,{weekday:"long"}))+'</b><em>'+ue(wd(dd,{month:"short",day:"numeric"}))+'</em><small>'+n+' on the card</small></div>'+
           '<ul class="x2p-tks">'+by[k].map(function(u){return tk(u,false)}).join("")+'</ul></section>'}).join("")}
     $(".ul-d",root).innerHTML=days();fitN(root);

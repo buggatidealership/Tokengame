@@ -384,6 +384,10 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
             # the close is the market's word (owner, 2026-10-25: "instead of outcome, it should be market... across the entire website"):
             # the record back's close row, and everywhere else bkOut() draws it, reads Market on X2+ (v15 and the locked pages keep Outcome)
             ('const ACTUAL_WORD = "Outcome";','const ACTUAL_WORD = "Market";'),
+            # a round with calls in but no grading date yet (2026-10-28, R59 GE Vernova) sorted first and took the "In play" pill
+            # over the rounds graded today; it goes after every dated round (Infinity), so the pill shows the next close
+            ('var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});',
+             'var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||Infinity)-(mmdd(b.resolves)||Infinity))||(a.n-b.n)});'),
             # the first screen's fonts are asked for at once (window.__x2pF; x2plus.js waits for them before it lifts the cover), not when
             # the page first lays them out; the cover comes off by itself after 20 s whatever happens, and at once without scripts
             ('<body>','<body>\n<div id="x2pLoad" aria-hidden="true">'+XPMARK+'</div>\n'

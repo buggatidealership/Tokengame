@@ -353,8 +353,12 @@ def main():
         if o[0] not in consumed:
             if ident(o) in VOID_KEYS:
                 report.append("VOIDED     R%s %s: removed from the site" % (o[0], o[1]))
+            elif o[act] == "" and "--allow-drops" in args:
+                # an ungraded round the owner took out of the sheet (2026-10-28, LG Energy Solution): it leaves the site;
+                # a graded one never goes this way (its record is public)
+                report.append("DROPPED    R%s %s: not graded, taken out of the sheet" % (o[0], o[1]))
             else:
-                problems.append("R%s %s is in the site but missing from the sheet" % (o[0], o[1]))
+                problems.append("R%s %s is in the site but missing from the sheet%s" % (o[0], o[1], "  (not graded: rerun with --allow-drops if the owner took it out)" if o[act] == "" else ""))
     # every round-keyed map follows its round when it moves; an entry whose round is gone is dropped (and reported)
     remaps, gone, spans = {}, [], []
     targets = set(renum.values())
