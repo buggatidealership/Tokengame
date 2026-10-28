@@ -2144,6 +2144,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   /* the bands' words knocked out of the band's ink, the card's grain in them, as the season ticket's; NVDA and its star in the band
      stars' gold with the grain multiplied in (owner, 2026-10-28: "a nice golden one... that's sort of the end of season 1") */
   var grain=Lb[23];[].forEach.call(t.querySelectorAll(".x2p-ls-bw"),function(e){e.style.backgroundImage=grain;e.style.backgroundSize="200px 200px"});
+  [].forEach.call(t.querySelectorAll(".x2p-ls-bar .g"),function(e){e.style.backgroundImage=grain;e.style.backgroundSize="200px 200px"});
   [].forEach.call(t.querySelectorAll(".x2p-ls-gd"),function(e){e.style.backgroundImage=grain+",linear-gradient(135deg,#fed98a,#fdbc2a 45%,#e8a817 70%,#fed98a)";e.style.backgroundSize="200px 200px,100% 100%";e.style.backgroundBlendMode="multiply,normal"});
   var fs=t.querySelector(".x2p-ls-fs"),T=t.getBoundingClientRect(),F=[].slice.call(fs.querySelectorAll(".x2p-ls-fr")).map(function(x){return x.getBoundingClientRect()});
   var cols=[0,1].map(function(i){return ((F[i].right+F[i+1].left)/2-T.left).toFixed(1)+"px"});
@@ -2156,7 +2157,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  var box=null,last="";function size(){var vt=d.querySelector(".x2p-vt");if(!vt||!box)return;var c=getComputedStyle(vt);box.style.width=vt.getBoundingClientRect().width+"px";box.style.marginLeft=c.marginLeft;box.style.marginRight=c.marginRight}
  function draw(force){var vt=d.querySelector(".x2p-vt");if(!vt||!H.classList.contains("x2pbt"))return false;
   if(!box){box=d.createElement("div");box.className="x2p-ls";box.setAttribute("role","region");box.setAttribute("aria-label","Live this week");box.setAttribute("data-v",window.__x2pLsV||"EF");   /* (owner, 2026-10-28) EF is the strip; A to E3 stay for mockups */vt.after(box)}else if(box.previousElementSibling!==vt)vt.after(box);
-  size();var h=html(model());if(h!==last||force){last=h;box.innerHTML=h;solid(box);bigfit();var t=box.querySelector(".x2p-ls-t");if(t)paper(t)}return true}   /* (speed, 2026-10-28) the paper only when the strip or the width changed: redone every 250 ms it restyled the page */
+  size();var h=html(model());if(h!==last||force){last=h;box.innerHTML=h;solid(box);bigfit();var t=box.querySelector(".x2p-ls-t");if(t)paper(t);band()}return true}   /* (speed, 2026-10-28) the paper only when the strip or the width changed: redone every 250 ms it restyled the page */
  /* a logo drawn on a tile (SK Hynix on white) prints as a block in one ink: when all four corners are opaque and the same colour, that
     colour is cut out on a canvas (same-origin image) and the logo then prints in ink like the rest; a logo whose shapes reach the corners
     in different colours (Microsoft) is left as it is */
@@ -2180,6 +2181,12 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
      x.putImageData(D,0,0);if(crop){var c2=d.createElement("canvas"),q=Math.max(cw,ch);c2.width=cw;c2.height=ch;c2.getContext("2d").drawImage(c,x0,y0,cw,ch,0,0,cw,ch);c=c2}
      KEY[s]=c.toDataURL("image/png");im.src=KEY[s];nudge(im)}catch(e){KEY[s]=null}};
    if(im.complete&&im.naturalWidth)test();else im.addEventListener("load",test,{once:true})})}
+ /* On air's logos halfway between the burst and the count under them (owner, 2026-10-28: "the bottom logo needs to be as close to
+    resolution as the top logos" to On air, "a bit more room to breathe"); Next's logos move with them so the two grids stay on one line */
+ function band(){var td=box.querySelector(".x2p-ls-td"),nx=box.querySelector(".x2p-ls-nx");if(!td)return;var cs=[td,nx].map(function(f){return f&&f.querySelector(".x2p-ls-c")});
+  cs.forEach(function(c){if(c)c.style.translate=""});var g=cs[0]&&cs[0].querySelector(".x2p-ls-lgw"),bu=td.querySelector(".x2p-ls-bu"),ct=td.querySelector(".x2p-ls-d .x2p-ls-ct,.x2p-ls-d .x2p-ls-s");if(!g||!bu||!ct)return;
+  var G=g.getBoundingClientRect(),A=bu.getBoundingClientRect(),D=ct.getBoundingClientRect(),v=A.bottom+(D.top-A.bottom-G.height)/2-G.top;if(!(v>.5))return;
+  cs.forEach(function(c){if(c&&c.querySelector(".x2p-ls-lgw"))c.style.translate="0 "+v.toFixed(2)+"px"})}
  /* the big labels (E takes) step down until they fit their frame */
  function bigfit(){[].forEach.call(box.querySelectorAll(".x2p-ls-big"),function(b){b.style.fontSize="";var f=b.closest(".x2p-ls-fr");if(!f)return;var cs=getComputedStyle(f),w=f.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-2,z=parseFloat(getComputedStyle(b).fontSize),n=0;
    while(b.scrollWidth>w&&z>9&&n++<30){z-=.5;b.style.fontSize=z+"px"}})}
