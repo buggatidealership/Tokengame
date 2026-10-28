@@ -2107,7 +2107,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   var N=m.nk?row('<b class="x2p-ls-lb">Next · '+kfmt(m.nk)+'</b>',"",logos(m.nR,3),cnt(m.nR.length,"prediction")):row('<b class="x2p-ls-lb">Next</b>',"","",'<span class="x2p-ls-s">Dates to come</span>');
   /* (owner, 2026-10-28, mockups E1 to E3) Last round and Next the biggest words in their frames; On air smaller and higher; the logos in
      the middle: two, or four in two rows, with "+n more" under them; the logos in their own colours */
-  var V=String(window.__x2pLsV||"");if(/^E/.test(V)){var two=V==="E3",tg=V!=="E1";
+  var V=String(window.__x2pLsV||"EF");if(/^E/.test(V)){var two=V==="E3"||V==="EF",tg=V!=="E1";
    var grid=function(R,n){var B=big(R),sh=B.slice(0,n),k=B.length-sh.length;return '<span class="x2p-ls-lgw"><span class="x2p-ls-lgs'+(n>2?" g4":"")+'">'+sh.map(function(u){return logo(u)}).join("")+'</span>'+(k>0?'<span class="x2p-ls-more">+'+k+' more</span>':'')+'</span>'};
    var big1=function(t,b){return '<b class="x2p-ls-lb x2p-ls-big">'+(two?t+'<br>'+b:t+(b?' '+b:''))+'</b>'};
    L=r?row(big1("Last","round"),'<span class="x2p-ls-who">'+ai(m.who)+'<b>'+esc(nm(m.who))+(m.won?" won":" · top P&amp;L")+'</b></span>',
@@ -2115,6 +2115,11 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
    if(s.k==="bell"||s.k==="due")C=row(burst,"",grid(s.R,tg?4:2),cnt(s.R.length,s.k==="bell"?"resolution":"prediction"));
    else if(s.k==="rung")C=row(burst,"",grid(s.R,tg?4:2),'<span class="x2p-ls-s">Results soon</span>');
    N=m.nk?row(big1("Next",(two?"":"· ")+kfmt(m.nk)),"",grid(m.nR,4),cnt(m.nR.length,"prediction")):row(big1("Next",""),"","",'<span class="x2p-ls-s">Dates to come</span>')}
+  /* F (owner, 2026-10-28, on E3): the winner and what the call made as one block in the middle of the frame, on the same line as the
+     other frames' logos; On air = the resolutions at today's close; a day's predictions still due show under Next ("Next / Today") */
+  if(V==="EF"){L=r?row(big1("Last","round"),"",'<span class="x2p-ls-mid"><span class="x2p-ls-who">'+ai(m.who)+'<b>'+esc(nm(m.who))+(m.won?" won":" · top P&amp;L")+'</b></span>'+
+     '<span class="x2p-ls-pn '+(m.pn>=0?"up":"dn")+'">'+m.usd(m.pn,true)+'</span></span>','<span class="x2p-ls-on">on '+logo(r,"x2p-ls-bg")+'</span>'):row("","","","");
+   if(s.k==="due"&&s.B&&s.B.length){C=row(burst,"",grid(s.B,4),cnt(s.B.length,"resolution"));N=row(big1("Next","Today"),"",grid(s.R,4),cnt(s.R.length,"prediction"))}}
   var g=(m.graded/m.total*100).toFixed(2),t=((s.k==="bell"?s.R.length:s.k==="due"?s.B.length:0)/m.total*100).toFixed(2);
   var inner='<div class="r39-in x2p-ls-fs"><div class="x2p-ls-fr x2p-ls-l">'+L+'</div><div class="x2p-ls-fr x2p-ls-td">'+C+'</div><div class="x2p-ls-fr x2p-ls-nx'+(on?"":" dim")+'">'+N+'</div></div>';
   var head='<b class="x2p-ls-bw">Season 1 · Week '+m.wk+'</b>',foot='<b class="x2p-ls-bw">Season 1</b><span class="x2p-ls-bar"><i class="g" style="width:'+g+'%"></i><i class="t" style="left:'+g+'%;width:'+t+'%"></i></span><b class="x2p-ls-bw"><u>'+m.graded+'</u>/'+m.total+' · NVDA ★</b>';
@@ -2139,18 +2144,20 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  /* as wide as the film, under it */
  var box=null,last="";function size(){var vt=d.querySelector(".x2p-vt");if(!vt||!box)return;var c=getComputedStyle(vt);box.style.width=vt.getBoundingClientRect().width+"px";box.style.marginLeft=c.marginLeft;box.style.marginRight=c.marginRight}
  function draw(force){var vt=d.querySelector(".x2p-vt");if(!vt||!H.classList.contains("x2pbt"))return false;
-  if(!box){box=d.createElement("div");box.className="x2p-ls";box.setAttribute("role","region");box.setAttribute("aria-label","Live this week");if(window.__x2pLsV)box.setAttribute("data-v",window.__x2pLsV);vt.after(box)}else if(box.previousElementSibling!==vt)vt.after(box);
+  if(!box){box=d.createElement("div");box.className="x2p-ls";box.setAttribute("role","region");box.setAttribute("aria-label","Live this week");box.setAttribute("data-v",window.__x2pLsV||"EF");   /* (owner, 2026-10-28) EF is the strip; A to E3 stay for mockups */vt.after(box)}else if(box.previousElementSibling!==vt)vt.after(box);
   size();var h=html(model());if(h!==last||force){last=h;box.innerHTML=h;solid(box);bigfit();var t=box.querySelector(".x2p-ls-t");if(t)paper(t)}return true}   /* (speed, 2026-10-28) the paper only when the strip or the width changed: redone every 250 ms it restyled the page */
  /* a logo drawn on a tile (SK Hynix on white) prints as a block in one ink: when all four corners are opaque and the same colour, that
     colour is cut out on a canvas (same-origin image) and the logo then prints in ink like the rest; a logo whose shapes reach the corners
     in different colours (Microsoft) is left as it is */
- var KEY={};function solid(r){[].slice.call(r.querySelectorAll(".x2p-ls-lg img")).forEach(function(im){var s=im.getAttribute("src");if(/^data:/.test(s))return;
-   if(KEY[s]!==undefined){if(KEY[s])im.src=KEY[s];return}var test=function(){try{var c=d.createElement("canvas"),w=c.width=im.naturalWidth,h=c.height=im.naturalHeight;if(!w||!h)return;var x=c.getContext("2d");x.drawImage(im,0,0);
+ var KEY={},LT={};function solid(r){[].slice.call(r.querySelectorAll(".x2p-ls-lg img")).forEach(function(im){var s=im.getAttribute("src");if(/^data:/.test(s))return;
+   if(KEY[s]!==undefined){if(KEY[s])im.src=KEY[s];if(LT[s]&&im.parentNode)im.parentNode.classList.add("dk");return}var test=function(){try{var c=d.createElement("canvas"),w=c.width=im.naturalWidth,h=c.height=im.naturalHeight;if(!w||!h)return;var x=c.getContext("2d");x.drawImage(im,0,0);
      var D=x.getImageData(0,0,w,h),a=D.data,px=function(X,Y){var o=(Y*w+X)*4;return [a[o],a[o+1],a[o+2],a[o+3]]},C=[px(1,1),px(w-2,1),px(1,h-2),px(w-2,h-2)],dist=function(p,q){return Math.abs(p[0]-q[0])+Math.abs(p[1]-q[1])+Math.abs(p[2]-q[2])};
      var keyed=C.every(function(p){return p[3]>200&&dist(p,C[0])<30});
      if(keyed)for(var o=0;o<a.length;o+=4){var e=Math.abs(a[o]-C[0][0])+Math.abs(a[o+1]-C[0][1])+Math.abs(a[o+2]-C[0][2]);if(e<60)a[o+3]=0;else if(e<120)a[o+3]=Math.round(a[o+3]*(e-60)/60)}
      /* (owner, 2026-10-28: the Apple and Amazon logos "a bit larger") empty margins in a logo's file are trimmed, so every mark fills its box */
      var x0=w,y0=h,x1=-1,y1=-1;for(var Y=0;Y<h;Y++)for(var X=0;X<w;X++)if(a[(Y*w+X)*4+3]>12){if(X<x0)x0=X;if(X>x1)x1=X;if(Y<y0)y0=Y;if(Y>y1)y1=Y}
+     /* a light logo meant for a dark ground (Samsung's white wordmark) prints in ink on the cream, like the CO_LOGOS dark ones */
+     var lu=0,sat=0,ln=0;for(var o2=0;o2<a.length;o2+=16)if(a[o2+3]>128){lu+=.299*a[o2]+.587*a[o2+1]+.114*a[o2+2];sat+=Math.max(a[o2],a[o2+1],a[o2+2])-Math.min(a[o2],a[o2+1],a[o2+2]);ln++}if(ln&&lu/ln>175&&sat/ln<40){LT[s]=1;if(im.parentNode)im.parentNode.classList.add("dk")}
      var cw=x1-x0+1,ch=y1-y0+1,crop=x1>=0&&(cw<w*.92||ch<h*.92);if(!keyed&&!crop){KEY[s]=null;return}
      x.putImageData(D,0,0);if(crop){var c2=d.createElement("canvas"),q=Math.max(cw,ch);c2.width=cw;c2.height=ch;c2.getContext("2d").drawImage(c,x0,y0,cw,ch,0,0,cw,ch);c=c2}
      KEY[s]=c.toDataURL("image/png");im.src=KEY[s]}catch(e){KEY[s]=null}};
