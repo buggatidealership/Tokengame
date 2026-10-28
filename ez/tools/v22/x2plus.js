@@ -2326,3 +2326,17 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
 })();
 
 /*}G2JS*/
+/* PAPER (owner, 2026-10-28: "paper you can feel... do that on web on mobile and push it to production"): every printed ticket (the bet
+   stock: the strip under the film, the season ticket and its tryouts stub, the proof, the bet and Season 2 tickets) gets a cut edge, a
+   sliver of card between the paper and its hard shadow, and a light that rakes across the paper as it scrolls past. The edge is a copy
+   of the hard shadow's layer (same die cut), kept in step with it; the light is a wide gradient moved by transform on a view timeline. */
+(function(){
+ function sync(hs,ed){ed.style.cssText=hs.style.cssText;ed.style.setProperty("transform","translate(.6px,2.4px)","important")}
+ function one(t){if(t.hasAttribute("data-ppr"))return;var hs=t.querySelector(":scope>.bt-hs"),pp=t.querySelector(":scope>.bt-p");if(!hs||!pp)return;
+  t.setAttribute("data-ppr","");var ed=hs.cloneNode(false);ed.className="bt-hs bt-edge";ed.setAttribute("aria-hidden","true");sync(hs,ed);hs.after(ed);
+  new MutationObserver(function(){sync(hs,ed)}).observe(hs,{attributes:true,attributeFilter:["style"]});
+  var lt=document.createElement("i");lt.className="bt-rake";lt.setAttribute("aria-hidden","true");(pp.querySelector(":scope>.bt-pp")||pp).appendChild(lt)}
+ var q=0;function all(){q=0;[].forEach.call(document.querySelectorAll(".bs-nx:not([data-ppr])"),one)}
+ function soon(){if(!q)q=requestAnimationFrame(all)}
+ all();new MutationObserver(soon).observe(document.body,{childList:true,subtree:true});
+})();

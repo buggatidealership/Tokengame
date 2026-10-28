@@ -7618,6 +7618,20 @@ html.x2p .xc.xc.xc.xc.xc-pend .xc-out{gap:calc(6*var(--u))}
 html.x2p .xc.xc.xc.xc.xc-pend .xc-out .xc-cd{display:inline-flex;flex-direction:column;align-items:flex-end;white-space:nowrap;text-align:right;row-gap:calc(3*var(--u))}
 html.x2p .xc.xc.xc.xc.xc-pend .xc-out .xc-ci{margin-right:0;vertical-align:baseline}
 /*}PENDFIX*/
+/*PAPER{ (owner, 2026-10-28) paper you can feel: a cut edge under every printed ticket and a raking light on scroll (x2plus.js PAPER) */
+html.x2p .bs-nx>.bt-hs.bt-edge{z-index:-1;pointer-events:none;transform:translate(.6px,2.4px);background:linear-gradient(90deg,#b8a77f,#d9caa4 30%,#cdbd95 70%,#a8976f)!important}
+html.x2p .bs-nx>.bt-p{isolation:isolate}
+html.x2p .bs-nx .bt-pp:has(>.bt-rake){overflow:hidden}
+html.x2p .bt-rake{position:absolute;top:0;bottom:0;left:-100%;width:300%;pointer-events:none;z-index:50;mix-blend-mode:overlay;
+ background:linear-gradient(112deg,rgba(0,0,0,.10) 0%,rgba(0,0,0,0) 28%,rgba(255,255,255,.35) 44%,rgba(255,255,255,.7) 50%,rgba(255,255,255,.35) 56%,rgba(0,0,0,0) 72%,rgba(0,0,0,.12) 100%);
+ transform:translateX(-5%)}
+@supports (animation-timeline:view()){
+ @media (prefers-reduced-motion:no-preference){html.x2p .bt-rake{animation:x2pRake linear both;animation-timeline:view();animation-range:entry 0% exit 100%}}
+}
+@keyframes x2pRake{from{transform:translateX(-33.3%)}to{transform:translateX(33.3%)}}
+/* the bow: a touch lighter where the card bulges, a hair darker at its ends */
+html.x2p .bs-nx>.bt-p::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:49;background:radial-gradient(120% 90% at 50% 45%,rgba(255,255,255,.10),rgba(0,0,0,0) 55%,rgba(60,40,10,.10));mix-blend-mode:multiply}
+/*}PAPER*/
 
 </style>
 <style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>
@@ -7779,7 +7793,7 @@ html.x2p .xc.xc.xc.xc.xc-pend .xc-out .xc-ci{margin-right:0;vertical-align:basel
 <main id="view" class="wrap" tabindex="-1" hidden></main>
 <footer><div class="motto">Nobody said it would <span style="white-space:nowrap">be <span class="e">E</span><span class="z">Z</span></span></div><div class="badge mark"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></div><small>$EZ · EARNINGS ZEASON, WITH A Z<br>CALLS FILED BEFORE THE PRINT · GRADED BY THE MARKET · NEVER EDITED</small><p class="ftl"><a href="#" data-todo="philosophy page">How we think about this →</a></p></footer>
 
-<script src="ez-data.js?v=317eed6c80"></script>
+<script src="ez-data.js?v=8469211c6e"></script>
 <script src="ez-learn.js?v=831ec77111"></script>
 <script>
 (function(){
@@ -12102,6 +12116,20 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
 })();
 
 /*}G2JS*/
+/* PAPER (owner, 2026-10-28: "paper you can feel... do that on web on mobile and push it to production"): every printed ticket (the bet
+   stock: the strip under the film, the season ticket and its tryouts stub, the proof, the bet and Season 2 tickets) gets a cut edge, a
+   sliver of card between the paper and its hard shadow, and a light that rakes across the paper as it scrolls past. The edge is a copy
+   of the hard shadow's layer (same die cut), kept in step with it; the light is a wide gradient moved by transform on a view timeline. */
+(function(){
+ function sync(hs,ed){ed.style.cssText=hs.style.cssText;ed.style.setProperty("transform","translate(.6px,2.4px)","important")}
+ function one(t){if(t.hasAttribute("data-ppr"))return;var hs=t.querySelector(":scope>.bt-hs"),pp=t.querySelector(":scope>.bt-p");if(!hs||!pp)return;
+  t.setAttribute("data-ppr","");var ed=hs.cloneNode(false);ed.className="bt-hs bt-edge";ed.setAttribute("aria-hidden","true");sync(hs,ed);hs.after(ed);
+  new MutationObserver(function(){sync(hs,ed)}).observe(hs,{attributes:true,attributeFilter:["style"]});
+  var lt=document.createElement("i");lt.className="bt-rake";lt.setAttribute("aria-hidden","true");(pp.querySelector(":scope>.bt-pp")||pp).appendChild(lt)}
+ var q=0;function all(){q=0;[].forEach.call(document.querySelectorAll(".bs-nx:not([data-ppr])"),one)}
+ function soon(){if(!q)q=requestAnimationFrame(all)}
+ all();new MutationObserver(soon).observe(document.body,{childList:true,subtree:true});
+})();
 
 </script>
 </body>
