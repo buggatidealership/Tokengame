@@ -23,7 +23,7 @@ function data(w,card){var hb=card.querySelector('.x2p-hb'),fr=card.querySelector
     sim:'Simulated · $100K each · no leverage',rar:rar?T(rar.querySelector('span')):'',rarL:rar?rar.getAttribute('title'):'',calls:calls,acct:acct,
     film:card.querySelector('.art.still')?'picture':'film'}}
 function mount(card,id,html){var fin=card.querySelector('.face.back .fin');fin.querySelectorAll('.b45').forEach(function(e){e.remove()});
-  var hb=fin.querySelector('.x2p-hb');hb.style.visibility='hidden';var el=d.createElement('div');el.className='b45 b45-'+id;
+  var hb=fin.querySelector('.x2p-hb');hb.style.visibility='hidden';var el=d.createElement('div');el.className='b45 b45-'+id+(B45.CLS[id]?' '+B45.CLS[id]:'');
   el.style.setProperty('--u',(fin.getBoundingClientRect().width/202)+'px');el.innerHTML=html;fin.appendChild(el);return el}
 function over(el){var R=el.getBoundingClientRect(),o=[];if(el.scrollHeight>el.clientHeight+.5)o.push('scroll '+(el.scrollHeight-el.clientHeight));
   el.querySelectorAll('*').forEach(function(e){if(e.closest('.b45-free'))return;var r=e.getBoundingClientRect();if(!r.width||!r.height)return;
@@ -35,7 +35,7 @@ function fit(el){var k=1;el.style.setProperty('--k',k);var o=over(el);while(o.le
   if(!o.length){var sp=function(){return [].reduce.call(el.querySelectorAll(':scope>.b45-sp'),function(a,e){return a+e.getBoundingClientRect().height},0)};
     while(k<1.24){var k2=Math.round((k+.03)*100)/100;el.style.setProperty('--k',k2);if(over(el).length||sp()<el.clientHeight*.06){el.style.setProperty('--k',k);break}k=k2}o=over(el)}
   return {k:k,over:o.slice(0,5)}}
-window.B45={E:E,data:data,mount:mount,fit:fit,over:over,mark:mark,R:{}};
+window.B45={CLS:{a2:'b45-a',f:'b45-a'},E:E,data:data,mount:mount,fit:fit,over:over,mark:mark,R:{}};
 })();
 /* a round rubber stamp: a double rim, words round it, a star and the odds in the middle; struck in PASS's worn ink */
 B45.seal=function(top,mid,uid,col,w){col=col||'#a8231a';var id='b45s'+uid;
