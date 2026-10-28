@@ -21,7 +21,10 @@ def board(W,sc,kinds,out,percol):
         x=cx
         for i in g:im.paste(i,(x,cy+lab));x+=i.width+16
     im.save(EZ+out,optimize=True);print(out,im.size)
-if os.environ.get('R3'):
+if os.environ.get('R4'):
+    OPTS[:]=[('g2','G2','Certificate of record, P&L in the middle, punch line at the foot')]
+    os.environ['MINW']='1400';board(390,.5,KINDS,'x2p-r1045-mvp-4.png',1);os.environ['MINW']='1400';board(1280,.5,[KINDS[0]],'x2p-r1045-mvp-4-desktop.png',1)
+elif os.environ.get('R3'):
     OPTS[:]=[('a3','A3','A2 without the combined box\'s second line'),('g','G','A2 and F morphed')]
     board(390,.5,KINDS,'x2p-r1045-mvp-3.png',2);os.environ['MINW']='640';board(1280,.5,[KINDS[0]],'x2p-r1045-mvp-3-desktop.png',2)
 elif os.environ.get('R2'):

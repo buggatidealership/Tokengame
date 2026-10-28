@@ -25,7 +25,7 @@ for(const W of WS){const c=await b.newContext(W<700?{viewport:{width:W,height:84
   const el=await p.evaluateHandle(i=>document.querySelectorAll('#x2pHl .x2p-hi')[i],i);await el.screenshot({path:OUT+'g2-'+i+'-'+W+'.png'});
   console.log(W,JSON.stringify(m));rep.push([W,m])}
  // flip still works: tap the moved button on the centred card and check the card turns back
- const flips=await p.evaluate(async()=>{const c=[...document.querySelectorAll('#x2pHl .card')].find(c=>c.querySelector('.b45-g2 .flipb')&&c.getBoundingClientRect().left>=0&&c.getBoundingClientRect().right<=innerWidth);if(!c)return 'none';
+ const flips=await p.evaluate(async()=>{window.__x2pHlGo(2,true);await new Promise(r=>setTimeout(r,900));const w=document.querySelectorAll('#x2pHl .x2p-hi')[2],c=w.querySelector('.card');if(!c.querySelector('.b45-g2 .flipb'))return 'none';
    const before=c.className;c.querySelector('.b45-g2 .flipb').click();await new Promise(r=>setTimeout(r,700));return before!==c.className?'turns':'same'});
  console.log(W,'flip button',flips,'errors',errs.length?errs:0);await c.close()}
 fs.writeFileSync(OUT+'report.json',JSON.stringify(rep));await b.close()})();
