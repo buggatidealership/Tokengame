@@ -97,6 +97,12 @@ open(os.path.join(OUT, 'robots.txt'), 'w').write("User-agent: *\nAllow: /\n")
 # (overnight 2026-10-27, launch audit) a missing path answered with the page itself and a 200, which Cloudflare then cached under
 # /media for a year (R43, 2026-10-24); with a 404.html Pages answers a missing file with this page and a real 404
 open(os.path.join(OUT, '404.html'), 'w', encoding='utf-8').write('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Not found \u00b7 Earnings Zeason</title><meta name="robots" content="noindex"><link rel="icon" href="/media/icon.svg" type="image/svg+xml"><style>html{color-scheme:dark}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0a14;color:#f8f0d9;font:600 18px/1.4 system-ui,sans-serif;text-align:center;padding:16px}a{color:#fdbc2a}img{width:96px;height:96px;display:block;margin:0 auto 18px}</style></head><body><main><img src="/media/icon.svg" alt="EZ."><p>Nothing here.</p><p><a href="/">Back to Earnings Zeason</a></p></main></body></html>\n')
+# every round its own link (owner, 2026-10-28): /r/<n> pages whose share picture is that round's own slab (tools/site/round_cards.js;
+# pictures cached in media/share by a hash of what they show, so a build draws only new or changed rounds). SITE_NOCARDS=1 skips it.
+if not os.environ.get('SITE_NOCARDS'):
+    import subprocess
+    if subprocess.run(['node', os.path.join(EZ, 'tools', 'site', 'round_cards.js'), OUT], cwd=EZ).returncode:
+        print('round_cards failed: the /r/ pages are missing from this build')
 total = sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(OUT) for f in fs)
 big = [f for r, _, fs in os.walk(OUT) for f in fs if os.path.getsize(os.path.join(r, f)) > 25 * 2**20]
 print('site/: %d media files + logos, %.1f MB total%s' % (n, total / 1e6, ('; OVER 25 MiB: ' + str(big)) if big else ''))
