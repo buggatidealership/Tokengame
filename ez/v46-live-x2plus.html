@@ -9535,11 +9535,11 @@ if(EXP==="x2")(function(){
     var bf=$("#bflip");if(bf)bf.remove();
     bet.hidden=true;                                  // its chip moved up; the calculator still travels to the Buyback tab
     /* the order: each section right after the one before it (hidden sections skipped); only what is out of place moves */
-    var seq=[hero,top,rec,st,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get].filter(function(s){return s&&!s.hidden}),prev=seq[0];
+    var seq=[hero,top,st,rec,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get].filter(function(s){return s&&!s.hidden}),prev=seq[0];
     function nextVis(e){var n=e.nextElementSibling;while(n&&n.hidden)n=n.nextElementSibling;return n}
     seq.slice(1).forEach(function(s){if(nextVis(prev)!==s)prev.after(s);prev=s});
     /* the section numbers follow the order */
-    var k=0;[rec,st,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get].forEach(function(s){if(!s||s.hidden)return;var no=$(".sh .no",s);k++;if(no)no.textContent=(k<10?"0":"")+k})}
+    var k=0;[st,rec,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get].forEach(function(s){if(!s||s.hidden)return;var no=$(".sh .no",s);k++;if(no)no.textContent=(k<10?"0":"")+k})}
   apply();
   addEventListener("hashchange",function(){if(!boardEl.hidden){apply();fitSoon()}});
 
@@ -10229,7 +10229,9 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
        the carousel is out of view (no width yet), so the caller tries again when the Overview shows */
     window.__x2pHlGo=function(i,back){if(!tr.clientWidth)return false;eqH();var w=cards[Math.max(0,Math.min(cards.length-1,i))];
       tr.scrollLeft=ox(w)+w.offsetWidth/2-tr.clientWidth/2;cur=near();mark();var c=topc(w);
-      if(back&&c&&!c.classList.contains("nofilm")&&!c.classList.contains("flipped")){c.classList.add("flipped");setFaces2(c,true)}films();return true}}
+      /* (owner, 2026-10-28: "by default in the MVP section, users should fall on the back of the card, not the video") back: every
+         highlight card turned to its certificate, the stacked ones too */
+      if(back)cards.forEach(function(sl){[].forEach.call(sl.querySelectorAll(".card"),function(k){if(!k.classList.contains("nofilm")&&!k.classList.contains("flipped")){k.classList.add("flipped");setFaces2(k,true)}})});films();return true}}
   function tkStamp(){[].forEach.call(document.querySelectorAll("ol.rx3>li"),function(li){if(li.querySelector(".x2p-tg"))return;var a=li.querySelector("a.rx3-r"),m=a&&(a.getAttribute("href")||"").match(/round\/(\d+)/);if(!m)return;
       var r=null,i;for(i=0;i<ROUNDS.length;i++)if(ROUNDS[i].n===+m[1])r=ROUNDS[i];if(!r)return;var E=ezGrade(r),s=document.createElement("span");
       s.className="x2p-tg"+(E.gr===10?" gold":"");s.setAttribute("aria-hidden","true");s.innerHTML="<b>"+E.gr+"</b><small>"+E.ds+"</small>";li.appendChild(s);
@@ -10959,7 +10961,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       if(ol)rows.forEach(function(li,i){ol.insertBefore(li,n5||null);li.classList.remove("lead","r1","r2","r3","r4");li.classList.add("r"+(i+1));if(!i)li.classList.add("lead");
         var rk=$(".rk",li),tn=rk&&[].filter.call(rk.childNodes,function(x){return x.nodeType===3&&/\d/.test(x.nodeValue)})[0];if(tn)tn.nodeValue=String(i+1)});
       if(crown&&rows[0])rows[0].insertBefore(crown,rows[0].firstChild);st.classList.add("x2p-pnrank")})();
-    rec.after(st)}   /* the standings come second, after the record (owner, 2026-10-26: "the record section as the number one section") */
+    rec.before(st)}   /* the standings first again, the record second (owner, 2026-10-28: "the leaderboard is number one... the record becomes number two") */
   var sw=$(".rsw2",hold),rf=$("#rflip",hold);
   if(sw&&rf){$$(".lsw,.lrn",ln).forEach(function(e){if(e.parentNode===ln)e.remove()});ln.appendChild(sw);ln.appendChild(rf);
     ["hit","roi","miss","sector"].forEach(function(k){var b=$('[data-rk="'+k+'"]',sw);if(b)sw.appendChild(b)});
@@ -11114,7 +11116,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   var tp=d.createElement("template");tp.innerHTML=R.vResults();var hs=tp.content.querySelector("section.xsec");
   if(hs&&window.__x2pHlSlabs){var h2=d.createElement("div");h2.hidden=true;d.body.appendChild(h2);h2.appendChild(hs);window.__x2pHlSlabs();
     if($("#x2pHl",hs)){hs.id="highlights";hs.classList.add("sec","x2p-hl-sec");hs.setAttribute("aria-labelledby","x2hlH");
-      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH" class="x2p-mvp">MVP<span class="x2p-lc">s</span> <small>(Most valuable predictions)</small></h2></div>';
+      var sh=d.createElement("div");sh.className="sh";sh.innerHTML='<div class="tx"><span class="no">04</span><span class="eb">Highlights</span><h2 id="x2hlH">Most valuable predictions</h2></div>';
       /* "MVPs" and "(Most valuable predictions)" on one line (owner, 2026-10-25): the brackets step down until the head fits
          its column; if even .45em does not fit (a 320px phone), they wrap at full size as before */
       (function(){var fit=function(){var h=d.querySelector("h2.x2p-mvp"),s=h&&h.querySelector("small");if(!s||!h.clientWidth)return;s.style.fontSize="";h.style.whiteSpace="nowrap";
@@ -11145,11 +11147,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   /* (owner, 2026-10-22) the record's first line names the graded cards: "graded" and "card" must be there */
   var rl1=$("#record .x2o-rec li:not(.x2p-xli)");if(rl1)rl1.textContent="Don't trust us. Verify every graded card.";
   var rcl=$("#record .x2o-rec");if(rcl&&!rcl.closest(".x2p-strap")){var rsp=d.createElement("div");rsp.className="x2p-strap";rsp.innerHTML='<span class="x2p-bug" aria-hidden="true">Receipts</span>';rcl.parentNode.insertBefore(rsp,rcl);rsp.appendChild(rcl)}
-  [["#record","01"],["#standings","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
+  [["#standings","01"],["#record","02"],["#learn","03"],["#get","05"]].forEach(function(x){var n=$(x[0]+" .sh .no");if(n)n.textContent=x[1]});
   /* the highlights land on Tightest race (the middle card), its film first (owner, 2026-10-22: with "Flip a card for the
      story" under the head, the animation shows first; it replaced the story side up), once the Overview is on screen */
   var landed=false;function land(){if(landed||!window.__x2pHlGo)return;var ws=$$("#x2pHl .x2p-hi"),i=1;
-    ws.forEach(function(w,j){var t=$(".x2p-htag",w);if(t&&/tight/i.test(t.textContent))i=j});if(window.__x2pHlGo(i,false))landed=true}
+    ws.forEach(function(w,j){var t=$(".x2p-htag",w);if(t&&/tight/i.test(t.textContent))i=j});if(window.__x2pHlGo(i,true))landed=true}
   /* the standings: rank, logo, name, the last five, hit rate and ROI on each strip's middle by what the eye sees (the ink of
      the letters and digits, not their line boxes; owner: "a freak when it comes to symmetry"), and the last five halfway
      between the longest name and the leftmost hit rate, the same on every row */
@@ -11319,7 +11321,7 @@ if(!$('.bs-tail',roll)){
 }
 /* numbers: Get $EZ follows as 06. X2's order routine (patched by build.py to include this section) re-runs on every return to the
    Overview; this is its safety net */
-var fix=function(){var g=$('#get'),s=$('#x2pSt');if(!g||!s)return;if(s.nextElementSibling!==g)g.parentNode.insertBefore(s,g);var k=0;['#record','#standings','#learn','#highlights','#x2pSt','#get'].forEach(function(q){var e=$(q);if(!e||e.hidden)return;k++;var n=$('.sh .no',e);if(n)n.textContent=(k<10?'0':'')+k})};
+var fix=function(){var g=$('#get'),s=$('#x2pSt');if(!g||!s)return;if(s.nextElementSibling!==g)g.parentNode.insertBefore(s,g);var k=0;['#standings','#record','#learn','#highlights','#x2pSt','#get'].forEach(function(q){var e=$(q);if(!e||e.hidden)return;k++;var n=$('.sh .no',e);if(n)n.textContent=(k<10?'0':'')+k})};
 fix();
 /* each logo at the same optical size: its ink measured from the file itself (the white of a logo made for a light ground is
    paper, not ink), scaled so every mark carries about the same weight, and centred on its ink, not on its file's box
@@ -11901,6 +11903,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
    line "All tracked, public, graded at the close." */
 (function(){try{var d=document;
  function words(){d.querySelectorAll('section .sh h2:not(.x2p-mvp)').forEach(function(h){if(h.__h45)return;h.__h45=1;var ws=[];
+   if(h.id==='lrnH')h.textContent=window.__x2pLrnH||'Smarter or just lucky?';
    var walk=function(n){[].slice.call(n.childNodes).forEach(function(c){if(c.nodeType===3){var fr=d.createDocumentFragment();c.textContent.split(/(\s+)/).forEach(function(p){if(!p)return;
       if(/^\s+$/.test(p))fr.appendChild(d.createTextNode(p));else{var s=d.createElement('span');s.className='h45-w';s.textContent=p;fr.appendChild(s);ws.push(s)}});c.replaceWith(fr)}
      else if(c.nodeType===1&&c.tagName==='SMALL')walk(c)})};walk(h);

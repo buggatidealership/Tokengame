@@ -473,8 +473,9 @@ pp=pp.replace(a,'window.__x2pR={vModels:vModels,wireModels:wireModels,vResults:v
 # ... and X2's Overview order, which the page re-applies on every tab change, follows the launch order: record (owner,
 # 2026-10-26: "the record section as the number one section", the standings second; the standings came first from
 # 2026-10-22), standings, proof, highlights (x2plus.js adds #highlights), the bet, Get $EZ; the section numbers follow it
-for a,b in [('var seq=[hero,top,rec,st,learn,get]','var seq=[hero,top,rec,st,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get]'),
-            ('var k=0;[rec,st,learn,get]','var k=0;[rec,st,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get]'),
+# (owner, 2026-10-28: "the leaderboard is number one... and the record becomes number two") the standings first again
+for a,b in [('var seq=[hero,top,rec,st,learn,get]','var seq=[hero,top,st,rec,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get]'),
+            ('var k=0;[rec,st,learn,get]','var k=0;[st,rec,learn,document.getElementById("highlights"),document.getElementById("x2pSt"),get]'),
             # the NVIDIA chip sits in the bet section at the foot of the Overview since 2026-10-24 (x2plus.js BETSEC): it loads when reached
             ('if(im)im.loading="eager";','if(im)im.loading="lazy";')]:
     assert pp.count(a)==1,a; pp=pp.replace(a,b)
@@ -534,35 +535,10 @@ px=px.replace('</head>','<style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-v
 # (owner, 2026-10-27) the certificate's Kanit (the logo's lettering), X2+ only
 px=px.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&family=Alfa+Slab+One&display=swap" rel="stylesheet">\n</head>',1)
 open("v46-live-x2plus.html",'w').write(px); print("ok v46-live-x2plus.html",len(px))
-# EZ Live X3+ (owner, 2026-10-22: "a complete replica", first with neon bullets, then the same day "for X3 plus, can you do the
-# letterpress"): X2+ whose broadcast straps are cream card with the words pressed in (tools/v22/skin-x3plus.css in place of X2+'s
-# origami block; its __PAPER__ is the "As it stands" ticket's own texture, so the two papers always match)
-X3N=open(sys.argv[1]+'/skin-x3plus.css').read()
-PAPER=re.search(r'html\.x2p #standings \.x2p-ast \.tk\{.*?(url\("data:image/svg\+xml[^"]*"\))',XPCSS,re.S).group(1)
-X3N=X3N.replace('__PAPER__',PAPER)
-x3=re.sub(r'/\*ORIGAMI\{\*/.*?/\*\}ORIGAMI\*/',lambda m:X3N,pp,count=1,flags=re.S)
-# (owner, 2026-10-26) the clean certificate (the CERTU2 block) is X2+'s; X3+ keeps its own certificate C
-x3=re.sub(r'/\*CERTU2\{.*?/\*\}CERTU2\*/','',x3,count=1,flags=re.S)
-# (owner, 2026-10-27) and the certificate in the logo's look (CERTL1) too
-x3=re.sub(r'/\*CERTL1\{.*?/\*\}CERTL1\*/','',x3,count=1,flags=re.S)
-# (owner, 2026-10-27, night) C1, the lighter-ink certificate, is X2+'s; X3+ keeps its certificate C
-x3=re.sub(r'/\*CERTC1\{.*?/\*\}CERTC1\*/','',x3,count=1,flags=re.S)
-# (owner, 2026-10-27, night) X3+ takes the lighter ink, not X2+'s stamped one; and the Kanit + Saira link X2+ has (the tower, the
-# proof and the tickets are set in them)
-x3=re.sub(r'/\*INKS\{\*/.*?/\*\}INKS\*/','',x3,count=1,flags=re.S)
-x3=x3.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&family=Alfa+Slab+One&display=swap" rel="stylesheet">\n</head>',1)
-# (owner, 2026-10-28) the M1 section heads and straps are X2+'s; X3+ keeps its Anton heads and letterpress straps
-x3=re.sub(r'/\*HEADS\{.*?/\*\}HEADS\*/','',x3,count=1,flags=re.S)
-# (owner, 2026-10-28) X3+'s tickets take the certificate's cream flat; X2+ keeps the fine grain (x2plus.js reads the flag)
-x3=x3.replace('</head>','<script>window.__x2pCream="flat"</script>\n</head>',1)
-assert x3!=pp and '__PAPER__' not in x3
+# EZ Live X3+ (owner, 2026-10-28: "essentially the exact same as we have everything now... without the fine grain but just the
+# plain one"): X2+ byte for byte but for the title and one flag, the certificate's cream flat on every ticket (x2plus.js reads it).
+# The letterpress straps (skin-x3plus.css), its certificate C, the lighter ink and the ticket rip mockup are history (git).
+x3=px.replace('</head>','<script>window.__x2pCream="flat"</script>\n</head>',1)
 assert x3.count('<title>EZ Live X2+</title>')==1
 x3=x3.replace('<title>EZ Live X2+</title>','<title>EZ Live X3+</title>')
-# (owner, 2026-10-25: "do the logo stamp. Put that one on the Easy Life X2 Plus, and then put the seal hot stamped on Easy Life X3
-# Plus") the certificate's hologram: x2plus.js draws the logo stamp unless the page says seal
-# (later the same day) both pages follow one rule instead: the seal on perfect rounds, the logo stamp on the rest (x2plus.js xkind)
-# (owner, 2026-10-22) X3+ only: the ticket rip mockup (an Admit One ticket over the first screen that scrolling tears open)
-RIPC=open(sys.argv[1]+'/x3plus-rip.css').read().replace('__PAPER__',PAPER); RIPJ=open(sys.argv[1]+'/x3plus-rip.js').read()
-assert x3.count('</head>')==1 and x3.count('</body>')==1
-x3=x3.replace('</head>','<style id="x3plus-rip">\n'+RIPC+'\n</style>\n</head>').replace('</body>','<script id="x3plus-rip">\n'+RIPJ+'\n</script>\n</body>')
 open("v47-live-x3plus.html",'w').write(x3); print("ok v47-live-x3plus.html",len(x3))
