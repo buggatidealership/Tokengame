@@ -1898,3 +1898,78 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  function watch(ol){if(ol===cur||!mo)return;cur=ol;mo.observe(ol,{childList:true})}
  addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run()}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(run);addEventListener("load",run);addEventListener("hashchange",function(){setTimeout(run,120)});
  var n=0;(function poll(){run();if(++n<40)setTimeout(poll,250)})()}catch(e){window.__x2pStitchErr=e}})();
+/*SEASONTIX{*/
+/* The season ticket, the tryouts ticket and the proof on the bet ticket's own stock (owner, 2026-10-28; CSS in the SEASONTIX block of
+   skin-x2plus.css; mockups ez/tools/concepts/r1038, picks A4 and P4 K2). Built from the page's own board and proof ticket and the bet
+   ticket's classes; the page's board stays in the page, out of sight, for screen readers and the ⓘ flip. Each ticket's paper is the bet's
+   layer list with some layers set to none (read from the computed style, so it is redone on every width change: the band heights
+   follow the width): the fibres (22: they "make the ticket look dirty"), the sunburst behind the bet's label (24, 25), and on the season
+   ticket's foot and the tryouts ticket's head the strips and their squeeze edges (17 to 21), so the two meet on bare stock. The proof's
+   die gets stamp teeth down both sides (owner: "K2 stamp teeth... both on the left and on the right"). */
+(function(){try{var d=document,H=d.documentElement;
+ var lst=function(v){var o=[],dp=0,st=0;for(var i=0;i<v.length;i++){var c=v[i];if(c==="(")dp++;else if(c===")")dp--;else if(c===","&&!dp){o.push(v.slice(st,i).trim());st=i+1}}o.push(v.slice(st).trim());return o};
+ var full=function(v,n){var a=lst(v),o=[];for(var i=0;i<n;i++)o.push(a[i%a.length]);return o};
+ var PROPS=["background-image","background-size","background-position","background-repeat","mask-image","mask-size","mask-position","mask-repeat","mask-composite","mask-origin","mask-clip"];
+ /* the paper: the bet's layers with some set to none; teeth: added to the die of the paper and both shadows, toned like the bet's bites */
+ function paper(t,o){var pp=t.querySelector(".bt-pp");if(!pp)return null;[pp,t.querySelector(".bt-sh>i"),t.querySelector(".bt-hs")].forEach(function(e){if(e)PROPS.forEach(function(p){e.style.removeProperty(p)})});
+  var L=lst(getComputedStyle(pp).backgroundImage);if(L.length<27||!/31, 122, 69/.test(L[19])||!/200, 55, 42/.test(L[21]))return null;var grain=L[23];
+  L[22]="none";L[24]="none";L[25]="none";if(o.noTop){L[17]="none";L[18]="none";L[19]="none"}if(o.noBot){L[20]="none";L[21]="none"}pp.style.backgroundImage=L.join(", ");
+  if(o.teeth){var r=3,p=9,cut=function(x){return "radial-gradient(circle at "+x+" 50%, #0000 "+(r-.35)+"px, #000 "+(r+.45)+"px)"},tone=function(x){return "radial-gradient(circle at "+x+" 50%, #0000 "+(r-.2)+"px, rgba(110,78,34,.22) "+(r+.3)+"px, #0000 "+(r+3.5)+"px)"};
+   [pp,t.querySelector(".bt-sh>i"),t.querySelector(".bt-hs")].forEach(function(e){if(!e)return;var cs=getComputedStyle(e),im=lst(cs.maskImage),n=im.length;
+    /* every list at the full layer count first: CSS cycles a short list, which gave the added layers the wrong size */
+    e.style.setProperty("mask-image",im.concat([cut("0"),cut("100%")]).join(", "));e.style.setProperty("mask-size",full(cs.maskSize,n).concat(["100% "+p+"px","100% "+p+"px"]).join(", "));
+    e.style.setProperty("mask-position",full(cs.maskPosition,n).concat(["0 50%","0 50%"]).join(", "));e.style.setProperty("mask-repeat",full(cs.maskRepeat,n).concat(["repeat-y","repeat-y"]).join(", "));
+    e.style.setProperty("mask-composite",full(cs.maskComposite,n).concat(["intersect","intersect"]).join(", "));e.style.setProperty("mask-origin",full(cs.maskOrigin,n).concat(["border-box","border-box"]).join(", "));e.style.setProperty("mask-clip",full(cs.maskClip,n).concat(["border-box","border-box"]).join(", "))});
+   var cs=getComputedStyle(pp),nb=L.length;pp.style.backgroundImage=[tone("0"),tone("100%")].concat(L).join(", ");pp.style.backgroundSize=["100% "+p+"px","100% "+p+"px"].concat(full(cs.backgroundSize,nb)).join(", ");
+   pp.style.backgroundPosition=["0 50%","0 50%"].concat(full(cs.backgroundPosition,nb)).join(", ");pp.style.backgroundRepeat=["repeat-y","repeat-y"].concat(full(cs.backgroundRepeat,nb)).join(", ")}
+  [].slice.call(t.querySelectorAll(".stx-ko,.stx-sw i")).forEach(function(e){e.style.backgroundImage=grain;e.style.backgroundSize="200px 200px"});return grain}
+ function isLive(){try{var p={};new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"2-digit",month:"numeric",day:"numeric",weekday:"short"}).formatToParts(new Date()).forEach(function(x){p[x.type]=x.value});
+  if(p.weekday==="Sat"||p.weekday==="Sun")return false;var t=+p.month+"/"+(+p.day)+"/"+p.year,nd=function(v){var q=String(v||"").split("/");return q.length===3?(+q[0])+"/"+(+q[1])+"/"+q[2].slice(-2):""};
+  return [].concat(window.ROUNDS||[],window.PENDING||[],window.UPCOMING||[]).some(function(r){return nd(r.called)===t||nd(r.resolves)===t})}catch(e){return false}}
+ var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+ var num=function(s){var ink=[1,.84,.95,.88,1,.9],dy=[0,.3,-.2,.2,-.3,.1];return "N<u>o</u> "+s.split("").map(function(c,i){return '<s style="opacity:'+ink[i]+';top:'+dy[i]+'px">'+c+"</s>"}).join("")};
+ function tk(cls,inner,head,foot,j){return '<div class="bs-nx stx-t '+cls+'"><div class="bt-sh"><i></i></div><div class="bt-hs"></div><div class="bt-p"><div class="bt-pp"><i class="bt-pl"></i><i class="bt-r1"></i><i class="bt-r2"></i></div>'+
+   inner+(head?'<div class="bt-st bt-hd">'+head+"</div>":"")+(foot?'<div class="bt-st bt-ft">'+foot+"</div>":"")+(j?'<i class="bs-perf"></i>':"")+"</div></div>"}
+ /* ---- the board ---- */
+ var sig="",roll=null;
+ function board(){var ol=d.querySelector("#standings ol.lbl"),fin=ol&&ol.closest(".x2p-fin"),lbx=ol&&ol.closest(".lbx");if(!ol||!fin||!lbx)return;var li=[].slice.call(ol.querySelectorAll("li.lbr"));if(li.length<2)return;
+  var s=ol.textContent.replace(/\s+/g," ");if(s===sig&&roll&&roll.isConnected)return;sig=s;
+  var rows=li.map(function(l){var t=function(q){var e=l.querySelector(q);return e?e.textContent.trim():""},sm=l.querySelector(".pc-t small"),fl=sm&&sm.querySelector("svg"),w=l.querySelector(".pn-rec b.w"),ls=l.querySelector(".pn-rec b.l");
+   return {rk:(t(".rk b")||t(".rk")).replace(/\D/g,""),nm:t(".pc-t h3"),ver:sm?(sm.querySelector("span")||sm).textContent.trim():"",flag:fl?fl.outerHTML:"",logo:(l.querySelector(".lg")||{}).innerHTML||"",w:w?w.textContent.trim():"",l:ls?ls.textContent.trim():"",hit:t(".lb-c:not(.roi)>b"),pl:t(".lb-c.roi>b")}});
+  var n5=ol.querySelector("li.x2p-n5"),TRY=n5?[].slice.call(n5.querySelectorAll(".n5-c")).map(function(c){var f=c.querySelector(".n5-fw");return {lg:(c.querySelector(".n5-lg")||{}).innerHTML||"",nm:(c.querySelector("b")||{}).textContent||"",flag:f?f.innerHTML:""}}):[];
+  var live=isLive();
+  var foil=function(t){return '<span class="bt-b stx-fo"><span class="x2p-cdh"><b><em data-t="'+esc(t)+'">'+esc(t)+"</em></b></span></span>"};
+  var row=function(r,i){return '<div class="stx-r"><span class="stx-rk"><small>No.</small><b>'+esc(r.rk)+"</b></span>"+
+   '<span class="stx-ai"><span class="stx-lg">'+r.logo+'</span><span class="stx-nm">'+(i?"<b>"+esc(r.nm)+"</b>":foil(r.nm.toUpperCase()))+"<small>"+esc(r.ver)+'<span class="stx-fl">'+r.flag+"</span></small></span></span>"+
+   '<span class="stx-wl"><i class="stx-w">'+esc(r.w)+'</i>-<i class="stx-l">'+esc(r.l)+'</i></span><span class="stx-hr">'+esc(r.hit)+'</span><span class="stx-pl '+(/^[-−]/.test(r.pl)?"dn":"up")+'">'+esc(r.pl)+"</span></div>"};
+  var ant='<span class="stx-air'+(live?" on":"")+'"><svg viewBox="0 0 20 22" aria-hidden="true" focusable="false"><path class="w" d="M4.2 3.6a8 8 0 0 0 0 11.3M15.8 3.6a8 8 0 0 1 0 11.3M6.9 6.3a4.2 4.2 0 0 0 0 5.9M13.1 6.3a4.2 4.2 0 0 1 0 5.9"/><path class="m" d="M10 9.3 6.6 21.2M10 9.3l3.4 11.9M7.6 17.6h4.8M8.6 14h2.8"/><circle class="d" cx="10" cy="9.3" r="2.1"/></svg><b class="stx-ko">'+(live?"Live":"Off air")+"</b></span>";
+  var h=tk("stx-board",'<div class="stx-in"><div class="stx-cols"><span></span><span>Model</span><span>W-L</span><span>Hit rate</span><span>P&amp;L</span></div>'+rows.map(row).join("")+"</div>",'<span class="stx-ko stx-s1">Season 1</span>'+ant,"",0)+
+   (TRY.length?tk("stx-try",'<div class="stx-in stx-tin"><span class="stx-rk"><small>No. 5</small><b class="stx-rd">?</b></span><span class="stx-tl"><b>Models</b><b class="stx-rd">in tryouts</b></span>'+
+    TRY.map(function(c){return '<span class="stx-tc"><span class="stx-lg">'+c.lg+"</span><b>"+esc(c.nm.toUpperCase())+'</b><span class="stx-fl">'+c.flag+"</span></span>"}).join("")+"</div>","",'<span class="stx-ko">Not signed yet</span><span class="bt-no">'+num("000005")+"</span>",1):"");
+  if(roll&&roll.isConnected)roll.remove();roll=d.createElement("div");roll.className="stx-roll";roll.setAttribute("aria-hidden","true");roll.innerHTML=h;fin.insertBefore(roll,lbx);lbx.classList.add("stx-sr");dress()}
+ /* each label over its figure's ink, as the Season 1 bar did */
+ function align(){if(!roll)return;var ink=function(e){var g=d.createRange();g.selectNodeContents(e);return g.getBoundingClientRect()},row=roll.querySelector(".stx-r"),map={"W-L":".stx-wl","Hit rate":".stx-hr","P&L":".stx-pl"};if(!row)return;
+  [].slice.call(roll.querySelectorAll(".stx-cols span")).forEach(function(l){var q=map[l.textContent.trim()];if(!q)return;l.style.transform="";var f=ink(row.querySelector(q)),a=ink(l);l.style.transform="translateX("+((f.left+f.width/2)-(a.left+a.width/2)).toFixed(2)+"px)"})}
+ function dress(){if(!roll)return;var T=[].slice.call(roll.querySelectorAll(".stx-t"));T.forEach(function(t,i){paper(t,{noTop:i>0,noBot:i<T.length-1})});align()}
+ /* ---- the proof ---- */
+ var pcd=null;
+ function proof(){var pt=d.querySelector("#learn .x2p-pt"),cd=pt&&pt.querySelector(".pt-cd");if(!cd)return;if(cd===pcd){paper(cd,{teeth:1});gap(cd);return}pcd=cd;
+  var ser=((cd.querySelector(".pt-bd.r .pt-ko:last-child")||{}).textContent||"").match(/\d{6}/);ser=ser?ser[0]:"";
+  var star=d.querySelector(".x2p-bt .bt-st span i");if(star)cd.style.setProperty("--stx-star",getComputedStyle(star).backgroundImage);
+  cd.classList.add("bs-nx","stx-p");pt.classList.add("stx-pt");
+  var sw='<span class="stx-sw" aria-hidden="true"><i></i></span>';  /* the bands replace the page's own (hidden), so they stay readable */
+  cd.insertAdjacentHTML("afterbegin",'<div class="bt-sh" aria-hidden="true"><i></i></div><div class="bt-hs" aria-hidden="true"></div><div class="bt-pp" aria-hidden="true"><i class="bt-r1"></i><i class="bt-r2"></i></div>'+
+   '<div class="bt-st bt-hd"><span class="stx-q">'+sw+'<b class="stx-ko stx-qt"></b>'+sw+"</span></div>"+
+   '<div class="bt-st bt-ft"><span class="stx-q">'+sw+'<b class="stx-ko stx-qt">Simulated. Before fees.</b>'+sw+'</span><span class="stx-q"><b class="stx-ko stx-qt stx-n">Nº '+ser+"</b></span></div>");
+  /* the question follows the page's own band (it changes with the tab) */
+  var src=cd.querySelector(".pt-top"),q=cd.querySelector(".bt-hd .stx-qt"),sync=function(){q.textContent=src?src.textContent.trim():""};sync();
+  if(src&&window.MutationObserver)new MutationObserver(sync).observe(cd.querySelector(".pt-q")||src,{subtree:true,childList:true,characterData:true});
+  var tb=cd.querySelector(".pt-tb");if(tb&&window.MutationObserver)new MutationObserver(function(){gap(cd)}).observe(tb,{subtree:true,attributes:true,attributeFilter:["aria-pressed"]});
+  paper(cd,{teeth:1});gap(cd)}
+ /* the rule under the folder tabs, drawn with a gap under the open one */
+ function gap(cd){var tb=cd.querySelector(".pt-tb"),on=tb&&tb.querySelector('[aria-pressed="true"]');if(!on)return;var R=tb.getBoundingClientRect(),o=on.getBoundingClientRect(),a=(o.left-R.left).toFixed(1),b=(o.right-R.left).toFixed(1),ink="rgba(20,18,23,.75)";
+  tb.style.setProperty("border-bottom-color","transparent","important");tb.style.setProperty("background","linear-gradient(90deg,"+ink+" 0 "+a+"px,transparent "+a+"px "+b+"px,"+ink+" "+b+"px 100%) 0 100%/100% 1.5px no-repeat","important")}
+ var lw=0,raf=0;function run(force){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){if(!H.classList.contains("x2pbt"))return;try{board();if(force)dress();proof()}catch(e){window.__x2pTixErr=e}})}
+ addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run(1)}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){run(1)});addEventListener("load",function(){run(1)});addEventListener("hashchange",function(){setTimeout(run,150)});
+ var n=0;(function poll(){run();if(++n<40)setTimeout(poll,250)})()}catch(e){window.__x2pTixErr=e}})();
+/*}SEASONTIX*/
