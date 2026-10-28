@@ -7210,6 +7210,18 @@ html.x2p #liveChip .x2p-ip{font:inherit;color:#f8f0d9;text-shadow:.7px .7px 0 #0
 html.x2p #liveChip .x2p-ic{color:#fdbc2a;margin-left:.2em}
 html.x2p #liveChip>i{background:#ff3a31;box-shadow:0 0 6px 1px rgba(255,70,45,.85)}
 /*}PILL*/
+/*PENDCERT{ a pending round's certificate (owner, 2026-10-28: "calls are in before it becomes a certificate... that doesn't have the graded
+   stamp yet"): x2plus.js pendify() lays the graded certificate's layout over the pending card's one face; the old panel stays under it,
+   hidden. No ranks, no PASS/FAIL, the market still to answer, and in the graded stamp's place a stamp of its own */
+html.x2p :is(#record,#x2pHl,#x2pRm) .card.pend.x2p-pc .face.front .fin,html.x2p .card.pend.x2p-pc .face.front .fin{position:relative}
+html.x2p .card.pend.x2p-pc .face.front .fin>:is(.art,.cwin,.cnote){visibility:hidden}
+html.x2p .xc.xc.xc.xc.xc-pend .xc-out .xc-q{font:800 calc(9.5*var(--u))/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;--ink:#57504a}
+html.x2p .xc.xc.xc.xc.xc-pend .xc-out .xc-cd{font:400 calc(16*var(--u))/1 Anton,Impact,sans-serif;--ink:#1d1a1e}
+html.x2p .xc.xc.xc.xc.xc-pend .xc-stp{transform:translateY(-50%) rotate(var(--xr,0deg))}
+html.x2p .xc.xc.xc.xc.xc-pend:is([data-v=B],[data-v=D]) .xc-stp{width:calc(54*var(--u));height:calc(54*var(--u));right:0}
+html.x2p .xc.xc.xc.xc.xc-pend .xc-lk{display:block;width:100%;height:100%;mix-blend-mode:multiply}
+html.x2p .xc.xc.xc.xc.xc-pend .xc-out .xc-ci{font:800 calc(7.5*var(--u))/1 Archivo,sans-serif;font-style:normal;letter-spacing:.12em;text-transform:uppercase;margin-right:calc(4*var(--u));vertical-align:calc(2*var(--u))}
+/*}PENDCERT*/
 
 </style>
 <link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&family=Alfa+Slab+One&display=swap" rel="stylesheet">
@@ -9656,6 +9668,43 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
     /* the page's own stats side stays under it, hidden: on a 350px phone and narrower it still sets the card's height (CERT block) */
     if(old)old.remove();fin.appendChild(x);
     if(re)xstamp(c)}
+  /* (owner, 2026-10-28: a round with its calls in still showed the old dark panel while graded rounds carry the certificate; "a mock-up
+     where we can have calls are in before it becomes a certificate... that doesn't have the graded stamp yet") the same certificate on a
+     pending card's one face: the calls in the order filed, no ranks, no PASS/FAIL yet, the market still to answer, and where the graded
+     stamp goes a stamp of its own. Variant by window.__x2pPendV (mockups); the build ships one */
+  function xclose(s){if(!s)return null;var m=String(s).match(/(\d+)\/(\d+)\/(\d+)/);if(!m)return null;
+    /* 4 pm in New York that day: 20:00 UTC in daylight time, 21:00 in standard time (from the first Sunday of November) */
+    var y=2000+(+m[3]),mo=+m[1],d=+m[2],nov=new Date(Date.UTC(y,10,1)),fs=1+(7-nov.getUTCDay())%7,mar=new Date(Date.UTC(y,2,1)),ss=1+(7-mar.getUTCDay())%7+7;
+    var dst=(mo>3&&mo<11)||(mo===3&&d>=ss)||(mo===11&&d<fs);return Date.UTC(y,mo-1,d,dst?20:21)}
+  function xleft(ms){var mn=Math.max(0,Math.round(ms/60000)),h=Math.floor(mn/60);return h>=24?Math.floor(h/24)+"d "+(h%24)+"h":h?h+"h "+(mn%60)+"m":(mn%60)+"m"}
+  function xlock(id,v){
+    return '<svg class="xc-s xc-lk" viewBox="0 0 100 100" role="img" aria-label="'+(v==="B"||v==="D"?"Calls locked before the report":"Not graded yet")+'" focusable="false">'+(v==="B"||v==="D"?
+      '<g filter="url(#x2pcw1)" fill="#a8231a" stroke="#a8231a"><rect x="6" y="28" width="88" height="44" rx="3" fill="none" stroke-width="3"/><rect x="11" y="33" width="78" height="34" rx="1.5" fill="none" stroke-width="1"/>'+
+      '<text x="50" y="54.5" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="18" letter-spacing="2" stroke="none">LOCKED</text>'+
+      '<text x="50" y="63.4" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="800" font-size="4.7" letter-spacing=".7" stroke="none">BEFORE THE REPORT</text></g>':
+      '<defs><path id="'+id+'c" d="M50 50m-36 0a36 36 0 1 1 72 0a36 36 0 1 1 -72 0"/></defs><g filter="url(#x2pcw2)" fill="none" stroke="#1d1a1e">'+
+      '<circle cx="50" cy="50" r="44" stroke-width="1.6" stroke-dasharray="4 3.2"/><circle cx="50" cy="50" r="29" stroke-width=".8" stroke-dasharray="2 2.4"/>'+
+      '<text font-family="Archivo,sans-serif" font-weight="800" font-size="6.2" fill="#1d1a1e" stroke="none"><textPath href="#'+id+'c" startOffset="0" textLength="222" lengthAdjust="spacing">STAMPED AT THE CLOSE · STAMPED AT THE CLOSE ·</textPath></text>'+
+      '<text x="50" y="54" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="13" fill="#1d1a1e" stroke="none" opacity=".55">?</text></g>')+'</svg>'}
+  function xopen(v,i){if(v==="B")return xmini("LOCKED","#1d1a1e",[-6,-4,-7,-5][i%4],i%4).replace('font-size="7.2" letter-spacing=".5"','font-size="6.2" letter-spacing=".3"');
+    return '<svg class="xc-m" viewBox="0 0 29 13" width="29" height="13" style="--rot:0deg" aria-hidden="true" focusable="false"><path d="M4 1H25L28 4V9L25 12H4L1 9V4Z" fill="none" stroke="#6b645b" stroke-width="1" stroke-dasharray="2.2 1.6"/></svg>'}
+  var XPN=0;
+  function pendify(c,u,re){var fin=c.querySelector(".face.front .fin");if(!fin)return;var old=fin.querySelector(".xc");if(old&&!re)return;xdefs();
+    var v=window.__x2pPendV||"D",id="xp"+(++XPN),cl=xclose(u.resolves),now=Date.now();
+    var rows=u.calls.map(function(x,i){var up=x.dir==="UP";
+      return '<div class="xc-r pd"><b class="xc-rk lp" aria-hidden="true"></b><span class="xc-mk" data-m="'+x.m+'" aria-hidden="true">'+xsvg(x.m)+'</span><span class="xc-nm lp">'+xnm(x.m)+'</span>'+xopen(v,i)+
+        '<span class="xc-cl lp '+(up?"up":"dn")+'" style="--rot:'+[-2.5,-1.5,-3,-2][i%4]+'deg"><span aria-hidden="true">'+(up?"+":"−")+'</span><span class="sr">'+(up?"Up ":"Down ")+'</span>'+x.mag+'%</span></div>'}).join("");
+    var mk=(v==="C"||v==="D")&&cl&&cl>now?'<b class="lp xc-cd" data-cl="'+cl+'"><i class="xc-ci">Closes in </i><span>'+xleft(cl-now)+'</span></b>':'<b class="lp xc-q">'+(!u.resolves?"Date to come":cl&&cl<=now?"Results soon":"At the close")+'</b>';
+    var x=document.createElement("div");x.className="xc xc-pend";x.setAttribute("data-v",v);
+    x.innerHTML='<div class="xc-fr" aria-hidden="true"></div><div class="xc-hd"><p class="xc-t"><i class="xc-sr xc-g" aria-hidden="true">★</i><span class="lp">Certificate</span><i class="xc-sr xc-g" aria-hidden="true">★</i></p><p class="xc-no lp">No. '+String(u.n).padStart(4,"0")+'</p></div>'+
+      '<p class="xc-sec"><span class="lp">What they predicted</span></p><div class="xc-rows">'+rows+'</div>'+
+      '<div class="xc-out"><small class="lp">Market</small>'+mk+'</div>'+
+      '<div class="xc-mid"><div class="xc-lc"><div class="xc-dt"><p class="xc-d"><small class="lp">Calls filed</small><b class="lp">'+md(u.called).t+'</b></p><p class="xc-d"><small class="lp">Final grade</small><b class="lp">'+(u.resolves?md(u.resolves).t:"Soon")+'</b></p></div>'+
+      '<div class="xc-st xc-stp" style="--xr:'+(v==="B"||v==="D"?-8:0)+'deg">'+xlock(id,v)+'</div></div><div class="xc-ft"></div></div>';
+    if(old)old.remove();fin.appendChild(x);c.classList.add("x2p-pc")}
+  window.__x2pPendCopy=function(c){var n=+c.getAttribute("data-n"),u=null;PENDING.forEach(function(q){if(q.n===n)u=q});if(u)try{pendify(c,u,true)}catch(e){window.__x2pCertErr=e}};
+  /* the market box's countdown on a pending certificate, once a minute */
+  setInterval(function(){[].forEach.call(document.querySelectorAll(".xc-pend .xc-cd[data-cl]"),function(b){var l=+b.getAttribute("data-cl")-Date.now();if(l>0)b.lastChild.textContent=xleft(l);else{b.className="lp xc-q";b.textContent="Results soon"}})},60000);
   /* the stamp in front: drawn for the front card and its neighbours, the foil moving only on the front card with its stats side
      up (or on the round opened over the page), while its section is on screen; never with reduced motion */
   /* the foils are stepped by script, 20 times a second, on a paused SMIL clock (setCurrentTime): measured on a 4x slower CPU, SMIL's own
@@ -9667,7 +9716,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
   /* a card gets its certificate when it comes within two places of the front card (built for all 45 at load, it cost the first build
      about 1 s on a 4x slower CPU); a card further off keeps the page's own stats side, which no one sees */
   var XG=null;function xg(n){if(!XG){XG={};ROUNDS.forEach(function(r){XG[r.n]=r})}return XG[n]}
-  function xnear(c){if(c.getAttribute("data-k")!=="g")return;if(!c.querySelector(".xc")){var g=xg(+c.getAttribute("data-n"));if(!g)return;try{certify(c,g)}catch(e){window.__x2pCertErr=e;return}}xstamp(c)}
+  function xnear(c){if(c.getAttribute("data-k")==="p"){if(!c.querySelector(".xc"))window.__x2pPendCopy(c);return}if(c.getAttribute("data-k")!=="g")return;if(!c.querySelector(".xc")){var g=xg(+c.getAttribute("data-n"));if(!g)return;try{certify(c,g)}catch(e){window.__x2pCertErr=e;return}}xstamp(c)}
   function xlive(){XQ=0;var car=document.getElementById("car"),rec=document.getElementById("record"),want=null,pm=document.querySelector("#x2pRm .card[data-k=g]");
     if(car){var cs=[].slice.call(car.querySelectorAll(".card[data-n]")),i=-1;cs.forEach(function(c,j){if(c.classList.contains("cur"))i=j});
       if(i>-1)for(var j=Math.max(0,i-2);j<=Math.min(cs.length-1,i+2);j++)xnear(cs[j])}
@@ -9676,7 +9725,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
       else if(rec&&!rec.classList.contains("x2p-offs")){var cc=rec.querySelector(".card.cur[data-k=g]");if(cc&&(cc.classList.contains("flipped")||cc.classList.contains("nofilm")))want=cc.querySelector(".xc-s")}}
     if(want===XLIVE)return;XLIVE=want;XL=0;if(want&&!XT)XT=requestAnimationFrame(xstep)}
   window.__x2pCertLive=function(){if(!XQ)XQ=requestAnimationFrame(xlive)};
-  window.__x2pCertCopy=function(c){var g=xg(+c.getAttribute("data-n"));if(g&&c.getAttribute("data-k")==="g")try{certify(c,g,true)}catch(e){window.__x2pCertErr=e}};
+  window.__x2pCertCopy=function(c){if(c.getAttribute("data-k")==="p")return window.__x2pPendCopy(c);var g=xg(+c.getAttribute("data-n"));if(g&&c.getAttribute("data-k")==="g")try{certify(c,g,true)}catch(e){window.__x2pCertErr=e}};
   window.__x2pSlab=function(root){var late=[];[].forEach.call((root||document).querySelectorAll("#record .card[data-n]"),function(c){[].forEach.call(c.querySelectorAll(".cwin .wn"),function(w){if(w.textContent==="Date to come")w.textContent="Soon"});var fs=[].filter.call(c.querySelectorAll(".face"),function(f){return !f.querySelector(":scope>.fx")});if(!fs.length)return;
     /* (speed, 2026-10-27) the back of a far graded card is put in later (build.py, the record): it gets its label then, fitted on its own;
        the card's aria-label is added once */
