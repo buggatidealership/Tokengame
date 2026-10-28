@@ -874,7 +874,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
 (function(){try{if(window.__x2pHold)return;var d=document,still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,WH=null,cur=null;
   addEventListener("resize",function(){WH=null});
   /* the record card's size; on another tab the Overview is hidden, so it is shown for one measure, off screen and invisible */
-  function recSize(){var c=d.querySelector("#record .card[data-n]");if(!c)return null;var r=c.getBoundingClientRect();if(r.width)return {w:r.width,h:r.height};
+  function recSize(){var c=d.querySelector("#record .card[data-n]:not(.x2p-wo)")||d.querySelector("#record .card[data-n]");/* not a card the desktop wall hides */if(!c)return null;var r=c.getBoundingClientRect();if(r.width)return {w:r.width,h:r.height};
     var top=d.getElementById("top");if(!top||!top.hidden)return null;var st=top.getAttribute("style");
     top.style.cssText=(st||"")+";position:absolute;left:-300vw;top:0;width:100%;visibility:hidden";top.hidden=false;r=c.getBoundingClientRect();top.hidden=true;
     if(st==null)top.removeAttribute("style");else top.setAttribute("style",st);return r.width?{w:r.width,h:r.height}:null}
@@ -2340,3 +2340,64 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
  function soon(){if(!q)q=requestAnimationFrame(all)}
  all();new MutationObserver(soon).observe(document.body,{childList:true,subtree:true});
 })();
+/* DESKB (owner, 2026-10-28, night: "I give you full go-ahead to build the desktop version"; "the wall and the crawl... 100% agree"):
+   from 1200px only (html.x2p-desk), phones untouched. 1 the record as a wall: the eight newest graded cards side by side (grid order by
+   CSS, no DOM moves, so the carousel's own logic stays intact); a click opens the round big (#/round/n); "See all" brings the carousel back,
+   wide. 2 the crawl: a broadcast bar fixed to the bottom: the P&L order, the last graded day, the calls locked, the next calls, the next bell;
+   rebuilt every minute; a click on a round opens it. 3 two heads in one row share the smaller size. */
+(function(){try{var d=document,H=d.documentElement,mq=matchMedia("(min-width:1200px)"),NM={GPT:"GPT",KIMI:"Kimi",CLAUDE:"Claude",GROK:"Grok"};
+ var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+ var money=function(v){return (v<0?"−$":"+$")+Math.abs(Math.round(v)).toLocaleString("en-US")};
+ var pct=function(v){return (v<0?"−":"+")+Math.abs(v).toFixed(2)+"%"};
+ var K=function(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?(2000+ +m[3]%100)+"-"+("0"+m[1]).slice(-2)+"-"+("0"+m[2]).slice(-2):"9999"};
+ var WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];var wd=function(k){var p=k.split("-");return WD[new Date(Date.UTC(+p[0],+p[1]-1,+p[2])).getUTCDay()]};
+ /* 1 the wall */
+ var wallOn=false,all=false,more=null;
+ function wall(){var car=d.querySelector("#record .car");if(!car)return;var on=mq.matches&&!all;
+  var g=[].slice.call(car.querySelectorAll(":scope>.card[data-k=g]")),keep=g.slice(-8).reverse();
+  [].forEach.call(car.querySelectorAll(":scope>.card"),function(c){c.classList.remove("x2p-wl","x2p-wo");c.style.removeProperty("order");c.style.removeProperty("--wt")});
+  H.classList.toggle("x2p-wall",on);H.classList.toggle("x2p-wallall",mq.matches&&all);wallOn=on;
+  if(on){[].forEach.call(car.querySelectorAll(":scope>.card"),function(c){c.classList.add("x2p-wo")});
+   keep.forEach(function(c,i){c.classList.remove("x2p-wo");c.classList.add("x2p-wl");c.style.order=i;c.style.setProperty("--wt",[-1.2,.6,-.5,1,.8,-.9,.4,-.6][i]+"deg");if(window.__x2pRecFill)window.__x2pRecFill(c.getAttribute("data-n"))})}
+  if(!more){more=d.createElement("div");more.className="x2p-wallmore";more.innerHTML='<button type="button"></button><span></span>';car.parentNode.insertBefore(more,car.nextSibling);
+   more.querySelector("button").addEventListener("click",function(){all=!all;wall();d.getElementById("record").scrollIntoView({behavior:"smooth",block:"start"})})}
+  more.querySelector("button").textContent=all?"Back to the newest 8":"See all "+g.length+" graded cards";more.querySelector("span").textContent=all?"Swipe or use the round picker":"Newest first · click a card to see it big"}
+ d.addEventListener("click",function(e){if(!wallOn)return;var c=e.target.closest&&e.target.closest("#record .car>.card.x2p-wl");if(!c||e.target.closest(".snd,a"))return;e.preventDefault();e.stopPropagation();var y=scrollY,h0=location.hash||"#/";location.hash="#/round/"+c.getAttribute("data-n");
+  /* closing the slab put the page back at its top: return to the wall, where the click came from */
+  var seen=false,mo=new MutationObserver(function(){var o=d.getElementById("x2pRm");if(o){seen=true;return}if(!seen)return;mo.disconnect();
+   var back=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",h0);scrollTo({top:y,behavior:"instant"})};back();setTimeout(back,80);setTimeout(back,400)});
+  mo.observe(d.body,{childList:true});setTimeout(function(){if(!seen)mo.disconnect()},8000)},true);
+ d.addEventListener("mouseover",function(e){if(!wallOn)return;var c=e.target.closest&&e.target.closest("#record .car>.card.x2p-wl");if(!c||c.__wh)return;c.__wh=1;c.classList.add("x2p-wh");var v=c.querySelector("video");if(v){v.muted=true;var pr=v.play();if(pr&&pr.catch)pr.catch(function(){})}
+  c.addEventListener("mouseleave",function f(){c.__wh=0;c.classList.remove("x2p-wh");c.removeEventListener("mouseleave",f);if(v)v.pause()})});
+ /* 2 the crawl */
+ var bar=null;
+ function nyNow(){var p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date()),o={};p.forEach(function(x){o[x.type]=x.value});return {k:o.year+"-"+o.month+"-"+o.day,h:+o.hour%24,m:+o.minute}}
+ function crawl(){if(!mq.matches){if(bar){bar.remove();bar=null}H.classList.remove("x2p-crawl");return}
+  if(typeof ROUNDS==="undefined"||!window.__x2pPnl)return;var P=window.__x2pPnl(),ms=["GROK","CLAUDE","GPT","KIMI"].sort(function(a,b){return P.A[b].pnl-P.A[a].pnl});
+  var it=[],sep='<i class="x2p-cw-s"></i>';
+  it.push('<span class="x2p-cw-i"><span class="x2p-cw-k">Season P&amp;L</span>'+ms.map(function(m,i){return '<b>'+(i+1)+" "+NM[m]+'</b><b class="'+(P.A[m].pnl<0?"dn":"up")+'">'+money(P.A[m].pnl)+"</b>"}).join("")+"</span>");
+  var lk=ROUNDS.reduce(function(a,u){var k=K(u.resolves);return k!=="9999"&&k>a?k:a},"0000"),last=ROUNDS.filter(function(u){return K(u.resolves)===lk});
+  if(last.length)it.push('<span class="x2p-cw-i"><span class="x2p-cw-k">Graded '+wd(lk)+"</span>"+last.map(function(u){var w=String(u.win||"").split(/\s*&\s*/).filter(Boolean).map(function(m){return NM[m]});
+   return '<a href="#/round/'+u.n+'"><b>'+esc(u.co)+'</b> <b class="'+(u.a<0?"dn":"up")+'">'+pct(u.a)+"</b> "+(w.length?esc(w.join(" & "))+(w.length>1?" tie":" wins"):"nobody")+"</a>"}).join(" · ")+"</span>");
+  var lock=PENDING.filter(function(u){return u.calls&&u.calls.some(function(c){return c.dir})});
+  if(lock.length)it.push('<span class="x2p-cw-i"><span class="x2p-cw-k">Locked, graded '+(K(lock[0].resolves)!=="9999"?wd(K(lock[0].resolves)):"soon")+"</span>"+lock.map(function(u){return '<a href="#/round/'+u.n+'"><b>'+esc(u.ticker)+"</b></a>"}).join(" ")+"</span>");
+  var nk=UPCOMING.map(function(u){return K(u.called)}).sort()[0];if(nk){var nx=UPCOMING.filter(function(u){return K(u.called)===nk});
+   it.push('<span class="x2p-cw-i"><span class="x2p-cw-k">Calls due '+wd(nk)+"</span>"+nx.length+" · "+nx.slice(0,8).map(function(u){return esc(u.co)}).join(" · ")+(nx.length>8?" · more":"")+"</span>")}
+  var q=nyNow(),open=q.h<16,day=new Date().getDay(),bell=(day>0&&day<6&&open)?(16*60-(q.h*60+q.m)):null;
+  var bt=bell!=null?'<span>Next bell</span><b>'+(bell>=60?Math.floor(bell/60)+"h "+("0"+bell%60).slice(-2)+"m":bell+"m")+"</b>":'<span>Next bell</span><b>4:00 PM ET</b>';
+  var s=it.join(sep);if(!bar){bar=d.createElement("div");bar.className="x2p-cw";bar.setAttribute("role","region");bar.setAttribute("aria-label","Live scores");
+   bar.innerHTML='<div class="x2p-cw-lg">'+X2P_LOGO+'</div><div class="x2p-cw-bug"><i></i><span>On air</span></div><div class="x2p-cw-run"><div class="x2p-cw-tr"></div></div><div class="x2p-cw-cl"></div>';d.body.appendChild(bar);H.classList.add("x2p-crawl")}
+  var tr=bar.querySelector(".x2p-cw-tr");if(tr.__s!==s){tr.__s=s;tr.innerHTML=s+sep+'<span aria-hidden="true" class="x2p-cw-dup">'+s+sep+"</span>";tr.style.setProperty("--cwd",Math.max(40,Math.round(s.replace(/<[^>]+>/g,"").length/9))+"s")}
+  bar.querySelector(".x2p-cw-cl").innerHTML=bt}
+ /* the logo for the crawl: the header's own EZ. mark */
+ function logoUrl(){var svg=d.querySelector(".brand svg, .brand .x2p-ezl svg");if(svg&&!window.__x2pLogoUrl)window.__x2pLogoUrl="data:image/svg+xml;utf8,"+encodeURIComponent(new XMLSerializer().serializeToString(svg))}
+ /* 3 heads in one row share the smaller size */
+ var pairs=[["#learn h2.h45-h","#highlights h2.h45-h"]],busy=false;
+ function heads(){if(busy)return;busy=true;pairs.forEach(function(pr){var a=d.querySelector(pr[0]),b=d.querySelector(pr[1]);if(!a||!b)return;
+   if(!mq.matches)return;var fa=parseFloat(getComputedStyle(a).fontSize),fb=parseFloat(getComputedStyle(b).fontSize),m=Math.min(fa,fb);
+   [a,b].forEach(function(h){if(parseFloat(getComputedStyle(h).fontSize)>m+.1){h.style.setProperty("font-size",m+"px","important")}})});busy=false}
+ function all3(){H.classList.toggle("x2p-desk",mq.matches);wall();crawl();setTimeout(heads,80)}
+ var n=0;(function p(){all3();if(++n<16)setTimeout(p,500)})();
+ (mq.addEventListener?mq.addEventListener("change",all3):mq.addListener(all3));addEventListener("load",all3);if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){setTimeout(heads,120)});
+ var lw=innerWidth;addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;setTimeout(heads,150)}});
+ setInterval(crawl,60000)}catch(e){window.__x2pDeskErr=e}})();

@@ -62,7 +62,7 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    - EZ Live X2+: https://claude.ai/artifact/9dPsU3tcgmC9RAzQZy9Mg5 (`ez/v46-live-x2plus.html`, built by build.py after X6)
    - EZ Live X3+: https://claude.ai/artifact/H1uXHpDV6GmJcaef11n8RQ (`ez/v47-live-x3plus.html`, built by build.py right after X2+; X2+ with letterpress straps; owner, 2026-10-22). Republish it with X2+ (with `ez-data.js` and any new media), and its preview branch: `SITE_OUT=<dir> SITE_PAGE=v47-live-x3plus.html python3 tools/site/make_site.py`, then `npx --yes wrangler@4 pages deploy <dir> --project-name earningszn --branch x3plus` (https://x3plus.earningszn.pages.dev; never `--branch main`).
    Include `ez-data.js`, and any new `media/` files, in the publish. (Primetime and Primetime Kraft previews were deleted on 2026-10-03; their source files are kept.)
-7. **Report to the owner** in plain words: what changed, the new standings, any warnings,
+8. **Report to the owner** in plain words: what changed, the new standings, any warnings,
    and what to QA.
 
 ## Notes
