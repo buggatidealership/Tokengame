@@ -2231,3 +2231,24 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  function hook(){var lt=d.querySelector("#liveTxt");if(!lt)return false;wrap();if(window.MutationObserver)new MutationObserver(wrap).observe(lt,{childList:true,characterData:true,subtree:true});return true}
  if(!hook()){var n=0;(function p(){if(!hook()&&++n<40)setTimeout(p,250)})()}}catch(e){}})();
 /*}PILL*/
+/*HEADS{ M1 (owner, 2026-10-28: "just go with M1 lockup plus numbers... every call receipts included need to be on the same line... same for
+   getting smarter or just lucky"; the number and the eyebrow tag stay as on the live site): each section head's words in spans, the
+   first half edged green to the left, the rest red to the right (CSS in the HEADS block of skin-x2plus.css); every head one line,
+   stepped down from its CSS size until it fits its column (not the MVPs head, which has its own fitter); the standings strap's second
+   line "All tracked, public, graded at the close." */
+(function(){try{var d=document;
+ function words(){d.querySelectorAll('section .sh h2:not(.x2p-mvp)').forEach(function(h){if(h.__h45)return;h.__h45=1;var ws=[];
+   var walk=function(n){[].slice.call(n.childNodes).forEach(function(c){if(c.nodeType===3){var fr=d.createDocumentFragment();c.textContent.split(/(\s+)/).forEach(function(p){if(!p)return;
+      if(/^\s+$/.test(p))fr.appendChild(d.createTextNode(p));else{var s=d.createElement('span');s.className='h45-w';s.textContent=p;fr.appendChild(s);ws.push(s)}});c.replaceWith(fr)}
+     else if(c.nodeType===1&&c.tagName==='SMALL')walk(c)})};walk(h);
+   ws.forEach(function(s){var nx=s.nextSibling;if(nx&&nx.nodeType===1&&nx.classList.contains('x2p-lc'))s.appendChild(nx)});
+   ws.forEach(function(s,i){s.classList.add(i<Math.ceil(ws.length/2)?'h45-L':'h45-R')});h.classList.add('h45-h')})}
+ function fit(){d.querySelectorAll('section .sh h2.h45-h').forEach(function(h){if(!h.offsetWidth)return;h.style.removeProperty('font-size');var p=h.parentNode,
+   room=function(){var cs=getComputedStyle(p);return p.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)},
+   need=function(){var r=d.createRange();r.selectNodeContents(h);var b=r.getBoundingClientRect();return b.width+h.offsetLeft-p.offsetLeft+(h.querySelector('.x2p-flipbtn')?0:0)};
+   var z=parseFloat(getComputedStyle(h).fontSize),n=0,w=room();while(h.scrollWidth>h.clientWidth+.5&&z>14&&n++<60){z-=.5;h.style.setProperty('font-size',z+'px','important')}})}
+ function strap(){var ls=d.querySelectorAll('#standings .x2p-strap li');if(ls[1]&&!ls[1].__h45){ls[1].__h45=1;ls[1].textContent='All tracked, public, graded at the close.'}}
+ function go(){words();strap();fit()}
+ var lw=0;addEventListener('resize',function(){if(innerWidth!==lw){lw=innerWidth;fit()}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(fit);addEventListener('load',fit);
+ var n=0;(function p(){go();if(++n<24)setTimeout(p,250)})()}catch(e){window.__x2pHdErr=e}})();
+/*}HEADS*/

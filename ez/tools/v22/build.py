@@ -551,6 +551,8 @@ x3=re.sub(r'/\*CERTC1\{.*?/\*\}CERTC1\*/','',x3,count=1,flags=re.S)
 # proof and the tickets are set in them)
 x3=re.sub(r'/\*INKS\{\*/.*?/\*\}INKS\*/','',x3,count=1,flags=re.S)
 x3=x3.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&family=Alfa+Slab+One&display=swap" rel="stylesheet">\n</head>',1)
+# (owner, 2026-10-28) the M1 section heads and straps are X2+'s; X3+ keeps its Anton heads and letterpress straps
+x3=re.sub(r'/\*HEADS\{.*?/\*\}HEADS\*/','',x3,count=1,flags=re.S)
 # (owner, 2026-10-28) X3+'s tickets take the certificate's cream flat; X2+ keeps the fine grain (x2plus.js reads the flag)
 x3=x3.replace('</head>','<script>window.__x2pCream="flat"</script>\n</head>',1)
 assert x3!=pp and '__PAPER__' not in x3
