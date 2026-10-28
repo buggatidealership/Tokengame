@@ -23,7 +23,7 @@ async function measure(p){return p.evaluate(()=>{const W=innerWidth,o={sw:docume
   const box=await p.evaluate(()=>{const f=document.querySelector('.x2p-vt').getBoundingClientRect(),m=document.querySelector('.q41').getBoundingClientRect();return {y:f.top-12,h:m.bottom-f.top+28}});
   await p.screenshot({path:S+opt+'-'+m+'-'+w+'.png',clip:{x:0,y:Math.max(0,box.y),width:w,height:Math.min(box.h,(w>760?900:844)-Math.max(0,box.y))}});
   console.log(opt,m,w,JSON.stringify(r),p.errs.join('|'));await p.context().close()}
- for(const opt of P)for(const [w,m] of [[390,'wed'],[390,'bell'],[390,'sat'],[320,'wed'],[1280,'wed']]){const p=await open(b,w,m,w>760?900:844);await inject(p,[opt],1);await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(300);
+ for(const opt of P)for(const [w,m] of (process.env.PW?[[390,'wed']]:[[390,'wed'],[390,'bell'],[390,'sat'],[320,'wed'],[1280,'wed']])){const p=await open(b,w,m,w>760?900:844);await inject(p,[opt],1);await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(300);
   const r=await p.evaluate(()=>{const c=document.querySelector('#liveChip'),R=c.getBoundingClientRect(),o={w:Math.round(R.width),h:Math.round(R.height),sw:document.documentElement.scrollWidth,hit:[]};
    const kids=[...c.querySelectorAll('*')].map(e=>e.getBoundingClientRect()).filter(x=>x.width);const L=Math.min(...kids.map(x=>x.left)),Rr=Math.max(...kids.map(x=>x.right)),T=Math.min(...kids.map(x=>x.top)),B=Math.max(...kids.map(x=>x.bottom));
    document.querySelectorAll('header .brand, header .x2p-xhd, header .nav a').forEach(e=>{const q=e.getBoundingClientRect();if(q.width&&q.right>L&&q.left<Rr&&q.bottom>T&&q.top<B)o.hit.push(e.className||e.tagName)});
