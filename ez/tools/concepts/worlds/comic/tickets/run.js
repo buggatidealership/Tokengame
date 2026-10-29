@@ -15,6 +15,6 @@ const SECS=[['tn','.wc-cliff'],['bi','.wc-season'],['ch','.wc-chars'],['cn','.wc
   await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(1200);
   for(const [k,s] of SECS){const e=await p.$(s);if(!e)continue;await e.scrollIntoViewIfNeeded();await p.waitForTimeout(500);
    await p.evaluate(()=>{document.querySelector('header.top')&&(document.querySelector('header.top').style.visibility='hidden');document.querySelectorAll('.x2p-crawl,[class*=crawl]').forEach(x=>x.style.visibility='hidden')});
-   const bb=await e.boundingBox();await p.screenshot({path:`${OUT}/${W}-${k}-${t}.png`,clip:{x:Math.max(0,bb.x-12),y:bb.y-8,width:Math.min(W,bb.width+24),height:Math.min(bb.height+16,6000)},fullPage:true})}
+   const bb=await e.evaluate(n=>{const r=n.getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,width:r.width,height:r.height}});await p.screenshot({path:`${OUT}/${W}-${k}-${t}.png`,clip:{x:Math.max(0,bb.x-12),y:bb.y-8,width:Math.min(W,bb.width+24),height:Math.min(bb.height+16,6000)},fullPage:true})}
   const sw=await p.evaluate(()=>document.documentElement.scrollWidth);console.log(W,t,'scrollWidth',sw,er.join('|')||'ok');await p.close()}
  await b.close()})();
