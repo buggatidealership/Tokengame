@@ -840,3 +840,65 @@ img.wc-lg-dk{background:var(--wc-ink);padding:2px;border-radius:3px}
 .wc-key{margin-top:10px}
 /* panel captions may take two lines on a phone rather than be cut ("…the AIs submit their predictions") */
 @media (max-width:999px){.wc-lr-c{white-space:normal;text-overflow:clip;line-height:1.25}.wc-lr-1{padding-top:48px}}
+
+/* ===== R6 (owner, 2026-10-29: the round strip on desktop "looks like we built this in 2 hours": the phone panels stretched
+   to the tallest one, so three of four were padded with air). Desktop: four SQUARE panels; each one's content is drawn
+   for the square in container units (cqw of its own panel), so it fills the panel at every width instead of floating in it.
+   The captions sit above the squares, growing upward from the panel's top edge (world-comic.js sets the room they need). ===== */
+@media (min-width:1000px){
+  #wc-book .wc-lr-pg{grid-template-columns:repeat(4,minmax(0,1fr));gap:0 26px;align-items:start;padding-top:var(--lrcap,58px)}
+  #wc-book .wc-lr-p{container-type:inline-size;aspect-ratio:1/1;display:flex;flex-direction:column;padding:calc(8px + 4%) 5% 5%!important;overflow:visible}
+  #wc-book .wc-lr-c{top:auto;bottom:calc(100% - 7px);left:30px;right:2px;max-width:none;font-size:12px;line-height:1.22;white-space:normal}
+  #wc-book .wc-lr-n{top:auto;bottom:calc(100% - 12px);left:-12px}
+  /* the gutter arrow points right, level with the panels' middle */
+  #wc-book .wc-lr-p + .wc-lr-p::before{left:-20px;top:50%;margin:-9px 0 0;border:9px solid transparent;border-left:12px solid var(--wc-ink);border-right:0}
+  /* 1: the company, then the four calls as a conversation, left and right in turn */
+  #wc-book .wc-lr-1 .wc-lr-co{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"lg h" "lg k";column-gap:4cqw;row-gap:1.6cqw;align-items:center;margin:0}
+  #wc-book .wc-lr-1 .wc-lr-lg{grid-area:lg;width:19cqw;height:19cqw;padding:2.2cqw}
+  #wc-book .wc-lr-1 .wc-lr-co h3{grid-area:h;font-size:11cqw;line-height:.92;align-self:end;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #wc-book .wc-lr-1 .wc-lr-co h3 small{font-size:3.9cqw;margin-top:1cqw}
+  #wc-book .wc-lr-1 .wc-lr-lock{grid-area:k;justify-self:start;align-self:start;margin:0;font-size:5cqw;padding:.8cqw 2.6cqw .2cqw;border-width:2px}
+  #wc-book .wc-lr-1 .wc-lr-bub{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;gap:0;margin-top:2cqw}
+  #wc-book .wc-lr-1 .wc-lr-s{gap:4.6cqw;align-items:center}
+  #wc-book .wc-lr-1 .wc-lr-s{align-self:flex-start}
+  #wc-book .wc-lr-1 .wc-lr-s:nth-child(even){flex-direction:row-reverse;align-self:flex-end}
+  #wc-book .wc-lr-1 .wc-lr-s .wc-face{width:13cqw;height:13cqw;flex:none}
+  #wc-book .wc-lr-1 .wc-lr-s .wc-bub{flex:none;margin:0;display:flex;align-items:baseline;gap:2.4cqw;font-size:7.6cqw;padding:1.6cqw 4cqw 1.8cqw;border-radius:6cqw}
+  #wc-book .wc-lr-1 .wc-lr-s .wc-bub small{font-size:4.3cqw}
+  #wc-book .wc-lr-1 .wc-lr-s .wc-bub::before,#wc-book .wc-lr-1 .wc-lr-s .wc-bub::after{bottom:auto;top:50%;height:30px;margin-top:-15px}
+  #wc-book .wc-lr-1 .wc-lr-s:nth-child(even) .wc-bub::before{left:auto;right:-12px;clip-path:polygon(14.5px 30px,0 0,0 18px)}
+  #wc-book .wc-lr-1 .wc-lr-s:nth-child(even) .wc-bub::after{left:auto;right:-12px;clip-path:polygon(8.76px 20.76px,0 2.64px,0 13.51px)}
+  /* 2: the film is the panel */
+  #wc-book .wc-lr-2{padding:0!important;background:var(--wc-ink)!important}
+  #wc-book .wc-lr-2 .wc-lr-artw{position:absolute;inset:0;border:0;overflow:hidden}
+  #wc-book .wc-lr-2 .wc-lr-art{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;border:0}
+  #wc-book .wc-lr-2 .wc-lr-art video{width:100%;height:100%;object-fit:cover}
+  #wc-book .wc-lr-2 .wc-lr-sfx{right:3cqw;bottom:3cqw}
+  #wc-book .wc-lr-2 .wc-lr-sfx em{font-size:7cqw}#wc-book .wc-lr-2 .wc-lr-sfx b{font-size:10cqw}
+  /* 3: the graded card's middle, spread over the square */
+  #wc-book .wc-lr-3 .wc-lr-cw{flex:1;display:flex}
+  #wc-book .wc-lr-3 .wc-ce-mini{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:2.4cqw;padding:2.6cqw 0 0}
+  #wc-book .wc-lr-3 .wc-ce-mini .wc-ce-rows{flex:none;gap:2.4cqw}
+  #wc-book .wc-lr-3 .wc-ce-mini .wc-ce-r.wc-win{margin-top:2.4cqw}
+  #wc-book .wc-lr-3 .wc-ce-mini .wc-ce-mk{margin:2cqw 1cqw 0;padding:3.4cqw 3cqw 2.6cqw}
+  #wc-book .wc-lr-3 .wc-lr-rule{margin:2.6cqw 0 0;font-size:4.4cqw;line-height:1.25}
+  /* 4: the winner's money big, then every AI's result as a row of four */
+  #wc-book .wc-lr-4{justify-content:space-between}
+  #wc-book .wc-lr-4 .wc-lr-m{flex:none;margin:0;justify-content:center}
+  #wc-book .wc-lr-4 .wc-lr-mw{column-gap:4cqw}
+  #wc-book .wc-lr-4 .wc-lr-mw .wc-face{width:18cqw;height:18cqw}
+  #wc-book .wc-lr-4 .wc-lr-mw b{font-size:17cqw;text-shadow:.9cqw .9cqw 0 var(--wc-ink)}
+  #wc-book .wc-lr-4 .wc-lr-mw small{font-size:4.6cqw}
+  #wc-book .wc-lr-4 .wc-lr-all{padding-top:4cqw;gap:1cqw}
+  #wc-book .wc-lr-4 .wc-lr-all li{font-size:4.2cqw;gap:1cqw}
+  #wc-book .wc-lr-4 .wc-lr-all .wc-face{width:9cqw;height:9cqw}
+  #wc-book .wc-lr-4 .wc-lr-all b{font-size:7cqw}
+  #wc-book .wc-lr-4 .wc-lr-fine{margin:0;font-size:3.8cqw}
+  #wc-book .wc-lr-4 .wc-lr-open{margin:0 auto;font-size:6cqw;padding:2.6cqw 5cqw 2cqw}
+}
+/* Tonight at the close on desktop: small tickets like the phone's, six to a row (a row of three wide tickets left a gap
+   between every name and its call); 1000 to 1279px: three to a row with the calls in two columns */
+@media (min-width:1000px){#wc-book .wc-tn{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  #wc-book .wc-tnp .wc-lvc{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:12px!important}}
+@media (min-width:1280px){#wc-book .wc-tn{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+  #wc-book .wc-tnp .wc-lvc{grid-template-columns:minmax(0,1fr)!important}}

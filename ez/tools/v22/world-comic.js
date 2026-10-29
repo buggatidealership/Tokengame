@@ -176,6 +176,7 @@ function build(){
   /* owner, 2026-10-29 (a friend's read): no "Previously" (it repeated the cover, the cast and the last round), and the
      last round straight after the cover, so the first scroll shows how a round goes */
   book.innerHTML=cover+lastR+cast+issues+cliff+splash+bet+back;
+  lrCap();setTimeout(lrCap,400);
   const main=D.querySelector('main');main.insertBefore(book,main.firstChild);
   // the real explainer film moves onto the cover (its controls keep working)
   const vt=D.querySelector('.x2p-vt');if(vt)book.querySelector('.wc-film-slot').appendChild(vt);
@@ -340,6 +341,12 @@ function lastRound(R,P){
   return `<section class="wc-lr" aria-label="One round, start to finish">
     <h2 class="wc-h2"><span>One round, start to finish</span><small>A real one: round ${r.n}, ${esc(r.co)}, ${esc(day.replace(/^(Today|Yesterday) · /,''))}.</small></h2>
     <ol class="wc-lr-pg" data-n="${r.n}">${p1}${p2}${p3}${p4}</ol></section>`}
+/* desktop: the captions sit above the square panels; the strip leaves room for the tallest one */
+function lrCap(){const pg=D.querySelector('.wc-lr-pg');if(!pg)return;
+  if(!matchMedia('(min-width:1000px)').matches){pg.style.removeProperty('--lrcap');return}
+  let h=0;pg.querySelectorAll('.wc-lr-c').forEach(c=>{h=Math.max(h,c.offsetHeight)});pg.style.setProperty('--lrcap',Math.max(30,h-7+10)+'px')}
+let lrW=0;addEventListener('resize',()=>{if(innerWidth!==lrW){lrW=innerWidth;lrCap()}});
+if(D.fonts&&D.fonts.ready)D.fonts.ready.then(()=>lrCap());
 
 /* the bet: the close the weekday after NVIDIA's call date in the sheet (or SIM/CONFIG.betDate), as routes.js counts it */
 function betAt(){const md2=s=>{const m=String(s||'').match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null};
