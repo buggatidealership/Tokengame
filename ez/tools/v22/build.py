@@ -545,7 +545,9 @@ def world(name,title,out):
     assert w.count('<title>EZ Live X2+</title>')==1
     w=w.replace('<title>EZ Live X2+</title>','<title>%s</title>'%title)
     assert w.count('</body>')==1
-    w=w.replace('</body>','<script id="x2p-world-js">document.addEventListener("DOMContentLoaded",function(){try{%s\n}catch(e){window.__x2pWorldErr=e;document.documentElement.classList.add("x2p-world");console.error(e)}})</script>\n</body>'%js.replace('</script','<\\/script'),1)
+    # run at once at the end of <body> (not at DOMContentLoaded, which a slow phone reaches after the cover's 9.5 s net): each
+    # world script waits for the page itself (x2p-launch, the film ticket, the data) before drawing
+    w=w.replace('</body>','<script id="x2p-world-js">try{%s\n}catch(e){window.__x2pWorldErr=e;document.documentElement.classList.add("x2p-world");console.error(e)}</script>\n</body>'%js.replace('</script','<\\/script'),1)
     open(out,'w').write(w); print("ok",out,len(w))
 world("comic","EZ Live X3+","v47-live-x3plus.html")
 world("arcade","EZ Live X4+","v48-live-x4plus.html")

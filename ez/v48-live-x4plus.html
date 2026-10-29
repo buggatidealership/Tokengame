@@ -13035,7 +13035,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
    a swipe down or the close button puts it back. "See the stats" still turns the card in place. */
 (function(){try{if(window.__x2pHoldTap)return;var d=document,H=d.documentElement,still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,from=null,slide=0,ret=null;
  function order(){return [].slice.call(d.querySelectorAll("#record .car>.card[data-n]")).map(function(c){return c.getAttribute("data-n")})}
- function go(n,src,dir){if(!ret)ret={y:scrollY,h:/^#\/round\//.test(location.hash)?"#/":(location.hash||"#/")};from=src?src.getBoundingClientRect():null;slide=dir||0;location.hash="#/round/"+n}
+ function go(n,src,dir){if(!ret)ret={y:scrollY,h:/^#\/round\//.test(location.hash)?"#/":(location.hash||"#/"),sec:H.getAttribute("data-sec")};from=src?src.getBoundingClientRect():null;slide=dir||0;location.hash="#/round/"+n}
  d.addEventListener("click",function(e){if(H.classList.contains("x2p-wall"))return;var c=e.target.closest&&e.target.closest("#record .car>.card.cur[data-n]");
   if(!c||e.target.closest(".snd,a,button,[data-flip]"))return;e.preventDefault();e.stopPropagation();go(c.getAttribute("data-n"),c,0)},true);
  function step(dir){var o=order(),cur=d.querySelector("#x2pRm .card[data-n]");if(!cur)return;var i=o.indexOf(cur.getAttribute("data-n")),j=i+dir;if(i<0||j<0||j>=o.length)return;go(o[j],null,dir)}
@@ -13057,7 +13057,11 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
   from=null;slide=0}
  new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm")arrive(x)});
    [].forEach.call(m.removedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm"&&ret)setTimeout(function(){if(d.getElementById("x2pRm")||!ret)return;var r=ret;ret=null;
-    var back=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",r.h);scrollTo({top:r.y,behavior:"instant"})};back();setTimeout(back,80);setTimeout(back,400)},60)})})}).observe(d.body,{childList:true});
+    /* stepping onto a round still to come routes the page underneath to Upcoming (X2 places such a round there); closing put the
+       address back without telling the router, so the Overview stayed hidden under "#/" (2026-10-29): re-route once */
+    var back=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",r.h);
+     if(r.sec&&H.getAttribute("data-sec")!==r.sec&&!r.rr){r.rr=1;dispatchEvent(new HashChangeEvent("hashchange"))}
+     scrollTo({top:r.y,behavior:"instant"})};back();setTimeout(back,80);setTimeout(back,400)},60)})})}).observe(d.body,{childList:true});
 }catch(e){window.__x2pTapErr=e}})();
 
 /* TIES (owner, 2026-10-29: "Claude and Grok should be on the same line"): a tied round's winners on one line in the Winner box, the
@@ -13252,7 +13256,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
  if(d.readyState==="complete")ready();else addEventListener("load",ready)}catch(e){}})();
 
 </script>
-<script id="x2p-world-js">document.addEventListener("DOMContentLoaded",function(){try{/* EZ Live X4+, the arcade fighting game (owner, 2026-10-29: "create the arcade one on a new page called Easy Live X4 Plus").
+<script id="x2p-world-js">try{/* EZ Live X4+, the arcade fighting game (owner, 2026-10-29: "create the arcade one on a new page called Easy Live X4 Plus").
    build.py injects this into X2+'s build at DOMContentLoaded (after x2plus.js has registered its own handlers), with
    window.__x2pLB=1 (the Leaderboard tab is kept) and window.__x2pNeedWorld=1 (the cover waits for html.x2p-world).
    Every figure is read from the page's own data: ROUNDS, PENDING, UPCOMING, MODELS, CO_LOGOS, CAPS, RMETA, window.__x2pPnl().
@@ -13544,6 +13548,6 @@ var tries=0;(function wait(){if(window.ROUNDS&&window.__x2pPnl&&window.MODELS&&d
     try{go()}catch(e){console.error('arcade',e);window.__waErr=e;done()}}else if(tries++<400)setTimeout(wait,25);else done()})();
 })();
 
-}catch(e){window.__x2pWorldErr=e;document.documentElement.classList.add("x2p-world");console.error(e)}})</script>
+}catch(e){window.__x2pWorldErr=e;document.documentElement.classList.add("x2p-world");console.error(e)}</script>
 </body>
 </html>
