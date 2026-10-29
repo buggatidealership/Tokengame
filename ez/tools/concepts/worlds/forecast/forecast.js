@@ -139,7 +139,8 @@ function build(){if(d.getElementById('wf-fc')||typeof ROUNDS==='undefined'||type
  rehead('get','The token','Get $EZ','');
 
  var anchor=main.querySelector('section.hero');
- [hero,fc,vd,tm,out,alm].forEach(function(s){main.insertBefore(s,anchor)});
+ var dock=d.createElement('div');dock.className='wf-dock';dock.appendChild(fc);
+ [hero,dock,vd,tm,out,alm].forEach(function(s){main.insertBefore(s,anchor)});
  return true}
 
 function go(){if(build())return;var n=0,t=setInterval(function(){if(build()||++n>80)clearInterval(t)},150)}
