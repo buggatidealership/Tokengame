@@ -1344,6 +1344,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       ver=function(m){return (MODELS[m]&&MODELS[m].ver)||m},no=String(N).padStart(6,"0");
     var row=function(i,m,v,c){return '<div class="pt-r" style="--c:'+COL[m]+'"><b>'+(i?i+1:fo("1"))+'</b>'+logo(m)+'<span class="pt-nm">'+(i?esc(m):fo(m))+'</span>'+v+c+'</div>'};
     var ax=function(a,k){return '<div class="pt-ax"><span>'+a+'</span><span class="pt-k">'+k+'</span><span>R'+N+'</span></div>'};
+    /* (owner, 2026-10-29: "instead of having trades... the last 5 rounds... the tiny little boxes... stamped in") the five newest graded
+       rounds, oldest left: a tick in green ink when the AI got the direction, a cross in red ink when not, a dash when it made no call */
+    var l5=function(m){var rs=ROUNDS.slice().sort(function(a,b){return b.n-a.n}).slice(0,5).reverse();return rs.map(function(r){var c=null;r.calls.forEach(function(x){if(x[0]===m&&x[1])c=x});
+      if(!c)return '<i class="l5n" title="R'+r.n+': no call"><span class="sr">no call, </span></i>';var ok=(/^UP/.test(c[1])&&r.a>0)||(/^DOWN/.test(c[1])&&r.a<0);
+      return '<i class="'+(ok?'l5r':'l5w')+'" title="R'+r.n+'"><span class="sr">'+(ok?'right':'wrong')+', </span></i>'}).join('')};
     /* the four views: the band words, the body, and what to draw once it is in place */
     var V={
       /* (owner, 2026-10-26: the trading competition, PA of ez/tools/concepts/pnl) the money view is "P&L": each AI's biggest win and
@@ -1363,8 +1368,8 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
       hit:{t:"Accuracy",top:"How often were they right about the direction?",bot:"Up or down only",
         /* (owner, 2026-10-26, later) the rows as a trader's record: trades, W and L (no "25 of 37"); the hit rate moves to where each
            line ends on the chart, as the P&L view prints its P&L % there */
-        html:function(){return '<div class="lp pt-3 pn-acc"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Trades</span><span class="pn-w">W</span><span class="pn-l">L</span><span>Accuracy</span></div>'+
-          byHit.map(function(m,i){var s=S[m];return row(i,m,'<span class="pt-v tnum pn-tr"><span class="sr">'+Math.round(s.hit*100)+'% right. Trades </span>'+s.n+'</span><span class="pt-v tnum pt-u pn-wv"><span class="sr">won </span>'+s.k+'</span><span class="pt-v tnum pt-d pn-lv"><span class="sr">lost </span>'+(s.n-s.k)+'</span>','<span class="pt-c tnum pn-hv'+(i?'':' pn-hg')+'" aria-hidden="true">'+Math.round(s.hit*100)+'%</span>')}).join("")+'</div>'+
+        html:function(){return '<div class="lp pt-3 pn-acc"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Last 5</span><span class="pn-w">W</span><span class="pn-l">L</span><span>Accuracy</span></div>'+
+          byHit.map(function(m,i){var s=S[m];return row(i,m,'<span class="pt-v pn-tr pn-l5"><span class="sr">'+Math.round(s.hit*100)+'% right. Last five rounds: </span>'+l5(m)+'</span><span class="pt-v tnum pt-u pn-wv"><span class="sr">won </span>'+s.k+'</span><span class="pt-v tnum pt-d pn-lv"><span class="sr">lost </span>'+(s.n-s.k)+'</span>','<span class="pt-c tnum pn-hv'+(i?'':' pn-hg')+'" aria-hidden="true">'+Math.round(s.hit*100)+'%</span>')}).join("")+'</div>'+
           '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("Start","Coin flip: 50%")+'</div><p class="pt-cp">Every line starts at 50/50 and moves with each call.</p>'},
         draw:function(el,h){var LO=30,HI=80,y=function(v){return (HI-Math.max(LO,Math.min(HI,v)))/(HI-LO)*100};
           chart(el,h,byHit.map(function(m,i){return {m:m,rank:i+1,pts:S[m].run.map(function(p){return [p[0]/N*100,y(p[1])]})}}),y(50),{left:24,grid:[80,70,60,40,30].map(function(v){return [y(v),v+"%"]})})}},

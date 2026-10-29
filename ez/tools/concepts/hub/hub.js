@@ -54,13 +54,13 @@
   var before={};ms.forEach(function(m){before[m]=P.A[m].pnl-LB.reduce(function(s,u){var e=P.A[m].per[u.n];return s+(e?e.v:0)},0)});
   var bms=ms.slice().sort(function(a,b){return before[b]-before[a]});
   var first=ROUNDS.map(function(u){return K(u.called)}).sort()[0],mon=function(k){var t=kd(k),w=t.getUTCDay();return t.getTime()-((w+6)%7)*864e5},wk=first?Math.floor((mon(today)-mon(first))/(7*864e5))+1:1;
-  return {now:now,today:today,P:P,ms:ms,rk:rk,bell:bellOf(bk),bk:bk,tk:tk,TN:TN,lk:lk,LB:LB,was:bms[0],wk:wk,graded:ROUNDS.length,total:ROUNDS.length+PENDING.length+UPCOMING.length}}
+  return {now:now,today:today,P:P,ms:ms,rk:rk,before:before,bell:bellOf(bk),bk:bk,tk:tk,TN:TN,lk:lk,LB:LB,was:bms[0],wk:wk,graded:ROUNDS.length,total:ROUNDS.length+PENDING.length+UPCOMING.length}}
  function dayWord(M,k,past){if(k===M.today)return past?"Today":"Tonight";var t=kd(k),n=kd(M.today);var dd=Math.round((t-n)/864e5);if(dd===1)return "Tomorrow";if(dd===-1)return "Yesterday";return kf(k,"l")}
 
  /* ---- the paper: the bet's own stock, read once from a ticket on the page ---- */
  var lst=function(v){var o=[],dp=0,st=0;for(var i=0;i<v.length;i++){var c=v[i];if(c==="(")dp++;else if(c===")")dp--;else if(c===","&&!dp){o.push(v.slice(st,i).trim());st=i+1}}o.push(v.slice(st).trim());return o};
  var STOCK=null;function stock(){if(STOCK)return STOCK;var pp=d.querySelector("#x2pSt .bt-pp")||d.querySelector(".bs-nx .bt-pp");if(!pp)return null;var L=lst(getComputedStyle(pp).backgroundImage);if(L.length<27)return null;
-  STOCK={grain:L[23],paper:L[L.length-1],g:L[19],r:L[21]};var s=H.style;s.setProperty("--hub-grain",STOCK.grain);s.setProperty("--hub-paper",STOCK.paper);s.setProperty("--hub-gink",STOCK.g);s.setProperty("--hub-rink",STOCK.r);return STOCK}
+  STOCK={grain:L[23],paper:getComputedStyle(pp).backgroundColor,g:L[19],r:L[21]};var s=H.style;s.setProperty("--hub-grain",STOCK.grain);s.setProperty("--hub-paper",STOCK.paper);s.setProperty("--hub-gink",STOCK.g);s.setProperty("--hub-rink",STOCK.r);return STOCK}
  /* the ticket's own layers with the fibres (22) and the sunburst (24, 25) off, as the season ticket does */
  function paper(t){var pp=t.querySelector(".bt-pp");if(!pp)return;pp.style.removeProperty("background-image");var L=lst(getComputedStyle(pp).backgroundImage);if(L.length<27)return;L[22]=L[24]=L[25]="none";pp.style.backgroundImage=L.join(", ")}
  function tk(cls,inner,head,foot,st){return '<div class="bs-nx hub-t '+cls+'"'+(st?' style="'+st+'"':"")+'><div class="bt-sh"><i></i></div><div class="bt-hs"></div><div class="bt-p"><div class="bt-pp"><i class="bt-pl"></i><i class="bt-r1"></i><i class="bt-r2"></i></div>'+
@@ -90,16 +90,17 @@
    (foreign?'<p class="hub-fx">'+esc(cl.city)+" close · "+etTime(cl.t)+"</p>":"")+"</div>";
   return tk("hub-me",inner,'<span class="hub-hl">'+star+ko(lbl)+star+'</span>'+ko(foreign?"Bell "+etTime(cl.t):"Bell "+etTime(M.bell)),ko("Calls locked "+kf(K(u.called),"s"))+ko("Nº "+String(u.n).padStart(6,"0"),"hub-no"),"--b:62px;--px:62px")}
  function undercard(M,U){var cols=["GPT","KIMI","CLAUDE","GROK"];
-  var hd='<div class="hub-uh"><span></span>'+cols.map(function(m){return '<span class="hub-uc">'+mark(m)+"<small>"+NM[m]+"</small></span>"}).join("")+'<span class="hub-ut"><i class="u">▲</i>v<i class="d">▼</i></span></div>';
+  var hd='<div class="hub-uh"><span></span>'+cols.map(function(m){return '<span class="hub-uc">'+mark(m)+"<small>"+NM[m]+"</small></span>"}).join("")+'<span class="hub-ut"><i class="hub-pu">▲</i>v<i class="hub-pd">▼</i></span></div>';
   var row=function(u){var cl=closeOf(u),byM={};u.calls.forEach(function(c){byM[c.m]=c});var nb=u.calls.filter(function(c){return c.dir==="UP"}).length,nr=u.calls.filter(function(c){return c.dir==="DOWN"}).length;
    return '<a class="hub-ur" href="#/round/'+u.n+'">'+'<span class="hub-uco">'+logo(u)+'<span class="hub-cot"><b>'+esc(u.co)+"</b><small>"+(cl&&cl.city?esc(cl.city)+" close · "+etTime(cl.t):"No. "+u.n+(tick(u)?" · "+esc(tick(u)):""))+(split(M,u)?' · <i class="hub-bfs">Belt fight</i>':"")+"</small></span></span>"+
-    cols.map(function(m){var c=byM[m];if(!c||!c.dir)return '<span class="hub-uv">·</span>';return '<span class="hub-uv '+(c.dir==="UP"?"u":"d")+(M.rk[m]===1?" L":"")+'"><i>'+(c.dir==="UP"?"▲":"▼")+"</i>"+esc(c.mag)+"</span>"}).join("")+
-    '<span class="hub-ut"><b class="u">'+nb+'</b>–<b class="d">'+nr+"</b></span></a>"};
+    cols.map(function(m){var c=byM[m];if(!c||!c.dir)return '<span class="hub-uv">·</span>';return '<span class="hub-uv '+(c.dir==="UP"?"hub-pu":"hub-pd")+(M.rk[m]===1?" hub-Lv":"")+'"><i>'+(c.dir==="UP"?"▲":"▼")+"</i>"+esc(c.mag)+"</span>"}).join("")+
+    '<span class="hub-ut"><b class="hub-pu">'+nb+'</b>–<b class="hub-pd">'+nr+"</b></span></a>"};
   return tk("hub-uc-t",'<div class="hub-ub">'+hd+U.map(row).join("")+"</div>",'<span class="hub-hl">'+star+ko("Undercard · "+U.length+" fights")+star+"</span>"+ko("Bell "+etTime(M.bell)),ko("Calls locked before the reports")+ko("Graded at the close"),"--b:0px;--px:-80px")}
  function fightNight(M){if(!M.TN.length)return "";var L=M.ms[0],S=M.ms[1],P=M.P,gap=P.A[L].pnl-P.A[S].pnl,sp=M.TN.filter(function(u){return split(M,u)});
   var lines=[M.TN.length+" fights. Calls locked before the reports.",
-   NM[L]+" holds the belt, "+money0(gap)+" clear of "+NM[S]+".",
    sp.length?NM[S]+" takes the other corner on "+sp.map(function(u){return u.co}).join(" and ")+".":NM[L]+" and "+NM[S]+" share a corner in every fight."];
+  var fx=M.TN.map(function(u){return {u:u,c:closeOf(u)}}).filter(function(x){return x.c&&x.c.city&&x.c.t<M.bell}).sort(function(a,b){return a.c.t-b.c.t})[0];
+  lines.push(fx?"First bell: "+fx.u.co+", "+fx.c.city+" close, "+etTime(fx.c.t)+".":"One bell for all: "+etTime(M.bell)+".");
   var dw=dayWord(M,M.tk);
   return '<section id="hubTn" class="sec hub-sec" aria-labelledby="hubTnH"><div class="sh"><div class="tx"><span class="no">01</span><span class="eb">'+esc(dw)+" · "+esc(kf(M.tk))+'</span><h2 id="hubTnH" class="h45-h hub-h"><span class="h45-w h45-L">Fight</span> <span class="h45-w h45-R">night</span></h2></div>'+
    '<div class="x2p-strap hub-strap"><span class="x2p-bug" aria-hidden="true">On the card</span><ul class="x2o-ul lede">'+lines.map(function(t){return "<li>"+esc(t)+"</li>"}).join("")+"</ul></div></div>"+
@@ -111,20 +112,21 @@
   var corner=(up?"Bulls":"Bears")+" win",tally=right.length===0?"Nobody called it":right.length===1?"1 of "+C.length+" called it":right.length+" of "+C.length+" called it";
   var pr=C.map(function(c){return {m:c.m,v:(P.A[c.m].per[u.n]||{v:0}).v}}).sort(function(a,b){return b.v-a.v}),W=pr[0],Lo=pr[pr.length-1];
   var L=M.ms[0],S=M.ms[1],keeps=M.was===L,gap=P.A[L].pnl-P.A[S].pnl;
-  var belt=keeps?NM[L]+" keeps the belt":NM[L]+" takes the belt from "+NM[M.was];
+  var g0=M.before[L]-M.before[S],belt=keeps?NM[L]+" keeps the belt":NM[L]+" takes the belt from "+NM[M.was];
+  var bline=keeps?(gap<g0?NM[S]+" closes from "+money0(g0)+" to "+money0(gap)+".":"The lead grows from "+money0(g0)+" to "+money0(gap)+"."):NM[L]+" leads by "+money0(gap)+".";
   var lone=right.length===1?" "+NM[right[0].m]+" the lone "+(up?"bull":"bear")+".":"";
   var fld=function(lbl,body,cls){return '<span class="hub-f '+(cls||"")+'"><small>'+lbl+"</small>"+body+"</span>"};
   var crown=win.length?win.map(function(m){return mark(m)+"<b>"+NM[m]+"</b>"}).join(""):"<b>Nobody</b>";
   var miss=win.length?(C.filter(function(c){return c.m===win[0]})[0]||{}).miss:null;
   var also=M.LB.slice(1).map(function(r){var w=String(r.win||"").split(/\s*&\s*/).filter(Boolean).map(function(m){return NM[m]});
-   return '<a class="hub-al" href="#/round/'+r.n+'">'+logo(r)+"<b>"+esc(r.co)+'</b><b class="'+(r.a<0?"d":"u")+'">'+pct(r.a)+"</b><small>"+(w.length?esc(w.join(" & "))+(w.length>1?" share the crown":" takes the crown"):"Nobody called it")+"</small></a>"}).join("");
+   return '<a class="hub-al" href="#/round/'+r.n+'">'+logo(r)+"<b>"+esc(r.co)+'</b><b class="'+(r.a<0?"hub-pd":"hub-pu")+'">'+pct(r.a)+"</b><small>"+(w.length?esc(w.join(" & "))+(w.length>1?" share the crown":" takes the crown"):"Nobody called it")+"</small></a>"}).join("");
   var inner='<span class="hub-stub"><small>No.</small><b>'+u.n+'</b></span><div class="hub-bd hub-rb">'+
-   '<a class="hub-co" href="#/round/'+u.n+'">'+logo(u,"hub-lgb")+'<span class="hub-cot"><b class="hub-nm">'+esc(u.co)+"</b>"+(tick(u)?"<small>"+esc(tick(u))+"</small>":"")+'</span><b class="hub-mv '+(up?"u":"d")+'">'+pct(u.a)+"</b></a>"+
+   '<a class="hub-co" href="#/round/'+u.n+'">'+logo(u,"hub-lgb")+'<span class="hub-cot"><b class="hub-nm">'+esc(u.co)+"</b>"+(tick(u)?"<small>"+esc(tick(u))+"</small>":"")+'</span><b class="hub-mv '+(up?"hub-pu":"hub-pd")+'">'+pct(u.a)+"</b></a>"+
    '<p class="hub-fw"><b>'+corner+".</b> "+tally+"."+esc(lone)+"</p>"+
-   '<div class="hub-fs">'+fld(win.length>1?"Shared crown":"Crown",'<span class="hub-fv">'+crown+"</span>"+(miss?'<i class="hub-fm">'+esc(miss)+"% off</i>":""),"cr")+
-    fld("Biggest W",'<span class="hub-fv">'+mark(W.m)+"<b>"+NM[W.m]+'</b></span><i class="hub-fm '+(W.v<0?"d":"u")+'">'+money(W.v)+"</i>")+
-    fld("Biggest L",'<span class="hub-fv">'+mark(Lo.m)+"<b>"+NM[Lo.m]+'</b></span><i class="hub-fm '+(Lo.v<0?"d":"u")+'">'+money(Lo.v)+"</i>")+"</div>"+
-   '<p class="hub-belt-l">'+star+"<b>"+esc(belt)+".</b> "+money(P.A[L].pnl)+", "+money0(gap)+" clear of "+NM[S]+".</p>"+
+   '<div class="hub-fs">'+fld(win.length>1?"Shared crown":"Crown",'<span class="hub-fv">'+crown+"</span>"+(miss?'<i class="hub-fm">'+esc(miss)+"% off</i>":""),"hub-fcr")+
+    fld("Biggest W",'<span class="hub-fv">'+mark(W.m)+"<b>"+NM[W.m]+'</b></span><i class="hub-fm '+(W.v<0?"hub-pd":"hub-pu")+'">'+money(W.v)+"</i>")+
+    fld("Biggest L",'<span class="hub-fv">'+mark(Lo.m)+"<b>"+NM[Lo.m]+'</b></span><i class="hub-fm '+(Lo.v<0?"hub-pd":"hub-pu")+'">'+money(Lo.v)+"</i>")+"</div>"+
+   '<p class="hub-belt-l">'+star+"<b>"+esc(belt)+".</b> "+esc(bline)+"</p>"+
    (also?'<div class="hub-also"><small class="hub-alh">Also on the card</small>'+also+"</div>":"")+"</div>";
   return tk("hub-res",inner,'<span class="hub-hl">'+star+ko("Main event result")+star+"</span>"+ko(kf(M.lk)),ko("Graded at the close")+ko(M.LB.length+" fights"),"--b:62px;--px:62px")}
  var goStub=function(href,k,t,s){return '<a class="hub-go" href="'+href+'"><span class="hub-gw"><span class="hub-gp">'+ko(k,"hub-gk")+'<span class="hub-gt"><b>'+t+"</b><small>"+s+'</small></span><i class="hub-ga" aria-hidden="true">→</i></span></span></a>'};
@@ -133,7 +135,7 @@
  function fitH(){[].forEach.call(d.querySelectorAll(".hub-h"),function(h){var w=h.parentNode.clientWidth;if(!w)return;var z=Math.min(46,Math.max(23,innerWidth*.071));if(H.classList.contains("hub-desk"))z=Math.min(z,44);h.style.setProperty("font-size",z+"px","important");var n=0;
    while(h.scrollWidth>w+1&&z>14&&n++<60){z-=.5;h.style.setProperty("font-size",z+"px","important")}})}
  /* strap lines one line each (as the page's fitLines) */
- function fitS(){[].forEach.call(d.querySelectorAll(".hub-strap ul"),function(ul){var li=[].slice.call(ul.children);li.forEach(function(l){l.style.fontSize=""});var z=parseFloat(getComputedStyle(li[0]).fontSize),n=0;
+ function fitS(){if(H.classList.contains("hub-desk"))return;[].forEach.call(d.querySelectorAll(".hub-strap ul"),function(ul){var li=[].slice.call(ul.children);li.forEach(function(l){l.style.fontSize=""});var z=parseFloat(getComputedStyle(li[0]).fontSize),n=0;
    var one=function(){return li.every(function(l){var r=d.createRange();r.selectNodeContents(l);return r.getClientRects().length<=1||l.getClientRects().length&&Math.round(r.getBoundingClientRect().height)<=Math.round(z*1.5)})};
    while(!one()&&z>11&&n++<40){z-=.5;li.forEach(function(l){l.style.fontSize=z+"px"})}})}
 
@@ -155,6 +157,7 @@
   /* the belt race: the season ticket as it is, its eyebrow in the fight voice; a stub into the Leaderboard */
   var st=d.getElementById("standings");if(st&&!st.__hub){st.__hub=1;var e2=st.querySelector(".sh .eb");if(e2)e2.textContent="The belt";
    var g2=d.createElement("div");g2.className="hub-gow";g2.innerHTML=goStub("#/leaderboard","Leaderboard","The proof","P&L, accuracy, target hits, sectors");st.appendChild(g2)}
+  var gc=[].slice.call(d.querySelectorAll("#car>.card[data-k=g]"));gc.slice(0,-8).forEach(function(c){c.classList.add("hub-old")});
   [].forEach.call(d.querySelectorAll(".hub-t"),paper);
   order();land();fitH();fitS();built=true;return true}
  function placeBug(B){B=B||d.querySelector(".hub-bug");if(!B)return;var desk=matchMedia("(min-width:1200px)").matches;H.classList.toggle("hub-desk",desk);
@@ -163,7 +166,7 @@
  /* the order, the numbers (the page re-numbers its own sections) */
  function order(){var main=d.querySelector("main.wrap");if(!main)return;var seq=["hubTn","record","standings","x2pSt","get"],bet=main.querySelector("section.x2o-bet"),prev=bet;
   seq.forEach(function(id){var s=d.getElementById(id);if(s&&prev&&prev.nextElementSibling!==s){prev.after(s)}if(s)prev=s});
-  var no={hubTn:"01",record:"02",standings:"03",x2pSt:"04",get:"05"};Object.keys(no).forEach(function(id){var s=d.getElementById(id),n=s&&s.querySelector(".sh .no");if(n&&n.textContent!==no[id])n.textContent=no[id]})}
+  var no=H.classList.contains("hub-desk")?{hubTn:"01",record:"02",x2pSt:"03",get:"04"}:{hubTn:"01",record:"02",standings:"03",x2pSt:"04",get:"05"};Object.keys(no).forEach(function(id){var s=d.getElementById(id),n=s&&s.querySelector(".sh .no");if(n&&n.textContent!==no[id])n.textContent=no[id]})}
  /* the record lands on the last bell's main event (the page's own round picker does the move) */
  var landed=0;function land(){if(!M||!M.LB[0]||landed>3)return;var c=d.querySelector('#chips .chip[data-i="'+(M.LB[0].n-1)+'"]');if(c){c.click();landed++}}
  function tickBug(){if(!M)return;var cd=d.querySelector(".hub-bug .hub-cd");if(cd)cd.textContent=left(M.bell-Date.now())}
