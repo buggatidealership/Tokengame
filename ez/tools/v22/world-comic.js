@@ -135,17 +135,27 @@ function build(){
         </div></article>`}).join('')}</div>
   </section>`;
 
-  /* ---------- THE SEASON SO FAR ---------- */
-  const rest=R.filter(r=>!night.includes(r)).sort((a,b)=>b.n-a.n);
-  const season=`<section class="wc-season" aria-label="The season so far">
-    <h2 class="wc-h2"><span>${nightLbl}</span><small>${md(lastDate)} · ${night.length} report${night.length===1?'':'s'} graded at the close</small></h2>
-    ${bigPanel(head,0)}
-    ${others.length?`<div class="wc-also"><p class="wc-gut">Also ${nightLbl==='Today'?'today':nightLbl.toLowerCase()}…</p><div class="wc-row">${others.map(smallPanel).join('')}</div></div>`:''}
+  /* ---------- LAST ROUND: one round, start to finish (owner, 2026-10-29: "the section where they should understand ... the process
+     of one given round, and we use the last round as the example and the case study"). Always the newest graded round with a film. ---------- */
+  const lastR=lastRound(R,P);
+
+  /* ---------- BACK ISSUES: every graded round, newest first ---------- */
+  const all=R.slice().sort((a,b)=>b.n-a.n);
+  const issues=`<section class="wc-season" aria-label="Back issues">
     <h2 class="wc-h2 wc-h2-b"><span>Back issues</span><small>Every graded round. Tap one to open its graded card.</small></h2>
-    <div class="wc-bis" data-all="0">${rest.map(backIssue).join('')}</div>
-    <button type="button" class="wc-more">Show all ${rest.length} back issues</button>
+    <div class="wc-bis" data-all="0">${all.map(backIssue).join('')}</div>
+    <button type="button" class="wc-more">Show all ${all.length} back issues</button>
     <p class="wc-key">Corner face = the round's winner (closest call that got the direction). × = nobody got the direction. % = how far the stock moved at the close.</p>
   </section>`;
+
+  /* ---------- TONIGHT AT THE CLOSE ---------- */
+  const tn=tonight.slice(0,4);
+  const cliff=tonight.length?`<p class="wc-cap wc-beat">And next on the card…</p><section class="wc-cliff" aria-label="${esc(tLabel)}">
+    <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} round${tonight.length===1?'':'s'}. Every call locked before the report. The close decides.</small></h2>
+    <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker);return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt="">`:''}<b>${esc(p.co)}</b></header>
+      <div class="wc-tn-c">${ORDER.map(m=>{const c=p.calls.find(x=>x.m===m);return c?`<span class="wc-tn-s ${c.dir==='UP'?'wc-tu':'wc-td'}">${face(m,'wc-f-s')}${c.dir==='UP'?'Up':'Down'} ${c.mag}%</span>`:''}).join('')}</div></article>`}).join('')}</div>
+    ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s"><a class="wc-gut-a" href="#/upcoming">+ ${tonight.length-tn.length} more locked in. See the card →</a></p>`:''}
+  </section>`:'';
 
   /* ---------- SPLASH: SMART OR LUCKY ---------- */
   const splash=`<p class="wc-cap wc-beat">Meanwhile, the big question…</p><section class="wc-splash" aria-label="Smart or lucky?">
@@ -158,33 +168,8 @@ function build(){
     <p class="wc-cap wc-cap-y wc-sp-cap">% = calls that got the direction right. ${n} rounds is a small sample. The real question: do they get better as the season goes on?</p>
   </section>`;
 
-  /* ---------- CLIFFHANGER ---------- */
-  const tn=tonight.slice(0,4);
-  const cliff=`<p class="wc-cap wc-beat">And next on the card…</p><section class="wc-cliff" aria-label="To be continued">
-    <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} rounds. Every call locked before the report. The close decides.</small></h2>
-    <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker);return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt="">`:''}<b>${esc(p.co)}</b></header>
-      <div class="wc-tn-c">${ORDER.map(m=>{const c=p.calls.find(x=>x.m===m);return c?`<span class="wc-tn-s ${c.dir==='UP'?'wc-tu':'wc-td'}">${face(m,'wc-f-s')}${c.dir==='UP'?'Up':'Down'} ${c.mag}%</span>`:''}).join('')}</div></article>`}).join('')}</div>
-    ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s"><a class="wc-gut-a" href="#/upcoming">+ ${tonight.length-tn.length} more locked in. See the card →</a></p>`:''}
-    <div class="wc-next">
-      <p class="wc-next-k">Next time…</p>
-      <h3>Bet #1: NVIDIA</h3>
-      <p class="wc-next-d">NVIDIA reports ${nv?md(nv.called):'in November'}.${daysLeft?' The bet is '+esc(daysLeft)+' away.':''}</p>
-      <ul><li>69% of $EZ creator fees fill a pool.</li><li>The AI on top of the P&amp;L makes the call. Today that's <b>${NM[lead]}</b>.</li><li><b class="wc-tu-k">Right:</b> profits buy back $EZ. <b class="wc-td-k">Wrong:</b> the pool can be wiped out.</li></ul>
-      <p class="wc-next-s">NVIDIA is the first bet, not the last. Season 2 brings more.</p>
-      <p class="wc-tbc">To be continued…</p>
-    </div>
-  </section>`;
-
-  /* ---------- GET $EZ (the live page's own words) ---------- */
-  const get=`<section class="wc-get" aria-label="Get $EZ">
-    <h2 class="wc-h2"><span>Get $EZ</span><small>The token. Not live yet.</small></h2>
-    <div class="wc-get-p">
-      <div class="wc-step"><b>1</b><p><strong>Check the address.</strong> Not posted yet. It appears here, and only here, at launch. Anyone DMing you a CA before that is a scammer.</p></div>
-      <div class="wc-step"><b>2</b><p><strong>Use this page's link.</strong> Opens at launch.</p></div>
-      <p class="wc-cap wc-get-cap">Best case, an AI buys back $EZ with its winnings. Worst case, the most entertaining way to lose money. Size accordingly.</p>
-    </div>
-  </section>`;
-
+  /* ---------- BET #1: NVIDIA, a comic chip whose dies count down to the bet ---------- */
+  const bet=betChip(lead);
   /* ---------- BACK COVER ---------- */
   const back=`<section class="wc-back" aria-label="Back cover">
     <p class="wc-motto">Nobody said it would be <span class="wc-e">E</span><span class="wc-z">Z</span>.</p>
@@ -193,7 +178,7 @@ function build(){
   </section>`;
 
   const book=D.createElement('div');book.id='wc-book';book.className='wc-book';
-  book.innerHTML=cover+prev+cast+season+splash+cliff+get+back;
+  book.innerHTML=cover+prev+cast+lastR+issues+cliff+splash+bet+back;
   const main=D.querySelector('main');main.insertBefore(book,main.firstChild);
   // the real explainer film moves onto the cover (its controls keep working)
   const vt=D.querySelector('.x2p-vt');if(vt)book.querySelector('.wc-film-slot').appendChild(vt);
@@ -203,12 +188,13 @@ function build(){
 function wire(book){
   book.querySelector('.wc-more').addEventListener('click',e=>{const g=book.querySelector('.wc-bis');const all=g.dataset.all==='1';g.dataset.all=all?'0':'1';e.target.textContent=all?e.target.textContent.replace('Show fewer','Show all'):'Show fewer back issues'});
   // the big panel's film rolls muted while on screen; a tap plays it with sound
-  book.querySelectorAll('.wc-big').forEach(pn=>{const v=pn.querySelector('video'),b=pn.querySelector('.wc-snd');if(!v)return;
+  betTick(book);
+  book.querySelectorAll('.wc-lr-2').forEach(pn=>{const v=pn.querySelector('video'),b=pn.querySelector('.wc-snd');if(!v)return;
     b.addEventListener('click',()=>{if(v.muted||v.paused){v.muted=false;v.currentTime=0;v.play();b.textContent='❚❚ Pause'}else{v.pause();b.textContent='▶ Sound'}});
-    v.addEventListener('click',()=>{D.location.hash='#/round/'+pn.dataset.n})});
+    v.addEventListener('click',()=>{D.location.hash='#/round/'+pn.closest('.wc-lr-pg').dataset.n})});
   const io=new IntersectionObserver(es=>es.forEach(e=>{const t=e.target;if(e.isIntersecting)t.classList.add('wc-in');
     const v=t.querySelector&&t.querySelector('video.wc-v');if(v&&!matchMedia('(prefers-reduced-motion: reduce)').matches){if(e.isIntersecting&&e.intersectionRatio>.35){v.play().catch(()=>{})}else if(!e.isIntersecting)v.pause()}}),{threshold:[0,.4]});
-  book.querySelectorAll('.wc-pn,.wc-ch,.wc-splash,.wc-next,.wc-prev,.wc-tnp,.wc-cn').forEach(x=>io.observe(x));
+  book.querySelectorAll('.wc-pn,.wc-ch,.wc-splash,.wc-prev,.wc-tnp,.wc-cn').forEach(x=>io.observe(x));
   let ly=scrollY;addEventListener('scroll',()=>{const y=scrollY;H.classList.toggle('wc-hhide',y>ly&&y>200);ly=y},{passive:true});
 }
 
@@ -269,29 +255,11 @@ function lbBuild(){
     <div class="wc-bwg">${rank.map(m=>{const x=bw(m);return `<article class="wc-pn wc-bw" style="--mc:${MODELS[m].c}"><header>${face(m)}<h3>${NM[m]}</h3></header>${bwl(x.b,'wc-bw-b')}${bwl(x.w,'wc-bw-w')}</article>`}).join('')}</div>
   </section>`;
 
-  const byT=ORDER.slice().sort((a,b)=>(S[b].bu-S[a].bu)||(S[b].w1-S[a].w1)||(S[a].ot-S[b].ot));
-  const tg=`<section class="wc-tgs" aria-label="Target practice">
-    <h2 class="wc-h2"><span>Target practice</span><small>How close did they get to the real move?</small></h2>
-    <div class="wc-pn wc-tg"><div class="wc-tg-h" aria-hidden="true"><span></span><span>Bullseyes</span><span>Within 1%</span><span>Off target</span></div>
-      ${byT.map((m,i)=>`<div class="wc-tg-r${i===0?' wc-tg-1':''}"><span class="wc-tg-nm">${face(m,'wc-f-s')}<b>${NM[m]}</b></span><b class="wc-tg-b" aria-label="${S[m].bu} bullseyes">${S[m].bu}</b><b class="wc-tg-w" aria-label="${S[m].w1} within 1%">${S[m].w1}</b><b class="wc-tg-o" aria-label="${S[m].ot} off target">${S[m].ot}</b></div>`).join('')}
-      <p class="wc-tg-k">Bullseye: the right way and within 0.1% of the move. Within 1%: the right way and within 1% (bullseyes count too). Off target: the wrong way.</p></div>
-  </section>`;
-
-  const sec=r=>((window.RMETA||{})[r.n]||{}).sector||'',cnt={};R.forEach(r=>{const x=sec(r);if(x)cnt[x]=(cnt[x]||0)+1});
-  const secs=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]);
-  const cell=(m,x)=>{let n=0,k=0;R.forEach(r=>{if(sec(r)!==x)return;const c=callOf(r,m);if(c){n++;if(c.ok)k++}});return {n,k}};
-  const sct=`<section class="wc-secs" aria-label="By sector">
-    <h2 class="wc-h2"><span>By sector</span><small>Which industries do they call best? Right calls out of calls made. Small samples, so it fills in.</small></h2>
-    <div class="wc-pn wc-sct"><table><thead><tr><th scope="col">Sector</th>${rank.map(m=>`<th scope="col">${face(m,'wc-f-s')}<span>${NM[m]}</span></th>`).join('')}</tr></thead><tbody>
-    ${secs.map(x=>{const cs=rank.map(m=>cell(m,x)),v=cs.map(c=>c.n?c.k/c.n:-1),mx=Math.max(...v),all=v.every(y=>y===mx);
-      return `<tr><th scope="row">${esc(SH[x]||x)}<small>${cnt[x]}</small></th>${cs.map((c,i)=>!c.n?'<td class="wc-sc-0">–</td>':`<td class="${3*c.k>=2*c.n?'wc-sc-hi':3*c.k<=c.n?'wc-sc-lo':'wc-sc-md'}${!all&&v[i]===mx?' wc-sc-top':''}">${c.k}/${c.n}</td>`).join('')}</tr>`}).join('')}
-    </tbody></table><p class="wc-tg-k">Green: 2 in 3 right or better. Red: 1 in 3 or worse. Outlined: the best in its row.</p></div>
-  </section>`;
-
+  const proof=proofBuild(P,R,rank);
   const el=D.createElement('div');el.id='wc-lb';el.className='wc-book wc-tab';
   el.innerHTML=`<section class="wc-tab-cv" aria-label="Who's winning"><div class="wc-cv-top"><span class="wc-iss"><small>Issue</small>#${N}</span><span class="wc-cv-s">The standings<small>${N} earnings reports graded</small></span></div>
     <h1 class="wc-tab-h">Who's winning?</h1><p class="wc-tag">Four AIs, a pretend <b>$100,000</b> each, the whole balance on every call. The money says who's best.</p></section>`
-    +board+race+bws+tg+sct+`<section class="wc-back"><a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a></section>`;
+    +board+proof+race+bws+`<section class="wc-back"><a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a></section>`;
   return el}
 
 /* ================= THE UPCOMING TAB (#/upcoming): the next fight nights, in the same comic ================= */
@@ -339,9 +307,180 @@ function upBuild(){
   setInterval(()=>{if(H.getAttribute('data-sec')!=='upcoming')return;el.querySelectorAll('.wc-bell').forEach(b=>{b.textContent=bellTxt(b.dataset.t,b.dataset.d)})},60000);
   return el}
 
+/* ===================== R2 (owner, 2026-10-29): the last round as a case study, the NVIDIA chip, the proof, cartoon certificates ===================== */
+const RM_=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+const offOf=(r,m)=>{const c=r.calls.find(x=>x[0]===m);return c?+c[2]:null};
+const fmtOff=v=>(Math.round(v*100)/100)+'%';
+const moveWord=r=>{const x=Math.abs(r.a),up=r.a>0;return up?(x>=5?'jumped':'rose'):(x>=5?'dropped':'fell')};
+
+function lastRound(R,P){
+  const key=r=>mdyKey(r.resolves)*1000+r.n;
+  const r=R.filter(x=>film(x.n)).sort((a,b)=>key(b)-key(a))[0];if(!r)return '';
+  const f=film(r.n),up=r.a>0,W=winners(r),lg=coLogo(r.ticker),rel=relDay(r.resolves),day=(rel==='Yesterday'?'Yesterday · ':rel==='Tonight'?'Today · ':'')+dayName(r.resolves);
+  const cs=ORDER.map(m=>{const row=r.calls.find(c=>c[0]===m);if(!row)return null;const c=call(row[1]);return c?{m,c,ok:c.up===up,off:+row[2],win:W.includes(m),v:(P[m].per[r.n]||{}).v||0}:null}).filter(Boolean);
+  const right=cs.filter(x=>x.ok);
+  const p1=`<li class="wc-pn wc-lr-p wc-lr-1"><b class="wc-lr-n" aria-hidden="true">1</b>
+      <p class="wc-cap wc-lr-c">Before the report, the AIs said</p>
+      <header class="wc-lr-co">${lg?`<span class="wc-lr-lg"><img src="${lg}" alt=""></span>`:''}<h3>${esc(r.co)}<small>Round ${r.n} · ${esc(r.ticker)}</small></h3></header>
+      <div class="wc-lr-bub">${cs.map(x=>`<div class="wc-lr-s">${face(x.m)}<p class="wc-bub"><small>${NM[x.m]}</small>${callTxt(x.c)}</p></div>`).join('')}</div>
+      <span class="wc-lr-lock" aria-label="Locked ${md(r.called)}">Locked ${md(r.called)}</span></li>`;
+  const p2=`<li class="wc-pn wc-lr-p wc-lr-2"><b class="wc-lr-n" aria-hidden="true">2</b>
+      <p class="wc-cap wc-lr-c">The report. Then the close</p>
+      <div class="wc-lr-artw"><div class="wc-art wc-lr-art"><video class="wc-v" muted playsinline loop preload="none" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video><button type="button" class="wc-snd" aria-label="Play with sound">▶ Sound</button></div></div>
+      <div class="wc-lr-pow"><span class="wc-sfx ${up?'wc-up':'wc-dn'}" aria-hidden="true"><em>${sfx(r.a)}</em><b>${up?'+':'−'}${pct(r.a)}</b></span>
+        <p>${esc(r.co)} ${moveWord(r)} <b>${pct(r.a)}</b> at the close.</p></div></li>`;
+  const p3=`<li class="wc-pn wc-lr-p wc-lr-3"><b class="wc-lr-n" aria-hidden="true">3</b>
+      <p class="wc-cap wc-lr-c">Graded at the close</p>
+      <div class="wc-lr-g">${cs.slice().sort((a,b)=>(b.ok-a.ok)||(a.off-b.off)).map(x=>`<div class="wc-lr-gr ${x.win?'wc-win':x.ok?'wc-ok':'wc-no'}">${face(x.m)}<b class="wc-lr-gn">${NM[x.m]}</b>
+        <span class="wc-lr-gv">${x.ok?'<i aria-hidden="true">✓</i> Right way':'<i aria-hidden="true">✗</i> Wrong way'}</span><small>${x.ok?fmtOff(x.off)+' off':'said '+(x.c.up?'up':'down')}</small>${x.win?'<em class="wc-lr-cr">Winner</em>':''}</div>`).join('')}</div>
+      <p class="wc-lr-rule">${W.length?'Closest call that got the direction wins.':right.length?'Got the direction, but nobody wins this one.':'Nobody got the direction. Nobody wins.'}</p></li>`;
+  const ws=cs.filter(x=>x.win),shown=ws.length?ws:cs.slice().sort((a,b)=>b.v-a.v).slice(0,1);
+  const p4=`<li class="wc-pn wc-lr-p wc-lr-4"><b class="wc-lr-n" aria-hidden="true">4</b>
+      <p class="wc-cap wc-lr-c">${ws.length?'The winner gets paid':'Nobody won. The money'}</p>
+      <div class="wc-lr-m">${shown.map(x=>`<div class="wc-lr-mw">${face(x.m,'wc-f-l')}<b class="${x.v>=0?'wc-tu':'wc-td'}">${pm(x.v)}</b><small>${NM[x.m]} ${x.v>=0?'made':'lost'} on this call</small></div>`).join('')}</div>
+      <ul class="wc-lr-all" aria-label="Every AI's P&L on this call">${cs.map(x=>`<li>${face(x.m,'wc-f-s')}<span>${NM[x.m]}</span><b class="${x.v>=0?'wc-tu':'wc-td'}">${kShort(x.v)}</b></li>`).join('')}</ul>
+      <p class="wc-lr-fine">Pretend $100,000 accounts, the whole balance on every call.</p>
+      <a class="wc-lr-open" href="#/round/${r.n}">Open its graded card →</a></li>`;
+  return `<section class="wc-lr" aria-label="Last round">
+    <h2 class="wc-h2"><span>Last round</span><small>${esc(day)} · ${esc(r.co)}. How a round works, start to finish.</small></h2>
+    <ol class="wc-lr-pg" data-n="${r.n}">${p1}${p2}${p3}${p4}</ol></section>`}
+
+/* the bet: the close the weekday after NVIDIA's call date in the sheet (or SIM/CONFIG.betDate), as routes.js counts it */
+function betAt(){const md2=s=>{const m=String(s||'').match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null};
+  const nyClose=(y,m,d)=>{const f=new Date(Date.UTC(y,2,1)).getUTCDay(),a=Date.UTC(y,2,8+(7-f)%7),g=new Date(Date.UTC(y,10,1)).getUTCDay(),b=Date.UTC(y,10,1+(7-g)%7),t=Date.UTC(y,m,d);return Date.UTC(y,m,d,t>=a&&t<b?20:21)};
+  const S=window.SIM||{},C=window.CONFIG||{},bd=md2(S.betDate||C.betDate);if(bd)return nyClose(bd[0],bd[1],bd[2]);
+  const nv=[].concat(window.UPCOMING||[],window.PENDING||[]).find(u=>u.ticker==='NVDA'),c0=nv&&md2(nv.called);if(!c0)return null;
+  let dt=new Date(Date.UTC(c0[0],c0[1],c0[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);return nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate())}
+function betLeft(){const at=betAt();if(!at)return null;const s=Math.max(0,Math.floor((at-Date.now())/1e3));return {s,d:Math.floor(s/86400),h:Math.floor(s%86400/3600),m:Math.floor(s%3600/60),x:s%60}}
+function betChip(lead){
+  const S=window.SIM||{},share=S.poolShare!=null?Math.round(S.poolShare*100):69,at=betAt(),L=betLeft();
+  const day=at?new Date(at).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'America/New_York'}):'';
+  const die=(k,v,l)=>`<span class="wc-die" data-k="${k}"><b>${String(v).padStart(2,'0')}</b><small>${l}</small></span>`;
+  return `<p class="wc-cap wc-beat">Next time…</p><section class="wc-bet" aria-label="Bet number 1, NVIDIA">
+    <h2 class="wc-h2"><span>Bet #1: NVIDIA</span><small>The first of many.${day?' The bet goes on at the close, '+esc(day)+'.':''}</small></h2>
+    <div class="wc-pn wc-chipw"><div class="wc-chip" role="timer" aria-label="Time until the NVIDIA bet">
+      <span class="wc-chip-pins" aria-hidden="true"></span>
+      <div class="wc-chip-pkg"><span class="wc-chip-k">NVIDIA</span>
+        <div class="wc-dies">${L?die('d',L.d,'days')+die('h',L.h,'hrs')+die('m',L.m,'min')+die('x',L.x,'sec'):'<span class="wc-die wc-die-tbc"><b>Soon</b></span>'}</div>
+        <span class="wc-chip-k wc-chip-k2">Until the bet</span></div></div>
+      <span class="wc-sfx wc-tick" aria-hidden="true"><em>Tick… tock…</em></span></div>
+    <div class="wc-bet-l">
+      <p class="wc-cap">${share}% of $EZ creator fees fill the pool.</p>
+      <p class="wc-cap">The pool gets bet on the top AI's call. Today that's <b>${NM[lead]}</b>.</p>
+      <p class="wc-cap wc-bet-rw"><b class="wc-tu-k">Right:</b> $EZ buyback. <b class="wc-td-k">Wrong:</b> pool can be wiped out.</p></div>
+    <p class="wc-next-s">NVIDIA is the first bet, not the last. Season 2 brings more.</p>
+    <p class="wc-tbc">To be continued…</p>
+  </section>`}
+function betTick(root){const el=root.querySelector('.wc-chip');if(!el)return;let on=false;
+  const set=()=>{const L=betLeft();if(!L)return;['d','h','m','x'].forEach(k=>{const b=el.querySelector(`.wc-die[data-k="${k}"] b`);if(b){const v=String(L[k]).padStart(2,'0');if(b.textContent!==v)b.textContent=v}})};
+  new IntersectionObserver(es=>{on=es[0].isIntersecting;if(on)set()}).observe(el);setInterval(()=>{if(on)set()},1000)}
+
+/* ---------- THE PROOF (Leaderboard): the live site's four views, drawn as a comic page, with motion between them ---------- */
+function proofBuild(P,R,rank){
+  const N=R.length,SHq={...SH};
+  const closeNY=s=>closeAt('',s),now=Date.now(),inWin=(r,ms)=>{const t=closeNY(r.resolves);return t!=null&&t<=now&&t>now-ms};
+  const win=(m,ms)=>R.reduce((s,r)=>s+(inWin(r,ms)&&P[m].per[r.n]?P[m].per[r.n].v:0),0);
+  /* each AI's balance and smoothed hit rate after every graded round */
+  const bal={},acc={};ORDER.forEach(m=>{let b=1e5,k=0,n=0;bal[m]=[b];acc[m]=[.5];R.forEach(r=>{const x=P[m].per[r.n];if(x){b+=x.v;n++;if(x.v>0)k++}bal[m].push(b);acc[m].push((k+1)/(n+2))})});
+  const W=1000,Hh=100,X=i=>(i/N*W).toFixed(1);
+  const chart=(ser,lo,hi,base,baseLbl,ends,ord)=>{const Y=v=>(Hh-(v-lo)/(hi-lo)*Hh).toFixed(2);
+    const ls=ord.slice().reverse().map(m=>{const d=ser[m].map((v,i)=>(i?'L':'M')+X(i)+' '+Y(v)).join(' ');return `<path class="wc-pf-o" d="${d}"/><path class="wc-pf-l${m===ord[0]?' wc-pf-lead':''}" style="--mc:${MODELS[m].c}" d="${d}"/>`}).join('');
+    /* end labels, pushed apart so they never touch */
+    let es=ord.map(m=>({m,y:(Hh-(ser[m][N]-lo)/(hi-lo)*Hh)})).sort((a,b)=>a.y-b.y);for(let i=1;i<es.length;i++)if(es[i].y-es[i-1].y<15)es[i].y=es[i-1].y+15;
+    const ov=es[es.length-1].y-96;if(ov>0)es.forEach(e=>e.y-=ov);
+    return `<div class="wc-pf-ch"><div class="wc-pf-cv"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><line class="wc-pf-base" x1="0" x2="${W}" y1="${Y(base)}" y2="${Y(base)}"/>${ls}</svg>
+      <span class="wc-pf-bl" style="top:${Y(base)}%">${baseLbl}</span></div>
+      <div class="wc-pf-ends">${es.map(e=>`<span class="wc-pf-end" style="top:${e.y.toFixed(1)}%;--mc:${MODELS[e.m].c}"><b>${NM[e.m]}</b>${ends(e.m)}</span>`).join('')}</div>
+      <p class="wc-pf-x" aria-hidden="true"><span>Start</span><span>R${R[N-1].n}</span></p></div>`};
+  /* P&L */
+  const all=[].concat(...ORDER.map(m=>bal[m])),lo=Math.min(...all),hi=Math.max(...all),pd=(hi-lo)*.06;
+  const vPnl=chart(bal,lo-pd,hi+pd,1e5,'$100K start',m=>`<small class="${P[m].pnl>=0?'wc-tu':'wc-td'}">${pc1(P[m].pnl/1000)}</small>`,rank)+
+    `<div class="wc-pf-rows" role="table" aria-label="P&amp;L"><div class="wc-pf-hd" role="row"><span role="columnheader">AI</span><span role="columnheader">Last 24h</span><span role="columnheader">Last 7d</span><span role="columnheader">P&amp;L</span></div>
+    ${rank.map((m,i)=>{const d1=win(m,864e5),d7=win(m,7*864e5);return `<div class="wc-pf-r${i===0?' wc-pf-1':''}" role="row"><span class="wc-pf-nm" role="cell"><i class="wc-pf-rk">${i+1}</i>${face(m,'wc-f-s')}<b>${NM[m]}</b></span>
+      <span role="cell" class="${d1>0?'wc-tu':d1<0?'wc-td':''}">${d1?kShort(d1):'·'}</span><span role="cell" class="${d7>0?'wc-tu':d7<0?'wc-td':''}">${d7?kShort(d7):'·'}</span><b role="cell" class="wc-pf-big ${P[m].pnl>=0?'wc-tu':'wc-td'}">${pm(P[m].pnl)}</b></div>`}).join('')}</div>
+    <p class="wc-pf-note">$100,000 to start. The whole balance on every call. Buy on up, short on down. No leverage. Before fees.</p>`;
+  /* Accuracy */
+  const byA=ORDER.slice().sort((a,b)=>P[b].W/(P[b].W+P[b].L)-P[a].W/(P[a].W+P[a].L));
+  const vAcc=chart(acc,.3,.8,.5,'Coin flip, 50%',m=>`<small>${Math.round(P[m].W/(P[m].W+P[m].L)*100)}%</small>`,byA)+
+    `<div class="wc-pf-rows" role="table" aria-label="Accuracy"><div class="wc-pf-hd" role="row"><span role="columnheader">AI</span><span role="columnheader">Trades</span><span role="columnheader" class="wc-tu">W</span><span role="columnheader" class="wc-td">L</span><span role="columnheader">Hit rate</span></div>
+    ${byA.map((m,i)=>{const a=P[m],t=a.W+a.L;return `<div class="wc-pf-r wc-pf-r5${i===0?' wc-pf-1':''}" role="row"><span class="wc-pf-nm" role="cell"><i class="wc-pf-rk">${i+1}</i>${face(m,'wc-f-s')}<b>${NM[m]}</b></span><span role="cell">${t}</span><span role="cell" class="wc-tu">${a.W}</span><span role="cell" class="wc-td">${a.L}</span><b role="cell" class="wc-pf-big">${Math.round(a.W/t*100)}%</b></div>`}).join('')}</div>
+    <p class="wc-pf-note">Right on direction, up or down. Every line starts at 50/50 and moves with each call.</p>`;
+  /* Target hits: one target per AI, a hole per call that got the direction, at its distance from the real move */
+  const S={};ORDER.forEach(m=>{const cs=R.map(r=>callOf(r,m)).filter(Boolean);S[m]={cs,bu:cs.filter(x=>x.ok&&x.off<=.1).length,w1:cs.filter(x=>x.ok&&x.off<=1).length,ot:cs.filter(x=>!x.ok).length}});
+  const byT=ORDER.slice().sort((a,b)=>(S[b].bu-S[a].bu)||(S[b].w1-S[a].w1)||(S[a].ot-S[b].ot));
+  const target=m=>{let k=0;const holes=S[m].cs.filter(x=>x.ok).map(x=>{const rr=Math.min(x.off,12.4)/12*46,a=(k++)*2.39996;return `<circle class="wc-th" cx="${(rr*Math.cos(a)).toFixed(2)}" cy="${(rr*Math.sin(a)).toFixed(2)}" r="2.1" style="--i:${k}"/>`}).join('');
+    return `<svg class="wc-tgt" viewBox="-52 -52 104 104" aria-hidden="true">${[46,34.5,23,11.5].map((r,i)=>`<circle class="wc-tr wc-tr${i%2}" r="${r}"/>`).join('')}<circle class="wc-tb" r="3.2"/>
+      ${[3,6,9,12].map((p,i)=>`<text class="wc-tt" x="0" y="${-(11.5*(i+1))+4.6}">${p}%</text>`).join('')}${holes}</svg>`};
+  const vTgt=`<div class="wc-tgg">${byT.map((m,i)=>`<div class="wc-tgc${i===0?' wc-pf-1':''}"><p class="wc-tgn"><i class="wc-pf-rk">${i+1}</i>${face(m,'wc-f-s')}<b>${NM[m]}</b></p>${target(m)}
+      <dl class="wc-tgk"><div class="wc-k-b"><dt>Bullseyes</dt><dd>${S[m].bu}</dd></div><div class="wc-k-w"><dt>Within 1%</dt><dd>${S[m].w1}</dd></div><div class="wc-k-o"><dt>Off target</dt><dd>${S[m].ot}</dd></div></dl></div>`).join('')}</div>
+    <p class="wc-pf-note">The bullseye is what the stock did. One hole per call that got the direction. Bullseye: within 0.1%. Off target: the wrong way.</p>`;
+  /* Sector */
+  const sec=r=>((window.RMETA||{})[r.n]||{}).sector||'',cnt={};R.forEach(r=>{const x=sec(r);if(x)cnt[x]=(cnt[x]||0)+1});
+  const secs=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]);
+  const cell=(m,x)=>{let n=0,k=0;R.forEach(r=>{if(sec(r)!==x)return;const c=callOf(r,m);if(c){n++;if(c.ok)k++}});return {n,k}};
+  const vSec=`<div class="wc-sct2"><table><thead><tr><th scope="col"><span class="wc-sr">Sector</span></th>${rank.map(m=>`<th scope="col">${face(m,'wc-f-s')}<span>${NM[m]}</span></th>`).join('')}</tr></thead><tbody>
+    ${secs.map(x=>{const cs=rank.map(m=>cell(m,x)),v=cs.map(c=>c.n?c.k/c.n:-1),mx=Math.max(...v),allq=v.every(y=>y===mx);
+      return `<tr><th scope="row">${esc(SHq[x]||x)}<small>${cnt[x]}</small></th>${cs.map((c,i)=>!c.n?'<td class="wc-sc-0">·</td>':`<td><span class="${3*c.k>=2*c.n?'wc-sc-hi':3*c.k<=c.n?'wc-sc-lo':'wc-sc-md'}${!allq&&v[i]===mx?' wc-sc-top':''}">${c.k}/${c.n}</span></td>`).join('')}</tr>`}).join('')}
+    </tbody></table></div><p class="wc-pf-note">Right calls out of calls made. Green: 2 in 3 or better. Red: 1 in 3 or worse. Starred: the best in its row. Small samples.</p>`;
+  const V=[['pnl','P&amp;L','Would following them have made you money?',vPnl],['acc','Accuracy','How often were they right about the direction?',vAcc],
+    ['tgt','Target hits','How close did they get to the real move?',vTgt],['sec','Sector','Which industries do they call best?',vSec]];
+  return `<section class="wc-pfs" aria-label="Smarter or just lucky?">
+    <h2 class="wc-h2"><span>Smarter or just lucky?</span><small>Four ways to check. Same numbers as the live board.</small></h2>
+    <div class="wc-pn wc-pf"><div class="wc-pf-tabs" role="tablist" aria-label="Views"><i class="wc-pf-ind" aria-hidden="true"></i>${V.map((v,i)=>`<button type="button" role="tab" id="wc-pft-${v[0]}" aria-controls="wc-pfv-${v[0]}" aria-selected="${i===0}" tabindex="${i===0?0:-1}">${v[1]}</button>`).join('')}</div>
+      <div class="wc-pf-st">${V.map((v,i)=>`<div class="wc-pf-v" id="wc-pfv-${v[0]}" role="tabpanel" aria-labelledby="wc-pft-${v[0]}" data-v="${v[0]}"${i?' hidden':''}><p class="wc-cap wc-pf-q">${v[2]}</p>${v[3]}</div>`).join('')}</div></div>
+  </section>`}
+function proofWire(root){const pf=root.querySelector('.wc-pf');if(!pf)return;const tabs=[...pf.querySelectorAll('[role=tab]')],views=[...pf.querySelectorAll('.wc-pf-v')],st=pf.querySelector('.wc-pf-st'),ind=pf.querySelector('.wc-pf-ind');let cur=0,busy=null;
+  const place=()=>{const b=tabs[cur];ind.style.transform=`translateX(${b.offsetLeft}px)`;ind.style.width=b.offsetWidth+'px'};
+  const enter=v=>{if(RM_())return;const sv=v.querySelector('.wc-pf-cv svg');
+    if(sv)sv.animate([{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0 0 0)'}],{duration:720,easing:'cubic-bezier(.3,.6,.2,1)',fill:'backwards'});
+    v.querySelectorAll('.wc-pf-end').forEach((e,i)=>e.animate([{opacity:0,transform:'translateX(-8px) scale(.6)'},{opacity:1,transform:'none'}],{duration:320,delay:560+i*70,easing:'cubic-bezier(.3,1.6,.5,1)',fill:'backwards'}));
+    v.querySelectorAll('.wc-pf-r,.wc-tgc,tbody tr').forEach((e,i)=>e.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:300,delay:120+i*55,easing:'cubic-bezier(.2,.8,.2,1)',fill:'backwards'}));
+    v.querySelectorAll('.wc-th').forEach((e,i)=>e.animate([{opacity:0,transform:'scale(0)'},{opacity:1,transform:'scale(1)'}],{duration:220,delay:260+i*12,easing:'cubic-bezier(.3,1.8,.5,1)',fill:'backwards'}));
+    v.querySelectorAll('.wc-pf-q').forEach(e=>e.animate([{opacity:0,transform:'rotate(-4deg) scale(.85)'},{opacity:1,transform:'none'}],{duration:300,easing:'cubic-bezier(.3,1.6,.5,1)',fill:'backwards'}))};
+  const show=(i,focus)=>{if(i===cur)return;const o=views[cur],n=views[i],dir=i>cur?1:-1;
+    tabs.forEach((t,k)=>{t.setAttribute('aria-selected',k===i);t.tabIndex=k===i?0:-1});cur=i;place();if(focus)tabs[i].focus();
+    if(busy){busy.forEach(a=>a.cancel());busy=null;views.forEach((v,k)=>v.hidden=k!==i);enter(n);return}
+    if(RM_()){o.hidden=true;n.hidden=false;return}
+    const h0=st.offsetHeight;const out=o.animate([{opacity:1,transform:'none'},{opacity:0,transform:`translateX(${-dir*24}px) rotate(${-dir*.8}deg)`}],{duration:150,easing:'ease-in',fill:'forwards'});busy=[out];
+    out.onfinish=()=>{out.cancel();o.hidden=true;n.hidden=false;const h1=st.offsetHeight;
+      const a1=st.animate([{height:h0+'px'},{height:h1+'px'}],{duration:280,easing:'cubic-bezier(.2,.8,.2,1)'}),a2=n.animate([{opacity:0,transform:`translateX(${dir*28}px) scale(.985)`},{opacity:1,transform:'none'}],{duration:300,easing:'cubic-bezier(.2,.8,.2,1.1)'});
+      busy=[a1,a2];a2.onfinish=()=>{busy=null};enter(n)}};
+  tabs.forEach((t,i)=>{t.addEventListener('click',()=>show(i));t.addEventListener('keydown',e=>{const k={ArrowRight:1,ArrowLeft:-1}[e.key];if(k){e.preventDefault();show((cur+k+tabs.length)%tabs.length,true)}else if(e.key==='Home'){e.preventDefault();show(0,true)}else if(e.key==='End'){e.preventDefault();show(tabs.length-1,true)}})});
+  const rp=()=>place();addEventListener('resize',rp);D.fonts&&D.fonts.ready.then(rp);new ResizeObserver(rp).observe(pf.querySelector('.wc-pf-tabs'));rp();
+  let first=true;new IntersectionObserver(es=>{if(first&&es[0].isIntersecting){first=false;enter(views[cur])}},{threshold:.2}).observe(pf)}
+
+/* ---------- CERTIFICATES, as cartoons: the graded card's back (and a pending card's face) in the round pop-up ---------- */
+function certHtml(g,flip){const up=g.a>0,W=winners(g);
+  let rs=g.calls.map(x=>{const c=call(x[1]);return c?{m:x[0],c,ok:c.up===up,off:+x[2],win:W.includes(x[0])}:null}).filter(Boolean);
+  rs=rs.filter(x=>x.ok).sort((a,b)=>a.off-b.off).concat(rs.filter(x=>!x.ok).sort((a,b)=>a.off-b.off));
+  return `<div class="wc-cert" data-n="${g.n}"><div class="wc-ce-hd"><b class="wc-ce-t">Graded!</b><span class="wc-ce-no">No. ${String(g.n).padStart(4,'0')}</span></div>
+    <div class="wc-ce-rows">${rs.map((x,i)=>`<div class="wc-ce-r ${x.win?'wc-win':x.ok?'wc-ok':'wc-no'}"><i class="wc-ce-rk">${i+1}</i>${face(x.m)}<span class="wc-ce-nm">${NM[x.m]}${x.win?'<em>Winner</em>':''}</span>
+      <span class="wc-ce-cl ${x.c.up?'wc-up':'wc-dn'}">${x.c.up?'+':'−'}${x.c.v}%</span><b class="wc-ce-pf ${x.ok?'wc-ce-p':'wc-ce-f'}">${x.ok?'Pass!':'Fail!'}</b></div>`).join('')}</div>
+    <div class="wc-ce-mk ${up?'wc-up':'wc-dn'}"><em>${sfx(g.a)}</em><small>Market</small><b>${up?'+':'−'}${Math.abs(g.a).toFixed(2)}%</b></div>
+    <div class="wc-ce-ft"><p><small>Calls filed</small><b>${md(g.called)}</b></p><p><small>Graded on</small><b>${md(g.resolves)}</b></p>
+      <span class="wc-ce-st" aria-hidden="true"><span class="wc-ce-lg">${window.X2P_LOGO||''}</span><i>Graded</i></span></div>
+    ${flip?`<button type="button" class="wc-ce-flip">${esc(flip)}</button>`:''}</div>`}
+function pendHtml(u,flip){const cs=ORDER.map(m=>(u.calls||[]).find(c=>c.m===m)).filter(Boolean);
+  return `<div class="wc-cert wc-ce-pd" data-n="${u.n}"><div class="wc-ce-hd"><b class="wc-ce-t">Locked in!</b><span class="wc-ce-no">No. ${String(u.n).padStart(4,'0')}</span></div>
+    <div class="wc-ce-rows">${cs.map(c=>`<div class="wc-ce-r">${face(c.m)}<span class="wc-ce-nm">${NM[c.m]}</span><span class="wc-ce-cl ${c.dir==='UP'?'wc-up':'wc-dn'}">${c.dir==='UP'?'+':'−'}${c.mag}%</span><b class="wc-ce-pf wc-ce-q">?</b></div>`).join('')}</div>
+    <div class="wc-ce-mk wc-ce-mq"><em>?!</em><small>Market</small><b>${u.resolves?bellTxt(u.ticker,u.resolves).replace('Bell in','Closes in'):'Date to come'}</b></div>
+    <div class="wc-ce-ft"><p><small>Calls filed</small><b>${md(u.called)||'·'}</b></p><p><small>Final grade</small><b>${u.resolves?md(u.resolves):'Soon'}</b></p>
+      <span class="wc-ce-st wc-ce-lk" aria-hidden="true"><i>Locked</i></span></div>
+    ${flip?`<button type="button" class="wc-ce-flip">${esc(flip)}</button>`:''}</div>`}
+function certWatch(){const rg=n=>ROUNDS.find(r=>r.n===n),rp=n=>(window.PENDING||[]).find(p=>p.n===n);
+  const fix=()=>{const rm=D.getElementById('x2pRm');if(!rm)return;rm.querySelectorAll('.card').forEach(c=>{const n=+c.getAttribute('data-n');
+    c.querySelectorAll('.fin').forEach(fin=>{const xc=fin.querySelector(':scope > .xc');const have=fin.querySelector(':scope > .wc-cert');if(!xc){if(have)have.remove();return}
+      if(have&&have.dataset.n===String(n))return;if(have)have.remove();
+      const fb=xc.querySelector('[data-flip]')||fin.querySelector('[data-flip]'),flip=fb?fb.textContent.trim():'';
+      const g=rg(n),u=g?null:rp(n),h=g&&fin.closest('.face.back')?certHtml(g,flip):u?pendHtml(u,flip):'';if(!h)return;
+      fin.classList.add('wc-cfin');fin.insertAdjacentHTML('beforeend',h);const b=fin.querySelector(':scope > .wc-cert .wc-ce-flip');if(b&&fb)b.addEventListener('click',e=>{e.stopPropagation();fb.click()})})})};
+  const q=()=>{if(!fix._q){fix._q=1;requestAnimationFrame(()=>{fix._q=0;fix()})}};let seen=null;const sub=new MutationObserver(q);
+  const look=()=>{const rm=D.getElementById('x2pRm');if(rm&&rm!==seen){seen=rm;sub.disconnect();sub.observe(rm,{childList:true,subtree:true});q()}else if(!rm&&seen){seen=null;sub.disconnect()}};
+  new MutationObserver(look).observe(D.body,{childList:true});look()}
+
 function tabs(){const v=D.getElementById('view');const lb=lbBuild(),up=upBuild();(v||D.querySelector('main')).after(lb,up);
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('wc-in');io.unobserve(e.target)}}),{threshold:.15});
-  [lb,up].forEach(x=>x.querySelectorAll('.wc-pn,.wc-sb-r').forEach(y=>io.observe(y)))}
+  [lb,up].forEach(x=>x.querySelectorAll('.wc-pn:not(.wc-pf),.wc-sb-r').forEach(y=>io.observe(y)));proofWire(lb)}
 const done=()=>H.classList.add('x2p-world');
 /* a round opened from a panel, a back issue or a ticket: when its card closes, the page goes back to where it was
    (the router scrolls the page while the card is open, and the address passes through '' on the way) */
@@ -352,6 +491,7 @@ let tries=0;(function wait(){
   if(window.__x2pPnl&&window.ROUNDS&&D.querySelector('.x2p-vt')&&D.querySelector('#x2pSt')&&D.querySelector('#standings')){
     try{build()}catch(e){window.__x2pWorldErr=e;console.error('comic',e)}
     try{tabs()}catch(e){window.__x2pWorldErr=e;console.error('comic tabs',e)}
+    try{certWatch()}catch(e){window.__x2pWorldErr=e;console.error('comic certs',e)}
     done()}
   else if(tries++<200)setTimeout(wait,50);else done()})();
 })();
