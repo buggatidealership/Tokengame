@@ -1,0 +1,12 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:720},deviceScaleFactor:2});await FONTS(p);
+p.on('pageerror',e=>console.log('ERR',e.message));
+await p.goto('http://localhost:8897/v46-live-x2plus.html',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});
+await p.evaluate(()=>document.getElementById('learn').scrollIntoView());await p.waitForTimeout(2500);
+console.log(await p.evaluate(()=>{const cd=document.querySelector('#learn .x2p-pt .pt-cd');const C=cd.getBoundingClientRect();const out=[];
+ const walk=(e,dep)=>{if(dep>3)return;for(const c of e.children){const r=c.getBoundingClientRect();const cs=getComputedStyle(c);out.push(' '.repeat(dep*2)+c.tagName+'.'+String(c.className.baseVal??c.className).slice(0,50)+' '+[r.left-C.left,r.top-C.top,r.width,r.height].map(Math.round).join(',')+' pos:'+cs.position+' z:'+cs.zIndex);walk(c,dep+1)}};
+ walk(cd,0);return 'cd '+[C.left,C.top,C.width,C.height].map(Math.round)+' '+getComputedStyle(cd).position+'\n'+out.join('\n')+'\nsil:'+JSON.stringify(cd.querySelector('.pr2-sil').dataset)}));
+await p.evaluate(()=>{const r=document.querySelector('#learn .x2p-pt').getBoundingClientRect();window.scrollBy(0,r.top-60)});await p.waitForTimeout(800);
+const r=await p.evaluate(()=>{const r=document.querySelector('#learn .x2p-pt').getBoundingClientRect();return [r.left,r.top,r.width,r.height]});console.log(r);
+await p.screenshot({path:'/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8/scratchpad/probe.png'});
+await b.close()})();
