@@ -10,7 +10,7 @@ const css=fs.readFileSync(path.join(__dirname,'comic.css'),'utf8'),js=fs.readFil
  const Hh=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<Hh;y+=400){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(60)}
  await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(1500);
  const hdr=await p.evaluate(()=>{const h=document.querySelector('header.top');return getComputedStyle(h).position==='sticky'||getComputedStyle(h).position==='fixed'?h.getBoundingClientRect().height:0});
- const step=VH-hdr;
+ const step=(await p.evaluate(()=>document.documentElement.classList.contains('wc-on')))?VH:VH-hdr;
  for(let i=0;i<N;i++){await p.evaluate(y=>scrollTo(0,y),i*step);await p.waitForTimeout(1400);await p.screenshot({path:`${OUT}/wc-${VW}-${i}.png`})}
  const chk=await p.evaluate(async()=>{const o={};o.sw=document.documentElement.scrollWidth;o.iw=innerWidth;
   const v=document.querySelector('.wc-big video');if(v){v.scrollIntoView({block:'center'});await new Promise(r=>setTimeout(r,2500));o.panelFilm=v.currentTime.toFixed(2)+' paused='+v.paused+' ready='+v.readyState}
@@ -20,11 +20,12 @@ const css=fs.readFileSync(path.join(__dirname,'comic.css'),'utf8'),js=fs.readFil
   const bad=[];const w=document.createTreeWalker(document.getElementById('wc-book'),NodeFilter.SHOW_TEXT);let t;
   while(t=w.nextNode()){if(!t.textContent.trim())continue;const el=t.parentElement;const cs=getComputedStyle(el);if(cs.visibility==='hidden'||el.offsetParent===null&&cs.position!=='fixed')continue;if(el.closest('.wc-sr,.x2p-vt'))continue;
    let col=cs.webkitTextFillColor&&cs.webkitTextFillColor!==cs.color&&!/rgba\(0, 0, 0, 0\)/.test(cs.webkitTextFillColor)?cs.webkitTextFillColor:cs.color;let bg=null,n=el;
-   while(n&&n.nodeType===1){const b=getComputedStyle(n).backgroundColor;const a=b.match(/[\d.]+/g).map(Number);if(a.length<4||a[3]>.6){bg=b;break}n=n.parentElement}
-   if(!bg)bg=getComputedStyle(document.body).backgroundColor;const [l1]=L(col),[l2]=L(bg);const r=(Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05);
+   while(n&&n.nodeType===1&&n!==document.body){const b=getComputedStyle(n).backgroundColor;const a=b.match(/[\d.]+/g).map(Number);if(a.length<4||a[3]>.6){bg=b;break}n=n.parentElement}
+   if(!bg)bg=getComputedStyle(document.documentElement).backgroundColor;const [l1]=L(col),[l2]=L(bg);const r=(Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05);
    if(r<4.5)bad.push(r.toFixed(2)+' "'+t.textContent.trim().slice(0,30)+'" '+col+' on '+bg)}
   o.lowContrast=bad.slice(0,30);o.lowN=bad.length;return o});
  console.log(VW,JSON.stringify(chk,null,1),'\nerrors:',er.join('\n')||'none');
  if(process.env.PLAY==='1'){await p.evaluate(()=>scrollTo(0,0));await p.click('.x2p-vt .vt-play');await p.waitForTimeout(3000);console.log('explainer t=',await p.evaluate(()=>document.querySelector('.x2p-vt video').currentTime))}
  if(process.env.POP==='1'){await p.evaluate(()=>document.querySelector('.wc-bi').scrollIntoView({block:'center'}));await p.click('.wc-bi');await p.waitForTimeout(2500);await p.screenshot({path:`${OUT}/wc-${VW}-pop.png`});console.log('pop',await p.evaluate(()=>{const r=document.querySelector('#x2pRm');return r?getComputedStyle(r).display+' '+r.getBoundingClientRect().width:'none'}))}
+ if(process.env.UP==='1'){await p.evaluate(()=>location.hash='#/upcoming');await p.waitForTimeout(2000);console.log('upcoming',JSON.stringify(await p.evaluate(()=>({book:document.getElementById('wc-book').hidden,up:document.querySelector('.x2p-up').getBoundingClientRect().height,sw:document.documentElement.scrollWidth}))));await p.screenshot({path:`${OUT}/wc-${VW}-up.png`})}
  await b.close()})();

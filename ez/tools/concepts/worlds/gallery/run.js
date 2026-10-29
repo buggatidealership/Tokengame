@@ -14,7 +14,7 @@ fs.mkdirSync(OUT,{recursive:true});
  await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(1500);
  const tag=NOW?'now':'we';
  for(let i=0;i<5;i++){await p.evaluate(y=>scrollTo(0,y),i*(VH-60));await p.waitForTimeout(900);await p.screenshot({path:`${OUT}/${tag}-${VW}-s${i}.png`})}
- if(!NOW)for(const id of ['we-r0','we-r1','we-r2','we-r3','we-r4','we-r5']){await p.evaluate(id=>{const e=document.getElementById(id);scrollTo(0,e.getBoundingClientRect().top+scrollY-(id==='we-r0'?200:56))},id);await p.waitForTimeout(1100);await p.screenshot({path:`${OUT}/${tag}-${VW}-${id}.png`})}
+ if(!NOW)for(const id of ['we-r0','we-r1','we-r2','we-r3','we-r4','we-r5']){await p.evaluate(id=>{const e=document.getElementById(id);const hh=document.querySelector('header.top').getBoundingClientRect().height;scrollTo(0,e.getBoundingClientRect().top+scrollY-hh+(id==='we-r0'?0:20))},id);await p.waitForTimeout(1100);if(id==='we-r3'){await p.click('.we-toss');await p.waitForTimeout(2200)}await p.screenshot({path:`${OUT}/${tag}-${VW}-${id}.png`})}
  // checks
  const chk=await p.evaluate(()=>{const sw=document.documentElement.scrollWidth,vw=innerWidth;
   function lum(c){const m=c.match(/[\d.]+/g).map(Number);const f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};return [.2126*f(m[0])+.7152*f(m[1])+.0722*f(m[2]),m[3]==null?1:m[3]]}
@@ -23,6 +23,11 @@ fs.mkdirSync(OUT,{recursive:true});
    const s=getComputedStyle(e);const [l1]=lum(s.color),[l2]=lum(bg(e));const r=(Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05);if(r<4.5)bad.push(e.className+'|'+e.textContent.trim().slice(0,30)+'|'+r.toFixed(2))});
   return {sw,vw,bad:bad.slice(0,12),H:document.documentElement.scrollHeight}});
  // films: the orientation film and the case in front
- const film=await p.evaluate(async()=>{const o={};const v=document.querySelector('.x2p-vt video');if(v){v.muted=true;try{await v.play()}catch(e){o.e1=e.message}await new Promise(r=>setTimeout(r,1500));o.orient=v.currentTime>0.3}
-  const c=document.querySelector('#car .card.cur video');if(c){c.muted=true;try{await c.play()}catch(e){o.e2=e.message}await new Promise(r=>setTimeout(r,1500));o.round=c.currentTime>0.3}return o});
+ // a round film first (the page holds round films while the explainer plays), then the explainer by a real tap on its play button
+ const film={};await p.evaluate(()=>{const r=document.getElementById('record');scrollTo(0,r.getBoundingClientRect().top+scrollY-100)});await p.waitForTimeout(800);
+ await p.waitForTimeout(3000);
+ film.round=await p.evaluate(()=>{const c=document.querySelector('#car .card.cur video');return c?{t:c.currentTime,paused:c.paused}:null});
+ await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(500);
+ const pb=await p.$('.x2p-vt .vt-pl, .x2p-vt button[aria-label*="play" i], .x2p-vt .vt-f');if(pb){await pb.scrollIntoViewIfNeeded();await pb.click().catch(e=>film.e=e.message)}
+ await p.waitForTimeout(3000);film.orient=await p.evaluate(()=>{const v=document.querySelector('.x2p-vt video');return v?{t:v.currentTime,paused:v.paused}:null});
  console.log(tag,VW,er.join(' | ')||'no errors',JSON.stringify(chk),JSON.stringify(film));await b.close()})();

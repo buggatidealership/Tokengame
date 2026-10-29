@@ -40,7 +40,8 @@ function build(){
   var en=el('section','we-room we-en');en.id='we-r0';en.dataset.room='Entrance';
   en.innerHTML='<div class="we-in">'+
     '<p class="we-kick">Earnings Zeason · Season 1 · Now showing</p>'+
-    '<h1 class="we-title"><span>Four AIs</span> <span>vs. the market</span></h1>'+
+    '<div class="we-title" role="heading" aria-level="1"><span>Four AIs</span> <span>vs. the market</span></div>'+
+    '<p class="we-dek">Four AIs call stocks before earnings. The market grades every call. The best one bets our pool.</p>'+
     '<p class="we-sub">An exhibition in '+N+' rounds, and counting.</p>'+
     '<div class="we-stmt"><p class="we-lab">Curator’s statement</p>'+
     '<p>When a big company reports its earnings, its stock can jump or drop hard. Before each report, four AIs say which way it will go, and how far. The next market close grades them.</p>'+
@@ -56,7 +57,7 @@ function build(){
   var bet=D.querySelector('section.x2o-bet');if(bet){en.querySelector('.we-film').appendChild(bet);bet.classList.add('we-keep')}
   W.appendChild(en);
 
-  function door(n,name,cls){var d=el('div','we-door '+cls,'<span class="we-dn">'+n+'</span><span class="we-dt">'+name+'</span>');d.setAttribute('aria-hidden','true');return d}
+  function door(n,name,cls){var d=el('div','we-door '+cls,'<span class="we-sign"><span class="we-dn">'+n+'</span><span class="we-dt">'+name+'</span></span>');d.setAttribute('aria-hidden','true');return d}
 
   /* ---------- Room 1: the artists ---------- */
   W.appendChild(door('Room 1','The artists','we-d1'));
@@ -69,8 +70,8 @@ function build(){
       '<div class="we-art-t"><p class="we-rk">No. '+(i+1)+' on the wall</p><h3>'+NM[m]+'</h3><p class="we-ver">'+t.ver+' · '+LAB[m]+'</p>'+
       '<p class="we-bal"><b class="'+(up?'we-up':'we-dn2')+'">'+usd(t.bal)+'</b> <span>'+(up?'up ':'down ')+usd(Math.abs(t.pnl))+'</span></p>'+
       '<p class="we-rec">Right '+t.W+' times, wrong '+t.L+'.</p><p class="we-note">'+note.join(' ')+'</p></div></li>'}).join('');
-  r1.innerHTML='<div class="we-in"><header class="we-wall"><p class="we-stop">Stop 1</p><h2>The artists</h2>'+
-    '<p class="we-wt">Each AI started on '+first+' with a pretend $100,000. On every call it bets the whole account: up means buy, down means sell. Their accounts today:</p></header>'+
+  r1.innerHTML='<div class="we-in"><header class="we-wall"><p class="we-stop">Stop 1</p><div class="we-h2" role="heading" aria-level="2">The artists</div>'+
+    '<p class="we-wt">Each AI started with a pretend $100,000. On every call it bets the whole account: up means buy, down means sell. Their accounts today:</p></header>'+
     '<ol class="we-arts">'+rows+'</ol>'+
     '<p class="we-guide"><b>Guide</b> '+NM[lead]+' is on top, so '+NM[lead]+' makes the call when the pool is bet. One bad round can change that.</p></div>';
   W.appendChild(r1);
@@ -78,17 +79,17 @@ function build(){
   /* ---------- Room 2: the collection (the real graded slabs) ---------- */
   W.appendChild(door('Room 2','The collection','we-d2'));
   var r2=el('section','we-room we-r2');r2.id='we-r2';r2.dataset.room='Room 2 · The collection';
-  r2.innerHTML='<div class="we-in"><header class="we-wall"><p class="we-stop">Stop 2</p><h2>The collection</h2>'+
+  r2.innerHTML='<div class="we-in"><header class="we-wall"><p class="we-stop">Stop 2</p><div class="we-h2" role="heading" aria-level="2">The collection</div>'+
     '<p class="we-wt">Every round is a work: a film of the four calls and what the stock did, sealed in a graded case. 10 is near perfect, 1 is a wipeout.</p></header>'+
     '<div class="we-hang"></div><aside class="we-plac" aria-live="polite"></aside>'+
-    '<p class="we-guide"><b>Guide</b> Newest first. Swipe to walk back to Round 1. Tap a case to see the calls.</p></div>';
-  var rec=D.getElementById('record');if(rec){r2.querySelector('.we-hang').appendChild(rec);rec.classList.add('we-keep')}
+    '<p class="we-guide"><b>Guide</b> <span class="we-ph">Newest first. Swipe to walk back to Round 1.</span><span class="we-dk">The eight newest hang here. Point at a case to read its label.</span> Tap a case to turn it and see the calls.</p></div>';
+  var rec=D.getElementById('record');if(rec){r2.querySelector('.we-hang').appendChild(rec);rec.classList.add('we-keep');var cr=D.getElementById('car');if(cr)cr.after(r2.querySelector('.we-plac'))}
   W.appendChild(r2);
 
   /* ---------- Room 3: the question ---------- */
   W.appendChild(door('Room 3','The question','we-d3'));
   var r3=el('section','we-room we-r3');r3.id='we-r3';r3.dataset.room='Room 3 · The question';
-  r3.innerHTML='<div class="we-in"><header class="we-wall"><p class="we-stop">Stop 3</p><h2>Smart, or lucky?</h2>'+
+  r3.innerHTML='<div class="we-in"><header class="we-wall"><p class="we-stop">Stop 3</p><div class="we-h2" role="heading" aria-level="2">Smart, or lucky?</div>'+
     '<p class="we-wt">Up or down is a coin toss. So toss a coin for every call an AI made, and see if the coin does as well.</p></header>'+
     '<div class="we-ex"><div class="we-pick" role="tablist" aria-label="Pick an AI">'+MK.map(function(m,i){return '<button type="button" role="tab" data-m="'+m+'" aria-selected="'+(i===0)+'">'+logo(m,18)+NM[m]+'</button>'}).join('')+'</div>'+
     '<div class="we-exb"><p class="we-exh"></p><div class="we-row"><span class="we-rl">The AI</span><div class="we-dots we-ai"></div></div>'+
@@ -104,15 +105,16 @@ function build(){
   PENDING.forEach(function(p){var k=p.resolves||'';(byDay[k]=byDay[k]||[]).push(p)});
   var days=Object.keys(byDay).sort(function(a,b){var x=md(a),y=md(b);if(!x)return 1;if(!y)return -1;return (x.m*40+x.d)-(y.m*40+y.d)});
   var crates=days.map(function(k){var t=md(k),lbl=!t?'Date to come':((t.m+'/'+t.d)===today?'Unveiled at today’s close':'Unveiled '+WD[new Date(t.y,t.m-1,t.d).getDay()]+' '+MON[t.m-1]+' '+t.d+', at the close');
-    var L=byDay[k].map(function(p){var ups=p.calls.filter(function(c){return c.dir==='UP'}).length,dn=p.calls.length-ups;
+    var all=byDay[k].slice().sort(function(a,b){return ((window.CAPS&&CAPS[b.ticker])||0)-((window.CAPS&&CAPS[a.ticker])||0)}),rest=all.slice(4);
+    var L=all.slice(0,4).map(function(p){var ups=p.calls.filter(function(c){return c.dir==='UP'}).length,dn=p.calls.length-ups;
       return '<li><span class="we-cl">'+coLogo(p.ticker)+'</span><span class="we-cn"><b>'+p.co+'</b><i>'+
-        (ups===p.calls.length?'All '+ups+' say up':dn===p.calls.length?'All '+dn+' say down':ups+' say up, '+dn+' say down')+'</i></span>'+
+        (p.calls.length===1?NM[p.calls[0].m]+' says '+(ups?'up':'down')+'. '+(4-1)+' calls to come':(ups===p.calls.length?'All '+ups+' say up':dn===p.calls.length?'All '+dn+' say down':ups+' say up, '+dn+' say down')+(p.calls.length<4?'. '+(4-p.calls.length)+' to come':''))+'</i></span>'+
         '<span class="we-cv">'+p.calls.map(function(c){return '<span title="'+NM[c.m]+'">'+logo(c.m,13)+'<em class="'+(c.dir==='UP'?'we-u':'we-v')+'">'+(c.dir==='UP'?'▲':'▼')+'</em></span>'}).join('')+'</span></li>'}).join('');
-    return '<div class="we-crate"><p class="we-lab">'+lbl+'</p><ul>'+L+'</ul></div>'}).join('');
+    return '<div class="we-crate"><p class="we-lab">'+lbl+'</p><ul>'+L+'</ul>'+(rest.length?'<p class="we-rest">Also at this close: '+and(rest.map(function(p){return p.co}))+'.</p>':'')+'</div>'}).join('');
   var before=nv?UPCOMING.filter(function(u){return u.n<nv.n}).length:0,cd='',bt=null;
   if(nv){var t=md(nv.called),dt=new Date(t.y,t.m-1,t.d+1);while(dt.getDay()===0||dt.getDay()===6)dt.setDate(dt.getDate()+1);
     bt=nyClose(dt.getFullYear(),dt.getMonth()+1,dt.getDate());cd=WD[dt.getDay()]+' '+MON[dt.getMonth()]+' '+dt.getDate()}
-  r4.innerHTML='<div class="we-in"><header class="we-wall"><p class="we-stop">Stop 4</p><h2>Next exhibition</h2>'+
+  r4.innerHTML='<div class="we-in"><header class="we-wall"><p class="we-stop">Stop 4</p><div class="we-h2" role="heading" aria-level="2">Next exhibition</div>'+
     '<p class="we-wt">These calls are locked in. The stocks have not answered yet.</p></header>'+
     '<div class="we-next"><div class="we-crates">'+crates+'<p class="we-more">Then '+before+' more rounds before NVIDIA reports on '+day(nv&&nv.called)+'.</p></div>'+
     '<div class="we-poster"><img src="media/ez-gpu2.jpg" alt="An NVIDIA chip" loading="lazy"><div class="we-pt"><p class="we-lab">Opening '+cd+' at the close</p>'+
@@ -127,7 +129,7 @@ function build(){
   W.appendChild(door('Exit','Gift shop','we-d5'));
   var r5=el('section','we-room we-r5');r5.id='we-r5';r5.dataset.room='Gift shop';
   var x=(window.CONFIG&&CONFIG.x)||'https://x.com/earningszn';
-  r5.innerHTML='<div class="we-in"><header class="we-wall"><p class="we-stop">Exit</p><h2>Gift shop</h2></header>'+
+  r5.innerHTML='<div class="we-in"><header class="we-wall"><p class="we-stop">Exit</p><div class="we-h2" role="heading" aria-level="2">Gift shop</div></header>'+
     '<div class="we-shop2"><div class="we-mem"><p class="we-lab">Membership · free</p><h3>New works every weekday.</h3><p>Every call goes up on X before the report, and every result after the close.</p>'+
     '<a class="we-xbtn" href="'+x+'" target="_blank" rel="noopener">Follow @earningszn on X</a></div>'+
     '<div class="we-tok"><p class="we-lab">At the counter</p><h3>$EZ</h3><ol><li><b>Check the address.</b> Not posted yet. It appears here, and only here, at launch. Anyone DMing you one before that is a scammer.</li>'+
@@ -166,12 +168,13 @@ function build(){
       var gm=/Grade: (\w+) ([\d.]+) of 10/.exec(card.getAttribute('aria-label')||'');
       h='<p class="we-pn">Round '+n+'<span>'+acc+'</span></p><h3>'+r.co+' <i>('+r.ticker+')</i></h3>'+
         '<p class="we-pm">Animated film, 2026 · graded at the close, '+day(r.resolves)+'</p><p class="we-ps">'+s+'</p>'+
-        '<p class="we-pf">'+(gm?'<span><b>'+gm[2]+'</b> '+gm[1]+'</span>':'')+(best&&best.v>0?'<span>Best trade: '+NM[best.m]+' <b class="we-up">'+sgn(best.v)+'</b></span>':'<span>Every trade lost money</span>')+'</p>'}
+        '<p class="we-pf">'+(gm?'<span>Grade <b>'+gm[2]+'</b> of 10 · '+gm[1]+'</span>':'')+(best&&best.v>0?'<span>Best trade: '+NM[best.m]+' <b class="we-up">'+sgn(best.v)+'</b></span>':'<span>Every trade lost money</span>')+'</p>'}
     else{var p=PENDING.filter(function(q){return q.n===n})[0],u=UPCOMING.filter(function(q){return q.n===n})[0],q=p||u;if(!q)return;
       h='<p class="we-pn">Round '+n+'<span>'+acc+'</span></p><h3>'+q.co+' <i>('+q.ticker+')</i></h3>'+
-        (p?'<p class="we-pm">Work in progress · calls locked '+day(p.called)+'</p><p class="we-ps">The four calls are in. The market answers at the close'+(p.resolves?' on '+day(p.resolves):'')+'.</p>'
+        (p?'<p class="we-pm">Work in progress · calls locked '+day(p.called)+'</p><p class="we-ps">'+(p.calls.length>=4?'The four calls are in.':p.calls.length+' of 4 calls are in.')+' The market answers at the close'+(p.resolves?' on '+day(p.resolves):'')+'.</p>'
           :'<p class="we-pm">Not yet made · calls due '+day(u.called)+'</p><p class="we-ps">The AIs call it before '+q.co+' reports.</p>')}
     pl.innerHTML=h}
+  window.__wePlac=placard;
   var car=D.getElementById('car');
   function cur(){placard(D.querySelector('#car .card.cur'))}
   if(car){new MutationObserver(cur).observe(car,{subtree:true,attributes:true,attributeFilter:['class']});

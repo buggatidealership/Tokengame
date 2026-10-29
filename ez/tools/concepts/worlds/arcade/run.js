@@ -11,7 +11,8 @@ const T=process.argv[2]||'arcade',[VW,VH]=(process.argv[3]||'390x844').split('x'
  await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(1500);
  const hdr=await p.evaluate(()=>{const h=document.querySelector('header.top');return h&&getComputedStyle(h).position==='sticky'?h.getBoundingClientRect().height:0});
  const step=VH-hdr-24;
- for(let i=0;i<N;i++){await p.evaluate(y=>scrollTo(0,y),i*step);await p.waitForTimeout(i?1400:600);await p.screenshot({path:`${OUT}/arc-${T}-${VW}-${i}.png`})}
+ const ids=VW>=1000?[null,'waSelect','waTrain']:null;
+ for(let i=0;i<N;i++){if(ids)await p.evaluate(id=>{if(!id)return scrollTo(0,0);const e=document.getElementById(id);scrollTo(0,e.getBoundingClientRect().top+scrollY-64)},ids[i]);else await p.evaluate(y=>scrollTo(0,y),i*step);await p.waitForTimeout(i?1400:600);await p.screenshot({path:`${OUT}/arc-${T}-${VW}-${i}.png`})}
  const chk=await p.evaluate(()=>{
    const lum=c=>{const m=c.match(/[\d.]+/g);if(!m)return null;const [r,g,b,a]=m.map(Number);if(a===0)return null;return [r,g,b].map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0)};
    const bgOf=e=>{for(let x=e;x;x=x.parentElement){const s=getComputedStyle(x);const m=s.backgroundColor.match(/[\d.]+/g);if(m&&(m[3]===undefined||+m[3]>.5))return s.backgroundColor}return 'rgb(8,7,14)'};
@@ -20,6 +21,6 @@ const T=process.argv[2]||'arcade',[VW,VH]=(process.argv[3]||'390x844').split('x'
    return {sw:document.documentElement.scrollWidth,w:innerWidth,err:window.__waErr&&String(window.__waErr),bad:bad.slice(0,25)}});
  // the explainer film
  const film=await p.evaluate(async()=>{const v=document.querySelector('.x2p-vt video');if(!v)return 'no film';v.scrollIntoView({block:'center'});const btn=document.querySelector('.x2p-vt .vt-play');if(btn)btn.click();await new Promise(r=>setTimeout(r,3500));return 'explainer t='+v.currentTime.toFixed(2)+' paused='+v.paused+' src='+(v.currentSrc||'').split('/').pop()});
- const rf=await p.evaluate(async()=>{const c=document.querySelector('#car .card.cur video, #car video');if(!c)return 'no round film';c.scrollIntoView({block:'center'});c.muted=true;try{await c.play()}catch(e){}await new Promise(r=>setTimeout(r,2500));return 'round t='+c.currentTime.toFixed(2)});
+ const rf=await p.evaluate(async()=>{const ex=document.querySelector('.x2p-vt video');if(ex)ex.pause();const rr=document.getElementById('record');rr.scrollIntoView({block:'start'});await new Promise(r=>setTimeout(r,1500));const c=[...document.querySelectorAll('#car video')].find(v=>{const r=v.getBoundingClientRect();return r.width>0&&r.top<innerHeight&&r.bottom>0});if(!c)return 'no round film';c.scrollIntoView({block:'center'});c.muted=true;try{c.play()}catch(e){}await new Promise(r=>setTimeout(r,2500));return 'round t='+c.currentTime.toFixed(2)+' '+(c.currentSrc||'').split('/').pop()});
  console.log(T,VW,'errors:',er.join(' | ')||'none',JSON.stringify(chk),film,rf);
  await b.close()})();

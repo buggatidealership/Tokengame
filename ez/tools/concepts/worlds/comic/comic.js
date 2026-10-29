@@ -59,9 +59,9 @@ function bigPanel(r,i){
   const f=film(r.n),up=r.a>0;
   return `<article class="wc-pn wc-big wc-tilt${i%2}" data-n="${r.n}">
     <div class="wc-cap wc-cap-tl">Round ${r.n} · ${md(r.resolves)}</div>
-    <div class="wc-art">${f?`<video class="wc-v" muted playsinline loop preload="none" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video><button type="button" class="wc-snd" aria-label="Play with sound">▶ Sound</button>`:'<div class="wc-noart"></div>'}
+    <div class="wc-artw"><div class="wc-art">${f?`<video class="wc-v" muted playsinline loop preload="none" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video><button type="button" class="wc-snd" aria-label="Play with sound">▶ Sound</button>`:'<div class="wc-noart"></div>'}</div>
       <span class="wc-sfx ${up?'wc-up':'wc-dn'}" aria-hidden="true"><em>${sfx(r.a)}</em><b>${up?'+':'−'}${pct(r.a)}</b></span></div>
-    <h3 class="wc-co">${esc(r.co)}<small> said the four AIs, before the report:</small></h3>
+    <h3 class="wc-co">${esc(r.co)}<small>Before the report, the AIs said:</small></h3>
     ${balloons(r,true)}
     <p class="wc-cap wc-cap-br">${narrate(r)}</p>
   </article>`}
@@ -71,7 +71,7 @@ function smallPanel(r){
   return `<a class="wc-pn wc-sm" href="#/round/${r.n}" data-n="${r.n}">
     <span class="wc-art">${f?`<img src="${f.p}" alt="" loading="lazy">`:lg?`<img class="wc-lgimg" src="${lg}" alt="">`:''}
       <span class="wc-sfx wc-mini ${up?'wc-up':'wc-dn'}"><b>${up?'+':'−'}${pct(r.a)}</b></span></span>
-    <span class="wc-smcap"><b>${esc(r.co)}</b>${W.length?W.map(m=>face(m,'wc-f-s')).join('')+' '+W.map(m=>NM[m]).join(' & ')+' closest':'Nobody right'}</span>
+    <span class="wc-smcap"><b>${esc(r.co)}</b>${W.length?'Closest: '+W.map(m=>face(m,'wc-f-s')).join('')+' '+W.map(m=>NM[m]).join(' & '):'Nobody got the direction'}</span>
   </a>`}
 
 function backIssue(r){
@@ -92,7 +92,7 @@ function build(){
   let tonight=(window.PENDING||[]).filter(p=>sameDay(p.resolves,today)&&p.calls&&p.calls.length);
   let tLabel='Tonight at the close';
   if(!tonight.length){const ps=(window.PENDING||[]).filter(p=>p.calls&&p.calls.length&&p.resolves);
-    if(ps.length){const d0=ps.map(p=>p.resolves).sort((a,b)=>{const f=s=>{const [m,d,y]=s.split('/').map(Number);return y*1e4+m*100+d};return f(a)-f(b)})[0];tonight=ps.filter(p=>p.resolves===d0);tLabel='Graded '+md(d0)}}
+    if(ps.length){const d0=ps.map(p=>p.resolves).sort((a,b)=>{const f=s=>{const [m,d,y]=s.split('/').map(Number);return y*1e4+m*100+d};return f(a)-f(b)})[0];tonight=ps.filter(p=>p.resolves===d0);const [m,d,y]=d0.split('/').map(Number),dd=Math.round((Date.UTC(2000+y,m-1,d)-Date.UTC(2000+today[2],today[0]-1,today[1]))/864e5);tLabel=dd===1?'Tomorrow at the close':'Graded at the close, '+md(d0)}}
   tonight.sort((a,b)=>cap(b.ticker)-cap(a.ticker));
   const nv=(window.UPCOMING||[]).find(u=>u.ticker==='NVDA');
   const stTxt=(D.querySelector('#x2pSt')||{}).innerText||'';const cd=/Until the NVIDIA bet:\s*\n?\s*([^\n]+?) left/.exec(stTxt);
@@ -100,9 +100,10 @@ function build(){
 
   /* ---------- COVER ---------- */
   const cover=`<section class="wc-cover" aria-label="Cover">
-    <div class="wc-cv-top"><span class="wc-iss"><small>Issue</small>#${n}</span><span class="wc-cv-s">Season 1<small>${n} earnings reports graded</small></span><span class="wc-cv-p">Free<small>every weeknight</small></span></div>
-    <h1 class="wc-h1">4 AIs trade earnings <span>to run our buybacks.</span></h1>
-    <div class="wc-film-slot"></div>
+    <div class="wc-cv-top"><span class="wc-iss"><small>Issue</small>#${n}</span><span class="wc-cv-s">Season 1<small>${n} earnings reports graded</small></span></div>
+    <p class="wc-h1" role="heading" aria-level="1">4 AI<span class="wc-lc">s</span> trade earnings <span>to run our buybacks.</span></p>
+    <p class="wc-tag">Each one calls a stock <b>before</b> its earnings report. The market close says who was right.</p>
+    <div class="wc-film-slot"><p class="wc-cap wc-film-cap" aria-hidden="true">How it works · 1:20</p></div>
     <div class="wc-starring"><span class="wc-st-l">Starring</span>${ORDER.map(m=>`<span class="wc-st-m">${face(m)}<b>${NM[m]}</b></span>`).join('')}</div>
   </section>`;
 
@@ -124,14 +125,10 @@ function build(){
     <div class="wc-ch-grid">${rank.map((m,i)=>{const a=P[m],b=best(m),w=worst(m),tot=a.W+a.L,hr=Math.round(a.W/tot*100),f=first(m);
       return `<article class="wc-ch wc-ch-${i+1}" style="--mc:${MODELS[m].c}">
         <div class="wc-ch-pic">${face(m,'wc-f-xl')}<span class="wc-ch-rk">#${i+1}</span></div>
-        <div class="wc-ch-tx"><h3>${NM[m]}<small>${esc(MODELS[m].ver)}</small></h3>
-          <p class="wc-ch-role">${roles[i]}</p>
-          <p class="wc-ch-big ${a.pnl>=0?'wc-tu':'wc-td'}">${pm(a.pnl)}<small>${a.pnl>=0?'made':'lost'} so far on $100,000</small></p>
-          <ul class="wc-ch-l"><li>Right way on <b>${a.W} of ${tot}</b> calls (${hr}%)</li>
-            <li>Best call: <b>${pm(b.v)}</b> on ${esc(b.r.co)}</li>
-            <li>Worst call: <b>${pm(w.v)}</b> on ${esc(w.r.co)}</li>
-            ${f>1?`<li>Joined at round ${f}</li>`:''}</ul>
-          <p class="wc-form" aria-label="Last five calls">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}<small>last 5</small></p>
+        <div class="wc-ch-tx"><div class="wc-ch-hd"><h3>${NM[m]}<small>${esc(MODELS[m].ver)}</small></h3><p class="wc-ch-role">${roles[i]}</p></div>
+          <p class="wc-ch-big ${a.pnl>=0?'wc-tu':'wc-td'}">${pm(a.pnl)}<small>${a.pnl>=0?'made':'lost'} on $100,000</small></p>
+          <p class="wc-ch-l">Right way on <b>${a.W} of ${tot}</b> calls. Best: <b>${pm(b.v)}</b> on ${esc(b.r.co)}.</p>
+          <p class="wc-form" aria-label="Last five calls">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}<small>last 5 calls</small></p>
         </div></article>`}).join('')}</div>
   </section>`;
 
@@ -140,15 +137,15 @@ function build(){
   const season=`<section class="wc-season" aria-label="The season so far">
     <h2 class="wc-h2"><span>Last night</span><small>${md(lastDate)} · ${night.length} reports graded at the close</small></h2>
     ${bigPanel(head,0)}
-    ${others.length?`<p class="wc-gut">Also last night…</p><div class="wc-row">${others.map(smallPanel).join('')}</div>`:''}
+    ${others.length?`<div class="wc-also"><p class="wc-gut">Also last night…</p><div class="wc-row">${others.map(smallPanel).join('')}</div></div>`:''}
     <h2 class="wc-h2 wc-h2-b"><span>Back issues</span><small>Every graded round. Tap one to open its graded card.</small></h2>
     <div class="wc-bis" data-all="0">${rest.map(backIssue).join('')}</div>
     <button type="button" class="wc-more">Show all ${rest.length} back issues</button>
-    <p class="wc-key">★ closest call · × nobody got the direction · % = how far the stock moved</p>
+    <p class="wc-key">Corner face = the AI with the closest call. × = nobody got the direction. % = how far the stock moved at the close.</p>
   </section>`;
 
   /* ---------- SPLASH: SMART OR LUCKY ---------- */
-  const splash=`<section class="wc-splash" aria-label="Smart or lucky?">
+  const splash=`<p class="wc-cap wc-beat">Meanwhile, the big question…</p><section class="wc-splash" aria-label="Smart or lucky?">
     <div class="wc-burst"><h2>Smart or lucky?</h2></div>
     <p class="wc-sp-lead">Flip a coin on every report and you get about half right. So who is beating the coin?</p>
     <div class="wc-coins">${rank.slice().sort((a,b)=>P[b].W/(P[b].W+P[b].L)-P[a].W/(P[a].W+P[a].L)).map(m=>{const a=P[m],t=a.W+a.L,h=a.W/t,c=coin(a.W,t);
@@ -160,11 +157,11 @@ function build(){
 
   /* ---------- CLIFFHANGER ---------- */
   const tn=tonight.slice(0,4);
-  const cliff=`<section class="wc-cliff" aria-label="To be continued">
-    <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} calls locked before the report. The close decides.</small></h2>
+  const cliff=`<p class="wc-cap wc-beat">And next on the card…</p><section class="wc-cliff" aria-label="To be continued">
+    <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} rounds. Every call locked before the report. The close decides.</small></h2>
     <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker);return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt="">`:''}<b>${esc(p.co)}</b></header>
       <div class="wc-tn-c">${ORDER.map(m=>{const c=p.calls.find(x=>x.m===m);return c?`<span class="wc-tn-s ${c.dir==='UP'?'wc-tu':'wc-td'}">${face(m,'wc-f-s')}${c.dir==='UP'?'Up':'Down'} ${c.mag}%</span>`:''}).join('')}</div></article>`}).join('')}</div>
-    ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s">+ ${tonight.length-tn.length} more on tonight's card</p>`:''}
+    ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s">+ ${tonight.length-tn.length} more locked in</p>`:''}
     <div class="wc-next">
       <p class="wc-next-k">Next time…</p>
       <h3>Bet #1: NVIDIA</h3>
@@ -179,7 +176,7 @@ function build(){
   const back=`<section class="wc-back" aria-label="Back cover">
     <p class="wc-motto">Nobody said it would be <span class="wc-e">E</span><span class="wc-z">Z</span>.</p>
     <a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a>
-    <p class="wc-fine">New calls every weeknight in earnings season. P&amp;L is simulated: $100,000 each, the whole balance on every call, no leverage, before fees. $EZ isn't live yet. Not advice.</p>
+    <p class="wc-fine">New panels whenever a round is graded. P&amp;L is simulated: $100,000 each, the whole balance on every call, no leverage, before fees. $EZ isn't live yet. Not advice.</p>
   </section>`;
 
   const book=D.createElement('div');book.id='wc-book';book.className='wc-book';
@@ -199,6 +196,7 @@ function wire(book){
   const io=new IntersectionObserver(es=>es.forEach(e=>{const t=e.target;if(e.isIntersecting)t.classList.add('wc-in');
     const v=t.querySelector&&t.querySelector('video.wc-v');if(v&&!matchMedia('(prefers-reduced-motion: reduce)').matches){if(e.isIntersecting&&e.intersectionRatio>.35){v.play().catch(()=>{})}else if(!e.isIntersecting)v.pause()}}),{threshold:[0,.4]});
   book.querySelectorAll('.wc-pn,.wc-ch,.wc-splash,.wc-next,.wc-prev,.wc-tnp,.wc-cn').forEach(x=>io.observe(x));
+  let ly=scrollY;addEventListener('scroll',()=>{const y=scrollY;H.classList.toggle('wc-hhide',y>ly&&y>200);ly=y},{passive:true});
   const sync=()=>{book.hidden=/^#\/(upcoming)/.test(location.hash)};addEventListener('hashchange',sync);sync()}
 
 let tries=0;(function wait(){

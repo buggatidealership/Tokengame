@@ -69,8 +69,8 @@ function build(){
   if(card.length){var h=card[0],up=h.calls.filter(function(c){return c.v>0}),dn=h.calls.filter(function(c){return c.v<0});
     var when=day===today?'Tonight':dname(day,true);var foreign=/\./.test(h.ticker);var bell=nyAt(day,16);
     var side=function(list,lab,cls){return '<div class="wa-team '+cls+'"><p class="wa-tl">'+lab+'</p>'+list.map(function(c){return '<div class="wa-tf" style="--fc:'+COL[c.m]+'"><span class="wa-tp">'+mk(c.m)+'</span><span class="wa-tn">'+NICE[c.m]+'</span><span class="wa-tc">'+(c.v>0?'Up ':'Down ')+esc(c.mag)+'%</span></div>'}).join('')+(list.length?'':'<p class="wa-none">Nobody</p>')+'</div>'};
-    var verdict=up.length&&dn.length?up.length+' say up, '+dn.length+' say down. One side loses.':'All '+h.calls.length+' say '+(up.length?'up':'down')+'. Closest call wins.';
-    tn.innerHTML=plate(1,when+' · the bell at the close','Round '+h.n+': Fight!','Calls locked before the report. '+verdict)+
+    var say=function(n){return n+(n===1?' says':' say')};var verdict=up.length&&dn.length?say(up.length)+' up, '+say(dn.length)+' down. Closest call wins.':'All '+h.calls.length+' say '+(up.length?'up':'down')+'. Closest call wins.';
+    tn.innerHTML=plate(1,'Round '+h.n+' · '+when+' at the close',(day===today?'Tonight: ':'Next up: ')+esc(h.co),'The calls are locked in. The market close decides. '+verdict)+
       '<div class="wa-vs"><span class="wa-burst" aria-hidden="true">Fight!</span>'+side(up,'Team up','wa-up')+
       '<div class="wa-mid">'+co(h.ticker,'wa-cobig')+'<b class="wa-vsx">VS</b><span class="wa-coname">'+esc(h.co)+'</span><span class="wa-clock" data-t="'+bell+'">'+(foreign?'Graded at its own exchange’s close':'Bell in <b>'+cd(bell-Date.now())+'</b>')+'</span></div>'+
       side(dn,'Team down','wa-dn')+'</div>'+
@@ -83,7 +83,7 @@ function build(){
   var cs=sec('waSelect',4,'wa-select');
   var tile=function(f,i){return '<button type="button" class="wa-pt'+(i===0?' wa-on':'')+'" data-m="'+f.m+'" style="--fc:'+COL[f.m]+'" aria-pressed="'+(i===0)+'"><span class="wa-rk">'+(i+1)+'</span>'+mk(f.m)+'<span class="wa-pn">'+NICE[f.m]+'</span><span class="wa-pp '+(f.a.pnl>=0?'wa-pos':'wa-neg')+'">'+k(f.a.pnl)+'</span>'+(i===0?'<span class="wa-p1">P1</span>':'')+'</button>'};
   cs.innerHTML=plate(2,'Character select · ranked by bank','Who’s winning','Every AI started with a pretend $100,000 and bets it all on each call. Tap a fighter.')+
-    '<div class="wa-cs"><div class="wa-card" aria-live="polite"></div><div class="wa-grid">'+fighters.map(tile).join('')+'</div></div>'+
+    '<div class="wa-cs"><div class="wa-grid">'+fighters.map(tile).join('')+'</div><div class="wa-card" aria-live="polite"></div></div>'+
     '<div class="wa-chal"><p class="wa-chh">Here comes a new challenger!</p><p class="wa-chs">In tryouts for fighter No. 5, one at a time:</p><div class="wa-chl"><span>Qwen</span><span>Mistral</span><span>Gemini</span></div></div>';
   main.appendChild(cs);
   var show=function(m){var f=fighters.filter(function(x){return x.m===m})[0],i=fighters.indexOf(f),a=f.a;
@@ -100,10 +100,20 @@ function build(){
     var bar=cs.querySelector('.wa-hp i');if(bar&&!RM){bar.style.transition='none';var w=bar.style.width;bar.style.width='0';requestAnimationFrame(function(){requestAnimationFrame(function(){bar.style.transition='';bar.style.width=w})})}};
   show(top.m);cs.querySelectorAll('.wa-pt').forEach(function(t){t.addEventListener('click',function(){show(t.dataset.m)})});
 
+  /* ---------- the HUD: the sticky header becomes the fight's top bar ---------- */
+  var tin=document.querySelector('header.top .top-in');
+  if(tin){var p1=fighters[0],p2=fighters[1];var hb=function(f,side){return '<span class="wa-hs wa-'+side+'" style="--fc:'+COL[f.m]+'"><span class="wa-hn"><i>'+mk(f.m)+'</i>'+NICE[f.m]+'</span><span class="wa-hbar"><i style="width:'+Math.max(2,Math.min(100,f.a.bal/2000)).toFixed(1)+'%"></i><s></s></span></span>'};
+    var nb=day!=null?nyAt(day,16):null;var hud=document.createElement('a');hud.className='wa-hud';hud.href='javascript:void 0';
+    hud.setAttribute('aria-label','Leader '+NICE[p1.m]+', bank '+usd(p1.a.bal)+'. Second '+NICE[p2.m]+', '+usd(p2.a.bal)+'.'+(nb?' Next bell in '+cd(nb-Date.now())+'.':''));
+    var tm=function(){if(!nb)return '<b>--</b><em>no bell</em>';var ms=nb-Date.now(),h=Math.floor(ms/36e5);return ms<=0?'<b>0</b><em>bell</em>':h>=1?'<b>'+h+'</b><em>hrs to bell</em>':'<b>'+Math.max(1,Math.floor(ms/6e4))+'</b><em>min to bell</em>'};
+    hud.innerHTML=hb(p1,'l')+'<span class="wa-tmr">'+tm()+'</span>'+hb(p2,'r');
+    hud.addEventListener('click',function(e){e.preventDefault();var s=document.getElementById('waSelect');if(s)scrollTo({top:s.getBoundingClientRect().top+scrollY-90,behavior:RM?'auto':'smooth'})});
+    tin.insertBefore(hud,tin.querySelector('#liveChip')||null);setInterval(function(){hud.querySelector('.wa-tmr').innerHTML=tm()},30000)}
+
   /* ---------- 4. MATCH HISTORY: the record ---------- */
   var rec=document.getElementById('record');
   if(rec){rec.style.order=5;rec.classList.add('wa-rec-sec');
-    var last=G.slice(-10).reverse();
+    var last=G.slice(-6).reverse();
     var hd=document.createElement('div');hd.className='wa-hist';
     hd.innerHTML=plate(3,'Match history · '+nG+' rounds graded','Replays','Every call, locked before the report, graded at the close. Each round has its own film.')+
       '<div class="wa-res" role="list">'+last.map(function(r){var x=result(r);return '<a role="listitem" class="wa-rt wa-'+x.k+'" href="#/round/'+r.n+'" title="Round '+r.n+', '+esc(r.co)+': '+x.s+'">'+co(r.ticker)+'<span class="wa-rtn">R'+r.n+'</span><b>'+x.t+'</b><span class="wa-rtw">'+(x.w?x.w.map(function(m){return '<i style="--fc:'+COL[m]+'">'+mk(m)+'</i>'}).join(''):'<i class="wa-x">✕</i>')+'</span></a>'}).join('')+'</div>'+

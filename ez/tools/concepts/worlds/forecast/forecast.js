@@ -65,18 +65,18 @@ function build(){if(d.getElementById('wf-fc')||typeof ROUNDS==='undefined'||type
  var fc=sec('wf-fc','The forecast',label+'’s forecast','Locked before the reports. Graded at '+(label==='Tonight'?'tonight’s':WD[next.getUTCDay()]+'’s')+' close.');
  var big=full[0];
  var outlook=cnt.storm>cnt.fair&&cnt.storm>cnt.split?'Mostly stormy':cnt.fair>cnt.storm&&cnt.fair>cnt.split?'Mostly fair':'Mixed';
- var now1='<div class="wf-now wf-glass"><div class="wf-now-a"><p class="wf-place">'+WD[next.getUTCDay()]+'’s close</p><p class="wf-temp">'+tonight.length+'</p><p class="wf-cond">stocks on the map</p><p class="wf-hl">'+outlook+'</p></div>'+
-  '<div class="wf-now-b"><p><b>'+cnt.fair+'</b> '+wx(3,22)+'<span>most see a rise</span></p><p><b>'+cnt.storm+'</b> '+wx(-3,22)+'<span>most see a drop</span></p><p><b>'+cnt.split+'</b> <i class="wf-split">'+wx(2,16)+wx(-2,16)+'</i><span>split 2 to 2</span></p>'+
-  (tonight.length>full.length?'<p class="wf-pend"><b>'+(tonight.length-full.length)+'</b><span>still filing forecasts</span></p>':'')+'</div>'+
+ var now1='<div class="wf-now wf-glass"><div class="wf-now-a"><p class="wf-place">'+WD[next.getUTCDay()]+' · '+md(next)+'</p><p class="wf-temp">'+tonight.length+'</p><p class="wf-cond">stocks on the map</p><p class="wf-hl">'+outlook+'</p></div>'+
+  '<div class="wf-now-b"><p><b>'+wx(3,22)+cnt.fair+'</b><span>most see a rise</span></p><p><b>'+wx(-3,22)+cnt.storm+'</b><span>most see a drop</span></p><p><b><i class="wf-split">'+wx(2,15)+wx(-2,15)+'</i>'+cnt.split+'</b><span>split 2 to 2</span></p>'+
+  (tonight.length>full.length?'<p class="wf-pend"><b>+'+(tonight.length-full.length)+'</b><span>still filing forecasts ('+tonight.filter(function(r){return r.list.length<3}).map(function(r){return esc(r.co)}).join(', ')+')</span></p>':'')+'</div>'+
   '<p class="wf-when">Graded at the close · US close in '+when+'</p></div>';
- var feat='';if(big){var cb=consensus(big.list);feat='<article class="wf-feat wf-glass"><div class="wf-feat-h">'+co(big.t,36)+'<div><p class="wf-k">The big one · biggest company tonight</p><h3>'+esc(big.co)+'</h3></div></div>'+
-  '<ul class="wf-feat-l">'+big.list.map(function(c){return '<li>'+mark(c.m,26)+'<b>'+nm(c.m)+'</b>'+wx(c.v,34,true)+'<span class="wf-say '+(c.v>=0?'wf-up':'wf-dn')+'">'+wxWord(c.v)+'<small>says '+says(c.v)+'</small></span></li>'}).join('')+'</ul>'+
+ var feat='';if(big){var cb=consensus(big.list);feat='<article class="wf-feat wf-glass"><div class="wf-feat-h">'+co(big.t,36)+'<div><p class="wf-k">The big one</p><h3>'+esc(big.co)+'</h3></div></div>'+
+  '<ul class="wf-feat-l">'+big.list.map(function(c){return '<li>'+mark(c.m,26)+'<b>'+nm(c.m)+'</b>'+wx(c.v,34,true)+'<span class="wf-say '+(c.v>=0?'wf-up':'wf-dn')+'">'+wxWord(c.v)+'<small>by '+pc(c.v)+'</small></span></li>'}).join('')+'</ul>'+
   '<p class="wf-feat-f">'+cb.w+'.</p></article>'}
  var heads='<div class="wf-colh"><span>Stock</span>'+ORDER.map(function(m){return '<span class="wf-colm">'+mark(m,18)+'<small>'+nm(m)+'</small></span>'}).join('')+'</div>';
  var rows=tonight.map(function(r){var c=consensus(r.list);return '<li class="wf-row wf-c-'+c.k+'">'+co(r.t,30)+'<span class="wf-rn-t"><b>'+esc(r.co)+'</b><small>'+c.w+'</small></span>'+
   ORDER.map(function(m){return '<span class="wf-cell" title="'+nm(m)+(m in r.cs?' says '+says(r.cs[m]):' has not filed')+'">'+(m in r.cs?wx(r.cs[m],26):'<i class="wf-nf">…</i>')+'</span>'}).join('')+'</li>'}).join('');
- var legend='<p class="wf-leg">'+wx(1,18)+'up a little '+wx(3,18)+'up '+wx(5,18)+'up big <span class="wf-legs"></span>'+wx(-1,18)+'down a little '+wx(-3,18)+'down '+wx(-5,18)+'down big</p><p class="wf-leg2">A little = under 2%. Big = 4% or more, in one day.</p>';
- fc.insertAdjacentHTML('beforeend',now1+feat+'<div class="wf-list wf-glass">'+heads+'<ul>'+rows+'</ul>'+legend+'</div>');
+ var legend='<p class="wf-key">'+wx(3,20)+'<span>says up</span>'+wx(-3,20)+'<span>says down</span><em>Stronger weather, bigger move: '+wx(1,16)+wx(5,16)+' under 2% to 4% or more, in a day.</em></p>';
+ fc.insertAdjacentHTML('beforeend',now1+feat+'<div class="wf-list wf-glass">'+legend+heads+'<ul>'+rows+'</ul></div>');
 
  /* ---------- yesterday's verdict ---------- */
  var lastD=Math.max.apply(null,ROUNDS.map(function(r){return+pd(r.resolves)||0})),lastRs=ROUNDS.filter(function(r){return+pd(r.resolves)===lastD}),ld=new Date(lastD);
@@ -89,8 +89,8 @@ function build(){if(d.getElementById('wf-fc')||typeof ROUNDS==='undefined'||type
    var poster=r.poster?'<img src="media/'+r.poster+'.jpg" alt="" loading="lazy">':'';
    return '<article class="wf-v wf-glass"><a class="wf-rep" href="#/round/'+r.n+'" aria-label="Replay round '+r.n+', '+esc(r.co)+'">'+poster+'<span class="wf-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span><span class="wf-rep-t">Replay</span></a>'+
     '<div class="wf-v-b"><p class="wf-v-h">'+co(r.ticker,22)+'<b>'+esc(r.co)+'</b></p>'+
-    '<div class="wf-v-g"><div><p class="wf-k">Forecast</p><p class="wf-v-f">'+cs.map(function(c){var ok=(c.v>=0)===(a>=0);return '<span class="wf-vf'+(ok?' wf-ok':' wf-no')+'">'+wx(c.v,22)+mark(c.m,12)+'<i>'+(ok?'✓':'✗')+'</i></span>'}).join('')+'</p></div>'+
-    '<div class="wf-v-a"><p class="wf-k">What happened</p><p class="wf-v-x">'+wx(a,30)+'<b class="'+(a>=0?'wf-up':'wf-dn')+'">'+(a>=0?'Up ':'Down ')+pc(a)+'</b></p></div></div>'+
+    '<div class="wf-v-g"><p class="wf-k">Forecast</p><p class="wf-v-f">'+cs.map(function(c){var ok=(c.v>=0)===(a>=0);return '<span class="wf-vf'+(ok?' wf-ok':' wf-no')+'" title="'+nm(c.m)+' said '+says(c.v)+'">'+wx(c.v,22)+mark(c.m,12)+'<i>'+(ok?'✓':'✗')+'</i></span>'}).join('')+'</p>'+
+    '<p class="wf-k">It went</p><p class="wf-v-x">'+wx(a,26)+'<b class="'+(a>=0?'wf-up':'wf-dn')+'">'+(a>=0?'Up ':'Down ')+pc(a)+'</b></p></div>'+
     '<p class="wf-v-l"><b>'+line+'</b> '+cl+'</p></div></article>'}).join('');
  vd.insertAdjacentHTML('beforeend','<div class="wf-vg">'+cards+'</div>');
 
