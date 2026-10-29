@@ -2822,6 +2822,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
   ctl.parentNode.insertBefore(box,ctl.nextSibling);built=true;
   var btn=box.querySelector(".x2p-bi-more"),n=R.length;
   function label(){var all=box.getAttribute("data-all")==="1",wall=H.classList.contains("x2p-wall")&&!H.classList.contains("x2p-wallall");
+   var hd=box.querySelector(".x2p-bi-hd"),ht=wall?"Earlier rounds at a glance":"Every round at a glance";if(hd.textContent!==ht)hd.textContent=ht;
    btn.textContent=all?"Show fewer":"Show all "+(wall?n-8+" earlier":n)+" rounds";btn.setAttribute("aria-expanded",all?"true":"false")}
   label();btn.addEventListener("click",function(){var all=box.getAttribute("data-all")==="1";box.setAttribute("data-all",all?"0":"1");label();
    if(all){var t=box.getBoundingClientRect().top;if(t<0)box.scrollIntoView({block:"start"})}});
