@@ -47,6 +47,10 @@ doc = doc.replace('</head>', meta2 + '</head>', 1)
 # (owner: "push pls"), so production is X2+ as it is again. SITE_HOLD=1 sets window.__x2pHold, which x2plus.js still honours,
 # to keep the next held changes off a production build.
 # (2026-10-26) the proof's lighter ink (the PROOFLI block) went live with the owner's "push everything to production"; no hold left
+# (2026-10-29) the G1 proof card waits on the preview until the owner has looked: production carries window.__x2pHoldG1 (the
+# old proof card) unless SITE_G1=1; the preview branch is built with SITE_G1=1. Drop this when the owner says to push it.
+if os.environ.get('SITE_G1') != '1':
+    doc = doc.replace('</head>', '<script>window.__x2pHoldG1=1</script>\n</head>', 1)
 if os.environ.get('SITE_HOLD') == '1':
     doc = doc.replace('</head>', '<script>window.__x2pHold=1</script>\n</head>', 1)
 if os.environ.get('SITE_CLASSIC') == '1':
