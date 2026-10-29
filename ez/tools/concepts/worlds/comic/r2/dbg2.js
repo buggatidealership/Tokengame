@@ -1,0 +1,5 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:844}});
+ await p.goto('http://localhost:8897/v47-live-x3plus.html#/round/64',{waitUntil:'load'});
+ await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});await p.waitForTimeout(2500);
+ console.log(await p.evaluate(()=>{const o=[];const c=document.querySelector('#x2pRm .card');[c,c.querySelector('.cin'),c.querySelector('.face.front'),c.querySelector('.face.front .fin'),c.querySelector('.face.front .fx'),c.querySelector('.face.front .zlab'),c.querySelector('.face.front .cwin'),c.querySelector('.face.front .cfoot')].forEach(e=>{if(!e)return o.push('none');const cs=getComputedStyle(e),r=e.getBoundingClientRect();o.push(e.className+' | '+[r.x,r.y,r.width,r.height].map(Math.round)+' bg='+cs.backgroundColor+' bgi='+cs.backgroundImage.slice(0,80)+' border='+cs.border+' radius='+cs.borderRadius+' shadow='+cs.boxShadow.slice(0,80))});return o.join('\n')}));await b.close()})();

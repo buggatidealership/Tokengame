@@ -386,7 +386,7 @@ function proofBuild(P,R,rank){
   const chart=(ser,lo,hi,base,baseLbl,ends,ord)=>{const Y=v=>(Hh-(v-lo)/(hi-lo)*Hh).toFixed(2);
     const ls=ord.slice().reverse().map(m=>{const d=ser[m].map((v,i)=>(i?'L':'M')+X(i)+' '+Y(v)).join(' ');return `<path class="wc-pf-o" d="${d}"/><path class="wc-pf-l${m===ord[0]?' wc-pf-lead':''}" style="--mc:${MODELS[m].c}" d="${d}"/>`}).join('');
     /* end labels, pushed apart so they never touch */
-    let es=ord.map(m=>({m,y:(Hh-(ser[m][N]-lo)/(hi-lo)*Hh)})).sort((a,b)=>a.y-b.y);for(let i=1;i<es.length;i++)if(es[i].y-es[i-1].y<15)es[i].y=es[i-1].y+15;
+    let es=ord.map(m=>({m,y:(Hh-(ser[m][N]-lo)/(hi-lo)*Hh)})).sort((a,b)=>a.y-b.y);for(let i=1;i<es.length;i++)if(es[i].y-es[i-1].y<17)es[i].y=es[i-1].y+17;
     const ov=es[es.length-1].y-96;if(ov>0)es.forEach(e=>e.y-=ov);
     return `<div class="wc-pf-ch"><div class="wc-pf-cv"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><line class="wc-pf-base" x1="0" x2="${W}" y1="${Y(base)}" y2="${Y(base)}"/>${ls}</svg>
       <span class="wc-pf-bl" style="top:${Y(base)}%">${baseLbl}</span></div>
@@ -429,7 +429,7 @@ function proofBuild(P,R,rank){
     <div class="wc-pn wc-pf"><div class="wc-pf-tabs" role="tablist" aria-label="Views"><i class="wc-pf-ind" aria-hidden="true"></i>${V.map((v,i)=>`<button type="button" role="tab" id="wc-pft-${v[0]}" aria-controls="wc-pfv-${v[0]}" aria-selected="${i===0}" tabindex="${i===0?0:-1}">${v[1]}</button>`).join('')}</div>
       <div class="wc-pf-st">${V.map((v,i)=>`<div class="wc-pf-v" id="wc-pfv-${v[0]}" role="tabpanel" aria-labelledby="wc-pft-${v[0]}" data-v="${v[0]}"${i?' hidden':''}><p class="wc-cap wc-pf-q">${v[2]}</p>${v[3]}</div>`).join('')}</div></div>
   </section>`}
-function proofWire(root){const pf=root.querySelector('.wc-pf');if(!pf)return;const tabs=[...pf.querySelectorAll('[role=tab]')],views=[...pf.querySelectorAll('.wc-pf-v')],st=pf.querySelector('.wc-pf-st'),ind=pf.querySelector('.wc-pf-ind');let cur=0,busy=null;
+function proofWire(root){const pf=root.querySelector('.wc-pf');if(!pf)return;pf.classList.add('wc-in');const tabs=[...pf.querySelectorAll('[role=tab]')],views=[...pf.querySelectorAll('.wc-pf-v')],st=pf.querySelector('.wc-pf-st'),ind=pf.querySelector('.wc-pf-ind');let cur=0,busy=null;
   const place=()=>{const b=tabs[cur];ind.style.transform=`translateX(${b.offsetLeft}px)`;ind.style.width=b.offsetWidth+'px'};
   const enter=v=>{if(RM_())return;const sv=v.querySelector('.wc-pf-cv svg');
     if(sv)sv.animate([{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0 0 0)'}],{duration:720,easing:'cubic-bezier(.3,.6,.2,1)',fill:'backwards'});
@@ -482,6 +482,8 @@ function tabs(){const v=D.getElementById('view');const lb=lbBuild(),up=upBuild()
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('wc-in');io.unobserve(e.target)}}),{threshold:.15});
   [lb,up].forEach(x=>x.querySelectorAll('.wc-pn:not(.wc-pf),.wc-sb-r').forEach(y=>io.observe(y)));proofWire(lb)}
 const done=()=>H.classList.add('x2p-world');
+/* a twist on the graded slab's front, as a switch only (owner to decide): ?slab=1 or window.__c3Slab */
+try{if(window.__c3Slab||/[?&]slab=1/.test(location.search))H.classList.add('wc-slab')}catch(e){}
 /* a round opened from a panel, a back issue or a ticket: when its card closes, the page goes back to where it was
    (the router scrolls the page while the card is open, and the address passes through '' on the way) */
 let back=null,open=false;addEventListener('pointerdown',e=>{const a=e.target.closest&&e.target.closest('#wc-book a[href^="#/round/"],#wc-lb a[href^="#/round/"],#wc-up a[href^="#/round/"],#wc-book .wc-big video');if(a){back=scrollY;open=false}},true);
