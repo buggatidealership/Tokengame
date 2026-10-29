@@ -2401,3 +2401,15 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
  (mq.addEventListener?mq.addEventListener("change",all3):mq.addListener(all3));addEventListener("load",all3);if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){setTimeout(heads,120)});
  var lw=innerWidth;addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;setTimeout(heads,150)}});
  setInterval(crawl,60000)}catch(e){window.__x2pDeskErr=e}})();
+
+/* TITLE (owner, 2026-10-29: the browser tab read "EZ Live X2", X2's own title routine): the tab names the site and the page:
+   "Earnings Zeason · 4 AIs trade earnings" on the Overview, "Upcoming · Earnings Zeason", "Round 57 · GE Vernova · Earnings Zeason"
+   on a round. The name first on the Overview (a tab shows its first ~25 characters), the page first elsewhere. */
+(function(){try{var d=document,B="Earnings Zeason";
+ function want(){var h=location.hash||"",m=h.match(/round\/(\d+)/);
+  if(m){var n=+m[1],all=[].concat(typeof ROUNDS!=="undefined"?ROUNDS:[],typeof PENDING!=="undefined"?PENDING:[],typeof UPCOMING!=="undefined"?UPCOMING:[]),r=null;
+   all.forEach(function(u){if(u.n==n)r=u});return "Round "+n+(r&&r.co?" · "+r.co:"")+" · "+B}
+  if(/upcoming/.test(h))return "Upcoming · "+B;return B+" · 4 AIs trade earnings"}
+ var busy=0;function fix(){if(busy)return;var t=want();if(d.title!==t){busy=1;d.title=t;busy=0}}
+ function go(){fix();var el=d.querySelector("title");if(el)new MutationObserver(fix).observe(el,{childList:true,characterData:true,subtree:true});addEventListener("hashchange",function(){setTimeout(fix,0)})}
+ if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",go);else go()}catch(e){}})();

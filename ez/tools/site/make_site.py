@@ -22,7 +22,7 @@ if re.search(r'<html[\s>]', page[:2000], re.I):
     doc = page
 else:
     doc = head + '</head>\n<body>\n' + page + '\n</body>\n</html>\n'
-doc = re.sub(r'<title>[^<]*</title>', '<title>$EZ \u00b7 Earnings Zeason</title>', doc, count=1)
+doc = re.sub(r'<title>[^<]*</title>', '<title>Earnings Zeason \u00b7 4 AIs trade earnings</title>', doc, count=1)
 # what a public page needs and an artifact did not: the canonical address and share tags (a share image comes next)
 meta = ('<link rel="canonical" href="' + URL + '">\n<meta property="og:type" content="website">\n<meta property="og:url" content="' + URL + '">\n'
         '<meta property="og:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:card" content="summary_large_image">\n')
