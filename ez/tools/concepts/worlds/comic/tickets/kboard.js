@@ -1,0 +1,11 @@
+// node kboard.js <shots dir> <out prefix> : round 2 of the ticket takes on Meet the models (phone row, desktop stack)
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const fs=require('fs'),path=require('path');
+const D=process.argv[2],OUT=process.argv[3];const im=f=>fs.existsSync(path.join(D,f))?'data:image/png;base64,'+fs.readFileSync(path.join(D,f)).toString('base64'):'';
+const T=[['t1','Round 1 · Comic Admit One'],['t1_k1','K1 · Live colours + Ben-Day dots, holo stub'],['t1_k2','K2 · $EZ stripes + speed lines, holo foil card'],['t1_k3','K3 · Burst behind the face, green/red stub, holo burst'],['t1_k4','K4 · The corner speaks: tonight\'s call, holo stub'],['t1_k5','K5 · Profit/loss print panel, gold holo']];
+const page=b=>`<style>body{margin:0;padding:24px;background:#1b181c;color:#f8f0d9;font:600 15px system-ui}h1{font-size:24px;margin:0 0 8px}p{margin:0 0 12px;color:#cfc6b2;max-width:1200px}.r{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}figure{margin:0 0 18px}figcaption{margin:0 0 6px;color:#fdbc2a}img{display:block;border:1px solid #444}</style>${b}`;
+const intro=`<h1>Comic Admit One, round 2: colour, a comic holo for #1, the empty corner filled</h1><p>Each take: the live site's green and red worked in, #1 (Grok) as a comic foil variant, and the plain body under the face given a comic job. Real data.</p>`;
+(async()=>{const br=await chromium.launch();
+ let p=await br.newPage({viewport:{width:2400,height:800}});
+ await p.setContent(page(intro+`<div class=r>${T.map(([k,l])=>`<figure><figcaption>${l}</figcaption><img style="width:370px" src="${im(`390-ch-${k}.png`)}"></figure>`).join('')}</div>`));await p.waitForTimeout(400);await p.screenshot({path:`${OUT}.png`,fullPage:true});await p.close();
+ p=await br.newPage({viewport:{width:1300,height:800}});
+ await p.setContent(page(intro+T.map(([k,l])=>`<figure><figcaption>${l} · desktop</figcaption><img style="width:1200px" src="${im(`1440-ch-${k}.png`)}"></figure>`).join('')));await p.waitForTimeout(400);await p.screenshot({path:`${OUT}-desktop.png`,fullPage:true});await br.close()})();
