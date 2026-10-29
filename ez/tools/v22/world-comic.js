@@ -153,7 +153,7 @@ function build(){
   const cliff=tonight.length?`<p class="wc-cap wc-beat">And next on the card…</p><section class="wc-cliff" aria-label="${esc(tLabel)}">
     <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} round${tonight.length===1?'':'s'}. Every call locked before the report. The close decides.</small></h2>
     <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker);return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt="">`:''}<b>${esc(p.co)}</b></header>
-      <div class="wc-tn-c">${ORDER.map(m=>{const c=p.calls.find(x=>x.m===m);return c?`<span class="wc-tn-s ${c.dir==='UP'?'wc-tu':'wc-td'}">${face(m,'wc-f-s')}${c.dir==='UP'?'Up':'Down'} ${c.mag}%</span>`:''}).join('')}</div></article>`}).join('')}</div>
+      <div class="wc-lvc">${ORDER.map(m=>{const c=p.calls.find(x=>x.m===m);return c?`<div class="wc-lvs ${c.dir==='UP'?'wc-lvu':'wc-lvd'}">${face(m,'wc-f-s')}<p><small>${NM[m]}</small>${c.dir==='UP'?'Up':'Down'} ${c.mag}%</p></div>`:''}).join('')}</div></article>`}).join('')}</div>
     ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s"><a class="wc-gut-a" href="#/upcoming">+ ${tonight.length-tn.length} more locked in. See the card →</a></p>`:''}
   </section>`:'';
 
