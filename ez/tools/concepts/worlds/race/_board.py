@@ -8,7 +8,7 @@ BG=(10,30,19);CR=(248,240,217);GD=(253,188,42)
 def head(d,W,title,sub):
     d.text((24,18),title,font=F(26),fill=CR);d.text((24,54),sub,font=G(15),fill=(190,200,186))
 # phone: five consecutive screens of the scroll at 390x844 (rendered 2x, shown at 1x)
-P=[('1','Headline, big screen, standings'),('2','Standings, today\'s card'),('3','The card, results board'),('4','Results, replays'),('5','Replays, the race so far')]
+P=[('1','Headline, big screen, standings'),('2','Standings, today\'s card'),('3','Results board (last race day)'),('4','Replays: the graded cards and films'),('5','The race so far, the paddock')]
 w,h,g=390,844,24;W=g+len(P)*(w+g);H=96+h+50
 B=Image.new('RGB',(W,H),BG);d=ImageDraw.Draw(B)
 head(d,W,'EZ world: RACE DAY  ·  phone 390x844, the first five screens of the Overview','The season is a race meeting. Four AIs in silks, every earnings report a race, the market close the finish line, prize money = P&L on a pretend $100K, NVIDIA the cup.  Clock: Thu Oct 29, 1:09 pm New York.')
