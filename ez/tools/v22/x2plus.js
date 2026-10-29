@@ -2790,3 +2790,41 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
  function go(){setTimeout(start,1500)}
  var ready=function(){if(d.fonts&&d.fonts.ready)d.fonts.ready.then(go);else go()};
  if(d.readyState==="complete")ready();else addEventListener("load",ready)}catch(e){}})();
+/* BACKISSUES (owner, 2026-10-29: the comic's "Back issues" on X2+, "it gives you a better overview of, okay, what happened... who won";
+   under the record's swipe carousel, which stays as it is): every graded round newest first as a small tile, its film's poster (or its
+   picture, or the company's logo) as the art, the round number, the stock's move in a green or red box and the winner's mark in the
+   corner (both on a tie, × when nobody got the direction; the sheet's winner column, as everywhere on the page). Four rows show on a phone,
+   the rest behind "Show all"; a tap opens the round big (#/round/n, TAPBIG's view with its arrows). On the desktop wall the eight newest
+   are already up as cards, so the tiles start at the ninth there. Not on the world pages (X3+, X4+ have their own). Posters load lazily. */
+(function(){try{if(window.__x2pNeedWorld)return;var d=document,H=d.documentElement;
+ var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+ var pct=function(v){return Math.abs(v).toFixed(2).replace(/\.?0+$/,"")+"%"};
+ var NM={GPT:"GPT",KIMI:"Kimi",CLAUDE:"Claude",GROK:"Grok"};
+ function art(r){var F=(window.FILMS||{})[r.n],S=(window.STILLS||{})[r.n]||r.still,pos=r.stillx!=null?' style="object-position:'+r.stillx+'% 50%"':"";
+  if(F&&F.p)return '<img src="media/'+esc(F.p)+'.jpg" alt="" loading="lazy" decoding="async"'+pos+'>';
+  if(S)return '<img src="media/'+esc(S)+'.jpg" alt="" loading="lazy" decoding="async"'+pos+'>';
+  var L=(window.CO_LOGOS||{})[r.ticker];return L?'<img class="x2p-bi-lg" src="media/'+esc(L.f)+'" alt="" loading="lazy" decoding="async">':""}
+ function mark(m){var M=(window.MODELS||{})[m];if(!M)return "";return '<i class="x2p-bi-f" style="--mc:'+esc(M.c)+'" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="'+esc(M.d)+'"/></svg></i>'}
+ function tile(r){var up=r.a>0,W=r.win?String(r.win).split(" & "):[];
+  var who=W.length?W.map(function(m){return NM[m]||m}).join(" and ")+(W.length>1?" tie":" wins"):"nobody got the direction";
+  return '<a class="x2p-bi" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(r.co)+', '+(up?"up ":"down ")+pct(r.a)+', '+esc(who)+'">'+
+   '<span class="x2p-bi-art">'+art(r)+'</span><span class="x2p-bi-no">#'+r.n+'</span>'+
+   '<span class="x2p-bi-mv '+(up?"x2p-bi-up":"x2p-bi-dn")+'">'+(up?"+":"−")+pct(r.a)+'</span>'+
+   '<span class="x2p-bi-w">'+(W.length?W.map(mark).join(""):'<i class="x2p-bi-x">×</i>')+'</span></a>'}
+ var built=false;
+ function build(){if(built)return true;var rec=d.getElementById("record"),ctl=rec&&rec.querySelector(":scope>.car-ctl");
+  if(!rec||!ctl||typeof ROUNDS==="undefined"||!window.MODELS)return false;
+  var R=ROUNDS.filter(function(r){return r&&r.a!=null&&!isNaN(r.a)}).slice().sort(function(a,b){return b.n-a.n});if(!R.length)return false;
+  var box=d.createElement("div");box.className="x2p-bis-w";box.setAttribute("data-all","0");
+  box.innerHTML='<h3 class="x2p-bi-hd">Every round at a glance</h3><p class="x2p-bi-sub">Who won, and how far the stock moved. Tap one to open its card.</p>'+
+   '<div class="x2p-bis">'+R.map(tile).join("")+'</div><button type="button" class="x2p-bi-more" aria-expanded="false"></button>'+
+   '<p class="x2p-bi-key">Corner = the winner (closest call that got the direction). × = nobody did.</p>';
+  ctl.parentNode.insertBefore(box,ctl.nextSibling);built=true;
+  var btn=box.querySelector(".x2p-bi-more"),n=R.length;
+  function label(){var all=box.getAttribute("data-all")==="1",wall=H.classList.contains("x2p-wall")&&!H.classList.contains("x2p-wallall");
+   btn.textContent=all?"Show fewer":"Show all "+(wall?n-8+" earlier":n)+" rounds";btn.setAttribute("aria-expanded",all?"true":"false")}
+  label();btn.addEventListener("click",function(){var all=box.getAttribute("data-all")==="1";box.setAttribute("data-all",all?"0":"1");label();
+   if(all){var t=box.getBoundingClientRect().top;if(t<0)box.scrollIntoView({block:"start"})}});
+  new MutationObserver(label).observe(H,{attributes:true,attributeFilter:["class"]});
+  return true}
+ (function tick(k){if(build()||k>80)return;setTimeout(function(){tick(k+1)},250)})(0)}catch(e){window.__x2pBiErr=e}})();
