@@ -25,5 +25,5 @@ board([[('po-0','Overview 1 · Attract mode, the film'),('po-1','Overview 2 · N
       'EZ Live X4+ · the arcade · phone 390x844',"Every number from ez-data.js and the page's P&L accounts (Thu 29 Oct, after the R64 sync). Header: health bars of the top two banks and the time to the next bell.",
       EZ+'/x2p-x4p-arcade-phone.png',.5,5)
 board([[('do-0','Overview · first screen'),('do-1','Overview · character select')],[('do-2','Overview · replays (the wall)'),('do-3','Overview · smart or lucky, boss fight')],
-       [('dl-0','Leaderboard · high scores, lead changes'),('dl-1','Leaderboard · fighter stats, sectors')],[('du-0','Upcoming · the card'),('do-3','')]][:4],
+       [('dl-0','Leaderboard · high scores, lead changes'),('dl-1','Leaderboard · fighter stats, sectors')],[('du-0','Upcoming · the card')]],
       'EZ Live X4+ · the arcade · desktop 1536x864','Overview, Leaderboard and Upcoming on a laptop screen. The bottom crawl is X2+\'s own.',EZ+'/x2p-x4p-arcade-desktop.png',.5,2)
