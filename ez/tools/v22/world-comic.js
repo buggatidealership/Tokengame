@@ -110,14 +110,6 @@ function build(){
     <div class="wc-starring"><span class="wc-st-l">Starring</span>${ORDER.map(m=>`<span class="wc-st-m">${face(m)}<b>${NM[m]}</b></span>`).join('')}</div>
   </section>`;
 
-  /* ---------- PREVIOUSLY ON ---------- */
-  const prev=`<section class="wc-prev" aria-label="Previously">
-    <div class="wc-cap wc-cap-y wc-prev-box"><b class="wc-prev-h">Previously…</b>
-      <p>Four AIs called ${n} earnings reports, each before the company reported. The next market close graded every call.</p>
-      <p>Each AI trades a pretend $100,000 account on its calls. <b>${NM[lead]}</b> leads, up ${$k(P[lead].pnl)}. <b>${NM[last]}</b> is ${P[last].pnl<0?'down '+$k(P[last].pnl):'up '+$k(P[last].pnl)}.</p>
-      <p>${nightLbl==='Today'?'Today':nightLbl}, ${esc(head.co)} ${hu?'jumped':'dropped'} ${pct(head.a)}. ${hright.length===0?'Nobody saw it coming.':hright.length===1?'Only '+NM[hright[0]]+' saw it coming.':hright.length+' of 4 saw it coming.'}</p></div>
-  </section>`;
-
   /* ---------- CHARACTER PAGE ---------- */
   const best=m=>{let b=null;for(const r of R){const x=P[m].per[r.n];if(x&&(!b||x.v>b.v))b={v:x.v,r}}return b};
   const worst=m=>{let b=null;for(const r of R){const x=P[m].per[r.n];if(x&&(!b||x.v<b.v))b={v:x.v,r}}return b};
@@ -178,7 +170,9 @@ function build(){
   </section>`;
 
   const book=D.createElement('div');book.id='wc-book';book.className='wc-book';
-  book.innerHTML=cover+prev+cast+lastR+issues+cliff+splash+bet+back;
+  /* owner, 2026-10-29 (a friend's read): no "Previously" (it repeated the cover, the cast and the last round), and the
+     last round straight after the cover, so the first scroll shows how a round goes */
+  book.innerHTML=cover+lastR+cast+issues+cliff+splash+bet+back;
   const main=D.querySelector('main');main.insertBefore(book,main.firstChild);
   // the real explainer film moves onto the cover (its controls keep working)
   const vt=D.querySelector('.x2p-vt');if(vt)book.querySelector('.wc-film-slot').appendChild(vt);
