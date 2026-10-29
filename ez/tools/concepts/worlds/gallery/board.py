@@ -28,7 +28,7 @@ def board(rows, scale, out, title, sub):
 
 board([[('we-390-s0.png', '1 · Entrance wall'), ('we-390-s1.png', '2 · Orientation film, floor plan'), ('we-390-s2.png', '3 · Door to Room 1, the artists'),
         ('we-390-s3.png', '4 · Room 1 (cont.)'), ('we-390-s4.png', '5 · Room 2, the collection')],
-       [('we-390-we-r3.png', 'Further in · Room 3, smart or lucky (coins tossed)'), ('we-390-we-r4.png', 'Room 4 · next exhibition'), ('we-390-we-r5.png', 'Exit · gift shop')]],
+       [('we-390-we-r3.png', 'Further in · Room 3 (coins tossed)'), ('we-390-we-r4.png', 'Room 4 · next show'), ('we-390-we-r5.png', 'Exit · gift shop')]],
       0.5, os.path.join(EZ, 'x2p-world-gallery-phone.png'), 'World: the exhibition (phone, 390x844)',
       'Top row: the first five screens of the scroll. Bottom row: the rooms further in. Every number from ez-data.js; the films and graded cases are the page\'s own.')
 board([[('we-1536-s0.png', '1 · Entrance wall: title, statement, floor plan, orientation film')],
