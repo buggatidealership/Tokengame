@@ -535,10 +535,17 @@ px=px.replace('</head>','<style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-v
 # (owner, 2026-10-27) the certificate's Kanit (the logo's lettering), X2+ only
 px=px.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&family=Alfa+Slab+One&display=swap" rel="stylesheet">\n</head>',1)
 open("v46-live-x2plus.html",'w').write(px); print("ok v46-live-x2plus.html",len(px))
-# EZ Live X3+ (owner, 2026-10-28: "essentially the exact same as we have everything now... without the fine grain but just the
-# plain one"): X2+ byte for byte but for the title and one flag, the certificate's cream flat on every ticket (x2plus.js reads it).
-# The letterpress straps (skin-x3plus.css), its certificate C, the lighter ink and the ticket rip mockup are history (git).
-x3=px.replace('</head>','<script>window.__x2pCream="flat"</script>\n</head>',1)
-assert x3.count('<title>EZ Live X2+</title>')==1
-x3=x3.replace('<title>EZ Live X2+</title>','<title>EZ Live X3+</title>')
-open("v47-live-x3plus.html",'w').write(x3); print("ok v47-live-x3plus.html",len(x3))
+# The world pages (owner, 2026-10-29: "erase Easy Live X3 Plus and build the entire [comic book] one on [it]... create the arcade
+# one on a new page called Easy Live X4 Plus"): X2+'s build with a world drawn over it (tools/v22/world-<name>.css/.js, from the
+# overnight mockups in tools/concepts/worlds/), a Leaderboard tab (window.__x2pLB) and the cover waiting for the world
+# (window.__x2pNeedWorld; the world adds html.x2p-world when it is drawn). The X3+ of 2026-10-28 (X2+ on flat cream) is history (git).
+def world(name,title,out):
+    css=open("tools/v22/world-%s.css"%name).read();js=open("tools/v22/world-%s.js"%name).read()
+    w=px.replace('</head>','<script>window.__x2pLB=1;window.__x2pNeedWorld=1;window.__x2pWorldName="%s"</script>\n<style id="x2p-world-css">%s</style>\n</head>'%(name,css),1)
+    assert w.count('<title>EZ Live X2+</title>')==1
+    w=w.replace('<title>EZ Live X2+</title>','<title>%s</title>'%title)
+    assert w.count('</body>')==1
+    w=w.replace('</body>','<script id="x2p-world-js">document.addEventListener("DOMContentLoaded",function(){try{%s\n}catch(e){window.__x2pWorldErr=e;document.documentElement.classList.add("x2p-world");console.error(e)}})</script>\n</body>'%js.replace('</script','<\\/script'),1)
+    open(out,'w').write(w); print("ok",out,len(w))
+world("comic","EZ Live X3+","v47-live-x3plus.html")
+world("arcade","EZ Live X4+","v48-live-x4plus.html")
