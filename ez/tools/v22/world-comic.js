@@ -116,13 +116,29 @@ function build(){
   const worst=m=>{let b=null;for(const r of R){const x=P[m].per[r.n];if(x&&(!b||x.v<b.v))b={v:x.v,r}}return b};
   const first=m=>R.find(r=>r.calls.some(c=>c[0]===m)).n;
   const roles=['We bet on its call','In the hunt','In the hunt','Last place'];
+  /* F1 (owner, 2026-10-29): each model's card is a Season 1 ticket with a waving cartoon flag behind it (US for GPT,
+     Claude and Grok; China for Kimi), its words on a yellow caption box; #1's face carries the holo. Flags drawn here as SVG. */
+  const enc=x=>"url('data:image/svg+xml,"+encodeURIComponent(x)+"')",FP=160,FA=6;
+  const fStripes=(cols,n,Hh)=>{const h=Hh/n;let x=`<svg xmlns="http://www.w3.org/2000/svg" width="${FP}" height="${Hh}" viewBox="0 ${-FA} ${FP} ${Hh+2*FA}" preserveAspectRatio="none">`;
+    const wy=(px,k)=>k*h+FA*Math.sin(2*Math.PI*px/FP);
+    for(let k=-1;k<=n;k++){let d='';for(let px=0;px<=FP;px+=4)d+=(px?'L':'M')+px+' '+wy(px,k).toFixed(2);for(let px=FP;px>=0;px-=4)d+='L'+px+' '+wy(px,k+1).toFixed(2);
+      x+=`<path d="${d}Z" fill="${cols[(k+n*2)%cols.length]}" stroke="#15121a" stroke-width="1.4" vector-effect="non-scaling-stroke"/>`}
+    return enc(x+'</svg>')};
+  const fStar=(cx,cy,r,f)=>{const q=[];for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.42:r;q.push((cx+rr*Math.cos(a)).toFixed(2)+','+(cy+rr*Math.sin(a)).toFixed(2))}return `<polygon points="${q.join(' ')}" fill="${f}" stroke="#15121a" stroke-width="1.2" stroke-linejoin="round"/>`};
+  const fCanton=()=>{let x=`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="140" viewBox="0 0 200 140"><rect width="200" height="140" fill="#2c4fa8" stroke="#15121a" stroke-width="3"/>`;
+    for(let r=0;r<5;r++)for(let c=0;c<6;c++){const px=18+c*33+(r%2?16:0),py=16+r*27;if(px<192)x+=fStar(px,py,8,'#f8f0d9')}return enc(x+'</svg>')};
+  const fCn=()=>enc(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="140" viewBox="0 0 200 140">${fStar(50,50,30,'#fdbc2a')}${fStar(100,18,10,'#fdbc2a')}${fStar(120,40,10,'#fdbc2a')}${fStar(120,70,10,'#fdbc2a')}${fStar(100,92,10,'#fdbc2a')}</svg>`);
+  const flagVars=`--fl-us:${fStripes(['#d63a3a','#f8f0d9'],13,260)};--fl-cn:${fStripes(['#d63a3a'],13,260)};--fl-usc:${fCanton()};--fl-cnc:${fCn()}`;
+  const FLAG={GPT:'us',CLAUDE:'us',GROK:'us',KIMI:'cn'};
   const cast=`<section class="wc-chars" aria-label="The cast">
     <h2 class="wc-h2"><span>Meet the models</span><small>Not the Instagram kind. Ranked by their pretend $100,000 accounts.</small></h2>
-    <div class="wc-ch-grid">${rank.map((m,i)=>{const a=P[m],b=best(m),w=worst(m),tot=a.W+a.L,hr=Math.round(a.W/tot*100),f=first(m);
-      return `<article class="wc-ch wc-ch-${i+1}" style="--mc:${MODELS[m].c}">
-        <div class="wc-ch-pic">${face(m,'wc-f-xl')}<span class="wc-ch-rk">#${i+1}</span></div>
+    <div class="wc-ch-grid" style="${flagVars}">${rank.map((m,i)=>{const a=P[m],b=best(m),w=worst(m),tot=a.W+a.L,hr=Math.round(a.W/tot*100),f=first(m),fl=FLAG[m]||'us';
+      return `<article class="wc-ch wc-ch-${i+1}" style="--mc:${MODELS[m].c}" data-m="${m}">
+        <div class="wc-flg wc-flg-${fl}" aria-hidden="true"><i class="wc-flg-st"></i><i class="wc-flg-ca"></i><i class="wc-flg-fd"></i><i class="wc-flg-dt"></i></div>
+        <div class="wc-tks" aria-hidden="true"><b>#${i+1}</b><i>${i===0?'Golden ticket':'Season 1'}</i></div><i class="wc-tkn wc-tkn-t" aria-hidden="true"></i><i class="wc-tkn wc-tkn-b" aria-hidden="true"></i>
+        <div class="wc-ch-pic">${face(m,'wc-f-xl')}<span class="wc-ch-rk">#${i+1}</span>${i===0?'<span class="wc-spk wc-spk1" aria-hidden="true">✦</span><span class="wc-spk wc-spk2" aria-hidden="true">✦</span><span class="wc-spk wc-spk3" aria-hidden="true">✧</span>':''}</div>
         <div class="wc-ch-tx"><div class="wc-ch-hd"><h3>${NM[m]}<small>${esc(MODELS[m].ver)}</small></h3><p class="wc-ch-role">${roles[i]}</p></div>
-          <p class="wc-ch-big ${a.pnl>=0?'wc-tu':'wc-td'}"><small class="wc-ch-lab">Current P&amp;L</small>${pm(a.pnl)}</p>
+          <p class="wc-ch-big ${a.pnl>=0?'wc-tu':'wc-td'}"><small class="wc-ch-lab">Current P&amp;L</small><span class="wc-cnt" data-v="${Math.round(Math.abs(a.pnl))}" data-s="${a.pnl<0?'−':'+'}">${pm(a.pnl)}</span></p>
           <p class="wc-ch-l">Right way on <b>${a.W} of ${tot}</b> calls.</p>
           <p class="wc-ch-l">Highest P&amp;L: <b class="${b.v>=0?'wc-tu':'wc-td'}">${pm(b.v)}</b> on ${esc(b.r.co)}.</p>
           <p class="wc-form" aria-label="Last five calls">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}<small>last 5 calls</small></p>
@@ -184,6 +200,10 @@ function build(){
   H.classList.add('wc-on');
   wire(book)}
 
+/* the money on a cast card rolls up once, the first time the card comes into view (not with reduced motion) */
+function rollCnt(c){const n=c.querySelector&&c.querySelector('.wc-cnt');if(!n||window.__kfShot||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const v=+n.dataset.v,s=n.dataset.s,fin=n.textContent,t0=performance.now(),d=900;
+  (function f(t){const k=Math.min(1,(t-t0)/d),e2=1-Math.pow(1-k,3);n.textContent=k<1?s+'$'+Math.round(v*e2).toLocaleString('en-US'):fin;if(k<1)requestAnimationFrame(f)})(t0)}
 function wire(book){
   book.querySelector('.wc-more').addEventListener('click',e=>{const g=book.querySelector('.wc-bis');const all=g.dataset.all==='1';g.dataset.all=all?'0':'1';e.target.textContent=all?e.target.textContent.replace('Show fewer','Show all'):'Show fewer back issues'});
   // the big panel's film rolls muted while on screen; a tap plays it with sound
@@ -191,7 +211,7 @@ function wire(book){
   book.querySelectorAll('.wc-lr-2').forEach(pn=>{const v=pn.querySelector('video'),b=pn.querySelector('.wc-snd');if(!v)return;
     b.addEventListener('click',()=>{if(v.muted||v.paused){v.muted=false;v.currentTime=0;v.play();b.textContent='❚❚ Pause'}else{v.pause();b.textContent='▶ Sound'}});
     v.addEventListener('click',()=>{D.location.hash='#/round/'+pn.closest('.wc-lr-pg').dataset.n})});
-  const io=new IntersectionObserver(es=>es.forEach(e=>{const t=e.target;if(e.isIntersecting)t.classList.add('wc-in');
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const t=e.target;if(e.isIntersecting&&!t.classList.contains('wc-in')){t.classList.add('wc-in');rollCnt(t)}
     const v=t.querySelector&&t.querySelector('video.wc-v');if(v&&!matchMedia('(prefers-reduced-motion: reduce)').matches){if(e.isIntersecting&&e.intersectionRatio>.35){v.play().catch(()=>{})}else if(!e.isIntersecting)v.pause()}}),{threshold:[0,.4]});
   book.querySelectorAll('.wc-pn,.wc-ch,.wc-splash,.wc-prev,.wc-tnp,.wc-cn').forEach(x=>io.observe(x));
   let ly=scrollY;addEventListener('scroll',()=>{const y=scrollY;H.classList.toggle('wc-hhide',y>ly&&y>200);ly=y},{passive:true});
