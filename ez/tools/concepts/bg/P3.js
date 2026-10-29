@@ -4,7 +4,7 @@
    the fixtures (every round still to be called, by day) come before the main event. Agate everywhere. */
 window.__npCfg={cls:'np-p3',edition:'Sports final',flag:'<b>Sport</b><span>Four AIs. One belt. Every earnings report.</span>',cardTitle:"Tonight's card",ixTitle:'In this section',
  fonts:'https://fonts.googleapis.com/css2?family=Pirata+One&family=Oswald:wght@500;700&family=Roboto+Condensed:ital,wght@0,400;0,700;1,400&display=swap',
- byline:'By the closing bell',pg:function(p){return 'B'+p},tapeBefore:'learn',
+ byline:'By the closing bell',jump:{standings:'Form guide below · Box scores, B2',record:'Box scores below: every round'},pg:function(p){return 'B'+p},tapeBefore:'learn',
  bannerKick:function(D){return 'Fight night · Season 1 · Week '+D.wk},
  tapeWords:function(D){return {kick:'Box scores',h:D.N+' rounds, every call',dk:'The move, each AI\'s call as filed in %, the winner. '+D.pend.length+' more with calls in, graded at the close.'}},
  index:[['The table','standings',1],['Form guide','standings',1],['The cards','record',2],['Box scores','np-tape',2],['The proof','learn',3],['Plays of the week','highlights',3],['Fixtures','np-fix',4],['Main event','x2pSt',4],['Tickets','get',4]],

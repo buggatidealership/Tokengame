@@ -84,7 +84,7 @@ function tape(D,T){var s=d.createElement('section');s.className='sec np-tape';s.
  s.innerHTML='<div class="sh"><div class="np-kick"><span class="np-no">'+T.tape.kick+'</span><span class="np-pg">'+(C.pg?C.pg(4):'Page 4')+'</span></div><div class="np-hd"><h3>'+T.tape.h+'</h3><p class="np-dk">'+T.tape.dk+'</p></div></div><div class="np-ag" style="--k:'+k+'">'+cols+'</div>';
  return s}
 function caption(el,txt,credit){if(!el||el.nextElementSibling&&el.nextElementSibling.classList.contains('np-cap'))return;var c=d.createElement('p');c.className='np-cap';c.innerHTML='<span>'+esc(txt)+'</span>'+(credit?'<em>'+credit+'</em>':'');el.after(c)}
-function story(id,t,pg,front){var s=d.getElementById(id);if(!s||s.querySelector('.np-kick'))return;var sh=s.querySelector(':scope>.sh');if(!sh)return;
+function story(id,t,pg,front){var s=d.getElementById(id);if(!s||s.querySelector('.np-kick'))return;if(C.jump&&C.jump[id]!==undefined)t.jump=C.jump[id];var sh=s.querySelector(':scope>.sh');if(!sh)return;
  s.classList.add('np-story');var no=sh.querySelector('.no'),k=d.createElement('div');k.className='np-kick';
  k.innerHTML='<span class="np-no">'+(no?no.textContent+' · ':'')+(front||t.kick)+'</span><span class="np-pg">'+(C.pg?C.pg(pg):'Page '+pg)+'</span>';sh.prepend(k);
  var h=d.createElement('div');h.className='np-hd';h.innerHTML='<h3>'+esc(t.h)+'</h3><p class="np-dk">'+esc(t.dk)+'</p>'+
