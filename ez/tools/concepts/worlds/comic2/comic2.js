@@ -8,6 +8,14 @@
 (function(){
 'use strict';
 const D=document,H=D.documentElement;
+/* mockup switches (owner's three questions, 2026-10-29): window.__c2Cast / __c2Tix / __c2Rules, or ?cast= &tix= &rules= in the address.
+   cast: 'cards' (today's character cards) | 'cols' (one row per AI in the standings' columns)
+   tix:  'inked' (the live tickets with an ink outline, as built) | 'flat' (redrawn as flat comic panels)
+   rules:'box' (the yellow caption boxes, as built) | 'none' (gone, the cover says it) | 'line' (one caption line each) */
+const Q=new URLSearchParams(location.search);
+const pick=(w,k,ok,d)=>{const v=window[w]||Q.get(k);return ok.includes(v)?v:d};
+const V={cast:pick('__c2Cast','cast',['cards','cols'],'cards'),tix:pick('__c2Tix','tix',['inked','flat'],'inked'),rules:pick('__c2Rules','rules',['box','none','line'],'box')};
+window.__c2V=V;H.classList.add('c2-cast-'+V.cast,'c2-tix-'+V.tix,'c2-rules-'+V.rules);
 const fl=D.createElement('link');fl.rel='stylesheet';
 fl.href='https://fonts.googleapis.com/css2?family=Bangers&family=Shantell+Sans:ital,wght@0,400;0,600;0,800;1,600&display=swap';
 D.head.appendChild(fl);
@@ -84,6 +92,12 @@ function backIssue(r){
     <span class="wc-bi-no">#${r.n}</span><span class="wc-bi-mv ${up?'wc-up':'wc-dn'}">${up?'+':'−'}${pct(r.a)}</span>
     <span class="wc-bi-w">${W.length?W.map(m=>face(m,'wc-f-s')).join(''):'<i class="wc-nob">×</i>'}</span></a>`}
 
+/* a small flag, as the live board's (US / China) */
+function cflag(cc){const RED='#d0262f',NAVY='#253f8a',YEL='#ffd23a';let v=`<svg class="c2-fl" viewBox="0 0 16 10" preserveAspectRatio="none" role="img" aria-label="${cc==='CN'?'China':'United States'}">`;
+  const star=(cx,cy,r)=>{let p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,q=i%2?r*.4:r;p.push((cx+q*Math.cos(a)).toFixed(2)+','+(cy+q*Math.sin(a)).toFixed(2))}return p.join(' ')};
+  if(cc==='US'){v+='<rect width="16" height="10" fill="#fff"/>';for(let i=0;i<7;i+=2)v+=`<rect y="${(i*10/7).toFixed(3)}" width="16" height="${(10/7).toFixed(3)}" fill="${RED}"/>`;v+=`<rect width="6.6" height="${(40/7).toFixed(3)}" fill="${NAVY}"/>`}
+  else{v+=`<rect width="16" height="10" fill="${RED}"/><polygon points="${star(3.2,3,2.15)}" fill="${YEL}"/>`;[[6.2,1.1],[7.2,2.2],[7.2,3.7],[6.2,4.8]].forEach(q=>{v+=`<polygon points="${star(q[0],q[1],.72)}" fill="${YEL}"/>`})}
+  return v+'</svg>'}
 function rankPnl(P,N){return ORDER.slice().sort((a,b)=>{const qa=P[a].W+P[a].L>=N/2,qb=P[b].W+P[b].L>=N/2;return qa!==qb?(qa?-1:1):P[b].pnl-P[a].pnl})}
 function build(){
   const P=window.__x2pPnl().A, R=ROUNDS.slice(), n=R.length;
@@ -138,6 +152,23 @@ function build(){
         </div></article>`}).join('')}</div>
   </section>`;
 
+  /* the cast in the standings' columns (cast=cols): one row per AI, rank, model with its mark and flag, W-L, hit rate, P&L biggest */
+  const N=n,half=m=>P[m].W+P[m].L>=N/2;
+  const castCols=`<section class="wc-chars c2-cc" aria-label="The cast">
+    <h2 class="wc-h2"><span>Meet the cast</span><small>Ranked by their pretend $100,000 accounts</small></h2>
+    <div class="c2-ct" role="table" aria-label="The cast, ranked by P&amp;L">
+      <div class="c2-ct-h" role="row"><span role="columnheader" class="c2-ct-rk"><span class="wc-sr">Rank</span>#</span><span role="columnheader" class="c2-ct-ai">Model</span><span role="columnheader">W-L</span><span role="columnheader">Hit rate</span><span role="columnheader" class="c2-ct-plh">P&amp;L</span></div>
+      ${rank.map((m,i)=>{const a=P[m],tot=a.W+a.L,hr=Math.round(a.W/tot*100);
+        return `<div class="c2-ct-r c2-ct-${i+1}${half(m)?'':' c2-ct-q'}" role="row" style="--mc:${MODELS[m].c}">
+        <span role="cell" class="c2-ct-rk">${i+1}</span>
+        <span role="cell" class="c2-ct-ai">${face(m,'c2-ct-f')}<span class="c2-ct-nm"><b>${NM[m]}</b><small>${esc(String(MODELS[m].ver||'').replace(/^GPT-/,''))} ${cflag(m==='KIMI'?'CN':'US')}</small>${i===0?'<em class="c2-ct-tag">Makes the buyback call</em>':''}</span></span>
+        <span role="cell" class="c2-ct-wl"><b class="c2-w">${a.W}</b>-<b class="c2-l">${a.L}</b></span>
+        <span role="cell" class="c2-ct-hr">${hr}%</span>
+        <span role="cell" class="c2-ct-pl ${a.pnl>=0?'wc-tu':'wc-td'}">${pm(a.pnl)}</span></div>`}).join('')}
+    </div>
+    <p class="c2-ct-ft">W = right way on the call. P&amp;L: $100,000 to start, the whole balance on every call. Simulated, before fees.</p>
+  </section>`;
+
   /* ---------- THE SEASON SO FAR ---------- */
   const rest=R.filter(r=>!night.includes(r)).sort((a,b)=>b.n-a.n);
   const season=`<section class="wc-season" aria-label="The season so far">
@@ -189,7 +220,7 @@ function build(){
   </section>`;
 
   const book=D.createElement('div');book.id='wc-book';book.className='wc-book';
-  book.innerHTML=cover+prev+cast+season+cliff;
+  book.innerHTML=cover+prev+(V.cast==='cols'?castCols:cast)+season+cliff;
   const main=D.querySelector('main');main.insertBefore(book,main.firstChild);
   /* the live page's bet section (05: the NVIDIA ticket with its running countdown, joined to the Season 2 ticket) stays where it is
      and shows between the book and its tail, in comic dress (CSS order on main#top); the tail is Get $EZ and the back cover */
@@ -341,16 +372,39 @@ function upBuild(){
 
 function lbCover(){const N=ROUNDS.length,el=D.createElement('div');el.id='c2-lbcv';el.className='wc-book c2-lbcv';
   el.innerHTML=`<section class="wc-tab-cv" aria-label="Who's winning"><div class="wc-cv-top"><span class="wc-iss"><small>Issue</small>#${N}</span><span class="wc-cv-s">The standings<small>${N} earnings reports graded</small></span></div>
-    <h1 class="wc-tab-h">Who's winning?</h1><p class="wc-tag">Four AIs, a pretend <b>$100,000</b> each, the whole balance on every call. The money says who's best.</p></section>`;
+    <h1 class="wc-tab-h">Who's winning?</h1>${V.rules==='none'?`<p class="wc-tag">Four AIs trade every earnings report with a pretend <b>$100,000</b> each, the whole balance on every call, graded at the close. <b>Top P&amp;L makes the buyback call.</b></p><p class="wc-tag c2-tag2">${N} rounds graded so far. Don't trust them: check the trend below.</p>`:`<p class="wc-tag">Four AIs, a pretend <b>$100,000</b> each, the whole balance on every call. The money says who's best.</p>`}</section>`;
   return el}
 function tabs(){const v=D.getElementById('view');const up=upBuild();(v||D.querySelector('main')).after(up);
   const main=D.querySelector('main#top');main.insertBefore(lbCover(),main.firstChild);
   ['standings','learn'].forEach(id=>{const s=D.getElementById(id);if(s)s.classList.add('c2-lb')});
+  /* rules=line: one short caption each (the strap's own last rule; the stats' first, shortened) */
+  if(V.rules==='line'){const one=(sel,t)=>{const ul=D.querySelector(sel+' .x2p-strap ul');if(ul)ul.innerHTML='<li>'+t+'</li>'};one('#standings','Top P&amp;L makes the buyback call.');one('#learn',"Don't trust them. Check the trend.")}
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('wc-in');io.unobserve(e.target)}}),{threshold:.15});
   [up].forEach(x=>x.querySelectorAll('.wc-pn,.wc-sb-r').forEach(y=>io.observe(y)));
   /* a halftone screen printed into every ticket's paper (inside the die-cut layer, so the dots stop at the cut) */
   const dots=()=>D.querySelectorAll('#standings .bt-pp,#learn .bt-pp,#x2pSt .bt-pp,#x2pSt .x2p-bt').forEach(p=>{if(!p.querySelector(':scope > .c2-dots')){const d=D.createElement('i');d.className='c2-dots';d.setAttribute('aria-hidden','true');p.appendChild(d)}});
-  dots();let q=0;new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;dots()})}).observe(D.querySelector('main#top'),{childList:true,subtree:true})}
+  /* tix=flat: a flat comic panel laid over each ticket's paper, inside the die cut (bands in flat green and red with an ink rule,
+     plain stock between); the band heights are read from the band lettering strips the page draws (.bt-hd / .bt-ft) */
+  const flat=()=>{if(V.tix!=='flat')return;D.querySelectorAll('#standings .bt-pp,#learn .bt-pp,#x2pSt .bt-pp').forEach(pp=>{
+    let f=pp.querySelector(':scope > .c2-flat');if(!f){f=D.createElement('i');f.className='c2-flat';f.setAttribute('aria-hidden','true');pp.insertBefore(f,pp.firstChild)}
+    const bp=pp.parentElement,hd=bp.querySelector(':scope > .bt-hd'),ft=bp.querySelector(':scope > .bt-ft');
+    const ht=hd?Math.round(hd.getBoundingClientRect().height*10)/10:0,hb=ft?Math.round(ft.getBoundingClientRect().height*10)/10:0;
+    if(f.dataset.k!==ht+'/'+hb){f.dataset.k=ht+'/'+hb;f.style.setProperty('--ht',ht+'px');f.style.setProperty('--hb',hb+'px');f.style.setProperty('--lt',ht?'3px':'0px');f.style.setProperty('--lb',hb?'3px':'0px')}})};
+  /* the proof card's paper is its own SVG silhouette (folder tabs + strip): flatten its fills in place, add the dot screen inside its mask */
+  const flatProof=()=>{if(V.tix!=='flat')return;D.querySelectorAll('#learn .pr2-sil svg').forEach(sv=>{if(sv.dataset.c2f)return;sv.dataset.c2f=1;
+    const NS='http://www.w3.org/2000/svg',defs=sv.querySelector('defs');
+    if(defs&&!sv.querySelector('#c2BD')){const pt=D.createElementNS(NS,'pattern');pt.id='c2BD';pt.setAttribute('patternUnits','userSpaceOnUse');pt.setAttribute('width','8');pt.setAttribute('height','8');
+      pt.innerHTML='<circle cx="4" cy="4" r="1.5" fill="rgba(232,51,43,.16)"/>';defs.appendChild(pt)}
+    sv.querySelectorAll(':scope > g[filter]').forEach(g=>g.style.display='none');
+    sv.querySelectorAll('[fill]').forEach(e=>{const f=e.getAttribute('fill');
+      if(f==='#f8f0d9')e.setAttribute('fill','#fff8e6');
+      else if(/^url\(#pr2\w+g\)$/.test(f)){e.setAttribute('fill','url(#c2BD)')}
+      else if(/^url\(#pr2\w+gr\)$/.test(f))e.setAttribute('fill','#12a85a');
+      else if(/^url\(#pr2\w+r\)$/.test(f))e.setAttribute('fill','#e8332b');
+      else if(f==='rgba(0,0,0,.22)'&&e.tagName==='rect'){const h=+e.getAttribute('height');if(h<2){e.setAttribute('fill','#15121a');e.setAttribute('height','2.5');const y=+e.getAttribute('y');if(y>100)e.setAttribute('y',String(y-1.3))}}})})};
+  const all=()=>{dots();flat();flatProof()};
+  all();let q=0;new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;all()})}).observe(D.querySelector('main#top'),{childList:true,subtree:true});
+  addEventListener('resize',()=>requestAnimationFrame(flat));if(D.fonts)D.fonts.ready.then(flat)}
 const done=()=>H.classList.add('x2p-world');
 /* a round opened from a panel, a back issue or a ticket: when its card closes, the page goes back to where it was
    (the router scrolls the page while the card is open, and the address passes through '' on the way) */
