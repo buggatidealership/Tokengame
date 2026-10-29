@@ -14,7 +14,7 @@ const SECS=[['tn','.wc-cliff'],['bi','.wc-season'],['ch','.wc-chars'],['cn','.wc
    await p.evaluate(s=>{window.__take=s},t);await p.addScriptTag({content:fs.readFileSync(__dirname+'/mk.js','utf8')})}
   await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(1200);
   for(const [k,s] of SECS){const e=await p.$(s);if(!e)continue;await e.scrollIntoViewIfNeeded();await p.waitForTimeout(500);
-   await p.evaluate(()=>{document.querySelector('header.top')&&(document.querySelector('header.top').style.visibility='hidden');document.querySelectorAll('.x2p-crawl,[class*=crawl]').forEach(x=>x.style.visibility='hidden')});
+   await p.evaluate(()=>{document.querySelector('header.top')&&(document.querySelector('header.top').style.visibility='hidden');[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed'&&x.offsetHeight<120&&x.offsetHeight>0)x.style.visibility='hidden'})});
    if(W>=1000){await p.evaluate(s=>{const n=document.querySelector(s);scrollTo(0,n.getBoundingClientRect().top+scrollY-20)},s);await p.waitForTimeout(500);
      const bb=await e.boundingBox();await p.screenshot({path:`${OUT}/${W}-${k}-${t}.png`,clip:{x:Math.max(0,bb.x-12),y:Math.max(0,bb.y-8),width:Math.min(W,bb.width+24),height:Math.min(bb.height+16,(W<600?844:900)-Math.max(0,bb.y-8))}})}
    else{const bb=await e.evaluate(n=>{const r=n.getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,width:r.width,height:r.height}});await p.screenshot({path:`${OUT}/${W}-${k}-${t}.png`,clip:{x:Math.max(0,bb.x-12),y:bb.y-8,width:Math.min(W,bb.width+24),height:Math.min(bb.height+16,6000)},fullPage:true})}}
