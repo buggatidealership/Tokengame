@@ -539,8 +539,13 @@ open("v46-live-x2plus.html",'w').write(px); print("ok v46-live-x2plus.html",len(
 # one on a new page called Easy Live X4 Plus"): X2+'s build with a world drawn over it (tools/v22/world-<name>.css/.js, from the
 # overnight mockups in tools/concepts/worlds/), a Leaderboard tab (window.__x2pLB) and the cover waiting for the world
 # (window.__x2pNeedWorld; the world adds html.x2p-world when it is drawn). The X3+ of 2026-10-28 (X2+ on flat cream) is history (git).
-def world(name,title,out):
+def world(name,title,out,layer=None):
     css=open("tools/v22/world-%s.css"%name).read();js=open("tools/v22/world-%s.js"%name).read()
+    # an extra world layer drawn over the first (X5+: the comic in the header's dark colours); its css after the world's,
+    # its script after the world's in its own try, so the world itself is untouched by a failure in the layer
+    if layer:
+        css+='\n'+open("tools/v22/world-%s.css"%layer).read()
+        js+='\n}catch(e){window.__x2pWorldErr=e;document.documentElement.classList.add("x2p-world");console.error(e)}\ntry{'+open("tools/v22/world-%s.js"%layer).read()
     w=px.replace('</head>','<script>window.__x2pLB=1;window.__x2pNeedWorld=1;window.__x2pWorldName="%s"</script>\n<style id="x2p-world-css">%s</style>\n</head>'%(name,css),1)
     assert w.count('<title>EZ Live X2+</title>')==1
     w=w.replace('<title>EZ Live X2+</title>','<title>%s</title>'%title)
@@ -551,3 +556,4 @@ def world(name,title,out):
     open(out,'w').write(w); print("ok",out,len(w))
 world("comic","EZ Live X3+","v47-live-x3plus.html")
 world("arcade","EZ Live X4+","v48-live-x4plus.html")
+world("comic","EZ Live X5+","v49-live-x5plus.html","comicdark")
