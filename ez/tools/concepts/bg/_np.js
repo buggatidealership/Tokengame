@@ -3,8 +3,12 @@
    window.__npCfg first). It turns the Overview into one day's paper: a masthead with today's date, the edition and a weather-box style
    "today's card" (the rounds graded at the next close, the calls due today) and an index; every section a story with a kicker, its
    standing head (the site's own h2), a headline and deck written from the data, a byline and a jump line; captions under the tickets
-   and slabs as under photos; folio lines and column rules drawn round the stories; "The tape", an agate table of every round.
-   Every number comes from ROUNDS, PENDING, UPCOMING and window.__x2pPnl(); nothing is typed in. Mockup only. */
+   and slabs as under photos; folio lines and column rules drawn round the stories. Revised the same day (owner: "more data, more
+   numbers, but less explanation is the issue"; "reading a newspaper about how the last 5 nights went, or one of these guys
+   predicting"): plain-words headlines that say what each part is and why you'd care, few numbers, and a front-page story told in
+   sentences: C.front = 'nights' (the last five nights, one dispatch each), 'tonight' (tonight's reports and what each AI said, then
+   last night), or 'profile' (the leader's week). The agate tape is off unless C.tape. Every fact comes from ROUNDS, PENDING, UPCOMING
+   and window.__x2pPnl(); nothing is typed in. Mockup only. */
 (function(){var d=document,C=window.__npCfg||{};
 var NM={GPT:'GPT',KIMI:'Kimi',CLAUDE:'Claude',GROK:'Grok'},AB={GPT:'GPT',KIMI:'Kimi',CLAUDE:'Cla',GROK:'Grok'};
 var WD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],MO=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -38,39 +42,66 @@ function data(){var P=window.__x2pPnl(),M=['GROK','CLAUDE','GPT','KIMI'],D={P:P,
  D.up=(typeof UPCOMING!=='undefined'?UPCOMING:[]).filter(function(r){return pd(r.called)>D.today}).sort(function(a,b){return pd(a.called)-pd(b.called)||a.n-b.n});
  return D}
 /* the words of the day's paper, all from D */
-function words(D){var r0=D.rk[0],r1=D.rk[1],r3=D.rk[3],T={};var lw=WD[D.lastDay.getDay()];
- T.standings={kick:'The leaderboard',h:NM[r0]+' holds the belt',
-  dk:'Up '+usd(D.tot[r0])+' after '+D.N+' rounds, '+usd(D.tot[r0]-D.tot[r1],false)+' clear of '+NM[r1]+'. '+NM[r3]+' sits at '+usd(D.tot[r3])+'.',
-  jump:'Every result: The tape, page 4',cap:'The table after '+D.N+' rounds. A $100K paper account each, simulated, before fees.'};
- var c={};D.lastR.forEach(function(r){wins(r).forEach(function(m){c[m]=(c[m]||0)+1})});var best=Object.keys(c).sort(function(a,b){return c[b]-c[a]})[0];
- T.record={kick:'The record',h:best&&c[best]>1?NM[best]+' takes '+word(c[best])+' of '+word(D.lastR.length)+' on '+lw:cap(word(D.lastR.length))+' rounds graded '+lw,
-  dk:D.lastR.map(function(r){return r.co+' '+r.out+', '+wname(r)}).join('. ')+'.',jump:'Continued on page 4: every round in The tape',
-  cap:'The card for every round, stamped at the close. Newest: '+D.rs[0].co+', Round '+D.rs[0].n+'.'};
- var h0=D.hk[0];T.learn={kick:'The proof',h:NM[h0]+' calls it right '+D.hit[h0]+'% of the time',
-  dk:D.hk.slice(1).map(function(m){return NM[m]+' '+D.hit[m]+'%'}).join(', ')+'. A coin flip gets 50%.',cap:"Each line is one AI's paper account from $100,000."};
- var bm={};D.bulls.forEach(function(b){(bm[b.m]=bm[b.m]||[]).push(b.r.co)});
- T.highlights={kick:'Highlights',h:cap(word(D.bulls.length))+' bullseyes in '+D.N+' rounds',
-  dk:'Within 0.1% of the move: '+Object.keys(bm).map(function(m){return NM[m]+' on '+list(bm[m])}).join('; ')+'.',cap:'Bullseye: the right direction, within 0.1% of the move.'};
- var nv=D.nvda?pd(D.nvda.called):null;
- T.x2pSt={kick:'The bet',h:'NVIDIA is bet No. 1',dk:'When NVIDIA reports'+(nv?' ('+MO[nv.getMonth()].slice(0,3)+' '+nv.getDate()+')':'')+", the pool rides on the top AI's call. As it stands, "+NM[r0]+' makes it.',
-  cap:'Bet No. 1, NVIDIA, the countdown running, the Season 2 ticket attached.'};
- T.get={kick:'Notices',h:'The coin is not live yet',dk:'The address appears here, and only here, at launch.'};
- T.film={cap:'How it works: the explainer, running time 1:20.'};
- T.strip={cap:D.lastR.length+' rounds graded '+lw+'. '+D.nextR.length+' more at '+D.closeWord+'.'};
- T.tape=C.tapeWords?C.tapeWords(D):{kick:'The tape',h:'Every round of Season 1',dk:D.N+' graded, '+D.pend.length+' with calls in. Calls as filed, in %; the winning call in bold.'};
+function mv(a){var x=Math.abs(a);return a>0?(x>=8?'soared':x>=4?'jumped':x>=1.5?'rose':'edged up'):(x>=8?'sank':x>=4?'dropped':x>=1.5?'fell':'slipped')}
+function rightOf(r){return r.calls.filter(function(c){return c[1]&&/^UP/.test(c[1])===(r.a>0)}).map(function(c){return c[0]})}
+function callers(r){return r.calls.filter(function(c){return c[1]}).map(function(c){return c[0]})}
+function names(a){return list(a.map(function(m){return NM[m]}))}
+function frac(p){return p>=72?'three times in four':p>=62?'about two times in three':p>=55?'a bit more than half the time':p>=45?'about half the time':'less than half the time'}
+/* one round in a sentence a non-trader gets: what the stock did, who saw it, who was closest */
+function rline(r){var R=rightOf(r),A=callers(r),w=wins(r),s=r.co+' '+mv(r.a)+'. ';
+ if(!R.length)s+='Nobody saw it coming.';else if(R.length===A.length)s+='All '+word(A.length)+' called it.';else if(R.length===1)s+='Only '+NM[R[0]]+' saw it coming.';else s+=names(R)+' called it.';
+ if(w.length&&!(R.length===1&&w.length===1))s+=' '+names(w)+(w.length>1?' tied for closest.':' was closest.');return s}
+function nights(D,n){var ds=[];ROUNDS.forEach(function(r){var t=+pd(r.resolves);if(ds.indexOf(t)<0)ds.push(t)});ds.sort(function(a,b){return b-a});
+ return ds.slice(0,n).map(function(t){var rs=ROUNDS.filter(function(r){return +pd(r.resolves)===t}).sort(function(a,b){return Math.abs(b.a)-Math.abs(a.a)}),dt=new Date(t),c={};
+  rs.forEach(function(r){wins(r).forEach(function(m){c[m]=(c[m]||0)+1})});var top=Object.keys(c).sort(function(a,b){return c[b]-c[a]}),best=top.length&&(top.length<2||c[top[0]]>c[top[1]])?top[0]:null;
+  var tie=top.filter(function(m){return c[m]===c[top[0]]});
+  return {dt:dt,day:WD[dt.getDay()],dd:MO[dt.getMonth()].slice(0,3)+' '+dt.getDate(),rs:rs,best:best,bc:best?c[best]:0,label:!top.length?'Nobody\'s night':best?NM[best]+'\'s night':names(tie)+' split it'}})}
+function words(D){var r0=D.rk[0],T={},h0=D.hk[0];
+ T.standings={kick:'The leaderboard',h:NM[r0]+' leads, and would call our bet',
+  dk:'Each AI trades a pretend $100,000 on every report. Right now '+NM[r0]+' has made the most, so '+NM[r0]+' would make our next buyback call.',
+  cap:'Pretend money, real calls. Before fees.'};
+ T.record={kick:'The record',h:'Every call, on its own card',dk:'Before a company reports, each AI says up or down and by how much. The next market close settles it. Nothing gets edited.',
+  cap:innerWidth>=1200?'The newest cards first. Click one to see it big.':'Swipe for older cards. Tap one to turn it over.'};
+ T.learn={kick:'The proof',h:'Skill or luck? Watch the lines',dk:NM[h0]+' calls the direction right '+frac(D.hit[h0])+'. A coin flip gets it right half the time.',cap:"One line per AI, its pretend money over the season."};
+ T.highlights={kick:'Highlights',h:'The calls worth remembering',dk:cap(word(D.bulls.length))+' times this season an AI landed almost exactly on the move. Flip a card for the story.',cap:'A bullseye: the right direction, almost to the decimal.'};
+ T.x2pSt={kick:'The bet',h:'The first real bet: NVIDIA',dk:'When NVIDIA reports, the pool goes on the call of the AI on top. Right: the profit buys back $EZ. Wrong: the pool can be wiped out.',
+  cap:'The ticket for bet No. 1, with Season 2 attached.'};
+ T.get={kick:'Notices',h:'Not on sale yet',dk:"The coin's address appears here, and only here, at launch."};
+ T.film={cap:'How it works, in 80 seconds.'};
+ T.strip={cap:'Last night, tonight and the next calls, live.'};
+ T.tape={kick:'The tape',h:'Every round of Season 1',dk:'Calls as filed, in %. The closest call in bold.'};
  return T}
+/* the front-page story, three ways */
+function front(D){var f=d.createElement('div');f.className='np-front np-f-'+(C.front||'nights');var h='';
+ if(C.front==='tonight'){var tn=D.nextR,last=nights(D,1)[0];
+  h='<div class="np-fk"><span>Front page · '+(D.isToday?'Tonight':WD[D.nextDay.getDay()])+'</span><span>'+(C.pg?C.pg(1):'Page 1')+'</span></div>'+
+   '<h3 class="np-fh3">'+(D.isToday?'Tonight':'Next')+': '+word(tn.length)+' companies report</h3><p class="np-fdk">The AIs locked their calls before the reports. The market close decides who was right.</p><div class="np-fcols">'+
+   tn.map(function(r){var u=[],dn=[];(r.calls||[]).forEach(function(c){(c.dir==='UP'?u:dn).push(c.m)});
+    return '<div class="np-fd"><b>'+esc(r.co)+'</b><p>'+(u.length?names(u)+(u.length>1?' say':' says')+' up.':'')+(u.length&&dn.length?' ':'')+(dn.length?names(dn)+(dn.length>1?' say':' says')+' down.':'')+'</p></div>'}).join('')+'</div>'+
+   (last?'<div class="np-flast"><b>Last night, '+last.day+'.</b> '+last.rs.slice(0,3).map(rline).join(' ')+(last.rs.length>3?' '+cap(word(last.rs.length-3))+' more on the cards below.':'')+'</div>':'')}
+ else if(C.front==='profile'){var m=D.rk[0],N=nights(D,5),lines=[],alone=[],miss=null;
+  N.forEach(function(n){var mine=n.rs.filter(function(r){return callers(r).indexOf(m)>=0});if(!mine.length)return;var ok=mine.filter(function(r){return rightOf(r).indexOf(m)>=0}),bad=mine.filter(function(r){return rightOf(r).indexOf(m)<0}),cl=mine.filter(function(r){return wins(r).indexOf(m)>=0});
+   mine.forEach(function(r){var R=rightOf(r);if(R.length===1&&R[0]===m)alone.push(r);if(R.indexOf(m)<0&&(!miss||Math.abs(r.a)>Math.abs(miss.a)))miss=r});
+   lines.push('<div class="np-fd"><b>'+n.day+'</b><p>'+(ok.length?'Right on '+list(ok.map(function(r){return r.co})):'')+(ok.length&&bad.length?'; wrong on ':bad.length?'Wrong on ':'')+(bad.length?list(bad.map(function(r){return r.co})):'')+'.'+(cl.length?' Closest of the four on '+list(cl.map(function(r){return r.co}))+'.':'')+'</p></div>')});
+  h='<div class="np-fk"><span>Front page · Profile</span><span>'+(C.pg?C.pg(1):'Page 1')+'</span></div><h3 class="np-fh3">'+NM[m]+'\'s week: the AI to beat</h3>'+
+   '<p class="np-fdk">'+NM[m]+' tops the table, so for now '+NM[m]+' would make our buyback call. Here is how its last five nights went.</p><div class="np-fcols">'+lines.join('')+'</div>'+
+   (alone.length||miss?'<div class="np-flast">'+(alone.length?'<b>Its best moment.</b> '+alone[0].co+' '+mv(alone[0].a)+' and only '+NM[m]+' saw it coming. ':'')+(miss?'<b>The one that got away.</b> '+miss.co+' '+mv(miss.a)+', the other way from '+NM[m]+'\'s call.':'')+'</div>':'')}
+ else{var N=nights(D,5);h='<div class="np-fk"><span>Front page · Night by night</span><span>'+(C.pg?C.pg(1):'Page 1')+'</span></div><h3 class="np-fh3">The last five nights</h3>'+
+   '<p class="np-fdk">Companies reported, the four AIs had already called them, the market settled it. Night by night:</p><div class="np-fcols">'+
+   N.map(function(n){return '<div class="np-fd"><b>'+n.day+' <i>'+n.dd+'</i></b>'+'<em>'+n.label+'</em>'+'<p>'+cap(word(n.rs.length))+(n.rs.length>1?' companies':' company')+' reported. '+n.rs.slice(0,2).map(rline).join(' ')+(n.rs.length>2?' '+(n.rs.length-2===1?'One more':cap(word(n.rs.length-2))+' more')+' on the cards.':'')+'</p></div>'}).join('')+'</div>'}
+ f.innerHTML=h;return f}
 function logo(){var s=d.querySelector('.brand .mark svg');return s?s.outerHTML:''}
 function scrollToId(id){var e=d.getElementById(id);if(e)scrollTo({top:e.getBoundingClientRect().top+scrollY-70,behavior:'smooth'})}
-function card(D){var a=D.nextR.map(tk),b=D.due.map(tk);
+function card(D){var a=D.nextR.map(function(r){return r.co}),b=D.due.map(function(r){return r.co}),more=function(x){return x.length>4?x.slice(0,4).join(', ')+' and '+(x.length-4)+' more':list(x)};
  return '<div class="np-wx"><div class="np-wxh">'+(C.cardTitle||"Today's card")+'</div>'+
-  '<div class="np-wxr"><b>'+D.nextR.length+'</b><span>graded at '+D.closeWord+'<i>'+esc(a.join(' · '))+'</i></span></div>'+
-  (b.length?'<div class="np-wxr"><b>'+b.length+'</b><span>calls due today<i>'+esc(b.join(' · '))+'</i></span></div>':'')+'</div>'}
-function index(){var I=C.index||[['The standings','standings',1],['The record','record',2],['Smarter or just lucky?','learn',3],['Most valuable predictions','highlights',3],['The bet','x2pSt',4],['The tape','np-tape',4],['Get $EZ','get',4]];
+  '<div class="np-wxr"><b>'+D.nextR.length+'</b><span>report, results at '+D.closeWord+'<i>'+esc(more(a))+'</i></span></div>'+
+  (b.length?'<div class="np-wxr"><b>'+b.length+'</b><span>calls due today<i>'+esc(more(b))+'</i></span></div>':'')+'</div>'}
+function index(){var I=C.index||[['The last five nights','np-front',1],['Who is winning','standings',1],['Every call','record',2],['Skill or luck','learn',3],['Best calls','highlights',3],['The first bet','x2pSt',4],['Get $EZ','get',4]];
  return '<div class="np-ix"><div class="np-wxh">'+(C.ixTitle||'Inside')+'</div>'+I.map(function(i){return '<a data-np-go="'+i[1]+'"><span>'+i[0]+'</span><b>'+(C.pg?C.pg(i[2]):i[2])+'</b></a>'}).join('')+'</div>'}
 function mast(D){var m=d.createElement('div');m.className='np-mh';
  m.innerHTML=(C.flag?'<div class="np-flag">'+C.flag+'</div>':'')+
   '<div class="np-top">'+card(D)+'<div class="np-nmw"><div class="np-nm">The Earnings <span class="np-seal">'+logo()+'</span> Zeason</div>'+(C.motto?'<div class="np-mot">'+C.motto+'</div>':'')+'</div>'+index()+'</div>'+
-  '<div class="np-dl"><span>Season 1 · Week '+D.wk+'</span><span>'+D.date+'</span><span>'+(C.edition||'Late edition')+' · '+D.N+' rounds graded</span></div>';
+  '<div class="np-dl"><span>Season 1 · Week '+D.wk+'</span><span>'+D.date+'</span><span>'+(C.edition||'Late edition')+'</span></div>';
  return m}
 function tape(D,T){var s=d.createElement('section');s.className='sec np-tape';s.id='np-tape';
  var rows=D.rs.slice().reverse().map(function(r){var w=wins(r),cm={};r.calls.forEach(function(c){cm[c[0]]=c});
@@ -88,7 +119,7 @@ function story(id,t,pg,front){var s=d.getElementById(id);if(!s||s.querySelector(
  s.classList.add('np-story');var no=sh.querySelector('.no'),k=d.createElement('div');k.className='np-kick';
  k.innerHTML='<span class="np-no">'+(no?no.textContent+' · ':'')+(front||t.kick)+'</span><span class="np-pg">'+(C.pg?C.pg(pg):'Page '+pg)+'</span>';sh.prepend(k);
  var h=d.createElement('div');h.className='np-hd';h.innerHTML='<h3>'+esc(t.h)+'</h3><p class="np-dk">'+esc(t.dk)+'</p>'+
-  (C.by!==false?'<p class="np-by">'+(C.byline||'Graded at the close')+(t.jump?' · <a data-np-go="np-tape">'+esc(t.jump)+'</a>':'')+'</p>':'');
+  (C.by!==false?'<p class="np-by">'+(C.byline||'Graded at the close')+(t.jump?' · <a data-np-go="np-front">'+esc(t.jump)+'</a>':'')+'</p>':'');
  var tx=sh.querySelector(':scope>.tx');(tx||sh.firstChild).after(h)}
 function furniture(D){var m=d.querySelector('main#top');if(!m)return;var f=m.querySelector(':scope>.np-fur');if(!f){f=d.createElement('div');f.className='np-fur';f.setAttribute('aria-hidden','true');m.appendChild(f)}
  var mr0=m.getBoundingClientRect(),cs=getComputedStyle(m),fr=f.getBoundingClientRect(),mr={left:fr.left,top:fr.top},Lx=mr0.left+parseFloat(cs.paddingLeft)-fr.left,Rx=mr0.right-parseFloat(cs.paddingRight)-fr.left,h='';
@@ -103,13 +134,14 @@ function furniture(D){var m=d.querySelector('main#top');if(!m)return;var f=m.que
  if(f.innerHTML!==h)f.innerHTML=h}
 function build(){if(d.documentElement.classList.contains('np-built'))return;var D=data(),T=words(D);d.documentElement.classList.add('np-built');window.__npD=D;
  var top=d.querySelector('main#top');top.parentNode.insertBefore(mast(D),top);
- var hero=d.querySelector('.hero .hero-t');if(hero&&!hero.querySelector('.np-bk')){var b=d.createElement('div');b.className='np-bk';b.textContent=C.bannerKick?C.bannerKick(D):'Season 1 · Week '+D.wk+' · '+D.N+' rounds graded';hero.prepend(b)}
+ var hero=d.querySelector('.hero .hero-t');if(hero&&!hero.querySelector('.np-bk')){var b=d.createElement('div');b.className='np-bk';b.textContent=C.bannerKick?C.bannerKick(D):'Season 1 · Week '+D.wk;hero.prepend(b)}
  var F=C.fronts||{};story('standings',T.standings,1,F.standings);story('record',T.record,2,F.record);story('learn',T.learn,3,F.learn);story('highlights',T.highlights,3,F.highlights);story('x2pSt',T.x2pSt,4,F.x2pSt);story('get',T.get,4,F.get);
  var credit=C.credit||'EZ. / Earnings Zeason';
  caption(d.querySelector('.x2o-bet .x2p-vt'),T.film.cap,credit);caption(d.querySelector('.x2o-bet .x2p-ls'),T.strip.cap,'Live');
  caption(d.querySelector('#standings .x2p-flip'),T.standings.cap,credit);caption(d.querySelector('#record #car'),T.record.cap,credit);
  caption(d.querySelector('#learn .x2p-pt'),T.learn.cap,credit);caption(d.querySelector('#highlights #x2pHl'),T.highlights.cap,credit);caption(d.querySelector('#x2pSt .bs-clip'),T.x2pSt.cap,credit);
- var g=d.getElementById(C.tapeBefore||'get');if(g&&!d.getElementById('np-tape'))g.parentNode.insertBefore(tape(D,T),g);
+ var g=d.getElementById(C.tapeBefore||'get');if(C.tape&&g&&!d.getElementById('np-tape'))g.parentNode.insertBefore(tape(D,T),g);
+ var fr=front(D);fr.id='np-front';var rc=d.getElementById('record');if(innerWidth>=1200&&rc)rc.before(fr);else{var bt=d.querySelector('section.x2o-bet');bt&&bt.after(fr)}
  if(C.extra)C.extra(D,T,{esc:esc,call:call,tk:tk,wname:wname,usd:usd,NM:NM,AB:AB,WD:WD,MO:MO,pd:pd});
  d.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-np-go]');if(a){e.preventDefault();scrollToId(a.getAttribute('data-np-go'))}});
  var fu=function(){furniture(D)};fu();[500,1500,3000,6000].forEach(function(t){setTimeout(fu,t)});addEventListener('resize',fu);

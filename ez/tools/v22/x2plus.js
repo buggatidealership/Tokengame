@@ -2541,3 +2541,52 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
  if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",start);else start();
  addEventListener("resize",go);addEventListener("load",go);if(d.fonts&&d.fonts.ready)d.fonts.ready.then(go);
 })();
+
+/* TAPBIG (owner, 2026-10-29: "click into the card... a bigger version, so you can actually appreciate the video... swipe... with a nice
+   animation"; "I need to see how it feels to open it"; "it flips once, so they can see there's something on the back"; "move from one
+   card to the other by clicking left and right when it pops up, so they don't have to click out"): on the record (phones and tablets;
+   the desktop wall already opens its cards) a tap on the card in front opens it big: it grows out of its own place in the record into the
+   round's slab view (#x2pRm, through the round's address); the first time in a visit it turns over once and back, to show it has a back;
+   arrows left and right (and a swipe, and the arrow keys) deal the next or previous card in the record's order, sliding in from that side;
+   a swipe down or the close button puts it back. "See the stats" still turns the card in place. */
+(function(){try{if(window.__x2pHoldTap)return;var d=document,H=d.documentElement,still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,from=null,slide=0,ret=null;
+ function order(){return [].slice.call(d.querySelectorAll("#record .car>.card[data-n]")).map(function(c){return c.getAttribute("data-n")})}
+ function go(n,src,dir){if(!ret)ret={y:scrollY,h:/^#\/round\//.test(location.hash)?"#/":(location.hash||"#/")};from=src?src.getBoundingClientRect():null;slide=dir||0;location.hash="#/round/"+n}
+ d.addEventListener("click",function(e){if(H.classList.contains("x2p-wall"))return;var c=e.target.closest&&e.target.closest("#record .car>.card.cur[data-n]");
+  if(!c||e.target.closest(".snd,a,button,[data-flip]"))return;e.preventDefault();e.stopPropagation();go(c.getAttribute("data-n"),c,0)},true);
+ function step(dir){var o=order(),cur=d.querySelector("#x2pRm .card[data-n]");if(!cur)return;var i=o.indexOf(cur.getAttribute("data-n")),j=i+dir;if(i<0||j<0||j>=o.length)return;go(o[j],null,dir)}
+ function nav(o){var c=o.querySelector(".card[data-n]");if(!c)return;var ord=order(),i=ord.indexOf(c.getAttribute("data-n"));
+  [[-1,"Previous round","‹"],[1,"Next round","›"]].forEach(function(a){var b=d.createElement("button");b.type="button";b.className="x2p-rmn "+(a[0]<0?"l":"r");b.setAttribute("aria-label",a[1]);b.textContent=a[2];
+   if(i+a[0]<0||i+a[0]>=ord.length)b.disabled=true;b.addEventListener("click",function(e){e.stopPropagation();step(a[0])});o.appendChild(b)});
+  var x0=0,y0=0,t0=0;o.addEventListener("touchstart",function(e){var t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now()},{passive:true});
+  o.addEventListener("touchend",function(e){var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Date.now()-t0>700)return;
+   if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3)step(dx<0?1:-1);else if(dy>90&&Math.abs(dy)>Math.abs(dx)*1.3){var x=o.querySelector(".x2p-rmx");if(x)x.click()}},{passive:true})}
+ d.addEventListener("keydown",function(e){if(!d.getElementById("x2pRm"))return;if(e.key==="ArrowRight")step(1);else if(e.key==="ArrowLeft")step(-1)});
+ var peeked=false;try{peeked=sessionStorage.getItem("ez-peek")==="1"}catch(e){}
+ function arrive(o){var rc=o.querySelector(".x2p-rmc"),c=o.querySelector(".card[data-n]");nav(o);if(!rc||!c)return;
+  if(!still&&rc.animate){rc.getAnimations().forEach(function(a){a.cancel()});var r2=rc.getBoundingClientRect();
+   if(from&&r2.width){var k=from.width/r2.width;rc.animate([{transformOrigin:"0 0",transform:"translate("+(from.left-r2.left).toFixed(1)+"px,"+(from.top-r2.top).toFixed(1)+"px) scale("+k.toFixed(3)+")"},{transformOrigin:"0 0",transform:"none"}],{duration:440,easing:"cubic-bezier(.2,.8,.2,1)"})}
+   else if(slide)rc.animate([{transform:"translateX("+(slide*70)+"%) rotate("+(slide*5)+"deg)",opacity:0},{transform:"none",opacity:1}],{duration:360,easing:"cubic-bezier(.2,.8,.2,1)"})}
+  /* the first time in a visit: it turns over once and back, so the back is not a secret */
+  if(from&&!peeked&&c.getAttribute("data-k")==="g"&&c.querySelector(".face.back")&&!c.classList.contains("nofilm")){peeked=true;try{sessionStorage.setItem("ez-peek","1")}catch(e){}
+   setTimeout(function(){if(d.body.contains(c))c.click()},still?200:620);setTimeout(function(){if(d.body.contains(c)&&c.classList.contains("flipped"))c.click()},still?1500:1900)}
+  from=null;slide=0}
+ new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm")arrive(x)});
+   [].forEach.call(m.removedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm"&&ret)setTimeout(function(){if(d.getElementById("x2pRm")||!ret)return;var r=ret;ret=null;
+    var back=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",r.h);scrollTo({top:r.y,behavior:"instant"})};back();setTimeout(back,80);setTimeout(back,400)},60)})})}).observe(d.body,{childList:true});
+}catch(e){window.__x2pTapErr=e}})();
+
+/* TIES (owner, 2026-10-29: "Claude and Grok should be on the same line"): a tied round's winners on one line in the Winner box, the
+   names stepped down until both fit; on the record, the highlights and the round opened big */
+(function(){try{var d=document;function fit(root){[].forEach.call((root||d).querySelectorAll(".card.f-tie .cwin .wv"),function(v){if(!v.offsetWidth)return;v.style.removeProperty("--tz");
+  /* the room is the box less its "Winner" label and their gap (the names run nowrap, so their own box only grows) */
+  var w=v.parentNode,sm=w.querySelector("small"),cs=getComputedStyle(w),wr=w.getBoundingClientRect(),sc=w.offsetWidth?wr.width/w.offsetWidth:1,/* on screen pixels (the opened round is zoomed) */
+   room=wr.right-parseFloat(cs.paddingRight)*sc-(sm?sm.getBoundingClientRect().right:wr.left+parseFloat(cs.paddingLeft)*sc)-((parseFloat(cs.columnGap)||10)+4)*sc;
+  /* the names are measured by their own boxes: the row is right-aligned, so it overflows to the left, which scrollWidth does not count */
+  var wd=function(){var l=1e9,r=-1e9;[].forEach.call(v.children,function(k){var q=k.getBoundingClientRect();if(q.width){l=Math.min(l,q.left);r=Math.max(r,q.right)}});return r-l};
+  var wn=v.querySelector(".wn"),z=wn?parseFloat(getComputedStyle(wn).fontSize):15,n=0;v.style.setProperty("--tz",z);while(wd()>room&&z>8&&n++<60){z-=.5;v.style.setProperty("--tz",z)}})}
+ function run(){fit()}if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",function(){setTimeout(run,1500)});else setTimeout(run,1500);
+ addEventListener("load",function(){setTimeout(run,300)});var lw=innerWidth;addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run()}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(run);
+ new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm")setTimeout(function(){fit(x)},60)})})}).observe(d.body,{childList:true});
+ setInterval(function(){var c=d.querySelector("#record .card.f-tie.cur");if(c)fit(c)},2000);
+}catch(e){}})();

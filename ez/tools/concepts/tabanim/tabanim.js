@@ -50,7 +50,7 @@
  var TAKES={
  /* T1 tear-off: the old page tears away along the perforation under the green strip: a tug, the tear runs from left to right (the
     left end drops first), then the sheet falls out of the card with its hard shadow; a torn fringe stays on the line and fades. 640ms */
- T1:function(cd,G,old,b){var D=640,Ws=G.W-7,Hs=G.Y1-G.Y0,R=rnd(7),top=[],bot=[];
+ T1:function(cd,G,old,b){var D=600,Ws=G.W-7,Hs=G.Y1-G.Y0,R=rnd(7),top=[],bot=[];
   for(var x=0;x<=Ws+.1;x+=2.5){var j=(R()-.5)*1.6,h=(x%5<1)?1.6:0;top.push([x,G.Y0+1.2+j+h])}
   var poly="polygon("+top.map(function(p){return p[0].toFixed(1)+"px "+p[1].toFixed(1)+"px"}).join(",")+","+Ws+"px "+G.Y1+"px,0px "+G.Y1+"px)";
   old.style.setProperty("clip-path",poly);
@@ -71,7 +71,7 @@
 
  /* T2 stamped: a stamp block comes down over the page (its shadow sharpening), strikes: the card gives, the new view is inked from the
     middle out, a faint second strike settles, the block lifts. The tab is struck too. 560ms */
- T2:function(cd,G,old,b){var D=560,I=.27,Hs=G.Y1-G.Y0;
+ T2:function(cd,G,old,b){var D=520,I=.27,Hs=G.Y1-G.Y0;
   var nw=sheet(cd,G,{cls:"ta-new",z:6,bg:false}),ds=sheet(cd,G,{cls:"ta-ds",z:7,bg:false});run.els.push(nw,ds);ds.style.translate="1.6px -1.3px";
   var blk=el(cd,"ta-block","left:"+(G.W*.16)+"px;top:"+(G.Y0+Hs*.14)+"px;width:"+(G.W*.68)+"px;height:"+(Hs*.56)+"px");run.els.push(blk);
   /* the ink: a wobbly blot growing from the middle (clip-path path(), the same commands at every size, so it interpolates); no paper on
@@ -80,8 +80,8 @@
   for(var i=0;i<N;i++){var a=i/N*6.2832;rad.push(1+.05*Math.sin(3*a+ph[0])+.035*Math.sin(7*a+ph[1])+.025*Math.sin(13*a+ph[2])+(Rr()-.5)*.03)}
   var ms=function(R){return {clipPath:'path("M'+rad.map(function(r,i){var a=i/N*6.2832;return (cx+R*r*Math.cos(a)).toFixed(1)+" "+(cy+R*r*Math.sin(a)).toFixed(1)}).join(" L")+'Z")'}};
   A(old,[{opacity:1},{opacity:1,offset:I},{opacity:0,offset:I+.08},{opacity:0}],o);
-  A(blk,[{opacity:0,transform:"translate(22px,30px) scale(1.25)",easing:"cubic-bezier(.55,0,1,.6)"},{opacity:.5,transform:"translate(3px,4px) scale(1)",offset:I},
-   {opacity:.5,transform:"translate(3px,4px) scale(1)",offset:I+.05,easing:"cubic-bezier(0,0,.3,1)"},{opacity:0,transform:"translate(18px,26px) scale(1.2)",offset:.6},{opacity:0,transform:"none"}],o);
+  A(blk,[{opacity:0,transform:"translate(22px,30px) scale(1.25)",easing:"cubic-bezier(.55,0,1,.6)"},{opacity:.62,transform:"translate(3px,4px) scale(1)",offset:I},
+   {opacity:.62,transform:"translate(3px,4px) scale(1)",offset:I+.05,easing:"cubic-bezier(0,0,.3,1)"},{opacity:0,transform:"translate(18px,26px) scale(1.2)",offset:.6},{opacity:0,transform:"none"}],o);
   var k0=ms(0),k1=ms(34),k2=ms(Math.hypot(G.W,Hs)*.62);
   [nw,ds].forEach(function(e){A(e,[k0,Object.assign({offset:I},k0),Object.assign({offset:I+.001,easing:"cubic-bezier(.15,.7,.3,1)"},k1),Object.assign({offset:.62},k2),k2],o)});
   A(ds,[{opacity:0},{opacity:0,offset:I},{opacity:.34,offset:I+.04,easing:"cubic-bezier(.3,0,.2,1)"},{opacity:0,translate:"0px 0px"}],o);
@@ -91,10 +91,10 @@
  /* T3 conductor's punch, then the gate: a punch bites a hole in the tapped tab and the chad drops out of the card; the new page is fed
     through like a ticket through a gate (in from the right, the old one pushed out left, a little judder as the rollers grip). The
     hole stays on the open tab. 660ms */
- T3:function(cd,G,old,b){var D=660,Ws=G.W-7,tb=tabBox(cd,b),hx=tb.x1-11,hy=12;
+ T3:function(cd,G,old,b){var D=620,Ws=G.W-7,tb=tabBox(cd,b),hx=tb.x1-11,hy=12;
   [].forEach.call(cd.querySelectorAll(".ta-hole"),function(h){var a=h.animate([{opacity:1},{opacity:0}],{duration:160,fill:"forwards"});a.onfinish=function(){h.remove()}});
   var hole=el(cd,"ta-hole","left:"+(hx-3.5)+"px;top:"+(hy-3.5)+"px");/* stays */
-  var die=el(cd,"ta-die","left:"+(hx-9)+"px;top:"+(hy-9)+"px"),chad=el(cd,"ta-chad","left:"+(hx-3.5)+"px;top:"+(hy-3.5)+"px");run.els.push(die,chad);
+  var die=el(cd,"ta-die","left:"+(hx-9)+"px;top:"+(hy-9)+"px"),chad=el(cd,"ta-chad","left:"+(hx-4.5)+"px;top:"+(hy-4.5)+"px");run.els.push(die,chad);
   var nw=sheet(cd,G,{cls:"ta-new",z:6,edge:true});run.els.push(nw);var ne=el(nw,"ta-lead","top:"+G.Y0+"px");
   var P=.16,o={duration:D,fill:"both"},E="cubic-bezier(.65,0,.25,1)";
   A(die,[{opacity:0,transform:"scale(1.7)",easing:"cubic-bezier(.5,0,1,1)"},{opacity:.55,transform:"scale(1)",offset:P},{opacity:0,transform:"scale(1.3)",offset:P+.1},{opacity:0}],o);
@@ -102,7 +102,7 @@
   A(chad,[{opacity:0,transform:"none"},{opacity:0,offset:P-.01},{opacity:1,transform:"none",offset:P,easing:"cubic-bezier(.45,0,.9,.6)"},
    {opacity:1,transform:"translate(9px,140px) rotate(300deg) scaleY(-.4)",offset:.78},{opacity:0,transform:"translate(11px,200px) rotate(420deg) scaleY(.8)"}],o);
   A(cd,[{transform:"none"},{transform:"none",offset:P-.02},{transform:"translateY(1.4px)",offset:P+.01},{transform:"none",offset:P+.08},{transform:"none"}],o);
-  var S=P+.04,F=.9,mid=Ws*.58;
+  var S=P+.03,F=.84,mid=Ws*.58;
   A(old,[{transform:"none",clipPath:"inset("+G.Y0+"px 0 0 0)"},{transform:"none",clipPath:"inset("+G.Y0+"px 0 0 0)",offset:S,easing:E},
    {transform:"translateX(-"+Ws+"px)",clipPath:"inset("+G.Y0+"px 0 0 "+Ws+"px)",offset:F},{transform:"translateX(-"+Ws+"px)",clipPath:"inset("+G.Y0+"px 0 0 "+Ws+"px)"}],o);
   A(nw,[{transform:"translateX("+Ws+"px)",clipPath:"inset("+G.Y0+"px "+Ws+"px 0 0)"},{transform:"translateX("+Ws+"px)",clipPath:"inset("+G.Y0+"px "+Ws+"px 0 0)",offset:S,easing:E},
@@ -112,7 +112,7 @@
 
  /* T4 the roller: a green ink roller (a brayer, wider than the card) rolls down the page, printing the new view behind it with a
     sheen of wet ink; the old view smears into streaks just ahead of it and is gone where it passed. 640ms */
- T4:function(cd,G,old,b){var D=640,Hs=G.Y1-G.Y0,F=.86,E="cubic-bezier(.45,.05,.3,1)";
+ T4:function(cd,G,old,b){var D=580,Hs=G.Y1-G.Y0,F=.86,E="cubic-bezier(.45,.05,.3,1)";
   cd.classList.remove("ta-hide");
   var rl=el(cd,"ta-roll","top:"+(G.Y0-11)+"px");run.els.push(rl);rl.innerHTML='<i class="wet"></i><i class="smr"></i><i class="cyl"></i><i class="ax l"></i><i class="ax r"></i>';
   var o={duration:D,fill:"both"};
@@ -122,8 +122,8 @@
   A(b,[{transform:"none"},{transform:"translateY(2px)",offset:.08},{transform:"none",offset:.22},{transform:"none"}],o)},
 
  /* T5 shuffle the stack: the four views are four tickets in a stack; the tapped one slides out from behind to the right, tilted, then
-    is laid on top with a hard shadow that shrinks as it settles; the old one gives way under it. The tab lifts. 700ms */
- T5:function(cd,G,old,b){var D=660,Ws=G.W-7,Z=.38;
+    is laid on top with a hard shadow that shrinks as it settles; the old one gives way under it. The tab lifts. 620ms */
+ T5:function(cd,G,old,b){var D=620,Ws=G.W-7,Z=.38;
   var sh=el(cd,"ta-shade2","left:3.5px;top:0;width:"+Ws+"px;height:"+G.Y1+"px;clip-path:inset("+G.Y0+"px 0 0 0);translate:5px 7px"),nw=sheet(cd,G,{cls:"ta-new",z:0,edge:true});
   var und=el(cd,"ta-under","left:3.5px;top:0;width:"+Ws+"px;height:"+G.Y1+"px;clip-path:inset("+G.Y0+"px 0 0 0)");run.els.push(nw,sh,und);
   var dk=el(old,"ta-dark","top:"+G.Y0+"px");

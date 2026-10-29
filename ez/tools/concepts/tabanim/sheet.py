@@ -2,7 +2,7 @@
 import json, os
 from PIL import Image, ImageDraw, ImageFont
 H=os.path.dirname(os.path.abspath(__file__));F=H+'/frames'
-NAME={'T1':'T1 Tear-off · 640ms','T2':'T2 Stamped · 560ms','T3':'T3 Punch and gate · 660ms','T4':'T4 Ink roller · 640ms','T5':'T5 Shuffle the stack · 660ms'}
+NAME={'T1':'T1 Tear-off · 600ms','T2':'T2 Stamped · 520ms','T3':'T3 Punch and gate · 620ms','T4':'T4 Ink roller · 580ms','T5':'T5 Shuffle the stack · 620ms'}
 def font(sz):
   for f in ['/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf','/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf']:
     if os.path.exists(f): return ImageFont.truetype(f,sz)
