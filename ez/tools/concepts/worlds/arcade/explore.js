@@ -5,7 +5,7 @@ const t0=Date.now();await p.goto('http://localhost:8897/v48-live-x4plus.html'+(p
 await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});console.log('lift',Date.now()-t0);
 console.log(JSON.stringify(await p.evaluate(()=>{const v=document.getElementById('view');const o={};o.sec=document.documentElement.getAttribute('data-sec');o.cls=document.documentElement.className.slice(0,300);
 o.viewParent=v&&v.parentElement.tagName+'.'+v.parentElement.className;o.viewHidden=v&&v.hidden;o.board=document.querySelector('main.wrap')&&document.querySelector('main.wrap').parentElement.tagName;
-o.mainHidden=document.querySelector('main.wrap').hidden;o.boardId=[...document.body.children].map(e=>e.tagName+'#'+e.id+'.'+e.className.slice(0,30)+(e.hidden?'[h]':'')).join(' | ');
+o.mainHidden=document.querySelector('main.wrap').hidden;o.boardId=[...document.body.children].map(e=>e.tagName+'#'+e.id+'.'+(e.getAttribute('class')||'').slice(0,30)+(e.hidden?'[h]':'')).join(' | ');
 o.nav=[...document.querySelectorAll('.nav a')].map(a=>a.textContent.trim()+':'+(a.dataset.r||'')+':'+a.getAttribute('href'));o.up=!!document.querySelector('.x2p-up');
 o.upPar=document.querySelector('.x2p-up')&&document.querySelector('.x2p-up').parentElement.id;o.mark=!!document.querySelector('.brand .mark');o.waok=document.documentElement.classList.contains('wa-ok');return o}),null,1));
 console.log('errors',er.join('\n'));await b.close()})();
