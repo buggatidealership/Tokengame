@@ -103,7 +103,7 @@ function build(){
 
   /* ---------- COVER ---------- */
   const cover=`<section class="wc-cover" aria-label="Cover">
-    <div class="wc-cv-top"><span class="wc-iss"><small>Issue</small>#${n}</span><span class="wc-cv-s">Season 1<small>${n} earnings reports graded</small></span></div>
+    <div class="wc-cv-top"><span class="wc-cv-s">Season 1<small>${n} earnings reports graded</small></span></div>
     <p class="wc-h1" role="heading" aria-level="1">4 AI<span class="wc-lc">s</span> trade earnings <span>to run our buybacks.</span></p>
     <p class="wc-tag">Each one calls a stock <b>before</b> its earnings report. The market close says who was right.</p>
     <div class="wc-film-slot"><p class="wc-cap wc-film-cap" aria-hidden="true">How it works · 1:20</p></div>
@@ -257,7 +257,7 @@ function lbBuild(){
 
   const proof=proofBuild(P,R,rank);
   const el=D.createElement('div');el.id='wc-lb';el.className='wc-book wc-tab';
-  el.innerHTML=`<section class="wc-tab-cv" aria-label="Who's winning"><div class="wc-cv-top"><span class="wc-iss"><small>Issue</small>#${N}</span><span class="wc-cv-s">The standings<small>${N} earnings reports graded</small></span></div>
+  el.innerHTML=`<section class="wc-tab-cv" aria-label="Who's winning"><div class="wc-cv-top"><span class="wc-cv-s">The standings<small>${N} earnings reports graded</small></span></div>
     <h1 class="wc-tab-h">Who's winning?</h1><p class="wc-tag">Four AIs, a pretend <b>$100,000</b> each, the whole balance on every call. The money says who's best.</p></section>`
     +board+proof+race+bws+`<section class="wc-back"><a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a></section>`;
   return el}
@@ -326,9 +326,8 @@ function lastRound(R,P){
       <span class="wc-lr-lock" aria-label="Locked ${md(r.called)}">Locked ${md(r.called)}</span></li>`;
   const p2=`<li class="wc-pn wc-lr-p wc-lr-2"><b class="wc-lr-n" aria-hidden="true">2</b>
       <p class="wc-cap wc-lr-c">The report. Then the close</p>
-      <div class="wc-lr-artw"><div class="wc-art wc-lr-art"><video class="wc-v" muted playsinline loop preload="none" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video><button type="button" class="wc-snd" aria-label="Play with sound">▶ Sound</button></div></div>
-      <div class="wc-lr-pow"><span class="wc-sfx ${up?'wc-up':'wc-dn'}" aria-hidden="true"><em>${sfx(r.a)}</em><b>${up?'+':'−'}${pct(r.a)}</b></span>
-        <p>${esc(r.co)} ${moveWord(r)} <b>${pct(r.a)}</b> at the close.</p></div></li>`;
+      <div class="wc-lr-artw"><div class="wc-art wc-lr-art"><video class="wc-v" muted playsinline loop preload="none" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video><button type="button" class="wc-snd" aria-label="Play with sound">▶ Sound</button></div><span class="wc-sfx wc-lr-sfx ${up?'wc-up':'wc-dn'}" aria-hidden="true"><em>${sfx(r.a)}</em><b>${up?'+':'−'}${pct(r.a)}</b></span></div>
+      <p class="wc-sr">${esc(r.co)} ${moveWord(r)} ${pct(r.a)} at the close.</p></li>`;
   const p3=`<li class="wc-pn wc-lr-p wc-lr-3"><b class="wc-lr-n" aria-hidden="true">3</b>
       <p class="wc-cap wc-lr-c">Graded at the close</p>
       <div class="wc-lr-g">${cs.slice().sort((a,b)=>(b.ok-a.ok)||(a.off-b.off)).map(x=>`<div class="wc-lr-gr ${x.win?'wc-win':x.ok?'wc-ok':'wc-no'}">${face(x.m)}<b class="wc-lr-gn">${NM[x.m]}</b>
@@ -388,7 +387,7 @@ function proofBuild(P,R,rank){
     /* end labels, pushed apart so they never touch */
     let es=ord.map(m=>({m,y:(Hh-(ser[m][N]-lo)/(hi-lo)*Hh)})).sort((a,b)=>a.y-b.y);for(let i=1;i<es.length;i++)if(es[i].y-es[i-1].y<17)es[i].y=es[i-1].y+17;
     const ov=es[es.length-1].y-96;if(ov>0)es.forEach(e=>e.y-=ov);
-    return `<div class="wc-pf-ch"><div class="wc-pf-cv"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><line class="wc-pf-base" x1="0" x2="${W}" y1="${Y(base)}" y2="${Y(base)}"/>${ls}</svg>
+    return `<div class="wc-pf-ch"><div class="wc-pf-cv" data-b="${Y(base)}" data-y="${JSON.stringify(ord.map(m=>ser[m].map(v=>+Y(v))))}"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><line class="wc-pf-base" x1="0" x2="${W}" y1="${Y(base)}" y2="${Y(base)}"/>${ls}</svg>
       <span class="wc-pf-bl" style="top:${Y(base)}%">${baseLbl}</span></div>
       <div class="wc-pf-ends">${es.map(e=>`<span class="wc-pf-end" style="top:${e.y.toFixed(1)}%;--mc:${MODELS[e.m].c}"><b>${NM[e.m]}</b>${ends(e.m)}</span>`).join('')}</div>
       <p class="wc-pf-x" aria-hidden="true"><span>Start</span><span>R${R[N-1].n}</span></p></div>`};
@@ -447,7 +446,18 @@ function proofWire(root){const pf=root.querySelector('.wc-pf');if(!pf)return;pf.
       busy=[a1,a2];a2.onfinish=()=>{busy=null};enter(n)}};
   tabs.forEach((t,i)=>{t.addEventListener('click',()=>show(i));t.addEventListener('keydown',e=>{const k={ArrowRight:1,ArrowLeft:-1}[e.key];if(k){e.preventDefault();show((cur+k+tabs.length)%tabs.length,true)}else if(e.key==='Home'){e.preventDefault();show(0,true)}else if(e.key==='End'){e.preventDefault();show(tabs.length-1,true)}})});
   const rp=()=>place();addEventListener('resize',rp);D.fonts&&D.fonts.ready.then(rp);new ResizeObserver(rp).observe(pf.querySelector('.wc-pf-tabs'));rp();
+  pf.querySelectorAll('.wc-pf-cv[data-y]').forEach(cv=>{const ro=new ResizeObserver(()=>blPlace(cv));ro.observe(cv)});
   let first=true;new IntersectionObserver(es=>{if(first&&es[0].isIntersecting){first=false;enter(views[cur])}},{threshold:.2}).observe(pf)}
+
+/* the start line's key (owner, 2026-10-29: it sat on the lines): a dashed swatch and its words, in the emptiest spot
+   of the chart (clear of every line and the dashed line itself), measured in pixels once the chart has a size */
+function blPlace(cv){const bl=cv.querySelector('.wc-pf-bl'),cw=cv.clientWidth,ch=cv.clientHeight;if(!bl||!cw||!ch)return;
+  const ys=JSON.parse(cv.dataset.y).concat([[+cv.dataset.b,+cv.dataset.b]]),lw=bl.offsetWidth,lh=bl.offsetHeight;
+  const at=(a,x)=>{const t=x/cw*(a.length-1),i=Math.min(a.length-2,Math.floor(t)),f=t-i;return (a[i]+(a[i+1]-a[i])*f)/100*ch};
+  let best=null;for(let top=4;top<=ch-lh-4;top+=3)for(let x0=4;x0<=cw-lw-4;x0+=4){let d=1e9;
+    for(let x=x0-3;x<=x0+lw+3;x+=2)for(const a of ys){const y=at(a,Math.max(0,Math.min(cw,x)));d=Math.min(d,y<top?top-y:y>top+lh?y-top-lh:-Math.min(y-top,top+lh-y))}
+    const sc=Math.min(d,14)-x0*.001-top*.002;if(!best||sc>best.sc)best={sc,x0,top}}
+  if(best){bl.style.left=best.x0+'px';bl.style.top=best.top+'px';bl.style.transform='none'}}
 
 /* ---------- CERTIFICATES, as cartoons: the graded card's back (and a pending card's face) in the round pop-up ---------- */
 function certHtml(g,flip){const up=g.a>0,W=winners(g);
@@ -467,13 +477,16 @@ function pendHtml(u,flip){const cs=ORDER.map(m=>(u.calls||[]).find(c=>c.m===m)).
     <div class="wc-ce-ft"><p><small>Calls filed</small><b>${md(u.called)||'·'}</b></p><p><small>Final grade</small><b>${u.resolves?md(u.resolves):'Soon'}</b></p>
       <span class="wc-ce-st wc-ce-lk" aria-hidden="true"><i>Locked</i></span></div>
     ${flip?`<button type="button" class="wc-ce-flip">${esc(flip)}</button>`:''}</div>`}
+/* owner, 2026-10-29: the graded stamp is X2+'s holo stamp (moved in from the hidden certificate once it is drawn), not the comic burst; X3+ only */
+function holo(xc,cert){if(D.documentElement.classList.contains('cd-on')||!cert||cert.classList.contains('wc-ce-pd'))return;const slot=cert.querySelector('.wc-ce-st');if(!slot||slot.classList.contains('wc-ce-holo'))return;
+  const st=xc.querySelector('.xc-st:not(.xc-stp)');if(!st||!st.firstChild)return;slot.classList.add('wc-ce-holo');slot.innerHTML='';slot.appendChild(st)}
 function certWatch(){const rg=n=>ROUNDS.find(r=>r.n===n),rp=n=>(window.PENDING||[]).find(p=>p.n===n);
   const fix=()=>{const rm=D.getElementById('x2pRm');if(!rm)return;rm.querySelectorAll('.card').forEach(c=>{const n=+c.getAttribute('data-n');
     c.querySelectorAll('.fin').forEach(fin=>{const xc=fin.querySelector(':scope > .xc');const have=fin.querySelector(':scope > .wc-cert');if(!xc){if(have)have.remove();return}
-      if(have&&have.dataset.n===String(n))return;if(have)have.remove();
+      if(have&&have.dataset.n===String(n)){holo(xc,have);return}if(have)have.remove();
       const fb=xc.querySelector('[data-flip]')||fin.querySelector('[data-flip]'),flip=fb?fb.textContent.trim():'';
       const g=rg(n),u=g?null:rp(n),h=g&&fin.closest('.face.back')?certHtml(g,flip):u?pendHtml(u,flip):'';if(!h)return;
-      fin.classList.add('wc-cfin');fin.insertAdjacentHTML('beforeend',h);const b=fin.querySelector(':scope > .wc-cert .wc-ce-flip');if(b&&fb)b.addEventListener('click',e=>{e.stopPropagation();fb.click()})})})};
+      fin.classList.add('wc-cfin');fin.insertAdjacentHTML('beforeend',h);holo(xc,fin.querySelector(':scope > .wc-cert'));const b=fin.querySelector(':scope > .wc-cert .wc-ce-flip');if(b&&fb)b.addEventListener('click',e=>{e.stopPropagation();fb.click()})})})};
   const q=()=>{if(!fix._q){fix._q=1;requestAnimationFrame(()=>{fix._q=0;fix()})}};let seen=null;const sub=new MutationObserver(q);
   const look=()=>{const rm=D.getElementById('x2pRm');if(rm&&rm!==seen){seen=rm;sub.disconnect();sub.observe(rm,{childList:true,subtree:true});q()}else if(!rm&&seen){seen=null;sub.disconnect()}};
   new MutationObserver(look).observe(D.body,{childList:true});look()}
