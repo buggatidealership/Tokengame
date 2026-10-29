@@ -21,6 +21,7 @@ const call=s=>{const m=/^(UP|DOWN)\s+([\d.]+)/i.exec(s||'');return m?{up:/UP/i.t
 const callTxt=c=>c?(c.up?'Up ':'Down ')+c.v+'%':'No call';
 const face=(m,cls)=>{const M=MODELS[m];return `<i class="wc-face ${cls||''}" style="--mc:${M.c}" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${M.d}"/></svg></i>`};
 const coLogo=t=>{const c=(window.CO_LOGOS||{})[t];return c?'media/'+c.f:''};
+const coDk=t=>((window.CO_LOGOS||{})[t]||{}).dark?' class="wc-lg-dk"':'';
 const film=n=>{const f=(window.FILMS||{})[n];return f?{v:'media/'+f.f+'.mp4',p:'media/'+f.p+'.jpg'}:null};
 const winners=r=>r.win?r.win.split(' & '):[];
 const nyToday=()=>{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',month:'numeric',day:'numeric',year:'2-digit'}).formatToParts(new Date());const g=k=>+p.find(x=>x.type===k).value;return [g('month'),g('day'),g('year')]};
@@ -107,16 +108,16 @@ function build(){
     <p class="wc-h1" role="heading" aria-level="1">4 AI<span class="wc-lc">s</span> trade earnings <span>to run our buybacks.</span></p>
     <p class="wc-tag">Each one calls a stock <b>before</b> its earnings report. The market close says who was right.</p>
     <div class="wc-film-slot"><p class="wc-cap wc-film-cap" aria-hidden="true">How it works · 1:20</p></div>
-    <div class="wc-starring"><span class="wc-st-l">Starring</span>${ORDER.map(m=>`<span class="wc-st-m">${face(m)}<b>${NM[m]}<small class="${P[m].pnl>=0?'wc-st-u':'wc-st-d'}">${pm(P[m].pnl)}</small></b></span>`).join('')}</div>
+    <div class="wc-starring"><span class="wc-st-l">Starring</span><span class="wc-st-g">${['GPT','CLAUDE','GROK','KIMI'].map(m=>`<span class="wc-st-m">${face(m)}<b>${NM[m]}</b></span>`).join('')}</span></div>
   </section>`;
 
   /* ---------- CHARACTER PAGE ---------- */
   const best=m=>{let b=null;for(const r of R){const x=P[m].per[r.n];if(x&&(!b||x.v>b.v))b={v:x.v,r}}return b};
   const worst=m=>{let b=null;for(const r of R){const x=P[m].per[r.n];if(x&&(!b||x.v<b.v))b={v:x.v,r}}return b};
   const first=m=>R.find(r=>r.calls.some(c=>c[0]===m)).n;
-  const roles=['Makes the buyback call','In the hunt','In the hunt','Last place'];
+  const roles=['We bet on its call','In the hunt','In the hunt','Last place'];
   const cast=`<section class="wc-chars" aria-label="The cast">
-    <h2 class="wc-h2"><span>Meet the cast</span><small>Ranked by their pretend $100,000 accounts</small></h2>
+    <h2 class="wc-h2"><span>Meet the models</span><small>Not the Instagram kind. Ranked by their pretend $100,000 accounts.</small></h2>
     <div class="wc-ch-grid">${rank.map((m,i)=>{const a=P[m],b=best(m),w=worst(m),tot=a.W+a.L,hr=Math.round(a.W/tot*100),f=first(m);
       return `<article class="wc-ch wc-ch-${i+1}" style="--mc:${MODELS[m].c}">
         <div class="wc-ch-pic">${face(m,'wc-f-xl')}<span class="wc-ch-rk">#${i+1}</span></div>
@@ -134,18 +135,19 @@ function build(){
 
   /* ---------- BACK ISSUES: every graded round, newest first ---------- */
   const all=R.slice().sort((a,b)=>b.n-a.n);
-  const issues=`<section class="wc-season" aria-label="Back issues">
-    <h2 class="wc-h2 wc-h2-b"><span>Back issues</span><small>Every graded round. Tap one to open its graded card.</small></h2>
+  const issues=`<section class="wc-season" aria-label="Every round so far">
+    <h2 class="wc-h2 wc-h2-b"><span>Every round so far</span><small>Newest first. Tap one to open its graded card.</small></h2>
     <div class="wc-bis" data-all="0">${all.map(backIssue).join('')}</div>
-    <button type="button" class="wc-more">Show all ${all.length} back issues</button>
-    <p class="wc-key">Corner face = the round's winner (closest call that got the direction). × = nobody got the direction. % = how far the stock moved at the close.</p>
+    <button type="button" class="wc-more">Show all ${all.length} rounds</button>
+    <p class="wc-key">Corner face = the winner. × = nobody. % = the move at the close.</p>
   </section>`;
 
   /* ---------- TONIGHT AT THE CLOSE ---------- */
-  const tn=tonight.slice(0,4);
+  const tn=tonight.slice(0,6);
   const cliff=tonight.length?`<p class="wc-cap wc-beat">And next on the card…</p><section class="wc-cliff" aria-label="${esc(tLabel)}">
     <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} round${tonight.length===1?'':'s'}. Every call locked before the report. The close decides.</small></h2>
-    <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker);return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt="">`:''}<b>${esc(p.co)}</b></header>
+    <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker),cs=p.calls||[],u=cs.filter(c=>c.dir==='UP').length,d=cs.length-u;return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt=""${coDk(p.ticker)}>`:''}<b>${esc(p.co)}</b></header>
+      <p class="wc-tn-vs" aria-label="${u} up, ${d} down"><span class="wc-tn-u" style="flex:${u||.0001}">${u?u+' up':''}</span><span class="wc-tn-d" style="flex:${d||.0001}">${d?d+' down':''}</span></p>
       <div class="wc-lvc">${ORDER.map(m=>{const c=p.calls.find(x=>x.m===m);return c?`<div class="wc-lvs ${c.dir==='UP'?'wc-lvu':'wc-lvd'}">${face(m,'wc-f-s')}<p><small>${NM[m]}</small>${c.dir==='UP'?'Up':'Down'} ${c.mag}%</p></div>`:''}).join('')}</div></article>`}).join('')}</div>
     ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s"><a class="wc-gut-a" href="#/upcoming">+ ${tonight.length-tn.length} more locked in. See the card →</a></p>`:''}
   </section>`:'';
@@ -277,7 +279,7 @@ function upBuild(){
   const days={};live.forEach(p=>{const k=nk(p.resolves);(days[k]=days[k]||[]).push(p)});
   const dk=Object.keys(days).sort((a,b)=>mdyKey(a)-mdyKey(b));
   const tick=p=>{const lg=coLogo(p.ticker),cs=ORDER.map(m=>p.calls.find(c=>c.m===m)).filter(Boolean),u=cs.filter(c=>c.dir==='UP').length;
-    return `<a class="wc-pn wc-lv" href="#/round/${p.n}" data-n="${p.n}"><header>${lg?`<img src="${lg}" alt="">`:''}<h3>${esc(p.co)}<small>${esc(p.ticker)} · Round ${p.n}</small></h3><span class="wc-bell" data-t="${esc(p.ticker)}" data-d="${p.resolves||''}">${bellTxt(p.ticker,p.resolves)}</span></header>
+    return `<a class="wc-pn wc-lv" href="#/round/${p.n}" data-n="${p.n}"><header>${lg?`<img src="${lg}" alt=""${coDk(p.ticker)}>`:''}<h3>${esc(p.co)}<small>${esc(p.ticker)} · Round ${p.n}</small></h3><span class="wc-bell" data-t="${esc(p.ticker)}" data-d="${p.resolves||''}">${bellTxt(p.ticker,p.resolves)}</span></header>
       <div class="wc-lvc">${cs.map(c=>`<div class="wc-lvs ${c.dir==='UP'?'wc-lvu':'wc-lvd'}">${face(c.m,'wc-f-s')}<p><small>${NM[c.m]}</small>${c.dir==='UP'?'Up':'Down'} ${c.mag}%</p></div>`).join('')}</div>
       <p class="wc-lv-f">${u} say${u===1?'s':''} up, ${cs.length-u} say${cs.length-u===1?'s':''} down. Locked before the report.</p></a>`};
   const spot=dk.map(k=>{const r=k?relDay(k):null,lab=!k?'Date to come':r==='Tonight'?'Tonight at the close':r==='Tomorrow'?'Tomorrow at the close':'At the close, '+md(k);
@@ -287,7 +289,7 @@ function upBuild(){
   /* days still to come first; a day already gone whose calls are not in yet goes last, said as it is */
   const uk=Object.keys(ud).sort((a,b)=>{const pa=a&&mdyKey(a)<tk,pb=b&&mdyKey(b)<tk;return pa!==pb?(pa?1:-1):mdyKey(a)-mdyKey(b)});
   const tile=u=>{const lg=coLogo(u.ticker),me=RM[u.n]||{},m7=!!me.mag7,ai=(me.themes||[]).indexOf('AI')>-1,nv=u.ticker==='NVDA';
-    return `<a class="wc-ut${m7?' wc-ut-m7':''}${nv?' wc-ut-nv':''}" href="#/round/${u.n}" data-m7="${m7?1:0}" data-ai="${ai?1:0}"><span class="wc-ut-lg">${lg?`<img src="${lg}" alt="" loading="lazy">`:''}</span>
+    return `<a class="wc-ut${m7?' wc-ut-m7':''}${nv?' wc-ut-nv':''}" href="#/round/${u.n}" data-m7="${m7?1:0}" data-ai="${ai?1:0}"><span class="wc-ut-lg">${lg?`<img src="${lg}" alt="" loading="lazy"${coDk(u.ticker)}>`:''}</span>
       <b>${esc(u.co)}</b><small>${esc(u.ticker)} · R${u.n}</small>${nv?'<em>Bet #1</em>':m7?'<em>Mag 7</em>':''}</a>`};
   const cal=uk.map(k=>{const g=ud[k].sort((a,b)=>cap(b.ticker)-cap(a.ticker)),past=k&&mdyKey(k)<tk,r=k?relDay(k):null;
     return `<section class="wc-ud" aria-label="${k?esc(dayName(k)):'Date to come'}"><h3 class="wc-ud-h"><span>${k?(r&&r!=='Yesterday'?r+' · ':'')+esc(dayName(k)):'Date to come'}</span><small>${past?'Calls not in yet':g.length+' on the card'}</small></h3><div class="wc-utg">${g.map(tile).join('')}</div></section>`}).join('');
@@ -310,24 +312,24 @@ const moveWord=r=>{const x=Math.abs(r.a),up=r.a>0;return up?(x>=5?'jumped':'rose
 
 function lastRound(R,P){
   const key=r=>mdyKey(r.resolves)*1000+r.n;
-  const r=R.filter(x=>film(x.n)).sort((a,b)=>key(b)-key(a))[0];if(!r)return '';
+  /* owner, 2026-10-29: the example is a round where exactly one AI got the direction (and so wins); else the newest with a film */
+  const one=x=>{const up=x.a>0;return x.calls.filter(c=>{const k=call(c[1]);return k&&k.up===up}).length===1&&winners(x).length===1};
+  const fs=R.filter(x=>film(x.n)).sort((a,b)=>key(b)-key(a)),r=fs.find(one)||fs[0];if(!r)return '';
   const f=film(r.n),up=r.a>0,W=winners(r),lg=coLogo(r.ticker),rel=relDay(r.resolves),day=(rel==='Yesterday'?'Yesterday · ':rel==='Tonight'?'Today · ':'')+dayName(r.resolves);
   const cs=ORDER.map(m=>{const row=r.calls.find(c=>c[0]===m);if(!row)return null;const c=call(row[1]);return c?{m,c,ok:c.up===up,off:+row[2],win:W.includes(m),v:(P[m].per[r.n]||{}).v||0}:null}).filter(Boolean);
   const right=cs.filter(x=>x.ok);
   const p1=`<li class="wc-pn wc-lr-p wc-lr-1"><b class="wc-lr-n" aria-hidden="true">1</b>
-      <p class="wc-cap wc-lr-c">Before the report, the AIs predict</p>
-      <header class="wc-lr-co">${lg?`<span class="wc-lr-lg"><img src="${lg}" alt=""></span>`:''}<h3>${esc(r.co)}<small>Round ${r.n} · ${esc(r.ticker)}</small></h3></header>
-      <div class="wc-lr-bub">${cs.map(x=>`<div class="wc-lr-s">${face(x.m)}<p class="wc-bub"><small>${NM[x.m]}</small>${callTxt(x.c)}</p></div>`).join('')}</div>
-      <span class="wc-lr-lock" aria-label="Locked ${md(r.called)}">Locked ${md(r.called)}</span></li>`;
+      <p class="wc-cap wc-lr-c">Before the earnings, the AIs submit their predictions</p>
+      <header class="wc-lr-co">${lg?`<span class="wc-lr-lg"><img src="${lg}" alt=""${coDk(r.ticker)}></span>`:''}<h3>${esc(r.co)}<small>Round ${r.n} · ${esc(r.ticker)}</small></h3><span class="wc-lr-lock">Locked ${md(r.called)}</span></header>
+      <div class="wc-lr-bub">${cs.map(x=>`<div class="wc-lr-s">${face(x.m)}<p class="wc-bub"><small>${NM[x.m]}</small><span class="${x.c.up?'wc-tu':'wc-td'}">${callTxt(x.c)}</span></p></div>`).join('')}</div></li>`;
   const p2=`<li class="wc-pn wc-lr-p wc-lr-2"><b class="wc-lr-n" aria-hidden="true">2</b>
       <p class="wc-cap wc-lr-c">${esc(r.co)} reports. Then the close</p>
       <div class="wc-lr-artw"><div class="wc-art wc-lr-art"><video class="wc-v" muted playsinline loop preload="none" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video><button type="button" class="wc-snd" aria-label="Play with sound">▶ Sound</button></div><span class="wc-sfx wc-lr-sfx ${up?'wc-up':'wc-dn'}" aria-hidden="true"><em>${sfx(r.a)}</em><b>${up?'+':'−'}${pct(r.a)}</b></span></div>
       <p class="wc-sr">${esc(r.co)} ${moveWord(r)} ${pct(r.a)} at the close.</p></li>`;
   const p3=`<li class="wc-pn wc-lr-p wc-lr-3"><b class="wc-lr-n" aria-hidden="true">3</b>
-      <p class="wc-cap wc-lr-c">The close grades every call</p>
-      <div class="wc-lr-g">${cs.slice().sort((a,b)=>(b.ok-a.ok)||(a.off-b.off)).map(x=>`<div class="wc-lr-gr ${x.win?'wc-win':x.ok?'wc-ok':'wc-no'}">${face(x.m)}<b class="wc-lr-gn">${NM[x.m]}</b>
-        <span class="wc-lr-gv">${x.ok?'<i aria-hidden="true">✓</i> Right way':'<i aria-hidden="true">✗</i> Wrong way'}</span><small>${x.ok?fmtOff(x.off)+' off':'said '+(x.c.up?'up':'down')}</small>${x.win?'<em class="wc-lr-cr">Winner</em>':''}</div>`).join('')}</div>
-      <p class="wc-lr-rule">${W.length?'Closest call that got the direction wins.':right.length?'Got the direction, but nobody wins this one.':'Nobody got the direction. Nobody wins.'}</p></li>`;
+      <p class="wc-cap wc-lr-c">The market grades every call</p>
+      <div class="wc-lr-cw">${certMid(r)}</div>
+      <p class="wc-lr-rule">${W.length===1&&right.length===1?`Only ${NM[W[0]]} said ${up?'up':'down'}. Right way, so ${NM[W[0]]} wins.`:W.length?'Right way and closest to the move wins.':right.length?'Got the direction, but nobody wins this one.':'Nobody got the direction. Nobody wins.'}</p></li>`;
   const ws=cs.filter(x=>x.win),shown=ws.length?ws:cs.slice().sort((a,b)=>b.v-a.v).slice(0,1);
   const p4=`<li class="wc-pn wc-lr-p wc-lr-4"><b class="wc-lr-n" aria-hidden="true">4</b>
       <p class="wc-cap wc-lr-c">${ws.length?'The winner gets paid':'Nobody won. The money'}</p>
@@ -335,8 +337,8 @@ function lastRound(R,P){
       <ul class="wc-lr-all" aria-label="Every AI's P&L on this call">${cs.map(x=>`<li>${face(x.m,'wc-f-s')}<span>${NM[x.m]}</span><b class="${x.v>=0?'wc-tu':'wc-td'}">${kShort(x.v)}</b></li>`).join('')}</ul>
       <p class="wc-lr-fine">Pretend $100,000 accounts, the whole balance on every call.</p>
       <a class="wc-lr-open" href="#/round/${r.n}">Open its graded card →</a></li>`;
-  return `<section class="wc-lr" aria-label="How a round works">
-    <h2 class="wc-h2"><span>How a round works</span><small>A real one, step by step: round ${r.n}, ${esc(r.co)}, ${esc(day.replace(/^(Today|Yesterday) · /,''))}.</small></h2>
+  return `<section class="wc-lr" aria-label="One round, start to finish">
+    <h2 class="wc-h2"><span>One round, start to finish</span><small>A real one: round ${r.n}, ${esc(r.co)}, ${esc(day.replace(/^(Today|Yesterday) · /,''))}.</small></h2>
     <ol class="wc-lr-pg" data-n="${r.n}">${p1}${p2}${p3}${p4}</ol></section>`}
 
 /* the bet: the close the weekday after NVIDIA's call date in the sheet (or SIM/CONFIG.betDate), as routes.js counts it */
@@ -455,13 +457,17 @@ function blPlace(cv){const bl=cv.querySelector('.wc-pf-bl'),cw=cv.clientWidth,ch
   if(best){bl.style.left=best.x0+'px';bl.style.top=best.top+'px';bl.style.transform='none'}}
 
 /* ---------- CERTIFICATES, as cartoons: the graded card's back (and a pending card's face) in the round pop-up ---------- */
-function certHtml(g,flip){const up=g.a>0,W=winners(g);
+function certRows(g){const up=g.a>0,W=winners(g);
   let rs=g.calls.map(x=>{const c=call(x[1]);return c?{m:x[0],c,ok:c.up===up,off:+x[2],win:W.includes(x[0])}:null}).filter(Boolean);
   rs=rs.filter(x=>x.ok).sort((a,b)=>a.off-b.off).concat(rs.filter(x=>!x.ok).sort((a,b)=>a.off-b.off));
-  return `<div class="wc-cert" data-n="${g.n}"><div class="wc-ce-hd"><b class="wc-ce-t">Graded!</b><span class="wc-ce-no">No. ${String(g.n).padStart(4,'0')}</span></div>
-    <div class="wc-ce-rows">${rs.map((x,i)=>`<div class="wc-ce-r ${x.win?'wc-win':x.ok?'wc-ok':'wc-no'}"><i class="wc-ce-rk">${i+1}</i>${face(x.m)}<span class="wc-ce-nm">${NM[x.m]}${x.win?'<em>Winner</em>':''}</span>
+  return `<div class="wc-ce-rows">${rs.map((x,i)=>`<div class="wc-ce-r ${x.win?'wc-win':x.ok?'wc-ok':'wc-no'}"><i class="wc-ce-rk">${i+1}</i>${face(x.m)}<span class="wc-ce-nm">${NM[x.m]}${x.win?'<em>Winner</em>':''}</span>
       <span class="wc-ce-cl ${x.c.up?'wc-up':'wc-dn'}">${x.c.up?'+':'−'}${x.c.v}%</span><b class="wc-ce-pf ${x.ok?'wc-ce-p':'wc-ce-f'}">${x.ok?'Pass!':'Fail!'}</b></div>`).join('')}</div>
-    <div class="wc-ce-mk ${up?'wc-up':'wc-dn'}"><em>${sfx(g.a)}</em><small>Market</small><b>${up?'+':'−'}${Math.abs(g.a).toFixed(2)}%</b></div>
+    <div class="wc-ce-mk ${up?'wc-up':'wc-dn'}"><em>${sfx(g.a)}</em><small>Market</small><b>${up?'+':'−'}${Math.abs(g.a).toFixed(2)}%</b></div>`}
+/* the graded card's middle (what they predicted, what the market said, who won), for the round walkthrough's panel 3 */
+function certMid(g){return `<div class="wc-cert wc-ce-mini" data-n="${g.n}">${certRows(g)}</div>`}
+function certHtml(g,flip){
+  return `<div class="wc-cert" data-n="${g.n}"><div class="wc-ce-hd"><b class="wc-ce-t">Graded!</b><span class="wc-ce-no">No. ${String(g.n).padStart(4,'0')}</span></div>
+    ${certRows(g)}
     <div class="wc-ce-ft"><p><small>Calls filed</small><b>${md(g.called)}</b></p><p><small>Graded on</small><b>${md(g.resolves)}</b></p>
       <span class="wc-ce-st" aria-hidden="true"><span class="wc-ce-lg">${window.X2P_LOGO||''}</span><i>Graded</i></span></div>
     ${flip?`<button type="button" class="wc-ce-flip">${esc(flip)}</button>`:''}</div>`}
