@@ -9991,7 +9991,8 @@ function x2pAnd(a){return a.length<3?a.join(" and "):a.slice(0,-1).join(", ")+" 
   if(window.__x2pF)window.__x2pF.then(function(){fok=true},function(){fok=true});
   function built(){if(H.getAttribute("data-sec")==="upcoming")return !!document.querySelector(".x2p-up");
     return H.classList.contains("x2p-launch")&&H.classList.contains("x2pbt")&&!!document.querySelector(".x2p-vt")&&
-      (H.classList.contains("x2pst")||!!window.__x2pBetErr)}   /* and the bet ticket moved to the foot (BETSEC), or that block gave up */
+      (H.classList.contains("x2pst")||!!window.__x2pBetErr)&&
+      (!window.__x2pNeedWorld||H.classList.contains("x2p-world"))}   /* a world page (X3+, X4+) waits for its world to be drawn */   /* and the bet ticket moved to the foot (BETSEC), or that block gave up */
   function lift(){if(!H.classList.contains("x2p-cur"))return;H.classList.add("x2p-rv");H.classList.remove("x2p-cur");setTimeout(function(){H.classList.remove("x2p-rv")},400);try{performance.mark("x2p-shown")}catch(e){}}
   (function tick(){if(!H.classList.contains("x2p-cur"))return;
     if(built()){if(!okAt)okAt=Date.now();if(fok||Date.now()-okAt>1500){requestAnimationFrame(lift);return}}
@@ -10918,7 +10919,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   var T=window.__x2pTrack;
   /* page views: on load and on every tab change; not for an address that only sends you on to the Overview (model pages, and
      since the two-tab launch the Leaderboard, Results and Buyback tabs), so those don't count twice */
-  var gone=function(){return /^#\/(leaderboard|models?|results|buyback)(\/|$)/.test(location.hash)};
+  var gone=function(){return (window.__x2pLB?/^#\/(models?|results|buyback)(\/|$)/:/^#\/(leaderboard|models?|results|buyback)(\/|$)/).test(location.hash)};
   if(!gone())T();addEventListener("hashchange",function(){if(gone())return;Object.keys(sent).forEach(function(k){if(k.indexOf("sec-")===0)delete sent[k]});T()});
   /* sections reached: once each, when 40% of one is on screen (the Overview's own sections; the others render inside #view) */
   var SEC=[[".x2p-vt","film"],["#gpu","bet"],["#record","record"],["#standings","standings"],["#learn","stats"],["#x2pHl","highlights"],["#get","get"]];
@@ -11197,11 +11198,13 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   var st=$("#standings"),rec=$("#record"),ln=$("#learn");if(!R||!st||!rec||!ln)return;
   d.documentElement.classList.add("x2p-launch");
   /* tabs: Overview and Upcoming */
-  $$(".nav a").forEach(function(a){if(/^(leaderboard|results|buyback)$/.test(a.dataset.r||""))a.remove()});
+  /* the world pages (X3+ comic, X4+ arcade; owner, 2026-10-29) keep a Leaderboard tab: build.py sets window.__x2pLB there */
+  var LB=!!window.__x2pLB;
+  $$(".nav a").forEach(function(a){if((LB?/^(results|buyback)$/:/^(leaderboard|results|buyback)$/).test(a.dataset.r||""))a.remove()});
   /* a third tab that says what comes next (owner, 2026-10-22: "Buybacks (soon)", option B): the tabs' own font (an <a> with no
      address, so it takes the same styles and goes nowhere), dimmed, a small gold "Soon" tag; it lights up when the buyback ships */
   var nav=$(".nav");if(nav&&!$(".x2p-soon",nav)){var sn=d.createElement("a");sn.className="x2p-soon";sn.setAttribute("aria-disabled","true");sn.innerHTML='Buybacks <small aria-hidden="true">Soon</small><span class="sr"> (coming soon)</span>';nav.appendChild(sn)}
-  function offRoute(){if(/^#\/(leaderboard|models|results|buyback)(\/|$)/.test(location.hash))location.replace("#/")}
+  function offRoute(){if((LB?/^#\/(models|results|buyback)(\/|$)/:/^#\/(leaderboard|models|results|buyback)(\/|$)/).test(location.hash))location.replace("#/")}
   offRoute();addEventListener("hashchange",offRoute);
   /* the standings as printed tickets (owner, 2026-10-22) are on the X2+ preview; the live site keeps today's board until the
      owner says so: make_site.py sets window.__x2pClassicBoard there (SITE_TIX=1 builds with the tickets) */
