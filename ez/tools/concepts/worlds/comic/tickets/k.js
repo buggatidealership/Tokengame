@@ -17,6 +17,6 @@
     c.append(el('span','kb-spk kb-s1','✦'),el('span','kb-spk kb-s2','✦'),el('span','kb-spk kb-s3','✧'));
     const call=nx&&nx.calls.find(x=>x.m===m);
     if(call){const pic=c.querySelector('.wc-ch-pic');
-      pic.append(el('p','kb-say '+(call.dir==='UP'?'kb-up':'kb-dn'),`<small>Tonight</small>${nx.co} ${call.dir==='UP'?'up':'down'} ${call.mag}%!`))}
+      pic.append(el('p','kb-say '+(call.dir==='UP'?'kb-up':'kb-dn'),`<small>Tonight</small><b>${nx.ticker}</b>${call.dir==='UP'?'up':'down'} ${call.mag}%!`))}
   });
 })();
