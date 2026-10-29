@@ -9,7 +9,8 @@ const [VW,VH]=(process.argv[2]||'390x844').split('x').map(Number),NOW=process.ar
  const H=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<H;y+=600){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(120)}
  await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(2500);
  const hh=await p.evaluate(()=>document.querySelector('header.top').getBoundingClientRect().height);const step=VH-Math.round(hh)-24;
- for(let k=0;k<N;k++){await p.evaluate(y=>scrollTo(0,y),k*step);await p.waitForTimeout(1200);await p.screenshot({path:`${OUT}/wf-${VW}-${k+1}.png`})}
+ const ys=VW<600||process.env.N?[...Array(N)].map((_,k)=>k*step):await p.evaluate(()=>[0,...['wf-vd','wf-out'].map(i=>document.getElementById(i).getBoundingClientRect().top+scrollY-96)]);
+ for(let k=0;k<ys.length;k++){await p.evaluate(y=>scrollTo(0,y),ys[k]);await p.waitForTimeout(1200);await p.screenshot({path:`${OUT}/wf-${VW}-${k+1}.png`})}
  const sw=await p.evaluate(()=>[document.documentElement.scrollWidth,innerWidth,document.documentElement.scrollHeight]);
  console.log(VW,'scrollWidth/innerWidth/height',sw.join('/'),'errors:',er.join(' | ')||'none');
  if(process.env.CHECK){ // contrast of every text node in the world against the lightest sky behind it, and the films
