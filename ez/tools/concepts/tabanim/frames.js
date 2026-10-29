@@ -7,7 +7,7 @@ const DUR={T1:640,T2:560,T3:660,T4:640,T5:700};fs.mkdirSync(__dirname+'/frames',
  await p.screenshot({path:`${__dirname}/frames/${t}-0.png`,clip});
  await p.evaluate(()=>{window.__taReady=0;document.querySelector('#learn .pt-tb [data-pt="hit"]').click()});
  await p.waitForFunction(()=>window.__taReady>0,null,{timeout:5000});
- await p.evaluate(()=>{window.__all=document.getAnimations();window.__all.forEach(a=>a.pause())});
+ await p.evaluate(()=>{const cd=document.querySelector('#learn .x2p-pt .pt-cd');window.__all=document.getAnimations().filter(a=>a.timeline===document.timeline&&a.effect&&a.effect.target&&(a.effect.target===cd||cd.contains(a.effect.target)));window.__all.forEach(a=>a.pause())});
  for(let i=0;i<FR.length;i++){await p.evaluate(ms=>{window.__all.forEach(a=>{a.currentTime=ms})},FR[i]*DUR[t]);await p.waitForTimeout(120);await p.screenshot({path:`${__dirname}/frames/${t}-${i+1}.png`,clip})}
  await p.evaluate(()=>window.__all.forEach(a=>a.play()));await p.waitForTimeout(1500);
  await p.screenshot({path:`${__dirname}/frames/${t}-9.png`,clip});console.log(t,errs.join(' | ')||'no errors',JSON.stringify(await open.state(p)));await ctx.close()}
