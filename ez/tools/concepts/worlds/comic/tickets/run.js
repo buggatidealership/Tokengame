@@ -15,7 +15,12 @@ const SECS=(process.env.SECS||'tn,bi,ch,cn').split(',').map(k=>[k,{tn:'.wc-cliff
    await p.evaluate(s=>{window.__take=s},base);await p.addScriptTag({content:fs.readFileSync(__dirname+'/mk.js','utf8')});
    if(parts.length>1){await p.addStyleTag({content:fs.readFileSync(__dirname+'/k-base.css','utf8')+parts.slice(1).map(k=>fs.readFileSync(__dirname+'/'+k+'.css','utf8')).join('\n')});
     await p.evaluate(ks=>{document.documentElement.classList.add('tkm-k',...ks.map(k=>'tkm-'+k))},parts.slice(1));
-    await p.addScriptTag({content:fs.readFileSync(__dirname+'/k.js','utf8')})}}
+    await p.addScriptTag({content:fs.readFileSync(__dirname+'/k.js','utf8')});
+    const kf=parts.slice(1).filter(k=>/^kf\d/.test(k));
+    if(kf.length){await p.addStyleTag({content:fs.readFileSync(__dirname+'/kf-base.css','utf8')});
+     await p.evaluate(ks=>{document.documentElement.classList.add('tkm-kf');window.__kfPal={kf2:'night',kf3:'print'}[ks[0]]||'bold'},kf);
+     await p.addScriptTag({content:fs.readFileSync(__dirname+'/kf.js','utf8')});
+     if(!process.env.LIVE)await p.evaluate(()=>setTimeout(()=>document.querySelectorAll('.wc-ch').forEach(c=>c.classList.add('kf-in')),300));await p.waitForTimeout(1800)}}}
   await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(1200);
   for(const [k,s] of SECS){const e=await p.$(s);if(!e)continue;await e.scrollIntoViewIfNeeded();await p.waitForTimeout(500);
    await p.evaluate(()=>{document.querySelector('header.top')&&(document.querySelector('header.top').style.visibility='hidden');[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed'&&x.offsetHeight<120&&x.offsetHeight>0)x.style.visibility='hidden'})});
