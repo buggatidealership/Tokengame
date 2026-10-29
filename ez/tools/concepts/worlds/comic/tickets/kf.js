@@ -35,7 +35,7 @@
   // a living comic: cards punch in, counters roll, as they come into view
   const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const c=e.target;c.classList.add('kf-in');io.unobserve(c);
-    const n=c.querySelector('.kf-cnt');if(!n||rm)return;const v=+n.dataset.v,s=n.dataset.s,t0=performance.now(),d=900;
+    const n=c.querySelector('.kf-cnt');if(!n||rm||window.__kfShot)return;const v=+n.dataset.v,s=n.dataset.s,t0=performance.now(),d=900;
     (function f(t){const k=Math.min(1,(t-t0)/d),e2=1-Math.pow(1-k,3);n.textContent=s+'$'+Math.round(v*e2).toLocaleString('en-US');if(k<1)requestAnimationFrame(f)})(t0)}),{threshold:.35});
   D.querySelectorAll('.wc-ch').forEach(c=>io.observe(c));
 })();
