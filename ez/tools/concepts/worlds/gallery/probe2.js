@@ -1,0 +1,14 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:844}});await FONTS(p);
+await p.goto('http://localhost:8897/v46-live-x2plus.html',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});
+const r=await p.evaluate(()=>{const o={};const P=window.__x2pPnl();
+o.A=JSON.stringify(Object.fromEntries(Object.entries(P.A).map(([k,v])=>[k,{pnl:v.pnl,keys:Object.keys(v),per:v.per&&Object.entries(v.per).slice(-2)}])));
+o.usd=JSON.stringify(P.usd).slice(0,300);o.pc=JSON.stringify(P.pc).slice(0,300);
+o.bet=document.querySelector('.x2o-bet').innerHTML.slice(0,1500);
+o.vt=[...document.querySelectorAll('.x2o-bet > *')].map(e=>e.tagName+'.'+e.className);
+o.car=document.querySelectorAll('#car .card').length; o.cardcls=document.querySelector('#car .card')?.className; 
+o.recKids=[...document.querySelector('#record').children].map(e=>e.tagName+'#'+e.id+'.'+e.className.toString().slice(0,50));
+o.stKids=[...document.querySelector('#standings').children].map(e=>e.tagName+'#'+e.id+'.'+e.className.toString().slice(0,50));
+o.vid=[...document.querySelectorAll('video')].slice(0,3).map(v=>v.outerHTML.slice(0,300));
+o.TICK=typeof TICKERS;o.SIM=JSON.stringify(window.SIM);o.css=getComputedStyle(document.body).backgroundColor;
+return o});console.log(JSON.stringify(r,null,1));await b.close()})();
