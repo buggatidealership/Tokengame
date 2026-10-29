@@ -57,16 +57,16 @@ function words(D){var r0=D.rk[0],r1=D.rk[1],r3=D.rk[3],T={};var lw=WD[D.lastDay.
  T.get={kick:'Notices',h:'The coin is not live yet',dk:'The address appears here, and only here, at launch.'};
  T.film={cap:'How it works: the explainer, running time 1:20.'};
  T.strip={cap:D.lastR.length+' rounds graded '+lw+'. '+D.nextR.length+' more at '+D.closeWord+'.'};
- T.tape={kick:'The tape',h:'Every round of Season 1',dk:D.N+' graded, '+D.pend.length+' with calls in. Calls as filed, in %; the winning call in bold.'};
+ T.tape=C.tapeWords?C.tapeWords(D):{kick:'The tape',h:'Every round of Season 1',dk:D.N+' graded, '+D.pend.length+' with calls in. Calls as filed, in %; the winning call in bold.'};
  return T}
 function logo(){var s=d.querySelector('.brand .mark svg');return s?s.outerHTML:''}
 function scrollToId(id){var e=d.getElementById(id);if(e)scrollTo({top:e.getBoundingClientRect().top+scrollY-70,behavior:'smooth'})}
 function card(D){var a=D.nextR.map(tk),b=D.due.map(tk);
- return '<div class="np-wx"><div class="np-wxh">Today\'s card</div>'+
+ return '<div class="np-wx"><div class="np-wxh">'+(C.cardTitle||"Today's card")+'</div>'+
   '<div class="np-wxr"><b>'+D.nextR.length+'</b><span>graded at '+D.closeWord+'<i>'+esc(a.join(' · '))+'</i></span></div>'+
   (b.length?'<div class="np-wxr"><b>'+b.length+'</b><span>calls due today<i>'+esc(b.join(' · '))+'</i></span></div>':'')+'</div>'}
-function index(){var I=[['The standings','standings',1],['The record','record',2],['Smarter or just lucky?','learn',3],['Most valuable predictions','highlights',3],['The bet','x2pSt',4],['The tape','np-tape',4],['Get $EZ','get',4]];
- return '<div class="np-ix"><div class="np-wxh">Inside</div>'+I.map(function(i){return '<a data-np-go="'+i[1]+'"><span>'+i[0]+'</span><b>'+i[2]+'</b></a>'}).join('')+'</div>'}
+function index(){var I=C.index||[['The standings','standings',1],['The record','record',2],['Smarter or just lucky?','learn',3],['Most valuable predictions','highlights',3],['The bet','x2pSt',4],['The tape','np-tape',4],['Get $EZ','get',4]];
+ return '<div class="np-ix"><div class="np-wxh">'+(C.ixTitle||'Inside')+'</div>'+I.map(function(i){return '<a data-np-go="'+i[1]+'"><span>'+i[0]+'</span><b>'+(C.pg?C.pg(i[2]):i[2])+'</b></a>'}).join('')+'</div>'}
 function mast(D){var m=d.createElement('div');m.className='np-mh';
  m.innerHTML=(C.flag?'<div class="np-flag">'+C.flag+'</div>':'')+
   '<div class="np-top">'+card(D)+'<div class="np-nmw"><div class="np-nm">The Earnings <span class="np-seal">'+logo()+'</span> Zeason</div>'+(C.motto?'<div class="np-mot">'+C.motto+'</div>':'')+'</div>'+index()+'</div>'+
@@ -109,7 +109,7 @@ function build(){if(d.documentElement.classList.contains('np-built'))return;var 
  caption(d.querySelector('.x2o-bet .x2p-vt'),T.film.cap,credit);caption(d.querySelector('.x2o-bet .x2p-ls'),T.strip.cap,'Live');
  caption(d.querySelector('#standings .x2p-flip'),T.standings.cap,credit);caption(d.querySelector('#record #car'),T.record.cap,credit);
  caption(d.querySelector('#learn .x2p-pt'),T.learn.cap,credit);caption(d.querySelector('#highlights #x2pHl'),T.highlights.cap,credit);caption(d.querySelector('#x2pSt .bs-clip'),T.x2pSt.cap,credit);
- var g=d.getElementById('get');if(g&&!d.getElementById('np-tape'))g.parentNode.insertBefore(tape(D,T),g);
+ var g=d.getElementById(C.tapeBefore||'get');if(g&&!d.getElementById('np-tape'))g.parentNode.insertBefore(tape(D,T),g);
  if(C.extra)C.extra(D,T,{esc:esc,call:call,tk:tk,wname:wname,usd:usd,NM:NM,AB:AB,WD:WD,MO:MO,pd:pd});
  d.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-np-go]');if(a){e.preventDefault();scrollToId(a.getAttribute('data-np-go'))}});
  var fu=function(){furniture(D)};fu();[500,1500,3000,6000].forEach(function(t){setTimeout(fu,t)});addEventListener('resize',fu);

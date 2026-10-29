@@ -22,8 +22,8 @@
  function sheet(cd,G,o){o=o||{};var pin=cd.querySelector(":scope>.pt-in:not(.ta-sheet)"),c=pin.cloneNode(true),tb=c.querySelector(".pt-tb");if(tb)tb.remove();
   c.classList.add("ta-sheet");if(o.cls)c.classList.add(o.cls);c.setAttribute("aria-hidden","true");c.removeAttribute("id");
   [].forEach.call(c.querySelectorAll("[id]"),function(e){if(e.tagName!=="filter"&&e.tagName!=="linearGradient"&&e.tagName!=="pattern")e.removeAttribute("id")});
-  var cs=getComputedStyle(pin),x=3.5,pl=parseFloat(cs.paddingLeft),pr=parseFloat(cs.paddingRight),cw=pin.offsetWidth-pl-pr,npl=pin.offsetLeft+pl-x,npr=(G.W-2*x)-npl-cw;
-  c.style.cssText=(c.getAttribute("style")||"")+";position:absolute;margin:0;left:"+x+"px;top:0;width:"+(G.W-2*x)+"px;height:"+G.Y1+"px;box-sizing:border-box;padding:"+cs.paddingTop+" "+npr+"px "+cs.paddingBottom+" "+npl+"px;z-index:"+(o.z||5)+";pointer-events:none";
+  var cs=getComputedStyle(pin),ex=Math.max(0,G.Y1-pin.offsetTop-pin.offsetHeight),x=3.5,pl=parseFloat(cs.paddingLeft),pr=parseFloat(cs.paddingRight),cw=pin.offsetWidth-pl-pr,npl=pin.offsetLeft+pl-x,npr=(G.W-2*x)-npl-cw;
+  c.style.cssText=(c.getAttribute("style")||"")+";position:absolute;margin:0;left:"+x+"px;top:0;width:"+(G.W-2*x)+"px;height:"+(pin.offsetHeight+ex)+"px;box-sizing:border-box;padding:"+cs.paddingTop+" "+npr+"px "+(parseFloat(cs.paddingBottom)+ex)+"px "+npl+"px;z-index:"+(o.z||5)+";pointer-events:none";
   c.style.setProperty("clip-path",o.clip||"inset("+G.Y0+"px 0 0 0)");
   if(o.bg!==false){c.style.setProperty("background-color","#f8f0d9","important");if(G.grain){c.style.setProperty("background-image",'url("'+G.grain.replace(/"/g,"%22")+'")',"important");
    c.style.setProperty("background-size","200px 200px","important");c.style.setProperty("background-position",-x+"px 0","important");c.style.setProperty("background-repeat","repeat","important")}}
@@ -59,11 +59,11 @@
   var perf=el(cd,"ta-perf","left:3.5px;top:"+(G.Y0+2)+"px;width:"+Ws+"px");run.els.push(perf);
   cd.classList.remove("ta-hide");
   var mv=[{transform:"none",offset:0,easing:"cubic-bezier(.3,0,.5,1)"},{transform:"translateY(3px)",offset:.13,easing:"cubic-bezier(.4,0,.6,1)"},
-   {transform:"translateY(5px) rotate(-5deg)",offset:.36,easing:"cubic-bezier(.55,0,.9,.55)"},{transform:"translate(-30px,"+Math.round(Hs*.95)+"px) rotate(-17deg)",offset:1}];
+   {transform:"translateY(5px) rotate(-5deg)",offset:.36,easing:"cubic-bezier(.55,0,.9,.55)"},{transform:"translate(-34px,"+Math.round(Hs*1.35)+"px) rotate(-18deg)",offset:1}];
   var o={duration:D,fill:"both"};
   [old,sh].forEach(function(e){e.style.transformOrigin="100% "+G.Y0+"px"});
-  A(old,mv,o);A(old,[{opacity:1},{opacity:1,offset:.68},{opacity:0}],o);
-  A(sh,mv,o);A(sh,[{opacity:0},{opacity:.85,offset:.3},{opacity:.85,offset:.68},{opacity:0}],o);
+  A(old,mv,o);A(old,[{opacity:1},{opacity:1,offset:.8},{opacity:0}],o);
+  A(sh,mv,o);A(sh,[{opacity:0},{opacity:.85,offset:.3},{opacity:.85,offset:.8},{opacity:0}],o);
   A(old.querySelector(".ta-edge"),[{opacity:0},{opacity:1,offset:.15},{opacity:1}],o);
   A(perf,[{opacity:0,transform:"scaleY(.6)"},{opacity:1,transform:"scaleY(1.4)",offset:.13},{opacity:0,offset:.3},{opacity:0}],o);
   A(fr,[{opacity:0},{opacity:0,offset:.2},{opacity:1,offset:.32},{opacity:1,offset:.6},{opacity:0}],o);
@@ -72,13 +72,18 @@
  /* T2 stamped: a stamp block comes down over the page (its shadow sharpening), strikes: the card gives, the new view is inked from the
     middle out, a faint second strike settles, the block lifts. The tab is struck too. 560ms */
  T2:function(cd,G,old,b){var D=560,I=.27,Hs=G.Y1-G.Y0;
-  var nw=sheet(cd,G,{cls:"ta-new",z:6}),ds=sheet(cd,G,{cls:"ta-ds",z:7,bg:false});run.els.push(nw,ds);ds.style.translate="1.6px -1.3px";
-  var blk=el(cd,"ta-block","left:10px;top:"+(G.Y0+8)+"px;width:"+(G.W-20)+"px;height:"+(Hs-16)+"px");run.els.push(blk);
-  var o={duration:D,fill:"both"},cx="50%",cy=(G.Y0+Hs*.42)+"px",ins=function(r){return "circle("+r+" at "+cx+" "+cy+")"};
-  A(old,[{opacity:1},{opacity:1,offset:I},{opacity:0,offset:I+.001},{opacity:0}],o);
-  A(blk,[{opacity:0,transform:"translate(16px,22px) scale(1.12)",easing:"cubic-bezier(.55,0,1,.6)"},{opacity:.62,transform:"translate(2px,3px) scale(1)",offset:I},
-   {opacity:.62,transform:"translate(2px,3px) scale(1)",offset:I+.06,easing:"cubic-bezier(0,0,.3,1)"},{opacity:0,transform:"translate(12px,16px) scale(1.08)",offset:.62},{opacity:0,transform:"none"}],o);
-  A(nw,[{clipPath:ins("0px")},{clipPath:ins("0px"),offset:I},{clipPath:ins("60px"),offset:I+.001,easing:"cubic-bezier(.1,.6,.3,1)"},{clipPath:ins("120%"),offset:.6},{clipPath:ins("120%")}],o);
+  var nw=sheet(cd,G,{cls:"ta-new",z:6,bg:false}),ds=sheet(cd,G,{cls:"ta-ds",z:7,bg:false});run.els.push(nw,ds);ds.style.translate="1.6px -1.3px";
+  var blk=el(cd,"ta-block","left:"+(G.W*.16)+"px;top:"+(G.Y0+Hs*.14)+"px;width:"+(G.W*.68)+"px;height:"+(Hs*.56)+"px");run.els.push(blk);
+  /* the ink: a wobbly blot growing from the middle (clip-path path(), the same commands at every size, so it interpolates); no paper on
+     the new sheet, the stamp lifts off a clean page */
+  var o={duration:D,fill:"both"},cx=G.W/2-3.5,cy=G.Y0+Hs*.42,Rr=rnd(4),N=64,ph=[Rr()*6.3,Rr()*6.3,Rr()*6.3],rad=[];
+  for(var i=0;i<N;i++){var a=i/N*6.2832;rad.push(1+.05*Math.sin(3*a+ph[0])+.035*Math.sin(7*a+ph[1])+.025*Math.sin(13*a+ph[2])+(Rr()-.5)*.03)}
+  var ms=function(R){return {clipPath:'path("M'+rad.map(function(r,i){var a=i/N*6.2832;return (cx+R*r*Math.cos(a)).toFixed(1)+" "+(cy+R*r*Math.sin(a)).toFixed(1)}).join(" L")+'Z")'}};
+  A(old,[{opacity:1},{opacity:1,offset:I},{opacity:0,offset:I+.08},{opacity:0}],o);
+  A(blk,[{opacity:0,transform:"translate(22px,30px) scale(1.25)",easing:"cubic-bezier(.55,0,1,.6)"},{opacity:.5,transform:"translate(3px,4px) scale(1)",offset:I},
+   {opacity:.5,transform:"translate(3px,4px) scale(1)",offset:I+.05,easing:"cubic-bezier(0,0,.3,1)"},{opacity:0,transform:"translate(18px,26px) scale(1.2)",offset:.6},{opacity:0,transform:"none"}],o);
+  var k0=ms(0),k1=ms(34),k2=ms(Math.hypot(G.W,Hs)*.62);
+  [nw,ds].forEach(function(e){A(e,[k0,Object.assign({offset:I},k0),Object.assign({offset:I+.001,easing:"cubic-bezier(.15,.7,.3,1)"},k1),Object.assign({offset:.62},k2),k2],o)});
   A(ds,[{opacity:0},{opacity:0,offset:I},{opacity:.34,offset:I+.04,easing:"cubic-bezier(.3,0,.2,1)"},{opacity:0,translate:"0px 0px"}],o);
   A(cd,[{transform:"none"},{transform:"none",offset:I-.02,easing:"cubic-bezier(.3,0,.2,1)"},{transform:"translateY(1.6px) scale(.993)",offset:I+.03,easing:"cubic-bezier(.3,0,.3,1.4)"},{transform:"none",offset:.5},{transform:"none"}],o);
   A(b,[{transform:"none"},{transform:"none",offset:I-.05},{transform:"scale(.84)",offset:I+.02,easing:"cubic-bezier(.3,0,.3,1.6)"},{transform:"none",offset:.55},{transform:"none"}],o)},
@@ -118,15 +123,15 @@
 
  /* T5 shuffle the stack: the four views are four tickets in a stack; the tapped one slides out from behind to the right, tilted, then
     is laid on top with a hard shadow that shrinks as it settles; the old one gives way under it. The tab lifts. 700ms */
- T5:function(cd,G,old,b){var D=700,Ws=G.W-7,Z=.42;
-  var nw=sheet(cd,G,{cls:"ta-new",z:4,edge:true}),sh=el(cd,"ta-shade2","left:3.5px;top:0;width:"+Ws+"px;height:"+G.Y1+"px;clip-path:inset("+G.Y0+"px 0 0 0);translate:5px 7px");
+ T5:function(cd,G,old,b){var D=660,Ws=G.W-7,Z=.38;
+  var sh=el(cd,"ta-shade2","left:3.5px;top:0;width:"+Ws+"px;height:"+G.Y1+"px;clip-path:inset("+G.Y0+"px 0 0 0);translate:5px 7px"),nw=sheet(cd,G,{cls:"ta-new",z:0,edge:true});
   var und=el(cd,"ta-under","left:3.5px;top:0;width:"+Ws+"px;height:"+G.Y1+"px;clip-path:inset("+G.Y0+"px 0 0 0)");run.els.push(nw,sh,und);
   var dk=el(old,"ta-dark","top:"+G.Y0+"px");
   [nw,sh,old,und].forEach(function(e){e.style.transformOrigin="50% "+G.Y1+"px"});
-  var o={duration:D,fill:"both"},mv=[{transform:"none",easing:"cubic-bezier(.3,0,.2,1)"},{transform:"translate("+Math.round(Ws*.64)+"px,-12px) rotate(6deg)",offset:Z,easing:"cubic-bezier(.45,0,.15,1)"},
+  var o={duration:D,fill:"both"},mv=[{transform:"none",easing:"cubic-bezier(.3,0,.2,1)"},{transform:"translate("+Math.round(Ws*.62)+"px,-4px) rotate(5deg)",offset:Z,easing:"cubic-bezier(.45,0,.15,1)"},
    {transform:"translate(-3px,2px) rotate(-1.4deg)",offset:.84,easing:"cubic-bezier(.3,0,.3,1)"},{transform:"none"}];
   A(nw,mv,o);A(sh,mv,o);
-  A(nw,[{zIndex:4},{zIndex:4,offset:Z},{zIndex:8,offset:Z+.001},{zIndex:8}],o);A(sh,[{zIndex:3},{zIndex:3,offset:Z},{zIndex:7,offset:Z+.001},{zIndex:7}],o);
+  A(nw,[{zIndex:0},{zIndex:0,offset:Z},{zIndex:8,offset:Z+.001},{zIndex:8}],o);A(sh,[{zIndex:0},{zIndex:0,offset:Z},{zIndex:7,offset:Z+.001},{zIndex:7}],o);
   A(sh,[{opacity:0},{opacity:.9,offset:.25},{opacity:.9,offset:.7},{opacity:0}],o);
   A(old,[{transform:"none",easing:"cubic-bezier(.3,0,.2,1)"},{transform:"translate(-7px,3px) rotate(-1.6deg)",offset:Z,easing:"cubic-bezier(.4,0,.2,1)"},{transform:"translate(-2px,1px) rotate(-.4deg)",offset:.84},{transform:"none"}],o);
   A(dk,[{opacity:0},{opacity:0,offset:Z},{opacity:1,offset:.8},{opacity:1}],o);
