@@ -79,7 +79,7 @@ function backIssue(r){
   const f=film(r.n),up=r.a>0,W=winners(r),lg=coLogo(r.ticker);
   return `<a class="wc-bi" href="#/round/${r.n}" aria-label="Round ${r.n}, ${esc(r.co)}, ${up?'up':'down'} ${pct(r.a)}">
     <span class="wc-bi-art">${f?`<img src="${f.p}" alt="" loading="lazy">`:lg?`<img class="wc-lgimg" src="${lg}" alt="" loading="lazy">`:''}</span>
-    <span class="wc-bi-no">#${r.n}</span><span class="wc-bi-mv ${up?'wc-up':'wc-dn'}">${up?'+':'−'}${pct(r.a)}</span>
+    <span class="wc-bi-no">#${r.n}<small>${esc(r.ticker)}</small></span><span class="wc-bi-mv ${up?'wc-up':'wc-dn'}">${up?'+':'−'}${pct(r.a)}</span>
     <span class="wc-bi-w">${W.length?W.map(m=>face(m,'wc-f-s')).join(''):'<i class="wc-nob">×</i>'}</span></a>`}
 
 function rankPnl(P,N){return ORDER.slice().sort((a,b)=>{const qa=P[a].W+P[a].L>=N/2,qb=P[b].W+P[b].L>=N/2;return qa!==qb?(qa?-1:1):P[b].pnl-P[a].pnl})}
@@ -146,7 +146,7 @@ function build(){
   const tn=tonight.slice(0,6);
   const cliff=tonight.length?`<p class="wc-cap wc-beat">And next on the card…</p><section class="wc-cliff" aria-label="${esc(tLabel)}">
     <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} round${tonight.length===1?'':'s'}. Every call locked before the report. The close decides.</small></h2>
-    <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker),cs=p.calls||[],u=cs.filter(c=>c.dir==='UP').length,d=cs.length-u;return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt=""${coDk(p.ticker)}>`:''}<b>${esc(p.co)}</b></header>
+    <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker),cs=p.calls||[],u=cs.filter(c=>c.dir==='UP').length,d=cs.length-u;return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt=""${coDk(p.ticker)}>`:''}<b>${esc(p.co)}<small>${esc(p.ticker)}</small></b></header>
       <p class="wc-tn-vs" aria-label="${u} up, ${d} down"><span class="wc-tn-u" style="flex:${u||.0001}">${u?u+' up':''}</span><span class="wc-tn-d" style="flex:${d||.0001}">${d?d+' down':''}</span></p>
       <div class="wc-lvc">${ORDER.map(m=>{const c=p.calls.find(x=>x.m===m);return c?`<div class="wc-lvs ${c.dir==='UP'?'wc-lvu':'wc-lvd'}">${face(m,'wc-f-s')}<p><small>${NM[m]}</small>${c.dir==='UP'?'Up':'Down'} ${c.mag}%</p></div>`:''}).join('')}</div></article>`}).join('')}</div>
     ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s"><a class="wc-gut-a" href="#/upcoming">+ ${tonight.length-tn.length} more locked in. See the card →</a></p>`:''}
@@ -177,6 +177,7 @@ function build(){
      last round straight after the cover, so the first scroll shows how a round goes */
   book.innerHTML=cover+lastR+cast+issues+cliff+splash+bet+back;
   lrCap();setTimeout(lrCap,400);
+  {const mb=book.querySelector('.wc-lr-meet');if(mb)mb.addEventListener('click',()=>{const c=D.querySelector('.wc-chars');if(c)c.scrollIntoView({behavior:RM_()?'auto':'smooth',block:'start'})})}
   const main=D.querySelector('main');main.insertBefore(book,main.firstChild);
   // the real explainer film moves onto the cover (its controls keep working)
   const vt=D.querySelector('.x2p-vt');if(vt)book.querySelector('.wc-film-slot').appendChild(vt);
@@ -330,17 +331,33 @@ function lastRound(R,P){
   const p3=`<li class="wc-pn wc-lr-p wc-lr-3"><b class="wc-lr-n" aria-hidden="true">3</b>
       <p class="wc-cap wc-lr-c">The market grades every call</p>
       <div class="wc-lr-cw">${certMid(r)}</div>
-      <p class="wc-lr-rule">${W.length===1&&right.length===1?`Only ${NM[W[0]]} said ${up?'up':'down'}. Right way, so ${NM[W[0]]} wins.`:W.length?'Right way and closest to the move wins.':right.length?'Got the direction, but nobody wins this one.':'Nobody got the direction. Nobody wins.'}</p></li>`;
+      <p class="wc-lr-rule">${lrWhy(r,cs,W,up)}</p></li>`;
   const ws=cs.filter(x=>x.win),shown=ws.length?ws:cs.slice().sort((a,b)=>b.v-a.v).slice(0,1);
   const p4=`<li class="wc-pn wc-lr-p wc-lr-4"><b class="wc-lr-n" aria-hidden="true">4</b>
       <p class="wc-cap wc-lr-c">${ws.length?'The winner gets paid':'Nobody won. The money'}</p>
       <div class="wc-lr-m">${shown.map(x=>`<div class="wc-lr-mw">${face(x.m,'wc-f-l')}<b class="${x.v>=0?'wc-tu':'wc-td'}">${pm(x.v)}</b><small>${NM[x.m]} ${x.v>=0?'made':'lost'} on this call</small></div>`).join('')}</div>
       <ul class="wc-lr-all" aria-label="Every AI's P&L on this call">${cs.map(x=>`<li>${face(x.m,'wc-f-s')}<span>${NM[x.m]}</span><b class="${x.v>=0?'wc-tu':'wc-td'}">${kShort(x.v)}</b></li>`).join('')}</ul>
-      <p class="wc-lr-fine">Pretend $100,000 accounts, the whole balance on every call.</p>
+      <p class="wc-lr-fine">Pretend $100,000 accounts, the whole balance on every call. Then on to the next round.</p>
       <a class="wc-lr-open" href="#/round/${r.n}">Open its graded card →</a></li>`;
+  const nR=R.length,nC=R.reduce((t,x)=>t+x.calls.length,0);
+  const p5=`<li class="wc-pn wc-lr-p wc-lr-5"><b class="wc-lr-n" aria-hidden="true">5</b>
+      <p class="wc-cap wc-lr-c">Every round goes on the record</p>
+      <div class="wc-lr-log"><p class="wc-lr-lt">Every call, every grade, every dollar is logged. Round after round, the record shows which AI is actually good, and which one just got lucky.</p>
+      <p class="wc-lr-tally" aria-label="${nR} rounds and ${nC} calls logged so far"><span><b>${nR}</b>rounds</span><span><b>${nC}</b>calls</span><span><b>4</b>models</span></p>
+      <button type="button" class="wc-lr-open wc-lr-meet">Meet the models ↓</button></div></li>`;
   return `<section class="wc-lr" aria-label="One round, start to finish">
-    <h2 class="wc-h2"><span>One round, start to finish</span><small>A real one: round ${r.n}, ${esc(r.co)}, ${esc(day.replace(/^(Today|Yesterday) · /,''))}.</small></h2>
-    <ol class="wc-lr-pg" data-n="${r.n}">${p1}${p2}${p3}${p4}</ol></section>`}
+    <h2 class="wc-h2"><span>One round, start to finish</span><small>Round ${r.n}: ${esc(r.co)} reports earnings. Calls locked ${md(r.called)}, graded at the close on ${esc(day.replace(/^(Today|Yesterday) · /,''))}.</small></h2>
+    <ol class="wc-lr-pg" data-n="${r.n}">${p1}${p2}${p3}${p4}${p5}</ol></section>`}
+/* panel 3's line: who passed, who failed, what the market said, who won */
+function lrWhy(r,cs,W,up){const and=a=>a.length<2?a[0]||'':a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+  const ok=cs.filter(x=>x.ok).map(x=>NM[x.m]),no=cs.filter(x=>!x.ok).map(x=>NM[x.m]),dir=up?'up':'down';
+  let t='';
+  if(ok.length)t+=`${and(ok)} called ${dir}: <b>pass</b>. `;
+  if(no.length)t+=`${no.length>1&&ok.length?'The other '+['','','two','three'][no.length]:and(no)}: <b>fail</b>. `;
+  if(W.length===1)t+=ok.length>1?`${NM[W[0]]} came closest, so <b>${NM[W[0]]} wins the round.</b>`:`<b>${NM[W[0]]} wins the round.</b>`;
+  else if(W.length>1)t+=`<b>${and(W.map(m=>NM[m]))} tie for the round.</b>`;
+  else t+='<b>Nobody wins this one.</b>';
+  return t}
 /* desktop: the captions sit above the square panels; the strip leaves room for the tallest one */
 function lrCap(){const pg=D.querySelector('.wc-lr-pg');if(!pg)return;
   if(!matchMedia('(min-width:1000px)').matches){pg.style.removeProperty('--lrcap');return}
