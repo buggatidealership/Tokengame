@@ -75,7 +75,7 @@ function build(){if(d.getElementById('wf-fc')||typeof ROUNDS==='undefined'||type
  var heads='<div class="wf-colh"><span>Stock</span>'+ORDER.map(function(m){return '<span class="wf-colm">'+mark(m,18)+'<small>'+nm(m)+'</small></span>'}).join('')+'</div>';
  var rows=tonight.map(function(r){var c=consensus(r.list);return '<li class="wf-row wf-c-'+c.k+'">'+co(r.t,30)+'<span class="wf-rn-t"><b>'+esc(r.co)+'</b><small>'+c.w+'</small></span>'+
   ORDER.map(function(m){return '<span class="wf-cell" title="'+nm(m)+(m in r.cs?' says '+says(r.cs[m]):' has not filed')+'">'+(m in r.cs?wx(r.cs[m],26):'<i class="wf-nf">…</i>')+'</span>'}).join('')+'</li>'}).join('');
- var legend='<p class="wf-key">'+wx(3,20)+'<span>says up</span>'+wx(-3,20)+'<span>says down</span><em>Stronger weather, bigger move: '+wx(1,16)+wx(5,16)+' under 2% to 4% or more, in a day.</em></p>';
+ var legend='<p class="wf-key">'+wx(3,20)+'<span>says up</span>'+wx(-3,20)+'<span>says down</span><em>Stronger weather, bigger move: '+wx(1,16)+' under 2%, '+wx(5,16)+' 4% or more, in one day.</em></p>';
  fc.insertAdjacentHTML('beforeend',now1+feat+'<div class="wf-list wf-glass">'+legend+heads+'<ul>'+rows+'</ul></div>');
 
  /* ---------- yesterday's verdict ---------- */
@@ -106,13 +106,13 @@ function build(){if(d.getElementById('wf-fc')||typeof ROUNDS==='undefined'||type
 
  /* ---------- the long-range outlook ---------- */
  var nv=UPCOMING.filter(function(r){return r.ticker==='NVDA'})[0],nvD=nv&&pd(nv.called);
- var days={};PENDING.concat(UPCOMING).forEach(function(r){var k=r.called;if(!k)return;var t=+pd(k);if(t<+now.day)return;(days[t]=days[t]||[]).push(r)});
+ var days={};PENDING.concat(UPCOMING).forEach(function(r){var k=r.called;if(!k)return;var t=+pd(k);if(t<=+now.day)return;(days[t]=days[t]||[]).push(r)});
  var keys=Object.keys(days).map(Number).sort(function(a,b){return a-b}).filter(function(t){return!nvD||t<=+nvD}),mx=Math.max.apply(null,keys.map(function(t){return days[t].length}));
  var strip=keys.map(function(t){var dt=new Date(t),rs=days[t].slice().sort(function(a,b){return(CAPS[b.ticker]||0)-(CAPS[a.ticker]||0)}),isNv=nvD&&t===+nvD,n=rs.length;
-  return '<li class="wf-day'+(isNv?' wf-nvd':'')+'"><p class="wf-dw">'+(t===+now.day?'Today':WD[dt.getUTCDay()].slice(0,3))+'</p><p class="wf-dd">'+md(dt)+'</p>'+
+  return '<li class="wf-day'+(isNv?' wf-nvd':'')+'"><p class="wf-dw">'+(Math.round((t-+now.day)/864e5)===1?'Tmrw':WD[dt.getUTCDay()].slice(0,3))+'</p><p class="wf-dd">'+md(dt)+'</p>'+
    '<p class="wf-dl">'+co(rs[0].ticker,26)+'</p><p class="wf-db"><i style="height:'+Math.max(6,Math.round(n/mx*56))+'px"></i></p><p class="wf-dn2"><b>'+n+'</b>'+(n===1?'stock':'stocks')+'</p></li>'}).join('');
  var nvIn=nvD?Math.round((+nvD-+now.day)/864e5):null,lead=team[0];
- var out=sec('wf-out','Long-range outlook','The storm on the horizon',nvD?'Forecast days between now and '+md(nvD)+', when NVIDIA reports.':'');
+ var out=sec('wf-out','Long-range outlook','The storm on the horizon',nvD?'How many stocks get forecast each day from tomorrow to '+md(nvD)+', when NVIDIA reports.':'');
  out.insertAdjacentHTML('beforeend','<div class="wf-glass wf-strip-w"><p class="wf-k">Stocks forecast each day</p><ol class="wf-strip">'+strip+'</ol></div>'+
   (nvD?'<article class="wf-storm wf-glass"><div class="wf-storm-art" aria-hidden="true">'+wx(-6,120,true)+wx(6,64,true)+'</div><div><p class="wf-k">Bet #1 · '+WD[nvD.getUTCDay()]+' '+md(nvD)+' · in '+nvIn+' days</p><h3>NVIDIA</h3>'+
    '<p>The forecaster on top makes the call, up or down. We bet the $EZ pool on it.</p><ul class="wf-two"><li class="wf-up-b"><b>Right</b> Profits buy back $EZ.</li><li class="wf-dn-b"><b>Wrong</b> The pool can be wiped out.</li></ul>'+

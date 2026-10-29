@@ -14,5 +14,5 @@ def board(w,labels,scale,out,title,sub):
 sub='Every word and number is read from ez-data.js and the page\'s P&L accounts (New York, Wed 28 Oct 2026, late evening). Screens in scroll order.'
 if PRE: board(390,['1','2','3','4','5'],.5,S+'prev-phone.png','preview',sub)
 else:
-    board(390,['1  The desk: what it is, the film','2  Tomorrow\'s forecast','3  The forecast, every stock','4  Yesterday\'s verdict, replays','5  The forecasters'],.5,EZ+'x2p-world-forecast-phone.png','The forecast station · phone, 390x844',sub)
+    board(390,['1  The desk: what it is, the film','2  Tomorrow\'s forecast','3  The forecast, every stock','4  The verdict, with the films as replays','5  The forecasters'],.5,EZ+'x2p-world-forecast-phone.png','The forecast station · phone, 390x844',sub)
     board(1536,['1  First screen: the forecast docked left, the desk and the film','2  Yesterday\'s verdict and the forecasters','3  The long-range outlook and the almanac'],.5,EZ+'x2p-world-forecast-desktop.png','The forecast station · desktop, 1536x864',sub)
