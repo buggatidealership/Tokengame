@@ -1482,7 +1482,10 @@ html.x2p #x2pHl .x2p-hi:not(.on) *,html.x2p #x2pHl .x2p-hi:not(.on) *::before,ht
 html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back,html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back *,
 html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back *::before,html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back *::after,
 html.x2p :is(#record,#x2pHl) .card.flipped .face.front *,html.x2p :is(#record,#x2pHl) .card.flipped .face.front *::before,html.x2p :is(#record,#x2pHl) .card.flipped .face.front *::after,
-html.x2p .x2p-offs,html.x2p .x2p-offs *,html.x2p .x2p-offs *::before,html.x2p .x2p-offs *::after{animation-play-state:paused!important}
+html.x2p .x2p-offs,html.x2p .x2p-offs .x2p-an,html.x2p .x2p-offs .x2p-anp::before,html.x2p .x2p-offs .x2p-anp::after{animation-play-state:paused!important}
+/* (SPEED3, 2026-10-29) the off-screen rule names only the elements that animate (x2plus.js tags them .x2p-an, or .x2p-anp when the
+   loop is on a ::before or ::after, as a section leaves the screen): ".x2p-offs *" made the browser restyle every element of a section
+   each time it crossed the screen's edge, the record's 10,000 included: about 1 s of frozen scrolling each way on a 4x slower phone */
 /*}SPEED*/
 
 /*BETSEC{*/
@@ -3412,3 +3415,24 @@ html.ta #learn .ta-under{z-index:2;background:#ece0c2;box-shadow:inset 0 0 0 1px
 html.ta #learn .ta-sheet>.ta-dark{position:absolute;left:0;right:0;bottom:0;background:rgba(40,28,12,.14);opacity:0;pointer-events:none}
 
 /*}TABANIM*/
+
+/*SPEED3{ (2026-10-29, slow phones) loops that run where nobody sees them. Each one made the browser do a full frame of style,
+   intersection and paint work 60 times a second on a 4x slower phone; none of them changes a visible pixel. */
+/* the page's own board under the season ticket is visually hidden (.stx-sr, a 1px clip) but its #1 foil (background-position),
+   its flags and its antenna kept animating: 5.5 s of main-thread work in 6 s idle at the top of the Overview, 2.0 s without */
+#standings .stx-sr li,#standings .stx-sr svg{animation-play-state:paused!important}
+/* the NVIDIA chip's countdown redraws its digits every second (v15's tick: segment classes and a screen-reader line) and that cost the
+   whole page a frame of paint and layer work every second, wherever the visitor was (about 1 s of every 6 s on a 4x slower phone);
+   while the chip is well off screen the browser now skips the digits' rendering (x2plus.js puts them in .x2p-gcw, the chip's own size;
+   content-visibility:auto keeps them readable to screen readers), so the ticks cost nothing until it comes near; on screen it counts as before */
+html.x2p .gpu-img>.x2p-gcw{position:absolute;inset:0;z-index:2;content-visibility:auto}
+/* the record carousel holds about 115 cards (10,000 elements, a hundred 3D layers), and the browser re-planned all of their layers on
+   every frame anything moved on the page (a tab switch on the proof card, a film, the countdown): 64 ms a frame on a 4x slower phone,
+   13 ms without them. Cards far off the carousel's sides (x2plus.js marks them .x2p-cvf: more than two screen widths away, refreshed when
+   the carousel stops scrolling or changes width) skip rendering while off screen (content-visibility:auto). Each keeps the size it was
+   last drawn at (contain-intrinsic-size: auto, recorded while every card was still drawn), so the carousel's height, its scroll width
+   and every card's place stay exactly as they were; no card on screen or near it is ever contained (containment would snap its drawing
+   to whole pixels) */
+html.x2p #car>.card{contain-intrinsic-size:auto 200px auto 100px}
+html.x2p.x2p-cvc #car>.card.x2p-cvf{content-visibility:auto}
+/*}SPEED3*/

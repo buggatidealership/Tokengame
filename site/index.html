@@ -5941,7 +5941,10 @@ html.x2p #x2pHl .x2p-hi:not(.on) *,html.x2p #x2pHl .x2p-hi:not(.on) *::before,ht
 html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back,html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back *,
 html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back *::before,html.x2p :is(#record,#x2pHl) .card:not(.flipped):not(.nofilm) .face.back *::after,
 html.x2p :is(#record,#x2pHl) .card.flipped .face.front *,html.x2p :is(#record,#x2pHl) .card.flipped .face.front *::before,html.x2p :is(#record,#x2pHl) .card.flipped .face.front *::after,
-html.x2p .x2p-offs,html.x2p .x2p-offs *,html.x2p .x2p-offs *::before,html.x2p .x2p-offs *::after{animation-play-state:paused!important}
+html.x2p .x2p-offs,html.x2p .x2p-offs .x2p-an,html.x2p .x2p-offs .x2p-anp::before,html.x2p .x2p-offs .x2p-anp::after{animation-play-state:paused!important}
+/* (SPEED3, 2026-10-29) the off-screen rule names only the elements that animate (x2plus.js tags them .x2p-an, or .x2p-anp when the
+   loop is on a ::before or ::after, as a section leaves the screen): ".x2p-offs *" made the browser restyle every element of a section
+   each time it crossed the screen's edge, the record's 10,000 included: about 1 s of frozen scrolling each way on a 4x slower phone */
 /*}SPEED*/
 
 /*BETSEC{*/
@@ -7816,6 +7819,27 @@ html.ta #learn .ta-under{z-index:2;background:#ece0c2;box-shadow:inset 0 0 0 1px
 html.ta #learn .ta-sheet>.ta-dark{position:absolute;left:0;right:0;bottom:0;background:rgba(40,28,12,.14);opacity:0;pointer-events:none}
 
 /*}TABANIM*/
+
+/*SPEED3{ (2026-10-29, slow phones) loops that run where nobody sees them. Each one made the browser do a full frame of style,
+   intersection and paint work 60 times a second on a 4x slower phone; none of them changes a visible pixel. */
+/* the page's own board under the season ticket is visually hidden (.stx-sr, a 1px clip) but its #1 foil (background-position),
+   its flags and its antenna kept animating: 5.5 s of main-thread work in 6 s idle at the top of the Overview, 2.0 s without */
+#standings .stx-sr li,#standings .stx-sr svg{animation-play-state:paused!important}
+/* the NVIDIA chip's countdown redraws its digits every second (v15's tick: segment classes and a screen-reader line) and that cost the
+   whole page a frame of paint and layer work every second, wherever the visitor was (about 1 s of every 6 s on a 4x slower phone);
+   while the chip is well off screen the browser now skips the digits' rendering (x2plus.js puts them in .x2p-gcw, the chip's own size;
+   content-visibility:auto keeps them readable to screen readers), so the ticks cost nothing until it comes near; on screen it counts as before */
+html.x2p .gpu-img>.x2p-gcw{position:absolute;inset:0;z-index:2;content-visibility:auto}
+/* the record carousel holds about 115 cards (10,000 elements, a hundred 3D layers), and the browser re-planned all of their layers on
+   every frame anything moved on the page (a tab switch on the proof card, a film, the countdown): 64 ms a frame on a 4x slower phone,
+   13 ms without them. Cards far off the carousel's sides (x2plus.js marks them .x2p-cvf: more than two screen widths away, refreshed when
+   the carousel stops scrolling or changes width) skip rendering while off screen (content-visibility:auto). Each keeps the size it was
+   last drawn at (contain-intrinsic-size: auto, recorded while every card was still drawn), so the carousel's height, its scroll width
+   and every card's place stay exactly as they were; no card on screen or near it is ever contained (containment would snap its drawing
+   to whole pixels) */
+html.x2p #car>.card{contain-intrinsic-size:auto 200px auto 100px}
+html.x2p.x2p-cvc #car>.card.x2p-cvf{content-visibility:auto}
+/*}SPEED3*/
 
 </style>
 <style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>
@@ -10937,7 +10961,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
 
 /* (2026-10-23, code review) a section off screen holds its looping animations still (skin-x2plus.css, after SPEED): the Overview's
    sections are watched with 200px of warning; a section on a hidden tab counts as off screen */
-(function(){try{if(!window.IntersectionObserver)return;var io=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle("x2p-offs",!e.isIntersecting)})},{rootMargin:"200px 0px"});
+(function(){try{if(!window.IntersectionObserver)return;var io=new IntersectionObserver(function(es){es.forEach(function(e){var t=e.target;
+   /* (SPEED3, 2026-10-29) tag what animates in the section as it leaves, so the off-screen rule can name it (a "*" there restyled the
+      whole section, 10,000 elements for the record, each time it crossed the edge); a loop started while it is away runs until the next time */
+   if(!e.isIntersecting&&t.getAnimations)try{t.getAnimations({subtree:true}).forEach(function(a){var f=a.effect,g=f&&f.target;if(g&&g.classList)g.classList.add(f.pseudoElement?"x2p-anp":"x2p-an")})}catch(x){}
+   t.classList.toggle("x2p-offs",!e.isIntersecting)})},{rootMargin:"200px 0px"});
   function watch(){["#standings","#record","#learn","#highlights","#get"].forEach(function(q){var el=document.querySelector(q);if(el&&!el.hasAttribute("data-x2p-io")){el.setAttribute("data-x2p-io","");io.observe(el)}})}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch);else watch();addEventListener("load",watch);setTimeout(watch,2000)}catch(e){}})();
 /* ---- the bet ticket (owner, 2026-10-22): Admit One's format with Fight Night's colours and words, under the explainer film ---- */
@@ -12241,10 +12269,17 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
      else if(c.nodeType===1&&c.tagName==='SMALL')walk(c)})};walk(h);
    ws.forEach(function(s){var nx=s.nextSibling;if(nx&&nx.nodeType===1&&nx.classList.contains('x2p-lc'))s.appendChild(nx)});
    ws.forEach(function(s,i){s.classList.add(i<Math.ceil(ws.length/2)?'h45-L':'h45-R')});h.classList.add('h45-h')})}
- function fit(){d.querySelectorAll('section .sh h2.h45-h').forEach(function(h){if(!h.offsetWidth)return;h.style.removeProperty('font-size');var p=h.parentNode,
+ function fit(){d.querySelectorAll('section .sh h2.h45-h').forEach(function(h){if(!h.offsetWidth)return;var p=h.parentNode,
    room=function(){var cs=getComputedStyle(p);return p.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)},
    need=function(){var r=d.createRange();r.selectNodeContents(h);var b=r.getBoundingClientRect();return b.width+h.offsetLeft-p.offsetLeft+(h.querySelector('.x2p-flipbtn')?0:0)};
-   var z=parseFloat(getComputedStyle(h).fontSize),n=0,w=room();while(h.scrollWidth>h.clientWidth+.5&&z>14&&n++<60){z-=.5;h.style.setProperty('font-size',z+'px','important')}})}
+   /* (SPEED3, 2026-10-29) same steps as before (half a pixel down until the head fits, never below 14px, at most 60), found by halving
+      instead of one page layout per step (a head came down up to 47 steps, five heads, on every start-up poll), and skipped when the
+      head's width, words and loaded fonts are as at its last fit */
+   var k0=p.clientWidth+'|'+fg+'|'+h.textContent;if(h.__fk===k0&&h.style.getPropertyValue('font-size')===h.__fz)return;h.style.removeProperty('font-size');
+   var z0=parseFloat(getComputedStyle(h).fontSize),w=room(),fits=function(k){if(k)h.style.setProperty('font-size',(z0-.5*k)+'px','important');else h.style.removeProperty('font-size');return h.scrollWidth<=h.clientWidth+.5};
+   var K=0;while(K<60&&z0-.5*K>14)K++;var lo=0,hi=K;if(!fits(0)&&K){lo=1;while(lo<hi){var m=(lo+hi)>>1;if(fits(m))hi=m;else lo=m+1}fits(lo)}
+   h.__fk=k0;h.__fz=h.style.getPropertyValue('font-size')})}
+ var fg=0;if(d.fonts&&d.fonts.addEventListener)d.fonts.addEventListener('loadingdone',function(){fg++});
  function strap(){var ls=d.querySelectorAll('#standings .x2p-strap li');if(ls[1]&&!ls[1].__h45){ls[1].__h45=1;ls[1].textContent='All tracked, public, graded at the close.'}}
  function go(){words();strap();fit()}
  var lw=0;addEventListener('resize',function(){if(innerWidth!==lw){lw=innerWidth;fit()}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(fit);addEventListener('load',fit);
@@ -12319,7 +12354,9 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
   new MutationObserver(function(){sync(hs,ed)}).observe(hs,{attributes:true,attributeFilter:["style"]});
   var lt=document.createElement("i");lt.className="bt-rake";lt.setAttribute("aria-hidden","true");(pp.querySelector(":scope>.bt-pp")||pp).appendChild(lt)}
  var q=0;function all(){q=0;[].forEach.call(document.querySelectorAll(":is(.bs-nx,.x2p-bt):not([data-ppr])"),one)}
- function soon(){if(!q)q=requestAnimationFrame(all)}
+ /* (SPEED3, 2026-10-29) only when an element was added: the NVIDIA countdown rewrites its screen-reader line every second (a text node),
+    and each of those cost the page one more frame a second, wherever the visitor was */
+ function soon(ms){if(q)return;for(var i=0;i<ms.length;i++)for(var j=0,a=ms[i].addedNodes;j<a.length;j++)if(a[j].nodeType===1){q=requestAnimationFrame(all);return}}
  all();new MutationObserver(soon).observe(document.body,{childList:true,subtree:true});
 })();
 /* DESKB (owner, 2026-10-28, night: "I give you full go-ahead to build the desktop version"; "the wall and the crawl... 100% agree"):
@@ -12438,7 +12475,10 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
  /* ---- the headline ---- */
  function headline(cd){var q=cd.querySelector(".pr2-q");if(!q){q=d.createElement("h3");q.className="pr2-q";var inn=cd.querySelector(".pt-in");inn.insertBefore(q,inn.querySelector(".pt-body"))}
   var src=cd.querySelector(".pt-top"),t=src?src.textContent.trim():"";if(q.dataset.t!==t){q.dataset.t=t;q.textContent=t}fitQ(q)}
- function fitQ(q){q.style.fontSize="";var z=parseFloat(getComputedStyle(q).fontSize),lh=parseFloat(getComputedStyle(q).lineHeight)||z*1.05,room=q.clientHeight;
+ /* (SPEED3, 2026-10-29) the card's go() runs on every tab swap, resize and start-up poll; the headline is refitted only when its width,
+    its words or the loaded fonts changed (each refit cleared its size and forced a page layout, about 20 ms a call on a 4x slower phone) */
+ var fgen=0;if(d.fonts&&d.fonts.addEventListener)d.fonts.addEventListener("loadingdone",function(){fgen++});
+ function fitQ(q){var k=q.clientWidth+"|"+fgen+"|"+q.textContent;if(q.__fk===k)return;q.__fk=k;q.style.fontSize="";var z=parseFloat(getComputedStyle(q).fontSize),lh=parseFloat(getComputedStyle(q).lineHeight)||z*1.05,room=q.clientHeight;
   while(q.scrollHeight>room+1&&z>12){z-=.5;q.style.fontSize=z+"px"}}
  /* ---- the silhouette ---- */
  var GEO={A:{th:36,step:7,gap:5,inset:12},B:{th:36,step:7,gap:0,inset:0},C:{th:38,step:6,gap:0,inset:0}};
@@ -12552,7 +12592,10 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
 
 /* TIES (owner, 2026-10-29: "Claude and Grok should be on the same line"): a tied round's winners on one line in the Winner box, the
    names stepped down until both fit; on the record, the highlights and the round opened big */
-(function(){try{var d=document;function fit(root){[].forEach.call((root||d).querySelectorAll(".card.f-tie .cwin .wv"),function(v){if(!v.offsetWidth)return;v.style.removeProperty("--tz");
+(function(){try{var d=document;function fit(root,memo){[].forEach.call((root||d).querySelectorAll(".card.f-tie .cwin .wv"),function(v){if(!v.offsetWidth)return;
+  /* SPEED3: the 2 s check refits only when the box's width or the names changed (each fit forces two or three page layouts: about
+     0.4 s every 2 s on a 4x slower phone while the front card was a tie); resize, fonts, load and the opened round still refit */
+  var mk=v.parentNode.getBoundingClientRect().width.toFixed(1)+"|"+v.textContent;if(memo&&v.__tzk===mk)return;v.__tzk=mk;v.style.removeProperty("--tz");
   /* the room is the box less its "Winner" label and their gap (the names run nowrap, so their own box only grows) */
   var w=v.parentNode,sm=w.querySelector("small"),cs=getComputedStyle(w),wr=w.getBoundingClientRect(),sc=w.offsetWidth?wr.width/w.offsetWidth:1,/* on screen pixels (the opened round is zoomed) */
    room=wr.right-parseFloat(cs.paddingRight)*sc-(sm?sm.getBoundingClientRect().right:wr.left+parseFloat(cs.paddingLeft)*sc)-((parseFloat(cs.columnGap)||10)+4)*sc;
@@ -12562,7 +12605,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
  function run(){fit()}if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",function(){setTimeout(run,1500)});else setTimeout(run,1500);
  addEventListener("load",function(){setTimeout(run,300)});var lw=innerWidth;addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run()}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(run);
  new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm")setTimeout(function(){fit(x)},60)})})}).observe(d.body,{childList:true});
- setInterval(function(){var c=d.querySelector("#record .card.f-tie.cur");if(c)fit(c)},2000);
+ setInterval(function(){var c=d.querySelector("#record .card.f-tie.cur");if(c)fit(c,1)},2000);
 }catch(e){}})();
 
 
@@ -12711,6 +12754,32 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
   A(b,[{transform:"none"},{transform:"translateY(-3px)",offset:.25,easing:"cubic-bezier(.3,0,.3,1)"},{transform:"none",offset:.7},{transform:"none"}],o)}
  };
 })();
+
+/* SPEED3 (2026-10-29, slow phones): the NVIDIA chip's countdown (v15's tick) redraws its digits every second: segment classes on about
+   a hundred rects that each carry a glow (a drop-shadow filter) and a screen-reader line. That cost the whole page a frame of paint and
+   layer work every second wherever the visitor was, about 1 s of every 6 s on a 4x slower phone. The digits and the line move into a
+   wrapper the size of the chip (the photo stays where it was) that the browser skips while it is well off screen (content-visibility,
+   skin-x2plus.css SPEED3): the ticks then cost nothing until the chip comes near; on screen it counts as before, and screen readers
+   still read it. */
+(function(){try{var d=document;function wrap(){var c=d.getElementById("gpuCore"),g=c&&c.parentNode;if(!g||!g.classList.contains("gpu-img")||g.querySelector(":scope>.x2p-gcw"))return;
+  var w=d.createElement("div");w.className="x2p-gcw";g.insertBefore(w,c);[].slice.call(g.children).forEach(function(k){if(k!==w&&k.tagName!=="IMG")w.appendChild(k)})}
+ if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",wrap);else wrap()}catch(e){}})();
+/* SPEED3 (2026-10-29): the record's far cards skip rendering (skin-x2plus.css SPEED3): once the page is built and its fonts are in,
+   cards more than two screen widths off the carousel's sides are marked .x2p-cvf (refreshed when the carousel stops scrolling or changes
+   width); on a width change the marks come off for two frames first, so every card is drawn and its size re-recorded. Not on the
+   desktop wall (its cards are not in a row). */
+(function(){try{var d=document,H=d.documentElement,on=false,lw=-1,t=0,tm=0;if(!window.ResizeObserver||!window.CSS||!CSS.supports("content-visibility","auto"))return;
+ function mark(){var car=d.getElementById("car");if(!car)return;var cs=[].slice.call(car.querySelectorAll(":scope>.card"));
+  if(H.classList.contains("x2p-wall")||cs.length<3){cs.forEach(function(c){c.classList.remove("x2p-cvf")});return}
+  var r0=cs[0].getBoundingClientRect(),r1=cs[1].getBoundingClientRect(),p=r1.left-r0.left,vw=innerWidth,M=2*vw;if(!(p>0))return;
+  cs.forEach(function(c,i){var x=r0.left+i*p,far=x+r0.width<-M||x>vw+M;if(c.classList.contains("x2p-cvf")!==far)c.classList.toggle("x2p-cvf",far)})}
+ function arm(){cancelAnimationFrame(t);H.classList.remove("x2p-cvc");t=requestAnimationFrame(function(){t=requestAnimationFrame(function(){mark();H.classList.add("x2p-cvc")})})}
+ function start(){if(on)return;var car=d.getElementById("car");if(!car){setTimeout(start,1000);return}on=true;lw=car.clientWidth;arm();
+  car.addEventListener("scroll",function(){clearTimeout(tm);tm=setTimeout(mark,120)},{passive:true});
+  new ResizeObserver(function(){var w=car.clientWidth;if(w!==lw){lw=w;arm()}}).observe(car)}
+ function go(){setTimeout(start,1500)}
+ var ready=function(){if(d.fonts&&d.fonts.ready)d.fonts.ready.then(go);else go()};
+ if(d.readyState==="complete")ready();else addEventListener("load",ready)}catch(e){}})();
 
 </script>
 </body>
