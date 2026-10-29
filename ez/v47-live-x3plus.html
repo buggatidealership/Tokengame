@@ -8647,6 +8647,24 @@ html:not(.cd-on) .wc-ce-st.wc-ce-holo .xc-st > *{width:100%;height:100%;display:
 .wc-pf-bl{display:flex;align-items:center;gap:5px}
 .wc-pf-bl::before{content:"";width:16px;border-top:1.5px dashed var(--wc-ink);opacity:.7}
 @media (max-width:359px){.wc-lr-s .wc-bub{padding:4px 5px 5px 6px}}
+
+/* ===== R4 (owner, 2026-10-29, phone notes): the cast up beside the headline with each AI's P&L, no strip under the
+   round's film, the cast cards' "Current P&L" ===== */
+@media (max-width:999px){
+  .wc-starring{align-self:start;margin-top:16px;gap:8px}
+  .wc-st-m b{display:flex;flex-direction:column;line-height:1.05}
+}
+.wc-st-m b small{font-size:11.5px;font-weight:800;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.wc-st-u{color:#3ee08f}.wc-st-d{color:#ff6158}
+/* the film runs to the panel's foot; the move sits on its bottom right corner, on the picture */
+.wc-lr-2,.wc-lr-p.wc-lr-2{padding-bottom:0!important}
+.wc-lr-artw{border-bottom:0}
+.wc-sfx.wc-lr-sfx{bottom:10px;right:10px}
+/* the cast card's money: a label over the figure */
+.wc-ch-lab{display:block;font-family:var(--wc-let)!important;font-size:11px!important;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#4a4350!important;margin:0 0 1px}
+.wc-ch-l + .wc-ch-l{margin-top:-2px}
+/* desktop: the four panels share one height, so the square film sits in a black screen, centred (no paper strip) */
+@media (min-width:1000px){html:not(.cd-on) .wc-lr-p.wc-lr-2{background:var(--wc-ink)!important;justify-content:center}}
 </style>
 </head>
 <body>
@@ -13723,7 +13741,7 @@ function build(){
     <p class="wc-h1" role="heading" aria-level="1">4 AI<span class="wc-lc">s</span> trade earnings <span>to run our buybacks.</span></p>
     <p class="wc-tag">Each one calls a stock <b>before</b> its earnings report. The market close says who was right.</p>
     <div class="wc-film-slot"><p class="wc-cap wc-film-cap" aria-hidden="true">How it works · 1:20</p></div>
-    <div class="wc-starring"><span class="wc-st-l">Starring</span>${ORDER.map(m=>`<span class="wc-st-m">${face(m)}<b>${NM[m]}</b></span>`).join('')}</div>
+    <div class="wc-starring"><span class="wc-st-l">Starring</span>${ORDER.map(m=>`<span class="wc-st-m">${face(m)}<b>${NM[m]}<small class="${P[m].pnl>=0?'wc-st-u':'wc-st-d'}">${pm(P[m].pnl)}</small></b></span>`).join('')}</div>
   </section>`;
 
   /* ---------- CHARACTER PAGE ---------- */
@@ -13737,8 +13755,9 @@ function build(){
       return `<article class="wc-ch wc-ch-${i+1}" style="--mc:${MODELS[m].c}">
         <div class="wc-ch-pic">${face(m,'wc-f-xl')}<span class="wc-ch-rk">#${i+1}</span></div>
         <div class="wc-ch-tx"><div class="wc-ch-hd"><h3>${NM[m]}<small>${esc(MODELS[m].ver)}</small></h3><p class="wc-ch-role">${roles[i]}</p></div>
-          <p class="wc-ch-big ${a.pnl>=0?'wc-tu':'wc-td'}">${pm(a.pnl)}<small>${a.pnl>=0?'made':'lost'} on $100,000</small></p>
-          <p class="wc-ch-l">Right way on <b>${a.W} of ${tot}</b> calls. Best: <b>${pm(b.v)}</b> on ${esc(b.r.co)}.</p>
+          <p class="wc-ch-big ${a.pnl>=0?'wc-tu':'wc-td'}"><small class="wc-ch-lab">Current P&amp;L</small>${pm(a.pnl)}</p>
+          <p class="wc-ch-l">Right way on <b>${a.W} of ${tot}</b> calls.</p>
+          <p class="wc-ch-l">Highest P&amp;L: <b class="${b.v>=0?'wc-tu':'wc-td'}">${pm(b.v)}</b> on ${esc(b.r.co)}.</p>
           <p class="wc-form" aria-label="Last five calls">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}<small>last 5 calls</small></p>
         </div></article>`}).join('')}</div>
   </section>`;
@@ -13930,16 +13949,16 @@ function lastRound(R,P){
   const cs=ORDER.map(m=>{const row=r.calls.find(c=>c[0]===m);if(!row)return null;const c=call(row[1]);return c?{m,c,ok:c.up===up,off:+row[2],win:W.includes(m),v:(P[m].per[r.n]||{}).v||0}:null}).filter(Boolean);
   const right=cs.filter(x=>x.ok);
   const p1=`<li class="wc-pn wc-lr-p wc-lr-1"><b class="wc-lr-n" aria-hidden="true">1</b>
-      <p class="wc-cap wc-lr-c">Before the report, the AIs said</p>
+      <p class="wc-cap wc-lr-c">Before the report, the AIs predict</p>
       <header class="wc-lr-co">${lg?`<span class="wc-lr-lg"><img src="${lg}" alt=""></span>`:''}<h3>${esc(r.co)}<small>Round ${r.n} · ${esc(r.ticker)}</small></h3></header>
       <div class="wc-lr-bub">${cs.map(x=>`<div class="wc-lr-s">${face(x.m)}<p class="wc-bub"><small>${NM[x.m]}</small>${callTxt(x.c)}</p></div>`).join('')}</div>
       <span class="wc-lr-lock" aria-label="Locked ${md(r.called)}">Locked ${md(r.called)}</span></li>`;
   const p2=`<li class="wc-pn wc-lr-p wc-lr-2"><b class="wc-lr-n" aria-hidden="true">2</b>
-      <p class="wc-cap wc-lr-c">The report. Then the close</p>
+      <p class="wc-cap wc-lr-c">${esc(r.co)} reports. Then the close</p>
       <div class="wc-lr-artw"><div class="wc-art wc-lr-art"><video class="wc-v" muted playsinline loop preload="none" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video><button type="button" class="wc-snd" aria-label="Play with sound">▶ Sound</button></div><span class="wc-sfx wc-lr-sfx ${up?'wc-up':'wc-dn'}" aria-hidden="true"><em>${sfx(r.a)}</em><b>${up?'+':'−'}${pct(r.a)}</b></span></div>
       <p class="wc-sr">${esc(r.co)} ${moveWord(r)} ${pct(r.a)} at the close.</p></li>`;
   const p3=`<li class="wc-pn wc-lr-p wc-lr-3"><b class="wc-lr-n" aria-hidden="true">3</b>
-      <p class="wc-cap wc-lr-c">Graded at the close</p>
+      <p class="wc-cap wc-lr-c">The close grades every call</p>
       <div class="wc-lr-g">${cs.slice().sort((a,b)=>(b.ok-a.ok)||(a.off-b.off)).map(x=>`<div class="wc-lr-gr ${x.win?'wc-win':x.ok?'wc-ok':'wc-no'}">${face(x.m)}<b class="wc-lr-gn">${NM[x.m]}</b>
         <span class="wc-lr-gv">${x.ok?'<i aria-hidden="true">✓</i> Right way':'<i aria-hidden="true">✗</i> Wrong way'}</span><small>${x.ok?fmtOff(x.off)+' off':'said '+(x.c.up?'up':'down')}</small>${x.win?'<em class="wc-lr-cr">Winner</em>':''}</div>`).join('')}</div>
       <p class="wc-lr-rule">${W.length?'Closest call that got the direction wins.':right.length?'Got the direction, but nobody wins this one.':'Nobody got the direction. Nobody wins.'}</p></li>`;
@@ -13950,8 +13969,8 @@ function lastRound(R,P){
       <ul class="wc-lr-all" aria-label="Every AI's P&L on this call">${cs.map(x=>`<li>${face(x.m,'wc-f-s')}<span>${NM[x.m]}</span><b class="${x.v>=0?'wc-tu':'wc-td'}">${kShort(x.v)}</b></li>`).join('')}</ul>
       <p class="wc-lr-fine">Pretend $100,000 accounts, the whole balance on every call.</p>
       <a class="wc-lr-open" href="#/round/${r.n}">Open its graded card →</a></li>`;
-  return `<section class="wc-lr" aria-label="Last round">
-    <h2 class="wc-h2"><span>Last round</span><small>${esc(day)} · ${esc(r.co)}. How a round works, start to finish.</small></h2>
+  return `<section class="wc-lr" aria-label="How a round works">
+    <h2 class="wc-h2"><span>How a round works</span><small>A real one, step by step: round ${r.n}, ${esc(r.co)}, ${esc(day.replace(/^(Today|Yesterday) · /,''))}.</small></h2>
     <ol class="wc-lr-pg" data-n="${r.n}">${p1}${p2}${p3}${p4}</ol></section>`}
 
 /* the bet: the close the weekday after NVIDIA's call date in the sheet (or SIM/CONFIG.betDate), as routes.js counts it */
