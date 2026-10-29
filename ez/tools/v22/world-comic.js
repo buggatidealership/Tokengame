@@ -42,18 +42,18 @@ function narrate(r){
   const mv=(up?(Math.abs(r.a)>=5?'jumped ':'rose '):(Math.abs(r.a)>=5?'dropped ':'fell '))+pct(r.a);
   let s=`${esc(r.co)} ${mv}. `;
   if(!right.length)s+=`All ${cs.length} AIs called it the wrong way. Nobody wins this one.`;
-  else if(right.length===1)s+=`Only ${NM[right[0].m]} called ${up?'up':'down'}${W.length===1&&W[0]===right[0].m?', so '+NM[right[0].m]+' takes the round':''}.`;
+  else if(right.length===1)s+=`Only ${NM[right[0].m]} called ${up?'up':'down'}${W.length===1&&W[0]===right[0].m?', so '+NM[right[0].m]+' wins the round':''}.`;
   else{s+=`${right.length} of ${cs.length} called ${up?'up':'down'}. `;
-    if(W.length>1)s+=`${W.map(m=>NM[m]).join(' and ')} tie for closest, both ${right.find(x=>x.m===W[0]).off}% off.`;
-    else if(W.length)s+=`${NM[W[0]]} got closest, ${cs.find(x=>x.m===W[0]).off}% off.`}
+    if(W.length>1)s+=`${W.map(m=>NM[m]).join(' and ')} tie for the win, both ${right.find(x=>x.m===W[0]).off}% off.`;
+    else if(W.length)s+=`${NM[W[0]]} wins it, ${cs.find(x=>x.m===W[0]).off}% off.`}
   return s}
 
 function balloons(r,big){
   const up=r.a>0,W=winners(r);
   return '<div class="wc-cast">'+ORDER.map(m=>{const row=r.calls.find(c=>c[0]===m);if(!row)return '';
     const c=call(row[1]);const ok=c&&c.up===up,win=W.includes(m);
-    const mk=win?'<b class="wc-mk wc-mk-w" title="Closest call">★</b>':ok?'<b class="wc-mk wc-mk-y" title="Right way">✓</b>':'<b class="wc-mk wc-mk-n" title="Wrong way">✗</b>';
-    return `<div class="wc-say ${win?'wc-win':ok?'wc-ok':'wc-no'}">${face(m)}<p class="wc-bub"><small>${NM[m]}</small>${callTxt(c)}</p>${mk}<span class="wc-sr">${win?'closest call':ok?'right way':'wrong way'}</span></div>`}).join('')+'</div>'}
+    const mk=win?'<b class="wc-mk wc-mk-w" title="Winner">★</b>':ok?'<b class="wc-mk wc-mk-y" title="Right way">✓</b>':'<b class="wc-mk wc-mk-n" title="Wrong way">✗</b>';
+    return `<div class="wc-say ${win?'wc-win':ok?'wc-ok':'wc-no'}">${face(m)}<p class="wc-bub"><small>${NM[m]}</small>${callTxt(c)}</p>${mk}<span class="wc-sr">${win?'winner':ok?'right way':'wrong way'}</span></div>`}).join('')+'</div>'}
 
 function bigPanel(r,i){
   const f=film(r.n),up=r.a>0;
@@ -71,7 +71,7 @@ function smallPanel(r){
   return `<a class="wc-pn wc-sm" href="#/round/${r.n}" data-n="${r.n}">
     <span class="wc-art">${f?`<img src="${f.p}" alt="" loading="lazy">`:lg?`<img class="wc-lgimg" src="${lg}" alt="">`:''}
       <span class="wc-sfx wc-mini ${up?'wc-up':'wc-dn'}"><b>${up?'+':'−'}${pct(r.a)}</b></span></span>
-    <span class="wc-smcap"><b>${esc(r.co)}</b>${W.length?'Closest: '+W.map(m=>face(m,'wc-f-s')).join('')+' '+W.map(m=>NM[m]).join(' & '):'Nobody got the direction'}</span>
+    <span class="wc-smcap"><b>${esc(r.co)}</b>Winner: ${W.length?W.map(m=>face(m,'wc-f-s')).join('')+' '+W.map(m=>NM[m]).join(' & '):'<i class="wc-nob wc-nob-s">×</i> Nobody'}</span>
   </a>`}
 
 function backIssue(r){
@@ -89,13 +89,15 @@ function build(){
   const others=night.filter(r=>r!==head).sort((a,b)=>b.n-a.n);
   const hu=head.a>0,hright=head.calls.filter(c=>{const x=call(c[1]);return x&&x.up===hu}).map(c=>c[0]);
   const today=nyToday();
+  const nightLbl=(()=>{const [m,d,y]=lastDate.split('/').map(Number),dd=Math.round((Date.UTC(2000+today[2],today[0]-1,today[1])-Date.UTC(2000+(y%100),m-1,d))/864e5);
+    return dd<=0?'Today':dd===1?'Last night':['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date(Date.UTC(2000+(y%100),m-1,d)).getUTCDay()]+' night'})();
   let tonight=(window.PENDING||[]).filter(p=>sameDay(p.resolves,today)&&p.calls&&p.calls.length);
   let tLabel='Tonight at the close';
   if(!tonight.length){const ps=(window.PENDING||[]).filter(p=>p.calls&&p.calls.length&&p.resolves);
     if(ps.length){const d0=ps.map(p=>p.resolves).sort((a,b)=>{const f=s=>{const [m,d,y]=s.split('/').map(Number);return y*1e4+m*100+d};return f(a)-f(b)})[0];tonight=ps.filter(p=>p.resolves===d0);const [m,d,y]=d0.split('/').map(Number),dd=Math.round((Date.UTC(2000+y,m-1,d)-Date.UTC(2000+today[2],today[0]-1,today[1]))/864e5);tLabel=dd===1?'Tomorrow at the close':'Graded at the close, '+md(d0)}}
   tonight.sort((a,b)=>cap(b.ticker)-cap(a.ticker));
   const nv=(window.UPCOMING||[]).find(u=>u.ticker==='NVDA');
-  const stTxt=(D.querySelector('#x2pSt')||{}).innerText||'';const cd=/Until the NVIDIA bet:\s*\n?\s*([^\n]+?) left/.exec(stTxt);
+  const stTxt=((D.querySelector('#x2pSt')||{}).textContent||'').replace(/\s+/g,' ');const cd=/Until the NVIDIA bet:\s*(.+?) left/.exec(stTxt);
   const daysLeft=cd?cd[1].replace(/,.*$/,''):'';
 
   /* ---------- COVER ---------- */
@@ -112,7 +114,7 @@ function build(){
     <div class="wc-cap wc-cap-y wc-prev-box"><b class="wc-prev-h">Previously…</b>
       <p>Four AIs called ${n} earnings reports, each before the company reported. The next market close graded every call.</p>
       <p>Each AI trades a pretend $100,000 account on its calls. <b>${NM[lead]}</b> leads, up ${$k(P[lead].pnl)}. <b>${NM[last]}</b> is ${P[last].pnl<0?'down '+$k(P[last].pnl):'up '+$k(P[last].pnl)}.</p>
-      <p>Last night, ${esc(head.co)} ${hu?'jumped':'dropped'} ${pct(head.a)}. ${hright.length===0?'Nobody saw it coming.':hright.length===1?'Only '+NM[hright[0]]+' saw it coming.':hright.length+' of 4 saw it coming.'}</p></div>
+      <p>${nightLbl==='Today'?'Today':nightLbl}, ${esc(head.co)} ${hu?'jumped':'dropped'} ${pct(head.a)}. ${hright.length===0?'Nobody saw it coming.':hright.length===1?'Only '+NM[hright[0]]+' saw it coming.':hright.length+' of 4 saw it coming.'}</p></div>
   </section>`;
 
   /* ---------- CHARACTER PAGE ---------- */
@@ -135,13 +137,13 @@ function build(){
   /* ---------- THE SEASON SO FAR ---------- */
   const rest=R.filter(r=>!night.includes(r)).sort((a,b)=>b.n-a.n);
   const season=`<section class="wc-season" aria-label="The season so far">
-    <h2 class="wc-h2"><span>Last night</span><small>${md(lastDate)} · ${night.length} reports graded at the close</small></h2>
+    <h2 class="wc-h2"><span>${nightLbl}</span><small>${md(lastDate)} · ${night.length} report${night.length===1?'':'s'} graded at the close</small></h2>
     ${bigPanel(head,0)}
-    ${others.length?`<div class="wc-also"><p class="wc-gut">Also last night…</p><div class="wc-row">${others.map(smallPanel).join('')}</div></div>`:''}
+    ${others.length?`<div class="wc-also"><p class="wc-gut">Also ${nightLbl==='Today'?'today':nightLbl.toLowerCase()}…</p><div class="wc-row">${others.map(smallPanel).join('')}</div></div>`:''}
     <h2 class="wc-h2 wc-h2-b"><span>Back issues</span><small>Every graded round. Tap one to open its graded card.</small></h2>
     <div class="wc-bis" data-all="0">${rest.map(backIssue).join('')}</div>
     <button type="button" class="wc-more">Show all ${rest.length} back issues</button>
-    <p class="wc-key">Corner face = the AI with the closest call. × = nobody got the direction. % = how far the stock moved at the close.</p>
+    <p class="wc-key">Corner face = the round's winner (closest call that got the direction). × = nobody got the direction. % = how far the stock moved at the close.</p>
   </section>`;
 
   /* ---------- SPLASH: SMART OR LUCKY ---------- */
@@ -172,15 +174,25 @@ function build(){
     </div>
   </section>`;
 
+  /* ---------- GET $EZ (the live page's own words) ---------- */
+  const get=`<section class="wc-get" aria-label="Get $EZ">
+    <h2 class="wc-h2"><span>Get $EZ</span><small>The token. Not live yet.</small></h2>
+    <div class="wc-get-p">
+      <div class="wc-step"><b>1</b><p><strong>Check the address.</strong> Not posted yet. It appears here, and only here, at launch. Anyone DMing you a CA before that is a scammer.</p></div>
+      <div class="wc-step"><b>2</b><p><strong>Use this page's link.</strong> Opens at launch.</p></div>
+      <p class="wc-cap wc-get-cap">Best case, an AI buys back $EZ with its winnings. Worst case, the most entertaining way to lose money. Size accordingly.</p>
+    </div>
+  </section>`;
+
   /* ---------- BACK COVER ---------- */
   const back=`<section class="wc-back" aria-label="Back cover">
     <p class="wc-motto">Nobody said it would be <span class="wc-e">E</span><span class="wc-z">Z</span>.</p>
     <a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a>
-    <p class="wc-fine">New panels whenever a round is graded. P&amp;L is simulated: $100,000 each, the whole balance on every call, no leverage, before fees. $EZ isn't live yet. Not advice.</p>
+    <p class="wc-fine">New panels whenever a round is graded. P&amp;L is simulated: $100,000 each, the whole balance on every call, no leverage, before fees. $EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p>
   </section>`;
 
   const book=D.createElement('div');book.id='wc-book';book.className='wc-book';
-  book.innerHTML=cover+prev+cast+season+splash+cliff+back;
+  book.innerHTML=cover+prev+cast+season+splash+cliff+get+back;
   const main=D.querySelector('main');main.insertBefore(book,main.firstChild);
   // the real explainer film moves onto the cover (its controls keep working)
   const vt=D.querySelector('.x2p-vt');if(vt)book.querySelector('.wc-film-slot').appendChild(vt);

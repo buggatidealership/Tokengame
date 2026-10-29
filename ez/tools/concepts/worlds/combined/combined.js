@@ -145,8 +145,8 @@ function build(){
           <span class="wk-w">${Wn.length?Wn.map(m=>face(m,'wc-f-s')).join('')+'<small>Winner</small><b>'+Wn.map(m=>NM[m]).join(' & ')+'</b>':'<i class="wc-nob">×</i><small>Winner</small><b>Nobody</b>'}</span></a></li>`}).join('')}</ol></article>`};
   const res=`<section class="wk-results" aria-label="The last five nights">
     <h2 class="wc-h2"><span>The last 5 nights</span><small>Every result, newest first. Tap a round to open its graded card and its film.</small></h2>
-    ${dates.slice(0,5).map(night).join('')}
-    <a class="wc-more wk-all" href="#/leaderboard">All ${N} results →</a>
+    <div class="wk-nights">${dates.slice(0,5).map(night).join('')}</div>
+    <a class="wc-more wk-all" href="#/lb">All ${N} results →</a>
   </section>`;
 
   /* ---------- 6 SMART OR LUCKY ---------- */
@@ -210,8 +210,8 @@ function build(){
   const vt=D.querySelector('.x2p-vt');if(vt)book.querySelector('.wc-film-slot').appendChild(vt);
   H.classList.add('wc-on','wk-on');
   /* a Leaderboard tab in the nav, between Overview and Upcoming */
-  const nav=D.querySelector('.nav');if(nav&&!nav.querySelector('.wk-lbt')){const a=D.createElement('a');a.className='wk-lbt';a.href='#/leaderboard';a.textContent='Leaderboard';const up=[...nav.querySelectorAll('a')].find(x=>/upcoming/i.test(x.textContent));nav.insertBefore(a,up||null)}
-  const sync=()=>{const lbOn=window.__wkLB||/^#\/leaderboard/.test(location.hash);H.classList.toggle('wk-lbon',!!lbOn);book.hidden=/^#\/upcoming/.test(location.hash);
+  const nav=D.querySelector('.nav');if(nav&&!nav.querySelector('.wk-lbt')){const a=D.createElement('a');a.className='wk-lbt';a.href='#/lb';a.textContent='Leaderboard';const up=[...nav.querySelectorAll('a')].find(x=>/upcoming/i.test(x.textContent));nav.insertBefore(a,up||null)}
+  const sync=()=>{const lbOn=window.__wkLB||/^#\/lb$/.test(location.hash);H.classList.toggle('wk-lbon',!!lbOn);book.hidden=/^#\/upcoming/.test(location.hash);
     nav&&nav.querySelectorAll('a').forEach(a=>{if(a.classList.contains('wk-lbt'))a.classList.toggle('wk-act',!!lbOn);else if(lbOn)a.classList.add('wk-un');else a.classList.remove('wk-un')})};
   addEventListener('hashchange',sync);sync();
   const io=new IntersectionObserver(es=>es.forEach(e=>{const t=e.target;if(e.isIntersecting)t.classList.add('wc-in');const v=t.querySelector&&t.querySelector('video.wc-v');if(v){if(e.isIntersecting&&e.intersectionRatio>.35)v.play().catch(()=>{});else if(!e.isIntersecting)v.pause()}}),{threshold:[0,.4]});
