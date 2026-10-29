@@ -7,7 +7,7 @@
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../live-r1/_fonts.js');const fs=require('fs'),path=require('path'),{execFileSync}=require('child_process');
 const N=+process.argv[2],OUT=path.resolve(process.argv[3]),REV=+process.argv[4],TMP=path.join(require('os').tmpdir(),'vc4-'+N);fs.mkdirSync(TMP,{recursive:true});
 const EZ=path.resolve(__dirname,'..','..','..');
-(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:844},deviceScaleFactor:3});await FONTS(p);
+(async()=>{const b=await chromium.launch({args:['--allow-file-access-from-files','--disable-web-security']});const p=await b.newPage({viewport:{width:390,height:844},deviceScaleFactor:3});await FONTS(p);
  await p.goto('http://localhost:8897/v46-live-x2plus.html#/round/'+N,{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});await p.waitForTimeout(3500);
  const I=await p.evaluate(n=>{document.querySelectorAll('#x2pRm video').forEach(v=>{v.pause();v.style.visibility='hidden'});document.querySelectorAll('#x2pRm .snd').forEach(e=>e.style.visibility='hidden');
   const c=document.querySelector('#x2pRm .card').getBoundingClientRect(),v=document.querySelector('#x2pRm video').getBoundingClientRect();const op=getComputedStyle(document.querySelector('#x2pRm video')).objectPosition;
@@ -17,7 +17,7 @@ const EZ=path.resolve(__dirname,'..','..','..');
   const md={};M.forEach(m=>{const x=MODELS[m];md[m]={bg:x.bg,fg:x.fg,d:x.d,fr:x.fr||'',dot:x.dot||'',dotc:x.dotc||'',ver:x.ver}});
   const K=s=>{const a=String(s||'').split('/');return a.length<2?'':('0'+a[0]).slice(-2)+('0'+a[1]).slice(-2)};
   const pend=(typeof PENDING!=='undefined'?PENDING:[]).filter(r=>r.resolves);const nx=pend.map(r=>K(r.resolves)).sort()[0];
-  const next=pend.filter(r=>K(r.resolves)===nx).map(r=>({t:r.ticker,co:r.co,lg:CO_LOGOS[r.ticker]?CO_LOGOS[r.ticker].f:null,cap:(typeof CAPS!=='undefined'&&CAPS[r.ticker])||0})).sort((a,b)=>b.cap-a.cap);
+  const next=pend.filter(r=>K(r.resolves)===nx).map(r=>({t:r.ticker,co:r.co,lg:CO_LOGOS[r.ticker]?CO_LOGOS[r.ticker].f:null,dk:!!(CO_LOGOS[r.ticker]&&CO_LOGOS[r.ticker].dark),cap:(typeof CAPS!=='undefined'&&CAPS[r.ticker])||0})).sort((a,b)=>b.cap-a.cap);
   const nd=pend.find(r=>K(r.resolves)===nx);
   return {c:{x:c.left,y:c.top,w:c.width,h:c.height},v:{x:v.left-c.left,y:v.top-c.top,w:v.width,h:v.height},op,u:{n:u.n,co:u.co,t:u.ticker,a:u.a,win:u.win,calls:u.calls,lg:CO_LOGOS[u.ticker]?CO_LOGOS[u.ticker].f:null},pre,post,per,md,next,nextDay:nd?nd.resolves:null,film:FILMS[n]&&FILMS[n].f}},N);
  const shot=async f=>fs.writeFileSync(path.join(TMP,f),await p.screenshot({clip:{x:I.c.x,y:I.c.y,width:I.c.w,height:I.c.h}}));
@@ -45,7 +45,7 @@ body::before{content:"";position:absolute;inset:0;background:repeating-conic-gra
 .bd{height:50px;flex:none;display:flex;align-items:center;justify-content:center;gap:12px;font:700 18px/1 "Barlow Condensed";letter-spacing:.24em;text-transform:uppercase;color:#f8f0d9}
 .bg{background:#1f7a45}.br{background:#b3261e}.bd b{color:#fdbc2a}
 .in{flex:1;padding:22px 30px 20px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:0}
-.tally{display:flex;justify-content:center;align-items:baseline;gap:14px;font:400 40px/1 Anton;text-transform:uppercase}.tally i{font:700 18px 'Saira Condensed';font-style:normal;letter-spacing:.2em;color:#5a5360}
+.tally{display:flex;justify-content:center;align-items:baseline;gap:14px;font:400 48px/1 Anton;text-transform:uppercase}.tally i{font:700 18px 'Saira Condensed';font-style:normal;letter-spacing:.2em;color:#5a5360}
 .card{display:grid;border-top:3px solid #1b181c;border-bottom:3px solid #1b181c}.fr{display:grid;grid-template-columns:40px 1fr auto 104px;align-items:center;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(27,24,28,.3)}.fr:last-child{border-bottom:0}
 .fr .lg{width:40px;height:40px;border-radius:9px;display:grid;place-items:center}.fr .lg svg{width:26px;height:26px}.fr .nm b{font:400 28px/1 Anton;text-transform:uppercase;font-weight:400}.fr .nm i{display:block;font:600 15px/1.1 'Saira Condensed';font-style:normal;color:#5a5360;margin-top:3px}.fr .nm em{font-style:normal;color:#a5770c;font-weight:700;letter-spacing:.06em}
 .fr .cr{font:700 13px/1 'Saira Condensed';letter-spacing:.18em;text-transform:uppercase;border:2px solid;border-radius:3px;padding:4px 6px}.fr .cl{font:400 38px/1 Anton;text-align:right}
@@ -63,11 +63,12 @@ body::before{content:"";position:absolute;inset:0;background:repeating-conic-gra
 .f .cl{grid-column:2;font:400 28px/1 Anton;margin-top:3px}.u{color:#1d7a43}.d{color:#b3221b}.emp{font:600 16px "Saira Condensed";color:#8a8290}
 .st{background:#1b181c;color:#f3ead6;border-radius:4px;padding:12px 16px;display:grid;gap:4px;text-align:center}.st i{font:700 13px/1 "Saira Condensed";font-style:normal;letter-spacing:.2em;text-transform:uppercase;color:#fdbc2a}
 .st b{font:400 25px/1.05 Anton;text-transform:uppercase;font-weight:400}.st small{font:600 15px/1.1 "Saira Condensed";color:#cfc6b3}
-.cta{text-align:center;font:400 34px/1 Anton;text-transform:uppercase;color:#b3221b;letter-spacing:.01em}.cta small{display:block;font:700 15px/1.2 "Saira Condensed";letter-spacing:.16em;color:#5a5360;margin-top:6px}
-.bell{display:flex;align-items:baseline;justify-content:center;gap:12px}.bell i{font:700 15px/1 "Saira Condensed";font-style:normal;letter-spacing:.2em;text-transform:uppercase;color:#5a5360}.bell b{font:400 78px/.9 Anton;font-weight:400}
+.cta{text-align:center;font:400 46px/1 Anton;text-transform:uppercase;color:#b3221b;letter-spacing:.01em}.cta small{display:block;font:700 15px/1.2 "Saira Condensed";letter-spacing:.16em;color:#5a5360;margin-top:6px}
+.big{text-align:center;font:400 76px/.95 Anton;text-transform:uppercase;letter-spacing:.01em}.big small{display:block;font:700 16px/1.2 "Saira Condensed";letter-spacing:.18em;color:#5a5360;margin-top:4px}
+.bell{display:flex;align-items:baseline;justify-content:center;gap:12px}.bell i{font:700 15px/1 "Saira Condensed";font-style:normal;letter-spacing:.2em;text-transform:uppercase;color:#5a5360}.bell b{font:400 52px/.9 Anton;font-weight:400}
 .wcn{text-align:center;font:400 30px/1 Anton;text-transform:uppercase;padding:8px 0;border-top:3px solid;border-bottom:3px solid}
 .dec{display:flex;align-items:center;justify-content:center;gap:10px;font:400 26px/1 Anton;text-transform:uppercase}.dec i{font:700 14px/1 "Saira Condensed";font-style:normal;letter-spacing:.18em;color:#a5770c}
-.dec .lg{width:28px;height:28px;border-radius:6px;display:grid;place-items:center}.dec .lg svg{width:18px;height:18px}.dec small{font:600 16px "Saira Condensed";color:#5a5360;text-transform:none}
+.dec .lg{width:28px;height:28px;border-radius:6px;display:grid;place-items:center}.dec .lg svg{width:18px;height:18px}.dec small{white-space:nowrap;font:600 16px "Saira Condensed";color:#5a5360;text-transform:none}
 .wl{display:grid;grid-template-columns:1fr 1fr;gap:10px}.wl>div{border:2px solid #1b181c;border-radius:4px;padding:8px 10px;display:grid;gap:3px}.wl i{font:700 13px/1 "Saira Condensed";font-style:normal;letter-spacing:.16em;text-transform:uppercase}
 .wl b{font:400 22px/1 Anton;text-transform:uppercase;font-weight:400}.wl em{font:400 28px/1 Anton;font-style:normal}
 .blt{display:grid;gap:5px}.blt .h{font:700 14px/1 "Saira Condensed";letter-spacing:.2em;text-transform:uppercase;color:#a5770c;text-align:center}
@@ -79,25 +80,30 @@ body::before{content:"";position:absolute;inset:0;background:repeating-conic-gra
 <div class="top"><img src="file://${path.join(EZ,'tools','site','ez-logo.svg')}"><span><span class="e">E</span>arnings <span class="z">Z</span>eason</span><span class="r">earningszn.xyz</span></div>`;
  const A=head+`<img class="cd" src="cardA.png"><div class="tk"><div class="bd bg"><b>★</b>Fight night · Round ${u.n}<b>★</b></div><div class="in">
 <div class="eb">Main event · earnings</div><div class="ev">${coLg}<div class="co">${u.co}</div></div>
-<div class="sub">4 AIs called it before the report. Locked.</div>
+<div class="sub">Called before the report. Locked. No edits.</div>
 <div class="tally"><span class="u">${bulls.length} ${bulls.length===1?'bull':'bulls'}</span><i>vs</i><span class="d">${bears.length} ${bears.length===1?'bear':'bears'}</span></div><div class="card">${calls.slice().sort((a,b)=>rp.indexOf(a.m)-rp.indexOf(b.m)).map(fighter).join('')}</div><div class="ifs"><div><i class="u">If it goes up</i>${bulls.length?andL(bulls.map(c=>NM[c.m]))+' '+(bulls.length===1?'gets':'get')+' paid':'Nobody gets paid'}</div><div><i class="d">If it goes down</i>${bears.length?andL(bears.map(c=>NM[c.m]))+' '+(bears.length===1?'gets':'get')+' paid':'Nobody gets paid'}</div></div>
 <div class="st"><i>The belt</i><b>Champ ${NM[champ]} · ${usd(I.pre[champ])}</b><small>${NM[rp[1]]} is ${usd(gap).slice(1)} behind</small></div>
-<div class="cta">Bulls or bears?<small>Reply with your corner 👇</small></div></div><div class="bd br">The bell · market close</div></div>`;
+<div class="cta">Who called it?<small>The bell rang at the close · watch the card</small></div></div><div class="bd br">The bell · market close</div></div>`;
  const w=String(u.win).split(/\s*&\s*/).filter(Boolean),wc=calls.find(c=>c.m===w[0]);const up=u.a>0,rightN=calls.filter(c=>c.up===up).length;
  const pn=Object.entries(I.per).sort((a,b)=>b[1]-a[1]),bw=pn[0],bl=pn[pn.length-1];const newChamp=rq[0]!==champ;
  const blt=rq.map((m,i)=>{const d=rp.indexOf(m)-i;return `<div class="r ${i===0?'c':''}"><span>${i+1}</span>${lg(m)}<b>${NM[m]}</b><span class="${I.post[m]<0?'d':'u'}">${usd(I.post[m])}</span><span class="mvr ${d>0?'u':d<0?'d':''}">${d>0?'▲'+d:d<0?'▼'+(-d):'–'}</span></div>`}).join('');
  const B=head+`<img class="cd" src="card.png"><div class="tk"><div class="bd bg"><b>★</b>Fight night · Round ${u.n}<b>★</b></div><div class="in">
 <div class="ev">${coLg}<div class="co">${u.co}</div></div>
+<div class="big ${up?'u':'d'}">${up?'Bulls':'Bears'} win<small>${rightN} of ${calls.length} called it</small></div>
 <div class="bell"><i>The bell</i><b class="${up?'u':'d'}">${up?'+':'−'}${Math.abs(u.a).toFixed(2)}%</b></div>
-<div class="wcn ${up?'u':'d'}">${up?'Bulls':'Bears'} win · ${rightN} of ${calls.length} right</div>
-${w.length?`<div class="dec"><i>Decision</i>${w.map(m=>lg(m)+NM[m]).join(' <small>&amp;</small> ')}<small>${wc?wc.off.toFixed(2).replace(/\.?0+$/,''):''}% off</small></div>`:`<div class="dec"><i>Decision</i>Nobody</div>`}
+${w.length?`<div class="dec"><i>${w.length>1?'Shared crown':'Crowned'}</i>${w.map(m=>lg(m)+NM[m]).join(' <small>&amp;</small> ')}<small>${wc?wc.off.toFixed(2).replace(/\.?0+$/,''):''}% off</small></div>`:`<div class="dec"><i>Decision</i>Nobody</div>`}
 <div class="wl"><div><i class="u">Biggest W</i><b>${NM[bw[0]]}</b><em class="${bw[1]<0?'d':'u'}">${usd(bw[1])}</em></div><div><i class="d">Biggest L</i><b>${NM[bl[0]]}</b><em class="${bl[1]<0?'d':'u'}">${usd(bl[1])}</em></div></div>
 <div class="blt"><div class="h">${newChamp?'★ New champ: '+NM[rq[0]]+' ★':'★ '+NM[rq[0]]+' keeps the belt ★'}</div>${blt}</div>
-${I.next.length?`<div class="nx"><div class="h">Next fight night · <span>${day(I.nextDay)}</span></div><div class="lgs">${I.next.slice(0,6).map(x=>x.lg?`<img src="file://${path.join(EZ,'media',x.lg)}">`:`<b>${x.t}</b>`).join('')}</div><small>${I.next.length} fights · follow for the bell</small></div>`:''}
+${I.next.length?`<div class="nx"><div class="h">Next fight night · <span>${day(I.nextDay)}</span></div><div class="lgs">${I.next.slice(0,6).map(x=>x.lg?`<img ${x.dk?'style="filter:brightness(0)"':''} src="file://${path.join(EZ,'media',x.lg)}">`:`<b>${x.t}</b>`).join('')}</div><small>${I.next.length} fights · follow for the bell</small></div>`:''}
 </div><div class="bd br">Graded at the close</div></div>`;
  fs.writeFileSync(path.join(TMP,'A.html'),A);fs.writeFileSync(path.join(TMP,'B.html'),B);
  const f=await b.newPage({viewport:{width:1080,height:1080}});
  for(const k of ['A','B']){await f.goto('file://'+path.join(TMP,k+'.html'));await f.evaluate(()=>document.fonts.ready);await f.waitForTimeout(500);
+  await f.evaluate(async()=>{for(const im of document.querySelectorAll('.nx img,.co-lg')){await im.decode().catch(()=>{});const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;const x=c.getContext('2d');x.drawImage(im,0,0);
+   const d=x.getImageData(0,0,c.width,c.height),p=d.data,W=c.width,H=c.height,at=(i,j)=>(j*W+i)*4,cs=[at(0,0),at(W-1,0),at(0,H-1),at(W-1,H-1)];
+   if(!cs.every(o=>p[o+3]>250&&Math.abs(p[o]-p[cs[0]])<12&&Math.abs(p[o+1]-p[cs[0]+1])<12&&Math.abs(p[o+2]-p[cs[0]+2])<12))continue;
+   const r=p[cs[0]],g=p[cs[0]+1],bb=p[cs[0]+2];let lum=0,n=0;for(let o=0;o<p.length;o+=4){if(Math.abs(p[o]-r)<40&&Math.abs(p[o+1]-g)<40&&Math.abs(p[o+2]-bb)<40)p[o+3]=0;else{lum+=p[o]+p[o+1]+p[o+2];n++}}
+   x.putImageData(d,0,0);im.src=c.toDataURL();if(n&&lum/n/3>170)im.style.filter='brightness(0)';await im.decode().catch(()=>{})}});
   const ov=await f.evaluate(()=>{const e=document.querySelector('.co'),m=document.querySelector('.ev').clientWidth-60;let s=50;while(e.scrollWidth>m&&s>26){s-=2;e.style.fontSize=s+'px'}const i=document.querySelector('.in');return i.scrollHeight-i.clientHeight});
   if(ov>0)console.log(k,'overflow',ov);await f.screenshot({path:path.join(TMP,k+'.png')})}
  await b.close();
