@@ -1,0 +1,14 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1536,height:864}});await FONTS(p);
+await p.goto('http://localhost:8897/v46-live-x2plus.html',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});
+const r=await p.evaluate(()=>{const o={};
+o.get=document.querySelector('#get').innerText.slice(0,800);
+o.vt=document.querySelector('.x2p-vt')?.outerHTML.slice(0,1500);
+o.nv=JSON.stringify(UPCOMING.filter(u=>/NVDA/.test(u.ticker)));
+o.wins=[...new Set(ROUNDS.map(r=>r.win))];o.tags=[...new Set(ROUNDS.map(r=>r.tag))];
+o.fns=['ezGrade','gradeOf','CONFIG','STILLS','SECT','RMETA','TICKERS'].map(k=>k+':'+typeof window[k]);
+o.cfg=JSON.stringify(window.CONFIG);
+o.crawl=[...document.querySelectorAll('body > *')].map(e=>e.tagName+'#'+e.id+'.'+e.className.toString().slice(0,40));
+o.htmlcls=document.documentElement.className;
+o.calls=JSON.stringify(ROUNDS[0].calls)+JSON.stringify(ROUNDS[9]);
+return o});console.log(JSON.stringify(r,null,1));await b.close()})();

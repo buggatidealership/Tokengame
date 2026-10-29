@@ -1,0 +1,11 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:844}});await FONTS(p);
+await p.goto('http://localhost:8897/v46-live-x2plus.html',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});
+await p.evaluate(()=>document.getElementById('record').scrollIntoView());await p.waitForTimeout(2000);
+const r=await p.evaluate(()=>{const o={};const rec=document.getElementById('record');
+o.kids=[...rec.querySelectorAll(':scope > *, :scope > * > *')].map(e=>e.tagName+'#'+e.id+'.'+e.className.toString().slice(0,50)+' '+e.offsetHeight);
+const c=[...document.querySelectorAll('#car .card')];o.n=c.length;o.c0=c.slice(-3).map(e=>e.className+' |'+[...e.attributes].map(a=>a.name+'='+a.value.slice(0,30)).join(' '));
+o.cur=document.querySelector('#car .card.cur')?.outerHTML.slice(0,600);
+o.pick=document.querySelector('#record [role=tablist], #record .rp, #record .pick')?.outerHTML.slice(0,400);
+o.hd=rec.querySelector('.x2o-rec')?.outerHTML.slice(0,500);
+return o});console.log(JSON.stringify(r,null,1));await p.screenshot({path:'/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8/scratchpad/rec.png'});await b.close()})();
