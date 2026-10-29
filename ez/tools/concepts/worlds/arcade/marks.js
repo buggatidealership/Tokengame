@@ -1,7 +1,0 @@
-const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../live-r1/_fonts.js');
-(async()=>{const b=await chromium.launch();for(const pg of (process.argv[2]||'v46-live-x2plus.html,v48-live-x4plus.html').split(',')){const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});const p=await ctx.newPage();await FONTS(p);
-const s=await ctx.newCDPSession(p);await s.send('Emulation.setCPUThrottlingRate',{rate:4});
-await p.addInitScript(()=>{const H=document.documentElement;const mo=new MutationObserver(()=>{const c=H.className;['x2p-launch','x2pbt','x2pst','x2p-world','wa'].forEach(k=>{if(c.split(' ').indexOf(k)>=0&&!window['__m_'+k]){window['__m_'+k]=Math.round(performance.now())}})});mo.observe(H,{attributes:true,attributeFilter:['class']});
- document.addEventListener('DOMContentLoaded',()=>{window.__m_dcl=Math.round(performance.now())});addEventListener('load',()=>{window.__m_load=Math.round(performance.now())})});
-await p.goto('http://localhost:8897/'+pg,{waitUntil:'load',timeout:180000});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:180000});
-console.log(pg,JSON.stringify(await p.evaluate(()=>{const o={};Object.keys(window).filter(k=>k.indexOf('__m_')===0).forEach(k=>o[k.slice(4)]=window[k]);performance.getEntriesByType('mark').forEach(m=>o[m.name]=Math.round(m.startTime));return o})));await ctx.close()}await b.close()})();
