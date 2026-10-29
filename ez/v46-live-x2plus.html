@@ -11206,7 +11206,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
           return row(i,m,'<span class="pt-v pt-st tnum"><span class="sr">started with </span>'+k+'</span><span class="pt-v tnum '+cl+'"><span class="sr">ROI '+(up?'up ':'down ')+'</span><span class="pt-pm" aria-hidden="true">'+(up?'+':'−')+'</span>'+p+'</span>','<span class="pt-c tnum '+cl+'"><span class="sr">now </span>'+usd(b)+'</span>')}).join("")+'</div>'+
           '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Start: "+usd(STK))+'</div><p class="pt-cp">'+usd(STK)+' to start. The whole balance on every call. Wins and losses carry over. Buy on up, short on down. No leverage.</p>'},
         draw:function(el,h){var vs=[STK];MK.forEach(function(m){S[m].roi.forEach(function(p){vs.push(p[1])})});var lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STK*.05;lo-=pd;hi+=pd;
-          chart(el,h,byRoi.map(function(m,i){return {m:m,rank:i+1,pts:S[m].roi.map(function(p){return [p[0]/N*100,(hi-p[1])/(hi-lo)*100]})}}),(hi-STK)/(hi-lo)*100,{lead:true,lab:function(m){var PL=window.__x2pPnl&&window.__x2pPnl();return PL&&PL.A[m]?PL.pc(PL.A[m].pct):ver(m)}})}},
+          chart(el,h,byRoi.map(function(m,i){return {m:m,rank:i+1,pts:S[m].roi.map(function(p){return [p[0]/N*100,(hi-p[1])/(hi-lo)*100]})}}),(hi-STK)/(hi-lo)*100,{lead:true,left:30,grid:pgrid(lo,hi),lab:function(m){var PL=window.__x2pPnl&&window.__x2pPnl();return PL&&PL.A[m]?PL.pc(PL.A[m].pct):ver(m)}})}},
       hit:{t:"Accuracy",top:"How often were they right about the direction?",bot:"Up or down only",
         /* (owner, 2026-10-26, later) the rows as a trader's record: trades, W and L (no "25 of 37"); the hit rate moves to where each
            line ends on the chart, as the P&L view prints its P&L % there */
@@ -11241,6 +11241,9 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
        satin gold with grain, a dark wall above, a pale lip below), as thin as the rest; the model where each line ends */
     /* the room on the right is the widest end label's, not a fixed 96px (owner, 2026-10-28: "extend the charts a bit to the right"),
        so the lines run as far right as the names after them allow */
+    /* (owner, 2026-10-29: "on accuracy you have the 50% and then it goes all the way to 80%... can we add the same to P&L, like 10%
+       points") the P&L chart's rules every 10% of the $100,000 start, labelled every 20% (+20%, -40%...); the start stays the dashed line */
+    var pgrid=function(lo,hi){var g=[];for(var v=Math.ceil((lo/STK-1)*10)*10;v<=(hi/STK-1)*100;v+=10){if(!v)continue;g.push([(hi-STK*(1+v/100))/(hi-lo)*100,v%20?"":(v>0?"+":"\u2212")+Math.abs(v)+"%"])}return g};
     var cid=0;function chart(el,h,ser,yz,o){var W=el.clientWidth,H=h||el.clientHeight||180,L=o.left||0,pad=6,ih=H-2*pad;el.style.height=H+"px";
       var G=0;el.innerHTML="";ser.forEach(function(s){var t=o.lab?o.lab(s.m):ver(s.m),q=d.createElement("div");q.className="pt-lb";q.style.cssText="visibility:hidden;left:0;top:0";q.innerHTML='<b'+(s.rank===1?' class="pt-fo"':'')+'>'+esc(t)+'</b>';el.appendChild(q);G=Math.max(G,q.getBoundingClientRect().width)});
       G=Math.min(96,Math.max(40,Math.ceil(G)+10));var pw=W-G-L;if(pw<40)return;var axr=el.parentNode&&el.parentNode.querySelector(".pt-ax");if(axr)axr.style.marginRight=G+"px";
