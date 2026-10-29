@@ -8077,18 +8077,204 @@ html.wc-on.wc-hhide header.top{transform:translateY(calc(-100% - 8px))}
 
 /* ---- beat the site's own heading and strip rules ---- */
 #wc-book .x2p-ls,#wc-book .x2p-t3,#wc-book .vb-bl,#wc-book .vb-ft{display:none!important}
-#wc-book h2,#wc-book h3{text-transform:none;filter:none;-webkit-text-fill-color:currentColor;background:none}
-#wc-book .wc-h2{font-family:var(--wc-pow)!important;color:var(--wc-ink)!important;font-size:40px!important;letter-spacing:.02em!important;text-shadow:3px 3px 0 var(--wc-gold)!important;line-height:.95!important;margin:52px 0 14px!important;padding:0!important}
-#wc-book .wc-h2 small{color:var(--wc-ink)!important;text-shadow:none!important;font-family:var(--wc-let)!important}
-#wc-book .wc-h2-b{margin-top:56px!important}
+#wc-book h2,#wc-book h3,#wc-lb h2,#wc-lb h3,#wc-up h2,#wc-up h3{text-transform:none;filter:none;-webkit-text-fill-color:currentColor;background:none}
+#wc-book .wc-h2,#wc-lb .wc-h2,#wc-up .wc-h2{font-family:var(--wc-pow)!important;color:var(--wc-ink)!important;font-size:40px!important;letter-spacing:.02em!important;text-shadow:3px 3px 0 var(--wc-gold)!important;line-height:.95!important;margin:52px 0 14px!important;padding:0!important}
+#wc-book .wc-h2 small,#wc-lb .wc-h2 small,#wc-up .wc-h2 small{color:var(--wc-ink)!important;text-shadow:none!important;font-family:var(--wc-let)!important}
+#wc-book .wc-h2-b,#wc-lb .wc-h2-b,#wc-up .wc-h2-b{margin-top:56px!important}
 #wc-book .wc-co,#wc-book .wc-ch h3,#wc-book .wc-next h3{font-family:var(--wc-pow)!important;text-transform:none}
 #wc-book .wc-burst h2{font-family:var(--wc-pow)!important;color:var(--wc-gold)!important;font-size:54px!important;text-shadow:4px 4px 0 var(--wc-r),-2px -2px 0 #000!important;margin:0!important}
-@media (min-width:1000px){#wc-book .wc-burst h2{font-size:84px!important}#wc-book .wc-h2{font-size:52px!important}}
+@media (min-width:1000px){#wc-book .wc-burst h2{font-size:84px!important}#wc-book .wc-h2,#wc-lb .wc-h2,#wc-up .wc-h2{font-size:52px!important}}
 
 .wc-tag{margin:-2px 0 12px;font-weight:800;font-size:15px;line-height:1.3;color:#fff;max-width:34ch}
 .wc-tag b{color:var(--wc-gold)}
 .wc-beat{display:block;width:max-content;max-width:80%;margin:44px auto 0;font-size:13px;padding:4px 12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;transform:rotate(-1deg)}
 @media (min-width:1000px){.wc-tag{grid-area:tag;font-size:18px}.wc-cover{grid-template-areas:"top film" "h1 film" "tag film" "star film"}}
+
+/* ===================== EZ Live X3+ (owner, 2026-10-29): the comic as a page with three tabs ===================== */
+/* which block shows: the book on the Overview (and under a round's pop-up), the leaderboard and upcoming blocks on their tabs;
+   X2's own tab content (#view) and the scores strip stay in the DOM, unseen */
+#wc-lb,#wc-up{display:none}
+html.wc-on[data-sec=leaderboard] #wc-lb,html.wc-on[data-sec=upcoming] #wc-up{display:block}
+html.x2p[data-sec=leaderboard] #view,html.x2p[data-sec=upcoming] #view,html.x2p #tick{display:none!important}
+html.x2p footer{display:none!important}
+/* before the world is drawn (a visitor landing on Upcoming, whose cover lifts on X2's own check): the paper, nothing else */
+html.x2p:not(.x2p-world)[data-sec=upcoming] #view{visibility:hidden}
+
+/* the header on phones: three tabs share the row; "Buybacks (soon)" waits for desktop, where the row has room */
+@media (max-width:999px){html.wc-on .nav .x2p-soon{display:none!important}}
+@media (max-width:359px){html.wc-on .wc-sb-st{gap:4px 10px}html.wc-on .wc-sb-st .wc-form i{width:17px;height:17px}}
+@media (max-width:599px){
+  html.wc-on .nav{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  html.wc-on .nav a{padding-left:4px!important;padding-right:4px!important;justify-content:center;text-align:center;white-space:nowrap}
+}
+@media (max-width:359px){html.wc-on .nav a{font-size:11px!important;letter-spacing:0!important}}
+
+/* desktop: the comic is one page, not the two-column grid underneath */
+html.wc-on main#top:not([hidden]){display:block!important;max-width:none!important;padding:0!important}
+
+/* ---- tab covers ---- */
+.wc-tab-cv{position:relative;background:var(--wc-ink);color:#fff;border:var(--wc-bd) solid var(--wc-ink);box-shadow:6px 6px 0 var(--wc-gold);padding:12px 12px 16px;margin:6px 4px 0 0;
+  background-image:repeating-conic-gradient(from 0deg at 82% 30%,rgba(253,188,42,.13) 0 6deg,transparent 6deg 15deg)}
+#wc-lb .wc-tab-h,#wc-up .wc-tab-h{font-family:var(--wc-pow)!important;font-weight:400;font-size:clamp(46px,14vw,72px)!important;line-height:.9;letter-spacing:.015em;margin:14px 0 10px;color:var(--wc-gold)!important;
+  text-transform:uppercase;transform:rotate(-2deg);transform-origin:left;text-shadow:3px 3px 0 var(--wc-r),-1px -1px 0 var(--wc-ink)!important;-webkit-text-fill-color:currentColor;filter:none;background:none;padding:0}
+.wc-tab .wc-tag{margin:0}
+
+/* ---- scoreboard ---- */
+.wc-sb{display:grid;gap:14px}
+.wc-sb-r{--mc:#111;position:relative;display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-areas:"rk f nm pl" "st st st st";align-items:center;gap:8px 10px;
+  background:var(--wc-pan);border:var(--wc-bd) solid var(--wc-ink);box-shadow:var(--wc-sh);padding:12px 12px 10px;
+  background-image:linear-gradient(115deg,color-mix(in srgb,var(--mc) 15%,transparent) 0 92px,transparent 92px)}
+.wc-sb-1{background-color:#fff3cc;box-shadow:6px 6px 0 var(--wc-gold),6px 6px 0 2px var(--wc-ink)}
+.wc-sb-rk{grid-area:rk;font-family:var(--wc-pow);font-size:26px;background:var(--wc-ink);color:#fff;padding:0 6px;transform:rotate(-6deg);line-height:1.15}
+.wc-sb-1 .wc-sb-rk{background:var(--wc-gold);color:var(--wc-ink);border:2px solid var(--wc-ink)}
+.wc-face.wc-f-m{grid-area:f;width:44px;height:44px;border-width:3px}
+.wc-sb-nm{grid-area:nm;min-width:0}
+#wc-lb .wc-sb-nm h3{font-family:var(--wc-pow)!important;font-weight:400;font-size:28px;line-height:.95;margin:0;letter-spacing:.03em;color:var(--wc-ink)}
+.wc-sb-nm small{display:block;font-size:12px;font-weight:600;color:#4a4350;margin-top:2px}
+.wc-sb-nm em{display:inline-block;margin-top:4px;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
+.wc-sb-nm em{font-style:normal;font-weight:800;color:var(--wc-ink);background:var(--wc-gold);padding:0 4px;border:1.5px solid var(--wc-ink)}
+.wc-sb-pl{grid-area:pl;margin:0;text-align:right;font-family:var(--wc-pow);font-size:28px;line-height:1;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.wc-sb-pl small{display:block;font-family:var(--wc-let);font-size:12.5px;font-weight:800;letter-spacing:0;margin-top:3px}
+.wc-sb-st{grid-area:st;display:grid;grid-template-columns:auto auto auto 1fr;gap:4px 16px;margin:4px 0 0;padding-top:8px;border-top:2px dashed rgba(21,18,26,.35)}
+.wc-sb-st div{margin:0}
+.wc-sb-st dt{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#4a4350}
+.wc-sb-st dd{margin:0;font-family:var(--wc-pow);font-size:22px;line-height:1.05;letter-spacing:.03em;font-variant-numeric:tabular-nums}
+.wc-sb-st dd b{font-weight:400}
+.wc-sb-f{justify-self:end}
+.wc-sb-st .wc-form{margin:2px 0 0;font-family:var(--wc-let)}
+.wc-sb-cap{margin-top:18px;font-size:13.5px;transform:rotate(-.4deg)}
+
+/* ---- the race so far ---- */
+.wc-rc{padding:14px 12px 12px}
+.wc-rc-plot{display:grid;grid-template-columns:30px minmax(0,1fr);gap:6px}
+.wc-rc-y{display:grid;grid-template-rows:repeat(4,1fr);font-family:var(--wc-pow);font-size:15px;letter-spacing:.03em}
+.wc-rc-y i{font-style:normal;align-self:center}
+.wc-rc-cv{position:relative;height:190px;margin-right:78px;border-left:2.5px solid var(--wc-ink);border-bottom:2.5px solid var(--wc-ink)}
+.wc-rc-cv > svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.wc-rc-g{stroke:rgba(21,18,26,.18);stroke-width:1;stroke-dasharray:4 4;vector-effect:non-scaling-stroke}
+.wc-rc-o{fill:none;stroke:var(--wc-ink);stroke-width:7;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.wc-rc-l{fill:none;stroke:var(--mc);stroke-width:4;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.wc-rc-lead{stroke-width:5}
+.wc-rc-st{position:absolute;top:12.5%;width:14px;height:14px;margin:-7px 0 0 -7px;background:var(--wc-gold);border:2px solid var(--wc-ink);clip-path:polygon(50% 0,63% 35%,100% 38%,71% 61%,81% 100%,50% 78%,19% 100%,29% 61%,0 38%,37% 35%);transform:scale(1.25)}
+.wc-rc-stk{position:relative;display:inline-block;top:2px;margin:0 4px 0 0}
+.wc-rc-ends{position:absolute;top:0;bottom:0;left:100%;width:78px}
+.wc-rc-end{position:absolute;left:6px;display:flex;align-items:center;gap:4px;transform:translateY(-50%);font-weight:800;font-size:13px;white-space:nowrap}
+.wc-rc-x{display:flex;justify-content:space-between;margin:4px 78px 0 36px;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#4a4350}
+.wc-rc-k{margin:8px 0 0;font-size:12.5px;font-weight:600}
+#wc-lb .wc-rc-h{font-family:var(--wc-pow)!important;font-weight:400;font-size:22px;letter-spacing:.04em;margin:16px 0 6px;color:var(--wc-ink)}
+.wc-ot{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.wc-ot li{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:7px;background:#fff;border:2px solid var(--wc-ink);padding:5px 8px;font-size:14px;font-weight:600;line-height:1.25}
+.wc-ot li small{display:block;font-size:12px;color:#4a4350}
+.wc-ot-r{font-family:var(--wc-pow);font-size:16px;background:var(--wc-cap);border:1.5px solid var(--wc-ink);padding:0 5px;letter-spacing:.03em}
+
+/* ---- best and worst ---- */
+.wc-bwg{display:grid;gap:14px}
+.wc-bw{padding:10px 12px 12px;background-image:linear-gradient(180deg,color-mix(in srgb,var(--mc) 14%,transparent) 0 48px,transparent 48px)}
+.wc-bw header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+#wc-lb .wc-bw h3{font-family:var(--wc-pow)!important;font-weight:400;font-size:26px;margin:0;letter-spacing:.03em;color:var(--wc-ink)}
+.wc-bw-l{display:grid;grid-template-columns:52px auto;grid-template-areas:"k v" "k s";gap:0 10px;margin:8px 0 0;align-items:baseline}
+.wc-bw-k{grid-area:k;align-self:start;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:2px 0;text-align:center;border:2px solid var(--wc-ink)}
+.wc-bw-b .wc-bw-k{background:var(--wc-g)}.wc-bw-w .wc-bw-k{background:var(--wc-r)}
+.wc-bw-l > b{grid-area:v;font-family:var(--wc-pow);font-weight:400;font-size:26px;line-height:1;letter-spacing:.02em}
+.wc-bw-l small{grid-area:s;font-size:13px;font-weight:600;line-height:1.3;color:#3d3742}
+
+/* ---- target practice ---- */
+.wc-tg{padding:12px}
+.wc-tg-h,.wc-tg-r{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,64px);align-items:center;gap:6px}
+.wc-tg-h{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;text-align:center;line-height:1.15;padding-bottom:6px}
+.wc-tg-r{padding:7px 0;border-top:2px dashed rgba(21,18,26,.3)}
+.wc-tg-nm{display:flex;align-items:center;gap:6px;font-weight:800;font-size:15px;min-width:0}
+.wc-tg-r > b{justify-self:center;display:grid;place-items:center;min-width:42px;height:36px;font-family:var(--wc-pow);font-weight:400;font-size:24px;border:2.5px solid var(--wc-ink);box-shadow:2px 2px 0 var(--wc-ink);font-variant-numeric:tabular-nums}
+.wc-tg-b{background:var(--wc-gold)}.wc-tg-w{background:#7fe6ad}.wc-tg-o{background:#ff9c95}
+.wc-tg-k{margin:10px 0 0;font-size:12.5px;font-weight:600;line-height:1.35;color:#3d3742}
+
+/* ---- by sector ---- */
+.wc-sct{padding:10px 8px 12px;overflow-x:auto}
+.wc-sct table{width:100%;border-collapse:separate;border-spacing:3px;font-variant-numeric:tabular-nums}
+.wc-sct th{font-size:11.5px;font-weight:800;text-align:center;padding:2px 1px;vertical-align:bottom}
+.wc-sct thead th span{display:block;font-size:11px;margin-top:2px}
+.wc-sct tbody th{text-align:left;font-size:13px;line-height:1.1;white-space:nowrap}
+.wc-sct tbody th small{display:block;font-size:10.5px;font-weight:600;color:#5a5360}
+.wc-sct td{text-align:center;font-family:var(--wc-pow);font-size:17px;letter-spacing:.03em;padding:5px 2px 3px;border:2px solid var(--wc-ink)}
+.wc-sc-hi{background:#7fe6ad}.wc-sc-md{background:#ffe9a8}.wc-sc-lo{background:#ff9c95}.wc-sc-0{background:#ece5d6;color:#6d6672;border-style:dashed!important}
+.wc-sc-top{outline:3px solid var(--wc-ink);outline-offset:1px;box-shadow:0 0 0 5px var(--wc-gold)}
+
+/* ---- upcoming: the spotlight ---- */
+.wc-lvg{display:grid;gap:16px}
+a.wc-lv{padding:10px 10px 10px;color:var(--wc-ink);text-decoration:none}
+.wc-lv header{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"lg h" "b b";align-items:center;gap:6px 10px}
+.wc-lv header img{grid-area:lg;width:40px;height:40px;object-fit:contain;background:#fff;border:2px solid var(--wc-ink);padding:3px}
+#wc-up .wc-lv h3{grid-area:h;font-family:var(--wc-pow)!important;font-weight:400;font-size:26px;line-height:1;letter-spacing:.03em;margin:0;color:var(--wc-ink);overflow-wrap:anywhere}
+.wc-lv h3 small{display:block;font-family:var(--wc-let);font-size:12px;font-weight:600;letter-spacing:0;color:#4a4350;margin-top:2px}
+.wc-bell{grid-area:b;justify-self:start;font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;background:var(--wc-ink);color:var(--wc-gold);padding:3px 9px;transform:rotate(-1deg)}
+.wc-lv .wc-cast{padding:12px 0 0}
+.wc-lv-f{margin:2px 0 0;font-size:13px;font-weight:600;color:#3d3742}
+/* the calendar */
+.wc-flt{display:flex;gap:8px;margin:-2px 0 14px}
+.wc-flt button{font-family:var(--wc-pow);font-size:18px;letter-spacing:.05em;background:#fff;color:var(--wc-ink);border:2.5px solid var(--wc-ink);box-shadow:3px 3px 0 var(--wc-ink);padding:6px 14px 3px;cursor:pointer;min-height:40px}
+.wc-flt button[aria-pressed=true]{background:var(--wc-gold)}
+.wc-ud{margin:0 0 22px}
+#wc-up .wc-ud-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 10px;font-family:var(--wc-pow)!important;font-weight:400;font-size:22px;letter-spacing:.04em;margin:0 0 9px;color:var(--wc-ink);border-bottom:3px solid var(--wc-ink);padding-bottom:3px}
+.wc-ud-h small{font-family:var(--wc-let);font-size:12.5px;font-weight:800;letter-spacing:.02em}
+.wc-utg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.wc-ut{position:relative;display:grid;grid-template-columns:34px minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;align-items:center;background:var(--wc-pan);border:2.5px solid var(--wc-ink);box-shadow:3px 3px 0 var(--wc-ink);padding:7px 8px;color:var(--wc-ink);text-decoration:none;min-height:54px}
+.wc-ut-lg{grid-row:1/3;width:34px;height:34px;display:grid;place-items:center;background:#fff;border:1.5px solid var(--wc-ink)}
+.wc-ut-lg img{max-width:28px;max-height:28px;object-fit:contain}
+.wc-ut b{font-family:var(--wc-pow);font-weight:400;font-size:17px;letter-spacing:.03em;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wc-ut small{font-size:11px;font-weight:600;color:#4a4350;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wc-ut em{position:absolute;right:-6px;top:-9px;font-style:normal;font-family:var(--wc-pow);font-size:13px;letter-spacing:.04em;background:var(--wc-gold);border:2px solid var(--wc-ink);padding:0 5px;transform:rotate(4deg)}
+.wc-ut-m7{background:#fff3cc}
+.wc-ut-nv{background:var(--wc-ink);color:#fff}.wc-ut-nv small{color:#e9dfc6}.wc-ut-nv em{background:var(--wc-r);color:#fff}
+.wc-cal[data-f=m7] .wc-ut:not([data-m7="1"]),.wc-cal[data-f=ai] .wc-ut:not([data-ai="1"]){display:none}
+.wc-cal[data-f=m7] .wc-ud:not(:has(.wc-ut[data-m7="1"])),.wc-cal[data-f=ai] .wc-ud:not(:has(.wc-ut[data-ai="1"])){display:none}
+
+/* ---- get $EZ ---- */
+.wc-get-p{background:var(--wc-pan);border:var(--wc-bd) solid var(--wc-ink);box-shadow:var(--wc-sh);padding:14px 14px 16px;display:grid;gap:12px}
+.wc-step{display:grid;grid-template-columns:36px 1fr;gap:10px;align-items:start}
+.wc-step b{display:grid;place-items:center;width:36px;height:36px;font-family:var(--wc-pow);font-weight:400;font-size:22px;background:var(--wc-gold);border:2.5px solid var(--wc-ink);box-shadow:2px 2px 0 var(--wc-ink)}
+.wc-step p{margin:0;font-size:15px;font-weight:600;line-height:1.35}
+.wc-step strong{font-weight:800}
+.wc-get-cap{font-size:13.5px;transform:rotate(-.4deg)}
+.wc-nob.wc-nob-s{display:inline-grid;width:18px;height:18px;font-size:11px;vertical-align:-4px;border-width:1px}
+
+/* ---- the tabs on desktop ---- */
+@media (min-width:1000px){
+  .wc-tab-cv{padding:22px 26px 26px}
+  #wc-lb .wc-tab-h,#wc-up .wc-tab-h{font-size:96px!important}
+  .wc-tab .wc-tag{font-size:19px;max-width:44ch}
+  .wc-sb{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+  .wc-bwg{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .wc-lb-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 30px;align-items:start}
+  .wc-rc-cv{height:300px}
+  .wc-lvg{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+  .wc-utg{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (min-width:1000px){#wc-lb .wc-tgs,#wc-lb .wc-secs{display:inline-block;vertical-align:top;width:calc(50% - 16px)}#wc-lb .wc-tgs{margin-right:28px}}
+
+/* ---- motion: the tabs ink in like the book; nothing moves under reduced motion ---- */
+@media (prefers-reduced-motion:no-preference){
+  .wc-sb-r{transition:transform .45s cubic-bezier(.2,.9,.3,1.3),opacity .3s}
+  .wc-sb-r:not(.wc-in){opacity:0;transform:translateY(22px) scale(.97)}
+}
+/* a round without a film: its company's logo on a burst, in the panel's place */
+.wc-noart{position:absolute;inset:0;display:grid;place-items:center;background:repeating-conic-gradient(from 0deg at 50% 46%,rgba(253,188,42,.55) 0 7deg,transparent 7deg 16deg),#fff3cc}
+.wc-noart img{width:46%;height:auto!important;max-height:46%;object-fit:contain;background:#fff;border:3px solid var(--wc-ink);box-shadow:5px 5px 0 var(--wc-ink);padding:6%;transform:rotate(-3deg)}
+.wc-noart-t{position:absolute;left:10px;top:12px;font-family:var(--wc-let);font-weight:800;font-size:12.5px;background:var(--wc-cap);border:2px solid var(--wc-ink);padding:3px 8px;transform:rotate(-1.5deg)}
+/* the spotlight's four calls, one row of small balloons */
+.wc-lvc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:10px 0 6px}
+.wc-lvs{position:relative;display:grid;justify-items:center;gap:3px;min-width:0}
+.wc-lvs p{position:relative;margin:0;width:100%;text-align:center;background:#fff;border:2px solid var(--wc-ink);border-radius:12px;padding:3px 2px 4px;font-weight:800;font-size:12.5px;line-height:1.1;white-space:nowrap}
+.wc-lvs p::before{content:"";position:absolute;left:50%;top:-7px;width:9px;height:9px;margin-left:-5px;background:inherit;border-left:2px solid var(--wc-ink);border-top:2px solid var(--wc-ink);transform:rotate(45deg)}
+.wc-lvs small{display:block;font-size:10px;font-weight:600;color:#4a4350;text-transform:uppercase;letter-spacing:.04em}
+.wc-lvu p{background:#d9f7e6}.wc-lvd p{background:#ffe1de}
+.wc-lvs .wc-face.wc-f-s{width:24px;height:24px;border-width:2px}
+.wc-lvg{gap:12px}
+@media (max-width:359px){.wc-lvs p{font-size:11.5px}}
+/* nothing moves where nobody sees it: the old Overview's paper light (its tickets sit off screen here) and the header's live dot
+   while the header is slid away */
+html.wc-on .bt-rake{animation:none!important}
+html.wc-on.wc-hhide header.top .live i{animation-play-state:paused!important}
+.wc-gut-a{color:var(--wc-ink);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;display:inline-block;padding:8px 4px}
 </style>
 </head>
 <body>
@@ -10234,7 +10420,8 @@ function x2pAnd(a){return a.length<3?a.join(" and "):a.slice(0,-1).join(", ")+" 
    script started; build.py adds a last net (20 s) and a <noscript> rule. */
 (function(){var H=document.documentElement;if(!H.classList.contains("x2p-cur"))return;var t0=Date.now(),okAt=0,fok=!window.__x2pF;
   if(window.__x2pF)window.__x2pF.then(function(){fok=true},function(){fok=true});
-  function built(){if(H.getAttribute("data-sec")==="upcoming")return !!document.querySelector(".x2p-up");
+  function built(){if(window.__x2pNeedWorld&&!H.classList.contains("x2p-world"))return false;   /* a world page (X3+, X4+) waits for its world on every tab */
+    if(H.getAttribute("data-sec")==="upcoming")return !!document.querySelector(".x2p-up");
     return H.classList.contains("x2p-launch")&&H.classList.contains("x2pbt")&&!!document.querySelector(".x2p-vt")&&
       (H.classList.contains("x2pst")||!!window.__x2pBetErr)&&
       (!window.__x2pNeedWorld||H.classList.contains("x2p-world"))}   /* a world page (X3+, X4+) waits for its world to be drawn */   /* and the bet ticket moved to the foot (BETSEC), or that block gave up */
@@ -12658,7 +12845,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
  function want(){var h=location.hash||"",m=h.match(/round\/(\d+)/);
   if(m){var n=+m[1],all=[].concat(typeof ROUNDS!=="undefined"?ROUNDS:[],typeof PENDING!=="undefined"?PENDING:[],typeof UPCOMING!=="undefined"?UPCOMING:[]),r=null;
    all.forEach(function(u){if(u.n==n)r=u});return "Round "+n+(r&&r.co?" · "+r.co:"")+" · "+B}
-  if(/upcoming/.test(h))return "Upcoming · "+B;return B+" · 4 AIs trade earnings"}
+  if(/upcoming/.test(h))return "Upcoming · "+B;if(/leaderboard/.test(h))return "Leaderboard · "+B;return B+" · 4 AIs trade earnings"}
  var busy=0;function fix(){if(busy)return;var t=want();if(d.title!==t){busy=1;d.title=t;busy=0}}
  function go(){fix();var el=d.querySelector("title");if(el)new MutationObserver(fix).observe(el,{childList:true,characterData:true,subtree:true});addEventListener("hashchange",function(){setTimeout(fix,0)})}
  if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",go);else go()}catch(e){}})();
@@ -13056,24 +13243,24 @@ function narrate(r){
   const mv=(up?(Math.abs(r.a)>=5?'jumped ':'rose '):(Math.abs(r.a)>=5?'dropped ':'fell '))+pct(r.a);
   let s=`${esc(r.co)} ${mv}. `;
   if(!right.length)s+=`All ${cs.length} AIs called it the wrong way. Nobody wins this one.`;
-  else if(right.length===1)s+=`Only ${NM[right[0].m]} called ${up?'up':'down'}${W.length===1&&W[0]===right[0].m?', so '+NM[right[0].m]+' takes the round':''}.`;
+  else if(right.length===1)s+=`Only ${NM[right[0].m]} called ${up?'up':'down'}${W.length===1&&W[0]===right[0].m?', so '+NM[right[0].m]+' wins the round':''}.`;
   else{s+=`${right.length} of ${cs.length} called ${up?'up':'down'}. `;
-    if(W.length>1)s+=`${W.map(m=>NM[m]).join(' and ')} tie for closest, both ${right.find(x=>x.m===W[0]).off}% off.`;
-    else if(W.length)s+=`${NM[W[0]]} got closest, ${cs.find(x=>x.m===W[0]).off}% off.`}
+    if(W.length>1)s+=`${W.map(m=>NM[m]).join(' and ')} tie for the win, both ${right.find(x=>x.m===W[0]).off}% off.`;
+    else if(W.length)s+=`${NM[W[0]]} wins it, ${cs.find(x=>x.m===W[0]).off}% off.`}
   return s}
 
 function balloons(r,big){
   const up=r.a>0,W=winners(r);
   return '<div class="wc-cast">'+ORDER.map(m=>{const row=r.calls.find(c=>c[0]===m);if(!row)return '';
     const c=call(row[1]);const ok=c&&c.up===up,win=W.includes(m);
-    const mk=win?'<b class="wc-mk wc-mk-w" title="Closest call">★</b>':ok?'<b class="wc-mk wc-mk-y" title="Right way">✓</b>':'<b class="wc-mk wc-mk-n" title="Wrong way">✗</b>';
-    return `<div class="wc-say ${win?'wc-win':ok?'wc-ok':'wc-no'}">${face(m)}<p class="wc-bub"><small>${NM[m]}</small>${callTxt(c)}</p>${mk}<span class="wc-sr">${win?'closest call':ok?'right way':'wrong way'}</span></div>`}).join('')+'</div>'}
+    const mk=win?'<b class="wc-mk wc-mk-w" title="Winner">★</b>':ok?'<b class="wc-mk wc-mk-y" title="Right way">✓</b>':'<b class="wc-mk wc-mk-n" title="Wrong way">✗</b>';
+    return `<div class="wc-say ${win?'wc-win':ok?'wc-ok':'wc-no'}">${face(m)}<p class="wc-bub"><small>${NM[m]}</small>${callTxt(c)}</p>${mk}<span class="wc-sr">${win?'winner':ok?'right way':'wrong way'}</span></div>`}).join('')+'</div>'}
 
 function bigPanel(r,i){
   const f=film(r.n),up=r.a>0;
   return `<article class="wc-pn wc-big wc-tilt${i%2}" data-n="${r.n}">
     <div class="wc-cap wc-cap-tl">Round ${r.n} · ${md(r.resolves)}</div>
-    <div class="wc-artw"><div class="wc-art">${f?`<video class="wc-v" muted playsinline loop preload="none" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video><button type="button" class="wc-snd" aria-label="Play with sound">▶ Sound</button>`:'<div class="wc-noart"></div>'}</div>
+    <div class="wc-artw"><div class="wc-art">${f?`<video class="wc-v" muted playsinline loop preload="none" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video><button type="button" class="wc-snd" aria-label="Play with sound">▶ Sound</button>`:`<div class="wc-noart">${coLogo(r.ticker)?`<img src="${coLogo(r.ticker)}" alt="${esc(r.co)}">`:''}<span class="wc-noart-t">No film for this one. The numbers tell it.</span></div>`}</div>
       <span class="wc-sfx ${up?'wc-up':'wc-dn'}" aria-hidden="true"><em>${sfx(r.a)}</em><b>${up?'+':'−'}${pct(r.a)}</b></span></div>
     <h3 class="wc-co">${esc(r.co)}<small>Before the report, the AIs said:</small></h3>
     ${balloons(r,true)}
@@ -13085,7 +13272,7 @@ function smallPanel(r){
   return `<a class="wc-pn wc-sm" href="#/round/${r.n}" data-n="${r.n}">
     <span class="wc-art">${f?`<img src="${f.p}" alt="" loading="lazy">`:lg?`<img class="wc-lgimg" src="${lg}" alt="">`:''}
       <span class="wc-sfx wc-mini ${up?'wc-up':'wc-dn'}"><b>${up?'+':'−'}${pct(r.a)}</b></span></span>
-    <span class="wc-smcap"><b>${esc(r.co)}</b>${W.length?'Closest: '+W.map(m=>face(m,'wc-f-s')).join('')+' '+W.map(m=>NM[m]).join(' & '):'Nobody got the direction'}</span>
+    <span class="wc-smcap"><b>${esc(r.co)}</b>Winner: ${W.length?W.map(m=>face(m,'wc-f-s')).join('')+' '+W.map(m=>NM[m]).join(' & '):'<i class="wc-nob wc-nob-s">×</i> Nobody'}</span>
   </a>`}
 
 function backIssue(r){
@@ -13095,21 +13282,24 @@ function backIssue(r){
     <span class="wc-bi-no">#${r.n}</span><span class="wc-bi-mv ${up?'wc-up':'wc-dn'}">${up?'+':'−'}${pct(r.a)}</span>
     <span class="wc-bi-w">${W.length?W.map(m=>face(m,'wc-f-s')).join(''):'<i class="wc-nob">×</i>'}</span></a>`}
 
+function rankPnl(P,N){return ORDER.slice().sort((a,b)=>{const qa=P[a].W+P[a].L>=N/2,qb=P[b].W+P[b].L>=N/2;return qa!==qb?(qa?-1:1):P[b].pnl-P[a].pnl})}
 function build(){
   const P=window.__x2pPnl().A, R=ROUNDS.slice(), n=R.length;
-  const rank=ORDER.slice().sort((a,b)=>P[b].pnl-P[a].pnl), lead=rank[0], last=rank[rank.length-1];
+  const rank=rankPnl(P,n), lead=rank[0], last=rank[rank.length-1];
   const lastDate=R[n-1].resolves, night=R.filter(r=>r.resolves===lastDate);
   const head=night.slice().sort((a,b)=>Math.abs(b.a)-Math.abs(a.a))[0];
   const others=night.filter(r=>r!==head).sort((a,b)=>b.n-a.n);
   const hu=head.a>0,hright=head.calls.filter(c=>{const x=call(c[1]);return x&&x.up===hu}).map(c=>c[0]);
   const today=nyToday();
+  const nightLbl=(()=>{const [m,d,y]=lastDate.split('/').map(Number),dd=Math.round((Date.UTC(2000+today[2],today[0]-1,today[1])-Date.UTC(2000+(y%100),m-1,d))/864e5);
+    return dd<=0?'Today':dd===1?'Last night':['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date(Date.UTC(2000+(y%100),m-1,d)).getUTCDay()]+' night'})();
   let tonight=(window.PENDING||[]).filter(p=>sameDay(p.resolves,today)&&p.calls&&p.calls.length);
   let tLabel='Tonight at the close';
   if(!tonight.length){const ps=(window.PENDING||[]).filter(p=>p.calls&&p.calls.length&&p.resolves);
     if(ps.length){const d0=ps.map(p=>p.resolves).sort((a,b)=>{const f=s=>{const [m,d,y]=s.split('/').map(Number);return y*1e4+m*100+d};return f(a)-f(b)})[0];tonight=ps.filter(p=>p.resolves===d0);const [m,d,y]=d0.split('/').map(Number),dd=Math.round((Date.UTC(2000+y,m-1,d)-Date.UTC(2000+today[2],today[0]-1,today[1]))/864e5);tLabel=dd===1?'Tomorrow at the close':'Graded at the close, '+md(d0)}}
   tonight.sort((a,b)=>cap(b.ticker)-cap(a.ticker));
   const nv=(window.UPCOMING||[]).find(u=>u.ticker==='NVDA');
-  const stTxt=(D.querySelector('#x2pSt')||{}).innerText||'';const cd=/Until the NVIDIA bet:\s*\n?\s*([^\n]+?) left/.exec(stTxt);
+  const stTxt=((D.querySelector('#x2pSt')||{}).textContent||'').replace(/\s+/g,' ');const cd=/Until the NVIDIA bet:\s*(.+?) left/.exec(stTxt);
   const daysLeft=cd?cd[1].replace(/,.*$/,''):'';
 
   /* ---------- COVER ---------- */
@@ -13126,7 +13316,7 @@ function build(){
     <div class="wc-cap wc-cap-y wc-prev-box"><b class="wc-prev-h">Previously…</b>
       <p>Four AIs called ${n} earnings reports, each before the company reported. The next market close graded every call.</p>
       <p>Each AI trades a pretend $100,000 account on its calls. <b>${NM[lead]}</b> leads, up ${$k(P[lead].pnl)}. <b>${NM[last]}</b> is ${P[last].pnl<0?'down '+$k(P[last].pnl):'up '+$k(P[last].pnl)}.</p>
-      <p>Last night, ${esc(head.co)} ${hu?'jumped':'dropped'} ${pct(head.a)}. ${hright.length===0?'Nobody saw it coming.':hright.length===1?'Only '+NM[hright[0]]+' saw it coming.':hright.length+' of 4 saw it coming.'}</p></div>
+      <p>${nightLbl==='Today'?'Today':nightLbl}, ${esc(head.co)} ${hu?'jumped':'dropped'} ${pct(head.a)}. ${hright.length===0?'Nobody saw it coming.':hright.length===1?'Only '+NM[hright[0]]+' saw it coming.':hright.length+' of 4 saw it coming.'}</p></div>
   </section>`;
 
   /* ---------- CHARACTER PAGE ---------- */
@@ -13149,13 +13339,13 @@ function build(){
   /* ---------- THE SEASON SO FAR ---------- */
   const rest=R.filter(r=>!night.includes(r)).sort((a,b)=>b.n-a.n);
   const season=`<section class="wc-season" aria-label="The season so far">
-    <h2 class="wc-h2"><span>Last night</span><small>${md(lastDate)} · ${night.length} reports graded at the close</small></h2>
+    <h2 class="wc-h2"><span>${nightLbl}</span><small>${md(lastDate)} · ${night.length} report${night.length===1?'':'s'} graded at the close</small></h2>
     ${bigPanel(head,0)}
-    ${others.length?`<div class="wc-also"><p class="wc-gut">Also last night…</p><div class="wc-row">${others.map(smallPanel).join('')}</div></div>`:''}
+    ${others.length?`<div class="wc-also"><p class="wc-gut">Also ${nightLbl==='Today'?'today':nightLbl.toLowerCase()}…</p><div class="wc-row">${others.map(smallPanel).join('')}</div></div>`:''}
     <h2 class="wc-h2 wc-h2-b"><span>Back issues</span><small>Every graded round. Tap one to open its graded card.</small></h2>
     <div class="wc-bis" data-all="0">${rest.map(backIssue).join('')}</div>
     <button type="button" class="wc-more">Show all ${rest.length} back issues</button>
-    <p class="wc-key">Corner face = the AI with the closest call. × = nobody got the direction. % = how far the stock moved at the close.</p>
+    <p class="wc-key">Corner face = the round's winner (closest call that got the direction). × = nobody got the direction. % = how far the stock moved at the close.</p>
   </section>`;
 
   /* ---------- SPLASH: SMART OR LUCKY ---------- */
@@ -13175,7 +13365,7 @@ function build(){
     <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} rounds. Every call locked before the report. The close decides.</small></h2>
     <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker);return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt="">`:''}<b>${esc(p.co)}</b></header>
       <div class="wc-tn-c">${ORDER.map(m=>{const c=p.calls.find(x=>x.m===m);return c?`<span class="wc-tn-s ${c.dir==='UP'?'wc-tu':'wc-td'}">${face(m,'wc-f-s')}${c.dir==='UP'?'Up':'Down'} ${c.mag}%</span>`:''}).join('')}</div></article>`}).join('')}</div>
-    ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s">+ ${tonight.length-tn.length} more locked in</p>`:''}
+    ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s"><a class="wc-gut-a" href="#/upcoming">+ ${tonight.length-tn.length} more locked in. See the card →</a></p>`:''}
     <div class="wc-next">
       <p class="wc-next-k">Next time…</p>
       <h3>Bet #1: NVIDIA</h3>
@@ -13186,15 +13376,25 @@ function build(){
     </div>
   </section>`;
 
+  /* ---------- GET $EZ (the live page's own words) ---------- */
+  const get=`<section class="wc-get" aria-label="Get $EZ">
+    <h2 class="wc-h2"><span>Get $EZ</span><small>The token. Not live yet.</small></h2>
+    <div class="wc-get-p">
+      <div class="wc-step"><b>1</b><p><strong>Check the address.</strong> Not posted yet. It appears here, and only here, at launch. Anyone DMing you a CA before that is a scammer.</p></div>
+      <div class="wc-step"><b>2</b><p><strong>Use this page's link.</strong> Opens at launch.</p></div>
+      <p class="wc-cap wc-get-cap">Best case, an AI buys back $EZ with its winnings. Worst case, the most entertaining way to lose money. Size accordingly.</p>
+    </div>
+  </section>`;
+
   /* ---------- BACK COVER ---------- */
   const back=`<section class="wc-back" aria-label="Back cover">
     <p class="wc-motto">Nobody said it would be <span class="wc-e">E</span><span class="wc-z">Z</span>.</p>
     <a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a>
-    <p class="wc-fine">New panels whenever a round is graded. P&amp;L is simulated: $100,000 each, the whole balance on every call, no leverage, before fees. $EZ isn't live yet. Not advice.</p>
+    <p class="wc-fine">New panels whenever a round is graded. P&amp;L is simulated: $100,000 each, the whole balance on every call, no leverage, before fees. $EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p>
   </section>`;
 
   const book=D.createElement('div');book.id='wc-book';book.className='wc-book';
-  book.innerHTML=cover+prev+cast+season+splash+cliff+back;
+  book.innerHTML=cover+prev+cast+season+splash+cliff+get+back;
   const main=D.querySelector('main');main.insertBefore(book,main.firstChild);
   // the real explainer film moves onto the cover (its controls keep working)
   const vt=D.querySelector('.x2p-vt');if(vt)book.querySelector('.wc-film-slot').appendChild(vt);
@@ -13211,11 +13411,150 @@ function wire(book){
     const v=t.querySelector&&t.querySelector('video.wc-v');if(v&&!matchMedia('(prefers-reduced-motion: reduce)').matches){if(e.isIntersecting&&e.intersectionRatio>.35){v.play().catch(()=>{})}else if(!e.isIntersecting)v.pause()}}),{threshold:[0,.4]});
   book.querySelectorAll('.wc-pn,.wc-ch,.wc-splash,.wc-next,.wc-prev,.wc-tnp,.wc-cn').forEach(x=>io.observe(x));
   let ly=scrollY;addEventListener('scroll',()=>{const y=scrollY;H.classList.toggle('wc-hhide',y>ly&&y>200);ly=y},{passive:true});
-  const sync=()=>{book.hidden=/^#\/(upcoming)/.test(location.hash)};addEventListener('hashchange',sync);sync()}
+}
 
+
+/* ================= THE LEADERBOARD TAB (#/leaderboard): the fuller standings, in the same comic ================= */
+const SH={"Information Technology":"Tech","Consumer Discretionary":"Consumer","Consumer Staples":"Staples","Financials":"Finance","Industrials":"Industrials","Communication Services":"Media & telecom","Health Care":"Health","Materials":"Materials","Energy":"Energy","Utilities":"Utilities","Real Estate":"Real estate"};
+const sgn=v=>(v>=0?'+':'−');
+const pc1=v=>sgn(v)+Math.abs(v).toFixed(1)+'%';
+const kShort=v=>sgn(v)+'$'+(Math.abs(v)>=1000?(Math.abs(v)/1000).toFixed(1)+'K':Math.round(Math.abs(v)));
+function callOf(r,m){const c=r.calls.find(x=>x[0]===m&&x[1]);if(!c)return null;const x=call(c[1]);return x?{ok:x.up===(r.a>0),off:+c[2],c:x}:null}
+function streak(seq){if(!seq.length)return '';const L=seq[seq.length-1];let k=0;for(let i=seq.length-1;i>=0&&seq[i]===L;i--)k++;return L+k}
+
+function lbBuild(){
+  const PL=window.__x2pPnl(),P=PL.A,R=ROUNDS.slice().sort((a,b)=>a.n-b.n),N=R.length,rank=rankPnl(P,N);
+  const S={};ORDER.forEach(m=>{const cs=R.map(r=>callOf(r,m)).filter(Boolean);S[m]={bu:cs.filter(x=>x.ok&&x.off<=.1).length,w1:cs.filter(x=>x.ok&&x.off<=1).length,ot:cs.filter(x=>!x.ok).length}});
+  /* the race: each AI's balance after every graded round, its place, the lead changes and the overtakes */
+  const bal={},pos={};ORDER.forEach(m=>{bal[m]=[1e5];pos[m]=[]});
+  let prev=ORDER.slice();const steps=[prev.slice()];
+  R.forEach((r,i)=>{ORDER.forEach(m=>{const x=P[m].per[r.n];bal[m].push(bal[m][i]+(x?x.v:0))});
+    const o=ORDER.slice().sort((a,b)=>(bal[b][i+1]-bal[a][i+1])||(prev.indexOf(a)-prev.indexOf(b)));steps.push(o);prev=o});
+  steps.forEach((o,i)=>o.forEach((m,j)=>pos[m][i]=j+1));
+  const leads=[];for(let i=1;i<steps.length;i++){if(i===1||steps[i][0]!==steps[i-1][0])leads.push({i,n:R[i-1].n,m:steps[i][0]})}
+  const changes=leads.length-1,since=leads[leads.length-1];
+  const ev=[];for(let i=2;i<steps.length;i++){steps[i].forEach(m=>{const was=steps[i-1].indexOf(m),now=steps[i].indexOf(m);if(now<was){const past=steps[i-1].slice(now,was).filter(o=>steps[i].indexOf(o)>now);if(past.length)ev.push({n:R[i-1].n,co:R[i-1].co,m,past,to:now+1})}})}
+  const W=600,Hh=4,X=i=>i/N*W,Y=p=>(p-.5);
+  const lines=rank.slice().reverse().map(m=>{const d=pos[m].map((p,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(p).toFixed(2)).join(' ');
+    return `<path class="wc-rc-o" d="${d}"/><path class="wc-rc-l${m===rank[0]?' wc-rc-lead':''}" style="--mc:${MODELS[m].c}" d="${d}"/>`}).join('');
+  const stars=leads.slice(1).map(l=>`<i class="wc-rc-st" style="left:${(l.i/N*100).toFixed(2)}%" title="R${l.n}: ${NM[l.m]} takes the lead"></i>`).join('');
+  const ends=ORDER.map(m=>`<span class="wc-rc-end" style="top:${((pos[m][N]-.5)/4*100).toFixed(2)}%">${face(m,'wc-f-s')}<b>${NM[m]}</b></span>`).join('');
+  const race=`<section class="wc-race" aria-label="The race so far">
+    <h2 class="wc-h2"><span>The race so far</span><small>Who was in front after every graded round. The lead has changed hands ${changes} time${changes===1?'':'s'}. ${NM[since.m]} has led since round ${since.n}.</small></h2>
+    <div class="wc-pn wc-rc"><div class="wc-rc-plot"><span class="wc-rc-ax wc-rc-y" aria-hidden="true"><i>1st</i><i>2nd</i><i>3rd</i><i>4th</i></span>
+      <div class="wc-rc-cv"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true">${[1,2,3].map(k=>`<line class="wc-rc-g" x1="0" x2="${W}" y1="${k}" y2="${k}"/>`).join('')}${lines}</svg>${stars}<div class="wc-rc-ends">${ends}</div></div></div>
+      <p class="wc-rc-x" aria-hidden="true"><span>Start</span><span>R${R[N-1].n}</span></p>
+      <p class="wc-rc-k"><i class="wc-rc-st wc-rc-stk"></i> a new leader</p>
+      <h3 class="wc-rc-h">Latest overtakes</h3>
+      <ol class="wc-ot">${ev.slice(-6).reverse().map(e=>`<li><span class="wc-ot-r">R${e.n}</span>${face(e.m,'wc-f-s')}<span><b>${NM[e.m]}</b> passes ${e.past.map(o=>NM[o]).join(' and ')}<small>on ${esc(e.co)} · now #${e.to}</small></span></li>`).join('')}</ol>
+    </div></section>`;
+
+  const roleOf=i=>i===0?'Makes the buyback call':'';
+  const board=`<section class="wc-sbd" aria-label="The scoreboard">
+    <h2 class="wc-h2"><span>The scoreboard</span><small>Ranked by P&amp;L on a pretend $100,000 each. Top P&amp;L makes the buyback call.</small></h2>
+    <div class="wc-sb">${rank.map((m,i)=>{const a=P[m],t=a.W+a.L,hr=t?Math.round(a.W/t*100):0,st=streak(a.seq);
+      return `<article class="wc-sb-r${i===0?' wc-sb-1':''}" style="--mc:${MODELS[m].c}">
+        <span class="wc-sb-rk">#${i+1}</span>${face(m,'wc-f-m')}
+        <div class="wc-sb-nm"><h3>${NM[m]}</h3><small>${esc(MODELS[m].ver)}</small>${roleOf(i)?'<em>'+roleOf(i)+'</em>':''}</div>
+        <p class="wc-sb-pl ${a.pnl>=0?'wc-tu':'wc-td'}">${pm(a.pnl)}<small>${pc1(a.pnl/1000)}</small></p>
+        <dl class="wc-sb-st"><div><dt>W-L</dt><dd><b class="wc-tu">${a.W}</b>-<b class="wc-td">${a.L}</b></dd></div><div><dt>Hit rate</dt><dd>${hr}%</dd></div><div><dt>Streak</dt><dd class="${st[0]==='W'?'wc-tu':'wc-td'}">${st}</dd></div>
+          <div class="wc-sb-f"><dt>Last 5</dt><dd class="wc-form">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}</dd></div></dl>
+      </article>`}).join('')}</div>
+    <p class="wc-cap wc-cap-y wc-sb-cap">P&amp;L is simulated: $100,000 to start, the whole balance on every call, buy on up, short on down, no leverage, before fees. W = right direction. An AI that called under half the rounds ranks after the rest.</p>
+  </section>`;
+
+  const bw=m=>{let b=null,w=null;R.forEach(r=>{const x=P[m].per[r.n];if(!x)return;if(!b||x.v>b.v)b={v:x.v,r,dn:x.dn};if(!w||x.v<w.v)w={v:x.v,r,dn:x.dn}});return {b,w}};
+  const bwl=(x,k)=>`<p class="wc-bw-l ${k}"><span class="wc-bw-k">${k==='wc-bw-b'?'Best':'Worst'}</span><b class="${x.v>=0?'wc-tu':'wc-td'}">${pm(x.v)}</b><small>said ${esc(x.r.co)} would go ${x.dn?'down':'up'}. It ${x.r.a>0?'rose':'fell'} ${pct(x.r.a)}. Round ${x.r.n}.</small></p>`;
+  const bws=`<section class="wc-bws" aria-label="Best and worst calls">
+    <h2 class="wc-h2"><span>Best and worst calls</span><small>Each AI's biggest win and biggest loss on a single call.</small></h2>
+    <div class="wc-bwg">${rank.map(m=>{const x=bw(m);return `<article class="wc-pn wc-bw" style="--mc:${MODELS[m].c}"><header>${face(m)}<h3>${NM[m]}</h3></header>${bwl(x.b,'wc-bw-b')}${bwl(x.w,'wc-bw-w')}</article>`}).join('')}</div>
+  </section>`;
+
+  const byT=ORDER.slice().sort((a,b)=>(S[b].bu-S[a].bu)||(S[b].w1-S[a].w1)||(S[a].ot-S[b].ot));
+  const tg=`<section class="wc-tgs" aria-label="Target practice">
+    <h2 class="wc-h2"><span>Target practice</span><small>How close did they get to the real move?</small></h2>
+    <div class="wc-pn wc-tg"><div class="wc-tg-h" aria-hidden="true"><span></span><span>Bullseyes</span><span>Within 1%</span><span>Off target</span></div>
+      ${byT.map((m,i)=>`<div class="wc-tg-r${i===0?' wc-tg-1':''}"><span class="wc-tg-nm">${face(m,'wc-f-s')}<b>${NM[m]}</b></span><b class="wc-tg-b" aria-label="${S[m].bu} bullseyes">${S[m].bu}</b><b class="wc-tg-w" aria-label="${S[m].w1} within 1%">${S[m].w1}</b><b class="wc-tg-o" aria-label="${S[m].ot} off target">${S[m].ot}</b></div>`).join('')}
+      <p class="wc-tg-k">Bullseye: the right way and within 0.1% of the move. Within 1%: the right way and within 1% (bullseyes count too). Off target: the wrong way.</p></div>
+  </section>`;
+
+  const sec=r=>((window.RMETA||{})[r.n]||{}).sector||'',cnt={};R.forEach(r=>{const x=sec(r);if(x)cnt[x]=(cnt[x]||0)+1});
+  const secs=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]);
+  const cell=(m,x)=>{let n=0,k=0;R.forEach(r=>{if(sec(r)!==x)return;const c=callOf(r,m);if(c){n++;if(c.ok)k++}});return {n,k}};
+  const sct=`<section class="wc-secs" aria-label="By sector">
+    <h2 class="wc-h2"><span>By sector</span><small>Which industries do they call best? Right calls out of calls made. Small samples, so it fills in.</small></h2>
+    <div class="wc-pn wc-sct"><table><thead><tr><th scope="col">Sector</th>${rank.map(m=>`<th scope="col">${face(m,'wc-f-s')}<span>${NM[m]}</span></th>`).join('')}</tr></thead><tbody>
+    ${secs.map(x=>{const cs=rank.map(m=>cell(m,x)),v=cs.map(c=>c.n?c.k/c.n:-1),mx=Math.max(...v),all=v.every(y=>y===mx);
+      return `<tr><th scope="row">${esc(SH[x]||x)}<small>${cnt[x]}</small></th>${cs.map((c,i)=>!c.n?'<td class="wc-sc-0">–</td>':`<td class="${3*c.k>=2*c.n?'wc-sc-hi':3*c.k<=c.n?'wc-sc-lo':'wc-sc-md'}${!all&&v[i]===mx?' wc-sc-top':''}">${c.k}/${c.n}</td>`).join('')}</tr>`}).join('')}
+    </tbody></table><p class="wc-tg-k">Green: 2 in 3 right or better. Red: 1 in 3 or worse. Outlined: the best in its row.</p></div>
+  </section>`;
+
+  const el=D.createElement('div');el.id='wc-lb';el.className='wc-book wc-tab';
+  el.innerHTML=`<section class="wc-tab-cv" aria-label="Who's winning"><div class="wc-cv-top"><span class="wc-iss"><small>Issue</small>#${N}</span><span class="wc-cv-s">The standings<small>${N} earnings reports graded</small></span></div>
+    <h1 class="wc-tab-h">Who's winning?</h1><p class="wc-tag">Four AIs, a pretend <b>$100,000</b> each, the whole balance on every call. The money says who's best.</p></section>`
+    +board+race+bws+tg+sct+`<section class="wc-back"><a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a></section>`;
+  return el}
+
+/* ================= THE UPCOMING TAB (#/upcoming): the next fight nights, in the same comic ================= */
+/* each exchange's close, local time (Seoul and Tokyo 15:30, Taipei 13:30, Hong Kong 16:00, London 16:30, the euro exchanges 17:30) */
+const XC={KS:['Asia/Seoul',15,30],T:['Asia/Tokyo',15,30],TW:['Asia/Taipei',13,30],HK:['Asia/Hong_Kong',16,0],L:['Europe/London',16,30],AS:['Europe/Amsterdam',17,30],DE:['Europe/Berlin',17,30],SW:['Europe/Zurich',17,30],PA:['Europe/Paris',17,30]};
+function closeAt(t,mdy){if(!mdy)return null;const [tz,h,mi]=XC[(String(t).split('.')[1]||'')]||['America/New_York',16,0],[m,d,y]=mdy.split('/').map(Number),Y=2000+(y%100);
+  const loc=x=>{const p=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}).formatToParts(new Date(x));const g=k=>+p.find(q=>q.type===k).value;return Date.UTC(g('year'),g('month')-1,g('day'),g('hour')%24,g('minute'))};
+  const want=Date.UTC(Y,m-1,d,h,mi);let x=want;for(let i=0;i<3;i++)x+=want-loc(x);return x}
+function bellTxt(t,mdy){const at=closeAt(t,mdy);if(at==null)return 'Date to come';const ms=at-Date.now();if(ms<=0)return 'The bell has rung · results soon';const mn=Math.round(ms/6e4),h=Math.floor(mn/60);
+  return 'Bell in '+(h>=24?Math.floor(h/24)+'d '+(h%24)+'h':h?h+'h '+(mn%60)+'m':mn+'m')}
+const nk=s=>{if(!s)return '';const [m,d,y]=s.split('/').map(Number);return m+'/'+d+'/'+(y%100)};
+const mdyKey=s=>{if(!s)return 9e9;const [m,d,y]=s.split('/').map(Number);return (y%100)*1e4+m*100+d};
+const dayName=s=>{const [m,d,y]=s.split('/').map(Number);return new Date(Date.UTC(2000+(y%100),m-1,d)).toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',timeZone:'UTC'})};
+function relDay(s){const t=nyToday(),[m,d,y]=s.split('/').map(Number),dd=Math.round((Date.UTC(2000+(y%100),m-1,d)-Date.UTC(2000+t[2],t[0]-1,t[1]))/864e5);return dd===0?'Tonight':dd===1?'Tomorrow':dd===-1?'Yesterday':null}
+
+function upBuild(){
+  const RM=window.RMETA||{},PEN=(window.PENDING||[]).slice(),UP=(window.UPCOMING||[]).slice();
+  const live=PEN.filter(p=>p.calls&&p.calls.length);
+  const t=nyToday(),tk=t[2]*1e4+t[0]*100+t[1];
+  const days={};live.forEach(p=>{const k=nk(p.resolves);(days[k]=days[k]||[]).push(p)});
+  const dk=Object.keys(days).sort((a,b)=>mdyKey(a)-mdyKey(b));
+  const tick=p=>{const lg=coLogo(p.ticker),cs=ORDER.map(m=>p.calls.find(c=>c.m===m)).filter(Boolean),u=cs.filter(c=>c.dir==='UP').length;
+    return `<a class="wc-pn wc-lv" href="#/round/${p.n}" data-n="${p.n}"><header>${lg?`<img src="${lg}" alt="">`:''}<h3>${esc(p.co)}<small>${esc(p.ticker)} · Round ${p.n}</small></h3><span class="wc-bell" data-t="${esc(p.ticker)}" data-d="${p.resolves||''}">${bellTxt(p.ticker,p.resolves)}</span></header>
+      <div class="wc-lvc">${cs.map(c=>`<div class="wc-lvs ${c.dir==='UP'?'wc-lvu':'wc-lvd'}">${face(c.m,'wc-f-s')}<p><small>${NM[c.m]}</small>${c.dir==='UP'?'Up':'Down'} ${c.mag}%</p></div>`).join('')}</div>
+      <p class="wc-lv-f">${u} say${u===1?'s':''} up, ${cs.length-u} say${cs.length-u===1?'s':''} down. Locked before the report.</p></a>`};
+  const spot=dk.map(k=>{const r=k?relDay(k):null,lab=!k?'Date to come':r==='Tonight'?'Tonight at the close':r==='Tomorrow'?'Tomorrow at the close':'At the close, '+md(k);
+    const g=days[k].sort((a,b)=>cap(b.ticker)-cap(a.ticker));
+    return `<section class="wc-spot" aria-label="${esc(lab)}"><h2 class="wc-h2"><span>${esc(lab)}</span><small>${g.length} round${g.length===1?'':'s'}. Every call locked before the report. The close decides.</small></h2><div class="wc-lvg">${g.map(tick).join('')}</div></section>`}).join('');
+  const ud={};UP.forEach(u=>{const k=nk(u.called);(ud[k]=ud[k]||[]).push(u)});
+  /* days still to come first; a day already gone whose calls are not in yet goes last, said as it is */
+  const uk=Object.keys(ud).sort((a,b)=>{const pa=a&&mdyKey(a)<tk,pb=b&&mdyKey(b)<tk;return pa!==pb?(pa?1:-1):mdyKey(a)-mdyKey(b)});
+  const tile=u=>{const lg=coLogo(u.ticker),me=RM[u.n]||{},m7=!!me.mag7,ai=(me.themes||[]).indexOf('AI')>-1,nv=u.ticker==='NVDA';
+    return `<a class="wc-ut${m7?' wc-ut-m7':''}${nv?' wc-ut-nv':''}" href="#/round/${u.n}" data-m7="${m7?1:0}" data-ai="${ai?1:0}"><span class="wc-ut-lg">${lg?`<img src="${lg}" alt="" loading="lazy">`:''}</span>
+      <b>${esc(u.co)}</b><small>${esc(u.ticker)} · R${u.n}</small>${nv?'<em>Bet #1</em>':m7?'<em>Mag 7</em>':''}</a>`};
+  const cal=uk.map(k=>{const g=ud[k].sort((a,b)=>cap(b.ticker)-cap(a.ticker)),past=k&&mdyKey(k)<tk,r=k?relDay(k):null;
+    return `<section class="wc-ud" aria-label="${k?esc(dayName(k)):'Date to come'}"><h3 class="wc-ud-h"><span>${k?(r&&r!=='Yesterday'?r+' · ':'')+esc(dayName(k)):'Date to come'}</span><small>${past?'Calls not in yet':g.length+' on the card'}</small></h3><div class="wc-utg">${g.map(tile).join('')}</div></section>`}).join('');
+  const el=D.createElement('div');el.id='wc-up';el.className='wc-book wc-tab';
+  el.innerHTML=`<section class="wc-tab-cv" aria-label="Coming up"><div class="wc-cv-top"><span class="wc-iss"><small>To come</small>${live.length+UP.length}</span><span class="wc-cv-s">Coming up<small>${live.length} with calls in · ${UP.length} still to call</small></span></div>
+    <h1 class="wc-tab-h">Next on the card</h1><p class="wc-tag">Every AI calls each stock <b>before</b> it reports. The next market close grades it. Tap a round to open its card.</p></section>`
+    +spot+`<h2 class="wc-h2 wc-h2-b"><span>Coming up</span><small>Calls drop before each report. Every round still to come, day by day.</small></h2>
+    <div class="wc-flt" role="group" aria-label="Show"><button type="button" aria-pressed="true" data-f="">All</button><button type="button" aria-pressed="false" data-f="m7">Mag 7</button><button type="button" aria-pressed="false" data-f="ai">AI</button></div>
+    <div class="wc-cal">${cal}</div>
+    <section class="wc-back"><a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Get every call on X</a></section>`;
+  el.querySelectorAll('.wc-flt button').forEach(b=>b.addEventListener('click',()=>{el.querySelectorAll('.wc-flt button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));el.querySelector('.wc-cal').dataset.f=b.dataset.f}));
+  setInterval(()=>{if(H.getAttribute('data-sec')!=='upcoming')return;el.querySelectorAll('.wc-bell').forEach(b=>{b.textContent=bellTxt(b.dataset.t,b.dataset.d)})},60000);
+  return el}
+
+function tabs(){const v=D.getElementById('view');const lb=lbBuild(),up=upBuild();(v||D.querySelector('main')).after(lb,up);
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('wc-in');io.unobserve(e.target)}}),{threshold:.15});
+  [lb,up].forEach(x=>x.querySelectorAll('.wc-pn,.wc-sb-r').forEach(y=>io.observe(y)))}
+const done=()=>H.classList.add('x2p-world');
+/* a round opened from a panel, a back issue or a ticket: when its card closes, the page goes back to where it was
+   (the router scrolls the page while the card is open, and the address passes through '' on the way) */
+let back=null,open=false;addEventListener('pointerdown',e=>{const a=e.target.closest&&e.target.closest('#wc-book a[href^="#/round/"],#wc-lb a[href^="#/round/"],#wc-up a[href^="#/round/"],#wc-book .wc-big video');if(a){back=scrollY;open=false}},true);
+new MutationObserver(()=>{if(back==null)return;const rm=D.getElementById('x2pRm');if(rm){open=true;return}if(!open)return;
+  const y=back;back=null;open=false;const go=()=>scrollTo({top:y,behavior:'instant'});requestAnimationFrame(()=>{go();setTimeout(go,150);setTimeout(go,500)})}).observe(D.body,{childList:true});
 let tries=0;(function wait(){
-  if(window.__x2pPnl&&window.ROUNDS&&D.querySelector('.x2p-vt')&&D.querySelector('#x2pSt')&&D.querySelector('#standings'))try{build()}catch(e){console.error('comic',e)}
-  else if(tries++<200)setTimeout(wait,50)})();
+  if(window.__x2pPnl&&window.ROUNDS&&D.querySelector('.x2p-vt')&&D.querySelector('#x2pSt')&&D.querySelector('#standings')){
+    try{build()}catch(e){window.__x2pWorldErr=e;console.error('comic',e)}
+    try{tabs()}catch(e){window.__x2pWorldErr=e;console.error('comic tabs',e)}
+    done()}
+  else if(tries++<200)setTimeout(wait,50);else done()})();
 })();
 
 }catch(e){window.__x2pWorldErr=e;document.documentElement.classList.add("x2p-world");console.error(e)}})</script>

@@ -241,7 +241,7 @@ function board(){
   var evl=function(e){return '<li style="--fc:'+COL[e.m]+'"><span class="wa-evr">R'+e.r.n+'</span><span class="wa-evc">'+co(e.r.ticker)+'</span><span class="wa-evt"><b>'+NICE[e.m]+'</b> passes <b>'+NICE[e.x]+'</b>'+(e.to===0?' for the lead':' for '+PLACE[e.to])+'<i>'+esc(e.r.co)+'</i></span></li>'};
   var recent=ev.slice(-8).reverse();
   /* fighter stats */
-  var stat=function(l,v,c){return '<div class="wa-st"><span>'+l+'</span><b'+(c?' class="'+c+'"':'')+'>'+v+'</b></div>'};
+  var stat=function(l,v,c){return '<div class="wa-st"><span class="wa-stl">'+l+'</span><b'+(c?' class="'+c+'"':'')+'>'+v+'</b></div>'};
   var card=function(f,i){var a=f.a,b=f.best,w=f.worst,stk=a.streak||'';
     return '<article class="wa-fc" style="--fc:'+COL[f.m]+'"><header class="wa-fch"><span class="wa-fcp">'+PLACE[i]+'</span><span class="wa-big">'+mk(f.m)+'</span><span class="wa-who"><b>'+NICE[f.m]+'</b><i>'+esc(MODELS[f.m].ver)+'</i></span></header>'+
       '<div class="wa-sts">'+stat('Bank',usd(a.bal))+stat('P&amp;L',usd(a.pnl,1),a.pnl>=0?'wa-pos':'wa-neg')+stat('Record','<span class="wa-pos">'+a.W+'</span>-<span class="wa-neg">'+a.L+'</span>')+stat('Hit rate',Math.round(f.hit*100)+'%')+
@@ -279,9 +279,9 @@ function upcoming(){var v=document.getElementById('view');if(!v)return;var up=v.
   up.insertBefore(d,up.firstChild);loops(up)}
 
 /* ================= start ================= */
-function done(){ROOT.classList.add('wa-ok');ROOT.classList.add('x2p-world')}
-function go(){
-  season();overview();hud();
+function done(){ROOT.classList.add('wa-ok');ROOT.classList.add('x2p-world');try{performance.mark('wa-done')}catch(e){}}
+function go(){try{performance.mark('wa-go')}catch(e){}
+  season();overview();try{performance.mark('wa-ov')}catch(e){}hud();
   var sync=function(){var s=ROOT.getAttribute('data-sec');if(s==='leaderboard'){board();var lb=document.getElementById('waLB');if(lb&&!sync.__f){sync.__f=1}}if(s==='upcoming')upcoming()};
   sync();new MutationObserver(sync).observe(ROOT,{attributes:true,attributeFilter:['data-sec']});
   var v=document.getElementById('view');if(v)new MutationObserver(function(){if(ROOT.getAttribute('data-sec')==='upcoming')upcoming()}).observe(v,{childList:true});

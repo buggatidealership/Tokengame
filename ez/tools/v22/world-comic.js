@@ -59,7 +59,7 @@ function bigPanel(r,i){
   const f=film(r.n),up=r.a>0;
   return `<article class="wc-pn wc-big wc-tilt${i%2}" data-n="${r.n}">
     <div class="wc-cap wc-cap-tl">Round ${r.n} · ${md(r.resolves)}</div>
-    <div class="wc-artw"><div class="wc-art">${f?`<video class="wc-v" muted playsinline loop preload="none" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video><button type="button" class="wc-snd" aria-label="Play with sound">▶ Sound</button>`:'<div class="wc-noart"></div>'}</div>
+    <div class="wc-artw"><div class="wc-art">${f?`<video class="wc-v" muted playsinline loop preload="none" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video><button type="button" class="wc-snd" aria-label="Play with sound">▶ Sound</button>`:`<div class="wc-noart">${coLogo(r.ticker)?`<img src="${coLogo(r.ticker)}" alt="${esc(r.co)}">`:''}<span class="wc-noart-t">No film for this one. The numbers tell it.</span></div>`}</div>
       <span class="wc-sfx ${up?'wc-up':'wc-dn'}" aria-hidden="true"><em>${sfx(r.a)}</em><b>${up?'+':'−'}${pct(r.a)}</b></span></div>
     <h3 class="wc-co">${esc(r.co)}<small>Before the report, the AIs said:</small></h3>
     ${balloons(r,true)}
@@ -164,7 +164,7 @@ function build(){
     <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} rounds. Every call locked before the report. The close decides.</small></h2>
     <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker);return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt="">`:''}<b>${esc(p.co)}</b></header>
       <div class="wc-tn-c">${ORDER.map(m=>{const c=p.calls.find(x=>x.m===m);return c?`<span class="wc-tn-s ${c.dir==='UP'?'wc-tu':'wc-td'}">${face(m,'wc-f-s')}${c.dir==='UP'?'Up':'Down'} ${c.mag}%</span>`:''}).join('')}</div></article>`}).join('')}</div>
-    ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s">+ ${tonight.length-tn.length} more locked in</p>`:''}
+    ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s"><a class="wc-gut-a" href="#/upcoming">+ ${tonight.length-tn.length} more locked in. See the card →</a></p>`:''}
     <div class="wc-next">
       <p class="wc-next-k">Next time…</p>
       <h3>Bet #1: NVIDIA</h3>
@@ -254,7 +254,7 @@ function lbBuild(){
     <div class="wc-sb">${rank.map((m,i)=>{const a=P[m],t=a.W+a.L,hr=t?Math.round(a.W/t*100):0,st=streak(a.seq);
       return `<article class="wc-sb-r${i===0?' wc-sb-1':''}" style="--mc:${MODELS[m].c}">
         <span class="wc-sb-rk">#${i+1}</span>${face(m,'wc-f-m')}
-        <div class="wc-sb-nm"><h3>${NM[m]}</h3><small>${esc(MODELS[m].ver)}${roleOf(i)?' · <em>'+roleOf(i)+'</em>':''}</small></div>
+        <div class="wc-sb-nm"><h3>${NM[m]}</h3><small>${esc(MODELS[m].ver)}</small>${roleOf(i)?'<em>'+roleOf(i)+'</em>':''}</div>
         <p class="wc-sb-pl ${a.pnl>=0?'wc-tu':'wc-td'}">${pm(a.pnl)}<small>${pc1(a.pnl/1000)}</small></p>
         <dl class="wc-sb-st"><div><dt>W-L</dt><dd><b class="wc-tu">${a.W}</b>-<b class="wc-td">${a.L}</b></dd></div><div><dt>Hit rate</dt><dd>${hr}%</dd></div><div><dt>Streak</dt><dd class="${st[0]==='W'?'wc-tu':'wc-td'}">${st}</dd></div>
           <div class="wc-sb-f"><dt>Last 5</dt><dd class="wc-form">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}</dd></div></dl>
@@ -302,6 +302,7 @@ function closeAt(t,mdy){if(!mdy)return null;const [tz,h,mi]=XC[(String(t).split(
   const want=Date.UTC(Y,m-1,d,h,mi);let x=want;for(let i=0;i<3;i++)x+=want-loc(x);return x}
 function bellTxt(t,mdy){const at=closeAt(t,mdy);if(at==null)return 'Date to come';const ms=at-Date.now();if(ms<=0)return 'The bell has rung · results soon';const mn=Math.round(ms/6e4),h=Math.floor(mn/60);
   return 'Bell in '+(h>=24?Math.floor(h/24)+'d '+(h%24)+'h':h?h+'h '+(mn%60)+'m':mn+'m')}
+const nk=s=>{if(!s)return '';const [m,d,y]=s.split('/').map(Number);return m+'/'+d+'/'+(y%100)};
 const mdyKey=s=>{if(!s)return 9e9;const [m,d,y]=s.split('/').map(Number);return (y%100)*1e4+m*100+d};
 const dayName=s=>{const [m,d,y]=s.split('/').map(Number);return new Date(Date.UTC(2000+(y%100),m-1,d)).toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',timeZone:'UTC'})};
 function relDay(s){const t=nyToday(),[m,d,y]=s.split('/').map(Number),dd=Math.round((Date.UTC(2000+(y%100),m-1,d)-Date.UTC(2000+t[2],t[0]-1,t[1]))/864e5);return dd===0?'Tonight':dd===1?'Tomorrow':dd===-1?'Yesterday':null}
@@ -309,25 +310,26 @@ function relDay(s){const t=nyToday(),[m,d,y]=s.split('/').map(Number),dd=Math.ro
 function upBuild(){
   const RM=window.RMETA||{},PEN=(window.PENDING||[]).slice(),UP=(window.UPCOMING||[]).slice();
   const live=PEN.filter(p=>p.calls&&p.calls.length);
-  const days={};live.forEach(p=>{(days[p.resolves||'']=days[p.resolves||'']||[]).push(p)});
+  const t=nyToday(),tk=t[2]*1e4+t[0]*100+t[1];
+  const days={};live.forEach(p=>{const k=nk(p.resolves);(days[k]=days[k]||[]).push(p)});
   const dk=Object.keys(days).sort((a,b)=>mdyKey(a)-mdyKey(b));
   const tick=p=>{const lg=coLogo(p.ticker),cs=ORDER.map(m=>p.calls.find(c=>c.m===m)).filter(Boolean),u=cs.filter(c=>c.dir==='UP').length;
     return `<a class="wc-pn wc-lv" href="#/round/${p.n}" data-n="${p.n}"><header>${lg?`<img src="${lg}" alt="">`:''}<h3>${esc(p.co)}<small>${esc(p.ticker)} · Round ${p.n}</small></h3><span class="wc-bell" data-t="${esc(p.ticker)}" data-d="${p.resolves||''}">${bellTxt(p.ticker,p.resolves)}</span></header>
-      <div class="wc-cast">${cs.map(c=>`<div class="wc-say">${face(c.m)}<p class="wc-bub"><small>${NM[c.m]}</small>${c.dir==='UP'?'Up':'Down'} ${c.mag}%</p></div>`).join('')}</div>
+      <div class="wc-lvc">${cs.map(c=>`<div class="wc-lvs ${c.dir==='UP'?'wc-lvu':'wc-lvd'}">${face(c.m,'wc-f-s')}<p><small>${NM[c.m]}</small>${c.dir==='UP'?'Up':'Down'} ${c.mag}%</p></div>`).join('')}</div>
       <p class="wc-lv-f">${u} say${u===1?'s':''} up, ${cs.length-u} say${cs.length-u===1?'s':''} down. Locked before the report.</p></a>`};
   const spot=dk.map(k=>{const r=k?relDay(k):null,lab=!k?'Date to come':r==='Tonight'?'Tonight at the close':r==='Tomorrow'?'Tomorrow at the close':'At the close, '+md(k);
     const g=days[k].sort((a,b)=>cap(b.ticker)-cap(a.ticker));
     return `<section class="wc-spot" aria-label="${esc(lab)}"><h2 class="wc-h2"><span>${esc(lab)}</span><small>${g.length} round${g.length===1?'':'s'}. Every call locked before the report. The close decides.</small></h2><div class="wc-lvg">${g.map(tick).join('')}</div></section>`}).join('');
-  const t=nyToday(),tk=t[2]*1e4+t[0]*100+t[1];
-  const ud={};UP.forEach(u=>{(ud[u.called||'']=ud[u.called||'']||[]).push(u)});
-  const uk=Object.keys(ud).sort((a,b)=>mdyKey(a)-mdyKey(b));
+  const ud={};UP.forEach(u=>{const k=nk(u.called);(ud[k]=ud[k]||[]).push(u)});
+  /* days still to come first; a day already gone whose calls are not in yet goes last, said as it is */
+  const uk=Object.keys(ud).sort((a,b)=>{const pa=a&&mdyKey(a)<tk,pb=b&&mdyKey(b)<tk;return pa!==pb?(pa?1:-1):mdyKey(a)-mdyKey(b)});
   const tile=u=>{const lg=coLogo(u.ticker),me=RM[u.n]||{},m7=!!me.mag7,ai=(me.themes||[]).indexOf('AI')>-1,nv=u.ticker==='NVDA';
     return `<a class="wc-ut${m7?' wc-ut-m7':''}${nv?' wc-ut-nv':''}" href="#/round/${u.n}" data-m7="${m7?1:0}" data-ai="${ai?1:0}"><span class="wc-ut-lg">${lg?`<img src="${lg}" alt="" loading="lazy">`:''}</span>
       <b>${esc(u.co)}</b><small>${esc(u.ticker)} · R${u.n}</small>${nv?'<em>Bet #1</em>':m7?'<em>Mag 7</em>':''}</a>`};
   const cal=uk.map(k=>{const g=ud[k].sort((a,b)=>cap(b.ticker)-cap(a.ticker)),past=k&&mdyKey(k)<tk,r=k?relDay(k):null;
     return `<section class="wc-ud" aria-label="${k?esc(dayName(k)):'Date to come'}"><h3 class="wc-ud-h"><span>${k?(r&&r!=='Yesterday'?r+' · ':'')+esc(dayName(k)):'Date to come'}</span><small>${past?'Calls not in yet':g.length+' on the card'}</small></h3><div class="wc-utg">${g.map(tile).join('')}</div></section>`}).join('');
   const el=D.createElement('div');el.id='wc-up';el.className='wc-book wc-tab';
-  el.innerHTML=`<section class="wc-tab-cv" aria-label="Coming up"><div class="wc-cv-top"><span class="wc-iss"><small>Next</small>#${(ROUNDS.length+1)}</span><span class="wc-cv-s">Coming up<small>${live.length+UP.length} rounds still to come</small></span></div>
+  el.innerHTML=`<section class="wc-tab-cv" aria-label="Coming up"><div class="wc-cv-top"><span class="wc-iss"><small>To come</small>${live.length+UP.length}</span><span class="wc-cv-s">Coming up<small>${live.length} with calls in · ${UP.length} still to call</small></span></div>
     <h1 class="wc-tab-h">Next on the card</h1><p class="wc-tag">Every AI calls each stock <b>before</b> it reports. The next market close grades it. Tap a round to open its card.</p></section>`
     +spot+`<h2 class="wc-h2 wc-h2-b"><span>Coming up</span><small>Calls drop before each report. Every round still to come, day by day.</small></h2>
     <div class="wc-flt" role="group" aria-label="Show"><button type="button" aria-pressed="true" data-f="">All</button><button type="button" aria-pressed="false" data-f="m7">Mag 7</button><button type="button" aria-pressed="false" data-f="ai">AI</button></div>
@@ -341,6 +343,11 @@ function tabs(){const v=D.getElementById('view');const lb=lbBuild(),up=upBuild()
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('wc-in');io.unobserve(e.target)}}),{threshold:.15});
   [lb,up].forEach(x=>x.querySelectorAll('.wc-pn,.wc-sb-r').forEach(y=>io.observe(y)))}
 const done=()=>H.classList.add('x2p-world');
+/* a round opened from a panel, a back issue or a ticket: when its card closes, the page goes back to where it was
+   (the router scrolls the page while the card is open, and the address passes through '' on the way) */
+let back=null,open=false;addEventListener('pointerdown',e=>{const a=e.target.closest&&e.target.closest('#wc-book a[href^="#/round/"],#wc-lb a[href^="#/round/"],#wc-up a[href^="#/round/"],#wc-book .wc-big video');if(a){back=scrollY;open=false}},true);
+new MutationObserver(()=>{if(back==null)return;const rm=D.getElementById('x2pRm');if(rm){open=true;return}if(!open)return;
+  const y=back;back=null;open=false;const go=()=>scrollTo({top:y,behavior:'instant'});requestAnimationFrame(()=>{go();setTimeout(go,150);setTimeout(go,500)})}).observe(D.body,{childList:true});
 let tries=0;(function wait(){
   if(window.__x2pPnl&&window.ROUNDS&&D.querySelector('.x2p-vt')&&D.querySelector('#x2pSt')&&D.querySelector('#standings')){
     try{build()}catch(e){window.__x2pWorldErr=e;console.error('comic',e)}
