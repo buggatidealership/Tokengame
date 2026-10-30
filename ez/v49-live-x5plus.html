@@ -8941,9 +8941,9 @@ html.wc-f9 .wc9-stub i{position:relative;z-index:1;writing-mode:vertical-rl;tran
 html.wc-f9 .wc9-n{position:absolute;z-index:3;width:16px;height:16px;border-radius:50%;background:var(--wc-paper);border:3px solid var(--wc-ink);margin-left:-8px}
 html.wc-f9 .wc9-nt{top:-9.5px;clip-path:inset(50% -2px -2px -2px)}
 html.wc-f9 .wc9-nb{bottom:-9.5px;clip-path:inset(-2px -2px 50% -2px)}
-html.wc-f9 .wc9-holo{background:radial-gradient(rgba(255,255,255,.55) 1px,transparent 1.5px) 0 0/5px 5px,linear-gradient(115deg,#ff7ad9,#ffd66b,#7af0c4,#79c9ff,#b88bff,#ff7ad9) 0 0/300% 100%!important}
+html.wc-f9 .wc9-holo{background:radial-gradient(rgba(255,255,255,.55) 1px,transparent 1.5px) 0 0/5px 5px,linear-gradient(115deg,#ff7ad9,#ffd66b,#7af0c4,#79c9ff,#b88bff,#ff7ad9) 0 0/300% 100%!important;animation:wc9Holo 6s linear infinite}
 html.wc-f9 .wc9-holo svg{fill:var(--wc-ink)!important}
-@keyframes wc9Holo{to{transform:translateX(-75%)}}
+@keyframes wc9Holo{to{background-position:0 0,300% 0}}
 html.wc-f9 .wc9-spk{position:absolute;z-index:3;color:#fff;-webkit-text-stroke:1px var(--wc-ink);font-size:15px;line-height:1;pointer-events:none;animation:wc9Tw 2.4s ease-in-out infinite}
 @keyframes wc9Tw{0%,100%{transform:scale(.6) rotate(0);opacity:.25}50%{transform:scale(1.15) rotate(25deg);opacity:1}}
 @media (prefers-reduced-motion:reduce){html.wc-f9 .wc9-flg::before,html.wc-f9 .wc9-stub,html.wc-f9 .wc9-holo,html.wc-f9 .wc9-spk{animation:none!important}
@@ -8996,7 +8996,7 @@ html.wc-f9 .wc9-d{background:var(--wc-r)}
 html.wc-f9 .wc-bi .wc9-nl,html.wc-f9 .wc-bi .wc9-nr{top:calc(100% - var(--sh) - 9px);margin:0}
 html.wc-f9 .wc-bi .wc9-nl{left:-9.5px;clip-path:inset(-2px -2px -2px 50%)}
 html.wc-f9 .wc-bi .wc9-nr{right:-9.5px;clip-path:inset(-2px 50% -2px -2px)}
-html.wc-f9 .wc-bi.wc9-perf{border-color:transparent!important;background:linear-gradient(115deg,#ff7ad9,#ffd66b,#7af0c4,#79c9ff,#b88bff,#ff7ad9) 0 0/300% 100% border-box!important;border:3px solid transparent!important;isolation:isolate}
+html.wc-f9 .wc-bi.wc9-perf{border-color:transparent!important;background:linear-gradient(115deg,#ff7ad9,#ffd66b,#7af0c4,#79c9ff,#b88bff,#ff7ad9) 0 0/300% 100% border-box!important;border:3px solid transparent!important;animation:wc9Holo2 6s linear infinite}
 html.wc-f9 .wc-bi.wc9-perf .wc9-bs{background:radial-gradient(rgba(255,255,255,.55) 1px,transparent 1.5px) 0 0/5px 5px,linear-gradient(115deg,#ff7ad9,#ffd66b,#7af0c4,#79c9ff,#b88bff,#ff7ad9) 0 0/300% 100%}
 html.wc-f9 .wc-cn{position:relative;isolation:isolate;padding-left:10px!important;overflow:hidden}
 html.wc-f9 .wc-cn > :not(.wc9-flg){position:relative;z-index:1}
@@ -9142,20 +9142,22 @@ html.wc-on .wc-sb-st>.wc-sb-tw{grid-column:span 6}
 /* a logo drawn for a dark ground (CO_LOGOS dark: Caterpillar's white letters) sits on ink on its round tile, as on Tonight's tickets */
 html .wc-bi .wc-bi-art.wc-bi-dk,html .wc-bi .wc-bi-art.wc-bi-dk img{background:var(--wc-ink)!important}
 
-/* ===== SPEED4 (2026-10-30): the endless holo, foil and flag loops move on the compositor. They slid background-position, which
+/* ===== SPEED4 (2026-10-30): the endless foil and flag loops move on the compositor. They slid background-position, which
    restyles and repaints every frame on the main thread (on a 4x slower phone the page at rest was busy most of every second).
    Each moving gradient now sits on its own layer one tile longer than its box and is translated (transform only), clipped by its
    box: same colours, same speed and direction, same tile; the box keeps the same gradient still underneath (what shows with
-   reduced motion). Dashed borders over a moving layer are redrawn on the ::after above it. holdOff() still pauses them. ===== */
-/* faces in holo: the prism on ::before, the dot screen on ::after, both under the mark */
-html:not(.cd-on) .wc-ch-1 .wc-face.wc-f-xl,html.wc-f9 .wc9-holo{position:relative;isolation:isolate;overflow:hidden}
-html:not(.cd-on) .wc-ch-1 .wc-face.wc-f-xl::before,html.wc-f9 .wc9-holo::before,html.wc-f9 .wc9-hb::before,html.wc-f9 .wc-bi.wc9-perf .wc9-bs::before{content:"";position:absolute;left:0;top:0;bottom:0;width:400%;z-index:-1;pointer-events:none;background:linear-gradient(115deg,#ff7ad9,#ffd66b,#7af0c4,#79c9ff,#b88bff,#ff7ad9) 0 0/75% 100%}
-html:not(.cd-on) .wc-ch-1 .wc-face.wc-f-xl::after,html.wc-f9 .wc9-holo::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(rgba(255,255,255,.55) 1px,transparent 1.5px) 0 0/5px 5px}
-/* a round where every AI got the direction: the holo border on a window the size of the tile's border box (world-comic.js r9 adds
-   it; the notches stick out of the tile, so the tile itself cannot clip) */
-html.wc-f9 .wc9-hb{position:absolute;inset:-3px;z-index:-1;overflow:hidden;pointer-events:none}
-html.wc-f9 .wc-bi:not(.wc9-perf) .wc9-hb{display:none}
-/* its stub: the prism from the padding box's top, repeated up under the dashed rule as before; dots and dashes on ::after */
+   reduced motion). Dashed borders over a moving layer are redrawn on the ::after above it. holdOff() still pauses them.
+   Not moved, because they never moved: the leader's holo faces (.wc9-holo) and the holo edge of an all-right round
+   (.wc-bi.wc9-perf) set their background with !important, which outranks an animation, so wc9Holo and wc9Holo2 on them only
+   cost a restyle every frame; they are off now (the look is unchanged). To let them drift, give them the ::before/::after
+   layers below and wc9Holo (now a transform). ===== */
+html.wc-f9 .wc9-holo,html.wc-f9 .wc-bi.wc9-perf{animation:none!important}
+@keyframes wc9HoloT{to{transform:translateX(-75%)}}
+/* #1's face in Meet the models when it is not also the P&L leader's (which is still): the prism on ::before, dots on ::after */
+html:not(.cd-on) .wc-ch-1 .wc-face.wc-f-xl:not(.wc9-holo){position:relative;isolation:isolate;overflow:hidden}
+html:not(.cd-on) .wc-ch-1 .wc-face.wc-f-xl:not(.wc9-holo)::before,html.wc-f9 .wc-bi.wc9-perf .wc9-bs::before{content:"";position:absolute;left:0;top:0;bottom:0;width:400%;z-index:-1;pointer-events:none;background:linear-gradient(115deg,#ff7ad9,#ffd66b,#7af0c4,#79c9ff,#b88bff,#ff7ad9) 0 0/75% 100%}
+html:not(.cd-on) .wc-ch-1 .wc-face.wc-f-xl:not(.wc9-holo)::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(rgba(255,255,255,.55) 1px,transparent 1.5px) 0 0/5px 5px}
+/* an all-right round's stub: the prism from the padding box's top, repeated up under the dashed rule as before; dots and dashes on ::after */
 html.wc-f9 .wc-bi.wc9-perf .wc9-bs{position:relative;isolation:isolate;clip-path:inset(0);border-top-color:transparent}
 html.wc-f9 .wc-bi.wc9-perf .wc9-bs::before{top:-2.5px;bottom:0;background-position:0 2.5px;background-size:75% calc(100% - 2.5px)}
 html.wc-f9 .wc-bi.wc9-perf .wc9-bs::after{content:"";position:absolute;left:0;right:0;top:-2.5px;bottom:0;z-index:-1;pointer-events:none;border-top:2.5px dashed var(--wc-ink);background:radial-gradient(rgba(255,255,255,.55) 1px,transparent 1.5px) 0 0/5px 5px padding-box border-box}
@@ -9164,9 +9166,9 @@ html:not(.cd-on) .wc-ch-1 .wc-tks,html.wc-f9 .wc9-stub.wc9-gold{clip-path:inset(
 html:not(.cd-on) .wc-ch-1 .wc-tks::before,html.wc-f9 .wc9-stub.wc9-gold::before{content:"";position:absolute;left:0;right:-2.5px;top:0;height:400%;pointer-events:none;background:linear-gradient(180deg,#c98a12,#fdbc2a 40%,#ffe08a 55%,#fdbc2a 70%,#c98a12) 0 0/100% 75%}
 html:not(.cd-on) .wc-ch-1 .wc-tks::after,html.wc-f9 .wc9-stub.wc9-gold::after{right:-2.5px;border-right:2.5px dashed var(--wc-ink);background:radial-gradient(rgba(0,0,0,.25) 1px,transparent 1.5px) 0 0/5px 5px padding-box}
 @media (prefers-reduced-motion:no-preference){
-  html:not(.cd-on) .wc-ch-1 .wc-face.wc-f-xl::before{animation:wcHolo 3s linear infinite}
+  html:not(.cd-on) .wc-ch-1 .wc-face.wc-f-xl:not(.wc9-holo)::before{animation:wcHolo 3s linear infinite}
   html:not(.cd-on) .wc-ch-1 .wc-tks::before{animation:wcFoil 3.5s linear infinite}
-  html.wc-f9 .wc9-holo::before,html.wc-f9 .wc9-hb::before,html.wc-f9 .wc-bi.wc9-perf .wc9-bs::before{animation:wc9Holo 3s linear infinite}
+  html.wc-f9 .wc-bi.wc9-perf .wc9-bs::before{animation:wc9HoloT 3s linear infinite}
   html.wc-f9 .wc9-stub.wc9-gold::before{animation:wc9Foil 3.5s linear infinite}
 }
 
@@ -15451,7 +15453,7 @@ function r9(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f9');
   D.querySelectorAll('.wc-bi').forEach(a=>{if(a.querySelector('.wc9-bs'))return;const r=RR[+(a.getAttribute('href')||'').replace(/\D/g,'')];if(!r)return;
     const up=r.a>0,cs=r.calls.filter(c=>c[1]),perfect=cs.length>1&&cs.every(c=>/^UP/i.test(c[1])===up);
     a.insertAdjacentHTML('beforeend',`<span class="wc9-bs" aria-hidden="true"><b>#${r.n}</b><small>${esc(r.ticker.replace(/\..*$/,''))}</small><em class="${up?'wc9-u':'wc9-d'}">${up?'+':'−'}${Math.abs(r.a).toFixed(2)}%</em></span><i class="wc9-n wc9-nl" aria-hidden="true"></i><i class="wc9-n wc9-nr" aria-hidden="true"></i>`);
-    if(perfect){a.classList.add('wc9-perf');a.insertAdjacentHTML('beforeend','<i class="wc9-hb" aria-hidden="true"></i>')}});
+    if(perfect)a.classList.add('wc9-perf')});
   /* M4: smart or lucky */
   D.querySelectorAll('.wc-cn').forEach(r=>{if(r.querySelector('.wc9-flg'))return;const m=(r.querySelector('.wc-cn-n')||{}).textContent.trim().toUpperCase();
     r.insertAdjacentHTML('afterbegin',flg(mfl(m),'wc9-cnf'));const b=r.querySelector('.wc-cn-bar');if(b)b.insertAdjacentHTML('beforeend','<span class="wc9-coin" aria-hidden="true"></span>')});
