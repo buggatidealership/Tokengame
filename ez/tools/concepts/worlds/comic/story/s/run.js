@@ -28,7 +28,7 @@ if(require.main===module)(async()=>{fs.mkdirSync(OUT,{recursive:true});const b=a
    await p.screenshot({path:`${OUT}/sb-${W}-${t}-${v}.png`,clip:{x:0,y:Math.max(0,bb.y-14),width:W,height:Math.min(bb.h+28,9000)},fullPage:true});
    const chk=await p.evaluate(()=>{const iw=innerWidth,q=[...document.querySelectorAll('#wc-lb .wc-sbd *')].filter(e=>e.offsetParent!==null||e.closest('svg'));return {sw:document.documentElement.scrollWidth,iw,
     ov:q.filter(e=>{const r=e.getBoundingClientRect();return r.width&&getComputedStyle(e).visibility!=='hidden'&&(r.right>iw+.5||r.left<-.5)&&!e.closest('svg')}).map(e=>String(e.className.baseVal||e.className).slice(0,40)).slice(0,6),
-    clip:q.filter(e=>!e.closest('svg')&&e.children.length===0&&e.scrollWidth>e.clientWidth+1&&!/IMG|^I$/i.test(e.tagName)&&getComputedStyle(e).overflow!=='visible').map(e=>String(e.className.baseVal||e.className||e.tagName).slice(0,40)+':'+e.textContent.slice(0,20)).slice(0,6)}});
+    clip:q.filter(e=>!e.closest('svg')&&e.children.length===0&&!e.closest('.ss-sr,.wc-sr')&&e.scrollWidth>e.clientWidth+1&&!/IMG|^I$/i.test(e.tagName)&&getComputedStyle(e).overflow!=='visible').map(e=>String(e.className.baseVal||e.className||e.tagName).slice(0,40)+':'+e.textContent.slice(0,20)).slice(0,6)}});
    console.log(W,t,v,JSON.stringify(chk),er.join('|')||'ok')}
   if(process.env.PROBE)console.log(await p.evaluate(()=>({closeAt:typeof closeAt,per:typeof per,nyToday:typeof nyToday,rankPnl:typeof rankPnl,MODELS:Object.keys(MODELS),R:ROUNDS.length})));
   await p.close()}
