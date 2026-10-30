@@ -90,6 +90,9 @@ const checks=p=>p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:docu
      await sec();const take=await measure();
      const ck=await checks(p);res.push({run:r,lift:p.__lift,setup,base,take,ck,err:p.__er});console.log(tk,'run',r,'lift',p.__lift,'setup',setup,JSON.stringify(base),'->',JSON.stringify(take),p.__er.join('|')||'ok');await p.close()}
    fs.writeFileSync(OUT,JSON.stringify(res,null,1))}
+ else if(mode==='check'){const W=+a3;const p=await open(b,W,{rm:!!process.env.RM});await prime(p);await inject(p);await settle(p);await p.evaluate(K.stage||(()=>{}),{today:false,W});
+   if(K.afterScroll)await p.evaluate(K.afterScroll,{W});await p.waitForTimeout(600);const mv=await p.evaluate(()=>({sjAnims:document.getAnimations().filter(a=>a.playState==='running'&&(/^sj/.test(a.animationName||'')||(a.effect&&a.effect.target&&a.effect.target.closest&&a.effect.target.closest('[class*=sj-]')))).length,webp:document.querySelectorAll('img[src*="/cg/"]').length,turn:!!document.documentElement.dataset.sjTurn}));
+   console.log(W,tk,process.env.RM?'reduced-motion':'',JSON.stringify(await checks(p)),JSON.stringify(mv),p.__er.join(' | ')||'no errors')}
  else if(mode==='ab'){const OUT=a3,RUNS=+(a4||2),WIN=+(a5||6),res=[];
    for(let r=0;r<RUNS;r++){const p=await open(b,390,{cpu:4,dpr:2});const c=p.__cdp;await c.send('Performance.enable');
      await p.evaluate(()=>{window.__sjF=[];let l=performance.now();(function f(t){window.__sjF.push(t-l);l=t;requestAnimationFrame(f)})(l)});

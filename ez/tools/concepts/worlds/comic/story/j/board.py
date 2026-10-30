@@ -23,7 +23,7 @@ def board(I):
   k=I['k'];today=Image.open(f"{D}/390-now-{k}.png").convert('RGB') if os.path.exists(f"{D}/390-now-{k}.png") else None
   fr=[]
   for i,(n,lab) in enumerate(I['frames']):
-    if I.get('still'):fr.append((lab,Image.open(f"{D}/390-{k}.png").convert('RGB')))
+    if isinstance(n,str):fr.append((lab,Image.open(f"{D}/{n}").convert('RGB')))
     else:fr.append((lab,frame(f"{D}/{I['mp4']}",n,f"{D}/_f{k}{i}.png")))
   H=I.get('h',1300)
   cols=([('Today',today)] if today else [])+fr

@@ -1,5 +1,6 @@
 // The takes: where each one sits on the page, how to stage it for a still, how to record it, how to measure it.
 module.exports={
+ j9:{name:'Measurement: the page\'s background-position loops paused',hash:'',sel:'.wc-chars',perfSel:'.wc-chars',stage:()=>{}},
  j0:{name:'Control: nothing injected (the order effect)',hash:'',sel:'.wc-season',stage:()=>{const g=document.querySelector('.wc-bis');if(g&&g.dataset.all!=='1')document.querySelector('.wc-season .wc-more').click()},perfSel:'.wc-season',perfDist:1400},
  j2:{name:'Page turn',hash:'',sel:'header.top',pad:[0,0],perfSwitch:true,perfSel:'.wc-cover',noFull:true,
    shotHook:async()=>{window.__sjKeepHead=1;scrollTo(0,0);await window.__sjTurn('#/leaderboard');window.__sjStep(300)},
@@ -15,8 +16,8 @@ module.exports={
    stage:()=>{},perfSel:'.wc-sbd',perfDist:700,
    shotHook:()=>{window.__sjNoEase=1;window.__sjTilt(0,45);window.__sjTilt(13,51)},
    perfInput:()=>{let k=0;window.__sjTI=setInterval(()=>{k++;const e=new Event('deviceorientation');e.gamma=15*Math.sin(k/20);e.beta=45+8*Math.sin(k/13);e.alpha=0;dispatchEvent(e)},16)},
-   clipFn:()=>{const a=document.querySelector('.wc-sbd h2').getBoundingClientRect(),b=document.querySelectorAll('.wc-sb-r')[1].getBoundingClientRect();
-     const c={x:0,y:Math.round(a.top+scrollY-10),width:document.documentElement.clientWidth,height:0};c.height=Math.round(b.top+scrollY+150-c.y);c.height-=c.height%2;c.width-=c.width%2;return c},
+   clipFn:({W})=>{const a=document.querySelector('.wc-sbd h2').getBoundingClientRect(),rs=document.querySelectorAll('.wc-sb-r'),b=rs[1].getBoundingClientRect();
+     const c={x:0,y:Math.round(a.top+scrollY-10),width:document.documentElement.clientWidth,height:0};c.height=Math.round((W>=1000?Math.max(rs[0].getBoundingClientRect().bottom,b.bottom)+24:b.top+150)+scrollY-c.y);c.height-=c.height%2;c.width-=c.width%2;return c},
    rec:{sec:6.4,fps:30,dpr:2,hold:0,
      setup:()=>{window.__sjNoEase=1;const r=document.querySelector('.wc-sb-1');r.insertAdjacentHTML('beforeend','<i class="sj-rphone" aria-hidden="true"><i></i><b>tilt</b></i>');window.__sjTilt(0,45)},
      frame:({t})=>{const s=t/1000,g=17*Math.sin(2*Math.PI*s/3.2),b=45+11*Math.sin(2*Math.PI*s/2.13+1.1)*Math.min(1,s/1.2);window.__sjTilt(g*Math.min(1,s/.8),b);
@@ -42,7 +43,7 @@ module.exports={
      frame:({t})=>{const p=Math.max(0,Math.min(1,(t-500)/1700));window.__sjDraw4(p)}}},
 
  j5:{name:'The closing bell',hash:'',sel:'.wc-lr-3',pre:'window.__sjHold=1',pad:[14,46],
-   stage:({today})=>{if(!today&&window.__sjDraw5)window.__sjDraw5(0.35)},
+   stage:({today})=>{if(!today&&window.__sjDraw5)window.__sjDraw5(1.75)},
    perfSel:'.wc-lr-3',
    rec:{sec:3.8,fps:30,dpr:2,hold:20,raf:true,pad:[14,46],
      setup:()=>{window.__sjDraw5(-1)},
