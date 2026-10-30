@@ -539,6 +539,61 @@ function certWatch(){const rg=n=>ROUNDS.find(r=>r.n===n),rp=n=>(window.PENDING||
 function tabs(){const v=D.getElementById('view');const lb=lbBuild(),up=upBuild();(v||D.querySelector('main')).after(lb,up);
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('wc-in');io.unobserve(e.target)}}),{threshold:.15});
   [lb,up].forEach(x=>x.querySelectorAll('.wc-pn:not(.wc-pf),.wc-sb-r').forEach(y=>io.observe(y)));proofWire(lb)}
+/* R9 (owner, 2026-10-30: "all the changes except on the M5... you don't need the flags on the M5"; ez/x2p-x3p-more.png):
+   F1's language carried to the rest of X3+. M1 the Leaderboard's scoreboard as Season 1 tickets with each model's flag,
+   M2 tomorrow's rounds as Admit One tickets whose stub is printed as the flag of the company's headquarters (owner: "whether
+   headquarters are located"; HQ below, by hand, checked 2026-10-30), M3 every round as a torn stub (holo edge when every AI
+   got the direction), M4 Smart or lucky with each model's flag and a flipping coin, M5 the leader's face in holo everywhere.
+   Also the walkthrough's "The winner gets paid" panel printed as a comic dollar bill. X3+ only (X5+ has cd-on). */
+function r9(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f9');
+  const enc=x=>"url('data:image/svg+xml,"+encodeURIComponent(x)+"')",K='stroke="#15121a" stroke-width="3"';
+  const sv=b=>enc(`<svg xmlns="http://www.w3.org/2000/svg" width="150" height="100" viewBox="0 0 150 100">${b}<rect width="150" height="100" fill="none" ${K}/></svg>`);
+  const st=(cx,cy,r,f)=>{const q=[];for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.42:r;q.push((cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1))}return `<polygon points="${q.join(' ')}" fill="${f}"/>`};
+  const R='#d63a3a',W='#f8f0d9',B='#2c4fa8',G='#fdbc2a',Kk='#15121a',Gn='#1f8a4c',Y='#f2c230';
+  const tri=(a,b,c,v)=>v?`<rect width="50" height="100" fill="${a}"/><rect x="50" width="50" height="100" fill="${b}"/><rect x="100" width="50" height="100" fill="${c}"/>`:`<rect width="150" height="34" fill="${a}"/><rect y="33" width="150" height="34" fill="${b}"/><rect y="66" width="150" height="34" fill="${c}"/>`;
+  const leaf=`<path d="M75 22l5 12 8-4-2 14 10-8 2 7 9-2-4 11 5 3-17 11 2 7-16-2v13h-4V73l-16 2 2-7-17-11 5-3-4-11 9 2 2-7 10 8-2-14 8 4z" fill="${R}"/>`;
+  const us=()=>{let x='';for(let i=0;i<13;i++)x+=`<rect y="${i*100/13}" width="150" height="${100/13}" fill="${i%2?W:R}"/>`;x+=`<rect width="64" height="54" fill="${B}"/>`;for(let r=0;r<4;r++)for(let c=0;c<5;c++)x+=st(8+c*12+(r%2?6:0),8+r*12,3.6,W);return sv(x)};
+  const F={US:us(),
+    CN:sv(`<rect width="150" height="100" fill="${R}"/>${st(28,28,15,G)}${st(55,10,5,G)}${st(64,22,5,G)}${st(64,38,5,G)}${st(55,50,5,G)}`),
+    DE:sv(tri(Kk,R,G)),NL:sv(tri(R,W,B)),IE:sv(tri(Gn,W,'#f28a2e',1)),
+    UK:sv(`<rect width="150" height="100" fill="${B}"/><path d="M0 0L150 100M150 0L0 100" stroke="${W}" stroke-width="20"/><path d="M0 0L150 100M150 0L0 100" stroke="${R}" stroke-width="7"/><path d="M75 0V100M0 50H150" stroke="${W}" stroke-width="32"/><path d="M75 0V100M0 50H150" stroke="${R}" stroke-width="18"/>`),
+    CH:sv(`<rect width="150" height="100" fill="${R}"/><path d="M75 22V78M47 50H103" stroke="${W}" stroke-width="16"/>`),
+    KR:sv(`<rect width="150" height="100" fill="${W}"/><path d="M50 50a25 25 0 0 1 50 0z" fill="${R}"/><path d="M50 50a25 25 0 0 0 50 0z" fill="${B}"/>`),
+    TW:sv(`<rect width="150" height="100" fill="${R}"/><rect width="75" height="50" fill="${B}"/><circle cx="37.5" cy="25" r="11" fill="${W}"/>`),
+    JP:sv(`<rect width="150" height="100" fill="${W}"/><circle cx="75" cy="50" r="26" fill="${R}"/>`),
+    SE:sv(`<rect width="150" height="100" fill="#2a6db5"/><path d="M58 0V100M0 50H150" stroke="${Y}" stroke-width="18"/>`),
+    DK:sv(`<rect width="150" height="100" fill="${R}"/><path d="M55 0V100M0 50H150" stroke="${W}" stroke-width="16"/>`),
+    CA:sv(`<rect width="150" height="100" fill="${W}"/><rect width="38" height="100" fill="${R}"/><rect x="112" width="38" height="100" fill="${R}"/>${leaf}`)};
+  /* where each company is headquartered (not where its stock trades: TSMC's TSM would read US). Unlisted = US.
+     Spotify: operating HQ Stockholm (legal seat Luxembourg, Form 20-F); Accenture: Dublin; Carnival: Miami; Nebius: Amsterdam. */
+  const HQ={'2317.TW':'TW',TSMC:'TW','005930.KS':'KR','000660.KS':'KR','ASML.AS':'NL',NBIS:'NL',ACN:'IE',SPOT:'SE','NOVN.SW':'CH',
+    'HSBA.L':'UK','SHEL.L':'UK','AZN.L':'UK',ARM:'UK','VOW3.DE':'DE',BMW:'DE',DHL:'DE','SIE.DE':'DE',BB:'CA',SHOP:'CA',NVO:'DK',
+    '6758.T':'JP',NINTENDO:'JP',SOFTBANK:'JP'};
+  const hq=t=>HQ[t]||'US',mfl=m=>m==='KIMI'?'CN':'US',P=window.__x2pPnl().A,lead=Object.keys(P).sort((a,b)=>P[b].pnl-P[a].pnl)[0];
+  const flg=(code,cls)=>`<i class="wc9-flg ${cls||''}" style="--fl:${F[code]||F.US}" aria-hidden="true"></i>`;
+  /* M1: the scoreboard */
+  D.querySelectorAll('.wc-sb-r').forEach((r,i)=>{if(r.querySelector('.wc9-cap'))return;const m=(r.querySelector('h3')||{}).textContent.trim().toUpperCase();
+    const cap=D.createElement('div');cap.className='wc9-cap';['.wc-sb-nm','.wc-sb-pl','.wc-sb-st'].forEach(q=>{const e=r.querySelector(q);if(e)cap.append(e)});r.append(cap);
+    r.insertAdjacentHTML('afterbegin',`${flg(mfl(m))}<div class="wc9-stub${i?'':' wc9-gold'}" aria-hidden="true"><b>#${i+1}</b><i>${i?'Season 1':'Golden ticket'}</i></div><i class="wc9-n wc9-nt" aria-hidden="true"></i><i class="wc9-n wc9-nb" aria-hidden="true"></i>`)});
+  /* M2: tomorrow's tickets */
+  const PU=(window.PENDING||[]).concat(window.UPCOMING||[]);
+  D.querySelectorAll('.wc-tnp').forEach(t=>{if(t.querySelector('.wc9-ts'))return;const tk=((t.querySelector('header small')||{}).textContent||'').trim(),p=PU.find(x=>x.ticker===tk)||{},c=hq(tk);
+    t.insertAdjacentHTML('afterbegin',`<div class="wc9-ts" aria-hidden="true">${flg(c)}<b>R${p.n||''}</b><em>${c}</em></div><i class="wc9-n wc9-nt" aria-hidden="true"></i><i class="wc9-n wc9-nb" aria-hidden="true"></i>`)});
+  /* M3: every round as a torn stub */
+  const RR={};ROUNDS.forEach(r=>RR[r.n]=r);
+  D.querySelectorAll('.wc-bi').forEach(a=>{if(a.querySelector('.wc9-bs'))return;const r=RR[+(a.getAttribute('href')||'').replace(/\D/g,'')];if(!r)return;
+    const up=r.a>0,cs=r.calls.filter(c=>c[1]),perfect=cs.length>1&&cs.every(c=>/^UP/i.test(c[1])===up);
+    a.insertAdjacentHTML('beforeend',`<span class="wc9-bs" aria-hidden="true"><b>#${r.n}</b><small>${esc(r.ticker.replace(/\..*$/,''))}</small><em class="${up?'wc9-u':'wc9-d'}">${up?'+':'−'}${Math.abs(r.a).toFixed(2)}%</em></span><i class="wc9-n wc9-nl" aria-hidden="true"></i><i class="wc9-n wc9-nr" aria-hidden="true"></i>`);
+    if(perfect)a.classList.add('wc9-perf')});
+  /* M4: smart or lucky */
+  D.querySelectorAll('.wc-cn').forEach(r=>{if(r.querySelector('.wc9-flg'))return;const m=(r.querySelector('.wc-cn-n')||{}).textContent.trim().toUpperCase();
+    r.insertAdjacentHTML('afterbegin',flg(mfl(m),'wc9-cnf'));const b=r.querySelector('.wc-cn-bar');if(b)b.insertAdjacentHTML('beforeend','<span class="wc9-coin" aria-hidden="true"></span>')});
+  /* M5: the leader's face in holo wherever it appears (no flags under Starring, owner) */
+  const lc=String((MODELS[lead]||{}).c||'').toLowerCase();
+  D.querySelectorAll('.wc-face').forEach(f=>{if((f.getAttribute('style')||'').replace(/\s/g,'').toLowerCase().includes('--mc:'+lc+';')||(f.getAttribute('style')||'').replace(/\s/g,'').toLowerCase().endsWith('--mc:'+lc))f.classList.add('wc9-holo')});
+  /* the dollar bill under "The winner gets paid" */
+  D.querySelectorAll('.wc-lr-4').forEach(p=>p.classList.add('wc9-bill'));
+}
 const done=()=>H.classList.add('x2p-world');
 /* a twist on the graded slab's front, as a switch only (owner to decide): ?slab=1 or window.__c3Slab */
 try{if(window.__c3Slab||/[?&]slab=1/.test(location.search))H.classList.add('wc-slab')}catch(e){}
@@ -552,6 +607,7 @@ let tries=0;(function wait(){
     try{build()}catch(e){window.__x2pWorldErr=e;console.error('comic',e)}
     try{tabs()}catch(e){window.__x2pWorldErr=e;console.error('comic tabs',e)}
     try{certWatch()}catch(e){window.__x2pWorldErr=e;console.error('comic certs',e)}
+    try{r9()}catch(e){window.__x2pWorldErr=e;console.error('comic r9',e)}
     done()}
   else if(tries++<200)setTimeout(wait,50);else done()})();
 })();
