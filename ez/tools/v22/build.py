@@ -563,10 +563,10 @@ def world(name,title,out,layer=None):
         # (2026-10-30, owner: "Every round so far... my favorite remains M3") the tile look M3 from story/{a,m}, fixed (story/m3.js)
         css+='\n'+''.join(open(S+f).read() for f in ['_sa.css','s1.css','s1s.css','g5.css'])
         story+=('\ntry{'+open(S+'_sa.js').read()+'\n'+open(S+'_mg.js').read()+'\nwindow.__evStamp=function(){'+open(S+'s1.js').read()+'};\n'+open(S+'m3.js').read()+'}catch(e){console.error(e)}')
-        css+='\n'+''.join(open(S+f).read() for f in ['sb_ss.css','sb_s1.css'])
-        # the scoreboard as S1, the ledger (owner, 2026-10-30: "S1, the ledger, is more accurate"); it reads the live board's flags, so it waits for them
+        css+='\n'+''.join(open(S+f).read() for f in ['sb_ss.css','sb_s3.css','sb_dock.css'])
+        # the scoreboard as S3, tale of the tape, with P3's thumb dock (owner, 2026-10-30, later: "my current favorite of the scoreboard is S3"; "P3... by far the best one"); it reads the live board's flags, so it waits for them
         story+=('\ntry{(function(){var H=document.documentElement,n=0;(function go(){if(!(H.classList.contains("x2p-world")&&window.__wc11Show&&document.querySelector("#wc-lb .wc-sb-r .wc9-flg"))){if(++n<240)setTimeout(go,250);return}'
-               +'try{'+open(S+'sb_ss.js').read()+'\n'+open(S+'sb_s1.js').read()+'}catch(e){console.error(e)}})()})()}catch(e){console.error(e)}')
+               +'try{'+open(S+'sb_ss.js').read()+'\n'+open(S+'sb_s3.js').read()+'\n'+open(S+'sb_dock.js').read()+'}catch(e){console.error(e)}})()})()}catch(e){console.error(e)}')
         story+=('\ntry{(function(){var H=document.documentElement,done=0;function run(){if(done||H.getAttribute("data-sec")!=="upcoming"||!document.getElementById("wc-up")||!H.classList.contains("x2p-world"))return;done=1;'
                +''.join(open(S+f).read() for f in ['_se.js','_sg.js','g1.js'])
                +'}new MutationObserver(run).observe(H,{attributes:true,attributeFilter:["data-sec","class"]});run()})()}catch(e){console.error(e)}')
