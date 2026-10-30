@@ -27,6 +27,6 @@ for n,(k,t,i) in enumerate(ims):
   for y in range(0,css+1,1000):
     yy=top+y*sc;d.line((rx-4,yy,rx+16,yy),fill='#e8dfc8',width=3)
   if k=='t3' and ex:
-    y=top+i.height+40;d.text((x,y),'T3 scrolled to Tuesday: the poster has changed with the night in view',fill='#fdbc2a',font=F2)
+    y=top+i.height+40;d.text((x,y),'T3 scrolled down to Wednesday (viewport 1280x860): the pinned poster now shows Wednesday\'s main event',fill='#fdbc2a',font=F2)
     e=ex.resize((cw,int(ex.height*cw/ex.width)),Image.LANCZOS);B.paste(e,(x,y+50))
 B.save(OUT,optimize=True);print(OUT,B.size)
