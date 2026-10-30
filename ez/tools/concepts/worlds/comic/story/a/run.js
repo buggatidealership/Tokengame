@@ -10,7 +10,7 @@ const SEL={lr5:'.wc-lr-5',season:'.wc-season'}[SEC];
   await p.waitForFunction(()=>document.documentElement.classList.contains('x2p-world')&&!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});
   const H=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<H;y+=500){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(40)}
   if(t!=='now'){const ps=t.split('+');await p.addStyleTag({content:rd('_sa.css')+ps.map(x=>rd(x+'.css')).join('')});await p.evaluate(ps=>ps.forEach(x=>document.documentElement.classList.add('sa-t-'+x)),ps);
-    await p.addScriptTag({content:rd('_sa.js')+ps.map(x=>rd(x+'.js')).join('')});await p.waitForFunction(()=>document.documentElement.classList.contains('sa-ready'),null,{timeout:20000})}
+    await p.addScriptTag({content:rd('_sa.js')+(ps.some(x=>/^g\d/.test(x))?rd('_gen.js'):'')+ps.map(x=>rd(x+'.js')).join('')});await p.waitForFunction(()=>document.documentElement.classList.contains('sa-ready'),null,{timeout:20000})}
   await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(600);
   await p.evaluate(s=>{const n=document.querySelector(s);scrollTo(0,n.getBoundingClientRect().top+scrollY-60)},SEL);await p.waitForTimeout(500);
   // let any arrival animation finish (the takes play once on view); SHOT_AT overrides

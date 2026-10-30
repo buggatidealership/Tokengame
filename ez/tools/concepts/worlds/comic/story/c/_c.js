@@ -88,3 +88,11 @@ d.reach=n=>{const b=d.band(n);return n?[b.lo/n,b.hi/n]:[0,1]};
 /* each model's right calls after each graded round (its call count lags on rounds it skipped) */
 d.byRound=m=>{const P=d.P[m].per;let k=0,n=0;return [{k:0,n:0}].concat(d.R.map(r=>{const x=P[r.n];if(x){n++;if(x.v>0)k++}return {k,n}}))};
 })();
+/* representative coins: TR coins whose final scores sit at evenly spaced points of a fair coin's spread (coin j ends at the
+   (j + .5) / TR point), each one's order of heads and tails shuffled by a seeded draw. So the share of coins that beat an AI
+   is the real chance, not the luck of one draw; only the wiggles along the way are random. */
+(function(){const d=window.__scD;
+d.qcoins=(n,TR,m)=>{const pm=k=>Math.exp((()=>{let a=0;for(let i=1;i<=n;i++)a+=Math.log(i);for(let i=1;i<=k;i++)a-=Math.log(i);for(let i=1;i<=n-k;i++)a-=Math.log(i);return a})()-n*Math.LN2);
+  const cdf=[];let c=0;for(let k=0;k<=n;k++){c+=pm(k);cdf.push(c)}
+  const out=[];for(let j=0;j<TR;j++){const q=(j+.5)/TR;let k=0;while(cdf[k]<q)k++;const a=[];for(let i=0;i<n;i++)a.push(i<k);const r=d.rng(d.seed(m,j));for(let i=n-1;i>0;i--){const t=Math.floor(r()*(i+1));[a[i],a[t]]=[a[t],a[i]]}out.push(a)}return out};
+})();
