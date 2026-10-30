@@ -47,8 +47,8 @@ const checks=p=>p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:docu
    const c=await clipOf(p,view,W);await p.screenshot({path:OUT,clip:c,fullPage:true});console.log(W,tk,view,JSON.stringify(await checks(p)),p.__er.join(' | ')||'no errors')}
  else if(mode==='rec'){const OUT=a3,W=+(a4||390),view=a5||'grid',SEC=+(a6||8);const p=await open(b,W,{pre:process.env.PRE||''});await prime(p);await base(p,{still:true});await take(p,tk);await settle(p);
    const sel=SEL[view]||view;await p.evaluate(([s,v])=>{const n=document.querySelector(s);const t=[...document.querySelectorAll('.wc-bi')].filter(x=>x.offsetParent);
-     const y=v==='grid'?t[Math.min(t.length-1,6)].getBoundingClientRect().top+scrollY-12:n.getBoundingClientRect().top+scrollY-30;scrollTo(0,y)},[sel,view]);
-   await hide(p);await p.waitForTimeout(300);if(process.env.STAGE)await p.evaluate(process.env.STAGE);
+     const y=v==='grid'?t[Math.min(t.length-1,6)].getBoundingClientRect().top+scrollY-12:n.getBoundingClientRect().top+scrollY-30;scrollTo({top:y,behavior:'instant'})},[sel,view]);
+   await hide(p);await p.waitForTimeout(300);if(process.env.STAGE)await p.evaluate(process.env.STAGE);await p.waitForTimeout(1200);
    const TMP=fs.mkdtempSync(os.tmpdir()+'/sorec-'),cdp=await p.context().newCDPSession(p),fr=[];
    cdp.on('Page.screencastFrame',async e=>{fr.push({d:e.data,t:e.metadata.timestamp});try{await cdp.send('Page.screencastFrameAck',{sessionId:e.sessionId})}catch(_){}});
    await cdp.send('Page.startScreencast',{format:'jpeg',quality:90,everyNthFrame:1,maxWidth:W*2,maxHeight:(W<600?844:1000)*2});const t0=Date.now();
