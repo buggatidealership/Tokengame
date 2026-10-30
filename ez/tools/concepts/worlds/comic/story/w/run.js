@@ -11,7 +11,7 @@ const SEL={every:'.wc-season',tonight:'.wc-cliff'}[SEC];
   const H=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<H;y+=500){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(40)}
   await p.waitForFunction(()=>document.querySelector('.wc-season canvas.sa-gc5')||!document.querySelector('.wc-season'),null,{timeout:30000}).catch(()=>{});
   if(t!=='now'){if(ex('_w.css'))await p.addStyleTag({content:rd('_w.css')});await p.addStyleTag({content:rd(t+'.css')});
-    if(ex('_w.js'))await p.addScriptTag({content:rd('_w.js')});await p.addScriptTag({content:rd(t+'.js')});
+    if(SEC==='every')await p.addScriptTag({content:'window.__wwDemo=1'});if(ex('_w.js'))await p.addScriptTag({content:rd('_w.js')});await p.addScriptTag({content:rd(t+'.js')});
     await p.waitForFunction(t=>document.documentElement.classList.contains('ww-ready-'+t),t,{timeout:30000})}
   await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(1200);
   await p.evaluate(s=>{const n=document.querySelector(s);scrollTo(0,n.getBoundingClientRect().top+scrollY-20)},SEL);await p.waitForTimeout(900);
