@@ -447,7 +447,7 @@ function betTick(root){const el=root.querySelector('.wc-chip');if(!el)return;let
 /* ---------- THE PROOF (Leaderboard): the live site's four views, drawn as a comic page, with motion between them ---------- */
 function proofBuild(P,R,rank){
   const N=R.length,SHq={...SH};
-  const closeNY=s=>closeAt('',s),now=Date.now(),inWin=(r,ms)=>{const t=closeNY(r.resolves);return t!=null&&t<=now&&t>now-ms};
+  const closeNY=s=>closeAt('',s),now=Date.now(),inWin=(r,ms)=>{if(ms>864e5){const td=nyToday(),[mm,dd,yy]=(r.resolves||'').split('/').map(Number);if(!mm)return false;const a=Math.round((Date.UTC(2000+td[2],td[0]-1,td[1])-Date.UTC(2000+(yy%100),mm-1,dd))/864e5);const c=closeAt(r.ticker,r.resolves);return a>=0&&a<=6&&c!=null&&c<=now}/* 7 days = the calendar days the stubs name (today and the 6 before), as the scoreboard and Who's winning count */const t=closeAt(r.ticker,r.resolves);/* each exchange's own close, as Who's winning counts it (2026-10-30) */return t!=null&&t<=now&&t>now-ms};
   const win=(m,ms)=>R.reduce((s,r)=>s+(inWin(r,ms)&&P[m].per[r.n]?P[m].per[r.n].v:0),0);
   /* each AI's balance and smoothed hit rate after every graded round */
   const bal={},acc={};ORDER.forEach(m=>{let b=1e5,k=0,n=0;bal[m]=[b];acc[m]=[.5];R.forEach(r=>{const x=P[m].per[r.n];if(x){b+=x.v;n++;if(x.v>0)k++}bal[m].push(b);acc[m].push((k+1)/(n+2))})});
@@ -681,7 +681,225 @@ let tries=0;(function wait(){
     try{certWatch()}catch(e){window.__x2pWorldErr=e;console.error('comic certs',e)}
     try{r9()}catch(e){window.__x2pWorldErr=e;console.error('comic r9',e)}
     try{r10()}catch(e){window.__x2pWorldErr=e;console.error('comic r10',e)}
+    try{r11()}catch(e){window.__x2pWorldErr=e;console.error('comic r11',e)}
     try{holdOff()}catch(e){}
     done()}
   else if(tries++<200)setTimeout(wait,50);else done()})();
+/* ===================== R11 (owner, 2026-10-30) ===================== X3+ only (X5+ has cd-on and keeps its own).
+   1 "Every round so far": the winner leaves the tile's corner and is stamped on the stub beside the move ("won"; a tie both
+     marks; nobody a red "×  Nobody"), where results are printed (lesson 50).
+   2 "Who's winning" (Leaderboard top): helper n's N1, the corners walk-in. Windows Season (default), Last 24 hours, Last 7 days
+     on the fight bill's ticket stubs (a tablist); each corner printed in its fighter's own colour; the figure says P&L with W-L
+     under it, no gap box; the undercard; the line (how the holder took the ticket, or the window's biggest swing); the next bell.
+     The scoreboard below re-orders to the window.
+   3 "One round, start to finish": helper d's D2 fight night on round 56 (Robinhood), panel 2 the poster with a play button
+     (no autoplay), panel 3 helper o's O5 dial (the needle lands, that half lights, the gold arc, the crown) with a comic slap
+     on the wrong side, on the two corners' own colours; panel 5 helper a's punched Season 1 ticket.
+   All motion is transform and opacity (CSS or WAAPI), one-shot, still with reduced motion; holdOff() holds the loops off screen.
+   Every number comes from ROUNDS, PENDING, UPCOMING, MODELS, CO_LOGOS and __x2pPnl(). Classes wc11-. */
+/* X5+ runs the dark layer right after this file in the same script, so its cd-on can arrive after wait() has called r11(): the
+   decision waits one microtask (still before the next paint, and before the cover's own observers see x2p-world) */
+function r11(){queueMicrotask(()=>{try{r11b()}catch(e){window.__x2pWorldErr=e;console.error('comic r11',e)}})}
+function r11b(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f11');
+  const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const col=m=>MODELS[m].c==='#111'?'#15121a':MODELS[m].c;
+  const mk=(m,cls)=>`<svg class="${cls||''}" viewBox="0 0 24 24" aria-hidden="true"><path d="${MODELS[m].d}" style="fill:${col(m)}"/></svg>`;
+  const P=window.__x2pPnl().A,RS=ROUNDS.slice().sort((a,b)=>a.n-b.n);
+  const plead=Object.keys(P).sort((a,b)=>P[b].pnl-P[a].pnl)[0];
+  const lgImg=(t,cls)=>{const l=coLogo(t),dk=((window.CO_LOGOS||{})[t]||{}).dark;return l?`<img class="wc11-lg${dk?' wc11-lgdk':''} ${cls||''}" src="${l}" alt="">`:''};
+  const $f=v=>(v>=0?'+':'−')+'$'+Math.round(Math.abs(v)).toLocaleString('en-US');
+  const k$=v=>(v>=0?'+':'−')+'$'+(Math.abs(v)>=1000?(Math.abs(v)/1000).toFixed(1)+'K':Math.round(Math.abs(v)));
+  const per=(m,r)=>P[m]&&P[m].per[r.n]?P[m].per[r.n].v:0;
+  const once=(el,th,f)=>{if(!el)return;const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){io.disconnect();f()}},{threshold:th||.5});io.observe(el)};
+  /* money accruing on screen: a one-shot count from a figure to another (instant with reduced motion) */
+  const count=(el,from,to,dur)=>{const fmt=v=>el.dataset.k?k$(v):$f(v);if(RM()||!dur||Math.round(from)===Math.round(to)){el.textContent=fmt(to);return}
+    const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);el.textContent=fmt(from+(to-from)*e);if(k<1)requestAnimationFrame(f)})(t0)};
+  try{r11Tiles()}catch(e){window.__x2pWorldErr=e;console.error('comic r11 tiles',e)}
+  try{r11Lb()}catch(e){window.__x2pWorldErr=e;console.error('comic r11 lb',e)}
+  try{r11Walk()}catch(e){window.__x2pWorldErr=e;console.error('comic r11 walk',e)}
+
+  /* ---------- 1 · the winner's stamp on every round's stub ---------- */
+  function r11Tiles(){const RR={};ROUNDS.forEach(r=>RR[r.n]=r);
+    const stamp=r=>{const W=winners(r),tilt=[-7,5,-4,8,-6,3][r.n%6];
+      if(!W.length)return `<span class="wc11-won wc11-nob" style="--ink:#c8261d;--r:${tilt}deg" aria-hidden="true"><i>×</i><b>Nobody</b></span>`;
+      return `<span class="wc11-won${W.length>1?' wc11-tie':''}" style="--ink:${W.length>1?'#15121a':col(W[0])};--r:${tilt}deg" aria-hidden="true"><span class="wc11-wm">${W.map(m=>mk(m)).join('')}</span><b>won</b></span>`};
+    const put=()=>D.querySelectorAll('.wc-season .wc-bi').forEach(a=>{const bs=a.querySelector('.wc9-bs');if(!bs||bs.querySelector('.wc11-won'))return;
+      const r=RR[+(a.getAttribute('href')||'').replace(/\D/g,'')];if(!r)return;bs.insertAdjacentHTML('beforeend',stamp(r));const W=winners(r);
+      a.setAttribute('aria-label',a.getAttribute('aria-label')+'. '+(W.length?W.map(m=>NM[m]).join(' and ')+(W.length>1?' tie for the win':' won'):'Nobody won'))});
+    put();const k=D.querySelector('.wc-season .wc-key');if(k)k.textContent='The stamp on each stub says who won the round. % = the move at the close.'}
+
+  /* ---------- 2 · who's winning: the fight bill ---------- */
+  function r11Lb(){const lb=D.getElementById('wc-lb'),cv=lb&&lb.querySelector('.wc-tab-cv');if(!cv||cv.querySelector('.wc11n-bill'))return;
+    const NOW=Date.now(),N=RS.length,rank=rankPnl(P,N),T=nyToday(),today=Date.UTC(2000+T[2],T[0]-1,T[1]);
+    const dAgo=r=>{if(!r.resolves)return 1e9;const [m,d,y]=r.resolves.split('/').map(Number);return Math.round((today-Date.UTC(2000+(y%100),m-1,d))/864e5)};
+    const CL=new Map(),clo=r=>{if(!CL.has(r))CL.set(r,closeAt(r.ticker,r.resolves));return CL.get(r)};
+    const seq={};ORDER.forEach(m=>{seq[m]=[];RS.forEach(r=>{const c=r.calls.find(x=>x[0]===m&&x[1]),k=c&&call(c[1]);if(k)seq[m].push({r,ok:k.up===(r.a>0)})})});
+    const NYF=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'long',month:'numeric',day:'numeric',hour:'numeric',minute:'2-digit',hourCycle:'h23'}),nyP=t=>{const p=NYF.formatToParts(new Date(t));const g=k=>(p.find(x=>x.type===k)||{}).value;return {wd:g('weekday'),m:+g('month'),d:+g('day'),h:+g('hour'),mi:+g('minute')}};
+    const mdy=s=>{const [m,d,y]=s.split('/').map(Number);return (y%100)*1e4+m*100+d};
+    const WS=[{k:'season',t:'Season',f:()=>true,when:'Since '+md(RS[0].called||RS[0].resolves)},
+      {k:'d1',t:'Last 24 hours',f:r=>{const a=dAgo(r);if(a>2||a<-1)return false;const c=clo(r);return c!=null&&c>NOW-864e5}},
+      {k:'d7',t:'Last 7 days',f:r=>{const a=dAgo(r);return a>=0&&a<=6}}];
+    WS.forEach(w=>{w.rs=RS.filter(w.f);w.amt=m=>w.rs.reduce((t,r)=>t+per(m,r),0);
+      w.wl=m=>{if(w.k==='season')return {W:P[m].W,L:P[m].L};const s=seq[m].filter(x=>w.f(x.r)),k=s.filter(x=>x.ok).length;return {W:k,L:s.length-k}}});
+    {const rs=WS[1].rs;WS[1].when=rs.length?md(rs.reduce((a,r)=>mdy(r.resolves)>mdy(a.resolves)?r:a).resolves)+' close':'No close'}
+    {const a=new Date(today-6*864e5);WS[2].when=a.getUTCMonth()===T[0]-1?`${MON[a.getUTCMonth()]} ${a.getUTCDate()} to ${T[1]}`:`${MON[a.getUTCMonth()]} ${a.getUTCDate()} to ${MON[T[0]-1]} ${T[1]}`}
+    /* since which round the golden ticket holder has led without a break (the board's own rule at every step) */
+    const reign=(()=>{const bal={},cnt={};ORDER.forEach(m=>{bal[m]=0;cnt[m]=0});let from=null;
+      RS.forEach((r,i)=>{ORDER.forEach(m=>{bal[m]+=per(m,r);if(r.calls.some(c=>c[0]===m&&c[1]))cnt[m]++});const n=i+1;
+        const ld=ORDER.slice().sort((a,b)=>((cnt[b]*2>=n)-(cnt[a]*2>=n))||(bal[b]-bal[a]))[0];if(ld!==rank[0])from=null;else if(!from)from=r});return from})();
+    const last5=m=>seq[m].slice(-5).filter(x=>x.ok).length;
+    const logo=r=>`${lgImg(r.ticker,'wc11n-lg')}<b>${esc(r.co)}</b>`;
+    /* the round that gave #1 its biggest edge over #2 in the window; "Decided" only when that round alone flips the order */
+    const swing=(w,a,b)=>{let best=null;w.rs.forEach(r=>{const va=per(a,r),vb=per(b,r),d=va-vb;if(!best||d>best.d)best={r,va,vb,d}});return best};
+    const fight=w=>{if(w.k==='season')return {a:rank[0],b:rank[1],la:'Golden ticket',lb:'Challenger',o:rank};
+      const o=ORDER.slice().sort((a,b)=>w.amt(b)-w.amt(a));return {a:o[0],b:o[1],la:'#1',lb:'#2',o}};
+    const line=(w,F)=>{if(w.k==='season'){if(!reign)return '';const l5=last5(F.a);
+        return `${NM[F.a]} took the ticket on ${logo(reign)}, round ${reign.n}.${l5<=1?` Only ${l5} of its last 5 calls ${l5===1?'was':'were'} right.`:''}`}
+      const s=swing(w,F.a,F.b);if(!s)return '';const flips=(w.amt(F.a)-s.va)<(w.amt(F.b)-s.vb);
+      return `${flips?'Decided on':'Biggest swing on'} ${logo(s.r)}, ${NM[F.a]} ${k$(s.va)}, ${NM[F.b]} ${k$(s.vb)}.`};
+    /* the next bell: the soonest exchange close among the rounds still to grade */
+    const nextBell=(()=>{const cand=[...(window.PENDING||[]),...(window.UPCOMING||[])].filter(r=>r.resolves&&dAgo(r)<=1),days=[...new Set(cand.map(r=>-dAgo(r)))].sort((a,b)=>a-b);
+      for(const d of days){const t=cand.filter(r=>-dAgo(r)===d).map(r=>({r,t:closeAt(r.ticker,r.resolves)})).filter(x=>x.t&&x.t>NOW);if(t.length){const m=Math.min(...t.map(x=>x.t));return {t:m,rs:t.filter(x=>x.t===m).map(x=>x.r)}}}return null})();
+    const inT=ms=>{const mn=Math.max(1,Math.round(ms/6e4)),h=Math.floor(mn/60);return h>=24?Math.floor(h/24)+'d '+(h%24)+'h':h?h+'h '+(mn%60)+'m':mn+'m'};
+    const bellWhen=nb=>{const p=nyP(nb.t),tp=nyP(NOW),hh=(p.h%12||12)+(p.mi?':'+String(p.mi).padStart(2,'0'):'')+(p.h<12?' am':' pm');return (p.d===tp.d&&p.m===tp.m?'Today':p.wd)+' '+hh+' ET'};
+    const lastBell=RS.filter(r=>r.resolves&&dAgo(r)<=Math.min(...RS.map(dAgo))+1).reduce((a,r)=>(clo(r)||0)>(clo(a)||0)?r:a),lbp=nyP(clo(lastBell)||NOW);
+    const quiet=w=>`Last bell: ${lbp.wd} ${MON[lbp.m-1]} ${lbp.d}.${nextBell?` Next: ${bellWhen(nextBell)}, ${nextBell.rs.slice(0,2).map(logo).join(' and ')}${nextBell.rs.length>2?' +'+(nextBell.rs.length-2):''}.`:''}`;
+    const all=WS.map(w=>{const F=fight(w),amts={};ORDER.forEach(m=>amts[m]=w.amt(m));
+      return {w,F,amts,va:amts[F.a],vb:amts[F.b],wa:w.wl(F.a),wb:w.wl(F.b),line:w.rs.length?line(w,F):'',under:F.o.filter(m=>m!==F.a&&m!==F.b),empty:!w.rs.length}});
+    const dots=m=>m==='GROK'?'#4a4452':`color-mix(in srgb,${col(m)} 62%,#000)`;
+    const money=(m,v)=>`<b class="${v>=0?'wc-tu':'wc-td'}" data-to="${v}" data-m="${m}">${$f(v)}</b>`;
+    const fc=(m,cls)=>face(m,cls+(m===plead?' wc9-holo':''));
+    const role=(x,s)=>x.w.k==='season'&&s==='a'?'<span class="wc11n-gt"><span>Golden</span><span>ticket</span></span>':`<span class="wc11n-rl">${s==='a'?x.F.la:x.F.lb}</span>`;
+    const wlh=x=>`<span class="wc11n-wl"><b class="wc11c-w">${x.W}</b>-<b class="wc11c-l">${x.L}</b><small>W-L</small></span>`;
+    const cn=(x,s)=>{const m=x.F[s],v=s==='a'?x.va:x.vb,w=s==='a'?x.wa:x.wb;
+      return `<div class="wc11c-cn wc11c-${s}">${role(x,s)}${fc(m,'wc-f-xl wc11c-f')}<span class="wc11c-nm">${NM[m]}</span><span class="wc11c-pl"><small>P&amp;L</small>${money(m,v)}</span>${wlh(w)}</div>`};
+    const bellSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a1.6 1.6 0 0 1 1.6 1.6v.7c3 .8 4.9 3.4 4.9 6.6v3.7l1.8 2.4H3.7l1.8-2.4v-3.7c0-3.2 1.9-5.8 4.9-6.6v-.7A1.6 1.6 0 0 1 12 2.5zM9.6 19.6h4.8a2.4 2.4 0 0 1-4.8 0z"/></svg>';
+    const render=x=>x.empty?`<div class="wc11c-gs"><i class="wc11c-g wc11c-gq"></i></div><div class="wc11c-q">${bellSvg.replace('<svg','<svg class="wc11c-qb"')}
+        <b class="wc11c-qh">No bell in ${x.w.k==='d1'?'24 hours':'7 days'}</b><div class="wc11c-qf">${ORDER.map(m=>`<span>${face(m,'wc11c-uf')}<em>$0</em></span>`).join('')}</div></div>
+        <p class="wc11c-line">${quiet(x.w)}</p>`
+      :`<div class="wc11c-gs"><i class="wc11c-g wc11c-ga" style="--c:${col(x.F.a)};--d:${dots(x.F.a)}"></i><i class="wc11c-gw"><i class="wc11c-g wc11c-gb" style="--c:${col(x.F.b)};--d:${dots(x.F.b)}"></i></i></div>
+        <div class="wc11c-ring">${cn(x,'a')}<div class="wc11c-mid" aria-hidden="true"><span class="wc11c-vs">VS</span></div>${cn(x,'b')}</div>
+        ${x.under.length?`<div class="wc11c-under"><small>Undercard</small>${x.under.map(m=>`<span>${fc(m,'wc11c-uf')}<em>${NM[m]}</em>${money(m,x.amts[m])}</span>`).join('')}</div>`:''}
+        ${x.line?`<p class="wc11c-line">${x.line}</p>`:''}`;
+    cv.classList.add('wc11n-cv');
+    cv.innerHTML=`<div class="wc11n-bill">
+      <div class="wc11n-hd"><div class="wc11n-top"><span class="wc11n-std">The standings<small>${N} earnings reports graded</small></span>${nextBell?`<span class="wc11n-bell" title="The next close that grades a round">${bellSvg}<span><small>Next bell</small><b data-bell>${inT(nextBell.t-NOW)}</b><small>${nextBell.rs.length} round${nextBell.rs.length>1?'s':''}</small></span></span>`:''}</div>
+        <h1 class="wc-tab-h">Who's winning?</h1>
+        <div class="wc11n-stubs" role="tablist" aria-label="Time window">${all.map((x,i)=>`<button type="button" role="tab" id="wc11n-t${i}" aria-controls="wc11n-bout" class="wc11n-stub" data-k="${x.w.k}" aria-selected="${i===0}" tabindex="${i?-1:0}"><b>${x.w.t}</b><small>${x.w.when}</small></button>`).join('')}</div></div>
+      <div class="wc11n-bout" id="wc11n-bout" role="tabpanel" aria-labelledby="wc11n-t0" aria-live="polite"></div></div>`;
+    const bout=cv.querySelector('.wc11n-bout'),btns=[...cv.querySelectorAll('.wc11n-stub')];let cur=null;
+    /* the scoreboard below follows the window: re-ordered (sliding into place), the window's money on a sticker */
+    const board=(x,anim)=>{const list=lb.querySelector('.wc-sb');if(!list)return;const tk=[...list.querySelectorAll('.wc-sb-r')],byM={};
+      tk.forEach(t=>{byM[((t.querySelector('h3')||{}).textContent||'').trim().toUpperCase()]=t});const fl=anim&&!RM(),r0=fl?new Map(tk.map(t=>[t,t.getBoundingClientRect()])):null;
+      x.F.o.forEach((m,i)=>{const t=byM[m];if(!t)return;t.style.order=i;let sk=t.querySelector('.wc11n-sk');if(!sk){t.insertAdjacentHTML('beforeend','<span class="wc11n-sk" aria-hidden="true"></span>');sk=t.querySelector('.wc11n-sk')}
+        sk.innerHTML=x.w.k==='season'?'':`<small>${x.w.t}</small><b class="${x.amts[m]>=0?'wc-tu':'wc-td'}">${k$(x.amts[m])}</b><i>#${i+1}</i>`;sk.classList.toggle('wc11n-on',x.w.k!=='season')});
+      if(fl)tk.forEach(t=>{const a=r0.get(t),dy=a.top-t.getBoundingClientRect().top;if(Math.abs(dy)>1)t.animate([{transform:`translateY(${dy}px)`},{transform:'none'}],{duration:620,easing:'cubic-bezier(.3,1.2,.4,1)'})})};
+    const enter=(prev)=>{/* the new corners' colours wipe in over the old ones, and the pair walks in from its corners */
+      const g=bout.querySelectorAll('.wc11c-ga,.wc11c-gw,.wc11c-gq');g.forEach((e,i)=>e.animate([{transform:`translateX(${i&&e.classList.contains('wc11c-gw')?100:-100}%)`},{transform:'none'}],{duration:380,easing:'cubic-bezier(.3,.8,.3,1)'}));
+      bout.querySelectorAll('.wc11c-cn').forEach((c,i)=>{const s=i?1:-1;c.animate([{transform:`translateX(${s*120}%)`},{transform:`translateX(${s*60}%) translateY(-7px)`,offset:.3},{transform:`translateX(${s*30}%)`,offset:.5},{transform:`translateX(${s*10}%) translateY(-5px)`,offset:.75},{transform:'none'}],{duration:620,delay:120,easing:'linear',fill:'backwards'})});
+      const m=bout.querySelector('.wc11c-mid');if(m)m.animate([{transform:'translate(-50%,-50%) scale(1.9) rotate(-10deg)',opacity:0},{transform:'translate(-50%,-50%)',opacity:1}],{duration:300,delay:600,easing:'cubic-bezier(.3,1.6,.5,1)',fill:'backwards'})};
+    const show=(i,anim)=>{const x=all[i],prev=cur!=null?all[cur]:null;if(prev===x)return;anim=anim&&!RM();
+      btns.forEach((b,j)=>{b.setAttribute('aria-selected',j===i);b.tabIndex=j===i?0:-1});bout.setAttribute('aria-labelledby','wc11n-t'+i);
+      const put=()=>{const old=anim?[...bout.querySelectorAll(':scope>.wc11c-gs')].map(e=>e.innerHTML).join(''):'';bout.innerHTML=render(x);
+        if(old){bout.insertAdjacentHTML('afterbegin',`<div class="wc11c-ug">${old}</div>`);setTimeout(()=>{const u=bout.querySelector('.wc11c-ug');if(u)u.remove()},520)}
+        bout.querySelectorAll('[data-to]').forEach(el=>{const to=+el.dataset.to;count(el,prev?prev.amts[el.dataset.m]:to,to,anim?760:0)});if(anim)enter(prev)};
+      bout.classList.toggle('wc11n-empty',x.empty);bout.dataset.k=x.w.k;board(x,anim);cur=i;
+      const old=bout.querySelectorAll('.wc11c-cn,.wc11c-q');if(!anim||!old.length){put();return}
+      old.forEach(c=>{const r=c.classList.contains('wc11c-b');c.animate([{transform:'none',opacity:1},{transform:`translateX(${r?130:-130}%) rotate(${r?8:-8}deg)`,opacity:.2}],{duration:240,easing:'cubic-bezier(.6,0,.9,.5)',fill:'forwards'})});
+      const m=bout.querySelector('.wc11c-mid');if(m)m.animate([{opacity:1},{opacity:0}],{duration:160,fill:'forwards'});setTimeout(put,230)};
+    btns.forEach((b,i)=>{b.addEventListener('click',()=>show(i,true));
+      b.addEventListener('keydown',e=>{const n=btns.length,j={ArrowRight:(i+1)%n,ArrowLeft:(i+n-1)%n,Home:0,End:n-1}[e.key];if(j==null)return;e.preventDefault();btns[j].focus();show(j,true)})});
+    show(0,false);window.__wc11Show=(k,anim)=>show(WS.findIndex(w=>w.k===k),anim);
+    const be=cv.querySelector('[data-bell]');if(be)setInterval(()=>{if(lb.offsetParent)be.textContent=inT(nextBell.t-Date.now())},30000)}
+
+  /* ---------- 3 · one round, start to finish: fight night ---------- */
+  function r11Walk(){const sec=D.querySelector('#wc-book .wc-lr');if(!sec||sec.querySelector('.wc11d-pg'))return;
+    /* the owner's example: round 56 (Robinhood). Without its film: the newest graded round with a film where exactly one AI stood
+       on the wrong side, or one alone on the right */
+    let r=ROUNDS.find(x=>x.n===56);if(!r||!film(r.n)){console.warn('comic r11: round 56 has no film; using another example');
+      r=ROUNDS.filter(x=>film(x.n)).sort((a,b)=>b.n-a.n).find(x=>{const up=x.a>0,cs=x.calls.map(c=>call(c[1])).filter(Boolean),ok=cs.filter(c=>c.up===up).length;return ok===1||cs.length-ok===1})}
+    if(!r)return;const n=r.n,up=r.a>0,A=r.a,W=winners(r),f=film(n);
+    const cs=ORDER.map(m=>{const row=r.calls.find(c=>c[0]===m);const c=row&&call(row[1]);return c?{m,c,ok:c.up===up,off:+row[2],win:W.includes(m),v:per(m,r)}:null}).filter(Boolean);
+    const cum=(m,upto)=>RS.reduce((t,x)=>x.n<=upto?t+per(m,x):t,0),rk=upto=>ORDER.slice().sort((a,b)=>cum(b,upto)-cum(a,upto)),before=rk(n-1),after=rk(n);
+    const ord=cs.filter(x=>x.ok).concat(cs.filter(x=>!x.ok));
+    const bulls=cs.filter(x=>x.c.up),bears=cs.filter(x=>!x.c.up).sort((a,b)=>a.c.v-b.c.v);
+    const cap=(k,t)=>`<b class="wc11s-n" aria-hidden="true">${k}</b><p class="wc11s-c">${t}</p>`;
+    const sv=x=>`${x.c.up?'+':'−'}${x.c.v}%`;
+    const fighter=(x,g)=>`<div class="wc11d-ft${g?(x.win?' wc11d-win wc11d-ok':x.ok?' wc11d-ok':' wc11d-no'):''}">${g&&x.win?'<em class="wc11d-crown" aria-hidden="true">♛</em><i class="wc11d-halo" aria-hidden="true"></i>':''}${face(x.m,'wc11d-f')}
+        <span class="wc11d-nm">${NM[x.m]}</span><b class="${x.c.up?'wc11s-tu':'wc11s-td'}">${sv(x)}</b>${g?`<i class="wc11d-pf ${x.ok?'wc11d-pass':'wc11d-fail'}" style="--i:${ord.indexOf(x)}">${x.ok?'Pass!':'Fail!'}</i>`:''}</div>`;
+    const corner=(g,side,list)=>`<div class="wc11d-cn wc11d-c${side}${g&&((side==='u')===up)?' wc11d-wc':g?' wc11d-lc':''}"><p class="wc11d-ch">${side==='u'?'▲ Bulls':'▼ Bears'}</p>${list.map(x=>fighter(x,g)).join('')||'<p class="wc11d-empty">Nobody</p>'}</div>`;
+    const corners=g=>`<div class="wc11d-ring${g?' wc11d-g':''}">${corner(g,'u',bulls)}${g?'':`<div class="wc11d-vs" aria-hidden="true"><b>${bulls.length} vs ${bears.length}</b></div>`}${corner(g,'d',bears)}</div>`;
+    const p1=`<section class="wc11s-pn wc11d-p wc11d-p1" aria-label="Step 1">${cap(1,'Before the earnings, the AIs submit their predictions')}
+        <p class="wc11d-bug"><span class="wc11d-live">R${n}</span>${lgImg(r.ticker)}<b>${esc(r.co)}</b><em>Locked ${md(r.called)}</em></p>${corners(0)}
+        <p class="wc-sr">${bulls.length} said up, ${bears.length} said down. ${cs.map(x=>NM[x.m]+' '+(x.c.up?'up ':'down ')+x.c.v+'%').join('. ')}.</p></section>`;
+    const p2=`<section class="wc11s-pn wc11d-p wc11d-p2" aria-label="Step 2">${cap(2,esc(r.co)+' reports. Then the close')}
+        <div class="wc11d-tv"><img class="wc11d-po" src="${f.p}" alt="" loading="lazy" decoding="async"><button type="button" class="wc11d-play" aria-label="Play the round ${n} film with sound"><i aria-hidden="true"></i></button></div></section>`;
+    /* panel 3: the needle lands (helper o's O5). 10% each way; a call beyond sits at the end stop */
+    const cx=160,cy=140,R=104,MX=10,clp=v=>Math.max(-MX,Math.min(MX,v)),ang=v=>90+clp(v)*(90/MX),pt=(v,rr)=>{const a=ang(v)*Math.PI/180;return [cx+rr*Math.cos(a),cy-rr*Math.sin(a)]};
+    const arc=(v0,v1,rr)=>{const [x0,y0]=pt(v0,rr),[x1,y1]=pt(v1,rr);return `M${x0.toFixed(1)} ${y0.toFixed(1)}A${rr} ${rr} 0 0 ${v0>v1?1:0} ${x1.toFixed(1)} ${y1.toFixed(1)}`};
+    let ticks='';for(let v=-MX;v<=MX;v+=2.5){const [a,b]=pt(v,R-11),[g,h]=pt(v,R-(v%5===0?19:15));ticks+=`<path class="wc11o-tk${v===0?' wc11o-tk0':''}" d="M${g.toFixed(1)} ${h.toFixed(1)}L${a.toFixed(1)} ${b.toFixed(1)}"/>`}
+    const dl=cs.map(x=>({...x,sv:x.c.up?x.c.v:-x.c.v})).sort((a,b)=>b.sv-a.sv);let pa=null;dl.forEach(x=>{x.a=ang(x.sv);if(pa!=null&&pa-x.a<13)x.a=pa-13;pa=x.a});
+    const best=dl.filter(x=>x.ok).sort((a,b)=>a.off-b.off)[0],gap=best?Math.abs(best.sv-A):0;
+    const dface=(x,i)=>{const rr=R+34,a=x.a*Math.PI/180,X=cx+rr*Math.cos(a),Y=cy-rr*Math.sin(a);return `<span class="wc11o-mk${x.ok?' wc11o-ok':' wc11o-no'}" style="left:${(X/320*100).toFixed(2)}%;top:${(Y/190*100).toFixed(2)}%">${face(x.m,'wc11o-f')}${x===best?'<em class="wc11o-cr" aria-hidden="true">♛</em>':''}</span>`};
+    /* the gold arc from the close to the closest pass, at least a few degrees so a near-perfect call still shows it */
+    const gA=best?(()=>{let a0=A,a1=best.sv;if(Math.abs(a1-a0)<.5){const m=(a0+a1)/2;a0=m-.25;a1=m+.25}return arc(Math.max(a0,a1),Math.min(a0,a1),R+15)})():'';
+    const oa=(ang(A)<=90?18:-18)*Math.PI/180+ang(A)*Math.PI/180,lx=cx+(R-34)*Math.cos(oa),ly=cy-(R-34)*Math.sin(oa);
+    const bandW=arc(up?MX:0,up?0:-MX,R),bandL=arc(up?0:MX,up?-MX:0,R);
+    const lose=up?'d':'u',loseList=up?bears:bulls,slap=loseList.length?(['WHAM!','SMACK!','THWACK!'][n%3]):'';
+    const p3=`<section class="wc11s-pn wc11d-p wc11d-p3 wc11o${up?' wc11o-U':' wc11o-D'}" aria-label="Step 3">${cap(3,'The market grades every call')}
+        <i class="wc11o-hl" aria-hidden="true"></i><i class="wc11o-hr" aria-hidden="true"></i><i class="wc11o-dim wc11o-dim-${lose}" aria-hidden="true"></i>
+        <div class="wc11o-g" role="button" tabindex="0" aria-label="${esc(r.co)} ${moveWord(r)} ${pct(A)} at the close. ${dl.map(x=>NM[x.m]+(x.ok?' right':' wrong')).join(', ')}.${best?' '+NM[best.m]+' was closest, '+(Math.round(gap*100)/100)+'% off.':''} Tap to play the grading again.">
+          <svg viewBox="0 0 320 190" aria-hidden="true">
+            <path class="wc11o-pl" d="M${cx-R+11} ${cy}A${R-11} ${R-11} 0 0 1 ${cx+R-11} ${cy}Z"/>
+            <path class="wc11o-bo" d="${arc(MX,-MX,R)}"/><path class="wc11o-bd wc11o-up" d="${arc(MX,0,R)}"/><path class="wc11o-bd wc11o-dn" d="${arc(0,-MX,R)}"/>${ticks}
+            <text class="wc11o-lb wc11o-lu" x="${pt(7.5,R-56)[0].toFixed(1)}" y="${pt(7.5,R-56)[1].toFixed(1)}">▲ Up</text><text class="wc11o-lb wc11o-ld" x="${pt(-7.5,R-56)[0].toFixed(1)}" y="${pt(-7.5,R-56)[1].toFixed(1)}">Down ▼</text>
+            <text class="wc11o-sc" x="${cx-R}" y="${cy+25}">+10%</text><text class="wc11o-sc" x="${cx+R}" y="${cy+25}">−10%</text>
+            ${dl.map(x=>{const [a,b]=pt(x.sv,R+11),[c,e]=pt(x.sv,R+20);return `<path class="wc11o-ct" d="M${a.toFixed(1)} ${b.toFixed(1)}L${c.toFixed(1)} ${e.toFixed(1)}"/>`}).join('')}</svg>
+          <div class="wc11o-ly wc11o-lose" aria-hidden="true"><svg viewBox="0 0 320 190"><path class="wc11o-bd wc11o-gr" d="${bandL}"/></svg></div>
+          <div class="wc11o-ly wc11o-lit" aria-hidden="true"><svg viewBox="0 0 320 190"><path class="wc11o-bd wc11o-bri ${up?'wc11o-bu':'wc11o-bdn'}" d="${bandW}"/><path class="wc11o-hi" d="${arc(up?MX:0,up?0:-MX,R-6)}"/></svg></div>
+          ${best?`<div class="wc11o-ly wc11o-ga" aria-hidden="true"><svg viewBox="0 0 320 190"><path d="${gA}"/></svg></div>`:''}
+          <div class="wc11o-ly wc11o-nd" style="--nd:${(-(ang(A)-90)).toFixed(2)}deg" aria-hidden="true"><svg viewBox="0 0 320 190"><path d="M${cx-5} ${cy}L${cx} ${cy-R+16}L${cx+5} ${cy}Z"/><circle cx="${cx}" cy="${cy}" r="11"/><circle class="wc11o-hub" cx="${cx}" cy="${cy}" r="4"/></svg></div>
+          ${dl.map(dface).join('')}
+          ${best?`<b class="wc11o-off" style="left:${(lx/320*100).toFixed(2)}%;top:${(ly/190*100).toFixed(2)}%" aria-hidden="true">${Math.round(gap*100)/100}% off</b>`:''}
+          <span class="wc11o-rd ${up?'wc11o-rU':'wc11o-rD'}" aria-hidden="true"><small>The close</small> ${up?'▲ +':'▼ −'}${pct(A)}</span></div>
+        <div class="wc11o-cw">${corners(1)}${slap?`<span class="wc11o-slap wc11o-slap-${lose}" aria-hidden="true"><svg class="wc11o-sl" viewBox="0 0 120 80">${[...Array(12)].map((_,i)=>{const a=i/12*Math.PI*2,c=Math.cos(a),s=Math.sin(a);return `<path d="M${(60+c*40).toFixed(1)} ${(40+s*27).toFixed(1)}L${(60+c*58).toFixed(1)} ${(40+s*39).toFixed(1)}"/>`}).join('')}</svg><span class="wc11o-bs"><b>${[...slap].map((ch,i,a)=>`<i style="--k:${i/(a.length-1)}">${ch}</i>`).join('')}</b></span></span>`:''}</div>
+        <p class="wc11d-rule"><span>Right corner passes. Closest pass takes the round.</span></p>
+        <a class="wc11d-open" href="#/round/${n}">Open its graded card →</a></section>`;
+    const pay=(cs.filter(x=>x.win)[0])||cs.slice().sort((a,b)=>b.v-a.v)[0],rest=cs.filter(x=>x!==pay);
+    const race=`<div class="wc11d-race" aria-label="Season P&L after round ${n}: ${after.map((m,i)=>(i+1)+' '+NM[m]).join(', ')}"><p class="wc11d-rh">Season P&amp;L, after round ${n}</p>
+        <ol class="wc11d-rl">${after.map((m,i)=>{const mv=before.indexOf(m)-i,v=cum(m,n);return `<li class="${i?'':'wc11d-gold'}" style="--from:${mv}">
+          <b class="wc11d-rk">#${i+1}</b>${face(m,'wc11d-rf')}<span class="wc11d-rn">${NM[m]}</span><b class="wc11d-rv ${v>=0?'wc11s-tu':'wc11s-td'}">${k$(v)}</b>${mv?`<i class="wc11d-mv ${mv>0?'wc11d-mvu':'wc11d-mvd'}">${mv>0?'▲':'▼'}${Math.abs(mv)}</i>`:'<i class="wc11d-mv"></i>'}</li>`}).join('')}</ol></div>`;
+    const p4=`<section class="wc11s-pn wc11d-p wc11d-p4" aria-label="Step 4">${cap(4,'The payout')}
+        <div class="wc11d-pay"><div class="wc11d-purse">${face(pay.m,'wc11d-pfc')}<div><small>${NM[pay.m]} ${pay.v>=0?'made':'lost'}</small><b class="wc11d-big ${pay.v>=0?'wc11d-bu':'wc11d-bd'}" data-v="${pay.v}">${$f(pay.v)}</b></div></div>
+          <ul class="wc11d-rest">${rest.map(x=>`<li>${face(x.m,'wc-f-s')}<span>${NM[x.m]}</span><b class="${x.v>=0?'wc11s-tu':'wc11s-td'}" data-v="${x.v}">${$f(x.v)}</b></li>`).join('')}</ul>${race}</div>
+        <p class="wc11d-fine">P&amp;L on this call. Pretend $100,000 accounts, the whole balance on every call.</p></section>`;
+    /* panel 5: the Season 1 ticket has a hole for every round; graded ones are punched, ringed by the move; this round gets punched */
+    const hs=[].concat(ROUNDS.map(x=>({n:x.n,k:'g',a:x.a})),(window.PENDING||[]).map(x=>({n:x.n,k:'p',t:x.ticker})),(window.UPCOMING||[]).map(x=>({n:x.n,k:'u',t:x.ticker}))).sort((a,b)=>a.n-b.n);
+    const TT=hs.length,G=ROUNDS.length,lst=hs[TT-1],isBet=lst&&lst.t==='NVDA';
+    const holes=hs.map(x=>`<i class="wc11p-ho ${x.k==='g'?'wc11p-hg '+(x.a>0?'wc11p-hu':'wc11p-hd'):x.k==='p'?'wc11p-hp':'wc11p-h0'}${x.n===n?' wc11p-me':''}${x===lst&&isBet?' wc11p-bet':''}">${x.n===n?'<span class="wc11p-chad"></span><span class="wc11p-punch"></span><b class="wc11p-pow"><span>Chunk!</span></b>':''}</i>`).join('');
+    const p5=`<section class="wc11s-pn wc11d-p wc11d-p5" aria-label="Step 5">${cap(5,'Every round goes on the record')}
+        <div class="wc11p"><div class="wc11p-tk" aria-hidden="true"><p class="wc11p-h"><b>Season 1</b><span>${G} of ${TT} punched</span></p>
+          <div class="wc11p-hs" style="--c:${Math.ceil(TT/6)};--c3:${Math.ceil(TT/3)}">${holes}</div><p class="wc11p-f">${isBet?'<span>Bet #1: NVIDIA ★</span>':''}</p><i class="wc11p-tn wc11p-tnl"></i><i class="wc11p-tn wc11p-tnr"></i></div>
+          <button type="button" class="wc11d-open wc11d-meet">Meet the models ↓</button></div>
+        <p class="wc-sr">The Season 1 ticket has a hole for each of its ${TT} rounds. ${G} are punched so far, round ${n} among them.${isBet?' The last one is bet number 1, NVIDIA.':''}</p></section>`;
+    const h2=sec.querySelector('.wc-h2');const sm=h2&&h2.querySelector('small');if(sm)sm.remove();
+    [...sec.children].forEach(c=>{if(c!==h2)c.remove()});
+    sec.classList.add('wc11d-on');sec.insertAdjacentHTML('beforeend',`<div class="wc11d-pg">${p1}${p2}${p3}${p4}${p5}</div>`);
+    const pg=sec.querySelector('.wc11d-pg'),rm=RM();
+    const go=(el,th,cb)=>{if(!el)return;if(rm){el.classList.add('wc11-done');cb&&cb(true);return}el.classList.add('wc11-wait');once(el,th,()=>{el.classList.remove('wc11-wait');el.classList.add('wc11-go');cb&&cb(false)})};
+    go(pg.querySelector('.wc11d-p1'),.45);
+    go(pg.querySelector('.wc11d-p4'),.4,still=>{if(!still)pg.querySelectorAll('.wc11d-p4 [data-v]').forEach((b,i)=>{b.dataset.k=b.classList.contains('wc11d-big')?'':'1';const v=+b.dataset.v;setTimeout(()=>count(b,0,v,900),200+i*80)})});
+    go(pg.querySelector('.wc11p-tk'),.7);
+    /* panel 3 plays once on screen; a tap (or Enter) on the dial plays the grading again */
+    const p3e=pg.querySelector('.wc11d-p3'),dial=p3e.querySelector('.wc11o-g');go(p3e,.55);
+    const replay=()=>{if(RM())return;p3e.classList.remove('wc11-wait','wc11-go');void p3e.offsetWidth;p3e.classList.add('wc11-go')};
+    dial.addEventListener('click',replay);dial.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();replay()}});
+    /* panel 2: the poster until asked; a tap plays the film with sound; a tap on the film pauses it */
+    const tv=pg.querySelector('.wc11d-tv'),pb=tv.querySelector('.wc11d-play');let v=null;
+    pb.addEventListener('click',()=>{if(!v){v=D.createElement('video');v.className='wc11d-v';v.playsInline=true;v.preload='auto';v.poster=f.p;v.src=f.v;tv.appendChild(v);
+        v.addEventListener('click',()=>{if(v.paused)v.play().catch(()=>{});else v.pause()});
+        v.addEventListener('playing',()=>tv.classList.add('wc11d-on'));v.addEventListener('pause',()=>tv.classList.remove('wc11d-on'));v.addEventListener('ended',()=>{tv.classList.remove('wc11d-on');v.currentTime=0})}
+      v.muted=false;v.play().catch(()=>{})});
+    const meet=pg.querySelector('.wc11d-meet');if(meet)meet.addEventListener('click',()=>{const c=D.querySelector('.wc-chars');if(c)c.scrollIntoView({behavior:RM()?'auto':'smooth',block:'start'})})}
+}
 })();
