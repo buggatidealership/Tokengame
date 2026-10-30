@@ -17,4 +17,4 @@ o.sim=typeof SIM!=='undefined'?SIM:null;
 o.header=document.querySelector('header.top')?.offsetHeight;
 o.vt=document.querySelector('.x2p-vt')?document.querySelector('.x2p-vt').outerHTML.slice(0,600):null;
 return o});
-console.log(JSON.stringify(r,null,1).slice(0,9000));console.log(er);await b.close()})();
+delete r.models;delete r.r0;delete r.r1;delete r.pending;delete r.up;console.log(JSON.stringify(r,null,0).slice(0,9000));console.log(er);await b.close()})();
