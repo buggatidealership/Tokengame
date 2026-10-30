@@ -7,6 +7,7 @@
   const mast=cv.querySelector('.sh-mast');mast.querySelector('.sh-cb').append(star);mast.append(h1);
   mast.insertAdjacentHTML('afterend',`<div class="sh-art"><div class="sh-grid" role="list" aria-label="How every round goes">${P}${AR}<span class="sh-hub" aria-hidden="true"><svg viewBox="0 0 60 60"><g class="sh-hubr"><path d="M30 6a24 24 0 0 1 23 17" fill="none" stroke="#15121a" stroke-width="4"/><path d="M48 18l6 7 3-9z" fill="#15121a"/>
       <path d="M30 54A24 24 0 0 1 7 37" fill="none" stroke="#15121a" stroke-width="4"/><path d="M12 42l-6-7-3 9z" fill="#15121a"/></g></svg><b>Every<br>round</b></span></div>${X.guard()}</div>`);
-  film.classList.add('sh-film');cv.querySelector('.sh-art').after(film);film.insertAdjacentHTML('afterend',X.guard().replace('class="sh-gd"','class="sh-gd sh-dgd" aria-hidden="true"'));
+  film.classList.add('sh-film');cv.querySelector('.sh-art').after(film);film.insertAdjacentHTML('afterend',X.guard().replace('class="sh-gd sh-nx"','class="sh-gd sh-nx sh-nxf"'));
+  cv.querySelectorAll('.sh-nxb').forEach(b=>b.addEventListener('click',()=>{const c=document.querySelector('.wc-chars');if(c)c.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}));
   const cap=film.querySelector('.wc-film-cap');if(cap)cap.textContent='Inside: how it works · 1:20';
   S.ready()})();

@@ -126,7 +126,7 @@ function build(){
   /* ---------- COVER ---------- */
   const cover=`<section class="wc-cover" aria-label="Cover">
     <div class="wc-cv-top"><span class="wc-cv-s">Season 1<small>${n} earnings reports graded</small></span></div>
-    <p class="wc-h1" role="heading" aria-level="1">4 AI<span class="wc-lc">s</span> trade earnings <span>to run our buybacks.</span></p>
+    <p class="wc-h1" role="heading" aria-level="1">4 AI<span class="wc-lc">s</span> trade earnings <span>Who calls it best?</span></p>
     <p class="wc-tag">Each one calls a stock <b>before</b> its earnings report. The market close says who was right.</p>
     <div class="wc-film-slot"><p class="wc-cap wc-film-cap" aria-hidden="true">How it works · 1:20</p></div>
     <div class="wc-starring"><span class="wc-st-l">Starring</span><span class="wc-st-g">${['GPT','CLAUDE','GROK','KIMI'].map(m=>`<span class="wc-st-m">${face(m)}<b>${NM[m]}</b></span>`).join('')}</span></div>
