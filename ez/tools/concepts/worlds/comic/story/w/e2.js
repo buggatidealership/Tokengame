@@ -10,7 +10,7 @@
     const stand=right.map((c,i)=>`<span class="ww2-up${W.includes(c.m)?' ww2-win':''}" style="--k:${i}">${W.includes(c.m)?'<i class="ww2-cr" aria-hidden="true">👑</i>':''}${X.face(c.m,'ww2-f')}</span>`).join('');
     const down=wrong.map((c,i)=>`<span class="ww2-ko" style="--k:${i}">${X.face(c.m,'ww2-f')}<i class="ww2-st" aria-hidden="true">✦</i></span>`).join('');
     art.insertAdjacentHTML('beforeend',`<span class="ww-p ww2 ${up?'ww-up':'ww-dn'}${right.length?'':' ww2-all'}" aria-hidden="true">
-      <i class="ww2-rp"></i><i class="ww2-mat">${X.lgDisc(r.ticker,'ww2-lg')}</i>
+      <i class="ww2-rp"></i><i class="ww2-mat"></i>${X.lgDisc(r.ticker,'ww2-lg')}
       <b class="ww2-sfx">${right.length?X.sfx(r.a):'K.O.!'}</b>
       <span class="ww2-ring" style="--nr:${right.length};--nw:${wrong.length}"><span class="ww2-s">${stand}</span><span class="ww2-d">${down}</span></span></span>`);
     art.querySelectorAll('.ww-lg img').forEach(X.capImg)};

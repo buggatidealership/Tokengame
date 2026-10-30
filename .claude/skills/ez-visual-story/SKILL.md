@@ -240,6 +240,8 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - *Taught by:* "it should say season P&L... so users understand that that is the total", 30 Oct.
 60. **Judge every big element at its biggest size.** A raster logo blown up past its native pixels, or a display face that looks lively at phone size, turns cheap on a desktop. Draw marks at or below their native resolution, and check the type at the largest size it will be drawn.
     - *Taught by:* the Amazon main event on desktop: "super low definition... on a big screen this font actually doesn't make sense", 30 Oct.
+61. **Literal fixes give increments; a committed direction gives the wow.** Following the owner's words point by point only improves the page a step at a time. Read what the words point at, then pick one tradition or idea and take it all the way, as an expert in it would, before the owner asks. Show several such leaps side by side, each complete, rather than one careful variation of today's page.
+    - *Taught by:* "as soon as you try to stick too much to what I'm saying, the improvements are incremental... trust my gut... go away and do something amazing, that's always the wow", 30 Oct.
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.

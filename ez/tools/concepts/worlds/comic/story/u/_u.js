@@ -43,9 +43,12 @@ function paint(){pq=pq.then(async()=>{await new Promise(r=>requestAnimationFrame
     const t=el.dataset.t,src=S.logo(t);if(!src)continue;const im=await P.load(src);if(!im)continue;const lg=LG[t]||{};
     const B=P.hex((await SA.pal(src))||(await SA.pal(src,.15))||(lg.c&&lg.c!=='#12131a'?lg.c:'#2b2733'));
     const c=P.cv(W,Hh);c.className='uu-cv';c.setAttribute('aria-hidden','true');
-    window.__uuK=+el.dataset.k||0;window.__uuCx=+el.dataset.cx||0;window.__uuCy=+el.dataset.cy||0;
+    const mk=P.mark(im,lg.dark);let k=+el.dataset.k||.7;const sc=Math.min(W*k/mk.width,Hh*k/mk.height);
+    /* never draw the mark past its own pixels (lesson 60): shrink the mark rather than blow the file up */
+    if(sc>1)k/=sc;el.dataset.ratio=Math.min(W*k/mk.width,Hh*k/mk.height).toFixed(2);
+    window.__uuK=k;window.__uuCx=+el.dataset.cx||0;window.__uuCy=+el.dataset.cy||0;
     const sp=el.dataset.sp;window.__uuB=sp?((u,v)=>{const [a,b]=sp.split(',').map(Number);/* the seam leans: a at the top, b at the foot */return u<a+(b-a)*v?[19,163,90]:[224,53,45]}):null;
-    try{P.G[el.dataset.g||'m3'](c.getContext('2d'),W,Hh,P.mark(im,lg.dark),B,P.rnd(P.hash(t+'m3')))}finally{window.__uuK=window.__uuCx=window.__uuCy=0;window.__uuB=null}
+    try{P.G[el.dataset.g||'m3'](c.getContext('2d'),W,Hh,mk,B,P.rnd(P.hash(t+'m3')))}finally{window.__uuK=window.__uuCx=window.__uuCy=0;window.__uuB=null}
     if(old)old.remove();el.prepend(c)}
   H2.classList.add('uu-painted')}).catch(e=>console.error(e))}
 const H2=document.documentElement;
