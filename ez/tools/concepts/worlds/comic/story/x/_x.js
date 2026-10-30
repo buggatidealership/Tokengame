@@ -33,7 +33,8 @@ window.XXmount=function(){const T=window.XXT,S2=window.SST,h=D.querySelector('.s
   /* the take's marks follow the board: a window switch (prev given, anim) plays the swap; a redraw without anim is still */
   S2.draw=function(x,prev,anim){orig(x,prev,anim);const s=st(x);const p=cur;cur=s;
     if(!seen){T.still(s,true);return}
-    if(anim&&p&&!RM())T.swap(s,p);else T.still(s,false)};
+    /* the take's own work waits one frame, so the click's frame only carries the board's own redraw */
+    if(anim&&p&&!RM())requestAnimationFrame(()=>{if(cur===s)T.swap(s,p)});else T.still(s,false)};
   /* first paint: the marks wait (hidden) until their row comes into view, then arrive row by row (lesson 55) */
   const k=S.cur();cur=st(S.X[k]);T.still(cur,!RM());
   if(RM()){seen=true}else{
