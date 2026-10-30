@@ -1,0 +1,11 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:844}});const er=[];p.on('pageerror',e=>er.push(e.message));
+await p.goto('http://localhost:8911/v47-live-x3plus.html',{waitUntil:'load',timeout:150000});
+await p.waitForFunction(()=>document.documentElement.classList.contains('x2p-world')&&!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});
+const r=await p.evaluate(()=>{const n=+document.querySelector('.wc-lr-pg').dataset.n;const r=ROUNDS.find(x=>x.n===n);const A=__x2pPnl().A;
+const cv=document.querySelector('#wc-book .wc-cover');const f=document.querySelector('.wc-film-slot').getBoundingClientRect();
+return {n,r:JSON.stringify(r),pnl:Object.fromEntries(Object.keys(A).map(m=>[m,Math.round(A[m].pnl)+' '+A[m].W+'-'+A[m].L+' '+A[m].seq.slice(-5).join('')])),filmTop:f.top+scrollY,coverBot:cv.getBoundingClientRect().bottom+scrollY,logo:JSON.stringify(CO_LOGOS[r.ticker]),cover:cv.outerHTML.slice(0,1500),pend:(PENDING||[]).length,mods:JSON.stringify(Object.fromEntries(Object.keys(MODELS).map(m=>[m,MODELS[m].c])))}});
+console.log(JSON.stringify(r,null,1),er);
+await p.setViewportSize({width:1280,height:1000});await p.waitForTimeout(1500);
+console.log(await p.evaluate(()=>{const f=document.querySelector('.wc-film-slot').getBoundingClientRect(),c=document.querySelector('#wc-book .wc-cover').getBoundingClientRect();return [f.top+scrollY,f.left,f.width,c.left,c.width,c.bottom+scrollY]}));
+await b.close()})();
