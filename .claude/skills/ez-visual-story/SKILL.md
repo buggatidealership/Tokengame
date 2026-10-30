@@ -39,6 +39,59 @@ The owner supplied the metaphors: the ticket stock and its borders, "Season one"
 9. **Contrast carries meaning, repetition doesn't.** A flag says something because Kimi's differs from the other three. If every item had the same mark, the mark would carry nothing. Use a carrier where it separates items.
 10. **The owner's no-go zones stay.** No flags on the landing cover. No numbers on Starring. The guardrails (no return promises, "the pool can be wiped out") hold. A good principle never overrides an explicit instruction.
 
+## Lessons extracted from the iterations
+
+Each lesson is the reason behind a change the owner liked, not the owner's pointer itself. Each comes with the iteration that taught it.
+
+11. **Explain by walking through one real case, step by step.**
+    - People grasp a mechanism through one real instance with cause and effect: these four called it, the close came in, this one passed, it got paid, it moves on.
+    - An abstract "how it works" teaches less than that one instance.
+    - Pick the instance that shows the mechanism most clearly. A round where everyone was right teaches nothing about grading; one where a single model was right teaches all of it.
+    - *Taught by:* the "One round, start to finish" iterations, R2 to R7, 29 Oct.
+12. **A carrier belongs only where its fact belongs to that section's story.**
+    - The flag works on Meet the models, whose story is rival labs. On the landing page the story is "what EZ does", so a flag there is noise. The same goes for M5's faces, where the story is "the leader".
+    - Before reusing a carrier, ask whether this section's story needs that fact.
+    - *Taught by:* "you don't need the flag on the landing page / on M5", 30 Oct.
+13. **Two carriers for one fact: keep the stronger and cut the other.**
+    - A flag plus a "US" chip says the same thing twice. Doubling it is clutter, not emphasis.
+    - *Taught by:* the "US" chip removed, 30 Oct.
+14. **A thing's own identity is the fastest carrier.**
+    - A company is recognised by its brand colour before its name is read. A model is recognised by its face and colour.
+    - Use identity where an element stands for that thing.
+    - *Taught by:* the brand-colour tickets, B1, 30 Oct.
+15. **Build takes from separable parts.**
+    - The owner often combines takes: "everything from B1 except the predictions from B3".
+    - Design takes whose parts can be swapped (background, layout of the calls, header), and label the parts, so a combination is quick to build.
+16. **The strength of a claim must match the size of the sample, and so must its picture.**
+    - With about 60 calls, nothing can be said about improving or declining. A coin's 95% range is still 37 to 63%.
+    - Show the uncertainty (a luck band, how far into the sample we are) rather than a verdict either way.
+    - This is the honest version of lesson 8: don't tell a sadder story than the data either.
+    - *Taught by:* "it's not like none of them are improving... we need 100 to 150", 30 Oct.
+17. **One name per thing, and words that mean one thing.**
+    - "Report" can mean many things; "earnings" is what the audience says.
+    - Two "how ... works" in one frame blur together.
+    - "Won" means the closest call in a round while the board ranks by P&L. Say which one a word means wherever both appear.
+    - *Taught by:* "before the earnings", "How it works / How a round works", 29 Oct; helper a's flag on "wins", 30 Oct.
+18. **Don't state the obvious or explain the frame.**
+    - "A real one, step by step" tells nothing; of course it is real.
+    - Every sentence must add a fact the picture cannot.
+    - *Taught by:* R7, 29 Oct.
+19. **No dead space, and design each format for itself.**
+    - Empty areas and stretched panels read as unfinished.
+    - On desktop, recompose the content for the wider shape, scaled to its own container. Do not stretch the phone version.
+    - *Taught by:* the R6 panel squares, 29 Oct; the "white space" notes.
+20. **Look at the live page before proposing.**
+    - Verify what exists before calling it missing. "Every round so far" already showed the winner. The real gap was that a key line had to explain it, which is lesson 7's test.
+    - *Taught by:* my wrong proposal, 30 Oct.
+
+## How this skill learns (owner, 2026-10-30)
+
+Every time the owner gives pointers and an iteration lands, update this file the same day:
+- Ask why the new version is better, find the general reason, and add it as a numbered lesson with what taught it.
+- Do not copy the pointer itself. "Remove the US chip" is a pointer; "two carriers for one fact" is the lesson.
+- If a new lesson contradicts an old one, rewrite the old one rather than stacking both.
+- Commit the change with the work it came from.
+
 ## How to work with it
 
 - **Before the first mockup,** write a three-line brief per element:

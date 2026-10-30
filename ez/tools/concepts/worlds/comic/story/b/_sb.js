@@ -21,4 +21,8 @@ window.SB=(function(){
   const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
   /* when an element first comes into view, add sb-in (motion starts there) */
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('sb-in');io.unobserve(e.target)}}),{threshold:.25});
-  return {D,ORDER,NM,face,lead,rank,calls,fake4,RM,seen:x=>io.observe(x)}})();
+  /* the golden ticket, as "Meet the models" draws #1's stub: gold foil "#1 / Golden ticket", then the holder's holo face and name */
+  const gt=(m,cls)=>`<div class="sb-gt ${cls||''}" data-m="${m}"><div class="sb-gt-s" aria-hidden="true"><b>#1</b></div>
+    <div class="sb-gt-b">${face(m,'wc-f-xl wc9-holo')}<span class="sb-gt-n"><i>Golden ticket</i><b>${NM[m]}</b><small>${(MODELS[m].ver||'')}</small></span>
+    <span class="wc9-spk sb-gt-k1" aria-hidden="true">✦</span><span class="wc9-spk sb-gt-k2" aria-hidden="true">✧</span></div></div>`;
+  return {D,ORDER,NM,face,lead,rank,calls,fake4,RM,gt,seen:x=>io.observe(x)}})();

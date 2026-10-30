@@ -9,7 +9,9 @@ const rd=f=>fs.existsSync(__dirname+'/'+f)?fs.readFileSync(__dirname+'/'+f,'utf8
   await p.goto('http://localhost:8897/'+(process.env.PAGE||'v47-live-x3plus.html'),{waitUntil:'load'});
   await p.waitForFunction(()=>document.documentElement.classList.contains('x2p-world')&&!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});
   const H=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<H;y+=500){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(40)}
-  if(process.env.LEAD)await p.evaluate(m=>{window.__sbLead=m},process.env.LEAD);
+  /* LEAD=<model>: a test of the leader changing (not real data): that model's P&L and the leader's swap places before the take builds */
+  if(process.env.LEAD)await p.evaluate(m=>{const f=window.__x2pPnl;window.__x2pPnl=()=>{const r=f(),A={...r.A},top=Object.keys(A).sort((a,b)=>A[b].pnl-A[a].pnl)[0];
+    if(top!==m){const x={...A[top]},y={...A[m]},t=x.pnl;x.pnl=y.pnl;y.pnl=t;A[top]=x;A[m]=y}return {...r,A}}},process.env.LEAD);
   if(t!=='now'){await p.addStyleTag({content:rd('_sb.css')+'\n'+rd(t+'.css')});await p.addScriptTag({content:rd('_sb.js')});await p.addScriptTag({content:rd(t+'.js')});
     await p.waitForFunction(t=>document.documentElement.classList.contains('sb-ok-'+t),t,{timeout:20000})}
   if(process.env.FAKE4)await p.evaluate(()=>window.__sbFake4&&window.__sbFake4());
@@ -21,7 +23,7 @@ const rd=f=>fs.existsSync(__dirname+'/'+f)?fs.readFileSync(__dirname+'/'+f,'utf8
   const ov=await p.evaluate(s=>{const out=[],root=document.querySelector(s);
     /* 1) text that runs past its own box (leaf elements of the take) */
     root.querySelectorAll('[class*="sb-"] *, [class*="sb-"]').forEach(e=>{if(e.closest('svg'))return;const cs=getComputedStyle(e);if(cs.display==='inline'||cs.display==='none')return;
-      const leaf=![...e.children].some(c=>!/^(I|EM|SMALL|B|BR)$/.test(c.tagName)||getComputedStyle(c).display!=='inline');if(leaf&&cs.textOverflow!=="ellipsis"&&e.textContent.trim()&&e.scrollWidth>e.clientWidth+1)out.push('text:'+e.className+':'+e.textContent.trim().slice(0,18))});
+      const leaf=![...e.children].some(c=>!/^(I|EM|SMALL|B|BR)$/.test(c.tagName)||getComputedStyle(c).display!=='inline');if(!e.classList.contains('wc-sr')&&leaf&&cs.textOverflow!=="ellipsis"&&e.textContent.trim()&&e.scrollWidth>e.clientWidth+1)out.push('text:'+e.className+':'+e.textContent.trim().slice(0,18))});
     /* 2) anything in flow that leaves its card (ticket, or the take's own box) sideways */
     root.querySelectorAll('.wc-tnp,[data-sb-card]').forEach(t=>{const R=t.getBoundingClientRect();t.querySelectorAll('*').forEach(e=>{const cs=getComputedStyle(e);if(cs.position==='absolute'||cs.position==='fixed'||e.closest('svg')||cs.display==='none'||e.closest('[aria-hidden="true"]'))return;const r=e.getBoundingClientRect();const o=Math.max(R.left-r.left,r.right-R.right);if(r.width&&o>1)out.push('box:'+(e.className.baseVal===undefined?e.className:'')+':'+e.textContent.trim().slice(0,18)+':'+o.toFixed(1)+'px')})});
     /* 3) labels marked data-sb-l: inside their data-sb-box, never on top of one another */
@@ -29,5 +31,6 @@ const rd=f=>fs.existsSync(__dirname+'/'+f)?fs.readFileSync(__dirname+'/'+f,'utf8
       L.forEach(([e,r],i)=>{if(e.scrollWidth>e.clientWidth+1)out.push('textlab:'+e.textContent.trim());if(r.left<B.left-.5||r.right>B.right+.5||r.top<B.top-.5||r.bottom>B.bottom+.5)out.push('outside:'+e.textContent.trim());
         L.slice(i+1).forEach(([f,q])=>{if(r.left<q.right-.5&&q.left<r.right-.5&&r.top<q.bottom-.5&&q.top<r.bottom-.5)out.push('overlap:'+e.textContent.trim()+'/'+f.textContent.trim())})})});
     return [...new Set(out)].slice(0,10)},SEL);
-  console.log(W,SEC,t,'sw',await p.evaluate(()=>document.documentElement.scrollWidth),'clipped',JSON.stringify(ov),er.join('|')||'ok');await p.close()}
+  const rm=process.env.RM?await p.evaluate(()=>document.getAnimations().filter(a=>{const e=a.effect&&a.effect.target;return e&&e.closest&&e.closest('[class*="sb-"]')&&a.playState==='running'}).map(a=>(a.animationName||a.transitionProperty||'anim')+'@'+a.effect.target.className).slice(0,5)):'';
+  console.log(W,SEC,t,process.env.RM?'RM running:'+JSON.stringify(rm):'','sw',await p.evaluate(()=>document.documentElement.scrollWidth),'clipped',JSON.stringify(ov),er.join('|')||'ok');await p.close()}
  await b.close()})();
