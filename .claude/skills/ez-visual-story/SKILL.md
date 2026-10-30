@@ -25,9 +25,18 @@ The owner supplied the metaphors: the ticket stock and its borders, "Season one"
    - a box nested in a box, or a labelled container holding a list (a dashboard widget);
    - a white or pale empty rectangle, or a container bigger than its content (one call in a box sized for four);
    - label-and-value pairs where a character could say the thing ("Kimi: up 1.5%" in a balloon beats "BULLS ▲ / Kimi +1.5%");
-   - a card with no character, no action and no comic device (balloon, caption, sound effect, motion lines, emoji);
+   - a card with no character, no action and no comic device (balloon, caption, sound effect, motion lines, a drawn gesture);
    - the same structure repeated so the page reads as rows of a table.
    Fun to read matters as much as easy to read: the information is wrapped in the joke, the face, the gesture.
+   Hard rules added 30 Oct, evening, after the owner had to repeat them again ("you keep making the same mistake... those learnings are definitely not getting through"):
+   - **No white or pale backgrounds inside a module**, unless the owner asks for one. A module's ground is art, colour or the scene itself.
+   - **No dead space.** Every container hugs its content; a panel is filled edge to edge by its art or its content; gutters are tight, like a comic page's. Measure it before showing (empty area per card), do not eyeball it.
+   - **Never lay content over a logo or over the art's subject.** People recognise the logo first; predictions sit beside or around it, lettered into the scene, never stickered on top.
+   - **No native emoji** (🐂 🐻 and the like). If a symbol is needed it is drawn in the comic's own line and colour.
+   - **A pattern is not a background.** Ben-Day dots and halftones carry shading or meaning in places; a whole module filled with dots reads as "pyjamas".
+   - **Name and ticker together** wherever a company is labelled (the stub, the tag), never the ticker alone.
+   - **Before any board reaches the owner,** check every module against this list and fix what fails; say in the report which checks ran.
+   - **Briefs pass on the want, never the owner's throwaway example as an instruction.** The 30 Oct brief quoted "emojis for bulls and bears... just as an example" as the fix, and every helper drew emojis; this list and its checks go into every brief.
 1. **Name the story, not the data.** Write the section's job in one line as a story with stakes, e.g. "four rivals from two countries race for the one ticket we bet on", not "the standings". If you can't find the conflict, the stakes or the change over time, find it before designing.
 2. **Every fact needs a carrier.** List the facts the section must convey. For each one, ask what in the page's own world could show it without a sentence:
    - which country → a flag;
