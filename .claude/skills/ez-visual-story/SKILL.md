@@ -192,6 +192,31 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - Crypto traders read performance as 24h, 7d and all time. Offer those windows in that language, and open on the complete one (the season), since a visitor first wants the full standings; the shorter windows are for the return visit.
     - *Taught by:* "last 24 hours, last 7 days, and then the entire season, because that relates more to the crypto crowd... season should be the default", 30 Oct.
 
+46. **Decide what the audience compares before deciding how it moves.**
+    - Ask first how this crowd already reads the thing (crypto traders compare traders by P&L over a time window), then show exactly that, in their word: "P&L" printed beside the figure, the window named.
+    - A derived number on top of the primaries (the gap between two P&Ls the viewer can already see) is one number too many unless it is the story itself (lesson 36).
+    - The animation comes last: it serves the comparison, not the other way round.
+    - *Taught by:* "what are we trying to portray here? How do the crypto people usually look at P&L comparison between traders?... I don't know if the gap is really that relevant... there should be P&L somewhere there", 30 Oct.
+47. **Read every screen as a stranger who just landed.**
+    - What is obvious to us (whose money, over what time, why these two) is not obvious to someone who does not know the project. Each view must say what it is showing in its own labels, without the explanation further up.
+    - *Taught by:* "it's not instantly clear. To me, yes. But to most... they don't know what this project is about", 30 Oct.
+48. **The participants are the best ground.**
+    - Painting a panel in the colours of the ones competing in it (Grok's black, Claude's orange, each in its own corner) makes the rivalry visible before any word and fills the space with meaning instead of texture. A large comic rendering of a participant's own mark can do the same.
+    - Generalise: when a panel is about someone, let their identity be the ground (lesson 14 at the scale of the whole panel; it is the cure for lesson 22).
+    - *Taught by:* "I like the fact that it just has the background colors of the models... these are probably first principle thinking that can be applied elsewhere", 30 Oct.
+49. **The climax must land like a comic beat.**
+    - When the result is revealed, the comic's own impact language carries it: the winner crowned, the wrong side hit by a lettered FAIL with a smack, as a panel would draw a punch. A quiet fade wastes the moment the whole page builds to.
+    - *Taught by:* "when the close gets revealed... he gets crowned, and then all the others were fail... there needs to be like a slap", 30 Oct.
+50. **Where a mark sits tells what it means.**
+    - A face in a tile's top corner reads as "who this is about", not "who won". A result belongs where results are printed (the stamp on the ticket's stub, beside the move), so the reader does not have to guess the convention.
+    - *Taught by:* "people might think, why is the logo in the top right?... the stamp should go here", 30 Oct.
+51. **An interaction must work on the device in the hand.**
+    - Hover and "plays as you pass" depend on a mouse or on slow scrolling; on a phone they either never fire or become autoplay. Design the phone behaviour first, then add desktop extras.
+    - *Taught by:* "the glance moves once you pass... on desktop that's fine, on mobile I don't think that'll work", 30 Oct.
+52. **An example chosen to explain must be calm and typical, not the loudest.**
+    - A walkthrough teaches through its example, so the example should show the rule plainly (a clear split of right and wrong) in a picture that does not compete with the explanation. Spectacle belongs in the record, not in the lesson.
+    - *Taught by:* "maybe we use another card because this one is very in your face... it screams LSD", 30 Oct.
+
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
