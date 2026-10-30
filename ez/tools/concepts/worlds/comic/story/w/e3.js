@@ -23,5 +23,5 @@
       <span class="ww3-tail" style="left:${sx}%;top:${sy/0.86}%">${X.lgDisc(r.ticker,'ww3-lg')}</span>
       <b class="ww3-sfx ${up?'ww3-sfu':'ww3-sfd'}">${X.sfx(r.a)}</b>${riders}${fall}</span>`);
     art.querySelectorAll('.ww-lg img').forEach(X.capImg)};
-  X.eachNoFilm(draw);X.demo(draw);
+  X.eachNoFilm(draw);X.demo(draw);window.__wwArrive=a=>X.arrive(draw,a,X.RR[66]);
   X.ready('e3')})();

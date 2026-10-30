@@ -39,7 +39,7 @@ function draw(){
 let pq=Promise.resolve();
 function paint(){pq=pq.then(async()=>{await new Promise(r=>requestAnimationFrame(r));const P=SA.uuG,dpr=devicePixelRatio||1,LG=window.CO_LOGOS||{};
   for(const el of root.querySelectorAll('.uu-art[data-t]')){if(!T.vis(el))continue;const bb=el.getBoundingClientRect();if(bb.width<4)continue;
-    const W=Math.round(bb.width*dpr),Hh=Math.round(bb.height*dpr),old=el.querySelector('canvas.uu-cv');if(old&&old.width===W&&old.height===Hh)continue;
+    const W=Math.round(bb.width*dpr),Hh=Math.round(bb.height*dpr),old=el.querySelector('img.uu-cv');if(old&&el.dataset.pw===W+'x'+Hh)continue;el.dataset.pw=W+'x'+Hh;
     const t=el.dataset.t,src=S.logo(t);if(!src)continue;const im=await P.load(src);if(!im)continue;const lg=LG[t]||{};
     const B=P.hex((await SA.pal(src))||(await SA.pal(src,.15))||(lg.c&&lg.c!=='#12131a'?lg.c:'#2b2733'));
     const c=P.cv(W,Hh);c.className='uu-cv';c.setAttribute('aria-hidden','true');
@@ -49,7 +49,9 @@ function paint(){pq=pq.then(async()=>{await new Promise(r=>requestAnimationFrame
     window.__uuK=k;window.__uuCx=+el.dataset.cx||0;window.__uuCy=+el.dataset.cy||0;
     const sp=el.dataset.sp;window.__uuB=sp?((u,v)=>{const [a,b]=sp.split(',').map(Number);/* the seam leans: a at the top, b at the foot */return u<a+(b-a)*v?[19,163,90]:[224,53,45]}):null;
     try{P.G[el.dataset.g||'m3'](c.getContext('2d'),W,Hh,mk,B,P.rnd(P.hash(t+'m3')))}finally{window.__uuK=window.__uuCx=window.__uuCy=0;window.__uuB=null}
-    if(old)old.remove();el.prepend(c)}
+    /* kept as an image, not a live canvas: forty canvases at twice the pixels get evicted by the browser and paint blank */
+    const blob=await new Promise(r=>c.toBlob(r));const im2=new Image();im2.className='uu-cv';im2.alt='';im2.setAttribute('aria-hidden','true');im2.width=W;im2.height=Hh;im2.src=URL.createObjectURL(blob);await im2.decode().catch(()=>{});
+    if(old){URL.revokeObjectURL(old.src);old.remove()}el.prepend(im2)}
   H2.classList.add('uu-painted')}).catch(e=>console.error(e))}
 const H2=document.documentElement;
 /* T1's packing; a card with its calls in is as wide as the take asks (UU.span: cells on phone / desktop) */
@@ -65,5 +67,5 @@ function pack(){const w=root.querySelector('.uu-wall');if(!w)return;const cols=g
     else if(e.classList.contains('uu-m')){wd=Math.min(2,cols);ht=cols>2&&e.classList.contains('uu-l')?2:1}
     else if(e.classList.contains('uu-l')){wd=Math.min(cols,cols<=2?(U.spanP||1):(U.spanD||1))}
     e.style.gridColumn='span '+wd;if(ht>1)e.style.gridRow='span '+ht;place(wd,ht)})}
-draw();let W0=innerWidth;addEventListener('resize',()=>{if(innerWidth===W0)return;W0=innerWidth;clearTimeout(draw.t);draw.t=setTimeout(draw,200)});
+draw();let W0=innerWidth;addEventListener('resize',()=>{if(innerWidth===W0||window.__uuFreeze)return;W0=innerWidth;clearTimeout(draw.t);draw.t=setTimeout(draw,200)});
 T.ready()})();

@@ -564,6 +564,10 @@ def world(name,title,out,layer=None):
         css+='\n'+''.join(open(S+f).read() for f in ['_sa.css','s1.css','s1s.css','g5.css'])
         story+=('\ntry{'+open(S+'_sa.js').read()+'\n'+open(S+'_mg.js').read()+'\nwindow.__evStamp=function(){'+open(S+'s1.js').read()+'};\n'+open(S+'m3.js').read()+'}catch(e){console.error(e)}')
         css+='\n'+''.join(open(S+f).read() for f in ['sb_ss.css','sb_s3.css','sb_dock.css'])
+        css+='\n'+''.join(open(S+f).read() for f in ['cv_sh.css','cv_h1.css'])
+        # the cover as H1, "the loop, alive" (owner, 2026-10-30, evening: the circular flow "into the top banner")
+        story+=('\ntry{(function(){var H=document.documentElement,n=0;(function go(){if(!(H.classList.contains("x2p-world")&&document.querySelector("#wc-book .wc-cover .wc-film-slot"))){if(++n<240)setTimeout(go,250);return}'
+               +'H.classList.add("sh-on","sh-t-h1");try{'+open(S+'_se.js').read()+'\n'+open(S+'cv_sh.js').read()+'\n'+open(S+'cv_h1.js').read()+'}catch(e){console.error(e)}})()})()}catch(e){console.error(e)}')
         # the scoreboard as S3, tale of the tape, with P3's thumb dock (owner, 2026-10-30, later: "my current favorite of the scoreboard is S3"; "P3... by far the best one"); it reads the live board's flags, so it waits for them
         story+=('\ntry{(function(){var H=document.documentElement,n=0;(function go(){if(!(H.classList.contains("x2p-world")&&window.__wc11Show&&document.querySelector("#wc-lb .wc-sb-r .wc9-flg"))){if(++n<240)setTimeout(go,250);return}'
                +'try{'+open(S+'sb_ss.js').read()+'\n'+open(S+'sb_s3.js').read()+'\n'+open(S+'sb_dock.js').read()+'}catch(e){console.error(e)}})()})()}catch(e){console.error(e)}')

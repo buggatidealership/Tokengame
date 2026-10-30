@@ -88,6 +88,8 @@ window.VV=window.VV||(function(){
     root.addEventListener('keydown',e=>{if(e.target.closest('input,textarea'))return;const k={ArrowRight:cur+1,ArrowLeft:cur-1,Home:0,End:N-1}[e.key];if(k==null||k<0||k>=N)return;e.preventDefault();show(k,k>cur?1:-1)});
     root.tabIndex=0;root.setAttribute('role','group');root.setAttribute('aria-roledescription','step by step');root.setAttribute('aria-label',`Round ${n}, ${R.co}, start to finish. Use Next and Back, or the arrow keys.`);
     go(0,0,1,true);mark(false);
+    /* the first beat plays its entrance once the card is on screen, not while the reader is still above it (lesson 55) */
+    if(!RM()){const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){io.disconnect();if(cur===0)go(0,0,1,false)}},{threshold:.55});io.observe(root)}
     window.__vvGo=(i)=>{show(i,i>=cur?1:-1,true)};
     window.__vvStep=(i)=>{show(i,i>=cur?1:-1,false)};
     return {show,get cur(){return cur}}};

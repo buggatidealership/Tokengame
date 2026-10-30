@@ -4,7 +4,7 @@
 (function(){const V=VV,{esc,face,pct,$f,R,n,up,cs,graded,G,TT,LINE,FINE,VERB}=V;const m=V.mount('vv1');if(!m)return V.ready();const {root}=m;
   const call=x=>`${x.up?'🐂':'🐻'} ${x.up?'Up':'Down'} ${pct(x.v)}`;
   /* 1 · the four AIs say their call around the company, sealed with the date */
-  const corner=['tl','tr','bl','br'];
+  const corner=['k0','k1','k2','k3'];
   const b1=`<div class="vv1-p vv1-p1" style="--bc:${V.brand}">
       <div class="vv1-co">${V.coImg('vv1-lg')}<b class="vv1-lock vv-stamp">Locked ${V.md(R.called)}</b></div>
       ${cs.map((x,i)=>`<div class="vv1-sp vv1-${corner[i]}" style="--i:${i}">${face(x.m,'vv1-f')}<p class="vv1-bal"><small>${V.NM[x.m]}</small><b class="${x.up?'vv-u':'vv-d'}">${call(x)}</b></p></div>`).join('')}</div>`;
@@ -26,8 +26,7 @@
   const hs=[].concat(ROUNDS.map(x=>({n:x.n,k:'g',a:x.a})),(window.PENDING||[]).map(x=>({n:x.n,k:'p'})),(window.UPCOMING||[]).map(x=>({n:x.n,k:'u'}))).sort((a,b)=>a.n-b.n);
   const b5=`<div class="vv1-p vv1-p5"><div class="vv1-st"><p class="vv1-sh"><b>Season 1</b><span><b class="vv1-pc">${G-1}</b> of ${TT} rounds punched</span></p>
       <div class="vv1-hs">${hs.map(x=>`<i class="${x.k==='g'?(x.a>0?'vv1-hu':'vv1-hd'):'vv1-h0'}${x.n===n?' vv1-me':''}">${x.n===n?'<b class="vv-sfx vv1-chunk">Chunk!</b>':''}</i>`).join('')}</div>
-      <p class="vv1-sf">Every round goes on the record</p></div>
-      <button type="button" class="vv1-see">See every round ↓</button></div>`;
+      <p class="vv1-sf"><button type="button" class="vv1-see">See every round ↓</button></p></div></div>`;
   const PIC=[b1,b2,b3,b4,b5];
   const LN=[LINE[1],LINE[2],LINE[3],LINE[4],`Round ${n} goes on the record, punched for good.`];
   const tk=i=>`<article class="vv1-tk" data-vb="${i}" style="--k:${i}"><p class="vv1-band">${V.coImg('vv1-blg')}<b>${esc(R.co)}</b><span>Round ${n}</span><em>${VERB[i]}</em></p>

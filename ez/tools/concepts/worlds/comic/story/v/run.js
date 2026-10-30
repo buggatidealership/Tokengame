@@ -17,7 +17,7 @@ const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
   await p.evaluate(()=>{const h=document.querySelector('header.top');if(h)h.style.visibility='hidden';[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed'&&x.offsetHeight<140&&x.offsetHeight>0)x.style.visibility='hidden'})});
   await p.evaluate(()=>{const s=document.querySelector('#wc-book .wc-lr');scrollTo(0,s.getBoundingClientRect().top+scrollY-20)});await p.waitForTimeout(600);
   const lines=[];
-  for(let i=0;i<5;i++){await p.evaluate(i=>window.__vvGo(i),i);await p.waitForTimeout(i===1?1800:700);
+  for(let i=0;i<5;i++){await p.evaluate(i=>window.__vvGo(i),i);await p.waitForTimeout(i===1?1800:(process.env.WAIT?+process.env.WAIT:700));
     const m=await p.evaluate(()=>{const s=document.querySelector('#wc-book .wc-lr'),r=s.getBoundingClientRect(),VW=innerWidth,root=document.querySelector('.vv-root');
       const cur=root.querySelector(`[data-vb="${root.dataset.cur}"]`);
       const vis=e=>{const c=getComputedStyle(e);return c.visibility!=='hidden'&&c.display!=='none'&&e.getClientRects().length};
@@ -25,7 +25,7 @@ const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
       /* every visible piece of the current beat's picture stays inside its picture box */
       const pic=cur&&(cur.querySelector('[data-pic]')||cur.querySelector('.vv1-pic,.vv2-pic,.vv3-pic'))||cur;const pr=pic.getBoundingClientRect();
       const spill=[...pic.querySelectorAll('*')].filter(e=>{if(e.closest('svg')&&e.tagName!=='svg')return false;if(!vis(e))return false;const q=e.getBoundingClientRect();if(!q.width)return false;return q.left<pr.left-1||q.right>pr.right+1||q.top<pr.top-1||q.bottom>pr.bottom+1}).map(e=>String(e.className&&e.className.baseVal!==undefined?e.className.baseVal:e.className).slice(0,22)+':'+Math.round(Math.max(pr.left-e.getBoundingClientRect().left,e.getBoundingClientRect().right-pr.right,pr.top-e.getBoundingClientRect().top,e.getBoundingClientRect().bottom-pr.bottom))).slice(0,6);
-      const clip=[...(cur||s).querySelectorAll('b,small,p,span,em')].filter(e=>vis(e)&&e.scrollWidth>e.clientWidth+1&&getComputedStyle(e).overflow!=='visible').map(e=>e.className+':'+e.textContent.slice(0,16)).slice(0,5);
+      const clip=[...(cur||s).querySelectorAll('b,small,p,span,em')].filter(e=>vis(e)&&e.scrollWidth>e.clientWidth+1&&getComputedStyle(e).overflow!=='visible'&&!e.classList.contains('wc-sr')).map(e=>e.className+':'+e.textContent.slice(0,16)).slice(0,5);
       return {sw:document.documentElement.scrollWidth,vw:VW,secH:Math.round(r.height),rootH:Math.round(root.getBoundingClientRect().height),out,spill,clip,y:r.top+scrollY}});
     lines.push(`  beat ${i+1}: secH=${m.secH} rootH=${m.rootH} sw=${m.sw}/${m.vw} out=${JSON.stringify(m.out)} spill=${JSON.stringify(m.spill)} clip=${JSON.stringify(m.clip)}`);
     if(!process.env.NOSHOT)await p.screenshot({path:`${OUT}/${t}-${W}-${i+1}.png`,clip:{x:0,y:m.y-4,width:W,height:m.secH+12},fullPage:true})}

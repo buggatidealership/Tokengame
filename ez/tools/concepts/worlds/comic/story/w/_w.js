@@ -47,9 +47,12 @@ WW.tn=async(body,cls)=>{const X=WW,sec=X.D.querySelector('.wc-cliff');if(!sec)re
   const g=X.D.createElement('div');g.className='ww-tn '+cls;
   const cards=await Promise.all(T.map(async p=>{const bm=await X.brand(p.ticker),bt=X.onBrand(bm),cs=X.pcalls(p),u=cs.filter(c=>c.up).length;
     return `<article class="ww-tk${bt==='#fff'?'':' ww-tklt'}" style="--bm:${bm};--bt:${bt}" aria-label="Round ${p.n}, ${X.esc(p.co)}: ${cs.map(c=>X.NM[c.m]+' '+(c.up?'up ':'down ')+c.mag+'%').join(', ')}">
-      <header class="ww-tkh">${X.lgDisc(p.ticker,'ww-tkl')}<b>${X.esc(p.co)}</b><small>R${p.n} · ${X.tk(p.ticker)}</small></header>
+      <header class="ww-tkh">${X.lgDisc(p.ticker,'ww-tkl')}<b${p.co.length>8?' class="ww-lnm"':''}>${X.esc(p.co)}</b><small>${X.tk(p.ticker)}</small><i class="ww-rn">R${p.n}</i></header>
       <div class="ww-tkb" aria-hidden="true">${body(p,cs,u)}</div></article>`}));
   g.innerHTML=cards.join('');const old=sec.querySelector('.wc-tn');old.style.display='none';old.after(g);
   const gut=sec.querySelector('.wc-gut-s');if(gut)gut.style.display='none';
   const sm=sec.querySelector('.wc-h2 small');if(sm)sm.textContent=`${T.length} rounds. Every call locked before the report. The close decides.`;
   g.querySelectorAll('.ww-lg img').forEach(X.capImg);return g};
+/* the film arrives: the take's panel is laid over the film tile and leaves in the take's own way (CSS .ww-arr). On the real page this
+   would play once for a visitor whose browser saw that round without a film (localStorage: the rounds that had no film last visit). */
+WW.arrive=async(draw,a,r)=>{await draw(a,r,true);const art=a.querySelector('.wc-bi-art'),p=art&&art.querySelector('.ww-p');if(!p)return;art.classList.remove('ww-d');art.style.background='';p.classList.add('ww-arr')};

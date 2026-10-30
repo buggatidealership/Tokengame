@@ -12,10 +12,7 @@
         <span class="ww1-bal${same?(say(ws[0]).length>8?' ww1-long':''):' ww1-bal2'}">${same?say(ws[0]):ws.map(c=>X.NM[c.m]+': '+say(c)).join('<br>')}</span>`}
     else who=`<span class="ww1-pile">${X.ORDER.map((m,i)=>X.face(m,'ww1-pf',`--i:${i}`)).join('')}<i class="ww1-dz" aria-hidden="true">✶</i><i class="ww1-dz ww1-dz2" aria-hidden="true">✶</i></span><span class="ww1-bal ww1-huh">Huh?!</span>`;
     art.insertAdjacentHTML('beforeend',`<span class="ww-p ww1 ${up?'ww-up':'ww-dn'}${W.length?'':' ww1-nob'}" aria-hidden="true">
-      ${X.lgDisc(r.ticker,'ww1-lg')}<b class="ww1-sfx">${X.sfx(r.a)}</b>${who}</span>`);
+      ${X.lgDisc(r.ticker,'ww1-lg')}<b class="ww1-sfx${X.sfx(r.a).length>5?' ww1-sfl':''}">${X.sfx(r.a)}</b>${who}</span>`);
     art.querySelectorAll('.ww-lg img').forEach(X.capImg)};
-  X.eachNoFilm(draw);X.demo(draw);
-  /* the film arrives: the drawn panel peels away from its corner and the film's poster is under it (played once for a returning visitor) */
-  window.__wwArrive=a=>{const r=X.rOf(a)||X.RR[66];const art=a.querySelector('.wc-bi-art');const tmp=document.createElement('span');tmp.className='wc-bi-art';const host=document.createElement('a');host.className='wc-bi';host.append(tmp);
-    return draw(host,r,true).then(()=>{const p=tmp.querySelector('.ww-p');p.classList.add('ww1-peel');art.append(p);art.style.setProperty('--bm',tmp.style.getPropertyValue('--bm'))})};
+  X.eachNoFilm(draw);X.demo(draw);window.__wwArrive=a=>X.arrive(draw,a,X.RR[66]);
   X.ready('e1')})();

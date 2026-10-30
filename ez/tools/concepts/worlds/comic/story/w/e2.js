@@ -14,5 +14,5 @@
       <b class="ww2-sfx">${right.length?X.sfx(r.a):'K.O.!'}</b>
       <span class="ww2-ring" style="--nr:${right.length};--nw:${wrong.length}"><span class="ww2-s">${stand}</span><span class="ww2-d">${down}</span></span></span>`);
     art.querySelectorAll('.ww-lg img').forEach(X.capImg)};
-  X.eachNoFilm(draw);X.demo(draw);
+  X.eachNoFilm(draw);X.demo(draw);window.__wwArrive=a=>X.arrive(draw,a,X.RR[66]);
   X.ready('e2')})();
