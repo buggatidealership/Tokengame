@@ -6,9 +6,9 @@
   const cap=(n,t)=>`<b class="sd-n" aria-hidden="true">${n}</b><p class="sd-c">${t}</p>`;
   const fighter=(x,g)=>`<div class="sd2-ft${g?(x.win?' sd2-win sd2-ok':x.ok?' sd2-ok':' sd2-no'):''}">${g&&x.win?'<em class="sd2-crown" aria-hidden="true">♛</em>':''}${S.face(x.m,'sd2-f')}
       <span class="sd2-nm">${S.NM[x.m]}</span><b class="${x.c.up?'sd-tu':'sd-td'}">${x.c.up?'+':'−'}${x.c.v}%</b>${g?`<i class="sd2-pf ${x.ok?'sd2-pass':'sd2-fail'}">${x.ok?'Pass!':'Fail!'}</i>`:''}</div>`;
-  const corners=g=>`<div class="sd2-ring${g?' sd2-g '+(up?'sd2-U':'sd2-D'):''}">
+  const corners=g=>`${g?`<p class="sd2-says ${up?'sd2-sL':'sd2-sR'}"><b class="${up?'sd2-su':'sd2-sd'}"><small>Market</small>${up?'▲ +':'▼ −'}${S.pct(A)}</b></p>`:''}<div class="sd2-ring${g?' sd2-g '+(up?'sd2-U':'sd2-D'):''}">
       <div class="sd2-cn sd2-cu"><p class="sd2-ch">▲ Bulls</p>${bulls.map(x=>fighter(x,g)).join('')||'<p class="sd2-empty">Nobody</p>'}</div>
-      ${g?`<div class="sd2-arrow ${up?'sd2-au':'sd2-ad'}" aria-hidden="true"><b>${up?'+':'−'}${S.pct(A)}</b></div>`:`<div class="sd2-vs" aria-hidden="true"><b>${bulls.length} vs ${bears.length}</b></div>`}
+      ${g?'':`<div class="sd2-vs" aria-hidden="true"><b>${bulls.length} vs ${bears.length}</b></div>`}
       <div class="sd2-cn sd2-cd"><p class="sd2-ch">▼ Bears</p>${bears.map(x=>fighter(x,g)).join('')||'<p class="sd2-empty">Nobody</p>'}</div></div>`;
   const bug=t=>`<p class="sd2-bug"><span class="sd2-live">R${r.n}</span>${d.logo?`<img src="${d.logo}" alt="">`:''}<b>${S.esc(r.co)}</b><em>${t}</em></p>`;
   const p1=`<section class="sd-pn sd2-p sd2-p1" aria-label="Step 1">${cap(1,'Before the earnings, the AIs submit their predictions')}

@@ -71,3 +71,20 @@ const last=d.changes[d.changes.length-1],g=d.bal[d.now[0]][d.N]-d.bal[d.now[1]][
 d.raceLine=d.changes.length+' lead changes. '+d.NM[d.now[0]]+' has led since round '+last.n+', by $'+Math.round(g).toLocaleString('en-US')+'.';
 d.gap=g;
 })();
+/* ---- round 2 of Smart or lucky (owner, 2026-10-30: the section back in the cream book, the coin as a character, no statistics words) ---- */
+(function(){const d=window.__scD;
+/* a seeded coin (mulberry32), so a board shows the same coin every time; the seed is the model's letter codes plus the try number */
+d.rng=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+d.seed=(m,j)=>[...m].reduce((a,c)=>a*31+c.charCodeAt(0),7)+j*1009;
+d.flips=(n,seed)=>{const r=d.rng(seed),o=[];for(let i=0;i<n;i++)o.push(r()<.5);return o};
+/* Lucky, the coin: a gold coin with a face, drawn in the comic's ink */
+d.lucky=(cls)=>'<svg class="scs-lucky '+(cls||'')+'" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17.5" fill="#fdbc2a" stroke="#15121a" stroke-width="3"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#c98a12" stroke-width="1.6"/><ellipse cx="15.5" cy="17" rx="1.9" ry="2.6" fill="#15121a"/><ellipse cx="24.5" cy="17" rx="1.9" ry="2.6" fill="#15121a"/><path d="M13.5 23.5q6.5 6 13 0" fill="none" stroke="#15121a" stroke-width="2.2" stroke-linecap="round"/><path d="M9 12q3-5 8-6" fill="none" stroke="#fff6d2" stroke-width="2" stroke-linecap="round"/></svg>';
+/* the section back in the book: the page's own head style on the cream page, the old dark splash content hidden */
+d.sol2=(cls,small,inner,cap)=>{const sp=document.querySelector('.wc-splash');sp.classList.add('scs-on',cls);
+  sp.insertAdjacentHTML('beforeend','<div class="scs-in"><h2 class="wc-h2"><span>Smart or lucky?</span><small>'+small+'</small></h2>'+inner+(cap?'<p class="wc-cap scs-cap">'+cap+'</p>':'')+'</div>');
+  const prev=sp.previousElementSibling;return sp.querySelector('.scs-in')};
+/* the coin's reach: how high (and low) a coin's share of right calls can land by luck alone after n calls (exact binomial, middle 95%) */
+d.reach=n=>{const b=d.band(n);return n?[b.lo/n,b.hi/n]:[0,1]};
+/* each model's right calls after each graded round (its call count lags on rounds it skipped) */
+d.byRound=m=>{const P=d.P[m].per;let k=0,n=0;return [{k:0,n:0}].concat(d.R.map(r=>{const x=P[r.n];if(x){n++;if(x.v>0)k++}return {k,n}}))};
+})();
