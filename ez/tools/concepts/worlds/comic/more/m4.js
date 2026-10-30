@@ -3,5 +3,5 @@
 (function(){const L=__mfl.lead(),NM={GPT:'GPT',KIMI:'KIMI',CLAUDE:'CLAUDE',GROK:'GROK'};
 document.querySelectorAll('.wc-cn').forEach(r=>{const m=r.querySelector('.wc-cn-n').textContent.trim().toUpperCase();
   r.insertAdjacentHTML('afterbegin',`<i class="mq-flg" style="--fl:${__mfl.F[__mfl.model(m)]}"></i>`);
-  r.querySelector('.wc-cn-bar').insertAdjacentHTML('beforeend','<span class="mq-coin"><b>$</b></span>');
+  r.querySelector('.wc-cn-bar').insertAdjacentHTML('beforeend','<span class="mq-coin"></span>');
   if(m===L)r.querySelector('.wc-face').classList.add('mq-holo')})})();
