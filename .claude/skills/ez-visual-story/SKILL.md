@@ -157,7 +157,27 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - Each view assumes what the earlier ones taught.
     - *Taught by:* "it's obvious after somebody went through the overview page", 30 Oct.
 
+38. **A ground comes from the page's own printed world, never from stock "energy" effects.**
+    - Sunbursts, radial rays, smoke clouds and glows are generic devices for excitement. They belong to no material on this site, so they read as cheap and off-style however well drawn.
+    - The site's grounds are things that could be printed: cream stock, Ben-Day dots, ink-outlined panels, hard offset shadows, tickets and bills. Excitement comes from the content (a fight, a reveal), not from the wallpaper behind it.
+    - An effect around a subject must never compete with it: a halo of smoke round a logo hides the very thing it frames (lesson 21). A blow-up that drifts keeps the subject whole; a cloud that swallows its edges does not.
+    - *Taught by:* "the background... it's out of style from the site. It looks a bit cheapish" (circling the sunburst rays), and "that cloudish area... it's a bit too much", 30 Oct.
+39. **A process is grasped either as one shape at a glance or as one step per beat, never as a grid read all at once.**
+    - The loop (four steps around a circle) works because the reader sees the cycle before reading a word: the shape says "this repeats".
+    - The alternative is to show one step alone, then the next, so each idea lands before the next arrives. Test both; the worst is four boxes of text competing at once.
+    - Each step's words name the actor and the act plainly ("They predict the move before earnings", "The model with the highest P&L holds the golden ticket"): "prediction" reads faster than "call" for a newcomer.
+    - *Taught by:* "the loop alive... from an easy to understand perspective, I think that one is the best", and "each slide that shows up one at a time, which makes it easier for people to see... predictions is easier to understand", 30 Oct.
+40. **Keep a familiar function, give it a crafted feel.**
+    - People know what a filter, a tab or a scoreboard does. Reinventing the function costs understanding; reinventing the feel (a filter that is part of the comic, a switch that animates the meaning) adds delight without any learning.
+    - *Taught by:* "it's a filter in the traditional sense, but it's a nice experience of a filter", 30 Oct.
+41. **A ranking reads fastest as a confrontation.**
+    - "Who's winning?" is answered by two faces and the gap between them (the golden ticket holder against the challenger) before any table. The table then serves those who want more.
+    - The gap is the story's tension: how close the chase is.
+    - *Taught by:* "the who's winning, golden ticket. VS Challenger... and the gap, as an interesting idea... the title fight still remains my favorite", 30 Oct.
+
 ## How this skill learns (owner, 2026-10-30)
+
+- A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
 
 Every time the owner gives pointers and an iteration lands, update this file the same day:
 - Ask why the new version is better, find the general reason, and add it as a numbered lesson with what taught it.
