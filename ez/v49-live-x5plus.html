@@ -9539,6 +9539,33 @@ html.wc-f11:not(.cd-on) .wc11p-pow span{font-family:var(--wc-pow);font-weight:40
 @keyframes wc11CrownR{from{opacity:0;transform:translateX(50%) translateY(-18px) rotate(-8deg)}}
 @media (prefers-reduced-motion:reduce){html.wc-f11:not(.cd-on) .wc11d-pg *,html.wc-f11:not(.cd-on) .wc11d-pg *::after,html.wc-f11:not(.cd-on) .wc11n-bill *,html.wc-f11:not(.cd-on) .wc-season .wc11-won{animation:none!important;transition:none!important}}
 
+/* ===== SBCARD (owner, 2026-10-30: "P&L plus a percentage in the top right corner, then everything else goes up"; "Last 5 on the
+   left and then the squares to the right of it"; the 60% "in the middle of hit rate... same for the win and loss"): the P&L and its
+   total % (on the $100,000 start) sit beside the name at every width, the card is shorter, the three figures sit centred under
+   their own labels, and the last five read as one line */
+html.wc-on:not(.cd-on) #wc-lb .wc9-cap{grid-template-columns:minmax(0,1fr) auto!important;grid-template-areas:"nm pl" "st st"!important;gap:4px 8px!important}
+html.wc-on:not(.cd-on) #wc-lb .wc9-cap .wc-sb-pl{text-align:right!important;font-size:26px!important;align-self:start}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-pl small.wc-sb-plk{text-align:right}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-pl small.wc-sb-pc{display:block!important;margin:2px 0 0!important;font-family:var(--wc-let);font-size:13px;font-weight:800;letter-spacing:0}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-st{margin-top:0;padding-top:6px;row-gap:6px!important}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>div:not(.wc-sb-f):not(.wc-sb-tw){text-align:center;justify-self:stretch}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-st{grid-template-columns:repeat(3,minmax(0,1fr))!important;column-gap:6px!important}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>div:not(.wc-sb-f):not(.wc-sb-tw){grid-column:span 1!important;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>.wc-sb-tw{grid-column:span 1!important}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>.wc-sb-tww{grid-column:span 2!important;justify-self:end;text-align:right}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>.wc-sb-tww dd{justify-content:flex-end}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-st dt{letter-spacing:.04em;white-space:nowrap}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>.wc-sb-f{grid-column:1/-1!important;justify-self:stretch!important;display:flex;align-items:center;gap:10px}
+html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>.wc-sb-f .wc-form{margin:0}
+@media (max-width:379px){html.wc-on:not(.cd-on) #wc-lb .wc9-cap .wc-sb-pl{font-size:21px!important}html.wc-on:not(.cd-on) #wc-lb .wc-sb-pl small.wc-sb-pc{font-size:11.5px}
+  html.wc-on:not(.cd-on) #wc-lb .wc-sb-nm h3{font-size:23px}}
+@media (max-width:379px){html.wc-on:not(.cd-on) #wc-lb .wc-sb-st dt{font-size:8.5px!important;letter-spacing:.01em}html.wc-on:not(.cd-on) #wc-lb .wc-sb-st{column-gap:4px!important}}
+/* (owner, 2026-10-30: panel 2 "doesn't show the market reaction"; the cartoon market box was the thing) the move stamped on the film's
+   bottom right, as the old Last round panel had it; and on desktop the film keeps its square (the panel stretched it to a portrait
+   box that showed half its width) */
+html.wc-f11:not(.cd-on) .wc11d-tv .wc11d-sfx{position:absolute;right:10px;bottom:10px;left:auto;top:auto;z-index:3;pointer-events:none}
+@media (min-width:1000px){html.wc-f11:not(.cd-on) .wc11d-tv{flex:none;aspect-ratio:1/1;min-height:0;margin:auto 0}}
+
 /* EZ Live X5+ (owner, 2026-10-29): the X3+ comic world in the header's dark colours, in two editions.
    Part 1 by hand: the page, the masthead, the edition switch. Part 2 generated (gen-comicdark.py): every colour of
    world-comic.css mapped onto black stock. Part 3 by hand: Night fixes. Part 4 by hand: Noir, redrawn. Classes cd-*.
@@ -15495,7 +15522,7 @@ function lbBuild(){
       return `<article class="wc-sb-r${i===0?' wc-sb-1':''}" style="--mc:${MODELS[m].c}">
         <span class="wc-sb-rk">#${i+1}</span>${face(m,'wc-f-m')}
         <div class="wc-sb-nm"><h3>${NM[m]}</h3><small>${esc(MODELS[m].ver)}</small></div>
-        <p class="wc-sb-pl ${a.pnl>=0?'wc-tu':'wc-td'}"><small class="wc-sb-plk">P&amp;L</small>${pm(a.pnl)}</p>
+        <p class="wc-sb-pl ${a.pnl>=0?'wc-tu':'wc-td'}"><small class="wc-sb-plk">P&amp;L</small>${pm(a.pnl)}<small class="wc-sb-pc">${a.pnl>=0?'+':'−'}${(Math.abs(a.pnl)/1000).toFixed(1)}%</small></p>
         <dl class="wc-sb-st"><div class="wc-sb-7"><dt>Last 7 days</dt><dd class="${p7(m)>=0?'wc-tu':'wc-td'}">${kk(p7(m))}</dd></div><div><dt>W-L</dt><dd><b class="wc-tu">${a.W}</b>-<b class="wc-td">${a.L}</b></dd></div><div><dt>Hit rate</dt><dd>${hr}%</dd></div>
           <div class="wc-sb-f"><dt>Last 5</dt><dd class="wc-form">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}</dd></div>${(x=>twl(x.b,'wc-sb-twb')+twl(x.w,'wc-sb-tww'))(tw(m))}</dl>
       </article>`}).join('')}</div>
@@ -16040,7 +16067,7 @@ function r11b(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f11'
         <p class="wc11d-bug"><span class="wc11d-live">R${n}</span>${lgImg(r.ticker)}<b>${esc(r.co)}</b><em>Locked ${md(r.called)}</em></p>${corners(0)}
         <p class="wc-sr">${bulls.length} said up, ${bears.length} said down. ${cs.map(x=>NM[x.m]+' '+(x.c.up?'up ':'down ')+x.c.v+'%').join('. ')}.</p></section>`;
     const p2=`<section class="wc11s-pn wc11d-p wc11d-p2" aria-label="Step 2">${cap(2,esc(r.co)+' reports. Then the close')}
-        <div class="wc11d-tv"><img class="wc11d-po" src="${f.p}" alt="" loading="lazy" decoding="async"><button type="button" class="wc11d-play" aria-label="Play the round ${n} film with sound"><i aria-hidden="true"></i></button></div></section>`;
+        <div class="wc11d-tv"><img class="wc11d-po" src="${f.p}" alt="" loading="lazy" decoding="async"><button type="button" class="wc11d-play" aria-label="Play the round ${n} film with sound"><i aria-hidden="true"></i></button><span class="wc-sfx wc-lr-sfx wc11d-sfx ${up?'wc-up':'wc-dn'}" aria-hidden="true"><em>${sfx(A)}</em><b>${up?'+':'−'}${pct(A)}</b></span></div></section>`;
     /* panel 3: the needle lands (helper o's O5). 10% each way; a call beyond sits at the end stop */
     const cx=160,cy=140,R=104,MX=10,clp=v=>Math.max(-MX,Math.min(MX,v)),ang=v=>90+clp(v)*(90/MX),pt=(v,rr)=>{const a=ang(v)*Math.PI/180;return [cx+rr*Math.cos(a),cy-rr*Math.sin(a)]};
     const arc=(v0,v1,rr)=>{const [x0,y0]=pt(v0,rr),[x1,y1]=pt(v1,rr);return `M${x0.toFixed(1)} ${y0.toFixed(1)}A${rr} ${rr} 0 0 ${v0>v1?1:0} ${x1.toFixed(1)} ${y1.toFixed(1)}`};

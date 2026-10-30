@@ -560,7 +560,10 @@ def world(name,title,out,layer=None):
     if name=="comic" and not layer:
         S="tools/v22/story/"
         css+='\n'+''.join(open(S+f).read() for f in ['_se.css','_sg.css','g1.css'])
-        story=('\ntry{(function(){var H=document.documentElement,done=0;function run(){if(done||H.getAttribute("data-sec")!=="upcoming"||!document.getElementById("wc-up")||!H.classList.contains("x2p-world"))return;done=1;'
+        # (2026-10-30, owner: "Every round so far... my favorite remains M3") the tile look M3 from story/{a,m}, fixed (story/m3.js)
+        css+='\n'+''.join(open(S+f).read() for f in ['_sa.css','s1.css','s1s.css','g5.css'])
+        story+=('\ntry{'+open(S+'_sa.js').read()+'\n'+open(S+'_mg.js').read()+'\nwindow.__evStamp=function(){'+open(S+'s1.js').read()+'};\n'+open(S+'m3.js').read()+'}catch(e){console.error(e)}')
+        story+=('\ntry{(function(){var H=document.documentElement,done=0;function run(){if(done||H.getAttribute("data-sec")!=="upcoming"||!document.getElementById("wc-up")||!H.classList.contains("x2p-world"))return;done=1;'
                +''.join(open(S+f).read() for f in ['_se.js','_sg.js','g1.js'])
                +'}new MutationObserver(run).observe(H,{attributes:true,attributeFilter:["data-sec","class"]});run()})()}catch(e){console.error(e)}')
     js+=story

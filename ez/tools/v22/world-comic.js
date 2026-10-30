@@ -288,7 +288,7 @@ function lbBuild(){
       return `<article class="wc-sb-r${i===0?' wc-sb-1':''}" style="--mc:${MODELS[m].c}">
         <span class="wc-sb-rk">#${i+1}</span>${face(m,'wc-f-m')}
         <div class="wc-sb-nm"><h3>${NM[m]}</h3><small>${esc(MODELS[m].ver)}</small></div>
-        <p class="wc-sb-pl ${a.pnl>=0?'wc-tu':'wc-td'}"><small class="wc-sb-plk">P&amp;L</small>${pm(a.pnl)}</p>
+        <p class="wc-sb-pl ${a.pnl>=0?'wc-tu':'wc-td'}"><small class="wc-sb-plk">P&amp;L</small>${pm(a.pnl)}<small class="wc-sb-pc">${a.pnl>=0?'+':'−'}${(Math.abs(a.pnl)/1000).toFixed(1)}%</small></p>
         <dl class="wc-sb-st"><div class="wc-sb-7"><dt>Last 7 days</dt><dd class="${p7(m)>=0?'wc-tu':'wc-td'}">${kk(p7(m))}</dd></div><div><dt>W-L</dt><dd><b class="wc-tu">${a.W}</b>-<b class="wc-td">${a.L}</b></dd></div><div><dt>Hit rate</dt><dd>${hr}%</dd></div>
           <div class="wc-sb-f"><dt>Last 5</dt><dd class="wc-form">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}</dd></div>${(x=>twl(x.b,'wc-sb-twb')+twl(x.w,'wc-sb-tww'))(tw(m))}</dl>
       </article>`}).join('')}</div>
@@ -833,7 +833,7 @@ function r11b(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f11'
         <p class="wc11d-bug"><span class="wc11d-live">R${n}</span>${lgImg(r.ticker)}<b>${esc(r.co)}</b><em>Locked ${md(r.called)}</em></p>${corners(0)}
         <p class="wc-sr">${bulls.length} said up, ${bears.length} said down. ${cs.map(x=>NM[x.m]+' '+(x.c.up?'up ':'down ')+x.c.v+'%').join('. ')}.</p></section>`;
     const p2=`<section class="wc11s-pn wc11d-p wc11d-p2" aria-label="Step 2">${cap(2,esc(r.co)+' reports. Then the close')}
-        <div class="wc11d-tv"><img class="wc11d-po" src="${f.p}" alt="" loading="lazy" decoding="async"><button type="button" class="wc11d-play" aria-label="Play the round ${n} film with sound"><i aria-hidden="true"></i></button></div></section>`;
+        <div class="wc11d-tv"><img class="wc11d-po" src="${f.p}" alt="" loading="lazy" decoding="async"><button type="button" class="wc11d-play" aria-label="Play the round ${n} film with sound"><i aria-hidden="true"></i></button><span class="wc-sfx wc-lr-sfx wc11d-sfx ${up?'wc-up':'wc-dn'}" aria-hidden="true"><em>${sfx(A)}</em><b>${up?'+':'−'}${pct(A)}</b></span></div></section>`;
     /* panel 3: the needle lands (helper o's O5). 10% each way; a call beyond sits at the end stop */
     const cx=160,cy=140,R=104,MX=10,clp=v=>Math.max(-MX,Math.min(MX,v)),ang=v=>90+clp(v)*(90/MX),pt=(v,rr)=>{const a=ang(v)*Math.PI/180;return [cx+rr*Math.cos(a),cy-rr*Math.sin(a)]};
     const arc=(v0,v1,rr)=>{const [x0,y0]=pt(v0,rr),[x1,y1]=pt(v1,rr);return `M${x0.toFixed(1)} ${y0.toFixed(1)}A${rr} ${rr} 0 0 ${v0>v1?1:0} ${x1.toFixed(1)} ${y1.toFixed(1)}`};
