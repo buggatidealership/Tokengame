@@ -1,0 +1,50 @@
+---
+name: ez-visual-story
+description: How to design any EZ page element (section, card, ticket, chart, label, copy, order of sections) so the picture tells the story and words only label it. Use before proposing or building any design, mockup, layout, wording or sequencing change on the EZ site (X2+, X3+, X4+, X5+, earningszn.xyz), and whenever the owner talks about design.
+---
+
+# Visual story: what took "Meet the cast" from card 1 to card 2
+
+Reverse-engineered on 2026-10-30 from the owner's own messages (29 to 30 Oct) and the builds R4 to R10 in world-comic.js.
+
+**Card 1** was a stat sheet: a ranked list of P&L, the right-way count and the last five, with a "Makes the buyback call" chip and a pastel wedge for decoration.
+**Card 2** tells the same numbers as a story:
+- a Season 1 ticket, whose #1 stub is the Golden ticket;
+- the lab's country as a waving flag behind each face;
+- the leader's face in holo;
+- the P&L counting up as you scroll;
+- the words cut down to labels ("Current P&L", "We bet on its call").
+
+## Where the ideas came from (be honest about this)
+
+The owner supplied the metaphors: the ticket stock and its borders, "Season one" in place of "Admit one", the flags, the US vs China rivalry, and "a living comic book... motion, fluidity". I supplied the execution. The gap to close is that I should arrive at those metaphors myself, before being told.
+
+## The test every element must pass
+
+1. **Name the story, not the data.** Write the section's job in one line as a story with stakes, e.g. "four rivals from two countries race for the one ticket we bet on", not "the standings". If you can't find the conflict, the stakes or the change over time, find it before designing.
+2. **Every fact needs a carrier.** List the facts the section must convey. For each one, ask what in the page's own world could show it without a sentence:
+   - which country → a flag;
+   - who we bet on → the golden ticket;
+   - leader → holo;
+   - money → a bill, a count-up;
+   - up or down → green or red, a corner, an arrow.
+
+   A fact that has no carrier stays as a short label.
+3. **Decoration must encode something.** If a shape, colour or motion carries no fact, cut it or give it one. Card 1's pastel wedge meant nothing; card 2's flag means "where this lab is from".
+4. **Build from objects the site already owns.** Use Season 1 tickets, the graded certificate, the dollar bill, comic panels and balloons. Do not invent a new widget when an existing object can carry the meaning. Every reuse ties the page together.
+5. **Motion means something.** A count-up means money accruing. A line drawing in means progression. A wave means a living rival. A punch-in means a new entrant. No motion only because it looks nice, and nothing moves with reduced motion.
+6. **Words: the audience's vocabulary, exact about who does what.** Crypto traders say "P&L" and "W/L". "We bet on its call" is right; "makes the buyback call" was wrong, because the AI doesn't buy back. Cut any word the picture already says (the "US" chip next to a flag).
+7. **The cover-the-text check.** Hide every word: what can a newcomer still tell? Then show only the words: is anything left that a picture already says? Both answers should be short.
+8. **Check the story against the data.** A visual story can lie louder than text. If the golden ticket holder is 1 of 5 in its last five calls, or every hit-rate line is falling, the picture must not imply a hot streak or rising skill. Show the tension or flag it to the owner. Never invent a happier story.
+9. **Contrast carries meaning, repetition doesn't.** A flag says something because Kimi's differs from the other three. If every item had the same mark, the mark would carry nothing. Use a carrier where it separates items.
+10. **The owner's no-go zones stay.** No flags on the landing cover. No numbers on Starring. The guardrails (no return promises, "the pool can be wiped out") hold. A good principle never overrides an explicit instruction.
+
+## How to work with it
+
+- **Before the first mockup,** write a three-line brief per element:
+  - **story:** the conflict or stakes in one line;
+  - **facts → carriers:** which visual carries each fact;
+  - **words left:** only what no picture can say.
+- **Then make several genuinely different takes,** each with a different carrier or metaphor, not a re-skin.
+- **Propose, don't wait.** When an element on the page fails the test, say so and mock up the fix, even if the owner didn't mention it.
+- **Say how it could fail.** The usual case: a viewer doesn't decode the visual without text. Analytics are off, so the only test is a person looking at it; ask the owner.
