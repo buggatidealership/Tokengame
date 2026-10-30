@@ -7889,7 +7889,7 @@ html.x2p.x2p-desk .x2p-bi-hd{font-size:26px}
 </style>
 <style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='5' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' lighting-color='%23f1e6cc' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='225' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E") 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>
 <link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&family=Alfa+Slab+One&display=swap" rel="stylesheet">
-<script>window.__x2pLB=1;window.__x2pNeedWorld=1;window.__x2pWorldName="comic"</script>
+<script>window.__x2pLB=1;window.__x2pNeedWorld=1;window.__x2pWorldName="comic";document.documentElement.classList.add("wc-pre")</script>
 <style id="x2p-world-css">/* EZ world: THE COMIC BOOK (mockup). Classes wc-*. */
 :root{--wc-paper:#f3ead3;--wc-pan:#fffaf0;--wc-ink:#15121a;--wc-g:#03c870;--wc-r:#ff3a31;--wc-gold:#fdbc2a;
   --wc-gt:#0a6b38;--wc-rt:#b3201a;--wc-cap:#ffe27a;--wc-bd:3px;--wc-sh:5px 5px 0 var(--wc-ink);
@@ -7902,6 +7902,13 @@ html.wc-on body::before{display:none!important}
 /* the old Overview stays in the DOM, off screen, so the round pop-up can still measure and copy its cards */
 html.wc-on main > section:not(.x2p-up):not([id^=wc]),html.wc-on main > .rfoot,html.wc-on footer{position:absolute!important;left:-40000px!important;top:0!important;width:min(100vw,1200px)!important;visibility:hidden!important;pointer-events:none!important}
 html.wc-on[data-sec=upcoming] footer{position:static!important;visibility:visible!important;pointer-events:auto!important}
+/* (speed, 2026-10-30) html.wc-pre is set before the page is parsed (build.py, comic pages only): the old Overview's sections the
+   comic never shows or copies are out of layout from the start, and the record sleeps until world-comic.js wakes it (.wc-rw).
+   The hero and the first screen's ticket stay: the film ticket is built and fitted there before it moves onto the cover. */
+html.wc-pre main > section:is(#standings,#learn,#highlights,#x2pSt,#get){display:none!important}
+html.wc-pre:not(.wc-rw) main > section#record{display:none!important}
+/* a section of the issue off screen holds its loops still (world-comic.js holdOff names them as the section leaves) */
+html.wc-on .wc-offs .wc-an,html.wc-on .wc-offs .wc-anp::before,html.wc-on .wc-offs .wc-anp::after{animation-play-state:paused!important}
 html.wc-on main.wrap{max-width:none!important;padding:0!important}
 
 /* the header becomes the comic's masthead strip */
@@ -9127,6 +9134,12 @@ html.wc-on .wc-sb-st>.wc-sb-tw{grid-column:span 3;display:block}
 html.wc-on .wc-sb-st .wc-sb-7 dt{white-space:normal}
 html.wc-on .wc-sb-st{align-items:end}
 html.wc-on .wc-sb-st>.wc-sb-f{justify-self:start}
+/* the 7-day figure ran into W-L at 390 and 320 (measured on the text, 0.5 to 0.9px): unequal columns, 7 days widest */
+html.wc-on .wc-sb-st,html.wc-f9 .wc9-cap .wc-sb-st{grid-template-columns:repeat(12,minmax(0,1fr))!important}
+html.wc-on .wc-sb-st>.wc-sb-7{grid-column:span 5}
+html.wc-on .wc-sb-st>div:not(.wc-sb-7):not(.wc-sb-f):not(.wc-sb-tw){grid-column:span 4}
+html.wc-on .wc-sb-st>div:not(.wc-sb-7):not(.wc-sb-f):not(.wc-sb-tw)+div:not(.wc-sb-f):not(.wc-sb-tw){grid-column:span 3}
+html.wc-on .wc-sb-st>.wc-sb-tw{grid-column:span 6}
 </style>
 </head>
 <body>
@@ -9511,7 +9524,7 @@ function setCur(i){if(i===cur)return;cur=i;recNear(i);
   chipEls.forEach(function(c,j){if(j===i)c.setAttribute("aria-current","true");else c.removeAttribute("aria-current")});
   var ch=chipEls[i];if(ch)chips.scrollTo({left:ch.offsetLeft-(chips.clientWidth-ch.offsetWidth)/2,behavior:reduce?"auto":"smooth"});
   syncFilms()}
-function nearest(){var mid=car.scrollLeft+car.clientWidth/2,best=0,bd=1e9;
+function nearest(){if(!car.clientWidth)return cur<0?START:cur;var mid=car.scrollLeft+car.clientWidth/2,best=0,bd=1e9;
   slides.forEach(function(s,i){var d=Math.abs(s.offsetLeft+s.offsetWidth/2-mid);if(d<bd){bd=d;best=i}});return best}
 /* films: only the centred card loads and plays, only while the record is on screen and the card is face up */
 var filmT=null;
@@ -9568,6 +9581,7 @@ slides.forEach(function(c,i){
 if("IntersectionObserver" in window)new IntersectionObserver(function(es){carVis=es[0].isIntersecting;syncFilms()},{threshold:.3}).observe(car);
 else carVis=true;
 function home(){if(slides.length)go(cur<0?START:cur,false)}
+window.__wcCarHome=function(){home()};
 home();requestAnimationFrame(home);
 addEventListener("load",function(){if(cur===START||cur<0)go(START,false)});
 var rT=null;addEventListener("resize",function(){clearTimeout(rT);rT=setTimeout(function(){if(cur>=0)car.scrollTo({left:target(cur)})},120)});
@@ -11882,7 +11896,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
       if(n.parentNode&&/^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName))continue;
       RE.forEach(function(p){u=u.replace(p[0],p[1])});if(u!==t)n.textContent=u}
     var w2=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),m,hit=[];while(m=w2.nextNode())if(/\bAIs\b/.test(m.textContent)&&m.parentNode&&m.parentNode.nodeType===1&&!m.parentNode.closest("script,style,.x2p-lc"))hit.push(m);
-    hit.forEach(function(n){if(getComputedStyle(n.parentNode).textTransform!=="uppercase")return;var f=document.createDocumentFragment();
+    hit=hit.filter(function(n){return getComputedStyle(n.parentNode).textTransform==="uppercase"});hit.forEach(function(n){var f=document.createDocumentFragment();
       n.textContent.split(/(\bAIs\b)/).forEach(function(x){if(x==="AIs"){f.appendChild(document.createTextNode("AI"));var sp=document.createElement("span");sp.className="x2p-lc";sp.textContent="s";f.appendChild(sp)}else if(x)f.appendChild(document.createTextNode(x))});
       n.parentNode.replaceChild(f,n)})}
   fix(document.body);
@@ -12145,7 +12159,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     if(st==null)top.removeAttribute("style");else top.setAttribute("style",st);return r.width?{w:r.width,h:r.height}:null}
   var ON="M12 5.2a4 4 0 0 1 0 5.6M13.9 3.3a6.6 6.6 0 0 1 0 9.4",OFF="M11.5 5.5l4 4M15.5 5.5l-4 4";
   function faces(c,f){var fr=c.querySelector(".face.front"),bk=c.querySelector(".face.back");if(!fr||!bk)return;fr.setAttribute("aria-hidden",f?"true":"false");bk.setAttribute("aria-hidden",f?"false":"true");if("inert" in fr){fr.inert=f;bk.inert=!f}}
-  function open(rm){var c0=rm.querySelector(".card[data-n]"),n=c0&&c0.getAttribute("data-n");if(n&&window.__x2pRecFill)window.__x2pRecFill(n);/* its back, if it waits (build.py) */var src=n&&d.querySelector('#record .card[data-n="'+n+'"]');if(!src||!src.querySelector(".fx"))return;
+  function open(rm){if(window.__wcRecWake&&!window.__wcRecWake(function(){if(rm.isConnected&&!cur)open(rm)})){rm.classList.add("x2p-rmh");return}var c0=rm.querySelector(".card[data-n]"),n=c0&&c0.getAttribute("data-n");if(n&&window.__x2pRecFill)window.__x2pRecFill(n);/* its back, if it waits (build.py) */var src=n&&d.querySelector('#record .card[data-n="'+n+'"]');if(!src||!src.querySelector(".fx"))return;
     var sz=WH||(WH=recSize());if(!sz)return;
     var c=src.cloneNode(true);c.classList.remove("flipped");c.classList.add("cur");c.removeAttribute("data-i");c.style.width=sz.w+"px";c.style.height=sz.h+"px";c.style.flex="none";
     /* the certificate on its back is drawn again for the copy (its stamp and ids its own) */
@@ -13242,7 +13256,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   var c=d.createElement("canvas"),x=c.getContext("2d"),F=fz*10;c.width=Math.ceil(F*txt.length*.9+40);c.height=Math.ceil(F*2);x.font=cs.fontStyle+" "+cs.fontWeight+" "+F+"px "+cs.fontFamily;x.textBaseline="alphabetic";x.fillText(txt,10,F*1.4);
   var dt=x.getImageData(0,0,c.width,c.height).data,top=-1,bot=-1;for(var y=0;y<c.height;y++){for(var i=0;i<c.width;i++)if(dt[(y*c.width+i)*4+3]>100){if(top<0)top=y;bot=y;break}}
   return IK[key]=top<0?[fz*.72,0]:[(F*1.4-top)/10,(F*1.4-bot-1)/10]}
- function level(ol){[].slice.call(ol.querySelectorAll("li.lbr")).forEach(function(li){var R=li.getBoundingClientRect(),mid=R.top+R.height/2;
+ function level(ol){if(document.documentElement.classList.contains("wc-pre"))return;[].slice.call(ol.querySelectorAll("li.lbr")).forEach(function(li){var R=li.getBoundingClientRect(),mid=R.top+R.height/2;
    [li.querySelector(".lb-f2 .pn-rec"),li.querySelector(".lb-c:not(.roi)>b"),li.querySelector(".lb-c.roi>b")].forEach(function(c){if(!c)return;c.style.removeProperty("transform");var b=c.tagName==="B"?c:c.querySelector("b");if(!b)return;
     var p=d.createElement("span");p.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";b.appendChild(p);var base=p.getBoundingClientRect().top;p.remove();
     var cs=getComputedStyle(b),k=inkOf(cs,b.textContent.replace(/\s+/g,"")),asc=k[0]-k[1];
@@ -13875,7 +13889,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
   /* the names are measured by their own boxes: the row is right-aligned, so it overflows to the left, which scrollWidth does not count */
   var wd=function(){var l=1e9,r=-1e9;[].forEach.call(v.children,function(k){var q=k.getBoundingClientRect();if(q.width){l=Math.min(l,q.left);r=Math.max(r,q.right)}});return r-l};
   var wn=v.querySelector(".wn"),z=wn?parseFloat(getComputedStyle(wn).fontSize):15,n=0;v.style.setProperty("--tz",z);while(wd()>room&&z>8&&n++<60){z-=.5;v.style.setProperty("--tz",z)}})}
- function run(){fit()}if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",function(){setTimeout(run,1500)});else setTimeout(run,1500);
+ function run(){fit()}window.__wcTiesFit=fit;if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",function(){setTimeout(run,1500)});else setTimeout(run,1500);
  addEventListener("load",function(){setTimeout(run,300)});var lw=innerWidth;addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run()}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(run);
  new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm")setTimeout(function(){fit(x)},60)})})}).observe(d.body,{childList:true});
  setInterval(function(){var c=d.querySelector("#record .card.f-tie.cur");if(c)fit(c,1)},2000);
@@ -14098,6 +14112,27 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
    then builds this week's issue from the page's own data (ROUNDS, PENDING, UPCOMING, FILMS, MODELS,
    CO_LOGOS, CAPS, __x2pPnl). Every number comes from the data; speech balloons only say the AI's call.
    The original Overview sections stay in the DOM (off screen) so the round pop-up (the PSA slab) still works. */
+/* (speed, 2026-10-30) the record wakes: build.py sets html.wc-pre before the page is parsed and world-comic.css keeps the old
+   record out of layout until then, so X2+ no longer lays out and fits its 117 cards under the cover. It wakes after the cover
+   lifts, once the page is idle; at once when a round is asked for (x2plus.js's pop-up waits for it, build.py) or a round link is
+   pressed. Waking does what loading did for it: the carousel back on its card (v15's own scroll, build.py exports it), the
+   name labels and tied winners fitted, and its looping animations named so the off-screen rule holds them still (x2plus.js, SPEED3). */
+(function(){var H=document.documentElement;if(!H.classList.contains('wc-pre'))return;var awake=false,started=false,q=[];
+  function tag(){var rec=document.getElementById('record');
+    if(rec&&rec.classList.contains('x2p-offs')&&rec.getAnimations)try{rec.getAnimations({subtree:true}).forEach(function(a){var f=a.effect,g=f&&f.target;if(g&&g.classList)g.classList.add(f.pseudoElement?'x2p-anp':'x2p-an')})}catch(e){}}
+  /* named now and again as the cards near the centred one get their certificates (their loops start a little later) */
+  function done(){awake=true;tag();setTimeout(tag,1500);setTimeout(tag,5000);
+    q.splice(0).forEach(function(f){try{f()}catch(e){}})}
+  function wake(){if(started)return;started=true;H.classList.add('wc-rw');
+    try{if(window.__wcCarHome)window.__wcCarHome()}catch(e){}
+    try{if(window.__x2pNmFitIn)window.__x2pNmFitIn()}catch(e){}
+    try{if(window.__wcTiesFit)window.__wcTiesFit(document.getElementById('record'))}catch(e){}
+    requestAnimationFrame(function(){requestAnimationFrame(done)})}
+  /* true when the record is awake; else wakes it and calls back once it is */
+  window.__wcRecWake=function(cb){if(awake)return true;if(cb)q.push(cb);wake();return false};
+  addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('a[href^="#/round/"],.wc-big video,.wc-lr-2 video'))wake()},{capture:true,passive:true});
+  (function idle(){if(started)return;if(H.classList.contains('x2p-cur')){setTimeout(idle,500);return}
+    setTimeout(function(){if(window.requestIdleCallback)requestIdleCallback(wake,{timeout:5000});else wake()},2000)})()})();
 (function(){
 'use strict';
 const D=document,H=D.documentElement;
@@ -14387,8 +14422,9 @@ function lbBuild(){
 /* ================= THE UPCOMING TAB (#/upcoming): the next fight nights, in the same comic ================= */
 /* each exchange's close, local time (Seoul and Tokyo 15:30, Taipei 13:30, Hong Kong 16:00, London 16:30, the euro exchanges 17:30) */
 const XC={KS:['Asia/Seoul',15,30],T:['Asia/Tokyo',15,30],TW:['Asia/Taipei',13,30],HK:['Asia/Hong_Kong',16,0],L:['Europe/London',16,30],AS:['Europe/Amsterdam',17,30],DE:['Europe/Berlin',17,30],SW:['Europe/Zurich',17,30],PA:['Europe/Paris',17,30]};
-function closeAt(t,mdy){if(!mdy)return null;const [tz,h,mi]=XC[(String(t).split('.')[1]||'')]||['America/New_York',16,0],[m,d,y]=mdy.split('/').map(Number),Y=2000+(y%100);
-  const loc=x=>{const p=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}).formatToParts(new Date(x));const g=k=>+p.find(q=>q.type===k).value;return Date.UTC(g('year'),g('month')-1,g('day'),g('hour')%24,g('minute'))};
+/* (speed, 2026-10-30) one date formatter per time zone: a new one on every call cost about a second under the cover */
+const IDF={};function closeAt(t,mdy){if(!mdy)return null;const [tz,h,mi]=XC[(String(t).split('.')[1]||'')]||['America/New_York',16,0],[m,d,y]=mdy.split('/').map(Number),Y=2000+(y%100);
+  const loc=x=>{const p=(IDF[tz]||(IDF[tz]=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}))).formatToParts(new Date(x));const g=k=>+p.find(q=>q.type===k).value;return Date.UTC(g('year'),g('month')-1,g('day'),g('hour')%24,g('minute'))};
   const want=Date.UTC(Y,m-1,d,h,mi);let x=want;for(let i=0;i<3;i++)x+=want-loc(x);return x}
 function bellTxt(t,mdy){const at=closeAt(t,mdy);if(at==null)return 'Date to come';const ms=at-Date.now();if(ms<=0)return 'The bell has rung · results soon';const mn=Math.round(ms/6e4),h=Math.floor(mn/60);
   return 'Bell in '+(h>=24?Math.floor(h/24)+'d '+(h%24)+'h':h?h+'h '+(mn%60)+'m':mn+'m')}
@@ -14732,6 +14768,15 @@ function r10(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f10')
   const co=sp.querySelector('.wc-coins');if(co)co.insertAdjacentHTML('beforebegin',html);sp.classList.add('wc10-on');
   const fig=sp.querySelector('.wc10-ch');new IntersectionObserver((es2,o)=>{if(es2[0].isIntersecting){fig.classList.add('wc10-in');o.disconnect()}},{threshold:.3}).observe(fig)}
 const done=()=>H.classList.add('x2p-world');
+/* (speed, 2026-10-30) a section of the issue off screen holds its loops still (the waving flags, the holo faces, the sparkles: about
+   forty run at once, a third of a slow phone's time at rest went to painting the ones nobody sees). As x2plus.js does for the old
+   Overview (SPEED3): watched with 200px of warning, what animates in a section is named as it leaves (wc-an, or wc-anp for a
+   ::before/::after), and world-comic.css pauses those while the section is away. A loop started while it is away runs until the next time. */
+function holdOff(){if(!window.IntersectionObserver)return;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const t=e.target;
+    if(!e.isIntersecting&&t.getAnimations)try{t.getAnimations({subtree:true}).forEach(a=>{const f=a.effect,g=f&&f.target;if(g&&g.classList)g.classList.add(f.pseudoElement?'wc-anp':'wc-an')})}catch(x){}
+    t.classList.toggle('wc-offs',!e.isIntersecting)}),{rootMargin:'200px 0px'});
+  D.querySelectorAll('#wc-book > section,#wc-lb > section,#wc-up > section').forEach(x=>io.observe(x))}
 /* a twist on the graded slab's front, as a switch only (owner to decide): ?slab=1 or window.__c3Slab */
 try{if(window.__c3Slab||/[?&]slab=1/.test(location.search))H.classList.add('wc-slab')}catch(e){}
 /* a round opened from a panel, a back issue or a ticket: when its card closes, the page goes back to where it was
@@ -14746,6 +14791,7 @@ let tries=0;(function wait(){
     try{certWatch()}catch(e){window.__x2pWorldErr=e;console.error('comic certs',e)}
     try{r9()}catch(e){window.__x2pWorldErr=e;console.error('comic r9',e)}
     try{r10()}catch(e){window.__x2pWorldErr=e;console.error('comic r10',e)}
+    try{holdOff()}catch(e){}
     done()}
   else if(tries++<200)setTimeout(wait,50);else done()})();
 })();
