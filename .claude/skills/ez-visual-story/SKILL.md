@@ -46,5 +46,6 @@ The owner supplied the metaphors: the ticket stock and its borders, "Season one"
   - **facts → carriers:** which visual carries each fact;
   - **words left:** only what no picture can say.
 - **Then make several genuinely different takes,** each with a different carrier or metaphor, not a re-skin.
+- **Mockups by default** (owner, 2026-10-30): every proposal arrives with its mockups; do not ask whether to make them. Ask a clarifying question whenever a phrase in the owner's brain dump can be read two ways, alongside the mockups.
 - **Propose, don't wait.** When an element on the page fails the test, say so and mock up the fix, even if the owner didn't mention it.
 - **Say how it could fail.** The usual case: a viewer doesn't decode the visual without text. Analytics are off, so the only test is a person looking at it; ask the owner.
