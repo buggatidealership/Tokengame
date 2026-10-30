@@ -227,6 +227,12 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - *Taught by:* "the animation should happen midway through... so they don't have to watch the entire 20 seconds", 30 Oct.
 57. **The headline number sits where the eye lands first.** On a ranked card, the figure people compare (P&L) goes beside the name with its percentage, and the supporting stats line up evenly beneath it.
     - *Taught by:* "PNL needs to go up here. And then it also needs to say the percentage... the W-L should be in the middle", 30 Oct.
+58. **A comparison needs a shared axis.** When the visitor's job is to compare contestants, each stat must sit in one column across all of them, stacked, so the eye runs down it and the order shows at once. Rich separate objects (cards in a grid) make the eye hunt left, right and down. Put the craft into the rows, not into separate objects.
+    - *Taught by:* the scoreboard's 2x2 cards on desktop: "with a traditional leaderboard... you can instantly compare them... with one glance", 30 Oct.
+59. **When two windows share a screen, every figure names its window, and one view has one rank.** An unlabelled "P&L" under a "Last 24 hours" switch reads as the 24-hour figure; a season rank on the stub and a window rank on a sticker give one card two places.
+    - *Taught by:* "it should say season P&L... so users understand that that is the total", 30 Oct.
+60. **Judge every big element at its biggest size.** A raster logo blown up past its native pixels, or a display face that looks lively at phone size, turns cheap on a desktop. Draw marks at or below their native resolution, and check the type at the largest size it will be drawn.
+    - *Taught by:* the Amazon main event on desktop: "super low definition... on a big screen this font actually doesn't make sense", 30 Oct.
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
