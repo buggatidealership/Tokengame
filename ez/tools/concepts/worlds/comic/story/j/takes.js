@@ -40,4 +40,21 @@ module.exports={
      setup:()=>{window.__sjDraw5(-1)},
      frame:({t})=>{window.__sjDraw5((t-400)/1000)},
      audio:()=>window.__sjSound5(0.4)}},
+
+ j6:{name:'Scroll plays the season',hash:'',sel:'.wc10-ch',pad:[14,30],
+   afterScroll:()=>{const f=document.querySelector('.wc10-ch'),r=f.getBoundingClientRect();scrollTo(0,r.top+scrollY-innerHeight*0.62)},
+   perfSel:'.wc10-ch',perfDist:900,
+   rec:{fixed:true,sec:4.4,fps:30,dpr:2,hold:20,raf:true,
+     setup:()=>{window.__sjY0=document.querySelector('.wc10-ch').getBoundingClientRect().top+scrollY;scrollTo(0,window.__sjY0-innerHeight*0.95)},
+     frame:({t})=>{const p=Math.min(1,t/3800),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;scrollTo(0,window.__sjY0-innerHeight*(0.95-0.62*e))}}},
+
+ j7:{name:'Talking portraits',hash:'',sel:'.wc-chars',pre:'window.__sjHold=1',
+   stage:({today})=>{if(!today&&window.__sjOpen7)window.__sjOpen7(0)},
+   clipFn:()=>{const s=document.querySelector('.wc-chars').getBoundingClientRect(),e=document.querySelectorAll('.wc-ch')[1].getBoundingClientRect();const c={x:0,y:Math.round(s.top+scrollY-10),width:document.documentElement.clientWidth,height:0};c.height=Math.round(e.bottom+scrollY+14-c.y);c.height-=c.height%2;c.width-=c.width%2;return c},
+   perfSel:'.wc-chars',
+   rec:{fixed:true,sec:5.2,fps:30,dpr:2,hold:10,
+     setup:()=>{window.__sjClose7();const g=document.querySelector('.wc-ch-grid');scrollTo(0,g.getBoundingClientRect().top+scrollY-90);
+       document.getAnimations().forEach(a=>a.pause());window.__sjA0=performance.now()},
+     frame:({t})=>{if(t>=700&&!window.__o1){window.__o1=1;window.__sjOpen7(0)}if(t>=2900&&!window.__o2){window.__o2=1;window.__sjOpen7(1)}
+       document.getAnimations().forEach(a=>{try{a.pause();a.currentTime=(a.__st==null?(a.__st=t):a.__st,t-a.__st)}catch(e){}})}}},
 };
