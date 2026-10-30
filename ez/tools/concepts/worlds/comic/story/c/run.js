@@ -12,7 +12,7 @@ const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8'),ex=f=>fs.existsSync(__dirnam
     try{await p.waitForFunction(t=>document.documentElement.classList.contains('sc-ready-'+t),t,{timeout:8000})}catch(e){console.log('NOT READY',t,er.join('|'));await p.close();continue}}
   await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(500);
   const sel=SEC==='lb'?(t==='now'?'#wc-lb .wc-race':'#wc-lb .sc-race'):'.wc-splash';
-  await p.evaluate(s=>{const n=document.querySelector(s);scrollTo(0,n.getBoundingClientRect().top+scrollY-20)},sel);await p.waitForTimeout(2600);
+  await p.evaluate(s=>{const n=document.querySelector(s);scrollTo(0,n.getBoundingClientRect().top+scrollY-20)},sel);await p.waitForTimeout(+(process.env.WAIT||2600));
   await p.evaluate(()=>{const h=document.querySelector('header.top');if(h)h.style.visibility='hidden';[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed'&&x.offsetHeight<120&&x.offsetHeight>0)x.style.setProperty('display','none','important')})});
   // for the leaderboard shoot from the take's section through the scoreboard (or the scoreboard alone for today)
   const bb=await p.evaluate(([s,lb])=>{const a=document.querySelector(s).getBoundingClientRect();let bt=a.bottom;if(lb&&!s.includes('wc-race')){const sb=document.querySelector('#wc-lb .wc-sb').getBoundingClientRect();bt=Math.max(bt,sb.top+Math.min(sb.height,innerWidth<600?330:420));}
