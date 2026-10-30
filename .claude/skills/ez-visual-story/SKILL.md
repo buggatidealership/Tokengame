@@ -229,6 +229,11 @@ Every time the owner gives pointers and an iteration lands, update this file the
 
 ## How to work with it
 
+- **Rewrite the prompt before answering it** (owner, 2026-10-30: "think about what I want, not what I say... take my prompt and write a better version of it based on what you think I want or need... then answer it"). The owner is not an expert in animation, design or production, and a brain dump says what he noticed, not always what he needs. For any long or open prompt:
+  1. Read it for the want under the words: the job the change does for a visitor, the feeling he is reaching for, the problem behind the symptom he pointed at.
+  2. Write the prompt an expert in that field would have written for the same want (the specialist's terms, the constraints that matter, what good looks like), and show it to him in a few lines at the top of the reply, so he can correct the reading before it costs a round.
+  3. Answer that prompt, leading the design: go past the literal ask where the want calls for it, and say where you did.
+  - **Guardrails:** his explicit asks, locks and "keep this" stay unless you flag why one fights the want; a word that could be read two ways still gets a question (the ask-don't-assume rule), asked alongside the mockups; the data rules never bend.
 - **Before the first mockup,** write a three-line brief per element:
   - **story:** the conflict or stakes in one line;
   - **facts → carriers:** which visual carries each fact;
