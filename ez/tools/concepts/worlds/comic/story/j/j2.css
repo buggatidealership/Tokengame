@@ -1,0 +1,17 @@
+/* J2 · Page turn. The header stays put (its own snapshot); the page under it turns on its left spine. */
+html.sj-j2 header.top{view-transition-name:sj-head}
+::view-transition-group(sj-head){animation-duration:.3s}
+html[data-sj-turn]::view-transition-group(root){animation:none}
+html[data-sj-turn]::view-transition-image-pair(root){isolation:auto}
+html[data-sj-turn]::view-transition-old(root),html[data-sj-turn]::view-transition-new(root){mix-blend-mode:normal;backface-visibility:hidden;transform-origin:0 50%}
+/* forward: the page you are on lifts at its right edge and swings over to the left; the next page lies under it, in its shadow */
+html[data-sj-turn=fwd]::view-transition-old(root){z-index:2;animation:sjTurnAway .74s cubic-bezier(.5,.02,.25,1) both}
+html[data-sj-turn=fwd]::view-transition-new(root){z-index:1;animation:sjUnder .74s ease-out both}
+/* back: the earlier page comes back over from the left and lies down on top */
+html[data-sj-turn=back]::view-transition-new(root){z-index:2;animation:sjTurnAway .74s cubic-bezier(.5,.02,.25,1) reverse both}
+html[data-sj-turn=back]::view-transition-old(root){z-index:1;animation:sjUnder .74s ease-in reverse both}
+@keyframes sjTurnAway{0%{transform:perspective(1300px) rotateY(0);filter:brightness(1) drop-shadow(0 0 0 rgba(21,18,26,0))}
+  35%{filter:brightness(1.04) drop-shadow(-14px 6px 16px rgba(21,18,26,.35))}
+  100%{transform:perspective(1300px) rotateY(-92deg);filter:brightness(.55) drop-shadow(-30px 10px 24px rgba(21,18,26,.5))}}
+@keyframes sjUnder{0%{filter:brightness(.62)}100%{filter:brightness(1)}}
+@media (prefers-reduced-motion:reduce){html[data-sj-turn]::view-transition-old(root),html[data-sj-turn]::view-transition-new(root){animation:none!important}}
