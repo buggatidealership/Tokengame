@@ -99,7 +99,7 @@ function smallPanel(r){
 function backIssue(r){
   const f=film(r.n),up=r.a>0,W=winners(r),lg=coLogo(r.ticker);
   return `<a class="wc-bi" href="#/round/${r.n}" aria-label="Round ${r.n}, ${esc(r.co)}, ${up?'up':'down'} ${pct(r.a)}">
-    <span class="wc-bi-art">${f?`<img src="${f.p}" alt="" loading="lazy">`:lg?`<img class="wc-lgimg" src="${lg}" alt="" loading="lazy">`:''}</span>
+    <span class="wc-bi-art${!f&&lg&&coDk(r.ticker)?' wc-bi-dk':''}">${f?`<img src="${f.p}" alt="" loading="lazy">`:lg?`<img class="wc-lgimg" src="${lg}" alt="" loading="lazy">`:''}</span>
     <span class="wc-bi-no">#${r.n}<small>${esc(r.ticker)}</small></span><span class="wc-bi-mv ${up?'wc-up':'wc-dn'}">${up?'+':'−'}${pct(r.a)}</span>
     <span class="wc-bi-w">${W.length?W.map(m=>face(m,'wc-f-s')).join(''):'<i class="wc-nob">×</i>'}</span></a>`}
 
