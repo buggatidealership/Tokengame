@@ -7,5 +7,5 @@
     el.querySelector('.wc-face').insertAdjacentHTML('beforeend',`<span class="se-c1b ${up?'se-c1u':'se-c1d'}" style="--i:${i}" aria-hidden="true">${up?'▲':'▼'}</span>`);
     el.setAttribute('aria-label',S.NM[m]+' says '+(up?'up':'down'))});
   const tag=cv.querySelector('.wc-tag');tag.classList.add('se-hide');
-  tag.insertAdjacentHTML('afterend',`<p class="se-c1cap"><span class="se-c1k"><b class="se-c1u">▲</b><b class="se-c1d">▼</b></span><span>Their calls on <i class="se-c1co"><img src="${S.logo(r.ticker)}" alt=""${S.L(r.ticker).dark?' class="se-dk"':''}>${S.esc(r.co)}</i>, locked before its earnings. <b>${when[0].toUpperCase()+when.slice(1)}</b> says who was right.</span></p>`);
+  tag.insertAdjacentHTML('afterend',`<p class="se-c1cap"><span>Their calls on <i class="se-c1co"><img src="${S.logo(r.ticker)}" alt=""${S.L(r.ticker).dark?' class="se-dk"':''}>${S.esc(r.co)}</i>, locked before its earnings. <b>${when[0].toUpperCase()+when.slice(1)}</b> says who was right.</span></p>`);
   S.once(cv.querySelector('.wc-starring'),.5);S.ready()})();

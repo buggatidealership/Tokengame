@@ -28,6 +28,6 @@
   const html=`<div class="sd1-tk"><p class="sd1-hd" aria-hidden="true"><b>Admit one</b><span>Round ${r.n} · ${S.esc(d.tk)}</span></p>
       <div class="sd1-cps">${c1}${perf}${c2}${perf}${c3}${perf}${c4}</div><p class="sd1-ft" aria-hidden="true"><span>No. ${String(r.n).padStart(4,'0')}</span></p></div>`;
   const w=S.mount(html,'sd-d1');if(!w){S.ready();return}
-  S.once(w.querySelector('.sd1-c1'),.5);S.once(w.querySelector('.sd1-c3'),.5);
-  S.once(w.querySelector('.sd1-c4'),.5,still=>{if(!still)w.querySelectorAll('.sd1-c4 [data-v]').forEach((n,i)=>S.count(n,250+i*80))});
+  S.once(w.querySelector('.sd1-c1'),.5);S.once(w.querySelector('.sd1-c2'),.6);S.once(w.querySelector('.sd1-c3'),.5);
+  S.once(w.querySelector('.sd1-c4'),.5,still=>{if(!still)w.querySelectorAll('.sd1-c4 [data-v]').forEach((n,i)=>S.count(n,700+i*80))});
   S.ready()})();

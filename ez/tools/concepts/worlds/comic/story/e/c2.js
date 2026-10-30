@@ -3,7 +3,7 @@
    move onto the ticket as its printed terms. */
 (function(){const S=SE,cv=S.D.querySelector('#wc-book .wc-cover');if(!cv)return S.ready();
   const ld=S.lead(),st=cv.querySelector('.wc-starring');st.classList.add('se-c2');
-  cv.querySelectorAll('.wc-st-m').forEach((el,i)=>{const m=S.STAR[i];el.classList.add('se-c2s');el.style.setProperty('--i',i);
+  cv.querySelectorAll('.wc-st-m').forEach((el,i)=>{const m=S.STAR[i];el.classList.add('se-c2s');el.style.setProperty('--i',i);el.style.setProperty('--sc',S.col(m));
     if(m===ld){el.classList.add('se-c2g');const f=el.querySelector('.wc-face');if(f)f.classList.remove('wc9-holo');el.insertAdjacentHTML('afterbegin','<small class="se-c2gt" aria-hidden="true">Golden ticket</small>');
       el.insertAdjacentHTML('beforeend','<em class="se-c2we">We bet on its call</em>')}});
   st.querySelector('.wc-st-g').insertAdjacentHTML('beforeend','<i class="se-c2n se-c2nl" aria-hidden="true"></i><i class="se-c2n se-c2nr" aria-hidden="true"></i>');

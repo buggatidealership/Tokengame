@@ -27,16 +27,19 @@ window.SD=window.SD||(function(){
     const before=rank(n-1),after=rank(n);
     const graded=cs.map(x=>x).sort((a,b)=>(b.ok-a.ok)||(a.off-b.off));
     const lg=(window.CO_LOGOS||{})[r.ticker],f=(window.FILMS||{})[n];
+    /* the company's own colour (CO_LOGOS) and an ink that reads on it (WCAG contrast) */
+    const bc=(lg&&lg.c)||'#4f4955',L=v=>{v/=255;return v<=.03928?v/12.92:((v+.055)/1.055)**2.4},bn=parseInt(bc.slice(1),16),Y=.2126*L(bn>>16)+.7152*L(bn>>8&255)+.0722*L(bn&255),bink=1.05/(Y+.05)>=4.5?'#fff':'#15121a';
     return {n,r,up,W,cs,graded,right:cs.filter(x=>x.ok),wrong:cs.filter(x=>!x.ok),before,after,cum,
-      logo:lg?'media/'+lg.f:'',dk:!!(lg&&lg.dark),brand:(lg&&lg.c)||'#4f4955',film:f?{v:'media/'+f.f+'.mp4',p:'media/'+f.p+'.jpg'}:null,
+      logo:lg?'media/'+lg.f:'',dk:!!(lg&&lg.dark),brand:bc,bink,film:f?{v:'media/'+f.f+'.mp4',p:'media/'+f.p+'.jpg'}:null,
       called:md(r.called),graded_on:md(r.resolves),tk:String(r.ticker).replace(/\..*$/,''),nR:ROUNDS.length}}
   /* mount: hide the page's panels 1 to 4 (kept in the DOM: the film and its wiring move into the take), drop the head's sentence
      (the panels carry round, company and dates), and put the take's own strip between the head and panel 5 */
+  let _d=null;const d0=()=>_d||(_d=data());
   function mount(html,cls){
     const sec=D.querySelector('.wc-lr'),pg=sec.querySelector('.wc-lr-pg');if(sec.querySelector('.sd-st'))return null;
     pg.querySelectorAll('.wc-lr-1,.wc-lr-2,.wc-lr-3,.wc-lr-4').forEach(li=>li.classList.add('sd-h'));pg.classList.add('sd-p5only');sec.classList.add('sd-on',cls);
     const sm=sec.querySelector('.wc-h2 small');if(sm)sm.classList.add('sd-h');
-    const w=D.createElement('div');w.className='sd-st '+cls;w.innerHTML=html;sec.insertBefore(w,pg);
+    const w=D.createElement('div');w.className='sd-st '+cls;w.style.setProperty('--br',d0().brand);w.style.setProperty('--bri',d0().bink);w.innerHTML=html;sec.insertBefore(w,pg);
     /* the page's own film element (its sound button and tap-to-open stay wired) */
     const slot=w.querySelector('.sd-film'),art=pg.querySelector('.wc-lr-2 .wc-lr-art');if(slot&&art)slot.appendChild(art);
     const v=art&&art.querySelector('video');if(v&&!rm()){new IntersectionObserver(es=>{const e=es[0];if(e.isIntersecting&&e.intersectionRatio>.35)v.play().catch(()=>{});else if(!e.isIntersecting)v.pause()},{threshold:[0,.4]}).observe(slot)}

@@ -110,6 +110,21 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - An idea only lands when its execution makes the point felt. Ask what the movement itself says, not only what the picture shows.
     - *Taught by:* panel 5 P3, 30 Oct.
 
+27. **One world, unless a change of world is itself the point.**
+    - A section that switches its ground, palette or style (Smart or lucky's dark sunburst on a cream comic) reads as a different site and breaks the story.
+    - A comic can change style on purpose, as a splash page does at the climax. Then the change must carry meaning and be the only one.
+    - Before shipping, scroll the whole page and ask whether every section looks like the same book.
+    - *Taught by:* "the background of smart or lucky is different to the rest... doesn't really feel part of the story", 30 Oct.
+28. **Design for the return visit, not only the first one.**
+    - The first visit needs "what is this". The return visit needs "what changed since I was here": who leads now, the latest predictions, the next close.
+    - The page people come back to (the Leaderboard) should open on what is new, and make the newest thing the liveliest.
+    - *Taught by:* "the leaderboard is where you want to come back to... who's leading right now, what are the latest predictions", 30 Oct.
+29. **A guide, not a salesman.**
+    - The page helps someone understand something complex and doesn't ask for attention.
+    - Delight comes from craft: fluid motion, elegant composition, a picture that makes the idea click. It never comes from loudness or a call to act.
+    - "Dry" means a fact presented without that craft. Any element that is only a table, a number or a sentence still owes the reader that moment.
+    - *Taught by:* "nothing should feel dry... somebody that isn't trying to ask for attention, somebody that's trying to help you understand something complex", 30 Oct.
+
 ## How this skill learns (owner, 2026-10-30)
 
 Every time the owner gives pointers and an iteration lands, update this file the same day:
