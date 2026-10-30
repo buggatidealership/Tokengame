@@ -613,7 +613,7 @@ function r9(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f9');
   D.querySelectorAll('.wc-bi').forEach(a=>{if(a.querySelector('.wc9-bs'))return;const r=RR[+(a.getAttribute('href')||'').replace(/\D/g,'')];if(!r)return;
     const up=r.a>0,cs=r.calls.filter(c=>c[1]),perfect=cs.length>1&&cs.every(c=>/^UP/i.test(c[1])===up);
     a.insertAdjacentHTML('beforeend',`<span class="wc9-bs" aria-hidden="true"><b>#${r.n}</b><small>${esc(r.ticker.replace(/\..*$/,''))}</small><em class="${up?'wc9-u':'wc9-d'}">${up?'+':'−'}${Math.abs(r.a).toFixed(2)}%</em></span><i class="wc9-n wc9-nl" aria-hidden="true"></i><i class="wc9-n wc9-nr" aria-hidden="true"></i>`);
-    if(perfect)a.classList.add('wc9-perf')});
+    if(perfect){a.classList.add('wc9-perf');a.insertAdjacentHTML('beforeend','<i class="wc9-hb" aria-hidden="true"></i>')}});
   /* M4: smart or lucky */
   D.querySelectorAll('.wc-cn').forEach(r=>{if(r.querySelector('.wc9-flg'))return;const m=(r.querySelector('.wc-cn-n')||{}).textContent.trim().toUpperCase();
     r.insertAdjacentHTML('afterbegin',flg(mfl(m),'wc9-cnf'));const b=r.querySelector('.wc-cn-bar');if(b)b.insertAdjacentHTML('beforeend','<span class="wc9-coin" aria-hidden="true"></span>')});
