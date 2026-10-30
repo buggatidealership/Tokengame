@@ -58,7 +58,8 @@ window.KC=window.KC||(function(){
     const mark=()=>{Dt.forEach((d,i)=>{d.classList.toggle('kc-on',i===cur);d.setAttribute('aria-selected',i===cur?'true':'false');d.classList.remove('kc-run')});
       if(!rm&&vis){const d=Dt[cur];void d.offsetWidth;d.classList.add('kc-run')}};
     const arm=()=>{clearTimeout(tm);if(rm||!vis)return mark();mark();tm=setTimeout(()=>{if(D.hidden)return arm();show((cur+1)%N,1)},per)};
-    const show=(i,dir,inst)=>{if(i===cur&&!inst)return arm();const from=cur;cur=i;go(i,from,dir,inst||rm);root.setAttribute('aria-label','How every round goes. Step '+(i+1)+' of 4: '+STEP_T[i]);arm()};
+    const cur_=i=>root.querySelectorAll('.kc-f').forEach(f=>f.classList.toggle('kc-cur',+f.dataset.i===i));root.classList.add('kc-deck');
+    const show=(i,dir,inst)=>{if(i===cur&&!inst)return arm();const from=cur;cur=i;go(i,from,dir,inst||rm);cur_(i);root.setAttribute('aria-label','How every round goes. Step '+(i+1)+' of 4: '+STEP_T[i]);arm()};
     root.addEventListener('pointerdown',e=>{x0=e.clientX;y0=e.clientY;moved=false});
     root.addEventListener('pointerup',e=>{if(x0==null)return;const dx=e.clientX-x0,dy=e.clientY-y0;x0=null;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){moved=true;show(dx<0?(cur+1)%N:(cur+N-1)%N,dx<0?1:-1)}});
     root.addEventListener('click',()=>{if(moved){moved=false;return}show((cur+1)%N,1)});
@@ -68,5 +69,5 @@ window.KC=window.KC||(function(){
     window.__kcGo=(i)=>{clearTimeout(tm);vis=false;show(i,i>cur?1:-1,true);clearTimeout(tm);mark()};
     window.__kcStop=()=>{clearTimeout(tm);vis=false;mark()};
     root.tabIndex=0;root.setAttribute('role','group');root.setAttribute('aria-roledescription','carousel');root.setAttribute('aria-label','How every round goes. Step 1 of 4: '+STEP_T[0]);
-    go(0,0,1,true);arm();return {show,get cur(){return cur}}};
+    go(0,0,1,true);cur_(0);arm();return {show,get cur(){return cur}}};
   return {frame,S,D,H,esc,STEP,STEP_T,PIC,cap,dots,deck,mount,lead,A,RANK,R,calls,up,money,face,tick}})();
