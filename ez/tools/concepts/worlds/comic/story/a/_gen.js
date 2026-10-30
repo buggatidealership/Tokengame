@@ -9,7 +9,9 @@ const rgb=(a,al)=>`rgba(${a.map(Math.round).join(',')},${al==null?1:al})`;
 const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
 const lum=(r,g,b)=>(.2126*r+.7152*g+.0722*b)/255;
 const INK=[21,18,26],PAPER=[243,234,211],CREAM=[255,250,240],NEWS=[238,224,184],MUSTARD=[226,166,44];
-const load=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src});
+/* the logo file, with two retries (the shared local server drops requests under load) */
+const load1=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src});
+const load=async src=>(await load1(src))||(await load1(src+'?r=1'))||(await load1(src+'?r=2'));
 const cv=(w,h)=>{const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w));c.height=Math.max(1,Math.round(h));return c};
 /* the mark: an opaque file loses its edge-connected background (Shell's yellow square, Volkswagen's white), a light logo made for dark grounds
    prints its white parts in ink (CAT), then trimmed to its ink */
@@ -49,7 +51,7 @@ g2(x,W,H,m,B,R){x.fillStyle=rgb(NEWS);x.fillRect(0,0,W,H);const o=W*.018;
   const col=px(placed(m,W,H,.74,.45,.43),(d,i)=>{for(let k=0;k<3;k++)d[i+k]=Math.round(d[i+k]/64)*64*.92+18});
   x.save();x.globalCompositeOperation='multiply';x.drawImage(col,o,o*.8);x.restore();
   x.drawImage(ring(L,W*.014,INK),0,0);
-  const dk=px(placed(m,W,H,.74,.45,.43),(d,i)=>{if(lum(d[i],d[i+1],d[i+2])<.22){d[i]=INK[0];d[i+1]=INK[1];d[i+2]=INK[2]}else d[i+3]=0});x.drawImage(dk,0,0);
+  const dk=px(placed(m,W,H,.74,.45,.43),(d,i)=>{if(Math.max(d[i],d[i+1],d[i+2])<70){d[i]=INK[0];d[i+1]=INK[1];d[i+2]=INK[2]}else d[i+3]=0});x.drawImage(dk,0,0);
   grain(x,W,H,R,W*H/40,.22);x.save();x.globalCompositeOperation='multiply';x.fillStyle=rgb([250,238,205],.5);x.fillRect(0,0,W,H);x.restore()},
 /* g3 UPA MODERN (1950s): flat shapes in a limited palette (the brand colour, mustard, paper, one ink line), no outlines,
    the mark in its own colours flattened to a few flat tones, over an offset shadow plate in the brand's dark
@@ -87,6 +89,6 @@ async function paint(name){const L=window.CO_LOGOS||{},dpr=window.devicePixelRat
     const lg=L[r.ticker]||{},im=await load(img.src);if(!im)return;
     const B=hex((await S.pal(img.src))||(await S.pal(img.src,.15))||(lg.c&&lg.c!=='#12131a'?lg.c:'#2b2733')),bb=art.getBoundingClientRect(),W=Math.round(bb.width*dpr),H=Math.round(bb.height*dpr);
     const c=cv(W,H);c.className='sa-gc5';G[name](c.getContext('2d'),W,H,mark(im,lg.dark),B,rnd(hash(r.ticker+name)));art.appendChild(c);art.classList.add('sa-gen')}))}
-S.gen=async name=>{await paint(name);const mo=document.querySelector('.wc-more');if(mo)mo.addEventListener('click',()=>requestAnimationFrame(()=>paint(name)));
+S.gen=async name=>{document.documentElement.classList.remove('sa-ready');/* s1.js marks ready first; wait for the paint */await paint(name);const mo=document.querySelector('.wc-more');if(mo)mo.addEventListener('click',()=>requestAnimationFrame(()=>paint(name)));
   document.documentElement.classList.add('sa-gen-'+name)};
 })();
