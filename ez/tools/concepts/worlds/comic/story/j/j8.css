@@ -1,0 +1,19 @@
+/* J8 · Wet ink: --wet is 1 at the close and 0 a day later */
+html.sj-j8 .wc-bi.sj-wet .wc9-bs em{position:relative;overflow:visible;
+  box-shadow:0 0 calc(1px + 3px*var(--wet)) calc(1px*var(--wet)) color-mix(in srgb,currentColor 0%,var(--sjink,#15121a) calc(45%*var(--wet)));
+  filter:saturate(calc(1 + .35*var(--wet))) contrast(calc(1 + .08*var(--wet)))}
+html.sj-j8 .wc-bi.sj-wet .wc9-bs em{background-image:linear-gradient(180deg,rgba(255,255,255,calc(.45*var(--wet))),rgba(255,255,255,0) 45%,rgba(0,0,0,calc(.12*var(--wet))))}
+html.sj-j8 .wc-bi.sj-wet .wc9-bs em.wc9-u{--sjink:#1f8a4c}html.sj-j8 .wc-bi.sj-wet .wc9-bs em.wc9-d{--sjink:#c22c2c}
+/* the gloss: a soft light band that slides across the wet stamp */
+html.sj-j8 .wc-bi.sj-wet .wc9-bs em::after{content:"";position:absolute;inset:0;pointer-events:none;overflow:hidden;opacity:calc(.9*var(--wet));
+  background:linear-gradient(100deg,transparent 28%,rgba(255,255,255,.95) 44%,rgba(255,255,255,.35) 54%,transparent 68%) -60px 0/220% 100% no-repeat,
+    radial-gradient(ellipse 40% 30% at 30% 25%,rgba(255,255,255,.7),transparent 70%);
+  animation:sjGloss 3.6s ease-in-out infinite;mix-blend-mode:screen}
+@keyframes sjGloss{0%,15%{background-position:-60px 0,0 0}70%,100%{background-position:60px 0,0 0}}
+/* a drop of ink while the stamp is only a few hours old */
+html.sj-j8 .wc-bi.sj-drip .wc9-bs em::before{content:"";position:absolute;right:22%;top:100%;width:6px;height:10px;margin-top:-2px;background:var(--sjink);border-radius:0 0 50% 50%/0 0 70% 70%;
+  transform-origin:50% 0;animation:sjDrip 4.8s ease-in infinite;box-shadow:inset -1px -1px 0 rgba(255,255,255,.35)}
+@keyframes sjDrip{0%{transform:scaleY(.4)}70%{transform:scaleY(1.25)}85%{transform:scaleY(1.3) translateY(1px)}100%{transform:scaleY(.4)}}
+/* the winner's corner face shines too */
+html.sj-j8 .wc-bi.sj-wet .wc-bi-w .wc-face{box-shadow:0 0 0 calc(2px*var(--wet)) rgba(253,188,42,calc(.8*var(--wet)))}
+@media (prefers-reduced-motion:reduce){html.sj-j8 .wc-bi.sj-wet .wc9-bs em::after,html.sj-j8 .wc-bi.sj-drip .wc9-bs em::before{animation:none}}

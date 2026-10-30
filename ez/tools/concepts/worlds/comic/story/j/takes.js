@@ -57,4 +57,15 @@ module.exports={
        document.getAnimations().forEach(a=>a.pause());window.__sjA0=performance.now()},
      frame:({t})=>{if(t>=700&&!window.__o1){window.__o1=1;window.__sjOpen7(0)}if(t>=2900&&!window.__o2){window.__o2=1;window.__sjOpen7(1)}
        document.getAnimations().forEach(a=>{try{a.pause();a.currentTime=(a.__st==null?(a.__st=t):a.__st,t-a.__st)}catch(e){}})}}},
+
+ j8:{name:'Wet ink',hash:'',sel:'.wc-season',pre:'window.__sjNow=Date.UTC(2026,9,29,23,0)',
+   stage:()=>{const g=document.querySelector('.wc-bis');if(g&&g.dataset.all!=='1')document.querySelector('.wc-season .wc-more').click()},
+   clipFn:()=>{const s=document.querySelector('.wc-season h2').getBoundingClientRect(),t=[...document.querySelectorAll('.wc-bi')].filter(x=>x.offsetParent);const e=t[Math.min(t.length-1,17)].getBoundingClientRect();
+     const c={x:0,y:Math.round(s.top+scrollY-10),width:document.documentElement.clientWidth,height:0};c.height=Math.round(e.bottom+scrollY+14-c.y);c.height-=c.height%2;c.width-=c.width%2;return c},
+   perfSel:'.wc-season',
+   rec:{sec:4.8,fps:30,dpr:2,hold:0,
+     clipFn:()=>{const t=[...document.querySelectorAll('.wc-bi')].filter(x=>x.offsetParent);const a=t[9].getBoundingClientRect(),e=t[17].getBoundingClientRect();
+       const c={x:0,y:Math.round(a.top+scrollY-8),width:document.documentElement.clientWidth,height:0};c.height=Math.round(e.bottom+scrollY+14-c.y);c.height-=c.height%2;c.width-=c.width%2;return c},
+     setup:()=>{document.querySelectorAll('.wc-bi').forEach(()=>{});window.__sjA=document.getAnimations().filter(a=>a.animationName&&/^sj/.test(a.animationName));window.__sjA.forEach(a=>a.pause())},
+     frame:({t})=>{(window.__sjA||[]).forEach(a=>{a.currentTime=t})}}},
 };
