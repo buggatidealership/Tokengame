@@ -21,6 +21,13 @@ The owner supplied the metaphors: the ticket stock and its borders, "Season one"
 
 ## The test every element must pass
 
+0. **Comic first, never a dashboard in costume (the owner has had to say this on almost every round).** My first drafts come out as spreadsheets because I start from the data (a grid of labelled boxes: a header strip, "Bulls ▲" over a list, a value beside a label) and only then skin it. Start the other way round, from the characters acting: each AI is a character who *says* its call in a balloon, the bull 🐂 and the bear 🐻 are characters too, the market close is an event with a sound effect, the round is a beat in a story. Layout follows the beat, not a table. Before showing anything, check it against "Meet the models", the one section the owner calls a comic: a character on a ticket, its flag waving behind it, its words on a tilted caption box, and nothing else. Reject a draft that has any of these:
+   - a box nested in a box, or a labelled container holding a list (a dashboard widget);
+   - a white or pale empty rectangle, or a container bigger than its content (one call in a box sized for four);
+   - label-and-value pairs where a character could say the thing ("Kimi: up 1.5%" in a balloon beats "BULLS ▲ / Kimi +1.5%");
+   - a card with no character, no action and no comic device (balloon, caption, sound effect, motion lines, emoji);
+   - the same structure repeated so the page reads as rows of a table.
+   Fun to read matters as much as easy to read: the information is wrapped in the joke, the face, the gesture.
 1. **Name the story, not the data.** Write the section's job in one line as a story with stakes, e.g. "four rivals from two countries race for the one ticket we bet on", not "the standings". If you can't find the conflict, the stakes or the change over time, find it before designing.
 2. **Every fact needs a carrier.** List the facts the section must convey. For each one, ask what in the page's own world could show it without a sentence:
    - which country → a flag;

@@ -60,3 +60,9 @@ The owner wants every section of EZ Live X3+ (the light American comic) to tell 
   - Each card should scream its company's name, with the company's own familiar element.
   - Every element must be valuable to a viewer. Reverse-engineer what humans expect.
   - Mockups should go beyond what the owner asked: "show me what we can actually do that is even better".
+
+## Update, 2026-10-30 evening: comic first (read before anything else)
+- **The owner, again:** "whenever you come up with this design, it's dry from the get-go... It doesn't look like a comic book module... it looks like a spreadsheet. The only aspect that doesn't feel like a spreadsheet... is the meet the models section." Read rule 0 at the top of the skill's test list and apply it to every draft before you show it.
+- **Reference:** open `v47-live-x3plus.html` and look closely at "Meet the models" (the cast cards: a character on a Season 1 ticket, its flag waving behind it, its words on a tilted yellow caption box). That is the bar.
+- **The owner's own examples of what is wrong:** a "BULLS ▲" box holding one name with an empty white area under it; empty space beside a headline; calls as white pills on top of a coloured card ("why have modules on top of it anyway?"). Their example of a fix: emojis for bulls and bears (🐂 🐻), "just as an example... that is just the surface level".
+- **The aim:** easy to read and fun to read; the information wrapped in the comic (characters speaking, sound effects, gestures, panels), compact, no wasted space.
