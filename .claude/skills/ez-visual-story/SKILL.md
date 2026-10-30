@@ -217,6 +217,16 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - A walkthrough teaches through its example, so the example should show the rule plainly (a clear split of right and wrong) in a picture that does not compete with the explanation. Spectacle belongs in the record, not in the lesson.
     - *Taught by:* "maybe we use another card because this one is very in your face... it screams LSD", 30 Oct.
 
+53. **No unprinted paper inside the comic.** A white or blank panel reads as a default widget, not a page of the world, and empty corners read as unfinished. Every ground is printed by something from the story (the ticket stock, a halftone in a participant's colour, the market's green and red); keep it calm enough to read.
+    - *Taught by:* "I'm just not a big fan of white backgrounds... the module itself that encompasses everything is a bit horrible", 30 Oct.
+54. **A control and its effect belong in the same view.** If a filter changes something further down, the visitor must see the filter while looking at the change, or the change reads as random.
+    - *Taught by:* "you should be able to filter... as you scroll down to the scoreboard as well, because it's not directly obvious that the scoreboard is directly changing", 30 Oct.
+55. **Animate on comprehension, not on arrival.** An explaining animation starts when the panel is fully read, and moves slow enough to follow beat by beat; if it is over before the reader knows what they are looking at, it explained nothing.
+    - *Taught by:* "by the time I understood what I was looking at, the animation sort of already happened", 30 Oct.
+56. **A clip starts at the question, not at the setup.** When a film illustrates one step, play only the part that step is about (here: calls already up, market about to resolve), so the reader spends seconds, not twenty.
+    - *Taught by:* "the animation should happen midway through... so they don't have to watch the entire 20 seconds", 30 Oct.
+57. **The headline number sits where the eye lands first.** On a ranked card, the figure people compare (P&L) goes beside the name with its percentage, and the supporting stats line up evenly beneath it.
+    - *Taught by:* "PNL needs to go up here. And then it also needs to say the percentage... the W-L should be in the middle", 30 Oct.
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
