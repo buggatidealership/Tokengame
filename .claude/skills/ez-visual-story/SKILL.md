@@ -84,6 +84,32 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - Verify what exists before calling it missing. "Every round so far" already showed the winner. The real gap was that a key line had to explain it, which is lesson 7's test.
     - *Taught by:* my wrong proposal, 30 Oct.
 
+21. **A mark must not bury its subject.**
+    - A stamp, burst or label sits on top of the thing it is about. Keep it to about a quarter of the area so the subject (the company, the film) stays readable.
+    - Bigger is not clearer once it hides what it marks.
+    - *Taught by:* the winner stamps in "Every round so far" S1, 30 Oct.
+22. **No neutral surfaces.**
+    - A plain white or blank fill carries nothing and reads as unfinished.
+    - Every surface should carry identity (the company's colours) or the world's texture (halftone, panels), unless the white itself means something.
+    - Check every box: why is this background this colour?
+    - *Taught by:* "everything that has a white background that doesn't absolutely need one, why have it", 30 Oct.
+23. **A carrier must decode at first sight, without a legend.**
+    - "Punched in tens" needed a key and still wasn't understood, even by the owner.
+    - If an encoding needs explaining, choose one people already know: a line going up, a stamp, a crown, money.
+    - *Taught by:* C3 rejected, 30 Oct.
+24. **Translate statistics into everyday words, or don't show them.**
+    - "19 times in 20" is a statistician's phrase. Most visitors read it as noise.
+    - Say what it means for them, or let the picture carry it with no number at all.
+    - *Taught by:* the luck band's caption, 30 Oct.
+25. **One story, one best carrier, even across sections.**
+    - A second element that tells the same story in another form adds length, not meaning. Lead-change panels repeat the line race; a "race for wins" panel repeats the grid of winners.
+    - Keep the one that tells it best, usually the simplest graph or the picture people already scroll through.
+    - *Taught by:* C6 and S3 dropped, C4 kept, 30 Oct.
+26. **The motion is the argument.**
+    - P3 works because the punch acts out "this round is now on the record".
+    - An idea only lands when its execution makes the point felt. Ask what the movement itself says, not only what the picture shows.
+    - *Taught by:* panel 5 P3, 30 Oct.
+
 ## How this skill learns (owner, 2026-10-30)
 
 Every time the owner gives pointers and an iteration lands, update this file the same day:

@@ -37,3 +37,15 @@ window.SE=window.SE||(function(){
   const totals=()=>{const g=ROUNDS.length,l=(window.PENDING||[]).filter(p=>p.calls&&p.calls.length).length,u=(window.UPCOMING||[]).length+(window.PENDING||[]).length-l;return {g,l,u,all:g+l+u}};
   return {D,H,ORDER,STAR,NM,esc,col,face,md,wd,pd,rel,cap,logo,brand,onB,tk,toCome,byDay,closeTxt,rm,once,P,lead,X,totals,L,ready:()=>H.classList.add('se-ready')};
 })();
+/* Upcoming: swap the tab's lists for a take's own root (the tab's cover stays); the All / Mag 7 / AI filter keeps working on it */
+SE.upMount=function(cls){const S=SE,up=S.D.getElementById('wc-up');if(!up)return null;
+  up.querySelectorAll(':scope > .wc-spot, :scope > .wc-h2-b, :scope > .wc-cal').forEach(e=>e.classList.add('se-hide'));
+  const root=S.D.createElement('div');root.className='se-up '+cls;const flt=up.querySelector('.wc-flt');
+  (up.querySelector('.wc-cal')||up.querySelector('.wc-back')).before(root);
+  if(flt){root.before(flt);flt.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{root.dataset.f=b.dataset.f}))}
+  return root};
+SE.dayLab=function(k){const S=SE;if(k==='wait')return {a:'Waiting on calls',b:'Their dates passed. The calls are not in yet.'};
+  const r=S.rel(k),d=S.wd(k,1)+', '+S.md(k);return {a:r==='Today'||r==='Tomorrow'?r:S.wd(k,1),b:r==='Today'||r==='Tomorrow'?d:S.md(k)}};
+SE.coImg=function(t,cls){const S=SE,lg=S.logo(t);return lg?`<img class="${cls||''}${S.L(t).dark?' se-dk':''}" src="${lg}" alt="" loading="lazy">`:`<b class="${cls||''} se-nolg">${S.esc(S.tk(t)).slice(0,4)}</b>`};
+SE.MDK=t=>{const d=new Date(t);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+'/'+(d.getUTCFullYear()%100)};
+SE.today=()=>{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',month:'numeric',day:'numeric',year:'numeric'}).formatToParts(new Date());const g=k=>+p.find(x=>x.type===k).value;return Date.UTC(g('year'),g('month')-1,g('day'))};

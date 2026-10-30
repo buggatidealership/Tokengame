@@ -23,7 +23,7 @@ const A=f=>fs.readFileSync(__dirname+'/../a/'+f,'utf8');
   const top=await p.evaluate(()=>document.querySelector('.wc-lr').getBoundingClientRect().top+scrollY);const sh=await p.evaluate(()=>document.querySelector('.wc-lr').offsetHeight);
   for(let y=top-200;y<top+sh;y+=250){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(220)}
   await p.evaluate(y=>scrollTo(0,y-60),top);await p.waitForTimeout(+process.env.SHOT_AT||2600);
-  await p.evaluate(()=>{const h=document.querySelector('header.top');if(h)h.style.visibility='hidden';[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed'&&x.offsetHeight<140&&x.offsetHeight>0)x.style.visibility='hidden'});document.querySelectorAll('video').forEach(v=>{v.pause();})});
+  await p.addStyleTag({content:'body > div:has(> .x2p-cw-run){display:none!important}'});await p.evaluate(()=>{const h=document.querySelector('header.top');if(h)h.style.visibility='hidden';[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed'&&x.offsetHeight<140&&x.offsetHeight>0)x.style.setProperty('display','none','important')});document.querySelectorAll('video').forEach(v=>{v.pause();})});
   const bb=await p.evaluate(()=>{const r=document.querySelector('.wc-lr').getBoundingClientRect();return {y:r.top+scrollY,h:r.height}});
   await p.screenshot({path:`${OUT}/lr-${W}-${t}.png`,clip:{x:0,y:bb.y-24,width:W,height:Math.min(bb.h+48,9000)},fullPage:true});
   const m=await p.evaluate(()=>{const n=document.querySelector('.wc-lr'),iw=innerWidth;

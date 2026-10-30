@@ -13,6 +13,7 @@ const SEL={chars:'.wc-chars',cliff:'.wc-cliff',cover:'#wc-book .wc-cover',up:'#w
   if(t!=='now'){const ps=t.split('+');await p.addStyleTag({content:rd('_se.css')+ps.map(x=>rd(x+'.css')).join('')});await p.evaluate(ps=>ps.forEach(x=>document.documentElement.classList.add('se-t-'+x)),ps);
     await p.addScriptTag({content:rd('_se.js')+ps.map(x=>rd(x+'.js')).join('')});await p.waitForFunction(()=>document.documentElement.classList.contains('se-ready'),null,{timeout:20000})}
   await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(600);
+  {const H2=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<H2;y+=400){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(60)}}
   if(SEC!=='cover'){await p.evaluate(s=>{const n=document.querySelector(s);scrollTo(0,n.getBoundingClientRect().top+scrollY-60)},SEL);}
   else await p.evaluate(()=>scrollTo(0,0));
   await p.waitForTimeout(+process.env.SHOT_AT||3000);

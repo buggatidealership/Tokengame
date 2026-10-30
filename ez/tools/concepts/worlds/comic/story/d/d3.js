@@ -20,7 +20,7 @@
   const ruler=(mode,extra)=>`<div class="sd3-nl sd3-m${mode}" style="--nL:${nL}">
       <div class="sd3-pins">${mode===2?cs.map(x=>`<span class="sd3-ghost" style="left:${X(x.sv)}">${S.face(x.m,'sd3-f')}</span>`).join(''):cs.map(x=>pin(x,mode)).join('')}${extra||''}</div>${axis}</div>`;
   /* the stock's marker: the company's logo on a post, at the move */
-  const mk=(cls)=>`<span class="sd3-mk ${up?'sd3-mku':'sd3-mkd'} ${cls||''}" style="--x:${X(A)}"><span class="sd3-mkf">${d.logo?`<img src="${d.logo}" alt="">`:S.esc(d.tk)}</span><b>${up?'+':'−'}${S.pct(A)}</b><i class="sd3-post"></i></span>`;
+  const mk=(cls,ding)=>`<span class="sd3-mk ${up?'sd3-mku':'sd3-mkd'} ${cls||''}" style="--x:${X(A)}">${ding?'<em class="sd3-ding" aria-hidden="true">Ding!</em>':''}<span class="sd3-mkf">${d.logo?`<img src="${d.logo}" alt="">`:S.esc(d.tk)}</span><b>${up?'+':'−'}${S.pct(A)}</b><i class="sd3-post"></i></span>`;
   /* P3: a dimension line from each right-way pin to the close, labelled with how far off it was */
   const dims=d.right.sort((a,b)=>a.off-b.off).map((x,i)=>{const a=Math.min(x.sv,A),b=Math.max(x.sv,A);
     return `<span class="sd3-dim${x.win?' sd3-dimw':''}" style="left:${X(a)};right:calc(100% - ${X(b)});--i:${i}"><b>${S.pct(x.off)} off</b></span>`}).join('');
@@ -30,10 +30,10 @@
       <p class="sd-sr">${cs.map(x=>S.NM[x.m]+' said '+(x.c.up?'up ':'down ')+x.c.v+'%').join('. ')}.</p></section>`;
   const p2=`<section class="sd-pn sd3-p sd3-p2" aria-label="Step 2"><b class="sd-n" aria-hidden="true">2</b><p class="sd-c">${S.esc(r.co)} reports. Then the close</p>
       <div class="sd-film"></div>
-      <div class="sd3-run">${ruler(2,mk('sd3-slide')+`<b class="sd3-ding" aria-hidden="true">Ding!</b>`)}<p class="sd3-at">The close · ${d.graded_on}</p></div>
+      <div class="sd3-run">${ruler(2,mk('sd3-slide',1))}<p class="sd3-at">The close · ${d.graded_on}</p></div>
       <p class="sd-sr">${S.esc(r.co)} ${up?'rose':'fell'} ${S.pct(A)} at the close on ${d.graded_on}.</p></section>`;
   const p3=`<section class="sd-pn sd3-p sd3-p3" aria-label="Step 3"><b class="sd-n" aria-hidden="true">3</b><p class="sd-c">The market grades every call</p>
-      ${ruler(3,mk('sd3-fix')+dims)}
+      ${ruler(3,mk('sd3-fix',1)+dims)}
       <p class="sd3-rule">Right side of zero: <b class="sd-tu">pass</b>. Closest pass wins.</p>
       <a class="sd3-open" href="#/round/${r.n}">Open its graded card →</a>
       <p class="sd-sr">${S.and(d.right.map(x=>S.NM[x.m]))||'Nobody'} called ${up?'up':'down'} and passed. ${d.W.length?S.and(d.W.map(m=>S.NM[m]))+' wins the round.':'Nobody wins.'}</p></section>`;
