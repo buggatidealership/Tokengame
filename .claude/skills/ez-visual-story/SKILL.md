@@ -125,6 +125,38 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - "Dry" means a fact presented without that craft. Any element that is only a table, a number or a sentence still owes the reader that moment.
     - *Taught by:* "nothing should feel dry... somebody that isn't trying to ask for attention, somebody that's trying to help you understand something complex", 30 Oct.
 
+30. **Lead with what the visitor came for, not a summary of it.**
+    - On Upcoming, people want to know what each AI is saying. A "1 up / 3 down" count answers a question nobody asked.
+    - Show the content itself (the calls) and let the arrangement summarise it (bulls against bears).
+    - *Taught by:* "if somebody comes in they want to see what's the main event, what are they predicting", 30 Oct.
+31. **Familiarity is a carrier.** A company's own signature element is recognised before any word is read: Amazon's smile-arrow, Apple's bite, Nike's swoosh.
+    - Drawn in the page's style, it makes each card "scream the name" and feel known.
+    - A bigger logo is not the same thing; the brand's own gesture is.
+    - *Taught by:* "the Amazon little arrow... behind the card... it needs to feel familiar to people", 30 Oct.
+32. **Magic is small, lasting life in still things.**
+    - Harry Potter's moving pictures work because a still frame keeps quietly living: a loop, a breath, a glance.
+    - One-shot entrance animations are not enough. Some elements should keep a gentle, endless motion that rewards looking (a cinemagraph from a round's film, a waving flag, a ticking clock).
+    - Keep it quiet so it never asks for attention (lesson 29), and still with reduced motion.
+    - *Taught by:* "a comic book that is alive... these moving images, moving pictures... these tiny elements that made the movie magical", 30 Oct.
+33. **Every element must pass the value test: what does the viewer gain from it?**
+    - The Leaderboard is "who holds the golden ticket, and the stats people expect from a leaderboard" (the P&L, its last 7 days, W-L, hit rate, form, best and worst round).
+    - Reverse-engineer what people expect from the genre (sports tables, trading competitions, fantasy leagues) before inventing.
+    - An element that is clever but answers no question goes.
+    - *Taught by:* "is this information valuable to a viewer or user", 30 Oct.
+34. **Dryness shows by contrast.** A plain table or text on a blank ground looks dry precisely because the section above it is alive.
+    - The whole page must share the same richness, so audit the weakest section, not the best.
+    - *Taught by:* "when I'm on the video... this feels like a comic... then you scroll down to smart or lucky and all of a sudden it becomes very dry again", 30 Oct.
+35. **An analogy must be common, not clever.**
+    - "Sixteen coins ran the same season" is clear to someone who thinks in numbers and opaque to most people.
+    - Test an analogy on everyday experience. If it needs numeracy to decode, it fails (lesson 24).
+    - *Taught by:* "for most humans that is not fully understandable", 30 Oct.
+36. **One number per fact.** "+$65,478" and "+65.5%" on a $100,000 start say the same thing twice. Keep the one people read (the dollars).
+    - *Taught by:* "remove the +65.5% because it already says +65K", 30 Oct.
+37. **Don't re-teach what the journey already taught.**
+    - Once the Overview has explained that we bet on the leader's call, a "We bet on its call" chip on every later view is noise.
+    - Each view assumes what the earlier ones taught.
+    - *Taught by:* "it's obvious after somebody went through the overview page", 30 Oct.
+
 ## How this skill learns (owner, 2026-10-30)
 
 Every time the owner gives pointers and an iteration lands, update this file the same day:

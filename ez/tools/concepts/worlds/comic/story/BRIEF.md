@@ -48,3 +48,15 @@ The owner wants every section of EZ Live X3+ (the light American comic) to tell 
   - measured checks (no overflow, no errors, widths checked);
   - what you could not do;
   - any number you computed and how you computed it.
+
+## Update, 2026-10-30 night
+- **earningszn.xyz is now X3+ (the comic).** Mockups still lay over the built `v47-live-x3plus.html`.
+- **Read the skill again.** It now holds lessons 11 to 37.
+- **Use your own local server, not 8897.** Several helpers on one server timed out and crashed renders. Start yours on the port in your brief: `cd /home/user/Tokengame/ez && setsid nohup python3 -m http.server <port> >/dev/null 2>&1 &`. Run your shots one at a time, not in parallel.
+- **Clean up your own temporary frames and folders when done.** The disk filled up once; it has about 20 GB free now.
+- **What the owner said tonight (2026-10-30):**
+  - Nothing should feel dry. Use the least white space possible and let the visuals do the talking.
+  - A comic that is alive: Harry Potter's moving pictures, small endless motion in still things.
+  - Each card should scream its company's name, with the company's own familiar element.
+  - Every element must be valuable to a viewer. Reverse-engineer what humans expect.
+  - Mockups should go beyond what the owner asked: "show me what we can actually do that is even better".
