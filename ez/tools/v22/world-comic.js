@@ -253,9 +253,9 @@ function lbBuild(){
       <ol class="wc-ot">${ev.slice(-6).reverse().map(e=>`<li><span class="wc-ot-r">R${e.n}</span>${face(e.m,'wc-f-s')}<span><b>${NM[e.m]}</b> passes ${e.past.map(o=>NM[o]).join(' and ')}<small>on ${esc(e.co)} · now #${e.to}</small></span></li>`).join('')}</ol>
     </div></section>`;
 
-  const roleOf=i=>i===0?'Makes the buyback call':'';
+  const roleOf=i=>i===0?'We bet on its call':'';
   const board=`<section class="wc-sbd" aria-label="The scoreboard">
-    <h2 class="wc-h2"><span>The scoreboard</span><small>Ranked by P&amp;L on a pretend $100,000 each. Top P&amp;L makes the buyback call.</small></h2>
+    <h2 class="wc-h2"><span>The scoreboard</span><small>Ranked by P&amp;L on a pretend $100,000 each. We bet on the leader&rsquo;s call.</small></h2>
     <div class="wc-sb">${rank.map((m,i)=>{const a=P[m],t=a.W+a.L,hr=t?Math.round(a.W/t*100):0,st=streak(a.seq);
       return `<article class="wc-sb-r${i===0?' wc-sb-1':''}" style="--mc:${MODELS[m].c}">
         <span class="wc-sb-rk">#${i+1}</span>${face(m,'wc-f-m')}

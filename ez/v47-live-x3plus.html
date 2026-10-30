@@ -9088,6 +9088,18 @@ html.wc-f9 .wc-bis{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media (min-width:1000px){html.wc-f9 .wc-bis{grid-template-columns:repeat(6,minmax(0,1fr))}}
 @media (max-width:599px){html.wc-f9 .wc-bi{--sh:44px}html.wc-f9 .wc9-bs{display:grid;grid-template-columns:auto minmax(0,1fr);align-content:center;gap:3px 4px;padding:0 6px}
   html.wc-f9 .wc9-bs small{align-self:end}html.wc-f9 .wc9-bs em{grid-column:1/-1;justify-self:start;margin:0}}
+/* Leaderboard scoreboard on narrow phones (2026-10-30, found by a mockup helper): below 380px the name ran into the P&L,
+   "Streak" ran off the card and the role chip wrapped a word a line; the P&L takes its own line under the name */
+@media (max-width:379px){html.wc-f9 .wc-sb-r{--sw:40px}
+  html.wc-f9 .wc-sb-r .wc-face{width:40px!important;height:40px!important}
+  html.wc-f9 .wc9-cap{grid-template-columns:minmax(0,1fr);grid-template-areas:"nm" "pl" "st";gap:4px;padding:7px 8px}
+  html.wc-f9 .wc9-cap .wc-sb-pl{text-align:left;font-size:24px}
+  html.wc-f9 .wc9-cap .wc-sb-pl small{display:inline;margin:0 0 0 6px}
+  html.wc-f9 .wc9-cap .wc-sb-nm em{white-space:nowrap}
+  html.wc-f9 .wc9-cap .wc-sb-st{gap:4px 8px}html.wc-f9 .wc9-cap .wc-sb-st>*{min-width:0}}
+html.wc-f9 .wc9-cap .wc-sb-nm em{white-space:nowrap}
+html.wc-f9 .wc9-cap .wc-sb-st dd{white-space:nowrap}
+@media (max-width:379px){html.wc-f9 .wc9-cap .wc-sb-st dd{font-size:19px}html.wc-f9 .wc9-cap .wc-sb-st dt{font-size:9.5px;letter-spacing:.04em}}
 </style>
 </head>
 <body>
@@ -14310,9 +14322,9 @@ function lbBuild(){
       <ol class="wc-ot">${ev.slice(-6).reverse().map(e=>`<li><span class="wc-ot-r">R${e.n}</span>${face(e.m,'wc-f-s')}<span><b>${NM[e.m]}</b> passes ${e.past.map(o=>NM[o]).join(' and ')}<small>on ${esc(e.co)} · now #${e.to}</small></span></li>`).join('')}</ol>
     </div></section>`;
 
-  const roleOf=i=>i===0?'Makes the buyback call':'';
+  const roleOf=i=>i===0?'We bet on its call':'';
   const board=`<section class="wc-sbd" aria-label="The scoreboard">
-    <h2 class="wc-h2"><span>The scoreboard</span><small>Ranked by P&amp;L on a pretend $100,000 each. Top P&amp;L makes the buyback call.</small></h2>
+    <h2 class="wc-h2"><span>The scoreboard</span><small>Ranked by P&amp;L on a pretend $100,000 each. We bet on the leader&rsquo;s call.</small></h2>
     <div class="wc-sb">${rank.map((m,i)=>{const a=P[m],t=a.W+a.L,hr=t?Math.round(a.W/t*100):0,st=streak(a.seq);
       return `<article class="wc-sb-r${i===0?' wc-sb-1':''}" style="--mc:${MODELS[m].c}">
         <span class="wc-sb-rk">#${i+1}</span>${face(m,'wc-f-m')}
