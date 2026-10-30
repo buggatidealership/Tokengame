@@ -578,7 +578,7 @@ function r9(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f9');
   /* M2: tomorrow's tickets */
   const PU=(window.PENDING||[]).concat(window.UPCOMING||[]);
   D.querySelectorAll('.wc-tnp').forEach(t=>{if(t.querySelector('.wc9-ts'))return;const tk=((t.querySelector('header small')||{}).textContent||'').trim(),p=PU.find(x=>x.ticker===tk)||{},c=hq(tk);
-    t.insertAdjacentHTML('afterbegin',`<div class="wc9-ts" aria-hidden="true">${flg(c)}<b>R${p.n||''}</b><em>${c}</em></div><i class="wc9-n wc9-nt" aria-hidden="true"></i><i class="wc9-n wc9-nb" aria-hidden="true"></i>`)});
+    t.insertAdjacentHTML('afterbegin',`<div class="wc9-ts" aria-hidden="true">${flg(c)}<b>R${p.n||''}</b></div><i class="wc9-n wc9-nt" aria-hidden="true"></i><i class="wc9-n wc9-nb" aria-hidden="true"></i>`)});
   /* M3: every round as a torn stub */
   const RR={};ROUNDS.forEach(r=>RR[r.n]=r);
   D.querySelectorAll('.wc-bi').forEach(a=>{if(a.querySelector('.wc9-bs'))return;const r=RR[+(a.getAttribute('href')||'').replace(/\D/g,'')];if(!r)return;
@@ -594,6 +594,40 @@ function r9(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f9');
   /* the dollar bill under "The winner gets paid" */
   D.querySelectorAll('.wc-lr-4').forEach(p=>p.classList.add('wc9-bill'));
 }
+/* R10 (owner, 2026-10-30, on ez/x2p-x3p-brand.png: "everything from B1 except the layout of the predictions", which takes B3's;
+   "remove US because we already have the flag"; and Smart or lucky "a chart... so they can visualize the progression"). X3+ only. */
+function r10(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f10');
+  /* each of tomorrow's tickets in its company's colours, read from the company's own logo file: the most common saturated colour */
+  const lum=h=>{const n=parseInt(h.slice(1),16);return (.2126*(n>>16)+.7152*(n>>8&255)+.0722*(n&255))/255};
+  const pal=src=>new Promise(res=>{const im=new Image();im.onload=()=>{try{const w=64,h=Math.max(8,Math.round(64*im.height/im.width)),c=D.createElement('canvas');c.width=w;c.height=h;
+    const x=c.getContext('2d');x.drawImage(im,0,0,w,h);const d=x.getImageData(0,0,w,h).data,bins={};
+    for(let i=0;i<d.length;i+=4){if(d[i+3]<160)continue;const r=d[i],g=d[i+1],b=d[i+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);if(mx<60||(mx-mn)/mx<.35)continue;
+      const k=(r>>5)+','+(g>>5)+','+(b>>5),o=bins[k]||(bins[k]={n:0,r:0,g:0,b:0});o.n++;o.r+=r;o.g+=g;o.b+=b}
+    const t=Object.values(bins).sort((a,b)=>b.n-a.n)[0];res(t?'#'+[t.r,t.g,t.b].map(v=>Math.round(v/t.n).toString(16).padStart(2,'0')).join(''):null)}catch(e){res(null)}};im.onerror=()=>res(null);im.src=src});
+  D.querySelectorAll('.wc-tnp').forEach(async t=>{if(t.classList.contains('wc10-b'))return;const tk=((t.querySelector('header small')||{}).textContent||'').trim(),lg=coLogo(tk);
+    const m=(lg&&await pal(lg))||'#2b2733';t.style.setProperty('--bm',m);const L=v=>{v/=255;return v<=.03928?v/12.92:((v+.055)/1.055)**2.4},n=parseInt(m.slice(1),16),Y=.2126*L(n>>16)+.7152*L(n>>8&255)+.0722*L(n&255);t.style.setProperty('--bt',1.05/(Y+.05)<3?'#15121a':'#fff');t.classList.toggle('wc10-lt',1.05/(Y+.05)<3);t.classList.add('wc10-b')});
+  /* Smart or lucky as a chart: every AI's hit rate after each graded round (the Leaderboard's own formula, (right + 1) / (calls + 2),
+     so every line starts at 50/50), the coin flip at 50%, a face and the hit rate where each line ends */
+  const sp=D.querySelector('.wc-splash');if(!sp||sp.querySelector('.wc10-ch'))return;
+  const P=window.__x2pPnl().A,R=ROUNDS.slice(),N=R.length,acc={};
+  ORDER.forEach(m=>{let k=0,n=0;acc[m]=[.5];R.forEach(r=>{const x=P[m].per[r.n];if(x){n++;if(x.v>0)k++}acc[m].push((k+1)/(n+2))})});
+  const lo=.3,hi=.8,Y=v=>((hi-Math.max(lo,Math.min(hi,v)))/(hi-lo)*100),X=i=>i/N*1000;
+  const by=ORDER.slice().sort((a,b)=>P[b].W/(P[b].W+P[b].L)-P[a].W/(P[a].W+P[a].L)),hr=m=>Math.round(P[m].W/(P[m].W+P[m].L)*100);
+  const ls=by.slice().reverse().map(m=>'<path class="wc10-l'+(m===by[0]?' wc10-lead':'')+'" pathLength="1" style="--mc:'+(MODELS[m].c==='#111'?'#15121a':MODELS[m].c)+'" d="'+acc[m].map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(2)).join(' ')+'"/>').join('');
+  let es=by.map(m=>({m,y:Y(acc[m][N])})).sort((a,b)=>a.y-b.y);for(let i=1;i<es.length;i++)if(es[i].y-es[i-1].y<15)es[i].y=es[i-1].y+15;const ov=es[es.length-1].y-97;if(ov>0)es.forEach(e=>e.y-=ov);
+  const ticks=[];for(let i=10;i<N;i+=10)ticks.push(i);
+  const gl=[.4,.6,.7];
+  const html='<figure class="wc10-ch" aria-label="Hit rate after every round: '+by.map(m=>NM[m]+' '+hr(m)+'%').join(', ')+'. A coin flip gets about 50%.">'
+    +'<figcaption class="wc10-hd"><span class="wc10-cap">Hit rate, round by round</span><span class="wc10-key"><i aria-hidden="true"></i>Coin flip 50%</span></figcaption>'
+    +'<div class="wc10-pl"><div class="wc10-cv"><svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">'
+    +gl.map(v=>'<line class="wc10-g" x1="0" x2="1000" y1="'+Y(v)+'" y2="'+Y(v)+'"/>').join('')
+    +'<line class="wc10-coinl" x1="0" x2="1000" y1="'+Y(.5)+'" y2="'+Y(.5)+'"/>'+ls+'</svg>'
+    +'<span class="wc10-coin" style="top:'+Y(.5)+'%" aria-hidden="true"></span>'
+    +gl.map(v=>'<span class="wc10-yl" style="top:'+Y(v)+'%">'+Math.round(v*100)+'%</span>').join('')+'</div>'
+    +'<div class="wc10-ends" aria-hidden="true">'+es.map(e=>'<span class="wc10-e" style="top:'+e.y.toFixed(1)+'%;--mc:'+MODELS[e.m].c+'">'+face(e.m,'wc-f-s')+'<b>'+hr(e.m)+'%</b></span>').join('')+'</div></div>'
+    +'<p class="wc10-x" aria-hidden="true"><span style="left:0">R1</span>'+ticks.map(i=>'<span style="left:'+(i/N*100).toFixed(2)+'%">R'+R[i-1].n+'</span>').join('')+'<span style="left:100%">R'+R[N-1].n+'</span></p></figure>';
+  const co=sp.querySelector('.wc-coins');if(co)co.insertAdjacentHTML('beforebegin',html);sp.classList.add('wc10-on');
+  const fig=sp.querySelector('.wc10-ch');new IntersectionObserver((es2,o)=>{if(es2[0].isIntersecting){fig.classList.add('wc10-in');o.disconnect()}},{threshold:.3}).observe(fig)}
 const done=()=>H.classList.add('x2p-world');
 /* a twist on the graded slab's front, as a switch only (owner to decide): ?slab=1 or window.__c3Slab */
 try{if(window.__c3Slab||/[?&]slab=1/.test(location.search))H.classList.add('wc-slab')}catch(e){}
@@ -608,6 +642,7 @@ let tries=0;(function wait(){
     try{tabs()}catch(e){window.__x2pWorldErr=e;console.error('comic tabs',e)}
     try{certWatch()}catch(e){window.__x2pWorldErr=e;console.error('comic certs',e)}
     try{r9()}catch(e){window.__x2pWorldErr=e;console.error('comic r9',e)}
+    try{r10()}catch(e){window.__x2pWorldErr=e;console.error('comic r10',e)}
     done()}
   else if(tries++<200)setTimeout(wait,50);else done()})();
 })();
