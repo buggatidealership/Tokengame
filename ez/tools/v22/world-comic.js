@@ -254,15 +254,22 @@ function lbBuild(){
     </div></section>`;
 
   const roleOf=i=>i===0?'We bet on its call':'';
+  /* owner, 2026-10-30, night: the scoreboard says P&L in words, adds the last 7 days, drops the % and the role chip,
+     and carries each AI's top and worst round (the Best and worst calls section is gone, lesson 25) */
+  const tdy=nyToday(),dAgo=r=>{if(!r.resolves)return 1e9;const [m,d,y]=r.resolves.split('/').map(Number);return Math.round((Date.UTC(2000+tdy[2],tdy[0]-1,tdy[1])-Date.UTC(2000+(y%100),m-1,d))/864e5)};
+  const p7=m=>R.reduce((t,r)=>{const x=P[m].per[r.n],a=dAgo(r);return x&&a>=0&&a<=6?t+x.v:t},0);
+  const kk=v=>(v>=0?'+':'−')+'$'+(Math.abs(v)>=1000?(Math.abs(v)/1000).toFixed(1)+'K':Math.round(Math.abs(v)));
+  const tw=m=>{let b=null,w=null;R.forEach(r=>{const x=P[m].per[r.n];if(!x)return;if(!b||x.v>b.v)b={v:x.v,r};if(!w||x.v<w.v)w={v:x.v,r}});return {b,w}};
+  const twl=(x,k)=>{const lg=coLogo(x.r.ticker);return `<div class="wc-sb-tw ${k}"><dt>${k==='wc-sb-twb'?'Top round':'Worst round'}</dt><dd><b class="${x.v>=0?'wc-tu':'wc-td'}">${kk(x.v)}</b>${lg?`<img src="${lg}" alt="" title="${esc(x.r.co)}"${coDk(x.r.ticker)}>`:''}<span class="wc-sr">${esc(x.r.co)}</span></dd></div>`};
   const board=`<section class="wc-sbd" aria-label="The scoreboard">
     <h2 class="wc-h2"><span>The scoreboard</span><small>Ranked by P&amp;L on a pretend $100,000 each. We bet on the leader&rsquo;s call.</small></h2>
     <div class="wc-sb">${rank.map((m,i)=>{const a=P[m],t=a.W+a.L,hr=t?Math.round(a.W/t*100):0,st=streak(a.seq);
       return `<article class="wc-sb-r${i===0?' wc-sb-1':''}" style="--mc:${MODELS[m].c}">
         <span class="wc-sb-rk">#${i+1}</span>${face(m,'wc-f-m')}
-        <div class="wc-sb-nm"><h3>${NM[m]}</h3><small>${esc(MODELS[m].ver)}</small>${roleOf(i)?'<em>'+roleOf(i)+'</em>':''}</div>
-        <p class="wc-sb-pl ${a.pnl>=0?'wc-tu':'wc-td'}">${pm(a.pnl)}<small>${pc1(a.pnl/1000)}</small></p>
-        <dl class="wc-sb-st"><div><dt>W-L</dt><dd><b class="wc-tu">${a.W}</b>-<b class="wc-td">${a.L}</b></dd></div><div><dt>Hit rate</dt><dd>${hr}%</dd></div><div><dt>Streak</dt><dd class="${st[0]==='W'?'wc-tu':'wc-td'}">${st}</dd></div>
-          <div class="wc-sb-f"><dt>Last 5</dt><dd class="wc-form">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}</dd></div></dl>
+        <div class="wc-sb-nm"><h3>${NM[m]}</h3><small>${esc(MODELS[m].ver)}</small></div>
+        <p class="wc-sb-pl ${a.pnl>=0?'wc-tu':'wc-td'}"><small class="wc-sb-plk">P&amp;L</small>${pm(a.pnl)}</p>
+        <dl class="wc-sb-st"><div class="wc-sb-7"><dt>Last 7 days</dt><dd class="${p7(m)>=0?'wc-tu':'wc-td'}">${kk(p7(m))}</dd></div><div><dt>W-L</dt><dd><b class="wc-tu">${a.W}</b>-<b class="wc-td">${a.L}</b></dd></div><div><dt>Hit rate</dt><dd>${hr}%</dd></div>
+          <div class="wc-sb-f"><dt>Last 5</dt><dd class="wc-form">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}</dd></div>${(x=>twl(x.b,'wc-sb-twb')+twl(x.w,'wc-sb-tww'))(tw(m))}</dl>
       </article>`}).join('')}</div>
     <p class="wc-cap wc-cap-y wc-sb-cap">P&amp;L is simulated: $100,000 to start, the whole balance on every call, buy on up, short on down, no leverage, before fees. W = right direction. An AI that called under half the rounds ranks after the rest.</p>
   </section>`;
@@ -278,7 +285,7 @@ function lbBuild(){
   const el=D.createElement('div');el.id='wc-lb';el.className='wc-book wc-tab';
   el.innerHTML=`<section class="wc-tab-cv" aria-label="Who's winning"><div class="wc-cv-top"><span class="wc-cv-s">The standings<small>${N} earnings reports graded</small></span></div>
     <h1 class="wc-tab-h">Who's winning?</h1><p class="wc-tag">Four AIs, a pretend <b>$100,000</b> each, the whole balance on every call. The money says who's best.</p></section>`
-    +board+proof+race+bws+`<section class="wc-back"><a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a></section>`;
+    +board+proof+race+`<section class="wc-back"><a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a></section>`;
   return el}
 
 /* ================= THE UPCOMING TAB (#/upcoming): the next fight nights, in the same comic ================= */

@@ -10,8 +10,9 @@ import os, sys, re, shutil
 EZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.environ.get('SITE_OUT') or os.path.join(os.path.dirname(EZ), 'site')
 URL = 'https://earningszn.xyz/'
-# SITE_PAGE=<file> builds another page (2026-10-22: X3+ on its own preview branch); the live site is always X2+
-page = open(os.path.join(EZ, os.environ.get('SITE_PAGE') or 'v46-live-x2plus.html'), encoding='utf-8').read()
+# SITE_PAGE=<file> builds another page. Since 2026-10-30 (owner: "push this to production... so we have the comic version
+# live") the live site is X3+, the comic; SITE_PAGE=v46-live-x2plus.html builds X2+ (the preview branch)
+page = open(os.path.join(EZ, os.environ.get('SITE_PAGE') or 'v47-live-x3plus.html'), encoding='utf-8').read()
 data = open(os.path.join(EZ, 'ez-data.js'), encoding='utf-8').read()
 if os.path.isdir(OUT):
     shutil.rmtree(OUT)
