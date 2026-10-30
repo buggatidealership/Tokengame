@@ -31,6 +31,7 @@ const X={};WS.forEach(w=>{const rs=RS.filter(w.f),row={};
   ORDER.forEach(m=>{const amt=rs.reduce((t,r)=>t+per(m,r),0);let W,L;if(w.k==='season'){W=P[m].W;L=P[m].L}else{const s=seq[m].filter(x=>w.f(x.r));W=s.filter(x=>x.ok).length;L=s.length-W}
     let top=null,low=null;rs.forEach(r=>{const x=P[m].per[r.n];if(!x)return;if(!top||x.v>top.v)top={v:x.v,r};if(!low||x.v<low.v)low={v:x.v,r}});
     const ago=P[m].pnl-RS.filter(d7.f).reduce((t,r)=>t+per(m,r),0);
+    if(top&&low&&top.r===low.r)low=null;
     row[m]={m,amt,W,L,hr:W+L?W/(W+L):null,top,low,l5:seq[m].slice(-5).map(x=>x.ok),ago,n:rs.length}});
   const o=w.k==='season'?srank:srank.slice().sort((a,b)=>row[b].amt-row[a].amt);
   X[w.k]={w,rs,row,o,empty:!rs.length,max:Math.max(1,...ORDER.map(m=>Math.abs(row[m].amt))),lo:Math.min(0,...ORDER.map(m=>row[m].amt)),hi:Math.max(0,...ORDER.map(m=>row[m].amt))}});
@@ -38,7 +39,8 @@ const gold=srank[0];
 /* formats */
 const $f=v=>(v>=0?'+':'−')+'$'+Math.round(Math.abs(v)).toLocaleString('en-US');
 const k$=v=>(v>=0?'+':'−')+'$'+(Math.abs(v)>=1000?(Math.abs(v)/1000).toFixed(1)+'K':Math.round(Math.abs(v)));
-const hr=x=>x.hr==null?'–':Math.round(x.hr*100)+'%';
+/* a hit rate on fewer than 5 calls says nothing (lesson 16): shown as a dash, the W-L beside it carries the count */
+const hr=x=>x.hr==null||x.W+x.L<5?'–':Math.round(x.hr*100)+'%';const hrv=x=>x.hr==null||x.W+x.L<5?null:x.hr;
 const col=m=>MODELS[m].c==='#111'?'#15121a':MODELS[m].c;
 const face=(m,cls)=>`<i class="wc-face ${cls||''}${m===gold?' wc9-holo':''}" style="--mc:${MODELS[m].c}" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${MODELS[m].d}"/></svg></i>`;
 const logo=(r,cls)=>{const c=(window.CO_LOGOS||{})[r.ticker];return c?`<img class="${cls||'ss-lg'}${c.dark?' ss-lgdk':''}" src="media/${c.f}" alt="" title="${esc(r.co)}">`:`<b class="${cls||'ss-lg'} ss-lgt">${esc(r.ticker.replace(/\..*$/,''))}</b>`};
@@ -56,8 +58,9 @@ const wire=sec=>{const bs=[...sec.querySelectorAll('.ss-swb')];bs.forEach((b,i)=
 /* FLIP: rows slide to their new place when the order changes */
 const flip=(els,fn,anim)=>{const r0=anim?new Map(els.map(e=>[e,e.getBoundingClientRect()])):null;fn();if(!anim)return;
   els.forEach(e=>{const a=r0.get(e),b=e.getBoundingClientRect(),dy=a.top-b.top,dx=a.left-b.left;if(Math.abs(dy)>1||Math.abs(dx)>1)e.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:'none'}],{duration:640,easing:'cubic-bezier(.3,1.2,.4,1)'})})};
-const count=(el,from,to,dur,fmt)=>{if(RM()||!dur||Math.round(from)===Math.round(to)){el.textContent=fmt(to);return}const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);el.textContent=fmt(from+(to-from)*e);if(k<1)requestAnimationFrame(f)})(t0)};
-window.SS={ORDER,NM,FLAG,X,WS,P,gold,srank,$f,k$,hr,col,face,logo,f5,flag,esc,sw,wire,flip,count,RM,cur,N};
+/* money counting from the old window's figure to the new one; its ink turns green or red as it crosses $0 */
+const count=(el,from,to,dur,fmt)=>{const put=v=>{el.textContent=fmt(v);el.classList.toggle('ss-u',v>=0);el.classList.toggle('ss-d',v<0)};if(RM()||!dur||Math.round(from)===Math.round(to)){put(to);return}const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);put(from+(to-from)*e);if(k<1)requestAnimationFrame(f)})(t0)};
+window.SS={ORDER,NM,FLAG,X,WS,P,gold,srank,$f,k$,hr,hrv,col,face,logo,f5,flag,esc,sw,wire,flip,count,RM,cur,N};
 /* mount: the take replaces the live list (kept in the DOM, hidden) and follows the window the bill shows */
 window.SSmount=function(){const T=window.SST,sec=D.querySelector('#wc-lb .wc-sbd');if(!T||!sec)return;
   const list=sec.querySelector('.wc-sb');list.classList.add('ss-hide');const sm=sec.querySelector('.wc-h2 small');if(sm)sm.textContent='A pretend $100,000 each to start. We bet on the leader’s call.';

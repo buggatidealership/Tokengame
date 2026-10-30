@@ -29,7 +29,7 @@ window.SST={id:'s1',build(h){
     const bar=e.querySelector('.ss1-bar');bar.style.setProperty('--z',(z*100).toFixed(2)+'%');
     const b=e.querySelector('.ss1-b'),w=Math.abs(a.amt)/span*100;b.style.left=(a.amt>=0?z*100:z*100-w).toFixed(2)+'%';b.style.width=w.toFixed(2)+'%';b.className='ss1-b '+(a.amt>=0?'ss1-bu':'ss1-bd');
     e.querySelector('[data-w]').textContent=a.W;e.querySelector('[data-l]').textContent=a.L;
-    e.querySelector('[data-hr]').textContent=S.hr(a);e.querySelector('.ss1-gf').style.width=a.hr==null?'0':(a.hr*100).toFixed(1)+'%';
+    e.querySelector('[data-hr]').textContent=S.hr(a);const hv=S.hrv(a);e.querySelector('.ss1-g').style.visibility=hv==null?'hidden':'';e.querySelector('.ss1-gf').style.width=hv==null?'0':(hv*100).toFixed(1)+'%';
     e.querySelector('[data-f5]').innerHTML=S.f5(a);
     const tw=(t,k)=>t?`<b class="${t.v>=0?'ss-u':'ss-d'}">${S.k$(t.v)}</b>${S.logo(t.r)}<span class="ss-sr">${S.esc(t.r.co)}</span>`:'<b class="ss1-na">–</b>';
     e.querySelector('[data-tp]').innerHTML=tw(a.top);e.querySelector('[data-wr]').innerHTML=tw(a.low)});
