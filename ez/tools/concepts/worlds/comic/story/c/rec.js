@@ -1,7 +1,7 @@
 // node rec.js <out.mp4> <section sol|lb> <take>: records the take's entrance at 390 x 844 (Playwright video, real timing), then ffmpeg to mp4
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../live-r1/_fonts.js');const fs=require('fs'),cp=require('child_process'),path=require('path');
 const [OUT,SEC,T]=process.argv.slice(2);const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
-(async()=>{const b=await chromium.launch();const vd=fs.mkdtempSync(path.join(path.dirname(OUT),'vid-'));
+(async()=>{const b=await chromium.launch({args:['--disable-dev-shm-usage']});const vd=fs.mkdtempSync(path.join(path.dirname(OUT),'vid-'));
  const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,recordVideo:{dir:vd,size:{width:390,height:844}}});const p=await ctx.newPage();await FONTS(p);
  const t0=Date.now();
  await p.goto('http://localhost:8897/v47-live-x3plus.html'+(SEC==='lb'?'#/leaderboard':''),{waitUntil:'load',timeout:120000});

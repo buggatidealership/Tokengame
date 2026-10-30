@@ -3,7 +3,7 @@
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../live-r1/_fonts.js');const fs=require('fs');
 const OUT=process.argv[2],SEC=process.argv[3]||'sol',TS=(process.argv[4]||'now').split(','),WS=(process.argv[5]||'390,1280').split(',').map(Number);fs.mkdirSync(OUT,{recursive:true});
 const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8'),ex=f=>fs.existsSync(__dirname+'/'+f);
-(async()=>{const b=await chromium.launch();
+(async()=>{const b=await chromium.launch({args:['--disable-dev-shm-usage']});
  for(const W of WS)for(const t of TS){const p=await b.newPage({viewport:{width:W,height:W<600?844:1000},deviceScaleFactor:2,reducedMotion:process.env.RM?'reduce':'no-preference'});await FONTS(p);const er=[];p.on('pageerror',e=>er.push(e.message));p.on('console',m=>{if(m.type()==='error')er.push('console:'+m.text().slice(0,120))});
   await p.goto('http://localhost:8897/'+(process.env.PAGE||'v47-live-x3plus.html')+(SEC==='lb'?'#/leaderboard':''),{waitUntil:'load',timeout:120000});
   await p.waitForFunction(()=>document.documentElement.classList.contains('x2p-world')&&!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});

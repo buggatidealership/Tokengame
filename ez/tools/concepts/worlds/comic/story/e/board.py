@@ -7,7 +7,12 @@ T={'cover':[('now','Today'),('c1','E · C1 · The next fight, live'),('c2','E ·
    'back':[('now','Today'),('k1','E · K1 · Next issue'),('k2','E · K2 · The coupon'),('k3','E · K3 · In your feed')]}[S]
 FN='/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';F=ImageFont.truetype(FN,30)
 ims=[(t,Image.open(f'{D}/{S}-{W}-{k}.png').convert('RGB')) for k,t in T]
-if int(W)<600:
+if int(W)>=600 and S=='up':
+  ims=[(t,i.crop((0,0,i.width,min(i.height,3000)))) for t,i in ims];cw=max(i.width for _,i in ims);ch=max(i.height for _,i in ims)
+  B=Image.new('RGB',(2*cw+120,2*(ch+90)+40),'#1b1820');d=ImageDraw.Draw(B)
+  for k,(t,i) in enumerate(ims):
+    x=40+(k%2)*(cw+40);y=30+(k//2)*(ch+90);d.text((x,y),t,fill='#fdbc2a',font=F);B.paste(i,(x,y+50))
+elif int(W)<600:
   B=Image.new('RGB',(sum(i.width for _,i in ims)+40*(len(ims)+1),max(i.height for _,i in ims)+110),'#1b1820');d=ImageDraw.Draw(B);x=40
   for t,i in ims:
     f=F

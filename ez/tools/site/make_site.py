@@ -6,7 +6,7 @@ ez-data.js or the page, the host's poses it names (media/commissioner/web), all 
 caching and security rules (_headers). SITE_OUT=<dir> builds elsewhere (a test build that leaves site/ alone).
 The live page was X2 (v24) until 2026-10-20; the owner chose X2+ (v46) for earningszn.xyz.
 """
-import os, re, shutil, sys
+import os, sys, re, shutil
 EZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.environ.get('SITE_OUT') or os.path.join(os.path.dirname(EZ), 'site')
 URL = 'https://earningszn.xyz/'
@@ -101,8 +101,11 @@ open(os.path.join(OUT, '404.html'), 'w', encoding='utf-8').write('<!doctype html
 # pictures cached in media/share by a hash of what they show, so a build draws only new or changed rounds). SITE_NOCARDS=1 skips it.
 if not os.environ.get('SITE_NOCARDS'):
     import subprocess
-    if subprocess.run(['node', os.path.join(EZ, 'tools', 'site', 'round_cards.js'), OUT], cwd=EZ).returncode:
-        print('round_cards failed: the /r/ pages are missing from this build')
+    # one retry (a busy local server can time out a shot), then stop: a production deploy without /r/ breaks every shared
+    # round link (2026-10-30, R61: the first try timed out and the build went on without the pages)
+    cmd = ['node', os.path.join(EZ, 'tools', 'site', 'round_cards.js'), OUT]
+    if subprocess.run(cmd, cwd=EZ).returncode and subprocess.run(cmd, cwd=EZ).returncode:
+        sys.exit('round_cards failed twice: the /r/ pages are missing, do not deploy this build')
 total = sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(OUT) for f in fs)
 big = [f for r, _, fs in os.walk(OUT) for f in fs if os.path.getsize(os.path.join(r, f)) > 25 * 2**20]
 print('site/: %d media files + logos, %.1f MB total%s' % (n, total / 1e6, ('; OVER 25 MiB: ' + str(big)) if big else ''))

@@ -28,9 +28,9 @@ S.top(el);S.body({stamps:true});
 /* the hand-off: show each holder in turn (a quarter turn out, a quarter turn in), stamping that round onto the stub */
 const fs=[...el.querySelectorAll('.sf2-h')],ss=[...el.querySelectorAll('.sf2-st')],last=fs.length-1;
 const show=i=>{fs.forEach((f,k)=>f.classList.toggle('sf2-on',k===i));ss.forEach((s,k)=>s.classList.toggle('sf2-in',k<i))};
-if(S.rm()){show(last);el.classList.add('sf-in')}
+if(S.rm()){show(last);el.classList.add('sf-in','sf2-done')}
 else{show(0);new IntersectionObserver((es,ob)=>{if(!es[0].isIntersecting)return;ob.disconnect();el.classList.add('sf-in');
-  let i=0;const step=()=>{if(i>=last){setTimeout(()=>S.count(el.querySelector('.sf2-gap b'),800),150);return}
+  let i=0;const step=()=>{if(i>=last){el.classList.add('sf2-done');setTimeout(()=>S.count(el.querySelector('.sf2-gap b'),800),150);return}
     const f=fs[i];f.classList.add('sf2-out');setTimeout(()=>{f.classList.remove('sf2-out');i++;show(i);fs[i].classList.add('sf2-turn');setTimeout(()=>{fs[i].classList.remove('sf2-turn');setTimeout(step,650)},320)},260)};
   setTimeout(step,900)},{threshold:.35}).observe(el.querySelector('.sf2-gt'))}
 document.documentElement.classList.add('sf-ready-f2')})();

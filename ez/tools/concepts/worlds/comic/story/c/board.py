@@ -2,10 +2,10 @@
 import sys
 from PIL import Image,ImageDraw,ImageFont
 D,S,W,OUT=sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4]
-T={'sol':[('now','Today · Smart or lucky? (R10 chart)'),('c1','C1 · The luck band'),('c2','C2 · How far into the sample'),('c3','C3 · Punched in tens')],
+T={'sol2':[('now','Today · Smart or lucky?'),('c7','C7 · Sixteen coins ran the same season'),('c8','C8 · Ten rematches against the coin'),('c9','C9 · The coin\'s reach, season replay')],'sol':[('now','Today · Smart or lucky? (R10 chart)'),('c1','C1 · The luck band'),('c2','C2 · How far into the sample'),('c3','C3 · Punched in tens')],
    'lb':[('now','Today · The race so far (lower on the tab)'),('c4','C4 · Line race, above the scoreboard'),('c5','C5 · The track, above the scoreboard'),('c6','C6 · Lead changes, panel by panel')]}[S]
 F=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',30)
-ims=[(t,Image.open(f'{D}/{S}-{W}-{k}.png').convert('RGB')) for k,t in T]
+ims=[(t,Image.open(f'{D}/{S[:3] if S!="lb" else S}-{W}-{k}.png').convert('RGB')) for k,t in T]
 if int(W)<600:
   B=Image.new('RGB',(sum(i.width for _,i in ims)+40*(len(ims)+1),max(i.height for _,i in ims)+110),'#1b1820');d=ImageDraw.Draw(B);x=40
   for t,i in ims:

@@ -52,13 +52,14 @@ g2(x,W,H,m,B,R){x.fillStyle=rgb(NEWS);x.fillRect(0,0,W,H);const o=W*.018;
   const dk=px(placed(m,W,H,.74,.45,.43),(d,i)=>{if(lum(d[i],d[i+1],d[i+2])<.22){d[i]=INK[0];d[i+1]=INK[1];d[i+2]=INK[2]}else d[i+3]=0});x.drawImage(dk,0,0);
   grain(x,W,H,R,W*H/40,.22);x.save();x.globalCompositeOperation='multiply';x.fillStyle=rgb([250,238,205],.5);x.fillRect(0,0,W,H);x.restore()},
 /* g3 UPA MODERN (1950s): flat shapes in a limited palette (the brand colour, mustard, paper, one ink line), no outlines,
-   the mark in its own colours flattened to a few flat tones, over an offset shadow plate in the brand's dark */
-g3(x,W,H,m,B,R){x.fillStyle=rgb(PAPER);x.fillRect(0,0,W,H);const BD=mix(B,INK,.45);
+   the mark in its own colours flattened to a few flat tones, over an offset shadow plate in the brand's dark
+   (none for a wordmark, where the plate read as doubled letters; a near-black brand gets a lighter band so black letters stay visible) */
+g3(x,W,H,m,B,R){x.fillStyle=rgb(PAPER);x.fillRect(0,0,W,H);if(lum(...B)<.2)B=mix(B,PAPER,.55);const BD=mix(B,INK,.45),word=m.width/m.height>2.5;
   x.save();x.translate(W*.2,H*.78);x.rotate(-.22);x.fillStyle=rgb(B);x.fillRect(-W*.5,-H*.2,W*1.5,H*.7);x.restore();
   x.beginPath();x.arc(W*.8,H*.2,W*.27,0,7);x.fillStyle=rgb(MUSTARD);x.fill();
   x.strokeStyle=rgb(INK);x.lineWidth=Math.max(1.5,W*.008);x.beginPath();x.moveTo(W*.04,H*.3);x.lineTo(W*.5,H*.06);x.stroke();
-  const L=placed(m,W,H,.66,.45,.43);x.drawImage(sil(L,BD),W*.035,W*.035);
-  const P=px(placed(m,W,H,.66,.45,.43),(d,i)=>{for(let k=0;k<3;k++)d[i+k]=Math.min(255,Math.round(d[i+k]/85)*85);d[i+3]=d[i+3]>100?255:0});x.drawImage(P,0,0)},
+  const L=placed(m,W,H,.66,.45,.43);if(!word)x.drawImage(sil(L,BD),W*.035,W*.035);
+  const P=px(placed(m,W,H,.66,.45,.43),(d,i)=>{for(let k=0;k<3;k++)d[i+k]=Math.min(255,Math.round(d[i+k]/51)*51);d[i+3]=d[i+3]>100?255:0});x.drawImage(P,0,0)},
 /* g4 KIRBY COSMIC (1960s): the mark in full colour inside a white-hot energy field, ringed by Kirby krackle (clusters of black dots),
    on the brand colour burning out from the centre */
 g4(x,W,H,m,B,R){const g=x.createRadialGradient(W*.45,H*.43,W*.05,W*.45,H*.43,W*.8);g.addColorStop(0,rgb(mix(B,[255,255,255],.35)));g.addColorStop(.55,rgb(B));g.addColorStop(1,rgb(mix(B,INK,.6)));
