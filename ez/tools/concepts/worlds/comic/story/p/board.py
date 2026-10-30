@@ -26,4 +26,4 @@ for t,r in rows:
   for i,n in r:
     d.text((x,y+50),n,fill='#f8f0d9',font=F);B.paste(i.crop((0,0,i.width,min(i.height,CAP))),(x,y+100));x+=cw+G
   y+=min(max(i.height for i,_ in r),CAP)+140
-B.thumbnail((9000,16000));B.save(OUT,optimize=True);print(OUT,B.size)
+B.thumbnail((5600 if W>1000 else 9000,16000));B.save(OUT,optimize=True);print(OUT,B.size)
