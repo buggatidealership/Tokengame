@@ -49,7 +49,8 @@ window.SD=window.SD||(function(){
     const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){io.disconnect();el.classList.add('sd-go');cb&&cb(false)}},{threshold:th||.5});io.observe(el)};
   /* money accruing: a dollar figure counts up from 0 */
   const count=(n,delay)=>{if(!n||rm()||window.__sdStill)return;const v=+n.dataset.v,s=n.dataset.s||'',fin=n.textContent;n.textContent=s+'$0';
-    setTimeout(()=>{const t0=performance.now(),d=900;(function f(t){const k=Math.min(1,(t-t0)/d),e=1-Math.pow(1-k,3);n.textContent=k<1?s+'$'+Math.round(v*e).toLocaleString('en-US'):fin;if(k<1)requestAnimationFrame(f)})(t0)},delay||0)};
+    const now=()=>window.__sdNow?window.__sdNow():performance.now();
+    setTimeout(()=>{const t0=now(),d=900;(function f(){const t=now(),k=Math.min(1,(t-t0)/d),e=1-Math.pow(1-k,3);n.textContent=k<1?s+'$'+Math.round(v*e).toLocaleString('en-US'):fin;if(k<1)requestAnimationFrame(f)})()},window.__sdNow?0:(delay||0))};
   const money=(v,cls)=>`<b class="${cls||''}" data-v="${Math.round(Math.abs(v))}" data-s="${sg(v)}">${sg(v)}${$(v)}</b>`;
   return {D,H,ORDER,NM,esc,col,face,md,call,pct,sg,$,$k,rm,and,sfx,data,mount,once,count,money,ready:()=>H.classList.add('sd-ready')};
 })();

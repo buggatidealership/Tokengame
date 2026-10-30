@@ -8,9 +8,9 @@ const cap=s=>s.replace(/^./,c=>c.toUpperCase());
 const ev=[];
 /* the past: each graded day, then its lead changes */
 /* closes with no change at the top run together into one stretch, so a long absence stays short */
-const runs=[];S.days.forEach(g=>{const lc=S.hand.filter(h=>g.rs.includes(h.r)),p=runs[runs.length-1];if(p&&!p.lc.length){p.rs=p.rs.concat(g.rs);p.to=g.s;p.lc=lc}else runs.push({s:g.s,to:g.s,rs:g.rs.slice(),lc})});
+const KEEP=S.hand.slice(-3),runs=[];S.days.forEach(g=>{const all=S.hand.filter(h=>g.rs.includes(h.r)),lc=all.filter(h=>KEEP.includes(h)),p=runs[runs.length-1];const ex=all.length-lc.length;if(p&&!p.lc.length){p.rs=p.rs.concat(g.rs);p.to=g.s;p.lc=lc;p.ex+=ex}else runs.push({s:g.s,to:g.s,rs:g.rs.slice(),lc,ex})});
 runs.forEach(g=>{const lc=g.lc;
-  ev.push({k:'close',when:(g.to!==g.s?cap(S.rel(g.s))+' to '+S.rel(g.to)+' · '+(g.rs.length)+' closes':cap(S.rel(g.s))+' · the close').replace(/ · \d+ closes$/,' · the closes'),body:`<p class="sf3-t"><b>${g.rs.length} report${g.rs.length===1?'':'s'} graded</b></p><div class="sf3-cos">${g.rs.slice(0,12).map(r=>chip(r.ticker,r.co,'','sf-co-s3')).join('')}${g.rs.length>12?`<small>+${g.rs.length-12}</small>`:''}</div>`});
+  ev.push({k:'close',when:(g.to!==g.s?cap(S.rel(g.s))+' to '+S.rel(g.to)+' · '+(g.rs.length)+' closes':cap(S.rel(g.s))+' · the close').replace(/ · \d+ closes$/,' · the closes'),body:`<p class="sf3-t"><b>${g.rs.length} report${g.rs.length===1?'':'s'} graded</b></p><div class="sf3-cos">${g.rs.slice(0,12).map(r=>chip(r.ticker,r.co,'','sf-co-s3')).join('')}${g.rs.length>12?`<small>+${g.rs.length-12}</small>`:''}</div>${g.ex?`<p class="sf3-ex"><i class="sf3-mini"></i>The lead changed hands ${g.ex===1?'once':g.ex===2?'twice':g.ex+' times'}</p>`:''}`});
   lc.forEach(h=>ev.push({k:'star',when:`R${h.r.n} · ${esc(S.short(h.r.co))} <span class="${h.r.a>0?'wc-tu':'wc-td'}">${mv(h.r.a)}</span>`,body:`<p class="sf3-t sf3-who">${face(h.m)}<b>${NM[h.m]} ${(()=>{const j=S.hand.indexOf(h);return j>0&&S.hand[j-1].from===h.m?'takes it back':'takes the lead'})()}</b></p>`}))});
 if(!S.hand.length)ev.push({k:'star',when:'No change at the top',body:`<p class="sf3-t sf3-who">${face(S.now[0])}<b>${NM[S.now[0]]} kept the lead</b></p>`});
 /* the predictions that came in */
