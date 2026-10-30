@@ -63,7 +63,7 @@ window.SQ=(function(){
     return {play,tv:tvb}}
   /* a panel's timeline starts when the element is fully on screen and its top half sits in the upper 70% of the screen,
      then waits a beat so the eye has landed; a tap or Enter plays it again. Reduced motion: the end state, no motion. */
-  function stage(el,hit,opt){opt=opt||{};if(RM()){el.classList.add('sq-done');return}
+  function stage(el,hit,opt){opt=opt||{};if(RM()){el.classList.add('sq-done','sq-go');opt.on&&opt.on();return}
     let fired=false;const fire=()=>{if(fired)return;fired=true;setTimeout(()=>{el.classList.add('sq-go');opt.on&&opt.on()},opt.dwell==null?350:opt.dwell)};
     const io=new IntersectionObserver(es=>{const e=es[0];if(!e.isIntersecting)return;const r=e.boundingClientRect,vh=innerHeight;
       if(r.top>=-2&&r.bottom<=vh*(opt.bottom||.86)&&r.top<=vh*.5){io.disconnect();removeEventListener('scroll',chk);fire()}},{threshold:[0,.25,.5,.75,.9,1]});

@@ -46,11 +46,11 @@ const cardHTML=(m,x)=>{const a=x.amt[m],other=x.k==='season'?X.d7:X.season,ov=ot
   return `<div class="sp-c">
   <div class="sp-hd"><div class="sp-nm"><h3 class="sp-h3">${NM[m]}</h3><small>${esc(MODELS[m].ver)}</small></div>
    <p class="sp-pl"><small class="sp-plk"><span class="sp-wn">${x.sh}</span> P&amp;L</small><b class="sp-fig ${ud(a)}" data-v="${a}">${$f(a)}</b><span class="sp-pc ${ud(a)}">${pc(x.pct[m])}</span></p></div>
-  <dl class="sp-st"><div class="sp-s1"><dt>${other.sh} P&amp;L</dt><dd class="${ud(ov)}">${k$(ov)}</dd></div>
+  <dl class="sp-st"><div class="sp-s1"><dt>${other.sh}<span class="sp-nw"> P&amp;L</span></dt><dd class="${ud(ov)}">${k$(ov)}</dd></div>
    <div class="sp-s2"><dt>W-L</dt><dd><b class="wc-tu">${wl.W}</b>-<b class="wc-td">${wl.L}</b></dd></div>
    <div class="sp-s3"><dt>Hit rate</dt><dd>${wl.W+wl.L?x.hr[m]+'%':'–'}</dd></div></dl>
   <div class="sp-l5"><div class="sp-f"><span class="sp-k">Last 5</span><span class="wc-form sp-form">${seq[m].slice(-5).map(q=>`<i class="${q.ok?'wc-fw':'wc-fl'}" title="${esc(q.r.co)}">${q.ok?'✓':'✗'}</i>`).join('')}</span></div><div class="sp-fill"></div></div>
-  <dl class="sp-tws">${tw.n===1?twl(tw.b,'Only round','sp-twb'):twl(tw.b,'Top round','sp-twb')+twl(tw.w,'Worst round','sp-tww')}</dl></div>`};
+  <dl class="sp-tws">${tw.n===1?twl(tw.b,'Only<span class="sp-rd"> round</span>','sp-twb'):twl(tw.b,'Top<span class="sp-rd"> round</span>','sp-twb')+twl(tw.w,'Worst<span class="sp-rd"> round</span>','sp-tww')}</dl></div>`};
 /* money counter: from the last window's figure to this one's (money accruing); instant with reduced motion */
 const count=(el,from,to,dur)=>{if(RM()||!dur||Math.round(from)===Math.round(to)){el.textContent=$f(to);return}const t0=performance.now();
   const st=t=>{const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3),v=from+(to-from)*e;el.textContent=$f(v);el.classList.toggle('wc-tu',v>=0);el.classList.toggle('wc-td',v<0);if(k<1)requestAnimationFrame(st)};requestAnimationFrame(st)};
@@ -65,7 +65,7 @@ const render=anim=>{const T=window.SPT||{},k=cur(),x=X[k],prev=last?X[last]:null
   D.querySelectorAll('[data-spk]').forEach(b=>{const on=b.dataset.spk===k;b.setAttribute('aria-pressed',on);b.classList.toggle('sp-on',on)});
   if(T.after)T.after(x,anim,prev);last=k};
 /* the controls a take prints: three stubs, Season / Last 24 hours / Last 7 days (short words where asked) */
-const ctl=(cls,short)=>`<div class="sp-ctl ${cls||''}" role="group" aria-label="Scoreboard time window">${['season','d1','d7'].map(k=>`<button type="button" class="sp-b" data-spk="${k}" aria-pressed="false"><b>${short?X[k].sh:X[k].t}</b>${short?'':`<small>${esc(X[k].when)}</small>`}</button>`).join('')}</div>`;
+const ctl=(cls,short)=>`<div class="sp-ctl ${cls||''}" role="group" aria-label="Scoreboard time window">${['season','d1','d7'].map(k=>`<button type="button" class="sp-b" data-spk="${k}" aria-pressed="false"><b>${short?X[k].sh:`<span class="sp-lt">${X[k].t}</span><span class="sp-sh">${X[k].sh}</span>`}</b>${short?'':`<small>${esc(X[k].when)}</small>`}</button>`).join('')}</div>`;
 D.addEventListener('click',e=>{const b=e.target.closest('[data-spk]');if(b){e.preventDefault();set(b.dataset.spk)}});
 const mount=()=>{const T=window.SPT||{};H.classList.add('sp-on',T.cls||'sp-x');
   D.querySelectorAll('#wc-lb .wc11n-sk').forEach(s=>s.remove());

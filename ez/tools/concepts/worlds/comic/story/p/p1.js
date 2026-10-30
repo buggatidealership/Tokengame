@@ -16,9 +16,9 @@ const line=(m,x)=>{const b=x.bal[m];if(b.length<2)return '';const vs=b.map(q=>q.
    <circle cx="${X(n-1)}" cy="${Y(b[n-1].v)}" r="2.2" class="sp-lne" style="--c:${win?c:(b[n-1].v>=100000?'#0a7a3c':'#c0261d')}"/></svg>`};
 window.SPT={id:'p1',cls:'sp-p1',
  mount(){D.body.insertAdjacentHTML('beforeend',`<div class="sp-dock sp-d1"><span class="sp-dl">Scoreboard P&amp;L over</span>${S.ctl('sp-c1')}</div>`);
-  const dk=D.querySelector('.sp-d1'),hd=D.querySelector('header.top'),pos=()=>{dk.style.top=Math.max(0,hd.getBoundingClientRect().bottom)+'px'};
-  pos();addEventListener('scroll',pos,{passive:true});addEventListener('resize',pos);
-  S.watch(s=>{const on=s.sb&&!s.st;dk.classList.toggle('sp-show',on);dk.inert=!on})},
+  /* the dock rides on the header's bottom edge (the header slides away on scroll down): followed every frame, only while shown */
+  const dk=D.querySelector('.sp-d1'),hd=D.querySelector('header.top');let on=false;const pos=()=>{dk.style.top=Math.max(0,hd.getBoundingClientRect().bottom)+'px';if(on)requestAnimationFrame(pos)};
+  pos();S.watch(s=>{const was=on;on=s.sb&&!s.st;dk.classList.toggle('sp-show',on);dk.inert=!on;if(on&&!was)pos()})},
  card(el,m,x,prev,anim){const cap=el.querySelector('.wc9-cap');cap.style.setProperty('--sp-tile',tile(m));
   const f=el.querySelector('.sp-fill');f.innerHTML=line(m,x);
   if(anim&&!S.RM()){const w=f.querySelector('.sp-lnw');if(w)w.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:650,easing:'cubic-bezier(.3,.8,.3,1)'})}}};

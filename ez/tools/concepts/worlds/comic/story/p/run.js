@@ -21,13 +21,18 @@ const chk=p=>p.evaluate(()=>{const iw=innerWidth,q=[...document.querySelectorAll
 module.exports={open,chk};
 if(require.main===module)(async()=>{fs.mkdirSync(OUT,{recursive:true});const b=await chromium.launch({args:['--disable-dev-shm-usage']});
  for(const W of WS)for(const t of TS){const {p,er}=await open(b,W,t);
-  for(const v of WINS){await p.evaluate(v=>window.__wc11Show(v,false),v);await p.waitForTimeout(500);
-   // scroll so the scoreboard's top is under the header (as a reader sees it)
-   const y=await p.evaluate(()=>{const s=document.querySelector('#wc-lb .wc-sbd');return s.getBoundingClientRect().top+scrollY});
-   await p.evaluate(y=>scrollTo(0,y-(innerWidth<600?70:90)),y);await p.waitForTimeout(+(process.env.WAIT||900));
-   const bb=await p.evaluate(()=>{const s=document.querySelector('#wc-lb .wc-sbd'),r=s.getBoundingClientRect();return {y:r.top+scrollY,h:r.height}});
-   if(process.env.VIEW){await p.screenshot({path:`${OUT}/v-${W}-${t}-${v}.png`})}
-   else await p.screenshot({path:`${OUT}/sb-${W}-${t}-${v}.png`,clip:{x:0,y:Math.max(0,bb.y-90),width:W,height:Math.min(bb.h+110,9000)},fullPage:true});
-   console.log(W,t,v,JSON.stringify(await chk(p)),er.join('|')||'ok')}
+  for(const v of WINS){await p.evaluate(v=>window.__wc11Show(v,false),v);await p.waitForTimeout(400);
+   // as a reader sees it: the scoreboard's head just under the sticky header (the docks show here if the take has one)
+   await p.evaluate(()=>{const h=document.querySelector('header.top').getBoundingClientRect().height,s=document.querySelector('#wc-lb .wc-sbd .wc-h2');scrollTo(0,s.getBoundingClientRect().top+scrollY-h-(innerWidth<600?4:10))});
+   await p.waitForTimeout(+(process.env.WAIT||900));
+   await p.screenshot({path:`${OUT}/v-${W}-${t}-${v}.png`});
+   const c=await chk(p);
+   if(v==='season'||process.env.FULL){await p.addStyleTag({content:'.sp-dock{display:none!important}'});
+    const bb=await p.evaluate(()=>{const s=document.querySelector('#wc-lb .wc-sb'),r=s.getBoundingClientRect();return {y:r.top+scrollY,h:r.height}});
+    await p.screenshot({path:`${OUT}/sb-${W}-${t}-${v}.png`,clip:{x:0,y:Math.max(0,bb.y-14),width:W,height:Math.min(bb.h+30,9000)},fullPage:true});
+    await p.addStyleTag({content:'.sp-dock{display:flex!important}'});await p.evaluate(()=>document.querySelectorAll('.sp-dock').forEach(d=>d.style.display=''))}
+   // card heights (the first ticket) for the "shorter" check
+   const ch=await p.evaluate(()=>[...document.querySelectorAll('#wc-lb .wc-sb-r')].map(t=>Math.round(t.getBoundingClientRect().height)).join('/'));
+   console.log(W,t,v,'cards',ch,JSON.stringify(c),er.join('|')||'ok')}
   await p.close()}
  await b.close()})();
