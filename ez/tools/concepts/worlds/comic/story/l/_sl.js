@@ -9,7 +9,7 @@ const ny=(()=>{const [m,d,y]=S.nyT.split('/').map(Number);return Date.UTC(2000+y
 const dstr=t=>{const x=new Date(t);return MON[x.getUTCMonth()]+' '+x.getUTCDate()};
 const W=[
  {k:'close',t:'Last close',f:S.inLast,when:md(S.lastD)+' close'},
- {k:'week',t:'This week',f:S.in7,when:dstr(ny-6*864e5)+' to '+dstr(ny)},
+ {k:'week',t:'This week',f:S.in7,when:(a=>{const z=dstr(ny);return a.split(' ')[0]===z.split(' ')[0]?a+' to '+z.split(' ')[1]:a+' to '+z})(dstr(ny-6*864e5))},
  {k:'season',t:'Season',f:()=>true,when:'Since '+md(S.R[0].called||S.R[0].resolves)}];
 /* the fight in each window: season = golden ticket holder vs challenger (the board's own rank);
    this week = #1 vs #2 by money made in the last 7 days; last close = best vs worst of that close. */
@@ -24,7 +24,9 @@ const line=(w,F)=>{const h=F.a;
   if(w.k==='season'){const g=S.reigns[S.reigns.length-1],l5=S.last5(h);
     return `${S.NM[h]} took the ticket on ${logo(g.r0)}<b>${S.esc(g.r0.co)}</b>, round ${g.n0}.${l5<=1?` Only ${l5} of its last 5 calls ${l5===1?'was':'were'} right.`:''}`}
   const s=swing(w,F.a,F.b);if(!s)return '';
-  return `Decided on ${logo(s.r)}<b>${S.esc(s.r.co)}</b>: ${S.NM[F.a]} ${S.k$(s.va)}, ${S.NM[F.b]} ${S.k$(s.vb)}.`};
+  /* "Decided on" only when that one round flips the fight; otherwise it is only the biggest swing */
+  const flips=(amt(F.a,w)-s.va)<(amt(F.b,w)-s.vb);
+  return `${flips?'Decided on':'Biggest swing:'} ${logo(s.r)}<b>${S.esc(s.r.co)}</b>. ${S.NM[F.a]} ${S.k$(s.va)}, ${S.NM[F.b]} ${S.k$(s.vb)}.`};
 const all=()=>W.map(w=>{const F=fight(w);return {w,F,va:amt(F.a,w),vb:amt(F.b,w),gap:Math.abs(Math.round(amt(F.a,w))-Math.round(amt(F.b,w))),wa:wl(F.a,w),wb:wl(F.b,w),n:rs(w).length,line:line(w,F),
   amts:Object.fromEntries(S.ORDER.map(m=>[m,amt(m,w)]))}});
 /* money counter: counts from where it stands to the new value (money accruing); instant with reduced motion */
