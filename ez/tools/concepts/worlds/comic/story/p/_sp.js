@@ -39,8 +39,8 @@ const ud=v=>v>=0?'wc-tu':'wc-td';
 const cur=()=>{const s=D.querySelector('.wc11n-stub[aria-selected="true"]');return s?s.dataset.k:'season'};
 const set=k=>{if(k!==cur()&&window.__wc11Show)window.__wc11Show(k,true)};
 const lg=(r,cls)=>{const l=coLogo(r.ticker);return l?`<img class="sp-lg ${cls||''}${coDk(r.ticker)?' sp-dk':''}" src="${l}" alt="" title="${esc(r.co)}">`:''};
-/* the common card: name and P&L on one line (P&L top right, % under), a dashed rule, the other window | W-L | hit rate,
-   Last 5 (+ the take's filler), top and worst round */
+/* the common card: name and P&L on one line (P&L top right, % under), a dashed rule, the other window | W-L | hit rate (each value centred under its label),
+   Last 5 with its squares on the same line, top and worst round (the owner's decided card, 2026-10-30) */
 const twl=(q,lab,cls)=>q?`<div class="sp-tw ${cls}"><dt>${lab}</dt><dd><b class="${ud(q.v)}">${k$(q.v)}</b>${lg(q.r)}<span class="sp-sr">${esc(q.r.co)}</span></dd></div>`:`<div class="sp-tw ${cls}"><dt>${lab}</dt><dd><span class="sp-no">No rounds</span></dd></div>`;
 const cardHTML=(m,x)=>{const a=x.amt[m],other=x.k==='season'?X.d7:X.season,ov=other.amt[m],wl=x.wl[m],tw=x.tw[m];
   return `<div class="sp-c">
@@ -49,7 +49,7 @@ const cardHTML=(m,x)=>{const a=x.amt[m],other=x.k==='season'?X.d7:X.season,ov=ot
   <dl class="sp-st"><div class="sp-s1"><dt>${other.sh}<span class="sp-nw"> P&amp;L</span></dt><dd class="${ud(ov)}">${k$(ov)}</dd></div>
    <div class="sp-s2"><dt>W-L</dt><dd><b class="wc-tu">${wl.W}</b>-<b class="wc-td">${wl.L}</b></dd></div>
    <div class="sp-s3"><dt>Hit rate</dt><dd>${wl.W+wl.L?x.hr[m]+'%':'–'}</dd></div></dl>
-  <div class="sp-l5"><div class="sp-f"><span class="sp-k">Last 5</span><span class="wc-form sp-form">${seq[m].slice(-5).map(q=>`<i class="${q.ok?'wc-fw':'wc-fl'}" title="${esc(q.r.co)}">${q.ok?'✓':'✗'}</i>`).join('')}</span></div><div class="sp-fill"></div></div>
+  <div class="sp-l5"><div class="sp-f"><span class="sp-k">Last 5</span><span class="wc-form sp-form">${seq[m].slice(-5).map(q=>`<i class="${q.ok?'wc-fw':'wc-fl'}" title="${esc(q.r.co)}">${q.ok?'✓':'✗'}</i>`).join('')}</span></div></div>
   <dl class="sp-tws">${tw.n===1?twl(tw.b,'Only<span class="sp-rd"> round</span>','sp-twb'):twl(tw.b,'Top<span class="sp-rd"> round</span>','sp-twb')+twl(tw.w,'Worst<span class="sp-rd"> round</span>','sp-tww')}</dl></div>`};
 /* money counter: from the last window's figure to this one's (money accruing); instant with reduced motion */
 const count=(el,from,to,dur)=>{if(RM()||!dur||Math.round(from)===Math.round(to)){el.textContent=$f(to);return}const t0=performance.now();

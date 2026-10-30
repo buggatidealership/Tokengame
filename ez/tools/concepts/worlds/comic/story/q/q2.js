@@ -16,10 +16,8 @@
       <div class="q2-page" style="--nb:${bulls.length||1};--nd:${bears.length||1}">${colL(bulls)}${colL(bears)}<span class="q2-vs" aria-hidden="true">${bulls.length} vs ${bears.length}</span></div>
       <p class="wc-sr">${bulls.length} said up, ${bears.length} said down. ${cs.map(x=>NM[x.m]+' '+word(x)).join('. ')}.</p></section>`;
     /* ---- 2 · the film rolls from the calls; the close lands as a sound effect ---- */
-    const sfx=['PLUNK!','KER-SPLAT!','WHUMP!'][n%3],sfxU=['ZOOM!','KA-BOOM!','WHOOSH!'][n%3];
     const p2=`<section class="wc11s-pn sq-p sq-p2 q2-p2" aria-label="Step 2">${cap(2,esc(co)+' reports. Then the close')}
-      ${tv(d,{cls:'q2-tv',tag:`<button type="button" class="q2-snd" aria-label="Sound on"><i aria-hidden="true"></i><span>Tap for sound</span></button>`,
-        mark:`<span class="q2-sfx ${up?'q2-sfxU':'q2-sfxD'}" aria-label="The close: ${up?'up':'down'} ${pct(A)}"><b aria-hidden="true">${up?sfxU:sfx}</b><span aria-hidden="true">${up?'▲ +':'▼ −'}${pct(A)}</span><small aria-hidden="true">at the close</small></span>`})}</section>`;
+      ${tv(d,{cls:'q2-tv',tag:`<button type="button" class="q2-snd" aria-label="Sound on"><i aria-hidden="true"></i><span>Tap for sound</span></button>`})}</section>`;
     /* ---- 3 · the balloons go to the grader ---- */
     const dl=G.spread(cs,13),best=d.best,gap=best?Math.abs(best.sv-A):0;
     const mk=x=>{const [X,Y]=G.ptA(x.a,G.R+27);return `<span class="q2-mk${x.ok?' q2-ok':' q2-no'}" style="left:${(X/320*100).toFixed(2)}%;top:${(Y/190*100).toFixed(2)}%;--i:${dl.indexOf(x)}">${face(x.m,'q2-mf')}</span>`};

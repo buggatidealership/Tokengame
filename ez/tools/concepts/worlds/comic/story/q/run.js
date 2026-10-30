@@ -49,7 +49,7 @@ const checks=p=>p.evaluate(()=>{const n=document.querySelector('.wc-lr'),iw=docu
     console.log(W,t,JSON.stringify(ck),'p2box',JSON.stringify(p2),p.__er.join(' | ')||'no errors');await p.close()}}
  else if(mode==='rec'){const OUT=a3,W=+(a4||390);const p=await open(b,W);await take(p,tk);await settle(p);await hide(p);
    const TMP=fs.mkdtempSync(os.tmpdir()+'/sqrec-');let N=0;const FPS=15;
-   const clip=sel=>p.evaluate(s=>{const r=document.querySelector(s).getBoundingClientRect();const h=Math.round(r.height+20);return {x:0,y:Math.round(r.top+scrollY-10),width:document.documentElement.clientWidth,height:h-h%2}},sel);
+   const clip=sel=>p.evaluate(s=>{const r=document.querySelector(s).getBoundingClientRect();const h=Math.round(r.height+50);return {x:0,y:Math.round(r.top+scrollY-20),width:document.documentElement.clientWidth,height:h-h%2}},sel);
    const shot=async c=>{await p.screenshot({path:`${TMP}/f${String(N++).padStart(4,'0')}.png`,clip:c,fullPage:true})};
    // panel 2: play the film from the take's start (stepped by seeking), title card frames first
    await p.evaluate(()=>{const n=document.querySelector('.sq-p2,.wc11d-p2');scrollTo(0,n.getBoundingClientRect().top+scrollY-40)});await p.waitForTimeout(300);

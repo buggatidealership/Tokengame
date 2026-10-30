@@ -22,8 +22,7 @@
     const f=d.film,len=Math.min(10,20.06-f.t0),mk=t=>((t-f.t0)/len*100).toFixed(1);
     const p2=`<section class="wc11s-pn sq-p sq-p2 q3-p2" aria-label="Step 2">${cap(2,esc(co)+' reports. Then the close')}
       ${tv(d,{cls:'q3-tv'})}
-      <div class="q3-track" aria-hidden="true"><i class="q3-head"></i><span style="left:0">Calls</span><span style="left:${mk(f.rev)}%">Close</span><span style="left:${mk(f.crown)}%">Crown</span><b>0:${String(Math.round(len)).padStart(2,'0')}</b></div>
-      <p class="q3-tape ${up?'q3-tU':'q3-tD'}" aria-label="The close: ${esc(co)} ${up?'up':'down'} ${pct(A)}"><span aria-hidden="true">${esc(d.ticker)}</span><b aria-hidden="true">${up?'▲':'▼'} ${pct(A)}</b><small aria-hidden="true">Close · ${d.graded}</small><span aria-hidden="true">${esc(d.ticker)}</span><b aria-hidden="true">${up?'▲':'▼'} ${pct(A)}</b></p></section>`;
+      <div class="q3-track" aria-hidden="true"><i class="q3-head"></i><b>0:${String(Math.round(len)).padStart(2,'0')}</b><span style="--x:0">Calls</span><span style="--x:${mk(f.rev)}">Close</span><span class="q3-crw" style="--x:${mk(f.crown)}">♛</span></div></section>`;
     /* ---- 3 · the dial on the stock, the slips graded ---- */
     const dl=G.spread(cs,13),best=d.best,gap=best?Math.abs(best.sv-A):0;
     const dmk=x=>{const [X,Y]=G.ptA(x.a,G.R+26);return `<span class="q3-mk${x.ok?' q3-ok':' q3-no'}" style="left:${(X/320*100).toFixed(2)}%;top:${(Y/190*100).toFixed(2)}%;--i:${dl.indexOf(x)}">${face(x.m,'q3-mf')}</span>`};
@@ -59,7 +58,7 @@
     return [p1,p2,p3,p4]});
   /* panel 2: the head runs along the track while the film plays */
   const p2=pg.querySelector('.sq-p2'),f=d.film,len=Math.min(10,20.06-f.t0),head=p2.querySelector('.q3-head');
-  wireTv(d,p2,{time:t=>{head.style.left=Math.max(0,Math.min(100,(t-f.t0)/len*100))+'%';p2.classList.toggle('q3-rev',t>=f.rev)}});
+  wireTv(d,p2,{time:t=>{head.style.setProperty('--x',Math.max(0,Math.min(100,(t-f.t0)/len*100)));p2.classList.toggle('q3-rev',t>=f.rev)}});
   const p3=pg.querySelector('.sq-p3'),st=p3.querySelector('.q3-stage');stage(st,null,{on:()=>p3.classList.add('sq-go')});
   st.addEventListener('click',()=>{if(RM())return;p3.classList.remove('sq-go');void p3.offsetWidth;p3.classList.add('sq-go')});
   if(RM())p3.classList.add('sq-done','sq-go');

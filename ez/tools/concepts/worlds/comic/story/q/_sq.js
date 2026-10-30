@@ -18,7 +18,7 @@ window.SQ=(function(){
   const sv=c=>(c.up?'+':'−')+c.v+'%';
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   /* the film's own timings (measured on the frames, not sheet numbers) */
-  const FT={56:{t0:10.0,rev:13.2,crown:14.8}};
+  const FT={56:{t0:10.0,rev:13.2,crown:14.8,end:20.06}};
   function data(){const P=window.__x2pPnl().A,RS=ROUNDS.slice().sort((a,b)=>a.n-b.n);
     const r=ROUNDS.find(x=>x.n===56);const n=r.n,up=r.a>0,A=r.a,W=r.win?r.win.split(' & '):[];
     const per=(m,x)=>P[m]&&P[m].per[x.n]?P[m].per[x.n].v:0;
@@ -45,9 +45,12 @@ window.SQ=(function(){
   function ticks(){let s='';for(let v=-G.MX;v<=G.MX;v+=2.5){const [a,b]=G.pt(v,G.R-11),[g,h]=G.pt(v,G.R-(v%5===0?19:15));s+=`<path class="sq-tk${v===0?' sq-tk0':''}" d="M${g.toFixed(1)} ${h.toFixed(1)}L${a.toFixed(1)} ${b.toFixed(1)}"/>`}return s}
   /* panel 2: a square film box. Poster = the frame where all four calls are up; play starts there (t0); the market's
      move lands on the picture when the film reaches it (rev). Shown on the poster too, so an unplayed panel still answers. */
-  function tv(d,o){o=o||{};const f=d.film;return `<div class="sq-tv${o.cls?' '+o.cls:''}"><img class="sq-po" src="${f.calls}" alt="" decoding="async">
+  /* the page's own comic move stamp (world-comic.js sfx() word rule, .wc-sfx look), given in every take (owner, 2026-10-30) */
+  const sfxW=a=>{const x=Math.abs(a),up=a>0;if(x<1.5)return up?'blip':'tick';if(x<4)return up?'POP!':'THUD!';if(x<8)return up?'ZOOM!':'CRASH!';return up?'KA-POW!':'KA-BOOM!'};
+  const stamp=d=>`<span class="wc-sfx wc-lr-sfx sq-sfx ${d.up?'wc-up':'wc-dn'}" aria-label="The close: ${d.up?'up':'down'} ${pct(d.A)}"><em aria-hidden="true">${sfxW(d.A)}</em><b aria-hidden="true">${d.up?'+':'−'}${pct(d.A)}</b></span>`;
+  function tv(d,o){o=o||{};const f=d.film;return `<div class="sq-tvw"><div class="sq-tv${o.cls?' '+o.cls:''}"><img class="sq-po" src="${f.calls}" alt="" decoding="async">
       <button type="button" class="sq-play" aria-label="Play the round ${d.n} film from the calls, with sound"><i aria-hidden="true"></i></button>
-      ${o.tag||''}${o.mark||''}</div>`}
+      ${o.tag||''}</div>${stamp(d)}</div>`}
   function wireTv(d,root,o){o=o||{};const tvb=root.querySelector('.sq-tv'),pb=tvb.querySelector('.sq-play'),f=d.film;let v=null;tvb.classList.add('sq-rev');
     const mk=()=>{if(v)return v;v=D.createElement('video');v.className='sq-v';v.playsInline=true;v.preload='auto';v.src=f.v+'#t='+f.t0;tvb.insertBefore(v,pb);
       v.addEventListener('loadedmetadata',()=>{if(v.currentTime<f.t0-.05)v.currentTime=f.t0});

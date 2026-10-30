@@ -552,6 +552,18 @@ def world(name,title,out,layer=None):
     # stop), and keeps the record asleep (the round pop-up copies its cards) until world-comic.js wakes it: after the cover lifts,
     # when the page is idle, or at once when a round is asked for. The patches below are for the comic pages only; X2+ and X4+
     # are built as before.
+    # (2026-10-30, owner: "build it on the X3 plus preview now. Then... just push to production") X3+ only: the Upcoming tab as
+    # story round G1 (helper e's fight night on the ticket stub, each company's own mark blown up and drifting), copied from
+    # tools/concepts/worlds/comic/story/{e,g} into tools/v22/story/. It runs the first time the Upcoming tab shows (its canvases
+    # need the tab laid out), in its own try so a failure leaves the tab as it was.
+    story=''
+    if name=="comic" and not layer:
+        S="tools/v22/story/"
+        css+='\n'+''.join(open(S+f).read() for f in ['_se.css','_sg.css','g1.css'])
+        story=('\ntry{(function(){var H=document.documentElement,done=0;function run(){if(done||H.getAttribute("data-sec")!=="upcoming"||!document.getElementById("wc-up")||!H.classList.contains("x2p-world"))return;done=1;'
+               +''.join(open(S+f).read() for f in ['_se.js','_sg.js','g1.js'])
+               +'}new MutationObserver(run).observe(H,{attributes:true,attributeFilter:["data-sec","class"]});run()})()}catch(e){console.error(e)}')
+    js+=story
     pre=';document.documentElement.classList.add("wc-pre")' if name=="comic" else ''
     w=px.replace('</head>','<script>window.__x2pLB=1;window.__x2pNeedWorld=1;window.__x2pWorldName="%s"%s</script>\n<style id="x2p-world-css">%s</style>\n</head>'%(name,pre,css),1)
     if name=="comic":

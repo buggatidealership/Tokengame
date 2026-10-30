@@ -17,8 +17,7 @@
       <p class="wc-sr">${bulls.length} said up, ${bears.length} said down. ${cs.map(x=>NM[x.m]+(x.up?' up ':' down ')+x.v+'%').join('. ')}.</p></section>`;
     /* ---- 2 · the arena screen ---- */
     const p2=`<section class="wc11s-pn sq-p sq-p2 q1-p2" aria-label="Step 2">${cap(2,esc(co)+' reports. Then the close')}
-      ${tv(d,{tag:`<span class="q1-tag" aria-hidden="true">▶ 0:${String(Math.round(Math.min(10,20.06-d.film.t0))).padStart(2,'0')}<span class="q1-tg2"> · from the calls</span></span>`,
-        mark:`<span class="q1-pow ${up?'q1-powU':'q1-powD'}" aria-label="The close: ${up?'up':'down'} ${pct(A)}"><svg viewBox="0 0 120 84" aria-hidden="true"><path d="M60 2 70 20 92 8 88 30 118 30 96 46 114 64 88 62 90 82 68 68 56 82 48 64 24 78 30 56 4 56 24 40 6 22 32 26 30 4 48 20Z"/></svg><span><small>The close</small><b>${up?'▲':'▼'} ${up?'+':'−'}${pct(A)}</b></span></span>`})}</section>`;
+      ${tv(d,{tag:`<span class="q1-tag" aria-hidden="true">▶ 0:${String(Math.round(Math.min(10,20.06-d.film.t0))).padStart(2,'0')}<span class="q1-tg2"> · from the calls</span></span>`})}</section>`;
     /* ---- 3 · the scorecards ---- */
     const dl=G.spread(cs,14),best=d.best,gap=best?Math.abs(best.sv-A):0;
     const mk=x=>{const [X,Y]=G.ptA(x.a,G.R+31);return `<span class="q1-mk${x.ok?' q1-ok':' q1-no'}${x===dl.find(y=>y.m===(best&&best.m))?' q1-best':''}" style="left:${(X/320*100).toFixed(2)}%;top:${(Y/190*100).toFixed(2)}%;--i:${dl.indexOf(x)}">${face(x.m,'q1-mf')}${best&&x.m===best.m?'<em class="q1-cr" aria-hidden="true">♛</em>':''}</span>`};
