@@ -7,7 +7,7 @@
   const mx=Math.max(Math.abs(A),...cs.map(x=>Math.abs(x.sv))),M=Math.ceil(mx*1.12/2)*2,step=M>12?5:M>6?2:1,lab=M>12?10:M>6?5:2;
   const X=v=>((v+M)/(2*M)*100).toFixed(3)+'%';
   /* pins on levels so faces never overlap: sort by value, put each on the lowest level with room (54px at 390, scaled by the ruler's width) */
-  const lv={};{const xs=cs.slice().sort((a,b)=>a.sv-b.sv),last=[];xs.forEach(x=>{let L=0;while(last[L]!=null&&(x.sv-last[L])/(2*M)<.17)L++;last[L]=x.sv;lv[x.m]=L})}
+  const lv={};{const xs=cs.slice().sort((a,b)=>a.sv-b.sv),last=[];xs.forEach(x=>{let L=0;while(last[L]!=null&&(x.sv-last[L])/(2*M)<.2)L++;last[L]=x.sv;lv[x.m]=L})}
   const nL=Math.max(...Object.values(lv))+1;
   const ticks=[];for(let v=-M;v<=M+1e-9;v+=step)ticks.push(`<i class="sd3-tk${Math.abs(v%lab)<1e-9?' sd3-tkl':''}" style="left:${X(v)}">${Math.abs(v%lab)<1e-9?`<span>${v===0?'0':(v>0?'+':'−')+Math.abs(v)+'%'}</span>`:''}</i>`);
   const axis=`<div class="sd3-ax" aria-hidden="true"><i class="sd3-hd sd3-hdn"></i><i class="sd3-hd sd3-hup"></i>${ticks.join('')}<i class="sd3-z"></i></div>
