@@ -10,6 +10,13 @@ html.wc-on body::before{display:none!important}
 /* the old Overview stays in the DOM, off screen, so the round pop-up can still measure and copy its cards */
 html.wc-on main > section:not(.x2p-up):not([id^=wc]),html.wc-on main > .rfoot,html.wc-on footer{position:absolute!important;left:-40000px!important;top:0!important;width:min(100vw,1200px)!important;visibility:hidden!important;pointer-events:none!important}
 html.wc-on[data-sec=upcoming] footer{position:static!important;visibility:visible!important;pointer-events:auto!important}
+/* (speed, 2026-10-30) html.wc-pre is set before the page is parsed (build.py, comic pages only): the old Overview's sections the
+   comic never shows or copies are out of layout from the start, and the record sleeps until world-comic.js wakes it (.wc-rw).
+   The hero and the first screen's ticket stay: the film ticket is built and fitted there before it moves onto the cover. */
+html.wc-pre main > section:is(#standings,#learn,#highlights,#x2pSt,#get){display:none!important}
+html.wc-pre:not(.wc-rw) main > section#record{display:none!important}
+/* a section of the issue off screen holds its loops still (world-comic.js holdOff names them as the section leaves) */
+html.wc-on .wc-offs .wc-an,html.wc-on .wc-offs .wc-anp::before,html.wc-on .wc-offs .wc-anp::after{animation-play-state:paused!important}
 html.wc-on main.wrap{max-width:none!important;padding:0!important}
 
 /* the header becomes the comic's masthead strip */

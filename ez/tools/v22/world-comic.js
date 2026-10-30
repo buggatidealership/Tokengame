@@ -2,6 +2,27 @@
    then builds this week's issue from the page's own data (ROUNDS, PENDING, UPCOMING, FILMS, MODELS,
    CO_LOGOS, CAPS, __x2pPnl). Every number comes from the data; speech balloons only say the AI's call.
    The original Overview sections stay in the DOM (off screen) so the round pop-up (the PSA slab) still works. */
+/* (speed, 2026-10-30) the record wakes: build.py sets html.wc-pre before the page is parsed and world-comic.css keeps the old
+   record out of layout until then, so X2+ no longer lays out and fits its 117 cards under the cover. It wakes after the cover
+   lifts, once the page is idle; at once when a round is asked for (x2plus.js's pop-up waits for it, build.py) or a round link is
+   pressed. Waking does what loading did for it: the carousel back on its card (v15's own scroll, build.py exports it), the
+   name labels and tied winners fitted, and its looping animations named so the off-screen rule holds them still (x2plus.js, SPEED3). */
+(function(){var H=document.documentElement;if(!H.classList.contains('wc-pre'))return;var awake=false,started=false,q=[];
+  function tag(){var rec=document.getElementById('record');
+    if(rec&&rec.classList.contains('x2p-offs')&&rec.getAnimations)try{rec.getAnimations({subtree:true}).forEach(function(a){var f=a.effect,g=f&&f.target;if(g&&g.classList)g.classList.add(f.pseudoElement?'x2p-anp':'x2p-an')})}catch(e){}}
+  /* named now and again as the cards near the centred one get their certificates (their loops start a little later) */
+  function done(){awake=true;tag();setTimeout(tag,1500);setTimeout(tag,5000);
+    q.splice(0).forEach(function(f){try{f()}catch(e){}})}
+  function wake(){if(started)return;started=true;H.classList.add('wc-rw');
+    try{if(window.__wcCarHome)window.__wcCarHome()}catch(e){}
+    try{if(window.__x2pNmFitIn)window.__x2pNmFitIn()}catch(e){}
+    try{if(window.__wcTiesFit)window.__wcTiesFit(document.getElementById('record'))}catch(e){}
+    requestAnimationFrame(function(){requestAnimationFrame(done)})}
+  /* true when the record is awake; else wakes it and calls back once it is */
+  window.__wcRecWake=function(cb){if(awake)return true;if(cb)q.push(cb);wake();return false};
+  addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('a[href^="#/round/"],.wc-big video,.wc-lr-2 video'))wake()},{capture:true,passive:true});
+  (function idle(){if(started)return;if(H.classList.contains('x2p-cur')){setTimeout(idle,500);return}
+    setTimeout(function(){if(window.requestIdleCallback)requestIdleCallback(wake,{timeout:5000});else wake()},2000)})()})();
 (function(){
 'use strict';
 const D=document,H=D.documentElement;
@@ -291,8 +312,9 @@ function lbBuild(){
 /* ================= THE UPCOMING TAB (#/upcoming): the next fight nights, in the same comic ================= */
 /* each exchange's close, local time (Seoul and Tokyo 15:30, Taipei 13:30, Hong Kong 16:00, London 16:30, the euro exchanges 17:30) */
 const XC={KS:['Asia/Seoul',15,30],T:['Asia/Tokyo',15,30],TW:['Asia/Taipei',13,30],HK:['Asia/Hong_Kong',16,0],L:['Europe/London',16,30],AS:['Europe/Amsterdam',17,30],DE:['Europe/Berlin',17,30],SW:['Europe/Zurich',17,30],PA:['Europe/Paris',17,30]};
-function closeAt(t,mdy){if(!mdy)return null;const [tz,h,mi]=XC[(String(t).split('.')[1]||'')]||['America/New_York',16,0],[m,d,y]=mdy.split('/').map(Number),Y=2000+(y%100);
-  const loc=x=>{const p=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}).formatToParts(new Date(x));const g=k=>+p.find(q=>q.type===k).value;return Date.UTC(g('year'),g('month')-1,g('day'),g('hour')%24,g('minute'))};
+/* (speed, 2026-10-30) one date formatter per time zone: a new one on every call cost about a second under the cover */
+const IDF={};function closeAt(t,mdy){if(!mdy)return null;const [tz,h,mi]=XC[(String(t).split('.')[1]||'')]||['America/New_York',16,0],[m,d,y]=mdy.split('/').map(Number),Y=2000+(y%100);
+  const loc=x=>{const p=(IDF[tz]||(IDF[tz]=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}))).formatToParts(new Date(x));const g=k=>+p.find(q=>q.type===k).value;return Date.UTC(g('year'),g('month')-1,g('day'),g('hour')%24,g('minute'))};
   const want=Date.UTC(Y,m-1,d,h,mi);let x=want;for(let i=0;i<3;i++)x+=want-loc(x);return x}
 function bellTxt(t,mdy){const at=closeAt(t,mdy);if(at==null)return 'Date to come';const ms=at-Date.now();if(ms<=0)return 'The bell has rung · results soon';const mn=Math.round(ms/6e4),h=Math.floor(mn/60);
   return 'Bell in '+(h>=24?Math.floor(h/24)+'d '+(h%24)+'h':h?h+'h '+(mn%60)+'m':mn+'m')}
@@ -636,6 +658,15 @@ function r10(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f10')
   const co=sp.querySelector('.wc-coins');if(co)co.insertAdjacentHTML('beforebegin',html);sp.classList.add('wc10-on');
   const fig=sp.querySelector('.wc10-ch');new IntersectionObserver((es2,o)=>{if(es2[0].isIntersecting){fig.classList.add('wc10-in');o.disconnect()}},{threshold:.3}).observe(fig)}
 const done=()=>H.classList.add('x2p-world');
+/* (speed, 2026-10-30) a section of the issue off screen holds its loops still (the waving flags, the holo faces, the sparkles: about
+   forty run at once, a third of a slow phone's time at rest went to painting the ones nobody sees). As x2plus.js does for the old
+   Overview (SPEED3): watched with 200px of warning, what animates in a section is named as it leaves (wc-an, or wc-anp for a
+   ::before/::after), and world-comic.css pauses those while the section is away. A loop started while it is away runs until the next time. */
+function holdOff(){if(!window.IntersectionObserver)return;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const t=e.target;
+    if(!e.isIntersecting&&t.getAnimations)try{t.getAnimations({subtree:true}).forEach(a=>{const f=a.effect,g=f&&f.target;if(g&&g.classList)g.classList.add(f.pseudoElement?'wc-anp':'wc-an')})}catch(x){}
+    t.classList.toggle('wc-offs',!e.isIntersecting)}),{rootMargin:'200px 0px'});
+  D.querySelectorAll('#wc-book > section,#wc-lb > section,#wc-up > section').forEach(x=>io.observe(x))}
 /* a twist on the graded slab's front, as a switch only (owner to decide): ?slab=1 or window.__c3Slab */
 try{if(window.__c3Slab||/[?&]slab=1/.test(location.search))H.classList.add('wc-slab')}catch(e){}
 /* a round opened from a panel, a back issue or a ticket: when its card closes, the page goes back to where it was
@@ -650,6 +681,7 @@ let tries=0;(function wait(){
     try{certWatch()}catch(e){window.__x2pWorldErr=e;console.error('comic certs',e)}
     try{r9()}catch(e){window.__x2pWorldErr=e;console.error('comic r9',e)}
     try{r10()}catch(e){window.__x2pWorldErr=e;console.error('comic r10',e)}
+    try{holdOff()}catch(e){}
     done()}
   else if(tries++<200)setTimeout(wait,50);else done()})();
 })();

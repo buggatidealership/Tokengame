@@ -546,7 +546,33 @@ def world(name,title,out,layer=None):
     if layer:
         css+='\n'+open("tools/v22/world-%s.css"%layer).read()
         js+='\n}catch(e){window.__x2pWorldErr=e;document.documentElement.classList.add("x2p-world");console.error(e)}\ntry{'+open("tools/v22/world-%s.js"%layer).read()
-    w=px.replace('</head>','<script>window.__x2pLB=1;window.__x2pNeedWorld=1;window.__x2pWorldName="%s"</script>\n<style id="x2p-world-css">%s</style>\n</head>'%(name,css),1)
+    # (speed, 2026-10-30) the comic hides X2+'s Overview, yet X2+ still built and laid it out under the cover (X3+'s cover lifted at
+    # about 31 s on a 4x slower phone, X2+'s at 22 s). On the comic pages (X3+, X5+) html.wc-pre is set before <body> is parsed:
+    # world-comic.css then takes the sections the comic never shows out of layout (display:none: their fitters find no width and
+    # stop), and keeps the record asleep (the round pop-up copies its cards) until world-comic.js wakes it: after the cover lifts,
+    # when the page is idle, or at once when a round is asked for. The patches below are for the comic pages only; X2+ and X4+
+    # are built as before.
+    pre=';document.documentElement.classList.add("wc-pre")' if name=="comic" else ''
+    w=px.replace('</head>','<script>window.__x2pLB=1;window.__x2pNeedWorld=1;window.__x2pWorldName="%s"%s</script>\n<style id="x2p-world-css">%s</style>\n</head>'%(name,pre,css),1)
+    if name=="comic":
+        for a,b in [
+            # v15's record: with the record asleep (no width) the centred card stays where it is, not the first one
+            ('function nearest(){var mid=','function nearest(){if(!car.clientWidth)return cur<0?START:cur;var mid='),
+            # ... and once it wakes, the carousel goes to it again, as on load (world-comic.js)
+            ('function home(){if(slides.length)go(cur<0?START:cur,false)}','function home(){if(slides.length)go(cur<0?START:cur,false)}\nwindow.__wcCarHome=function(){home()};'),
+            # x2plus.js's round pop-up copies a record card: wake the record first, X2's own layer hidden meanwhile
+            ('function open(rm){var c0=','function open(rm){if(window.__wcRecWake&&!window.__wcRecWake(function(){if(rm.isConnected&&!cur)open(rm)})){rm.classList.add("x2p-rmh");return}var c0='),
+            # x2plus.js's "AIs" fix: every check of a text's case forced a style pass after the last change (2.2 s when the comic
+            # went in); now all are read first, then changed, with the same result
+            ('hit.forEach(function(n){if(getComputedStyle(n.parentNode).textTransform!=="uppercase")return;var f=document.createDocumentFragment();',
+             'hit=hit.filter(function(n){return getComputedStyle(n.parentNode).textTransform==="uppercase"});hit.forEach(function(n){var f=document.createDocumentFragment();'),
+            # TIES fits a tied round's winners on one line: the record's ties are fitted again when it wakes (world-comic.js)
+            ('function run(){fit()}if(d.readyState==="loading")','function run(){fit()}window.__wcTiesFit=fit;if(d.readyState==="loading")'),
+            # STITCH levels the old board's figures on canvas: the comic never shows that board
+            ('function level(ol){','function level(ol){if(document.documentElement.classList.contains("wc-pre"))return;'),
+        ]:
+            assert w.count(a)==1,a
+            w=w.replace(a,b,1)
     assert w.count('<title>EZ Live X2+</title>')==1
     w=w.replace('<title>EZ Live X2+</title>','<title>%s</title>'%title)
     assert w.count('</body>')==1
