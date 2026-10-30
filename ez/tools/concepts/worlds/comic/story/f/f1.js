@@ -5,18 +5,17 @@
 const day=S.mode==='visit'?S.since:(S.rel(S.lastS)==='today'?"Today's close":S.sinceShort);
 /* A: the close. Every graded company with its move (a long list keeps the biggest moves and counts the rest) */
 const MAXA=14,ws=S.win.slice().sort((a,b)=>Math.abs(b.a)-Math.abs(a.a)),shown=ws.slice(0,MAXA).sort((a,b)=>a.n-b.n);
-const A=`<li class="sf-pn sf1-p sf1-a"><p class="sf-cb">${esc(day)}</p>
-  <p class="sf1-big"><b class="sf-pow">${S.win.length}</b> reports graded</p>
+const A=`<li class="sf-pn sf1-p sf1-a"><p class="sf-cb">${S.win.length} reports graded</p>
   <div class="sf1-cos">${shown.map((r,i)=>chip(r.ticker,r.co,`<small class="${r.a>0?'wc-tu':'wc-td'}">${mv(r.a)}</small>`,'sf1-co" style="--i:'+i)).join('')}${ws.length>MAXA?`<span class="sf1-more">+${ws.length-MAXA}</span>`:''}</div></li>`;
 /* B: who got paid. One bar per AI from zero, as long as its P&L over the window (all four on one scale) */
 const mx=Math.max(...S.ORDER.map(m=>Math.abs(S.delta[m]))),byD=S.ORDER.slice().sort((a,b)=>S.delta[b]-S.delta[a]);
 const B=`<li class="sf-pn sf1-p sf1-b"><p class="sf-cb">Who got paid</p>
-  <div class="sf1-bars">${byD.map((m,i)=>{const v=S.delta[m],w=Math.abs(v)/mx*50;return `<div class="sf1-bar ${v>=0?'sf1-u':'sf1-d'}" style="--w:${w.toFixed(2)}%;--i:${i}">${face(m,'sf1-f')}<span class="sf1-tr"><i></i></span><b class="sf-pow ${v>=0?'wc-tu':'wc-td'}">${usdK(v)}</b><span class="wc-sr">${NM[m]} ${usd(v)}, ${S.wl[m].w} right and ${S.wl[m].l} wrong</span></div>`}).join('')}</div>
-  <p class="sf1-ax" aria-hidden="true"><span>Lost</span><span>Made</span></p></li>`;
+  <div class="sf1-bars">${byD.map((m,i)=>{const v=S.delta[m],w=Math.abs(v)/mx*50;return `<div class="sf1-bar ${v>=0?'sf1-u':'sf1-d'}" style="--w:${w.toFixed(2)}%;--i:${i}">${face(m,'sf1-f')}<span class="sf1-tr"><i></i></span><b class="sf-pow ${v>=0?'wc-tu':'wc-td'}">${usdK(v)}</b><span class="wc-sr">${NM[m]} ${usd(v)}, ${S.wl[m].w} right and ${S.wl[m].l} wrong</span></div>`}).join('')}</div></li>`;
 /* C: the lead. The holders in order, a gold star (C4's mark) at each change, then who holds it and by how much */
-const hs=[S.before[0]].concat(S.hand.map(h=>h.m)),L=S.now[0],R2=S.now[1];
+/* a long window keeps the last two changes (three holders) and counts the earlier ones */
+const KEEP=2,cut=Math.max(0,S.hand.length-KEEP),hand=S.hand.slice(cut),hs=[cut?S.hand[cut-1].m:S.before[0]].concat(hand.map(h=>h.m)),L=S.now[0],R2=S.now[1];
 const C=`<li class="sf-pn sf1-p sf1-c"><p class="sf-cb">${esc(S.handLine)}</p>
-  <div class="sf1-relay">${hs.map((m,i)=>(i?`<span class="sf1-hop" style="--i:${i}"><i class="sf1-star"></i><small>R${S.hand[i-1].r.n} ${esc(S.short(S.hand[i-1].r.co))}</small></span>`:'')+`<span class="sf1-hold${i===hs.length-1?' sf1-now':''}" style="--i:${i}">${face(m,i===hs.length-1?'wc-f-l':'')}<small>${NM[m]}</small></span>`).join('')}</div>
+  <div class="sf1-relay">${cut?`<span class="sf1-early">+${cut} earlier</span>`:''}${hs.map((m,i)=>(i?`<span class="sf1-hop" style="--i:${i}"><i class="sf1-star"></i><small>R${hand[i-1].r.n} ${esc(S.short(hand[i-1].r.co))}</small></span>`:'')+`<span class="sf1-hold${i===hs.length-1?' sf1-now':''}" style="--i:${i}">${face(m,i===hs.length-1?'wc-f-l':'')}<small>${NM[m]}</small></span>`).join('')}</div>
   <div class="sf1-lead"><p><b class="sf-pow sf1-gap" data-v="${Math.round(S.gap)}" data-s="">$${Math.round(S.gap).toLocaleString('en-US')}</b><span>${NM[L]}'s lead over ${face(R2,'wc-f-s')} ${NM[R2]}</span></p>
   <p class="sf1-pl">${NM[L]} ${usd(S.cur[L]-1e5)} · We bet on its call</p></div></li>`;
 /* D: what's next. The predictions in, as tickets in each company's colours with their four calls; then the bell and who's next */

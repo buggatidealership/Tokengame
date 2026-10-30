@@ -12,11 +12,11 @@ const pans=by.map(m=>{const n=M[m].n,ai=path(M[m].cs.map(c=>c.ok),n),coins=[];d.
    +'<div class="sc7-cv"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line class="sc7-h" x1="0" x2="100" y1="'+Y(.5)+'" y2="'+Y(.5)+'"/>'
    +coins.map((c,j)=>'<path class="sc7-c" d="'+c.d+'"/>').join('')+'</svg><svg class="sc7-ai" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="sc7-o" d="'+ai.d+'"/><path class="sc7-a" d="'+ai.d+'"/></svg>'
    +'<div class="sc7-pile">'+pile+'</div><span class="sc7-f" style="top:'+Y((ai.k+1)/(n+2)).toFixed(2)+'%">'+face(m)+'</span>'
-   +'<span class="sc7-l">'+d.lucky()+'</span></div></article>'}).join('');
+   +'</div><p class="sc7-ft">'+(above?'<b>'+above+' of '+TR+'</b> coins did better':'<b>No coin</b> of '+TR+' did better')+'</p></article>'}).join('');
 window.__sc7=stats;
 const g=d.M.GROK;
 const box=d.sol2('sc7-on','Could a coin do as well? We gave 16 coins the same season.',
   '<div class="sc7-g">'+pans+'</div>',
-  '<b>Too early to tell.</b> Every AI still runs inside the coins. Each call makes the pile tighter.');
+  '<b>Too early to tell.</b> Every new call squeezes the coins closer together, and the gap gets easier to see.');
 d.reveal(box.querySelector('.sc7-g'));
 document.documentElement.classList.add('sc-ready-c7')})();

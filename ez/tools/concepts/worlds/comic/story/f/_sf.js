@@ -61,7 +61,7 @@ const CL=t=>(window.CO_LOGOS||{})[t]||{};
 const short=c=>String(c).replace(/ (Inc\.?|Corp\.?|Corporation|Holdings|Group|plc|AG|SE)$/i,'').replace(/^(The) /,'');
 /* a company chip: its logo on a cream disc over its own brand colour (filled in once read from the logo file) */
 const chip=(t,co,extra,cls)=>{const L=CL(t);return `<span class="sf-co ${cls||''}" data-tk="${esc(t)}" title="${esc(co)}"><i class="sf-co-d${L.dark?' sf-co-dk':''}">${L.f?`<img src="media/${esc(L.f)}" alt="" loading="eager">`:`<b>${esc(t.replace(/\..*$/,'').slice(0,4))}</b>`}</i>${extra||''}<span class="wc-sr">${esc(co)}</span></span>`};
-async function paint(root){if(!window.__bpal)return;const els=[...(root||D).querySelectorAll('.sf-co[data-tk]:not(.sf-pd)')];const memo={};
+async function paint(root){if(!window.__bpal)return;const els=[...(root||D).querySelectorAll(':is(.sf-co,.sf-tk)[data-tk]:not(.sf-pd)')];const memo={};
   await Promise.all(els.map(async e=>{const t=e.dataset.tk,L=CL(t);if(!L.f){e.classList.add('sf-pd');return}memo[t]=memo[t]||window.__bpal('media/'+L.f);const p=await memo[t];
     if(p.main){e.style.setProperty('--bc',p.main);e.style.setProperty('--ba',p.acc||p.main)}e.classList.add('sf-pd')}))}
 const rm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||window.__kfShot;
@@ -71,7 +71,7 @@ const count=(el,ms)=>{if(rm())return;const v=+el.dataset.v,s=el.dataset.s||'',pr
   const f=t=>{const q=Math.min(1,(t-t0)/(ms||900)),e=1-Math.pow(1-q,3),x=v*e;el.textContent=s+pre+(k?(x/1000).toFixed(1)+'K':Math.round(x).toLocaleString('en-US'));if(q<1)requestAnimationFrame(f)};requestAnimationFrame(f)};
 
 /* ---- the story line, in words (also the screen-reader summary) ---- */
-const since=mode==='visit'?'Since your visit '+ago(seen.t||Date.now()):'Since '+rel(lastS).replace(/^./,c=>c.toUpperCase())+"'s close";
+const since=mode==='visit'?'Since your visit '+ago(seen.t||Date.now()):'Since '+rel(lastS)+"'s close";
 const sinceShort=mode==='visit'?'Since your visit':(rel(lastS)==='yesterday'?"Yesterday's close":rel(lastS).replace(/^./,c=>c.toUpperCase())+"'s close");
 const handLine=!hand.length?NM[now[0]]+' kept the lead.':hand.length===1?NM[hand[0].m]+' took the lead.':'The lead changed hands '+(hand.length===2?'twice':hand.length+' times')+'.';
 

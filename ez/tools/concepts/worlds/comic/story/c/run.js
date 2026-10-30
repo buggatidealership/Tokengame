@@ -5,7 +5,7 @@ const OUT=process.argv[2],SEC=process.argv[3]||'sol',TS=(process.argv[4]||'now')
 const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8'),ex=f=>fs.existsSync(__dirname+'/'+f);
 (async()=>{const b=await chromium.launch();
  for(const W of WS)for(const t of TS){const p=await b.newPage({viewport:{width:W,height:W<600?844:1000},deviceScaleFactor:2,reducedMotion:process.env.RM?'reduce':'no-preference'});await FONTS(p);const er=[];p.on('pageerror',e=>er.push(e.message));p.on('console',m=>{if(m.type()==='error')er.push('console:'+m.text().slice(0,120))});
-  await p.goto('http://localhost:8897/'+(process.env.PAGE||'v47-live-x3plus.html')+(SEC==='lb'?'#/leaderboard':''),{waitUntil:'load'});
+  await p.goto('http://localhost:8897/'+(process.env.PAGE||'v47-live-x3plus.html')+(SEC==='lb'?'#/leaderboard':''),{waitUntil:'load',timeout:120000});
   await p.waitForFunction(()=>document.documentElement.classList.contains('x2p-world')&&!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});
   const H=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<H;y+=500){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(40)}
   if(t!=='now'){await p.addScriptTag({content:rd('_c.js')});await p.addStyleTag({content:rd('_c.css')});if(ex(t+'.css'))await p.addStyleTag({content:rd(t+'.css')});await p.addScriptTag({content:rd(t+'.js')});

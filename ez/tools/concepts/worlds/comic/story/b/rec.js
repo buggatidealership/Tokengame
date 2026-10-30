@@ -15,9 +15,13 @@ const TMP=fs.mkdtempSync(path.join(os.tmpdir(),'sbrec-'));
   await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(700);
   await p.evaluate(()=>{const h=document.querySelector('header.top');if(h)h.style.visibility='hidden';[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed'&&x.offsetHeight<120&&x.offsetHeight>0)x.style.visibility='hidden'})});
   await p.evaluate(s=>{const n=document.querySelector(s);scrollTo({top:n.getBoundingClientRect().top+scrollY-(innerWidth<600?10:30)-(n.querySelector('.wc-chipw')&&innerWidth<600?140:0),behavior:'instant'})},SEL);
-  const t0=Date.now();let last=null;
-  while(Date.now()-t0<3400){const f=`${TMP}/f${String(k++).padStart(5,'0')}.png`;await p.screenshot({path:f});const now=Date.now();if(last)last.d=(now-last.t)/1000;last={f,t:now,lab:NAME[t]};list.push(last)}
-  last.d=.9;await p.close()}
+  /* deterministic frames: once the take's motion starts (sb-in), pause every animation and step it 40 ms per frame (25 fps) */
+  await p.waitForFunction(s=>document.querySelector(s+' .sb-in, '+s+'.sb-in'),SEL,{timeout:15000,polling:10});
+  await p.evaluate(()=>{document.getAnimations().forEach(a=>{a.pause();a.__t0=a.currentTime||0})});
+  let last=null;const N=80;
+  for(let i=0;i<N;i++){await p.evaluate(ms=>{document.getAnimations().forEach(a=>{if(!('__t0' in a)){a.pause();a.__t0=(a.currentTime||0)-ms}a.currentTime=a.__t0+ms})},i*40);
+    const f=`${TMP}/f${String(k++).padStart(5,'0')}.png`;await p.screenshot({path:f});last={f,d:.04,lab:NAME[t]};list.push(last)}
+  last.d=1.2;await p.close()}
  await b.close();
  // label each frame (one label image per take, overlaid), then concat with durations
  const cc=list.map(x=>`file '${x.f}'\nduration ${x.d.toFixed(3)}`).join('\n')+`\nfile '${list[list.length-1].f}'\n`;fs.writeFileSync(TMP+'/list.txt','ffconcat version 1.0\n'+cc);

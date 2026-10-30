@@ -6,7 +6,7 @@ const rd=f=>fs.existsSync(__dirname+'/'+f)?fs.readFileSync(__dirname+'/'+f,'utf8
 const SEL={chars:'.wc-chars',cliff:'.wc-cliff',cover:'#wc-book .wc-cover',up:'#wc-up',back:'#wc-book > .wc-back'}[SEC];
 (async()=>{const b=await chromium.launch();
  for(const W of WS)for(const t of TS){const p=await b.newPage({viewport:{width:W,height:W<600?844:1000},deviceScaleFactor:2});await FONTS(p);const er=[];p.on('pageerror',e=>er.push(e.message));
-  await p.goto('http://localhost:8897/'+(process.env.PAGE||'v47-live-x3plus.html')+(SEC==='up'?'#/upcoming':''),{waitUntil:'load'});
+  await p.goto('http://localhost:8897/'+(process.env.PAGE||'v47-live-x3plus.html')+(SEC==='up'?'#/upcoming':''),{waitUntil:'load',timeout:150000});
   await p.waitForFunction(()=>document.documentElement.classList.contains('x2p-world')&&!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});
   const H=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<H;y+=500){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(40)}
   await p.evaluate(()=>scrollTo(0,0));
@@ -17,7 +17,7 @@ const SEL={chars:'.wc-chars',cliff:'.wc-cliff',cover:'#wc-book .wc-cover',up:'#w
   if(SEC!=='cover'){await p.evaluate(s=>{const n=document.querySelector(s);scrollTo(0,n.getBoundingClientRect().top+scrollY-60)},SEL);}
   else await p.evaluate(()=>scrollTo(0,0));
   await p.waitForTimeout(+process.env.SHOT_AT||3000);
-  await p.evaluate(()=>{const h=document.querySelector('header.top');if(h)h.style.visibility='hidden';[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed'&&x.offsetHeight<120&&x.offsetHeight>0)x.style.visibility='hidden'})});
+  await p.addStyleTag({content:'.x2p-cw{display:none!important}'});await p.evaluate(()=>{const h=document.querySelector('header.top');if(h)h.style.visibility='hidden';[...document.body.querySelectorAll('*')].forEach(x=>{if(getComputedStyle(x).position==='fixed'&&x.getBoundingClientRect().bottom>=innerHeight-2&&x.offsetHeight<90)x.style.visibility='hidden'});[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed'&&x.offsetHeight<120&&x.offsetHeight>0)x.style.visibility='hidden'})});
   const bb=await p.evaluate(s=>{const n=document.querySelector(s);const r=n.getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,width:r.width,height:r.height}},SEL);
   const pad=14;
   await p.screenshot({path:`${OUT}/${SEC}-${W}-${t}.png`,clip:{x:0,y:Math.max(0,bb.y-pad),width:W,height:Math.min(bb.height+pad+16,+process.env.MAXH||9000)},fullPage:true});

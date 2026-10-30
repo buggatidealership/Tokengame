@@ -40,7 +40,7 @@ const G={
    for the brand colour behind and dot shading on the mark */
 g1(x,W,H,m,B,R){x.fillStyle=rgb(CREAM);x.fillRect(0,0,W,H);
   dots(x,W,H,W/11,rgb(B),(u,v)=>.16+.3*Math.min(1,(u+v)/1.4));
-  const L=placed(m,W,H,1.02,.47,.45);x.drawImage(dil(L,W*.028,INK),0,0);x.drawImage(L,0,0);
+  const L=placed(m,W,H,.9,.46,.44);x.drawImage(dil(L,W*.028,INK),0,0);x.drawImage(L,0,0);
   const sh=cv(W,H),s=sh.getContext('2d');dots(s,W,H,W/22,rgb(INK,.55),(u,v)=>Math.max(0,(u+v-1)*.9));s.globalCompositeOperation='destination-in';s.drawImage(L,0,0);x.drawImage(sh,0,0)},
 /* g2 GOLDEN-AGE NEWSPRINT (1938 to the 1950s): yellowed newsprint, flat colour plates printed a little out of register against the black keyline */
 g2(x,W,H,m,B,R){x.fillStyle=rgb(NEWS);x.fillRect(0,0,W,H);const o=W*.018;
@@ -51,14 +51,14 @@ g2(x,W,H,m,B,R){x.fillStyle=rgb(NEWS);x.fillRect(0,0,W,H);const o=W*.018;
   x.drawImage(ring(L,W*.014,INK),0,0);
   const dk=px(placed(m,W,H,.74,.45,.43),(d,i)=>{if(lum(d[i],d[i+1],d[i+2])<.22){d[i]=INK[0];d[i+1]=INK[1];d[i+2]=INK[2]}else d[i+3]=0});x.drawImage(dk,0,0);
   grain(x,W,H,R,W*H/40,.22);x.save();x.globalCompositeOperation='multiply';x.fillStyle=rgb([250,238,205],.5);x.fillRect(0,0,W,H);x.restore()},
-/* g3 UPA MODERN (1950s): flat shapes in a limited palette (the brand colour, its dark, mustard, cream, ink), no outlines,
-   the mark posterized to flat tones over an offset shadow plate */
+/* g3 UPA MODERN (1950s): flat shapes in a limited palette (the brand colour, mustard, paper, one ink line), no outlines,
+   the mark in its own colours flattened to a few flat tones, over an offset shadow plate in the brand's dark */
 g3(x,W,H,m,B,R){x.fillStyle=rgb(PAPER);x.fillRect(0,0,W,H);const BD=mix(B,INK,.45);
-  x.save();x.translate(W*.42,H*.5);x.rotate(-.14);x.fillStyle=rgb(B);x.fillRect(-W*.62,-H*.42,W*1.05,H*.86);x.restore();
-  x.beginPath();x.arc(W*.86,H*.16,W*.24,0,7);x.fillStyle=rgb(MUSTARD);x.fill();
-  x.strokeStyle=rgb(INK);x.lineWidth=Math.max(1.5,W*.008);x.beginPath();x.moveTo(W*.05,H*.94);x.lineTo(W*.95,H*.8);x.stroke();
-  const L=placed(m,W,H,.7,.45,.45);x.drawImage(sil(L,BD),W*.04,W*.04);
-  const P=px(placed(m,W,H,.7,.45,.45),(d,i)=>{const l=lum(d[i],d[i+1],d[i+2]),c=l<.36?INK:l<.66?MUSTARD:CREAM;d[i]=c[0];d[i+1]=c[1];d[i+2]=c[2];d[i+3]=d[i+3]>100?255:0});x.drawImage(P,0,0)},
+  x.save();x.translate(W*.2,H*.78);x.rotate(-.22);x.fillStyle=rgb(B);x.fillRect(-W*.5,-H*.2,W*1.5,H*.7);x.restore();
+  x.beginPath();x.arc(W*.8,H*.2,W*.27,0,7);x.fillStyle=rgb(MUSTARD);x.fill();
+  x.strokeStyle=rgb(INK);x.lineWidth=Math.max(1.5,W*.008);x.beginPath();x.moveTo(W*.04,H*.3);x.lineTo(W*.5,H*.06);x.stroke();
+  const L=placed(m,W,H,.66,.45,.43);x.drawImage(sil(L,BD),W*.035,W*.035);
+  const P=px(placed(m,W,H,.66,.45,.43),(d,i)=>{for(let k=0;k<3;k++)d[i+k]=Math.min(255,Math.round(d[i+k]/85)*85);d[i+3]=d[i+3]>100?255:0});x.drawImage(P,0,0)},
 /* g4 KIRBY COSMIC (1960s): the mark in full colour inside a white-hot energy field, ringed by Kirby krackle (clusters of black dots),
    on the brand colour burning out from the centre */
 g4(x,W,H,m,B,R){const g=x.createRadialGradient(W*.45,H*.43,W*.05,W*.45,H*.43,W*.8);g.addColorStop(0,rgb(mix(B,[255,255,255],.35)));g.addColorStop(.55,rgb(B));g.addColorStop(1,rgb(mix(B,INK,.6)));
