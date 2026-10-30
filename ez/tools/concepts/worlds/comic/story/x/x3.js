@@ -24,5 +24,5 @@ function swap(s){const w=want(s);
   up.forEach((k,f)=>{if(w.has(f))return;set(f,k,false);up.delete(f);f.animate([{transform:T1(k),filter:F1},{transform:'none',filter:F0}],{duration:200,easing:'cubic-bezier(.4,0,1,1)'})});
   const n={};w.forEach((k,f)=>{if(up.has(f)&&!f.classList.contains('xx3-wt'))return;set(f,k,true);up.set(f,k);const ri=KEYS.indexOf(k),i=(n[k]=(n[k]||0)+1)-1;rise(f,k,(k==='top'?140:380+(ri-1)*80)+i*70)})}
 window.XXT={id:'x3',still,arrive,swap,relayout(){}};
-D.querySelectorAll('.ss-host.ss-s3 .ss3-key').forEach(k=>{k.querySelector('.ss3-ring').insertAdjacentHTML('afterend','<b class="xx3-key" aria-hidden="true">59%</b>');k.lastChild.textContent=' Leads the row'});
+D.querySelectorAll('.ss-host.ss-s3 .ss3-key').forEach(k=>{k.querySelector('.ss3-ring').insertAdjacentHTML('afterend','<b class="xx3-key" aria-hidden="true">Best</b>');k.lastChild.textContent=' in the row'});
 XXmount()})();
