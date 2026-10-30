@@ -249,7 +249,7 @@ function wire(book,ex){
   const cap2=i=>{if(!i.naturalWidth)return;const k=Math.max(i.naturalWidth,i.naturalHeight)/2;i.style.maxWidth=k+'px';i.style.maxHeight=k+'px';
     /* a logo drawn for a dark ground (light ink, no flag in CO_LOGOS) goes on the ink chip too */
     if(!i.classList.contains('z5-dk'))try{const c=D.createElement('canvas'),w=c.width=48,h=c.height=48,x=c.getContext('2d');x.drawImage(i,0,0,w,h);const d=x.getImageData(0,0,w,h).data;let n=0,l=0;
-      for(let j=0;j<d.length;j+=4)if(d[j+3]>160){n++;l+=(.2126*d[j]+.7152*d[j+1]+.0722*d[j+2])/255}if(n>40&&l/n>.86)i.classList.add('z5-dk')}catch(e){}};
+      for(let j=0;j<d.length;j+=4)if(d[j+3]>160){n++;l+=(.2126*d[j]+.7152*d[j+1]+.0722*d[j+2])/255}if(n>40&&l/n>.74)i.classList.add('z5-dk')}catch(e){}};
   book.querySelectorAll('img[src*="logos/"]').forEach(i=>{if(i.complete)cap2(i);else i.addEventListener('load',()=>cap2(i))})}
 
 function go(){if(D.getElementById('z5-book'))return;

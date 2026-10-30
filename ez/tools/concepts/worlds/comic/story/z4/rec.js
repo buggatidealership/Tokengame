@@ -13,7 +13,7 @@ const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
  c.on('Page.screencastFrame',async f=>{frames.push({t:f.metadata.timestamp,d:f.data});c.send('Page.screencastFrameAck',{sessionId:f.sessionId}).catch(()=>{})});
  await c.send('Page.startScreencast',{format:'jpeg',quality:88,maxWidth:780,maxHeight:1688,everyNthFrame:1});
  const W=ms=>p.waitForTimeout(ms);
- const glide=async(to,ms)=>{const y0=await p.evaluate(()=>scrollY),n=Math.max(1,Math.round(ms/16));for(let i=1;i<=n;i++){const k=i/n,e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;await p.evaluate(y=>scrollTo(0,y),y0+(to-y0)*e);await W(16)}};
+ const glide=async(to,ms)=>{const y0=await p.evaluate(()=>scrollY),n=Math.max(1,Math.round(ms/45));for(let i=1;i<=n;i++){const k=i/n,e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;await p.evaluate(y=>scrollTo(0,y),y0+(to-y0)*e);await W(8)}};
  const yOf=s=>p.evaluate(s=>{const n=document.querySelector(s);return n.getBoundingClientRect().top+scrollY-64},s);
  await W(1600);
  await glide(await yOf('.z4-ad'),1700);await W(5200);              // the strip ad plays once it's read
@@ -23,12 +23,12 @@ const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
  for(let i=0;i<3;i++){await p.click('.z4-lb-b[data-d="1"]');await W(950)}
  await p.click('.z4-lb-b[data-d="-1"]');await W(900);
  await glide(await yOf('.z4-rack'),1500);await W(400);
- for(let i=1;i<=50;i++){await p.evaluate(i=>{document.querySelector('.z4-rk-row').scrollLeft=i*14},i);await W(22)}await W(500);
- for(let i=50;i>=0;i--){await p.evaluate(i=>{document.querySelector('.z4-rk-row').scrollLeft=i*14},i);await W(14)}
+ for(let i=1;i<=25;i++){await p.evaluate(i=>{document.querySelector('.z4-rk-row').scrollLeft=i*28},i);await W(10)}await W(500);
+ for(let i=25;i>=0;i--){await p.evaluate(i=>{document.querySelector('.z4-rk-row').scrollLeft=i*28},i);await W(8)}
  await glide(await yOf('.z4-back'),1600);await W(2600);
  await c.send('Page.stopScreencast');await b.close();
  // write frames with real durations through the concat demuxer
  let list='';frames.forEach((f,i)=>{const fn=path.join(TMP,`f${String(i).padStart(5,'0')}.jpg`);fs.writeFileSync(fn,Buffer.from(f.d,'base64'));const d=i<frames.length-1?Math.max(.008,frames[i+1].t-f.t):.5;list+=`file '${fn}'\nduration ${d.toFixed(4)}\n`});
  list+=`file '${path.join(TMP,`f${String(frames.length-1).padStart(5,'0')}.jpg`)}'\n`;fs.writeFileSync(TMP+'/list.txt',list);
- cp.execFileSync('ffmpeg',['-y','-loglevel','error','-f','concat','-safe','0','-i',TMP+'/list.txt','-vf','scale=780:-2,fps=30,format=yuv420p','-c:v','libx264','-crf','22','-preset','slow','-movflags','+faststart',OUT]);
+ cp.execFileSync('ffmpeg',['-y','-loglevel','error','-f','concat','-safe','0','-i',TMP+'/list.txt','-vf','scale=780:-2,fps=30,format=yuv420p','-c:v','libx264','-crf','22','-preset','medium','-movflags','+faststart',OUT]);
  console.log('frames',frames.length);fs.rmSync(TMP,{recursive:true,force:true})})();

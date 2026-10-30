@@ -1,0 +1,202 @@
+<title>EZ Review Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column of numbered review lots, each a printed "proof sheet" card with an ID stamp; boards scroll inside their lot. Single light look on purpose (the site's own comic paper). */
+:root{
+  --paper:#f4ecd8; --card:#fffaf0; --ink:#15121a; --muted:#5d5566; --gold:#f2b12a; --green:#0f7a43; --red:#c0261d; --rule:#d8ccb0; --blue:#2c4fa8;
+  --disp:"Bangers","Impact",sans-serif; --body:"Barlow",system-ui,sans-serif; --cond:"Barlow Condensed","Arial Narrow",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px;
+  background-image:radial-gradient(rgba(21,18,26,.07) 1px,transparent 1.4px);background-size:7px 7px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+.wrap{max-width:980px;margin:0 auto}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ink);color:var(--paper);margin:0 calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+header.top .in{max-width:980px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+header.top b{font-family:var(--disp);font-size:24px;letter-spacing:.04em;color:var(--gold);font-weight:400}
+header.top nav{display:flex;gap:6px;flex-wrap:wrap;font-family:var(--cond);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+header.top nav a{color:var(--paper);text-decoration:none;border:1.5px solid rgba(244,236,216,.35);padding:2px 8px;border-radius:3px}
+header.top nav a:hover,header.top nav a:focus-visible{border-color:var(--gold);color:var(--gold);outline:none}
+.intro{padding-block:28px 8px;max-width:68ch}
+h1{font-family:var(--disp);font-weight:400;font-size:clamp(40px,8vw,64px);line-height:.95;letter-spacing:.02em;margin:0 0 10px;text-wrap:balance}
+.intro p{margin:0 0 10px}
+.how{background:var(--card);border:2.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:12px 16px;margin:12px 0 4px}
+.how b{font-family:var(--cond);text-transform:uppercase;letter-spacing:.05em}
+section.lot{margin-top:40px;background:var(--card);border:2.5px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:20px clamp(14px,3vw,28px) 24px;scroll-margin-top:70px}
+.lot-h{display:flex;gap:12px;align-items:flex-start;margin-bottom:6px}
+.stamp{flex:none;font-family:var(--disp);font-size:22px;letter-spacing:.04em;background:var(--gold);border:2.5px solid var(--ink);padding:2px 10px;transform:rotate(-3deg);box-shadow:2px 2px 0 var(--ink)}
+h2{font-family:var(--disp);font-weight:400;font-size:clamp(28px,5vw,40px);line-height:1;letter-spacing:.02em;margin:2px 0 0;text-wrap:balance}
+.state{font-family:var(--cond);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:2px 0 10px}
+.state .live{color:var(--green)}.state .wait{color:var(--red)}
+.lot p,.lot li{max-width:70ch}
+.takes{list-style:none;padding:0;margin:14px 0;display:grid;gap:10px}
+.takes li{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline;border-top:1.5px dashed var(--rule);padding-top:10px}
+.takes .id{font-family:var(--disp);font-size:22px;letter-spacing:.03em;min-width:2.4em}
+.takes .nm{font-weight:700}
+.takes .ds{grid-column:2;color:var(--ink)}
+.pick{background:#eaf5ec;border-left:5px solid var(--green);padding:8px 12px;margin:12px 0}
+.ask{background:#fff1d1;border-left:5px solid var(--gold);padding:8px 12px;margin:12px 0}
+.ask ol{margin:6px 0 0;padding-left:20px}
+.ask li{margin:6px 0}
+figure{margin:18px 0 0}
+figcaption{font-family:var(--cond);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;color:var(--muted)}
+.scroll{max-height:80vh;overflow:auto;border:2px solid var(--ink);background:#1b1820}
+.scroll img{display:block;width:100%;height:auto}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.duo .scroll{max-height:70vh}
+.phones{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.phones .scroll{max-height:75vh}
+video{display:block;width:100%;max-height:70vh;background:#000;border:2px solid var(--ink)}
+.vids{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.read ol{padding-left:20px}.read li{margin:8px 0}
+.alt{border-top:2px solid var(--ink);margin-top:14px;padding-top:10px}
+a{color:var(--blue)}
+a:focus-visible,video:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.foot{margin-top:40px;font-size:14px;color:var(--muted)}
+@media (max-width:520px){.takes li{grid-template-columns:1fr}.takes .ds{grid-column:1}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+
+<header class="top"><div class="in"><b>EZ Review Desk</b>
+<nav aria-label="Lots"><a href="#live">Live</a><a href="#read">Your read</a><a href="#asks">Questions</a><a href="#upcoming">Upcoming</a><a href="#tiles">Round tiles</a><a href="#tonight">Tonight</a><a href="#wow">Wow round</a><a href="#steps">Parked</a><a href="#next">In progress</a></nav></div></header>
+
+<div class="wrap">
+<div class="intro">
+<h1>Everything waiting for your eyes</h1>
+<p>Friday 30 October 2026. One page for every open decision on earningszn.xyz, so you can give feedback in one go.</p>
+<div class="how"><b>How to use it.</b> Highlight anything and comment with the tools. Every option has an ID on a gold stamp (U2, Z3, E1...). "Pick Z3" or "U1, but with U3's stub" is all I need. Boards scroll inside their frame. Phone boards show 390px screens; desktop boards show 1280px.</div>
+</div>
+
+<section class="lot" id="live"><div class="lot-h"><span class="stamp">Live</span><div><h2>Already on earningszn.xyz</h2><p class="state"><span class="live">Live tonight</span> · also on the previews and artifacts</p></div></div>
+<ul>
+<li><b>Cover:</b> your circular flow is in the top banner (option H1, "the loop, alive"). Four steps around an "Every round" hub, then the explainer film.</li>
+<li><b>"One round, start to finish" is off the page.</b> Meet the models now comes straight after the cover.</li>
+<li><b>Scoreboard:</b> S3 tale of the tape, with P3's floating Season / 24h / 7 days switch. The big figure says "Season P&amp;L", and the fight bill names its window.</li>
+<li><b>Films:</b> R66 Shell, R68 Mastercard, R69 Merck and R70 Eli Lilly. All match the sheet. R67 Caterpillar is held: its GPT plate says −1.5 while the sheet says +6.</li>
+</ul>
+<div class="duo"><figure><figcaption>Cover at 390px</figcaption><div class="scroll"><img src="a/live-390.jpg" alt="The live cover on a phone: Season 1 strip, Starring, the headline, the four-step loop." width="390" height="844" loading="lazy"></div></figure>
+<figure><figcaption>Cover at 1280px</figcaption><div class="scroll"><img src="a/live-1280.jpg" alt="The live cover on desktop: the loop on the left, the explainer film on the right." width="1280" height="900" loading="lazy"></div></figure></div>
+</section>
+
+<section class="lot read" id="read"><div class="lot-h"><span class="stamp">Read</span><div><h2>Why Meet the models works</h2><p class="state">My interpretation, as you asked</p></div></div>
+<p><b>The short version:</b> it is the only section that starts from a character instead of a number. The other sections start from data and dress it up as a comic.</p>
+<ol>
+<li><b>You meet someone.</b> Each card is one AI with a face, a name, a flag and a seat in Season 1. Its numbers are things about it, not the subject.</li>
+<li><b>Every object means something.</b> The ticket is a seat in the season, the flag says who it represents (US vs China), and the gold and holo say who leads. Nothing is there just to decorate.</li>
+<li><b>One thing per idea.</b> One AI, one ticket. No table, no box inside a box, no labels over lists.</li>
+<li><b>It is quietly alive.</b> The flags wave and the leader shimmers. The motion is small and constant, like a moving portrait.</li>
+<li><b>It invites you to pick a side.</b> Crypto traders back teams. A cast with a rivalry asks "who's your fighter?" before it asks you to read anything.</li>
+</ol>
+<p><b>The deeper meaning, as I read it:</b> EZ is a league with a cast, not a dashboard. People follow characters first and their stats second. So every section should be something the cast does (calls, fights, wins, loses), and every number should hang off a character. That also explains why the scoreboard is the other section you like: it is the cast compared side by side.</p>
+<p><b>What this means for the page:</b> the order meet them, watch them compete, see who's ahead, see what's next. Every new section has to pass one test: is a character doing something in it?</p>
+<div class="alt"><p><b>Another read:</b> Meet the models has simply had the most polishing rounds (F1, then R8, then R9). Its quality could come from being finished, not from the character idea.</p>
+<p><b>What would tell them apart:</b> if a heavily polished section without characters (say, the record) still feels dry to you, the character reading is right. If polish alone fixes it, the second read is right.</p></div>
+</section>
+
+<section class="lot" id="asks"><div class="lot-h"><span class="stamp">Asks</span><div><h2>Four questions before I build</h2><p class="state"><span class="wait">Answer in a comment</span> · these words can point several ways</p></div></div>
+<div class="ask"><ol>
+<li><b>"Worth your attention" on the leaderboard.</b> What should move? (a) only the overall leader, (b) the leader of each stat row, (c) only what changed when you switch Season / 24h / 7 days, (d) something else.</li>
+<li><b>"Apple-like".</b> Should the crown or gold arrive once and then stay still? Or should a tiny shimmer stay on the leader?</li>
+<li><b>"Alive, like Harry Potter".</b> Should there be small motion all the time (a wave, a blink)? Or only when something happens (a switch, a result)?</li>
+<li><b>The wow round.</b> Is the aim to replace the whole Overview with one of these, or to borrow the best pieces into today's page?</li>
+</ol></div>
+</section>
+
+<section class="lot" id="upcoming"><div class="lot-h"><span class="stamp">U</span><div><h2>Upcoming cards, in the "Every round so far" style</h2><p class="state"><span class="wait">Pick one</span> · Upcoming tab · on T1's dense grid</p></div></div>
+<p>Built from the tiles you called beautiful: the company's mark painted into the picture, the torn stub, the worn ink stamp. Each night has a date block and the main event is a double card.</p>
+<ul class="takes">
+<li><span class="id">U1</span><span class="nm">Stamped in</span><span class="ds">Each AI's call is a rubber stamp on the picture (up stamped high, down low), with 🐂 and 🐻 as corner mascots. The stub keeps a "? won" slot for the result. Shortest tab on desktop. On phones the stamps cover part of the logo.</span></li>
+<li><span class="id">U2</span><span class="nm">Corners</span><span class="ds">The dot screen is split by a leaning seam into a green bull corner and a red bear corner, each as wide as its crowd. The AIs speak their calls in cream balloons.</span></li>
+<li><span class="id">U3</span><span class="nm">The fight card</span><span class="ds">The picture stays clean. The stub lines up 🐂, the up-callers, VS, the down-callers, 🐻. Each call is shouted as sound-effect lettering that grows with the size of the move.</span></li>
+</ul>
+<div class="pick"><b>My pick: U1 on desktop.</b> It is the densest and the most like Every round. On phones I'd use U3, because U1's stamps bury the logo there.</div>
+<figure><figcaption>Desktop: Today, U1, U2, U3</figcaption><div class="scroll"><img src="a/u-desk.jpg" alt="Upcoming tab at 1280px: today against U1, U2 and U3." width="1600" height="2180" loading="lazy"></div></figure>
+<figure><figcaption>Phone, three parts: Today, U1, U2, U3</figcaption><div class="duo"><div class="scroll"><img src="a/u-ph1.jpg" alt="Upcoming on phones, part 1." width="1600" height="3759" loading="lazy"></div><div class="scroll"><img src="a/u-ph2.jpg" alt="Upcoming on phones, part 2." width="1600" height="3759" loading="lazy"></div><div class="scroll"><img src="a/u-ph3.jpg" alt="Upcoming on phones, part 3." width="1600" height="2255" loading="lazy"></div></div></figure>
+</section>
+
+<section class="lot" id="tiles"><div class="lot-h"><span class="stamp">E</span><div><h2>Round tiles without a film</h2><p class="state"><span class="wait">Pick one</span> · Overview · Every round so far</p></div></div>
+<p>New rounds arrive before their film. These are drawn panels for that gap, in the company's own colour, and they hand over to the film when it arrives. Today that is R67, R68, R69, R70 and R79. The stub (#, ticker, move, winner stamp) stays as it is.</p>
+<ul class="takes">
+<li><span class="id">E1</span><span class="nm">The winner speaks</span><span class="ds">The winner's face, with motion lines, says the call that won. On a no-winner round, four dizzy faces say "Huh?!".</span></li>
+<li><span class="id">E2</span><span class="nm">Knockout</span><span class="ds">A boxing ring: the AIs that called the direction stand, the winner wears the crown, and the wrong-way AIs lie flat with stars. This also shows how many got it right.</span></li>
+<li><span class="id">E3</span><span class="nm">Ride the move</span><span class="ds">A thick green or red arrow shoots out of the logo, steeper for bigger moves. The winner rides the arrowhead and the wrong-way AIs tumble off.</span></li>
+</ul>
+<div class="pick"><b>The helper's pick: E3.</b> It reads fastest at tile size (113px wide).</div>
+<div class="duo"><figure><figcaption>Phone</figcaption><div class="scroll"><img src="a/w-every.jpg" alt="Round tiles without film on a phone: today, E1, E2, E3." width="1600" height="1171" loading="lazy"></div></figure>
+<figure><figcaption>Desktop</figcaption><div class="scroll"><img src="a/w-every-desk.jpg" alt="Round tiles without film on desktop." width="1199" height="3576" loading="lazy"></div></figure></div>
+<figure><figcaption>When the film arrives: E1, E2, E3</figcaption><video src="a/x2p-x3p-story-w-film-arrives.mp4" controls muted playsinline preload="metadata"></video></figure>
+</section>
+
+<section class="lot" id="tonight"><div class="lot-h"><span class="stamp">T</span><div><h2>Tonight at the close, calls on the card itself</h2><p class="state"><span class="wait">Pick one</span> · Overview · no more white pills</p></div></div>
+<ul class="takes">
+<li><span class="id">T1</span><span class="nm">Bulls vs bears</span><span class="ds">🐂 and 🐻 corners with a gold VS. Each AI speaks its call in a balloon, and a lone AI against three stands bigger. One card per row on phones.</span></li>
+<li><span class="id">T2</span><span class="nm">The shouting match</span><span class="ds">No boxes at all. Each AI shouts its call as sound-effect lettering, tilted up or down, bigger for bigger calls. The most compact: two cards per row on phones.</span></li>
+<li><span class="id">T3</span><span class="nm">Tug of war</span><span class="ds">A rope: 🐻 pulls left, 🐂 pulls right, and each AI holds the rope at its own call. One scale across all of tonight's cards, so you also see how far apart the calls are.</span></li>
+</ul>
+<div class="pick"><b>My pick: T2.</b> It removes every box, which is what you asked for, and it is the most compact.</div>
+<div class="duo"><figure><figcaption>Phone</figcaption><div class="scroll"><img src="a/w-ton.jpg" alt="Tonight at the close on a phone: today, T1, T2, T3." width="1600" height="1823" loading="lazy"></div></figure>
+<figure><figcaption>Desktop</figcaption><div class="scroll"><img src="a/w-ton-desk.jpg" alt="Tonight at the close on desktop." width="1199" height="3288" loading="lazy"></div></figure></div>
+</section>
+
+<section class="lot" id="wow"><div class="lot-h"><span class="stamp">Z</span><div><h2>The wow round: five American comic traditions</h2><p class="state"><span class="wait">React to any</span> · the whole Overview, each taken all the way</p></div></div>
+<p>Each helper took one tradition as far as it would go, using real data only. Each kept the explainer film playable. Mix freely: "Z2's cover with Z5's case files" is a fine answer.</p>
+<ul class="takes">
+<li><span class="id">Z1</span><span class="nm">Sunday funnies</span><span class="ds">This week's Sunday comics section. The AIs are a recurring cast with running gags from their real records ("Down." for the bear, "1.5%. Again." for Kimi). The season runs as a serial, filed week by week, and ends on "Continued tonight at the close…".</span></li>
+<li><span class="id">Z2</span><span class="nm">Silver Age superheroes</span><span class="ds">Each graded round is an issue and the Overview is issue No. 71. It has a real cover with a corner box and masthead, an origin story told through one round, a team roster with power-grid stats, a back-issue rack, and Bet #1 as a "Giant-size special".</span></li>
+<li><span class="id">Z3</span><span class="nm">Saturday-morning cartoon</span><span class="ds">A weekly race show. The AIs are cartoon race cars whose faces come from their records: smug with the ticket, sweating after misses. Season P&amp;L is the distance from the start line. Each round is a fork in the road with a wall on the wrong branch.</span></li>
+<li><span class="id">Z4</span><span class="nm">The comic book you hold</span><span class="ds">The Overview as one issue you flip through. The film is the cover art, a Charles Atlas-style strip ad walks one round, the standings are a "Collect all 4!" card sheet (tap to turn), the record is a long box of bagged back issues, tonight is a spinner rack, and NVIDIA is a back-cover mail-order ad ("allow N days for delivery" counts down). Its helper asks whether that ad is too jokey next to "the pool can be wiped out".</span></li>
+<li><span class="id">Z5</span><span class="nm">Crime and suspense</span><span class="ds">Every earnings report is a case. The calls are statements, the film is evidence, and the close reads the verdict. The leader is "Wanted for suspicion of luck", tonight's rounds are open cases, and NVIDIA is "the NVIDIA job". It brings the $EZ host back as narrator, which goes against your 22 Oct call. That part can come out.</span></li>
+</ul>
+<div class="pick"><b>My picks:</b> Z2 for the strongest first screen and the back-issue rack. Z3 for the most "alive" characters. Z5 for the best hook ("who cracks at the close?"). My honest read: none should replace the page whole. Each has one section that beats ours.</div>
+<h3 style="font-family:var(--disp);font-weight:400;font-size:26px;margin:22px 0 4px">Desktop, one per tradition</h3>
+<div class="duo">
+<figure><figcaption>Z1 Sunday funnies</figcaption><div class="scroll"><img src="a/z1-desktop.jpg" alt="Z1 Sunday funnies, desktop." width="1200" height="3279" loading="lazy"></div></figure>
+<figure><figcaption>Z2 Silver Age</figcaption><div class="scroll"><img src="a/z2-desktop.jpg" alt="Z2 Silver Age superhero, desktop." width="1200" height="2795" loading="lazy"></div></figure>
+<figure><figcaption>Z3 Saturday morning</figcaption><div class="scroll"><img src="a/z3-desktop.jpg" alt="Z3 Saturday-morning cartoon, desktop." width="1200" height="4316" loading="lazy"></div></figure>
+<figure><figcaption>Z4 The comic you hold</figcaption><div class="scroll"><img src="a/z4-desktop.jpg" alt="Z4 the comic book you hold, desktop." width="1200" height="2802" loading="lazy"></div></figure>
+<figure><figcaption>Z5 Crime and suspense</figcaption><div class="scroll"><img src="a/z5-desktop.jpg" alt="Z5 crime and suspense, desktop." width="1200" height="4075" loading="lazy"></div></figure>
+</div>
+<h3 style="font-family:var(--disp);font-weight:400;font-size:26px;margin:22px 0 4px">Phone, one per tradition</h3>
+<div class="phones">
+<figure><figcaption>Z1</figcaption><div class="scroll"><img src="a/z1-phone-1.jpg" alt="Z1 on a phone, part 1." width="780" height="7800" loading="lazy"><img src="a/z1-phone-2.jpg" alt="Z1 on a phone, part 2." width="780" height="1668" loading="lazy"></div></figure>
+<figure><figcaption>Z2</figcaption><div class="scroll"><img src="a/z2-phone-1.jpg" alt="Z2 on a phone, part 1." width="780" height="7800" loading="lazy"><img src="a/z2-phone-2.jpg" alt="Z2 on a phone, part 2." width="780" height="2314" loading="lazy"></div></figure>
+<figure><figcaption>Z3</figcaption><div class="scroll"><img src="a/z3-phone-1.jpg" alt="Z3 on a phone, part 1." width="780" height="4228" loading="lazy"><img src="a/z3-phone-2.jpg" alt="Z3 on a phone, part 2." width="780" height="3476" loading="lazy"><img src="a/z3-phone-3.jpg" alt="Z3 on a phone, part 3." width="780" height="4552" loading="lazy"></div></figure>
+<figure><figcaption>Z4</figcaption><div class="scroll"><img src="a/z4-phone-1.jpg" alt="Z4 on a phone, part 1." width="780" height="4129" loading="lazy"><img src="a/z4-phone-2.jpg" alt="Z4 on a phone, part 2." width="780" height="4129" loading="lazy"></div></figure>
+<figure><figcaption>Z5</figcaption><div class="scroll"><img src="a/z5-phone-1.jpg" alt="Z5 on a phone, part 1." width="780" height="6166" loading="lazy"><img src="a/z5-phone-2.jpg" alt="Z5 on a phone, part 2." width="780" height="6166" loading="lazy"></div></figure>
+</div>
+<h3 style="font-family:var(--disp);font-weight:400;font-size:26px;margin:22px 0 4px">Motion</h3>
+<div class="vids">
+<figure><figcaption>Z1 grading: bell, stamps, crown</figcaption><video src="a/x2p-x3p-wow-z1-grading.mp4" controls muted playsinline preload="metadata"></video></figure>
+<figure><figcaption>Z2 stamps and NVIDIA energy</figcaption><video src="a/x2p-x3p-wow-z2-motion.mp4" controls muted playsinline preload="metadata"></video></figure>
+<figure><figcaption>Z3 on a phone</figcaption><video src="a/x2p-x3p-wow-z3-phone.mp4" controls muted playsinline preload="metadata"></video></figure>
+<figure><figcaption>Z4 page turns, cards, long box, rack</figcaption><video src="a/x2p-x3p-wow-z4.mp4" controls muted playsinline preload="metadata"></video></figure>
+<figure><figcaption>Z5 the verdict and the line-up</figcaption><video src="a/x2p-x3p-wow-z5-verdict.mp4" controls muted playsinline preload="metadata"></video></figure>
+</div>
+</section>
+
+<section class="lot" id="steps"><div class="lot-h"><span class="stamp">V</span><div><h2>Parked: one round, tapped through step by step</h2><p class="state">Off the page for now · for later, if you want a deeper explainer</p></div></div>
+<p>You took the walkthrough off the page tonight. These three turn it into one card you tap through, five beats on round 56 Robinhood. Nothing auto-plays. They could come back later as a "How a round works" you open from the loop in the cover.</p>
+<ul class="takes">
+<li><span class="id">V1</span><span class="nm">Tear-off pad</span><span class="ds">Five Season 1 tickets on a pad. Each Next tears the top one off ("Rrrip!"). The closest to your "rip off a ticket, step one, step two".</span></li>
+<li><span class="id">V2</span><span class="nm">One ring, redrawn</span><span class="ds">One boxing-ring scene with the same cast. Each tap redraws it: calls shouted, the film on the big screen, the knockdown, cash over each head, then the podium as the order changes.</span></li>
+<li><span class="id">V3</span><span class="nm">Fold-out strip</span><span class="ds">Five panels folded like an accordion. All five spines always show, and one panel is open at a time.</span></li>
+</ul>
+<div class="duo"><figure><figcaption>Phone, every beat</figcaption><div class="scroll"><img src="a/v-ph.jpg" alt="V1 to V3 on a phone, each beat." width="1800" height="1630" loading="lazy"></div></figure>
+<figure><figcaption>Desktop, every beat</figcaption><div class="scroll"><img src="a/v-desk.jpg" alt="V1 to V3 on desktop, each beat." width="1800" height="1110" loading="lazy"></div></figure></div>
+<div class="vids">
+<figure><figcaption>V1 tear-off pad</figcaption><video src="a/x2p-x3p-story-v-v1.mp4" controls muted playsinline preload="metadata"></video></figure>
+<figure><figcaption>V2 one ring</figcaption><video src="a/x2p-x3p-story-v-v2.mp4" controls muted playsinline preload="metadata"></video></figure>
+<figure><figcaption>V3 fold-out strip</figcaption><video src="a/x2p-x3p-story-v-v3.mp4" controls muted playsinline preload="metadata"></video></figure>
+</div>
+</section>
+
+<section class="lot" id="next"><div class="lot-h"><span class="stamp">X</span><div><h2>In progress: the leader, animated</h2><p class="state">Being made now · will land on this page</p></div></div>
+<p>The scoreboard's gold circles get replaced by small, precise motion that marks only the leader of each row and the overall leader. Think a tiny crown or a gold highlight that arrives on a switch and then stays still, so whatever moves is worth looking at. Three takes with videos will appear here. Your answers to questions 1 to 3 above steer them.</p>
+</section>
+
+<p class="foot">Every number on these boards comes from the sheet (ez-data.js). Nothing on this page is on the live site unless it is under "Live".</p>
+</div>

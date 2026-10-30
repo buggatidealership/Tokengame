@@ -13,7 +13,7 @@ const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
    await p.waitForFunction(()=>document.documentElement.classList.contains('z3-ready'),null,{timeout:30000})}
   await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(600);await p.addStyleTag({content:'.x2p-cw{display:none!important}'});
   const H=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<H;y+=400){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(350)}
-  await p.waitForTimeout(3800);await p.evaluate(()=>{scrollTo(0,0);[...document.body.querySelectorAll('*')].forEach(x=>{if(getComputedStyle(x).position==='fixed'&&!x.closest('header'))x.style.visibility='hidden'})});await p.waitForTimeout(500);
+  await p.evaluate(()=>document.querySelectorAll('#z3 .z3-fork,#z3 .z3-trk').forEach(e=>e.classList.add('z3-go')));await p.waitForTimeout(5200);await p.evaluate(()=>{scrollTo(0,0);[...document.body.querySelectorAll('*')].forEach(x=>{if(getComputedStyle(x).position==='fixed'&&!x.closest('header'))x.style.visibility='hidden'})});await p.waitForTimeout(500);
   const m=await p.evaluate(()=>{const z=document.querySelector('#z3');if(!z)return {};const VW=innerWidth;
     const vis=e=>{const c=getComputedStyle(e);return c.visibility!=='hidden'&&c.display!=='none'&&e.getClientRects().length};
     const out=[...z.querySelectorAll('*')].filter(e=>{if(e.closest('svg')&&e.tagName!=='svg')return false;const q=e.getBoundingClientRect();return q.width&&vis(e)&&(q.right>VW+.5||q.left<-.5)}).map(e=>String(e.className.baseVal??e.className).slice(0,30)).slice(0,8);
