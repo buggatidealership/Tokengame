@@ -1,6 +1,6 @@
 // q4: Darwyn Cooke, DC: The New Frontier (2004). Three widescreen tiers per beat, one point each; a clean line, a limited mid-century palette, a round told as a launch.
 (function(){
-window.__qNear=7;const D=__qD(66),F=window.__qF||{},PO='media/'+D.r.poster+'.jpg',fr=k=>F[k]||PO,face=__qFace;
+window.__qNear=9;const D=__qD(66),F=window.__qF||{},PO='media/'+D.r.poster+'.jpg',fr=k=>F[k]||PO,face=__qFace;
 const lk=document.createElement('link');lk.rel='stylesheet';lk.href='https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;800;900&family=Patrick+Hand&display=swap';document.head.appendChild(lk);
 const C=D.calls,byM=m=>C.find(c=>c.m===m),W=byM(D.win),L=byM(D.lead),ord=['GPT','KIMI','CLAUDE','GROK'].map(byM);
 const sgn=v=>(v>0?'+':v<0?'−':'')+Math.abs(v);
