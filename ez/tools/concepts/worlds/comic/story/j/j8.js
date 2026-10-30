@@ -13,7 +13,10 @@ const RR={};ROUNDS.forEach(r=>RR[r.n]=r);
 function paint(){const now=window.__sjNow||Date.now();let wet=0;
   D.querySelectorAll('.wc-bi').forEach(a=>{const r=RR[+(a.getAttribute('href')||'').replace(/\D/g,'')];if(!r)return;const at=closeAt(r.ticker,r.resolves);
     const h=at==null?99:(now-at)/36e5,w=h<0?0:Math.max(0,1-h/24);a.classList.toggle('sj-wet',w>0);a.classList.toggle('sj-drip',w>.8);
+    const em=a.querySelector('.wc9-bs em');if(em&&w>0&&!em.querySelector('.sj-gls')){em.insertAdjacentHTML('beforeend','<span class="sj-gls" aria-hidden="true"></span>');em.insertAdjacentHTML('afterend','<span class="sj-drop" aria-hidden="true"></span>')}
+    const dr=a.querySelector('.sj-drop');if(dr&&em){dr.style.left=(em.offsetLeft+em.offsetWidth*.72)+'px';dr.style.top=(em.offsetTop+em.offsetHeight-2)+'px'}
     if(w>0){a.style.setProperty('--wet',w.toFixed(3));wet++;a.dataset.sjAge=Math.max(0,Math.round(h))}else a.style.removeProperty('--wet')});
   return wet}
-window.__sjPaint8=paint;paint();setInterval(paint,10*60*1000);
+window.__sjPaint8=paint;paint();addEventListener('resize',paint);setInterval(paint,10*60*1000);
+window.__sjToggle=on=>H.classList.toggle('sj-j8',on);
 H.classList.add('sj-ready-j8')})();

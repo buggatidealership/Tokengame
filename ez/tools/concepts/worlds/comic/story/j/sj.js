@@ -40,7 +40,8 @@ const checks=p=>p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:docu
    await hideFixed(p);
    const sel=(W>=1000&&K.selD)||K.sel;await p.evaluate(s=>{const n=document.querySelector(s);scrollTo(0,n.getBoundingClientRect().top+scrollY-30)},sel);await p.waitForTimeout(K.wait2||500);
    if(K.afterScroll&&!today)await p.evaluate(K.afterScroll,{W});
-   const c=K.clipFn?await p.evaluate(K.clipFn,{W}):await clip(p,sel,K.pad);await p.screenshot({path:OUT,clip:c,fullPage:true});
+   const c=K.clipFn?await p.evaluate(K.clipFn,{W}):await clip(p,sel,K.pad);
+   if(K.noFull&&!today){const sy=await p.evaluate(()=>scrollY);c.y-=sy;await p.screenshot({path:OUT,clip:c})}else await p.screenshot({path:OUT,clip:c,fullPage:true});
    console.log(W,tk0,JSON.stringify(await checks(p)),p.__er.join(' | ')||'no errors')}
  else if(mode==='rec'){const OUT=a3,W=+(a4||390),R=K.rec;const p=await open(b,W,{dpr:R.dpr||2});await prime(p);await inject(p);await settle(p);
    await p.evaluate(K.stage||(()=>{}),{today:false,W});await p.waitForTimeout(800);await hideFixed(p);
@@ -50,7 +51,7 @@ const checks=p=>p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:docu
    const c=R.fixed?await p.evaluate(()=>({x:0,y:0,width:innerWidth,height:innerHeight})):(R.clipFn||K.clipFn)?await p.evaluate(R.clipFn||K.clipFn,{W}):await clip(p,sel,R.pad||K.pad);
    if(R.fixed){c.y=0}
    if(R.screencast){const cdp=await p.context().newCDPSession(p);const fr=[];cdp.on('Page.screencastFrame',async e=>{fr.push({d:e.data,t:e.metadata.timestamp});try{await cdp.send('Page.screencastFrameAck',{sessionId:e.sessionId})}catch(_){}});
-     await cdp.send('Page.startScreencast',{format:'jpeg',quality:92,everyNthFrame:1});const t0=Date.now();
+     await cdp.send('Page.startScreencast',{format:'jpeg',quality:92,everyNthFrame:1,maxWidth:W*2,maxHeight:(W<600?844:1000)*2});const t0=Date.now();
      while(Date.now()-t0<R.sec*1000){if(R.tick)await p.evaluate(R.tick,{t:Date.now()-t0});await p.waitForTimeout(R.tickMs||200)}
      await cdp.send('Page.stopScreencast');let L='';fr.forEach((f,i)=>{const fn=`${TMP}/s${String(i).padStart(5,'0')}.jpg`;fs.writeFileSync(fn,Buffer.from(f.d,'base64'));
        const du=i<fr.length-1?Math.max(.001,fr[i+1].t-f.t):.1;L+=`file '${fn}'\nduration ${du.toFixed(4)}\n`});fs.writeFileSync(TMP+'/l.txt',L);
@@ -71,7 +72,11 @@ const checks=p=>p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:docu
      const td=async()=>{const m=(await c.send('Performance.getMetrics')).metrics;return m.find(x=>x.name==='TaskDuration').value};
      const sec=async()=>{await p.evaluate(K.perfStage||K.stage||(()=>{}),{today:false,W:390,perf:true});
        await p.evaluate(s=>{const n=document.querySelector(s);scrollTo(0,n.getBoundingClientRect().top+scrollY-(window.__sjPerfOff||200))},K.perfSel||K.sel);await p.waitForTimeout(1500)};
+     if(K.perfInput)await p.evaluate(K.perfInput);
      const measure=async()=>{const o={};
+       if(K.perfSwitch){const sw=async h=>{await p.evaluate(()=>window.__sjF=[]);const a=await td();await p.evaluate(h=>document.querySelector(`header .nav a[href="${h}"]`).click(),h);await p.waitForTimeout(2500);
+           const fr=await p.evaluate(()=>window.__sjF.slice(1));return {task:+((await td())-a).toFixed(2),long:fr.filter(x=>x>50).length,maxFrame:Math.round(Math.max(...fr))}};
+         o.toLB=await sw('#/leaderboard');o.toUp=await sw('#/upcoming');o.toOv=await sw('#/');return o}
        await p.evaluate(()=>window.__sjF=[]);let a=await td();await p.waitForTimeout(6000);o.idle=+((await td())-a).toFixed(2);
        o.idleFrames=await p.evaluate(()=>window.__sjF.length);
        await p.evaluate(()=>window.__sjF=[]);a=await td();
@@ -84,5 +89,27 @@ const checks=p=>p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:docu
      let a=await td();if(!K.base)await inject(p);const setup=+((await td())-a).toFixed(2);await p.waitForTimeout(300);
      await sec();const take=await measure();
      const ck=await checks(p);res.push({run:r,lift:p.__lift,setup,base,take,ck,err:p.__er});console.log(tk,'run',r,'lift',p.__lift,'setup',setup,JSON.stringify(base),'->',JSON.stringify(take),p.__er.join('|')||'ok');await p.close()}
+   fs.writeFileSync(OUT,JSON.stringify(res,null,1))}
+ else if(mode==='ab'){const OUT=a3,RUNS=+(a4||2),WIN=+(a5||6),res=[];
+   for(let r=0;r<RUNS;r++){const p=await open(b,390,{cpu:4,dpr:2});const c=p.__cdp;await c.send('Performance.enable');
+     await p.evaluate(()=>{window.__sjF=[];let l=performance.now();(function f(t){window.__sjF.push(t-l);l=t;requestAnimationFrame(f)})(l)});
+     const td=async()=>{const m=(await c.send('Performance.getMetrics')).metrics;return m.find(x=>x.name==='TaskDuration').value};
+     let a=await td();await inject(p);const setup=+((await td())-a).toFixed(3);
+     if(K.perfInput)await p.evaluate(K.perfInput);
+     await p.evaluate(K.perfStage||K.stage||(()=>{}),{today:false,W:390,perf:true});
+     await p.evaluate(s=>{const n=document.querySelector(s);scrollTo(0,n.getBoundingClientRect().top+scrollY-(window.__sjPerfOff||200))},K.perfSel||K.sel);await p.waitForTimeout(1500);
+     for(let i=0;i<8;i++){const on=i%2===1;await p.evaluate(on=>window.__sjToggle(on),on);await p.waitForTimeout(400);
+       const o={on};
+       if(K.perfSwitch){await p.evaluate(()=>window.__sjF=[]);const a0=await td();
+         for(const h of ['#/leaderboard','#/upcoming','#/']){await p.evaluate(h=>document.querySelector(`header .nav a[href="${h}"]`).click(),h);await p.waitForTimeout(1600)}
+         o.task=+((await td())-a0).toFixed(3);const fr=await p.evaluate(()=>window.__sjF.slice(1));o.long=fr.filter(x=>x>50).length;o.maxFrame=Math.round(Math.max(...fr));o.frames=fr.length;
+         await p.evaluate(s=>{const n=document.querySelector(s);scrollTo(0,n.getBoundingClientRect().top+scrollY-200)},K.perfSel||K.sel);await p.waitForTimeout(600)}
+       else{await p.evaluate(()=>window.__sjF=[]);let a0=await td();await p.waitForTimeout(WIN*1000);o.idleTask=+((await td())-a0).toFixed(3);o.idleFps=+((await p.evaluate(()=>window.__sjF.length))/WIN).toFixed(1);
+         if(!K.noScroll){await p.evaluate(()=>window.__sjF=[]);a0=await td();
+           await c.send('Input.synthesizeScrollGesture',{x:195,y:600,yDistance:-(K.perfDist||1000),speed:500,gestureSourceType:'touch'});
+           await c.send('Input.synthesizeScrollGesture',{x:195,y:300,yDistance:(K.perfDist||1000),speed:500,gestureSourceType:'touch'});
+           o.scrollTask=+((await td())-a0).toFixed(3);const fr=await p.evaluate(()=>window.__sjF.slice(1));const du=fr.reduce((s,x)=>s+x,0)/1000;o.scrollSec=+du.toFixed(2);o.scrollFps=+(fr.length/du).toFixed(1);o.long=fr.filter(x=>x>50).length}}
+       res.push({run:r,i,...o,setup});console.log(tk,r,i,JSON.stringify(o))}
+     console.log(tk,'run',r,'lift',p.__lift,'errors',p.__er.join('|')||'none');await p.close()}
    fs.writeFileSync(OUT,JSON.stringify(res,null,1))}
  }finally{await b.close()}})();

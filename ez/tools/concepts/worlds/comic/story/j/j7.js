@@ -27,4 +27,5 @@ faces.forEach(x=>x.btn.addEventListener('click',e=>{e.preventDefault();e.stopPro
 D.addEventListener('click',e=>{if(!e.target.closest('.sj-say,.sj-port'))faces.forEach(close)});
 window.__sjOpen7=i=>{const x=faces[i];if(x)open(x)};window.__sjClose7=()=>faces.forEach(close);
 const grid=D.querySelector('.wc-ch-grid');if(grid&&!window.__sjHold){const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){io.disconnect();setTimeout(()=>open(faces[0],true),700)}},{threshold:.4});io.observe(grid)}
+window.__sjToggle=on=>{H.classList.toggle('sj-j7',on)};
 H.classList.add('sj-ready-j7')})();

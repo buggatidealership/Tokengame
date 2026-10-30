@@ -54,4 +54,5 @@ window.__sjDraw4=p=>{if(!geo)measure();draw(p)};
 cards.forEach(c=>{const n=c.querySelector('.wc-cnt');if(n){n.removeAttribute('data-v');n.classList.remove('wc-cnt');n.classList.add('sj-cnt')}});
 measure();draw(sjRM()?1:0);
 const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();if(!window.__sjHold)window.__sjGo4()}},{threshold:.35});io.observe(grid);
+window.__sjToggle=on=>{if(on)window.__sjGo4();else draw(1)};
 H.classList.add('sj-ready-j4')})();

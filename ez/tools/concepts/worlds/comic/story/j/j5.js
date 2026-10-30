@@ -44,4 +44,5 @@ function play(withSound){t0=sjT();if(withSound){try{ac=ac||new (window.AudioCont
   cancelAnimationFrame(raf);(function f(){const t=(sjT()-t0)/1000;draw(t);if(t<DUR)raf=requestAnimationFrame(f)})()}
 bell.addEventListener('click',e=>{e.preventDefault();play(!sjRM());if(sjRM())draw(99)});
 if(sjRM()){draw(99)}else{draw(-1);const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){io.disconnect();if(!window.__sjHold)play(false)}},{threshold:.6});io.observe(pn)}
+window.__sjToggle=on=>{if(on)play(false);else{cancelAnimationFrame(raf);draw(99)}};
 H.classList.add('sj-ready-j5')})();

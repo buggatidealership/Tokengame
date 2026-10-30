@@ -19,12 +19,13 @@ function build(){anims.forEach(a=>a.cancel());anims=[];const w=cv.clientWidth,h=
   anims.push(svg.animate([{clipPath:'inset(-20px 100% -20px -20px)'},{clipPath:'inset(-20px -20px -20px -20px)'}],opt));
   anims.push(cur.animate([{transform:'translateX(0px)'},{transform:`translateX(${w}px)`}],opt));
   anims.push(rn.animate([{'--sjr':1},{'--sjr':R[N-1].n}],opt));
-  if(coin)anims.push(coin.animate([{left:'0%',transform:'rotate(0deg)'},{left:'100%',transform:`rotate(${Math.round(w/(Math.PI*18)*360)}deg)`}],opt));
+  if(coin){coin.style.left='0';anims.push(coin.animate([{transform:'translateX(0px) rotate(0deg)'},{transform:`translateX(${w}px) rotate(${Math.round(w/(Math.PI*18)*360)}deg)`}],opt))}
   cv.querySelectorAll('.sj-rid').forEach(el=>{const m=el.dataset.m;const kf=acc[m].map((v,i)=>({transform:`translate(${(i/N*w).toFixed(1)}px,${(Y(v)*h).toFixed(1)}px)`,offset:i/N}));
     kf.push({transform:kf[kf.length-1].transform,opacity:1,offset:1});
     anims.push(el.animate(acc[m].map((v,i)=>({transform:`translate(${(i/N*w).toFixed(1)}px,${(Y(v)*h).toFixed(1)}px)`,offset:i/N})),opt));
     anims.push(el.animate([{opacity:1,offset:0},{opacity:1,offset:.96},{opacity:0,offset:1}],opt))});
   if(ends)anims.push(ends.animate([{opacity:0,offset:0},{opacity:0,offset:.95},{opacity:1,offset:1}],opt))}
+window.__sjToggle=on=>{if(on){H.classList.add('sj-j6');build()}else{anims.forEach(a=>a.cancel());anims=[];H.classList.remove('sj-j6');if(coin)coin.style.left=''}};
 build();let lw=innerWidth;addEventListener('resize',()=>{if(innerWidth!==lw){lw=innerWidth;build()}});
 if(D.fonts)D.fonts.ready.then(build);
 H.classList.add('sj-ready-j6')})();

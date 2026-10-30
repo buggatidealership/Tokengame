@@ -14,5 +14,6 @@ D.querySelectorAll('.wc-bi').forEach(a=>{const n=+(a.getAttribute('href')||'').r
   if(window.__sjVid){const v=D.createElement('video');v.muted=true;v.loop=true;v.playsInline=true;v.autoplay=true;v.preload='none';v.setAttribute('muted','');v.setAttribute('playsinline','');
     v.poster=im.src;v.src=B+'r'+n+'-cg.mp4';v.className='sj-cgv';im.replaceWith(v);
     const io=new IntersectionObserver(es=>es.forEach(e=>{e.isIntersecting?v.play().catch(()=>{}):v.pause()}));io.observe(v)}
-  else{im.loading='lazy';im.decoding='async';im.src=B+'r'+n+'.webp';a.classList.add('sj-cg')}});
+  else{im.dataset.sjP=im.src;im.loading='lazy';im.decoding='async';im.src=B+'r'+n+'.webp';a.classList.add('sj-cg')}});
+window.__sjToggle=on=>{D.querySelectorAll('.sj-cg img').forEach(i=>{const n=+(i.closest('.wc-bi').getAttribute('href')||'').replace(/\D/g,'');i.src=on?B+'r'+n+'.webp':i.dataset.sjP});D.querySelectorAll('video.sj-cgv').forEach(v=>on?v.play().catch(()=>{}):v.pause())};
 H.classList.add('sj-ready-j1')})();
