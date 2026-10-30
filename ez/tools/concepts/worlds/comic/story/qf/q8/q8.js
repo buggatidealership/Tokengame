@@ -17,9 +17,9 @@ const fighter=(c,i)=>`<div class="q8-f q8-f${i}" data-m="${c.m}" data-side="${c.
    <div class="q8-fc">${c.win?crown:''}${Q.face(c,'q8-face')}</div>
    <b class="q8-nm">${c.nm}</b>
    <span class="q8-bl">${shout()}<span>${arrow(c.dir)}${c.dir==='UP'?'Up':'Down'} ${ESC(c.mag)}!</span></span>
-   <span class="q8-slot"><span class="q8-lk">Locked ${Q.called}</span>
+   <span class="q8-slot">${c.ok?'':'<b class="q8-smack" aria-hidden="true">Smack!</b>'}<span class="q8-lk">Locked ${Q.called}</span>
      <span class="q8-rs"><i class="q8-st">${c.win?'Winner':c.ok?'Pass':'Fail'}</i><em class="${c.v>=0?'q8-pos':'q8-neg'}">${Q.usd(c.v)}</em>${c.win?`<small>${c.off}% off</small>`:''}</span></span>
-   ${c.ok?'':`<b class="q8-smack" aria-hidden="true">Smack!</b>${crack}`}
+
  </div>`;
 const wnr=m=>{const w=(m.win||'').split(/\s*&\s*/)[0];return w&&MODELS[w]?{m:w,col:w==='GROK'?'#15121a':MODELS[w].c,d:MODELS[w].d,dot:MODELS[w].dot,dotc:MODELS[w].dotc,fr:MODELS[w].fr,nm:Q.NM[w]}:null};
 const mv=a=>(a>0?'+':'−')+Math.abs(a).toFixed(2)+'%';
@@ -40,7 +40,7 @@ S.innerHTML=`
    <div class="q8-mid" data-panel>
      <div class="q8-vs"><b class="q8-up">${arrow('UP')}Up</b><span class="q8-vsc">${Q.logo?`<img src="${Q.logo}" alt="">`:''}<i>VS</i></span><b class="q8-dn">Down${arrow('DOWN')}</b>
        <p>${ups.length} said up. ${dns.length} said down. Locked before earnings, ${Q.called}.</p></div>
-     <div class="q8-imp"><img class="q8-imp-a" src="/q78/market.jpg" alt="The market window: ${Q.move}">
+     <div class="q8-imp"><img class="q8-imp-a" src="/q78/market.jpg" alt="The market window: ${Q.move}"><img class="q8-imp-b" src="/q78/tall14.jpg" alt="">
        <div class="q8-imp-t"><svg class="q8-fl" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 4 34 18M0 20 30 21M0 36 34 24M100 4 66 18M100 20 70 21M100 36 66 24"/></svg>
          <b class="q8-boom">Ka-boom!</b><i class="q8-jp" aria-hidden="true">ドン</i>
          <span>London close. <em class="${Q.up?'q8-pos':'q8-neg'}">${ESC(Q.co)} ${Q.up?'up':'down'} ${Q.move.replace(/^[+−]/,'')}</em></span></div></div>

@@ -23,8 +23,8 @@ const rd=f=>fs.readFileSync(f,'utf8');const PORT=process.env.PORT||8914;
       for(let y=r.top+3;y<r.bottom-2;y+=4)for(let x=r.left+3;x<r.right-2;x+=4){if(y<0||y>innerHeight)continue;tot++;const e=document.elementFromPoint(x,y);if(e===pn)emp++}
       return (pn.className.baseVal??pn.className).toString().split(' ')[0]+'#'+Math.round(r.width)+'x'+Math.round(r.height)+':'+(tot?Math.round(emp/tot*100):0)+'%'});
     // nothing over a logo or over the art: points inside every visible logo/art img must hit the img itself
-    const cover=[...S.querySelectorAll('img')].filter(vis).map(im=>{const r=im.getBoundingClientRect();let tot=0,bad=0;
-      for(let y=r.top+2;y<r.bottom-1;y+=5)for(let x=r.left+2;x<r.right-1;x+=5){if(y<0||y>innerHeight||x<0||x>VW)continue;tot++;const e=document.elementFromPoint(x,y);if(e&&e!==im&&!im.contains(e))bad++}
+    const cover=[...S.querySelectorAll('img')].filter(vis).map(im=>{const r=im.getBoundingClientRect();let tot=0,bad=0;const rnd=parseFloat(getComputedStyle(im).borderTopLeftRadius)>=r.width/2-1;
+      for(let y=r.top+2;y<r.bottom-1;y+=5)for(let x=r.left+2;x<r.right-1;x+=5){if(y<0||y>innerHeight||x<0||x>VW)continue;if(rnd&&((x-r.left-r.width/2)**2/(r.width/2-2)**2+(y-r.top-r.height/2)**2/(r.height/2-2)**2)>1)continue;tot++;const e=document.elementFromPoint(x,y);if(e&&e!==im&&!im.contains(e))bad++}
       return im.getAttribute('src').split('/').pop()+':'+(tot?Math.round(bad/tot*1000)/10:0)+'%'}).filter(s=>!/:0%$/.test(s));
     const clip=[...S.querySelectorAll('b,span,em,p,h2,small,i,li')].filter(e=>vis(e)&&getComputedStyle(e).overflow!=='visible'&&!e.closest('.q7-sp')&&(e.scrollWidth>e.clientWidth+1)).map(e=>e.textContent.trim().slice(0,20));
     const r=S.getBoundingClientRect();
