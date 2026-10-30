@@ -4,10 +4,11 @@ import sys
 from PIL import Image,ImageDraw,ImageFont
 D,W,OUT=sys.argv[1],int(sys.argv[2]),sys.argv[3]
 F=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',30 if W<1000 else 40)
-T=[('now','Today · the live scoreboard'),('p1','P1 · The docked bill: stubs dock under the header · ticket stock printed with the model\'s mark · balance line'),
-   ('p2','P2 · Stamped window: stubs printed at the head, every ticket stamped with its window · the dollar bill, green or red ink · Last 5 with companies'),
-   ('p3','P3 · Thumb dock: a ticket switch at the bottom · each card in its AI\'s colour · P&L bar on one shared scale'),
-   ('p4','P4 · Punch the ticket: Season / 24h / 7d punched on every stub · stock printed with the window\'s rounds · top and worst beside Last 5')]
+T=[('now','Today · the live scoreboard (sticker per card in a window)'),
+   ('p1','P1 · The docked bill: the three stubs dock under the header while the scoreboard is on screen · ground: ticket stock printed with the model\'s own mark'),
+   ('p2','P2 · Stamped window: the stubs printed again under the head, every ticket rubber-stamped with its window · ground: the dollar bill, green ink in profit, red ink at a loss'),
+   ('p3','P3 · Thumb dock: a ticket switch floats at the bottom while the scoreboard is on screen · ground: each card in its AI\'s colour, numbers on caption strips'),
+   ('p4','P4 · Punch the ticket: Season / 24h / 7d punched on every ticket\'s stub · ground: ticket stock printed with the logos of the rounds the window counts')]
 WN=[('season','Season'),('d1','Last 24 hours'),('d7','Last 7 days')]
 rows=[]
 for k,t in T:
