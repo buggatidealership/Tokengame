@@ -10,7 +10,7 @@ const [OUT,SEC,T]=process.argv.slice(2);const rd=f=>fs.readFileSync(__dirname+'/
  const ts=(Date.now()-t0)/1000;
  await p.addScriptTag({content:rd('_c.js')});await p.addStyleTag({content:rd('_c.css')});await p.addStyleTag({content:rd(T+'.css')});await p.addScriptTag({content:rd(T+'.js')});
 
- await p.evaluate(s=>{const n=document.querySelector(s);scrollTo({top:n.getBoundingClientRect().top+scrollY-(s.includes('race')?10:-60),behavior:'instant'})},SEC==='lb'?'.sc-race':'.sc-take');
+ await p.evaluate(s=>{const n=document.querySelector(s);scrollTo({top:n.getBoundingClientRect().top+scrollY-10,behavior:'instant'})},SEC==='lb'?'.sc-race':'.sc-take .sc-ch');
  await p.waitForTimeout(4200);console.log(await p.evaluate(()=>{const e=document.querySelector('.sc5,.sc-ch');return e&&e.className}));await ctx.close();await b.close();
  const f=fs.readdirSync(vd).find(x=>x.endsWith('.webm'));
  cp.execSync(`ffmpeg -y -loglevel error -ss ${Math.max(0,ts-0.3).toFixed(2)} -i ${vd}/${f} -t 4.6 -c:v libx264 -pix_fmt yuv420p -crf 22 -movflags +faststart ${OUT}`);fs.rmSync(vd,{recursive:true});console.log(OUT,'start',ts)})();
