@@ -93,6 +93,7 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - Every surface should carry identity (the company's colours) or the world's texture (halftone, panels), unless the white itself means something.
     - Check every box: why is this background this colour?
     - *Taught by:* "everything that has a white background that doesn't absolutely need one, why have it", 30 Oct.
+    - A pale dot screen on white is still a neutral surface: it reads as an empty page with texture. The ground of a panel must be a colour or material that belongs to its story (the fight's corners, the ticket's stock, the company's colour). Caught again on 30 Oct ("again, the white, that's always horrible").
 23. **A carrier must decode at first sight, without a legend.**
     - "Punched in tens" needed a key and still wasn't understood, even by the owner.
     - If an encoding needs explaining, choose one people already know: a line going up, a stamp, a crown, money.
@@ -174,6 +175,22 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - "Who's winning?" is answered by two faces and the gap between them (the golden ticket holder against the challenger) before any table. The table then serves those who want more.
     - The gap is the story's tension: how close the chase is.
     - *Taught by:* "the who's winning, golden ticket. VS Challenger... and the gap, as an interesting idea... the title fight still remains my favorite", 30 Oct.
+
+42. **Life is discovered, not announced.**
+    - A living picture works when the viewer notices on their own that it moves: a needle drifting, a blade turning, a glint. If the motion tells you where to look, it has become a show and competes with what you came to read.
+    - Keep the amplitude small, the tempo slow, one moving thing per picture, and never move the words or the numbers.
+    - *Taught by:* "it should be things that are more subtle... subtle enough to realize, hey, these things are actually alive, but not like, oh my God, I don't know where to look", 30 Oct.
+43. **In an explanation, animate the cause producing its effect.**
+    - Motion earns its place in the introduction when it shows the mechanism happening in front of the reader: the bell rings, the move lands, each prediction is stamped pass or fail. Seeing the cause make the effect teaches faster than any caption.
+    - Motion that only decorates the explanation (a wobble, a sparkle) teaches nothing and should go there first.
+    - *Taught by:* "the market grades every call, the bell... that is really easy to understand... the animations need to visualize value or visualize understanding, make it easy to absorb information", 30 Oct.
+44. **A device must survive the data growing.**
+    - An idea built on today's 70 rounds must still read at 300 (a scroll that plays every round, a strip of every call). Ask how it looks at the end of the season and the next one before proposing it.
+    - Likewise an idea must say how it would know what it shows (a "since your last visit" needs a record of the visit: only the visitor's own browser has it).
+    - *Taught by:* "the bigger the season, the tougher it's going to be to keep that animation", and "we have to think about feasibility... how do we track people's visits", 30 Oct.
+45. **Use the audience's own time frames, and open on the whole picture.**
+    - Crypto traders read performance as 24h, 7d and all time. Offer those windows in that language, and open on the complete one (the season), since a visitor first wants the full standings; the shorter windows are for the return visit.
+    - *Taught by:* "last 24 hours, last 7 days, and then the entire season, because that relates more to the crypto crowd... season should be the default", 30 Oct.
 
 ## How this skill learns (owner, 2026-10-30)
 
