@@ -42,3 +42,14 @@ window.WW=window.WW||(function(){
   const ready=t=>{requestAnimationFrame(()=>requestAnimationFrame(()=>H.classList.add('ww-ready-'+t,'ww-'+t[0])))};
   return {D,H,ORDER,NM,esc,col,face,logo,dark,hasFilm,W,tk,pct,rm,sfx,calls,RR,rOf,brand,onBrand,capImg,lgDisc,tonight,pcalls,demo,eachNoFilm,ready};
 })();
+/* Tonight: the whole day's card, rebuilt; each card in its company's colour (read from its own logo file), the take draws the body */
+WW.tn=async(body,cls)=>{const X=WW,sec=X.D.querySelector('.wc-cliff');if(!sec)return;const T=X.tonight();
+  const g=X.D.createElement('div');g.className='ww-tn '+cls;
+  const cards=await Promise.all(T.map(async p=>{const bm=await X.brand(p.ticker),bt=X.onBrand(bm),cs=X.pcalls(p),u=cs.filter(c=>c.up).length;
+    return `<article class="ww-tk${bt==='#fff'?'':' ww-tklt'}" style="--bm:${bm};--bt:${bt}" aria-label="Round ${p.n}, ${X.esc(p.co)}: ${cs.map(c=>X.NM[c.m]+' '+(c.up?'up ':'down ')+c.mag+'%').join(', ')}">
+      <header class="ww-tkh">${X.lgDisc(p.ticker,'ww-tkl')}<b>${X.esc(p.co)}</b><small>R${p.n} · ${X.tk(p.ticker)}</small></header>
+      <div class="ww-tkb" aria-hidden="true">${body(p,cs,u)}</div></article>`}));
+  g.innerHTML=cards.join('');const old=sec.querySelector('.wc-tn');old.style.display='none';old.after(g);
+  const gut=sec.querySelector('.wc-gut-s');if(gut)gut.style.display='none';
+  const sm=sec.querySelector('.wc-h2 small');if(sm)sm.textContent=`${T.length} rounds. Every call locked before the report. The close decides.`;
+  g.querySelectorAll('.ww-lg img').forEach(X.capImg);return g};

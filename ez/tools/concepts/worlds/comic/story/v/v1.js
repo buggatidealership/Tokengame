@@ -31,7 +31,7 @@
   const PIC=[b1,b2,b3,b4,b5];
   const LN=[LINE[1],LINE[2],LINE[3],LINE[4],`Round ${n} goes on the record, punched for good.`];
   const tk=i=>`<article class="vv1-tk" data-vb="${i}" style="--k:${i}"><p class="vv1-band">${V.coImg('vv1-blg')}<b>${esc(R.co)}</b><span>Round ${n}</span><em>${VERB[i]}</em></p>
-      <div class="vv1-pic">${PIC[i]}</div><p class="vv1-cap">${LN[i]}</p></article>`;
+      <div class="vv1-pic"><div class="vv1-pq">${PIC[i]}</div></div><div class="vv1-tx"><p class="vv1-cap">${LN[i]}</p><ol class="vv1-tl" aria-hidden="true">${VERB.map((w,j)=>`<li class="${j<i?'vv1-tld':j===i?'vv1-tlc':''}"><b>${j+1}</b>${w}</li>`).join('')}</ol></div></article>`;
   root.innerHTML=`<div class="vv1-pad"><div class="vv1-stub" aria-hidden="true"><i class="vv1-s1">Season 1</i><b class="vv1-no">1</b><small>of 5</small></div>
       <div class="vv1-stack">${[0,1,2,3,4].map(tk).join('')}</div><span class="vv1-rip vv-sfx" aria-hidden="true">Rrrip!</span></div><div class="vv1-ctlw"></div>`;
   const T=[...root.querySelectorAll('.vv1-tk')],no=root.querySelector('.vv1-no'),rip=root.querySelector('.vv1-rip'),v=root.querySelector('.vv1-v');let stop=()=>{};
