@@ -251,6 +251,17 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - *Taught by:* the Amazon main event on desktop: "super low definition... on a big screen this font actually doesn't make sense", 30 Oct.
 61. **Literal fixes give increments; a committed direction gives the wow.** Following the owner's words point by point only improves the page a step at a time. Read what the words point at, then pick one tradition or idea and take it all the way, as an expert in it would, before the owner asks. Show several such leaps side by side, each complete, rather than one careful variation of today's page.
     - *Taught by:* "as soon as you try to stick too much to what I'm saying, the improvements are incremental... trust my gut... go away and do something amazing, that's always the wow", 30 Oct.
+62. **Unfold at reading speed: one change per beat, and the beat says what happened.** A comic reads because each panel holds while the eye takes it in. Motion that lands every stamp at once is a slideshow at 4x. Reveal one fact per beat, hold it long enough to read (about 2 s or a tap), and let the motion itself explain the fact (the bell rings, then the needle moves, then the stamp lands), never decorate it.
+    - *Taught by:* "the unfolding happens too fast for a human to visualize and understand what is happening... every animation explains exactly what's happening", 30 Oct.
+63. **The last frame of a section introduces the next.** A page is one journey, not a stack of modules: end each section on the beat that opens the following one (a round ends by joining the record, "every round stays here", and the record begins). The reader is handed forward, never dropped.
+    - *Taught by:* V3's "round 56 joins the record... see every round", which the owner wants "from section to section", 30 Oct.
+64. **The owner's noun is a pointer, not the design.** When the owner names a device ("a tiny crown"), ask what job it does, then pick the treatment that does that job best in this design, which may not be the named one. Picking the literal device because the owner said it is the incremental trap of lesson 61.
+    - *Taught by:* the leader mark: the owner picked X2 gold leaf over X1 tiny crown, which I had recommended "because that's what I told you", 30 Oct.
+65. **Every line must be true of the product.** Genre copy that does not fit ("Collect all four!" where nothing is collected) breaks the spell and reads as filler. Borrow a tradition's devices, never its claims.
+    - *Taught by:* Z4's checklist, 30 Oct.
+66. **The art is the design; the frame only serves it.** The films are interior-level art made for each company; the page's own elements must reach that level (drawn, lit, from inside the scene), or be built from that art. A box of text beside good art is the overlay the owner keeps rejecting.
+    - *Taught by:* "think about the animation production... every single video we do... unfolding from within the environment... every element has been thought through and crafted", 30 Oct.
+
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
@@ -273,6 +284,7 @@ Every time the owner gives pointers and an iteration lands, update this file the
   - **facts → carriers:** which visual carries each fact;
   - **words left:** only what no picture can say.
 - **Then make several genuinely different takes,** each with a different carrier or metaphor, not a re-skin.
+- **Converge by quick-fire** (owner, 2026-10-30): on a new direction, first show about ten quick, rough, very different versions side by side; the owner picks one "but not entirely"; iterate outward from that one; repeat until it converges. Breadth first, polish after the pick.
 - **Mockups by default** (owner, 2026-10-30): every proposal arrives with its mockups; do not ask whether to make them. Ask a clarifying question whenever a phrase in the owner's brain dump can be read two ways, alongside the mockups.
 - **Propose, don't wait.** When an element on the page fails the test, say so and mock up the fix, even if the owner didn't mention it.
 - **Say how it could fail.** The usual case: a viewer doesn't decode the visual without text. Analytics are off, so the only test is a person looking at it; ask the owner.
