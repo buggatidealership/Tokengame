@@ -10,14 +10,16 @@ const mk=pn.querySelector('.wc-ce-mk'),num=mk&&mk.querySelector('b'),rows=[...pn
 mk.insertAdjacentHTML('beforeend',`<button type="button" class="sj-bell" aria-label="Ring the closing bell (with sound)"><svg viewBox="0 0 40 44" aria-hidden="true"><path class="sj-bl-b" d="M20 5c-1.6 0-2.6 1-2.6 2.4v1.1C11 10 8 15 8 21v8l-4 5v2h32v-2l-4-5v-8c0-6-3-11-9.4-12.5V7.4C22.6 6 21.6 5 20 5z"/><circle class="sj-bl-c" cx="20" cy="39" r="3.6"/><path class="sj-bl-s" d="M13 15c1.4-2.4 3.4-3.6 5.6-4"/></svg></button>
   <span class="sj-ding" aria-hidden="true">Ding!</span>`);
 rows.forEach(r=>r.insertAdjacentHTML('beforeend','<i class="sj-slot" aria-hidden="true">?</i>'));
-const bell=mk.querySelector('.sj-bell'),ding=mk.querySelector('.sj-ding'),bsvg=bell.querySelector('svg');
+const rule=pn.querySelector('.wc-lr-rule'),bell=mk.querySelector('.sj-bell'),ding=mk.querySelector('.sj-ding'),bsvg=bell.querySelector('svg');
 const T={bell:0,num:.78,st0:1.12,stD:.26,win:.2};const DUR=T.st0+T.stD*st.length+T.win+.4;
 const cl=x=>Math.max(0,Math.min(1,x)),out=x=>1-Math.pow(1-x,3);
 function slam(el,q,rot){if(!el)return;el.style.opacity=q>0?1:0;const s=q<1?2.3-1.3*out(q):1;el.style.transform=`rotate(${rot}deg) scale(${s.toFixed(3)})`}
 function draw(t){/* t in seconds since the bell */
   const sw=t<0?0:Math.exp(-t*2.6)*Math.sin(t*26);bsvg.style.transform=`rotate(${(sw*22).toFixed(2)}deg)`;
   const dq=cl(t/.12)*(1-cl((t-1.1)/.3));ding.style.opacity=t<0?0:dq;ding.style.transform=`rotate(-10deg) scale(${(.7+.3*cl(t/.15)+.06*Math.sin(t*26)).toFixed(3)})`;
-  if(num){const q=cl((t-T.num)/.16);num.style.opacity=t<T.num?0:1;num.style.transform=`scale(${(q<1?1.9-.9*out(q):1).toFixed(3)})`}
+  if(num){const q=cl((t-T.num)/.16);num.style.opacity=t<T.num?0:1;num.style.transform=`scale(${(q<1?1.9-.9*out(q):1).toFixed(3)})`;
+    const em=mk.querySelector('em');if(em){em.style.opacity=t<T.num?0:1;em.style.transform=`rotate(-6deg) scale(${(q<1?.4+.6*out(q):1).toFixed(3)})`}}
+  if(rule)rule.style.opacity=cl((t-(T.st0+T.stD*st.length+.25))/.3);
   st.forEach((s,i)=>{const q=cl((t-T.st0-i*T.stD)/.14);slam(s,t<T.st0+i*T.stD?0:q,-7);const sl=rows[i].querySelector('.sj-slot');if(sl)sl.style.opacity=t<T.st0+i*T.stD?1:0;
     rows[i].style.transform=q>0&&q<1?`translateY(${(Math.sin(q*Math.PI)*1.6).toFixed(2)}px)`:''});
   const wt=T.st0+T.stD*st.length+.05;win.forEach(w=>{const q=cl((t-wt)/.2);w.style.opacity=q;w.style.transform=`translateY(${((1-out(q))*-10).toFixed(1)}px) rotate(-4deg)`})}

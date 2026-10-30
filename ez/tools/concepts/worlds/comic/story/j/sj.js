@@ -62,7 +62,7 @@ const checks=p=>p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:docu
      const cc=R.fixed?{x:0,y:0,width:c.width,height:c.height}:c;await p.screenshot({path:`${TMP}/f${String(N++).padStart(4,'0')}.png`,clip:cc,fullPage:!R.fixed})}
    const hold=R.hold==null?FPS:R.hold;for(let i=0;i<hold;i++)fs.copyFileSync(`${TMP}/f${String(N-1).padStart(4,'0')}.png`,`${TMP}/f${String(N+i).padStart(4,'0')}.png`);
    const aud=R.audio?await p.evaluate(R.audio):null;let ain='';
-   if(aud){const wav=TMP+'/a.wav';fs.writeFileSync(wav,Buffer.from(aud,'base64'));ain=`-i ${wav} -c:a aac -b:a 128k -shortest`}
+   if(aud){const wav=TMP+'/a.wav';fs.writeFileSync(wav,Buffer.from(aud,'base64'));ain=`-i ${wav} -af apad -c:a aac -b:a 128k -shortest`}
    execSync(`ffmpeg -y -loglevel error -framerate ${FPS} -i ${TMP}/f%04d.png ${ain} -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -pix_fmt yuv420p -crf 20 -movflags +faststart ${OUT}`);
    fs.rmSync(TMP,{recursive:true});console.log(OUT,N+hold,'frames',p.__er.join(' | ')||'no errors')}
  else if(mode==='perf'){const OUT=a3,RUNS=+(a4||3),res=[];

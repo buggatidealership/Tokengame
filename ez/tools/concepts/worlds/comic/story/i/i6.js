@@ -2,7 +2,7 @@
    a trail back to where it stood 7 days ago (who is gaining, who is falling back), the $100,000 start line, the losing side
    shaded, the golden ticket in the leader's hand and the gap to the runner behind. */
 (function(){const S=SI,D=document,B=S.lbBase();if(!B)return;const {lb,cv}=B;
-const now=m=>S.P[m].pnl,ago=m=>S.bal[m][S.i7]-1e5,ws=S.ORDER.map(m=>[now(m),ago(m)]).flat();
+const now=m=>S.P[m].pnl,ago=m=>S.b7[m]-1e5,ws=S.ORDER.map(m=>[now(m),ago(m)]).flat();
 const step=10000,lo=Math.floor((Math.min(0,...ws)-6000)/step)*step,hi=Math.ceil((Math.max(...ws)+6000)/step)*step,X=v=>((v-lo)/(hi-lo)*100);
 const ticks=[];for(let v=Math.ceil(lo/40000)*40000;v<=hi;v+=40000)ticks.push(v);
 const gain=S.ORDER.slice().sort((a,b)=>(now(b)-ago(b))-(now(a)-ago(a))),up=gain[0],dn=gain[gain.length-1];

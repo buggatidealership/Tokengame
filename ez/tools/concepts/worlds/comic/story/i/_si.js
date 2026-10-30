@@ -26,10 +26,14 @@ reigns.forEach(g=>{g.n0=R[g.from-1].n;g.n1=R[g.to-1].n;g.r0=R[g.from-1];g.len=g.
 /* windows: the last close (rounds graded on the newest grading date) and the last 7 days */
 const lastD=R.reduce((a,r)=>key(r.resolves)>key(a)?r.resolves:a,R[0].resolves);
 const dd=(a,b)=>{const f=s=>{const [m,d,y]=s.split('/').map(Number);return Date.UTC(2000+(y%100),m-1,d)};return Math.round((f(a)-f(b))/864e5)};
-const inLast=r=>r.resolves===lastD,in7=r=>dd(lastD,r.resolves)<=6;
+/* the last 7 days counted exactly as the live scoreboard does: calendar days back from today in New York (0 to 6) */
+const nyT=(()=>{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',month:'numeric',day:'numeric',year:'2-digit'}).formatToParts(new Date());const g=k=>+p.find(x=>x.type===k).value;return `${g('month')}/${g('day')}/${g('year')}`})();
+const inLast=r=>r.resolves===lastD,in7=r=>{const a=dd(nyT,r.resolves);return a>=0&&a<=6};
 const sum=(m,f)=>R.reduce((t,r)=>f(r)&&P[m].per[r.n]?t+P[m].per[r.n].v:t,0);
-/* where each AI stood 7 days before the newest close */
-const i7=R.filter(r=>!in7(r)).length,rank7=rankAt(bal,i7);
+/* where each AI stood 7 days ago: its balance without the last 7 days, ranked by the same rule */
+const b7={};ORDER.forEach(m=>b7[m]=1e5+P[m].pnl-sum(m,in7));
+const n7=m=>seq[m].filter(x=>!in7(x.r)).length,N7=R.filter(r=>!in7(r)).length;
+const rank7=ORDER.slice().sort((a,b)=>((n7(b)*2>=N7)-(n7(a)*2>=N7))||(b7[b]-b7[a]));
 /* runs of right and wrong calls */
 const runs=m=>{let w=0,l=0,bw=0,bl=0,bwAt=null,blAt=null;seq[m].forEach((x,i)=>{if(x.ok){w++;l=0;if(w>bw){bw=w;bwAt=i}}else{l++;w=0;if(l>bl){bl=l;blAt=i}}});return {bw,bl,bwAt,blAt}};
 /* chance a pure guesser gets at least k right of n (each call a 50/50) */
@@ -39,7 +43,7 @@ const leadLine=n=>{for(let L=0;L<=n;L++){if((n+L)%2)continue;if(tail((n+L)/2,n)<
 const FULL=120;
 /* a seeded random for shots (Math.random otherwise) */
 let seed=null;const rnd=()=>{if(seed==null)return Math.random();seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
-window.SI={ORDER,NM,col,esc,face,coLogo,coDk,md,k$,$f,P,R,N,seq,W,C,bal,rank,lead,reigns,lastD,inLast,in7,sum,i7,rank7,runs,tail,leadLine,FULL,rnd,setSeed:s=>{seed=s},
+window.SI={ORDER,NM,col,esc,face,coLogo,coDk,md,k$,$f,P,R,N,seq,W,C,bal,rank,lead,reigns,lastD,inLast,in7,sum,b7,rank7,nyT,runs,tail,leadLine,FULL,rnd,setSeed:s=>{seed=s},
   hr:m=>W(m)/C(m),RM:()=>matchMedia('(prefers-reduced-motion: reduce)').matches,
   ready:t=>D.documentElement.classList.add('si-ready-'+t),
   io:(el,f,th)=>{new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){o.disconnect();f()}},{threshold:th||.25}).observe(el)}};
