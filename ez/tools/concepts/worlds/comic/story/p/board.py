@@ -4,7 +4,7 @@ import sys
 from PIL import Image,ImageDraw,ImageFont
 D,W,OUT=sys.argv[1],int(sys.argv[2]),sys.argv[3]
 F=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',30 if W<1000 else 40)
-T=[('now','Today · the live scoreboard (sticker per card in a window)'),
+T=[('now','Today · the live scoreboard as rebuilt 18:20 (a sticker per card in a window)'),
    ('p1','P1 · The docked bill: the three stubs dock under the header while the scoreboard is on screen · ground: ticket stock printed with the model\'s own mark'),
    ('p2','P2 · Stamped window: the stubs printed again under the head, every ticket rubber-stamped with its window · ground: the dollar bill, green ink in profit, red ink at a loss'),
    ('p3','P3 · Thumb dock: a ticket switch floats at the bottom while the scoreboard is on screen · ground: each card in its AI\'s colour, numbers on caption strips'),

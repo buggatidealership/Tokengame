@@ -1,9 +1,9 @@
-// node rec.js <tmp dir> <out.mp4>: records P1, P3, P4, P2 at 390x844 (real-time video of the page), joined with ffmpeg
+// node rec.js <tmp dir> <out.mp4>: records P1, P3, P4, P2 at 390x844 (real-time video at 1x; Playwright video at 2x captured only part of the frame), upscaled to 780 and joined with ffmpeg
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../live-r1/_fonts.js');const fs=require('fs');const {execSync}=require('child_process');
 const TMP=process.argv[2],OUT=process.argv[3],D=__dirname+'/',rd=f=>fs.readFileSync(f,'utf8');fs.mkdirSync(TMP,{recursive:true});
 const NAME={p1:'P1 · The docked bill',p2:'P2 · Stamped window',p3:'P3 · Thumb dock',p4:'P4 · Punch the ticket'};
 (async()=>{const b=await chromium.launch({args:['--disable-dev-shm-usage']});const parts=[];
- for(const t of ['p1','p3','p4','p2']){const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,recordVideo:{dir:TMP,size:{width:780,height:1688}}});
+ for(const t of ['p1','p3','p4','p2']){const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,recordVideo:{dir:TMP,size:{width:390,height:844}}});
   const t0=Date.now();const p=await ctx.newPage();await FONTS(p);
   await p.goto('http://localhost:8931/v47-live-x3plus.html#/leaderboard',{waitUntil:'load',timeout:120000});
   await p.waitForFunction(()=>document.documentElement.classList.contains('x2p-world')&&!document.documentElement.classList.contains('x2p-cur')&&window.__wc11Show,null,{timeout:90000});
@@ -25,6 +25,6 @@ const NAME={p1:'P1 · The docked bill',p2:'P2 · Stamped window',p3:'P3 · Thumb
     await glide(bill-120,1500);await p.waitForTimeout(1600)}
   const v=p.video();await ctx.close();const f=await v.path();parts.push([f,ss]);console.log(t,f)}
  await b.close();
- const cut=parts.map(([f,ss],i)=>{const o=TMP+'/cut'+i+'.mp4';execSync(`ffmpeg -y -loglevel error -ss ${ss.toFixed(2)} -i "${f}" -vf "scale=780:-2,fps=30" -c:v libx264 -pix_fmt yuv420p -crf 23 ${o}`);return o});
+ const cut=parts.map(([f,ss],i)=>{const o=TMP+'/cut'+i+'.mp4';execSync(`ffmpeg -y -loglevel error -ss ${ss.toFixed(2)} -i "${f}" -vf "scale=780:-2:flags=lanczos,fps=30" -c:v libx264 -pix_fmt yuv420p -crf 23 ${o}`);return o});
  const list=TMP+'/list.txt';fs.writeFileSync(list,cut.map(f=>`file '${f}'`).join('\n'));
  execSync(`ffmpeg -y -loglevel error -f concat -safe 0 -i ${list} -c copy -movflags +faststart ${OUT}`);console.log(OUT)})();

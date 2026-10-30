@@ -6,8 +6,8 @@ D,OUTP,OUTD=sys.argv[1:4];BG=(24,22,28);G=28
 def F(s,b=False):
   return ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans%s.ttf'%('-Bold' if b else ''),s)
 ft,fl,fs=F(40,True),F(21),F(22,True)
-T=[('now','Today (live R11)'),('q1','Q1 · Fight card: the ring, the arena screen, scorecards, the purse'),('q2','Q2 · Shouting match: balloons carried from the calls to the grader, bills, podium'),('q3','Q3 · Bet slips: slips dealt to the window, the clip's own track, slips stamped or torn, the cashier')]
-LINE='"One round, start to finish" on round 56 (Robinhood), every number read from ROUNDS and __x2pPnl(). Panel 2 starts at 0:10 of the film (all four calls on their screens; the poster is that frame), the market lands at 0:13.2 and the page's comic stamp (THUD! -3.31%) slams onto the film's corner as it does. Panel 3 waits until the dial is fully on screen and read, then plays in three beats over about 6 s; tap to replay; still with reduced motion.'
+T=[('now','Today (live R11)'),('q1','Q1 · Fight card: the ring, the arena screen, scorecards, the purse'),('q2','Q2 · Shouting match: balloons carried from the calls to the grader, bills, podium'),('q3','Q3 · Bet slips: slips dealt to the window, the clip with its own track, slips stamped or torn, the cashier')]
+LINE='"One round, start to finish" on round 56 (Robinhood), every number read from ROUNDS and __x2pPnl(). Panel 2 starts at 0:10 of the film (all four calls on their screens; the poster is that frame), the market lands at 0:13.2 and the comic stamp of the page (THUD! -3.31%) slams onto the corner of the film as it does. Panel 3 waits until the dial is fully on screen and read, then plays in three beats over about 6 s; tap to replay; still with reduced motion.'
 def wrap(t,f,w):
   out=[];l='';dr=ImageDraw.Draw(Image.new('RGB',(1,1)))
   for x in t.split():
