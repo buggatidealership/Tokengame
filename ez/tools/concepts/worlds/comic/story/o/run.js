@@ -3,7 +3,7 @@
 //   node run.js rec   <take> <out.mp4> <width> <view> <sec>  real-time screencast of a view (living pictures run on the real clock)
 //   node run.js step  <take> <out.mp4> <width>              O4/O5: panel 3's timeline stepped frame by frame (smooth on any machine)
 //   node run.js check <take> <width>                        scrollWidth, errors, what moves (RM=1: reduced motion)
-//   node run.js perf  <take> <out.json> [runs]              4x slower CPU at 390x844: 6 s idle over the grid, page with D2 vs D2 + take
+//   node run.js perf  <takes,..> <out.json> [runs]          4x slower CPU at 390x844: 6 s idle over the grid, page with D2 vs D2 + each take (order rotated per run)
 // Server: localhost:8915 (cwd ez).
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../live-r1/_fonts.js');
 const fs=require('fs'),os=require('os'),{execSync}=require('child_process');
@@ -70,8 +70,8 @@ const checks=p=>p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:docu
      layers:[...document.querySelectorAll('.so-pt')].filter(x=>getComputedStyle(x).display!=='none'&&+getComputedStyle(x).opacity>0).length,living:document.querySelectorAll('.so-pic').length}));
    console.log(W,tk,process.env.RM?'reduced-motion':'',JSON.stringify(await checks(p)),JSON.stringify(mv),p.__er.join(' | ')||'no errors')}
  else if(mode==='perf'){const OUT=a3,RUNS=+(a4||3),res=[];
-   for(let r=0;r<RUNS;r++)for(const arm of (r%2?['take','base']:['base','take'])){const p=await open(b,390,{cpu:4,dpr:2});const c=p.__cdp;await c.send('Performance.enable');
-     await prime(p);await base(p);if(arm==='take')await take(p,tk);await settle(p);
+   const AR=['base',...tk.split(',')];for(let r=0;r<RUNS;r++)for(let q=0;q<AR.length;q++){const arm=AR[(q+r)%AR.length];const p=await open(b,390,{cpu:4,dpr:2});const c=p.__cdp;await c.send('Performance.enable');
+     await prime(p);await base(p);if(arm!=='base')await take(p,arm);await settle(p);
      await p.evaluate(()=>{const t=[...document.querySelectorAll('.wc-bi')].filter(x=>x.offsetParent);scrollTo(0,t[9].getBoundingClientRect().top+scrollY-120)});await p.waitForTimeout(2500);
      await p.evaluate(()=>{window.__soF=[];let l=performance.now();(function f(t){window.__soF.push(t-l);l=t;requestAnimationFrame(f)})(l)});
      const td=async()=>(await c.send('Performance.getMetrics')).metrics.find(x=>x.name==='TaskDuration').value;
