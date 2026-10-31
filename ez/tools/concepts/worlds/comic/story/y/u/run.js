@@ -2,7 +2,7 @@
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');const fs=require('fs');
 const OUT=process.argv[2],TS=(process.argv[3]||'now').split(','),WS=(process.argv[4]||'390,1280').split(',').map(Number),DPR=+(process.argv[5]||2);
 if(OUT)fs.mkdirSync(OUT,{recursive:true});const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
-async function open(b,W,t,o={}){const p=await b.newPage({viewport:{width:W,height:W<600?844:1000},deviceScaleFactor:o.dpr||DPR,reducedMotion:o.rm?'reduce':'no-preference'});await FONTS(p);const er=[];
+async function open(b,W,t,o={}){const p=await b.newPage({viewport:{width:W,height:W<600?844:1000},deviceScaleFactor:o.dpr||DPR,reducedMotion:o.rm?'reduce':'no-preference'});await FONTS(p);const er=[];if(process.env.SIM||o.sim){await p.clock.setFixedTime(new Date('2026-10-30T14:30:00Z'));await p.addInitScript(()=>{window.__uSim=1})}
   p.on('pageerror',e=>er.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource/.test(m.text()))er.push(m.text())});
   await p.goto('http://localhost:8926/v47-live-x3plus.html#/upcoming',{waitUntil:'load'});
   await p.waitForFunction(()=>document.documentElement.classList.contains('x2p-world')&&!document.documentElement.classList.contains('x2p-cur')&&document.querySelector('#wc-up'),null,{timeout:120000});
@@ -23,9 +23,9 @@ if(require.main===module)(async()=>{const b=await chromium.launch({args:['--disa
    const VH=W<600?844:1000;
    const bb=await p.evaluate(s=>{const n=document.querySelector(s),h=document.querySelector('header.top');const r=n.getBoundingClientRect();return {y:(h?h.getBoundingClientRect().top:r.top)+scrollY,b:r.bottom+scrollY}},sel);
    const full=Math.ceil(bb.b-bb.y);await p.setViewportSize({width:W,height:Math.min(full,16000)});await p.evaluate(y=>scrollTo(0,y),bb.y);await p.waitForTimeout(1200);
-   await p.screenshot({path:`${OUT}/up-${W}-${t}.png`,clip:{x:0,y:0,width:W,height:Math.min(full,16000)}});
+   await p.screenshot({path:`${OUT}/up-${W}-${t}${process.env.SIM?'-sim':''}.png`,clip:{x:0,y:0,width:W,height:Math.min(full,16000)}});
    await p.setViewportSize({width:W,height:VH});
    const m=t==='now'?{}:await p.evaluate(()=>window.Ucheck?Ucheck():{});
    const sw=await p.evaluate(()=>document.documentElement.scrollWidth);
    R.push({W,t,sw,h:full,err:er.slice(),...m});console.log(JSON.stringify(R[R.length-1]));await p.close()}
- fs.writeFileSync(OUT+'/checks-'+TS.join('_')+'-'+WS.join('_')+'.json',JSON.stringify(R,null,1));await b.close()})();
+ fs.writeFileSync(OUT+'/checks-'+TS.join('_')+'-'+WS.join('_')+(process.env.SIM?'-sim':'')+'.json',JSON.stringify(R,null,1));await b.close()})();

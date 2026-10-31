@@ -1,6 +1,7 @@
 const {open}=require('./run.js');const {chromium}=require('/opt/node22/lib/node_modules/playwright');
-(async()=>{const b=await chromium.launch();const {p}=await open(b,390,'now',{dpr:1});
-console.log(await p.evaluate(()=>JSON.stringify({pen:PENDING.slice(0,3),up:UPCOMING.slice(0,3),nup:UPCOMING.length,npen:PENDING.length,r:ROUNDS.slice(-2),logo:Object.entries(CO_LOGOS).slice(0,3),rm:(window.RMETA||{})[82],caps:typeof CAPS,models:Object.keys(MODELS),mv:MODELS.GPT.ver,
- sg:[...document.querySelectorAll('#wc-up [class*=sg-]')].slice(0,30).map(n=>n.tagName+'.'+n.className).join(' | '),
- se:typeof SE, seK:window.SE?Object.keys(SE):null, sgK:window.SG?Object.keys(SG):null})));
+(async()=>{const b=await chromium.launch();for(const W of [390,1280]){const {p}=await open(b,W,'now',{dpr:1});
+console.log(W,await p.evaluate(()=>JSON.stringify({w:document.querySelector('#wc-up').getBoundingClientRect().width,cs:getComputedStyle(document.querySelector('#wc-up')).padding,
+ res:ROUNDS.filter(r=>r.resolves==='10/30/26').map(r=>r.n+r.ticker),days:SE.byDay(SE.toCome()).map(d=>d.k+':'+d.items.length).join(' '),lead:SE.lead(),
+ cover:document.querySelector('#wc-up .wc-tab-cv').getBoundingClientRect().height, flt:!!document.querySelector('#wc-up .wc-flt'),
+ back:document.querySelector('#wc-up .wc-back').outerHTML.slice(0,300), wide:SE.toCome().map(x=>x.co+' ('+x.ticker+')').sort((a,b)=>b.length-a.length).slice(0,4)})));await p.close()}
 await b.close()})();
