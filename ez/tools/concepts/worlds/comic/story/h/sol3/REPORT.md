@@ -37,7 +37,7 @@ Playwright in place of today's big board. Nothing in `ez/tools/v22/` or any `ez/
   **high-score table** (rank, name, W-L, P&L); in P&L the end labels carry the name only (the figure is in the table: one carrier).
 - **Controls that move until used (lesson 86):** arcade, a blinking "▸" cursor before the menu item not yet tried ("PRESS START"); console,
   the painted knob itself (a disc of the painting, rotated) turns between hit rate and P&L and twitches every few seconds until first
-  used, the brass plates under the three toggles are Season / 7 days / 24h, the plate under the knob names what it points at; desk, the
+  used, the brass plates under the three toggles are Season / 7 days / 24h (red ink when on), the plate under the knob names what it points at (a tap on it turns the knob too); desk, the
   chart paper's own printed header, the untried item pulsing. Nothing moves with reduced motion.
 
 ## Data (nothing typed)
@@ -59,8 +59,12 @@ Playwright in place of today's big board. Nothing in `ez/tools/v22/` or any `ez/
   interrogation table, the machine's pens on it, hat, ashtray, coffee, a gloved hand and a scatter of gold coins round it.
 
 ## Measured
-- 390 and 1280: no sideways scroll (`scrollWidth` = viewport) and no element outside the viewport on any take; no console errors.
-  320: see below.
+- 320, 390 and 1280: no sideways scroll (`scrollWidth` = viewport) and no element outside the viewport on any take, every text and
+  control inside its surface, no console errors (39 of 39 final shots; 320 checked on every take in P&L, the densest view).
+- Bugs caught on the boards and fixed before shipping them: on the polygraph's narrow paper the P&L figures ran into W-L
+  ("45-27+$148,480"; columns are now measured from the widest value); an empty 24h window drew the $0 line through "No round closed
+  in this window yet." and a table of 0-0 rows (now only the message, two lines where the paper is narrow); in P&L the coin row was
+  also drawn at $0 (the coin flip means nothing there; now a plain dashed $0 line).
 - Smallest text at 390: arcade axis labels 9.3px, end labels and menu about 11px; polygraph key 10.5px, plates 11 to 12px.
 - Cost: no element moves except the cursor blink, the knob's twitch (both stop once used) and the line drawing on a switch (1.5 s,
   `stroke-dashoffset`, one path per AI). Not measured at 4x CPU in this round.
@@ -79,8 +83,9 @@ of truth", but its pens take a third of the paper.
 - **A (arcade):** "gambling" next to a coin may read as "crypto casino", against the guide-not-salesman tone (lesson 29); the menu is
   on-screen text, not the painted buttons (the buttons under the screen do nothing, which a visitor may try); VT323 is a pixel face,
   crisp but small.
-- **P (console):** the pens' third of the paper means no end labels, so the reader has to match colours to the key; the window is
-  short on desktop (the chart there is about 450 x 200px); the dimmed window plates in hit-rate view read as greyed text on brass.
+- **P (console):** the pens' third of the paper means no end labels, so the reader has to match colours to the key; on desktop the
+  console is a centred 900px stage on the chapter's ground (the painting is taller than wide), so the sides of the section are the
+  band's dark gold, not painting; the painted plates carry pseudo-engraving marks of their own under our words (worst on S1 "7 DAYS").
 - **P4/P5 (desk):** the top-down view is the least "comic panel" of the set, the lamp's pool sits on the printed header, and the sheet
   is a big dark rectangle that can read as a laptop screen at a glance.
 - **Styles:** the S2/S4 restyles keep the composition only roughly (each was measured again); S4's magenta is outside the brand's
