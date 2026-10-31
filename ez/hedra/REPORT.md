@@ -56,3 +56,19 @@ Honest read of each (judged at full size):
 4. **ideogram-v4-5:** a photograph, not a comic: no ink lines, no halftone; the "doors" became four freestanding steel lockers. Great materials, wrong finish.
 
 Verdict: seedream-50-pro for the 3D-first look, gpt-image-2 for the strongest ink layer; neither does both fully. Next test worth running: seedream-50-pro with the comic layer pushed harder (heavier ink, explicit dot screen in shadows) and "steel" doors stated, and gpt-image-2 with "octane render, subsurface, ray-traced reflections" to push it further from illustration.
+
+## Section openers (1K) (2026-10-31)
+One establishing shot per site section, each in a different finish, 16:9 landscape, the cheapest 1K settings. Every prompt ended with "No people, no text, no letters, no numbers, no logos, no signs. Main subject centred in the middle 60% of the width." Balance 98.421 -> 98.228 (spent **$0.193**; every charge equalled its estimate). All four submitted in parallel; time = submit to COMPLETED, polled every 5 s. Files are JPG q90 at native size in `openers/`.
+
+| Name | Model | Settings | Cost | Time | Output | File |
+|---|---|---|---|---|---|---|
+| o1-models | seedream-50-pro | 1080p (its smallest; no 1K option), 16:9, png | $0.0675 | 109 s | 1920 x 1080 | `openers/o1-models-seedream-50-pro.jpg` |
+| o2-rounds | gpt-image-2 | quality medium, 1K, 16:9, png | $0.029 | 31 s | 1280 x 720 | `openers/o2-rounds-gpt-image-2.jpg` |
+| o3-tonight | gpt-image-2 | quality medium, 1K, 16:9, png | $0.029 | 31 s | 1280 x 720 | `openers/o3-tonight-gpt-image-2.jpg` |
+| o4-bet | seedream-50-pro | 1080p, 16:9, png | $0.0675 | 90 s | 1920 x 1080 | `openers/o4-bet-seedream-50-pro.jpg` |
+
+Honest read of each:
+- **o1-models (3D first, comic ink):** the strongest of the four: four panel doors in exactly the asked order (orange, mint, charcoal, blue) under four bulbs, red light left, green right, a wet reflective floor; a real render with a fine ink line on edges and faint dots in the dark walls. Doors read as painted wood panels with chipped paint more than steel. Doors sit at x 480 to 1450 of 1920, inside the middle 60%. A ceiling vent and smoke detector are the only extras; no text.
+- **o2-rounds (pop-art 3D):** loud and on brief: a wire spinner rack of blank red, yellow and blue covers in front of a yellow starburst, thick outlines, Ben-Day dots everywhere, a rainy street and lamp post left, a kiosk right. The "3D/extruded" part is weak (it is flat Lichtenstein with perspective). The kiosk's back shelves hold small comics with scribbled faux covers, close to text at full size. Rack inside the middle 60%.
+- **o3-tonight (anime cel):** reads as an anime background (Cowboy Bebop-ish sunset, flat hard shadows, ink lines), ring on a rooftop between towers, a spotlight pool on the canvas. The brass bell is the foreground subject but sits at x 220 to 490 of 1280, partly left of the middle 60% (256 to 1024): a phone crop cuts into it. The bell reads dark bronze more than shiny brass.
+- **o4-bet (noir, gold spot):** very strong: heavy brush ink, rain, cross-hatching, a vault door half open with the inside and the coin pile in gold, gold light spilling onto the wet floor; the only colour is gold. Vault inside the middle 60%. The ink has a scratchy, slightly digital-brush look in places.
