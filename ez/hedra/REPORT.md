@@ -34,3 +34,25 @@
 - Cost: **$0.712** (estimate 0.712, balance 100.00 -> 99.288).
 - File: `test-backdrop.png` (2880 x 2880, 13.2 MB).
 - Look: an empty backstage room, four doors side by side, red key light on the left half and green on the right, wall lamps, a make-up mirror with bulbs, a sofa, bench and a red kit bag; ink lines and halftone dots in the darks; no people, no text or logos visible at preview size. It reads more "drawn comic with lighting" than "3D render with comic finish"; a prompt pushing modelled materials (or another model such as nano-banana-pro) could be tried next.
+
+## Four takes, one scene (2026-10-31): "3D first, comic finish"
+Same prompt on four models (only each model's own fields changed):
+"3D-rendered scene with an American comic book finish: an empty backstage green room of a boxing arena, four dressing-room doors side by side, each door a different scuffed painted metal, hard red key light from the left and hard green key light from the right, volumetric haze, glossy concrete floor with reflections, a worn leather sofa, a make-up mirror ringed with bulbs. Physically modelled materials and depth like a Pixar or Spider-Verse frame, then bold black ink contour lines on edges and Ben-Day halftone dots only inside the shadows. No people, no text, no letters, no numbers, no logos, no signs."
+
+Balance 99.288 -> 98.421 (spent **$0.867**; every charge equalled its estimate). All jobs submitted in parallel; time = submit to COMPLETED, polled every 5 s. Files are JPG q90 in `takes/` (PNGs not kept).
+
+| # | Model | Settings | Cost | Time | Output | File |
+|---|---|---|---|---|---|---|
+| 1 | gpt-image-2 | quality high, 2K, 1:1, png | $0.4289 | 110 s | 2048 x 2048 | `takes/t1-gpt-image-2.jpg` |
+| 2 | nano-banana-pro | 2K, 1:1 | $0.1512 | 28 s | 2048 x 2048 | `takes/t2-nano-banana-pro.jpg` |
+| 3 | seedream-50-pro | 1440p (2K QHD), 1:1, png (its largest) | $0.0675 | 105 s | 1440 x 1440 | `takes/t3-seedream-50-pro.jpg` |
+| - | reve-21 | 1:1, png | $0 (not charged) | 7 s | none | FAILED: `{"code":"NOT_FOUND","message":"The generation failed. Please try again.","retryable":false}` (job_7605aad4-783a-4e0c-9101-c65313b77d97) |
+| 4 | ideogram-v4-5 (fallback for reve) | quality high, 2K, 1:1 | $0.22 | 23 s | 2048 x 2048 | `takes/t4-ideogram-v4-5.jpg` |
+
+Honest read of each (judged at full size):
+1. **gpt-image-2:** much more modelled than the first test (real depth, glossy floor reflections of each door, scuffed metal doors with vents, leather sofa, ducting), fine ink contours throughout; halftone barely visible. Reads as a polished painted illustration with 3D depth, still more "drawn and lit" than "rendered then inked". No haze. Door colours red/yellow/blue/green, no text.
+2. **nano-banana-pro:** a collage, not one look: a near-photo brick wall and haze with doors and sofa traced in line art laid over; the halftone covers the whole floor and frame edges, not only the shadows; one door is grey. Weakest match to "3D first, comic finish".
+3. **seedream-50-pro:** the closest to the brief: reads as a modelled 3D render (pitted concrete with depth, studded leather sofa with specular highlights, volumetric red and green beams, wet glossy floor) with a light ink line on the edges and dots in the dark corners. But the doors are painted wooden panel doors, not metal; the mirror is a round free-standing one; a magenta spill on the floor where the lights mix. Cheapest, and capped at 1440 px.
+4. **ideogram-v4-5:** a photograph, not a comic: no ink lines, no halftone; the "doors" became four freestanding steel lockers. Great materials, wrong finish.
+
+Verdict: seedream-50-pro for the 3D-first look, gpt-image-2 for the strongest ink layer; neither does both fully. Next test worth running: seedream-50-pro with the comic layer pushed harder (heavier ink, explicit dot screen in shadows) and "steel" doors stated, and gpt-image-2 with "octane render, subsurface, ray-traced reflections" to push it further from illustration.
