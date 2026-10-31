@@ -287,6 +287,7 @@ Every time the owner gives pointers and an iteration lands, update this file the
   - **facts → carriers:** which visual carries each fact;
   - **words left:** only what no picture can say.
 - **Then make several genuinely different takes,** each with a different carrier or metaphor, not a re-skin.
+- **Settle words with pictures before mockups** (owner, 2026-10-31: "I only have one word to say it because I am not a specialist... keep generating these images if you need me to answer questions"): when a word could mean several things ("3D", "modules", "alive"), show a small board of reference pictures (the site's own films and assets first) labelled with what each one means, get a yes or no per picture, then build.
 - **Converge by quick-fire** (owner, 2026-10-30): on a new direction, first show about ten quick, rough, very different versions side by side; the owner picks one "but not entirely"; iterate outward from that one; repeat until it converges. Breadth first, polish after the pick.
 - **Mockups by default** (owner, 2026-10-30): every proposal arrives with its mockups; do not ask whether to make them. Ask a clarifying question whenever a phrase in the owner's brain dump can be read two ways, alongside the mockups.
 - **Propose, don't wait.** When an element on the page fails the test, say so and mock up the fix, even if the owner didn't mention it.
