@@ -10,7 +10,7 @@ const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 /* a loop cropped to a box of the 854x480 source: crop={x,y,w,h} in source px */
 const SW=854,SH=480;
 /* the film's founder plates (baked into the source) are covered by the page's own plate, set in HTML in the film's poster style */
-const PB={CLAUDE:{x:27,y:18,w:212,h:62,st:'frame'},GPT:{x:241,y:9,w:350,h:84,st:'stars'},GROK:{x:32,y:6,w:320,h:96,st:'brush'},KIMI:{x:12,y:21,w:268,h:82,st:'rule'}};
+const PB={CLAUDE:{x:27,y:18,w:212,h:62,st:'frame'},GPT:{x:241,y:8,w:350,h:83,st:'stars'},GROK:{x:32,y:6,w:320,h:96,st:'brush'},KIMI:{x:12,y:21,w:268,h:82,st:'rule'}};
 function plate(m,c){const b=PB[m];if(b.x+b.w<=c.x||b.x>=c.x+c.w||b.y+b.h<=c.y||b.y>=c.y+c.h)return '';
   return `<span class="gr-pl gr-pl-${b.st}" style="left:${((b.x-c.x)/c.w*100).toFixed(3)}%;top:${((b.y-c.y)/c.h*100).toFixed(3)}%;width:${(b.w/c.w*100).toFixed(3)}%;height:${(b.h/c.h*100).toFixed(3)}%;--ph:${(b.h/c.h*100).toFixed(3)}cqh">${b.st==='stars'?'<i></i>':''}<b>${NM[m].toUpperCase()}</b>${b.st==='stars'?'<i></i>':''}</span>`}
 function vid(m,crop,cls){const c=crop||{x:0,y:0,w:SW,h:SH},k=m.toLowerCase();
@@ -22,7 +22,7 @@ function l5(a){return `<span class="gr-l5" aria-label="Last five: ${a.join(' ')}
 function mount(html,cls){const s=document.querySelector('.wc-chars');s.classList.add('gr-on',cls);
   s.innerHTML=html;wire(s);if(!document.querySelector('#gr-fonts')){const l=document.createElement('link');l.id='gr-fonts';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Ultra&family=Permanent+Marker&family=Oswald:wght@600;700&display=swap';document.head.appendChild(l)}return s}
 /* checks: faces (hand-measured boxes in the 854x480 source) against every lettered or drawn element; empty area of every text container */
-const FACE={CLAUDE:[245,0,420,175],GPT:[456,85,590,205],GROK:[365,0,485,125],KIMI:[318,0,480,175]};
+const FACE={CLAUDE:[245,0,420,175],GPT:[456,92,590,205],GROK:[365,0,485,125],KIMI:[318,0,480,175]};
 function GRcheck(){const out={faceHits:[],faceShown:{},empty:{}};const ov=[...document.querySelectorAll('.wc-chars :is(.gr-pl,.g2-cap,.g2-sfx,.g1-bar,.g3d-tape,.g3d-leaf,.g3d-lint,.g3d-spill)')];
  document.querySelectorAll('.wc-chars .gr-v').forEach(v=>{const r=v.getBoundingClientRect(),[cx,cy,cw,ch]=v.dataset.crop.split(',').map(Number),f=FACE[v.dataset.m];
   const fx0=r.left+(f[0]-cx)/cw*r.width,fx1=r.left+(f[2]-cx)/cw*r.width,fy0=r.top+(f[1]-cy)/ch*r.height,fy1=r.top+(f[3]-cy)/ch*r.height;
