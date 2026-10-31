@@ -39,8 +39,12 @@ function skin(el,o){if(!el||!el.offsetWidth||off('skin')||o.frame&&off('frame'))
   const w=Math.round(el.offsetWidth),h=Math.round(el.offsetHeight);if(w<6||h<6)return;const dr=o.drop!=null?o.drop:3;
   if(cs.position==='static')el.style.position='relative';
   el.classList.add(o.frame?'cb-skf':'cb-sk');el.style.setProperty('--skl',(-bl)+'px');el.style.setProperty('--skt',(-bt)+'px');el.style.setProperty('--skw',(w+dr)+'px');el.style.setProperty('--skh',(h+dr)+'px');
-  if(o.frame){el.style.setProperty('--sk2',skinURI(w,h,o));el.style.setProperty('--sk',skinURI(w,h,Object.assign({},o,{droponly:1})))}
+  if(o.frame){el._cbr={u:skinURI(w,h,o),w:w+dr,h:h+dr};el.style.setProperty('--sk',skinURI(w,h,Object.assign({},o,{droponly:1})));bg(el)}
   else el.style.setProperty('--sk',skinURI(w,h,o))}
+/* an element's background: its frame ring (drawn in its own border area, so nothing above it is forced onto a layer) over its ground */
+function bg(el){const L=[],S=[];if(el._cbr){L.push(el._cbr.u);S.push(el._cbr.w+'px '+el._cbr.h+'px')}if(el._cbg){L.push(el._cbg.u);S.push(el._cbg.w+'px '+el._cbg.h+'px')}if(!L.length)return;
+  el.style.setProperty('background-image',L.join(','),'important');el.style.setProperty('background-size',S.join(','),'important');el.style.setProperty('background-position','0 0','important');
+  el.style.setProperty('background-origin','border-box','important');el.style.setProperty('background-clip','border-box','important');el.style.setProperty('background-repeat','no-repeat','important')}
 
 /* ---------- panel grounds ---------- */
 const GR={orange:['#ffc066','#ff7a12','#e0480a','rgba(255,232,170,.2)','#b52d00'],blue:['#a9d6ff','#3a8bff','#1446c8','rgba(220,240,255,.18)','#0e2f99'],
@@ -50,7 +54,7 @@ const GR={orange:['#ffc066','#ff7a12','#e0480a','rgba(255,232,170,.2)','#b52d00'
   p2:['#fffbc0','#ffe02a','#ffa400','rgba(255,255,225,.35)','#ff8a00'],p3:['#efc2ff','#a64cff','#5a14c4','rgba(255,225,255,.22)','#3d0a8a'],p4:['#d0ffb0','#46de7e','#0f9a50','rgba(225,255,215,.25)','#06632f'],
   fm:['#c8ffd8','#3fd48a','#0b8a48','rgba(225,255,235,.2)','#05602f']};
 function ground(el,f){if(off('ground'))return;const W=Math.round(el.offsetWidth),Hh=Math.round(el.offsetHeight);if(!W||!Hh)return;const o=f(W,Hh);el.classList.add('cb-pn');
-  el.style.setProperty('background-image',X.groundURI(W,Hh,o),'important');el.style.setProperty('background-size',W+'px '+Hh+'px','important');el.style.setProperty('background-position','0 0','important');if(o.clip)el.style.clipPath=o.clip}
+  el._cbg={u:X.groundURI(W,Hh,o),w:W,h:Hh};bg(el);if(o.clip)el.style.clipPath=o.clip}
 const polyPx=p=>`polygon(${p.map(q=>f1(q[0])+'px '+f1(q[1])+'px').join(',')})`;
 
 /* ================= the cover ================= */
@@ -104,15 +108,15 @@ function cover(){const root=D.querySelector('.cvx.c2');if(!root)return;const pg=
       speed:{r0:k==='mh'?Math.min(W,Hh)*.42:Math.min(x1-x0,Hh)*.36,n:k==='mh'?44:26,l0:10,l1:k==='mh'?100:60,w0:1,w1:k==='mh'?5:3.6,seed:hs(k+'s'),col:k==='p2'?'#c3140c':INK,op:k==='p2'?.6:.6}});
     el.style.backgroundSize=W+'px '+Hh+'px'}
   /* the overlay: what breaks the borders (stars across the gutters, bolts, MINE! across the cut into the record) */
-  pg.querySelectorAll(':scope > .cb-ov').forEach(n=>n.remove());
   const PR=pg.getBoundingClientRect(),R=el=>{const b=el.getBoundingClientRect();return {x:b.left-PR.left,y:b.top-PR.top,w:b.width,h:b.height}};
-  const ra=root.querySelector('.c2-ra'),rb=root.querySelector('.c2-rb'),mh=root.querySelector('.c2-mh');let ov='';
+  const ra=root.querySelector('.c2-ra'),rb=root.querySelector('.c2-rb'),mh=root.querySelector('.c2-mh');let ov='';const bits=[];
+  const put=(x,y,w,h,inner)=>bits.push(`<i class="cb-bit" aria-hidden="true" style="left:${f1(x-w/2)}px;top:${f1(y-h/2)}px">${X.svg(w,h,`<g transform="translate(${f1(w/2-x)} ${f1(h/2-y)})">${inner}</g>`)}</i>`);
   if(ra&&rb&&mh){const A=R(ra),B=R(rb),M=R(mh),w=A.w;
-    ov+=X.star(A.x+.64*w,A.y-4,dk?15:12,{rot:-10})+X.star(A.x+2,A.y+A.h*.52,dk?13:10,{rot:12})+X.star(A.x+w-2,B.y-4,dk?11:8,{rot:-20});
-    ov+=X.bolt(A.x+.585*w,A.y+A.h*.42,dk?1:.78,14)+X.bolt(M.x+M.w-24,M.y+M.h-30,dk?.9:.7,-24);
+    const s1=dk?15:12,s2=dk?13:10,s3=dk?11:8;put(A.x+.64*w,A.y-4,s1*2+8,s1*2+8,X.star(A.x+.64*w,A.y-4,s1,{rot:-10}));put(A.x+2,A.y+A.h*.52,s2*2+8,s2*2+8,X.star(A.x+2,A.y+A.h*.52,s2,{rot:12}));put(A.x+w-2,B.y-4,s3*2+8,s3*2+8,X.star(A.x+w-2,B.y-4,s3,{rot:-20}));
+    const k1=dk?1:.78,k2=dk?.9:.7;put(A.x+.585*w+8*k1,A.y+A.h*.42+20*k1,40,60,X.bolt(A.x+.585*w,A.y+A.h*.42,k1,14));put(M.x+M.w-24+8*k2,M.y+M.h-30+20*k2,40,60,X.bolt(M.x+M.w-24,M.y+M.h-30,k2,-24));
     const mine=root.querySelector('.c2-mine');if(mine){const r=IL('MINE!',{size:dk?32:24*kk,fill:'gold',rot:-9,jr:7,jb:.07});
-      const mx=B.x+.03*w,my=B.y+B.h-r.h*.6;ov+=`<g transform="translate(${f1(mx)} ${f1(my)})">${r.inner}</g>`}}
-  pg.insertAdjacentHTML('beforeend',`<div class="cb-ov cb-brk-wrap" aria-hidden="true">${X.svg(PR.width,PR.height,ov)}</div>`)}
+      bits.push(`<i class="cb-bit" aria-hidden="true" style="left:${f1(B.x+.03*w)}px;top:${f1(B.y+B.h-r.h*.6)}px">${r.svg}</i>`)}}
+  pg.querySelectorAll(':scope > .cb-bit').forEach(n=>n.remove());pg.insertAdjacentHTML('beforeend',bits.join(''))}
 
 /* a model's coin: a hand-drawn ring (thick ink, white keyline, lit disc, a stepped drop); the leader's holo keeps its foil */
 function coinRing(c,seed){if(!c||!c.offsetWidth||c.classList.contains('pp-holo'))return;const w=c.offsetWidth;c.style.boxShadow='none';
@@ -162,10 +166,12 @@ function chars(){const sec=D.querySelector('#wc-book .wc-chars');if(!sec||!sec.q
   ground(sec,(W,Hh)=>({c:GR.orange,cx:tr.x+tr.w*.5,cy:tr.y+tr.h*.55,gr:Math.max(W,Hh*.5),r0:Math.min(W,Hh)*.25,r1:Math.max(W,700),seed:11,sp:8,n:30,bw:8,holes:holesOf(sec,'.pp1-c'),
     speed:{r0:tr.h*.62,n:34,l0:14,l1:70,w0:1,w1:4.2,seed:12,op:.55}}))}
 /* a ticket's perforation: half-round notches top and bottom where the stub tears off, the dashes hand-drawn */
-function perf(c){const st=c.querySelector('.pp1-stub');if(!st)return;c.querySelectorAll(':scope > .cb-perf').forEach(n=>n.remove());const h=c.clientHeight,x=st.offsetWidth;const r=X.rng(hs(c.dataset.m||'p'));
-  let d='';for(let y=10;y<h-10;y+=9){const l=4+r()*2;d+=`M${f1(x-1+(r()-.5)*.8)} ${f1(y)}l${f1((r()-.5)*.6)} ${f1(l)}`}
-  const n=`<path d="${d}" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><circle cx="${x}" cy="-1" r="7" fill="#fffdf6" stroke="${INK}" stroke-width="3"/><circle cx="${x}" cy="${h+1}" r="7" fill="#fffdf6" stroke="${INK}" stroke-width="3"/>`;
-  c.insertAdjacentHTML('beforeend',`<i class="cb-perf" aria-hidden="true">${X.svg(x+10,h,n,'','overflow:visible')}</i>`)}
+function perf(c){const st=c.querySelector('.pp1-stub');if(!st||!st.offsetWidth)return;const h=st.offsetHeight,x=st.offsetWidth;const r=X.rng(hs(c.dataset.m||'p'));
+  /* the tear line drawn into the stub itself: hand-inked dashes down its right edge, half-round punched notches top and bottom */
+  let d='';for(let y=9;y<h-9;y+=9){const l=4+r()*2;d+=`M${f1(x-2+(r()-.5)*.8)} ${f1(y)}l${f1((r()-.5)*.6)} ${f1(l)}`}
+  const n=`<path d="${d}" stroke="${INK}" stroke-width="2.3" stroke-linecap="round"/><circle cx="${x}" cy="0" r="6.5" fill="#fffdf6" stroke="${INK}" stroke-width="2.6"/><circle cx="${x}" cy="${h}" r="6.5" fill="#fffdf6" stroke="${INK}" stroke-width="2.6"/>`;
+  const u=X.uri(x,h,n),cur=getComputedStyle(st).backgroundImage;st.style.setProperty('background-image',u+(cur&&cur!=='none'&&!st._cbp?','+cur:st._cbp?','+st._cbp:''),'important');if(!st._cbp)st._cbp=cur;
+  st.style.setProperty('border-right-color','transparent','important')}
 /* the P&L counts up once in view, digit by digit like a rolling counter (the money accruing); the layout never moves */
 const counted={};
 function odometer(svg,fin,key){if(!svg||RM||counted[key]||!window.IntersectionObserver)return;const texts=[...svg.querySelectorAll('text')];if(!texts.length)return;
