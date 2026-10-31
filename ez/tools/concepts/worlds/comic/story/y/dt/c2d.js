@@ -30,35 +30,35 @@
   /* 2 · the headline, glyph by glyph: "4 AIs" small and white, TRADE and EARNINGS in gold with halftone in the letters */
   const h1=root.querySelector('.cvx-h1'),tw=root.querySelector('.c2-t');
   if(h1&&tw){const W=tw.clientWidth,desk=W>500;
-   const s2=X.fit('EARNINGS',{size:desk?72:58,seed:5,grow:.1},W-6),s1=s2*.86;
+   const s2=X.fit('EARNINGS',{size:desk?72:58,seed:5,grow:.1},W-6);let s1=s2*.86;{const bal=root.querySelector('.c2-bal'),room=W-(bal&&!desk?bal.offsetWidth+14:0)-8;for(let i=0;i<12;i++){const w1=X.layout('4 AIs',{size:s1*.6,seed:3,sizes:[1,1,1,1,.74]}).tot+10+X.layout('TRADE',{size:s1,seed:8,grow:.08}).tot+s1*.3;if(w1<=room)break;s1*=.94}}
    const a={size:s1*.6,fill:'white',seed:3,jr:5,jb:.05,sizes:[1,1,1,1,.74],depth:3},t={size:s1,fill:'yellow',seed:8,jr:6,jb:.06,grow:.08,depth:Math.round(s1*.11),dot:'#ff6a0a',dotTo:'br'};
    const wa=X.layout('4 AIs',a).tot,wt=X.layout('TRADE',t).tot,we=X.layout('EARNINGS',{size:s2,seed:5,grow:.1}).tot;
-   const y1=s1*1.0+6,y2=y1+s2*.98,hh=y2+s2*.32+8;
+   const bal=root.querySelector('.c2-bal'),bh=bal&&!desk?bal.offsetTop+bal.offsetHeight:0;const y1=s1*1.0+6,y2=Math.max(y1+s2*.98,bh+s2*.8),hh=y2+s2*.32+8;
    let g=X.word('4 AIs',Object.assign({x:8+wa/2,y:y1,rot:-4},a))+X.word('TRADE',Object.assign({x:8+wa+10+wt/2,y:y1,rot:-4},t))+X.word('EARNINGS',{x:6+we/2,y:y2,size:s2,fill:'yellow',seed:5,jr:6,jb:.06,grow:.1,rot:-3,depth:Math.round(s2*.11),dot:'#ff6a0a',dotTo:'br'});
    h1.querySelectorAll(':scope > :not(.dtw-h)').forEach(n=>n.style.display='none');h1.querySelectorAll('.dtw-h').forEach(n=>n.remove());
    h1.insertAdjacentHTML('beforeend',`<span class="dtw-h">${svgEl(W,hh,g)}</span>`)}
   /* 3 · sound effects: DING! on a nested burst, FILED! as a stamp burst, the market's move lettered */
   const sf=(sel,txt,o,burst)=>{const el=root.querySelector(sel);if(!el)return;const r=wsvg(txt,o,burst);el.innerHTML=r.svg;el.classList.add('dtw-sfx')};
-  const desk=root.clientWidth>=900;
-  sf('.c2-ding','DING!',{size:desk?34:27,fill:'yellow',seed:4,jr:9,jb:.09,grow:.25,rot:-10,depth:4,dot:'#e0140c',dotTo:'br'},(x,y)=>X.burst(x,y,28,44,12,5,{c:['#ff3a31','#fff'],ks:[.74],drop:3,ow:2.6,sx:1.45,sy:.8}));
-  sf('.c2-filed','FILED!',{size:desk?32:25,fill:'white',seed:6,jr:8,jb:.07,grow:.2,rot:6,depth:4,dot:'#4a3fd0',dotTo:'br'},(x,y)=>X.burst(x,y,26,40,12,9,{c:['#ff3a6e','#ffd21f'],ks:[.72],drop:3,ow:2.6,sx:1.5,sy:.78}));
+  const desk=root.clientWidth>=900,kk=desk?1:Math.min(1,root.clientWidth/360);
+  sf('.c2-ding','DING!',{size:desk?32:23*kk,fill:'yellow',seed:4,jr:9,jb:.09,grow:.25,rot:-10,depth:4,dot:'#e0140c',dotTo:'br'},(x,y)=>X.burst(x,y,20,32,11,5,{c:['#ff3a31','#fff'],ks:[.72],drop:3,ow:2.4,sx:1.55,sy:.72}));
+  sf('.c2-filed','FILED!',{size:desk?32:25*kk,fill:'white',seed:6,jr:8,jb:.07,grow:.2,rot:6,depth:4,dot:'#4a3fd0',dotTo:'br'},(x,y)=>X.burst(x,y,26,40,12,9,{c:['#ff3a6e','#ffd21f'],ks:[.72],drop:3,ow:2.6,sx:1.5,sy:.78}));
   const mv=root.querySelector('.c2-mv');if(mv&&!mv.dataset.dt){mv.dataset.dt=1;const t=mv.textContent.trim()||mv.querySelector('text')?.textContent||'';const txt=(mv.querySelector('text')||{}).textContent||t;const up=/▲/.test(txt);
    const r=wsvg(txt,{size:desk?28:22,fill:up?'green':'red',seed:2,jr:4,jb:.04,depth:3,key:1.3,out:1.8,rot:-4});mv.innerHTML=r.svg}
+  const fb=root.querySelector('.c2-file b');if(fb&&!fb.dataset.dt){fb.dataset.dt=1;const r=wsvg(fb.textContent.trim(),{size:desk?24:18*kk,fill:'white',seed:3,jr:4,jb:.04,depth:3,key:1.2,out:1.7,rot:-3,dot:'#9a8ad0'});fb.innerHTML=r.svg;fb.style.cssText='-webkit-text-stroke:0;transform:none'}
   /* 4 · MINE! moves to the overlay so it crosses the cut into the record panel; the rest of the overlay: stars, bolts, debris */
   const mine=root.querySelector('.c2-mine');if(mine)mine.style.visibility='hidden';
   pg.querySelectorAll(':scope > .dtw-ov').forEach(n=>n.remove());
   const PR=pg.getBoundingClientRect(),rel=el=>{const b=el.getBoundingClientRect();return {x:b.left-PR.left,y:b.top-PR.top,w:b.width,h:b.height}};
   const ra=root.querySelector('.c2-ra'),rb=root.querySelector('.c2-rb'),mh=root.querySelector('.c2-mh');let ov='';
   if(ra&&rb&&mh){const A=rel(ra),B=rel(rb),M=rel(mh),w=A.w;
-   ov+=X.star(A.x+.61*w,A.y-3,14,{rot:-10});                          // across the masthead / row gutter, over the p1|p2 cut
-   ov+=X.star(B.x+.46*w,B.y-4,16,{rot:12})+X.star(B.x+.30*w,B.y-6,8,{rot:-20}); // across the row gutter, over the p3|p4 cut
+   ov+=X.star(A.x+.64*w,A.y-4,13,{rot:-10});                          // across the masthead / row gutter, over the p1|p2 cut
+   ov+=X.star(A.x+1,A.y+A.h*.5,12,{rot:12})+X.star(A.x+w-1,A.y+A.h*.47,9,{rot:-20}); // across the page margin and the panel contours
    ov+=X.bolt(A.x+.585*w,A.y+A.h*.42,.8,14)+X.bolt(M.x+M.w-26,M.y+M.h-34,.75,-24);
-   ov+=X.star(M.x+12,M.y+M.h+2,7,{rot:8});
-   if(mine){const r=wsvg('MINE!',{size:desk?34:26,fill:'pink',seed:9,jr:9,jb:.09,grow:.28,rot:-9,depth:4,dot:'#8a0a3a',dotTo:'br'});
-    const mx=B.x+.43*w-r.w*.62,my=B.y+B.h-r.h-4;ov+=`<g transform="translate(${X.f1(mx)} ${X.f1(my)})">${X.burst(r.w*.5,r.h*.45,r.h*.42,r.h*.66,11,13,{c:['#ffd21f','#fff7b0'],ks:[.7],drop:3,ow:2.6,sx:1.55,sy:.78})}${r.svg.replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'')}</g>`}}
+   if(mine){const r=wsvg('MINE!',{size:desk?34:26*kk,fill:'pink',seed:9,jr:9,jb:.09,grow:.28,rot:-9,depth:4,dot:'#8a0a3a',dotTo:'br'});
+    const mx=B.x+.06*w,my=B.y+B.h-r.h*.52;ov+=`<g transform="translate(${X.f1(mx)} ${X.f1(my)})">${X.burst(r.w*.5,r.h*.45,r.h*.42,r.h*.66,11,13,{c:['#ffd21f','#fff7b0'],ks:[.7],drop:3,ow:2.6,sx:1.55,sy:.78})}${r.svg.replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'')}</g>`}}
   pg.insertAdjacentHTML('beforeend',`<div class="dtw-ov" aria-hidden="true">${svgEl(PR.width,PR.height,ov)}</div>`);
  }
- const go=()=>{try{draw();H.classList.add('c2d-ready')}catch(e){console.error('c2d',e);H.classList.add('c2d-ready')}};
+ const go=()=>{try{draw();draw();H.classList.add('c2d-ready')}catch(e){console.error('c2d',e);H.classList.add('c2d-ready')}};
  Promise.all([D.fonts.load('40px "Luckiest Guy"'),D.fonts.load('20px Bangers')]).then(go,go);
  let lw=root.clientWidth;new ResizeObserver(()=>{const w=root.clientWidth;if(Math.abs(w-lw)>2){lw=w;setTimeout(go,60)}}).observe(root);
 })();
