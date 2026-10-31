@@ -23,6 +23,6 @@ P=24;cw=640;H=760;W=2*cw+3*P;top=70
 B=Image.new('RGB',(W,top+2*(H+40)+P),'#1b1820');d=ImageDraw.Draw(B)
 d.text((P,16),'Round U · the Upcoming tab at 1280 (top of the tab, shown at half size)',fill='#fdbc2a',font=B_)
 for i,(t,lab,s) in enumerate(T):
-  x=P+(i%2)*(cw+P);y=top+(i//2)*(H+40);d.text((x,y),lab+'  ·  '+s,fill='#fdbc2a' if t!='now' else '#b9b19b',font=M_)
+  x=P+(i%2)*(cw+P);y=top+(i//2)*(H+40);d.text((x,y),lab,fill='#fdbc2a' if t!='now' else '#b9b19b',font=M_)
   im=Image.open(f'{D}/up-1280-{t}.png').convert('RGB');c=im.crop((0,0,im.width,min(im.height,int(H*2*2560/1280)//1))).resize((cw,H),Image.LANCZOS) if False else im.crop((0,0,im.width,min(im.height,H*4))).resize((cw,min(im.height,H*4)//4),Image.LANCZOS);B.paste(c,(x,y+24))
 B.save(OUT+'-desktop.png',optimize=True);print(OUT+'-desktop.png',B.size)
