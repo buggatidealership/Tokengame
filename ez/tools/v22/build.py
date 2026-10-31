@@ -571,12 +571,20 @@ def world(name,title,out,layer=None):
         # the scoreboard as S3, tale of the tape, with P3's thumb dock (owner, 2026-10-30, later: "my current favorite of the scoreboard is S3"; "P3... by far the best one"); it reads the live board's flags, so it waits for them
         story+=('\ntry{(function(){var H=document.documentElement,n=0;(function go(){if(!(H.classList.contains("x2p-world")&&window.__wc11Show&&document.querySelector("#wc-lb .wc-sb-r .wc9-flg"))){if(++n<240)setTimeout(go,250);return}'
                +'try{'+open(S+'sb_ss.js').read()+'\n'+open(S+'sb_s3.js').read()+'\n'+open(S+'sb_dock.js').read()+'}catch(e){console.error(e)}})()})()}catch(e){console.error(e)}')
+        # (2026-10-31, owner: "pop ticket, P1 level 4. Pop stub as well.") Meet the models and Every round so far in the pop cover's
+        # recipe (extruded, lit, outlined lettering and slabs on bright rays; the flag popped too), from tools/concepts/worlds/comic/story/y/p.
+        # pop_p1.js waits for the comic itself (the cast grid with its flags, the round tiles) and gates every page rule under html.p1-on.
+        css+='\n'+''.join(open(S+f).read() for f in ['pop_lib.css','pop_p1.css'])
+        story+=('\ntry{'+open(S+'pop_lib.js').read()+'\n'+open(S+'pop_p1.js').read()+'}catch(e){console.error(e)}')
         story+=('\ntry{(function(){var H=document.documentElement,done=0;function run(){if(done||H.getAttribute("data-sec")!=="upcoming"||!document.getElementById("wc-up")||!H.classList.contains("x2p-world"))return;done=1;'
                +''.join(open(S+f).read() for f in ['_se.js','_sg.js','g1.js'])
                +'}new MutationObserver(run).observe(H,{attributes:true,attributeFilter:["data-sec","class"]});run()})()}catch(e){console.error(e)}')
     js+=story
     pre=';document.documentElement.classList.add("wc-pre")' if name=="comic" else ''
     w=px.replace('</head>','<script>window.__x2pLB=1;window.__x2pNeedWorld=1;window.__x2pWorldName="%s"%s</script>\n<style id="x2p-world-css">%s</style>\n</head>'%(name,pre,css),1)
+    if name=="comic" and not layer:
+        # Luckiest Guy for the pop look (X3+ only); not render-blocking and not in __x2pF, so the cover does not wait for it
+        w=w.replace('</head>','<link id="x3p-pop-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Luckiest+Guy&display=swap" media="print" onload="this.media=\'all\'">\n</head>',1)
     if name=="comic":
         for a,b in [
             # v15's record: with the record asleep (no width) the centred card stays where it is, not the first one
