@@ -31,7 +31,7 @@ function ext(t,o={}){let size=o.size||32;const font=o.font||'Luckiest Guy';const
 function setText(svg,t){svg.querySelectorAll('text').forEach(n=>n.textContent=t)}
 /* an extruded slab: ink outline round the whole extrusion, then the shade copies, then an inner highlight top-left and a soft inner shade bottom-right */
 function xbox(dp,sh,o={}){const a=[];a.push(`inset ${o.hl||2}px ${o.hl||2}px 0 rgba(255,255,255,${o.ha||.55})`,`inset -${o.lo||3}px -${o.lo||3}px 0 rgba(0,0,0,${o.la||.16})`);
-  for(let k=1;k<=dp;k++)a.push(`${k}px ${k}px 0 ${sh}`);for(let k=0;k<=dp;k++)a.push(`${k}px ${k}px 0 ${o.bw||2.5}px ${INK}`);if(o.cast)a.push(`${dp+o.cast}px ${dp+o.cast}px 0 ${o.bw||2.5}px rgba(13,11,16,.55)`);return a.join(',')}
+  for(let k=1;k<=dp;k++)a.push(`${k}px ${k}px 0 ${sh}`);{const bw=o.bw||2.5;for(let k=Math.min(dp,Math.ceil(bw));k<=dp;k++)a.push(`${k}px ${k}px 0 ${bw}px ${INK}`)}if(o.cast)a.push(`${dp+o.cast}px ${dp+o.cast}px 0 ${o.bw||2.5}px rgba(13,11,16,.55)`);return a.join(',')}
 function seed(s){return ()=>(s=(s*9301+49297)%233280)/233280}
 function burst(cx0,cy0,r1,r2,n,sd){const rnd=seed(sd||7),pts=[];for(let i=0;i<n*2;i++){const a=i/(n*2)*2*Math.PI-Math.PI/2,r=i%2?r2*(.85+.3*rnd()):r1*(.9+.25*rnd());pts.push((cx0+r*Math.cos(a)).toFixed(1)+','+(cy0+r*Math.sin(a)).toFixed(1))}return pts.join(' ')}
 /* a burst sized to a box (w x h) as an svg string: ink drop, outer colour, inner colour */
@@ -71,7 +71,7 @@ function fonts(){if(!document.getElementById('pp-fonts')){const l=document.creat
 function check(sel,cardSel){const sec=document.querySelector(sel),cards=[...sec.querySelectorAll(cardSel)].filter(c=>c.offsetParent);const emo=/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(sec.innerText);
   const over=[...sec.querySelectorAll('*')].filter(n=>n.scrollWidth>n.clientWidth+1&&getComputedStyle(n).overflow!=='visible'&&n.clientWidth>0).map(n=>n.className&&n.className.baseVal!==undefined?n.className.baseVal:n.className).slice(0,6);
   /* dead space: share of each card's area covered by no content box (text, svg, img, canvas, coin), sampled on a 4px grid */
-  const dead=cards.map(c=>{const r=c.getBoundingClientRect();let tot=0,empty=0;for(let y=r.top+3;y<r.bottom-3;y+=4)for(let x=r.left+3;x<r.right-3;x+=4){tot++;const e=document.elementFromPoint(x,y);if(!e||e===c||e.classList.contains('pp-pad'))empty++}return tot?Math.round(empty/tot*100):0});
+  const dead=cards.map(c=>{c.scrollIntoView({block:'center'});const r=c.getBoundingClientRect();let tot=0,empty=0;for(let y=r.top+3;y<r.bottom-3;y+=4)for(let x=r.left+3;x<r.right-3;x+=4){tot++;const e=document.elementFromPoint(x,y);if(!e||e===c||e.classList.contains('pp-pad'))empty++}return tot?Math.round(empty/tot*100):0});
   const pale=cards.map(c=>{const bg=getComputedStyle(c).backgroundColor;const m=bg.match(/\d+/g);return m&&+m[3]!==0&&(+m[0]+ +m[1]+ +m[2])/3>235}).filter(Boolean).length;
   return {cards:cards.length,deadPct:dead,emoji:emo,overflowing:over,paleCardGrounds:pale,sw:document.documentElement.scrollWidth,vw:innerWidth}}
 window.POP={INK,G,SH,ext,setText,xbox,burst,burstSvg,star,rays,mark,coin,mcol,shade,lighten,NM,FLAG,pm,pct,data,winners,coName,countUp,fonts,check,esc};
