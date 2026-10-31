@@ -22,15 +22,23 @@ async function checks(p){return p.evaluate(()=>{const R=e=>{const b=e.getBoundin
   const vis=e=>{const s=getComputedStyle(e);return s.display!=='none'&&s.visibility!=='hidden'&&e.getClientRects().length};
   const prot=[...document.querySelectorAll('#wc-book .wc-film-slot video,#wc-book .x2p-vt,#wc-book img,#wc-book .fb-port,#wc-book .pp-coin,#wc-book .wc-face')].filter(vis).map(e=>({e,r:R(e)})).filter(q=>q.r.w>4&&q.r.h>4);
   const brk=[...document.querySelectorAll('.cb-brk')].filter(vis);const hits=[];
-  for(const b of brk){const rb=R(b);for(const q of prot){if(b.contains(q.e)||q.e.contains(b))continue;const a=ix(rb,q.r);if(a>Math.min(q.r.w*q.r.h,rb.w*rb.h)*.04)hits.push((b.className.baseVal??b.className).slice(0,30)+' x '+(q.e.className.baseVal??q.e.className||q.e.tagName).toString().slice(0,30)+' '+Math.round(a))}}
-  let small=0;const ex=[];document.querySelectorAll('#wc-book *').forEach(e=>{if(!vis(e)||e.closest('[aria-hidden="true"]')&&!e.closest('.cb-read'))return;const t=[...e.childNodes].filter(n=>n.nodeType===3&&n.textContent.trim()).length;if(!t)return;const fs=parseFloat(getComputedStyle(e).fontSize);if(fs<10.5&&!e.closest('.pp-sr,.cb-sr,.x2p-vt')){small++;if(ex.length<6)ex.push(e.className+' '+fs)}});
+  for(const b of brk){const rb=R(b);for(const q of prot){if(b.contains(q.e)||q.e.contains(b))continue;const a=ix(rb,q.r);if(a>Math.min(q.r.w*q.r.h,rb.w*rb.h)*.04)hits.push((b.className.baseVal??b.className).slice(0,30)+' x '+((q.e.className.baseVal??q.e.className)||q.e.tagName).toString().slice(0,30)+' '+Math.round(a))}}
+  let small=0;const ex=[];const neg=[...document.querySelectorAll('svg')].filter(s=>/^-/.test(s.getAttribute('width')||'')||/^-/.test(s.getAttribute('height')||'')).map(s=>(s.parentElement.className||s.parentElement.tagName)+'').slice(0,4);document.querySelectorAll('#wc-book *').forEach(e=>{if(!vis(e)||e.closest('[aria-hidden="true"]')&&!e.closest('.cb-read'))return;const t=[...e.childNodes].filter(n=>n.nodeType===3&&n.textContent.trim()).length;if(!t)return;const fs=parseFloat(getComputedStyle(e).fontSize);if(fs<10.5&&!e.closest('.pp-sr,.cb-sr,.x2p-vt')){small++;if(ex.length<6)ex.push(e.tagName+'.'+e.className+' '+fs+' '+e.textContent.trim().slice(0,20))}});
   const over=[];document.querySelectorAll('#wc-book *').forEach(e=>{const b=e.getBoundingClientRect();if(b.width&&(b.right>innerWidth+.5||b.left<-.5)&&vis(e)&&!e.closest('.wc-bis[data-all="0"] .wc-bi:nth-child(n+13)'))over.push(String(e.className.baseVal??e.className).slice(0,26)+' '+Math.round(b.left)+'..'+Math.round(b.right))});
   return {sw:document.documentElement.scrollWidth,iw:innerWidth,H:document.documentElement.scrollHeight,hits:hits.slice(0,12),nhits:hits.length,small,smallEx:ex,over:over.slice(0,8),nover:over.length,
-    emoji:/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(document.getElementById('wc-book').innerText)}})}
-module.exports={open,checks};
+    neg,emoji:/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(document.getElementById('wc-book').innerText)}})}
+/* the whole page by viewport-sized captures (a full-page capture drops canvases outside the viewport); the header shows only on the first */
+async function shoot(p,out){const cp=require('child_process'),vh=p.viewportSize().height,TH=await p.evaluate(()=>document.documentElement.scrollHeight),dir=out+'.parts';fs.mkdirSync(dir,{recursive:true});const L=[];
+  for(let y=0,i=0;y<TH;y+=vh,i++){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(350);const sy=await p.evaluate(()=>scrollY);
+    await p.evaluate(i=>{const h=document.querySelector('header.top');if(h)h.style.visibility=i?'hidden':''},i);await p.waitForTimeout(60);
+    const f=`${dir}/${i}.png`;await p.screenshot({path:f});L.push([f,sy])}
+  await p.evaluate(()=>{const h=document.querySelector('header.top');if(h)h.style.visibility=''});
+  fs.writeFileSync(dir+'/list.json',JSON.stringify({L,TH,dpr:await p.evaluate(()=>devicePixelRatio)}));
+  cp.execFileSync('/usr/bin/python3',[__dirname+'/stitch.py',dir+'/list.json',out]);fs.rmSync(dir,{recursive:true,force:true})}
+module.exports={open,checks,shoot};
 if(require.main===module)(async()=>{const b=await chromium.launch({args:['--disable-dev-shm-usage']});const R=[];
  for(const W of WS)for(const m of MS){const {p,er}=await open(b,W,m);
   await p.evaluate(()=>{document.querySelectorAll('body *').forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed')x.style.visibility='hidden'})});
-  await p.screenshot({path:`${OUT}/${m}-${W}.png`,fullPage:true});
+  await shoot(p,`${OUT}/${m}-${W}.png`);
   const c=await checks(p);R.push({m,W,...c,err:er.slice(0,8)});console.log(JSON.stringify(R[R.length-1]));await p.close()}
  fs.writeFileSync(OUT+'/checks.json',JSON.stringify(R,null,1));await b.close()})();
