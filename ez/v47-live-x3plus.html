@@ -9571,6 +9571,8 @@ html.wc-f11:not(.cd-on) .wc11d-tv .wc11d-sfx{position:absolute;right:10px;bottom
 @media (max-width:379px){html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>.wc-sb-tw dt{font-size:8.5px!important}}
 @media (max-width:379px){html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>.wc-sb-tw{grid-column:1/-1!important;display:flex!important;justify-content:space-between;align-items:center;text-align:left;justify-self:stretch}
   html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>.wc-sb-tww{padding-top:2px;border-top:0}}
+/* (2026-10-31) the "Next time…" beat is gone: the bet keeps the gap it gave */
+.wc-book > section + section.wc-bet{margin-top:56px}
 
 /* helper e, shared */
 .se-hide{display:none!important}
@@ -10405,6 +10407,14 @@ html.hc-f3 .hcf-bu b{position:absolute;inset:0;display:grid;place-items:center;f
 @media (max-width:359px){html.hc-f3 .hcf-cap b{font-size:17px}html.hc-f3 .hcf-lg svg{width:24px;height:24px}html.hc-f3 .hcf-bu{width:64px;height:45px}html.hc-f3 .hcf-bu b{font-size:16px}}
 @media (min-width:760px){html.hc-f3 .hcf-cap b{font-size:30px}html.hc-f3 .hcf-cap small{font-size:13px}html.hc-f3 .hcf-lg svg{width:40px;height:40px}
   html.hc-f3 .hcf-cap{padding:7px 16px 8px 9px;gap:9px}html.hc-f3 .hcf-bu{width:104px;height:73px}html.hc-f3 .hcf-bu b{font-size:27px}}
+
+/* H_BANDS: the Overview's grounds (h_bands.js writes --wc-bands). The cream paper stays on the Leaderboard and Upcoming tabs. */
+html.wc-on.wc-bands:not([data-sec=leaderboard]):not([data-sec=upcoming]){background:var(--wc-bands)!important}
+html.wc-bands #wc-book{overflow-x:visible}
+/* the back cover now sits on the logo's black: its words in cream, the E and Z in the logo's own green and red */
+html.wc-bands #wc-book .wc-back .wc-motto{color:#f8f0d9}
+html.wc-bands #wc-book .wc-back .wc-e{color:#03c870}html.wc-bands #wc-book .wc-back .wc-z{color:#ff3a31}
+html.wc-bands #wc-book .wc-back .wc-fine{color:#b5ad9c}
 
 /* SLAB T1 (owner, 2026-10-31: round H, area "round", T1 "The slab, for real", of ez/x2p-x3p-h-round-390.png; from
    tools/concepts/worlds/comic/story/h/round/t1.*): a round opened over the page (#x2pRm) is a painted acrylic holder (Hedra) around
@@ -15916,7 +15926,7 @@ function betChip(lead){
   const S=window.SIM||{},share=S.poolShare!=null?Math.round(S.poolShare*100):69,at=betAt(),L=betLeft();
   const day=at?new Date(at).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'America/New_York'}):'';
   const die=(k,v,l)=>`<span class="wc-die" data-k="${k}"><b>${String(v).padStart(2,'0')}</b><small>${l}</small></span>`;
-  return `<p class="wc-cap wc-beat">Next time…</p><section class="wc-bet" aria-label="Bet number 1, NVIDIA">
+  return `<section class="wc-bet" aria-label="Bet number 1, NVIDIA">
     <h2 class="wc-h2"><span>Bet #1: NVIDIA</span><small>The first of many.${day?' The bet goes on at the close, '+esc(day)+'.':''}</small></h2>
     <div class="wc-pn wc-chipw"><div class="wc-chip" role="timer" aria-label="Time until the NVIDIA bet">
       <span class="wc-chip-pins" aria-hidden="true"></span>
@@ -17298,7 +17308,7 @@ function html(Dt){
     <li><b class="hb4-d" aria-hidden="true">U1</b><span class="hb4-n">The call</span><span>The pool gets bet on the top AI's call.${lead?` Today: ${lead}`:''}</span></li>
     <li><b class="hb4-d" aria-hidden="true">K1</b><span class="hb4-n">The switch</span><span><i class="hb4-ok"><span aria-hidden="true">● </span>Right:</i> $EZ buyback</span><span><i class="hb4-no"><span aria-hidden="true">● </span>Wrong:</i> the pool can be wiped out</span></li></ol></div>`;
   return `<div class="hb-wrap" style="--hb-vault:url(${IMG.vault});--hb-grp:url(${IMG.grP});--hb-grd:url(${IMG.grD})"><div class="hb-gr" aria-hidden="true"><i></i></div>
-  <div class="hb-open" aria-hidden="true"><div class="i"><div class="g"></div></div><p class="c">The pool. Bet #1 opens the vault.</p></div>
+  <div class="hb-open" aria-hidden="true"><div class="i"><div class="g"></div></div></div>
   <h2 class="hb-h"><span class="hb-w">Bet #1:</span> <span class="hb-w hb-w2">NVIDIA</span></h2>
   ${Dt.day?`<p class="hb-sub">It goes on at the close, ${Dt.day}.</p>`:''}
   ${chip()}
@@ -17378,6 +17388,46 @@ if(H.classList.contains('sh-on'))go();
 /* a redrawn cover or a font arriving: rebuild or re-lay */
 if(D.fonts&&D.fonts.ready)D.fonts.ready.then(function(){if(vt)lay()});
 var w0=innerWidth;addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;setTimeout(function(){go();lay()},120)});
+})();
+}catch(e){console.error(e)}
+try{/* H_BANDS (owner, 2026-10-31: "each section its own ground... green, red, goldenish... but also dark"; the cream page paper goes):
+   every Overview section of X3+ gets its own full-width ground in the logo's colours, painted on the page itself (html's background,
+   one hard stop per section, an ink line where two meet, a soft lamp glow in each), so no section's markup changes. A beat caption
+   belongs to the section after it. Overview only; the Leaderboard and Upcoming tabs keep their paper. Not on X5+ (cd-on). */
+(function(){
+var H=document.documentElement,D=document;
+var MAP=[['wc-cover','#04070e','rgba(253,188,42,.07)'],['wc-chars','#2b0907','rgba(255,58,49,.16)'],['wc-season','#04261a','rgba(3,200,112,.13)'],
+ ['wc-cliff','#2b0907','rgba(255,58,49,.14)'],['wc-splash','#1d1505','rgba(253,188,42,.12)'],['wc-bet','#04070e','rgba(253,188,42,.05)'],['wc-back','#04070e','rgba(253,188,42,.04)']];
+var last='',ro=null,raf=0;
+function on(){return H.classList.contains('p1-on')&&!H.classList.contains('cd-on')}
+function draw(){raf=0;var bk=D.getElementById('wc-book');
+ if(!on()||!bk){H.classList.remove('wc-bands');return}
+ if(!bk.offsetHeight)return;
+ var Y=scrollY,g=[],beat=null;
+ for(var k=bk.firstElementChild;k;k=k.nextElementSibling){
+  if(k.classList.contains('wc-beat')){beat=k;continue}
+  if(k.tagName!=='SECTION')continue;
+  var m=null;for(var i=0;i<MAP.length;i++)if(k.classList.contains(MAP[i][0])){m=MAP[i];break}
+  if(!m){beat=null;continue}
+  var a=(beat||k).getBoundingClientRect(),b=k.getBoundingClientRect();
+  if(b.height)g.push({t:a.top+Y,b:b.bottom+Y,c:m[1],l:m[2]});beat=null}
+ if(!g.length)return;
+ var stops=[],glow=[],top=0,W=Math.min(innerWidth*.9,900);
+ for(var j=0;j<g.length;j++){
+  var s=j?Math.round((g[j-1].b+g[j].t)/2):0,e=j<g.length-1?Math.round((g[j].b+g[j+1].t)/2):null;
+  if(j)stops.push('#000 '+(s-1)+'px','#000 '+(s+1)+'px');
+  stops.push(g[j].c+' '+(j?s+1:0)+'px',g[j].c+' '+(e==null?'100%':(e-1)+'px'));
+  var mid=Math.round((g[j].t+g[j].b)/2),hh=Math.round(Math.max(200,(g[j].b-g[j].t)*.6));
+  glow.push('radial-gradient('+Math.round(W)+'px '+hh+'px at 50% '+mid+'px,'+g[j].l+',transparent)')}
+ var v=glow.join(',')+',linear-gradient(180deg,'+stops.join(',')+')';
+ if(v!==last){last=v;H.style.setProperty('--wc-bands',v)}
+ H.classList.add('wc-bands')}
+function ask(){if(!raf)raf=requestAnimationFrame(draw)}
+function hook(){var bk=D.getElementById('wc-book');if(!bk){setTimeout(hook,300);return}
+ if(!ro&&window.ResizeObserver){ro=new ResizeObserver(ask);ro.observe(bk)}
+ new MutationObserver(ask).observe(bk,{childList:true});ask()}
+new MutationObserver(ask).observe(H,{attributes:true,attributeFilter:['class','data-sec']});
+addEventListener('load',ask);hook();
 })();
 }catch(e){console.error(e)}
 try{/* SLAB T1 (owner, 2026-10-31: round H "round", T1 "The slab, for real"; from tools/concepts/worlds/comic/story/h/round/t1.js): the round

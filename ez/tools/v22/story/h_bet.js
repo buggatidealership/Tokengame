@@ -84,7 +84,7 @@ function html(Dt){
     <li><b class="hb4-d" aria-hidden="true">U1</b><span class="hb4-n">The call</span><span>The pool gets bet on the top AI's call.${lead?` Today: ${lead}`:''}</span></li>
     <li><b class="hb4-d" aria-hidden="true">K1</b><span class="hb4-n">The switch</span><span><i class="hb4-ok"><span aria-hidden="true">● </span>Right:</i> $EZ buyback</span><span><i class="hb4-no"><span aria-hidden="true">● </span>Wrong:</i> the pool can be wiped out</span></li></ol></div>`;
   return `<div class="hb-wrap" style="--hb-vault:url(${IMG.vault});--hb-grp:url(${IMG.grP});--hb-grd:url(${IMG.grD})"><div class="hb-gr" aria-hidden="true"><i></i></div>
-  <div class="hb-open" aria-hidden="true"><div class="i"><div class="g"></div></div><p class="c">The pool. Bet #1 opens the vault.</p></div>
+  <div class="hb-open" aria-hidden="true"><div class="i"><div class="g"></div></div></div>
   <h2 class="hb-h"><span class="hb-w">Bet #1:</span> <span class="hb-w hb-w2">NVIDIA</span></h2>
   ${Dt.day?`<p class="hb-sub">It goes on at the close, ${Dt.day}.</p>`:''}
   ${chip()}

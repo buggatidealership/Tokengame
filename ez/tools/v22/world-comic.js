@@ -426,7 +426,7 @@ function betChip(lead){
   const S=window.SIM||{},share=S.poolShare!=null?Math.round(S.poolShare*100):69,at=betAt(),L=betLeft();
   const day=at?new Date(at).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'America/New_York'}):'';
   const die=(k,v,l)=>`<span class="wc-die" data-k="${k}"><b>${String(v).padStart(2,'0')}</b><small>${l}</small></span>`;
-  return `<p class="wc-cap wc-beat">Next time…</p><section class="wc-bet" aria-label="Bet number 1, NVIDIA">
+  return `<section class="wc-bet" aria-label="Bet number 1, NVIDIA">
     <h2 class="wc-h2"><span>Bet #1: NVIDIA</span><small>The first of many.${day?' The bet goes on at the close, '+esc(day)+'.':''}</small></h2>
     <div class="wc-pn wc-chipw"><div class="wc-chip" role="timer" aria-label="Time until the NVIDIA bet">
       <span class="wc-chip-pins" aria-hidden="true"></span>
