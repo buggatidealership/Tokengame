@@ -1,0 +1,27 @@
+/* T2 "Chip count": a poker tournament's chip count. Each AI's P&L in the window is its stack on the felt (one chip per $10K, its own
+   colour); a loss is a stack of red IOUs pinned under a marker. The chip leader of the window gets the dealer-style "Chip leader"
+   button; the golden ticket stays on the season leader. The window switch is three chips. Under the felt, the rail: one placard
+   per seat on a shared axis (W-L, hit rate, last five as small chips, best hand and bad beat with the company). Painted: the felt. */
+(function(){const {S,esc,$f,k$,$abs,col,NM,MS,face,mark,logo,IMG}=window.LQ;const R=window.PQ.rnd;
+const chip=(c,i,s)=>{const dx=(R(s*11+i)-.5)*3.2;return `<g transform="translate(${dx.toFixed(1)} ${-i*7})"><ellipse cx="30" cy="66" rx="25" ry="9" fill="#0d0b10"/><path d="M5 62 v4 a25 9 0 0 0 50 0 v-4" fill="${c}" stroke="#0d0b10" stroke-width="1.6"/>
+ ${[12,24,36,48].map(x=>`<path d="M${x} ${64+((x-30)**2)/140} v4" stroke="#f4eedf" stroke-width="2.4"/>`).join('')}<ellipse cx="30" cy="62" rx="25" ry="9" fill="${c}" stroke="#0d0b10" stroke-width="1.6"/><ellipse cx="30" cy="62" rx="16" ry="5.6" fill="none" stroke="#f4eedf" stroke-width="1.4" stroke-dasharray="4 3"/><path d="M14 59 Q26 55 40 56" stroke="#fff" stroke-width="1.2" fill="none" opacity=".45"/></g>`};
+function stack(m,amt,s){const n=Math.max(1,Math.round(Math.abs(amt)/1e4)),c=m==='GROK'?'#4a4356':col(m);
+  if(amt<0){return `<div class="t2-iou" style="--n:${Math.min(n,9)}">${Array.from({length:Math.min(n,9)},(_,i)=>`<i style="--r:${((R(s*5+i)-.5)*16).toFixed(1)}deg;--x:${((R(s*9+i)-.5)*10).toFixed(1)}px;--y:${-i*5}px"></i>`).join('')}<b class="t2-ioub"><em>IOU</em>${$abs(amt)}</b></div>`}
+  const g=`<svg class="t2-tw" viewBox="0 ${-n*7+40} 60 ${n*7+36}" aria-hidden="true">${Array.from({length:n},(_,i)=>chip(c,i,s)).join('')}</svg>`;
+  return `<div class="t2-stk">${g}</div>`}
+const btnChip=(c)=>`<svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="31.5" cy="32" r="27" fill="#0d0b10"/><circle cx="30" cy="30" r="27" fill="${c}" stroke="#0d0b10" stroke-width="2"/>${[0,1,2,3,4,5].map(i=>{const a=i*Math.PI/3;return `<path d="M${30+Math.cos(a)*27} ${30+Math.sin(a)*27} L${30+Math.cos(a)*20} ${30+Math.sin(a)*20}" stroke="#f4eedf" stroke-width="6"/>`}).join('')}<circle cx="30" cy="30" r="18" fill="#f4eedf" stroke="#0d0b10" stroke-width="1.6"/><circle cx="30" cy="30" r="15" fill="none" stroke="${c}" stroke-width="1.2" stroke-dasharray="3 2.4"/></svg>`;
+function build(D){return `<header class="t2-hd"><h2 class="t2-h">Who's winning?</h2><p class="t2-sub">The chip count. If you'd bet $100K on every call: one chip per $10K won, an IOU for every $10K lost.</p>
+  <div class="t2-sw" role="tablist" aria-label="Time window">${D.WS.map((w,i)=>`<button type="button" role="tab" class="t2-b" data-k="${w.k}" aria-selected="false">${btnChip(['#c8262d','#1f6fd1','#0f8a4a'][i])}<b>${w.short==='24h'?'24 h':w.short}</b><small>${esc(w.when)}</small></button>`).join('')}</div></header>
+  <div class="t2-tb lq-z"><div class="t2-felt" style="background-image:url(${IMG}t2-felt.jpg)"></div><div class="t2-seats"></div></div>
+  <div class="t2-rail" role="table" aria-label="Scoreboard"><div class="t2-rh" role="row"><span role="columnheader">Seat</span><span role="columnheader">W-L</span><span role="columnheader">Hit</span><span role="columnheader">Last 5</span><span role="columnheader">Best hand</span><span role="columnheader">Bad beat</span></div><div class="t2-rr"></div></div>
+  <p class="t2-ft">${D.line} W = right direction.</p>`}
+function draw(root,k,prev,anim,D){const X=D.X[k];
+  root.querySelector('.t2-seats').innerHTML=X.o.map((m,i)=>{const r=X.row[m];return `<div class="t2-seat${r.amt<0?' t2-neg':''}" style="--mc:${col(m)};--i:${i}">
+     ${i===0&&r.amt>0?`<span class="t2-cl"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="21" cy="21.5" r="17" fill="#0d0b10"/><circle cx="20" cy="20" r="17" fill="#f4eedf" stroke="#0d0b10" stroke-width="2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#c8262d" stroke-width="1.5"/></svg><em>Chip<br>leader</em></span>`:''}
+     <b class="t2-amt ${r.amt>=0?'lq-u':'lq-d'}" data-v="${r.amt}">${$f(r.amt)}</b>${stack(m,r.amt,MS.indexOf(m)+2)}
+     <div class="t2-pl"><span class="t2-fc">${face(m)}</span><span class="t2-nm">${mark(m,'t2-mk')}${NM[m]}</span>${m===D.gold?'<span class="t2-gt">Golden ticket</span>':''}</div></div>`}).join('');
+  if(anim)root.querySelectorAll('.t2-tw,.t2-iou i').forEach((e,i)=>e.animate([{transform:'translateY(-30px)',opacity:0},{transform:'none',opacity:1}],{duration:380,delay:i*30,easing:'cubic-bezier(.3,1.4,.5,1)',fill:'backwards',composite:'add'}));
+  root.querySelector('.t2-rr').innerHTML=X.o.map((m,i)=>{const r=X.row[m];return `<div class="t2-r" role="row" style="--mc:${col(m)}"><span role="cell" class="t2-rs"><i>${i+1}</i>${NM[m]}</span>
+    <span role="cell"><b class="lq-u">${r.W}</b>-<b class="lq-d">${r.L}</b></span><span role="cell">${S.hr(r)}</span><span role="cell" class="t2-l5">${r.l5.map(ok=>`<i class="${ok?'t2-cw':'t2-cl5'}" title="${ok?'Right way':'Wrong way'}"></i>`).join('')}</span>
+    <span role="cell" class="t2-bh">${r.top?logo(r.top.r,'t2-lg')+`<em class="${r.top.v>=0?'lq-u':'lq-d'}">${k$(r.top.v)}</em>`:'–'}</span><span role="cell" class="t2-bh">${r.low?logo(r.low.r,'t2-lg')+`<em class="${r.low.v>=0?'lq-u':'lq-d'}">${k$(r.low.v)}</em>`:'–'}</span></div>`}).join('')}
+window.LQT={id:'t2',build,draw};})();
