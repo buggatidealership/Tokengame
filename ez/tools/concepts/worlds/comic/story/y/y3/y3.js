@@ -25,7 +25,7 @@ const best=m=>{let b=null;for(const r of R){const x=A[m].per[r.n];if(x&&(!b||x.v
 const svgTex=(w,h,body)=>`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><defs>${body}</defs><rect width="${w}" height="${h}" filter="url(#f)"/></svg>`;
 const TEX={
   grime:[256,256,`<filter id="f" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".035 .05" numOctaves="4" seed="7" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .02  0 0 0 0 .02  0 0 0 0 .03  -1.6 0 0 0 1.05"/></filter>`],
-  chips:[256,256,`<filter id="f" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="3" seed="3" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .86  0 0 0 0 .80  0 0 0 0 .68  9 0 0 0 -5.6"/></filter>`],
+  chips:[256,256,`<filter id="f" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".14" numOctaves="3" seed="3" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .86  0 0 0 0 .80  0 0 0 0 .68  11 0 0 0 -7.3"/></filter>`],
   fibre:[256,256,`<filter id="f" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".012 .55" numOctaves="3" seed="11" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .12  0 0 0 0 .07  0 0 0 0 .03  1.4 0 0 0 -.45"/></filter>`],
   paper:[200,200,`<filter id="f" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="5" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .25  0 0 0 0 .16  0 0 0 0 .05  1 0 0 0 -.38"/></filter>`],
   brush:[256,64,`<filter id="f" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".004 .9" numOctaves="2" seed="9" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.2 0 0 0 -.35"/></filter>`],
@@ -67,14 +67,14 @@ function door(m,i){const a=A[m],t=a.W+a.L,b=best(m),lg=(window.CO_LOGOS||{})[b.r
      aria-label="Number ${i+1}, ${esc(NM[m])}, ${esc(MODELS[m].ver)}">
    <div class="y3-set" aria-hidden="true"><i class="y3-wall"></i><i class="y3-sconce"><b></b></i><i class="y3-floor"></i><i class="y3-spill"><i class="y3-walk"></i></i></div>
    <div class="y3-case"><div class="y3-leaf">
-     <i class="y3-paint" aria-hidden="true"></i>
+     <i class="y3-paint" aria-hidden="true"></i><i class="y3-chip" aria-hidden="true"></i><i class="y3-gloss" aria-hidden="true"></i>
      <i class="y3-pnl" aria-hidden="true"></i>
      <i class="y3-key" aria-hidden="true"></i>
      <i class="y3-rim" aria-hidden="true"></i>
      <i class="y3-csh y3-csh-plate" aria-hidden="true"></i><i class="y3-csh y3-csh-lever" aria-hidden="true"></i><i class="y3-csh y3-csh-clip" aria-hidden="true"></i>
      <div class="y3-lite" aria-hidden="true"><i class="y3-glow"></i><i class="y3-mk">${markSvg(m)}</i><i class="y3-wire"></i><i class="y3-refl"></i></div>
      <div class="y3-plate">${starSvg(i,gold)}<b class="y3-rk" aria-hidden="true">${i+1}</b>${gold?'<i class="y3-sheen" aria-hidden="true"></i>':''}
-       <h3 class="y3-np"><span class="y3-nm">${esc(NM[m])}</span><small>${esc(MODELS[m].ver)}</small><i class="y3-scr y3-scr1"></i><i class="y3-scr y3-scr2"></i></h3></div>
+       <div class="y3-np" role="heading" aria-level="3"><span class="y3-nm">${esc(NM[m])}</span><small>${esc(MODELS[m].ver)}</small><i class="y3-scr y3-scr1"></i><i class="y3-scr y3-scr2"></i></div></div>
      <i class="y3-stk" aria-hidden="true">${flagSvg(FLAG[m]||'us')}</i>
      <i class="y3-lvw" aria-hidden="true">${lever}</i>
      <div class="y3-clip">
@@ -84,7 +84,7 @@ function door(m,i){const a=A[m],t=a.W+a.L,b=best(m),lg=(window.CO_LOGOS||{})[b.r
          <p class="y3-role">${ROLE[i]}</p>
          <p class="y3-pl"><small>Current P&amp;L</small><b class="${a.pnl>=0?'y3-up':'y3-dn'}" data-v="${Math.round(Math.abs(a.pnl))}" data-s="${a.pnl<0?'−':'+'}">${money(a.pnl)}</b></p>
          <p class="y3-ln">Right way on <b>${a.W} of ${t}</b> calls.</p>
-         <p class="y3-ln y3-bst">Highest P&amp;L: <b class="${b.v>=0?'y3-up':'y3-dn'}">${money(b.v)}</b> on ${lg?`<img class="${lg.dark?'y3-dk':''}" src="media/${lg.f}" alt="">`:''}<span>${esc(b.r.co)} (${esc(b.r.ticker)})</span></p>
+         <p class="y3-ln y3-bst">Highest P&amp;L: <b class="${b.v>=0?'y3-up':'y3-dn'}">${money(b.v)}</b> on <span class="y3-co">${lg?`<img class="${lg.dark?'y3-dk':''}" src="media/${lg.f}" alt="">`:''}${esc(b.r.co)} (${esc(b.r.ticker)})</span></p>
          <p class="y3-l5" aria-label="Last five calls: ${a.seq.slice(-5).map(x=>x==='W'?'right':'wrong').join(', ')}">${a.seq.slice(-5).map(x=>tick(x==='W')).join('')}<small>last 5 calls</small></p>
        </div></div>
    </div></div>

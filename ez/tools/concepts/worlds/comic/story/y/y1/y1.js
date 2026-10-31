@@ -73,7 +73,7 @@ function build(){
       <i class="y1-key" aria-hidden="true"></i><i class="y1-tone" aria-hidden="true"></i>
       <div class="y1-head">${stars()}
         <div class="y1-plate"><i class="y1-rv y1-rv1"></i><i class="y1-rv y1-rv2"></i>${flag(FLAG[m]||'us')}<h3><span>${NM[m]}</span><small>${esc(MODELS[m].ver)}</small></h3></div></div>
-      <div class="y1-mir">
+      <div class="y1-mir"><i class="y1-msh" aria-hidden="true"></i>
         <div class="y1-row" aria-hidden="true">${L5.map((x,k)=>bulb(x==='W'?'w':'l',k)).join('')}<span class="y1-l5">Last 5</span></div>
         <div class="y1-side y1-sl" aria-hidden="true">${bulb('on')}${bulb('on')}${bulb('on')}</div>
         <div class="y1-side y1-sr" aria-hidden="true">${bulb('on')}${bulb('on')}${bulb('on')}</div>
@@ -109,10 +109,11 @@ window.Y1check=function(){/* dead space: share of each card's area not covered b
     const clip=[...c.querySelectorAll('h3 span,.y1-big span,.y1-tape b,.y1-clip span,.y1-role')].filter(x=>x.scrollWidth>x.clientWidth+1).map(x=>x.className||x.tagName);
     out.push({m:c.dataset.m,w:Math.round(r.width),h:Math.round(r.height),emptyCard:+(e/n*100).toFixed(1),emptyGlass:+(ge/gn*100).toFixed(1),over,clip})});
   const emoji=/\p{Extended_Pictographic}/u.test(D.querySelector('.wc-chars').textContent);
-  return {cards:out,emoji,sw:D.documentElement.scrollWidth}};
+  const tex=['--y1-wall','--y1-wood','--y1-chips','--y1-leather','--y1-cloth'].map(k=>Math.round(H.style.getPropertyValue(k).length/1024)+'KB');
+  return {cards:out,emoji,sw:D.documentElement.scrollWidth,matMs:window.__y1mat,tex}};
 
 (async function go(t0){t0=t0||Date.now();
   if(!build()){if(Date.now()-t0<20000)return setTimeout(()=>go(t0),150);return}
-  try{await materials()}catch(e){console.warn('y1 materials',e)}
+  const t1=performance.now();try{await materials()}catch(e){console.warn('y1 materials',e)}window.__y1mat=Math.round(performance.now()-t1);
   H.classList.add('y1-on','y1-ready')})();
 })();

@@ -37,7 +37,7 @@ let GRAIN=null,MOTTLE=null,BRUSH=null,BRUSHC=null,STREAK=null;
 function grain(){if(GRAIN)return GRAIN;const S=180,[c,x]=off(S,S);const id=x.getImageData(0,0,c.width,c.height),d=id.data;
   for(let i=0;i<d.length;i+=4){const v=200+Math.random()*55;d[i]=v;d[i+1]=v-4;d[i+2]=v-14;d[i+3]=Math.random()<.5?Math.random()*70:0}
   x.putImageData(id,0,0);x.setTransform(R,0,0,R,0,0);
-  for(let i=0;i<70;i++){const px=Math.random()*S,py=Math.random()*S,a=Math.random()*6.28,l=4+Math.random()*12;x.strokeStyle=`rgba(${120+Math.random()*60|0},${100+Math.random()*50|0},70,${.12+Math.random()*.2})`;
+  for(let i=0;i<26;i++){const px=Math.random()*S,py=Math.random()*S,a=Math.random()*6.28,l=4+Math.random()*12;x.strokeStyle=`rgba(${120+Math.random()*60|0},${100+Math.random()*50|0},70,${.05+Math.random()*.09})`;
     x.lineWidth=.3+Math.random()*.4;x.beginPath();x.moveTo(px,py);x.quadraticCurveTo(px+Math.cos(a)*l*.5+Math.random()*3,py+Math.sin(a)*l*.5+Math.random()*3,px+Math.cos(a)*l,py+Math.sin(a)*l);x.stroke()}
   for(let i=0;i<120;i++){x.fillStyle=`rgba(60,45,30,${Math.random()*.35})`;x.fillRect(Math.random()*S,Math.random()*S,.5+Math.random(),.5+Math.random())}
   return GRAIN=c.toDataURL()}
@@ -49,9 +49,9 @@ function mottle(){if(MOTTLE)return MOTTLE;const S=260,[c,x]=off(S,S);
   return MOTTLE=c.toDataURL()}
 /* paint: overlapping loaded-brush strokes in greys around 50% (overlay-blended, so they modulate the colour beneath) */
 function brush(dirA=-.5,hue=null){const S=240,[c,x]=off(S,S);x.fillStyle='rgb(128,128,128)';x.fillRect(0,0,S,S);
-  for(let i=0;i<260;i++){const px=Math.random()*S,py=Math.random()*S,a=dirA+(Math.random()-.5)*.5,l=18+Math.random()*46,wd=4+Math.random()*12,v=95+Math.random()*70|0;
+  for(let i=0;i<300;i++){const px=Math.random()*S,py=Math.random()*S,a=dirA+(Math.random()-.5)*.5,l=18+Math.random()*46,wd=4+Math.random()*12,v=70+Math.random()*120|0;
     for(const dx of [-S,0,S])for(const dy of [-S,0,S]){x.save();x.translate(px+dx,py+dy);x.rotate(a);
-      const g=x.createLinearGradient(0,-wd/2,0,wd/2);const al=.18+Math.random()*.22;g.addColorStop(0,`rgba(${v},${v},${v},0)`);g.addColorStop(.25,`rgba(${v},${v},${v},${al})`);g.addColorStop(.75,`rgba(${v},${v},${v},${al})`);g.addColorStop(1,`rgba(${v},${v},${v},0)`);
+      const g=x.createLinearGradient(0,-wd/2,0,wd/2);const al=.28+Math.random()*.3;g.addColorStop(0,`rgba(${v},${v},${v},0)`);g.addColorStop(.25,`rgba(${v},${v},${v},${al})`);g.addColorStop(.75,`rgba(${v},${v},${v},${al})`);g.addColorStop(1,`rgba(${v},${v},${v},0)`);
       x.fillStyle=g;x.beginPath();x.ellipse(0,0,l/2,wd/2,0,0,6.283);x.fill();
       x.strokeStyle=`rgba(${v-30},${v-30},${v-30},.18)`;x.lineWidth=.4;for(let k=-wd/2+1;k<wd/2;k+=1.6){x.beginPath();x.moveTo(-l/2+2,k);x.lineTo(l/2-2,k+(Math.random()-.5));x.stroke()}x.restore()}}
   return c.toDataURL()}
@@ -67,29 +67,33 @@ const disc=(w,h)=>(x,y)=>{const nx=(x-w/2)/(w/2),ny=(y-h/2)/(h/2),r=Math.hypot(n
 
 function fold(card,lit){/* the waving flag's own fold tile (160px, the same loop as today), now with dots in the folds' shade */
   const fd=card.querySelector('.wc-flg-fd');if(!fd)return;const h=fd.offsetHeight||card.offsetHeight,P=160,[c,x]=off(P,h);
-  const dk=(px)=>Math.pow(Math.max(0,Math.cos(2*Math.PI*px/P)),1.3);const dark=(px,py)=>dk(px)*(.55+.25*py/h);
+  const cv=(px)=>Math.cos(2*Math.PI*px/P);const dark=lit?(px,py)=>{const c=cv(px);return sm(.34,.4,c)*(.5+.35*c)*(.8+.2*py/h)}:(px,py)=>Math.pow(Math.max(0,cv(px)),2.4)*(.42+.22*py/h);
   screen(x,P,h,dark,[{a:3,b:1,s:1.6,col:'rgba(0,120,200,.7)'},{a:1,b:3,s:1.6,col:'rgba(200,0,110,.55)',k:.85},{a:1,b:1,s:2.5,col:'rgba(21,18,26,.75)',k:.5,g:1}]);
-  hatchTile(x,P,h,(px,py)=>dark(px,py),{thr:.62,sp:4});fd.style.setProperty('--y4fd',`url(${c.toDataURL()})`);
-  if(lit){const [c2,x2]=off(P,h);const g=x2.createLinearGradient(0,0,P,0);g.addColorStop(0,'rgba(255,214,150,0)');g.addColorStop(.38,'rgba(255,214,150,0)');g.addColorStop(.5,'rgba(255,236,190,.75)');g.addColorStop(.62,'rgba(255,214,150,0)');g.addColorStop(1,'rgba(255,214,150,0)');
+  hatchTile(x,P,h,(px,py)=>dark(px,py),{thr:lit?.62:.5,sp:4});fd.style.setProperty('--y4fd',`url(${c.toDataURL()})`);
+  if(lit){const [c2,x2]=off(P,h);const g=x2.createLinearGradient(0,0,P,0);g.addColorStop(0,'rgba(255,214,150,0)');g.addColorStop(.43,'rgba(255,214,150,0)');g.addColorStop(.455,'rgba(255,232,186,.5)');g.addColorStop(.545,'rgba(255,232,186,.5)');g.addColorStop(.57,'rgba(255,214,150,0)');g.addColorStop(1,'rgba(255,214,150,0)');
     x2.fillStyle=g;x2.fillRect(0,0,P,h);const i=D.createElement('i');i.className='y4-x y4-fdh';i.style.setProperty('--y4fh',`url(${c2.toDataURL()})`);const an=fd.getAnimations&&fd.getAnimations()[0];if(an&&an.currentTime!=null)i.style.animationDelay=(-(an.currentTime%4000))+'ms';fd.after(i)}}
 
 function sv(card,lit){/* T1 Spider-Verse print (and T2 on top) */
   const W=card.offsetWidth,Hh=card.offsetHeight,m=card.dataset.m,rim=rimOf(m);card.style.setProperty('--y4rim',rim);
-  const flg=card.querySelector('.wc-flg');if(flg){const w=flg.offsetWidth,h=flg.offsetHeight,[,x]=canvas(flg,'y4-flsh',w,h);
-    const dk=lit?(px,py)=>Math.max(.95*sm(.5,.62,px/w)*(.75+.25*py/h),plate(w,h,.25,.8,.7)(px,py)):plate(w,h,.05,.7,.75);
-    screen(x,w,h,dk,CMY(1));hatch(x,w,h,dk,{thr:lit?.8:.6,sp:3.4})}
+  const flg=card.querySelector('.wc-flg');if(flg){const w=flg.offsetWidth,h=flg.offsetHeight,fx=flg.offsetLeft,[,x]=canvas(flg,'y4-flsh',w,h);
+    const U=(px,py)=>((px+fx)/W)*.6+(py/Hh)*.4;
+    const dk=lit?(px,py)=>{const u=U(px,py);return sm(.6,.625,u)*(.6+.4*sm(.6,1,u))}:plate(w,h,.2,.75,.62);
+    if(lit){x.fillStyle='rgba(52,40,140,.30)';x.save();x.beginPath();
+      /* the shade side: everything past the terminator line u = .515 */
+      const pts=[];for(let yy=0;yy<=h;yy+=2){const xx=((.612-(yy/Hh)*.4)/.6)*W-fx;pts.push([xx,yy])}x.moveTo(w+2,-2);pts.forEach(([a,b2],i)=>x.lineTo(a,b2));x.lineTo(w+2,h+2);x.closePath();x.fill();x.restore()}
+    screen(x,w,h,dk,CMY(1));hatch(x,w,h,dk,{thr:lit?.72:.5,sp:3.4})}
   fold(card,lit);
   const tks=card.querySelector('.wc-tks');if(tks){const w=tks.offsetWidth,h=tks.offsetHeight,[,x]=canvas(tks,'y4-tksh',w,h);
-    const dk=(px,py)=>.85*Math.max(sm(.5,1,py/h),sm(w*.55,w,px)*.7);
+    const dk=(px,py)=>.85*Math.max(sm(.55,1,py/h),sm(w*.72,w,px)*.38);
     screen(x,w,h,dk,[{a:3,b:1,s:1.6,col:'rgba(200,0,90,.55)'},{a:1,b:3,s:1.6,col:'rgba(150,70,0,.55)'},{a:1,b:1,s:2.5,col:'rgba(21,18,26,.7)',k:.5,g:1}]);hatch(x,w,h,dk,{thr:.62,sp:3})}
   const f=card.querySelector('.wc-ch-pic .wc-face');if(f){const w=f.clientWidth,h=f.clientHeight,[c,x]=canvas(f,'y4-fcsh',w,h);
     x.save();x.beginPath();x.arc(w/2,h/2,w/2,0,6.283);x.clip();const dk=disc(w,h);screen(x,w,h,dk,CMY(1,.85));hatch(x,w,h,dk,{thr:.7,sp:2.6,wmax:.8});x.restore()}
   const tx=card.querySelector('.wc-ch-tx');if(tx){const w=tx.clientWidth,h=tx.clientHeight,[,x]=canvas(tx,'y4-txsh',w,h);
-    const dk=lit?(px,py)=>Math.max(edges(w,h,30,22,.7)(px,py),.42*sm(.7,1,px/w)):edges(w,h,24,18,.55);
-    screen(x,w,h,dk,[{a:3,b:1,s:1.6,col:'rgba(0,150,214,.5)'},{a:1,b:3,s:1.6,col:'rgba(214,0,122,.45)'}])}
+    const dk=edges(w,h,16,13,lit?.6:.5);
+    screen(x,w,h,dk,[{a:3,b:1,s:1.3,col:'rgba(0,150,214,.5)'},{a:1,b:3,s:1.3,col:'rgba(214,0,122,.45)'}])}
   const rl=card.querySelector('.wc-ch-role');if(rl){const w=rl.clientWidth,h=rl.clientHeight,[,x]=canvas(rl,'y4-rlsh',w,h);screen(x,w,h,(px,py)=>.7*sm(.45,1,py/h),[{a:3,b:1,s:1.3,col:'rgba(200,0,90,.5)'},{a:1,b:3,s:1.3,col:'rgba(150,70,0,.5)'}])}
   if(lit){/* the ticket bends: a hard terminator two thirds across, the shade side in dots, a rim of the model's colour on the far edge */
-    ['y4-key','y4-keyw'].forEach(c=>{const k=D.createElement('i');k.className='y4-x '+c;card.appendChild(k)});const rr=D.createElement('i');rr.className='y4-x y4-rimx';card.appendChild(rr);
+    ['y4-keyw'].forEach(c=>{const k=D.createElement('i');k.className='y4-x '+c;card.appendChild(k)});const rr=D.createElement('i');rr.className='y4-x y4-rimx';card.appendChild(rr);
     const [,x]=canvas(card,'y4-cast',W,Hh);/* the caption box's long cast shadow on the flag: dots that thin out with distance */
     if(tx){const sx=tx.offsetLeft+10,sy=tx.offsetTop+9,tw=tx.offsetWidth,th=tx.offsetHeight;
       const inBox=(px,py)=>px>=sx&&py>=sy&&px<=sx+tw&&py<=sy+th;
@@ -113,7 +117,7 @@ function foil(card){['y4-gl'].forEach(c=>{const i=D.createElement('i');i.classNa
 
 function defs(){if(D.getElementById('y4defs'))return;const s=D.createElementNS('http://www.w3.org/2000/svg','svg');s.id='y4defs';s.setAttribute('width','0');s.setAttribute('height','0');s.setAttribute('aria-hidden','true');s.style.position='absolute';
   s.innerHTML='<filter id="y4rough" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="1.3" xChannelSelector="R" yChannelSelector="G"/></filter>'+
-   '<filter id="y4spread" x="-3%" y="-3%" width="106%" height="106%"><feMorphology operator="dilate" radius=".25" in="SourceGraphic" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7"/><feDisplacementMap in="d" scale=".9" xChannelSelector="R" yChannelSelector="G" result="r"/><feGaussianBlur in="r" stdDeviation=".22"/></filter>';D.body.appendChild(s)}
+   '<filter id="y4spread" x="-3%" y="-3%" width="106%" height="106%"><feMorphology operator="dilate" radius=".25" in="SourceGraphic" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7"/><feDisplacementMap in="d" scale=".9" xChannelSelector="R" yChannelSelector="G" result="r"/><feGaussianBlur in="r" stdDeviation=".12"/></filter>';D.body.appendChild(s)}
 window.__y4=function(t){defs();D.querySelectorAll('.y4-x').forEach(n=>n.remove());D.querySelectorAll('.wc-flg-fd').forEach(n=>n.style.removeProperty('--y4fd'));
   H.classList.remove('y4-sv','y4-lt','y4-pt','y4-lp','y4-fo','y4-t0','y4-t1','y4-t2','y4-t3','y4-t4','y4-t5');H.classList.add('y4-'+t);
   const cls={t1:['y4-sv'],t2:['y4-sv','y4-lt'],t3:['y4-pt'],t4:['y4-lp'],t5:['y4-fo']}[t]||[];cls.forEach(c=>H.classList.add(c));

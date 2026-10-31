@@ -2,7 +2,7 @@
 // "card" as 5th arg shoots only the first card. Checks: scrollWidth, errors, dead space (Y1check).
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');const fs=require('fs');
 const OUT=process.argv[2],TS=(process.argv[3]||'now,y1').split(','),WS=(process.argv[4]||'390,1280').split(',').map(Number),DPR=+(process.argv[5]||2),CARD=process.argv[6]==='card';
-fs.mkdirSync(OUT,{recursive:true});const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
+if(OUT)fs.mkdirSync(OUT,{recursive:true});const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
 async function open(b,W,t,o={}){const p=await b.newPage({viewport:{width:W,height:W<600?844:1000},deviceScaleFactor:o.dpr||DPR,reducedMotion:o.rm?'reduce':'no-preference'});await FONTS(p);const er=[];
   p.on('pageerror',e=>er.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource/.test(m.text()))er.push(m.text())});
   await p.goto('http://localhost:8921/v47-live-x3plus.html',{waitUntil:'load'});

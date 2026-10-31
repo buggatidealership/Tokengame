@@ -61,8 +61,8 @@ function flagSticker(cc){const W=150,Hh=100,[c,x]=cv(W,Hh);
   return url(c)}
 // a steel corner cap: an L bracket, three rivets and a ball, lit from above whichever corner it sits on
 function cap(sx,sy){const S=64,f=(x,y)=>[sx?S-x:x,sy?S-y:y].map(v=>v.toFixed(1)).join(',');
-  const P=[[0,0],[S,0],[S,13],[20,13],[13,20],[13,S],[0,S]],d='M'+P.map(p=>f(...p)).join('L')+'Z';
-  const rv=[[38,7],[7,38],[22,22]].map(([x,y])=>{const [a,b]=f(x,y).split(',');return `<circle cx="${a}" cy="${b}" r="3.6" fill="url(#rv)" stroke="#04070e" stroke-width=".9"/><circle cx="${a-1}" cy="${b-1.3}" r="1.1" fill="#fff" opacity=".75"/>`}).join('');
+  const P=[[0,0],[S,0],[S,17],[31,17],[17,31],[17,S],[0,S]],d='M'+P.map(p=>f(...p)).join('L')+'Z';
+  const rv=[[44,9],[9,44],[25,25]].map(([x,y])=>{const [a,b]=f(x,y).split(',');return `<circle cx="${a}" cy="${b}" r="3.6" fill="url(#rv)" stroke="#04070e" stroke-width=".9"/><circle cx="${a-1}" cy="${b-1.3}" r="1.1" fill="#fff" opacity=".75"/>`}).join('');
   const [bx,by]=f(9,9).split(',');
   return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${S} ${S}" width="${S}" height="${S}"><defs>
    <linearGradient id="st" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sy?'#9aa1ab':'#e6e9ee'}"/><stop offset=".55" stop-color="${sy?'#6c727c':'#a9afb8'}"/><stop offset="1" stop-color="${sy?'#3f444c':'#6f757e'}"/></linearGradient>
@@ -125,12 +125,13 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return
 grid.querySelectorAll('.y2-c').forEach(c=>io.observe(c));
 
 // measurement hook for the runner: empty area inside each card, things over a logo, emoji
-window.__y2chk=()=>{const o={cards:[]};for(const c of grid.querySelectorAll('.y2-c')){const r=c.querySelector('.y2-in').getBoundingClientRect();
+window.__y2chk=()=>{const o={cards:[]};for(const c of grid.querySelectorAll('.y2-c')){const inn=c.querySelector('.y2-in'),cs=getComputedStyle(inn),R0=inn.getBoundingClientRect(),r={left:R0.left+parseFloat(cs.paddingLeft),right:R0.right-parseFloat(cs.paddingRight),top:R0.top+parseFloat(cs.paddingTop),bottom:R0.bottom-parseFloat(cs.paddingBottom)};r.width=r.right-r.left;
   const kids=[...c.querySelectorAll('.y2-in > *')].map(k=>k.getBoundingClientRect());// sample a grid of points: empty = no content box covers it
-  let e=0,t=0;for(let y=r.top+2;y<r.bottom;y+=4)for(let x=r.left+2;x<r.right;x+=4){t++;if(!kids.some(k=>x>=k.left&&x<=k.right&&y>=k.top&&y<=k.bottom))e++}
+  let e=0,t=0,best=0;const prev=[];let ri=0;for(let y=r.top+2;y<r.bottom;y+=4){const cur=[];let ci=0;for(let x=r.left+2;x<r.right;x+=4){t++;const em=!kids.some(k=>x>=k.left&&x<=k.right&&y>=k.top&&y<=k.bottom);if(em)e++;
+    cur[ci]=em?1+Math.min(prev[ci]||0,prev[ci-1]||0,cur[ci-1]||0):0;if(cur[ci]>best){best=cur[ci];o.at=[Math.round(x-r.left),Math.round(y-r.top)]}ci++}prev.splice(0,prev.length,...cur);ri++}
   const lg=c.querySelector('.y2-ph img'),lr=lg&&lg.getBoundingClientRect();
   const over=lr?[...c.querySelectorAll('.y2-in *')].filter(k=>k!==lg&&!k.contains(lg)&&!lg.contains(k)&&!k.closest('.y2-ph')&&!k.matches('.y2-pol,figure')).filter(k=>{const q=k.getBoundingClientRect();return q.width&&q.left<lr.right-1&&q.right>lr.left+1&&q.top<lr.bottom-1&&q.bottom>lr.top+1}).map(k=>k.className||k.tagName):[];
-  o.cards.push({m:c.dataset.m,w:Math.round(r.width),h:Math.round(c.getBoundingClientRect().height),empty:Math.round(e/t*100)+'%',overLogo:over.join(' ')||'none'})}
+  o.cards.push({m:c.dataset.m,w:Math.round(r.width),h:Math.round(c.getBoundingClientRect().height),empty:Math.round(e/t*100)+'%',biggestHole:(best*4)+'px ('+Math.round(best*4/r.width*100)+'% of width)',overLogo:over.join(' ')||'none'})}
   o.emoji=/\p{Extended_Pictographic}/u.test(grid.textContent);return o};
 await D.fonts.load('900 20px "Big Shoulders Stencil Display"').catch(()=>{});await D.fonts.load('20px "Permanent Marker"').catch(()=>{});
 // fit the stencilled name and the P&L to their space (a stencil runs to the edge of the lid, never past it)
