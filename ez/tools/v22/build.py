@@ -607,7 +607,7 @@ def world(name,title,out,layer=None):
     if name=="comic" and not layer:
         # Luckiest Guy for the pop look (X3+ only); not render-blocking and not in __x2pF, so the cover does not wait for it
         # the L3 loading cover's painting, asked for early (h_chrome.css draws it on #x2pLoad)
-        w=w.replace('<head>','<head>\n<link rel="preload" as="image" href="media/load-ring-l3.jpg" media="(max-aspect-ratio:1/1)" fetchpriority="high">\n<link rel="preload" as="image" href="media/load-ring-l3-desk.jpg" media="(min-aspect-ratio:1001/1000)" fetchpriority="high">',1)
+        w=w.replace('<head>','<head>\n<link rel="preload" as="image" href="media/load-lamp-lh.jpg" media="(max-aspect-ratio:1/1)" fetchpriority="high">\n<link rel="preload" as="image" href="media/load-lamp-lh-desk.jpg" media="(min-aspect-ratio:1001/1000)" fetchpriority="high">',1)
         w=w.replace('</head>','<link id="x3p-pop-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Luckiest+Guy&display=swap" media="print" onload="this.media=\'all\'">\n</head>',1)
     if name=="comic":
         for a,b in [
