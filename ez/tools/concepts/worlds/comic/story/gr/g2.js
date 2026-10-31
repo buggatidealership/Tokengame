@@ -3,9 +3,9 @@
 /* crops of the 854x480 source, chosen so no founder plate shows half-cut and every face stays clear of the captions */
 const CROP={GROK:{x:0,y:0,w:700,h:480},CLAUDE:{x:242,y:0,w:360,h:480},GPT:{x:318,y:95,w:330,h:330},KIMI:{x:290,y:0,w:500,h:480}};
 /* caption corner per model: the side away from the face */
-const CORNER={GROK:'br',CLAUDE:'bl',GPT:'bl',KIMI:'tr'};
+const CORNER={GROK:'br',CLAUDE:'bl',GPT:'bl',KIMI:'bl'};
 const cap=(x,one)=>`<p class="g2-cap g2-${CORNER[x.m]}${one?' gr-leaf':''}"><b class="g2-nm">${x.nm}<small>${x.ver}</small></b><span>${one?'Golden ticket · ':''}No. ${x.rank}</span><span class="g2-pl"><small>Season P&amp;L</small> <b class="${one?'':x.up?'g2-u':'g2-d'}">${x.pm}</b></span><span><small>W-L</small> <b>${x.W}-${x.L}</b></span></p>`;
-const pan=(x,i)=>`<figure class="g2-pn g2-pn${i+1}" data-m="${x.m}">${G.vid(x.m,CROP[x.m])}${cap(x,i===0)}${i===0?'<b class="g2-sfx" aria-hidden="true">KA-CHING!</b>':''}</figure>`;
+const pan=(x,i)=>`<figure class="g2-pn g2-pn${i+1}" data-m="${x.m}">${G.vid(x.m,CROP[x.m])}${cap(x,i===0)}${i===0?'<b class="g2-sfx" aria-hidden="true">KA-<br>CHING!</b>':''}</figure>`;
 const head=`<h2 class="wc-h2"><span>Meet the models</span><small>Ranked by season P&amp;L on a pretend $100,000 each.</small></h2>`;
 const s=G.mount(head+`<div class="g2-page">${d.map(pan).join('')}</div>`,'gr-g2');
 /* exact layout: panels keep their crops' shapes and fill the page with 6px gutters, no dead space */

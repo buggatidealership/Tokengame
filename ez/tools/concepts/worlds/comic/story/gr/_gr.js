@@ -16,6 +16,6 @@ function wire(root){const vs=[...root.querySelectorAll('video')];if(RM()){vs.for
   const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){v.play().catch(()=>{})}else v.pause()}),{threshold:.25});vs.forEach(v=>io.observe(v))}
 function l5(a){return `<span class="gr-l5" aria-label="Last five: ${a.join(' ')}">${a.map(x=>`<i class="${x==='W'?'gr-w':'gr-l'}"></i>`).join('')}</span>`}
 function mount(html,cls){const s=document.querySelector('.wc-chars');s.classList.add('gr-on',cls);
-  s.innerHTML=html;wire(s);if(!document.querySelector('#gr-fonts')){const l=document.createElement('link');l.id='gr-fonts';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Ultra&family=Oswald:wght@600;700&display=swap';document.head.appendChild(l)}return s}
+  s.innerHTML=html;wire(s);if(!document.querySelector('#gr-fonts')){const l=document.createElement('link');l.id='gr-fonts';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Ultra&family=Permanent+Marker&family=Oswald:wght@600;700&display=swap';document.head.appendChild(l)}return s}
 window.GR={A,ORD,D,vid,wire,mount,money,l5,NM,FOUNDER,RM,SW,SH};
 })();
