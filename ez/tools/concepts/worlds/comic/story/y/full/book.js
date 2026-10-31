@@ -296,9 +296,10 @@ function tabs(){D.querySelectorAll('header.top nav a, header.top .tabs a, header
   a.style.setProperty('box-shadow','none','important');a.style.setProperty('background','transparent','important');a.style.setProperty('border-color','transparent','important');skin(a,{pal:on?'gold':'white',drop:3,ow:2.4,key:1.1,seed:400+i,dots:!!on})})}
 
 /* ================= build, and again when the width changes or the page redraws a module ================= */
-function all(){cuts();cover();chars();season();cliff();splash();bet();back();tabs();
+const F={cuts,cover,chars,season,cliff,splash,bet,back,tabs};const run=k=>{if(!off(k))F[k]()};
+function all(){['cuts','cover','chars','season','cliff','splash','bet','back','tabs'].forEach(run);
   /* sizes settle after the lettering went in: redo the grounds once at their final size */
-  requestAnimationFrame(()=>{chars();season();splash();bet();back()})}
+  requestAnimationFrame(()=>{['chars','season','splash','bet','back'].forEach(run)})}
 /* for the cost measure: one full build, timed (the first pass; the settle pass follows in the next frame) */
 window.__cbRebuild=()=>{const t=performance.now();all();return performance.now()-t};
 let busy=false;

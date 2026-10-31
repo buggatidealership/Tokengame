@@ -11,10 +11,12 @@ async function open(b,W,mode,o={}){const H=o.h||(W<600?844:1000);const p=await b
   if(mode!=='now'){for(const f of ['base/_cv.css','base/c2.css','book.css'])await p.addStyleTag({content:rd(f)});
     for(const f of ['base/_cv.js','base/c2.js'])await p.addScriptTag({content:rd(f)});await p.evaluate(([t,n])=>{window.__cbTake=t;window.__cbNo=n},[o.take||process.env.TAKE||'ink',process.env.CBNO||'']);
     await p.waitForFunction(()=>document.documentElement.classList.contains('c2-ready'),null,{timeout:30000});
-    if(mode==='c2'||mode==='css'){if(mode==='css')await p.evaluate(()=>document.documentElement.classList.add('cb-on'));await p.evaluate(()=>document.fonts.ready);await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(800);return {p,er}}
+    if(mode==='libs'){await p.addScriptTag({content:rd('dtlib.js')});await p.addScriptTag({content:rd('takes.js')});await p.evaluate(()=>document.documentElement.classList.add('cb-on'));await p.waitForTimeout(800);return fin(p,er,o)}
+    if(mode==='c2'||mode==='css'){if(mode==='css')await p.evaluate(c=>document.documentElement.classList.add('cb-on',...c.split(',').filter(Boolean)),process.env.CLS||'');await p.evaluate(()=>document.fonts.ready);return fin(p,er,o)}
     await p.addScriptTag({content:rd('dtlib.js')});await p.addScriptTag({content:rd('takes.js')});await p.addScriptTag({content:rd('book.js')});
     await p.waitForFunction(()=>document.documentElement.classList.contains('cb-ready'),null,{timeout:60000})}
-  await p.evaluate(()=>document.fonts.ready);
+  return fin(p,er,o)}
+async function fin(p,er,o){await p.evaluate(()=>document.fonts.ready);
   const H2=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<H2;y+=600){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(40)}
   await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(o.wait||1500);return {p,er}}
 /* hard-rule checks on the built book */
