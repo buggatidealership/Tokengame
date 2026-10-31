@@ -79,7 +79,7 @@ var SHEET=[
  ["64","005930.KS","10/28/26","DOWN","3.5","DOWN","1","DOWN","3","DOWN","2.1","10/29/26","-4.13","","Information Technology","Technology Hardware & Equipment","AI; Semiconductors; Consumer electronics","FALSE"],
  ["65","VOW3.DE","10/29/26","UP","2.5","DOWN","1","DOWN","2","DOWN","1.8","10/29/26","1.68","","Consumer Discretionary","Automobiles & Components","Automotive","FALSE"],
  ["66","SHEL.L","10/29/26","DOWN","1.5","UP","1","UP","2","DOWN","1.2","10/29/26","2.06","","Energy","Energy","","FALSE"],
- ["67","CAT","10/29/26","UP","6","UP","1.5","UP","3.5","DOWN","1.4","10/29/26","-9.27","","Industrials","Capital Goods","","FALSE"],
+ ["67","CAT","10/29/26","DOWN","1.5","UP","1.5","UP","3.5","DOWN","1.4","10/29/26","-9.27","","Industrials","Capital Goods","","FALSE"],
  ["68","MA","10/29/26","UP","2.5","UP","1","DOWN","2","DOWN","1.1","10/29/26","4.18","","Financials","Financial Services","Payments","FALSE"],
  ["69","MRK","10/29/26","UP","3","UP","1","DOWN","1.5","DOWN","1.3","10/29/26","3.85","","Health Care","Pharmaceuticals, Biotechnology & Life Sciences","Healthcare","FALSE"],
  ["70","LLY","10/29/26","DOWN","4.5","UP","1.5","DOWN","4","DOWN","2.6","10/29/26","6.57","","Health Care","Pharmaceuticals, Biotechnology & Life Sciences","Healthcare","FALSE"],
