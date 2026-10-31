@@ -70,7 +70,7 @@ function fold(card,lit){/* the waving flag's own fold tile (160px, the same loop
   const cv=(px)=>Math.cos(2*Math.PI*px/P);const dark=lit?(px,py)=>{const c=cv(px);return sm(.34,.4,c)*(.5+.35*c)*(.8+.2*py/h)}:(px,py)=>Math.pow(Math.max(0,cv(px)),2.4)*(.42+.22*py/h);
   screen(x,P,h,dark,[{a:3,b:1,s:1.6,col:'rgba(0,120,200,.7)'},{a:1,b:3,s:1.6,col:'rgba(200,0,110,.55)',k:.85},{a:1,b:1,s:2.5,col:'rgba(21,18,26,.75)',k:.5,g:1}]);
   hatchTile(x,P,h,(px,py)=>dark(px,py),{thr:lit?.62:.5,sp:4});fd.style.setProperty('--y4fd',`url(${c.toDataURL()})`);
-  if(lit){const [c2,x2]=off(P,h);const g=x2.createLinearGradient(0,0,P,0);g.addColorStop(0,'rgba(255,214,150,0)');g.addColorStop(.43,'rgba(255,214,150,0)');g.addColorStop(.455,'rgba(255,232,186,.5)');g.addColorStop(.545,'rgba(255,232,186,.5)');g.addColorStop(.57,'rgba(255,214,150,0)');g.addColorStop(1,'rgba(255,214,150,0)');
+  if(lit){const [c2,x2]=off(P,h);const g=x2.createLinearGradient(0,0,P,0);g.addColorStop(0,'rgba(255,214,150,0)');g.addColorStop(.43,'rgba(255,214,150,0)');g.addColorStop(.455,'rgba(255,226,170,.7)');g.addColorStop(.545,'rgba(255,226,170,.7)');g.addColorStop(.57,'rgba(255,214,150,0)');g.addColorStop(1,'rgba(255,214,150,0)');
     x2.fillStyle=g;x2.fillRect(0,0,P,h);const i=D.createElement('i');i.className='y4-x y4-fdh';i.style.setProperty('--y4fh',`url(${c2.toDataURL()})`);const an=fd.getAnimations&&fd.getAnimations()[0];if(an&&an.currentTime!=null)i.style.animationDelay=(-(an.currentTime%4000))+'ms';fd.after(i)}}
 
 function sv(card,lit){/* T1 Spider-Verse print (and T2 on top) */
@@ -117,7 +117,7 @@ function foil(card){['y4-gl'].forEach(c=>{const i=D.createElement('i');i.classNa
 
 function defs(){if(D.getElementById('y4defs'))return;const s=D.createElementNS('http://www.w3.org/2000/svg','svg');s.id='y4defs';s.setAttribute('width','0');s.setAttribute('height','0');s.setAttribute('aria-hidden','true');s.style.position='absolute';
   s.innerHTML='<filter id="y4rough" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="1.3" xChannelSelector="R" yChannelSelector="G"/></filter>'+
-   '<filter id="y4spread" x="-3%" y="-3%" width="106%" height="106%"><feMorphology operator="dilate" radius=".25" in="SourceGraphic" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7"/><feDisplacementMap in="d" scale=".9" xChannelSelector="R" yChannelSelector="G" result="r"/><feGaussianBlur in="r" stdDeviation=".12"/></filter>';D.body.appendChild(s)}
+   '<filter id="y4spread" x="-3%" y="-3%" width="106%" height="106%"><feMorphology operator="erode" radius=".22" in="SourceGraphic" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7"/><feDisplacementMap in="d" scale=".9" xChannelSelector="R" yChannelSelector="G" result="r"/><feGaussianBlur in="r" stdDeviation=".12"/></filter>';D.body.appendChild(s)}
 window.__y4=function(t){defs();D.querySelectorAll('.y4-x').forEach(n=>n.remove());D.querySelectorAll('.wc-flg-fd').forEach(n=>n.style.removeProperty('--y4fd'));
   H.classList.remove('y4-sv','y4-lt','y4-pt','y4-lp','y4-fo','y4-t0','y4-t1','y4-t2','y4-t3','y4-t4','y4-t5');H.classList.add('y4-'+t);
   const cls={t1:['y4-sv'],t2:['y4-sv','y4-lt'],t3:['y4-pt'],t4:['y4-lp'],t5:['y4-fo']}[t]||[];cls.forEach(c=>H.classList.add(c));

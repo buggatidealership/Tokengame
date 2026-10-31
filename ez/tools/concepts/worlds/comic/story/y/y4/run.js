@@ -20,7 +20,7 @@ async function take(p,t){await p.evaluate(t=>{document.documentElement.classList
   for(const t of TS){await take(p,t);
     await p.evaluate(()=>{const c=document.querySelector('.wc-ch-1');scrollTo(0,c.getBoundingClientRect().top+scrollY-120)});await p.waitForTimeout(250);
     const bb=await p.evaluate(()=>{const r=document.querySelector('.wc-ch-1').getBoundingClientRect();return {x:r.left,y:r.top,w:r.width,h:r.height}});
-    await p.screenshot({path:`${OUT}/${t}.png`,clip:{x:0,y:bb.y-18,width:390,height:bb.h+36}});
+    await p.screenshot({path:`${OUT}/${t}.png`,clip:{x:0,y:bb.y-9,width:390,height:bb.h+19}});
     console.log(t,'sw',await p.evaluate(()=>document.documentElement.scrollWidth),er.join('|')||'ok')}
   await p.close()}
  if(MODE==='check'){const WS=(process.argv[3]||'320,390,1280').split(',').map(Number);
