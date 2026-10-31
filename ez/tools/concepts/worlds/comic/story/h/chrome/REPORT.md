@@ -40,7 +40,7 @@ Each take is `_ch.css/_ch.js` (shared helpers) + `<take>.css/.js`, laid over the
 - Every word on every take is page text; the logo is the page's own traced svg, cloned. No logo, word or number in any painting.
 
 ## The takes
-Header (sticky; height at 390 / 1280, today 107 / 58 px):
+Header (sticky; height at 390 / 1280, today 107 / 58 px; H4 measured 94 after the last fix):
 - **H1 Masthead** (86 / 62): a painted dusk skyline of exchange towers behind an extruded, hand-lettered "Earnings Zeason" (every letter its own angle and baseline, E green, Z red); the three tabs are paper tags cut along a newsprint foot strip; the pill an ink box.
 - **H2 Cover corner box** (75 / 86): the header is the cover's top band on newsprint; the logo sits in the classic corner box with "No. 80" (live) and "Free"; the tabs are the cover's contents line divided by red stars, the open one an ink slab; the pill a red price burst. The cover strip's own "No. 80" is hidden in this take so the issue is said once (if picked, the cover strip loses that cell).
 - **H3 Ringside** (93 / 64): three painted ring ropes; the tabs are fight tags clipped to the bottom rope with little steel clips; the name extruded in red.
@@ -86,6 +86,7 @@ Loading cover:
 - **Loading covers:** a painting on the loading screen has to load before it shows, which is exactly when the page is slowest; in a build it must be inlined small (under 30 KB) or the logo shows on flat colour first. L2 and L4 show "No. 80" only once ez-data.js has run (in the real cover the number would be filled by a tiny inline script).
 
 ## Checks run
-- 320 (headers and back covers), 390, 1280 px: no sideways scroll, no page errors, no console errors (failed-resource lines filtered: none came from the takes). Film size, header heights from the page itself (`run.js` prints them).
+- 320 (headers, back covers, F1, F4), 390, 1280 px: no sideways scroll, no page errors, no console errors (failed-resource lines filtered: none came from the takes).
+- **Fails at 320 px, not fixed:** every header take clips its right end there (the pill is cut in all four; H2's and H4's last tab too). The header hides overflow, so the page does not scroll sideways, but the pill is unreadable. A picked take needs a step under 360 px (pill under the name, or the name shortened to the logo). The back covers and film frames fit at 320 (film 249 x 140). Film size, header heights from the page itself (`run.js` prints them).
 - Zoomed every take at device pixels: letters of the jigged names each turn on their own baseline; the takes' outlines are drawn per element (seeded wobbly paths with a thick outer and a thin inner ink); no lettering inside any painting.
 - Skill rule 0 list: no white grounds inside a module (the fine print sits outside the panels), no native emoji, no dots over a whole module, nothing laid on a logo or a face. Not done: compare against a printed comic page beside the screen (no page at hand); the boards were compared with the cover's own pop panels instead.
