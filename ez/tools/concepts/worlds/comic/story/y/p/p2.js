@@ -60,11 +60,11 @@ function season(D){const sec=document.querySelector('.wc-season');if(!sec)return
 function fillTiles(RR){document.querySelectorAll('.pp2-bis .pp2-band').forEach(s=>{if(s.dataset.ok||!s.offsetParent)return;const r=RR[s.dataset.n],a=s.parentElement,w=a.clientWidth,sm=w<150;s.dataset.ok=1;
   const up=r.a>0,Wn=P.winners(r);
   s.querySelector('.pp2-no').innerHTML='<span class="pp2-noh">#</span>'+r.n;
-  s.querySelector('.pp2-mv').innerHTML=P.ext((up?'+':'−')+P.pct(r.a),{size:sm?24:30,fill:'white',shade:up?'#053b20':'#5e0703',depth:4,max:w-(sm?44:54)});
+  s.querySelector('.pp2-mv').innerHTML=P.ext((up?'+':'−')+P.pct(r.a),{size:sm?24:30,fill:'white',shade:up?'#053b20':'#5e0703',depth:4,max:w-(sm?62:66)});
   a.querySelector('.pp2-won').innerHTML=Wn.length?Wn.map(m=>P.coin(m,Wn.length>1?(sm?22:26):(sm?26:30),{dp:2})).join('')+`<b class="pp2-wl">${Wn.length>1?'Tie':'Won'}</b>`
     :`<i class="pp2-nob"><svg viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="#0d0b10" stroke-width="6" stroke-linecap="round"/><path d="M5 5l10 10M15 5L5 15" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></i><b class="pp2-wl">Nobody</b>`})}
 function depth(){const X=(sel,dp,sh,o)=>document.querySelectorAll(sel).forEach(n=>n.style.boxShadow=P.xbox(dp,sh,o));
-  X('.pp2-mm',8,'#5a0424',{bw:3,cast:5,hl:3});X('.pp2-ms',7,'#8a5200',{bw:3,cast:4,hl:3});
+  X('.pp2-mm',8,'#5a0424',{bw:3,cast:5,hl:3});X('.pp2-ms',7,'#2a0f6e',{bw:3,cast:4,hl:3});
   X('.pp2-c',7,'#2a0616',{bw:2.5,cast:5});X('.pp2-rw',4,'#0b2366',{bw:2,hl:2,lo:2});X('.pp2-t',3,'#3d0a07',{bw:1.5,hl:1.5,lo:2});X('.pp2-foot',3,'#2a0616',{bw:2,hl:1.5,lo:2});
   X('.pp2-bi',4,'#6e3a00',{bw:2.5,cast:3,hl:0,ha:0,la:0})}
 function go(){H.classList.add(TAKE+'-on');const D=P.data();chars(D);season(D);depth();
