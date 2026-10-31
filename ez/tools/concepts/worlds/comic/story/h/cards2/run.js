@@ -1,0 +1,20 @@
+// node run.js <out dir> <takes now,t1,...> [widths 390,1280,320]  -> <out>/<take>-<W>.png (Meet the models section), <take>-<W>-zoom.png (3x close-up of card 1), metrics
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('/home/user/Tokengame/ez/tools/concepts/live-r1/_fonts.js');const fs=require('fs');
+const OUT=process.argv[2],TS=(process.argv[3]||'now').split(','),WS=(process.argv[4]||'390,1280').split(',').map(Number);fs.mkdirSync(OUT,{recursive:true});
+const CFG={a1:{bg:'scene',inner:'cut'},a2:{bg:'scene',inner:'ink'},b1:{bg:'robe',inner:'cut'},b2:{bg:'robe',inner:'ink'},c1:{bg:'poster',inner:'cut'},c2:{bg:'poster',inner:'ink'}};const rd=f=>fs.existsSync(__dirname+'/'+f)?fs.readFileSync(__dirname+'/'+f,'utf8'):'';const PORT=process.env.PORT||8931;
+(async()=>{const b=await chromium.launch();
+ for(const W of WS)for(const t of TS)for(const z of (process.env.NOZOOM?[0]:[0,1])){if(z&&W>1000&&!process.env.ZOOMDESK)continue;
+  const ctx=await b.newContext({viewport:{width:W,height:W<600?844:1000},deviceScaleFactor:z?3:(W>1000?1:2)});const p=await ctx.newPage();await FONTS(p);const er=[];p.on('pageerror',e=>er.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource/.test(m.text()))er.push(m.text())});
+  await p.goto(`http://localhost:${PORT}/v47-live-x3plus.html?${Date.now()}`,{waitUntil:'load',timeout:150000});
+  await p.waitForFunction(()=>document.documentElement.classList.contains('p1-ready')&&document.querySelector('.pp1-grid .pp1-c.fb-on'),null,{timeout:120000});
+  await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(800);
+  await p.addStyleTag({content:'.x2p-cw{display:none!important}'});if(t!=='now'){await p.addStyleTag({url:'https://fonts.googleapis.com/css2?family=Knewave&family=Caveat+Brush&display=swap'});await p.waitForFunction(()=>document.fonts.load('30px Knewave').then(()=>document.fonts.load('20px "Caveat Brush"')).then(()=>1));await p.addStyleTag({content:rd('../cards/_c.css')+rd('_k.css')});await p.addScriptTag({content:'window.KCFG='+JSON.stringify(CFG[t])+';'+rd('../cards/_c.js')+rd('_k.js')});await p.waitForTimeout(400)}
+  await p.evaluate(()=>{const s=document.querySelector('#wc-book .wc-chars');scrollTo(0,s.getBoundingClientRect().top+scrollY-60)});await p.waitForTimeout(2600);
+  await p.evaluate(()=>{document.querySelectorAll('video').forEach(v=>{try{v.pause();v.currentTime=1.2}catch(e){}});[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if((c.position==='fixed'||c.position==='sticky')&&!x.closest('.wc-chars'))x.style.visibility='hidden'});document.querySelectorAll('body *').forEach(e=>{if(getComputedStyle(e).position==='fixed'&&!e.closest('.wc-chars'))e.style.setProperty('display','none','important')});let e=document.elementFromPoint(innerWidth/2,innerHeight-6);while(e&&e!==document.body){if(getComputedStyle(e).position==='fixed'){e.style.setProperty('display','none','important');break}e=e.parentElement}});
+  await p.waitForTimeout(700);
+  const r=await p.evaluate(z=>{const s=document.querySelector('#wc-book .wc-chars');const g=s.querySelector('.hc-grid')||s.querySelector('.pp1-grid');const c=z?(g.querySelector('.k-c,.pp1-c')):s;const q=c.getBoundingClientRect();
+   const ov=[...s.querySelectorAll('*')].filter(e=>{const k=e.getBoundingClientRect();return k.width&&(k.right>innerWidth+.5||k.left<-.5)&&getComputedStyle(e).visibility!=='hidden'&&!e.closest('.hc-open,.hc-bleed')}).map(e=>String(e.className&&e.className.baseVal!==undefined?e.className.baseVal:e.className).slice(0,24)).slice(0,5);
+   return {x:q.left,y:q.top+scrollY,w:q.width,h:q.height,sw:document.documentElement.scrollWidth,ov}},z);
+  const pad=z?10:0;await p.screenshot({path:`${OUT}/${t}-${W}${z?'-zoom':''}.png`,fullPage:true,clip:{x:Math.max(0,r.x-pad),y:Math.max(0,r.y-pad),width:Math.min(W,r.w+2*pad),height:r.h+2*pad}});
+  console.log(W,t,z?'zoom':'',JSON.stringify({h:Math.round(r.h),sw:r.sw,ov:r.ov}),er.slice(0,3).join('|')||'ok');await ctx.close()}
+ await b.close()})();
