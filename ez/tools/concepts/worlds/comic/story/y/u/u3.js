@@ -6,10 +6,10 @@
 const STARS=(W,H,n,sd)=>{let s='';const r=(k=>()=>(k=(k*9301+49297)%233280)/233280)(sd||3);for(let i=0;i<n;i++){const x=r()*W,y=r()*H,rr=5+r()*7;s+=P.star(x,y,rr,i%3?'#ffd21f':'#fff3d0')}return `<svg class="uu3-st" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${s}</svg>`};
 async function build(){const L=U.list(),DS=U.days(L),C=U.counts(L);await Promise.all(L.map(x=>U.brand(x.ticker)));const B={};for(const x of L)B[x.ticker]=(await U.brand(x.ticker)).hx||'#2b2733';
   const root=U.mount('uu3');const W0=root.clientWidth,desk=matchMedia('(min-width:1000px)').matches,sm=W0<360;
-  const nf=h=>({fill:U.fillOf(h),shade:U.shOf(h)});
+  const nf=h=>U.nameFill(h,'#6e2ff5');
   const head=DS.find(d=>d.k!=='wait'),hx=head.items[0],hl=S.dayLab(head.k);
   /* the burst that holds the main event's art: the same jagged polygon as an svg underlay and as the art's clip */
-  const BW=desk?440:Math.min(W0-24,360),BH=desk?330:Math.round(BW*.78),pts=P.burst(0,0,1,.8,14,hx.n).split(' ').map(p=>p.split(',').map(Number));
+  const BW=desk?440:Math.min(W0-44,340),BH=desk?330:Math.round(BW*.78),pts=P.burst(0,0,1,.8,14,hx.n).split(' ').map(p=>p.split(',').map(Number));
   const clip='polygon('+pts.map(([x,y])=>`${(50+x*50).toFixed(2)}% ${(50+y*50).toFixed(2)}%`).join(',')+')';
   const pin=pts.map(([x,y])=>`${(BW/2+x*BW/2*.98).toFixed(1)},${(BH/2+y*BH/2*.98).toFixed(1)}`).join(' ');
   const top=`<section class="uu3-top" aria-label="Next main event"><div class="uu3-tt" aria-hidden="true">${X(hl.a==='Today'?'TONIGHT':hl.a==='Tomorrow'?'TOMORROW':hl.a.toUpperCase(),{size:desk?40:30,fill:'cream',shade:'#3b0b5c',depth:4,rot:-3})}${X('MAIN EVENT',{size:desk?60:44,fill:'gold',shade:'#7a0c06',depth:7,rot:-3,fit:1})}</div>

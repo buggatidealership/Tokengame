@@ -25,6 +25,8 @@ const days=L=>S.byDay(L);
 const lum=h=>{const n=parseInt(h.slice(1),16),f=v=>{v/=255;return v<=.03928?v/12.92:((v+.055)/1.055)**2.4};return .2126*f(n>>16)+.7152*f(n>>8&255)+.0722*f(n&255)};
 const dark=h=>lum(h)<.06;
 const fillOf=h=>dark(h)?['#a8a2b3','#5a5464','#2b2733']:[P.lighten(h,.55),h,P.shade(h,.72)];
+const cr=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+const nameFill=(h,ground)=>cr(h,ground)>=1.6&&!dark(h)?{fill:fillOf(h),shade:shOf(h)}:{fill:['#ffffff','#e9e4f2','#b9b2c8'],shade:dark(h)?'#15121a':P.shade(h,.6)};
 const shOf=h=>dark(h)?'#000000':P.shade(h,.38);
 /* the brand ground of a card: two tones of the brand colour (a near-black brand gets a steel grey, so its ink mark still reads) */
 const tones=h=>dark(h)?['#5a5366','#463f52']:[P.lighten(h,.14),h];
@@ -78,7 +80,7 @@ function foot(x){return x.locked?`<span class="uu-bell" data-t="${esc(x.ticker)}
 function badge(x,w,h){const t=x.nv?'BET #1':x.m7?'MAG 7':'';if(!t)return '';return `<span class="uu-bdg" style="width:${w}px;height:${h}px">${P.burstSvg(w,h,{n:11,dp:3,c1:'#ffd21f',c2:'#fff3a0',k:.8,seed:x.n})}<b>${t}</b></span>`}
 /* an extruded word placeholder, filled after layout to its own width (o.fit: fit the slot's width) */
 const X=(t,o)=>`<span class="uu-x" data-t="${esc(t)}" data-o='${JSON.stringify(o).replace(/'/g,'&#39;')}'></span>`;
-function fillX(root){root.querySelectorAll('.uu-x').forEach(s=>{const o=JSON.parse(s.dataset.o);if(o.fit){const w=s.clientWidth;if(!w)return;o.max=w*o.fit}s.innerHTML=P.ext(s.dataset.t,o)})}
+function fillX(root){root.querySelectorAll('.uu-x').forEach(s=>{const o=JSON.parse(s.dataset.o);if(o.fit){const w=s.clientWidth||s.parentElement.clientWidth;if(!w)return;o.max=w*o.fit}s.innerHTML=P.ext(s.dataset.t,o)})}
 /* name fills: white with the brand's dark as the extrusion */
 const nmO=(hx,o)=>Object.assign({fill:['#ffffff','#fff4d6','#f0d6a0'],shade:shOf(hx)},o);
 /* --------------------------------------------------------------------------------------------- the tab around the takes */
@@ -99,4 +101,4 @@ function check(sel){const r=P.check('#wc-up',sel);const root=D.querySelector('#w
   r.overArt=over;r.minFont=small.length?Math.min(...small):null;r.dead=r.deadPct.length?{max:Math.max(...r.deadPct),mean:Math.round(r.deadPct.reduce((a,b)=>a+b,0)/r.deadPct.length)}:null;delete r.deadPct;return r}
 async function boot(take,build){await P.fonts();try{await build()}catch(e){console.error(e)}
   let w0=innerWidth;addEventListener('resize',()=>{if(innerWidth===w0)return;w0=innerWidth;clearTimeout(boot.t);boot.t=setTimeout(()=>build(),300)});H.classList.add(take+'-ready')}
-return {P,S,G,INK,esc,closeAt,bell,list,days,lum,dark,fillOf,shOf,tones,brand,blow,paintArt,paintCoin,chip,calls,VS,foot,badge,X,fillX,nmO,mount,filter,FLT,counts,run,tickBells,check,boot,due}})();
+return {nameFill,cr,P,S,G,INK,esc,closeAt,bell,list,days,lum,dark,fillOf,shOf,tones,brand,blow,paintArt,paintCoin,chip,calls,VS,foot,badge,X,fillX,nmO,mount,filter,FLT,counts,run,tickBells,check,boot,due}})();
