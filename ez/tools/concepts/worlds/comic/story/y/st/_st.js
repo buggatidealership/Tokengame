@@ -7,7 +7,7 @@
 (function(){const X=CV,S=X.S,P=X.P,T=window.STT||{name:'st',cls:''};const m=X.mount('st '+T.cls);if(!m)return;const {root,film,h1}=m;
   const L=X.last,esc=S.esc,ORD=['GPT','KIMI','CLAUDE','GROK'];
   const mc=k=>k==='GROK'?'#15121a':MODELS[k].c;
-  const w=(t,cls,tag)=>`<${tag||'span'} class="st-w ${cls||''}" data-t="${esc(t)}">${esc(t)}</${tag||'span'}>`;
+  const w=(t,cls,tag,inner)=>`<${tag||'span'} class="st-w ${cls||''}" data-t="${esc(t)}">${inner||esc(t)}</${tag||'span'}>`;
   const coin=(k,cls)=>`<i class="st-coin st-c-${k}${k===X.lead?' st-lead':''} ${cls||''}" style="--mc:${mc(k)}" data-m="${k}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${MODELS[k].d}" fill-rule="${MODELS[k].fr||'nonzero'}"/></svg></i>`;
   /* one shared defs sheet: the gradients a style may point its bell, ticket or coin at */
   if(!document.getElementById('st-defs'))document.body.insertAdjacentHTML('beforeend',`<svg id="st-defs" width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -59,14 +59,16 @@
   </div><p class="st-gd">${X.next('st-nx')}</p>`;
   root.querySelector('.st-fm').append(film);X.wire(root);
   root.querySelector('.st-t').append(h1);
-  X.head(h1,`<span class="st-l1">${w('4 AIs','st-ais')} ${w('TRADE','st-trade')}</span> ${w('EARNINGS','st-earn')}`);
+  X.head(h1,`<div class="st-hd"><div class="st-l1">${w('4 AIs','st-ais','span','4 AI<span class="st-s">s</span>')} ${w('TRADE','st-trade')}</div> ${w('EARNINGS','st-earn')}</div>`);
   /* fit: the big words fill their line, never more */
   function fit(){root.querySelectorAll('[data-fit]').forEach(e=>{e.style.fontSize='';});
     const mh=root.querySelector('.st-mh'),avail=mh.clientWidth-parseFloat(getComputedStyle(mh).paddingLeft)-parseFloat(getComputedStyle(mh).paddingRight)-6;
     const ea=root.querySelector('.st-earn');const base=parseFloat(getComputedStyle(ea).fontSize);const k=Math.min(1,avail/ea.scrollWidth);ea.style.fontSize=(base*k).toFixed(1)+'px';
     root.querySelectorAll('.st-b').forEach(b=>{b.style.fontSize=''});
-    /* the balloons in panel 1 keep two per row */
-    const p1=root.querySelector('.st-p1 .st-in');if(p1){let guard=0;while(guard++<8&&[...p1.querySelectorAll('.st-say')].some(s=>{const r=s.getBoundingClientRect(),q=p1.getBoundingClientRect();return r.right>q.right+1||r.left<q.left-1})){p1.querySelectorAll('.st-b').forEach(b=>{b.style.fontSize=(parseFloat(getComputedStyle(b).fontSize)*.93).toFixed(1)+'px'})}}
+    /* the balloons in panel 1 keep two per row, apart and inside the panel */
+    const p1=root.querySelector('.st-p1 .st-in');if(p1){const bad=()=>{const q=p1.getBoundingClientRect(),s=[...p1.querySelectorAll('.st-say')].map(e=>e.getBoundingClientRect());
+        return s.some(r=>r.right>q.right+1||r.left<q.left-1)||s[0].right>s[1].left-3||s[2].right>s[3].left-3};
+      let guard=0;while(guard++<10&&bad()){p1.querySelectorAll('.st-b').forEach(b=>{b.style.fontSize=(parseFloat(getComputedStyle(b).fontSize)*.94).toFixed(1)+'px'})}}
   }
   document.fonts.ready.then(()=>{fit();let lw=root.clientWidth;new ResizeObserver(()=>{const ww=root.clientWidth;if(Math.abs(ww-lw)>2){lw=ww;fit()}}).observe(root);
     setTimeout(()=>X.ready(T.name),60)});
