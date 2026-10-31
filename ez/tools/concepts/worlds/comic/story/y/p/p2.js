@@ -3,7 +3,7 @@
    the face and the P&L inside the big action burst, right way on a tilted slab, the best call in a corner burst, the last five along the foot.
    Every round so far: each round an issue cover: the move is the masthead on a green or red band, the art whole under it, the round number
    on the band's left, the company and the winner along the foot. No burst per tile, so the grid keeps its hierarchy. */
-(function(){const H=document.documentElement,P=POP,INK=P.INK;
+(function(){const H=document.documentElement,P=POP,INK=P.INK,TAKE='p2';
 function el(h){const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild}
 const ROLES=['WE BET ON ITS CALL','IN THE HUNT','IN THE HUNT','LAST PLACE'];
 const tick=s=>`<i class="pp2-t ${s==='W'?'pp2-tw':'pp2-tl'}"><svg viewBox="0 0 20 20" aria-hidden="true">${s==='W'?'<path d="M4.5 10.5l3.8 3.8L15.8 6" fill="none" stroke="#0d0b10" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 10.5l3.8 3.8L15.8 6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>':'<path d="M5.5 5.5l9 9M14.5 5.5l-9 9" fill="none" stroke="#0d0b10" stroke-width="5.4" stroke-linecap="round"/><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>'}</svg></i>`;
@@ -30,7 +30,7 @@ function chars(D){const sec=document.querySelector('.wc-chars');if(!sec)return;c
     c.querySelector('.pp2-rkb').innerHTML=P.burstSvg(sm?52:60,sm?52:60,{c1:i===0?'#ffd21f':'#ff3a6e',c2:i===0?'#fff3a0':'#ff8fb0',n:10,seed:11+i,dp:3})+P.ext('#'+(i+1),{size:sm?22:26,fill:i===0?'red':'gold',shade:i===0?'#5e0703':'#6b0626',depth:3,cls:'pp2-rk'});
     c.querySelector('.pp2-adm').innerHTML=P.ext(i===0?'GOLDEN TICKET':'SEASON 1',{font:'Bangers',size:sm?14:16,fill:i===0?'gold':'cream',shade:'#3d0a07',depth:2,sw:2.4,hl:false});
     const nf=x.m==='GROK'?['#a49eae','#3a3540','#15121a']:[P.lighten(mc,.6),mc,P.shade(mc,.7)];
-    c.querySelector('.pp2-name').innerHTML=P.ext(x.name.toUpperCase(),{size:sm?54:64,fill:nf,shade:x.m==='GROK'?'#000':P.shade(mc,.38),max:bw-14,depth:8,rot:-4});
+    c.querySelector('.pp2-name').innerHTML=P.ext(x.name.toUpperCase(),{size:sm?60:84,fill:nf,shade:x.m==='GROK'?'#000':P.shade(mc,.38),max:bw-8,depth:8,rot:-4});
     c.querySelector('.pp2-role').innerHTML=P.ext(ROLES[i],{font:'Bangers',size:sm?15:17,fill:i===0?'gold':i===3?'red':'white',shade:'#3d0a07',depth:2,sw:2.6,hl:false,max:bw*.8});
     const hb=c.querySelector('.pp2-hero'),hw=hb.clientWidth,hh=hb.clientHeight;
     c.querySelector('.pp2-hb').innerHTML=P.burstSvg(hw,hh,{c1:i===0?'#ffd21f':'#fff8e6',c2:i===0?'#ffe25a':'#fff8e6',c3:i===0?'#fff3a0':null,n:13,k:.8,seed:7+i*5,dp:7});
@@ -67,7 +67,7 @@ function depth(){const X=(sel,dp,sh,o)=>document.querySelectorAll(sel).forEach(n
   X('.pp2-mm',8,'#5a0424',{bw:3,cast:5,hl:3});X('.pp2-ms',7,'#8a5200',{bw:3,cast:4,hl:3});
   X('.pp2-c',7,'#2a0616',{bw:2.5,cast:5});X('.pp2-rw',4,'#0b2366',{bw:2,hl:2,lo:2});X('.pp2-t',3,'#3d0a07',{bw:1.5,hl:1.5,lo:2});X('.pp2-foot',3,'#2a0616',{bw:2,hl:1.5,lo:2});
   X('.pp2-bi',4,'#6e3a00',{bw:2.5,cast:3,hl:0,ha:0,la:0})}
-function go(){const D=P.data();chars(D);season(D);depth();
+function go(){H.classList.add(TAKE+'-on');const D=P.data();chars(D);season(D);depth();
   document.querySelectorAll('.wc-season canvas.sa-gc5').forEach(c=>c.remove());if(window.SA&&SA.paintG)SA.paintG('m3');
   H.classList.add('p2-on','p2-ready')}
 let w0=innerWidth;addEventListener('resize',()=>{if(innerWidth===w0)return;w0=innerWidth;clearTimeout(go.t);go.t=setTimeout(()=>{document.querySelectorAll('.pp2-band').forEach(s=>delete s.dataset.ok);go()},250)});

@@ -10,7 +10,7 @@ async function open(b,W,t,o={}){const p=await b.newPage({viewport:{width:W,heigh
   // let the page's late patches (M3 stamps, R11 stamps) land first
   const H=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<H;y+=700){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(60)}
   await p.waitForTimeout(800);
-  if(t!=='now'){await p.addStyleTag({content:rd('_pop.css')});await p.addStyleTag({content:rd(t+'.css')});await p.addScriptTag({content:rd('_pop.js')});await p.addScriptTag({content:rd(t+'.js')});
+  if(t!=='now'){if(!o.live)await p.evaluate(()=>window.__ppShot=1);await p.addStyleTag({content:rd('_pop.css')});await p.addStyleTag({content:rd(t+'.css')});await p.addScriptTag({content:rd('_pop.js')});await p.addScriptTag({content:rd(t+'.js')});
     await p.waitForFunction(t=>document.documentElement.classList.contains(t+'-ready'),t,{timeout:30000})}
   await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(500);return {p,er}}
 module.exports={open,SEL};

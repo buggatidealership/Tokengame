@@ -61,7 +61,7 @@ const winners=r=>r.win?r.win.split(' & ').filter(x=>MODELS[x]):[];
 /* company display: "Exxon Mobil (XOM)" */
 const coName=r=>`${r.co} (${r.ticker})`;
 /* count up an ext svg once in view */
-function countUp(svg,v,sign){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const fin=sign+'$'+Math.round(v).toLocaleString('en-US');setText(svg,sign+'$0');
+function countUp(svg,v,sign){if(window.__ppShot||matchMedia('(prefers-reduced-motion: reduce)').matches)return;const fin=sign+'$'+Math.round(v).toLocaleString('en-US');setText(svg,sign+'$0');
   const io=new IntersectionObserver(es=>{if(!es.some(e=>e.isIntersecting))return;io.disconnect();const t0=performance.now(),D=1100;
     const f=t=>{const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);setText(svg,k<1?sign+'$'+Math.round(v*e).toLocaleString('en-US'):fin);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)},{threshold:.4});io.observe(svg)}
 /* fonts */
@@ -71,7 +71,7 @@ function fonts(){if(!document.getElementById('pp-fonts')){const l=document.creat
 function check(sel,cardSel){const sec=document.querySelector(sel),cards=[...sec.querySelectorAll(cardSel)].filter(c=>c.offsetParent);const emo=/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(sec.innerText);
   const over=[...sec.querySelectorAll('*')].filter(n=>n.scrollWidth>n.clientWidth+1&&getComputedStyle(n).overflow!=='visible'&&n.clientWidth>0).map(n=>n.className&&n.className.baseVal!==undefined?n.className.baseVal:n.className).slice(0,6);
   /* dead space: share of each card's area covered by no content box (text, svg, img, canvas, coin), sampled on a 4px grid */
-  const dead=cards.map(c=>{c.scrollIntoView({block:'center'});const r=c.getBoundingClientRect();let tot=0,empty=0;for(let y=r.top+3;y<r.bottom-3;y+=4)for(let x=r.left+3;x<r.right-3;x+=4){tot++;const e=document.elementFromPoint(x,y);if(!e||e===c||e.classList.contains('pp-pad'))empty++}return tot?Math.round(empty/tot*100):0});
+  const dead=cards.map(c=>{c.scrollIntoView({block:'center',behavior:'instant'});const r=c.getBoundingClientRect();let tot=0,empty=0;for(let y=r.top+3;y<r.bottom-3;y+=4)for(let x=r.left+3;x<r.right-3;x+=4){tot++;const e=document.elementFromPoint(x,y);if(!e||e===c||e.classList.contains('pp-pad'))empty++}return tot?Math.round(empty/tot*100):0});
   const pale=cards.map(c=>{const bg=getComputedStyle(c).backgroundColor;const m=bg.match(/\d+/g);return m&&+m[3]!==0&&(+m[0]+ +m[1]+ +m[2])/3>235}).filter(Boolean).length;
   return {cards:cards.length,deadPct:dead,emoji:emo,overflowing:over,paleCardGrounds:pale,sw:document.documentElement.scrollWidth,vw:innerWidth}}
 window.POP={INK,G,SH,ext,setText,xbox,burst,burstSvg,star,rays,mark,coin,mcol,shade,lighten,NM,FLAG,pm,pct,data,winners,coName,countUp,fonts,check,esc};

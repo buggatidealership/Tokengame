@@ -1,6 +1,6 @@
 /* P1 · "Pop ticket" : today's layouts kept (the Season 1 ticket with its flag; the round tile with its stub), every element inside
    rebuilt in the pop cover's recipe, on bright modules (Meet the models on the cover's orange rays, Every round so far on electric blue). */
-(function(){const H=document.documentElement,P=POP,INK=P.INK;
+(function(){const H=document.documentElement,P=POP,INK=P.INK,TAKE='p1';
 const GOLD=P.G.gold,REDF=P.G.red,GRN=P.G.green;
 function el(h){const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild}
 
@@ -66,7 +66,7 @@ function depth(){const X=(sel,dp,sh,o)=>document.querySelectorAll(sel).forEach(n
   X('.pp1-c',6,'#3a0a05',{bw:2.5,cast:4});X('.pp1-cap',4,'#8a5200',{bw:2});X('.pp1-chip',3,'#3d0a07',{bw:1.5,hl:1.5,lo:2});
   X('.pp1-rw',3,'#0b2366',{bw:2,hl:1.5,lo:2});X('.pp1-best',3,'#4a0420',{bw:2,hl:1.5,lo:2});X('.pp1-t',3,'#3d0a07',{bw:1.5,hl:1.5,lo:2});
   X('.pp1-bi',5,'#071640',{bw:2.5,cast:3,hl:0,ha:0,la:0})}
-function go(){const D=P.data();chars(D);season(D);depth();
+function go(){H.classList.add(TAKE+'-on');const D=P.data();chars(D);season(D);depth();
   /* repaint the round art (the page's own M3 paint) to the new tile shape */
   document.querySelectorAll('.wc-season canvas.sa-gc5').forEach(c=>c.remove());if(window.SA&&SA.paintG)SA.paintG('m3');
   H.classList.add('p1-on','p1-ready')}
