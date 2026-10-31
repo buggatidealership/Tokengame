@@ -263,6 +263,7 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     - *Taught by:* "think about the animation production... every single video we do... unfolding from within the environment... every element has been thought through and crafted", 30 Oct.
 
 67. **A comic is its art, not its chrome.** Flat fills, thick even outlines, hard offset shadows and a comic font are the costume of a comic; on their own they read as a child's layout. A real comic page is rendered: forms modelled by light (key, fill, rim), volume, materials, perspective and depth, with the ink and halftone as a layer on top (the Spider-Verse recipe: 3D realism under a comic layer). Before calling something "comic", ask where its light comes from and what it is made of; if the answer is "a CSS box", it is not there yet.
+68. **A reference is a source of elements, never an asset to paste.** When the owner shows a picture or a film as the look, take it apart into what it is made of (where the light falls, which materials, how deep the set is, which marks a viewer remembers) and design the module out of those elements, from scratch, with its own data. Pasting the reference's frames into the page answers "make it look like this" with "here it is again" and designs nothing.
     - *Taught by:* "why isn't there... 3D realism, but with a layer of American comic... it feels like... a child designed the page... where's the modeling", 31 Oct, after all ten quick-fire takes were rejected.
 
 ## How this skill learns (owner, 2026-10-30)
