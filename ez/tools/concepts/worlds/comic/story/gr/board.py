@@ -5,7 +5,7 @@ D,W,OUT=sys.argv[1],sys.argv[2],sys.argv[3]
 T=[('now','Today'),('g1','G1 · Fight card: the dressing-room mirror'),('g2','G2 · Interior page: panels and captions'),('g3','G3 · The backstage corridor: four doors')]
 F=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',30);f2=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',22)
 ims=[(t,Image.open(f'{D}/{W}-{k}.png').convert('RGB')) for k,t in T]
-note='Source film is 854x480: art is upscaled about 1.7x on a phone and 2.9x on desktop at 2x pixel density, so it looks soft. A full-resolution re-export would fix it.'
+note='Source film is 854x480. At 2x pixel density the crops are upscaled about 1.2 to 1.5x on a phone and up to 2x on desktop (G2 leader panel, G3 doorways), so they look soft there. A full-resolution re-export without the founder plates would fix both.'
 if int(W)<600:
   B=Image.new('RGB',(sum(i.width for _,i in ims)+40*(len(ims)+1),max(i.height for _,i in ims)+150),'#1b1820');d=ImageDraw.Draw(B);x=40
   for t,i in ims:
