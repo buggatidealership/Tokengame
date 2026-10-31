@@ -38,10 +38,10 @@ function lw(txt,o,extra){const S=o.size,{tot}=X.layout(txt,o),key=o.key!=null?o.
   const at={x:pad+tot/2+(w-w0)/2,y:pad+S*.95+(h-h0)/2};const draw=t=>{g.clearRect(0,0,w,h);if(extra)extra(g,at.x,at.y-S*.33,w,h);word(g,t,Object.assign({},o,at))};draw(txt);
   if(o.cls)c.classList.add(...o.cls.split(' '));const r={w,h,el:c,at,redraw:draw};if(!o.live)freeze(r);return r}
 /* several coloured parts on one baseline */
-function multi(parts,o){let x=0;const L=parts.map(p=>{const q=Object.assign({},o,p.o||{},{size:o.size});const w=X.layout(p.t,q).tot;const r={p,q,x,w};x+=w*(q.track||.94)+(p.gap||0);return r});
+function multi(parts,o){let x=0;const L=parts.map(p=>{const q=Object.assign({},o,p.o||{},{size:o.size});const w=X.layout(p.t.trim(),q).tot;const r={p,q,x,w};x+=w+(p.gap!=null?p.gap:o.size*(/\s$/.test(p.t)?.3:.08));return r});
   const S0=o.size,pad=S0*.12+4,dp=S0*.17+3,rot=Math.abs(o.rot||0)*Math.PI/180,w0=x+pad*2+dp,h0=S0*1.2+pad*2+dp,w=w0+h0*Math.sin(rot),h=h0+w0*Math.sin(rot),{c,g}=mk(w,h);
   const ox=(w-w0)/2+pad,oy=(h-h0)/2+pad+S0*.95;g.save();g.translate(w/2,h/2);g.rotate((o.rot||0)*Math.PI/180);g.translate(-w/2,-h/2);
-  L.forEach(r=>word(g,r.p.t,Object.assign({},r.q,{x:ox+r.x+r.w*(r.q.track||.94)/2,y:oy,rot:0})));g.restore();const rr={w,h,el:c};freeze(rr);return rr}
+  L.forEach(r=>word(g,r.p.t.trim(),Object.assign({},r.q,{x:ox+r.x+r.w/2,y:oy,rot:0})));g.restore();const rr={w,h,el:c};freeze(rr);return rr}
 
 /* ---- inner lettering in the take's way (CBT.IL's recipes, painted) ---- */
 let SPK=null;function speck(){if(SPK)return SPK;const c=document.createElement('canvas');c.width=c.height=96;const g=c.getContext('2d'),r=X.rng(31);

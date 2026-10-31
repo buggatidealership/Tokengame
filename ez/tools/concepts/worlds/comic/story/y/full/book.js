@@ -73,7 +73,7 @@ function cover(){const root=D.querySelector('.cvx.c2');if(!root)return;const pg=
     const room=W-(dk?bw+10:bw+4);
     const s2=X.fitw('EARNINGS',{size:dk?76:62,seed:5,grow:.1},W-4);let s1=s2*.86;
     for(let i=0;i<14;i++){const w1=X.layout('4 AIs',{size:s1*.6,sizes:[1,1,1,1,.74]}).tot+12+X.layout('TRADE',{size:s1,grow:.08}).tot+s1*.34;if(w1<=room)break;s1*=.95}
-    const a={size:s1*.6,fill:'white',seed:3,jr:5,jb:.05,sizes:[1,1,1,1,.74],depth:3,dot:'#9ab'},t={size:s1,fill:'yellow',seed:8,jr:6,jb:.06,grow:.08,depth:Math.round(s1*.11),dot:'#ff6a0a',dotTo:'br'};
+    const a={size:s1*.6,fill:'white',seed:3,jr:5,jb:.05,sizes:[1,1,1,1,.74],depth:3,dot:'#ff8a70',dotTo:'br'},t={size:s1,fill:'yellow',seed:8,jr:6,jb:.06,grow:.08,depth:Math.round(s1*.11),dot:'#ff6a0a',dotTo:'br'};
     const wa=X.layout('4 AIs',a).tot,wt=X.layout('TRADE',t).tot,we=X.layout('EARNINGS',{size:s2,seed:5,grow:.1}).tot;
     const y1=s1*1.0+6+(dk?0:Math.max(0,bh-s1*1.05-10)),y2=y1+s2*.98,hh=y2+s2*.34+8;
     const r=CV.paint(W,hh,g=>{CV.word(g,'4 AIs',Object.assign({x:8+wa/2,y:y1,rot:-4},a));CV.word(g,'TRADE',Object.assign({x:8+wa+12+wt/2,y:y1,rot:-4},t));
@@ -88,11 +88,14 @@ function cover(){const root=D.querySelector('.cvx.c2');if(!root)return;const pg=
   const fb=root.querySelector('.c2-file b');if(fb){put(fb,IL('No. '+window.ROUNDS.length,{size:dk?24:17*kk,fill:'white',rot:-3}))}
   /* the golden ticket's name and P&L: the holo ticket keeps its foil, its words lettered */
   root.querySelectorAll('.cvx-tkt > svg.pp-ext, .cvx-tkp > svg.pp-ext').forEach(sv=>{const t=(sv.querySelector('text')||sv).textContent.trim(),pnl=!!sv.closest('.cvx-tkp');const h=parseFloat(sv.getAttribute('height'))||20,wd=parseFloat(sv.getAttribute('width'))||60;sv.replaceWith(IL(t,{size:fitIL(t,h*(pnl?.56:.66),wd+2),fill:pnl?'green':'white'}).el)});
+  /* today's facts kept: the loop's own wording (SH.STEP) and the next close in the issue strip's price box (SH.closeWords) */
+  if(window.SH){root.querySelectorAll('.c2-cap > span').forEach((sp,i)=>{if(SH.STEP[i])sp.innerHTML=SH.STEP[i]});
+    const iss=root.querySelector('.c2-iss');if(iss&&!iss.querySelector('.cb-pr')){const cw=SH.closeWords();iss.insertAdjacentHTML('beforeend',`<span class="cb-pr" aria-label="${S.esc(cw.a+': '+cw.b)}"><small>${S.esc(cw.a)}</small><b>${S.esc(cw.b)}</b></span>`)}}
   /* small elements: the issue strip, step captions and their numbers, the call pills, pass and fail, the logo ring, the film's tag, the hand-off */
   if(!off('cvs'))root.querySelectorAll('.c2-cap').forEach((c,i)=>{skin(c,{pal:'yellow',drop:0,ow:0,key:0,band:true,seed:40+i});const b=c.querySelector(':scope > b');skin(b,{pal:'red',kind:'circle',drop:2,ow:2,key:1,seed:50+i,dots:false})});
   root.querySelectorAll('.c2-b').forEach((b,i)=>skin(b,{pal:b.classList.contains('c2-bu')?'green':'red',kind:'pill',drop:2.5,ow:2.4,seed:60+i}));
   root.querySelectorAll('.cvx-pf').forEach((b,i)=>skin(b,{pal:b.classList.contains('cvx-pass')?'green':'red',drop:2,ow:2,key:1,seed:70+i,dots:false}));
-  skin(root.querySelector('.c2-iss'),{pal:'black',drop:3,ow:2.2,key:1,seed:81,dots:false});
+  skin(root.querySelector('.c2-iss'),{pal:'black',drop:3,ow:2.2,key:1,seed:81,dots:false});skin(root.querySelector('.cb-pr'),{pal:'red',drop:2,ow:2,key:1,seed:86,dots:false});
   skin(root.querySelector('.c2-lg'),{pal:'white',kind:'circle',drop:3,ow:3,key:1.4,seed:82});
   skin(root.querySelector('.c2-fl'),{pal:'yellow',drop:3,ow:2.6,seed:83});
   root.querySelectorAll('.cvx-nx').forEach((b,i)=>skin(b,{pal:'yellow',drop:4,ow:2.8,seed:84+i}));
@@ -110,7 +113,7 @@ function cover(){const root=D.querySelector('.cvx.c2');if(!root)return;const pg=
   const ra=root.querySelector('.c2-ra'),rb=root.querySelector('.c2-rb'),mh=root.querySelector('.c2-mh');let ov='';const bits=[];
   const bit=(x,y,w,h,inner)=>bits.push(`<i class="cb-bit" aria-hidden="true" style="left:${f1(x-w/2)}px;top:${f1(y-h/2)}px">${X.svg(w,h,`<g transform="translate(${f1(w/2-x)} ${f1(h/2-y)})">${inner}</g>`)}</i>`);
   if(ra&&rb&&mh){const A=R(ra),B=R(rb),M=R(mh),w=A.w;
-    const s1=dk?15:12,s2=dk?13:10,s3=dk?11:8;bit(A.x+.64*w,A.y-4,s1*2+8,s1*2+8,X.star(A.x+.64*w,A.y-4,s1,{rot:-10}));bit(A.x+2,A.y+A.h*.52,s2*2+8,s2*2+8,X.star(A.x+2,A.y+A.h*.52,s2,{rot:12}));bit(A.x+w-2,B.y-4,s3*2+8,s3*2+8,X.star(A.x+w-2,B.y-4,s3,{rot:-20}));
+    const s1=dk?15:12,s2=dk?13:10,s3=dk?11:8;bit(A.x+.64*w,A.y-4,s1*2+8,s1*2+8,X.star(A.x+.64*w,A.y-4,s1,{rot:-10}));bit(A.x+s2+2,A.y+A.h*.52,s2*2+8,s2*2+8,X.star(A.x+s2+2,A.y+A.h*.52,s2,{rot:12}));bit(A.x+w-2,B.y-4,s3*2+8,s3*2+8,X.star(A.x+w-2,B.y-4,s3,{rot:-20}));
     const k1=dk?1:.78,k2=dk?.9:.7;bit(A.x+.585*w+8*k1,A.y+A.h*.42+20*k1,40,60,X.bolt(A.x+.585*w,A.y+A.h*.42,k1,14));bit(M.x+M.w-24+8*k2,M.y+M.h-30+20*k2,40,60,X.bolt(M.x+M.w-24,M.y+M.h-30,k2,-24));
     const mine=root.querySelector('.c2-mine');if(mine){const r=IL('MINE!',{size:dk?32:24*kk,fill:'gold',rot:-9,jr:7,jb:.07});
       r.el.classList.add('cb-bit');r.el.style.left=f1(B.x+.03*w)+'px';r.el.style.top=f1(B.y+B.h-r.h*.6)+'px';var mineEl=r.el}}
@@ -237,7 +240,7 @@ function splash(){const sec=D.querySelector('#wc-book > .wc-splash');if(!sec)ret
   const cp=sec.querySelector('.wc-sp-cap');if(cp){cp.style.boxShadow='none';cp.style.borderColor='transparent';cp.style.background='transparent';skin(cp,{pal:'yellow',drop:4,ow:2.8,seed:47})}
   /* the panel: a tear across its top (the big question tears in), purple with ink lines round the title */
   const tt=sec.querySelector('.cb-ttl .cb-art'),tr=tt?rel(tt,sec):{x:0,y:0,w:200,h:120};
-  const nb=sec.nextElementSibling&&sec.nextElementSibling.classList.contains('cb-gut')?sec.nextElementSibling.nextElementSibling:sec.nextElementSibling,slant=nb&&nb.classList.contains('wc-bet');
+  const nb=sib(sec,1),slant=!!nb&&nb.classList.contains('wc-bet');
   ground(sec,(W,Hh)=>{const rg=X.ragged(W,77,4.5,6).map(([x,y])=>[x,10+y]),sl=slant?SL(W):0;const poly=[...rg,[W,Hh-sl],[0,Hh]];
     return {c:GR.purple,cx:tr.x+tr.w/2,cy:tr.y+tr.h/2,gr:Math.max(W,Hh*.5),r0:tr.h*.5,r1:Math.max(W,Hh*.8),seed:51,sp:8,n:32,bw:8,poly,holes:holesOf(sec,'.wc10-ch,.wc-cn'),
       speed:{r0:tr.h*.66,n:36,l0:14,l1:80,w0:1,w1:4.4,seed:52,op:.6},
@@ -245,6 +248,8 @@ function splash(){const sec=D.querySelector('#wc-book > .wc-splash');if(!sec)ret
       extra:`<path d="M${rg.map(p=>f1(p[0])+' '+f1(p[1]+3)).join('L')}" fill="none" stroke="#fffdf6" stroke-width="4" stroke-opacity=".9"/><path d="M${rg.map(p=>f1(p[0])+' '+f1(p[1]+5.5)).join('L')}" fill="none" stroke="${INK}" stroke-width=".8" stroke-opacity=".5"/>`,
       clip:polyPx([[-60,rg[0][1]],...rg,[W+60,rg[rg.length-1][1]],[W+60,Hh-sl-sl*60/W],[-60,Hh+sl*60/W]])}})}
 const SL=W=>Math.min(26,W*.06);
+/* the next or previous section, past the cuts and the page's hidden beats */
+const sib=(el,d)=>{let n=el;do{n=d>0?n.nextElementSibling:n.previousElementSibling}while(n&&n.tagName!=='SECTION');return n};
 /* ================= the bet ================= */
 function bet(){const sec=D.querySelector('#wc-book > .wc-bet');if(!sec)return;const dk=desk(),W=sec.clientWidth-24;
   const h2=sec.querySelector(':scope > h2.wc-h2');if(h2){h2.querySelectorAll('.cb-ttl').forEach(n=>n.remove());
@@ -258,7 +263,7 @@ function bet(){const sec=D.querySelector('#wc-book > .wc-bet');if(!sec)return;co
   sec.querySelectorAll('.wc-bet-l .wc-cap').forEach((c,i)=>{c.style.boxShadow='none';c.style.borderColor='transparent';c.style.background='transparent';skin(c,{pal:'yellow',drop:4,ow:2.6,seed:65+i})});
   const tbc=sec.querySelector('.wc-tbc');if(tbc){tbc.classList.add('cb-brk');tbc.style.setProperty('box-shadow','none','important');tbc.style.setProperty('background','transparent','important');tbc.style.setProperty('border-color','transparent','important');skin(tbc,{pal:'yellow',drop:4,ow:2.8,seed:69})}
   const tr=sec.querySelector('.wc-chipw')?rel(sec.querySelector('.wc-chipw'),sec):{x:W/2,y:200,w:10,h:10};
-  const pv=sec.previousElementSibling&&sec.previousElementSibling.classList.contains('cb-gut')?sec.previousElementSibling.previousElementSibling:sec.previousElementSibling,slant=pv&&pv.classList.contains('wc-splash');
+  const pv=sib(sec,-1),slant=!!pv&&pv.classList.contains('wc-splash');
   ground(sec,(W,Hh)=>{const sl=slant?SL(W):0;const poly=[[0,sl],[W,0],[W,Hh],[0,Hh]];sec.style.setProperty('margin-top',(slant?10-sl-8:8)+'px','important');
     return {c:GR.nv,cx:tr.x+tr.w/2,cy:tr.y+tr.h/2,gr:Math.max(W,Hh*.6),r0:Math.min(tr.w,tr.h)*.6,r1:Math.max(W,Hh),seed:71,sp:8,n:30,bw:8,poly,holes:holesOf(sec,'.wc-chipw,.wc-cap'),
       clip:polyPx([[-60,sl+sl*60/W],[W+60,-sl*60/W],[W+60,Hh+80],[-60,Hh+80]])}})}

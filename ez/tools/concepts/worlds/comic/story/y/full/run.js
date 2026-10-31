@@ -1,7 +1,7 @@
 // node run.js <out dir> <modes now,full> [widths 390,1280,320] [dpr 2]: the whole X3+ Overview, today or as one comic book (round FULL). Port 8930.
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');const fs=require('fs');
 const OUT=process.argv[2],MS=(process.argv[3]||'now,full').split(','),WS=(process.argv[4]||'390').split(',').map(Number),DPR=+(process.argv[5]||2);
-if(OUT)fs.mkdirSync(OUT,{recursive:true});const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
+const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
 async function open(b,W,mode,o={}){const H=o.h||(W<600?844:1000);const p=await b.newPage({viewport:{width:W,height:H},deviceScaleFactor:o.dpr||DPR,reducedMotion:o.rm?'reduce':'no-preference'});await FONTS(p);const er=[];
   p.on('pageerror',e=>er.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource/.test(m.text()))er.push(m.text())});
   await p.goto('http://localhost:8930/v47-live-x3plus.html',{waitUntil:'load'});
@@ -23,7 +23,7 @@ async function fin(p,er,o){await p.evaluate(()=>document.fonts.ready);
 async function checks(p){return p.evaluate(()=>{const R=e=>{const b=e.getBoundingClientRect();return {x:b.left+scrollX,y:b.top+scrollY,w:b.width,h:b.height}};
   const ix=(a,b)=>Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
   const vis=e=>{const s=getComputedStyle(e);return s.display!=='none'&&s.visibility!=='hidden'&&e.getClientRects().length};
-  const prot=[...document.querySelectorAll('#wc-book .wc-film-slot video,#wc-book .x2p-vt,#wc-book img,#wc-book .fb-port,#wc-book .pp-coin,#wc-book .wc-face')].filter(vis).map(e=>({e,r:R(e)})).filter(q=>q.r.w>4&&q.r.h>4);
+  const prot=[...document.querySelectorAll('#wc-book .wc-film-slot video,#wc-book .x2p-vt,#wc-book img:not(.cb-cv),#wc-book .fb-port,#wc-book .pp-coin,#wc-book .wc-face')].filter(vis).map(e=>({e,r:R(e)})).filter(q=>q.r.w>4&&q.r.h>4);
   const brk=[...document.querySelectorAll('.cb-brk')].filter(vis);const hits=[];
   for(const b of brk){const rb=R(b);for(const q of prot){if(b.contains(q.e)||q.e.contains(b))continue;const a=ix(rb,q.r);if(a>Math.min(q.r.w*q.r.h,rb.w*rb.h)*.04)hits.push((b.className.baseVal??b.className).slice(0,30)+' x '+((q.e.className.baseVal??q.e.className)||q.e.tagName).toString().slice(0,30)+' '+Math.round(a))}}
   let small=0;const ex=[];const neg=[...document.querySelectorAll('svg')].filter(s=>/^-/.test(s.getAttribute('width')||'')||/^-/.test(s.getAttribute('height')||'')).map(s=>(s.parentElement.className||s.parentElement.tagName)+'').slice(0,4);document.querySelectorAll('#wc-book *').forEach(e=>{if(!vis(e)||e.closest('[aria-hidden="true"]')&&!e.closest('.cb-read'))return;const t=[...e.childNodes].filter(n=>n.nodeType===3&&n.textContent.trim()).length;if(!t)return;const fs=parseFloat(getComputedStyle(e).fontSize);if(fs<10.5&&!e.closest('.pp-sr,.cb-sr,.x2p-vt')){small++;if(ex.length<6)ex.push(e.tagName+'.'+e.className+' '+fs+' '+e.textContent.trim().slice(0,20))}});
@@ -39,7 +39,7 @@ async function shoot(p,out){const cp=require('child_process'),vh=p.viewportSize(
   fs.writeFileSync(dir+'/list.json',JSON.stringify({L,TH,dpr:await p.evaluate(()=>devicePixelRatio)}));
   cp.execFileSync('/usr/bin/python3',[__dirname+'/stitch.py',dir+'/list.json',out]);fs.rmSync(dir,{recursive:true,force:true})}
 module.exports={open,checks,shoot};
-if(require.main===module)(async()=>{const b=await chromium.launch({args:['--disable-dev-shm-usage']});const R=[];
+if(require.main===module)(async()=>{fs.mkdirSync(OUT,{recursive:true});const b=await chromium.launch({args:['--disable-dev-shm-usage']});const R=[];
  for(const W of WS)for(const m of MS){const {p,er}=await open(b,W,m);
   await p.evaluate(()=>{document.querySelectorAll('body *').forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed')x.style.visibility='hidden'})});
   await shoot(p,`${OUT}/${m}-${W}.png`);
