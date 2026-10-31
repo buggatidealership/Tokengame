@@ -36,12 +36,12 @@ function word(g,txt,o){const font=o.font||'Luckiest Guy',S=o.size,P=Array.isArra
 function lw(txt,o,extra){const S=o.size,{tot}=X.layout(txt,o),key=o.key!=null?o.key:S*.05,out=o.out!=null?o.out:S*.07,dp=(o.depth!=null?o.depth:Math.max(2,Math.round(S*.1)))+(o.drop!=null?o.drop:Math.max(2,S*.07)),pad=key+out+2+(o.pad||0);
   const rot=Math.abs(o.rot||0)*Math.PI/180,w0=tot+pad*2+dp,h0=S*1.2+pad*2+dp,w=w0+h0*Math.sin(rot)*.9,h=h0+w0*Math.sin(rot)*.9;const {c,g}=mk(w,h);
   const at={x:pad+tot/2+(w-w0)/2,y:pad+S*.95+(h-h0)/2};const draw=t=>{g.clearRect(0,0,w,h);if(extra)extra(g,at.x,at.y-S*.33,w,h);word(g,t,Object.assign({},o,at))};draw(txt);
-  if(o.cls)c.classList.add(...o.cls.split(' '));return {w,h,el:c,at,redraw:draw}}
+  if(o.cls)c.classList.add(...o.cls.split(' '));const r={w,h,el:c,at,redraw:draw};if(!o.live)freeze(r);return r}
 /* several coloured parts on one baseline */
 function multi(parts,o){let x=0;const L=parts.map(p=>{const q=Object.assign({},o,p.o||{},{size:o.size});const w=X.layout(p.t,q).tot;const r={p,q,x,w};x+=w*(q.track||.94)+(p.gap||0);return r});
   const S0=o.size,pad=S0*.12+4,dp=S0*.17+3,rot=Math.abs(o.rot||0)*Math.PI/180,w0=x+pad*2+dp,h0=S0*1.2+pad*2+dp,w=w0+h0*Math.sin(rot),h=h0+w0*Math.sin(rot),{c,g}=mk(w,h);
   const ox=(w-w0)/2+pad,oy=(h-h0)/2+pad+S0*.95;g.save();g.translate(w/2,h/2);g.rotate((o.rot||0)*Math.PI/180);g.translate(-w/2,-h/2);
-  L.forEach(r=>word(g,r.p.t,Object.assign({},r.q,{x:ox+r.x+r.w*(r.q.track||.94)/2,y:oy,rot:0})));g.restore();return {w,h,el:c}}
+  L.forEach(r=>word(g,r.p.t,Object.assign({},r.q,{x:ox+r.x+r.w*(r.q.track||.94)/2,y:oy,rot:0})));g.restore();const rr={w,h,el:c};freeze(rr);return rr}
 
 /* ---- inner lettering in the take's way (CBT.IL's recipes, painted) ---- */
 let SPK=null;function speck(){if(SPK)return SPK;const c=document.createElement('canvas');c.width=c.height=96;const g=c.getContext('2d'),r=X.rng(31);
@@ -65,11 +65,17 @@ function il(txt,o){const T=window.CBT,TAKE=T.TAKE,FONT={ink:'Bangers',cut:'Lucki
     else{pass(dr,dr,(z,ch,s,b)=>{z.globalAlpha=.85;z.fillStyle=p[3];z.fillText(ch,0,b)});pass(S*.05,-S*.04,(z,ch,s,b)=>{z.fillStyle=ink;z.fillText(ch,0,b)});
       pass(0,0,(z,ch,s,b)=>{z.strokeStyle=INK;z.lineWidth=Math.max(1,S*.055);z.strokeText(ch,0,b)})}
     g.restore()};
-  draw(txt);if(o.cls)c.classList.add(...o.cls.split(' '));return {w,h,el:c,redraw:draw}}
+  draw(txt);if(o.cls)c.classList.add(...o.cls.split(' '));const r={w,h,el:c,redraw:draw};if(!o.live)freeze(r);return r}
+/* once painted, a canvas becomes a plain image: a 2D canvas is a composited layer of its own, and many of them made every frame's
+   commit to the compositor heavy (measured: Commit 1.5 s -> 3.2 s over a 9 s scroll at 4x CPU). The PNG is encoded off the main thread. */
+function freeze(r){if(!r||!r.el||r.el.tagName!=='CANVAS'||r._fz)return;r._fz=1;const c=r.el;
+  const go=()=>c.toBlob(b=>{if(!b||!c.isConnected&&!c._cbHost)return;const im=new Image();im.src=URL.createObjectURL(b);im.className=c.className;im.style.cssText=c.style.cssText;im.alt='';im.setAttribute('aria-hidden','true');im.decoding='async';
+    im.decode().then(()=>{if(c.parentNode){c.replaceWith(im);r.el=im}},()=>{})},'image/png');
+  (window.requestIdleCallback||setTimeout)(go)}
 /* a blank canvas of w x h painted by fn(g) */
-function paint(w,h,fn){const {c,g}=mk(w,h);fn(g);return {w,h,el:c}}
+function paint(w,h,fn){const {c,g}=mk(w,h);fn(g);const r={w,h,el:c};freeze(r);return r}
 /* the drawn width of inner lettering (no canvas) */
 function ilW(txt,o){const T=window.CBT,FONT={ink:'Bangers',cut:'Luckiest Guy',press:'Anton',screen:'Bangers'},font=o.font||FONT[T.TAKE],S=o.size;const {tot}=X.layout(txt,{font,size:S,jr:0,jb:0,js:0,seed:1,track:font==='Anton'?.98:.96});return tot+Math.max(3,S*.18)*2+Math.max(1.5,S*.08)}
 /* put a lettering result into a host element */
 const put=(host,r)=>{if(!host)return r;host.replaceChildren(r.el);return r};
-return {lw,multi,il,put,word,paint,ilW}})();
+return {lw,multi,il,put,word,paint,ilW,freeze}})();

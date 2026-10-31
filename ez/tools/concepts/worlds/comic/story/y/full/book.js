@@ -143,7 +143,7 @@ function chars(){const sec=D.querySelector('#wc-book .wc-chars');if(!sec||!sec.q
     const ad=c.querySelector('.pp1-adm');if(ad)put(ad,IL(i===0?'GOLDEN TICKET':'SEASON 1',{size:sm?13:15,fill:i===0?'gold':'cream',jr:1,jb:.01}));
     const nmax=stack?top-6:Math.min(top*.56,top-10);
     const nmS=fitIL(x.name.toUpperCase(),stack?50:(sm?36:42),nmax);put(c.querySelector('.pp1-name'),IL(x.name.toUpperCase(),{size:nmS,fill:x.m}));
-    const up=x.pnl>=0,plv=c.querySelector('.pp1-plv');const pl=IL(pm(x.pnl),{size:fitIL(pm(x.pnl),sm?40:46,cw-26),fill:up?'green':'red'});
+    const up=x.pnl>=0,plv=c.querySelector('.pp1-plv');const pl=IL(pm(x.pnl),{size:fitIL(pm(x.pnl),sm?40:46,cw-26),fill:up?'green':'red',live:1});
     put(plv,pl);odometer(pl,pm(x.pnl),'cb-'+x.m);
     put(c.querySelector('.pp1-rwv'),IL(`${x.W}/${x.tot}`,{size:sm?25:29,fill:'yellow'}));
     const be=c.querySelector('.pp1-best'),bs=be&&be.querySelector('svg.pp-ext,canvas.cb-bv');if(bs){const b=x.best,bu=b.v>=0;bs.replaceWith(IL(pm(b.v),{size:fitIL(pm(b.v),sm?21:25,(be.clientWidth||120)-16),fill:bu?'green':'red',cls:'cb-bv'}).el)}
@@ -171,10 +171,10 @@ function perf(c){const st=c.querySelector('.pp1-stub');if(!st||!st.offsetWidth)r
   st.style.setProperty('border-right-color','transparent','important')}
 /* the P&L counts up once in view, digit by digit like a rolling counter (the money accruing); the layout never moves */
 const counted={};
-function odometer(r,fin,key){if(!r||!r.el||RM||counted[key]||!window.IntersectionObserver)return;const n=fin.length;
+function odometer(r,fin,key){if(!r||!r.el||RM||counted[key]||!window.IntersectionObserver){CV.freeze(r);return}const n=fin.length;
   const io=new IntersectionObserver(es=>{if(!es.some(e=>e.isIntersecting))return;io.disconnect();counted[key]=1;const t0=performance.now(),T=1200;let lastF=-1;
     const f=t=>{const k=Math.min(1,(t-t0)/T),fr=Math.floor(t/45);if(fr!==lastF&&k<1){lastF=fr;r.redraw([...fin].map((g,j)=>/\d/.test(g)&&k<(.25+.7*j/n)?String((fr+j)%10):g).join(''))}
-      if(k<1&&r.el.isConnected)requestAnimationFrame(f);else r.redraw(fin)};requestAnimationFrame(f)},{threshold:.5});io.observe(r.el)}
+      if(k<1&&r.el.isConnected)requestAnimationFrame(f);else{r.redraw(fin);CV.freeze(r)}};requestAnimationFrame(f)},{threshold:.5});io.observe(r.el)}
 
 /* ================= Every round so far ================= */
 function season(){const sec=D.querySelector('#wc-book .wc-season');if(!sec||!sec.querySelector('.pp1-stb'))return;const dk=desk(),W=sec.clientWidth-24;
