@@ -85,10 +85,14 @@ function tile(a){if(a.querySelector('.hr-cov')||!a.classList.contains('pp1-bi'))
     `<span class="hr-mv"><b>${pct(r.a)}</b></span>`+
     `<span class="hr-nm"><b>${esc(r.co)}</b><em>${W.length?W.map(nm).join(' & ')+(W.length>1?' tie':' won'):'Nobody won'}</em></span></span>`);
   const im=a.querySelector('.hr-mast img');if(im)tileKey(im,a);return true}
-/* a logo drawn on its own dark tile (SpaceX, Samsung...): the roundel takes the tile's colour and the logo an oval cut */
+/* a logo drawn on its own tile (Samsung's black, Shell's yellow, Volkswagen's white): the roundel takes the tile's colour and the
+   logo an oval cut, so the tile's square corners never show on the roundel. A tile = the four corners opaque and one colour */
 const KEY={};
 function tileKey(im,host){const go=()=>{const k=im.src;let v=KEY[k];
-  if(v===undefined){try{const c=document.createElement('canvas');c.width=c.height=8;const x=c.getContext('2d');x.drawImage(im,0,0,8,8);const d=x.getImageData(0,0,1,1).data;v=d[3]>200&&Math.max(d[0],d[1],d[2])<70?`rgb(${d[0]},${d[1]},${d[2]})`:null}catch(e){v=null}KEY[k]=v}
+  if(v===undefined){v=null;try{const N=32,c=document.createElement('canvas');c.width=c.height=N;const x=c.getContext('2d');x.drawImage(im,0,0,N,N);
+    const px=[[2,2],[N-3,2],[2,N-3],[N-3,N-3]].map(([a,b])=>x.getImageData(a,b,1,1).data);
+    if(px.every(d=>d[3]>220)&&px.every(d=>Math.max(Math.abs(d[0]-px[0][0]),Math.abs(d[1]-px[0][1]),Math.abs(d[2]-px[0][2]))<40)){
+      const m=i=>Math.round(px.reduce((s,d)=>s+d[i],0)/4);v=`rgb(${m(0)},${m(1)},${m(2)})`}}catch(e){v=null}KEY[k]=v}
   if(v){host.classList.add('hr-tl');host.style.setProperty('--tg',v)}};im.complete&&im.naturalWidth?go():im.addEventListener('load',go,{once:true})}
 
 /* ---------------- keep it built ---------------- */
