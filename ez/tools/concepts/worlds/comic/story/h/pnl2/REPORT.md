@@ -148,8 +148,7 @@ mark is still on the glass), with D1's wide room for desktop. That pairing is on
   carries the rows for screen readers.
 
 ## Cost on a slow phone
-4x slower CPU, 390x844, medians of 3 runs, `perf.js`. See "Perf" at the end. The run was still going when this was written; the
-figures are appended below.
+4x slower CPU, 390x844, medians of 3 runs, `perf.js`; the table is under "Perf" at the end.
 
 For a live build:
 - Draw each window's marks once to a canvas or bitmap, and lay that image on the quad. A filtered SVG under a `matrix3d` re-rasterises
@@ -200,3 +199,14 @@ Code:
 - `d1.js`, `d2.js`, `e.js` (with the copper material), `f.js`: the takes, each mostly measured corners and layout fractions.
 
 ## Perf
+| What (4x slower CPU, 390x844, medians of 3) | Today (live section) | D1 (pick) |
+|---|---|---|
+| Scroll in and lines draw in, 3 s: fps / main-thread time | (no draw-in) | 48.3 fps / 2.24 s |
+| A window switch (lines redraw), 3 s | (no windows) | 54.8 fps / 1.21 s |
+| Sitting on the section, 6 s | 60.1 fps / 1.76 s | 60.1 fps / 0.64 s |
+
+How to read it:
+- The main-thread figures include the rest of the page's own work, so compare the columns, not the absolute values.
+- Sitting still, D1 costs less than today's section, which keeps drawing its own chart and coin.
+- The draw-in holds 48 fps, better than pnl's take A (20 fps): the scene is two images and one transformed SVG.
+- The filtered draw-in is still the heaviest moment. The bitmap or clip-path approach above would remove most of it.
