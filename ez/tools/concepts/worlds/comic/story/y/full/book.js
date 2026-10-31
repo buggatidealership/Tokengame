@@ -21,7 +21,7 @@ const NM={GPT:'GPT',KIMI:'KIMI',CLAUDE:'CLAUDE',GROK:'GROK'};
 const pm=v=>(v<0?'−':'+')+'$'+Math.round(Math.abs(v)).toLocaleString('en-US');
 
 /* ---------- lettering ---------- */
-const LW=(t,o,ex)=>X.lw(t,Object.assign({jr:5,jb:.05,js:.05,seed:hs(t)},o),ex);
+const LW=(t,o,ex)=>off('letter')?{w:10,h:10,svg:'',inner:''}:X.lw(t,Object.assign({jr:5,jb:.05,js:.05,seed:hs(t)},o),ex);
 /* several coloured parts on one baseline (for "...BE EZ." with the logo's green E and red Z) */
 function multi(parts,o){let x=0;const L=parts.map(p=>{const q=Object.assign({},o,p.o||{},{size:o.size,anchor:'start',seed:hs(p.t)});const w=X.layout(p.t,q).tot;const r={p,q,x};x+=w*(q.track||.94)+(p.gap||0);return r});
   const S0=o.size,pad=S0*.12+4,dp=S0*.17+3,rot=Math.abs(o.rot||0)*Math.PI/180,w0=x+pad*2+dp,h0=S0*1.2+pad*2+dp,w=w0+h0*Math.sin(rot),h=h0+w0*Math.sin(rot);
@@ -31,7 +31,7 @@ function multi(parts,o){let x=0;const L=parts.map(p=>{const q=Object.assign({},o
 /* ---------- skins: a handmade box behind an element's own text, in the take's way (takes.js) ---------- */
 const skinURI=(w,h,o)=>CBT.skinURI(w,h,o);
 /* inner lettering: calmer than a headline, never extruded (takes.js) */
-const IL=(t,o)=>CBT.IL(t,Object.assign({seed:hs(t)},o));
+const IL=(t,o)=>off('il')?{w:10,h:10,svg:'',inner:''}:CBT.IL(t,Object.assign({seed:hs(t)},o));
 /* the largest inner-lettering size (<= s) that fits maxW */
 function fitIL(t,s,maxW){for(let i=0;i<16;i++){if(IL(t,{size:s}).w<=maxW)return s;s*=.94}return s}
 /* put a skin on an element: its own border, background and shadow go; a pseudo-element carries the drawing behind the text */
@@ -54,7 +54,7 @@ const GR={orange:['#ffc066','#ff7a12','#e0480a','rgba(255,232,170,.2)','#b52d00'
   p2:['#fffbc0','#ffe02a','#ffa400','rgba(255,255,225,.35)','#ff8a00'],p3:['#efc2ff','#a64cff','#5a14c4','rgba(255,225,255,.22)','#3d0a8a'],p4:['#d0ffb0','#46de7e','#0f9a50','rgba(225,255,215,.25)','#06632f'],
   fm:['#c8ffd8','#3fd48a','#0b8a48','rgba(225,255,235,.2)','#05602f']};
 function ground(el,f){if(off('ground'))return;const W=Math.round(el.offsetWidth),Hh=Math.round(el.offsetHeight);if(!W||!Hh)return;const o=f(W,Hh);el.classList.add('cb-pn');
-  el._cbg={u:X.groundURI(W,Hh,o),w:W,h:Hh};bg(el);if(o.clip)el.style.clipPath=o.clip}
+  el._cbg={u:X.groundURI(W,Hh,o),w:W,h:Hh};bg(el);if(o.clip&&!off('clip'))el.style.clipPath=o.clip}
 const polyPx=p=>`polygon(${p.map(q=>f1(q[0])+'px '+f1(q[1])+'px').join(',')})`;
 
 /* ================= the cover ================= */
@@ -277,7 +277,7 @@ function back(){const sec=D.querySelector('#wc-book > .wc-back');if(!sec)return;
     speed:{r0:Math.min(W,Hh)*.32,n:40,l0:10,l1:60,w0:1,w1:3,col:'#fdbc2a',op:.25,seed:83}}))}
 
 /* ================= the cuts between sections ================= */
-function cuts(){book.querySelectorAll(':scope > .cb-turn,:scope > .cb-gut').forEach(n=>n.remove());
+function cuts(){if(off('cuts'))return;book.querySelectorAll(':scope > .cb-turn,:scope > .cb-gut').forEach(n=>n.remove());
   const q=s=>book.querySelector(':scope > '+s),n=window.ROUNDS.length;let pg=1;
   const turn=(after,label)=>{if(!after)return;const t=D.createElement('div');t.className='cb-turn';t.setAttribute('aria-hidden','true');
     t.innerHTML=`<span class="cb-fo"><span class="cb-fo-l">Earnings Zeason · </span>Season 1 · No. ${n}</span><span class="cb-pgno">${pg++}</span><i class="cb-curl">${X.svg(40,40,X.curl(40))}</i>`;after.after(t)};

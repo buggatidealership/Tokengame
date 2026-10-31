@@ -11,6 +11,7 @@ async function open(b,W,mode,o={}){const H=o.h||(W<600?844:1000);const p=await b
   if(mode!=='now'){for(const f of ['base/_cv.css','base/c2.css','book.css'])await p.addStyleTag({content:rd(f)});
     for(const f of ['base/_cv.js','base/c2.js'])await p.addScriptTag({content:rd(f)});await p.evaluate(([t,n])=>{window.__cbTake=t;window.__cbNo=n},[o.take||process.env.TAKE||'ink',process.env.CBNO||'']);
     await p.waitForFunction(()=>document.documentElement.classList.contains('c2-ready'),null,{timeout:30000});
+    if(mode==='c2'||mode==='css'){if(mode==='css')await p.evaluate(()=>document.documentElement.classList.add('cb-on'));await p.evaluate(()=>document.fonts.ready);await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(800);return {p,er}}
     await p.addScriptTag({content:rd('dtlib.js')});await p.addScriptTag({content:rd('takes.js')});await p.addScriptTag({content:rd('book.js')});
     await p.waitForFunction(()=>document.documentElement.classList.contains('cb-ready'),null,{timeout:60000})}
   await p.evaluate(()=>document.fonts.ready);
