@@ -59,7 +59,7 @@ window.S3World=function(cfg){const M=cfg.mat;
   /* controls printed on the surface (arcade menu, paper header) take the top row */
   const ctlTop=C.ctl==='menu'||C.ctl==='header';if(ctlTop)top=fs*2.1;
   /* the table under the chart: in P&L always; in hit rate only where the world can't label line ends (pens in the way) */
-  const tab=mode==='pnl'||cfg.alwaysTable,rowH=fs*1.32,tabH=tab?rowH*(V.rank.length+1)+fs*.5:0;
+  const tab=V.n>0&&(mode==='pnl'||cfg.alwaysTable),rowH=fs*1.32,tabH=tab?rowH*(V.rank.length+1)+fs*.5:0;
   const ends=!cfg.alwaysTable;/* end labels at the line ends */
   const endW=ends?Math.max(...V.rank.map(m=>S.tw(NM[m]+(mode==='hit'?' '+V.val(m):''),`${fs*.95}px ${DF}`)))+fs*.8:0;
   const axW=Math.max(...V.ticks.map(v=>S.tw(V.fmt(v),`${fs*.8}px ${DF}`)))+fs*.55;
@@ -67,22 +67,22 @@ window.S3World=function(cfg){const M=cfg.mat;
   const x0=axW,x1=Math.min(sw-endW-fs*.4,penX),y0=top+fs*.8,y1=sh-tabH-fs*1.6;
   const Y=v=>y1-(Math.max(V.lo,Math.min(V.hi,v))-V.lo)/(V.hi-V.lo)*(y1-y0),X=i=>x0+i/Math.max(1,V.n)*(x1-x0);
   /* grid and axis */
-  V.ticks.forEach(v=>{const y=Y(v);if(v===V.base)return;o+=`<path d="M${x0.toFixed(1)} ${y.toFixed(1)}H${x1.toFixed(1)}" stroke="${M.grid}" stroke-width="1" ${M.gridDash?`stroke-dasharray="${M.gridDash}"`:''} fill="none" shape-rendering="crispEdges"/>`+T(x0-fs*.35,y+fs*.28,fs*.8,V.fmt(v),{a:'end',c:M.dim})});
-  const yb=Y(V.base);o+=(mode==='hit'?M.base(x0,x1,yb,fs):`<path d="M${x0.toFixed(1)} ${yb.toFixed(1)}H${x1.toFixed(1)}" stroke="${M.dim}" stroke-width="1.2" stroke-dasharray="5 4" fill="none" shape-rendering="crispEdges"/>`)+T(x0-fs*.35,yb+fs*.28,fs*.8,mode==='hit'?'50%':'$0',{a:'end',c:mode==='hit'?M.baseC:M.dim});
+  if(V.n)V.ticks.forEach(v=>{const y=Y(v);if(v===V.base)return;o+=`<path d="M${x0.toFixed(1)} ${y.toFixed(1)}H${x1.toFixed(1)}" stroke="${M.grid}" stroke-width="1" ${M.gridDash?`stroke-dasharray="${M.gridDash}"`:''} fill="none" shape-rendering="crispEdges"/>`+T(x0-fs*.35,y+fs*.28,fs*.8,V.fmt(v),{a:'end',c:M.dim})});
+  const yb=Y(V.base);if(V.n)o+=(mode==='hit'?M.base(x0,x1,yb,fs):`<path d="M${x0.toFixed(1)} ${yb.toFixed(1)}H${x1.toFixed(1)}" stroke="${M.dim}" stroke-width="1.2" stroke-dasharray="5 4" fill="none" shape-rendering="crispEdges"/>`)+T(x0-fs*.35,yb+fs*.28,fs*.8,mode==='hit'?'50%':'$0',{a:'end',c:mode==='hit'?M.baseC:M.dim});
   if(V.n)o+=T(x0,y1+fs*1.15,fs*.78,'R'+V.first.n,{c:M.dim})+T(x1,y1+fs*1.15,fs*.78,'R'+V.last.n,{a:'end',c:M.dim});
   /* the lines, the leader last */
   const L=V.lines.slice().sort((a,b)=>a.m===lead?1:b.m===lead?-1:0).map(l=>{const pts=l.s.map((v,i)=>[X(i),Y(v)]);return {m:l.m,pts,end:pts[pts.length-1],d:'M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L')}});
   if(V.n)o+=`<g class="s3-lines">${L.map(l=>`<path class="s3-ln" pathLength="1" d="${l.d}" stroke="${ink(l.m)}" stroke-width="${l.m===lead?M.lw*1.45:M.lw}" fill="none" stroke-linejoin="round" stroke-linecap="round"/><circle class="s3-dot" cx="${l.end[0].toFixed(1)}" cy="${l.end[1].toFixed(1)}" r="${(M.lw*1.6).toFixed(1)}" fill="${ink(l.m)}"/>`).join('')}</g>`;
-  else o+=T((x0+x1)/2,(y0+y1)/2,fs,'No round closed in this window yet.',{a:'middle',c:M.dim});
+  else{const mx=(fs*.4+Math.min(sw,penX))/2;o+=T(mx,(y0+y1)/2-fs*.2,fs,'No round closed',{a:'middle',c:M.dim})+T(mx,(y0+y1)/2+fs*1.1,fs,'in this window yet.',{a:'middle',c:M.dim})}
   /* end labels: one line each, name then value, pushed apart, in a gutter no line enters */
   if(ends&&V.n){const sp=spread(L.map(l=>({m:l.m,y:l.end[1]})),fs*1.22,y0,y1);o+=`<g class="s3-ends">${sp.map(e=>{const c=ink(e.m),tx=x1+fs*.55;
       return mode==='hit'?T(tx,e.y+fs*.33,fs*.95,NM[e.m]+' '+V.val(e.m),{c}):T(tx,e.y+fs*.33,fs*.95,NM[e.m],{c})}).join('')}</g>`}
   /* the table under the chart */
-  if(tab){const ty=sh-tabH+fs*.2,c1=fs*.2,cV=Math.min(sw-fs*.4,penX),cW=c1+(cV-c1)*.6;const hd=mode==='hit'?'Hit rate':'P&L'+(wid==='season'?'':' · '+S.LAB[wid]);
-    o+=`<g class="s3-tab">`+T(c1,ty+fs*.85,fs*.78,M.tabHead||'',{c:M.dim})+T(cW,ty+fs*.85,fs*.78,'W-L',{a:'middle',c:M.dim})+T(cV,ty+fs*.85,fs*.78,hd,{a:'end',c:M.dim});
+  if(tab){const ty=sh-tabH+fs*.2,c1=fs*.2,cV=Math.min(sw-fs*.4,penX),vW=Math.max(S.tw(mode==='hit'?'Hit rate':'P&L',`${fs*.78}px ${DF}`),...V.rank.map(m=>S.tw(V.val(m),`${fs*.92}px ${DF}`))),nW=Math.max(...V.rank.map(m=>S.tw((M.rankNo?'4  ':'')+NM[m],`${fs*.92}px ${DF}`))),cW=Math.max(c1+nW+fs*1.2+S.tw('00-00',`${fs*.92}px ${DF}`),Math.min(c1+(cV-c1)*.62,cV-vW-fs*1.2));const hd=mode==='hit'?'Hit rate':'P&L'+(wid==='season'?'':' · '+S.LAB[wid]);
+    o+=`<g class="s3-tab">`+T(c1,ty+fs*.85,fs*.78,M.tabHead||'',{c:M.dim})+T(cW,ty+fs*.85,fs*.78,'W-L',{a:'end',c:M.dim})+T(cV,ty+fs*.85,fs*.78,hd,{a:'end',c:M.dim});
     if(M.tabRule)o+=`<path d="M${c1} ${(ty+fs*1.12).toFixed(1)}H${cV}" stroke="${M.grid}" stroke-width="1" shape-rendering="crispEdges"/>`;
     V.rank.forEach((m,i)=>{const y=ty+rowH*(i+1)+fs*.85,v=mode==='hit'?V.val(m):V.val(m),[w,l]=V.wl(m),vc=mode==='hit'?ink(m):(V.tot(m)>=0?M.up:M.dn);
-      o+=T(c1,y,fs*.92,(M.rankNo?(i+1)+'  ':'')+NM[m],{c:ink(m)})+T(cW,y,fs*.92,w+'-'+l,{a:'middle',c:M.txt})+T(cV,y,fs*.92,v,{a:'end',c:vc})});
+      o+=T(c1,y,fs*.92,(M.rankNo?(i+1)+'  ':'')+NM[m],{c:ink(m)})+T(cW,y,fs*.92,w+'-'+l,{a:'end',c:M.txt})+T(cV,y,fs*.92,v,{a:'end',c:vc})});
     o+='</g>'}
   sv.innerHTML=`<g style='font-family:${DF}' text-rendering="geometricPrecision">${o}</g>`;sv.setAttribute('aria-label',mode==='hit'?'Hit rate, round by round, against a coin flip at 50%':'P&L, '+S.LAB[wid]);
   /* the controls */

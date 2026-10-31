@@ -8,7 +8,7 @@ const T=process.argv[2],OUT=process.argv[3],W=+(process.argv[4]||390);
  await cdp.send('Page.startScreencast',{format:'jpeg',quality:88,everyNthFrame:1});
  /* a click like a visitor's: on the control itself */
  const click=async w=>{const h=await p.$(`.s3-root [data-win="${w}"]:not(.s3-knob)`)||await p.$(`.s3-root [data-win="${w}"]`);await h.click();await p.waitForTimeout(3000)};
- await p.waitForTimeout(800);await p.evaluate(()=>S3set('hit',true));await p.waitForTimeout(3600);
+ await p.waitForTimeout(2500);await p.evaluate(()=>{const r=document.querySelector('.s3-root').getBoundingClientRect();scrollBy(0,r.top-6)});await p.waitForTimeout(800);await p.evaluate(()=>S3set('hit',true));await p.waitForTimeout(3600);
  for(const w of ['season','d7','d1'])await click(w);
  await p.evaluate(()=>{const k=document.querySelector('.s3-knob');(k||document.querySelector('.s3-root [data-win="hit"]')).click()});await p.waitForTimeout(3200);
  await cdp.send('Page.stopScreencast');

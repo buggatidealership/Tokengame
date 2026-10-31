@@ -23,9 +23,10 @@ def board(W,scale,horiz,out,fs):
   cols=col(W,['hit','season'],scale)
   if horiz:  # one column per take, hit over P&L
     cw=max(i.width for _,ims in cols for i in ims);ch=max(sum(i.height for i in ims)+10 for _,ims in cols)
-    B=Image.new('RGB',(len(cols)*(cw+20)+20,ch+90),'#1b1b1f');d=ImageDraw.Draw(B)
+    import textwrap
+    B=Image.new('RGB',(len(cols)*(cw+20)+20,ch+110),'#1b1b1f');d=ImageDraw.Draw(B)
     for k,(lab,ims) in enumerate(cols):
-      x=20+k*(cw+20);d.text((x,14),lab,font=F(fs),fill='#ffd21f');y=70
+      x=20+k*(cw+20);d.multiline_text((x,10),'\n'.join(textwrap.wrap(lab,int(cw/(fs*.62)))),font=F(fs),fill='#ffd21f',spacing=4);y=96
       for i in ims:B.paste(i,(x,y));y+=i.height+10
   else:      # one row per take, hit | P&L
     rw=max(sum(i.width for i in ims)+20 for _,ims in cols);rh=[max(i.height for i in ims) for _,ims in cols]
