@@ -15,7 +15,8 @@ if(require.main===module)(async()=>{const b=await chromium.launch({args:['--disa
  for(const W of WS)for(const t of TS){const {p,er}=await open(b,W,t);
   await p.screenshot({path:`${OUT}/${t}-${W}.png`});
   const m=await p.evaluate(()=>{const cv=document.querySelector('#wc-book .wc-cover'),r=cv.getBoundingClientRect(),q=s=>{const n=cv.querySelector(s);if(!n)return null;const b=n.getBoundingClientRect();return {top:Math.round(b.top+scrollY),bot:Math.round(b.bottom+scrollY)}};
-    return {sw:document.documentElement.scrollWidth,cvTop:Math.round(r.top+scrollY),cvH:Math.round(r.height),h1:q('.wc-h1'),film:q('.wc-film-slot'),loop:q('[data-cvloop]')||q('.sh-grid')}});
+    const o=[];const cr=cv.getBoundingClientRect();cv.querySelectorAll('*').forEach(e=>{const b=e.getBoundingClientRect();if(b.width&&(b.right>innerWidth+0.5||b.left<-0.5))o.push((e.className.baseVal??e.className)+' '+Math.round(b.left)+'..'+Math.round(b.right))});const lp=cv.querySelector('[role=list]');const lb=lp?lp.getBoundingClientRect():null;
+    return {over:o.slice(0,6),loopBot:lb?Math.round(lb.bottom+scrollY):null,sw:document.documentElement.scrollWidth,cvTop:Math.round(r.top+scrollY),cvH:Math.round(r.height),h1:q('.wc-h1'),film:q('.wc-film-slot'),loop:q('[data-cvloop]')||q('.sh-grid')}});
   if(FULL){const hh=m.cvTop+m.cvH+20;await p.setViewportSize({width:W,height:Math.min(hh,4000)});await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(800);await p.screenshot({path:`${OUT}/${t}-${W}-full.png`});}
   R.push({t,W,...m,err:er.slice()});console.log(JSON.stringify(R[R.length-1]));await p.close()}
  fs.writeFileSync(OUT+'/checks-'+TS.join('_')+'-'+WS.join('_')+'.json',JSON.stringify(R,null,1));await b.close()})();

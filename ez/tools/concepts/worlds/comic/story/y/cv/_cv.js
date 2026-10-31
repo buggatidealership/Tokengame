@@ -44,7 +44,7 @@ window.CV=window.CV||(function(){
     <circle cx="30" cy="53" r="4.6" fill="${INK}"/></g>
     <g class="cvx-ring" stroke="${INK}" stroke-width="3" stroke-linecap="round"><path d="M6 20l-5-3M54 20l5-3M4 31H-2M56 31h6"/></g></svg>`};
   /* the golden ticket: holo foil, scalloped, the leader's coin on its stub, its season P&L extruded */
-  const ticket=(w,o={})=>`<span class="cvx-tk ${o.cls||''}" style="--tw:${w}px"><span class="cvx-tks">${coin(lead,Math.round(w*.25),{dp:3})}</span><span class="cvx-tkt"><small>Golden ticket</small>${ext(nm(lead).toUpperCase(),{size:w*.15,fill:'white',shade:'#3b2f5c',max:w*.6})}${o.pnl!==false?`<span class="cvx-tkp">${ext(P.pm(L.pnl),{size:w*.105,fill:'green',max:w*.6})}</span>`:''}</span><i class="cvx-tkf"></i></span>`;
+  const ticket=(w,o={})=>`<span class="cvx-tkw"><span class="cvx-tk ${o.cls||''}" style="--tw:${w}px"><span class="cvx-tks">${coin(lead,Math.round(w*.25),{dp:3})}</span><span class="cvx-tkt"><small>Golden ticket</small>${ext(nm(lead).toUpperCase(),{size:w*.15,fill:'white',shade:'#3b2f5c',max:w*.6})}${o.pnl!==false?`<span class="cvx-tkp">${ext(P.pm(L.pnl),{size:w*.105,fill:'green',max:w*.6})}</span>`:''}</span><i class="cvx-tkf"></i></span></span>`;
   /* the record: graded slabs stacked in depth, the newest on top with its number */
   const slabs=(w)=>`<span class="cvx-stack" style="--sw:${w}px">${[2,1,0].map(i=>`<span class="cvx-slab cvx-s${i}"><i class="cvx-sl"><em>#${R[R.length-1-i].n}</em></i><i class="cvx-sw">${S.coImg(R[R.length-1-i].ticker,'cvx-swl')}</i></span>`).join('')}</span>`;
   const logo=(t,cls)=>S.coImg(t,cls||'');

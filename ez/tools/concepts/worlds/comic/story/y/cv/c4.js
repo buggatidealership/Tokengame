@@ -5,12 +5,12 @@
   root.innerHTML=`<div class="c4-tb"><div class="c4-mh"></div><div class="c4-bd" role="list" aria-label="How every round goes"></div><div class="c4-fm"></div><p class="c4-gd">${X.next()}</p></div>`;
   const mh=root.querySelector('.c4-mh'),bd=root.querySelector('.c4-bd');root.querySelector('.c4-fm').append(film);X.wire(root);
   let timer=0;
-  function build(){const W=root.clientWidth,desk=W>=900,cw=desk?Math.min(620,(W-60)*.52):W-20;
-    const hs=desk?70:Math.min(50,cw*.15);
+  function build(){const W=root.clientWidth,desk=W>=900,cw=desk?Math.min(640,(W-72)*.52):W-20;
+    const hs=desk?66:Math.min(50,cw*.15);
     mh.innerHTML=`<span class="c4-t"></span>`;mh.querySelector('.c4-t').append(h1);
-    X.head(h1,`<span class="c4-l1">${X.aisWord({size:hs*.62,fill:'gold'})}<span class="c4-q">Who calls it best?</span></span>${X.ext('TRADE',{size:hs,fill:'white',shade:'#1446c8',depth:Math.round(hs*.16)})}${X.ext('EARNINGS',{size:hs,fill:'white',shade:'#1446c8',depth:Math.round(hs*.16),max:cw-8})}`);
+    X.head(h1,`<span class="c4-l1">${X.aisWord({size:hs*.62,fill:'gold'})}<span class="c4-q">Who calls it best?</span></span>${X.ext('TRADE',{size:hs,fill:'white',shade:'#1446c8',depth:Math.round(hs*.16)})}${X.ext('EARNINGS',{size:hs,fill:'white',shade:'#1446c8',depth:Math.round(hs*.16),max:desk?(W-72)*.46:cw-8})}`);
     /* the board, drawn in true isometric (30 degrees) */
-    const s=Math.min(desk?300:220,cw*.58),c30=.866,k=s/1;const Bw=cw,ox=Bw/2,oy=desk?150:118; /* oy: room above the top corner for its pieces */
+    const s=Math.min(desk?360:230,cw*.6),c30=.866,k=s/1;const Bw=cw,ox=Bw/2,oy=desk?150:(W<360?140:118); /* oy: room above the top corner for its pieces */
     const pr=(x,y,z=0)=>[ox+(x-y)*c30,oy+(x+y)*.5-z];
     const poly=(pts,f,cls)=>`<polygon class="${cls||''}" points="${pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="${f}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>`;
     const box=(x0,y0,w,h,z0,z1,top,left,right,cls)=>{const a=pr(x0,y0,z1),b=pr(x0+w,y0,z1),c=pr(x0+w,y0+h,z1),d=pr(x0,y0+h,z1),c0=pr(x0+w,y0+h,z0),d0=pr(x0,y0+h,z0),b0=pr(x0+w,y0,z0);
@@ -31,9 +31,9 @@
     const slab=box(0,0,s,s,-bt,0,'url(#c4top)','#1386a8','#0b5f7a');
     /* the centre, printed on the board: a ring of arrows and the words, set in the board's plane */
     const M=`matrix(${c30},.5,${-c30},.5,${ox},${oy})`;
-    const cen=`<g transform="${M}"><circle cx="${s/2}" cy="${s/2}" r="${s*.2}" fill="none" stroke="#0d0b10" stroke-width="${s*.035}" stroke-dasharray="${s*.22} ${s*.094}" opacity=".85"/>
-      ${[0,90,180,270].map(a=>`<path d="M${s/2+s*.2} ${s/2-s*.05}l${s*.05} ${s*.07}l${s*.05} ${-s*.07}z" fill="#0d0b10" transform="rotate(${a+20} ${s/2} ${s/2})"/>`).join('')}
-      <text x="${s/2}" y="${s/2-s*.01}" text-anchor="middle" font-family="Luckiest Guy" font-size="${s*.07}" fill="#fff" stroke="#0d0b10" stroke-width="${s*.012}" paint-order="stroke">EVERY</text><text x="${s/2}" y="${s/2+s*.07}" text-anchor="middle" font-family="Luckiest Guy" font-size="${s*.07}" fill="#fff" stroke="#0d0b10" stroke-width="${s*.012}" paint-order="stroke">ROUND</text></g>`;
+    const cen=`<g transform="${M}"><circle cx="${s*.4}" cy="${s*.4}" r="${s*.2}" fill="none" stroke="#0d0b10" stroke-width="${s*.035}" stroke-dasharray="${s*.22} ${s*.094}" opacity=".85"/>
+      ${[0,90,180,270].map(a=>`<path d="M${s*.6} ${s*.35}l${s*.05} ${s*.07}l${s*.05} ${-s*.07}z" fill="#0d0b10" transform="rotate(${a+20} ${s*.4} ${s*.4})"/>`).join('')}
+      <text x="${s*.4}" y="${s*.39}" text-anchor="middle" font-family="Luckiest Guy" font-size="${s*.07}" fill="#fff" stroke="#0d0b10" stroke-width="${s*.012}" paint-order="stroke">EVERY</text><text x="${s*.4}" y="${s*.47}" text-anchor="middle" font-family="Luckiest Guy" font-size="${s*.07}" fill="#fff" stroke="#0d0b10" stroke-width="${s*.012}" paint-order="stroke">ROUND</text></g>`;
     const blocks=C.map(([x,y],i)=>box(x,y,T,T,0,th,COL[i][0],COL[i][1],COL[i][2],'c4-blk')).join('');
     const H=Math.round(oy+s+bt+(desk?12:6));
     const svg=`<svg class="c4-svg" width="${Bw}" height="${H}" viewBox="0 0 ${Bw} ${H}" aria-hidden="true"><defs>
@@ -49,7 +49,7 @@
     const pieces=[
       `<span class="c4-pc c4-p1">${['GPT','KIMI','CLAUDE','GROK'].map(mm=>{const c=X.calls.find(x=>x.m===mm);return `<span class="c4-tok">${X.callExt(c,desk?17:13)}${X.coin(mm,cs,{dp:2,holo:false})}</span>`}).join('')}</span>`,
       `<span class="c4-pc c4-p2">${X.ext((L.a<0?'▼':'▲')+Math.abs(L.a).toFixed(2)+'%',{size:desk?22:17,fill:L.a<0?'red':'green'})}${X.bell(desk?62:46)}</span>`,
-      `<span class="c4-pc c4-p3">${X.ticket(desk?190:Math.round(s*.56))}</span>`,
+      `<span class="c4-pc c4-p3">${X.ticket(desk?170:Math.round(s*.5))}</span>`,
       `<span class="c4-pc c4-p4">${X.slabs(desk?96:Math.round(s*.34))}</span>`];
     const lab=(i,extra)=>`<div class="c4-lb c4-l${i+1}" role="listitem"><b class="c4-n">${i+1}</b><span>${X.STEP[i]}${extra||''}</span></div>`;
     bd.style.height=H+'px';

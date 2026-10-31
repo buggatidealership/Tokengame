@@ -19,7 +19,7 @@
     const stop3=X.ticket(Math.round(D*.5));
     const stop4=`${X.slabs(Math.round(D*.24))}`;
     const ST=[stop1,stop2,stop3,stop4];
-    const lab=(i)=>`<p class="c1-lb" style="font-size:${lb.toFixed(1)}px"><b class="c1-n">${i+1}</b><span>${X.STEP[i]}</span></p>`;
+    const lab=(i)=>`<p class="c1-lb" style="font-size:${lb.toFixed(1)}px"><b class="c1-n">${i+1}</b><span>${X.STEP[i]}${i===0?`<small class="c1-rs">Round ${L.n}: ${S.esc(X.co(L))}</small>`:''}</span></p>`;
     wh.innerHTML=`<svg class="c1-ring" width="${D}" height="${Hh}" viewBox="0 0 ${D} ${Hh}" aria-hidden="true"><defs><linearGradient id="c1chr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".3" stop-color="#b8c2d6"/><stop offset=".5" stop-color="#5c6680"/><stop offset=".55" stop-color="#e9eef8"/><stop offset=".8" stop-color="#8c96ae"/><stop offset="1" stop-color="#ffffff"/></linearGradient></defs>
         <ellipse cx="${cx+5}" cy="${cy+5}" rx="${rx}" ry="${ry}" fill="none" stroke="#0d0b10" stroke-width="20"/>
         <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="#0d0b10" stroke-width="20"/><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="url(#c1chr)" stroke-width="13"/>

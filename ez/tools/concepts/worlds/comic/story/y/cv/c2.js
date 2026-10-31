@@ -11,7 +11,7 @@
     mh.querySelector('.c2-t').append(h1);
     X.head(h1,`<span class="c2-l1">${X.aisWord({size:hs*.62,fill:'white'})}${X.ext('TRADE',{size:hs,fill:'gold'})}</span>${X.ext('EARNINGS',{size:hs*1.18,fill:'gold',max:desk?pw-40:pw-20})}`);mh.querySelector('.c2-t').insertAdjacentHTML('beforeend','<span class="c2-bal" aria-hidden="true">Who calls it best?</span>');
     const cs=desk?30:22;
-    const p1=`<div class="c2-co">${X.logo(L.ticker,'c2-lg')}<b>${S.esc(X.co(L))}</b></div>${['GPT','KIMI','CLAUDE','GROK'].map((mm,i)=>{const c=X.calls.find(x=>x.m===mm);return `<span class="c2-say c2-say${i}">${X.coin(mm,cs,{dp:2,holo:false})}<i class="c2-b ${c.up?'c2-bu':'c2-bd'}">${c.up?'Up':'Down'} ${S.esc(c.sz)}</i></span>`}).join('')}`;
+    const p1=`<div class="c2-co">${X.logo(L.ticker,'c2-lg')}<b>${S.esc(X.co(L))}</b></div>${['GPT','KIMI','CLAUDE','GROK'].map((mm,i)=>{const c=X.calls.find(x=>x.m===mm);return `<span class="c2-say c2-say${i}">${X.coin(mm,cs,{dp:2,holo:false})}<i class="c2-b ${c.up?'c2-bu':'c2-bd'}"><span class="c2-bw">${c.up?'Up':'Down'} </span><span class="c2-ba">${c.up?'▲':'▼'}</span>${S.esc(c.sz)}</i></span>`}).join('')}`;
     const p2=`<span class="c2-bell">${X.bell(desk?62:50)}${sfx('DING!',desk?30:24,'gold','c2-ding')}</span><span class="c2-mv">${X.ext((L.a<0?'▼':'▲')+Math.abs(L.a).toFixed(2)+'%',{size:desk?24:19,fill:L.a<0?'red':'green'})}</span><span class="c2-pfs">${X.calls.map(c=>`<span>${X.coin(c.m,desk?20:17,{dp:1,holo:false})}${X.pf(c)}</span>`).join('')}</span>`;
     const p3=`${X.ticket(desk?190:Math.round(pw*.42))}${sfx('MINE!',desk?28:21,'pink','c2-mine')}`;
     const p4=`${X.slabs(desk?110:Math.round(pw*.25))}<span class="c2-file">${sfx('FILED!',desk?28:21,'white','c2-filed')}<b>No. ${X.R.length}</b></span>`;
