@@ -262,6 +262,9 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
 66. **The art is the design; the frame only serves it.** The films are interior-level art made for each company; the page's own elements must reach that level (drawn, lit, from inside the scene), or be built from that art. A box of text beside good art is the overlay the owner keeps rejecting.
     - *Taught by:* "think about the animation production... every single video we do... unfolding from within the environment... every element has been thought through and crafted", 30 Oct.
 
+67. **A comic is its art, not its chrome.** Flat fills, thick even outlines, hard offset shadows and a comic font are the costume of a comic; on their own they read as a child's layout. A real comic page is rendered: forms modelled by light (key, fill, rim), volume, materials, perspective and depth, with the ink and halftone as a layer on top (the Spider-Verse recipe: 3D realism under a comic layer). Before calling something "comic", ask where its light comes from and what it is made of; if the answer is "a CSS box", it is not there yet.
+    - *Taught by:* "why isn't there... 3D realism, but with a layer of American comic... it feels like... a child designed the page... where's the modeling", 31 Oct, after all ten quick-fire takes were rejected.
+
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
