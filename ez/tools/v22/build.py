@@ -594,7 +594,8 @@ def world(name,title,out,layer=None):
         # (2026-10-31, owner's round H picks) Every round so far: the painted rack R2 and Golden Age tiles T2 (h_rounds); the opened
         # round as the real slab T1 (h_slab); NVIDIA's die count with the S4 parts list (h_bet); the loading cover L3 and the film
         # frame F3 (h_chrome). Each file gates itself (p1-on, sh-on) and fails alone.
-        for f in ['h_rounds','h_bet','h_chrome','h_bands']+(['h_slab'] if os.environ.get('H_SLAB')!='0' else []):
+        # (2026-10-31, owner's pick of round H6 pnl2: take F, "On the big board") Smart or lucky? chalked on the exchange's slate (h_sol).
+        for f in ['h_rounds','h_bet','h_chrome','h_bands','h_sol']+(['h_slab'] if os.environ.get('H_SLAB')!='0' else []):
             if os.path.exists(S+f+'.js'):
                 css+='\n'+open(S+f+'.css').read()
                 story+=('\ntry{'+open(S+f+'.js').read()+'}catch(e){console.error(e)}')
