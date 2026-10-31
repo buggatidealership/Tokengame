@@ -45,14 +45,15 @@ function skinURI(w,h,o){const key=[TAKE,w,h,o.pal,o.kind,o.frame?1:0,o.droponly?
   if(TAKE==='ink'){const P=pts(kind,w,h,0,sd,{wob:.55}),bw=o.frame?2.6:2,r=X.rng(sd+3),ph=r()*6,
       wf=(i,n)=>Math.max(.7,bw*(.62+.55*Math.sin(i/n*Math.PI*2*2+ph)+.25*(r()-.5))),In=inset(P,wf),hid=id('h'),h2=id('k'),cl=id('c');
     s+=`<defs>${hatch(hid,45,2.6,.75)}${hatch(h2,-45,2.6,.7)}<clipPath id="${cl}"><path d="${path(In)}"/></clipPath></defs>`;
-    if(o.droponly||!o.frame&&dr>0)s+=`<path d="${path(P,dr*.8,dr*.8)}" fill="url(#${hid})"/>`;
-    if(o.droponly)return cache[key]=X.uri(W,Hh,s);
+    if(o.droponly)return cache[key]=X.uri(W,Hh,s+dropMask(W,Hh,P,`<path d="${path(P,dr*.8,dr*.8)}" fill="url(#${hid})"/>`));
+    if(!o.frame&&dr>0)s+=`<path d="${path(P,dr*.8,dr*.8)}" fill="url(#${hid})"/>`;
     if(!o.frame){s+=`<path d="${path(In)}" fill="${p[1]}"/><g clip-path="url(#${cl})"><path d="M${f1(w)} ${f1(h*.3)}L${f1(w)} ${f1(h)}L${f1(w*.3)} ${f1(h)}Z" fill="url(#${hid})" opacity=".42"/><path d="M${f1(w)} ${f1(h*.66)}L${f1(w)} ${f1(h)}L${f1(w*.66)} ${f1(h)}Z" fill="url(#${h2})" opacity=".42"/>
       <path d="M${f1(w*.1)} ${f1(Math.min(h*.32,7))}Q${f1(w*.16)} ${f1(Math.min(h*.16,3.5))} ${f1(Math.min(w*.32,30))} ${f1(Math.min(h*.18,3.6))}" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".75"/></g>`}
     s+=`<path d="${path(P)} ${path(In)}" fill="${INK}" fill-rule="evenodd"/>`}
   else if(TAKE==='cut'){const P=pts(kind,w,h,.5,sd,{wob:.15,step:Math.max(14,Math.min(w,h)*.9),corner:4,facet:kind==='pill'?5:9});
-    if(o.droponly||!o.frame){s+=`<path d="${path(P,1.8,2.6)}" fill="rgba(13,11,16,.16)"/><path d="${path(P,.9,1.4)}" fill="rgba(13,11,16,.2)"/>`}
-    if(o.droponly)return cache[key]=X.uri(W,Hh,s);
+    const sh=`<path d="${path(P,1.8,2.6)}" fill="rgba(13,11,16,.16)"/><path d="${path(P,.9,1.4)}" fill="rgba(13,11,16,.2)"/>`;
+    if(o.droponly)return cache[key]=X.uri(W,Hh,dropMask(W,Hh,P,sh));
+    if(!o.frame)s+=sh;
     if(o.frame){const In=inset(P,(i,n)=>2.6+.9*Math.sin(i*1.7+sd));s+=`<path d="${path(P)} ${path(In)}" fill="#1c1820" fill-rule="evenodd"/><path d="${path(In)}" fill="none" stroke="#fffdf6" stroke-width=".9" stroke-opacity=".6"/>`}
     else{const cl=id('c'),In=inset(P,()=>.9);s+=`<defs>${GRAIN}<clipPath id="${cl}"><path d="${path(In)}"/></clipPath></defs><path d="${path(P)}" fill="#fffaf0"/><path d="${path(In,-.5,-.5)}" fill="${p[1]}"/>
       <g clip-path="url(#${cl})"><rect width="${w}" height="${h}" filter="url(#gr)" opacity=".55"/><path d="M0 ${f1(h)}L${f1(w)} ${f1(h*.55)}L${f1(w)} ${f1(h)}Z" fill="${p[2]}" opacity=".22"/></g>`}}
@@ -62,11 +63,14 @@ function skinURI(w,h,o){const key=[TAKE,w,h,o.pal,o.kind,o.frame?1:0,o.droponly?
     if(o.frame){const In=inset(P,()=>2.4),In2=inset(P,()=>4.6),In3=inset(P,()=>5.6);s+=`<g mask="url(#${mk})"><path d="${path(P)} ${path(In)}" fill="#1a1620" fill-rule="evenodd"/><path d="${path(In2)} ${path(In3)}" fill="#1a1620" fill-rule="evenodd" opacity=".85"/></g>`}
     else{const In=inset(P,()=>1.3);s+=`<path d="${path(P,0,1)}" fill="rgba(255,255,255,.5)"/><g mask="url(#${mk})"><path d="${path(P)}" fill="${sq}" opacity=".9"/><path d="${path(In)}" fill="${ink}"/></g><path d="${path(P,0,-.6)}" fill="none" stroke="rgba(0,0,0,.28)" stroke-width=".8"/>`}}
   else{/* screen */const P=pts(kind,w,h,1,sd,{wob:.25}),off=[1.4,-1.1];
-    if(o.droponly||!o.frame)s+=`<path d="${path(P,dr*.75,dr*.75)}" fill="${p[3]}" opacity=".85"/>`;
-    if(o.droponly)return cache[key]=X.uri(W,Hh,s);
+    const sh=`<path d="${path(P,dr*.75,dr*.75)}" fill="${o.frame?INK:p[3]}" opacity=".85"/>`;
+    if(o.droponly)return cache[key]=X.uri(W,Hh,dropMask(W,Hh,P,sh));
+    if(!o.frame)s+=sh;
     if(o.frame){const In=inset(P,()=>2.2);s+=`<path d="${path(P,off[0],off[1])} ${path(In,off[0],off[1])}" fill="${p[2]}" fill-rule="evenodd" opacity=".9"/><path d="${path(P)} ${path(In)}" fill="${INK}" fill-rule="evenodd"/>`}
     else s+=`<path d="${path(P,off[0],off[1])}" fill="${p[1]}"/><path d="${path(P)}" fill="none" stroke="${INK}" stroke-width="1.7" stroke-linejoin="round"/>`}
   return cache[key]=X.uri(W,Hh,s)}
+/* a frame's drop sits behind the element's own ground: only the part outside the shape may show */
+const dropMask=(W,Hh,P,inner)=>{const m=id('dm');return `<defs><mask id="${m}" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${Hh}"><rect width="${W}" height="${Hh}" fill="#fff"/><path d="${path(P)}" fill="#000"/></mask></defs><g mask="url(#${m})">${inner}</g>`};
 
 /* ================= inner lettering: calmer than a headline, never extruded ================= */
 const FONT={ink:'Bangers',cut:'Luckiest Guy',press:'Anton',screen:'Bangers'};

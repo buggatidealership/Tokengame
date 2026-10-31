@@ -162,9 +162,10 @@ X.groundURI=(W,H,o)=>{const c=o.c,cx=o.cx!=null?o.cx:W/2,cy=o.cy!=null?o.cy:H/2,
 /* a ragged (torn) line across w: returns points along y=0 with small jumps */
 X.ragged=(w,seed,amp,step)=>{const r=X.rng(seed||17),p=[];let x=0;while(x<w){p.push([x,(r()-.5)*2*(amp||5)]);x+=(step||5)*(.5+r())}p.push([w,(r()-.5)*2*(amp||5)]);return p};
 /* a page curl for a sheet's corner (size s): the folded-back paper with its shading, the cast shadow under it */
-X.curl=(s,o={})=>{const id=X.id('cu');return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset=".55" stop-color="#ede3c8"/><stop offset="1" stop-color="#b8a983"/></linearGradient></defs>
- <path d="M${s} 0 L${s} ${s} L0 ${s} Z" fill="${o.under||'#1c1820'}"/>
- <path d="M${s} 0 Q${f1(s*.62)} ${f1(s*.38)} ${f1(s*.06)} ${f1(s*.9)} L0 ${s} Z" fill="rgba(13,11,16,.35)"/>
- <path d="M${s} 0 Q${f1(s*.5)} ${f1(s*.18)} ${f1(s*.18)} ${f1(s*.62)} Q${f1(s*.52)} ${f1(s*.5)} ${s} 0Z" fill="url(#${id})" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
- <path d="M${f1(s*.86)} ${f1(s*.1)} Q${f1(s*.56)} ${f1(s*.26)} ${f1(s*.3)} ${f1(s*.56)}" fill="none" stroke="${INK}" stroke-width=".9" stroke-opacity=".45"/>`};
+X.curl=(s,o={})=>{const id=X.id('cu');/* the sheet's corner lifted: the flap shows the paper's back, shaded toward the fold; the desk shows under it */
+ return `<defs><linearGradient id="${id}" x1="1" y1="0" x2=".35" y2=".65"><stop offset="0" stop-color="#d9ccaa"/><stop offset=".55" stop-color="#f6eedb"/><stop offset=".9" stop-color="#fffdf6"/><stop offset="1" stop-color="#e9dfc4"/></linearGradient></defs>
+ <path d="M${s} ${f1(s*.04)} L${s} ${s} L${f1(s*.04)} ${s} Q${f1(s*.42)} ${f1(s*.62)} ${s} ${f1(s*.04)}Z" fill="${o.under||'#1c1820'}"/>
+ <path d="M${s} ${f1(s*.04)} Q${f1(s*.42)} ${f1(s*.62)} ${f1(s*.04)} ${s} Q${f1(s*.3)} ${f1(s*.5)} ${f1(s*.36)} ${f1(s*.36)} Q${f1(s*.62)} ${f1(s*.3)} ${s} ${f1(s*.04)}Z" fill="url(#${id})" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+ <path d="M${f1(s*.86)} ${f1(s*.14)} Q${f1(s*.5)} ${f1(s*.42)} ${f1(s*.2)} ${f1(s*.84)}" fill="none" stroke="${INK}" stroke-width=".8" stroke-opacity=".35"/>
+ <path d="M${f1(s*.04)} ${s} Q${f1(s*.42)} ${f1(s*.62)} ${s} ${f1(s*.04)}" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="3" transform="translate(-2 2)"/>`};
 })(window.DT);

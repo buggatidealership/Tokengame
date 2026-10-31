@@ -177,8 +177,8 @@ function season(){const sec=D.querySelector('#wc-book .wc-season');if(!sec||!sec
   const t1=LW('EVERY ROUND',{size:X.fitw('EVERY ROUND',{size:dk?56:46},W*.86),fill:'yellow',jr:5,jb:.06,rot:-3,depth:5,dot:'#ff6a0a',dotTo:'br'}),
     t2=LW('SO FAR',{size:Math.min(dk?84:66,W*.2),fill:'pink',jr:7,jb:.07,grow:.12,rot:-3,depth:6,dot:'#6b0626',dotTo:'br'});
   const ttl=D.createElement('div');ttl.className='cb-ttl';ttl.setAttribute('aria-hidden','true');const tag=(sec.querySelector('.pp1-tag')||{}).innerHTML||'';
-  const bw=Math.max(t1.w,t2.w+20),bh=t1.h+t2.h-10;
-  ttl.innerHTML=X.svg(bw,bh,`${t1.svg.replace(/^<svg[^>]*>|<\/svg>$/g,'')}<g transform="translate(18 ${f1(t1.h-12)})">${t2.svg.replace(/^<svg[^>]*>|<\/svg>$/g,'')}</g>`,'cb-brk')+`<p class="cb-tag">${tag}</p>`;
+  const bw=Math.max(t1.w,t2.w+20),bh=t1.h+t2.h-34;
+  ttl.innerHTML=X.svg(bw,bh,`${t1.svg.replace(/^<svg[^>]*>|<\/svg>$/g,'')}<g transform="translate(18 ${f1(t1.h-34)})">${t2.svg.replace(/^<svg[^>]*>|<\/svg>$/g,'')}</g>`,'cb-brk')+`<p class="cb-tag">${tag}</p>`;
   sec.insertBefore(ttl,sec.querySelector('.wc-bis'));skin(ttl.querySelector('.cb-tag'),{pal:'yellow',drop:3,ow:2.4,seed:6});
   tiles();
   const mb=sec.querySelector('.wc-more');if(mb){mb.style.boxShadow='none';skin(mb,{pal:'gold',drop:6,ow:3,key:1.5,seed:7})}
@@ -193,7 +193,7 @@ function tiles(){const sec=D.querySelector('#wc-book .wc-season');if(!sec)return
       stubDn=X.groundURI(130,120,{c:['#ffb3a6','#ff4d40','#c3140c','rgba(255,230,225,.2)','#8a0a05'],cx:65,cy:38,seed:4,sp:6,n:22,poly:false,r0:18,r1:110})}
     s.style.backgroundImage=up?stubUp:stubDn;
     if(first)s.querySelector('.pp1-mv').innerHTML=IL((up?'+':'−')+Math.abs(r.a).toFixed(2)+'%',{size:fitIL('+00.00%',sm?26:31,w-10),fill:'white',seed:r.n}).svg;
-    if(first)s.querySelector('.pp1-no').innerHTML=IL('#'+r.n,{size:xs?15:sm?17:21,fill:'gold',seed:r.n+1}).svg;
+    if(first)s.querySelector('.pp1-no').innerHTML=IL('#'+r.n,{size:xs?15:sm?17:21,fill:CBT.TAKE==='cut'?'cream':'gold',seed:r.n+1}).svg;
     if(first)s.querySelectorAll('.pp1-won > svg.pp-ext').forEach(sv=>{const t=(sv.querySelector('text')||sv).textContent.trim();sv.outerHTML=IL(t,{size:xs?11:sm?12.5:14,fill:'cream',font:'Bangers',jr:1,jb:.01}).svg});
     skin(s.querySelector('.pp1-co'),{pal:'yellow',drop:2,ow:2,key:1,seed:r.n+3,dots:false});
     s.querySelectorAll('.pp-coin').forEach((c,j)=>coinRing(c,r.n*7+j));
@@ -206,10 +206,10 @@ function cliff(){const sec=D.querySelector('#wc-book > .wc-cliff');if(!sec)retur
   ground(sec,(W,Hh)=>({c:GR.purple,cx:W*.3,cy:40,seed:31,sp:8,n:26,bw:8,holes:holesOf(sec,'.wc-tnp'),r0:60,r1:Math.max(W,Hh)}))}
 
 /* ================= Smart or lucky ================= */
-function splash(){const sec=D.querySelector('#wc-book > .wc-splash');if(!sec)return;const dk=desk(),W=sec.clientWidth-24;
-  const bur=sec.querySelector('.wc-burst');if(bur){const h2=bur.querySelector('h2');if(h2)h2.classList.add('cb-sr');bur.querySelectorAll('.cb-ttl').forEach(n=>n.remove());
-    const t1=LW('SMART OR',{size:Math.min(dk?60:46,W*.13),fill:'yellow',jr:6,jb:.06,rot:-4,depth:5,dot:'#ff6a0a',dotTo:'br'}),
-      t2=LW('LUCKY?',{size:Math.min(dk?92:72,W*.21),fill:'yellow',jr:8,jb:.08,grow:.16,rot:-4,depth:6,dot:'#e0140c',dotTo:'br'});
+function splash(){const sec=D.querySelector('#wc-book > .wc-splash');if(!sec)return;const dk=desk();let W=sec.clientWidth-24;
+  const bur=sec.querySelector('.wc-burst');if(bur){if(dk)W=Math.min(W,(sec.querySelector('.wc-sp-lead')||bur).clientWidth+20);const h2=bur.querySelector('h2');if(h2)h2.classList.add('cb-sr');bur.querySelectorAll('.cb-ttl').forEach(n=>n.remove());
+    const t1=LW('SMART OR',{size:Math.min(dk?56:46,W*.13),fill:'yellow',jr:6,jb:.06,rot:-4,depth:5,dot:'#ff6a0a',dotTo:'br'}),
+      t2=LW('LUCKY?',{size:Math.min(dk?84:72,W*.21),fill:'yellow',jr:8,jb:.08,grow:.16,rot:-4,depth:6,dot:'#e0140c',dotTo:'br'});
     const bw=Math.min(W,Math.max(t1.w,t2.w)+70),bh=t1.h+t2.h+20,cx=bw/2,cy=bh*.52;
     let g=X.burst(cx,cy,bh*.44,bh*.7,16,31,{c:['#ff3a31','#ff8a1f','#ffd21f'],ks:[.82,.62],drop:5,ow:3.4,sx:bw/bh*.6,sy:.82});
     g+=`<g transform="translate(${f1(cx-t1.w/2-12)} 8)">${t1.svg.replace(/^<svg[^>]*>|<\/svg>$/g,'')}</g><g transform="translate(${f1(cx-t2.w/2+8)} ${f1(t1.h-4)})">${t2.svg.replace(/^<svg[^>]*>|<\/svg>$/g,'')}</g>`;
