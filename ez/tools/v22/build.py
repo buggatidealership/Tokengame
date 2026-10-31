@@ -574,8 +574,8 @@ def world(name,title,out,layer=None):
         # (2026-10-31, owner: "pop ticket, P1 level 4. Pop stub as well.") Meet the models and Every round so far in the pop cover's
         # recipe (extruded, lit, outlined lettering and slabs on bright rays; the flag popped too), from tools/concepts/worlds/comic/story/y/p.
         # pop_p1.js waits for the comic itself (the cast grid with its flags, the round tiles) and gates every page rule under html.p1-on.
-        css+='\n'+''.join(open(S+f).read() for f in ['pop_lib.css','pop_p1.css'])
-        story+=('\ntry{'+open(S+'pop_lib.js').read()+'\n'+open(S+'pop_p1.js').read()+'}catch(e){console.error(e)}')
+        css+='\n'+''.join(open(S+f).read() for f in ['pop_lib.css','pop_p1.css','pop_founders.css'])
+        story+=('\ntry{'+open(S+'pop_lib.js').read()+'\n'+open(S+'pop_p1.js').read()+'\n'+open(S+'pop_founders.js').read()+'}catch(e){console.error(e)}')
         story+=('\ntry{(function(){var H=document.documentElement,done=0;function run(){if(done||H.getAttribute("data-sec")!=="upcoming"||!document.getElementById("wc-up")||!H.classList.contains("x2p-world"))return;done=1;'
                +''.join(open(S+f).read() for f in ['_se.js','_sg.js','g1.js'])
                +'}new MutationObserver(run).observe(H,{attributes:true,attributeFilter:["data-sec","class"]});run()})()}catch(e){console.error(e)}')
