@@ -4,7 +4,7 @@ const head=`<h2 class="wc-h2"><span>Meet the models</span><small>Backstage befor
 const card=G.ORD.map(m=>{const d=G.D(m),one=d.rank===1;
  return `<article class="g1-p${one?' g1-one':''}" aria-label="${d.nm}, number ${d.rank}">${G.vid(m)}
   <div class="g1-bar${one?' gr-leaf':''}"><span class="g1-no"><small>No.</small>${d.rank}</span>
-   <span class="g1-f"><small>${d.ver}</small><b>${one?'Golden ticket':'Season 1'}</b></span>
+   <span class="g1-f g1-md"><small>${one?'Golden ticket':'Model'}</small><b>${d.ver}</b></span>
    <span class="g1-f g1-pl"><small>Season P&amp;L</small><b class="${one?'':d.up?'gr-up':'gr-dn'}">${d.pm}</b></span>
    <span class="g1-f g1-wl"><small>W-L</small><b>${d.W}-${d.L}</b></span></div></article>`}).join('');
 G.mount(head+`<div class="g1-grid">${card}</div>`,'gr-g1');document.documentElement.classList.add('gr-ready');})();
