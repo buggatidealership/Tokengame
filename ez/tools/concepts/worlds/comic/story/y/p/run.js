@@ -21,10 +21,14 @@ if(require.main===module)(async()=>{const b=await chromium.launch({args:['--disa
    const sh=await p.evaluate(sel=>document.querySelector(sel).offsetHeight,sel);
    for(let y=0;y<sh;y+=300){await p.evaluate(([sel,y])=>{const n=document.querySelector(sel);scrollTo(0,n.getBoundingClientRect().top+scrollY-20+y)},[sel,y]);await p.waitForTimeout(250)}
    await p.evaluate(sel=>{const n=document.querySelector(sel);scrollTo(0,n.getBoundingClientRect().top+scrollY-20)},sel);await p.waitForTimeout(2600);
+   if(s==='season')await p.waitForFunction(()=>[...document.querySelectorAll('.wc-season .wc-bi')].filter(a=>a.offsetParent&&a.querySelector('img.wc-lgimg')).every(a=>a.querySelector('canvas.sa-gc5')),null,{timeout:30000}).catch(()=>console.log('paint wait timed out'));
    await p.evaluate(()=>{const h=document.querySelector('header.top');if(h)h.style.visibility='hidden';[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed'&&x.offsetHeight<140&&x.offsetHeight>0)x.style.visibility='hidden'})});
    const bb=await p.evaluate(s=>{const r=document.querySelector(s).getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,width:r.width,height:r.height}},sel);
    const pad=12;
-   await p.screenshot({path:`${OUT}/${s}-${W}-${t}.png`,clip:{x:Math.max(0,bb.x-pad),y:bb.y-pad,width:Math.min(W-Math.max(0,bb.x-pad),bb.width+2*pad),height:Math.min(bb.height+2*pad,7000)},fullPage:true});
+   const VH=W<600?844:1000;await p.setViewportSize({width:W,height:Math.ceil(bb.height+2*pad+4)});await p.evaluate(([sel,pad])=>{const n=document.querySelector(sel);scrollTo(0,n.getBoundingClientRect().top+scrollY-pad)},[sel,pad]);await p.waitForTimeout(700);
+   const b2=await p.evaluate(s=>{const r=document.querySelector(s).getBoundingClientRect();return {x:r.left,y:r.top,width:r.width,height:r.height}},sel);
+   await p.screenshot({path:`${OUT}/${s}-${W}-${t}.png`,clip:{x:Math.max(0,b2.x-pad),y:Math.max(0,b2.y-pad),width:Math.min(W-Math.max(0,b2.x-pad),b2.width+2*pad),height:b2.height+2*pad}});
+   await p.setViewportSize({width:W,height:VH});
    const m=t==='now'?{}:await p.evaluate(s=>window.Pcheck?Pcheck(s):{},s);
    const sw=await p.evaluate(()=>document.documentElement.scrollWidth);
    R.push({s,W,t,sw,h:Math.round(bb.height),err:er.slice(),...m});console.log(JSON.stringify(R[R.length-1]))}

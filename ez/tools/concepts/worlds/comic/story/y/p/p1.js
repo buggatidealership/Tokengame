@@ -27,16 +27,16 @@ function chars(D){const sec=document.querySelector('.wc-chars');if(!sec)return;c
     c.querySelector('.pp1-rk').innerHTML=P.ext('#'+(i+1),{size:sm?26:30,fill:i===0?'gold':'cream',shade:i===0?'#7a2a06':'#3d0a07',depth:4});
     c.querySelector('.pp1-adm').innerHTML=P.ext(i===0?'GOLDEN TICKET':'SEASON 1',{font:'Bangers',size:sm?13:15,fill:i===0?'gold':'cream',shade:'#3d0a07',depth:2,sw:2.2,hl:false});
     const csz=sm?56:66;c.querySelector('.pp1-coin').innerHTML=P.coin(x.m,csz,{holo:i===0});
-    const nmax=top-csz-18;const mc=P.mcol(x.m),nf=x.m==='GROK'?['#8d8796','#3a3540','#15121a']:[P.lighten(mc,.55),mc,P.shade(mc,.72)];
-    c.querySelector('.pp1-name').innerHTML=P.ext(x.name.toUpperCase(),{size:sm?34:40,fill:nf,shade:x.m==='GROK'?'#000':P.shade(mc,.4),max:nmax,depth:5});
+    const stack=matchMedia('(min-width:1000px)').matches,nmax=stack?top-6:top-csz-18;const mc=P.mcol(x.m),nf=x.m==='GROK'?['#8d8796','#3a3540','#15121a']:[P.lighten(mc,.55),mc,P.shade(mc,.72)];
+    c.querySelector('.pp1-name').innerHTML=P.ext(x.name.toUpperCase(),{size:stack?52:(sm?34:40),fill:nf,shade:x.m==='GROK'?'#000':P.shade(mc,.4),max:nmax,depth:5});
     const roles=['WE BET ON ITS CALL','IN THE HUNT','IN THE HUNT','LAST PLACE'];
     c.querySelector('.pp1-role').innerHTML=`<b class="pp1-chip pp1-chip${i===0?'g':i===3?'r':'k'}">${roles[i]}</b>`;
     const up=x.pnl>=0;const pl=P.ext(P.pm(x.pnl),{size:sm?36:42,fill:up?'green':'red',shade:up?'#053b20':'#5e0703',max:cw-28,depth:6,cls:'pp1-cnt'});
     c.querySelector('.pp1-plv').innerHTML=pl;P.countUp(c.querySelector('.pp1-plv svg'),Math.abs(x.pnl),up?'+':'−');
-    c.querySelector('.pp1-rwv').innerHTML=P.ext(`${x.W}/${x.tot}`,{size:sm?22:26,fill:'gold',shade:'#7a0c06',depth:3});
+    c.querySelector('.pp1-rwv').innerHTML=P.ext(`${x.W}/${x.tot}`,{size:sm?24:28,max:cw*.42,fill:'gold',shade:'#7a0c06',depth:3});
     c.querySelector('.pp1-tiles').innerHTML=x.last5.map(s=>`<i class="pp1-t ${s==='W'?'pp1-tw':'pp1-tl'}"><svg viewBox="0 0 20 20" aria-hidden="true">${s==='W'?'<path d="M4.5 10.5l3.8 3.8L15.8 6" fill="none" stroke="#0d0b10" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 10.5l3.8 3.8L15.8 6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>':'<path d="M5.5 5.5l9 9M14.5 5.5l-9 9" fill="none" stroke="#0d0b10" stroke-width="5.4" stroke-linecap="round"/><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>'}</svg></i>`).join('');
     const b=x.best,bu=b.v>=0;
-    c.querySelector('.pp1-best').innerHTML=`<span class="pp1-lab">Best call</span>${P.ext(P.pm(b.v),{size:sm?20:24,fill:bu?'green':'red',shade:bu?'#053b20':'#5e0703',depth:3,max:cw*.5})}<span class="pp1-bc">${P.esc(b.r.co)} (${P.esc(b.r.ticker)})</span>`;
+    c.querySelector('.pp1-best').innerHTML=`<span class="pp1-lab">Best call</span>${P.ext(P.pm(b.v),{size:sm?20:24,fill:bu?'green':'red',shade:bu?'#053b20':'#5e0703',depth:3,max:cw*.52})}<span class="pp1-bc">${P.esc(b.r.co)} (${P.esc(b.r.ticker)})</span>`;
     c.insertAdjacentHTML('afterbegin',`<p class="pp-sr">#${i+1} ${x.name}, ${P.esc(x.ver)}. ${roles[i].toLowerCase()}. Current P&amp;L ${P.pm(x.pnl)}. Right way on ${x.W} of ${x.tot} calls. Highest P&amp;L ${P.pm(b.v)} on ${P.esc(b.r.co)}. Last five: ${x.last5.map(s=>s==='W'?'right':'wrong').join(', ')}.</p>`);
     c.removeAttribute('aria-hidden')});
   grid.removeAttribute('aria-hidden')}
@@ -57,7 +57,7 @@ function season(D){const sec=document.querySelector('.wc-season');if(!sec)return
 function fillTiles(RR){document.querySelectorAll('.pp1-bis .pp1-stb').forEach(s=>{if(s.dataset.ok||!s.offsetParent)return;const r=RR[s.dataset.n],w=s.clientWidth,sm=w<150;s.dataset.ok=1;
   const up=r.a>0,Wn=P.winners(r);
   s.querySelector('.pp1-no').innerHTML=P.ext('#'+r.n,{size:sm?17:21,fill:'gold',shade:'#7a2a06',depth:3});
-  s.querySelector('.pp1-won').innerHTML=Wn.length?`<span class="pp1-ws">${Wn.map(m=>P.coin(m,Wn.length>1?(sm?22:26):(sm?24:30),{dp:2})).join('')}</span>${P.ext(Wn.length>1?'TIE':'WON',{font:'Bangers',size:sm?12:14,fill:'cream',shade:'#3d0a07',depth:2,sw:2,hl:false})}`
+  s.querySelector('.pp1-won').innerHTML=Wn.length?`<span class="pp1-ws">${Wn.map(m=>P.coin(m,Wn.length>1?(sm?19:26):(sm?24:30),{dp:2})).join('')}</span>${P.ext(Wn.length>1?'TIE':'WON',{font:'Bangers',size:sm?12:14,fill:'cream',shade:'#3d0a07',depth:2,sw:2,hl:false})}`
     :`<i class="pp1-nob"><svg viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="#0d0b10" stroke-width="6" stroke-linecap="round"/><path d="M5 5l10 10M15 5L5 15" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></i>${P.ext('NOBODY',{font:'Bangers',size:sm?11:13,fill:'cream',shade:'#3d0a07',depth:2,sw:2,hl:false})}`;
   s.querySelector('.pp1-mv').innerHTML=P.ext((up?'+':'−')+P.pct(r.a),{size:sm?24:30,fill:'white',shade:up?'#053b20':'#5e0703',depth:4,max:w-12})})}
 
