@@ -10,7 +10,7 @@ T={'vault':[('now','Today','The caption is gone: the painting carries no words.'
  ('v4','V4 Stencilled on the wall','A heist crew\'s marking sprayed on the wet wall, the paint running in the rain, a red arrow at the door.'),
  ('v5','V5 Light on the wet floor','The light pouring out lands on the wet ground right of the door, and the words are in it, flat on the floor.')],
  'trans':[('now','Today','A ruled seam: the gold ground stops, the black starts.'),
- ('t1','T1 The coin goes in','The coin on the coin-flip line is tossed off the chart, falls down the margin and drops into the vault\'s pile. (Board: its path shown as a trail.)'),
+ ('t1','T1 The coin goes in','The coin on the coin-flip line rolls off along its line, finds its way down the margin and drops into the vault\'s pile, shrinking into the painting. (Board: its path shown as a trail; see the video.)'),
  ('t2','T2 The page tears','The gold page ends in a torn edge; through it the night and its rain. The strip below the tear falls away as you scroll.'),
  ('t3','T3 The night soaks through','The vault\'s rain falls on the ground before the vault arrives; the gold ink runs from the seam in drips that lengthen.'),
  ('t4','T4 The vault\'s light reaches up','A beam leaves the painting\'s top: the rain in it turns gold, and the panel and caption above catch a warm rim.'),
