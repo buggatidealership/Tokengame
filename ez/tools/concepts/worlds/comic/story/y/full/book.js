@@ -10,7 +10,7 @@
 (function(){
 const X=window.DT,P=window.POP,S=window.SE,D=document,H=D.documentElement,INK=X.INK,f1=X.f1;
 const book=D.getElementById('wc-book');if(!X||!book){H.classList.add('cb-ready');return}
-H.classList.add('cb-on');
+H.classList.add('cb-on','cb-t-'+CBT.TAKE);
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const desk=()=>innerWidth>=1000;
 const hs=s=>{let h=7;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h%9973+1};
@@ -27,45 +27,18 @@ function multi(parts,o){let x=0;const L=parts.map(p=>{const q=Object.assign({},o
   const ox=(w-w0)/2+pad,oy=(h-h0)/2+pad+S0*.95;let g='';L.forEach(r=>{g+=X.word(r.p.t,Object.assign({},r.q,{x:ox+r.x,y:oy,rot:0}))});
   return {w,h,svg:X.svg(w,h,`<g transform="rotate(${o.rot||0} ${f1(w/2)} ${f1(h/2)})">${g}</g>`,'cb-lw')}}
 
-/* ---------- skins: a hand-drawn box behind an element's own text ---------- */
-const SK={yellow:['#fffbd0','#ffe23a','#ffb800','#a35a00','#ff9a00'],green:['#c9ffe0','#2fe08a','#0fa055','#053b20','#06803f'],red:['#ffc4bc','#ff4a3a','#d4180f','#5e0703','#a0100a'],
-  blue:['#cbe6ff','#4ea6ff','#1f5fd8','#0b2366','#143e98'],pink:['#ffd0e2','#ff5c98','#d9145a','#5a0322','#a00c43'],black:['#5d5668','#2c2733','#121016','#000000','#000000'],
-  white:['#ffffff','#fffbe8','#efe0b8','#6a4a14','#d6c08a'],gold:['#fff6b0','#ffd21f','#f29a00','#7a2a06','#d97f00'],cream:['#ffffff','#fff3d0','#f2d9a0','#5b2a0c','#d9b46a'],
-  purple:['#ecd2ff','#b46bff','#7a2fe0','#33106b','#5a1fb0'],orange:['#ffe0a8','#ff9a2e','#ff6a0a','#6e2104','#c84a00']};
-/* a closed outline of a box, an ellipse-ended pill or a circle, inset by k, its edges wobbled a little (seeded, so an inset matches) */
-function shape(kind,w,h,k,seed,wob){const r=X.rng(seed),J=()=>(r()-.5)*2*wob,pts=[];
-  if(kind==='circle'||kind==='pill'){const rad=Math.min(w,h)/2-k,cx=w/2,cy=h/2,half=kind==='pill'?Math.max(0,w/2-h/2):0,n=kind==='pill'?14:28;
-    const arc=(ax,a0)=>{for(let i=0;i<=n;i++){const a=a0+Math.PI*i/n;pts.push([ax+Math.cos(a)*(rad+J()),cy+Math.sin(a)*(rad+J())])}};
-    if(kind==='circle'){for(let i=0;i<n*2;i++){const a=Math.PI*i/n;pts.push([cx+Math.cos(a)*(rad+J()),cy+Math.sin(a)*(rad+J())])}}
-    else{arc(cx+half,-Math.PI/2);arc(cx-half,Math.PI/2)}}
-  else{const x0=k,y0=k,x1=w-k,y1=h-k,st=Math.max(9,Math.min(w,h)/3);const side=(ax,ay,bx,by)=>{const L=Math.hypot(bx-ax,by-ay),n=Math.max(1,Math.round(L/st));for(let i=0;i<n;i++){const t=i/n,nx=-(by-ay)/L,ny=(bx-ax)/L,j=i?J():J()*1.3;pts.push([ax+(bx-ax)*t+nx*j,ay+(by-ay)*t+ny*j])}};
-    side(x0,y0,x1,y0);side(x1,y0,x1,y1);side(x1,y1,x0,y1);side(x0,y1,x0,y0)}
-  return 'M'+pts.map(p=>f1(p[0])+' '+f1(p[1])).join('L')+'Z'}
-const skc={};
-/* o: pal (key of SK), kind (box|pill|circle), drop (px), ow (outer ink), key (white keyline), dots (true), band (true), frame (front ring only), wob */
-function skinURI(w,h,o){const k=[w,h,o.pal,o.kind,o.drop,o.ow,o.frame?1:0,o.dots===false?0:1,o.seed||0].join('|');if(skc[k])return skc[k];
-  const p=SK[o.pal]||SK.yellow,dr=o.drop!=null?o.drop:3,ow=o.ow!=null?o.ow:2.6,key=o.key!=null?o.key:1.3,sd=o.seed||hs(k),wob=o.wob!=null?o.wob:.45,kind=o.kind||'box';
-  const W=w+dr,Hh=h+dr,id='s'+(sd%997),sh=kk=>shape(kind,w,h,kk,sd,wob);let s='';
-  if(o.frame){/* the ring alone, drawn above the element's own content: thick ink, white keyline, thin inner ink */
-    s=`<path d="${sh(0)} ${sh(ow)}" fill="${INK}" fill-rule="evenodd"/><path d="${sh(ow)} ${sh(ow+key)}" fill="#fff" fill-rule="evenodd" opacity=".85"/><path d="${sh(ow+key+2.2)}" fill="none" stroke="${INK}" stroke-width=".8" stroke-opacity=".35"/>`;
-    return skc[k]=X.uri(W,Hh,s)}
-  if(o.droponly)return skc[k]=X.uri(W,Hh,`<path d="${sh(0)}" fill="${INK}" transform="translate(${dr} ${dr})"/>`);
-  const g1=`<linearGradient id="${id}f" x1="0" y1="0" x2="${kind==='box'&&w>h*2.4?.18:.42}" y2="1"><stop offset="0" stop-color="${p[0]}"/><stop offset=".3" stop-color="${p[1]}"/><stop offset=".52" stop-color="${p[1]}"/><stop offset="1" stop-color="${p[2]}"/></linearGradient>`;
-  s+=`<defs>${g1}<clipPath id="${id}c"><path d="${sh(ow+key)}"/></clipPath></defs>`;
-  if(dr>0){s+=`<path d="${sh(0)}" fill="${INK}" transform="translate(${dr} ${dr})"/>`;if(dr>=4)s+=`<path d="${sh(0)}" fill="${p[3]}" transform="translate(${f1(dr*.45)} ${f1(dr*.45)})"/>`}
-  s+=`<path d="${sh(0)}" fill="${INK}"/><path d="${sh(ow)}" fill="#fff"/><path d="${sh(ow+key)}" fill="url(#${id}f)"/>`;
-  s+=`<g clip-path="url(#${id}c)">`;
-  if(o.dots!==false){const sp=Math.max(3.4,Math.min(5.5,Math.min(w,h)/6));s+=X.dots(0,0,w,h,{sp,ang:45,col:p[4],rmax:sp*.62,op:o.dop||.55,f:(x,y)=>Math.max(0,Math.min(1,((x/w)*.45+(y/h)*.75-.55)/.6))**1.15})}
-  if(o.band!==false){const bh=Math.max(1.6,Math.min(h*.14,5));s+=`<path d="M0 ${f1(h*.24)}L${f1(w)} ${f1(h*.24-(kind==='box'?Math.min(6,w*.04):0))}" stroke="#fff" stroke-opacity=".38" stroke-width="${f1(bh)}"/>`}
-  s+=`<path d="${sh(ow+key)}" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.6" transform="translate(-.8 -.8)"/></g>`;
-  s+=`<path d="${sh(ow+key+2.4)}" fill="none" stroke="${INK}" stroke-width=".75" stroke-opacity=".3"/>`;
-  return skc[k]=X.uri(W,Hh,s)}
+/* ---------- skins: a handmade box behind an element's own text, in the take's way (takes.js) ---------- */
+const skinURI=(w,h,o)=>CBT.skinURI(w,h,o);
+/* inner lettering: calmer than a headline, never extruded (takes.js) */
+const IL=(t,o)=>CBT.IL(t,Object.assign({seed:hs(t)},o));
+/* the largest inner-lettering size (<= s) that fits maxW */
+function fitIL(t,s,maxW){for(let i=0;i<16;i++){if(IL(t,{size:s}).w<=maxW)return s;s*=.94}return s}
 /* put a skin on an element: its own border, background and shadow go; a pseudo-element carries the drawing behind the text */
 function skin(el,o){if(!el||!el.offsetWidth)return;const cs=getComputedStyle(el),bl=parseFloat(cs.borderLeftWidth)||0,bt=parseFloat(cs.borderTopWidth)||0;
   const w=Math.round(el.offsetWidth),h=Math.round(el.offsetHeight);if(w<6||h<6)return;const dr=o.drop!=null?o.drop:3;
   if(cs.position==='static')el.style.position='relative';
   el.classList.add(o.frame?'cb-skf':'cb-sk');el.style.setProperty('--skl',(-bl)+'px');el.style.setProperty('--skt',(-bt)+'px');el.style.setProperty('--skw',(w+dr)+'px');el.style.setProperty('--skh',(h+dr)+'px');
-  if(o.frame){el.style.setProperty('--sk2',skinURI(w,h,o));el.style.setProperty('--sk',skinURI(w,h,Object.assign({},o,{frame:0,droponly:1})))}
+  if(o.frame){el.style.setProperty('--sk2',skinURI(w,h,o));el.style.setProperty('--sk',skinURI(w,h,Object.assign({},o,{droponly:1})))}
   else el.style.setProperty('--sk',skinURI(w,h,o))}
 
 /* ---------- panel grounds ---------- */
@@ -84,13 +57,6 @@ function cover(){const root=D.querySelector('.cvx.c2');if(!root)return;const pg=
   const dk=root.clientWidth>=900,kk=dk?1:Math.min(1,root.clientWidth/360);
   /* grounds: each panel its own colour, the light at its subject, its contour along its own cut */
   const panels=[['mh',root.querySelector('.c2-mh')],...[1,2,3,4].map(i=>['p'+i,root.querySelector('.c2-p'+i)]),['fm',root.querySelector('.c2-fm')]];
-  for(const [k,el] of panels){if(!el)continue;const W=el.offsetWidth,Hh=el.offsetHeight,w=W;
-    const q={p1:[[0,0],[.64*w-4,0],[.58*w-4,Hh],[0,Hh]],p2:[[.64*w+4,0],[w,0],[w,Hh],[.58*w+4,Hh]],p3:[[0,0],[.43*w-4,0],[.49*w-4,Hh],[0,Hh]],p4:[[.43*w+4,0],[w,0],[w,Hh],[.49*w+4,Hh]]}[k]||[[0,0],[w,0],[w,Hh],[0,Hh]];
-    const xs=q.map(p=>p[0]),x0=Math.min(...xs),x1=Math.max(...xs);const cx=k==='mh'?W*.42:k==='fm'?W*.5:x0+(x1-x0)*({p1:.48,p2:.62,p3:.5,p4:.55}[k]),cy=k==='mh'?Hh*.6:k==='fm'?Hh*.5:Hh*.58;
-    el.style.backgroundImage=X.groundURI(W,Hh,{c:GR[k],cx,cy,seed:hs(k),sp:k==='mh'?7.5:6.6,n:28,poly:q,bw:8,r0:Math.min(x1-x0,Hh)*.18,r1:Math.hypot(x1-x0,Hh)*.62,
-      holes:k==='fm'?holesOf(el,'.wc-film-slot'):[],
-      speed:{r0:k==='mh'?Math.min(W,Hh)*.42:Math.min(x1-x0,Hh)*.36,n:k==='mh'?44:26,l0:10,l1:k==='mh'?100:60,w0:1,w1:k==='mh'?5:3.6,seed:hs(k+'s'),col:k==='p2'?'#c3140c':INK,op:k==='p2'?.6:.6}});
-    el.style.backgroundSize=W+'px '+Hh+'px'}
   /* the headline, glyph by glyph */
   const h1=root.querySelector('.cvx-h1'),tw=root.querySelector('.c2-t');
   if(h1&&tw){const W=tw.clientWidth,bal=root.querySelector('.c2-bal');
@@ -111,11 +77,14 @@ function cover(){const root=D.querySelector('.cvx.c2');if(!root)return;const pg=
       +X.word('EARNINGS',{x:6+we/2,y:y2,size:s2,fill:'yellow',seed:5,jr:6,jb:.06,grow:.1,rot:-3,depth:Math.round(s2*.11),dot:'#ff6a0a',dotTo:'br'});
     h1.insertAdjacentHTML('beforeend',`<span class="cb-hl">${X.svg(W,hh,g)}</span>`)}
   /* sound words */
-  const sf=(sel,txt,o,burst)=>{const el=root.querySelector(sel);if(!el)return;const r=LW(txt,o,burst);el.innerHTML=r.svg;el.classList.add('cb-sfx')};
-  sf('.c2-ding','DING!',{size:dk?32:23*kk,fill:'yellow',seed:4,jr:9,jb:.09,grow:.25,rot:-10,depth:4,dot:'#e0140c',dotTo:'br'},(x,y)=>X.burst(x,y,19,31,11,5,{c:['#ff3a31','#fff'],ks:[.72],drop:3,ow:2.4,sx:1.6,sy:.74}));
-  sf('.c2-filed','FILED!',{size:dk?32:24*kk,fill:'white',seed:6,jr:8,jb:.07,grow:.2,rot:6,depth:4,dot:'#4a3fd0',dotTo:'br'},(x,y)=>X.burst(x,y,25,39,12,9,{c:['#ff3a6e','#ffd21f'],ks:[.72],drop:3,ow:2.6,sx:1.5,sy:.78}));
-  const mv=root.querySelector('.c2-mv');if(mv){const L=window.ROUNDS[window.ROUNDS.length-1],up=L.a>0;mv.innerHTML=LW((up?'▲':'▼')+Math.abs(L.a).toFixed(2)+'%',{size:dk?28:22,fill:up?'green':'red',seed:2,jr:3,jb:.03,depth:3,key:1.3,out:1.8,rot:-4,nodots:!dk}).svg}
-  const fb=root.querySelector('.c2-file b');if(fb){fb.innerHTML=LW('NO. '+window.ROUNDS.length,{size:dk?24:17*kk,fill:'white',seed:3,jr:4,jb:.04,depth:3,key:1.2,out:1.7,rot:-3,nodots:true}).svg}
+  /* the sound words inside the panels are inner elements too: lettered in the take's way, calmer than the headline */
+  const sf=(sel,txt,o)=>{const el=root.querySelector(sel);if(!el)return;el.innerHTML=IL(txt,o).svg;el.classList.add('cb-sfx')};
+  sf('.c2-ding','DING!',{size:dk?30:22*kk,fill:'red',rot:-10,jr:7,jb:.07});
+  sf('.c2-filed','FILED!',{size:dk?30:22*kk,fill:'pink',rot:6,jr:6,jb:.06});
+  const mv=root.querySelector('.c2-mv');if(mv){const L=window.ROUNDS[window.ROUNDS.length-1],up=L.a>0;mv.innerHTML=IL((up?'▲':'▼')+Math.abs(L.a).toFixed(2)+'%',{size:dk?28:22,fill:up?'green':'red',rot:-4}).svg}
+  const fb=root.querySelector('.c2-file b');if(fb){fb.innerHTML=IL('No. '+window.ROUNDS.length,{size:dk?24:17*kk,fill:'white',rot:-3}).svg}
+  /* the golden ticket's name and P&L: the holo ticket keeps its foil, its words lettered */
+  root.querySelectorAll('.cvx-tkt > svg.pp-ext, .cvx-tkp > svg.pp-ext').forEach(sv=>{const t=(sv.querySelector('text')||sv).textContent.trim(),pnl=!!sv.closest('.cvx-tkp');const h=parseFloat(sv.getAttribute('height'))||20;sv.outerHTML=IL(t,{size:h*.72,fill:pnl?'green':'white'}).svg});
   /* small elements: the issue strip, step captions and their numbers, the call pills, pass and fail, the logo ring, the film's tag, the hand-off */
   root.querySelectorAll('.c2-cap').forEach((c,i)=>{skin(c,{pal:'yellow',drop:0,ow:0,key:0,band:true,seed:40+i});const b=c.querySelector(':scope > b');skin(b,{pal:'red',kind:'circle',drop:2,ow:2,key:1,seed:50+i,dots:false})});
   root.querySelectorAll('.c2-b').forEach((b,i)=>skin(b,{pal:b.classList.contains('c2-bu')?'green':'red',kind:'pill',drop:2.5,ow:2.4,seed:60+i}));
@@ -125,6 +94,14 @@ function cover(){const root=D.querySelector('.cvx.c2');if(!root)return;const pg=
   skin(root.querySelector('.c2-fl'),{pal:'yellow',drop:3,ow:2.6,seed:83});
   root.querySelectorAll('.cvx-nx').forEach((b,i)=>skin(b,{pal:'yellow',drop:4,ow:2.8,seed:84+i}));
   root.querySelectorAll('.c2-cast .pp-coin,.c2-say .pp-coin,.c2-pfs .pp-coin').forEach((c,i)=>coinRing(c,90+i));
+  /* the grounds last, at the panels' final size */
+  for(const [k,el] of panels){if(!el)continue;const W=el.offsetWidth,Hh=el.offsetHeight,w=W;
+    const q={p1:[[0,0],[.64*w-4,0],[.58*w-4,Hh],[0,Hh]],p2:[[.64*w+4,0],[w,0],[w,Hh],[.58*w+4,Hh]],p3:[[0,0],[.43*w-4,0],[.49*w-4,Hh],[0,Hh]],p4:[[.43*w+4,0],[w,0],[w,Hh],[.49*w+4,Hh]]}[k]||[[0,0],[w,0],[w,Hh],[0,Hh]];
+    const xs=q.map(p=>p[0]),x0=Math.min(...xs),x1=Math.max(...xs);const cx=k==='mh'?W*.42:k==='fm'?W*.5:x0+(x1-x0)*({p1:.48,p2:.62,p3:.5,p4:.55}[k]),cy=k==='mh'?Hh*.6:k==='fm'?Hh*.5:Hh*.58;
+    el.style.backgroundImage=X.groundURI(W,Hh,{c:GR[k],cx,cy,seed:hs(k),sp:k==='mh'?7.5:6.6,n:28,poly:q,bw:8,r0:Math.min(x1-x0,Hh)*.18,r1:Math.hypot(x1-x0,Hh)*.62,
+      holes:k==='fm'?holesOf(el,'.wc-film-slot'):[],
+      speed:{r0:k==='mh'?Math.min(W,Hh)*.42:Math.min(x1-x0,Hh)*.36,n:k==='mh'?44:26,l0:10,l1:k==='mh'?100:60,w0:1,w1:k==='mh'?5:3.6,seed:hs(k+'s'),col:k==='p2'?'#c3140c':INK,op:k==='p2'?.6:.6}});
+    el.style.backgroundSize=W+'px '+Hh+'px'}
   /* the overlay: what breaks the borders (stars across the gutters, bolts, MINE! across the cut into the record) */
   pg.querySelectorAll(':scope > .cb-ov').forEach(n=>n.remove());
   const PR=pg.getBoundingClientRect(),R=el=>{const b=el.getBoundingClientRect();return {x:b.left-PR.left,y:b.top-PR.top,w:b.width,h:b.height}};
@@ -132,8 +109,8 @@ function cover(){const root=D.querySelector('.cvx.c2');if(!root)return;const pg=
   if(ra&&rb&&mh){const A=R(ra),B=R(rb),M=R(mh),w=A.w;
     ov+=X.star(A.x+.64*w,A.y-4,dk?15:12,{rot:-10})+X.star(A.x+2,A.y+A.h*.52,dk?13:10,{rot:12})+X.star(A.x+w-2,B.y-4,dk?11:8,{rot:-20});
     ov+=X.bolt(A.x+.585*w,A.y+A.h*.42,dk?1:.78,14)+X.bolt(M.x+M.w-24,M.y+M.h-30,dk?.9:.7,-24);
-    const mine=root.querySelector('.c2-mine');if(mine){const r=LW('MINE!',{size:dk?34:25*kk,fill:'pink',seed:9,jr:9,jb:.09,grow:.28,rot:-9,depth:4,dot:'#8a0a3a',dotTo:'br'});
-      const mx=B.x+.03*w,my=B.y+B.h-r.h*.56;ov+=`<g transform="translate(${f1(mx)} ${f1(my)})">${X.burst(r.w*.5,r.h*.45,r.h*.4,r.h*.64,11,13,{c:['#ffd21f','#fff7b0'],ks:[.7],drop:3,ow:2.6,sx:1.55,sy:.78})}${r.svg.replace(/^<svg[^>]*>|<\/svg>$/g,'')}</g>`}}
+    const mine=root.querySelector('.c2-mine');if(mine){const r=IL('MINE!',{size:dk?32:24*kk,fill:'gold',rot:-9,jr:7,jb:.07});
+      const mx=B.x+.03*w,my=B.y+B.h-r.h*.6;ov+=`<g transform="translate(${f1(mx)} ${f1(my)})">${r.inner}</g>`}}
   pg.insertAdjacentHTML('beforeend',`<div class="cb-ov cb-brk-wrap" aria-hidden="true">${X.svg(PR.width,PR.height,ov)}</div>`)}
 
 /* a model's coin: a hand-drawn ring (thick ink, white keyline, lit disc, a stepped drop); the leader's holo keeps its foil */
@@ -160,13 +137,14 @@ function chars(){const sec=D.querySelector('#wc-book .wc-chars');if(!sec||!sec.q
   /* the cards */
   const Dd=P.data();
   sec.querySelectorAll('.pp1-c').forEach((c,i)=>{const x=Dd.models[i];if(!x)return;const cw=c.querySelector('.pp1-cap').clientWidth,top=c.querySelector('.pp1-top').clientWidth,sm=cw<240,stack=dk;
-    const rk=c.querySelector('.pp1-rk');rk.innerHTML=LW('#'+(i+1),{size:sm?27:31,fill:i===0?'yellow':'cream',depth:4,jr:6,dot:i===0?'#ff6a0a':'#d9b46a'}).svg;
+    const rk=c.querySelector('.pp1-rk');rk.innerHTML=IL('#'+(i+1),{size:sm?27:31,fill:i===0?'gold':'cream'}).svg;
+    const ad=c.querySelector('.pp1-adm');if(ad)ad.innerHTML=IL(i===0?'GOLDEN TICKET':'SEASON 1',{size:sm?13:15,fill:i===0?'gold':'cream',jr:1,jb:.01}).svg;
     const nmax=stack?top-6:Math.min(top*.56,top-10);
-    c.querySelector('.pp1-name').innerHTML=LW(x.name.toUpperCase(),{size:X.fitw(x.name.toUpperCase(),{size:stack?50:(sm?36:42),grow:.06},nmax),fill:x.m,grow:.06,depth:5,jr:5,jb:.05,dotTo:'br'}).svg;
-    const up=x.pnl>=0,plv=c.querySelector('.pp1-plv');const pl=LW(pm(x.pnl),{size:X.fitw(pm(x.pnl),{size:sm?40:46},cw-26),fill:up?'green':'red',jr:3,jb:.035,js:.03,depth:5,dotTo:'br'});
+    const nmS=fitIL(x.name.toUpperCase(),stack?50:(sm?36:42),nmax);c.querySelector('.pp1-name').innerHTML=IL(x.name.toUpperCase(),{size:nmS,fill:x.m}).svg;
+    const up=x.pnl>=0,plv=c.querySelector('.pp1-plv');const pl=IL(pm(x.pnl),{size:fitIL(pm(x.pnl),sm?40:46,cw-26),fill:up?'green':'red'});
     plv.innerHTML=pl.svg;odometer(plv.querySelector('svg'),pm(x.pnl),'cb-'+x.m);
-    c.querySelector('.pp1-rwv').innerHTML=LW(`${x.W}/${x.tot}`,{size:sm?25:29,fill:'yellow',jr:4,jb:.04,depth:3,dotTo:'br',dot:'#ff6a0a'}).svg;
-    const be=c.querySelector('.pp1-best'),bs=be&&be.querySelector('svg.pp-ext');if(bs){const b=x.best,bu=b.v>=0;bs.outerHTML=LW(pm(b.v),{size:X.fitw(pm(b.v),{size:sm?21:25},(be.clientWidth||120)-16),fill:bu?'green':'red',jr:3,jb:.035,depth:3,nodots:true,cls:'cb-bv'}).svg}
+    c.querySelector('.pp1-rwv').innerHTML=IL(`${x.W}/${x.tot}`,{size:sm?25:29,fill:'yellow'}).svg;
+    const be=c.querySelector('.pp1-best'),bs=be&&be.querySelector('svg.pp-ext,svg.cb-il');if(bs){const b=x.best,bu=b.v>=0;bs.outerHTML=IL(pm(b.v),{size:fitIL(pm(b.v),sm?21:25,(be.clientWidth||120)-16),fill:bu?'green':'red',cls:'cb-bv'}).svg}
     /* small elements */
     skin(c.querySelector('.pp1-cap'),{pal:'yellow',drop:5,ow:3,key:1.5,seed:100+i,dop:.5});
     skin(c.querySelector('.pp1-rw'),{pal:'blue',drop:3,ow:2.4,seed:110+i});
@@ -214,8 +192,9 @@ function tiles(){const sec=D.querySelector('#wc-book .wc-season');if(!sec)return
     if(!stubUp){stubUp=X.groundURI(130,120,{c:['#8dffc0','#1fd47a','#0b9a52','rgba(230,255,240,.22)','#05703a'],cx:65,cy:38,seed:3,sp:6,n:22,poly:false,r0:18,r1:110});
       stubDn=X.groundURI(130,120,{c:['#ffb3a6','#ff4d40','#c3140c','rgba(255,230,225,.2)','#8a0a05'],cx:65,cy:38,seed:4,sp:6,n:22,poly:false,r0:18,r1:110})}
     s.style.backgroundImage=up?stubUp:stubDn;
-    if(first)s.querySelector('.pp1-mv').innerHTML=LW((up?'+':'−')+Math.abs(r.a).toFixed(2)+'%',{size:X.fitw('+00.00%',{size:sm?26:31},w-10),fill:'white',jr:3,jb:.035,js:.03,depth:xs?3:4,nodots:true,seed:r.n}).svg;
-    if(first)s.querySelector('.pp1-no').innerHTML=LW('#'+r.n,{size:xs?15:sm?17:21,fill:'yellow',jr:5,depth:2,nodots:true,seed:r.n+1}).svg;
+    if(first)s.querySelector('.pp1-mv').innerHTML=IL((up?'+':'−')+Math.abs(r.a).toFixed(2)+'%',{size:fitIL('+00.00%',sm?26:31,w-10),fill:'white',seed:r.n}).svg;
+    if(first)s.querySelector('.pp1-no').innerHTML=IL('#'+r.n,{size:xs?15:sm?17:21,fill:'gold',seed:r.n+1}).svg;
+    if(first)s.querySelectorAll('.pp1-won > svg.pp-ext').forEach(sv=>{const t=(sv.querySelector('text')||sv).textContent.trim();sv.outerHTML=IL(t,{size:xs?11:sm?12.5:14,fill:'cream',font:'Bangers',jr:1,jb:.01}).svg});
     skin(s.querySelector('.pp1-co'),{pal:'yellow',drop:2,ow:2,key:1,seed:r.n+3,dots:false});
     s.querySelectorAll('.pp-coin').forEach((c,j)=>coinRing(c,r.n*7+j));
     const nob=s.querySelector('.pp1-nob');if(nob){nob.style.boxShadow='none';nob.style.border='0';nob.style.background='transparent';skin(nob,{pal:'red',kind:'circle',drop:2,ow:2,key:1,seed:r.n,dots:false})}
@@ -246,7 +225,7 @@ function splash(){const sec=D.querySelector('#wc-book > .wc-splash');if(!sec)ret
   sec.querySelectorAll('.wc-cn').forEach((r,i)=>{const m=((r.querySelector('.wc-cn-n')||{}).textContent||'').trim().toUpperCase();
     const pal={GPT:['#7ff0c8','#10a37f','#06664d','rgba(220,255,240,.14)','#04402f'],CLAUDE:['#ffb58a','#e0602a','#8a3210','rgba(255,230,210,.14)','#5e1e06'],KIMI:['#8cbcff','#1a6bff','#0b3a9c','rgba(220,235,255,.14)','#082a70'],GROK:['#6a6474','#2a2530','#0d0b10','rgba(255,255,255,.07)','#000']}[m]||GR.navy;
     r.style.setProperty('--cb-t',(i%2?.6:-.6)+'deg');
-    const pc=r.querySelector('.wc-cn-p');if(pc&&!pc.dataset.cb){pc.dataset.cb=1;const t=pc.textContent.trim();pc.setAttribute('aria-label',t);pc.innerHTML=LW(t,{size:dk?34:30,fill:'white',jr:4,jb:.05,depth:4,nodots:true,seed:hs(t)+i}).svg}
+    const pc=r.querySelector('.wc-cn-p');if(pc&&!pc.dataset.cb){pc.dataset.cb=1;const t=pc.textContent.trim();pc.setAttribute('aria-label',t);pc.innerHTML=IL(t,{size:dk?34:30,fill:'white',seed:hs(t)+i}).svg}
     const sm=r.querySelector('small');if(sm){sm.style.boxShadow='none';sm.style.border='0';sm.style.background='transparent';skin(sm,{pal:'yellow',drop:2,ow:2,key:1,seed:44+i,dots:false})}
     const fc=r.querySelector('.wc-face');if(fc){fc.style.boxShadow='none'}
     r.style.borderColor='transparent';r.style.boxShadow='none';
@@ -268,7 +247,7 @@ function bet(){const sec=D.querySelector('#wc-book > .wc-bet');if(!sec)return;co
     const t=multi([{t:'BET #1: ',o:{fill:'yellow',dot:'#ff6a0a'}},{t:'NVIDIA',o:{fill:'nv',dot:'#2a5e00'}}],{size:X.fitw('BET #1: NVIDIA',{size:dk?70:52},Math.min(W,dk?700:W)),jr:5,jb:.06,depth:5,rot:-3,dotTo:'br'});
     h2.insertAdjacentHTML('afterbegin',`<span class="cb-ttl" aria-hidden="true" style="display:block">${t.svg}</span>`);
     const sm=h2.querySelector('small');if(sm){sm.style.boxShadow='none';sm.style.borderColor='transparent';sm.style.background='transparent';skin(sm,{pal:'yellow',drop:3,ow:2.4,seed:61})}}
-  const cw=sec.querySelector('.wc-chipw');if(cw){const tk=cw.querySelector('.wc-tick');if(tk&&!tk.querySelector('.cb-lw'))tk.insertAdjacentHTML('beforeend',LW('TICK… TOCK…',{size:dk?28:22,fill:'white',jr:8,jb:.08,rot:-6,depth:3,dot:'#9a8ad0',dotTo:'br',cls:'cb-brk'}).svg);
+  const cw=sec.querySelector('.wc-chipw');if(cw){const tk=cw.querySelector('.wc-tick');if(tk&&!tk.querySelector('.cb-il'))tk.insertAdjacentHTML('beforeend',IL('TICK… TOCK…',{size:dk?28:22,fill:'white',rot:-6,jr:6,jb:.06,cls:'cb-brk'}).svg);
     cw.style.boxShadow='none';cw.style.borderColor='transparent';
     ground(cw,(W,Hh)=>({c:GR.chip,cx:W/2,cy:Hh/2,seed:62,sp:7,n:26,poly:false,r0:Math.min(W,Hh)*.45,r1:Math.max(W,Hh)*.8,holes:holesOf(cw,'.wc-chip'),speed:{r0:Math.min(W,Hh)*.46,n:40,l0:12,l1:60,w0:1,w1:3,col:'#d4ff8a',op:.35,seed:63}}));
     skin(cw,{frame:1,ow:3.6,key:1.4,drop:6,seed:64})}
