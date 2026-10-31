@@ -280,6 +280,8 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
 79. **The page is one comic; the cut between sections is part of the design.** A section is a panel of one book, not a box on a scroll. Design the gutter and the arrival of each section (a "Meanwhile..." caption, a page turn, a splash, an abrupt cut) with the same care as the section, and give each panel its small, quiet life once it is there (lesson 32). A strong section that sits in its own world (a different ground) breaks the book, however good it is (lesson 27).
     - *Taught by:* "the background of the website itself is essentially supposed to be the comic... one box at a time... a unified storybook" and "small animations, small visual effects... that's what brings the comic alive", 31 Oct.
 
+78. **Never put a code-drawn object beside painted ones.** Next to painted, lit pieces, an object drawn in code (a vector lamp, a CSS cone) reads as a placeholder, however tidy; once a section is painted, every object in it comes from the same painted source (owner, 2026-10-31, on the loading lamps: the drawn one was "horrible... not even worth a try"). The same goes for a stand-in picture where the real subject is missing: show the subject itself, crafted (a round with no film shows its company's logo, painted), never a generic scene.
+
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
