@@ -4,7 +4,7 @@
    angle, the painted hologram seal with the EZ. logo, a drawn close cross and brushed arrows. Every word and number stays the page's
    own; nothing is rebuilt, so flip, the arrows, swipe, Escape and close keep working. Styles in h_slab.css, gated by html.p1-on
    (set by pop_p1.js, X3+ only). Painted plates, full names written out (make_site.py copies only media named in the page):
-   media/slab-acrylic-t1.jpg, media/slab-holo-t1.jpg, media/cert-paper-t1.jpg (in h_slab.css), media/cert-seal-t1.png (here). */
+   media/slab-acrylic-t1b.jpg, media/slab-holo-t1.jpg, media/cert-paper-t1.jpg (in h_slab.css), media/cert-seal-t1.png (here). */
 (function(){var D=document,H=D.documentElement,SEAL='media/cert-seal-t1.png';
 /* seeded jitter, so every shape is irregular but the same on every open */
 var S=7;function rnd(){S=(S*16807)%2147483647;return S/2147483647}function seed(v){S=(v|0)||7}

@@ -1,3 +1,4 @@
+import os
 import sys
 S=sys.argv[1]
 src=open('v15-season.html').read()
@@ -590,6 +591,13 @@ def world(name,title,out,layer=None):
         # pop_p1.js waits for the comic itself (the cast grid with its flags, the round tiles) and gates every page rule under html.p1-on.
         css+='\n'+''.join(open(S+f).read() for f in ['pop_lib.css','pop_p1.css','pop_founders.css'])
         story+=('\ntry{'+open(S+'pop_lib.js').read()+'\n'+open(S+'pop_p1.js').read()+'\n'+open(S+'pop_founders.js').read()+'}catch(e){console.error(e)}')
+        # (2026-10-31, owner's round H picks) Every round so far: the painted rack R2 and Golden Age tiles T2 (h_rounds); the opened
+        # round as the real slab T1 (h_slab); NVIDIA's die count with the S4 parts list (h_bet); the loading cover L3 and the film
+        # frame F3 (h_chrome). Each file gates itself (p1-on, sh-on) and fails alone.
+        for f in ['h_rounds','h_bet','h_chrome']+(['h_slab'] if os.environ.get('H_SLAB')!='0' else []):
+            if os.path.exists(S+f+'.js'):
+                css+='\n'+open(S+f+'.css').read()
+                story+=('\ntry{'+open(S+f+'.js').read()+'}catch(e){console.error(e)}')
         story+=('\ntry{(function(){var H=document.documentElement,done=0;function run(){if(done||H.getAttribute("data-sec")!=="upcoming"||!document.getElementById("wc-up")||!H.classList.contains("x2p-world"))return;done=1;'
                +''.join(open(S+f).read() for f in ['_se.js','_sg.js','g1.js'])
                +'}new MutationObserver(run).observe(H,{attributes:true,attributeFilter:["data-sec","class"]});run()})()}catch(e){console.error(e)}')
@@ -598,6 +606,8 @@ def world(name,title,out,layer=None):
     w=px.replace('</head>','<script>window.__x2pLB=1;window.__x2pNeedWorld=1;window.__x2pWorldName="%s"%s</script>\n<style id="x2p-world-css">%s</style>\n</head>'%(name,pre,css),1)
     if name=="comic" and not layer:
         # Luckiest Guy for the pop look (X3+ only); not render-blocking and not in __x2pF, so the cover does not wait for it
+        # the L3 loading cover's painting, asked for early (h_chrome.css draws it on #x2pLoad)
+        w=w.replace('<head>','<head>\n<link rel="preload" as="image" href="media/load-ring-l3.jpg" media="(max-aspect-ratio:1/1)" fetchpriority="high">\n<link rel="preload" as="image" href="media/load-ring-l3-desk.jpg" media="(min-aspect-ratio:1001/1000)" fetchpriority="high">',1)
         w=w.replace('</head>','<link id="x3p-pop-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Luckiest+Guy&display=swap" media="print" onload="this.media=\'all\'">\n</head>',1)
     if name=="comic":
         for a,b in [
