@@ -1,3 +1,6 @@
+/* the bank bars (2026-10-31): full = $200K or the top bank, whichever is more, since a flat $100K a call runs past $200K; the white
+   tick sits at $100K, break even */
+window.__waFull=function(){var A=window.__x2pPnl().A,t=200000;for(var k in A)t=Math.max(t,A[k].bal);return t};
 /* EZ Live X4+, the arcade fighting game (owner, 2026-10-29: "create the arcade one on a new page called Easy Live X4 Plus").
    build.py injects this into X2+'s build at DOMContentLoaded (after x2plus.js has registered its own handlers), with
    window.__x2pLB=1 (the Leaderboard tab is kept) and window.__x2pNeedWorld=1 (the cover waits for html.x2p-world).
@@ -124,12 +127,12 @@ function overview(){
     '<a class="wa-more" href="#/leaderboard">High scores, lead changes and every stat <span aria-hidden="true">▶</span></a>';
   main.appendChild(cs);
   var show=function(m){var f=fighters.filter(function(x){return x.m===m})[0],i=fighters.indexOf(f),a=f.a;
-    var hp=(function(b){var A=window.__x2pPnl().A,t=200000;for(var k in A)t=Math.max(t,A[k].bal);return Math.max(2,Math.min(100,b/t*100))})(a.bal);/* full bar = $200K or the top bank, whichever is more (a flat $100K a call since 2026-10-31 runs past $200K) */
+    var hp=Math.max(2,Math.min(100,a.bal/__waFull()*100));
     var seq=(a.seq||[]).slice(-5);var b=f.best;
     var lead=i===0?'<p class="wa-lead">On top of the bank. <b>Makes the call on bet #1.</b></p>':'<p class="wa-lead">'+usd(top.a.pnl-a.pnl)+' behind '+NICE[top.m]+'.</p>';
     cs.querySelector('.wa-card').innerHTML='<div class="wa-fh" style="--fc:'+COL[m]+'"><span class="wa-big">'+mk(m)+'</span><span class="wa-who"><span class="wa-no">No. '+(i+1)+'</span><b>'+NICE[m]+'</b><i>'+esc(MODELS[m].ver)+'</i></span></div>'+lead+
       '<div class="wa-hpw"><p class="wa-hl"><span>Bank</span><b>'+usd(a.bal)+'</b><em class="'+(a.pnl>=0?'wa-pos':'wa-neg')+'">'+usd(a.pnl,1)+' since the start</em></p>'+
-      '<div class="wa-hp'+(a.pnl<0?' wa-low':'')+'"><i style="width:'+hp.toFixed(1)+'%"></i><s title="Start: $100,000"></s></div><p class="wa-hk">White tick = the $100,000 start. Full bar = $200,000.</p></div>'+
+      '<div class="wa-hp'+(a.pnl<0?' wa-low':'')+'"><i style="width:'+hp.toFixed(1)+'%"></i><s title="$100K: break even" style="left:'+(1e7/__waFull()).toFixed(1)+'%"></s></div><p class="wa-hk">White tick = $100K, break even. Full bar = '+(__waFull()>200000?'the top bank':'$200K')+'.</p></div>'+
       '<div class="wa-fs"><div><p class="wa-fsl">Record</p><p class="wa-fsv"><b class="wa-pos">'+a.W+'</b> right <b class="wa-neg">'+a.L+'</b> wrong</p><p class="wa-fsk">on direction, '+(a.W+a.L)+' calls</p></div>'+
       '<div><p class="wa-fsl">Last 5 calls</p><p class="wa-dr">'+seq.map(function(s){return '<i class="'+(s==='W'?'wa-dw':'wa-dl')+'" title="'+(s==='W'?'right way':'wrong way')+'"></i>'}).join('')+'</p><p class="wa-fsk">green = right way</p></div></div>'+
       (b?'<p class="wa-sig"><span>Best hit</span>Called '+esc(b.r.co)+' '+(b.dn?'down':'up')+' in round '+b.r.n+': <b class="wa-pos">'+k(b.v)+'</b></p>':'');
@@ -197,7 +200,7 @@ function overview(){
 /* ================= THE HUD: the sticky header becomes the fight's top bar ================= */
 function hud(){
   var tin=document.querySelector('header.top .top-in');if(!tin||tin.querySelector('.wa-hud'))return;var p1=fighters[0],p2=fighters[1];
-  var hb=function(f,side){return '<span class="wa-hs wa-'+side+'" style="--fc:'+COL[f.m]+'"><span class="wa-hn"><i>'+mk(f.m)+'</i>'+NICE[f.m]+'</span><span class="wa-hbar"><i style="width:'+(function(b){var A=window.__x2pPnl().A,t=200000;for(var k in A)t=Math.max(t,A[k].bal);return Math.max(2,Math.min(100,b/t*100))})(f.a.bal).toFixed(1)+'%"></i><s></s></span></span>'};
+  var hb=function(f,side){return '<span class="wa-hs wa-'+side+'" style="--fc:'+COL[f.m]+'"><span class="wa-hn"><i>'+mk(f.m)+'</i>'+NICE[f.m]+'</span><span class="wa-hbar"><i style="width:'+Math.max(2,Math.min(100,f.a.bal/__waFull()*100)).toFixed(1)+'%"></i><s style="left:'+(1e7/__waFull()).toFixed(1)+'%"></s></span></span>'};
   var h=document.createElement('a');h.className='wa-hud';h.href='#/leaderboard';
   /* the clock: the next bell of any round with its calls in (each at its own exchange's close); after the last bell, results due;
      with no calls in, the next calls day */

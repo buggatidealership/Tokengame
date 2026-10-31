@@ -92,24 +92,33 @@ function tileKey(im,host){const go=()=>{const k=im.src;let v=KEY[k];
   if(v){host.classList.add('hr-tl');host.style.setProperty('--tg',v)}};im.complete&&im.naturalWidth?go():im.addEventListener('load',go,{once:true})}
 
 /* ---------------- keep it built ---------------- */
-let near=false;
-function ensure(){const sec=document.querySelector('#wc-book .wc-season.pp1-ms');if(!sec||!sec.offsetParent)return;
+let near=false,seen=null,io=null;
+/* the section is watched while it lives: coming near builds the rack, and coming back into view (after the round pop-up, another
+   tab or a rebuild made while it was hidden) re-checks everything */
+function watch(sec){if(sec===seen)return;seen=sec;if(!window.IntersectionObserver){near=true;return}
+  if(!io)io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){near=true;ensure()}},{rootMargin:'1500px 0px'});io.disconnect();io.observe(sec)}
+function ensure(){const any=document.querySelector('#wc-book .wc-season');if(any)watch(any);
+  const sec=document.querySelector('#wc-book .wc-season.pp1-ms');if(!sec||!sec.offsetParent)return;
   sec.classList.add('hr-ts','hr-t2');
   if(near)rack(sec);
   const ttl=sec.querySelector('.pp1-ttl');if(ttl&&sec.querySelector('.hr-rack'))ttl.classList.add('hr-lift');
-  sec.querySelectorAll('.wc-bis .wc-bi.pp1-bi:not(.hr-tile)').forEach(a=>{if(a.offsetParent)tile(a)})}
+  const built=[];sec.querySelectorAll('.wc-bis .wc-bi.pp1-bi:not(.hr-tile)').forEach(a=>{if(a.offsetParent&&tile(a))built.push(a)});fit(built)}
+/* the foot's two lines on a narrow phone (an 81px tile at 320): step a line that would cut off down, all tiles at once, one layout
+   read per step; floors 8px for the company, 6.5px for who won */
+function fit(ts){let todo=[];ts.forEach(a=>a.querySelectorAll('.hr-nm b,.hr-nm em').forEach(t=>{t.style.fontSize='';todo.push(t)}));
+  for(let i=0;i<8&&todo.length;i++){const over=todo.filter(t=>t.scrollWidth>t.clientWidth+.5);if(!over.length)break;
+    const sz=over.map(t=>parseFloat(getComputedStyle(t).fontSize));
+    todo=over.filter((t,k)=>{const fl=t.tagName==='B'?8:6.5;if(sz[k]<=fl)return false;t.style.fontSize=Math.max(fl,sz[k]-.5)+'px';return true})}}
 function start(){H.classList.add('hr-on');
-  const sec=document.querySelector('#wc-book .wc-season');
-  if(sec&&window.IntersectionObserver)new IntersectionObserver((es,o)=>{if(es.some(e=>e.isIntersecting)){near=true;o.disconnect();ensure()}},{rootMargin:'1500px 0px'}).observe(sec);else near=true;
   ensure();
-  const book=document.getElementById('wc-book');let t=0;const later=()=>{clearTimeout(t);t=setTimeout(ensure,160)};
+  const book=document.getElementById('wc-book');let t=0;const later=()=>{if(!t)t=setTimeout(()=>{t=0;ensure()},140)};/* a throttle, not a debounce: M3 repaints 80 tiles one by one */
   /* pop_p1 rebuilds the title and stubs on a width change or a redrawn book; "Show all" flips data-all; ignore our own writes */
-  const mine=n=>{const e=n&&(n.nodeType===1?n:n.parentElement);return !!(e&&e.closest&&e.closest('.hr-cov,.hr-rack'))};
+  const mine=n=>{const e=n&&(n.nodeType===1?n:n.parentElement);return !!(e&&e.closest&&e.closest('.hr-cov,.hr-rack,.wc-bi-art'))};/* .wc-bi-art: M3's canvases */
   if(book)new MutationObserver(rs=>{if(rs.every(r=>mine(r.target)||(r.type==='childList'&&r.addedNodes.length&&!r.removedNodes.length&&[...r.addedNodes].every(mine))))return;later()})
     .observe(book,{childList:true,subtree:true,attributes:true,attributeFilter:['data-all']});
   new MutationObserver(later).observe(H,{attributes:true,attributeFilter:['data-sec']});
   addEventListener('hashchange',()=>setTimeout(ensure,350));
-  let w0=innerWidth;addEventListener('resize',()=>{if(innerWidth===w0)return;w0=innerWidth;rackFit&&rackFit();later()})}
+  let w0=innerWidth;addEventListener('resize',()=>{if(innerWidth===w0)return;w0=innerWidth;rackFit&&rackFit();clearTimeout(start.f);start.f=setTimeout(()=>fit([...document.querySelectorAll('#wc-book .wc-season .wc-bi.hr-tile')].filter(a=>a.offsetParent)),300);later()})}
 /* wait for pop_p1's stubs on the round tiles (it waits for the comic itself) */
 (function wait(n){if(H.classList.contains('p1-on')&&H.classList.contains('p1-ready')&&window.POP&&document.querySelector('#wc-book .wc-season .pp1-ttl')&&document.querySelector('#wc-book .wc-season .wc-bi.pp1-bi'))start();
   else if(n<600)setTimeout(()=>wait(n+1),250)})(0);
