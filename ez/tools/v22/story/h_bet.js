@@ -104,3 +104,14 @@ function start(){try{dress()}catch(e){window.__x2pHbetErr=e;console.error('h_bet
   if(D.fonts&&D.fonts.ready)D.fonts.ready.then(()=>D.querySelectorAll('.hb-wrap .hb-art').forEach(a=>a.__hbPlace&&a.__hbPlace()))}
 (function wait(n){if(H.classList.contains('p1-on')&&!H.classList.contains('cd-on')&&D.querySelector('#wc-book .wc-bet')&&window.MODELS)start();else if(n<480)setTimeout(()=>wait(n+1),250)})(0);
 })();
+/* H_BET ALIVE (owner, 2026-10-31): the coin glint in the vault and K1's lamps (positions measured on the paintings, round H5's
+   effects 8 and 9); each runs only while its picture is on screen. */
+;(function(){var D=document,t=0,io=null;
+ function add(host,list,cls){if(!host||host.querySelector('.'+cls))return null;if(getComputedStyle(host).position==='static')host.style.position='relative';
+  list.forEach(function(a){var s=D.createElement('i');s.className=cls+a[2];s.setAttribute('aria-hidden','true');s.style.left=a[0]+'%';s.style.top=a[1]+'%';host.appendChild(s)});return host}
+ function go(){var v=D.querySelector('.wc-bet.hb-on .hb-open .i'),k=D.querySelector('.wc-bet.hb-on .hb4-a .hb-ink')||D.querySelector('.wc-bet.hb-on .hb4-a');
+  if(!v||!k){if(++t<120)setTimeout(go,500);return}
+  var a=add(v,[[44,66,''],[51.5,73,' s2']],'hb-star'),b=add(k,[[70.9,50.3,' g'],[80.6,50.3,' r']],'hb-led');
+  if(!window.IntersectionObserver)return;io=io||new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle('hb-lv',e.isIntersecting)})},{threshold:.2});
+  [a,b].forEach(function(h){h&&io.observe(h)})}
+ go()})();

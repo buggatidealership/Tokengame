@@ -10347,6 +10347,21 @@ html.p1-on .wc-bet.hb-on h2.hb-h .hb-w2{font-size:.74em!important;margin-left:.0
  .hb-on .hb4-bom li{font-size:16px;padding:12px 14px}.hb-on .hb4-n{font-size:26px}.hb-on .hb4-d{font-size:20px}.hb-on .hb4-rd{font-size:20px}.hb-on .hb4-ln{height:34px}
  .hb-on .hbc-sk{width:66px;height:58px}.hb-on .hbc-cl{font-size:19px}.hb-on .hbc-cl b{font-size:30px}.hb-on .hbc-close{gap:22px}
 }
+/* H_BET ALIVE (owner, 2026-10-31: "the switch not yet thrown... the coin in the vault glints... you can already push"; round H5's
+   effects 8 and 9): a coin in the vault catches the light (the pool's gold), and K1's green and red lamps glow in turn (right or
+   wrong is still open). They run only while their picture is on screen (.hb-lv, h_bet.js) and are still with reduced motion. */
+.hb-on .hb-star{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;pointer-events:none;opacity:0;z-index:2;
+ background:radial-gradient(circle,#fff 0,#fffbe6 22%,#ffe07a 45%,rgba(255,220,120,0) 72%);filter:drop-shadow(0 0 3px rgba(255,240,190,.9));
+ clip-path:polygon(50% 0,57% 43%,100% 50%,57% 57%,50% 100%,43% 57%,0 50%,43% 43%)}
+.hb-on .hb-led{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;pointer-events:none;opacity:0;mix-blend-mode:screen}
+.hb-on .hb-led.g{background:radial-gradient(circle,rgba(170,255,190,.95) 0,rgba(40,230,110,.55) 30%,rgba(40,230,110,0) 70%)}
+.hb-on .hb-led.r{background:radial-gradient(circle,rgba(255,200,190,.95) 0,rgba(255,50,40,.55) 30%,rgba(255,50,40,0) 70%)}
+@media (prefers-reduced-motion:no-preference){
+ .hb-on .hb-lv .hb-star{animation:hb-tw 9s ease-in-out .4s infinite}.hb-on .hb-lv .hb-star.s2{animation-delay:1.1s}
+ .hb-on .hb-lv .hb-led{animation:hb-lamp 4.8s ease-in-out infinite}.hb-on .hb-lv .hb-led.r{animation-delay:-2.4s}
+}
+@keyframes hb-tw{0%,6%,100%{opacity:0;transform:scale(.2) rotate(0)}14%{opacity:1;transform:scale(1) rotate(45deg)}22%,99%{opacity:0;transform:scale(.3) rotate(90deg)}}
+@keyframes hb-lamp{0%,100%{opacity:.05}50%{opacity:.9}}
 
 /* X3+ chrome, round H (owner, 2026-10-31, picks from tools/concepts/worlds/comic/story/h/chrome, board x2p-x3p-h-chrome-390.png).
    Part 1, L3 "Ring at night": the loading cover (#x2pLoad, the CURTAIN block of skin-x2plus.css) is the boxing ring seen from above
@@ -17335,6 +17350,17 @@ function start(){try{dress()}catch(e){window.__x2pHbetErr=e;console.error('h_bet
   if(D.fonts&&D.fonts.ready)D.fonts.ready.then(()=>D.querySelectorAll('.hb-wrap .hb-art').forEach(a=>a.__hbPlace&&a.__hbPlace()))}
 (function wait(n){if(H.classList.contains('p1-on')&&!H.classList.contains('cd-on')&&D.querySelector('#wc-book .wc-bet')&&window.MODELS)start();else if(n<480)setTimeout(()=>wait(n+1),250)})(0);
 })();
+/* H_BET ALIVE (owner, 2026-10-31): the coin glint in the vault and K1's lamps (positions measured on the paintings, round H5's
+   effects 8 and 9); each runs only while its picture is on screen. */
+;(function(){var D=document,t=0,io=null;
+ function add(host,list,cls){if(!host||host.querySelector('.'+cls))return null;if(getComputedStyle(host).position==='static')host.style.position='relative';
+  list.forEach(function(a){var s=D.createElement('i');s.className=cls+a[2];s.setAttribute('aria-hidden','true');s.style.left=a[0]+'%';s.style.top=a[1]+'%';host.appendChild(s)});return host}
+ function go(){var v=D.querySelector('.wc-bet.hb-on .hb-open .i'),k=D.querySelector('.wc-bet.hb-on .hb4-a .hb-ink')||D.querySelector('.wc-bet.hb-on .hb4-a');
+  if(!v||!k){if(++t<120)setTimeout(go,500);return}
+  var a=add(v,[[44,66,''],[51.5,73,' s2']],'hb-star'),b=add(k,[[70.9,50.3,' g'],[80.6,50.3,' r']],'hb-led');
+  if(!window.IntersectionObserver)return;io=io||new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle('hb-lv',e.isIntersecting)})},{threshold:.2});
+  [a,b].forEach(function(h){h&&io.observe(h)})}
+ go()})();
 }catch(e){console.error(e)}
 try{/* X3+ chrome, round H, part 2 (owner, 2026-10-31: F3 "Through the page", from tools/concepts/worlds/comic/story/h/chrome/f3.js):
    the explainer film on the cover seen through a hole torn in a comic page, a hand-cut caption box presenting it, the running time in
