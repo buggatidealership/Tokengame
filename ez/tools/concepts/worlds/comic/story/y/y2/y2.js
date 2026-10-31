@@ -97,8 +97,9 @@ const cards=await Promise.all(order.map(async(m,i)=>{const a=P[m],tot=a.W+a.L,b=
   const src=lg?'media/'+lg.f:'',brand=(src&&await bpal(src))||(lg&&lg.c)||'#3a3f4a';
   const key=lum(Mm.c)<.05?'#c9d3e6':Mm.c;// Grok's own colour is ink: its lamp burns a cool white instead
   const capInk=lum(brand)>.35?'#04070e':'#f8f0d9';
+  const tape=i===0?'#fdbc2a':lum(Mm.c)<.05?'#8a8f99':Mm.c,tapeInk=lum(tape)>.28?'#04070e':'#f8f0d9';
   const seq=a.seq.slice(-5);const sx=(i*137)%400,sy=(i*211)%400;
-  return `<article class="y2-c${i===0?' y2-gold':''}" data-m="${m}" style="--mc:${Mm.c};--key:${key};--brand:${brand};--capink:${capInk};--sx:${sx}px;--sy:${sy}px;--tilt:${[-1.2,.9,-.7,1.1][i%4]}deg">
+  return `<article class="y2-c${i===0?' y2-gold':''}" data-m="${m}" style="--mc:${Mm.c};--key:${key};--brand:${brand};--capink:${capInk};--tape:${tape};--tapeink:${tapeInk};--sx:${sx}px;--sy:${sy}px;--tilt:${[-1.2,.9,-.7,1.1][i%4]}deg">
   <div class="y2-lid" aria-hidden="true"><i class="y2-key"></i><i class="y2-ht"></i><i class="y2-sc"></i></div>
   <i class="y2-ex y2-ex-t" aria-hidden="true"></i><i class="y2-ex y2-ex-b" aria-hidden="true"></i><i class="y2-ex y2-ex-l" aria-hidden="true"></i><i class="y2-ex y2-ex-r" aria-hidden="true"></i>
   <i class="y2-cap y2-c00" aria-hidden="true"></i><i class="y2-cap y2-c10" aria-hidden="true"></i><i class="y2-cap y2-c01" aria-hidden="true"></i><i class="y2-cap y2-c11" aria-hidden="true"></i>
@@ -132,4 +133,7 @@ window.__y2chk=()=>{const o={cards:[]};for(const c of grid.querySelectorAll('.y2
   o.cards.push({m:c.dataset.m,w:Math.round(r.width),h:Math.round(c.getBoundingClientRect().height),empty:Math.round(e/t*100)+'%',overLogo:over.join(' ')||'none'})}
   o.emoji=/\p{Extended_Pictographic}/u.test(grid.textContent);return o};
 await D.fonts.load('900 20px "Big Shoulders Stencil Display"').catch(()=>{});await D.fonts.load('20px "Permanent Marker"').catch(()=>{});
+// fit the stencilled name and the P&L to their space (a stencil runs to the edge of the lid, never past it)
+const fit=()=>grid.querySelectorAll('.y2-nm,.y2-pnl b').forEach(el=>{el.style.setProperty('--k',1);const w=el.clientWidth,s=el.scrollWidth;if(s>w+.5)el.style.setProperty('--k',(w/s*.98).toFixed(3))});
+fit();new ResizeObserver(()=>requestAnimationFrame(fit)).observe(grid);
 H.classList.add('y2-ready')})();

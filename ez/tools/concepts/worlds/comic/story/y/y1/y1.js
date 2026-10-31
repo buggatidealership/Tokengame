@@ -34,7 +34,7 @@ async function materials(){
     '<feDiffuseLighting in="n" surfaceScale="2.4" diffuseConstant="1" lighting-color="#fff" result="d"><feDistantLight azimuth="200" elevation="45"/></feDiffuseLighting>',
     '<feSpecularLighting in="n" surfaceScale="2.4" specularConstant=".7" specularExponent="22" lighting-color="#fff" result="s"><feDistantLight azimuth="200" elevation="45"/></feSpecularLighting><feComposite in="s" in2="d" operator="arithmetic" k2="1" k3=".55"/>'),360,360);
   /* enamel chips: where the paint has flaked off the plate (alpha mask, white = metal shows) */
-  const chips=await rast(`<svg xmlns="http://www.w3.org/2000/svg" width="420" height="120"><filter id="f" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="4" seed="4"/><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 .93  0 0 0 0 .82  0 0 0 -9 5.6"/></filter><rect width="420" height="120" filter="url(#f)"/></svg>`,420,120,true);
+  const chips=await rast(`<svg xmlns="http://www.w3.org/2000/svg" width="420" height="120"><filter id="f" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".13" numOctaves="3" seed="4"/><feColorMatrix type="matrix" values="0 0 0 0 .6  0 0 0 0 .47  0 0 0 0 .36  0 0 0 -34 12.2"/></filter><rect width="420" height="120" filter="url(#f)"/></svg>`,420,120,true);
   /* worn leather (counter top) and tape cloth */
   const leather=await rast(lit(320,120,'<feTurbulence type="turbulence" baseFrequency=".09" numOctaves="3" seed="2" result="n"/>',
     '<feDiffuseLighting in="n" surfaceScale="1.4" diffuseConstant="1" lighting-color="#fff"><feDistantLight azimuth="210" elevation="50"/></feDiffuseLighting>'),320,120);
@@ -55,7 +55,7 @@ function flag(k){
   return x+'</svg>'}
 const mark=(m,cls)=>{const M=MODELS[m];return `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${M.d}" fill-rule="${M.fr||'nonzero'}"/></svg>`};
 function bulb(state,i){/* state: on (always lit), w (a right call), l (a wrong call) */
-  return `<i class="y1-b y1-b-${state}${i!=null?' y1-b5-'+i:''}" aria-hidden="true"><i class="y1-bg"></i><svg class="y1-fil" viewBox="0 0 10 10"><path d="${state==='l'?'M2.4 7.6 L3.6 5.2 L4.4 6.4 M5.8 5.6 L6.6 4.4 L7.6 7.6':'M2.4 7.6 L3.6 4.6 L5 6.6 L6.4 4.6 L7.6 7.6'}"/></svg></i>`}
+  return `<i class="y1-b y1-b-${state}${i!=null?' y1-b5-'+i:''}" aria-hidden="true"><i class="y1-bg"></i><svg class="y1-fil" viewBox="0 0 10 10"><path d="${state==='l'?'M3 8 L3.4 5.6 Q3.8 4.4 4.4 5.2 M5.8 4.8 Q6.4 4.2 6.6 5.4 L7 8':'M3 8 L3.4 5.6 M6.6 5.6 L7 8 M3.4 5.6 q.4 -1 .8 0 q.4 -1 .8 0 q.4 -1 .8 0 q.4 -1 .8 0'}"/></svg></i>`}
 
 /* ---------- the card ---------- */
 function build(){
@@ -74,7 +74,7 @@ function build(){
       <div class="y1-head">${stars()}
         <div class="y1-plate"><i class="y1-rv y1-rv1"></i><i class="y1-rv y1-rv2"></i>${flag(FLAG[m]||'us')}<h3><span>${NM[m]}</span><small>${esc(MODELS[m].ver)}</small></h3></div></div>
       <div class="y1-mir">
-        <div class="y1-row" aria-hidden="true">${bulb('on')}${L5.map((x,k)=>bulb(x==='W'?'w':'l',k)).join('')}${bulb('on')}<span class="y1-l5">Last 5</span></div>
+        <div class="y1-row" aria-hidden="true">${L5.map((x,k)=>bulb(x==='W'?'w':'l',k)).join('')}<span class="y1-l5">Last 5</span></div>
         <div class="y1-side y1-sl" aria-hidden="true">${bulb('on')}${bulb('on')}${bulb('on')}</div>
         <div class="y1-side y1-sr" aria-hidden="true">${bulb('on')}${bulb('on')}${bulb('on')}</div>
         <div class="y1-glass">
@@ -103,7 +103,7 @@ window.Y1check=function(){/* dead space: share of each card's area not covered b
     let gn=0,ge=0;for(let y=g.top+1;y<g.bottom;y+=3)for(let x=g.left+1;x<g.right;x+=3){gn++;if(!go.some(o=>x>=o.left&&x<=o.right&&y>=o.top&&y<=o.bottom))ge++}
     /* overlaps: nothing over the company logo or the model mark */
     const lg=c.querySelector('.y1-clip img'),mk=c.querySelector('.y1-mk-s'),hit=(a,b)=>a&&b&&!(a.right<=b.left||a.left>=b.right||a.bottom<=b.top||a.top>=b.bottom);
-    const lr=lg&&lg.getBoundingClientRect(),mr=mk.getBoundingClientRect();
+    const lr=lg&&lg.getBoundingClientRect(),mr=mk.querySelector('path').getBoundingClientRect();
     const over=[...c.querySelectorAll('.y1-tk,.y1-tape,.y1-tx,.y1-clip small,.y1-clip b,.y1-clip span')].filter(x=>{const q=x.getBoundingClientRect();return hit(q,mr)||(lr&&!x.closest('.y1-clip')&&hit(q,lr))}).map(x=>x.className);
     /* text clipping inside its box */
     const clip=[...c.querySelectorAll('h3 span,.y1-big span,.y1-tape b,.y1-clip span,.y1-role')].filter(x=>x.scrollWidth>x.clientWidth+1).map(x=>x.className||x.tagName);

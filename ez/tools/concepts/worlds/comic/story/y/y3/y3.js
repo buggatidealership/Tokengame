@@ -69,7 +69,9 @@ function door(m,i){const a=A[m],t=a.W+a.L,b=best(m),lg=(window.CO_LOGOS||{})[b.r
    <div class="y3-case"><div class="y3-leaf">
      <i class="y3-paint" aria-hidden="true"></i>
      <i class="y3-pnl" aria-hidden="true"></i>
+     <i class="y3-key" aria-hidden="true"></i>
      <i class="y3-rim" aria-hidden="true"></i>
+     <i class="y3-csh y3-csh-plate" aria-hidden="true"></i><i class="y3-csh y3-csh-lever" aria-hidden="true"></i><i class="y3-csh y3-csh-clip" aria-hidden="true"></i>
      <div class="y3-lite" aria-hidden="true"><i class="y3-glow"></i><i class="y3-mk">${markSvg(m)}</i><i class="y3-wire"></i><i class="y3-refl"></i></div>
      <div class="y3-plate">${starSvg(i,gold)}<b class="y3-rk" aria-hidden="true">${i+1}</b>${gold?'<i class="y3-sheen" aria-hidden="true"></i>':''}
        <h3 class="y3-np"><span class="y3-nm">${esc(NM[m])}</span><small>${esc(MODELS[m].ver)}</small><i class="y3-scr y3-scr1"></i><i class="y3-scr y3-scr2"></i></h3></div>
@@ -93,7 +95,7 @@ function rollCnt(el){const n=el.querySelector('.y3-pl b');if(!n||RM()||window.__
 
 async function go(){const sec=D.querySelector('.wc-chars');if(!sec)return setTimeout(go,200);
   if(!D.getElementById('y3-fonts')){const l=D.createElement('link');l.id='y3-fonts';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Special+Elite&family=Permanent+Marker&display=swap';D.head.appendChild(l)}
-  await bake();
+  await bake();H.style.setProperty('--y3-staru',`url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 96'><polygon points='${STAR}'/></svg>`)}")`);
   const hall=D.createElement('div');hall.className='y3-hall';hall.innerHTML=ORD.map(door).join('');
   const g=sec.querySelector('.wc-ch-grid');g.style.display='none';g.after(hall);sec.classList.add('y3-sec');
   const io=new IntersectionObserver(es=>es.forEach(e=>{const d=e.target;d.classList.toggle('y3-on',e.isIntersecting);
