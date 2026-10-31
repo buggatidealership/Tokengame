@@ -7,5 +7,5 @@ const {chromium}=require('/opt/node22/lib/node_modules/playwright');const {open}
  await p.evaluate(()=>new Promise(res=>{const H=document.documentElement.scrollHeight-innerHeight,T=9000,t0=performance.now();const f=t=>{const k=Math.min(1,(t-t0)/T);scrollTo(0,H*k);if(k<1)requestAnimationFrame(f);else res()};requestAnimationFrame(f)}));
  await cdp.send('Tracing.end');await done;
  const main=ev.filter(e=>e.name==='thread_name'&&e.args&&e.args.name==='CrRendererMain').map(e=>e.tid);console.log('events',ev.length,'main tids',main.length);const S={};
- for(const e of ev){if(!main.includes(e.tid)||e.ph!=='X'||!e.dur)continue;S[e.name]=(S[e.name]||0)+e.dur/1000}
+ const N={};for(const e of ev){if(!main.includes(e.tid)||e.ph!=='X'||!e.dur)continue;S[e.name]=(S[e.name]||0)+e.dur/1000;N[e.name]=(N[e.name]||0)+1}console.log('Layerize n',N.Layerize,'Paint n',N.Paint,'frames',N.FireAnimationFrame);
  console.log(process.env.MODE||'full',process.env.CBNO||'-',Object.entries(S).sort((a,b)=>b[1]-a[1]).slice(0,12).map(([k,v])=>k+' '+v.toFixed(0)).join(' | '));await b.close()})();
