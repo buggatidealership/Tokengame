@@ -282,6 +282,11 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
 
 78. **Never put a code-drawn object beside painted ones.** Next to painted, lit pieces, an object drawn in code (a vector lamp, a CSS cone) reads as a placeholder, however tidy; once a section is painted, every object in it comes from the same painted source (owner, 2026-10-31, on the loading lamps: the drawn one was "horrible... not even worth a try"). The same goes for a stand-in picture where the real subject is missing: show the subject itself, crafted (a round with no film shows its company's logo, painted), never a generic scene.
 
+80. **Integrated means the scene would have made the mark itself.** A chart, a balloon or a number laid over a painting reads as pasted however good both are. In the scene it takes the scene's light and reflections, its perspective, its material (grease pencil on glass, a trace etched in a board, chalk on a slate, a balloon inked in the panel's own line), and it is partly covered by what stands in front of it. Before showing anything, ask: could this mark exist in that place, made by someone in it?
+    - *Taught by:* "the charts look like they've been just pasted on top of the background"; "the background does not feel part of the predictions"; the prediction circles on the card back "look super cheap compared to the rest", 31 Oct.
+81. **One book, many inks.** A comic can change its finish from chapter to chapter (the Overview in 3D with comic ink, the Leaderboard in noir) as long as the story, the cast and the cuts hold it together; the change of ink then marks a new chapter instead of a different site (lesson 27's "a change of world must be itself the point"). And a character's pose can carry the outcome: crowned when it won, hit by the FAIL when it went the wrong way.
+    - *Taught by:* "you can change the character's style depending on what sections they're showing up in... the leaderboard tab can have a different style itself, can have like noir ink"; "when they fail, hit by the fail... you can do that one", 31 Oct.
+
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
