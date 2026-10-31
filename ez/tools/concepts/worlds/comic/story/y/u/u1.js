@@ -12,9 +12,9 @@ async function build(){const L=U.list(),DS=U.days(L),C=U.counts(L);await Promise
       <p class="pp-tag uu1-tag">Every AI calls each stock <em>before</em> it reports.<br>The next close grades it. ${C.lk?`${C.lk} locked · `:''}${C.tc} still to call.</p>${U.FLT}</section>`;
   const under=x=>`<a class="uu1-u" href="#/round/${x.n}" data-n="${x.n}" data-m7="${x.m7?1:0}" data-ai="${x.ai?1:0}" style="${bg(B[x.ticker])}">
       <span class="pp-sr">${esc(x.co)} (${esc(x.ticker)}), round ${x.n}.</span>
-      <i class="uu-lc" data-t="${esc(x.ticker)}" style="--lc:${sm?40:desk?48:46}px"></i>
+      ${desk?`<span class="uu-art uu1-ua uu1-sa" data-t="${esc(x.ticker)}"></span>`:`<i class="uu-lc" data-t="${esc(x.ticker)}" style="--lc:${sm?40:46}px"></i>`}
       <span class="uu1-un">${X(x.co.toUpperCase(),nm(B[x.ticker],{size:desk?26:sm?20:23,depth:4,fit:1,min:12}))}<span class="uu-tk">(${esc(x.ticker)}) · R${x.n}</span></span>${U.badge(x,58,34)}
-      <span class="uu1-uc">${U.calls(x,desk?24:sm?20:23)}</span></a>`;
+      <span class="uu1-uc">${U.calls(x,desk?26:sm?20:x.locked?22:23)}</span></a>`;
   const main=x=>`<a class="uu1-m" href="#/round/${x.n}" data-n="${x.n}" data-m7="${x.m7?1:0}" data-ai="${x.ai?1:0}" style="${bg(B[x.ticker])}">
       <span class="pp-sr">Main event: ${esc(x.co)} (${esc(x.ticker)}), round ${x.n}. ${x.locked?'Calls locked. '+esc(U.bell(x))+'.':'Calls due '+esc(U.due(x))+'.'}</span>
       <span class="uu-art uu1-art" data-t="${esc(x.ticker)}"></span>
@@ -28,10 +28,10 @@ async function build(){const L=U.list(),DS=U.days(L),C=U.counts(L);await Promise
       <span class="uu1-dn" aria-hidden="true">${X(l.a.toUpperCase(),{size:desk?60:sm?38:46,fill:'gold',shade:'#7a0c06',depth:6,rot:-2})}${k==='wait'?'':X(S.md(k).toUpperCase(),{size:desk?30:22,fill:'cream',shade:'#3d0a07',depth:3,rot:-2})}</span>
       <h2 class="pp-sr">${esc(l.a)}, ${esc(l.b)}</h2>
       <span class="uu-cnt uu1-cnt">${lk?lk+' locked':''}${lk&&items.length>lk?' · ':''}${items.length>lk?(items.length-lk)+' to call':''}</span></header>
-      ${k==='wait'?'':main(m)}${rest.length?`<div class="uu1-ug">${rest.map(under).join('')}</div>`:''}</section>`};
+      ${k==='wait'?'':main(m)}${rest.length?`<div class="uu1-ug" style="--n:${rest.length}">${rest.map(under).join('')}</div>`:''}</section>`};
   root.innerHTML=cover+DS.map(day).join('');
   U.fillX(root);U.filter(root);
-  await Promise.all([...root.querySelectorAll('.uu1-art')].map(a=>U.paintArt(a,a.dataset.t,{kw:.8,kh:.74,cx:.58,cy:.5,rx:.6,ry:.5})).concat([...root.querySelectorAll('.uu-lc')].map(c=>U.paintCoin(c,c.dataset.t))));
+  await Promise.all([...root.querySelectorAll('.uu1-ua')].map(a=>U.paintArt(a,a.dataset.t,{still:1,kw:.72,kh:.66,cx:.5,cy:.5,rx:.5,ry:.5,ol:5,n:24})).concat([...root.querySelectorAll('.uu1-art')].map(a=>U.paintArt(a,a.dataset.t,{kw:.8,kh:.74,cx:.58,cy:.5,rx:.6,ry:.5})).concat([...root.querySelectorAll('.uu-lc')].map(c=>U.paintCoin(c,c.dataset.t)))));
   /* the slabs' extrusions, in each brand's dark */
   root.querySelectorAll('.uu1-mod').forEach(n=>n.style.boxShadow=P.xbox(7,'#6e1e04',{bw:3,cast:4,hl:3}));
   root.querySelectorAll('.uu1-m').forEach(n=>n.style.boxShadow=P.xbox(6,getComputedStyle(n).getPropertyValue('--bs').trim(),{bw:2.5,cast:4,hl:2}));

@@ -9,7 +9,7 @@ async function build(){const L=U.list(),DS=U.days(L),C=U.counts(L);await Promise
   const nf=h=>U.nameFill(h,'#6e2ff5');
   const head=DS.find(d=>d.k!=='wait'),hx=head.items[0],hl=S.dayLab(head.k);
   /* the burst that holds the main event's art: the same jagged polygon as an svg underlay and as the art's clip */
-  const BW=desk?440:Math.min(W0-44,340),BH=desk?330:Math.round(BW*.78),pts=P.burst(0,0,1,.8,14,hx.n).split(' ').map(p=>p.split(',').map(Number));
+  const BW=desk?440:Math.min(W0-70,330),BH=desk?330:Math.round(BW*.78),pts=P.burst(0,0,1,.8,14,hx.n).split(' ').map(p=>p.split(',').map(Number));
   const clip='polygon('+pts.map(([x,y])=>`${(50+x*50).toFixed(2)}% ${(50+y*50).toFixed(2)}%`).join(',')+')';
   const pin=pts.map(([x,y])=>`${(BW/2+x*BW/2*.98).toFixed(1)},${(BH/2+y*BH/2*.98).toFixed(1)}`).join(' ');
   const top=`<section class="uu3-top" aria-label="Next main event"><div class="uu3-tt" aria-hidden="true">${X(hl.a==='Today'?'TONIGHT':hl.a==='Tomorrow'?'TOMORROW':hl.a.toUpperCase(),{size:desk?40:30,fill:'cream',shade:'#3b0b5c',depth:4,rot:-3})}${X('MAIN EVENT',{size:desk?60:44,fill:'gold',shade:'#7a0c06',depth:7,rot:-3,fit:1})}</div>
@@ -24,7 +24,7 @@ async function build(){const L=U.list(),DS=U.days(L),C=U.counts(L);await Promise
       <i class="uu-lc" data-t="${esc(x.ticker)}" style="--lc:${big?(desk?60:50):(desk?44:sm?34:38)}px"></i>
       <span class="uu3-lt"><span class="uu3-lnm" aria-hidden="true">${X(x.co.toUpperCase(),{size:big?(desk?44:sm?28:33):(desk?30:sm?20:23),...nf(B[x.ticker]),depth:big?6:4,fit:1,min:12})}</span>
         <span class="uu3-lm"><span class="uu-tk">(${esc(x.ticker)}) · R${x.n}</span>${U.badge(x,big?56:48,big?32:28)}</span>
-        <span class="uu3-lc">${U.calls(x,big?(desk?28:24):(desk?22:sm?18:20),{vs:x.locked&&big})}</span></span></a>`;
+        <span class="uu3-lc">${U.calls(x,big?(desk?28:24):(desk?24:sm?19:22),{vs:x.locked&&big})}</span></span></a>`;
   const day=({k,items:all})=>{const items=k===head.k?all.slice(1):all,isHead=k===head.k;if(!items.length)return '';const l=S.dayLab(k),lk=items.filter(x=>x.locked).length,first=items.find(x=>x.locked);
     const ft=lk?U.bell(first):k==='wait'?'Waiting on calls':'Calls due '+U.due(items[0]);
     return `<section class="uu3-day" data-day="${esc(k)}" aria-label="${esc(l.a+' '+l.b)}"><header class="uu3-rb"><span class="uu3-rd" aria-hidden="true">${X(l.a.toUpperCase(),{size:desk?36:sm?24:28,fill:'gold',shade:'#7a0c06',depth:5})}${k==='wait'?'':X(S.md(k).toUpperCase(),{size:desk?22:17,fill:'cream',shade:'#3d0a07',depth:3})}</span><h2 class="pp-sr">${esc(l.a)}, ${esc(l.b)}</h2><span class="uu-cnt uu3-cnt">${esc(ft)}</span></header>

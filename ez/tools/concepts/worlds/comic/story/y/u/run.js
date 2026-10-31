@@ -25,7 +25,8 @@ if(require.main===module)(async()=>{const b=await chromium.launch({args:['--disa
    const full=Math.ceil(bb.b-bb.y);await p.setViewportSize({width:W,height:Math.min(full,16000)});await p.evaluate(y=>scrollTo(0,y),bb.y);await p.waitForTimeout(1200);
    await p.screenshot({path:`${OUT}/up-${W}-${t}${process.env.SIM?'-sim':''}.png`,clip:{x:0,y:0,width:W,height:Math.min(full,16000)}});
    await p.setViewportSize({width:W,height:VH});
-   const m=t==='now'?{}:await p.evaluate(()=>window.Ucheck?Ucheck():{});
+   if(t==='now'){await p.addScriptTag({content:rd('../p/_pop.js')})}
+   const m=t==='now'?await p.evaluate(()=>{const r=POP.check('#wc-up','.sg-m,.sg-u');r.dead={max:Math.max(...r.deadPct),mean:Math.round(r.deadPct.reduce((a,b)=>a+b,0)/r.deadPct.length)};delete r.deadPct;return r}):await p.evaluate(()=>window.Ucheck?Ucheck():{});
    const sw=await p.evaluate(()=>document.documentElement.scrollWidth);
    R.push({W,t,sw,h:full,err:er.slice(),...m});console.log(JSON.stringify(R[R.length-1]));await p.close()}
  fs.writeFileSync(OUT+'/checks-'+TS.join('_')+'-'+WS.join('_')+(process.env.SIM?'-sim':'')+'.json',JSON.stringify(R,null,1));await b.close()})();

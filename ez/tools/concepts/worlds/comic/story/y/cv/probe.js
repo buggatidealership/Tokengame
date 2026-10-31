@@ -1,0 +1,5 @@
+const {open}=require('./run.js');const {chromium}=require('/opt/node22/lib/node_modules/playwright');
+(async()=>{const b=await chromium.launch();const {p}=await open(b,390,'now',{wait:300});
+console.log(await p.evaluate(()=>{const A=__x2pPnl().A,R=ROUNDS,l=R[R.length-1];const cv=document.querySelector('#wc-book .wc-cover');
+return JSON.stringify({n:R.length,last:l,pnl:Object.fromEntries(Object.entries(A).map(([k,v])=>[k,[Math.round(v.pnl),v.W,v.L]])),pend:(window.PENDING||[]).filter(p=>p.calls&&p.calls.length).slice(0,3),films:Object.keys(window.FILMS||{}).slice(-6),filmL:window.FILMS&&FILMS[l.n],models:Object.fromEntries(Object.entries(MODELS).map(([k,v])=>[k,[v.c,v.ver]])),
+kids:[...cv.children].map(c=>c.tagName+'.'+c.className),filmslot:cv.querySelector('.wc-film-slot').outerHTML.slice(0,800),star:cv.querySelector('.wc-starring').outerHTML.slice(0,500),h1:cv.querySelector('.wc-h1').outerHTML,vars:getComputedStyle(document.documentElement).getPropertyValue('--wc-pow')+'|'+getComputedStyle(document.documentElement).getPropertyValue('--wc-let')},null,1)}));await b.close()})();
