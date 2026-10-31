@@ -55,9 +55,16 @@ Each take is `_b2.js`/`_b2.css` (the shared cover builder and lettering) plus it
 ## What I measured
 - **Layout (Chromium, 390x844 and 1280x800):** no sideways scroll and no page errors in any take at either width.
 - **Data check (`window.__b2`):** 80 graded, lead GROK, last round XOM#80 +2.17% won by GPT. Each take's chapter order is listed there.
-- **Cost of the opening on a 4x slower CPU** (390x844). The scroll runs through the opening stage (or 1.6 screens for today and C) over 5 s, three runs, medians. Results: see the table below, filled in from `perf.js`.
+- **Cost of the opening on a 4x slower CPU** (390x844). The scroll runs through the opening stage (or 1.6 screens for today and C) over 5 s, three runs, medians. Results:
 
-PERF_TABLE
+| Take | fps while opening | frames > 50 ms | worst frame | main-thread time |
+|---|---|---|---|---|
+| Today (plain scroll, 1.6 screens) | 20.8 | 37 | 300 ms | 5.09 s |
+| A · cover swings open, spread pans | 24.6 | 15 | 83 ms | 5.04 s |
+| B · fly through the panel | **26.2** | **10** | 267 ms | 4.93 s |
+| C · the descent (1.6 screens, no pin) | 23.0 | 33 | 300 ms | 5.30 s |
+
+Measured in one session on this machine, so compare within the table. None of the openings costs more than today's plain scroll: A and B pin a sticky stage and move one layer by transform, which is cheaper than scrolling today's first screen. C scrolls the real page and pays for what comes up under it. The recordings each start with a few seconds of the page loading, which is real loading time rather than part of the design.
 
 ## My pick: A, The Issue
 - It is the most literal answer to the owner's words ("the cover of the world itself… when you scroll down, it opens up the book"). It is the one where a newcomer sees a comic in their hands before reading a word.
