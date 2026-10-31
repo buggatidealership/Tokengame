@@ -9,7 +9,7 @@ async function open(b,W,mode,o={}){const H=o.h||(W<600?844:1000);const p=await b
   const HH=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<HH;y+=500){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(50)}
   await p.waitForFunction(()=>document.documentElement.classList.contains('p1-ready')&&document.querySelector('.pp1-c.fb-on'),null,{timeout:60000});
   if(mode!=='now'){for(const f of ['base/_cv.css','base/c2.css','book.css'])await p.addStyleTag({content:rd(f)});
-    for(const f of ['base/_cv.js','base/c2.js'])await p.addScriptTag({content:rd(f)});await p.evaluate(t=>{window.__cbTake=t},o.take||process.env.TAKE||'ink');
+    for(const f of ['base/_cv.js','base/c2.js'])await p.addScriptTag({content:rd(f)});await p.evaluate(([t,n])=>{window.__cbTake=t;window.__cbNo=n},[o.take||process.env.TAKE||'ink',process.env.CBNO||'']);
     await p.waitForFunction(()=>document.documentElement.classList.contains('c2-ready'),null,{timeout:30000});
     await p.addScriptTag({content:rd('dtlib.js')});await p.addScriptTag({content:rd('takes.js')});await p.addScriptTag({content:rd('book.js')});
     await p.waitForFunction(()=>document.documentElement.classList.contains('cb-ready'),null,{timeout:60000})}

@@ -12,6 +12,7 @@ const X=window.DT,P=window.POP,S=window.SE,D=document,H=D.documentElement,INK=X.
 const book=D.getElementById('wc-book');if(!X||!book){H.classList.add('cb-ready');return}
 H.classList.add('cb-on','cb-t-'+CBT.TAKE);
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NO=String(window.__cbNo||'').split(',');const off=k=>NO.includes(k);
 const desk=()=>innerWidth>=1000;
 const hs=s=>{let h=7;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h%9973+1};
 const rel=(el,root)=>{const a=el.getBoundingClientRect(),b=root.getBoundingClientRect();return {x:a.left-b.left,y:a.top-b.top,w:a.width,h:a.height}};
@@ -34,7 +35,7 @@ const IL=(t,o)=>CBT.IL(t,Object.assign({seed:hs(t)},o));
 /* the largest inner-lettering size (<= s) that fits maxW */
 function fitIL(t,s,maxW){for(let i=0;i<16;i++){if(IL(t,{size:s}).w<=maxW)return s;s*=.94}return s}
 /* put a skin on an element: its own border, background and shadow go; a pseudo-element carries the drawing behind the text */
-function skin(el,o){if(!el||!el.offsetWidth)return;const cs=getComputedStyle(el),bl=parseFloat(cs.borderLeftWidth)||0,bt=parseFloat(cs.borderTopWidth)||0;
+function skin(el,o){if(!el||!el.offsetWidth||off('skin')||o.frame&&off('frame'))return;const cs=getComputedStyle(el),bl=parseFloat(cs.borderLeftWidth)||0,bt=parseFloat(cs.borderTopWidth)||0;
   const w=Math.round(el.offsetWidth),h=Math.round(el.offsetHeight);if(w<6||h<6)return;const dr=o.drop!=null?o.drop:3;
   if(cs.position==='static')el.style.position='relative';
   el.classList.add(o.frame?'cb-skf':'cb-sk');el.style.setProperty('--skl',(-bl)+'px');el.style.setProperty('--skt',(-bt)+'px');el.style.setProperty('--skw',(w+dr)+'px');el.style.setProperty('--skh',(h+dr)+'px');
@@ -48,7 +49,7 @@ const GR={orange:['#ffc066','#ff7a12','#e0480a','rgba(255,232,170,.2)','#b52d00'
   mh:['#ffa284','#ff3d31','#c8120c','rgba(255,215,190,.24)','#8a0a05'],p1:['#b4ddff','#4ea6ff','#1c5ed2','rgba(200,235,255,.26)','#123f9c'],
   p2:['#fffbc0','#ffe02a','#ffa400','rgba(255,255,225,.35)','#ff8a00'],p3:['#efc2ff','#a64cff','#5a14c4','rgba(255,225,255,.22)','#3d0a8a'],p4:['#d0ffb0','#46de7e','#0f9a50','rgba(225,255,215,.25)','#06632f'],
   fm:['#c8ffd8','#3fd48a','#0b8a48','rgba(225,255,235,.2)','#05602f']};
-function ground(el,f){const W=Math.round(el.offsetWidth),Hh=Math.round(el.offsetHeight);if(!W||!Hh)return;const o=f(W,Hh);el.classList.add('cb-pn');
+function ground(el,f){if(off('ground'))return;const W=Math.round(el.offsetWidth),Hh=Math.round(el.offsetHeight);if(!W||!Hh)return;const o=f(W,Hh);el.classList.add('cb-pn');
   el.style.setProperty('background-image',X.groundURI(W,Hh,o),'important');el.style.setProperty('background-size',W+'px '+Hh+'px','important');el.style.setProperty('background-position','0 0','important');if(o.clip)el.style.clipPath=o.clip}
 const polyPx=p=>`polygon(${p.map(q=>f1(q[0])+'px '+f1(q[1])+'px').join(',')})`;
 
@@ -217,7 +218,7 @@ function splash(){const sec=D.querySelector('#wc-book > .wc-splash');if(!sec)ret
     bur.insertAdjacentHTML('beforeend',`<div class="cb-ttl" aria-hidden="true">${X.svg(bw,bh,g,'cb-brk')}</div>`)}
   const lead=sec.querySelector('.wc-sp-lead');if(lead){lead.style.boxShadow='none';lead.style.borderColor='transparent';lead.style.background='transparent';skin(lead,{pal:'yellow',drop:4,ow:2.8,seed:41})}
   /* the chart: a night panel; every line cased in ink with a cream keyline, like inked lettering */
-  const fig=sec.querySelector('.wc10-ch');if(fig){const sv=fig.querySelector('.wc10-cv svg');if(sv&&!sv.querySelector('.cb-case')){[...sv.querySelectorAll('path.wc10-l')].forEach(p=>{const a=p.cloneNode(),b=p.cloneNode();a.setAttribute('class','wc10-l cb-case');b.setAttribute('class','wc10-l cb-key');a.removeAttribute('style');b.removeAttribute('style');p.before(a);p.before(b)})}
+  const fig=sec.querySelector('.wc10-ch');if(fig){const sv=fig.querySelector('.wc10-cv svg');if(sv&&!off('case')&&!sv.querySelector('.cb-case')){[...sv.querySelectorAll('path.wc10-l')].forEach(p=>{const a=p.cloneNode(),b=p.cloneNode();a.setAttribute('class','wc10-l cb-case');b.setAttribute('class','wc10-l cb-key');a.removeAttribute('style');b.removeAttribute('style');p.before(a);p.before(b)})}
     const cap=fig.querySelector('.wc10-cap');if(cap){cap.style.boxShadow='none';cap.style.borderColor='transparent';cap.style.background='transparent';skin(cap,{pal:'yellow',drop:2,ow:2.2,key:1,seed:42,dots:false})}
     fig.querySelectorAll('.wc10-e .wc-face').forEach((f,i)=>{f.style.boxShadow='none'});
     ground(fig,(W,Hh)=>({c:GR.navy,cx:W*.5,cy:Hh*.45,seed:43,sp:7,n:24,poly:false,r0:W*.3,r1:Math.max(W,Hh)*.75,holes:holesOf(fig,'.wc10-cv')}))}
