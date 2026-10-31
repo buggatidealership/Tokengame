@@ -57,3 +57,15 @@ When the pool is named, name its share: "69% of the creator earnings" (the creat
 - **NVIDIA bet:** the pick is T1, **the die count** (a modelled GPU chip, the countdown in its four dies). The numbers must tick down live, every second, as page text set into the dies. Prove it with a short recording. Reinvent the three stake modules (the "69% of $EZ creator fees fill the pool" box, the "pool gets bet on the top AI's call, today Grok" box, the right / wrong pair) and the "NVIDIA is the first bet, not the last" line. They are still flat yellow and green boxes.
 - **Meet the models cards:** Current P&L in the 3D pop lettering. Right way and Best call in **cut paper** or **ink brush line** (make both). The card's own background still lacks flair, so make it painted and rich, not a flat colour or one even dot pattern.
 - **The bell** (on the cover's loop) still looks cheap. Reinvent it.
+
+## Round H3: picks so far and what's next (owner, 2026-10-31, later)
+- **Picked and going live:**
+  - Every round so far: rack R2/R6 (logos painted by the model) and T2 Golden Age tiles;
+  - the opened round: T1, the slab for real, films kept;
+  - NVIDIA: the die count with S4, the parts list;
+  - the loading cover: L3, ring at night;
+  - the film frame: F3, through the page;
+  - the P&L: flat, "If you'd bet $100K on every call".
+- **Every element handcrafted, no exceptions.** The owner on the first screen's four steps: only the clock was redesigned; the logos in step 1 "look horrible... not handcrafted at all". Nothing flat may remain anywhere, inside any module.
+- **The page's own ground.** Picture the empty website: what lies under every module? Today it is flat beige. It should be a comic book's page, and moving from one section to the next must read as a comic's segmentation (a page turn, a gutter, a splash, an abrupt cut), not one long scroll. G3 (a backdrop per section) is the favourite direction so far.
+- **Tiles get comic thumbnails of their own films.** Each round's tile shows a Golden Age comic thumbnail drawn from what its film actually shows, so opening the film continues the picture instead of surprising the viewer.
