@@ -84,7 +84,7 @@ function cover(){const root=D.querySelector('.cvx.c2');if(!root)return;const pg=
   const mv=root.querySelector('.c2-mv');if(mv){const L=window.ROUNDS[window.ROUNDS.length-1],up=L.a>0;mv.innerHTML=IL((up?'▲':'▼')+Math.abs(L.a).toFixed(2)+'%',{size:dk?28:22,fill:up?'green':'red',rot:-4}).svg}
   const fb=root.querySelector('.c2-file b');if(fb){fb.innerHTML=IL('No. '+window.ROUNDS.length,{size:dk?24:17*kk,fill:'white',rot:-3}).svg}
   /* the golden ticket's name and P&L: the holo ticket keeps its foil, its words lettered */
-  root.querySelectorAll('.cvx-tkt > svg.pp-ext, .cvx-tkp > svg.pp-ext').forEach(sv=>{const t=(sv.querySelector('text')||sv).textContent.trim(),pnl=!!sv.closest('.cvx-tkp');const h=parseFloat(sv.getAttribute('height'))||20,wd=parseFloat(sv.getAttribute('width'))||60;sv.outerHTML=IL(t,{size:fitIL(t,h*.7,wd+2),fill:pnl?'green':'white'}).svg});
+  root.querySelectorAll('.cvx-tkt > svg.pp-ext, .cvx-tkp > svg.pp-ext').forEach(sv=>{const t=(sv.querySelector('text')||sv).textContent.trim(),pnl=!!sv.closest('.cvx-tkp');const h=parseFloat(sv.getAttribute('height'))||20,wd=parseFloat(sv.getAttribute('width'))||60;sv.outerHTML=IL(t,{size:fitIL(t,h*(pnl?.56:.66),wd+2),fill:pnl?'green':'white'}).svg});
   /* small elements: the issue strip, step captions and their numbers, the call pills, pass and fail, the logo ring, the film's tag, the hand-off */
   root.querySelectorAll('.c2-cap').forEach((c,i)=>{skin(c,{pal:'yellow',drop:0,ow:0,key:0,band:true,seed:40+i});const b=c.querySelector(':scope > b');skin(b,{pal:'red',kind:'circle',drop:2,ow:2,key:1,seed:50+i,dots:false})});
   root.querySelectorAll('.c2-b').forEach((b,i)=>skin(b,{pal:b.classList.contains('c2-bu')?'green':'red',kind:'pill',drop:2.5,ow:2.4,seed:60+i}));
@@ -292,6 +292,8 @@ function tabs(){D.querySelectorAll('header.top nav a, header.top .tabs a, header
 function all(){cuts();cover();chars();season();cliff();splash();bet();back();tabs();
   /* sizes settle after the lettering went in: redo the grounds once at their final size */
   requestAnimationFrame(()=>{chars();season();splash();bet();back()})}
+/* for the cost measure: one full build, timed (the first pass; the settle pass follows in the next frame) */
+window.__cbRebuild=()=>{const t=performance.now();all();return performance.now()-t};
 let busy=false;
 function go(){if(busy)return;busy=true;try{all()}catch(e){console.error('cb',e)}busy=false;H.classList.add('cb-ready')}
 /* wait for the cover's page of panels (C2 builds once it has a width), then build; rebuild the cover whenever C2 redraws its rows */
