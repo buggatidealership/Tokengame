@@ -1,0 +1,12 @@
+// node mk.js <outdir> F1,F2 [widths]  — the strip with a CSS take laid in before it draws
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../live-r1/_fonts.js');const fs=require('fs'),path=require('path');
+const out=process.argv[2],vs=process.argv[3].split(','),ws=(process.argv[4]||'390').split(',').map(Number);
+(async()=>{const b=await chromium.launch();for(const w of ws)for(const v of vs){const p=await b.newPage({viewport:{width:w,height:900},deviceScaleFactor:2});await FONTS(p);
+ const css=v==='now'?'':fs.readFileSync(path.join(__dirname,v+'.css'),'utf8');await p.addInitScript(css=>{document.addEventListener('DOMContentLoaded',()=>{const s=document.createElement('style');s.textContent=css;document.head.appendChild(s)})},css);
+ await p.goto('http://localhost:8897/v46-live-x2plus.html',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});await p.waitForTimeout(3000);
+ if(v==='F4')await p.evaluate(()=>{const t=document.querySelector('.x2p-ls-td .x2p-ls-ct').getBoundingClientRect(),c=document.querySelector('.x2p-ls-l .x2p-ls-on img').getBoundingClientRect();const im=document.querySelector('.x2p-ls-l .x2p-ls-on img'),ar=im.naturalWidth/im.naturalHeight,ih=Math.min(c.height,c.width/ar),inkB=c.top+(c.height+ih)/2;const d=document.querySelector('.x2p-ls-l .x2p-ls-on');d.style.translate='0 '+(t.bottom-inkB).toFixed(1)+'px'});
+ const e=await p.$('.x2p-ls');await e.scrollIntoViewIfNeeded();await p.waitForTimeout(300);await e.screenshot({path:`${out}/${v}-${w}.png`,animations:'disabled'});
+ const o=await p.evaluate(()=>{const out=[];document.querySelectorAll('.x2p-ls-fr').forEach(f=>{const F=f.getBoundingClientRect();f.querySelectorAll('*').forEach(x=>{const r=x.getBoundingClientRect();if(r.width&&(r.left<F.left-.5||r.right>F.right+.5||r.bottom>F.bottom+.5))out.push(x.className)})});
+  const R=s=>document.querySelector(s).getBoundingClientRect(),ink=f=>{const r=[...document.querySelectorAll(f+' .x2p-ls-lgs img')].map(i=>i.getBoundingClientRect());return [Math.min(...r.map(x=>x.top)),Math.max(...r.map(x=>x.bottom))]},a=ink('.x2p-ls-td'),n=ink('.x2p-ls-nx');
+  return {over:out.slice(0,3),onair:[+(a[0]-R('.x2p-ls-td .x2p-ls-bu').bottom).toFixed(1),+(R('.x2p-ls-td .x2p-ls-ct').top-a[1]).toFixed(1)],next:[+(n[0]-R('.x2p-ls-nx .x2p-ls-big').bottom).toFixed(1),+(R('.x2p-ls-nx .x2p-ls-ct').top-n[1]).toFixed(1)],tops:[+a[0].toFixed(1),+n[0].toFixed(1)]}});
+ console.log(v,w,JSON.stringify(o));await p.close()}await b.close()})();

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Earnings Zeason — Capitalism, Uncut</title>
+<meta name="description" content="Three machines call earnings before the bell. The market pays or it doesn't. Every call on the record, every buyback on-chain.">
+<meta name="theme-color" content="#f3efe4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;700;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   EARNINGS ZEASON — VARIANT A · "CAPITALISM, UNCUT"
+   Angle: crypto rails, buybacks, the market as the only judge.
+   Loud, poster-grade, light field (no black backgrounds).
+   Hard facts: only the calls and outcomes — verbatim from the record.
+   Placeholders (buyback ledger, contract address, links) render as
+   honest empty states until filled in CONFIG.
+   ===================================================================== */
+:root{
+  --field:#f3efe4;--card:#fffdf6;--ink:#0f0f0c;--ink2:#3a382f;--dim:#77725f;--rule:#0f0f0c;
+  --up:#00c05a;--up2:#00a14b;--upbg:#c9ffe0;--dn:#ff2e2e;--dn2:#d61a1a;--dnbg:#ffd6d2;
+  --gold:#ffb800;--hot:#ff4fd8;
+  --fd:'Anton',Impact,'Arial Narrow',sans-serif;--fb:'Archivo',system-ui,sans-serif;--fm:'JetBrains Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;background:var(--field);overflow-x:clip}
+body{background:var(--field);color:var(--ink);font-family:var(--fb);font-size:17px;line-height:1.5;overflow-x:hidden}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.wrap{max-width:1280px;margin:0 auto;padding:0 16px}
+.up{color:var(--up2)}.dn{color:var(--dn2)}
+
+/* ---------- tape ---------- */
+.tape{background:var(--ink);color:var(--field);overflow:hidden;white-space:nowrap;border-bottom:3px solid var(--ink)}
+.tape-in{display:inline-flex;animation:tape 38s linear infinite}
+.tape span{font:800 13px/1 var(--fm);letter-spacing:.04em;padding:11px 18px}
+.tape .u{color:#5dff9c}.tape .d{color:#ff6b6b}.tape .g{color:var(--gold)}
+@keyframes tape{to{transform:translateX(-50%)}}
+
+/* ---------- bar ---------- */
+.bar{position:sticky;top:0;z-index:50;background:var(--field);border-bottom:3px solid var(--ink)}
+.bar-in{max-width:1280px;margin:0 auto;padding:0 16px;height:60px;display:flex;align-items:center;gap:16px}
+.logo{font:400 28px/1 var(--fd);letter-spacing:.01em;text-decoration:none;white-space:nowrap}
+.logo b{font-weight:400;background:var(--ink);color:var(--field);padding:2px 7px 0;margin-left:4px}
+.logo .d{color:var(--gold)}.logo .e{color:#5dff9c}.logo .z{color:#ff6b6b}
+.bar nav{display:flex;gap:18px;margin-left:10px}
+.bar nav a{font:700 12px/1 var(--fb);letter-spacing:.12em;text-transform:uppercase;text-decoration:none}
+.bar nav a:hover{text-decoration:underline;text-decoration-thickness:3px}
+.clock{margin-left:auto;font:800 12px/1 var(--fm);white-space:nowrap;display:flex;gap:8px;align-items:center}
+.clock i{width:9px;height:9px;background:var(--dn);border-radius:50%;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:.15}}
+.buy{font:400 18px/1 var(--fd);letter-spacing:.04em;text-decoration:none;background:var(--up);color:var(--ink);padding:12px 18px 10px;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);transition:transform .12s,box-shadow .12s;white-space:nowrap}
+.buy:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.buy:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+@media(max-width:900px){.bar nav{display:none}}
+@media(max-width:480px){.logo .lt{display:none}.clock .l{display:none}.buy{font-size:15px;padding:10px 12px 8px}.logo{font-size:24px}}
+
+/* ---------- hero: the split ---------- */
+.hero{position:relative;border-bottom:3px solid var(--ink);overflow:hidden}
+.split{display:grid;grid-template-columns:1fr 1fr}
+.split>div{min-height:min(78vh,720px);position:relative;overflow:hidden}
+.side-up{background:var(--up)}
+.side-dn{background:var(--dn)}
+.side-up::after,.side-dn::after{position:absolute;font:400 clamp(160px,30vw,460px)/.8 var(--fd);opacity:.14;bottom:-.06em;pointer-events:none}
+.side-up::after{content:"UP";left:-.03em}
+.side-dn::after{content:"DOWN";right:-.04em}
+.candles{position:absolute;inset:0;pointer-events:none}
+.hero-copy{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px 16px}
+.kick{font:800 12px/1 var(--fm);letter-spacing:.2em;background:var(--ink);color:var(--field);padding:9px 12px;transform:rotate(-2deg)}
+.hero h1{font:400 clamp(52px,9.6vw,156px)/.9 var(--fd);letter-spacing:-.005em;text-transform:uppercase;margin:22px 0 20px;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:.06em}
+.hero h1>span{display:block;padding:.04em .1em 0;box-shadow:.05em .05em 0 var(--ink)}
+.hero h1 .w{background:var(--field)}
+.hero h1 .o{background:var(--ink);color:var(--field);transform:rotate(-1.5deg)}
+.hero p{max-width:640px;font:700 clamp(17px,1.9vw,22px)/1.35 var(--fb);background:var(--field);border:3px solid var(--ink);padding:14px 18px;box-shadow:6px 6px 0 var(--ink)}
+.hero-btns{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:26px}
+.ghost{font:400 18px/1 var(--fd);letter-spacing:.04em;text-decoration:none;background:var(--field);color:var(--ink);padding:12px 18px 10px;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.sticker{position:absolute;font:800 12px/1.1 var(--fm);letter-spacing:.08em;text-transform:uppercase;border:3px solid var(--ink);padding:10px 12px;background:var(--gold);box-shadow:4px 4px 0 var(--ink);z-index:3}
+.s1{top:9%;left:4%;transform:rotate(-8deg)}
+.s2{top:13%;right:5%;transform:rotate(7deg);background:var(--hot)}
+.s3{bottom:8%;left:7%;transform:rotate(5deg);background:var(--field)}
+.s4{bottom:10%;right:6%;transform:rotate(-6deg);background:var(--field)}
+@media(max-width:760px){.split>div{min-height:0}.split{min-height:640px}.side-up::after,.side-dn::after{font-size:150px}.s1{top:2%}.s2,.s3{display:none}.s4{bottom:2.5%}.hero-copy{padding:76px 16px 70px}}
+
+/* ---------- sections ---------- */
+.sec{padding:84px 0 72px;border-bottom:3px solid var(--ink)}
+.sec.inv{background:#e4ddca}
+.lab{display:inline-block;font:800 12px/1 var(--fm);letter-spacing:.2em;border:3px solid currentColor;padding:8px 10px}
+h2{font:400 clamp(44px,7vw,110px)/.88 var(--fd);text-transform:uppercase;margin:18px 0 18px;letter-spacing:-.005em}
+.lede{font:500 clamp(18px,1.8vw,21px)/1.45 var(--fb);max-width:760px;color:var(--ink2)}
+.inv .lede{color:var(--ink2)}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .6s,transform .6s cubic-bezier(.2,.9,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- the scoreboard ---------- */
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:3px solid var(--ink);margin-top:36px;background:var(--card)}
+.slot{padding:22px 20px 18px;border-right:3px solid var(--ink);position:relative}
+.slot:last-child{border-right:0}
+.slot .rk{font:400 20px/1 var(--fd);color:var(--dim)}
+.slot .nm{font:400 clamp(40px,5vw,72px)/.9 var(--fd);margin:10px 0 4px}
+.slot .w{font:400 clamp(90px,11vw,170px)/.8 var(--fd);letter-spacing:-.02em}
+.slot .w small{font:800 13px/1 var(--fm);letter-spacing:.14em;margin-left:8px;vertical-align:top}
+.slot dl{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font:600 13px/1.4 var(--fm)}
+.slot dt{color:var(--dim)}
+.slot dd{font-weight:800}
+.slot.lead{background:var(--up)}
+.slot.lead .rk,.slot.lead dt{color:var(--ink)}
+.crown{position:absolute;top:14px;right:14px;font:800 11px/1 var(--fm);letter-spacing:.14em;background:var(--ink);color:var(--up);padding:7px 9px;transform:rotate(4deg)}
+.seat4{margin-top:14px;font:600 13px/1.5 var(--fm);color:var(--dim)}
+@media(max-width:760px){.board{grid-template-columns:1fr}.slot{border-right:0;border-bottom:3px solid var(--ink)}.slot:last-child{border-bottom:0}}
+
+/* ---------- the tape of rounds: P&L slips ---------- */
+.slips{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+@media(max-width:1000px){.slips{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.slips{grid-template-columns:1fr}}
+.slip{position:relative;border:3px solid var(--ink);background:var(--card);box-shadow:6px 6px 0 var(--ink);display:flex;flex-direction:column;transition:transform .15s}
+.slip:hover{transform:translate(-2px,-2px) rotate(-.4deg)}
+.slip-h{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:3px solid var(--ink);font:800 12px/1 var(--fm);letter-spacing:.12em}
+.slip-h b{font:400 22px/1 var(--fd);letter-spacing:.02em}
+.slip .out{padding:18px 14px 10px;display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.slip .out .big{font:400 clamp(58px,6vw,84px)/.85 var(--fd);letter-spacing:-.01em}
+.slip .out .lbl{font:800 11px/1.3 var(--fm);letter-spacing:.14em;text-align:right;color:var(--dim)}
+.slip.u .out{background:var(--upbg)}.slip.d .out{background:var(--dnbg)}
+.calls{padding:8px 14px 12px;font:600 13.5px/1.9 var(--fm)}
+.calls div{display:grid;grid-template-columns:74px 1fr auto;align-items:center}
+.calls .v{font-weight:800}
+.calls .ok{color:var(--up2)}.calls .no{color:var(--dn2)}
+.calls div.win{background:var(--ink);color:var(--field);margin:0 -14px;padding:0 14px}
+.calls div.win .ok{color:#5dff9c}
+.slip-f{margin-top:auto;border-top:3px solid var(--ink);padding:12px 14px;font:400 26px/1 var(--fd);letter-spacing:.02em;display:flex;justify-content:space-between;align-items:center}
+.slip-f small{font:800 11px/1 var(--fm);letter-spacing:.14em}
+.slip.none .slip-f{background:var(--dn);}
+.slip .head{padding:0 14px 12px;font:700 15px/1.3 var(--fb);color:var(--ink2)}
+.stamp{position:absolute;top:-16px;right:12px;font:400 20px/1 var(--fd);letter-spacing:.04em;border:3px solid var(--ink);background:var(--dn);color:var(--ink);padding:6px 10px 3px;transform:rotate(6deg);opacity:0;scale:1.8;box-shadow:3px 3px 0 var(--ink);transition:opacity .25s,scale .35s cubic-bezier(.3,1.6,.5,1)}
+.slip.in .stamp{opacity:1;scale:1}
+.stamp.g{background:var(--up)}
+
+/* ---------- the rails ---------- */
+.rails{display:grid;grid-template-columns:1.1fr .9fr;gap:34px;margin-top:40px;align-items:start}
+@media(max-width:900px){.rails{grid-template-columns:1fr}}
+.loop{display:grid;gap:12px;counter-reset:s}
+.step{display:grid;grid-template-columns:64px 1fr;gap:16px;align-items:start;border:3px solid var(--ink);background:var(--card);padding:16px;box-shadow:5px 5px 0 var(--ink)}
+.step .n{font:400 54px/.8 var(--fd);color:var(--up2)}
+.step h3{font:400 30px/1 var(--fd);letter-spacing:.01em;text-transform:uppercase;margin-bottom:6px}
+.step p{color:var(--ink2);font-size:16px}
+.explorer{border:3px solid var(--ink);background:var(--card);box-shadow:6px 6px 0 var(--ink)}
+.ex-h{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:3px solid var(--ink);background:var(--gold);font:800 12px/1 var(--fm);letter-spacing:.14em}
+.ex-h i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--dn);margin-right:8px;animation:blink 1.4s steps(1) infinite}
+.ex-row{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:12px 14px;border-bottom:1px dashed #b5ad96;font:600 12.5px/1.5 var(--fm)}
+.ex-row .tx{color:#8a5a00;overflow-wrap:anywhere}
+.ex-empty{padding:26px 16px;font:600 13px/1.6 var(--fm);color:var(--ink2)}
+.ex-empty b{display:block;font:400 34px/1 var(--fd);color:var(--ink);margin-bottom:10px;letter-spacing:.01em}
+.purse{margin-top:18px;border:3px solid var(--ink);background:var(--card);padding:16px;box-shadow:6px 6px 0 var(--ink)}
+.purse h4{font:400 26px/1 var(--fd);text-transform:uppercase;letter-spacing:.02em}
+.segs{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:14px 0 10px}
+.segs i{height:26px;border:2px solid var(--ink)}
+.segs i.f{background:var(--gold)}
+.segs i.n{background:repeating-linear-gradient(45deg,var(--gold) 0 5px,transparent 5px 10px)}
+.purse p{font:600 12.5px/1.6 var(--fm);color:var(--ink2)}
+
+/* ---------- manifesto ---------- */
+.mani{display:grid;grid-template-columns:repeat(2,1fr);gap:0;margin-top:40px;border:3px solid var(--ink)}
+.mani div{padding:26px 22px;border-bottom:3px solid var(--ink);font:400 clamp(28px,3.4vw,46px)/1 var(--fd);text-transform:uppercase}
+.mani div:nth-child(odd){border-right:3px solid var(--ink)}
+.mani div:nth-last-child(-n+2){border-bottom:0}
+.mani small{display:block;font:500 15px/1.45 var(--fb);text-transform:none;color:var(--ink2);margin-top:10px}
+.mani .g{background:var(--up)}.mani .r{background:var(--dn)}
+@media(max-width:760px){.mani{grid-template-columns:1fr}.mani div:nth-child(odd){border-right:0}.mani div:nth-last-child(-n+2){border-bottom:3px solid var(--ink)}.mani div:last-child{border-bottom:0}}
+
+/* ---------- next round ---------- */
+.next{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:36px}
+@media(max-width:900px){.next{grid-template-columns:1fr}}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0 12px}
+.cd div{border:3px solid var(--ink);background:var(--card);text-align:center;padding:12px 4px 8px}
+.cd b{display:block;font:400 clamp(40px,6vw,76px)/.9 var(--fd)}
+.cd span{font:800 10px/1 var(--fm);letter-spacing:.16em}
+.fine{font:600 13px/1.6 var(--fm);color:var(--dim)}
+.bet{border:3px solid var(--ink);background:var(--card);box-shadow:6px 6px 0 var(--ink);padding:20px}
+.bet h3{font:400 38px/1 var(--fd);text-transform:uppercase}
+.bet p{color:var(--ink2);margin:8px 0 16px;font-size:15.5px}
+.picks{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.picks button{font:400 34px/1 var(--fd);letter-spacing:.02em;border:3px solid var(--ink);padding:18px 8px 14px;background:var(--field);box-shadow:4px 4px 0 var(--ink);transition:transform .1s,box-shadow .1s}
+.picks button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.picks button[data-d="UP"].on{background:var(--up)}.picks button[data-d="DOWN"].on{background:var(--dn)}
+.picks button:disabled{opacity:.4;cursor:not-allowed}
+.mine{margin-top:14px;font:800 13px/1.5 var(--fm);border:3px dashed var(--ink);padding:12px;display:none}
+.mine.on{display:block}
+.crowd{margin-top:14px;font:600 12px/1.5 var(--fm);color:var(--dim)}
+
+/* ---------- get $EZ ---------- */
+.get{background:var(--gold)}
+.get-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+@media(max-width:900px){.get-grid{grid-template-columns:1fr}}
+.card{border:3px solid var(--ink);background:var(--card);box-shadow:6px 6px 0 var(--ink);padding:18px;display:flex;flex-direction:column;gap:10px}
+.card .n{font:400 44px/.8 var(--fd)}
+.card h4{font:400 30px/1 var(--fd);text-transform:uppercase}
+.card p{font-size:15.5px;color:var(--ink2)}
+.ca{font:600 12px/1.5 var(--fm);border:3px dashed var(--ink);padding:10px;overflow-wrap:anywhere;background:var(--field)}
+.ca.live{border-style:solid;cursor:copy;background:var(--upbg)}
+.go{margin-top:auto;text-align:center;font:400 22px/1 var(--fd);letter-spacing:.03em;text-decoration:none;border:3px solid var(--ink);padding:13px 10px 10px;background:var(--up);box-shadow:4px 4px 0 var(--ink)}
+.go.off{background:transparent;border-style:dashed;box-shadow:none;color:var(--dim);pointer-events:none}
+.risk{margin-top:30px;font:600 12.5px/1.65 var(--fm);border:3px solid var(--ink);background:var(--field);padding:14px 16px;max-width:900px}
+
+/* ---------- footer ---------- */
+footer{padding:80px 16px 110px;text-align:center}
+.motto{font:400 clamp(44px,9vw,140px)/.9 var(--fd);text-transform:uppercase}
+.motto .e{color:var(--up2)}.motto .z{color:var(--dn2)}
+.mark{display:inline-block;margin-top:26px;font:400 64px/1 var(--fd);background:var(--ink);padding:10px 22px 4px}
+.mark .d{color:var(--gold)}.mark .e{color:#5dff9c}.mark .z{color:#ff6b6b}
+.colo{margin-top:18px;font:800 12px/1.6 var(--fm);letter-spacing:.14em;color:var(--dim)}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;background:var(--ink);color:var(--field);font:800 13px/1 var(--fm);padding:13px 16px;border:3px solid var(--field);transition:all .25s;z-index:100;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}.reveal{opacity:1;transform:none}.stamp{opacity:1;scale:1}}
+</style>
+</head>
+<body>
+<div class="tape" aria-label="Season results"><div class="tape-in" id="tape"></div></div>
+
+<header class="bar">
+  <div class="bar-in">
+    <a class="logo" href="#top"><span class="lt">EARNINGS ZEASON</span><b><span class="d">$</span><span class="e">E</span><span class="z">Z</span></b></a>
+    <nav aria-label="Sections"><a href="#board">Board</a><a href="#tape-sec">The tape</a><a href="#rails">The rails</a><a href="#next">Round 7</a></nav>
+    <div class="clock"><i></i><span class="l">MICRON LOCKS</span><span data-cd>—</span></div>
+    <a class="buy" href="#get">BUY $EZ</a>
+  </div>
+</header>
+
+<main id="top">
+<!-- ======================= HERO ======================= -->
+<section class="hero">
+  <div class="split"><div class="side-up"></div><div class="side-dn"></div></div>
+  <svg class="candles" id="candles" aria-hidden="true" preserveAspectRatio="none"></svg>
+  <span class="sticker s1">No edits. Ever.</span>
+  <span class="sticker s2">On-chain or it didn't happen</span>
+  <span class="sticker s3">Graded +24h</span>
+  <span class="sticker s4">No bailouts</span>
+  <div class="hero-copy">
+    <span class="kick">EARNINGS ZEASON · SEASON ONE</span>
+    <h1><span class="w">The market</span><span class="o">pays or it</span><span class="w">doesn't.</span></h1>
+    <p>Three AI models call earnings before the bell. Twenty-four hours later the market grades them. Right gets paid. Wrong gets printed. Every call on the record — every buyback on-chain.</p>
+    <div class="hero-btns"><a class="buy" href="#get">BUY $EZ</a><a class="ghost" href="#tape-sec">SEE THE TAPE ↓</a></div>
+  </div>
+</section>
+
+<!-- ======================= BOARD ======================= -->
+<section class="sec" id="board">
+  <div class="wrap">
+    <span class="lab reveal">THE BOARD · 6 OF 10 ROUNDS GRADED</span>
+    <h2 class="reveal">Three machines.<br>One scoreboard.</h2>
+    <p class="lede reveal">No fund manager to fire, no quarterly letter to spin. Just calls filed before the bell and a number that settles them. This is capitalism with the excuses removed.</p>
+    <div class="board reveal" id="scores"></div>
+    <p class="seat4">SEAT FOUR — GROK — invited. When the paperwork clears, the board grows to four, then five, then seven.</p>
+  </div>
+</section>
+
+<!-- ======================= THE TAPE ======================= -->
+<section class="sec" id="tape-sec" style="background:var(--card)">
+  <div class="wrap">
+    <span class="lab reveal">THE TAPE · EVERY ROUND, SETTLED</span>
+    <h2 class="reveal">Six rounds.<br>No refunds.</h2>
+    <p class="lede reveal">Before the bell, each machine files a direction and a number. The market answers. The nearest call with the right direction takes the round. Nobody right? Nobody gets paid.</p>
+    <div class="slips" id="slips"></div>
+  </div>
+</section>
+
+<!-- ======================= THE RAILS ======================= -->
+<section class="sec inv" id="rails">
+  <div class="wrap">
+    <span class="lab reveal">THE RAILS · CRYPTO, NOT PROMISES</span>
+    <h2 class="reveal">Receipts or<br>it didn't happen.</h2>
+    <p class="lede reveal">Wall Street settles in T+1 and a press release. This settles on-chain. Every buyback posts here with its transaction hash — check it yourself, don't take our word for anything.</p>
+    <div class="rails">
+      <div class="loop reveal">
+        <div class="step"><span class="n">01</span><div><h3>The call</h3><p>Three machines file before the bell. Timestamped, public, verbatim. No deleting the bad ones.</p></div></div>
+        <div class="step"><span class="n">02</span><div><h3>The grade</h3><p>Twenty-four hours later the market settles it. No appeals, no "long-term view," no adjusting the goalposts.</p></div></div>
+        <div class="step"><span class="n">03</span><div><h3>The purse</h3><p>Accruing since Round I. Sealed until Round X. 69% to the season's winning machine. Settles in $EZ.</p></div></div>
+        <div class="step"><span class="n">04</span><div><h3>The buyback</h3><p>When money moves, it moves on-chain — and it lands in the ledger on the right with the hash attached. If it isn't there, it didn't happen.</p></div></div>
+      </div>
+      <div class="reveal">
+        <div class="explorer">
+          <div class="ex-h"><span><i></i>BUYBACK LEDGER · ON-CHAIN</span><span id="exCount">0 TX</span></div>
+          <div id="ledger"></div>
+        </div>
+        <div class="purse">
+          <h4>The purse</h4>
+          <div class="segs" id="segs" aria-label="6 of 10 rounds settled"></div>
+          <p>SIX OF TEN ROUNDS SETTLED · SEALED UNTIL ROUND X · NO PURSE FIGURES PUBLISHED YET — THE LEDGER CARRIES THE NUMBER THE DAY IT IS WRITTEN.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= MANIFESTO ======================= -->
+<section class="sec" id="rules">
+  <div class="wrap">
+    <span class="lab reveal">THE RULES OF THE HOUSE</span>
+    <h2 class="reveal">Pure capitalism.<br>Uncut.</h2>
+    <div class="mani reveal">
+      <div class="g">The market is the only judge<small>It does not read the opinions of the judged. Not the machines', not ours, not yours.</small></div>
+      <div>Nothing is edited. Ever.<small>A wrong call stays wrong forever. That's the point — you can't learn anything from a ledger that can be rewritten.</small></div>
+      <div>Being early is being wrong<small>The grade is +24h. "Right eventually" doesn't settle anything here.</small></div>
+      <div class="r">Nobody right, nobody wins<small>Costco went up, all three machines said down, and the round paid nobody. The record says so in the same size type as the wins.</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= ROUND 7 ======================= -->
+<section class="sec" id="next" style="background:var(--card)">
+  <div class="wrap">
+    <span class="lab reveal">NEXT AT THE WINDOW</span>
+    <h2 class="reveal">Round 7 · Micron</h2>
+    <div class="next">
+      <div class="reveal">
+        <div class="cd"><div><b data-cd="d">—</b><span>DAYS</span></div><div><b data-cd="h">—</b><span>HRS</span></div><div><b data-cd="m">—</b><span>MIN</span></div><div><b data-cd="s">—</b><span>SEC</span></div></div>
+        <p class="fine">CALLS LOCK WED, SEP 30 · 4:30 PM ET. DATE PER MICRON'S ANNOUNCEMENT — THE SHEET WILL CARRY IT OFFICIALLY.</p>
+        <p class="fine" style="margin-top:10px">The machines' calls post before the market says a word.</p>
+      </div>
+      <div class="bet reveal">
+        <h3>Call it before they do</h3>
+        <p>Up or down on Micron. Saved on this device only — no wallet, no account, not part of the record. Just you against three machines.</p>
+        <div class="picks"><button type="button" data-d="UP">▲ UP</button><button type="button" data-d="DOWN">▼ DOWN</button></div>
+        <div class="mine" id="mine" role="status"></div>
+        <p class="crowd">After the print, come back and see who you beat.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= GET $EZ ======================= -->
+<section class="sec get" id="get">
+  <div class="wrap">
+    <span class="lab reveal">GET $EZ</span>
+    <h2 class="reveal">Pick a side.<br>Hold the receipts.</h2>
+    <div class="get-grid">
+      <div class="card reveal"><span class="n">01</span><h4>Check the address</h4><p>The only official contract address lives here and on the pinned post. Anything else posted first is not us.</p><div class="ca" id="ca">CONTRACT ADDRESS NOT POSTED YET — IT APPEARS HERE, AND ONLY HERE, AT LAUNCH.</div></div>
+      <div class="card reveal"><span class="n">02</span><h4>Buy $EZ</h4><p>Only through the link on this page, only against the address beside it.</p><a class="go off" id="buyLink" href="#get" target="_blank" rel="noopener">OPENS AT LAUNCH</a></div>
+      <div class="card reveal"><span class="n">03</span><h4>Be there for the print</h4><p>Calls before the bell, grade after the close, buybacks on-chain. Be in the room for all three.</p><div id="follow" style="display:flex;flex-direction:column;gap:10px;margin-top:auto"></div></div>
+    </div>
+    <p class="risk">$EZ is a memecoin. It can go to zero. Nothing on this page promises value, returns, or a payout to holders, and none of it is financial advice. The machines' calls are an experiment in public, not trading signals — six rounds in, one of them fooled all three.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="motto">Nobody said it would be <span class="e">E</span><span class="z">Z</span></div>
+  <div class="mark" aria-label="$EZ"><span class="d">$</span><span class="e">E</span><span class="z">Z</span></div>
+  <div class="colo">EARNINGS ZEASON · PRINTED ONCE, NEVER EDITED</div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ================== CONFIG — empty means "not live yet" ================== */
+var CONFIG={
+  ca:"", buyUrl:"", chain:"", x:"", tg:"",
+  /* Buyback ledger. Each entry: {date:"2026-10-01", round:"Round 7 · Micron", amount:"…", tx:"0x…", url:"https://…explorer/tx/…"}
+     Nothing renders until a real, verifiable transaction exists. */
+  buybacks:[]
+};
+var LOCK_AT=Date.parse("2026-09-30T20:30:00Z");
+
+/* ================== THE RECORD — verbatim ================== */
+var LADDER=[{m:"GPT",dir:"4 / 6",avg:"3.96",won:3},{m:"KIMI",dir:"4 / 6",avg:"4.46",won:2},{m:"CLAUDE",dir:"3 / 6",avg:"4.61",won:1}];
+var ROUNDS=[
+ {n:1,co:"GameStop",out:"+5.95%",up:true,head:"Kimi Calls GameStop",win:"KIMI",calls:[["GPT","UP 1%",false,"4.95"],["KIMI","UP 4%",true,"1.95"],["CLAUDE","UP 2%",true,"3.95"]]},
+ {n:2,co:"Oracle",out:"−1.74%",up:false,head:"Oracle Fades; Claude Collects",win:"CLAUDE",calls:[["GPT","UP 6%",false,"7.74"],["KIMI","DOWN 6%",true,"4.26"],["CLAUDE","DOWN 3%",true,"1.26"]]},
+ {n:3,co:"AutoZone",out:"+3.25%",up:true,head:"GPT Answers the Doubters",win:"GPT",calls:[["GPT","UP 4%",true,"0.75"],["KIMI","DOWN 5%",false,"8.25"],["CLAUDE","DOWN 4.5%",false,"7.75"]]},
+ {n:4,co:"General Mills",out:"+1.04%",up:true,head:"A Dead Heat at General Mills",win:"GPT & KIMI",calls:[["GPT","UP 3%",true,"1.96"],["KIMI","UP 3%",true,"1.96"],["CLAUDE","DOWN 3%",false,"4.04"]]},
+ {n:5,co:"BlackBerry",out:"+4.10%",up:true,head:"GPT Again, and the Standings Turn",win:"GPT",calls:[["GPT","UP 7%",true,"2.90"],["KIMI","UP 9%",true,"4.90"],["CLAUDE","UP 9%",true,"4.90"]]},
+ {n:6,co:"Costco",out:"+2.95%",up:true,head:"The Call That Fooled All Three",win:null,calls:[["GPT","DOWN 2.5%",false,"5.45"],["KIMI","DOWN 2.5%",false,"5.45"],["CLAUDE","DOWN 2.8%",false,"5.75"]]}
+];
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function toast(t){var x=$("#toast");x.textContent=t;x.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(function(){x.classList.remove("on")},2200)}
+function pad(n){return ("0"+n).slice(-2)}
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* tape */
+(function(){var h=ROUNDS.map(function(r){return '<span>ROUND '+r.n+' · '+r.co.toUpperCase()+' <b class="'+(r.up?'u':'d')+'">'+r.out+'</b> · <b class="g">'+(r.win?r.win+' WINS':'NOBODY WINS')+'</b></span><span>✦</span>'}).join("")+'<span>ROUND 7 · MICRON · <b class="g">CALLS LOCK WED SEP 30 · 4:30 PM ET</b></span><span>✦</span>';$("#tape").innerHTML=h+h})();
+
+/* candles across the hero: the six real outcomes, then Micron pending */
+(function(){
+  var s=$("#candles"),W=1000,H=600;s.setAttribute("viewBox","0 0 "+W+" "+H);
+  var o=ROUNDS.map(function(r){return parseFloat(r.out.replace("−","-"))}),x0=90,step=(W-180)/6,base=H*.5,k=34,g="";
+  o.forEach(function(v,i){var x=x0+i*step,y1=base,y2=base-v*k,top=Math.min(y1,y2),h=Math.max(6,Math.abs(y2-y1));
+    g+='<line x1="'+x+'" x2="'+x+'" y1="'+(top-26)+'" y2="'+(top+h+26)+'" stroke="#0f0f0c" stroke-width="4"/>';
+    g+='<rect x="'+(x-22)+'" y="'+top+'" width="44" height="'+h+'" fill="'+(v<0?'#ff2e2e':'#00c05a')+'" stroke="#0f0f0c" stroke-width="4"/>'});
+  var xm=x0+6*step;g+='<rect x="'+(xm-22)+'" y="'+(base-40)+'" width="44" height="80" fill="none" stroke="#0f0f0c" stroke-width="4" stroke-dasharray="10 8"/><text x="'+xm+'" y="'+(base+5)+'" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="800" font-size="30" fill="#0f0f0c">?</text>';
+  s.innerHTML='<g opacity=".16">'+g+'</g>';
+})();
+
+/* scoreboard */
+(function(){$("#scores").innerHTML=LADDER.map(function(l,i){return '<div class="slot'+(i===0?' lead':'')+'">'+(i===0?'<span class="crown">LEADS THE SEASON</span>':'')+'<div class="rk">#'+(i+1)+'</div><div class="nm">'+l.m+'</div><div class="w">'+l.won+'<small>ROUNDS WON</small></div><dl><dt>DIRECTION</dt><dd>'+l.dir+'</dd><dt>AVG DISTANCE</dt><dd>'+l.avg+' PTS</dd></dl></div>'}).join("")})();
+
+/* slips */
+(function(){$("#slips").innerHTML=ROUNDS.map(function(r){
+  var winners=r.win?r.win.split(" & "):[];
+  return '<article class="slip reveal '+(r.up?'u':'d')+(r.win?'':' none')+'"><div class="slip-h"><b>ROUND '+r.n+' · '+r.co.toUpperCase()+'</b><span>+24H</span></div>'+
+   '<div class="out"><span class="big '+(r.up?'up':'dn')+'">'+r.out+'</span><span class="lbl">OUTCOME<br>'+(r.up?'▲ IT WENT UP':'▼ IT WENT DOWN')+'</span></div>'+
+   '<p class="head">'+r.head+'</p>'+
+   '<div class="calls">'+r.calls.map(function(c){return '<div class="'+(winners.indexOf(c[0])>-1?'win':'')+'"><span>'+c[0]+'</span><span class="v">'+c[1]+'</span><span class="'+(c[2]?'ok':'no')+'">'+(c[2]?'✓':'✗')+' '+c[3]+'</span></div>'}).join("")+'</div>'+
+   '<div class="slip-f"><span>'+(r.win?r.win+' GETS PAID':'NOBODY GETS PAID')+'</span><small>'+(r.win?'WINNER':'NO WINNER')+'</small></div>'+
+   '<span class="stamp'+(r.win?' g':'')+'">'+(r.win?'SETTLED':'BURNED')+'</span></article>'}).join("")})();
+
+/* ledger */
+(function(){
+  var L=$("#ledger"),b=CONFIG.buybacks;$("#exCount").textContent=b.length+" TX";
+  if(!b.length){L.innerHTML='<div class="ex-empty"><b>0 buybacks. So far.</b>Nothing has settled on-chain yet, so nothing is listed. The first buyback posts here with its date, its round, its size and its transaction hash — linked, so you can check it on the explorer yourself.</div>';return}
+  L.innerHTML=b.map(function(t){return '<div class="ex-row"><span>'+t.date+' · '+t.round+'</span><b>'+t.amount+'</b><a class="tx" href="'+t.url+'" target="_blank" rel="noopener">'+t.tx+' ↗</a></div>'}).join("");
+})();
+(function(){var s=$("#segs");for(var i=1;i<=10;i++){var e=document.createElement("i");if(i<=6)e.className="f";else if(i===7)e.className="n";e.title="Round "+i;s.appendChild(e)}})();
+
+/* countdown */
+function tick(){var ms=Math.max(0,LOCK_AT-Date.now()),d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
+  $$("[data-cd]").forEach(function(n){var k=n.dataset.cd;n.textContent=!k?(ms<=0?"LOCKED":(d?d+"D ":"")+pad(h)+":"+pad(m)+":"+pad(s)):k==="d"?d:k==="h"?pad(h):k==="m"?pad(m):pad(s)});
+  if(ms<=0)$$(".picks button").forEach(function(b){b.disabled=true})}
+tick();setInterval(tick,1000);
+
+/* your call */
+function showMine(){var c=store("ez.a.call");var m=$("#mine");if(!c){m.classList.remove("on");return}
+  m.innerHTML="YOU CALLED MICRON "+(c==="UP"?"▲ UP":"▼ DOWN")+". LOCKED ON THIS DEVICE. THE MACHINES FILE NEXT.";m.classList.add("on");
+  $$(".picks button").forEach(function(b){b.classList.toggle("on",b.dataset.d===c)})}
+$$(".picks button").forEach(function(b){b.addEventListener("click",function(){if(Date.now()>=LOCK_AT)return;store("ez.a.call",b.dataset.d);showMine();toast("Called. No edits after the lock.")})});
+showMine();
+
+/* launch config */
+(function(){
+  if(CONFIG.ca){var ca=$("#ca");ca.className="ca live";ca.textContent=(CONFIG.chain?CONFIG.chain+" · ":"")+CONFIG.ca+"  — TAP TO COPY";ca.addEventListener("click",function(){navigator.clipboard&&navigator.clipboard.writeText(CONFIG.ca).then(function(){toast("Address copied — check it anyway")})})}
+  if(CONFIG.buyUrl){var b=$("#buyLink");b.href=CONFIG.buyUrl;b.className="go";b.textContent="BUY $EZ ↗"}
+  var f=$("#follow"),any=false;
+  [["x","FOLLOW ON X"],["tg","JOIN THE TELEGRAM"]].forEach(function(k){if(CONFIG[k[0]]){any=true;var a=document.createElement("a");a.className="go";a.href=CONFIG[k[0]];a.target="_blank";a.rel="noopener";a.textContent=k[1]+" ↗";f.appendChild(a)}});
+  if(!any){var s=document.createElement("span");s.className="go off";s.textContent="CHANNELS POST AT LAUNCH";f.appendChild(s)}
+})();
+
+/* reveals */
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}})},{threshold:.2});
+$$(".reveal").forEach(function(n){if(reduce)n.classList.add("in");else io.observe(n)});
+</script>
+</body>
+</html>

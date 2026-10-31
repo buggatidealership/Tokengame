@@ -1,0 +1,7 @@
+// node vcheck.js : every mockup switch at 320, 390 and 1536 on the Overview, Leaderboard and Upcoming: sideways scroll, console errors, the switch read
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../live-r1/_fonts.js');
+const QS=['','cast=cols&tix=flat&rules=line','rules=none&tix=flat','cast=cols'];
+(async()=>{const b=await chromium.launch();const out=[];for(const w of [320,390,1536])for(const q of QS)for(const h of ['','#/leaderboard','#/upcoming']){const p=await b.newPage({viewport:{width:w,height:860}});await FONTS(p);const er=[];p.on('pageerror',e=>er.push(e.message));p.on('console',m=>{if(m.type()==='error')er.push(m.text())});
+await p.goto('http://localhost:8897/x2p-comic-remake.html'+(q?'?'+q:'')+h);await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});await p.waitForTimeout(1200);
+const o=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth,v:Object.values(window.__c2V||{}).join('/'),e:String(window.__x2pWorldErr||''),ct:(()=>{const t=document.querySelector('.c2-ct');if(!t)return '';const r=t.getBoundingClientRect();return [...t.querySelectorAll('*')].filter(x=>{const q=x.getBoundingClientRect();return q.width&&(q.right>r.right+.5)}).length+' over'})()}));
+out.push(`${w} ${q||'default'} ${h||'#/'} sw=${o.sw}/${o.iw} [${o.v}] ${o.ct} ${o.e} ${er.join('|')||'ok'}`);await p.close()}console.log(out.join('\n'));await b.close()})();

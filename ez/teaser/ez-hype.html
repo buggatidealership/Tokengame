@@ -1,0 +1,858 @@
+<!doctype html>
+<!--
+EZ HYPE FILM, Option A "The Pot" (treatment + adversarial review, 2026-10-11). This file builds the 15 s cut.
+PASSES (one page, URL params):
+  ?pass=plate          WebGL only: the 3D plate of master frame m (no type, no vignette, no grain). Files are named
+                       m0000-<plate key>.png, the key hashing every input of that plate (plateKey).
+  ?pass=type           2D only: loads plate m from __plates/ (render.js serves PLATES=dir there), adds vignette, grain, scrims and type.
+  ?pass=both           both in one page (quick previews).
+  &variant=std|uk      std: AD rail, data stamps, leverage paired with "THE POT CAN BE WIPED OUT.", equal split, end disclaimer card.
+                       uk : std plus the FCA band (COBS 4.12A.11R(1)(d), Instrument Sans 700 at 36 px, white, 2 px black border) on every frame.
+  &cut=15              the 900-frame cut (critique must-fix 2). The 30 s and the 9:16 come later from the same master plates.
+  &ns=N                subframes (default: the shot table's own value). &res=960 renders plates at 960 for the upscale fallback.
+MASTER TIMELINE: plates are keyed by the 30 s master frame (0..1799), so the 15 s cut and the later 30 s share them.
+DATA: every number and name comes from ../ez-data.js at render time (hypeData below). Nothing on screen is typed by hand
+      except fixed copy and the legal texts.
+LOOK: the loop's navy studio, chrome F0 0.92, EZ yellow lights, glossy floor; one accent (#ffc72c); green/red only on up/down data.
+      No springs, pops, rotations, wipes, splats or confetti. Out drops sink through the floor. Impact squash no deeper than 0.9.
+SOUND: window.renderAudio(): 120 BPM, D minor, sub thuds, pitched metal resonances, filtered granular liquid; no bloops,
+      gurgles or whistles. Every hit lands 1 frame after its picture.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EZ Hype Film</title>
+<meta name="viewport" content="width=1080">
+<style>
+@font-face{font-family:"IS";src:url(fonts/instrument-sans-latin-wdth-normal.woff2) format("woff2");font-weight:400 700;font-stretch:75% 100%}
+@font-face{font-family:"GM";src:url(fonts/geist-mono-latin-wght-normal.woff2) format("woff2");font-weight:100 900}
+:root{--cream:#f4efe6;--ink:#07080d;--yel:#ffc72c;--up:#1fcf6b;--dn:#ff4136}
+html,body{margin:0;background:#07080d}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#07080d}
+#gl{position:absolute;left:0;top:0}
+#bg{position:absolute;left:0;top:0;width:1080px;height:1080px}
+#ov{position:absolute;inset:0;pointer-events:none}
+.ab{position:absolute}
+.scrim{position:absolute;left:0;right:0}
+.hd{font-family:"IS";font-weight:700;font-stretch:75%;font-size:72px;line-height:.95;letter-spacing:.005em;color:var(--cream);white-space:nowrap}
+.ln{overflow:hidden;padding:.06em 0 .04em}
+.ln>span{display:inline-block;will-change:transform}
+.mono{font-family:"GM";font-weight:500;letter-spacing:.06em;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--cream)}
+.sub{font-family:"GM";font-weight:700;font-size:36px;letter-spacing:.04em;color:var(--cream);white-space:nowrap}
+.ar{display:inline-block;width:.62em;height:.62em;margin:0 .14em 0 .06em;vertical-align:.02em}
+.up{color:var(--up)}.dn{color:var(--dn)}
+#rail{left:48px;top:26px;height:46px;display:flex;align-items:center;gap:18px}
+#ad{font:700 30px/1 "GM";letter-spacing:.04em;color:var(--cream);border:2px solid var(--cream);border-radius:4px;padding:5px 10px 5px 12px}
+#brand{font-size:24px;color:rgba(244,239,230,.88)}
+#stamp{right:48px;top:34px;font-size:28px;letter-spacing:0;color:rgba(244,239,230,.86);text-align:right}
+.lab{transform:translate(-50%,-100%);text-align:center}
+.lab .nm{font-size:32px;color:var(--cream)}
+.lab .cl{font:700 36px/1.15 "GM";letter-spacing:.02em;color:var(--cream);position:relative;display:inline-block}
+.lab .cl i{position:absolute;left:-4px;right:-4px;top:52%;height:3px;background:var(--cream);transform-origin:left center;font-style:normal}
+.rn{font-size:32px}
+.k{font-family:"GM";font-weight:500;letter-spacing:.06em;font-size:30px;color:rgba(244,239,230,.86);margin-bottom:10px}
+.tag{font:700 36px/1 "GM";letter-spacing:.06em;color:#0b0b0d;background:var(--yel);border-radius:4px;padding:5px 8px 4px;display:inline-block}
+.num{font:700 36px/1 "GM";color:var(--cream);font-variant-numeric:tabular-nums}
+#legal{left:48px;font-family:"IS";font-weight:600;font-stretch:100%;font-size:26px;line-height:1.2;letter-spacing:0;color:rgba(244,239,230,.86);white-space:nowrap}
+#card{left:48px;right:48px;border:1px solid rgba(244,239,230,.42);border-radius:4px;background:rgba(7,8,13,.88);
+  font-family:"IS";font-weight:600;font-stretch:100%;font-size:34px;line-height:1.22;color:var(--cream);padding:10px 18px 11px;text-wrap:balance}
+#band{left:24px;right:24px;bottom:96px;height:160px;background:#fff;border-radius:4px;box-sizing:border-box}
+#band::before{content:"";position:absolute;inset:4px;border:2px solid #000;border-radius:2px}
+#band p{position:absolute;left:20px;right:20px;top:50%;transform:translateY(-50%);margin:0;font-family:"IS";font-weight:700;font-stretch:100%;font-size:36px;line-height:1.18;color:#000}
+#div{left:535px;width:10px;top:0;height:1080px;background:#07080d}
+.half{width:540px;box-sizing:border-box;padding:0 40px}
+.half .k{font-size:30px}
+.half .hd{font-size:60px}
+/* &mica=1 (only if counsel says MiCA Art 7 applies): a top band for the whole runtime; the rail moves under it */
+#mica{left:24px;right:24px;top:12px;height:140px;box-sizing:border-box;border:2px solid var(--cream);border-radius:4px;background:#07080d}
+#mica p{position:absolute;left:16px;right:16px;top:50%;transform:translateY(-50%);margin:0;font-family:"IS";font-weight:600;font-stretch:100%;font-size:26px;line-height:1.2;color:var(--cream)}
+.mi #rail{top:158px}.mi #stamp{top:170px}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="gl"></canvas><canvas id="bg" width="1080" height="1080"></canvas><div id="ov"></div></div>
+<script src="../ez-data.js"></script>
+<script>
+(function(){
+"use strict";
+var Q=new URLSearchParams(location.search);
+var PASS=Q.get("pass")||"both",VAR=Q.get("variant")||"std",CUT=Q.get("cut")||"15",NSQ=Q.get("ns"),RES=+(Q.get("res")||1080);
+var FPS=60;window.FPS=FPS;
+
+/* ======================================================================================================
+   1. DATA: every on-screen value, computed from ez-data.js. STRINGS records which field produced what.
+   ====================================================================================================== */
+var STRINGS=[];function S(text,src){STRINGS.push({text:text,src:src});return text}
+/* the lab behind each model, for the non-affiliation line (names only, never marks). A new model fails the build. */
+var LABS={GPT:"OPENAI",KIMI:"MOONSHOT AI",CLAUDE:"ANTHROPIC",GROK:"XAI"};
+function hypeData(){
+  if(MODEL_KEYS.length!==4)throw new Error("EZ hype needs exactly 4 AIs in MODEL_KEYS, got "+MODEL_KEYS.length);
+  MODEL_KEYS.forEach(function(m){if(!LABS[m])throw new Error("EZ hype: no lab name for model "+m+" (add it to LABS in ez-hype.html)")});
+  if(!ROUNDS.length)throw new Error("EZ hype needs at least one graded round");
+  var RS=ROUNDS.slice().sort(function(a,b){return a.n-b.n}),LAST=RS[RS.length-1];
+  /* "STANDINGS AS OF ROUND N" is only true if every round up to N is graded */
+  var gap=[].concat(PENDING,UPCOMING).filter(function(u){return u.n<LAST.n}).map(function(u){return u.n});
+  if(gap.length)throw new Error("EZ hype: round(s) "+gap.join(",")+" not graded but round "+LAST.n+" is; the standings stamp would be wrong");
+  /* SHOWCASE ROUND (critique must-fix 11), a stated rule, not a pick: the latest graded round in which every AI called,
+     with a winner and at least two right-way calls (so "CLOSEST WINS" is visible). If none qualifies: the latest graded round. */
+  var R=null,showRule="latest graded round with all "+MODEL_KEYS.length+" calls, a winner and at least two right-way calls";
+  for(var k=RS.length-1;k>=0&&!R;k--){var r=RS[k],upk=r.a>0,right=r.calls.filter(function(c){return (c[1].split(" ")[0]==="UP")===upk}).length;
+    if(r.calls.length===MODEL_KEYS.length&&r.win&&right>=2)R=r}
+  if(!R){R=LAST;showRule="latest graded round (no round met the showcase rule)"}
+  var MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  function md(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null}
+  var bd=md(SIM.betDate||CONFIG.betDate),betSrc="SIM.betDate || CONFIG.betDate",bet=null;
+  if(bd)bet={mon:MON[bd[1]],day:bd[2]};
+  else{var nv=[].concat(UPCOMING,PENDING).filter(function(u){return u.ticker==="NVDA"})[0],c0=nv&&md(nv.called);
+    if(c0){var dt=new Date(Date.UTC(c0[0],c0[1],c0[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);
+      bet={mon:MON[dt.getUTCMonth()],day:dt.getUTCDate()};betSrc="SHEET NVDA row (round "+nv.n+") CALL DATE "+nv.called+", next weekday (the site's rule)"}}
+  var up=R.a>0,wins=R.win?R.win.split(" & "):[];
+  var drops=MODEL_KEYS.map(function(m){var c=R.calls.filter(function(c){return c[0]===m})[0];
+    var dir=c?c[1].split(" ")[0]:null,mag=c?c[1].split(" ")[1]:"";
+    return {m:m,name:MODELS[m].name,dir:dir,mag:mag,ok:c?((dir==="UP")===up):false,has:!!c,win:wins.indexOf(m)>-1}});
+  var lad=LADDER.map(function(L){return {m:L.m,name:MODELS[L.m].name,won:L.won}});
+  /* THE RACE (critique must-fix 4): standings after each graded round, by the site's rule (wins, then the smaller average
+     miss to date; equal wins do not share a place). The lanes keep the drops' order (MODEL_KEYS, left to right, as in A4/A5;
+     QA 2026-10-11), so no AI swaps places across the cut; "#1" marks the leader. has[i]: lane i's AI had made a call by then
+     (an AI that joined later shows no count before its first round; QA: GROK joined at round 9). */
+  var lanes=MODEL_KEYS.map(function(m){return {m:m,name:MODELS[m].name,won:(LADDER.filter(function(L){return L.m===m})[0]||{}).won}});
+  var tal={};MODEL_KEYS.forEach(function(m){tal[m]={won:0,n:0,err:0}});
+  var steps=RS.map(function(r){var a=r.a,wn=r.win?r.win.split(" & "):[];
+    r.calls.forEach(function(c){var p=c[1].split(" "),v=(p[0]==="DOWN"?-1:1)*parseFloat(p[1]),T=tal[c[0]];T.n++;T.err+=Math.abs(v-a)});
+    wn.forEach(function(m){tal[m].won++});
+    var order=MODEL_KEYS.filter(function(m){return tal[m].n}).sort(function(x,y){return (tal[y].won-tal[x].won)||(parseFloat((tal[x].err/tal[x].n).toFixed(2))-parseFloat((tal[y].err/tal[y].n).toFixed(2)))});
+    return {n:r.n,date:fmtDate(r.resolves).toUpperCase(),won:lanes.map(function(l){return tal[l.m].won}),has:lanes.map(function(l){return tal[l.m].n>0}),lead:lanes.map(function(l){return l.m}).indexOf(order[0])}});
+  var fin=steps[steps.length-1];lanes.forEach(function(l,i){if(fin.won[i]!==l.won)throw new Error("EZ hype: race tally for "+l.m+" ("+fin.won[i]+") disagrees with LADDER ("+l.won+")")});
+  if(lanes[fin.lead].m!==lad[0].m)throw new Error("EZ hype: race leader disagrees with LADDER[0]");
+  /* the NVDA round (the bet), for the stamp-width check: every standings stamp up to it must fit beside the rail */
+  var nvR=[].concat(UPCOMING,PENDING,RS).filter(function(u){return u.ticker==="NVDA"}).map(function(u){return u.n});
+  return {R:R,showRule:showRule,n:R.n,co:R.co.toUpperCase(),ticker:R.ticker,out:R.out,up:up,drops:drops,wins:wins,lad:lad,lanes:lanes,steps:steps,
+    nvRound:nvR.length?Math.max.apply(null,nvR):LAST.n,
+    lastN:LAST.n,lastDate:fmtDate(LAST.resolves).toUpperCase(),labs:MODEL_KEYS.map(function(m){return LABS[m]}),
+    bet:bet,betSrc:betSrc,betSet:!!bd,lev:SIM.leverage!=null?SIM.leverage:null,
+    pool:SIM.poolShare!=null?Math.round(SIM.poolShare*100):null,launched:!!CONFIG.launched,x:String(CONFIG.x||"").trim(),nAI:MODEL_KEYS.length};
+}
+var D=hypeData();window.HYPE_DATA=D;window.HYPE_STRINGS=STRINGS;
+
+/* ======================================================================================================
+   2. EASING AND VECTORS
+   ====================================================================================================== */
+function sat(x){return x<0?0:x>1?1:x}
+function lerp(a,b,t){return a+(b-a)*t}
+function eio(x){x=sat(x);return x*x*(3-2*x)}
+function eOutCubic(x){x=sat(x);return 1-Math.pow(1-x,3)}
+function eInQuad(x){x=sat(x);return x*x}
+function eInCubic(x){x=sat(x);return x*x*x}
+function eOutExpo(x){x=sat(x);return x>=1?1:1-Math.pow(2,-10*x)}
+function eioSine(x){x=sat(x);return .5-.5*Math.cos(Math.PI*x)}
+function eioQuart(x){x=sat(x);return x<.5?8*x*x*x*x:1-Math.pow(-2*x+2,4)/2}
+function bez(x1,y1,x2,y2){return function(x){x=sat(x);if(x===0||x===1)return x;var t=x;
+  for(var i=0;i<8;i++){var cx=3*x1*t*(1-t)*(1-t)+3*x2*t*t*(1-t)+t*t*t-x,d=3*x1*(1-t)*(1-t)+6*(x2-x1)*t*(1-t)+3*(1-x2)*t*t;if(Math.abs(d)<1e-6)break;t=sat(t-cx/d)}
+  return 3*y1*t*(1-t)*(1-t)+3*y2*t*t*(1-t)+t*t*t}}
+var EIN=bez(.16,1,.3,1),EOUT=bez(.7,0,.84,0);
+function v3(x,y,z){return [x,y,z]}
+function sub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
+function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+function cross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+function norm(a){var l=Math.hypot(a[0],a[1],a[2]);return [a[0]/l,a[1]/l,a[2]/l]}
+function lerp3(a,b,t){return [lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)]}
+/* the camera, as the shader builds it. cx = viewport centre in 1080 px; returns pixel position, top-left origin */
+function project(c,P,cx){var fw=norm(sub(c.ta,c.ro)),u0=Math.abs(fw[1])>.95?[0,0,-1]:[0,1,0],rt=norm(cross(fw,u0)),up=cross(rt,fw);
+  var d=sub(P,c.ro),z=dot(d,fw),f=1/Math.tan(c.fov*Math.PI/360);
+  return [(cx==null?540:cx)+f*dot(d,rt)/z*540,540-(f*dot(d,up)/z+c.sh)*540]}
+
+/* ======================================================================================================
+   3. THE SHOT TABLE (master 30 s timeline, 1800 frames, 120 BPM, 1 bar = 120 f).
+      {id, f0, f1, prog, ns, cam(f), st(f) -> {s: 16 vec4 of scene state, T?, anchors}, box(f)}
+      Shots marked todo:true are in the 30 s only and are not built yet.
+   ====================================================================================================== */
+var CHIPY=-.9,SH=.35;
+var XS=[-2.1,-.7,.7,2.1];
+/* --- LOOP time-warps --- */
+function warpA1(f){return .95+1.65*(1-Math.pow(1-sat(f/120),2.2))}
+function warpA14(f){return f<1668?2.6+1.6*(f-1560)/108:4.2+2.75*(f-1668)/132}
+function warpSplitL(f){return f<=1392?.7+1.7*(f-1320)/72:2.4+.04*sat((f-1392)/167)}
+function loopBox(sc,o){o=o||[0,-1,0];return [[o[0]-3*sc,o[1]-.05*sc,o[2]-1.05*sc],[o[0]+3*sc,o[1]+3.3*sc,o[2]+1.05*sc]]}
+function slots(){return new Float32Array(64)}
+function put(s,i,a,b,c,d){s[i*4]=a;s[i*4+1]=b;s[i*4+2]=c;s[i*4+3]=d}
+
+/* --- FOUR: four AI drops (A3 pinch is 30 s only; A4 hover with calls; A5 graded) --- */
+var WRONG=[],WIN_X=0,RIGHT_X=0;(function(){var k=0;D.drops.forEach(function(d,i){WRONG[i]=d.has&&!d.ok?k++:-1});
+  var wx=D.drops.map(function(d,i){return d.win?XS[i]:null}).filter(function(x){return x!=null});WIN_X=wx.length?wx.reduce(function(a,b){return a+b},0)/wx.length:0;
+  var rx=D.drops.map(function(d,i){return d.has&&d.ok?XS[i]:null}).filter(function(x){return x!=null});RIGHT_X=rx.length?(Math.min.apply(null,rx)+Math.max.apply(null,rx))/2:0})();
+window.HYPE_WRONG=WRONG;
+function fourDrop(i,f){var t=f/60,hov=.35+.025*Math.sin(2*Math.PI*(t/3+i/4)),y=hov,ring=null,lab=hov;
+  var d=D.drops[i];
+  if(WRONG[i]>=0&&f>=368){var fs=368+3*WRONG[i];
+    if(f<fs+24){y=hov-(hov+1)*eInQuad((f-fs)/24)}else{y=-1-.78*eOutCubic((f-fs-24)/34)}
+    var fc=fs+24*Math.sqrt((hov+1-.52)/(hov+1));if(f>=fc)ring=[XS[i],0,(f-fc)/60,.035];
+    lab=.35}
+  if(d.win&&f>=400){y=hov+.3*eOutCubic((f-400)/40);lab=y}
+  return {p:[XS[i],y,0],r:.52,ring:ring,lab:[XS[i],lab+.52+.18,0]}}
+function fourSt(f){var s=slots(),an=[];put(s,0,0,0,0,0);put(s,1,1,1,1,.05);
+  for(var i=0;i<4;i++){var q=fourDrop(i,f);put(s,2+i,q.p[0],q.p[1],q.p[2],q.r);an.push(q.lab);if(q.ring)put(s,12+i,q.ring[0],q.ring[1],q.ring[2],q.ring[3])}
+  put(s,6,f/60,.008,3.2,0);return {s:s,anchors:an}}
+function fourCam(f){
+  if(f<420){var z=f<360?9.0-.6*eio((f-240)/120):8.4-.15*eio((f-360)/60);return {ro:[0,.45,z],ta:[0,.1,0],fov:38,sh:.05}}   /* low enough that the rising winner's label clears the non-affiliation line */
+  /* the push frames every right-way drop (the winner and the ones it beat), so "CLOSEST WINS" is visible */
+  var u=eioQuart((f-420)/60),yt=(winY(f)+.35)/2;return {ro:[lerp(0,RIGHT_X,u),lerp(.45,yt+.3,u),lerp(8.25,7.0,u)],ta:[lerp(0,RIGHT_X,u),lerp(.1,yt,u),0],fov:38,sh:lerp(.05,.16,u)}}
+function winY(f){var ys=[];for(var i=0;i<4;i++)if(D.drops[i].win)ys.push(fourDrop(i,f).p[1]);return ys.length?ys.reduce(function(a,b){return a+b},0)/ys.length:.35}
+/* --- RACE (critique must-fix 4): columns grow round by round from the graded record (D.steps) from m480, at most one round
+       per 32nd note (3.75 f), lanes in MODEL_KEYS order (the drops' order); each new win eases in over 8 f, so the column never
+       jumps. The last round is counted by m480+57 at the latest, so its column has settled by m545 and the final standings
+       hold at least 24 f (0.4 s) before the 15 s cut leaves the race at m569 (QA 2026-10-11). --- */
+var RACE_M0=480,RACE_SPAN=57,RACE_EASE=8,RACE_STEP=Math.min(3.75,RACE_SPAN/Math.max(1,D.steps.length-1)),RACE_H=1.4;
+function raceT(j){return RACE_M0+j*RACE_STEP}                                  /* master frame at which round j (0-based) is counted */
+function raceK(f){return Math.max(0,Math.min(D.steps.length,Math.floor((f-RACE_M0)/RACE_STEP+1e-9)+1))}   /* rounds counted at f */
+function raceW(i,f){var w=0,prev=0;for(var j=0;j<D.steps.length;j++){var c=D.steps[j].won[i],dw=c-prev;prev=c;if(dw)w+=dw*eOutCubic((f-raceT(j))/RACE_EASE)}return w}
+function raceH(i,f){return -.9+RACE_H*raceW(i,f)/Math.max(1,Math.max.apply(null,D.lanes.map(function(l){return l.won})))}
+function raceSt(f){var s=slots(),an=[];for(var i=0;i<4;i++){var x=-2.1+1.4*i,h=raceH(i,f);put(s,i,x,h,.31,0);an.push({name:[x,-1.0,1.05],top:[x,h+.31+.14,0],h:h})}
+  put(s,4,2.85,.1,.95,-1);put(s,5,f/60,.008,3.2,0);return {s:s,anchors:an}}
+/* camera from the review (ro.y .55, ta.y .05): no "porthole" reflections, the pool reads as a pool */
+function raceCam(f){var u=eioSine((f-480)/120),rx=lerp(-.5,.5,u);return {ro:[rx,.55,9.1],ta:[.5*rx,.05,0],fov:38,sh:.23}}
+/* --- FEES (critique must-fix 8): two straight streams of round beads; each lands one every 30 f, offset by 15 f, so
+       together one bead lands per 8th note. Blend k .08, a small ripple ring per landing. --- */
+var FEE_N=2,STREAM_X=[-.2,.26],STREAM_Z=[-.08,.1],FEE_PER=30,FEE_V=.056,FEE_SP=FEE_PER*FEE_V,FEE_R=[.13,.15];
+function feesPot(f){var r=.80+.25*eOutCubic((f-840)/120);return {c:[0,-1+r,0],r:r}}
+function feeHit0(i){return 840+15*i}
+function feesSt(f){var s=slots(),P=feesPot(f);put(s,0,P.c[0],P.c[1],P.c[2],P.r);put(s,1,f/60,.008,3.2,.08);
+  for(var i=0;i<FEE_N;i++){var x=STREAM_X[i],z=STREAM_Z[i],top=P.c[1]+Math.sqrt(Math.max(0,P.r*P.r-x*x-z*z)),E=[x,top,z],A=[x*1.6,6,z-.3],Dd=norm(sub(A,E));
+    var fh0=feeHit0(i),ph=((FEE_V*(fh0-f))%FEE_SP+FEE_SP)%FEE_SP;if(ph>FEE_SP-.3)ph-=FEE_SP;   /* s of bead k=0 above the entry; a landing when it crosses 0 */
+    put(s,2+i,E[0],E[1],E[2],ph);put(s,5+i,Dd[0],Dd[1],Dd[2],4);
+    var fl=fh0+FEE_PER*Math.floor((f-fh0)/FEE_PER),a=f>=fh0?(f-fl)/60:-1;put(s,8+i,E[0],E[1],E[2],a)}
+  put(s,11,FEE_SP,FEE_R[0],FEE_R[1],FEE_N);return {s:s}}
+/* framed low and wide enough that the beads fall through clear air above the pot, below the rail */
+function feesCam(f){var u=eioSine((f-840)/120);return {ro:lerp3([-1.05,.95,9.4],[-.95,.55,9.8],u),ta:lerp3([-1.05,.45,0],[-.95,.55,0],u),fov:35,sh:.15}}   /* pot right of centre, clear of the caption */
+/* --- POT on the CHIP: A11 lands, A12 the 10x orbit; the same program plays the rekt half of the split --- */
+var POT_R=.62,POT_Z=-.35;
+function potA11(f){var rest=CHIPY+POT_R,y,sy=1,sxz=1,ring=-1;
+  if(f<1110){var u=sat((f-1086)/24);y=rest+3.6*(1-eInQuad(u));sy=1+.05*eInQuad(u);sxz=1-.025*eInQuad(u)}
+  else{var wt=(f-1110)/60,def=-.12*Math.sin(2*Math.PI*3.75*wt)*Math.exp(-5*wt);sy=1+def;sxz=1-.5*def;y=CHIPY+POT_R*sy;ring=wt}
+  return {c:[0,y,POT_Z],r:POT_R,sc:[sxz,sy,sxz],ring:ring}}
+function potSt(f){var s=slots(),P,ra=.008,rf=3.2;
+  if(f<1200)P=potA11(f);else{P={c:[0,CHIPY+POT_R,POT_Z],r:POT_R,sc:[1,1,1],ring:-1};var u=sat((f-1200)/120);rf=lerp(3.2,4.0,u);
+    ra=f<1229.5?.008:lerp(.008,.025,eioSine((f-1230)/90))}            /* the macro: the pot visibly shivers under the leverage line */
+  put(s,0,P.c[0],P.c[1],P.c[2],P.r);put(s,1,P.sc[0],P.sc[1],P.sc[2],1);put(s,2,f/60,ra,rf,0);
+  put(s,3,P.c[0],CHIPY,P.c[2],P.ring);return {s:s}}
+var POT_HIT=1110;
+/* impact weight: a 6-frame decaying camera jitter of under 3 px (aim offset), no scale pop */
+function jit(f){var t=f-POT_HIT;if(t<0||t>=6)return [0,0,0];var e=.011*Math.exp(-t/1.8);return [e*Math.cos(2.9*t+.4),e*Math.sin(3.7*t+1.1),0]}
+/* A11 sits at the azimuth the move ends on (atan(2.7/5.6), about 25.7 degrees right of the front), so the high start no
+   longer looks straight down the front: from there the softbox reflections under the yellow arc on the pot's top read as a
+   face (QA 2026-10-11). The move is now a pure descent at that azimuth; the end of it (and A12) is unchanged. */
+var A11_AZ=Math.atan2(2.7,5.6),A11_HI=[4.9*Math.sin(A11_AZ),3.2,4.9*Math.cos(A11_AZ)+POT_Z];
+function potCam(f){var j=jit(f);
+  if(f<POT_HIT)return {ro:A11_HI,ta:[0,-.45,POT_Z],fov:36,sh:.3};
+  if(f<1200){var u=eioQuart((f-POT_HIT)/90);return {ro:lerp3(A11_HI,[2.7,.15,5.6+POT_Z],u),ta:lerp3([j[0],-.45+j[1],POT_Z],[0,-.45,POT_Z],u),fov:lerp(36,32,u),sh:lerp(.3,.22,u)}}
+  /* orbit m1200..1229 (30 s cut only), macro m1230..1319: in the 15 s the leverage lines land on a hard cut to the macro (critique must-fix 3) */
+  /* the switch sits at 1229.5 so no motion-blur subframe of m1230 (the 15 s cut's first A12 frame) samples the orbit camera */
+  if(f<1229.5){var a=(25.7+6*eioSine((f-1200)/30))*Math.PI/180;return {ro:[6.22*Math.sin(a),.15,POT_Z+6.22*Math.cos(a)],ta:[0,-.45,POT_Z],fov:32,sh:.22}}
+  var v=eioSine((f-1230)/90);return {ro:lerp3([.9,-.55,2.4+POT_Z],[.78,-.56,2.12+POT_Z],v),ta:[0,-.42,POT_Z],fov:30,sh:.2}}
+/* --- SPLIT: left = LOOP on the chip (profits buy back $EZ), right = POT (rekt). Equal key light both sides; the drain
+       alone carries the loss. Balance (compliance must-fix 2): the left logotype shrinks to the pot's footprint while it
+       pours (scale .55 -> .38 over the pinch, so both halves start from the same pot), and the rekt pot never vanishes:
+       it sinks into the chip through the whole hold and stops with about 15% of it still above the chip. --- */
+var SPL_S=.55,SPL_L=.5,SPL_LIFT=-.06,SPL_RS=.38;   /* tuned by the bright-pixel balance test (compliance must-fix 2) */
+/* the left scene's scale and lift: the logotype floats a little higher so its faces catch the same horizon light as the hero */
+function splitLXf(f){var u=eio((warpSplitL(f)-1.0)/.6);return [0,CHIPY+SPL_LIFT*u,0,lerp(SPL_S,SPL_L,u)]}
+/* the rekt pot shrinks while it boils, in step with the left pot becoming the smaller logotype, then sinks */
+function splitRScale(f){return lerp(SPL_S,SPL_RS,eio((f-1333)/30))}
+function splitR(f){var sc=splitRScale(f),r0=.95*sc,s=slots(),r=r0;
+  var b=sat((f-1320)/30),ra=lerp(.008,.07,eio(b))*sc,rf=lerp(3.2,4.2,b)/sc;        /* boil heaves, not foil (critique must-fix 6) */
+  var sl=eio((f-1345)/22),sy=lerp(1,.8,sl),sxz=lerp(1,1.12,sl);
+  var sink=SPL_SINK(sat((f-1352)/148))*.85*2*r0*sy;                                   /* still sinking when the shot cuts at m1507 */
+  if(f>=1352)ra=lerp(ra,.025*sc,eio((f-1352)/30));
+  put(s,0,0,CHIPY+r0*sy-sink,0,r);put(s,1,sxz,sy,sxz,sc);put(s,2,f/60,ra,rf,0);put(s,3,0,0,0,-1);return {s:s}}
+var SPL_SINK=eio;
+function splitCam(){return {ro:[0,.02,6.0],ta:[0,-.3,0],fov:38,sh:.12}}
+
+var SHOTS=[
+  {id:"A1",f0:0,f1:119,prog:"LOOP",ns:4,cam:function(f){return {ro:[0,.45,6.2+1.4*eOutCubic(f/120)*eio(f/8)],ta:[0,.1,0],fov:35,sh:SH}},
+    st:function(f){return {T:warpA1(f)}},xf:[0,-1,0,1],chip:0},
+  {id:"A2",f0:120,f1:179,todo:true},{id:"A3",f0:180,f1:239,todo:true},
+  {id:"A4",f0:240,f1:359,prog:"FOUR",ns:2,cam:fourCam,st:fourSt,box:[[-2.8,-1.05,-.75],[2.8,1.6,.75]],chip:0},
+  {id:"A5",f0:360,f1:479,prog:"FOUR",ns:3,cam:fourCam,st:fourSt,box:[[-2.8,-2.4,-.75],[2.8,1.8,.75]],chip:0},
+  {id:"A6",f0:480,f1:599,prog:"RACE",ns:3,cam:raceCam,st:raceSt,box:[[-3.0,-1.25,-1.1],[3.0,1.75,1.1]],chip:0},
+  {id:"A7",f0:600,f1:719,todo:true},{id:"A8",f0:720,f1:839,todo:true},
+  {id:"A9",f0:840,f1:959,prog:"FEES",ns:2,cam:feesCam,st:feesSt,box:[[-1.6,-1.05,-1.5],[1.6,6.2,1.5]],chip:0},
+  {id:"A10",f0:960,f1:1079,todo:true},
+  {id:"A11",f0:1080,f1:1199,prog:"POT",ns:function(m){return m>=1100&&m<1110?8:3},cam:potCam,st:potSt,box:[[-.85,-.93,POT_Z-.85],[.85,4.4,POT_Z+.85]],chip:1},   /* the fall m1100..1109 at ns8: at ns3 the pot, about 79 px a frame, strobed as three exposures (QA 2026-10-11) */
+  {id:"A12",f0:1200,f1:1319,prog:"POT",ns:2,cam:potCam,st:potSt,box:[[-.8,-.93,POT_Z-.8],[.8,.5,POT_Z+.8]],chip:1},
+  {id:"A13",f0:1320,f1:1559,split:true,ns:function(m){return m<1410?3:4},   /* action at ns3, the still hold at ns4 (QA 2026-10-11: at ns2 the "$EZ" outlines twinkled) */
+    /* the hold also keeps one sampling offset (the seed of the per-frame quarter-pixel jitter) from m1410: with a new offset every
+       frame the thin chrome highlights flickered even at ns4 (measured: pixels flipping 20+ times in 56 frames, 3.5% at ns2, 3.8% at ns4) */
+    seed:function(m){return m>=1410?1410:m},
+    L:{prog:"LOOP",cam:splitCam,st:function(f){return {T:warpSplitL(f)}},xf:splitLXf,chip:1},
+    R:{prog:"POT",cam:splitCam,st:splitR,box:[[-1.1,-.93,-1.1],[1.1,.3,1.1]],chip:1}},
+  {id:"A14",f0:1560,f1:1799,prog:"LOOP",ns:3,cam:function(f){return {ro:[0,.45,f<1668?7.8:7.8-1.6*eio((f-1668)/132)],ta:[0,.1,0],fov:35,sh:SH}},
+    st:function(f){return {T:warpA14(f)}},xf:[0,-1,0,1],chip:0}];
+function shotAt(m){for(var i=0;i<SHOTS.length;i++)if(m>=SHOTS[i].f0&&m<=SHOTS[i].f1)return SHOTS[i];return null}
+
+/* the 15 s cut (critique must-fix 2, re-timed by the craft review: A5 from m366 and A12 from m1230 so no boundary is a
+   caption swap over the same picture; A6 from m480 so the race starts at round 1; A13 to out 817 and A14 from m1718,
+   past the melt's side lobes). Re-timed by QA (2026-10-11): A4 now plays m291..365 straight into A5 at m366, so 194->195 is
+   continuous motion with a caption change (no more m329 -> m366 jump cut), and A6 runs 90 f so the race's final standings
+   hold for 0.4 s or more. Out frames -> master plate frames. */
+var CUTS={"15":[[0,119,"A1",0],[120,194,"A4",291],[195,284,"A5",366],[285,374,"A6",480],[375,449,"A9",855],
+  [450,539,"A11",1100],[540,629,"A12",1230],[630,817,"A13",1320],[818,899,"A14",1718]]};
+var CT=CUTS[CUT];if(!CT)throw new Error("unknown cut "+CUT);
+var N=CT[CT.length-1][1]+1;window.N=N;
+function plateOf(i){for(var k=0;k<CT.length;k++){var c=CT[k];if(i>=c[0]&&i<=c[1])return {m:c[3]+(i-c[0]),seg:k,id:c[2],o0:c[0]}}return null}
+window.plateOf=plateOf;
+function pad4(n){return String(n).padStart(4,"0")}
+function outOf(m){for(var k=0;k<CT.length;k++){var c=CT[k];if(m>=c[3]&&m<=c[3]+c[1]-c[0])return c[0]+(m-c[3])}return null}   /* master -> out (null: not in this cut) */
+window.outOf=outOf;
+/* PLATE NAMES carry a key of everything the plate is drawn from (compliance must-fix 6; QA 2026-10-11): the shader source
+   of its program, its subframe count, and every uniform the plate pass sends (each subframe's camera and scene state, the
+   lens, the bounding box, the transform, the chip flag), plus the bet date the chip's LEDs spell when the chip shows. These
+   are computed by the same code the plate pass draws with (viewInputs), so any change to the data, a camera, ns, RACE_STEP
+   or a shader gives the plate a new name: a stale plate fails to load and the type pass stops (renderAt rejects) instead of
+   pairing old pictures with new numbers. The plate size (&res) is not in the key: a 960 plate stands in for a 1080 one. */
+var PLATE_VER="p3";
+function hash8(s){var h=2166136261>>>0;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return ("0000000"+h.toString(16)).slice(-8)}
+function plateNS(sh,m){return NSQ?+NSQ:(typeof sh.ns==="function"?sh.ns(m):sh.ns)}
+function plateSeed(sh,m){return sh.seed?sh.seed(m):m}           /* uFrame: the per-frame jitter's seed (the frame itself unless the shot holds it) */
+function plateKey(m){var sh=shotAt(m),ns=plateNS(sh,m),views=sh.split?[[sh.L,RES/4],[sh.R,RES*3/4]]:[[sh,RES/2]];
+  function q(a){return Array.prototype.map.call(a,function(x){return Math.round(x*1e5)}).join(",")}
+  var sd=plateSeed(sh,m);
+  return ns+(sd!==m?"|seed="+sd:"")+"|"+views.map(function(vc){var v=vc[0],I=viewInputs(v,m,ns);
+    return [v.prog,hash8(FS_COMMON+FS_SCENES[v.prog]+FS_TAIL),q(I.ro),q(I.ta),q(I.ln),q(I.S),q(I.xf),q(I.bx[0].concat(I.bx[1])),v.chip?1:0,v.chip?JSON.stringify(D.bet):""].join(";")}).join("||")}
+function plateName(m){var sh=shotAt(m);return "m"+pad4(m)+"-"+hash8(PLATE_VER+"|"+sh.id+"|"+plateKey(m))}
+window.plateName=plateName;window.plateKey=plateKey;
+window.frameName=PASS==="plate"?function(i){return plateName(plateOf(i).m)}:null;
+
+/* ======================================================================================================
+   4. WEBGL PLATES
+   ====================================================================================================== */
+var gl=null,PROG={},GLY=null,CHIPTX=null,CHIPEM=null;
+var FS_COMMON=`
+uniform vec2 uRes;uniform float uCx;uniform int uNS;uniform float uFrame;
+uniform vec3 uRo[8];uniform vec3 uTa[8];uniform vec4 uLens[8];uniform vec4 uS[128];
+uniform vec3 uBlo;uniform vec3 uBhi;uniform float uChip;
+uniform sampler2D uTx;uniform vec4 uBox;uniform vec3 uG[3];uniform vec4 uXf;
+uniform sampler2D uCt;uniform sampler2D uCe;
+out vec4 o;
+const float PI=3.14159265,FLOOR=-1.,CHIPY=-.9;
+const vec3 YEL=vec3(1.,.62,.05);
+float sat(float x){return clamp(x,0.,1.);}
+float eio(float x){x=sat(x);return x*x*(3.-2.*x);}
+float ei(float x){x=sat(x);return x*x*x;}
+float back(float x,float s){x=sat(x)-1.;return x*x*((s+1.)*x+s)+1.;}
+float smin(float a,float b,float k){float h=max(k-abs(a-b),0.)/k;return min(a,b)-h*h*k*.25;}
+float GT;int SB;vec4 FR[4];float TT,RA,RF;
+float wv(vec3 p,float ph){float w=2.*PI*TT/1.5,v=2.*PI*TT/6.;
+  return RA*sin(RF*p.x+w+ph)*sin(RF*p.y-w)*sin(RF*p.z+w*.5+ph)+.035*sin(p.x+v+ph)*sin(p.y+2.*v)*sin(p.z-v);}
+`;
+var FS_SCENES={
+LOOP:`
+float T;vec3 bC,bS;float bR;vec3 dP[3];float dR[3],dK[3],kM;
+void stateLoop(float t){
+  T=mod(t,6.);
+  float u=eio((T-1.0)/.45)*(1.-eio((T-4.65)/.7));
+  bR=.95*pow(max(1.-u,0.),1./3.);
+  float sq=eio((T-.7)/.25)*(1.-eio((T-1.0)/.3));
+  float st=eio((T-1.0)/.3)*(1.-eio((T-1.3)/.4));
+  float wt=T-5.3,wob=wt>0.?.04*exp(-wt*6.5)*sin(wt*2.*PI*2.4)*(1.-eio((T-5.75)/.25)):0.;   /* critique must-fix 7: less squash, stretch and wobble */
+  float idle=.012*sin(T*2.*PI/1.5);
+  float sy=1.-.06*sq+.08*st+wob+idle,sxz=1.+.03*sq-.035*st-.5*wob-.5*idle;
+  bS=vec3(sxz,sy,sxz);bC=vec3(0.,FLOOR+bR*sy,0.);
+  for(int i=0;i<3;i++){float fi=float(i);
+    vec3 G=uG[i],S=vec3(.4*G.x,FLOOR+.95*1.25,0.);
+    float go=back((T-1.15-.04*fi)/.82,1.25);
+    float ret=ei((T-(4.62+.05*(2.-fi)))/.7);
+    vec3 p=mix(S,G,go)+vec3(0.,.55*sin(PI*sat((T-1.15-.04*fi)/.82)),0.);
+    p=mix(p,S+vec3(0.,-.25,0.),ret)+vec3(0.,-.22*sin(PI*sat((T-(4.62+.05*(2.-fi)))/.7)),0.);
+    p.y+=.025*sin(2.*PI*(T/3.+fi*.25))*eio((T-2.)/.4)*(1.-eio((T-4.2)/.4));
+    dP[i]=p;
+    if(i==1)bC=mix(bC,p-vec3(0.,.15,0.),eio(u*1.3-.3));
+    dR[i]=.4*pow(u,1./3.);
+    dK[i]=eio((T-(1.78+.08*fi))/.35)*(1.-eio((T-(4.2+.08*(2.-fi)))/.5));
+  }
+  kM=mix(.35,.05,eio((T-1.25)/.3));kM=mix(kM,.02,eio((T-2.)/.35));kM=mix(kM,.06,eio((T-4.3)/.4));kM=mix(kM,.35,eio((T-4.9)/.45));
+}
+float sdGlyph(vec3 p,int i){
+  vec2 uv=(p.xy-uBox.xy)/uBox.zw,cu=clamp(uv,0.,1.);
+  vec4 s=texture(uTx,cu);float d2=(i==0?s.r:i==1?s.g:s.b)+length((uv-cu)*uBox.zw);
+  vec2 w=vec2(d2+.035,abs(p.z)-.14+.035);
+  return min(max(w.x,w.y),0.)+length(max(w,0.))-.035;
+}
+float wavL(vec3 p){float w=2.*PI*T/1.5,v=2.*PI*T/6.;
+  return .008*sin(3.2*p.x+w)*sin(3.2*p.y-w)*sin(3.2*p.z+w*.5)+.035*sin(1.0*p.x+v)*sin(1.0*p.y+2.*v)*sin(1.0*p.z-v);}
+float mapL(vec3 p){
+  vec3 q=(p-bC)/bS;float d=(length(q)-bR)*min(bS.x,bS.y);
+  d=bR>.002?d-wavL(p):1e3;
+  for(int i=0;i<3;i++){
+    float ds=dR[i]>.002?length(p-dP[i])-dR[i]-wavL(p+float(i)):1e3;
+    float k=dK[i],o;
+    if(k<=0.)o=ds;else{float dg=sdGlyph(p-(dP[i]-uG[i]),i);o=k>=1.?dg:mix(ds,dg,k);}
+    d=smin(d,o,kM);
+  }
+  return d;
+}
+float map(vec3 p){return mapL((p-uXf.xyz)/uXf.w+vec3(0.,-1.,0.))*uXf.w;}
+void setState(){stateLoop(uS[SB].x);}
+`,
+FOUR:`
+vec4 B0,B1,DR[4];
+void setState(){B0=uS[SB];B1=uS[SB+1];for(int i=0;i<4;i++)DR[i]=uS[SB+2+i];TT=uS[SB+6].x;RA=uS[SB+6].y;RF=uS[SB+6].z;}
+float map(vec3 p){float d=1e3;
+  if(B0.w>.002){vec3 q=(p-B0.xyz)/B1.xyz;d=(length(q)-B0.w)*min(B1.x,min(B1.y,B1.z))-wv(p-B0.xyz,0.);}
+  for(int i=0;i<4;i++){if(DR[i].w>.002){vec3 l=p-DR[i].xyz;d=smin(d,length(l)-DR[i].w-wv(l,1.7*float(i)),B1.w);}}
+  return d;}
+`,
+RACE:`
+vec4 C[4],PL;
+void setState(){for(int i=0;i<4;i++)C[i]=uS[SB+i];PL=uS[SB+4];TT=uS[SB+5].x;RA=uS[SB+5].y;RF=uS[SB+5].z;}
+float sdCap(vec3 p,vec3 a,vec3 b,float r){vec3 pa=p-a,ba=b-a;float h=sat(dot(pa,ba)/dot(ba,ba));return length(pa-ba*h)-r;}
+float map(vec3 p){
+  float de=(length(p.xz/PL.xz)-1.)*min(PL.x,PL.z);
+  vec2 w=vec2(de,abs(p.y-PL.w));float d=min(max(w.x,w.y),0.)+length(max(w,0.))-PL.y;
+  d-=wv(p,0.)*.5;
+  for(int i=0;i<4;i++){vec3 a=vec3(C[i].x,-1.2,0.),b=vec3(C[i].x,C[i].y,0.);
+    float dc=sdCap(p,a,b,C[i].z)-.008*sin(6.*p.y-8.*TT+1.7*float(i))-wv(p-b,1.7*float(i))*.4;d=smin(d,dc,.3);}
+  return d;}
+`,
+FEES:`
+vec4 P0,PS,SE[3],SD[3],RG[3],FB;
+void setState(){P0=uS[SB];PS=uS[SB+1];for(int i=0;i<3;i++){SE[i]=uS[SB+2+i];SD[i]=uS[SB+5+i];RG[i]=uS[SB+8+i];}FB=uS[SB+11];TT=PS.x;RA=PS.y;RF=PS.z;}
+float drp(vec3 p,int i){vec3 q=p-SE[i].xyz,Dd=SD[i].xyz;float s=dot(q,Dd),rr=length(q-s*Dd);
+  float k=clamp(floor((s-SE[i].w)/FB.x+.5),0.,SD[i].w);float sr=s-SE[i].w-k*FB.x;
+  vec2 e=vec2(rr,sr),R=FB.yz;float k0=length(e/R),k1=length(e/(R*R));return k0*(k0-1.)/k1;}
+float map(vec3 p){vec3 q=p-P0.xyz;float d=length(q)-P0.w-wv(q,0.);int n=int(FB.w+.5);
+  for(int i=0;i<3;i++){if(i>=n)break;float a=RG[i].w;if(a>=0.&&a<1.){float dd=length(p-RG[i].xyz);d-=.012*exp(-8.*a)*sin(12.*dd-30.*a)*exp(-2.*dd);}}
+  float ds=1e3;for(int i=0;i<3;i++){if(i>=n)break;ds=min(ds,drp(p,i));}
+  return smin(d,ds,PS.w);}
+`,
+POT:`
+vec4 P0,PS,PR;
+void setState(){P0=uS[SB];PS=uS[SB+1];TT=uS[SB+2].x;RA=uS[SB+2].y;RF=uS[SB+2].z;PR=uS[SB+3];}
+float map(vec3 p){if(P0.w<.002)return 1e3;vec3 l=p-P0.xyz;vec3 q=l/PS.xyz;float d=(length(q)-P0.w)*min(PS.x,min(PS.y,PS.z));
+  float sc=PS.w;d-=wv(l/sc,0.)*sc;
+  if(PR.w>=0.&&PR.w<1.5){float dd=length(p-PR.xyz);d-=.022*exp(-5.*PR.w)*sin(16.*dd-26.*PR.w)*exp(-1.5*dd);}
+  return d/(1.+.45*RA*RF);}
+`};
+var FS_TAIL=`
+float ringH(vec2 xz){float h=0.;for(int i=0;i<4;i++){if(FR[i].w>0.){float a=FR[i].z,d=length(xz-FR[i].xy),x=d-.9*a;h+=FR[i].w*exp(-2.4*a)*exp(-x*x*14.)*sin(26.*x);}}return h;}
+vec3 floorN(vec3 p){float h=ringH(p.xz);if(h==0.&&FR[0].w+FR[1].w+FR[2].w+FR[3].w<=0.)return vec3(0.,1.,0.);
+  float e=.01;return normalize(vec3(-(ringH(p.xz+vec2(e,0.))-h)/e,1.,-(ringH(p.xz+vec2(0.,e))-h)/e));}
+vec3 nrm(vec3 p){const vec2 e=vec2(1.,-1.)*.0065;
+  return normalize(e.xyy*map(p+e.xyy)+e.yyx*map(p+e.yyx)+e.yxy*map(p+e.yxy)+e.xxx*map(p+e.xxx));}
+float boxA(float az,float el,float a0,float a1,float e0,float e1,float soft){
+  return sat((az-a0)/soft+.5)*sat((a1-az)/soft+.5)*sat((el-e0)/soft+.5)*sat((e1-el)/soft+.5);}
+float glint(float az,float el){if(GT<0.)return 0.;float T=GT,g=0.;
+  float s1=sat((T-.15)/.5),s2=sat((T-2.45)/.8);
+  float on1=step(.15,T)*step(T,.65),on2=step(2.45,T)*step(T,3.25);
+  float a1=radians(mix(140.,220.,s1)),a2=radians(mix(150.,210.,eio(s2)));
+  float az2=az<0.?az+2.*PI:az;
+  g+=on1*.45*exp(-pow((az2-a1-.35*el)/radians(2.6),2.))*sat(sin(PI*s1)*3.);
+  g+=on2*exp(-pow((az2-a2-.35*el)/radians(.4),2.));
+  return 3.*g;}
+vec3 env(vec3 d){
+  float el=asin(clamp(d.y,-1.,1.)),az=atan(d.x,-d.z);vec3 c=vec3(.012,.013,.02);float aaz=abs(az);
+  float cam=boxA(aaz,el,radians(137.),radians(200.),radians(-28.5),radians(28.5),.05);
+  c*=1.-.85*cam;
+  c+=vec3(1.3,1.32,1.38)*exp(-pow((el+.035)/.014,2.))*(.4+.6*cam);
+  c+=vec3(.16,.155,.15)*sat((-.035-el)*6.)*sat((el+.6)*3.);
+  c+=.9*vec3(1.,.99,.97)*boxA(aaz,el,radians(140.),radians(200.),radians(16.),radians(44.),.09);
+  c+=2.4*vec3(1.)*boxA(az,el,radians(-25.),radians(25.),radians(62.),radians(90.),.06);
+  c+=3.0*vec3(1.,.98,.95)*boxA(az,el,radians(-95.),radians(-45.),radians(18.),radians(52.),.08);
+  c+=1.6*YEL*boxA(az,el,radians(-35.),radians(35.),radians(34.),radians(50.),.04);
+  c+=1.1*YEL*boxA(az,el,radians(55.),radians(125.),radians(-16.),radians(10.),.12);
+  c+=.35*vec3(.75,.85,1.)*boxA(az,el,radians(-140.),radians(-60.),radians(-12.),radians(8.),.1);
+  c+=glint(az,el)*vec3(1.);
+  return c;}
+vec3 backdrop(vec3 d){float y=d.y;vec3 c=mix(vec3(.010,.011,.019),vec3(.004,.004,.008),sat(y*1.5+.2));
+  c+=vec3(.016,.022,.05)*exp(-dot(d.xy,d.xy)*14.);return c;}
+vec2 boxHit(vec3 ro,vec3 rd,vec3 lo,vec3 hi){vec3 ir=1./rd,a=(lo-ro)*ir,b=(hi-ro)*ir,mn=min(a,b),mx=max(a,b);
+  return vec2(max(max(mn.x,mn.y),mn.z),min(min(mx.x,mx.y),mx.z));}
+float shadow(vec3 p){vec3 L=normalize(vec3(-.2,1.,.25));vec2 bh=boxHit(p,L,uBlo,uBhi);if(bh.x>bh.y||bh.y<0.)return 1.;
+  float r=1.,t=max(.05,bh.x),te=min(4.,bh.y);for(int i=0;i<22;i++){float h=map(p+L*t);r=min(r,6.*h/t);t+=clamp(h,.04,.4);if(r<.01||t>te)break;}return sat(r);}
+bool march(vec3 ro,vec3 rd,float tmax,int n,out float t){
+  vec2 bh=boxHit(ro,rd,uBlo,uBhi);
+  if(bh.x>bh.y||bh.y<0.){t=1e9;return false;}
+  tmax=min(tmax,bh.y);
+  t=max(bh.x,0.);for(int i=0;i<160;i++){if(i>=n)break;float d=map(ro+rd*t);if(d<.0008*(1.+t))return t<tmax;t+=d*.82;if(t>tmax)return false;}return false;}
+/* the chip: an analytic slab (critique must-fix 10), its top shaded as a textured plane with LED emission */
+float chipHit(vec3 ro,vec3 rd,out vec3 n){vec3 lo=vec3(-2.,-1.,-1.5),hi=vec3(2.,CHIPY,1.5);
+  vec3 ir=1./rd,a=(lo-ro)*ir,b=(hi-ro)*ir,mn=min(a,b),mx=max(a,b);
+  float t0=max(max(mn.x,mn.y),mn.z),t1=min(min(mx.x,mx.y),mx.z);
+  if(t0>t1||t1<0.||t0<1e-4){n=vec3(0.);return 1e9;}
+  n=t0==mn.y?vec3(0.,-sign(rd.y),0.):t0==mn.x?vec3(-sign(rd.x),0.,0.):vec3(0.,0.,-sign(rd.z));
+  return t0;}
+vec3 trace(vec3 ro,vec3 rd){
+  vec3 col=vec3(0.),thr=vec3(1.);bool past=false;
+  for(int b=0;b<4;b++){
+    float tf=rd.y<-1e-4?(FLOOR-ro.y)/rd.y:1e9;
+    vec3 nc;float tc=uChip>.5?chipHit(ro,rd,nc):1e9;
+    float t;bool hit=march(ro,rd,min(min(tf,tc),22.),b==0?140:72,t);
+    if(hit){vec3 p=ro+rd*t,n=nrm(p);float c=1.-max(dot(-rd,n),0.);
+      vec3 F=vec3(.92,.92,.93)+(1.-vec3(.92,.92,.93))*pow(c,5.);
+      thr*=F;ro=p+n*.004;rd=reflect(rd,n);
+      if(b==3){col+=thr*(past?backdrop(rd):env(rd));}
+      continue;}
+    if(tc<22.&&tc<tf){vec3 p=ro+rd*tc;
+      if(nc.y>.5){vec2 uv=vec2((p.x+2.)/4.,(p.z+1.5)/3.);
+        vec3 alb=pow(texture(uCt,uv).rgb,vec3(2.2));float em=texture(uCe,uv).r;
+        float sh=mix(.28,1.,shadow(p)),ao=mix(.3,1.,sat(map(p+vec3(0.,.3,0.))/.3));
+        float c=1.-max(-rd.y,0.);float Fc=.04+.96*pow(c,5.);
+        col+=thr*(alb*vec3(.66,.6,.5)*sh*ao*(1.-Fc)+em*em*YEL*3.2);
+        thr*=vec3(Fc)*mix(.6,1.,sh)*.4;   /* clear coat at 0.4: the pot's reflection in the chip no longer reads as a ghost double */ro=p+vec3(0.,.002,0.);rd=reflect(rd,vec3(0.,1.,0.));}
+      else{col+=thr*vec3(.014,.012,.008);thr*=vec3(.1);ro=p+nc*.002;rd=reflect(rd,nc);}
+      if(max(thr.r,max(thr.g,thr.b))<.003)break;
+      continue;}
+    if(tf<22.&&!past){vec3 p=ro+rd*tf;
+      float dist=length(p.xz),fade=exp(-dist*.18);
+      float sh=mix(.35,1.,shadow(p)),ao=mix(.35,1.,sat(map(p+vec3(0.,.35,0.))/.35));
+      if(uChip>.5){vec2 q=abs(p.xz)-vec2(2.,1.5);float dq=length(max(q,0.))+min(max(q.x,q.y),0.);ao*=mix(.3,1.,sat(dq/.3));}
+      vec3 base=vec3(.010,.012,.026)*sh*ao;
+      base+=vec3(.22,.22,.226)*exp(-dist*dist*.2)*sh*ao;   /* floor light pool lifted from .16 (review: too dark on bright phones) */
+      float far=sat((length(p.xz)-2.5)/6.);base=mix(base,backdrop(rd),far);
+      float c=1.-max(-rd.y,0.);float fr=.04+.96*pow(c,5.);
+      col+=thr*base;thr*=vec3(.3*mix(fr,1.,.25)*fade)*ao*(1.-far);
+      vec3 fn=floorN(p);
+      ro=p+vec3(0.,.002,0.);rd=reflect(rd,fn);if(rd.y<.002)rd.y=.002;past=true;
+      if(max(thr.r,max(thr.g,thr.b))<.003)break;
+      continue;}
+    col+=thr*((b==0||past)?backdrop(rd):env(rd));break;
+  }
+  return col;}
+vec3 neutral(vec3 c){const float sc=.8-.04,dd=.15;float x=min(c.r,min(c.g,c.b));float off=x<.08?x-6.25*x*x:.04;c-=off;
+  float pk=max(c.r,max(c.g,c.b));if(pk<sc)return c;float d2=1.-sc;float np=1.-d2*d2/(pk+d2-sc);c*=np/pk;float g=1.-1./(dd*(pk-np)+1.);return mix(c,vec3(np),g);}
+void main(){
+  vec2 fc=gl_FragCoord.xy;vec3 acc=vec3(0.);float ns=float(uNS);
+  for(int s=0;s<8;s++){if(s>=uNS)break;float fs=float(s);
+    SB=s*16;GT=uLens[s].z;for(int i=0;i<4;i++)FR[i]=uS[SB+12+i];
+    setState();
+    vec2 jit=ns>1.?vec2(fract(.5+fs*.7548776662),fract(.5+fs*.5698402910))-.5:vec2(0.);
+    jit+=(vec2(fract(uFrame*.618),fract(uFrame*.382))-.5)*.25;
+    vec2 uv=(fc+jit-vec2(uCx,.5*uRes.y))/(.5*uRes.y);uv.y-=uLens[s].y;
+    vec3 ro=uRo[s],ta=uTa[s],fw=normalize(ta-ro),u0=abs(fw.y)>.95?vec3(0.,0.,-1.):vec3(0.,1.,0.);
+    vec3 rt=normalize(cross(fw,u0)),up=cross(rt,fw);float f=1./tan(radians(uLens[s].x)*.5);
+    acc+=trace(ro,normalize(uv.x*rt+uv.y*up+f*fw));
+  }
+  vec3 c=acc/ns;c*=1.05;c=neutral(c);c=pow(max(c,0.),vec3(1./2.2));
+  o=vec4(c,1.);
+}`;
+var VS="#version 300 es\nin vec2 a;void main(){gl_Position=vec4(a,0.,1.);}";
+function glInit(){
+  var cv=document.getElementById("gl");cv.width=RES;cv.height=RES;cv.style.width=RES+"px";cv.style.height=RES+"px";
+  gl=cv.getContext("webgl2",{preserveDrawingBuffer:true,antialias:false});if(!gl)throw new Error("no webgl2");
+  var bf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+}
+function program(name){if(PROG[name])return PROG[name];
+  function sh(t,s){var x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(name+": "+gl.getShaderInfoLog(x));return x}
+  var src="#version 300 es\nprecision highp float;\n"+FS_COMMON+FS_SCENES[name]+FS_TAIL;
+  var pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,VS));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,src));gl.bindAttribLocation(pr,0,"a");gl.linkProgram(pr);
+  if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw new Error(name+": "+gl.getProgramInfoLog(pr));
+  var U={};["uRes","uCx","uNS","uFrame","uRo","uTa","uLens","uS","uBlo","uBhi","uChip","uTx","uBox","uG","uXf","uCt","uCe"].forEach(function(n){U[n]=gl.getUniformLocation(pr,n)});
+  gl.useProgram(pr);gl.uniform1i(U.uTx,0);gl.uniform1i(U.uCt,1);gl.uniform1i(U.uCe,2);
+  if(GLY){gl.uniform4f(U.uBox,GLY.box[0],GLY.box[1],GLY.box[2],GLY.box[3]);gl.uniform3fv(U.uG,new Float32Array([].concat(GLY.gc[0],GLY.gc[1],GLY.gc[2])))}
+  return PROG[name]={pr:pr,U:U}}
+
+/* "$EZ" baked into three signed distance fields from Instrument Sans width 75, weight 700 (the film's head face) */
+function edt1(f,n,d,v,z){var k=0;v[0]=0;z[0]=-1e20;z[1]=1e20;
+  for(var q=1;q<n;q++){var s=((f[q]+q*q)-(f[v[k]]+v[k]*v[k]))/(2*q-2*v[k]);while(s<=z[k]){k--;s=((f[q]+q*q)-(f[v[k]]+v[k]*v[k]))/(2*q-2*v[k])}k++;v[k]=q;z[k]=s;z[k+1]=1e20}
+  k=0;for(q=0;q<n;q++){while(z[k+1]<q)k++;d[q]=(q-v[k])*(q-v[k])+f[v[k]]}}
+function edt(grid,W,H){var n=Math.max(W,H),f=new Float64Array(n),d=new Float64Array(n),v=new Int32Array(n),z=new Float64Array(n+1),x,y;
+  for(x=0;x<W;x++){for(y=0;y<H;y++)f[y]=grid[y*W+x];edt1(f,H,d,v,z);for(y=0;y<H;y++)grid[y*W+x]=d[y]}
+  for(y=0;y<H;y++){for(x=0;x<W;x++)f[x]=grid[y*W+x];edt1(f,W,d,v,z);for(x=0;x<W;x++)grid[y*W+x]=Math.sqrt(d[x])}return grid}
+function bake(){
+  var TW=1400,TH=760,FS=600,CAPW=1.5,TXT="$EZ",TRACK=0.05,SS=2,W2=TW*SS,H2=TH*SS,GC=[];
+  var c=document.createElement("canvas");c.width=W2;c.height=H2;var x=c.getContext("2d");
+  x.font='700 condensed '+(FS*SS)+'px "IS"';x.fontStretch="condensed";x.textBaseline="alphabetic";
+  var capPx=x.measureText("E").actualBoundingBoxAscent/SS,s=CAPW/capPx,s2=s/SS;
+  var widths=[],tot=0;for(var i=0;i<TXT.length;i++){widths.push(x.measureText(TXT[i]).width/SS);tot+=widths[i]}
+  var trackPx=TRACK/s;tot+=trackPx*(TXT.length-1);
+  var x0=(TW-tot)/2,base=TH/2+capPx/2,data=new Float32Array(TW*TH*4),ink=[1e9,-1e9,1e9,-1e9],xs=x0;
+  for(i=0;i<TXT.length;i++){x.clearRect(0,0,W2,H2);x.fillStyle="#fff";x.fillText(TXT[i],xs*SS,base*SS);xs+=widths[i]+trackPx;
+    var px=x.getImageData(0,0,W2,H2).data,inG=new Float64Array(W2*H2),outG=new Float64Array(W2*H2),bb=[1e9,-1e9,1e9,-1e9];
+    for(var p=0,q=0;q<W2*H2;q++,p+=4){var on=px[p+3]>127;inG[q]=on?1e20:0;outG[q]=on?0:1e20;
+      if(on){var qx=q%W2,qy=(q/W2)|0;if(qx<bb[0])bb[0]=qx;if(qx>bb[1])bb[1]=qx;if(qy<bb[2])bb[2]=qy;if(qy>bb[3])bb[3]=qy}}
+    edt(outG,W2,H2);edt(inG,W2,H2);
+    for(var ty=0;ty<TH;ty++)for(var tx=0;tx<TW;tx++){var a=0;
+      for(var sy=0;sy<SS;sy++)for(var sx=0;sx<SS;sx++){var k=(ty*SS+sy)*W2+tx*SS+sx;a+=outG[k]-inG[k]}
+      data[((TH-1-ty)*TW+tx)*4+i]=a/(SS*SS)*s2}
+    bb=bb.map(function(v){return v/SS});GC.push(bb);ink=[Math.min(ink[0],bb[0]),Math.max(ink[1],bb[1]),Math.min(ink[2],bb[2]),Math.max(ink[3],bb[3])]}
+  for(q=0;q<TW*TH;q++)data[q*4+3]=1;
+  var cxp=(ink[0]+ink[1])/2,cyp=(ink[2]+ink[3])/2,X0=-cxp*s,Y1=0.2+cyp*s;
+  var box=[X0,Y1-TH*s,TW*s,TH*s];GC=GC.map(function(bb){return [X0+(bb[0]+bb[1])/2*s,Y1-(bb[2]+bb[3])/2*s,0]});
+  var tex=gl.createTexture();gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,tex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA16F,TW,TH,0,gl.RGBA,gl.FLOAT,data);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  GLY={box:box,gc:GC};window.GLYPHS=GC}
+
+/* the chip: the site's GPU photo, plus LED dies that spell the bet date (5x7 dots, EZ yellow when lit) */
+var F57={"0":"01110100011001110101110011000101110","1":"00100011000010000100001000010001110","2":"01110100010000100010001000100011111","3":"11110000010000101110000010000111110",
+  "4":"00010001100101010010111110001000010","5":"11111100001111000001000011000101110","6":"00110010001000011110100011000101110","7":"11111000010001000100010000100001000",
+  "8":"01110100011000101110100011000101110","9":"01110100011000101111000010001001100",A:"01110100011000111111100011000110001",B:"11110100011000111110100011000111110",
+  C:"01110100011000010000100001000101110",D:"11110100011000110001100011000111110",E:"11111100001000011110100001000011111",F:"11111100001000011110100001000010000",
+  G:"01110100011000010111100011000101111",J:"00111000100001000010000101001001100",L:"10000100001000010000100001000011111",M:"10001110111010110101100011000110001",
+  N:"10001100011100110101100111000110001",O:"01110100011000110001100011000101110",P:"11110100011000111110100001000010000",R:"11110100011000111110101001001010001",
+  S:"01111100001000001110000010000111110",T:"11111001000010000100001000010000100",U:"10001100011000110001100011000101110",V:"10001100011000101010010100010000100",
+  Y:"10001100010101000100001000010000100"};
+function chipTextures(img,lit){
+  var W=2000,H=1500,a=document.createElement("canvas"),e=document.createElement("canvas");a.width=e.width=W;a.height=e.height=H;
+  var x=a.getContext("2d"),y=e.getContext("2d");x.drawImage(img,0,0,W,H);y.fillStyle="#000";y.fillRect(0,0,W,H);
+  var words=D.bet?[D.bet.mon,String(D.bet.day)]:["",""],P=17.2,CS=13.6,dots=[];
+  [478,1078].forEach(function(px0,pi){var wd=words[pi],n=wd.length,ww=(6*n-1)*P-(P-CS),hh=6*P+CS,gx=px0+(446-ww)/2,gy=628+(214-hh)/2;
+    x.fillStyle="#141518";x.strokeStyle="#3a3c42";x.lineWidth=2;x.beginPath();x.roundRect(gx-12,gy-12,ww+24,hh+24,6);x.fill();x.stroke();
+    for(var g=0;g<n;g++){var F=F57[wd[g]]||"";for(var r=0;r<7;r++)for(var c=0;c<5;c++){var on=F.charAt(r*5+c)==="1"&&lit>g+(pi?words[0].length:0)-.5;
+      var X=gx+(g*6+c)*P,Y=gy+r*P;x.fillStyle=on?"#ffc72c":"#26282d";x.beginPath();x.roundRect(X,Y,CS,CS,2);x.fill();if(on)dots.push([X,Y])}}});
+  y.filter="blur(7px)";y.fillStyle="#666";dots.forEach(function(d){y.fillRect(d[0]-3,d[1]-3,CS+6,CS+6)});
+  y.filter="none";y.fillStyle="#fff";dots.forEach(function(d){y.beginPath();y.roundRect(d[0],d[1],CS,CS,2);y.fill()});
+  function up(cv,unit,old){var t=old||gl.createTexture();gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,cv);gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);return t}
+  CHIPTX=up(a,1,CHIPTX);CHIPEM=up(e,2,CHIPEM)}
+
+/* every uniform a view's plate is drawn from: drawView sends exactly these, plateKey hashes exactly these */
+function viewInputs(v,m,ns){
+  var ro=new Float32Array(24),ta=new Float32Array(24),ln=new Float32Array(32),S=new Float32Array(512);
+  for(var s=0;s<ns;s++){var fs=m+((s+.5)/ns-.5)*.5,c=v.cam(fs),st=v.st(fs);
+    ro.set(c.ro,s*3);ta.set(c.ta,s*3);ln.set([c.fov,c.sh,st.T!=null?st.T:-1,1],s*4);
+    if(st.s)S.set(st.s,s*64);else S[s*64]=st.T}
+  var xf=typeof v.xf==="function"?v.xf(m):(v.xf||[0,-1,0,1]);
+  var bx=v.box||loopBox(xf[3],[xf[0],xf[1],xf[2]]);
+  return {ro:ro,ta:ta,ln:ln,S:S,xf:new Float32Array(xf),bx:[Array.prototype.slice.call(new Float32Array(bx[0])),Array.prototype.slice.call(new Float32Array(bx[1]))]}}
+function drawView(v,m,ns,x0,x1,cx,seed){
+  var P=program(v.prog),U=P.U;gl.useProgram(P.pr);
+  var I=viewInputs(v,m,ns);
+  gl.uniform2f(U.uRes,RES,RES);gl.uniform1f(U.uCx,cx);gl.uniform1i(U.uNS,ns);gl.uniform1f(U.uFrame,seed);
+  gl.uniform3fv(U.uRo,I.ro);gl.uniform3fv(U.uTa,I.ta);gl.uniform4fv(U.uLens,I.ln);gl.uniform4fv(U.uS,I.S);
+  gl.uniform3fv(U.uBlo,new Float32Array(I.bx[0]));gl.uniform3fv(U.uBhi,new Float32Array(I.bx[1]));gl.uniform1f(U.uChip,v.chip?1:0);
+  gl.uniform4fv(U.uXf,I.xf);
+  gl.enable(gl.SCISSOR_TEST);var B=12,h=Math.ceil(RES/B),px=new Uint8Array(4);
+  for(var i=0;i<B;i++){gl.scissor(x0,i*h,x1-x0,h);gl.drawArrays(gl.TRIANGLES,0,3);gl.readPixels(x0,i*h,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px)}
+  gl.disable(gl.SCISSOR_TEST)}
+function renderPlate(m){var sh=shotAt(m);if(!sh||sh.todo)throw new Error("no plate program for master frame "+m);
+  var ns=plateNS(sh,m);gl.viewport(0,0,RES,RES);
+  var sd=plateSeed(sh,m);
+  if(sh.split){drawView(sh.L,m,ns,0,RES/2,RES/4,sd);drawView(sh.R,m,ns,RES/2,RES,RES*3/4,sd)}
+  else drawView(sh,m,ns,0,RES,RES/2,sd)}
+window.renderPlate=renderPlate;
+
+/* ======================================================================================================
+   5. TYPE PASS: plate + vignette + grain on #bg, then DOM type. Pure function of the out frame.
+   ====================================================================================================== */
+var bg=document.getElementById("bg"),bx=bg.getContext("2d",{willReadFrequently:true}),OV=document.getElementById("ov");
+var VIG=null;
+function finish(fr){var im=bx.getImageData(0,0,1080,1080),d=im.data,n=1080*1080;
+  if(!VIG){VIG=new Float32Array(n);for(var y=0;y<1080;y++)for(var x=0;x<1080;x++){var qx=x/1080-.5,qy=y/1080-.5;VIG[y*1080+x]=1-.08*Math.pow(Math.sqrt(qx*qx+qy*qy)*1.41,2.2)}}
+  var s=(fr*2654435761>>>0)||1;
+  for(var i=0,p=0;i<n;i++,p+=4){s^=s<<13;s^=s>>>17;s^=s<<5;var g=((s>>>0)/4294967296-.5)*.03*255,v=VIG[i];
+    d[p]=d[p]*v+g;d[p+1]=d[p+1]*v+g;d[p+2]=d[p+2]*v+g}
+  bx.putImageData(im,0,0)}
+function h(tag,cls,html,parent){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;(parent||OV).appendChild(e);return e}
+var ARU='<svg class="ar" viewBox="0 0 10 10" aria-hidden="true"><path d="M5 .8 9.6 9.2H.4Z" fill="currentColor"/></svg>',
+    ARD='<svg class="ar" viewBox="0 0 10 10" aria-hidden="true"><path d="M.4 .8h9.2L5 9.2Z" fill="currentColor"/></svg>';
+function arrow(dir){return dir==="UP"?'<span class="up">'+ARU+'</span>':'<span class="dn">'+ARD+'</span>'}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+
+/* LAYOUT. uk binds: the FCA band is 24..1056 x 824..984, raised 96 px off the bottom edge so X's inline player controls
+   (time pill bottom left, mute bottom right) cannot cover it (compliance must-fix 4); captions end 60 px above it.
+   std keeps nothing below y 975. The non-affiliation line sits under the rail in both (compliance must-fix 5). */
+var UK=VAR==="uk",MICA=Q.get("mica")==="1";
+var L=UK?{cap:764,cardB:770}:{cap:890,cardB:960};L.split=344;L.legalTop=MICA?216:84;
+
+/* ---- copy, each bound to its source (window.HYPE_STRINGS lists them) ---- */
+var C={};
+C.hook=[S("WE’RE PUTTING BUYBACKS","owner copy (CLAUDE.md, EZ Season hero)"),S("IN THE HANDS OF AN AI.","owner copy")];
+C.ad=S("AD","fixed (critique must-fix 3)");
+C.brand=S("$EZ · EARNINGS ZEASON","fixed");
+C.rnd=S("ROUND "+D.n+" · "+D.co+" ("+D.ticker+")","showcase round ("+D.showRule+"): .n, .co, .ticker");
+C.four=[S(D.nAI+" AIs CALL STOCKS","MODEL_KEYS.length"),S("BEFORE EARNINGS.","fixed")];
+C.names=D.drops.map(function(d){return S(d.name,"MODELS["+d.m+"].name (MODEL_KEYS order)")});
+C.calls=D.drops.map(function(d){return d.has?S((d.dir==="UP"?"▲ ":"▼ ")+d.mag,"showcase round .calls["+d.m+"]"):S("NO CALL","showcase round .calls (missing)")});
+C.outc=S(D.ticker+" "+(D.up?"▲ ":"▼ ")+D.out,"showcase round .ticker, .out (sign of .a)");
+C.graded=[S("WRONG WAY? OUT.","fixed"),S(D.wins.length?"CLOSEST WINS.":"NO WINNER THIS ROUND.","showcase round .win ("+(D.wins.join(" & ")||"none")+")")];
+C.win=S(D.wins.length>1?"DEAD HEAT":"WIN","showcase round .win");
+C.most=[S("MOST WINS IS #1.","fixed")];
+C.stand=S("STANDINGS AS OF ROUND "+D.lastN+" · "+D.lastDate,"ROUNDS (latest graded).n, fmtDate(.resolves)");
+function standK(k){return "STANDINGS AS OF ROUND "+D.steps[k-1].n+" · "+D.steps[k-1].date}
+/* the rail stamp while the race runs: one value for the whole run, then the final standings (QA 2026-10-11: a stamp per
+   round changed every 3.75 f and could not be read). Each holds far longer than 8 f; the counts on the lanes run round by round. */
+C.raceRun=S("WINS · ROUNDS "+D.steps[0].n+" TO "+D.lastN,"ROUNDS (first and latest graded).n");
+D.steps.forEach(function(st,k){S(standK(k+1)+"  ["+D.lanes.map(function(l,i){return l.name+" "+(st.has[i]?st.won[i]:"(no calls yet, hidden)")}).join(", ")+"; #1 "+D.lanes[st.lead].name+"]","race step "+(k+1)+": cumulative ROUNDS[].win, site rank rule")});
+C.lad=D.lanes.map(function(l,i){return {name:S(l.name,"MODEL_KEYS["+i+"] -> MODELS.name (race lane "+(i+1)+", the drops' order)"),won:l.won}});
+C.one=S("#1","race leader at each round (site rule); final = LADDER[0] ("+D.lad[0].name+")");
+var poolTxt=D.pool!=null?D.pool+"%":"A CUT";
+/* number first, at most 6 words in the head (critique must-fix 8). Before launch "AT LAUNCH" is part of the 72 px head, not a
+   small label, so the line never reads as a claim about now (QA 2026-10-11) */
+C.feesK=null;
+C.fees=D.launched?[S(poolTxt+" OF $EZ FEES","SIM.poolShare ("+D.pool+"%)"),S(D.pool!=null?"FILL THE POT.":"FILLS THE POT.","fixed")]
+  :[S("AT LAUNCH, "+poolTxt+" OF $EZ","CONFIG.launched=false; SIM.poolShare ("+D.pool+"%)"),S(D.pool!=null?"FEES FILL THE POT.":"FEES FILLS THE POT.","fixed")];
+C.nv=[S("THE #1 AT NVIDIA CALLS IT.","fixed (compliance must-fix 3)"),S("UP OR DOWN. THE WHOLE POT.","fixed (craft must-fix 10)")];
+C.lev=[S("BET AT "+(D.lev!=null?D.lev+"X ":"")+"LEVERAGE.","SIM.leverage ("+D.lev+")"),S("THE POT CAN BE WIPED OUT.","fixed (paired with leverage)")];
+C.splitL=[S("RIGHT CALL","fixed"),S("PROFITS BUY","fixed"),S("BACK $EZ.","fixed")];
+C.splitR=[S("WRONG CALL","fixed"),S("THE POT","fixed"),S("GETS REKT.","fixed")];
+C.end=[S("NOBODY SAID IT WOULD BE EZ.","fixed")];
+C.betl=D.bet?S("NVIDIA BET · "+D.bet.mon+" "+D.bet.day,D.betSrc):null;
+C.follow=D.x?S("FOLLOW THE RACE · "+(D.x.charAt(0)==="@"?D.x:"@"+D.x.replace(/^https?:\/\/(x|twitter)\.com\//,"")),"CONFIG.x"):null;
+/* labs from MODEL_KEYS (LABS table), NVIDIA for the bet and the chip, and any company in the showcase round */
+var labs=D.labs.slice();var labTxt=labs.join(", ");
+C.legal=[S("NOT AFFILIATED WITH NVIDIA, "+labTxt,"LABS[MODEL_KEYS] (compliance must-fix 5)"),S("OR ANY COMPANY SHOWN.","fixed")];
+C.card=S("$EZ is a memecoin. Not financial advice. The pot can be wiped out.","fixed (end disclaimer, both variants)");
+C.mica=MICA?S("This crypto-asset marketing communication has not been reviewed or approved by any competent authority in any Member State of the European Union. The offeror of the crypto-asset is solely responsible for the content of this crypto-asset marketing communication.","fixed: MiCA Article 7 disclaimer as quoted in research-video.md, exact (only with &mica=1)"):null;
+C.fca=UK?S("Don’t invest unless you’re prepared to lose all the money you invest. This is a high-risk investment and you should not expect to be protected if something goes wrong.","fixed: COBS 4.12A.11R(1)(d), exact"):null;
+if(D.bet){S(D.bet.mon+" / "+D.bet.day+" (LED dies on the chip, baked into plates)",D.betSrc)}
+
+/* ---- timing (out frames), derived from the cut and the plate events, never typed twice ---- */
+var SEG={};CT.forEach(function(c){SEG[c[2]]={o0:c[0],o1:c[1],m0:c[3]}});
+var T_HIT=outOf(POT_HIT);                                   /* the impact: "UP OR DOWN. THE WHOLE POT." switches on with it */
+var T_CARD0=SEG.A13.o0,T_END=N-16;                          /* end card from the split to out 884; the hook re-enters at 885 */
+function callAt(k){return SEG.A4.o0+Math.round(7.5+7.5*k)}  /* calls tick on 16ths from the 2nd 16th of A4 */
+window.HYPE_T={hit:T_HIT,card0:T_CARD0,end:T_END,calls:[0,1,2,3].map(callAt)};
+/* PICTURE EVENTS for the sound pass (critique must-fix 3): master frames from the same functions that move the plates;
+   ez-hype-audio.js maps them to out frames with outOf(), so a re-time cannot put the sound out of sync. */
+window.HYPE_PIC={outOf:outOf,seg:SEG,N:N,warpA1:warpA1,warpA14:warpA14,warpSplitL:warpSplitL,
+  calls:HYPE_T.calls,
+  wrong:D.drops.map(function(d,k){if(WRONG[k]<0)return null;var fs=368+3*WRONG[k],hov=.35;return {k:k,fall:fs,floor:fs+24*Math.sqrt((hov+1-.52)/(hov+1))}}).filter(Boolean),
+  winRise:400,push:420,
+  race:D.steps.map(function(st,j){var prev=j?D.steps[j-1].won:D.lanes.map(function(){return 0});
+    return {m:raceT(j),lanes:st.won.map(function(w,i){return w-prev[i]}).map(function(d,i){return d?i:-1}).filter(function(i){return i>=0}),lead:st.lead,leadChange:j>0&&st.lead!==D.steps[j-1].lead}}),
+  fees:(function(){var r=[];for(var i=0;i<FEE_N;i++)for(var m=feeHit0(i);m<960;m+=FEE_PER)r.push(m);return r.sort(function(a,b){return a-b})})(),
+  potHit:POT_HIT,splitBoil:1320,splitSlump:1345,splitSink:[1352,1500]};
+
+/* ---- elements ---- */
+var E={};
+function lines(arr,cls){var w=h("div","ab "+(cls||"hd"));w.__l=arr.map(function(t){var l=h("div","ln",null,w);var s=h("span",null,esc(t),l);return s});return w}
+function typeInit(){
+  E.scrB=h("div","scrim");E.scrT=h("div","scrim");
+  E.scrB.style.cssText="bottom:0;height:"+(1080-L.cap+300)+"px;background:linear-gradient(rgba(7,8,13,0),rgba(7,8,13,.72) 50%,rgba(7,8,13,.86))";
+  E.div=h("div","ab");E.div.id="div";
+  E.rail=h("div","ab");E.rail.id="rail";h("div",null,C.ad,E.rail).id="ad";h("div","mono",esc(C.brand),E.rail).id="brand";
+  E.stamp=h("div","ab mono");E.stamp.id="stamp";
+  E.hook=lines(C.hook);E.four=lines(C.four);E.graded=lines(C.graded);E.most=lines(C.most);
+  E.fees=h("div","ab");if(C.feesK){h("div","mono k",esc(C.feesK),E.fees)}var fh=h("div","hd",null,E.fees);E.fees.__l=C.fees.map(function(t){var l=h("div","ln",null,fh);return h("span",null,esc(t),l)});
+  E.nv=lines(C.nv);E.lev=lines(C.lev);E.end=lines(C.end);
+  E.follow=C.follow?h("div","ab mono",esc(C.follow)):null;if(E.follow){E.follow.style.fontSize="28px"}
+  E.outc=h("div","ab sub",esc(D.ticker)+" "+arrow(D.up?"UP":"DOWN")+'<span class="'+(D.up?"up":"dn")+'">'+esc(D.out)+"</span>");
+  E.labs=D.drops.map(function(d,i){var w=h("div","ab lab");h("div","mono nm",esc(C.names[i]),w);
+    var cl=h("div","cl",d.has?arrow(d.dir)+esc(d.mag):"NO CALL",w);var st=h("i",null,"",cl);var tg=h("div",null,'<span class="tag">'+esc(C.win)+"</span>",w);tg.style.marginTop="8px";
+    return {w:w,cl:cl,st:st,tg:tg}});
+  E.race=D.lanes.map(function(l,i){var nm=h("div","ab mono lab rn",esc(l.name));nm.style.transform="translate(-50%,0)";
+    var num=h("div","ab lab num","0");return {nm:nm,num:num}});
+  E.one=h("div","ab lab",'<span class="tag">'+esc(C.one)+"</span>");
+  E.spL=h("div","ab half");E.spR=h("div","ab half");
+  [[E.spL,C.splitL],[E.spR,C.splitR]].forEach(function(q){h("div","mono k",esc(q[1][0]),q[0]);var b=h("div","hd",null,q[0]);
+    q[0].__l=q[1].slice(1).map(function(t){var l=h("div","ln",null,b);return h("span",null,esc(t),l)})});
+  E.legal=h("div","ab",C.legal.map(esc).join("<br>"));E.legal.id="legal";E.legal.style.top=L.legalTop+"px";
+  /* the card wraps balanced (text-wrap:balance) and only between sentences, so no line ends on a lone "wiped out." or splits
+     "financial advice" (QA 2026-10-11) */
+  E.card=h("div","ab",C.card.split(/(?<=\.) /).map(function(t){return '<span style="white-space:nowrap">'+esc(t)+"</span>"}).join(" "));E.card.id="card";
+  if(UK){E.band=h("div","ab");E.band.id="band";h("p",null,esc(C.fca),E.band)}
+  if(MICA){OV.classList.add("mi");E.mica=h("div","ab");E.mica.id="mica";h("p",null,esc(C.mica),E.mica)}
+  stampCheck();
+}
+/* THE RAIL STAMP never touches the rail (QA 2026-10-11). fitStamp shrinks it from 28 px, one px at a time, until it clears the
+   rail by STAMP_GAP; below STAMP_MIN px it throws (the render stops) rather than overlap. stampCheck runs once per type pass:
+   every standings stamp up to the NVDA round (the bet; the widest day, mono digits), the race stamp at that count, the
+   showcase round's stamp and the bet stamp must all fit, so a later sheet sync cannot push the stamp into the rail. */
+var STAMP_FS=28,STAMP_MIN=22,STAMP_GAP=16;
+function fitStamp(txt){E.stamp.textContent=txt;show(E.stamp,!!txt);if(!txt)return STAMP_FS;
+  var rr=document.getElementById("rail").getBoundingClientRect().right,fs=STAMP_FS;
+  for(;fs>=STAMP_MIN;fs--){E.stamp.style.fontSize=fs+"px";if(E.stamp.getBoundingClientRect().left>=rr+STAMP_GAP)return fs}
+  throw new Error("EZ hype: the rail stamp \""+txt+"\" overlaps the rail even at "+STAMP_MIN+" px")}
+function stampCheck(){var t=[],day="SEP 30";
+  for(var n=1;n<=D.nvRound;n++)t.push("STANDINGS AS OF ROUND "+n+" · "+day);
+  t.push("WINS · ROUNDS "+D.steps[0].n+" TO "+D.nvRound,C.raceRun,C.rnd,C.stand);if(C.betl)t.push(C.betl);
+  var worst=STAMP_FS;t.forEach(function(x){worst=Math.min(worst,fitStamp(x))});fitStamp("");
+  window.HYPE_STAMP_CHECK={n:t.length,upTo:D.nvRound,smallestPx:worst}}
+function show(e,on){if(e)e.style.display=on?"":"none"}
+function posB(e,bottom,left){e.style.left=(left==null?48:left)+"px";e.style.bottom=(1080-bottom)+"px";e.style.top=""}
+/* type is set hard on the cut and switches off hard (critique must-fix 2): no slide-ups, no exits. A line can carry its
+   own on-frame (an event, e.g. the impact). */
+function block(e,on,f,bottom,lineOn){show(e,on);if(!on)return;posB(e,bottom);
+  e.__l.forEach(function(s,k){s.style.visibility=(lineOn&&lineOn[k]!=null&&f<lineOn[k])?"hidden":"visible"})}
+
+function typeFrame(i){
+  var pl=plateOf(i),m=pl.m,seg=pl.id;
+  var cardOn=i>=T_CARD0&&i<=T_END,legalOn=i>=SEG.A4.o0&&i<=T_END;   /* the card holds 630..884 (4.25 s); the line whenever names, NVIDIA or the chip show */
+  show(E.card,cardOn);var cardTop=L.cardB;
+  if(cardOn){E.card.style.top="";E.card.style.bottom=(1080-L.cardB)+"px";cardTop=L.cardB-E.card.offsetHeight}
+  var capB=cardOn?cardTop-20:L.cap;
+  /* rail stamp: the showcase round, the race's running standings, the standings, the bet in the end */
+  var st="";
+  if(seg==="A4"||seg==="A5")st=C.rnd;
+  else if(seg==="A6")st=raceK(m)<D.steps.length?C.raceRun:standK(D.steps.length);
+  else if(seg==="A11"||seg==="A12")st=C.stand;
+  else if(seg==="A14"&&i<=T_END&&C.betl)st=C.betl;
+  fitStamp(st);
+  show(E.div,seg==="A13");E.div.style.height=(cardOn?cardTop:1080)+"px";
+  /* top scrim: nearly solid to y 150 over the fee beads (A9) and the falling pot (A11 before the impact), so nothing passes
+     behind the legal line or the stamp (QA 2026-10-11); deep over the impact's first frames and the A12 macro; light elsewhere */
+  var solid=seg==="A9"||(seg==="A11"&&i<T_HIT),deep=(seg==="A11"&&i<T_HIT+4)||seg==="A12",mo=MICA?150:0;
+  E.scrT.style.cssText="top:0;height:"+((solid||deep?300:200)+mo)+"px;background:"+(solid?"linear-gradient(rgba(7,8,13,.97) 0,rgba(7,8,13,.97) "+(150+mo)+"px,rgba(7,8,13,.62) "+(220+mo)+"px,rgba(7,8,13,0) "+(300+mo)+"px)"
+    :deep?"linear-gradient(rgba(7,8,13,.88),rgba(7,8,13,.62) 50%,rgba(7,8,13,0))":"linear-gradient(rgba(7,8,13,.6),rgba(7,8,13,.3) 55%,rgba(7,8,13,0))");
+  /* captions */
+  block(E.hook,seg==="A1"||i>T_END,i,capB);
+  block(E.four,seg==="A4",i,capB);
+  block(E.graded,seg==="A5",i,capB);
+  show(E.outc,seg==="A5");if(seg==="A5")posB(E.outc,capB-E.graded.offsetHeight-8);
+  block(E.most,seg==="A6",i,capB);
+  block(E.fees,seg==="A9",i,capB);
+  block(E.nv,seg==="A11",i,capB,[null,T_HIT]);
+  block(E.lev,seg==="A12",i,capB);
+  var endOn=seg==="A14"&&i<=T_END;
+  if(E.follow){show(E.follow,endOn);if(endOn)posB(E.follow,capB)}
+  block(E.end,endOn,i,E.follow?capB-E.follow.offsetHeight-8:capB);
+  /* drop labels: names set on the cut, calls tick on at 16ths; wrong calls dim and strike as their drops fall; the winner gets the tag as it rises */
+  var four=seg==="A4"||seg==="A5";
+  E.labs.forEach(function(L4,k){show(L4.w,four);if(!four)return;
+    var c=fourCam(m),an=fourSt(m).anchors[k],p=project(c,an);L4.w.style.left=p[0].toFixed(1)+"px";L4.w.style.top=p[1].toFixed(1)+"px";
+    L4.cl.style.visibility=(seg==="A4"&&i<callAt(k))?"hidden":"visible";
+    var d=D.drops[k],out=seg==="A5"&&WRONG[k]>=0,dim=out?sat((m-368-3*WRONG[k])/10):0;
+    L4.w.style.opacity=((1-.65*dim)*(out?1-sat((m-420)/8):1)).toFixed(3);
+    L4.st.style.transform="scaleX("+(out?sat((m-368-3*WRONG[k])/8):0).toFixed(3)+")";
+    show(L4.tg,seg==="A5"&&d.win&&m>=400)});
+  /* race: names under the lanes, each lane's wins after the latest counted round (none before that AI's first call), "#1" on the leader at that round */
+  var race=seg==="A6",k=race?Math.max(1,raceK(m)):0,ld=race?D.steps[k-1].lead:-1;
+  show(E.one,race);
+  E.race.forEach(function(R,j){show(R.nm,race);show(R.num,race&&D.steps[k-1].has[j]);if(!race)return;
+    var c=raceCam(m),an=raceSt(m).anchors[j],pn=project(c,an.name),pt=project(c,an.top);
+    R.nm.style.left=pn[0].toFixed(1)+"px";R.nm.style.top=pn[1].toFixed(1)+"px";
+    R.num.textContent=String(D.steps[k-1].won[j]);
+    R.num.style.left=pt[0].toFixed(1)+"px";R.num.style.top=pt[1].toFixed(1)+"px";
+    if(j===ld){E.one.style.left=pt[0].toFixed(1)+"px";E.one.style.top=(pt[1]-50).toFixed(1)+"px"}});
+  /* split: both sides, same size, same frames */
+  var sp=seg==="A13";show(E.spL,sp);show(E.spR,sp);
+  if(sp){posB(E.spL,L.split,0);posB(E.spR,L.split,540)}
+  /* furniture */
+  show(E.legal,legalOn);
+}
+
+/* ======================================================================================================
+   6. renderAt(t): pure function of t (out time of the selected cut)
+   ====================================================================================================== */
+var platesImg=new Image();
+window.renderAt=function(t){var i=Math.min(N-1,Math.max(0,Math.round(t*FPS))),pl=plateOf(i);
+  if(PASS==="plate"){renderPlate(pl.m);return}
+  if(PASS==="both"){renderPlate(pl.m);bx.drawImage(gl.canvas,0,0,1080,1080);finish(i);typeFrame(i);return}
+  /* a missing or stale plate is an error, never a stand-in frame (compliance must-fix 7) */
+  var nm=plateName(pl.m);
+  return new Promise(function(res,rej){platesImg.onload=function(){bx.imageSmoothingQuality="high";bx.drawImage(platesImg,0,0,1080,1080);finish(i);typeFrame(i);res()};
+    platesImg.onerror=function(){var e=new Error("missing plate "+nm+".png for out frame "+i);window.__err=String(e);rej(e)};
+    platesImg.src="__plates/"+nm+".png?"+i})};
+
+/* ======================================================================================================
+   7. SOUND (set in section 8 below)
+   ====================================================================================================== */
+window.renderAudio=function(o){return window.__audio(o)};
+
+/* ready */
+var stage=document.getElementById("stage");
+if(PASS==="plate"){stage.style.width=stage.style.height=RES+"px";bg.style.display="none";OV.style.display="none"}
+else{document.getElementById("gl").style.display="none"}
+var ready=document.fonts.load('700 condensed 600px "IS"').then(function(){return Promise.all([document.fonts.load('700 36px "IS"'),document.fonts.load('600 34px "IS"'),document.fonts.load('500 26px "GM"'),document.fonts.load('700 30px "GM"')])}).then(function(){return document.fonts.ready});
+ready.then(function(){
+  if(PASS!=="type"){glInit();bake();
+    return new Promise(function(res,rej){var im=new Image();im.onload=function(){chipTextures(im,99);res()};im.onerror=rej;im.src="../media/ez-gpu2.jpg"})}
+}).then(function(){if(PASS!=="plate")typeInit();window.__ready=true}).catch(function(e){console.error(String(e&&e.stack||e));window.__err=String(e)});
+})();
+</script>
+<script src="ez-hype-audio.js"></script>
+</body>
+</html>

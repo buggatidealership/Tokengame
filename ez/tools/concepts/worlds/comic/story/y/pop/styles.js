@@ -1,0 +1,5 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const fonts=require('/home/user/Tokengame/ez/tools/concepts/live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();const q=await b.newPage();await q.goto('http://localhost:8897/v47-live-x3plus.html',{waitUntil:'load'});await q.waitForFunction(()=>window.__x2pPnl&&window.ROUNDS,null,{timeout:60000});
+const D=await q.evaluate(()=>{const A=__x2pPnl().A,m=Object.keys(A).sort((a,b)=>A[b].pnl-A[a].pnl)[0],a=A[m];return {m,d:MODELS[m].d,pnl:(a.pnl<0?'−':'+')+'$'+Math.round(Math.abs(a.pnl)).toLocaleString('en-US'),rw:'Right way '+a.W+' of '+(a.W+a.L)}});
+const p=await b.newPage({viewport:{width:1170,height:1300},deviceScaleFactor:2});await fonts(p);await p.goto('file://'+__dirname+'/styles.html');await p.evaluate(()=>document.fonts.ready);await p.evaluate(D=>draw(D),D);await p.waitForTimeout(900);
+const h=await p.evaluate(()=>document.body.scrollHeight);await p.screenshot({path:process.argv[2],clip:{x:0,y:0,width:1170,height:h}});console.log(JSON.stringify(D).slice(0,120));await b.close()})();

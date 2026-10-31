@@ -1,0 +1,29 @@
+/* B · Guided view. The page is one printed comic page (newsprint stock); each section is a hand-inked panel on it.
+   The reader's eye is the camera: the panel in front is inked and full size; the next one waits in pencil (faint, set back) and inks in as it arrives. */
+html.fl-b{background:#f1e4c2 url(@B@img/web/f-stock.jpg) 0 0/360px!important}
+html.fl-b body,html.fl-b main,html.fl-b #wc-book{background:transparent!important}
+html.fl-b body::before{display:none!important}
+html.fl-b #wc-book > section{position:relative}
+html.fl-b #wc-book > section:not(.wc-cover):not(.wc-back){margin-top:30px!important}
+html.fl-b .wc-splash{margin-left:12px!important;margin-right:12px!important}
+.flb-fr{position:absolute;inset:-7px;width:calc(100% + 14px);height:calc(100% + 14px);z-index:30;pointer-events:none;overflow:visible}
+.flb-fr path{fill:none;stroke:#141018;stroke-linejoin:round}
+.flb-fr .o{stroke-width:4.2}.flb-fr .i{stroke-width:1.1;opacity:.7}
+.flb-wash{position:absolute;inset:-8px;z-index:29;pointer-events:none;background:#efe2bf url(@B@img/web/f-stock.jpg) 0 0/360px;opacity:0}
+@media (prefers-reduced-motion:no-preference){
+ html.fl-sda.fl-b #wc-book > section:not(.wc-cover):not(.wc-back){animation:flb-in linear both,flb-out linear forwards;animation-timeline:view(),view();animation-range:entry 0% entry 70%,exit 35% exit 100%}
+ html.fl-sda .flb-wash{animation:flb-win linear both,flb-wout linear forwards;animation-timeline:view(),view();animation-range:entry 0% entry 70%,exit 35% exit 100%}
+ .flb-fr path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.1s cubic-bezier(.4,.1,.2,1)}
+ .flb-fr .i{transition-delay:.35s}
+ .flb-fr.fl-drawn path{stroke-dashoffset:0}
+ html.fl-io.fl-b #wc-book > section:not(.wc-cover):not(.wc-back){transition:scale .8s cubic-bezier(.2,.8,.3,1)}
+ html.fl-io.fl-b #wc-book > section:not(.wc-cover):not(.wc-back):not(.flb-on){scale:.9}
+ html.fl-io .flb-wash{transition:opacity .8s}html.fl-io section:not(.flb-on) > .flb-wash{opacity:.62}
+}
+html.fl-still .flb-fr path{stroke-dashoffset:0!important}
+@keyframes flb-in{0%{scale:.86}100%{scale:1}}
+@keyframes flb-out{0%{scale:1}100%{scale:.93}}
+@keyframes flb-win{0%{opacity:.7}100%{opacity:0}}
+@keyframes flb-wout{0%{opacity:0}100%{opacity:.55}}
+/* the cover is panel one: inked from the start */
+html.fl-b .wc-cover > .flb-fr path{stroke-dashoffset:0}

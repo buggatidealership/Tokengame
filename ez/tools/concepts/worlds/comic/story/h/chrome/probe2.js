@@ -1,0 +1,10 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();for(const W of [390,1280]){const p=await (await b.newContext({viewport:{width:W,height:W<600?844:900},deviceScaleFactor:2})).newPage();await FONTS(p);
+await p.goto('http://localhost:8941/v47-live-x3plus.html',{waitUntil:'load',timeout:150000});
+await p.waitForFunction(()=>document.documentElement.classList.contains('x2p-world')&&!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});await p.waitForTimeout(2500);
+const r=await p.evaluate(()=>{const g=s=>{const e=document.querySelector(s);return e?e.outerHTML.replace(/<svg[\s\S]*?<\/svg>/g,'<svg/>').slice(0,2500):null};return {pill:g('header.top .live')||g('header .top-in > :nth-child(3)'),hdrIn:[...document.querySelector('header .top-in').children].map(e=>e.tagName+'.'+e.className),back:g('.wc-back'),cw:g('.x2p-cw')}});
+console.log('=====',W,JSON.stringify(r,null,1));
+await p.screenshot({path:`/tmp/claude-0/-home-user-Tokengame/08701fb1-b7a0-5ffb-a46b-c9f3d0a33081/scratchpad/top-${W}.png`});
+await p.evaluate(()=>document.querySelector('.wc-back').scrollIntoView({block:'center'}));await p.waitForTimeout(800);
+await p.screenshot({path:`/tmp/claude-0/-home-user-Tokengame/08701fb1-b7a0-5ffb-a46b-c9f3d0a33081/scratchpad/back-${W}.png`});
+}await b.close()})();

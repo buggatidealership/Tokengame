@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>EZ Board</title>
+<meta name="description" content="Earnings Zeason as one scoreboard: who leads, what just happened, what is live, and where the fees go.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* EZ BOARD (v27). The scoreboard is the page. A yellow board with the four AIs, then three one-line beats under it:
+   what just happened, what is live, how it works. The pot is one line of four steps. Nothing else.
+   Data: ez-data.js + ez-story.js only. Single light look on purpose. */
+:root{color-scheme:light;
+  --bg:#f6f6f2;--board:#ffc72c;--ink:#111218;--ink2:#5a5c6a;--line:#dedfe4;--card:#ffffff;--up:#0f9a52;--dn:#dc2f26;
+  --fd:'Barlow Condensed',Impact,'Arial Narrow',sans-serif;--fb:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --w:720px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:500 16px/1.5 var(--fb);padding-inline:16px}
+main{max-width:var(--w);margin:0 auto;padding-block:20px 56px;display:flex;flex-direction:column;gap:48px}
+h1,h2{font-family:var(--fd);font-weight:800;text-transform:uppercase;line-height:.95;text-wrap:balance}
+.u{color:var(--up)}.d{color:var(--dn)}
+.lg{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:9px;flex:none}
+.lg svg{width:62%;height:62%}
+.co-mark{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:9px;background:#fff;box-shadow:0 0 0 1px var(--line);overflow:hidden;flex:none;font:800 9px/1 var(--fb)}
+.co-mark img{width:78%;height:78%;object-fit:contain}
+.co-mark.dk{background:#111218}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;font:800 15px/1 var(--fd);letter-spacing:.06em;text-transform:uppercase}
+.ez{display:inline-flex;font:800 18px/1 var(--fd);background:#111218;border-radius:7px;padding:5px 6px 4px}
+.ez i{font-style:normal}.ez i:nth-child(1){color:#ffc72c}.ez i:nth-child(2){color:#1fcf6b}.ez i:nth-child(3){color:#ff4136}
+.pill{font:700 12px/1 var(--fb);letter-spacing:.08em;text-transform:uppercase;padding:7px 10px;border-radius:99px;background:var(--ink);color:#fff;white-space:nowrap}
+/* the board */
+.board{background:var(--board);border-radius:22px;padding:22px 18px 10px;box-shadow:0 0 0 2.5px var(--ink),5px 6px 0 0 var(--ink)}
+.board h1{font-size:clamp(34px,8.5vw,56px)}
+.board .sub{font:600 15px/1.4 var(--fb);margin-top:8px;max-width:34em}
+table{width:100%;border-collapse:collapse;margin-top:16px;font-variant-numeric:tabular-nums}
+th{font:700 11px/1.2 var(--fb);letter-spacing:.08em;text-transform:uppercase;text-align:right;padding:0 0 8px 8px;color:color-mix(in srgb,var(--ink) 70%,var(--board))}
+th:first-child{text-align:left;padding-left:0}
+td{padding:12px 0 12px 8px;border-top:2px solid var(--ink);text-align:right;font:800 28px/1 var(--fd)}
+td:first-child{text-align:left;padding-left:0;font:700 17px/1 var(--fb)}
+td .m{display:flex;align-items:center;gap:10px}
+td .rk{font:800 18px/1 var(--fd);width:14px;color:color-mix(in srgb,var(--ink) 60%,var(--board))}
+td small{display:block;font:600 11px/1.3 var(--fb);margin-top:3px}
+.note{font:500 12px/1.4 var(--fb);padding:10px 0 4px;color:color-mix(in srgb,var(--ink) 72%,var(--board))}
+/* beats */
+.beats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.beat{background:var(--card);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 0 0 1px var(--line);min-width:0}
+.beat .k{font:700 12px/1 var(--fb);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.beat .co{display:flex;align-items:center;gap:10px;font:700 17px/1.2 var(--fb)}
+.beat .big{font:800 44px/.9 var(--fd);font-variant-numeric:tabular-nums}
+.beat p{font:500 14px/1.45 var(--fb);color:var(--ink2)}
+.mini{display:flex;flex-wrap:wrap;gap:6px}
+.mini span{display:inline-flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;border-radius:99px;background:var(--bg);font:800 16px/1 var(--fd);font-variant-numeric:tabular-nums}
+.mini .lg{width:22px;height:22px;border-radius:6px}
+/* how it works */
+h2{font-size:clamp(28px,6vw,40px)}
+.how{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px;counter-reset:h}
+.how li{counter-increment:h;display:flex;flex-direction:column;gap:6px;font:600 15px/1.35 var(--fb);padding-top:10px;border-top:2.5px solid var(--ink)}
+.how li::before{content:counter(h);font:800 26px/1 var(--fd)}
+.how li small{font:500 13px/1.4 var(--fb);color:var(--ink2)}
+.cta{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px;border-radius:18px;background:var(--ink);color:#fff;text-decoration:none}
+.cta b{font:800 30px/1 var(--fd);text-transform:uppercase}
+.cta span{font:600 14px/1.3 var(--fb);color:#c9cbd6;text-align:right}
+footer{max-width:var(--w);margin:0 auto;padding-block:0 40px;font:500 13px/1.5 var(--fb);color:var(--ink2)}
+a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+@media(max-width:560px){.beats{grid-template-columns:minmax(0,1fr)}.how{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:18px}
+  td{font-size:24px}td:first-child{font-size:15px}.lg{width:30px;height:30px}}
+@media(max-width:380px){td{font-size:21px}th{font-size:10px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><span class="brand"><span class="ez" aria-label="$EZ"><i>$</i><i>E</i><i>Z</i></span>Earnings Zeason</span><span class="pill" id="pill"></span></div>
+
+  <section class="board" aria-labelledby="h1">
+    <h1 id="h1"></h1>
+    <p class="sub" id="sub"></p>
+    <table>
+      <thead><tr><th scope="col">AI</th><th scope="col">Wins</th><th scope="col">Right</th><th scope="col" id="thCopy"></th></tr></thead>
+      <tbody id="tb"></tbody>
+    </table>
+    <p class="note" id="note"></p>
+  </section>
+
+  <section class="beats" aria-label="What just happened and what is live">
+    <div class="beat" id="bLast"></div>
+    <div class="beat" id="bLive"></div>
+  </section>
+
+  <section aria-labelledby="hHow">
+    <h2 id="hHow">The winner bets for $EZ</h2>
+    <ol class="how" id="how"></ol>
+  </section>
+
+  <a class="cta" id="buy" href="#" aria-disabled="true"><b>Get $EZ</b><span id="buyS">Opens at launch</span></a>
+</main>
+<footer>$EZ is a memecoin. Not financial advice. Nothing here is a promise of value, return or payout.</footer>
+
+<script src="ez-data.js"></script>
+<script src="ez-story.js"></script>
+<script>
+(function(){var S=EZS,$=function(i){return document.getElementById(i)},nm=S.nm;
+  var words=["Zero","One","Two","Three","Four","Five","Six"],B=S.board,lead=B[0];
+  $("pill").textContent="Round "+S.graded+" of "+S.total;
+  $("h1").textContent=(words[B.length]||B.length)+" AIs call earnings. The market keeps score.";
+  $("sub").textContent="Before a company reports, each AI says up or down, and by how much. The closest right call wins the round.";
+  $("thCopy").textContent=S.usd(S.STAKE)+" copied";
+  var F={};S.follow.forEach(function(o){F[o.m]=o});
+  $("tb").innerHTML=B.map(function(b,i){var o=F[b.m];return '<tr><td><span class="m"><span class="rk">'+(i+1)+'</span>'+S.logo(b.m)+nm(b.m)+'</span></td><td>'+b.won+'</td><td>'+b.right+'/'+b.n+'</td><td>'+(o?S.usd(o.bal)+'<small class="'+(o.bal>=S.STAKE?'u':'d')+'">'+S.pct(o.bal)+'</small>':'')+'</td></tr>'}).join("");
+  $("note").textContent="Copied: "+S.usd(S.STAKE)+" all in on each of that AI's calls. Simulated, before fees.";
+
+  var L=S.last;
+  if(L){var W=S.winners(L);
+    $("bLast").innerHTML='<span class="k">Last round</span><span class="co">'+S.coMark(L.ticker)+S.esc(S.co(L))+'</span><span class="big '+(L.a<0?'d':'u')+'">'+S.outTxt(L)+'</span>'
+      +'<div class="mini">'+L.calls.map(function(c){return '<span class="'+(/^DOWN/.test(c[1])?'d':'u')+'">'+S.logo(c[0])+S.callTxt(c)+'</span>'}).join("")+'</div>'
+      +'<p>'+(W.length?'<b style="color:var(--ink)">'+W.map(nm).join(" & ")+' won.</b> Closest call in the right direction.':'Nobody got the direction right. No winner.')+'</p>'}
+  var P=S.live;
+  if(P){$("bLive").innerHTML='<span class="k">Live now</span><span class="co">'+S.coMark(P.ticker)+S.esc(S.co(P))+'</span><span class="big">'+S.date(P.resolves)+'</span>'
+      +'<div class="mini">'+P.calls.map(function(c){return '<span class="'+(c.dir==="DOWN"?'d':'u')+'">'+S.logo(c.m)+S.liveTxt(c)+'</span>'}).join("")+'</div>'
+      +'<p>The calls are in. The market grades them at the close.</p>'}
+  else if(S.next){$("bLive").innerHTML='<span class="k">Next</span><span class="co">'+S.coMark(S.next.ticker)+S.esc(S.co(S.next))+'</span><span class="big">'+S.date(S.next.called)+'</span><p>The calls are filed the day before the report.</p>'}
+  else $("bLive").hidden=true;
+
+  $("how").innerHTML=[["Every $EZ trade pays a fee",S.pot+"% to the pot, "+S.ops+"% runs the project."],
+    ["The top AI bets the pot","On NVIDIA's earnings, "+S.lev+"x leverage, on Hyperliquid."],
+    ["Winning trade","The profits buy back $EZ."],
+    ["Losing trade","The pot shrinks. It can be wiped out."]]
+    .map(function(s){return '<li>'+s[0]+'<small>'+s[1]+'</small></li>'}).join("");
+
+  if(CONFIG.buyUrl){var b=$("buy");b.href=CONFIG.buyUrl;b.target="_blank";b.rel="noopener";b.removeAttribute("aria-disabled");$("buyS").textContent="Through this link only"}
+  else $("buy").addEventListener("click",function(e){e.preventDefault()});
+})();
+</script>
+</body>
+</html>
