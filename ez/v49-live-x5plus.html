@@ -9571,6 +9571,8 @@ html.wc-f11:not(.cd-on) .wc11d-tv .wc11d-sfx{position:absolute;right:10px;bottom
   html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>.wc-sb-tww{padding-top:2px;border-top:0}}
 /* (2026-10-31) the "Next time…" beat is gone: the bet keeps the gap it gave */
 .wc-book > section + section.wc-bet{margin-top:56px}
+/* Tonight at the close with no calls in yet: the next day on the card (owner, 2026-10-31) */
+.wc-cliff .wc-tn-soon{margin:8px 0 0;font:700 13px/1.25 'Shantell Sans',system-ui,sans-serif;opacity:.8}
 
 /* EZ Live X5+ (owner, 2026-10-29): the X3+ comic world in the header's dark colours, in two editions.
    Part 1 by hand: the page, the masthead, the edition switch. Part 2 generated (gen-comicdark.py): every colour of
@@ -15423,13 +15425,18 @@ function build(){
   </section>`;
 
   /* ---------- TONIGHT AT THE CLOSE ---------- */
+  /* owner, 2026-10-31: Tonight at the close is the last chapter (after the bet) and always hands over to the Upcoming tab, so a
+     visitor leaves knowing the season is still going. With no calls in yet, it shows the next day on the card, calls to come. */
+  let soon=false;
+  if(!tonight.length){const ups=(window.UPCOMING||[]).filter(u=>u.called);const f=s=>{const [m,d,y]=s.split('/').map(Number);return y*1e4+m*100+d};
+    if(ups.length){const c0=ups.map(u=>u.called).sort((a,b)=>f(a)-f(b))[0];tonight=ups.filter(u=>u.called===c0).map(u=>Object.assign({},u,{calls:[]}));soon=true;tLabel='Next on the card, '+md(c0)}}
   const tn=tonight.slice(0,6);
-  const cliff=tonight.length?`<p class="wc-cap wc-beat">And next on the card…</p><section class="wc-cliff" aria-label="${esc(tLabel)}">
-    <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} round${tonight.length===1?'':'s'}. Every call locked before the report. The close decides.</small></h2>
+  const cliff=tonight.length?`<p class="wc-cap wc-beat">And it's not over. Next on the card…</p><section class="wc-cliff" aria-label="${esc(tLabel)}">
+    <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} round${tonight.length===1?'':'s'}. ${soon?'The calls drop before each report. The close decides.':'Every call locked before the report. The close decides.'}</small></h2>
     <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker),cs=p.calls||[],u=cs.filter(c=>c.dir==='UP').length,d=cs.length-u;return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt=""${coDk(p.ticker)}>`:''}<b>${esc(p.co)}<small>${esc(p.ticker)}</small></b></header>
-      <p class="wc-tn-vs" aria-label="${u} up, ${d} down"><span class="wc-tn-u" style="flex:${u||.0001}">${u?u+' up':''}</span><span class="wc-tn-d" style="flex:${d||.0001}">${d?d+' down':''}</span></p>
+      ${soon?`<p class="wc-tn-soon">Calls drop before the report</p>`:`<p class="wc-tn-vs" aria-label="${u} up, ${d} down"><span class="wc-tn-u" style="flex:${u||.0001}">${u?u+' up':''}</span><span class="wc-tn-d" style="flex:${d||.0001}">${d?d+' down':''}</span></p>`}
       <div class="wc-lvc">${ORDER.map(m=>{const c=p.calls.find(x=>x.m===m);return c?`<div class="wc-lvs ${c.dir==='UP'?'wc-lvu':'wc-lvd'}">${face(m,'wc-f-s')}<p><small>${NM[m]}</small>${c.dir==='UP'?'Up':'Down'} ${c.mag}%</p></div>`:''}).join('')}</div></article>`}).join('')}</div>
-    ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s"><a class="wc-gut-a" href="#/upcoming">+ ${tonight.length-tn.length} more locked in. See the card →</a></p>`:''}
+    <p class="wc-gut wc-gut-s"><a class="wc-gut-a" href="#/upcoming">${tonight.length>tn.length?`+ ${tonight.length-tn.length} more ${soon?'on the card':'locked in'}. `:''}See everything coming up →</a></p>
   </section>`:'';
 
   /* ---------- SPLASH: SMART OR LUCKY ---------- */
@@ -15456,7 +15463,8 @@ function build(){
   /* owner, 2026-10-29 (a friend's read): no "Previously" (it repeated the cover, the cast and the last round), and the
      last round straight after the cover, so the first scroll shows how a round goes */
   /* owner, 2026-10-30, evening: "one round, start to finish" is off the page (the loop in the cover explains a round); Meet the models comes first after the cover */
-  book.innerHTML=cover+cast+issues+cliff+splash+bet+back;
+  /* owner, 2026-10-31: cover, Meet the models, Every round so far, Smart or lucky, the bet, then Tonight at the close last */
+  book.innerHTML=cover+cast+issues+splash+bet+cliff+back;
   lrCap();setTimeout(lrCap,400);
   {const mb=book.querySelector('.wc-lr-meet');if(mb)mb.addEventListener('click',()=>{const c=D.querySelector('.wc-chars');if(c)c.scrollIntoView({behavior:RM_()?'auto':'smooth',block:'start'})})}
   const main=D.querySelector('main');main.insertBefore(book,main.firstChild);

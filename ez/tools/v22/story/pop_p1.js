@@ -29,8 +29,8 @@ function chars(D){const sec=document.querySelector('.wc-chars');if(!sec)return;c
   sec.classList.add('pp-mod','pp1-mm');h2.classList.add('pp-sr');old.classList.add('pp-sr');old.setAttribute('aria-hidden','false');old.style.display='none';
   const W=sec.clientWidth-24;
   const ttl=el(`<div class="pp-ttl pp1-ttl" aria-hidden="true"></div>`);
-  ttl.insertAdjacentHTML('beforeend',P.ext('MEET THE',{size:44,fill:'gold',shade:'#7a0c06',max:W*.72,rot:-3,cls:'pp1-t1'}));
-  ttl.insertAdjacentHTML('beforeend',P.ext('MODELS',{size:74,fill:'red',shade:'#7a0c06',max:W*.86,rot:-3,depth:8,cls:'pp1-t2'}));
+  /* owner, 2026-10-31: one heading face on the Overview, the bet chapter's "Bet #1: NVIDIA" lettering */
+  ttl.insertAdjacentHTML('beforeend',`<p class="ez-hd"><span class="ez-w">Meet the</span> <span class="ez-w">models</span></p>`);
   ttl.insertAdjacentHTML('beforeend',`<p class="pp-tag pp1-tag">Not the Instagram kind.<br>Ranked by P&amp;L: $100K on every call.</p>`);
   sec.insertBefore(ttl,old);
   const grid=el(`<div class="pp1-grid" style="${flagVars()}"></div>`);sec.insertBefore(grid,old);
@@ -63,8 +63,7 @@ function chars(D){const sec=document.querySelector('.wc-chars');if(!sec)return;c
 function season(D){const sec=document.querySelector('.wc-season');if(!sec)return;const h2=sec.querySelector('h2'),bis=sec.querySelector('.wc-bis'),more=sec.querySelector('.wc-more');
   sec.querySelectorAll('.pp1-ttl').forEach(n=>n.remove());sec.classList.add('pp-mod','pp1-ms');h2.classList.add('pp-sr');
   const W=sec.clientWidth-24,ttl=el(`<div class="pp-ttl pp1-ttl" aria-hidden="true"></div>`);
-  ttl.insertAdjacentHTML('beforeend',P.ext('EVERY ROUND',{size:50,fill:'gold',shade:'#0b2366',max:W*.8,rot:-3,depth:6}));
-  ttl.insertAdjacentHTML('beforeend',P.ext('SO FAR',{size:66,fill:'pink',shade:'#4a0420',max:W*.6,rot:-3,depth:8}));
+  ttl.insertAdjacentHTML('beforeend',`<p class="ez-hd"><span class="ez-w">Every round</span> <span class="ez-w">so far</span></p>`);
   ttl.insertAdjacentHTML('beforeend',`<p class="pp-tag pp1-tag">Newest first. Tap one to open its graded card.</p>`);sec.insertBefore(ttl,bis);
   bis.classList.add('pp1-bis');const RR={};D.rounds.forEach(r=>RR[r.n]=r);
   bis.querySelectorAll('.wc-bi').forEach(a=>{a.querySelectorAll('.pp1-stb').forEach(n=>n.remove());const r=RR[+(a.getAttribute('href')||'').replace(/\D/g,'')];if(!r)return;a.classList.add('pp1-bi');

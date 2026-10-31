@@ -9573,6 +9573,8 @@ html.wc-f11:not(.cd-on) .wc11d-tv .wc11d-sfx{position:absolute;right:10px;bottom
   html.wc-on:not(.cd-on) #wc-lb .wc-sb-st>.wc-sb-tww{padding-top:2px;border-top:0}}
 /* (2026-10-31) the "Next time…" beat is gone: the bet keeps the gap it gave */
 .wc-book > section + section.wc-bet{margin-top:56px}
+/* Tonight at the close with no calls in yet: the next day on the card (owner, 2026-10-31) */
+.wc-cliff .wc-tn-soon{margin:8px 0 0;font:700 13px/1.25 'Shantell Sans',system-ui,sans-serif;opacity:.8}
 
 /* helper e, shared */
 .se-hide{display:none!important}
@@ -10157,6 +10159,11 @@ html.p1-on .pp1-fl .wc-flg-fd::before,html.p1-on .pp1-fl .wc-flg-fd::after{conte
 html.p1-on .pp1-fl .wc-flg-fd::before{background:radial-gradient(circle,rgba(13,11,16,.55) 1.3px,transparent 1.85px) 0 0/6px 6px;
   -webkit-mask:repeating-linear-gradient(90deg,#000 0,rgba(0,0,0,0) 34px,rgba(0,0,0,0) 126px,#000 160px);mask:repeating-linear-gradient(90deg,#000 0,rgba(0,0,0,0) 34px,rgba(0,0,0,0) 126px,#000 160px)}
 html.p1-on .pp1-fl .wc-flg-fd::after{background:repeating-linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,0) 64px,rgba(255,255,255,.55) 76px,rgba(255,255,255,.12) 84px,rgba(255,255,255,0) 92px,rgba(255,255,255,0) 160px)}
+/* one heading face on the Overview (owner, 2026-10-31): the bet chapter's "Bet #1: NVIDIA" lettering (h_bet.css h2.hb-h), for the
+   chapters whose titles were extruded pop lettering */
+html.p1-on #wc-book .ez-hd{position:relative;z-index:3;margin:0 0 6px;padding:0 4px;font:400 clamp(46px,14vw,104px)/.86 Bangers,Anton,sans-serif;letter-spacing:.015em;text-transform:uppercase;transform:rotate(-2.2deg);transform-origin:0 100%;text-align:left}
+html.p1-on #wc-book .ez-hd .ez-w{display:inline-block;color:#ffd21f;-webkit-text-fill-color:#ffd21f;-webkit-text-stroke:.075em #0d0b10;paint-order:stroke fill;
+ text-shadow:.02em .02em 0 #e7930b,.04em .04em 0 #c42a20,.06em .06em 0 #c42a20,.08em .08em 0 #c42a20,.1em .1em 0 #0d0b10,.12em .12em 0 #0d0b10,.135em .14em 0 #0d0b10}
 /* FOUNDERS (owner, 2026-10-31: "the one with Dario and Sam as backgrounds... on the live site... with all the founders"): each Meet the
    models card shows its lab's founder from the green room film behind the name (Claude: Dario, GPT: Sam, Grok: Elon, Kimi: Kimi's founder),
    the face on the right, a panel in the model's own colour behind the name on the left, and the lab's flag as a small patch under the
@@ -10437,6 +10444,9 @@ html.wc-bands #wc-book{overflow-x:visible}
 html.wc-bands #wc-book .wc-back .wc-motto{color:#f8f0d9}
 html.wc-bands #wc-book .wc-back .wc-e{color:#03c870}html.wc-bands #wc-book .wc-back .wc-z{color:#ff3a31}
 html.wc-bands #wc-book .wc-back .wc-fine{color:#b5ad9c}
+/* Tonight at the close sits on the dark red ground at the end of the book (owner, 2026-10-31): its small print and the link to Upcoming in cream */
+html.wc-on.wc-bands #wc-book .wc-cliff .wc-h2 small,html.wc-on.wc-bands #wc-book .wc-cliff .wc-gut-a{color:#f4ecd2!important;-webkit-text-fill-color:#f4ecd2}
+html.wc-on.wc-bands #wc-book .wc-cliff .wc-gut-a{text-decoration-color:#ffd21f!important;border-color:#ffd21f!important}
 
 /* H_SOL: "Smart or lucky?" on the big board (take F of round H6 pnl2; h_sol.js builds it). X3+ only, everything under
    html.p1-on .wc-splash.hs-on. The page's own splash content stays in the DOM, hidden. The section's ground is h_bands' dark gold;
@@ -15739,13 +15749,18 @@ function build(){
   </section>`;
 
   /* ---------- TONIGHT AT THE CLOSE ---------- */
+  /* owner, 2026-10-31: Tonight at the close is the last chapter (after the bet) and always hands over to the Upcoming tab, so a
+     visitor leaves knowing the season is still going. With no calls in yet, it shows the next day on the card, calls to come. */
+  let soon=false;
+  if(!tonight.length){const ups=(window.UPCOMING||[]).filter(u=>u.called);const f=s=>{const [m,d,y]=s.split('/').map(Number);return y*1e4+m*100+d};
+    if(ups.length){const c0=ups.map(u=>u.called).sort((a,b)=>f(a)-f(b))[0];tonight=ups.filter(u=>u.called===c0).map(u=>Object.assign({},u,{calls:[]}));soon=true;tLabel='Next on the card, '+md(c0)}}
   const tn=tonight.slice(0,6);
-  const cliff=tonight.length?`<p class="wc-cap wc-beat">And next on the card…</p><section class="wc-cliff" aria-label="${esc(tLabel)}">
-    <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} round${tonight.length===1?'':'s'}. Every call locked before the report. The close decides.</small></h2>
+  const cliff=tonight.length?`<p class="wc-cap wc-beat">And it's not over. Next on the card…</p><section class="wc-cliff" aria-label="${esc(tLabel)}">
+    <h2 class="wc-h2"><span>${tLabel}</span><small>${tonight.length} round${tonight.length===1?'':'s'}. ${soon?'The calls drop before each report. The close decides.':'Every call locked before the report. The close decides.'}</small></h2>
     <div class="wc-tn">${tn.map(p=>{const lg=coLogo(p.ticker),cs=p.calls||[],u=cs.filter(c=>c.dir==='UP').length,d=cs.length-u;return `<article class="wc-tnp"><header>${lg?`<img src="${lg}" alt=""${coDk(p.ticker)}>`:''}<b>${esc(p.co)}<small>${esc(p.ticker)}</small></b></header>
-      <p class="wc-tn-vs" aria-label="${u} up, ${d} down"><span class="wc-tn-u" style="flex:${u||.0001}">${u?u+' up':''}</span><span class="wc-tn-d" style="flex:${d||.0001}">${d?d+' down':''}</span></p>
+      ${soon?`<p class="wc-tn-soon">Calls drop before the report</p>`:`<p class="wc-tn-vs" aria-label="${u} up, ${d} down"><span class="wc-tn-u" style="flex:${u||.0001}">${u?u+' up':''}</span><span class="wc-tn-d" style="flex:${d||.0001}">${d?d+' down':''}</span></p>`}
       <div class="wc-lvc">${ORDER.map(m=>{const c=p.calls.find(x=>x.m===m);return c?`<div class="wc-lvs ${c.dir==='UP'?'wc-lvu':'wc-lvd'}">${face(m,'wc-f-s')}<p><small>${NM[m]}</small>${c.dir==='UP'?'Up':'Down'} ${c.mag}%</p></div>`:''}).join('')}</div></article>`}).join('')}</div>
-    ${tonight.length>tn.length?`<p class="wc-gut wc-gut-s"><a class="wc-gut-a" href="#/upcoming">+ ${tonight.length-tn.length} more locked in. See the card →</a></p>`:''}
+    <p class="wc-gut wc-gut-s"><a class="wc-gut-a" href="#/upcoming">${tonight.length>tn.length?`+ ${tonight.length-tn.length} more ${soon?'on the card':'locked in'}. `:''}See everything coming up →</a></p>
   </section>`:'';
 
   /* ---------- SPLASH: SMART OR LUCKY ---------- */
@@ -15772,7 +15787,8 @@ function build(){
   /* owner, 2026-10-29 (a friend's read): no "Previously" (it repeated the cover, the cast and the last round), and the
      last round straight after the cover, so the first scroll shows how a round goes */
   /* owner, 2026-10-30, evening: "one round, start to finish" is off the page (the loop in the cover explains a round); Meet the models comes first after the cover */
-  book.innerHTML=cover+cast+issues+cliff+splash+bet+back;
+  /* owner, 2026-10-31: cover, Meet the models, Every round so far, Smart or lucky, the bet, then Tonight at the close last */
+  book.innerHTML=cover+cast+issues+splash+bet+cliff+back;
   lrCap();setTimeout(lrCap,400);
   {const mb=book.querySelector('.wc-lr-meet');if(mb)mb.addEventListener('click',()=>{const c=D.querySelector('.wc-chars');if(c)c.scrollIntoView({behavior:RM_()?'auto':'smooth',block:'start'})})}
   const main=D.querySelector('main');main.insertBefore(book,main.firstChild);
@@ -17057,8 +17073,8 @@ function chars(D){const sec=document.querySelector('.wc-chars');if(!sec)return;c
   sec.classList.add('pp-mod','pp1-mm');h2.classList.add('pp-sr');old.classList.add('pp-sr');old.setAttribute('aria-hidden','false');old.style.display='none';
   const W=sec.clientWidth-24;
   const ttl=el(`<div class="pp-ttl pp1-ttl" aria-hidden="true"></div>`);
-  ttl.insertAdjacentHTML('beforeend',P.ext('MEET THE',{size:44,fill:'gold',shade:'#7a0c06',max:W*.72,rot:-3,cls:'pp1-t1'}));
-  ttl.insertAdjacentHTML('beforeend',P.ext('MODELS',{size:74,fill:'red',shade:'#7a0c06',max:W*.86,rot:-3,depth:8,cls:'pp1-t2'}));
+  /* owner, 2026-10-31: one heading face on the Overview, the bet chapter's "Bet #1: NVIDIA" lettering */
+  ttl.insertAdjacentHTML('beforeend',`<p class="ez-hd"><span class="ez-w">Meet the</span> <span class="ez-w">models</span></p>`);
   ttl.insertAdjacentHTML('beforeend',`<p class="pp-tag pp1-tag">Not the Instagram kind.<br>Ranked by P&amp;L: $100K on every call.</p>`);
   sec.insertBefore(ttl,old);
   const grid=el(`<div class="pp1-grid" style="${flagVars()}"></div>`);sec.insertBefore(grid,old);
@@ -17091,8 +17107,7 @@ function chars(D){const sec=document.querySelector('.wc-chars');if(!sec)return;c
 function season(D){const sec=document.querySelector('.wc-season');if(!sec)return;const h2=sec.querySelector('h2'),bis=sec.querySelector('.wc-bis'),more=sec.querySelector('.wc-more');
   sec.querySelectorAll('.pp1-ttl').forEach(n=>n.remove());sec.classList.add('pp-mod','pp1-ms');h2.classList.add('pp-sr');
   const W=sec.clientWidth-24,ttl=el(`<div class="pp-ttl pp1-ttl" aria-hidden="true"></div>`);
-  ttl.insertAdjacentHTML('beforeend',P.ext('EVERY ROUND',{size:50,fill:'gold',shade:'#0b2366',max:W*.8,rot:-3,depth:6}));
-  ttl.insertAdjacentHTML('beforeend',P.ext('SO FAR',{size:66,fill:'pink',shade:'#4a0420',max:W*.6,rot:-3,depth:8}));
+  ttl.insertAdjacentHTML('beforeend',`<p class="ez-hd"><span class="ez-w">Every round</span> <span class="ez-w">so far</span></p>`);
   ttl.insertAdjacentHTML('beforeend',`<p class="pp-tag pp1-tag">Newest first. Tap one to open its graded card.</p>`);sec.insertBefore(ttl,bis);
   bis.classList.add('pp1-bis');const RR={};D.rounds.forEach(r=>RR[r.n]=r);
   bis.querySelectorAll('.wc-bi').forEach(a=>{a.querySelectorAll('.pp1-stb').forEach(n=>n.remove());const r=RR[+(a.getAttribute('href')||'').replace(/\D/g,'')];if(!r)return;a.classList.add('pp1-bi');
