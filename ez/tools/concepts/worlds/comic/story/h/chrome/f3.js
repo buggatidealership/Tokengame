@@ -1,5 +1,5 @@
 /* F3 through the page: the film shows through a hole torn in a comic page; a caption box presents it, a burst carries the running time */
-(()=>{CH.frame({img:'fm-torn-cut.webp',hole:[26.41,19.58,70.86,78.19,1280,720],keepM:.96,keepD:.86,mM:22,mD:60,mt:1.3,mb:1.3,mx:1.2,after:(f,g)=>{
+(()=>{CH.frame({img:'fm-torn-cut.webp',hole:[26.41,19.58,70.86,78.19,1280,720],eb:8,keepM:.96,keepD:.86,mM:22,mD:40,mt:1.3,mb:1.3,mx:1.2,after:(f,g)=>{
  const a=CH.lab(f,'f3-cap',`<span class="f3-lg">${CH.logo()}</span><span><small>presents</small><b>How it works</b></span>`);
  const b=CH.lab(f,'f3-bu',`<svg viewBox="0 0 100 70" aria-hidden="true"><path d="M50 2 L58 16 L74 6 L72 22 L96 18 L82 32 L99 44 L78 46 L86 64 L66 54 L56 69 L46 55 L28 66 L30 49 L4 52 L18 38 L2 24 L24 24 L18 6 L38 15 Z" fill="#15121a" transform="translate(2.5 3)"/><path d="M50 2 L58 16 L74 6 L72 22 L96 18 L82 32 L99 44 L78 46 L86 64 L66 54 L56 69 L46 55 L28 66 L30 49 L4 52 L18 38 L2 24 L24 24 L18 6 L38 15 Z" fill="#ff3a31" stroke="#15121a" stroke-width="2.4" stroke-linejoin="round"/><path d="M50 12 L56 22 L68 16 L66 28 L84 26 L74 35 L86 43 L71 44 L76 56 L62 50 L55 60 L48 51 L35 58 L36 47 L17 49 L27 39 L16 30 L31 30 L28 18 L41 24 Z" fill="#fdbc2a" stroke="#15121a" stroke-width=".8"/></svg><b>${CH.dur()}</b>`);
  if(!a.__ib)CH.inkBox(a,{fill:'#fdbc2a',seed:21,amp:1.8});

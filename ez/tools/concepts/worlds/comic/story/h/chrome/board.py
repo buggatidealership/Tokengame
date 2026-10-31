@@ -21,7 +21,13 @@ for title,k,ts in P:
   if ims:rows.append((title,ims))
 cw=max(i.width for _,ims in rows for _,i in ims);pad=30;lh=92
 Hs=[max(i.height for _,i in ims)+lh+60 for _,ims in rows]
-B=Image.new('RGB',(pad+(cw+pad)*5,sum(Hs)+40),'#1b1820');d=ImageDraw.Draw(B);y=20
+CU=[]
+for t in ['now-h','h1','h2','h3','h4'] if W<600 else ['now-c','c1','c2','c3','c4']:
+  k=t.replace('now-','')[0];f=f'{D}/{k}-{W}-{t}.png'
+  if os.path.exists(f):
+    im=Image.open(f).convert('RGB');CU.append(im.crop((0,0,min(im.width,cw),min(im.height,230 if W<600 else 230))))
+cuh=(max(i.height for i in CU)+90) if CU else 0
+B=Image.new('RGB',(pad+(cw+pad)*5,sum(Hs)+40+cuh),'#1b1820');d=ImageDraw.Draw(B);y=20
 def wrap(t,w):
   ws=t.split(' ');ls=['']
   for x in ws:
@@ -36,4 +42,7 @@ for (title,ims),h in zip(rows,Hs):
     if len(t)>2:d.text((x+cw-d.textlength('Hedra '+t[2],font=F),y+50+3*24-2),'Hedra '+t[2],fill='#9fe0b8',font=F)
     B.paste(i,(x,y+50+lh));x+=cw+pad
   y+=h
+if CU:
+  d.text((pad,y),'Close-up at device pixels: '+('the header, logo, name and pill' if W<600 else 'the crawl\'s left end and the first items'),fill='#f8f0d9',font=FH);x=pad
+  for i in CU:B.paste(i,(x,y+60));x+=cw+pad
 B.save(OUT,optimize=True);print(OUT,B.size)

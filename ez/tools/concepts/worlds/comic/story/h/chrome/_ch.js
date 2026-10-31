@@ -28,7 +28,7 @@ window.CH=(()=>{const I='tools/concepts/worlds/comic/story/h/chrome/img/';
   const lay=()=>{const v=$('.vt-f',vt);v.style.transform='none';const vr=v.getBoundingClientRect(),tr=vt.getBoundingClientRect();v.style.transform='';if(!vr.width)return;const [x0,y0,x1,y1,W,H]=cfg.hole;
    const mob=innerWidth<600,keep=mob?cfg.keepM||.92:cfg.keepD||.9;          /* film width kept vs today */
    const fw=vr.width*keep,pw=fw/((x1-x0)/100),ph=pw*H/W;const cx=vr.left-tr.left+vr.width/2,cy=vr.top-tr.top+vr.height/2;
-   const left=cx-((x0+x1)/200)*pw+(cfg.dx||0)*pw,top=cy-((y0+y1)/200)*ph+(cfg.dy||0)*ph;const M=mob?cfg.mM||22:cfg.mD||48,mS=M*(cfg.mx||1),mT=M*(cfg.mt||1),mB=M*(cfg.mb||1);slot.style.paddingTop=(mT+6)+'px';slot.style.paddingBottom=(mB+6)+'px';
+   const left=cx-((x0+x1)/200)*pw+(cfg.dx||0)*pw,top=cy-((y0+y1)/200)*ph+(cfg.dy||0)*ph;const M=mob?cfg.mM||22:cfg.mD||48,mS=M*(mob?(cfg.mx||1):Math.min(cfg.mx||1,.8)),mT=M*(cfg.mt||1),mB=M*(cfg.mb||1);slot.style.paddingTop=(mT+6)+'px';slot.style.paddingBottom=(mB+6+(cfg.eb||0))+'px';
    const holeH=(y1-y0)/100*ph,fh=fw*9/16;
    vt.style.setProperty('--chfs',(fw/vr.width).toFixed(4));
    const cl=vr.left-tr.left-mS,ct=vr.top-tr.top-mT;const c=$('.chf-c',f);c.style.cssText=`left:${cl}px;top:${ct}px;width:${vr.width+2*mS}px;height:${vr.height+mT+mB}px`;
