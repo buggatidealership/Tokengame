@@ -40,7 +40,7 @@ function blow(W,H,M,o={}){const c=G.cv(W,H),x=c.getContext('2d'),hx=M.hx||'#2b27
   for(let i=0;i<n;i++){const a0=i/n*2*Math.PI;x.beginPath();x.moveTo(ox,oy);x.arc(ox,oy,R,a0,a0+Math.PI/n);x.closePath();x.fill()}
   G.dots(x,W,H,Math.max(5,Math.min(W,H)/18),rgb(hexA(P.shade(dark(hx)?'#463f52':hx,.55))),(u,v)=>{const e=Math.min(u,1-u,v,1-v);return Math.max(0,.46-e*2.4)});
   const part=o.whole||!M.part?M.m:M.part;if(!part)return c;
-  const s=Math.min(W*(o.kw||.6)/part.width,H*(o.kh||.6)/part.height),w=part.width*s,h=part.height*s,L=G.cv(W,H);
+  const kw=part.width/part.height>2.2?Math.min(o.kw||.6,.62):(o.kw||.6);const s=Math.min(W*kw/part.width,H*(o.kh||.6)/part.height),w=part.width*s,h=part.height*s,L=G.cv(W,H);
   const lx=L.getContext('2d');lx.imageSmoothingQuality='high';lx.drawImage(part,(o.cx!=null?o.cx:.62)*W-w/2,(o.cy!=null?o.cy:.5)*H-h/2,w,h);
   const ol=Math.max(1.6,Math.min(h*.05,w*.05,(o.ol||9))),rim=G.dil(L,ol*.8,[255,247,226]),out=G.dil(rim,ol,G.INK),dp=Math.max(2,Math.round(ol*(o.dpk||1.6)));
   const shd=G.sil(out,hexA(shOf(hx)));x.drawImage(G.sil(out,G.INK),dp+ol*.5,dp+ol*.5);for(let k=dp;k>0;k--)x.drawImage(shd,k,k);

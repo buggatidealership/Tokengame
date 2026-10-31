@@ -7,7 +7,7 @@ async function build(){const L=U.list(),DS=U.days(L),C=U.counts(L);await Promise
   const bg=h=>{const [a,b]=U.tones(h);return `--b1:${a};--b2:${b};--bs:${U.shOf(h)}`};
   const cover=`<section class="pp-mod uu1-mod uu1-cv" aria-label="Next on the card"><div class="uu1-cvg">
       <div class="uu1-ttl" aria-hidden="true">${X('NEXT ON THE',{size:desk?54:40,fill:'gold',shade:'#7a0c06',rot:-3,cls:'uu1-t1'})}${X('CARD',{size:desk?96:74,fill:'red',shade:'#7a0c06',depth:8,rot:-3})}</div>
-      <span class="uu1-iss" aria-hidden="true">${P.burstSvg(desk?128:104,desk?118:96,{n:13,dp:5,c1:'#ffd21f',c2:'#fff3a0',k:.78,seed:5})}<span class="uu1-isn">${X(String(C.all),{size:desk?44:36,fill:'red',shade:'#5e0703',depth:4})}<b>to come</b></span></span></div>
+      <span class="uu1-iss" aria-hidden="true" style="width:${desk?128:104}px;height:${desk?118:96}px">${P.burstSvg(desk?128:104,desk?118:96,{n:13,dp:5,c1:'#ffd21f',c2:'#fff3a0',k:.78,seed:5})}<span class="uu1-isn">${X(String(C.all),{size:desk?44:36,fill:'red',shade:'#5e0703',depth:4})}<b>to come</b></span></span></div>
       <h1 class="pp-sr">Next on the card. ${C.all} rounds to come: ${C.lk} with calls in, ${C.tc} still to call.</h1>
       <p class="pp-tag uu1-tag">Every AI calls each stock <em>before</em> it reports.<br>The next close grades it. ${C.lk?`${C.lk} locked · `:''}${C.tc} still to call.</p>${U.FLT}</section>`;
   const under=x=>`<a class="uu1-u" href="#/round/${x.n}" data-n="${x.n}" data-m7="${x.m7?1:0}" data-ai="${x.ai?1:0}" style="${bg(B[x.ticker])}">

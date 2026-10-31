@@ -14,3 +14,8 @@ The site sets every word and number in code; the art carries **no text, no numbe
 
 ## What I do with them
 Cut the layers out, stack them with depth (the backdrop drifts slower than the fighters as you scroll), let the bulbs flicker and the light breathe, play the loops only on screen, and set the name, P&L, record and last five in the site's lettering on the sign plate, tape and ticket. One module first; if it works, the same kit pattern for every section.
+
+## Founders behind the cards (owner, 2026-10-31)
+Layout mockup: `ez/x2p-x3p-founders-cards.png` (Dario's still and a frame of the green room film behind the Claude and GPT cards; the flag moves to a patch under the model's name). For the real thing, one portrait per card from the image tool, all four in one style so they match:
+> Pop art comic portrait, head and shoulders, three-quarter view facing left, of [the person in the attached picture], caricatured lightly, flat bold colours, thick black ink outlines, Ben-Day halftone dots in the shadows, one strong key light from the right, background a flat [Claude: orange #d97757 / GPT: green #10a37f / Grok: near-black with cold white rim light / Kimi: blue #1a6bff] with a few halftone rays. No text, no letters, no logos. Square 1:1, largest size.
+Feed it the green room stills of each founder. The face sits on the right half of the card; keep the left third quiet (the coin, name and patch sit there).
