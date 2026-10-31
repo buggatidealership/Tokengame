@@ -90,7 +90,7 @@ function overview(){
     ml.innerHTML='<p class="wa-mlh">Move list</p><ol>'+
       '<li><b>1</b><span><strong>Call it.</strong> Before a company reports, each AI says up or down, and by how much.</span></li>'+
       '<li><b>2</b><span><strong>The bell.</strong> The next market close grades every call. Closest call wins the round.</span></li>'+
-      '<li><b>3</b><span><strong>The bank.</strong> Each fights with a pretend $100,000. The top bank makes the real call: our pool on NVIDIA.</span></li></ol>'+
+      '<li><b>3</b><span><strong>The bank.</strong> If you&rsquo;d bet $100K on every call: the bank is $100K plus that P&amp;L. The top bank makes the real call: our pool on NVIDIA.</span></li></ol>'+
       '<button type="button" class="wa-start wa-lp">Press start</button>';
     bet.appendChild(ml);ml.querySelector('.wa-start').addEventListener('click',function(){var s=document.getElementById('waTonight');if(s)scrollTo({top:s.getBoundingClientRect().top+scrollY-90,behavior:RM?'auto':'smooth'})});
   }
@@ -118,13 +118,13 @@ function overview(){
   /* 3. character select: the standings */
   var cs=sec('waSelect',4,'wa-select');
   var tile=function(f,i){return '<button type="button" class="wa-pt'+(i===0?' wa-on':'')+'" data-m="'+f.m+'" style="--fc:'+COL[f.m]+'" aria-pressed="'+(i===0)+'"><span class="wa-rk">'+(i+1)+'</span>'+mk(f.m)+'<span class="wa-pn">'+NICE[f.m]+'</span><span class="wa-pp '+(f.a.pnl>=0?'wa-pos':'wa-neg')+'">'+k(f.a.pnl)+'</span>'+(i===0?'<span class="wa-p1">P1</span>':'')+'</button>'};
-  cs.innerHTML=plate(2,'Character select · ranked by bank','Who’s winning','Every AI started with a pretend $100,000 and bets it all on each call. Tap a fighter.')+
+  cs.innerHTML=plate(2,'Character select · ranked by bank','Who’s winning','If you&rsquo;d bet $100K on every call: the bank is $100K plus that P&amp;L. Tap a fighter.')+
     '<div class="wa-cs"><div class="wa-grid">'+fighters.map(tile).join('')+'</div><div class="wa-card" aria-live="polite"></div></div>'+
     '<div class="wa-chal"><p class="wa-chh">Here comes a new challenger!</p><p class="wa-chs">In tryouts for fighter No. 5, one at a time:</p><div class="wa-chl"><span>Qwen</span><span>Mistral</span><span>Gemini</span></div></div>'+
     '<a class="wa-more" href="#/leaderboard">High scores, lead changes and every stat <span aria-hidden="true">▶</span></a>';
   main.appendChild(cs);
   var show=function(m){var f=fighters.filter(function(x){return x.m===m})[0],i=fighters.indexOf(f),a=f.a;
-    var hp=Math.max(2,Math.min(100,a.bal/2000));
+    var hp=(function(b){var A=window.__x2pPnl().A,t=200000;for(var k in A)t=Math.max(t,A[k].bal);return Math.max(2,Math.min(100,b/t*100))})(a.bal);/* full bar = $200K or the top bank, whichever is more (a flat $100K a call since 2026-10-31 runs past $200K) */
     var seq=(a.seq||[]).slice(-5);var b=f.best;
     var lead=i===0?'<p class="wa-lead">On top of the bank. <b>Makes the call on bet #1.</b></p>':'<p class="wa-lead">'+usd(top.a.pnl-a.pnl)+' behind '+NICE[top.m]+'.</p>';
     cs.querySelector('.wa-card').innerHTML='<div class="wa-fh" style="--fc:'+COL[m]+'"><span class="wa-big">'+mk(m)+'</span><span class="wa-who"><span class="wa-no">No. '+(i+1)+'</span><b>'+NICE[m]+'</b><i>'+esc(MODELS[m].ver)+'</i></span></div>'+lead+
@@ -197,7 +197,7 @@ function overview(){
 /* ================= THE HUD: the sticky header becomes the fight's top bar ================= */
 function hud(){
   var tin=document.querySelector('header.top .top-in');if(!tin||tin.querySelector('.wa-hud'))return;var p1=fighters[0],p2=fighters[1];
-  var hb=function(f,side){return '<span class="wa-hs wa-'+side+'" style="--fc:'+COL[f.m]+'"><span class="wa-hn"><i>'+mk(f.m)+'</i>'+NICE[f.m]+'</span><span class="wa-hbar"><i style="width:'+Math.max(2,Math.min(100,f.a.bal/2000)).toFixed(1)+'%"></i><s></s></span></span>'};
+  var hb=function(f,side){return '<span class="wa-hs wa-'+side+'" style="--fc:'+COL[f.m]+'"><span class="wa-hn"><i>'+mk(f.m)+'</i>'+NICE[f.m]+'</span><span class="wa-hbar"><i style="width:'+(function(b){var A=window.__x2pPnl().A,t=200000;for(var k in A)t=Math.max(t,A[k].bal);return Math.max(2,Math.min(100,b/t*100))})(f.a.bal).toFixed(1)+'%"></i><s></s></span></span>'};
   var h=document.createElement('a');h.className='wa-hud';h.href='#/leaderboard';
   /* the clock: the next bell of any round with its calls in (each at its own exchange's close); after the last bell, results due;
      with no calls in, the next calls day */
@@ -257,7 +257,7 @@ function board(){
     sk.map(function(s){var o=secs[s],best=0;fighters.forEach(function(f){var t=o.c[f.m];if(t&&t.n)best=Math.max(best,t.k/t.n)});var all=fighters.every(function(f){var t=o.c[f.m];return t&&t.n&&t.k/t.n===best});
       return '<div class="wa-sgr" role="row"><span role="rowheader">'+esc(s)+'<small>'+o.n+'</small></span>'+fighters.map(function(f){var t=o.c[f.m];if(!t||!t.n)return '<span role="cell" class="wa-sc0">–</span>';var v=t.k/t.n;
         return '<span role="cell" class="'+(v>=2/3?'wa-sch':v<=1/3?'wa-scl':'wa-scm')+(!all&&v===best&&best>0?' wa-scb':'')+'">'+t.k+'/'+t.n+'</span>'}).join('')+'</div>'}).join('')+'</div>';
-  lb.innerHTML='<section class="wa-sec wa-lbs" id="waHS">'+plate('Ranking','Season 1 · after round '+(last?last.n:0),'High scores','Ranked by bank: a pretend $100,000 each, the whole balance on every call, right way or wrong. The top bank makes the call on bet #1.','h1').replace('class="wa-h2"','class="wa-h2" id="waLBh"')+
+  lb.innerHTML='<section class="wa-sec wa-lbs" id="waHS">'+plate('Ranking','Season 1 · after round '+(last?last.n:0),'High scores','Ranked by bank: $100K plus the P&amp;L if you&rsquo;d bet $100K on every call, right way or wrong. The top bank makes the call on bet #1.','h1').replace('class="wa-h2"','class="wa-h2" id="waLBh"')+
       '<div class="wa-hst"><div class="wa-hsh" aria-hidden="true"><span>Rank</span><span>Fighter</span><span>Bank</span><span>W-L</span><span>Last 5</span></div><ol class="wa-hsl0">'+fighters.map(row).join('')+'</ol></div></section>'+
     '<section class="wa-sec wa-lbs" id="waLead">'+plate('Replay','Who was in front after every round','Lead changes','The lead has changed hands '+leadCh+' time'+(leadCh===1?'':'s')+'. '+NICE[curLead]+' has led since round '+since+'.')+
       '<figure class="wa-bump"><div class="wa-bpl"><span>1st</span><span>2nd</span><span>3rd</span><span>4th</span></div><div class="wa-bpc"><svg viewBox="0 0 '+W+' '+Hc+'" preserveAspectRatio="none" aria-hidden="true">'+[0,1,2,3].map(function(j){return '<line x1="0" x2="'+W+'" y1="'+py(j)+'" y2="'+py(j)+'" class="wa-bg"/>'}).join('')+lines+'</svg>'+marks.join('')+ends+'</div>'+

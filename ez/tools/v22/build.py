@@ -390,9 +390,9 @@ for a,b in [('<title>EZ Live X2</title>','<title>EZ Live X2+</title>'),
              'var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||Infinity)-(mmdd(b.resolves)||Infinity))||(a.n-b.n)});'),
             # (audit, 2026-10-28) the Upcoming score bar still led with "On direction" after the board moved to P&L, and printed an arrow
             # and a sign together ("▲+5.95%"): on X2+ it leads with each AI's P&L (the same account as the board: $100,000, the whole
-            # balance on every call), and the move keeps its arrow only
+            # balance on every call; since 2026-10-31 a flat $100,000 on every call), and the move keeps its arrow only
             ("""'<b>Leaderboard</b> On direction: '+ROWS.map(function(T){var C=career(T.m);return nm(T.m)+' '+(!C.g?'n/a':EZ_FULL(T.m)?Math.round(C.right/C.g*100)+'%':C.right+' of '+C.g)}).join(' · ')""",
-             """'<b>P&amp;L</b> '+(function(){var A={};ROUNDS.forEach(function(r){if(typeof r.a!=="number"||isNaN(r.a))return;r.calls.forEach(function(x){A[x[0]]=(A[x[0]]||100000)*(1+(/^DOWN/.test(x[1])?-1:1)*r.a/100)})});return Object.keys(A).sort(function(a,b){return A[b]-A[a]}).map(function(m){var v=A[m]-100000;return nm(m)+' '+(v>=0?'+$':'−$')+(Math.abs(v)/1000).toFixed(1)+'K'}).join(' · ')})()"""),
+             """'<b>P&amp;L</b> '+(function(){var A={};ROUNDS.forEach(function(r){if(typeof r.a!=="number"||isNaN(r.a))return;r.calls.forEach(function(x){A[x[0]]=(A[x[0]]||100000)+100000*(/^DOWN/.test(x[1])?-1:1)*r.a/100})});return Object.keys(A).sort(function(a,b){return A[b]-A[a]}).map(function(m){var v=A[m]-100000;return nm(m)+' '+(v>=0?'+$':'−$')+(Math.abs(v)/1000).toFixed(1)+'K'}).join(' · ')})()"""),
             ("""<span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span>'+r.out+'</span> · '+w)""",
              """<span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span>'+r.out.replace(/^[+−-]/,"")+'</span> · '+w)"""),
             # the first screen's fonts are asked for at once (window.__x2pF; x2plus.js waits for them before it lifts the cover), not when
@@ -504,6 +504,20 @@ HL=[("""'<span class="hx2-t"><span class="hx2-h">'+head+'</span><span class="hx2
     [[x(Math.abs(big.a)/avgMv),'a normal earnings move'],[rt(big)+' of '+big.calls.length,'AIs saw it coming']]);""")]
 for a,b in HL:
     assert pp.count(a)==1,a[:80]; pp=pp.replace(a,b)
+# (owner, 2026-10-31: "If you'd bet $100K on every call") a flat stake replaces the compounding pot: every call is its own $100,000
+# bet, long on up, short on down, no leverage, before fees. x2plus.js window.__x2pPnl is the source; X2's own ROI charts and follow
+# list (routes.js, v15) compounded on their own, so on X2+ (and the world pages built from it) they add the bets up too, with the
+# words to match. X2 itself is untouched.
+for a,b in [('bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,bal])});return {m:x.m','bal+=STAKE*(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,bal])});return {m:x.m'),
+            ('b*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,b])}else if(started)','b+=STAKE*(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,b])}else if(started)'),
+            ('if(first==null)first=r.n;n++;bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;path.push(bal)','if(first==null)first=r.n;n++;bal+=STAKE*(/^DOWN/.test(c[1])?-1:1)*r.a/100;path.push(bal)'),
+            ('Each AI started with $100,000 on its first call and bet it all on every call since.','If you’d bet $100K on every call. Shown as $100K plus what those bets made.'),
+            ('All in on every call: buy on an up call, short on a down call. Simulated, before fees.','Each call is its own bet: buy on an up call, short on a down call. Simulated, before fees.'),
+            ('Following every call, all in. Simulated, before fees.','If you’d bet $100K on every call. Simulated, before fees.')]:
+    assert pp.count(a)==1,a; pp=pp.replace(a,b)
+for a,b in [('Each AI started with "+usd(STAKE)+" on its first call and bet it all on every call since.','If you’d bet $100K on every call. Shown as $100K plus what those bets made.'),
+            ('What would "+usd(STAKE)+" be worth now?','What if you’d bet $100K on every call?')]:
+    assert pp.count(a)==2,a; pp=pp.replace(a,b)
 XPCSS=open(sys.argv[1]+'/skin-x2plus.css').read(); XPJS=open(sys.argv[1]+'/x2plus.js').read()
 # (owner, 2026-10-22) the standings tickets are cut from the "As it stands" ticket's own card: __PAPER__ in the TICKETS block
 XPCSS=XPCSS.replace('__PAPER__',re.search(r'html\.x2p #standings \.x2p-ast \.tk\{.*?(url\("data:image/svg\+xml[^"]*"\))',XPCSS,re.S).group(1))

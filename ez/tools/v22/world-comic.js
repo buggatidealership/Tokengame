@@ -152,7 +152,7 @@ function build(){
   const flagVars=`--fl-us:${fStripes(['#d63a3a','#f8f0d9'],13,260)};--fl-cn:${fStripes(['#d63a3a'],13,260)};--fl-usc:${fCanton()};--fl-cnc:${fCn()}`;
   const FLAG={GPT:'us',CLAUDE:'us',GROK:'us',KIMI:'cn'};
   const cast=`<section class="wc-chars" aria-label="The cast">
-    <h2 class="wc-h2"><span>Meet the models</span><small>Not the Instagram kind. Ranked by their pretend $100,000 accounts.</small></h2>
+    <h2 class="wc-h2"><span>Meet the models</span><small>Not the Instagram kind. Ranked by P&amp;L, if you&rsquo;d bet $100K on every call.</small></h2>
     <div class="wc-ch-grid" style="${flagVars}">${rank.map((m,i)=>{const a=P[m],b=best(m),w=worst(m),tot=a.W+a.L,hr=Math.round(a.W/tot*100),f=first(m),fl=FLAG[m]||'us';
       return `<article class="wc-ch wc-ch-${i+1}" style="--mc:${MODELS[m].c}" data-m="${m}">
         <div class="wc-flg wc-flg-${fl}" aria-hidden="true"><i class="wc-flg-st"></i><i class="wc-flg-ca"></i><i class="wc-flg-fd"></i><i class="wc-flg-dt"></i></div>
@@ -206,7 +206,7 @@ function build(){
   const back=`<section class="wc-back" aria-label="Back cover">
     <p class="wc-motto">Nobody said it would be <span class="wc-e">E</span><span class="wc-z">Z</span>.</p>
     <a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a>
-    <p class="wc-fine">New panels whenever a round is graded. P&amp;L is simulated: $100,000 each, the whole balance on every call, no leverage, before fees. $EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p>
+    <p class="wc-fine">New panels whenever a round is graded. P&amp;L is simulated: if you&rsquo;d bet $100K on every call, each call its own bet, no leverage, before fees. $EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p>
   </section>`;
 
   const book=D.createElement('div');book.id='wc-book';book.className='wc-book';
@@ -251,7 +251,7 @@ function streak(seq){if(!seq.length)return '';const L=seq[seq.length-1];let k=0;
 function lbBuild(){
   const PL=window.__x2pPnl(),P=PL.A,R=ROUNDS.slice().sort((a,b)=>a.n-b.n),N=R.length,rank=rankPnl(P,N);
   const S={};ORDER.forEach(m=>{const cs=R.map(r=>callOf(r,m)).filter(Boolean);S[m]={bu:cs.filter(x=>x.ok&&x.off<=.1).length,w1:cs.filter(x=>x.ok&&x.off<=1).length,ot:cs.filter(x=>!x.ok).length}});
-  /* the race: each AI's balance after every graded round, its place, the lead changes and the overtakes */
+  /* the race: each AI's running P&L (flat $100K a call, as 100K + P&L) after every graded round, its place, the lead changes and the overtakes */
   const bal={},pos={};ORDER.forEach(m=>{bal[m]=[1e5];pos[m]=[]});
   let prev=ORDER.slice();const steps=[prev.slice()];
   R.forEach((r,i)=>{ORDER.forEach(m=>{const x=P[m].per[r.n];bal[m].push(bal[m][i]+(x?x.v:0))});
@@ -284,7 +284,7 @@ function lbBuild(){
   const tw=m=>{let b=null,w=null;R.forEach(r=>{const x=P[m].per[r.n];if(!x)return;if(!b||x.v>b.v)b={v:x.v,r};if(!w||x.v<w.v)w={v:x.v,r}});return {b,w}};
   const twl=(x,k)=>{const lg=coLogo(x.r.ticker);return `<div class="wc-sb-tw ${k}"><dt>${k==='wc-sb-twb'?'Top round':'Worst round'}</dt><dd><b class="${x.v>=0?'wc-tu':'wc-td'}">${kk(x.v)}</b>${lg?`<img src="${lg}" alt="" title="${esc(x.r.co)}"${coDk(x.r.ticker)}>`:''}<span class="wc-sr">${esc(x.r.co)}</span></dd></div>`};
   const board=`<section class="wc-sbd" aria-label="The scoreboard">
-    <h2 class="wc-h2"><span>The scoreboard</span><small>Ranked by P&amp;L on a pretend $100,000 each. We bet on the leader&rsquo;s call.</small></h2>
+    <h2 class="wc-h2"><span>The scoreboard</span><small>Ranked by P&amp;L, if you&rsquo;d bet $100K on every call. We bet on the leader&rsquo;s call.</small></h2>
     <div class="wc-sb">${rank.map((m,i)=>{const a=P[m],t=a.W+a.L,hr=t?Math.round(a.W/t*100):0,st=streak(a.seq);
       return `<article class="wc-sb-r${i===0?' wc-sb-1':''}" style="--mc:${MODELS[m].c}">
         <span class="wc-sb-rk">#${i+1}</span>${face(m,'wc-f-m')}
@@ -293,7 +293,7 @@ function lbBuild(){
         <dl class="wc-sb-st"><div class="wc-sb-7"><dt>Last 7 days</dt><dd class="${p7(m)>=0?'wc-tu':'wc-td'}">${kk(p7(m))}</dd></div><div><dt>W-L</dt><dd><b class="wc-tu">${a.W}</b>-<b class="wc-td">${a.L}</b></dd></div><div><dt>Hit rate</dt><dd>${hr}%</dd></div>
           <div class="wc-sb-f"><dt>Last 5</dt><dd class="wc-form">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}</dd></div>${(x=>twl(x.b,'wc-sb-twb')+twl(x.w,'wc-sb-tww'))(tw(m))}</dl>
       </article>`}).join('')}</div>
-    <p class="wc-cap wc-cap-y wc-sb-cap">P&amp;L is simulated: $100,000 to start, the whole balance on every call, buy on up, short on down, no leverage, before fees. W = right direction. An AI that called under half the rounds ranks after the rest.</p>
+    <p class="wc-cap wc-cap-y wc-sb-cap">P&amp;L is simulated: if you&rsquo;d bet $100K on every call. Each call is its own bet. Buy on up, short on down, no leverage, before fees. W = right direction. An AI that called under half the rounds ranks after the rest.</p>
   </section>`;
 
   const bw=m=>{let b=null,w=null;R.forEach(r=>{const x=P[m].per[r.n];if(!x)return;if(!b||x.v>b.v)b={v:x.v,r,dn:x.dn};if(!w||x.v<w.v)w={v:x.v,r,dn:x.dn}});return {b,w}};
@@ -306,7 +306,7 @@ function lbBuild(){
   const proof=proofBuild(P,R,rank);
   const el=D.createElement('div');el.id='wc-lb';el.className='wc-book wc-tab';
   el.innerHTML=`<section class="wc-tab-cv" aria-label="Who's winning"><div class="wc-cv-top"><span class="wc-cv-s">The standings<small>${N} earnings reports graded</small></span></div>
-    <h1 class="wc-tab-h">Who's winning?</h1><p class="wc-tag">Four AIs, a pretend <b>$100,000</b> each, the whole balance on every call. The money says who's best.</p></section>`
+    <h1 class="wc-tab-h">Who's winning?</h1><p class="wc-tag">Four AIs. If you&rsquo;d bet <b>$100K</b> on every call, who made you the most? The money says who's best.</p></section>`
     +board+proof+race+`<section class="wc-back"><a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a></section>`;
   return el}
 
@@ -387,7 +387,7 @@ function lastRound(R,P){
       <p class="wc-cap wc-lr-c">${ws.length?'The winner gets paid':'Nobody won. The money'}</p>
       <div class="wc-lr-m">${shown.map(x=>`<div class="wc-lr-mw">${face(x.m,'wc-f-l')}<b class="${x.v>=0?'wc-tu':'wc-td'}">${pm(x.v)}</b><small>${NM[x.m]} ${x.v>=0?'made':'lost'} on this call</small></div>`).join('')}</div>
       <ul class="wc-lr-all" aria-label="Every AI's P&L on this call">${cs.map(x=>`<li>${face(x.m,'wc-f-s')}<span>${NM[x.m]}</span><b class="${x.v>=0?'wc-tu':'wc-td'}">${kShort(x.v)}</b></li>`).join('')}</ul>
-      <p class="wc-lr-fine">Pretend $100,000 accounts, the whole balance on every call. Then on to the next round.</p>
+      <p class="wc-lr-fine">If you&rsquo;d bet $100K on every call. Then on to the next round.</p>
       <a class="wc-lr-open" href="#/round/${r.n}">Open its graded card →</a></li>`;
   const nR=R.length,nC=R.reduce((t,x)=>t+x.calls.length,0);
   const p5=`<li class="wc-pn wc-lr-p wc-lr-5"><b class="wc-lr-n" aria-hidden="true">5</b>
@@ -450,7 +450,7 @@ function proofBuild(P,R,rank){
   const N=R.length,SHq={...SH};
   const closeNY=s=>closeAt('',s),now=Date.now(),inWin=(r,ms)=>{if(ms>864e5){const td=nyToday(),[mm,dd,yy]=(r.resolves||'').split('/').map(Number);if(!mm)return false;const a=Math.round((Date.UTC(2000+td[2],td[0]-1,td[1])-Date.UTC(2000+(yy%100),mm-1,dd))/864e5);const c=closeAt(r.ticker,r.resolves);return a>=0&&a<=6&&c!=null&&c<=now}/* 7 days = the calendar days the stubs name (today and the 6 before), as the scoreboard and Who's winning count */const t=closeAt(r.ticker,r.resolves);/* each exchange's own close, as Who's winning counts it (2026-10-30) */return t!=null&&t<=now&&t>now-ms};
   const win=(m,ms)=>R.reduce((s,r)=>s+(inWin(r,ms)&&P[m].per[r.n]?P[m].per[r.n].v:0),0);
-  /* each AI's balance and smoothed hit rate after every graded round */
+  /* each AI's running P&L (as 100K + P&L; flat $100K a call) and smoothed hit rate after every graded round */
   const bal={},acc={};ORDER.forEach(m=>{let b=1e5,k=0,n=0;bal[m]=[b];acc[m]=[.5];R.forEach(r=>{const x=P[m].per[r.n];if(x){b+=x.v;n++;if(x.v>0)k++}bal[m].push(b);acc[m].push((k+1)/(n+2))})});
   const W=1000,Hh=100,X=i=>(i/N*W).toFixed(1);
   const chart=(ser,lo,hi,base,baseLbl,ends,ord)=>{const Y=v=>(Hh-(v-lo)/(hi-lo)*Hh).toFixed(2);
@@ -464,11 +464,11 @@ function proofBuild(P,R,rank){
       <p class="wc-pf-x" aria-hidden="true"><span>Start</span><span>R${R[N-1].n}</span></p></div>`};
   /* P&L */
   const all=[].concat(...ORDER.map(m=>bal[m])),lo=Math.min(...all),hi=Math.max(...all),pd=(hi-lo)*.06;
-  const vPnl=chart(bal,lo-pd,hi+pd,1e5,'$100K start',m=>`<small class="${P[m].pnl>=0?'wc-tu':'wc-td'}">${pc1(P[m].pnl/1000)}</small>`,rank)+
+  const vPnl=chart(bal,lo-pd,hi+pd,1e5,'Break even',m=>`<small class="${P[m].pnl>=0?'wc-tu':'wc-td'}">${pc1(P[m].pnl/1000)}</small>`,rank)+
     `<div class="wc-pf-rows" role="table" aria-label="P&amp;L"><div class="wc-pf-hd" role="row"><span role="columnheader">AI</span><span role="columnheader">Last 24h</span><span role="columnheader">Last 7d</span><span role="columnheader">P&amp;L</span></div>
     ${rank.map((m,i)=>{const d1=win(m,864e5),d7=win(m,7*864e5);return `<div class="wc-pf-r${i===0?' wc-pf-1':''}" role="row"><span class="wc-pf-nm" role="cell"><i class="wc-pf-rk">${i+1}</i>${face(m,'wc-f-s')}<b>${NM[m]}</b></span>
       <span role="cell" class="${d1>0?'wc-tu':d1<0?'wc-td':''}">${d1?kShort(d1):'·'}</span><span role="cell" class="${d7>0?'wc-tu':d7<0?'wc-td':''}">${d7?kShort(d7):'·'}</span><b role="cell" class="wc-pf-big ${P[m].pnl>=0?'wc-tu':'wc-td'}">${pm(P[m].pnl)}</b></div>`}).join('')}</div>
-    <p class="wc-pf-note">$100,000 to start. The whole balance on every call. Buy on up, short on down. No leverage. Before fees.</p>`;
+    <p class="wc-pf-note">If you&rsquo;d bet $100K on every call. Each call is its own bet. Buy on up, short on down. No leverage. Before fees.</p>`;
   /* Accuracy */
   const byA=ORDER.slice().sort((a,b)=>P[b].W/(P[b].W+P[b].L)-P[a].W/(P[a].W+P[a].L));
   const vAcc=chart(acc,.3,.8,.5,'Coin flip, 50%',m=>`<small>${Math.round(P[m].W/(P[m].W+P[m].L)*100)}%</small>`,byA)+
@@ -873,7 +873,7 @@ function r11b(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f11'
     const p4=`<section class="wc11s-pn wc11d-p wc11d-p4" aria-label="Step 4">${cap(4,'The payout')}
         <div class="wc11d-pay"><div class="wc11d-purse">${face(pay.m,'wc11d-pfc')}<div><small>${NM[pay.m]} ${pay.v>=0?'made':'lost'}</small><b class="wc11d-big ${pay.v>=0?'wc11d-bu':'wc11d-bd'}" data-v="${pay.v}">${$f(pay.v)}</b></div></div>
           <ul class="wc11d-rest">${rest.map(x=>`<li>${face(x.m,'wc-f-s')}<span>${NM[x.m]}</span><b class="${x.v>=0?'wc11s-tu':'wc11s-td'}" data-v="${x.v}">${$f(x.v)}</b></li>`).join('')}</ul>${race}</div>
-        <p class="wc11d-fine">P&amp;L on this call. Pretend $100,000 accounts, the whole balance on every call.</p></section>`;
+        <p class="wc11d-fine">P&amp;L on this call, if you&rsquo;d bet $100K on it.</p></section>`;
     /* panel 5: the Season 1 ticket has a hole for every round; graded ones are punched, ringed by the move; this round gets punched */
     const hs=[].concat(ROUNDS.map(x=>({n:x.n,k:'g',a:x.a})),(window.PENDING||[]).map(x=>({n:x.n,k:'p',t:x.ticker})),(window.UPCOMING||[]).map(x=>({n:x.n,k:'u',t:x.ticker}))).sort((a,b)=>a.n-b.n);
     const TT=hs.length,G=ROUNDS.length,lst=hs[TT-1],isBet=lst&&lst.t==='NVDA';

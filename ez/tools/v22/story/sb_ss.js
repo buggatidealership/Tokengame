@@ -63,7 +63,7 @@ const count=(el,from,to,dur,fmt)=>{const put=v=>{el.textContent=fmt(v);el.classL
 window.SS={ORDER,NM,FLAG,X,WS,P,gold,srank,$f,k$,hr,hrv,col,face,logo,f5,flag,esc,sw,wire,flip,count,RM,cur,N};
 /* mount: the take replaces the live list (kept in the DOM, hidden) and follows the window the bill shows */
 window.SSmount=function(){const T=window.SST,sec=D.querySelector('#wc-lb .wc-sbd');if(!T||!sec)return;
-  const list=sec.querySelector('.wc-sb');list.classList.add('ss-hide');const sm=sec.querySelector('.wc-h2 small');if(sm)sm.textContent='A pretend $100,000 each to start. We bet on the leader’s call.';
+  const list=sec.querySelector('.wc-sb');list.classList.add('ss-hide');const sm=sec.querySelector('.wc-h2 small');if(sm)sm.textContent='If you’d bet $100K on every call. We bet on the leader’s call.';
   const host=D.createElement('div');host.className='ss-host ss-'+T.id;list.after(host);T.build(host);const setSw=wire(host);
   let k=cur(),prev=null;setSw(k);T.draw(X[k],null,false);prev=X[k];
   const mo=new MutationObserver(()=>{const n=cur();if(n===k)return;k=n;setSw(k);T.draw(X[k],prev,!RM());prev=X[k]});

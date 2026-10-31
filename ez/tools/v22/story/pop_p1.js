@@ -31,7 +31,7 @@ function chars(D){const sec=document.querySelector('.wc-chars');if(!sec)return;c
   const ttl=el(`<div class="pp-ttl pp1-ttl" aria-hidden="true"></div>`);
   ttl.insertAdjacentHTML('beforeend',P.ext('MEET THE',{size:44,fill:'gold',shade:'#7a0c06',max:W*.72,rot:-3,cls:'pp1-t1'}));
   ttl.insertAdjacentHTML('beforeend',P.ext('MODELS',{size:74,fill:'red',shade:'#7a0c06',max:W*.86,rot:-3,depth:8,cls:'pp1-t2'}));
-  ttl.insertAdjacentHTML('beforeend',`<p class="pp-tag pp1-tag">Not the Instagram kind.<br>Ranked by pretend $100,000 accounts.</p>`);
+  ttl.insertAdjacentHTML('beforeend',`<p class="pp-tag pp1-tag">Not the Instagram kind.<br>Ranked by P&amp;L, if you&rsquo;d bet $100K on every call.</p>`);
   sec.insertBefore(ttl,old);
   const grid=el(`<div class="pp1-grid" style="${flagVars()}"></div>`);sec.insertBefore(grid,old);
   D.models.forEach((x,i)=>{const fl=old.querySelector(`article[data-m="${x.m}"] .wc-flg`);

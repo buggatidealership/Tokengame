@@ -20,10 +20,10 @@ const pct=v=>(v<0?'−':'+')+Math.abs(v).toFixed(2)+'%';
  await new Promise(r=>srv.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+srv.address().port+'/';
  const b=await PW.chromium.launch();const p=await b.newPage({viewport:{width:390,height:844},deviceScaleFactor:2});if(FONTS)await FONTS(p);
  await p.goto(base+'v46-live-x2plus.html',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});await p.waitForTimeout(1500);
- // what each card says, from the page's own data and P&L accounts
+ // what each card says, from the page's own data and P&L (a flat $100K bet on every call, 2026-10-31)
  const R=await p.evaluate(()=>{const P=window.__x2pPnl();const g=ROUNDS.map(u=>{const right=u.calls.filter(c=>c[1]&&(/UP/.test(c[1])?1:-1)*u.a>0).map(c=>c[0]);const called=u.calls.filter(c=>c[1]).map(c=>c[0]);
    const pn=called.map(m=>[m,P.A[m]&&P.A[m].per[u.n]?P.A[m].per[u.n].v:0]).sort((a,b)=>b[1]-a[1]);
-   return {k:'g',n:u.n,co:u.co,t:u.ticker,a:u.a,win:u.win||'',calls:u.calls,right,called,best:pn[0],film:!!(FILMS[u.n]),poster:FILMS[u.n]?FILMS[u.n].p:'',miss:(u.calls.find(c=>c[0]===String(u.win).split(/\s*&\s*/)[0])||[])[2]||''}});
+   return {k:'g',n:u.n,co:u.co,t:u.ticker,a:u.a,win:u.win||'',calls:u.calls,right,called,best:pn[0],pn,film:!!(FILMS[u.n]),poster:FILMS[u.n]?FILMS[u.n].p:'',miss:(u.calls.find(c=>c[0]===String(u.win).split(/\s*&\s*/)[0])||[])[2]||''}});
   const pe=PENDING.filter(u=>u.calls&&u.calls.some(c=>c.dir)).map(u=>({k:'p',n:u.n,co:u.co,t:u.ticker,res:u.resolves||'',calls:u.calls.map(c=>[c.m,c.dir,c.mag])}));return g.concat(pe)});
  fs.mkdirSync(CACHE,{recursive:true});fs.mkdirSync(path.join(OUT,'media','share'),{recursive:true});fs.mkdirSync(path.join(OUT,'r'),{recursive:true});
  const logo='data:image/svg+xml;base64,'+fs.readFileSync(path.join(__dirname,'ez-logo.svg')).toString('base64');
@@ -35,7 +35,9 @@ const pct=v=>(v<0?'−':'+')+Math.abs(v).toFixed(2)+'%';
    if(k===0)line1='All '+four+' called it wrong.';else if(k===1)line1='Only <b>'+NM[u.right[0]]+'</b> said '+(up?'up':'down')+'.';
    else if(k===n)line1='All '+four+' said '+(up?'up':'down')+'. <b>'+and(w)+'</b> '+(w.length>1?'tie, ':'closest, ')+miss+'.';
    else line1='<b>'+and(w)+'</b> '+(w.length>1?'tie, ':'closest, ')+miss+'. '+k+' of '+n+' right.';
-   line2=(u.best[1]<0?'Smallest loss: ':'Best P&amp;L of the round: ')+NM[u.best[0]]+' <span class="'+(u.best[1]<0?'d':'u')+'">'+money(u.best[1])+'</span>';
+   // a flat stake: every call that got the direction made the same, so name the round's winner (closest call), else the first caller
+   const wk=String(u.win).split(/\s*&\s*/).filter(Boolean)[0],e=u.pn.find(x=>x[0]===wk)||u.best;
+   line2='If you’d bet $100K on '+NM[e[0]]+'’s call: <span class="'+(e[1]<0?'d':'u')+'">'+money(e[1])+'</span>';
    title='Round '+u.n+' · '+u.co+' '+pct(u.a)+' · Earnings Zeason';desc=line1.replace(/<[^>]+>/g,'')+' Graded at the close.'}
   else{title='Round '+u.n+' · '+u.co+' · calls locked · Earnings Zeason';const d=day(u.res);desc=u.calls.map(c=>NM[c[0]]+' '+(c[1]==='UP'?'+':'−')+c[2]+'%').join(' · ')+'. Graded at the close'+(d?', '+d:'')+'.'}
   const h=crypto.createHash('sha256').update(JSON.stringify([V,u,line1,line2,title,desc])).digest('hex').slice(0,10);const name='r'+u.n+'-'+h+'.jpg',cf=path.join(CACHE,name);

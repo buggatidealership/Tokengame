@@ -6535,7 +6535,7 @@ html.x2p .xc.xc.xc.xc.xc .xc-r .xc-mk{filter:drop-shadow(0 1px 0 rgba(255,255,25
 /*}CERTU2*/
 /*PNL{*/
 /* The trading competition (owner, 2026-10-26, after a friend's feedback: pump.fun traders think in P&L; mockups
-   ez/tools/concepts/pnl, boards ez/x2p-pnl-*.png). x2plus.js window.__x2pPnl is the one account per AI the three parts share. */
+   ez/tools/concepts/pnl, boards ez/x2p-pnl-*.png). x2plus.js window.__x2pPnl is the one P&L per AI the three parts share (a flat $100K on every call since 2026-10-31). */
 /* Standings, SB: the record (W-L, the streak under it) in the Last 5's field, Accuracy (the hit rate) in the ROI's old place, the
    P&L in dollars in the last column ("The PNL should be on the right"); the fields keep their widths, sizes and the press */
 html.x2p #standings.x2p-tix li.lbr>.lb-c:not(.roi),html.x2p #standings.x2p-tix .lbh>:nth-child(4){grid-column:4!important;padding:0 2px!important}
@@ -10249,7 +10249,7 @@ html.p1-on .pp1-c.fb-on .pp1-fl{overflow:hidden}
         <div class="tgv" id="lxDist"></div></div>
     </div></div>
     <h3 class="fol-x">$100K on each AI, now worth</h3>
-    <p class="lede fol-sub" id="folH">Each AI started with $100,000 on its first call and bet it all on every call since.</p>
+    <p class="lede fol-sub" id="folH">If you’d bet $100K on every call. Shown as $100K plus what those bets made.</p>
     <div class="fol" id="fol" aria-labelledby="folH">
       
       <ol class="fol-l" id="folL"></ol>
@@ -10492,7 +10492,7 @@ function pcStats(m){if(STAND_STAT==="roi"){var o=(FOL_EARLY=FOL_EARLY||followAll
 var P0=PS[0]||null;
 /* ---------- the score bar (Primetime's ticker): the standings, every graded round, then the rounds to come ---------- */
 (function(){var tt=$("#tt"),tick=$("#tick"),tp=$("#tickP");if(!tt)return;
-  var sp=[ '<b>P&amp;L</b> '+(function(){var A={};ROUNDS.forEach(function(r){if(typeof r.a!=="number"||isNaN(r.a))return;r.calls.forEach(function(x){A[x[0]]=(A[x[0]]||100000)*(1+(/^DOWN/.test(x[1])?-1:1)*r.a/100)})});return Object.keys(A).sort(function(a,b){return A[b]-A[a]}).map(function(m){var v=A[m]-100000;return nm(m)+' '+(v>=0?'+$':'−$')+(Math.abs(v)/1000).toFixed(1)+'K'}).join(' · ')})() ];
+  var sp=[ '<b>P&amp;L</b> '+(function(){var A={};ROUNDS.forEach(function(r){if(typeof r.a!=="number"||isNaN(r.a))return;r.calls.forEach(function(x){A[x[0]]=(A[x[0]]||100000)+100000*(/^DOWN/.test(x[1])?-1:1)*r.a/100})});return Object.keys(A).sort(function(a,b){return A[b]-A[a]}).map(function(m){var v=A[m]-100000;return nm(m)+' '+(v>=0?'+$':'−$')+(Math.abs(v)/1000).toFixed(1)+'K'}).join(' · ')})() ];
   ROUNDS.forEach(function(r){var w=r.win?r.win.split(" & ").map(nm).join(" & ")+(r.win.indexOf(" & ")>-1?" win":" wins"):"No winner";
     sp.push('R'+r.n+' '+r.co+' <span class="'+(r.a>0?'up':'dn')+'"><span aria-hidden="true">'+(r.a>0?'▲':'▼')+'</span>'+r.out.replace(/^[+−-]/,"")+'</span> · '+w)});
   PS.forEach(function(u){sp.push('R'+u.n+' '+u.co+' · <b>Calls are in</b> · '+RESOLVE_WORD+' '+fmtDate(u.resolves))});
@@ -11118,7 +11118,7 @@ addEventListener("hashchange",shDeep);requestAnimationFrame(function(){requestAn
    Hypothetical, from the graded moves in ez-data.js, before fees and costs. FOLLOW is shared with Season Live. ---------- */
 var FOLLOW=followAll();
 function followAll(){var out=[];ACTIVE.forEach(function(m){var bal=STAKE,n=0,first=null,path=[STAKE];
-    ROUNDS.forEach(function(r){var c=callOf(r,m);if(!c)return;if(first==null)first=r.n;n++;bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;path.push(bal)});
+    ROUNDS.forEach(function(r){var c=callOf(r,m);if(!c)return;if(first==null)first=r.n;n++;bal+=STAKE*(/^DOWN/.test(c[1])?-1:1)*r.a/100;path.push(bal)});
     if(n)out.push({m:m,bal:bal,n:n,first:first,path:path})});
   return out.sort(function(a,b){return b.bal-a.bal})}
 function usd(v){return "$"+Math.round(v).toLocaleString("en-US")}
@@ -11133,7 +11133,7 @@ var FOLLOW_NOTE="Simulated, before fees. Buy on an up call, short on a down call
   L.innerHTML=FOLLOW.map(function(o,i){var up=o.bal>=STAKE;
     return '<li class="ft'+(i?'':' lead')+'"><span class="ft-w">'+logo(o.m)+'<span>'+nm(o.m)+(o.n<NR?'<small>'+o.n+' rounds</small>':'')+'</span></span>'+
       spark(o,up)+'<span class="ft-v"><b class="ft-bal">'+usd(o.bal)+'</b><span class="ft-pill '+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(o.bal).replace(/^[+−]/,"")+'</span></span></li>'}).join("");
-  $("#folH").textContent="Each AI started with "+usd(STAKE)+" on its first call and bet it all on every call since.";$("#folF").textContent=FOLLOW_NOTE})();
+  $("#folH").textContent="If you’d bet $100K on every call. Shown as $100K plus what those bets made.";$("#folF").textContent=FOLLOW_NOTE})();
 window.EZ_EXP="x2";
 
 /* ================= V22 · SEASON LIVE: pages =================
@@ -11434,7 +11434,7 @@ var RMET={
   wins:{t:"Wins",sub:"Rounds won. A shared round counts for each winner."},
   hit:{t:"Hit rate",sub:X2?"<b>How often were they right about the stock's direction?</b> Only up or down counts here, not the size.":"<b>How often did they call the direction right?</b> Only up or down counts here, not the size."},
   miss:{t:"Avg miss",sub:X2?"<b>How close did they get?</b> The bullseye is what the stock did. Each dot is one call. A red dot outside missed the direction. The closer to the bullseye, the better.":"<b>How close did they get?</b> Average points off the real move, smaller is better. The bullseye is what the stock did. Each dot is one call; red dots outside missed the direction."},
-  roi:{t:"ROI",sub:"<b>What would "+usd(STAKE)+" be worth now?</b> All in on every call: buy on an up call, short on a down call. Simulated, before fees."}};
+  roi:{t:"ROI",sub:"<b>What if you’d bet $100K on every call?</b> Each call is its own bet: buy on an up call, short on a down call. Simulated, before fees."}};
 var RKEYS=X1?["hit","miss","roi","sector"]:["hit","miss","roi","wins"],RCUR="hit";
 var UPS_N=ROUNDS.filter(function(r){return r.a>0}).length,AVG_MOVE=ROUNDS.length?ROUNDS.reduce(function(a,r){return a+Math.abs(r.a)},0)/ROUNDS.length:0;
 RMET.sector={t:X2?"Sector":"By sector",sub:"<b>Where are they sharpest?</b> Right calls by sector. Small samples for now: the grid fills in as the Zeason goes on."};
@@ -11487,7 +11487,7 @@ function drawStats(face,k,anim){var box=$(".st-box",face);if(!box)return;if(X2)f
   if(k==="hit"&&X1&&window.EZLearn){box.innerHTML='<div class="lxv hx"></div>';EZLearn.together($(".hx",box),{pctOnly:true,noCoin:true,ver:true});return}
   /* X1, ROI: the balance over the rounds, like a trading app's portfolio chart. the stake at the start, one line per AI. */
   if(k==="roi"&&X1){var N=ROUNDS.length,F=R.map(function(x){var bal=STAKE,pts=[],st=null;
-        ROUNDS.forEach(function(r,i){var c=callOf(r,x.m);if(!c)return;if(st==null){st=i;pts.push([i,bal])}bal*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,bal])});return {m:x.m,pts:pts,bal:bal,x:x}}),
+        ROUNDS.forEach(function(r,i){var c=callOf(r,x.m);if(!c)return;if(st==null){st=i;pts.push([i,bal])}bal+=STAKE*(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,bal])});return {m:x.m,pts:pts,bal:bal,x:x}}),
       vs=[].concat.apply([STAKE],F.map(function(f){return f.pts.map(function(p){return p[1]})})),lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STAKE*.05;lo-=pd;hi+=pd;
     function X(i){return i/N*100}function Y(v){return (hi-v)/(hi-lo)*100}
     box.innerHTML='<ol class="pnl-k">'+F.map(function(f,i){var up=f.bal>=STAKE;return '<li'+(i?'':' class="lead"')+'><span class="pk-r">'+(i+1)+'</span>'+logo(f.m)+'<b class="pk-n">'+nm(f.m)+'</b><strong>'+usd(f.bal)+'</strong><em class="'+(up?'pu':'pd')+'">'+(up?'▲ ':'▼ ')+pctTxt(f.bal).replace(/^[+−]/,"")+'</em></li>'}).join("")+'</ol>'+
@@ -11759,7 +11759,7 @@ function vProfile(m){if(!CAR[m])return null;
   var cmp='<section class="pf-sec" aria-labelledby="pfCH"><h2 id="pfCH">Against the other three</h2><div class="pf-cmps">'+
     bars("Right way","",hit,function(k){return CAR[k].right+'<span>/'+CAR[k].g+'</span>'},function(a,b){return a>b},"Calls that got up or down right. Longer is better.")+
     bars("Average miss","",function(k){return CAR[k].avg==null?0:CAR[k].avg},function(k,v){return v.toFixed(2)+'<span> pts</span>'},function(a,b){return a<b},"Points between its number and the real move. Shorter is better.")+
-    bars(usd(STAKE)+" copied","",bal,function(k,v){return usd(v)},function(a,b){return a>b},"Following every call, all in. Simulated, before fees.")+'</div>'+(full.length<N?'<p class="pf-sub pf-note">'+RK.filter(function(k){return full.indexOf(k)<0}).map(nm).join(' and ')+' joined later, so '+(N-full.length===1?'it sits':'they sit')+' at the bottom until '+(N-full.length===1?'it has':'they have')+' called half the rounds.</p>':'')+'</section>';
+    bars(usd(STAKE)+" copied","",bal,function(k,v){return usd(v)},function(a,b){return a>b},"If you’d bet $100K on every call. Simulated, before fees.")+'</div>'+(full.length<N?'<p class="pf-sub pf-note">'+RK.filter(function(k){return full.indexOf(k)<0}).map(nm).join(' and ')+' joined later, so '+(N-full.length===1?'it sits':'they sit')+' at the bottom until '+(N-full.length===1?'it has':'they have')+' called half the rounds.</p>':'')+'</section>';
   /* form: newest first */
   var form='<section class="pf-sec" aria-labelledby="pfFH"><h2 id="pfFH">Form</h2><p class="pf-sub">Newest first. Gold won the round, green got the direction right, red got it wrong.</p><ol class="pf-form">'+
     C.hist.slice().reverse().map(function(h){var r=ROUNDS.filter(function(x){return x.n===h.n})[0],cls=h.none?"n":h.win?"w":h.ok?"g":"r",lab=h.none?"no call":h.win?"won":h.ok?"right way":"wrong way";
@@ -11798,7 +11798,7 @@ function vProfile(m){if(!CAR[m])return null;
     '<div class="pf-k"><small>'+usd(STAKE)+' copied</small><b>'+usd(bal(m))+'</b><span>'+rankTag(fR)+' '+pctTxt(bal(m))+'</span></div></div>'+
     '<p class="pf-sample">'+sample+'</p></header>';
   /* one chart: $100K copied, round by round; this AI bold, the others faint, labelled at the end */
-  var ser=RK.map(function(k){var b=STAKE,pts=[],started=false;ROUNDS.forEach(function(r,i){var c=callOf(r,k);if(c){if(!started){pts.push([i,STAKE]);started=true}b*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,b])}else if(started)pts.push([i+1,b])});return {k:k,pts:pts,end:b}});
+  var ser=RK.map(function(k){var b=STAKE,pts=[],started=false;ROUNDS.forEach(function(r,i){var c=callOf(r,k);if(c){if(!started){pts.push([i,STAKE]);started=true}b+=STAKE*(/^DOWN/.test(c[1])?-1:1)*r.a/100;pts.push([i+1,b])}else if(started)pts.push([i+1,b])});return {k:k,pts:pts,end:b}});
   var all=[].concat.apply([],ser.map(function(x){return x.pts.map(function(p){return p[1]})})),lo=Math.min.apply(null,all.concat([STAKE])),hi=Math.max.apply(null,all.concat([STAKE])),pad=(hi-lo)*.08;lo-=pad;hi+=pad;
   var NAR=window.innerWidth<640,CW=NAR?380:640,CH=NAR?250:260,L0=8,R0=NAR?116:104,T0=12,B0=26,cx=function(i){return L0+i/G*(CW-L0-R0)},cy=function(v){return T0+(1-(v-lo)/(hi-lo))*(CH-T0-B0)};
   var labs=ser.map(function(x){return {k:x.k,y:cy(x.end),v:x.end}}).sort(function(a,b){return a.y-b.y});for(var q=1;q<labs.length;q++)if(labs[q].y-labs[q-1].y<16)labs[q].y=labs[q-1].y+16;
@@ -11887,9 +11887,9 @@ route();
    the card (owner, 2026-10-10). ---------- */
 if(X2)(function(){var sw=$("#swDir"),sd=$("#swDist"),q=$("#lqDist"),box=$("#lxDist");if(!sw||!sd||!q||!box)return;
   sd.textContent=RMET.roi.t;sw.parentNode.insertBefore(sd,sw);
-  var h=$("#lqDistH");if(h)h.textContent="What would "+usd(STAKE)+" be worth now?";
+  var h=$("#lqDistH");if(h)h.textContent="What if you’d bet $100K on every call?";
   q.classList.add("lq-roi");box.className="st-box";box.innerHTML="";
-  var note=document.createElement("p");note.className="lq-roi-n";note.textContent="Each AI started with "+usd(STAKE)+" on its first call and bet it all on every call since. "+(typeof FOLLOW_NOTE!=="undefined"?FOLLOW_NOTE:"Simulated, before fees.");box.parentNode.appendChild(note);
+  var note=document.createElement("p");note.className="lq-roi-n";note.textContent="If you’d bet $100K on every call. Shown as $100K plus what those bets made. "+(typeof FOLLOW_NOTE!=="undefined"?FOLLOW_NOTE:"Simulated, before fees.");box.parentNode.appendChild(note);
   ["#fol","#folH","#learn .fol-x"].forEach(function(sel){var e=$(sel);if(e)e.remove()});
   function draw(anim){drawStats(q,"roi",anim&&!reduce)}
   draw(false);sd.click();
@@ -12334,14 +12334,15 @@ function x2pAnd(a){return a.length<3?a.join(" and "):a.slice(0,-1).join(", ")+" 
 /* EZ Live X2+ (owner, 2026-10-19): X2's words, with the decisions of 2026-10-19 on top. Runs after X2 has built the page.
    The first screen explains the concept, not the bet; NVIDIA sits under the chip as bet #1; "pool", not "pot"; the brand
    line drops "never edited" (a call changed after it was shown, 2026-10-14, as on X6). Numbers from ez-data.js (SIM). */
-/* The trading competition (owner, 2026-10-26, after a friend's feedback: pump.fun traders think in P&L). One account per AI, exactly
-   the proof's P&L view: $100,000 to start, the whole balance on every call, buy on up, short on down, no leverage, before fees.
-   P&L = balance - $100,000; per call: what the account made or lost on that round; the record W-L (a W = a call that got the
-   direction right) and the current streak. The standings, the proof and the MVP backs all read it, so the cards add up to the board.
-   Mockups: ez/tools/concepts/pnl/. */
+/* The trading competition (owner, 2026-10-26, after a friend's feedback: pump.fun traders think in P&L). Since 2026-10-31 (owner:
+   "If you'd bet $100K on every call") a flat stake: every call is its own $100,000 bet, long on up, short on down, no leverage,
+   before fees, nothing carried from one call to the next (it was one compounding pot per AI before). per[n].v = that bet's result
+   (100000 x direction x move%); P&L = the sum of them; bal = 100000 + P&L (kept so the charts and older readers still work: the
+   lines are the running sum); pct = P&L as a share of one $100K stake. The record W-L (a W = a call that got the direction right)
+   and the current streak. The standings, the proof and the MVP backs all read it, so the cards add up to the board. */
 window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
   ROUNDS.forEach(function(r){if(typeof r.a!=="number"||isNaN(r.a))return;r.calls.forEach(function(x){var m=x[0],dn=/^DOWN/.test(x[1]),s=(dn?-1:1)*r.a/100,
-    t=A[m]||(A[m]={m:m,ver:(MODELS[m]&&MODELS[m].ver)||m,bal:100000,W:0,L:0,seq:[],per:{},bw:null,bl:null}),dv=t.bal*s;
+    t=A[m]||(A[m]={m:m,ver:(MODELS[m]&&MODELS[m].ver)||m,bal:100000,W:0,L:0,seq:[],per:{},bw:null,bl:null}),dv=100000*s;
     t.per[r.n]={v:dv,dn:dn,mg:parseFloat(x[1].replace(/^(UP|DOWN)\s*/,""))};t.bal+=dv;if(s>0)t.W++;else t.L++;t.seq.push(s>0?"W":"L");
     if(t.bw==null||dv>t.bw)t.bw=dv;if(t.bl==null||dv<t.bl)t.bl=dv})});
   Object.keys(A).forEach(function(m){var t=A[m],k=t.seq[t.seq.length-1],n=0;for(var i=t.seq.length-1;i>=0&&t.seq[i]===k;i--)n++;t.streak=k+n;t.pnl=t.bal-100000;t.pct=t.pnl/1000});
@@ -12763,7 +12764,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
         RA="1 in "+S.rounds;RL="The biggest move of "+S.rounds+" rounds"}
       /* Biggest W and Biggest L (owner, 2026-10-28, a mockup behind window.__x2pWL: "geared towards crypto people... which model had
          the best round in P&L... which one got wrecked the most"): the season's biggest single-call win and loss in the P&L view's
-         accounts, told around that one AI in the traders' own words */
+         $100K bets, told around that one AI in the traders' own words */
       else if((bk==="w"||bk==="l")&&it.call){var sc=per.filter(function(p){return p.raw===it.call.m})[0];if(sc){var su=r.a>0;
         H=bk==="w"?esc2(sc.m)+" "+(sc.up?"longs":"shorts")+" "+co+". <em>Prints.</em>":esc2(sc.m)+" gets <em>rekt</em> on "+co;
         D=esc2(sc.m)+" went "+(sc.up?"long":"short")+". "+co+" "+(su?"ripped":"dumped")+" "+mv+"%.";
@@ -12773,9 +12774,9 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
       if(!H){H=it.head;B=esc2(it.body)}
       var calls=per.map(function(p){return '<span class="x2p-hc '+(p.ok?"ok":"no")+'">'+esc2(p.m)+'<b><span class="'+(p.up?"x2p-cup":"x2p-cdn")+'">'+(p.up?"▲":"▼")+(Math.round(p.mg*100)/100)+'%</span> <i>'+(p.ok?"✓":"✗")+'</i></b></span>'}).join("");
       /* (owner, 2026-10-26: P&L, "the P&L card for when the story focuses on one individual stock"; M2 of ez/tools/concepts/pnl)
-         no "Think of it this way": the headline, the deck and one punch line, then the P&L card: what the star's account made on the
+         no "Think of it this way": the headline, the deck and one punch line, then the P&L card: what the star's $100K bet made on the
          call (the bullseye) or what the whole table made (the others), the rest of the table in a strip under it, "Simulated" small at
-         the foot. The accounts are the P&L view's (window.__x2pPnl), so the cards add up to the board. The call chips stay in the DOM,
+         the foot. The bets are the P&L view's (window.__x2pPnl), so the cards add up to the board. The call chips stay in the DOM,
          out of sight, for the story side's holo levels. */
       var PL=window.__x2pPnl&&window.__x2pPnl(),pnl="",pun="";
       if(PL){var tk=/^\d/.test(r.ticker)||String(r.ticker).indexOf(".")>-1?r.co.split(" ")[0]:r.ticker,
@@ -12788,7 +12789,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
         if(rows.length)pnl='<div class="pn"><div class="pn-card '+(big>=0?"ok":"no")+'"><div class="pn-ct"><span>'+(hs?esc2(hs.nm)+" · "+side(hs):"All "+rows.length+" AIs · "+esc2(tk))+'</span><em>'+(hs?"Its P&amp;L":"Combined P&amp;L")+'</em></div>'+
           '<b class="pn-big">'+PL.usd(big)+'</b><div class="pn-cs">'+(hs?"Called "+(hs.dn?"−":"+")+(Math.round(hs.mg*100)/100)+"% · It moved "+mvs:"The stock moved "+mvs)+'</div></div>'+
           '<div class="pn-strip">'+rows.filter(function(x){return x!==hs}).map(function(x){return '<span class="'+(x.ok?"ok":"no")+'">'+esc2(x.nm)+'<b>'+PL.usd(x.v,1)+'</b></span>'}).join("")+'</div>'+
-          '<small class="pn-sim">Simulated · $100K each<span class="pn-nl"> · no leverage</span></small></div>'}
+          '<small class="pn-sim">Simulated · $100K a call<span class="pn-nl"> · no leverage</span></small></div>'}
       var fin=c.querySelector(".face.back .fin");if(fin)fin.innerHTML='<div class="x2p-hb x2p-rc'+(pnl?' x2p-pnb':'')+'"><div class="x2p-rch"><span class="x2p-rbug">Recap</span><small>Round '+r.n+(r.resolves?" · "+md(r.resolves).t:"")+'</small></div>'+
         '<h4>'+H+'</h4>'+(D?'<p class="x2p-dk">'+D+'</p>':'')+(pnl?'<div class="x2p-hw"><p class="pn-pun">'+pun+'</p></div>'+pnl:'<div class="x2p-hw"><p>'+B+'</p>'+(TK?'<p class="x2p-tkw"><small>Think of it this way</small>'+TK+'</p>':'')+'</div>')+
         (T?'<div class="x2p-tt"><div><small>'+T[0]+'</small><b class="x2p-t'+T[2]+'">'+T[1]+'</b></div><i aria-hidden="true">vs</i><div><small>'+T[3]+'</small><b class="x2p-t'+T[5]+'">'+T[4]+'</b></div></div>':'')+
@@ -12969,7 +12970,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
       bk.innerHTML='<div class="bk-s"><div class="bk-t"><div class="bk-bd g"><h3><em class="bk-st" aria-hidden="true">★</em>'+ko("How we rank")+'<em class="bk-st" aria-hidden="true">★</em></h3></div>'+
         '<div class="bk-in"><p class="x2p-why">Why it matters: <b class="bk-fo" data-t="#1 makes the call">#1 makes the call</b> on the next bet.</p><ol>'+
         /* (owner, 2026-10-26: "just focus on P&L for now, because that's usually whoever everybody wants to follow") ranked by P&L */
-        '<li>Ranked by P&amp;L: $100,000 each, the whole balance on every call.</li>'+
+        '<li>Ranked by P&amp;L: if you&rsquo;d bet $100K on every call.</li>'+
         '<li>Buy on up, short on down. No leverage.</li>'+
         '<li>Every call is made before the company reports and graded at the next market close.</li>'+
         '<li>Called fewer than half the rounds? Ranked after the rest.</li>'+
@@ -13652,10 +13653,11 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     var COL={};MK.forEach(function(m){COL[m]=m==="GROK"?"#141217":MODELS[m].c});
     /* the page's short sector names (routes.js SECT_SHORT, not global on this page) */
     var SH=(typeof SECT_SHORT!=="undefined"&&SECT_SHORT)||{"Information Technology":"Tech","Consumer Discretionary":"Consumer","Consumer Staples":"Staples","Financials":"Finance","Industrials":"Industrials","Communication Services":"Media & telecom","Health Care":"Health","Materials":"Materials","Energy":"Energy","Utilities":"Utilities","Real Estate":"Real estate"};
-    /* per AI, from the graded rounds in order: calls, right, average miss, the running hit rate from 50/50, the $100,000 balance */
+    /* per AI, from the graded rounds in order: calls, right, average miss, the running hit rate from 50/50, and 100K + the running P&L
+       of a flat $100,000 bet on every call (owner, 2026-10-31) */
     var S={};MK.forEach(function(m){var n=0,k=0,off=0,run=[],roi=[],bal=STK,calls=[];
       ROUNDS.forEach(function(r,i){var c=callOf(r,m);if(!c)return;var dn=/^DOWN/.test(c[1]),ok=(dn?-1:1)>0===(r.a>0),o=parseFloat(c[2])||0;
-        if(!n){run.push([i,50]);roi.push([i,bal])}n++;if(ok)k++;off+=o;calls.push({ok:ok,off:o});run.push([i+1,(k+1)/(n+2)*100]);bal*=1+(dn?-1:1)*r.a/100;roi.push([i+1,bal])});
+        if(!n){run.push([i,50]);roi.push([i,bal])}n++;if(ok)k++;off+=o;calls.push({ok:ok,off:o});run.push([i+1,(k+1)/(n+2)*100]);bal+=STK*(dn?-1:1)*r.a/100;roi.push([i+1,bal])});
       S[m]={m:m,n:n,k:k,hit:n?k/n:0,miss:n?off/n:0,run:run,roi:roi,bal:bal,calls:calls}});
     var byHit=MK.slice().sort(function(a,b){var qa=S[a].n>=N/2,qb=S[b].n>=N/2;return qa!==qb?(qa?-1:1):(S[b].hit-S[a].hit)||(S[a].miss-S[b].miss)}),
       byRoi=MK.slice().sort(function(a,b){return S[b].bal-S[a].bal}),byMiss=MK.slice().sort(function(a,b){return S[a].miss-S[b].miss});
@@ -13679,10 +13681,10 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
         html:function(){var k="$"+Math.round(STK/1000)+"K",PL=window.__x2pPnl&&window.__x2pPnl();if(PL&&MK.every(function(m){return PL.A[m]}))return '<div class="lp pt-3"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Top <i class="pn-w">W</i></span><span>P&amp;L</span><span>Top <i class="pn-l">L</i></span></div>'+
           byRoi.map(function(m,i){var t=PL.A[m],up=t.pnl>=0;return row(i,m,'<span class="pt-v tnum pn-bw"><span class="sr">top win </span>'+PL.usd(t.bw,1)+'</span><span class="pt-v tnum pn-pl '+(up?'pt-u':'pt-d')+'"><span class="sr">P&amp;L </span>'+PL.usd(t.pnl)+'</span>',
             '<span class="pt-c tnum pn-bl"><span class="sr">top loss </span>'+PL.usd(t.bl,1)+'</span>')}).join("")+'</div>'+
-          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Start: "+usd(STK))+'</div><p class="pt-cp">'+usd(STK)+' to start. The whole balance on every call. Wins and losses carry over. Buy on up, short on down. No leverage.</p>';
+          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Break even")+'</div><p class="pt-cp">If you&rsquo;d bet $100K on every call. Each call is its own bet. Buy on up, short on down. No leverage.</p>';
           return '<div class="lp pt-3"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Start</span><span>ROI</span><span>Now</span></div>'+byRoi.map(function(m,i){var b=S[m].bal,up=b>=STK,cl=up?'pt-u':'pt-d',p=Math.abs(b/STK*100-100).toFixed(1)+"%";
           return row(i,m,'<span class="pt-v pt-st tnum"><span class="sr">started with </span>'+k+'</span><span class="pt-v tnum '+cl+'"><span class="sr">ROI '+(up?'up ':'down ')+'</span><span class="pt-pm" aria-hidden="true">'+(up?'+':'−')+'</span>'+p+'</span>','<span class="pt-c tnum '+cl+'"><span class="sr">now </span>'+usd(b)+'</span>')}).join("")+'</div>'+
-          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Start: "+usd(STK))+'</div><p class="pt-cp">'+usd(STK)+' to start. The whole balance on every call. Wins and losses carry over. Buy on up, short on down. No leverage.</p>'},
+          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Break even")+'</div><p class="pt-cp">If you&rsquo;d bet $100K on every call. Each call is its own bet. Buy on up, short on down. No leverage.</p>'},
         draw:function(el,h){var vs=[STK];MK.forEach(function(m){S[m].roi.forEach(function(p){vs.push(p[1])})});var lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STK*.05;lo-=pd;hi+=pd;
           chart(el,h,byRoi.map(function(m,i){return {m:m,rank:i+1,pts:S[m].roi.map(function(p){return [p[0]/N*100,(hi-p[1])/(hi-lo)*100]})}}),(hi-STK)/(hi-lo)*100,{lead:true,left:30,grid:pgrid(lo,hi),lab:function(m){var PL=window.__x2pPnl&&window.__x2pPnl();return PL&&PL.A[m]?PL.pc(PL.A[m].pct):ver(m)}})}},
       hit:{t:"Accuracy",top:"How often were they right about the direction?",bot:"Up or down only",
@@ -13721,7 +13723,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
        so the lines run as far right as the names after them allow */
     /* (owner, 2026-10-29: "on accuracy you have the 50% and then it goes all the way to 80%... can we add the same to P&L, like 10%
        points") the P&L chart's rules every 10% of the $100,000 start, labelled every 20% (+20%, -40%...); the start stays the dashed line */
-    var pgrid=function(lo,hi){var g=[];for(var v=Math.ceil((lo/STK-1)*10)*10;v<=(hi/STK-1)*100;v+=10){if(!v)continue;g.push([(hi-STK*(1+v/100))/(hi-lo)*100,v%20?"":(v>0?"+":"\u2212")+Math.abs(v)+"%"])}return g};
+    var pgrid=function(lo,hi){var g=[];for(var v=Math.ceil((lo/STK-1)*10)*10;v<=(hi/STK-1)*100;v+=10){if(!v)continue;g.push([(hi-STK*(1+v/100))/(hi-lo)*100,v%20?"":(v>0?"+$":"\u2212$")+Math.round(Math.abs(v)*STK/1e5)+"K"])}return g};
     var cid=0;function chart(el,h,ser,yz,o){var W=el.clientWidth,H=h||el.clientHeight||180,L=o.left||0,pad=6,ih=H-2*pad;el.style.height=H+"px";
       var G=0;el.innerHTML="";ser.forEach(function(s){var t=o.lab?o.lab(s.m):ver(s.m),q=d.createElement("div");q.className="pt-lb";q.style.cssText="visibility:hidden;left:0;top:0";q.innerHTML='<b'+(s.rank===1?' class="pt-fo"':'')+'>'+esc(t)+'</b>';el.appendChild(q);G=Math.max(G,q.getBoundingClientRect().width)});
       G=Math.min(96,Math.max(40,Math.ceil(G)+10));var pw=W-G-L;if(pw<40)return;var axr=el.parentNode&&el.parentNode.querySelector(".pt-ax");if(axr)axr.style.marginRight=G+"px";
@@ -13812,7 +13814,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   /* (owner, 2026-10-22) "predict", not "call each stock" (they don't call every stock); "before" and "after" in gold */
   /* the standings' three rules on the "The rules" strap above the board, with the tickets too (owner, 2026-10-23: "in the same
      format as we have it on the current live site"; they were the tickets' small print under the board for a day) */
-  [].concat([["#standings","x2p-stb",['4 AI<span class="x2p-lc">s</span> paper-trade every earnings report.',"$100K account each. Graded at the close.","Top P&amp;L makes the buyback call."],"The rules"]],
+  [].concat([["#standings","x2p-stb",['4 AI<span class="x2p-lc">s</span> paper-trade every earnings report.',"$100K on every call. Graded at the close.","Top P&amp;L makes the buyback call."],"The rules"]],
   [["#learn","x2p-lrb",["Do not trust the models. Verify the trend.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
    ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[],"Replays"]]).forEach(function(x){if(!x[2].length)return;
     var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
@@ -14066,8 +14068,8 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
    the first of many... the bet is the ticket"; "push it to EZ Live X2+"): the standings become the timing tower (the terminal's live tag,
    a P&L line under each P&L, the flag on the model line, the tryouts as row "5?") and the proof becomes L2 Speed (the logo's black, Kanit,
    the leader in shiny gold, its line too; Top W / Top L; a red and white target). Mockups: ez/x2p-r1028-*.png. The page's own board and
-   proof ticket are still built underneath, out of sight, so nothing that reads them breaks. Numbers: window.__x2pPnl() (the same accounts as
-   before), ROUNDS, RMETA; the rules as x2pProof's (the same ranking, the 50/50 start, the sector bands). */
+   proof ticket are still built underneath, out of sight, so nothing that reads them breaks. Numbers: window.__x2pPnl() (the same $100K bets as
+   the board), ROUNDS, RMETA; the rules as x2pProof's (the same ranking, the 50/50 start, the sector bands). */
 (function(){try{var d=document,TRY=[["Qwen","CN"],["Mistral","EU"],["Gemini","US"]];
  var NM={GPT:"GPT",KIMI:"Kimi",CLAUDE:"Claude",GROK:"Grok"},MC={GPT:"#10a37f",KIMI:"#1e80ff",CLAUDE:"#d97757",GROK:"#f8f0d9"},CC={GPT:"US",CLAUDE:"US",GROK:"US",KIMI:"CN"};
  var SH={"Information Technology":"Tech","Consumer Discretionary":"Consumer","Consumer Staples":"Staples","Financials":"Finance","Industrials":"Industrials","Communication Services":"Media & telecom","Health Care":"Health","Materials":"Materials","Energy":"Energy","Utilities":"Utilities","Real Estate":"Real estate"};
@@ -14087,7 +14089,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  function data(){var P=window.__x2pPnl(),A=P.A,MK=Object.keys(A),G=ROUNDS.filter(function(r){return typeof r.a==="number"&&!isNaN(r.a)}),N=G.length,S={};
   function callOf(r,m){return (r.calls||[]).filter(function(c){return c[0]===m})[0]}
   MK.forEach(function(m){var n=0,k=0,off=0,run=[50],bal=100000,b=[bal],calls=[];G.forEach(function(r){var c=callOf(r,m);if(c){var dn=/^DOWN/.test(c[1]),ok=((dn?-1:1)>0)===(r.a>0),o=parseFloat(c[2])||0;n++;if(ok)k++;off+=o;calls.push({ok:ok,off:o,n:r.n});
-    run.push((k+1)/(n+2)*100);bal*=1+(dn?-1:1)*r.a/100}else run.push(run[run.length-1]);b.push(bal)});
+    run.push((k+1)/(n+2)*100);bal+=1e5*(dn?-1:1)*r.a/100}else run.push(run[run.length-1]);b.push(bal)});
    S[m]={m:m,n:n,k:k,hit:n?k/n:0,miss:n?off/n:0,run:run,bal:b,calls:calls,bu:calls.filter(function(c){return c.ok&&c.off<=.1}).length,w1:calls.filter(function(c){return c.ok&&c.off<=1}).length,ot:calls.filter(function(c){return !c.ok}).length,
     pnl:A[m].pnl,pct:A[m].pct,bw:A[m].bw,bl:A[m].bl,W:A[m].W,L:A[m].L,ver:A[m].ver}});
   var half=function(m){return S[m].n>=N/2};
@@ -14110,7 +14112,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
     '<span class="rz-v"><span class="sr">Record </span><span class="up">'+s.W+'</span>-<span class="dn">'+s.L+'</span></span><span class="rz-v"><span class="sr">Hit rate </span>'+Math.round(s.hit*100)+'%</span>'+
     '<span class="rz-pl"><b class="'+(s.pnl<0?'dn':'up')+'"><span class="sr">P&amp;L </span>'+usd(s.pnl)+'</b>'+spark(m,70,16)+'</span></li>'}).join('')+
    '<li class="rz-r rz-5"><span class="rz-pos">5?</span><span class="rz-bar"></span><span class="rz-5t">In tryouts</span><span class="rz-5n">'+TRY.map(function(t){return '<span>'+t[0]+flag(t[1],12)+'</span>'}).join('')+'</span></li></ol>'+
-   '<div class="rz-how" hidden><p class="rz-why">Why it matters: <b>#1 makes the call</b> on the next bet.</p><ol><li>Ranked by P&amp;L: $100,000 each, the whole balance on every call.</li><li>Buy on up, short on down. No leverage.</li>'+
+   '<div class="rz-how" hidden><p class="rz-why">Why it matters: <b>#1 makes the call</b> on the next bet.</p><ol><li>Ranked by P&amp;L: if you&rsquo;d bet $100K on every call.</li><li>Buy on up, short on down. No leverage.</li>'+
    '<li>Every call is made before the company reports and graded at the next market close.</li><li>Called fewer than half the rounds? Ranked after the rest.</li><li>The board freezes 24h before each bet.</li></ol><p class="rz-fine">P&amp;L: simulated, before fees.</p></div></div>';
   return h}
  /* ---- the proof in L2 Speed ---- */
@@ -14127,9 +14129,9 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block" aria-hidden="true" focusable="false">'+g+ls+en+T(pad[3],H-3,o.x0||'R1')+T(W-pad[1],H-3,'R'+G[N-1].n,'end')+'</svg>'}
  var TABS=[["pnl","P&amp;L"],["acc","Accuracy"],["tgt","Target hits"],["sec","Sector"]];
  function proof(D){var S=D.S,MK=D.MK,G=D.G,N=D.N,BAL={},RUN={};MK.forEach(function(m){BAL[m]=S[m].bal;RUN[m]=S[m].run});
-  var CO={pnl:{step:20000,base:100000,fmt:function(v){return (v/1000)+'K'},ends:function(m){return pc(S[m].pct)}},acc:{lo:30,hi:80,step:10,base:50,x0:'Start',fmt:function(v){return v+'%'}}};
+  var CO={pnl:{step:20000,base:100000,fmt:function(v){return v===1e5?'$0':(v>1e5?'+':'\u2212')+Math.abs(v-1e5)/1000+'K'},ends:function(m){return pc(S[m].pct)}},acc:{lo:30,hi:80,step:10,base:50,x0:'Start',fmt:function(v){return v+'%'}}};
   function card(k,q,sub,body){return '<div class="rz-pv" data-v="'+k+'" role="tabpanel" aria-label="'+q+'"><p class="rz-q">'+lx(q)+'</p><p class="rz-sm rz-sub">'+sub+'</p>'+body+'</div>'}
-  var pnl=card("pnl","Would following them have made you money?","$100K each. All in on every call. No leverage.",'<div class="rz-ch" data-k="pnl">'+chart(D,BAL,D.byP[0],CO.pnl)+'</div>'+
+  var pnl=card("pnl","Would following them have made you money?","If you&rsquo;d bet $100K on every call. No leverage.",'<div class="rz-ch" data-k="pnl">'+chart(D,BAL,D.byP[0],CO.pnl)+'</div>'+
    '<div class="rz-g rz-gp"><span class="rz-cap">#</span><span></span><span class="rz-cap">AI</span><span class="rz-cap c">Top <span class="w">W</span></span><span class="rz-cap c">Top <span class="l">L</span></span><span class="rz-cap c">P&amp;L</span>'+
    D.byP.map(function(m,i){var s=S[m];return '<span class="rz-lx rz-n'+(i?'':' gd')+'">'+(i+1)+'</span>'+disc(m,24)+lx(NM[m],i?'':'gd')+'<span class="rz-sm c up"><span class="sr">Top win </span>'+usd(s.bw,1)+'</span><span class="rz-sm c dn"><span class="sr">Top loss </span>'+usd(s.bl,1)+'</span><span class="c">'+lx('<span class="sr">P&amp;L </span>'+usd(s.pnl),i?(s.pnl<0?'dn':'up'):'gd')+'</span>'}).join('')+'</div>');
   var acc=card("acc","How often were they right about the direction?","Every line starts at 50/50 and moves with each call.",'<div class="rz-ch" data-k="acc">'+chart(D,RUN,D.byH[0],CO.acc)+'</div>'+
@@ -14193,13 +14195,13 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
 (function(){try{var d=document;
  function go(){if(window.__x2pRzOff)return true;var tw=d.querySelector("#standings .rz-tw"),pf=d.querySelector("#learn .rz-pf");if(!tw||!pf||!window.__x2pPnl)return false;if(tw.querySelector(".tq30"))return true;
   var P=window.__x2pPnl(),A=P.A,G=ROUNDS.filter(function(r){return typeof r.a==="number"&&!isNaN(r.a)});
-  var S={};Object.keys(A).forEach(function(m){var b=100000,s=[b];G.forEach(function(r){var c=(r.calls||[]).filter(function(x){return x[0]===m})[0];if(c)b*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;s.push(b)});S[m]=s});
+  var S={};Object.keys(A).forEach(function(m){var b=100000,s=[b];G.forEach(function(r){var c=(r.calls||[]).filter(function(x){return x[0]===m})[0];if(c)b+=1e5*(/^DOWN/.test(c[1])?-1:1)*r.a/100;s.push(b)});S[m]=s});
   /* marks, flags and order from the tower (ranked by P&L) */
   var R=[].slice.call(tw.querySelectorAll(".rz-r:not(.rz-5)")).map(function(li){var nm=li.querySelector(".rz-nmw b").textContent.trim(),m=nm.toUpperCase(),sm=li.querySelector(".rz-nmw small"),fl=sm.querySelector("svg"),t=A[m];
    return {m:m,nm:nm,ver:sm.textContent.trim(),flag:fl?fl.outerHTML:"",logo:li.querySelector(".rz-lo").innerHTML,W:t.W,L:t.L,hit:Math.round(t.W/(t.W+t.L)*100),pnl:t.pnl,s:S[m]}});
   var TRY=[].slice.call(tw.querySelectorAll(".rz-5n>span")).map(function(s){return s.innerHTML});
   var usd=function(v){return (v>=0?"+$":"−$")+Math.round(Math.abs(v)).toLocaleString("en-US")};
-  /* the P&L line: the balance after every graded round, the $100K start dashed; green in profit, red at a loss */
+  /* the P&L line: the running P&L after every graded round (flat $100K a call; drawn as 100K + P&L), break even dashed; green in profit, red at a loss */
   function spark(s,w,h){var lo=Math.min.apply(0,s.concat([1e5])),hi=Math.max.apply(0,s.concat([1e5])),f=function(v){return (2+(h-4)*(1-(v-lo)/(hi-lo||1))).toFixed(2)},x=function(i){return (w*i/(s.length-1)).toFixed(2)},c=s[s.length-1]>=1e5?"#0f8a4c":"#c8302a",z=f(1e5);
    return '<svg class="qs" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" aria-hidden="true" focusable="false"><line x1="0" x2="'+w+'" y1="'+z+'" y2="'+z+'" stroke="rgba(4,7,14,.35)" stroke-width=".8" stroke-dasharray="2.5 2.5"/>'+
     '<path d="'+s.map(function(v,i){return (i?"L":"M")+x(i)+" "+f(v)}).join(" ")+'" fill="none" stroke="'+c+'" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+x(s.length-1)+'" cy="'+f(s[s.length-1])+'" r="1.9" fill="'+c+'"/></svg>'}
@@ -14272,10 +14274,10 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   for(var i=1;i<T.length;i++){var a=T[i-1].getBoundingClientRect(),b=T[i].getBoundingClientRect(),y=(a.bottom+b.top)/2-O.top,L=b.left-O.left,W=b.width,rk=T[i].querySelector(".rk"),sx=rk?rk.getBoundingClientRect().right-O.left:L+52;
    add("xs-p","left:"+(L+10)+"px;width:"+(W-20)+"px;top:"+(y-1.9)+"px");add("xs-b","left:"+(L-10)+"px;top:"+(y-10)+"px");add("xs-b","left:"+(L+W-10)+"px;top:"+(y-10)+"px");add("xs-h","left:"+(sx-6)+"px;top:"+(y-6)+"px")}}
  /* (owner, same night: "remove the green and the red... it looks very cheaply done") the joins keep only the holes, the bites and the
-    crossing hole, no bands; and the P&L takes its line, as on the F2 tickets: the balance after every graded round, the $100K start
+    crossing hole, no bands; and the P&L takes its line, as on the F2 tickets: the running P&L after every graded round (flat $100K a call), break even
     dashed, green in profit and red at a loss, exactly as wide as the figure above it (the % under the figure goes) */
  var S=null;function series(){if(S)return S;S={};var G=ROUNDS.filter(function(r){return typeof r.a==="number"&&!isNaN(r.a)});
-  ["GPT","KIMI","CLAUDE","GROK"].forEach(function(m){var b=1e5,s=[b];G.forEach(function(r){var c=(r.calls||[]).filter(function(x){return x[0]===m})[0];if(c)b*=1+(/^DOWN/.test(c[1])?-1:1)*r.a/100;s.push(b)});S[m]=s});return S}
+  ["GPT","KIMI","CLAUDE","GROK"].forEach(function(m){var b=1e5,s=[b];G.forEach(function(r){var c=(r.calls||[]).filter(function(x){return x[0]===m})[0];if(c)b+=1e5*(/^DOWN/.test(c[1])?-1:1)*r.a/100;s.push(b)});S[m]=s});return S}
  function spark(s,w,h){var lo=Math.min.apply(0,s.concat([1e5])),hi=Math.max.apply(0,s.concat([1e5])),f=function(v){return (1.6+(h-3.2)*(1-(v-lo)/(hi-lo||1))).toFixed(2)},x=function(i){return (w*i/(s.length-1)).toFixed(2)},c=s[s.length-1]>=1e5?"#0f8a4c":"#c8302a",z=f(1e5);
   return '<svg class="xs-sp" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" aria-hidden="true" focusable="false"><line x1="0" x2="'+w+'" y1="'+z+'" y2="'+z+'" stroke="rgba(4,7,14,.35)" stroke-width=".8" stroke-dasharray="2.5 2.5"/><path d="'+s.map(function(v,i){return (i?"L":"M")+x(i)+" "+f(v)}).join(" ")+'" fill="none" stroke="'+c+'" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+x(s.length-1)+'" cy="'+f(s[s.length-1])+'" r="1.8" fill="'+c+'"/></svg>'}
  function lines(ol){var Q=series();[].slice.call(ol.querySelectorAll("li.lbr")).forEach(function(li){var h=li.querySelector(".pc-t h3"),c=li.querySelector(".lb-c.roi"),b=c&&c.querySelector("b"),m=h&&h.textContent.trim().toUpperCase();if(!b||!Q[m])return;
@@ -14783,7 +14785,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
   [].slice.call(body.querySelectorAll(".pt-r")).forEach(function(r){var nm=(r.querySelector(".pt-nm")||{}).textContent||"",m=nm.trim().toUpperCase(),w=W[m];if(!w)return;
    [[".pn-bw",w.d1,"last 24 hours "],[".pn-bl",w.d7,"last 7 days "]].forEach(function(x){var e=r.querySelector(x[0]);if(!e)return;var v=Math.round(x[1]);
     e.innerHTML='<span class="sr">'+x[2]+'</span>'+money(W.P,v);e.classList.remove("pr2-u","pr2-d","pr2-z");e.classList.add(v>0?"pr2-u":v<0?"pr2-d":"pr2-z")})});
-  var cp=body.querySelector(".pt-cp");if(cp&&!cp.dataset.pr2){cp.dataset.pr2=1;cp.textContent="$100,000 to start. The whole balance on every call. Buy on up, short on down. No leverage. 24h and 7d: rounds graded at the close in the last 24 hours and 7 days."}
+  var cp=body.querySelector(".pt-cp");if(cp&&!cp.dataset.pr2){cp.dataset.pr2=1;cp.textContent="If you\u2019d bet $100K on every call. Each call is its own bet. Buy on up, short on down. No leverage. 24h and 7d: rounds graded at the close in the last 24 hours and 7 days."}
   centre(body)}
  /* each column label over its figures' middle */
  function centre(body){var hd=body.querySelector(".pt-3 .pt-hd"),r=body.querySelector(".pt-3 .pt-r");if(!hd||!r)return;var ink=function(e){var g=d.createRange();g.selectNodeContents(e);return g.getBoundingClientRect()};
@@ -15297,7 +15299,7 @@ function build(){
   const flagVars=`--fl-us:${fStripes(['#d63a3a','#f8f0d9'],13,260)};--fl-cn:${fStripes(['#d63a3a'],13,260)};--fl-usc:${fCanton()};--fl-cnc:${fCn()}`;
   const FLAG={GPT:'us',CLAUDE:'us',GROK:'us',KIMI:'cn'};
   const cast=`<section class="wc-chars" aria-label="The cast">
-    <h2 class="wc-h2"><span>Meet the models</span><small>Not the Instagram kind. Ranked by their pretend $100,000 accounts.</small></h2>
+    <h2 class="wc-h2"><span>Meet the models</span><small>Not the Instagram kind. Ranked by P&amp;L, if you&rsquo;d bet $100K on every call.</small></h2>
     <div class="wc-ch-grid" style="${flagVars}">${rank.map((m,i)=>{const a=P[m],b=best(m),w=worst(m),tot=a.W+a.L,hr=Math.round(a.W/tot*100),f=first(m),fl=FLAG[m]||'us';
       return `<article class="wc-ch wc-ch-${i+1}" style="--mc:${MODELS[m].c}" data-m="${m}">
         <div class="wc-flg wc-flg-${fl}" aria-hidden="true"><i class="wc-flg-st"></i><i class="wc-flg-ca"></i><i class="wc-flg-fd"></i><i class="wc-flg-dt"></i></div>
@@ -15351,7 +15353,7 @@ function build(){
   const back=`<section class="wc-back" aria-label="Back cover">
     <p class="wc-motto">Nobody said it would be <span class="wc-e">E</span><span class="wc-z">Z</span>.</p>
     <a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a>
-    <p class="wc-fine">New panels whenever a round is graded. P&amp;L is simulated: $100,000 each, the whole balance on every call, no leverage, before fees. $EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p>
+    <p class="wc-fine">New panels whenever a round is graded. P&amp;L is simulated: if you&rsquo;d bet $100K on every call, each call its own bet, no leverage, before fees. $EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p>
   </section>`;
 
   const book=D.createElement('div');book.id='wc-book';book.className='wc-book';
@@ -15396,7 +15398,7 @@ function streak(seq){if(!seq.length)return '';const L=seq[seq.length-1];let k=0;
 function lbBuild(){
   const PL=window.__x2pPnl(),P=PL.A,R=ROUNDS.slice().sort((a,b)=>a.n-b.n),N=R.length,rank=rankPnl(P,N);
   const S={};ORDER.forEach(m=>{const cs=R.map(r=>callOf(r,m)).filter(Boolean);S[m]={bu:cs.filter(x=>x.ok&&x.off<=.1).length,w1:cs.filter(x=>x.ok&&x.off<=1).length,ot:cs.filter(x=>!x.ok).length}});
-  /* the race: each AI's balance after every graded round, its place, the lead changes and the overtakes */
+  /* the race: each AI's running P&L (flat $100K a call, as 100K + P&L) after every graded round, its place, the lead changes and the overtakes */
   const bal={},pos={};ORDER.forEach(m=>{bal[m]=[1e5];pos[m]=[]});
   let prev=ORDER.slice();const steps=[prev.slice()];
   R.forEach((r,i)=>{ORDER.forEach(m=>{const x=P[m].per[r.n];bal[m].push(bal[m][i]+(x?x.v:0))});
@@ -15429,7 +15431,7 @@ function lbBuild(){
   const tw=m=>{let b=null,w=null;R.forEach(r=>{const x=P[m].per[r.n];if(!x)return;if(!b||x.v>b.v)b={v:x.v,r};if(!w||x.v<w.v)w={v:x.v,r}});return {b,w}};
   const twl=(x,k)=>{const lg=coLogo(x.r.ticker);return `<div class="wc-sb-tw ${k}"><dt>${k==='wc-sb-twb'?'Top round':'Worst round'}</dt><dd><b class="${x.v>=0?'wc-tu':'wc-td'}">${kk(x.v)}</b>${lg?`<img src="${lg}" alt="" title="${esc(x.r.co)}"${coDk(x.r.ticker)}>`:''}<span class="wc-sr">${esc(x.r.co)}</span></dd></div>`};
   const board=`<section class="wc-sbd" aria-label="The scoreboard">
-    <h2 class="wc-h2"><span>The scoreboard</span><small>Ranked by P&amp;L on a pretend $100,000 each. We bet on the leader&rsquo;s call.</small></h2>
+    <h2 class="wc-h2"><span>The scoreboard</span><small>Ranked by P&amp;L, if you&rsquo;d bet $100K on every call. We bet on the leader&rsquo;s call.</small></h2>
     <div class="wc-sb">${rank.map((m,i)=>{const a=P[m],t=a.W+a.L,hr=t?Math.round(a.W/t*100):0,st=streak(a.seq);
       return `<article class="wc-sb-r${i===0?' wc-sb-1':''}" style="--mc:${MODELS[m].c}">
         <span class="wc-sb-rk">#${i+1}</span>${face(m,'wc-f-m')}
@@ -15438,7 +15440,7 @@ function lbBuild(){
         <dl class="wc-sb-st"><div class="wc-sb-7"><dt>Last 7 days</dt><dd class="${p7(m)>=0?'wc-tu':'wc-td'}">${kk(p7(m))}</dd></div><div><dt>W-L</dt><dd><b class="wc-tu">${a.W}</b>-<b class="wc-td">${a.L}</b></dd></div><div><dt>Hit rate</dt><dd>${hr}%</dd></div>
           <div class="wc-sb-f"><dt>Last 5</dt><dd class="wc-form">${a.seq.slice(-5).map(x=>`<i class="${x==='W'?'wc-fw':'wc-fl'}">${x==='W'?'✓':'✗'}</i>`).join('')}</dd></div>${(x=>twl(x.b,'wc-sb-twb')+twl(x.w,'wc-sb-tww'))(tw(m))}</dl>
       </article>`}).join('')}</div>
-    <p class="wc-cap wc-cap-y wc-sb-cap">P&amp;L is simulated: $100,000 to start, the whole balance on every call, buy on up, short on down, no leverage, before fees. W = right direction. An AI that called under half the rounds ranks after the rest.</p>
+    <p class="wc-cap wc-cap-y wc-sb-cap">P&amp;L is simulated: if you&rsquo;d bet $100K on every call. Each call is its own bet. Buy on up, short on down, no leverage, before fees. W = right direction. An AI that called under half the rounds ranks after the rest.</p>
   </section>`;
 
   const bw=m=>{let b=null,w=null;R.forEach(r=>{const x=P[m].per[r.n];if(!x)return;if(!b||x.v>b.v)b={v:x.v,r,dn:x.dn};if(!w||x.v<w.v)w={v:x.v,r,dn:x.dn}});return {b,w}};
@@ -15451,7 +15453,7 @@ function lbBuild(){
   const proof=proofBuild(P,R,rank);
   const el=D.createElement('div');el.id='wc-lb';el.className='wc-book wc-tab';
   el.innerHTML=`<section class="wc-tab-cv" aria-label="Who's winning"><div class="wc-cv-top"><span class="wc-cv-s">The standings<small>${N} earnings reports graded</small></span></div>
-    <h1 class="wc-tab-h">Who's winning?</h1><p class="wc-tag">Four AIs, a pretend <b>$100,000</b> each, the whole balance on every call. The money says who's best.</p></section>`
+    <h1 class="wc-tab-h">Who's winning?</h1><p class="wc-tag">Four AIs. If you&rsquo;d bet <b>$100K</b> on every call, who made you the most? The money says who's best.</p></section>`
     +board+proof+race+`<section class="wc-back"><a class="wc-follow" href="${esc((window.CONFIG||{}).x||'https://x.com/earningszn')}" target="_blank" rel="noopener">Follow the story on X</a></section>`;
   return el}
 
@@ -15532,7 +15534,7 @@ function lastRound(R,P){
       <p class="wc-cap wc-lr-c">${ws.length?'The winner gets paid':'Nobody won. The money'}</p>
       <div class="wc-lr-m">${shown.map(x=>`<div class="wc-lr-mw">${face(x.m,'wc-f-l')}<b class="${x.v>=0?'wc-tu':'wc-td'}">${pm(x.v)}</b><small>${NM[x.m]} ${x.v>=0?'made':'lost'} on this call</small></div>`).join('')}</div>
       <ul class="wc-lr-all" aria-label="Every AI's P&L on this call">${cs.map(x=>`<li>${face(x.m,'wc-f-s')}<span>${NM[x.m]}</span><b class="${x.v>=0?'wc-tu':'wc-td'}">${kShort(x.v)}</b></li>`).join('')}</ul>
-      <p class="wc-lr-fine">Pretend $100,000 accounts, the whole balance on every call. Then on to the next round.</p>
+      <p class="wc-lr-fine">If you&rsquo;d bet $100K on every call. Then on to the next round.</p>
       <a class="wc-lr-open" href="#/round/${r.n}">Open its graded card →</a></li>`;
   const nR=R.length,nC=R.reduce((t,x)=>t+x.calls.length,0);
   const p5=`<li class="wc-pn wc-lr-p wc-lr-5"><b class="wc-lr-n" aria-hidden="true">5</b>
@@ -15595,7 +15597,7 @@ function proofBuild(P,R,rank){
   const N=R.length,SHq={...SH};
   const closeNY=s=>closeAt('',s),now=Date.now(),inWin=(r,ms)=>{if(ms>864e5){const td=nyToday(),[mm,dd,yy]=(r.resolves||'').split('/').map(Number);if(!mm)return false;const a=Math.round((Date.UTC(2000+td[2],td[0]-1,td[1])-Date.UTC(2000+(yy%100),mm-1,dd))/864e5);const c=closeAt(r.ticker,r.resolves);return a>=0&&a<=6&&c!=null&&c<=now}/* 7 days = the calendar days the stubs name (today and the 6 before), as the scoreboard and Who's winning count */const t=closeAt(r.ticker,r.resolves);/* each exchange's own close, as Who's winning counts it (2026-10-30) */return t!=null&&t<=now&&t>now-ms};
   const win=(m,ms)=>R.reduce((s,r)=>s+(inWin(r,ms)&&P[m].per[r.n]?P[m].per[r.n].v:0),0);
-  /* each AI's balance and smoothed hit rate after every graded round */
+  /* each AI's running P&L (as 100K + P&L; flat $100K a call) and smoothed hit rate after every graded round */
   const bal={},acc={};ORDER.forEach(m=>{let b=1e5,k=0,n=0;bal[m]=[b];acc[m]=[.5];R.forEach(r=>{const x=P[m].per[r.n];if(x){b+=x.v;n++;if(x.v>0)k++}bal[m].push(b);acc[m].push((k+1)/(n+2))})});
   const W=1000,Hh=100,X=i=>(i/N*W).toFixed(1);
   const chart=(ser,lo,hi,base,baseLbl,ends,ord)=>{const Y=v=>(Hh-(v-lo)/(hi-lo)*Hh).toFixed(2);
@@ -15609,11 +15611,11 @@ function proofBuild(P,R,rank){
       <p class="wc-pf-x" aria-hidden="true"><span>Start</span><span>R${R[N-1].n}</span></p></div>`};
   /* P&L */
   const all=[].concat(...ORDER.map(m=>bal[m])),lo=Math.min(...all),hi=Math.max(...all),pd=(hi-lo)*.06;
-  const vPnl=chart(bal,lo-pd,hi+pd,1e5,'$100K start',m=>`<small class="${P[m].pnl>=0?'wc-tu':'wc-td'}">${pc1(P[m].pnl/1000)}</small>`,rank)+
+  const vPnl=chart(bal,lo-pd,hi+pd,1e5,'Break even',m=>`<small class="${P[m].pnl>=0?'wc-tu':'wc-td'}">${pc1(P[m].pnl/1000)}</small>`,rank)+
     `<div class="wc-pf-rows" role="table" aria-label="P&amp;L"><div class="wc-pf-hd" role="row"><span role="columnheader">AI</span><span role="columnheader">Last 24h</span><span role="columnheader">Last 7d</span><span role="columnheader">P&amp;L</span></div>
     ${rank.map((m,i)=>{const d1=win(m,864e5),d7=win(m,7*864e5);return `<div class="wc-pf-r${i===0?' wc-pf-1':''}" role="row"><span class="wc-pf-nm" role="cell"><i class="wc-pf-rk">${i+1}</i>${face(m,'wc-f-s')}<b>${NM[m]}</b></span>
       <span role="cell" class="${d1>0?'wc-tu':d1<0?'wc-td':''}">${d1?kShort(d1):'·'}</span><span role="cell" class="${d7>0?'wc-tu':d7<0?'wc-td':''}">${d7?kShort(d7):'·'}</span><b role="cell" class="wc-pf-big ${P[m].pnl>=0?'wc-tu':'wc-td'}">${pm(P[m].pnl)}</b></div>`}).join('')}</div>
-    <p class="wc-pf-note">$100,000 to start. The whole balance on every call. Buy on up, short on down. No leverage. Before fees.</p>`;
+    <p class="wc-pf-note">If you&rsquo;d bet $100K on every call. Each call is its own bet. Buy on up, short on down. No leverage. Before fees.</p>`;
   /* Accuracy */
   const byA=ORDER.slice().sort((a,b)=>P[b].W/(P[b].W+P[b].L)-P[a].W/(P[a].W+P[a].L));
   const vAcc=chart(acc,.3,.8,.5,'Coin flip, 50%',m=>`<small>${Math.round(P[m].W/(P[m].W+P[m].L)*100)}%</small>`,byA)+
@@ -16018,7 +16020,7 @@ function r11b(){if(H.classList.contains('cd-on'))return;H.classList.add('wc-f11'
     const p4=`<section class="wc11s-pn wc11d-p wc11d-p4" aria-label="Step 4">${cap(4,'The payout')}
         <div class="wc11d-pay"><div class="wc11d-purse">${face(pay.m,'wc11d-pfc')}<div><small>${NM[pay.m]} ${pay.v>=0?'made':'lost'}</small><b class="wc11d-big ${pay.v>=0?'wc11d-bu':'wc11d-bd'}" data-v="${pay.v}">${$f(pay.v)}</b></div></div>
           <ul class="wc11d-rest">${rest.map(x=>`<li>${face(x.m,'wc-f-s')}<span>${NM[x.m]}</span><b class="${x.v>=0?'wc11s-tu':'wc11s-td'}" data-v="${x.v}">${$f(x.v)}</b></li>`).join('')}</ul>${race}</div>
-        <p class="wc11d-fine">P&amp;L on this call. Pretend $100,000 accounts, the whole balance on every call.</p></section>`;
+        <p class="wc11d-fine">P&amp;L on this call, if you&rsquo;d bet $100K on it.</p></section>`;
     /* panel 5: the Season 1 ticket has a hole for every round; graded ones are punched, ringed by the move; this round gets punched */
     const hs=[].concat(ROUNDS.map(x=>({n:x.n,k:'g',a:x.a})),(window.PENDING||[]).map(x=>({n:x.n,k:'p',t:x.ticker})),(window.UPCOMING||[]).map(x=>({n:x.n,k:'u',t:x.ticker}))).sort((a,b)=>a.n-b.n);
     const TT=hs.length,G=ROUNDS.length,lst=hs[TT-1],isBet=lst&&lst.t==='NVDA';
@@ -16473,7 +16475,7 @@ const count=(el,from,to,dur,fmt)=>{const put=v=>{el.textContent=fmt(v);el.classL
 window.SS={ORDER,NM,FLAG,X,WS,P,gold,srank,$f,k$,hr,hrv,col,face,logo,f5,flag,esc,sw,wire,flip,count,RM,cur,N};
 /* mount: the take replaces the live list (kept in the DOM, hidden) and follows the window the bill shows */
 window.SSmount=function(){const T=window.SST,sec=D.querySelector('#wc-lb .wc-sbd');if(!T||!sec)return;
-  const list=sec.querySelector('.wc-sb');list.classList.add('ss-hide');const sm=sec.querySelector('.wc-h2 small');if(sm)sm.textContent='A pretend $100,000 each to start. We bet on the leader’s call.';
+  const list=sec.querySelector('.wc-sb');list.classList.add('ss-hide');const sm=sec.querySelector('.wc-h2 small');if(sm)sm.textContent='If you’d bet $100K on every call. We bet on the leader’s call.';
   const host=D.createElement('div');host.className='ss-host ss-'+T.id;list.after(host);T.build(host);const setSw=wire(host);
   let k=cur(),prev=null;setSw(k);T.draw(X[k],null,false);prev=X[k];
   const mo=new MutationObserver(()=>{const n=cur();if(n===k)return;k=n;setSw(k);T.draw(X[k],prev,!RM());prev=X[k]});
@@ -16482,14 +16484,14 @@ window.SSmount=function(){const T=window.SST,sec=D.querySelector('#wc-lb .wc-sbd
 })();
 
 /* S3 · Tale of the tape: the four AIs stand side by side like a fight poster (left = first in the window's order), every
-   stat is one row across them, printed once. The P&L row is a skyline from the $100,000 start line: up is profit, down is
+   stat is one row across them, printed once. The P&L row is a skyline from the $0 line (a flat $100K on every call): up is profit, down is
    loss, the height is the money. In each other row the best figure is circled in gold ink, so "who wins this stat" reads
    at a glance; a window with too few calls leaves the hit rate blank instead of circling a fluke. Switching the window
    sends the fighters to their new corners (they slide sideways) and the skyline regrows. */
 (function(){const S=window.SS,D=document;
 const ROWS=[['pl','P&L'],['wl','W-L'],['hr','Hit rate'],['l5','Last 5'],['tp','Top round'],['wr','Worst round']];
 window.SST={id:'s3',build(h){
-  const lab=ROWS.map(([k,t])=>k==='pl'?`<span class="ss3-lab ss3-r-pl"><b data-lab>${t}</b><small class="ss3-st0"><i class="ss3-dash"></i> <span data-st0>$100K start</span></small></span>`:`<span class="ss3-lab ss3-r-${k}">${t}</span>`).join('');
+  const lab=ROWS.map(([k,t])=>k==='pl'?`<span class="ss3-lab ss3-r-pl"><b data-lab>${t}</b><small class="ss3-st0"><i class="ss3-dash"></i> <span data-st0>$0</span></small></span>`:`<span class="ss3-lab ss3-r-${k}">${t}</span>`).join('');
   const cells=S.ORDER.map(m=>`<div class="ss3-c ss3-r-hd" data-m="${m}"><span class="ss3-stub"><b data-rk></b><i data-sub></i></span>
       <span class="ss3-pic">${S.flag(m,'ss3-flg')}${S.face(m,'ss3-face')}</span><b class="ss3-nm">${S.NM[m]}</b><small class="ss3-ver">${S.esc(MODELS[m].ver)}</small></div>
     <div class="ss3-c ss3-r-pl" data-m="${m}"><span class="ss3-sky"><i class="ss3-col"></i><b class="ss3-v" data-pl></b></span></div>
@@ -16502,7 +16504,7 @@ window.SST={id:'s3',build(h){
     <div class="ss3-g" aria-hidden="true"><span class="ss3-lab ss3-r-hd ss3-lab0"><span class="ss3-key"><i class="ss3-ring"></i> Best in the row</span></span>${lab}<i class="ss3-base"></i>${cells}</div>
     <ol class="ss-sr" data-sr></ol><p class="ss3-ft"><span data-ft></span><span class="ss3-key"><i class="ss3-ring"></i> best in the row</span></p></div>`},
  draw(x,prev,anim){const h=D.querySelector('.ss-host.ss-s3'),g=h.querySelector('.ss3-g'),cs=[...g.querySelectorAll('.ss3-c')];
-  h.querySelectorAll('[data-lab]').forEach(e=>e.textContent=x.w.lab);h.dataset.k=x.w.k;h.querySelectorAll('[data-st0]').forEach(e=>e.textContent=x.w.k==='season'?'$100K start':'$0');
+  h.querySelectorAll('[data-lab]').forEach(e=>e.textContent=x.w.lab);h.dataset.k=x.w.k;h.querySelectorAll('[data-st0]').forEach(e=>e.textContent='$0');
   const lo=Math.min(0,...S.ORDER.map(m=>x.row[m].amt)),hi=Math.max(0,...S.ORDER.map(m=>x.row[m].amt)),span=(hi-lo)||1;
   g.style.setProperty('--zb',(-lo/span).toFixed(4));/* the start line's height from the row's foot, as a share */
   S.flip(cs,()=>x.o.forEach((m,i)=>g.querySelectorAll(`.ss3-c[data-m="${m}"]`).forEach(c=>{c.style.setProperty('--c',i);c.classList.toggle('ss3-c0',i===0)})),anim);
@@ -16645,7 +16647,7 @@ function chars(D){const sec=document.querySelector('.wc-chars');if(!sec)return;c
   const ttl=el(`<div class="pp-ttl pp1-ttl" aria-hidden="true"></div>`);
   ttl.insertAdjacentHTML('beforeend',P.ext('MEET THE',{size:44,fill:'gold',shade:'#7a0c06',max:W*.72,rot:-3,cls:'pp1-t1'}));
   ttl.insertAdjacentHTML('beforeend',P.ext('MODELS',{size:74,fill:'red',shade:'#7a0c06',max:W*.86,rot:-3,depth:8,cls:'pp1-t2'}));
-  ttl.insertAdjacentHTML('beforeend',`<p class="pp-tag pp1-tag">Not the Instagram kind.<br>Ranked by pretend $100,000 accounts.</p>`);
+  ttl.insertAdjacentHTML('beforeend',`<p class="pp-tag pp1-tag">Not the Instagram kind.<br>Ranked by P&amp;L, if you&rsquo;d bet $100K on every call.</p>`);
   sec.insertBefore(ttl,old);
   const grid=el(`<div class="pp1-grid" style="${flagVars()}"></div>`);sec.insertBefore(grid,old);
   D.models.forEach((x,i)=>{const fl=old.querySelector(`article[data-m="${x.m}"] .wc-flg`);

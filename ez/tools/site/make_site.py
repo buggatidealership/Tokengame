@@ -32,7 +32,7 @@ doc = doc.replace('</head>', meta + '</head>', 1)
 # The card is media/share-d.png (since 2026-10-28: the live headline "4 AIs trade earnings to run our buybacks." over the host; options a to d from ez/tools/concepts/share/share.js);
 # a new card needs a new file name (media is cached for a year, and X keeps a card for days). The icons are the EZ. logo.
 SHARE = 'share-d.png'
-DESC = '4 AIs paper-trade every earnings report. $100K account each. Graded at the close. Top P&L makes the buyback call.'
+DESC = '4 AIs paper-trade every earnings report. $100K on every call. Graded at the close. Top P&L makes the buyback call.'
 meta2 = ('<meta name="description" content="' + DESC + '">\n<meta property="og:description" content="' + DESC + '">\n'
          '<meta property="og:image" content="' + URL + 'media/' + SHARE + '">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n'
          '<meta property="og:image:alt" content="4 AIs trade earnings to run our buybacks. The EZ. logo and the host at his desk.">\n'
