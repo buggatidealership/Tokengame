@@ -84,7 +84,7 @@ function cover(){const root=D.querySelector('.cvx.c2');if(!root)return;const pg=
   const mv=root.querySelector('.c2-mv');if(mv){const L=window.ROUNDS[window.ROUNDS.length-1],up=L.a>0;mv.innerHTML=IL((up?'▲':'▼')+Math.abs(L.a).toFixed(2)+'%',{size:dk?28:22,fill:up?'green':'red',rot:-4}).svg}
   const fb=root.querySelector('.c2-file b');if(fb){fb.innerHTML=IL('No. '+window.ROUNDS.length,{size:dk?24:17*kk,fill:'white',rot:-3}).svg}
   /* the golden ticket's name and P&L: the holo ticket keeps its foil, its words lettered */
-  root.querySelectorAll('.cvx-tkt > svg.pp-ext, .cvx-tkp > svg.pp-ext').forEach(sv=>{const t=(sv.querySelector('text')||sv).textContent.trim(),pnl=!!sv.closest('.cvx-tkp');const h=parseFloat(sv.getAttribute('height'))||20;sv.outerHTML=IL(t,{size:h*.72,fill:pnl?'green':'white'}).svg});
+  root.querySelectorAll('.cvx-tkt > svg.pp-ext, .cvx-tkp > svg.pp-ext').forEach(sv=>{const t=(sv.querySelector('text')||sv).textContent.trim(),pnl=!!sv.closest('.cvx-tkp');const h=parseFloat(sv.getAttribute('height'))||20,wd=parseFloat(sv.getAttribute('width'))||60;sv.outerHTML=IL(t,{size:fitIL(t,h*.7,wd+2),fill:pnl?'green':'white'}).svg});
   /* small elements: the issue strip, step captions and their numbers, the call pills, pass and fail, the logo ring, the film's tag, the hand-off */
   root.querySelectorAll('.c2-cap').forEach((c,i)=>{skin(c,{pal:'yellow',drop:0,ow:0,key:0,band:true,seed:40+i});const b=c.querySelector(':scope > b');skin(b,{pal:'red',kind:'circle',drop:2,ow:2,key:1,seed:50+i,dots:false})});
   root.querySelectorAll('.c2-b').forEach((b,i)=>skin(b,{pal:b.classList.contains('c2-bu')?'green':'red',kind:'pill',drop:2.5,ow:2.4,seed:60+i}));
@@ -273,7 +273,7 @@ function back(){const sec=D.querySelector('#wc-book > .wc-back');if(!sec)return;
 function cuts(){book.querySelectorAll(':scope > .cb-turn,:scope > .cb-gut').forEach(n=>n.remove());
   const q=s=>book.querySelector(':scope > '+s),n=window.ROUNDS.length;let pg=1;
   const turn=(after,label)=>{if(!after)return;const t=D.createElement('div');t.className='cb-turn';t.setAttribute('aria-hidden','true');
-    t.innerHTML=`<span class="cb-fo">Earnings Zeason · Season 1 · No. ${n}</span><span class="cb-pgno">${pg++}</span><i class="cb-curl">${X.svg(40,40,X.curl(40))}</i>`;after.after(t)};
+    t.innerHTML=`<span class="cb-fo"><span class="cb-fo-l">Earnings Zeason · </span>Season 1 · No. ${n}</span><span class="cb-pgno">${pg++}</span><i class="cb-curl">${X.svg(40,40,X.curl(40))}</i>`;after.after(t)};
   const gut=(after,txt,cls)=>{if(!after)return null;const g=D.createElement('div');g.className='cb-gut '+(cls||'');g.setAttribute('aria-hidden','true');g.innerHTML=`<p class="cb-cap cb-brk${cls&&cls.includes('cb-gr')?' cb-r':''}">${txt}</p>`;after.after(g);return g};
   const beat=sec=>{const p=sec&&sec.previousElementSibling;return p&&p.classList.contains('wc-beat')?p.textContent.trim():''};
   turn(q('.wc-cover'));
