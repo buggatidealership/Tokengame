@@ -30,8 +30,8 @@ if W==390:
     for t in ['now','t1','t2','t3','t4']:
         p=f'{D}/{t}-78b-390.png'
         if os.path.exists(p):
-            i=Image.open(p).convert('RGB');c=i.crop((20,int(i.height*.28),i.width-20,int(i.height*.62)));close.append((t,c.resize((int(c.width*1.1),int(c.height*1.1)))))
-    ch=max(c.height for _,c in close);tot+=ch+lab+pad
+            i=Image.open(p).convert('RGB');c=i.crop((20,int(i.height*.28),i.width-20,int(i.height*.62)));close.append((t,c))
+    tw=(cw-pad*(len(close)+1))//len(close);close=[(t,c.resize((tw,int(c.height*tw/c.width)))) for t,c in close];ch=max(c.height for _,c in close);tot+=ch+lab+pad
 B=Image.new('RGB',(cw,tot),'#15131c');d=ImageDraw.Draw(B);y=pad
 d.text((pad,y),f'Round H, area "round": opening a round at {W}px. R78 Intel (film), R57 GE Vernova (tie), R80 Exxon Mobil (no film), pending = R80 replayed as it stood before its close.',fill='#ffd23f',font=font(26));y+=56
 for t,desc,cost,ims in rows:
