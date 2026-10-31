@@ -8,4 +8,4 @@ H7.ready(()=>{if(H7.RM)return;const w=document.querySelector('.wc-bet.hb-on .hb-
  H7.scroll(Y=>{if(!G)return;const t=H7.clamp((G.W.t-Y)/G.vh,0,1.2),p=H7.clamp((1-t)/0.42,0,1),e=1-Math.pow(1-p,3);
    /* t: where the wrap's top sits on the screen (1 = bottom edge, .58 = settled) */
    w.style.transform=e>=1?'none':`perspective(${Math.round(G.vw*2.2)}px) rotateX(${(26*(1-e)).toFixed(2)}deg)`;sh.style.opacity=(1-e).toFixed(3)});
- window.__h7Range=()=>[G.W.t-G.vh*1.05,G.W.t-G.vh*.5];window.__h7Still=()=>Math.round(G.W.t-G.vh*.8)});
+ window.__h7Range=()=>[G.W.t-G.vh*1.05,G.W.t-G.vh*.5];window.__h7Still=()=>Math.round(G.W.t-G.vh*.68)});

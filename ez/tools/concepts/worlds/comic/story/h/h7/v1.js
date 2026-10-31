@@ -2,7 +2,9 @@
    up over the top until the open door hides the ring. The gilt catches the vault's gold light: brightest where the ring meets
    the opening and the floor, dimmer round the dark outer side. A dark wall above each cut, a pale lip below (engraved, not printed). */
 H7.ready(()=>{const L=H7.scene();if(!L)return;
- const cx=797,cy=446,rx=298,ry=305,a1=141,a2=innerWidth>=1000?252:285,P=a=>[cx+rx*Math.cos(a*Math.PI/180),cy+ry*Math.sin(a*Math.PI/180)];
+ /* the arc starts just clear of the headline, which climbs higher up the painting on narrow phones */
+ const hr=(()=>{const r=document.createRange(),h=document.querySelector('.wc-bet h2.hb-h');if(!h)return 9e9;r.selectNodeContents(h);const t=Math.min(...[...r.getClientRects()].map(q=>q.top)),lr=L.getBoundingClientRect();return (t-lr.top)/L.__k})();
+ const cx=797,cy=446,rx=298,ry=305,a1=Math.max(141,180-Math.asin(H7.clamp((hr-26-cy)/ry,-1,1))*180/Math.PI),a2=innerWidth>=1000?252:285,P=a=>[cx+rx*Math.cos(a*Math.PI/180),cy+ry*Math.sin(a*Math.PI/180)];
  const [x1,y1]=P(a1),[x2,y2]=P(a2),d=`M${x1.toFixed(1)} ${y1.toFixed(1)} A${rx} ${ry} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`;
  const t=`THE POOL • ${H7.share()}% OF $EZ CREATOR FEES`;
  L.insertAdjacentHTML('beforeend',`<svg class="v1-r" viewBox="0 0 1600 900" preserveAspectRatio="none" role="img" aria-label="The pool: ${H7.share()}% of $EZ creator fees">

@@ -33,7 +33,7 @@ const MEASURE=()=>{const R=e=>e.getBoundingClientRect(),hit=(a,b)=>a.left<b.righ
  for(const W of WS)for(const t of TS){const {ctx,p,er}=await open(b,W,t);let clip;
   if(MODE==='vault'){const r=await p.evaluate(()=>{const w=document.querySelector('.hb-wrap'),s=document.querySelector('.hb-sub');const t=w.getBoundingClientRect().top+scrollY;scrollTo({top:t-20,behavior:'instant'});const a=w.getBoundingClientRect(),c=s.getBoundingClientRect();return {y:a.top,h:c.bottom+14-a.top}});
    await p.waitForTimeout(700);clip={x:0,y:r.y,width:W,height:r.h}}
-  else{const y=await p.evaluate(()=>{if(window.__h7Still)return window.__h7Still();const g=document.querySelector('.hb-open .g'),h=document.querySelector('.wc-bet h2.hb-h');const b=h.getBoundingClientRect().bottom+scrollY+10;return Math.round(b-innerHeight)});
+  else{const y=await p.evaluate(()=>{window.__h7Strobe=1;if(window.__h7Still)return window.__h7Still();const w=document.querySelector('.wc-bet .hb-wrap'),g=document.querySelector('.hb-open .g');return Math.round(w.getBoundingClientRect().top+scrollY+g.getBoundingClientRect().height+90-innerHeight)});
    await p.evaluate(y=>scrollTo({top:y,behavior:'instant'}),y);await p.waitForTimeout(1300);clip={x:0,y:0,width:W,height:W<600?844:900}}
   await p.screenshot({path:`${OUT}/${MODE}-${W}-${t}.png`,clip});
   const m=await p.evaluate(MEASURE);console.log(W,t,JSON.stringify(m),er.join('|')||'ok');await ctx.close()}

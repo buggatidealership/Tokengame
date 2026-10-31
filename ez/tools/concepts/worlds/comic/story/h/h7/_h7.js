@@ -45,4 +45,4 @@ H7.geo=function(){const D=document,sp=D.querySelector('#wc-book .wc-splash'),cap
   w=D.querySelector('.wc-bet.hb-on .hb-wrap'),g=D.querySelector('.wc-bet.hb-on .hb-open .g'),L=H7.scene();
  const S=H7.doc(sp),C=H7.doc(cap),W=H7.doc(w),Gp=H7.doc(g),Lr=H7.doc(L),k=L.__k;
  const img=(x,y)=>({x:Lr.l+x*k,y:Lr.t+y*k});
- return {S,C,W,G:Gp,seam:Math.round((S.b+W.t)/2),vw:D.documentElement.clientWidth,vh:innerHeight,pile:img(722,612),mouth:img(700,420),img,k}};
+ return {S,C,W,G:Gp,seam:Math.round((S.b+W.t)/2),vw:D.documentElement.clientWidth,vh:innerHeight,pile:img(712,566),mouth:img(700,420),img,k}};
