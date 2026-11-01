@@ -200,3 +200,96 @@ Every chapter gets the same three beats: (1) an establishing picture that makes 
   - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
   - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
   - Budget: up to $10 of Hedra each, rough first.
+
+## Round H12 (owner, 2026-11-01, ~02:00 UTC, before bed: "just do a ton of other iterations")
+The owner's three reference screenshots are in `h12/`:
+- `ref-bet-s1-circuit-owner.webp`: bet2's S1 "The circuit", with the owner's green marks.
+- `ref-meet-models-owner.webp`: today's live Meet the models card, circled, beside cast2's doors take.
+- `ref-cover-loop-owner.webp`: today's live cover, with the four loop panels circled.
+
+**1. Scroll, not show.** "It's maybe not the best to have all these animations. I think you just want to have a scroll... a scroll within a storybook, within the comic book itself."
+- The reader scrolls through panels.
+- No tap-to-unfold objects, no clips playing on tap, no scroll-hijacking.
+- Motion is small and shows a fact flowing. Example: the fees running down the traces into the pool, so the reader feels it filling. Hold to one small loop per panel at most.
+- Nothing needs a click to be understood.
+
+**2. Every chapter follows the bet's S1 sequence (the template):**
+1. The title over the establishing picture (the vault).
+2. The live instrument (the timer in the chip).
+3. A panel where the fact happens in the world (the fees flowing into the pool).
+4. The call.
+5. The two outcomes.
+6. The hook to what comes next (Season 2).
+- "It doesn't mean exactly the same numbers... as many sections as needed but not too many."
+- Each chapter finds its own sequence of panels in that spirit: what it is, the live thing, what happens, why it matters, what's next.
+
+**3. Text lives in the world.**
+- A fact about the world is painted or lettered *on* the world. The owner circled "69% of $EZ creator fees fill the pool" as written text: it should be part of the picture, for example engraved on the pool's rim, stamped on the vessel, or a gold plate on the board.
+- A line that is a voice goes in a comic speech balloon or a narration caption drawn into the panel, not a plain paragraph. Example: "The pool gets bet on the top AI's call. Today that's Grok."
+- Plain text outside the world is kept to a minimum.
+- Live numbers are still page text, set on a surface the painting leaves blank for them (lesson 85), in that object's own material.
+
+**4. Meet the models (the `cast4` helper already has this).**
+- Keep today's format and layout (the circled card). The founder's living portrait is "enough".
+- No clicking into a model.
+- Paint the card as a hand-drawn ticket.
+- Make the background an environment.
+- Change the chapter's opening picture.
+
+**5. The cover's four loop panels.**
+- Today's cover keeps its layout. Its four circled panels carry the box helper's painted objects, at that size, seen at first glance:
+  - panel 1, the letter with the four predictions;
+  - panel 2, the bell with the market's answer;
+  - panel 3, the golden ticket with the leader's P&L and W-L;
+  - panel 4, "we follow its call on the bet".
+- Show them in their open state (the fact visible), since nothing needs a click. Show a closed/opened pair as a second option only.
+
+**Areas:**
+- **`bet3`, the bet chapter in the S1 circuit sequence, many iterations.**
+  - Start from `bet2/s1.js` and its paintings (traces-sd, fork-gpt) and the live chapter (`ez/tools/v22/story/h_bet.*`).
+  - Keep the vault opener and the live countdown in the chip as they are.
+  - The 69% (from SIM.poolShare) is lettered into the pool's picture. At least three ways: engraved on the rim, on a gold plate, on a meter or gauge.
+  - Fees visibly flow into it in one small loop (CSS or a short painted loop; nothing on tap).
+  - "The pool gets bet on the top AI's call. Today that's <leader>" as a speech balloon or narration caption drawn in. At least two voices, for example the host's balloon or a caption box.
+  - The fork to RIGHT (lit LED, "$EZ buyback") and WRONG (blown fuse, "the pool can be wiped out"), with the outcome words lettered in the world.
+  - Then Season 2 ("NVIDIA is the first bet, not the last") in the world, as the empty sockets of bets to come.
+  - The bet stays the one dark chapter (vault noir with gold, green and red light).
+  - At least four variations of the whole sequence, each tested against "how much plain text is left".
+  - Boards: `ez/x2p-x3p-h12-bet3-390.png`, `-1280.png`, and a scroll video at 390.
+- **`cover7`, the cover with the loop objects, many iterations.**
+  - Today's live cover layout: the Season 1 strip, Starring, the title, the 2x2 loop with "Every round" in the middle, the film.
+  - The four panels repainted as the box helper's objects (`box/img/`; box/REPORT.md).
+  - The objects show their facts at first glance, from the newest graded round (ROUNDS, CO_LOGOS, `__x2pPnl`):
+    - the letter open with GPT/Kimi/Claude/Grok's predictions;
+    - the bell with the close ("XOM closed ▲2.17%");
+    - the golden ticket with "GROK", P&L and W-L;
+    - panel 4 at least three options: the coming-attractions wall with Bet #1 lit, the vault cracked onto Bet #1, the slip under the grille.
+  - Bright and flashy like today's cover (not noir).
+  - At least four treatments: Silver Age flat print, the logo's flat badge, today's pop palette, and one of your own.
+  - The model names may appear as words (the predictions, the ticket); no founders' faces on the cover.
+  - Boards: `ez/x2p-x3p-h12-cover7-390.png`, `-1280.png`.
+- **`seq`, the same sequencing on the chapters nobody else has tonight.**
+  - **Tonight at the close** (the end of the Overview, linking to Upcoming).
+  - **The Upcoming tab's top.**
+  - **The Leaderboard tab's top** (the fight bill and the scoreboard).
+  - For each, design a panel sequence in the S1 spirit:
+    1. what it is, over an establishing picture;
+    2. the live thing in the world;
+    3. what happens;
+    4. why it matters;
+    5. what's next.
+  - Text in the world; speech balloons for voices.
+  - Bright, except where the chapter is about risk.
+  - At least three takes per chapter.
+  - Boards: `ez/x2p-x3p-h12-seq-390.png`, `-1280.png`.
+- **`book3`, the whole Overview as one scrolled comic book.**
+  - How the chapters hand over to each other on scroll alone: gutters, a panel whose picture continues into the next chapter's opening, a page edge, a narration caption bridging two chapters.
+  - What is fixed (the header) and what scrolls.
+  - The rhythm of big and small panels down a phone.
+  - Use today's live chapters and the bet as content. Show the full Overview as one long board at 390, in at least three rhythms.
+  - Also a desktop take: is it one column of panels, or a two-page spread?
+  - Boards: `ez/x2p-x3p-h12-book3-390.png`, `-1280.png`, and a scroll video.
+- **Rules:** rule 0, the hard rules and BRIEF-H's output rules hold.
+  - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
+  - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
+  - Budget: up to $10 of Hedra each.
