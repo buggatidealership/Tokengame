@@ -549,7 +549,10 @@ for _a,_c in [(r'#f6dc93|#fbe8a8|#f6d77c','#fed98a'),(r'#e4b54a|#e7bd5b|#efc24a'
 px=px.replace('</head>','<style id="x2p-cream">html.x2p.x2d.x2pbt.x2pbill .x2p-vt .vb-bl .pa{background:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p.x2d.x2pbt.x2pbill .x2p-vt{--ko:'+GRAIN+' 0 0/240px 240px,#efe4c8!important}html.x2p .card .xc{background-color:#fff!important}</style>\n</head>',1)
 # (owner, 2026-10-27) the certificate's Kanit (the logo's lettering), X2+ only
 px=px.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&family=Saira+Condensed:wght@600;700;800&family=Alfa+Slab+One&display=swap" rel="stylesheet">\n</head>',1)
-open("v46-live-x2plus.html",'w').write(px); print("ok v46-live-x2plus.html",len(px))
+# (owner, 2026-11-01: round H21 top6 take A, "push it to production") X2+'s new top: the headline, "How a round works" and "The whole
+# game" (tools/v22/story/x2p_top.*), in place of X2+'s hero and film bill + live strip. X2+ only: the world pages build from px without it.
+_tp=px.replace('</head>','<style id="x2p-top">\n'+open('tools/v22/story/x2p_top.css').read()+'\n</style>\n</head>',1).replace('</body>','<script id="x2p-top-js">\n'+open('tools/v22/story/x2p_top.js').read()+'\n</script>\n</body>',1)
+open("v46-live-x2plus.html",'w').write(_tp); print("ok v46-live-x2plus.html",len(_tp))
 # The world pages (owner, 2026-10-29: "erase Easy Live X3 Plus and build the entire [comic book] one on [it]... create the arcade
 # one on a new page called Easy Live X4 Plus"): X2+'s build with a world drawn over it (tools/v22/world-<name>.css/.js, from the
 # overnight mockups in tools/concepts/worlds/), a Leaderboard tab (window.__x2pLB) and the cover waiting for the world

@@ -1,0 +1,169 @@
+/* X2+ TOP: the top of X2+ (round H21 top6 take A), see x2p_top.js */
+/* Round H19 · top4: the top of X2+, from H18 top3's take A (mockup CSS laid over the built page). */
+.t4{--cr:#f8f0d9;--ink:#0d0b10;--gd:#ffd21f;--up:#3ee07f;--dn:#ff5148;position:relative;padding:10px 0 8px;color:var(--cr)}
+.t4 *{box-sizing:border-box}
+/* phones: every beat bleeds edge to edge (the page's main has 16px sides) */
+@media (max-width:999px){.t4-bleed,.t4-frs{margin-left:-16px;margin-right:-16px}}
+.t4-pic{position:relative;width:100%;overflow:hidden;background:#020203}
+.t4-mv{position:absolute;inset:0;transform-origin:50% 50%}
+.t4-pic>.t4-mv>img{position:absolute;display:block;height:auto;max-width:none;user-select:none}
+.t4-sf{position:absolute;left:0;top:0;transform-origin:0 0;pointer-events:none}
+.t4-sf svg{display:block;overflow:visible}
+.t4-at{position:absolute;display:block;pointer-events:none}
+.t4-an{font-family:Anton,'Bebas Neue',sans-serif}
+.t4-glass .t4-an{filter:drop-shadow(0 0 1.5px rgba(255,236,190,.55)) drop-shadow(0 0 5px rgba(255,190,60,.25))}
+.t4-glass .t4-call,.t4-glass .t4-move{filter:drop-shadow(0 0 4px currentColor)}
+.t4-glass svg>svg,.t4-glass g>svg{filter:drop-shadow(0 0 3px rgba(255,236,190,.5))}
+.t4-led{filter:drop-shadow(0 0 3px #ffb21a) drop-shadow(0 0 8px rgba(255,150,0,.55))!important}
+.t4-gold svg{mix-blend-mode:multiply}
+.t4-eng{filter:drop-shadow(0 1px 0 rgba(255,236,170,.75)) drop-shadow(0 -1px 0 rgba(60,30,0,.35))}
+.t4-lc{font-size:.8em}
+/* ---------- the bet's lettering (Bangers, ink stroke, stacked drop, tilt): headline, "How a round works", the film's head ---------- */
+.t4-h1,.t4-h2{position:relative;z-index:3;margin:0;font:400 clamp(30px,8.6vw,78px)/.92 Bangers,Anton,sans-serif!important;letter-spacing:.012em!important;text-transform:uppercase;transform:rotate(-2.2deg);background:none!important;color:inherit;padding:0 12px}
+.t4-hw{display:block;width:max-content;max-width:100%;color:var(--gd);-webkit-text-fill-color:var(--gd);-webkit-text-stroke:.075em var(--ink);paint-order:stroke fill;
+ text-shadow:.02em .02em 0 #e7930b,.04em .04em 0 #c42a20,.06em .06em 0 #c42a20,.08em .08em 0 #c42a20,.1em .1em 0 var(--ink),.12em .12em 0 var(--ink),.135em .14em 0 var(--ink)}
+.t4-h1 .t4-hw1{color:var(--cr);-webkit-text-fill-color:var(--cr);margin-left:.35em;text-shadow:.02em .02em 0 #b9ad8f,.04em .04em 0 #0a5c2e,.06em .06em 0 #0a5c2e,.08em .08em 0 #0a5c2e,.1em .1em 0 var(--ink),.12em .12em 0 var(--ink),.135em .14em 0 var(--ink)}
+/* the headline sits on top and its foot bites into the painting's black void, as "Bet #1: NVIDIA" breaks the vault's border */
+.t4-h1{padding-top:4px;margin-bottom:-.5em}
+/* "How a round works" at the headline's size, breaking the CALL frame's top edge as "Bet #1: NVIDIA" breaks the vault's */
+.t4-h2{margin:0 0 10px;transform:rotate(-1.8deg)}
+.t4-b2 .t4-h2{margin-bottom:-.52em}
+.t4-h2 .t4-hw{display:inline-block}
+.t4-h1 .t4-hw,.t4-h2 .t4-hw{white-space:nowrap}
+.t4-fh .t4-hws{color:var(--cr);-webkit-text-fill-color:var(--cr);font-size:.62em;margin-left:.15em}
+/* ---------- gutters ---------- */
+.t4-gut{height:26px}
+/* ---------- beat 2 ---------- */
+.t4-frs{list-style:none;margin-top:0;margin-bottom:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:16px 4px}
+.t4-fr{position:relative;outline:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.t4-fr:focus-visible .t4-art{outline:2px dashed var(--gd);outline-offset:-3px}
+.t4-art{position:relative;overflow:hidden;background:#020203;border-top:2px solid var(--cr);border-bottom:2px solid var(--cr)}
+.t4-cap{position:absolute;z-index:3;left:5px;top:6px;max-width:94%;overflow:hidden;text-overflow:ellipsis;background:#050507;border:1.5px solid var(--cr);padding:3px 6px 2px;white-space:nowrap;font:700 8.5px/1.15 'Shantell Sans',system-ui;text-transform:uppercase;letter-spacing:.02em;color:var(--cr);transform:rotate(-1deg)}
+.t4-ln{margin:3px 8px 0;font:600 12px/1.25 'Shantell Sans',system-ui;color:var(--cr)}
+/* ---------- the step words: silkscreened on each painting's bare strip of board (SVG text in perspective, see _t4.js sw()) ---------- */
+.t4-sw{font-family:Bangers,Anton,sans-serif;letter-spacing:.03em}
+.t4-strip svg{opacity:.96}
+/* ---------- states: off until a tap (or 3 s on screen) ---------- */
+.t4-fr.t4-on .t4-veil{opacity:0}
+.t4-fr:not(.t4-on) .t4-lit,.t4-fr:not(.t4-on) .t4-ro,.t4-fr:not(.t4-on) .t4-new,.t4-fr:not(.t4-on) .t4-eg{opacity:0}
+.t4-fr.t4-on .t4-cur{display:none}
+.t4-old{opacity:.55}
+/* the affordances while off (no word says "tap"): the dies breathe, the bell's plunger bobs, the head's cursor blinks, a glint crosses the gold */
+.t4-die::before{content:'';position:absolute;inset:4%;border-radius:4px;background:radial-gradient(ellipse at 50% 50%,rgba(255,200,90,.42),rgba(255,170,40,.12) 55%,transparent 75%);opacity:0}
+.t4-knob{overflow:hidden;border-radius:46% 46% 40% 40%/30% 30% 50% 50%}
+.t4-knob img{position:absolute;max-width:none;height:auto}
+.t4-veil{background:radial-gradient(ellipse 60% 62% at 46% 46%,#000 62%,rgba(0,0,0,.85) 76%,transparent 100%);transition:opacity .5s ease .2s}
+.t4-ring{border-radius:50%;border:2px solid rgba(255,214,110,.9);opacity:0;box-shadow:0 0 8px rgba(255,200,80,.6)}
+.t4-head{border-radius:6px}
+.t4-cur{opacity:.9}
+.t4-gold::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 38%,rgba(255,252,230,.95) 50%,transparent 62%) -160% 0/260% 100% no-repeat;mix-blend-mode:overlay;opacity:0}
+@media (prefers-reduced-motion:no-preference){
+ .t4-call:not(.t4-on) .t4-die::before{animation:t4-breathe 2.2s ease-in-out infinite}
+ .t4-call:not(.t4-on) .t4-d1::before{animation-delay:.3s}.t4-call:not(.t4-on) .t4-d2::before{animation-delay:.6s}.t4-call:not(.t4-on) .t4-d3::before{animation-delay:.9s}
+ .t4-bell:not(.t4-on) .t4-knob{animation:t4-trem 2.6s linear infinite}
+ .t4-bell:not(.t4-on) .t4-cur{animation:t4-blink 1s steps(2,end) infinite}
+ .t4-ledger:not(.t4-on) .t4-head{animation:t4-headg 1.6s ease-in-out infinite}
+ .t4-one:not(.t4-on) .t4-gold::after{animation:t4-sheen 1.3s ease-in-out infinite;animation-delay:1.2s}
+ /* turning on: CALL's dies light one after another; the bell rings and the readout types; the head writes the row; the lid is engraved and tilts */
+ .t4-call.t4-go .t4-lit{animation:t4-lit .9s steps(2,end) both}
+ .t4-call.t4-go .t4-d1 .t4-lit{animation-delay:.35s}.t4-call.t4-go .t4-d2 .t4-lit{animation-delay:.7s}.t4-call.t4-go .t4-d3 .t4-lit{animation-delay:1.05s}
+ .t4-bell.t4-go .t4-knob{animation:t4-buzz .09s linear 10}
+ .t4-bell.t4-go .t4-ring{animation:t4-ring 1.1s ease-out .15s both}.t4-bell.t4-go .t4-ring.r2{animation-delay:.5s}
+ .t4-bell.t4-go .t4-mv{animation:t4-buzz .45s linear .1s 2}
+ .t4-bell.t4-go .t4-ro{animation:t4-type 1.2s steps(8,end) .5s both}
+ .t4-ledger.t4-go .t4-new{animation:t4-type 1.4s steps(12,end) .2s both}
+ .t4-ledger.t4-go .t4-head{animation:t4-headw 1.4s linear .2s both}
+ .t4-one .t4-pic{perspective:700px}
+ .t4-one.t4-go .t4-mv{animation:t4-tilt 1.3s ease-in-out both}
+ .t4-one.t4-go .t4-eg{animation:t4-lit .8s steps(2,end) .2s both}
+ .t4-one.t4-go .t4-gold::after{animation:t4-sheen 1.1s ease-in-out .35s both}
+ .t4-fr:hover .t4-art{filter:brightness(1.08)}
+}
+@keyframes t4-breathe{0%,100%{opacity:0}50%{opacity:1}}
+@keyframes t4-bob{0%,70%,100%{transform:translateY(0)}78%{transform:translateY(5%)}86%{transform:translateY(0)}92%{transform:translateY(4%)}}
+@keyframes t4-trem{0%,72%,100%{transform:translate(0,0)}75%{transform:translate(1.2px,-.6px)}78%{transform:translate(-1.2px,.6px)}81%{transform:translate(1px,.4px)}84%{transform:translate(-1px,-.4px)}87%{transform:translate(0,0)}}
+@keyframes t4-press{0%{transform:translateY(0)}30%{transform:translateY(9%)}100%{transform:translateY(0)}}
+@keyframes t4-blink{0%{opacity:.9}100%{opacity:0}}
+@keyframes t4-headg{0%,100%{box-shadow:0 0 0 0 rgba(255,200,80,0)}50%{box-shadow:0 0 14px 4px rgba(255,200,80,.55)}}
+@keyframes t4-headw{0%{transform:translateX(0);box-shadow:0 0 14px 4px rgba(255,200,80,.6)}100%{transform:translateX(0);box-shadow:0 0 0 0 rgba(255,200,80,0)}}
+@keyframes t4-lit{0%{opacity:0}40%{opacity:.3}60%{opacity:1}100%{opacity:1}}
+@keyframes t4-ring{0%{opacity:.95;transform:scale(.5)}100%{opacity:0;transform:scale(1.7)}}
+@keyframes t4-buzz{0%,100%{transform:translate(0,0)}25%{transform:translate(1px,-1px)}50%{transform:translate(-1px,1px)}75%{transform:translate(1px,1px)}}
+@keyframes t4-type{0%{clip-path:inset(0 100% 0 0)}100%{clip-path:inset(0 0 0 0)}}
+@keyframes t4-tilt{0%{transform:rotateX(0) rotateY(0) scale(1)}40%{transform:rotateX(10deg) rotateY(-16deg) scale(1.04)}100%{transform:rotateX(0) rotateY(0) scale(1)}}
+@keyframes t4-sheen{0%{opacity:1;background-position:-160% 0}100%{opacity:1;background-position:160% 0}}
+/* ---------- beat 3: the film on the board's display ---------- */
+.t4-glass-v{pointer-events:auto!important;overflow:hidden;background:#000}
+.t4-v{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.t4-glare{position:absolute;inset:0;pointer-events:none;background:linear-gradient(128deg,rgba(255,255,255,.16) 0,rgba(255,255,255,.05) 34%,transparent 34.2%);mix-blend-mode:screen}
+.t4-play{position:absolute;left:50%;top:89%;width:44px;height:44px;margin:-22px 0 0 -22px;border:0;background:none;padding:0;cursor:pointer}
+.t4-play i{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ffe9a0,#f5b81f 55%,#b07a0c);box-shadow:0 0 0 1.5px #000,0 0 10px rgba(255,190,60,.7)}
+.t4-play i::after{content:'';position:absolute;left:8.5px;top:6px;border-left:7px solid #000;border-top:5px solid transparent;border-bottom:5px solid transparent}
+/* ---------- wide ---------- */
+@media (min-width:1000px){
+ .t4{max-width:1180px;margin:0 auto;padding-top:22px}
+ .t4-h1,.t4-h2{font-size:clamp(48px,5.4vw,74px)!important}
+ .t4-h1{margin-bottom:-.35em;padding-left:40px}
+ .t4-b1 .t4-bleed{max-width:1100px;margin:0 auto}
+ .t4-gut{height:48px}
+ .t4-frs{grid-template-columns:repeat(4,1fr);gap:18px}
+ .t4-art{border:2px solid var(--cr)}
+ .t4-cap{font-size:11.5px;padding:4px 8px 3px}
+ .t4-ln{font-size:15px}
+ .t4-b3 .t4-bleed{max-width:900px;margin:0 auto}
+ .t4-h2{padding-left:40px}
+ .t4-b2 .t4-h2{margin-bottom:-.36em}
+}
+
+/* Round H20 · top5: laid over top4's _t4.css (both over the built v46-live-x2plus.html). */
+/* ---------- the numbered sub-heads: comic narration in the headline's Bangers, below "How a round works" in size, above the line ---------- */
+.t5-sh{position:relative;z-index:4;display:flex;align-items:center;gap:.16em;width:max-content;max-width:calc(100% - 8px);margin:calc(var(--t5sh,21px)*-.86) 0 0 6px;
+ font:400 var(--t5sh,21px)/1 Bangers,Anton,sans-serif!important;letter-spacing:.025em!important;text-transform:uppercase;color:#f8f0d9;transform-origin:0 60%;background:none!important;padding:0}
+.t5-sh .t5-w{display:block;white-space:nowrap}
+.t5-sh .t5-n{position:relative;flex:none;display:grid;place-items:center}
+.t5-sh .t5-n svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.t5-sh .t5-n b{position:relative;font-weight:400}
+.t4-ln{margin-top:3px}
+/* 1 · gold badge: the number on a hand-drawn gold disc, the word in cream with an ink outline and an ink drop (no colour drop: the headline keeps those) */
+.t5-S1{transform:rotate(-2.6deg);margin-top:calc(var(--t5sh,21px)*-.24)!important}
+.t5-S1 .t5-n{width:1.32em;height:1.32em;margin-right:.02em}
+.t5-S1 .t5-n b{font-size:.86em;color:#0d0b10;transform:translate(-.05em,-.04em)}
+.t5-S1 .t5-w{-webkit-text-fill-color:#f8f0d9;-webkit-text-stroke:.08em #0d0b10;paint-order:stroke fill;text-shadow:.04em .045em 0 #0d0b10,.07em .08em 0 #0d0b10}
+/* 2 · green word, big numeral: the number tall in the headline's gold (red drop, as the headline), the word in green; the frames tilt in turn */
+.t5-S2.t5-l{transform:rotate(-3deg)}.t5-S2.t5-r{transform:rotate(2.2deg)}
+.t5-S2{gap:.06em;align-items:flex-end;margin-top:calc(var(--t5sh,21px)*-.3)!important}
+.t5-S2 .t5-n b{font-size:1.7em;line-height:.8;-webkit-text-fill-color:#ffd21f;-webkit-text-stroke:.06em #0d0b10;paint-order:stroke fill;text-shadow:.03em .03em 0 #c42a20,.055em .055em 0 #c42a20,.08em .08em 0 #0d0b10}
+.t5-S2 .t5-w{-webkit-text-fill-color:#3ee07f;-webkit-text-stroke:.08em #0d0b10;paint-order:stroke fill;text-shadow:.04em .045em 0 #0d0b10,.07em .08em 0 #0d0b10;padding-bottom:.04em}
+/* 3 · caption tab: a drawn narration box (black, cream ink border, an ink drop) with the number on a red tab, the word in cream */
+.t5-S3{padding:.16em .62em .1em .16em;transform:rotate(-1.6deg);margin-top:calc(var(--t5sh,21px)*-.55)!important}
+.t5-S3 .t5-box{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.t5-S3 .t5-n{width:1.05em;height:1.05em;margin-right:.12em}
+.t5-S3 .t5-n b{font-size:.78em;color:#f8f0d9}
+.t5-S3 .t5-w{position:relative;color:#f8f0d9;-webkit-text-fill-color:#f8f0d9}
+/* ---------- gutters ---------- */
+.t4-frs{position:relative}
+.t5-fg{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-index:2}
+@media (max-width:999px){.t4-frs{gap:20px 10px}}
+@media (min-width:1000px){.t4-frs{gap:24px 22px}}
+/* beat gutters: full bleed, drawn */
+.t5-bg{position:relative;pointer-events:none}
+.t5-bgs{position:absolute;left:0;top:0;display:block;overflow:visible}
+.t5-G1{height:40px;margin:16px 0 14px}
+.t5-G3{height:44px;margin:14px 0 12px}
+.t5-G2{display:flex;height:30px;margin:22px 0 24px;filter:drop-shadow(0 2px 0 #000)}
+.t5-G2 i{display:block;height:100%}
+.t5-G2 .t5-el{width:calc(30px*78/232);background:url(tools/concepts/worlds/comic/story/h/top5/img/t5-edge-l.jpg) 0 0/100% 100%}
+.t5-G2 .t5-em{flex:1;background:url(tools/concepts/worlds/comic/story/h/top5/img/t5-edge-m.jpg) 0 0/auto 100% repeat-x}
+.t5-G2 .t5-er{width:calc(30px*109/232);background:url(tools/concepts/worlds/comic/story/h/top5/img/t5-edge-r.jpg) 0 0/100% 100%}
+@media (max-width:999px){.t5-bg{margin-left:-16px;margin-right:-16px}}
+@media (min-width:1000px){
+ .t5-G1{height:56px;margin:26px 0 22px}.t5-G3{height:60px;margin:24px 0 20px}
+ .t5-G2{height:42px;margin:32px 0 34px}.t5-G2 .t5-el{width:calc(42px*78/232)}.t5-G2 .t5-er{width:calc(42px*109/232)}
+}
+
+/* Round H21 · top6: laid over top4's _t4.css and top5's _t5.css. */
+.t6-k{white-space:nowrap}
+.t4-frs>.t4-fr{min-width:0}
+
+/* the white rule at the top of each frame is gone: the torn paper and the gold trace part the beats and frames now (owner, 2026-11-01) */
+.t4-art{border-top:0}
