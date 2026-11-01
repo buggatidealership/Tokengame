@@ -59,7 +59,7 @@ function html(Dt){
      `<text class="glo no" x="724" y="580" text-anchor="end" font-size="40" font-family="Anton" letter-spacing="3">WRONG</text>${ss('THE POOL CAN','x="724" y="606" text-anchor="end" font-size="21"')}${ss('BE WIPED OUT','x="724" y="629" text-anchor="end" font-size="21"')}`)}
    
    <g filter="url(#bdlc)"><image href="media/logos/GOOGL.png" x="1076.3" y="169.4" width="58" height="58" preserveAspectRatio="xMidYMid meet" class="bd-lg" style="animation-delay:0s"/></g><g filter="url(#bdlc)"><image href="media/logos/TSLA.png" x="1076.3" y="332.6" width="58" height="58" preserveAspectRatio="xMidYMid meet" class="bd-lg" style="animation-delay:1.6s"/></g><g filter="url(#bdlc)"><image href="media/logos/MSFT.png" x="1078.3" y="497" width="54" height="54" preserveAspectRatio="xMidYMid meet" class="bd-lg" style="animation-delay:3.2s"/></g>${ss('SEASON 2 →','font-size="30" text-anchor="middle" transform="translate(1222 372) rotate(90)"')}</g>`;
-  const pct=`<b>${Dt.share}%</b> of $EZ creator fees fill the pool.`, call=`The pool gets bet on the top AI's call. Today that's <b>${Dt.name}</b>.`;
+  const pct=`<b>${Dt.share}%</b> of $EZ creator fees fill the pool.`, call=`The pool gets bet on the top AI's prediction. Today that's <b>${Dt.name}</b>.`;
   return `<div class="bd-shd bd-p" data-iw="720|1280" data-ih="1280|720" data-src="media/bet-board-d-tall.jpg|media/bet-board-d-wide.jpg" data-bdp="[40,150,640,1070]" data-bdd="[0,40,1280,630]">
    <div class="bd-ink"><div class="bd-a"><svg class="bd-s" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">${DEFS}${ph}${dk}</svg></div></div>
    <div class="bd-caps" aria-hidden="true">
