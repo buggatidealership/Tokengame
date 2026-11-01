@@ -151,3 +151,52 @@ Process (owner, same night): rough first. Coded or primitive mockups (quick low-
   2. *Your call* (owner: "this browser only", no login): before the AIs' calls are in, the visitor stamps up or down on the next round; after the close the page shows "You beat 2 of 4" and a running tally, kept in the visitor's browser (localStorage, try/catch, works without it). Mock where it lives (on the Upcoming floor, and a version in Tonight at the close at the end of the Overview).
   Boards `ez/x2p-x3p-h10-floor-390.png`, `-1280.png` (both styles, each market state), a video of a stamp and the result.
 - Rule 0, the hard rules and BRIEF-H's budget and output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`; never touch `ez/tools/v22/` or any `ez/v4*.html`, never deploy or publish. Budget up to $10 of Hedra each.
+
+## Round H11 (owner, 2026-11-01, on the H9 boards)
+**Style for these three areas: Silver Age line with flat print colours** (rounds4's style B, sol3's S2): a clean brush-and-nib line, flat bold colours, Ben-Day dots only in a few shadows, the plates a hair out of register. **Bright and flashy, not dark.** The owner: today's site is "a little bit more of that flashy"; the H9 covers are "a bit too dark"; "we can get dark when it speaks about the bet". The noir look stays in the bet chapter only. The logo's colours lead (gold #fdbc2a, green #03c870, red #ff3a31) on bright flat grounds, plus each company's own brand colour where a company appears. Never realism. Never beige.
+**Drawn, not slapped on:** every element is painted into its object. The owner on the H9 editions: "there's still stuff that has been slapped on it, that hasn't been drawn on it". A live word or number sits on a surface the painting leaves blank for it (lessons 85, 92). Name the surface under every live text in the REPORT.
+**The bet's three beats are the template for every chapter.** The owner's reading of the bet chapter:
+1. The top says what the section is about ("Bet #1: NVIDIA") over the establishing picture (the vault = the pool).
+2. The live instrument (the timer in the chip).
+3. The explanation (the three painted parts and their lines).
+Every chapter gets the same three beats: (1) an establishing picture that makes the section's claim, (2) the live data in the world, (3) a short visual comic beat that says why it matters, with one or two lines at most. Those lines live in the world (a printed plate, a caption box drawn in), or at least use a lettering face, not body text.
+**Live:** every interactive object moves a little so the eye finds it (lesson 86). Every take at 390 and 1280.
+
+- **`rounds5`, Every round so far: Hot off the press.**
+  - The print shop (rounds4's place 4), now in the Silver Age flat-print style.
+  - Only the **four newest graded rounds** hang on the drying wire, newest first, read from ROUNDS. Each is alive so people know they can tap it: wet ink still running down, the sheet swaying on its clip, or print rolling onto the sheet. Show at least two of these motions.
+  - Beside them, **a few blank white sheets** hang on the same wire: the next prints are coming. Show two versions:
+    - plain blank sheets;
+    - blank sheets with the next round's company faintly pencilled in (from PENDING/UPCOMING).
+  - Tap a cover: it comes off its clip and opens the round (the slab), as now.
+  - Under the press, **keep today's painted logo rack** (`media/rack-r6c.jpg`, h_rounds' quads: the Google, Amazon, Meta and Samsung logos). The owner likes it: "all the biggest names are showing up there, so people can click in to see every single big name". Under that, the grid of every round so far, as today.
+  - **The editions themselves get redrawn.** The owner on the H9 covers: they "don't look too good... too dark". Make them bright and flashy, every word painted into the cover (masthead, issue number, cover line "GROK WINS!"), the outcome scene from the T3 tile art. Show 2 or 3 cover treatments.
+  - Boards: `ez/x2p-x3p-h11-rounds5-390.png`, `-1280.png`, and a video of the wire coming alive plus a tap.
+- **`sol4`, Smart or lucky in three beats.**
+  1. **The establishing picture**, the equivalent of the vault: an image of AI lying, hallucinating, "smart or lucky". At least three ideas, for example:
+     - a robot with its nose growing;
+     - a confident mouth speaking over a blank page;
+     - a coin spinning behind a mask.
+  2. **The tracking: the lie detector on the desk (sol3's P4, the owner's pick), redrawn** in the flat-print style. It carries the hit rate round by round, with the switch to P&L (Season / 7 days / 24h) and a small table under the P&L chart (W-L, P&L per AI).
+     - Keep what the owner likes in today's big board (`h_sol`): an environment with other people in it, and real chalk or ink marks.
+     - Also show one version with the lie detector inside the exchange room among people.
+  3. **Why it matters**, as one or two comic panels plus one or two lines: an AI sounds just as sure when it is guessing; only the record shows which one is which.
+  - **Side item (the bet chapter, mock only):** the owner said the bet's three callouts (C1 the pool, U1 the call, K1 the switch) should live in the world, or at least change font. Make two takes:
+    - the lines printed as silkscreen or a parts-manual page on the board itself;
+    - the lines in a lettering face on caption boxes drawn into the plate.
+    The vault and the chip stay as they are.
+  - Boards: `ez/x2p-x3p-h11-sol4-390.png`, `-1280.png`, `-bet.png`, and a video of the switch.
+- **`cast4`, Meet the models: today's cards, redrawn in a world.**
+  - The owner: "Meet the models is horrible. There's no environment", and "we are definitely not on the same page". He still prefers today's version (`tools/v22/story/pop_p1.*`, `pop_founders.*`): keep its layout and the room each element takes:
+    - rank, name, model version, flag, P&L, right way, best call, last five;
+    - the founder's living portrait (`media/founder-<m>-anim.mp4`).
+  - Then **redraw every element by hand** in the flat-print style (today's are all code), and put the cards in **a new environment**. At least three worlds, your choice.
+  - The card is **about the model**; the founder is the face behind it, not the subject.
+  - The cards are drawn tickets.
+  - Use the **Harry Potter living frames**: the founder loops play inside drawn frames hanging in the world, so the portrait feels like a living painting.
+  - Do not invent new characters; the green room founders are the cast.
+  - Boards: `ez/x2p-x3p-h11-cast4-390.png`, `-1280.png`, and a video.
+- Rule 0, the hard rules and BRIEF-H's output rules hold.
+  - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
+  - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
+  - Budget: up to $10 of Hedra each, rough first.
