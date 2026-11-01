@@ -564,3 +564,39 @@ Today each EPROM is its own painting, so their parts land in different places. F
 - Budget: up to $5 of Hedra.
 
 Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Never touch `ez/tools/v22/`, any `ez/v4*.html` or `ez/media/`. Never deploy or publish.
+
+## Round H21 (owner, 2026-11-01, ~19:45 UTC, on the H20 boards; owner's screenshot `h21/ref-chips-swap-owner.jpg`)
+### `top6`, from H20 top5 (`h/top5/`)
+1. **Sub-heads: 3**, the caption tab (the red number tab in a drawn caption box).
+2. **Gutters, as the lead reads the owner's message:**
+   - **Between beats:** pair 1's white torn paper. That covers the headline → "How a round works", and the four frames → "The whole game".
+   - **Between the four frames:** pair 2's gold trace.
+   - The lead is confirming this reading with the owner, so also show pair 1 complete (torn paper and zigzag) as a second take.
+3. **Frame lines.** Each fits as few lines as it can at 390px; report the line count of each.
+   1. "4 AIs submit their predictions before the earnings report." The owner asked whether "4 AIs submit their predictions" fits on one line in a frame at 390px. Measure it at today's size. If it doesn't fit, show:
+      - the size it would need;
+      - "4 AIs submit predictions" as a shorter variant;
+      - the size that line needs.
+   2. CLOSE: "The next market close after the report decides who wins." The owner wants visitors to understand that the market close after the earnings report decides the round.
+   3. LEDGER: "Every round is written to the ledger."
+   4. BOARD: "The ledger ranks the board."
+- Boards: `ez/x2p-h21-top6-390.png`, `-1280.png`.
+- Budget: $2 at most (this round is lettering and CSS).
+
+### `chips5`, from H20 chips4 (`h/chips4/`, the one master painting; geometry identical on every chip, measured)
+1. **S, swapped** (the owner's sketch):
+   - The label module (name + version, No., Last 5, W-L, Season P&L) moves left, next to the logo plate.
+   - The founder's square window moves to the right.
+   - The window grows so that its top lines up with the top of the logo plate and its bottom with the bottom of the flag.
+   - Still identical on every chip, and measured.
+2. **N2, layout as it is:**
+   - Remove the rounded vignette and dark corners around the founder in the die. In the screenshot it is the black edge outside the circle the owner drew. The die square must read clean edge to edge, with no rounded mask or dark falloff on the character.
+3. **The flag, on both S and N2: built into the chip, not a sticker.** Mock 2 or 3 processes, e.g.:
+   - lithographed or etched into the die metal (the flag as a pattern in the copper layer, lit by the gold key light);
+   - a printed field on the ceramic lid with the lid's grain over it;
+   - an enamel inlay flush with the surface.
+- The fifth chip stays "In inference".
+- Boards: `ez/x2p-h21-chips5-390.png`, `-1280.png`, short loops video.
+- Budget: up to $4 of Hedra.
+
+Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Never touch `ez/tools/v22/`, any `ez/v4*.html` or `ez/media/`. Never deploy or publish.
