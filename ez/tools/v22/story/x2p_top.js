@@ -110,7 +110,8 @@ function ledgerSurfs(){const prev=G.slice(Math.max(0,iEx-2),iEx),S=[surf(LROW[0]
   return S}
 /* the gold lid: the leader engraved */
 const leadSurf=(w,h)=>{const s=Math.min(h*.5,w*.3),x=w*.08+s*1.15,tw=w*.92-x,l2=$(pnl(lead)),l3=A[lead].W+'-'+A[lead].L+' · Season P&L';
-  return `<g class="t4-eg">`+mark(lead,w*.07,h/2-s/2,s,'#2a1a06')+T(x,h*.4,fit(NM[lead],tw,h*.3),NM[lead].toUpperCase(),{c:'#2a1a06',cls:'t4-an t4-eng'})+T(x,h*.66,fit(l2,tw,h*.2),l2,{c:'#2a1a06',cls:'t4-an t4-eng'})+T(x,h*.84,fit(l3,tw,h*.1),l3,{c:'#3a260b',cls:'t4-an t4-eng'})+`</g>`};
+  /* owner, 2026-11-01: only the name beside the mark, level with it; no P&L or W-L on the gold lid */
+  const fz=fit(NM[lead],tw,h*.38);return `<g class="t4-eg">`+mark(lead,w*.07,h/2-s/2,s,'#2a1a06')+T(x,h/2+fz*.36,fz,NM[lead].toUpperCase(),{c:'#2a1a06',cls:'t4-an t4-eng'})+`</g>`};
 /* the step word, silkscreened on the painting's bare strip of board: Bangers, in perspective, ink grain, no stroke or drop.
    Its font size is set in screen px by place() from --t4swpx (between the headline's and the line's). */
 const INKS={cream:'#efe6cc',green:'#5ef08f',gold:'url(#t4gold)'};
@@ -202,9 +203,12 @@ function wire(){const fs=[...sec.querySelectorAll('.t4-fr')];
   fs.forEach(f=>{f.addEventListener('click',()=>{if(f.classList.contains('t4-on')){f.classList.remove('t4-go');void f.offsetWidth;f.classList.add('t4-go');setTimeout(()=>f.classList.remove('t4-go'),2600)}else on(f,'tap')});
     f.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f.click()}})});
   if(RM){fs.forEach(f=>on(f,'rm'));return}
-  if(AUTO){const tm=new Map(),io=new IntersectionObserver(es=>es.forEach(e=>{const f=e.target;
-      if(e.intersectionRatio>=.6&&!tm.has(f))tm.set(f,setTimeout(()=>on(f,'auto'),3000));
-      else if(e.intersectionRatio<.6&&tm.has(f)){clearTimeout(tm.get(f));tm.delete(f)}}),{threshold:[0,.6,1]});fs.forEach(f=>io.observe(f))}
+  /* owner, 2026-11-01: one by one, in order. A frame lights itself only after the one before it is lit and it has been on screen 2.4 s;
+     a tap lights that frame alone. */
+  if(AUTO){const seen=new Set();let tm=null;
+    const next=()=>{if(tm)return;const f=fs.find(x=>!x.classList.contains('t4-on'));if(!f||!seen.has(f))return;tm=setTimeout(()=>{tm=null;if(seen.has(f))on(f,'auto');next()},2400)};
+    const io=new IntersectionObserver(es=>{es.forEach(e=>{e.intersectionRatio>=.6?seen.add(e.target):seen.delete(e.target)});next()},{threshold:[0,.6,1]});
+    fs.forEach(f=>{io.observe(f);f.addEventListener('click',()=>setTimeout(next,50))})}
   const v=sec.querySelector('.t4-v'),b=sec.querySelector('.t4-play');
   if(v&&b){b.addEventListener('click',()=>{v.muted=false;v.controls=true;v.play().catch(()=>{});b.hidden=true});
     v.addEventListener('loadedmetadata',()=>{const s=Math.round(v.duration||80),t=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');sec.querySelectorAll('.t4-fh .t4-hw').forEach(x=>x.textContent=x.textContent.replace(/\d:\d\d/,t).replace(/\b80 seconds|80-second/,m=>m.replace('80',String(s))))})}}
