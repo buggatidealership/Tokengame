@@ -14,11 +14,11 @@ const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
   await p.waitForFunction(()=>document.fonts.status==='loaded');await p.evaluate(()=>{__t4.place();[...document.images].forEach(i=>i.loading='eager')});
   await p.waitForFunction(()=>[...document.querySelectorAll('.t4 img')].every(i=>i.complete));await p.waitForTimeout(500);
   const t0=Date.now();await p.evaluate(()=>scrollTo({top:0}));await p.waitForTimeout(1500);
-  const go=async sel=>{await p.evaluate(s=>{const f=document.querySelector(s);scrollTo({top:f.getBoundingClientRect().top+scrollY-60,behavior:'smooth'})},sel);await p.waitForTimeout(1600)};
-  if(mode==='tap'){await go('.t4-h2');await p.waitForTimeout(2600);
+  const go=async sel=>{await p.evaluate(s=>{const f=document.querySelector(s);scrollTo({top:f.getBoundingClientRect().top+scrollY-140,behavior:'smooth'})},sel);await p.waitForTimeout(1600)};
+  if(mode==='tap'){await go('.t4-b2 .t4-h2');await p.waitForTimeout(2600);
    for(const [i,sel] of ['.t4-call','.t4-bell','.t4-ledger','.t4-one'].entries()){if(i===2)await go('.t4-ledger');const f=await p.$(sel);const bb=await f.boundingBox();
     await p.mouse.move(bb.x+bb.width/2,bb.y+bb.height*.35,{steps:6});await p.mouse.down();await p.mouse.up();await p.waitForTimeout(2900)}}
-  else{await go('.t4-h2');await p.waitForTimeout(4600);await go('.t4-ledger');await p.waitForTimeout(4600)}
+  else{await go('.t4-b2 .t4-h2');await p.waitForTimeout(4600);await go('.t4-ledger');await p.waitForTimeout(4600)}
   const dur=(Date.now()-t0)/1000;const v=p.video();await ctx.close();parts.push({f:await v.path(),dur,t:mode==='tap'?'tap to reveal (self-reveal off)':'self-reveal after 3 s on screen'})}
  await b.close();const list=[];
  parts.forEach((q,i)=>{const len=+cp.execFileSync('ffprobe',['-v','error','-show_entries','format=duration','-of','csv=p=0',q.f]).toString();const o=`${TMP}/p${i}.mp4`;
