@@ -484,3 +484,46 @@ The owner likes **top1 take A** (the chip's own world) "most of what I see" and 
 - Budget: up to $8 of Hedra.
 
 Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Never touch `ez/tools/v22/` or any `ez/v4*.html`. Never deploy or publish.
+
+## Round H19 (owner, 2026-11-01, ~17:30 UTC, on the H18 boards; owner's screenshot `h19/ref-chips-b-owner.jpg`)
+### `top4`, from H18 top3 (`h/top3/`, board `ez/x2p-h18-top3-390.png`)
+1. **"The market keeps score" at the same size** as "Four AIs call earnings" (both lines one size).
+2. **"How a round works" at the headline's size too**, and it **touches the first frame**: it breaks the CALL frame's top edge, as "Bet #1: NVIDIA" breaks the vault's.
+3. **No bell: "there's no bell on a chip."** Use something chip-native for the close. top1's take A had a piezo buzzer with a readout; the owner remembers it as the right kind of thing.
+4. **The step words.** Use the same font as the headline (the bet's Bangers lettering), not LED, neon or stamped faces.
+   - **Size:** between the headline and the line under each frame.
+   - **Colour:** different from the headline's, so it doesn't repeat. Try cream, green and gold.
+   - **Printed into the board, diegetic**, like silkscreen on the PCB (the owner liked S's green silkscreen feel), not laid on top.
+   - **Wording, two sets:**
+     - (a) CALL / CLOSE / LEDGER / #1
+     - (b) CALL / CLOSE / LEDGER / BOARD (the owner's lean)
+5. **Order:** the owner said the ledger and #1 frames "have to swap", then "actually it's fine how it is". Show both orders; the lead asks the owner.
+6. **The ledger frame:**
+   - The first row is a header: Round · Company · Move · Winner.
+   - Then R38 Meta, R39 Texas Instruments and R40 Tesla, so Tesla sits in row 4, at the bottom (the rows sit lower).
+   - All from ROUNDS.
+7. **The film head:** "The whole game 1:20".
+- The rest stays as top3's A, with the tap-to-reveal and the 3 s self-reveal.
+- Boards: `ez/x2p-h19-top4-390.png`, `-1280.png`, `-micro.mp4`.
+- Budget: up to $6 of Hedra.
+
+### `chips3`, Meet the models B (all four EPROMs in one beat; the owner's pick), from H18 chips2 (`h/chips2/`)
+1. **The founder's living loop, two versions:**
+   - (S) in a **square** window where the round porthole is now, like A's square die;
+   - (N) **no frame at all**: the animation is part of the chip in that area, as if seen in the silicon (masked into the die area, with the chip's own texture, grain and light over it).
+2. **Everything on the label must be printed into the chip, not pasted on:** name, version, No., Last 5, W-L, Season P&L.
+   - Laser-etched or silkscreened onto the ceramic, with the surface's grain, light and slight ink spread.
+   - Bigger and simpler where it helps.
+   - The owner: "it still feels like a layer that has been pasted on top of it".
+   - Check that every label fits: Claude's "Fable 5.1" was cut by the portrait.
+3. **The fifth chip's wording.** "In tryouts" is not right; the owner suggested "in inference". Mock 3 options, e.g.:
+   - "In inference"
+   - "Running inference…"
+   - "Inference pending"
+   
+   Keep "No. 5?" if it reads.
+4. **One revised take of A** (one chip per model) with the same printed-in label, since the owner still finds A "interesting".
+- Boards: `ez/x2p-h19-chips3-390.png`, `-1280.png`, a short video of the loops in S and N.
+- Budget: up to $6 of Hedra.
+
+Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Never touch `ez/tools/v22/`, any `ez/v4*.html` or `ez/media/`. Never deploy or publish.
