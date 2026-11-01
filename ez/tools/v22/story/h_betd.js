@@ -18,20 +18,22 @@ function data(sec){const S=window.SIM||{};let lead=null;const b=sec.querySelecto
   return {share:S.poolShare!=null?Math.round(S.poolShare*100):69,name:NM[lead]||lead||''}}
 const DEFS=`<defs>
  <filter id="bdss"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.1 1.35" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
+ <filter id="bdlg" x="-10%" y="-10%" width="120%" height="120%"><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 .94  0 0 0 0 .9  0 0 0 0 .79  0 0 0 .9 0" result="c"/><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="9" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.2 1.45" result="m"/><feComposite in="c" in2="m" operator="in"/></filter>
+ <filter id="bdbl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5"/></filter>
  <radialGradient id="bddrop"><stop offset="0" stop-color="#fffbe0"/><stop offset=".35" stop-color="#ffd24a"/><stop offset=".75" stop-color="#ff9d1c" stop-opacity=".55"/><stop offset="1" stop-color="#ff9d1c" stop-opacity="0"/></radialGradient>
  <radialGradient id="bdpool"><stop offset="0" stop-color="#fff6c8" stop-opacity=".95"/><stop offset=".45" stop-color="#ffcf4a" stop-opacity=".55"/><stop offset="1" stop-color="#ff9d1c" stop-opacity="0"/></radialGradient>
  <radialGradient id="bdok"><stop offset="0" stop-color="#eafff0"/><stop offset=".3" stop-color="#3dff8c" stop-opacity=".85"/><stop offset="1" stop-color="#03c870" stop-opacity="0"/></radialGradient>
  <radialGradient id="bdno"><stop offset="0" stop-color="#fff0e0"/><stop offset=".3" stop-color="#ff5a2e" stop-opacity=".9"/><stop offset="1" stop-color="#ff3a31" stop-opacity="0"/></radialGradient></defs>`;
 const ss=(t,a)=>`<text class="bd-k" filter="url(#bdss)" ${a}>${t}</text>`;
 /* gold drops running down traces into the pool: one small loop */
-function flow(paths,{n=2,dur=2.4,r=9}={}){return paths.map((d,i)=>`<path d="${d}" id="bdf${i}" fill="none"/>`+Array.from({length:n},(_,j)=>{const b=-(dur*j/n+i*.37).toFixed(2);
-  return `<ellipse rx="${r*.7}" ry="${r}" fill="url(#bddrop)" class="bd-dr"><animateMotion dur="${dur}s" begin="${b}s" repeatCount="indefinite" rotate="auto" calcMode="spline" keyPoints="0;1" keyTimes="0;1" keySplines=".5 0 .9 .6"><mpath href="#bdf${i}"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.85;1" dur="${dur}s" begin="${b}s" repeatCount="indefinite"/></ellipse>`}).join('')).join('')}
+function flow(paths,{dur=2.4,w=20}={}){return paths.map((d,i)=>{const b=-(i*.41).toFixed(2);
+  return `<path d="${d}" pathLength="100" class="bd-pl" stroke-width="${w}" stroke-dasharray="26 140" filter="url(#bdbl)"><animate attributeName="stroke-dashoffset" values="22;-118" dur="${dur}s" begin="${b}s" repeatCount="indefinite"/></path>`}).join('')}
 /* the pool fills: its gold brightens and settles in time with the drops */
-const pool=(cx,cy,rx,ry)=>`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#bdpool)" class="bd-dr" opacity=".25"><animate attributeName="opacity" values=".18;.6;.18" dur="2.4s" repeatCount="indefinite"/></ellipse>`;
+const pool=(cx,cy,rx,ry)=>`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#bdpool)" class="bd-pd" opacity=".25"><animate attributeName="opacity" values=".18;.6;.18" dur="2.4s" repeatCount="indefinite"/></ellipse>`;
 /* the fork, one after the other (6 s): a drop runs to the lamp, the lamp lights and RIGHT glows; then a drop runs to the fuse, it blows and WRONG flickers */
 const T=6;
 function fork(pOk,pNo,lamp,fuse,okT,noT){
-  const run=(id,d,a,b)=>`<path id="${id}" d="${d}" fill="none"/><ellipse rx="7" ry="10" fill="url(#bddrop)" class="bd-dr" opacity="0"><animateMotion dur="${T}s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;${a};${b};1" calcMode="linear"><mpath href="#${id}"/></animateMotion><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;${a};${(a+.01).toFixed(2)};${(b-.01).toFixed(2)};${b};1" dur="${T}s" repeatCount="indefinite"/></ellipse>`;
+  const run=(id,d,a,b)=>`<path id="${id}" d="${d}" pathLength="100" class="bd-pl" stroke-width="24" stroke-dasharray="30 140" stroke-dashoffset="30" filter="url(#bdbl)"><animate attributeName="stroke-dashoffset" values="30;30;-100;-100" keyTimes="0;${a};${b};1" dur="${T}s" repeatCount="indefinite"/></path>`;
   const glow=(c,g,vals,kt)=>`<circle cx="${c[0]}" cy="${c[1]}" r="${c[2]}" fill="url(#${g})" class="bd-dr" opacity="0"><animate attributeName="opacity" values="${vals}" keyTimes="${kt}" dur="${T}s" repeatCount="indefinite"/></circle>`;
   const lit=(vals,kt)=>`<animate attributeName="opacity" values="${vals}" keyTimes="${kt}" dur="${T}s" repeatCount="indefinite"/>`;
   const okV='.35;.35;1;1;.35;.35',okK='0;.2;.25;.45;.5;1',noV='.35;.35;1;.55;1;.7;1;.35;.35',noK='0;.7;.73;.77;.81;.86;.9;.95;1';
@@ -46,7 +48,7 @@ function html(Dt){
    ${fork('M355 718 L192 718 Q178 720 177 736 L172 800','M355 718 L500 718 Q514 720 515 736 L518 780',[165,835,78],[520,850,74],
      `<text class="glo ok" x="140" y="935" font-size="40" font-family="Anton" letter-spacing="3">RIGHT</text>${ss('$EZ BUYBACK','x="140" y="962" font-size="22"')}`,
      `<text class="glo no" x="600" y="895" text-anchor="middle" font-size="40" font-family="Anton" letter-spacing="3">WRONG</text>${['THE POOL','CAN BE','WIPED OUT'].map((t,i)=>ss(t,`x="600" y="${920+i*24}" text-anchor="middle" font-size="21"`)).join('')}`)}
-   ${ss('#2','x="180" y="1060" text-anchor="middle" font-size="62"')}${ss('#3','x="355" y="1060" text-anchor="middle" font-size="62"')}${ss('#4','x="526" y="1060" text-anchor="middle" font-size="62"')}
+   <image href="media/logos/GOOGL.png" x="150.5" y="1010.5" width="59" height="59" preserveAspectRatio="xMidYMid meet" filter="url(#bdlg)" class="bd-lg"/><image href="media/logos/TSLA.png" x="325.5" y="1010.5" width="59" height="59" preserveAspectRatio="xMidYMid meet" filter="url(#bdlg)" class="bd-lg"/><image href="media/logos/MSFT.png" x="498" y="1012" width="56" height="56" preserveAspectRatio="xMidYMid meet" filter="url(#bdlg)" class="bd-lg"/>
    ${ss('SEASON 2 →','x="355" y="1140" text-anchor="middle" font-size="34"')}</g>`;
   const dk=`<g class="dkonly">
    ${flow(['M0 230 L240 230 L340 320 L408 340','M0 300 L250 300 L330 340 L408 350','M0 420 L240 420 L330 380 L408 365','M0 480 L250 480 L340 400 L410 375'],{dur:2.8})}
@@ -54,10 +56,10 @@ function html(Dt){
    ${fork('M775 350 L782 300 L782 245 L812 220 L838 212','M775 350 L780 400 L780 480 L812 508 L838 512',[880,210,80],[915,515,78],
      `<text class="glo ok" x="904" y="340" text-anchor="middle" font-size="40" font-family="Anton" letter-spacing="3">RIGHT</text>${ss('$EZ BUYBACK','x="904" y="366" text-anchor="middle" font-size="21"')}`,
      `<text class="glo no" x="724" y="580" text-anchor="end" font-size="40" font-family="Anton" letter-spacing="3">WRONG</text>${ss('THE POOL CAN','x="724" y="606" text-anchor="end" font-size="21"')}${ss('BE WIPED OUT','x="724" y="629" text-anchor="end" font-size="21"')}`)}
-   ${ss('#2','x="1105" y="222" text-anchor="middle" font-size="60"')}${ss('#3','x="1105" y="382" text-anchor="middle" font-size="60"')}${ss('#4','x="1105" y="542" text-anchor="middle" font-size="60"')}
+   <image href="media/logos/GOOGL.png" x="1076" y="172" width="58" height="58" preserveAspectRatio="xMidYMid meet" filter="url(#bdlg)" class="bd-lg"/><image href="media/logos/TSLA.png" x="1076" y="332" width="58" height="58" preserveAspectRatio="xMidYMid meet" filter="url(#bdlg)" class="bd-lg"/><image href="media/logos/MSFT.png" x="1078" y="494" width="54" height="54" preserveAspectRatio="xMidYMid meet" filter="url(#bdlg)" class="bd-lg"/>
    ${ss('SEASON 2 →','font-size="30" text-anchor="middle" transform="translate(1222 372) rotate(90)"')}</g>`;
   const pct=`<b>${Dt.share}%</b> of $EZ creator fees fill the pool.`, call=`The pool gets bet on the top AI's call. Today that's <b>${Dt.name}</b>.`;
-  return `<div class="bd-shd bd-p" data-iw="720|1280" data-ih="1280|720" data-src="media/bet-board-d-tall.jpg|media/bet-board-d-wide.jpg" data-bdp="[40,0,640,1220]" data-bdd="[0,40,1280,630]">
+  return `<div class="bd-shd bd-p" data-iw="720|1280" data-ih="1280|720" data-src="media/bet-board-d-tall.jpg|media/bet-board-d-wide.jpg" data-bdp="[40,150,640,1070]" data-bdd="[0,40,1280,630]">
    <div class="bd-ink"><div class="bd-a"><svg class="bd-s" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">${DEFS}${ph}${dk}</svg></div></div>
    <div class="bd-caps" aria-hidden="true">
     ${cap('[500,236]|[402,62]',pct,'bd-c1')}
