@@ -441,3 +441,46 @@ The owner: "we were trying to redesign every section independently without setti
   - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
   - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
   - Budget: up to $8 of Hedra each.
+
+## Round H18 (owner, 2026-11-01, ~15:20 UTC, on the H15 top boards and the H17 chips; owner's screenshots `h18/ref-top-owner.png`, `h18/ref-bet-logos-owner.jpg`)
+The owner likes **top1 take A** (the chip's own world) "most of what I see" and both **chips A** (one chip per model) and **chips B** (old-school EPROMs).
+
+### `top3`, the top of X2+, take A redone (mockups on the built `v46-live-x2plus.html`, as H15)
+1. **The headline goes to the top**, above the picture: "Four AIs call earnings. The market keeps score." Today it sits at the picture's foot.
+2. **Every beat bleeds** edge to edge on phones (no side margins, no frame inset). From 1000px follow your judgement.
+3. **Beat 1's chip shows only the four AIs' logos and names** (Grok, Claude, GPT, Kimi), no P&L. The "Season 1 · 80 rounds graded" bar may stay.
+4. **"How a round works" takes the headline's lettering** (the bet's: Bangers, ink stroke, stacked drop, tilt). So the four step words need **a different lettering**: mock 4 or 5 options (e.g. silkscreen on the chip, LED segments, stamped metal, embossed, neon), each shown on all four frames.
+5. **The four steps are the mechanism, first principles** (owner: "they submit their predictions, the market dictates who wins, we record it in a ledger, and then we update the leaderboard"). BET goes away.
+   1. **CALL** "Each AI submits its prediction before the earnings report."
+   2. **BELL** "The closing bell decides who wins the round."
+   3. **LEDGER** (new): the round is written onto the ledger. Draw it in the chip world (a ledger chip or memory bank writing the round as a new row or block). Line, your proposal, e.g. "Every round is written to the ledger."
+      - **Do not say blockchain or on-chain.** The record is the public sheet and site, not a chain. The lead flags this to the owner.
+   4. **#1 / top of the board**: "The ledger ranks the board." Grok with its P&L and W-L, as in take A (owner: "that's fine").
+6. **Interaction:** by default everything is off. The CALL dies are dark and pulse, inviting a tap; a tap lights the four predictions. The BELL's knob or buzzer moves to invite a tap; a tap shows the market's move and who won.
+   - Do the same for LEDGER (a tap writes the row) and #1 if it reads well.
+   - Lead's addition: if a frame has been on screen for about 3 s without a tap, it reveals itself, so a scroller still gets every fact. Show it with and without this.
+   - Make the affordance obvious without a word like "tap": the pulse, a moving knob, a glint.
+7. **The example round is a Mag 7 round: R40 Tesla.** Called 10/21, graded 10/22. GPT UP 1, Kimi UP 2, Claude DOWN 4.5, Grok DOWN 3.1; market −3.08%. Two right, two wrong, Grok wins (0.02% off). Read it from ROUNDS, never type it.
+8. **Beat 3, the film, redone.** "How it works" appears twice (with "How a round works"), and the old green and red bill is "the old-school way".
+   - Give the film a new head instead of "Watch it all" (which doesn't say what you'll watch). Mock 3 or 4 options, e.g. "The explainer · 1:20", "The 80-second version".
+   - Give it a new frame in the chip world: the film on a chip's display, a monitor on the board, or your idea. No bill and no "How it works".
+   - The film stays `media/ez-landing-v4.mp4`, its poster `-poster-ez.jpg`.
+- Boards: `ez/x2p-h18-top3-390.png`, `-1280.png` (lettering options as a row of close-ups), `-micro.mp4` (taps and the self-reveal).
+- Budget: up to $8 of Hedra.
+
+### `chips2`, Meet the models, A and B redone
+- **Two versions:**
+  - **A:** one chip per model, one beat each (as H17 A).
+  - **B:** the old-school EPROMs, all four in ONE beat (owner: "you could also just have one beat... it just shows all the models").
+- **The company's logo bigger, top left of each chip** ("people relate more to logos than anything"). The model's version is printed beside it, as part of the chip: Grok "4.7", Claude "Fable 5.1", GPT "6 Astra", Kimi "K3" (MODELS[].ver).
+- **The flag is a layer on top of the chip itself** (a decal, an enamel inlay, a printed field on the lid). It reads "chip" first and "flag" second, not a separate badge in the corner. US for Grok, Claude and GPT; China for Kimi.
+- **Labelled stats on the chip's own surfaces:** the name, **Last 5** (✓/✗ or green and red cells), **W-L**, **Season P&L**. Each has a small printed label, live from `__x2pPnl` and ROUNDS.
+- GPT stays green. The founder loop stays in the die (`media/founder-<m>-anim.mp4`).
+- **A fifth chip: the tryouts.** One chip with four dies: Mistral, Qwen, Gemini, Nemotron (their marks are in x2plus.js's No. 5 ticket code).
+  - The tryouts feel of the old ticket ("Models in tryouts"), in chip language. Owner: "we're still running that inference to see who qualifies".
+  - Mock 2 or 3 wordings, e.g. "In tryouts", "Qualifying", "Running inference…".
+- Every beat bleeds.
+- Boards: `ez/x2p-h18-chips2-390.png`, `-1280.png`, a short video of A and B.
+- Budget: up to $8 of Hedra.
+
+Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Never touch `ez/tools/v22/` or any `ez/v4*.html`. Never deploy or publish.
