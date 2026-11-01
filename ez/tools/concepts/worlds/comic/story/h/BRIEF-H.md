@@ -331,3 +331,23 @@ The H11 boards landed before the owner's H12 notes. Each second pass starts from
   - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
   - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
   - Budget: up to $10 of Hedra each.
+
+## Round H14 (owner, 2026-11-01, ~02:20 UTC, on the H11 boards)
+- **Smart or lucky:** E3 (the coin behind the mask) is liked, but the picture should be **about a third smaller** than in sol4.
+  - The line "Four AIs, 312 graded calls. A coin flip gets 50%." moves into the scene as a **comic narration caption** at the panel's top-left corner. It overlaps the plate's frame, lettered in comic characters.
+  - The owner's sketch is `h12/ref-sol-caption-owner.webp`: the box drawn over the top-left of the exchange-room plate, by the lamp.
+- **The bet's explanations:** **K2** (caption boxes drawn into the plate, each on a gold trace from its part) is the pick: "a beautiful morphing of the wiring with the environment while keeping the comic book style alive". The owner prefers K2's colours, and "the pool, the call, the switch" read more obviously. K1 (silkscreen) is liked too; grey engraving would not be.
+- **Meet the models:** "None of them stand out. But the format is good." The trading floor is the favourite, "but just directionally". The next pass has to make it striking, not only correct: `cast6`.
+- **`cast6`, Meet the models that stands out** (in parallel with `cast5`, which fixes structure):
+  - Keep today's format: the ticket layout and the big living founder portrait.
+  - Work in the trading-floor direction. Aim for the one picture a visitor would screenshot. Levers to try, each as its own take:
+    - one hero moment (the #1 ticket lit like the vault, the others in the crowd's shadow);
+    - scale contrast (the leader's portrait huge on the exchange wall, the challengers smaller);
+    - dramatic light (one key light, the logo's colours as spot light);
+    - a camera angle (looking up at the board);
+    - the tickets as physical objects, pinned, held, or slid across the floor by a trader.
+  - Silver Age flat print, bright (not the bet's noir).
+  - Every number on a painted blank surface.
+  - At least five takes, very different from each other.
+  - Boards: `ez/x2p-x3p-h14-cast6-390.png`, `-1280.png`.
+  - Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Budget up to $10 of Hedra.
