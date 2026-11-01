@@ -527,3 +527,40 @@ Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/to
 - Budget: up to $6 of Hedra.
 
 Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Never touch `ez/tools/v22/`, any `ez/v4*.html` or `ez/media/`. Never deploy or publish.
+
+## Round H20 (owner, 2026-11-01, ~18:40 UTC, on the H19 boards)
+### `top5`, from H19 top4 (`h/top4/`; the owner's base: cream, CALL / CLOSE / LEDGER / BOARD, order 1)
+1. **The step words are a comic sub-headline, not printed on the chip.**
+   - The owner: printed on the board, they read as "it's on the chip, what does that mean?". These words explain each step.
+   - Letter them as comic headlines in the headline's family, numbered **1 CALL · 2 CLOSE · 3 LEDGER · 4 BOARD** so the sequence can't be read wrongly.
+   - **Size:** smaller than "How a round works", which stays the main thing, and larger than the line under each frame.
+   - Give each a distinct treatment: a colour, a number badge, a tilt. Mock 3 options.
+2. **Gutters, two strengths, drawn not flat.** "A flat white line is a bit boring."
+   - **Between beats:** a strong, cartoonish gutter, so it's clear you move on. Beats are: the headline beat → "How a round works", and the four-frame panel → "The whole game".
+   - **Between the four frames:** a lighter gutter, clearly weaker than the beat gutters.
+   - Draw both in the comic and chip world, e.g.:
+     - a torn or jagged paper edge;
+     - a thick ink band with a halftone fade;
+     - a board edge with pins;
+     - a zigzag cut.
+   - Mock 3 pairs (beat gutter + frame gutter).
+3. Everything else as top4 option 1.
+   - Change CLOSE's line to "The close decides who wins the round." (there is no bell any more).
+- Boards: `ez/x2p-h20-top5-390.png`, `-1280.png`.
+- Budget: up to $4 of Hedra (most of this is lettering and CSS).
+
+### `chips4`, from H19 chips3 (`h/chips3/`; the owner's pick: **S**, the founder in a square window; N2 also liked)
+**Everything symmetrical**, on every chip:
+- the founder windows the same size and aligned (today Claude's and Kimi's are bigger than Grok's and GPT's);
+- the logo plates the same size and aligned (Claude's is bigger);
+- the label modules (name, version, Last 5, W-L, No., Season P&L) the same width and height, on the same grid;
+- the flags the same size and aligned.
+
+Today each EPROM is its own painting, so their parts land in different places. Fix it with one master EPROM painting re-coloured per model, or place every part in code on a fixed grid over the paintings, so the geometry is identical. Measure it: report every box's x, y, w and h per chip, equal within 1px.
+
+- Deliver S, and N2 with the same symmetry.
+- The fifth chip: "In inference".
+- Boards: `ez/x2p-h20-chips4-390.png`, `-1280.png`, and a short loops video.
+- Budget: up to $5 of Hedra.
+
+Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Never touch `ez/tools/v22/`, any `ez/v4*.html` or `ez/media/`. Never deploy or publish.
