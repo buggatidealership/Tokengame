@@ -293,3 +293,41 @@ The owner's three reference screenshots are in `h12/`:
   - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
   - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
   - Budget: up to $10 of Hedra each.
+
+## Round H13 (overnight second passes on H11, applying H12's rules; lead's notes, 2026-11-01 02:15 UTC)
+The H11 boards landed before the owner's H12 notes. Each second pass starts from its H11 helper's folder and pick, applies Round H12 in full, and makes more iterations. H12's rules:
+- scroll, not show;
+- the S1 sequence;
+- facts painted on the world;
+- voices in speech balloons or narration captions;
+- plain text outside the world kept to almost nothing.
+
+- **`rounds6`** (from `rounds5`, pick B with pencilled blanks):
+  - Exactly **four covers of one size** on the wire, the four newest, plus two or three blank or pencilled sheets. Today the wire mixes two small and two big covers, which reads as a hierarchy that isn't there.
+  - At 320 "Printed at every close · 80 so far" runs over the top wire's sheets. Paint it on a surface, for example a sign on the press or a chalk tally on the wall, never over the sheets.
+  - The only tap is a cover opening its round (that is navigation); drop the sheet letting go of its clip.
+  - Small loop only: the wet ink, or the sheet swaying.
+  - Then the logo rack and the grid as today.
+  - At least three variations of the wire's composition, plus one desktop where the wire spans the width.
+  - Boards: `ez/x2p-x3p-h13-rounds6-390.png`, `-1280.png`.
+- **`sol5`** (from `sol4`, pick E3 + I2):
+  - The S1 sequence, in this order:
+    1. E3's mask and coin under the title;
+    2. the instrument: make the lie detector itself visible and doing the work, its pens drawing each AI's hit-rate line on the paper strip, the live chart set on the strip or screen it writes, in the exchange room with people;
+    3. "Same AI. Same voice." (keep it, it works);
+    4. the hook to the bet.
+  - The two plain lines ("Four AIs, 312 graded calls. A coin flip gets 50%." and "Only the record shows which call was the guess.") become a narration caption or a balloon drawn in, or are painted on the world (the 50% coin-flip line lettered on the strip).
+  - The P&L view keeps its table, set on the instrument.
+  - At least four variations, including one where the onlookers react to the lines.
+  - Boards: `ez/x2p-x3p-h13-sol5-390.png`, `-1280.png`.
+- **`cast5`** (from `cast4`, pick B, the trading floor):
+  - The owner liked today's **big** founder portrait ("you just have the characters animated, that's enough"); cast4 shrank it into a small frame. Give the living portrait today's share of the ticket (about half its width), framed as a painting.
+  - A new opening picture for the chapter (the owner: "the initial picture has to change"): the trading floor as an establishing panel with the title, before the first ticket. The subtitle goes in a caption or on a board, not as plain text.
+  - Every element of the ticket is hand-drawn: the ribbon, the plaques, the last-five lamps. The P&L, the record and the best call are lettered on painted blank surfaces.
+  - No clicking into a model.
+  - At least three variations of B, plus A and C carried forward with the big portrait.
+  - Boards: `ez/x2p-x3p-h13-cast5-390.png`, `-1280.png`.
+- Rule 0, the hard rules and BRIEF-H's output rules hold.
+  - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
+  - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
+  - Budget: up to $10 of Hedra each.
