@@ -657,3 +657,14 @@ Boards: `ez/x2p-h23-chips7-390.png`, `-1280.png`, a 3x close-up of one chip, and
 Budget: up to $8.
 
 Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Never touch `ez/tools/v22/`, any `ez/v4*.html` or `ez/media/`. Never deploy or publish.
+
+### H23 addendum (owner, 2026-11-01, ~23:05 UTC, with the NVIDIA timer as the reference, `h23/ref-nvidia-timer.jpg`)
+"That one feels like an animated comic." The lead applies this at the port, in code, on whatever quad4 delivers:
+- **The numbers show from the start.** No tap is needed to see the facts. The off state and the 3 s and one-by-one reveals go.
+- **They feel alive through small effects that belong to the world,** the way the timer's seconds tick:
+  - a display's digits glitch or re-scan briefly every few seconds, a short flicker or a segment refresh, never a jump of layout;
+  - the leader's gold glints;
+  - the ledger's cursor blinks.
+- **The face is the number:** big, lit, glowing, as the timer's digits are. The right word plus the right visual makes the point at a glance; there are no micro-interactions to discover.
+- A tap may still replay the frame's moment (the buzzer sounding, then the readout flashing), but nothing depends on it.
+- With reduced motion, everything stays still and visible.
