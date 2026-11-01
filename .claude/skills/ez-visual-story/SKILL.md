@@ -327,6 +327,19 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
 119. **Repeated parts get identical geometry.** When several objects share a layout (four chips, four cards), every common part has the same size and position on each, measured to the pixel. Small differences read as sloppiness, and they break comparison. Generate one master and vary only the colour and the content, not separate paintings.
 120. **Show the fact; make it feel alive, don't hide it behind a tap.** The NVIDIA timer works because the number is there at once, big and lit, and its seconds tick. The reader gets "this matters" from the word and the picture together. Facts that need a tap to appear are facts most people never see. Keep the facts visible and add life with small effects native to the object: a display that flickers or re-scans, a glint on gold, a blinking cursor. Make the number the face of the picture.
 121. **One world per page, one universe across pages (conceptual integrity).** Decide a world's rules once (its objects, its light, its materials, its rendering, its perspective, its type, its motion), make every element obey them, and break them only on purpose, for the one thing that must be seen. Every element must be explainable by the same rules as its neighbours ("what is this physically, and where does its light come from?"). The principle is universal. The world is chosen per page: the Overview lives on the chip and in the vault, and the Leaderboard may get a world of its own. What never changes from page to page: the data (one source, the sheet), the words for the same thing, the logo, the core palette, the nav, the voice and the meaning of every gesture. Like a comic universe drawn by different artists: different worlds, one canon.
+122. **The design questions to ask yourself, every section, before showing it** (owner, 2026-11-01: "what other questions am I not asking in design... you have to ask yourself those questions instead of me"):
+   1. *Hierarchy:* what is the one thing a visitor must take away, and is it the biggest, brightest thing?
+   2. *Sequence:* what came just before, and what does this hand over to?
+   3. *Words:* front-loaded, parallel, one term per concept, label rather than explain.
+   4. *Motion:* does anything move without a reason? Does every state change show?
+   5. *Interaction:* what looks touchable, and is it? What answers a touch?
+   6. *Return:* why would someone come back tomorrow? What has changed since their last visit, and when is the next bell?
+   7. *Trust:* can a sceptic check this fact without trusting us (the sheet, the X post's time, a hash)?
+   8. *Share:* what does a screenshot of this look like on X? What does its link card show?
+   9. *Edge states:* no calls today, a tie, nobody right, a missing film, after the NVIDIA date, a new model joining.
+   10. *Data honesty:* scales, sample sizes, and no picture happier than the numbers.
+   11. *Reach:* legible at 320px one-handed, with reduced motion, with a screen reader, on a slow phone.
+   12. *Feeling:* where are the suspense, the reveal and the payoff?
     - *Taught by:* "you can change the character's style depending on what sections they're showing up in... the leaderboard tab can have a different style itself, can have like noir ink"; "when they fail, hit by the fail... you can do that one", 31 Oct.
 
 ## How this skill learns (owner, 2026-10-30)
