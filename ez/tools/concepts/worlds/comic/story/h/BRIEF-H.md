@@ -390,3 +390,27 @@ The H11 boards landed before the owner's H12 notes. Each second pass starts from
   - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
   - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
   - Budget: up to $10 of Hedra each.
+
+## Round H16 (owner, 2026-11-01, ~13:10 UTC): set the world stage first
+The owner: "we were trying to redesign every section independently without setting the entire world stage... every section did not have a coherent next follow-up." X2+ becomes the main site again once its sections are done. The order is top down: section 1 (the top), then Meet the models, then the current scoreboard, then every round. The bet section is done: the vault, the chip, and the parts plate with **K2** caption boxes (`h15/ref-k2-owner-2.jpg`). The vault already holds the bet, so the record does not go in the vault. Back issues was "decent", and so was the vault, but the record is open: "let's just start from scratch... continue exploring."
+
+- **`world`, the stage for the whole site, before any more section mockups.** Make three coherent worlds, each in the chip's art style (Round H15). Each one is one place you move through from top to bottom, and it ends in the bet's vault and chip, which stay as they are. For each world:
+  - **The world bible.** One paragraph: the place, the light, the objects, why the vault is at the end of it.
+  - **The storyboard.** One rough painted establishing panel per chapter, in order:
+    1. the top (what we do + how a round works);
+    2. Meet the models with the current scoreboard;
+    3. every round (the record);
+    4. the bet (vault, chip, K2 parts; reuse the live paintings);
+    5. tonight at the close / what's next.
+  - **The hand-over line between each chapter.** How one leads into the next (a door, a stair, a wire, a camera move), so every chapter has a coherent next.
+  - **The words.** Each chapter's lettered head and one caption, in the style of "Bet #1: NVIDIA".
+  - Candidate worlds, your call:
+    - the exchange building at night, floor by floor: the lobby, the trading floor, the records room, the vault in the basement;
+    - the chip / circuit board itself, every chapter a part on one board, ending at the vault;
+    - one of your own.
+  - Rough on purpose: 1K, medium, about 5 paintings per world.
+  - Boards: `ez/x2p-h16-world-390.png` (three columns, one per world, top to bottom) and a one-page `ez/x2p-h16-world-bible.md`.
+- Rule 0, the hard rules and BRIEF-H's output rules hold.
+  - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
+  - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
+  - Budget: up to $6 of Hedra.
