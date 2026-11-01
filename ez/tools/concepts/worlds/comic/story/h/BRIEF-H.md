@@ -600,3 +600,60 @@ Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/to
 - Budget: up to $4 of Hedra.
 
 Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Never touch `ez/tools/v22/`, any `ez/v4*.html` or `ez/media/`. Never deploy or publish.
+
+## Round H23 (owner, 2026-11-01, ~23:00 UTC, on the live X2+ preview; screenshots in `h23/`)
+The owner's word is "integrated" ("diegetic"): every word and number is part of the world, as the NVIDIA timer's digits are. The owner asked to make "crisp" and "integrated" computable. These are the acceptance tests for this round. **Measure them and report them; a board that fails one is not done.**
+
+1. **Resolution.** Each painting is at least as many real pixels wide as it is shown on a 3x phone (CSS width × 3). A frame 195 CSS px wide needs ≥ 600 px of source; a full-width chip 390 CSS px wide needs ≥ 1170 px, and 2400 px+ for the master. Never upscale.
+2. **Reading size.** Every live number or word on a phone at 390px has a cap height of at least 9 CSS px. Today the CALL figures are about 5.
+3. **Integration of live text.** Live text sits on a surface the painting provides for it (a display, a lit glass window, a silkscreen field, an etched plate). It shares that surface's perspective. It is lit as that surface would light it:
+   - on a display: emissive, with bloom spilling onto the bezel, and the glass glare and reflections painted over the text (a screen-blended glare layer from the painting on top);
+   - on ceramic or metal: the surface's grain and light multiplied through the letters, a slight ink spread, no clean vector edge.
+
+   No flat-colour vector text with crisp edges on top of a painting. Compare against the NVIDIA timer (`media/bet-chip-h2.jpg` and h_bet.js's dies) side by side.
+4. **Static words and marks are painted, not overlaid.** Anything that never changes is painted by the image model into the object: the model names, the versions, the labels "LAST 5", "W-L", "SEASON P&L" and "NO.", each company's logo, each flag. One master for geometry, then one image-to-image pass per model that paints its own logo, flag, name and version into the same places.
+   - Check every painted word letter by letter. Image models misspell; reject and redo any that are wrong.
+   - Only the numbers that change stay live: rank, W-L, Last 5, P&L, calls, market move, winner.
+5. **Chip detail.** Packages and boards show real chip features at the density of the top's hero chip (`media/top-hero-t-h22.jpg`): traces, SMD capacitors and resistors, vias, pads, gold pins, package seams, markings. Compare against photos of real chips. No flat single-colour areas larger than about 15% of the chip.
+6. **Framing.** Crop in until the subject (the dies, the readout, the ledger rows, the gold lid) fills at least 60% of the frame. The chip may run off the frame's edges, with no empty black or blank board around it.
+7. **Animation.** The four frames now light one by one; keep that. Tap-to-reveal stays.
+
+### `quad4`: the four frames of "How a round works" (X2+, built from `tools/v22/story/x2p_top.js/.css`)
+Repaint all four as zoom-ins at 1200 px+ square (or 4:5), with the readouts big:
+- **CALL:** the four dies large, each a lit display showing the AI's mark and call ("+1%", "−4.5%") at the NVIDIA timer's scale.
+- **CLOSE:** the readout display fills the frame, "TESLA (TSLA)", "−3.08%", "Grok wins", lit like the timer. The owner circled it as "not integrated" (`h23/ref-close-zoom.jpg`). The buzzer may run off the edge.
+- **LEDGER:** zoom into the rows.
+- **BOARD:** the gold lid with the leader's mark and name only (no P&L; the live build already does this), close.
+
+Data stays live from ROUNDS and `__x2pPnl`.
+
+Deliver:
+- a drop-in replacement for x2p_top.js's four pictures and surfaces;
+- the paintings under your folder, as flat names ready to copy into `media/` (`top-h23-*.jpg`, ≤ 300 KB each);
+- a REPORT with the measurements for tests 1 to 6.
+
+Boards: `ez/x2p-h23-quad4-390.png`, `-1280.png`, and a close-up row at 3x.
+
+Budget: up to $6.
+
+### `chips7`: Meet the models (X2+, built from `tools/v22/story/x2p_chips.js/.css` = chips6)
+- A new master at 2400 px+ wide, with the chip detail of test 5 on the ceramic package (not a flat colour body).
+- Per model, one image-to-image pass that paints, into the same places:
+  - the logo on the gold plate, as an engraved or embossed mark;
+  - the flag, as an etched or printed field;
+  - the model name and version, and the static labels "NO.", "LAST 5", "W-L" and "SEASON P&L", laser-etched on the label.
+
+  The owner circled the GPT logo, flag and label as "pasted on" (`h23/ref-chips-phone.jpg`).
+- The live numbers (No., W-L, the five ✓/✗ cells, P&L) go on the painted fields with test 3's treatment.
+- Keep the founder's die on the right, as the owner likes it ("the only one that sort of does is the character framings"). Keep identical geometry and "In inference".
+
+Deliver:
+- the drop-in `_c7.js`/`_c7.css`;
+- flat-named images `chip7-*` and `try7-*` (≤ 300 KB each), plus webp;
+- the measurements for tests 1 to 5.
+
+Boards: `ez/x2p-h23-chips7-390.png`, `-1280.png`, a 3x close-up of one chip, and a loops video.
+
+Budget: up to $8.
+
+Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Never touch `ez/tools/v22/`, any `ez/v4*.html` or `ez/media/`. Never deploy or publish.
