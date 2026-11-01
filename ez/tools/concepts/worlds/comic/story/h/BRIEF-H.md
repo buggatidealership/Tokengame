@@ -351,3 +351,42 @@ The H11 boards landed before the owner's H12 notes. Each second pass starts from
   - At least five takes, very different from each other.
   - Boards: `ez/x2p-x3p-h14-cast6-390.png`, `-1280.png`.
   - Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and the boards in `ez/`. Budget up to $10 of Hedra.
+
+## Round H15 (owner, 2026-11-01, ~12:30 UTC: "I over-engineered everything once again. Though with good lessons.")
+**The base is EZ Live X2+** (`ez/v46-live-x2plus.html`; its artifact 9dPsU3tcgmC9RAzQZy9Mg5), not X3+'s comic.
+- The owner will fix X2+ one section at a time: first the top, then Meet the models mixed with the current standings, then the record ("Every call, receipts included").
+- The bet section is the only section the owner likes. It comes over from X3+, with **K2** (caption boxes drawn into the plate; `h15/ref-k2-owner.jpg`).
+
+**One art style for every section:** the NVIDIA chip (`h15/ref-art-style-chip.jpg` = `ez/media/bet-chip-h2.jpg`), a painted comic illustration of a real object:
+- clean ink outlines on every part, comic dot shading only in the shadows;
+- painted light, one warm gold key light from behind (rays), green rim light on one side, red on the other;
+- the object alone on a black void, sharp, seen clearly.
+
+**Palette:** black, the bet's dark green, red and gold. Every caption box and every lettering is in the logo's cream (#f8f0d9, the colour of "EZ" in the logo) on black. Saturated.
+
+**Lettering:** the bet's own, "Bet #1: NVIDIA" (`ez/tools/v22/story/h_bet.css`, `h2.hb-h`: Bangers, an ink stroke, a stacked drop, tilted). The captions are comic caption boxes, drawn in.
+
+- **`top1` and `top2`, the top of X2+, redesigned.** Mockups only, on the built `v46-live-x2plus.html`. Replace its top (headline, film bill, live strip); leave everything below untouched. Three beats:
+  1. **Beat 1, the headline panel:** one frame, one picture in the chip's style that says what EZ does, with the headline lettered on or over it (breaking its border like "Bet #1: NVIDIA" breaks the vault's).
+     - Model names and logos only; no characters or founders on the landing.
+     - Headline (my choice; the owner asked me to pick the words): **"Four AIs call earnings. The market keeps score."** Show one take with "4 AIs. Every earnings report. One scoreboard." as the alternative.
+  2. **A gutter**, then **Beat 2, how a round works:** ONE panel (not four beats) with a comic caption box on it, "How a round works" (or "Every round:").
+     - Under it, four frames, two per row.
+     - Each frame: a picture in the chip's style plus a big lettered word that **breaks its frame's border** and bleeds over the section, with one short line under it:
+       1. **CALL** "Each AI calls the move before the report."
+       2. **BELL** "The closing bell says who was right."
+       3. **#1** "The top of the board holds the golden ticket."
+       4. **BET** "We follow its call. Bet #1: NVIDIA."
+     - The facts show at once, live from the newest graded round (ROUNDS, CO_LOGOS, `__x2pPnl`): the four calls; the close; the leader, P&L and W-L; Bet #1 NVIDIA.
+     - Each frame has **affordance and a small micro-interaction**, diegetic: on hover or tap the bell swings, the ticket tilts and catches the light, and so on. Nothing needs a tap to be understood (lesson 103).
+  3. **Beat 3, the explainer film** (`media/ez-landing-v4.mp4`, poster `-poster-ez.jpg`), with its own lettered head.
+  - Every live word or number sits on a surface the painting leaves blank for it (lessons 85, 92), or in a caption box.
+  - Every take at 390 and 1280, plus a short recording of the micro-interactions.
+  - Different worlds per helper:
+    - `top1`: (a) the chip's own world (the board, traces and dies carry the story, as the bet's circuit does); (b) the trading floor at the bell, drawn as objects (bell, ticker, board).
+    - `top2`: (c) objects on the black void, each step one hero object like the chip (an envelope with the calls, the bell, the golden ticket, the vault); (d) one world of your own.
+  - Boards: `ez/x2p-h15-<area>-390.png`, `-1280.png`, `-micro.mp4`.
+- Rule 0, the hard rules and BRIEF-H's output rules hold.
+  - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
+  - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
+  - Budget: up to $10 of Hedra each.
