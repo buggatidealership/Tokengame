@@ -414,3 +414,4 @@ The owner: "we were trying to redesign every section independently without setti
   - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
   - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
   - Budget: up to $6 of Hedra.
+- **Owner, same message:** the top ends with the film. There is no live strip under it: nothing of today's X2+ top stays, it is a complete redesign. Sequence: beat 1 explains what we do, beat 2 is the four quadrants, beat 3 is the film. The world the whole page lives in still has to be chosen (the `world` helper).
