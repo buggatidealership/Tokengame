@@ -668,3 +668,13 @@ Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/to
 - **The face is the number:** big, lit, glowing, as the timer's digits are. The right word plus the right visual makes the point at a glance; there are no micro-interactions to discover.
 - A tap may still replay the frame's moment (the buzzer sounding, then the readout flashing), but nothing depends on it.
 - With reduced motion, everything stays still and visible.
+
+### H23 addendum 2 (owner, 2026-11-01, ~23:15 UTC; the lead leads the design and applies this at the port)
+- **The numbers are the most beautiful thing in each frame.** CALL shows the four predictions; CLOSE shows the market's move and the winner; LEDGER shows the rows (Tesla, move, winner).
+- **The company is a picture, not a word.** Tesla's logo sits in the frame as part of the chip, for example marked on the CALL chip's package. The word "Tesla" stays only where it reads as a print on the chip.
+- **The lines get simpler:**
+  - CALL: "AIs submit predictions before the report." (no "4")
+  - CLOSE: "The market close grades them."
+  - LEDGER: "Every round is written to the ledger."
+  - BOARD: "The ledger ranks the board."
+- **The cut-off:** once quad4 and chips7 are built in, the top and Meet the models are good enough for now, and the next section is the record.
