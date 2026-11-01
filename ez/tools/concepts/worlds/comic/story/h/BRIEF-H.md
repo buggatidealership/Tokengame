@@ -415,3 +415,29 @@ The owner: "we were trying to redesign every section independently without setti
   - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
   - Budget: up to $6 of Hedra.
 - **Owner, same message:** the top ends with the film. There is no live strip under it: nothing of today's X2+ top stays, it is a complete redesign. Sequence: beat 1 explains what we do, beat 2 is the four quadrants, beat 3 is the film. The world the whole page lives in still has to be chosen (the `world` helper).
+
+## Round H17 (owner, 2026-11-01, ~13:20 UTC): the exchange, and the models as chips
+- **The world is the exchange building**, "that's ultimately what we're doing". The open question is old school or new school. Mock both.
+- **The motto:** "They used to call it stock picking. We call it model picking." It must be in the world, diegetic: for example the last frame's caption of the top, or the gutter itself, leading straight into Meet the models.
+- **Gutters:** a classic gutter, beats pasted together, or a break that is itself designed in the world's own material. Mock the options.
+- **Meet the models: each model is a chip** ("they're not traders, they are actual AIs doing the trading"). This is either one chip per model, or one big chip with each model as a die.
+  - On each chip: the model's logo, its country flag, W-L and current P&L. The last five rounds can wait.
+  - In the die, a glimpse into the chip: the founder caricature's living loop, from X3+ (`media/founder-<m>-anim.mp4`, poster `.jpg`). The characters are kept, but they are "the interesting animated layer", the Harry Potter touch, never the focal point. The chip and its numbers are the subject.
+  - Open: one beat per model, or two models per beat? Mock both, plus one big chip.
+- **Areas**, both in the chip's art style (Round H15), with the palette and the cream lettering and caption boxes:
+  - **`exch`, the exchange building.** Old school (a marble and brass hall, the bell, a ticker) against new school (a glass and LED exchange, a server floor). For each, two panels:
+    - the top's beat 1 panel ("Four AIs call earnings. The market keeps score.");
+    - the hand-over into Meet the models carrying the motto: as the last frame's caption, as a sign or ticker in the world, or as the gutter itself.
+    - Show three break treatments: a classic gutter, pasted beats, and a designed break (a floor slab, a ticker band, a torn edge).
+    - Boards: `ez/x2p-h17-exch-390.png`, `-1280.png`.
+  - **`chips`, Meet the models.** Three layouts in the exchange world:
+    - one chip per model, one beat each;
+    - two chips per beat;
+    - one big chip with four dies.
+    - The founder loop plays inside each die, behind glass, like a living portrait in the silicon. Logo, flag, W-L and P&L sit on the chip's own blank surfaces (pads, labels, silkscreen), live from `__x2pPnl` and MODELS.
+    - The leader is marked the way the bet's chip glows.
+    - Boards: `ez/x2p-h17-chips-390.png`, `-1280.png`, and a short video of the loops playing in the dies.
+- Rule 0, the hard rules and BRIEF-H's output rules hold.
+  - Commit only under `ez/tools/concepts/` and the boards in `ez/`.
+  - Never touch `ez/tools/v22/` or any `ez/v4*.html`; never deploy or publish.
+  - Budget: up to $8 of Hedra each.
