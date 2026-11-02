@@ -18,6 +18,8 @@ const css=fs.readFileSync(__dirname+'/_st.css','utf8').replace(/url\(img\//g,'ur
   const t0=Date.now();
   await p.evaluate(t=>{(t==='now'?document.getElementById('record'):document.getElementById('stRoot')).scrollIntoView()},t);await p.waitForTimeout(1600);
   const loadedAtView=reqs.filter(r=>r[2]>=t0).length;
+  const cost=await p.evaluate(()=>{const R=document.getElementById('stRoot');if(!R)return null;const want=new Set([...R.querySelectorAll('img')].map(i=>i.src));const es=performance.getEntriesByType('resource').filter(e=>want.has(e.name)||/stand\/img\//.test(e.name));
+    const imgs=[...R.querySelectorAll('img')];return {imgsInDom:imgs.length,imgsLoaded:imgs.filter(i=>i.complete&&i.naturalWidth).length,files:es.length,KB:Math.round(es.reduce((a,e)=>a+(e.encodedBodySize||e.transferSize||0),0)/1024),videosInSection:R.querySelectorAll('video').length}});
   if(id.includes('+'))await p.evaluate(()=>document.querySelector('#stRoot .st-more').click());
   await p.evaluate(()=>window.__st&&window.__st.render&&0);
   // for the picture only: load every image in the section now
@@ -28,15 +30,15 @@ const css=fs.readFileSync(__dirname+'/_st.css','utf8').replace(/url\(img\//g,'ur
   await p.screenshot({path:`${OUT}/sec-${W}-${id}.png`,clip:{x:0,y:Math.max(0,box.y-6),width:W,height:Math.min(box.h+12,14000)},fullPage:true,type:'png'});
   const m=await p.evaluate(()=>{const R=document.getElementById('stRoot'),out={sw:document.documentElement.scrollWidth,vw:innerWidth};if(!R){out.secH=Math.round(document.getElementById('record').getBoundingClientRect().height);return out}
     const h=e=>e?Math.round(e.getBoundingClientRect().height):0,hd=R.querySelector('.st-hd'),b1=R.querySelector('.st-b1'),b2=R.querySelector('.st-b2');
-    out.beat1=Math.round(b1.getBoundingClientRect().bottom-hd.getBoundingClientRect().top);out.beat2=h(b2);out.secH=h(R);
+    out.beat1=Math.round(b1.getBoundingClientRect().bottom-hd.getBoundingClientRect().top);out.b2top=Math.round(b2.getBoundingClientRect().top-R.getBoundingClientRect().top);out.hdtop=Math.round(hd.getBoundingClientRect().top-R.getBoundingClientRect().top);out.beat2=h(b2);out.secH=h(R);
     const sl=R.querySelector('.st-b1 .st-sl');out.standSlab=sl?Math.round(sl.getBoundingClientRect().width)+'x'+Math.round(sl.getBoundingClientRect().height):'';
     const rs=R.querySelector('.st-b2 .st-sl');out.restSlab=rs?Math.round(rs.getBoundingClientRect().width)+'x'+Math.round(rs.getBoundingClientRect().height):'';
     out.restShown=R.querySelectorAll('.st-b2 .st-sl').length;out.standSlots=R.querySelectorAll('.st-b1 .st-sl').length;
     out.over=[];R.querySelectorAll('.st-lab').forEach(L=>{const lr=L.getBoundingClientRect();L.querySelectorAll('.st-nm,.st-y,.st-ds,.st-gr,.st-no,.st-zb').forEach(e=>{const r=e.getBoundingClientRect();if(!r.width)return;const d=Math.max(r.right-lr.right,lr.left-r.left,r.bottom-lr.bottom,lr.top-r.top);if(d>1)out.over.push(e.className+' '+Math.round(d))});
-      const nm=L.querySelector('.st-nm');if(nm&&nm.scrollWidth>nm.clientWidth+1)out.over.push('clip '+nm.textContent.slice(0,20))});
+      const nm=L.querySelector('.st-nm');if(nm&&nm.scrollWidth>nm.clientWidth+1)out.over.push('clip '+nm.textContent.slice(0,20));const sm=L.querySelector('.st-nm small');if(sm&&sm.getBoundingClientRect().bottom>lr.bottom+.5)out.over.push('tick '+sm.textContent)});
     out.minNm=Math.min(...[...R.querySelectorAll('.st-nm')].map(e=>parseFloat(getComputedStyle(e).fontSize)));out.minDs=Math.min(...[...R.querySelectorAll('.st-ds')].map(e=>parseFloat(getComputedStyle(e).fontSize)));
     out.videos=[...document.querySelectorAll('video')].filter(v=>!v.paused).length;return out});
-  m.reqAtView=loadedAtView;m.imgsSection=await p.evaluate(()=>{const R=document.getElementById('stRoot');return R?R.querySelectorAll('img').length:0});
+  m.reqAtView=loadedAtView;m.cost=cost;m.imgsSection=await p.evaluate(()=>{const R=document.getElementById('stRoot');return R?R.querySelectorAll('img').length:0});
   m.mediaReqs=reqs.length;m.mediaKB=Math.round(reqs.reduce((a,r)=>a+r[1],0)/1024);m.standKB=Math.round(reqs.filter(r=>/tile-r|stand|caseP|caseD|slab|ledge|velvet|box\.webp/.test(r[0])).reduce((a,r)=>a+r[1],0)/1024);
   if(t!=='now'&&W===390&&!id.includes('+')){const a=await p.$('#stRoot .st-b1 a.st-sl');if(a){const href=await a.getAttribute('href');await a.click({force:true});await p.waitForTimeout(1800);
     m.tap={href,hash:await p.evaluate(()=>location.hash),opened:await p.evaluate(()=>{const e=document.getElementById('x2pRm');return !!(e&&getComputedStyle(e).display!=='none'&&e.getBoundingClientRect().height>50&&(e.textContent.match(/Round \d+|#\d+/)||[1])[0])}),video:await p.evaluate(()=>[...document.querySelectorAll('#x2pRm video')].map(v=>v.currentSrc.split('/').pop()+(v.paused?' paused':' playing')).join(','))}}}
