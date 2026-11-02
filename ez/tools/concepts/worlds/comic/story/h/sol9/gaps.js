@@ -3,7 +3,7 @@
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');const fs=require('fs');
 const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8'),W=+process.argv[2]||390;
 (async()=>{const b=await chromium.launch();const p=await (await b.newContext({viewport:{width:W,height:900},reducedMotion:'reduce'})).newPage();await FONTS(p);
-await p.goto('http://localhost:'+(process.env.PORT||8991)+'/v46-live-x2plus.html',{waitUntil:'load',timeout:150000});
+await p.goto('http://localhost:'+(process.env.PORT||8991)+'/v46-live-x2plus.html',{waitUntil:'domcontentloaded',timeout:150000});
 await p.waitForFunction(()=>window.P5&&P5.cur&&!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});
 await p.addStyleTag({content:rd('_s9.css')+rd('a3.css')});await p.addScriptTag({content:rd('../sol7/_s7.js')+rd('../sol8/_s8.js')+rd('_s9.js')+rd('a3.js')});
 await p.evaluate(()=>document.querySelector('#learn').scrollIntoView());await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(1200);

@@ -11,7 +11,7 @@ const rd=f=>fs.existsSync(__dirname+'/'+f)?fs.readFileSync(__dirname+'/'+f,'utf8
   await p.route('**/media/s7-*',r=>{const f=__dirname+'/../sol7/img/'+r.request().url().split('/').pop().split('?')[0];r.fulfill({path:f,contentType:'image/jpeg'})});
   await p.route('**/media/s25-coin.jpg',r=>r.fulfill({path:__dirname+'/../sol6/h25/out/s25-coin.jpg',contentType:'image/jpeg'}));
   const er=[];p.on('pageerror',e=>er.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource/.test(m.text()))er.push('c:'+m.text().slice(0,160))});
-  await p.goto(`http://localhost:${PORT}/v46-live-x2plus.html`,{waitUntil:'load',timeout:150000});
+  await p.goto(`http://localhost:${PORT}/v46-live-x2plus.html`,{waitUntil:'domcontentloaded',timeout:150000});
   await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});
   await p.waitForFunction(()=>window.P5&&P5.cur,null,{timeout:60000});await p.waitForTimeout(600);
   if(id!=='now'){await p.addStyleTag({content:rd('_s9.css')+rd(id+'.css')});await p.addScriptTag({content:rd('../sol7/_s7.js')+rd('../sol8/_s8.js')+rd('_s9.js')+rd(id+'.js')})}

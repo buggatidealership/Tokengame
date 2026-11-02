@@ -1,7 +1,7 @@
 /* take C3 (owner, 2026-11-02, on C2): each row is two equal halves: the gold caption box is exactly the picture's size (same width, same height),
    so text and picture weigh the same. One type size for all four boxes: the largest at which every box holds its sentence (set by the tightest
    box), refitted on width changes and fonts. Red number tab, kicker, long/short colours and hard shadow as B.
-   Phones (below 1000px): the ledger is a strip, so as a half it would be about 60px tall; there the ledger row stacks: the caption box and the strip
+   The ledger is a strip, so as a half it would be about 60px tall on a phone (and on desktop its short box set the type for all four): its row stacks at every width: the caption box and the strip
    one over the other, both full width and the same height. The frames bleed to 8px from the screen's edges (as the live frames bleed) to give the
    halves room. */
 R3start(function(R3){const {D,b2,KEYS,FR,VERB,sayHTML}=R3;b2.classList.add('r3-C3');b2.querySelector('.t4-frs').classList.add('r3');
