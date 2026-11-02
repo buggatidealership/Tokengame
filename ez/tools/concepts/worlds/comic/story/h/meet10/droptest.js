@@ -1,0 +1,8 @@
+// node droptest.js W : loads dropin/x2p_meet10.js/.css as production would (images pointed at this folder, since media/ does not carry them yet); prints errors and overflow
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');const fs=require('fs');const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
+(async()=>{const W=+process.argv[2];const b=await chromium.launch();const p=await b.newPage({viewport:{width:W,height:844}});await FONTS(p);const errs=[];p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error')errs.push(m.text())});
+ await p.goto('http://localhost:8963/v46-live-x2plus.html',{waitUntil:'load',timeout:150000});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur')&&document.querySelector('section.c8 .c8-one'),null,{timeout:120000});
+ await p.evaluate(()=>{window.__M10IMG='tools/concepts/worlds/comic/story/h/meet10/out/';window.__M10BUS='tools/concepts/worlds/comic/story/h/meetbus/out/pub/'});
+ await p.addStyleTag({content:rd('dropin/x2p_meet10.css')});await p.addScriptTag({content:rd('dropin/x2p_meet10.js')});await p.waitForFunction(()=>document.documentElement.classList.contains('m10-ready'));await p.waitForTimeout(1500);
+ const r=await p.evaluate(()=>({S:document.querySelector('section.c8').className,sw:document.documentElement.scrollWidth,img:[...document.querySelectorAll('section.c8 img')].filter(i=>i.complete&&!i.naturalWidth&&i.getAttribute('src')).map(i=>i.src).slice(0,3)}));
+ console.log(W,JSON.stringify(r),errs);await b.close()})();
