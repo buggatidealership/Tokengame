@@ -13,8 +13,9 @@
 #         the components, traces and pads stay on top. The loud, meme take. The model colour is lost from the substrate.
 #      c  SILHOUETTE: the flag in the mask's own colour, a shade darker and lighter (tone on tone, like a screen print in one ink):
 #         the quietest take; reads as a flag by its shapes only.
-#      d  BACKLIT: take a's copper with the flag lit from under the board: the mask glows in the flag's colours around the parts
-#         (a gamer's RGB board). Still.
+#      d  WAVING: b with every layer rippled (more at the fly end) and the folds shaded light and dark. Still.
+#      e  D2 (the owner's pick of d): d plus a bus of gold traces run to the board's top and bottom edge at the same x on every chip,
+#         so where m11.css butts the chips together (pins cut) the lines run on from one chip into the next.
 # Words: none painted (every label and number stays page text).
 import sys, os, random, math
 import numpy as np
@@ -199,6 +200,20 @@ def compose(base,m,t):
       col=np.array((168,30,24),np.float32)*np.ones_like(STw)[...,None];top=STw;sc=np.array((240,190,56),np.float32)
     w=(K*.92)[...,None];out=a*(1-w)+col*np.clip(L*.95,0,1.35)*fold*w
     sg=(top*np.maximum(K,.45)*G*.85)[...,None];out=out*(1-sg)+sc*np.clip(L,0.6,1.2)*fold*sg
+  elif t=='e':
+    # D2: D's waving flag, plus the bus that joins one chip to the next: gold traces run from inside the top and bottom margins to the
+    # board's edge, at the same x on every chip, so where two chips butt (m11.css cuts the pins) each line runs straight on into the next
+    out=np.asarray(compose(base,m,'d')).astype(np.float32)
+    tr=Image.new('L',SZ,0);d=ImageDraw.Draw(tr);vi=Image.new('L',SZ,0);dv=ImageDraw.Draw(vi)
+    for x in range(424,1772,48):
+      yb=650 if x<1288 else 606
+      for (y0,y1,yv) in ((40,92,92),(yb,690,yb)):
+        d.line((x,y0,x,y1),fill=255,width=7);dv.ellipse((x-9,yv-9,x+9,yv+9),fill=255)
+    T=np.asarray(tr.filter(ImageFilter.GaussianBlur(.6))).astype(np.float32)/255;V=np.asarray(vi.filter(ImageFilter.GaussianBlur(.6))).astype(np.float32)/255
+    bm=Image.new('L',SZ,0);ImageDraw.Draw(bm).rectangle((BODY[0]+30,0,BODY[2]-30,SZ[1]),255);bm=np.asarray(bm).astype(np.float32)/255
+    for r in (PANEL,CORE):bm[r[1]:r[3],r[0]:r[2]]=0
+    cu=np.array((232,178,84),np.float32);w=(np.clip(T+V,0,1)*bm*np.maximum(K/np.maximum(G,1e-3),.25)*.95)[...,None]
+    out=out*(1-w)+cu*w
   return Image.fromarray(np.clip(out,0,255).astype(np.uint8))
 def run(takes):
   for m in ['grok','claude','gpt','kimi']:
@@ -212,4 +227,4 @@ def run(takes):
         oo=o if w==1800 else o.resize((w,round(SZ[1]*w/1800)),Image.LANCZOS)
         oo.save(os.path.join(OUT,f'chip12{t}-{m}-{w}.jpg'),quality=90);oo.save(os.path.join(OUT,f'chip12{t}-{m}-{w}.webp'),quality=88)
   print('ok',takes)
-if __name__=='__main__':run(sys.argv[1:] or ['a','b','c','d'])
+if __name__=='__main__':run(sys.argv[1:] or ['a','b','c','d','e'])
