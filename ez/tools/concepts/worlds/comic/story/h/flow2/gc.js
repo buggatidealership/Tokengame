@@ -1,0 +1,4 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const fs=require('fs');
+(async()=>{const b=await chromium.launch();const p=await (await b.newContext({viewport:{width:1280,height:900}})).newPage();
+await p.goto('http://localhost:8995/v46-live-x2plus.html',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});await p.waitForTimeout(1500);
+console.log(await p.evaluate(()=>[...document.querySelectorAll('main>*')].map(e=>{const c=getComputedStyle(e),r=e.getBoundingClientRect();return e.tagName+'.'+String(e.className).slice(0,30)+' gc='+c.gridColumn+' gr='+c.gridRow+' order='+c.order+' x='+Math.round(r.left)+' w='+Math.round(r.width)}).join('\n')+'\nmain:'+getComputedStyle(document.querySelector('main')).display+' '+getComputedStyle(document.querySelector('main')).gridTemplateColumns));await b.close()})();

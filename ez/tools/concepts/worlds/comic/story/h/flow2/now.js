@@ -1,1 +1,1 @@
-window.__f2done=true;
+F2.done();

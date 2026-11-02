@@ -14,7 +14,7 @@ const PORT=process.env.PORT||8995;
  await p.addStyleTag({content:rd('_f2.css')+rd(T+'.css')+'\n'});await p.addScriptTag({content:rd('_f2.js')+rd(T+'.js')});
  await p.waitForFunction(()=>window.__f2done,null,{timeout:20000}).catch(()=>er.push('no __f2done'));
  await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(1500);
- await p.evaluate(()=>window.__t4&&window.__t4.place&&window.__t4.place());await p.evaluate(()=>window.__f2place&&window.__f2place());await p.waitForTimeout(900);
+ await p.evaluate(()=>window.__f2place&&window.__f2place());await p.waitForTimeout(900);
  // reveal everything that reveals on scroll
  if(!process.env.NOREVEAL)await p.evaluate(async()=>{const H=document.documentElement.scrollHeight;for(let y=0;y<H;y+=300){scrollTo(0,y);await new Promise(r=>setTimeout(r,60))}scrollTo(0,0)});
  await p.waitForTimeout(1600);
@@ -23,7 +23,10 @@ const PORT=process.env.PORT||8995;
   const clip=[...document.querySelectorAll('.f2 .f2-t, .f2 .f2-l, .f2 .f2-k, .f2 h2, .f2 h3, .f2 p')].filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>(e.getAttribute('class')||e.tagName).slice(0,30)).slice(0,5);
   return {scrollW:document.documentElement.scrollWidth,vw,over,clip,err:window.__x2pTopErr?String(window.__x2pTopErr):null,f2err:window.__f2err||null}});
  await p.evaluate(()=>{[...document.body.querySelectorAll('*')].forEach(x=>{const ps=getComputedStyle(x).position;if(ps==='fixed'||ps==='sticky')x.style.visibility='hidden'})});
- const y=await p.evaluate(()=>{const ch=document.querySelector('section.ch'),t4=document.querySelector('section.t4');const e=Math.max(ch.getBoundingClientRect().bottom,t4.getBoundingClientRect().bottom)+scrollY;return Math.round(e+10)});
- const lim=process.env.TO?+process.env.TO:y;
- await p.screenshot({path:out,fullPage:true,clip:{x:0,y:0,width:w,height:Math.min(lim,y)}});
+ const y=await p.evaluate(()=>{const e=Math.max(...[...document.querySelectorAll('section.ch,section.t4')].map(s=>s.getBoundingClientRect().bottom))+scrollY;return Math.round(e+10)});
+ if(process.env.FROM==='b2'){const m=()=>p.evaluate(()=>{const a=document.querySelector('.t4-b2').getBoundingClientRect(),c=document.querySelector('.t4-b3').getBoundingClientRect();return [Math.round(a.top+scrollY-40),Math.round(c.bottom+scrollY+16)]});
+  let [y0,y1]=await m();await p.setViewportSize({width:w,height:y1-y0});await p.waitForTimeout(700);await p.evaluate(()=>window.__f2place());await p.waitForTimeout(500);
+  [y0,y1]=await m();await p.evaluate(v=>scrollTo(0,v),y0);await p.waitForTimeout(600);[y0,y1]=await m();
+  const sy=await p.evaluate(()=>scrollY);await p.screenshot({path:out,timeout:120000,clip:{x:0,y:y0-sy,width:w,height:Math.min(y1-y0,(await p.viewportSize()).height-(y0-sy))}})}
+ else await p.screenshot({path:out,fullPage:true,timeout:120000,clip:{x:0,y:0,width:w,height:y}});
  console.log(JSON.stringify({out,w,T,O,...chk,h:y,er}));await b.close()})();
