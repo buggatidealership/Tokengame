@@ -465,7 +465,9 @@ P5.mountProof=function(take){const sec=D.querySelector('#learn');if(!sec)return;
 P5.mountClose=function(take){const sec=D.querySelector('#get');if(!sec)return;
   [...sec.children].forEach(c=>{if(!c.classList.contains('p5c'))c.style.display='none'});sec.classList.add('p5-host');
   let box=sec.querySelector('.p5c');if(!box){box=D.createElement('div');box.className='p5c p5c-'+take.id;sec.appendChild(box)}
-  const X=P5.data();const draw=()=>{box.innerHTML=take.html(X);take.draw(box,X)};P5.prepLogos([].concat(...X.days.slice(0,3).map(d=>d.rs.map(r=>r.ticker)))).then(draw);draw();P5.curC={X,draw,box};
+  const X=P5.data();const draw=()=>{box.innerHTML=take.html(X);take.draw(box,X);window.__x2pTears&&requestAnimationFrame(window.__x2pTears)};
+  /* H35: a take with its own desktop composition is drawn again when the width crosses into or out of it */
+  if(take.dk){let k0=take.dk();addEventListener('resize',()=>{const k=take.dk();if(k!==k0){k0=k;draw()}})}P5.prepLogos([].concat(...X.days.slice(0,3).map(d=>d.rs.map(r=>r.ticker)))).then(draw);draw();P5.curC={X,draw,box};
   /* the next close ticks once a minute */
   if(!RM.matches)setInterval(()=>{const e=box.querySelector('.p5-cd');if(e&&take.cd)e.textContent=take.cd(X)},30000)};
 /* switch markup shared by the takes (real buttons; the takes paint them onto their surfaces) */
@@ -585,21 +587,32 @@ setTimeout(()=>{if(!P5.cur)P5.mountProof(P5.take)},0);
 const CR1=[112,196,888,826],WN=[[144,254],[270,256],[394,256],[518,256],[642,254],[766,254]],WW=90,WH=100,FING=[120,762,768,40];
 const CR2=[118,150,882,812],GL=[136,172,724,288],B1=[336,660],B2=[658,660];
 function card(X){const out=[];X.days.forEach(d=>d.rs.forEach(r=>{if(out.length<6)out.push({r,d})}));return out}
-P5.take={id:'c1',cd:X=>P5.cd(X),html(X){return `<div class="p5-bleed"><h2 class="t4-h2 p5-h p5-nx"><span class="t4-hw">Next,</span> <span class="t4-hw p5-hw2">the AI<span class="t4-lc x2p-lc">s</span> trade</span></h2><div class="p5-col"><div class="p5-st"></div><p class="p5-ln uf-nar">These companies report next. Each one is a round for the four AIs, not a bet.</p><button type="button" class="p5-sched" data-go="upcoming">See the full schedule <span aria-hidden="true">→</span></button></div><div class="p5-gut"></div><div class="p5-col"><div class="p5-st"></div><p class="p5-ln">$EZ isn’t live yet. The address appears here, and only here, at launch. <b>Anyone DMing you one before that is a scammer.</b> Not financial advice.</p></div></div>`},
- draw(box,X){const [s1,s2]=box.querySelectorAll('.p5-st'),C=card(X);let lit='',silk='',top='';
+/* H35 (owner, 2026-11-02, night: on desktop it "fills only about half the screen"): from 1000px the close is its own composition, stacked
+   at the column's full width: the heading; the six lit windows and their empty sockets as one wide strip of the same board (CR1D);
+   the caption on the left and "See the full schedule" on the right of one row under it; the torn gutter; then the panel split in two
+   crops of its own painting side by side, the next bell's glass (CR2G) beside the two buttons (CR2B); the scam line under them.
+   Phones keep the square board and panel. */
+const CR1D=[80,232,920,584],CR2G=[100,138,900,514],CR2B=[176,520,824,822];
+const DK=()=>innerWidth>=1000;
+P5.take={id:'c1',cd:X=>P5.cd(X),dk:DK,html(X){if(DK())return `<div class="p5-bleed p5-dkx"><h2 class="t4-h2 p5-h p5-nx"><span class="t4-hw">Next,</span> <span class="t4-hw p5-hw2">the AI<span class="t4-lc x2p-lc">s</span> trade</span></h2><div class="p5-st p5-nxs"></div><div class="p5-nxr"><p class="p5-ln uf-nar">These companies report next. Each one is a round for the four AIs, not a bet.</p><button type="button" class="p5-sched" data-go="upcoming">See the full schedule <span aria-hidden="true">→</span></button></div><div class="p5-gut"></div><div class="p5-nxp"><div class="p5-st"></div><div class="p5-st"></div></div><p class="p5-ln p5-nxw">$EZ isn’t live yet. The address appears here, and only here, at launch. <b>Anyone DMing you one before that is a scammer.</b> Not financial advice.</p></div>`;
+  return `<div class="p5-bleed"><h2 class="t4-h2 p5-h p5-nx"><span class="t4-hw">Next,</span> <span class="t4-hw p5-hw2">the AI<span class="t4-lc x2p-lc">s</span> trade</span></h2><div class="p5-col"><div class="p5-st"></div><p class="p5-ln uf-nar">These companies report next. Each one is a round for the four AIs, not a bet.</p><button type="button" class="p5-sched" data-go="upcoming">See the full schedule <span aria-hidden="true">→</span></button></div><div class="p5-gut"></div><div class="p5-col"><div class="p5-st"></div><p class="p5-ln">$EZ isn’t live yet. The address appears here, and only here, at launch. <b>Anyone DMing you one before that is a scammer.</b> Not financial advice.</p></div></div>`},
+ draw(box,X){const dk=box.querySelector('.p5-dkx'),[s1,s2,s3]=box.querySelectorAll('.p5-st'),C=card(X);let lit='',silk='',top='';
   C.forEach(({r,d},i)=>{const [x,y]=WN[i],cx=x+WW/2;lit+=P5.litLogo(r.ticker,cx,y+38,56)+t(cx,y+88,26,new Date(d.t).toLocaleDateString('en-US',{weekday:'short',timeZone:'UTC'}).toUpperCase(),{a:'middle',c:AMB})});
   silk+=t(500,FING[1]-16,30,'EVERYTHING COMING UP',{a:'middle',c:'#fff6dc',ls:2});
   top+=`<rect class="p5-fing" x="${FING[0]}" y="${FING[1]}" width="${FING[2]}" height="${FING[3]}" fill="${GD}" style="mix-blend-mode:screen"/>`;
   const lab=C.map(({r,d})=>`${r.co} (${r.ticker}), calls lock ${P5.day(d.t,X.today)}`).join('; ');
-  P5.stage(s1,{img:'media/p5-sockets.jpg',crop:CR1,glass:WN.map(([x,y])=>[x,y,WW,WH,6]),lit,silk,top,glare:.55,bloom:1.8,label:'Next on the card: '+lab});
-  s1.insertAdjacentHTML('beforeend',P5.link(CR1,{href:'#/upcoming',label:'See everything coming up',x:FING[0],y:FING[1]-50,w:FING[2],h:FING[3]+60}));
+  P5.stage(s1,{img:'media/p5-sockets.jpg',crop:dk?CR1D:CR1,glass:WN.map(([x,y])=>[x,y,WW,WH,6]),lit,silk,top,glare:.55,bloom:1.8,label:'Next on the card: '+lab});
+  if(!dk)s1.insertAdjacentHTML('beforeend',P5.link(CR1,{href:'#/upcoming',label:'See everything coming up',x:FING[0],y:FING[1]-50,w:FING[2],h:FING[3]+60}));
   /* the panel: the next bell on the glass; the buttons' caps lit with what they do */
   const nb=P5.nextClose(X);let l2=t(500,232,32,'THE NEXT BELL',{a:'middle',c:AMB,ls:2})+t(500,338,92,P5.cd(X),{a:'middle',c:CR,cls:'p5-cd'})+t(500,400,28,nb?`${nb.r.co.toUpperCase()} · ${X.nUp} ROUNDS LEFT IN SEASON 1`:'',{a:'middle',c:'#9fd8b4'});
   const live=!!(window.CONFIG&&CONFIG.ca);
   l2+=t(B1[0],B1[1]-6,30,'GET',{a:'middle',c:'#eafff1'})+t(B1[0],B1[1]+30,34,'$EZ',{a:'middle',c:'#eafff1'})+t(B2[0],B2[1]-6,30,'FOLLOW',{a:'middle',c:CR})+t(B2[0],B2[1]+30,34,'ON X',{a:'middle',c:CR});
   const sk=t(B1[0],B1[1]+118,26,live?'':'OPENS AT LAUNCH',{a:'middle',c:'#fff6dc'})+t(B2[0],B2[1]+118,26,'EVERY CALL FIRST',{a:'middle',c:'#fff6dc'});
-  P5.stage(s2,{img:'media/p5-panel.jpg',crop:CR2,glass:[[GL[0],GL[1],GL[2],GL[3],10]],lit:l2,silk:sk,glare:.5,bloom:2.2,label:'The next bell, Get $EZ and Follow on X'});
-  s2.insertAdjacentHTML('beforeend',(live?P5.link(CR2,{href:CONFIG.buyUrl||'#',label:'Get $EZ',x:B1[0]-90,y:B1[1]-90,w:180,h:180,ext:1}):'')+P5.link(CR2,{href:(window.CONFIG&&CONFIG.x)||'https://x.com/earningszn',label:'Follow EZ on X',x:B2[0]-90,y:B2[1]-90,w:180,h:180,ext:1}));
+  const sb2=dk?s3:s2,CB=dk?CR2B:CR2;
+  if(dk){P5.stage(s2,{img:'media/p5-panel.jpg',crop:CR2G,glass:[[GL[0],GL[1],GL[2],GL[3],10]],lit:l2,glare:.5,bloom:2.2,label:'The next bell: '+P5.cd(X)});
+   P5.stage(s3,{img:'media/p5-panel.jpg',crop:CR2B,lit:l2,silk:sk,bloom:2.2,label:'Get $EZ and Follow on X'})}
+  else P5.stage(s2,{img:'media/p5-panel.jpg',crop:CR2,glass:[[GL[0],GL[1],GL[2],GL[3],10]],lit:l2,silk:sk,glare:.5,bloom:2.2,label:'The next bell, Get $EZ and Follow on X'});
+  sb2.insertAdjacentHTML('beforeend',(live?P5.link(CB,{href:CONFIG.buyUrl||'#',label:'Get $EZ',x:B1[0]-90,y:B1[1]-90,w:180,h:180,ext:1}):'')+P5.link(CB,{href:(window.CONFIG&&CONFIG.x)||'https://x.com/earningszn',label:'Follow EZ on X',x:B2[0]-90,y:B2[1]-90,w:180,h:180,ext:1}));
   P5.vis(s1);
   /* H34: the schedule button switches to the Upcoming tab through the router's own address (as the tabs do: #/upcoming), never a page anchor */
   const sb=box.querySelector('.p5-sched');if(sb)sb.onclick=()=>{location.hash='#/upcoming'};
@@ -626,7 +639,7 @@ document.documentElement.classList.add('x2b-bleed');
 (function(){
 const H=document.documentElement,D=document,RM=matchMedia('(prefers-reduced-motion: reduce)');
 /* full file names written out: make_site.py copies only media named in the page */
-const IMG={chip:'media/bet-chip-h2.jpg',grP:'media/bet-ground-h2-phone.jpg',grD:'media/bet-ground-h2-desk.jpg'};
+const IMG={chip:'media/bet-chip-h2.jpg',grP:'media/bet-ground-h2-phone.jpg',grD:'media/bet-ground-h2-desk.jpg',s2:'media/s2-chips-h35.jpg'};
 const NM={GPT:'GPT',KIMI:'Kimi',CLAUDE:'Claude',GROK:'Grok'};
 const p2=v=>String(v).padStart(2,'0');
 
@@ -651,6 +664,11 @@ function persp(w,h,q){const [x0,y0]=q[0],[x1,y1]=q[1],[x2,y2]=q[2],[x3,y3]=q[3];
   const g=(dx3*dy2-dx2*dy3)/den,hh=(dx1*dy3-dx3*dy1)/den;
   const a=x1-x0+g*x1,b=x3-x0+hh*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+hh*y3,f=y0;
   return `matrix3d(${a/w},${d/w},0,${g/w},${b/h},${e/h},0,${hh/h},0,0,1,0,${c},${f},0,1)`}
+/* H35: a flat (2D) fit of the unit rect onto a small quad: the mean of its edges, centred on its centre. The Season 2 dies are small
+   and nearly square-on, so a 2D matrix is within a pixel of the perspective one and, unlike matrix3d, makes no GPU layer of its own. */
+function aff(w,h,q){const [p0,p1,p2,p3]=q,ux=((p1[0]-p0[0])+(p2[0]-p3[0]))/2/w,uy=((p1[1]-p0[1])+(p2[1]-p3[1]))/2/w,vx=((p3[0]-p0[0])+(p2[0]-p1[0]))/2/h,vy=((p3[1]-p0[1])+(p2[1]-p1[1]))/2/h;
+  const cx=(p0[0]+p1[0]+p2[0]+p3[0])/4,cy=(p0[1]+p1[1]+p2[1]+p3[1])/4;
+  return `matrix(${ux},${uy},${vx},${vy},${cx-ux*w/2-vx*h/2},${cy-uy*w/2-vy*h/2})`}
 /* the chip: the four dies' glass, measured on the 2048x1152 painting */
 const Q=[[[650,494],[781,471],[858,610],[719,631]],[[842,465],[981,440],[1064,579],[918,602]],[[1043,431],[1172,410],[1262,547],[1121,568]],[[1229,403],[1358,383],[1453,514],[1316,535]]];
 const lq=q=>{const [tl,tr,br,bl]=q,m=(p,o,t)=>[p[0]+(p[0]-o[0])*t,p[1]+(p[1]-o[1])*t];return [m(bl,tl,.13),m(br,tr,.13),m(br,tr,.36),m(bl,tl,.36)]};
@@ -685,10 +703,15 @@ function tick(root){const art=root.querySelector('.hbc-art'),sr=root.querySelect
    An art box: data-crop "[x,y,w,h]" (phone) | "[x,y,w,h]" (desk) in the painting's pixels; where a crop runs past the painting, the
    box's own dark ground shows, faded into the painting by ::after. [data-at] children are placed at painting pixels, [data-q] quads. */
 const pk=v=>{const q=String(v).split('|');return innerWidth>=1000&&q[1]?q[1]:q[0]};
-function place5(el){const w=el.clientWidth;if(!w)return;const c=JSON.parse(pk(el.dataset.crop)),iw=2048,ih=1152,k=w/c[2];
-  el.style.height=Math.round(c[3]*k)+'px';el.style.backgroundImage=`url(${IMG.chip})`;el.style.backgroundSize=`${iw*k}px ${ih*k}px`;el.style.backgroundPosition=`${-c[0]*k}px ${-c[1]*k}px`;
+function place5(el){const w=el.clientWidth;if(!w)return;const c=JSON.parse(pk(el.dataset.crop)),iw=2048,ih=1152,k=w/c[2],img=el.dataset.img||IMG.chip;
+  el.style.height=Math.round(c[3]*k)+'px';el.style.backgroundImage=`url(${img})`;
+  /* H35: a [data-fit] quad is laid out at its on-screen size (the GPU rule: never a perspective surface at painting size), --s its height */
+  el.querySelectorAll('[data-fit]').forEach(n=>{const q=JSON.parse(n.dataset.q),xs=q.map(p=>p[0]),ys=q.map(p=>p[1]);
+    const bw=Math.max(8,Math.round((Math.max(...xs)-Math.min(...xs))*k)),bh=Math.max(8,Math.round((Math.max(...ys)-Math.min(...ys))*k));
+    n.style.width=bw+'px';n.style.height=bh+'px';n.style.setProperty('--s',bh+'px')});
+  el.style.backgroundSize=`${iw*k}px ${ih*k}px`;el.style.backgroundPosition=`${-c[0]*k}px ${-c[1]*k}px`;
   el.style.setProperty('--k',k);el.style.setProperty('--pl',(-c[0]*k)+'px');el.style.setProperty('--pt',(-c[1]*k)+'px');el.style.setProperty('--pw',(iw*k)+'px');el.style.setProperty('--ph',(ih*k)+'px');
-  el.querySelectorAll('[data-q]').forEach(n=>{const q=JSON.parse(n.dataset.q).map(([x,y])=>[(x-c[0])*k,(y-c[1])*k]);n.style.transform=persp(n.offsetWidth,n.offsetHeight,q)});
+  el.querySelectorAll('[data-q]').forEach(n=>{const q=JSON.parse(n.dataset.q).map(([x,y])=>[(x-c[0])*k,(y-c[1])*k]);n.style.transform=n.hasAttribute('data-fit')?aff(n.offsetWidth,n.offsetHeight,q):persp(n.offsetWidth,n.offsetHeight,q)});
   el.querySelectorAll('[data-at]').forEach(n=>{const [x,y]=JSON.parse(pk(n.dataset.at));n.style.left=((x-c[0])*k)+'px';n.style.top=((y-c[1])*k)+'px'})}
 /* the caption sits on the seam: its middle on the chip's bottom edge (the crops start right under it) */
 function seam(sec){const st=sec.querySelector('.hb5-st'),chip=st&&st.querySelector('.hb5-chip'),c=st&&st.querySelector('.hb5-c');
@@ -705,22 +728,57 @@ function html(Dt){
      ${[0,1,2,3].map(die).join('')}
     </div>
     <div class="hb5-two">
-     ${pan('hb5-g','[600,800,560,440]|[560,740,1048,380]','[624,1050]|[600,1000]','Right','Profits buy back $EZ','hb5-ok')}
-     ${pan('hb5-r','[1400,560,560,440]|[1000,600,1048,380]','[1420,810]|[1460,860]','Wrong','The pool can be wiped out','hb5-no')}
+     ${pan('hb5-g','[600,800,560,440]|[560,740,1048,380]','[624,1050]|[600,1000]','Right','Profits buy back $EZ.','hb5-ok')}
+     ${pan('hb5-r','[1400,560,560,440]|[1000,600,1048,380]','[1420,810]|[1330,860]','Wrong','The pool shrinks or can be wiped out.','hb5-no')}
     </div>
-    <div class="hb5-c"><div class="bd-c"><span>${pool}<p class="hb5-say">We bet <em>the whole pool</em> on NVIDIA, based on the <em>#1 AI's</em> prediction.</p></span></div></div>
+    <div class="hb5-c"><div class="bd-c"><span>${pool}<p class="hb5-say">For Season 1, we bet <em>the whole pool</em> on NVIDIA, long or short, based on the <em>#1 AI's</em> prediction.</p></span></div></div>
    </div>
-   <p class="hb5-cl">NVIDIA is the first bet, <b>not the last.</b></p>
+   ${s2html()}
   </div></div>`}
+/* H35 (owner, 2026-11-02, night): the Season 2 beat under the bet, from s2bets take A (sealed chips): four more chips of Bet #1's kind on
+   the same dark bench, still unlit. #2, #3 and #4 carry Google's, Apple's and Microsoft's marks in their dies (each in its own colours,
+   lit under the glass: the die's diagonal sheen and its edge shading drawn over them); the fourth die says "More". The number
+   is silkscreened on the chip under its die, as DAYS and HRS sit under Bet #1's dies. Painting media/s2-chips-h35.jpg (2048x1152); the
+   dies' glass measured on it. No dates: "Next earnings season". */
+const S2Q=[[[263,556],[471,533],[511,691],[297,717]],[[785,504],[968,485],[1019,628],[831,651]],[[1254,457],[1422,441],[1487,571],[1315,591]],[[1682,413],[1825,399],[1898,517],[1745,535]]];
+const S2T=['GOOGL','AAPL','MSFT'],S2N={GOOGL:'Google',AAPL:'Apple',MSFT:'Microsoft'};
+/* the strip under a die, on the chip's substrate: the die's side edges carried on down */
+const s2lq=q=>{const [tl,tr,br,bl]=q,m=(p,o,t)=>[p[0]+(p[0]-o[0])*t,p[1]+(p[1]-o[1])*t];return [m(bl,tl,.05),m(br,tr,.05),m(br,tr,.36),m(bl,tl,.36)]};
+function s2html(){
+  const die=(q,i)=>{const t=S2T[i];return `<div class="s2a-d${t?'':' s2a-m'}" data-fit data-q='${JSON.stringify(q)}'>${t?`<i class="s2a-lg" data-t="${t}"></i>`:'<b>More</b>'}</div>`+
+    (t?`<div class="s2a-n" data-fit data-q='${JSON.stringify(s2lq(q))}'><b>#${i+2}</b></div>`:'')};
+  return `<div class="s2b" role="group" aria-labelledby="s2bK">
+    <p class="s2-k" id="s2bK">NVIDIA is the first bet, <b>not the last.</b><span class="s2-k2">Season 2 ups the stakes.</span></p>
+    <div class="hb5-art s2-art" data-img="${IMG.s2}" data-crop="[50,318,1890,556]|[40,300,1990,640]" aria-hidden="true">${S2Q.map(die).join('')}</div>
+    <p class="hb-sr">Season 2 bets: #2 Google, #3 Apple, #4 Microsoft, and more.</p>
+    <div class="s2a-ft"><span class="s2-tab">Season 2 · Next earnings season</span></div>
+   </div>`}
+/* the marks: a tile (four opaque corners of one colour) is keyed out; a dark one-colour mark (Apple) is lit silver, as a dark mark
+   cannot glow in dark glass; every other mark keeps its own colours. Done once on a canvas, then set as the die's picture. */
+const S2L={};
+function s2logo(t){if(S2L[t])return S2L[t];const L=window.CO_LOGOS&&CO_LOGOS[t],f=L&&(L.f||L);
+  return S2L[t]=new Promise(res=>{if(!f)return res(null);const im=new Image();im.onload=()=>{try{const S=240,c=D.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d');
+    const k=Math.min(S/im.width,S/im.height);g.drawImage(im,(S-im.width*k)/2,(S-im.height*k)/2,im.width*k,im.height*k);
+    const d=g.getImageData(0,0,S,S),p=d.data,px=(x,y)=>(y*S+x)*4,q=Math.round(S*.04),cs=[[q,q],[S-1-q,q],[q,S-1-q],[S-1-q,S-1-q]].map(([x,y])=>px(x,y));
+    const tile=cs.every(i=>p[i+3]>200)&&cs.every(i=>Math.abs(p[i]-p[cs[0]])+Math.abs(p[i+1]-p[cs[0]+1])+Math.abs(p[i+2]-p[cs[0]+2])<40);
+    let lum=0,n=0;for(let i=0;i<p.length;i+=4){let a=p[i+3];if(tile){const dd=Math.abs(p[i]-p[cs[0]])+Math.abs(p[i+1]-p[cs[0]+1])+Math.abs(p[i+2]-p[cs[0]+2]);a=Math.min(a,Math.max(0,Math.min(255,(dd-30)*3)))}p[i+3]=a;if(a>128){lum+=(p[i]+p[i+1]+p[i+2])/3;n++}}
+    if(n&&lum/n<70)for(let i=0;i<p.length;i+=4){p[i]=232;p[i+1]=236;p[i+2]=242}
+    g.putImageData(d,0,0);
+    /* trimmed to the mark's own bounds, so every mark fills its die alike (Apple's file is mostly tile) */
+    let x0=S,y0=S,x1=-1,y1=-1;for(let y=0;y<S;y++)for(let x=0;x<S;x++)if(p[px(x,y)+3]>24){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+    if(x1<x0)return res(null);const w=x1-x0+1,h=y1-y0+1,o=D.createElement('canvas');o.width=w;o.height=h;o.getContext('2d').drawImage(c,x0,y0,w,h,0,0,w,h);res(o.toDataURL())}catch(e){res(f?'media/'+f:null)}};im.onerror=()=>res(null);im.src='media/'+f})}
+function s2marks(sec){sec.querySelectorAll('.s2a-lg[data-t]').forEach(e=>s2logo(e.dataset.t).then(u=>{if(u)e.style.backgroundImage=`url(${u})`}))}
 
 function dress(){const sec=D.querySelector('#x2pSt');if(!sec||sec.classList.contains('hb-on'))return;
   sec.insertAdjacentHTML('beforeend',html(data(sec)));sec.classList.add('hb-on');H.classList.add('x2b-on');sec.setAttribute('aria-labelledby','x2bH');
   sec.querySelectorAll('.hb5-art').forEach(a=>{a.__hbPlace=()=>{place5(a);seam(sec)};place5(a)});seam(sec);
   if(window.ResizeObserver){const ro=new ResizeObserver(()=>seam(sec));ro.observe(sec.querySelector('.hb5-st'));ro.observe(sec.querySelector('.hb5-c'))}
-  tick(sec);H.classList.add('hb-ready')}
+  s2marks(sec);tick(sec);H.classList.add('hb-ready');
+  /* the torn gutter under the bet is measured to the content's own edges: measure again now the Season 2 beat is in */
+  window.__x2pTears&&requestAnimationFrame(window.__x2pTears)}
 function start(){try{dress()}catch(e){window.__x2pHbetErr=e;console.error('h_bet',e);return}
   const main=D.querySelector('main');if(main)new MutationObserver(()=>{try{dress()}catch(e){window.__x2pHbetErr=e}}).observe(main,{childList:true});
-  const re=()=>D.querySelectorAll('#x2pSt .hb5-art').forEach(a=>a.__hbPlace&&a.__hbPlace());
+  const re=()=>{D.querySelectorAll('#x2pSt .hb5-art').forEach(a=>a.__hbPlace&&a.__hbPlace());window.__x2pTears&&requestAnimationFrame(window.__x2pTears)};
   let w0=innerWidth,rt=0;addEventListener('resize',()=>{if(innerWidth===w0)return;w0=innerWidth;clearTimeout(rt);rt=setTimeout(re,150)});
   if(D.fonts&&D.fonts.ready)D.fonts.ready.then(re);addEventListener('load',re)}
 (function wait(n){if(D.querySelector('#x2pSt')&&window.MODELS&&window.__x2pPnl)start();else if(n<480)setTimeout(()=>wait(n+1),250)})(0);

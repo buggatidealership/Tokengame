@@ -250,3 +250,64 @@ D.documentElement.classList.add('m11-ready');
 (function(){const D=document;let n=0;(function go(){const four=D.querySelector('section.m11 .c8-four');if(!four||!D.documentElement.classList.contains('m11-ready')){if(++n<400)setTimeout(go,50);return}
  try{[...four.querySelectorAll('.c8-one')].forEach((o,i)=>{if(o.querySelector('.m32-tab'))return;const t=D.createElement('i');t.className='m32-tab'+(i?'':' m32-t1');t.setAttribute('aria-hidden','true');
    t.innerHTML=`<b>${i+1}</b>`;o.prepend(t)});D.documentElement.classList.add('m32');window.__m11&&window.__m11.layout()}catch(e){window.__m32Err=e;console.error(e)}})()})();
+
+/* ===== H36 (owner, 2026-11-02, night): A the rank in the square: each chip's solid colour square (Grok's white one read as an empty box) is the medal,
+   its material the rank: #1 gold, #2 silver, #3 bronze, #4 dark gunmetal; the numeral (Anton, page text) engraved into it (an SVG inner shadow: dark top
+   wall, lit bottom lip, the floor a darker tone of the metal). The board's own order (season P&L, x2p_chips) sets the rank, so a rank change moves the medal.
+   The separate contact tabs (H32) are off. The model colour stays on the chip's board and rim (chip15).
+   B No. 5 joined: the "In inference" chip leaves its own block and joins the board under the last chip with the same join (pins cut, chips pulled
+   together); its "?" plate becomes a dark medal engraved "5?" (a gold "?" read as a fifth gold medal) and "Not signed yet" is written on its painted tape.
+   Media (written out so make_site.py copies them): media/medal-h36-gold.jpg media/medal-h36-gold.webp media/medal-h36-silver.jpg media/medal-h36-silver.webp
+   media/medal-h36-bronze.jpg media/medal-h36-bronze.webp media/medal-h36-dim.jpg media/medal-h36-dim.webp (Hedra gpt-image-2, blank plates in the style of
+   the chip's own gold logo plate). CSS: the H36 block of x2p_meet10.css. window.__m36 = {layout, measure}; a failure is kept in window.__m36Err. ===== */
+(function(){const W=window,D=document;let n=0;
+(function go(){const sec=D.querySelector('section.c8.m11'),four=sec&&sec.querySelector('.c8-four');
+ if(!four||!D.documentElement.classList.contains('m32')||!W.__m11){if(++n<400)setTimeout(go,50);return}
+ try{run(sec,four)}catch(e){W.__m36Err=e;console.error(e)}})();
+function run(sec,four){
+const MED='media/',MET=['gold','silver','bronze','dim'];
+/* the engraved floor and its walls, per metal: [floor top, floor bottom, top wall shadow, bottom lip light] */
+const INK={gold:['#7a4d0c','#a8701c','rgba(40,20,0,.85)','rgba(255,240,190,.75)'],silver:['#4f555c','#7b828a','rgba(10,14,20,.8)','rgba(255,255,255,.8)'],
+ bronze:['#5a2a10','#83431d','rgba(30,10,0,.85)','rgba(255,200,160,.6)'],dim:['#050608','#121418','rgba(0,0,0,.9)','rgba(200,210,225,.32)']};
+const pc=(v,t)=>(v/t*100).toFixed(4)+'%';
+const at=(r,S)=>`left:${pc(r[0],S[0])};top:${pc(r[1],S[1])};width:${pc(r[2]-r[0],S[0])};height:${pc(r[3]-r[1],S[1])}`;
+/* the square in the paintings: chip15 (1800 x 728, chip14.py's enamel panel P), try8 (1800 x 699, the "?" plate) */
+const SQ=[64,100,338,364],S15=[1800,728],SQ5=[59,109,337,367],S5=[1800,699];
+const pic=(met,w)=>`<picture><source type="image/webp" srcset="${MED}medal-h36-${met}.webp"><img src="${MED}medal-h36-${met}.jpg" alt="" decoding="async" draggable="false"></picture>`;
+function medal(k,txt,met,small){const id='m36e'+k,c=INK[met];
+ return `<div class="m36-md m36-${met}" data-r="${txt}" aria-hidden="true">${pic(met)}
+  <svg viewBox="0 0 274 264" preserveAspectRatio="xMidYMid meet"><defs>
+   <linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient>
+   <filter id="${id}" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+    <feComponentTransfer in="SourceAlpha" result="inv"><feFuncA type="table" tableValues="1 0"/></feComponentTransfer>
+    <feOffset in="inv" dy="5" result="o1"/><feGaussianBlur in="o1" stdDeviation="1.6" result="b1"/><feFlood flood-color="${c[2]}"/><feComposite in2="b1" operator="in"/><feComposite in2="SourceAlpha" operator="in" result="sh"/>
+    <feOffset in="inv" dy="-3.5" result="o2"/><feGaussianBlur in="o2" stdDeviation="1" result="b2"/><feFlood flood-color="${c[3]}"/><feComposite in2="b2" operator="in"/><feComposite in2="SourceAlpha" operator="in" result="li"/>
+    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sh"/><feMergeNode in="li"/></feMerge></filter></defs>
+   <text x="137" y="${small?205:212}" text-anchor="middle" font-size="${small?178:196}" fill="url(#${id}g)" filter="url(#${id})">${txt}</text></svg></div>`}
+const ones=()=>[...four.querySelectorAll('.c8-one')];
+/* A: the medals, by the board's order */
+function medals(){ones().forEach((o,i)=>{const p=o.querySelector('.c7-pic'),r=i+1,met=MET[Math.min(i,3)];let m=p.querySelector(':scope>.m36-md');
+  if(!m||m.dataset.r!==String(r)){m&&m.remove();const t=D.createElement('div');t.innerHTML=medal(o.dataset.m,r,met);m=t.firstElementChild;m.style.cssText=at(SQ,S15);p.append(m)}})}
+medals();
+/* B: the fifth chip joins the board */
+const tb=sec.querySelector('li.ch-tb'),tp=tb&&tb.querySelector('.c7-pic');let five=null;
+if(tp){five=D.createElement('div');five.className='m36-five';five.append(tp);tb.style.display='none';four.querySelector('.m11-l')?four.insertBefore(five,four.querySelector('.m11-l')):four.append(five);
+ const t=D.createElement('div');t.innerHTML=medal('N5','5?','dim',true);const m=t.firstElementChild;m.style.cssText=at(SQ5,S5);tp.append(m);
+ const tape=D.createElement('div');tape.className='m36-tape';tape.setAttribute('aria-hidden','true');tape.style.cssText=at([66,416,300,528],S5);tape.innerHTML='<span>Not signed<br>yet</span>';tp.append(tape)}
+/* the join (m11's): each chip's body cut at its pins where it meets the next; the last chip now meets the fifth, so its bottom pins go too */
+const CB=(728-661)/728,CT5=60/699;
+function layout(){medals();const os=ones(),last=os[os.length-1];os.forEach(o=>o.classList.remove('m36-last'));if(!five||!last)return;last.classList.add('m36-last');
+ const lp=last.querySelector('.c7-pic'),w=lp.getBoundingClientRect().width;five.style.width=w.toFixed(1)+'px';
+ const h=lp.getBoundingClientRect().height,h5=w*699/1800;five.style.marginTop=(-(CB*h+CT5*h5)).toFixed(2)+'px';
+ const tr=five.querySelector('.m36-tape');if(tr){/* the note as big as the tape allows, two lines */let f=w*44/1800;const sp=tr.firstElementChild,bw=tr.clientWidth*.86,bh=tr.clientHeight*.92;
+  for(;f>5;f-=.25){tr.style.fontSize=f.toFixed(2)+'px';if(sp.offsetWidth<=bw&&sp.offsetHeight<=bh)break}}}
+D.documentElement.classList.add('m36');
+const relay=()=>{W.__m11&&W.__m11.layout();layout()};relay();
+let lw=0;new ResizeObserver(()=>{const w=four.clientWidth;if(w!==lw){lw=w;requestAnimationFrame(()=>requestAnimationFrame(layout))}}).observe(four);
+D.fonts&&D.fonts.ready.then(()=>requestAnimationFrame(()=>requestAnimationFrame(layout)));
+W.__m36={layout,measure:()=>{const fr=four.getBoundingClientRect(),b=e=>{const r=e.getBoundingClientRect();return [r.left-fr.left,r.top-fr.top,r.width,r.height].map(v=>+v.toFixed(1))};
+ const os=ones(),lp=os[os.length-1].querySelector('.c7-pic'),L=lp.getBoundingClientRect(),F=five&&five.querySelector('.c7-pic').getBoundingClientRect();
+ return {order:os.map((o,i)=>[o.dataset.m,i+1,o.querySelector('.m36-md').className.replace('m36-md ','')]),medals:os.map(o=>b(o.querySelector('.m36-md'))),
+  five:five&&b(five.querySelector('.c7-pic')),lastBody:+(L.bottom-CB*L.height-fr.top).toFixed(2),fiveBody:F?+(F.top+CT5*F.height-fr.top).toFixed(2):null,
+  widths:[+L.width.toFixed(1),F?+F.width.toFixed(1):null],lefts:[+L.left.toFixed(1),F?+F.left.toFixed(1):null]}}};
+}})();
