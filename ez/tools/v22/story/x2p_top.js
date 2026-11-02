@@ -1,3 +1,8 @@
+/* X2+ TOP, H23 quad4 (ported 2026-11-02). Media: media/top-h23-call.jpg media/top-h23-close.jpg media/top-h23-ledger.jpg media/top-h23-board.jpg media/top-hero-t-h22.jpg media/top-hero-w-h22.jpg media/top-t3-screen-h22.jpg media/ez-landing-v4-poster-ez.jpg media/ez-landing-v4.mp4 */
+/* H23 quad4: a drop-in replacement for tools/v22/story/x2p_top.js (round H23, area quad4; built by quad4/build.py). Only beat 2's four
+   pictures, their surfaces and the frame states change: new zoomed-in paintings (media/top-h23-*.jpg), the figures big and lit in the glass,
+   the facts visible from the start, small life in the world. Everything else (headline, chip, gutters, film) is x2p_top.js as of f180a6e.
+   Laid over the built page as a mockup, it first takes out the live .t4 section. CSS: _q4.css, appended after x2p_top.css. */
 (function(){var n=0;(function go(){if(!document.querySelector("section.x2o-bet")||!window.__x2pPnl){if(++n<400)setTimeout(go,50);return}
 try{
 /* X2+ TOP (owner, 2026-11-01: round H21 top6 take A, built): the headline, "How a round works" (1 CALL, 2 CLOSE, 3 LEDGER, 4 BOARD on R40 Tesla),
@@ -23,7 +28,7 @@ const D=document,WS='b',INK='cream',ORD=1,FH='G',AUTO=window.__T4auto!==false,SH
 /* top6 (Round H21): the four frame lines. LV = 'a' the full lines at today's size; 'b' the same, with "4 AIs submit their predictions" kept on line 1
    (all four lines take the size that clause needs); 'c' the shorter "4 AIs submit predictions ..." (fitted the same way, only if it needs it); 'd' = c with a shorter CLOSE line (my suggestion). */
 const KL={a:'4 AIs submit their predictions',b:'4 AIs submit their predictions',c:'4 AIs submit predictions',d:'4 AIs submit predictions'}[LV]||'4 AIs submit their predictions';
-const LINES={call:KL+' before the earnings report.',close:LV==='d'?'The close after the report decides who wins.':'The next market close after the report decides who wins.',ledger:'Every round is written to the ledger.',board:'The ledger ranks the board.'};
+const LINES={call:'AIs submit predictions before the report.',close:'The market close grades them.',ledger:'Every round is written to the ledger.',board:'The ledger ranks the board.'}; /* H23 addendum 2: the simpler lines */
 const lh=t=>LV!=='a'&&t.startsWith(KL)?`<span class="t6-k">${esc(KL)}</span>${esc(t.slice(KL.length))}`:esc(t);
 function fitLines(root){const ls=[...root.querySelectorAll('.t4-ln')];ls.forEach(l=>l.style.fontSize='');if(LV==='a')return;const k=root.querySelector('.t6-k');if(!k)return;
   const ln=k.parentElement,cs=getComputedStyle(ln),av=ln.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),f0=parseFloat(cs.fontSize);root.dataset.t6base=f0;k.style.whiteSpace='nowrap';
@@ -87,49 +92,61 @@ const dieAI=m=>(w,h)=>{const s=Math.min(w,h);return mark(m,w/2-s*.24,h*.1,s*.48)
 const led=t=>(w,h)=>{const f=fit(t,w*.9,h*.5);return T(w/2,h/2+f*.36,f,t,{a:'middle',c:'#ffc23a',cls:'t4-an t4-led'})};
 function hero(wide){const Q=wide?QA_W:QA_T,QB=wide?QA_WB:QA_TB;
   return pic('media/'+(wide?'top-hero-w-h22.jpg':'top-hero-t-h22.jpg'),wide?1280:768,wide?720:1024,[...rank.map((m,i)=>surf(Q[i],dieAI(m),'t4-glass')),surf(QB,led(`SEASON 1 · ${graded} ROUNDS GRADED`),'t4-glass')],'t4-hero','',wide?[150,90,1000,560]:[0,40,768,900])}
-/* ---------- beat 2: the four frames ---------- */
-const QCALL=[[[277,289],[437,272],[466,399],[302,410]],[[488,268],[641,253],[676,378],[521,391]],[[314,458],[479,440],[512,583],[341,599]],[[537,433],[696,420],[732,558],[568,573]]];
-const dieCall=c=>(w,h)=>{const s=Math.min(w,h),t=(c.up?'+':'−')+c.v+'%';return `<g class="t4-lit">`+mark(c.m,w/2-s*.17,h*.08,s*.34)+T(w/2,h*.6,s*.19,NM[c.m].toUpperCase(),{a:'middle',cls:'t4-an'})+T(w/2,h*.9,s*.27,t,{a:'middle',c:c.up?UPC:DNC,cls:'t4-an t4-call'})+`</g>`};
-/* the buzzer's readout: a landscape glass beside the piezo buzzer (the chip's own bell) */
-const QBUZZ=[[500,396],[856,322],[874,446],[542,522]];
-const readout=(w,h)=>{const co=(EX.co+' ('+EX.ticker+')').toUpperCase(),wn=(NM[win]||win).toUpperCase()+' WINS',fw=fit(wn,w*.5,h*.17),tw=wn.length*fw*.47;
-  return `<g class="t4-ro">`+T(w/2,h*.25,fit(co,w*.84,h*.17),co,{a:'middle',c:'#ffc23a',cls:'t4-an'})+T(w/2,h*.63,fit(EX.out,w*.5,h*.4),EX.out,{a:'middle',c:EX.a>0?UPC:DNC,cls:'t4-an t4-move'})
-   +mark(win,w/2-tw/2-h*.2,h*.735,h*.17)+T(w/2+h*.1,h*.88,fw,wn,{a:'middle',c:'#ffd768',cls:'t4-an t4-win'})+`</g>`
-   +`<rect class="t4-cur" x="${w*.48}" y="${h*.42}" width="${w*.04}" height="${h*.18}" fill="#ffc23a"/>`};
-/* the ledger: five ruled rows; row 1 the header, then the two rounds before the example, the example (row 4, written by the head), row 5 blank */
-const LROW=[[[141,265],[909,284],[909,346],[141,322]],[[141,322],[909,346],[909,402],[141,383]],[[141,383],[909,402],[909,459],[141,445]],[[141,445],[909,459],[909,515],[141,505]]];
-const COLS={r:.06,c:.17,m:.7,w:.75};
-const ledgerHead=(wv,hv)=>{const f=hv*.36,y=hv*.66,o={c:'#ffc23a',cls:'t4-an t4-lh',ls:'.08em'};
-  return `<g class="t4-hd">`+T(wv*COLS.r,y,f,'ROUND',o)+T(wv*COLS.c,y,f,'COMPANY',o)+T(wv*COLS.m,y,f,'MOVE',{...o,a:'end'})+T(wv*COLS.w,y,f,'WINNER',o)+`</g>`};
-const ledgerRow=(r,cls)=>(wv,hv)=>{const f=hv*.56,y=hv*.72,mv=r.a>0?UPC:DNC,wn=String(r.win||'').toUpperCase(),one=wn&&!/,|&| /.test(wn)&&NM[wn],co=String(r.co).toUpperCase();
-   return `<g class="${cls}">`+T(wv*COLS.r,y,f,'R'+r.n,{c:'#ffc23a',cls:'t4-an'})+T(wv*COLS.c,y,Math.min(f,fit(co,wv*(COLS.m-COLS.c-.14),f)),co,{c:'#f8f0d9',cls:'t4-an'})
-    +T(wv*COLS.m,y,f,r.out,{a:'end',c:mv,cls:'t4-an'})+(one?mark(wn,wv*COLS.w,hv*.2,hv*.58)+T(wv*COLS.w+hv*.72,y,f,NM[wn].toUpperCase(),{c:'#ffd768',cls:'t4-an'}):T(wv*COLS.w,y,f,'NOBODY',{c:'#bdb4a0',cls:'t4-an'}))+`</g>`};
-function ledgerSurfs(){const prev=G.slice(Math.max(0,iEx-2),iEx),S=[surf(LROW[0],ledgerHead,'t4-glass t4-row')];
-  prev.forEach((r,i)=>S.push(surf(LROW[1+i+(2-prev.length)],ledgerRow(r,'t4-old'),'t4-glass t4-row')));
-  S.push(surf(LROW[3],ledgerRow(EX,'t4-new'),'t4-glass t4-row t4-wr'));
-  return S}
-/* the gold lid: the leader engraved */
-const leadSurf=(w,h)=>{const s=Math.min(h*.5,w*.3),x=w*.08+s*1.15,tw=w*.92-x,l2=$(pnl(lead)),l3=A[lead].W+'-'+A[lead].L+' · Season P&L';
-  /* owner, 2026-11-01: only the name beside the mark, level with it; no P&L or W-L on the gold lid */
-  const fz=fit(NM[lead],tw,h*.38);return `<g class="t4-eg">`+mark(lead,w*.07,h/2-s/2,s,'#2a1a06')+T(x,h/2+fz*.36,fz,NM[lead].toUpperCase(),{c:'#2a1a06',cls:'t4-an t4-eng'})+`</g>`};
-/* the step word, silkscreened on the painting's bare strip of board: Bangers, in perspective, ink grain, no stroke or drop.
-   Its font size is set in screen px by place() from --t4swpx (between the headline's and the line's). */
-const INKS={cream:'#efe6cc',green:'#5ef08f',gold:'url(#t4gold)'};
-const sw=t=>(w,h)=>`<text class="t4-sw" x="${w*.05}" y="${h*.78}" font-size="${h*.7}" fill="${INKS[INK]||INKS.cream}" filter="url(#t4ss)">${esc(t)}</text>`;
-const STRIP={call:[[214,731],[954,649],[976,719],[222,799]],close:[[170,738],[930,554],[964,640],[190,844]],ledger:[[60,614],[950,614],[950,768],[60,768]],board:[[242,686],[932,598],[952,686],[258,790]]};
-function frames(){const cap=t=>`<div class="t4-cap">${t}</div>`;const W2=WS==='a'?'#1':'BOARD';
-  const st=(k,w)=>surf(STRIP[k],sw(w),'t4-strip');
+/* ---------- beat 2: the four frames (round H23 quad4: zoom-ins at 2K, the readouts big, every figure lit in its glass) ----------
+   Paintings: media/top-h23-{call,close,ledger,board}.jpg, each the crop cr of a 2048 px painting, exported square (1200 px; board 960).
+   Quads and crops are in the 2048 painting's px minus the crop's origin (so the crop's own px), measured on the paintings (quad4/quads.json). */
+const Q4={"call": {"crop": [168, 0, 1880, 1880], "file": "top-h23-call.jpg", "q": [[[100, 164], [784, 164], [800, 804], [120, 820]], [[986, 164], [1568, 172], [1656, 796], [1032, 816]], [[164, 1096], [844, 1092], [888, 1772], [204, 1788]], [[1116, 1080], [1728, 1080], [1804, 1740], [1164, 1760]]]}, "close": {"crop": [140, 120, 1880, 1880], "file": "top-h23-close.jpg", "q": [[[140, 440], [1520, 260], [1780, 1420], [310, 1670]]]}, "ledger": {"crop": [380, 300, 1400, 1400], "file": "top-h23-ledger.jpg", "q": [[[32, -148], [1028, -176], [1096, 164], [72, 192]], [[84, 224], [1100, 180], [1156, 528], [124, 560]], [[136, 604], [1172, 564], [1232, 920], [172, 952]], [[184, 988], [1244, 944], [1352, 1312], [220, 1396]]]}, "board": {"crop": [170, 90, 1760, 1760], "file": "top-h23-board.jpg", "q": [[[6, 262], [1254, 50], [1782, 1314], [462, 1666]]]}};
+const IMQ='media/';
+const em=(c)=>c==='up'?'url(#q4up)':c==='dn'?'url(#q4dn)':c==='gd'?'url(#q4gd)':'url(#q4em)';
+const TX=(x,y,s,t,o={})=>`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${s.toFixed(1)}" ${o.a?`text-anchor="${o.a}"`:''} fill="${o.f||em()}" class="t4-an q4-tx ${o.cls||''}" ${o.ls?`letter-spacing="${o.ls}"`:''}>${esc(t)}</text>`;
+const mn=s=>String(s).replace(/^-/,'−');
+const tw=(t,f)=>String(t).length*f*.47;
+/* the glass's own glare and reflections, cut from the painting itself and laid back over the lit text (screen) */
+function glare(k){const v=Q4[k],[,,cw,ch]=v.crop;return `<img class="q4-gl" src="${IMQ+v.file}" alt="" draggable="false" style="width:100%;left:0;top:0;clip-path:polygon(${v.q.map(q=>q.map(([x,y])=>`${(x/cw*100).toFixed(2)}% ${(y/ch*100).toFixed(2)}%`).join(',')).join(',')})">`}
+/* a polygon clip per quad needs one polygon; several quads: one img per quad */
+function glares(k){const v=Q4[k],[,,cw,ch]=v.crop;return v.q.map(q=>`<img class="q4-gl" src="${IMQ+v.file}" alt="" draggable="false" style="width:100%;left:0;top:0;clip-path:polygon(${q.map(([x,y])=>`${(x/cw*100).toFixed(2)}% ${(y/ch*100).toFixed(2)}%`).join(',')})">`).join('')}
+const scan=(w,h)=>`<i class="q4-scan"></i>`;
+/* CALL: each die a lit display: the AI's mark and name, then its call, the face of the die */
+const dieQ4=c=>(w,h)=>{const s=h*.165,f1=h*.17,nm=NM[c.m].toUpperCase(),tot=s+f1*.28+tw(nm,f1),x0=w/2-tot/2,t=(c.up?'+':'−')+c.v+'%',f2=Math.min(h*.36,w*.86/(t.length*.47));
+  /* the die's content sits low (the call, then the AI under it): "How a round works" and the frame's caption cross the top of the first row */
+  return `<g class="q4-g">`+TX(w/2,h*.74,f2,t,{a:'middle',f:em(c.up?'up':'dn'),cls:'q4-big'})+mark(c.m,x0,h*.93-s*.86,s)+TX(x0+s+f1*.28,h*.93,f1,nm)+`</g>`};
+/* CLOSE: the readout fills the frame: company and ticker, the move, who wins */
+const readQ4=(w,h)=>{const co=(EX.co+' ('+EX.ticker+')').toUpperCase(),W=wins(EX),wn=W[0],one=W.length===1,wt=one?NM[wn].toUpperCase()+' WINS':W.length?W.map(m=>NM[m].toUpperCase()).join(' & ')+' TIE':'NOBODY WINS',
+  f1=Math.min(h*.17,w*.78/(co.length*.47)),mv=mn(EX.out),f2=Math.min(h*.42,w*.6/(mv.length*.47)),f3=Math.min(h*.16,w*.6/(wt.length*.47)),ms=f3*1.15,tt=(one?ms+f3*.3:0)+tw(wt,f3),x0=w/2-tt/2;
+  return `<g class="q4-g">`+TX(w/2,h*.27,f1,co,{a:'middle'})+TX(w/2,h*.66,f2,mv,{a:'middle',f:em(EX.a>0?'up':'dn'),cls:'q4-big'})
+   +(one?mark(wn,x0,h*.9-f3*.95,ms):'')+TX(x0+(one?ms+f3*.3:0),h*.9,f3,wt,{f:em('gd')})+`</g>`};
+/* LEDGER: rows of the record. Row: line 1 round + ticker, the move on the right; line 2 the company, the winner on the right */
+/* the winners of a round: none, one, or a tie (the sheet joins tied winners with " & ") */
+const wins=r=>String(r.win||'').toUpperCase().split(/\s*&\s*|\s*,\s*/).filter(m=>NM[m]);
+const rowQ4=(r,cls)=>(w,h)=>{const f=h*.3,mv=r.a>0?'up':'dn',W=wins(r),co=String(r.co).toUpperCase(),ws=f*.95,
+   avail=w*.86,wl0=W.length===1?NM[W[0]].toUpperCase():W.length?'TIE':'NOBODY',fit2=wl=>{const ww=W.length*(ws+f*.2)+(wl?tw(wl,f*.9):0);return [ww,Math.min(f,(avail-ww-f*.4)/(co.length*.47))]};
+   /* the winner's name goes when the company would have to shrink below .82 of the row's type: its mark stays (a word only for a tie or nobody) */
+   let wl=wl0,[ww,f2]=fit2(wl);if(f2<f*.82&&W.length){wl='';[ww,f2]=fit2('')}
+   return `<g class="q4-g ${cls}">`+TX(w*.05,h*.42,f,'R'+r.n,{f:em('gd')})+TX(w*.05+tw('R'+r.n+'  ',f),h*.42,f,r.ticker||'')+TX(w*.95,h*.42,f,mn(r.out),{a:'end',f:em(mv)})
+    +TX(w*.05,h*.84,f2,co)+W.map((m,i)=>mark(m,w*.95-ww+i*(ws+f*.2),h*.84-ws*.82,ws)).join('')+(wl?TX(w*.95,h*.84,f*.9,wl,{a:'end',f:em('gd')}):'')+`</g>`};
+const rowNext=(w,h)=>{const f=h*.3,n=EX.n+1;return `<g class="q4-g q4-nx">`+TX(w*.05,h*.42,f,'R'+n,{f:em('gd')})+`<rect class="q4-cur" x="${(w*.05+tw('R'+n+'  ',f)).toFixed(1)}" y="${(h*.42-f*.74).toFixed(1)}" width="${(f*.42).toFixed(1)}" height="${(f*.78).toFixed(1)}" fill="url(#q4em)"/></g>`};
+function ledgerQ4(){const prev=G.slice(Math.max(0,iEx-2),iEx),q=Q4.ledger.q,S=[];
+  prev.forEach((r,i)=>S.push(surf(q[i+(2-prev.length)],rowQ4(r,'q4-old'),'q4-glass q4-row')));
+  S.push(surf(q[2],rowQ4(EX,'q4-new'),'q4-glass q4-row',scan));S.push(surf(q[3],rowNext,'q4-glass q4-row'));return S}
+/* BOARD: the gold lid, the leader's mark and name stamped into the metal (multiplied, a pale lip under each stroke) */
+const lidQ4=lip=>(w,h)=>{const nm=NM[lead].toUpperCase(),s=h*.24,f=Math.min(h*.3,(w*.62)/(nm.length*.47)),tot=s+f*.3+tw(nm,f),x0=w/2-tot/2,y=h*.55;
+  const body=(fill,dy)=>`<g transform="translate(0 ${dy.toFixed(1)})">`+mark(lead,x0,y-s*.86,s,fill)+`<text x="${(x0+s+f*.3).toFixed(1)}" y="${y.toFixed(1)}" font-size="${f.toFixed(1)}" fill="${fill}" class="t4-an">${esc(nm)}</text></g>`;
+  return lip?`<g filter="url(#q4etch)">${body('#fff6cf',h*.007)}</g>`:`<g filter="url(#q4etch)">${body('#4a2c06',0)}</g>`};
+const crQ=k=>{const[,,cw,ch]=Q4[k].crop;return [0,0,cw,ch]};
+const picQ=(k,S,cls,extra)=>{const[,,cw,ch]=Q4[k].crop;return pic(IMQ+Q4[k].file,cw,ch,S,cls,extra,[0,0,cw,ch])};
+function frames(){const cap=t=>`<div class="t4-cap">${t}</div>`;
   const F={call:{w:'CALL',k:'call',l:LINES.call,cap:`R${EX.n} · ${esc(EX.co)} (${EX.ticker}) · ${md(EX.called)}`,
-    p:pic('media/top-t4-call-h22.jpg',1024,1024,[...calls.map((c,i)=>surf(QCALL[i],dieCall(c),'t4-glass t4-die t4-d'+i))],'','',[120,0,870,870])},
-   close:{w:'CLOSE',k:'bell',l:LINES.close,cap:`At the close · ${md(EX.resolves)}`,
-    p:pic('media/top-t4-buzz-b-h22.jpg',1024,1024,[surf(QBUZZ,readout,'t4-glass t4-rd')],'',
-      at(70,40,520,320,'t4-veil')+at(222,326,184,214,'t4-knob',`<img src="${I4}t4-buzz-b.jpg" alt="" style="width:${(1024/184*100).toFixed(2)}%;left:${(-222/184*100).toFixed(2)}%;top:${(-326/214*100).toFixed(2)}%">`)+at(162,250,300,300,'t4-ring')+at(162,250,300,300,'t4-ring r2'),[60,40,950,950])},
+    p:picQ('call',calls.map((c,i)=>surf(Q4.call.q[i],dieQ4(c),'q4-glass q4-die q4-d'+i,scan)),'',glares('call'))},
+   close:{w:'CLOSE',k:'close',l:LINES.close,cap:`At the close · ${md(EX.resolves)}`,
+    p:picQ('close',[surf(Q4.close.q[0],readQ4,'q4-glass q4-rd',scan)],'',glares('close')+at(-40,-120,300,300,'q4-ring')+at(-40,-120,300,300,'q4-ring r2'))},
    ledger:{w:'LEDGER',k:'ledger',l:LINES.ledger,cap:`Round ${EX.n} · ${md(EX.resolves)}`,
-    p:pic('media/top-t4-ledger-d-h22.jpg',1024,1024,[...ledgerSurfs()],'',at(80,474,80,66,'t4-head'),[30,60,960,960])},
-   board:{w:W2,k:'one',l:LINES.board,cap:'Top of the board',
-    p:pic('media/top-t4-one-b-h22.jpg',1024,1024,[surf([[300,252],[652,212],[748,520],[388,568]],leadSurf,'t4-gold')],'','',[50,80,920,920])}};
-  const seq=ORD===2?['call','close','board','ledger']:['call','close','ledger','board'];
-  return seq.map(k=>F[k]).map((f,i)=>`<li class="t4-fr t4-${f.k}" tabindex="0" role="button" aria-pressed="false" aria-label="${i+1} ${f.w}: ${esc(f.l)}"><div class="t4-ink"><div class="t4-art">${cap(f.cap)}${f.p}</div></div>${sub(i+1,f.w)}<p class="t4-ln">${lh(f.l)}</p></li>`).join('')}
+    p:picQ('ledger',ledgerQ4(),'',glares('ledger'))},
+   board:{w:'BOARD',k:'board',l:LINES.board,cap:'Top of the board',
+    p:picQ('board',[surf(Q4.board.q[0],lidQ4(1),'q4-lid q4-lip'),surf(Q4.board.q[0],lidQ4(0),'q4-lid q4-eng'),surf(Q4.board.q[0],()=>'','q4-lid q4-sheen')],'','')}};
+  return ['call','close','ledger','board'].map(k=>F[k]).map((f,i)=>`<li class="t4-fr q4-fr q4-${f.k} t4-on" tabindex="0" role="button" aria-label="${i+1} ${f.w}: ${esc(f.l)}"><div class="t4-ink"><div class="t4-art">${cap(f.cap)}${f.p}</div></div>${sub(i+1,f.w)}<p class="t4-ln">${lh(f.l)}</p></li>`).join('')}
+/* the glow and bloom are drawn in the screen's px: each painting carries its scale k (CSS px per painting px) as --k */
+function q4k(root){root.querySelectorAll('.q4-fr .t4-pic').forEach(p=>{const k=p.clientWidth/+p.dataset.iw;if(k)p.style.setProperty('--k',k.toFixed(5))})}
+
 /* ---------- top5: the numbered comic sub-head (narration, not printed on the board) ---------- */
 /* a wobbly hand-drawn closed path around (cx,cy): n points, radius r, wobble w, seeded so it is the same on every load */
 function rnd(seed){let x=seed*9301+49297;return()=>(x=(x*9301+49297)%233280)/233280}
@@ -178,7 +195,12 @@ const DEFS=`<svg width="0" height="0" style="position:absolute" aria-hidden="tru
   <feColorMatrix in="g" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -3 2.45" result="gm"/>
   <feComposite in="d" in2="gm" operator="in" result="ink"/>
   <feOffset in="ink" dy="1.2" result="o"/><feColorMatrix in="o" type="matrix" values="0 0 0 0 0 0 0 0 0 .04 0 0 0 0 0 0 0 0 .55 0" result="sh"/>
-  <feMerge><feMergeNode in="sh"/><feMergeNode in="ink"/></feMerge></filter></defs></svg>`;
+  <feMerge><feMergeNode in="sh"/><feMergeNode in="ink"/></feMerge></filter><linearGradient id="q4em" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf0"/><stop offset=".5" stop-color="#ffe9a8"/><stop offset="1" stop-color="#ffb43a"/></linearGradient>
+ <linearGradient id="q4gd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset=".55" stop-color="#ffd25a"/><stop offset="1" stop-color="#ff9d1c"/></linearGradient>
+ <linearGradient id="q4up" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2ffeb"/><stop offset=".4" stop-color="#6ff59e"/><stop offset="1" stop-color="#16b955"/></linearGradient>
+ <linearGradient id="q4dn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe2da"/><stop offset=".4" stop-color="#ff6d5e"/><stop offset="1" stop-color="#e01f14"/></linearGradient>
+ <filter id="q4etch" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter>
+ </defs></svg>`;
 /* ---------- beat 3: the film on the board's own display ---------- */
 const FILM={G:['The whole game','1:20']};
 function film(){const v=`<video class="t4-v" playsinline preload="metadata" poster="media/ez-landing-v4-poster-ez.jpg"><source src="media/ez-landing-v4.mp4" type="video/mp4"></video><i class="t4-glare"></i><button class="t4-play" aria-label="Play the explainer"><i></i></button>`;
@@ -186,37 +208,32 @@ function film(){const v=`<video class="t4-v" playsinline preload="metadata" post
 /* ---------- mount ---------- */
 const lt=s=>esc(s).replace(/AIs/g,'AI<span class="t4-lc">s</span>');
 const main=D.querySelector('main'),hero0=D.querySelector('section.hero'),bet0=D.querySelector('section.x2o-bet');
-const sec=D.createElement('section');sec.className='t4 t5 t5-s'+SH+' t5-g'+GT;sec.setAttribute('aria-label','What EZ does');
+D.querySelectorAll('section.t4').forEach(s=>s.remove());const sec=D.createElement('section');sec.className='t4 t5 t5-s'+SH+' t5-g'+GT;sec.setAttribute('aria-label','What EZ does');
 function build(){const wide=innerWidth>=1000,[fh,fs]=FILM[FH];
   sec.innerHTML=`<div class="t4-b1">${DEFS}<h1 class="t4-h1"><span class="t4-hw t4-hw0">${lt('Four AIs call earnings.')}</span><span class="t4-hw t4-hw1">The market keeps score.</span></h1><div class="t4-bleed">${hero(wide)}</div></div>
    ${beatGut()}
    <div class="t4-b2"><h2 class="t4-h2"><span class="t4-hw">How a round works</span></h2><ol class="t4-frs">${frames()}</ol></div>
    ${beatGut()}
    <div class="t4-b3"><h2 class="t4-h2 t4-fh t4-F${FH}"><span class="t4-hw">${esc(fh)}</span>${fs?` <span class="t4-hw t4-hws">${esc(fs)}</span>`:''}</h2><div class="t4-bleed">${film()}</div></div>`;
-  requestAnimationFrame(()=>place(sec));wire()}
+  requestAnimationFrame(()=>{place(sec);q4k(sec)});wire()}
 if(hero0)hero0.before(sec);else main.prepend(sec);
 [hero0,bet0].forEach(s=>s&&(s.style.display='none'));
-/* ---------- states: every frame starts off; a tap (or 3 s on screen) turns it on ---------- */
+/* ---------- states (H23): every fact shows from the start. Small life in the world while the frames are on screen: the dies re-scan one after
+   another, the readout re-scans, the ledger's cursor blinks, a glint crosses the gold. A tap replays the frame's moment. Still with reduced motion. ---------- */
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
-function on(f,how){if(f.classList.contains('t4-on'))return;f.classList.add('t4-on','t4-go');f.setAttribute('aria-pressed','true');if(how)f.dataset.how=how;setTimeout(()=>f.classList.remove('t4-go'),2600)}
-function wire(){const fs=[...sec.querySelectorAll('.t4-fr')];
-  fs.forEach(f=>{f.addEventListener('click',()=>{if(f.classList.contains('t4-on')){f.classList.remove('t4-go');void f.offsetWidth;f.classList.add('t4-go');setTimeout(()=>f.classList.remove('t4-go'),2600)}else on(f,'tap')});
+function wire(){const fs=[...sec.querySelectorAll('.t4-fr')],fl=sec.querySelector('.t4-frs');
+  if(!RM){fs.forEach(f=>{f.addEventListener('click',()=>{f.classList.remove('q4-go');void f.offsetWidth;f.classList.add('q4-go');setTimeout(()=>f.classList.remove('q4-go'),2400)});
     f.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f.click()}})});
-  if(RM){fs.forEach(f=>on(f,'rm'));return}
-  /* owner, 2026-11-01: one by one, in order. A frame lights itself only after the one before it is lit and it has been on screen 2.4 s;
-     a tap lights that frame alone. */
-  if(AUTO){const seen=new Set();let tm=null;
-    const next=()=>{if(tm)return;const f=fs.find(x=>!x.classList.contains('t4-on'));if(!f||!seen.has(f))return;tm=setTimeout(()=>{tm=null;if(seen.has(f))on(f,'auto');next()},2400)};
-    const io=new IntersectionObserver(es=>{es.forEach(e=>{e.intersectionRatio>=.6?seen.add(e.target):seen.delete(e.target)});next()},{threshold:[0,.6,1]});
-    fs.forEach(f=>{io.observe(f);f.addEventListener('click',()=>setTimeout(next,50))})}
+  if('IntersectionObserver' in window&&fl)new IntersectionObserver(es=>{fl.classList.toggle('q4-vis',es[es.length-1].isIntersecting)},{rootMargin:'80px 0px'}).observe(fl);else fl&&fl.classList.add('q4-vis')}
+
   const v=sec.querySelector('.t4-v'),b=sec.querySelector('.t4-play');
   if(v&&b){b.addEventListener('click',()=>{v.muted=false;v.controls=true;v.play().catch(()=>{});b.hidden=true});
     v.addEventListener('loadedmetadata',()=>{const s=Math.round(v.duration||80),t=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');sec.querySelectorAll('.t4-fh .t4-hw').forEach(x=>x.textContent=x.textContent.replace(/\d:\d\d/,t).replace(/\b80 seconds|80-second/,m=>m.replace('80',String(s))))})}}
-build();let lw=innerWidth;addEventListener('resize',()=>{if((innerWidth>=1000)!==(lw>=1000)){lw=innerWidth;build()}else place(sec)});
-D.fonts&&D.fonts.ready.then(()=>place(sec));
-window.__t5=window.__t4={rebuild:build,place:()=>place(sec),all:s=>sec.querySelectorAll('.t4-fr').forEach(f=>s==='on'?(on(f,'test'),f.classList.remove('t4-go')):(f.classList.remove('t4-on','t4-go'),f.setAttribute('aria-pressed','false'))),
+build();let lw=innerWidth;addEventListener('resize',()=>{if((innerWidth>=1000)!==(lw>=1000)){lw=innerWidth;build()}else{place(sec);q4k(sec)}});
+D.fonts&&D.fonts.ready.then(()=>{place(sec);q4k(sec)});
+window.__t5=window.__t4={rebuild:build,place:()=>{place(sec);q4k(sec)},all:()=>{},
   data:{ex:EX.n,co:EX.co,t:EX.ticker,out:EX.out,win:EX.win,calls:calls.map(c=>c.m+(c.up?'+':'-')+c.v),lead,pnl:pnl(lead),wl:A[lead].W+'-'+A[lead].L,graded,prev:G.slice(Math.max(0,iEx-2),iEx).map(r=>r.n)}};
 D.documentElement.classList.add('t4-ready','t5-ready');
 })();
 
-}catch(e){window.__x2pTopErr=e;console.error(e)}})()})();
+}catch(e){window.__x2pTopErr=window.__q4Err=e;console.error(e)}})()})();
