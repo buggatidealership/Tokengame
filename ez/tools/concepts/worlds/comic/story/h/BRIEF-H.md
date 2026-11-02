@@ -1033,3 +1033,18 @@ Live state unchanged (earningszn.xyz = X2+ with H26). **Hedra is still out of cr
 - Keep: the latest round first; then the recent ones; "Show more"; each round's company (no ticker), its move, and its winner (logo + name; ties; Nobody); a tap opens the round's graded card; desktop with no dead space; every word page text or on a blank surface the painting carries (no words baked into new art). The outcome tiles `tile-r<n>-t3.jpg` exist for film rounds (T2 for the six without a film).
 - Hedra is at $0.38: build from existing paintings; if a take truly needs a new painting, say so and show the closest you can.
 - Boards `ez/x2p-h28-rounds10-{390,1280,320}.png`. Work in `h/rounds10/`.
+
+## Round H31 (owner, 2026-11-02, evening; on the live X2+ page, not a redesign)
+The H30 ground-up concepts read as "the most boring site I've ever seen... clear for sure... lame";
+continue from the live page (earningszn.xyz = X2+ = preview, byte for byte). Mockups over the built
+X2+ page (`ez/v46-live-x2plus.html`), overlay CSS/JS in the helper's folder, never editing tools/v22.
+- **top7**: the film at the top (above or right under the headline, a big obvious play target, the
+  film4 scope look kept or bettered) and How a round works in ONE phone frame (390x664 visible: the
+  section head plus all four C3 steps; today the four rows run over two screens). Takes: e.g. C3 rows
+  side by side (square picture left, the caption box right, same height), a 2x2 with captions, and one
+  more. Keep C3's content (CALL LONG/SHORT dies, MARKET CLOSE, one ledger entry, the board with #1).
+- **stand**: Every round so far as PSA graded cards (the record's own slab, `__x2pSlab`/record card
+  look, or a cleaner slab in the same family): one beat is a display stand holding three slabs
+  (owner named Google, Microsoft, Tesla), and under it the other rounds as slabs. Move the section up
+  to right after How a round works (the track record earlier). Takes for the stand (painted in Hedra
+  with blank surfaces, or built) and for how the rest sit under it (grid, rows, shelves).
