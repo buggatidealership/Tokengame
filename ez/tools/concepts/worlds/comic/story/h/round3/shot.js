@@ -21,14 +21,14 @@ const PORT=process.env.PORT||8931;
  await p.evaluate(()=>Promise.all([...document.querySelectorAll('section.t4 img')].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r}))));
  const chk=await p.evaluate(()=>{const vw=document.documentElement.clientWidth,sec=document.querySelector('section.t4');
   const over=[...sec.querySelectorAll('*')].filter(e=>{const r=e.getBoundingClientRect();return r.width&&r.right>vw+1&&getComputedStyle(e).position!=='fixed'&&!e.closest('svg')&&!e.closest('.t4-pic')&&!e.closest('.r3-bd')&&!e.closest('.t4-bleed')&&!e.closest('.f4')&&!e.closest('.t5-bg')}).slice(0,6).map(e=>(e.tagName+'.'+(e.getAttribute('class')||'')).slice(0,40)+'@'+Math.round(e.getBoundingClientRect().right));
-  const clip=[...sec.querySelectorAll('.r3b-cap,.r3-say,.r3-fact,.t4-h2')].filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>(e.getAttribute('class')||e.tagName).slice(0,30));
+  const clip=[...sec.querySelectorAll('.r3b-cap,.r3c2-cap,.r3-say,.r3-fact,.t4-h2')].filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>(e.getAttribute('class')||e.tagName).slice(0,30));
   /* every lit text inside a surface stays inside its surface's svg box */
   const tx=[...sec.querySelectorAll('.t4-fr .t4-sf svg text, .r3-rk svg text')].filter(t=>{const s=t.ownerSVGElement.getBoundingClientRect(),r=t.getBoundingClientRect();return r.width&&(r.left<s.left-2||r.right>s.right+2)}).map(t=>t.textContent).slice(0,6);
   const fr=[...sec.querySelectorAll('.t4-frs>.t4-fr')].map(f=>{const r=f.getBoundingClientRect(),a=f.querySelector('.t4-art').getBoundingClientRect();return [Math.round(r.left),Math.round(r.top+scrollY),Math.round(r.width),Math.round(a.height)]});
   /* a caption box may not cover the panel above it */
-  const cps=[...sec.querySelectorAll('.r3b-cap')],arts=[...sec.querySelectorAll('.t4-frs>.t4-fr .t4-art')];let ov=[];
+  const cps=[...sec.querySelectorAll('.r3b-cap,.r3c2-cap')],arts=[...sec.querySelectorAll('.t4-frs>.t4-fr .t4-art')];let ov=[];
   cps.forEach((c,i)=>{const cr=c.getBoundingClientRect();arts.forEach((a,j)=>{if(j===i)return;const ar=a.getBoundingClientRect();const x=Math.min(cr.right,ar.right)-Math.max(cr.left,ar.left),y=Math.min(cr.bottom,ar.bottom)-Math.max(cr.top,ar.top);if(x>1&&y>1)ov.push(`cap${i+1}/art${j+1}:${Math.round(x)}x${Math.round(y)}`)})});
-  const sz=[...sec.querySelectorAll('.r3b-cap,.r3-say,.r3-fact')].map(e=>parseFloat(getComputedStyle(e).fontSize)).filter(Boolean);
+  const sz=[...sec.querySelectorAll('.r3b-cap,.r3c2-cap,.r3-say,.r3-fact')].map(e=>parseFloat(getComputedStyle(e).fontSize)).filter(Boolean);
   return {scrollW:document.documentElement.scrollWidth,vw,over,clip,tx,ov,fr,minFont:sz.length?Math.min(...sz):null,err:window.__x2pTopErr?String(window.__x2pTopErr):null,r3err:window.__r3err||null}});
  await p.evaluate(()=>{[...document.body.querySelectorAll('*')].forEach(x=>{const ps=getComputedStyle(x).position;if(ps==='fixed'||ps==='sticky')x.style.visibility='hidden'})});
  const PART=process.env.PART||'top';
