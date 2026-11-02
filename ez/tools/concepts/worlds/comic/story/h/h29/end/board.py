@@ -11,5 +11,6 @@ except Exception:f=ImageFont.load_default()
 x=g
 for a,t in zip(A,['Today (live X2+)','H29 · the end']):
   B.paste(a,(x,top));dr.text((x,12),f'{t} · {W}px',fill=(255,210,31),font=f);x+=a.width+g
+B=B.quantize(colors=256,method=Image.Quantize.FASTOCTREE,dither=Image.Dither.NONE) if out.endswith(".png") and len(sys.argv)>5 else B
 B.save(out,optimize=True) if out.endswith('.png') else B.save(out,quality=85)
 print(out,B.size)

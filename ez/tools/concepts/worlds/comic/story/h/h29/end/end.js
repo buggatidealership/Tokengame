@@ -45,6 +45,8 @@ function sol(){const S9=window.S9;if(!S9||!S9.A3||!D.querySelector('#learn .p5')
       if(x==='ROUND BY ROUND'){t.remove();return}/* the caption above says it (say each fact once) */
       if(/^\$100K ON EVERY TRADE/.test(x))t.textContent=x.charAt(0)+x.slice(1).toLowerCase().replace('100k','100K');
       if(/[a-z]{3,}/i.test(t.textContent)&&!/^R\d+$/.test(t.textContent)){t.setAttribute('font-family',"'Shantell Sans',system-ui");t.setAttribute('font-weight','800');t.setAttribute('letter-spacing','.02em')}});
+    /* two-word column titles may take two lines on the narrowest phones (they ran into each other at 320) */
+    box.querySelectorAll('.s9a2-h span').forEach(sp=>{if(/^(Last round|Hit rate)$/.test(sp.textContent))sp.innerHTML=sp.textContent.replace(' ','<br class="h29e-br">')});
     box.querySelectorAll('.s9a2-r').forEach(r=>{const n=(r.querySelector('.s9a2-nm')||{}).textContent||'';const m=Object.keys(COL).find(k=>S9.NM[k]===n.trim());if(m)r.dataset.m=m})};
   S9.mount(W);D.querySelector('#learn').classList.add('h29e-learn');return true}
 

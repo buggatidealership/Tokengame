@@ -3,7 +3,7 @@
 // ("now"), and shoots the end of the Overview, from the gutter above Smart or lucky to the bottom of the page, as <id>-<W>.png.
 // Prints and saves (measure-<id>.json): errors, sideways scroll, elements of this part past the screen edge, text boxes that overflow,
 // the smallest font size in this part, and per phone screen of this part (window height minus the sticky header): visible words,
-// typefaces used and movers (running animations, playing videos, the ticking countdown). ALL=1 also loads top/top.css+top.js if present.
+// typefaces used and movers (running animations, playing videos, the ticking countdown). ALL=1 also loads top/top.css+top.js and mid/front.css+front.js+live.js when present (a smoke test that the overlays coexist).
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../../live-r1/_fonts.js');const fs=require('fs'),path=require('path');
 const OUT=process.argv[2],ID=process.argv[3]||'h29',WS=(process.argv[4]||'320,390,1280').split(',').map(Number),DPR=+(process.argv[5]||1),PORT=process.env.PORT||8977;
 fs.mkdirSync(OUT,{recursive:true});const L=JSON.parse(fs.readFileSync(path.join(__dirname,'load.json'),'utf8'));
@@ -17,8 +17,8 @@ const rd=f=>{const p=path.join(__dirname,f);return fs.existsSync(p)?fs.readFileS
   await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});
   await p.waitForFunction(()=>window.P5&&P5.cur&&document.querySelector('#x2pSt.hb-on'),null,{timeout:90000});await p.waitForTimeout(500);
   if(ID!=='now'){let css=L.css.map(rd).join('\n');const g=rd('../_gutter.css');css=(g||rd(L.gutterPlaceholder))+'\n'+css;
-   if(process.env.ALL)css=rd('../top/top.css')+'\n'+css;
-   await p.addStyleTag({content:css});await p.addScriptTag({content:(process.env.ALL?rd('../top/top.js')+'\n;':'')+L.js.map(rd).join('\n;')});
+   if(process.env.ALL)css=rd('../top/top.css')+'\n'+rd('../mid/front.css')+'\n'+css;
+   await p.addStyleTag({content:css});await p.addScriptTag({content:(process.env.ALL?rd('../top/top.js')+'\n;'+rd('../mid/front.js')+'\n;'+rd('../mid/live.js')+'\n;':'')+L.js.map(rd).join('\n;')});
    await p.waitForFunction(()=>document.documentElement.classList.contains('h29e-ready')||window.__h29eErr,null,{timeout:60000})}
   /* load what is lazy, settle */
   const ph=await p.evaluate(()=>document.documentElement.scrollHeight);for(let y=0;y<ph;y+=500){await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(90)}
