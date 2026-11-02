@@ -23,6 +23,7 @@ const NM=m=>String((MD[m]&&MD[m].name)||m).toUpperCase();
 const VER=m=>{const v=String((MD[m]&&MD[m].ver)||'').trim(),n=String((MD[m]&&MD[m].name)||m);return v.toLowerCase().startsWith(n.toLowerCase())?v.slice(n.length).replace(/^[\s\-–]+/,''):v};
 const FLAG={GPT:'us',CLAUDE:'us',GROK:'us',KIMI:'cn'};
 sec.classList.add('m12','m12-'+T);
+const DF=D.createElement('div');DF.innerHTML='<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="m12gG" x1="0" y1="0" x2="0" y2="1"><stop offset=".05" stop-color="#fff3b8"/><stop offset=".5" stop-color="#f2c23a"/><stop offset="1" stop-color="#b8790e"/></linearGradient></defs></svg>';sec.prepend(DF.firstChild);
 const SZ=[1800,728],pc=(v,t)=>(v/t*100).toFixed(4)+'%',at=r=>`left:${pc(r[0],SZ[0])};top:${pc(r[1],SZ[1])};width:${pc(r[2]-r[0],SZ[0])};height:${pc(r[3]-r[1],SZ[1])}`;
 const PL=BASE==='q'?[32,197,362,527]:[54,218,341,505],FIELD=[40,66,356,214];
 /* the paintings */
@@ -53,9 +54,9 @@ function nameRow(o,i){const m=o.dataset.m,nm=o.querySelector('.m11-nm'),sv=nm&&n
 ones.forEach((o,i)=>{const pic=o.querySelector('.c7-pic');
  if(T==='d'&&i>0){const im=pic.querySelector('img.c7-base'),c=im.cloneNode();c.className='m12-medal m12-med'+(i+1);c.removeAttribute('style');
   const r=8/(PL[2]-PL[0])*100;c.style.clipPath=`inset(${pc(PL[1],SZ[1])} ${pc(SZ[0]-PL[2],SZ[0])} ${pc(SZ[1]-PL[3],SZ[1])} ${pc(PL[0],SZ[0])} round 2.2%)`;im.after(c)}
- if(T==='a'){const e=D.createElement('div');e.className='m12-et'+(i?'':' m12-et1');e.style.cssText=at(FIELD);e.innerHTML=`<svg viewBox="0 0 ${FIELD[2]-FIELD[0]} ${FIELD[3]-FIELD[1]}" aria-hidden="true"><text class="m12-no" x="64" y="118" font-size="44">No.</text><text class="m12-dg" x="150" y="128" font-size="150">${i+1}</text></svg>`;pic.append(e)}
- if(T==='c'||T==='d'){const e=D.createElement('div');e.className='m12-en'+(i?'':' m12-en1');const r=[PL[0]+16,PL[1]+12,PL[0]+16+96,PL[1]+12+96];e.style.cssText=at(r);
-  e.innerHTML=`<svg viewBox="0 0 96 96" aria-hidden="true"><text x="12" y="76" font-size="78">${i+1}</text></svg>`;pic.append(e)}});
+ if(T==='a'){const e=D.createElement('div');e.className='m12-et'+(i?'':' m12-et1');e.style.cssText=at(FIELD);e.innerHTML=`<svg viewBox="0 0 ${FIELD[2]-FIELD[0]} ${FIELD[3]-FIELD[1]}" aria-hidden="true"><text class="m12-no" x="80" y="118" font-size="44">No.</text><text class="m12-dg" x="166" y="128" font-size="150">${i+1}</text></svg>`;pic.append(e)}
+ if(T==='c'||T==='d'){const e=D.createElement('div');e.className='m12-en'+(i?'':' m12-en1');const r=[PL[0]+14,PL[1]+8,PL[0]+14+130,PL[1]+8+130];e.style.cssText=at(r);
+  e.innerHTML=`<svg viewBox="0 0 130 130" aria-hidden="true"><text x="14" y="112" font-size="122">${i+1}</text></svg>`;pic.append(e)}});
 /* layout: D2's own (no numerals outside, so the chips take the gutter), then our name rows */
 function apply(){W.__m11.layout();ones.forEach((o,i)=>nameRow(o,i))}
 ones.forEach((o,i)=>{const sv=o.querySelector('.m11-nm svg');new MutationObserver(()=>{if(sv.dataset.m12==='1'&&sv.querySelector('.m12-fl'))return;nameRow(o,i)}).observe(sv,{childList:true});

@@ -106,7 +106,7 @@ sec.classList.add('r10-sec');sec.appendChild(root);
 if(!D.getElementById('r10defs')){const d=D.createElement('div');d.id='r10defs';d.style.cssText='position:absolute;width:0;height:0;overflow:hidden';
   d.innerHTML='<svg width="0" height="0"><defs><linearGradient id="r10brass" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6b4a12"/><stop offset=".3" stop-color="#e2b955"/><stop offset=".55" stop-color="#9a7020"/><stop offset=".8" stop-color="#f0cd6a"/><stop offset="1" stop-color="#6b4a12"/></linearGradient></defs></svg>';D.body.appendChild(d)}
 ['clip','pocket','plate'].forEach(n=>root.style.setProperty('--img-'+n,`url(${IMG}spr-${n}.webp)`));root.style.setProperty('--img-dress',`url(${IMG}dress.webp)`);render();
-let lw=innerWidth;addEventListener('resize',()=>{if(innerWidth!==lw){lw=innerWidth;shown=FIRST;render()}});
+let lw=innerWidth;addEventListener('resize',()=>{if(innerWidth!==lw){lw=innerWidth;render()}});
 D.fonts&&(D.fonts.ready.then(()=>{fit();post()}),D.fonts.addEventListener('loadingdone',()=>setTimeout(()=>{fit();post()},30)));
 if(TK==='D'&&'IntersectionObserver' in window){const io=new IntersectionObserver(e=>{if(e.some(x=>x.isIntersecting)){root.classList.add('r10d-go');io.disconnect()}},{threshold:.35});io.observe(root)}
 window.__r10={render,hero:HERO.n,next:NEXTS.map(u=>u.n),set:n=>{shown=n;render()}};
