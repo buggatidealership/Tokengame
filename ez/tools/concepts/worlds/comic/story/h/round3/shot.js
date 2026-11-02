@@ -8,7 +8,7 @@ const PORT=process.env.PORT||8931;
  const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:w,height:w<760?844:900},deviceScaleFactor:+(dpr||2)});
  const p=await ctx.newPage();await FONTS(p);const er=[];p.on('pageerror',e=>er.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource/.test(m.text()))er.push('c:'+m.text().slice(0,160))});
  p.on('response',r=>{if(r.status()>=400&&/round3|media/.test(r.url()))er.push(r.status()+' '+r.url().slice(-60))});
- await p.goto(`http://localhost:${PORT}/v46-live-x2plus.html`,{waitUntil:'load',timeout:150000});
+ await p.goto(`http://127.0.0.1:${PORT}/v46-live-x2plus.html`,{waitUntil:'load',timeout:150000});
  await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});await p.waitForTimeout(1200);
  await p.evaluate(()=>[...document.images].forEach(i=>i.loading='eager'));
  if(T!=='now'){await p.evaluate(([w,bd])=>{window.__R3W=w;window.__R3BD=bd;window.__R3BASE='tools/concepts/worlds/comic/story/h/round3/'},[process.env.W||'bare',process.env.BD||'r']);
