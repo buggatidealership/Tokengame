@@ -8072,7 +8072,7 @@ html.x2p.x2p-desk .x2p-bi-hd{font-size:26px}
  background:radial-gradient(closest-side,rgba(255,176,50,.24),rgba(255,140,20,.1) 70%,transparent);mix-blend-mode:screen}
 /* scanlines in the glass, in perspective with it */
 .q4-glass::after{content:'';position:absolute;inset:0;pointer-events:none;
- background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 calc(.7px / var(--k)),transparent calc(.7px / var(--k)) calc(2.4px / var(--k)))}
+ background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 calc(.7px * var(--r,1)),transparent calc(.7px * var(--r,1)) calc(2.4px * var(--r,1)))}
 .q4-tx{filter:drop-shadow(0 0 calc(.45px / var(--k)) rgba(255,246,214,.7)) drop-shadow(0 0 calc(3px / var(--k)) rgba(255,176,46,.55)) drop-shadow(0 0 calc(8px / var(--k)) rgba(255,140,20,.28))}
 .q4-tx[fill="url(#q4up)"]{filter:drop-shadow(0 0 calc(.45px / var(--k)) rgba(220,255,230,.7)) drop-shadow(0 0 calc(3px / var(--k)) rgba(62,224,127,.6)) drop-shadow(0 0 calc(9px / var(--k)) rgba(30,200,90,.3))}
 .q4-tx[fill="url(#q4dn)"]{filter:drop-shadow(0 0 calc(.45px / var(--k)) rgba(255,220,210,.7)) drop-shadow(0 0 calc(3px / var(--k)) rgba(255,81,72,.6)) drop-shadow(0 0 calc(9px / var(--k)) rgba(230,40,30,.3))}
@@ -8095,21 +8095,22 @@ html.x2p.x2p-desk .x2p-bi-hd{font-size:26px}
 .q4-close .t4-cap{left:auto;right:5px}
 @media (prefers-reduced-motion:no-preference){
  .q4-vis .q4-die .q4-scan::before{animation:q4-scan 6.4s linear infinite}
- .q4-vis .q4-die .q4-g{animation:q4-flk 6.4s linear infinite}
- .q4-vis .q4-d1 .q4-scan::before,.q4-vis .q4-d1 .q4-g{animation-delay:1.6s}
- .q4-vis .q4-d2 .q4-scan::before,.q4-vis .q4-d2 .q4-g{animation-delay:3.2s}
- .q4-vis .q4-d3 .q4-scan::before,.q4-vis .q4-d3 .q4-g{animation-delay:4.8s}
- .q4-vis .q4-rd .q4-scan::before,.q4-vis .q4-rd .q4-g{animation:q4-scan 5.2s linear .8s infinite}
- .q4-vis .q4-rd .q4-g{animation-name:q4-flk}
+ /* MEM: the flicker sits on the screen-sized surface, not on the svg group inside it: an animated group inside a perspective transform is composited at painting size */
+ .q4-vis .q4-die{animation:q4-flk 6.4s linear infinite}
+ .q4-vis .q4-d1 .q4-scan::before,.q4-vis .q4-die.q4-d1{animation-delay:1.6s}
+ .q4-vis .q4-d2 .q4-scan::before,.q4-vis .q4-die.q4-d2{animation-delay:3.2s}
+ .q4-vis .q4-d3 .q4-scan::before,.q4-vis .q4-die.q4-d3{animation-delay:4.8s}
+ .q4-vis .q4-rd .q4-scan::before{animation:q4-scan 5.2s linear .8s infinite}
+ .q4-vis .q4-rd{animation:q4-flk 5.2s linear .8s infinite}
  .q4-vis .q4-row .q4-scan::before{animation:q4-scan 7s linear 2.2s infinite}
  .q4-vis .q4-cur{animation:q4-blink 1.06s steps(2,end) infinite}
  .q4-vis .q4-sheen::after{animation:q4-sheen 6.8s ease-in-out 1.4s infinite}
  /* a tap replays the moment */
- .q4-call.q4-go .q4-g{animation:q4-on .9s steps(2,end) both!important}
- .q4-call.q4-go .q4-d1 .q4-g{animation-delay:.3s!important}.q4-call.q4-go .q4-d2 .q4-g{animation-delay:.6s!important}.q4-call.q4-go .q4-d3 .q4-g{animation-delay:.9s!important}
+ .q4-call.q4-go .q4-die{animation:q4-on .9s steps(2,end) both!important}
+ .q4-call.q4-go .q4-die.q4-d1{animation-delay:.3s!important}.q4-call.q4-go .q4-die.q4-d2{animation-delay:.6s!important}.q4-call.q4-go .q4-die.q4-d3{animation-delay:.9s!important}
  .q4-close.q4-go .q4-ring{animation:q4-ring 1.1s ease-out both}.q4-close.q4-go .q4-ring.r2{animation-delay:.35s}
  .q4-close.q4-go .t4-mv{animation:t4-buzz .45s linear 2}
- .q4-close.q4-go .q4-rd .q4-g{animation:q4-on 1s steps(2,end) .45s both!important}
+ .q4-close.q4-go .q4-rd{animation:q4-on 1s steps(2,end) .45s both!important}
  .q4-ledger.q4-go .q4-new .q4-g{animation:q4-type 1.3s steps(12,end) both}
  .q4-board.q4-go .q4-sheen::after{animation:q4-sheen 1.2s ease-in-out both!important}
 }
@@ -8129,10 +8130,10 @@ html.x2p.x2p-desk .x2p-bi-hd{font-size:26px}
 .b6-w{position:absolute;z-index:2;display:block}
 .b6-w svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 /* the chips sit in their sockets: a contact shadow, and the key light from the top falling off downward */
-.b6-chip{filter:drop-shadow(calc(2px / var(--k)) calc(5px / var(--k)) calc(5px / var(--k)) rgba(0,0,0,.85))}
+.b6-chip{filter:drop-shadow(calc(2px * var(--r,1)) calc(5px * var(--r,1)) calc(5px * var(--r,1)) rgba(0,0,0,.85))}
 .b6-chip::after{content:'';position:absolute;inset:0;z-index:4;pointer-events:none;background:linear-gradient(170deg,rgba(255,214,140,.14),transparent 45%,rgba(0,0,0,.26));mix-blend-mode:soft-light}
 /* the leader: lifted out of the gold socket on its column of light. The shadow falls far below it (it floats), the light rims it gold */
-.b6-lead{filter:drop-shadow(0 0 calc(7px / var(--k)) rgba(255,200,70,.7)) drop-shadow(0 calc(26px / var(--k)) calc(14px / var(--k)) rgba(40,20,0,.55))}
+.b6-lead{filter:drop-shadow(0 0 calc(7px * var(--r,1)) rgba(255,200,70,.7)) drop-shadow(0 calc(26px * var(--r,1)) calc(14px * var(--r,1)) rgba(40,20,0,.55))}
 .b6-lead::before{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(110deg,transparent 40%,rgba(255,246,200,.5) 50%,transparent 60%) -170% 0/260% 100% no-repeat;mix-blend-mode:overlay}
 @media (prefers-reduced-motion:no-preference){
  .q4-vis .b6-lead::before{animation:b6-glint 6s ease-in-out 1.4s infinite}
@@ -13621,7 +13622,7 @@ function m3d(w,h,q){const s=[[0,0],[w,0],[w,h],[0,h]],A=[],B=[];
   const X=B.map((b,i)=>b/A[i][i]);const[a,b,c,d,e,f,g,hh]=X;
   return `matrix3d(${a},${d},0,${g},${b},${e},0,${hh},0,0,1,0,${c},${f},0,1)`}
 function surf(q,draw,cls,inner){const L=(p,r)=>Math.hypot(p[0]-r[0],p[1]-r[1]),bw=(L(q[0],q[1])+L(q[3],q[2]))/2,bh=(L(q[0],q[3])+L(q[1],q[2]))/2;
-  return {html:`<div class="t4-sf ${cls||''}" data-q='${JSON.stringify(q)}' data-bw="${bw}" data-bh="${bh}" style="width:${bw}px;height:${bh}px">${inner?inner(bw,bh):''}<svg viewBox="0 0 ${bw.toFixed(1)} ${bh.toFixed(1)}" width="${bw}" height="${bh}" aria-hidden="true">${draw(bw,bh)}</svg></div>`}}
+  return {html:`<div class="t4-sf ${cls||''}" data-q='${JSON.stringify(q)}' data-bw="${bw}" data-bh="${bh}" style="width:${bw}px;height:${bh}px">${inner?inner(bw,bh):''}<svg viewBox="0 0 ${bw.toFixed(1)} ${bh.toFixed(1)}" width="100%" height="100%" aria-hidden="true">${draw(bw,bh)}</svg></div>`}}
 /* a painting with surfaces; cr = [x,y,w,h], the part of the painting the frame shows, in painting px */
 function pic(src,iw,ih,surfs,cls,extra,cr){cr=cr||[0,0,iw,ih];const[cx,cy,cw,ch]=cr;
   return `<div class="t4-pic ${cls||''}" data-iw="${cw}" data-cx="${cx}" data-cy="${cy}" style="aspect-ratio:${cw}/${ch}"><div class="t4-mv"><img src="${src}" alt="" draggable="false" style="width:${(iw/cw*100).toFixed(3)}%;left:${(-cx/cw*100).toFixed(3)}%;top:${(-cy/ch*100).toFixed(3)}%">${surfs.map(s=>s.html).join('')}${extra||''}</div></div>`}
@@ -13635,7 +13636,7 @@ function fitHead(root){const h1=root.querySelector('.t4-h1');if(!h1)return;const
 function place(root){fitHead(root);fitLines(root);requestAnimationFrame(()=>{root.querySelectorAll('.t5-bg').forEach(drawBeat);gutters(root)});const h2=root.querySelector('.t4-b2 .t4-h2'),fl=root.querySelector('.t4-frs');if(h2&&fl){const hr=h2.querySelector('.t4-hw').getBoundingClientRect();root.style.setProperty('--t4ov',Math.max(0,hr.bottom-fl.getBoundingClientRect().top)+'px');
    /* a caption moves down only in the frames the heading actually crosses */
    fl.querySelectorAll('.t4-fr').forEach(f=>{const c=f.querySelector('.t4-cap'),r=f.getBoundingClientRect();if(!c)return;c.style.top=(Math.min(hr.right,r.right)-Math.max(hr.left,r.left)>r.width*.25&&hr.bottom>r.top)?(hr.bottom-r.top+3)+'px':''})}root.querySelectorAll('.t4-pic').forEach(p=>{const k=p.clientWidth/+p.dataset.iw,cx=+p.dataset.cx,cy=+p.dataset.cy;
-  p.querySelectorAll('.t4-sf').forEach(s=>{const q=JSON.parse(s.dataset.q).map(([x,y])=>[(x-cx)*k,(y-cy)*k]);s.style.transform=m3d(+s.dataset.bw,+s.dataset.bh,q)});
+  p.querySelectorAll('.t4-sf').forEach(s=>{const q=JSON.parse(s.dataset.q).map(([x,y])=>[(x-cx)*k,(y-cy)*k]);/* MEM: the surface is laid out at its on-screen size times the pixel ratio (at most 3), its svg scaling by its viewBox: a layer with perspective is rastered at its own size, so at painting size (1,000 to 2,600 px) it ran a phone out of GPU memory and the page painted black (2026-11-02) */const R=Math.min(3,Math.max(1,window.devicePixelRatio||1)),w=+s.dataset.bw*k*R,h=+s.dataset.bh*k*R;s.style.width=w+'px';s.style.height=h+'px';s.style.setProperty('--r',R);s.style.transform=m3d(w,h,q)});
   const sec4=p.closest('.t4'),hf=parseFloat(getComputedStyle(sec4.querySelector('.t4-h1')).fontSize),lf=parseFloat(sec4.dataset.t6base||getComputedStyle(sec4.querySelector('.t4-ln')).fontSize),px=Math.round(Math.sqrt(hf*lf)*2)/2;sec4.dataset.swpx=px;
   /* top5: the sub-head sits between "How a round works" and the line: the geometric mean of the two, a step up (x1.1) */
   sec4.style.setProperty('--t5sh',Math.round(px*1.1*2)/2+'px');sec4.dataset.shpx=Math.round(px*1.1*2)/2;
