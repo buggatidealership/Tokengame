@@ -1,0 +1,8 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');const fs=require('fs');
+const IM='tools/concepts/worlds/comic/story/h/rounds8/img/web/';const [t,h,W]=process.argv.slice(2);
+(async()=>{const b=await chromium.launch();const p=await (await b.newContext({viewport:{width:+W,height:900}})).newPage();await FONTS(p);
+ await p.goto('http://127.0.0.1:8973/v46-live-x2plus.html',{waitUntil:'load',timeout:150000});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});
+ await p.addStyleTag({content:fs.readFileSync(__dirname+'/_r8.css','utf8').replace(/__IM__/g,IM)});await p.evaluate(([t,h])=>{window.__R8=t;window.__R8H=h},[t,h]);await p.addScriptTag({content:fs.readFileSync(__dirname+'/_r8.js','utf8')});
+ await p.waitForTimeout(1500);
+ console.log(await p.evaluate(()=>{const b=document.querySelector('.r8-list .r8-nm'),box=b.parentElement,cs=getComputedStyle(b);const m=document.querySelector('.r8b-more');
+  return JSON.stringify({fs:cs.fontSize,sw:b.scrollWidth,cw:b.clientWidth,box:box.clientWidth,sib:[...box.children].map(c=>[c.className,c.getBoundingClientRect().width]),more:m&&[m.getBoundingClientRect().width,m.getBoundingClientRect().height,getComputedStyle(m).display,m.querySelector('img').naturalWidth]})}));await p.evaluate(()=>document.querySelector('.r8b-more')?.scrollIntoView());await p.waitForTimeout(1500);if(await p.$('.r8b-more'))await (await p.$('.r8b-more')).screenshot({path:'/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8/scratchpad/r8/more.png'});await b.close()})();
