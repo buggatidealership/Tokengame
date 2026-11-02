@@ -911,3 +911,9 @@ Each task below is a **mockup** unless it says otherwise. Rules: rule 0, the har
   - your own.
 - Phone first at 390; desktop 1280.
 - **Boards:** `ez/x2p-h25-meetbus-*.png`. Work in `h/meetbus/`. Up to $40.
+
+### H25, for every task (owner, 2026-11-02, ~01:45 UTC: "Everything has to be highest res and fps pls. Quality has no price.")
+- Every painting and every loop is made at the highest resolution and frame rate the model offers: 4K masters, and video at the model's highest resolution and native fps, never downscaled before the master is kept.
+- What the page serves is at least 3x the CSS size it shows at, at the native fps, with no visible compression.
+- Say each file's resolution, fps and size in the REPORT.
+- The `chars` loops especially: the highest resolution and fps Hedra gives, then cut for the window.
