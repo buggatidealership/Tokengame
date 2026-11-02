@@ -375,6 +375,11 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     Universal rules still have edges: reading direction is cultural, and "seven plus or minus two" is overstated. So even universal rules are stated with their reason, never as slogans. New lessons from here on say which kind they are.
     - *Taught by:* owner, 2026-11-02: "I do not know what laws or rules or mental frameworks, human-derived mental frameworks, are use-case dependent and which ones aren't. So when do you apply some? When do you apply others that are... universal?" (Earlier: "for the overview page, that is correct. For the leaderboard page it depends... So it's use case dependent or no?")
 
+128. **Set up the next section, then pay it off** (universal: anticipation and reveal). The last beat of a section can show the next section's objects with their facts withheld, lit with placeholders ("–") and only the identity filled in (the face). The visitor learns the shape first ("this is a leaderboard") and gets the numbers as the reward one scroll later. It is the comic's page-turn: the panel before the reveal.
+    - *Taught by:* owner, 2026-11-02, on frame 4: "illuminate the cards with the placeholder of '-' where numbers or data will appear to then see them 'reveal' in the meet the models section... set up the next section but making them understand it's a leaderboard."
+129. **Colour is introduced by a character and carried forward** (use-case dependent: a page with recurring characters). The page opens in one colour (the chip's green). Each model brings its own colour when it is introduced, and later sections borrow those colours, so colour itself tells the story of who joined. A section's theme is earned, never a random accent.
+    - *Taught by:* owner, 2026-11-02: "green at the beginning dominates, when you get to the model sections you introduce other colors through each model's chip background color that can then be used for the next sections."
+
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
