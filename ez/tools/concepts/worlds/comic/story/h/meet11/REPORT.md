@@ -30,3 +30,15 @@ B and D: the three US chips look alike ("three of the same") and the model colou
 
 ## Files
 `gen.py` (chip paintings; run first with /usr/bin/python3), `m11.js`/`m11.css` (`__M11T` a/b/c/d, `__M11L` col/grid), `shot.js`, `run.sh` (PORT, default 8961), `board.py`, `flags.py`. `out/` (15 MB generated chips) is git-ignored now but still in history; gen.py rebuilds it.
+
+## Round 2 · D2 (owner picked D with four notes, 2026-11-02; commit a0926b0f)
+Boards `ez/x2p-h28-meet11-2-{390,320,1280}.png` (D beside D2, one column).
+1. No glare: the painting's glass layers (`img.c7-glass`) and the drawn glare (`.c7-gl`) off, glass plain black; the glow behind P&L, W-L and quote off; the founder window untouched.
+2. Plain lettering but the name: Season P&L flat green #3fd07a / red #ff5a4c, W-L (W green, L red, dash cream), quote flat cream #efe3c4, labels and version plain; the name keeps its lit cream and stays biggest (16.3 / 13.1 / 39px cap at 390 / 320 / 1280); meet10's strip pulse lands on W or L by turning the figure paler, no flash.
+3. One board of four: `m11.js` clips each chip's pins and rim at the joins (painting rows 63 and 661 of 728) and pulls the next chip up, bodies edge to edge; `gen.py` take `e` paints gold bus traces with vias at the same x on every chip so the lines run across the joins; only #1 keeps its top pins and #4 its bottom pins; No. 5 stays separate; numerals level with their chip's body.
+4. Desktop one column only.
+Kept: equal chips (318x128.5 / 256x103.5 / 760x307), numerals left, #1 gold, no No. box, strip S1, founder loops, D's waving flag, live numbers.
+Measured at 320/390/1280: no errors, no failed requests, no sideways scroll, only the rotated head 2–3px past the edge (as today), no numeral overlap. Body tops at 390: 44, 149.6, 255.2, 360.8 (step 105.6), section 489px (was 624); 320: step 85, 403 (524); 1280: step 282.3, 1214 (1379).
+Could fail: at 4x a faint seam where two rims were cut, and the bus broken by parts in the margins (a Hedra repaint of one long board would hide the joins); the bus lines up only because all chips share x positions; joined, a newcomer may read one object, not four rivals (numerals and founder windows carry the split); the W/L pulse is a quiet colour change; Safari unchecked.
+Questions: the bus enough of a link, or something louder (copper bar, solder bridge)? Should the pulse keep any light?
+Files: `gen.py e` (run first), `m11.js` (`__M11T='e'`, class `m11-d2`), `m11.css` (D2 block), `shot.js`, `run.sh`.
