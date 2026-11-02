@@ -27,7 +27,7 @@ const b1={id:'a',kick:'What luck looks like',
     ${t(x1-6,Y(.86),40,'BEATS A COIN',{a:'end',c:'#3ee07f'})}
     ${t(x1-6,ym-12,30,'A COIN COULD DO THIS',{a:'end',c:'#fff1c2'})}
     ${t(x1-6,Y(.14)+12,40,'WORSE THAN A COIN',{a:'end',c:'#ff5148'})}
-    ${t(x0,yB+44,28,'1 TRADE',{c:'#9fd8b4',op:.85})}${t(x1,yB+44,28,n+' TRADES',{a:'end',c:'#9fd8b4',op:.85})}
-    ${t(x1+2,Y(r80.hi/n)-10,26,r80.lo+'–'+r80.hi+' OF '+n+' RIGHT',{a:'end',c:'#ffd21f'})}
+    ${t(x0,yB+46,32,'1 TRADE',{c:'#9fd8b4',op:.85})}${t(x1,yB+46,32,n+' TRADES',{a:'end',c:'#9fd8b4',op:.85})}
+    ${t(x1+2,Y(r80.hi/n)-10,30,r80.lo+'–'+r80.hi+' OF '+n+' RIGHT',{a:'end',c:'#ffd21f'})}
    </g></svg>`}};
 S8.mount(b1)})();

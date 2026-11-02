@@ -9,8 +9,8 @@ const b1={id:'d',kick:'Count the coins',
   html(X){return `<p class="s8-ln">One coin per trade: <b>gold</b> went the right way, dark didn’t. The bracket is where <b>a fair coin’s</b> gold would stop.</p><div class="s8d-st"></div>`},
  draw(el,X){const R=S.rows(X),T=Math.max(...R.map(r=>r.t)),x0=24,x1=976,pc=(x1-x0)/T,rh=[150,118,118,118],y0=14;let g='',y=y0;
   R.forEach((r,i)=>{const col=S8.col(X,r.m),v=S8.verdict(r),big=!i,ry=y+(big?60:48),ch=big?44:34,cw=pc*.42;
-   g+=t(x0,y+(big?42:32),big?42:32,'',{raw:`<tspan fill="${col}">${S.NM[r.m].toUpperCase()}</tspan><tspan fill="${v==='past'?'#ffd21f':'#f8f0d9'}" dx="14">${r.W}</tspan><tspan fill="#9fd8b4" font-size="${big?28:25}"> OF ${r.t}</tspan>`});
-   g+=t(x1,y+(big?40:30),big?30:27,`A COIN: ${r.lo}–${r.hi}`,{a:'end',c:'#ffb21a'});
+   g+=t(x0,y+(big?42:34),big?44:36,'',{raw:`<tspan fill="${col}">${S.NM[r.m].toUpperCase()}</tspan><tspan fill="${v==='past'?'#ffd21f':'#f8f0d9'}" dx="14">${r.W}</tspan><tspan fill="#9fd8b4" font-size="${big?30:28}"> OF ${r.t}</tspan>`});
+   g+=t(x1,y+(big?40:30),big?32:30,`A COIN: ${r.lo}–${r.hi}`,{a:'end',c:'#ffb21a'});
    const by=ry+ch/2+6;
    for(let k=0;k<r.t;k++){const cx=x0+(k+.5)*pc,gold=k<r.W;
     g+=`<rect x="${(cx-cw).toFixed(1)}" y="${(by-ch/2+2).toFixed(1)}" width="${(cw*2).toFixed(1)}" height="${ch}" rx="${cw.toFixed(1)}" fill="${gold?'#7a4e06':'#2a1210'}"/><rect x="${(cx-cw).toFixed(1)}" y="${(by-ch/2).toFixed(1)}" width="${(cw*2).toFixed(1)}" height="${ch}" rx="${cw.toFixed(1)}" fill="url(#${gold?'s8dg':'s8dk'})"/>`}

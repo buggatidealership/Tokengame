@@ -21,7 +21,7 @@ const b1={id:'b',kick:'Where luck lands',
     stems+=`<line x1="${x.toFixed(1)}" y1="${hy+rad}" x2="${x.toFixed(1)}" y2="${base+18}" stroke="${col}" stroke-width="${i?2.4:3.4}" stroke-opacity=".9"/><path d="M${(x-9).toFixed(1)} ${base+30} L${(x+9).toFixed(1)} ${base+30} L${x.toFixed(1)} ${base+16}Z" fill="${col}"/>`;
     const right=i===0, lx=right?x+rad+12:x-rad-12,a=right?'start':'end',v=S8.verdict(r);
     heads+=`<circle cx="${x.toFixed(1)}" cy="${hy}" r="${rad}" fill="#06080a" stroke="${col}" stroke-width="${i?3:4.5}"/>${P5.mark(r.m,x,hy,rad*1.15,col)}`+
-     t(lx,hy-2,i?30:40,'',{a,raw:halo(S.NM[r.m].toUpperCase(),col)})+t(lx,hy+(i?30:40),i?26:32,'',{a,raw:halo(r.W+' OF '+r.t,v==='past'?'#ffd21f':'#f8f0d9')})});
+     t(lx,hy-2,i?33:42,'',{a,raw:halo(S.NM[r.m].toUpperCase(),col)})+t(lx,hy+(i?32:42),i?30:34,'',{a,raw:halo(r.W+' OF '+r.t,v==='past'?'#ffd21f':'#f8f0d9')})});
   let ax='';[.3,.4,.5,.6,.7].forEach(v=>{const x=Xk(v*n);ax+=`<line x1="${x.toFixed(1)}" y1="${base+8}" x2="${x.toFixed(1)}" y2="${base+14}" stroke="#9fd8b4" stroke-opacity=".6" stroke-width="2"/>`+t(x,base+66,30,Math.round(v*100)+'%',{a:'middle',c:v===.5?'#ffb21a':'#9fd8b4',op:.9})});
   const gx0=Xk(R.lo)-cw/2,gx1=Xk(R.hi)+cw/2;
   el.querySelector('.s8b-st').innerHTML=`<svg class="s8b-svg" viewBox="0 0 1000 650" role="img" aria-label="1,000 coins, ${n} trades each, piled as stacks by how many they got right; the gold stacks hold the coin's 95 in 100 range, ${R.lo} to ${R.hi} of ${n}. The four AIs stand as pins at their own hit rate: ${ord.map(r=>S.NM[r.m]+' '+r.W+' of '+r.t).join(', ')}.">

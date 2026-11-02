@@ -80,6 +80,6 @@ function fit(){root.querySelectorAll('.r9-l1').forEach(l=>{const b=l.querySelect
 [...sec.children].forEach(c=>{if(c!==root){c.classList.add('r9-old');c.setAttribute('aria-hidden','true');c.inert=true}});
 sec.appendChild(root);render();
 let lw=innerWidth;addEventListener('resize',()=>{if(innerWidth!==lw){lw=innerWidth;render()}});
-D.fonts&&D.fonts.ready.then(fit);
+D.fonts&&(D.fonts.ready.then(fit),D.fonts.addEventListener('loadingdone',()=>setTimeout(fit,30)));/* a face asked for late (Archivo at 75% width) refits */
 window.__r9={render,hero:HERO.n,set:n=>{shown=n;render()}};
 })();
