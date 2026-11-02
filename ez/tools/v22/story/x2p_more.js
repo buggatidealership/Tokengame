@@ -10,7 +10,8 @@ try{
 const T={g1:{k:'g1-board',s:'s1-fingers',nm:'The board'},g2:{k:'g2-wafer',s:'s2-scribe',nm:'The wafer'},g3:{k:'g3-rack',s:'s3-blank',nm:'The rack'},g4:{k:'g4-bus',s:'s4-junction',nm:'The bus',bus:1},g5:{k:'g5-void',s:null,nm:'The void'}}[id];
 const D=document.documentElement;D.classList.add('g4',...('g4-'+id).split(' '));
 const css=`
-html.g4.x2p.x2d[data-theme="dark"] body::before{background:none!important}
+/* GPU (2026-11-02): with the ground on html the fixed night ground draws nothing, and as a fixed layer under the page it pushed the whole page into a second full-screen layer (about 10 MB of tiles at 2.75x), so it goes */
+html.g4.x2p.x2d[data-theme="dark"] body::before{content:none!important;background:none!important}
 html.g4{background:#030408 url(${M}gr4-${T.k}-p.jpg) 50% 0/100% auto repeat-y!important}
 @media (min-width:760px){html.g4{background-image:url(${M}gr4-${T.k}-l.jpg)!important}}
 ${T.s?`
