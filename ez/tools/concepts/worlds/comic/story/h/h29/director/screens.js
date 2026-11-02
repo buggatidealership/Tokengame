@@ -28,7 +28,7 @@ const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=
  beats.forEach((b0,k)=>{const b1=k+1<beats.length?beats[k+1]:H;stops.push(b0);for(let s0=b0+step;s0<b1-120;s0+=step)stops.push(s0)});
  console.log('gutters',JSON.stringify(gt),'stops',JSON.stringify(stops));
  const shots=[];let i=0;
- let lastY=-1e9;for(const y of stops){const yy=Math.min(y,H-VH);if(yy<lastY+150)continue;lastY=yy;i++;await p.evaluate(y=>scrollTo(0,y),yy);
+ let lastY=-1e9;for(const y of stops){const yy=Math.min(y,H-VH);if(yy<lastY+(y===stops[stops.length-1]?40:150))continue;lastY=yy;i++;await p.evaluate(y=>scrollTo(0,y),yy);
   if(V==='launch')await p.evaluate(()=>{const b=window.__h29dBar;if(b){const e=document.getElementById('h29eFollow').getBoundingClientRect();b.classList.toggle('on',scrollY>innerHeight*.8&&!(e.top<innerHeight&&e.bottom>0)&&!(window.__h29dNumIn&&__h29dNumIn()))}});
   await p.waitForTimeout(1400);
   const m=await p.evaluate(({hdr})=>{const D=document,VW=innerWidth,VH=innerHeight;const fam=f=>f.split(',')[0].replace(/["']/g,'').trim();

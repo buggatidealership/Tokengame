@@ -8,6 +8,9 @@ J=json.load(open(os.path.join(d,'screens.json')));S=J['shots'];W=J['W'];VH=J['VH
 a=int(sys.argv[4]) if len(sys.argv)>4 else 1;b=int(sys.argv[5]) if len(sys.argv)>5 else len(S)
 title=sys.argv[6] if len(sys.argv)>6 else f'H29 · Director\'s cut · {W}px'
 cols=int(sys.argv[7]) if len(sys.argv)>7 else 6
+NT=json.load(open(os.environ['NOTES'])) if os.environ.get('NOTES') else {}
+for j,m in enumerate(S,1):
+  if str(j) in NT:m['note']=NT[str(j)]
 S=S[a-1:b]
 F='/usr/share/fonts/truetype/dejavu/'
 fT=ImageFont.truetype(F+'DejaVuSans-Bold.ttf',int(26)) ;fN=ImageFont.truetype(F+'DejaVuSans-Bold.ttf',22);fS=ImageFont.truetype(F+'DejaVuSans.ttf',14);fB=ImageFont.truetype(F+'DejaVuSans-Bold.ttf',14)
@@ -29,7 +32,8 @@ for i,m in enumerate(S):
     dr.rectangle((X0,ly,X0+tw,ly+19),fill=CY);dr.text((X0,ly+1),lab,fill=(0,0,0),font=fB)
   # the number tab
   dr.rectangle((x-8,y-8,x+30,y+24),fill=(196,42,32),outline=(13,11,16),width=2);dr.text((x+(2 if n>9 else 6),y-6),str(n),fill=(248,240,217),font=fN)
-  ty=y+sh+8;sec=' / '.join(dict.fromkeys(m.get('secs') or []))[:60] or '(continues)'
+  ty=y+sh+8;sec=' / '.join(dict.fromkeys(x.replace('.T','. T') for x in (m.get('secs') or []))) or '(continues)'
+  while dr.textlength(sec,font=fB)>sw-4:sec=sec[:-2].rstrip()+'…' if not sec.endswith('…') else sec[:-3].rstrip()+'…'
   dr.text((x,ty),sec,fill=(255,210,31),font=fB)
   wc=m['words'];col=(3,200,112) if wc<=40 else ((255,210,31) if wc<=50 else (255,90,80))
   dr.text((x,ty+22),f'{wc} words',fill=col,font=fB)
