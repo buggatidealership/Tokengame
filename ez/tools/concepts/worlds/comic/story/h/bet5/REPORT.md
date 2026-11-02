@@ -40,3 +40,32 @@ Skill rule 0:
 1. Should today's leader be named (for example "Today: Grok"), or only "the #1 AI on our leaderboard" as in your words? All takes now drop the name.
 2. Leverage: 5x is still on no take. Add "at 5x" to the second sentence?
 3. In D, is "Right: / Wrong:" as text enough, or should the green and red light of the painting carry it (as A does)?
+
+## B2: the owner's notes on B (2026-11-02)
+
+The owner picked B and asked for these changes. Files: `b2.js` and `b2.css`. Boards: `ez/x2p-h28-bet5-2-{390,1280,320}.png` (B, then B2). Reshoot: `PORT=8975 node run.js <out> b,b2 320,390,1280`.
+
+1. **The heading moves onto the chip.** "Bet #1: NVIDIA" now sits where the date tab was, on the chip's top edge in its light. "At the close · Nov 18" is on the same row. The chip crop starts just above that row, so the gap is gone.
+2. **New caption words.** The caption reads "69% of $EZ creator fees fill the pool." / "We bet the whole pool on NVIDIA, based on the #1 AI's prediction."
+   - The share comes from SIM.poolShare: with .42 the caption reads 42%.
+   - The word "leaderboard" is gone.
+3. **The caption sits on the seam.** The K2 caption is centred on the seam between the chip and the RIGHT / WRONG crops. b2.js sets its top to the chip's bottom minus half its own height, rerun on resize and fonts.
+   - It is also centred across the seam between the two crops, so both lines are hidden under it.
+   - The chip crop runs down to below the dies' labels, so the caption never covers DAYS / HRS.
+
+**Heights against B:**
+
+| Width | B | B2 |
+|---|---|---|
+| 320 | 502px | 398px |
+| 390 | 601px | 476px (125px, about 21%, shorter) |
+| 1280 | 743px | 701px |
+
+**Checks:**
+- At 320, 390 and 1280: no errors, no sideways scroll, no text past its picture.
+- The countdown ticks.
+- Reduced motion at 390: no errors.
+
+**Known issues:**
+- At 320 the heading row fills the width (heading 28px, tag 10px). A longer date ("Nov 18" is the longest form, "Sep 30") still fits, with about 10px to spare.
+- On desktop the heading row sits in the rays above the chip, not on its edge. The chip there starts lower in the painting.
