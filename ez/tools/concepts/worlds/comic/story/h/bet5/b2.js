@@ -13,8 +13,8 @@ B5.mount(Dt=>{
     <div class="b5-at" data-at="${at}"><span class="${w}">${word}</span><span class="b5-ol">${line}</span></div></div>`;
   return `<div class="b5e">
    <div class="b5e-st b5-bleed">
-    <div class="b5-art b5e-chip" data-src="media/bet-chip-h2.jpg" data-iw="2048" data-ih="1152" data-crop="[596,196,930,500]|[-40,40,2210,700]" role="group" aria-labelledby="b5H">
-     <div class="b5-at b5e-hd" data-at="[612,212]|[0,70]"><h2 class="hb-h" id="b5H"><span class="hb-w">Bet #1:</span> <span class="hb-w hb-w2">NVIDIA</span></h2><span class="b5e-tab">At the close · ${md(Dt.at)}</span></div>
+    <div class="b5-art b5e-chip" data-src="media/bet-chip-h2.jpg" data-iw="2048" data-ih="1152" data-crop="[596,190,930,610]|[-40,110,2210,690]" role="group" aria-labelledby="b5H">
+     <div class="b5-at b5e-hd" data-at="[614,222]|[0,160]"><h2 class="hb-h" id="b5H"><span class="hb-w">Bet #1:</span> <span class="hb-w hb-w2">NVIDIA</span></h2><span class="b5e-tab">At the close · ${md(Dt.at)}</span></div>
      <div class="b5e-dies" role="timer" aria-live="off">${B5.dies()}</div>
     </div>
     <div class="b5e-two">

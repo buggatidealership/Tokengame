@@ -35,3 +35,7 @@ Port `_r3.js` into `frames()` of x2p_top.js: dieQ4 → LONG/SHORT; readQ4 withou
 
 ## Files
 `_r3.js/.css`, `B.js/.css`, `C.js/.css`, `fit.py` (+`fit.json`), `warp.py`, `export.py` (→ `img/board-r.jpg`, `img/board-f.jpg`, `geo.json`), `shot.js` (`W=`, `BD=`, `STAIR=1`, `PART=top|b2|fr:<key>`), `mem.js`, `probe.js`, `board.py`; shots in `out/` (git-ignored).
+
+## Round 2 · C2 (owner's notes, 2026-11-02; commit 8b632d42)
+C's layout with B's look: each row a gold caption box (red number tab, CALL/CLOSE/LEDGER/BOARD kicker, long/short green and red, key words underlined, hard ink shadow, tilting the other way every second row) left, the picture right; B's sentences unchanged; the example lines gone; the picture 54% of the row on phones (C 40%), 52% below 360, 50% of a 1040px row on desktop; panels as B (MARKET CLOSE, round 40 only, frontal board); desktop one row under another.
+Whole top at 390: today 1,756, B 2,863, C2 2,076 (C was 1,996); 1280: C2 3,810, B 4,119. Checks at 320/390/1280: no errors, 404s, sideways scroll or overflow; smallest caption 16px at 320, 19 at 390; MEM holds. Boards `ez/x2p-h28-round3-2-{390,1280,320}.png` (B beside C2). Could fail: pictures about 175px wide at 390 (LONG/SHORT and the ledger entry small; the ledger strip 66px tall at 390, 51 at 320); empty space left of the caption boxes on desktop. Question: on phones, the ledger row's picture full width under its caption? Files `C2.js`, `C2.css`; `board.py r2`.

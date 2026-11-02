@@ -28,3 +28,12 @@ Grok's lead is one trade (45 against a ceiling of 44); every world makes "off th
 
 ## Files
 `_s9.js`/`_s9.css` (geometry, gold band, ranked keys, compose, mount), `a`–`d` (.js/.css), `run.js` (`node run.js <out> now,a,b,c,d <W>`, ez/ on 8991), `board.py`; shots in the scratchpad (`.gitignore`: shots/, *.mp4).
+
+## Round 2 · A2, Etched simplified (owner's notes, 2026-11-02; commit 84d4f529)
+Boards `ez/x2p-h28-sol9-2-390.png`, `-320.png` (75%), `-1280.png` (50%): today, A, A2.
+1. Heads: How a round works' caption box (round3 B: yellow Bangers on an ink border, hard shadow, −1.4°, small label, red number tab): "Hit rate · 1 Right way, round by round", "P&L · 2 Money, round by round"; both sentences gone; "$100K on every trade · no leverage" on the P&L axis ("$100K on every trade" below 380px).
+2. The gold coin pour and its label removed: four lines on the board; the plated 50% / $0 base, silkscreen grid, start and end pads kept.
+3. Each key a small table, titles once, one size for every figure, rank only by row order, no verdict tags; names keep their line colours (Grok's gold). Hit rate: model | Last 5 (W/L boxes with letters, oldest → newest left to right; Grok W W W L L) | W-L | Hit rate. Money: model | Last 5 (green/red by each trade's sign, brighter = bigger, no letters) | W-L | P&L.
+4. Both beats on one continuous green board, gold rails top and foot only; no gap between them.
+5. "The last section" noted; the mockup mounts in today's slot.
+Measured: smallest cap the W/L letters, 8.4 at 390, 7.7 at 320, 8.8 at 1280; section 1,200px at 390 (503 today); site `.u`/`.d` clash fixed (`s9u2`/`s9d2`). Could fail: with the band gone nothing says whether 63% beats chance (the luck question moves to the Leaderboard); brightness-for-size without a key; "Last 5" is each AI's own last five trades (Grok skipped rounds). Questions: newest on the right or left? Money's Last 5 by brightness or flat? A chance line anywhere, or only on the Leaderboard? Files `a2.js`, `a2.css`; `_s9.js` gained `W.head`, `W.rows`; `node run.js <out> a2 <W>`; `A2=1 /usr/bin/python3 board.py ...`.
