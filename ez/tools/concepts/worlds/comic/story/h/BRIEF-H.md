@@ -833,3 +833,67 @@ Out of the X2+ Overview: the MVPs (the record's highlights) and the old standing
 - **Takes:** at least four, very different, all in the chip world. For example: a scope or oscilloscope tracing the hit rates with the coin flip as the reference line; a test bench where each model's chip is "under test"; a wafer map; your own.
 - **The close of the page, two or three takes:** what's next on the card (the next rounds' logos and when the calls are due, live from ROUNDS), a door to the Upcoming tab, then Get $EZ, with the last frame handing the visitor somewhere (follow on X, come back for the bell).
 - **Deliverables:** boards `ez/x2p-h24-proof5-*.png` at 390 and 1280, the twelve questions, and H23's tests. Up to $40. Work in `h/proof5/`.
+
+## Round H25 (owner, 2026-11-02, ~01:30 UTC, before bed: "feel free to ship to production. So at least the overview page v1 is done")
+**Production is X2+ again.** earningszn.xyz is built from `v46-live-x2plus.html` with the H24 picks:
+- the board ground with gold-finger gaps;
+- frame 4 take C;
+- Meet the models chips8 take c, with personality balloons computed from the data;
+- Every round so far as B, Season 1 die by die;
+- Smart or lucky T1, the scope, with "Hit rate: how often a trade went the right way.";
+- the bet, from X3+;
+- the close.
+
+Each task below is a **mockup** unless it says otherwise. Rules: rule 0, the hard rules and BRIEF-H's output rules hold, plus lessons 123 to 127 and the twelve questions. Use 4K masters, up to $40 each.
+
+### `board6`: frame 4 as E, the golden ticket, revised (owner's pick; this one ships once it passes)
+- The owner picked **E** (`ez/x2p-h24-board5-close.png`, `h/board5/`): "it gives a bit of a distance from the first number-heavy frames."
+- **Changes:**
+  - **#1 at the top**, not the front-bottom. The leader's chip is lifted on its column of light at the top of the row, with 2, 3 and 4 below it.
+  - **Every chip lit, every number a placeholder "–".** The chips are lit as on Meet the models, but where a number will appear (7 days, season, last round) show only a dash. The numbers are revealed in Meet the models, the next section. The point is to set up the next section and show it is a *leaderboard*.
+  - **The characters:** the founders' faces stay exactly as they are in E, the only filled content.
+- **Chips:** use the new Meet the models chips (`media/chip8c-*-1200.jpg`, live in `ez/tools/v22/story/x2p_chips.js`). The geometry should match, so the "reveal" reads as the same chip coming closer.
+- **Deliver:**
+  - a drop-in for x2p_top.js's frame 4 (as board5's `dropin-frame4.js`);
+  - flat-named images;
+  - boards `ez/x2p-h25-board6-*.png`.
+
+  Work in `h/board6/`.
+
+### `rounds7`: Every round so far, more inspiration (mockups)
+- **Today's pick:** B, Season 1 die by die, is live. The owner likes it ("but would want more inspiration") and wants **two beats**, as B has (the season wafer, then the newest rounds), which A, C and D don't.
+- **This section gets its own theme** (see `theme7`). It doesn't have to stay in the chip narrative: the owner likes that the scope "changes away from the chip narrative everywhere".
+- **Takes:** at least four new, very different two-beat takes:
+  - beat 1, the whole season at a glance;
+  - beat 2, the newest rounds with each film's own frame, readable.
+- **Boards:** `ez/x2p-h25-rounds7-*.png`. Work in `h/rounds7/`.
+
+### `sol6`: Smart or lucky, more takes (mockups)
+- **Today's pick:** T1, the scope, is live and fine for now. The owner: it "can be different", and it should take the section's own theme.
+- **Takes:** at least four. Each must make a newcomer understand what a hit rate is and what "a coin could do it" means, by word design first (lessons 124 and 126): one front-loaded clause, the domain's verbs, a sample shown.
+- **Data:** the same numbers as X2+'s proof and h_sol.js.
+- **Boards:** `ez/x2p-h25-sol6-*.png`. Work in `h/sol6/`.
+
+### `theme7`: colour per section, the gaps and bleed, and "the whole game" as its own small section (mockups)
+- **Colour as a story (owner):** "green at the beginning dominates, when you get to the model sections you introduce other colors through each model's chip background color that can then be used for the next sections."
+  - The models' chip colours: Grok slate, Claude orange, GPT green, Kimi blue.
+  - Propose how each later section takes its theme from them (Every round so far, Smart or lucky, the bet stays dark, the close).
+  - Show at least three palettes across the whole Overview at 390, top to bottom.
+- **Gaps and bleed, first principle (owner):** "they all need to bleed individually but the bleed must make sense with the gap between sections."
+  - Work out the rule: what a gap *is* between two worlds, and how each section's bleed meets it. Make it computable, as H23's tests are.
+  - Show it on the whole page.
+- **"The whole game"** becomes its own section: "way smaller and an option of information a user decides to want to watch or not. As the basics are already explained. More subtle but unmissable."
+  - At least three takes, e.g. a small lit monitor with a play key, a cassette, a "watch the 1:20 film" plug.
+  - The `film` helper's H24 boards (`ez/x2p-h24-film-*`, when in) are earlier thinking.
+- **Boards:** `ez/x2p-h25-theme7-*.png`. Work in `h/theme7/`.
+
+### `chars`: the new Grok and GPT characters (owner, 2026-11-02)
+- **The owner's new stills:**
+  - `h/h25/owner-grok-elon.png`, two panels. Read the left as the portrait for Grok's die (red, a rocket in hand, the face filling the frame) and the right as an alternative (green, on the couch). Make both and say which fits the window.
+  - `h/h25/owner-gpt-sam.jpg`: Sam in the green room, coin up, feet on the road case.
+- **The work:**
+  - Re-render each at 2K+ with Hedra image-to-image, keeping the face, pose and art exactly, crisp.
+  - Then make a 5 s seamless loop for each in the style of the live founder loops (`media/founder-*-anim.mp4/.webm/.jpg`: 640 px, no sound, about 0.4 to 0.6 MB).
+  - Crop it for chips8's founder window (`ez/tools/v22/story/x2p_chips.js`, the window's geometry is in `h/chips8/`).
+- **Names:** new files named `founder-grok-anim2.*` and `founder-gpt-anim2.*` (media is cached for a year).
+- **Boards:** `ez/x2p-h25-chars-*.png` (the chips at 390 with the new loops, beside today's), plus a short video. Work in `h/chars/`.
