@@ -21,7 +21,7 @@ def row(cols,out,pad=24,title=None):
   for c in cols:b.paste(c,(x,pad+th));x+=c.size[0]+pad
   b.save(EZ+out,optimize=True);print(out,b.size,round(os.path.getsize(EZ+out)/1e6,2),'MB')
 o=lambda f:Image.open(O+f).convert('RGB')
-if "r2" not in __import__("sys").argv:
+if len(__import__("sys").argv)<2:
  row([col('Now (live)','2x2 frames, line under each;\nthe ledger shows R38 to R41',[o('now-390.png')],440),
       col('B · caption on the panel','one panel under the other; the sentence\non a gold caption box biting each panel',[o('B-390.png')],440),
       col('C · text first, small picture','the sentence big, the example in its words,\nthe panel beside it as proof',[o('C-390.png')],440)],
@@ -53,3 +53,13 @@ if 'r2' in sys.argv:
       'x2p-h28-round3-2-1280.png',title='round3 · B and C2 · 1280px')
   row([col('B · 320','',[o('B-320.png')],440),col('C2 · 320','picture 52% below 360px',[o('C2-320.png')],440)],
       'x2p-h28-round3-2-320.png',title='round3 · B and C2 · 320px')
+# round 3 (owner, 2026-11-02): C3 = each caption box the size of its picture, one type size for all four; C2 beside it
+if 'r3' in sys.argv:
+  row([col('C2 (round 2)','caption box hugs its words,\npicture 54% of the row',[o('C2-390.png')],500),
+       col('C3 · caption box = picture size','two equal halves; one type size for all four (30.5px);\nthe ledger row stacks: box over strip, both full width',[o('C3-390.png')],500)],
+      'x2p-h28-round3-3-390.png',title='round3 · C2 and C3 · 390px, the whole top')
+  row([col('C2','',[o('C2-1280.png')],720),
+       col('C3 · desktop','halves of a 1040px row; type 86.75px;\nthe ledger row stacks here too',[o('C3-1280.png')],720)],
+      'x2p-h28-round3-3-1280.png',title='round3 · C2 and C3 · 1280px')
+  row([col('C2 · 320','',[o('C2-320.png')],420),col('C3 · 320','type 25px; frames bleed to 8px from the edge',[o('C3-320.png')],420)],
+      'x2p-h28-round3-3-320.png',title='round3 · C2 and C3 · 320px')
