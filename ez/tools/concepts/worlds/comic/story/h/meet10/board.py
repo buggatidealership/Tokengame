@@ -38,3 +38,10 @@ if os.path.exists('out/close/a.png'):
          ('out/close/b.png','B · the season P&L as a small line\n"SEASON −$56,930" over "SEASON −$70,650": the order explains itself;\ncost: a third figure on the chip, about 8 px cap (label 6) at 390')],EZ+'x2p-h26-meet10-pnl.png',1170,'meet10 · the open question, A or B (3x at 390, GPT and Kimi)',
    sub='The line in the SEASON window (one size on all four chips, 10.25 px cap at 390 on the tape take, 10.75 on the strip take); W-L in green and red in the old LAST ROUND window.')
   board([('out/close/s1.png','S1 · the strip (meetbus A)\nrounds on their side, 13 px'),('out/close/s2.png','S2 · the tape (my own)\nflat tickets: round, mark, move')],EZ+'x2p-h26-meet10-strips.png',1100,'meet10 · the two strips, 3x at 390 (a pulse landing on W-L)')
+# ---- meet11: the owner's pick (2026-11-02), today vs the final (S1, SEASON P&L in the big window, W-L, the quote) ----
+if os.path.exists('out/s11/s1-390.png'):
+  F11='Final · the owner\'s pick\nthe strip (S1) feeding each chip; SEASON P&L in the big window,\nW-L (W green, L red), the quote in the tall window\n(10.75 px cap at 390, one size on all four)'
+  board([('out/shots/now-390.png','Today (chips8 c, live)\nLAST 7 DAYS, LAST ROUND, SEASON, balloons'),('out/s11/s1-390.png',F11)],EZ+'x2p-h26-meet11-390.png',780,'meet11 · Meet the models, final · 390 px',
+   sub='Frozen mid-pulse: the round passing a trace sends a green or red pulse into that chip, landing on its W or its L. Every number live from ROUNDS / __x2pPnl.')
+  board([('out/shots/now-1280.png','Today (chips8 c, live)'),('out/s11/s1-1280.png',F11.replace('\n(10.75 px cap at 390, one size on all four)','\n(16 px cap at 1280)'))],EZ+'x2p-h26-meet11-1280.png',1280,'meet11 · Meet the models, final · 1280 px',
+   sub='The strip runs down the column gap and feeds both columns.')
