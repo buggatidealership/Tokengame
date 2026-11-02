@@ -293,7 +293,7 @@ function f4fit(){const b3=sec.querySelector('.f4'),st=b3&&b3.querySelector('.f4-
   /* gaps */const u=f4u(),fl=sec.querySelector('.t4-frs'),g1=sec.querySelector('.t5-bg'),b1=sec.querySelector('.t4-b1 .t4-bleed'),h2=sec.querySelector('.t4-b2 .t4-h2');
   const first=b3.querySelector('.f4-chap .t4-hw,.f4-mqi')||st,cx=sec.querySelector('.f4-cx'),ch=D.querySelector('section.ch .ch-h');
   for(let i=0;i<2;i++){
-    if(g1&&b1&&h2){const cur=f4r(h2).t-f4r(b1).b;g1.style.marginBottom=(parseFloat(getComputedStyle(g1).marginBottom)+3.5*u-cur)+'px'}
+    if(g1&&b1&&h2&&!g1.classList.contains('x2p-tear')){const cur=f4r(h2).t-f4r(b1).b;g1.style.marginBottom=(parseFloat(getComputedStyle(g1).marginBottom)+3.5*u-cur)+'px'}
     if(fl){const cur=f4r(first).t-f4r(fl).b;b3.style.marginTop=(parseFloat(getComputedStyle(b3).marginTop)+u-cur)+'px'}
     if(cx){const cl=Math.max(14,u*.6),want=5*u;cx.style.height=(want-2*cl)+'px';cx.style.marginTop=cl+'px';cx.style.marginLeft=b3.style.marginLeft;cx.style.marginRight=b3.style.marginRight;
       if(ch){const cur=f4r(ch).t-f4r(st).b;cx.style.marginBottom=(parseFloat(getComputedStyle(cx).marginBottom)+want-cur)+'px'}}}

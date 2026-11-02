@@ -55,7 +55,7 @@ function sr(X,kind){const acc=kind==='acc',S=X.W.season,ord=acc?X.arank:S.rank;
   if(acc)return `<table class="p5-sr"><caption>Hit rate: how often each AI's trade went the right way, round by round, over ${X.N} graded rounds. A coin flip gets 50%.</caption><tr><th>AI</th><th>Last 5</th><th>W-L</th><th>Hit rate</th></tr>${ord.map(m=>{const a=X.A[m];return `<tr><th>${esc(NM[m])}</th><td>${trades(X,m).slice(-5).map(v=>v>0?'W':'L').join(' ')}</td><td>${a.W}-${a.L}</td><td>${pc(a.hr)}</td></tr>`}).join('')}</table>`;
   return `<table class="p5-sr"><caption>P&amp;L if you’d bet $100K on every trade, no leverage, the season, ${S.n} rounds</caption><tr><th>AI</th><th>Last round</th><th>W-L</th><th>P&amp;L</th></tr>${ord.map(m=>{const a=X.A[m],tr=trades(X,m),lr=tr[tr.length-1];return `<tr><th>${esc(NM[m])}</th><td>${lr==null?'none':$f(lr)}</td><td>${a.W}-${a.L}</td><td>${$f(S.tot[m])}</td></tr>`}).join('')}</table>`}
 /* ---------- the take ---------- */
-const CAP={acc:['Hit rate','Right way, round by round'],pnl:['P&amp;L','Money, round by round']};
+const CAP={acc:['Hit rate','How often they’re right, round by round'],pnl:['P&amp;L','Money, round by round']};
 let anim=false;
 const take={id:'sx',html(X,V){const k=V.view==='pnl'?'pnl':'acc',c=CAP[k];
   return `<div class="p5-bleed sx sx-${k}">${P5.head('Smart or','lucky?')}
@@ -67,6 +67,7 @@ const take={id:'sx',html(X,V){const k=V.view==='pnl'?'pnl':'acc',c=CAP[k];
  draw(box,X,V){const k=V.view==='pnl'?'pnl':'acc',el=box.querySelector('.sx-ch');
   if(el){const Wd=Math.max(240,Math.round(el.clientWidth)||358),Hh=Wd>=560?Math.round(Wd*.47):Math.round(Wd*.76);el.style.height=Hh+'px';
    el.innerHTML=`<svg class="sx-svg" viewBox="0 0 ${Wd} ${Hh}" width="${Wd}" height="${Hh}" role="img" aria-label="${k==='acc'?'Each AI’s hit rate round by round, from 50/50, against the 50% line':'Each AI’s P&L round by round from $0, $100K on every trade, no leverage, the season'}">${chart(X,k,Wd,Hh)}</svg>`}
+  P5.fitH&&P5.fitH(box.querySelector('.p5-h'));
   if(anim&&!RM.matches){box.classList.remove('sx-go');void box.offsetWidth;box.classList.add('sx-go')}anim=false;
   box.querySelectorAll('[data-sx]').forEach(b=>b.onclick=()=>{const v=b.dataset.sx;if(V.view===v)return;V.view=v;anim=true;P5.cur.draw();const f=box.querySelector(`[data-sx="${v}"]`);f&&f.focus({preventScroll:true})})}};
 P5.mountProof(take);

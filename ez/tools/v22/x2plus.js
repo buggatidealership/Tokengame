@@ -23,7 +23,7 @@ function x2pAnd(a){return a.length<3?a.join(" and "):a.slice(0,-1).join(", ")+" 
    The first screen explains the concept, not the bet; NVIDIA sits under the chip as bet #1; "pool", not "pot"; the brand
    line drops "never edited" (a call changed after it was shown, 2026-10-14, as on X6). Numbers from ez-data.js (SIM). */
 /* The trading competition (owner, 2026-10-26, after a friend's feedback: pump.fun traders think in P&L). Since 2026-10-31 (owner:
-   "If you'd bet $100K on every call") a flat stake: every call is its own $100,000 bet, long on up, short on down, no leverage,
+   "If you'd bet $100K on every trade") a flat stake: every call is its own $100,000 bet, long on up, short on down, no leverage,
    before fees, nothing carried from one call to the next (it was one compounding pot per AI before). per[n].v = that bet's result
    (100000 x direction x move%); P&L = the sum of them; bal = 100000 + P&L (kept so the charts and older readers still work: the
    lines are the running sum); pct = P&L as a share of one $100K stake. The record W-L (a W = a call that got the direction right)
@@ -658,7 +658,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
       bk.innerHTML='<div class="bk-s"><div class="bk-t"><div class="bk-bd g"><h3><em class="bk-st" aria-hidden="true">★</em>'+ko("How we rank")+'<em class="bk-st" aria-hidden="true">★</em></h3></div>'+
         '<div class="bk-in"><p class="x2p-why">Why it matters: <b class="bk-fo" data-t="#1 makes the call">#1 makes the call</b> on the next bet.</p><ol>'+
         /* (owner, 2026-10-26: "just focus on P&L for now, because that's usually whoever everybody wants to follow") ranked by P&L */
-        '<li>Ranked by P&amp;L: if you&rsquo;d bet $100K on every call.</li>'+
+        '<li>Ranked by P&amp;L: if you&rsquo;d bet $100K on every trade.</li>'+
         '<li>Buy on up, short on down. No leverage.</li>'+
         '<li>Every call is made before the company reports and graded at the next market close.</li>'+
         '<li>Called fewer than half the rounds? Ranked after the rest.</li>'+
@@ -1369,10 +1369,10 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
         html:function(){var k="$"+Math.round(STK/1000)+"K",PL=window.__x2pPnl&&window.__x2pPnl();if(PL&&MK.every(function(m){return PL.A[m]}))return '<div class="lp pt-3"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Top <i class="pn-w">W</i></span><span>P&amp;L</span><span>Top <i class="pn-l">L</i></span></div>'+
           byRoi.map(function(m,i){var t=PL.A[m],up=t.pnl>=0;return row(i,m,'<span class="pt-v tnum pn-bw"><span class="sr">top win </span>'+PL.usd(t.bw,1)+'</span><span class="pt-v tnum pn-pl '+(up?'pt-u':'pt-d')+'"><span class="sr">P&amp;L </span>'+PL.usd(t.pnl)+'</span>',
             '<span class="pt-c tnum pn-bl"><span class="sr">top loss </span>'+PL.usd(t.bl,1)+'</span>')}).join("")+'</div>'+
-          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Break even")+'</div><p class="pt-cp">If you&rsquo;d bet $100K on every call. Each call is its own bet. Buy on up, short on down. No leverage.</p>';
+          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Break even")+'</div><p class="pt-cp">If you&rsquo;d bet $100K on every trade. Each call is its own bet. Buy on up, short on down. No leverage.</p>';
           return '<div class="lp pt-3"><div class="pt-hd" aria-hidden="true"><i></i><i></i><i></i><span>Start</span><span>ROI</span><span>Now</span></div>'+byRoi.map(function(m,i){var b=S[m].bal,up=b>=STK,cl=up?'pt-u':'pt-d',p=Math.abs(b/STK*100-100).toFixed(1)+"%";
           return row(i,m,'<span class="pt-v pt-st tnum"><span class="sr">started with </span>'+k+'</span><span class="pt-v tnum '+cl+'"><span class="sr">ROI '+(up?'up ':'down ')+'</span><span class="pt-pm" aria-hidden="true">'+(up?'+':'−')+'</span>'+p+'</span>','<span class="pt-c tnum '+cl+'"><span class="sr">now </span>'+usd(b)+'</span>')}).join("")+'</div>'+
-          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Break even")+'</div><p class="pt-cp">If you&rsquo;d bet $100K on every call. Each call is its own bet. Buy on up, short on down. No leverage.</p>'},
+          '<div class="pt-fl"><div class="pt-ch lp"></div>'+ax("R1","Break even")+'</div><p class="pt-cp">If you&rsquo;d bet $100K on every trade. Each call is its own bet. Buy on up, short on down. No leverage.</p>'},
         draw:function(el,h){var vs=[STK];MK.forEach(function(m){S[m].roi.forEach(function(p){vs.push(p[1])})});var lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs),pd=(hi-lo)*.1||STK*.05;lo-=pd;hi+=pd;
           chart(el,h,byRoi.map(function(m,i){return {m:m,rank:i+1,pts:S[m].roi.map(function(p){return [p[0]/N*100,(hi-p[1])/(hi-lo)*100]})}}),(hi-STK)/(hi-lo)*100,{lead:true,left:30,grid:pgrid(lo,hi),lab:function(m){var PL=window.__x2pPnl&&window.__x2pPnl();return PL&&PL.A[m]?PL.pc(PL.A[m].pct):ver(m)}})}},
       hit:{t:"Accuracy",top:"How often were they right about the direction?",bot:"Up or down only",
@@ -1503,7 +1503,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
   /* (owner, 2026-10-22) "predict", not "call each stock" (they don't call every stock); "before" and "after" in gold */
   /* the standings' three rules on the "The rules" strap above the board, with the tickets too (owner, 2026-10-23: "in the same
      format as we have it on the current live site"; they were the tickets' small print under the board for a day) */
-  [].concat([["#standings","x2p-stb",['4 AI<span class="x2p-lc">s</span> paper-trade every earnings report.',"$100K on every call. Graded at the close.","Top P&amp;L makes the buyback call."],"The rules"]],
+  [].concat([["#standings","x2p-stb",['4 AI<span class="x2p-lc">s</span> paper-trade every earnings report.',"$100K on every trade. Graded at the close.","Top P&amp;L makes the buyback call."],"The rules"]],
   [["#learn","x2p-lrb",["Do not trust the models. Verify the trend.",gN+" rounds graded so far. Judge for yourself."],"The stats"],
    ["#highlights","x2p-hlb",hk?[hk,"Swipe for more. Flip a card for the story."]:[],"Replays"]]).forEach(function(x){if(!x[2].length)return;
     var sh=$(x[0]+" .sh");if(!sh||$("."+x[1],sh))return;var ul=d.createElement("ul");ul.className="x2o-ul lede "+x[1];
@@ -1801,7 +1801,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
     '<span class="rz-v"><span class="sr">Record </span><span class="up">'+s.W+'</span>-<span class="dn">'+s.L+'</span></span><span class="rz-v"><span class="sr">Hit rate </span>'+Math.round(s.hit*100)+'%</span>'+
     '<span class="rz-pl"><b class="'+(s.pnl<0?'dn':'up')+'"><span class="sr">P&amp;L </span>'+usd(s.pnl)+'</b>'+spark(m,70,16)+'</span></li>'}).join('')+
    '<li class="rz-r rz-5"><span class="rz-pos">5?</span><span class="rz-bar"></span><span class="rz-5t">In tryouts</span><span class="rz-5n">'+TRY.map(function(t){return '<span>'+t[0]+flag(t[1],12)+'</span>'}).join('')+'</span></li></ol>'+
-   '<div class="rz-how" hidden><p class="rz-why">Why it matters: <b>#1 makes the call</b> on the next bet.</p><ol><li>Ranked by P&amp;L: if you&rsquo;d bet $100K on every call.</li><li>Buy on up, short on down. No leverage.</li>'+
+   '<div class="rz-how" hidden><p class="rz-why">Why it matters: <b>#1 makes the call</b> on the next bet.</p><ol><li>Ranked by P&amp;L: if you&rsquo;d bet $100K on every trade.</li><li>Buy on up, short on down. No leverage.</li>'+
    '<li>Every call is made before the company reports and graded at the next market close.</li><li>Called fewer than half the rounds? Ranked after the rest.</li><li>The board freezes 24h before each bet.</li></ol><p class="rz-fine">P&amp;L: simulated, before fees.</p></div></div>';
   return h}
  /* ---- the proof in L2 Speed ---- */
@@ -1820,7 +1820,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
  function proof(D){var S=D.S,MK=D.MK,G=D.G,N=D.N,BAL={},RUN={};MK.forEach(function(m){BAL[m]=S[m].bal;RUN[m]=S[m].run});
   var CO={pnl:{step:20000,base:100000,fmt:function(v){return v===1e5?'$0':(v>1e5?'+':'\u2212')+Math.abs(v-1e5)/1000+'K'},ends:function(m){return pc(S[m].pct)}},acc:{lo:30,hi:80,step:10,base:50,x0:'Start',fmt:function(v){return v+'%'}}};
   function card(k,q,sub,body){return '<div class="rz-pv" data-v="'+k+'" role="tabpanel" aria-label="'+q+'"><p class="rz-q">'+lx(q)+'</p><p class="rz-sm rz-sub">'+sub+'</p>'+body+'</div>'}
-  var pnl=card("pnl","Would following them have made you money?","If you&rsquo;d bet $100K on every call. No leverage.",'<div class="rz-ch" data-k="pnl">'+chart(D,BAL,D.byP[0],CO.pnl)+'</div>'+
+  var pnl=card("pnl","Would following them have made you money?","If you&rsquo;d bet $100K on every trade. No leverage.",'<div class="rz-ch" data-k="pnl">'+chart(D,BAL,D.byP[0],CO.pnl)+'</div>'+
    '<div class="rz-g rz-gp"><span class="rz-cap">#</span><span></span><span class="rz-cap">AI</span><span class="rz-cap c">Top <span class="w">W</span></span><span class="rz-cap c">Top <span class="l">L</span></span><span class="rz-cap c">P&amp;L</span>'+
    D.byP.map(function(m,i){var s=S[m];return '<span class="rz-lx rz-n'+(i?'':' gd')+'">'+(i+1)+'</span>'+disc(m,24)+lx(NM[m],i?'':'gd')+'<span class="rz-sm c up"><span class="sr">Top win </span>'+usd(s.bw,1)+'</span><span class="rz-sm c dn"><span class="sr">Top loss </span>'+usd(s.bl,1)+'</span><span class="c">'+lx('<span class="sr">P&amp;L </span>'+usd(s.pnl),i?(s.pnl<0?'dn':'up'):'gd')+'</span>'}).join('')+'</div>');
   var acc=card("acc","How often were they right about the direction?","Every line starts at 50/50 and moves with each call.",'<div class="rz-ch" data-k="acc">'+chart(D,RUN,D.byH[0],CO.acc)+'</div>'+
@@ -2474,7 +2474,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
   [].slice.call(body.querySelectorAll(".pt-r")).forEach(function(r){var nm=(r.querySelector(".pt-nm")||{}).textContent||"",m=nm.trim().toUpperCase(),w=W[m];if(!w)return;
    [[".pn-bw",w.d1,"last 24 hours "],[".pn-bl",w.d7,"last 7 days "]].forEach(function(x){var e=r.querySelector(x[0]);if(!e)return;var v=Math.round(x[1]);
     e.innerHTML='<span class="sr">'+x[2]+'</span>'+money(W.P,v);e.classList.remove("pr2-u","pr2-d","pr2-z");e.classList.add(v>0?"pr2-u":v<0?"pr2-d":"pr2-z")})});
-  var cp=body.querySelector(".pt-cp");if(cp&&!cp.dataset.pr2){cp.dataset.pr2=1;cp.textContent="If you\u2019d bet $100K on every call. Each call is its own bet. Buy on up, short on down. No leverage. 24h and 7d: rounds graded at the close in the last 24 hours and 7 days."}
+  var cp=body.querySelector(".pt-cp");if(cp&&!cp.dataset.pr2){cp.dataset.pr2=1;cp.textContent="If you\u2019d bet $100K on every trade. Each call is its own bet. Buy on up, short on down. No leverage. 24h and 7d: rounds graded at the close in the last 24 hours and 7 days."}
   centre(body)}
  /* each column label over its figures' middle */
  function centre(body){var hd=body.querySelector(".pt-3 .pt-hd"),r=body.querySelector(".pt-3 .pt-r");if(!hd||!r)return;var ink=function(e){var g=d.createRange();g.selectNodeContents(e);return g.getBoundingClientRect()};

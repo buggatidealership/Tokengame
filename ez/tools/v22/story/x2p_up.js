@@ -191,7 +191,7 @@ function last(M){if(!M.last.length)return '';const n=M.last.length;
   return `<section class="ua-last" aria-labelledby="uaLastH"><h3 class="u3-h3" id="uaLastH">The last bell <small>${esc(dayName(M.lastP,M.today))} ${esc(md(M.lastP))} · ${n} graded</small></h3>
    <ul class="u3-slabs">${M.last.slice(0,8).map(r=>`<li>${slab(r,'ua-sl')}</li>`).join('')}</ul>${n>8?`<a class="ua-more" href="#/">All ${n} on the record</a>`:''}</section>`}
 function build(M){const b=M.bell;return `<section class="ua" aria-labelledby="uaH"><h2 class="t4-h2 ua-h" id="uaH"><span class="t4-hw">The next bell</span></h2>${bell(M)}
-  ${b?`<p class="u3-cap ua-cap">The close grades every trade. <span class="u3-n">${b.nIn}</span> of <span class="u3-n">${b.nAll}</span> are in.</p><ol class="ua-rows">${b.rounds.map(u=>module(u,M)).join('')}</ol>`:''}</section>${last(M)}${season(M)}${follow(M)}`}
+  ${b?`<p class="u3-cap ua-cap">The close grades every trade. <span class="u3-n">${b.nIn}</span> of <span class="u3-n">${b.nAll}</span> are in.</p><ol class="ua-rows">${b.rounds.map(u=>module(u,M)).join('')}</ol>`:''}</section>${season(M)}${follow(M)}`}/* H34 (owner, 2026-11-02, night): no "The last bell" here: graded rounds belong to the record, Upcoming is what's coming (last() kept, unused) */
 
 /* ---------- mount: every time the router draws the Upcoming tab (upTab's .x2p-up), the take goes in its place ---------- */
 let busy=false,tries=0,timer=0;
@@ -199,7 +199,7 @@ function tryMount(){timer=0;const v=D.querySelector('#view .x2p-up');
   if(!v||v.querySelector('.u3-root')||busy)return;
   if(!(window.ROUNDS&&window.MODELS&&window.__x2pPnl))return again();
   /* the last bell's slabs read the record's labels; give the record a moment, then go without them */
-  if(!D.querySelector('#car .card .zlab')&&tries++<40)return again();
+  /* (H34: the last bell is gone, so the tab no longer waits up to 3 s for the record's slab labels) */
   busy=true;
   try{const M=model();prepLogos(M.fut).then(()=>{busy=false;try{
     if(!v.isConnected||v.querySelector('.u3-root'))return;

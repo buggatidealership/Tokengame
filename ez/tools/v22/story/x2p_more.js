@@ -21,7 +21,7 @@ html.g4 :is(.t5-bg,.g4-gut,.p5-gut).x2p-tear{display:block;position:relative;poi
  margin:var(--tear-a,44px) 0 var(--tear-b,40px) calc(50% - 50vw)!important;background:none!important;filter:none!important;grid-column:1/-1}
 html.g4 main.wrap>.g4-gut.x2p-tear.x2p-tear-x{display:none!important}
 html.g4 .x2p-tear>svg{visibility:visible!important;position:absolute;left:0;top:0;display:block;overflow:visible}
-@media (min-width:1000px){html.g4 :is(.t5-bg,.g4-gut,.p5-gut).x2p-tear{--tear-h:58px;--tear-a:64px;--tear-b:60px}}
+@media (min-width:1000px){html.g4 :is(.t5-bg,.g4-gut,.p5-gut).x2p-tear{--tear-h:58px;--tear-a:64px;--tear-b:60px}html.g4 #get .p5-gut.x2p-tear{display:none!important}}
 html.g4 .f4-cx{display:none!important}
 `:''}
 ${T.bus?`
@@ -44,12 +44,37 @@ function tear(el,k){let svg=el.querySelector(':scope>svg');if(!svg){svg=document
   let dots='';for(let x=4;x<w;x+=6)for(let j=0;j<4;j++){const y=h*.78+j*4.2,rr=1.6-j*.38;if(rr>.2)dots+=`<circle cx="${(x+(j%2)*3).toFixed(1)}" cy="${y.toFixed(1)}" r="${rr.toFixed(2)}"/>`}
   /* fibres where the paper ripped: a pale line just inside the top tear */
   svg.innerHTML=`<g fill="#f8f0d9" opacity=".22">${dots}</g><path d="${d}" fill="#c42a20" transform="translate(2,3.4)"/><path d="${d}" fill="#f8f0d9" stroke="#0d0b10" stroke-width="2.2" stroke-linejoin="round"/><path d="${'M'+t.map(p=>p[0].toFixed(1)+','+(p[1]+2.6).toFixed(1)).join(' L')}" fill="none" stroke="#c9bc98" stroke-width="1.4" opacity=".8"/><path d="${'M'+b.slice().reverse().map(p=>p[0].toFixed(1)+','+(p[1]-2.6).toFixed(1)).join(' L')}" fill="none" stroke="#d9cdb0" stroke-width="1.1" opacity=".7"/>`}
-function tears(){const els=[...document.querySelectorAll('section.t4 .t5-bg, main.wrap>.g4-gut, #get .p5-gut')];
-  /* one tear per break: a gutter whose nearest shown sibling before it is another gutter (or nothing) stays hidden */
-  const isG=e=>e&&e.matches&&e.matches('.g4-gut');
-  els.forEach(e=>{if(!isG(e))return;let p=e.previousElementSibling;while(p&&!isG(p)&&!p.offsetHeight)p=p.previousElementSibling;e.classList.toggle('x2p-tear-x',!p||isG(p)&&!p.classList.contains('x2p-tear-x'))});
-  els.forEach((e,i)=>{e.classList.add('x2p-tear');e.setAttribute('aria-hidden','true');tear(e,i)})}
+/* the content edges of a block: the lowest (or highest) visible leaf, so the room above and below each tear is what the eye sees, not the
+   sections' paddings (the hidden old carousel, screen-reader tables and inert parts are skipped whole) */
+function edge(el,top){let v=top?1e9:-1e9;const SK='.r6-old,.p5-sr,[inert],.x2p-sr,.m14-sr,.x2p-tear',LF=/^(svg|img|video|canvas|picture|button|iframe)$/i,O={checkOpacity:true,checkVisibilityCSS:true};
+  const walk=n=>{for(let c=n.firstElementChild;c;c=c.nextElementSibling){if(c.matches(SK)||(c.checkVisibility&&!c.checkVisibility(O)))continue;
+    if(!c.firstElementChild||LF.test(c.tagName)){const r=c.getBoundingClientRect();if(r.width<2||r.height<2||r.right<0||r.left>innerWidth)continue;v=top?Math.min(v,r.top):Math.max(v,r.bottom)}else walk(c)}};
+  walk(el);return Math.abs(v)<1e8?v:null}
+const isG=e=>e&&e.matches&&e.matches('.g4-gut');
+function tears(){const main=document.querySelector('main.wrap');if(!main)return;
+  /* one tear before every shown section after the first (X2's and X2+'s own order routines move sections around; the tears follow them) */
+  const shown=e=>e&&e.offsetHeight>0&&!isG(e);
+  const secs=[...main.children].filter(e=>e.tagName==='SECTION'&&shown(e));
+  secs.slice(1).forEach(sc=>{let p=sc.previousElementSibling;while(p&&!shown(p)&&!isG(p))p=p.previousElementSibling;if(!isG(p)){const g=document.createElement('div');g.className='g4-gut';g.setAttribute('aria-hidden','true');sc.before(g)}});
+  /* a tear shows only between two shown sections, once */
+  let last=null;[...main.children].forEach(e=>{if(isG(e)){let p=e.previousElementSibling,n=e.nextElementSibling;while(p&&!shown(p))p=p.previousElementSibling;while(n&&!shown(n))n=n.nextElementSibling;
+    const ok=p&&n&&p.tagName==='SECTION'&&n.tagName==='SECTION'&&last!==p;e.classList.toggle('x2p-tear-x',!ok);if(ok)last=p}});
+  /* desktop: main is a grid whose sections sit on numbered rows; the rows are renumbered in page order so each tear gets its own row between them */
+  if(getComputedStyle(main).display==='grid'){let rw=1;[...main.children].forEach(e=>{if(e.offsetHeight>0||(isG(e)&&!e.classList.contains('x2p-tear-x')))e.style.setProperty('grid-row',String(rw++),'important');else e.style.removeProperty('grid-row')})}
+  else [...main.children].forEach(e=>e.style.removeProperty('grid-row'));
+  const els=[...document.querySelectorAll('section.t4 .t5-bg, main.wrap>.g4-gut, #get .p5-gut')];
+  els.forEach((e,i)=>{e.classList.add('x2p-tear');e.setAttribute('aria-hidden','true');tear(e,i)});
+  /* the same room above and below every tear: measured to the content's own edges, then the tear's margins set (all measured first, then all set) */
+  const desk=innerWidth>=1000,A=desk?72:48,B=desk?64:44,todo=[];
+  els.forEach(e=>{if(!e.offsetHeight)return;const sib=(x,d)=>{let s2=x[d];while(s2&&(!s2.offsetHeight||isG(s2)))s2=s2[d];return s2};
+    const p=sib(e,'previousElementSibling'),n=sib(e,'nextElementSibling');if(!p||!n)return;const r=e.getBoundingClientRect(),pb=edge(p,0),nt=edge(n,1);if(pb==null||nt==null)return;
+    const cs=getComputedStyle(e);todo.push([e,parseFloat(cs.marginTop)+A-(r.top-pb),parseFloat(cs.marginBottom)+B-(nt-r.bottom)])});
+  todo.forEach(([e,a,b])=>{e.style.setProperty('--tear-a',Math.max(6,Math.round(a))+'px');e.style.setProperty('--tear-b',Math.max(-120,Math.round(b))+'px')})
+  window.__x2pTearGaps=()=>els.filter(e=>e.offsetHeight).map(e=>{const sib=(x,d)=>{let s2=x[d];while(s2&&(!s2.offsetHeight||isG(s2)))s2=s2[d];return s2};const p=sib(e,'previousElementSibling'),n=sib(e,'nextElementSibling'),r=e.getBoundingClientRect();
+    return {before:(n&&(n.id||n.className.split(' ')[0]))||'',above:p?Math.round(r.top-edge(p,0)):null,below:n?Math.round(edge(n,1)-r.bottom):null}})}
 window.__x2pTears=tears;
+let tq=0;const tmo=new MutationObserver(()=>{if(tq)return;tq=1;requestAnimationFrame(()=>{tq=0;tmo.disconnect();try{tears()}finally{const m=document.querySelector('main.wrap');m&&tmo.observe(m,{childList:true})}})});
+setTimeout(()=>{const m=document.querySelector('main.wrap');m&&tmo.observe(m,{childList:true})},0);
 let tw0=innerWidth;addEventListener('resize',()=>{if(innerWidth!==tw0){tw0=innerWidth;requestAnimationFrame(tears)}});
 addEventListener('load',tears);document.fonts&&document.fonts.ready.then(()=>requestAnimationFrame(tears));
 [300,1200,3000].forEach(t=>setTimeout(tears,t));
@@ -301,7 +326,7 @@ function restHTML(){const k=Math.min(REST.length,shown||PAGE()),it=REST.slice(0,
 /* H34 (owner, 2026-11-02, night): a slab in the box lifts and says what it is before it opens: company and ticker, grade, who won.
    Phones: the first tap lifts it and shows the tag, a second tap on the same slab opens it. Mouse: hover lifts and tags, a click opens. */
 function tag(r){const L=lab(r)||{},W=wins(r),gw=L.gr?`Grade ${esc(L.gr)}${L.ds?' · '+esc(L.ds):''}`:'';
-  return `<span class="m7-tag" aria-hidden="true"><b>${esc(r.co)} <small>(${esc(r.ticker)})</small></b>${gw?`<span class="m7-tg">${gw}</span>`:''}<span class="m7-tw">${W.length?W.map(nm).join(' &amp; ')+(W.length>1?' tie':' won'):'Nobody won'}</span></span>`}
+  return `<span class="m7-tag" aria-hidden="true"><b>${esc(r.co)} <small>(${esc(r.ticker)})</small></b>${gw?`<span class="m7-tg">${gw}</span>`:''}<span class="m7-tw">${W.length?W.map(m=>m==='GPT'?'GPT':m.charAt(0)+m.slice(1).toLowerCase()).join(' &amp; ')+(W.length>1?' tie':' won'):'Nobody won'}</span></span>`}
 function caseHTML(){return `<div class="m7-case m7-${V}" role="group" aria-label="The Mag 7"><i class="m7-bg" aria-hidden="true"></i><span class="m7-plt"><b>Mag 7</b></span><div class="m7-cin">${items.map((x,i)=>`<div class="m7-slot"><i class="m7-sh" aria-hidden="true"></i>${x}</div>`).join('')}</div><i class="m7-lips" aria-hidden="true"></i></div>`}
 const sec=D.getElementById('record');
 const root=D.createElement('div');root.className='m7r m7-C m7-v'+V;root.id='x2pMag';
@@ -446,6 +471,11 @@ P5.mountClose=function(take){const sec=D.querySelector('#get');if(!sec)return;
 /* switch markup shared by the takes (real buttons; the takes paint them onto their surfaces) */
 P5.sw=(V)=>`<div class="p5-sw" role="group" aria-label="View">${[['acc','Hit rate'],['pnl','P&L']].map(([k,t])=>`<button type="button" data-v="${k}" aria-pressed="${V.view===k}">${t}</button>`).join('')}</div>`+
   (V.view==='pnl'?`<div class="p5-sw p5-ws" role="group" aria-label="Window">${[['season','Season'],['d7','Last 7 days'],['d1','Last 24 hours']].map(([k,t])=>`<button type="button" data-w="${k}" aria-pressed="${V.win===k}">${t}</button>`).join('')}</div>`:'');
+/* H34 (owner, 2026-11-02, night): a section's heading is clearly the loudest words in it: on phones and tablets it fills its line (up to 52px) */
+P5.fitH=h=>{if(!h)return;h.style.removeProperty('font-size');if(innerWidth>=1000||!h.offsetWidth)return;const c=getComputedStyle(h),fs=parseFloat(c.fontSize),av=h.clientWidth-parseFloat(c.paddingLeft)-parseFloat(c.paddingRight);
+  const rg=document.createRange();rg.selectNodeContents(h);const w=rg.getBoundingClientRect().width;if(!w)return;const f=Math.min(52,Math.floor(fs*av/w*.95*10)/10);if(f>fs)h.style.setProperty('font-size',f+'px','important')};
+let p5fw=innerWidth;addEventListener('resize',()=>{if(innerWidth===p5fw)return;p5fw=innerWidth;document.querySelectorAll('main .p5-h').forEach(P5.fitH)});
+document.fonts&&document.fonts.ready.then(()=>document.querySelectorAll('main .p5-h').forEach(P5.fitH));
 P5.head=(a,b)=>`<h2 class="t4-h2 p5-h"><span class="t4-hw">${a}</span>${b?` <span class="t4-hw p5-hw2">${b}</span>`:''}</h2>`;
 })();
 (function(){const P5=window.P5;
@@ -453,7 +483,7 @@ P5.head=(a,b)=>`<h2 class="t4-h2 p5-h"><span class="t4-hw">${a}</span>${b?` <spa
 P5.hits=(crop,items)=>{const [x0,y0,x1,y1]=crop,W=x1-x0,H=y1-y0;return items.map(i=>`<button type="button" class="p5-hit" data-${i.k}="${i.val}" aria-pressed="${!!i.on}" aria-label="${P5.esc(i.label)}" style="left:${((i.x-x0)/W*100).toFixed(2)}%;top:${((i.y-y0)/H*100).toFixed(2)}%;width:${(i.w/W*100).toFixed(2)}%;height:${(i.h/H*100).toFixed(2)}%"></button>`).join('')};
 P5.link=(crop,i)=>{const [x0,y0,x1,y1]=crop,W=x1-x0,H=y1-y0;return `<a class="p5-hit" href="${i.href}"${i.ext?' target="_blank" rel="noopener"':''} aria-label="${P5.esc(i.label)}" style="left:${((i.x-x0)/W*100).toFixed(2)}%;top:${((i.y-y0)/H*100).toFixed(2)}%;width:${(i.w/W*100).toFixed(2)}%;height:${(i.h/H*100).toFixed(2)}%"></a>`};
 P5.table=(X,V)=>{const pc=P5.pc,NM=P5.NM;if(V.view==='acc')return `<table class="p5-sr"><caption>Hit rate by AI, ${X.N} rounds. A coin flip gets 50%; the luck zone is where 95 in 100 coins would land after this many calls.</caption><tr><th>AI</th><th>W-L</th><th>Hit rate</th><th>Beyond the luck zone</th></tr>${X.arank.map(m=>{const a=X.A[m];return `<tr><th>${NM[m]}</th><td>${a.W}-${a.L}</td><td>${pc(a.hr)}</td><td>${a.out>0?'Yes, above':a.out<0?'Yes, below':'No'}</td></tr>`}).join('')}</table>`;
-  const w=X.W[V.win];return `<table class="p5-sr"><caption>P&amp;L if you’d bet $100K on every call, ${w.lab}</caption><tr><th>AI</th><th>Last 24 hours</th><th>Last 7 days</th><th>Season</th></tr>${w.rank.map(m=>`<tr><th>${NM[m]}</th><td>${P5.$f(X.W.d1.tot[m])}</td><td>${P5.$f(X.W.d7.tot[m])}</td><td>${P5.$f(X.W.season.tot[m])}</td></tr>`).join('')}</table>`};
+  const w=X.W[V.win];return `<table class="p5-sr"><caption>P&amp;L if you’d bet $100K on every trade, ${w.lab}</caption><tr><th>AI</th><th>Last 24 hours</th><th>Last 7 days</th><th>Season</th></tr>${w.rank.map(m=>`<tr><th>${NM[m]}</th><td>${P5.$f(X.W.d1.tot[m])}</td><td>${P5.$f(X.W.d7.tot[m])}</td><td>${P5.$f(X.W.season.tot[m])}</td></tr>`).join('')}</table>`};
 /* the next close after now (any round still to come), and a short countdown */
 P5.nextClose=X=>{const now=Date.now();let best=null;X.days.forEach(d=>d.rs.forEach(r=>{const c=P5.closeAt(r.ticker,r.resolves);if(c&&c>now&&(!best||c<best.c))best={c,r}}));return best};
 P5.cd=X=>{const b=P5.nextClose(X);if(!b)return 'Date to come';const m=Math.max(0,Math.round((b.c-Date.now())/6e4)),d=Math.floor(m/1440),h=Math.floor(m%1440/60);return d?`${d}d ${h}h`:`${h}h ${String(m%60).padStart(2,'0')}m`};
@@ -541,7 +571,7 @@ function screen(X,V){const ac=V.view==='acc',w=X.W[V.win];let lit='',under='',ov
 P5.take={id:'t1',html(X,V){return `<div class="p5-bleed">${P5.head('Smart or','lucky?')}<div class="p5-st"></div><p class="p5-ln">${V.view==='acc'?'<b>Hit rate:</b> how often a trade went the right way. Inside the gold zone, <b>a coin could have done it.</b>':'Every call a $100K trade. <b>Who made money?</b>'}</p>${P5.table(X,V)}</div>`},
  draw(box,X,V){const st=box.querySelector('.p5-st'),s=screen(X,V);
   const C2=[170,166,846,782],LB={acc:'Hit rate view',pnl:'P&L view',season:'Season',d7:'Last 7 days',d1:'Last 24 hours'};
-  P5.stage(st,{img:null,crop:C2,glass:[],lit:s.lit,under:s.under,over:s.over,label:V.view==='acc'?'Chart: each AI’s hit rate round by round against the coin’s luck zone':'Chart: P&L if you’d bet $100K on every call',bloom:2.6});
+  P5.stage(st,{img:null,crop:C2,glass:[],lit:s.lit,under:s.under,over:s.over,label:V.view==='acc'?'Chart: each AI’s hit rate round by round against the coin’s luck zone':'Chart: P&L if you’d bet $100K on every trade',bloom:2.6});
   st.insertAdjacentHTML('beforeend',P5.hits(C2,s.kr.map(r=>({k:r.k,val:r.val,x:r.x-4,y:r.y-8,w:r.w+8,h:r.h+16,label:LB[r.val],on:r.on}))));
   P5.vis(st)}};
 })();
@@ -555,7 +585,7 @@ setTimeout(()=>{if(!P5.cur)P5.mountProof(P5.take)},0);
 const CR1=[112,196,888,826],WN=[[144,254],[270,256],[394,256],[518,256],[642,254],[766,254]],WW=90,WH=100,FING=[120,762,768,40];
 const CR2=[118,150,882,812],GL=[136,172,724,288],B1=[336,660],B2=[658,660];
 function card(X){const out=[];X.days.forEach(d=>d.rs.forEach(r=>{if(out.length<6)out.push({r,d})}));return out}
-P5.take={id:'c1',cd:X=>P5.cd(X),html(X){return `<div class="p5-bleed"><h2 class="t4-h2 p5-h"><span class="t4-hw">Next on</span> <span class="t4-hw p5-hw2">the card</span></h2><div class="p5-col"><div class="p5-st"></div><p class="p5-ln">Every round gets its chip when the calls lock. <b>Plug in for the whole schedule.</b></p></div><div class="p5-gut"></div><div class="p5-col"><div class="p5-st"></div><p class="p5-ln">$EZ isn’t live yet. The address appears here, and only here, at launch. <b>Anyone DMing you one before that is a scammer.</b> Not financial advice.</p></div></div>`},
+P5.take={id:'c1',cd:X=>P5.cd(X),html(X){return `<div class="p5-bleed"><h2 class="t4-h2 p5-h p5-nx"><span class="t4-hw">Next,</span> <span class="t4-hw p5-hw2">the AI<span class="t4-lc x2p-lc">s</span> trade</span></h2><div class="p5-col"><div class="p5-st"></div><p class="p5-ln uf-nar">These companies report next. Each one is a round for the four AIs, not a bet.</p><button type="button" class="p5-sched" data-go="upcoming">See the full schedule <span aria-hidden="true">→</span></button></div><div class="p5-gut"></div><div class="p5-col"><div class="p5-st"></div><p class="p5-ln">$EZ isn’t live yet. The address appears here, and only here, at launch. <b>Anyone DMing you one before that is a scammer.</b> Not financial advice.</p></div></div>`},
  draw(box,X){const [s1,s2]=box.querySelectorAll('.p5-st'),C=card(X);let lit='',silk='',top='';
   C.forEach(({r,d},i)=>{const [x,y]=WN[i],cx=x+WW/2;lit+=P5.litLogo(r.ticker,cx,y+38,56)+t(cx,y+88,26,new Date(d.t).toLocaleDateString('en-US',{weekday:'short',timeZone:'UTC'}).toUpperCase(),{a:'middle',c:AMB})});
   silk+=t(500,FING[1]-16,30,'EVERYTHING COMING UP',{a:'middle',c:'#fff6dc',ls:2});
@@ -570,7 +600,10 @@ P5.take={id:'c1',cd:X=>P5.cd(X),html(X){return `<div class="p5-bleed"><h2 class=
   const sk=t(B1[0],B1[1]+118,26,live?'':'OPENS AT LAUNCH',{a:'middle',c:'#fff6dc'})+t(B2[0],B2[1]+118,26,'EVERY CALL FIRST',{a:'middle',c:'#fff6dc'});
   P5.stage(s2,{img:'media/p5-panel.jpg',crop:CR2,glass:[[GL[0],GL[1],GL[2],GL[3],10]],lit:l2,silk:sk,glare:.5,bloom:2.2,label:'The next bell, Get $EZ and Follow on X'});
   s2.insertAdjacentHTML('beforeend',(live?P5.link(CR2,{href:CONFIG.buyUrl||'#',label:'Get $EZ',x:B1[0]-90,y:B1[1]-90,w:180,h:180,ext:1}):'')+P5.link(CR2,{href:(window.CONFIG&&CONFIG.x)||'https://x.com/earningszn',label:'Follow EZ on X',x:B2[0]-90,y:B2[1]-90,w:180,h:180,ext:1}));
-  P5.vis(s1)}};
+  P5.vis(s1);
+  /* H34: the schedule button switches to the Upcoming tab through the router's own address (as the tabs do: #/upcoming), never a page anchor */
+  const sb=box.querySelector('.p5-sched');if(sb)sb.onclick=()=>{location.hash='#/upcoming'};
+  P5.fitH&&P5.fitH(box.querySelector('.p5-h'))}};
 })();
 
 P5.mountClose(P5.take);
@@ -710,7 +743,7 @@ function ones(root){if(!root||root.nodeType!==1&&root.nodeType!==3)return;if(roo
    parts.forEach((p,i)=>{if(i===0){if(p)frag.appendChild(D.createTextNode(p));return}frag.appendChild(mk('uf1','1'));frag.appendChild(mk('uf1r',p||'​'))})}
   else{parts.forEach((p,i)=>{if(i>0){const o=D.createElement('span');o.className='uf1';o.textContent='1';frag.appendChild(o)}if(p)frag.appendChild(D.createTextNode(p))})}
   t.replaceWith(frag)}}
-function tags(){D.querySelectorAll('#get .p5-ln').forEach(p=>{if(/gets its chip/.test(p.textContent))p.classList.add('uf-nar')})}
+function tags(){D.querySelectorAll('#get .p5-ln').forEach(p=>{if(/gets its chip|report next/.test(p.textContent))p.classList.add('uf-nar')})}
 let pend=new Set(),q=0;
 const mo=new MutationObserver(rs=>{for(const r of rs){if(r.type==='characterData')pend.add(r.target);else r.addedNodes.forEach(a=>pend.add(a))}
   if(q)return;q=1;requestAnimationFrame(()=>{q=0;const list=[...pend];pend.clear();mo.disconnect();

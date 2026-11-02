@@ -109,7 +109,7 @@ function lightLogos(){sec.querySelectorAll('img.c8-lg[data-src]').forEach(im=>{c
    const lum=c2?L/c2/255:1,sat=c2?S/c2/255:0;im.classList.add(tile?'c8-tile':'c8-inv')}catch(e){im.classList.add('c8-col')}im.src=s};o.onerror=()=>{im.src=s};o.src=s})}
 function build(){
   sec.innerHTML=`${DEFS}<h2 class="ch-h"><span class="ch-w">Meet the</span> <span class="ch-w ch-w2">models</span></h2>
-   <p class="ch-sub"><span>Ranked by season P&amp;L.</span> <span>$100K on every call.</span></p>
+   <p class="ch-sub"><span>Ranked by season P&amp;L.</span> <span>$100K on every trade.</span></p>
    <ol class="ch-beats ch-b" aria-hidden="true"><li class="ch-beat"><div class="ch-ink"><div class="ch-art"><div class="ch-cap ch-cap-g"><b>Season 1</b> <span>· the board, by P&amp;L</span></div>
      <div class="c7-four c8-four">${rank.map((m,i)=>`<div class="c7-one c8-one" data-m="${m}">${T==='c'?`<div class="c8-bal"><span>${esc(LINE[m])}</span></div>`:''}${chip(m,i)}</div>`).join('')}</div></div></div></li>
     <li class="ch-beat ch-tb"><div class="ch-ink"><div class="ch-art"><div class="ch-cap ch-cap-t"><b>No. 5?</b> <span>· not signed yet</span></div>${tryChip()}</div></div></li></ol>
