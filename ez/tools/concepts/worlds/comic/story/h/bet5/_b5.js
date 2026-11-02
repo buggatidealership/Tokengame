@@ -48,7 +48,7 @@ function tick(root){const set=()=>{const L=left();if(!L)return;const v={d:p2(L.d
   set();const loop=()=>{if(!root.isConnected)return;set();setTimeout(loop,1000-(Date.now()%1000)+5)};setTimeout(loop,1000-(Date.now()%1000)+5)}
 /* a narration caption drawn into the plate (the owner's K2 pick, x2p_more.js's .bd-c): hand-cut black box, gold double rule */
 /* the owner's words (round H28), set plainly: the pool, then the bet. Only the share is data (SIM.poolShare). */
-function say(Dt,cls){if(Dt.share==null)throw new Error("no SIM.poolShare");return `<p class="b5-say ${cls||''}"><b class="b5-n">${Dt.share}%</b> of $EZ creator fees fill the pool.</p><p class="b5-say ${cls||''}">We bet <em>the whole pool</em> on NVIDIA, on the call of the <em>#1 AI</em> on our leaderboard.</p>`}
+function say(Dt,cls){if(Dt.share==null)throw new Error("no SIM.poolShare");return `<p class="b5-say ${cls||''}"><b class="b5-n">${Dt.share}%</b> of $EZ creator&nbsp;fees fill the pool.</p><p class="b5-say ${cls||''}">We bet <em>the whole pool</em> on NVIDIA, on the call of the <em>#1 AI</em> on our leaderboard.</p>`}
 const cap=(html,cls,at)=>`<div class="b5-at ${cls||''}" data-at="${at}"><div class="bd-c"><span>${html}</span></div></div>`;
 function mount(build){const sec=D.querySelector('#x2pSt.hb-on'),w=sec&&sec.querySelector('.hb-wrap');if(!w)throw new Error('no bet');
   const Dt=data(),box=D.createElement('div');box.className='b5';box.innerHTML=build(Dt);w.appendChild(box);

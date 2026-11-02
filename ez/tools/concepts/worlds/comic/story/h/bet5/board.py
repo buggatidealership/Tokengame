@@ -3,9 +3,9 @@
 import sys
 from PIL import Image,ImageDraw,ImageFont
 D,W,OUT=sys.argv[1],int(sys.argv[2]),sys.argv[3]
-IDS=(sys.argv[4] if len(sys.argv)>4 else 'now,a,b,c').split(',')
-LAB={'now':'Today (live X2+)','a':'A · Say it first','b':'B · One chip','c':'C · Today, trimmed'}
-SUB={'now':'vault, date line, chip, board D, sockets','a':'the sentence, then the chip, then right | wrong','b':'every fact on the chip painting','c':'chip + board D cropped above the sockets'}
+IDS=(sys.argv[4] if len(sys.argv)>4 else 'now,a,b,d').split(',')
+LAB={'now':'Today (live X2+)','a':'A · Say it first','b':'B · One chip + split','d':'D · Plain (simplest)'}
+SUB={'now':'vault, date line, chip, board D, sockets','a':'the owner\'s words, the chip, right | wrong','b':'the words drawn into the chip, then right | wrong','d':'words, one picture, words'}
 col=420 if W<600 else 900
 ims=[]
 for i in IDS:

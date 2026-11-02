@@ -1,4 +1,4 @@
-// node run.js <outdir> <ids now,a,b,c> [widths 320,390,1280] [dpr 2]   (serve ez/: cd ez && python3 -m http.server 8971; PORT=8971)
+// node run.js <outdir> <ids now,a,b,d> [widths 320,390,1280] [dpr 2]   (serve ez/: cd ez && python3 -m http.server 8971; PORT=8971)
 // Lays _b5.css/_b5.js + <take>.css/.js over the built v46-live-x2plus.html's bet section (#x2pSt), shoots it as <id>-<W>.png,
 // prints measurements: sideways scroll, errors, elements past the viewport, the countdown digits, the visible words in the section.
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');const fs=require('fs');
