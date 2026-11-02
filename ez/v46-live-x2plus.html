@@ -7927,7 +7927,7 @@ html.x2p.x2p-desk .x2p-bi-hd{font-size:26px}
 .t4-gut{height:26px}
 /* ---------- beat 2 ---------- */
 .t4-frs{list-style:none;margin-top:0;margin-bottom:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:16px 4px}
-.t4-fr{position:relative;outline:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.t4-fr{position:relative;outline:none;-webkit-tap-highlight-color:transparent}
 .t4-fr:focus-visible .t4-art{outline:2px dashed var(--gd);outline-offset:-3px}
 .t4-art{position:relative;overflow:hidden;background:#020203;border-top:2px solid var(--cr);border-bottom:2px solid var(--cr)}
 .t4-cap{position:absolute;z-index:3;left:5px;top:6px;max-width:94%;overflow:hidden;text-overflow:ellipsis;background:#050507;border:1.5px solid var(--cr);padding:3px 6px 2px;white-space:nowrap;font:700 8.5px/1.15 'Shantell Sans',system-ui;text-transform:uppercase;letter-spacing:.02em;color:var(--cr);transform:rotate(-1deg)}
@@ -8126,7 +8126,7 @@ html.x2p.x2p-desk .x2p-bi-hd{font-size:26px}
 .b6-chip .b6-im{position:absolute;inset:0;width:100%;height:100%;display:block;max-width:none}
 .b6-chip .b6-gl{mix-blend-mode:screen;z-index:3;pointer-events:none}
 .b6-die{position:absolute;overflow:hidden;background:#000;z-index:1;border-radius:1.2%}
-.b6-die video{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block}
+.b6-die video,.b6-die img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block;max-width:none}
 .b6-w{position:absolute;z-index:2;display:block}
 .b6-w svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 /* the chips sit in their sockets: a contact shadow, and the key light from the top falling off downward */
@@ -13703,7 +13703,8 @@ const B6={"file":"top-h25-board6.jpg","iw":1500,"cq":[[[730.9,168.5],[1413.8,79.
 const B6G={s:[3760,1520],no:[2385,251,2604,421],d7:[1120,479,2020,759],lr:[2086,478,2604,765],se:[1121,890,2604,1087],core:[2766,305,3612,1179]};
 const b6pc=(v,t)=>(v/t*100).toFixed(4)+'%',b6at=r=>`left:${b6pc(r[0],B6G.s[0])};top:${b6pc(r[1],B6G.s[1])};width:${b6pc(r[2]-r[0],B6G.s[0])};height:${b6pc(r[3]-r[1],B6G.s[1])}`;
 const b6dash=(r,lead)=>{const w=r[2]-r[0],h=r[3]-r[1],f=h*.62;return `<i class="b6-w" style="${b6at(r)}"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><rect x="${(w*.34).toFixed(1)}" y="${(h*.42).toFixed(1)}" width="${(w*.32).toFixed(1)}" height="${(h*.16).toFixed(1)}" rx="${(h*.08).toFixed(1)}" fill="${em(lead?'gd':'em')}" class="q4-tx b6-dash"/></svg></i>`};
-const b6vid=m=>{const b='media/founder-'+m.toLowerCase()+(m==='GROK'||m==='GPT'?'-anim2':'-anim');return `<video class="b6-v" muted loop playsinline preload="metadata" poster="${b}.jpg" aria-hidden="true" tabindex="-1"><source src="${b}.mp4" type="video/mp4"><source src="${b}.webm" type="video/webm"></video>`};
+/* STILL: the founders as still pictures here (the loops live in Meet the models) */
+const b6vid=m=>{const b='media/founder-'+m.toLowerCase()+(m==='GROK'||m==='GPT'?'-anim2':'-anim');return `<img class="b6-v" src="${b}.jpg" alt="" draggable="false" decoding="async">`};
 const b6chip=(m,i)=>(bw,bh)=>{const src='media/chip8c-'+m.toLowerCase()+'-1200.jpg',sx=bw/B6G.s[0],sy=bh/B6G.s[1],K=['no','d7','lr','se'];
   const P=K.map(k=>{const[x0,y0,x1,y1]=B6G[k];return `M${(x0*sx).toFixed(1)} ${(y0*sy).toFixed(1)}H${(x1*sx).toFixed(1)}V${(y1*sy).toFixed(1)}H${(x0*sx).toFixed(1)}Z`}).join('');
   return `<img class="b6-im" src="${src}" alt="" draggable="false"><i class="b6-die" style="${b6at(B6G.core)}">${b6vid(m)}</i>`+K.map(k=>b6dash(B6G[k],i===0)).join('')
@@ -13726,7 +13727,7 @@ function frames(){const cap=t=>`<div class="t4-cap">${t}</div>`;
    ledger:{w:'LEDGER',k:'ledger',l:LINES.ledger,cap:`Round ${EX.n} · ${md(EX.resolves)}`,
     p:picQ('ledger',ledgerQ4(),'',glares('ledger'))},
    board:{w:'BOARD',k:'board',l:LINES.board,cap:'The board',p:boardB6()}};
-  return ['call','close','ledger','board'].map(k=>F[k]).map((f,i)=>`<li class="t4-fr q4-fr q4-${f.k} t4-on" tabindex="0" role="button" aria-label="${i+1} ${f.w}: ${esc(f.l)}"><div class="t4-ink"><div class="t4-art">${f.p}</div></div>${sub(i+1,f.w)}<p class="t4-ln">${lh(f.l)}</p></li>`).join('')}
+  return ['call','close','ledger','board'].map(k=>F[k]).map((f,i)=>`<li class="t4-fr q4-fr q4-${f.k} t4-on" aria-label="${i+1} ${f.w}: ${esc(f.l)}"><div class="t4-ink"><div class="t4-art">${f.p}</div></div>${sub(i+1,f.w)}<p class="t4-ln">${lh(f.l)}</p></li>`).join('')}
 /* the glow and bloom are drawn in the screen's px: each painting carries its scale k (CSS px per painting px) as --k */
 function q4k(root){root.querySelectorAll('.q4-fr .t4-pic').forEach(p=>{const k=p.clientWidth/+p.dataset.iw;if(k)p.style.setProperty('--k',k.toFixed(5))})}
 
@@ -13798,14 +13799,15 @@ function build(){const wide=innerWidth>=1000,[fh,fs]=FILM[FH];
    <div class="t4-b2"><h2 class="t4-h2"><span class="t4-hw">How a round works</span></h2><ol class="t4-frs">${frames()}</ol></div>
    ${beatGut()}
    <div class="t4-b3"><h2 class="t4-h2 t4-fh t4-F${FH}"><span class="t4-hw">${esc(fh)}</span>${fs?` <span class="t4-hw t4-hws">${esc(fs)}</span>`:''}</h2><div class="t4-bleed">${film()}</div></div>`;
-  requestAnimationFrame(()=>{place(sec);q4k(sec)});wire();b6Wire(sec)}
+  requestAnimationFrame(()=>{place(sec);q4k(sec)});wire()}
 if(hero0)hero0.before(sec);else main.prepend(sec);
 [hero0,bet0].forEach(s=>s&&(s.style.display='none'));
 /* ---------- states (H23): every fact shows from the start. Small life in the world while the frames are on screen: the dies re-scan one after
    another, the readout re-scans, the ledger's cursor blinks, a glint crosses the gold. A tap replays the frame's moment. Still with reduced motion. ---------- */
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function wire(){const fs=[...sec.querySelectorAll('.t4-fr')],fl=sec.querySelector('.t4-frs');
-  if(!RM){fs.forEach(f=>{f.addEventListener('click',()=>{f.classList.remove('q4-go');void f.offsetWidth;f.classList.add('q4-go');setTimeout(()=>f.classList.remove('q4-go'),2400)});
+  /* STILL (owner, 2026-11-02: "no animation or pulsing or anything... just the numbers are always displayed"): no loops on screen, no tap replay */
+  if(false){fs.forEach(f=>{f.addEventListener('click',()=>{f.classList.remove('q4-go');void f.offsetWidth;f.classList.add('q4-go');setTimeout(()=>f.classList.remove('q4-go'),2400)});
     f.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f.click()}})});
   if('IntersectionObserver' in window&&fl)new IntersectionObserver(es=>{fl.classList.toggle('q4-vis',es[es.length-1].isIntersecting)},{rootMargin:'80px 0px'}).observe(fl);else fl&&fl.classList.add('q4-vis')}
 
