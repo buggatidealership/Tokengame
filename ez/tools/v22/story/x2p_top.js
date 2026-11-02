@@ -81,14 +81,24 @@ function place(root){fitHead(root);fitLines(root);requestAnimationFrame(()=>{roo
    /* a caption moves down only in the frames the heading actually crosses */
    fl.querySelectorAll('.t4-fr').forEach(f=>{const c=f.querySelector('.t4-cap'),r=f.getBoundingClientRect();if(!c)return;c.style.top=(Math.min(hr.right,r.right)-Math.max(hr.left,r.left)>r.width*.25&&hr.bottom>r.top)?(hr.bottom-r.top+3)+'px':''})}root.querySelectorAll('.t4-pic').forEach(p=>{const k=p.clientWidth/+p.dataset.iw,cx=+p.dataset.cx,cy=+p.dataset.cy;
   p.querySelectorAll('.t4-sf').forEach(s=>{const q=JSON.parse(s.dataset.q).map(([x,y])=>[(x-cx)*k,(y-cy)*k]);/* MEM: the surface is laid out at its on-screen size, its svg scaling by its viewBox: a layer with perspective is rastered at its own size in device pixels (layout size x the pixel ratio), so at painting size (1,000 to 2,600 px) it ran a phone out of GPU memory and the page painted black (2026-11-02); laid out at on-screen size x the pixel ratio it was still rastered at the ratio squared (7.6x the pixels at 2.75: 41 MB of tiles for the four frames on a 390px phone, 5 MB now; GPU probe 2026-11-02, tools/concepts/perf/gpu). window.__t4Rmax raises the ratio for tests only */const R=Math.min(window.__t4Rmax||1,3,Math.max(1,window.devicePixelRatio||1)),w=+s.dataset.bw*k*R,h=+s.dataset.bh*k*R;s.style.width=w+'px';s.style.height=h+'px';s.style.setProperty('--r',R);s.style.transform=m3d(w,h,q)});
-  p.querySelectorAll('.t4-at').forEach(e=>{const[x,y,w,h]=e.dataset.r.split(',').map(Number);Object.assign(e.style,{left:(x-cx)*k+'px',top:(y-cy)*k+'px',width:w*k+'px',height:h*k+'px'})})});c3fit(root)}
+  p.querySelectorAll('.t4-at').forEach(e=>{const[x,y,w,h]=e.dataset.r.split(',').map(Number);Object.assign(e.style,{left:(x-cx)*k+'px',top:(y-cy)*k+'px',width:w*k+'px',height:h*k+'px'})})});c3fit(root);requestAnimationFrame(()=>playBtn(root))}
 /* ---------- beat 1: the chip, the four AIs (logo and name only), the season bar ---------- */
 const QA_W=[[[282,286],[430,276],[452,388],[305,400]],[[470,268],[610,260],[630,368],[492,378]],[[655,252],[790,246],[815,350],[678,360]],[[828,235],[952,228],[992,330],[855,340]]],QA_WB=[[358,480],[1042,408],[1056,452],[365,530]];
 const QA_T=[[[207,180],[348,188],[371,326],[224,317]],[[399,192],[533,202],[556,334],[422,328]],[[233,379],[375,383],[395,521],[249,519]],[[432,384],[567,388],[591,520],[453,521]]],QA_TB=[[212,690],[678,671],[694,775],[221,801]];
 const dieAI=m=>(w,h)=>{const s=Math.min(w,h);return mark(m,w/2-s*.24,h*.1,s*.48)+T(w/2,h*.86,fit(NM[m].toUpperCase(),w*.86,s*.25),NM[m].toUpperCase(),{a:'middle',cls:'t4-an'})};
 const led=t=>(w,h)=>{const f=fit(t,w*.9,h*.5);return T(w/2,h/2+f*.36,f,t,{a:'middle',c:'#ffc23a',cls:'t4-an t4-led'})};
+/* H32 (owner, 2026-11-02, round H31 top7 take A): the season glass is the film's play button. The glass stays drawn in perspective at on-screen size
+   (the MEM rule); a real button is laid over its box by place() and opens the film (f4open: a phone's own player, desktop's theatre). The film strip is gone. */
+const tri7=(cx,cy,r,fill)=>`<path d="M${(cx-r*.42).toFixed(1)},${(cy-r*.62).toFixed(1)} L${(cx+r*.66).toFixed(1)},${cy.toFixed(1)} L${(cx-r*.42).toFixed(1)},${(cy+r*.62).toFixed(1)}Z" fill="${fill}"/>`;
+const playGlass=(w,h)=>{const T1='THE WHOLE GAME',R=F4T,r=h*.36,cx=h*.5,cy=h/2,x0=cx+r+h*.28,f=Math.min(h*.46,(w-x0-h*.2)/tw(T1+'  '+R,1));
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#q4gd)" stroke="#0d0b10" stroke-width="${(h*.04).toFixed(1)}" class="t7-disc"/>`+tri7(cx+r*.08,cy,r,'#0d0b10')
+   +`<text x="${x0.toFixed(1)}" y="${(cy+f*.36).toFixed(1)}" font-size="${f.toFixed(1)}" fill="#ffc23a" class="t4-an t4-led">${T1}<tspan class="f4-t" dx="${(f*.5).toFixed(1)}" fill="#fff4c4">${R}</tspan></text>`};
+function playBtn(root){const hp=root.querySelector('.t4-hero');if(!hp)return;const L=hp.querySelector('.t7-pg'),mv=hp.querySelector('.t4-mv');if(!L||!mv)return;
+  let b=mv.querySelector('.t7-pb');if(!b){b=D.createElement('button');b.type='button';b.className='t7-pb';b.addEventListener('click',()=>f4open());mv.appendChild(b)}
+  b.setAttribute('aria-label',f4aria());const a=L.getBoundingClientRect(),m=mv.getBoundingClientRect(),p=8;if(!a.width)return;
+  Object.assign(b.style,{left:(a.left-m.left-p)+'px',top:(a.top-m.top-p)+'px',width:(a.width+2*p)+'px',height:(a.height+2*p)+'px'})}
 function hero(wide){const Q=wide?QA_W:QA_T,QB=wide?QA_WB:QA_TB;
-  return pic('media/'+(wide?'top-hero-w-h22.jpg':'top-hero-t-h22.jpg'),wide?1280:768,wide?720:1024,[...rank.map((m,i)=>surf(Q[i],dieAI(m),'t4-glass')),surf(QB,led(`SEASON 1 · ${graded} ROUNDS GRADED`),'t4-glass')],'t4-hero','',wide?[150,90,1000,560]:[0,40,768,900])}
+  return pic('media/'+(wide?'top-hero-w-h22.jpg':'top-hero-t-h22.jpg'),wide?1280:768,wide?720:1024,[...rank.map((m,i)=>surf(Q[i],dieAI(m),'t4-glass')),surf(QB,playGlass,'t4-glass t7-pg')],'t4-hero','',wide?[150,90,1000,560]:[0,40,768,900])}
 /* ---------- beat 2: the four frames (round H23 quad4: zoom-ins at 2K, the readouts big, every figure lit in its glass) ----------
    Paintings: media/top-h23-{call,close,ledger,board}.jpg, each the crop cr of a 2048 px painting, exported square (1200 px; board 960).
    Quads and crops are in the 2048 painting's px minus the crop's origin (so the crop's own px), measured on the paintings (quad4/quads.json). */
@@ -155,9 +165,9 @@ function c3fit(root){const fs=[...root.querySelectorAll('.t4-frs.r3c3>.t4-fr')],
   root.querySelectorAll('.r3-bd').forEach(b=>b.style.setProperty('--k',(b.clientWidth/1400).toFixed(5)));
   root.querySelectorAll('.r3-rk').forEach(r=>r.style.setProperty('--k',(r.clientWidth/100).toFixed(5)));
   const key=as.map(a=>{const z=getComputedStyle(a);return z.width+'x'+z.height}).join(',')+'|'+(D.fonts?D.fonts.status:'');if(key===c3key)return;c3key=key;
-  as.forEach((a,i)=>{const z=getComputedStyle(a);cs[i].style.width=z.width;cs[i].style.height=z.height});
+  /* H32: the rows' CSS sets each box (the picture's height, the rest of the row's width) */
   const fits=()=>cs.every(c=>{const n=c.firstElementChild;return n.scrollHeight<=c.clientHeight-2*parseFloat(getComputedStyle(c).paddingTop)+1&&n.scrollWidth<=n.clientWidth+1});
-  let lo=8,hi=96;for(let i=0;i<14;i++){const m=(lo+hi)/2;cs.forEach(c=>c.style.fontSize=m+'px');if(fits())lo=m;else hi=m}
+  let lo=8,hi=32;for(let i=0;i<14;i++){const m=(lo+hi)/2;cs.forEach(c=>c.style.fontSize=m+'px');if(fits())lo=m;else hi=m}
   const f=Math.floor(lo*4)/4;cs.forEach(c=>c.style.fontSize=f+'px');root.dataset.c3fs=f}
 const VERB={call:'Call',close:'Close',ledger:'Ledger',board:'Board'};
 /* the sentence with the trade's key words in its colours */
@@ -296,8 +306,8 @@ function f4open(still){const vw=D.documentElement.clientWidth,vh=innerHeight,ph=
 function f4wire(){const b3=sec.querySelector('.f4'),st=b3&&b3.querySelector('.f4-strip');if(!st)return;
   st.addEventListener('click',()=>f4open());st.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f4open()}});
   /* the running time from the file, read once the strip is near (metadata only) */
-  const probe=()=>{const v=D.createElement('video');v.preload='metadata';v.muted=true;v.src='media/ez-landing-v4.mp4';v.onloadedmetadata=()=>{const s=Math.round(v.duration||0);if(s>0){F4S=s;F4T=f4fmt(s);D.querySelectorAll('.f4-t').forEach(t=>t.textContent=F4T);st.setAttribute('aria-label',f4aria());f4fit()}v.removeAttribute('src');v.load()}};
-  if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();probe()}},{rootMargin:'600px 0px'});io.observe(st)}else probe();
+  const probe=()=>{const v=D.createElement('video');v.preload='metadata';v.muted=true;v.src='media/ez-landing-v4.mp4';v.onloadedmetadata=()=>{const s=Math.round(v.duration||0);if(s>0){F4S=s;F4T=f4fmt(s);D.querySelectorAll('.f4-t').forEach(t=>t.textContent=F4T);st.setAttribute('aria-label',f4aria());const pb=sec.querySelector('.t7-pb');pb&&pb.setAttribute('aria-label',f4aria());f4fit()}v.removeAttribute('src');v.load()}};
+  if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();probe()}},{rootMargin:'600px 0px'});io.observe(sec.querySelector('.t4-hero')||st)}else probe();
   /* Meet the models is built by another script: refit the chapter gap once its head exists */
   let n=0;(function wait(){if(D.querySelector('section.ch .ch-h')){f4fit();return}if(++n<60)setTimeout(wait,250)})();
   window.__f4open=f4open}
