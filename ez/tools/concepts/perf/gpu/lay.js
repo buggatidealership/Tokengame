@@ -1,8 +1,8 @@
 // node lay.js <page> <scrollY> [mb]: the composited layers (that draw content) at that scroll on a phone, with their DOM node, size, raster scale hint and reasons; sorted by area.
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../live-r1/_fonts.js');
-(async()=>{const [pg,y,mb]=process.argv.slice(2);const args=['--enable-gpu-rasterization','--ignore-gpu-blocklist'];if(+mb)args.push('--force-gpu-mem-available-mb='+mb);
+(async()=>{const [pg,y,mb]=process.argv.slice(2);const args=['--enable-gpu-rasterization','--ignore-gpu-blocklist','--force-device-scale-factor=2.75'];if(+mb)args.push('--force-gpu-mem-available-mb='+mb);
 const b=await chromium.launch({args});const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2.75,isMobile:true,hasTouch:true});const p=await ctx.newPage();await FONTS(p);
-await p.goto('http://127.0.0.1:8971/'+pg,{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});await p.waitForTimeout(2000);
+await p.goto('http://127.0.0.1:8971/'+pg,{waitUntil:'load',timeout:180000});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});await p.waitForTimeout(2000);
 await p.evaluate(y=>scrollTo(0,+y),y);await p.waitForTimeout(2500);
 const c=await ctx.newCDPSession(p);let layers=[];c.on('LayerTree.layerTreeDidChange',e=>{if(e.layers)layers=e.layers});await c.send('DOM.enable');await c.send('DOM.getDocument',{depth:-1});await c.send('LayerTree.enable');
 await p.evaluate(()=>scrollBy(0,1));await p.waitForTimeout(1500);

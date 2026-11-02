@@ -3,11 +3,11 @@
 // and dumps the composited layers (LayerTree) at that stop to outdir/s<y>.json.
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../live-r1/_fonts.js');const fs=require('fs');
 (async()=>{const [pg,mb,out,st,css]=process.argv.slice(2);fs.mkdirSync(out,{recursive:true});
-const args=['--enable-gpu-rasterization','--ignore-gpu-blocklist'];if(+mb)args.push('--force-gpu-mem-available-mb='+mb);
+const args=['--enable-gpu-rasterization','--ignore-gpu-blocklist','--force-device-scale-factor=2.75'];if(+mb)args.push('--force-gpu-mem-available-mb='+mb);
 const b=await chromium.launch({args});const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2.75,isMobile:true,hasTouch:true});
-const p=await ctx.newPage();await FONTS(p);
+const p=await ctx.newPage();await FONTS(p);if(process.env.RMAX)await p.addInitScript(r=>{window.__t4Rmax=+r},process.env.RMAX);
 if(css){const t=fs.readFileSync(css,'utf8');await p.addInitScript(t=>{document.addEventListener('DOMContentLoaded',()=>{const s=document.createElement('style');s.id='gpuprobe';s.textContent=t;document.head.appendChild(s)})},t)}
-await p.goto('http://127.0.0.1:8971/'+pg,{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});
+await p.goto('http://127.0.0.1:8971/'+pg,{waitUntil:'load',timeout:180000});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});
 await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(2000);
 const c=await ctx.newCDPSession(p);let layers=[];c.on('LayerTree.layerTreeDidChange',e=>{if(e.layers)layers=e.layers});await c.send('DOM.enable');await c.send('LayerTree.enable');
 const stops=(st||'0,700,1400,2100,2800,3500,4200,4900,5600').split(',').map(Number);

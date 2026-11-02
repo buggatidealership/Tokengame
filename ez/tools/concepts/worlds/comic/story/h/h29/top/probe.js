@@ -1,0 +1,9 @@
+const {chromium}=require('playwright');const FONTS=require('../../../../../../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:844}});await FONTS(p);
+await p.goto('http://127.0.0.1:8947/v46-live-x2plus.html',{waitUntil:'load',timeout:150000});
+await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur')&&window.__t4,null,{timeout:120000});
+console.log(JSON.stringify(await p.evaluate(()=>{const X=P5.data(),nb=P5.nextClose(X);const now=new Date().toISOString();
+ const all=[].concat(...X.days.map(d=>d.rs));const same=nb?all.filter(r=>P5.closeAt(r.ticker,r.resolves)===nb.c):[];
+ const ch=document.querySelector('#liveChip');const cs=getComputedStyle(ch);const dot=ch.querySelector('i,span,svg');
+ return {now,pill:ch.textContent.trim(),pillW:ch.getBoundingClientRect().width,pillFont:getComputedStyle(document.querySelector('#liveTxt')).fontFamily,anim:document.getAnimations().filter(a=>a.effect.target.closest&&a.effect.target.closest('header')).map(a=>(a.effect.target.className&&a.effect.target.className.baseVal!==undefined?a.effect.target.className.baseVal:a.effect.target.className)+':'+a.animationName),
+  next:nb&&{c:new Date(nb.c).toISOString(),r:[nb.r.n,nb.r.co,nb.r.ticker,nb.r.resolves,nb.r.called,(nb.r.calls||[]).length]},same:same.map(r=>[r.n,r.co,r.ticker,r.called,r.resolves,(r.calls||[]).length]),days:X.days.slice(0,3).map(d=>Object.keys(d).filter(k=>k!=='rs').map(k=>k+'='+d[k]).join(' ')+' | '+d.rs.map(r=>r.ticker+'@'+r.resolves).join(',')),cd:P5.cd(X),hdr:document.querySelector('header').innerHTML.length,h1font:getComputedStyle(document.querySelector('.t4-h1')).fontFamily,h1fs:getComputedStyle(document.querySelector('.t4-h1')).fontSize,h2font:getComputedStyle(document.querySelector('.t4-h2')).fontFamily,h2fs:getComputedStyle(document.querySelector('.t4-h2')).fontSize}})));await b.close()})();
