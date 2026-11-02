@@ -15,4 +15,6 @@ for t,cols,ims in R:
   dr.text((g,y+6),t,fill='#f8f0d9',font=F(22));y+=rh;x=g
   for (f,l),i in zip(cols,ims):dr.text((x,y+4),l,fill='#d8cfba',font=F(17));o.paste(i,(x,y+lh));x+=i.width+g
   y+=lh+max(i.height for i in ims)+g
-o.save(out,optimize=True);print(out,o.size,round(os.path.getsize(out)/1e6,2),'MB')
+o.save(out,optimize=True)
+if os.path.getsize(out)>1.95e6:o.quantize(256,method=Image.Quantize.MEDIANCUT,dither=Image.Dither.FLOYDSTEINBERG).save(out,optimize=True)  # keep a board under 2 MB
+print(out,o.size,round(os.path.getsize(out)/1e6,2),'MB')

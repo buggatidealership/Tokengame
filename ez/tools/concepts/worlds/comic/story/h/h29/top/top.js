@@ -8,7 +8,7 @@
    5 Type: headings Bangers, numbers Anton, text Shantell Sans (the header too). The header's pill is the one "next" source:
      the next close (the soonest close of any round still to come, P5.nextClose, the same as the page's next-bell panel) and its companies;
      its dot is still and cream (a red dot means a loss under the colour rule).
-   window.__h29next() -> {at, cd, rounds:[{n,co,ticker}], label} for the other H29 overlays. window.__h29t = true when applied.
+   window.__h29next() -> the H29_NEXT object (at, rs, day, time, label) plus short/list labels and src ('H29_NEXT' or 'own'). window.__h29t = true when applied.
    window.__h29tDesk = 'rows' keeps desktop as four rows. A failure is kept in window.__h29tErr. */
 (function(){const D=document,H=D.documentElement;let n=0;
 function ready(){return window.__t4&&D.querySelector('section.t4 .t4-frs .q4-board .r3-bd')&&D.querySelector('section.t4 .q4-ledger .t4-pic')}
@@ -18,26 +18,30 @@ function main(){
 H.classList.add('h29t');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-/* ---------- the one "next" source ---------- */
+/* ---------- the one "next" source: the end helper's window.H29_NEXT (h29/end/end.js) when it is on the page;
+   alone, the same rule copied here (P5.nextClose: the soonest close of any round still to come, every round graded at it, biggest first) ---------- */
 const CAPS=window.CAPS||{};
-function nextClose(){const P5=window.P5;if(!P5||!P5.data||!P5.nextClose)return null;const X=P5.data(),nb=P5.nextClose(X);if(!nb)return null;
-  const all=[].concat(...X.days.map(d=>d.rs)),same=all.filter(r=>P5.closeAt(r.ticker,r.resolves)===nb.c);
-  same.sort((a,b)=>((CAPS[b.ticker]||0)-(CAPS[a.ticker]||0))||(a.n-b.n));
-  return {at:nb.c,cd:P5.cd(X),rounds:same.map(r=>({n:r.n,co:r.co,ticker:r.ticker}))}}
-window.__h29next=()=>{const x=nextClose();if(!x)return null;const nm=x.rounds.map(r=>r.co);
-  x.label=nm.length>2?`${nm[0]}, ${nm[1]} +${nm.length-2}`:nm.join(', ');return x};
+function ownNext(){const P5=window.P5;if(!P5||!P5.data||!P5.nextClose)return null;const X=P5.data(),nb=P5.nextClose(X);if(!nb)return {at:null,rs:[]};
+  const rs=[];X.days.forEach(d=>d.rs.forEach(r=>{if(P5.closeAt(r.ticker,r.resolves)===nb.c)rs.push(r)}));
+  rs.sort((a,b)=>((CAPS[b.ticker]||0)-(CAPS[a.ticker]||0))||(a.n-b.n));
+  const f=o=>new Date(nb.c).toLocaleString('en-US',Object.assign({timeZone:'America/New_York'},o));
+  const hr=f({hour:'numeric',minute:'2-digit',hour12:true}).replace(':00','').replace(' ','').toLowerCase();
+  return {at:nb.c,rs,day:f({weekday:'short'}),date:f({month:'short',day:'numeric'}),time:hr,label:`${f({weekday:'short'})}, ${f({month:'short',day:'numeric'})} · ${hr} New York`}}
+window.__h29next=()=>{const x=(window.H29_NEXT&&window.H29_NEXT())||ownNext();if(!x||!x.at||!x.rs.length)return null;const nm=x.rs.map(r=>r.co);
+  return Object.assign({},x,{src:window.H29_NEXT?'H29_NEXT':'own',short:nm[0]+(nm.length>1?' +'+(nm.length-1):''),list:nm.length>2?`${nm[0]}, ${nm[1]} +${nm.length-2}`:nm.join(', ')})};
 
-/* ---------- header: the pill ---------- */
+/* ---------- header: the pill (phones "Next close / Apple +3"; desktop "Next close Tue 4pm · Apple, Palantir +2"), still, links to Upcoming ---------- */
 const upHref=(()=>{const a=[...D.querySelectorAll('header nav a')].find(a=>/upcoming/i.test(a.textContent));return a?a.getAttribute('href'):'#/upcoming'})();
 const bell=`<svg class="h29t-bell" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6c.6 0 1 .4 1 1v.5c2 .5 3.3 2.2 3.3 4.4v2.6l1.3 1.7v.8H2.4v-.8l1.3-1.7V7.5C3.7 5.3 5 3.6 7 3.1v-.5c0-.6.4-1 1-1zM6.4 13.4h3.2a1.6 1.6 0 0 1-3.2 0z"/></svg>`;
 function pill(){const live=D.querySelector('#liveChip');if(!live)return;let a=D.querySelector('.h29t-next');
   if(!a){a=D.createElement('a');a.className='live h29t-next';live.after(a)}
-  const x=window.__h29next();if(!x){a.style.display='none';return}
-  a.href=upHref;const when=new Date(x.at).toLocaleString('en-US',{weekday:'short',hour:'numeric',minute:'2-digit',timeZone:'America/New_York'});
-  a.setAttribute('aria-label',`Next close in ${x.cd}, ${when} New York: ${x.rounds.map(r=>r.co).join(', ')}. See what is coming up`);
-  a.title=`${x.label} · ${when} ET`;
-  a.innerHTML=`${bell}<span class="h29t-st"><span class="h29t-nl">Next close</span><b class="h29t-cd">${esc(x.cd)}</b></span><span class="h29t-co">${esc(x.label)}</span>`}
-pill();setInterval(pill,30000);
+  const x=window.__h29next();if(!x){a.style.display='none';return}a.style.display='';
+  a.href=upHref;a.dataset.src=x.src;
+  a.setAttribute('aria-label',`Next close: ${x.label}. ${x.rs.map(r=>r.co+' ('+r.ticker+')').join(', ')}. See what is coming up`);
+  a.title=`${x.rs.map(r=>r.co+' ('+r.ticker+')').join(', ')} · ${x.label}`;
+  a.innerHTML=`${bell}<span class="h29t-st"><span class="h29t-nl">Next close</span><b class="h29t-when">${esc(x.day+' '+x.time)}</b><b class="h29t-co1">${esc(x.short)}</b></span><span class="h29t-co">${esc(x.list)}</span>`}
+pill();setInterval(pill,60000);/* H29_NEXT may arrive after this overlay: read it again once it does */
+let pn=0;(function wn(){if(window.H29_NEXT){pill();return}if(++pn<40)setTimeout(wn,250)})();
 
 /* ---------- the top section ---------- */
 const sec=D.querySelector('section.t4');

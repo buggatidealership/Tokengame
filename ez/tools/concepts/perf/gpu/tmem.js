@@ -11,10 +11,11 @@ await p.evaluate(()=>scrollBy(0,1));await p.waitForTimeout(1200);await p.evaluat
 await c.send('Tracing.end');await done;
 const snaps=ev.filter(e=>(e.name=='cc::LayerTreeHostImpl'||e.name=='LayerTreeHostImpl:snapshot'||/LayerTreeHostImpl/.test(e.name))&&e.args&&e.args.snapshot);
 if(!snaps.length){console.log('no snapshot; names:',[...new Set(ev.map(e=>e.name))].filter(n=>/cc::|Snap|Layer/.test(n)).join(' '));await b.close();return}
-const s=snaps[snaps.length-1].args.snapshot;const tree=s.active_tree;
+const NM={};snaps.forEach(e=>(e.args.snapshot.active_tree.layers||[]).forEach(l=>{if(l.layer_name)NM[l.layer_id]=l.layer_name+(l.compositing_reason_ids?' ['+l.compositing_reason_ids.join(',')+']':'')}));
+const s=snaps.filter(e=>(e.args.snapshot.active_tree.layers||[]).some(l=>l.tilings)).pop().args.snapshot;const tree=s.active_tree;
 if(process.env.DUMP)fs.writeFileSync(process.env.DUMP,JSON.stringify(s));
 const L=[];(function walk(ls){for(const l of ls||[]){L.push(l);}})(tree.layers);
-let tot=0;const rows=L.map(l=>{const m=l.gpu_memory_usage||0;tot+=m;return {id:l.layer_id,m,b:l.bounds,dbg:(l.layer_name||l.debug_name||''),ts:(l.tilings||[]).map(t=>t.content_scale||t.raster_scale).join('/')}}).filter(r=>r.m>0).sort((a,b)=>b.m-a.m);
+let tot=0;const rows=L.map(l=>{const m=l.gpu_memory_usage||0;tot+=m;return {id:l.layer_id,m,b:l.bounds,dbg:(l.layer_name||NM[l.layer_id]||''),ts:(l.tilings||[]).map(t=>t.content_scale||t.raster_scale).join('/')}}).filter(r=>r.m>0).sort((a,b)=>b.m-a.m);
 console.log('scrollY',y,'layers',L.length,'GPU tile memory MB',(tot/1048576).toFixed(1));
 rows.slice(0,+(process.env.N||25)).forEach(r=>console.log((r.m/1048576).toFixed(2)+'MB',r.b.width+'x'+r.b.height,r.dbg.slice(0,110),'scale',r.ts));
 await b.close()})();
