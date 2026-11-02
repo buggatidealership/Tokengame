@@ -22,7 +22,8 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const NM=m=>String((MD[m]&&MD[m].name)||m).toUpperCase();
 const VER=m=>{const v=String((MD[m]&&MD[m].ver)||'').trim(),n=String((MD[m]&&MD[m].name)||m);return v.toLowerCase().startsWith(n.toLowerCase())?v.slice(n.length).replace(/^[\s\-–]+/,''):v};
 const $=v=>(v<0?'−':'+')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US');
-sec.classList.add('m11','m11-'+T,'m11-'+LAY);
+const J=T==='e';/* D2: the four chips joined into one board, no glare, plain lettering but the name */
+sec.classList.add('m11','m11-'+T,'m11-'+LAY);if(J)sec.classList.add('m11-d2');
 /* ---------- the chip: new paintings (gen.py) and the live parts moved to the new layout ---------- */
 const SZ=[1800,728],pc=(v,t)=>(v/t*100).toFixed(4)+'%';
 const at=r=>`left:${pc(r[0],SZ[0])};top:${pc(r[1],SZ[1])};width:${pc(r[2]-r[0],SZ[0])};height:${pc(r[3]-r[1],SZ[1])}`;
@@ -66,6 +67,12 @@ const desk=()=>innerWidth>=1000,grid=()=>LAY==='grid'&&desk();
 const L=D.createElement('div');L.className='r2-l m11-l';L.setAttribute('aria-hidden','true');four.append(L);
 const CCOL={GROK:'#5b5148',CLAUDE:'#cd5e26',GPT:'#207e49',KIMI:'#3c5691'};
 const nums=ones.map((o,i)=>{const e=D.createElement('b');e.className='r2-n'+(i?'':' r2-n1');e.style.setProperty('--cc',CCOL[ms[i]]||'#444');e.innerHTML=`<span>${i+1}</span>`;L.append(e);return e});
+/* D2, the join: each chip's pins and rim are cut where it meets the next (clip-path on the picture, painting rows 60 and 664 of 728),
+   and the chips are pulled together by those amounts, so the boards butt into one; gen.py's bus traces sit at the same x on every chip and run on across */
+const CT=60/728,CB=(728-664)/728;
+function join(){ones.forEach((o,i)=>{const pic=o.querySelector('.c7-pic');pic.style.clipPath='';o.style.marginTop='';if(!J)return;
+  const h=pic.getBoundingClientRect().height,t=i?CT:0,b=i<ones.length-1?CB:0;pic.style.clipPath=`inset(${(t*100).toFixed(4)}% 0 ${(b*100).toFixed(4)}% 0)`;
+  if(i)o.style.marginTop=(-(CB+CT)*h).toFixed(2)+'px'})}
 function size(){ones.forEach(o=>{o.style.width=''});sec.classList.toggle('m11-g',grid());if(grid())return;
  const cs=getComputedStyle(four),inner=four.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),top=Math.min(inner,desk()?760:9e9);
  ones.forEach(o=>{o.style.width=top.toFixed(1)+'px'})}
@@ -84,7 +91,7 @@ function place(){const fr=four.getBoundingClientRect(),sp=four.querySelector('.m
   const maxH=r.h*.5-Math.max(9,r.h*.2)/2-2,d=String(i+1),fs=Math.min(maxH/.74,gw/DW[d]/1.12,desk()?120:9e9);
   Object.assign(e.style,{left:(gx+gw/2).toFixed(1)+'px',top:(r.y-2).toFixed(1)+'px',fontSize:fs.toFixed(1)+'px'})})}
 let busy=false;
-function layout(){if(busy)return;busy=true;try{size();W.__m10.layout();names();W.__c8.fit&&W.__c8.fit();if(!grid())strip();place();W.__m10.render(W.__M10T!=null?+W.__M10T:-1)}finally{busy=false}}
+function layout(){if(busy)return;busy=true;try{size();join();W.__m10.layout();names();W.__c8.fit&&W.__c8.fit();if(!grid())strip();place();W.__m10.render(W.__M10T!=null?+W.__M10T:-1)}finally{busy=false}}
 let lw=0;new ResizeObserver(()=>{const w=four.clientWidth;if(w!==lw){lw=w;requestAnimationFrame(layout)}}).observe(four);
 D.fonts&&D.fonts.ready.then(()=>requestAnimationFrame(layout));layout();
 /* screen readers: chips8/meet10's list already reads "No. 1 Grok 4.7, United States. ..." */
