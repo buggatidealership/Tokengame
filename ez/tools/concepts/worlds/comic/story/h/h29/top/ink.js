@@ -1,5 +1,0 @@
-const {chromium}=require('playwright');const FONTS=require('../../../../../../live-r1/_fonts.js');
-(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:+(process.argv[2]||390),height:900}});await FONTS(p);
-await p.goto('http://127.0.0.1:8947/v46-live-x2plus.html',{waitUntil:'load',timeout:150000});
-await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur')&&window.__t4,null,{timeout:120000});
-console.log(await p.evaluate(()=>{const f=document.querySelector('.q4-call');const out=[];[f.querySelector('.t4-ink'),f.querySelector('.t4-art'),f.querySelector('.t4-pic'),f.querySelector('.t4-mv')].forEach(e=>{const c=getComputedStyle(e);const r=e.getBoundingClientRect();out.push(e.className+' '+r.width+'x'+r.height+' bd:'+c.border+' bb:'+c.borderBottom+' sh:'+c.boxShadow+' bg:'+c.backgroundColor+' pad:'+c.padding+' out:'+c.outline+' ::after:'+getComputedStyle(e,'::after').content+'/'+getComputedStyle(e,'::after').borderBottom+'/'+getComputedStyle(e,'::after').background.slice(0,60))});return out.join('\n')}));await b.close()})();

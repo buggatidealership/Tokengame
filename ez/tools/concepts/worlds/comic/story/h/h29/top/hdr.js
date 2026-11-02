@@ -1,5 +1,0 @@
-const {chromium}=require('playwright');const FONTS=require('../../../../../../live-r1/_fonts.js');
-(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:+process.argv[2]||390,height:844}});await FONTS(p);
-await p.goto('http://127.0.0.1:8947/v46-live-x2plus.html',{waitUntil:'load',timeout:150000});
-await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur')&&window.__t4,null,{timeout:120000});await p.waitForTimeout(1500);
-console.log(await p.evaluate(()=>{const h=document.querySelector('header');const out=[];h.querySelectorAll('*').forEach(e=>{const r=e.getBoundingClientRect();if(!r.width)return;const cs=getComputedStyle(e);out.push(e.tagName+'.'+(typeof e.className==='string'?e.className:'')+'#'+e.id+' '+Math.round(r.left)+','+Math.round(r.top)+' '+Math.round(r.width)+'x'+Math.round(r.height)+' '+cs.fontFamily.split(',')[0]+' '+cs.fontSize+' |'+(e.children.length?'':e.textContent.trim().slice(0,30)))});return out.join('\n')}));await b.close()})();

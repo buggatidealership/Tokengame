@@ -13,5 +13,5 @@ const L=JSON.parse(rd('end/load.json'));const WS=(process.argv[2]||'320,390,1280
  const r=await p.evaluate(()=>{const a=document.querySelector('.h29t-next');return {top:!!window.__h29t,topErr:window.__h29tErr?String(window.__h29tErr):null,endErr:window.__h29eErr?String(window.__h29eErr):null,
   src:a&&a.dataset.src,pill:a&&a.innerText.replace(/\n/g,' / '),gutters:document.querySelectorAll('.h29-gutter').length,gh:[...new Set([...document.querySelectorAll('.h29-gutter')].map(g=>g.getBoundingClientRect().height))],
   sq:[...document.querySelectorAll('.t4-frs>.t4-fr .t4-art')].map(a=>Math.round(a.getBoundingClientRect().width)+'x'+Math.round(a.getBoundingClientRect().height)).join(' '),scrollW:document.documentElement.scrollWidth,vw:innerWidth,
-  film:document.querySelectorAll('.h29t-film').length,b3:getComputedStyle(document.querySelector('.t4-b3')).display}});
+  film:document.querySelectorAll('.h29t-film').length,gpos:[...document.querySelectorAll('.h29-gutter')].map(g=>Math.round(g.getBoundingClientRect().top+scrollY)+':'+(g.className.split(' ')[1]||'')+':'+g.parentElement.tagName+'.'+String(g.parentElement.className).split(' ')[0]),b3:getComputedStyle(document.querySelector('.t4-b3')).display}});
  console.log(W,JSON.stringify(r),'er',JSON.stringify(er));await p.close()}await b.close()})();
