@@ -1,0 +1,2 @@
+const {open}=require('./lib');(async()=>{const ov=process.argv.slice(2);const {b,p,errs}=await open(390,844,{css:ov.filter(f=>f.endsWith('.css')),js:ov.filter(f=>f.endsWith('.js')),data:'repo'});
+await p.waitForTimeout(2500);console.log(await p.evaluate(()=>[...document.querySelectorAll('.hb-row img')].map(i=>({c:i.className,w:i.getBoundingClientRect().width,nw:i.naturalWidth,nh:i.naturalHeight,src:i.src.slice(0,40)}))));await b.close()})();

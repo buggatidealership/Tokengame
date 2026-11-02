@@ -1,0 +1,2 @@
+const {open}=require('./lib');(async()=>{const ov=process.argv.slice(2);const {b,p,errs}=await open(390,844,{css:ov.filter(f=>f.endsWith('.css')),js:ov.filter(f=>f.endsWith('.js')),data:'repo'});
+await p.waitForTimeout(2500);console.log(await p.evaluate(()=>{const e=document.querySelector('.hb-cd1');if(!e)return 'none';const r=e.getBoundingClientRect(),s=getComputedStyle(e);return {r:[r.x,r.y,r.width,r.height],d:s.display,v:s.visibility,c:s.color,html:e.outerHTML.slice(0,300)}}));await b.close()})();

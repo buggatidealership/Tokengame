@@ -27,9 +27,13 @@ const flagCC=cc=>cc;
 const nm=(r,x,y,s,w,o)=>{o=o||{};let ns=s,vs=s*.42;const tot=tw(r.name,ns)+ns*.18+tw(r.ver,vs);if(tot>w){const k=w/tot;ns*=k;vs*=k}const g=tw(r.name,ns)+ns*.18+tw(r.ver,vs);let x0=o.a==='start'?x:x-g/2;
   return T(x0,y,ns,r.name,{a:'start',c:o.c||CR,st:o.st,sw:o.sw})+T(x0+tw(r.name,ns)+ns*.18,y+ns*.12,vs,r.ver,{a:'start',c:o.vc||o.c||CR,op:o.vop||.8})};
 /* season P&L + W-L on one line, labelled */
-function stat(r,x,y,s,w,o){o=o||{};const pt=$(r.pl),ws=`${r.W}-${r.L}`,L1='SEASON P&L',L2='W-L',ls=s*.5;
-  const need=k=>tw(L1,k*.5,'s')+k*.35+tw(pt,k)+k*.9+tw(L2,k*.5,'s')+k*.35+tw(ws,k);let k=s;if(need(k)>w)k*=w/need(k);
+function stat(r,x,y,s,w,o){o=o||{};const pt=$(r.pl),ws=`${r.W}-${r.L}`,L1='SEASON P&L',L2='W-L',LF=o.lf||.62;
+  const need=k=>tw(L1,k*LF,'s')+k*.35+tw(pt,k)+k*.9+tw(L2,k*LF,'s')+k*.35+tw(ws,k);let k=s;if(need(k)>w)k*=w/need(k);
   let px=o.a==='start'?x:x-need(k)/2;const lc=o.lc||LB;let t='';
-  t+=T(px,y,k*.5,L1,{a:'start',f:'s',c:lc});px+=tw(L1,k*.5,'s')+k*.35;t+=T(px,y,k,pt,{a:'start',c:r.pl>=0?(o.up||UP):(o.dn||DN),st:o.st,sw:o.sw});px+=tw(pt,k)+k*.9;
-  t+=T(px,y,k*.5,L2,{a:'start',f:'s',c:lc});px+=tw(L2,k*.5,'s')+k*.35;t+=wl(r,k,px,y,{a:'start',dc:lc,wc:o.up,lc:o.dn,st:o.st,sw:o.sw});return t}
+  t+=T(px,y,k*LF,L1,{a:'start',f:'s',c:lc});px+=tw(L1,k*LF,'s')+k*.35;t+=T(px,y,k,pt,{a:'start',c:r.pl>=0?(o.up||UP):(o.dn||DN),st:o.st,sw:o.sw});px+=tw(pt,k)+k*.9;
+  t+=T(px,y,k*LF,L2,{a:'start',f:'s',c:lc});px+=tw(L2,k*LF,'s')+k*.35;t+=wl(r,k,px,y,{a:'start',dc:lc,wc:o.up,lc:o.dn,st:o.st,sw:o.sw});return t}
+/* the same two figures stacked: SEASON P&L over W-L, each labelled */
+function stat2(r,x,y,s,w,o){o=o||{};const LF=o.lf||.62,lc=o.lc||LB,pt=$(r.pl),ws=`${r.W}-${r.L}`;let k=s;const n1=k=>tw('SEASON P&L',k*LF,'s')+k*.3+tw(pt,k);if(n1(k)>w)k*=w/n1(k);
+  const a=n1(k),b=tw('W-L',k*LF,'s')+k*.3+tw(ws,k);let t='';let px=x-a/2;t+=T(px,y,k*LF,'SEASON P&L',{a:'start',f:'s',c:lc})+T(px+tw('SEASON P&L',k*LF,'s')+k*.3,y,k,pt,{a:'start',c:r.pl>=0?UP:DN});
+  px=x-b/2;const y2=y+k*1.15;t+=T(px,y2,k*LF,'W-L',{a:'start',f:'s',c:lc})+wl(r,k,px+tw('W-L',k*LF,'s')+k*.3,y2,{a:'start',dc:lc});return t}
 const tag=(x,y,s,w)=>T(x,y,fit(s,KEY,w,'s'),KEY,{f:'s',c:LB});

@@ -17,9 +17,9 @@ const OUT=process.env.OUT||'/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516
    /* text that overflows its own box (clipped) */
    out.clip=[];R.querySelectorAll('[data-fitw],.h37-t').forEach(e=>{if(e.scrollWidth>e.clientWidth+1)out.clip.push(e.textContent.slice(0,30))});
    /* text collisions: leaf text boxes from different parents that overlap */
-   const T=[...R.querySelectorAll('*')].filter(e=>!e.closest('svg')&&e.childNodes.length&&[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())&&e.offsetParent!==null).map(e=>{const rg=document.createRange();rg.selectNodeContents(e);const rs=[...rg.getClientRects()];return {e,rs}});
+   const T=[...R.querySelectorAll('*')].filter(e=>!e.closest('svg')&&e.childNodes.length&&[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())&&e.offsetParent!==null).map(e=>{const rs=[];[...e.childNodes].filter(n=>n.nodeType===3&&n.textContent.trim()).forEach(n=>{const rg=document.createRange();rg.selectNodeContents(n);[...rg.getClientRects()].forEach(q=>{/* glyph box: trim the line-height to ~70% of the font size around the middle */const fs=parseFloat(getComputedStyle(e).fontSize),mid=(q.top+q.bottom)/2,h=Math.min(q.height,fs*.72);rs.push({left:q.left,right:q.right,top:mid-h/2,bottom:mid+h/2})})});return {e,rs}});
    out.coll=[];for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++){if(T[i].e.contains(T[j].e)||T[j].e.contains(T[i].e))continue;
-     for(const a of T[i].rs)for(const c of T[j].rs){const ox=Math.min(a.right,c.right)-Math.max(a.left,c.left),oy=Math.min(a.bottom,c.bottom)-Math.max(a.top,c.top);if(ox>1.5&&oy>1.5){out.coll.push(T[i].e.textContent.slice(0,18)+' × '+T[j].e.textContent.slice(0,18));}}}
+     for(const a of T[i].rs)for(const c of T[j].rs){const ox=Math.min(a.right,c.right)-Math.max(a.left,c.left),oy=Math.min(a.bottom,c.bottom)-Math.max(a.top,c.top);const ar=Math.min((a.right-a.left)*(a.bottom-a.top),(c.right-c.left)*(c.bottom-c.top));if(ox>1.5&&oy>1.5&&ox*oy>.3*ar){out.coll.push(T[i].e.textContent.slice(0,18)+' × '+T[j].e.textContent.slice(0,18));}}}
    out.coll=[...new Set(out.coll)].slice(0,10);
    out.persp=[...R.querySelectorAll('*')].filter(e=>{const s=getComputedStyle(e);return s.perspective!=='none'||/matrix3d|perspective/.test(s.transform)}).length;
    out.anims=document.getAnimations().length;

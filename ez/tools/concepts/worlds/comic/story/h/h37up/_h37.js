@@ -19,9 +19,9 @@ const sym=u=>/^\d/.test(u.ticker)?String(u.co).split(' ')[0].toUpperCase():tick(
 const mk=(m,s,col)=>{const M=(window.MODELS||{})[m];if(!M||!M.d)return '';return `<svg class="h37-mk" viewBox="0 0 24 24" width="${s}" height="${s}" aria-hidden="true"><path d="${M.d}"${M.fr?` fill-rule="${M.fr}"`:''} fill="${col||MCOL()[m]}"/></svg>`};
 /* a company mark in its own colours (the live tab's measured mode: tile, plate, bare) */
 const logo=(u,cls)=>String(u.ticker).toUpperCase()==='NVDA'&&window.NVIDIA_D?`<svg class="h37-lg h37-nv ${cls||''}" viewBox="0 0 24 24" aria-hidden="true"><path fill="#76B900" d="${window.NVIDIA_D}"/></svg>`:
-  u.logo?`<img class="h37-lg h37-lg-${u.lm||'bare'} ${cls||''}" src="${u.logo}" alt="" decoding="async">`:`<b class="h37-lg h37-tkx ${cls||''}">${esc(sym(u))}</b>`;
+  u.logo?`<img class="h37-lg h37-lg-${u.lm||'bare'}${u.dark?' h37-dk':''} ${cls||''}" src="${u.logo}" alt="" decoding="async">`:`<b class="h37-lg h37-tkx ${cls||''}">${esc(sym(u))}</b>`;
 const trade=c=>{const dn=c.dir==='DOWN';return {dn,word:dn?'Short':'Long',sign:dn?'−':'+',mag:c.mag,txt:(dn?'−':'+')+c.mag+'%',sr:`${nm(c.m)} ${dn?'short':'long'} ${c.mag}%`}};
-const left=ms=>{if(ms<=0)return {d:0,h:0,m:0,s:0};const S=Math.floor(ms/1000);return {d:Math.floor(S/86400),h:Math.floor(S%86400/3600),m:Math.floor(S%3600/60),s:S%60}};
+const left=ms=>{if(ms<=0)return {d:0,h:0,H:0,m:0,s:0};const S=Math.floor(ms/1000);return {d:Math.floor(S/86400),h:Math.floor(S%86400/3600),H:Math.floor(S/3600),m:Math.floor(S%3600/60),s:S%60}};
 /* the shape every take reads */
 function shape(M){
   const b=M.bell;const bell=b?Object.assign({},b,{rounds:b.rounds.slice().sort((x,y)=>(y.nIn-x.nIn)||(y.mag7-x.mag7)||(y.cap-x.cap))}):null;
@@ -69,9 +69,10 @@ function bellHead(S,cf){const b=S.bell,h=cf.head,cd=b?b.close:0;
   let inner='';
   if(h.plate)inner+=`<div class="hb-plate" style="${pos(h.plate)}"><span data-fit data-min="7">${chars(b?b.plate:'No close on the card',cf.chars)}</span></div>`;
   if(h.cd4)inner+=`<div class="hb-cd" data-h37cd="${cd}" role="timer" aria-label="Time to the close">${h.cd4.map((q,i)=>`<div class="hb-u" style="${pos(q)}"><b data-u="${cells[i]}">00</b><i>${lab[i]}</i></div>`).join('')}</div>`;
-  if(h.inner)inner+=`<div class="hb-in" style="${pos(h.inner)}">${(cf.innerHTML||(()=>''))(S,cf)}</div>`;
+  if(h.cd1)inner+=`<div class="hb-cd hb-cd1" data-h37cd="${cd}" role="timer" aria-label="Time to the close" style="${pos(h.cd1)}"><span><b data-u="H">00</b>:<b data-u="m">00</b>:<b data-u="s">00</b></span><i>to the close</i></div>`;
+  if(h.inner)inner+=`<div class="hb-in" style="${pos(h.inner)}">${(cf.innerHTML||(()=>''))(S,cf,cd)}</div>`;
   return `<div class="hb-head" style="aspect-ratio:${h.ar}"><img class="hb-hi" src="${IMG+h.img}" alt="">${inner}</div>`}
-function row(u,S,cf){return `<li class="hb-row hb-${u.state}${u.mag7?' hb-m7':''}"><a href="#/round/${u.n}" aria-label="${esc(u.co+' ('+u.ticker+'), round '+u.n+'. '+H.st(u)+'. '+u.trades.map(c=>H.trade(c).sr).join(', '))}">
+function row(u,S,cf){return `<li class="hb-row hb-s-${u.state}${u.mag7?' hb-m7':''}"><a href="#/round/${u.n}" aria-label="${esc(u.co+' ('+u.ticker+'), round '+u.n+'. '+H.st(u)+'. '+u.trades.map(c=>H.trade(c).sr).join(', '))}">
   <span class="hb-co">${H.logo(u,'hb-lg')}<span class="hb-nm" data-fit data-min="9"><b>${esc(u.co)}</b> <small>${chars(H.sym(u),cf.chars)}</small>${u.mag7?'<em>Mag 7</em>':''}</span></span>
   <span class="hb-st">${u.state==='in'?'All 4 in':u.state==='coming'?u.nIn+' of 4 in':esc(u.due)}</span>${trades(u,S,cf)}</a></li>`}
 function big(u,S,cf){return `<li class="hb-big${u.mag7?' hb-m7':''}"><a href="#/round/${u.n}" aria-label="${esc(u.co+' ('+u.ticker+'), round '+u.n+(u.mag7?', Mag 7':'')+(u.bet?', Bet #1':'')+'. '+u.when)}">

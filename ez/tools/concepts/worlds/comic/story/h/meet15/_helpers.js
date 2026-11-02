@@ -1,6 +1,6 @@
 const D=document,W=window,BASE='tools/concepts/worlds/comic/story/h/meet15/img/',M13='tools/concepts/worlds/comic/story/h/meet13/img/';
 const UC={GROK:'#e4e0d6',CLAUDE:'#ef8a55',GPT:'#b18cff',KIMI:'#58b7ff'};
-const CTRY={GROK:'us',CLAUDE:'us',GPT:'us',KIMI:'cn'},CNAME={us:'United States',cn:'China'};
+const CTRY={GROK:'us',CLAUDE:'us',GPT:'us',KIMI:'cn'},CNAME={us:'United States',cn:'China',eu:'European Union'};
 const UP='#3fd07a',DN='#ff5a4c',CR='#f8f0d9',LB='#d8cfba',GD='#ffd21f',INK='#0d0b10',QT='#efe3c4';
 const FND=m=>'media/founder-'+m.toLowerCase()+(m==='GROK'||m==='GPT'?'-anim2':'-anim')+'.jpg';
 const TRY=['Mistral','Qwen','Gemini','Nemotron'];
@@ -38,6 +38,7 @@ function patch(cc,cx,cy,w,rot){const id='m15pt'+(PID++),h=w*.64,x=-w/2,y=-h/2,r=
   if(cc==='us'){for(let i=0;i<13;i++)fl+=`<rect x="${f1(ix)}" y="${f1(iy+i*ih/13)}" width="${f1(iw)}" height="${f1(ih/13+.5)}" fill="${i%2?'#f3ead6':'#c8312c'}"/>`;
     const cw=iw*.44,ch=ih*7/13;fl+=`<rect x="${f1(ix)}" y="${f1(iy)}" width="${f1(cw)}" height="${f1(ch)}" fill="#25366f"/>`;
     for(let a=0;a<4;a++)for(let b=0;b<5;b++)fl+=`<circle cx="${f1(ix+cw*(.12+b*.19+(a%2)*.09))}" cy="${f1(iy+ch*(.15+a*.24))}" r="${f1(ih*.026)}" fill="#f3ead6"/>`}
+  else if(cc==='eu'){fl+=`<rect x="${f1(ix)}" y="${f1(iy)}" width="${f1(iw)}" height="${f1(ih)}" fill="#1f3f9a"/>`;for(let k=0;k<12;k++){const a=k*Math.PI/6;fl+=`<polygon points="${star(ix+iw/2+Math.cos(a)*ih*.32,iy+ih/2+Math.sin(a)*ih*.32,ih*.07,0)}" fill="#ffd21f"/>`}}
   else{fl+=`<rect x="${f1(ix)}" y="${f1(iy)}" width="${f1(iw)}" height="${f1(ih)}" fill="#cf2f26"/>`;const s=ih;
     fl+=`<polygon points="${star(ix+iw*.18,iy+s*.3,s*.17,0)}" fill="#ffd21f"/>`;[[.36,.12,.3],[.44,.24,.9],[.44,.42,0],[.36,.54,.4]].forEach(([a,b,t])=>fl+=`<polygon points="${star(ix+iw*a,iy+s*b,s*.06,t)}" fill="#ffd21f"/>`)}
   return `<g transform="translate(${f1(cx)} ${f1(cy)}) rotate(${rot||0})" class="m15-pt">
