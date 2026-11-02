@@ -1,0 +1,21 @@
+/* Round H24 · board5: the gaps */
+.b5g{height:64px!important;margin:18px -16px 16px!important;overflow:hidden}
+.b5g-band{position:absolute;inset:0;background:center/100% auto no-repeat;display:block}
+/* the band fades into the page's black above and below, so it reads as a strip of board crossing the gap, not a box */
+.b5g-band{-webkit-mask:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
+.b5g3 .b5g-band,.b5g2 .b5g-band{-webkit-mask:none;mask:none}
+.b5g-into{margin:0 0 0 calc(50% - 50vw)!important;width:100vw}
+@media (min-width:1000px){.b5g{height:84px!important;margin:28px 0 22px!important}.b5g-into{width:min(1180px,100%);margin:0 auto!important}}
+/* the bus: a pulse of data runs down each of the four trace bundles */
+.b5g-pulse{position:absolute;inset:0;display:block;pointer-events:none;
+ background:radial-gradient(circle at 20.6% 0,rgba(255,236,160,.95) 0 2px,rgba(255,190,50,.6) 3px,transparent 7px),radial-gradient(circle at 40% 0,rgba(255,236,160,.95) 0 2px,rgba(255,190,50,.6) 3px,transparent 7px),
+  radial-gradient(circle at 59.2% 0,rgba(255,236,160,.95) 0 2px,rgba(255,190,50,.6) 3px,transparent 7px),radial-gradient(circle at 79.3% 0,rgba(255,236,160,.95) 0 2px,rgba(255,190,50,.6) 3px,transparent 7px);
+ background-size:100% 100%;background-repeat:no-repeat;opacity:0;mix-blend-mode:screen}
+@media (prefers-reduced-motion:no-preference){
+ .b5g-pulse{animation:b5g-down 2.6s cubic-bezier(.4,0,.6,1) infinite}
+ .b5g:nth-of-type(odd) .b5g-pulse{animation-delay:1.3s}
+ .b5g-on .t5-fg path:nth-of-type(2n){stroke-dasharray:5 900;animation:b5g-spark 4.8s linear infinite}
+}
+@keyframes b5g-down{0%{transform:translateY(-8px);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateY(100%);opacity:0}}
+@keyframes b5g-spark{from{stroke-dashoffset:0}to{stroke-dashoffset:-905}}
+.b5g-on .t5-fg path:nth-of-type(2n){stroke:#ffd768}
