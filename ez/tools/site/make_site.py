@@ -13,7 +13,13 @@ URL = 'https://earningszn.xyz/'
 # SITE_PAGE=<file> builds another page. Since 2026-10-30 (owner: "push this to production... so we have the comic version
 # live") the live site was X3+, the comic. Since 2026-11-02 (owner: "feel free to ship to production. So at least the overview page v1 is done")
 # the live site is X2+ again (the chip world); SITE_PAGE=v47-live-x3plus.html builds X3+ (the x3plus preview branch)
-page = open(os.path.join(EZ, os.environ.get('SITE_PAGE') or 'v46-live-x2plus.html'), encoding='utf-8').read()
+# Since 2026-11-02 (H31, the unified page: one world, one set of rules, tools/unified/RULES.md) the live page is v50-unified.html,
+# built here from tools/unified/ so a sheet sync and a deploy need no extra step. SITE_PAGE=v46-live-x2plus.html builds X2+ again (the rollback).
+PAGE = os.environ.get('SITE_PAGE') or 'v50-unified.html'
+if PAGE == 'v50-unified.html':
+    import subprocess
+    subprocess.run([sys.executable, os.path.join(EZ, 'tools', 'unified', 'build.py')], check=True)
+page = open(os.path.join(EZ, PAGE), encoding='utf-8').read()
 data = open(os.path.join(EZ, 'ez-data.js'), encoding='utf-8').read()
 if os.path.isdir(OUT):
     shutil.rmtree(OUT)
@@ -59,7 +65,7 @@ import hashlib
 for f in ('ez-data.js', 'ez-learn.js'):
     v = hashlib.sha256(open(os.path.join(EZ, f), 'rb').read()).hexdigest()[:10]
     doc, n = re.subn(r'src="' + re.escape(f) + '"', 'src="' + f + '?v=' + v + '"', doc)
-    assert n, f + ' is not loaded by the page'
+    assert n or f != 'ez-data.js', f + ' is not loaded by the page'  # ez-learn.js: X2+ loads it, the unified page does not need it
 open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(doc)
 for f in ('ez-data.js', 'ez-learn.js'):
     shutil.copy2(os.path.join(EZ, f), OUT)
