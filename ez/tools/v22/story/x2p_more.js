@@ -1,6 +1,6 @@
 /* X2+ OVERVIEW, round H24 (2026-11-02, the lead's picks; X2+ only): ground G1 (the board, gold edge fingers between beats), rounds D (the ledger grows),
    proof T1 (the scope) + C1 (the close), and the bet ported from X3+ (bet2x). Media: media/gr4-g1-board-p.jpg media/gr4-g1-board-l.jpg media/gr4-s1-fingers.jpg
-   media/rounds-h24-ledger.jpg media/p5-scope.jpg media/p5-sockets.jpg media/p5-panel.jpg media/bet-vault-h2.jpg media/bet-chip-h2.jpg media/bet-parts-h2.jpg
+   media/rounds-h24-ledger.jpg media/rounds-h24-wafer.jpg media/rounds-h24-die.jpg media/p5-scope.jpg media/p5-sockets.jpg media/p5-panel.jpg media/bet-vault-h2.jpg media/bet-chip-h2.jpg media/bet-parts-h2.jpg
    media/bet-ground-h2-phone.jpg media/bet-ground-h2-desk.jpg media/bet-board-d-tall.jpg media/bet-board-d-wide.jpg */
 window.__G4='g1';window.__G4M='media/';
 (function(){var n=0;(function go(){if(!(document.querySelector("section.t4"))){if(++n<400)setTimeout(go,50);return}
@@ -38,7 +38,7 @@ if(T.bus){const b=document.createElement('div');b.className='g4-bus';b.setAttrib
 })();
 
 }catch(e){window.__x2pG4Err=e;console.error(e)}})()})();
-window.__R6='D';window.__R6IMG='media/';
+window.__R6='B'; /* owner, 2026-11-02: Season 1, die by die (two beats: the season wafer, then the newest rounds) */window.__R6IMG='media/';
 (function(){var n=0;(function go(){if(!(document.getElementById("record")&&window.ROUNDS&&window.__x2pPnl&&window.MODELS)){if(++n<400)setTimeout(go,50);return}
 try{
 /* Round H24 · rounds6: "Every round so far" on X2+, four takes in the chip art, continuing frame 3 (the LEDGER).
@@ -400,7 +400,7 @@ function screen(X,V){const ac=V.view==='acc',w=X.W[V.win];let lit='',under='',ov
   const keys=[['v','acc','HIT RATE',KN[0][0]],['v','pnl','P&L',KN[1][0]],['w','season','SEASON',BT[0][0]-12],['w','d7','7D',BT[1][0]],['w','d1','24H',BT[2][0]]];
   keys.forEach(([k,val,l,x])=>{if(k==='w'&&ac)return;const on=k==='v'?V.view===val:V.win===val,s=28,wdt=P5.tw(l,s)+16,xx=Math.min(Math.max(x,G[0]+14+wdt/2),G[0]+G[2]-12-wdt/2),y=738;lit+=(on?`<rect x="${xx-wdt/2}" y="${y-s*.95}" width="${wdt}" height="${s*1.3}" fill="${AMB}" fill-opacity=".9"/>`:'')+t(xx,y,s,l,{a:'middle',c:on?'#140a00':AMB,op:on?1:.75})});
   return {lit,under,over}}
-P5.take={id:'t1',html(X,V){return `<div class="p5-bleed">${P5.head('Smart or','lucky?')}<div class="p5-st"></div><p class="p5-ln">${V.view==='acc'?'Inside the gold zone, <b>a coin could have done it.</b> It narrows every round.':'Every call a $100K trade. <b>Who made money?</b>'}</p>${P5.table(X,V)}</div>`},
+P5.take={id:'t1',html(X,V){return `<div class="p5-bleed">${P5.head('Smart or','lucky?')}<div class="p5-st"></div><p class="p5-ln">${V.view==='acc'?'<b>Hit rate:</b> how often a trade went the right way. Inside the gold zone, <b>a coin could have done it.</b>':'Every call a $100K trade. <b>Who made money?</b>'}</p>${P5.table(X,V)}</div>`},
  draw(box,X,V){const st=box.querySelector('.p5-st'),s=screen(X,V);
   P5.stage(st,{img:IMG,crop:CROP,glass:[[G[0],G[1],G[2],G[3],26]],lit:s.lit,under:s.under,label:V.view==='acc'?'Oscilloscope: each AI’s hit rate round by round against the coin’s luck zone':'Oscilloscope: P&L if you’d bet $100K on every call',glare:.55,bloom:2.6});
   st.insertAdjacentHTML('beforeend',P5.hits(CROP,[{k:'v',val:'acc',x:KN[0][0]-46,y:828,w:92,h:84,label:'Hit rate view',on:V.view==='acc'},{k:'v',val:'pnl',x:KN[1][0]-46,y:828,w:92,h:84,label:'P&L view',on:V.view==='pnl'}]
