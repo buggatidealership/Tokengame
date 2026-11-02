@@ -69,3 +69,17 @@ The owner picked B and asked for these changes. Files: `b2.js` and `b2.css`. Boa
 **Known issues:**
 - At 320 the heading row fills the width (heading 28px, tag 10px). A longer date ("Nov 18" is the longest form, "Sep 30") still fits, with about 10px to spare.
 - On desktop the heading row sits in the rays above the chip, not on its edge. The chip there starts lower in the painting.
+
+## B2 ported into X2+ (2026-11-02, owner: "B2, the owner's note. Yeah.")
+- **Where it lives:** `ez/tools/v22/story/x2p_more.js`, in the H_BET block, which now builds B2 directly (`html()`, `place5()`, `seam()`). The ticking reel digits are unchanged (`tick`, `setReel`).
+- **CSS:** `x2p_more.css`, in the "B2" block. The section's ground, the heading lettering, the dies and the K2 caption box are kept.
+- **What was removed from X2+:**
+  - from the page: the vault opener, the parts list S4, the sockets, board D (H_BETD) and H_BET ALIVE;
+  - from the CSS: their rules;
+  - from the header comment: their media names, so make_site.py no longer copies those files. The files themselves stay in media/ for X3+.
+- **bet2x/gen.py no longer applies to x2p_more.*.**
+- **Data:**
+  - the share comes from SIM.poolShare, with no typed fallback (no pool line without it);
+  - the date uses the same betAt rule;
+  - "Today's #1" is not shown, and there is no 5x.
+- **Old runners:** html.bd-ready is no longer set on X2+, so bet4's and bet5's own run.js (which wait for it) no longer run against the live page.
