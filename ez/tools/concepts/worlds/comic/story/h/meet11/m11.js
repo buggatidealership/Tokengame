@@ -67,9 +67,9 @@ const desk=()=>innerWidth>=1000,grid=()=>LAY==='grid'&&desk();
 const L=D.createElement('div');L.className='r2-l m11-l';L.setAttribute('aria-hidden','true');four.append(L);
 const CCOL={GROK:'#5b5148',CLAUDE:'#cd5e26',GPT:'#207e49',KIMI:'#3c5691'};
 const nums=ones.map((o,i)=>{const e=D.createElement('b');e.className='r2-n'+(i?'':' r2-n1');e.style.setProperty('--cc',CCOL[ms[i]]||'#444');e.innerHTML=`<span>${i+1}</span>`;L.append(e);return e});
-/* D2, the join: each chip's pins and rim are cut where it meets the next (clip-path on the picture, painting rows 60 and 664 of 728),
+/* D2, the join: each chip's pins and rim are cut where it meets the next (clip-path on the picture, painting rows 63 and 661 of 728),
    and the chips are pulled together by those amounts, so the boards butt into one; gen.py's bus traces sit at the same x on every chip and run on across */
-const CT=60/728,CB=(728-664)/728;
+const CT=63/728,CB=(728-661)/728;
 function join(){ones.forEach((o,i)=>{const pic=o.querySelector('.c7-pic');pic.style.clipPath='';o.style.marginTop='';if(!J)return;
   const h=pic.getBoundingClientRect().height,t=i?CT:0,b=i<ones.length-1?CB:0;pic.style.clipPath=`inset(${(t*100).toFixed(4)}% 0 ${(b*100).toFixed(4)}% 0)`;
   if(i)o.style.marginTop=(-(CB+CT)*h).toFixed(2)+'px'})}
@@ -89,7 +89,7 @@ function place(){const fr=four.getBoundingClientRect(),sp=four.querySelector('.m
  nums.forEach((e,i)=>{const r=R[i];let gx,gw;
   if(grid()){const right=r.x>fr.width/2;gx=right?sR+2:Math.max(0,r.x-110);gw=r.x-gx-6}else{gx=desk()?sR+6:sR+2;gw=r.x-gx-(desk()?8:2)}
   const maxH=r.h*.5-Math.max(9,r.h*.2)/2-2,d=String(i+1),fs=Math.min(maxH/.74,gw/DW[d]/1.12,desk()?120:9e9);
-  Object.assign(e.style,{left:(gx+gw/2).toFixed(1)+'px',top:(r.y-2).toFixed(1)+'px',fontSize:fs.toFixed(1)+'px'})})}
+  Object.assign(e.style,{left:(gx+gw/2).toFixed(1)+'px',top:(r.y-2+(J&&i?CT*r.h:0)).toFixed(1)+'px',fontSize:fs.toFixed(1)+'px'})})}
 let busy=false;
 function layout(){if(busy)return;busy=true;try{size();join();W.__m10.layout();names();W.__c8.fit&&W.__c8.fit();if(!grid())strip();place();W.__m10.render(W.__M10T!=null?+W.__M10T:-1)}finally{busy=false}}
 let lw=0;new ResizeObserver(()=>{const w=four.clientWidth;if(w!==lw){lw=w;requestAnimationFrame(layout)}}).observe(four);
