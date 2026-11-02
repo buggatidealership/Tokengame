@@ -35,7 +35,7 @@ const W={id:'b',
     s+=t(cx1-6,cy1-7,sm-.5,big?'A COIN WRITES INSIDE THE GOLD':'A COIN WRITES IN THE GOLD',{a:'end',ff:mono,w:700,c:'#8a5c00',ls:'.02em'})}
   s+=`<line x1="${cx0}" y1="${Y(g.base).toFixed(1)}" x2="${cx1}" y2="${Y(g.base).toFixed(1)}" stroke="${g.ac?'#a87400':'#c0261d'}" stroke-width="1.5"/>`;
   g.grid.forEach(v=>{const y=Y(v);if(y<cy0-3||y>cy1+3)return;s+=t(cx0-6,y+sm*.36,sm-.5,g.fmt(v),{a:'end',ff:mono,w:700,c:v===g.base?(g.ac?'#8a5c00':'#a8201a'):'#2c4a33',op:.95})});
-  s+=t(cx0,cy1+sm+8,sm-.5,'R1',{ff:mono,w:700,c:'#2c4a33'})+t(cx1,cy1+sm+8,sm-.5,'R'+g.n,{a:'end',ff:mono,w:700,c:'#2c4a33'})+t((cx0+cx1)/2,cy1+sm+8,sm-.5,g.ac?'ROUND BY ROUND →':'$100K ON EVERY TRADE →',{a:'middle',ff:mono,w:700,c:'#2c4a33',op:.8});
+  s+=t(cx0,cy1+sm+8,sm-.5,'R1',{ff:mono,w:700,c:'#2c4a33'})+t(cx1,cy1+sm+8,sm-.5,'R'+g.n,{a:'end',ff:mono,w:700,c:'#2c4a33'});{const ml=g.ac?'ROUND BY ROUND →':'$100K ON EVERY TRADE →';if(ml.length*(sm-.5)*.62<(cx1-cx0)-80)s+=t((cx0+cx1)/2,cy1+sm+8,sm-.5,ml,{a:'middle',ff:mono,w:700,c:'#2c4a33',op:.8})}
   /* the ink: a slight bleed under each line, then the line; the golden ticket holder in gold ink with a dark edge */
   g.order.forEach(m=>{const d=g.d(g.pts(m)),ld=m===g.lead,c=W.col(X,m);
     s+=`<path d="${d}" fill="none" stroke="${c}" stroke-opacity=".22" stroke-width="${ld?5.5:4}" stroke-linejoin="round" stroke-linecap="round"/>`+(ld?`<path d="${d}" fill="none" stroke="#3a2600" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round"/>`:'')+

@@ -175,9 +175,9 @@ def compose(base,m,t):
     # the mask's own shading carried over (a shade of the original luminance), parts stay on top
     w=(K*.92)[...,None];out=a*(1-w)+col*np.clip(L*.95,0,1.35)*w
     if fl=='us':
-      sw2=(ST*CA*G*.85)[...,None];out=out*(1-sw2)+np.array((236,230,212),np.float32)*np.clip(L,0.6,1.2)*sw2
+      sw2=(ST*CA*np.maximum(K,.45)*G*.85)[...,None];out=out*(1-sw2)+np.array((236,230,212),np.float32)*np.clip(L,0.6,1.2)*sw2
     else:
-      sg=(ST*G*.8)[...,None];out=out*(1-sg)+np.array((240,190,56),np.float32)*np.clip(L,0.6,1.25)*sg
+      sg=(ST*np.maximum(K,.45)*G*.8)[...,None];out=out*(1-sg)+np.array((240,190,56),np.float32)*np.clip(L,0.6,1.25)*sg
   elif t=='c':
     # tone on tone: the flag's shapes in the mask's own ink, a shade darker (red stripes, canton) and lighter (stars)
     if fl=='us':dk=np.clip(RED*.7+CA,0,1)*(1-ST);lt=ST*CA
@@ -186,19 +186,19 @@ def compose(base,m,t):
     hi=np.clip(a*1.6+30,0,255);w=(lt*np.maximum(K,.35*G)*.9)[...,None];out=out*(1-w)+hi*w
   elif t=='d':
     # B's mask, waving: every layer rippled (more at the fly end), and the folds shaded light and dark across the board
-    lam=430.;amp=16.;xx=np.arange(SZ[0])[None,:].astype(np.float32);yy=np.arange(SZ[1])[:,None].astype(np.float32)
-    ph=2*math.pi*xx/lam;dy=amp*np.sin(ph)*(.35+.65*xx/SZ[0]);Y=np.clip(np.rint(yy-dy),0,SZ[1]-1).astype(int);X=np.broadcast_to(np.arange(SZ[0])[None,:],Y.shape)
+    lam=380.;amp=20.;xx=np.arange(SZ[0])[None,:].astype(np.float32);yy=np.arange(SZ[1])[:,None].astype(np.float32)
+    ph=2*math.pi*xx/lam;dy=amp*np.sin(ph)*(.6+.4*xx/SZ[0]);Y=np.clip(np.rint(yy-dy),0,SZ[1]-1).astype(int);X=np.broadcast_to(np.arange(SZ[0])[None,:],Y.shape)
     wv=lambda A:A[Y,X]
     if fl=='us':Sw,CAw,STw=wv(S),wv(CA),wv(ST)
     else:STw=wv(ST)
-    fold=(1+.22*np.cos(ph+.6))[...,None]
+    fold=(1+.3*np.cos(ph+.6))[...,None]
     if fl=='us':
       red=np.array((150,32,36),np.float32);wht=np.array((214,204,184),np.float32);blu=np.array((30,44,100),np.float32)
       col=red*Sw[...,None]*(1-CAw[...,None])+wht*(1-Sw[...,None])*(1-CAw[...,None])+blu*CAw[...,None];top=STw*CAw;sc=np.array((236,230,212),np.float32)
     else:
       col=np.array((168,30,24),np.float32)*np.ones_like(STw)[...,None];top=STw;sc=np.array((240,190,56),np.float32)
     w=(K*.92)[...,None];out=a*(1-w)+col*np.clip(L*.95,0,1.35)*fold*w
-    sg=(top*G*.85)[...,None];out=out*(1-sg)+sc*np.clip(L,0.6,1.2)*fold*sg
+    sg=(top*np.maximum(K,.45)*G*.85)[...,None];out=out*(1-sg)+sc*np.clip(L,0.6,1.2)*fold*sg
   return Image.fromarray(np.clip(out,0,255).astype(np.uint8))
 def run(takes):
   for m in ['grok','claude','gpt','kimi']:

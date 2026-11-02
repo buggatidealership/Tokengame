@@ -14,5 +14,5 @@ for k,t in COLS:
 g=24;th=60;cw=max(i.size[0] for i,_ in ims);H=max(i.size[1] for i,_ in ims)+th
 B=Image.new('RGB',(g+len(ims)*(cw+g),H+2*g),(10,10,12));d=ImageDraw.Draw(B);x=g
 for im,t in ims:
-  d.text((x+6,g+12),t,fill=(255,210,31),font=F(26 if cw<900 else 34));B.paste(im,(x,g+th));x+=cw+g
+  d.text((x+6,g+12),t,fill=(255,210,31),font=F(17 if cw<300 else 22 if cw<500 else 34));B.paste(im,(x,g+th));x+=cw+g
 B.save(OUT,optimize=True);print(OUT,B.size,os.path.getsize(OUT)//1024,'KB')

@@ -37,7 +37,7 @@ ones.forEach(o=>{const m=o.dataset.m,pic=o.querySelector('.c7-pic');
  const no=pic.querySelector('.c8-no');if(no){no.style.display='none';const g=glassOf(no);g&&(g.style.display='none')}
  /* Season P&L: the window shorter, its figure redrawn for the new box (chips8's fit refits it) */
  const d7=pic.querySelector('.c8-d7');if(d7){d7.style.cssText=at(PNL);const g=glassOf(d7);g&&(g.style.clipPath=clip(PNL).slice(10));
-  const w=(PNL[2]-PNL[0]),h=(PNL[3]-PNL[1]),fs=h*.64,sv=d7.querySelector('svg'),t=d7.querySelector('text'),gg=t&&t.parentNode;sv.setAttribute('viewBox',`0 0 ${w} ${h}`);
+  const w=(PNL[2]-PNL[0]),h=(PNL[3]-PNL[1]),fs=h*.58,sv=d7.querySelector('svg'),t=d7.querySelector('text'),gg=t&&t.parentNode;sv.setAttribute('viewBox',`0 0 ${w} ${h}`);
   if(t){t.setAttribute('x',w/2);t.setAttribute('y',(h*.5+fs*.36).toFixed(2));t.setAttribute('font-size',fs.toFixed(2));gg.dataset.w=w*.9;gg.dataset.cx=w/2;gg.dataset.y=(h*.5+fs*.36).toFixed(2)}}
  /* W-L: narrower, its label on the matte at its left (meet10's fitWL refits it to the new box) */
  const wl=pic.querySelector('.m10-wl');if(wl){wl.style.cssText=at(WL);const g=glassOf(wl);g&&(g.style.clipPath=clip(WL).slice(10))}
@@ -54,7 +54,7 @@ const tw=(s,fs,f)=>{cv.font=`${fs}px ${f||'Anton'}`;return cv.measureText(s).wid
 let CAP=.735;const capR=()=>{cv.font='100px Anton';const m=cv.measureText('H');if(m.actualBoundingBoxAscent>40)CAP=m.actualBoundingBoxAscent/100};
 const nameLog={};
 function names(){capR();ones.forEach(o=>{const m=o.dataset.m,nm=o.querySelector('.m11-nm'),R=nm.getBoundingClientRect();if(!R.width)return;
-  const w=R.width,h=R.height,pad=h*.3;let fs=h*.56/CAP;/* the name's cap = 56% of its window's height */
+  const w=R.width,h=R.height,pad=h*.3;let fs=h*.62/CAP;/* the name's cap = 62% of its window's height */
   const N=NM(m),V=VER(m).toUpperCase();let vs=fs*.42;const gap=fs*.16;
   let tot=tw(N,fs)+gap+tw(V,vs,"'Barlow Condensed'");const max=w-pad*2;if(tot>max){const k=max/tot;fs*=k;vs*=k}
   const y=h/2+fs*CAP/2,x=pad,nw=tw(N,fs);
