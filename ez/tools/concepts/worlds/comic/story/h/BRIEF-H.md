@@ -897,3 +897,17 @@ Each task below is a **mockup** unless it says otherwise. Rules: rule 0, the har
   - Crop it for chips8's founder window (`ez/tools/v22/story/x2p_chips.js`, the window's geometry is in `h/chips8/`).
 - **Names:** new files named `founder-grok-anim2.*` and `founder-gpt-anim2.*` (media is cached for a year).
 - **Boards:** `ez/x2p-h25-chars-*.png` (the chips at 390 with the new loops, beside today's), plus a short video. Work in `h/chars/`.
+
+### `meetbus`: Meet the models fed by the ledger (owner, 2026-11-02, ~01:40 UTC; mockups)
+- The owner likes board5's take **D, the bus** (`h/h25/owner-bus.jpg`, `ez/x2p-h24-board5-close.png`): the ledger strip on the left, its rounds scrolling ("R80 XOM +2.17%, R79 AZN.L +6.96%..."), feeding four sockets through gold traces. The owner wants it **for Meet the models, not frame 4**: "it takes the concept of predictions, outcomes, logs and ledger and distils it into a visual."
+- Today's Meet the models is chips8 take c, live: four character chips with a balloon each (`ez/tools/v22/story/x2p_chips.js/.css`, `h/chips8/`). Mock up how the ledger bus feeds them:
+  - a vertical ledger strip down the section's left, the newest graded rounds running up it in the lit amber of frame 3 (live from ROUNDS);
+  - gold traces from the strip into each chip;
+  - when a round passes, a pulse runs into each chip that traded it, green if it was right and red if wrong (lesson 115: the motion carries the fact).
+- Keep the chips, the founders and the balloons as they are.
+- **Takes:** at least three:
+  - the strip on the left, as D;
+  - the strip as a bus across the top feeding down;
+  - your own.
+- Phone first at 390; desktop 1280.
+- **Boards:** `ez/x2p-h25-meetbus-*.png`. Work in `h/meetbus/`. Up to $40.
