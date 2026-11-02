@@ -359,6 +359,22 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
     Then it gets the same craft as everything else, so it's worth coming back to: some visitors return for the look, some for the insight, and the insight only keeps them if it holds up. Beauty must never lend a weak pattern more trust than its sample earns. A pattern a coin could produce in 80 rounds is not an insight. Say so, or leave it out. Databases (Crunchbase, CB Insights) show everything and explain nothing. We show few things, each one meant.
     - *Taught by:* owner, 2026-11-02: "it's essentially turning it into interesting insights... information you want to come back to because it's unique... wrapped in a beautiful way... they might just come back for the insights because they feel trustworthy or because the way the insights are presented... is what makes it valuable."
 
+127. **Every rule names what it rests on.** A rule is universal when it rests on the reader or on logic, things that don't change with the page:
+    - perception: contrast, grouping, motion pulling the eye, reading order;
+    - memory limits;
+    - honesty with numbers: scales, samples, chance.
+
+    A rule depends on the use case when it rests on a goal, an audience or a medium:
+    - density (compact when comparing, spacious when introducing);
+    - one world per page;
+    - dark for the bet, bright elsewhere;
+    - brand voice.
+
+    Before applying a rule, ask "what does this depend on?" If the answer is the reader or the truth, apply it everywhere. If it is the job of the page, check that the job is the same here; if it isn't, say which condition fails and choose again.
+
+    Universal rules still have edges: reading direction is cultural, and "seven plus or minus two" is overstated. So even universal rules are stated with their reason, never as slogans. New lessons from here on say which kind they are.
+    - *Taught by:* owner, 2026-11-02: "I do not know what laws or rules or mental frameworks, human-derived mental frameworks, are use-case dependent and which ones aren't. So when do you apply some? When do you apply others that are... universal?" (Earlier: "for the overview page, that is correct. For the leaderboard page it depends... So it's use case dependent or no?")
+
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
