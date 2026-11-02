@@ -1,5 +1,0 @@
-const {open}=require('./lib');const ov=process.argv.slice(3);(async()=>{const {b,p,errs}=await open(+process.argv[2],664,{css:ov.filter(f=>f.endsWith('.css')),js:ov.filter(f=>f.endsWith('.js'))});
-await p.waitForSelector('.u3-root');await p.waitForTimeout(800);
-const r=await p.evaluate(()=>{const q=s=>{const e=document.querySelector(s);if(!e)return null;const r=e.getBoundingClientRect(),c=getComputedStyle(e);return [Math.round(r.left),Math.round(r.top+scrollY),Math.round(r.width),Math.round(r.height),c.display,c.visibility,c.opacity,c.position]};
- return {html:document.querySelector('.ua-bell').innerHTML.slice(0,300),nmc:getComputedStyle(document.querySelector('.ua-nm b')).color,nmtx:document.querySelector('.ua-nm').textContent,nmfs:getComputedStyle(document.querySelector('.ua-nm')).fontSize,bell:q('.ua-bell'),bsvg:q('.ua-bell svg'),lab:q('.ua-lab'),nm:q('.ua-nm'),row:q('.ua-row'),rsvg:q('.ua-row svg'),h2:q('.ua-h'),h2b:getComputedStyle(document.querySelector('.ua-h'),'::before').content,
- imgAAPL:CO_LOGOS.AAPL}});console.log(JSON.stringify(r));console.log(errs);await b.close()})();

@@ -7,7 +7,7 @@ const {open}=require('./lib');const fs=require('fs');(async()=>{const [W,tag,...
  await p.evaluate(()=>{document.querySelectorAll('img').forEach(i=>i.loading='eager')});
  await p.waitForFunction(()=>[...document.querySelectorAll('#view img')].every(i=>i.complete),null,{timeout:30000}).catch(()=>{});await p.waitForTimeout(1200);
  await p.screenshot({path:`out/${tag}-${W}-first.png`});
- await p.screenshot({path:`out/${tag}-${W}.png`,fullPage:true});
+ if(!process.env.FIRSTONLY)await p.screenshot({path:`out/${tag}-${W}.png`,fullPage:true});
  const m=await p.evaluate(()=>{const de=document.documentElement,R=document.querySelector('.u3-root');const out={sh:de.scrollHeight,sw:de.scrollWidth,vw:innerWidth};
   if(R){out.over=[];const rr=R.getBoundingClientRect();R.querySelectorAll('*').forEach(e=>{const r=e.getBoundingClientRect();if(r.width&&!e.closest('svg')&&(r.right>innerWidth+.5||r.left<-.5)&&getComputedStyle(e).position!=='fixed')out.over.push((e.className&&e.className.baseVal===undefined?e.className:e.tagName)+' '+Math.round(r.left)+'..'+Math.round(r.right))});out.over=out.over.slice(0,12);
    out.clip=[];R.querySelectorAll('[data-fit]').forEach(e=>{if(e.scrollWidth>e.clientWidth+1)out.clip.push(e.textContent.slice(0,30))});

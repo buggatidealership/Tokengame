@@ -29,7 +29,7 @@ function T(x,y,s,str,o){o=o||{};return `<text x="${x.toFixed(1)}" y="${y.toFixed
 function mark(m,x,y,s,fill){const M=window.MODELS&&MODELS[m];if(!M||!M.d)return '';const k=s/24;return `<path d="${M.d}" transform="translate(${(x-s/2).toFixed(1)} ${(y-s/2).toFixed(1)}) scale(${k.toFixed(4)})" fill="${fill}"/>`}
 function coin(x,y,r){return `<g><circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${CR}" stroke-width="${(r*.16).toFixed(1)}"/><circle cx="${x}" cy="${y}" r="${(r*.62).toFixed(1)}" fill="none" stroke="${CR}" stroke-width="${(r*.09).toFixed(1)}" opacity=".8"/>${T(x,y+r*.04,r*.95,'½',{ff:'Anton'})}</g>`}
 /* fit: shrink font so an n-char Anton string fits width w (Anton ~.5em per char, .62 for %) */
-const fit=(s,str,w)=>{const em=[...String(str)].reduce((a,c)=>a+(c==='%'?.66:c===' '?.25:/[A-Z]/.test(c)?.52:.47),0);return Math.min(s,w/em)};
+const fit=(s,str,w)=>{const em=[...String(str)].reduce((a,c)=>a+(c==='%'?.8:c===' '?.25:/[A-Z]/.test(c)?.52:.47),0);return Math.min(s,w/em)};
 function build(take,wide){const g=G[take][wide?'w':'p'],W=g.W,H=g.H,X=f=>f*W,Y=f=>f*H;const R=data();
   const [cx0,cy0,cx1,cy1]=g.crop,vb=[X(cx0),Y(cy0),X(cx1-cx0),Y(cy1-cy0)];
   const ph=Y(g.ph),pw=X(g.pw);let txt='',top='';
