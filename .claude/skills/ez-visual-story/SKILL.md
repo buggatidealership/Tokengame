@@ -342,6 +342,9 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
    12. *Feeling:* where are the suspense, the reveal and the payoff?
     - *Taught by:* "you can change the character's style depending on what sections they're showing up in... the leaderboard tab can have a different style itself, can have like noir ink"; "when they fail, hit by the fail... you can do that one", 31 Oct.
 
+123. **One member of a set reads as the whole set.** A frame that shows only the leader can read as "this is the only one". Show the field first, then mark the leader inside it: the rank is a relation, so the picture must hold everything that is being ranked. When the last frame of a sequence introduces what comes next, make it the payoff of the sequence (the "oh, this looks sick" moment) and the doorway to the next section.
+    - *Taught by:* owner, 2026-11-02, on BOARD showing only Grok on the gold lid: "people could misunderstand it as, ooh, grok is the only model. So maybe there should be a board... and then it introduces them to the meet the models section."
+
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.

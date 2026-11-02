@@ -733,3 +733,28 @@ The owner: with the new rule, "that wording and that beat has to be probably... 
 - **The world:** it continues frame 3, the LEDGER: the ledger the round was written to, so the visitor sees the same object grow from four rows into the whole season. Glass, rows and a gold bezel, the round's picture lit on its row, or your own way.
 - **Takes:** at least four, very different, all in the chip art. Each answers how 80 rounds fit a phone without a wall of scrolling (show 8, then more), and how a new round arrives.
 - **Boards:** `ez/x2p-h24-rounds-*.png`, phone and desktop, plus a 3x close-up of one row.
+
+### H24 addendum (owner, 2026-11-02, ~00:25 UTC, on the built top: "they're all exactly right. Even the wording, I agree with... beautiful")
+The top is locked: the first three frames, the four lines, the zoom rhythm and the centred numbers (`h24/now-top-390.png`). Two things remain, both for the new helper `board5`.
+
+### `board5`: frame 4, BOARD, as the whole board, and the gaps
+**1. BOARD shows the field, not one model.**
+- Today the gold lid shows only Grok, so "people could misunderstand it as, ooh, grok is the only model" (owner).
+- Frame 4 becomes the board: all four models ranked by season P&L, the leader marked inside it. The leader is gold: the golden ticket.
+- Keep the wide shot after three close-ups.
+- It should be the payoff of the sequence ("oh shit... this looks sick", owner).
+- It is also the doorway to Meet the models, the section right below it: the four chips of frame 4 should read as the same four the visitor then meets up close.
+- Data: ranks, marks and names live from `__x2pPnl`; static words painted. H23's tests hold.
+- Takes: at least four.
+- Line: keep "The ledger ranks the board." unless a take argues for better; say why.
+
+**2. The gaps.** The owner: "think about the gap with this new found design thinking."
+- I read this as the gutters: the torn paper between beats and the gold trace between the four frames. Show at least three ways the gaps themselves become part of the chip world and carry the story from one beat to the next. For example: a trace that carries data down from one beat into the next, a seam between two boards, or the gap from BOARD into Meet the models as a cut you scroll through.
+- The `ground` helper is redoing the page's background at the same time (`h/ground4/`, boards `ez/x2p-h24-ground-*`). Make the gaps work over today's black, and say how they would sit on a painted ground.
+
+**Deliverables:**
+- boards `ez/x2p-h24-board5-*.png` at 390 and 1280, plus a 3x close-up;
+- a drop-in for x2p_top.js's frame 4;
+- REPORT.md with the twelve questions.
+
+Budget up to $40. Work in `h/board5/`.
