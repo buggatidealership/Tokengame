@@ -3,9 +3,9 @@ import sys,os
 from PIL import Image,ImageDraw,ImageFont
 S=sys.argv[1];OUT='/home/user/Tokengame/ez/';HERE=os.path.dirname(os.path.abspath(__file__))
 F=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',26);f2=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',19)
-NAME={'now':('Today (live)','rounds6 B: the season wafer, then 8 dies'),
- 'A':('A · hot off the press','the print shop: newest print on the wire, next pencilled'),'B':('B · the newsstand','latest issue in the big pocket, the rest racked'),
- 'C':('C · the latest issue','one cover for every round, back issues fanned'),'D':('D · the press run','the newest print comes off the rollers'),
+NAME={'now':('Today (live)','rounds6 B: wafer, then 8 dies'),
+ 'A':('A · hot off the press','newest print on the wire, next pencilled'),'B':('B · the newsstand','latest issue on top, the rest racked'),
+ 'C':('C · the latest issue','one cover dress, back issues fanned'),'D':('D · the press run','the newest print comes off the rollers'),
  'A+':('A · after Show more','phones +8, desktop +12'),'B+':('B · after Show more','phones +8, desktop +12'),'C+':('C · after Show more','phones +8, desktop +12'),'D+':('D · after Show more','phones +8, desktop +12')}
 def save(B,out):
   p=OUT+out;B.save(p,optimize=True)

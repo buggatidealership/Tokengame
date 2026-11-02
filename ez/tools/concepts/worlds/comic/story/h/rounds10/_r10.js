@@ -72,7 +72,7 @@ function more(){const left=REST.length-shown;if(left<=0)return `<p class="r10-al
   return `<button class="r10-more" type="button" aria-label="Show ${k} more rounds"><b>Show ${k} more</b><i>${left} ${MORE}</i></button>`}
 const HDR=()=>`<header class="r10-hd"><h2 class="r10-h2"><span class="r10-hw">${esc(HEAD[0])}</span></h2><p class="r10-cap">${esc(HEAD[1])}</p></header>`;
 function render(){const nx=TK==='A'?NEXTS.slice(0,WIDE()?2:1):[];
-  const grid=`<div class="r10-g">${link(HERO,true)}${(TK==='A'&&WIDE()?REST.slice(0,3):[]).map(r=>link(r,false)).join('')}${nx[0]?`<span class="r10-nx">${A_next(nx[0])}</span>`:''}${REST.slice(TK==='A'&&WIDE()?3:0,shown).map(r=>link(r,false)).join('')}${nx[1]?`<span class="r10-nx r10-nx2">${A_next(nx[1])}</span>`:''}${more()}</div>`;
+  const grid=`<div class="r10-g">${link(HERO,true)}${(TK==='A'&&WIDE()?REST.slice(0,3):[]).map(r=>link(r,false)).join('')}${nx[0]?`<span class="r10-nx">${A_next(nx[0])}</span>`:''}${REST.slice(TK==='A'&&WIDE()?3:0,TK==='A'&&WIDE()?6:shown).map(r=>link(r,false)).join('')}${nx[1]?`<span class="r10-nx r10-nx2">${A_next(nx[1])}</span>`:''}${TK==='A'&&WIDE()?REST.slice(6,shown).map(r=>link(r,false)).join(''):''}${more()}</div>`;
   root.innerHTML=TK==='A'?`<div class="r10-stage"><div class="r10-bg" aria-hidden="true"></div><div class="r10-in">${HDR()}${grid}</div></div>`
     :`<div class="r10-in">${HDR()}</div><div class="r10-stage"><div class="r10-bg" aria-hidden="true"></div><div class="r10-in">${grid}</div></div>`;
   layout();

@@ -3,7 +3,8 @@ import sys,os
 from PIL import Image,ImageDraw,ImageFont
 D,W,OUT=sys.argv[1],sys.argv[2],sys.argv[3];SC=float(sys.argv[4]) if len(sys.argv)>4 else 1
 COLS=[('now','Today (live): T1, the scope + switch'),('a','A · Etched: the trace on the board'),('b','B · The recorder: pens on the paper'),('c','C · The peg board: cord on baize'),('d','D · The chain: one block per round')]
-if os.environ.get('A3'):COLS=[('a2','A2 · Etched, simplified'),('a3','A3 · Last round, equal gaps')]
+if os.environ.get('A4'):COLS=[('a3','A3 (as picked)'),('a4','A4 · the rail tab'),('a4b','A4b · the ribbon cable'),('w1','W1 · the trader\'s whiteboard'),('w2','W2 · the terminal'),('w3','W3 · the post on the floor'),('w4','W4 · the ticker wall')]
+elif os.environ.get('A3'):COLS=[('a2','A2 · Etched, simplified'),('a3','A3 · Last round, equal gaps')]
 elif os.environ.get('A2'):COLS=[('now','Today (live): T1, the scope + switch'),('a','A · Etched (sol9, picked)'),('a2','A2 · Etched, simplified')]
 F=lambda s:ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',s)
 ims=[]
