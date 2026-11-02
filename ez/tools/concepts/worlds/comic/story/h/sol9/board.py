@@ -18,6 +18,6 @@ B=Image.new('RGB',(g+len(rows[0])*(cw+g),g+sum(h+g for h in rh)),(10,10,12));d=I
 for r,h in zip(rows,rh):
   x=g
   for im,t in r:
-    d.text((x+6,y+12),t,fill=(255,210,31),font=F(17 if cw<300 else 22 if cw<500 else 34));B.paste(im,(x,y+th));x+=cw+g
+    d.text((x+6,y+12),t,fill=(255,210,31),font=F(15 if cw<450 else 20 if cw<700 else 34));B.paste(im,(x,y+th));x+=cw+g
   y+=h+g
 B.save(OUT,optimize=True);print(OUT,B.size,os.path.getsize(OUT)//1024,'KB')
