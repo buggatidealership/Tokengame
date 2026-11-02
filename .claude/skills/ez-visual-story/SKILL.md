@@ -388,6 +388,25 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
 137. **The overview shows, the tab lets you choose** (use-case dependent: a landing with a detail tab). Selectors, windows and filters ask a newcomer a question they can't answer yet. Show the one view they must see; put the choices where people come to explore.
     - *Taught by:* owner, 2026-11-02: "green at the beginning dominates, when you get to the model sections you introduce other colors through each model's chip background color that can then be used for the next sections."
 
+
+## The gap list: a gate before any board or ship (owner, 2026-11-02: "fill the gap list... how we approach things now")
+Run these on every board before it is shown and every build before it ships; say in the report which ones failed.
+1. **One system:** at most three faces rendered (Bangers titles, Anton numbers, Shantell Sans words); gold only on section titles; green/red only for right/wrong, profit/loss, with a sign or W/L beside. Measure the rendered fonts and colours, don't assume.
+2. **One identity per model:** Grok #e4e0d6, Claude #ef8a55, GPT #b18cff, Kimi #58b7ff, the mark and a flag patch by the name; the same everywhere.
+3. **One component per thing:** a round, a model, a company, a trade looks the same in every section and tab.
+4. **Keys:** every encoded value labelled on first use (Last 5, grade, W-L); plain words before any metaphor.
+5. **Honest data:** sample sizes and luck visible; a picture never tells a happier story than the numbers.
+6. **Words:** the glossary (trade, pool, close, graded); grep the build for "call", "pot", "volume".
+7. **Content spec first:** the section's job, its one focal fact, at most four chunks, written before the mockup.
+8. **One variable per take; a requested fix is done exactly once;** today's version always beside the takes.
+9. **States:** empty, partial ("trades coming in"), finished, after-the-bet; designed, not discovered.
+10. **Budgets up front:** GPU (40 MB cap at ratio 2.75), page weight, one mover per screen.
+11. **Real devices:** iOS Safari on the first screen and every touched section before shipping (when possible; say when not).
+12. **Accessibility:** contrast, colour-blind second carrier, 44px taps, reduced motion, screen-reader text.
+13. **Evidence:** analytics on (Umami ID), and a 5-second test with strangers before big changes.
+14. **Current spec:** CLAUDE.md's newest "live" line per section is the source; never list a picked item as open.
+15. **Gaps and hierarchy:** the torn-paper gutter at every section break with real room; section title > step headline > label.
+
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
