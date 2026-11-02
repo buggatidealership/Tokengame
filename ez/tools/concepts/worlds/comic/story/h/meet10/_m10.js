@@ -1,30 +1,26 @@
-/* Round H26 · meet10: Meet the models, the line in the chip, fed by the ledger strip. Laid over the live chips8 take c (x2p_chips.js) without touching it.
-   The chip's windows (owner, H26):
-     SEASON window  -> the computed personality line (x2p_chips.js LINE, read from the live balloon, so it stays computed); one tall glass window
-                       9-sliced from the chip's own SEASON window (gen.py, out/chip10-*), fitted to 9 CSS px cap height or more, a sentence per line.
-     LAST ROUND     -> the W-L record, W in green ink-light, L in red; the painted "LAST ROUND" label is gone (gen.py), a live "W-L" label in its place.
-     LAST 7 DAYS and No. stay as they are.
-   The P&L question (window.__M10P):
-     'a' the season P&L leaves the chip (as the owner said);
-     'b' the season P&L stays as a small lit line in the label row under LAST 7 DAYS ("SEASON +$148,480"), so the head "Ranked by season P&L" has its number.
-   The strip (window.__M10S):
-     's1' THE STRIP  meetbus A as the owner saw it: the ledger glass down the left, the 12 newest graded rounds running up it, on their side;
-     's2' THE TAPE   my own: the same housing, but each round is a flat ticket read the right way up (round, the company's mark lit in the glass, the move);
-     both: as a round passes a chip's trace, a pulse runs into that chip, green if the model's trade on it went the right way, red if not, and lands
-     on the W-L window: the W lights (green) or the L lights (red). That is the fact the motion carries: the ledger writes each trade into the record.
-     A model that did not trade a round gets no pulse. Desktop (2x2): the strip runs down the column gap and feeds both columns.
-   Data, live: __x2pPnl().A (W, L, bal, per[n].v), ROUNDS, CO_LOGOS. Nothing typed.
-   Motion: one deterministic clock (window.__M10T freezes it), only while the section is near the screen; still with reduced motion
-   (the newest round on the strip, each trace and its W or L lit for it). Options: window.__M10IMG, window.__M10BUS (meetbus's pub folder), window.__M10N.
+/* Round H26 · meet10, the owner's pick (2026-11-02): Meet the models, the quote in the chip, fed by the ledger strip. Laid over the live chips8 take c
+   (x2p_chips.js) without touching it. The chip now reads: name and No. · SEASON P&L (the big window) · W-L · the quote.
+     LAST 7 DAYS window -> the SEASON P&L, full figure ("+$148,480"), green or red, the biggest figure; the painted "LAST 7 DAYS" label is gone (gen.py, chip11-*)
+                           and a live "SEASON" label sits in its place. The No. order (ranked by season P&L) now explains itself on the chip.
+     LAST ROUND window  -> the W-L record, W in green light, L in red; the painted "LAST ROUND" label is gone, a live "W-L" label in its place.
+     SEASON window      -> the computed quote (x2p_chips.js LINE, read from the live balloon so it stays computed), in one tall glass window 9-sliced from
+                           the chip's own SEASON window (gen.py), one size on all four chips, a sentence per line. The balloons leave.
+   The strip (window.__M10S): 's1' THE STRIP (default; meetbus A): the ledger glass down the left, the 12 newest graded rounds running up it on their side;
+     's2' THE TAPE: each round a flat ticket (round, the company's mark, the move). As a round passes a chip's trace, a pulse runs into that chip, green if
+     that model's trade on it went the right way, red if not, and lands on the W-L window: the W lights (green) or the L (red). A model that did not trade
+     a round gets no pulse. Desktop (2x2): the strip runs down the column gap and feeds both columns.
+   Data, live: __x2pPnl().A (W, L, bal, per[n].v), ROUNDS, MODELS, CO_LOGOS. Nothing typed.
+   Motion: one deterministic clock (window.__M10T freezes it), transforms, opacity and CSS variables only, no perspective; only while the section is near the
+   screen; still with reduced motion (the newest round, each trace and its W or L lit). Options: window.__M10IMG (paintings), window.__M10BUS (strip and traces).
    window.__m10 = {layout, render, state, fit, geo}. */
 (function(){const W=window,D=document;let tries=0;
 (function go(){const sec=D.querySelector('section.c8'),four=sec&&sec.querySelector('.c8-four');
  if(!four||!W.__x2pPnl||!W.ROUNDS||four.querySelectorAll('.c8-one').length<4){if(++tries<400)setTimeout(go,50);return}
  try{run(sec,four)}catch(e){W.__m10Err=e;console.error(e)}})();
 function run(sec,four){
-const S=(W.__M10S||'s1').toLowerCase(),PN=(W.__M10P||'a').toLowerCase(),N=W.__M10N||12;
+const S=(W.__M10S||'s1').toLowerCase(),N=W.__M10N||12;
 const IMG=W.__M10IMG||'tools/concepts/worlds/comic/story/h/meet10/out/',BUS=W.__M10BUS||'tools/concepts/worlds/comic/story/h/meetbus/out/pub/',MED='media/';
-const P=W.__x2pPnl(),A=P.A,CL=W.CO_LOGOS||{};
+const P=W.__x2pPnl(),A=P.A,CL=W.CO_LOGOS||{},MD=W.MODELS||{};
 const G=ROUNDS.filter(r=>typeof r.a==='number'&&!isNaN(r.a)).slice(-N);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const mv=r=>String(r.out||'').replace(/^-/,'−');
@@ -34,27 +30,30 @@ const $=v=>(v<0?'−':'+')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US');
 const pct=(v,t)=>(v/t*100).toFixed(4)+'%';
 const SZ=[1800,728],at=r=>`left:${pct(r[0],SZ[0])};top:${pct(r[1],SZ[1])};width:${pct(r[2]-r[0],SZ[0])};height:${pct(r[3]-r[1],SZ[1])}`;
 const clip=r=>`clip-path:inset(${pct(r[1],SZ[1])} ${pct(SZ[0]-r[2],SZ[0])} ${pct(SZ[1]-r[3],SZ[1])} ${pct(r[0],SZ[0])})`;
-/* geometry in the 1800 painting (gen.py): the line window, its text box inside the bezel, the W-L label, the season small line (b) */
-const LW=[408,418,1251,603],LT=[434,436,1225,585],WLL=[998,372,1247,414],SEL=[536,372,985,414];
-sec.classList.add('m10','m10-'+S,'m10-'+PN);
+/* geometry in the 1800 painting (gen.py): the quote window, its text box inside the bezel, the W-L label, the SEASON label (where LAST 7 DAYS was) */
+const LW=[408,418,1251,603],LT=[434,436,1225,585],WLL=[998,372,1247,414],SNL=[404,262,532,330];
+sec.classList.add('m10','m10-'+S);
 ['strip','bundle'].forEach(k=>sec.style.setProperty('--mb-'+k,`image-set(url("${BUS}mb-${k}.webp") type("image/webp"),url("${BUS}mb-${k}.jpg") type("image/jpeg"))`));
 const ones=[...four.querySelectorAll('.c8-one')],ms=ones.map(o=>o.dataset.m);
 /* ---------- the chips ---------- */
 const line={};
 ones.forEach(o=>{const m=o.dataset.m,b=o.querySelector('.c8-bal span');line[m]=b?b.textContent.trim():'';
  const pic=o.querySelector('.c7-pic'),lm=m.toLowerCase();
- pic.querySelectorAll('img').forEach(im=>{for(const k of ['src','srcset'])if(im.getAttribute(k))im.setAttribute(k,im.getAttribute(k).replace(/[^ ,]*chip8c-([a-z]+)-(\d+)\.(jpg|webp)/g,(s,mm,w,x)=>`${IMG}chip10-${mm}-${w}.${x}`))});
+ pic.querySelectorAll('img').forEach(im=>{for(const k of ['src','srcset'])if(im.getAttribute(k))im.setAttribute(k,im.getAttribute(k).replace(/[^ ,]*chip8c-([a-z]+)-(\d+)\.(jpg|webp)/g,(s,mm,w,x)=>`${IMG}chip11-${mm}-${w}.${x}`))});
  /* the SEASON window and its glass: off */
  const se=pic.querySelector('.c8-se');if(se){se.style.display='none';const g=se.nextElementSibling;if(g&&g.matches('img.c7-glass'))g.style.display='none'}
  /* LAST ROUND -> W-L */
  const lr=pic.querySelector('.c8-lr');lr.className='c7-win m10-wl';lr.innerHTML='<span class="c7-glow"></span><i class="m10-fl m10-flw"></i><i class="m10-fl m10-fll"></i><svg aria-hidden="true"></svg><i class="c7-gl"></i>';
  /* the line window: dark glass, the text, the glare, the painting's own glass screened back on top */
  const lw=D.createElement('div');lw.className='c7-win m10-ln';lw.style.cssText=at(LW);lw.innerHTML='<span class="c7-glow"></span><svg aria-hidden="true"></svg><i class="c7-gl"></i>';
- const gl=D.createElement('img');gl.className='c7-glass m10-lng';gl.alt='';gl.src=`${IMG}chip10-${lm}-1200.jpg`;gl.srcset=`${IMG}chip10-${lm}-1200.webp 1200w, ${IMG}chip10-${lm}-1800.webp 1800w`;gl.sizes='(min-width:1000px) 580px, 100vw';gl.style.cssText=clip(LW);
+ const gl=D.createElement('img');gl.className='c7-glass m10-lng';gl.alt='';gl.src=`${IMG}chip11-${lm}-1200.jpg`;gl.srcset=`${IMG}chip11-${lm}-1200.webp 1200w, ${IMG}chip11-${lm}-1800.webp 1800w`;gl.sizes='(min-width:1000px) 580px, 100vw';gl.style.cssText=clip(LW);
  lr.parentNode.insertBefore(lw,lr);lr.parentNode.insertBefore(gl,lr);
  /* the printed labels, live, in the painted labels' type */
  const lb=D.createElement('div');lb.className='m10-lab m10-labwl';lb.style.cssText=at(WLL);lb.innerHTML='<span>W-L</span>';pic.append(lb);
- if(PN==='b'){const sl=D.createElement('div');sl.className='m10-lab m10-labse';sl.style.cssText=at(SEL);sl.innerHTML=`<span>Season</span><b class="${A[m].bal-1e5>=0?'m10-u':'m10-d'}">${$(A[m].bal-1e5)}</b>`;pic.append(sl)}
+ /* LAST 7 DAYS -> SEASON P&L: the same lit window, its figure and colour swapped (chips8's own fit refits it) */
+ const d7=pic.querySelector('.c8-d7'),p=A[m].bal-1e5;if(d7){d7.className='c7-win c8-d7 '+(p>=0?'c7-up':'c7-dn');const sv=d7.querySelector('svg'),t=d7.querySelector('text'),vh=sv.viewBox.baseVal.height;
+   if(t){t.textContent=$(p);t.setAttribute('font-size',(vh*.66).toFixed(2));t.setAttribute('y',(vh*.5+vh*.66*.36).toFixed(2));const g=t.parentNode;g.dataset.y=t.getAttribute('y')}}
+ const sl=D.createElement('div');sl.className='m10-lab m10-labsn';sl.style.cssText=at(SNL);sl.innerHTML='<span>Season</span>';pic.append(sl);
 });
 /* ---------- text: canvas metrics of Anton, so the fit is measured, not guessed ---------- */
 const cv=D.createElement('canvas').getContext('2d');
@@ -100,7 +99,7 @@ function fitTape(){if(S!=='s2')return;const g=sp.querySelector('.m10-gl'),gw=g.g
 const taps=ones.map(o=>{const t=D.createElement('div');t.className='m10-tp';t.innerHTML='<i class="m10-tl"></i><i class="m10-ph"></i>';L.append(t);
   const h=D.createElement('i');h.className='m10-hit';o.querySelector('.c7-pic').append(h);return {o,t,h,m:o.dataset.m,wl:o.querySelector('.m10-wl')}});
 let Gm={};
-function layout(){capR();fitLines();ones.forEach(fitWL);fitLabels();
+function layout(){capR();W.__c8&&W.__c8.fit&&W.__c8.fit();fitLines();ones.forEach(fitWL);fitLabels();
   const fr=four.getBoundingClientRect(),desk=fr.width>=700;sec.classList.toggle('m10-desk',desk);
   const R=taps.map(x=>{const r=x.o.querySelector('.c7-pic').getBoundingClientRect();return {x:r.left-fr.left,y:r.top-fr.top,w:r.width,h:r.height}});
   const sw=S==='s1'?(desk?46:32):(desk?78:54);
@@ -129,7 +128,9 @@ let raf=0,vis=false;const loop=()=>{raf=0;if(!vis||W.__M10T!=null||RM.matches)re
 new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis&&!raf)raf=requestAnimationFrame(loop)},{rootMargin:'120px 0px'}).observe(sec);
 let lwid=0;new ResizeObserver(()=>{const w=four.clientWidth;if(w!==lwid){lwid=w;layout()}}).observe(four);
 D.fonts&&D.fonts.ready.then(layout);layout();
-/* screen readers: the chip list of chips8 stays (it already says the line and W-L); the season and last-round parts are left as they are there */
+/* screen readers: chips8's list rewritten for the new chip (no "Last 7 days", no "Last round"); its last item (the models in inference) stays */
+const CC={GPT:'United States',CLAUDE:'United States',GROK:'United States',KIMI:'China'};
+const srl0=sec.querySelector('ol.ch-sr');if(srl0){const li=[...srl0.children];ones.forEach((o,i)=>{const m=o.dataset.m;if(li[i])li[i].textContent=`No. ${i+1} ${(MD[m]&&MD[m].ver)||m}${CC[m]?', '+CC[m]:''}. ${line[m]} Season P&L: ${$(A[m].bal-1e5)}. W-L: ${A[m].W}-${A[m].L}.`})}
 const srl=D.createElement('p');srl.className='ch-sr';srl.textContent='The ledger, newest rounds: '+G.slice().reverse().slice(0,4).map(r=>`round ${r.n}, ${r.co}, ${mv(r)}: `+ms.map(m=>{const v=vd(m,r);return v?`${m} ${v==='ok'?'right':'wrong'}`:''}).filter(Boolean).join(', ')).join('; ')+'.';sec.append(srl);
 W.__m10={layout,render,fit:fitLog,geo:()=>Gm,seq:G.map(r=>r.n),
  state:t=>{render(t);return taps.map(x=>({m:x.m,r:x.r&&x.r.n,i:+x.t.style.getPropertyValue('--i'),u:+x.t.style.getPropertyValue('--u'),land:+x.h.style.getPropertyValue('--i'),v:x.t.classList.contains('m10-ok')?'ok':x.t.classList.contains('m10-no')?'no':null}))}};
