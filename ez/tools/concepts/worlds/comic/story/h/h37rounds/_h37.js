@@ -61,7 +61,7 @@ A(){const line=SL.map(s=>{if(s.r){const L=lab(s.r.n);return `<li class="h7-hon">
 B(){const bay=(x,cls)=>`<div class="h7-bay ${cls||''}"><i class="h7-bayp" aria-hidden="true"></i><div class="h7-bin">${x}</div></div>`;
   const others=SL.filter(s=>!(s.r&&s.r===HERO));
   const top=`<div class="h7-case">${bay(item(HERO,'h7-big'),'h7-hero')}<div class="h7-bays">${others.map(s=>bay(s.r?item(s.r):emptySlab(s.u,s.bet),s.r?'':'h7-bmt')).join('')}</div><span class="h7-plate"><b>Mag 7</b></span></div>`;
-  const dr=WEEKS.map((w,i)=>{const o=open.has(i);return `<div class="h7-dw${o?' h7-open':''}"><button class="h7-df" type="button" data-dw="${i}" aria-expanded="${o}"><span class="h7-card"><b>${w.t}</b><i>${w.rs.length} rounds</i></span></button>${o?`<div class="h7-tray"><div class="h7-tin">${w.rs.map(r=>item(r)).join('')}</div></div>`:''}</div>`}).join('');
+  const dr=WEEKS.map((w,i)=>{const o=open.has(i);return `<div class="h7-dw${o?' h7-open':''}"><button class="h7-df" type="button" data-dw="${i}" aria-expanded="${o}">${i===0?'<span class="h7-new">Newest</span>':''}<span class="h7-card"><b>${w.t}</b></span><span class="h7-cnt">${w.rs.length}<i>rounds</i></span></button>${o?`<div class="h7-tray"><div class="h7-tin">${w.rs.map(r=>item(r)).join('')}</div></div>`:''}</div>`}).join('');
   return `${head}${top}<p class="h7-sub">Every other round <i>· a drawer a week, newest on top</i></p><div class="h7-cab">${dr}</div>`},
 /* C. The registry: the Mag 7 as a set in a collector's album (PSA's Set Registry, its Digital Card Album built to look like a binder): five of seven
    pockets filled, two waiting; every other round on the album's pages, nine to a page, newest first, a spread of two on desktop. */

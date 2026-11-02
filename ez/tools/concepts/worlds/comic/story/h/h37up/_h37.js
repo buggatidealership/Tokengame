@@ -53,3 +53,39 @@ function mount(name,build){let done=false;const go=()=>{if(done)return;const R=D
     ticker(root);fitAll(root);if(D.fonts&&D.fonts.ready)D.fonts.ready.then(()=>fitAll(root));(H37.after||(()=>{}))(root,S);window.__h37=S}catch(e){window.__h37Err=e;console.error('h37',e)}};go()}
 Object.assign(H37,{esc,nm,md,mk,logo,trade,sym,st,cdCells,mount,fit,fitAll,MCOL,SD,WD,dow,key});
 })();
+/* ---------- the generic board: one painted head (the next bell), a body grown from the painting's own band, a painted foot; then the
+   upcoming board. Each take gives its paintings, the places on its head, and its own CSS. ---------- */
+(function(){const H=window.H37,esc=H.esc;
+const IMG='tools/concepts/worlds/comic/story/h/h37up/img/';H.IMG=IMG;
+const pos=b=>`left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%`;
+const chars=(s,on)=>on?[...String(s)].map(c=>c===' '?'<i class="c sp"> </i>':`<i class="c">${esc(c)}</i>`).join(''):esc(s);
+H.chars=chars;
+function trades(u,S,cf){return `<span class="hb-trs">${S.ORDER.map(m=>{const c=u.trades.find(x=>x.m===m);
+  if(!c)return `<span class="hb-tr no"><span class="hb-mk">${H.mk(m,cf.mk||14,'currentColor')}</span><span class="hb-w">${esc(H.nm(m))}</span><b class="hb-v">–</b></span>`;
+  const t=H.trade(c);return `<span class="hb-tr ${t.dn?'dn':'up'}"><span class="hb-mk">${H.mk(m,cf.mk||14)}</span><span class="hb-w">${t.word}</span><b class="hb-v">${t.sign}${esc(c.mag)}%</b></span>`}).join('')}</span>`}
+H.trades=trades;
+function bellHead(S,cf){const b=S.bell,h=cf.head,cd=b?b.close:0;
+  const cells=['d','h','m','s'],lab=['days','hrs','min','sec'];
+  let inner='';
+  if(h.plate)inner+=`<div class="hb-plate" style="${pos(h.plate)}"><span data-fit data-min="7">${chars(b?b.plate:'No close on the card',cf.chars)}</span></div>`;
+  if(h.cd4)inner+=`<div class="hb-cd" data-h37cd="${cd}" role="timer" aria-label="Time to the close">${h.cd4.map((q,i)=>`<div class="hb-u" style="${pos(q)}"><b data-u="${cells[i]}">00</b><i>${lab[i]}</i></div>`).join('')}</div>`;
+  if(h.inner)inner+=`<div class="hb-in" style="${pos(h.inner)}">${(cf.innerHTML||(()=>''))(S,cf)}</div>`;
+  return `<div class="hb-head" style="aspect-ratio:${h.ar}"><img class="hb-hi" src="${IMG+h.img}" alt="">${inner}</div>`}
+function row(u,S,cf){return `<li class="hb-row hb-${u.state}${u.mag7?' hb-m7':''}"><a href="#/round/${u.n}" aria-label="${esc(u.co+' ('+u.ticker+'), round '+u.n+'. '+H.st(u)+'. '+u.trades.map(c=>H.trade(c).sr).join(', '))}">
+  <span class="hb-co">${H.logo(u,'hb-lg')}<span class="hb-nm" data-fit data-min="9"><b>${esc(u.co)}</b> <small>${chars(H.sym(u),cf.chars)}</small>${u.mag7?'<em>Mag 7</em>':''}</span></span>
+  <span class="hb-st">${u.state==='in'?'All 4 in':u.state==='coming'?u.nIn+' of 4 in':esc(u.due)}</span>${trades(u,S,cf)}</a></li>`}
+function big(u,S,cf){return `<li class="hb-big${u.mag7?' hb-m7':''}"><a href="#/round/${u.n}" aria-label="${esc(u.co+' ('+u.ticker+'), round '+u.n+(u.mag7?', Mag 7':'')+(u.bet?', Bet #1':'')+'. '+u.when)}">
+  <span class="hb-bl">${H.logo(u,'hb-blg')}</span><span class="hb-bt"><span class="hb-bn" data-fit data-min="11">${esc(u.co)}</span>
+  <span class="hb-bk">${chars(H.sym(u),cf.chars)}${u.mag7?'<em>Mag 7</em>':''}${u.bet?'<em class="hb-bet">Bet #1</em>':''}</span>
+  <span class="hb-bw">${esc(u.when)}</span></span>${trades(u,S,cf)}</a></li>`}
+function li(u,S,cf){return `<li class="hb-li"><a href="#/round/${u.n}" aria-label="${esc(u.co+' ('+u.ticker+'), round '+u.n+'. '+H.st(u))}">${H.logo(u,'hb-slg')}<span class="hb-ln" data-fit data-min="9">${esc(u.co)}</span><small class="hb-lk">${esc(H.sym(u))}</small><span class="hb-ls">${u.state==='due'?(u.dated?'':'trades due'):esc(u.nIn+'/4 in')}</span></a></li>`}
+function day(d,S,cf){return `<section class="hb-day${d.past?' hb-past':''}"><h3 class="hb-dh"><b>${chars((d.sd||'').toUpperCase(),cf.chars)}</b> <span>${chars(H.md(d.p).toUpperCase(),cf.chars)}</span><small>${d.dueOnly?'trades due · no close set':'graded at the close'}</small></h3><ul class="hb-lis">${d.rounds.map(u=>li(u,S,cf)).join('')}</ul></section>`}
+H.generic=function(S,cf){const b=S.bell;
+  const t1=`<h2 class="t4-h2 hb-t"><span class="t4-hw">The next bell</span></h2>`,t2=`<h2 class="t4-h2 hb-t hb-t2"><span class="t4-hw">Upcoming predictions</span></h2>`;
+  const cap=b?`<p class="hb-cap">${cf.capHTML?cf.capHTML(b):`The close grades every trade. <b>${b.nIn}</b> of <b>${b.nAll}</b> are in.`}</p>`:'';
+  const tomorrow=b?`${cf.tomLab?`<h3 class="hb-th">${cf.tomLab(b)}</h3>`:''}<ol class="hb-rows">${b.rounds.map(u=>row(u,S,cf)).join('')}</ol>`:'';
+  const b1=`<div class="hb hb1">${bellHead(S,cf)}<div class="hb-body">${cf.capInHead?'':cap}${tomorrow}</div><div class="hb-foot"></div></div>`;
+  const b2=`<div class="hb hb2"><div class="hb-top"></div><div class="hb-body">${cf.bigLab?`<h3 class="hb-th">${cf.bigLab}</h3>`:''}<ul class="hb-bigs">${S.big.map(u=>big(u,S,cf)).join('')}</ul>
+    ${cf.restLab?`<h3 class="hb-th hb-th2">${cf.restLab}</h3>`:''}<div class="hb-days">${S.days.map(d=>day(d,S,cf)).join('')}</div></div><div class="hb-foot"></div></div>`;
+  return `<div class="hb-wrap"><div class="hb-c1">${t1}${b1}</div><div class="hb-c2">${t2}${b2}</div></div>`};
+H.pos=pos;})();

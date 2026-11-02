@@ -359,7 +359,10 @@ function fit(){root.querySelectorAll('.m7-nm').forEach(e=>{e.style.fontSize='';e
   const f0=parseFloat(getComputedStyle(e).fontSize);let f=f0,g=0;
   while(over()>0&&f>f0*.85&&g++<40){f-=.25;e.style.fontSize=f+'px'}
   if(over()>0){e.classList.add('m7-tl');f=f0;e.style.fontSize='';g=0;while(over()>0&&f>4.5&&g++<80){f-=.25;e.style.fontSize=f+'px'}}})}
-D.fonts&&D.fonts.ready.then(()=>{try{fit()}catch(x){}});
+/* the grade's "1" is boxed to a full digit's width a frame later (FONTS AND GOLD below), which widens the right column: fit again then */
+const refit=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{try{fit()}catch(x){}}));
+new MutationObserver(refit).observe(root,{childList:true,subtree:true});
+D.fonts&&D.fonts.ready.then(()=>setTimeout(()=>{try{fit()}catch(x){}},700));
 /* the old carousel stays laid out (the round view copies and measures its cards), only moved off screen and hidden from readers */
 [...sec.children].forEach(c=>{if(c===root)return;c.classList.add('r6-old');c.setAttribute('aria-hidden','true');c.inert=true});
 sec.classList.add('r6-sec','m7-sec');sec.appendChild(root);
