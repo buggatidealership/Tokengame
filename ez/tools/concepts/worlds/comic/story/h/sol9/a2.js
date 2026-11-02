@@ -33,7 +33,7 @@ const W={id:'a2',
   /* the x axis: vias every 10 rounds (the board's own marks), R1 and the last round */
   for(let i=10;i<g.n;i+=10)s+=`<circle cx="${Xp(i).toFixed(1)}" cy="${(cy1+9).toFixed(1)}" r="2.4" fill="#04130a" stroke="#ffcc33" stroke-opacity=".75" stroke-width="1.2"/>`;
   s+=t(cx0,cy1+sm+12,sm,'R1',{ff:"'Barlow Condensed',sans-serif",w:800,c:'#efe6c6',op:.75})+t(cx1,cy1+sm+12,sm,'R'+g.n,{a:'end',ff:"'Barlow Condensed',sans-serif",w:800,c:'#efe6c6',op:.75})+
-   t((cx0+cx1)/2,cy1+sm+12,sm,g.ac?'ROUND BY ROUND':'$100K ON EVERY TRADE · NO LEVERAGE',{a:'middle',ff:"'Barlow Condensed',sans-serif",w:800,c:'#efe6c6',op:.55,ls:'.08em'});
+   t((cx0+cx1)/2,cy1+sm+12,sm,g.ac?'ROUND BY ROUND':(w>=380?'$100K ON EVERY TRADE · NO LEVERAGE':'$100K ON EVERY TRADE'),{a:'middle',ff:"'Barlow Condensed',sans-serif",w:800,c:'#efe6c6',op:.55,ls:'.08em'});
   /* the traces: a shadow cut into the mask, the copper in the AI's colour, a highlight along its top edge */
   g.order.forEach(m=>{const d=g.d(g.pts(m)),ld=m===g.lead,c=W.col(X,m),sw=ld?3.6:2.6;
     s+=`<path d="${d}" fill="none" stroke="#000" stroke-opacity=".6" stroke-width="${sw+2.4}" stroke-linejoin="round" stroke-linecap="round" transform="translate(0 1.2)"/>`+
