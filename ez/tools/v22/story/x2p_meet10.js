@@ -1,6 +1,6 @@
 /* X2+ MEET THE MODELS, H26 meet10, the owner's pick (2026-11-02): drop-in, load after tools/v22/story/x2p_chips.js (chips8 take c) and its CSS after x2p_chips.css.
    The strip S1 by default (window.__M10S='s2' gives the tape). Images from media/.
-   Media (written out so make_site.py copies them; copy them flat into ez/media/ first): media/chip11-grok-1200.jpg media/chip11-grok-1200.webp media/chip11-grok-1800.jpg media/chip11-grok-1800.webp media/chip11-claude-1200.jpg media/chip11-claude-1200.webp media/chip11-claude-1800.jpg media/chip11-claude-1800.webp media/chip11-gpt-1200.jpg media/chip11-gpt-1200.webp media/chip11-gpt-1800.jpg media/chip11-gpt-1800.webp media/chip11-kimi-1200.jpg media/chip11-kimi-1200.webp media/chip11-kimi-1800.jpg media/chip11-kimi-1800.webp media/mb-strip.webp media/mb-strip.jpg media/mb-bundle.webp media/mb-bundle.jpg */
+   Media (written out so make_site.py copies them; copy them flat into ez/media/ first): media/chip12-grok-1200.jpg media/chip12-grok-1200.webp media/chip12-grok-1800.jpg media/chip12-grok-1800.webp media/chip12-claude-1200.jpg media/chip12-claude-1200.webp media/chip12-claude-1800.jpg media/chip12-claude-1800.webp media/chip12-gpt-1200.jpg media/chip12-gpt-1200.webp media/chip12-gpt-1800.jpg media/chip12-gpt-1800.webp media/chip12-kimi-1200.jpg media/chip12-kimi-1200.webp media/chip12-kimi-1800.jpg media/chip12-kimi-1800.webp media/mb-strip.webp media/mb-strip.jpg media/mb-bundle.webp media/mb-bundle.jpg */
 window.__M10IMG=window.__M10IMG||"media/";window.__M10BUS=window.__M10BUS||"media/";window.__M10S=window.__M10S||"s1";
 /* Round H26 · meet10, the owner's pick (2026-11-02): Meet the models, the quote in the chip, fed by the ledger strip. Laid over the live chips8 take c
    (x2p_chips.js) without touching it. The chip now reads: name and No. · SEASON P&L (the big window) · W-L · the quote.
@@ -43,14 +43,14 @@ const ones=[...four.querySelectorAll('.c8-one')],ms=ones.map(o=>o.dataset.m);
 const line={};
 ones.forEach(o=>{const m=o.dataset.m,b=o.querySelector('.c8-bal span');line[m]=b?b.textContent.trim():'';
  const pic=o.querySelector('.c7-pic'),lm=m.toLowerCase();
- pic.querySelectorAll('img').forEach(im=>{for(const k of ['src','srcset'])if(im.getAttribute(k))im.setAttribute(k,im.getAttribute(k).replace(/[^ ,]*chip8c-([a-z]+)-(\d+)\.(jpg|webp)/g,(s,mm,w,x)=>`${IMG}chip11-${mm}-${w}.${x}`))});
+ pic.querySelectorAll('img').forEach(im=>{for(const k of ['src','srcset'])if(im.getAttribute(k))im.setAttribute(k,im.getAttribute(k).replace(/[^ ,]*chip8c-([a-z]+)-(\d+)\.(jpg|webp)/g,(s,mm,w,x)=>`${IMG}chip12-${mm}-${w}.${x}`));if(im.getAttribute('sizes'))im.setAttribute('sizes','(min-width:1000px) 600px, calc(100vw - 72px)')});
  /* the SEASON window and its glass: off */
  const se=pic.querySelector('.c8-se');if(se){se.style.display='none';const g=se.nextElementSibling;if(g&&g.matches('img.c7-glass'))g.style.display='none'}
  /* LAST ROUND -> W-L */
  const lr=pic.querySelector('.c8-lr');lr.className='c7-win m10-wl';lr.innerHTML='<span class="c7-glow"></span><i class="m10-fl m10-flw"></i><i class="m10-fl m10-fll"></i><svg aria-hidden="true"></svg><i class="c7-gl"></i>';
  /* the line window: dark glass, the text, the glare, the painting's own glass screened back on top */
  const lw=D.createElement('div');lw.className='c7-win m10-ln';lw.style.cssText=at(LW);lw.innerHTML='<span class="c7-glow"></span><svg aria-hidden="true"></svg><i class="c7-gl"></i>';
- const gl=D.createElement('img');gl.className='c7-glass m10-lng';gl.alt='';gl.src=`${IMG}chip11-${lm}-1200.jpg`;gl.srcset=`${IMG}chip11-${lm}-1200.webp 1200w, ${IMG}chip11-${lm}-1800.webp 1800w`;gl.sizes='(min-width:1000px) 580px, 100vw';gl.style.cssText=clip(LW);
+ const gl=D.createElement('img');gl.className='c7-glass m10-lng';gl.alt='';gl.src=`${IMG}chip12-${lm}-1200.jpg`;gl.srcset=`${IMG}chip12-${lm}-1200.webp 1200w, ${IMG}chip12-${lm}-1800.webp 1800w`;gl.sizes='(min-width:1000px) 580px, 100vw';gl.style.cssText=clip(LW);
  lr.parentNode.insertBefore(lw,lr);lr.parentNode.insertBefore(gl,lr);
  /* the printed labels, live, in the painted labels' type */
  const lb=D.createElement('div');lb.className='m10-lab m10-labwl';lb.style.cssText=at(WLL);lb.innerHTML='<span>W-L</span>';pic.append(lb);
@@ -139,4 +139,85 @@ const srl=D.createElement('p');srl.className='ch-sr';srl.textContent='The ledger
 W.__m10={layout,render,fit:fitLog,geo:()=>Gm,seq:G.map(r=>r.n),
  state:t=>{render(t);return taps.map(x=>({m:x.m,r:x.r&&x.r.n,i:+x.t.style.getPropertyValue('--i'),u:+x.t.style.getPropertyValue('--u'),land:+x.h.style.getPropertyValue('--i'),v:x.t.classList.contains('m10-ok')?'ok':x.t.classList.contains('m10-no')?'no':null}))}};
 D.documentElement.classList.add('m10-ready');
+}})();
+/* Round H28 · meet11 D2, the owner's pick (2026-11-02: "D2 works as it is"), ported from tools/concepts/worlds/comic/story/h/meet11/ (m11.js take e).
+   Laid over meet10 above, after it has built (html.m10-ready):
+   - every chip the same size, one column at every width (desktop at most 600px, so the 1800px paintings stay 3x the chip);
+   - the rank as a big extruded numeral outside each chip on the left (#1 gold), the painted "No." box off;
+   - the paintings chip12-<m> (gen.py take e): one tall NAME window across the panel's top row (the name live, the biggest word on the chip, the version
+     small beside it, from MODELS.ver with the name taken off its front), shorter Season P&L and W-L windows with their labels on the matte at their left,
+     the flag patch gone and the gold plate moved down, the lab's flag waving in the board itself (US, China), a bus of gold traces to the board's edges;
+   - one board of four: each chip's pins and rim are cut where it meets the next (clip-path rows 63 and 661 of 728) and the chips pulled together, so the
+     bus lines run on from chip to chip; the No. 5 chip stays apart;
+   - no glare on the display windows; every figure, label and the quote written plainly (no glow, no sheen); only the name keeps its light.
+   Numbers: live as in meet10 (__x2pPnl, the computed line). Nothing new moves. window.__m11 = {layout, measure}. */
+(function(){const W=window,D=document;let tries=0;
+(function go(){const sec=D.querySelector('section.c8.m10'),four=sec&&sec.querySelector('.c8-four');
+ if(!four||!W.__m10||!W.__c8||!D.documentElement.classList.contains('m10-ready')){if(++tries<400)setTimeout(go,50);return}
+ try{run(sec,four)}catch(e){W.__m11Err=e;console.error(e)}})();
+function run(sec,four){
+const MD=W.MODELS||{};
+const ones=[...four.querySelectorAll('.c8-one')],ms=ones.map(o=>o.dataset.m);ones.forEach((o,i)=>o.dataset.r=i+1);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const NM=m=>String((MD[m]&&MD[m].name)||m).toUpperCase();
+const VER=m=>{const v=String((MD[m]&&MD[m].ver)||'').trim(),n=String((MD[m]&&MD[m].name)||m);return v.toLowerCase().startsWith(n.toLowerCase())?v.slice(n.length).replace(/^[\s\-–]+/,''):v};
+sec.classList.add('m11','m11-d2');
+const SZ=[1800,728],pc=(v,t)=>(v/t*100).toFixed(4)+'%';
+const at=r=>`left:${pc(r[0],SZ[0])};top:${pc(r[1],SZ[1])};width:${pc(r[2]-r[0],SZ[0])};height:${pc(r[3]-r[1],SZ[1])}`;
+/* the new windows in the 1800 painting (gen.py) */
+const NAME=[408,113,1252,262],PNL=[530,276,946,404],WL=[1046,276,1252,404],SNL=[404,276,526,404],WLL=[950,276,1044,404];
+const glassOf=e=>{let g=e&&e.nextElementSibling;return g&&g.matches('img.c7-glass')?g:null};
+const DF=D.createElement('div');DF.innerHTML='<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="m11gC" x1="0" y1="0" x2="0" y2="1"><stop offset=".05" stop-color="#ffffff"/><stop offset=".55" stop-color="#fff6dc"/><stop offset="1" stop-color="#f0d9a2"/></linearGradient></defs></svg>';sec.prepend(DF.firstChild);
+ones.forEach(o=>{const m=o.dataset.m,pic=o.querySelector('.c7-pic');
+ const no=pic.querySelector('.c8-no');if(no){no.style.display='none';const g=glassOf(no);g&&(g.style.display='none')}
+ const d7=pic.querySelector('.c8-d7');if(d7){d7.style.cssText=at(PNL);
+  const w=PNL[2]-PNL[0],h=PNL[3]-PNL[1],fs=h*.58,sv=d7.querySelector('svg'),t=d7.querySelector('text'),gg=t&&t.parentNode;sv.setAttribute('viewBox',`0 0 ${w} ${h}`);
+  if(t){t.setAttribute('x',w/2);t.setAttribute('y',(h*.5+fs*.36).toFixed(2));t.setAttribute('font-size',fs.toFixed(2));gg.dataset.w=w*.9;gg.dataset.cx=w/2;gg.dataset.y=(h*.5+fs*.36).toFixed(2)}}
+ const wl=pic.querySelector('.m10-wl');if(wl)wl.style.cssText=at(WL);
+ const lw=pic.querySelector('.m10-labwl');if(lw){lw.style.cssText=at(WLL);lw.innerHTML='<span>W-L</span>';lw.classList.add('m11-lab')}
+ const ls=pic.querySelector('.m10-labsn');if(ls){ls.style.cssText=at(SNL);ls.innerHTML='<span>Season<br>P&amp;L</span>';ls.classList.add('m11-lab')}
+ const nm=D.createElement('div');nm.className='c7-win m11-nm';nm.style.cssText=at(NAME);nm.innerHTML='<span class="c7-glow"></span><svg aria-hidden="true"></svg>';
+ pic.insertBefore(nm,pic.querySelector('.c8-d7')||pic.firstChild);
+});
+/* the name, measured on canvas: its cap 62% of the window's height, the version at .42 of it, both shrunk together if the row runs out */
+const cv=D.createElement('canvas').getContext('2d');
+const tw=(s,fs,f)=>{cv.font=`${fs}px ${f||'Anton'}`;return cv.measureText(s).width+s.length*fs*.02};
+let CAP=.735;const capR=()=>{cv.font='100px Anton';const m=cv.measureText('H');if(m.actualBoundingBoxAscent>40)CAP=m.actualBoundingBoxAscent/100};
+const nameLog={};
+function names(){capR();ones.forEach(o=>{const m=o.dataset.m,nm=o.querySelector('.m11-nm'),R=nm.getBoundingClientRect();if(!R.width)return;
+  const w=R.width,h=R.height,pad=h*.3;let fs=h*.62/CAP,vs=fs*.42;const gap=fs*.16,N=NM(m),V=VER(m).toUpperCase();
+  const tot=tw(N,fs)+gap+tw(V,vs,"'Barlow Condensed'"),max=w-pad*2;if(tot>max){const k=max/tot;fs*=k;vs*=k}
+  const y=h/2+fs*CAP/2,nw=tw(N,fs),sv=nm.querySelector('svg');sv.setAttribute('viewBox',`0 0 ${w} ${h}`);
+  sv.innerHTML=`<text class="m11-n" x="${pad.toFixed(2)}" y="${y.toFixed(2)}" font-size="${fs.toFixed(2)}">${esc(N)}</text>`+(V?`<text class="m11-v" x="${(pad+nw+gap).toFixed(2)}" y="${y.toFixed(2)}" font-size="${vs.toFixed(2)}">${esc(V)}</text>`:'');
+  nameLog[m]={cap:+(fs*CAP).toFixed(2),ver:+(vs*.7).toFixed(2)}})}
+/* the layout: one column, equal chips, joined into one board */
+const desk=()=>innerWidth>=1000;
+const L=D.createElement('div');L.className='m11-l';L.setAttribute('aria-hidden','true');four.append(L);
+const CCOL={GROK:'#5b5148',CLAUDE:'#cd5e26',GPT:'#207e49',KIMI:'#3c5691'};
+const nums=ones.map((o,i)=>{const e=D.createElement('b');e.className='m11-num'+(i?'':' m11-num1');e.style.setProperty('--cc',CCOL[ms[i]]||'#444');e.innerHTML=`<span>${i+1}</span>`;L.append(e);return e});
+const CT=63/728,CB=(728-661)/728;
+function size(){const cs=getComputedStyle(four),inner=four.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),top=Math.min(inner,desk()?600:9e9);ones.forEach(o=>{o.style.width=top.toFixed(1)+'px'})}
+function join(){ones.forEach((o,i)=>{const pic=o.querySelector('.c7-pic'),h=pic.getBoundingClientRect().height,t=i?CT:0,b=i<ones.length-1?CB:0;
+  pic.style.clipPath=`inset(${(t*100).toFixed(4)}% 0 ${(b*100).toFixed(4)}% 0)`;o.style.marginTop=i?(-(CB+CT)*h).toFixed(2)+'px':''})}
+function strip(){const g=W.__m10.geo(),sw=g.sw,sp=four.querySelector('.m10-sp'),fr=four.getBoundingClientRect();
+ const R=ones.map(o=>{const r=o.querySelector('.c7-pic').getBoundingClientRect();return {x:r.left-fr.left,y:r.top-fr.top,w:r.width,h:r.height}});
+ const x0=Math.min(...R.map(r=>r.x)),cx=desk()?x0-150:3+sw/2,top=Math.min(...R.map(r=>r.y))-14,bot=Math.max(...R.map(r=>r.y+r.h))+10;
+ sp.style.left=(cx-sw/2)+'px';sp.style.top=top+'px';sp.style.height=(bot-top)+'px';sp.style.width=sw+'px';
+ [...four.querySelectorAll('.m10-tp')].forEach((t,j)=>{const r=R[j],y=r.y+r.h*.5,h=Math.max(9,r.h*.2),a=cx+sw/2-2,b=r.x+2;t.style.cssText=`left:${a}px;top:${y-h/2}px;width:${Math.max(0,b-a)}px;height:${h}px`;t.classList.remove('m10-rev')});
+ ones.forEach(o=>{const h=o.querySelector('.m10-hit');h&&h.classList.remove('m10-rt')})}
+cv.font='100px Bangers';const DW={};for(const d of '1234')DW[d]=cv.measureText(d).width/100||.46;
+function place(){const fr=four.getBoundingClientRect(),sR=four.querySelector('.m10-sp').getBoundingClientRect().right-fr.left;
+ ones.forEach((o,i)=>{const r0=o.querySelector('.c7-pic').getBoundingClientRect(),r={x:r0.left-fr.left,y:r0.top-fr.top,h:r0.height},e=nums[i];
+  const gx=desk()?sR+6:sR+2,gw=r.x-gx-(desk()?8:2),maxH=r.h*.5-Math.max(9,r.h*.2)/2-2,fs=Math.min(maxH/.74,gw/DW[String(i+1)]/1.12,desk()?110:9e9);
+  Object.assign(e.style,{left:(gx+gw/2).toFixed(1)+'px',top:(r.y-2+(i?CT*r.h:0)).toFixed(1)+'px',fontSize:fs.toFixed(1)+'px'})})}
+let busy=false;
+function layout(){if(busy)return;busy=true;try{size();join();W.__m10.layout();names();W.__c8.fit&&W.__c8.fit();strip();place();W.__m10.render(W.__M10T!=null?+W.__M10T:-1)}finally{busy=false}}
+let lw=0;new ResizeObserver(()=>{const w=four.clientWidth;if(w!==lw){lw=w;requestAnimationFrame(layout)}}).observe(four);
+D.fonts&&D.fonts.ready.then(()=>requestAnimationFrame(layout));layout();
+W.__m11={layout,names:nameLog,measure:()=>{const fr=four.getBoundingClientRect(),box=e=>{const r=e.getBoundingClientRect();return [r.left-fr.left,r.top-fr.top,r.width,r.height].map(v=>+v.toFixed(1))};
+ const ov=(a,b)=>!(a[0]+a[2]<=b[0]||b[0]+b[2]<=a[0]||a[1]+a[3]<=b[1]||b[1]+b[3]<=a[1]),chips=ones.map(o=>box(o.querySelector('.c7-pic'))),N=nums.map(box),sp=box(four.querySelector('.m10-sp')),hits=[];
+ N.forEach((b,i)=>{chips.forEach((c,j)=>{if(ov(b,c))hits.push('n'+(i+1)+'xchip'+(j+1))});if(ov(b,sp))hits.push('n'+(i+1)+'xstrip')});
+ const bodyTop=chips.map((c,i)=>+(c[1]+(i?CT*c[3]:0)).toFixed(1)),bodyBot=chips.map((c,i)=>+(c[1]+c[3]-(i<chips.length-1?CB*c[3]:0)).toFixed(1));
+ return {chips,sizes:chips.map(c=>c[2]+'x'+c[3]),nums:N,overlap:hits,joins:bodyTop.slice(1).map((t,i)=>+(t-bodyBot[i]).toFixed(2)),names:nameLog,h:Math.round(fr.height)}}};
+D.documentElement.classList.add('m11-ready');
 }})();
