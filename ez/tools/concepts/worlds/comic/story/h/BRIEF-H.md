@@ -917,3 +917,18 @@ Each task below is a **mockup** unless it says otherwise. Rules: rule 0, the har
 - What the page serves is at least 3x the CSS size it shows at, at the native fps, with no visible compression.
 - Say each file's resolution, fps and size in the REPORT.
 - The `chars` loops especially: the highest resolution and fps Hedra gives, then cut for the window.
+
+### `meet9`: Meet the models, the lines and the ground between the chips (owner, 2026-11-02, ~01:50 UTC, from the live site on a phone, `h/h25/owner-meet-phone.jpg`; mockups)
+1. **The balloons don't fit.** "They don't feel part of the world. There should be a more magical way they are integrated." The balloons are pasted-on comic paper over painted hardware (lesson 111: every object obeys its world). Make the line part of the chip world, the way the NVIDIA timer's digits are part of the chip. Takes, at least four:
+   - the line scrolls on a display strip of its own chip;
+   - it is projected as light from the founder's die, a hologram in the chip's own colour;
+   - it is etched in light on the board's traces between two chips;
+   - it is typed out on a ticker the founder's die drives;
+   - your own.
+
+   It must stay readable: 9 CSS px cap height at 390. The line stays computed from the sheet (x2p_chips.js `LINE`).
+2. **The black between the chips is boring.** The owner circled the gaps between the chips: "the bleeding needs to happen here". The chips should sit in a world that runs edge to edge under and between them, not on black: the board ground (`ground4` G1, live) with traces, light and the ledger bus (`meetbus`, running at the same time: build on its boards if they are in, `ez/x2p-h25-meetbus-*`).
+   - Apply the gap rule: what sits between two chips is part of the same board, so it carries something (traces, data, light).
+   - Show at least three treatments.
+- Live code: `ez/tools/v22/story/x2p_chips.js/.css` (chips8 take c) and `x2p_more.js` (the ground), both read only.
+- **Boards:** `ez/x2p-h25-meet9-*.png` at 390 and 1280. Work in `h/meet9/`. Up to $40, highest resolution and fps.
