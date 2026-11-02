@@ -678,3 +678,58 @@ Rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/to
   - LEDGER: "Every round is written to the ledger."
   - BOARD: "The ledger ranks the board."
 - **The cut-off:** once quad4 and chips7 are built in, the top and Meet the models are good enough for now, and the next section is the record.
+
+## Round H24 (owner, 2026-11-02, ~00:30 UTC, on the H23 port; screenshots in `h24/`)
+**Where X2+ stands** (preview.earningszn.pages.dev, artifact 9dPsU3tcgmC9RAzQZy9Mg5). The owner calls the top and Meet the models nearly locked: "a lot more beautiful".
+- **Built, after the owner's notes:**
+  - the four frames with the numbers centred in their glass;
+  - Tesla's logo lit beside "TESLA" (no ticker);
+  - no caption tabs ("too much information");
+  - BOARD zoomed out again: three close-ups, then the wide shot;
+  - the lines in the trade's own words: "Each AI goes long or short before the report." / "The next market close ends every trade." / "Every trade is written to the ledger." / "The ledger ranks the board."
+- **The look of all three tasks below:** the NVIDIA chip's art (`media/bet-chip-h2.jpg`, `media/top-hero-t-h22.jpg`, and `h24/now-*.png`). That means painted comic hardware, one warm key light, green and red rim lights, black void, and the palette black, dark green, red, gold. Lettering is in the logo's cream with the bet's font. Live numbers are lit in painted glass, as the NVIDIA timer's.
+- **Unity is the brief** ("coherent unity", owner): one world on the page. Every element continues the beat before it (the ledger, the chips), so nothing is a separate module laid on a page.
+- **Process:**
+  - Before showing anything, run the twelve design questions of skill lesson 122 on your section (`.claude/skills/ez-visual-story/SKILL.md`). Write the answers in your REPORT in a line each.
+  - H23's tests 1 to 6 still hold (resolution, 9 px cap height, integration, static words painted, chip detail, framing), measured and reported.
+  - 4K masters. The owner: "there is no limit to the spending for now"; take up to **$40** each. Spend on quality and more takes, not on padding.
+- **Deliverables:** boards at 390 (phone, the default) and 1280, each take shown inside the real X2+ page (laid over the built `v46-live-x2plus.html`, like quad4's run.js), plus a REPORT.
+- **Rules:** rule 0, the hard rules and BRIEF-H's output rules hold. Commit only under `ez/tools/concepts/` and boards in `ez/`. Never touch `ez/tools/v22/`, any `ez/v4*.html` or `ez/media/`. Never deploy or publish.
+
+### `ground`: the page's own background
+Today the page between and behind the beats is flat black. The owner: "visualize a website that has nothing on it, just a background... that should also be part of the unity."
+- **Takes:** at least four very different grounds from the chip's world. For example:
+  - the motherboard the chips sit on, as one continuous board running down the page;
+  - a dark wafer;
+  - the inside of a server rack;
+  - a substrate that changes as you scroll (traces leading from beat to beat, carrying data downward);
+  - your own.
+- **Constraints:**
+  - It must never compete with the beats: dim, low contrast, and the key light stays on the content.
+  - It must work behind the torn-paper gutters, or replace them if your ground makes them redundant (say which).
+  - Show how it behaves at 390 and 1280 and over a long page.
+- **Cost on the page:** keep it cheap. One tiled or very long image, or a few layers; no per-frame script. Measure the cover lift and scroll on a 4x slower CPU against today.
+- **Boards:** `ez/x2p-h24-ground-*.png`: the whole X2+ Overview from top to bet, phone and desktop, each take.
+
+### `film`: the explainer beat ("The whole game 1:20")
+The owner: with the new rule, "that wording and that beat has to be probably... redesigned".
+- Today: the head "THE WHOLE GAME 1:20", then the film on a painted board screen (`media/top-t3-screen-h22.jpg`).
+- **Takes:** at least three. Each is:
+  - a new head in the beat's own words;
+  - the film playing on a surface that belongs to the chip world;
+  - the play control and the running time integrated like the timer's digits;
+  - the beat's place after "How a round works" (or before it, if your take argues for that; say why).
+- The film's frame (`media/ez-landing-v4-poster-ez.jpg`, 16:9) must show whole. Never baked words over the picture.
+- **Boards:** `ez/x2p-h24-film-*.png`, phone and desktop, plus a short video of play starting in one take.
+
+### `rounds`: Every round so far (X2+, the section after Meet the models)
+- **The record today:** X2+'s record is a carousel of PSA slabs ("Every call, receipts included"); X3+ has the rack and tiles.
+- **Content:**
+  - Every graded round, newest first.
+  - Each round shows its film's own frame (`media/tile-r<n>-f1.jpg`, native, never repainted; no-film rounds: `tile-r71-t2.jpg`, `tile-r79-t2.jpg`), the company's logo, the move, the winner, and whether each AI was right.
+  - A tap opens the round as today (`#/round/<n>`, the slab view).
+  - Pending rounds (calls in) and what is coming next are optional, if they fit the story.
+  - The name "Every round so far" is not locked; propose the section's head in the beat's own words.
+- **The world:** it continues frame 3, the LEDGER: the ledger the round was written to, so the visitor sees the same object grow from four rows into the whole season. Glass, rows and a gold bezel, the round's picture lit on its row, or your own way.
+- **Takes:** at least four, very different, all in the chip art. Each answers how 80 rounds fit a phone without a wall of scrolling (show 8, then more), and how a new round arrives.
+- **Boards:** `ez/x2p-h24-rounds-*.png`, phone and desktop, plus a 3x close-up of one row.
