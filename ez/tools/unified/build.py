@@ -1,4 +1,4 @@
-"""Build the unified EZ page (ez/v50-unified.html) from tools/unified/: page.html with u.css, track.js, u.js and the logo inlined.
+"""Build EZ Live XZ+, the unified page (ez/v50-live-xzplus.html) from tools/unified/: page.html with u.css, track.js, u.js and the logo inlined.
 Run from anywhere: python3 tools/unified/build.py. The page reads every figure from ez-data.js at load, so a sheet sync needs no
 rebuild of this file; make_site.py runs this build itself before it copies the page. The world's rules: tools/unified/RULES.md."""
 import os, re
@@ -12,6 +12,6 @@ for k, v in (('CSS', rd('u.css')), ('TRACK', rd('track.js')), ('JS', rd('u.js'))
 # every CSS file stays brace-balanced (the X2+ reduced-motion bug was one missing brace)
 css = re.sub(r'/\*.*?\*/', '', rd('u.css'), flags=re.S)
 assert css.count('{') == css.count('}'), 'u.css braces do not balance'
-out = os.path.join(EZ, 'v50-unified.html')
+out = os.path.join(EZ, 'v50-live-xzplus.html')
 open(out, 'w', encoding='utf-8').write(page)
 print('wrote', os.path.relpath(out, EZ), len(page), 'bytes')

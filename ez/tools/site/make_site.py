@@ -13,10 +13,10 @@ URL = 'https://earningszn.xyz/'
 # SITE_PAGE=<file> builds another page. Since 2026-10-30 (owner: "push this to production... so we have the comic version
 # live") the live site was X3+, the comic. Since 2026-11-02 (owner: "feel free to ship to production. So at least the overview page v1 is done")
 # the live site is X2+ again (the chip world); SITE_PAGE=v47-live-x3plus.html builds X3+ (the x3plus preview branch)
-# Since 2026-11-02 (H31, the unified page: one world, one set of rules, tools/unified/RULES.md) the live page is v50-unified.html,
-# built here from tools/unified/ so a sheet sync and a deploy need no extra step. SITE_PAGE=v46-live-x2plus.html builds X2+ again (the rollback).
-PAGE = os.environ.get('SITE_PAGE') or 'v50-unified.html'
-if PAGE == 'v50-unified.html':
+# SITE_PAGE=v50-live-xzplus.html builds EZ Live XZ+ (2026-11-02, a candidate: the unified page, tools/unified/RULES.md),
+# rebuilt here from tools/unified/ first. Production stays X2+.
+PAGE = os.environ.get('SITE_PAGE') or 'v46-live-x2plus.html'
+if PAGE == 'v50-live-xzplus.html':
     import subprocess
     subprocess.run([sys.executable, os.path.join(EZ, 'tools', 'unified', 'build.py')], check=True)
 page = open(os.path.join(EZ, PAGE), encoding='utf-8').read()

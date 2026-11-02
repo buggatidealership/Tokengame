@@ -3,9 +3,9 @@
 Rule zero, from the owner: decide the world's rules once, make every element obey them, and break them only on purpose,
 for the one thing you want seen. Each section hands over to the next in the same rhythm and the same world.
 
-The page is `ez/v50-unified.html`, built by `tools/unified/build.py` from `page.html`, `u.css`, `track.js`, `u.js`
-(started from H30 concept B, `tools/concepts/worlds/comic/story/h/h30/b/`). `make_site.py` builds it by default;
-`SITE_PAGE=v46-live-x2plus.html` builds X2+ again.
+The page is EZ Live XZ+, `ez/v50-live-xzplus.html`, built by `tools/unified/build.py` from `page.html`, `u.css`, `track.js`, `u.js`
+(started from H30 concept B, `tools/concepts/worlds/comic/story/h/h30/b/`). A candidate: production stays X2+;
+`SITE_PAGE=v50-live-xzplus.html python3 tools/site/make_site.py` builds a site from it.
 
 ## The world
 A black circuit board seen head-on under one soft, even key light. Every object on it is a chip: a matte black body,
