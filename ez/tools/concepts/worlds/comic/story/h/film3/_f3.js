@@ -1,5 +1,5 @@
 /* Round H26 · film3: "the whole game" as a small sub-section of How a round works, and the gaps (mockup over the built v46-live-x2plus.html).
-   window.__f3(take, opts): take 'A' bezel, 'B' transport, 'C' legs, 'D' scope, 'E' module. opts.open: 'phone' | 'land' | 'theatre' shows the open state.
+   window.__f3(take, opts): take 'A' bezel, 'B' transport, 'C' legs, 'D' scope, 'E' module, 'F' bare bezel, 'G' transport on the bare bezel (the pick). opts.open: 'phone' | 'land' | 'theatre' shows the open state.
    The monitor is the painting cut as a 9-slice (CSS border-image) at one uniform scale k = width / painting width, so the bezel keeps its painted
    thickness and only the gold side strips stretch: the glass is exactly 16:9 (2.39:1 on D) at any width. E keeps its painting whole (scaled uniformly).
    Every word and number is page text: the running time is read from the film's own metadata (1:20 today). */
@@ -12,7 +12,7 @@ const P={
  fp:{cw:3200,ch:1763,s:[43,113,53,126],ar:16/9},
  fs:{cw:3650,ch:923,s:[63,46,59,189],ar:2.39},
  fr:{cw:3311,ch:1444,glass:[167,172,2551,1256],led:[2727,156,3127,832],key:[2949,1088,150]}};
-const TK={A:'fb',B:'fb',C:'fp',D:'fs',E:'fr',F:'fbt',T:'fbt'};
+const TK={A:'fb',B:'fb',C:'fp',D:'fs',E:'fr',F:'fbt',G:'fbt',T:'fbt'};
 let DUR='1:20',SEC=80;
 const css=`
 .f3{position:relative;margin:0;padding:0}
@@ -83,7 +83,7 @@ const tr=(t,playing)=>`<span class="f3-tr"><span class="pl${playing?' ps':''}"><
 const fmt=s=>Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0');
 function inner(take,state){/* what is lit on the glass */
  if(state)return `<i class="f3-fade"></i>`+tr(state.t,true);
- if(take==='B')return `<i class="f3-fade"></i>`+tr(0,false);
+ if(take==='B'||take==='G')return `<i class="f3-fade"></i>`+tr(0,false);
  if(take==='E')return '';
  return `<i class="f3-fade"></i>`+disc()+dur()}
 /* lay out one monitor at width w (CSS px) */
@@ -123,6 +123,7 @@ function build(take,opts={}){opts=opts||{};
  const ch=D.querySelector('section.ch');if(ch){ch.style.paddingTop='0'}
  m.addEventListener('click',()=>openLB(take));m.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openLB(take)}});
  st={take,sec,j,f,m,cx,ch};gaps();
+ if(opts.open){f.scrollIntoView({block:'center'})}
  if(opts.open==='phone'||opts.open==='theatre')openLB(take,true);if(opts.open==='land')openLand();
  const v=D.createElement('video');v.preload='metadata';v.src=MED+'ez-landing-v4.mp4';v.onloadedmetadata=()=>{const s=Math.round(v.duration);if(s>0){SEC=s;DUR=fmt(s);D.querySelectorAll('.f3-time').forEach(t=>t.textContent=DUR)}}}
 function rect(e){const r=e.getBoundingClientRect();return {t:r.top+scrollY,b:r.bottom+scrollY,h:r.height}}
