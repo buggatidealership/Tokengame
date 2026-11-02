@@ -17,6 +17,6 @@ const PORT=process.env.PORT||8994;
  const chk=await p.evaluate(()=>{const vw=document.documentElement.clientWidth,s=document.querySelector('section.c8');
   const over=[...s.querySelectorAll('*')].filter(e=>{const r=e.getBoundingClientRect();const cs=getComputedStyle(e);return r.width&&(r.right>vw+.5||r.left<-.5)&&cs.position!=='fixed'&&!e.closest('.ch-sr,.m10-l,svg')&&cs.visibility!=='hidden'&&cs.display!=='none'}).slice(0,6).map(e=>(e.tagName+'.'+(e.getAttribute('class')||'')).slice(0,40)+'@'+Math.round(e.getBoundingClientRect().left)+'..'+Math.round(e.getBoundingClientRect().right));
   return {scrollW:document.documentElement.scrollWidth,vw,over,err:window.__r2Err?String(window.__r2Err):null,m:window.__r2&&window.__r2.measure?window.__r2.measure():null}});
- if(out!=='-'){await p.evaluate(()=>{[...document.body.querySelectorAll('*')].forEach(x=>{const ps=getComputedStyle(x).position;if((ps==='fixed'||ps==='sticky')&&!x.closest('section.c8'))x.style.visibility='hidden'})});
+ if(out!=='-'){await p.addStyleTag({content:'.x2p-cw,[class^="x2p-cw"],body>div:has(.x2p-cw-bug){display:none!important}'});await p.evaluate(()=>{[...document.body.querySelectorAll('*')].forEach(x=>{const ps=getComputedStyle(x).position;if((ps==='fixed'||ps==='sticky')&&!x.closest('section.c8'))x.style.setProperty('opacity','0','important')})});
   const s=await p.$('section.c8');await s.screenshot({path:out});}
  console.log(JSON.stringify({w,T,out,...chk,er}));await b.close()})();
