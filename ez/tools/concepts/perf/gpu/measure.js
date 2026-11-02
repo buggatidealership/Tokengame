@@ -1,8 +1,8 @@
-// node measure.js <page> <mb|0> <outdir> [stops csv] [css file to inject]
+// node measure.js <page> <mb|0> <outdir> [stops csv]   env: CSS=<css file to inject>, RMAX=<x2p_top surface ratio>
 // Phone (390x844, DPR 2.75, mobile, touch), GPU memory capped (0 = no cap). Scrolls to each stop, waits, shoots the viewport (PNG in outdir/s<y>.png),
 // and dumps the composited layers (LayerTree) at that stop to outdir/s<y>.json.
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../live-r1/_fonts.js');const fs=require('fs');
-(async()=>{const [pg,mb,out,st,css]=process.argv.slice(2);fs.mkdirSync(out,{recursive:true});
+(async()=>{const [pg,mb,out,st]=process.argv.slice(2);const css=process.env.CSS;fs.mkdirSync(out,{recursive:true});
 const args=['--enable-gpu-rasterization','--ignore-gpu-blocklist','--force-device-scale-factor=2.75'];if(+mb)args.push('--force-gpu-mem-available-mb='+mb);
 const b=await chromium.launch({args});const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2.75,isMobile:true,hasTouch:true});
 const p=await ctx.newPage();await FONTS(p);if(process.env.RMAX)await p.addInitScript(r=>{window.__t4Rmax=+r},process.env.RMAX);

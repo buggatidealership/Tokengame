@@ -17,7 +17,7 @@ async function load(p,o={}){const PORT=o.port||process.env.PORT||9833,er=o.er||[
  await p.addScriptTag({content:L.js.map(E).join('\n;')});
  await p.waitForFunction(()=>document.documentElement.classList.contains('h29e-ready')||window.__h29eErr,null,{timeout:60000}).catch(()=>er.push('no h29e'));
  /* top */
- await p.addStyleTag({content:rd(path.join(H29,'top/top.css'))});await p.addScriptTag({content:rd(path.join(H29,'top/top.js'))});
+ await p.evaluate(()=>{window.__h29tDesk='rows'});await p.addStyleTag({content:rd(path.join(H29,'top/top.css'))});await p.addScriptTag({content:rd(path.join(H29,'top/top.js'))});
  await p.waitForFunction(()=>window.__h29t||window.__h29tErr,null,{timeout:20000}).catch(()=>er.push('no h29t'));
  /* middle: meet12 D, patched as mid/shot.js */
  const M12=path.join(H,'meet12');
