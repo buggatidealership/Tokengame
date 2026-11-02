@@ -1,4 +1,4 @@
-/* X2+ TOP, H23 quad4 (ported 2026-11-02). Media: media/top-h23-call.jpg media/top-h23-close.jpg media/top-h23-ledger.jpg media/top-h24-board.jpg media/chip7-grok-1200.jpg media/chip7-claude-1200.jpg media/chip7-gpt-1200.jpg media/chip7-kimi-1200.jpg media/top-t4-one-b-h22.jpg media/top-hero-t-h22.jpg media/top-hero-w-h22.jpg media/top-t3-screen-h22.jpg media/ez-landing-v4-poster-ez.jpg media/ez-landing-v4.mp4 */
+/* X2+ TOP, H23 quad4 (ported 2026-11-02). Media: media/top-h23-call.jpg media/top-h23-close.jpg media/top-h23-ledger.jpg media/top-h25-board6.jpg media/chip8c-grok-1200.jpg media/chip8c-claude-1200.jpg media/chip8c-gpt-1200.jpg media/chip8c-kimi-1200.jpg media/founder-grok-anim2.mp4 media/founder-grok-anim2.webm media/founder-grok-anim2.jpg media/founder-gpt-anim2.mp4 media/founder-gpt-anim2.webm media/founder-gpt-anim2.jpg media/founder-claude-anim.mp4 media/founder-claude-anim.webm media/founder-claude-anim.jpg media/founder-kimi-anim.mp4 media/founder-kimi-anim.webm media/founder-kimi-anim.jpg media/top-t4-one-b-h22.jpg media/top-hero-t-h22.jpg media/top-hero-w-h22.jpg media/top-t3-screen-h22.jpg media/ez-landing-v4-poster-ez.jpg media/ez-landing-v4.mp4 */
 /* H23 quad4: a drop-in replacement for tools/v22/story/x2p_top.js (round H23, area quad4; built by quad4/build.py). Only beat 2's four
    pictures, their surfaces and the frame states change: new zoomed-in paintings (media/top-h23-*.jpg), the figures big and lit in the glass,
    the facts visible from the start, small life in the world. Everything else (headline, chip, gutters, film) is x2p_top.js as of f180a6e.
@@ -141,26 +141,26 @@ const leadSurf=(w,h)=>{const s=Math.min(h*.5,w*.3),x=w*.08+s*1.15,tw2=w*.92-x,fz
   return `<g class="t4-eg">`+mark(lead,w*.07,h/2-s/2,s,'#2a1a06')+T(x,h/2+fz*.36,fz,NM[lead].toUpperCase(),{c:'#2a1a06',cls:'t4-an t4-eng'})+`</g>`};
 const crQ=k=>{const[,,cw,ch]=Q4[k].crop;return [0,0,cw,ch]};
 const picQ=(k,S,cls,extra)=>{const[,,cw,ch]=Q4[k].crop;return pic(IMQ+Q4[k].file,cw,ch,S,cls,extra,[0,0,cw,ch])};
-const B5={file:'top-h24-board.jpg',iw:1630,
-  /* the sockets' inner cavities and the glass windows, in the 1630 px crop's own px (measured on c4k at 2048, minus the crop's origin 215,200) */
-  cav:[[255,62,1375,525],[40,790,600,1005],[40,1075,600,1290],[40,1380,600,1600]],
-  win:[null,[930,885,1590,1050],[930,1150,1590,1310],[930,1410,1590,1575]]};
-const b5R2Q=([x0,y0,x1,y1])=>[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
-/* the chip painting (3760 x 1520) fitted in its cavity by height, centred */
-const b5Chip=cv=>{const[x0,y0,x1,y1]=cv,h=y1-y0,w=Math.min(x1-x0,h*2.474),hh=w/2.474,x=(x0+x1)/2-w/2,y=(y0+y1)/2-hh/2;return b5R2Q([x,y,x+w,y+hh])};
-const b5k$=v=>(v<0?'−':'+')+'$'+(Math.abs(v)>=1e6?(Math.abs(v)/1e6).toFixed(2)+'M':Math.round(Math.abs(v)/1000)+'K');
-function boardB5(){const S=[],GQ=[],pl=m=>A[m].bal-100000;
-  rank.forEach((m,i)=>{const cq=b5Chip(B5.cav[i]);
-    S.push(surf(cq,()=>'','b5-chip'+(i===0?' b5-lead':''),()=>`<img class="b5-im" src="media/chip7-${m.toLowerCase()}-1200.jpg" alt="" draggable="false">`));
-    if(i===0){/* the leader's own SEASON P&L window on its chip (chip px 1136,787 to 2585,1203 of 3760 x 1520), lit */
-      const[x0,y0]=cq[0],sx=(cq[1][0]-x0)/3760,sy=(cq[3][1]-y0)/1520,r=[x0+1136*sx,y0+787*sy,x0+2585*sx,y0+1203*sy];
-      S.push(surf(b5R2Q(r),(w,h)=>{const t=b5k$(pl(m)),f=Math.min(h*.86,w*.86/(t.length*.47));return `<g class="q4-g">`+TX(w/2,h/2+f*.37,f,t,{a:'middle',f:em(pl(m)<0?'dn':'up'),cls:'q4-big'})+`</g>`},'q4-glass b5-win',()=>`<i class="q4-scan"></i>`))}
-    else{/* ranks 2 to 4: the rank numeral and the name, one line, centred in the board's glass */
-      const q=b5R2Q(B5.win[i]);GQ.push(q);
-      S.push(surf(q,(w,h)=>{const r=String(i+1),t=NM[m].toUpperCase(),f1=h*.7,g=h*.12,av=w*.9-tw(r,f1)-g,f2=Math.min(h*.6,av/(t.length*.47)),tot=tw(r,f1)+g+tw(t,f2),x0=w/2-tot/2,y=h/2+f1*.36;
-        return `<g class="q4-g">`+TX(x0,y,f1,r,{cls:'q4-big'})+TX(x0+tw(r,f1)+g,y,f2,t)+`</g>`},'q4-glass b5-win',()=>`<i class="q4-scan"></i>`))}});
-  const gl=GQ.map(q=>`<img class="q4-gl" src="${IMQ+B5.file}" alt="" draggable="false" style="width:100%;left:0;top:0;clip-path:polygon(${q.map(([x,y])=>`${(x/B5.iw*100).toFixed(2)}% ${(y/B5.iw*100).toFixed(2)}%`).join(',')})">`).join('');
-  return pic(IMQ+B5.file,B5.iw,B5.iw,S,'b5-pic',gl,[0,0,B5.iw,B5.iw])}
+/* Round H25 board6 E3: frame 4, the golden ticket revised (#1 on top lifted on light, lit dashes, the founders' loops; Grok and GPT the H25 characters) */
+const B6={"file":"top-h25-board6.jpg","iw":1500,"cq":[[[730.9,168.5],[1413.8,79.1],[1422.8,250.2],[720.6,325.5]],[[718.1,586.6],[1399.1,536.8],[1396.6,711.1],[709.8,749.4]],[[691.9,884.0],[1391.5,864.9],[1401.7,1041.1],[676.0,1049.4]],[[655.5,1182.8],[1384.5,1212.8],[1389.6,1411.9],[642.8,1373.0]]],"wq":[[[204.3,389.4],[386.2,370.2],[376.6,488.3],[191.5,510.6]],[[166.0,649.8],[339.6,634.5],[324.3,759.6],[145.5,772.3]],[[122.6,917.9],[296.2,915.3],[280.9,1045.5],[102.1,1048.1]],[[74.0,1186.0],[252.8,1191.1],[229.8,1331.5],[51.1,1321.3]]],"beam":[[753.2,197.9],[1394.7,108.5],[1403.0,392.6],[741.7,459.6]]};
+/* chips8 take c's geometry, in chip units (3760 x 1520): the No., LAST 7 DAYS, LAST ROUND and SEASON windows, and the founder's window */
+const B6G={s:[3760,1520],no:[2385,251,2604,421],d7:[1120,479,2020,759],lr:[2086,478,2604,765],se:[1121,890,2604,1087],core:[2766,305,3612,1179]};
+const b6pc=(v,t)=>(v/t*100).toFixed(4)+'%',b6at=r=>`left:${b6pc(r[0],B6G.s[0])};top:${b6pc(r[1],B6G.s[1])};width:${b6pc(r[2]-r[0],B6G.s[0])};height:${b6pc(r[3]-r[1],B6G.s[1])}`;
+const b6dash=(r,lead)=>{const w=r[2]-r[0],h=r[3]-r[1],f=h*.62;return `<i class="b6-w" style="${b6at(r)}"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><rect x="${(w*.34).toFixed(1)}" y="${(h*.42).toFixed(1)}" width="${(w*.32).toFixed(1)}" height="${(h*.16).toFixed(1)}" rx="${(h*.08).toFixed(1)}" fill="${em(lead?'gd':'em')}" class="q4-tx b6-dash"/></svg></i>`};
+const b6vid=m=>{const b='media/founder-'+m.toLowerCase()+(m==='GROK'||m==='GPT'?'-anim2':'-anim');return `<video class="b6-v" muted loop playsinline preload="metadata" poster="${b}.jpg" aria-hidden="true" tabindex="-1"><source src="${b}.mp4" type="video/mp4"><source src="${b}.webm" type="video/webm"></video>`};
+const b6chip=(m,i)=>(bw,bh)=>{const src='media/chip8c-'+m.toLowerCase()+'-1200.jpg',sx=bw/B6G.s[0],sy=bh/B6G.s[1],K=['no','d7','lr','se'];
+  const P=K.map(k=>{const[x0,y0,x1,y1]=B6G[k];return `M${(x0*sx).toFixed(1)} ${(y0*sy).toFixed(1)}H${(x1*sx).toFixed(1)}V${(y1*sy).toFixed(1)}H${(x0*sx).toFixed(1)}Z`}).join('');
+  return `<img class="b6-im" src="${src}" alt="" draggable="false"><i class="b6-die" style="${b6at(B6G.core)}">${b6vid(m)}</i>`+K.map(k=>b6dash(B6G[k],i===0)).join('')
+   +`<img class="b6-im b6-gl" src="${src}" alt="" draggable="false" style="clip-path:path('${P}')">`};
+function boardB6(){const S=[];
+  S.push(surf(B6.beam,()=>'','b6-beam',()=>'<i class="b6-rays"></i>'));
+  rank.forEach((m,i)=>{S.push(surf(B6.cq[i],()=>'','b6-chip'+(i===0?' b6-lead':''),b6chip(m,i)));
+    S.push(surf(B6.wq[i],(w,h)=>{const f=Math.min(h*.8,w*1.3);return `<g class="q4-g"><text x="${(w/2).toFixed(1)}" y="${(h/2+f*.37).toFixed(1)}" font-size="${f.toFixed(1)}" text-anchor="middle" fill="${em(i?'em':'gd')}" class="t4-an q4-tx q4-big">${i+1}</text></g>`},'q4-glass b6-rk',()=>'<i class="q4-scan"></i>'))});
+  const gl=B6.wq.map(q=>`<img class="q4-gl" src="${IMQ+B6.file}" alt="" draggable="false" style="width:100%;left:0;top:0;clip-path:polygon(${q.map(([x,y])=>`${(x/B6.iw*100).toFixed(2)}% ${(y/B6.iw*100).toFixed(2)}%`).join(',')})">`).join('');
+  return pic(IMQ+B6.file,B6.iw,B6.iw,S,'b6-pic',gl,[0,0,B6.iw,B6.iw])}
+/* the founder loops play only near the screen; never with reduced motion */
+function b6Wire(root){const vs=root.querySelectorAll('li.q4-board video.b6-v');if(!vs.length)return;if(matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window))return;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){v.muted=true;const p=v.play();p&&p.catch(()=>{})}else v.pause()}),{rootMargin:'80px 0px'});vs.forEach(v=>io.observe(v))}
 
 function frames(){const cap=t=>`<div class="t4-cap">${t}</div>`;
   const F={call:{w:'CALL',k:'call',l:LINES.call,cap:`R${EX.n} · ${esc(EX.co)} (${EX.ticker}) · ${md(EX.called)}`,
@@ -169,7 +169,7 @@ function frames(){const cap=t=>`<div class="t4-cap">${t}</div>`;
     p:picQ('close',[surf(Q4.close.q[0],readQ4,'q4-glass q4-rd',scan)],'',glares('close')+at(-40,-120,300,300,'q4-ring')+at(-40,-120,300,300,'q4-ring r2'))},
    ledger:{w:'LEDGER',k:'ledger',l:LINES.ledger,cap:`Round ${EX.n} · ${md(EX.resolves)}`,
     p:picQ('ledger',ledgerQ4(),'',glares('ledger'))},
-   board:{w:'BOARD',k:'board',l:LINES.board,cap:'The board',p:boardB5()}};
+   board:{w:'BOARD',k:'board',l:LINES.board,cap:'The board',p:boardB6()}};
   return ['call','close','ledger','board'].map(k=>F[k]).map((f,i)=>`<li class="t4-fr q4-fr q4-${f.k} t4-on" tabindex="0" role="button" aria-label="${i+1} ${f.w}: ${esc(f.l)}"><div class="t4-ink"><div class="t4-art">${f.p}</div></div>${sub(i+1,f.w)}<p class="t4-ln">${lh(f.l)}</p></li>`).join('')}
 /* the glow and bloom are drawn in the screen's px: each painting carries its scale k (CSS px per painting px) as --k */
 function q4k(root){root.querySelectorAll('.q4-fr .t4-pic').forEach(p=>{const k=p.clientWidth/+p.dataset.iw;if(k)p.style.setProperty('--k',k.toFixed(5))})}
@@ -242,7 +242,7 @@ function build(){const wide=innerWidth>=1000,[fh,fs]=FILM[FH];
    <div class="t4-b2"><h2 class="t4-h2"><span class="t4-hw">How a round works</span></h2><ol class="t4-frs">${frames()}</ol></div>
    ${beatGut()}
    <div class="t4-b3"><h2 class="t4-h2 t4-fh t4-F${FH}"><span class="t4-hw">${esc(fh)}</span>${fs?` <span class="t4-hw t4-hws">${esc(fs)}</span>`:''}</h2><div class="t4-bleed">${film()}</div></div>`;
-  requestAnimationFrame(()=>{place(sec);q4k(sec)});wire()}
+  requestAnimationFrame(()=>{place(sec);q4k(sec)});wire();b6Wire(sec)}
 if(hero0)hero0.before(sec);else main.prepend(sec);
 [hero0,bet0].forEach(s=>s&&(s.style.display='none'));
 /* ---------- states (H23): every fact shows from the start. Small life in the world while the frames are on screen: the dies re-scan one after
