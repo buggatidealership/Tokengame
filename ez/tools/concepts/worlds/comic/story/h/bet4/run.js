@@ -28,8 +28,9 @@ const rd=f=>fs.existsSync(__dirname+'/'+f)?fs.readFileSync(__dirname+'/'+f,'utf8
       if(hid||e.closest('.hb-sr,.b4-sr,.x2p-sr,.sr-only'))continue;if(r.width<=1&&r.height<=1)continue;wc+=words(s);txt.push(s.slice(0,40))}
     const out=[...S.querySelectorAll('*')].filter(e=>{const q=e.getBoundingClientRect();if(!q.width)return false;const cs=getComputedStyle(e);if(cs.visibility==='hidden')return false;
       if(e.closest('.hbc-die,.hbc-lab'))return false;return q.right>innerWidth+.5||q.left<-.5}).map(e=>String(e.className&&e.className.baseVal!==undefined?e.className.baseVal:e.className).slice(0,24)).slice(0,6);
+    const clip=[...S.querySelectorAll('.b4-art [data-at]')].filter(n=>getComputedStyle(n).display!=='none').flatMap(n=>{const a=n.closest('.b4-art').getBoundingClientRect();return [...n.querySelectorAll('*')].filter(e=>{const q=e.getBoundingClientRect();return q.width&&(q.right>a.right+.5||q.left<a.left-.5||q.bottom>a.bottom+.5||q.top<a.top-.5)}).map(e=>(e.textContent||'').trim().slice(0,24))}).slice(0,6);
     const dig=[...S.querySelectorAll('[data-b4d]')].map(x=>x.textContent).join(':')||[...S.querySelectorAll('.hbc-num')].map(x=>x.textContent).join(':');
-    return {sw:document.documentElement.scrollWidth,vw:innerWidth,h:Math.round(S.getBoundingClientRect().height),words:wc,txt:txt.slice(0,40),out,dig}});
+    return {clip,sw:document.documentElement.scrollWidth,vw:innerWidth,h:Math.round(S.getBoundingClientRect().height),words:wc,txt:txt.slice(0,40),out,dig}});
   await p.screenshot({path:`${OUT}/${id}-${W}.png`,clip:{x:0,y:Math.max(0,bx.y-10),width:W,height:Math.min(bx.h+20,7000)},fullPage:true});
-  m.errors=er;res[id+'@'+W]=m;console.log(id,W,JSON.stringify({sw:m.sw,vw:m.vw,h:m.h,words:m.words,out:m.out,dig:m.dig,err:er.slice(0,3)}));await ctx.close()}
+  m.errors=er;res[id+'@'+W]=m;console.log(id,W,JSON.stringify({clip:m.clip,sw:m.sw,vw:m.vw,h:m.h,words:m.words,out:m.out,dig:m.dig,err:er.slice(0,3)}));await ctx.close()}
  fs.writeFileSync(OUT+'/measure-'+IDS.join('_')+'.json',JSON.stringify(res,null,1));await b.close()})();
