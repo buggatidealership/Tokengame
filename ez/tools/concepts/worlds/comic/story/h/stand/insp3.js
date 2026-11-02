@@ -1,0 +1,10 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();const p=await (await b.newContext({viewport:{width:390,height:844}})).newPage();await FONTS(p);
+await p.goto('http://127.0.0.1:8985/v46-live-x2plus.html',{waitUntil:'load',timeout:150000});
+await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});await p.waitForTimeout(1500);
+console.log(await p.evaluate(()=>{const M=['AAPL','MSFT','GOOGL','GOOG','AMZN','META','NVDA','TSLA'];
+ const up=(window.UPCOMING||[]).filter(r=>M.includes(r.ticker)).map(r=>r.n+' '+r.ticker+' '+r.called);
+ const g=ROUNDS.filter(r=>M.includes(r.ticker)).map(r=>{const c=document.querySelector('#car .card[data-n="'+r.n+'"]');const z=c&&c.querySelector('.zlab');return r.n+' '+r.co+' '+r.ticker+' '+r.out+' win '+r.win+' film '+!!FILMS[r.n]+' '+(z?z.querySelector('.ds').textContent+' '+z.querySelector('.gr').textContent:'nolab')});
+ const all=ROUNDS.map(r=>{const c=document.querySelector('#car .card[data-n="'+r.n+'"]');const z=c&&c.querySelector('.zlab .gr');return z?1:0}).reduce((a,b)=>a+b,0);
+ return JSON.stringify({g,up,nGraded:ROUNDS.length,labelled:all,upKeys:Object.keys((window.UPCOMING||[])[0]||{}),films:Object.keys(FILMS).length,stills:Object.keys(STILLS||{})})}));
+await b.close()})();
