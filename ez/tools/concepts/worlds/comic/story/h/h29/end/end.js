@@ -53,7 +53,7 @@ function sol(){const S9=window.S9;if(!S9||!S9.A3||!D.querySelector('#learn .p5')
 /* ---------- 2 the bet: the spec's words in the narrator box ---------- */
 function bet(){const sec=D.querySelector('#x2pSt.hb-on'),c=sec&&sec.querySelector('.hb5-c');if(!c)return false;
   const S=window.SIM||{},share=S.poolShare!=null?Math.round(S.poolShare*100):null;
-  c.innerHTML=`<div class="h29e-nar h29e-nar-bet">${share!=null?`<small>${share}% of $EZ creator fees fill the pool</small>`:''}<span>We bet the pool on the NVIDIA trade of #1 on the board.</span></div>`;
+  c.innerHTML=`<div class="h29e-nar h29e-nar-bet">${share!=null?`<small>${share}% of $EZ creator fees fill the pool</small>`:''}<span>We bet the whole pool on NVIDIA, based on the trade of #1 on the board.</span></div>`;
   const cl=sec.querySelector('.hb5-cl');if(cl)cl.innerHTML='NVIDIA is the first bet, <b>not the last.</b>';
   sec.classList.add('h29e-bet');
   /* the B2 seam is placed by x2p_more's own ResizeObserver on .hb5-c; nudge it once the new box has its size */
@@ -94,7 +94,7 @@ function follow(){const P5=window.P5,main=D.querySelector('main');if(!P5||!P5.da
 /* ---------- the slim footer ---------- */
 function foot(){const f=D.querySelector('body>footer, footer');if(!f||!window.X2P_LOGO)return false;if(f.querySelector('.h29e-ft'))return true;
   [...f.children].forEach(c=>c.style.display='none');f.classList.add('h29e-foot');
-  f.insertAdjacentHTML('beforeend',`<div class="h29e-ft"><span class="h29e-lo" role="img" aria-label="EZ">${X2P_LOGO}</span><p>An experiment. $EZ isn’t live yet. Not financial advice.</p></div>`);return true}
+  f.insertAdjacentHTML('beforeend',`<div class="h29e-ft"><span class="h29e-lo" role="img" aria-label="EZ">${X2P_LOGO}</span><p><b>Nobody said it would be <i>E</i><i>Z</i>.</b>An experiment. $EZ isn’t live yet; once it is, trust its address only from this page or @earningszn. Not financial advice.</p></div>`);return true}
 
 /* ---------- the joints: one gutter device before each of this part's sections and the footer; the old strips go. The page's own
    order routines (x2plus.js BETSEC fix(), routes.js apply()) move #x2pSt to just before #get, so Follow sits after the hidden #get ---------- */
