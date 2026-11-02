@@ -64,7 +64,8 @@ S8.take=b1=>({id:'s8'+b1.id,html(X){return `<div class="p5-bleed s8">${P5.head('
    <section class="s8-b s8-b3" aria-label="P&amp;L">${S8.kick(3,'Money, round by round')}<p class="s8-ln">${S8.linePnl(X)}</p><div class="s7-st s8-sc s8-pnl"></div>${S8.rowsPnl(X)}</section>
    </div>${S8.tables(X)}</div>`},
  draw(box,X){b1.draw(box.querySelector('.s8-b1'),X);S8.scope(box.querySelector('.s8-acc'),X,'acc');S8.scope(box.querySelector('.s8-pnl'),X,'pnl')}});
-S8.mount=b1=>{const b=document.querySelector('#learn .p5');if(b)b.className='p5 p5-s8 p5-s8'+b1.id;P5.mountProof(S8.take(b1))};
+/* a fresh box: the live take's ResizeObserver watches the old one and would redraw T1 into it when the section widens */
+S8.mount=b1=>{const b=document.querySelector('#learn .p5');if(b){const n=document.createElement('div');n.className='p5 p5-s8 p5-s8'+b1.id;b.replaceWith(n)}P5.mountProof(S8.take(b1))};
 /* a coin's face, struck (sol7 C): words pressed into the gold, not lit */
 S8.strike=(x,y,k,rot,lines)=>{const c='#5a3604',lp='#ffe7a0';return `<g transform="translate(${x} ${y}) rotate(${rot||0}) scale(${k*.66} ${k})" opacity=".92">${lines.map(([dy,sz,s])=>`<text x="0" y="${dy}" font-size="${sz}" text-anchor="middle" font-family="Anton,sans-serif" fill="${c}" stroke="${lp}" stroke-width="1.6" paint-order="stroke" style="letter-spacing:.02em">${s}</text>`).join('')}</g>`};
 })();

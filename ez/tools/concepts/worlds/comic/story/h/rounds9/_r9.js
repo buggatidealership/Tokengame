@@ -56,16 +56,18 @@ function C_it(r,hero){return `<span class="r9-ob r9c-sleeve">${pic(hero?big(r):t
 
 const IT={A:A_it,B:B_it,C:C_it}[TK]||A_it;
 const link=(r,hero)=>`<a class="${hero?'r9-hero':'r9-it'}" href="#/round/${r.n}" aria-label="${esc(aria(r))}">${IT(r,hero)}</a>`;
-const FIRST=6,PAGE=8;let shown=FIRST;
-const root=D.createElement('div');root.className='r6 r9 r9-'+TK;
+const FIRST=6;let shown=FIRST;
+/* eight at a time; ten on the five-column desktop grid so every row closes and no cell stays empty (owner: no dead space at 1280) */
+const PAGE=()=>innerWidth>=1000?10:8;
+const root=D.createElement('div');root.className='r9 r9-'+TK;
 const CAP=`${G.length} rounds graded · ${FUT.length} to come`;
 const MORE={A:(k,left)=>`<b>Show ${k} more</b><i>${left} more on the reel</i>`,B:(k,left)=>`<b>Show ${k} more</b><i>${left} more in the album</i>`,C:(k,left)=>`<b>Show ${k} more</b><i>${left} more in the crate</i>`}[TK];
-function more(){const left=REST.length-shown;if(left<=0)return `<p class="r9-all">All ${G.length} rounds</p>`;const k=Math.min(PAGE,left);
-  const nx=REST.slice(shown,shown+k).slice(0,6);
+function more(){const left=REST.length-shown;if(left<=0)return `<p class="r9-all">All ${G.length} rounds</p>`;const k=Math.min(PAGE(),left);
+  const nx=REST.slice(shown,shown+k);
   return `<button class="r9-more" type="button" aria-label="Show ${k} more rounds"><span class="r9-peek" aria-hidden="true">${nx.map(r=>`<img src="${tile(r.n)}" alt="" decoding="async">`).join('')}</span>${TK==='B'?'<i class="r9b-curl" aria-hidden="true"></i>':''}${MORE(k,left)}</button>`}
 function render(){root.innerHTML=`<div class="r9-in"><header class="r9-hd"><h2 class="r9-h2">Every round so far</h2><p class="r9-cap">${esc(CAP)}</p></header>
   <div class="r9-g">${link(HERO,true)}${REST.slice(0,shown).map(r=>link(r,false)).join('')}${more()}</div></div>`;
-  root.querySelector('.r9-more')?.addEventListener('click',()=>{shown+=PAGE;render()});span();fit();
+  root.querySelector('.r9-more')?.addEventListener('click',()=>{shown+=PAGE();render()});span();fit();
   let t;root.querySelectorAll('img').forEach(i=>{if(!i.complete)i.addEventListener('load',()=>{clearTimeout(t);t=setTimeout(fit,120)},{once:true})});setTimeout(fit,400)}
 /* the button fills what is left of the last row (a full row when the row is complete), so no cell stays empty */
 function span(){const g=root.querySelector('.r9-g'),b=g&&g.querySelector('.r9-more,.r9-all');if(!b)return;const cols=getComputedStyle(g).gridTemplateColumns.split(' ').length;
