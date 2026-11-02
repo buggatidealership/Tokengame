@@ -10,7 +10,7 @@ function x2pAnd(a){return a.length<3?a.join(" and "):a.slice(0,-1).join(", ")+" 
 (function(){var H=document.documentElement;if(!H.classList.contains("x2p-cur"))return;var t0=Date.now(),okAt=0,fok=!window.__x2pF;
   if(window.__x2pF)window.__x2pF.then(function(){fok=true},function(){fok=true});
   function built(){if(window.__x2pNeedWorld&&!H.classList.contains("x2p-world"))return false;   /* a world page (X3+, X4+) waits for its world on every tab */
-    if(H.getAttribute("data-sec")==="upcoming")return !!document.querySelector(".x2p-up");
+    if(H.getAttribute("data-sec")==="upcoming")return !!document.querySelector(".x2p-up")&&(!document.getElementById("x2p-up-js")||!!document.querySelector(".u3-root")||!!window.__u3Err);   /* H33: the next bell (story/x2p_up.js) replaces the fight night: wait for it */
     return H.classList.contains("x2p-launch")&&H.classList.contains("x2pbt")&&!!document.querySelector(".x2p-vt")&&
       (H.classList.contains("x2pst")||!!window.__x2pBetErr)&&
       (!window.__x2pNeedWorld||H.classList.contains("x2p-world"))}   /* a world page (X3+, X4+) waits for its world to be drawn */   /* and the bet ticket moved to the foot (BETSEC), or that block gave up */

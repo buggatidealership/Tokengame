@@ -507,7 +507,8 @@ P5.take={id:'t1',html(X,V){return `<div class="p5-bleed">${P5.head('Smart or','l
   P5.vis(st)}};
 })();
 
-P5.mountProof(P5.take);
+/* H33: Smart or lucky is x2p_sol.js (the H29 director's chart, loaded right after this file); T1 mounts only if that one did not */
+setTimeout(()=>{if(!P5.cur)P5.mountProof(P5.take)},0);
 /* C1 THE NEXT SOCKETS: the board's last row is empty sockets waiting for the next rounds' chips. Each window above a socket lights the
    company's mark and the day its calls lock; the board ends in a gold edge connector that plugs into the Upcoming tab. Then the panel:
    the next bell's countdown on its glass, and two buttons: Get $EZ and Follow on X. Paintings: q-sockets-b, q-panel-b. */
