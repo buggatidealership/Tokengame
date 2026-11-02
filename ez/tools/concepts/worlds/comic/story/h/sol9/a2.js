@@ -17,7 +17,7 @@ const W={id:'a2',
   let mx=1;ord.forEach(m=>last(m).forEach(v=>mx=Math.max(mx,Math.abs(v))));
   const box=v=>acc?`<i class="s9a2-bx ${v>0?'w':'l'}">${v>0?'W':'L'}</i>`:`<i class="s9a2-bx ${v>0?'w':'l'}" style="--o:${(.35+.65*Math.sqrt(Math.abs(v)/mx)).toFixed(2)}"></i>`;
   return `<div class="s9a2-t" role="presentation" aria-hidden="true"><div class="s9a2-h"><span></span><span>Last 5</span><span>W-L</span><span>${acc?'Hit rate':'P&amp;L'}</span></div>${ord.map(m=>{const a=X.A[m],v=X.W.season.tot[m];
-   return `<div class="s9a2-r" style="--c:${W.col(X,m)}"><b class="s9a2-nm"><i class="s9a2-sw"></i>${S9.NM[m]}</b><span class="s9a2-l5">${last(m).map(box).join('')}</span><span class="s9a2-f"><em class="u">${a.W}</em>-<em class="d">${a.L}</em></span><span class="s9a2-f ${acc?'':v>=0?'u':'d'}">${acc?S.pc(a.hr):S.$f(v)}</span></div>`}).join('')}</div>`},
+   return `<div class="s9a2-r" style="--c:${W.col(X,m)}"><b class="s9a2-nm"><i class="s9a2-sw"></i>${S9.NM[m]}</b><span class="s9a2-l5">${last(m).map(box).join('')}</span><span class="s9a2-f"><em class="s9u2">${a.W}</em>-<em class="s9d2">${a.L}</em></span><span class="s9a2-f ${acc?'':v>=0?'s9u2':'s9d2'}">${acc?S.pc(a.hr):S.$f(v)}</span></div>`}).join('')}</div>`},
  h:(w,k)=>w>=560?Math.round(w*.47):Math.round(w*.76),
  svg(X,kind,w,h){const u=S9.uid(),t=S9.t,sm=w>=560?13.5:12.5,big=w>=560;
   const g=S9.geo(X,kind,[big?62:46,big?26:18,w-(big?24:16),h-(big?42:34)]),{Y,Xp,cx0,cx1,cy0,cy1}=g;
