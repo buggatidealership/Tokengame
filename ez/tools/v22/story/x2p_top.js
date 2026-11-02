@@ -76,7 +76,11 @@ const at=(x,y,w,h,cls,inner)=>`<i class="t4-at ${cls}" data-r="${x},${y},${w},${
 function fitHead(root){const h1=root.querySelector('.t4-h1');if(!h1)return;const hs=[h1,...root.querySelectorAll('.t4-h2')];hs.forEach(h=>h.style.fontSize='');
   const base=parseFloat(getComputedStyle(h1).fontSize),cs=getComputedStyle(h1),avail=h1.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
   const need=Math.max(...[...h1.querySelectorAll('.t4-hw')].map(e=>e.scrollWidth+parseFloat(getComputedStyle(e).marginLeft)));
-  const fs=need>avail?Math.floor(base*avail/need*.985*10)/10:base;hs.forEach(h=>h.style.setProperty('font-size',fs+'px','important'))}
+  const fs=need>avail?Math.floor(base*avail/need*.985*10)/10:base;hs.forEach(h=>h.style.setProperty('font-size',fs+'px','important'));
+  /* H34 (owner, 2026-11-02, night): "How a round works" is the loudest words of its beat: on phones it fills its line (up to 52px), and the
+     captions under it stay at most half its size (c3fit), so heading > caption headline */
+  const h2=root.querySelector('.t4-b2.r3-C3 .t4-h2'),hw=h2&&h2.querySelector('.t4-hw');if(h2&&hw&&innerWidth<1000){const c=getComputedStyle(h2),av=h2.clientWidth-parseFloat(c.paddingLeft)-parseFloat(c.paddingRight);
+   const f2=Math.min(52,Math.floor(fs*av/Math.max(1,hw.scrollWidth)*.97*10)/10);if(f2>fs)h2.style.setProperty('font-size',f2+'px','important')}}
 function place(root){fitHead(root);fitLines(root);requestAnimationFrame(()=>{root.querySelectorAll('.t5-bg').forEach(drawBeat);gutters(root);f4fit()});const h2=root.querySelector('.t4-b2 .t4-h2'),fl=root.querySelector('.t4-frs');if(h2&&fl){const hr=h2.querySelector('.t4-hw').getBoundingClientRect();root.style.setProperty('--t4ov',Math.max(0,hr.bottom-fl.getBoundingClientRect().top)+'px');
    /* a caption moves down only in the frames the heading actually crosses */
    fl.querySelectorAll('.t4-fr').forEach(f=>{const c=f.querySelector('.t4-cap'),r=f.getBoundingClientRect();if(!c)return;c.style.top=(Math.min(hr.right,r.right)-Math.max(hr.left,r.left)>r.width*.25&&hr.bottom>r.top)?(hr.bottom-r.top+3)+'px':''})}root.querySelectorAll('.t4-pic').forEach(p=>{const k=p.clientWidth/+p.dataset.iw,cx=+p.dataset.cx,cy=+p.dataset.cy;
@@ -173,10 +177,11 @@ let c3key='';
 function c3fit(root){const fs=[...root.querySelectorAll('.t4-frs.r3c3>.t4-fr')],cs=fs.map(f=>f.querySelector('.r3c3-cap')),as=fs.map(f=>f.querySelector('.t4-art'));if(!cs.length||cs.some(c=>!c))return;
   root.querySelectorAll('.r3-bd').forEach(b=>b.style.setProperty('--k',(b.clientWidth/1400).toFixed(5)));
   root.querySelectorAll('.r3-rk').forEach(r=>r.style.setProperty('--k',(r.clientWidth/100).toFixed(5)));
-  const key=as.map(a=>{const z=getComputedStyle(a);return z.width+'x'+z.height}).join(',')+'|'+(D.fonts?D.fonts.status:'');if(key===c3key)return;c3key=key;
+  const h2=root.querySelector('.t4-b2.r3-C3 .t4-h2'),h2f=h2?parseFloat(getComputedStyle(h2).fontSize):64,cap=Math.min(32,h2f*.5);
+  const key=as.map(a=>{const z=getComputedStyle(a);return z.width+'x'+z.height}).join(',')+'|'+(D.fonts?D.fonts.status:'')+'|'+h2f;if(key===c3key)return;c3key=key;
   /* H32: the rows' CSS sets each box (the picture's height, the rest of the row's width) */
   const fits=()=>cs.every(c=>{const n=c.firstElementChild;return n.scrollHeight<=c.clientHeight-2*parseFloat(getComputedStyle(c).paddingTop)+1&&n.scrollWidth<=n.clientWidth+1});
-  let lo=8,hi=32;for(let i=0;i<14;i++){const m=(lo+hi)/2;cs.forEach(c=>c.style.fontSize=m+'px');if(fits())lo=m;else hi=m}
+  let lo=8,hi=cap;for(let i=0;i<14;i++){const m=(lo+hi)/2;cs.forEach(c=>c.style.fontSize=m+'px');if(fits())lo=m;else hi=m}
   const f=Math.floor(lo*4)/4;cs.forEach(c=>c.style.fontSize=f+'px');root.dataset.c3fs=f}
 const VERB={call:'Call',close:'Close',ledger:'Ledger',board:'Board'};
 /* the sentence with the trade's key words in its colours */
@@ -207,7 +212,7 @@ function sub(n,w){const lab=`<span class="t5-w">${esc(w)}</span>`;
 function beatGut(){
   if(BG===2)return `<div class="t5-bg t5-G2" aria-hidden="true"><i class="t5-el"></i><i class="t5-em"></i><i class="t5-er"></i></div>`;
   return `<div class="t5-bg t5-G${BG}" aria-hidden="true"><svg class="t5-bgs" preserveAspectRatio="none" aria-hidden="true"></svg></div>`}
-function drawBeat(el){const svg=el.querySelector('.t5-bgs');if(!svg)return;const w=el.clientWidth,h=el.clientHeight;if(!w)return;svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.setAttribute('width',w);svg.setAttribute('height',h);
+function drawBeat(el){const svg=el.querySelector('.t5-bgs');if(!svg||el.classList.contains('x2p-tear'))return;/* H34: x2p_more.js draws the torn gutter (__x2pTears) */const w=el.clientWidth,h=el.clientHeight;if(!w)return;svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.setAttribute('width',w);svg.setAttribute('height',h);
   const r=rnd(w|0),edge=(y0,amp,step,down)=>{let pts=[];for(let x=0;x<=w+step;x+=step*(.6+r()*.8))pts.push([Math.min(x,w),y0+(r()-.5)*amp*2+(down&&r()<.18?amp*1.4:0)]);return pts};
   if(BG===1){/* torn cream paper: a strip ripped along both edges, an ink outline, a red sliver under it (the headline's drop), a soft halftone shadow below */
     const t=edge(h*.3,h*.07,7),b=edge(h*.68,h*.08,6,1).reverse(),P=t.concat(b),d='M'+P.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' L')+'Z';

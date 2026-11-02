@@ -336,7 +336,7 @@ html.x2p #highlights + .g4-gut{display:none!important}
 .m7-plt{position:absolute;z-index:3;display:flex;align-items:center;justify-content:center;font:400 16px/1 Bangers,Anton,sans-serif;letter-spacing:.08em;text-transform:uppercase;pointer-events:none}
 .m7-plt b{font-weight:400;color:rgba(46,30,4,.86);text-shadow:0 1px 0 rgba(255,236,170,.75),0 -1px 0 rgba(0,0,0,.35);mix-blend-mode:multiply;transform:translateY(.04em)}
 /* the slab box */
-.m7-box{position:relative;padding:0 8px}
+.m7-box{position:relative;padding:0 8px;isolation:isolate}
 .m7-flip{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:12px;position:relative;--peek:58px}
 .m7-flip li{position:relative;height:var(--peek)}
 .m7-flip li.m7-front{height:auto}
@@ -494,3 +494,19 @@ html.uf.x2p.x2d[data-theme="dark"] body footer small{font-size:9.5px!important;l
 @media (min-width:600px) and (max-width:999px){.m7-b1{max-width:600px;margin:0 auto}.m7-flip{grid-template-columns:repeat(4,1fr)}}
 /* H32: below 360px the text face's tabs run past the screen (Buybacks Soon was cut at 320): a size down, no tracking */
 @media (max-width:359px){html.uf.x2p.x2d[data-theme="dark"] body header.top a[data-r],html.uf.x2p.x2d[data-theme="dark"] body header.top .x2p-soon{font-size:10.5px!important;letter-spacing:0!important}}
+/* ===== H34 (owner, 2026-11-02, night): a slab in the box lifts and says what it is (company and ticker, grade, who won) before it opens:
+   first tap lifts on phones (x2p_more.js tag(), the two-tap handler), hover on desktop; a second tap or a click opens the round ===== */
+.m7-flip li.m7-lift,.m7-flip li:focus-within{z-index:150!important}
+.m7-flip li.m7-lift .m7-sl{transform:translateY(-14px)}
+@media (hover:hover){.m7-flip li:hover{z-index:150!important}}
+.m7-tag{position:absolute;z-index:4;left:-2px;top:-14px;display:flex;flex-direction:column;gap:1px;width:max-content;max-width:min(250px,calc(100vw - 36px));box-sizing:border-box;
+ padding:5px 9px 6px;background:#f8f0d9;color:#0d0b10;border:2px solid #0d0b10;border-radius:3px;box-shadow:3px 3px 0 #0d0b10;font:600 12px/1.22 'Shantell Sans',system-ui,sans-serif;
+ opacity:0;visibility:hidden;transform:translateY(calc(-100% - 6px));transition:opacity .15s,visibility 0s .15s;pointer-events:none}
+.m7-tag::after{content:"";position:absolute;left:16px;bottom:-9px;width:12px;height:9px;background:#0d0b10;clip-path:polygon(0 0,100% 0,30% 100%)}
+.m7-tag::before{content:"";position:absolute;z-index:1;left:18px;bottom:-5px;width:8px;height:6px;background:#f8f0d9;clip-path:polygon(0 0,100% 0,30% 100%)}
+.m7-flip li[data-col="r"] .m7-tag{left:auto;right:-2px}.m7-flip li[data-col="r"] .m7-tag::after{left:auto;right:16px}.m7-flip li[data-col="r"] .m7-tag::before{left:auto;right:18px}
+.m7-tag b{font-weight:800;font-size:13px;letter-spacing:.01em}.m7-tag b small{font-size:.82em;font-weight:700;opacity:.75}
+.m7-tag .m7-tw{color:#0a6b35;font-weight:800}
+.m7-flip li.m7-lift .m7-tag,.m7-flip li:focus-within .m7-tag{opacity:1;visibility:visible;transition:opacity .15s}
+@media (hover:hover){.m7-flip li:hover .m7-tag{opacity:1;visibility:visible;transition:opacity .15s}}
+@media (prefers-reduced-motion:reduce){.m7-tag{transition:none!important}}

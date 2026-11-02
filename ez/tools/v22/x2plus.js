@@ -2577,7 +2577,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
  function go(n,src,dir){if(!ret)ret={y:scrollY,h:/^#\/round\//.test(location.hash)?"#/":(location.hash||"#/"),sec:H.getAttribute("data-sec")};from=src?src.getBoundingClientRect():null;slide=dir||0;location.hash="#/round/"+n}
  d.addEventListener("click",function(e){if(H.classList.contains("x2p-wall"))return;var c=e.target.closest&&e.target.closest("#record .car>.card.cur[data-n]");
   if(!c||e.target.closest(".snd,a,button,[data-flip]"))return;e.preventDefault();e.stopPropagation();go(c.getAttribute("data-n"),c,0)},true);
- function step(dir){var o=order(),cur=d.querySelector("#x2pRm .card[data-n]");if(!cur)return;var i=o.indexOf(cur.getAttribute("data-n")),j=i+dir;if(i<0||j<0||j>=o.length)return;go(o[j],null,dir)}
+ function step(dir){var o=order(),cur=d.querySelector("#x2pRm .card[data-n]");if(!cur)return;var i=o.indexOf(cur.getAttribute("data-n")),j=i+dir;if(i<0||j<0||j>=o.length)return;hold();go(o[j],null,dir)}
  function nav(o){var c=o.querySelector(".card[data-n]");if(!c)return;var ord=order(),i=ord.indexOf(c.getAttribute("data-n"));
   [[-1,"Previous round","‹"],[1,"Next round","›"]].forEach(function(a){var b=d.createElement("button");b.type="button";b.className="x2p-rmn "+(a[0]<0?"l":"r");b.setAttribute("aria-label",a[1]);b.textContent=a[2];
    if(i+a[0]<0||i+a[0]>=ord.length)b.disabled=true;b.addEventListener("click",function(e){e.stopPropagation();step(a[0])});o.appendChild(b)});
@@ -2585,6 +2585,14 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
   o.addEventListener("touchend",function(e){var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Date.now()-t0>700)return;
    if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3)step(dx<0?1:-1);else if(dy>90&&Math.abs(dy)>Math.abs(dx)*1.3){var x=o.querySelector(".x2p-rmx");if(x)x.click()}},{passive:true})}
  d.addEventListener("keydown",function(e){if(!d.getElementById("x2pRm"))return;if(e.key==="ArrowRight")step(1);else if(e.key==="ArrowLeft")step(-1)});
+ /* H34 (owner, 2026-11-02, night): stepping from card to card in the open round scrolled the page behind to the top (X2's router scrolls to
+    the top on every round address, and a round still to come routes the page underneath to Upcoming). A step now keeps the page behind
+    where it was: the router's scrolls are held while it handles the new address, the Overview stays shown under the view
+    (html.x2p-rmkeep), and the scroll is put back; closing re-routes as before and returns to the same place. */
+ function hold(){var y=scrollY,sc=window.scrollTo,done=false;H.classList.add("x2p-rmkeep");window.scrollTo=function(){};
+  var put=function(){if(d.getElementById("x2pRm"))sc.call(window,{top:y,behavior:"instant"})};
+  var rel=function(){if(done)return;done=true;window.scrollTo=sc;put()};
+  addEventListener("hashchange",function(){requestAnimationFrame(function(){requestAnimationFrame(rel)})},{once:true});setTimeout(rel,500);setTimeout(put,80);setTimeout(put,700)}
  var peeked=false;try{peeked=sessionStorage.getItem("ez-peek")==="1"}catch(e){}
  function arrive(o){var rc=o.querySelector(".x2p-rmc"),c=o.querySelector(".card[data-n]");nav(o);if(!rc||!c)return;
   if(!still&&rc.animate){rc.getAnimations().forEach(function(a){a.cancel()});var r2=rc.getBoundingClientRect();
@@ -2595,12 +2603,12 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
    setTimeout(function(){if(d.body.contains(c))c.click()},still?200:620);setTimeout(function(){if(d.body.contains(c)&&c.classList.contains("flipped"))c.click()},still?1500:1900)}
   from=null;slide=0}
  new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm")arrive(x)});
-   [].forEach.call(m.removedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm"&&ret)setTimeout(function(){if(d.getElementById("x2pRm")||!ret)return;var r=ret;ret=null;
+   [].forEach.call(m.removedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm"&&!ret)H.classList.remove("x2p-rmkeep");if(x.nodeType===1&&x.id==="x2pRm"&&ret)setTimeout(function(){if(d.getElementById("x2pRm")||!ret)return;var r=ret;ret=null;
     /* stepping onto a round still to come routes the page underneath to Upcoming (X2 places such a round there); closing put the
        address back without telling the router, so the Overview stayed hidden under "#/" (2026-10-29): re-route once */
     var back=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",r.h);
      if(r.sec&&H.getAttribute("data-sec")!==r.sec&&!r.rr){r.rr=1;dispatchEvent(new HashChangeEvent("hashchange"))}
-     scrollTo({top:r.y,behavior:"instant"})};back();setTimeout(back,80);setTimeout(back,400)},60)})})}).observe(d.body,{childList:true});
+     scrollTo({top:r.y,behavior:"instant"});H.classList.remove("x2p-rmkeep")};back();setTimeout(back,80);setTimeout(back,400)},60)})})}).observe(d.body,{childList:true});
 }catch(e){window.__x2pTapErr=e}})();
 
 /* TIES (owner, 2026-10-29: "Claude and Grok should be on the same line"): a tied round's winners on one line in the Winner box, the

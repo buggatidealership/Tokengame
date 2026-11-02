@@ -1,7 +1,7 @@
 /* H32: the ledger strip is off (owner, 2026-11-02): its pulse loop never starts */window.__M10T=-1;
 /* X2+ MEET THE MODELS, H26 meet10, the owner's pick (2026-11-02): drop-in, load after tools/v22/story/x2p_chips.js (chips8 take c) and its CSS after x2p_chips.css.
    The strip S1 by default (window.__M10S='s2' gives the tape). Images from media/.
-   Media (written out so make_site.py copies them; copy them flat into ez/media/ first): media/chip12-grok-1200.jpg media/chip12-grok-1200.webp media/chip12-grok-1800.jpg media/chip12-grok-1800.webp media/chip12-claude-1200.jpg media/chip12-claude-1200.webp media/chip12-claude-1800.jpg media/chip12-claude-1800.webp media/chip12-gpt-1200.jpg media/chip12-gpt-1200.webp media/chip12-gpt-1800.jpg media/chip12-gpt-1800.webp media/chip12-kimi-1200.jpg media/chip12-kimi-1200.webp media/chip12-kimi-1800.jpg media/chip12-kimi-1800.webp media/mb-strip.webp media/mb-strip.jpg media/mb-bundle.webp media/mb-bundle.jpg */
+   Media (written out so make_site.py copies them; copy them flat into ez/media/ first): H34 (chip15, the board in the model's unit colour, the flag panel a solid inlay; tools/concepts/worlds/comic/story/h/meet14/chip14.py without the LAST 5 band): media/chip15-grok-1200.jpg media/chip15-grok-1200.webp media/chip15-grok-1800.jpg media/chip15-grok-1800.webp media/chip15-claude-1200.jpg media/chip15-claude-1200.webp media/chip15-claude-1800.jpg media/chip15-claude-1800.webp media/chip15-gpt-1200.jpg media/chip15-gpt-1200.webp media/chip15-gpt-1800.jpg media/chip15-gpt-1800.webp media/chip15-kimi-1200.jpg media/chip15-kimi-1200.webp media/chip15-kimi-1800.jpg media/chip15-kimi-1800.webp Before: media/chip12-grok-1200.jpg media/chip12-grok-1200.webp media/chip12-grok-1800.jpg media/chip12-grok-1800.webp media/chip12-claude-1200.jpg media/chip12-claude-1200.webp media/chip12-claude-1800.jpg media/chip12-claude-1800.webp media/chip12-gpt-1200.jpg media/chip12-gpt-1200.webp media/chip12-gpt-1800.jpg media/chip12-gpt-1800.webp media/chip12-kimi-1200.jpg media/chip12-kimi-1200.webp media/chip12-kimi-1800.jpg media/chip12-kimi-1800.webp media/mb-strip.webp media/mb-strip.jpg media/mb-bundle.webp media/mb-bundle.jpg */
 window.__M10IMG=window.__M10IMG||"media/";window.__M10BUS=window.__M10BUS||"media/";window.__M10S=window.__M10S||"s1";
 /* Round H26 · meet10, the owner's pick (2026-11-02): Meet the models, the quote in the chip, fed by the ledger strip. Laid over the live chips8 take c
    (x2p_chips.js) without touching it. The chip now reads: name and No. · SEASON P&L (the big window) · W-L · the quote.
@@ -44,14 +44,14 @@ const ones=[...four.querySelectorAll('.c8-one')],ms=ones.map(o=>o.dataset.m);
 const line={};
 ones.forEach(o=>{const m=o.dataset.m,b=o.querySelector('.c8-bal span');line[m]=b?b.textContent.trim():'';
  const pic=o.querySelector('.c7-pic'),lm=m.toLowerCase();
- pic.querySelectorAll('img').forEach(im=>{for(const k of ['src','srcset'])if(im.getAttribute(k))im.setAttribute(k,im.getAttribute(k).replace(/[^ ,]*chip8c-([a-z]+)-(\d+)\.(jpg|webp)/g,(s,mm,w,x)=>`${IMG}chip12-${mm}-${w}.${x}`));if(im.getAttribute('sizes'))im.setAttribute('sizes','(min-width:1000px) 600px, calc(100vw - 72px)')});
+ pic.querySelectorAll('img').forEach(im=>{for(const k of ['src','srcset'])if(im.getAttribute(k))im.setAttribute(k,im.getAttribute(k).replace(/[^ ,]*chip8c-([a-z]+)-(\d+)\.(jpg|webp)/g,(s,mm,w,x)=>`${IMG}chip15-${mm}-${w}.${x}`));if(im.getAttribute('sizes'))im.setAttribute('sizes','(min-width:1000px) 600px, calc(100vw - 72px)')});
  /* the SEASON window and its glass: off */
  const se=pic.querySelector('.c8-se');if(se){se.style.display='none';const g=se.nextElementSibling;if(g&&g.matches('img.c7-glass'))g.style.display='none'}
  /* LAST ROUND -> W-L */
  const lr=pic.querySelector('.c8-lr');lr.className='c7-win m10-wl';lr.innerHTML='<span class="c7-glow"></span><i class="m10-fl m10-flw"></i><i class="m10-fl m10-fll"></i><svg aria-hidden="true"></svg><i class="c7-gl"></i>';
  /* the line window: dark glass, the text, the glare, the painting's own glass screened back on top */
  const lw=D.createElement('div');lw.className='c7-win m10-ln';lw.style.cssText=at(LW);lw.innerHTML='<span class="c7-glow"></span><svg aria-hidden="true"></svg><i class="c7-gl"></i>';
- const gl=D.createElement('img');gl.className='c7-glass m10-lng';gl.alt='';gl.src=`${IMG}chip12-${lm}-1200.jpg`;gl.srcset=`${IMG}chip12-${lm}-1200.webp 1200w, ${IMG}chip12-${lm}-1800.webp 1800w`;gl.sizes='(min-width:1000px) 580px, 100vw';gl.style.cssText=clip(LW);
+ const gl=D.createElement('img');gl.className='c7-glass m10-lng';gl.alt='';gl.src=`${IMG}chip15-${lm}-1200.jpg`;gl.srcset=`${IMG}chip15-${lm}-1200.webp 1200w, ${IMG}chip15-${lm}-1800.webp 1800w`;gl.sizes='(min-width:1000px) 580px, 100vw';gl.style.cssText=clip(LW);
  lr.parentNode.insertBefore(lw,lr);lr.parentNode.insertBefore(gl,lr);
  /* the printed labels, live, in the painted labels' type */
  const lb=D.createElement('div');lb.className='m10-lab m10-labwl';lb.style.cssText=at(WLL);lb.innerHTML='<span>W-L</span>';pic.append(lb);
@@ -163,6 +163,24 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const NM=m=>String((MD[m]&&MD[m].name)||m).toUpperCase();
 const VER=m=>{const v=String((MD[m]&&MD[m].ver)||'').trim(),n=String((MD[m]&&MD[m].name)||m);return v.toLowerCase().startsWith(n.toLowerCase())?v.slice(n.length).replace(/^[\s\-–]+/,''):v};
 sec.classList.add('m11','m11-d2');
+/* H34: the flag patch (meet14 m14.js patch(), verbatim but for ids): a hand-cut cloth outline, the flag woven in, a stitch line, a hard shadow */
+const f1=v=>(+v).toFixed(1);
+function m15star(cx,cy,r,rot){let p=[];for(let i=0;i<10;i++){const a=(rot||0)-Math.PI/2+i*Math.PI/5,rr=i%2?r*.42:r;p.push(f1(cx+Math.cos(a)*rr)+','+f1(cy+Math.sin(a)*rr))}return p.join(' ')}
+function m15patch(cc,cx,cy,w,rot,m){const id='m15pt'+m,h=w*.64,x=-w/2,y=-h/2,r=w*.13;
+  const j=[.010,-.008,.012,-.006,.009,-.011,.007,-.01];const q=(a,b,k)=>`${f1(a+j[k%8]*w)},${f1(b+j[(k+3)%8]*w)}`;
+  const o=`M${q(x+r,y,0)} Q${q(0,y-h*.03,1)} ${q(x+w-r,y,2)} Q${q(x+w,y,3)} ${q(x+w,y+r,4)} Q${q(x+w+w*.02,0,5)} ${q(x+w,y+h-r,6)} Q${q(x+w,y+h,7)} ${q(x+w-r,y+h,0)} Q${q(0,y+h+h*.03,1)} ${q(x+r,y+h,2)} Q${q(x,y+h,3)} ${q(x,y+h-r,4)} Q${q(x-w*.02,0,5)} ${q(x,y+r,6)} Q${q(x,y,7)} ${q(x+r,y,0)}Z`;
+  const ix=x+w*.09,iy=y+h*.13,iw=w*.82,ih=h*.74;let fl='';
+  if(cc==='us'){for(let i=0;i<13;i++)fl+=`<rect x="${f1(ix)}" y="${f1(iy+i*ih/13)}" width="${f1(iw)}" height="${f1(ih/13+.5)}" fill="${i%2?'#f3ead6':'#c8312c'}"/>`;
+    const cw=iw*.44,ch=ih*7/13;fl+=`<rect x="${f1(ix)}" y="${f1(iy)}" width="${f1(cw)}" height="${f1(ch)}" fill="#25366f"/>`;
+    for(let a=0;a<4;a++)for(let b=0;b<5;b++)fl+=`<circle cx="${f1(ix+cw*(.12+b*.19+(a%2)*.09))}" cy="${f1(iy+ch*(.15+a*.24))}" r="${f1(ih*.026)}" fill="#f3ead6"/>`}
+  else{fl+=`<rect x="${f1(ix)}" y="${f1(iy)}" width="${f1(iw)}" height="${f1(ih)}" fill="#cf2f26"/>`;const s=ih;
+    fl+=`<polygon points="${m15star(ix+iw*.18,iy+s*.3,s*.17,0)}" fill="#ffd21f"/>`;[[.36,.12,.3],[.44,.24,.9],[.44,.42,0],[.36,.54,.4]].forEach(([a,b,t])=>fl+=`<polygon points="${m15star(ix+iw*a,iy+s*b,s*.06,t)}" fill="#ffd21f"/>`)}
+  return `<g transform="translate(${f1(cx)} ${f1(cy)}) rotate(${rot||0})">
+    <path d="${o}" transform="translate(${f1(w*.035)} ${f1(h*.07)})" fill="rgba(0,0,0,.62)"/>
+    <path d="${o}" fill="#1b1712"/><clipPath id="${id}"><rect x="${f1(ix)}" y="${f1(iy)}" width="${f1(iw)}" height="${f1(ih)}" rx="${f1(w*.05)}"/></clipPath>
+    <linearGradient id="${id}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></linearGradient>
+    <g clip-path="url(#${id})">${fl}<rect x="${f1(ix)}" y="${f1(iy)}" width="${f1(iw)}" height="${f1(ih)}" fill="url(#${id}s)"/></g>
+    <rect x="${f1(x+w*.05)}" y="${f1(y+h*.08)}" width="${f1(w*.9)}" height="${f1(h*.84)}" rx="${f1(w*.08)}" fill="none" stroke="#e9dcc0" stroke-width="${f1(w*.018)}" stroke-dasharray="${f1(w*.035)} ${f1(w*.025)}" opacity=".85"/></g>`}
 const SZ=[1800,728],pc=(v,t)=>(v/t*100).toFixed(4)+'%';
 const at=r=>`left:${pc(r[0],SZ[0])};top:${pc(r[1],SZ[1])};width:${pc(r[2]-r[0],SZ[0])};height:${pc(r[3]-r[1],SZ[1])}`;
 /* the new windows in the 1800 painting (gen.py) */
@@ -179,6 +197,9 @@ ones.forEach(o=>{const m=o.dataset.m,pic=o.querySelector('.c7-pic');
  const ls=pic.querySelector('.m10-labsn');if(ls){ls.style.cssText=at(SNL);ls.innerHTML='<span>Season<br>P&amp;L</span>';ls.classList.add('m11-lab')}
  const nm=D.createElement('div');nm.className='c7-win m11-nm';nm.style.cssText=at(NAME);nm.innerHTML='<span class="c7-glow"></span><svg aria-hidden="true"></svg>';
  pic.insertBefore(nm,pic.querySelector('.c8-d7')||pic.firstChild);
+ /* H34 (owner, 2026-11-02, night): the lab's flag as a small sewn patch on the name window's top right corner (meet14 V1's patch); the board is the unit colour now */
+ const fl=D.createElement('div');fl.className='m15-fl';fl.setAttribute('aria-hidden','true');fl.style.cssText=at([1192-82,118-56,1192+82,118+56]);
+ fl.innerHTML=`<svg viewBox="-82 -56 164 112">${m15patch(m==='KIMI'?'cn':'us',0,0,136,4,m)}</svg>`;pic.append(fl);
 });
 /* the name, measured on canvas: its cap 62% of the window's height, the version at .42 of it, both shrunk together if the row runs out */
 const cv=D.createElement('canvas').getContext('2d');
@@ -187,7 +208,7 @@ let CAP=.735;const capR=()=>{cv.font='100px Anton';const m=cv.measureText('H');i
 const nameLog={};
 function names(){capR();ones.forEach(o=>{const m=o.dataset.m,nm=o.querySelector('.m11-nm'),R=nm.getBoundingClientRect();if(!R.width)return;
   const w=R.width,h=R.height,pad=h*.3;let fs=h*.62/CAP,vs=fs*.42;const gap=fs*.16,N=NM(m),V=VER(m).toUpperCase();
-  const tot=tw(N,fs)+gap+tw(V,vs,"'Barlow Condensed'"),max=w-pad*2;if(tot>max){const k=max/tot;fs*=k;vs*=k}
+  const tot=tw(N,fs)+gap+tw(V,vs,"'Barlow Condensed'"),max=w-pad*2-w*.15;if(tot>max){const k=max/tot;fs*=k;vs*=k}
   const y=h/2+fs*CAP/2,nw=tw(N,fs),sv=nm.querySelector('svg');sv.setAttribute('viewBox',`0 0 ${w} ${h}`);
   sv.innerHTML=`<text class="m11-n" x="${pad.toFixed(2)}" y="${y.toFixed(2)}" font-size="${fs.toFixed(2)}">${esc(N)}</text>`+(V?`<text class="m11-v" x="${(pad+nw+gap).toFixed(2)}" y="${y.toFixed(2)}" font-size="${vs.toFixed(2)}">${esc(V)}</text>`:'');
   nameLog[m]={cap:+(fs*CAP).toFixed(2),ver:+(vs*.7).toFixed(2)}})}

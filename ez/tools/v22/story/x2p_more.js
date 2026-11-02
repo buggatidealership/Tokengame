@@ -15,9 +15,14 @@ html.g4.x2p.x2d[data-theme="dark"] body::before{content:none!important;backgroun
 html.g4{background:#030408 url(${M}gr4-${T.k}-p.jpg) 50% 0/100% auto repeat-y!important}
 @media (min-width:760px){html.g4{background-image:url(${M}gr4-${T.k}-l.jpg)!important}}
 ${T.s?`
-html.g4 .t5-bg{height:auto!important;margin:22px 0 24px;aspect-ratio:2400/var(--g4sh,150);max-height:64px;min-height:26px;filter:drop-shadow(0 3px 0 #000) drop-shadow(0 0 14px rgba(0,0,0,.9));background:url(${M}gr4-${T.s}.jpg) 50% 50%/cover no-repeat}
-html.g4 .t5-bg>*{visibility:hidden}
-html.g4 .g4-gut{display:block;width:100vw;margin:0 0 0 calc(50% - 50vw);height:clamp(26px,8vw,64px);background:url(${M}gr4-${T.s}.jpg) 50% 50%/cover no-repeat;filter:drop-shadow(0 3px 0 #000) drop-shadow(0 0 14px rgba(0,0,0,.9))}
+/* H34 (owner, 2026-11-02, night): every beat and section break is one torn comic-paper gutter (the H21 top6 pick, BG 1: a cream strip ripped
+   along both edges, ink outline, a red sliver under it, a halftone shadow), full bleed, with real room above and below. Drawn by __x2pTears. */
+html.g4 :is(.t5-bg,.g4-gut,.p5-gut).x2p-tear{display:block;position:relative;pointer-events:none;box-sizing:border-box;width:100vw!important;height:var(--tear-h,46px)!important;max-height:none!important;min-height:0!important;aspect-ratio:auto!important;
+ margin:var(--tear-a,44px) 0 var(--tear-b,40px) calc(50% - 50vw)!important;background:none!important;filter:none!important;grid-column:1/-1}
+html.g4 main.wrap>.g4-gut.x2p-tear.x2p-tear-x{display:none!important}
+html.g4 .x2p-tear>svg{visibility:visible!important;position:absolute;left:0;top:0;display:block;overflow:visible}
+@media (min-width:1000px){html.g4 :is(.t5-bg,.g4-gut,.p5-gut).x2p-tear{--tear-h:58px;--tear-a:64px;--tear-b:60px}}
+html.g4 .f4-cx{display:none!important}
 `:''}
 ${T.bus?`
 html.g4 .g4-bus{position:absolute;z-index:-1;left:0;top:0;width:100%;height:var(--g4h,0px);overflow:hidden;pointer-events:none}
@@ -28,8 +33,29 @@ html.g4 .g4-bus i:nth-child(3){left:calc(50% + 22px);animation-delay:-10s;animat
 @media (prefers-reduced-motion:reduce){html.g4 .g4-bus i{animation:none;display:none}}
 `:''}`;
 const st=document.createElement('style');st.id='g4-css';st.textContent=css;document.head.appendChild(st);
+/* H34: the torn paper, drawn per gutter at its own width (seeded by width and position, so each tear differs and stays put across loads) */
+function rnd(seed){let x=seed*9301+49297;return()=>(x=(x*9301+49297)%233280)/233280}
+function tear(el,k){let svg=el.querySelector(':scope>svg');if(!svg){svg=document.createElementNS('http://www.w3.org/2000/svg','svg');el.appendChild(svg)}
+  svg.setAttribute('aria-hidden','true');svg.setAttribute('preserveAspectRatio','none');svg.classList.add('t5-bgs');
+  const w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;const key=w+'x'+h+':'+k;if(el.dataset.tear===key)return;el.dataset.tear=key;
+  svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.setAttribute('width',w);svg.setAttribute('height',h);
+  const r=rnd((w|0)+k*977),edge=(y0,amp,step,down)=>{let pts=[];for(let x=0;x<=w+step;x+=step*(.6+r()*.8))pts.push([Math.min(x,w),y0+(r()-.5)*amp*2+(down&&r()<.18?amp*1.4:0)]);return pts};
+  const t=edge(h*.26,h*.07,7),b=edge(h*.7,h*.08,6,1).reverse(),P=t.concat(b),d='M'+P.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' L')+'Z';
+  let dots='';for(let x=4;x<w;x+=6)for(let j=0;j<4;j++){const y=h*.78+j*4.2,rr=1.6-j*.38;if(rr>.2)dots+=`<circle cx="${(x+(j%2)*3).toFixed(1)}" cy="${y.toFixed(1)}" r="${rr.toFixed(2)}"/>`}
+  /* fibres where the paper ripped: a pale line just inside the top tear */
+  svg.innerHTML=`<g fill="#f8f0d9" opacity=".22">${dots}</g><path d="${d}" fill="#c42a20" transform="translate(2,3.4)"/><path d="${d}" fill="#f8f0d9" stroke="#0d0b10" stroke-width="2.2" stroke-linejoin="round"/><path d="${'M'+t.map(p=>p[0].toFixed(1)+','+(p[1]+2.6).toFixed(1)).join(' L')}" fill="none" stroke="#c9bc98" stroke-width="1.4" opacity=".8"/><path d="${'M'+b.slice().reverse().map(p=>p[0].toFixed(1)+','+(p[1]-2.6).toFixed(1)).join(' L')}" fill="none" stroke="#d9cdb0" stroke-width="1.1" opacity=".7"/>`}
+function tears(){const els=[...document.querySelectorAll('section.t4 .t5-bg, main.wrap>.g4-gut, #get .p5-gut')];
+  /* one tear per break: a gutter whose nearest shown sibling before it is another gutter (or nothing) stays hidden */
+  const isG=e=>e&&e.matches&&e.matches('.g4-gut');
+  els.forEach(e=>{if(!isG(e))return;let p=e.previousElementSibling;while(p&&!isG(p)&&!p.offsetHeight)p=p.previousElementSibling;e.classList.toggle('x2p-tear-x',!p||isG(p)&&!p.classList.contains('x2p-tear-x'))});
+  els.forEach((e,i)=>{e.classList.add('x2p-tear');e.setAttribute('aria-hidden','true');tear(e,i)})}
+window.__x2pTears=tears;
+let tw0=innerWidth;addEventListener('resize',()=>{if(innerWidth!==tw0){tw0=innerWidth;requestAnimationFrame(tears)}});
+addEventListener('load',tears);document.fonts&&document.fonts.ready.then(()=>requestAnimationFrame(tears));
+[300,1200,3000].forEach(t=>setTimeout(tears,t));
+
 if(T.s){const im=new Image();im.onload=()=>D.style.setProperty('--g4sh',im.naturalHeight);im.src=M+'gr4-'+T.s+'.jpg';
- if(!matchMedia('(min-width:1200px)').matches)['record','learn','highlights','x2pSt','get'].forEach(i=>{const s=document.getElementById(i);if(s&&s.offsetHeight&&!(s.previousElementSibling||{}).classList?.contains('g4-gut')){const d=document.createElement('div');d.className='g4-gut';d.setAttribute('aria-hidden','true');s.before(d)}})}
+ ['record','learn','highlights','x2pSt','get'].forEach(i=>{const s=document.getElementById(i);if(s&&s.offsetHeight&&!(s.previousElementSibling||{}).classList?.contains('g4-gut')){const d=document.createElement('div');d.className='g4-gut';d.setAttribute('aria-hidden','true');s.before(d)}})}
 if(T.bus){const b=document.createElement('div');b.className='g4-bus';b.setAttribute('aria-hidden','true');b.innerHTML='<i></i><i></i><i></i>';document.body.prepend(b);
  const tint=()=>{const mn=document.querySelector('main');D.style.setProperty('--g4h',Math.round(mn.getBoundingClientRect().bottom+scrollY)+'px');const H=D.scrollHeight,y=i=>{const e=document.getElementById(i);return e?Math.round((e.getBoundingClientRect().top+scrollY)/H*1000)/10:null};
   const r=y('record')||40,l=y('learn')||55,b2=y('x2pSt')||80;
@@ -265,13 +291,17 @@ const isD=()=>matchMedia('(min-width:1000px)').matches;
 const CASE=window.__x2pMagCase||{p:{img:'media/mag-case-h32-p.jpg',w:2048,h:1536,inner:[192,1856],plate:[790,238,1256,354],top:380,
    shelf:[{s0:840,e:925,lip:[868,906]},{s0:1290,e:1536,lip:[1305,1337]}]},
   d:{img:'media/mag-case-h32-d.jpg',w:2560,h:1440,inner:[92,2466],plate:[1002,234,1554,338],top:380,shelf:[{s0:1135,e:1440,lip:[1196,1233]}]}};
-const head=`<header class="m7-hd"><h2 class="t4-h2 m7-h2"><span class="t4-hw">Every round so far</span></h2><p class="m7-cap"><span class="m7-c1">Every round is graded like a collector's card.</span> <span class="m7-c1">10: all four AIs right, and close.</span></p></header>`;
+const head=`<header class="m7-hd"><h2 class="t4-h2 m7-h2"><span class="t4-hw">Every round so far</span></h2><p class="m7-cap"><span class="m7-c1">Each round gets a grade from 1 to 10.</span> <span class="m7-c1">A 10 means all four AIs got it right, and close.</span></p></header>`;
 const isT=()=>!isD()&&matchMedia('(min-width:600px)').matches;
 const PAGE=()=>isD()?14:isT()?12:10;let shown=0;
 function restHTML(){const k=Math.min(REST.length,shown||PAGE()),it=REST.slice(0,k),C=isD()?7:isT()?4:2,R=Math.ceil(it.length/C);
-  const h=`<div class="m7-box"><ol class="m7-flip" style="grid-template-rows:${R>1?`repeat(${R-1},var(--peek)) `:''}auto">${it.map((r,j)=>{const row=R-1-Math.floor(j/C);return `<li style="grid-row:${row+1};grid-column:${j%C+1};z-index:${row+1}"${row===R-1?' class="m7-front"':''}>${slab(r,'m7-fl')}</li>`}).join('')}</ol><span class="m7-boxf" aria-hidden="true"></span></div>`;
+  const h=`<div class="m7-box"><ol class="m7-flip" style="grid-template-rows:${R>1?`repeat(${R-1},var(--peek)) `:''}auto">${it.map((r,j)=>{const row=R-1-Math.floor(j/C);return `<li style="grid-row:${row+1};grid-column:${j%C+1};z-index:${row+1}" data-col="${j%C===0?'l':j%C===C-1?'r':'m'}"${row===R-1?' class="m7-front"':''}>${slab(r,'m7-fl')}${tag(r)}</li>`}).join('')}</ol><span class="m7-boxf" aria-hidden="true"></span></div>`;
   const more=k<REST.length?`<button class="m7-more" type="button"><span>Show all ${REST.length}</span><i>${k} of ${REST.length}</i></button>`:(REST.length>PAGE()?`<button class="m7-more m7-less" type="button"><span>Show fewer</span></button>`:'');
   return `<p class="m7-sub"><b>Every other round</b> · newest first</p>${h}${more}`}
+/* H34 (owner, 2026-11-02, night): a slab in the box lifts and says what it is before it opens: company and ticker, grade, who won.
+   Phones: the first tap lifts it and shows the tag, a second tap on the same slab opens it. Mouse: hover lifts and tags, a click opens. */
+function tag(r){const L=lab(r)||{},W=wins(r),gw=L.gr?`Grade ${esc(L.gr)}${L.ds?' · '+esc(L.ds):''}`:'';
+  return `<span class="m7-tag" aria-hidden="true"><b>${esc(r.co)} <small>(${esc(r.ticker)})</small></b>${gw?`<span class="m7-tg">${gw}</span>`:''}<span class="m7-tw">${W.length?W.map(nm).join(' &amp; ')+(W.length>1?' tie':' won'):'Nobody won'}</span></span>`}
 function caseHTML(){return `<div class="m7-case m7-${V}" role="group" aria-label="The Mag 7"><i class="m7-bg" aria-hidden="true"></i><span class="m7-plt"><b>Mag 7</b></span><div class="m7-cin">${items.map((x,i)=>`<div class="m7-slot"><i class="m7-sh" aria-hidden="true"></i>${x}</div>`).join('')}</div><i class="m7-lips" aria-hidden="true"></i></div>`}
 const sec=D.getElementById('record');
 const root=D.createElement('div');root.className='m7r m7-C m7-v'+V;root.id='x2pMag';
@@ -303,10 +333,19 @@ sec.classList.add('r6-sec','m7-sec');sec.appendChild(root);
    models to the foot of the page), so the order is set again after each one. Between beats: one gold-fingers gutter (phones and tablets). */
 function order(){const t4=D.querySelector('main > section.t4'),ch=D.querySelector('main > section.ch'),ids=['learn','x2pSt','get'].map(i=>D.getElementById(i));if(!t4)return;
   let prev=t4;const hid=[...D.querySelectorAll('main > section.hero, main > section.x2o-bet, main > #standings')];hid.forEach(h=>{prev.after(h);prev=h});
-  const seq=[sec,ch,...ids].filter(Boolean);const gut=!matchMedia('(min-width:1200px)').matches&&D.querySelector('.g4-gut');
+  const seq=[sec,ch,...ids].filter(Boolean);const gut=!!D.querySelector('.g4-gut');
   D.querySelectorAll('main > .g4-gut').forEach(g=>g.remove());
-  seq.forEach((s,i)=>{if(gut&&i>0){const g=D.createElement('div');g.className='g4-gut';g.setAttribute('aria-hidden','true');prev.after(g);prev=g}prev.after(s);prev=s})}
+  seq.forEach((s,i)=>{if(gut){const g=D.createElement('div');g.className='g4-gut';g.setAttribute('aria-hidden','true');prev.after(g);prev=g}prev.after(s);prev=s});
+  window.__x2pTears&&requestAnimationFrame(window.__x2pTears)}
 order();addEventListener('hashchange',()=>setTimeout(order,0));
+/* H34: the two-tap lift on touch (see tag()). The pointer type of the tap decides; a keyboard Enter or a mouse click opens at once. */
+let ptype='';root.addEventListener('pointerdown',e=>{ptype=e.pointerType||''},true);
+const unlift=()=>root.querySelectorAll('.m7-flip li.m7-lift').forEach(l=>l.classList.remove('m7-lift'));
+root.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('.m7-flip li>a.m7-sl');if(!a)return;const li=a.parentNode;
+  if((ptype==='touch'||ptype==='pen')&&!li.classList.contains('m7-lift')){e.preventDefault();e.stopPropagation();unlift();li.classList.add('m7-lift')}
+  ptype=''},true);
+D.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('.m7-flip li.m7-lift')))unlift()});
+addEventListener('scroll',()=>{if(root.querySelector('.m7-lift')){const l=root.querySelector('.m7-lift').getBoundingClientRect();if(l.bottom<0||l.top>innerHeight)unlift()}},{passive:true});
 render();
 let lw=innerWidth;addEventListener('resize',()=>{if(innerWidth===lw){lay();return}lw=innerWidth;render()});
 D.fonts&&D.fonts.ready.then(()=>{fit();lay()});
