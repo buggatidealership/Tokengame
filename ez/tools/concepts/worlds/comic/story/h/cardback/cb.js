@@ -23,7 +23,7 @@ const pct=v=>(Math.round(v*100)/100)+'%';
 function trade(r){return `<span class="cb-tr"><i>${r.up?'Long':'Short'}</i> <b>${pct(r.v)}</b></span>`}
 function stamp(r,i){return `<span class="cb-pf ${r.ok?'p':'f'}" style="--rot:${[-6,-3,-7,-4][i%4]}deg;filter:url(#x2pcw${i%4})">${r.ok?'PASS':'FAIL'}</span>`}
 function off(r){return `<small class="cb-off">${r.ok?pct(r.off)+' off':'wrong way'}</small>`}
-function winLine(d){if(!d.W.length)return `<span class="cb-wn none"><em>No winner</em> <small>${d.right?'':'all '+d.total+' traded the wrong way'}</small></span>`;
+function winLine(d){if(!d.W.length)return `<span class="cb-wn none"><em>No winner</em> <small>${d.right?'':'all '+d.total+' wrong way'}</small></span>`;
   return `<span class="cb-wn">${crown}<em>${d.W.length>1?'Winners':'Winner'}</em> <b>${d.W.map(m=>NM[m]).join(' & ')}</b></span>`}
 function move(d){return `<b class="cb-mv"><span aria-hidden="true">${d.a<0?'−':'+'}</span><span class="sr">${d.a<0?'Down ':'Up '}</span>${Math.abs(d.a).toFixed(2)}%</b>`}
 const box=b=>`left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%`;
@@ -34,7 +34,7 @@ const T={
  c:{img:'c3.jpg',name:'The die',title:[11.5,3.6,78,9.6],ai:[[14,23,29,19.6],[57,23,29,19.6],[14,50.2,29,19.8],[57,50.2,29,19.8]],cell:'die',mkt:[11,76.4,78,5.6],dates:[[9.5,87.8,13.8,8.6],[30,87.8,13.8,8.6]],seal:[80.3,90.75],sr:6.6},
  d:{img:'d1.jpg',name:'The plate',title:[11,8.8,78,7.6],rows:[24.4,34.1,43.6,53.1],circ:13,cr:3.5,bar:[19.5,55],chk:[77,12.6],mkt:[11,61.4,78,10.2],dates:[[9.8,81.3,21.6,7.6],[37.3,81.3,21.6,7.6]],seal:[76.3,85],sr:9.2,cell:'row'}};
 function cellHtml(k,r,i){const nm=`<span class="cb-nm" style="--mc:${MC[r.m]}">${NM[r.m]}</span>${flag(CC[r.m])}`;
-  if(k==='cart')return `<span class="cb-l1"><b class="cb-rk">${i+1}</b>${mark(r.m)}${nm}${r.win?`<span class="cb-wt">${crown}</span>`:''}${stamp(r,i)}</span><span class="cb-l2">${trade(r)}</span>`;
+  if(k==='cart')return `<span class="cb-l1"><b class="cb-rk">${i+1}</b>${mark(r.m)}${nm}${r.win?`<span class="cb-wt">${crown}</span>`:''}</span><span class="cb-l2">${trade(r)}${stamp(r,i)}</span>`;
   if(k==='die')return `<span class="cb-dh"><b class="cb-rk">${i+1}</b>${mark(r.m)}${stamp(r,i)}</span><span class="cb-l1">${r.win?`<span class="cb-wt">${crown}</span>`:''}${nm}</span><span class="cb-l2">${trade(r)}</span>${off(r)}`;
   return ''}
 function build(k,n){const t=T[k],d=data(n);let h=`<div class="cb-p" style="--img:url(${IMG+t.img})"><i class="cb-bg"></i>`;
