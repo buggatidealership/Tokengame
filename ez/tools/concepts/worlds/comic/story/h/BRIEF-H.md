@@ -758,3 +758,45 @@ The top is locked: the first three frames, the four lines, the zoom rhythm and t
 - REPORT.md with the twelve questions.
 
 Budget up to $40. Work in `h/board5/`.
+
+### `chips8`: Meet the models as character cards (owner, 2026-11-02, ~00:30 UTC; the lead's design, the owner is the taste layer)
+The owner: the characters are not popping out; there is too much info and too much moving; "Last 5" belongs on the leaderboard; show time ("there's time in this": the season is live); one sentence of personality per model. Skill lessons 123 to 125.
+
+**The card, decided:**
+- **Founder:** big. Bring back chips5's **SW** geometry (`h/chips5/`, the `sw-c2` master; `ez/x2p-h21-chips5-390.png`): a big square window at the chip's right end, its frame top level with the plate's top and its bottom level with the flag's bottom. The founder's loop fills the window's inner edge (about 90×89 at 390; chips7's die is far smaller). No vignette, no pad ring over the face.
+- **Kept from chips7:**
+  - the painted craft: the engraved mark on the gold plate, the laser-marked name and version, the substrate detail of test 5;
+  - the **small etched flag** under the plate.
+- **The label, top to bottom:**
+  1. `No. n` small beside the name (the chips are in season-P&L order).
+  2. **LAST 7 DAYS**: the P&L of this model's trades graded in the last 7 days, the biggest lit figure, green or red. The rule is the comic's: the calendar days the window names, New York date of each round's close (see world-comic.js, R11 block). No trades in the window: "No trades" (dim), never "$0".
+  3. **LAST ROUND**: that round's company logo, lit, and a ✓ or ✗ for whether the direction was right. Ties count by direction too; a skipped round shows the last round it traded.
+  4. **SEASON**: one small line, P&L and W-L ("+$148,480 · 45-27").
+  5. **One line of personality**, laser-etched along the foot of the label:
+     - Grok: "Shorts almost everything. Somehow it's working."
+     - Claude: "Never met a small move it liked."
+     - GPT: "Bullish on everything. Including itself."
+     - Kimi: "Buys every dip. Some dips keep dipping."
+- **Where the lines come from:** the data on 2026-11-02:
+  - Grok shorts 87% of its calls and leads the season;
+  - Claude's calls average 3.61%, the largest;
+  - GPT calls up 66% of the time, at −$56,930;
+  - Kimi calls up 66% of the time and is last.
+
+  These are static words: paint them in, checked letter by letter. If a painted sentence won't come out right in three tries, letter it in code as an etched line with test 3's metal treatment, and say so.
+- **Painted labels:** LAST 7 DAYS, LAST ROUND, SEASON, NO. Gone: LAST 5, the standalone W-L and SEASON P&L fields.
+- **Motion:** only the founder loops. No re-scans, no flicker, no LED glow animation.
+- **Fifth chip:** "In inference" as chips7, in the same new geometry.
+
+**Takes:**
+- (a) as above;
+- (b) as above, but the founder window also breaks the chip's top edge (the character "pops out" of the card, comic panel-break style, the window frame drawn over the rim);
+- (c) your own variant of the label order, if the twelve questions argue for one.
+
+**Deliver:**
+- a drop-in for `x2p_chips.js/.css`;
+- flat-named images `chip8-*`, ≤ 300 KB each, plus webp;
+- boards `ez/x2p-h24-chips8-*.png` at 390 and 1280, a 3x close-up, and a short loops video;
+- REPORT with the twelve questions and H23's tests.
+
+Budget up to $40. Work in `h/chips8/`. The live chips7 is `ez/tools/v22/story/x2p_chips.js/.css` and `h/chips7/` (read only).
