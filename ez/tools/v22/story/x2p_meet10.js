@@ -1,3 +1,4 @@
+/* H32: the ledger strip is off (owner, 2026-11-02): its pulse loop never starts */window.__M10T=-1;
 /* X2+ MEET THE MODELS, H26 meet10, the owner's pick (2026-11-02): drop-in, load after tools/v22/story/x2p_chips.js (chips8 take c) and its CSS after x2p_chips.css.
    The strip S1 by default (window.__M10S='s2' gives the tape). Images from media/.
    Media (written out so make_site.py copies them; copy them flat into ez/media/ first): media/chip12-grok-1200.jpg media/chip12-grok-1200.webp media/chip12-grok-1800.jpg media/chip12-grok-1800.webp media/chip12-claude-1200.jpg media/chip12-claude-1200.webp media/chip12-claude-1800.jpg media/chip12-claude-1800.webp media/chip12-gpt-1200.jpg media/chip12-gpt-1200.webp media/chip12-gpt-1800.jpg media/chip12-gpt-1800.webp media/chip12-kimi-1200.jpg media/chip12-kimi-1200.webp media/chip12-kimi-1800.jpg media/chip12-kimi-1800.webp media/mb-strip.webp media/mb-strip.jpg media/mb-bundle.webp media/mb-bundle.jpg */
@@ -221,3 +222,10 @@ W.__m11={layout,names:nameLog,measure:()=>{const fr=four.getBoundingClientRect()
  return {chips,sizes:chips.map(c=>c[2]+'x'+c[3]),nums:N,overlap:hits,joins:bodyTop.slice(1).map((t,i)=>+(t-bodyBot[i]).toFixed(2)),names:nameLog,h:Math.round(fr.height)}}};
 D.documentElement.classList.add('m11-ready');
 }})();
+
+/* ===== H32 (owner, 2026-11-02: "remove the vertical ledger strip... let the board use the width"; the rank numerals "look slapped on"): the strip, its
+   traces and the pulses are off; each rank is a contact tab of the board itself, pressed into the metal at the chip's left edge: #1's tab gold
+   (the golden socket of How a round works' BOARD frame), 2 to 4 nickel like its silver sockets; the numeral stamped into the plate. CSS: H32 block. ===== */
+(function(){const D=document;let n=0;(function go(){const four=D.querySelector('section.m11 .c8-four');if(!four||!D.documentElement.classList.contains('m11-ready')){if(++n<400)setTimeout(go,50);return}
+ try{[...four.querySelectorAll('.c8-one')].forEach((o,i)=>{if(o.querySelector('.m32-tab'))return;const t=D.createElement('i');t.className='m32-tab'+(i?'':' m32-t1');t.setAttribute('aria-hidden','true');
+   t.innerHTML=`<b>${i+1}</b>`;o.prepend(t)});D.documentElement.classList.add('m32');window.__m11&&window.__m11.layout()}catch(e){window.__m32Err=e;console.error(e)}})()})();

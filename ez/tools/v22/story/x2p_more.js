@@ -52,6 +52,7 @@ try{
    Every live word sits in a painted glass window, lit like the NVIDIA timer (amber gradient, glow, scanlines, the painting's own glare
    screened back over the glass). Sizes are set from the painting's on-screen scale so every live word keeps a cap height of 9 CSS px. */
 (function(){
+if(window.__x2pMagOff===undefined&&document.getElementById('record')){/* H32: Every round so far is the Mag 7 case (X2P_MAG below) */return}
 const D=document,TK=window.__R6||'A',IM=window.__R6IMG||'tools/concepts/worlds/comic/story/h/rounds6/h24/img/web/';
 const sec=D.getElementById('record');if(!sec||sec.querySelector('.r6'))return;
 const G=(window.ROUNDS||[]).filter(r=>r.a!=null&&r.out),NEW=G.slice().reverse();
@@ -220,6 +221,99 @@ window.__r6={render,scale,set:n=>{shown=n;render()}};
 })();
 
 }catch(e){window.__x2pR6Err=e;console.error(e)}})()})();
+/* ===== H32 X2P_MAG (owner, 2026-11-02: "Every round so far", round H31 stand take C, built): the Mag 7 in a painted showcase, the rest standing
+   in a slab box (labels up, flipped through). Right after How a round works (before Meet the models). window.__x2pMag = 'a' (default: 4 on the
+   upper shelf, Amazon then Apple and NVIDIA as empty slots below) | 'b' (the graded Mag 7 only, 3 + 3, the sixth slot the next one to come).
+   The slabs stand on the painted shelves: each foot tucked behind the shelf's brass lip (a strip of the same painting laid back over them) with a
+   contact shadow; "Mag 7" is page text engraved on the case's blank brass plate. Data: ROUNDS / UPCOMING / FILMS / CO_LOGOS (ez-data.js); each
+   grade from the page's own slab label (#car .card .zlab). From tools/concepts/worlds/comic/story/h/stand/_st.js (take C).
+   Media: media/mag-case-h32-p.jpg media/mag-case-h32-d.jpg media/mag-slab-h32.webp media/mag-box-h32.webp */
+(function(){var n=0;(function go(){if(!(window.ROUNDS&&window.UPCOMING&&document.getElementById('record')&&document.querySelector('section.t4 .t4-b2')&&document.querySelector('#car .card .zlab'))){if(++n<600)setTimeout(go,50);return}
+try{run()}catch(e){window.__x2pMagErr=e;console.error(e)}})();
+function run(){
+const D=document,V=(window.__x2pMag==='b')?'b':'a';
+const M7=t=>t==='GOOG'?'GOOGL':t;
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MO=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],md=s=>{const m=String(s||'').match(/(\d+)\/(\d+)\/(\d+)/);return m?MO[+m[1]]+' '+(+m[2]):''};
+const logoF=t=>{const L=(window.CO_LOGOS||{})[t];return L?'media/'+(L.f||L):''},dark=t=>!!((window.CO_LOGOS||{})[t]||{}).dark;
+const tile=r=>`media/tile-r${r.n}-${(window.FILMS||{})[r.n]?'f1':'t2'}.jpg`;
+const lab=r=>{const z=D.querySelector(`#car .card[data-n="${r.n}"] .zlab`);if(!z)return null;const q=s=>(z.querySelector(s)||{}).textContent||'';
+  return {ds:q('.zr .ds'),gr:q('.zr .gr'),no:q('.zr .no'),cert:(q('.zb').match(/\d{6,}/)||[''])[0],ten:q('.zr .gr')==='10'}};
+const MDL=window.MODELS||{},nm=m=>(MDL[m]&&MDL[m].name)||m.charAt(0)+m.slice(1).toLowerCase();
+const wins=r=>String(r.win||'').toUpperCase().split(/\s*&\s*|\s*,\s*|\s+AND\s+/).filter(m=>MDL[m]);
+const aria=r=>{const L=lab(r)||{},W=wins(r);return `Round ${r.n}, ${r.co} (${r.ticker}): moved ${r.out}. Grade ${L.ds||''} ${L.gr||''}. ${W.length?'Winner '+W.map(nm).join(' and '):'Nobody won'}. Open the slab.`};
+const G=ROUNDS.filter(r=>r.a!=null&&r.out).slice().sort((a,b)=>a.n-b.n);
+/* the Mag 7: one slot per company, its latest graded round; a company not graded yet holds its next round from UPCOMING */
+const all=[];['META','TSLA','GOOGL','MSFT','AMZN','AAPL','NVDA'].forEach(t=>{const g=G.filter(r=>M7(r.ticker)===t).pop();
+  if(g){all.push({r:g,t});return}const u=(window.UPCOMING||[]).filter(r=>M7(r.ticker)===t).sort((a,b)=>a.n-b.n)[0];all.push({u:u||{ticker:t,co:t},t})});
+all.sort((a,b)=>((a.r||a.u).n||1e9)-((b.r||b.u).n||1e9));
+const graded=all.filter(s=>s.r),todo=all.filter(s=>!s.r);
+const slots=V==='a'?all:[...graded,...todo.slice(0,Math.max(0,6-graded.length))].slice(0,6);
+const onCase=new Set(graded.map(s=>s.r.n));
+const REST=G.filter(r=>!onCase.has(r.n)).reverse();
+const BET=(()=>{const u=(window.UPCOMING||[]).filter(r=>r.ticker==='NVDA').sort((a,b)=>a.n-b.n)[0];return u&&u.n})();
+function label(r,L){return `<span class="m7-lab${L.ten?' m7-ten':''}"><span class="m7-l"><span class="m7-y">2026 <b class="s">$</b><b class="e">E</b><b class="z">Z</b> Season 1</span><span class="m7-nm"><b>${esc(r.co)}</b> <small>(${esc(r.ticker)})</small></span><span class="m7-zb"><i></i><span class="m7-ct">${esc(L.cert)}</span><span class="m7-ho"><i class="s">$</i><i class="e">E</i><i class="z">Z</i></span></span></span><span class="m7-r"><span class="m7-no">${esc(L.no)}</span><span class="m7-ds">${esc(L.ds)}</span><span class="m7-gr">${esc(L.gr)}</span></span></span>`}
+function slab(r,cls){const L=lab(r)||{ds:'',gr:'',no:'#'+r.n,cert:''},f=(window.FILMS||{})[r.n];
+  return `<a class="m7-sl ${cls||''}" href="#/round/${r.n}" aria-label="${esc(aria(r))}" data-n="${r.n}"><span class="m7-wn"><img src="${tile(r)}" alt="" loading="lazy" decoding="async">${f?'<i class="m7-pl" aria-hidden="true"></i>':''}</span><span class="m7-fr" aria-hidden="true"></span>${label(r,L)}</a>`}
+function empty(s){const u=s.u,bet=u.n&&u.n===BET,lg=logoF(u.ticker);
+  const when=bet?'Bet #1':V==='b'?'Next: '+u.co+(u.resolves?'\n'+md(u.resolves):''):(u.resolves?'Graded '+md(u.resolves):u.called?'Calls '+md(u.called):'To come');
+  return `<div class="m7-sl m7-mt${bet?' m7-bet':''}${V==='b'?' m7-nx':''}" role="img" aria-label="Empty slot: ${esc(u.co)} (${esc(u.ticker)}), round ${u.n||''}, ${bet?'Bet #1, ':''}${u.resolves?'graded at the close on '+md(u.resolves):'calls due '+md(u.called)}"><span class="m7-wn">${lg?`<img class="m7-ml${dark(u.ticker)?'':' m7-inv'}" src="${lg}" alt="" loading="lazy">`:''}<em class="m7-when">${esc(when)}</em></span><span class="m7-fr" aria-hidden="true"></span><span class="m7-lab m7-lab0"><span class="m7-l"><span class="m7-y">Next in the case</span><span class="m7-nm"><b>${esc(u.co)}</b> <small>(${esc(u.ticker)})</small></span></span><span class="m7-r"><span class="m7-no">${u.n?'#'+u.n:''}</span><span class="m7-ds">${bet?'Bet #1':'Soon'}</span><span class="m7-gr">?</span></span></span></div>`}
+const items=slots.map(s=>s.r?slab(s.r,'m7-big'):empty(s));
+const isD=()=>matchMedia('(min-width:1000px)').matches;
+/* the cases, measured on the paintings (px): the inner walls, the blank plate, the top slice (frame + plate) drawn as painted; then per shelf a band
+   of velvet stretched to the slabs' height and the shelf's own strip as painted (from s0: the glass line, the brass lip), the last strip down to the foot */
+const CASE=window.__x2pMagCase||{p:{img:'media/mag-case-h32-p.jpg',w:2048,h:1536,inner:[192,1856],plate:[790,238,1256,354],top:380,
+   shelf:[{s0:840,e:925,lip:[868,906]},{s0:1290,e:1536,lip:[1305,1337]}]},
+  d:{img:'media/mag-case-h32-d.jpg',w:2560,h:1440,inner:[92,2466],plate:[1002,234,1554,338],top:380,shelf:[{s0:1135,e:1440,lip:[1196,1233]}]}};
+const head=`<header class="m7-hd"><h2 class="t4-h2 m7-h2"><span class="t4-hw">Every round so far</span></h2><p class="m7-cap"><span class="m7-c1">Every round is graded like a collector's card.</span> <span class="m7-c1">10: all four AIs right, and close.</span></p></header>`;
+const isT=()=>!isD()&&matchMedia('(min-width:600px)').matches;
+const PAGE=()=>isD()?14:isT()?12:10;let shown=0;
+function restHTML(){const k=Math.min(REST.length,shown||PAGE()),it=REST.slice(0,k),C=isD()?7:isT()?4:2,R=Math.ceil(it.length/C);
+  const h=`<div class="m7-box"><ol class="m7-flip" style="grid-template-rows:${R>1?`repeat(${R-1},var(--peek)) `:''}auto">${it.map((r,j)=>{const row=R-1-Math.floor(j/C);return `<li style="grid-row:${row+1};grid-column:${j%C+1};z-index:${row+1}"${row===R-1?' class="m7-front"':''}>${slab(r,'m7-fl')}</li>`}).join('')}</ol><span class="m7-boxf" aria-hidden="true"></span></div>`;
+  const more=k<REST.length?`<button class="m7-more" type="button"><span>Show all ${REST.length}</span><i>${k} of ${REST.length}</i></button>`:(REST.length>PAGE()?`<button class="m7-more m7-less" type="button"><span>Show fewer</span></button>`:'');
+  return `<p class="m7-sub"><b>Every other round</b> · newest first</p>${h}${more}`}
+function caseHTML(){return `<div class="m7-case m7-${V}" role="group" aria-label="The Mag 7"><i class="m7-bg" aria-hidden="true"></i><span class="m7-plt"><b>Mag 7</b></span><div class="m7-cin">${items.map((x,i)=>`<div class="m7-slot"><i class="m7-sh" aria-hidden="true"></i>${x}</div>`).join('')}</div><i class="m7-lips" aria-hidden="true"></i></div>`}
+const sec=D.getElementById('record');
+const root=D.createElement('div');root.className='m7r m7-C m7-v'+V;root.id='x2pMag';
+/* lay the case out from slices of its painting: the slabs' size sets the bands; each slab's foot tucked behind its shelf's lip */
+function lay(){const cs=root.querySelector('.m7-case');if(!cs)return;const d=isD(),C=d?CASE.d:CASE.p,W=cs.clientWidth;if(!W)return;const s=W/C.w,H0=C.h*s;
+  const rows=d?[slots.length]:(V==='a'?[4,3]:[3,3]),n=slots.length,iw=(C.inner[1]-C.inner[0])*s,il=C.inner[0]*s,gap=Math.max(4,W*.012);
+  const wA=(iw-gap*5)/4,most=Math.max(...rows),w=d?Math.min(170,(iw-gap*(most+1))/most):Math.min((iw-gap*(most+1))/most,wA*(V==='b'?1.12:1)),h=w*922/600;
+  const bg=(top,hgt,y0,k)=>`top:${top.toFixed(1)}px;height:${(hgt+1).toFixed(1)}px;background-size:${W}px ${(H0*k).toFixed(1)}px;background-position:0 ${(-y0*s*k).toFixed(1)}px`;
+  let html=`<i class="m7-s" style="${bg(0,C.top*s,0,1)}"></i>`,y=C.top*s,prevB=C.plate[3]*s,k0=0;const feet=[],lips=[];
+  C.shelf.forEach((sh,i)=>{const tuck=(sh.lip[1]-sh.lip[0])*s*.35,foot=prevB+gap+h,st=foot-(sh.lip[0]-sh.s0)*s-tuck,bh=st-y,src=(sh.s0-(i?C.shelf[i-1].e:C.top));
+    html+=`<i class="m7-s" style="${bg(y,bh,(i?C.shelf[i-1].e:C.top),bh/(src*s))}"></i>`;
+    const sH=(sh.e-sh.s0)*s;html+=`<i class="m7-s" style="${bg(st,sH+.5,sh.s0,1)}"></i>`;
+    const l0=st+(sh.lip[0]-sh.s0)*s;lips.push(`<i class="m7-lip" style="${bg(l0,(sh.lip[1]-sh.lip[0])*s,sh.lip[0],1)}"></i>`);
+    feet.push(foot);y=st+sH;prevB=st+(sh.lip[1]-sh.s0)*s});
+  cs.style.height=y.toFixed(1)+'px';cs.querySelector('.m7-bg').innerHTML=html;cs.querySelector('.m7-lips').innerHTML=lips.join('');
+  const els=[...cs.querySelectorAll('.m7-slot')];let k=0;
+  rows.forEach((cnt,ri)=>{const foot=feet[d?0:ri],sp=(iw-cnt*w)/(cnt+1);
+    for(let j=0;j<cnt&&k<n;j++,k++){Object.assign(els[k].style,{width:w.toFixed(1)+'px',left:(il+sp+(sp+w)*j).toFixed(1)+'px',top:(foot-h).toFixed(1)+'px'})}});
+  const pl=root.querySelector('.m7-plt'),[x0,y0,x1,y1]=C.plate;Object.assign(pl.style,{left:(x0*s)+'px',top:(y0*s)+'px',width:((x1-x0)*s)+'px',height:((y1-y0)*s)+'px',fontSize:((y1-y0)*s*.6).toFixed(1)+'px'});
+  root.dataset.mg=JSON.stringify({v:V,w:+w.toFixed(1),h:+h.toFixed(1),caseH:+y.toFixed(1)});fit()}
+function render(){root.innerHTML=head+`<div class="m7-b1">${caseHTML()}</div><div class="m7-b2">${restHTML()}</div>`;
+  const b=root.querySelector('.m7-more');if(b)b.addEventListener('click',()=>{shown=b.classList.contains('m7-less')?0:REST.length;render();if(!shown)root.querySelector('.m7-b2').scrollIntoView({block:'start'})});
+  lay()}
+function fit(){root.querySelectorAll('.m7-nm').forEach(e=>{e.style.fontSize='';let f=parseFloat(getComputedStyle(e).fontSize),g=0;while(e.scrollWidth>e.clientWidth+.5&&f>5.5&&g++<40){f-=.5;e.style.fontSize=f+'px'}})}
+/* the old carousel stays laid out (the round view copies and measures its cards), only moved off screen and hidden from readers */
+[...sec.children].forEach(c=>{if(c===root)return;c.classList.add('r6-old');c.setAttribute('aria-hidden','true');c.inert=true});
+sec.classList.add('r6-sec','m7-sec');sec.appendChild(root);
+/* the order: How a round works, then this section, then Meet the models. X2's own order routine re-runs on every tab change (and drops Meet the
+   models to the foot of the page), so the order is set again after each one. Between beats: one gold-fingers gutter (phones and tablets). */
+function order(){const t4=D.querySelector('main > section.t4'),ch=D.querySelector('main > section.ch'),ids=['learn','x2pSt','get'].map(i=>D.getElementById(i));if(!t4)return;
+  let prev=t4;const hid=[...D.querySelectorAll('main > section.hero, main > section.x2o-bet, main > #standings')];hid.forEach(h=>{prev.after(h);prev=h});
+  const seq=[sec,ch,...ids].filter(Boolean);const gut=!matchMedia('(min-width:1200px)').matches&&D.querySelector('.g4-gut');
+  D.querySelectorAll('main > .g4-gut').forEach(g=>g.remove());
+  seq.forEach((s,i)=>{if(gut&&i>0){const g=D.createElement('div');g.className='g4-gut';g.setAttribute('aria-hidden','true');prev.after(g);prev=g}prev.after(s);prev=s})}
+order();addEventListener('hashchange',()=>setTimeout(order,0));
+render();
+let lw=innerWidth;addEventListener('resize',()=>{if(innerWidth===lw){lay();return}lw=innerWidth;render()});
+D.fonts&&D.fonts.ready.then(()=>{fit();lay()});
+window.__x2pMagApi={render,lay,slots,REST,V};
+}
+})();
+
 (function(){var n=0;(function go(){if(!(document.getElementById("learn")&&document.getElementById("get")&&window.ROUNDS&&window.__x2pPnl&&window.MODELS)){if(++n<400)setTimeout(go,50);return}
 try{
 /* proof5 shared engine: data (h_sol.js's rules verbatim) + a painted stage (one SVG: the painting as <image>, live text lit on its glass,
@@ -287,7 +381,7 @@ P5.stage=function(el,o){const id=UID(),[x0,y0,x1,y1]=o.crop,w=x1-x0,h=y1-y0;
     <clipPath id="${id}c">${gl}</clipPath>
     <clipPath id="${id}k">${o.silk||''}</clipPath>
    </defs>
-   <image href="${o.img}" x="0" y="0" width="1000" height="1000" preserveAspectRatio="none"/>
+   ${o.img?`<image href="${o.img}" x="0" y="0" width="1000" height="1000" preserveAspectRatio="none"/>`:''}
    <g class="p5-under">${o.under||''}</g>
    <g class="p5-lit" filter="url(#${id}g)">${o.lit||''}</g>
    <g class="p5-ov">${o.over||''}</g>
@@ -363,7 +457,7 @@ const KN=[[285,870],[385,870]],BT=[[672,870],[750,870],[828,870]];
 function screen(X,V){const ac=V.view==='acc',w=X.W[V.win];let lit='',under='',over='';
   const cx0=258,cx1=628,cy0=262,cy1=598,lab=34,sm=30;
   /* the top line of the screen: what is traced, and how big the sample is */
-  lit+=t(804,222,lab,(ac?X.N:w.n)+(ac||w.n!==1?' ROUNDS':' ROUND'),{a:'end',c:AMB,ls:1});
+  lit+=t(804,222,lab,(ac?X.N:w.n)+(ac||w.n!==1?' ROUNDS':' ROUND'),{a:'end',c:CR,ls:1});
   let lo,hi,n,rank,ser,Y,Xp;
   if(ac){n=X.N;rank=X.arank;ser=m=>X.A[m].s;lo=.3;hi=.8}
   else{n=w.n;rank=w.rank;ser=m=>w.ser[m];const all=[].concat(...X.MS.map(m=>w.ser[m]));const a=Math.min(0,...all),b=Math.max(0,...all),pd=(b-a||1)*.08;lo=a-pd;hi=b+pd}
@@ -374,15 +468,15 @@ function screen(X,V){const ac=V.view==='acc',w=X.W[V.win];let lit='',under='',ov
     /* the mask: the coin's 95% zone for the line as drawn ((right+1)/(calls+2)), by round */
     const up=[],dn=[];for(let i=0;i<=n;i++){const z=i?1.96*Math.sqrt(i/4)/(i+2):0;up.push([Xp(i),Y(.5+z)]);dn.push([Xp(i),Y(.5-z)])}
     under+=`<path d="M${up.map(p=>p.map(v=>v.toFixed(1)).join(' ')).join(' L')} L${dn.reverse().map(p=>p.map(v=>v.toFixed(1)).join(' ')).join(' L')}Z" fill="${AMB}" fill-opacity=".13" stroke="${AMB}" stroke-opacity=".7" stroke-width="2" stroke-dasharray="7 6"/>`;
-    [.3,.4,.6,.7,.8].forEach(v=>{under+=`<line x1="${cx0}" y1="${Y(v)}" x2="${cx1}" y2="${Y(v)}" stroke="#7dffb0" stroke-opacity=".12" stroke-width="1.2"/>`;lit+=t(cx0-10,Y(v)+sm*.36,sm,Math.round(v*100)+'%',{a:'end',c:'#9fd8b4',op:.85})});
-    lit+=`<line x1="${cx0}" y1="${Y(.5)}" x2="${cx1}" y2="${Y(.5)}" stroke="${AMB}" stroke-width="2.4"/>`+t(cx0-10,Y(.5)+sm*.36,sm,'50%',{a:'end',c:AMB});
-    const li=Math.round(n*.2),lz=1.96*Math.sqrt(li/4)/(li+2);lit+=t(cx0+14,Y(.5)-12,sm,'COIN',{c:AMB})+t(Xp(li),Math.min(cy1-8,Y(.5-lz*.72)),sm,'LUCK ZONE',{a:'middle',c:AMB,op:.95});
+    [.3,.4,.6,.7,.8].forEach(v=>{under+=`<line x1="${cx0}" y1="${Y(v)}" x2="${cx1}" y2="${Y(v)}" stroke="#7dffb0" stroke-opacity=".12" stroke-width="1.2"/>`;lit+=t(cx0-10,Y(v)+sm*.36,sm,Math.round(v*100)+'%',{a:'end',c:CR,op:.75})});
+    lit+=`<line x1="${cx0}" y1="${Y(.5)}" x2="${cx1}" y2="${Y(.5)}" stroke="${AMB}" stroke-width="2.4"/>`+t(cx0-10,Y(.5)+sm*.36,sm,'50%',{a:'end',c:CR});
+    const li=Math.round(n*.2),lz=1.96*Math.sqrt(li/4)/(li+2);lit+=t(cx0+14,Y(.5)-12,sm,'COIN',{c:CR})+t(Xp(li),Math.min(cy1-8,Y(.5-lz*.72)),sm,'LUCK ZONE',{a:'middle',c:CR,op:.95});
   }else{
     const st=P5.k$;const tk=[lo,0,hi].map(v=>v);
-    if(n){lit+=`<line x1="${cx0}" y1="${Y(0)}" x2="${cx1}" y2="${Y(0)}" stroke="${AMB}" stroke-width="2.4"/>`+t(cx0-10,Y(0)+sm*.36,sm,'$0',{a:'end',c:AMB});
+    if(n){lit+=`<line x1="${cx0}" y1="${Y(0)}" x2="${cx1}" y2="${Y(0)}" stroke="${AMB}" stroke-width="2.4"/>`+t(cx0-10,Y(0)+sm*.36,sm,'$0',{a:'end',c:CR});
       const top=Math.max(...[].concat(...X.MS.map(m=>w.ser[m]))),bot=Math.min(...[].concat(...X.MS.map(m=>w.ser[m])));
-      [top,bot].forEach(v=>{if(Math.abs(Y(v)-Y(0))>40)lit+=t(cx0-10,Y(v)+sm*.36,sm,st(v).replace('.0K','K'),{a:'end',c:'#9fd8b4',op:.85})})}
-    else lit+=t((cx0+cx1)/2,(cy0+cy1)/2,lab,'NO CLOSE IN '+w.t.toUpperCase(),{a:'middle',c:AMB});
+      [top,bot].forEach(v=>{if(Math.abs(Y(v)-Y(0))>40)lit+=t(cx0-10,Y(v)+sm*.36,sm,st(v).replace('.0K','K'),{a:'end',c:CR,op:.75})})}
+    else lit+=t((cx0+cx1)/2,(cy0+cy1)/2,lab,'NO CLOSE IN '+w.t.toUpperCase(),{a:'middle',c:CR});
   }
   /* the traces, the leader's in gold, drawn last */
   const lead=rank[0];
@@ -396,16 +490,20 @@ function screen(X,V){const ac=V.view==='acc',w=X.W[V.win];let lit='',under='',ov
       else{const v=w.tot[e.m];lit+=t(cx1+16,e.y-2,lab*.9,NM[e.m].toUpperCase(),{c})+t(cx1+16,e.y+lab*.95,lab,k$(v),{c:ld?GD:v>0?UP:v<0?DN:CR})}})}
   /* the measurement row, as a scope prints it under the trace: W-L per AI in the trace's colour */
   if(ac){const y=652;rank.forEach((m,i)=>{const x=196+i*152,a=X.A[m];lit+=t(x,y,sm,NM[m].toUpperCase(),{c:m===lead?GD:INK[m]})+t(x,y+36,lab,a.W+'-'+a.L,{c:CR})})}
-  else if(n){const y=652;lit+=t(196,y,sm,'IF YOU’D BET $100K ON EVERY CALL',{c:'#9fd8b4'})+t(196,y+36,sm,'NO LEVERAGE · BEFORE FEES',{c:'#9fd8b4',op:.8})}
+  else if(n){const y=652;lit+=t(196,y,sm,'IF YOU’D BET $100K ON EVERY CALL',{c:CR,op:.85})+t(196,y+36,sm,'NO LEVERAGE · BEFORE FEES',{c:CR,op:.7})}
   /* soft-key labels on the screen's foot, above each control; the open one boxed */
   const keys=[['v','acc','HIT RATE',KN[0][0]],['v','pnl','P&L',KN[1][0]],['w','season','SEASON',BT[0][0]-12],['w','d7','7D',BT[1][0]],['w','d1','24H',BT[2][0]]];
-  keys.forEach(([k,val,l,x])=>{if(k==='w'&&ac)return;const on=k==='v'?V.view===val:V.win===val,s=28,wdt=P5.tw(l,s)+16,xx=Math.min(Math.max(x,G[0]+14+wdt/2),G[0]+G[2]-12-wdt/2),y=738;lit+=(on?`<rect x="${xx-wdt/2}" y="${y-s*.95}" width="${wdt}" height="${s*1.3}" fill="${AMB}" fill-opacity=".9"/>`:'')+t(xx,y,s,l,{a:'middle',c:on?'#140a00':AMB,op:on?1:.75})});
-  return {lit,under,over}}
+  /* H32 (owner, 2026-11-02: "remove the screen"): no scope; the soft keys are the tabs themselves, cream boxes on the board, the open one filled */
+  const kr=[];let kx=200;const KS=30,ky=744;keys.forEach(([k,val,l])=>{if(k==='w'&&ac)return;const on=k==='v'?V.view===val:V.win===val,wdt=P5.tw(l,KS)+26;
+    if(k==='w'&&kr.length&&kr[kr.length-1].k==='v')kx+=26;
+    under+=`<rect x="${kx}" y="${ky-KS*1.02}" width="${wdt}" height="${KS*1.42}" rx="5" fill="${on?CR:'rgba(4,7,14,.72)'}" stroke="${CR}" stroke-width="2.4"/>`;
+    over+=t(kx+wdt/2,ky,KS,l,{a:'middle',c:on?'#0d0b10':CR});kr.push({k,val,l,on,x:kx,y:ky-KS*1.02,w:wdt,h:KS*1.42});kx+=wdt+12});
+  return {lit,under,over,kr}}
 P5.take={id:'t1',html(X,V){return `<div class="p5-bleed">${P5.head('Smart or','lucky?')}<div class="p5-st"></div><p class="p5-ln">${V.view==='acc'?'<b>Hit rate:</b> how often a trade went the right way. Inside the gold zone, <b>a coin could have done it.</b>':'Every call a $100K trade. <b>Who made money?</b>'}</p>${P5.table(X,V)}</div>`},
  draw(box,X,V){const st=box.querySelector('.p5-st'),s=screen(X,V);
-  P5.stage(st,{img:IMG,crop:CROP,glass:[[G[0],G[1],G[2],G[3],26]],lit:s.lit,under:s.under,label:V.view==='acc'?'Oscilloscope: each AI’s hit rate round by round against the coin’s luck zone':'Oscilloscope: P&L if you’d bet $100K on every call',glare:.55,bloom:2.6});
-  st.insertAdjacentHTML('beforeend',P5.hits(CROP,[{k:'v',val:'acc',x:KN[0][0]-46,y:828,w:92,h:84,label:'Hit rate view',on:V.view==='acc'},{k:'v',val:'pnl',x:KN[1][0]-46,y:828,w:92,h:84,label:'P&L view',on:V.view==='pnl'}]
-   .concat(V.view==='pnl'?[['season','Season'],['d7','Last 7 days'],['d1','Last 24 hours']].map(([v,l],i)=>({k:'w',val:v,x:BT[i][0]-38,y:832,w:76,h:76,label:l,on:V.win===v})):[])));
+  const C2=[170,166,846,782],LB={acc:'Hit rate view',pnl:'P&L view',season:'Season',d7:'Last 7 days',d1:'Last 24 hours'};
+  P5.stage(st,{img:null,crop:C2,glass:[],lit:s.lit,under:s.under,over:s.over,label:V.view==='acc'?'Chart: each AI’s hit rate round by round against the coin’s luck zone':'Chart: P&L if you’d bet $100K on every call',bloom:2.6});
+  st.insertAdjacentHTML('beforeend',P5.hits(C2,s.kr.map(r=>({k:r.k,val:r.val,x:r.x-4,y:r.y-8,w:r.w+8,h:r.h+16,label:LB[r.val],on:r.on}))));
   P5.vis(st)}};
 })();
 
@@ -553,4 +651,31 @@ function start(){try{dress()}catch(e){window.__x2pHbetErr=e;console.error('h_bet
   let w0=innerWidth,rt=0;addEventListener('resize',()=>{if(innerWidth===w0)return;w0=innerWidth;clearTimeout(rt);rt=setTimeout(re,150)});
   if(D.fonts&&D.fonts.ready)D.fonts.ready.then(re);addEventListener('load',re)}
 (function wait(n){if(D.querySelector('#x2pSt')&&window.MODELS&&window.__x2pPnl)start();else if(n<480)setTimeout(()=>wait(n+1),250)})(0);
+})();
+
+/* ===== H32 FONTS AND GOLD (owner, 2026-11-02: take A of round H31 unify; from tools/concepts/worlds/comic/story/h/unify/unify.js, ported):
+   1. the lit gold gradients of the chips (q4em, q4gd, r6em, r6gd) become cream ramps: gold is for section titles only;
+   2. Anton's narrow "1" is boxed to the other digits' width (fixed-width figures in the number face);
+   3. the "gets its chip" line of Next on the card is a narrator line.
+   Only what changes is re-checked (the mutated nodes), so the bet's ticking countdown costs nothing here. CSS: the FONTS AND GOLD block of x2p_more.css. ===== */
+(function(){const D=document,H=D.documentElement;H.classList.add('uf','uf-a');const CR=['#fffdf3','#f8f0d9','#c9bd9f'];
+function grads(root){(root.querySelectorAll?root:D).querySelectorAll('linearGradient[id],radialGradient[id]').forEach(g=>{if(g.__uf||!/^(q4em|q4gd|r6em|r6gd)/.test(g.id))return;g.__uf=1;
+  const st=g.querySelectorAll('stop');st.forEach((s,i)=>s.setAttribute('stop-color',CR[Math.min(CR.length-1,Math.round(i*(CR.length-1)/Math.max(1,st.length-1)))]))})}
+const isAnton=el=>{try{return /^\s*["']?Anton/i.test(getComputedStyle(el).fontFamily)}catch(e){return false}};
+function ones(root){if(!root||root.nodeType!==1&&root.nodeType!==3)return;if(root.nodeType===3)root=root.parentElement;if(!root||root.closest('.uf1,.hbc-sl,#car,script,style'))return;
+ const tw=D.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.nodeValue.indexOf('1')<0||!/\d/.test(n.nodeValue)?2:1});const todo=[];let n;while(n=tw.nextNode())todo.push(n);
+ for(const t of todo){const pe=t.parentElement;if(!pe||pe.closest('.uf1,script,style,.hbc-sl,.sr,[class*="sr-only"],title,desc,#car'))continue;if(!isAnton(pe))continue;
+  const parts=t.nodeValue.split('1');if(parts.length<2)continue;const svg=pe instanceof SVGElement;const frag=D.createDocumentFragment();
+  if(svg){if(!/^(text|tspan)$/i.test(pe.tagName))continue;const NS='http://www.w3.org/2000/svg';const mk=(c,txt)=>{const o=D.createElementNS(NS,'tspan');o.setAttribute('class',c);o.setAttribute('dx','0.0815em');o.textContent=txt;return o};
+   parts.forEach((p,i)=>{if(i===0){if(p)frag.appendChild(D.createTextNode(p));return}frag.appendChild(mk('uf1','1'));frag.appendChild(mk('uf1r',p||'​'))})}
+  else{parts.forEach((p,i)=>{if(i>0){const o=D.createElement('span');o.className='uf1';o.textContent='1';frag.appendChild(o)}if(p)frag.appendChild(D.createTextNode(p))})}
+  t.replaceWith(frag)}}
+function tags(){D.querySelectorAll('#get .p5-ln').forEach(p=>{if(/gets its chip/.test(p.textContent))p.classList.add('uf-nar')})}
+let pend=new Set(),q=0;
+const mo=new MutationObserver(rs=>{for(const r of rs){if(r.type==='characterData')pend.add(r.target);else r.addedNodes.forEach(a=>pend.add(a))}
+  if(q)return;q=1;requestAnimationFrame(()=>{q=0;const list=[...pend];pend.clear();mo.disconnect();
+   try{list.forEach(x=>{if(!x.isConnected)return;if(x.nodeType===1){grads(x);ones(x)}else if(x.nodeType===3)ones(x)});tags()}finally{mo.observe(D.body,{childList:true,subtree:true,characterData:true})}})});
+function start(){grads(D);tags();ones(D.body);mo.observe(D.body,{childList:true,subtree:true,characterData:true})}
+if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',start);else start();
+D.fonts&&D.fonts.ready.then(()=>setTimeout(()=>{mo.disconnect();try{ones(D.body)}finally{mo.observe(D.body,{childList:true,subtree:true,characterData:true})}},300));
 })();
