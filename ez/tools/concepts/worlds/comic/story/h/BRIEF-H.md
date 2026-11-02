@@ -800,3 +800,36 @@ The owner: the characters are not popping out; there is too much info and too mu
 - REPORT with the twelve questions and H23's tests.
 
 Budget up to $40. Work in `h/chips8/`. The live chips7 is `ez/tools/v22/story/x2p_chips.js/.css` and `h/chips7/` (read only).
+
+### H24 addendum 2 (owner, 2026-11-02, ~00:40 UTC: "lead the design and I'm your taste layer... the goal now is just to get to the end of the overview page... I want everything to bleed out... the background is the first layer of the website")
+**The X2+ Overview, end to end (the lead's plan):**
+1. **The top** (locked): the headline and the chip, then How a round works, then the film.
+2. **Meet the models** (`chips8`).
+3. **Every round so far, on the ledger** (`rounds`).
+4. **Smart or lucky**, the proof (`proof5`).
+5. **The bet**: X3+'s Bet #1 NVIDIA as it is live today (the vault, the chip timer, board D), ported to X2+ (`bet2x`).
+6. **The close of the page:** what's next on the card, a door to Upcoming, and "Get $EZ" (`proof5` closes the page too; see below).
+
+Out of the X2+ Overview: the MVPs (the record's highlights) and the old standings (Meet the models replaces them).
+
+**Rules for every helper from now on:**
+- **Everything bleeds.** On phones every beat runs edge to edge: no side margins, no rounded box, no card floating on black.
+- **The ground is the first layer.** It is what stays if you remove everything else, so every beat sits in it, not on it. The `ground` helper is painting it now.
+- **Generated lines.** Lines that describe a model (personality, form) are computed from the sheet's data with stated rules and refreshed at every sync, never typed once and left to go stale.
+
+### `bet2x`: port the bet to X2+ (engineering, no new paintings)
+- **What to port:** X3+'s bet section, exactly as it is live: `ez/tools/v22/story/h_bet.js/.css` and `h_betd.js/.css` (the vault opener, the headline, the painted GPU chip with the live countdown in its dies, the parts list, the pool line, board D with the flow in its traces, the bleed on phones).
+- **How:** as an X2+ drop-in `x2p_bet.js/.css` that mounts on X2+'s own page without the comic's DOM (`#wc-book .wc-bet`, `html.p1-on`). It replaces X2+'s current bet section (`section.x2o-bet`... find X2+'s bet and NVIDIA ticket in the built `v46-live-x2plus.html`) and keeps its data rules: the bet time as world-comic.js's betAt, the 69% pool share from SIM.poolShare, the leader from `__x2pPnl`.
+- **Checks:** identical pixels to X3+'s bet at 390 and 1280 (inside the section), the countdown equal to X3+'s, no errors, no sideways scroll at 320, 390 and 1280, nothing moving with reduced motion.
+- **Boards:** `ez/x2p-h24-bet2x-*.png`. Work in `h/bet2x/`. No Hedra needed.
+
+### `proof5`: Smart or lucky, and the close of the page, in the chip world
+- **The question:** are the AIs skilled or lucky? Answer it with the page's own numbers in the chip art:
+  - each model's hit rate round by round against the coin flip, with the 50/50 start;
+  - the P&L over the season, with Season / Last 7 days / Last 24 hours;
+  - small samples stated plainly.
+
+  X3+ answers it on a chalk board in an exchange (`h_sol.js`); X2+'s paper ticket is `x2plus.js` `x2pProof`. Read both for the numbers' rules; the numbers must match them.
+- **Takes:** at least four, very different, all in the chip world. For example: a scope or oscilloscope tracing the hit rates with the coin flip as the reference line; a test bench where each model's chip is "under test"; a wafer map; your own.
+- **The close of the page, two or three takes:** what's next on the card (the next rounds' logos and when the calls are due, live from ROUNDS), a door to the Upcoming tab, then Get $EZ, with the last frame handing the visitor somewhere (follow on X, come back for the bell).
+- **Deliverables:** boards `ez/x2p-h24-proof5-*.png` at 390 and 1280, the twelve questions, and H23's tests. Up to $40. Work in `h/proof5/`.
