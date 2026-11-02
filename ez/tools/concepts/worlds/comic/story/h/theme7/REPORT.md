@@ -18,7 +18,7 @@ Round H25, task `theme7` (BRIEF-H.md). Mockups only, laid over the built `v46-li
 
 **Where colour can actually show (measured):** on X2+ today almost every beat is a painting with its own black void that bleeds edge to edge. The page ground shows only at section heads and gaps. So a colour per section needs four carriers, used in all takes:
 1. the ground between and behind the beats (a 4K painted neutral board, `img/gnd.jpg`, tinted per mask by `tint.py`, mean luminance 4%);
-2. the paintings' own black voids, which lighten over the ground (black shows the mask, light stays the painting);
+2. the paintings' own black voids, which lighten over the ground (black shows the mask, light stays the painting). In Meet the models the cream panel fill behind each chip (`.ch-ink`) is cleared too, so each chip sits on its own band and two bands meet at a small two-colour connector (the 10 px seams on the gap board);
 3. **the section's own paintings re-masked** (`remask.py`: green-mask pixels get the target hue and matching saturation, value and luminance kept, gold, ink and light untouched): the wafer and die of Every round so far, the scope of Smart or lucky, the sockets and panel of the close;
 4. the heads' extrusion: today every head's second word is extruded in green `#0a5c2e`; it takes the section's colour. Meet the models stacks all four, in rank order: the moment the colours enter.
 
@@ -51,9 +51,11 @@ Round H25, task `theme7` (BRIEF-H.md). Mockups only, laid over the built `v46-li
 
 | | T1 | T2 magenta px | T3 | T5 min contrast (48 boxes) | T6 |
 |---|---|---|---|---|---|
-| P1 | pass | 0 | pass | 6.1:1 | __T6P1__ |
-| P2 | pass | 0 | pass | 6.1:1 | __T6P2__ |
-| P3 | pass | 0 | pass | 5.5:1 | __T6P3__ |
+| P1 | pass | 0 | pass | 6.1:1 | fail: 4 boxes (the bet's foot caption "NVIDIA is the first bet" and its C1/U1/K1 labels) end 0 to 8 px above the bet→close gap |
+| P2 | pass | 0 | pass | 6.1:1 | fail: 4 boxes (the bet's foot caption "NVIDIA is the first bet" and its C1/U1/K1 labels) end 0 to 8 px above the bet→close gap |
+| P3 | pass | 0 | pass | 5.5:1 | fail: 4 boxes (the bet's foot caption "NVIDIA is the first bet" and its C1/U1/K1 labels) end 0 to 8 px above the bet→close gap |
+
+**T6 fails at one joint:** board D's last caption sits on its own bottom edge, and `padding-bottom` on `#x2pSt` does not move it (the board sets its own height). The drop-in needs 8 px of padding inside board D's wrapper (`.hb-wrap`), not on the section.
 
 Gaps today (P1): top→film green/green ΔE 0 → 31 px; film→models green/Grok ΔE 36.5 → 48 px; models (bare board)→record Claude ΔE 56 → 56 px; record→proof Claude/Grok ΔE 51 → 54 px; proof→bet Grok/vault ΔE 38 → 48 px; bet→close vault/green ΔE 53 → 55 px.
 
