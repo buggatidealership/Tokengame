@@ -147,7 +147,37 @@ function tA(R,wide){const g=GA[wide?'w':'p'],Wd=g.W,Hd=g.H,X=f=>f*Wd,Y=f=>f*Hd;l
     t+=patch(cc,cx-tw(n,ss)/2-ss*.9,cy,ss*1.25,0)+T(cx+ss*.2,cy,ss,n,{c:'#cfc6b0'})});
   s+=t;
   return svgW([0,Y(g.vb[1]),Wd,Y(g.vb[3]-g.vb[1])],s,df)}
-function tB(R,wide){return '<p>todo</p>'}
+/* ================= B · pit lane (each lab's garage; the bay order is the standings) ================= */
+const GB={p:{img:'pb4',W:1536,H:2048,vb:[0,.1,1,.92],
+   b:[{f:[.10,.148,.475,.188],m:[.137,.222,.372,.308],p:[.408,.232,.442,.33]},{f:[.52,.148,.9,.188],m:[.547,.222,.788,.308],p:[.818,.232,.852,.33]},
+      {f:[.10,.448,.475,.488],m:[.137,.527,.372,.617],p:[.408,.537,.442,.637]},{f:[.52,.448,.9,.488],m:[.547,.527,.788,.617],p:[.818,.537,.852,.637]}],
+   sh:[[.10,.76,.265,.89],[.30,.76,.48,.89],[.52,.76,.69,.89],[.715,.76,.90,.89]],s2:[.5,.745,.6]},
+ w:{img:'wb3',W:2048,H:1152,vb:[0,.03,1,.97],title:[.36,.1,.6,.11],key:[.36,.175,.6],
+   b:[{f:[.028,.25,.217,.338],m:[.06,.45,.157,.57],p:[.181,.468,.209,.582]},{f:[.24,.25,.415,.338],m:[.265,.45,.357,.57],p:[.375,.468,.404,.582]},
+      {f:[.438,.25,.578,.338],m:[.455,.456,.532,.572],p:[.545,.468,.567,.582]},{f:[.598,.25,.728,.338],m:[.612,.456,.69,.572],p:[.70,.468,.722,.582]}],
+   s2:[.86,.215,.22],sh:[[.742,.25,.856,.44],[.862,.25,.978,.44],[.742,.46,.856,.72],[.862,.46,.978,.72]]}};
+function tB(R,wide){const g=GB[wide?'w':'p'],Wd=g.W,Hd=g.H,X=f=>f*Wd,Y=f=>f*Hd;let s=`<image href="${BASE}${g.img}.jpg" x="0" y="0" width="${Wd}" height="${Hd}" preserveAspectRatio="none"/>`,top='';
+  if(g.title)s+=head(X(g.title[0]),Y(g.title[1]),X(g.title[2]),Y(g.title[3]),{rot:-1.5})+tag(X(g.key[0]),Y(g.key[1]),Y(wide?.028:.016),X(g.key[2]));
+  R.forEach((r,i)=>{const b=g.b[i],id='m15b'+i;
+    /* the fascia: the team's name lit in its colour, the lab and its flag */
+    const [fx,fy,fw,fh]=R4(b.f,X,Y);s+=`<rect x="${f1(fx)}" y="${f1(fy)}" width="${f1(fw)}" height="${f1(fh)}" fill="${r.c}" opacity=".07"/>`;
+    if(wide)s+=nm(r,fx+fw/2,fy+fh*.38,fh*.5,fw*.86,{c:r.c,vc:CR})+T(fx+fw/2+fh*.12,fy+fh*.8,fh*.17,LAB[r.m],{f:'s',c:LB})+patch(r.cc,fx+fw/2-tw(LAB[r.m],fh*.17,'s')/2-fh*.12,fy+fh*.8,fh*.24,0);
+    else{const ls=fh*.36,lw=tw(LAB[r.m],ls,'s');s+=nm(r,fx+fh*.3,fy+fh*.52,fh*.78,fw-lw-fh*1.6,{a:'start',c:r.c,vc:CR})+T(fx+fw-fh*.25,fy+fh*.52,ls,LAB[r.m],{a:'end',f:'s',c:LB})+patch(r.cc,fx+fw-fh*.25-lw-fh*.45,fy+fh*.52,fh*.5,0)}
+    /* the monitor: the founder, the season line as the timing strip */
+    const [mx,my,mw,mh]=R4(b.m,X,Y),sh=mh*(wide?.2:.27);s+=face(r.m,mx,my,mw,mh-sh,{vg:'m15vg'})+`<rect x="${f1(mx)}" y="${f1(my+mh-sh)}" width="${f1(mw)}" height="${f1(sh)}" fill="#07090f"/><rect x="${f1(mx)}" y="${f1(my+mh-sh)}" width="${f1(mw*.025)}" height="${f1(sh)}" fill="${r.c}"/>`;
+    {const pt=$(r.pl),k0=sh*.62,L='SEASON P&L',need=k=>tw(L,k*.62,'s')+k*.35+tw(pt,k);const k=need(k0)>mw*.88?k0*mw*.88/need(k0):k0,x0=mx+mw/2+mw*.012-need(k)/2;
+     s+=T(x0,my+mh-sh/2,k*.62,L,{a:'start',f:'s',c:LB})+T(x0+tw(L,k*.62,'s')+k*.35,my+mh-sh/2,k,pt,{a:'start',c:r.pl>=0?UP:DN})}
+    /* the pit board: the position and the record */
+    const [px,py,pw,ph]=R4(b.p,X,Y);s+=T(px+pw/2,py+ph*.2,fit(ph*.2,'P'+(i+1),pw*.86),'P'+(i+1),{c:'#f4f1e8'})+T(px+pw/2,py+ph*.47,fit(ph*.1,'W-L',pw*.9),'W-L',{c:'#f4f1e8',op:.75});
+    {const ws=`${r.W}-${r.L}`,k=fit(ph*.15,ws,pw*.9);s+=wl(r,k,px+pw/2,py+ph*.64,{dc:'#f4f1e8'})}
+    /* team radio on the pit lane floor */
+    const bw=X(wide?.15:.33),bh=Y(wide?.12:.068),bx=X((b.f[0]+b.f[2])/2)-bw/2,by=wide?Y(.76):Y(b.m[3])+Y(.032);top+=balloon(bx,by,bw,bh,X((b.m[0]+b.m[2])/2),wide?Y(b.m[3])+Y(.15):Y(b.m[3])+Y(.004),r.q,{smax:bh*.22});
+    if(wide)top+=T(bx+bw*.5,by-bh*.04,bh*.13,'TEAM RADIO',{c:r.c,st:INK,sw:bh*.03,ls:wide?2:1});
+  });
+  /* Season 2: shutters down, the names stencilled on them */
+  S2.forEach(([n,cc],j)=>{const [sx,sy,sw,sh2]=R4(g.sh[j],X,Y);s+=T(sx+sw/2,sy+sh2*.42,fit(sh2*.16,n,sw*.82),n,{c:'#d8cfba',op:.82,fl:'m15ink'})+patch(cc,sx+sw/2,sy+sh2*.62,sh2*.16,0)});
+  s+=T(X(g.s2[0]),Y(g.s2[1]),fit(Y(wide?.03:.016),'SEASON 2 · IN INFERENCE',X(g.s2[2]),'s'),'SEASON 2 · IN INFERENCE',{f:'s',c:LB});
+  return svgW([0,Y(g.vb[1]),Wd,Y(g.vb[3]-g.vb[1])],s+top,'')}
 /* ================= C · character select (arcade) ================= */
 const GC={p:{img:'pc',W:1536,H:2048,vb:[.095,.905,0,.8],mq:[.131,.054,.869,.186],sc:[.163,.283,.837,.642]},
           w:{img:'wc',W:2048,H:1152,vb:[0,1,0,.86],mq:[.106,.043,.894,.217],sc:[.152,.318,.848,.708]}};
@@ -161,12 +191,12 @@ function tC(R,wide){const g=GC[wide?'w':'p'],Wd=g.W,Hd=g.H,X=f=>f*Wd,Y=f=>f*Hd;l
   /* the preview of the model under the cursor (#1 at rest; the build steps the cursor through all four) */
   const pv=wide?[x+G,y+hh+G*.4,w*.47-G*1.5,h-hh-G*1.4]:[x+G,y+hh+G*.3,w-G*2,h*.39];
   const fsz=wide?Math.min(pv[3],pv[2]*.56):pv[3];t+=face(r0.m,pv[0],pv[1],fsz,fsz,{vg:'m15vg'});t+=`<rect x="${f1(pv[0])}" y="${f1(pv[1])}" width="${f1(fsz)}" height="${f1(fsz)}" fill="none" stroke="${r0.c}" stroke-width="${f1(fsz*.025)}"/>`;
-  const ix=pv[0]+fsz+G,iy=pv[1],iw=pv[2]-fsz-G,L=wide?fsz*.8:pv[3];let yy=iy;
-  t+=T(ix,yy+L*.1,L*.15,'No. 1 · LEADS THE SEASON',{a:'start',c:r0.c});
+  const ix=pv[0]+fsz+G,iy=pv[1]+(wide?fsz*.04:0),iw=pv[2]-fsz-G,L=wide?fsz*.92:pv[3];let yy=iy;
+  t+=T(ix,yy+L*.1,fit(L*.15,'No. 1 · LEADS THE SEASON',iw),'No. 1 · LEADS THE SEASON',{a:'start',c:r0.c});
   t+=nm(r0,ix,yy+L*.29,L*.21,iw*.8,{a:'start',c:CR})+patch(r0.cc,ix+iw-L*.13,yy+L*.29,L*.2,0);
   t+=T(ix,yy+L*.45,L*.1,'by '+LAB[r0.m],{a:'start',f:'s',c:LB});
-  const q=qfit('“'+r0.q+'”',iw,L*.24,L*.11,4,'s');if(q)t+=q.L.map((l,j)=>T(ix,yy+L*.6+j*q.s*1.12,q.s,l,{a:'start',f:'s',c:QT})).join('');
-  t+=stat(r0,ix,yy+L*.9,L*.12,iw,{a:'start'});
+  const q=qfit('“'+r0.q+'”',iw,L*.27,L*(wide?.1:.11),4,'s');if(q)t+=q.L.map((l,j)=>T(ix,yy+L*.6+j*q.s*1.12,q.s,l,{a:'start',f:'s',c:QT})).join('');
+  t+=wide?stat2(r0,ix+iw/2,yy+L*.86,L*.09,iw):stat(r0,ix,yy+L*.9,L*.12,iw,{a:'start'});
   /* the four fighters, in rank order; the cursor on #1 */
   const tr=wide?[x+w*.47+G*.5,y+hh+G*.4,w*.53-G*1.5,h*.56]:[x+G,pv[1]+pv[3]+G*.8,w-G*2,h*.29];
   const tw4=(tr[2]-G*.9*3)/4;
@@ -190,8 +220,8 @@ function tC(R,wide){const g=GC[wide?'w':'p'],Wd=g.W,Hd=g.H,X=f=>f*Wd,Y=f=>f*Hd;l
 const GD4={p:{img:'pd2',W:1536,H:2048,vb:[0,0,1,.965],
    cv:[[.16,.142,.392,.316],[.608,.142,.84,.316],[.16,.516,.392,.688],[.608,.516,.84,.688]],mat:[.024,.017,.024,.019],pq:[.016,.052],
    cloth:[[.05,.235],[.25,.445],[.53,.715],[.735,.93]],cy:.875},
-  w:{img:'wd',W:2048,H:1152,vb:[0,.03,1,.86],
-   cv:[[.082,.356,.176,.559],[.264,.356,.356,.559],[.436,.356,.528,.559],[.603,.356,.690,.559]],mat:[.012,.022,.012,.024],pq:[.035,.085],
+  w:{img:'wd',W:2048,H:1152,vb:[0,.03,1,.88],
+   cv:[[.082,.356,.176,.559],[.264,.356,.356,.559],[.436,.356,.528,.559],[.603,.356,.690,.559]],mat:[.012,.022,.012,.024],pq:[.03,.115],
    cloth:[[.752,.846],[.858,.954]],cy:.36}};
 /* a brass plaque, hand-cut: bevelled, two screws, its lines engraved (pale brass with a dark cut under) */
 function brass(x,y,w,h,id){return `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a6a2e"/><stop offset=".45" stop-color="#5e4519"/><stop offset="1" stop-color="#3a2a0e"/></linearGradient>
@@ -209,13 +239,13 @@ function tD(R,wide){const g=GD4[wide?'w':'p'],Wd=g.W,Hd=g.H,X=f=>f*Wd,Y=f=>f*Hd;
     const nr=cw*(wide?.13:.11),nx=X(c[0]-m[0])-nr*.1,ny=Y(c[1]-m[1])-nr*.1;
     s+=`<circle cx="${f1(nx+nr*.08)}" cy="${f1(ny+nr*.12)}" r="${f1(nr)}" fill="rgba(0,0,0,.6)"/><circle cx="${f1(nx)}" cy="${f1(ny)}" r="${f1(nr)}" fill="url(#${id}b)" stroke="#1c1306" stroke-width="${f1(nr*.1)}"/>`+T(nx,ny+nr*.05,nr*1.25,String(i+1),ENG);
     /* the plaque: No. and name, the lab with its flag, the season line */
-    const py=Y(c[3]+m[3])+Y(g.pq[0]),ph=Y(g.pq[1]),px=cx-cw*.04,pw=cw*1.08;s+=brass(px,py,pw,ph,id+'b');
+    const py=Y(c[3]+m[3])+Y(g.pq[0]),ph=Y(g.pq[1]),px=cx-cw*(wide?.12:.04),pw=cw*(wide?1.24:1.08);s+=brass(px,py,pw,ph,id+'b');
     if(!wide){s+=nm(r,px+pw/2,py+ph*.3,ph*.36,pw*.8,{c:ENG.c})+stat(r,px+pw/2,py+ph*.72,ph*.28,pw*.84,{lc:'#d9c08a'})}
-    else{s+=nm(r,px+pw/2,py+ph*.18,ph*.2,pw*.8,{c:ENG.c})+T(px+pw/2+ph*.12,py+ph*.39,ph*.11,LAB[r.m],{f:'s',c:'#d9c08a'})+patch(r.cc,px+pw/2-tw(LAB[r.m],ph*.11,'s')/2-ph*.1,py+ph*.39,ph*.15,0)+stat2(r,px+pw/2,py+ph*.6,ph*.14,pw*.84,{lc:'#d9c08a'})}
+    else{s+=nm(r,px+pw/2,py+ph*.2,ph*.24,pw*.84,{c:ENG.c})+T(px+pw/2+ph*.1,py+ph*.42,ph*.13,LAB[r.m],{f:'s',c:'#d9c08a'})+patch(r.cc,px+pw/2-tw(LAB[r.m],ph*.13,'s')/2-ph*.08,py+ph*.42,ph*.16,0)+stat2(r,px+pw/2,py+ph*.62,ph*.17,pw*.9,{lc:'#d9c08a'})}
     /* the portrait speaks */
     if(!wide){const right=i%2===0,bw=X(.27),bh=Y(.07),by=cy+(right?ch*.52:ch*.08),bx=right?X(.37):X(.63)-bw;
       top+=balloon(bx,by,bw,bh,right?cx+cw*.86:cx+cw*.14,by+bh*(right?.1:.9),r.q,{smax:bh*.24})}
-    else{const pb=py+ph,bw=cw*1.7,bh=Y(.1),bx=cx+cw/2-bw/2,by=pb+Y(.045);top+=balloon(bx,by,bw,bh,cx+cw*.62,pb-ph*.1,r.q,{smax:bh*.22})}
+    else{const pb=py+ph,bw=cw*1.7,bh=Y(.1),bx=cx+cw/2-bw/2,by=pb+Y(.035);top+=balloon(bx,by,bw,bh,cx+cw*.62,pb-ph*.1,r.q,{smax:bh*.22})}
   });
   /* Season 2: the frames under cloth, a paper tag on each cord */
   const tags=wide?S2.map((s2,j)=>[g.cloth[j%2],j<2?.36:.555]):S2.map((s2,j)=>[g.cloth[j],g.cy]);
@@ -224,12 +254,51 @@ function tD(R,wide){const g=GD4[wide?'w':'p'],Wd=g.W,Hd=g.H,X=f=>f*Wd,Y=f=>f*Hd;
       +patch(cc,tx-tw0/2+th*.42,ty-th*.02,th*.5,0)+T(tx+th*.12,ty-th*.13,fit(th*.36,n,tw0*.58),n,{c:INK})+T(tx+th*.12,ty+th*.24,fit(th*.2,'Season 2',tw0*.58,'s'),'Season 2',{f:'s',c:'#5a4a30'})+`</g>`});
   const lab=wide?[.903,.70]:[.5,.952];s+=T(X(lab[0]),Y(lab[1]),fit(Y(wide?.026:.016),'Season 2 · in inference',X(wide?.18:.6),'s'),'Season 2 · in inference',{f:'s',c:LB});
   return svgW([0,Y(g.vb[1]),Wd,Y(g.vb[3]-g.vb[1])],s+top,'')}
-function tE(R,wide){return '<p>todo</p>'}
+/* ================= E · the weigh-in (each scale reads its season P&L) ================= */
+const GE={p:{img:'pe2',W:1536,H:2048,vb:[0,0,1,.985],ban:[.03,.015,.97,.125],
+   d:[[.316,.247],[.681,.247],[.316,.556],[.681,.556]],dr:.077,
+   po:[[.041,.183,.185,.306],[.8107,.183,.952,.306],[.0427,.506,.1813,.624],[.8107,.506,.952,.624]],
+   pl:[[.205,.398,.43],[.57,.398,.43],[.205,.695,.43],[.57,.695,.43]],plw:.22,
+   bal:[[.38,.172],[.38,.262],[.38,.481],[.38,.571]],chair:[[.13,.898],[.356,.898],[.60,.898],[.843,.898]],pw:.095,bench:[.5,.79]},
+  w:{img:'we',W:2048,H:1152,vb:[0,0,1,1],ban:[.03,.01,.97,.105],
+   d:[[.109,.509],[.269,.511],[.423,.511],[.577,.509]],dr:.0345,
+   po:[[.086,.274,.160,.409],[.242,.274,.314,.409],[.390,.274,.462,.409],[.548,.274,.622,.409]],
+   pl:[[.064,.895],[.224,.895],[.378,.895],[.532,.895]],plw:.09,
+   chair:[[.725,.752],[.795,.752],[.865,.752],[.935,.752]],pw:.05,bench:[.83,.845]}};
+const LO=-1e5,HI=2e5;
+function dial(r,cx,cy,R0,id){const a=v=>(180+180*(Math.max(LO,Math.min(HI,v))-LO)/(HI-LO))*Math.PI/180,P=(v,k)=>[cx+Math.cos(a(v))*R0*k,cy-R0*.12+Math.sin(a(v))*R0*k];let t='';
+  const arc=(v0,v1,k,col,w)=>{const [x0,y0]=P(v0,k),[x1,y1]=P(v1,k);return `<path d="M${f1(x0)} ${f1(y0)}A${f1(R0*k)} ${f1(R0*k)} 0 0 1 ${f1(x1)} ${f1(y1)}" fill="none" stroke="${col}" stroke-width="${f1(w)}"/>`};
+  /* the dial's printed band in the model's colour; under it the loss side printed red, the profit side green */
+  t+=`<circle cx="${f1(cx)}" cy="${f1(cy)}" r="${f1(R0*.95)}" fill="none" stroke="${r.c}" stroke-width="${f1(R0*.1)}"/>`+arc(LO,0,.8,'#c8392f',R0*.06)+arc(0,HI,.8,'#2f9a57',R0*.06);
+  for(let v=LO;v<=HI;v+=25e3){const big=v%1e5===0,[x0,y0]=P(v,big?.64:.7),[x1,y1]=P(v,.76);t+=`<line x1="${f1(x0)}" y1="${f1(y0)}" x2="${f1(x1)}" y2="${f1(y1)}" stroke="#2a2118" stroke-width="${f1(R0*(big?.035:.018))}"/>`;
+    if(big){const [lx,ly]=P(v,.5);t+=T(lx,ly+(v===LO||v===HI?-R0*.06:0),R0*.12,v===0?'0':(v>0?'+':'−')+Math.abs(v/1e3)+'K',{c:'#2a2118'})}}
+  /* the needle swings to the season P&L */
+  const [nx,ny]=P(r.pl,.78),[bx,by]=P(r.pl,-.1);t+=`<line x1="${f1(bx)}" y1="${f1(by)}" x2="${f1(nx)}" y2="${f1(ny)}" stroke="#14100c" stroke-width="${f1(R0*.05)}" stroke-linecap="round"/><circle cx="${f1(cx)}" cy="${f1(cy-R0*.12)}" r="${f1(R0*.07)}" fill="#14100c"/>`;
+  const pt=$(r.pl);t+=T(cx,cy+R0*.3,fit(R0*.3,pt,R0*1.2),pt,{c:r.pl>=0?'#13703a':'#a3221a'})+T(cx,cy+R0*.55,R0*.13,'SEASON P&L',{f:'s',c:'#4a3d2c'});
+  return t}
+function tE(R,wide){const g=GE[wide?'w':'p'],Wd=g.W,Hd=g.H,X=f=>f*Wd,Y=f=>f*Hd;let s=`<image href="${BASE}${g.img}.jpg" x="0" y="0" width="${Wd}" height="${Hd}" preserveAspectRatio="none"/>`,top='';
+  const [bx,by,bw,bh]=R4(g.ban,X,Y);s+=head(bx+bw/2,by+bh*.42,bw*(wide?.5:.84),bh*.6,{rot:-1})+tag(bx+bw/2,by+bh*.85,bh*.17,bw*.8);
+  R.forEach((r,i)=>{const id='m15e'+i,[dx,dy]=g.d[i],R0=X(g.dr);s+=dial(r,X(dx),Y(dy),R0,id);
+    /* the fighter's poster: the founder, the name printed across its foot */
+    const [px,py,pw,ph]=R4(g.po[i],X,Y);s+=face(r.m,px,py,pw,ph*.74,{vg:'m15vg'})+`<rect x="${f1(px)}" y="${f1(py+ph*.74)}" width="${f1(pw)}" height="${f1(ph*.26)}" fill="#0d0b10"/>`;
+    s+=nm(r,px+pw/2,py+ph*.845,ph*.14,pw*.9)+T(px+pw/2,py+ph*.95,fit(ph*.06,'by '+LAB[r.m],pw*.86,'s'),'by '+LAB[r.m],{f:'s',c:LB});
+    s+=patch(r.cc,px+pw-pw*.13,py+pw*.1,pw*.2,6);
+    /* the platform's brass plate: the weigh-in order and the record */
+    const pl=g.pl[i],plx=X(pl[0]),ply=Y(pl[1]),plw=X(g.plw),plh=plw*.2;s+=brass(plx,ply,plw,plh,id+'b');
+    const wsx=`${r.W}-${r.L}`,s1=plh*.55;s+=T(plx+plw*.1,ply+plh*.53,s1,'No. '+(i+1),{a:'start',...ENG})+T(plx+plw*.58,ply+plh*.54,s1*.6,'W-L',{a:'end',f:'s',c:'#d9c08a'})+wl(r,s1,plx+plw*.62,ply+plh*.53,{a:'start',dc:'#d9c08a',st:'#1c1306',sw:s1*.08});
+    /* trash talk */
+    if(!wide){const [qx,qy]=g.bal[i],bw2=X(.24),bh2=Y(.075),bx2=X(qx),by2=Y(qy);
+      top+=balloon(bx2,by2,bw2,bh2,i%2?X(dx)-R0*.95:X(dx)+R0*.95,Y(dy)+R0*(i%2?.35:-.45),r.q,{smax:bh2*.22})}
+    else{const bw2=X(.1),bh2=Y(.15),bx2=X(dx)+R0*1.05,by2=Y(dy)+R0*1.6;top+=balloon(bx2,by2,bw2,bh2,X(dx)+R0*.75,Y(dy)+R0*.85,r.q,{smax:bh2*.17})}});
+  /* Season 2: the bench, a card on every seat */
+  S2.forEach(([n,cc],j)=>{const [cx,cy]=g.chair[j],w0=X(g.pw),h0=w0*.38,x0=X(cx),y0=Y(cy);s+=T(x0+h0*.18,y0-h0*.05,fit(h0*.42,n,w0*.66),n,{c:INK})+patch(cc,x0-w0*.36,y0,h0*.42,0)});
+  const bt='SEASON 2 · NEXT TO WEIGH IN · IN INFERENCE';s+=T(X(g.bench[0]),Y(g.bench[1]),fit(Y(wide?.024:.016),bt,X(wide?.26:.9),'s'),bt,{f:'s',c:CR,st:INK,sw:Y(.002)});
+  return svgW([0,Y(g.vb[1]),Wd,Y(g.vb[3]-g.vb[1])],s+top,'')}
 const sr=R=>`<table class="m15-sr"><caption>Meet the models: Season 1, ranked by season P&amp;L ($100K on every trade). Season 2: ${S2.map(s=>s[0][0]+s[0].slice(1).toLowerCase()).join(', ')} in inference.</caption><tr><th>No.</th><th>Model</th><th>Lab</th><th>Season P&amp;L</th><th>W-L</th><th>Line</th></tr>${R.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.full)}</td><td>${LAB[r.m]}, ${CNAME[r.cc]}</td><td>${$(r.pl)}</td><td>${r.W}-${r.L}</td><td>${esc(r.q)}</td></tr>`).join('')}</table>`;
 W.__M15=function(take){const sec=D.querySelector('section.c8');if(!sec)return false;const de=D.documentElement;de.classList.add('m15-on','m15-'+take);
   sec.querySelectorAll('.c8-one').forEach(o=>{const b=o.querySelector('.c8-bal span');if(b)QUOTE[o.dataset.m]=b.textContent.trim()});
-  [...sec.children].forEach(c=>{if(!c.classList.contains('m15')&&c.tagName!=='svg')c.style.display='none'});
+  const wide=matchMedia('(min-width:900px)').matches,keepH=(take==='D'||take==='B')&&!wide;[...sec.children].forEach(c=>{if(!c.classList.contains('m15')&&c.tagName!=='svg'&&!(keepH&&c.matches('h2.ch-h')))c.style.display='none'});
   let host=sec.querySelector(':scope>.m15');if(!host){host=D.createElement('div');sec.appendChild(host)}
-  const wide=matchMedia('(min-width:900px)').matches,R=rows();host.className='m15 m15-'+take+(wide?' m15-wide':'');
+  const R=rows();host.className='m15 m15-'+take+(wide?' m15-wide':'');
   host.innerHTML=({A:tA,B:tB,C:tC,D:tD,E:tE})[take](R,wide)+sr(R);return true};
 })();

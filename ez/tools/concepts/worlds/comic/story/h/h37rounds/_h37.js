@@ -57,7 +57,7 @@ A(){const line=SL.map(s=>{if(s.r){const L=lab(s.r.n);return `<li class="h7-hon">
      return `<li class="h7-hon h7-hmt"><i class="h7-lamp h7-off" aria-hidden="true"></i>${emptySlab(s.u,s.bet)}<p class="h7-tomb"><b>${esc(s.u.co==='AAPL'?'Apple':s.u.co)}</b> <span>(${esc(s.u.ticker)})</span><br><span class="h7-tl">${s.bet?'Bet #1 · the hook is ready':'Its hook is ready'}</span></p></li>`}).join('');
   const gs=groups(shown||LIM(),true);
   const salon=gs.map(g=>`<section class="h7-wk"><h3 class="h7-wl">Week of ${g.w.t} <span>· ${g.w.rs.length} rounds</span></h3><div class="h7-salon">${g.rs.map(r=>item(r,r===g.best?'h7-x2':'')).join('')}</div></section>`).join('');
-  return `<div class="h7-wall">${head}<p class="h7-wt"><span>The Mag 7</span> <i>newest last · swipe the wall</i></p><ol class="h7-line">${line}</ol>
+  return `<div class="h7-wall">${head}<p class="h7-wt"><span>The Mag 7</span> <i>oldest to newest<span class="h7-sw"> · swipe along the wall</span></i></p><ol class="h7-line">${line}</ol>
    <p class="h7-wt h7-wt2"><span>The collection</span> <i>${REST.length} rounds · newest first · each week hangs around its best grade</i></p>${salon}
    ${moreBtn('Show all')}</div>`},
 /* B. The vitrine and its drawers: the newest Mag 7 alone in the tall bay (one piece per vitrine, lit 10:1), the other Mag 7 one per small bay;
@@ -79,16 +79,16 @@ C(){const fill=G7.length;const pips=SL.map(s=>`<i class="${s.r?'on':''}"></i>`).
   return `${head}${set}<p class="h7-sub">Every other round <i>· nine to a page, newest first</i></p><div class="h7-spread">${ps.join('')}</div>${nav}`},
 /* D. The card show: the Mag 7 stand upright on brass easels on top of the counter, each under its own spot; every other round lies flat
    under the glass, laid by hand in rows, a brass strip and the week engraved between weeks (how dealers show hundreds of slabs). */
-D(){const top=`<div class="h7-top">${SL.map(s=>`<div class="h7-es">${s.r?item(s.r):emptySlab(s.u,s.bet)}<i class="h7-easel" aria-hidden="true"></i></div>`).join('')}</div>`;
+D(){const top=`<div class="h7-top"><span class="h7-dplt">Mag 7 · on the stands</span>${SL.map(s=>`<div class="h7-es">${s.r?item(s.r):emptySlab(s.u,s.bet)}<i class="h7-easel" aria-hidden="true"></i></div>`).join('')}</div>`;
   const glass=WEEKS.map(w=>`<div class="h7-strip"><b>${w.t}</b><i>${w.rs.length} rounds${isD()?'':' · swipe'}</i></div><div class="h7-flat"><div class="h7-row">${w.rs.map(r=>{const a=((r.n*37)%7-3)*.5;return item(r).replace('class="h7-it ','style="--rot:'+a.toFixed(2)+'deg" class="h7-it ')}).join('')}</div></div>`).join('');
   return `${head}<div class="h7-counter">${top}<p class="h7-sub h7-gl">Under the glass <i>· every other round, a row a week, newest left</i></p><div class="h7-glass">${glass}<i class="h7-sheen" aria-hidden="true"></i></div></div>`},
 /* E. The storehouse: one rack holds everything (V&A East Storehouse: the collection on open racks, visible); the top shelf is the Mag 7,
    lit; each shelf below is a week, its brass lip engraved, every slab standing whole. */
 E(){const C=isD()?8:3;const shelf=(rs,tagt,cls)=>{const rows=[];for(let i=0;i<rs.length;i+=C)rows.push(rs.slice(i,i+C));
-    return rows.map((row,i)=>`<div class="h7-sh ${cls||''}"><div class="h7-on">${row.join('')}</div><i class="h7-lip" aria-hidden="true"></i>${i===rows.length-1&&tagt?`<span class="h7-stag">${tagt}</span>`:''}</div>`).join('')};
+    return rows.map((row,i)=>`<div class="h7-sh ${cls||''}"><div class="h7-on">${row.join('')}</div><i class="h7-lip" aria-hidden="true"></i>${i===0&&tagt?`<span class="h7-stag">${tagt}</span>`:''}</div>`).join('')};
   const m7=SL.map(s=>s.r?item(s.r):emptySlab(s.u,s.bet));
   const C7=isD()?7:4,rows7=[m7.slice(0,C7),m7.slice(C7)].filter(x=>x.length);
-  const top=rows7.map((row,i)=>`<div class="h7-sh h7-m7"><div class="h7-on">${row.join('')}</div><i class="h7-lip" aria-hidden="true"></i>${i===rows7.length-1?'<span class="h7-stag h7-g"><b>Mag 7</b></span>':''}</div>`).join('');
+  const top=rows7.map((row,i)=>`<div class="h7-sh h7-m7"><div class="h7-on">${row.join('')}</div><i class="h7-lip" aria-hidden="true"></i>${i===0?'<span class="h7-stag h7-g"><b>Mag 7</b></span>':''}</div>`).join('');
   const gs=groups(shown||LIM(),false);
   const rest=gs.map(g=>shelf(g.rs.map(r=>item(r)),`<b>${g.w.t}</b> · ${g.w.rs.length} rounds`)).join('');
   return `${head}<div class="h7-rack">${top}<p class="h7-sub">Every other round <i>· a shelf a week, newest first</i></p>${rest}</div>${moreBtn('Show all')}`}

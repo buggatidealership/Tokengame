@@ -262,8 +262,8 @@ D.documentElement.classList.add('m11-ready');
      box like Season 1's on the chip's bottom edge: "Season 2 · not signed yet. It adds at least one more model."
    C the head like Smart or lucky's: the heading at Smart or lucky's own computed size (read live, so a shared size change follows), then ONE caption
      box in Smart or lucky's caption style (.sx-cap): "Season 1 · ranked by current season P&L. $100K on every trade."; the "Season 1 · the board" tag off.
-   D the figures in the glass: the painting's own window glass screened back over the name, Season P&L, W-L and the line (one clipped copy of the chip
-     per chip), a soft inner shadow under each window's top edge, the lettering faintly lit; the lab's flag a printed decal inside the name window.
+   D the figures in the glass: a pane over each window (the name, Season P&L, W-L, the line) with a faint diagonal glare (a gradient; a screened copy of
+     the painting per chip dropped 27% of tiles under a 40 MB GPU cap) and a soft inner shadow under its top edge, the lettering faintly lit; the lab's flag a printed decal inside the name window.
    Media (written out so make_site.py copies them): media/medal-h36-gold.jpg media/medal-h36-gold.webp media/medal-h36-silver.jpg media/medal-h36-silver.webp
    media/medal-h36-bronze.jpg media/medal-h36-bronze.webp media/medal-h36-dim.jpg media/medal-h36-dim.webp (Hedra gpt-image-2, blank plates in the style of
    the chip's own gold logo plate) media/try9-h36-1200.jpg media/try9-h36-1200.webp media/try9-h36-1800.jpg media/try9-h36-1800.webp.
@@ -306,8 +306,7 @@ DF.innerHTML=`<defs><clipPath id="m36gc" clipPathUnits="objectBoundingBox">${WIN
 const ones=()=>[...four.querySelectorAll('.c8-one')];
 const CC={GPT:'us',CLAUDE:'us',GROK:'us',KIMI:'cn'};
 /* D: the glass, the shadow under each window's top, the flag decal in the name window */
-ones().forEach(o=>{const p=o.querySelector('.c7-pic'),m=o.dataset.m,b=p.querySelector('img.c7-base');
- if(b&&!p.querySelector('.m36-gl')){const g=b.cloneNode();g.className='m36-gl';g.removeAttribute('style');g.setAttribute('aria-hidden','true');p.append(g)}
+ones().forEach(o=>{const p=o.querySelector('.c7-pic'),m=o.dataset.m;
  WINS.forEach(r=>{const s=D.createElement('i');s.className='m36-ws';s.style.cssText=at(r,S15);p.append(s)});
  const nm=p.querySelector('.m11-nm');if(nm&&!nm.querySelector('.m36-fd')){const f=D.createElementNS(NS,'svg');f.setAttribute('class','m36-fd');f.setAttribute('viewBox','0 0 844 149');f.setAttribute('preserveAspectRatio','none');f.setAttribute('aria-hidden','true');
   f.innerHTML=flag(CC[m]||'us',844-44-104,149/2-34,104,68);nm.append(f)}});

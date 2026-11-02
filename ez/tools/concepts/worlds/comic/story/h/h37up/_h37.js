@@ -79,8 +79,8 @@ function big(u,S,cf){return `<li class="hb-big${u.mag7?' hb-m7':''}"><a href="#/
   <span class="hb-bl">${H.logo(u,'hb-blg')}</span><span class="hb-bt"><span class="hb-bn" data-fit data-min="11">${esc(u.co)}</span>
   <span class="hb-bk">${chars(H.sym(u),cf.chars)}${u.mag7?'<em>Mag 7</em>':''}${u.bet?'<em class="hb-bet">Bet #1</em>':''}</span>
   <span class="hb-bw">${esc(u.when)}</span></span>${trades(u,S,cf)}</a></li>`}
-function li(u,S,cf){return `<li class="hb-li"><a href="#/round/${u.n}" aria-label="${esc(u.co+' ('+u.ticker+'), round '+u.n+'. '+H.st(u))}">${H.logo(u,'hb-slg')}<span class="hb-ln" data-fit data-min="9">${esc(u.co)}</span><small class="hb-lk">${esc(H.sym(u))}</small><span class="hb-ls">${u.state==='due'?(u.dated?'':'trades due'):esc(u.nIn+'/4 in')}</span></a></li>`}
-function day(d,S,cf){return `<section class="hb-day${d.past?' hb-past':''}"><h3 class="hb-dh"><b>${chars((d.sd||'').toUpperCase(),cf.chars)}</b> <span>${chars(H.md(d.p).toUpperCase(),cf.chars)}</span><small>${d.dueOnly?'trades due · no close set':'graded at the close'}</small></h3><ul class="hb-lis">${d.rounds.map(u=>li(u,S,cf)).join('')}</ul></section>`}
+function li(u,S,cf){return `<li class="hb-li"><a href="#/round/${u.n}" aria-label="${esc(u.co+' ('+u.ticker+'), round '+u.n+'. '+H.st(u))}">${H.logo(u,'hb-slg')}<span class="hb-ln" data-fit data-min="9">${esc(u.co)}</span><small class="hb-lk">${esc(H.sym(u))}${!u.dated&&!cf.dueDay?' · close tbc':''}</small>${u.nIn?`<span class="hb-ls">${esc(u.nIn+'/4 in')}</span>`:''}</a></li>`}
+function day(d,S,cf){return `<section class="hb-day${d.past?' hb-past':''}"><h3 class="hb-dh"><b>${chars((d.sd||'').toUpperCase(),cf.chars)}</b> <span>${chars(H.md(d.p).toUpperCase(),cf.chars)}</span><small>${d.dueOnly?'trades due · no close set':'graded at the close'}</small></h3><ul class="hb-lis">${d.rounds.map(u=>li(u,S,Object.assign({},cf,{dueDay:d.dueOnly}))).join('')}</ul></section>`}
 H.generic=function(S,cf){const b=S.bell;
   const t1=`<h2 class="t4-h2 hb-t"><span class="t4-hw">The next bell</span></h2>`,t2=`<h2 class="t4-h2 hb-t hb-t2"><span class="t4-hw">Upcoming predictions</span></h2>`;
   const cap=b?`<p class="hb-cap">${cf.capHTML?cf.capHTML(b):`The close grades every trade. <b>${b.nIn}</b> of <b>${b.nAll}</b> are in.`}</p>`:'';
@@ -89,4 +89,4 @@ H.generic=function(S,cf){const b=S.bell;
   const b2=`<div class="hb hb2"><div class="hb-top"></div><div class="hb-body">${cf.bigLab?`<h3 class="hb-th">${cf.bigLab}</h3>`:''}<ul class="hb-bigs">${S.big.map(u=>big(u,S,cf)).join('')}</ul>
     ${cf.restLab?`<h3 class="hb-th hb-th2">${cf.restLab}</h3>`:''}<div class="hb-days">${S.days.map(d=>day(d,S,cf)).join('')}</div></div><div class="hb-foot"></div></div>`;
   return `<div class="hb-wrap"><div class="hb-c1">${t1}${b1}</div><div class="hb-c2">${t2}${b2}</div></div>`};
-H.pos=pos;})();
+H.pos=pos;H.row=row;H.big=big;H.li=li;H.bellHead=bellHead;})();

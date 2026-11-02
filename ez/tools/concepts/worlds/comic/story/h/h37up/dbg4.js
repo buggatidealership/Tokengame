@@ -1,0 +1,2 @@
+const {open}=require('./lib');(async()=>{const ov=process.argv.slice(2);const {b,p,errs}=await open(1280,800,{css:ov.filter(f=>f.endsWith('.css')),js:ov.filter(f=>f.endsWith('.js')),data:'repo'});
+await p.waitForTimeout(2500);console.log(await p.evaluate(()=>{const o=[];let e=document.querySelector('.h37-root')||document.querySelector('.u3-root');while(e&&e!==document.body){const r=e.getBoundingClientRect();o.push((e.id||e.className).toString().slice(0,40)+' '+Math.round(r.left)+' '+Math.round(r.width));e=e.parentElement}return o}));await b.close()})();
