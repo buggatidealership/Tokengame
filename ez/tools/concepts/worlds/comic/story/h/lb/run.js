@@ -19,7 +19,7 @@ const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
    await p.evaluate(async()=>{await Promise.all([...document.querySelectorAll('#lbx img')].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})))});
   }else{await p.evaluate(()=>{const n=document.querySelector('header nav.nav');})}
   await p.waitForTimeout(+(process.env.WAIT||900));
-  await p.evaluate(()=>{[...document.body.querySelectorAll('*')].forEach(x=>{if(x.closest('header'))return;if(getComputedStyle(x).position==='fixed')x.style.setProperty('visibility','hidden','important')})});
+  await p.evaluate(()=>{[...document.body.querySelectorAll('*')].forEach(x=>{if(x.closest('header'))return;if(getComputedStyle(x).position==='fixed')x.style.setProperty('display','none','important')})});
   const m=await p.evaluate(()=>{const L=document.getElementById('lbx');const o={sw:document.documentElement.scrollWidth,vw:innerWidth};if(!L)return o;
     const r=L.getBoundingClientRect();o.secH=Math.round(r.height);o.bottom=Math.round(r.bottom+scrollY);
     let mn=99,mt='';L.querySelectorAll('*').forEach(e=>{if(!e.childNodes.length)return;const t=[...e.childNodes].filter(n=>n.nodeType===3&&n.textContent.trim()).length;if(!t)return;const cs=getComputedStyle(e);if(cs.display==='none'||e.closest('.sr'))return;const f=parseFloat(cs.fontSize);if(f<mn){mn=f;mt=e.textContent.trim().slice(0,20)}});o.minFont=mn;o.minT=mt;

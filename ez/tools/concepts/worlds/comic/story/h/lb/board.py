@@ -12,11 +12,17 @@ for k,t in COLS:
   except Exception:continue
   if SC!=1:im=im.resize((int(im.width*SC),int(im.height*SC)),Image.LANCZOS)
   ims.append((t,im))
-G=30;TH=int(48*max(SC,.6));rows=[ims[i:i+PER] for i in range(0,len(ims),PER)]
+G=30;TH=int(84*max(SC,.6));rows=[ims[i:i+PER] for i in range(0,len(ims),PER)]
 cw=max(i.width for _,i in ims);BW=G+len(rows[0])*(cw+G);BH=G+sum(TH+max(i.height for _,i in r)+G for r in rows)
 B=Image.new('RGB',(BW,BH),(14,13,16));d=ImageDraw.Draw(B);y=G
 for r in rows:
   x=G
-  for t,im in r:d.text((x,y),t,fill=(255,210,31),font=F);B.paste(im,(x,y+TH));x+=cw+G
+  for t,im in r:
+    ws=t.split(' ');ln=[''];
+    for w_ in ws:
+      c=(ln[-1]+' '+w_).strip()
+      if d.textlength(c,font=F)>cw and ln[-1]:ln.append(w_)
+      else:ln[-1]=c
+    d.multiline_text((x,y),'\n'.join(ln[:2]),fill=(255,210,31),font=F,spacing=4);B.paste(im,(x,y+TH));x+=cw+G
   y+=TH+max(i.height for _,i in r)+G
 B.save(OUT,optimize=True);print(OUT,B.size)

@@ -50,8 +50,7 @@ function build(k,n){const t=T[k],d=data(n);let h=`<div class="cb-p" style="--img
   h+='</div><button type="button" class="cb-flip"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>See the film</button>';
   return h}
 /* shrink a line until it fits its field (one line), never below a floor */
-function fit(root){root.querySelectorAll('.cb-ti .cb-co,.cb-nm,.cb-mk2 .cb-wn,.cb-ml').forEach(e=>{e.style.fontSize='';let s=parseFloat(getComputedStyle(e).fontSize),k=0;const box=e.closest('.cb-f');
-  while(k++<40&&(e.scrollWidth>e.clientWidth+.5)&&s>5){s*=.95;e.style.fontSize=s+'px'}})}
+function fit(root){root.querySelectorAll('.cb-ti .cb-co,.cb-l1,.cb-l2,.cb-ml,.cb-wn,.cb-dt b').forEach(e=>{e.style.zoom='';const z=e.clientWidth/e.scrollWidth;if(z<.999)e.style.zoom=Math.max(.5,z*.98).toFixed(3)})}
 window.CB={T,show(k,n){const fin=D.querySelector('#x2pRm .face.back .fin');if(!fin)throw new Error('no back');const old=fin.querySelector('.cb');if(old)old.remove();
   if(window.__x2pXdefs)window.__x2pXdefs();
   const o=D.createElement('div');o.className='cb cb-'+k;o.innerHTML=build(k,n);fin.appendChild(o);fin.classList.add('cb-on');

@@ -40,7 +40,7 @@ window.LBT.c=function(host,d){
   function draw(anim){const o=order(),s=scale(),w=WS[wk];
     host.dataset.mt=mt;
     host.querySelector('.c-ax').innerHTML=s.ticks.map(t=>`<span class="c-tk${t===s.start?' c-t0':''}" style="left:${X(t,s).toFixed(2)}%">${s.fmt(t)}</span>`).join('')+
-      `<i class="c-sl" style="left:${X(s.start,s).toFixed(2)}%"></i><span class="c-sll" style="left:${X(s.start,s).toFixed(2)}%">${s.sl}</span>`;
+      `<i class="c-sl" style="left:${X(s.start,s).toFixed(2)}%"></i>`;
     host.style.setProperty('--x0',X(s.start,s).toFixed(2)+'%');
     if(anim){flip(lanes,o,'data-m');flip(tws,o,'data-m');flip(pits,o,'data-m')}else{o.forEach(m=>{lanes.appendChild(lanes.querySelector(`[data-m="${m}"]`));tws.appendChild(tws.querySelector(`[data-m="${m}"]`));pits.appendChild(pits.querySelector(`[data-m="${m}"]`))})}
     o.forEach((m,i)=>{const v=val(m),ln=lanes.querySelector(`[data-m="${m}"]`),x0=X(s.start,s),x=v==null?x0:X(v,s),neg=v!=null&&v<s.start;
@@ -51,7 +51,7 @@ window.LBT.c=function(host,d){
       const pv=i?val(o[i-1]):null;tw.querySelector('.c-gap').textContent=i===0?'Leader':(v==null||pv==null)?'–':mt==='hit'?'−'+Math.round((pv-v)*1000)/10+'%':$f(v-pv);
       tw.querySelector('.c-gap').className='lb-n c-gap'+(i===0?' c-ldr':'');
       tw.querySelector('.c-wl').innerHTML=`<span class="up">${x2.W}</span>-<span class="dn">${x2.L}</span>`;tw.querySelector('.c-hit').textContent=x2.hit==null?'–':pc(x2.hit)});
-    host.querySelector('.c-when').textContent=(mt==='hit'?'Hit rate · ':'')+w.t+' · '+w.when;
+    host.querySelector('.c-when').innerHTML=`<span class="c-key"><i></i>${mt==='hit'?'Coin flip, 50%':'Start, $0'}</span><span>${(mt==='hit'?'Hit rate · ':'')+esc(w.t)+' · '+esc(w.when)}</span>`;
     const a=M[o[0]],b=M[o[1]],va=val(a.m),vb=val(b.m);
     host.querySelector('.c-l3t').innerHTML=(va==null)?`<b class="lb-n c-ln1">No close</b><span>in the last 24 hours · ${esc(w.when.replace(/^No close in 24h · /,''))}</span>`:
       `<b class="lb-n c-ln1" style="color:${a.c}">${esc(a.NAME)}</b><b class="lb-n c-ln2 ${mt==='hit'||va>=0?'up':'dn'}">${mt==='hit'?pc(va):$f(va)}</b><span>${mt==='hit'?'right on direction, '+b.name+' '+pc(vb):(wk==='season'?'leads by ':'takes the '+w.t.toLowerCase()+' by ')+$f(va-vb).replace('+','$').replace('$$','$')}</span>`}

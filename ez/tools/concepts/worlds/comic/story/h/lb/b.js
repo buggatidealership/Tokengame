@@ -16,8 +16,8 @@ window.LBT.b=function(host,d){
     {k:'hit',l:()=>'Hit rate'+(wk==='season'?'':' · '+WS[wk].t.toLowerCase()),best:m=>M[m].win[wk].hit,v:m=>{const h=M[m].win[wk].hit;return h==null?`<b class="lb-n b-v b-nil">–</b><small class="b-s">under 5 trades</small>`:
       `<span class="b-dial" style="--a:${(h*180-90).toFixed(1)}deg"><i></i></span><b class="lb-n b-v b-key">${pc(h)}</b>`}},
     {k:'l5',l:()=>'Last 5 · newest right',v:m=>lamps(M[m].l5)},
-    {k:'win',l:()=>wk==='season'?'24h · 7 days':'Season · '+(wk==='d1'?'7 days':'24h'),v:m=>{const o=wk==='season'?['d1','d7']:wk==='d1'?['season','d7']:['season','d1'];
-      return o.map(k=>{const w=M[m].win[k];return `<span class="b-pair"><small>${k==='season'?'Season':k==='d1'?'24h':'7d'}</small><b class="lb-n ${w.n?(w.pnl<0?'dn':'up'):'b-nil'}">${w.n?$k(w.pnl):'–'}</b></span>`}).join('')}},
+    {k:'win',l:()=>wk==='season'?'24h  /  7 days':'Season  /  '+(wk==='d1'?'7 days':'24h'),v:m=>{const o=wk==='season'?['d1','d7']:wk==='d1'?['season','d7']:['season','d1'];
+      return o.map(k=>{const w=M[m].win[k];return `<span class="b-pair"><b class="lb-n ${w.n?(w.pnl<0?'dn':'up'):'b-nil'}">${w.n?$k(w.pnl):'–'}</b></span>`}).join('')}},
     {k:'bw',l:()=>'Biggest W',best:m=>M[m].bw.v,v:m=>`${plate(M[m].bw)}<b class="lb-n up b-t b-key">${$k(M[m].bw.v)}</b>`},
     {k:'bl',l:()=>'Biggest L',best:m=>M[m].bl.v,v:m=>`${plate(M[m].bl)}<b class="lb-n dn b-t b-key">${$k(M[m].bl.v)}</b>`},
     {k:'sec',l:()=>'Best sector',v:m=>{const s=M[m].sec;return s?`<b class="b-sn">${esc(s.name)}</b><small class="b-s"><span class="${s.p<0?'dn':'up'}">${$k(s.p)}</span> · ${s.w}-${s.n-s.w}</small>`:'–'}}];
