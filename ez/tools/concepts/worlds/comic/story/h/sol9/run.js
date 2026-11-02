@@ -14,7 +14,7 @@ const rd=f=>fs.existsSync(__dirname+'/'+f)?fs.readFileSync(__dirname+'/'+f,'utf8
   await p.goto(`http://localhost:${PORT}/v46-live-x2plus.html`,{waitUntil:'domcontentloaded',timeout:150000});
   await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});
   await p.waitForFunction(()=>window.P5&&P5.cur,null,{timeout:60000});await p.waitForTimeout(600);
-  if(id!=='now'){await p.addStyleTag({content:rd('_s9.css')+rd(id+'.css')});await p.addScriptTag({content:rd('../sol7/_s7.js')+rd('../sol8/_s8.js')+rd('_s9.js')+rd(id+'.js')})}
+  if(id!=='now'){await p.addStyleTag({content:rd('_s9.css')+rd('_a3core.css')+rd(id+'.css')});await p.addScriptTag({content:rd('../sol7/_s7.js')+rd('../sol8/_s8.js')+rd('_s9.js')+rd('_a3core.js')+rd(id+'.js')})}
   await p.evaluate(()=>document.querySelector('#learn').scrollIntoView());await p.waitForTimeout(400);
   await p.waitForFunction(()=>document.fonts.status==='loaded');
   await p.evaluate(()=>[...document.images].forEach(i=>i.loading='eager'));await p.waitForTimeout(+(process.env.WAIT||1500));

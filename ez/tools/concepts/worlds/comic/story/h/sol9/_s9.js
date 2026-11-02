@@ -39,7 +39,7 @@ S9.t=(x,y,s,str,o)=>{o=o||{};return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)
 let uid=0;S9.uid=()=>'s9'+(uid++);
 /* ---------- compose and mount ---------- */
 S9.take=W=>({id:'s9'+W.id,html(X){const k=W.kick||['Right way, round by round','Money, round by round'];
-  return `<div class="p5-bleed s9 s9w-${W.id}">${P5.head('Smart or','lucky?')}
+  return `<div class="p5-bleed s9 s9w-${W.id}${W.cls?" "+W.cls:""}">${P5.head('Smart or','lucky?')}
    <section class="s9-b s9-b1" aria-label="Hit rate">${W.pre?W.pre(X,'acc'):''}${W.head?W.head(1,k[0],X,'acc'):`<div class="s9-w">${S9.kick(1,k[0])}<p class="s9-ln">${S8.lineAcc(X)}</p></div>`}<div class="s9-pic"><div class="s9-ch" data-k="acc"></div>${W.rows?W.rows(X,'acc'):S9.rows(X,'acc',W.col,W.tag)}</div></section>
    <section class="s9-b s9-b2" aria-label="P&amp;L">${W.pre?W.pre(X,'pnl'):''}${W.head?W.head(2,k[1],X,'pnl'):`<div class="s9-w">${S9.kick(2,k[1])}<p class="s9-ln">${S8.linePnl(X)}</p></div>`}<div class="s9-pic"><div class="s9-ch" data-k="pnl"></div>${W.rows?W.rows(X,'pnl'):S9.rows(X,'pnl',W.col)}</div></section>
    ${S8.tables(X)}</div>`},
