@@ -1,0 +1,158 @@
+/* H37 rounds (mockup), the shared parts. Takes below, each in its own block (.h7-A ... .h7-E). Paintings: img/ (Hedra gpt-image-2, see gen1.log). */
+#record.m7-sec{padding:6px 0 30px!important}
+.h7{--cr:#f8f0d9;--ink:#0d0b10;--gd:#ffd21f;--br:#c99a3a;position:relative;max-width:1180px;margin:0 auto;padding:0 14px;box-sizing:border-box;color:var(--cr);font-family:'Shantell Sans',system-ui,sans-serif}
+.h7 *{box-sizing:border-box}
+.h7-hd{position:relative;z-index:3;margin:0 0 14px}
+.h7 .h7-h2{margin:0 0 -.2em;padding:0 2px}
+@media (min-width:1000px){.h7{padding:0 24px;width:min(1180px,calc(100vw - 48px));max-width:none}.h7-hd{display:flex;align-items:flex-end;gap:28px;margin-bottom:20px}.h7-hd .m7-cap{flex:none;margin-bottom:8px}}
+/* ---- the slab (one component): the painted holder, the round's picture in its window, a live label in two layouts ---- */
+.h7-sl{--lab-l:9.8%;--lab-t:5.6%;--lab-r:9.4%;--lab-b:79.6%;--win-l:9.4%;--win-t:25.2%;--win-r:9.3%;--win-b:7.8%;
+ position:relative;display:block;width:100%;aspect-ratio:600/922;text-decoration:none;color:#141217;-webkit-tap-highlight-color:transparent;container-type:inline-size;filter:drop-shadow(0 3px 3px rgba(0,0,0,.6))}
+.h7-wn{position:absolute;left:var(--win-l);top:var(--win-t);right:var(--win-r);bottom:var(--win-b);overflow:hidden;background:#0b0a14}
+.h7-wn img{display:block;width:100%;height:100%;object-fit:cover}
+.h7-fr{position:absolute;inset:0;background:url(media/mag-slab-h32.webp) center/100% 100% no-repeat;pointer-events:none}
+.h7-lb{position:absolute;left:var(--lab-l);top:var(--lab-t);right:var(--lab-r);bottom:var(--lab-b);display:flex;justify-content:space-between;align-items:center;gap:2.5cqw;padding:1.6cqw 3cqw;
+ line-height:1;color:#141217;mix-blend-mode:multiply;overflow:hidden}
+.h7-l{display:flex;flex-direction:column;justify-content:center;gap:1.2cqw;min-width:0;flex:1 1 auto}
+.h7-r{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;flex:none;text-align:right}
+.h7-nm{display:block;font:400 9cqw/1 Anton,sans-serif;text-transform:uppercase;white-space:nowrap;overflow:hidden;letter-spacing:.01em}
+.h7-tk{display:block;font:700 6cqw/1 'Shantell Sans',sans-serif;color:#4a443c;white-space:nowrap;overflow:hidden;text-overflow:clip}
+.h7-ds{font:700 5.2cqw/1 'Shantell Sans',sans-serif;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.h7-gr{font:400 13cqw/.82 Anton,sans-serif}
+.h7-10 .h7-gr{color:#8a5a00}
+/* compact (a slab under 150px): the grade word moves to the tag, the grade grows, the company and ticker take the rest */
+@container (max-width:149px){.h7-lb{padding:1.2cqw 3.2cqw;gap:2cqw}.h7-ds{display:none}.h7-gr{font-size:17cqw}.h7-nm{font-size:10.5cqw}.h7-tk{font-size:7.6cqw}}
+.h7-pl{position:absolute;right:4cqw;bottom:4cqw;width:12cqw;height:12cqw;border-radius:50%;background:rgba(10,8,14,.72);box-shadow:0 0 0 1.5px var(--cr)}
+.h7-pl::after{content:"";position:absolute;left:40%;top:30%;border-left:4.6cqw solid var(--cr);border-top:2.9cqw solid transparent;border-bottom:2.9cqw solid transparent}
+.h7-mt .h7-wn{background:radial-gradient(70% 55% at 50% 42%,#1b2a20,#07090b 75%)}
+.h7-ml{position:absolute;left:24%;top:22%;height:34%;width:52%;object-fit:contain;opacity:.3;filter:grayscale(1) brightness(1.6)}
+.h7-ml.h7-inv{filter:grayscale(1) invert(1) brightness(1.4)}
+.h7-when{position:absolute;left:4%;right:4%;bottom:10%;text-align:center;font:400 11cqw/1 Bangers,Anton,sans-serif;letter-spacing:.03em;text-transform:uppercase;font-style:normal;color:rgba(248,240,217,.8)}
+.h7-mt .h7-gr{color:#8d867a}.h7-mt .h7-fr{filter:saturate(.8) brightness(.85)}
+.h7-sl:is(a):focus-visible{outline:2px solid var(--gd);outline-offset:3px}
+/* ---- the lift and its tag (kept from H34: the first touch lifts and says what it is, the second opens) ---- */
+.h7-it{position:relative}
+.h7-it>.h7-sl{transition:transform .25s cubic-bezier(.2,0,0,1)}
+.h7-it.h7-lift,.h7-it:focus-within{z-index:150}
+.h7-it.h7-lift>.h7-sl,.h7-it:focus-within>.h7-sl{transform:translateY(-12px) rotate(var(--lr,0deg))}
+@media (hover:hover){.h7-it:hover{z-index:150}.h7-it:hover>.h7-sl{transform:translateY(-12px) rotate(var(--lr,0deg))}}
+.h7-tag{position:absolute;z-index:4;left:0;top:-12px;display:flex;flex-direction:column;gap:1px;width:max-content;max-width:min(240px,calc(100vw - 16px));
+ padding:5px 9px 6px;background:#f8f0d9;color:#0d0b10;border:2px solid #0d0b10;border-radius:3px;box-shadow:3px 3px 0 #0d0b10;font:600 12px/1.22 'Shantell Sans',system-ui,sans-serif;
+ opacity:0;visibility:hidden;transform:translateY(calc(-100% - 6px));transition:opacity .15s,visibility 0s .15s;pointer-events:none;--tx:24px}
+.h7-tag::after{content:"";position:absolute;left:calc(var(--tx) - 6px);bottom:-9px;width:12px;height:9px;background:#0d0b10;clip-path:polygon(0 0,100% 0,50% 100%)}
+.h7-tag::before{content:"";position:absolute;z-index:1;left:calc(var(--tx) - 4px);bottom:-5px;width:8px;height:6px;background:#f8f0d9;clip-path:polygon(0 0,100% 0,50% 100%)}
+.h7-tag b{font-weight:800;font-size:13px;letter-spacing:.01em}.h7-tag b small{font-size:.82em;font-weight:700;opacity:.75}
+.h7-tag .h7-tw{color:#0a6b35;font-weight:800}.h7-tag .h7-tw.h7-no{color:#9a1f18}
+.h7-it.h7-lift .h7-tag,.h7-it:focus-within .h7-tag{opacity:1;visibility:visible;transition:opacity .15s}
+@media (hover:hover){.h7-it:hover .h7-tag{opacity:1;visibility:visible;transition:opacity .15s}}
+@media (prefers-reduced-motion:reduce){.h7-tag,.h7-it>.h7-sl{transition:none!important}}
+/* ---- shared bits ---- */
+.h7-sub{margin:26px 0 12px;font:400 18px/1 Bangers,Anton,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--cr)}
+.h7-sub i{font:600 12px/1 'Shantell Sans',sans-serif;letter-spacing:0;text-transform:none;font-style:normal;opacity:.82}
+.h7-more{display:flex;align-items:center;justify-content:center;gap:12px;margin:18px auto 0;min-height:46px;padding:9px 22px;cursor:pointer;background:#0d0b10;border:2px solid var(--cr);box-shadow:3px 4px 0 #000;
+ font:400 21px/1 Bangers,Anton,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--cr)}
+.h7-more i{font:600 12px/1 'Shantell Sans',sans-serif;letter-spacing:0;text-transform:none;font-style:normal;opacity:.85}
+
+/* ================= A. GALLERY OF HONOUR ================= */
+.h7-A{padding:0}
+.h7-A .h7-wall{position:relative;padding:18px 14px 28px;background:#0c1a12 url(tools/concepts/worlds/comic/story/h/h37rounds/img/galwall-tile.webp) center top/640px auto repeat;
+ box-shadow:inset 0 14px 30px rgba(0,0,0,.75),inset 0 -14px 30px rgba(0,0,0,.75)}
+.h7-A .h7-wall::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.05) 0,rgba(0,0,0,0) 420px,rgba(0,0,0,.42) 560px,rgba(0,0,0,.42))}
+.h7-A .h7-wall>*{position:relative}
+.h7-wt{margin:4px 2px 6px;font:400 17px/1 Bangers,Anton,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--cr);display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.h7-wt i{font:600 11.5px/1.2 'Shantell Sans',sans-serif;letter-spacing:0;text-transform:none;font-style:normal;opacity:.8}
+.h7-wt2{margin-top:30px;padding-top:16px;border-top:2px solid rgba(201,154,58,.55)}
+.h7-line{list-style:none;margin:0 -14px;padding:6px 14px 6px;display:flex;gap:26px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none}
+.h7-line::-webkit-scrollbar{display:none}
+.h7-hon{position:relative;flex:none;width:150px;padding-top:48px;scroll-snap-align:center}
+.h7-lamp{position:absolute;z-index:3;left:50%;top:0;width:118px;height:66px;transform:translateX(-50%);background:url(tools/concepts/worlds/comic/story/h/h37rounds/img/plight.webp) center top/100% auto no-repeat;pointer-events:none}
+.h7-lamp.h7-off{filter:brightness(.6) saturate(.6)}
+.h7-pool{position:absolute;z-index:0;left:-30px;right:-30px;top:20px;height:300px;pointer-events:none;background:radial-gradient(50% 58% at 50% 0,rgba(255,214,140,.38),rgba(255,200,110,.12) 55%,transparent 100%);mix-blend-mode:screen}
+.h7-hon .h7-it{z-index:1}
+.h7-tomb{margin:12px 0 0;font:600 11.5px/1.35 'Shantell Sans',sans-serif;color:var(--cr);text-align:left;opacity:.95}
+.h7-tomb b{font:400 15px/1 Anton,sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.h7-tomb span{opacity:.85}.h7-tomb .h7-tl{opacity:.82}.h7-tomb em{font:400 14px/1 Anton,sans-serif;font-style:normal;color:var(--cr)}
+.h7-hmt .h7-sl{opacity:.92}
+.h7-wk{margin-top:18px}
+.h7-wl{margin:0 2px 10px;font:400 15px/1 Anton,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--cr)}
+.h7-wl span{font:600 11.5px/1 'Shantell Sans',sans-serif;text-transform:none;letter-spacing:0;opacity:.75}
+.h7-salon{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-flow:row dense;gap:16px 12px}
+.h7-salon .h7-x2{grid-column:span 2;grid-row:span 2;padding:0 14%}
+.h7-salon .h7-x2::before{content:"";position:absolute;left:-8%;right:-8%;top:-6%;height:60%;pointer-events:none;background:radial-gradient(50% 60% at 50% 0,rgba(255,214,140,.28),transparent);mix-blend-mode:screen}
+@media (min-width:600px){.h7-salon{grid-template-columns:repeat(5,1fr)}}
+@media (min-width:1000px){.h7-A .h7-wall{padding:26px 28px 34px}.h7-line{margin:0;padding:6px 0;justify-content:space-between;gap:12px;overflow:visible}.h7-hon{width:calc((100% - 72px)/7)}
+ .h7-salon{grid-template-columns:repeat(9,1fr);gap:18px 14px}.h7-wt i.h7-sw{display:none}}
+
+/* ================= B. VITRINE AND DRAWERS ================= */
+.h7-case{position:relative;display:grid;grid-template-columns:1fr;gap:10px;padding:12px;background:#07090b;border:3px solid #6b4d14;box-shadow:inset 0 0 0 2px #c99a3a,0 10px 22px rgba(0,0,0,.7);border-radius:3px}
+.h7-bay{position:relative;border-image:url(tools/concepts/worlds/comic/story/h/h37rounds/img/bay.jpg) 7% 7% 11% 7% fill/9px 9px 14px 9px stretch;padding:16px 12px 20px}
+.h7-bay::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(48% 40% at 50% 0,rgba(255,216,150,.22),transparent 90%);mix-blend-mode:screen}
+.h7-hero{padding:26px 22% 30px;border-image-width:14px 14px 22px 14px}
+.h7-bays{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.h7-bays .h7-bay{padding:12px 9px 16px}
+.h7-plate{position:absolute;left:50%;top:-14px;transform:translateX(-50%);z-index:5;padding:5px 18px 4px;border-radius:3px;background:linear-gradient(180deg,#f3d27a,#b78424 55%,#7b5512);box-shadow:0 2px 0 #3a2706,0 4px 8px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,244,200,.8)}
+.h7-plate b{font:400 16px/1 Bangers,Anton,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(46,30,4,.9);text-shadow:0 1px 0 rgba(255,236,170,.75)}
+.h7-cab{display:flex;flex-direction:column;gap:6px;padding:10px;background:#050607;border:3px solid #6b4d14;box-shadow:inset 0 0 0 2px #c99a3a,0 10px 22px rgba(0,0,0,.7);border-radius:3px}
+.h7-df{position:relative;display:block;width:100%;aspect-ratio:1210/208;border:0;padding:0;cursor:pointer;background:url(tools/concepts/worlds/comic/story/h/h37rounds/img/drawer.webp) center/100% 100% no-repeat}
+.h7-card{position:absolute;left:var(--cl,40.6%);top:var(--ct,13%);width:var(--cw,18.8%);height:var(--ch,22%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;mix-blend-mode:multiply;color:#1d1408}
+.h7-card b{font:400 clamp(9px,2.6vw,15px)/1 Anton,sans-serif;text-transform:uppercase;letter-spacing:.02em;white-space:nowrap}
+.h7-card i{font:700 clamp(7.5px,1.9vw,11px)/1 'Shantell Sans',sans-serif;font-style:normal;white-space:nowrap}
+.h7-dw.h7-open .h7-df{filter:brightness(1.12)}
+.h7-tray{border-image:url(tools/concepts/worlds/comic/story/h/h37rounds/img/tray.jpg) 4% 3% 4% 3% fill/10px stretch;padding:34px 16px 18px;margin:-2px 6px 6px;box-shadow:inset 0 10px 18px rgba(0,0,0,.7)}
+.h7-tin{display:grid;grid-template-columns:repeat(3,1fr);gap:22px 12px}
+@media (min-width:600px){.h7-bays{grid-template-columns:repeat(6,1fr)}.h7-tin{grid-template-columns:repeat(5,1fr)}}
+@media (min-width:1000px){.h7-case{grid-template-columns:300px 1fr;align-items:stretch;padding:16px}.h7-hero{padding:34px 40px 40px}.h7-bays{grid-template-columns:repeat(3,1fr);align-content:stretch}.h7-bays .h7-bay{padding:16px 30px 20px}
+ .h7-tin{grid-template-columns:repeat(8,1fr)}.h7-cab{gap:8px}.h7-df{max-width:820px;margin:0 auto}}
+
+/* ================= C. THE REGISTRY ================= */
+.h7-alb{position:relative;border-image:url(tools/concepts/worlds/comic/story/h/h37rounds/img/album.jpg) 9% 8% 9% 14% fill/18px 16px 18px 30px stretch;padding:22px 16px 22px 34px;box-shadow:0 10px 22px rgba(0,0,0,.7)}
+.h7-reg{display:flex;align-items:center;gap:10px;margin:0 0 12px;flex-wrap:wrap}
+.h7-reg b{font:400 18px/1 Bangers,Anton,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#e7c46a;text-shadow:0 1px 0 #000}
+.h7-reg i{font:400 16px/1 Anton,sans-serif;font-style:normal;color:var(--cr)}
+.h7-pips{display:inline-flex;gap:4px}.h7-pips i{width:14px;height:6px;border-radius:1px;background:rgba(248,240,217,.16);box-shadow:inset 0 0 0 1px rgba(231,196,106,.45)}.h7-pips i.on{background:linear-gradient(180deg,#f3d27a,#b78424)}
+.h7-pk7{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 10px}
+.h7-pk{position:relative;padding:5px;border-radius:4px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));box-shadow:inset 0 0 0 1px rgba(231,196,106,.38),inset 0 2px 6px rgba(0,0,0,.6)}
+.h7-pk:has(.h7-mt){box-shadow:inset 0 0 0 1px rgba(231,196,106,.38),inset 0 2px 6px rgba(0,0,0,.6);background:repeating-linear-gradient(135deg,rgba(231,196,106,.06) 0 6px,transparent 6px 12px)}
+.h7-spread{display:grid;grid-template-columns:1fr;gap:14px}
+.h7-pgh{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 10px}
+.h7-pgh b{font:400 16px/1 Bangers,Anton,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#e7c46a}
+.h7-pgh i{font:600 12px/1 'Shantell Sans',sans-serif;font-style:normal;color:var(--cr);opacity:.8}
+.h7-pk9{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 10px}
+.h7-pnav{display:flex;align-items:center;justify-content:center;gap:16px;margin:14px 0 0;font:400 18px/1 Anton,sans-serif;color:var(--cr)}
+.h7-pnav button{width:48px;height:48px;border-radius:50%;cursor:pointer;background:radial-gradient(circle at 40% 35%,#f3d27a,#a87418 70%,#5d3f0c);border:2px solid #0d0b10;box-shadow:2px 3px 0 #000;font:400 28px/1 Anton,sans-serif;color:#1d1408}
+.h7-pnav button:disabled{opacity:.3;cursor:default}
+@media (min-width:600px){.h7-pk7{grid-template-columns:repeat(7,1fr)}}
+@media (min-width:1000px){.h7-spread{grid-template-columns:1fr 1fr;gap:6px}.h7-alb{padding:30px 26px 30px 48px}.h7-pk9{gap:16px 14px}}
+
+/* ================= D. THE CARD SHOW ================= */
+.h7-counter{position:relative;border:3px solid #6b4d14;box-shadow:inset 0 0 0 2px #c99a3a,0 10px 22px rgba(0,0,0,.7);border-radius:3px;overflow:hidden;background:#060708}
+.h7-top{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:14px 10px;padding:18px 14px 8px;background:radial-gradient(120% 70% at 50% 0,rgba(255,214,140,.16),transparent 70%),#0a0b0c;border-bottom:3px solid #8a6a22}
+.h7-es{position:relative;padding-bottom:16%}
+.h7-es .h7-it,.h7-es>.h7-mt{position:relative;z-index:1;transform-origin:50% 100%;transform:perspective(600px) rotateX(5deg)}
+.h7-easel{position:absolute;z-index:2;left:-10%;right:-10%;bottom:0;height:34%;background:url(tools/concepts/worlds/comic/story/h/h37rounds/img/easel.webp) center bottom/100% auto no-repeat;pointer-events:none}
+.h7-es::before{content:"";position:absolute;left:-12%;right:-12%;top:-10%;height:80%;pointer-events:none;background:radial-gradient(50% 60% at 50% 0,rgba(255,214,140,.26),transparent);mix-blend-mode:screen}
+.h7-glass{position:relative;padding:12px 18px 22px;background:#0b0c0d url(tools/concepts/worlds/comic/story/h/h37rounds/img/counter-tile.webp) center top/100% auto repeat-y}
+.h7-sheen{position:absolute;inset:0;pointer-events:none;z-index:5;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.05) 38%,transparent 44%,transparent 70%,rgba(255,255,255,.04) 76%,transparent 80%)}
+.h7-strip{position:relative;display:flex;justify-content:space-between;align-items:center;margin:12px -18px 14px;padding:5px 18px 4px;background:linear-gradient(180deg,#f3d27a,#b78424 55%,#7b5512);box-shadow:0 2px 0 #2a1c04,inset 0 1px 0 rgba(255,244,200,.8)}
+.h7-strip b{font:400 15px/1 Anton,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:rgba(46,30,4,.9);text-shadow:0 1px 0 rgba(255,236,170,.75)}
+.h7-strip i{font:700 11.5px/1 'Shantell Sans',sans-serif;font-style:normal;color:rgba(46,30,4,.85)}
+.h7-flat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 14px}
+.h7-flat .h7-it{transform:rotate(var(--rot,0deg))}.h7-flat .h7-it{--lr:0deg}
+.h7-flat .h7-sl{filter:drop-shadow(0 1px 1px rgba(0,0,0,.8)) drop-shadow(0 4px 6px rgba(0,0,0,.45))}
+@media (min-width:600px){.h7-top{grid-template-columns:repeat(7,1fr)}.h7-flat{grid-template-columns:repeat(5,1fr)}}
+@media (min-width:1000px){.h7-top{padding:26px 40px 12px;gap:22px}.h7-flat{grid-template-columns:repeat(9,1fr);gap:18px 16px}.h7-glass{padding:14px 30px 26px}.h7-strip{margin:16px -30px 16px;padding:6px 30px 5px}}
+
+/* ================= E. THE STOREHOUSE ================= */
+.h7-rack{position:relative;padding:14px 14px 10px;background:#08090a url(tools/concepts/worlds/comic/story/h/h37rounds/img/rackwall.jpg) center top/100% auto repeat-y;border-left:10px solid #15171a;border-right:10px solid #15171a;box-shadow:inset 3px 0 0 #3a3f45,inset -3px 0 0 #3a3f45,0 10px 22px rgba(0,0,0,.7)}
+.h7-rack::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,.35) 500px,rgba(0,0,0,.35))}
+.h7-rack>*{position:relative}
+.h7-sh{position:relative;padding:8px 6px 0;margin-bottom:26px}
+.h7-on{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:end;position:relative;z-index:1}
+.h7-m7 .h7-on{grid-template-columns:repeat(4,1fr);gap:8px}
+.h7-m7::before{content:"";position:absolute;left:-10px;right:-10px;top:-14px;bottom:0;pointer-events:none;background:radial-gradient(60% 70% at 50% 0,rgba(255,214,140,.22),transparent);mix-blend-mode:screen}
+.h7-lip{position:relative;z-index:2;display:block;height:22px;margin:-6px -12px 0;background:url(tools/concepts/worlds/comic/story/h/stand/img/ledge.webp) center/100% 100% no-repeat}
+.h7-stag{position:absolute;z-index:3;right:0;bottom:-18px;padding:3px 10px 2px;border-radius:2px;background:linear-gradient(180deg,#e9e1cb,#bfb393);box-shadow:0 1px 0 #000,0 3px 5px rgba(0,0,0,.6);font:600 11px/1.2 'Shantell Sans',sans-serif;color:#1b1610}
+.h7-stag b{font:400 12.5px/1 Anton,sans-serif;text-transform:uppercase;letter-spacing:.03em}
+.h7-stag.h7-g{background:linear-gradient(180deg,#f3d27a,#b78424 55%,#7b5512)}.h7-stag.h7-g b{font:400 15px/1 Bangers,Anton,sans-serif;letter-spacing:.08em;color:rgba(46,30,4,.9)}
+@media (min-width:600px){.h7-on{grid-template-columns:repeat(5,1fr)}.h7-m7 .h7-on{grid-template-columns:repeat(7,1fr)}}
+@media (min-width:1000px){.h7-rack{padding:20px 34px 14px}.h7-on{grid-template-columns:repeat(8,1fr);gap:16px}.h7-m7 .h7-on{grid-template-columns:repeat(7,1fr);gap:18px;padding:0 4%}}

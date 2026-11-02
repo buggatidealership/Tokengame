@@ -29,7 +29,7 @@ function move(d){return `<b class="cb-mv"><span aria-hidden="true">${d.a<0?'−'
 const box=b=>`left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%`;
 /* each take: its painted plate, the measured fields (percent of the plate), and the AI cells' layout */
 const T={
- a:{img:'a3.jpg',name:'The note',title:[14,6.3,72,10.4],ai:[[13,23.2,30,6.8],[57,23.2,30,6.8],[13,34.8,30,7.4],[57,34.8,30,7.4]],cell:'cart',mkt:[25,51.5,50,16],dates:[[11.5,75.6,29,6.6],[11.5,85.6,29,6.6]],seal:[77.5,84.5],sr:10.4},
+ a:{img:'a3.jpg',name:'The note',title:[14,6.3,72,10.4],ai:[[11.8,22.9,33.2,7.3],[55.1,22.9,33.2,7.3],[11.8,34.5,33.2,7.7],[55.1,34.5,33.2,7.7]],cell:'cart',mkt:[25,51.5,50,16],dates:[[11.5,75.6,29,6.6],[11.5,85.6,29,6.6]],seal:[77.5,84.5],sr:10.4},
  b:{img:'b2.jpg',name:'The share',title:[14.5,9,71,9],rows:[26.4,36.6,46.9,57],circ:19.6,cr:4.6,bar:[27.5,44],chk:[74,12.5],mkt:[15,65.2,70,8.3],dates:[[13.8,80.2,19.5,8.6],[37.6,80.2,19.5,8.6]],seal:[73.3,84.4],sr:8.6,cell:'row'},
  c:{img:'c3.jpg',name:'The die',title:[11.5,3.6,78,9.6],ai:[[14,23,29,19.6],[57,23,29,19.6],[14,50.2,29,19.8],[57,50.2,29,19.8]],cell:'die',mkt:[11,76.4,78,5.6],dates:[[9.5,87.8,13.8,8.6],[30,87.8,13.8,8.6]],seal:[80.3,90.75],sr:6.6},
  d:{img:'d1.jpg',name:'The plate',title:[11,8.8,78,7.6],rows:[24.4,34.1,43.6,53.1],circ:13,cr:3.5,bar:[19.5,55],chk:[77,12.6],mkt:[11,61.4,78,10.2],dates:[[9.8,81.3,21.6,7.6],[37.3,81.3,21.6,7.6]],seal:[76.3,85],sr:9.2,cell:'row'}};

@@ -316,7 +316,7 @@ const isD=()=>matchMedia('(min-width:1000px)').matches;
 const CASE=window.__x2pMagCase||{p:{img:'media/mag-case-h32-p.jpg',w:2048,h:1536,inner:[192,1856],plate:[790,238,1256,354],top:380,
    shelf:[{s0:840,e:925,lip:[868,906]},{s0:1290,e:1536,lip:[1305,1337]}]},
   d:{img:'media/mag-case-h32-d.jpg',w:2560,h:1440,inner:[92,2466],plate:[1002,234,1554,338],top:380,shelf:[{s0:1135,e:1440,lip:[1196,1233]}]}};
-const head=`<header class="m7-hd"><h2 class="t4-h2 m7-h2"><span class="t4-hw">Every round so far</span></h2><p class="m7-cap"><span class="m7-c1">Each round gets a grade from 1 to 10.</span> <span class="m7-c1">A 10 means all four AIs got it right, and close.</span></p></header>`;
+const head=`<header class="m7-hd"><h2 class="t4-h2 m7-h2"><span class="t4-hw">Every round so far</span></h2><p class="m7-cap"><span class="m7-c1">Each round gets a grade from 1 to 10.</span> <span class="m7-c1">A 10 means all four AI<span class="x2p-lc">s</span> got it right, and close.</span></p></header>`;
 const isT=()=>!isD()&&matchMedia('(min-width:600px)').matches;
 const PAGE=()=>isD()?14:isT()?12:10;let shown=0;
 function restHTML(){const k=Math.min(REST.length,shown||PAGE()),it=REST.slice(0,k),C=isD()?7:isT()?4:2,R=Math.ceil(it.length/C);
@@ -350,7 +350,16 @@ function lay(){const cs=root.querySelector('.m7-case');if(!cs)return;const d=isD
 function render(){root.innerHTML=head+`<div class="m7-b1">${caseHTML()}</div><div class="m7-b2">${restHTML()}</div>`;
   const b=root.querySelector('.m7-more');if(b)b.addEventListener('click',()=>{shown=b.classList.contains('m7-less')?0:REST.length;render();if(!shown)root.querySelector('.m7-b2').scrollIntoView({block:'start'})});
   lay()}
-function fit(){root.querySelectorAll('.m7-nm').forEach(e=>{e.style.fontSize='';let f=parseFloat(getComputedStyle(e).fontSize),g=0;while(e.scrollWidth>e.clientWidth+.5&&f>5.5&&g++<40){f-=.5;e.style.fontSize=f+'px'}})}
+/* H35 (owner's phone, 2026-11-02: "MICROSOFT" and "AMAZON" ran under "STRONG"): the name fits by its ink, at least 2px clear of the right
+   column's ink (grade word and grade); where name and ticker do not fit on one line at 85% of the size, the ticker takes its own line */
+const ink=el=>{const rs=[],w=D.createTreeWalker(el,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){if(!n.nodeValue.trim())continue;const g=D.createRange();g.selectNodeContents(n);rs.push(...[...g.getClientRects()].filter(r=>r.width>0))}
+  return rs.length?{l:Math.min(...rs.map(r=>r.left)),r:Math.max(...rs.map(r=>r.right))}:null};
+function fit(){root.querySelectorAll('.m7-nm').forEach(e=>{e.style.fontSize='';e.classList.remove('m7-tl');const lab=e.closest('.m7-lab'),rc=lab&&lab.querySelector('.m7-r');if(!rc||!e.offsetWidth)return;
+  const R=ink(rc);if(!R)return;const lim=()=>Math.min(R.l-2,e.getBoundingClientRect().right),over=()=>{const I=ink(e);return I?I.r-lim():0};
+  const f0=parseFloat(getComputedStyle(e).fontSize);let f=f0,g=0;
+  while(over()>0&&f>f0*.85&&g++<40){f-=.25;e.style.fontSize=f+'px'}
+  if(over()>0){e.classList.add('m7-tl');f=f0;e.style.fontSize='';g=0;while(over()>0&&f>4.5&&g++<80){f-=.25;e.style.fontSize=f+'px'}}})}
+D.fonts&&D.fonts.ready.then(()=>{try{fit()}catch(x){}});
 /* the old carousel stays laid out (the round view copies and measures its cards), only moved off screen and hidden from readers */
 [...sec.children].forEach(c=>{if(c===root)return;c.classList.add('r6-old');c.setAttribute('aria-hidden','true');c.inert=true});
 sec.classList.add('r6-sec','m7-sec');sec.appendChild(root);
@@ -466,15 +475,17 @@ P5.mountClose=function(take){const sec=D.querySelector('#get');if(!sec)return;
   [...sec.children].forEach(c=>{if(!c.classList.contains('p5c'))c.style.display='none'});sec.classList.add('p5-host');
   let box=sec.querySelector('.p5c');if(!box){box=D.createElement('div');box.className='p5c p5c-'+take.id;sec.appendChild(box)}
   const X=P5.data();const draw=()=>{box.innerHTML=take.html(X);take.draw(box,X);window.__x2pTears&&requestAnimationFrame(window.__x2pTears)};
+  if(take.prep)take.prep(X).then(draw);
   /* H35: a take with its own desktop composition is drawn again when the width crosses into or out of it */
-  if(take.dk){let k0=take.dk();addEventListener('resize',()=>{const k=take.dk();if(k!==k0){k0=k;draw()}})}P5.prepLogos([].concat(...X.days.slice(0,3).map(d=>d.rs.map(r=>r.ticker)))).then(draw);draw();P5.curC={X,draw,box};
+  if(take.dk){let k0=take.dk();addEventListener('resize',()=>{const k=take.dk();if(k!==k0){k0=k;draw()}})}if(!take.prep)P5.prepLogos([].concat(...X.days.slice(0,3).map(d=>d.rs.map(r=>r.ticker)))).then(draw);draw();P5.curC={X,draw,box};
   /* the next close ticks once a minute */
   if(!RM.matches)setInterval(()=>{const e=box.querySelector('.p5-cd');if(e&&take.cd)e.textContent=take.cd(X)},30000)};
 /* switch markup shared by the takes (real buttons; the takes paint them onto their surfaces) */
 P5.sw=(V)=>`<div class="p5-sw" role="group" aria-label="View">${[['acc','Hit rate'],['pnl','P&L']].map(([k,t])=>`<button type="button" data-v="${k}" aria-pressed="${V.view===k}">${t}</button>`).join('')}</div>`+
   (V.view==='pnl'?`<div class="p5-sw p5-ws" role="group" aria-label="Window">${[['season','Season'],['d7','Last 7 days'],['d1','Last 24 hours']].map(([k,t])=>`<button type="button" data-w="${k}" aria-pressed="${V.win===k}">${t}</button>`).join('')}</div>`:'');
 /* H34 (owner, 2026-11-02, night): a section's heading is clearly the loudest words in it: on phones and tablets it fills its line (up to 52px) */
-P5.fitH=h=>{if(!h)return;h.style.removeProperty('font-size');if(innerWidth>=1000||!h.offsetWidth)return;const c=getComputedStyle(h),fs=parseFloat(c.fontSize),av=h.clientWidth-parseFloat(c.paddingLeft)-parseFloat(c.paddingRight);
+/* H35: one heading size on the whole Overview (the CSS sets it), so fitH only clears an old inline size */
+P5.fitH=h=>{if(!h)return;h.style.removeProperty('font-size');if(innerWidth>=1000||!h.offsetWidth||true)return;const c=getComputedStyle(h),fs=parseFloat(c.fontSize),av=h.clientWidth-parseFloat(c.paddingLeft)-parseFloat(c.paddingRight);
   const rg=document.createRange();rg.selectNodeContents(h);const w=rg.getBoundingClientRect().width;if(!w)return;const f=Math.min(52,Math.floor(fs*av/w*.95*10)/10);if(f>fs)h.style.setProperty('font-size',f+'px','important')};
 let p5fw=innerWidth;addEventListener('resize',()=>{if(innerWidth===p5fw)return;p5fw=innerWidth;document.querySelectorAll('main .p5-h').forEach(P5.fitH)});
 document.fonts&&document.fonts.ready.then(()=>document.querySelectorAll('main .p5-h').forEach(P5.fitH));
@@ -582,37 +593,58 @@ P5.take={id:'t1',html(X,V){return `<div class="p5-bleed">${P5.head('Smart or','l
 setTimeout(()=>{if(!P5.cur)P5.mountProof(P5.take)},0);
 /* C1 THE NEXT SOCKETS: the board's last row is empty sockets waiting for the next rounds' chips. Each window above a socket lights the
    company's mark and the day its calls lock; the board ends in a gold edge connector that plugs into the Upcoming tab. Then the panel:
-   the next bell's countdown on its glass, and two buttons: Get $EZ and Follow on X. Paintings: q-sockets-b, q-panel-b. */
+   the next bell's countdown on its glass, and two buttons: Get $EZ and Follow on X. Paintings: q-sockets-b, q-panel-b.
+   H35 (owner, 2026-11-02, night): "Up next" (was "Next, the AIs trade": "sounds horrible"), the section's one caption box under the
+   heading, then the board: the next 8 companies as 4 + 4, the first four in the lit windows, the next four seated in the sockets on dark
+   glass, each mark in its own colours (its tile as drawn, a cream plate behind a dark mark, a bare mark as drawn: the Upcoming tab's rule,
+   measured per file) with the day its calls lock under it; "Everything coming up" is gone from the board, and so is the next bell's
+   glass (the panel is the two buttons only). Phones and tablets: four columns of the board; desktop (1000px+): all six columns, 6 + 6. */
 (function(){const P5=window.P5,{t,GD,AMB,UP,CR}=P5;
-const CR1=[112,196,888,826],WN=[[144,254],[270,256],[394,256],[518,256],[642,254],[766,254]],WW=90,WH=100,FING=[120,762,768,40];
-const CR2=[118,150,882,812],GL=[136,172,724,288],B1=[336,660],B2=[658,660];
-function card(X){const out=[];X.days.forEach(d=>d.rs.forEach(r=>{if(out.length<6)out.push({r,d})}));return out}
-/* H35 (owner, 2026-11-02, night: on desktop it "fills only about half the screen"): from 1000px the close is its own composition, stacked
-   at the column's full width: the heading; the six lit windows and their empty sockets as one wide strip of the same board (CR1D);
-   the caption on the left and "See the full schedule" on the right of one row under it; the torn gutter; then the panel split in two
-   crops of its own painting side by side, the next bell's glass (CR2G) beside the two buttons (CR2B); the scam line under them.
-   Phones keep the square board and panel. */
-const CR1D=[80,232,920,584],CR2G=[100,138,900,514],CR2B=[176,520,824,822];
+const CR1=[100,226,632,594],WN=[[144,254],[270,256],[394,256],[518,256],[642,254],[766,254]],WW=90,WH=100;
+const SK=[173,303,432,566,697,826],SKY=447,SKW=66,SKH=88;
+const CR2=[176,520,824,822],B1=[336,660],B2=[658,660];
+const CR1D=[80,232,920,584];
 const DK=()=>innerWidth>=1000;
-P5.take={id:'c1',cd:X=>P5.cd(X),dk:DK,html(X){if(DK())return `<div class="p5-bleed p5-dkx"><h2 class="t4-h2 p5-h p5-nx"><span class="t4-hw">Next,</span> <span class="t4-hw p5-hw2">the AI<span class="t4-lc x2p-lc">s</span> trade</span></h2><div class="p5-st p5-nxs"></div><div class="p5-nxr"><p class="p5-ln uf-nar">These companies report next. Each one is a round for the four AIs, not a bet.</p><button type="button" class="p5-sched" data-go="upcoming">See the full schedule <span aria-hidden="true">→</span></button></div><div class="p5-gut"></div><div class="p5-nxp"><div class="p5-st"></div><div class="p5-st"></div></div><p class="p5-ln p5-nxw">$EZ isn’t live yet. The address appears here, and only here, at launch. <b>Anyone DMing you one before that is a scammer.</b> Not financial advice.</p></div>`;
-  return `<div class="p5-bleed"><h2 class="t4-h2 p5-h p5-nx"><span class="t4-hw">Next,</span> <span class="t4-hw p5-hw2">the AI<span class="t4-lc x2p-lc">s</span> trade</span></h2><div class="p5-col"><div class="p5-st"></div><p class="p5-ln uf-nar">These companies report next. Each one is a round for the four AIs, not a bet.</p><button type="button" class="p5-sched" data-go="upcoming">See the full schedule <span aria-hidden="true">→</span></button></div><div class="p5-gut"></div><div class="p5-col"><div class="p5-st"></div><p class="p5-ln">$EZ isn’t live yet. The address appears here, and only here, at launch. <b>Anyone DMing you one before that is a scammer.</b> Not financial advice.</p></div></div>`},
- draw(box,X){const dk=box.querySelector('.p5-dkx'),[s1,s2,s3]=box.querySelectorAll('.p5-st'),C=card(X);let lit='',silk='',top='';
-  C.forEach(({r,d},i)=>{const [x,y]=WN[i],cx=x+WW/2;lit+=P5.litLogo(r.ticker,cx,y+38,56)+t(cx,y+88,26,new Date(d.t).toLocaleDateString('en-US',{weekday:'short',timeZone:'UTC'}).toUpperCase(),{a:'middle',c:AMB})});
-  silk+=t(500,FING[1]-16,30,'EVERYTHING COMING UP',{a:'middle',c:'#fff6dc',ls:2});
-  top+=`<rect class="p5-fing" x="${FING[0]}" y="${FING[1]}" width="${FING[2]}" height="${FING[3]}" fill="${GD}" style="mix-blend-mode:screen"/>`;
+function card(X,n){const out=[];X.days.forEach(d=>d.rs.forEach(r=>{if(out.length<n)out.push({r,d})}));return out}
+/* company marks in their own colours: mode per file (tile / plate / bare) and the file trimmed to its ink, once, on a canvas */
+const LM={},LT={},lin=c=>{c/=255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4)};
+function prep(ts){return Promise.all([...new Set(ts)].filter(tk=>!(tk in LM)).map(tk=>new Promise(res=>{const src=P5.logo(tk),L=window.CO_LOGOS&&CO_LOGOS[tk],dk=!!(L&&L.dark);
+  if(!src){LM[tk]=null;return res()}const im=new Image();
+  im.onload=()=>{try{const w0=im.naturalWidth,h0=im.naturalHeight,f=Math.min(1,256/Math.max(w0,h0)),w=Math.max(4,Math.round(w0*f)),h=Math.max(4,Math.round(h0*f));
+    const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(im,0,0,w,h);const a=x.getImageData(0,0,w,h).data;
+    const px=(i,j)=>{const q=(j*w+i)*4;return [a[q],a[q+1],a[q+2],a[q+3]]},cs=[px(1,1),px(w-2,1),px(1,h-2),px(w-2,h-2)];
+    if(cs.every(q=>q[3]>250&&Math.abs(q[0]-cs[0][0])+Math.abs(q[1]-cs[0][1])+Math.abs(q[2]-cs[0][2])<24)){LM[tk]='tile';LT[tk]=src;return res()}
+    let n=0,lo=0;if(!dk)for(let q=0;q<a.length;q+=4){if(a[q+3]<128)continue;n++;const Lm=.2126*lin(a[q])+.7152*lin(a[q+1])+.0722*lin(a[q+2]);if(Lm<.115)lo++}
+    LM[tk]=!dk&&n&&lo/n>.3?'plate':'bare';
+    let X0=w,Y0=h,X1=-1,Y1=-1;for(let j=0;j<h;j++)for(let i=0;i<w;i++)if(a[(j*w+i)*4+3]>16){if(i<X0)X0=i;if(i>X1)X1=i;if(j<Y0)Y0=j;if(j>Y1)Y1=j}
+    if(X1>X0&&Y1>Y0&&(X1-X0+1)*(Y1-Y0+1)<w*h*.8){const pw=Math.round(Math.max(X1-X0,Y1-Y0)*.04),cw=X1-X0+1+2*pw,ch=Y1-Y0+1+2*pw,c3=document.createElement('canvas');c3.width=cw;c3.height=ch;
+      c3.getContext('2d').drawImage(c,X0,Y0,X1-X0+1,Y1-Y0+1,pw,pw,X1-X0+1,Y1-Y0+1);LT[tk]=c3.toDataURL()}else LT[tk]=src}catch(e){LM[tk]=LM[tk]||'bare';LT[tk]=LT[tk]||src}res()};
+  im.onerror=()=>{LM[tk]=null;res()};im.src=src})))}
+let MK=0;function mark(tk,x,y,s){const m=LM[tk],u=LT[tk];
+  if(!m||!u)return t(x,y+s*.18,s*.42,String(tk).split('.')[0],{a:'middle',c:CR});
+  const T=s*.9,r=T*.2,f=v=>v.toFixed(1);
+  if(m==='tile'){const id='p5mk'+(MK++);return `<clipPath id="${id}"><rect x="${f(x-T/2)}" y="${f(y-T/2)}" width="${f(T)}" height="${f(T)}" rx="${f(r)}"/></clipPath><image href="${u}" x="${f(x-T/2)}" y="${f(y-T/2)}" width="${f(T)}" height="${f(T)}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/><rect x="${f(x-T/2)}" y="${f(y-T/2)}" width="${f(T)}" height="${f(T)}" rx="${f(r)}" fill="none" stroke="#0d0b10" stroke-width="${f(T*.03)}"/>`}
+  if(m==='plate'){const i=T*.72;return `<rect x="${f(x-T/2)}" y="${f(y-T/2)}" width="${f(T)}" height="${f(T)}" rx="${f(r)}" fill="#f8f0d9" stroke="#0d0b10" stroke-width="${f(T*.03)}"/><image href="${u}" x="${f(x-i/2)}" y="${f(y-i/2)}" width="${f(i)}" height="${f(i)}" preserveAspectRatio="xMidYMid meet"/>`}
+  return `<image href="${u}" x="${f(x-s/2)}" y="${f(y-s/2)}" width="${f(s)}" height="${f(s)}" preserveAspectRatio="xMidYMid meet"/>`}
+const HEAD=`<h2 class="t4-h2 p5-h p5-nx"><span class="t4-hw">Up next</span></h2><p class="h35-cap">These companies report next. Each one is a round for the four AI<span class="x2p-lc">s</span>, not a bet.</p>`;
+const SCHED=`<button type="button" class="p5-sched" data-go="upcoming">See the full schedule <span aria-hidden="true">→</span></button>`;
+const SCAM=`$EZ isn’t live yet. The address appears here, and only here, at launch. <b>Anyone DMing you one before that is a scammer.</b> Not financial advice.`;
+P5.take={id:'c1',dk:DK,prep:X=>prep(card(X,12).map(c=>c.r.ticker)),html(X){
+  return `<div class="p5-bleed p5-nx2${DK()?' p5-dkx':''}">${HEAD}<div class="p5-col"><div class="p5-st p5-nxs"></div>${SCHED}</div><div class="p5-gut"></div><div class="p5-col p5-nxp"><div class="p5-st"></div><p class="p5-ln p5-nxw">${SCAM}</p></div></div>`},
+ draw(box,X){const dk=DK(),[s1,s2]=box.querySelectorAll('.p5-st'),cols=dk?6:4,C=card(X,cols*2);let lit='',over='',under='';MK=0;const glass=[];
+  const day=d=>new Date(d.t).toLocaleDateString('en-US',{weekday:'short',timeZone:'UTC'}).toUpperCase();
+  C.forEach(({r,d},i)=>{const row=Math.floor(i/cols),col=i%cols;
+   if(row===0){const [x,y]=WN[col],cx=x+WW/2;glass.push([x,y,WW,WH,6]);over+=mark(r.ticker,cx,y+36,54);lit+=t(cx,y+93,22,day(d),{a:'middle',c:AMB})}
+   else{const cx=SK[col];glass.push([cx-SKW/2,SKY,SKW,SKH,6]);under+=`<rect x="${cx-SKW/2}" y="${SKY}" width="${SKW}" height="${SKH}" rx="6" fill="#07080a" stroke="#c9a24a" stroke-width="2.4"/>`;
+    over+=mark(r.ticker,cx,SKY+31,43);lit+=t(cx,SKY+83,19,day(d),{a:'middle',c:AMB})}});
   const lab=C.map(({r,d})=>`${r.co} (${r.ticker}), calls lock ${P5.day(d.t,X.today)}`).join('; ');
-  P5.stage(s1,{img:'media/p5-sockets.jpg',crop:dk?CR1D:CR1,glass:WN.map(([x,y])=>[x,y,WW,WH,6]),lit,silk,top,glare:.55,bloom:1.8,label:'Next on the card: '+lab});
-  if(!dk)s1.insertAdjacentHTML('beforeend',P5.link(CR1,{href:'#/upcoming',label:'See everything coming up',x:FING[0],y:FING[1]-50,w:FING[2],h:FING[3]+60}));
-  /* the panel: the next bell on the glass; the buttons' caps lit with what they do */
-  const nb=P5.nextClose(X);let l2=t(500,232,32,'THE NEXT BELL',{a:'middle',c:AMB,ls:2})+t(500,338,92,P5.cd(X),{a:'middle',c:CR,cls:'p5-cd'})+t(500,400,28,nb?`${nb.r.co.toUpperCase()} · ${X.nUp} ROUNDS LEFT IN SEASON 1`:'',{a:'middle',c:'#9fd8b4'});
+  P5.stage(s1,{img:'media/p5-sockets.jpg',crop:dk?CR1D:CR1,glass,lit,over,under,glare:.45,bloom:1.6,label:'Up next: '+lab});
+  /* the panel: the two buttons, their caps lit with what they do */
   const live=!!(window.CONFIG&&CONFIG.ca);
-  l2+=t(B1[0],B1[1]-6,30,'GET',{a:'middle',c:'#eafff1'})+t(B1[0],B1[1]+30,34,'$EZ',{a:'middle',c:'#eafff1'})+t(B2[0],B2[1]-6,30,'FOLLOW',{a:'middle',c:CR})+t(B2[0],B2[1]+30,34,'ON X',{a:'middle',c:CR});
+  const l2=t(B1[0],B1[1]-6,30,'GET',{a:'middle',c:'#eafff1'})+t(B1[0],B1[1]+30,34,'$EZ',{a:'middle',c:'#eafff1'})+t(B2[0],B2[1]-6,30,'FOLLOW',{a:'middle',c:CR})+t(B2[0],B2[1]+30,34,'ON X',{a:'middle',c:CR});
   const sk=t(B1[0],B1[1]+118,26,live?'':'OPENS AT LAUNCH',{a:'middle',c:'#fff6dc'})+t(B2[0],B2[1]+118,26,'EVERY CALL FIRST',{a:'middle',c:'#fff6dc'});
-  const sb2=dk?s3:s2,CB=dk?CR2B:CR2;
-  if(dk){P5.stage(s2,{img:'media/p5-panel.jpg',crop:CR2G,glass:[[GL[0],GL[1],GL[2],GL[3],10]],lit:l2,glare:.5,bloom:2.2,label:'The next bell: '+P5.cd(X)});
-   P5.stage(s3,{img:'media/p5-panel.jpg',crop:CR2B,lit:l2,silk:sk,bloom:2.2,label:'Get $EZ and Follow on X'})}
-  else P5.stage(s2,{img:'media/p5-panel.jpg',crop:CR2,glass:[[GL[0],GL[1],GL[2],GL[3],10]],lit:l2,silk:sk,glare:.5,bloom:2.2,label:'The next bell, Get $EZ and Follow on X'});
-  sb2.insertAdjacentHTML('beforeend',(live?P5.link(CB,{href:CONFIG.buyUrl||'#',label:'Get $EZ',x:B1[0]-90,y:B1[1]-90,w:180,h:180,ext:1}):'')+P5.link(CB,{href:(window.CONFIG&&CONFIG.x)||'https://x.com/earningszn',label:'Follow EZ on X',x:B2[0]-90,y:B2[1]-90,w:180,h:180,ext:1}));
+  P5.stage(s2,{img:'media/p5-panel.jpg',crop:CR2,lit:l2,silk:sk,bloom:2.2,label:'Get $EZ and Follow on X'});
+  s2.insertAdjacentHTML('beforeend',(live?P5.link(CR2,{href:CONFIG.buyUrl||'#',label:'Get $EZ',x:B1[0]-90,y:B1[1]-90,w:180,h:180,ext:1}):'')+P5.link(CR2,{href:(window.CONFIG&&CONFIG.x)||'https://x.com/earningszn',label:'Follow EZ on X',x:B2[0]-90,y:B2[1]-90,w:180,h:180,ext:1}));
   P5.vis(s1);
   /* H34: the schedule button switches to the Upcoming tab through the router's own address (as the tabs do: #/upcoming), never a page anchor */
   const sb=box.querySelector('.p5-sched');if(sb)sb.onclick=()=>{location.hash='#/upcoming'};
