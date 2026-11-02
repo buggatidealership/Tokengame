@@ -65,6 +65,7 @@ function end(){const fo=D.getElementById('h29eFollow');if(!fo||fo.querySelector(
  if(W.__h29dLaunch){ca.innerHTML=`<b>CA</b><span>$EZ on Solana · sample address</span><code>${SAMPLE}</code><button type="button" class="h29d-cc">${''}Copy the address</button>`}
  else ca.innerHTML='<b>CA</b><span>Drops here at launch.</span>';
  (xs||x||fo.lastElementChild).after(ca);
+ if(W.__h29dLaunch){const fp=D.querySelector('.h29e-ft p');if(fp)fp.innerHTML='<b>Nobody said it would be <i>E</i><i>Z</i>.</b>An experiment. Trust $EZ’s address only from this page or @earningszn. Not financial advice.'}
  const pf=D.createElement('p');pf.className='h29d-pf';
  pf.innerHTML=W.__h29dLaunch?'<a href="#" data-todo="pump.fun link at launch">Buy $EZ on pump.fun</a>':'Launching on pump.fun soon.';ca.after(pf)}
 
@@ -73,8 +74,12 @@ function bar(){if(!W.__h29dLaunch||D.querySelector('.h29d-bar'))return;const b=D
  b.innerHTML=`<a class="h29d-bf" href="${XURL}" target="_blank" rel="noopener">${XG}<span>Follow</span></a><a class="h29d-bb" href="#" data-todo="pump.fun link at launch">Buy $EZ</a><button type="button" class="h29d-bc" aria-label="Copy the contract address">${CP}</button>`;
  D.body.append(b);let ly=scrollY,t=0;const end=D.getElementById('h29eFollow');
  const upd=()=>{const y=scrollY,first=y>innerHeight*.8,er=end&&end.getBoundingClientRect(),inEnd=er&&er.top<innerHeight&&er.bottom>0;
-  const down=y>ly+2,up=y<ly-2;if(down)b.classList.remove('on');else if(up&&first&&!inEnd)b.classList.add('on');if(!first||inEnd)b.classList.remove('on');ly=y};
- addEventListener('scroll',()=>{if(!t)t=requestAnimationFrame(()=>{t=0;upd()})},{passive:true});W.__h29dBar=b}
+  const down=y>ly+2,up=y<ly-2;if(down)b.classList.remove('on');else if(up&&first&&!inEnd&&!numIn())b.classList.add('on');if(!first||inEnd||numIn())b.classList.remove('on');ly=y};
+ addEventListener('scroll',()=>{if(!t)t=requestAnimationFrame(()=>{t=0;upd()})},{passive:true});W.__h29dBar=b;W.__h29dNumIn=numIn;
+ /* never on a number: the bar keeps away while any figure (a digit in page text, or a lit number painted into a chip) sits in its band */
+ function numIn(){const top=innerHeight-b.offsetHeight-6,tw=D.createTreeWalker(D.querySelector('main'),NodeFilter.SHOW_TEXT);let n;
+  while(n=tw.nextNode()){if(!/\d/.test(n.nodeValue))continue;const e=n.parentElement;if(!e||skip(e))continue;const rg=D.createRange();rg.selectNodeContents(n);const R=rg.getBoundingClientRect();if(R.width>1&&R.bottom>top&&R.top<innerHeight)return true}
+  return [...D.querySelectorAll('.hbc-art,.t4-frs .t4-pic')].some(e=>{const R=e.getBoundingClientRect();return R.bottom>top&&R.top<innerHeight})}}
 
 /* GUTTER rhythm: one gutter per joint (duplicates hidden), then the same gap above and below every gutter: content -> gap -> gutter -> gap -> content */
 function fit(){front();const gs=[...D.querySelectorAll('.h29-gutter')].filter(g=>getComputedStyle(g).display!=='none'||g.classList.contains('h29d-dup'));

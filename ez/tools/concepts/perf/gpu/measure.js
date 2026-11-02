@@ -1,10 +1,10 @@
-// node measure.js <page> <mb|0> <outdir> [stops csv]   env: CSS=<css file to inject>, RMAX=<x2p_top surface ratio>
+// node measure.js <page> <mb|0> <outdir> [stops csv]   env: DESK=1 (1280x800 at 1x), NOFORCE=1 (emulated ratio only), CSS=<css file to inject>, RMAX=<x2p_top surface ratio>
 // Phone (390x844, DPR 2.75, mobile, touch), GPU memory capped (0 = no cap). Scrolls to each stop, waits, shoots the viewport (PNG in outdir/s<y>.png),
 // and dumps the composited layers (LayerTree) at that stop to outdir/s<y>.json.
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../live-r1/_fonts.js');const fs=require('fs');
 (async()=>{const [pg,mb,out,st]=process.argv.slice(2);const css=process.env.CSS;fs.mkdirSync(out,{recursive:true});
-const args=['--enable-gpu-rasterization','--ignore-gpu-blocklist','--force-device-scale-factor=2.75'];if(+mb)args.push('--force-gpu-mem-available-mb='+mb);
-const b=await chromium.launch({args});const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2.75,isMobile:true,hasTouch:true});
+const args=['--enable-gpu-rasterization','--ignore-gpu-blocklist'];if(!process.env.NOFORCE)args.push('--force-device-scale-factor=2.75');if(+mb)args.push('--force-gpu-mem-available-mb='+mb);
+const DESK=process.env.DESK;if(DESK)args.pop();const b=await chromium.launch({args});const ctx=await b.newContext(DESK?{viewport:{width:1280,height:800},deviceScaleFactor:1}:{viewport:{width:390,height:844},deviceScaleFactor:2.75,isMobile:true,hasTouch:true});
 const p=await ctx.newPage();await FONTS(p);if(process.env.RMAX)await p.addInitScript(r=>{window.__t4Rmax=+r},process.env.RMAX);
 if(css){const t=fs.readFileSync(css,'utf8');await p.addInitScript(t=>{document.addEventListener('DOMContentLoaded',()=>{const s=document.createElement('style');s.id='gpuprobe';s.textContent=t;document.head.appendChild(s)})},t)}
 await p.goto('http://127.0.0.1:8971/'+pg,{waitUntil:'load',timeout:180000});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});

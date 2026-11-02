@@ -29,7 +29,7 @@ const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=
  console.log('gutters',JSON.stringify(gt),'stops',JSON.stringify(stops));
  const shots=[];let i=0;
  let lastY=-1e9;for(const y of stops){const yy=Math.min(y,H-VH);if(yy<lastY+150)continue;lastY=yy;i++;await p.evaluate(y=>scrollTo(0,y),yy);
-  if(V==='launch')await p.evaluate(()=>{const b=window.__h29dBar;if(b){const e=document.getElementById('h29eFollow').getBoundingClientRect();b.classList.toggle('on',scrollY>innerHeight*.8&&!(e.top<innerHeight&&e.bottom>0))}});
+  if(V==='launch')await p.evaluate(()=>{const b=window.__h29dBar;if(b){const e=document.getElementById('h29eFollow').getBoundingClientRect();b.classList.toggle('on',scrollY>innerHeight*.8&&!(e.top<innerHeight&&e.bottom>0)&&!(window.__h29dNumIn&&__h29dNumIn()))}});
   await p.waitForTimeout(1400);
   const m=await p.evaluate(({hdr})=>{const D=document,VW=innerWidth,VH=innerHeight;const fam=f=>f.split(',')[0].replace(/["']/g,'').trim();
    const vis=e=>{for(let a=e;a&&a!==D.body;a=a.parentElement){const c=getComputedStyle(a);if(c.display==='none'||c.visibility==='hidden'||+c.opacity<.05)return false;if(/inset\(50%/.test(c.clipPath)||(c.clip&&/rect\(0/.test(c.clip)))return false;if(a.classList&&/(^| )(sr|p5-sr|hb-sr|ch-sr)( |$)/.test(a.className))return false}return true};
