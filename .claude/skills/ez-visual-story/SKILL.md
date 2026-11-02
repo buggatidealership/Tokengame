@@ -350,6 +350,15 @@ Each lesson is the reason behind a change the owner liked, not the owner's point
 125. **Introduce, don't inform.** A card that presents a character carries who it is (its face, big, and one sentence of personality drawn from its real behaviour) and one fresh fact that shows the season is live (its last round, this week). Histories, streaks and full records belong on the board people come back to check. Only the character moves; every other part is still, so the eye goes where the uniqueness is.
     - *Taught by:* owner, 2026-11-02, on Meet the models: "the characters to be bigger... just having the character animated here is good enough... the numbers is quite a lot to take in... last five should be something in the leaderboard... last round with a company logo... the last 7 days, so people understand there's time in this... each character's personality gets reflected through one sentence."
 
+126. **An insight is a true, surprising, checkable fact, wrapped in the world.** Each one has four parts:
+    - the claim, in one sentence;
+    - the number behind it;
+    - its sample ("on 72 calls"), so a sceptic can weigh it;
+    - a way back to the rounds that prove it.
+
+    Then it gets the same craft as everything else, so it's worth coming back to: some visitors return for the look, some for the insight, and the insight only keeps them if it holds up. Beauty must never lend a weak pattern more trust than its sample earns. A pattern a coin could produce in 80 rounds is not an insight. Say so, or leave it out. Databases (Crunchbase, CB Insights) show everything and explain nothing. We show few things, each one meant.
+    - *Taught by:* owner, 2026-11-02: "it's essentially turning it into interesting insights... information you want to come back to because it's unique... wrapped in a beautiful way... they might just come back for the insights because they feel trustworthy or because the way the insights are presented... is what makes it valuable."
+
 ## How this skill learns (owner, 2026-10-30)
 
 - A pick is a direction, not a lock (owner: "it doesn't mean, oh, okay, that means lock this down"): keep refining the picked take, and keep checking it against this skill.
