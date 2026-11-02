@@ -963,3 +963,34 @@ Live state to build on: earningszn.xyz = `ez/v46-live-x2plus.html` (X2+). The fo
 - **The section:** theme7's **M, the monitor**, is the favourite, but: "the chip is taking too much space. Ideally just have the video... the video frame on the chip itself... There shouldn't be too much chip visible because you already had a full dose of chips." The viewer must see at a glance it is a video and it is 1:20. Minimal chip, no dead space.
 - **Tap to watch big:** "if you click on the video, you should make it bigger... right now it would be way too small for a screen." A tap opens the film large (a phone's own full-screen player or a lightbox at the screen's width; desktop a theatre view), sound on, close back to the page. Mock the closed and the open state.
 - At least three takes of the small section. 390 first, 1280 too. **Boards:** `ez/x2p-h26-film3-*.png`. Work in `h/film3/`.
+
+## Round H27 (owner, 2026-11-02, ~11:30 UTC, with a friend's read of the live X2+ Overview; mockups)
+**The first principle under all of it:** a picture the eye lands on first must carry its own sentence. The friend "was so focused on the images... he didn't even read the text. But without reading the text, it's difficult to understand." So: one focal thing per beat; the words are part of the picture or come before it, never a caption under a busy painting that the eye skips. Ranking is shown by position and size, never only by a small numeral. Choices (selectors, windows, filters) belong on the Leaderboard tab; the Overview shows only what a visitor must see. The friend liked the headline ("4 AIs trade earnings. The market keeps score."), the charts, and the animated characters; he found the rest "too much".
+Live state: earningszn.xyz = X2+ with H26 (still frames, meet10 Meet the models, film4 The whole game). **Hedra is out of credit:** build from existing paintings and code; if a take truly needs a new painting, say so in the REPORT and stop there (the owner will top up). Same rules as H26 (still unless motion carries a fact; no perspective surface laid out at painting size; numbers computed; words page text). Skill first.
+
+### `rounds9`: Every round so far, simple and in its own style
+- Hero: **the latest round** (owner: "great from a sequence perspective"), then six recent, then "Show 8 more" (rounds8's structure).
+- Each tile, simplified (owner's sketch, `h/h27/owner-rounds-tile.webp` if saved, else as written): the company name **without the ticker**, the move **beside the name** on the same line; under it **"Winner"** and the winning model's logo + name (both on a tie, "Nobody" when none). No row of four marks with a ring.
+- **No die, no gold chip frames** ("I don't like the world of the die... maybe a change from a die perspective to something else"). Its own colour scheme, different from the top's (still within red, green and the yellowish gold). At least three styles that are not the comic book and not the chip; say what world each is.
+- **Desktop:** no dead space: the area under the hero must be filled (owner circled it on rounds8 A and B at 1280).
+- Boards `ez/x2p-h27-rounds9-*.png` (390, 1280). Work in `h/rounds9/`.
+
+### `flow2`: the Overview's order and How a round works, read not just seen
+- The friend: the four frames are "too many images and too many things to focus on"; he didn't read the text. Options the owner named: (a) "you click a play button and then the text appears like in a comic book and then the animation shows up"; (b) change it altogether.
+- The friend's order: the headline beat, then **Meet the models**, then what a round is. Mock both orders: today's (headline → How a round works → the whole game → Meet the models) and the friend's (headline → Meet the models → How a round works → the whole game).
+- At least three takes of How a round works where the words cannot be skipped: e.g. one step on screen at a time with its sentence big (scroll, not tap: H11's "scroll, not show"), the sentence lettered into the picture, one picture for all four steps with the steps as captions on it, a text-first strip with a small picture. Keep the trade verbs (CALL "Each AI goes long or short before the report.", CLOSE "The next market close ends every trade.", LEDGER "Every trade is written to the ledger.", BOARD "The ledger ranks the board.") unless a take shows a better line.
+- Boards `ez/x2p-h27-flow2-*.png` (390 first, 1280). Work in `h/flow2/`.
+
+### `rank2`: Meet the models that reads as a leaderboard
+- The friend: "difficult for him to visualize that it is a leaderboard... hard to see who's number one... on desktop they're all side by side, but side by side is hard to visualize who's first."
+- Keep meet10's chip content (Season P&L, W-L, the line, the founders animated: "what he loved is the characters animated") and the strip. Make rank unmistakable: one column top to bottom on every width (or a podium), #1 largest, the rank numeral big and outside the chip, the gap in P&L visible. At least three takes. Desktop must not put the four side by side unless the order still reads at a glance.
+- Boards `ez/x2p-h27-rank2-*.png`. Work in `h/rank2/`.
+
+### `sol8`: Smart or lucky in three beats, no selector
+- Owner: "maybe we just have two different charts, one on top of the other without a selector... the selection... should probably happen on the leaderboard... a third beat at the top... an image that explains what a user is about to look at."
+- Beat 1: a picture that says what you are about to see (a coin flip against the AIs' record; the question "smart or lucky?" answered visually). Beat 2: the hit rate chart, full width (the coin's exact binomial range, no label column; colours named in the rows). Beat 3: the P&L chart, full width, season only. No tabs, no windows, no knobs. Build on sol7 (`h/sol7/`).
+- At least three takes of beat 1. Boards `ez/x2p-h27-sol8-*.png`. Work in `h/sol8/`.
+
+### `bet4`: the bet, simpler
+- The friend understands the NVIDIA bet section but "prefers simplicity". Today: the vault chip and the parts list (S4) with the countdown. Make it read in one glance: what is bet, on whose call, when, what happens right or wrong, the countdown. At least three takes, from the existing paintings (`media/bet-*`), fewer parts.
+- Boards `ez/x2p-h27-bet4-*.png`. Work in `h/bet4/`.
