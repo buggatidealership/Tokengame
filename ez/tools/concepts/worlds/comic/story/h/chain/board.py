@@ -4,9 +4,9 @@ from PIL import Image,ImageDraw,ImageFont
 S=sys.argv[1];OUT='/home/user/Tokengame/ez/'
 F=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',26);f2=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',19)
 NAME={'now':('Today (live)','rounds6 B: the season wafer, then 8 dies'),
- 'A':('A · the hash chain','blocks on the board, a gold link in every gap; the chain snakes'),'B':('B · the block explorer','the latest block in full, then rows: height, round, hash'),
- 'C':('C · the bus','one gold line; every block hangs on it; the hash it hands up is printed on the line'),'D':('D · the open block','block 81 already open on top, pointing at 80; hashes engraved on each slab'),
- 'E':('E · A + the open block','A\'s chain with D\'s open block hung on block 80 (my pick)'),'E+':('E · after Show more','desktop 10 (two rows), phones 8'),
+ 'A':('A · the hash chain','a gold link in every gap'),'B':('B · the explorer','latest block, then rows'),
+ 'C':('C · the bus','the hash printed on the line'),'D':('D · the open block','81 open; hashes on the edges'),
+ 'E':('E · A + open block','my pick'),'E+':('E · after Show more','desktop 10 (two rows), phones 8'),
  'A+':('A · after Show more','desktop 10 (two rows), phones 8'),'B+':('B · after Show more','desktop 8 (rows of two), phones 8'),'C+':('C · after Show more','desktop: a second bus of 8'),'D+':('D · after Show more','desktop 10 (two rows of five), phones 8')}
 def save(B,out):
   p=OUT+out;B.save(p,optimize=True)
