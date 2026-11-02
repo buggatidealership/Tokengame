@@ -10,8 +10,8 @@ const W={id:'b',
  col:(X,m)=>m===S8.lead(X)?GOLD:PEN[m],
  tag:{past:'Past the gold',in:'In the gold',under:'Under the gold'},
  kick:['Right way, round by round','Money, round by round'],
- h:(w,k)=>w>=700?Math.round(w*.5):Math.round(w*.86),
- svg(X,kind,w,h){const u=S9.uid(),t=S9.t,big=w>=700,sm=big?13.5:12.5,mono="'Chivo Mono',monospace";
+ h:(w,k)=>w>=560?Math.round(w*.5):Math.round(w*.86),
+ svg(X,kind,w,h){const u=S9.uid(),t=S9.t,big=w>=560,sm=big?13.5:12.5,mono="'Chivo Mono',monospace";
   /* the machine: a black case; the paper strip inside it with sprocket holes; the pen carriage at the right */
   const px0=big?18:10,px1=w-(big?92:62),py0=big?16:12,py1=h-(big?16:12),hole=big?7:5.5;
   const g=S9.geo(X,kind,[px0+(kind==='pnl'?(big?70:58):(big?52:42)),py0+hole*2+(big?14:10),px1-6,py1-hole*2-(big?30:28)]),{Y,Xp,cx0,cx1,cy0,cy1}=g;

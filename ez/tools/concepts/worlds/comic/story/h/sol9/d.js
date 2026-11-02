@@ -7,8 +7,8 @@
 (function(){const S=window.S7,S8=window.S8,S9=window.S9,P5=window.P5;
 const W={id:'d',
  col:(X,m)=>m===S8.lead(X)?S.GD:S.INK[m],
- h:(w,k)=>w>=700?Math.round(w*.5):Math.round(w*.92),
- svg(X,kind,w,h){const u=S9.uid(),t=S9.t,big=w>=700,sm=big?13.5:12.5,bc="'Barlow Condensed',sans-serif",mono="'Chivo Mono',monospace";
+ h:(w,k)=>w>=560?Math.round(w*.5):Math.round(w*.92),
+ svg(X,kind,w,h){const u=S9.uid(),t=S9.t,big=w>=560,sm=big?13.5:12.5,bc="'Barlow Condensed',sans-serif",mono="'Chivo Mono',monospace";
   const ch=big?11:8.5,cg=big?1.5:1,chainH=ch*4+cg*3,padL=kind==='pnl'?(big?66:52):(big?50:40);
   const top=big?14:10,cy1=h-(big?30:26)-chainH-(big?36:30),g=S9.geo(X,kind,[padL,top,w-(big?16:12),cy1]),{Y,Xp,cx0,cx1,cy0}=g;
   let s=`<defs><linearGradient id="${u}gd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0a0"/><stop offset=".5" stop-color="#ffcc33"/><stop offset="1" stop-color="#9a6a08"/></linearGradient></defs>

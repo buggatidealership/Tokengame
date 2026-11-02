@@ -7,8 +7,8 @@
 const W={id:'a',
  col:(X,m)=>m===window.S8.lead(X)?S.GD:S.INK[m],
  tag:{past:'Off the gold',in:'On the gold',under:'Under the gold'},
- h:(w,k)=>w>=700?Math.round(w*.47):Math.round(w*.76),
- svg(X,kind,w,h){const u=S9.uid(),t=S9.t,sm=w>=700?13.5:12.5,big=w>=700;
+ h:(w,k)=>w>=560?Math.round(w*.47):Math.round(w*.76),
+ svg(X,kind,w,h){const u=S9.uid(),t=S9.t,sm=w>=560?13.5:12.5,big=w>=560;
   const g=S9.geo(X,kind,[big?62:46,big?26:18,w-(big?24:16),h-(big?42:34)]),{Y,Xp,cx0,cx1,cy0,cy1}=g;
   let s=`<defs>
    <pattern id="${u}h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffcc33" fill-opacity=".10"/><line x1="0" y1="0" x2="0" y2="6" stroke="#ffd65a" stroke-opacity=".38" stroke-width="1.2"/></pattern>

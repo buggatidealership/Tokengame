@@ -7,8 +7,8 @@
 const W={id:'c',
  col:(X,m)=>m===S8.lead(X)?S.GD:S.INK[m],
  tag:{past:'Off the brass',in:'On the brass',under:'Under the brass'},
- h:(w,k)=>w>=700?Math.round(w*.48):Math.round(w*.8),
- svg(X,kind,w,h){const u=S9.uid(),t=S9.t,big=w>=700,sm=big?14:12.5,bc="'Barlow Condensed',sans-serif",fr=big?16:11;
+ h:(w,k)=>w>=560?Math.round(w*.48):Math.round(w*.8),
+ svg(X,kind,w,h){const u=S9.uid(),t=S9.t,big=w>=560,sm=big?14:12.5,bc="'Barlow Condensed',sans-serif",fr=big?16:11;
   const g=S9.geo(X,kind,[fr+(kind==='pnl'?(big?66:52):(big?50:40)),fr+(big?20:16),w-fr-(big?20:14),h-fr-(big?34:30)]),{Y,Xp,cx0,cx1,cy0,cy1}=g;
   let s=`<defs>
    <radialGradient id="${u}f" cx="50%" cy="40%" r="80%"><stop offset="0" stop-color="#1c6a3a"/><stop offset=".6" stop-color="#0f4426"/><stop offset="1" stop-color="#06210f"/></radialGradient>
