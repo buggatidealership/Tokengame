@@ -932,3 +932,34 @@ Each task below is a **mockup** unless it says otherwise. Rules: rule 0, the har
    - Show at least three treatments.
 - Live code: `ez/tools/v22/story/x2p_chips.js/.css` (chips8 take c) and `x2p_more.js` (the ground), both read only.
 - **Boards:** `ez/x2p-h25-meet9-*.png` at 390 and 1280. Work in `h/meet9/`. Up to $40, highest resolution and fps.
+
+## Round H26 (owner, 2026-11-02, ~10:30 UTC; on the live X2+ Overview; mockups)
+Live state to build on: earningszn.xyz = `ez/v46-live-x2plus.html` (X2+). The four frames of How a round works are now **still** (owner: "no animation or pulsing or anything... just the numbers are always displayed"; no flicker, no scan, no tap replay; frame 4's founders as still pictures). Keep every new take still unless a motion carries a fact, and cheap: no layer with a perspective transform laid out at painting size (a phone rasters it at that size and runs out of GPU memory: the black frames of 2026-11-02; lay surfaces out at screen size x pixel ratio, see `x2p_top.js` "MEM"). Highest resolution and fps for any painting or loop (H25). Words and numbers stay page text, computed from ROUNDS / `__x2pPnl`, never typed, never baked into paintings. Skill: `.claude/skills/ez-visual-story/SKILL.md`, read first.
+
+### `meet10`: Meet the models, the line in the chip, fed by the ledger strip
+- **The chip's windows (owner):** "the sentence should essentially replace the season section": the computed line (x2p_chips.js `LINE`, e.g. "Shorts almost everything. Somehow it's working.") goes in the SEASON window (where "+$148,480 · 45-27" is today). The LAST ROUND window becomes the **W-L record**, W in green, L in red ("we remove the last round section altogether... they'll be able to see that data in the leaderboard section"). LAST 7 DAYS and No. stay.
+  - Open question for the owner (show both): A the season P&L leaves the chip (as said); B the season P&L moves into LAST 7 DAYS' place or a small line, so the "Ranked by season P&L" head still has its number on the chip.
+  - The line must be readable in the window: 9 CSS px cap height at 390, one or two lines, fitted; say how the longest line fits.
+- **The bus as a strip (owner: "I would love for it to be in the strip format. Because then it sort of represents the market feeding every chip"):** meetbus take A (`ez/x2p-h25-meetbus-*`, `h/meetbus/`): the ledger strip of the newest graded rounds feeding each chip through gold traces, a pulse green or red per trade. Build on it with the new windows. The ground between the chips is the board (meet9's gap rule; meet9 E's channels are no longer needed for the line, so the gap carries traces only).
+- At least two takes of the strip (left edge, as A; and your own) x the two P&L answers. 390 first, 1280 too.
+- **Boards:** `ez/x2p-h26-meet10-*.png`. Work in `h/meet10/`.
+
+### `rounds8`: Every round so far, a hero, six, then more
+- Today (rounds6 take B, live): the whole season die by die at the top, then the newest dies. The owner: "I wouldn't want every round to show up at the top... it should only show either the top one or the latest one. And then underneath... six of the last rounds. And then you can click on show 8 more."
+- Structure, every take: one hero round (make both: **the latest** graded round, and **the top one**: propose the rule, e.g. the season's bullseye or biggest W, and say it), then six recent rounds, then a "Show 8 more" that adds eight at a time.
+- Worlds (owner): the die "is sort of the most in line with our narrative", but also "a filing cabinet... or some type of folders where it's a ledger, where every record gets added to". Takes, at least three: the die (wafer world, today's look), the filing cabinet (each round a filed record, the hero the folder pulled out), folders on a ledger (each round a folder added to a stack or a binder). Each round shows its film's outcome tile (`media/tile-r<n>-t3.jpg` or the F1 frames used today), company, move, winner.
+- 390 first, 1280 too. **Boards:** `ez/x2p-h26-rounds8-*.png`. Work in `h/rounds8/`.
+
+### `sol7`: Smart or lucky in two beats, T1 refined
+- Today (live): T1, the scope (`_p5.js` / `t1.js` in `x2p_more.js`). The owner: keep T1 ("actually not bad"), but:
+  1. **Two beats:** "Smart or lucky, and then it instantly puts you into what it's looking at... too little information to understand what someone is looking at." Beat 1 sets up the question visually (what a coin flip does vs what the AIs did); beat 2 is the scope.
+  2. **The chart bigger:** no "Grok 63%, Claude 60, GPT 54, Kimi 46" label column beside the chart ("taking too much space. People just should focus on the percentage"); the chart wider, extended to the right; the colour coding carried by the rows underneath (each AI's W-L in its colour).
+  3. **The switch obvious:** "not obvious that hit rate and P&L are clickable... so many little knobs at the bottom and 3 black buttons, but you don't really know which one to click... It needs to be obvious yet simple." One clear control (Hit rate / P&L, and the windows if kept), nothing decorative that looks pressable.
+  4. **Wording:** sol6's D (the control) "is correct and is good": "Hit rate: how often a trade went the right way. Grok: 45 of 72. A coin flip lands 28 to 44 of 72." (computed).
+- At least three takes. 390 first, 1280 too. **Boards:** `ez/x2p-h26-sol7-*.png`. Work in `h/sol7/`.
+
+### `film3`: the gaps, and "the whole game" as its own small section
+- **Order and gaps (owner):** the top (headline and chip), a gap, How a round works, then "the whole game" in "its own little section underneath" (part of how a round works, but how the whole game works), then a **bigger** gap before Meet the models. Make the gaps follow theme7's rule (`ez/x2p-h25-theme7-gaps-390.png`).
+- **The section:** theme7's **M, the monitor**, is the favourite, but: "the chip is taking too much space. Ideally just have the video... the video frame on the chip itself... There shouldn't be too much chip visible because you already had a full dose of chips." The viewer must see at a glance it is a video and it is 1:20. Minimal chip, no dead space.
+- **Tap to watch big:** "if you click on the video, you should make it bigger... right now it would be way too small for a screen." A tap opens the film large (a phone's own full-screen player or a lightbox at the screen's width; desktop a theatre view), sound on, close back to the page. Mock the closed and the open state.
+- At least three takes of the small section. 390 first, 1280 too. **Boards:** `ez/x2p-h26-film3-*.png`. Work in `h/film3/`.
