@@ -40,8 +40,8 @@ let uid=0;S9.uid=()=>'s9'+(uid++);
 /* ---------- compose and mount ---------- */
 S9.take=W=>({id:'s9'+W.id,html(X){const k=W.kick||['Right way, round by round','Money, round by round'];
   return `<div class="p5-bleed s9 s9w-${W.id}">${P5.head('Smart or','lucky?')}
-   <section class="s9-b s9-b1" aria-label="Hit rate">${W.pre?W.pre(X,'acc'):''}<div class="s9-w">${S9.kick(1,k[0])}<p class="s9-ln">${S8.lineAcc(X)}</p></div><div class="s9-pic"><div class="s9-ch" data-k="acc"></div>${S9.rows(X,'acc',W.col,W.tag)}</div></section>
-   <section class="s9-b s9-b2" aria-label="P&amp;L">${W.pre?W.pre(X,'pnl'):''}<div class="s9-w">${S9.kick(2,k[1])}<p class="s9-ln">${S8.linePnl(X)}</p></div><div class="s9-pic"><div class="s9-ch" data-k="pnl"></div>${S9.rows(X,'pnl',W.col)}</div></section>
+   <section class="s9-b s9-b1" aria-label="Hit rate">${W.pre?W.pre(X,'acc'):''}${W.head?W.head(1,k[0],X,'acc'):`<div class="s9-w">${S9.kick(1,k[0])}<p class="s9-ln">${S8.lineAcc(X)}</p></div>`}<div class="s9-pic"><div class="s9-ch" data-k="acc"></div>${W.rows?W.rows(X,'acc'):S9.rows(X,'acc',W.col,W.tag)}</div></section>
+   <section class="s9-b s9-b2" aria-label="P&amp;L">${W.pre?W.pre(X,'pnl'):''}${W.head?W.head(2,k[1],X,'pnl'):`<div class="s9-w">${S9.kick(2,k[1])}<p class="s9-ln">${S8.linePnl(X)}</p></div>`}<div class="s9-pic"><div class="s9-ch" data-k="pnl"></div>${W.rows?W.rows(X,'pnl'):S9.rows(X,'pnl',W.col)}</div></section>
    ${S8.tables(X)}</div>`},
  draw(box,X){box.querySelectorAll('.s9-ch').forEach(el=>{const k=el.dataset.k,Wd=Math.max(240,Math.round(el.clientWidth)||358),H=Math.round(W.h(Wd,k));
    el.style.height=H+'px';el.innerHTML=`<svg class="s9-svg" viewBox="0 0 ${Wd} ${H}" width="${Wd}" height="${H}" role="img" aria-label="${k==='acc'?'Each AI’s hit rate round by round, against the gold range a fair coin lands in':'Each AI’s P&L round by round, $100K on every trade, the season'}">${W.svg(X,k,Wd,H)}</svg>`});
