@@ -1,4 +1,4 @@
-/* X2+ TOP, H23 quad4 (ported 2026-11-02). Media: media/top-h23-call.jpg media/top-h23-close.jpg media/top-h23-ledger.jpg media/top-t4-one-b-h22.jpg media/top-hero-t-h22.jpg media/top-hero-w-h22.jpg media/top-t3-screen-h22.jpg media/ez-landing-v4-poster-ez.jpg media/ez-landing-v4.mp4 */
+/* X2+ TOP, H23 quad4 (ported 2026-11-02). Media: media/top-h23-call.jpg media/top-h23-close.jpg media/top-h23-ledger.jpg media/top-h24-board.jpg media/chip7-grok-1200.jpg media/chip7-claude-1200.jpg media/chip7-gpt-1200.jpg media/chip7-kimi-1200.jpg media/top-t4-one-b-h22.jpg media/top-hero-t-h22.jpg media/top-hero-w-h22.jpg media/top-t3-screen-h22.jpg media/ez-landing-v4-poster-ez.jpg media/ez-landing-v4.mp4 */
 /* H23 quad4: a drop-in replacement for tools/v22/story/x2p_top.js (round H23, area quad4; built by quad4/build.py). Only beat 2's four
    pictures, their surfaces and the frame states change: new zoomed-in paintings (media/top-h23-*.jpg), the figures big and lit in the glass,
    the facts visible from the start, small life in the world. Everything else (headline, chip, gutters, film) is x2p_top.js as of f180a6e.
@@ -141,6 +141,27 @@ const leadSurf=(w,h)=>{const s=Math.min(h*.5,w*.3),x=w*.08+s*1.15,tw2=w*.92-x,fz
   return `<g class="t4-eg">`+mark(lead,w*.07,h/2-s/2,s,'#2a1a06')+T(x,h/2+fz*.36,fz,NM[lead].toUpperCase(),{c:'#2a1a06',cls:'t4-an t4-eng'})+`</g>`};
 const crQ=k=>{const[,,cw,ch]=Q4[k].crop;return [0,0,cw,ch]};
 const picQ=(k,S,cls,extra)=>{const[,,cw,ch]=Q4[k].crop;return pic(IMQ+Q4[k].file,cw,ch,S,cls,extra,[0,0,cw,ch])};
+const B5={file:'top-h24-board.jpg',iw:1630,
+  /* the sockets' inner cavities and the glass windows, in the 1630 px crop's own px (measured on c4k at 2048, minus the crop's origin 215,200) */
+  cav:[[255,62,1375,525],[40,790,600,1005],[40,1075,600,1290],[40,1380,600,1600]],
+  win:[null,[930,885,1590,1050],[930,1150,1590,1310],[930,1410,1590,1575]]};
+const b5R2Q=([x0,y0,x1,y1])=>[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
+/* the chip painting (3760 x 1520) fitted in its cavity by height, centred */
+const b5Chip=cv=>{const[x0,y0,x1,y1]=cv,h=y1-y0,w=Math.min(x1-x0,h*2.474),hh=w/2.474,x=(x0+x1)/2-w/2,y=(y0+y1)/2-hh/2;return b5R2Q([x,y,x+w,y+hh])};
+const b5k$=v=>(v<0?'−':'+')+'$'+(Math.abs(v)>=1e6?(Math.abs(v)/1e6).toFixed(2)+'M':Math.round(Math.abs(v)/1000)+'K');
+function boardB5(){const S=[],GQ=[],pl=m=>A[m].bal-100000;
+  rank.forEach((m,i)=>{const cq=b5Chip(B5.cav[i]);
+    S.push(surf(cq,()=>'','b5-chip'+(i===0?' b5-lead':''),()=>`<img class="b5-im" src="media/chip7-${m.toLowerCase()}-1200.jpg" alt="" draggable="false">`));
+    if(i===0){/* the leader's own SEASON P&L window on its chip (chip px 1136,787 to 2585,1203 of 3760 x 1520), lit */
+      const[x0,y0]=cq[0],sx=(cq[1][0]-x0)/3760,sy=(cq[3][1]-y0)/1520,r=[x0+1136*sx,y0+787*sy,x0+2585*sx,y0+1203*sy];
+      S.push(surf(b5R2Q(r),(w,h)=>{const t=b5k$(pl(m)),f=Math.min(h*.86,w*.86/(t.length*.47));return `<g class="q4-g">`+TX(w/2,h/2+f*.37,f,t,{a:'middle',f:em(pl(m)<0?'dn':'up'),cls:'q4-big'})+`</g>`},'q4-glass b5-win',()=>`<i class="q4-scan"></i>`))}
+    else{/* ranks 2 to 4: the rank numeral and the name, one line, centred in the board's glass */
+      const q=b5R2Q(B5.win[i]);GQ.push(q);
+      S.push(surf(q,(w,h)=>{const r=String(i+1),t=NM[m].toUpperCase(),f1=h*.7,g=h*.12,av=w*.9-tw(r,f1)-g,f2=Math.min(h*.6,av/(t.length*.47)),tot=tw(r,f1)+g+tw(t,f2),x0=w/2-tot/2,y=h/2+f1*.36;
+        return `<g class="q4-g">`+TX(x0,y,f1,r,{cls:'q4-big'})+TX(x0+tw(r,f1)+g,y,f2,t)+`</g>`},'q4-glass b5-win',()=>`<i class="q4-scan"></i>`))}});
+  const gl=GQ.map(q=>`<img class="q4-gl" src="${IMQ+B5.file}" alt="" draggable="false" style="width:100%;left:0;top:0;clip-path:polygon(${q.map(([x,y])=>`${(x/B5.iw*100).toFixed(2)}% ${(y/B5.iw*100).toFixed(2)}%`).join(',')})">`).join('');
+  return pic(IMQ+B5.file,B5.iw,B5.iw,S,'b5-pic',gl,[0,0,B5.iw,B5.iw])}
+
 function frames(){const cap=t=>`<div class="t4-cap">${t}</div>`;
   const F={call:{w:'CALL',k:'call',l:LINES.call,cap:`R${EX.n} · ${esc(EX.co)} (${EX.ticker}) · ${md(EX.called)}`,
     p:picQ('call',calls.map((c,i)=>surf(Q4.call.q[i],dieQ4(c),'q4-glass q4-die q4-d'+i,scan)),'',glares('call'))},
@@ -148,8 +169,7 @@ function frames(){const cap=t=>`<div class="t4-cap">${t}</div>`;
     p:picQ('close',[surf(Q4.close.q[0],readQ4,'q4-glass q4-rd',scan)],'',glares('close')+at(-40,-120,300,300,'q4-ring')+at(-40,-120,300,300,'q4-ring r2'))},
    ledger:{w:'LEDGER',k:'ledger',l:LINES.ledger,cap:`Round ${EX.n} · ${md(EX.resolves)}`,
     p:picQ('ledger',ledgerQ4(),'',glares('ledger'))},
-   board:{w:'BOARD',k:'board',l:LINES.board,cap:'Top of the board',
-    p:pic('media/top-t4-one-b-h22.jpg',1024,1024,[surf([[300,252],[652,212],[748,520],[388,568]],leadSurf,'t4-gold')],'','',[50,80,920,920])}};
+   board:{w:'BOARD',k:'board',l:LINES.board,cap:'The board',p:boardB5()}};
   return ['call','close','ledger','board'].map(k=>F[k]).map((f,i)=>`<li class="t4-fr q4-fr q4-${f.k} t4-on" tabindex="0" role="button" aria-label="${i+1} ${f.w}: ${esc(f.l)}"><div class="t4-ink"><div class="t4-art">${f.p}</div></div>${sub(i+1,f.w)}<p class="t4-ln">${lh(f.l)}</p></li>`).join('')}
 /* the glow and bloom are drawn in the screen's px: each painting carries its scale k (CSS px per painting px) as --k */
 function q4k(root){root.querySelectorAll('.q4-fr .t4-pic').forEach(p=>{const k=p.clientWidth/+p.dataset.iw;if(k)p.style.setProperty('--k',k.toFixed(5))})}
