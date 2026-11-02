@@ -55,7 +55,7 @@ let CAP=.735;const capR=()=>{cv.font='100px Anton';const m=cv.measureText('H');i
 const nameLog={};
 function names(){capR();ones.forEach(o=>{const m=o.dataset.m,nm=o.querySelector('.m11-nm'),R=nm.getBoundingClientRect();if(!R.width)return;
   const w=R.width,h=R.height,pad=h*.3;let fs=h*.56/CAP;/* the name's cap = 56% of its window's height */
-  const N=NM(m),V=VER(m).toUpperCase();let vs=fs*.34;const gap=fs*.16;
+  const N=NM(m),V=VER(m).toUpperCase();let vs=fs*.42;const gap=fs*.16;
   let tot=tw(N,fs)+gap+tw(V,vs,"'Barlow Condensed'");const max=w-pad*2;if(tot>max){const k=max/tot;fs*=k;vs*=k}
   const y=h/2+fs*CAP/2,x=pad,nw=tw(N,fs);
   const sv=nm.querySelector('svg');sv.setAttribute('viewBox',`0 0 ${w} ${h}`);

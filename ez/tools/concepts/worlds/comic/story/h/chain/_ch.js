@@ -1,6 +1,7 @@
 /* Round H28 · chain: "Every round so far" as a blockchain (mockups over the built v46-live-x2plus.html).
    The story chain of the page: the models live in chips (Meet the models) -> the record is a ledger -> a chain of blocks, one block per round.
-   window.__CH = 'A' the hash chain (blocks on a board, joined by gold links, the chain snakes so every link is a short one)
+   window.__CH = 'E' A's chain with D's open block on top (the two parts combined)
+                 'A' the hash chain (blocks on a board, joined by gold links, the chain snakes so every link is a short one)
                  'B' the block explorer (newest first, the way crypto people already read a chain: height, contents, hash)
                  'C' the bus (one gold line down the page; every block hangs on it, the hash it hands to the next is printed on the line)
                  'D' the open block (the stack grows: block 81 is already open on top and already points at block 80; sealed blocks below)
@@ -56,7 +57,7 @@ const ht=n=>`<span class="cz-ht"><i>Block</i><b>${n}</b></span>`;
 function A_it(r,hero){return `<span class="cz-blk cza-blk"><span class="cza-bar">${ht(r.n)}${hx(HASH[r.n])}</span>${pic(hero?big(r):tile(r.n))}
   <span class="cz-tx">${line1(r,true)}${winner(r)}${hero?`<span class="cza-prev"><i>Prev</i>${hx(PREV[r.n],'cz-hx-p')}<i class="cza-pt">= block ${r.n-1}</i></span>`:''}</span></span>`}
 /* ================= B · the block explorer ================= */
-function B_hero(r){return `<span class="cz-blk czb-hero"><span class="czb-hd"><span class="czb-lab"><i class="czb-dot"></i>Latest block</span><span class="czb-when">Sealed<span class="czb-atc"> at the close</span> · ${esc(md(r.resolves))}</span></span>
+function B_hero(r){return `<span class="cz-blk czb-hero"><span class="czb-hd"><span class="czb-lab"><i class="czb-dot"></i>Latest block</span><span class="czb-when">Graded<span class="czb-atc"> at the close</span> · ${esc(md(r.resolves))}</span></span>
   <span class="czb-body">${pic(big(r),'czb-pic')}<span class="cz-tx"><span class="czb-big">${ht(r.n)}</span>${line1(r,true)}${winner(r)}
   <span class="czb-kv"><i>Hash</i><code class="cz-hx czb-full"><span>0x${HASH[r.n].slice(0,32)}</span><span>${HASH[r.n].slice(32)}</span></code></span>
   <span class="czb-kv"><i>Prev</i>${hx(PREV[r.n],'cz-hx-p')}<em class="czb-to">block ${r.n-1} ↓</em></span></span></span></span>`}
@@ -65,22 +66,22 @@ function B_it(r){return `<span class="cz-blk czb-row"><span class="czb-n">${r.n}
 function C_it(r,hero){return `<span class="cz-blk czc-blk">${pic(hero?big(r):tile(r.n),'czc-pic')}<span class="cz-tx"><span class="czc-top">${ht(r.n)}<span class="czc-d">${esc(md(r.resolves))}</span></span>${line1(r,true)}${winner(r)}${hero?`<span class="czc-hh"><i>Hash</i>${hx(HASH[r.n])}</span>`:''}</span></span>`}
 /* ================= D · the open block on top of the stack ================= */
 function D_open(){if(!OPEN)return '';const lg=logo(OPEN.ticker);
-  return `<div class="czd-open" aria-label="Block ${OPEN.n} is open: round ${esc(OPEN.n)}, ${esc(OPEN.co)}. Calls due ${esc(md(OPEN.called))}, sealed at the close${OPEN.resolves?' on '+esc(md(OPEN.resolves)):''}. It already points at block ${HERO.n}."><span class="czd-ob">
+  return `<div class="czd-open" aria-label="Block ${OPEN.n} is open: round ${esc(OPEN.n)}, ${esc(OPEN.co)}. Calls due ${esc(md(OPEN.called))}, graded at the close${OPEN.resolves?' on '+esc(md(OPEN.resolves)):''}. It already points at block ${HERO.n}."><span class="czd-ob">
   <span class="czd-obar">${ht(OPEN.n)}<span class="czd-state"><i class="czd-led"></i>Open</span></span>
-  <span class="czd-obody">${lg}<span class="czd-oco"><b>${esc(OPEN.co)}</b><span>Calls due ${esc(md(OPEN.called))} · sealed at the close${OPEN.resolves?' '+esc(md(OPEN.resolves)):''}</span></span>
-  <span class="czd-slots">${ORDER.map(m=>`<span class="czd-slot">${mark(m)}<b>?</b></span>`).join('')}</span></span>
+  <span class="czd-obody">${lg}<span class="czd-oco"><b>${esc(OPEN.co)}</b><span>${OPEN.calls&&OPEN.calls.length?'Calls in':'Calls due '+esc(md(OPEN.called))} · graded at the close${OPEN.resolves?' '+esc(md(OPEN.resolves)):''}</span></span>
+  <span class="czd-slots">${ORDER.map(m=>{const c=(OPEN.calls||[]).find(c=>c[0]===m);return `<span class="czd-slot${c?' czd-in':''}">${mark(m)}<b class="${c?(/^UP/i.test(c[1])?'cz-pu':'cz-pd'):''}">${c?(/^UP/i.test(c[1])?'Long':'Short'):'?'}</b></span>`}).join('')}</span></span>
   <span class="czd-oprev"><i>Prev</i>${hx(HASH[HERO.n],'cz-hx-p')}<em>already points at block ${HERO.n}</em></span></span></div>`}
 function D_it(r,hero){return `<span class="cz-blk czd-blk${hero?' czd-hero':''}">${pic(hero?big(r):tile(r.n),'czd-pic')}<span class="cz-tx">${line1(r,true)}${winner(r)}</span>
   <span class="czd-edge">${ht(r.n)}<code class="cz-hx">${HASH[r.n].slice(0,16)}<span class="czd-xx">${HASH[r.n].slice(16,40)}</span>…</code></span></span>`}
 
 const link=(r,hero,body)=>`<a class="${hero?'cz-hero':'cz-it'}" href="#/round/${r.n}" data-n="${r.n}" aria-label="${esc(aria(r))}">${body}</a>`;
-const ITEM={A:(r,h)=>A_it(r,h),B:(r,h)=>h?B_hero(r):B_it(r),C:(r,h)=>C_it(r,h),D:(r,h)=>D_it(r,h)}[TK];
+const ITEM={A:(r,h)=>A_it(r,h),E:(r,h)=>A_it(r,h),B:(r,h)=>h?B_hero(r):B_it(r),C:(r,h)=>C_it(r,h),D:(r,h)=>D_it(r,h)}[TK];
 const FIRST=6;let shown=FIRST;
 const wide=()=>innerWidth>=1000;
-const PAGE=()=>!wide()?8:({A:10,B:8,C:8,D:10}[TK]);
+const PAGE=()=>!wide()?8:({A:10,B:8,C:8,D:10,E:10}[TK]);
 const root=D.createElement('div');root.className='cz cz-'+TK;
 const CAP={A:'Every round is a block. Each block carries the hash of the one before.',B:'Newest first. Each block carries the hash of the one before.',
-  C:'One chain, newest on top. The hash on the line is what each block hands to the next.',D:'Each block carries the hash of the one before. The next one is already open.'}[TK];
+  C:'One chain, newest on top. The hash on the line is what each block hands to the next.',E:'Each block carries the hash of the one before. The next one is already open.',D:'Each block carries the hash of the one before. The next one is already open.'}[TK];
 function more(){const left=REST.length-shown;if(left<=0)return `<p class="cz-all">Back to the genesis block · round 1</p>`;const k=Math.min(PAGE(),left);
   return `<button class="cz-more" type="button" aria-label="Show ${k} more blocks"><b>Show ${k} more</b><i>${left} older blocks · down to block 1</i></button>`}
 function grid(){const items=[link(HERO,true,ITEM(HERO,true)),...REST.slice(0,shown).map(r=>link(r,false,ITEM(r,false)))];
@@ -92,16 +93,16 @@ function grid(){const items=[link(HERO,true,ITEM(HERO,true)),...REST.slice(0,sho
     const bands=[items.slice(0,7)];for(let i=7;i<items.length;i+=8)bands.push(items.slice(i,i+8));
     return bands.map((b,k)=>`<div class="czc-g czc-band${k?' czc-b8':''}"><i class="czc-bus" aria-hidden="true"></i>${b.join('')}</div>`).join('')+more()}
   if(TK==='D'){const x=items.slice(7);return `${D_open()}<div class="czd-g czd-top">${items[0]}</div><div class="czd-g czd-rest">${items.slice(1,7).join('')}</div>${x.length?`<div class="czd-g czd-x">${x.join('')}</div>`:''}${more()}`}
-  return `<div class="cza-g">${items.join('')}${more()}<svg class="cza-links" aria-hidden="true"></svg></div>`}
+  return `${TK==='E'?D_open():''}<div class="cza-g">${items.join('')}${more()}<svg class="cza-links" aria-hidden="true"></svg></div>`}
 function render(){root.innerHTML=`<div class="cz-in"><header class="cz-hd"><h2 class="cz-h2"><span class="cz-hw">Every round so far</span></h2>
-  <p class="cz-cap">${esc(CAP)}</p><p class="cz-meta"><span><b>${G.length}</b> blocks sealed</span><span><b>${FUT.length}</b> to come</span></p></header>${grid()}</div>`;
+  <p class="cz-cap">${esc(CAP)}</p><p class="cz-meta"><span><b>${G.length}</b> blocks</span><span><b>${FUT.length}</b> to come</span></p></header>${grid()}</div>`;
   root.querySelector('.cz-more')?.addEventListener('click',()=>{shown+=PAGE();render()});
   place();fit();links();bus();
   let t;root.querySelectorAll('img').forEach(i=>{if(!i.complete)i.addEventListener('load',()=>{clearTimeout(t);t=setTimeout(()=>{fit();links();bus()},120)},{once:true})});setTimeout(()=>{fit();links();bus()},400)}
 /* A: the chain snakes, so every block sits next to the one before it and every link is short.
    Phone (2 columns): the hero across, then rows of two, alternating direction. Desktop (5): the hero 2x2 on the left, the six run down and up
    columns 3, 4, 5 (ending bottom right), then full rows of five alternate direction. */
-function place(){if(TK!=='A')return;const g=root.querySelector('.cza-g'),its=[...g.querySelectorAll('.cz-it')],more=g.querySelector('.cz-more,.cz-all');
+function place(){if(!/[AE]/.test(TK))return;const g=root.querySelector('.cza-g'),its=[...g.querySelectorAll('.cz-it')],more=g.querySelector('.cz-more,.cz-all');
   const cols=getComputedStyle(g).gridTemplateColumns.split(' ').length;let last=[1,1];
   its.forEach((a,i)=>{let r,c;
     if(cols>=5){if(i<6){const col=3+Math.floor(i/2),down=Math.floor(i/2)%2===0;r=1+((i%2)===(down?0:1)?0:1);c=col}
@@ -112,7 +113,7 @@ function place(){if(TK!=='A')return;const g=root.querySelector('.cza-g'),its=[..
     a.style.gridRow=r;a.style.gridColumn=c;last=[r,c]});
   if(more){const r=last[0]+1;more.style.gridRow=r;more.style.gridColumn='1/-1'}}
 /* the links: one gold chain link in every gap between a block and the one before it, oriented along the gap */
-function links(){if(TK!=='A')return;const g=root.querySelector('.cza-g'),sv=g&&g.querySelector('.cza-links');if(!sv)return;const gr=g.getBoundingClientRect();
+function links(){if(!/[AE]/.test(TK))return;const g=root.querySelector('.cza-g'),sv=g&&g.querySelector('.cza-links');if(!sv)return;const gr=g.getBoundingClientRect();
   const seq=[g.querySelector('.cz-hero'),...g.querySelectorAll('.cz-it')];let s='';
   for(let i=0;i<seq.length-1;i++){const a=seq[i].getBoundingClientRect(),b=seq[i+1].getBoundingClientRect();let x,y,rot;
     const ov=(p,q,r,t)=>Math.max(0,Math.min(q,t)-Math.max(p,r));

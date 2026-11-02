@@ -10,7 +10,7 @@ subprocess.run(['/usr/bin/python3','warp.py',str(X0),str(Y0),str(X1),str(Y1),str
 pc=lambda x,y,w,h:[round((x-X0)/(X1-X0)*100,3),round((y-Y0)/(Y1-Y0)*100,3),round(w/(X1-X0)*100,3),round(h/(Y1-Y0)*100,3)]
 G['r']={'ar':[X1-X0,Y1-Y0],'img':'board-r.jpg','chip':[pc(0,(i-1)*P,1000,Hc) for i in range(4)],'win':[pc(wx0,(i-1)*P+wy0,wx1-wx0,wh) for i in range(4)]}
 # F: E2 master crop [200,110,2270,2270]
-S=Image.open('../board6/img/e2c.jpg').convert('RGB');cx,cy,cw=200,110,2270
+S=Image.open('../board6/img/e2c.jpg').convert('RGB');cx,cy,cw=80,60,2720
 S.crop((cx,cy,cx+cw,cy+cw)).resize((OW,OW),Image.LANCZOS).save('img/board-f.jpg',quality=88)
 cq=[[[1341,961],[2241,961],[2241,1325],[1341,1325]],[[1344,1499],[2244,1499],[2244,1863],[1344,1863]],[[1343,2043],[2243,2043],[2243,2407],[1343,2407]]]
 wq=[[[368,400],[684,404],[680,724],[364,720]],[[364,972],[680,972],[676,1296],[364,1292]],[[368,1540],[684,1544],[680,1864],[364,1864]],[[368,2084],[684,2088],[676,2412],[364,2408]]]

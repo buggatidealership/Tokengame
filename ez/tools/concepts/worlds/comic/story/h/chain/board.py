@@ -6,6 +6,7 @@ F=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',26);
 NAME={'now':('Today (live)','rounds6 B: the season wafer, then 8 dies'),
  'A':('A · the hash chain','blocks on the board, a gold link in every gap; the chain snakes'),'B':('B · the block explorer','the latest block in full, then rows: height, round, hash'),
  'C':('C · the bus','one gold line; every block hangs on it; the hash it hands up is printed on the line'),'D':('D · the open block','block 81 already open on top, pointing at 80; hashes engraved on each slab'),
+ 'E':('E · A + the open block','A\'s chain with D\'s open block hung on block 80 (my pick)'),'E+':('E · after Show more','desktop 10 (two rows), phones 8'),
  'A+':('A · after Show more','desktop 10 (two rows), phones 8'),'B+':('B · after Show more','desktop 8 (rows of two), phones 8'),'C+':('C · after Show more','desktop: a second bus of 8'),'D+':('D · after Show more','desktop 10 (two rows of five), phones 8')}
 def save(B,out):
   p=OUT+out;B.save(p,optimize=True)
@@ -25,11 +26,11 @@ def board(ids,W,k,out,title,cols=None):
       x=g+c*(cw+g);n=NAME[ids[j]];d.text((x,y),n[0],font=F,fill='#f8f0d9');d.text((x,y+36),n[1],font=f2,fill='#c9bfa6');B.paste(ims[j],(x,y+hd-22))
     y+=rh[r]+hd+g
   save(B,out)
-board(['A','B','C','D'],390,.62,'x2p-h28-chain-390.png','chain · 390px · the latest block, six, Show 8 more · every hash is SHA-256 of the round + the hash before it')
-board(['A','B','C','D'],320,.75,'x2p-h28-chain-320.png','chain · 320px (ties keep the marks, names in the screen-reader label; small blocks drop the company logo)')
-board(['A','B','C','D'],1280,.5,'x2p-h28-chain-1280.png','chain · 1280px · no dead space beside or under the latest block',cols=2)
-board(['A+','B+','C+','D+'],1280,.42,'x2p-h28-chain-1280-more.png','chain · 1280px after one tap on Show more',cols=2)
-board(['A+','B+','C+','D+'],390,.5,'x2p-h28-chain-390-more.png','chain · 390px after one tap: eight more')
+board(['E','A','B','C','D'],390,.55,'x2p-h28-chain-390.png','chain · 390px · the latest block, six, Show 8 more · every hash is SHA-256 of the round + the hash before it')
+board(['E','A','B','C','D'],320,.7,'x2p-h28-chain-320.png','chain · 320px (ties keep the marks, names in the screen-reader label; small blocks drop the company logo)')
+board(['E','A','B','C','D'],1280,.5,'x2p-h28-chain-1280.png','chain · 1280px · no dead space beside or under the latest block',cols=2)
+board(['E+','B+','C+','D+'],1280,.42,'x2p-h28-chain-1280-more.png','chain · 1280px after one tap on Show more',cols=2)
+board(['E+','B+','C+','D+'],390,.5,'x2p-h28-chain-390-more.png','chain · 390px after one tap: eight more')
 rows=[]
 for t in 'ABCD':
   rows.append([Image.open(f'{S}/tile-{t}-{n}.png') for n in ('78','79','none')])
