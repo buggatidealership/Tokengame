@@ -8,7 +8,10 @@ S.GD='#ffd21f';S.AMB='#ffb21a';S.UP='#3ee07f';S.DN='#ff5148';S.CR='#f8f0d9';S.DI
 /* the models' colours as lit on a display; the hit-rate leader (arank[0]) in gold, as on the live scope */
 S.INK={GPT:'#5ff0b4',KIMI:'#7fb6ff',CLAUDE:'#ff9d6b',GROK:'#f4efe4'};
 S.NM=P5.NM;S.esc=P5.esc;S.t=P5.t;S.k$=P5.k$;S.$f=P5.$f;S.pc=P5.pc;
-S.range=n=>({lo:Math.ceil(n/2-.98*Math.sqrt(n)),hi:Math.floor(n/2+.98*Math.sqrt(n))});
+/* the coin's range by the binomial (brief): the narrowest symmetric count range a fair coin lands in at least 95 times in 100
+   over n trades (n=72: 28 to 44, 95.6%; n=80: 31 to 49, 96.7%). The live scope's normal approximation gives 32 to 48 at 80 (94.5%). */
+const LG=[0];for(let i=1;i<=2000;i++)LG[i]=LG[i-1]+Math.log(i);const pmf=(n,k)=>Math.exp(LG[n]-LG[k]-LG[n-k]-n*Math.LN2);
+S.range=n=>{let c=0,lo=0;while(lo<n/2&&c+pmf(n,lo)<=.025){c+=pmf(n,lo);lo++}return {lo,hi:n-lo}};
 S.rows=X=>X.arank.map(m=>{const a=X.A[m],r=S.range(a.t);return {m,W:a.W,L:a.L,t:a.t,hr:a.hr,lo:r.lo,hi:r.hi,beyond:a.out>0,below:a.out<0}});
 S.col=(X,m,rank)=>m===(rank||X.arank)[0]?S.GD:S.INK[m];
 /* the approved line (sol6 D): one front-loaded clause, the sample inside the sentence, the coin in the same units */
@@ -76,8 +79,8 @@ S.scope=function(X,V,g,o){o=o||{};const t=S.t,ac=V.view==='acc',w=X.W[V.win];let
   const ry=g3-rowsH+lab*.2,cw=(g2-g0-24)/rank.length;
   rank.forEach((m,i)=>{const x=g0+12+i*cw+cw/2,c=cl(m);let l1,l2,c2=c;
     if(ac){const a=X.A[m];l1=S.NM[m].toUpperCase()+(o.cal?'':' '+S.pc(a.hr));l2=o.cal?'?–?':a.W+'-'+a.L}
-    else{const v=w.tot[m];l1=S.NM[m].toUpperCase();l2=S.k$(v).replace('.0K','K');c2=v>0?S.UP:v<0?S.DN:S.CR}
-    if(o.oneLine){const nm=S.NM[m].toUpperCase();lit+=t(x,g3-rowsH/2+lab*.36,lab,'',{a:'middle',raw:`<tspan fill="${c}" font-size="${sm}">${nm}</tspan> <tspan fill="${c2}">${l2}</tspan>`})}
+    else{const v=w.tot[m];l1=S.NM[m].toUpperCase();l2=n?S.k$(v).replace('.0K','K'):'–';c2=!n?S.CR:v>0?S.UP:v<0?S.DN:S.CR}
+    if(o.oneLine&&ac){const nm=S.NM[m].toUpperCase();lit+=t(x,g3-rowsH/2+lab*.36,lab,'',{a:'middle',raw:`<tspan fill="${c}" font-size="${sm}">${nm}</tspan> <tspan fill="${c2}">${l2}</tspan>`})}
     else lit+=t(x,ry+sm*.9,sm,l1,{a:'middle',c})+t(x,ry+sm*.9+lab+4,lab,l2,{a:'middle',c:c2})});
   return {lit,under,over}};
 /* the view switch as page buttons (take A's pill; take C's tabs reuse the markup with another class) */

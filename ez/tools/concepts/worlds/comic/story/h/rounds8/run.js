@@ -9,10 +9,10 @@ const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
   const er=[];p.on('pageerror',e=>er.push(e.message));p.on('console',m=>{if(m.type()==='error')er.push('c:'+m.text().slice(0,140))});
   await p.goto('http://127.0.0.1:8973/v46-live-x2plus.html',{waitUntil:'load',timeout:150000});
   await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});await p.waitForTimeout(800);
-  if(id!=='now'){const [t,h]=id.split('-');await p.addStyleTag({content:rd('_r8.css').replace(/__IM__/g,IM)});await p.evaluate(([t,h])=>{window.__R8=t;window.__R8H=h},[t,h]);await p.addScriptTag({content:rd('_r8.js')});await p.waitForFunction(()=>document.querySelector('.r8'),null,{timeout:30000})}
+  if(id!=='now'){const [t,h0]=id.split('-'),h=h0.replace('+','');await p.addStyleTag({content:rd('_r8.css').replace(/__IM__/g,IM)});await p.evaluate(([t,h])=>{window.__R8=t;window.__R8H=h},[t,h]);await p.addScriptTag({content:rd('_r8.js')});await p.waitForFunction(()=>document.querySelector('.r8'),null,{timeout:30000})}
   await p.waitForFunction(()=>document.fonts.status==='loaded');
   await p.evaluate(()=>{document.querySelectorAll('#record img').forEach(i=>{i.loading='eager'});document.getElementById('record').scrollIntoView()});
-  await p.waitForTimeout(500);await p.evaluate(()=>window.__r8&&window.__r8.render());
+  await p.waitForTimeout(500);await p.evaluate(()=>window.__r8&&window.__r8.render());if(id.includes('+'))await p.evaluate(()=>document.querySelector('.r8 .r8-more').click());
   await p.waitForFunction(()=>[...document.querySelectorAll('#record .r8 img')].every(i=>i.complete),null,{timeout:60000}).catch(()=>{});await p.evaluate(()=>Promise.all([...document.querySelectorAll('#record .r8 img')].map(i=>i.decode().catch(()=>{}))));await p.waitForTimeout(1500);
   await p.addStyleTag({content:'body>div:has(>.x2p-cw-bug){display:none!important}'});await p.evaluate(()=>{[...document.body.querySelectorAll('*')].forEach(x=>{const s=getComputedStyle(x).position;if(s==='fixed'||s==='sticky')x.style.setProperty('display','none','important')})});
   const box=await p.evaluate(()=>{const s=document.querySelector('#record .r8')||document.querySelector('#record .r6'),r=s.getBoundingClientRect();return {y:r.top+scrollY-12,h:r.height+24}});
@@ -26,7 +26,7 @@ const rd=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
     R.querySelectorAll('a.r8-it,a.r8-hero,.r8-more').forEach(a=>{const ar=a.getBoundingClientRect();a.querySelectorAll('b,span,em,i').forEach(e=>{const r=e.getBoundingClientRect();if(!r.width)return;if(r.right>ar.right+1.5||r.left<ar.left-1.5||r.bottom>ar.bottom+1.5)out.over.push((e.textContent||e.className).slice(0,24)+' '+Math.round(Math.max(r.right-ar.right,ar.left-r.left,r.bottom-ar.bottom)))})});
     const seen=new Set();R.querySelectorAll('img').forEach(i=>{const r=i.getBoundingClientRect(),k=i.src.split('/').pop().replace(/r\d+/,'rN');if(!r.width||seen.has(k))return;seen.add(k);out.imgs.push({f:k,cssW:+r.width.toFixed(1),srcW:i.naturalWidth,x3:i.naturalWidth>=r.width*3})});
     out.dead=[...R.querySelectorAll('a.r8-it')].slice(0,1).map(a=>Math.round(a.getBoundingClientRect().height));
-    out.links=R.querySelectorAll('a').length;out.hero=window.__r8&&window.__r8.hero;out.top=window.__r8&&window.__r8.top&&{n:window.__r8.top.r.n,v:window.__r8.top.v,who:window.__r8.top.who};
+    out.links=R.querySelectorAll('a').length;out.items=R.querySelectorAll('.r8-list>li').length;out.moreTxt=(R.querySelector('.r8-more')||{}).textContent;out.hero=window.__r8&&window.__r8.hero;out.top=window.__r8&&window.__r8.top&&{n:window.__r8.top.r.n,v:window.__r8.top.v,who:window.__r8.top.who};
     return out});
   if(id!=='now'&&W===390&&/-L/.test(id)){const a=await p.$('.r8 a[href^="#/round/"]');if(a){const href=await a.getAttribute('href');await a.click({force:true});await p.waitForTimeout(1500);m.tap={href,hash:await p.evaluate(()=>location.hash),slab:await p.evaluate(()=>{const e=document.getElementById('x2pRm');return !!e&&getComputedStyle(e).display!=='none'&&e.getBoundingClientRect().height>50})}}}
   m.errors=er;res[W+'-'+id]=m;console.log(W,id,JSON.stringify(m));await ctx.close()}

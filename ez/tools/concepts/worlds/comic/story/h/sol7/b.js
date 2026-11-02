@@ -14,14 +14,13 @@ function keys(V){let lit='',items=[];[['acc','HIT RATE'],['pnl','P&L']].forEach(
   items.push({k:'v',val:v,x:x0,y:y0,w:x1-x0,h:y1-y0,label:l==='HIT RATE'?'Hit rate':'P&L',on})});return {lit,items}}
 P5.take={id:'s7b',html(X,V){const c=cal&&V.view==='acc',r=S.rows(X),T=Math.max(...r.map(x=>x.t)),rg=S.range(T);
   return `<div class="p5-bleed">${P5.head('Smart or','lucky?')}
-  ${c?S.kick(1,'Where a coin lands'):S.kick(2,V.view==='acc'?'Where the four landed':'Who made money')}
-  <div class="s7-stk"><div class="s7-st s7-b2"></div></div>
-  <p class="s7-ln">${c?`<b>A coin flip</b> goes the right way half the time. Over ${T} trades it lands <b>${rg.lo} to ${rg.hi}</b>: anywhere in the gold.`:S.line(X,V)}</p>${S.table(X,V)}</div>`},
- draw(box,X,V){const c=cal&&V.view==='acc',st=box.querySelector('.s7-b2'),s=S.scope(X,V,GL,{sm:30,lab:36,padL:84,padT:22,oneLine:true,rowsH:58,cal:c,zoneLabel:c?'A COIN LANDS IN THE GOLD':undefined}),k=keys(V);
+  <div class="s7-stk"><div class="s7-sty">${c?S.kick(1,'Where a coin lands'):S.kick(2,V.view==='acc'?'Where the four landed':'Who made money')}<div class="s7-st s7-b2"></div>
+  <p class="s7-ln">${c?`<b>A coin flip</b> goes the right way half the time. Over ${T} trades it lands <b>${rg.lo} to ${rg.hi}</b>: anywhere in the gold.`:S.line(X,V)}</p></div><i class="s7-sp" aria-hidden="true"></i></div>${S.table(X,V)}</div>`},
+ draw(box,X,V){const c=cal&&V.view==='acc',st=box.querySelector('.s7-b2'),s=S.scope(X,V,GL,{sm:30,lab:36,padL:84,padT:22,oneLine:true,rowsH:V.view==='acc'?58:undefined,cal:c,zoneLabel:c?'A COIN LANDS IN THE GOLD':undefined}),k=keys(V);
   S.stage(st,{img:IMG,ar:AR,crop:CROP,lit:s.lit+k.lit,under:s.under,over:s.over,glass:[[GL[0],GL[1],GL[2],GL[3],16]].concat(K.map(q=>[q[0],q[1],q[2],q[3],8])),glare:.3,
    label:c?'Scope, calibrated on a coin: where a coin’s hit rate lands, round by round':V.view==='acc'?'Scope: each AI’s hit rate round by round against where a coin lands':'Scope: P&L if you’d bet $100K on every trade, the season'});
   st.insertAdjacentHTML('beforeend',P5.hits(CROP,k.items));
   /* the page turn: past the scope's middle, the lines are drawn in */
-  if(!io&&!S.noScroll){const wr=box.querySelector('.s7-stk');const f=()=>{if(S.noScroll)return;const r=box.querySelector('.s7-stk').getBoundingClientRect(),now=r.top< -0.18*innerHeight;if(now===cal){cal=!now;P5.cur.draw()}};io=1;addEventListener('scroll',f,{passive:true})}}};
+  if(!io&&!S.noScroll){const wr=box.querySelector('.s7-stk');const f=()=>{if(S.noScroll)return;const r=box.querySelector('.s7-stk').getBoundingClientRect(),st0=parseFloat(getComputedStyle(box.querySelector('.s7-sty')).top)||0,now=r.top<st0-0.21*innerHeight;if(now===cal){cal=!now;P5.cur.draw()}};io=1;addEventListener('scroll',f,{passive:true})}}};
 S.setCal=v=>{S.noScroll=true;document.querySelector('#learn').classList.add('s7-still');cal=v;P5.cur&&P5.cur.draw()};
 })();
