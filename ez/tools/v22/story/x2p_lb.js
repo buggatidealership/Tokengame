@@ -153,7 +153,8 @@ function build(host,d){
   const lanes=host.querySelector('.xr-lanes'),tws=host.querySelector('.xr-tws'),pits=host.querySelector('.xr-pits');
   function draw(anim){const o=order(),s=scale(),w=WS[wk],hit=mt==='hit';
     host.dataset.mt=mt;host.dataset.wk=wk;
-    host.querySelector('.xr-ax').innerHTML=s.ticks.map(t=>`<span class="xr-tk${t===s.start?' xr-t0':''}" style="left:${X(t,s).toFixed(2)}%">${s.fmt(t)}</span>`).join('')+
+    const i0=s.ticks.indexOf(s.start);   /* on a narrow board every other label goes quiet (its line stays), so the figures never touch */
+    host.querySelector('.xr-ax').innerHTML=s.ticks.map((t,i)=>`<span class="xr-tk${t===s.start?' xr-t0':''}${(i-i0)%2?' xr-tkh':''}" style="left:${X(t,s).toFixed(2)}%">${s.fmt(t)}</span>`).join('')+
       `<i class="xr-sl" style="left:${X(s.start,s).toFixed(2)}%"></i>`;
     flip(lanes,o,anim);flip(tws,o,anim);flip(pits,o,anim);
     host.querySelector('.xr-gh').textContent=hit?'Hit rate':'Gap';host.querySelector('.xr-hh').textContent=hit?'P&L':'Hit';

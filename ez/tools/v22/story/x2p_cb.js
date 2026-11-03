@@ -38,7 +38,7 @@ function pending(n){var u=null;(window.PENDING||[]).forEach(function(q){if(q.n==
 function trade(r){return '<span class="cb-tr"><i>'+(r.up?'Long':'Short')+'</i> <b>'+pct(r.v)+'</b></span>'}
 function pf(r,i){return '<span class="cb-pf '+(r.ok?'p':'f')+'" style="--rot:'+[-6,-3,-7,-4][i%4]+'deg">'+(r.ok?'PASS':'FAIL')+'</span>'}
 function move(a){return '<b class="cb-mv '+(a<0?'dn':'up')+'"><span aria-hidden="true">'+(a<0?'−':'+')+'</span><span class="sr">'+(a<0?'Down ':'Up ')+'</span>'+Math.abs(a).toFixed(2)+'%</b>'}
-function build(d,fb){var G=d.k==='g',h='<div class="cb-p">';
+function build(d,fb){var G=d.k==='g',h='<div class="cb-p"><i class="cb-sh" aria-hidden="true"></i>';
   h+='<i class="cb-g" style="--g:.6"></i><div class="cb-ti cb-np"><small class="cb-fit">Season 1 · Round '+d.n+'</small><b class="cb-co cb-fit">'+esc(d.co)+' <span class="cb-tk">('+esc(d.t)+')</span></b></div><i class="cb-g" style="--g:1.4"></i>';
   h+='<ol class="cb-rows" aria-label="'+(G?'The trades, ranked by the close':'The trades, as filed')+'">';
   d.rows.forEach(function(r,i){if(i)h+='<i class="cb-g cb-gr" aria-hidden="true"></i>';
@@ -48,7 +48,7 @@ function build(d,fb){var G=d.k==='g',h='<div class="cb-p">';
       '<span class="cb-wr">'+(G?pf(r,i):'<span class="sr">Not graded yet</span>')+'</span></li>'});
   h+='</ol><i class="cb-g" style="--g:1"></i>';
   h+='<div class="cb-mw"><span class="cb-ml"><small class="cb-fit">'+esc(d.co)+' at the close</small>'+(G?move(d.a):'<b class="cb-mv cb-q"></b>')+'</span>'+
-    (G?(d.W.length?'<span class="cb-wn cb-fit">'+CROWN+'<em>'+(d.W.length>1?'Winners':'Winner')+'</em> <b>'+d.W.map(function(m){return NM[m]}).join(' & ')+'</b></span>':
+    (G?(d.W.length?'<span class="cb-wn cb-fit">'+CROWN+'<em>'+(d.W.length>1?'Winners':'Winner')+'</em> '+d.W.map(function(m){return '<b style="--wc:'+MC[m]+'">'+NM[m]+'</b>'}).join(' <em>&amp;</em> ')+'</span>':
       '<span class="cb-wn cb-fit none"><em>No winner</em>'+(d.right?'':' <small>all '+d.rows.length+' wrong way</small>')+'</span>'):'<span class="cb-wn cb-fit cb-cd"><em></em></span>')+'</div>';
   h+='<i class="cb-g" style="--g:1"></i><div class="cb-bt"><div class="cb-dt cb-np"><small class="cb-fit">Trades filed</small><b class="cb-fit">'+d.filed+'</b></div><div class="cb-dt cb-np"><small class="cb-fit">'+(G?'Graded on':'Final grade')+'</small><b class="cb-fit">'+d.graded+'</b></div>'+
     '<span class="cb-st'+(G?'':' cb-die')+'" role="img" aria-label="'+(G?'Struck with the EZ. mark: graded by the market close':'The EZ. mark is struck once the market closes')+'"></span></div><i class="cb-g" style="--g:.5"></i>';
@@ -56,7 +56,7 @@ function build(d,fb){var G=d.k==='g',h='<div class="cb-p">';
   return h+'</div>'}
 /* one line each: the type steps down to fit its plate, never below the 8 px floor (on screen, through the view's zoom) */
 function fit(o){var z=+o.style.getPropertyValue('--cbz')||1,fl=8.2/z;
-  [].forEach.call(o.querySelectorAll('.cb-fit'),function(e){e.style.fontSize='';if(!e.clientWidth)return;var n=0;
+  [].forEach.call(o.querySelectorAll('.cb-fit'),function(e){e.style.fontSize='';if(!e.clientWidth||getComputedStyle(e).flexWrap==='wrap')return;var n=0;
     while(e.scrollWidth>e.clientWidth+.5&&n++<40){var f=parseFloat(getComputedStyle(e).fontSize),nf=Math.max(fl,f*Math.max(.9,e.clientWidth/e.scrollWidth));if(nf>=f-.01)break;e.style.fontSize=nf+'px'}})}
 function zoomOf(c){var z=c.closest('.x2p-rmz');return z&&parseFloat(z.style.zoom)||1}
 function countdown(o,fin){var src=fin.querySelector('.xc-pend .xc-out b'),t=o.querySelector('.cb-cd em');if(!t)return;
@@ -64,7 +64,7 @@ function countdown(o,fin){var src=fin.querySelector('.xc-pend .xc-out b'),t=o.qu
 function mount(){var rm=D.getElementById('x2pRm');if(!rm)return;var c=rm.querySelector('.card[data-n]');if(!c)return;var n=+c.getAttribute('data-n');
   var k=c.getAttribute('data-k'),d=k==='g'?graded(n):k==='p'?pending(n):null;if(!d)return;
   var fin=c.querySelector(k==='g'?'.face.back .fin':'.face.front .fin');if(!fin||fin.querySelector(':scope>.cb'))return;
-  var fbt=fin.querySelector('.xc [data-flip]'),lab=fbt?fbt.textContent.replace(/[↻\s]+$/,'').trim():'';
+  var fbt=fin.querySelector('.xc [data-flip]'),lab=fbt?fbt.textContent.replace(/↻/g,'').trim():'';
   var o=D.createElement('div');o.className='cb cb-'+d.k+(window.__x2pCbStamp==='steel'?' cb-steel':'');o.style.setProperty('--cbz',zoomOf(c));
   o.innerHTML=build(d,fbt?(lab||'See the film'):'');fin.insertBefore(o,fin.firstChild);fin.classList.add('cb-on');
   if(d.k==='p'){countdown(o,fin);o.__cd=setInterval(function(){if(!o.isConnected){clearInterval(o.__cd);return}countdown(o,fin)},30000)}
