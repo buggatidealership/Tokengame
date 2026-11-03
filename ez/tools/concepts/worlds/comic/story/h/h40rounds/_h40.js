@@ -113,6 +113,9 @@ if(T==='C'){
    `<div class="pc-line"><div class="pc-belt" tabindex="0" role="group" aria-label="${esc(`The line: every other graded round, newest first, ${belt.length} rounds`)}"><div class="pc-trk">${html}</div></div>`+
    `<div class="pc-nav">${plate('‹ Newer','pc-l','button')}${plate(`${G.length} graded · newest first`,'pc-c')}${plate('Older ›','pc-r','button')}</div></div>`;
   const B=()=>root.querySelector('.pc-belt');
+  /* the press strikes once when it comes into view: the slab takes the blow and its grade is printed (the close grades the round) */
+  after=()=>{const pr=root.querySelector('.pc-press');if(pr.dataset.io||matchMedia('(prefers-reduced-motion: reduce)').matches)return;pr.dataset.io=1;pr.classList.add('pc-wait');
+    const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting&&e.intersectionRatio>.6)){io.disconnect();setTimeout(()=>{pr.classList.remove('pc-wait');pr.classList.add('pc-hit')},500)}},{threshold:[.6]});io.observe(pr)};
   root.addEventListener('click',e=>{const j=e.target.closest&&e.target.closest('.pc-j[data-n]');if(j){const it=root.querySelector(`.pc-belt .vt-it[data-n="${j.dataset.n}"]`);if(!it)return;const b=B();
       b.scrollTo({left:it.offsetLeft-(b.clientWidth-it.offsetWidth)/2,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});root.querySelectorAll('.vt-lift').forEach(x=>x.classList.remove('vt-lift'));setTimeout(()=>{place(it);it.classList.add('vt-lift')},450);return}
     const n=e.target.closest&&e.target.closest('.pc-l,.pc-r');if(n){const b=B();b.scrollBy({left:(n.classList.contains('pc-r')?1:-1)*b.clientWidth*.8,behavior:'smooth'})}});
@@ -155,12 +158,12 @@ if(T==='E'){
   root.addEventListener('click',e=>{const m=e.target.closest&&e.target.closest('.pe-mon[data-n]');if(m){tune(+m.dataset.n);return}
     const a=e.target.closest&&e.target.closest('.pe-all');if(a){shown=!shown;root.querySelector('.pe-fg').innerHTML=floor();a.querySelector('b').textContent=shown?'Show fewer':`Show all ${G.length}`;fit(root.querySelector('.pe-fg'))}});
   /* the nameplate: both lines fit the plate's face, never under 8px */
-  const shrink=(e,box,mn)=>{e.style.fontSize='';let f=parseFloat(getComputedStyle(e).fontSize),g=0;while(e.getBoundingClientRect().width>box-2&&f>mn&&g++<60){f-=.25;e.style.fontSize=f+'px'}return e.getBoundingClientRect().width<=box-2};
+  const shrink=(e,box,mn)=>{e.style.fontSize='';let f=parseFloat(getComputedStyle(e).fontSize),g=0;while(e.getBoundingClientRect().width>box-5&&f>mn&&g++<60){f-=.25;e.style.fontSize=f+'px'}return e.getBoundingClientRect().width<=box-5};
   /* the nameplate: a line that does not fit at 8px takes its short form (data-s) */
   const fitNp=()=>{const np=root.querySelector('.pe-np');if(!np)return;['.pe-l1','.pe-l2'].forEach(s=>{const e=np.querySelector(s);if(e.dataset.l)e.innerHTML=e.dataset.l;if(!shrink(e,np.clientWidth,8)&&e.dataset.s){e.dataset.l=e.innerHTML;e.innerHTML=e.dataset.s;shrink(e,np.clientWidth,8)}})};
   /* the monitor plates: the name and grade step down together to 8px; if they still do not fit, the grade leaves the plate (it is in the tag and the big screen) */
-  const fitMl=()=>root.querySelectorAll('.pe-ml').forEach(p=>{const bs=[...p.querySelectorAll('b')];p.classList.remove('pe-ng');bs.forEach(b=>b.style.fontSize='');const w=()=>bs.reduce((a,b)=>a+b.getBoundingClientRect().width,0)+3;
-    let f=parseFloat(getComputedStyle(bs[0]).fontSize),g=0;while(w()>p.clientWidth-2&&f>8&&g++<60){f-=.25;bs.forEach((b,i)=>b.style.fontSize=(i?f*1.12:f)+'px')}if(w()>p.clientWidth-2)p.classList.add('pe-ng')});
+  const fitMl=()=>root.querySelectorAll('.pe-ml').forEach(p=>{const bs=[...p.querySelectorAll('b')];p.classList.remove('pe-ng');bs.forEach(b=>b.style.fontSize='');const w=()=>bs.reduce((a,b)=>a+b.getBoundingClientRect().width,0)+6;
+    let f=parseFloat(getComputedStyle(bs[0]).fontSize),g=0;while(w()>p.clientWidth-2&&f>8&&g++<60){f-=.25;bs.forEach(b=>b.style.fontSize=f+'px')}if(w()>p.clientWidth-2)p.classList.add('pe-ng')});
   after=()=>{fitNp();fitMl();play()};
 }
 sec.classList.add('h40-sec');sec.appendChild(root);
@@ -170,7 +173,7 @@ const ink=el=>{const rs=[],tw=D.createTreeWalker(el,NodeFilter.SHOW_TEXT);let n;
 function fitOne(lb){const nmE=lb.querySelector('.vt-nm'),tk=lb.querySelector('.vt-tk'),rc=lb.querySelector('.vt-r');if(!nmE||!lb.offsetWidth)return;
   nmE.style.fontSize='';lb.classList.remove('vt-w2','vt-nt','vt-clip');
   const R=ink(rc),LR=lb.getBoundingClientRect(),lim=e=>Math.min(R?R.l-2:LR.right,LR.right-1,e.getBoundingClientRect().right+.5),over=e=>{const I=ink(e);return I?I.r-lim(e):0};
-  const vfit=()=>{const I=ink(lb.querySelector('.vt-l'));return !I||(I.b<=LR.bottom+.5&&I.t>=LR.top-.5)};
+  const vfit=()=>{const I=ink(lb.querySelector('.vt-l'));return !I||(I.b<=LR.bottom-.5&&I.t>=LR.top+.5)};
   const f0=parseFloat(getComputedStyle(nmE).fontSize);let f=f0,g=0;
   while((over(nmE)>0||!vfit())&&f>8&&g++<60){f=Math.max(8,f-.25);nmE.style.fontSize=f+'px'}
   if(over(nmE)>0||!vfit()){lb.classList.add('vt-w2');f=f0;nmE.style.fontSize=f+'px';g=0;while((over(nmE)>0||!vfit())&&f>8&&g++<60){f=Math.max(8,f-.25);nmE.style.fontSize=f+'px'}if(over(nmE)>0||!vfit())lb.classList.add('vt-clip')}

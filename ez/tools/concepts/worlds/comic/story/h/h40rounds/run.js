@@ -36,7 +36,9 @@ const css=fs.readFileSync(__dirname+'/_h40.css','utf8'),js=fs.readFileSync(__dir
    // the ink box of a text node: the glyphs' own extent (canvas metrics on the element's font at the node's baseline), not the line box
    const cv=document.createElement('canvas').getContext('2d');
    const inkOf=n=>{const v=n.nodeValue,i0=v.search(/\S/),i1=v.length-(v.length-v.trimEnd().length);const g=document.createRange();g.setStart(n,i0);g.setEnd(n,i1);const rs=[...g.getClientRects()].filter(r=>r.width>0);if(!rs.length)return null;
-     const e=n.parentElement,cs=getComputedStyle(e);if(rs.length>1)return {l:Math.min(...rs.map(r=>r.left)),r:Math.max(...rs.map(r=>r.right)),t:Math.min(...rs.map(r=>r.top)),b:Math.max(...rs.map(r=>r.bottom)),lines:rs.length};
+     const e=n.parentElement,cs=getComputedStyle(e);cv.font=`${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+     if(rs.length>1){let t=v.slice(i0,i1);if(cs.textTransform==='uppercase')t=t.toUpperCase();const m=cv.measureText(t),fa=m.fontBoundingBoxAscent,fd=m.fontBoundingBoxDescent,k=rs[0].height/(fa+fd);
+       return {l:Math.min(...rs.map(r=>r.left)),r:Math.max(...rs.map(r=>r.right)),t:rs[0].top+(fa-m.actualBoundingBoxAscent)*k,b:rs[rs.length-1].bottom-(fd-m.actualBoundingBoxDescent)*k,lines:rs.length}}
      const r=rs[0];let t=v.slice(i0,i1);if(cs.textTransform==='uppercase')t=t.toUpperCase();cv.font=`${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;cv.letterSpacing=cs.letterSpacing==='normal'?'0px':cs.letterSpacing;
      const m=cv.measureText(t),fa=m.fontBoundingBoxAscent,fd=m.fontBoundingBoxDescent,k=r.height/(fa+fd),base=r.top+fa*k;
      return {l:r.left-m.actualBoundingBoxLeft,r:r.left+m.actualBoundingBoxRight,t:base-m.actualBoundingBoxAscent,b:base+m.actualBoundingBoxDescent,lines:1}};
@@ -51,8 +53,8 @@ const css=fs.readFileSync(__dirname+'/_h40.css','utf8'),js=fs.readFileSync(__dir
    bySurf.forEach((v,sf)=>{const rr=sf.getBoundingClientRect(),U=v.u.reduce((a,u)=>({l:Math.min(a.l,u.l),r:Math.max(a.r,u.r),t:Math.min(a.t,u.t),b:Math.max(a.b,u.b)}),{l:1e9,r:-1e9,t:1e9,b:-1e9});
     if(SURF[v.i][3]){nc++;let V=U;sf.querySelectorAll('img').forEach(im=>{if(!vis(im))return;const q=im.getBoundingClientRect();V={l:Math.min(V.l,q.left),r:Math.max(V.r,q.right),t:Math.min(V.t,q.top),b:Math.max(V.b,q.bottom)}});
 const dx=(V.l+V.r)/2-(rr.left+rr.right)/2,dy=SURF[v.i][3]==='x'?0:(V.t+V.b)/2-(rr.top+rr.bottom)/2;if(Math.abs(dx)>1||Math.abs(dy)>1)o.offC.push(`${SURF[v.i][0]} "${sf.textContent.trim().slice(0,22)}" dx ${dx.toFixed(2)} dy ${dy.toFixed(2)}`)}
-    const d=Math.max(U.r-rr.right,rr.left-U.l,U.b-rr.bottom,rr.top-U.t);if(d>.5&&SURF[v.i][0]!=='.m7-hd'&&SURF[v.i][0]!=='.vt-tag')o.over.push(`${SURF[v.i][0]} "${sf.textContent.trim().slice(0,22)}" ${d.toFixed(2)}`)});
-   o.offScreen=[...new Set(texts.filter(t=>t.x<0).map(t=>t.t))].slice(0,6);bySurf.forEach((v,sf)=>v.u.forEach(u=>{if(u.l<-.5||u.r>innerWidth+.5)o.offScreen.push('ink off screen: '+sf.textContent.trim().slice(0,20))}));o.offScreen=[...new Set(o.offScreen)].slice(0,6);
+    const d=Math.max(U.r-rr.right,rr.left-U.l,U.b-rr.bottom,rr.top-U.t);if(d>.5&&SURF[v.i][0]!=='.m7-hd'&&SURF[v.i][0]!=='.vt-tag'){const side=['r','l','b','t'][[U.r-rr.right,rr.left-U.l,U.b-rr.bottom,rr.top-U.t].indexOf(d)];o.over.push(`${SURF[v.i][0]} "${sf.textContent.trim().slice(0,22)}" ${d.toFixed(2)} ${side}`)}});
+   o.offScreen=[...new Set(texts.filter(t=>t.x<0).map(t=>t.t))].slice(0,6);bySurf.forEach((v,sf)=>v.u.forEach(u=>{if(sf.closest('.pc-belt'))return;if(u.l<-.5||u.r>innerWidth+.5)o.offScreen.push('ink off screen: '+sf.textContent.trim().slice(0,20))}));o.offScreen=[...new Set(o.offScreen)].slice(0,6);
    o.centredSurfaces=nc;o.offC=o.offC.slice(0,12);o.over=o.over.slice(0,12);
    // slab label parts must not collide (the live rule)
    o.coll=[];R.querySelectorAll('.vt-lb').forEach(L=>{if(!vis(L))return;const lr=L.getBoundingClientRect();const parts=[...L.querySelectorAll('.vt-nm,.vt-tk,.vt-ds,.vt-gr')].filter(vis).map(e=>{const tn=[...e.childNodes].find(c=>c.nodeType===3&&c.nodeValue.trim());const u=tn&&inkOf(tn);return u?{e,u}:null}).filter(Boolean);
