@@ -9415,18 +9415,6 @@ html.u3-on #view.x2p-upv{padding-top:0}
 .u3-D .ud-sub{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-width:0}
 .u3-D .ud-tk{--fs:10.5px}
 .u3-D .ud-tk .ud-w>i{color:#d9cfb4}
-/* four trade flaps: the painted flap stretched by its edges, the AI's mark, LONG / SHORT and the size */
-.u3-D .ud-trs{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
-.u3-D .ud-tr{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;align-items:center;column-gap:3px;row-gap:4px;min-width:0;
- padding:5px 2px 6px 4px;border-style:solid;border-color:transparent;border-width:5px 4px;border-image:url(media/up-h39-flap.jpg) 26 fill/5px 4px stretch;border-radius:4px}
-.u3-D .ud-mk{width:14px;height:14px;display:block}
-.u3-D .ud-tv{grid-column:1/-1}
-.u3-D .ud-tw{font:400 11px/1 Anton,sans-serif;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;overflow:hidden;color:#f3ead2}
-.u3-D .ud-tv{font:400 17px/1 Anton,sans-serif;white-space:nowrap;color:#f3ead2;text-shadow:0 1px 0 #000}
-.u3-D .ud-up .ud-tw,.u3-D .ud-up .ud-tv{color:var(--up)}
-.u3-D .ud-dn .ud-tw,.u3-D .ud-dn .ud-tv{color:var(--dn)}
-.u3-D .ud-no .ud-tw{color:rgba(243,234,210,.5)}
-.u3-D .ud-no .ud-tv{color:rgba(243,234,210,.36)}
 /* the torn gutter between the two boards (the page's recipe, full bleed) */
 .u3-D .ud-tear{position:relative;display:block;pointer-events:none;width:100vw;height:46px;margin:48px 0 44px calc(50% - 50vw)}
 .u3-D .ud-tear>svg{position:absolute;left:0;top:0;display:block;overflow:visible}
@@ -9453,8 +9441,6 @@ html.u3-on #view.x2p-upv{padding-top:0}
 /* narrow phones: smaller flaps */
 @media (max-width:359px){
  .u3-D .ud-nm{--fs:13.5px}.u3-D .ud-big .ud-nm{--fs:16px}.u3-D .ud-li .ud-nm{--fs:11.5px}
- .u3-D .ud-tw{font-size:10px;letter-spacing:.03em}.u3-D .ud-tv{font-size:15px}.u3-D .ud-mk{width:11px;height:11px}.u3-D .ud-tr{column-gap:3px;padding:5px 3px 5px 4px}
- .u3-D .ud-trs{gap:3px}
 }
 @media (min-width:560px){.u3-D .ud-lis{display:grid;grid-template-columns:1fr 1fr;column-gap:18px}}
 @media (min-width:900px){
@@ -9475,13 +9461,54 @@ html.u3-on #view.x2p-upv{padding-top:0}
  .u3-D .ud-cap{font-size:16.5px}.u3-D .ud-cn{--fs:20px}
  .u3-D .ud-nm{--fs:19px}.u3-D .ud-tk{--fs:12.5px}.u3-D .ud-lg{width:42px;height:42px}
  .u3-D .ud-st,.u3-D .ud-when,.u3-D .ud-dl{font-size:13.5px}
- .u3-D .ud-mk{width:16px;height:16px}.u3-D .ud-tw{font-size:12.5px}.u3-D .ud-tv{font-size:21px}
  .u3-D .ud-big .ud-nm{--fs:23px}.u3-D .ud-big .ud-tk{--fs:14px}.u3-D .ud-big .ud-lg{width:64px;height:64px}
  .u3-D .ud-li .ud-nm{--fs:14.5px}.u3-D .ud-li .ud-tk{--fs:11px}.u3-D .ud-li .ud-lg{width:32px;height:32px}.u3-D .ud-li .ud-st{font-size:12.5px}
  .u3-D .ud-dp{font-size:19px}.u3-D .ud-pt{font-size:14px}
 }
 /* two big names side by side: their trade flaps stand on one line however the names wrap */
 @media (min-width:900px){.u3-D .ud-big{display:flex}.u3-D .ud-big .ud-a{flex:1;grid-template-rows:1fr auto;align-content:space-between}.u3-D .ud-big .ud-lg,.u3-D .ud-big .ud-id{align-self:center}}
+
+/* ===== H40 the trades on the flaps (owner, 2026-11-03: "They're not aligned. They're not symmetrical. They've been pasted on top of it...
+   not in the middle of the tiny module"). Four cells of one width on one grid, the same gaps, the same outer margins (the row's own edges).
+   Each cell, top to bottom, on rows of fixed height so every part shares one x (its cell's centre) and one baseline across cells and rows:
+   (1) the AI's mark and name printed on the enamel (Anton, the board's label type), (2) LONG / SHORT on a word flap (media/up-h39-flap.jpg),
+   (3) the size on a brass-framed split flap (media/up-h40-die.jpg: a clock die of the head painting, made symmetric about its split, so the
+   split sits at exactly half the face). Words and numbers are the flap's own type (Anton, as the clock's digits), centred on the face by
+   their cap height (text-box), and the split is drawn again over them: the line crosses the characters and the lower leaf is a touch darker.
+   SHORT and its −x% red, LONG and its +x% green; a trade not in yet is a blank word flap and a dash. ===== */
+.u3-D .ud-trs{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:6px;
+ --tlh:12px;--tls:10px;--tmk:11px;--twh:19px;--tws:10.5px;--tvh:42px;--tvs:20px}
+.u3-D .ud-tr{display:grid;grid-template-rows:var(--tlh) var(--twh) var(--tvh);row-gap:4px;min-width:0;justify-items:stretch}
+.u3-D .ud-tl{display:flex;align-items:center;justify-content:center;gap:3px;min-width:0;overflow:hidden;white-space:nowrap;
+ font:400 var(--tls)/1 Anton,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#cfc6ae}
+.u3-D .ud-tl .ud-mk{width:var(--tmk);height:var(--tmk);flex:none}
+.u3-D .ud-no .ud-tl{color:rgba(243,234,210,.46)}
+.u3-D .ud-tw,.u3-D .ud-tv{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden;border-style:solid;border-color:transparent}
+.u3-D .ud-tw{border-width:4px 4px;border-image:url(media/up-h39-flap.jpg) 26 fill/4px 4px stretch}
+.u3-D .ud-tv{border-width:5px;border-image:url(media/up-h40-die.jpg) 40 fill/5px stretch}
+.u3-D :is(.ud-tw,.ud-tv)>b{display:block;font-weight:400;font-family:Anton,sans-serif;line-height:1;white-space:nowrap;text-box:trim-both cap alphabetic;
+ color:#f3ead2;text-shadow:0 1px 0 #000;font-variant-numeric:tabular-nums}
+.u3-D .ud-tw>b{font-size:calc(var(--tws) * var(--twk,1));letter-spacing:.09em;padding-left:.09em;text-transform:uppercase}
+.u3-D .ud-tv>b{font-size:calc(var(--tvs) * var(--tvk,1))}
+.u3-D .ud-up :is(.ud-tw,.ud-tv)>b{color:var(--up)}
+.u3-D .ud-dn :is(.ud-tw,.ud-tv)>b{color:var(--dn)}
+/* a trade not in yet: the flap's dash card, a bar of the flap's cream ink centred on the face, cut in two by the split like any character */
+.u3-D .ud-tv>b.ud-dash{width:calc(var(--tvs) * .78);height:calc(var(--tvs) * .16);background:rgba(243,234,210,.6);border-radius:1px;box-shadow:0 1px 0 #000}
+/* the split, drawn over the type: a dark gap with a lit lip under it, exactly at half the face; the lower leaf in its own shade */
+.u3-D :is(.ud-tw,.ud-tv)::after{content:'';position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(to bottom,transparent calc(50% - .45px),rgba(0,0,0,.42) calc(50% - .45px),rgba(0,0,0,.42) calc(50% + .3px),rgba(214,200,160,.16) calc(50% + .3px),rgba(214,200,160,.16) calc(50% + .75px),rgba(0,0,0,.1) calc(50% + .75px),rgba(0,0,0,.16) 100%)}
+.u3-D .ud-tw::after{background:linear-gradient(to bottom,transparent calc(50% - .4px),rgba(0,0,0,.42) calc(50% - .4px),rgba(0,0,0,.42) calc(50% + .25px),rgba(214,200,160,.14) calc(50% + .25px),rgba(214,200,160,.14) calc(50% + .6px),rgba(0,0,0,.1) calc(50% + .6px),rgba(0,0,0,.16) 100%)}
+@media (max-width:359px){.u3-D .ud-trs{column-gap:4px;--tls:9px;--tmk:10px;--tws:9.5px;--twh:17px;--tvh:34px;--tvs:15.5px}}
+@media (min-width:900px){.u3-D .ud-trs{column-gap:8px;--tlh:15px;--tls:12px;--tmk:14px;--twh:24px;--tws:12.5px;--tvh:52px;--tvs:23px}
+ .u3-D .ud-tw{border-width:5px;border-image-width:5px}.u3-D .ud-tv{border-width:6px;border-image-width:6px}}
+/* the second board opens on "Upcoming predictions": its header plate, a brass day plate, then rows; a brass rail before the hot names */
+.u3-D .ud-sdh{margin:2px 0 2px}
+.u3-D .ud-soon .ud-rows+.ud-sdh{margin-top:8px;padding-top:12px;border-top:3px solid transparent;border-image:url(media/up-h39-rail.jpg) 100% 0 0 0 stretch}
+.u3-D .ud-soon{padding-bottom:10px;margin-bottom:6px;border-bottom:3px solid transparent;border-image:url(media/up-h39-rail.jpg) 0 0 100% 0 stretch}
+.u3-D .ud-hot>.ud-hp{margin-top:12px}
+/* two rows side by side (desktop): their trade cells stand on one line however the names and lines above them wrap */
+@media (min-width:900px){.u3-D .ud-rows .ud-row{display:flex}.u3-D .ud-rows .ud-row .ud-a{flex:1;grid-template-rows:1fr auto;align-content:space-between}
+ .u3-D .ud-rows .ud-row :is(.ud-lg,.ud-id){align-self:start}}
 
 /* ===== H38 LEADERBOARD (owner, 2026-11-03): take C "The race board" of round H35 lb, ported (x2p_lb.js). _m.css + c.css, with the
    classes renamed (xl- shared, xr- the race board; the site's own .up/.dn/.w/.l/.sr/.lbx leak into bare names), the page's own heading
@@ -9639,77 +9666,104 @@ html body main.wrap#view #x2pLbx h2.xr-pw::before,html body main.wrap#view #x2pL
  html.uf.x2p.x2d[data-theme="dark"] body header.top .nav:has(> a[data-r="leaderboard"]) a[aria-current="page"]{padding-right:9px!important}
 }
 
-/* x2p_cb (round H38): the round's card back as a blackened steel vault plate. Painted parts (Hedra, from the H36 plate) laid out by the
-   page: sizes in cqw of the plate's width (.cb is the size container), every text at least 8 px on screen (--f8 = 8.2px through the
-   view's zoom, --cbz, set by x2p_cb.js). Standard shape = the painting's own proportions; a short card squeezes the gaps; a tall card
-   (a 320 px phone) takes two-line nameplates and stacks the dates over the mark. */
+/* x2p_cb (round H40): the round's card back as a blackened steel vault plate carrying the certificate's own content and layout
+   (No., one nameplate per model: rank, logo, name, flag, PASS/FAIL, the trade; MARKET and the move; the dates; the EZ. mark).
+   Painted parts (Hedra, from the H36 plate) laid out by the page: sizes in cqw of the plate's width (.cb is the size container), every
+   text at least 8 px on screen (--f8 = 8.2px through the view's zoom, --cbz, set by x2p_cb.js).
+   How each text is made, as a plate maker would make it:
+   - engraved (.cb-np text: rank, name, Long/Short, No., the date plates): dark ink in the cut, a dark wall above, a light lip below;
+   - enamel-filled engraving (.cb-en: the trade's move, the market's move): red or green paint sitting in the cut, a darker band where
+     the cut's upper wall shades it, the wall and the lit lip drawn by drop-shadows (a text-shadow would show through clipped paint);
+   - hand-punched (.cb-pf: PASS / FAIL): one letter punch per letter, each at its own tilt and depth, the recess rubbed with paint
+     that wears off in places, a faint raised burr around each letter;
+   - engraved through the black enamel (.cb-ml MARKET, the countdown): the cut shows the bright metal under the enamel.
+   Vertical centring: every text box is trimmed to its capitals (text-box), and each plate's padding-top moves the centre onto the
+   painted face (np/title/date plates: the face runs 0.956 to -0.569 of the 2.9cqw bevel, so +.56cqw; the enamel window +.52cqw). */
 #x2pRm .fin.cb-on>.xc{visibility:hidden}
 html.x2p #x2pRm .card .fin>div.cb{visibility:visible!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;z-index:6;container:cb/size;display:flex!important;flex-direction:column!important;background:#0b0a0d;
   --f8:calc(8.2px / var(--cbz,1));--ink:#24211d;--ink2:#4a463f;--lip:0 .16cqw 0 rgba(255,255,255,.55),0 -.12cqw 0 rgba(0,0,0,.3);
+  --red:#a5261c;--red2:#6e140e;--grn:#1e6f3f;--grn2:#0f4426;
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .86 0 0 0 0 .84 0 0 0 0 .79 -14 0 0 0 4.7'/%3E%3C/filter%3E%3Crect width='64' height='64' filter='url(%23n)'/%3E%3C/svg%3E");
   font-family:Anton,Impact,sans-serif;font-weight:400;letter-spacing:0;text-transform:none;line-height:1;color:var(--ink);text-align:left}
 #x2pRm .cb *{box-sizing:border-box}
 #x2pRm .cb .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 #x2pRm .cb :is(b,em,i,small,span){font-style:normal}
+/* every text box is its capitals: centring a box centres the letters */
+#x2pRm .cb .cb-tb{display:block;text-box:trim-both cap alphabetic;line-height:1;white-space:nowrap}
 /* the steel shell: corners and rivets whole, the edges and the field stretch */
 html.x2p #x2pRm .cb .cb-p{position:relative!important;flex:1 1 auto!important;min-height:0;display:flex!important;flex-direction:column!important;padding:8cqw 7.6cqw 0;margin:0}
 html.x2p #x2pRm .cb .cb-sh{display:block!important;position:absolute!important;inset:0!important;z-index:0!important;border:0 solid transparent;pointer-events:none;
   border-image:image-set(url(media/cb-plate-h38-shell-1200.jpg) 1x,url(media/cb-plate-h38-shell-1800.jpg) 3x) 6.84% 9.11% fill / 9.1cqw stretch}
 html.x2p #x2pRm .cb .cb-p>:not(.cb-sh){position:relative;z-index:1;flex-shrink:0}
 html.x2p #x2pRm .cb .cb-p>.cb-g{display:block;flex:var(--g,1) 1 0;min-height:.8cqw}
+html.x2p #x2pRm .cb .cb-p>.cb-g0{min-height:3.4cqw}
 /* nickel nameplates (bevels whole, the brushed face stretches) */
 #x2pRm .cb-np{border:0 solid transparent;border-image:url(media/cb-plate-h38-np.webp) 16.9% 3.33% fill / 2.9cqw stretch}
-#x2pRm .cb-np :is(b,small,span,em,i){text-shadow:var(--lip)}
+#x2pRm .cb-np :is(b,small,span,i):not(.cb-en,.cb-en *,.cb-pf,.cb-pf *){text-shadow:var(--lip)}
 #x2pRm .cb-np svg{filter:drop-shadow(0 .14cqw 0 rgba(255,255,255,.45))}
-/* the title plate (the key light falls on it) */
-#x2pRm .cb-ti{border-image-source:url(media/cb-plate-h38-title.webp);height:16.6cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6cqw;padding:3cqw 4cqw 2.2cqw;text-align:center}
-#x2pRm .cb-ti small{font-size:max(2.4cqw,var(--f8));color:#37332c}
+/* the title plate: the certificate's number, engraved */
+#x2pRm .cb-ti{border-image-source:url(media/cb-plate-h38-title.webp);height:13.4cqw;display:flex;align-items:center;justify-content:center;padding:1.12cqw 4cqw 0;text-align:center}
+#x2pRm .cb-no{font-size:max(6.2cqw,var(--f8));letter-spacing:.07em;text-transform:uppercase;color:var(--ink);max-width:100%;overflow:hidden}
 #x2pRm .cb small{font-size:max(2.6cqw,var(--f8));letter-spacing:.09em;text-transform:uppercase;color:var(--ink2);white-space:nowrap;font-family:Anton,Impact,sans-serif}
-#x2pRm .cb-co{display:block;max-width:100%;font-family:Bangers,Impact,sans-serif;font-size:max(7.4cqw,var(--f8));line-height:1.02;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
-#x2pRm .cb-tk{font-family:Anton,Impact,sans-serif;font-size:max(.5em,var(--f8));letter-spacing:.06em;color:var(--ink2);vertical-align:.3em}
-/* the four nameplates */
-#x2pRm .cb-rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;justify-content:space-between;gap:1.2cqw;flex:2.2 0 auto}
-#x2pRm .cb-gr{display:none}
-#x2pRm .cb-r{height:11.8cqw;display:flex;align-items:center;gap:2cqw;padding:0 1.8cqw 0 .7cqw}
+/* the four nameplates: one grid, every row on its columns (rank, well, name + flag, gap, PASS/FAIL, gap, Long/Short, move), so the
+   marks share one column exactly halfway between the widest name + flag and the trades, and the moves end on one line */
+#x2pRm .cb-rows{--rs:1;list-style:none;margin:0;padding:0;display:grid;row-gap:2.8cqw;align-content:space-between;flex:2.2 0 auto;
+  grid-template-columns:auto auto max-content minmax(1.4cqw,1fr) auto minmax(1.4cqw,1fr) auto auto}
+#x2pRm .cb-rows.p{grid-template-columns:auto max-content minmax(1.4cqw,1fr) auto minmax(1.4cqw,1fr) auto auto}
+#x2pRm .cb-r{--rh:11.8cqw;--pt:1.12cqw;position:relative;grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center;height:var(--rh);padding:var(--pt) 3.5cqw 0 .7cqw}
 #x2pRm .cb-r.win{border-image-source:url(media/cb-plate-h38-npg.webp);--ink:#2a1a03;--ink2:#5b3d0b;--lip:0 .16cqw 0 rgba(255,240,190,.6),0 -.12cqw 0 rgba(60,30,0,.35)}
-#x2pRm .cb-wc{position:relative;flex:none;width:10cqw;height:10cqw;background:url(media/cb-plate-h38-wellc.webp) center/100% 100% no-repeat}
+#x2pRm .cb-rk{font-size:max(calc(4.2cqw * var(--rs)),var(--f8));color:var(--ink2);margin:0 1.3cqw 0 1.2cqw;justify-self:center}
+#x2pRm .cb-r .cb-rk{margin-left:3.3cqw}
+#x2pRm .cb-wc{position:relative;width:10cqw;height:10cqw;margin-right:1.8cqw;background:url(media/cb-plate-h38-wellc.webp) center/100% 100% no-repeat}
+#x2pRm .cb-rows.p .cb-wc{margin-left:0}
 #x2pRm .cb-r.win .cb-wc{background-image:url(media/cb-plate-h38-wellcg.webp)}
 #x2pRm .cb-wc .cb-mk{position:absolute;inset:19%;border-radius:50%;background:#131117;padding:19%;display:grid;place-items:center;
   box-shadow:inset 0 .45cqw .8cqw rgba(0,0,0,.75),inset 0 -.2cqw .3cqw rgba(255,255,255,.08)}
 #x2pRm .cb-mk svg{width:100%;height:100%;display:block;filter:none}
 #x2pRm .cb-mk svg :is(path,circle,rect,polygon,ellipse){fill:var(--mc)!important}
-#x2pRm .cb-tx{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:1.6cqw}
-#x2pRm .cb-l1,#x2pRm .cb-l2{display:flex;align-items:center;gap:1.1cqw;min-width:0;white-space:nowrap;overflow:hidden}
-#x2pRm .cb-l2{flex-direction:column;align-items:flex-end;gap:.35cqw;overflow:visible}
-#x2pRm .cb-rk{font-size:max(4cqw,var(--f8));color:var(--ink2);flex:none}
-#x2pRm .cb-nm{font-size:max(5.2cqw,var(--f8));letter-spacing:.05em;text-transform:uppercase;color:var(--ink);overflow:hidden;text-overflow:ellipsis}
-#x2pRm .cb-fl{width:3.6cqw;height:2.4cqw;flex:none;display:block;box-shadow:0 0 0 .22cqw rgba(0,0,0,.35)}
-#x2pRm .cb-tr{white-space:nowrap;font-size:max(3.9cqw,var(--f8));line-height:.95;color:var(--ink)}
-#x2pRm .cb-tr i{font-family:"Shantell Sans",sans-serif;font-weight:700;font-size:max(.8em,var(--f8));color:var(--ink2)}
-#x2pRm .cb-off{font-size:max(2.5cqw,var(--f8))!important;letter-spacing:.06em;color:#3c382f!important}
-#x2pRm .cb-r.no .cb-tr b,#x2pRm .cb-r.no .cb-nm{opacity:.85}
-/* the PASS / FAIL well, stamped in worn ink */
-#x2pRm .cb-wr{position:relative;flex:none;width:15.6cqw;height:8cqw;display:grid;place-items:center;background:url(media/cb-plate-h38-wellr.webp) center/100% 100% no-repeat}
-#x2pRm .cb-r.win .cb-wr{background-image:url(media/cb-plate-h38-wellrg.webp)}
-#x2pRm .cb-pf{display:inline-block;font-size:max(3.4cqw,var(--f8));letter-spacing:.12em;padding:.5cqw 1.1cqw .45cqw 1.3cqw;border:.42cqw solid currentColor;border-radius:.9cqw;transform:rotate(var(--rot));line-height:1;text-shadow:none!important}
-#x2pRm .cb-pf.p{color:#1f7a45;filter:url(#x2pcw0)}#x2pRm .cb-pf.f{color:#a8231a;filter:url(#x2pcw2)}
-/* the market's window: black enamel, cream type */
-#x2pRm .cb-mw{height:18.6cqw;display:flex;align-items:center;justify-content:space-between;gap:2cqw;padding:0 5.2cqw;
-  border:0 solid transparent;border-image:url(media/cb-plate-h38-mk.webp) 16% 3.64% fill / 3.1cqw stretch;--ink:#efe6cc;--ink2:#b9b19b}
-#x2pRm .cb-mw :is(b,small,span,em){text-shadow:0 -.12cqw 0 rgba(0,0,0,.9)}
-#x2pRm .cb-ml{display:flex;flex-direction:column;align-items:flex-start;gap:.9cqw;min-width:0}
-#x2pRm .cb-mw small{color:var(--ink2);max-width:100%;overflow:hidden;text-overflow:ellipsis}
-#x2pRm .cb-mv{font-size:max(8.6cqw,var(--f8));letter-spacing:.01em;color:var(--ink);white-space:nowrap}
-#x2pRm .cb-mv.up{color:#5fe08f}#x2pRm .cb-mv.dn{color:#ff6a5c}
-#x2pRm .cb-mv.cb-q{min-height:1em}
-#x2pRm .cb-wn{display:flex;align-items:center;gap:1cqw;white-space:nowrap;font-size:max(4.8cqw,var(--f8));color:var(--ink);min-width:0;overflow:hidden}
-#x2pRm .cb-wn em{font-family:"Shantell Sans",sans-serif;font-weight:800;font-size:max(.78em,var(--f8));color:var(--ink2)}
-#x2pRm .cb-wn small{font-family:"Shantell Sans",sans-serif;font-weight:600;text-transform:none;letter-spacing:0}
-#x2pRm .cb-wn b{color:var(--wc,var(--ink))}
-#x2pRm .cb-wn .cb-cr{width:4.4cqw;height:2.9cqw;flex:none;color:#e9b94a}
-#x2pRm .cb-wn.cb-cd em{font-family:Anton,Impact,sans-serif;font-weight:400;font-size:1em;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+/* the name and its flag (the cell runs the plate's full height so the crown can sit on the plate's top edge) */
+#x2pRm .cb-id{position:relative;align-self:stretch;display:flex;align-items:center;gap:1.2cqw}
+#x2pRm .cb-nm{font-size:max(calc(5.2cqw * var(--rs)),var(--f8));letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+#x2pRm .cb-fl{width:calc(3.6cqw * var(--rs));height:calc(2.4cqw * var(--rs));min-width:9px;min-height:6px;flex:none;display:block;box-shadow:0 0 0 .22cqw rgba(0,0,0,.35)}
+#x2pRm .cb-pc{justify-self:center;display:flex;align-items:center}
+/* the trade: Long / Short engraved, the move enamel-filled, every move ending on the same line */
+#x2pRm .cb-tw{font-size:max(calc(3.1cqw * var(--rs)),var(--f8));letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-right:1.1cqw}
+#x2pRm .cb-tv{justify-self:end;font-size:max(calc(4.8cqw * var(--rs)),var(--f8));letter-spacing:.02em}
+/* enamel in the cut: paint below the surface, its upper edge shaded by the cut's wall, the lit lip under it */
+#x2pRm .cb .cb-en{color:transparent!important;-webkit-background-clip:text;background-clip:text;padding:.14em 0;margin:-.14em 0;text-shadow:none!important;
+  background-image:linear-gradient(180deg,var(--e2) 0 22%,var(--e1) 40%,var(--e1) 80%,var(--e3) 100%);
+  filter:drop-shadow(0 -.1cqw 0 rgba(0,0,0,.42)) drop-shadow(0 .15cqw 0 rgba(255,255,255,.5))}
+#x2pRm .cb .cb-en.dn{--e1:var(--red);--e2:var(--red2);--e3:#b8392d}
+#x2pRm .cb .cb-en.up{--e1:var(--grn);--e2:var(--grn2);--e3:#2a8250}
+#x2pRm .cb-r.win .cb-en{filter:drop-shadow(0 -.1cqw 0 rgba(60,30,0,.45)) drop-shadow(0 .15cqw 0 rgba(255,240,190,.55))}
+/* PASS / FAIL: struck with letter punches into the plate and rubbed with paint; no box, the word is the mark */
+#x2pRm .cb-pf{display:flex;align-items:center;gap:.28cqw;font-size:max(calc(3.9cqw * var(--rs)),var(--f8));
+  filter:drop-shadow(0 0 .22cqw rgba(255,255,255,.16))}
+#x2pRm .cb .cb-pf i{display:block;text-box:trim-both cap alphabetic;line-height:1;color:transparent;text-shadow:none!important;-webkit-background-clip:text;background-clip:text;padding:.14em .02em;margin:-.14em -.02em;
+  transform:translateY(var(--py)) rotate(var(--pr)) scale(var(--ps));
+  background-image:var(--noise),linear-gradient(180deg,var(--p2) 0 26%,var(--p1) 46%,var(--p1) 82%,var(--p3));background-size:11cqw 11cqw,100% 100%;
+  filter:drop-shadow(0 -.12cqw 0 rgba(0,0,0,.55)) drop-shadow(0 .16cqw 0 rgba(255,255,255,.6))}
+#x2pRm .cb-pf.p{--p1:#23864c;--p2:#0f4a28;--p3:#3b9a62}
+#x2pRm .cb-pf.f{--p1:#b42a1f;--p2:#6a120c;--p3:#c8473a}
+#x2pRm .cb-r.win .cb-pf i{filter:drop-shadow(0 -.12cqw 0 rgba(60,30,0,.55)) drop-shadow(0 .16cqw 0 rgba(255,240,190,.62))}
+/* the crown: cast gold, lit from above like the rivets, seated on the winning plate's top edge above the name, its shadow on the steel */
+#x2pRm .cb-cr{position:absolute;left:-.4cqw;top:calc(-1 * var(--pt) - 2.75cqw);width:6.4cqw;height:4.5cqw;pointer-events:none;
+  background:url(media/cb-crown-h40.webp) center/100% 100% no-repeat;filter:saturate(.86) brightness(.97) drop-shadow(0 .32cqw .26cqw rgba(0,0,0,.6))}
+/* the market's window: black enamel; MARKET and the move engraved through it, the move filled with enamel */
+#x2pRm .cb-mw{height:18.6cqw;display:flex;align-items:center;justify-content:space-between;gap:2cqw;padding:1.03cqw 5.6cqw 0;
+  border:0 solid transparent;border-image:url(media/cb-plate-h38-mk.webp) 16% 3.64% fill / 3.1cqw stretch}
+#x2pRm .cb .cb-ml,#x2pRm .cb .cb-cd{color:transparent!important;-webkit-background-clip:text;background-clip:text;padding:.14em 0;margin:-.14em 0;text-shadow:none;
+  background-image:linear-gradient(180deg,#5c574d 0 24%,#c9c1ae 44%,#e6decb 82%,#f4ecd8);filter:drop-shadow(0 -.1cqw 0 #000) drop-shadow(0 .14cqw 0 rgba(255,250,235,.32))}
+#x2pRm .cb-ml{font-size:max(4.6cqw,var(--f8));letter-spacing:.16em;text-transform:uppercase}
+#x2pRm .cb-mv{font-size:max(8.4cqw,var(--f8));letter-spacing:.01em;white-space:nowrap}
+#x2pRm .cb .cb-mw .cb-en.dn{--e1:#d3402f;--e2:#7e1a12;--e3:#e25a47}
+#x2pRm .cb .cb-mw .cb-en.up{--e1:#2fa25a;--e2:#135a30;--e3:#47b872}
+#x2pRm .cb .cb-mw .cb-en{filter:drop-shadow(0 -.12cqw 0 #000) drop-shadow(0 .16cqw 0 rgba(255,250,235,.38))}
+#x2pRm .cb-mv.cb-cd{font-size:max(4.6cqw,var(--f8));letter-spacing:.08em;text-transform:uppercase}
 /* the foot: two date plates and the EZ. mark struck into the steel */
 #x2pRm .cb-bt{display:flex;align-items:center;gap:3.2cqw;height:27.6cqw}
-#x2pRm .cb-dt{width:25.6cqw;height:14.4cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1cqw;padding:0 1.6cqw}
+#x2pRm .cb-dt{width:25.6cqw;height:14.4cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5cqw;padding:1.12cqw 1.6cqw 0}
+#x2pRm .cb-dt :is(small,b){display:block;text-box:trim-both cap alphabetic;line-height:1}
 #x2pRm .cb-dt small{font-size:max(2.4cqw,var(--f8))}
 #x2pRm .cb-dt b{font-size:max(5.2cqw,var(--f8));letter-spacing:.03em;white-space:nowrap;color:var(--ink)}
 #x2pRm .cb-st{flex:none;margin-left:auto;width:31.2cqw;height:31.2cqw;margin-right:-1.8cqw;background:url(media/cb-plate-h38-stamp.webp) center/100% 100% no-repeat}
@@ -9722,22 +9776,18 @@ html.x2p #x2pRm .cb .cb-flip svg{width:1.05em;height:1.05em}
 html.x2p #x2pRm .cb .cb-flip.cb-nob{min-height:6cqw;margin:0}
 html.x2p #x2pRm .cb .cb-flip:focus-visible{outline:2px solid #e9b94a;outline-offset:2px;border-radius:4px}
 /* a card a little shorter than the painting (desktop): the plates a touch smaller */
-@container cb (min-aspect-ratio: 39/50){
-  #x2pRm .cb-ti{height:15cqw}#x2pRm .cb-r{height:11cqw}#x2pRm .cb-rows{gap:1cqw}#x2pRm .cb-mw{height:16.6cqw}
+@container cb (min-aspect-ratio: 37/50){
+  #x2pRm .cb-ti{height:12.4cqw}#x2pRm .cb-r{--rh:11cqw}#x2pRm .cb-rows{row-gap:2.5cqw}#x2pRm .cb-mw{height:16.6cqw}
   #x2pRm .cb-bt{height:25cqw}#x2pRm .cb-st{width:28.6cqw;height:28.6cqw}#x2pRm .cb-dt{height:13.4cqw}html.x2p #x2pRm .cb .cb-p{padding-top:7.2cqw}}
-/* a tall card (a 320 px phone): two-line nameplates, the market on three lines, the dates over the mark */
+/* a tall card (a 320 px phone): taller nameplates and bigger wells, still one line; the dates over the mark */
 @container cb (max-aspect-ratio: 5/8){
   html.x2p #x2pRm .cb .cb-p{padding:8.6cqw 7.4cqw 0}
-  #x2pRm .cb-ti{height:19cqw}
-  #x2pRm .cb-r{height:24cqw;padding:0 2cqw 0 1cqw;gap:2cqw}
-  #x2pRm .cb-rows{gap:1cqw}
-  #x2pRm .cb-wc{width:13.6cqw;height:13.6cqw}
-  #x2pRm .cb-tx{flex-direction:column;align-items:flex-start;justify-content:center;gap:1.6cqw}
-  #x2pRm .cb-l1,#x2pRm .cb-l2{max-width:100%}
-  #x2pRm .cb-l2{flex-direction:row;flex-wrap:wrap;align-items:baseline;column-gap:1.6cqw;row-gap:.8cqw;white-space:normal}
-  #x2pRm .cb-l2.cb-fit{overflow:visible}
-  #x2pRm .cb-wr{width:17cqw;height:8.7cqw}
-  #x2pRm .cb-mw{height:auto;min-height:23cqw;flex-direction:column;align-items:flex-start;justify-content:center;gap:2.4cqw;padding:3.6cqw 6cqw}
+  #x2pRm .cb-ti{height:15cqw}
+  #x2pRm .cb-r{--rh:17cqw;padding-left:1cqw}
+  #x2pRm .cb-rows{row-gap:2.6cqw}
+  #x2pRm .cb-wc{width:12.6cqw;height:12.6cqw;margin-right:1.4cqw}
+  #x2pRm .cb-rk{margin-right:.9cqw}
+  #x2pRm .cb-mw{height:21cqw}
   #x2pRm .cb-bt{height:auto;flex-wrap:wrap;justify-content:space-between;row-gap:2cqw}
   #x2pRm .cb-dt{width:41cqw;height:16cqw}
   #x2pRm .cb-st{width:35cqw;height:35cqw;margin:-2cqw auto -3cqw}}
@@ -16668,6 +16718,11 @@ P5.mountProof(take);
      window.__x2pTear is exported).
    3 HOT UPCOMING PREDICTIONS lettered on the second board's brass header plate: the big names first (Mag 7, then market cap from CAPS; four)
      as large flap rows, then every other round still to come, day by day under brass rails (a brass day plate, the line under it on the enamel).
+   H40 (owner, 2026-11-03: the trades "not aligned... not symmetrical... pasted on top"; the order clock, what resolves, "upcoming predictions",
+   "hot upcoming predictions", everything else): each trade is a cell of one width on one grid (the AI's mark and name on the enamel, LONG/SHORT
+   on a word flap, the size on a brass-framed split flap, media/up-h40-die.jpg, printed on the face with the split crossing it), and the second
+   board opens on "Upcoming predictions" (the next trades due, by trade day; window.__x2pUpV='in' shows the rounds whose trades are in and grade
+   later instead), then the hot names, then the rest; no round twice. Tools and the gate: tools/concepts/worlds/comic/story/h/up40/.
    One type system, set by the material: brass plates are engraved in Bangers (titles and headers), flaps carry Anton (numbers and flap
    letters), the enamel is printed in Shantell Sans (words). Company logos keep their own colours (tile / plate / bare, measured per file).
    Every row is one keyboard-reachable link to its round (#/round/n). No motion but the minute flaps; nothing in perspective.
@@ -16732,7 +16787,19 @@ function model(){
   const lk=G.reduce((a,r)=>{const k=key(pd(r.resolves));return k>a?k:a},'');
   const last=G.filter(r=>key(pd(r.resolves))===lk).sort((a,b)=>cap(b.ticker)-cap(a.ticker)||a.n-b.n);
   const bet=fut.find(u=>u.bet);
-  return {ORDER,A,P,today,tk,now,fut,bell,DAYS,last,lastP:pd(last[0]&&last[0].resolves),G,bet,x:(window.CONFIG||{}).x||'https://x.com/earningszn'}
+  /* H40 "Upcoming predictions", the panel after the next bell. Default (the owner's first reading): the next batch of trades coming in, i.e.
+     the first trade day after the next bell's day (after today when no close is on the card), plus any round not graded at the bell whose
+     trades are due today or by that day and are not all in yet (AMD with Claude's trade still to come). window.__x2pUpV='in' (the second
+     reading): every round whose trades are already in (some or all) and is graded after the next close. Never a round graded at the bell. */
+  const bk=bell?bell.k:'',inBell=u=>bell&&u.dated&&u.k===bell.k,live=u=>!inBell(u)&&!(u.dated&&u.close<=now);
+  let soon,due;
+  {const after=bell?bk:'',cand=fut.filter(u=>live(u)&&u.cp&&u.state!=='in');
+    const ds=cand.map(u=>key(u.cp)).filter(k=>after?k>after:k>=tk).sort(),dk=ds[0]||'';
+    const rs=dk?cand.filter(u=>{const k=key(u.cp);return k===dk||(k>=tk&&k<dk)}).sort((a,b)=>key(a.cp).localeCompare(key(b.cp))||byCap(a,b)):[];
+    due={v:'due',rounds:rs,p:rs.length?rs.find(u=>key(u.cp)===dk).cp:null}}
+  if(window.__x2pUpV==='in'){const rs=fut.filter(u=>live(u)&&u.nIn>0).sort((a,b)=>(a.close||9e15)-(b.close||9e15)||byCap(a,b));soon={v:'in',rounds:rs}}
+  else soon=due;
+  return {ORDER,A,P,today,tk,now,fut,bell,DAYS,soon,due,last,lastP:pd(last[0]&&last[0].resolves),G,bet,x:(window.CONFIG||{}).x||'https://x.com/earningszn'}
 }
 /* ---------- company logos in their own colours ---------- */
 /* mode per logo file: 'tile' (drawn on its own opaque square: shown as that tile, corners rounded), 'bare' (reads on the dark die as drawn,
@@ -16778,7 +16845,8 @@ const MK=(m,x,y,s,fill)=>{const M=(window.MODELS||{})[m];if(!M||!M.d)return '';c
 /* a company mark in its own colours in the big die: the tile as drawn (rounded), a plate behind a dark mark, a bare mark as drawn. Not lit:
    it is printed on the glass, so the bloom stays on the trades. Returns {defs, flat}. */
 /* the follow panel (the Overview's own close, media/p5-panel.jpg): the glass says when the next trades drop, the green key is Follow on X */
-function follow(M){const nx=M.DAYS.concat(M.bell?[{rounds:M.bell.rounds,p:M.bell.p,day:M.bell.day,date:M.bell.date}]:[]).map(d=>({d,rs:d.rounds.filter(u=>u.state!=='in')})).filter(x=>x.rs.length).sort((a,b)=>key(a.d.p).localeCompare(key(b.d.p)))[0];
+function follow(M){const dd=M.due&&M.due.p?M.due:null,nx=dd?{d:{p:dd.p,day:dayName(dd.p,M.today),date:md(dd.p)},rs:dd.rounds.filter(u=>key(u.cp)===key(dd.p))}:
+  M.DAYS.concat(M.bell?[{rounds:M.bell.rounds,p:M.bell.p,day:M.bell.day,date:M.bell.date}]:[]).map(d=>({d,rs:d.rounds.filter(u=>u.state!=='in')})).filter(x=>x.rs.length&&key(x.d.p)>=M.tk).sort((a,b)=>key(a.d.p).localeCompare(key(b.d.p)))[0];
   const first=nx?nx.rs.slice().sort((a,b)=>b.cap-a.cap).slice(0,2):[];const S=1.6,g=[136*S,172*S,724*S,288*S];
   let lit=T(800,172*S+92,48,'NEXT TRADES DROP ON X',{a:'middle',c:'#ffb21a',ls:3})+T(800,172*S+218,110,nx?(nx.d.day+' · '+nx.d.date).toUpperCase():'SOON',{a:'middle'})+
     T(800,172*S+300,44,first.map(u=>u.co.toUpperCase()).join(' · ')+(nx&&nx.rs.length>2?' + '+(nx.rs.length-2)+' MORE':''),{a:'middle',c:'#9fd8b4'});
@@ -16805,18 +16873,24 @@ function state(u,M){const n=M.ORDER.length;if(u.state==='in')return `All ${n} tr
   if(u.cp&&key(u.cp)<M.tk)return 'Trades coming in';
   if(isOpen(u))return u.dated?'Trades due before the open':'Trades due '+dayWord(u.cp,M);
   return 'Trades due '+dayWord(u.cp,M)}
-/* four trade flaps: the AI's mark in its colour, LONG green or SHORT red, the size; the AI's name and a dash while it is due */
-function trades(u,M){return `<span class="ud-trs" aria-hidden="true">${M.ORDER.map(m=>{const c=u.trades.find(x=>x.m===m);
-  if(!c)return `<span class="ud-tr ud-no">${mkSvg(m,'rgba(243,234,210,.3)')}<span class="ud-tw">${esc(nm(m))}</span><b class="ud-tv">–</b></span>`;
-  const dn=c.dir==='DOWN';return `<span class="ud-tr ${dn?'ud-dn':'ud-up'}">${mkSvg(m,MCOL[m]||'#f8f0d9')}<span class="ud-tw">${dn?'Short':'Long'}</span><b class="ud-tv">${dn?'−':'+'}${esc(c.mag)}%</b></span>`}).join('')}</span>`}
+/* H40 four trade cells, one per AI, all four the same width on one grid: (1) the AI's mark and name printed on the enamel, (2) LONG or SHORT
+   on a word flap, (3) the size on a brass-framed split flap (media/up-h40-die.jpg, a clock die of the head painting made symmetric about its
+   split). Words and numbers are printed on the flap face, centred on it, the split crossing the characters and the lower leaf a touch darker
+   (CSS ::after). SHORT and its −x% red, LONG and its +x% green; a trade not in yet: a blank word flap and a dash. */
+function trades(u,M){return `<span class="ud-trs" aria-hidden="true">${M.ORDER.map(m=>{const c=u.trades.find(x=>x.m===m),lab=`<span class="ud-tl">${mkSvg(m,c?(MCOL[m]||'#f8f0d9'):'rgba(243,234,210,.34)')}<span>${esc(nm(m))}</span></span>`;
+  if(!c)return `<span class="ud-tr ud-no">${lab}<span class="ud-tw"><b></b></span><span class="ud-tv"><b class="ud-dash"></b></span></span>`;
+  const dn=c.dir==='DOWN';return `<span class="ud-tr ${dn?'ud-dn':'ud-up'}">${lab}<span class="ud-tw"><b>${dn?'Short':'Long'}</b></span><span class="ud-tv"><b>${dn?'−':'+'}${esc(c.mag)}%</b></span></span>`}).join('')}</span>`}
 const sr=(u,M,extra)=>{const t=u.trades.map(c=>`${nm(c.m)} ${c.dir==='DOWN'?'short':'long'} ${c.mag}%`).join(', ');
   return `${u.co} (${u.ticker}), round ${u.n}${u.mag7?', Mag 7':''}${u.bet?', Bet #1':''}. ${extra?extra+'. ':''}${state(u,M)}${t?': '+t:''}${u.missing.length&&u.nIn?'. Still due: '+u.missing.map(nm).join(', '):''}.`};
 const tags=u=>(u.mag7?plate('Mag 7','ud-pt'):'')+(u.bet?plate('Bet #1','ud-pt'):'');
 /* a company row at the next bell */
-function row(u,M){const tk=tkOf(u);
-  return `<li class="ud-row ud-s-${u.state}"><a class="ud-a" href="#/round/${u.n}" aria-label="${esc(sr(u,M))}">
+function row(u,M,st){const tk=tkOf(u),s0=st||state(u,M);
+  return `<li class="ud-row ud-s-${u.state}"><a class="ud-a" href="#/round/${u.n}" aria-label="${esc(sr(u,M,st&&st!==state(u,M)?st:''))}">
    <span class="ud-lg">${coImg(u,'ud-logo')}</span><span class="ud-id"><span class="ud-nmr">${flaps(u.co,'ud-nm')}${tags(u)}</span>
-   <span class="ud-sub">${tk?flaps(tk,'ud-tk'):''}<span class="ud-st" aria-hidden="true">${esc(state(u,M))}</span></span></span>${trades(u,M)}</a></li>`}
+   <span class="ud-sub">${tk?flaps(tk,'ud-tk'):''}<span class="ud-st" aria-hidden="true">${esc(s0)}</span></span></span>${trades(u,M)}</a></li>`}
+/* a round in "Upcoming predictions": the same row; its line says when its trades are due (or how many are in), and when it is graded */
+function soonState(u,M){if(M.soon.v==='in')return state(u,M)+' · '+(u.dated?'graded '+dayWord(u.rp,M):'close date to come');
+  if(u.state==='coming')return state(u,M);return 'Trades due '+dayWord(u.cp,M)+(isOpen(u)?', before the open':'')}
 /* a big name: larger flaps, when it is graded, its four trades */
 function bigRow(u,M){const tk=tkOf(u),when=u.dated?'Graded at the close '+dayWord(u.rp,M):u.state==='due'?state(u,M)+' · close date to come':'Close date to come';
   return `<li class="ud-big ud-s-${u.state}"><a class="ud-a" href="#/round/${u.n}" aria-label="${esc(sr(u,M,u.dated?when:'Close date to come'))}">
@@ -16841,17 +16915,24 @@ function board1(M){const b=M.bell;
   const cap=b?`<p class="ud-cap"><span>The close grades every trade.</span> <span class="ud-capn">${n2(b.nIn)}<span>of</span>${n2(b.nAll)}<span>are in.</span></span><span class="u3-sr">${b.nIn} of ${b.nAll} trades are in.</span></p>`:
     `<p class="ud-cap"><span>No close on the card right now. The next trades drop before each report.</span></p>`;
   return `<div class="ud-bd ud-b1">${head(M)}<div class="ud-body">${cap}${b?`<ol class="ud-rows">${b.rounds.map(u=>row(u,M)).join('')}</ol>`:''}</div><div class="ud-foot"></div></div>`}
-function board2(M){const b=M.bell,rest=[];M.DAYS.forEach(d=>d.rounds.forEach(u=>rest.push(u)));
-  /* the big names: Mag 7 first (NVIDIA is also Bet #1), then market cap; four */
+function board2(M){const S=M.soon||{rounds:[]},ss=new Set(S.rounds.map(u=>u.n)),rest=[];M.DAYS.forEach(d=>d.rounds.forEach(u=>{if(!ss.has(u.n))rest.push(u)}));
+  /* the big names: Mag 7 first (NVIDIA is also Bet #1), then market cap; four; never a round already on the board above */
   const big=rest.filter(u=>u.mag7||u.cap>0).sort((x,y)=>(y.mag7-x.mag7)||(y.cap-x.cap)||(x.n-y.n)).slice(0,4),bs=new Set(big.map(u=>u.n));
-  const days=M.DAYS.map(d=>Object.assign({},d,{rounds:d.rounds.filter(u=>!bs.has(u.n))})).filter(d=>d.rounds.length);
+  const days=M.DAYS.map(d=>Object.assign({},d,{rounds:d.rounds.filter(u=>!bs.has(u.n)&&!ss.has(u.n))})).filter(d=>d.rounds.length);
   const dayHtml=d=>`<li class="ud-day${d.past?' ud-past':''}"><h3 class="ud-dh">${plate((d.day==='Today'||d.day==='Tomorrow'?d.day:SD[dow(d.p)])+' · '+md(d.p),'ud-dp')}<span class="ud-dl">${d.dueOnly?'Trades due · close date to come':'Graded at the close'}</span></h3>
     <ul class="ud-lis">${d.rounds.map(u=>li(u,M)).join('')}</ul></li>`;
-  if(!big.length&&!days.length)return '';
-  return `<section class="ud-s2" aria-labelledby="udH2"><div class="ud-bd ud-b2"><div class="ud-top"></div><div class="ud-body">
-   <h2 class="ud-hp" id="udH2"><span>Hot upcoming predictions</span></h2>
+  /* (2) Upcoming predictions: its brass header plate, a brass day plate with the line under it, one row per round with its four flaps */
+  /* grouped by trade day, each under its brass day plate: a round still waiting on today's trades (AMD) sits above the next day's batch */
+  const dpl=p=>{const d=dayName(p,M.today);return plate((d==='Today'||d==='Tomorrow'?d:SD[dow(p)])+' · '+md(p),'ud-dp')};
+  const grp=[];if(S.v==='in')grp.push({h:`<span class="ud-dl">Trades in · graded after the next bell</span>`,rs:S.rounds});
+  else S.rounds.forEach(u=>{const k=key(u.cp),g=grp.find(x=>x.k===k);if(g)g.rs.push(u);else grp.push({k,h:dpl(u.cp)+`<span class="ud-dl">${u.state==='coming'?'Trades coming in':'The next trades to come in'}</span>`,rs:[u]})});
+  const soonHtml=S.rounds.length?`<div class="ud-soon"><h2 class="ud-hp" id="udH3"><span>Upcoming predictions</span></h2>
+   ${grp.map(g=>`<h3 class="ud-dh ud-sdh">${g.h}</h3><ol class="ud-rows">${g.rs.map(u=>row(u,M,soonState(u,M))).join('')}</ol>`).join('')}</div>`:'';
+  if(!big.length&&!days.length&&!soonHtml)return '';
+  return `<section class="ud-s2" aria-labelledby="${soonHtml?'udH3':'udH2'}"><div class="ud-bd ud-b2"><div class="ud-top"></div><div class="ud-body">
+   ${soonHtml}${big.length||days.length?`<div class="ud-hot"><h2 class="ud-hp" id="udH2"><span>Hot upcoming predictions</span></h2>
    ${big.length?`<ol class="ud-bigs">${big.map(u=>bigRow(u,M)).join('')}</ol>`:''}
-   ${days.length?`<ol class="ud-days">${days.map(dayHtml).join('')}</ol>`:''}</div><div class="ud-foot"></div></div></section>`}
+   ${days.length?`<ol class="ud-days">${days.map(dayHtml).join('')}</ol>`:''}</div>`:''}</div><div class="ud-foot"></div></div></section>`}
 function build(M){return `<section class="ud-s1" aria-labelledby="udH"><h2 class="t4-h2 ud-h" id="udH"><span class="t4-hw">The next bell</span></h2>${board1(M)}</section>
   <div class="ud-tear" aria-hidden="true"></div>${board2(M)}${follow(M)}`}
 
@@ -16885,15 +16966,20 @@ function tryMount(){timer=0;const v=D.querySelector('#view .x2p-up');
     const root=D.createElement('div');root.className='u3-root u3-D';root.innerHTML=build(M);
     [...v.children].forEach(c=>{if(c.tagName!=='H1'){c.style.display='none';c.setAttribute('aria-hidden','true')}});
     v.appendChild(root);H.classList.add('u3-on');
-    clock(root);tearAll(root);
-    if(D.fonts&&D.fonts.ready)D.fonts.ready.then(()=>{if(root.isConnected)tearAll(root)});
+    clock(root);tearAll(root);fitTr(root);
+    if(D.fonts&&D.fonts.ready)D.fonts.ready.then(()=>{if(root.isConnected){tearAll(root);fitTr(root)}});
     window.__u3=M}catch(e){fail(e)}},fail)}catch(e){busy=false;fail(e)}}
+/* H40: one type size for all the trade numbers on the tab (and one for the words), stepped down together only if the widest would come
+   within 3px of its flap face's edge, so every number reads at the same size and sits centred on its flap */
+function fitTr(root){[['.ud-tv','--tvk'],['.ud-tw','--twk']].forEach(([sel,v])=>{root.style.removeProperty(v);let k=1;
+  root.querySelectorAll('.ud-tr '+sel).forEach(f=>{const b=f.firstElementChild;if(!b||!b.textContent)return;const room=f.clientWidth-6,w=b.getBoundingClientRect().width;if(room>0&&w>room)k=Math.min(k,room/w)});
+  if(k<1)root.style.setProperty(v,(Math.floor(k*100)/100).toString())})}
 function fail(e){busy=false;window.__u3Err=e;H.classList.remove('u3-live');try{console.error('u3',e)}catch(x){}}
 function again(){if(!timer)timer=setTimeout(tryMount,80)}
 /* the router redraws #view on every tab change: watch it (child list only) and try again */
 function watch(){const v=D.getElementById('view');if(!v)return setTimeout(watch,200);new MutationObserver(()=>{const u=D.querySelector('#view .x2p-up');if(!window.__u3Err&&u&&!u.querySelector('.u3-root'))again()}).observe(v,{childList:true,subtree:false});again()}
 addEventListener('hashchange',()=>again());
-let lw=innerWidth;addEventListener('resize',()=>{if(innerWidth===lw)return;lw=innerWidth;const r=D.querySelector('.u3-root.u3-D');if(r)tearAll(r)});
+let lw=innerWidth;addEventListener('resize',()=>{if(innerWidth===lw)return;lw=innerWidth;const r=D.querySelector('.u3-root.u3-D');if(r){tearAll(r);fitTr(r)}});
 watch();
 })();
 
@@ -17103,15 +17189,17 @@ watch();
 
 </script>
 <script id="x2p-cb-js">
-/* x2p_cb (round H38, owner 2026-11-03: "D the plate for the back card but bottom right should be the EZ stamp diegetically integrated
-   into the card. Winner plate should be golden."): the back of a round opened big (#x2pRm, the round's address) is a blackened steel
-   vault plate. Every part is painted (Hedra, from the H36 plate d1) and laid out by the page so the plate fills the card at any shape:
-   the steel shell stretches by its border (the rivets and corners stay whole), the nickel nameplates by their bevels; the wells and the
-   EZ. maker's mark keep their painted proportions. The mark is die-struck into the steel on a graded round; on a round still to grade its
-   die seat is empty. The winner's nameplate is gold (both on a tie, none when nobody won).
+/* x2p_cb (round H40, owner 2026-11-03: "replicate exactly that in terms of the content. Nothing needs to change, only the art style and
+   the makeover... diegetically integrated"): the back of a round opened big (#x2pRm, the round's address) is a blackened steel vault
+   plate carrying exactly the certificate's content and layout: the certificate's number on the title plate; one nameplate per model in
+   the certificate's order (graded: right way by closeness, then wrong way; pending: as filed), each reading rank, logo, name, flag,
+   PASS or FAIL (punched), then the trade (Long +2.5% / Short -3.5%, the move enamel-filled green or red); the winner's plate gold with
+   a small cast crown on its top edge (both on a tie, none when nobody won); MARKET and the move (pending: the page's countdown) in the
+   black enamel window; the dates and the EZ. mark struck into the steel (pending: the empty die seat). Every part is painted (Hedra,
+   from the H36 plate d1; the crown H40) and laid out by the page so the plate fills the card at any shape.
    Media, written out in full for make_site.py: media/cb-plate-h38-shell-1200.jpg media/cb-plate-h38-shell-1800.jpg
    media/cb-plate-h38-title.webp media/cb-plate-h38-np.webp media/cb-plate-h38-npg.webp media/cb-plate-h38-mk.webp
-   media/cb-plate-h38-wellc.webp media/cb-plate-h38-wellcg.webp media/cb-plate-h38-wellr.webp media/cb-plate-h38-wellrg.webp
+   media/cb-plate-h38-wellc.webp media/cb-plate-h38-wellcg.webp media/cb-crown-h40.webp
    media/cb-plate-h38-stamp.webp media/cb-plate-h38-stamp-steel.webp media/cb-plate-h38-die.webp
    It sits over the page's certificate (graded: the back face; pending: the one face), which stays underneath, hidden, so the flip, the
    arrows, close and the holo levels keep working. Every word and number from ROUNDS / PENDING. window.__x2pCbStamp="steel" shows the
@@ -17131,46 +17219,54 @@ function flag(c){var s='<svg class="cb-fl" viewBox="0 0 30 20" preserveAspectRat
   return s+'</svg>'}
 function mark(m){var h='';try{h=(typeof logo==='function'?logo(m):'').match(/<svg[\s\S]*<\/svg>/);h=h?h[0]:''}catch(e){h=''}
   return '<span class="cb-mk" style="--mc:'+MC[m]+'" aria-hidden="true">'+h+'</span>'}
-var CROWN='<svg class="cb-cr" viewBox="0 0 40 26" aria-hidden="true" focusable="false"><path d="M3.5 22.5 L2.2 6.8 L11.4 14 L19.6 2.3 L28.4 13.6 L37.6 6 L36.2 22.8 C25 24.4 14 24.2 3.5 22.5Z" fill="currentColor"/></svg>';
+/* the winner's crown: a small cast gold crown (painted, media/cb-crown-h40.webp) seated on the winning nameplate's top edge */
 function pct(v){return (Math.round(v*100)/100)+'%'}
+function no4(n){return 'No. '+('000'+n).slice(-4)}
 /* a graded round, ranked as the certificate ranks it: right way by closeness, then wrong way by closeness */
 function graded(n){var g=null;ROUNDS.forEach(function(r){if(r.n===n)g=r});if(!g)return null;var W=g.win?g.win.split(' & '):[],up=g.a>0;
   var rows=g.calls.map(function(x){var u=String(x[1]).indexOf('DOWN')<0,v=parseFloat(String(x[1]).replace(/^(UP|DOWN)\s*/,''));return {m:x[0],up:u,v:v,off:+x[2],ok:u===up,win:W.indexOf(x[0])>-1}});
   var by=function(a,b){return a.off-b.off};rows=rows.filter(function(r){return r.ok}).sort(by).concat(rows.filter(function(r){return !r.ok}).sort(by));
-  return {k:'g',n:n,co:g.co,t:g.ticker,a:g.a,rows:rows,W:W,filed:md(g.called),graded:md(g.resolves),right:rows.filter(function(r){return r.ok}).length}}
+  return {k:'g',n:n,co:g.co,t:g.ticker,a:g.a,rows:rows,W:W,filed:md(g.called),graded:md(g.resolves)}}
 function pending(n){var u=null;(window.PENDING||[]).forEach(function(q){if(q.n===n)u=q});if(!u)return null;
-  return {k:'p',n:n,co:u.co,t:u.ticker,rows:(u.calls||[]).map(function(x){return {m:x.m,up:x.dir==='UP',v:parseFloat(x.mag)}}),filed:md(u.called),graded:u.resolves?md(u.resolves):'Soon'}}
-function trade(r){return '<span class="cb-tr"><i>'+(r.up?'Long':'Short')+'</i> <b>'+pct(r.v)+'</b></span>'}
-function pf(r,i){return '<span class="cb-pf '+(r.ok?'p':'f')+'" style="--rot:'+[-6,-3,-7,-4][i%4]+'deg">'+(r.ok?'PASS':'FAIL')+'</span>'}
-function move(a){return '<b class="cb-mv '+(a<0?'dn':'up')+'"><span aria-hidden="true">'+(a<0?'−':'+')+'</span><span class="sr">'+(a<0?'Down ':'Up ')+'</span>'+Math.abs(a).toFixed(2)+'%</b>'}
+  return {k:'p',n:n,co:u.co,t:u.ticker,rows:(u.calls||[]).map(function(x){return {m:x.m,up:x.dir==='UP',v:Math.abs(parseFloat(x.mag))}}),filed:md(u.called),graded:u.resolves?md(u.resolves):'Soon'}}
+/* the trade: the word engraved, the move enamel-filled (green long, red short) */
+function trade(r){return '<span class="cb-tw cb-tb">'+(r.up?'Long':'Short')+'</span><b class="cb-tv cb-tb cb-en '+(r.up?'up':'dn')+'"><span aria-hidden="true">'+(r.up?'+':'−')+'</span><span class="sr">'+(r.up?'up ':'down ')+'</span>'+pct(r.v)+'</b>'}
+/* PASS / FAIL hand-punched: one letter punch per letter, each at its own tilt and depth, rubbed with paint */
+/* each word's four punches: tilt (deg), drop (em, summing to zero so the word stays centred on the plate's face), size */
+var PT=[[[-2.2,.04,1],[1.6,-.03,.97],[-1.1,.02,1.02],[2.6,-.03,.99]],[[1.8,-.03,1.01],[-2.6,.03,.98],[1.1,.02,1],[-1.4,-.02,1.03]],
+  [[-1.6,.02,.99],[2.2,.03,1.02],[-2.8,-.03,1],[1.2,-.02,.98]],[[2.4,-.02,1],[-1.2,-.03,1.01],[1.9,.04,.97],[-2.1,.01,1.02]]];
+function pf(r,i){var w=r.ok?'PASS':'FAIL',q=PT[(i+(r.ok?0:2))%4],h='<span class="cb-pf '+(r.ok?'p':'f')+'" role="img" aria-label="'+(r.ok?'Pass':'Fail')+'">';
+  for(var j=0;j<4;j++)h+='<i aria-hidden="true" style="--pr:'+q[j][0]+'deg;--py:'+q[j][1]+'em;--ps:'+q[j][2]+'">'+w[j]+'</i>';
+  return h+'</span>'}
+function move(a){return '<b class="cb-mv cb-tb cb-en '+(a<0?'dn':'up')+'"><span aria-hidden="true">'+(a<0?'−':'+')+'</span><span class="sr">'+(a<0?'down ':'up ')+'</span>'+Math.abs(a).toFixed(2)+'%</b>'}
 function build(d,fb){var G=d.k==='g',h='<div class="cb-p"><i class="cb-sh" aria-hidden="true"></i>';
-  h+='<i class="cb-g" style="--g:.6"></i><div class="cb-ti cb-np"><small class="cb-fit">Season 1 · Round '+d.n+'</small><b class="cb-co cb-fit">'+esc(d.co)+' <span class="cb-tk">('+esc(d.t)+')</span></b></div><i class="cb-g" style="--g:1.4"></i>';
-  h+='<ol class="cb-rows" aria-label="'+(G?'The trades, ranked by the close':'The trades, as filed')+'">';
-  d.rows.forEach(function(r,i){if(i)h+='<i class="cb-g cb-gr" aria-hidden="true"></i>';
-    h+='<li class="cb-r cb-np'+(G&&r.win?' win':'')+(G?(r.ok?' ok':' no'):' pd')+'"><span class="cb-wc">'+mark(r.m)+'</span>'+
-      '<span class="cb-tx"><span class="cb-l1 cb-fit">'+(G?'<b class="cb-rk">'+(i+1)+'</b>':'')+'<span class="cb-nm">'+NM[r.m]+'</span>'+flag(CC[r.m])+(G&&r.win?'<span class="sr"> (winner)</span>':'')+'</span>'+
-      '<span class="cb-l2 cb-fit">'+trade(r)+(G?'<small class="cb-off">'+(r.ok?pct(r.off)+' off':'wrong way')+'</small>':'')+'</span></span>'+
-      '<span class="cb-wr">'+(G?pf(r,i):'<span class="sr">Not graded yet</span>')+'</span></li>'});
+  h+='<i class="cb-g" style="--g:.6"></i><div class="cb-ti cb-np"><b class="cb-no cb-tb cb-fit">'+no4(d.n)+'</b><span class="sr"> '+esc(d.co)+'</span></div><i class="cb-g cb-g0" style="--g:1.4"></i>';
+  h+='<ol class="cb-rows '+(G?'g':'p')+'" aria-label="'+(G?'The trades, ranked by the close':'The trades, as filed')+'">';
+  d.rows.forEach(function(r,i){
+    h+='<li class="cb-r cb-np'+(G&&r.win?' win':'')+(G?(r.ok?' ok':' no'):' pd')+'">'+(G?'<b class="cb-rk cb-tb">'+(i+1)+'</b>':'')+'<span class="cb-wc">'+mark(r.m)+'</span>'+
+      '<span class="cb-id">'+(G&&r.win?'<i class="cb-cr" aria-hidden="true"></i>':'')+'<span class="cb-nm cb-tb">'+NM[r.m]+'</span>'+flag(CC[r.m])+(G&&r.win?'<span class="sr"> (winner)</span>':'')+'</span>'+
+      '<span class="cb-pc">'+(G?pf(r,i):'<span class="sr">Not graded yet</span>')+'</span>'+trade(r)+'</li>'});
   h+='</ol><i class="cb-g" style="--g:1"></i>';
-  h+='<div class="cb-mw"><span class="cb-ml"><small class="cb-fit">At the close<span class="sr"> ('+esc(d.co)+')</span></small>'+(G?move(d.a):'<b class="cb-mv cb-q"></b>')+'</span>'+
-    (G?(d.W.length?'<span class="cb-wn cb-fit">'+CROWN+'<em>'+(d.W.length>1?'Winners':'Winner')+'</em> '+d.W.map(function(m){return '<b style="--wc:'+MC[m]+'">'+NM[m]+'</b>'}).join(' <em>&amp;</em> ')+'</span>':
-      '<span class="cb-wn cb-fit none"><em>No winner</em>'+(d.right?'':' <small>all '+d.rows.length+' wrong way</small>')+'</span>'):'<span class="cb-wn cb-fit cb-cd"><em></em></span>')+'</div>';
+  h+='<div class="cb-mw"><b class="cb-ml cb-tb">Market</b>'+(G?move(d.a):'<b class="cb-mv cb-tb cb-cd"></b>')+'</div>';
   h+='<i class="cb-g" style="--g:1"></i><div class="cb-bt"><div class="cb-dt cb-np"><small class="cb-fit">Trades filed</small><b class="cb-fit">'+d.filed+'</b></div><div class="cb-dt cb-np"><small class="cb-fit">'+(G?'Graded on':'Final grade')+'</small><b class="cb-fit">'+d.graded+'</b></div>'+
     '<span class="cb-st'+(G?'':' cb-die')+'" role="img" aria-label="'+(G?'Struck with the EZ. mark: graded by the market close':'The EZ. mark is struck once the market closes')+'"></span></div><i class="cb-g" style="--g:.5"></i>';
   h+=fb?'<button type="button" class="cb-flip" data-flip><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'+esc(fb)+'</button>':'<i class="cb-flip cb-nob" aria-hidden="true"></i>';
   return h+'</div>'}
-/* one line each: the type steps down to fit its plate, never below the 8 px floor (on screen, through the view's zoom) */
+/* one line each: the type steps down to fit its plate, never below the 8 px floor (on screen, through the view's zoom); the rows share
+   one grid, so they step down together (--rs) until the widest row fits its nameplate */
 function fit(o){var z=+o.style.getPropertyValue('--cbz')||1,fl=8.2/z;
   [].forEach.call(o.querySelectorAll('.cb-fit'),function(e){e.style.fontSize='';if(!e.clientWidth||getComputedStyle(e).flexWrap==='wrap')return;var n=0;
-    while(e.scrollWidth>e.clientWidth+.5&&n++<40){var f=parseFloat(getComputedStyle(e).fontSize),nf=Math.max(fl,f*Math.max(.9,e.clientWidth/e.scrollWidth));if(nf>=f-.01)break;e.style.fontSize=nf+'px'}})}
+    while(e.scrollWidth>e.clientWidth+.5&&n++<40){var f=parseFloat(getComputedStyle(e).fontSize),nf=Math.max(fl,f*Math.max(.9,e.clientWidth/e.scrollWidth));if(nf>=f-.01)break;e.style.fontSize=nf+'px'}});
+  var ol=o.querySelector('.cb-rows');if(!ol)return;var rs=1;ol.style.setProperty('--rs',1);
+  while(ol.scrollWidth>ol.clientWidth+.5&&rs>.6){rs-=.03;ol.style.setProperty('--rs',rs.toFixed(2))}}
 function zoomOf(c){var z=c.closest('.x2p-rmz');return z&&parseFloat(z.style.zoom)||1}
-function countdown(o,fin){var src=fin.querySelector('.xc-pend .xc-out b'),t=o.querySelector('.cb-cd em');if(!t)return;
-  var s=src?src.textContent.replace(/\s+/g,' ').trim():'At the close';t.textContent=s||'At the close'}
+function countdown(o,fin){var src=fin.querySelector('.xc-pend .xc-out b'),t=o.querySelector('.cb-cd');if(!t)return;
+  var s=src?src.textContent.replace(/\s+/g,' ').trim():'';if(t.textContent!==s){t.textContent=s;fit(o)}}
 function mount(){var rm=D.getElementById('x2pRm');if(!rm)return;var c=rm.querySelector('.card[data-n]');if(!c)return;var n=+c.getAttribute('data-n');
   var k=c.getAttribute('data-k'),d=k==='g'?graded(n):k==='p'?pending(n):null;if(!d)return;
   var fin=c.querySelector(k==='g'?'.face.back .fin':'.face.front .fin');if(!fin||fin.querySelector(':scope>.cb'))return;
   var fbt=fin.querySelector('.xc [data-flip]'),lab=fbt?fbt.textContent.replace(/↻/g,'').trim():'';
-  var o=D.createElement('div');o.className='cb cb-'+d.k+(window.__x2pCbStamp==='steel'?' cb-steel':'');o.style.setProperty('--cbz',zoomOf(c));
+  var o=D.createElement('div');o.className='cb cb-k'+d.k+(window.__x2pCbStamp==='steel'?' cb-steel':'');o.style.setProperty('--cbz',zoomOf(c));
   o.innerHTML=build(d,fbt?(lab||'See the film'):'');fin.insertBefore(o,fin.firstChild);fin.classList.add('cb-on');
   if(d.k==='p'){countdown(o,fin);o.__cd=setInterval(function(){if(!o.isConnected){clearInterval(o.__cd);return}countdown(o,fin)},30000)}
   var f=function(){if(o.isConnected)fit(o)};f();if(D.fonts&&D.fonts.ready)D.fonts.ready.then(f);setTimeout(f,400);
