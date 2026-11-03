@@ -12,8 +12,10 @@ OUT = os.environ.get('SITE_OUT') or os.path.join(os.path.dirname(EZ), 'site')
 URL = 'https://earningszn.xyz/'
 # SITE_PAGE=<file> builds another page. Since 2026-10-30 (owner: "push this to production... so we have the comic version
 # live") the live site was X3+, the comic. Since 2026-11-02 (owner: "feel free to ship to production. So at least the overview page v1 is done")
-# the live site is X2+ again (the chip world); SITE_PAGE=v47-live-x3plus.html builds X3+ (the x3plus preview branch)
-page = open(os.path.join(EZ, os.environ.get('SITE_PAGE') or 'v46-live-x2plus.html'), encoding='utf-8').read()
+# the live site was X2+ again (the chip world). Since 2026-11-03, night (owner: "You can push the new page live") the live site is
+# X6+ (v50, the Saturday-morning show); SITE_PAGE=v46-live-x2plus.html builds X2+ (the preview branch), v47 X3+ (x3plus).
+# SITE_PAGE may be an absolute path (a copy of the built page, so a builder's later build.py run cannot change it mid-build).
+page = open(os.path.join(EZ, os.environ.get('SITE_PAGE') or 'v50-live-x6plus.html'), encoding='utf-8').read()
 data = open(os.path.join(EZ, 'ez-data.js'), encoding='utf-8').read()
 if os.path.isdir(OUT):
     shutil.rmtree(OUT)
@@ -32,11 +34,13 @@ doc = doc.replace('</head>', meta + '</head>', 1)
 # (overnight, 2026-10-27) the share card and the icons: a link to the site on X showed a bare text card and browsers a blank tab.
 # The card is media/share-d.png (since 2026-10-28: the live headline "4 AIs trade earnings to run our buybacks." over the host; options a to d from ez/tools/concepts/share/share.js);
 # a new card needs a new file name (media is cached for a year, and X keeps a card for days). The icons are the EZ. logo.
-SHARE = 'share-d.png'
-DESC = '4 AIs paper-trade every earnings report. $100K on every call. Graded at the close. Top P&L makes the buyback call.'
+# Since 2026-11-03 (X6+ live) the card is media/share-x6a.jpg: X6+'s own title card ("EZ. presents Four AIs Trade Earnings" over the
+# painted town), shot at 1200x630 with the header, the crawl and the week pills hidden (a week number on a card X keeps for days goes stale).
+SHARE = 'share-x6a.jpg'
+DESC = "We track four AIs on every earnings trade, so you don't have to. $100K on every trade, graded at the close."
 meta2 = ('<meta name="description" content="' + DESC + '">\n<meta property="og:description" content="' + DESC + '">\n'
          '<meta property="og:image" content="' + URL + 'media/' + SHARE + '">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n'
-         '<meta property="og:image:alt" content="4 AIs trade earnings to run our buybacks. The EZ. logo and the host at his desk.">\n'
+         '<meta property="og:image:alt" content="EZ. presents Four AIs Trade Earnings, lettered over a painted town with a stock exchange on the hill.">\n'
          '<meta name="twitter:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:description" content="' + DESC + '">\n<meta name="twitter:image" content="' + URL + 'media/' + SHARE + '">\n'
          '<meta property="og:site_name" content="Earnings Zeason">\n<meta name="twitter:site" content="@earningszn">\n'
          '<link rel="icon" href="media/icon.svg" type="image/svg+xml">\n<link rel="icon" href="media/icon-32.png" sizes="32x32" type="image/png">\n<link rel="apple-touch-icon" href="media/icon-180.png">\n')

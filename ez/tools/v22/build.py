@@ -561,8 +561,9 @@ open("v46-live-x2plus.html",'w').write(_tp); print("ok v46-live-x2plus.html",len
 # In a try: a failure here never stops the pages after it (an hourly sheet sync runs this file).
 try:
     _S='tools/v22/story/'
-    _h6css='\n'.join(open(_S+f).read() for f in ['h48_show.css','h48_ov.css','h48_lb.css'])
-    _h6js='\n'.join(open(_S+f).read() for f in ['h48_data.js','h48_ui.js','h48_ov.js','h48_lb.js'])
+    # h48_crawl.css: the desktop crawl at the bottom in the show's look; h48_up.*: the Upcoming tab (round H48b), read when present
+    _h6css='\n'.join(open(_S+f).read() for f in ['h48_show.css','h48_ov.css','h48_lb.css','h48_crawl.css','h48_up.css'] if f in ('h48_show.css','h48_ov.css','h48_lb.css') or os.path.exists(_S+f))
+    _h6js='\n'.join(open(_S+f).read() for f in ['h48_data.js','h48_ui.js','h48_ov.js','h48_lb.js','h48_up.js'] if f!='h48_up.js' or os.path.exists(_S+f))
     _lb='<script id="x2p-lb-js">\n'+open(_S+'x2p_lb.js').read()+'\n</script>\n'
     assert _tp.count(_lb)==1
     _h6=_tp.replace(_lb,'',1)
@@ -575,6 +576,10 @@ try:
     _EL='<script src="ez-learn.js"></script>\n'
     assert _h6.count(_EL)==1
     _h6=_h6.replace(_EL,_EL+'<script id="h48-js">\n'+_h6js.replace('</script','<\\/script')+'\n</script>\n',1)
+    # the crawl says "trades" like the rest of the page (x2plus.js DESKB writes "Calls due")
+    _CD='<span class="x2p-cw-k">Calls due \'+wd(nk)'
+    assert _h6.count(_CD)==1
+    _h6=_h6.replace(_CD,_CD.replace('Calls due','Trades due'),1)
     open("v50-live-x6plus.html",'w').write(_h6); print("ok v50-live-x6plus.html",len(_h6))
 except Exception as _e:
     print("FAILED v50-live-x6plus.html:",repr(_e))
