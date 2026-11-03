@@ -1,1 +1,155 @@
-/* x2p_lb: filled by its builder */
+/* ===== H38 LEADERBOARD (owner, 2026-11-03): take C "The race board" of round H35 lb, ported (x2p_lb.js). _m.css + c.css, with the
+   classes renamed (xl- shared, xr- the race board; the site's own .up/.dn/.w/.l/.sr/.lbx leak into bare names), the page's own heading
+   lettering (.t4-h2) and the cream narrator caption box of the other sections. ===== */
+/* while the race board is on, X2's own Leaderboard stays in the DOM, hidden; a failure takes xlb-live off and it shows again */
+html.xlb-live #view>.xlb-old{display:none!important}
+html.xlb-on[data-sec="leaderboard"] #view{padding-top:0}
+#x2pLbx{--cr:#f8f0d9;--lb:#d8cfba;--mu:#a69d8a;--up:#3fd07a;--dn:#ff5a4c;--gd:#ffd21f;--ink:#0d0b10;
+  position:relative;padding:22px 0 56px;color:var(--cr);font:600 13px/1.3 'Shantell Sans',system-ui,sans-serif;max-width:1240px;margin:0 auto;box-sizing:border-box}
+#x2pLbx *,#x2pLbx *::before,#x2pLbx *::after{box-sizing:border-box}
+/* the heading: the page's lettering (Bangers, gold, ink stroke, stacked drop), at the Overview's heading size */
+html body main.wrap#view #x2pLbx h1.xl-h{margin:4px 0 12px;padding:0 4px;font-size:clamp(40px,12.4vw,52px)!important;outline:0}
+@media (min-width:1000px){html body main.wrap#view #x2pLbx h1.xl-h{font-size:clamp(48px,5.4vw,74px)!important}}
+/* the caption box: the page's one narrator voice (cream, ink, tilted), as under every Overview heading */
+#x2pLbx .xl-cap{position:relative;z-index:4;display:inline-block;margin:0 0 14px 4px;max-width:100%;transform:rotate(-.8deg);background:var(--cr);border:2.5px solid var(--ink);box-shadow:3px 4px 0 var(--ink);
+  padding:5px 10px 4px;font:600 13.5px/1.25 'Shantell Sans',system-ui,sans-serif;color:var(--ink)}
+#x2pLbx .xl-cap .xl-cn{font:400 1.08em/1 Anton,sans-serif;letter-spacing:.02em}
+#x2pLbx .xl-up{color:var(--up)}#x2pLbx .xl-dn{color:var(--dn)}
+#x2pLbx .xl-n{white-space:nowrap;font-family:Anton,'Bebas Neue',sans-serif;font-weight:400;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+#x2pLbx .xl-lab{display:block;font:700 9.5px/1.1 'Shantell Sans',system-ui;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);white-space:nowrap}
+#x2pLbx .xl-mk{display:block;width:100%;height:100%}
+#x2pLbx .xl-pt{display:inline-block;width:24px;height:auto;vertical-align:middle;flex:none}
+#x2pLbx .xl-lg{display:inline-flex;align-items:center;justify-content:center;flex:none;width:46px;height:24px;padding:3px 5px;border-radius:4px;background:#f3ead6;
+  box-shadow:inset 0 0 0 1px rgba(13,11,16,.35),1.5px 1.5px 0 #000;vertical-align:middle}
+#x2pLbx .xl-lg img{display:block;max-width:100%;max-height:100%;object-fit:contain}
+#x2pLbx .xl-lgt{font:400 11px/1 Anton,sans-serif;color:var(--ink)}
+/* last five: lamps lit in green or red with the letter in them */
+#x2pLbx .xl-l5{display:inline-flex;gap:3px;vertical-align:middle}
+#x2pLbx .xl-l5 i{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;font:400 9px/1 Anton,sans-serif;font-style:normal;color:#06120b;border:1px solid rgba(0,0,0,.7)}
+#x2pLbx .xl-l5 i.xl-w{background:radial-gradient(circle at 35% 30%,#d8ffe6 0 14%,#46e08a 40%,#178a46 100%);box-shadow:0 0 5px rgba(63,208,122,.65)}
+#x2pLbx .xl-l5 i.xl-l{background:radial-gradient(circle at 35% 30%,#ffd9d2 0 14%,#ff5a4c 40%,#a3201a 100%);box-shadow:0 0 5px rgba(255,90,76,.6);color:#1b0505}
+/* switches: a segmented rocker in black glass with a nickel rim, the lit position cream */
+#x2pLbx .xl-sw{display:inline-flex;padding:3px;gap:2px;border-radius:7px;background:linear-gradient(#18161b,#060507);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1.5px #6f6a60,0 0 0 3px #0d0b10,2.5px 3px 0 3px #000}
+#x2pLbx .xl-sw button{appearance:none;border:0;margin:0;min-height:32px;padding:6px 10px;border-radius:5px;background:transparent;color:var(--lb);cursor:pointer;
+  font:400 14px/1 Anton,sans-serif;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+#x2pLbx .xl-sw button[aria-selected="true"]{background:linear-gradient(#fff8e6,#e7dcc0);color:var(--ink);box-shadow:inset 0 -2px 0 rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.4);cursor:default}
+#x2pLbx .xl-sw button:focus-visible{outline:2px solid var(--cr);outline-offset:1px}
+#x2pLbx .xl-swl{font:700 11px/1 'Shantell Sans',system-ui;color:var(--lb);margin-right:8px;white-space:nowrap}
+#x2pLbx .xl-fine{margin:16px 2px 0;font:600 11.5px/1.35 'Shantell Sans',system-ui;color:var(--mu)}
+
+/* ---------- take C, the race board ---------- */
+/* the lower third: the leader's name in its colour, its figure, the gap; a red round bug on its corner */
+#x2pLbx .xr-l3{position:relative;display:flex;align-items:stretch;margin:0 0 12px;max-width:640px;transform:skewX(-6deg);box-shadow:3px 3px 0 #000}
+#x2pLbx .xr-bug{flex:none;display:flex;align-items:center;padding:0 10px;background:linear-gradient(#e0362c,#a3201a);color:#fff;font-size:14px;letter-spacing:.06em;text-transform:uppercase;border:1.5px solid #0d0b10}
+#x2pLbx .xr-l3t{flex:1;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:8px 12px 9px;background:linear-gradient(#17151a,#060507);border:1.5px solid #0d0b10;border-left:0;
+  box-shadow:inset 0 2px 0 rgba(255,236,190,.12),inset 0 -3px 0 rgba(201,144,30,.6)}
+#x2pLbx .xr-l3t>b,#x2pLbx .xr-l3t>span{transform:skewX(6deg)}
+#x2pLbx .xr-ln1{font-size:26px;line-height:1;letter-spacing:.02em}
+#x2pLbx .xr-ln2{font-size:26px;line-height:1}
+#x2pLbx .xr-l3t>span{flex-basis:100%;font:700 12.5px/1.25 'Shantell Sans',system-ui;color:var(--lb)}
+#x2pLbx .xr-l3t>span>em{font-style:normal;color:var(--mu)}
+#x2pLbx .xr-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin:0 0 14px 3px}
+#x2pLbx .xr-cg{display:inline-flex;align-items:center}
+#x2pLbx .xr-ctl .xl-sw button{padding:6px 9px;font-size:13px}
+/* the board: black solder mask under a warm key light, a gold rim, the ticks as faint traces */
+#x2pLbx .xr-board{position:relative;padding:26px 0 8px;border-radius:8px;--lh:256px;
+  background:radial-gradient(90% 70% at 15% 0%,rgba(255,226,160,.10),transparent 60%),linear-gradient(180deg,#0f1410,#050806);
+  box-shadow:inset 0 0 0 1.5px rgba(201,144,30,.75),inset 0 0 0 3px #0d0b10,inset 0 0 0 4px rgba(201,144,30,.35),3px 4px 0 #000}
+#x2pLbx .xr-tk{position:absolute;top:8px;transform:translateX(-50%);font:400 10.5px/1 Anton,sans-serif;color:var(--mu);white-space:nowrap}
+#x2pLbx .xr-tk::after{content:"";position:absolute;left:50%;top:15px;width:1px;height:var(--lh);background:rgba(201,144,30,.13)}
+#x2pLbx .xr-tk.xr-t0{color:var(--cr)}
+#x2pLbx .xr-sl{position:absolute;top:22px;bottom:28px;width:0;border-left:2px dashed rgba(248,240,217,.75);transform:translateX(-1px)}
+#x2pLbx .xr-lanes{position:relative}
+#x2pLbx .xr-ln{position:relative;height:62px}
+#x2pLbx .xr-nm{position:absolute;left:12px;bottom:3px;color:var(--u);letter-spacing:.04em}
+#x2pLbx .xr-nm b{font-size:13px}
+/* the lane: a copper trace with vias at both ends */
+#x2pLbx .xr-tr{position:absolute;left:3%;right:3%;top:34px;height:4px;border-radius:2px;background:linear-gradient(#e8bd5a,#9a6a16);box-shadow:0 0 0 1px rgba(0,0,0,.7),0 6px 0 -1px rgba(201,144,30,.18)}
+#x2pLbx .xr-tr::before,#x2pLbx .xr-tr::after{content:"";position:absolute;top:-3px;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle,#050806 0 2px,#d8a640 2.5px 4px,#6a4a10 4.5px)}
+#x2pLbx .xr-tr::before{left:-5px}#x2pLbx .xr-tr::after{right:-5px}
+/* the trail: the run from the start line, lit green for profit, red for a loss */
+#x2pLbx .xr-trail{position:absolute;left:var(--a);width:var(--w);top:33px;height:6px;border-radius:3px;background:linear-gradient(90deg,#1c7a43,#5cf09c);box-shadow:0 0 8px rgba(70,224,138,.7),0 0 0 1px #000}
+#x2pLbx .xr-ln.xl-neg .xr-trail{background:linear-gradient(270deg,#8f1d17,#ff6a5c);box-shadow:0 0 8px rgba(255,90,76,.7),0 0 0 1px #000}
+#x2pLbx .xr-ln.xl-nil .xr-trail{display:none}
+/* the car: a small chip in the model's own colour, pins top and bottom, the lab's mark in ink */
+#x2pLbx .xr-car{position:absolute;left:var(--x);top:36px;width:38px;height:24px;transform:translate(-50%,-50%);border-radius:3px;
+  background:linear-gradient(180deg,rgba(255,255,255,.35),transparent 40%,rgba(0,0,0,.25)),var(--u);box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.6),2px 2px 0 #000}
+#x2pLbx .xr-car::before,#x2pLbx .xr-car::after{content:"";position:absolute;left:4px;right:4px;height:4px;background:repeating-linear-gradient(90deg,#f2c95a 0 3px,transparent 3px 6px)}
+#x2pLbx .xr-car::before{top:-4px}#x2pLbx .xr-car::after{bottom:-4px}
+#x2pLbx .xr-mk{position:absolute;left:50%;top:50%;width:16px;height:16px;transform:translate(-50%,-50%)}
+#x2pLbx .xr-ln.xr-1 .xr-car{box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.6),2px 2px 0 #000,0 0 0 2px #ffd21f,0 0 12px rgba(255,210,31,.55)}
+#x2pLbx .xr-val{position:absolute;top:2px;left:clamp(44px,var(--x),calc(100% - 44px));transform:translateX(-50%);font-size:16px;color:var(--up);white-space:nowrap}
+#x2pLbx .xr-ln.xl-neg .xr-val{color:var(--dn)}
+#x2pLbx .xr-ln.xl-nil .xr-val{font:700 11px/1 'Shantell Sans',system-ui;color:var(--mu)}
+#x2pLbx[data-mt="hit"] .xr-val{color:var(--cr)}
+#x2pLbx .xr-when{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;margin:4px 12px 0;font:700 11px/1.25 'Shantell Sans',system-ui;color:var(--lb)}
+#x2pLbx .xr-key{display:inline-flex;align-items:center;gap:6px;color:var(--cr)}
+#x2pLbx .xr-key>i{display:inline-block;width:0;height:13px;border-left:2px dashed rgba(248,240,217,.75)}
+#x2pLbx .xr-wt.xr-fb{color:var(--cr)}
+@media (prefers-reduced-motion:no-preference){#x2pLbx .xr-car,#x2pLbx .xr-trail,#x2pLbx .xr-val{transition:left .6s cubic-bezier(.2,0,0,1),width .6s cubic-bezier(.2,0,0,1)}}
+/* the timing tower */
+#x2pLbx .xr-tower{margin-top:16px}
+#x2pLbx .xr-th,#x2pLbx .xr-tw{display:grid;grid-template-columns:24px minmax(0,1fr) 78px 50px 44px;align-items:center;column-gap:6px}
+#x2pLbx .xr-th{padding:0 8px 5px;font:700 9.5px/1 'Shantell Sans',system-ui;letter-spacing:.06em;text-transform:uppercase;color:var(--mu)}
+#x2pLbx .xr-th>span:nth-child(n+3){text-align:right}
+#x2pLbx .xr-tws{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+#x2pLbx .xr-tw{padding:7px 8px;background:linear-gradient(90deg,var(--u) 0 4px,#141216 4px,#08070a);box-shadow:inset 0 0 0 1px rgba(201,144,30,.35),2px 2px 0 #000;transform:skewX(-6deg)}
+#x2pLbx .xr-tw>b,#x2pLbx .xr-tw>.xr-who{transform:skewX(6deg)}
+#x2pLbx .xr-pos{font-size:18px;color:var(--cr);text-align:center}
+#x2pLbx .xr-tw.xr-1 .xr-pos{color:var(--cr);text-shadow:0 0 6px rgba(255,210,31,.5)}
+#x2pLbx .xr-who{display:flex;align-items:center;gap:6px;min-width:0}
+#x2pLbx .xr-who>b{font-size:17px;color:var(--u);letter-spacing:.02em;overflow:hidden;text-overflow:ellipsis}
+#x2pLbx .xr-tmk{flex:none;width:16px;height:16px}
+#x2pLbx .xr-who .xl-pt{width:20px}
+#x2pLbx .xr-gap,#x2pLbx .xr-wl,#x2pLbx .xr-hit{font-size:15px;text-align:right;color:var(--cr)}
+#x2pLbx .xr-gap{color:var(--dn)}#x2pLbx .xr-gap.xr-ldr{font:700 11px/1 'Shantell Sans',system-ui;color:var(--lb)}
+#x2pLbx .xr-gap.xr-gh2{color:var(--cr)}
+#x2pLbx .xr-hit.xl-up{color:var(--up)}#x2pLbx .xr-hit.xl-dn{color:var(--dn)}
+/* the pit wall: each model's own chip with its season trades */
+html body main.wrap#view #x2pLbx h2.xr-pw{margin:22px 0 8px!important;padding:0!important;font:700 11px/1 'Shantell Sans',system-ui!important;letter-spacing:.07em!important;text-transform:uppercase;color:var(--lb)!important;
+  background:none!important;border:0!important;transform:none!important;text-align:left!important;text-shadow:none!important;-webkit-text-stroke:0!important}
+html body main.wrap#view #x2pLbx h2.xr-pw::before,html body main.wrap#view #x2pLbx h2.xr-pw::after{content:none!important}
+#x2pLbx .xr-pits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#x2pLbx .xr-pit{min-width:0;border-style:solid;border-width:11px 8px;border-image:var(--chip) 58 42 / 11px 8px round;background:linear-gradient(180deg,#141216,#050507);background-clip:padding-box;box-shadow:2.5px 3px 0 #000}
+#x2pLbx .xr-ph{display:flex;align-items:center;gap:5px;padding:7px 7px 6px;border-bottom:1px solid rgba(201,144,30,.38)}
+#x2pLbx .xr-ph>b{font-size:17px;color:var(--u);letter-spacing:.02em}
+#x2pLbx .xr-ph>small{font:700 9.5px/1 'Shantell Sans',system-ui;color:var(--lb);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#x2pLbx .xr-ph .xl-pt{width:20px;margin-left:auto}
+#x2pLbx .xr-pr{padding:6px 7px;border-bottom:1px solid rgba(201,144,30,.2)}
+#x2pLbx .xr-pr:last-child{border-bottom:0}
+#x2pLbx .xr-pr .xl-lab{margin-bottom:4px}
+#x2pLbx .xr-tr2{display:flex;align-items:center;gap:6px}
+#x2pLbx .xr-tr2>b{font-size:16px}
+#x2pLbx .xr-sec{display:block;font:700 11px/1 'Shantell Sans',system-ui;white-space:nowrap}
+#x2pLbx .xr-sec>b{font-size:16px;color:var(--cr)}
+#x2pLbx .xr-sec>em{font-style:normal}
+#x2pLbx .xr-pit .xl-l5 i{width:14px;height:14px}
+@media (max-width:359.98px){#x2pLbx .xr-th,#x2pLbx .xr-tw{grid-template-columns:20px minmax(0,1fr) 66px 44px 38px;column-gap:4px}#x2pLbx .xr-who .xl-pt{display:none}#x2pLbx .xr-ph>small{display:none}
+  #x2pLbx .xr-ctl .xl-sw button{padding:6px 6px;font-size:12px}#x2pLbx .xr-val{font-size:14px}#x2pLbx .xr-pits{gap:8px}#x2pLbx .xr-pr{padding:6px 5px}#x2pLbx .xr-tr2{gap:4px}#x2pLbx .xl-lg{width:40px}}
+@media (min-width:900px){
+ #x2pLbx .xr-l3{max-width:760px}#x2pLbx .xr-ln1,#x2pLbx .xr-ln2{font-size:38px}#x2pLbx .xr-l3t>span{font-size:15px;flex-basis:auto;align-self:center}#x2pLbx .xr-bug{font-size:17px;padding:0 14px}
+ #x2pLbx .xl-cap{font-size:15px}
+ #x2pLbx .xr-grid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:26px;align-items:start}
+ #x2pLbx .xr-tower{margin-top:0}
+ #x2pLbx .xr-ln{height:84px}#x2pLbx .xr-board{--lh:344px;padding-top:30px}#x2pLbx .xr-nm b{font-size:15px}#x2pLbx .xr-car{width:46px;height:30px;top:48px}#x2pLbx .xr-tr{top:46px}#x2pLbx .xr-trail{top:45px}#x2pLbx .xr-mk{width:20px;height:20px}#x2pLbx .xr-val{font-size:22px;left:clamp(60px,var(--x),calc(100% - 60px))}
+ #x2pLbx .xr-tk{font-size:12px}
+ #x2pLbx .xr-th,#x2pLbx .xr-tw{grid-template-columns:30px minmax(0,1fr) 98px 60px 56px}
+ #x2pLbx .xr-tw{padding:16px 12px}#x2pLbx .xr-pos{font-size:24px}#x2pLbx .xr-who>b{font-size:22px}#x2pLbx .xr-tmk{width:20px;height:20px}#x2pLbx .xr-gap,#x2pLbx .xr-wl,#x2pLbx .xr-hit{font-size:19px}#x2pLbx .xr-th{font-size:11px;padding:0 12px 6px}
+ #x2pLbx .xr-pits{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+ #x2pLbx .xr-ph>b{font-size:22px}#x2pLbx .xr-ph>small{font-size:11px}#x2pLbx .xr-tr2>b{font-size:18px}#x2pLbx .xr-sec>b{font-size:18px}#x2pLbx .xr-pr{padding:8px 10px}
+}
+
+/* ---------- the header with four tabs (Overview, Leaderboard, Upcoming, Buybacks Soon): one row on phones ---------- */
+@media (max-width:759.98px){
+ html.x2p-launch .nav:has(> a[data-r="leaderboard"]){grid-template-columns:auto auto auto auto!important;justify-content:space-between!important;gap:2px!important}
+ html.uf.x2p.x2d[data-theme="dark"] body header.top .nav:has(> a[data-r="leaderboard"]) :is(a[data-r],.x2p-soon){padding-left:6px!important;padding-right:6px!important}
+ html.uf.x2p.x2d[data-theme="dark"] body header.top .nav:has(> a[data-r="leaderboard"]) a[aria-current="page"]{padding-right:11px!important}
+ /* "Buybacks" with its "Soon" tag stacked over it, so the four fit 360 to 430 */
+ html.uf.x2p.x2d[data-theme="dark"] body header.top .nav:has(> a[data-r="leaderboard"]) .x2p-soon{flex-direction:column;gap:2px!important;line-height:1}
+ html.uf.x2p.x2d[data-theme="dark"] body header.top .nav:has(> a[data-r="leaderboard"]) .x2p-soon small{font-size:7.5px!important;padding:1.5px 3px 1px!important;order:-1}
+}
+@media (max-width:379.98px){
+ html.uf.x2p.x2d[data-theme="dark"] body header.top .nav:has(> a[data-r="leaderboard"]) :is(a[data-r],.x2p-soon){font-size:10px!important;padding-left:4px!important;padding-right:4px!important}
+ html.uf.x2p.x2d[data-theme="dark"] body header.top .nav:has(> a[data-r="leaderboard"]) a[aria-current="page"]{padding-right:9px!important}
+}

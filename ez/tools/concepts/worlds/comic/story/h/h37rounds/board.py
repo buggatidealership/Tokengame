@@ -27,6 +27,7 @@ if sys.argv[1]=='lift':
       if os.path.exists(f):cells.append((W,k,Image.open(f).convert('RGB')))
   tw=520;th=0;rows=[]
   for W,k,im in cells:
+    if W>600:im=im.resize((im.width*2,im.height*2),Image.LANCZOS)
     im.thumbnail((tw,620));rows.append((W,k,im))
   cols=6;cw=tw+24;hh=70;rh=max(i.height for _,_,i in rows)+hh+20
   B=Image.new('RGB',(cols*cw+24,2*rh+20),(24,22,28));d=ImageDraw.Draw(B)
