@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Four AIs Trade Earnings · This week</title>
+<link rel="stylesheet" href="show.css">
+<style>
+/* ===== Overview: this week's episode ===== */
+/* --- the title card (the show open) --- */
+.tc{position:relative;background:url(img/title-34.jpg) center top/cover no-repeat;aspect-ratio:3/4;border-bottom:3px solid var(--ink)}
+.tc .in{position:absolute;left:0;right:0;top:0;height:46%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px var(--gut) 0}
+.pres{display:flex;align-items:center;gap:8px;font-family:"Lilita One";font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:#7a2e12;margin:0 0 6px}
+.pres img{width:30px;height:30px}
+.tc h1{font-size:clamp(40px,12.2vw,78px);--l1:#fff1e2;--l2:#ff7b52;--l3:#d8331d}
+.ep{margin:8px 0 0;font-family:"Lilita One";font-size:16px;letter-spacing:.06em;color:#4a2412;display:flex;gap:10px;align-items:center}
+.ep span{display:inline-block;padding:3px 10px 2px;border:2px solid #4a2412;border-radius:999px;transform:rotate(-2deg)}
+.cred{--g:#41702e;padding:18px var(--gut) 22px;border-bottom:3px solid var(--ink)}
+.cred .say{font-size:18px;line-height:1.35;margin:0;max-width:30em}
+.cred .say b{color:#fff6c8}
+.cred .sim{font-family:"Lilita One";font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#e6f2c8;margin:10px 0 0;opacity:.9}
+.star{margin:14px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.star .lab{font-family:"Lilita One";font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#e6f2c8;width:100%}
+.star .who{display:inline-flex;align-items:center;gap:6px;font-family:"Caprasimo";font-size:22px;color:var(--mc);
+  -webkit-text-stroke:1.2px var(--ink);paint-order:stroke fill;filter:drop-shadow(1.5px 1.5px 0 var(--ink))}
+
+/* --- previously on: the TV set with last time's film, then the beats --- */
+.prev{--g:#7b3a1a}
+.tvw{position:relative;aspect-ratio:4/3;background:url(img/tv.jpg) center/cover no-repeat;border-bottom:3px solid var(--ink)}
+.tvs{position:absolute;left:24.8%;top:30.4%;width:40.4%;height:40.9%;border-radius:10%/13%;overflow:hidden;background:#0c0f0c;box-shadow:inset 0 0 0 2px rgba(0,0,0,.6)}
+.tvs video,.tvs img{width:100%;height:100%;object-fit:contain;display:block}
+.tvs::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(90% 70% at 30% 20%,rgba(255,255,255,.16),rgba(255,255,255,0) 45%),radial-gradient(120% 120% at 50% 50%,rgba(0,0,0,0) 60%,rgba(0,0,0,.45) 100%)}
+.tvs button{position:absolute;inset:0;border:0;background:none;cursor:pointer;z-index:2}
+.tvs .play{position:absolute;right:6%;bottom:8%;z-index:3;width:40px;height:40px;border-radius:50%;background:#f2b632;border:2.5px solid var(--ink);box-shadow:2px 2px 0 var(--ink);display:grid;place-items:center;pointer-events:none}
+.tvs .play::before{content:"";margin-left:4px;border-left:13px solid var(--ink);border-top:8px solid transparent;border-bottom:8px solid transparent}
+.tvs.on .play{display:none}
+.beats{padding:20px var(--gut) 24px}
+.beats h2{font-size:clamp(30px,8.6vw,46px);margin:2px 0 4px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.beats .when{font-family:"Lilita One";font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#ffe2b8;margin:0}
+.beat{margin:18px 0 0}
+.beat > p{margin:0 0 8px;font-size:17px;color:var(--cream2)}
+.beat > p b{color:#fff}
+.tok{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tk{display:flex;align-items:center;gap:8px;padding:2px 2px;min-height:44px}
+.tk .who{font-family:"Lilita One";font-size:16px;line-height:1}
+.tk .wh{display:flex;flex-direction:column;gap:3px;min-width:0}
+.tk .sz{font-family:"Lilita One";font-size:15px;line-height:1}
+.long{color:var(--up)}.short{color:var(--dn)}
+.tk .st{margin-left:auto;font-family:"Lilita One";font-size:18px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:2.5px solid currentColor;transform:rotate(-12deg);flex:none}
+.tk.w .st{color:var(--up)}.tk.l .st{color:var(--dn)}
+.close{display:inline-flex;align-items:baseline;gap:12px;padding:4px 10px}
+.close .num{font-size:40px;line-height:1}
+.close .lbl{font-size:12px}
+.payoff{margin:18px 0 0;font-size:18px}
+.payoff b{color:#fff3c0}
+.payoff .nx{display:block;margin-top:6px;color:#ffe2b8}
+
+/* --- act one: the cast, freeze-frame introductions --- */
+.castsec{--g:#21485a;padding:22px 0 26px}
+.cast{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cc{display:flex;flex-direction:column;filter:drop-shadow(3px 4px 0 rgba(10,4,0,.5))}
+.cc .pic{aspect-ratio:3/4;border:3px solid var(--ink);border-bottom:0;border-radius:12px 12px 0 0;overflow:hidden;background:#000}
+.cc .pic img{width:100%;height:100%;object-fit:cover}
+.cc .card{flex:1;border-width:12px;border-image-width:12px;margin-top:-6px;padding:2px 2px 0;display:flex;flex-direction:column;gap:6px}
+.cc .nmr{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.cc h3{font-size:clamp(26px,7.4vw,36px);--l1:#fff;--l2:var(--mc);--l3:var(--mc2);margin:0}
+.cc .rk{font-family:"Lilita One";font-size:12px;letter-spacing:.06em;color:#7a5a3e;display:block;margin-bottom:-2px}
+.cc .fig{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.cc .fig .num{font-size:22px;line-height:1}
+.cc .fig .lbl{display:block;font-size:10px;margin-bottom:3px}
+.cc .trait{margin:0;font-size:13.5px;line-height:1.3;color:#4a2e1e;font-weight:600}
+
+/* --- act two: every round so far (the episode guide) --- */
+.recsec{--g:#1d4a3a;padding:20px 0 26px}
+.key{font-size:14px;line-height:1.35;margin:8px 0 14px;color:#d7f0e0}
+.key b{font-family:"Lilita One";font-weight:400;letter-spacing:.04em;color:#fff}
+.guide{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}
+.ep2{display:flex;flex-direction:column;filter:drop-shadow(3px 3px 0 rgba(8,3,0,.55))}
+.ep2 .scr{position:relative;display:block;padding:0;border:3px solid var(--ink);border-radius:16px/14px;overflow:hidden;aspect-ratio:1;background:#111;cursor:pointer}
+.ep2 .scr img,.ep2 .scr video{width:100%;height:100%;object-fit:cover;display:block}
+.ep2 .scr::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(85% 60% at 28% 18%,rgba(255,255,255,.14),rgba(255,255,255,0) 50%),radial-gradient(130% 130% at 50% 50%,rgba(0,0,0,0) 62%,rgba(0,0,0,.35) 100%)}
+.ep2 .cap{margin-top:-8px;border-width:10px;border-image-width:10px;flex:1;display:flex;flex-direction:column;gap:4px;padding:3px 1px 1px}
+.ep2 .r1{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.ep2 .rn{font-family:"Lilita One";font-size:12px;letter-spacing:.06em;color:#7a5a3e;text-transform:uppercase}
+.ep2 .mv{font-size:17px;line-height:1}
+.ep2 .cn{font-size:13.5px;line-height:1.2;font-weight:700;color:var(--ink)}
+.ep2 .wn{display:flex;align-items:center;gap:5px;font-family:"Lilita One";font-size:13px;color:#4a2e1e;margin-top:auto;padding-top:2px}
+.ep2 .wn .mk+.mk{margin-left:-9px}
+.ep2 .wn.no{color:#8a3a26}
+.more{display:flex;justify-content:center;margin-top:18px}
+
+/* --- act three: smart or lucky (the screening room and the chalkboard) --- */
+.solsec{--g:#3c2442;padding:20px 0 26px}
+.sol2{display:grid;gap:20px;margin-top:14px}
+.bd h3{font-size:28px;margin:0;--l1:#fff;--l2:#ffe08a;--l3:#ffb43a}
+.bd .q{margin:3px 0 10px;font-size:15.5px;color:var(--cream2)}
+.scene{position:relative;margin:0 calc(var(--gut)*-1);border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);overflow:hidden}
+/* a close-up of the painting: the surface fills 92% of the width */
+.scene.sc{aspect-ratio:1/.8;background:url(img/screen.jpg) no-repeat}
+.scene.ch{aspect-ratio:1/.72;background:url(img/chalk.jpg) no-repeat}
+.scene .sf{position:absolute}
+.chart{display:block;width:100%;height:100%;overflow:visible}
+.chart text{font-family:"Lilita One";letter-spacing:.02em}
+
+/* --- act four: the cliffhanger --- */
+.betsec{--g:#5e2516;padding:0 0 26px}
+.cliff{position:relative;aspect-ratio:4/3;background:url(img/cliff.jpg) center/cover no-repeat;border-bottom:3px solid var(--ink);margin:0 calc(var(--gut)*-1)}
+.pk{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#f7e6c2;
+  text-shadow:0 1px 0 rgba(0,0,0,.55),0 -1px 0 rgba(255,236,200,.12);line-height:1}
+.pk1{left:4%;top:7.4%;width:29.4%;height:15.2%}
+.pk2{left:4.4%;top:27.6%;width:29.6%;height:14.4%}
+.pk3{left:4.8%;top:48.2%;width:29.6%;height:14.4%}
+.pk .a{font-family:"Lilita One";font-size:clamp(10px,2.8vw,19px);letter-spacing:.06em;text-transform:uppercase;opacity:.92}
+.pk .b{font-family:"Caprasimo";font-size:clamp(16px,5.2vw,38px);margin-top:.12em;white-space:nowrap}
+.pk1 .b{display:flex;align-items:center;gap:.25em}
+.pk1 .b img{width:1.05em;height:1.05em;object-fit:contain;background:#fff;border-radius:4px;padding:1px;box-shadow:0 0 0 1.5px #24140c}
+.pk3 .b{font-family:"Lilita One";font-variant-numeric:tabular-nums;letter-spacing:.02em;font-size:clamp(15px,4.6vw,36px)}
+.pk3 .b u{text-decoration:none;font-size:.55em;opacity:.85;margin:0 .14em 0 .04em}
+.plq{position:absolute;left:67.9%;top:39.2%;width:9.4%;height:6.4%;transform:rotate(7deg);display:grid;place-items:center;
+  font-family:"Lilita One";font-size:clamp(11px,3.3vw,26px);color:#3a220c;text-shadow:0 1px 0 rgba(255,236,170,.6),0 -1px 0 rgba(60,30,0,.35)}
+.bet-tx{padding:20px var(--gut) 0}
+.bet-tx .say{font-size:18px;margin:0 0 6px}
+.bet-tx .say b{color:#ffd9a8}
+.outs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 0}
+.out{padding:2px 2px}
+.out .k{font-family:"Caprasimo";font-size:24px;line-height:1}
+.out p{margin:4px 0 0;font-size:15px;color:var(--ink);font-weight:600;line-height:1.25}
+.tbc{font-size:clamp(32px,9vw,54px);margin:22px 0 4px;--l1:#fff8e8;--l2:#ffd36a;--l3:#ff8a3a}
+.s2{margin:6px 0 0;font-size:15px;color:#ffe2c4}
+.frz{margin:10px 0 0;font-size:14px;color:#ffd9b8;opacity:.95}
+
+/* --- next time on: the end card at dusk --- */
+.endc{position:relative;aspect-ratio:3/4;background:url(img/end-34.jpg) center top/cover no-repeat;border-top:3px solid var(--ink)}
+.endc .in{position:absolute;left:0;right:0;top:0;height:44%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 var(--gut)}
+.endc .k{font-family:"Lilita One";font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:#cfc4ff;margin:0 0 4px}
+.endc h2{font-size:clamp(36px,10.6vw,68px);--l1:#fffbe8;--l2:#ffe08a;--l3:#ffb43a}
+.nextsec{--g:#252050;padding:18px 0 28px;border-top:3px solid var(--ink)}
+.nextsec h3{font-size:26px;margin:4px 0 2px;--l1:#fff;--l2:#cfe3ff;--l3:#9cb8ff}
+.nextsec .sub{margin:0 0 10px;font-size:15px;color:#dcd6ff}
+.tin{display:grid;gap:10px}
+.ti{border-width:12px;border-image-width:12px;padding:2px}
+.ti .hd{display:flex;align-items:center;gap:8px}
+.ti .cn{font-weight:700;font-size:16px;line-height:1.15;color:var(--ink)}
+.ti .gd{font-family:"Lilita One";font-size:12px;letter-spacing:.05em;color:#7a5a3e;text-transform:uppercase;margin-top:2px}
+.ti .tok{margin-top:8px;gap:4px 10px}
+.ti .tk{min-height:30px;gap:6px}
+.ti .tk .who{font-size:14px}.ti .tk .sz{font-size:14px}
+.cup{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.nxw > div + div{margin-top:26px}
+.cu{border-width:10px;border-image-width:10px;display:flex;align-items:center;gap:8px;padding:1px}
+.cu .cn{font-weight:700;font-size:13.5px;line-height:1.15;color:var(--ink)}
+.cu .gd{font-family:"Lilita One";font-size:11px;letter-spacing:.05em;color:#7a5a3e;text-transform:uppercase;margin-top:2px}
+.alsoN{margin:10px 0 0;font-size:14px;color:#dcd6ff}
+.bye{margin:26px 0 0;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.bye .let{font-size:30px;--l1:#fff;--l2:#ffe08a;--l3:#ffb43a}
+.foot{--g:#1a1530;padding:16px var(--gut);font-size:13px;color:#cfc8f2;border-top:3px solid var(--ink)}
+.foot .in{max-width:var(--maxw);margin:0 auto;display:flex;gap:10px;align-items:center}
+.foot img{width:28px;height:28px}
+
+/* ===== desktop: each act recomposed for the wide frame ===== */
+@media (min-width:1000px){
+  :root{--gut:32px}
+  .tc{aspect-ratio:auto;height:min(56.25vw,760px);background-image:url(img/title-169.jpg);background-position:center}
+  .tc .in{left:0;right:auto;width:52%;height:100%;align-items:flex-start;text-align:left;padding:40px 0 140px max(var(--gut),calc((100vw - var(--maxw))/2 + var(--gut)));justify-content:center}
+  .tc h1{font-size:clamp(70px,7.2vw,112px)}
+  .cred{padding:22px 0 26px}
+  .cred .wrap{display:grid;grid-template-columns:1.25fr 1fr;gap:40px;align-items:center}
+  .star{margin:0}
+  .star .who{font-size:28px}
+  .prev .pw{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);align-items:center}
+  .tvw{width:100%}
+  .tvw{border-bottom:0;border-right:3px solid var(--ink)}
+  .beats{padding:28px 40px 30px}
+  .tok{grid-template-columns:1fr 1fr 1fr 1fr}
+  .beat .tok .tk{flex-direction:column;align-items:flex-start;gap:6px}
+  .beat .tok .tk .st{margin-left:0}
+  .castsec{padding:30px 0 34px}
+  .cast{grid-template-columns:repeat(4,1fr);gap:18px}
+  .cc h3{font-size:34px}
+  .cc .fig .num{font-size:24px}
+  .guide{grid-template-columns:repeat(5,1fr);gap:16px 14px}
+  .recsec{padding:28px 0 34px}
+  .sol2{grid-template-columns:1fr 1fr;gap:28px}
+  .scene{margin:0;border:3px solid var(--ink);border-radius:6px}
+  .betsec{padding:30px 0 34px}
+  .bet .bw{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:center}
+  .cliff{border:3px solid var(--ink);border-radius:6px;margin:0}
+  .nxw > div + div{margin-top:0}
+  .bet-tx{padding:0}
+  .endc{aspect-ratio:auto;height:min(50vw,640px);background-image:url(img/end-169.jpg);background-position:center bottom}
+  .endc .in{width:46%;height:100%;align-items:flex-start;text-align:left;padding:0 0 120px max(var(--gut),calc((100vw - var(--maxw))/2 + var(--gut)))}
+  .endc h2{font-size:clamp(52px,5vw,76px)}
+  .nxw{display:grid;grid-template-columns:1.5fr 1fr;gap:34px;align-items:start}
+  .tin{grid-template-columns:1fr}
+  .ti{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr);align-items:center;gap:12px}
+  .ti .tok{grid-template-columns:repeat(4,1fr);margin-top:0}
+  .cup{grid-template-columns:1fr 1fr}
+  .bump{height:150px}
+}
+</style>
+</head>
+<body>
+<header class="top grd"><div class="in">
+  <img class="lg" src="../../../../../tools/v22/x2p-logo.svg" alt="EZ.">
+  <span class="nm"><b>E</b>arnings <i>Z</i>eason</span>
+  <nav class="tabs" aria-label="Pages"><a class="tab" href="overview.html" aria-current="page">Overview</a><a class="tab" href="leaderboard.html">Leaderboard</a></nav>
+</div></header>
+<main id="show"></main>
+<footer class="foot grd"><div class="in"><img src="../../../../../tools/v22/x2p-logo.svg" alt=""><span>Simulated trades, $100K each, graded at each company's close. No return promises.</span></div></footer>
+
+<script src="../../../../../ez-data.js"></script>
+<script src="ezx.js"></script>
+<script src="show.js"></script>
+<script>
+(function(){
+var E=EZX,S=SHOW,M=S.M,esc=S.esc,RM=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var ord=E.rank(E.season,"pl");                       /* one order everywhere: season P&L */
+var mc2={GROK:"#9c968a",CLAUDE:"#c2552a",GPT:"#7a55d6",KIMI:"#2f84cf"};
+function sz(t){return (t.up?"Long ":"Short ")+t.size+"%"}
+function tokTrade(t){return '<div class="tk pl t">'+S.badge(t.m,28)+'<div class="wh"><span class="who">'+E.NAME[t.m]+'</span><span class="sz '+(t.up?"long":"short")+'">'+sz(t)+'</span></div></div>'}
+function tokGrade(t){return '<div class="tk pl t '+(t.w?"w":"l")+'">'+S.badge(t.m,28)+'<div class="wh"><span class="who">'+E.NAME[t.m]+'</span><span class="sz num '+(t.v>0?"pos":"neg")+'">'+E.money(t.v)+'</span></div><span class="st" aria-label="'+(t.w?"Win":"Loss")+'">'+(t.w?"W":"L")+'</span></div>'}
+function byOrd(a){return ord.map(function(m){return a.filter(function(t){return t.m===m})[0]}).filter(Boolean)}
+var R=E.R,last=R[R.length-1],nR=R.length,nT=R.reduce(function(a,r){return a+r.tr.length},0);
+function dayLong(a){return E.fmtDay(a,true)}
+var h="";
+
+/* ---------- the title card ---------- */
+h+='<section class="tcw" aria-label="Title card"><div class="tc"><div class="in">'+
+  '<p class="pres"><img src="'+M+'tools/v22/x2p-logo.svg" alt="EZ.">presents</p>'+
+  '<h1 class="let" data-let="7">Four AIs Trade Earnings</h1>'+
+  '<p class="ep"><span>Season 1</span><span>Week '+E.weekNo+'</span></p></div></div>'+
+  '<div class="cred grd"><div class="wrap"><div><p class="say">Before each company reports earnings, every AI goes <b>long or short</b> on its stock. <b>The close grades every trade.</b></p>'+
+  '<p class="sim">$100K a trade · simulated · '+nR+' rounds graded</p></div>'+
+  '<div class="star"><span class="lab">Starring</span>'+["GPT","CLAUDE","GROK","KIMI"].map(function(m){return '<span class="who" style="--mc:'+E.COL[m]+'">'+S.badge(m,26)+E.NAME[m]+'</span>'}).join("")+'</div></div></div></section>';
+
+/* ---------- previously on ---------- */
+var rc=E.recap,rcR=rc.tr.filter(function(t){return t.w}),rcW=E.winners(rc);
+h+='<div class="bump"><h2 class="t"><small>Last time</small><span data-let="2" data-amp=".7">Previously on…</span></h2></div>';
+h+='<section class="prev grd" aria-label="Previously: Round '+rc.n+'"><div class="pw">'+
+  '<div class="tvw" role="img" aria-label="A television showing the film of Round '+rc.n+'"><div class="tvs" id="tvs">'+
+    '<video id="tvv" muted playsinline preload="auto" poster="'+M+'media/'+rc.poster+'.jpg"><source src="'+M+'media/'+rc.film+'.webm" type="video/webm"><source src="'+M+'media/'+rc.film+'.mp4" type="video/mp4"></video>'+
+    '<button type="button" aria-label="Play the film of Round '+rc.n+'"></button><span class="play" aria-hidden="true"></span></div></div>'+
+  '<div class="beats"><p class="act">Round '+rc.n+'</p><h2 class="let cr" data-let="11" data-amp=".6">'+esc(E.coLabel(rc))+'</h2>'+
+  '<p class="when">Graded at the close · '+dayLong(rc.day)+'</p>'+
+  '<div class="beat"><p>Before its earnings, each AI placed a trade:</p><div class="tok">'+byOrd(rc.tr).map(tokTrade).join("")+'</div></div>'+
+  '<div class="beat"><p>Then the close:</p><div class="close pl"><span class="num '+(rc.a>0?"pos":"neg")+'">'+E.pct(rc.a)+'</span><span class="lbl">'+esc(rc.ticker)+' at the close</span></div></div>'+
+  '<div class="beat"><p>Graded, <b>$100K a trade</b>:</p><div class="tok">'+byOrd(rc.tr).map(tokGrade).join("")+'</div></div>'+
+  '<p class="payoff">'+(rcR.length===1?'<b>'+E.NAME[rcR[0].m]+' was the only one right</b>'+(rcW.length===1&&rcW[0]===rcR[0].m?' and won the round.':'.'):(rcW.length?'<b>'+rcW.map(function(m){return E.NAME[m]}).join(" & ")+' won the round.</b>':'<b>Nobody was right.</b>'))+
+  '<span class="nx">One round. There have been '+nR+'. Here is the cast.</span></p></div></div></section>';
+
+/* ---------- act one: the cast ---------- */
+h+='<div class="bump flip"><h2 class="t"><small>Act one</small><span data-let="3" data-amp=".7">Meet the cast</span></h2></div>';
+h+='<section class="castsec grd" aria-label="Meet the cast"><div class="wrap"><div class="cast">'+ord.map(function(m,i){var s=E.season[m],sh=s.seq.filter(function(x){return !x.r.tr.filter(function(t){return t.m===m})[0].up}).length,
+   firstN=s.seq[0].r.n,bias=sh*2>s.n?"Short on "+sh+" of its "+s.n+" trades.":"Long on "+(s.n-sh)+" of its "+s.n+" trades.";
+   return '<article class="cc" style="--mc:'+E.COL[m]+';--mc2:'+mc2[m]+'"><div class="pic"><img src="img/cast-'+m.toLowerCase()+'.jpg" alt="'+E.NAME[m]+', drawn as a cartoon character" loading="eager"></div>'+
+   '<div class="card pl"><div><span class="rk">No. '+(i+1)+'</span><div class="nmr"><h3 class="let" data-let="'+(20+i)+'" data-amp=".7">'+E.NAME[m]+'</h3>'+S.flag(m,30)+'</div></div>'+
+   '<div class="fig"><div><span class="lbl">Season P&amp;L</span><span class="num '+(s.pl>0?"pos":"neg")+'">'+E.money(s.pl)+'</span></div><div><span class="lbl">W-L</span><span class="num">'+s.w+'-'+s.l+'</span></div></div>'+
+   '<p class="trait">'+(firstN>1?"Joined in Round "+firstN+". ":"")+bias+'</p></div></article>'}).join("")+'</div></div></section>';
+
+/* ---------- act two: every round so far ---------- */
+var shown=window.matchMedia("(min-width:1000px)").matches?15:12;
+function ep(r){var w=E.winners(r);
+  return '<article class="ep2"><button class="scr" type="button" data-n="'+r.n+'" aria-label="Play the film of Round '+r.n+', '+esc(E.coLabel(r))+'"><img src="'+M+'media/'+r.poster+'.jpg" alt="" loading="eager"></button>'+
+  '<div class="cap pl t"><div class="r1"><span class="rn">Round '+r.n+'</span><span class="mv num '+(r.a>0?"pos":"neg")+'">'+E.pct(r.a)+'</span></div>'+
+  '<div class="cn">'+esc(E.coLabel(r))+'</div>'+
+  '<div class="wn'+(w.length?"":" no")+'">'+(w.length?w.map(function(m){return S.badge(m,20)}).join("")+w.map(function(m){return E.NAME[m]}).join(" & ")+" won":"Nobody won")+'</div></div></article>'}
+var rev=R.slice().reverse();
+h+='<div class="bump"><h2 class="t"><small>Act two</small><span data-let="4" data-amp=".7">Every round so far</span></h2></div>';
+h+='<section class="recsec grd" aria-label="Every round so far"><div class="wrap"><p class="lede"><b>'+nR+' rounds</b>, newest first. Every round has its own film: tap one to watch it.</p>'+
+  '<p class="key"><b>Won</b> = the trade closest to the move, among those that got the direction right. Both on a tie. <b>Nobody</b> when all four were wrong.</p>'+
+  '<div class="guide" id="guide">'+rev.slice(0,shown).map(ep).join("")+'</div><div class="more"><button class="btn" id="more" type="button">Show all '+nR+' rounds</button></div></div></section>';
+
+/* ---------- act three: smart or lucky ---------- */
+h+='<div class="bump flip"><h2 class="t"><small>Act three</small><span data-let="5" data-amp=".7">Smart or lucky?</span></h2></div>';
+h+='<section class="solsec grd" aria-label="Smart or lucky?"><div class="wrap"><p class="lede"><b>'+nR+' rounds, '+nT+' trades</b>, all graded at the close. That is too few to call it skill either way. Here is how it looks so far.</p>'+
+  '<div class="sol2"><div class="bd"><h3 class="let" data-let="31" data-amp=".6">Hit rate</h3><p class="q">How often were they right on their long or short?</p><figure class="scene sc" id="sc1"><div class="sf" id="sf1"></div></figure></div>'+
+  '<div class="bd"><h3 class="let" data-let="33" data-amp=".6">P&amp;L</h3><p class="q">Would $100K on every trade have made money?</p><figure class="scene ch" id="sc2"><div class="sf" id="sf2"></div></figure></div></div></div></section>';
+
+/* ---------- act four: the cliffhanger ---------- */
+var B=E.BET,betDay=B?new Date(B).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:"America/New_York"}):"Date to come";
+var frz=B&&SIM.leadHours!=null?new Date(B-SIM.leadHours*3600e3):null;
+h+='<div class="bump"><h2 class="t"><small>Act four</small><span data-let="6" data-amp=".7">The cliffhanger</span></h2></div>';
+h+='<section class="betsec grd bet" aria-label="Bet #1: NVIDIA"><div class="wrap bw"><figure class="cliff" role="img" aria-label="The pool, a chest of coins, teeters on a cliff edge beside a signpost">'+
+  '<div class="pk pk1"><span class="a">Bet #1</span><span class="b"><img src="'+M+'media/'+(CO_LOGOS.NVDA.f)+'" alt="">NVIDIA</span></div>'+
+  '<div class="pk pk2"><span class="a">At the close</span><span class="b">'+(B?new Date(B).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"}):"Soon")+'</span></div>'+
+  '<div class="pk pk3"><span class="a">Time left</span><span class="b" id="cd" aria-live="off"></span></div>'+
+  '<div class="plq" aria-label="69 percent">'+Math.round(SIM.poolShare*100)+'%</div></figure>'+
+  '<div class="bet-tx"><p class="say"><b>'+Math.round(SIM.poolShare*100)+'% of $EZ creator fees</b> fill the pool. At the close on '+betDay+', the pool goes on <b>NVIDIA (NVDA)</b>. The top model&rsquo;s trade decides: long or short.</p>'+
+  '<div class="outs"><div class="out pl"><span class="k let gr" data-let="41" data-amp=".5">Right</span><p>Profits buy back $EZ.</p></div><div class="out pl"><span class="k let rd" data-let="43" data-amp=".5">Wrong</span><p>The pool shrinks or can be wiped out.</p></div></div>'+
+  (frz?'<p class="frz">The board freezes 24 hours before: '+frz.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:"America/New_York"})+', '+frz.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/New_York"}).replace(":00","")+' New York.</p>':'')+
+  '<p class="tbc let" data-let="47">To be continued&hellip;</p><p class="s2">NVIDIA is the first bet, not the last. Season 2 brings more.</p></div></div></section>';
+
+/* ---------- next time on ---------- */
+var tday=E.dayKey(E.today);
+function grd(a){if(!a)return "Date to come";return (E.dayKey(a)===tday?"Today, ":"")+E.fmtDay(a,true)}
+var cu=E.comingUp.slice().sort(function(a,b){return ((a.resolves?E.dayKey(a.resolves):9e9)-(b.resolves?E.dayKey(b.resolves):9e9))||(a.n-b.n)});
+var cuN=window.matchMedia("(min-width:1000px)").matches?10:8;
+h+='<section class="endw" aria-label="Next time"><div class="endc"><div class="in"><p class="k">Next time on</p><h2 class="let" data-let="51">Four AIs Trade Earnings</h2></div></div>'+
+  '<div class="nextsec grd"><div class="wrap nxw"><div><h3 class="let" data-let="53" data-amp=".6">The trades are in</h3><p class="sub">Placed before the earnings. The close grades them.</p><div class="tin">'+
+  E.tradesIn.map(function(p){return '<div class="ti pl"><div class="hd">'+S.co(p.ticker,36)+'<div><div class="cn">'+esc(E.coName(p.ticker)+" ("+p.ticker+")")+'</div><div class="gd">Graded at the close · '+grd(p.resolves)+'</div></div></div>'+
+    '<div class="tok">'+byOrd(p.tr).map(function(t){return '<div class="tk">'+S.badge(t.m,24)+'<div class="wh"><span class="who">'+E.NAME[t.m]+'</span><span class="sz '+(t.up?"long":"short")+'">'+sz(t)+'</span></div></div>'}).join("")+'</div></div>'}).join("")+'</div></div>'+
+  '<div><h3 class="let" data-let="57" data-amp=".6">Coming up</h3><p class="sub">No trades yet.</p><div class="cup">'+
+  cu.slice(0,cuN).map(function(u){return '<div class="cu pl t">'+S.co(u.ticker,30)+'<div><div class="cn">'+esc(E.coName(u.ticker)+" ("+u.ticker+")")+'</div><div class="gd">'+(u.resolves?"Graded "+grd(u.resolves):"Date to come")+'</div></div></div>'}).join("")+'</div>'+
+  (cu.length>cuN?'<p class="alsoN">And '+(cu.length-cuN)+' more on the schedule, NVIDIA last.</p>':'')+
+  '<div class="bye"><p class="let" data-let="61" data-amp=".6">That&rsquo;s all for this week.</p><a class="btn" href="leaderboard.html">See the standings</a></div></div></div></div></section>';
+
+document.getElementById("show").innerHTML=h;
+S.letterAll();
+
+/* the countdown on the third plank (seconds only when motion is welcome) */
+var cd=document.getElementById("cd");
+function tick(){if(!B){cd.textContent="Soon";return}var s=Math.max(0,Math.floor((B-Date.now())/1000)),d=Math.floor(s/86400),hh=Math.floor(s%86400/3600),mm=Math.floor(s%3600/60),ss=s%60;
+  cd.innerHTML=d+'<u>d</u>'+String(hh).padStart(2,"0")+'<u>h</u>'+String(mm).padStart(2,"0")+'<u>m</u>'+(RM?"":String(ss).padStart(2,"0")+'<u>s</u>');
+  cd.setAttribute("aria-label",d+" days, "+hh+" hours, "+mm+" minutes until the bet")}
+tick();setInterval(tick,RM?60000:1000);
+
+/* the TV: last time's film, paused where the trades are in; tap to play with sound */
+var tv=document.getElementById("tvv"),tvs=document.getElementById("tvs");
+tv.addEventListener("loadedmetadata",function(){try{tv.currentTime=tv.duration*.36}catch(e){}});
+tvs.querySelector("button").addEventListener("click",function(){if(tv.paused){tv.muted=false;tv.currentTime=0;tv.play();tvs.classList.add("on")}else{tv.pause();tvs.classList.remove("on")}});
+
+/* episode guide: tap a round to play its film in place; show all */
+function film(btn){var r=R.filter(function(x){return x.n===+btn.dataset.n})[0];if(!r||btn.querySelector("video"))return;
+  btn.innerHTML='<video playsinline controls autoplay poster="'+M+'media/'+r.poster+'.jpg"><source src="'+M+'media/'+r.film+'.webm" type="video/webm"><source src="'+M+'media/'+r.film+'.mp4" type="video/mp4"></video>'}
+document.getElementById("guide").addEventListener("click",function(e){var b=e.target.closest(".scr");if(b)film(b)});
+document.getElementById("more").addEventListener("click",function(){var g=document.getElementById("guide");g.insertAdjacentHTML("beforeend",rev.slice(shown).map(ep).join(""));this.parentNode.remove()});
+
+/* ---------- the two charts, drawn on the painted surfaces ---------- */
+var SER=E.series(R),dash={GROK:"",CLAUDE:"9 5",GPT:"2.5 4",KIMI:"10 4 2.5 4"};
+/* place each surface on its painting: the screen and the chalkboard, measured on the paintings (in % of the picture) */
+function fit(sc,sf,box,fill){var W=sc.clientWidth,k=fill/box.w,pw=W*k,ph=pw*box.ar,x=W*(1-fill)/2-box.x*pw;
+  var y0=box.y*ph-W*.05;sc.style.backgroundSize=pw+"px "+ph+"px";sc.style.backgroundPosition=x+"px "+(-y0)+"px";
+  sc.style.height=(box.h*ph+W*.1)+"px";sc.style.aspectRatio="auto";sf.style.left=(W*(1-fill)/2)+"px";sf.style.width=(W*fill)+"px";sf.style.top=(W*.05)+"px";sf.style.height=(box.h*ph)+"px"}
+function chart(sf,kind){var W=sf.clientWidth,H=sf.clientHeight,ink=kind==="hit"?"#2a1a10":"#f3efe2",pad={l:kind==="hit"?40:52,r:96,t:kind==="hit"?16:16,b:30};
+  var fs=W<420?11:13;pad.r=W<420?84:104;
+  var n=R.length,vals=[],key=kind==="hit"?"hit":"pl";E.MK.forEach(function(m){vals=vals.concat(SER[m][key])});
+  var lo,hi,ticks=[];if(kind==="hit"){lo=Math.floor(Math.min.apply(null,vals)*10)/10;hi=Math.ceil(Math.max.apply(null,vals)*10)/10;for(var t=lo;t<=hi+1e-9;t+=.1)ticks.push(+t.toFixed(2))}
+  else{var st=50000;lo=Math.floor(Math.min(0,Math.min.apply(null,vals))/st)*st;hi=Math.ceil(Math.max.apply(null,vals)/st)*st;for(var t2=lo;t2<=hi;t2+=st)ticks.push(t2)}
+  var X=function(i){return pad.l+(W-pad.l-pad.r)*(i+1)/n},Y=function(v){return pad.t+(H-pad.t-pad.b)*(1-(v-lo)/(hi-lo))};
+  var g='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(kind==="hit"?"Hit rate round by round, every line starting at 50 percent":"P&L round by round from $0, $100K a trade")+'">';
+  if(kind==="ch")g+='<defs><filter id="chalk" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed="3"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.7"/><feComposite in="SourceGraphic" operator="in"/></filter></defs>';
+  ticks.forEach(function(v){var base=kind==="hit"?Math.abs(v-.5)<1e-6:v===0,y=Y(v).toFixed(1);
+    g+='<line x1="'+pad.l+'" x2="'+(W-pad.r+6)+'" y1="'+y+'" y2="'+y+'" stroke="'+ink+'" stroke-opacity="'+(base?.75:.22)+'" stroke-width="'+(base?1.6:1)+'"'+(base?' stroke-dasharray="6 5"':'')+'/>'+
+       '<text x="'+(pad.l-6)+'" y="'+(+y+4)+'" text-anchor="end" font-size="'+fs+'" fill="'+ink+'" fill-opacity="'+(base?1:.75)+'">'+(kind==="hit"?Math.round(v*100)+"%":(v===0?"$0":(v>0?"+":"\u2212")+"$"+Math.abs(v/1000)+"K"))+'</text>'});
+  [[-1,"Start"],[n-1,"Round "+R[n-1].n]].forEach(function(a,i){g+='<text x="'+X(a[0])+'" y="'+(H-8)+'" text-anchor="'+(i?"end":"start")+'" font-size="'+fs+'" fill="'+ink+'" fill-opacity=".8">'+a[1]+'</text>'});
+  var ends=[],base0=kind==="hit"?.5:0;
+  E.MK.slice().reverse().forEach(function(m){var s=SER[m][key],f0=R.findIndex(function(r){return r.tr.some(function(t){return t.m===m})});
+    /* every line starts before its first trade: 50% for the hit rate, $0 for the P&L */
+    var d="M"+X(f0-1).toFixed(1)+" "+Y(base0).toFixed(1);for(var i=f0;i<n;i++)d+="L"+X(i).toFixed(1)+" "+Y(s[i]).toFixed(1);
+    var cas=kind==="hit"?'#24140c':'#173a2a';
+    g+='<path class="ln" d="'+d+'" fill="none" stroke="'+cas+'" stroke-width="'+(kind==="hit"?4.6:4.2)+'" stroke-linejoin="round" stroke-linecap="round"'+(dash[m]?' stroke-dasharray="'+dash[m]+'"':'')+(kind==="ch"?' opacity=".55"':'')+'/>'+
+       '<path class="ln" d="'+d+'" fill="none" stroke="'+E.COL[m]+'" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"'+(dash[m]?' stroke-dasharray="'+dash[m]+'"':'')+(kind==="ch"?' filter="url(#chalk)"':'')+'/>';
+    ends.push({m:m,y:Y(s[n-1])})});
+  ends.sort(function(a,b){return a.y-b.y});for(var i=1;i<ends.length;i++)if(ends[i].y-ends[i-1].y<fs+5)ends[i].y=ends[i-1].y+fs+5;
+  var over=ends[ends.length-1].y-(H-pad.b);if(over>0)ends.forEach(function(e){e.y-=over});
+  ends.forEach(function(e){var s=E.season[e.m],v=kind==="hit"?(s.hit*100).toFixed(1)+"%":E.kmoney(s.pl),x=W-pad.r+10;
+    g+='<circle cx="'+X(n-1).toFixed(1)+'" cy="'+Y(SER[e.m][key][n-1]).toFixed(1)+'" r="3.2" fill="'+E.COL[e.m]+'" stroke="'+(kind==="hit"?"#24140c":"#173a2a")+'" stroke-width="1.4"/>'+
+      '<text x="'+x+'" y="'+(e.y+4).toFixed(1)+'" font-size="'+fs+'" fill="'+(kind==="hit"?"#24140c":E.COL[e.m])+'"><tspan>'+E.NAME[e.m]+'</tspan> <tspan fill="'+(kind==="hit"?"#24140c":"#f3efe2")+'">'+v+'</tspan></text>'});
+  g+='</svg>';sf.innerHTML=g;
+  if(!RM&&"IntersectionObserver" in window){sf.querySelectorAll(".ln").forEach(function(p){var L=p.getTotalLength();if(!p.getAttribute("stroke-dasharray")){p.style.strokeDasharray=L;p.style.strokeDashoffset=L}else{p.style.clipPath="inset(0 100% 0 0)"}});
+    new IntersectionObserver(function(es,o){es.forEach(function(e){if(e.isIntersecting){o.disconnect();sf.querySelectorAll(".ln").forEach(function(p){p.style.transition="stroke-dashoffset 1.6s ease-out, clip-path 1.6s ease-out";p.style.strokeDashoffset=0;p.style.clipPath="inset(0 0 0 0)"})}})},{threshold:.35}).observe(sf)}}
+/* the painted surfaces, measured on the 1600x1200 paintings */
+var BOX={sc:{x:.207,y:.12,w:.598,h:.623,ar:.75},ch:{x:.13,y:.167,w:.765,h:.627,ar:.75}};
+function draw(){var a=document.getElementById("sc1"),b=document.getElementById("sc2"),side=innerWidth>=1000;
+  /* side by side, both boards get the same height: the screen gives up width to match the chalkboard */
+  var fc=.96,fs2=side?fc*(BOX.ch.h*BOX.ch.ar/BOX.ch.w)/(BOX.sc.h*BOX.sc.ar/BOX.sc.w):.92;
+  fit(a,document.getElementById("sf1"),BOX.sc,fs2);fit(b,document.getElementById("sf2"),BOX.ch,fc);
+  chart(document.getElementById("sf1"),"hit");chart(document.getElementById("sf2"),"ch")}
+var lw=0;function onR(){if(innerWidth!==lw){lw=innerWidth;draw()}}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(onR);else onR();
+addEventListener("resize",onR);
+})();
+</script>
+</body>
+</html>

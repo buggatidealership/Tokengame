@@ -1,0 +1,75 @@
+/* satire / sat.css — shared by overview.html and leaderboard.html.
+   The world: this month's issue of EARNINGS ZEASON, an American humour magazine (1950s to 1980s tradition):
+   painted gouache cover, pen-and-ink caricature with watercolour wash, labelled editorial cartoons, marginal gags,
+   a mock mail-order ad, a back-page fold. Every page is printed on a watercolour-washed stock (painted, never flat).
+   Faces: Shrikhand (the one heading face), Patrick Hand SC (the cartoonist's lettering: labels, tags, numbers),
+   Libre Caslon Text (the magazine's typeset body). */
+:root{
+  --ink:#15110d;--cream:#f3e6c4;--cream2:#e9d9b2;--gold:#e9b43c;--goldd:#a87414;
+  --up:#56d38a;--dn:#ff6a5c;--upi:#17703a;--dni:#a8231a;
+  --grok:#e4e0d6;--claude:#ef8a55;--gpt:#b18cff;--kimi:#58b7ff;
+  --H:'Shrikhand',serif;--L:'Patrick Hand SC','Patrick Hand',cursive;--B:'Libre Caslon Text',Georgia,serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#0b0a09 url(art/wash-ink.jpg) center/700px repeat;color:var(--cream);font-family:var(--B);font-size:15px;line-height:1.4;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- pages: each a sheet of washed stock ---------- */
+.mag{max-width:1240px;margin:0 auto}
+.spread{position:relative}
+.pg{position:relative;padding:22px 16px 10px;background-size:cover,100% 100%,cover;background-position:center;isolation:isolate}
+.pg::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;
+  background:radial-gradient(ellipse 120% 80% at 50% 0%,rgba(255,240,200,.10),transparent 60%),linear-gradient(90deg,rgba(0,0,0,.28),transparent 7%,transparent 93%,rgba(0,0,0,.28))}
+.w-green{background-image:linear-gradient(rgba(6,22,14,.62),rgba(6,22,14,.70)),url(art/wash-green.jpg)}
+.w-red{background-image:linear-gradient(rgba(34,6,4,.66),rgba(28,4,3,.72)),url(art/wash-red.jpg)}
+.w-ochre{background-image:linear-gradient(rgba(38,24,4,.62),rgba(30,18,2,.70)),url(art/wash-ochre.jpg)}
+.w-ink{background-image:linear-gradient(rgba(4,6,12,.30),rgba(4,6,12,.42)),url(art/wash-ink.jpg)}
+/* the cut between pages: the next sheet's edge, a hard shadow, never a gap */
+.pg+.pg,.spread+.spread{box-shadow:0 -6px 0 -2px rgba(0,0,0,.55),0 -1px 0 rgba(243,230,196,.18)}
+/* folio: the magazine's page foot */
+.fol{display:flex;justify-content:space-between;gap:8px;margin-top:14px;padding-top:6px;border-top:1px solid rgba(243,230,196,.25);font:13px/1.2 var(--L);color:rgba(243,230,196,.62);letter-spacing:.04em}
+
+/* ---------- type roles ---------- */
+.kick{display:flex;align-items:center;gap:8px;font:15px/1 var(--L);letter-spacing:.08em;color:var(--cream);margin:0 0 4px}
+.kick::after{content:"";flex:1;height:2px;background:repeating-linear-gradient(90deg,rgba(243,230,196,.6) 0 7px,transparent 7px 11px)}
+.hd{font:400 34px/1.02 var(--H);margin:0 0 10px;color:var(--cream);text-shadow:2px 2px 0 var(--ink),-1px -1px 0 var(--ink),1px -1px 0 var(--ink),-1px 1px 0 var(--ink),3px 4px 0 rgba(0,0,0,.45);letter-spacing:.005em}
+.hd .g{color:var(--gold)}
+.deck{font:italic 15.5px/1.38 var(--B);margin:0 0 12px;color:rgba(243,230,196,.92);max-width:36em}
+.lab{font:15px/1.15 var(--L);letter-spacing:.03em}
+.num{font-family:var(--L);font-variant-numeric:tabular-nums}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.card .up{color:var(--upi)}.card .dn{color:var(--dni)}
+
+/* ---------- the card stock: a painted cream card (cut from the painted tags), ink rim ---------- */
+.card{background:url(art/card.jpg) center/cover;color:var(--ink);border:2px solid var(--ink);box-shadow:3px 4px 0 rgba(0,0,0,.55);position:relative}
+.card::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(160deg,rgba(255,255,255,.18),transparent 40%,rgba(80,50,10,.12));mix-blend-mode:soft-light}
+
+/* the reader's pencil: a hand-drawn ink ring around the chosen option */
+.ring{position:relative}
+.ring>svg.rg{position:absolute;left:-7px;top:-6px;width:calc(100% + 14px);height:calc(100% + 12px);pointer-events:none;overflow:visible}
+
+/* ---------- marginal gags: tiny reversed-ink drawings in the page edges ---------- */
+.mg{position:absolute;pointer-events:none;opacity:.9;z-index:2}
+.mg img{width:100%}
+.mg i{display:block;font:normal 12px/1.1 var(--L);color:rgba(243,230,196,.8);text-align:center;margin-top:2px;letter-spacing:.03em}
+
+/* model marks */
+.mk{display:inline-grid;place-items:center;width:1.2em;height:1.2em;vertical-align:-.2em}
+.mk svg{width:100%;height:100%}
+.flag{display:inline-block;width:20px;height:13px;vertical-align:-1px;border:1px solid rgba(21,17,13,.8);box-shadow:1px 1px 0 rgba(0,0,0,.4);transform:rotate(-3deg);filter:url(#inkedge)}
+
+@media (min-width:1000px){
+  .pg{padding:34px 40px 14px}
+  .hd{font-size:52px}
+  .spread.two{display:grid;grid-template-columns:1fr 1fr}
+  .spread.two>.pg+.pg{box-shadow:none}
+  /* the binding: a soft valley down the middle of every spread */
+  .spread.two::after{content:"";position:absolute;top:0;bottom:0;left:calc(50% - 26px);width:52px;pointer-events:none;z-index:3;
+    background:linear-gradient(90deg,transparent,rgba(0,0,0,.38) 46%,rgba(0,0,0,.55) 50%,rgba(0,0,0,.38) 54%,transparent)}
+  .fol{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

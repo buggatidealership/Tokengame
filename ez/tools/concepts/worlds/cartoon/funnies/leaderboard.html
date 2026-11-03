@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EZ Sports Page</title>
+<meta name="description" content="Mockup H47 (funnies): the Leaderboard as the sports page of the same EZ paper, printed on green newsprint. Every figure from ez-data.js at render time.">
+<link rel="stylesheet" href="common.css">
+<style>
+/* the sports section runs on green newsprint, like a sports final */
+body{--paper:#bfd4a0;--paper2:#cfdfb6;--paperL:#e3ecd1}
+.np{margin-top:10px;display:grid;grid-template-columns:1fr auto;gap:var(--g);align-items:stretch}
+.np .band{border:2.5px solid var(--ink);background:#1f1c19 var(--grain);background-size:240px;display:flex;align-items:center;gap:18px;padding:8px 18px 4px;color:#e3ecd1}
+.np .band .hd{font-size:84px;color:#e3ecd1;letter-spacing:.02em;text-shadow:3px 3px 0 #5d7a3a}
+.np .band .tag{font:700 14px/1.25 "Comic Neue",sans-serif;text-transform:uppercase;letter-spacing:.05em;max-width:330px}
+.np .ear{border:2.5px solid var(--ink);padding:10px 14px;display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:210px;text-align:center}
+.np .ear b{font:400 30px/1 Ultra,serif}
+.np .ear span{font:700 12.5px/1.2 "Source Serif 4",serif;letter-spacing:.04em;text-transform:uppercase}
+.head1{margin:16px 0 0;font-size:56px;line-height:.98}
+.deck2{font:italic 600 19px/1.32 "Source Serif 4",serif;margin:8px 0 0;max-width:980px}
+@media (max-width:700px){.np{grid-template-columns:1fr}.np .band{padding:6px 12px 2px;gap:10px}.np .band .hd{font-size:52px}.np .band .tag{font-size:11px}.np .ear{flex-direction:row;align-items:baseline;justify-content:center;gap:10px;padding:6px 10px}.np .ear b{font-size:20px}.head1{font-size:34px;margin-top:12px}.deck2{font-size:15.5px}}
+
+/* boxes: the paper's own printed rules and agate type */
+.box{border:2.5px solid var(--ink);background:var(--paper2) var(--grain);background-size:240px;position:relative}
+.bh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 12px 7px;background:#1f1c19 var(--grain);background-size:240px;color:#e3ecd1;border-bottom:2.5px solid var(--ink)}
+.bh .hd{font-size:30px;color:#e3ecd1}
+.bh .wlab{font:700 12.5px/1.2 "Comic Neue",sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#f0c12e}
+@media (max-width:700px){.bh .hd{font-size:24px}.bh .wlab{font-size:11px}}
+.row1{display:grid;grid-template-columns:1.45fr 1fr;gap:var(--g);margin-top:14px;align-items:stretch}
+.row3{display:grid;grid-template-columns:1fr 1fr;gap:var(--g);margin-top:var(--g)}
+@media (max-width:700px){.row1,.row3{grid-template-columns:1fr}}
+
+/* controls: printed tabs that are clearly buttons */
+.ctl{display:flex;flex-wrap:wrap;gap:8px 18px;padding:10px 12px;border-bottom:2px solid var(--ink)}
+.seg{display:flex;align-items:center;gap:0}
+.seg .lab{font:800 11px/1 "Source Serif 4",serif;text-transform:uppercase;letter-spacing:.08em;margin-right:8px}
+.seg button{font:700 13px/1 "Comic Neue",sans-serif;text-transform:uppercase;letter-spacing:.03em;color:var(--ink);background:var(--paperL) var(--grain);background-size:240px;border:2px solid var(--ink);margin-left:-2px;padding:0 13px;min-height:44px;cursor:pointer}
+.seg button:first-of-type{margin-left:0}
+.seg button[aria-pressed="true"]{background:#1f1c19 var(--grain);background-size:240px;color:#f0c12e}
+.seg button:focus-visible{outline:3px solid var(--cy);outline-offset:2px;position:relative;z-index:2}
+@media (max-width:700px){.ctl{gap:8px;padding:8px}.seg{width:100%}.seg .lab{width:62px;font-size:10px}.seg button{flex:1;padding:0 6px;font-size:12px}}
+
+/* the standings, agate */
+.st{font-family:"Source Serif 4",serif;font-variant-numeric:tabular-nums lining-nums}
+.st .r{display:grid;grid-template-columns:36px 1.65fr 1.35fr .7fr .75fr 1.1fr 1fr;grid-template-areas:"rk md l5 wl hr pl lc";align-items:center;gap:0 10px;padding:9px 12px;border-bottom:1.5px solid rgba(29,26,24,.55)}
+.st .r>*{min-width:0}
+.st .hdr{padding:7px 12px;border-bottom:2px solid var(--ink);font:800 10.5px/1.15 "Source Serif 4",serif;text-transform:uppercase;letter-spacing:.06em}
+.st .rk{grid-area:rk;font:400 22px/1 Ultra,serif}
+.st .md{grid-area:md;display:flex;align-items:center;gap:7px;font:800 17px/1 "Source Serif 4",serif;white-space:nowrap}
+.st .l5{grid-area:l5;display:flex;gap:3px;align-items:center}
+.st .wl{grid-area:wl;font-weight:700;font-size:16px;text-align:center}
+.st .hr{grid-area:hr;font-weight:700;font-size:16px;text-align:center}
+.st .pl{grid-area:pl;font-weight:900;font-size:19px;text-align:right}
+.st .lc{grid-area:lc;font-weight:700;font-size:15px;text-align:right}
+.st .hdr .wl,.st .hdr .hr{text-align:center}.st .hdr .pl,.st .hdr .lc{text-align:right}
+.st .r.gold{background:#f0c64a var(--grain);background-size:240px;background-image:var(--grain),radial-gradient(circle,rgba(204,58,40,.28) 0 30%,transparent 34%);background-size:240px 240px,5px 5px}
+.st .tk{width:34px;height:22px;flex:none;border:1.5px solid var(--ink);background:url(img/s-ticket.jpg) 44% 47%/170% auto;transform:rotate(-6deg)}
+.wb{width:19px;height:19px;border:1.5px solid var(--ink);display:inline-flex;align-items:center;justify-content:center;font:700 11px/1 "Comic Neue",sans-serif}
+.wb.w{background:#8cc79b;color:#0f4a25}.wb.l{background:#e79a8f;color:#6d1410}
+.l5 .ar{font:700 10px/1 "Comic Neue",sans-serif;margin:0 3px;opacity:.75}
+.mchip{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--ink);display:inline-flex;align-items:center;justify-content:center;flex:none}
+.note{margin:0;padding:10px 12px;font:700 13px/1.3 "Comic Neue",sans-serif;text-transform:uppercase;letter-spacing:.03em;border-bottom:1.5px solid rgba(29,26,24,.55);background:#f0c64a var(--grain);background-size:240px}
+.fine{margin:0;padding:8px 12px 10px;font:600 12.5px/1.35 "Source Serif 4",serif}
+@media (max-width:700px){
+  .st .r{grid-template-columns:24px 1.35fr .75fr .62fr .9fr;grid-template-areas:"rk md md pl pl" ". l5 wl hr lc";gap:6px 6px;padding:8px 8px}
+  .st .md{font-size:15.5px;gap:5px}.st .pl{font-size:18px}.st .rk{font-size:19px}
+  .st .wl,.st .hr{font-size:13.5px}.st .lc{font-size:13px}
+  .wb{width:15px;height:16px;font-size:9.5px}.l5{gap:2px}.l5 .ar{display:none}
+  .st .hdr{font-size:9px}.mchip{width:20px;height:20px}.st .tk{width:26px;height:17px}
+}
+
+/* the sports cartoon */
+.toon{display:flex;flex-direction:column}
+.toon .crop{--iar:1/1;--ar:1/1.02}
+.toon .tkt{left:41%;top:34.6%;width:23.4%;height:12.8%;font:400 4.6cqw/1 Ultra,serif;color:#1d1a18;letter-spacing:.02em;flex-direction:column}
+.toon .tkt small{font:700 1.7cqw/1 "Comic Neue",sans-serif;letter-spacing:.14em;margin-bottom:.5cqw;color:#5a3a06}
+.toon .mug{position:absolute;left:3.5%;bottom:4%;width:23%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:.5cqw solid #1d1a18;background:#e3ecd1}
+.toon .mug img{width:100%;height:100%;object-fit:cover;object-position:50% 12%;filter:grayscale(1) contrast(1.25) brightness(1.05);mix-blend-mode:multiply}
+.toon .lbl{position:absolute;left:28%;bottom:9%;font:700 2.7cqw/1.1 "Comic Neue",sans-serif;text-transform:uppercase;color:#1d1a18;background:#e9e4d4;border:.3cqw solid #1d1a18;padding:.6cqw 1cqw;transform:rotate(-3deg)}
+.toon .lbl b{display:block;font-size:1.25em}
+.cut{padding:10px 12px 12px;font:600 14px/1.4 "Source Serif 4",serif;border-top:2.5px solid var(--ink)}
+.cut b{font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+
+/* chart */
+.chbox .cv{position:relative;height:360px}
+.chbox .cv svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.chbox .empty{height:360px;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;font:700 17px/1.3 "Comic Neue",sans-serif;text-transform:uppercase}
+@media (max-width:700px){.chbox .cv,.chbox .empty{height:290px}}
+
+/* box scores */
+.bxs{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--g);padding:var(--g)}
+.bx{border:2px solid var(--ink);background:var(--paperL) var(--grain);background-size:240px;font-family:"Source Serif 4",serif;font-variant-numeric:tabular-nums}
+.bx .bt{display:flex;align-items:center;gap:7px;padding:6px 7px;border-bottom:1.5px solid var(--ink)}
+.bx .lg{width:30px;height:30px;flex:none;border:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;background:#f6f1e2;border-radius:3px}
+.bx .lg.dk{background:#1d1a18}
+.bx .lg img{width:24px;height:24px;object-fit:contain}
+.bx .nm{font:800 12.5px/1.12 "Source Serif 4",serif;min-width:0}
+.bx .nm i{font-style:normal;font-weight:600;opacity:.8}
+.bx .mv{margin-left:auto;font:900 15px/1 "Source Serif 4",serif;white-space:nowrap}
+.bx table{width:100%;border-collapse:collapse;font-size:12.5px}
+.bx td{padding:3px 7px;border-bottom:1px solid rgba(29,26,24,.25);white-space:nowrap}
+.bx td:last-child,.bx td.v{text-align:right}
+.bx td.v{font-weight:800}
+.bx .won{padding:5px 7px;font:700 11.5px/1.2 "Comic Neue",sans-serif;text-transform:uppercase;background:#f0c64a var(--grain);background-size:240px}
+@media (max-width:1100px){.bxs{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:700px){.bxs{grid-template-columns:1fr 1fr;gap:6px;padding:6px}.bx td{padding:3px 4px;font-size:11.5px}.bx .wlc{display:none}.bx .nm{font-size:11.5px}.bx .mv{font-size:13px}.bx .bt{flex-wrap:wrap;gap:4px 6px}.bx .mv{margin-left:0;width:100%}}
+
+/* sectors */
+.sx{width:100%;border-collapse:collapse;font-family:"Source Serif 4",serif;font-variant-numeric:tabular-nums}
+.sx th,.sx td{padding:8px 8px;border-bottom:1.5px solid rgba(29,26,24,.45);text-align:center}
+.sx th{font:800 11px/1.1 "Source Serif 4",serif;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--ink)}
+.sx th:first-child,.sx td:first-child{text-align:left}
+.sx td{font-size:15px;font-weight:700}
+.sx td:first-child{font-weight:800;font-size:14px}
+.sx .best{position:relative}
+.sx .best svg{position:absolute;left:50%;top:50%;width:62px;height:34px;transform:translate(-50%,-50%) rotate(-4deg);overflow:visible;pointer-events:none}
+.sx th .mchip{width:22px;height:22px}
+@media (max-width:700px){.sx th,.sx td{padding:7px 4px}.sx td{font-size:13.5px}.sx td:first-child{font-size:12.5px}.sx .best svg{width:52px}}
+/* the column */
+.col{padding:4px 14px 12px;font-family:"Source Serif 4",serif}
+.col .p{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;padding:10px 0;border-bottom:1.5px solid rgba(29,26,24,.45)}
+.col .p:last-child{border-bottom:0}
+.col .who{grid-row:span 2;display:flex;flex-direction:column;align-items:center;gap:4px;width:64px;font:800 13px/1 "Source Serif 4",serif;text-transform:uppercase}
+.col .ln{display:flex;align-items:center;gap:8px;font-size:15px;line-height:1.2;min-width:0}
+.col .ln .k{font:700 12px/1 "Comic Neue",sans-serif;text-transform:uppercase;width:58px;flex:none}
+.col .ln .lg{width:26px;height:26px;flex:none;border:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;background:#f6f1e2;border-radius:3px}
+.col .ln .lg.dk{background:#1d1a18}
+.col .ln .lg img{width:20px;height:20px;object-fit:contain}
+.col .ln .co{flex:1;min-width:0;font-weight:700}
+.col .ln .v{font-weight:900;white-space:nowrap}
+@media (max-width:700px){.col{padding:2px 10px 8px}.col .who{width:48px;font-size:11px}.col .ln{font-size:13px;gap:6px}.col .ln .k{width:44px;font-size:10.5px}}
+.foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding-top:10px;border-top:3px double var(--ink);font:600 13px/1.35 "Source Serif 4",serif}
+</style>
+</head>
+<body>
+<div class="sheet" id="app"></div>
+<script src="../../../../../ez-data.js"></script>
+<script src="data.js"></script>
+<script src="charts.js"></script>
+<script>
+(function(){
+var D=F.compute(),E=F.esc,O=F.ORDER,NAME=F.NAME,LOGO='../../../../v22/x2p-logo.svg';
+var st={by:'pnl',win:'S'};
+function img(m,p){return 'img/c-'+m.toLowerCase()+'-'+p+'.jpg'}
+function sgn(v){return v>0?'up':v<0?'dn':''}
+function mchip(m,s){return '<span class="mchip" style="background:'+F.COL[m]+'">'+F.mark(m,s||14)+'</span>'}
+function lg(t){var L=F.logoSrc(t),dk=(CO_LOGOS[String(t).toUpperCase()]||{}).dark;return '<span class="lg'+(dk?' dk':'')+'">'+(L?'<img src="'+L+'" alt="">':'')+'</span>'}
+var top=D.top,second=D.rank(D.season,'pnl')[1],lcName=F.wmd(D.lcDay),below=O.filter(function(m){return D.season[m].pnl<0});
+var nowDay=F.nyDay(D.NOW),H='';
+H+='<header class="fol"><img class="lg" src="'+LOGO+'" alt="EZ."><span><b>THE EZ. DAILY</b> &middot; '+F.longDay(nowDay)+'</span><span class="sp"></span><nav aria-label="Sections"><a href="overview.html">&larr; C &middot; The Funnies</a><a href="leaderboard.html" aria-current="page">D &middot; Sports</a></nav></header>';
+H+='<div class="np"><div class="band"><h1 class="hd">Sports</h1><span class="tag">Four AIs trade earnings. Flat $100K a trade, simulated. Graded at the close.</span></div><div class="ear t-gold"><b>Final</b><span>Season 1 &middot; '+D.RS.length+' rounds graded<br>Last close '+lcName+'</span></div></div>';
+var gap=D.season[top].pnl-D.season[second].pnl;
+H+='<h2 class="hd head1">'+NAME[top]+' holds the golden ticket</h2>';
+H+='<p class="deck2">'+NAME[second]+' is second, '+F.usd(gap).replace('+','')+' back after '+D.RS.length+' rounds. '+(below.length?below.map(function(m){return NAME[m]}).join(' and ')+(below.length>1?' are':' is')+' below $0. ':'')+'The board freezes 24 hours before NVIDIA reports, and the top model\'s trade is the bet.</p>';
+H+='<div class="row1"><section class="box std" aria-label="Standings"><div class="bh"><h2 class="hd">Standings</h2><span class="wlab" id="wlab"></span></div>'+
+ '<div class="ctl"><div class="seg" role="group" aria-label="Rank by"><span class="lab">Rank by</span><button data-by="pnl">P&amp;L</button><button data-by="hit">Hit rate</button></div>'+
+ '<div class="seg" role="group" aria-label="Window"><span class="lab">Window</span><button data-win="S">Season</button><button data-win="7">7 days</button><button data-win="1">24 hours</button></div></div>'+
+ '<div class="st" id="st" role="table" aria-label="Standings"></div><p class="fine">Last 5 runs oldest to newest, left to right. Last close = the P&amp;L of the rounds graded at the most recent close, '+lcName+'.</p></section>';
+var ts=D.season[top];
+H+='<section class="box toon" aria-label="The golden ticket"><div class="crop"><div class="stage"><img src="img/s-pedestal.jpg" alt="The golden ticket on a pedestal under the stadium lights, drawn by the paper\'s sports cartoonist"><div class="on tkt"><small>GOLDEN TICKET</small>'+NAME[top].toUpperCase()+'</div>'+
+ '<div class="mug"><img src="'+img(top,'n')+'" alt="'+NAME[top]+'"></div><div class="lbl">'+NAME[top]+'<b class="up">'+F.usd(ts.pnl)+'</b>season P&amp;L</div></div></div>'+
+ '<p class="cut"><b>The prize.</b> The top model by season P&amp;L holds the golden ticket. The board freezes 24 hours before NVIDIA reports, and that model\'s trade is Bet #1.</p></section></div>';
+H+='<section class="box chbox" style="margin-top:var(--g)" aria-label="Over time"><div class="bh"><h2 class="hd" id="chT"></h2><span class="wlab" id="chW"></span></div><div id="chHost"></div></section>';
+/* box scores: the latest close */
+var lc=D.lcRs.slice().sort(function(a,b){return (D.caps[b.ticker]||0)-(D.caps[a.ticker]||0)||b.n-a.n});
+H+='<section class="box" style="margin-top:var(--g)" aria-label="Box scores"><div class="bh"><h2 class="hd">Box scores</h2><span class="wlab">Last close &middot; '+lcName+' &middot; '+lc.length+' rounds</span></div><div class="bxs">';
+lc.forEach(function(r){H+='<div class="bx"><div class="bt">'+lg(r.ticker)+'<span class="nm">'+E(F.coName(r.ticker))+' <i>('+E(r.ticker)+')</i></span><b class="mv '+sgn(r.a)+'">'+E(r.out)+'</b></div><table>'+
+  O.filter(function(m){return r.T[m]}).map(function(m){var t=r.T[m];return '<tr><td>'+mchip(m,12)+' '+NAME[m]+'</td><td>'+(t.dir==='LONG'?'Long +':'Short −')+t.mag+'%</td><td class="v '+sgn(t.v)+'">'+F.usd(t.v)+'</td><td class="wlc"><span class="wb '+(t.w?'w':'l')+'">'+(t.w?'W':'L')+'</span></td></tr>'}).join('')+
+  '</table><div class="won">'+(r.wins.length?'Won by '+r.wins.map(function(m){return NAME[m]}).join(' &amp; ')+(r.wins.length>1?' (tie)':''):'Nobody won')+'</div></div>'});
+H+='</div></section>';
+/* sectors and the column */
+H+='<div class="row3"><section class="box" aria-label="By sector"><div class="bh"><h2 class="hd">By sector</h2><span class="wlab">Season &middot; trades won of trades made</span></div><table class="sx"><thead><tr><th>Sector</th>'+O.map(function(m){return '<th>'+mchip(m,13)+'<br>'+NAME[m]+'</th>'}).join('')+'</tr></thead><tbody>'+
+ D.sectors.map(function(k){var cells=O.map(function(m){return D.per[m].sec[k]}),rates=cells.map(function(c){return c&&c.n?c.w/c.n:-1}),mx=Math.max.apply(null,rates);
+   return '<tr><td>'+E(k)+'</td>'+cells.map(function(c,i){var best=c&&c.n&&rates[i]===mx&&mx>0;return '<td class="'+(best?'best':'')+'">'+(c?c.w+'/'+c.n:'–')+(best?'<svg viewBox="0 0 62 34" aria-hidden="true"><path d="M8 20 C6 8 26 3 40 5 C56 7 60 18 52 26 C42 33 16 33 9 25 C6 21 10 12 18 9" fill="none" stroke="#1d1a18" stroke-width="2" stroke-linecap="round"/></svg>':'')+'</td>'}).join('')+'</tr>'}).join('')+
+ '</tbody></table><p class="fine">Circled: the best rate in each sector. Small samples in most rows.</p></section>';
+H+='<section class="box" aria-label="Biggest W and biggest L"><div class="bh"><h2 class="hd">Biggest W and L</h2><span class="wlab">Season &middot; one trade each</span></div><div class="col">'+
+ D.rank(D.season,'pnl').map(function(m){var p=D.per[m];function ln(k,x){return '<div class="ln"><span class="k '+(k==='W'?'up':'dn')+'">Biggest '+k+'</span>'+lg(x.r.ticker)+'<span class="co">'+E(F.coName(x.r.ticker))+' ('+E(x.r.ticker)+')</span><b class="v '+sgn(x.t.v)+'">'+F.usd(x.t.v)+'</b></div>'}
+   return '<div class="p"><div class="who">'+mchip(m,16)+NAME[m]+'</div>'+ln('W',p.bw)+ln('L',p.bl)+'</div>'}).join('')+'</div></section></div>';
+H+='<footer class="foot"><span>Simulated. Flat $100K a trade, before fees. Not advice. The pool can be wiped out.</span><a class="btn" href="overview.html" style="text-decoration:none">&larr; Back to the Funnies</a></footer>';
+document.getElementById('app').innerHTML=H;
+
+function W(){return st.win==='7'?D.W7:st.win==='1'?D.W1:D.WS}
+function render(){var w=W(),S=w.S,order=w.empty?D.rank(D.season,'pnl'):D.rank(S,st.by);
+  document.getElementById('wlab').textContent=w.label+' · '+(w.empty?'nothing graded':w.rs.length+' round'+(w.rs.length===1?'':'s')+' graded')+' · ranked by '+(st.by==='pnl'?'P&L':'hit rate');
+  var L=w.label;
+  var h='<div class="r hdr" role="row"><span class="rk" role="columnheader">#</span><span class="md" role="columnheader">Model</span><span class="l5" role="columnheader">Last 5 &middot; old &rarr; new</span><span class="wl" role="columnheader">W-L<br>'+L+'</span><span class="hr" role="columnheader">Hit rate<br>'+L+'</span><span class="pl" role="columnheader">P&amp;L<br>'+L+'</span><span class="lc" role="columnheader">Last close<br>'+lcName+'</span></div>';
+  if(w.empty)h+='<p class="note">'+E(w.sub)+'. Order shown: season P&amp;L.</p>';
+  order.forEach(function(m,i){var s=S[m],p=D.per[m],lcv=D.latest[m];
+    h+='<div class="r'+(m===top?' gold':'')+'" role="row"><span class="rk" role="cell">'+(w.empty?'–':i+1)+'</span><span class="md" role="cell">'+mchip(m)+NAME[m]+' '+F.flag(F.CTRY[m],20)+(m===top?'<span class="tk" title="Golden ticket" aria-label="Golden ticket"></span>':'')+'</span>'+
+    '<span class="l5" role="cell" aria-label="Last 5 trades, oldest first: '+p.last5.map(function(x){return (x.t.w?'W ':'L ')+F.coLabel(x.r)}).join(', ')+'">'+p.last5.map(function(x){return '<span class="wb '+(x.t.w?'w':'l')+'" title="R'+x.r.n+' '+E(F.coLabel(x.r))+'">'+(x.t.w?'W':'L')+'</span>'}).join('')+'</span>'+
+    '<span class="wl" role="cell">'+(s.n?s.w+'-'+s.l:'–')+'</span><span class="hr" role="cell">'+(s.hit==null?'–':(s.hit*100).toFixed(1)+'%')+'</span><span class="pl '+(s.n?sgn(s.pnl):'')+'" role="cell">'+(s.n?F.usd(s.pnl):'–')+'</span><span class="lc '+(lcv.n?sgn(lcv.pnl):'')+'" role="cell">'+(lcv.n?F.usd(lcv.pnl):'–')+'</span></div>'});
+  document.getElementById('st').innerHTML=h;
+  [].forEach.call(document.querySelectorAll('[data-by]'),function(b){b.setAttribute('aria-pressed',b.dataset.by===st.by)});
+  [].forEach.call(document.querySelectorAll('[data-win]'),function(b){b.setAttribute('aria-pressed',b.dataset.win===st.win)});
+  drawChart()}
+function drawChart(){var w=W(),hit=st.by==='hit',host=document.getElementById('chHost');
+  document.getElementById('chT').textContent=hit?'Hit rate, trade by trade':'P&L, trade by trade';
+  document.getElementById('chW').textContent=w.label+' · '+(hit?'every line starts at 50%':'every line starts at $0');
+  if(w.empty){host.innerHTML='<div class="empty t-gold">'+E(w.sub)+'.</div>';return}
+  var rs=w.rs.slice().sort(function(a,b){return a.n-b.n}),N=rs.length,ser={},vals=[];
+  O.forEach(function(m){var pts=[{x:0,y:hit?.5:0}],r0=0,n=0,p=0,k=0;rs.forEach(function(r,i){var t=r.T[m];if(!t)return;n++;if(t.w)r0++;p+=t.v;pts.push({x:i+1,y:hit?(r0+1)/(n+2):p})});
+    if(pts.length>1){ser[m]=pts;pts.forEach(function(q){vals.push(q.y)})}});
+  var T=hit?F.ticks(vals.concat([.5]),.1):F.ticks(vals.concat([0]),N>40?50000:25000);
+  host.innerHTML='<div class="cv t-grid" id="cvLB"></div>';
+  F.chart(document.getElementById('cvLB'),{label:(hit?'Hit rate':'P&L')+' over the '+w.label.toLowerCase(),N:N,xl:[[1,'R'+rs[0].n],[N,'R'+rs[N-1].n]],series:ser,ymin:T.mn,ymax:T.mx,ticks:T.t,base:hit?.5:0,signed:!hit,padT:22,
+    axfmt:hit?function(v){return Math.round(v*100)+'%'}:function(v){return v===0?'$0':F.usdk(v).replace('+','')},fmt:hit?function(v){return Math.round(v*100)+'%'}:F.usdk,face:function(m){return img(m,'n')},gray:1,halo:'#e3ecd1'})}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-by],[data-win]');if(!b)return;if(b.dataset.by)st.by=b.dataset.by;if(b.dataset.win)st.win=b.dataset.win;render()});
+render();var lw=innerWidth;addEventListener('resize',function(){if(innerWidth!==lw){lw=innerWidth;drawChart()}});
+})();
+</script>
+</body>
+</html>
