@@ -172,3 +172,33 @@ This replaces "keep today's board, add an action strip". The Leaderboard on X6+ 
 - **The small print** once.
 
 Labels and one-line facts only. X2+ keeps x2p_lb. On the Overview, "Previously on…" plays the round's film inline on the painted TV, with the beats underneath.
+
+## Round H48b: the Upcoming tab in the same show (owner, 2026-11-03, night: "what about the upcoming section?")
+
+On X6+ the Upcoming tab was still X2+'s departures board, the only tab left in the old world.
+
+The want, written as the spec:
+> The Upcoming tab answers "what's on next, what does each AI say, and can I follow it", in the Saturday-morning show's look, so the three tabs read as one programme.
+> - It opens on the next bell: when the next close grades, and which companies.
+> - Then every company with trades in, each a listing: the leader's trade first, the field under it, the split ("2 long, 2 short"), and Follow on Hyperliquid where a market exists.
+> - Then the rest of the schedule by day: big names first, as today's "Hot upcoming predictions" does. Rounds without trades say "Trades drop before the earnings".
+>
+> Labels, not narration. Every listing opens its round.
+
+Build, on v50 only:
+- **The look.** Saturday's world as a painted TV-listings page: "This week on Four AIs Trade Earnings". Reuse the show's plates, ribbons, grounds and faces; the title card and end card paintings can be cropped. Use no new Hedra unless a surface is truly missing (budget $2; no words in art).
+- **The next bell.** The day, date and exchange close (from the sheet's resolution date and each exchange's own close; x2plus.js `xcloseAt` has them), and a countdown that ticks once a minute (no seconds). Include "N of M trades in".
+- **Listings with trades in.** Use the Overview's next-trade card layout: the leader (computed from the season P&L, same rule as the Overview) on the gold strip, the field, the split, and the Hyperliquid pill. The pill rule is unchanged: link only the leader's trade, show market name and open interest, "thin market" under $10M, "No Hyperliquid market" when none. A company with only some trades in shows the missing ones as "not in yet", e.g. R87 BMW and R88 Novo Nordisk have 3 of 4 tonight, with Claude's missing.
+- **The schedule.** Day by day after that. Big names first within the whole list, as today (Mag 7, then CAPS). Name and ticker together, logos in their own colours. Rows with no resolution date go last under "Date to come".
+- **A filter.** All / On Hyperliquid. With On Hyperliquid on, the rows show only companies with a market today.
+- **The end card.** "Follow on X for the bell", with the next close.
+- **Every row opens its round.** Link to `#/round/N` (the slab view, as today).
+- **Keep X2+'s board underneath, hidden.** `window.__h48UpOff=1` brings it back on v50, the way the Leaderboard does it.
+- **Checks.** The same as the brief:
+  - rule 0;
+  - alignment measured at 320/390/1280;
+  - no sideways scroll;
+  - every figure from the sheet;
+  - `#/upcoming` and `#/round/87` lift the cover with no errors;
+  - v46 byte for byte unchanged.
+- **Boards.** `ez/x2p-h48-up-{390,1280}.png`.
