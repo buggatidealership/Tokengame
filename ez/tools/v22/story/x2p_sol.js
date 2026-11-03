@@ -70,6 +70,23 @@ const take={id:'sx',html(X,V){const k=V.view==='pnl'?'pnl':'acc',c=CAP[k];
   P5.fitH&&P5.fitH(box.querySelector('.p5-h'));
   if(anim&&!RM.matches){box.classList.remove('sx-go');void box.offsetWidth;box.classList.add('sx-go')}anim=false;
   box.querySelectorAll('[data-sx]').forEach(b=>b.onclick=()=>{const v=b.dataset.sx;if(V.view===v)return;V.view=v;anim=true;P5.cur.draw();const f=box.querySelector(`[data-sx="${v}"]`);f&&f.focus({preventScroll:true})})}};
+/* ---------- H45 two beats (owner, 2026-11-03: "the hit rate and the PNL to be two separate beats... they land on the accuracy, and then they land on
+   the PNL"; a line between the heading and the hit rate that says we tracked every trade and the results are below). Mockup switch
+   window.__x2pSolTwo = 'A' (questions), 'B' (answers worked out from the data), 'C' (question small, answer big); off = the one board above.
+   Each beat is its own board with its own chart and table; no switch; each beat's lines draw in once when it comes on screen. ---------- */
+const TWO=window.__x2pSolTwo;
+if(TWO){const done=new Set();const io=('IntersectionObserver' in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const t=e.target;io.unobserve(t);done.add(t.dataset.k);if(RM.matches){t.classList.add('sx-dn');return}t.classList.add('sx-go');setTimeout(()=>{t.classList.remove('sx-go');t.classList.add('sx-dn')},1300)}}),{threshold:.35}):null;
+ const words=X=>{const S=X.W.season,MS=X.MS,T=MS.reduce((a,m)=>a+X.A[m].W+X.A[m].L,0),up=MS.filter(m=>X.A[m].hr>.5).length,pr=MS.filter(m=>S.tot[m]>0).length,n=MS.length,N=X.N;
+  const intro={A:`We tracked every trade for ${N} rounds. Here is the record.`,B:`${N} rounds. ${T} trades. Every one graded by the market close.`,C:`${N} rounds. ${T} trades. Every one graded by the market close.`}[TWO]||'';
+  const b1={A:['Hit rate','Can they beat a coin flip?'],B:['Hit rate · a coin flip gets 50%',`${up} of ${n} are above a coin flip`],C:['Can they beat a coin flip?',`${up} of ${n} are above it`]}[TWO];
+  const b2={A:['P&amp;L · $100K on every trade','Would following them have made you money?'],B:['P&amp;L · $100K on every trade',`${pr} of ${n} are in profit`],C:['Would following them have made you money?',`${pr} of ${n} made money`]}[TWO];
+  return {intro,b1,b2}};
+ const board=(X,k,c)=>`<div class="sx-bd sx2-bd${done.has(k)?' sx-dn':''}" data-k="${k}"><p class="sx-cap"><small>${c[0]}</small>${c[1]}</p><div class="sx-pic"><div class="sx-ch" data-k="${k}"></div>${rows(X,k)}</div></div>${sr(X,k)}`;
+ take.html=(X,V)=>{const w=words(X);return `<div class="p5-bleed sx sx2 sx2-${TWO}">${P5.head('Smart or','lucky?')}<p class="h35-cap sx2-cap">${w.intro}</p>${board(X,'acc',w.b1)}${board(X,'pnl',w.b2)}</div>`};
+ take.draw=(box,X,V)=>{box.querySelectorAll('.sx-ch[data-k]').forEach(el=>{const k=el.dataset.k,Wd=Math.max(240,Math.round(el.clientWidth)||358),Hh=Wd>=560?Math.round(Wd*.47):Math.round(Wd*.76);el.style.height=Hh+'px';
+   el.innerHTML=`<svg class="sx-svg" viewBox="0 0 ${Wd} ${Hh}" width="${Wd}" height="${Hh}" role="img" aria-label="${k==='acc'?'Each AI’s hit rate round by round, from 50/50, against the 50% line':'Each AI’s P&L round by round from $0, $100K on every trade, no leverage, the season'}">${chart(X,k,Wd,Hh)}</svg>`});
+  P5.fitH&&P5.fitH(box.querySelector('.p5-h'));
+  if(io)box.querySelectorAll('.sx2-bd').forEach(b=>{if(!b.classList.contains('sx-go')&&!b.classList.contains('sx-dn'))io.observe(b)})}}
 P5.mountProof(take);
 }catch(e){window.__x2pSolErr=e;try{console.error('x2p_sol',e)}catch(x){}}
 })();
