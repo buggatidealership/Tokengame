@@ -80,8 +80,11 @@ C(){const fill=G7.length;const pips=SL.map(s=>`<i class="${s.r?'on':''}"></i>`).
 /* D. The card show: the Mag 7 stand upright on brass easels on top of the counter, each under its own spot; every other round lies flat
    under the glass, laid by hand in rows, a brass strip and the week engraved between weeks (how dealers show hundreds of slabs). */
 D(){const top=`<div class="h7-top"><span class="h7-dplt">Mag 7 · on the stands</span>${SL.map(s=>`<div class="h7-es">${s.r?item(s.r):emptySlab(s.u,s.bet)}<i class="h7-easel" aria-hidden="true"></i></div>`).join('')}</div>`;
-  const glass=WEEKS.map(w=>`<div class="h7-strip"><b>${w.t}</b><i>${w.rs.length} rounds${isD()?'':' · swipe'}</i></div><div class="h7-flat"><div class="h7-row">${w.rs.map(r=>{const a=((r.n*37)%7-3)*.5;return item(r).replace('class="h7-it ','style="--rot:'+a.toFixed(2)+'deg" class="h7-it ')}).join('')}</div></div>`).join('');
-  return `${head}<div class="h7-counter">${top}<p class="h7-sub h7-gl">Under the glass <i>· every other round, a row a week, newest left</i></p><div class="h7-glass">${glass}<i class="h7-sheen" aria-hidden="true"></i></div></div>`},
+  const tilt=r=>{const a=((r.n*37)%7-3)*.5;return item(r).replace('class="h7-it ','style="--rot:'+a.toFixed(2)+'deg" class="h7-it ')};
+  /* desktop: one bed of glass, the week's brass divider card standing in the flow before its rounds (no half-empty rows) */
+  const glass=isD()?`<div class="h7-bed">${WEEKS.map(w=>`<div class="h7-div"><b>${w.t}</b><i>${w.rs.length} rounds</i></div>${w.rs.map(tilt).join('')}`).join('')}</div>`
+   :WEEKS.map(w=>`<div class="h7-strip"><b>${w.t}</b><i>${w.rs.length} rounds · swipe</i></div><div class="h7-flat"><div class="h7-row">${w.rs.map(tilt).join('')}</div></div>`).join('');
+  return `${head}<div class="h7-counter">${top}<p class="h7-sub h7-gl">Under the glass <i>· every other round, newest first, ${isD()?"a brass card opens each week":"a row a week, swipe each row"}</i></p><div class="h7-glass">${glass}<i class="h7-sheen" aria-hidden="true"></i></div></div>`},
 /* E. The storehouse: one rack holds everything (V&A East Storehouse: the collection on open racks, visible); the top shelf is the Mag 7,
    lit; each shelf below is a week, its brass lip engraved, every slab standing whole. */
 E(){const C=isD()?8:3;const shelf=(rs,tagt,cls)=>{const rows=[];for(let i=0;i<rs.length;i+=C)rows.push(rs.slice(i,i+C));

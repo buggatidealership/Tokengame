@@ -30,7 +30,7 @@ R38.build=function(host,d,cfg){
       <div class="r-pr"><span class="lb-lab">${W.sec||'Best sector'}</span><span class="r-sec">${x.sec?`<b>${esc(x.sec.name)}</b> <span class="lb-n ${x.sec.p<0?'dn':'up'}">${$k(x.sec.p)}</span>`:'–'}</span></div>
       <div class="r-pr"><span class="lb-lab">Last 5</span>${lamps(x.l5)}</div></div>`;
   const pit=m=>(cfg.pit||pitDef)(m,M[m]);
-  host.classList.add('r38','r38-'+cfg.id);
+  const root=host.closest('#lbx')||host;root.classList.add('r38','r38-'+cfg.id);
   host.innerHTML=`${cfg.top?cfg.top(d):''}<p class="lb-cap r-cap">Season 1 · ${d.N} rounds graded · $100K on every trade</p>
     <div class="r-lead" aria-live="polite"><span class="r-bug">${W.bug||'Round '+d.N}</span><div class="r-lt"></div></div>
     <div class="r-ctl"><span class="r-cg"><span class="lb-swl">${W.raceOn||'Race on'}</span>${sw('Race on',[{k:'pnl',t:'P&L'},{k:'hit',t:'Hit rate'}],mt,'r-m')}</span>${sw('Window',[{k:'season',t:'Season'},{k:'d1',t:'24h'},{k:'d7',t:'7 days'}],wk,'r-w')}</div>
@@ -39,10 +39,10 @@ R38.build=function(host,d,cfg){
     <h3 class="r-pw">${W.pit}</h3><div class="r-pits">${order().map(pit).join('')}</div>
     <p class="lb-fine">Flat $100,000 on every trade, long on up and short on down, no leverage, before fees. Simulated. Gap = to the model one place ahead. 24h = rounds graded at their exchange's close in the last 24 hours; 7 days = ${esc(WS.d7.when)}. Best sector = most P&L, 3 trades or more.</p>`;
   const lanes=host.querySelector('.r-lanes'),tws=host.querySelector('.r-tws'),pits=host.querySelector('.r-pits');
-  function draw(anim){const o=order(),s=scale(),w=WS[wk];host.dataset.mt=mt;
+  function draw(anim){const o=order(),s=scale(),w=WS[wk];root.dataset.mt=mt;
     host.querySelector('.r-ax').innerHTML=s.ticks.map(t=>`<span class="r-tk${t===s.start?' r-t0':''}" style="left:${X(t,s).toFixed(2)}%"><b>${s.fmt(t)}</b></span>`).join('')+
       `<i class="r-sl" style="left:${X(s.start,s).toFixed(2)}%"></i>`;
-    host.style.setProperty('--x0',X(s.start,s).toFixed(2)+'%');
+    root.style.setProperty('--x0',X(s.start,s).toFixed(2)+'%');
     if(anim){flip(lanes,o,'data-m');flip(tws,o,'data-m');flip(pits,o,'data-m')}else o.forEach(m=>{[lanes,tws,pits].forEach(p=>p.appendChild(p.querySelector(`[data-m="${m}"]`)))});
     o.forEach((m,i)=>{const v=val(m),ln=lanes.querySelector(`[data-m="${m}"]`),x0=X(s.start,s),x=v==null?x0:X(v,s),neg=v!=null&&v<s.start;
       ln.style.setProperty('--x',x.toFixed(2)+'%');ln.style.setProperty('--a',Math.min(x,x0).toFixed(2)+'%');ln.style.setProperty('--w',Math.abs(x-x0).toFixed(2)+'%');ln.style.setProperty('--i',i);

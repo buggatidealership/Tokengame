@@ -13,7 +13,7 @@
    graded at their own exchange's close in the last 24 hours (when there was none: the most recent close, said so on the board);
    7 days = today in New York and the six days before. Nothing typed.
    Mount: X2's router draws its own Leaderboard (vModels) into #view on #/leaderboard; this take goes in beside it and the old board is
-   hidden (kept in the DOM, aria-hidden). Re-mounted every time the router draws the tab. A failure is kept in window.__xlbErr and the
+   hidden (kept in the DOM, display:none while the race board is on). Re-mounted every time the router draws the tab. A failure is kept in window.__xlbErr and the
    old board shows again. The pit wall's chip frames: media/chip15-grok-1200.jpg media/chip15-claude-1200.jpg media/chip15-gpt-1200.jpg
    media/chip15-kimi-1200.jpg. window.__LBNOW (ms) moves the clock, for tests only. ===== */
 (function(){
@@ -56,7 +56,7 @@ function data(){
   const d7rs=RS.filter(inD7);
   const wd=new Date(today-6*864e5),lcD=nyDay(lastClose||NOW),lcName=DAY[new Date(lcD).getUTCDay()]+' '+md(lcD);
   const WS={season:{k:'season',t:'Season',lab:'Season P&L',when:'Since '+md(dOf(RS[0].called||RS[0].resolves)),rs:RS},
-    d1:{k:'d1',t:fb?'Last close':'Last 24 hours',fb,lab:'24h P&L',when:fb?'No close in 24h · showing the last close, '+lcName:d1rs.length+' round'+(d1rs.length===1?'':'s')+' at the '+md(dOf(d1rs[d1rs.length-1].resolves))+' close',rs:d1rs},
+    d1:{k:'d1',t:fb?'Last close':'Last 24 hours',fb,lc:lcName,lab:'24h P&L',when:fb?'No close in 24h · showing the last close, '+lcName:d1rs.length+' round'+(d1rs.length===1?'':'s')+' at the '+md(dOf(d1rs[d1rs.length-1].resolves))+' close',rs:d1rs},
     d7:{k:'d7',t:'Last 7 days',lab:'7-day P&L',when:md(wd.getTime())+' to '+md(today)+' · '+d7rs.length+' round'+(d7rs.length===1?'':'s'),rs:d7rs}};
   const logo=t=>{const L=W.CO_LOGOS&&CO_LOGOS[t];return L?'media/'+L.f:null};
   const co=t=>(W.TICKERS&&TICKERS[t])||t;
@@ -170,11 +170,11 @@ function build(host,d){
       const h=tw.querySelector('.xr-hit');
       if(hit){h.textContent=x2.n?$k(x2.pnl):'–';h.className='xl-n xr-hit '+(x2.n?(x2.pnl<0?'xl-dn':'xl-up'):'')}else{h.textContent=x2.hit==null?'–':pc(x2.hit);h.className='xl-n xr-hit'}
       tw.setAttribute('aria-label',`${i+1}. ${M[m].name}: ${w.t}, ${x2.n?`P&L ${$f(x2.pnl)}, ${x2.W} right and ${x2.L} wrong`:'no trades'}${x2.hit!=null?', hit rate '+pc(x2.hit):''}`)});
-    host.querySelector('.xr-when').innerHTML=`<span class="xr-key"><i></i>${hit?'Coin flip, 50%':'Start, $0'}</span><span class="xr-wt${w.fb?' xr-fb':''}">${(hit?'Hit rate · ':'')+esc(w.t)+' · '+esc(w.when)}</span>`;
+    host.querySelector('.xr-when').innerHTML=`<span class="xr-key"><i></i>${hit?'Coin flip, 50%':'Start, $0'}</span><span class="xr-wt${w.fb?' xr-fb':''}">${(hit?'Hit rate · ':'')+(w.fb?'':esc(w.t)+' · ')+esc(w.when)}</span>`;
     const a=M[o[0]],b=M[o[1]],va=val(a.m),vb=val(b.m),lt=host.querySelector('.xr-l3t');
     if(va==null)lt.innerHTML=hit?`<b class="xl-n xr-ln1">Too early</b><span>under 5 trades each in this window, too few for a hit rate</span>`:`<b class="xl-n xr-ln1">No close</b><span>${esc(w.when)}</span>`;
     else lt.innerHTML=`<b class="xl-n xr-ln1" style="color:${a.c}">${esc(a.NAME)}</b><b class="xl-n xr-ln2 ${hit||va>=0?'xl-up':'xl-dn'}">${hit?pc(va):$f(va)}</b><span>${hit?
-      'of trades right · '+esc(b.name)+' '+pc(vb):(wk==='season'?'leads '+esc(b.name)+' by ':w.fb?'takes the last close by ':'takes the '+esc(w.t.toLowerCase())+' by ')+(vb==null?'':'$'+Math.abs(Math.round(va-vb)).toLocaleString('en-US'))}${w.fb?' · <em class="xr-fbn">no close in 24h, last close '+esc(w.when.split(', ').pop())+'</em>':''}</span>`}
+      'of trades right'+(w.fb?' at the last close, '+esc(w.lc):'')+' · '+esc(b.name)+' '+pc(vb):(wk==='season'?'leads '+esc(b.name)+' by ':w.fb?'takes the last close, '+esc(w.lc)+', by ':'takes the '+esc(w.t.toLowerCase())+' by ')+(vb==null?'':'$'+Math.abs(Math.round(va-vb)).toLocaleString('en-US'))}</span>`}
   wireSw(host,(g,k)=>{if(g.classList.contains('xr-w'))wk=k;else mt=k;draw(!RM())});
   draw(false);
   W.__xlbSet=k=>{const t=host.querySelector(`.xl-sw button[data-k="${k}"]`);t&&t.click()};
@@ -188,11 +188,10 @@ function tryMount(){timer=0;
   if(!(W.ROUNDS&&W.MODELS&&W.__x2pPnl&&ROUNDS.length))return again();
   try{const d=data(),root=D.createElement('section');root.className='xlb-root';root.id='x2pLbx';root.setAttribute('aria-labelledby','x2pLbH');
     const hadFocus=v.contains(D.activeElement);
-    [...v.children].forEach(c=>{c.classList.add('xlb-old');c.setAttribute('aria-hidden','true')});
     build(root,d);v.appendChild(root);H.classList.add('xlb-on');
     const h1=root.querySelector('h1');h1.id='x2pLbH';if(hadFocus)h1.focus({preventScroll:true});
     W.__xlb=d}catch(e){fail(e)}}
-function fail(e){W.__xlbErr=e;H.classList.remove('xlb-live');D.querySelectorAll('#view>.xlb-old').forEach(c=>{c.classList.remove('xlb-old');c.removeAttribute('aria-hidden')});try{console.error('xlb',e)}catch(x){}}
+function fail(e){W.__xlbErr=e;H.classList.remove('xlb-live');D.querySelectorAll('#view>.xlb-root').forEach(c=>c.remove());try{console.error('xlb',e)}catch(x){}}
 function again(){if(!timer&&!W.__xlbErr)timer=setTimeout(tryMount,60)}
 function watch(){const v=D.getElementById('view');if(!v)return setTimeout(watch,200);
   new MutationObserver(()=>{if(!W.__xlbErr&&H.getAttribute('data-sec')==='leaderboard'&&!v.querySelector(':scope>.xlb-root'))again()}).observe(v,{childList:true});
