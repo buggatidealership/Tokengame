@@ -109,7 +109,7 @@ function audit(){
      discClear:{frameR:+(fr.r-(cx+rd)).toFixed(1),frameB:+(fr.b-(cy+rd)).toFixed(1),dates:+Math.min(...dts.map(gapC)).toFixed(1),flip:+gapC(fb).toFixed(1)},
      foil:ho?{mask:getComputedStyle(ho).webkitMaskImage.slice(0,60),blend:getComputedStyle(ho).mixBlendMode,opacity:getComputedStyle(ho).opacity,anim:getComputedStyle(hf).animationName,live:cb.classList.contains('cb-live')}:null};
    if(k==='g'){if(deg<6||deg>9)res.fails.push('stamp tilt '+deg.toFixed(2));if(!ho)res.fails.push('no foil');
-     if(!res.stamp.boxInFrame)res.fails.push('stamp box outside frame');if(res.stamp.boxClear.dates<4)res.fails.push('stamp box within 4px of a date plate: '+res.stamp.boxClear.dates);if(res.stamp.boxClear.flip<4)res.fails.push('stamp box within 4px of the flip button: '+res.stamp.boxClear.flip)}}
+     if(!res.stamp.boxInFrame)res.fails.push('stamp box outside frame');if(res.stamp.discClear.dates<4)res.fails.push('mark within 4px of a date plate: '+res.stamp.discClear.dates);if(res.stamp.discClear.flip<4)res.fails.push('mark within 4px of the flip button: '+res.stamp.discClear.flip);if(res.stamp.discClear.frameR<0||res.stamp.discClear.frameB<0)res.fails.push('mark outside the frame')}}
   res.sw=document.documentElement.scrollWidth-innerWidth;if(res.sw>0)res.fails.push('sideways scroll '+res.sw);
   return res}
 (async()=>{const b=await chromium.launch();const all=[];

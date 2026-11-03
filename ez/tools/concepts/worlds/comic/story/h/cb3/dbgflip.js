@@ -1,0 +1,5 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('/home/user/Tokengame/ez/tools/concepts/live-r1/_fonts.js');
+(async()=>{const W=+process.argv[2];const b=await chromium.launch();const p=await (await b.newContext({viewport:{width:W,height:W<600?844:900}})).newPage();await FONTS(p);
+await p.goto('http://127.0.0.1:'+(process.env.PORT||8993)+'/v46-live-x2plus.html?'+Date.now()+'#/round/80',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur')&&document.querySelector('#x2pRm .card'),null,{timeout:200000});await p.waitForTimeout(1200);
+await p.evaluate(()=>{const c=document.querySelector('#x2pRm .card');(c.querySelector('.face.front [data-flip]')||c).click()});await p.waitForTimeout(1500);
+console.log(JSON.stringify(await p.evaluate(()=>{const q=s=>{const r=document.querySelector('#x2pRm '+s).getBoundingClientRect();return [r.left,r.top,r.right,r.bottom].map(v=>+v.toFixed(1))};return {flip:q('.cb .cb-flip'),st:q('.cb-st'),bt:q('.cb-bt'),cb:q('.cb')}})));await b.close()})();
