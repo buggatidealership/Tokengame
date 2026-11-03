@@ -71,7 +71,7 @@ function audit(){
     const cr=li.querySelector('.cb-cr');if(cr){const c=cr.getBoundingClientRect(),CR=card.getBoundingClientRect(),nm=li.querySelector('.cb-nm').getBoundingClientRect();
       res.crown=(res.crown||[]).concat([{row:i+1,top:+c.top.toFixed(1),bot:+c.bottom.toFixed(1),plateEdge:+f.vtop.toFixed(1),h:+c.height.toFixed(1),capH:+(ink(li.querySelector('.cb-nm')).bot-ink(li.querySelector('.cb-nm')).top).toFixed(1),overName:c.right>nm.left&&c.left<nm.right}]);
       if(!(c.bottom>f.vtop&&c.top<f.vtop))res.fails.push('crown not on edge');if(c.top<CR.top||c.left<CR.left||c.right>CR.right)res.fails.push('crown outside card');
-      const prev=lis[i-1];if(prev){const pf=face(prev,'np');if(c.top<pf.r.bottom-f.B*14/43.94)res.fails.push('crown touches plate above')}}});
+      const prev=lis[i-1]||cb.querySelector('.cb-ti');if(prev){const pf=face(prev,'np');if(c.top<pf.r.bottom-f.B*14/43.94)res.fails.push('crown touches plate above')}}});
   const ti=cb.querySelector('.cb-ti');{const q=ink(cb.querySelector('.cb-no'));minF.push([q.t,q.fs]);chk('No.',null,face(ti,'np'),q)}
   const mw=cb.querySelector('.cb-mw'),fm=face(mw,'mk'),qm=ink(cb.querySelector('.cb-ml')),qv=ink(mv);minF.push([qm.t,qm.fs],[qv.t,qv.fs]);
   chk('MARKET',null,fm,qm);chk('move',null,fm,qv);res.geo.moveVsMarket=+(((qv.top+qv.bot)-(qm.top+qm.bot))/2).toFixed(2);if(Math.abs(res.geo.moveVsMarket)>1)res.fails.push('move vs MARKET '+res.geo.moveVsMarket);
@@ -88,6 +88,7 @@ function audit(){
     if(cs.textShadow&&cs.textShadow!=='none')return 'engraved: ink in the cut + text-shadow lip/wall ('+cs.textShadow.slice(0,60)+')';return 'FLAT (no process)'};
   [['rank','.cb-rk'],['name','.cb-nm'],['Long/Short','.cb-tw'],['trade move','.cb-tv'],['PASS/FAIL','.cb-pf i'],['No.','.cb-no'],['MARKET','.cb-ml'],['market move / countdown','.cb-mv'],['date label','.cb-dt small'],['date','.cb-dt b'],['See the film','.cb-flip']].forEach(([l,s])=>{const e=cb.querySelector(s);if(!e)return;const kd=KIND(e);res.surf[l]=kd;if(/FLAT/.test(kd))res.fails.push('flat text: '+l)});
   res.fonts=[...new Set([...cb.querySelectorAll('*')].filter(e=>vis(e)&&[...e.childNodes].some(z=>z.nodeType===3&&z.textContent.trim())).map(e=>getComputedStyle(e).fontFamily.split(',')[0].replace(/"/g,'')))];
+  [...cb.querySelectorAll('.cb-p>:not(.cb-sh):not(.cb-g)')].forEach(e=>{const r=e.getBoundingClientRect();if(r.bottom>CB.bottom-1||r.top<CB.top)res.fails.push('outside the plate: '+e.className)});
   res.sw=document.documentElement.scrollWidth-innerWidth;if(res.sw>0)res.fails.push('sideways scroll '+res.sw);
   return res}
 (async()=>{const b=await chromium.launch();const all=[];

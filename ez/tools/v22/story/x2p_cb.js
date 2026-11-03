@@ -49,7 +49,7 @@ function pf(r,i){var w=r.ok?'PASS':'FAIL',q=PT[(i+(r.ok?0:2))%4],h='<span class=
   return h+'</span>'}
 function move(a){return '<b class="cb-mv cb-tb cb-en '+(a<0?'dn':'up')+'"><span aria-hidden="true">'+(a<0?'−':'+')+'</span><span class="sr">'+(a<0?'down ':'up ')+'</span>'+Math.abs(a).toFixed(2)+'%</b>'}
 function build(d,fb){var G=d.k==='g',h='<div class="cb-p"><i class="cb-sh" aria-hidden="true"></i>';
-  h+='<i class="cb-g" style="--g:.6"></i><div class="cb-ti cb-np"><b class="cb-no cb-tb cb-fit">'+no4(d.n)+'</b><span class="sr"> '+esc(d.co)+'</span></div><i class="cb-g" style="--g:1.4"></i>';
+  h+='<i class="cb-g" style="--g:.6"></i><div class="cb-ti cb-np"><b class="cb-no cb-tb cb-fit">'+no4(d.n)+'</b><span class="sr"> '+esc(d.co)+'</span></div><i class="cb-g cb-g0" style="--g:1.4"></i>';
   h+='<ol class="cb-rows '+(G?'g':'p')+'" aria-label="'+(G?'The trades, ranked by the close':'The trades, as filed')+'">';
   d.rows.forEach(function(r,i){
     h+='<li class="cb-r cb-np'+(G&&r.win?' win':'')+(G?(r.ok?' ok':' no'):' pd')+'">'+(G?'<b class="cb-rk cb-tb">'+(i+1)+'</b>':'')+'<span class="cb-wc">'+mark(r.m)+'</span>'+

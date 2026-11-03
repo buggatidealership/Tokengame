@@ -12,7 +12,7 @@ const PORT=process.env.PORT||8997,DPR=+process.env.DPR||2,PAGE=process.env.PAGE|
    const k=await p.evaluate(()=>document.querySelector('#x2pRm .card').getAttribute('data-k'));
    if(k==='g'){await p.evaluate(()=>{const c=document.querySelector('#x2pRm .card');const f=c.querySelector('.face.front [data-flip]')||c.querySelector('[data-flip]');(f||c).click()});await p.waitForTimeout(1800)}
    await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(600);
-   await p.evaluate(()=>document.querySelectorAll('video').forEach(v=>{try{v.pause()}catch(e){}}));
+   await p.evaluate(()=>{document.activeElement&&document.activeElement.blur()});await p.evaluate(()=>document.querySelectorAll('video').forEach(v=>{try{v.pause()}catch(e){}}));
    await p.screenshot({path:`${OUT}/view-${n}-${W}.png`});
    const el=await p.$('#x2pRm .card');if(el)await el.screenshot({path:`${OUT}/card-${n}-${W}.png`});
    const cb=await p.$('#x2pRm .cb');if(cb&&process.env.CB)await cb.screenshot({path:`${OUT}/cb-${n}-${W}.png`});
