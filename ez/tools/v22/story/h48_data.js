@@ -74,6 +74,7 @@ function hlKey(t){t=String(t);if(HL[t])return t;var b=t.split(".")[0];return HL[
 function hlMarket(t){var k=hlKey(t);if(!k)return null;var m=HL[k].slice().sort(function(a,b){return b[1]-a[1]});if(!m.length)return null;
   return {name:m[0][0]+":"+k,oi:m[0][1],thin:m[0][1]<10,url:"https://app.hyperliquid.xyz/trade/"+m[0][0]+":"+k}}
 function hlAsOf(){return HLlive?"Hyperliquid, live":"Hyperliquid, as of "+HL_ASOF}
+function hlWhen(){return HLlive?"today (live)":"as of "+HL_ASOF}
 var hlP=null,hlSubs=[];
 function onHL(f){hlSubs.push(f)}
 function refreshHL(){if(hlP)return hlP;var dex={};Object.keys(HL_SNAP).forEach(function(k){HL_SNAP[k].forEach(function(x){dex[x[0]]=1})});
@@ -89,6 +90,6 @@ function refreshHL(){if(hlP)return hlP;var dex={};Object.keys(HL_SNAP).forEach(f
 
 var D=null;
 W.H48D={get:function(){if(!D&&W.ROUNDS&&ROUNDS.length)D=build();return D},MK:MK,COL:COL,NAME:NAME,FLAG:FLAG,money:money,kmoney:kmoney,pct:pct,
-  coName:coName,coLabel:coLabel,winners:winners,wilson:wilson,hlMarket:hlMarket,hlAsOf:hlAsOf,refreshHL:refreshHL,onHL:onHL,
+  coName:coName,coLabel:coLabel,winners:winners,wilson:wilson,hlMarket:hlMarket,hlAsOf:hlAsOf,hlWhen:hlWhen,refreshHL:refreshHL,onHL:onHL,
   fmtDay:fmtDay,md:md,dayKey:dayKey,nyToday:nyToday};
 })();

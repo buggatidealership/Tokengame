@@ -59,5 +59,55 @@ function ticket(m,s){return '<div class="h8-gt" role="group" aria-label="'+E.NAM
   '<div class="h8-gtmain" aria-hidden="true"><span class="h8-gtn">'+badge(m,30)+'<b>'+E.NAME[m]+'</b></span>'+
    '<span class="h8-gtk">Right on '+s.w+' of '+s.n+' trades</span><span class="h8-gtbig">'+(s.hit*100).toFixed(1)+'%</span>'+
    '<span class="h8-gtbig '+(s.pl>=0?'h8-pos':'h8-neg')+'">'+E.money(s.pl)+'</span><span class="h8-gtk">at $100K a trade</span></div></div>'}
-window.H48UI={esc:esc,badge:badge,flag:flag,co:co,letter:letter,letterAll:letterAll,ticket:ticket,nextCard:nextCard,follow:follow,size:size,when:when,CAST:CAST,mix:mix};
+/* ---------- the charts, drawn on the painted surfaces: the hit rate projected on the screening-room screen (from 50%), the P&L in
+   coloured chalk on the classroom board (from $0). Each line starts before the model's first trade in the rounds shown; lines are told
+   apart by colour and dash. A chart draws in once (never with reduced motion); a redraw after that shows it whole. ---------- */
+var BOX={sc:{x:.207,y:.12,w:.598,h:.623,ar:.75},ch:{x:.13,y:.167,w:.765,h:.627,ar:.75}};
+/* place a surface on its painting (measured on the paintings, in % of the picture) */
+/* extra (px, desktop Leaderboard only): the board drawn that much taller, the painting stretched to match, so a page ends level with the one beside it */
+function fit(sc,sf,box,fill,extra){var W=sc.clientWidth,k=fill/box.w,pw=W*k,ph=pw*box.ar,x=W*(1-fill)/2-box.x*pw;if(extra>0)ph*=(box.h*ph+extra)/(box.h*ph);var y0=box.y*ph-W*.05;
+  sc.style.backgroundSize=pw+"px "+ph+"px";sc.style.backgroundPosition=x+"px "+(-y0)+"px";sc.style.height=(box.h*ph+W*.1)+"px";sc.style.aspectRatio="auto";
+  sf.style.left=(W*(1-fill)/2)+"px";sf.style.width=(W*fill)+"px";sf.style.top=(W*.05)+"px";sf.style.height=(box.h*ph)+"px"}
+var SEEN={},DASH={GROK:"",CLAUDE:"9 5",GPT:"2.5 4",KIMI:"10 4 2.5 4"};
+function RM(){return window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches}
+/* o: {rs: rounds in order, ends: {m: label}, empty: words when there is nothing to draw, anim: draw in once} */
+function chart(sf,kind,o){var W=sf.clientWidth,H=sf.clientHeight,hit=kind==="sc",ink=hit?"#2a1a10":"#f3efe2",fs=W<420?11:13,rs=o.rs,n=rs.length;
+  if(!n){sf.innerHTML='<div class="h8-chempty" style="color:'+ink+'">'+esc(o.empty||"Nothing graded yet")+'</div>';return}
+  var pad={l:hit?40:52,r:0,t:16,b:30};
+  /* room on the right for the line ends (name and figure), measured roughly from their length */
+  var lw=0;E.MK.forEach(function(m){if(o.ends[m]!=null)lw=Math.max(lw,(E.NAME[m]+" "+o.ends[m]).length)});pad.r=Math.min(Math.round(W*.42),Math.round(lw*fs*.6+16));
+  var ser={},vals=[];E.MK.forEach(function(m){var a={pl:0,w:0,n:0},s=[],f0=-1;rs.forEach(function(r,i){var t=r.__h8.tr.filter(function(x){return x.m===m})[0];if(t){if(f0<0)f0=i;a.pl+=t.v;a.n++;if(t.w)a.w++}s.push(hit?(a.w+1)/(a.n+2):a.pl)});
+    ser[m]={s:s,f0:f0};if(f0>=0)vals=vals.concat(s.slice(f0)).concat([hit?.5:0])});
+  if(!vals.length){sf.innerHTML='<div class="h8-chempty" style="color:'+ink+'">'+esc(o.empty||"Nothing graded yet")+'</div>';return}
+  var lo,hi,ticks=[],t;
+  if(hit){lo=Math.min(.4,Math.floor(Math.min.apply(null,vals)*10)/10);hi=Math.max(.6,Math.ceil(Math.max.apply(null,vals)*10)/10);for(t=lo;t<=hi+1e-9;t+=.1)ticks.push(+t.toFixed(2))}
+  else{var mn=Math.min(0,Math.min.apply(null,vals)),mx=Math.max(0,Math.max.apply(null,vals)),span=Math.max(mx-mn,20000),st=[5000,10000,25000,50000,100000].filter(function(s){return span/s<=6})[0]||100000;
+    lo=Math.floor(mn/st)*st;hi=Math.ceil(mx/st)*st;if(lo===hi)hi=lo+st;for(t=lo;t<=hi+1e-9;t+=st)ticks.push(t)}
+  var X=function(i){return pad.l+(W-pad.l-pad.r)*(i+1)/n},Y=function(v){return pad.t+(H-pad.t-pad.b)*(1-(v-lo)/(hi-lo))};
+  var g='<svg class="h8-chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(o.aria||"")+'">';
+  if(!hit)g+='<defs><filter id="h8chalk'+sf.id+'" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed="3"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.7"/><feComposite in="SourceGraphic" operator="in"/></filter></defs>';
+  ticks.forEach(function(v){var base=hit?Math.abs(v-.5)<1e-6:v===0,y=Y(v).toFixed(1);
+    g+='<line x1="'+pad.l+'" x2="'+(W-pad.r+6)+'" y1="'+y+'" y2="'+y+'" stroke="'+ink+'" stroke-opacity="'+(base?.75:.22)+'" stroke-width="'+(base?1.6:1)+'"'+(base?' stroke-dasharray="6 5"':'')+'/>'+
+       '<text x="'+(pad.l-6)+'" y="'+(+y+4)+'" text-anchor="end" font-size="'+fs+'" fill="'+ink+'" fill-opacity="'+(base?1:.75)+'">'+(hit?Math.round(v*100)+"%":(v===0?"$0":(v>0?"+":"−")+"$"+Math.abs(v/1000)+"K"))+'</text>'});
+  [[-1,"Start"],[n-1,"Round "+rs[n-1].n]].forEach(function(a,i){g+='<text x="'+X(a[0])+'" y="'+(H-8)+'" text-anchor="'+(i?"end":"start")+'" font-size="'+fs+'" fill="'+ink+'" fill-opacity=".8">'+a[1]+'</text>'});
+  var ends=[],base0=hit?.5:0,cas=hit?"#24140c":"#173a2a";
+  E.MK.slice().reverse().forEach(function(m){var S=ser[m];if(S.f0<0)return;var d="M"+X(S.f0-1).toFixed(1)+" "+Y(base0).toFixed(1);for(var i=S.f0;i<n;i++)d+="L"+X(i).toFixed(1)+" "+Y(S.s[i]).toFixed(1);
+    g+='<path class="h8-ln" d="'+d+'" fill="none" stroke="'+cas+'" stroke-width="'+(hit?4.6:4.2)+'" stroke-linejoin="round" stroke-linecap="round"'+(DASH[m]?' stroke-dasharray="'+DASH[m]+'"':'')+(hit?'':' opacity=".55"')+'/>'+
+       '<path class="h8-ln" d="'+d+'" fill="none" stroke="'+E.COL[m]+'" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"'+(DASH[m]?' stroke-dasharray="'+DASH[m]+'"':'')+(hit?'':' filter="url(#h8chalk'+sf.id+')"')+'/>';
+    ends.push({m:m,y:Y(S.s[n-1]),v:S.s[n-1]})});
+  ends.sort(function(a,b){return a.y-b.y});for(var i=1;i<ends.length;i++)if(ends[i].y-ends[i-1].y<fs+5)ends[i].y=ends[i-1].y+fs+5;
+  var over=ends.length?ends[ends.length-1].y-(H-pad.b):0;if(over>0)ends.forEach(function(e){e.y-=over});
+  ends.forEach(function(e){var x=W-pad.r+10;
+    g+='<circle cx="'+X(n-1).toFixed(1)+'" cy="'+Y(e.v).toFixed(1)+'" r="3.2" fill="'+E.COL[e.m]+'" stroke="'+cas+'" stroke-width="1.4"/>'+
+      '<text x="'+x+'" y="'+(e.y+4).toFixed(1)+'" font-size="'+fs+'" fill="'+(hit?"#24140c":E.COL[e.m])+'"><tspan>'+E.NAME[e.m]+'</tspan> <tspan fill="'+(hit?"#24140c":"#f3efe2")+'">'+esc(o.ends[e.m])+'</tspan></text>'});
+  g+='</svg>';sf.innerHTML=g;
+  var key=o.key||sf.id;
+  if(o.anim&&!RM()&&!SEEN[key]&&"IntersectionObserver" in window){var ps=sf.querySelectorAll(".h8-ln");ps.forEach(function(p){if(!p.getAttribute("stroke-dasharray")){var L=p.getTotalLength();p.style.strokeDasharray=L;p.style.strokeDashoffset=L}else p.style.clipPath="inset(0 100% 0 0)"});
+    var done=false,go=function(){if(done)return;done=true;SEEN[key]=true;ps.forEach(function(p){p.style.transition="stroke-dashoffset 1.6s ease-out, clip-path 1.6s ease-out";p.style.strokeDashoffset=0;p.style.clipPath="inset(0 0 0 0)"})};
+    /* draws when a third of it is on screen; a reader who scrolls past without stopping still gets it drawn, 1.2 s after it first shows */
+    var tm=0,io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.intersectionRatio>=.34){io.disconnect();clearTimeout(tm);go()}else if(e.isIntersecting&&!tm)tm=setTimeout(function(){io.disconnect();go()},1200)})},{threshold:[0,.35]});io.observe(sf)}}
+/* a painted ring around the best figure in a row (a brush stroke in red-brown ink, the cel's own line) */
+function ring(){return '<svg class="h8-ring" viewBox="0 0 100 44" preserveAspectRatio="none" aria-hidden="true"><path d="M8 24C9 10 34 4 55 5S95 12 93 24 66 41 44 40 6 35 9 21 30 6 52 7" fill="none" stroke="#a8231a" stroke-width="3.4" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>'}
+window.H48UI={esc:esc,badge:badge,flag:flag,co:co,letter:letter,letterAll:letterAll,ticket:ticket,nextCard:nextCard,follow:follow,size:size,when:when,CAST:CAST,mix:mix,
+  fit:fit,chart:chart,BOX:BOX,ring:ring,RM:RM};
 })();
