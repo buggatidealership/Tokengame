@@ -171,7 +171,7 @@ function build(host,d){
       const h=tw.querySelector('.xr-hit');
       if(hit){h.textContent=x2.n?$k(x2.pnl):'–';h.className='xl-n xr-hit '+(x2.n?(x2.pnl<0?'xl-dn':'xl-up'):'')}else{h.textContent=x2.hit==null?'–':pc(x2.hit);h.className='xl-n xr-hit'}
       tw.setAttribute('aria-label',`${i+1}. ${M[m].name}: ${w.t}, ${x2.n?`P&L ${$f(x2.pnl)}, ${x2.W} right and ${x2.L} wrong`:'no trades'}${x2.hit!=null?', hit rate '+pc(x2.hit):''}`)});
-    host.querySelector('.xr-when').innerHTML=`<span class="xr-key"><i></i>${hit?'Coin flip, 50%':'Start, $0'}</span><span class="xr-wt${w.fb?' xr-fb':''}">${(hit?'Hit rate · ':'')+(w.fb?'':esc(w.t)+' · ')+esc(w.when)}</span>`;
+    host.querySelector('.xr-when').innerHTML=`<span class="xr-key"><i></i>${hit?'Start, 50%':'Start, $0'}</span><span class="xr-wt${w.fb?' xr-fb':''}">${(hit?'Hit rate · ':'')+(w.fb?'':esc(w.t)+' · ')+esc(w.when)}</span>`;
     const a=M[o[0]],b=M[o[1]],va=val(a.m),vb=val(b.m),lt=host.querySelector('.xr-l3t');
     if(va==null)lt.innerHTML=hit?`<b class="xl-n xr-ln1">Too early</b><span>under 5 trades each in this window, too few for a hit rate</span>`:`<b class="xl-n xr-ln1">No close</b><span>${esc(w.when)}</span>`;
     else lt.innerHTML=`<b class="xl-n xr-ln1" style="color:${a.c}">${esc(a.NAME)}</b><b class="xl-n xr-ln2 ${hit||va>=0?'xl-up':'xl-dn'}">${hit?pc(va):$f(va)}</b><span>${hit?

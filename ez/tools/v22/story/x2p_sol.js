@@ -52,7 +52,7 @@ function rows(X,kind){const acc=kind==='acc',S=X.W.season,ord=acc?X.arank:S.rank
    return `<div class="sx-r" data-m="${m}" style="--c:${COL[m]||CR}"><b class="sx-nm"><i class="sx-sw"></i>${esc(NM[m])}</b>${acc?`<span class="sx-l5 c2">${tr.slice(-5).map(box).join('')}</span>`:`<span class="sx-f c2 ${lr==null?'':lr>=0?'sx-u':'sx-d'}">${lr==null?'–':$f(lr)}</span>`}<span class="sx-f c3"><em class="sx-u">${a.W}</em>-<em class="sx-d">${a.L}</em></span><span class="sx-f c4 ${acc?'':v>=0?'sx-u':'sx-d'}">${acc?pc(a.hr):$f(v)}</span></div>`}).join('')}</div>`}
 /* the same table for screen readers */
 function sr(X,kind){const acc=kind==='acc',S=X.W.season,ord=acc?X.arank:S.rank;
-  if(acc)return `<table class="p5-sr"><caption>Hit rate: how often each AI's trade went the right way, round by round, over ${X.N} graded rounds. A coin flip gets 50%.</caption><tr><th>AI</th><th>Last 5</th><th>W-L</th><th>Hit rate</th></tr>${ord.map(m=>{const a=X.A[m];return `<tr><th>${esc(NM[m])}</th><td>${trades(X,m).slice(-5).map(v=>v>0?'W':'L').join(' ')}</td><td>${a.W}-${a.L}</td><td>${pc(a.hr)}</td></tr>`}).join('')}</table>`;
+  if(acc)return `<table class="p5-sr"><caption>Hit rate: how often each AI's trade went the right way, round by round, over ${X.N} graded rounds.</caption><tr><th>AI</th><th>Last 5</th><th>W-L</th><th>Hit rate</th></tr>${ord.map(m=>{const a=X.A[m];return `<tr><th>${esc(NM[m])}</th><td>${trades(X,m).slice(-5).map(v=>v>0?'W':'L').join(' ')}</td><td>${a.W}-${a.L}</td><td>${pc(a.hr)}</td></tr>`}).join('')}</table>`;
   return `<table class="p5-sr"><caption>P&amp;L if you’d bet $100K on every trade, no leverage, the season, ${S.n} rounds</caption><tr><th>AI</th><th>Last round</th><th>W-L</th><th>P&amp;L</th></tr>${ord.map(m=>{const a=X.A[m],tr=trades(X,m),lr=tr[tr.length-1];return `<tr><th>${esc(NM[m])}</th><td>${lr==null?'none':$f(lr)}</td><td>${a.W}-${a.L}</td><td>${$f(S.tot[m])}</td></tr>`}).join('')}</table>`}
 /* ---------- the take ---------- */
 const CAP={acc:['Hit rate','How often their long or short was right'],pnl:['P&amp;L','Money, round by round']};
@@ -71,18 +71,16 @@ const take={id:'sx',html(X,V){const k=V.view==='pnl'?'pnl':'acc',c=CAP[k];
   if(anim&&!RM.matches){box.classList.remove('sx-go');void box.offsetWidth;box.classList.add('sx-go')}anim=false;
   box.querySelectorAll('[data-sx]').forEach(b=>b.onclick=()=>{const v=b.dataset.sx;if(V.view===v)return;V.view=v;anim=true;P5.cur.draw();const f=box.querySelector(`[data-sx="${v}"]`);f&&f.focus({preventScroll:true})})}};
 /* ---------- H45 two beats (owner, 2026-11-03: "the hit rate and the PNL to be two separate beats... they land on the accuracy, and then they land on
-   the PNL"; a line between the heading and the hit rate that says we tracked every trade and the results are below). Mockup switch
-   window.__x2pSolTwo = 'A' (questions), 'B' (answers worked out from the data), 'C' (question small, answer big); off = the one board above.
+   the PNL"; a line between the heading and the hit rate that says we tracked every trade and the results are below). The owner's words (same day): "We tracked every trade so you don't have to. Here are the stats after N rounds." / Hit rate: "How often were they right
+   on their long or short?" / P&L: "Would following them have made you money?". No coin flip anywhere (owner). window.__x2pSolTwo='off' = the one board above.
    Each beat is its own board with its own chart and table; no switch; each beat's lines draw in once when it comes on screen. ---------- */
-const TWO=window.__x2pSolTwo;
+const TWO=window.__x2pSolTwo!=='off';
 if(TWO){const done=new Set();const io=('IntersectionObserver' in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const t=e.target;io.unobserve(t);done.add(t.dataset.k);if(RM.matches){t.classList.add('sx-dn');return}t.classList.add('sx-go');setTimeout(()=>{t.classList.remove('sx-go');t.classList.add('sx-dn')},1300)}}),{threshold:.35}):null;
- const words=X=>{const S=X.W.season,MS=X.MS,T=MS.reduce((a,m)=>a+X.A[m].W+X.A[m].L,0),up=MS.filter(m=>X.A[m].hr>.5).length,pr=MS.filter(m=>S.tot[m]>0).length,n=MS.length,N=X.N;
-  const intro={A:`We tracked every trade for ${N} rounds. Here is the record.`,B:`${N} rounds. ${T} trades. Every one graded by the market close.`,C:`${N} rounds. ${T} trades. Every one graded by the market close.`}[TWO]||'';
-  const b1={A:['Hit rate','Can they beat a coin flip?'],B:['Hit rate · a coin flip gets 50%',`${up} of ${n} are above a coin flip`],C:['Can they beat a coin flip?',`${up} of ${n} are above it`]}[TWO];
-  const b2={A:['P&amp;L · $100K on every trade','Would following them have made you money?'],B:['P&amp;L · $100K on every trade',`${pr} of ${n} are in profit`],C:['Would following them have made you money?',`${pr} of ${n} made money`]}[TWO];
-  return {intro,b1,b2}};
+ const words=X=>({intro:`We tracked every trade so you don't have to. Here are the stats after ${X.N} rounds.`,
+  b1:['Hit rate','How often were they right on their long or short?'],
+  b2:['P&amp;L · $100K on every trade','Would following them have made you money?']});
  const board=(X,k,c)=>`<div class="sx-bd sx2-bd${done.has(k)?' sx-dn':''}" data-k="${k}"><p class="sx-cap"><small>${c[0]}</small>${c[1]}</p><div class="sx-pic"><div class="sx-ch" data-k="${k}"></div>${rows(X,k)}</div></div>${sr(X,k)}`;
- take.html=(X,V)=>{const w=words(X);return `<div class="p5-bleed sx sx2 sx2-${TWO}">${P5.head('Smart or','lucky?')}<p class="h35-cap sx2-cap">${w.intro}</p>${board(X,'acc',w.b1)}${board(X,'pnl',w.b2)}</div>`};
+ take.html=(X,V)=>{const w=words(X);return `<div class="p5-bleed sx sx2">${P5.head('Smart or','lucky?')}<p class="h35-cap sx2-cap">${w.intro}</p>${board(X,'acc',w.b1)}${board(X,'pnl',w.b2)}</div>`};
  take.draw=(box,X,V)=>{box.querySelectorAll('.sx-ch[data-k]').forEach(el=>{const k=el.dataset.k,Wd=Math.max(240,Math.round(el.clientWidth)||358),Hh=Wd>=560?Math.round(Wd*.47):Math.round(Wd*.76);el.style.height=Hh+'px';
    el.innerHTML=`<svg class="sx-svg" viewBox="0 0 ${Wd} ${Hh}" width="${Wd}" height="${Hh}" role="img" aria-label="${k==='acc'?'Each AI’s hit rate round by round, from 50/50, against the 50% line':'Each AI’s P&L round by round from $0, $100K on every trade, no leverage, the season'}">${chart(X,k,Wd,Hh)}</svg>`});
   P5.fitH&&P5.fitH(box.querySelector('.p5-h'));
