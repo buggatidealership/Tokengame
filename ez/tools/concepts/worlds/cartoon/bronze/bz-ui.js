@@ -23,5 +23,20 @@ function burst(w,h,seed){var pts=[],n=22,cx=w/2,cy=h/2;for(var i=0;i<n;i++){var 
   return '<svg viewBox="-4 -4 '+(w+8)+' '+(h+8)+'" preserveAspectRatio="none" style="position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);z-index:-1" aria-hidden="true"><polygon points="'+pts.join(" ")+'" fill="#f8efd2" stroke="#17120d" stroke-width="2.6" stroke-linejoin="round"/></svg>'}
 /* the move as a sound effect word picked by size and direction (bigger moves, louder words) */
 function moveWord(a){var x=Math.abs(a);if(a>=0)return x>=10?"KA-BOOM!":x>=4?"WHOOSH!":"ZIP!";return x>=10?"KRAKOOM!":x>=4?"CRASH!":"THUD!"}
-window.BZU={esc:esc,sfx:sfx,mark:mark,flag:flag,tail:tail,burst:burst,moveWord:moveWord};
+/* a crop of a model's painted portrait with the face kept whole; a = the box's width/height */
+function face(m,Z,fy,a){var F={GROK:[.42,.21],CLAUDE:[.52,.27],GPT:[.63,.22],KIMI:[.62,.2]}[m];Z=Z||2.1;a=a||3/4.4;
+  var left=(50-F[0]*Z*100),top=((fy||58)-F[1]*Z*(4/3)*a*100);
+  return '<img class="fimg" alt="" src="art/cast-'+m.toLowerCase()+'.jpg" style="position:absolute;max-width:none;width:'+(Z*100)+'%;left:'+left.toFixed(1)+'%;top:'+top.toFixed(1)+'%">'}
+/* one upcoming company as a "next issue" panel: the top model's trade in its balloon, the other three as the field,
+   and where to follow it (the company's Hyperliquid market, from the Nov 3 snapshot) */
+function nextCard(p,top){var B=BZ,lg=B.logo(p.t),dk=(CO_LOGOS[p.t]||{}).dark,h=B.hl(p.t),tt=p.tr&&p.tr[top];
+  var field=p.tr?["GPT","CLAUDE","GROK","KIMI"].filter(function(m){return m!==top&&p.tr[m]}).map(function(m){var t=p.tr[m];return '<span class="nt-ch" style="--c:'+B.COL[m]+'"><span class="mkb">'+mark(m,"#17120d",12)+'</span><span class="'+(t.long?"up":"dn")+'">'+(t.long?"LONG":"SHORT")+'</span></span>'}).join(""):"";
+  var when=p.res?(B.key(p.res)===B.key(B.today)?"At the close today · ":"At the close · ")+B.wday(p.res)+" "+B.fmt(p.res):"Earnings "+(p.called?"from "+B.fmt(p.called):"date to come");
+  var hlTxt=h?'<b>Follow it on Hyperliquid:</b> <span class="mono">'+h.name+'</span> · '+(h.thin?'<span class="thin">thin market, $'+h.oi.toFixed(1)+'M open interest</span>':'$'+h.oi.toFixed(1)+'M open interest'):'No Hyperliquid market for '+esc(TICKERS[p.t]||p.t)+'.';
+  return '<article class="pn nt'+(tt?"":" nt-off")+'" style="--bc:'+B.brand(p.t)+'"><div class="nt-g ink solid" style="--c:var(--bc)">'+
+    '<div class="nt-lg'+(dk?" dk":"")+'">'+(lg?'<img src="'+lg+'" alt="">':'')+'</div>'+
+    '<div class="nt-mid"><div class="nt-nm">'+esc(B.co(p.t))+'</div><div class="nt-dt">'+when+'</div>'+(field?'<div class="nt-fd">'+field+'</div>':'<div class="nt-dt nt-wait">Trades drop before the earnings.</div>')+'</div>'+
+    (tt?'<div class="nt-top"><div class="nt-face" style="--c:'+B.COL[top]+'">'+face(top,2.25,64,1/1.1)+'<span class="nt-who">'+B.NAME[top].toUpperCase()+'</span></div><div class="bal nt-bal">'+(tt.long?"Long!":"Short!")+tail("b")+'</div></div>':'')+
+    '</div><div class="nt-hl'+(h?"":" none")+'">'+hlTxt+'</div></article>'}
+window.BZU={face:face,nextCard:nextCard,esc:esc,sfx:sfx,mark:mark,flag:flag,tail:tail,burst:burst,moveWord:moveWord};
 })();

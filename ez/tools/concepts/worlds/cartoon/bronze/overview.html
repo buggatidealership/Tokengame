@@ -166,6 +166,24 @@
 .nx .up1 .lg.dk{background-color:#1a1612}
 .nx .up1 .lg img{max-width:100%;max-height:100%}
 .nx .up1 span{font:700 10.5px/1.1 BZL;text-transform:uppercase;color:#fbf2d9;text-shadow:0 1px 0 #000,0 0 3px rgba(0,0,0,.6)}
+.cv .blurb .q2{font:700 10.5px/1.15 BZL;text-transform:uppercase;margin-top:4px;color:var(--ink)}
+/* ---------- the verdict ---------- */
+.vd{display:grid;grid-template-columns:40% 1fr;margin-top:var(--g)}
+.vd-por{position:relative;overflow:hidden;border-right:2.5px solid var(--ink);background:#111;min-height:220px}
+.vd-gt{position:absolute;left:-1px;top:-1px;padding:4px 7px 2px;border:2px solid var(--ink);font:10.5px/1 BZH;letter-spacing:.04em;color:#3a240b;
+  background:linear-gradient(135deg,#ffe28a,#e0a11b 55%,#b9790f),var(--pp);background-blend-mode:multiply;background-size:auto,200px}
+.vd-tx{padding:8px 9px 8px}
+.vd-h{font:700 11px/1 BZL;text-transform:uppercase;letter-spacing:.05em}
+.vd-n{font:25px/1 BZH;margin-top:4px}
+.vd-n span{-webkit-text-stroke:1.6px var(--ink);paint-order:stroke fill;text-shadow:2px 2px 0 var(--ink)}
+.vd-f{font:700 12.5px/1.2 BZL;text-transform:uppercase;margin-top:6px}
+.vd-f b{font-family:BZH;font-weight:400;font-size:15px}
+.vd-p{font:22px/1 BZH;color:#145c2a;margin-top:6px}
+.vd-p small{display:block;font:700 9.5px/1.2 BZL;text-transform:uppercase;color:var(--ink);margin-top:2px}
+.rgb{display:block;width:100%;height:auto;margin-top:6px}
+.rgb .rt{font:700 9px BZL;fill:var(--ink)}
+.vd-c{font:700 10.5px/1.25 BZL;text-transform:uppercase;margin-top:3px}
+.nts.two{grid-template-columns:1fr 1fr}
 /* ---------- desktop recomposition ---------- */
 @media (min-width:1000px){
   .sttl{font-size:46px;margin:6px 0 14px}
@@ -188,6 +206,12 @@
   .crowd .bal{font-size:20px;padding:22px 20px 20px}
   .ch .ax{font-size:12px}
   .betw{aspect-ratio:16/9}
+  .cv .blurb .q2{font-size:16px}
+  .vpg .vd{flex:1;grid-template-columns:1fr;grid-template-rows:1fr auto;margin-top:0}
+  .vpg .vd-por{border-right:0;border-bottom:2.5px solid var(--ink);min-height:420px}
+  .vpg .vd-tx{padding:16px 18px 14px}
+  .vd-h{font-size:15px}.vd-n{font-size:46px}.vd-f{font-size:18px}.vd-f b{font-size:22px}.vd-p{font-size:38px}.vd-p small{font-size:13px}.vd-c{font-size:14px}.rgb .rt{font-size:8px}
+  .spread.wide .mail .lts{columns:2;column-gap:34px}.spread.wide .mail .lt{break-inside:avoid}
   .spread>.pg{display:flex;flex-direction:column}
   .spread.s1{height:920px}
   .s1 .cv{flex:1;aspect-ratio:auto;min-height:0}
@@ -221,7 +245,7 @@
 <script src="bz-data.js"></script>
 <script src="bz-ui.js"></script>
 <script>
-(function(){
+BZ.loadHL(function(){
 var B=BZ,U=BZU,S=B.stats(B.R),RK=B.rank(S,"p"),N=B.R.length,L=B.R[N-1];
 var DESK=matchMedia("(min-width:1000px)").matches;
 var LOGO="../../../../v22/x2p-logo.svg";
@@ -241,17 +265,37 @@ var cover='<section class="pg" aria-label="Cover"><div class="pn cv">'+
     '<div class="mm">'+B.ORDER.slice().sort(function(a,b){return ["GPT","CLAUDE","GROK","KIMI"].indexOf(a)-["GPT","CLAUDE","GROK","KIMI"].indexOf(b)}).map(function(m){return '<span class="ink" style="--c:'+B.COL[m]+'">'+U.mark(m,"#17120d",13)+'</span>'}).join("")+'</div></div>'+
   '<h1 class="mast" aria-label="Earnings Zeason"><span id="m1"><b class="e" style="font-weight:400">E</b>ARNINGS</span><span id="m2"><b class="z" style="font-weight:400">Z</b>EASON</span></h1>'+
   '<div class="star">Starring <b>GPT · Claude · Grok · Kimi</b></div>'+
-  '<div class="blurb">'+U.burst(300,110,5)+'<div class="q">Which AI trades<br><em>earnings</em> best?</div></div>'+
+  '<div class="blurb">'+U.burst(300,130,5)+'<div class="q">Which AI can you<br>trust on <em>earnings?</em></div><div class="q2">We track every trade so you don\'t have to!</div></div>'+
 '</div></section>';
-/* ===== SPLASH (page 1): what EZ is ===== */
-var first=B.R[0].called;
-var splash='<section class="pg fpad" aria-label="Page 1"><div class="sttl ttl">Four AI<span class="lc">s</span> trade earnings!</div>'+
+/* ===== SPLASH (page 1): what EZ does for you, then the verdict ===== */
+var first=B.R[0].called,TOP=RK[0],TS=S[TOP],RG=B.range(TS.w,TS.n);
+function pc(x){return Math.round(x*100)+"%"}
+function rangeBar(){var lo=.3,hi=.9,W=300,X=function(v){return 10+(v-lo)/(hi-lo)*(W-20)};var g='';
+  for(var v=.3;v<=.9001;v+=.1){g+='<line x1="'+X(v)+'" x2="'+X(v)+'" y1="20" y2="34" stroke="#17120d" stroke-width="1.4"/><text x="'+X(v)+'" y="46" text-anchor="middle" class="rt">'+Math.round(v*100)+'%</text>'}
+  g='<line x1="10" x2="'+(W-10)+'" y1="27" y2="27" stroke="#17120d" stroke-width="2"/>'+g+
+    '<rect x="'+X(RG[0])+'" y="17" width="'+(X(RG[1])-X(RG[0]))+'" height="20" fill="'+B.COL[TOP]+'" stroke="#17120d" stroke-width="2"/>'+
+    '<line x1="'+X(TS.hit)+'" x2="'+X(TS.hit)+'" y1="11" y2="43" stroke="#17120d" stroke-width="3"/><circle cx="'+X(TS.hit)+'" cy="11" r="5" fill="#cf3327" stroke="#17120d" stroke-width="2"/>';
+  return '<svg class="rgb" viewBox="0 0 '+W+' 50" role="img" aria-label="Likely range of the hit rate: '+pc(RG[0])+' to '+pc(RG[1])+'">'+g+'</svg>'}
+var verdict='<div class="pn vd ink solid" style="--c:#f2e3bc"><div class="vd-por" style="--c:'+B.COL[TOP]+'">'+U.face(TOP,1.55,50,DESK?4/3:3/3.9)+'<span class="vd-gt">Golden ticket</span></div>'+
+  '<div class="vd-tx"><div class="vd-h">The verdict, so far</div><div class="vd-n"><span style="color:'+B.COL[TOP]+'">'+cname(TOP)+'</span> leads</div>'+
+  '<div class="vd-f">Right on <b>'+TS.w+' of '+TS.n+'</b> trades ('+(TS.hit*100).toFixed(1).replace(/\.0$/,"")+'%)</div>'+
+  '<div class="vd-p">'+B.money(TS.p)+'<small>season P&amp;L, $100K a trade</small></div>'+rangeBar()+
+  '<div class="vd-c">On '+TS.n+' trades, luck still counts: its true hit rate could be anywhere from '+pc(RG[0])+' to '+pc(RG[1])+'.</div></div></div>';
+var splash='<section class="pg fpad" aria-label="Page 1"><div class="sttl ttl">We track the AI<span class="lc">s</span> so you don\'t have to!</div>'+
   '<div class="pn sp"><div class="clip"><img class="art" src="art/splash.jpg" alt="Four hands slam four trade slips onto a desk at once: a red coat sleeve, a black suit sleeve, a leather jacket sleeve, a blue flight-suit sleeve."></div>'+
-  '<div class="cap">Before a company reports its earnings, each AI goes <b>long</b> or <b>short</b> on the stock.</div>'+
-  '<div class="cap br" style="max-width:56%">Then the market close grades every trade!</div></div>'+
+  '<div class="cap">Before a company reports earnings, four AIs each go <b>long</b> or <b>short</b> on its stock.</div>'+
+  '<div class="cap br" style="max-width:58%">The market close grades every trade. We keep the record!</div></div>'+
+  verdict+
   '<dl class="credits"><dt>Traders</dt><dd>GPT, Claude, Grok and Kimi</dd><dt>Stakes</dt><dd>$100K a trade, simulated</dd><dt>Grader</dt><dd>The market close</dd></dl>'+
-  '<p class="indicia ty">EARNINGS ZEASON, Season 1, No. '+N+'. Every trade simulated at $100,000, before fees; graded at the close of its own exchange. Round 1 traded '+B.fmt(first)+'. Every figure in this issue is computed from the season sheet. No returns are promised.</p>'+
+  '<p class="indicia ty">EARNINGS ZEASON, Season 1, No. '+N+'. Round 1 traded '+B.fmt(first)+'; every figure is computed from the season sheet, graded at the close of each company\'s own exchange. Simulated record, $100K a trade, before fees. Not financial advice. Trading can lose money; the pool can be wiped out. Hyperliquid markets as of Nov 3; Hyperliquid is not available in every country.</p>'+
   '<span class="fol l">1</span></section>';
+/* ===== NEXT TRADES (page 2): the top model's trade on every company coming up, and where to follow it ===== */
+var NX=B.PEND.slice(),UPN=B.UP.slice().sort(function(a,b){return (B.key(a.res)||9e9)-(B.key(b.res)||9e9)||a.n-b.n}).slice(0,DESK?6:4);
+var nextp='<section class="pg fpad" aria-label="Page 2: the next trades">'+
+  '<div class="chap"><div class="ttl">'+B.NAME[TOP]+'\'s next trades</div><div class="k">The top model\'s trade on each company reporting next, with the other three beside it. Markets: Hyperliquid, as of Nov 3.</div></div>'+
+  '<div class="nts">'+NX.map(function(p){return U.nextCard(p,TOP)}).join("")+'</div>'+
+  '<div class="nts two" style="margin-top:var(--g)">'+UPN.map(function(p){return U.nextCard(p,TOP)}).join("")+'</div>'+
+  '<div class="handoff"><div class="capbar n2">Why '+B.NAME[TOP]+'? Here are the receipts...</div></div><span class="fol r">2</span></section>';
 /* ===== THIS ISSUE (page 2): the newest round, step by step ===== */
 var ms=B.ORDER.filter(function(m){return L.tr[m]}).sort(function(a,b){return ["GPT","CLAUDE","GROK","KIMI"].indexOf(a)-["GPT","CLAUDE","GROK","KIMI"].indexOf(b)});
 var t1=ms.map(function(m){var t=L.tr[m];return '<div class="pn fc" style="--c:'+B.COL[m]+'"><div class="clip">'+face(m,2.05,62)+'</div>'+
@@ -265,8 +309,8 @@ var nW=ms.filter(function(m){return L.tr[m].w}).length;
 var verdict=!L.win.length?"All "+WORDS[ms.length]+" went the wrong way. Nobody wins the round.":
   L.win.length>1?"Right way: a W. Wrong way: an L. "+L.win.map(cname).join(" and ")+" tie for the closest trade.":
   "Right way: a W. Wrong way: an L. The closest trade wins the round: "+cname(L.win[0])+".";
-var issue='<section class="pg fpad" aria-label="Page 2: this issue">'+
-  '<div class="chap"><div class="ttl">This issue</div><div class="k">Round '+L.n+', step by step</div></div>'+
+var issue='<section class="pg fpad" aria-label="Page 3: the receipts">'+
+  '<div class="chap"><div class="ttl">The receipts</div><div class="k">How every trade is graded: round '+L.n+', step by step</div></div>'+
   '<div class="capbar">'+B.fmt(L.called)+'. Before '+TICKERS[L.t]+' ('+L.t+') reports, the four AIs trade:</div>'+
   '<div class="tier">'+t1+'</div>'+
   '<div class="t2"><div class="pn pst"><div class="clip"><img class="art" loading="lazy" src="'+fl.poster+'" alt="Round '+L.n+' film poster, '+B.co(L.t)+'"></div>'+
@@ -276,7 +320,7 @@ var issue='<section class="pg fpad" aria-label="Page 2: this issue">'+
   '<div class="capbar n2">'+verdict+'</div>'+
   '<div class="tier">'+t3+'</div>'+
   '<div class="handoff"><div class="capbar n2">...and round '+L.n+' goes on the record.</div></div>'+
-  '<span class="fol r">2</span></section>';
+  '<span class="fol l">3</span></section>';
 /* ===== THE STORY SO FAR (page 3): every round on the record, newest first ===== */
 function winLine(r){if(!r.win.length)return "All wrong. Nobody wins.";
   var t=r.tr[r.win[0]],same=r.win.every(function(m){var x=r.tr[m];return x.long===t.long&&x.mag===t.mag});
@@ -287,11 +331,11 @@ function rd(r){var f=B.film(r.n),sz=DESK?Math.min(34,15+Math.abs(r.a)*.65):Math.
   U.sfx(B.pct(r.a),{size:sz,grow:.12,rot:-7,jit:.6,fill:r.a>=0?"#8fe08f":"#ff8a72",ex:"#17120d"})+'</div>'+
   '<div class="cs"><span class="co">R'+r.n+' · '+B.co(r.t)+'</span><span class="wn">'+winLine(r)+'</span></div></article>'}
 var past=B.R.slice(0,N-1).reverse(),SHOW=DESK?12:8;
-var rec='<section class="pg fpad" aria-label="Page 3: the story so far">'+
+var rec='<section class="pg fpad" aria-label="Page 4: the story so far">'+
   '<div class="chap"><div class="ttl">The story so far</div><div class="k">Every round, newest first. The move, and the closest trade.</div></div>'+
   '<div class="rec" id="rec">'+past.slice(0,SHOW).map(rd).join("")+'</div>'+
   '<button class="more" id="more">Show all '+N+' rounds</button>'+
-  '<div class="handoff"><div class="capbar n2">'+N+' rounds. Four traders. Who are they?</div></div><span class="fol l">3</span></section>';
+  '<div class="handoff"><div class="capbar n2">'+N+' rounds. Four traders. Who are they?</div></div><span class="fol r">4</span></section>';
 /* ===== THE CAST (pages 4-5) ===== */
 var lc=["GPT","CLAUDE","GROK","KIMI"];
 var avg={};B.ORDER.forEach(function(m){var s=S[m].seq;avg[m]=s.reduce(function(a,x){return a+x.t.mag},0)/s.length});
@@ -307,10 +351,10 @@ function card(m,i){var s=S[m],t=L.tr[m];
     '<div class="ps">'+persona(m)+'</div>'+
     (t?'<div class="lr">Round '+L.n+': '+trd(t).toLowerCase()+', '+(t.w?"a W":"an L")+'</div>':'')+'</div></article>'}
 function upLine(){var k=B.ORDER.filter(function(m){return S[m].p>0}).length;return k===0?"None of them is up.":k===4?"All four are up.":(k===1?"One of them is up.":WORDS[k].charAt(0).toUpperCase()+WORDS[k].slice(1)+" of them are up.")}
-var cast='<section class="pg fpad" aria-label="Pages 4 and 5: meet the traders">'+
+var cast='<section class="pg fpad" aria-label="Page 5: meet the traders">'+
   '<div class="chap"><div class="ttl">Meet the traders</div><div class="k">Ranked by season P&amp;L. $100K on every trade.</div></div>'+
   '<div class="cast">'+RK.map(card).join("")+'</div>'+
-  '<div class="handoff"><div class="capbar n2">'+upLine()+' But are any of them good?</div></div><span class="fol r">4</span></section>';
+  '<div class="handoff"><div class="capbar n2">'+upLine()+' But are any of them good?</div></div><span class="fol l">5</span></section>';
 /* ===== SMART OR LUCKY (page 6) ===== */
 var SE=B.series(B.R);
 function chart(kind,W,Hh){var pad={l:DESK?50:42,r:DESK?118:84,t:14,b:26},w=W-pad.l-pad.r,h=Hh-pad.t-pad.b,nx=N;
@@ -342,7 +386,7 @@ var crowd='<div class="pn crowd"><div class="clip"><img class="art" loading="laz
 var charts='<div class="chs">'+
   '<div class="pn ch ink solid" style="--c:var(--navy)"><div class="cap">Hit rate: how often were they right on their long or short?</div>'+chart("hit",chW,chH)+'</div>'+
   '<div class="pn ch ink solid" style="--c:var(--navy)"><div class="cap">P&amp;L: $100K on every trade, added up round by round</div>'+chart("pnl",chW,chH)+'</div></div>';
-var foot='<div class="foot"><div class="capbar">*'+N+' rounds is too few to tell skill from luck. We keep counting, in public. <i>Ed.</i></div></div>';
+var foot='<div class="foot"><div class="capbar">*'+N+' rounds is too few to tell skill from luck. We keep counting, in public. <i>Ed.</i> And we put our own pool on the top model...</div></div>';
 var sol='<section class="pg fpad" aria-label="Page 6: smart or lucky">'+crowd+charts+foot+'<span class="fol l">6</span></section>';
 var solL='<section class="pg fpad sol" aria-label="Page 6: smart or lucky">'+crowd+foot+'<span class="fol l">6</span></section>';
 var solR='<section class="pg fpad" aria-label="Page 7: the evidence">'+charts.replace('class="chs"','class="chs" style="margin-top:0"')+'<span class="fol r">7</span></section>';
@@ -371,28 +415,16 @@ var bet='<section class="pg fpad" aria-label="Page 8: the bet">'+
 var nobody=B.R.filter(function(r){return !r.win.length}).length;
 var gk1=B.R.filter(function(r){return r.tr.GROK})[0];
 var mail='<section class="pg fpad" aria-label="Page 9: letters"><div class="mail ink solid" style="--c:#f0dc9a">'+
-  '<div class="ttl">The Mailbag</div><div class="sub">The questions every new reader asks. Answers from the editor.</div>'+
-  '<div class="lt"><p class="q">Dear EZ, is any of this real money?</p><p>Not the trades: each is a simulated $100K, before fees. The pool for Bet #1 is filled by real $EZ creator fees. <span class="ed">Ed.</span></p></div>'+
+  '<div class="ttl">The Mailbag</div><div class="sub">The questions every new reader asks. Answers from the editor.</div>'+'<div class="lts">'+
+  '<div class="lt"><p class="q">Dear EZ, can I follow these trades?</p><p>Where a company has a market on Hyperliquid, its card names it, and says when the market is thin. Hyperliquid is not available in every country, and none of this is financial advice. <span class="ed">Ed.</span></p></div>'+
+  '<div class="lt"><p class="q">Is any of this real money?</p><p>Not the trades: each is a simulated $100K, before fees. The pool for Bet #1 is filled by real $EZ creator fees. <span class="ed">Ed.</span></p></div>'+
   '<div class="lt"><p class="q">Who decides who won?</p><p>The market close. Right way is a W, wrong way an L, and the closest trade wins the round. All four wrong? Nobody wins. That has happened '+nobody+' times in '+N+' rounds. <span class="ed">Ed.</span></p></div>'+
   '<div class="lt"><p class="q">Why has Grok traded fewer rounds?</p><p>It joined at round '+gk1.n+'. Grok has '+S.GROK.n+' trades, the other three '+S.CLAUDE.n+' each. <span class="ed">Ed.</span></p></div>'+
-  '<div class="lt"><p class="q">Can you change a trade after the report?</p><p>No. Every trade is in before the company reports, and every graded round stays on the record, the Ls too. <span class="ed">Ed.</span></p></div>'+
-  '</div><span class="fol r">9</span></section>';
-function tk(p,showTr){var lg=B.logo(p.t),dk=(CO_LOGOS[p.t]||{}).dark;
-  return '<div class="tk" style="--bc:'+B.brand(p.t)+'"><div class="lg'+(dk?" dk":"")+'">'+(lg?'<img src="'+lg+'" alt="">':'')+'</div><div><div class="nm">'+B.co(p.t)+'</div>'+
-    (showTr?'<div class="trs">'+["GPT","CLAUDE","GROK","KIMI"].filter(function(m){return p.tr[m]}).map(function(m){var t=p.tr[m];return '<span class="tr" style="--c:'+B.COL[m]+'">'+U.mark(m,"#17120d",13)+'<span class="'+(t.long?"up":"dn")+'">'+(t.long?"LONG":"SHORT")+'</span></span>'}).join("")+'</div>':'')+'</div></div>'}
-var groups={};B.PEND.forEach(function(p){var k=B.key(p.res);(groups[k]=groups[k]||{d:p.res,l:[]}).l.push(p)});
-var gk=Object.keys(groups).sort();
-var todayK=B.key(B.today);
-var nxh=gk.map(function(k){var g=groups[k];return '<h3>'+(+k===todayK?"Tonight at the close · ":"At the close · ")+B.wday(g.d)+' '+B.fmt(g.d)+'</h3><div class="tks">'+g.l.map(function(p){return tk(p,true)}).join("")+'</div>'}).join("");
-var ups=B.UP.slice().sort(function(a,b){return (B.key(a.res)||9e9)-(B.key(b.res)||9e9)||a.n-b.n}).slice(0,6);
-var next='<section class="pg fpad" aria-label="Page 10: next issue"><div class="nx ink solid" style="--c:#c9372a">'+
-  '<div class="ttl">Next issue!</div>'+nxh+
-  '<h3>Then, trades not in yet</h3><div class="ups">'+ups.map(function(p){var lg=B.logo(p.t),dk=(CO_LOGOS[p.t]||{}).dark;return '<div class="up1" style="--bc:'+B.brand(p.t)+'"><div class="lg'+(dk?" dk":"")+'">'+(lg?'<img src="'+lg+'" alt="">':'')+'</div><span>'+B.co(p.t)+'<br>'+(p.res?B.wday(p.res)+' '+B.fmt(p.res):"Date to come")+'</span></div>'}).join("")+'</div>'+
-  '</div><span class="fol l">10</span></section>';
+  '</div></div><span class="fol r">9</span></section>';
 /* ===== assemble: phone = pages in reading order; desktop = facing pages, the big moments as double-page spreads ===== */
 var book=document.getElementById("book");
-if(DESK){book.innerHTML='<div class="spread s1">'+cover+splash+'</div><div class="spread">'+issue+cast+'</div><div class="spread wide">'+rec+'</div><div class="spread">'+solL+solR+'</div><div class="spread wide">'+bet+'</div><div class="spread">'+mail.replace('fol r">9','fol l">9')+next.replace('fol l">10','fol r">10')+'</div>'}
-else book.innerHTML=cover+splash+issue+rec+cast+sol+bet+mail+next;
+if(DESK){book.innerHTML='<div class="spread s1">'+cover+splash.replace(verdict,"")+'</div><div class="spread hook">'+'<section class="pg fpad vpg" aria-label="The verdict">'+verdict+'<span class="fol l">1</span></section>'+nextp+'</div><div class="spread">'+issue.replace('fol l">3','fol l">3')+cast.replace('fol l">5','fol r">5')+'</div><div class="spread wide">'+rec+'</div><div class="spread">'+solL+solR+'</div><div class="spread wide">'+bet+'</div><div class="spread wide">'+mail+'</div>'}
+else book.innerHTML=cover+splash+nextp+issue+rec+cast+sol+bet.replace('fol l">8','fol r">7').replace('Page 8','Page 7')+mail.replace('fol r">9','fol l">8').replace('Page 9','Page 8');
 /* cover masthead: fit each line to the strip */
 function fitM(){["m1","m2"].forEach(function(id,i){var e=document.getElementById(id);if(!e)return;var box=e.parentNode.getBoundingClientRect().width,s=60;e.style.fontSize=s+"px";var w=e.scrollWidth;e.style.fontSize=Math.min(i?110:96,s*box/w*(i?.97:.98)).toFixed(1)+"px"})}
 document.fonts.ready.then(fitM);fitM();
@@ -400,6 +432,6 @@ document.fonts.ready.then(fitM);fitM();
 document.getElementById("more").addEventListener("click",function(){var g=document.getElementById("rec");g.innerHTML=past.map(rd).join("");this.textContent="Every round is on the record: "+N;this.disabled=true});
 /* the countdown ticks once a minute (still with reduced motion: it is a fact, not a loop) */
 setInterval(function(){var c=cd(),e=document.querySelectorAll("#cdg b");if(e.length){e[0].textContent=c[0];e[1].textContent=c[1];e[2].textContent=c[2]}},30000);
-})();
+});
 </script>
 </body></html>

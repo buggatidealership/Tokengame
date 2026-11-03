@@ -45,6 +45,14 @@ function flag(c,w){w=w||22;var h=Math.round(w*0.66);
   var dots='';for(var a=0;a<4;a++)for(var b=0;b<5;b++)dots+='<circle cx="'+(1.5+b*2.6)+'" cy="'+(1.3+a*2.5)+'" r=".55" fill="#f4ecd6"/>';
   return '<svg class="flag" width="'+w+'" height="'+h+'" viewBox="0 0 30 20" aria-label="United States"><rect width="30" height="20" fill="#f4ecd6"/>'+st+'<rect width="13" height="10.77" fill="#2b4c8c"/>'+dots+'<rect width="30" height="20" fill="none" stroke="#1d1a18" stroke-width="1.2"/></svg>'}
 
+
+/* Hyperliquid snapshot (../hl-markets-2026-11-03.json, the one input not from the sheet): a company's market is the live
+   (not delisted) market with the most open interest, looked up by its ticker, else by the ticker without its exchange suffix. */
+function hlMarket(t,HL){if(!HL)return null;var k=HL[t]?t:String(t).split('.')[0],L=HL[k];if(!L)return null;
+  var live=L.filter(function(x){return !x[4]}).sort(function(a,b){return b[1]-a[1]})[0];if(!live)return null;
+  return {name:live[0]+':'+k,dex:live[0],oi:live[1],vol:live[2],lev:live[3],thin:live[1]<10}}
+/* the honest range on a hit rate: a 95% Wilson interval */
+function wilson(k,n){if(!n)return null;var z=1.96,p=k/n,d=1+z*z/n,c=(p+z*z/(2*n))/d,h=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d;return {lo:c-h,hi:c+h}}
 function compute(){
   var NOW=W.__FNOW||Date.now(),today=nyDay(NOW);
   var RS=ROUNDS.filter(function(r){return typeof r.a==='number'&&!isNaN(r.a)}).slice().sort(function(a,b){return a.n-b.n});
@@ -85,5 +93,5 @@ function compute(){
   var caps=W.CAPS||{};
   return {NOW:NOW,today:today,RS:RS,season:season,WS:WS,W7:W7,W1:W1,latest:latest,lcDay:lcDay,lcRs:lcRs,lastCloseMs:lastCloseMs,per:per,sectors:sectors,rank:rank,top:top,nights:nights,pend:pend,up:up,caps:caps,betAt:betAt()};
 }
-W.F={ROOT:ROOT,ORDER:ORDER,COL:COL,CTRY:CTRY,CNAME:CNAME,NAME:NAME,SECT:SECT,MON:MON,DAY:DAY,md:md,wmd:wmd,longDay:longDay,dOf:dOf,nyDay:nyDay,esc:esc,usd:usd,usdk:usdk,pct:pct,coName:coName,coLabel:coLabel,logoSrc:logoSrc,poster:poster,film:film,mark:mark,flag:flag,compute:compute,closeAt:closeAt};
+W.F={hlMarket:hlMarket,wilson:wilson,ROOT:ROOT,ORDER:ORDER,COL:COL,CTRY:CTRY,CNAME:CNAME,NAME:NAME,SECT:SECT,MON:MON,DAY:DAY,md:md,wmd:wmd,longDay:longDay,dOf:dOf,nyDay:nyDay,esc:esc,usd:usd,usdk:usdk,pct:pct,coName:coName,coLabel:coLabel,logoSrc:logoSrc,poster:poster,film:film,mark:mark,flag:flag,compute:compute,closeAt:closeAt};
 })();

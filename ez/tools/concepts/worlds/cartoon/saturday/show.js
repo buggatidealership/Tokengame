@@ -30,5 +30,19 @@ function letter(el,seed,amp){var t=el.textContent,words=t.split(" "),k=0,a=amp||
   el.innerHTML=words.map(function(w){return '<span class="w" aria-hidden="true">'+w.split("").map(function(ch){k++;var r=(rnd(k,seed||1)-.5)*9*a,y=(rnd(k+40,seed||1)-.5)*.11*a,s=1+(rnd(k+80,seed||1)-.5)*.1*a;
     return '<span class="c" style="transform:translateY('+y.toFixed(3)+'em) rotate('+r.toFixed(2)+'deg) scale('+s.toFixed(3)+')">'+esc(ch)+'</span>'}).join("")+'</span>'}).join(" ")}
 function letterAll(root){(root||document).querySelectorAll("[data-let]").forEach(function(el,i){letter(el,+el.dataset.let||i+1,+el.dataset.amp||1)})}
-window.SHOW={M:M,esc:esc,badge:badge,flag:flag,co:co,letter:letter,letterAll:letterAll,mix:mix};
+/* the golden ticket: the verdict, with its sample, printed on the painted ticket */
+function ticket(o){return '<div class="gt" role="group" aria-label="'+esc(o.aria||"")+'"><div class="gt-stub"><span>'+esc(o.stub||"Golden ticket")+'</span></div>'+
+  '<div class="gt-main"><span class="gt-k">'+o.kicker+'</span><span class="gt-n">'+badge(o.m,30)+'<b>'+E.NAME[o.m]+'</b></span><span class="gt-l">'+o.l1+'</span><span class="gt-l">'+o.l2+'</span></div></div>'}
+/* one company coming up: the top model's trade first, the other three as the field, and where to follow it */
+function nextCard(u,lead,ord){var mk=E.hlMarket(u.ticker),t=u.in?u.tr.filter(function(x){return x.m===lead})[0]:null,f=u.in?ord.filter(function(m){return m!==lead}).map(function(m){return u.tr.filter(function(x){return x.m===m})[0]}).filter(Boolean):[];
+  var when=u.resolves?((E.dayKey(u.resolves)===E.dayKey(E.today)?"Today, ":"")+E.fmtDay(u.resolves,true)):"Date to come";
+  var h='<article class="nx pl"><div class="nx-hd">'+co(u.ticker,38)+'<div><div class="nx-cn">'+esc(E.coName(u.ticker)+" ("+u.ticker+")")+'</div><div class="nx-gd">Graded at the close · '+when+'</div></div></div>';
+  if(t)h+='<div class="nx-top">'+badge(lead,34)+'<div><span class="nx-lb">'+E.NAME[lead]+'&rsquo;s trade</span><span class="nx-big '+(t.up?"long":"short")+'">'+(t.up?"Long ":"Short ")+t.size+'%</span></div></div>'+
+    '<div class="nx-fld"><span class="nx-lb">The field</span>'+f.map(function(x){return '<span class="nx-f">'+badge(x.m,18)+E.NAME[x.m]+' <i class="'+(x.up?"long":"short")+'">'+(x.up?"Long ":"Short ")+x.size+'%</i></span>'}).join("")+'</div>';
+  else h+='<div class="nx-top wait"><span class="nx-wt">Trades drop before the earnings.</span></div>';
+  if(mk)h+='<div class="nx-hl">'+(t?'<a class="btn hlb" href="https://app.hyperliquid.xyz/trade/'+mk.name+'" target="_blank" rel="noopener">Follow '+E.NAME[lead]+'&rsquo;s '+(t.up?"long":"short")+' on Hyperliquid</a>':'<span class="nx-lb">On Hyperliquid</span>')+
+    '<span class="nx-mk"><b>'+mk.name+'</b> · $'+mk.oi.toFixed(1)+'M open interest'+(mk.thin?' · <em>thin market</em>':'')+'</span></div>';
+  else h+='<div class="nx-hl none"><span class="nx-mk">No Hyperliquid market for this one.</span></div>';
+  return h+'</article>'}
+window.SHOW={M:M,esc:esc,badge:badge,flag:flag,co:co,letter:letter,letterAll:letterAll,mix:mix,ticket:ticket,nextCard:nextCard};
 })();

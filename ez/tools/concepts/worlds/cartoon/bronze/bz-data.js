@@ -58,7 +58,15 @@ function series(rs){var o={};ORDER.forEach(function(m){var right=0,n=0,p=0,pts=[
 function srt(a,b){return key(pd(a.resolves)||pd(a.called))-key(pd(b.resolves)||pd(b.called))||a.n-b.n}
 var PEND=PENDING.slice().sort(srt).map(function(p){var tr={};p.calls.forEach(function(c){tr[c.m]={long:c.dir==="UP",mag:+c.mag}});return {n:p.n,co:p.co,t:p.ticker,res:pd(p.resolves),called:pd(p.called),tr:tr}});
 var UP=UPCOMING.slice().sort(function(a,b){return key(pd(a.called))-key(pd(b.called))||a.n-b.n}).map(function(p){return {n:p.n,co:p.co,t:p.ticker,res:pd(p.resolves),called:pd(p.called)}});
-window.BZ={ORDER:ORDER,COL:COL,FLAG:FLAG,LAB:LAB,NAME:NAME,BET:BET,R:R,W:W,stats:stats,rank:rank,series:series,PEND:PEND,UP:UP,
+/* the likely range of a hit rate on a small sample (Wilson, 95%): "on 72 trades the true rate could be anywhere from 51% to 73%" */
+function range(w,n){if(!n)return null;var z=1.96,p=w/n,d=1+z*z/n,c=(p+z*z/(2*n))/d,h=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d;return [c-h,c+h]}
+/* Hyperliquid markets: the snapshot hl-markets-2026-11-03.json (one level up), the only input not from the sheet.
+   A sheet ticker matches a snapshot key with its exchange suffix dropped (ASML.AS -> ASML); delisted markets are ignored. */
+var HL={};
+function hl(t){var k=String(t).replace(/\.[A-Z]+$/,"");var L=(HL[k]||[]).filter(function(m){return !m[4]}).sort(function(a,b){return b[1]-a[1]});
+  return L.length?{name:L[0][0]+":"+k,oi:L[0][1],vol:L[0][2],lev:L[0][3],thin:L[0][1]<10}:null}
+function loadHL(cb){fetch("../hl-markets-2026-11-03.json").then(function(r){return r.json()}).then(function(j){HL=j;cb()}).catch(function(){cb()})}
+window.BZ={range:range,hl:hl,loadHL:loadHL,ORDER:ORDER,COL:COL,FLAG:FLAG,LAB:LAB,NAME:NAME,BET:BET,R:R,W:W,stats:stats,rank:rank,series:series,PEND:PEND,UP:UP,
   lastRounds:lastRounds,lastDay:lastDay,today:today,now:now,fmt:fmt,wday:wday,money:money,kmoney:kmoney,pct:pct,pd:pd,key:key,
   co:function(t){return (TICKERS[t]||t)+" ("+t+")"},logo:function(t){var L=CO_LOGOS[t];return L?MEDIA+(L.f||L):null},brand:function(t){var L=CO_LOGOS[t];return L&&L.c||"#3a3a3a"},
   film:function(n){var f=FILMS[n];return f?{mp4:MEDIA+f.f+".mp4",poster:MEDIA+f.p+".jpg"}:null}};

@@ -84,7 +84,14 @@ function compute(NOW){
   return {NOW,today,RS,per,rank,WIN,win,lc,lcRs,lcName,lastClose,wolf,nobody,shared,pend,upc,bet,freeze,sectors,nTrades,MK,NM,COL,FLAG,
     pool:W.SIM&&SIM.poolShare!=null?Math.round(SIM.poolShare*100):null};
 }
+/* Hyperliquid snapshot (the one input not from the sheet): ticker -> [[dex, open interest $M, 24h volume $M, max leverage, delisted]].
+   Key rule: the sheet ticker without its exchange suffix (ASML.AS -> ASML), as the brief's figures use; live markets only. */
+function hlFor(HL,t){if(!HL)return null;const L=(HL[String(t).split('.')[0]]||[]).filter(x=>!x[4]);if(!L.length)return null;const b=L.slice().sort((a,c)=>c[1]-a[1])[0];
+  return {name:b[0]+':'+String(t).split('.')[0],oi:b[1],vol:b[2],lev:b[3],thin:b[1]<10,all:L.map(x=>x[0]+':'+String(t).split('.')[0])}}
+function hlPnl(D,HL){const o={};D.MK.forEach(m=>o[m]={pnl:0,W:0,L:0,n:0});D.RS.forEach(r=>{if(!hlFor(HL,r.ticker))return;D.MK.forEach(m=>{const t=r.__t[m];if(!t)return;const q=o[m];q.pnl+=t.v;q.n++;if(t.v>0)q.W++;else q.L++})});return o}
+/* the plain range for a hit rate: Wilson 95% interval */
+function wilson(k,n){if(!n)return [0,1];const z=1.96,p=k/n,d=1+z*z/n,c=(p+z*z/(2*n))/d,h=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d;return [c-h,c+h]}
 function left(at){if(!at)return null;const s=Math.max(0,Math.floor((at-Date.now())/1e3));return {s,d:Math.floor(s/86400),h:Math.floor(s%86400/3600),m:Math.floor(s%3600/60),x:s%60}}
 const nyFmt=(ms,o)=>new Date(ms).toLocaleString('en-US',Object.assign({timeZone:'America/New_York'},o));
-W.SAT={compute,left,closeAt,nyDay,dOf,md,wdmd,$f,$k,pct,mv,co,tk,coT,logo,esc,nyFmt,MK,NM,COL,FLAG,SECT};
+W.SAT={compute,hlFor,hlPnl,wilson,left,closeAt,nyDay,dOf,md,wdmd,$f,$k,pct,mv,co,tk,coT,logo,esc,nyFmt,MK,NM,COL,FLAG,SECT};
 })(window);

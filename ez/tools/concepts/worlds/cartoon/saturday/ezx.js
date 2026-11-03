@@ -86,7 +86,20 @@ function coLabel(r){return coName(r.ticker)+" ("+r.ticker+")"}
 function logoSrc(t,base){var L=CO_LOGOS[t];return L?(base||"")+"media/"+(L.f||L):null}
 function winners(r){return r.win?r.win.split(" & "):[]}
 
-window.EZX={MK:MK,COL:COL,NAME:NAME,FLAG:FLAG,LAB:LAB,R:R,win:win,season:season,atLatest:atLatest,latestDay:latestDay,latestRounds:latestRounds,
+/* the one input that is not from the sheet: Hyperliquid's markets, a snapshot taken 2026-11-03 (../hl-markets-2026-11-03.json).
+   Each ticker -> [[dex, open interest $M, 24h volume $M, max leverage, delisted]]; a sheet ticker with an exchange suffix
+   (ASML.AS) is looked up without it (ASML). The live market with the most open interest is the one to follow. */
+var HL=null;
+function hlKey(t){if(!HL)return null;t=String(t);if(HL[t])return t;var b=t.split(".")[0];return HL[b]?b:null}
+function hlMarket(t){var k=hlKey(t);if(!k)return null;var m=HL[k].filter(function(x){return !x[4]});if(!m.length)return null;
+  m.sort(function(a,b){return b[1]-a[1]});return {name:m[0][0]+":"+k,oi:m[0][1],vol:m[0][2],lev:m[0][3],thin:m[0][1]<10}}
+function loadHL(url){return fetch(url).then(function(r){return r.json()}).then(function(j){HL=j;return j})}
+/* a 95% range for a hit rate on n trades (Wilson), in plain words on the page */
+function wilson(w,n){if(!n)return null;var z=1.96,p=w/n,d=1+z*z/n,c=(p+z*z/(2*n))/d,h=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d;return [c-h,c+h]}
+/* the next companies, in the order they are graded (undated last), trades in or not */
+function nextUp(){var a=tradesIn.map(function(x){return Object.assign({in:true},x)}).concat(comingUp.map(function(x){return Object.assign({in:false},x)}));
+  return a.sort(function(x,y){var kx=x.resolves?dayKey(x.resolves):9e9,ky=y.resolves?dayKey(y.resolves):9e9;return (kx-ky)||((y.in?1:0)-(x.in?1:0))||(x.n-y.n)})}
+window.EZX={hlMarket:hlMarket,hlKey:hlKey,loadHL:loadHL,wilson:wilson,nextUp:nextUp,MK:MK,COL:COL,NAME:NAME,FLAG:FLAG,LAB:LAB,R:R,win:win,season:season,atLatest:atLatest,latestDay:latestDay,latestRounds:latestRounds,
   today:today,from7:from7,rank:rank,series:series,sectors:sectors,tradesIn:tradesIn,comingUp:comingUp,BET:BET,weekNo:weekNo,recap:recap,
   money:money,kmoney:kmoney,pct:pct,coName:coName,coLabel:coLabel,logoSrc:logoSrc,winners:winners,fmtDay:fmtDay,md:md,dayKey:dayKey,stats:stats,now:now};
 })();

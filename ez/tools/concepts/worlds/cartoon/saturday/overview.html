@@ -24,6 +24,19 @@
 .star .who{display:inline-flex;align-items:center;gap:6px;font-family:"Caprasimo";font-size:22px;color:var(--mc);
   -webkit-text-stroke:1.2px var(--ink);paint-order:stroke fill;filter:drop-shadow(1.5px 1.5px 0 var(--ink))}
 
+
+/* --- the score so far (the verdict) and the next trades --- */
+.versec{--g:#1f5560;padding:22px 0 26px}
+.vw{display:grid;gap:16px}
+.hon{margin:0;font-size:15.5px;line-height:1.38;color:#e2f2f2}
+.hon b{color:#fff}
+.field{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.field .lbl{width:100%;color:#cfe8e8}
+.fe{display:inline-flex;align-items:center;gap:6px;border-width:9px;border-image-width:9px;padding:0 2px;font-size:14px}
+.fe b{font-family:"Lilita One";font-weight:400}.fe i{font-style:normal;font-family:"Lilita One"}.fe small{font-size:11.5px;color:#7a5a3e;font-weight:600}
+.flwsec{--g:#6a3a14;padding:22px 0 26px;border-top:3px solid var(--ink)}
+.nxs{display:grid;gap:12px;margin:14px 0 12px}
+.nt{margin:10px 0 0;font-size:16px;color:#e6defc;max-width:24em}
 /* --- previously on: the TV set with last time's film, then the beats --- */
 .prev{--g:#7b3a1a}
 .tvw{position:relative;aspect-ratio:4/3;background:url(img/tv.jpg) center/cover no-repeat;border-bottom:3px solid var(--ink)}
@@ -175,6 +188,10 @@
   .tok{grid-template-columns:1fr 1fr 1fr 1fr}
   .beat .tok .tk{flex-direction:column;align-items:flex-start;gap:6px}
   .beat .tok .tk .st{margin-left:0}
+  .vw{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:18px 40px;align-items:center}
+  .vw > div:last-child{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center}
+  .vw .field{margin-top:0}
+  .nxs{grid-template-columns:repeat(3,1fr);gap:16px}
   .castsec{padding:30px 0 34px}
   .cast{grid-template-columns:repeat(4,1fr);gap:18px}
   .cc h3{font-size:34px}
@@ -207,13 +224,13 @@
   <nav class="tabs" aria-label="Pages"><a class="tab" href="overview.html" aria-current="page">Overview</a><a class="tab" href="leaderboard.html">Leaderboard</a></nav>
 </div></header>
 <main id="show"></main>
-<footer class="foot grd"><div class="in"><img src="../../../../../tools/v22/x2p-logo.svg" alt=""><span>Simulated trades, $100K each, graded at each company's close. No return promises.</span></div></footer>
+<footer class="foot grd"><div class="in"><img src="../../../../../tools/v22/x2p-logo.svg" alt=""><span>Simulated record, $100K a trade, before fees. Not financial advice. Trading can lose money; the pool can be wiped out. Hyperliquid is not available in every country.</span></div></footer>
 
 <script src="../../../../../ez-data.js"></script>
 <script src="ezx.js"></script>
 <script src="show.js"></script>
 <script>
-(function(){
+EZX.loadHL("../hl-markets-2026-11-03.json").catch(function(){}).then(function(){
 var E=EZX,S=SHOW,M=S.M,esc=S.esc,RM=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 var ord=E.rank(E.season,"pl");                       /* one order everywhere: season P&L */
 var mc2={GROK:"#9c968a",CLAUDE:"#c2552a",GPT:"#7a55d6",KIMI:"#2f84cf"};
@@ -230,13 +247,30 @@ h+='<section class="tcw" aria-label="Title card"><div class="tc"><div class="in"
   '<p class="pres"><img src="'+M+'tools/v22/x2p-logo.svg" alt="EZ.">presents</p>'+
   '<h1 class="let" data-let="7">Four AIs Trade Earnings</h1>'+
   '<p class="ep"><span>Season 1</span><span>Week '+E.weekNo+'</span></p></div></div>'+
-  '<div class="cred grd"><div class="wrap"><div><p class="say">Before each company reports earnings, every AI goes <b>long or short</b> on its stock. <b>The close grades every trade.</b></p>'+
-  '<p class="sim">$100K a trade · simulated · '+nR+' rounds graded</p></div>'+
+  '<div class="cred grd"><div class="wrap"><div><p class="say"><b>We track four AIs on every earnings trade, so you don&rsquo;t have to.</b> Before a company reports, each one goes long or short on its stock. The close grades every trade.</p>'+
+  '<p class="sim">$100K a trade · simulated · '+nR+' rounds, '+nT+' trades graded</p></div>'+
   '<div class="star"><span class="lab">Starring</span>'+["GPT","CLAUDE","GROK","KIMI"].map(function(m){return '<span class="who" style="--mc:'+E.COL[m]+'">'+S.badge(m,26)+E.NAME[m]+'</span>'}).join("")+'</div></div></div></section>';
+
+/* ---------- the score so far: the verdict, with its sample ---------- */
+var L=ord[0],LS=E.season[L],WR=E.wilson(LS.w,LS.n),hr=function(s){return (s.hit*100).toFixed(1)+"%"};
+h+='<section class="versec grd" aria-label="The score so far"><div class="wrap vw"><div><p class="act">The score so far</p>'+
+  '<h2 class="let h2" data-let="9" data-amp=".7">'+E.NAME[L]+' leads</h2>'+
+  '<p class="lede">After <b>'+nR+' rounds</b>, the model that has earned the most trust is '+E.NAME[L]+': right on <b>'+LS.w+' of its '+LS.n+' trades</b>, '+E.money(LS.pl)+' on a flat $100K a trade.</p></div>'+
+  S.ticket({m:L,stub:"Golden ticket",kicker:"Top model so far",aria:E.NAME[L]+", top model so far",l1:"Right on "+LS.w+" of "+LS.n+" trades · "+hr(LS),l2:'<span class="'+(LS.pl>0?"pos":"neg")+'">'+E.money(LS.pl)+'</span> at $100K a trade'})+
+  '<div><p class="hon">So far is the word. On '+LS.n+' trades, '+E.NAME[L]+'&rsquo;s real hit rate could be anywhere from about <b>'+Math.round(WR[0]*100)+'% to '+Math.round(WR[1]*100)+'%</b>. A lead, not a proof.</p>'+
+  '<div class="field"><span class="lbl">The field, season P&amp;L</span>'+ord.slice(1).map(function(m){var s=E.season[m];return '<span class="fe pl t">'+S.badge(m,22)+'<b>'+E.NAME[m]+'</b><i class="num '+(s.pl>0?"pos":"neg")+'">'+E.money(s.pl)+'</i><small>'+s.w+' of '+s.n+'</small></span>'}).join("")+'</div></div></div></section>';
+
+/* ---------- the top model's next trades, and where to follow them ---------- */
+var NU=E.nextUp(),inN=NU.filter(function(u){return u.in}).length,nShow=inN+(window.matchMedia("(min-width:1000px)").matches?4:3);
+h+='<section class="flwsec grd" aria-label="'+E.NAME[L]+'&rsquo;s next trades"><div class="wrap"><p class="act">Coming up this week</p>'+
+  '<h2 class="let h2" data-let="10" data-amp=".7">'+E.NAME[L]+'&rsquo;s next trades</h2>'+
+  '<p class="lede">The top model&rsquo;s trade first, the other three as the field. Where the company has a market on Hyperliquid, you can follow it there.</p>'+
+  '<div class="nxs">'+NU.slice(0,nShow).map(function(u){return S.nextCard(u,L,ord)}).join("")+'</div>'+
+  '<p class="fine">'+(NU.length-nShow)+' more companies on the schedule, NVIDIA last; trades drop before each one&rsquo;s earnings. Markets: Hyperliquid, as of Nov 3.</p></div></section>';
 
 /* ---------- previously on ---------- */
 var rc=E.recap,rcR=rc.tr.filter(function(t){return t.w}),rcW=E.winners(rc);
-h+='<div class="bump"><h2 class="t"><small>Last time</small><span data-let="2" data-amp=".7">Previously on…</span></h2></div>';
+h+='<div class="bump"><h2 class="t"><small>The receipts</small><span data-let="2" data-amp=".7">Previously on…</span></h2></div>';
 h+='<section class="prev grd" aria-label="Previously: Round '+rc.n+'"><div class="pw">'+
   '<div class="tvw" role="img" aria-label="A television showing the film of Round '+rc.n+'"><div class="tvs" id="tvs">'+
     '<video id="tvv" muted playsinline preload="auto" poster="'+M+'media/'+rc.poster+'.jpg"><source src="'+M+'media/'+rc.film+'.webm" type="video/webm"><source src="'+M+'media/'+rc.film+'.mp4" type="video/mp4"></video>'+
@@ -286,25 +320,16 @@ h+='<section class="betsec grd bet" aria-label="Bet #1: NVIDIA"><div class="wrap
   '<div class="pk pk2"><span class="a">At the close</span><span class="b">'+(B?new Date(B).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"America/New_York"}):"Soon")+'</span></div>'+
   '<div class="pk pk3"><span class="a">Time left</span><span class="b" id="cd" aria-live="off"></span></div>'+
   '<div class="plq" aria-label="69 percent">'+Math.round(SIM.poolShare*100)+'%</div></figure>'+
-  '<div class="bet-tx"><p class="say"><b>'+Math.round(SIM.poolShare*100)+'% of $EZ creator fees</b> fill the pool. At the close on '+betDay+', the pool goes on <b>NVIDIA (NVDA)</b>. The top model&rsquo;s trade decides: long or short.</p>'+
+  '<div class="bet-tx"><p class="say">We put our own pool on the top model&rsquo;s trade. <b>'+Math.round(SIM.poolShare*100)+'% of $EZ creator fees</b> fill it. At the close on '+betDay+', the whole pool goes on <b>NVIDIA (NVDA)</b>, long or short, as the top model trades it.</p>'+
   '<div class="outs"><div class="out pl"><span class="k let gr" data-let="41" data-amp=".5">Right</span><p>Profits buy back $EZ.</p></div><div class="out pl"><span class="k let rd" data-let="43" data-amp=".5">Wrong</span><p>The pool shrinks or can be wiped out.</p></div></div>'+
   (frz?'<p class="frz">The board freezes 24 hours before: '+frz.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:"America/New_York"})+', '+frz.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/New_York"}).replace(":00","")+' New York.</p>':'')+
   '<p class="tbc let" data-let="47">To be continued&hellip;</p><p class="s2">NVIDIA is the first bet, not the last. Season 2 brings more.</p></div></div></section>';
 
-/* ---------- next time on ---------- */
-var tday=E.dayKey(E.today);
-function grd(a){if(!a)return "Date to come";return (E.dayKey(a)===tday?"Today, ":"")+E.fmtDay(a,true)}
-var cu=E.comingUp.slice().sort(function(a,b){return ((a.resolves?E.dayKey(a.resolves):9e9)-(b.resolves?E.dayKey(b.resolves):9e9))||(a.n-b.n)});
-var cuN=window.matchMedia("(min-width:1000px)").matches?10:8;
-h+='<section class="endw" aria-label="Next time"><div class="endc"><div class="in"><p class="k">Next time on</p><h2 class="let" data-let="51">Four AIs Trade Earnings</h2></div></div>'+
-  '<div class="nextsec grd"><div class="wrap nxw"><div><h3 class="let" data-let="53" data-amp=".6">The trades are in</h3><p class="sub">Placed before the earnings. The close grades them.</p><div class="tin">'+
-  E.tradesIn.map(function(p){return '<div class="ti pl"><div class="hd">'+S.co(p.ticker,36)+'<div><div class="cn">'+esc(E.coName(p.ticker)+" ("+p.ticker+")")+'</div><div class="gd">Graded at the close · '+grd(p.resolves)+'</div></div></div>'+
-    '<div class="tok">'+byOrd(p.tr).map(function(t){return '<div class="tk">'+S.badge(t.m,24)+'<div class="wh"><span class="who">'+E.NAME[t.m]+'</span><span class="sz '+(t.up?"long":"short")+'">'+sz(t)+'</span></div></div>'}).join("")+'</div></div>'}).join("")+'</div></div>'+
-  '<div><h3 class="let" data-let="57" data-amp=".6">Coming up</h3><p class="sub">No trades yet.</p><div class="cup">'+
-  cu.slice(0,cuN).map(function(u){return '<div class="cu pl t">'+S.co(u.ticker,30)+'<div><div class="cn">'+esc(E.coName(u.ticker)+" ("+u.ticker+")")+'</div><div class="gd">'+(u.resolves?"Graded "+grd(u.resolves):"Date to come")+'</div></div></div>'}).join("")+'</div>'+
-  (cu.length>cuN?'<p class="alsoN">And '+(cu.length-cuN)+' more on the schedule, NVIDIA last.</p>':'')+
-  '<div class="bye"><p class="let" data-let="61" data-amp=".6">That&rsquo;s all for this week.</p><a class="btn" href="leaderboard.html">See the standings</a></div></div></div></div></section>';
-
+/* ---------- the end card: next time ---------- */
+var nxtDay=NU.length&&NU[0].resolves,nxtCos=NU.filter(function(u){return u.in&&u.resolves&&E.dayKey(u.resolves)===E.dayKey(nxtDay)});
+h+='<section class="endw" aria-label="Next time"><div class="endc"><div class="in"><p class="k">Next time on</p><h2 class="let" data-let="51">Four AIs Trade Earnings</h2>'+
+  (nxtCos.length?'<p class="nt">The close grades '+nxtCos.length+' trades each on '+nxtCos.map(function(u){return esc(E.coName(u.ticker))}).join(", ").replace(/, ([^,]*)$/," and $1")+'.</p>':'')+
+  '</div></div><div class="nextsec grd"><div class="wrap bye"><p class="let" data-let="61" data-amp=".6">That&rsquo;s all for this week.</p><a class="btn" href="leaderboard.html">Who to follow, by the week</a></div></div></section>';
 document.getElementById("show").innerHTML=h;
 S.letterAll();
 
@@ -370,7 +395,7 @@ function draw(){var a=document.getElementById("sc1"),b=document.getElementById("
 var lw=0;function onR(){if(innerWidth!==lw){lw=innerWidth;draw()}}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(onR);else onR();
 addEventListener("resize",onR);
-})();
+});
 </script>
 </body>
 </html>
