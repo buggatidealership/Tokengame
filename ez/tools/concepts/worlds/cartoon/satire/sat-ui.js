@@ -4,7 +4,7 @@
 (function(W){
 'use strict';
 const S=W.SAT;
-const FACE={GROK:[.54,.40],CLAUDE:[.50,.40],GPT:[.56,.37],KIMI:[.52,.33]};
+const FACE={GROK:[.51,.39],CLAUDE:[.52,.44],GPT:[.60,.41],KIMI:[.52,.39]};
 const PORT={GROK:'art/p-grok.jpg',CLAUDE:'art/p-claude.jpg',GPT:'art/p-gpt.jpg',KIMI:'art/p-kimi.jpg'};
 function mark(m,fill){const M=MODELS[m];if(!M)return '';const f=fill||'currentColor';
   return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="'+f+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+' d="'+M.d+'"/>'+(M.dot?'<path fill="'+f+'" d="'+M.dot+'"/>':'')+'</svg>'}
@@ -16,7 +16,7 @@ function flag(c){
   return s+'</svg>'}
 /* the reader's pencil: a hand-drawn ellipse, overshooting where the pen started */
 function ring(col){return '<svg class="rg" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M8 24 C6 10 30 3 55 4 C80 5 97 11 96 21 C95 32 70 37 46 36 C22 35 5 30 6 19 C7 12 18 7 30 6" fill="none" stroke="'+(col||'#e9b43c')+'" stroke-width="2.6" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>'}
-function faceBg(m){const f=FACE[m]||[.5,.4];const bw=2.6,bh=bw*4/3;return 'background-image:url('+PORT[m]+');background-size:'+(bw*100)+'% auto;background-position:'+(((bw*f[0]-.5)/(bw-1))*100).toFixed(1)+'% '+(((bh*f[1]-.5)/(bh-1))*100).toFixed(1)+'%'}
+function faceBg(m){const f=FACE[m]||[.5,.4];const bw=2.1,bh=bw*4/3;return 'background-image:url('+PORT[m]+');background-size:'+(bw*100)+'% auto;background-position:'+(((bw*f[0]-.5)/(bw-1))*100).toFixed(1)+'% '+(((bh*f[1]-.5)/(bh-1))*100).toFixed(1)+'%'}
 /* fit an element's font-size so it stays inside its box */
 function fit(el,max,min){let s=max;el.style.fontSize=s+'px';let g=40;while(g-->0&&s>min&&(el.scrollWidth>el.clientWidth+.5||el.scrollHeight>el.clientHeight+.5)){s-=.5;el.style.fontSize=s+'px'}return s}
 function fitW(el,max,min){let s=max;el.style.fontSize=s+'px';let g=60;const P=el.parentElement;while(g-->0&&s>min&&el.scrollWidth>(el.clientWidth||P.clientWidth)+.5){s-=.5;el.style.fontSize=s+'px'}return s}
@@ -36,14 +36,16 @@ function chart(host,o){
   const uid='c'+Math.random().toString(36).slice(2,7);
   let s='<svg viewBox="0 0 '+Wd+' '+Hd+'" width="100%" role="img" aria-label="'+S.esc(o.aria||'')+'"><defs>'+
     '<filter id="'+uid+'pen" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.3"/></filter>'+
-    '<pattern id="'+uid+'wt" patternUnits="userSpaceOnUse" width="'+Wd+'" height="'+(Hd*0.9)+'"><image href="art/water.jpg" x="0" y="-6" width="'+Wd+'" height="'+(Hd*0.9)+'" preserveAspectRatio="xMidYMin slice"/></pattern>';
-  ms.forEach(m=>{const f=FACE[m];const bw=2.6,bh=bw*4/3;s+='<pattern id="'+uid+'f'+m+'" patternContentUnits="objectBoundingBox" width="1" height="1"><image href="'+PORT[m]+'" x="'+(.5-f[0]*bw).toFixed(3)+'" y="'+(.5-f[1]*bh).toFixed(3)+'" width="'+bw+'" height="'+bh.toFixed(3)+'" preserveAspectRatio="none"/></pattern>'});
+    '';
+  ms.forEach(m=>{const f=FACE[m];const bw=2.1,bh=bw*4/3;s+='<pattern id="'+uid+'f'+m+'" patternContentUnits="objectBoundingBox" width="1" height="1"><image href="'+PORT[m]+'" x="'+(.5-f[0]*bw).toFixed(3)+'" y="'+(.5-f[1]*bh).toFixed(3)+'" width="'+bw+'" height="'+bh.toFixed(3)+'" preserveAspectRatio="none"/></pattern>'});
   s+='</defs>';
   /* gridlines: pencil */
   for(let v=lo;v<=hi+1e-9;v+=o.step){const y=Y(v);const lab=mode==='pnl'?(v===0?'$0':(v>0?'+':'−')+'$'+Math.abs(v/1000)+'K'):Math.round(v*100)+'%';
     s+='<line x1="'+pad.l+'" x2="'+(Wd-pad.r+6)+'" y1="'+y+'" y2="'+y+'" stroke="rgba(243,230,196,.16)" stroke-width="1" stroke-dasharray="2 5"/>'+
       '<text x="'+(pad.l-6)+'" y="'+(y+4)+'" text-anchor="end" class="ch-ax">'+lab+'</text>'}
   if(mode==='pnl'){
+    const wh=Math.max(40,Hd-pad.b-y0+8);
+    s=s.replace('</defs>','<pattern id="'+uid+'wt" patternUnits="userSpaceOnUse" x="0" y="'+(y0-6)+'" width="'+Wd+'" height="'+wh+'"><image href="art/water.jpg" x="0" y="0" width="'+Wd+'" height="'+wh+'" preserveAspectRatio="xMidYMin slice"/></pattern></defs>');
     /* the waterline: $0, everything under it is under water */
     let wv='M'+pad.l+' '+y0;const step=14;for(let x=pad.l;x<=Wd-pad.r+6;x+=step)wv+=' Q'+(x+step/4)+' '+(y0-2.2)+' '+(x+step/2)+' '+y0+' T'+(x+step)+' '+y0;
     s+='<path d="'+wv+' L'+(Wd-pad.r+6)+' '+(Hd-pad.b)+' L'+pad.l+' '+(Hd-pad.b)+'Z" fill="url(#'+uid+'wt)" opacity=".86"/>'+

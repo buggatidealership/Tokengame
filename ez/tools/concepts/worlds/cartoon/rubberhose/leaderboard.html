@@ -137,6 +137,7 @@
 .listed li .m{display:flex;align-items:center;gap:5px;letter-spacing:.06em;text-transform:uppercase}
 .listed li .v{text-align:right}
 .listed li .v small{display:block;font:500 11px/1 var(--num);color:#cfc5ad;margin-top:3px}
+@media (max-width:369px){.listed{grid-template-columns:1fr}.tl .s{font-size:11px;gap:4px}.tl .s b{font-size:12.5px}.l5 i{width:13px}.l5 small{display:none}.felt{border-width:16px 14px;border-image-width:16px 14px;padding:4px 2px 8px}.mq-row{font-size:6vw}.wl .r{grid-template-columns:14px 24px 1fr auto;gap:5px;font-size:12px}.wl .r .amt{font-size:13.5px}.sct{font-size:12px}.nx .t{font-size:15px}}
 .note{margin:10px 2px 2px;font:italic 13px/1.35 var(--tx);color:#d3c7ab}
 .fine{padding:18px 16px 26px;background:linear-gradient(180deg,rgba(0,0,0,.4),rgba(0,0,0,.7)),url(art/curtain.jpg) center 80%/900px auto;text-align:center}
 .fine p{max-width:760px;margin:0 auto;font:13px/1.45 var(--tx);color:var(--cream2)}
@@ -150,12 +151,15 @@
   .mq-wide{display:block;aspect-ratio:16/9;background:url(art/marquee-wide.jpg) center/100% 100%;border-radius:4px;box-shadow:0 10px 24px rgba(0,0,0,.7)}
   .mq-face{margin:0}
   .mq-row{font-size:clamp(18px,2.35vw,30px)}
-  .row2{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;margin-top:14px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"a b" "c d";gap:18px 24px;align-items:start;margin-top:14px}
+  .g-a{grid-area:a}.g-b{grid-area:b}.g-c{grid-area:c}.g-d{grid-area:d}
+  .row2 .felt{margin-top:0}
   .ctl{margin-top:0}.seg>span{min-width:64px}
   .gt{margin-top:0}.gt-h{font-size:40px}.gt-h .mkd{width:36px;height:36px}.gt-k{font-size:12.5px}.gt-t{font-size:15px}.gt-stub span{font-size:13px}
-  .pair{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+  .pair .felt{margin-top:0}
   .pair>*{min-width:0}
-  .scr{margin:12px 0 0;aspect-ratio:auto;height:calc(100% - 64px);min-height:340px;background-image:url(art/screen-wide.jpg)}
+  .scr{margin:12px 0 0;aspect-ratio:16/9;background-image:url(art/screen-wide.jpg)}
   .scr-a{left:12.5%;top:11.8%;width:75.6%;height:77.1%}
   .thead{display:grid}
   .tl li,.thead{grid-template-columns:30px minmax(120px,1.4fr) 112px 62px 70px 1.1fr 1fr;grid-template-areas:none;align-items:center;column-gap:8px}
@@ -168,9 +172,6 @@
   .tl .s b{margin:0;font-size:16px}
   .tl .v{order:5;font-size:19px}
   .tl .s .lc{order:6}
-  .nx li{grid-template-columns:40px minmax(150px,1.2fr) 150px 2fr 1.3fr;grid-template-areas:none;align-items:center}
-  .nx .lgt,.nx .c,.nx .t,.nx .f,.nx .h{grid-area:auto}
-  .nx .t{text-align:left}
   .lgt{width:38px;height:38px}
   .wl .r{grid-template-columns:22px 28px 1fr auto}
   .fine{padding:22px 40px 30px}
@@ -197,43 +198,43 @@ function sgn(v){return v>0?"wq":v<0?"lq":""}
 var LC=RH.lastCloseDay,LCL=RH.dayLabel(LC);
 
 function render(){
-var html='<section class="ch front"><div class="wrap"><div class="ch-hd"><p class="kick"><span class="rn">&#9733;</span>The marquee</p><h2 class="gilt">Who to follow right now</h2></div>'+
-  '<div class="hero"><div class="mq-wide" role="img" aria-label="The picture palace front at night"></div><div class="mq-face" id="mq" role="list" aria-label="Top of the bill"></div></div>'+
-  '<div class="plate-w"><span class="brass" id="mqLabel"></span></div>'+
-  '<div class="row2"><div><div class="ctl" role="group" aria-label="View"><div class="seg"><span>Rank by</span><button data-by="pl">P&amp;L</button><button data-by="hit">Hit rate</button></div>'+
-  '<div class="seg"><span>Window</span><button data-win="season">Season</button><button data-win="d7">7 days</button><button data-win="h24">24 hours</button></div></div>'+
-  '<div class="title-card verdict-l" id="vline"></div></div>'+
-  '<div class="gt" role="img" aria-label="Golden ticket"><div class="gt-stub"><span>Admit one</span></div><div class="gt-main"><span class="gt-k">Holds the golden ticket</span><span class="gt-h">'+mkd(GTOP)+RH.NICE[GTOP]+'</span>'+
-    '<span class="gt-t">Top model by season P&amp;L. The board freezes 24 hours before NVIDIA reports, and the holder\'s trade is the bet.</span></div></div></div>'+
-  '</div></section><div class="gutter" aria-hidden="true"></div>';
-
+var SEC=RH.sectors(),SO=RH.rank(SEASON,"pl");
 /* next trades by the golden ticket holder, on the lobby letter board */
 var pend=PENDING.slice().sort(function(a,b){var x=RH.ymd(a.resolves),y=RH.ymd(b.resolves);var kx=x?x[0]*1e4+x[1]*100+x[2]:9e9,ky=y?y[0]*1e4+y[1]*100+y[2]:9e9;return (kx-ky)||((CAPS[b.ticker]||0)-(CAPS[a.ticker]||0))});
-html+='<section class="ch lobbyg"><div class="wrap"><div class="felt"><div class="fh L1"><h3>'+RH.NICE[GTOP]+'\'s next trades</h3><small>Locked before the earnings<br>Hyperliquid, as of Nov 3</small></div><ul class="nx">'+
-  pend.map(function(u){var mine=u.calls.filter(function(c){return c.m===GTOP})[0],d=RH.ymd(u.resolves),mk=RH.market(u.ticker);
+var nextB='<div class="felt g-d"><div class="fh L1"><h3>'+RH.NICE[GTOP]+'\'s next trades</h3><small>Locked before the earnings<br>Hyperliquid, as of Nov 3</small></div>'+
+  (pend.length?'<ul class="nx">'+pend.map(function(u){var mine=u.calls.filter(function(c){return c.m===GTOP})[0],d=RH.ymd(u.resolves),mk=RH.market(u.ticker);
     var t=mine?'<span class="t L1"><small>'+RH.NICE[GTOP]+'</small><span class="'+(mine.dir==="DOWN"?"lq":"wq")+'">'+(mine.dir==="DOWN"?"Short ":"Long ")+esc(mine.mag)+'%</span></span>':'<span class="t L1"><small>'+RH.NICE[GTOP]+'</small>No trade</span>';
     var f='<span class="f L1">'+RH.ORDER.filter(function(m){return m!==GTOP}).map(function(m){var c=u.calls.filter(function(c){return c.m===m})[0];if(!c)return '';var L=c.dir!=="DOWN";return '<span>'+mkd(m)+RH.NICE[m]+' <b class="'+(L?"wq":"lq")+'">'+(L?"Long":"Short")+'</b> '+esc(c.mag)+'%</span>'}).join("")+'</span>';
     var h='<span class="h L1">'+(mk?'Follow on Hyperliquid: <a href="'+mk.url+'" target="_blank" rel="noopener">'+esc(mk.name)+'</a> · <span class="'+(mk.thin?"thin":"")+'">$'+mk.oi.toFixed(1)+'M open interest'+(mk.thin?', thin':'')+'</span>':'<span class="no">No Hyperliquid market</span>')+'</span>';
-    return '<li>'+lgt(u.ticker,"g")+'<span class="c L1">'+esc(u.co)+' <span>('+esc(u.ticker)+')</span><small>Graded '+(d?RH.dayLabel(d):"date to come")+'</small></span>'+t+f+h+'</li>'}).join("")+
-  '</ul></div></div></section><div class="gutter" aria-hidden="true"></div>';
+    return '<li>'+lgt(u.ticker)+'<span class="c L1">'+esc(u.co)+' <span>('+esc(u.ticker)+')</span><small>Graded '+(d?RH.dayLabel(d):"date to come")+'</small></span>'+t+f+h+'</li>'}).join("")+'</ul>'
+   :'<p class="empty L1">No trades in yet. They drop before the earnings.</p>')+'</div>';
+var listedB=RH.hlLoaded()?(function(){var Lx=RH.listedStats();return '<div class="felt g-c"><div class="fh L1"><h3>Only Hyperliquid-listed companies</h3><small>Season · listed today</small></div><ul class="listed">'+
+    SO.map(function(m){var o=Lx[m];return '<li class="L1"><span class="m">'+mkd(m,"sm")+RH.NICE[m]+'</span><span class="v '+sgn(o.pl)+'">'+RH.money(o.pl)+'<small>'+o.w+'-'+o.l+'</small></span></li>'}).join("")+
+    '</ul><p class="note">Counts only companies with a Hyperliquid market as of Nov 3. Most of them were not listed when the trade was made.</p></div>'})():'';
+var html='<section class="ch front"><div class="wrap"><div class="ch-hd"><p class="kick"><span class="rn"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="#3a2205" d="M12 2.6l2.8 6.1 6.6.6-5 4.4 1.5 6.5L12 16.8l-5.9 3.4 1.5-6.5-5-4.4 6.6-.6z"/></svg></span>The marquee</p><h2 class="gilt">Who to follow right now</h2></div>'+
+  '<div class="hero"><div class="mq-wide" role="img" aria-label="The picture palace front at night"></div><div class="mq-face" id="mq" role="list" aria-label="Top of the bill"></div></div>'+
+  '<div class="plate-w"><span class="brass" id="mqLabel"></span></div>'+
+  '<div class="row2"><div class="g-a"><div class="ctl" role="group" aria-label="View"><div class="seg"><span>Rank by</span><button data-by="pl">P&amp;L</button><button data-by="hit">Hit rate</button></div>'+
+  '<div class="seg"><span>Window</span><button data-win="season">Season</button><button data-win="d7">7 days</button><button data-win="h24">24 hours</button></div></div>'+
+  '<div class="title-card verdict-l" id="vline"></div></div>'+
+  '<div class="gt g-b" role="img" aria-label="Golden ticket"><div class="gt-stub"><span>Admit one</span></div><div class="gt-main"><span class="gt-k">Holds the golden ticket</span><span class="gt-h">'+mkd(GTOP)+RH.NICE[GTOP]+'</span>'+
+    '<span class="gt-t">Top model by season P&amp;L. The board freezes 24 hours before NVIDIA reports, and the holder\'s trade is the bet.</span></div></div>'+
+  nextB+listedB+'</div></div></section><div class="gutter" aria-hidden="true"></div>';
 
-/* the tally and the screen, side by side on desktop */
-html+='<section class="ch houseg"><div class="wrap"><div class="pair"><div><div class="felt" id="tally"></div></div><div><div class="sec-hd"><h3 class="sub" id="chT"></h3><p id="chQ"></p></div><figure class="scr"><div class="scr-a" id="scrA"></div></figure><p class="cap" id="chC"></p></div></div></div></section><div class="gutter" aria-hidden="true"></div>';
+/* the receipts: the tally, then the take over time on the screen */
+html+='<section class="ch lobbyg"><div class="wrap"><div class="felt" id="tally"></div></div></section><div class="gutter" aria-hidden="true"></div>';
+html+='<section class="ch houseg"><div class="wrap"><div class="sec-hd"><h3 class="sub" id="chT"></h3><p id="chQ"></p></div><figure class="scr"><div class="scr-a" id="scrA"></div></figure><p class="cap" id="chC"></p></div></section><div class="gutter" aria-hidden="true"></div>';
 
 /* by sector and biggest W and L: the season's receipts */
-var SEC=RH.sectors(),SO=RH.rank(SEASON,"pl");
 html+='<section class="ch lobbyg"><div class="wrap"><div class="pair">'+
   '<div class="felt"><div class="fh L1"><h3>By sector · Season</h3><small>Trades won of trades made<br>gold ring = best in its sector</small></div><table class="sct L1"><thead><tr><th>Sector</th>'+SO.map(function(m){return '<th>'+mkd(m,"sm")+RH.NICE[m]+'</th>'}).join("")+'</tr></thead><tbody>'+
   SEC.map(function(s){var rates=SO.map(function(m){var o=s[m];return o&&o.n?o.w/o.n:-1}),mx=Math.max.apply(null,rates),all=rates.every(function(r){return Math.abs(r-mx)<1e-9});
     return '<tr><td>'+esc(s.name)+'</td>'+SO.map(function(m,i){var o=s[m];if(!o)return '<td>-</td>';var b=!all&&Math.abs(rates[i]-mx)<1e-9;return '<td'+(b?' class="best"':'')+'><span>'+o.w+'/'+o.n+'</span></td>'}).join("")+'</tr>'}).join("")+
   '</tbody></table></div>'+
-  '<div><div class="felt"><div class="fh L1"><h3>Biggest W and L · Season</h3><small>One trade each, $100K</small></div><ul class="wl">'+
+  '<div class="felt"><div class="fh L1"><h3>Biggest W and L · Season</h3><small>One trade each, $100K</small></div><ul class="wl">'+
   SO.map(function(m){var o=SEASON.by[m];function row(t,k){return '<span class="r L1"><span class="k '+(k==="W"?"wq":"lq")+'">'+k+'</span>'+lgt(t.r.ticker)+'<span class="co">'+esc(t.r.co)+' <span>('+esc(t.r.ticker)+') R'+t.r.n+'</span></span><span class="amt '+sgn(t.v)+'">'+RH.money(t.v)+'</span></span>'}
     return '<li><span class="m L1">'+mkd(m)+RH.NICE[m]+'</span>'+row(o.bigW,"W")+row(o.bigL,"L")+'</li>'}).join("")+'</ul></div>'+
-  (RH.hlLoaded()?(function(){var Lx=RH.listedStats();return '<div class="felt"><div class="fh L1"><h3>Only Hyperliquid-listed companies</h3><small>Season · listed today</small></div><ul class="listed">'+
-    SO.map(function(m){var o=Lx[m];return '<li class="L1"><span class="m">'+mkd(m,"sm")+RH.NICE[m]+'</span><span class="v '+sgn(o.pl)+'">'+RH.money(o.pl)+'<small>'+o.w+'-'+o.l+'</small></span></li>'}).join("")+
-    '</ul><p class="note">Counts only companies with a Hyperliquid market as of Nov 3. Most of them were not listed when the trade was made.</p></div>'})():'')+
-  '</div></div><div class="back"><a class="btn-plate brass" href="overview.html">Back to the programme</a></div></div></section>'+
+  '</div><div class="back"><a class="btn-plate brass" href="overview.html">Back to the programme</a></div></div></section>'+
   '<footer class="fine"><p>Simulated record, $100K a trade, before fees. Not financial advice. Trading can lose money; the pool can be wiped out. Hyperliquid is not available in every country.</p></footer>';
 $("#app").innerHTML=html;
 document.querySelectorAll(".seg button").forEach(function(b){b.addEventListener("click",function(){if(b.dataset.by)STATE.by=b.dataset.by;if(b.dataset.win)STATE.win=b.dataset.win;view()})});
@@ -253,7 +254,7 @@ function view(){
   /* the verdict for this window, with its sample */
   var t=ord[0],o=st.by[t],ci=o.n?RH.wilson(o.w,o.n):null;
   $("#vline").innerHTML=empty?'<p>No round graded in the last 24 hours. The last close was '+LCL+'.</p>':
-    '<p><b>'+W.long+':</b> '+RH.NICE[t]+' leads'+(byHit?' on hit rate':'')+', right on '+o.w+' of '+o.n+' trades ('+RH.pct(o.hit,1)+'), '+RH.money(o.pl)+'.</p><p>On '+o.n+' trades its real hit rate could be anywhere from about '+Math.round(ci[0]*100)+'% to '+Math.round(ci[1]*100)+'%.</p>';
+    '<p><b>'+W.long+':</b> '+RH.NICE[t]+' leads'+(byHit?' on hit rate':'')+', right on '+o.w+' of '+o.n+' trades ('+RH.pct(o.hit,1)+'), '+RH.money(o.pl)+'.</p><p>'+(o.n<20?o.n+' trades is far too few to judge anything yet.':'On '+o.n+' trades its real hit rate could be anywhere from about '+Math.round(ci[0]*100)+'% to '+Math.round(ci[1]*100)+'%.')+'</p>';
   /* the tally */
   var lcK='Last close · '+RH.shortDay(LC);
   $("#tally").innerHTML='<div class="fh L1"><h3>The tally · '+W.long+'</h3><small>'+(byHit?'Ranked by hit rate':'Ranked by P&amp;L')+(STATE.win==="d7"?'<br>'+W.span+' · '+st.rounds.length+' rounds':STATE.win==="season"?'<br>'+st.rounds.length+' rounds':'')+'</small></div>'+

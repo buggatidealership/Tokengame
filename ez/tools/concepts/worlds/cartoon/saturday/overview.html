@@ -197,9 +197,8 @@
   .tok{grid-template-columns:1fr 1fr 1fr 1fr}
   .beat .tok .tk{flex-direction:column;align-items:flex-start;gap:6px}
   .beat .tok .tk .st{margin-left:0}
-  .vw{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:18px 40px;align-items:center}
-  .vw > div:last-child{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center}
-  .vw .field{margin-top:0}
+  .vw{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);grid-template-areas:"a t" "b t";gap:14px 40px;align-items:start}
+  .vw > div:first-child{grid-area:a;align-self:end}.vw > .gt{grid-area:t;align-self:center}.vw > div:last-child{grid-area:b}
   .nxs{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
   .nxs.wts{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
   .castsec{padding:30px 0 34px}
@@ -224,7 +223,6 @@
   .ti{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr);align-items:center;gap:12px}
   .ti .tok{grid-template-columns:repeat(4,1fr);margin-top:0}
   .cup{grid-template-columns:1fr 1fr}
-  .bump{height:150px}
 }
 </style>
 </head>
@@ -343,7 +341,7 @@ h+='<section class="betsec grd bet" aria-label="Bet #1: NVIDIA"><div class="wrap
 /* ---------- the end card: next time ---------- */
 var nxtDay=NU.length&&NU[0].resolves,nxtCos=NU.filter(function(u){return u.in&&u.resolves&&E.dayKey(u.resolves)===E.dayKey(nxtDay)});
 h+='<section class="endw" aria-label="Next time"><div class="endc"><div class="in"><p class="k">Next time on</p><h2 class="let" data-let="51">Four AIs Trade Earnings</h2>'+
-  (nxtCos.length?'<p class="nt">The close grades '+nxtCos.length+' trades each on '+nxtCos.map(function(u){return esc(E.coName(u.ticker))}).join(", ").replace(/, ([^,]*)$/," and $1")+'.</p>':'')+
+  (nxtCos.length?'<p class="nt">The next close grades the trades on '+nxtCos.map(function(u){return esc(E.coName(u.ticker)+" ("+u.ticker+")")}).join(", ").replace(/, ([^,]*)$/," and $1")+'.</p>':'')+
   '</div></div><div class="nextsec grd"><div class="wrap bye"><p class="let" data-let="61" data-amp=".6">That&rsquo;s all for this week.</p><a class="btn" href="leaderboard.html">Who to follow, by the week</a></div></div></section>';
 document.getElementById("show").innerHTML=h;
 S.letterAll();
@@ -367,6 +365,8 @@ document.getElementById("guide").addEventListener("click",function(e){var b=e.ta
 document.getElementById("more").addEventListener("click",function(){var g=document.getElementById("guide");g.insertAdjacentHTML("beforeend",rev.slice(shown).map(ep).join(""));this.parentNode.remove()});
 
 /* ---------- the two charts, drawn on the painted surfaces ---------- */
+/* a chart draws in once; a redraw after that (a resize, a turned phone) shows it whole */
+var SEEN={};
 var SER=E.series(R),dash={GROK:"",CLAUDE:"9 5",GPT:"2.5 4",KIMI:"10 4 2.5 4"};
 /* place each surface on its painting: the screen and the chalkboard, measured on the paintings (in % of the picture) */
 function fit(sc,sf,box,fill){var W=sc.clientWidth,k=fill/box.w,pw=W*k,ph=pw*box.ar,x=W*(1-fill)/2-box.x*pw;
@@ -398,8 +398,11 @@ function chart(sf,kind){var W=sf.clientWidth,H=sf.clientHeight,ink=kind==="hit"?
     g+='<circle cx="'+X(n-1).toFixed(1)+'" cy="'+Y(SER[e.m][key][n-1]).toFixed(1)+'" r="3.2" fill="'+E.COL[e.m]+'" stroke="'+(kind==="hit"?"#24140c":"#173a2a")+'" stroke-width="1.4"/>'+
       '<text x="'+x+'" y="'+(e.y+4).toFixed(1)+'" font-size="'+fs+'" fill="'+(kind==="hit"?"#24140c":E.COL[e.m])+'"><tspan>'+E.NAME[e.m]+'</tspan> <tspan fill="'+(kind==="hit"?"#24140c":"#f3efe2")+'">'+v+'</tspan></text>'});
   g+='</svg>';sf.innerHTML=g;
-  if(!RM&&"IntersectionObserver" in window){sf.querySelectorAll(".ln").forEach(function(p){var L=p.getTotalLength();if(!p.getAttribute("stroke-dasharray")){p.style.strokeDasharray=L;p.style.strokeDashoffset=L}else{p.style.clipPath="inset(0 100% 0 0)"}});
-    new IntersectionObserver(function(es,o){es.forEach(function(e){if(e.isIntersecting){o.disconnect();sf.querySelectorAll(".ln").forEach(function(p){p.style.transition="stroke-dashoffset 1.6s ease-out, clip-path 1.6s ease-out";p.style.strokeDashoffset=0;p.style.clipPath="inset(0 0 0 0)"})}})},{threshold:.35}).observe(sf)}}
+  if(!RM&&!SEEN[sf.id]&&"IntersectionObserver" in window){sf.querySelectorAll(".ln").forEach(function(p){var L=p.getTotalLength();if(!p.getAttribute("stroke-dasharray")){p.style.strokeDasharray=L;p.style.strokeDashoffset=L}else{p.style.clipPath="inset(0 100% 0 0)"}});
+    var done=false,go=function(){if(done)return;done=true;SEEN[sf.id]=true;sf.querySelectorAll(".ln").forEach(function(p){p.style.transition="stroke-dashoffset 1.6s ease-out, clip-path 1.6s ease-out";p.style.strokeDashoffset=0;p.style.clipPath="inset(0 0 0 0)"})};
+    new IntersectionObserver(function(es,o){es.forEach(function(e){if(e.isIntersecting){o.disconnect();go()}})},{threshold:.35}).observe(sf);
+    /* never leave a chart undrawn: if the reader never stops on it, the lines arrive anyway */
+    setTimeout(go,5000)}}
 /* the painted surfaces, measured on the 1600x1200 paintings */
 var BOX={sc:{x:.207,y:.12,w:.598,h:.623,ar:.75},ch:{x:.13,y:.167,w:.765,h:.627,ar:.75}};
 function draw(){var a=document.getElementById("sc1"),b=document.getElementById("sc2"),side=innerWidth>=1000;
