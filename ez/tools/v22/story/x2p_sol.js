@@ -62,7 +62,7 @@ const take={id:'sx',html(X,V){const k=V.view==='pnl'?'pnl':'acc',c=CAP[k];
    <div class="sx-bd">
     <p class="sx-cap"><small>${c[0]}</small>${c[1]}</p>
     <div class="sx-pic"><div class="sx-ch"></div>${rows(X,k)}</div>
-    <div class="sx-rail"><div class="sx-dvt" role="group" aria-label="Chart"><button type="button" data-sx="acc" aria-pressed="${k==='acc'}">Hit rate</button><b aria-hidden="true">${k==='acc'?'▸':'◂'}</b><button type="button" data-sx="pnl" aria-pressed="${k==='pnl'}">P&amp;L</button></div></div>
+    <div class="sx-rail"><div class="sx-dvt" role="group" aria-label="Chart"><button type="button" data-sx="acc" aria-pressed="${k==='acc'}">Hit rate</button><b class="sx-ar${k==='acc'?'':' sx-arl'}" aria-hidden="true"></b><button type="button" data-sx="pnl" aria-pressed="${k==='pnl'}">P&amp;L</button></div></div>
    </div>${sr(X,k)}</div>`},
  draw(box,X,V){const k=V.view==='pnl'?'pnl':'acc',el=box.querySelector('.sx-ch');
   if(el){const Wd=Math.max(240,Math.round(el.clientWidth)||358),Hh=Wd>=560?Math.round(Wd*.47):Math.round(Wd*.76);el.style.height=Hh+'px';

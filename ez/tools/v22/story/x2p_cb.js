@@ -47,7 +47,7 @@ function build(d,fb){var G=d.k==='g',h='<div class="cb-p"><i class="cb-sh" aria-
       '<span class="cb-l2 cb-fit">'+trade(r)+(G?'<small class="cb-off">'+(r.ok?pct(r.off)+' off':'wrong way')+'</small>':'')+'</span></span>'+
       '<span class="cb-wr">'+(G?pf(r,i):'<span class="sr">Not graded yet</span>')+'</span></li>'});
   h+='</ol><i class="cb-g" style="--g:1"></i>';
-  h+='<div class="cb-mw"><span class="cb-ml"><small class="cb-fit">'+esc(d.co)+' at the close</small>'+(G?move(d.a):'<b class="cb-mv cb-q"></b>')+'</span>'+
+  h+='<div class="cb-mw"><span class="cb-ml"><small class="cb-fit">At the close<span class="sr"> ('+esc(d.co)+')</span></small>'+(G?move(d.a):'<b class="cb-mv cb-q"></b>')+'</span>'+
     (G?(d.W.length?'<span class="cb-wn cb-fit">'+CROWN+'<em>'+(d.W.length>1?'Winners':'Winner')+'</em> '+d.W.map(function(m){return '<b style="--wc:'+MC[m]+'">'+NM[m]+'</b>'}).join(' <em>&amp;</em> ')+'</span>':
       '<span class="cb-wn cb-fit none"><em>No winner</em>'+(d.right?'':' <small>all '+d.rows.length+' wrong way</small>')+'</span>'):'<span class="cb-wn cb-fit cb-cd"><em></em></span>')+'</div>';
   h+='<i class="cb-g" style="--g:1"></i><div class="cb-bt"><div class="cb-dt cb-np"><small class="cb-fit">Trades filed</small><b class="cb-fit">'+d.filed+'</b></div><div class="cb-dt cb-np"><small class="cb-fit">'+(G?'Graded on':'Final grade')+'</small><b class="cb-fit">'+d.graded+'</b></div>'+
@@ -68,7 +68,9 @@ function mount(){var rm=D.getElementById('x2pRm');if(!rm)return;var c=rm.querySe
   var o=D.createElement('div');o.className='cb cb-'+d.k+(window.__x2pCbStamp==='steel'?' cb-steel':'');o.style.setProperty('--cbz',zoomOf(c));
   o.innerHTML=build(d,fbt?(lab||'See the film'):'');fin.insertBefore(o,fin.firstChild);fin.classList.add('cb-on');
   if(d.k==='p'){countdown(o,fin);o.__cd=setInterval(function(){if(!o.isConnected){clearInterval(o.__cd);return}countdown(o,fin)},30000)}
-  var f=function(){if(o.isConnected)fit(o)};f();if(D.fonts&&D.fonts.ready)D.fonts.ready.then(f);setTimeout(f,400)}
+  var f=function(){if(o.isConnected)fit(o)};f();if(D.fonts&&D.fonts.ready)D.fonts.ready.then(f);setTimeout(f,400);
+  /* refit once the plate is the face in front (a turned card lays out again) */
+  var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(f,120)}).observe(c,{attributes:true,attributeFilter:['class']})}
 function run(){try{mount()}catch(e){window.__x2pCbErr=e}}
 function init(){new MutationObserver(function(ms){for(var i=0;i<ms.length;i++)for(var j=0;j<ms[i].addedNodes.length;j++){var x=ms[i].addedNodes[j];if(x.nodeType===1&&x.id==='x2pRm'){run();return}}}).observe(D.body,{childList:true});run();
   var lw=innerWidth;addEventListener('resize',function(){if(innerWidth===lw)return;lw=innerWidth;var o=D.querySelector('#x2pRm .cb');if(o){var c=o.closest('.card');o.style.setProperty('--cbz',zoomOf(c));fit(o)}})}

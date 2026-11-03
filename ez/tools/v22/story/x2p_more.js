@@ -630,7 +630,7 @@ let MK=0;function mark(tk,x,y,s){const m=LM[tk],u=LT[tk];
   if(m==='plate'){const i=T*.72;return `<rect x="${f(x-T/2)}" y="${f(y-T/2)}" width="${f(T)}" height="${f(T)}" rx="${f(r)}" fill="#f8f0d9" stroke="#0d0b10" stroke-width="${f(T*.03)}"/><image href="${u}" x="${f(x-i/2)}" y="${f(y-i/2)}" width="${f(i)}" height="${f(i)}" preserveAspectRatio="xMidYMid meet"/>`}
   return `<image href="${u}" x="${f(x-s/2)}" y="${f(y-s/2)}" width="${f(s)}" height="${f(s)}" preserveAspectRatio="xMidYMid meet"/>`}
 const HEAD=`<h2 class="t4-h2 p5-h p5-nx"><span class="t4-hw">Up next</span></h2><p class="h35-cap">These companies report next. Each one is a round for the four AI<span class="x2p-lc">s</span>, not a bet.</p>`;
-const SCHED=`<button type="button" class="p5-sched" data-go="upcoming">See the full schedule <span aria-hidden="true">→</span></button>`;
+const SCHED=`<button type="button" class="p5-sched" data-go="upcoming">See the full schedule <span class="p5-ar" aria-hidden="true"></span></button>`;
 const SCAM=`$EZ isn’t live yet. The address appears here, and only here, at launch. <b>Anyone DMing you one before that is a scammer.</b> Not financial advice.`;
 P5.take={id:'c1',dk:DK,prep:X=>prep(card(X,12).map(c=>c.r.ticker)),html(X){
   return `<div class="p5-bleed p5-nx2${DK()?' p5-dkx':''}">${HEAD}<div class="p5-col"><div class="p5-st p5-nxs"></div>${SCHED}</div><div class="p5-gut"></div><div class="p5-col p5-nxp"><div class="p5-st"></div><p class="p5-ln p5-nxw">${SCAM}</p></div></div>`},

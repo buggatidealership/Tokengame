@@ -35,6 +35,7 @@ const LB=__dirname+'/../../lb/';const rd=f=>fs.readFileSync(f,'utf8');const tf=(
     o.outside=[...L.querySelectorAll('b,small,span,img')].filter(e=>{const a=e.getBoundingClientRect();return vis(e)&&a.width&&(a.right>innerWidth+.5||a.left<-.5)}).map(e=>e.className+':'+e.textContent.trim().slice(0,14)).slice(0,6);
     o.fonts=[...new Set(leaves.map(e=>getComputedStyle(e).fontFamily.split(',')[0].replace(/"/g,'')))];
     o.imgFail=[...L.querySelectorAll('img')].filter(i=>!i.naturalWidth).map(i=>i.src.slice(-24));return o});
+  await p.evaluate(()=>{[...document.body.querySelectorAll('*')].forEach(x=>{if(x.closest('header'))return;const cs=getComputedStyle(x);if(cs.position==='fixed'||cs.position==='sticky'&&!x.closest('#lbx'))x.style.setProperty('display','none','important')})});
   const H=Math.min(m.bottom||1600,7000);
   await p.screenshot({path:`${OUT}/${id}-${W}.png`,clip:{x:0,y:0,width:W,height:H},fullPage:true});
   m.errors=er;m.bad=bad.slice(0,5);res[id+'@'+W]=m;console.log(id,W,JSON.stringify(m));await ctx.close()}
