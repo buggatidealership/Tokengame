@@ -161,3 +161,14 @@ Send these back in your final message:
 - the checks with their numbers, and the speed medians;
 - the Hyperliquid link finding;
 - a list of what you changed and where.
+
+## Change, same night (owner: "who to follow on the left... where the next ones come up... straight on the right, you have the table to back it up... Then where they win, the big score, the big ouch. Like, the layout on the scorecard is really good"; "from the overview perspective, I do prefer Saturday morning"; "Previously on... they can watch the video and then they can see underneath how that round happened")
+
+This replaces "keep today's board, add an action strip". The Leaderboard on X6+ takes the satire scorecard's layout and wording (`satire/leaderboard.html`, board `ez/x2p-h47-satire-lb-1280.png`), drawn in the Saturday-morning look so both tabs read as one show:
+- **Left (first on phones): "Who to follow?"** The window and rank chooser, by R11's window rules. The leader card with its founder's cel, P&L, W-L and hit rate. The golden ticket with the freeze line. "<Leader>'s next trades" with Hyperliquid pills.
+- **Right: "The table".** Standings with every stat at once, then the P&L chart (the hit-rate chart when ranked by hit rate), then "Only companies Hyperliquid lists today".
+- **"Where they win".** Sectors, with a ring on the best in each row.
+- **"The big score, the big ouch".** Biggest W and L per model, and "Same stock, same day".
+- **The small print** once.
+
+Labels and one-line facts only. X2+ keeps x2p_lb. On the Overview, "Previously on…" plays the round's film inline on the painted TV, with the beats underneath.
