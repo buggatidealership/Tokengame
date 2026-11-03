@@ -172,7 +172,7 @@ function cdVals(ms){if(!(ms>0))return ['00','HRS','00','MIN'];const m=Math.ceil(
   return d>=1?[String(d).padStart(2,'0'),d===1?'DAY':'DAYS',String(h).padStart(2,'0'),'HRS']:[String(h).padStart(2,'0'),'HRS',String(mi).padStart(2,'0'),'MIN']}
 const cdSr=v=>`${+v[0]} ${v[1]==='MIN'?'minutes':v[1]==='HRS'?'hours':v[1].toLowerCase()} ${+v[2]} ${v[3]==='MIN'?'minutes':'hours'} to the close`;
 const DIES=[[6.64,46.5,20.06,50.6],[28.53,46.5,20.3,50.6],[50.99,46.5,20.06,50.6],[73.45,46.5,19.77,50.6]];
-function head(M){const b=M.bell,pl=b?`${b.day} · ${b.date} · ${b.mixed?'each exchange’s close':'4pm '+b.ex}`:'No close on the card',v=b?cdVals(b.close-Date.now()):['–','','–',''];
+function head(M){const b=M.bell,pl=b?`${b.day} · ${b.date} · ${b.mixed?'each exchange’s close':'4pm '+b.ex}`:'No close on the card',v=b?cdVals(b.close-Date.now()):['–','–','–','–'];
   return `<div class="ud-head"><img class="ud-hi" src="${H39.head1}" srcset="media/up-h39-head-1x.jpg 906w, media/up-h39-head-2x.jpg 1812w" sizes="(min-width:1000px) 800px, 100vw" alt="" decoding="async">
    <div class="ud-np"><span>${esc(pl)}</span></div>
    <div class="ud-cd"${b?` data-udcd="${b.close}"`:''}>${DIES.map((q,i)=>`<div class="ud-die ${i%2?'ud-unit':'ud-num'}" style="left:${q[0]}%;top:${q[1]}%;width:${q[2]}%;height:${q[3]}%"><b data-i="${i}">${esc(v[i])}</b></div>`).join('')}</div>
