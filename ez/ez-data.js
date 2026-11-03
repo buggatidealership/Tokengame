@@ -97,7 +97,7 @@ var SHEET=[
  ["82","AAPL","11/02/26","DOWN","3","UP","2","DOWN","2.5","DOWN","1.6","11/03/26","","","Information Technology","Technology Hardware & Equipment","AI; Consumer electronics","TRUE"],
  ["83","PFE","11/03/26","DOWN","1.5","UP","1","UP","1.5","DOWN","1.2","11/03/26","","","Health Care","Pharmaceuticals, Biotechnology & Life Sciences","Healthcare","FALSE"],
  ["84","SHOP","11/03/26","UP","6","UP","1.5","DOWN","8","DOWN","1.8","11/03/26","","","Information Technology","Software & Services","AI; E-commerce; Payments","FALSE"],
- ["85","AMD","11/03/26","","","","","","","","","11/04/26","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors; Gaming","FALSE"],
+ ["85","AMD","11/03/26","UP","4","UP","2.5","DOWN","7","DOWN","2.5","11/04/26","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors; Gaming","FALSE"],
  ["86","MCD","11/04/26","","","","","","","","","11/04/26","","","Consumer Discretionary","Consumer Services","Food & beverages","FALSE"],
  ["87","BMW","11/04/26","","","","","","","","","11/04/26","","","Consumer Discretionary","Automobiles & Components","Automotive","FALSE"],
  ["88","NVO","11/04/26","","","","","","","","","11/04/26","","","Health Care","Pharmaceuticals, Biotechnology & Life Sciences","Healthcare","FALSE"],
