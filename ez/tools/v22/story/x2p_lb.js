@@ -175,7 +175,7 @@ function build(host,d){
     const a=M[o[0]],b=M[o[1]],va=val(a.m),vb=val(b.m),lt=host.querySelector('.xr-l3t');
     if(va==null)lt.innerHTML=hit?`<b class="xl-n xr-ln1">Too early</b><span>under 5 trades each in this window, too few for a hit rate</span>`:`<b class="xl-n xr-ln1">No close</b><span>${esc(w.when)}</span>`;
     else lt.innerHTML=`<b class="xl-n xr-ln1" style="color:${a.c}">${esc(a.NAME)}</b><b class="xl-n xr-ln2 ${hit||va>=0?'xl-up':'xl-dn'}">${hit?pc(va):$f(va)}</b><span>${hit?
-      'of trades right'+(w.fb?' at the last close, '+esc(w.lc):'')+' · '+esc(b.name)+' '+pc(vb):(wk==='season'?'leads '+esc(b.name)+' by ':w.fb?'takes the last close, '+esc(w.lc)+', by ':'takes the '+esc(w.t.toLowerCase())+' by ')+(vb==null?'':'$'+Math.abs(Math.round(va-vb)).toLocaleString('en-US'))}</span>`}
+      'of trades right'+(w.fb?' at the last close':'')+' · '+esc(b.name)+' '+pc(vb):(wk==='season'?'leads '+esc(b.name)+' by ':w.fb?'takes the last close by ':'takes the '+esc(w.t.toLowerCase())+' by ')+(vb==null?'':'$'+Math.abs(Math.round(va-vb)).toLocaleString('en-US'))}</span>`}
   wireSw(host,(g,k)=>{if(g.classList.contains('xr-w'))wk=k;else mt=k;draw(!RM())});
   draw(false);
   W.__xlbSet=k=>{const t=host.querySelector(`.xl-sw button[data-k="${k}"]`);t&&t.click()};
