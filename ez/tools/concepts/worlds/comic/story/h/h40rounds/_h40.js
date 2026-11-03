@@ -65,7 +65,7 @@ if(T==='A'){
      `<button class="pa-pl" type="button" aria-expanded="${o}" aria-controls="paT${R.g}" aria-label="${esc(`Grade ${R.g}${R.g<10?' to '+R.g+'.5':''}: ${R.rs.length} round${R.rs.length===1?'':'s'}. ${o?'Close':'Open'} the row.`)}"${R.rs.length?'':' disabled'}><span class="pa-pn">${R.g}</span><span class="pa-pc">×${R.rs.length}</span></button>`+
      `<div class="pa-sh">${m.map(r=>item(r,'pa-m7'+(r===NEW?' pa-new':''))).join('')}<span class="pa-pile">${rest.map(r=>r===NEW?`<span class="h4-mini pa-nmini" aria-hidden="true"><span class="vt-wn"><img src="${tile(r)}" alt="" loading="lazy"></span><span class="vt-fr"></span></span>`:mini(r)).join('')}</span></div>`+
      `<div class="pa-tray" id="paT${R.g}"${o?'':' hidden'}>${o?tray(R):''}</div></div>`};
-  root.innerHTML=head+`<div class="pa-wrap"><div class="pa-top">${item(NEW,'pa-hero')}<div class="pa-side">${plate('Newest · Round '+NEW.n,'pa-p1')}${plate(`Graded ${esc(lab(NEW.n).gr)} · into row ${nr?nr.g:''}`,'pa-p2')}</div></div>`+
+  root.innerHTML=head+`<div class="pa-wrap"><div class="pa-top">${item(NEW,'pa-hero')}<div class="pa-side">${plate('Newest','pa-p1')}${plate(`Joins row ${nr?nr.g:''}`,'pa-p2')}</div></div>`+
    `<div class="pa-board" role="group" aria-label="Every graded round by grade, 10 at the top">${plate(`Rounds by grade · ${G.length} graded`,'vt-plt')}${ROWS.map(row).join('')}</div>`+
    `<div class="pa-key">${plate(`Mag 7 face out · ${m7n} of 7 graded`,'pa-p3')}</div></div>`;
   root.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('.pa-all');if(a){const g=+a.dataset.g;allR.has(g)?allR.delete(g):allR.add(g);const t=a.parentNode;t.innerHTML=tray(ROWS.find(x=>x.g===g));fit(t);return}
@@ -140,15 +140,15 @@ if(T==='E'){
     `<span class="pe-mon pe-off" role="img" aria-label="${esc(`${m7name(s)}: not graded yet${s.t==='NVDA'?', Bet #1':''}`)}"><span class="pe-mg">${logoF(s.t)?`<img class="pe-lg${dark(s.t)?'':' pe-inv'}" src="${logoF(s.t)}" alt="">`:''}<em class="pe-ms">${s.t==='NVDA'?'Bet #1':'Soon'}</em></span><span class="pe-mf" aria-hidden="true"></span><span class="pe-ml" aria-hidden="true"><b>${esc(m7name(s))}</b><b class="pe-mn">?</b></span></span>`).join('');
   let shown=false;const floor=()=>{const k=shown?G.length:cols()*2;return NEWF.slice(0,k).map(r=>item(r,r===NEW?'pe-new':'')).join('')};
   const scr=r=>{const f=film(r),L=lab(r.n);return {media:f?`<video muted playsinline loop preload="metadata" poster="${f.p}"><source src="${f.v}" type="video/mp4"></video>`:`<img src="${tile(r)}" alt="">`,
-    l1:`Round ${r.n} · ${esc(r.co)} (${esc(r.ticker)})`,l2:`Grade ${esc(L.gr||'')}${L.ds?' '+esc(L.ds):''} · ${esc(winT(r))}`,bg:f?f.p:tile(r),al:`On the big screen: round ${r.n}, ${r.co} (${r.ticker}), grade ${L.gr}, ${winT(r)}.`}};
+    l1:`Round ${r.n} · ${esc(r.co)} (${esc(r.ticker)})`,s1:`R${r.n} ${esc(r.co)} (${esc(r.ticker)})`,l2:`Grade ${esc(L.gr||'')}${L.ds?' '+esc(L.ds):''} · ${esc(winT(r))}`,s2:`Grade ${esc(L.gr||'')} · ${esc(winT(r))}`,bg:f?f.p:tile(r),al:`On the big screen: round ${r.n}, ${r.co} (${r.ticker}), grade ${L.gr}, ${winT(r)}.`}};
   const s0=scr(NEW);
   root.innerHTML=head+`<div class="pe-scr" role="group" aria-label="${esc(s0.al)}"><div class="pe-gl"><span class="pe-bg" style="background-image:url(${s0.bg})"></span><span class="pe-md">${s0.media}</span><span class="pe-st" aria-hidden="true"></span></div><div class="pe-fr" aria-hidden="true"></div>`+
-   `<a class="pe-np" href="#/round/${NEW.n}"><b class="pe-l1">${s0.l1}</b><span class="pe-l2">${s0.l2}</span></a><span class="pe-live" aria-hidden="true"><b>Newest</b></span></div>`+
+   `<a class="pe-np" href="#/round/${NEW.n}"><b class="pe-l1" data-s="${esc(s0.s1)}">${s0.l1}</b><span class="pe-l2" data-s="${esc(s0.s2)}">${s0.l2}</span></a><span class="pe-live" aria-hidden="true"><b>Newest</b></span></div>`+
    `<div class="pe-chs" role="group" aria-label="The Mag 7 channels">${plate('Mag 7 · tune the screen','vt-plt')}<div class="pe-cg">${ch}</div></div>`+
    `<div class="pe-floor" role="group" aria-label="Every graded round, newest first">${plate('Every round · newest first','vt-plt')}<div class="pe-fg">${floor()}</div>${plate(`Show all ${G.length}`,'pe-all','button')}</div>`;
   const tune=n=>{const r=G.find(x=>x.n===n);if(!r)return;const s=scr(r),gl=root.querySelector('.pe-gl'),wrap=root.querySelector('.pe-scr');
     gl.classList.remove('pe-sw');void gl.offsetWidth;gl.classList.add('pe-sw');
-    setTimeout(()=>{gl.querySelector('.pe-md').innerHTML=s.media;gl.querySelector('.pe-bg').style.backgroundImage=`url(${s.bg})`;const np=root.querySelector('.pe-np');np.href='#/round/'+n;np.querySelector('.pe-l1').innerHTML=s.l1;np.querySelector('.pe-l2').innerHTML=s.l2;
+    setTimeout(()=>{gl.querySelector('.pe-md').innerHTML=s.media;gl.querySelector('.pe-bg').style.backgroundImage=`url(${s.bg})`;const np=root.querySelector('.pe-np');np.href='#/round/'+n;const e1=np.querySelector('.pe-l1'),e2=np.querySelector('.pe-l2');e1.innerHTML=s.l1;e1.dataset.s=s.s1;delete e1.dataset.l;e2.innerHTML=s.l2;e2.dataset.s=s.s2;delete e2.dataset.l;
       root.querySelector('.pe-live b').textContent=n===NEW.n?'Newest':'Mag 7';wrap.setAttribute('aria-label',s.al);play();fitNp()},180);
     root.querySelectorAll('.pe-mon').forEach(m=>m.classList.toggle('pe-onm',+m.dataset.n===n))};
   const play=()=>{const v=root.querySelector('.pe-md video');if(v&&!matchMedia('(prefers-reduced-motion: reduce)').matches)v.play().catch(()=>{})};
@@ -156,7 +156,8 @@ if(T==='E'){
     const a=e.target.closest&&e.target.closest('.pe-all');if(a){shown=!shown;root.querySelector('.pe-fg').innerHTML=floor();a.querySelector('b').textContent=shown?'Show fewer':`Show all ${G.length}`;fit(root.querySelector('.pe-fg'))}});
   /* the nameplate: both lines fit the plate's face, never under 8px */
   const shrink=(e,box,mn)=>{e.style.fontSize='';let f=parseFloat(getComputedStyle(e).fontSize),g=0;while(e.getBoundingClientRect().width>box-2&&f>mn&&g++<60){f-=.25;e.style.fontSize=f+'px'}return e.getBoundingClientRect().width<=box-2};
-  const fitNp=()=>{const np=root.querySelector('.pe-np');if(!np)return;['.pe-l1','.pe-l2'].forEach(s=>shrink(np.querySelector(s),np.clientWidth,8))};
+  /* the nameplate: a line that does not fit at 8px takes its short form (data-s) */
+  const fitNp=()=>{const np=root.querySelector('.pe-np');if(!np)return;['.pe-l1','.pe-l2'].forEach(s=>{const e=np.querySelector(s);if(e.dataset.l)e.innerHTML=e.dataset.l;if(!shrink(e,np.clientWidth,8)&&e.dataset.s){e.dataset.l=e.innerHTML;e.innerHTML=e.dataset.s;shrink(e,np.clientWidth,8)}})};
   /* the monitor plates: the name and grade step down together to 8px; if they still do not fit, the grade leaves the plate (it is in the tag and the big screen) */
   const fitMl=()=>root.querySelectorAll('.pe-ml').forEach(p=>{const bs=[...p.querySelectorAll('b')];p.classList.remove('pe-ng');bs.forEach(b=>b.style.fontSize='');const w=()=>bs.reduce((a,b)=>a+b.getBoundingClientRect().width,0)+3;
     let f=parseFloat(getComputedStyle(bs[0]).fontSize),g=0;while(w()>p.clientWidth-2&&f>8&&g++<60){f-=.25;bs.forEach((b,i)=>b.style.fontSize=(i?f*1.12:f)+'px')}if(w()>p.clientWidth-2)p.classList.add('pe-ng')});

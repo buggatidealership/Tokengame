@@ -52,6 +52,7 @@ const css=fs.readFileSync(__dirname+'/_h40.css','utf8'),js=fs.readFileSync(__dir
     if(SURF[v.i][3]){nc++;let V=U;sf.querySelectorAll('img').forEach(im=>{if(!vis(im))return;const q=im.getBoundingClientRect();V={l:Math.min(V.l,q.left),r:Math.max(V.r,q.right),t:Math.min(V.t,q.top),b:Math.max(V.b,q.bottom)}});
 const dx=(V.l+V.r)/2-(rr.left+rr.right)/2,dy=SURF[v.i][3]==='x'?0:(V.t+V.b)/2-(rr.top+rr.bottom)/2;if(Math.abs(dx)>1||Math.abs(dy)>1)o.offC.push(`${SURF[v.i][0]} "${sf.textContent.trim().slice(0,22)}" dx ${dx.toFixed(2)} dy ${dy.toFixed(2)}`)}
     const d=Math.max(U.r-rr.right,rr.left-U.l,U.b-rr.bottom,rr.top-U.t);if(d>.5&&SURF[v.i][0]!=='.m7-hd'&&SURF[v.i][0]!=='.vt-tag')o.over.push(`${SURF[v.i][0]} "${sf.textContent.trim().slice(0,22)}" ${d.toFixed(2)}`)});
+   o.offScreen=[...new Set(texts.filter(t=>t.x<0).map(t=>t.t))].slice(0,6);bySurf.forEach((v,sf)=>v.u.forEach(u=>{if(u.l<-.5||u.r>innerWidth+.5)o.offScreen.push('ink off screen: '+sf.textContent.trim().slice(0,20))}));o.offScreen=[...new Set(o.offScreen)].slice(0,6);
    o.centredSurfaces=nc;o.offC=o.offC.slice(0,12);o.over=o.over.slice(0,12);
    // slab label parts must not collide (the live rule)
    o.coll=[];R.querySelectorAll('.vt-lb').forEach(L=>{if(!vis(L))return;const lr=L.getBoundingClientRect();const parts=[...L.querySelectorAll('.vt-nm,.vt-tk,.vt-ds,.vt-gr')].filter(vis).map(e=>{const tn=[...e.childNodes].find(c=>c.nodeType===3&&c.nodeValue.trim());const u=tn&&inkOf(tn);return u?{e,u}:null}).filter(Boolean);
