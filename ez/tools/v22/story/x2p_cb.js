@@ -2,14 +2,19 @@
    the makeover... diegetically integrated"): the back of a round opened big (#x2pRm, the round's address) is a blackened steel vault
    plate carrying exactly the certificate's content and layout: the certificate's number on the title plate; one nameplate per model in
    the certificate's order (graded: right way by closeness, then wrong way; pending: as filed), each reading rank, logo, name, flag,
-   PASS or FAIL (punched), then the trade (Long +2.5% / Short -3.5%, the move enamel-filled green or red); the winner's plate gold with
+   PASS or FAIL (punched), then the trade (the signed move alone, +2.5% / -3.5%, enamel-filled green or red; H41, owner 2026-11-03: "we
+   have plus 2.5 and plus 1.5 and minus 1, we don't really need the long and short wording"); the winner's plate gold with
    a small cast crown on its top edge (both on a tie, none when nobody won); MARKET and the move (pending: the page's countdown) in the
-   black enamel window; the dates and the EZ. mark struck into the steel (pending: the empty die seat). Every part is painted (Hedra,
+   black enamel window; the dates and the EZ. mark struck into the steel (pending: the empty die seat). H41 (owner, 2026-11-03: "a little
+   bit tilted to the right, because stamps are usually never exactly properly stamped... a bit more of a holo design"): the mark is struck
+   7 degrees crooked and its letters carry a holographic foil (a rainbow sheen masked to the mark's own shape, media/cb-holo-mask-h41.webp,
+   overlay-blended so the steel and the struck relief show through) that drifts only while the back faces you (.cb-live), never with
+   reduced motion; the logo wells and marks about 22% larger. Every part is painted (Hedra,
    from the H36 plate d1; the crown H40) and laid out by the page so the plate fills the card at any shape.
    Media, written out in full for make_site.py: media/cb-plate-h38-shell-1200.jpg media/cb-plate-h38-shell-1800.jpg
    media/cb-plate-h38-title.webp media/cb-plate-h38-np.webp media/cb-plate-h38-npg.webp media/cb-plate-h38-mk.webp
    media/cb-plate-h38-wellc.webp media/cb-plate-h38-wellcg.webp media/cb-crown-h40.webp
-   media/cb-plate-h38-stamp.webp media/cb-plate-h38-stamp-steel.webp media/cb-plate-h38-die.webp
+   media/cb-plate-h38-stamp.webp media/cb-plate-h38-stamp-steel.webp media/cb-plate-h38-die.webp media/cb-holo-mask-h41.webp
    It sits over the page's certificate (graded: the back face; pending: the one face), which stays underneath, hidden, so the flip, the
    arrows, close and the holo levels keep working. Every word and number from ROUNDS / PENDING. window.__x2pCbStamp="steel" shows the
    plain struck-steel mark instead of the enamelled one (a mockup switch). Failures are kept in window.__x2pCbErr. */
@@ -38,8 +43,8 @@ function graded(n){var g=null;ROUNDS.forEach(function(r){if(r.n===n)g=r});if(!g)
   return {k:'g',n:n,co:g.co,t:g.ticker,a:g.a,rows:rows,W:W,filed:md(g.called),graded:md(g.resolves)}}
 function pending(n){var u=null;(window.PENDING||[]).forEach(function(q){if(q.n===n)u=q});if(!u)return null;
   return {k:'p',n:n,co:u.co,t:u.ticker,rows:(u.calls||[]).map(function(x){return {m:x.m,up:x.dir==='UP',v:Math.abs(parseFloat(x.mag))}}),filed:md(u.called),graded:u.resolves?md(u.resolves):'Soon'}}
-/* the trade: the word engraved, the move enamel-filled (green long, red short) */
-function trade(r){return '<span class="cb-tw cb-tb">'+(r.up?'Long':'Short')+'</span><b class="cb-tv cb-tb cb-en '+(r.up?'up':'dn')+'"><span aria-hidden="true">'+(r.up?'+':'−')+'</span><span class="sr">'+(r.up?'up ':'down ')+'</span>'+pct(r.v)+'</b>'}
+/* the trade: the signed move, enamel-filled (green long, red short); the sign says the side, so no Long / Short word (H41) */
+function trade(r){return '<b class="cb-tv cb-tb cb-en '+(r.up?'up':'dn')+'"><span aria-hidden="true">'+(r.up?'+':'−')+'</span><span class="sr">'+(r.up?'up ':'down ')+'</span>'+pct(r.v)+'</b>'}
 /* PASS / FAIL hand-punched: one letter punch per letter, each at its own tilt and depth, rubbed with paint */
 /* each word's four punches: tilt (deg), drop (em, summing to zero so the word stays centred on the plate's face), size */
 var PT=[[[-2.2,.04,1],[1.6,-.03,.97],[-1.1,.02,1.02],[2.6,-.03,.99]],[[1.8,-.03,1.01],[-2.6,.03,.98],[1.1,.02,1],[-1.4,-.02,1.03]],
@@ -58,7 +63,7 @@ function build(d,fb){var G=d.k==='g',h='<div class="cb-p"><i class="cb-sh" aria-
   h+='</ol><i class="cb-g" style="--g:1"></i>';
   h+='<div class="cb-mw"><b class="cb-ml cb-tb">Market</b>'+(G?move(d.a):'<b class="cb-mv cb-tb cb-cd"></b>')+'</div>';
   h+='<i class="cb-g" style="--g:1"></i><div class="cb-bt"><div class="cb-dt cb-np"><small class="cb-fit">Trades filed</small><b class="cb-fit">'+d.filed+'</b></div><div class="cb-dt cb-np"><small class="cb-fit">'+(G?'Graded on':'Final grade')+'</small><b class="cb-fit">'+d.graded+'</b></div>'+
-    '<span class="cb-st'+(G?'':' cb-die')+'" role="img" aria-label="'+(G?'Struck with the EZ. mark: graded by the market close':'The EZ. mark is struck once the market closes')+'"></span></div><i class="cb-g" style="--g:.5"></i>';
+    '<span class="cb-st'+(G?'':' cb-die')+'" role="img" aria-label="'+(G?'Struck with the EZ. mark: graded by the market close':'The EZ. mark is struck once the market closes')+'">'+(G?'<i class="cb-ho" aria-hidden="true"><i class="cb-hf"></i></i>':'')+'</span></div><i class="cb-g" style="--g:.5"></i>';
   h+=fb?'<button type="button" class="cb-flip" data-flip><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'+esc(fb)+'</button>':'<i class="cb-flip cb-nob" aria-hidden="true"></i>';
   return h+'</div>'}
 /* one line each: the type steps down to fit its plate, never below the 8 px floor (on screen, through the view's zoom); the rows share
@@ -80,7 +85,9 @@ function mount(){var rm=D.getElementById('x2pRm');if(!rm)return;var c=rm.querySe
   if(d.k==='p'){countdown(o,fin);o.__cd=setInterval(function(){if(!o.isConnected){clearInterval(o.__cd);return}countdown(o,fin)},30000)}
   var f=function(){if(o.isConnected)fit(o)};f();if(D.fonts&&D.fonts.ready)D.fonts.ready.then(f);setTimeout(f,400);
   /* refit once the plate is the face in front (a turned card lays out again) */
-  var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(f,120)}).observe(c,{attributes:true,attributeFilter:['class']})}
+  /* the foil drifts only while the back faces you (a graded card turned; the pending card's face has no foil) */
+  var lv=function(){o.classList.toggle('cb-live',d.k==='g'&&c.classList.contains('flipped'))};lv();
+  var t=0;new MutationObserver(function(){lv();clearTimeout(t);t=setTimeout(f,120)}).observe(c,{attributes:true,attributeFilter:['class']})}
 function run(){try{mount()}catch(e){window.__x2pCbErr=e}}
 function init(){new MutationObserver(function(ms){for(var i=0;i<ms.length;i++)for(var j=0;j<ms[i].addedNodes.length;j++){var x=ms[i].addedNodes[j];if(x.nodeType===1&&x.id==='x2pRm'){run();return}}}).observe(D.body,{childList:true});run();
   var lw=innerWidth;addEventListener('resize',function(){if(innerWidth===lw)return;lw=innerWidth;var o=D.querySelector('#x2pRm .cb');if(o){var c=o.closest('.card');o.style.setProperty('--cbz',zoomOf(c));fit(o)}})}

@@ -1,0 +1,12 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');
+(async()=>{const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,hasTouch:true,isMobile:true});const p=await ctx.newPage();
+ await p.setContent('<div style="height:5000px;background:linear-gradient(red,blue)"></div><div id=s style="position:absolute;top:300px;left:0;right:0;height:200px;overflow-x:auto;overflow-y:hidden"><div style="width:3000px;height:200px;background:repeating-linear-gradient(90deg,#000 0 20px,#fff 20px 40px)"></div></div>');
+ const c=await ctx.newCDPSession(p);
+ const tryit=async(name,f)=>{await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(200);await f();await p.waitForTimeout(800);console.log(name,await p.evaluate(()=>[scrollY,document.getElementById('s').scrollLeft]))};
+ await tryit('gesture',()=>c.send('Input.synthesizeScrollGesture',{x:195,y:400,yDistance:-250,gestureSourceType:'touch',speed:800}));
+ await tryit('gesture-x',()=>c.send('Input.synthesizeScrollGesture',{x:195,y:400,xDistance:-250,gestureSourceType:'touch',speed:800}));
+ const drag=async(x0,y0,x1,y1)=>{await c.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:x0,y:y0}]});for(let i=1;i<=10;i++)await c.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x0+(x1-x0)*i/10,y:y0+(y1-y0)*i/10}]});await c.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]})};
+ await tryit('touch drag up',()=>drag(195,450,195,200));
+ await tryit('touch drag x',()=>drag(300,400,100,400));
+ await tryit('touch drag off',()=>drag(195,700,195,450));
+ await b.close()})();

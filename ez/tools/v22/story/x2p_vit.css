@@ -137,3 +137,61 @@
 @media (min-width:1000px){.vt-cab{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;align-items:start}.vt-dw.vt-open,.vt-dw.vt-solo{grid-column:1/-1}.vt-dw.vt-solo .vt-df{max-width:calc(50% - 5px)}}
 /* dates are not columns: the page's fixed-width "1" (html.uf .uf1) keeps its own width on the card holders */
 .vt-card .uf1{width:auto}
+
+/* ===== H41 the swiping element under the vitrine (owner, 2026-11-03: "the weekly drawer is too complex... underneath we just have sort of the
+   swiping element... people know how to swipe left or right... the Tinder one"; and of take C of round H40, "the grading line way of scrolling...
+   a sort of display where they can scroll through"). x2p_vit.js builds one of two takes, window.__x2pSwipe:
+   belt (default): every graded round on take C's belt (media/vit-belt-h41.webp, the painting tiled; it travels with the slabs), newest first,
+   a brass date plate at each new close, the line's own plate bolted to the belt's left end, Newer / Older under it. A sideways scroller,
+   overflow-y hidden (a sideways scroller that overflows downwards traps the page's scroll on a phone).
+   deck: one slab in front, the next two peeking under it; a deal flies the front card off the way it was swiped and the next one rises.
+   The slab, its label, the lift and its tag are the live component above (vt-*). Plates Anton, one recipe (vt-plate). ===== */
+.vt-line{position:relative;margin:30px -14px 0}
+.vt-day .uf1,.vt-cnt .uf1,.vt-nv .uf1{width:auto}
+/* --- Newer / Older (both takes): brass plates, a full tap area --- */
+.vt-nav{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:10px;padding:0 14px}
+.vt-nv{min-height:40px;padding:8px 16px 7px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.vt-nv b,.vt-cnt b{font-size:13px}
+.vt-nv.vt-off{filter:saturate(.3) brightness(.55);cursor:default}
+.vt-nv:focus-visible{outline:2px solid var(--gd);outline-offset:3px}
+/* --- the belt --- */
+.vt-bw{position:relative}
+.vt-belt{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scroll-padding:0 24px;-webkit-overflow-scrolling:touch}
+.vt-belt::-webkit-scrollbar{display:none}
+.vt-trk{--bh:58px;position:relative;display:flex;align-items:flex-end;gap:12px;width:max-content;padding:24px 24px calc(var(--bh) - 8px);
+ background:url(media/vit-belt-h41.webp) 0 100%/auto var(--bh) repeat-x}
+.vt-trk .vt-it{width:104px;flex:none;scroll-snap-align:center}
+.vt-trk .vt-it .vt-wn{background:#0b0a14}
+.vt-day{flex:none;align-self:flex-end;padding:5px 9px 4px}
+.vt-day b{font-size:12px}
+/* the line's own plate, bolted to the belt's left end (the belt runs on under it) */
+.vt-bplt{position:absolute;z-index:3;left:10px;bottom:calc((58px - 22px) / 2);height:22px;padding:0 10px;pointer-events:none}
+.vt-bplt b{font-size:11px}
+/* on the belt a lifted slab's tag hangs on its front (the belt clips anything above its own room) */
+.vt-trk .vt-tag{top:22%;transform:none}.vt-trk .vt-tag::before,.vt-trk .vt-tag::after{display:none}
+@media (min-width:600px){.vt-trk .vt-it{width:120px}}
+@media (min-width:1000px){.vt-line{margin:34px 0 0}.vt-trk{--bh:76px;gap:18px}.vt-trk .vt-it{width:150px}.vt-day b{font-size:14px}
+ .vt-bplt{height:26px;bottom:calc((76px - 26px) / 2);padding:0 14px}.vt-bplt b{font-size:13px}.vt-nv b,.vt-cnt b{font-size:15px}}
+/* --- the deck --- */
+.vt-sw-deck{margin:34px 0 0}
+.vt-stk{--cw:min(54vw,220px);position:relative;width:var(--cw);height:calc(var(--cw) * 922 / 600 + 36px);margin:0 auto;-webkit-user-select:none;user-select:none}
+@media (min-width:600px){.vt-stk{--cw:240px}}
+@media (min-width:1000px){.vt-stk{--cw:270px}}
+.vt-stk .vt-it{position:absolute;left:0;top:0;width:100%;transform-origin:50% 100%;
+ transition:transform .3s cubic-bezier(.2,0,0,1),opacity .3s,filter .3s}
+.vt-stk a.vt-sl,.vt-stk img{-webkit-user-drag:none;-webkit-touch-callout:none}
+.vt-stk .vt-it[data-p="f"]{opacity:0;transition:none}
+.vt-stk .vt-it[data-p="0"]{z-index:5;touch-action:none;cursor:grab}
+.vt-stk .vt-it[data-p="1"]{z-index:4;transform:translateY(18px) scale(.93);filter:brightness(.72);pointer-events:none}
+.vt-stk .vt-it[data-p="2"]{z-index:3;transform:translateY(36px) scale(.86);filter:brightness(.5);pointer-events:none}
+.vt-stk .vt-it[data-p="3"]{z-index:2;transform:translateY(54px) scale(.79);opacity:0;pointer-events:none}
+.vt-stk .vt-it.vt-drag{transition:none;cursor:grabbing}
+.vt-stk .vt-it.vt-fly{z-index:6;pointer-events:none;transition:transform .34s cubic-bezier(.45,0,.8,.3),opacity .34s ease-in}
+.vt-stk .vt-it.vt-fl{transform:translate(-130%,-6%) rotate(-22deg);opacity:0}
+.vt-stk .vt-it.vt-flr{transform:translate(130%,-6%) rotate(22deg);opacity:0}
+.vt-stk .vt-it.vt-up{transform:translateY(-34%) scale(1.04);opacity:0;transition:transform .22s ease-in,opacity .22s ease-in}
+.vt-stk .vt-it.vt-bump{animation:vtBump .3s cubic-bezier(.2,0,0,1)}.vt-stk .vt-it.vt-bumpr{animation:vtBumpR .3s cubic-bezier(.2,0,0,1)}
+@keyframes vtBump{40%{transform:translateX(-10px) rotate(-1.5deg)}}@keyframes vtBumpR{40%{transform:translateX(10px) rotate(1.5deg)}}
+.vt-stk.vt-flat .vt-it{transform:none!important;transition:none!important}
+.vt-cnt{min-height:28px;padding:0 12px}
+@media (prefers-reduced-motion:reduce){.vt-stk .vt-it{transition:none!important;animation:none!important}}

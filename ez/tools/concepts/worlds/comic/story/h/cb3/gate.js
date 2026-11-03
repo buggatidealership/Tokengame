@@ -1,4 +1,4 @@
-// node gate.js <outdir> [widths] [rounds]: the H40 gate on the real build, card turned to its back. Writes gate.json + gate.txt
+// node gate.js <outdir> [widths] [rounds]: the H41 gate (H40's, with no Long/Short, larger wells and the crooked holo stamp) on the real build, card turned to its back. Writes gate.json + gate.txt
 const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('/home/user/Tokengame/ez/tools/concepts/live-r1/_fonts.js');const fs=require('fs');
 const OUT=process.argv[2],WS=(process.argv[3]||'320,390,1280').split(',').map(Number),RS=(process.argv[4]||'64,80,51,57,81').split(',').map(Number);fs.mkdirSync(OUT,{recursive:true});
 const PORT=process.env.PORT||8993;
@@ -26,21 +26,23 @@ function audit(){
   // join a row's letters/sign into tokens
   res.visible=[...cb.querySelectorAll('.cb-no,.cb-r,.cb-ml,.cb-mv,.cb-dt small,.cb-dt b,.cb-flip')].map(e=>{
     if(e.classList.contains('cb-r')){const g=s=>vt(e.querySelector(s));
-      return [g('.cb-rk'),g('.cb-nm'),'[flag '+(e.querySelector('.cb-fl rect[fill="#de2910"]')?'CN':'US')+']',[...e.querySelectorAll('.cb-pf i')].map(i=>i.textContent).join(''),g('.cb-tw'),g('.cb-tv'),e.classList.contains('win')?'[gold, crown]':''].filter(Boolean).join(' ')}
+      return [g('.cb-rk'),g('.cb-nm'),'[flag '+(e.querySelector('.cb-fl rect[fill="#de2910"]')?'CN':'US')+']',[...e.querySelectorAll('.cb-pf i')].map(i=>i.textContent).join(''),g('.cb-tv'),e.classList.contains('win')?'[gold, crown]':''].filter(Boolean).join(' ')}
     return vt(e)});
   const all=res.visible.join(' | ');
-  ['OFF','WRONG WAY','AT THE CLOSE','WINNER','CERTIFICATE','Off','Wrong way','At the close','Winner','Certificate'].forEach(w=>{if(new RegExp('\\b'+w+'\\b').test(all))res.fails.push('extra word: '+w)});
+  ['long','short','off','wrong way','at the close','winner','certificate'].forEach(w=>{if(new RegExp('\\b'+w+'\\b','i').test(all))res.fails.push('extra word: '+w)});
+  res.allText=[...cb.querySelectorAll('*')].filter(e=>vis(e)).map(e=>[...e.childNodes].filter(z=>z.nodeType===3).map(z=>z.textContent).join('')).join(' ').replace(/\s+/g,' ').trim();
+  ['long','short','off','wrong way','at the close','winner','certificate'].forEach(w=>{if(new RegExp('\\b'+w+'\\b','i').test(res.allText))res.fails.push('extra word in DOM text: '+w)});
   // expected
   let exp;if(k==='g'){const g=ROUNDS.find(r=>r.n===n),W=g.win?g.win.split(' & '):[],up=g.a>0;
     let rows=g.calls.map(c=>{const u=!/DOWN/.test(c[1]),v=parseFloat(c[1].replace(/^(UP|DOWN)\s*/,''));return {m:c[0],u,v,off:+c[2],ok:u===up}});
     rows=rows.filter(r=>r.ok).sort((a,b)=>a.off-b.off).concat(rows.filter(r=>!r.ok).sort((a,b)=>a.off-b.off));
-    exp=rows.map((r,i)=>[i+1,r.m,r.ok?'PASS':'FAIL',r.u?'LONG':'SHORT',(r.u?'+':'−')+(Math.round(r.v*100)/100)+'%',W.includes(r.m)]);
+    exp=rows.map((r,i)=>[i+1,r.m,r.ok?'PASS':'FAIL',(r.u?'+':'−')+(Math.round(r.v*100)/100)+'%',W.includes(r.m)]);
     res.expMove=(g.a<0?'−':'+')+Math.abs(g.a).toFixed(2)+'%'}
-  else{const u=PENDING.find(q=>q.n===n);exp=u.calls.map(c=>['',c.m,'',c.dir==='UP'?'LONG':'SHORT',(c.dir==='UP'?'+':'−')+Math.abs(parseFloat(c.mag))+'%',false])}
+  else{const u=PENDING.find(q=>q.n===n);exp=u.calls.map(c=>['',c.m,'',(c.dir==='UP'?'+':'−')+Math.abs(parseFloat(c.mag))+'%',false])}
   const NM={GPT:'GPT',KIMI:'KIMI',CLAUDE:'CLAUDE',GROK:'GROK'};
   const lis=[...cb.querySelectorAll('.cb-r')];
-  lis.forEach((li,i)=>{const e=exp[i]||[];const got=[vt(li.querySelector('.cb-rk')),vt(li.querySelector('.cb-nm')).toUpperCase(),[...li.querySelectorAll('.cb-pf i')].map(z=>z.textContent).join(''),vt(li.querySelector('.cb-tw')).toUpperCase(),vt(li.querySelector('.cb-tv')).replace(/\s+/g,''),li.classList.contains('win'),!!li.querySelector('.cb-cr')];
-    const want=[String(e[0]),NM[e[1]],e[2],e[3],e[4],e[5],e[5]];
+  lis.forEach((li,i)=>{const e=exp[i]||[];const got=[vt(li.querySelector('.cb-rk')),vt(li.querySelector('.cb-nm')).toUpperCase(),[...li.querySelectorAll('.cb-pf i')].map(z=>z.textContent).join(''),vt(li.querySelector('.cb-tv')).replace(/\s+/g,''),li.classList.contains('win'),!!li.querySelector('.cb-cr'),!!li.querySelector('.cb-tw')];
+    const want=[String(e[0]),NM[e[1]],e[2],e[3],e[4],e[4],false];
     if(JSON.stringify(got)!==JSON.stringify(want))res.fails.push('row '+(i+1)+' got '+JSON.stringify(got)+' want '+JSON.stringify(want))});
   if(lis.length!==exp.length)res.fails.push('rows '+lis.length+' vs '+exp.length);
   const mv=cb.querySelector('.cb-mv');const mvt=vt(mv);
@@ -51,7 +53,7 @@ function audit(){
   // b. geometry
   const pfs=lis.map(li=>li.querySelector('.cb-pf')).filter(Boolean).map(e=>{const r=e.getBoundingClientRect();return (r.left+r.right)/2});
   const idEnd=Math.max(...lis.map(li=>Math.max(li.querySelector('.cb-nm').getBoundingClientRect().right,li.querySelector('.cb-fl').getBoundingClientRect().right)));
-  const trStart=Math.min(...lis.map(li=>li.querySelector('.cb-tw').getBoundingClientRect().left));
+  const trStart=Math.min(...lis.map(li=>li.querySelector('.cb-tv').getBoundingClientRect().left));
   const trR=lis.map(li=>li.querySelector('.cb-tv').getBoundingClientRect().right);
   res.geo={pfX:pfs.map(v=>+v.toFixed(2)),pfSpread:pfs.length?+(Math.max(...pfs)-Math.min(...pfs)).toFixed(2):null,
     pfVsHalf:pfs.length?+(pfs[0]-(idEnd+trStart)/2).toFixed(2):null,gapL:pfs.length?+(pfs[0]-idEnd).toFixed(1):null,gapR:pfs.length?+(trStart-pfs[0]).toFixed(1):null,
@@ -62,12 +64,13 @@ function audit(){
   const chk=(lab,el,f,i0)=>{const c=(f.top+f.bot)/2,ic=(i0.top+i0.bot)/2,d=ic-c;res.v.push([lab,+d.toFixed(2)]);if(Math.abs(d)>1)res.fails.push('vcentre '+lab+' '+d.toFixed(2))};
   const minF=[];
   lis.forEach((li,i)=>{const f=face(li,'np');
-    li.querySelectorAll('.cb-rk,.cb-nm,.cb-tw,.cb-tv').forEach(e=>{const q=ink(e);minF.push([q.t,q.fs]);chk('r'+(i+1)+' '+e.className.split(' ')[0]+' '+q.t,e,f,q)});
+    li.querySelectorAll('.cb-rk,.cb-nm,.cb-tv').forEach(e=>{const q=ink(e);minF.push([q.t,q.fs]);chk('r'+(i+1)+' '+e.className.split(' ')[0]+' '+q.t,e,f,q)});
     const P=[...li.querySelectorAll('.cb-pf i')];if(P.length){const q=P.map(ink);P.forEach((p,j)=>minF.push([q[j].t,q[j].fs]));const tops=q.map(z=>z.top),bots=q.map(z=>z.bot);
       chk('r'+(i+1)+' PASS/FAIL (mean of 4 punches)',null,f,{top:tops.reduce((a,b)=>a+b)/4,bot:bots.reduce((a,b)=>a+b)/4});}
     const W=li.querySelector('.cb-wc').getBoundingClientRect();chk('r'+(i+1)+' well',null,f,{top:W.top,bot:W.bottom});
+    {const PR=li.getBoundingClientRect(),M=li.querySelector('.cb-mk').getBoundingClientRect();res.wells=(res.wells||[]).concat([{row:i+1,well:+W.height.toFixed(1),mark:+M.height.toFixed(1),plate:+PR.height.toFixed(1),clearTop:+(W.top-PR.top).toFixed(1),clearBot:+(PR.bottom-W.bottom).toFixed(1),wellInPlate:W.top>=PR.top-.5&&W.bottom<=PR.bottom+.5}]);if(W.top<PR.top-.5||W.bottom>PR.bottom+.5)res.fails.push('well outside plate r'+(i+1))}
     // overflow: every piece inside the plate (text clear of the side bevels)
-    const R=li.getBoundingClientRect();li.querySelectorAll('.cb-rk,.cb-nm,.cb-fl,.cb-pf,.cb-tw,.cb-tv').forEach(e=>{const r=e.getBoundingClientRect();if(r.left<R.left+f.B*.6||r.right>R.right-f.B*.6)res.fails.push('overflow r'+(i+1)+' '+e.className.baseVal||e.className)});
+    const R=li.getBoundingClientRect();li.querySelectorAll('.cb-rk,.cb-nm,.cb-fl,.cb-pf,.cb-tv,.cb-wc').forEach(e=>{const r=e.getBoundingClientRect();if(r.left<R.left+f.B*.6||r.right>R.right-f.B*.6)res.fails.push('overflow r'+(i+1)+' '+e.className.baseVal||e.className)});
     const cr=li.querySelector('.cb-cr');if(cr){const c=cr.getBoundingClientRect(),CR=card.getBoundingClientRect(),nm=li.querySelector('.cb-nm').getBoundingClientRect();
       res.crown=(res.crown||[]).concat([{row:i+1,top:+c.top.toFixed(1),bot:+c.bottom.toFixed(1),plateEdge:+f.vtop.toFixed(1),h:+c.height.toFixed(1),capH:+(ink(li.querySelector('.cb-nm')).bot-ink(li.querySelector('.cb-nm')).top).toFixed(1),overName:c.right>nm.left&&c.left<nm.right}]);
       if(!(c.bottom>f.vtop&&c.top<f.vtop))res.fails.push('crown not on edge');if(c.top<CR.top||c.left<CR.left||c.right>CR.right)res.fails.push('crown outside card');
@@ -86,9 +89,27 @@ function audit(){
     if(e.closest('.cb-en'))return 'enamel-filled engraving: paint clipped into the cut ('+cs.backgroundImage.slice(0,30)+'...), wall+lip drop-shadows';
     if(clip)return 'engraved through enamel: bright metal clipped into the letters, wall+lip drop-shadows';
     if(cs.textShadow&&cs.textShadow!=='none')return 'engraved: ink in the cut + text-shadow lip/wall ('+cs.textShadow.slice(0,60)+')';return 'FLAT (no process)'};
-  [['rank','.cb-rk'],['name','.cb-nm'],['Long/Short','.cb-tw'],['trade move','.cb-tv'],['PASS/FAIL','.cb-pf i'],['No.','.cb-no'],['MARKET','.cb-ml'],['market move / countdown','.cb-mv'],['date label','.cb-dt small'],['date','.cb-dt b'],['See the film','.cb-flip']].forEach(([l,s])=>{const e=cb.querySelector(s);if(!e)return;const kd=KIND(e);res.surf[l]=kd;if(/FLAT/.test(kd))res.fails.push('flat text: '+l)});
+  [['rank','.cb-rk'],['name','.cb-nm'],['trade move','.cb-tv'],['PASS/FAIL','.cb-pf i'],['No.','.cb-no'],['MARKET','.cb-ml'],['market move / countdown','.cb-mv'],['date label','.cb-dt small'],['date','.cb-dt b'],['See the film','.cb-flip']].forEach(([l,s])=>{const e=cb.querySelector(s);if(!e)return;const kd=KIND(e);res.surf[l]=kd;if(/FLAT/.test(kd))res.fails.push('flat text: '+l)});
   res.fonts=[...new Set([...cb.querySelectorAll('*')].filter(e=>vis(e)&&[...e.childNodes].some(z=>z.nodeType===3&&z.textContent.trim())).map(e=>getComputedStyle(e).fontFamily.split(',')[0].replace(/"/g,'')))];
   [...cb.querySelectorAll('.cb-p>:not(.cb-sh):not(.cb-g)')].forEach(e=>{const r=e.getBoundingClientRect();if(r.bottom>CB.bottom+.5||r.top<CB.top-.5)res.fails.push('outside the plate: '+e.className)});
+  // the EZ. mark: tilt, its rotated box (the element's, a square larger than the disc) and the visible disc, against the frame,
+  // the date plates and the flip button; the foil masked to the mark, its blend, and whether it moves
+  {const st=cb.querySelector('.cb-st'),cs=getComputedStyle(st),R=st.getBoundingClientRect();
+   const m=new DOMMatrix(cs.transform==='none'?undefined:cs.transform),deg=Math.atan2(m.b,m.a)*180/Math.PI;
+   const side=st.offsetWidth*S,cx=(R.left+R.right)/2,cy=(R.top+R.bottom)/2,rd=side*.458; // disc radius: 293 of 320 px in the painting
+   const fr={l:CB.left+3.2*cq,r:CB.right-3.2*cq,t:CB.top+3.2*cq,b:CB.bottom-3.2*cq};
+   const dts=[...cb.querySelectorAll('.cb-dt')].map(e=>e.getBoundingClientRect()),fb=cb.querySelector('.cb-flip').getBoundingClientRect();
+   const gapR=(a,b)=>{const dx=Math.max(b.left-a.right,a.left-b.right,0),dy=Math.max(b.top-a.bottom,a.top-b.bottom,0);return dx>0&&dy>0?Math.hypot(dx,dy):Math.max(dx,dy)};
+   const gapC=(b)=>{const nx=Math.max(b.left,Math.min(cx,b.right)),ny=Math.max(b.top,Math.min(cy,b.bottom));return Math.hypot(nx-cx,ny-cy)-rd};
+   const box={left:R.left,right:R.right,top:R.top,bottom:R.bottom};
+   const ho=st.querySelector('.cb-ho'),hf=st.querySelector('.cb-hf');
+   res.stamp={kind:st.classList.contains('cb-die')?'die seat':'struck mark',deg:+deg.toFixed(2),boxW:+R.width.toFixed(1),
+     boxInFrame:R.left>=fr.l-.5&&R.right<=fr.r+.5&&R.top>=fr.t-.5&&R.bottom<=fr.b+.5,
+     boxClear:{frameL:+(R.left-fr.l).toFixed(1),frameR:+(fr.r-R.right).toFixed(1),frameB:+(fr.b-R.bottom).toFixed(1),dates:+Math.min(...dts.map(d=>gapR(box,d))).toFixed(1),flip:+gapR(box,fb).toFixed(1)},
+     discClear:{frameR:+(fr.r-(cx+rd)).toFixed(1),frameB:+(fr.b-(cy+rd)).toFixed(1),dates:+Math.min(...dts.map(gapC)).toFixed(1),flip:+gapC(fb).toFixed(1)},
+     foil:ho?{mask:getComputedStyle(ho).webkitMaskImage.slice(0,60),blend:getComputedStyle(ho).mixBlendMode,opacity:getComputedStyle(ho).opacity,anim:getComputedStyle(hf).animationName,live:cb.classList.contains('cb-live')}:null};
+   if(k==='g'){if(deg<6||deg>9)res.fails.push('stamp tilt '+deg.toFixed(2));if(!ho)res.fails.push('no foil');
+     if(!res.stamp.boxInFrame)res.fails.push('stamp box outside frame');if(res.stamp.boxClear.dates<4)res.fails.push('stamp box within 4px of a date plate: '+res.stamp.boxClear.dates);if(res.stamp.boxClear.flip<4)res.fails.push('stamp box within 4px of the flip button: '+res.stamp.boxClear.flip)}}
   res.sw=document.documentElement.scrollWidth-innerWidth;if(res.sw>0)res.fails.push('sideways scroll '+res.sw);
   return res}
 (async()=>{const b=await chromium.launch();const all=[];
