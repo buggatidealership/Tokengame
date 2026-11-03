@@ -674,7 +674,7 @@ document.documentElement.classList.add('x2b-bleed');
 (function(){
 const H=document.documentElement,D=document,RM=matchMedia('(prefers-reduced-motion: reduce)');
 /* full file names written out: make_site.py copies only media named in the page */
-const IMG={chip:'media/bet-chip-h2.jpg',grP:'media/bet-ground-h2-phone.jpg',grD:'media/bet-ground-h2-desk.jpg',s2:'media/s2-chips-h35.jpg'};
+const IMG={chip:'media/bet-chip-h2.jpg',grP:'media/bet-ground-h2-phone.jpg',grD:'media/bet-ground-h2-desk.jpg',s2:'media/s2-chip-h46.jpg'};
 const NM={GPT:'GPT',KIMI:'Kimi',CLAUDE:'Claude',GROK:'Grok'};
 const p2=v=>String(v).padStart(2,'0');
 
@@ -738,7 +738,7 @@ function tick(root){const art=root.querySelector('.hbc-art'),sr=root.querySelect
    An art box: data-crop "[x,y,w,h]" (phone) | "[x,y,w,h]" (desk) in the painting's pixels; where a crop runs past the painting, the
    box's own dark ground shows, faded into the painting by ::after. [data-at] children are placed at painting pixels, [data-q] quads. */
 const pk=v=>{const q=String(v).split('|');return innerWidth>=1000&&q[1]?q[1]:q[0]};
-function place5(el){const w=el.clientWidth;if(!w)return;const c=JSON.parse(pk(el.dataset.crop)),iw=2048,ih=1152,k=w/c[2],img=el.dataset.img||IMG.chip;
+function place5(el){const w=el.clientWidth;if(!w)return;const c=JSON.parse(pk(el.dataset.crop)),iw=+el.dataset.iw||2048,ih=+el.dataset.ih||1152,k=w/c[2],img=el.dataset.img||IMG.chip;
   el.style.height=Math.round(c[3]*k)+'px';el.style.backgroundImage=`url(${img})`;
   /* H35: a [data-fit] quad is laid out at its on-screen size (the GPU rule: never a perspective surface at painting size), --s its height */
   el.querySelectorAll('[data-fit]').forEach(n=>{const q=JSON.parse(n.dataset.q),xs=q.map(p=>p[0]),ys=q.map(p=>p[1]);
@@ -746,7 +746,7 @@ function place5(el){const w=el.clientWidth;if(!w)return;const c=JSON.parse(pk(el
     n.style.width=bw+'px';n.style.height=bh+'px';n.style.setProperty('--s',bh+'px')});
   el.style.backgroundSize=`${iw*k}px ${ih*k}px`;el.style.backgroundPosition=`${-c[0]*k}px ${-c[1]*k}px`;
   el.style.setProperty('--k',k);el.style.setProperty('--pl',(-c[0]*k)+'px');el.style.setProperty('--pt',(-c[1]*k)+'px');el.style.setProperty('--pw',(iw*k)+'px');el.style.setProperty('--ph',(ih*k)+'px');
-  el.querySelectorAll('[data-q]').forEach(n=>{const q=JSON.parse(n.dataset.q).map(([x,y])=>[(x-c[0])*k,(y-c[1])*k]);n.style.transform=n.hasAttribute('data-fit')?aff(n.offsetWidth,n.offsetHeight,q):persp(n.offsetWidth,n.offsetHeight,q)});
+  el.querySelectorAll('[data-q]').forEach(n=>{const q=JSON.parse(n.dataset.q).map(([x,y])=>[(x-c[0])*k,(y-c[1])*k]);n.style.transform=n.hasAttribute('data-fit')&&!n.hasAttribute('data-p3')?aff(n.offsetWidth,n.offsetHeight,q):persp(n.offsetWidth,n.offsetHeight,q)});
   el.querySelectorAll('[data-at]').forEach(n=>{const [x,y]=JSON.parse(pk(n.dataset.at));n.style.left=((x-c[0])*k)+'px';n.style.top=((y-c[1])*k)+'px'})}
 /* the caption sits on the seam: its middle on the chip's bottom edge (the crops start right under it) */
 function seam(sec){const st=sec.querySelector('.hb5-st'),chip=st&&st.querySelector('.hb5-chip'),c=st&&st.querySelector('.hb5-c');
@@ -773,7 +773,7 @@ function html(Dt){
 /* H35 (owner, 2026-11-02, night): the Season 2 beat under the bet, from s2bets take A (sealed chips): four more chips of Bet #1's kind on
    the same dark bench, still unlit. #2, #3 and #4 carry Google's, Apple's and Microsoft's marks in their dies (each in its own colours,
    lit under the glass: the die's diagonal sheen and its edge shading drawn over them); the fourth die says "More". The number
-   is silkscreened on the chip under its die, as DAYS and HRS sit under Bet #1's dies. Painting media/s2-chips-h35.jpg (2048x1152); the
+   is silkscreened on the chip under its die, as DAYS and HRS sit under Bet #1's dies. Painting s2-chips-h35 (retired in H46) (2048x1152); the
    dies' glass measured on it. No dates: "Next earnings season". */
 const S2Q=[[[263,556],[471,533],[511,691],[297,717]],[[785,504],[968,485],[1019,628],[831,651]],[[1254,457],[1422,441],[1487,571],[1315,591]],[[1682,413],[1825,399],[1898,517],[1745,535]]];
 const S2T=['GOOGL','AAPL','MSFT'],S2N={GOOGL:'Google',AAPL:'Apple',MSFT:'Microsoft'};
@@ -787,14 +787,21 @@ const s2lq=q=>{const [tl,tr,br,bl]=q,m=(p,o,t)=>[p[0]+(p[0]-o[0])*t,p[1]+(p[1]-o
 function s2tear(){let x=97;const r=()=>(x=(x*9301+49297)%233280)/233280,W=240,Hh=22,pts=(y0,a,st)=>{const o=[];for(let i=0;i<=W+st;i+=st*(.6+r()*.8))o.push([Math.min(i,W),y0+(r()-.5)*a*2]);return o};
   const t=pts(5,1.6,5),b=pts(15,1.9,4.5).reverse(),P=t.concat(b),f=v=>v.toFixed(1),d='M'+P.map(p=>f(p[0])+','+f(p[1])).join(' L')+'Z';
   return `<svg viewBox="-3 -2 ${W+8} ${Hh+4}" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="${d}" fill="#c42a20" transform="translate(1.6,2.4)"/><path d="${d}" fill="#f8f0d9" stroke="#0d0b10" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="${'M'+t.map(p=>f(p[0])+','+f(p[1]+1.6)).join(' L')}" fill="none" stroke="#c9bc98" stroke-width="1.1" opacity=".8" vector-effect="non-scaling-stroke"/></svg>`}
+/* H46 (owner, 2026-11-03: the Season 2 chips "not the same design" as Bet #1's, the #2, #3, #4 "not integrated into the world"): one
+   Season 2 chip painted from Bet #1's own chip as the reference (same green board, ink, gold pins, green and red rim light, gold rays;
+   media/s2-chip-h46.jpg, 2048 square, kept at 1400 px), shown four times so every chip has the same geometry: its big die holds the
+   company's mark (lit under the glass, as before), its small die shows the bet's number lit like Bet #1's countdown digits; the fourth
+   chip's big die says More and its small die stays dark (no number promised). Phones: two rows of two; desktop: one row of four. */
+const S2M={img:'media/s2-chip-h46.jpg',iw:2048,ih:2048,crop:'[400,170,1320,1330]',big:[[822,782],[1160,736],[1296,1018],[912,1086]],num:[[1004,1161],[1306,1112],[1314,1197],[1029,1249]]};
 function s2html(){
-  const die=(q,i)=>{const t=S2T[i];return `<div class="s2a-d${t?'':' s2a-m'}" data-fit data-q='${JSON.stringify(q)}'>${t?`<i class="s2a-lg" data-t="${t}"></i>`:'<b>More</b>'}</div>`+
-    (t?`<div class="s2a-n" data-fit data-q='${JSON.stringify(s2lq(q))}'><b>#${i+2}</b></div>`:'')};
+  const tile=i=>{const t=S2T[i];return `<div class="hb5-art s2-art s2x" data-img="${S2M.img}" data-iw="${S2M.iw}" data-ih="${S2M.ih}" data-crop="${S2M.crop}" aria-hidden="true">
+     <div class="s2a-d${t?'':' s2a-m'}" data-fit data-p3 data-q='${JSON.stringify(S2M.big)}'>${t?`<i class="s2a-lg" data-t="${t}"></i>`:'<b>More</b>'}</div>
+     <div class="s2a-n${t?'':' s2a-n0'}" data-fit data-p3 data-q='${JSON.stringify(S2M.num)}'>${t?`<i class="s2a-gl"></i><b>#${i+2}</b>`:''}</div></div>`};
   return `<div class="s2b" role="group" aria-labelledby="s2bH">
     <div class="s2-dv" aria-hidden="true">${s2tear()}</div>
     <h3 class="s2-h" id="s2bH">Season 2</h3>
     <p class="h35-cap s2-cap">NVIDIA is the first bet, not the last. <span class="s2-cap2">Season 2 ups the stakes.</span></p>
-    <div class="hb5-art s2-art" data-img="${IMG.s2}" data-crop="[64,316,2004,600]|[50,296,2030,640]" aria-hidden="true">${S2Q.map(die).join('')}</div>
+    <div class="s2-row">${[0,1,2,3].map(tile).join('')}</div>
     <p class="hb-sr">Season 2 bets: #2 Google, #3 Apple, #4 Microsoft, and more.</p>
     <div class="s2a-ft"><span class="s2-tab">Next earnings season</span></div>
    </div>`}

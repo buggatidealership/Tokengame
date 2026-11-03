@@ -179,7 +179,7 @@ let c3key='';
 function c3fit(root){const fs=[...root.querySelectorAll('.t4-frs.r3c3>.t4-fr')],cs=fs.map(f=>f.querySelector('.r3c3-cap')),as=fs.map(f=>f.querySelector('.t4-art'));if(!cs.length||cs.some(c=>!c))return;
   root.querySelectorAll('.r3-bd').forEach(b=>b.style.setProperty('--k',(b.clientWidth/1400).toFixed(5)));
   root.querySelectorAll('.r3-rk').forEach(r=>r.style.setProperty('--k',(r.clientWidth/100).toFixed(5)));
-  const h2=root.querySelector('.t4-b2.r3-C3 .t4-h2'),h2f=h2?parseFloat(getComputedStyle(h2).fontSize):64,cap=Math.min(32,h2f*.5);
+  const h2=root.querySelector('.t4-b2.r3-C3 .t4-h2'),h2f=h2?parseFloat(getComputedStyle(h2).fontSize):64,cap=innerWidth>=1000?Math.min(40,h2f*.6):Math.min(32,h2f*.56);/* H46: the 50/50 boxes are squares; the steps may fill them up to .56 (phone) / .6 (desktop) of the heading */
   const key=as.map(a=>{const z=getComputedStyle(a);return z.width+'x'+z.height}).join(',')+'|'+(D.fonts?D.fonts.status:'')+'|'+h2f;if(key===c3key)return;c3key=key;
   /* H32: the rows' CSS sets each box (the picture's height, the rest of the row's width) */
   const fits=()=>cs.every(c=>{const n=c.firstElementChild;return n.scrollHeight<=c.clientHeight-2*parseFloat(getComputedStyle(c).paddingTop)+1&&n.scrollWidth<=n.clientWidth+1});

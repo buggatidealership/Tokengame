@@ -71,7 +71,7 @@ function data(){
     const l5=ks.slice(-5).map(n=>{const r=rof(n);return {n,w:a.per[n].v>0,t:r.ticker,co:co(r.ticker),v:a.per[n].v}});
     const nm=String(MODELS[m].name||m),v=String(MODELS[m].ver||''),ver=v.toLowerCase().startsWith(nm.toLowerCase())?v.slice(nm.length).replace(/^[\s\-–]+/,''):v;
     M[m]={m,name:NM[m],NAME:nm.toUpperCase(),ver,full:v,c:UC[m],cc:CTRY[m],pnl:a.bal-1e5,W:a.W,L:a.L,n:a.W+a.L,
-      win,bw:pack(bw),bl:pack(bl),sec:bs?{name:SECT[bs.s]||bs.s,p:bs.p,w:bs.w,n:bs.n}:null,l5}});
+      win,bw:pack(bw),bl:pack(bl),sec:bs?{name:SECT[bs.s]||bs.s,p:bs.p,w:bs.w,n:bs.n}:null,secs:sec,l5}});
   /* ranking: P&L (or hit rate) in the window; an AI under half the graded rounds still goes after the rest (the page's rule) */
   const rank=(wk,key)=>Object.keys(M).sort((x,y)=>{const qa=M[x].n>=N/2,qb=M[y].n>=N/2;if(qa!==qb)return qa?-1:1;
       const a=M[x].win[wk],b=M[y].win[wk];if(key==='hit'){const ha=a.hit==null?-1:a.hit,hb=b.hit==null?-1:b.hit;if(hb!==ha)return hb-ha;return b.pnl-a.pnl}
@@ -134,29 +134,29 @@ function build(host,d){
       <b class="xl-n xr-val"></b></div>`};
   const trow=m=>{const x=M[m];return `<li class="xr-tw" data-m="${m}" style="--u:${x.c}"><b class="xl-n xr-pos">1</b>
       <span class="xr-who"><span class="xr-tmk">${mark(m,x.c)}</span><b class="xl-n">${esc(x.NAME)}</b>${patch(x.cc,22)}</span>
-      <b class="xl-n xr-gap"></b><b class="xl-n xr-wl"></b><b class="xl-n xr-hit"></b></li>`};
+      <b class="xl-n xr-gap"></b><b class="xl-n xr-wl"></b><b class="xl-n xr-hit"></b><span class="xr-l5c">${lamps(x.l5)}</span></li>`};
   const pit=m=>{const x=M[m];return `<div class="xr-pit" data-m="${m}" style="--u:${x.c};--chip:url(${CHIP[m]})">
       <div class="xr-ph"><span class="xr-tmk">${mark(m,x.c)}</span><b class="xl-n">${esc(x.NAME)}</b><small>${esc(x.ver)}</small>${patch(x.cc,22)}</div>
       <div class="xr-pr"><span class="xl-lab">Biggest W</span><span class="xr-tr2">${plate(x.bw)}<b class="xl-n xl-up">${$k(x.bw.v)}</b></span></div>
       <div class="xr-pr"><span class="xl-lab">Biggest L</span><span class="xr-tr2">${plate(x.bl)}<b class="xl-n xl-dn">${$k(x.bl.v)}</b></span></div>
-      <div class="xr-pr"><span class="xl-lab">Best sector</span><span class="xr-sec">${x.sec?`<b class="xl-n">${esc(x.sec.name)}</b> <em class="${x.sec.p<0?'xl-dn':'xl-up'}">${$k(x.sec.p)}</em>`:'–'}</span></div>
-      <div class="xr-pr"><span class="xl-lab">Last 5</span>${lamps(x.l5)}</div></div>`};
+</div>`};
   const o0=order();
   host.innerHTML=`<h1 class="t4-h2 xl-h" tabindex="-1"><span class="t4-hw">Leaderboard</span></h1>
     <p class="xl-cap">Season 1 · <span class="xl-cn">${d.N}</span> rounds graded · $100K on every trade</p>
     <div class="xr-l3" aria-live="polite"><span class="xr-bug xl-n">Round ${d.N}</span><div class="xr-l3t"></div></div>
     <div class="xr-ctl"><span class="xr-cg"><span class="xl-swl" id="xlbRace">Race on</span>${sw('Race on',[{k:'pnl',t:'P&L'},{k:'hit',t:'Hit rate'}],mt,'xr-m')}</span>${sw('Window',[{k:'season',t:'Season'},{k:'d1',t:'24h'},{k:'d7',t:'7 days'}],wk,'xr-w')}</div>
-    <div class="xr-grid"><div class="xr-board"><div class="xr-ax" aria-hidden="true"></div><div class="xr-lanes">${o0.map(lane).join('')}</div><p class="xr-when"></p></div>
-      <div class="xr-tower"><div class="xr-th" aria-hidden="true"><span>Pos</span><span>Model</span><span class="xr-gh">Gap</span><span>W-L</span><span class="xr-hh">Hit</span></div><ol class="xr-tws">${o0.map(trow).join('')}</ol></div></div>
-    <h2 class="xr-pw">The pit wall · season</h2><div class="xr-pits">${o0.map(pit).join('')}</div>
-    <p class="xl-fine">Flat $100,000 on every trade, long on up and short on down, no leverage, before fees. Simulated. Gap = P&L behind the model one place ahead. 24h = rounds graded at their exchange's close in the last 24 hours (with none, the last close); 7 days = ${esc(WS.d7.when)}. Best sector = most P&L, 3 trades or more.</p>`;
+    <div class="xr-grid"><div class="xr-tower"><div class="xr-th" aria-hidden="true"><span>Pos</span><span>Model</span><span class="xr-gh">Gap</span><span>W-L</span><span class="xr-hh">Hit</span><span class="xr-l5h">Last 5</span></div><ol class="xr-tws">${o0.map(trow).join('')}</ol></div>
+      <div class="xr-board"><div class="xr-ax" aria-hidden="true"></div><div class="xr-lanes">${o0.map(lane).join('')}</div><p class="xr-when"></p></div></div>
+    <div class="xr-row2"><div class="xr-secw"><h2 class="xr-pw">By sector · season</h2><table class="xr-sect"><caption class="xl-sr">P&amp;L or right and wrong trades by sector, season</caption><thead></thead><tbody></tbody></table></div>
+      <div class="xr-pitw"><h2 class="xr-pw">Biggest W and L · season</h2><div class="xr-pits">${o0.map(pit).join('')}</div></div></div>
+    <p class="xl-fine">Flat $100,000 on every trade, long on up and short on down, no leverage, before fees. Simulated. Gap = P&L behind the model one place ahead. 24h = rounds graded at their exchange's close in the last 24 hours (with none, the last close); 7 days = ${esc(WS.d7.when)}. By sector: every graded trade this season; gold = the best in its sector.</p>`;
   const lanes=host.querySelector('.xr-lanes'),tws=host.querySelector('.xr-tws'),pits=host.querySelector('.xr-pits');
   function draw(anim){const o=order(),s=scale(),w=WS[wk],hit=mt==='hit';
     host.dataset.mt=mt;host.dataset.wk=wk;
     const i0=s.ticks.indexOf(s.start);   /* on a narrow board every other label goes quiet (its line stays), so the figures never touch */
     host.querySelector('.xr-ax').innerHTML=s.ticks.map((t,i)=>`<span class="xr-tk${t===s.start?' xr-t0':''}${(i-i0)%2?' xr-tkh':''}" style="left:${X(t,s).toFixed(2)}%">${s.fmt(t)}</span>`).join('')+
       `<i class="xr-sl" style="left:${X(s.start,s).toFixed(2)}%"></i>`;
-    flip(lanes,o,anim);flip(tws,o,anim);flip(pits,o,anim);
+    flip(lanes,o,anim);flip(tws,o,anim);flip(pits,o,anim);secTable(o,hit);
     host.querySelector('.xr-gh').textContent=hit?'Hit rate':'Gap';host.querySelector('.xr-hh').textContent=hit?'P&L':'Hit';
     o.forEach((m,i)=>{const v=val(m),ln=lanes.querySelector(`[data-m="${m}"]`),x0=X(s.start,s),x=v==null?x0:X(v,s),neg=v!=null&&v<s.start,x2=M[m].win[wk];
       ln.style.setProperty('--x',x.toFixed(2)+'%');ln.style.setProperty('--a',Math.min(x,x0).toFixed(2)+'%');ln.style.setProperty('--w',Math.abs(x-x0).toFixed(2)+'%');
@@ -176,6 +176,18 @@ function build(host,d){
     if(va==null)lt.innerHTML=hit?`<b class="xl-n xr-ln1">Too early</b><span>under 5 trades each in this window, too few for a hit rate</span>`:`<b class="xl-n xr-ln1">No close</b><span>${esc(w.when)}</span>`;
     else lt.innerHTML=`<b class="xl-n xr-ln1" style="color:${a.c}">${esc(a.NAME)}</b><b class="xl-n xr-ln2 ${hit||va>=0?'xl-up':'xl-dn'}">${hit?pc(va):$f(va)}</b><span>${hit?
       (w.fb?'right at the last close':'of trades right')+' · '+esc(b.name)+' '+pc(vb):(wk==='season'?'leads '+esc(b.name)+' by ':w.fb?'takes the last close by ':'takes the '+esc(w.t.toLowerCase())+' by ')+(vb==null?'':'$'+Math.abs(Math.round(va-vb)).toLocaleString('en-US'))}</span>`}
+  /* H46 (owner, 2026-11-03: "a table that shows by sector"): one row per sector (most trades first), one column per model in the race's order;
+     the race's metric decides the cell (P&L, or right-wrong with the hit rate as its shade); the best in each row in gold. Season only. */
+  function secTable(o,hit){const t=host.querySelector('.xr-sect');if(!t)return;
+    const tot={};o.forEach(m=>Object.values(M[m].secs).forEach(q=>{tot[q.s]=(tot[q.s]||0)+q.n}));
+    const ss=Object.keys(tot).sort((a,b)=>tot[b]-tot[a]||a.localeCompare(b));
+    t.querySelector('thead').innerHTML=`<tr><th scope="col">Sector</th>${o.map(m=>`<th scope="col" style="--u:${M[m].c}"><span class="xr-tmk" role="img" aria-label="${esc(M[m].name)}">${mark(m,M[m].c)}</span><span class="xr-sn" aria-hidden="true">${esc(M[m].NAME)}</span></th>`).join('')}</tr>`;
+    t.querySelector('tbody').innerHTML=ss.map(sn=>{const q=o.map(m=>M[m].secs[sn]||null),sc=x=>!x?null:hit?(x.n?x.w/x.n:null):x.p,v=q.map(sc),
+        best=Math.max(...v.filter(x=>x!=null));
+      return `<tr><th scope="row">${esc(SECT[sn]||sn)}</th>${q.map((x,i)=>{if(!x)return '<td class="xr-sx">–</td>';
+        const b=v[i]===best&&v.filter(y=>y===best).length<o.length;
+        return hit?`<td class="xr-sh${b?' xr-sb':''}" style="--h:${(x.w/x.n).toFixed(3)}" title="${esc(M[o[i]].name)}: ${x.w} right of ${x.n} in ${esc(SECT[sn]||sn)}"><span class="xl-n"><span class="xl-up">${x.w}</span>-<span class="xl-dn">${x.n-x.w}</span></span></td>`
+          :`<td class="${b?'xr-sb':''}" title="${esc(M[o[i]].name)}: ${$f(x.p)} on ${x.n} trade${x.n===1?'':'s'} in ${esc(SECT[sn]||sn)}"><span class="xl-n ${x.p<0?'xl-dn':'xl-up'}">${$k(x.p)}</span></td>`}).join('')}</tr>`}).join('')}
   wireSw(host,(g,k)=>{if(g.classList.contains('xr-w'))wk=k;else mt=k;draw(!RM())});
   draw(false);
   W.__xlbSet=k=>{const t=host.querySelector(`.xl-sw button[data-k="${k}"]`);t&&t.click()};
