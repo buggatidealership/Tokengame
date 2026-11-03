@@ -172,3 +172,45 @@ A short summary:
 - any checks that failed.
 
 Do not paste long logs.
+
+## ADDENDUM: the story changes (owner, 2026-11-03, while you work)
+
+Owner: "My unverified assumption is that we need to focus more on users not having to track AIs to see how good they are on trading earnings but that we track it so they don't have to. And then focusing on saying you can follow those calls for these companies on Hyperliquid... Think bigger picture."
+
+### The new job of both pages
+
+- The visitor should not have to work out which AI is any good. **We track every trade so they don't have to.**
+- The page hands them the conclusion:
+  1. who has earned trust so far, on how many trades;
+  2. what that model is trading on the next earnings;
+  3. where that trade can be followed: the company's market on Hyperliquid, where one exists.
+- The competition between the four AIs (the cast, the rounds, the films) stays. It is the **proof and the entertainment wrapper**; it is not the job.
+- The record is the receipts: every trade locked before the earnings and graded by the close, checkable.
+
+### The facts that move to the front
+
+- **The verdict, with its sample.** For example: Grok leads, right on 45 of 72 trades (62.5%), +$148,480 on a flat $100K a trade.
+  - Say "so far" and give the count. On 72 trades the true hit rate could be anywhere from about 51% to 73%. Never write "proven", "beats the market" or "getting smarter".
+- **The next trades, one card per upcoming company.**
+  - The top model's trade (long or short), with the other three as the field.
+  - Where trades are not in yet: "trades drop before the earnings".
+  - Example from the sheet: R85 AMD is in. GPT and Kimi are long; Claude and Grok are short. The top model, Grok, is short.
+- **"Follow it on Hyperliquid"**, only for a company that has a market there.
+  - The snapshot is `hl-markets-2026-11-03.json` in this folder, taken from Hyperliquid's API on 2026-11-03. It maps each ticker to its markets as `[dex, open interest $M, 24h volume $M, max leverage, delisted]`.
+  - Of the 34 upcoming companies, 18 have a market; only 6 have $10M or more of open interest (AAPL, AMD, LITE, CRWV, NBIS, NVDA).
+  - Show the market name (for example `xyz:AMD`) and mark thin markets honestly.
+  - A company with no market says so, or simply has no follow link.
+  - This snapshot is the one input that is not from the sheet. Label it as "Hyperliquid, as of Nov 3".
+- **Small print, once per page, plain:**
+  - "Simulated record, $100K a trade, before fees. Not financial advice. Trading can lose money; the pool can be wiped out."
+  - Hyperliquid is not available in every country. Do not claim it is.
+
+### Each page's new job
+
+- **Overview:** what EZ does for you ("we track 4 AIs on every earnings trade so you don't have to"), the verdict, the next trades to follow, then the proof underneath (cast, record, smart or lucky), then the bet (we put our own pool on the top model's trade: skin in the game).
+- **Leaderboard:** "who to follow right now", answered per window, with the receipts behind it; the next trades by the top model.
+  - Optional: P&L on Hyperliquid-listed companies only.
+  - Today: Grok 21-5 (+$162,920), Claude 21-9 (+$104,540), GPT 14-16 (−$98,780), Kimi 14-16 (−$27,420).
+  - Caveat: these are companies listed *today*; most were not listed when the trade was made.
+
+Keep your tradition and your art. Change only the story's order and its emphasis. Update your REPORT with how your take tells this.
