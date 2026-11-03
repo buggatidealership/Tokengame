@@ -70,18 +70,6 @@ html.u3-on #view.x2p-upv{padding-top:0}
 .u3-D .ud-sub{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-width:0}
 .u3-D .ud-tk{--fs:10.5px}
 .u3-D .ud-tk .ud-w>i{color:#d9cfb4}
-/* four trade flaps: the painted flap stretched by its edges, the AI's mark, LONG / SHORT and the size */
-.u3-D .ud-trs{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
-.u3-D .ud-tr{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;align-items:center;column-gap:3px;row-gap:4px;min-width:0;
- padding:5px 2px 6px 4px;border-style:solid;border-color:transparent;border-width:5px 4px;border-image:url(media/up-h39-flap.jpg) 26 fill/5px 4px stretch;border-radius:4px}
-.u3-D .ud-mk{width:14px;height:14px;display:block}
-.u3-D .ud-tv{grid-column:1/-1}
-.u3-D .ud-tw{font:400 11px/1 Anton,sans-serif;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;overflow:hidden;color:#f3ead2}
-.u3-D .ud-tv{font:400 17px/1 Anton,sans-serif;white-space:nowrap;color:#f3ead2;text-shadow:0 1px 0 #000}
-.u3-D .ud-up .ud-tw,.u3-D .ud-up .ud-tv{color:var(--up)}
-.u3-D .ud-dn .ud-tw,.u3-D .ud-dn .ud-tv{color:var(--dn)}
-.u3-D .ud-no .ud-tw{color:rgba(243,234,210,.5)}
-.u3-D .ud-no .ud-tv{color:rgba(243,234,210,.36)}
 /* the torn gutter between the two boards (the page's recipe, full bleed) */
 .u3-D .ud-tear{position:relative;display:block;pointer-events:none;width:100vw;height:46px;margin:48px 0 44px calc(50% - 50vw)}
 .u3-D .ud-tear>svg{position:absolute;left:0;top:0;display:block;overflow:visible}
@@ -108,8 +96,6 @@ html.u3-on #view.x2p-upv{padding-top:0}
 /* narrow phones: smaller flaps */
 @media (max-width:359px){
  .u3-D .ud-nm{--fs:13.5px}.u3-D .ud-big .ud-nm{--fs:16px}.u3-D .ud-li .ud-nm{--fs:11.5px}
- .u3-D .ud-tw{font-size:10px;letter-spacing:.03em}.u3-D .ud-tv{font-size:15px}.u3-D .ud-mk{width:11px;height:11px}.u3-D .ud-tr{column-gap:3px;padding:5px 3px 5px 4px}
- .u3-D .ud-trs{gap:3px}
 }
 @media (min-width:560px){.u3-D .ud-lis{display:grid;grid-template-columns:1fr 1fr;column-gap:18px}}
 @media (min-width:900px){
@@ -130,10 +116,51 @@ html.u3-on #view.x2p-upv{padding-top:0}
  .u3-D .ud-cap{font-size:16.5px}.u3-D .ud-cn{--fs:20px}
  .u3-D .ud-nm{--fs:19px}.u3-D .ud-tk{--fs:12.5px}.u3-D .ud-lg{width:42px;height:42px}
  .u3-D .ud-st,.u3-D .ud-when,.u3-D .ud-dl{font-size:13.5px}
- .u3-D .ud-mk{width:16px;height:16px}.u3-D .ud-tw{font-size:12.5px}.u3-D .ud-tv{font-size:21px}
  .u3-D .ud-big .ud-nm{--fs:23px}.u3-D .ud-big .ud-tk{--fs:14px}.u3-D .ud-big .ud-lg{width:64px;height:64px}
  .u3-D .ud-li .ud-nm{--fs:14.5px}.u3-D .ud-li .ud-tk{--fs:11px}.u3-D .ud-li .ud-lg{width:32px;height:32px}.u3-D .ud-li .ud-st{font-size:12.5px}
  .u3-D .ud-dp{font-size:19px}.u3-D .ud-pt{font-size:14px}
 }
 /* two big names side by side: their trade flaps stand on one line however the names wrap */
 @media (min-width:900px){.u3-D .ud-big{display:flex}.u3-D .ud-big .ud-a{flex:1;grid-template-rows:1fr auto;align-content:space-between}.u3-D .ud-big .ud-lg,.u3-D .ud-big .ud-id{align-self:center}}
+
+/* ===== H40 the trades on the flaps (owner, 2026-11-03: "They're not aligned. They're not symmetrical. They've been pasted on top of it...
+   not in the middle of the tiny module"). Four cells of one width on one grid, the same gaps, the same outer margins (the row's own edges).
+   Each cell, top to bottom, on rows of fixed height so every part shares one x (its cell's centre) and one baseline across cells and rows:
+   (1) the AI's mark and name printed on the enamel (Anton, the board's label type), (2) LONG / SHORT on a word flap (media/up-h39-flap.jpg),
+   (3) the size on a brass-framed split flap (media/up-h40-die.jpg: a clock die of the head painting, made symmetric about its split, so the
+   split sits at exactly half the face). Words and numbers are the flap's own type (Anton, as the clock's digits), centred on the face by
+   their cap height (text-box), and the split is drawn again over them: the line crosses the characters and the lower leaf is a touch darker.
+   SHORT and its −x% red, LONG and its +x% green; a trade not in yet is a blank word flap and a dash. ===== */
+.u3-D .ud-trs{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:6px;
+ --tlh:12px;--tls:10px;--tmk:11px;--twh:19px;--tws:10.5px;--tvh:42px;--tvs:20px}
+.u3-D .ud-tr{display:grid;grid-template-rows:var(--tlh) var(--twh) var(--tvh);row-gap:4px;min-width:0;justify-items:stretch}
+.u3-D .ud-tl{display:flex;align-items:center;justify-content:center;gap:3px;min-width:0;overflow:hidden;white-space:nowrap;
+ font:400 var(--tls)/1 Anton,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#cfc6ae}
+.u3-D .ud-tl .ud-mk{width:var(--tmk);height:var(--tmk);flex:none}
+.u3-D .ud-no .ud-tl{color:rgba(243,234,210,.46)}
+.u3-D .ud-tw,.u3-D .ud-tv{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden;border-style:solid;border-color:transparent}
+.u3-D .ud-tw{border-width:4px 4px;border-image:url(media/up-h39-flap.jpg) 26 fill/4px 4px stretch}
+.u3-D .ud-tv{border-width:5px;border-image:url(media/up-h40-die.jpg) 40 fill/5px stretch}
+.u3-D :is(.ud-tw,.ud-tv)>b{display:block;font-weight:400;font-family:Anton,sans-serif;line-height:1;white-space:nowrap;text-box:trim-both cap alphabetic;
+ color:#f3ead2;text-shadow:0 1px 0 #000;font-variant-numeric:tabular-nums}
+.u3-D .ud-tw>b{font-size:calc(var(--tws) * var(--twk,1));letter-spacing:.09em;padding-left:.09em;text-transform:uppercase}
+.u3-D .ud-tv>b{font-size:calc(var(--tvs) * var(--tvk,1))}
+.u3-D .ud-up :is(.ud-tw,.ud-tv)>b{color:var(--up)}
+.u3-D .ud-dn :is(.ud-tw,.ud-tv)>b{color:var(--dn)}
+/* a trade not in yet: the flap's dash card, a bar of the flap's cream ink centred on the face, cut in two by the split like any character */
+.u3-D .ud-tv>b.ud-dash{width:calc(var(--tvs) * .78);height:calc(var(--tvs) * .16);background:rgba(243,234,210,.6);border-radius:1px;box-shadow:0 1px 0 #000}
+/* the split, drawn over the type: a dark gap with a lit lip under it, exactly at half the face; the lower leaf in its own shade */
+.u3-D :is(.ud-tw,.ud-tv)::after{content:'';position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(to bottom,transparent calc(50% - 1px),rgba(0,0,0,.92) calc(50% - 1px),rgba(0,0,0,.92) calc(50% + .5px),rgba(214,200,160,.32) calc(50% + .5px),rgba(214,200,160,.32) calc(50% + 1.3px),rgba(0,0,0,.2) calc(50% + 1.3px),rgba(0,0,0,.26) 100%)}
+.u3-D .ud-tw::after{background:linear-gradient(to bottom,transparent calc(50% - .6px),rgba(0,0,0,.9) calc(50% - .6px),rgba(0,0,0,.9) calc(50% + .4px),rgba(214,200,160,.26) calc(50% + .4px),rgba(214,200,160,.26) calc(50% + 1px),rgba(0,0,0,.2) calc(50% + 1px),rgba(0,0,0,.26) 100%)}
+@media (max-width:359px){.u3-D .ud-trs{column-gap:4px;--tls:9px;--tmk:10px;--tws:9.5px;--twh:17px;--tvh:34px;--tvs:15.5px}}
+@media (min-width:900px){.u3-D .ud-trs{column-gap:8px;--tlh:15px;--tls:12px;--tmk:14px;--twh:24px;--tws:12.5px;--tvh:52px;--tvs:23px}
+ .u3-D .ud-tw{border-width:5px;border-image-width:5px}.u3-D .ud-tv{border-width:6px;border-image-width:6px}}
+/* the second board opens on "Upcoming predictions": its header plate, a brass day plate, then rows; a brass rail before the hot names */
+.u3-D .ud-sdh{margin:2px 0 2px}
+.u3-D .ud-soon .ud-rows+.ud-sdh{margin-top:8px;padding-top:12px;border-top:3px solid transparent;border-image:url(media/up-h39-rail.jpg) 100% 0 0 0 stretch}
+.u3-D .ud-soon{padding-bottom:10px;margin-bottom:6px;border-bottom:3px solid transparent;border-image:url(media/up-h39-rail.jpg) 0 0 100% 0 stretch}
+.u3-D .ud-hot>.ud-hp{margin-top:12px}
+/* two rows side by side (desktop): their trade cells stand on one line however the names and lines above them wrap */
+@media (min-width:900px){.u3-D .ud-rows .ud-row{display:flex}.u3-D .ud-rows .ud-row .ud-a{flex:1;grid-template-rows:1fr auto;align-content:space-between}
+ .u3-D .ud-rows .ud-row :is(.ud-lg,.ud-id){align-self:start}}

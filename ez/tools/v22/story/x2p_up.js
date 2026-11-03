@@ -9,6 +9,11 @@
      window.__x2pTear is exported).
    3 HOT UPCOMING PREDICTIONS lettered on the second board's brass header plate: the big names first (Mag 7, then market cap from CAPS; four)
      as large flap rows, then every other round still to come, day by day under brass rails (a brass day plate, the line under it on the enamel).
+   H40 (owner, 2026-11-03: the trades "not aligned... not symmetrical... pasted on top"; the order clock, what resolves, "upcoming predictions",
+   "hot upcoming predictions", everything else): each trade is a cell of one width on one grid (the AI's mark and name on the enamel, LONG/SHORT
+   on a word flap, the size on a brass-framed split flap, media/up-h40-die.jpg, printed on the face with the split crossing it), and the second
+   board opens on "Upcoming predictions" (the next trades due, by trade day; window.__x2pUpV='in' shows the rounds whose trades are in and grade
+   later instead), then the hot names, then the rest; no round twice. Tools and the gate: tools/concepts/worlds/comic/story/h/up40/.
    One type system, set by the material: brass plates are engraved in Bangers (titles and headers), flaps carry Anton (numbers and flap
    letters), the enamel is printed in Shantell Sans (words). Company logos keep their own colours (tile / plate / bare, measured per file).
    Every row is one keyboard-reachable link to its round (#/round/n). No motion but the minute flaps; nothing in perspective.
@@ -73,7 +78,19 @@ function model(){
   const lk=G.reduce((a,r)=>{const k=key(pd(r.resolves));return k>a?k:a},'');
   const last=G.filter(r=>key(pd(r.resolves))===lk).sort((a,b)=>cap(b.ticker)-cap(a.ticker)||a.n-b.n);
   const bet=fut.find(u=>u.bet);
-  return {ORDER,A,P,today,tk,now,fut,bell,DAYS,last,lastP:pd(last[0]&&last[0].resolves),G,bet,x:(window.CONFIG||{}).x||'https://x.com/earningszn'}
+  /* H40 "Upcoming predictions", the panel after the next bell. Default (the owner's first reading): the next batch of trades coming in, i.e.
+     the first trade day after the next bell's day (after today when no close is on the card), plus any round not graded at the bell whose
+     trades are due today or by that day and are not all in yet (AMD with Claude's trade still to come). window.__x2pUpV='in' (the second
+     reading): every round whose trades are already in (some or all) and is graded after the next close. Never a round graded at the bell. */
+  const bk=bell?bell.k:'',inBell=u=>bell&&u.dated&&u.k===bell.k,live=u=>!inBell(u)&&!(u.dated&&u.close<=now);
+  let soon,due;
+  {const after=bell?bk:'',cand=fut.filter(u=>live(u)&&u.cp&&u.state!=='in');
+    const ds=cand.map(u=>key(u.cp)).filter(k=>after?k>after:k>=tk).sort(),dk=ds[0]||'';
+    const rs=dk?cand.filter(u=>{const k=key(u.cp);return k===dk||(k>=tk&&k<dk)}).sort((a,b)=>key(a.cp).localeCompare(key(b.cp))||byCap(a,b)):[];
+    due={v:'due',rounds:rs,p:rs.length?rs.find(u=>key(u.cp)===dk).cp:null}}
+  if(window.__x2pUpV==='in'){const rs=fut.filter(u=>live(u)&&u.nIn>0).sort((a,b)=>(a.close||9e15)-(b.close||9e15)||byCap(a,b));soon={v:'in',rounds:rs}}
+  else soon=due;
+  return {ORDER,A,P,today,tk,now,fut,bell,DAYS,soon,due,last,lastP:pd(last[0]&&last[0].resolves),G,bet,x:(window.CONFIG||{}).x||'https://x.com/earningszn'}
 }
 /* ---------- company logos in their own colours ---------- */
 /* mode per logo file: 'tile' (drawn on its own opaque square: shown as that tile, corners rounded), 'bare' (reads on the dark die as drawn,
@@ -119,7 +136,8 @@ const MK=(m,x,y,s,fill)=>{const M=(window.MODELS||{})[m];if(!M||!M.d)return '';c
 /* a company mark in its own colours in the big die: the tile as drawn (rounded), a plate behind a dark mark, a bare mark as drawn. Not lit:
    it is printed on the glass, so the bloom stays on the trades. Returns {defs, flat}. */
 /* the follow panel (the Overview's own close, media/p5-panel.jpg): the glass says when the next trades drop, the green key is Follow on X */
-function follow(M){const nx=M.DAYS.concat(M.bell?[{rounds:M.bell.rounds,p:M.bell.p,day:M.bell.day,date:M.bell.date}]:[]).map(d=>({d,rs:d.rounds.filter(u=>u.state!=='in')})).filter(x=>x.rs.length).sort((a,b)=>key(a.d.p).localeCompare(key(b.d.p)))[0];
+function follow(M){const dd=M.due&&M.due.p?M.due:null,nx=dd?{d:{p:dd.p,day:dayName(dd.p,M.today),date:md(dd.p)},rs:dd.rounds.filter(u=>key(u.cp)===key(dd.p))}:
+  M.DAYS.concat(M.bell?[{rounds:M.bell.rounds,p:M.bell.p,day:M.bell.day,date:M.bell.date}]:[]).map(d=>({d,rs:d.rounds.filter(u=>u.state!=='in')})).filter(x=>x.rs.length&&key(x.d.p)>=M.tk).sort((a,b)=>key(a.d.p).localeCompare(key(b.d.p)))[0];
   const first=nx?nx.rs.slice().sort((a,b)=>b.cap-a.cap).slice(0,2):[];const S=1.6,g=[136*S,172*S,724*S,288*S];
   let lit=T(800,172*S+92,48,'NEXT TRADES DROP ON X',{a:'middle',c:'#ffb21a',ls:3})+T(800,172*S+218,110,nx?(nx.d.day+' · '+nx.d.date).toUpperCase():'SOON',{a:'middle'})+
     T(800,172*S+300,44,first.map(u=>u.co.toUpperCase()).join(' · ')+(nx&&nx.rs.length>2?' + '+(nx.rs.length-2)+' MORE':''),{a:'middle',c:'#9fd8b4'});
@@ -146,18 +164,24 @@ function state(u,M){const n=M.ORDER.length;if(u.state==='in')return `All ${n} tr
   if(u.cp&&key(u.cp)<M.tk)return 'Trades coming in';
   if(isOpen(u))return u.dated?'Trades due before the open':'Trades due '+dayWord(u.cp,M);
   return 'Trades due '+dayWord(u.cp,M)}
-/* four trade flaps: the AI's mark in its colour, LONG green or SHORT red, the size; the AI's name and a dash while it is due */
-function trades(u,M){return `<span class="ud-trs" aria-hidden="true">${M.ORDER.map(m=>{const c=u.trades.find(x=>x.m===m);
-  if(!c)return `<span class="ud-tr ud-no">${mkSvg(m,'rgba(243,234,210,.3)')}<span class="ud-tw">${esc(nm(m))}</span><b class="ud-tv">–</b></span>`;
-  const dn=c.dir==='DOWN';return `<span class="ud-tr ${dn?'ud-dn':'ud-up'}">${mkSvg(m,MCOL[m]||'#f8f0d9')}<span class="ud-tw">${dn?'Short':'Long'}</span><b class="ud-tv">${dn?'−':'+'}${esc(c.mag)}%</b></span>`}).join('')}</span>`}
+/* H40 four trade cells, one per AI, all four the same width on one grid: (1) the AI's mark and name printed on the enamel, (2) LONG or SHORT
+   on a word flap, (3) the size on a brass-framed split flap (media/up-h40-die.jpg, a clock die of the head painting made symmetric about its
+   split). Words and numbers are printed on the flap face, centred on it, the split crossing the characters and the lower leaf a touch darker
+   (CSS ::after). SHORT and its −x% red, LONG and its +x% green; a trade not in yet: a blank word flap and a dash. */
+function trades(u,M){return `<span class="ud-trs" aria-hidden="true">${M.ORDER.map(m=>{const c=u.trades.find(x=>x.m===m),lab=`<span class="ud-tl">${mkSvg(m,c?(MCOL[m]||'#f8f0d9'):'rgba(243,234,210,.34)')}<span>${esc(nm(m))}</span></span>`;
+  if(!c)return `<span class="ud-tr ud-no">${lab}<span class="ud-tw"><b></b></span><span class="ud-tv"><b class="ud-dash"></b></span></span>`;
+  const dn=c.dir==='DOWN';return `<span class="ud-tr ${dn?'ud-dn':'ud-up'}">${lab}<span class="ud-tw"><b>${dn?'Short':'Long'}</b></span><span class="ud-tv"><b>${dn?'−':'+'}${esc(c.mag)}%</b></span></span>`}).join('')}</span>`}
 const sr=(u,M,extra)=>{const t=u.trades.map(c=>`${nm(c.m)} ${c.dir==='DOWN'?'short':'long'} ${c.mag}%`).join(', ');
   return `${u.co} (${u.ticker}), round ${u.n}${u.mag7?', Mag 7':''}${u.bet?', Bet #1':''}. ${extra?extra+'. ':''}${state(u,M)}${t?': '+t:''}${u.missing.length&&u.nIn?'. Still due: '+u.missing.map(nm).join(', '):''}.`};
 const tags=u=>(u.mag7?plate('Mag 7','ud-pt'):'')+(u.bet?plate('Bet #1','ud-pt'):'');
 /* a company row at the next bell */
-function row(u,M){const tk=tkOf(u);
-  return `<li class="ud-row ud-s-${u.state}"><a class="ud-a" href="#/round/${u.n}" aria-label="${esc(sr(u,M))}">
+function row(u,M,st){const tk=tkOf(u),s0=st||state(u,M);
+  return `<li class="ud-row ud-s-${u.state}"><a class="ud-a" href="#/round/${u.n}" aria-label="${esc(sr(u,M,st&&st!==state(u,M)?st:''))}">
    <span class="ud-lg">${coImg(u,'ud-logo')}</span><span class="ud-id"><span class="ud-nmr">${flaps(u.co,'ud-nm')}${tags(u)}</span>
-   <span class="ud-sub">${tk?flaps(tk,'ud-tk'):''}<span class="ud-st" aria-hidden="true">${esc(state(u,M))}</span></span></span>${trades(u,M)}</a></li>`}
+   <span class="ud-sub">${tk?flaps(tk,'ud-tk'):''}<span class="ud-st" aria-hidden="true">${esc(s0)}</span></span></span>${trades(u,M)}</a></li>`}
+/* a round in "Upcoming predictions": the same row; its line says when its trades are due (or how many are in), and when it is graded */
+function soonState(u,M){if(M.soon.v==='in')return state(u,M)+' · '+(u.dated?'graded '+dayWord(u.rp,M):'close date to come');
+  if(u.state==='coming')return state(u,M);return 'Trades due '+dayWord(u.cp,M)+(isOpen(u)?', before the open':'')}
 /* a big name: larger flaps, when it is graded, its four trades */
 function bigRow(u,M){const tk=tkOf(u),when=u.dated?'Graded at the close '+dayWord(u.rp,M):u.state==='due'?state(u,M)+' · close date to come':'Close date to come';
   return `<li class="ud-big ud-s-${u.state}"><a class="ud-a" href="#/round/${u.n}" aria-label="${esc(sr(u,M,u.dated?when:'Close date to come'))}">
@@ -182,17 +206,24 @@ function board1(M){const b=M.bell;
   const cap=b?`<p class="ud-cap"><span>The close grades every trade.</span> <span class="ud-capn">${n2(b.nIn)}<span>of</span>${n2(b.nAll)}<span>are in.</span></span><span class="u3-sr">${b.nIn} of ${b.nAll} trades are in.</span></p>`:
     `<p class="ud-cap"><span>No close on the card right now. The next trades drop before each report.</span></p>`;
   return `<div class="ud-bd ud-b1">${head(M)}<div class="ud-body">${cap}${b?`<ol class="ud-rows">${b.rounds.map(u=>row(u,M)).join('')}</ol>`:''}</div><div class="ud-foot"></div></div>`}
-function board2(M){const b=M.bell,rest=[];M.DAYS.forEach(d=>d.rounds.forEach(u=>rest.push(u)));
-  /* the big names: Mag 7 first (NVIDIA is also Bet #1), then market cap; four */
+function board2(M){const S=M.soon||{rounds:[]},ss=new Set(S.rounds.map(u=>u.n)),rest=[];M.DAYS.forEach(d=>d.rounds.forEach(u=>{if(!ss.has(u.n))rest.push(u)}));
+  /* the big names: Mag 7 first (NVIDIA is also Bet #1), then market cap; four; never a round already on the board above */
   const big=rest.filter(u=>u.mag7||u.cap>0).sort((x,y)=>(y.mag7-x.mag7)||(y.cap-x.cap)||(x.n-y.n)).slice(0,4),bs=new Set(big.map(u=>u.n));
-  const days=M.DAYS.map(d=>Object.assign({},d,{rounds:d.rounds.filter(u=>!bs.has(u.n))})).filter(d=>d.rounds.length);
+  const days=M.DAYS.map(d=>Object.assign({},d,{rounds:d.rounds.filter(u=>!bs.has(u.n)&&!ss.has(u.n))})).filter(d=>d.rounds.length);
   const dayHtml=d=>`<li class="ud-day${d.past?' ud-past':''}"><h3 class="ud-dh">${plate((d.day==='Today'||d.day==='Tomorrow'?d.day:SD[dow(d.p)])+' · '+md(d.p),'ud-dp')}<span class="ud-dl">${d.dueOnly?'Trades due · close date to come':'Graded at the close'}</span></h3>
     <ul class="ud-lis">${d.rounds.map(u=>li(u,M)).join('')}</ul></li>`;
-  if(!big.length&&!days.length)return '';
-  return `<section class="ud-s2" aria-labelledby="udH2"><div class="ud-bd ud-b2"><div class="ud-top"></div><div class="ud-body">
-   <h2 class="ud-hp" id="udH2"><span>Hot upcoming predictions</span></h2>
+  /* (2) Upcoming predictions: its brass header plate, a brass day plate with the line under it, one row per round with its four flaps */
+  /* grouped by trade day, each under its brass day plate: a round still waiting on today's trades (AMD) sits above the next day's batch */
+  const dpl=p=>{const d=dayName(p,M.today);return plate((d==='Today'||d==='Tomorrow'?d:SD[dow(p)])+' · '+md(p),'ud-dp')};
+  const grp=[];if(S.v==='in')grp.push({h:`<span class="ud-dl">Trades in · graded after the next bell</span>`,rs:S.rounds});
+  else S.rounds.forEach(u=>{const k=key(u.cp),g=grp.find(x=>x.k===k);if(g)g.rs.push(u);else grp.push({k,h:dpl(u.cp)+`<span class="ud-dl">${u.state==='coming'?'Trades coming in':'The next trades to come in'}</span>`,rs:[u]})});
+  const soonHtml=S.rounds.length?`<div class="ud-soon"><h2 class="ud-hp" id="udH3"><span>Upcoming predictions</span></h2>
+   ${grp.map(g=>`<h3 class="ud-dh ud-sdh">${g.h}</h3><ol class="ud-rows">${g.rs.map(u=>row(u,M,soonState(u,M))).join('')}</ol>`).join('')}</div>`:'';
+  if(!big.length&&!days.length&&!soonHtml)return '';
+  return `<section class="ud-s2" aria-labelledby="${soonHtml?'udH3':'udH2'}"><div class="ud-bd ud-b2"><div class="ud-top"></div><div class="ud-body">
+   ${soonHtml}${big.length||days.length?`<div class="ud-hot"><h2 class="ud-hp" id="udH2"><span>Hot upcoming predictions</span></h2>
    ${big.length?`<ol class="ud-bigs">${big.map(u=>bigRow(u,M)).join('')}</ol>`:''}
-   ${days.length?`<ol class="ud-days">${days.map(dayHtml).join('')}</ol>`:''}</div><div class="ud-foot"></div></div></section>`}
+   ${days.length?`<ol class="ud-days">${days.map(dayHtml).join('')}</ol>`:''}</div>`:''}</div><div class="ud-foot"></div></div></section>`}
 function build(M){return `<section class="ud-s1" aria-labelledby="udH"><h2 class="t4-h2 ud-h" id="udH"><span class="t4-hw">The next bell</span></h2>${board1(M)}</section>
   <div class="ud-tear" aria-hidden="true"></div>${board2(M)}${follow(M)}`}
 
@@ -226,14 +257,19 @@ function tryMount(){timer=0;const v=D.querySelector('#view .x2p-up');
     const root=D.createElement('div');root.className='u3-root u3-D';root.innerHTML=build(M);
     [...v.children].forEach(c=>{if(c.tagName!=='H1'){c.style.display='none';c.setAttribute('aria-hidden','true')}});
     v.appendChild(root);H.classList.add('u3-on');
-    clock(root);tearAll(root);
-    if(D.fonts&&D.fonts.ready)D.fonts.ready.then(()=>{if(root.isConnected)tearAll(root)});
+    clock(root);tearAll(root);fitTr(root);
+    if(D.fonts&&D.fonts.ready)D.fonts.ready.then(()=>{if(root.isConnected){tearAll(root);fitTr(root)}});
     window.__u3=M}catch(e){fail(e)}},fail)}catch(e){busy=false;fail(e)}}
+/* H40: one type size for all the trade numbers on the tab (and one for the words), stepped down together only if the widest would come
+   within 3px of its flap face's edge, so every number reads at the same size and sits centred on its flap */
+function fitTr(root){[['.ud-tv','--tvk'],['.ud-tw','--twk']].forEach(([sel,v])=>{root.style.removeProperty(v);let k=1;
+  root.querySelectorAll('.ud-tr '+sel).forEach(f=>{const b=f.firstElementChild;if(!b||!b.textContent)return;const room=f.clientWidth-6,w=b.getBoundingClientRect().width;if(room>0&&w>room)k=Math.min(k,room/w)});
+  if(k<1)root.style.setProperty(v,(Math.floor(k*100)/100).toString())})}
 function fail(e){busy=false;window.__u3Err=e;H.classList.remove('u3-live');try{console.error('u3',e)}catch(x){}}
 function again(){if(!timer)timer=setTimeout(tryMount,80)}
 /* the router redraws #view on every tab change: watch it (child list only) and try again */
 function watch(){const v=D.getElementById('view');if(!v)return setTimeout(watch,200);new MutationObserver(()=>{const u=D.querySelector('#view .x2p-up');if(!window.__u3Err&&u&&!u.querySelector('.u3-root'))again()}).observe(v,{childList:true,subtree:false});again()}
 addEventListener('hashchange',()=>again());
-let lw=innerWidth;addEventListener('resize',()=>{if(innerWidth===lw)return;lw=innerWidth;const r=D.querySelector('.u3-root.u3-D');if(r)tearAll(r)});
+let lw=innerWidth;addEventListener('resize',()=>{if(innerWidth===lw)return;lw=innerWidth;const r=D.querySelector('.u3-root.u3-D');if(r){tearAll(r);fitTr(r)}});
 watch();
 })();
