@@ -322,7 +322,7 @@ const PAGE=()=>isD()?14:isT()?12:10;let shown=0;
 function restHTML(){const k=Math.min(REST.length,shown||PAGE()),it=REST.slice(0,k),C=isD()?7:isT()?4:2,R=Math.ceil(it.length/C);
   const h=`<div class="m7-box"><ol class="m7-flip" style="grid-template-rows:${R>1?`repeat(${R-1},var(--peek)) `:''}auto">${it.map((r,j)=>{const row=R-1-Math.floor(j/C);return `<li style="grid-row:${row+1};grid-column:${j%C+1};z-index:${row+1}" data-col="${j%C===0?'l':j%C===C-1?'r':'m'}"${row===R-1?' class="m7-front"':''}>${slab(r,'m7-fl')}${tag(r)}</li>`}).join('')}</ol><span class="m7-boxf" aria-hidden="true"></span></div>`;
   const more=k<REST.length?`<button class="m7-more" type="button"><span>Show all ${REST.length}</span><i>${k} of ${REST.length}</i></button>`:(REST.length>PAGE()?`<button class="m7-more m7-less" type="button"><span>Show fewer</span></button>`:'');
-  return `<p class="m7-sub"><b>Every other round</b> · newest first</p>${h}${more}`}
+  return `<p class="m7-sub"><b>Every other round</b><span class="m7-sub2"><i> · </i>newest first</span></p>${h}${more}`}
 /* H34 (owner, 2026-11-02, night): a slab in the box lifts and says what it is before it opens: company and ticker, grade, who won.
    Phones: the first tap lifts it and shows the tag, a second tap on the same slab opens it. Mouse: hover lifts and tags, a click opens. */
 function tag(r){const L=lab(r)||{},W=wins(r),gw=L.gr?`Grade ${esc(L.gr)}${L.ds?' · '+esc(L.ds):''}`:'';
