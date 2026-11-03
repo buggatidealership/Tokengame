@@ -5,7 +5,7 @@
    EZ. maker's mark keep their painted proportions. The mark is die-struck into the steel on a graded round; on a round still to grade its
    die seat is empty. The winner's nameplate is gold (both on a tie, none when nobody won).
    Media, written out in full for make_site.py: media/cb-plate-h38-shell-1200.jpg media/cb-plate-h38-shell-1800.jpg
-   media/cb-plate-h38-title.jpg media/cb-plate-h38-np.jpg media/cb-plate-h38-npg.jpg media/cb-plate-h38-mk.jpg
+   media/cb-plate-h38-title.webp media/cb-plate-h38-np.webp media/cb-plate-h38-npg.webp media/cb-plate-h38-mk.webp
    media/cb-plate-h38-wellc.webp media/cb-plate-h38-wellcg.webp media/cb-plate-h38-wellr.webp media/cb-plate-h38-wellrg.webp
    media/cb-plate-h38-stamp.webp media/cb-plate-h38-stamp-steel.webp media/cb-plate-h38-die.webp
    It sits over the page's certificate (graded: the back face; pending: the one face), which stays underneath, hidden, so the flip, the

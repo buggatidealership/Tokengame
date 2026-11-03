@@ -70,11 +70,15 @@ const cabH=`<div class="vt-cab" role="group" aria-label="Every other round, a dr
 const root=D.createElement('div');root.className='vt';root.id='x2pVit';
 root.innerHTML=head+caseH+cabH;
 sec.classList.add('vt-sec');sec.appendChild(root);
+/* desktop pairs the closed drawers two to a row; a closed drawer left alone in its row (before an open one, or the last) takes the whole row */
+function pair(){let c=0;const ds=[...root.querySelectorAll('.vt-dw')];ds.forEach((d,j)=>{d.classList.remove('vt-solo');if(open.has(+d.dataset.dw)){c=0;return}
+  const nx=ds[j+1];if(c===0&&(!nx||open.has(+nx.dataset.dw))){d.classList.add('vt-solo');return}c=1-c})}
+pair();
 /* ---- drawers ---- */
 function setDrawer(i,o){const dw=root.querySelector(`.vt-dw[data-dw="${i}"]`);if(!dw)return;const b=dw.querySelector('.vt-df'),t=dw.querySelector('.vt-tray'),w=WEEKS[i];
   o?open.add(i):(open.delete(i),all.delete(i));dw.classList.toggle('vt-open',o);b.setAttribute('aria-expanded',o);
   b.setAttribute('aria-label',`Week of ${w.a}: ${w.rs.length} round${w.rs.length>1?'s':''}. ${o?'Close':'Open'} the drawer.`);
-  if(o){t.innerHTML=trayHTML(i);t.hidden=false;t.classList.remove('vt-pull');void t.offsetWidth;t.classList.add('vt-pull');fit(t)}else{t.hidden=true;t.innerHTML=''}}
+  pair();if(o){t.innerHTML=trayHTML(i);t.hidden=false;t.classList.remove('vt-pull');void t.offsetWidth;t.classList.add('vt-pull');fit(t)}else{t.hidden=true;t.innerHTML=''}}
 root.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.vt-df');if(b){const i=+b.parentNode.dataset.dw;setDrawer(i,!open.has(i));return}
   const a=e.target.closest&&e.target.closest('[data-all]');if(a){const i=+a.dataset.all,dw=a.closest('.vt-dw');all.has(i)?all.delete(i):all.add(i);const t=dw.querySelector('.vt-tray');t.innerHTML=trayHTML(i);fit(t);
     const nb=t.querySelector('[data-all]');if(nb)nb.focus({preventScroll:true});if(!all.has(i)){const r=dw.getBoundingClientRect();if(r.top<0)dw.scrollIntoView({block:'start'})}}});
