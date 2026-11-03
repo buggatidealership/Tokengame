@@ -1,4 +1,4 @@
-# /usr/bin/python3 key.py img/x-run.png img/x  -> img/x-<m>.png (grok,claude,gpt,kimi = TL,TR,BL,BR), magenta keyed out, cropped tight, max 520 px wide
+# /usr/bin/python3 key.py img/x-run.jpg img/x  -> img/x-<m>.png (grok,claude,gpt,kimi = TL,TR,BL,BR), magenta keyed out, cropped tight, max 520 px wide
 import sys
 from PIL import Image
 src,pre=sys.argv[1],sys.argv[2];FLIP='flip' in sys.argv
