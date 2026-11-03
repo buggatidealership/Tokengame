@@ -52,7 +52,7 @@ const css=fs.readFileSync(__dirname+'/_shop.css','utf8'),js=fs.readFileSync(__di
    o.offC=[];o.over=[];let nc=0;
    bySurf.forEach((v,sf)=>{const rr=sf.getBoundingClientRect(),U=v.u.reduce((a,u)=>({l:Math.min(a.l,u.l),r:Math.max(a.r,u.r),t:Math.min(a.t,u.t),b:Math.max(a.b,u.b)}),{l:1e9,r:-1e9,t:1e9,b:-1e9});
     if(SURF[v.i][3]){nc++;let V=U;sf.querySelectorAll('img').forEach(im=>{if(!vis(im))return;const q=im.getBoundingClientRect();V={l:Math.min(V.l,q.left),r:Math.max(V.r,q.right),t:Math.min(V.t,q.top),b:Math.max(V.b,q.bottom)}});
-const dx=(V.l+V.r)/2-(rr.left+rr.right)/2,dy=SURF[v.i][3]==='x'?0:(V.t+V.b)/2-(rr.top+rr.bottom)/2;if(Math.abs(dx)>1||Math.abs(dy)>1)o.offC.push(`${SURF[v.i][0]} "${sf.textContent.trim().slice(0,22)}" dx ${dx.toFixed(2)} dy ${dy.toFixed(2)}`)}
+const dx=(V.l+V.r)/2-(rr.left+rr.right)/2,dy=SURF[v.i][3]==='x'?0:(V.t+V.b)/2-(rr.top+rr.bottom)/2;o.cList=o.cList||[];o.cList.push(`${SURF[v.i][0]} "${sf.textContent.trim().slice(0,18)}" dx ${dx.toFixed(2)} dy ${dy.toFixed(2)}`);o.cMax=Math.max(o.cMax||0,Math.abs(dx),Math.abs(dy));if(Math.abs(dx)>1||Math.abs(dy)>1)o.offC.push(`${SURF[v.i][0]} "${sf.textContent.trim().slice(0,22)}" dx ${dx.toFixed(2)} dy ${dy.toFixed(2)}`)}
     const d=Math.max(U.r-rr.right,rr.left-U.l,U.b-rr.bottom,rr.top-U.t);if(d>.5&&SURF[v.i][0]!=='.m7-hd'&&SURF[v.i][0]!=='.vt-tag'){const side=['r','l','b','t'][[U.r-rr.right,rr.left-U.l,U.b-rr.bottom,rr.top-U.t].indexOf(d)];o.over.push(`${SURF[v.i][0]} "${sf.textContent.trim().slice(0,22)}" ${d.toFixed(2)} ${side}`)}});
    o.offScreen=[...new Set(texts.filter(t=>t.x<0).map(t=>t.t))].slice(0,6);bySurf.forEach((v,sf)=>v.u.forEach(u=>{if(sf.closest('.sp-belt'))return;if(u.l<-.5||u.r>innerWidth+.5)o.offScreen.push('ink off screen: '+sf.textContent.trim().slice(0,20))}));o.offScreen=[...new Set(o.offScreen)].slice(0,6);
    o.centredSurfaces=nc;o.offC=o.offC.slice(0,12);o.over=o.over.slice(0,12);
@@ -66,7 +66,7 @@ const dx=(V.l+V.r)/2-(rr.left+rr.right)/2,dy=SURF[v.i][3]==='x'?0:(V.t+V.b)/2-(r
     ks.forEach(k=>{const r=k.getBoundingClientRect();const key=Math.round(r.top/20);(rows[key]=rows[key]||[]).push({k,r})});
     Object.values(rows).forEach(row=>{if(row.length<2)return;ng++;const sameCls=c=>c.k.className.replace(/vt-lift/g,'').trim();
      const byC={};row.forEach(c=>{(byC[sameCls(c)]=byC[sameCls(c)]||[]).push(c)});Object.values(byC).forEach(cs=>{if(cs.length<2)return;const r0=cs[0].r;
-      cs.forEach(c=>{const bad=[];if(q!=='.pc-trk'&&Math.abs(c.r.top-r0.top)>.5)bad.push('top');if(Math.abs(c.r.bottom-r0.bottom)>.5)bad.push('bottom');if(Math.abs(c.r.width-r0.width)>.5)bad.push('width');if(bad.length)o.edge.push(q+' '+bad.join('/')+' '+(c.k.textContent||'').trim().slice(0,16))})})})}));
+      cs.forEach(c=>{o.eMax=Math.max(o.eMax||0,Math.abs(c.r.top-r0.top)*(q!=='.sp-row'?1:0),Math.abs(c.r.bottom-r0.bottom),Math.abs(c.r.width-r0.width));const bad=[];if(q!=='.pc-trk'&&Math.abs(c.r.top-r0.top)>.5)bad.push('top');if(Math.abs(c.r.bottom-r0.bottom)>.5)bad.push('bottom');if(Math.abs(c.r.width-r0.width)>.5)bad.push('width');if(bad.length)o.edge.push(q+' '+bad.join('/')+' '+(c.k.textContent||'').trim().slice(0,16))})})})}));
    o.edgeRows=ng;o.edge=[...new Set(o.edge)].slice(0,10);
    // inner scrollers (a carousel must not be a vertical scroller: the live SCROLLFIX rule)
    o.vscroll=[...R.querySelectorAll('*')].filter(e=>{const cs=getComputedStyle(e);return /auto|scroll/.test(cs.overflowY)&&e.scrollHeight>e.clientHeight+1}).map(e=>e.className).slice(0,4);
