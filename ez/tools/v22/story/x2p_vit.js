@@ -84,7 +84,7 @@ const ink=el=>{const rs=[],tw=D.createTreeWalker(el,NodeFilter.SHOW_TEXT);let n;
 const MIN=8;
 function fitOne(lb){const nmE=lb.querySelector('.vt-nm'),tk=lb.querySelector('.vt-tk'),rc=lb.querySelector('.vt-r');if(!nmE||!lb.offsetWidth)return;
   nmE.style.fontSize='';lb.classList.remove('vt-w2','vt-nt','vt-clip');
-  const R=ink(rc),LR=lb.getBoundingClientRect(),lim=()=>Math.min(R?R.l-2:LR.right,LR.right-1),over=e=>{const I=ink(e);return I?I.r-lim():0};
+  const R=ink(rc),LR=lb.getBoundingClientRect(),lim=e=>Math.min(R?R.l-2:LR.right,LR.right-1,e.getBoundingClientRect().right+.5),over=e=>{const I=ink(e);return I?I.r-lim(e):0};
   const vfit=()=>{const I=ink(lb.querySelector('.vt-l'));return !I||(I.b<=LR.bottom+.5&&I.t>=LR.top-.5)};
   const f0=parseFloat(getComputedStyle(nmE).fontSize);let f=f0,g=0;
   while((over(nmE)>0||!vfit())&&f>MIN&&g++<60){f=Math.max(MIN,f-.25);nmE.style.fontSize=f+'px'}

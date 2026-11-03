@@ -56,6 +56,7 @@ R38.build=function(host,d,cfg){
     const a=M[o[0]],b=M[o[1]],va=val(a.m),vb=val(b.m);
     host.querySelector('.r-lt').innerHTML=cfg.lead?cfg.lead(a,b,va,vb,w,mt,wk):(va==null)?`<b class="r-l1">No close</b><span>in the last 24 hours</span>`:
       `<b class="r-l1" style="color:${a.c}">${esc(a.name)}</b><b class="lb-n r-l2 ${mt==='hit'||va>=0?'up':'dn'}">${mt==='hit'?pc(va):$f(va)}</b><span>${mt==='hit'?'right on direction · '+esc(b.name)+' '+pc(vb):(wk==='season'?'leads by ':'takes the '+w.t.toLowerCase()+' by ')+$f(va-vb).replace('+','')}</span>`;
+    const sl=host.querySelector('.r-sl');if(sl){sl.style.top=lanes.offsetTop+'px';sl.style.height=lanes.offsetHeight+'px';sl.style.bottom='auto'}
     cfg.after&&cfg.after(host,o,mt,wk)}
   wireSw(host,(g,k)=>{if(g.classList.contains('r-w'))wk=k;else mt=k;draw(!RM())});
   draw(false);
