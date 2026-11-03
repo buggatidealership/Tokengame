@@ -113,7 +113,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const wins=r=>String(r.win||'').toUpperCase().split(/\s*&\s*|\s*,\s*/).filter(m=>MD[m]);
 const callOf=(r,m)=>(r.calls||[]).find(c=>c[0]===m);
 const right=(c,a)=>/^UP/i.test(c)===(a>0);
-const tile=n=>`media/tile-r${n}-${(window.FILMS||{})[n]?'f1':'t2'}.jpg`;
+const tile=n=>{const F=(window.FILMS||{})[n];return `media/tile-r${n}-${F?(F.t||'f1'):'t2'}.jpg`};
 const mv=r=>String(r.out).replace(/^-/,'−');
 const md=s=>{if(!s)return '';const[m,d]=String(s).split('/');return ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][m-1]+' '+(+d)};
 const logoF=t=>{const L=(window.CO_LOGOS||{})[t];return L?'media/'+(L.f||L):''};
@@ -287,7 +287,7 @@ const M7=t=>t==='GOOG'?'GOOGL':t;
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const MO=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],md=s=>{const m=String(s||'').match(/(\d+)\/(\d+)\/(\d+)/);return m?MO[+m[1]]+' '+(+m[2]):''};
 const logoF=t=>{const L=(window.CO_LOGOS||{})[t];return L?'media/'+(L.f||L):''},dark=t=>!!((window.CO_LOGOS||{})[t]||{}).dark;
-const tile=r=>`media/tile-r${r.n}-${(window.FILMS||{})[r.n]?'f1':'t2'}.jpg`;
+const tile=r=>{const F=(window.FILMS||{})[r.n];return `media/tile-r${r.n}-${F?(F.t||'f1'):'t2'}.jpg`};
 const lab=r=>{const z=D.querySelector(`#car .card[data-n="${r.n}"] .zlab`);if(!z)return null;const q=s=>(z.querySelector(s)||{}).textContent||'';
   return {ds:q('.zr .ds'),gr:q('.zr .gr'),no:q('.zr .no'),cert:(q('.zb').match(/\d{6,}/)||[''])[0],ten:q('.zr .gr')==='10'}};
 const MDL=window.MODELS||{},nm=m=>(MDL[m]&&MDL[m].name)||m.charAt(0)+m.slice(1).toLowerCase();

@@ -24,7 +24,7 @@ const MDL=window.MODELS||{},nm=m=>m==='GPT'?'GPT':m.charAt(0)+m.slice(1).toLower
 const wins=r=>String(r.win||'').toUpperCase().split(/\s*&\s*|\s*,\s*|\s+AND\s+/).filter(m=>MDL[m]);
 const winT=r=>{const W=wins(r);return W.length?W.map(nm).join(' & ')+(W.length>1?' tie':' won'):'Nobody won'};
 /* the round's picture, as the record's (written out for make_site.py: media/tile-r<n>-f1.jpg for a round with a film, media/tile-r<n>-t2.jpg without) */
-const tile=r=>'media/tile-r'+r.n+'-'+((window.FILMS||{})[r.n]?'f1':'t2')+'.jpg';
+const tile=r=>{const F=(window.FILMS||{})[r.n];return 'media/tile-r'+r.n+'-'+(F?(F.t||'f1'):'t2')+'.jpg'};
 const logoF=t=>{const L=(window.CO_LOGOS||{})[t];return L?'media/'+(L.f||L):''},dark=t=>!!((window.CO_LOGOS||{})[t]||{}).dark;
 const LB={};const lab=n=>{if(LB[n])return LB[n];const z=D.querySelector(`#car .card[data-n="${n}"] .zlab`);if(!z)return {};const q=s=>((z.querySelector(s)||{}).textContent||'').trim();
   const o={ds:q('.zr .ds'),gr:q('.zr .gr')};if(o.gr)LB[n]=o;return o};
