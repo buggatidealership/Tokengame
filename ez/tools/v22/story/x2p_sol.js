@@ -78,8 +78,8 @@ const TWO=window.__x2pSolTwo!=='off';
 if(TWO){const done=new Set();const io=('IntersectionObserver' in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const t=e.target;io.unobserve(t);done.add(t.dataset.k);if(RM.matches){t.classList.add('sx-dn');return}t.classList.add('sx-go');setTimeout(()=>{t.classList.remove('sx-go');t.classList.add('sx-dn')},1300)}}),{threshold:.35}):null;
  const words=X=>({intro:`We tracked every trade so you don't have to. Here are the stats after ${X.N} rounds.`,
   b1:['Hit rate','How often were they right on their long or short?'],
-  b2:['P&amp;L · $100K on every trade','Would following them have made you money?']});
- const board=(X,k,c)=>`<div class="sx-bd sx2-bd${done.has(k)?' sx-dn':''}" data-k="${k}"><p class="sx-cap"><small>${c[0]}</small>${c[1]}</p><div class="sx-pic"><div class="sx-ch" data-k="${k}"></div>${rows(X,k)}</div></div>${sr(X,k)}`;
+  b2:['P&amp;L','Would following them have made you money?']});
+ const board=(X,k,c)=>`<div class="sx-bd sx2-bd${done.has(k)?' sx-dn':''}" data-k="${k}"><div class="sx-hd2"><h3 class="sx-sh">${c[0]}</h3><p class="sx-q">${c[1]}</p></div><div class="sx-pic"><div class="sx-ch" data-k="${k}"></div>${rows(X,k)}</div></div>${sr(X,k)}`;
  take.html=(X,V)=>{const w=words(X);return `<div class="p5-bleed sx sx2">${P5.head('Smart or','lucky?')}<p class="h35-cap sx2-cap">${w.intro}</p>${board(X,'acc',w.b1)}${board(X,'pnl',w.b2)}</div>`};
  take.draw=(box,X,V)=>{box.querySelectorAll('.sx-ch[data-k]').forEach(el=>{const k=el.dataset.k,Wd=Math.max(240,Math.round(el.clientWidth)||358),two=box.clientWidth>=860,Hh=two?Math.round(Wd*.56):Wd>=560?Math.round(Wd*.47):Math.round(Wd*.76);el.style.height=Hh+'px';/* H46: two boards side by side on desktop, each chart a little flatter */
    el.innerHTML=`<svg class="sx-svg" viewBox="0 0 ${Wd} ${Hh}" width="${Wd}" height="${Hh}" role="img" aria-label="${k==='acc'?'Each AI’s hit rate round by round, from 50/50, against the 50% line':'Each AI’s P&L round by round from $0, $100K on every trade, no leverage, the season'}">${chart(X,k,Wd,Hh)}</svg>`});
