@@ -66,14 +66,15 @@ function build(d,fb){var G=d.k==='g',WN=window.__x2pCbWin==1,h='<div class="cb-p
       '<span class="cb-pc">'+(G?pf(r,i):'<span class="sr">Not graded yet</span>')+'</span>'+trade(r)+'</li>'});
   h+='</ol><i class="cb-g" style="--g:1"></i>';
   h+='<div class="cb-mw"><b class="cb-ml cb-tb">Market</b>'+(G?move(d.a):'<b class="cb-mv cb-tb cb-cd"></b>')+'</div>';
-  h+='<i class="cb-g" style="--g:1"></i><div class="cb-bt"><div class="cb-dt cb-np"><small class="cb-fit">Trades filed</small><b class="cb-fit">'+d.filed+'</b></div><div class="cb-dt cb-np"><small class="cb-fit">'+(G?'Graded on':'Final grade')+'</small><b class="cb-fit">'+d.graded+'</b></div>'+
-    '<span class="cb-st'+(G?'':' cb-die')+'" role="img" aria-label="'+(G?'Struck with the EZ. mark: graded by the market close':'The EZ. mark is struck once the market closes')+'">'+(G?'<i class="cb-ho" aria-hidden="true"><i class="cb-hf"></i></i>':'')+'</span></div><i class="cb-g" style="--g:.5"></i>';
-  h+=fb?pushPlate(fb):'<i class="cb-flip cb-nob" aria-hidden="true"></i>';
+  h+='<i class="cb-g" style="--g:1"></i><div class="cb-bt'+(fb?' cb-btf':'')+'"><div class="cb-dt cb-np"><small class="cb-fit">Trades filed</small><b class="cb-fit">'+d.filed+'</b></div><div class="cb-dt cb-np"><small class="cb-fit">'+(G?'Graded on':'Final grade')+'</small><b class="cb-fit">'+d.graded+'</b></div>'+
+    '<span class="cb-st'+(G?'':' cb-die')+'" role="img" aria-label="'+(G?'Struck with the EZ. mark: graded by the market close':'The EZ. mark is struck once the market closes')+'">'+(G?'<i class="cb-ho" aria-hidden="true"><i class="cb-hf"></i></i>':'')+'</span>'+(fb?pushPlate(fb):'')+'</div><i class="cb-g" style="--g:.5"></i>';
+  if(!fb)h+='<i class="cb-flip cb-nob" aria-hidden="true"></i>';
   return h+'</div>'}
 /* H43 (owner, 2026-11-03: "see the film on the card needs to be diegetically integrated with the world"): the flip button is a nickel
    push-plate riveted to the foot of the steel plate, cut from the same nameplate stock as the date plates (media/cb-plate-h38-np.webp),
    its two rivets cut from the shell's own corner rivet (media/cb-rivet-h43.webp); "See the film" engraved into it like the dates, a
-   play triangle engraved before it (a picture round: a small framed picture). It stands proud of the steel; pressed, it sinks a pixel
+   play triangle engraved before it (a picture round: a small framed picture). It sits in the foot under the two date plates, as wide
+   as the pair, the EZ. mark beside them (a 320 px phone: under the mark). It stands proud of the steel; pressed, it sinks a pixel
    and its bevel's lit edge turns to the bottom (a recess). The button itself stays the real button (the page's data-flip), at least
    44 px tall on screen, its name the engraved words. */
 function pushPlate(fb){var pic=/picture/i.test(fb),g=pic?

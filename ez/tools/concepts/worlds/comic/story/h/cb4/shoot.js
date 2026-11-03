@@ -3,7 +3,7 @@ const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=
 const OUT=process.argv[2],WS=(process.argv[3]||'320,390,1280').split(',').map(Number),RS=(process.argv[4]||'64,80,51,57,81').split(',').map(Number);fs.mkdirSync(OUT,{recursive:true});
 const PORT=process.env.PORT||8994,DPR=+process.env.DPR||2,PAGE=process.env.PAGE||'v46-live-x2plus.html';
 (async()=>{const b=await chromium.launch();
- for(const W of WS){const ctx=await b.newContext({viewport:{width:W,height:W<600?844:900},deviceScaleFactor:DPR});const p=await ctx.newPage();await FONTS(p);const er=[];
+ for(const W of WS){const ctx=await b.newContext({viewport:{width:W,height:W<600?844:900},deviceScaleFactor:DPR});const p=await ctx.newPage();await FONTS(p);const er=[];if(process.env.WIN)await p.addInitScript(()=>{window.__x2pCbWin=1});
   p.on('pageerror',e=>er.push('pageerror '+e.message));p.on('console',m=>{if(m.type()==='error')er.push(m.text())});
   for(const n of RS){
    await p.goto(`http://127.0.0.1:${PORT}/${PAGE}?${Date.now()}#/round/${n}`,{waitUntil:'load',timeout:150000});

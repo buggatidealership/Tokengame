@@ -90,12 +90,12 @@ function audit(){
     if(e.closest('.cb-en'))return 'enamel-filled engraving: paint clipped into the cut ('+cs.backgroundImage.slice(0,30)+'...), wall+lip drop-shadows';
     if(clip)return 'engraved through enamel: bright metal clipped into the letters, wall+lip drop-shadows';
     if(cs.textShadow&&cs.textShadow!=='none')return 'engraved: ink in the cut + text-shadow lip/wall ('+cs.textShadow.slice(0,60)+')';return 'FLAT (no process)'};
-  [['See the film (push-plate)','.cb-fpl'],['rank','.cb-rk'],['name','.cb-nm'],['trade move','.cb-tv'],['PASS/FAIL','.cb-pf i'],['No.','.cb-no'],['MARKET','.cb-ml'],['market move / countdown','.cb-mv'],['date label','.cb-dt small'],['date','.cb-dt b'],['See the film','.cb-flip']].forEach(([l,s])=>{const e=cb.querySelector(s);if(!e)return;const kd=KIND(e);res.surf[l]=kd;if(/FLAT/.test(kd))res.fails.push('flat text: '+l)});
+  [['See the film (push-plate)','.cb-fpl'],['rank','.cb-rk'],['name','.cb-nm'],['trade move','.cb-tv'],['PASS/FAIL','.cb-pf i'],['No.','.cb-no'],['MARKET','.cb-ml'],['market move / countdown','.cb-mv'],['date label','.cb-dt small'],['date','.cb-dt b']].forEach(([l,s])=>{const e=cb.querySelector(s);if(!e)return;const kd=KIND(e);res.surf[l]=kd;if(/FLAT/.test(kd))res.fails.push('flat text: '+l)});
   res.fonts=[...new Set([...cb.querySelectorAll('*')].filter(e=>vis(e)&&[...e.childNodes].some(z=>z.nodeType===3&&z.textContent.trim())).map(e=>getComputedStyle(e).fontFamily.split(',')[0].replace(/"/g,'')))];
   [...cb.querySelectorAll('.cb-p>:not(.cb-sh):not(.cb-g)')].forEach(e=>{const r=e.getBoundingClientRect();if(r.bottom>CB.bottom+.5||r.top<CB.top-.5)res.fails.push('outside the plate: '+e.className)});
   // H43: the See the film push-plate: its words + triangle centred on the plate's painted face, clear of the dates, the mark and the frame,
   // a tap box of 44 px or more, and its making process
-  {const bt=cb.querySelector('.cb-flip:not(.cb-nob)');if(bt){const fp=bt.querySelector('.cb-fp'),P=fp.getBoundingClientRect(),T=bt.getBoundingClientRect();
+  {const bt=cb.querySelector('.cb-flip:not(.cb-nob)');if(bt&&bt.querySelector('.cb-fp')){const fp=bt.querySelector('.cb-fp'),P=fp.getBoundingClientRect(),T=bt.getBoundingClientRect();
     const B=parseFloat(getComputedStyle(fp).fontSize)*.66*S;const fc={top:P.top+B*42/43.94,bot:P.bottom-B*(1-(235-216.06)/43.94),left:P.left+B*51/44,right:P.right-B*51/44};
     const lab=bt.querySelector('.cb-fpl'),q=ink(lab),g=bt.querySelector('.cb-fg').getBoundingClientRect();
     const grpL=Math.min(g.left,q.left),grpR=q.right-parseFloat(getComputedStyle(lab).letterSpacing)*S; // the trailing tracking is not ink
