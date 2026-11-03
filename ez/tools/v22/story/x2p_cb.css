@@ -1,14 +1,27 @@
-/* x2p_cb (round H38): the round's card back as a blackened steel vault plate. Painted parts (Hedra, from the H36 plate) laid out by the
-   page: sizes in cqw of the plate's width (.cb is the size container), every text at least 8 px on screen (--f8 = 8.2px through the
-   view's zoom, --cbz, set by x2p_cb.js). Standard shape = the painting's own proportions; a short card squeezes the gaps; a tall card
-   (a 320 px phone) takes two-line nameplates and stacks the dates over the mark. */
+/* x2p_cb (round H40): the round's card back as a blackened steel vault plate carrying the certificate's own content and layout
+   (No., one nameplate per model: rank, logo, name, flag, PASS/FAIL, the trade; MARKET and the move; the dates; the EZ. mark).
+   Painted parts (Hedra, from the H36 plate) laid out by the page: sizes in cqw of the plate's width (.cb is the size container), every
+   text at least 8 px on screen (--f8 = 8.2px through the view's zoom, --cbz, set by x2p_cb.js).
+   How each text is made, as a plate maker would make it:
+   - engraved (.cb-np text: rank, name, Long/Short, No., the date plates): dark ink in the cut, a dark wall above, a light lip below;
+   - enamel-filled engraving (.cb-en: the trade's move, the market's move): red or green paint sitting in the cut, a darker band where
+     the cut's upper wall shades it, the wall and the lit lip drawn by drop-shadows (a text-shadow would show through clipped paint);
+   - hand-punched (.cb-pf: PASS / FAIL): one letter punch per letter, each at its own tilt and depth, the recess rubbed with paint
+     that wears off in places, a faint raised burr around each letter;
+   - engraved through the black enamel (.cb-ml MARKET, the countdown): the cut shows the bright metal under the enamel.
+   Vertical centring: every text box is trimmed to its capitals (text-box), and each plate's padding-top moves the centre onto the
+   painted face (np/title/date plates: the face runs 0.956 to -0.569 of the 2.9cqw bevel, so +.56cqw; the enamel window +.52cqw). */
 #x2pRm .fin.cb-on>.xc{visibility:hidden}
 html.x2p #x2pRm .card .fin>div.cb{visibility:visible!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;z-index:6;container:cb/size;display:flex!important;flex-direction:column!important;background:#0b0a0d;
   --f8:calc(8.2px / var(--cbz,1));--ink:#24211d;--ink2:#4a463f;--lip:0 .16cqw 0 rgba(255,255,255,.55),0 -.12cqw 0 rgba(0,0,0,.3);
+  --red:#a5261c;--red2:#6e140e;--grn:#1e6f3f;--grn2:#0f4426;
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .86 0 0 0 0 .84 0 0 0 0 .79 -14 0 0 0 4.9'/%3E%3C/filter%3E%3Crect width='64' height='64' filter='url(%23n)'/%3E%3C/svg%3E");
   font-family:Anton,Impact,sans-serif;font-weight:400;letter-spacing:0;text-transform:none;line-height:1;color:var(--ink);text-align:left}
 #x2pRm .cb *{box-sizing:border-box}
 #x2pRm .cb .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 #x2pRm .cb :is(b,em,i,small,span){font-style:normal}
+/* every text box is its capitals: centring a box centres the letters */
+#x2pRm .cb .cb-tb{display:block;text-box:trim-both cap alphabetic;line-height:1;white-space:nowrap}
 /* the steel shell: corners and rivets whole, the edges and the field stretch */
 html.x2p #x2pRm .cb .cb-p{position:relative!important;flex:1 1 auto!important;min-height:0;display:flex!important;flex-direction:column!important;padding:8cqw 7.6cqw 0;margin:0}
 html.x2p #x2pRm .cb .cb-sh{display:block!important;position:absolute!important;inset:0!important;z-index:0!important;border:0 solid transparent;pointer-events:none;
@@ -17,58 +30,71 @@ html.x2p #x2pRm .cb .cb-p>:not(.cb-sh){position:relative;z-index:1;flex-shrink:0
 html.x2p #x2pRm .cb .cb-p>.cb-g{display:block;flex:var(--g,1) 1 0;min-height:.8cqw}
 /* nickel nameplates (bevels whole, the brushed face stretches) */
 #x2pRm .cb-np{border:0 solid transparent;border-image:url(media/cb-plate-h38-np.webp) 16.9% 3.33% fill / 2.9cqw stretch}
-#x2pRm .cb-np :is(b,small,span,em,i){text-shadow:var(--lip)}
+#x2pRm .cb-np :is(b,small,span,i):not(.cb-en,.cb-en *,.cb-pf,.cb-pf *){text-shadow:var(--lip)}
 #x2pRm .cb-np svg{filter:drop-shadow(0 .14cqw 0 rgba(255,255,255,.45))}
-/* the title plate (the key light falls on it) */
-#x2pRm .cb-ti{border-image-source:url(media/cb-plate-h38-title.webp);height:16.6cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6cqw;padding:3cqw 4cqw 2.2cqw;text-align:center}
-#x2pRm .cb-ti small{font-size:max(2.4cqw,var(--f8));color:#37332c}
+/* the title plate: the certificate's number, engraved */
+#x2pRm .cb-ti{border-image-source:url(media/cb-plate-h38-title.webp);height:13.4cqw;display:flex;align-items:center;justify-content:center;padding:1.12cqw 4cqw 0;text-align:center}
+#x2pRm .cb-no{font-size:max(6.2cqw,var(--f8));letter-spacing:.07em;text-transform:uppercase;color:var(--ink);max-width:100%;overflow:hidden}
 #x2pRm .cb small{font-size:max(2.6cqw,var(--f8));letter-spacing:.09em;text-transform:uppercase;color:var(--ink2);white-space:nowrap;font-family:Anton,Impact,sans-serif}
-#x2pRm .cb-co{display:block;max-width:100%;font-family:Bangers,Impact,sans-serif;font-size:max(7.4cqw,var(--f8));line-height:1.02;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
-#x2pRm .cb-tk{font-family:Anton,Impact,sans-serif;font-size:max(.5em,var(--f8));letter-spacing:.06em;color:var(--ink2);vertical-align:.3em}
-/* the four nameplates */
-#x2pRm .cb-rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;justify-content:space-between;gap:1.2cqw;flex:2.2 0 auto}
-#x2pRm .cb-gr{display:none}
-#x2pRm .cb-r{height:11.8cqw;display:flex;align-items:center;gap:2cqw;padding:0 1.8cqw 0 .7cqw}
+/* the four nameplates: one grid, every row on its columns (rank, well, name + flag, gap, PASS/FAIL, gap, Long/Short, move), so the
+   marks share one column exactly halfway between the widest name + flag and the trades, and the moves end on one line */
+#x2pRm .cb-rows{--rs:1;list-style:none;margin:0;padding:0;display:grid;row-gap:2.8cqw;align-content:space-between;flex:2.2 0 auto;
+  grid-template-columns:auto auto max-content minmax(1.4cqw,1fr) auto minmax(1.4cqw,1fr) auto auto}
+#x2pRm .cb-rows.p{grid-template-columns:auto max-content minmax(1.4cqw,1fr) auto minmax(1.4cqw,1fr) auto auto}
+#x2pRm .cb-r{--rh:11.8cqw;--pt:1.12cqw;position:relative;grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center;height:var(--rh);padding:var(--pt) 2.8cqw 0 .7cqw}
 #x2pRm .cb-r.win{border-image-source:url(media/cb-plate-h38-npg.webp);--ink:#2a1a03;--ink2:#5b3d0b;--lip:0 .16cqw 0 rgba(255,240,190,.6),0 -.12cqw 0 rgba(60,30,0,.35)}
-#x2pRm .cb-wc{position:relative;flex:none;width:10cqw;height:10cqw;background:url(media/cb-plate-h38-wellc.webp) center/100% 100% no-repeat}
+#x2pRm .cb-rk{font-size:max(calc(4.2cqw * var(--rs)),var(--f8));color:var(--ink2);margin:0 1.3cqw 0 1.2cqw;justify-self:center}
+#x2pRm .cb-r .cb-rk{margin-left:3.3cqw}
+#x2pRm .cb-wc{position:relative;width:10cqw;height:10cqw;margin-right:1.8cqw;background:url(media/cb-plate-h38-wellc.webp) center/100% 100% no-repeat}
+#x2pRm .cb-rows.p .cb-wc{margin-left:0}
 #x2pRm .cb-r.win .cb-wc{background-image:url(media/cb-plate-h38-wellcg.webp)}
 #x2pRm .cb-wc .cb-mk{position:absolute;inset:19%;border-radius:50%;background:#131117;padding:19%;display:grid;place-items:center;
   box-shadow:inset 0 .45cqw .8cqw rgba(0,0,0,.75),inset 0 -.2cqw .3cqw rgba(255,255,255,.08)}
 #x2pRm .cb-mk svg{width:100%;height:100%;display:block;filter:none}
 #x2pRm .cb-mk svg :is(path,circle,rect,polygon,ellipse){fill:var(--mc)!important}
-#x2pRm .cb-tx{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:1.6cqw}
-#x2pRm .cb-l1,#x2pRm .cb-l2{display:flex;align-items:center;gap:1.1cqw;min-width:0;white-space:nowrap;overflow:hidden}
-#x2pRm .cb-l2{flex-direction:column;align-items:flex-end;gap:.35cqw;overflow:visible}
-#x2pRm .cb-rk{font-size:max(4cqw,var(--f8));color:var(--ink2);flex:none}
-#x2pRm .cb-nm{font-size:max(5.2cqw,var(--f8));letter-spacing:.05em;text-transform:uppercase;color:var(--ink);overflow:hidden;text-overflow:ellipsis}
-#x2pRm .cb-fl{width:3.6cqw;height:2.4cqw;flex:none;display:block;box-shadow:0 0 0 .22cqw rgba(0,0,0,.35)}
-#x2pRm .cb-tr{white-space:nowrap;font-size:max(3.9cqw,var(--f8));line-height:.95;color:var(--ink)}
-#x2pRm .cb-tr i{font-family:"Shantell Sans",sans-serif;font-weight:700;font-size:max(.8em,var(--f8));color:var(--ink2)}
-#x2pRm .cb-off{font-size:max(2.5cqw,var(--f8))!important;letter-spacing:.06em;color:#3c382f!important}
-#x2pRm .cb-r.no .cb-tr b,#x2pRm .cb-r.no .cb-nm{opacity:.85}
-/* the PASS / FAIL well, stamped in worn ink */
-#x2pRm .cb-wr{position:relative;flex:none;width:15.6cqw;height:8cqw;display:grid;place-items:center;background:url(media/cb-plate-h38-wellr.webp) center/100% 100% no-repeat}
-#x2pRm .cb-r.win .cb-wr{background-image:url(media/cb-plate-h38-wellrg.webp)}
-#x2pRm .cb-pf{display:inline-block;font-size:max(3.4cqw,var(--f8));letter-spacing:.12em;padding:.5cqw 1.1cqw .45cqw 1.3cqw;border:.42cqw solid currentColor;border-radius:.9cqw;transform:rotate(var(--rot));line-height:1;text-shadow:none!important}
-#x2pRm .cb-pf.p{color:#1f7a45;filter:url(#x2pcw0)}#x2pRm .cb-pf.f{color:#a8231a;filter:url(#x2pcw2)}
-/* the market's window: black enamel, cream type */
-#x2pRm .cb-mw{height:18.6cqw;display:flex;align-items:center;justify-content:space-between;gap:2cqw;padding:0 5.2cqw;
-  border:0 solid transparent;border-image:url(media/cb-plate-h38-mk.webp) 16% 3.64% fill / 3.1cqw stretch;--ink:#efe6cc;--ink2:#b9b19b}
-#x2pRm .cb-mw :is(b,small,span,em){text-shadow:0 -.12cqw 0 rgba(0,0,0,.9)}
-#x2pRm .cb-ml{display:flex;flex-direction:column;align-items:flex-start;gap:.9cqw;min-width:0}
-#x2pRm .cb-mw small{color:var(--ink2);max-width:100%;overflow:hidden;text-overflow:ellipsis}
-#x2pRm .cb-mv{font-size:max(8.6cqw,var(--f8));letter-spacing:.01em;color:var(--ink);white-space:nowrap}
-#x2pRm .cb-mv.up{color:#5fe08f}#x2pRm .cb-mv.dn{color:#ff6a5c}
-#x2pRm .cb-mv.cb-q{min-height:1em}
-#x2pRm .cb-wn{display:flex;align-items:center;gap:1cqw;white-space:nowrap;font-size:max(4.8cqw,var(--f8));color:var(--ink);min-width:0;overflow:hidden}
-#x2pRm .cb-wn em{font-family:"Shantell Sans",sans-serif;font-weight:800;font-size:max(.78em,var(--f8));color:var(--ink2)}
-#x2pRm .cb-wn small{font-family:"Shantell Sans",sans-serif;font-weight:600;text-transform:none;letter-spacing:0}
-#x2pRm .cb-wn b{color:var(--wc,var(--ink))}
-#x2pRm .cb-wn .cb-cr{width:4.4cqw;height:2.9cqw;flex:none;color:#e9b94a}
-#x2pRm .cb-wn.cb-cd em{font-family:Anton,Impact,sans-serif;font-weight:400;font-size:1em;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+/* the name and its flag (the cell runs the plate's full height so the crown can sit on the plate's top edge) */
+#x2pRm .cb-id{position:relative;align-self:stretch;display:flex;align-items:center;gap:1.2cqw}
+#x2pRm .cb-nm{font-size:max(calc(5.2cqw * var(--rs)),var(--f8));letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+#x2pRm .cb-fl{width:calc(3.6cqw * var(--rs));height:calc(2.4cqw * var(--rs));min-width:9px;min-height:6px;flex:none;display:block;box-shadow:0 0 0 .22cqw rgba(0,0,0,.35)}
+#x2pRm .cb-pc{justify-self:center;display:flex;align-items:center}
+/* the trade: Long / Short engraved, the move enamel-filled, every move ending on the same line */
+#x2pRm .cb-tw{font-size:max(calc(3.1cqw * var(--rs)),var(--f8));letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-right:1.1cqw}
+#x2pRm .cb-tv{justify-self:end;font-size:max(calc(4.8cqw * var(--rs)),var(--f8));letter-spacing:.02em}
+/* enamel in the cut: paint below the surface, its upper edge shaded by the cut's wall, the lit lip under it */
+#x2pRm .cb .cb-en{color:transparent!important;-webkit-background-clip:text;background-clip:text;padding:.14em 0;margin:-.14em 0;text-shadow:none!important;
+  background-image:linear-gradient(180deg,var(--e2) 0 22%,var(--e1) 40%,var(--e1) 80%,var(--e3) 100%);
+  filter:drop-shadow(0 -.1cqw 0 rgba(0,0,0,.42)) drop-shadow(0 .15cqw 0 rgba(255,255,255,.5))}
+#x2pRm .cb .cb-en.dn{--e1:var(--red);--e2:var(--red2);--e3:#b8392d}
+#x2pRm .cb .cb-en.up{--e1:var(--grn);--e2:var(--grn2);--e3:#2a8250}
+#x2pRm .cb-r.win .cb-en{filter:drop-shadow(0 -.1cqw 0 rgba(60,30,0,.45)) drop-shadow(0 .15cqw 0 rgba(255,240,190,.55))}
+/* PASS / FAIL: struck with letter punches into the plate and rubbed with paint; no box, the word is the mark */
+#x2pRm .cb-pf{display:flex;align-items:center;gap:.28cqw;font-size:max(calc(3.9cqw * var(--rs)),var(--f8));
+  filter:drop-shadow(0 0 .22cqw rgba(255,255,255,.16))}
+#x2pRm .cb-pf i{display:block;text-box:trim-both cap alphabetic;line-height:1;color:transparent;-webkit-background-clip:text;background-clip:text;padding:.14em .02em;margin:-.14em -.02em;
+  transform:translateY(var(--py)) rotate(var(--pr)) scale(var(--ps));
+  background-image:var(--noise),linear-gradient(180deg,var(--p2) 0 26%,var(--p1) 46%,var(--p1) 82%,var(--p3));background-size:4.5cqw 4.5cqw,100% 100%;
+  filter:drop-shadow(0 -.12cqw 0 rgba(0,0,0,.55)) drop-shadow(0 .16cqw 0 rgba(255,255,255,.6))}
+#x2pRm .cb-pf.p{--p1:#23864c;--p2:#0f4a28;--p3:#3b9a62}
+#x2pRm .cb-pf.f{--p1:#b42a1f;--p2:#6a120c;--p3:#c8473a}
+#x2pRm .cb-r.win .cb-pf i{filter:drop-shadow(0 -.12cqw 0 rgba(60,30,0,.55)) drop-shadow(0 .16cqw 0 rgba(255,240,190,.62))}
+/* the crown: cast gold, lit from above like the rivets, seated on the winning plate's top edge above the name, its shadow on the steel */
+#x2pRm .cb-cr{position:absolute;left:-.4cqw;top:calc(-1 * var(--pt) - 2.75cqw);width:6.4cqw;height:4.5cqw;pointer-events:none;
+  background:url(media/cb-crown-h40.webp) center/100% 100% no-repeat;filter:saturate(.86) brightness(.97) drop-shadow(0 .32cqw .26cqw rgba(0,0,0,.6))}
+/* the market's window: black enamel; MARKET and the move engraved through it, the move filled with enamel */
+#x2pRm .cb-mw{height:18.6cqw;display:flex;align-items:center;justify-content:space-between;gap:2cqw;padding:1.03cqw 5.6cqw 0;
+  border:0 solid transparent;border-image:url(media/cb-plate-h38-mk.webp) 16% 3.64% fill / 3.1cqw stretch}
+#x2pRm .cb .cb-ml,#x2pRm .cb .cb-cd{color:transparent!important;-webkit-background-clip:text;background-clip:text;padding:.14em 0;margin:-.14em 0;text-shadow:none;
+  background-image:linear-gradient(180deg,#5c574d 0 24%,#c9c1ae 44%,#e6decb 82%,#f4ecd8);filter:drop-shadow(0 -.1cqw 0 #000) drop-shadow(0 .14cqw 0 rgba(255,250,235,.32))}
+#x2pRm .cb-ml{font-size:max(4.6cqw,var(--f8));letter-spacing:.16em;text-transform:uppercase}
+#x2pRm .cb-mv{font-size:max(8.4cqw,var(--f8));letter-spacing:.01em;white-space:nowrap}
+#x2pRm .cb .cb-mw .cb-en.dn{--e1:#d3402f;--e2:#7e1a12;--e3:#e25a47}
+#x2pRm .cb .cb-mw .cb-en.up{--e1:#2fa25a;--e2:#135a30;--e3:#47b872}
+#x2pRm .cb .cb-mw .cb-en{filter:drop-shadow(0 -.12cqw 0 #000) drop-shadow(0 .16cqw 0 rgba(255,250,235,.38))}
+#x2pRm .cb-mv.cb-cd{font-size:max(4.6cqw,var(--f8));letter-spacing:.08em;text-transform:uppercase}
 /* the foot: two date plates and the EZ. mark struck into the steel */
 #x2pRm .cb-bt{display:flex;align-items:center;gap:3.2cqw;height:27.6cqw}
-#x2pRm .cb-dt{width:25.6cqw;height:14.4cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1cqw;padding:0 1.6cqw}
+#x2pRm .cb-dt{width:25.6cqw;height:14.4cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5cqw;padding:1.12cqw 1.6cqw 0}
+#x2pRm .cb-dt :is(small,b){display:block;text-box:trim-both cap alphabetic;line-height:1}
 #x2pRm .cb-dt small{font-size:max(2.4cqw,var(--f8))}
 #x2pRm .cb-dt b{font-size:max(5.2cqw,var(--f8));letter-spacing:.03em;white-space:nowrap;color:var(--ink)}
 #x2pRm .cb-st{flex:none;margin-left:auto;width:31.2cqw;height:31.2cqw;margin-right:-1.8cqw;background:url(media/cb-plate-h38-stamp.webp) center/100% 100% no-repeat}
@@ -82,21 +108,17 @@ html.x2p #x2pRm .cb .cb-flip.cb-nob{min-height:6cqw;margin:0}
 html.x2p #x2pRm .cb .cb-flip:focus-visible{outline:2px solid #e9b94a;outline-offset:2px;border-radius:4px}
 /* a card a little shorter than the painting (desktop): the plates a touch smaller */
 @container cb (min-aspect-ratio: 39/50){
-  #x2pRm .cb-ti{height:15cqw}#x2pRm .cb-r{height:11cqw}#x2pRm .cb-rows{gap:1cqw}#x2pRm .cb-mw{height:16.6cqw}
+  #x2pRm .cb-ti{height:12.4cqw}#x2pRm .cb-r{--rh:11cqw}#x2pRm .cb-rows{row-gap:2.5cqw}#x2pRm .cb-mw{height:16.6cqw}
   #x2pRm .cb-bt{height:25cqw}#x2pRm .cb-st{width:28.6cqw;height:28.6cqw}#x2pRm .cb-dt{height:13.4cqw}html.x2p #x2pRm .cb .cb-p{padding-top:7.2cqw}}
-/* a tall card (a 320 px phone): two-line nameplates, the market on three lines, the dates over the mark */
+/* a tall card (a 320 px phone): taller nameplates and bigger wells, still one line; the dates over the mark */
 @container cb (max-aspect-ratio: 5/8){
   html.x2p #x2pRm .cb .cb-p{padding:8.6cqw 7.4cqw 0}
-  #x2pRm .cb-ti{height:19cqw}
-  #x2pRm .cb-r{height:24cqw;padding:0 2cqw 0 1cqw;gap:2cqw}
-  #x2pRm .cb-rows{gap:1cqw}
-  #x2pRm .cb-wc{width:13.6cqw;height:13.6cqw}
-  #x2pRm .cb-tx{flex-direction:column;align-items:flex-start;justify-content:center;gap:1.6cqw}
-  #x2pRm .cb-l1,#x2pRm .cb-l2{max-width:100%}
-  #x2pRm .cb-l2{flex-direction:row;flex-wrap:wrap;align-items:baseline;column-gap:1.6cqw;row-gap:.8cqw;white-space:normal}
-  #x2pRm .cb-l2.cb-fit{overflow:visible}
-  #x2pRm .cb-wr{width:17cqw;height:8.7cqw}
-  #x2pRm .cb-mw{height:auto;min-height:23cqw;flex-direction:column;align-items:flex-start;justify-content:center;gap:2.4cqw;padding:3.6cqw 6cqw}
+  #x2pRm .cb-ti{height:15cqw}
+  #x2pRm .cb-r{--rh:17cqw;padding-left:1cqw}
+  #x2pRm .cb-rows{row-gap:2.6cqw}
+  #x2pRm .cb-wc{width:12.6cqw;height:12.6cqw;margin-right:1.4cqw}
+  #x2pRm .cb-rk{margin-right:.9cqw}
+  #x2pRm .cb-mw{height:21cqw}
   #x2pRm .cb-bt{height:auto;flex-wrap:wrap;justify-content:space-between;row-gap:2cqw}
   #x2pRm .cb-dt{width:41cqw;height:16cqw}
   #x2pRm .cb-st{width:35cqw;height:35cqw;margin:-2cqw auto -3cqw}}

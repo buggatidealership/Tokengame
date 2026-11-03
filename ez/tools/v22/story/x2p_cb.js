@@ -1,12 +1,14 @@
-/* x2p_cb (round H38, owner 2026-11-03: "D the plate for the back card but bottom right should be the EZ stamp diegetically integrated
-   into the card. Winner plate should be golden."): the back of a round opened big (#x2pRm, the round's address) is a blackened steel
-   vault plate. Every part is painted (Hedra, from the H36 plate d1) and laid out by the page so the plate fills the card at any shape:
-   the steel shell stretches by its border (the rivets and corners stay whole), the nickel nameplates by their bevels; the wells and the
-   EZ. maker's mark keep their painted proportions. The mark is die-struck into the steel on a graded round; on a round still to grade its
-   die seat is empty. The winner's nameplate is gold (both on a tie, none when nobody won).
+/* x2p_cb (round H40, owner 2026-11-03: "replicate exactly that in terms of the content. Nothing needs to change, only the art style and
+   the makeover... diegetically integrated"): the back of a round opened big (#x2pRm, the round's address) is a blackened steel vault
+   plate carrying exactly the certificate's content and layout: the certificate's number on the title plate; one nameplate per model in
+   the certificate's order (graded: right way by closeness, then wrong way; pending: as filed), each reading rank, logo, name, flag,
+   PASS or FAIL (punched), then the trade (Long +2.5% / Short -3.5%, the move enamel-filled green or red); the winner's plate gold with
+   a small cast crown on its top edge (both on a tie, none when nobody won); MARKET and the move (pending: the page's countdown) in the
+   black enamel window; the dates and the EZ. mark struck into the steel (pending: the empty die seat). Every part is painted (Hedra,
+   from the H36 plate d1; the crown H40) and laid out by the page so the plate fills the card at any shape.
    Media, written out in full for make_site.py: media/cb-plate-h38-shell-1200.jpg media/cb-plate-h38-shell-1800.jpg
    media/cb-plate-h38-title.webp media/cb-plate-h38-np.webp media/cb-plate-h38-npg.webp media/cb-plate-h38-mk.webp
-   media/cb-plate-h38-wellc.webp media/cb-plate-h38-wellcg.webp media/cb-plate-h38-wellr.webp media/cb-plate-h38-wellrg.webp
+   media/cb-plate-h38-wellc.webp media/cb-plate-h38-wellcg.webp media/cb-crown-h40.webp
    media/cb-plate-h38-stamp.webp media/cb-plate-h38-stamp-steel.webp media/cb-plate-h38-die.webp
    It sits over the page's certificate (graded: the back face; pending: the one face), which stays underneath, hidden, so the flip, the
    arrows, close and the holo levels keep working. Every word and number from ROUNDS / PENDING. window.__x2pCbStamp="steel" shows the
@@ -26,41 +28,49 @@ function flag(c){var s='<svg class="cb-fl" viewBox="0 0 30 20" preserveAspectRat
   return s+'</svg>'}
 function mark(m){var h='';try{h=(typeof logo==='function'?logo(m):'').match(/<svg[\s\S]*<\/svg>/);h=h?h[0]:''}catch(e){h=''}
   return '<span class="cb-mk" style="--mc:'+MC[m]+'" aria-hidden="true">'+h+'</span>'}
-var CROWN='<svg class="cb-cr" viewBox="0 0 40 26" aria-hidden="true" focusable="false"><path d="M3.5 22.5 L2.2 6.8 L11.4 14 L19.6 2.3 L28.4 13.6 L37.6 6 L36.2 22.8 C25 24.4 14 24.2 3.5 22.5Z" fill="currentColor"/></svg>';
+/* the winner's crown: a small cast gold crown (painted, media/cb-crown-h40.webp) seated on the winning nameplate's top edge */
 function pct(v){return (Math.round(v*100)/100)+'%'}
+function no4(n){return 'No. '+('000'+n).slice(-4)}
 /* a graded round, ranked as the certificate ranks it: right way by closeness, then wrong way by closeness */
 function graded(n){var g=null;ROUNDS.forEach(function(r){if(r.n===n)g=r});if(!g)return null;var W=g.win?g.win.split(' & '):[],up=g.a>0;
   var rows=g.calls.map(function(x){var u=String(x[1]).indexOf('DOWN')<0,v=parseFloat(String(x[1]).replace(/^(UP|DOWN)\s*/,''));return {m:x[0],up:u,v:v,off:+x[2],ok:u===up,win:W.indexOf(x[0])>-1}});
   var by=function(a,b){return a.off-b.off};rows=rows.filter(function(r){return r.ok}).sort(by).concat(rows.filter(function(r){return !r.ok}).sort(by));
-  return {k:'g',n:n,co:g.co,t:g.ticker,a:g.a,rows:rows,W:W,filed:md(g.called),graded:md(g.resolves),right:rows.filter(function(r){return r.ok}).length}}
+  return {k:'g',n:n,co:g.co,t:g.ticker,a:g.a,rows:rows,W:W,filed:md(g.called),graded:md(g.resolves)}}
 function pending(n){var u=null;(window.PENDING||[]).forEach(function(q){if(q.n===n)u=q});if(!u)return null;
-  return {k:'p',n:n,co:u.co,t:u.ticker,rows:(u.calls||[]).map(function(x){return {m:x.m,up:x.dir==='UP',v:parseFloat(x.mag)}}),filed:md(u.called),graded:u.resolves?md(u.resolves):'Soon'}}
-function trade(r){return '<span class="cb-tr"><i>'+(r.up?'Long':'Short')+'</i> <b>'+pct(r.v)+'</b></span>'}
-function pf(r,i){return '<span class="cb-pf '+(r.ok?'p':'f')+'" style="--rot:'+[-6,-3,-7,-4][i%4]+'deg">'+(r.ok?'PASS':'FAIL')+'</span>'}
-function move(a){return '<b class="cb-mv '+(a<0?'dn':'up')+'"><span aria-hidden="true">'+(a<0?'−':'+')+'</span><span class="sr">'+(a<0?'Down ':'Up ')+'</span>'+Math.abs(a).toFixed(2)+'%</b>'}
+  return {k:'p',n:n,co:u.co,t:u.ticker,rows:(u.calls||[]).map(function(x){return {m:x.m,up:x.dir==='UP',v:Math.abs(parseFloat(x.mag))}}),filed:md(u.called),graded:u.resolves?md(u.resolves):'Soon'}}
+/* the trade: the word engraved, the move enamel-filled (green long, red short) */
+function trade(r){return '<span class="cb-tw cb-tb">'+(r.up?'Long':'Short')+'</span><b class="cb-tv cb-tb cb-en '+(r.up?'up':'dn')+'"><span aria-hidden="true">'+(r.up?'+':'−')+'</span><span class="sr">'+(r.up?'up ':'down ')+'</span>'+pct(r.v)+'</b>'}
+/* PASS / FAIL hand-punched: one letter punch per letter, each at its own tilt and depth, rubbed with paint */
+/* each word's four punches: tilt (deg), drop (em, summing to zero so the word stays centred on the plate's face), size */
+var PT=[[[-2.2,.04,1],[1.6,-.03,.97],[-1.1,.02,1.02],[2.6,-.03,.99]],[[1.8,-.03,1.01],[-2.6,.03,.98],[1.1,.02,1],[-1.4,-.02,1.03]],
+  [[-1.6,.02,.99],[2.2,.03,1.02],[-2.8,-.03,1],[1.2,-.02,.98]],[[2.4,-.02,1],[-1.2,-.03,1.01],[1.9,.04,.97],[-2.1,.01,1.02]]];
+function pf(r,i){var w=r.ok?'PASS':'FAIL',q=PT[(i+(r.ok?0:2))%4],h='<span class="cb-pf '+(r.ok?'p':'f')+'" role="img" aria-label="'+(r.ok?'Pass':'Fail')+'">';
+  for(var j=0;j<4;j++)h+='<i aria-hidden="true" style="--pr:'+q[j][0]+'deg;--py:'+q[j][1]+'em;--ps:'+q[j][2]+'">'+w[j]+'</i>';
+  return h+'</span>'}
+function move(a){return '<b class="cb-mv cb-tb cb-en '+(a<0?'dn':'up')+'"><span aria-hidden="true">'+(a<0?'−':'+')+'</span><span class="sr">'+(a<0?'down ':'up ')+'</span>'+Math.abs(a).toFixed(2)+'%</b>'}
 function build(d,fb){var G=d.k==='g',h='<div class="cb-p"><i class="cb-sh" aria-hidden="true"></i>';
-  h+='<i class="cb-g" style="--g:.6"></i><div class="cb-ti cb-np"><small class="cb-fit">Season 1 · Round '+d.n+'</small><b class="cb-co cb-fit">'+esc(d.co)+' <span class="cb-tk">('+esc(d.t)+')</span></b></div><i class="cb-g" style="--g:1.4"></i>';
-  h+='<ol class="cb-rows" aria-label="'+(G?'The trades, ranked by the close':'The trades, as filed')+'">';
-  d.rows.forEach(function(r,i){if(i)h+='<i class="cb-g cb-gr" aria-hidden="true"></i>';
-    h+='<li class="cb-r cb-np'+(G&&r.win?' win':'')+(G?(r.ok?' ok':' no'):' pd')+'"><span class="cb-wc">'+mark(r.m)+'</span>'+
-      '<span class="cb-tx"><span class="cb-l1 cb-fit">'+(G?'<b class="cb-rk">'+(i+1)+'</b>':'')+'<span class="cb-nm">'+NM[r.m]+'</span>'+flag(CC[r.m])+(G&&r.win?'<span class="sr"> (winner)</span>':'')+'</span>'+
-      '<span class="cb-l2 cb-fit">'+trade(r)+(G?'<small class="cb-off">'+(r.ok?pct(r.off)+' off':'wrong way')+'</small>':'')+'</span></span>'+
-      '<span class="cb-wr">'+(G?pf(r,i):'<span class="sr">Not graded yet</span>')+'</span></li>'});
+  h+='<i class="cb-g" style="--g:.6"></i><div class="cb-ti cb-np"><b class="cb-no cb-tb cb-fit">'+no4(d.n)+'</b><span class="sr"> '+esc(d.co)+'</span></div><i class="cb-g" style="--g:1.4"></i>';
+  h+='<ol class="cb-rows '+(G?'g':'p')+'" aria-label="'+(G?'The trades, ranked by the close':'The trades, as filed')+'">';
+  d.rows.forEach(function(r,i){
+    h+='<li class="cb-r cb-np'+(G&&r.win?' win':'')+(G?(r.ok?' ok':' no'):' pd')+'">'+(G?'<b class="cb-rk cb-tb">'+(i+1)+'</b>':'')+'<span class="cb-wc">'+mark(r.m)+'</span>'+
+      '<span class="cb-id">'+(G&&r.win?'<i class="cb-cr" aria-hidden="true"></i>':'')+'<span class="cb-nm cb-tb">'+NM[r.m]+'</span>'+flag(CC[r.m])+(G&&r.win?'<span class="sr"> (winner)</span>':'')+'</span>'+
+      '<span class="cb-pc">'+(G?pf(r,i):'<span class="sr">Not graded yet</span>')+'</span>'+trade(r)+'</li>'});
   h+='</ol><i class="cb-g" style="--g:1"></i>';
-  h+='<div class="cb-mw"><span class="cb-ml"><small class="cb-fit">At the close<span class="sr"> ('+esc(d.co)+')</span></small>'+(G?move(d.a):'<b class="cb-mv cb-q"></b>')+'</span>'+
-    (G?(d.W.length?'<span class="cb-wn cb-fit">'+CROWN+'<em>'+(d.W.length>1?'Winners':'Winner')+'</em> '+d.W.map(function(m){return '<b style="--wc:'+MC[m]+'">'+NM[m]+'</b>'}).join(' <em>&amp;</em> ')+'</span>':
-      '<span class="cb-wn cb-fit none"><em>No winner</em>'+(d.right?'':' <small>all '+d.rows.length+' wrong way</small>')+'</span>'):'<span class="cb-wn cb-fit cb-cd"><em></em></span>')+'</div>';
+  h+='<div class="cb-mw"><b class="cb-ml cb-tb">Market</b>'+(G?move(d.a):'<b class="cb-mv cb-tb cb-cd"></b>')+'</div>';
   h+='<i class="cb-g" style="--g:1"></i><div class="cb-bt"><div class="cb-dt cb-np"><small class="cb-fit">Trades filed</small><b class="cb-fit">'+d.filed+'</b></div><div class="cb-dt cb-np"><small class="cb-fit">'+(G?'Graded on':'Final grade')+'</small><b class="cb-fit">'+d.graded+'</b></div>'+
     '<span class="cb-st'+(G?'':' cb-die')+'" role="img" aria-label="'+(G?'Struck with the EZ. mark: graded by the market close':'The EZ. mark is struck once the market closes')+'"></span></div><i class="cb-g" style="--g:.5"></i>';
   h+=fb?'<button type="button" class="cb-flip" data-flip><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'+esc(fb)+'</button>':'<i class="cb-flip cb-nob" aria-hidden="true"></i>';
   return h+'</div>'}
-/* one line each: the type steps down to fit its plate, never below the 8 px floor (on screen, through the view's zoom) */
+/* one line each: the type steps down to fit its plate, never below the 8 px floor (on screen, through the view's zoom); the rows share
+   one grid, so they step down together (--rs) until the widest row fits its nameplate */
 function fit(o){var z=+o.style.getPropertyValue('--cbz')||1,fl=8.2/z;
   [].forEach.call(o.querySelectorAll('.cb-fit'),function(e){e.style.fontSize='';if(!e.clientWidth||getComputedStyle(e).flexWrap==='wrap')return;var n=0;
-    while(e.scrollWidth>e.clientWidth+.5&&n++<40){var f=parseFloat(getComputedStyle(e).fontSize),nf=Math.max(fl,f*Math.max(.9,e.clientWidth/e.scrollWidth));if(nf>=f-.01)break;e.style.fontSize=nf+'px'}})}
+    while(e.scrollWidth>e.clientWidth+.5&&n++<40){var f=parseFloat(getComputedStyle(e).fontSize),nf=Math.max(fl,f*Math.max(.9,e.clientWidth/e.scrollWidth));if(nf>=f-.01)break;e.style.fontSize=nf+'px'}});
+  var ol=o.querySelector('.cb-rows');if(!ol)return;var rs=1;ol.style.setProperty('--rs',1);
+  while(ol.scrollWidth>ol.clientWidth+.5&&rs>.6){rs-=.03;ol.style.setProperty('--rs',rs.toFixed(2))}}
 function zoomOf(c){var z=c.closest('.x2p-rmz');return z&&parseFloat(z.style.zoom)||1}
-function countdown(o,fin){var src=fin.querySelector('.xc-pend .xc-out b'),t=o.querySelector('.cb-cd em');if(!t)return;
-  var s=src?src.textContent.replace(/\s+/g,' ').trim():'At the close';t.textContent=s||'At the close'}
+function countdown(o,fin){var src=fin.querySelector('.xc-pend .xc-out b'),t=o.querySelector('.cb-cd');if(!t)return;
+  var s=src?src.textContent.replace(/\s+/g,' ').trim():'';if(t.textContent!==s){t.textContent=s;fit(o)}}
 function mount(){var rm=D.getElementById('x2pRm');if(!rm)return;var c=rm.querySelector('.card[data-n]');if(!c)return;var n=+c.getAttribute('data-n');
   var k=c.getAttribute('data-k'),d=k==='g'?graded(n):k==='p'?pending(n):null;if(!d)return;
   var fin=c.querySelector(k==='g'?'.face.back .fin':'.face.front .fin');if(!fin||fin.querySelector(':scope>.cb'))return;
