@@ -22,7 +22,7 @@ const css=fs.readFileSync(__dirname+'/_h37.css','utf8'),js=fs.readFileSync(__dir
   await p.evaluate(s=>{document.querySelector(s).scrollIntoView();document.querySelectorAll(s+' img').forEach(i=>i.loading='eager')},SEL);
   await p.waitForFunction(s=>[...document.querySelectorAll(s+' img')].every(i=>i.complete),SEL,{timeout:60000}).catch(()=>{});await p.waitForTimeout(700);
   await p.evaluate(()=>{window.__h37&&document.fonts.ready.then(()=>{});[...document.body.querySelectorAll('*')].forEach(x=>{const s=getComputedStyle(x).position;if((s==='fixed'||s==='sticky')&&!x.closest('#h37,#x2pMag'))x.style.setProperty('display','none','important')})});
-  await p.addStyleTag({content:'body>div:has(>.x2p-cw-bug),.x2p-cw,[class*="crawl"]{display:none!important}'});await p.waitForTimeout(300);
+  await p.addStyleTag({content:'body>div:has(>.x2p-cw-bug),.x2p-cw{display:none!important}'});await p.waitForTimeout(300);
   const box=await p.evaluate(s=>{const e=document.querySelector(s),r=e.getBoundingClientRect();return {y:r.top+scrollY,h:r.height}},SEL);
   await p.screenshot({path:`${OUT}/sec-${W}-${id}.png`,clip:{x:0,y:Math.max(0,box.y-8),width:W,height:Math.min(box.h+16,16000)},fullPage:true,type:'png'});
   const m=await p.evaluate(s=>{const R=document.querySelector(s),o={sw:document.documentElement.scrollWidth,vw:innerWidth,secH:Math.round(R.getBoundingClientRect().height)};

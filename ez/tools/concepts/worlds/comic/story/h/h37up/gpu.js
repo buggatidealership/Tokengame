@@ -9,7 +9,7 @@ const CSS=ov.filter(f=>f.endsWith('.css')).map(f=>fs.readFileSync(f,'utf8')).joi
 await p.addInitScript(()=>{const D=Date,t=1793739600000-(20*3600+30*60)*1000,off=t-D.now();class F extends D{constructor(...a){if(!a.length)super(D.now()+off);else super(...a)}static now(){return D.now()+off}};window.Date=F});
 if(CSS||JS)await p.addInitScript(([c,j])=>{const add=()=>{if(c){const s=document.createElement('style');s.textContent=c;document.head.appendChild(s)}if(j){try{(0,eval)(j)}catch(e){console.error(e)}}};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add);else add()},[CSS,JS]);
 await p.goto('http://127.0.0.1:8991/v46-live-x2plus.html#/upcoming',{waitUntil:'load',timeout:180000});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});
-await p.waitForFunction(()=>document.querySelector(ov=>0)||document.querySelector('.h37-root')||(document.querySelector('.u3-root')&&!window.__H37WANT),null,{timeout:30000}).catch(()=>{});
+await p.waitForFunction(w=>w?document.querySelector('.h37-root'):document.querySelector('.u3-root'),!!(CSS||JS),{timeout:30000}).catch(()=>console.error('not mounted'));
 await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(2500);
 const H=await p.evaluate(()=>document.documentElement.scrollHeight);
 for(let y=0;y<H-844;y+=700){await p.evaluate(async y=>{const s=scrollY,n=8;for(let i=1;i<=n;i++){scrollTo(0,s+(y-s)*i/n);await new Promise(r=>setTimeout(r,60))}},y);await p.waitForTimeout(2200);await p.screenshot({path:`${out}/s${y}.png`})}

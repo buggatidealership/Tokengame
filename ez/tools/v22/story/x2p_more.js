@@ -779,14 +779,24 @@ const S2Q=[[[263,556],[471,533],[511,691],[297,717]],[[785,504],[968,485],[1019,
 const S2T=['GOOGL','AAPL','MSFT'],S2N={GOOGL:'Google',AAPL:'Apple',MSFT:'Microsoft'};
 /* the strip under a die, on the chip's substrate: the die's side edges carried on down */
 const s2lq=q=>{const [tl,tr,br,bl]=q,m=(p,o,t)=>[p[0]+(p[0]-o[0])*t,p[1]+(p[1]-o[1])*t];return [m(bl,tl,.05),m(br,tr,.05),m(br,tr,.36),m(bl,tl,.36)]};
+/* H38 (owner, 2026-11-03: "season two should be a sub section/beat"): Season 2 is its own beat inside the bet chapter, built like a
+   section at one level down: room and a small torn scrap (the section tears' paper, a fraction of their size) part it from Bet #1,
+   then "Season 2" lettered in cream (gold is for section titles), then one cream caption box in the page's style (.h35-cap), then the
+   four chips, the whole row fitted to the width (the crop holds all four with their pins and shadows from 320 up), and the tab. The tab
+   no longer repeats "Season 2" (the sub-heading says it). */
+function s2tear(){let x=97;const r=()=>(x=(x*9301+49297)%233280)/233280,W=240,Hh=22,pts=(y0,a,st)=>{const o=[];for(let i=0;i<=W+st;i+=st*(.6+r()*.8))o.push([Math.min(i,W),y0+(r()-.5)*a*2]);return o};
+  const t=pts(5,1.6,5),b=pts(15,1.9,4.5).reverse(),P=t.concat(b),f=v=>v.toFixed(1),d='M'+P.map(p=>f(p[0])+','+f(p[1])).join(' L')+'Z';
+  return `<svg viewBox="-3 -2 ${W+8} ${Hh+4}" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="${d}" fill="#c42a20" transform="translate(1.6,2.4)"/><path d="${d}" fill="#f8f0d9" stroke="#0d0b10" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="${'M'+t.map(p=>f(p[0])+','+f(p[1]+1.6)).join(' L')}" fill="none" stroke="#c9bc98" stroke-width="1.1" opacity=".8" vector-effect="non-scaling-stroke"/></svg>`}
 function s2html(){
   const die=(q,i)=>{const t=S2T[i];return `<div class="s2a-d${t?'':' s2a-m'}" data-fit data-q='${JSON.stringify(q)}'>${t?`<i class="s2a-lg" data-t="${t}"></i>`:'<b>More</b>'}</div>`+
     (t?`<div class="s2a-n" data-fit data-q='${JSON.stringify(s2lq(q))}'><b>#${i+2}</b></div>`:'')};
-  return `<div class="s2b" role="group" aria-labelledby="s2bK">
-    <p class="s2-k" id="s2bK">NVIDIA is the first bet, <b>not the last.</b><span class="s2-k2">Season 2 ups the stakes.</span></p>
-    <div class="hb5-art s2-art" data-img="${IMG.s2}" data-crop="[50,318,1890,556]|[40,300,1990,640]" aria-hidden="true">${S2Q.map(die).join('')}</div>
+  return `<div class="s2b" role="group" aria-labelledby="s2bH">
+    <div class="s2-dv" aria-hidden="true">${s2tear()}</div>
+    <h3 class="s2-h" id="s2bH">Season 2</h3>
+    <p class="h35-cap s2-cap">NVIDIA is the first bet, not the last. <span class="s2-cap2">Season 2 ups the stakes.</span></p>
+    <div class="hb5-art s2-art" data-img="${IMG.s2}" data-crop="[64,316,2004,600]|[50,296,2030,640]" aria-hidden="true">${S2Q.map(die).join('')}</div>
     <p class="hb-sr">Season 2 bets: #2 Google, #3 Apple, #4 Microsoft, and more.</p>
-    <div class="s2a-ft"><span class="s2-tab">Season 2 · Next earnings season</span></div>
+    <div class="s2a-ft"><span class="s2-tab">Next earnings season</span></div>
    </div>`}
 /* the marks: a tile (four opaque corners of one colour) is keyed out; a dark one-colour mark (Apple) is lit silver, as a dark mark
    cannot glow in dark glass; every other mark keeps its own colours. Done once on a canvas, then set as the die's picture. */
