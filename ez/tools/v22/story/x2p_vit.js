@@ -186,7 +186,7 @@ function deck(){const ln=root.querySelector('.vt-line'),S=ln.querySelector('.vt-
     if(e.type==='pointercancel'){f.style.transform='';return}
     if(G0.ax==='x'&&(Math.abs(dx)>W*.28||Math.abs(dx)/dt>.45&&Math.abs(dx)>30)){if(deal(dx<0?1:-1))return}
     if(G0.ax==='up'&&(-dy>H*.2||-dy/dt>.45&&-dy>36)){const n=NEWF[i].n;if(!RM()){f.classList.add('vt-up');f.style.transform=''}
-      setTimeout(()=>{location.hash='#/round/'+n;setTimeout(()=>{f.classList.remove('vt-up')},400)},RM()?0:220);return}
+      setTimeout(()=>{eat=0;ptype='';const a=f.querySelector('a.vt-sl');a?a.click():(location.hash='#/round/'+n);setTimeout(()=>{f.classList.remove('vt-up')},400)},RM()?0:220);return}
     f.style.transform=''};
   S.addEventListener('pointerup',end);S.addEventListener('pointercancel',end);
   /* a drag is not a tap: the click that may follow it neither lifts nor opens */

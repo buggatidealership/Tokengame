@@ -20,7 +20,7 @@ const drag=async(c,x0,y0,x1,y1)=>{await c.send('Input.dispatchTouchEvent',{type:
   await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(800);
   await p.evaluate(()=>{document.querySelector('#x2pVit').scrollIntoView();});await p.waitForTimeout(700);
   // hide fixed chrome for the shot
-  await p.evaluate(()=>{[...document.body.querySelectorAll('*')].forEach(x=>{const s=getComputedStyle(x).position;if((s==='fixed'||s==='sticky')&&!x.closest('#x2pVit'))x.style.setProperty('display','none','important')})});
+  await p.evaluate(()=>{[...document.body.querySelectorAll('*')].forEach(x=>{const s=getComputedStyle(x).position;if((s==='fixed'||s==='sticky')&&!x.closest('#x2pVit'))x.style.setProperty('display','none','important')})});await p.addStyleTag({content:'body>div:has(>.x2p-cw-bug),.x2p-cw,[class*="x2p-cw"]{display:none!important}'});
   await p.waitForFunction(()=>[...document.querySelectorAll('#x2pVit img[src]')].every(i=>i.complete),null,{timeout:60000}).catch(()=>{});await p.waitForTimeout(500);
   const box=await p.evaluate(()=>{const r=document.querySelector('#x2pVit').getBoundingClientRect();return {y:r.top+scrollY,h:r.height}});
   await p.screenshot({path:`${OUT}/sec-${W}-${V}.png`,clip:{x:0,y:Math.max(0,box.y-12),width:W,height:box.h+24},fullPage:true});
