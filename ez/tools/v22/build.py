@@ -580,6 +580,10 @@ try:
     _CD='<span class="x2p-cw-k">Calls due \'+wd(nk)'
     assert _h6.count(_CD)==1
     _h6=_h6.replace(_CD,_CD.replace('Calls due','Trades due'),1)
+    # the footer in the show (h48_crawl.css): the EZ. logo for the old $EZ badge, and "trades" for "calls"
+    _FT='<div class="badge mark"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></div><small>$EZ \u00b7 EARNINGS ZEASON, WITH A Z<br>CALLS FILED BEFORE THE PRINT \u00b7 GRADED BY THE MARKET \u00b7 NEVER EDITED</small>'
+    assert _h6.count(_FT)==1
+    _h6=_h6.replace(_FT,'<img class="h8-ftl" src="media/icon.svg" alt="EZ." width="52" height="52"><small>$EZ \u00b7 Earnings Zeason, with a Z<br>Trades filed before the earnings \u00b7 graded at the close</small>',1)
     open("v50-live-x6plus.html",'w').write(_h6); print("ok v50-live-x6plus.html",len(_h6))
 except Exception as _e:
     print("FAILED v50-live-x6plus.html:",repr(_e))
