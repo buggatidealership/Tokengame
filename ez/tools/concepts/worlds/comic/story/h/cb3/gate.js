@@ -70,7 +70,7 @@ function audit(){
     const W=li.querySelector('.cb-wc').getBoundingClientRect();chk('r'+(i+1)+' well',null,f,{top:W.top,bot:W.bottom});
     {const PR=li.getBoundingClientRect(),M=li.querySelector('.cb-mk').getBoundingClientRect();res.wells=(res.wells||[]).concat([{row:i+1,well:+W.height.toFixed(1),mark:+M.height.toFixed(1),plate:+PR.height.toFixed(1),clearTop:+(W.top-PR.top).toFixed(1),clearBot:+(PR.bottom-W.bottom).toFixed(1),wellInPlate:W.top>=PR.top-.5&&W.bottom<=PR.bottom+.5}]);if(W.top<PR.top-.5||W.bottom>PR.bottom+.5)res.fails.push('well outside plate r'+(i+1))}
     // overflow: every piece inside the plate (text clear of the side bevels)
-    const R=li.getBoundingClientRect();li.querySelectorAll('.cb-rk,.cb-nm,.cb-fl,.cb-pf,.cb-tv,.cb-wc').forEach(e=>{const r=e.getBoundingClientRect();if(r.left<R.left+f.B*.6||r.right>R.right-f.B*.6)res.fails.push('overflow r'+(i+1)+' '+e.className.baseVal||e.className)});
+    const R=li.getBoundingClientRect();li.querySelectorAll('.cb-rk,.cb-nm,.cb-fl,.cb-pf,.cb-tv,.cb-wc').forEach(e=>{const r=e.getBoundingClientRect(),w=e.classList.contains('cb-wc');if(w?(r.left<R.left-.5||r.right>R.right+.5):(r.left<R.left+f.B*.6||r.right>R.right-f.B*.6))res.fails.push('overflow r'+(i+1)+' '+(e.className.baseVal||e.className))});
     const cr=li.querySelector('.cb-cr');if(cr){const c=cr.getBoundingClientRect(),CR=card.getBoundingClientRect(),nm=li.querySelector('.cb-nm').getBoundingClientRect();
       res.crown=(res.crown||[]).concat([{row:i+1,top:+c.top.toFixed(1),bot:+c.bottom.toFixed(1),plateEdge:+f.vtop.toFixed(1),h:+c.height.toFixed(1),capH:+(ink(li.querySelector('.cb-nm')).bot-ink(li.querySelector('.cb-nm')).top).toFixed(1),overName:c.right>nm.left&&c.left<nm.right}]);
       if(!(c.bottom>f.vtop&&c.top<f.vtop))res.fails.push('crown not on edge');if(c.top<CR.top||c.left<CR.left||c.right>CR.right)res.fails.push('crown outside card');
@@ -96,7 +96,7 @@ function audit(){
   // the date plates and the flip button; the foil masked to the mark, its blend, and whether it moves
   {const st=cb.querySelector('.cb-st'),cs=getComputedStyle(st),R=st.getBoundingClientRect();
    const m=new DOMMatrix(cs.transform==='none'?undefined:cs.transform),deg=Math.atan2(m.b,m.a)*180/Math.PI;
-   const side=st.offsetWidth*S,cx=(R.left+R.right)/2,cy=(R.top+R.bottom)/2,rd=side*.458; // disc radius: 293 of 320 px in the painting
+   const side=st.offsetWidth*S,cx=(R.left+R.right)/2,cy=(R.top+R.bottom)/2,rd=side*.4935; // the visible mark: the painting's alpha stays at 10% or more out to 0.4935 of its side (the disc itself 0.458)
    const fr={l:CB.left+3.2*cq,r:CB.right-3.2*cq,t:CB.top+3.2*cq,b:CB.bottom-3.2*cq};
    const dts=[...cb.querySelectorAll('.cb-dt')].map(e=>e.getBoundingClientRect()),fb=cb.querySelector('.cb-flip').getBoundingClientRect();
    const gapR=(a,b)=>{const dx=Math.max(b.left-a.right,a.left-b.right,0),dy=Math.max(b.top-a.bottom,a.top-b.bottom,0);return dx>0&&dy>0?Math.hypot(dx,dy):Math.max(dx,dy)};
