@@ -15,6 +15,7 @@
    media/cb-plate-h38-title.webp media/cb-plate-h38-np.webp media/cb-plate-h38-npg.webp media/cb-plate-h38-mk.webp
    media/cb-plate-h38-wellc.webp media/cb-plate-h38-wellcg.webp media/cb-crown-h40.webp
    media/cb-plate-h38-stamp.webp media/cb-plate-h38-stamp-steel.webp media/cb-plate-h38-die.webp media/cb-holo-mask-h41.webp
+   media/cb-rivet-h43.webp
    It sits over the page's certificate (graded: the back face; pending: the one face), which stays underneath, hidden, so the flip, the
    arrows, close and the holo levels keep working. Every word and number from ROUNDS / PENDING. window.__x2pCbStamp="steel" shows the
    plain struck-steel mark instead of the enamelled one (a mockup switch). Failures are kept in window.__x2pCbErr. */
@@ -53,19 +54,33 @@ function pf(r,i){var w=r.ok?'PASS':'FAIL',q=PT[(i+(r.ok?0:2))%4],h='<span class=
   for(var j=0;j<4;j++)h+='<i aria-hidden="true" style="--pr:'+q[j][0]+'deg;--py:'+q[j][1]+'em;--ps:'+q[j][2]+'">'+w[j]+'</i>';
   return h+'</span>'}
 function move(a){return '<b class="cb-mv cb-tb cb-en '+(a<0?'dn':'up')+'"><span aria-hidden="true">'+(a<0?'−':'+')+'</span><span class="sr">'+(a<0?'down ':'up ')+'</span>'+Math.abs(a).toFixed(2)+'%</b>'}
-function build(d,fb){var G=d.k==='g',h='<div class="cb-p"><i class="cb-sh" aria-hidden="true"></i>';
+/* window.__x2pCbWin=1 (a mockup switch, H43): the word Winner engraved small under the name on the winning (gold) plate, both on a tie,
+   none when nobody won */
+function build(d,fb){var G=d.k==='g',WN=window.__x2pCbWin==1,h='<div class="cb-p"><i class="cb-sh" aria-hidden="true"></i>';
   h+='<i class="cb-g" style="--g:.6"></i><div class="cb-ti cb-np"><b class="cb-no cb-tb cb-fit">'+no4(d.n)+'</b><span class="sr"> '+esc(d.co)+'</span></div><i class="cb-g cb-g0" style="--g:1.4"></i>';
   h+='<ol class="cb-rows '+(G?'g':'p')+'" aria-label="'+(G?'The trades, ranked by the close':'The trades, as filed')+'">';
   d.rows.forEach(function(r,i){
     h+='<li class="cb-r cb-np'+(G&&r.win?' win':'')+(G?(r.ok?' ok':' no'):' pd')+'">'+(G?'<b class="cb-rk cb-tb">'+(i+1)+'</b>':'')+'<span class="cb-wc">'+mark(r.m)+'</span>'+
-      '<span class="cb-id">'+(G&&r.win?'<i class="cb-cr" aria-hidden="true"></i>':'')+'<span class="cb-nm cb-tb">'+NM[r.m]+'</span>'+flag(CC[r.m])+(G&&r.win?'<span class="sr"> (winner)</span>':'')+'</span>'+
+      '<span class="cb-id">'+(G&&r.win?'<i class="cb-cr" aria-hidden="true"></i>':'')+(WN&&G&&r.win?'<span class="cb-nw"><span class="cb-nr"><span class="cb-nm cb-tb">'+NM[r.m]+'</span>'+flag(CC[r.m])+'</span><small class="cb-wn cb-tb">Winner</small></span>':
+        '<span class="cb-nm cb-tb">'+NM[r.m]+'</span>'+flag(CC[r.m])+(G&&r.win?'<span class="sr"> (winner)</span>':''))+'</span>'+
       '<span class="cb-pc">'+(G?pf(r,i):'<span class="sr">Not graded yet</span>')+'</span>'+trade(r)+'</li>'});
   h+='</ol><i class="cb-g" style="--g:1"></i>';
   h+='<div class="cb-mw"><b class="cb-ml cb-tb">Market</b>'+(G?move(d.a):'<b class="cb-mv cb-tb cb-cd"></b>')+'</div>';
   h+='<i class="cb-g" style="--g:1"></i><div class="cb-bt"><div class="cb-dt cb-np"><small class="cb-fit">Trades filed</small><b class="cb-fit">'+d.filed+'</b></div><div class="cb-dt cb-np"><small class="cb-fit">'+(G?'Graded on':'Final grade')+'</small><b class="cb-fit">'+d.graded+'</b></div>'+
     '<span class="cb-st'+(G?'':' cb-die')+'" role="img" aria-label="'+(G?'Struck with the EZ. mark: graded by the market close':'The EZ. mark is struck once the market closes')+'">'+(G?'<i class="cb-ho" aria-hidden="true"><i class="cb-hf"></i></i>':'')+'</span></div><i class="cb-g" style="--g:.5"></i>';
-  h+=fb?'<button type="button" class="cb-flip" data-flip><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'+esc(fb)+'</button>':'<i class="cb-flip cb-nob" aria-hidden="true"></i>';
+  h+=fb?pushPlate(fb):'<i class="cb-flip cb-nob" aria-hidden="true"></i>';
   return h+'</div>'}
+/* H43 (owner, 2026-11-03: "see the film on the card needs to be diegetically integrated with the world"): the flip button is a nickel
+   push-plate riveted to the foot of the steel plate, cut from the same nameplate stock as the date plates (media/cb-plate-h38-np.webp),
+   its two rivets cut from the shell's own corner rivet (media/cb-rivet-h43.webp); "See the film" engraved into it like the dates, a
+   play triangle engraved before it (a picture round: a small framed picture). It stands proud of the steel; pressed, it sinks a pixel
+   and its bevel's lit edge turns to the bottom (a recess). The button itself stays the real button (the page's data-flip), at least
+   44 px tall on screen, its name the engraved words. */
+function pushPlate(fb){var pic=/picture/i.test(fb),g=pic?
+    '<svg class="cb-fg" viewBox="0 0 14 12" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M0 0H14V12H0ZM1.8 1.8V10.2H12.2V1.8Z"/><path d="M3 9.2L6 5.4L7.9 7.6L9.3 6.2L11 9.2Z"/><circle cx="9.9" cy="3.9" r="1.1"/></svg>':
+    '<svg class="cb-fg" viewBox="0 0 10 12" aria-hidden="true" focusable="false"><path d="M.9 .6L9.6 6L.9 11.4Z"/></svg>';
+  return '<button type="button" class="cb-flip" data-flip><span class="cb-fp"><i class="cb-fpb" aria-hidden="true"></i><i class="cb-rv l" aria-hidden="true"></i>'+
+    '<span class="cb-fpt">'+g+'<b class="cb-fpl cb-tb">'+esc(fb)+'</b></span><i class="cb-rv r" aria-hidden="true"></i></span></button>'}
 /* one line each: the type steps down to fit its plate, never below the 8 px floor (on screen, through the view's zoom); the rows share
    one grid, so they step down together (--rs) until the widest row fits its nameplate */
 function fit(o){var z=+o.style.getPropertyValue('--cbz')||1,fl=8.2/z;
