@@ -9671,12 +9671,16 @@ html body main.wrap#view #x2pLbx h2.xr-pw::before,html body main.wrap#view #x2pL
    Painted parts (Hedra, from the H36 plate) laid out by the page: sizes in cqw of the plate's width (.cb is the size container), every
    text at least 8 px on screen (--f8 = 8.2px through the view's zoom, --cbz, set by x2p_cb.js).
    How each text is made, as a plate maker would make it:
-   - engraved (.cb-np text: rank, name, Long/Short, No., the date plates): dark ink in the cut, a dark wall above, a light lip below;
+   - engraved (.cb-np text: rank, name, No., the date plates): dark ink in the cut, a dark wall above, a light lip below;
    - enamel-filled engraving (.cb-en: the trade's move, the market's move): red or green paint sitting in the cut, a darker band where
      the cut's upper wall shades it, the wall and the lit lip drawn by drop-shadows (a text-shadow would show through clipped paint);
    - hand-punched (.cb-pf: PASS / FAIL): one letter punch per letter, each at its own tilt and depth, the recess rubbed with paint
      that wears off in places, a faint raised burr around each letter;
-   - engraved through the black enamel (.cb-ml MARKET, the countdown): the cut shows the bright metal under the enamel.
+   - engraved through the black enamel (.cb-ml MARKET, the countdown): the cut shows the bright metal under the enamel;
+   - the EZ. mark (H41): struck 7 degrees crooked, a holographic foil laid on its letters, slashes and dot only (a rainbow gradient
+     masked by media/cb-holo-mask-h41.webp, cut from the stamp painting itself, overlay-blended so the steel, the enamel and the struck
+     wall and lip read through it); the foil's one moving part is a transform on one small layer, run only on .cb-live (the back facing
+     you) and never with reduced motion.
    Vertical centring: every text box is trimmed to its capitals (text-box), and each plate's padding-top moves the centre onto the
    painted face (np/title/date plates: the face runs 0.956 to -0.569 of the 2.9cqw bevel, so +.56cqw; the enamel window +.52cqw). */
 #x2pRm .fin.cb-on>.xc{visibility:hidden}
@@ -9691,7 +9695,7 @@ html.x2p #x2pRm .card .fin>div.cb{visibility:visible!important;position:absolute
 /* every text box is its capitals: centring a box centres the letters */
 #x2pRm .cb .cb-tb{display:block;text-box:trim-both cap alphabetic;line-height:1;white-space:nowrap}
 /* the steel shell: corners and rivets whole, the edges and the field stretch */
-html.x2p #x2pRm .cb .cb-p{position:relative!important;flex:1 1 auto!important;min-height:0;display:flex!important;flex-direction:column!important;padding:8cqw 7.6cqw 0;margin:0}
+html.x2p #x2pRm .cb .cb-p{position:relative!important;flex:1 1 auto!important;min-height:0;display:flex!important;flex-direction:column!important;padding:7.2cqw 7.6cqw 0;margin:0}
 html.x2p #x2pRm .cb .cb-sh{display:block!important;position:absolute!important;inset:0!important;z-index:0!important;border:0 solid transparent;pointer-events:none;
   border-image:image-set(url(media/cb-plate-h38-shell-1200.jpg) 1x,url(media/cb-plate-h38-shell-1800.jpg) 3x) 6.84% 9.11% fill / 9.1cqw stretch}
 html.x2p #x2pRm .cb .cb-p>:not(.cb-sh){position:relative;z-index:1;flex-shrink:0}
@@ -9702,19 +9706,20 @@ html.x2p #x2pRm .cb .cb-p>.cb-g0{min-height:3.4cqw}
 #x2pRm .cb-np :is(b,small,span,i):not(.cb-en,.cb-en *,.cb-pf,.cb-pf *){text-shadow:var(--lip)}
 #x2pRm .cb-np svg{filter:drop-shadow(0 .14cqw 0 rgba(255,255,255,.45))}
 /* the title plate: the certificate's number, engraved */
-#x2pRm .cb-ti{border-image-source:url(media/cb-plate-h38-title.webp);height:13.4cqw;display:flex;align-items:center;justify-content:center;padding:1.12cqw 4cqw 0;text-align:center}
+#x2pRm .cb-ti{border-image-source:url(media/cb-plate-h38-title.webp);height:12.4cqw;display:flex;align-items:center;justify-content:center;padding:1.12cqw 4cqw 0;text-align:center}
 #x2pRm .cb-no{font-size:max(6.2cqw,var(--f8));letter-spacing:.07em;text-transform:uppercase;color:var(--ink);max-width:100%;overflow:hidden}
 #x2pRm .cb small{font-size:max(2.6cqw,var(--f8));letter-spacing:.09em;text-transform:uppercase;color:var(--ink2);white-space:nowrap;font-family:Anton,Impact,sans-serif}
-/* the four nameplates: one grid, every row on its columns (rank, well, name + flag, gap, PASS/FAIL, gap, Long/Short, move), so the
-   marks share one column exactly halfway between the widest name + flag and the trades, and the moves end on one line */
-#x2pRm .cb-rows{--rs:1;list-style:none;margin:0;padding:0;display:grid;row-gap:2.8cqw;align-content:space-between;flex:2.2 0 auto;
-  grid-template-columns:auto auto max-content minmax(1.4cqw,1fr) auto minmax(1.4cqw,1fr) auto auto}
-#x2pRm .cb-rows.p{grid-template-columns:auto max-content minmax(1.4cqw,1fr) auto minmax(1.4cqw,1fr) auto auto}
-#x2pRm .cb-r{--rh:11.8cqw;--pt:1.12cqw;position:relative;grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center;height:var(--rh);padding:var(--pt) 3.5cqw 0 .7cqw}
+/* the four nameplates: one grid, every row on its columns (rank, well, name + flag, the space between, the move); PASS/FAIL sits
+   centred in the space between, so the marks share one column exactly halfway between the widest name + flag and the widest move,
+   and the moves end on one line */
+#x2pRm .cb-rows{--rs:1;list-style:none;margin:0;padding:0;display:grid;row-gap:2.2cqw;align-content:space-between;flex:2.2 0 auto;
+  grid-template-columns:auto auto max-content minmax(max-content,1fr) auto}
+#x2pRm .cb-rows.p{grid-template-columns:auto max-content minmax(max-content,1fr) auto}
+#x2pRm .cb-r{--rh:14cqw;--pt:1.12cqw;position:relative;grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center;height:var(--rh);padding:var(--pt) 3.5cqw 0 .7cqw}
 #x2pRm .cb-r.win{border-image-source:url(media/cb-plate-h38-npg.webp);--ink:#2a1a03;--ink2:#5b3d0b;--lip:0 .16cqw 0 rgba(255,240,190,.6),0 -.12cqw 0 rgba(60,30,0,.35)}
 #x2pRm .cb-rk{font-size:max(calc(4.2cqw * var(--rs)),var(--f8));color:var(--ink2);margin:0 1.3cqw 0 1.2cqw;justify-self:center}
 #x2pRm .cb-r .cb-rk{margin-left:3.3cqw}
-#x2pRm .cb-wc{position:relative;width:10cqw;height:10cqw;margin-right:1.8cqw;background:url(media/cb-plate-h38-wellc.webp) center/100% 100% no-repeat}
+#x2pRm .cb-wc{position:relative;width:12.2cqw;height:12.2cqw;margin-right:1.8cqw;background:url(media/cb-plate-h38-wellc.webp) center/100% 100% no-repeat}
 #x2pRm .cb-rows.p .cb-wc{margin-left:0}
 #x2pRm .cb-r.win .cb-wc{background-image:url(media/cb-plate-h38-wellcg.webp)}
 #x2pRm .cb-wc .cb-mk{position:absolute;inset:19%;border-radius:50%;background:#131117;padding:19%;display:grid;place-items:center;
@@ -9725,9 +9730,8 @@ html.x2p #x2pRm .cb .cb-p>.cb-g0{min-height:3.4cqw}
 #x2pRm .cb-id{position:relative;align-self:stretch;display:flex;align-items:center;gap:1.2cqw}
 #x2pRm .cb-nm{font-size:max(calc(5.2cqw * var(--rs)),var(--f8));letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
 #x2pRm .cb-fl{width:calc(3.6cqw * var(--rs));height:calc(2.4cqw * var(--rs));min-width:9px;min-height:6px;flex:none;display:block;box-shadow:0 0 0 .22cqw rgba(0,0,0,.35)}
-#x2pRm .cb-pc{justify-self:center;display:flex;align-items:center}
-/* the trade: Long / Short engraved, the move enamel-filled, every move ending on the same line */
-#x2pRm .cb-tw{font-size:max(calc(3.1cqw * var(--rs)),var(--f8));letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-right:1.1cqw}
+#x2pRm .cb-pc{justify-self:center;display:flex;align-items:center;padding:0 1.4cqw}
+/* the trade: the signed move enamel-filled, every move ending on the same line */
 #x2pRm .cb-tv{justify-self:end;font-size:max(calc(4.8cqw * var(--rs)),var(--f8));letter-spacing:.02em}
 /* enamel in the cut: paint below the surface, its upper edge shaded by the cut's wall, the lit lip under it */
 #x2pRm .cb .cb-en{color:transparent!important;-webkit-background-clip:text;background-clip:text;padding:.14em 0;margin:-.14em 0;text-shadow:none!important;
@@ -9750,7 +9754,7 @@ html.x2p #x2pRm .cb .cb-p>.cb-g0{min-height:3.4cqw}
 #x2pRm .cb-cr{position:absolute;left:-.4cqw;top:calc(-1 * var(--pt) - 2.75cqw);width:6.4cqw;height:4.5cqw;pointer-events:none;
   background:url(media/cb-crown-h40.webp) center/100% 100% no-repeat;filter:saturate(.86) brightness(.97) drop-shadow(0 .32cqw .26cqw rgba(0,0,0,.6))}
 /* the market's window: black enamel; MARKET and the move engraved through it, the move filled with enamel */
-#x2pRm .cb-mw{height:18.6cqw;display:flex;align-items:center;justify-content:space-between;gap:2cqw;padding:1.03cqw 5.6cqw 0;
+#x2pRm .cb-mw{height:16.2cqw;display:flex;align-items:center;justify-content:space-between;gap:2cqw;padding:1.03cqw 5.6cqw 0;
   border:0 solid transparent;border-image:url(media/cb-plate-h38-mk.webp) 16% 3.64% fill / 3.1cqw stretch}
 #x2pRm .cb .cb-ml,#x2pRm .cb .cb-cd{color:transparent!important;-webkit-background-clip:text;background-clip:text;padding:.14em 0;margin:-.14em 0;text-shadow:none;
   background-image:linear-gradient(180deg,#5c574d 0 24%,#c9c1ae 44%,#e6decb 82%,#f4ecd8);filter:drop-shadow(0 -.1cqw 0 #000) drop-shadow(0 .14cqw 0 rgba(255,250,235,.32))}
@@ -9761,7 +9765,7 @@ html.x2p #x2pRm .cb .cb-p>.cb-g0{min-height:3.4cqw}
 #x2pRm .cb .cb-mw .cb-en{filter:drop-shadow(0 -.12cqw 0 #000) drop-shadow(0 .16cqw 0 rgba(255,250,235,.38))}
 #x2pRm .cb-mv.cb-cd{font-size:max(4.6cqw,var(--f8));letter-spacing:.08em;text-transform:uppercase}
 /* the foot: two date plates and the EZ. mark struck into the steel */
-#x2pRm .cb-bt{display:flex;align-items:center;gap:3.2cqw;height:27.6cqw}
+#x2pRm .cb-bt{display:flex;align-items:center;gap:3.2cqw;height:26.4cqw}
 #x2pRm .cb-dt{width:25.6cqw;height:14.4cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5cqw;padding:1.12cqw 1.6cqw 0}
 #x2pRm .cb-dt :is(small,b){display:block;text-box:trim-both cap alphabetic;line-height:1}
 #x2pRm .cb-dt small{font-size:max(2.4cqw,var(--f8))}
@@ -9769,28 +9773,51 @@ html.x2p #x2pRm .cb .cb-p>.cb-g0{min-height:3.4cqw}
 #x2pRm .cb-st{flex:none;margin-left:auto;width:31.2cqw;height:31.2cqw;margin-right:-1.8cqw;background:url(media/cb-plate-h38-stamp.webp) center/100% 100% no-repeat}
 #x2pRm .cb-steel .cb-st{background-image:url(media/cb-plate-h38-stamp-steel.webp)}
 #x2pRm .cb-st.cb-die{background-image:url(media/cb-plate-h38-die.webp)}
+/* H41: struck a little crooked (a hand strike is never square), the foil on the mark's own shape */
+#x2pRm .cb-st:not(.cb-die){position:relative;transform:rotate(7deg);isolation:isolate}
+#x2pRm .cb-ho{position:absolute;inset:0;overflow:hidden;pointer-events:none;mix-blend-mode:overlay;opacity:.7;
+  -webkit-mask:url(media/cb-holo-mask-h41.webp) center/100% 100% no-repeat;mask:url(media/cb-holo-mask-h41.webp) center/100% 100% no-repeat}
+/* the foil: rainbow bands (cyan, violet, magenta, gold, a pale glint, mint) under a fine diffraction grain; the mask lays it full on
+   the letters and at about a third on the slashes and the dot, so the logo's green, red and gold still read */
+#x2pRm .cb-hf{position:absolute;top:-10%;bottom:-10%;left:0;width:300%;transform:translateX(-28%);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='1' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.6 -.55'/%3E%3C/filter%3E%3Crect width='48' height='48' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/4cqw 4cqw,
+    linear-gradient(112deg,#2ad4ff 0%,#8b6bff 7%,#ff4fc8 14%,#ffcf3a 21%,#fff8e0 23.5%,#3cf2a6 28%,#2ad4ff 35%,#8b6bff 42%,#ff4fc8 49%,#ffcf3a 56%,#fff8e0 58.5%,#3cf2a6 63%,#2ad4ff 70%,#8b6bff 77%,#ff4fc8 84%,#ffcf3a 91%,#2ad4ff 100%)}
+@media (prefers-reduced-motion:no-preference){
+  #x2pRm .cb.cb-live .cb-hf{animation:cbHolo 9s ease-in-out -4s infinite alternate;will-change:transform}
+}
+@keyframes cbHolo{from{transform:translateX(0)}to{transform:translateX(-66.667%)}}
 /* "See the film", engraved in the plate's foot */
 html.x2p #x2pRm .cb .cb-flip{align-self:center;flex:none;display:inline-flex;align-items:center;gap:1.2cqw;background:none!important;border:0!important;box-shadow:none!important;border-radius:0;width:auto;margin:0 0 2.6cqw;padding:.8cqw 2.4cqw;min-height:5.4cqw;color:#e3d8bd;
   font:400 max(3cqw,var(--f8))/1 Anton,Impact,sans-serif;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;text-shadow:0 -.12cqw 0 rgba(0,0,0,.9)}
 html.x2p #x2pRm .cb .cb-flip svg{width:1.05em;height:1.05em}
 html.x2p #x2pRm .cb .cb-flip.cb-nob{min-height:6cqw;margin:0}
 html.x2p #x2pRm .cb .cb-flip:focus-visible{outline:2px solid #e9b94a;outline-offset:2px;border-radius:4px}
-/* a card a little shorter than the painting (desktop): the plates a touch smaller */
-@container cb (min-aspect-ratio: 37/50){
-  #x2pRm .cb-ti{height:12.4cqw}#x2pRm .cb-r{--rh:11cqw}#x2pRm .cb-rows{row-gap:2.5cqw}#x2pRm .cb-mw{height:16.6cqw}
-  #x2pRm .cb-bt{height:25cqw}#x2pRm .cb-st{width:28.6cqw;height:28.6cqw}#x2pRm .cb-dt{height:13.4cqw}html.x2p #x2pRm .cb .cb-p{padding-top:7.2cqw}}
-/* a tall card (a 320 px phone): taller nameplates and bigger wells, still one line; the dates over the mark */
-@container cb (max-aspect-ratio: 5/8){
-  html.x2p #x2pRm .cb .cb-p{padding:8.6cqw 7.4cqw 0}
-  #x2pRm .cb-ti{height:15cqw}
+/* a card a little shorter than the painting (desktop, tablets; height under 1.4 x width): the plates a touch smaller (H41: from 1.35 to
+   1.4, so the larger wells still leave every plate its room) */
+@container cb (min-aspect-ratio: 5/7){
+  #x2pRm .cb-ti{height:11.2cqw}#x2pRm .cb-rows{row-gap:2cqw}#x2pRm .cb-mw{height:14.8cqw}
+  #x2pRm .cb-bt{height:23.4cqw}#x2pRm .cb-st{width:28.6cqw;height:28.6cqw}#x2pRm .cb-dt{height:13.4cqw}html.x2p #x2pRm .cb .cb-p{padding-top:6.2cqw}
+  #x2pRm .cb-r{--rh:13.4cqw}html.x2p #x2pRm .cb .cb-flip{margin-bottom:2cqw}}
+/* a wide, short card (tablets from about 540 to 759 px; height under 1.3 x width): plates smaller again, the wells a little smaller,
+   still larger than H40's (H41; H40 ran 15 to 29 px past the plate at 680 to 759 px) */
+@container cb (min-aspect-ratio: 10/13){
+  html.x2p #x2pRm .cb .cb-p{padding-top:6cqw}#x2pRm .cb-ti{height:10.4cqw}#x2pRm .cb-rows{row-gap:1.9cqw}#x2pRm .cb-r{--rh:11.6cqw}
+  #x2pRm .cb-wc{width:10.4cqw;height:10.4cqw}#x2pRm .cb-mw{height:13.6cqw}#x2pRm .cb-bt{height:22.4cqw}#x2pRm .cb-dt{height:12.4cqw}
+  #x2pRm .cb-st{width:26cqw;height:26cqw}}
+/* a tall card (a 320 px phone): taller nameplates and bigger wells, still one line; the dates over the mark (H41: the mark clear of
+   the dates and of "See the film" now it turns; the title and the market window a touch shorter to make that room; only from a
+   height of 1.85 x the width, the least this stack needs: H40 used it from 1.6 and ran 2 to 15 px past the plate at 345 to 354 px) */
+@container cb (max-aspect-ratio: 20/37){
+  html.x2p #x2pRm .cb .cb-p{padding:8cqw 7.4cqw 0}
+  #x2pRm .cb-ti{height:14cqw}
   #x2pRm .cb-r{--rh:17cqw;padding-left:1cqw}
   #x2pRm .cb-rows{row-gap:2.6cqw}
-  #x2pRm .cb-wc{width:12.6cqw;height:12.6cqw;margin-right:1.4cqw}
+  #x2pRm .cb-wc{width:15.4cqw;height:15.4cqw;margin-right:1.4cqw}
   #x2pRm .cb-rk{margin-right:.9cqw}
-  #x2pRm .cb-mw{height:21cqw}
-  #x2pRm .cb-bt{height:auto;flex-wrap:wrap;justify-content:space-between;row-gap:2cqw}
+  #x2pRm .cb-mw{height:19.4cqw}
+  #x2pRm .cb-bt{height:auto;flex-wrap:wrap;justify-content:space-between;row-gap:2.6cqw}
   #x2pRm .cb-dt{width:41cqw;height:16cqw}
-  #x2pRm .cb-st{width:35cqw;height:35cqw;margin:-2cqw auto -3cqw}}
+  #x2pRm .cb-st{width:32cqw;height:32cqw;margin:0 auto .6cqw}}
 
 /* ===== H39 X2P_VIT (owner, 2026-11-03: "The vitrine and its drawer pls. Push to prod as well."): "Every round so far" = take B of round H37
    (tools/concepts/worlds/comic/story/h/h37rounds, _h37.js take B), built. The newest graded Mag 7 round alone in the tall lit bay, the other Mag 7
@@ -9931,6 +9958,67 @@ html.x2p #x2pRm .cb .cb-flip:focus-visible{outline:2px solid #e9b94a;outline-off
 @media (min-width:1000px){.vt-cab{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;align-items:start}.vt-dw.vt-open,.vt-dw.vt-solo{grid-column:1/-1}.vt-dw.vt-solo .vt-df{max-width:calc(50% - 5px)}}
 /* dates are not columns: the page's fixed-width "1" (html.uf .uf1) keeps its own width on the card holders */
 .vt-card .uf1{width:auto}
+
+/* ===== H41 the swiping element under the vitrine (owner, 2026-11-03: "the weekly drawer is too complex... underneath we just have sort of the
+   swiping element... people know how to swipe left or right... the Tinder one"; and of take C of round H40, "the grading line way of scrolling...
+   a sort of display where they can scroll through"). x2p_vit.js builds one of two takes, window.__x2pSwipe:
+   belt (default): every graded round on take C's belt (media/vit-belt-h41.webp, the painting tiled; it travels with the slabs), newest first,
+   a brass date plate at each new close, the line's own plate bolted to the belt's left end, Newer / Older under it. A sideways scroller,
+   overflow-y hidden (a sideways scroller that overflows downwards traps the page's scroll on a phone).
+   deck: one slab in front, the next two peeking under it; a deal flies the front card off the way it was swiped and the next one rises.
+   The slab, its label, the lift and its tag are the live component above (vt-*). Plates Anton, one recipe (vt-plate). ===== */
+.vt-line{position:relative;margin:30px -14px 0}
+.vt-day .uf1,.vt-cnt .uf1,.vt-nv .uf1{width:auto}
+/* --- Newer / Older (both takes): brass plates, a full tap area --- */
+.vt-nav{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:10px;padding:0 14px}
+.vt-nv{min-height:40px;padding:8px 16px 7px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.vt-nv b,.vt-cnt b{font-size:13px}
+.vt-nv.vt-off{filter:saturate(.3) brightness(.55);cursor:default}
+.vt-nv:focus-visible{outline:2px solid var(--gd);outline-offset:3px}
+/* --- the belt --- */
+.vt-bw{position:relative}
+.vt-belt{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scroll-padding:0 24px;-webkit-overflow-scrolling:touch}
+.vt-belt::-webkit-scrollbar{display:none}
+.vt-trk{--bh:58px;position:relative;display:flex;align-items:flex-end;gap:12px;width:max-content;padding:24px 24px calc(var(--bh) - 8px);
+ background:url(media/vit-belt-h41.webp) 0 100%/auto var(--bh) repeat-x}
+.vt-trk .vt-it{width:104px;flex:none;scroll-snap-align:center}
+.vt-trk .vt-it .vt-wn{background:#0b0a14}
+.vt-day{flex:none;align-self:flex-end;padding:5px 9px 4px}
+.vt-day b{font-size:12px}
+/* the line's own plate, bolted to the belt's left end (the belt runs on under it) */
+.vt-bplt{position:absolute;z-index:3;left:10px;bottom:calc((58px - 22px) / 2);height:22px;padding:0 10px;pointer-events:none}
+.vt-bplt b{font-size:11px}
+/* on the belt a lifted slab's tag hangs on its front (the belt clips anything above its own room) */
+.vt-trk .vt-tag{top:22%;transform:none}.vt-trk .vt-tag::before,.vt-trk .vt-tag::after{display:none}
+@media (min-width:600px){.vt-trk .vt-it{width:120px}}
+@media (min-width:1000px){.vt-line{margin:34px 0 0}.vt-trk{--bh:76px;gap:18px}.vt-trk .vt-it{width:150px}.vt-day b{font-size:14px}
+ .vt-bplt{height:26px;bottom:calc((76px - 26px) / 2);padding:0 14px}.vt-bplt b{font-size:13px}.vt-nv b,.vt-cnt b{font-size:15px}}
+/* --- the deck --- */
+.vt-sw-deck{margin:34px 0 0}
+.vt-stk{--cw:min(54vw,220px);position:relative;width:var(--cw);height:calc(var(--cw) * 922 / 600 + 36px);margin:0 auto;-webkit-user-select:none;user-select:none}
+@media (min-width:600px){.vt-stk{--cw:240px}}
+@media (min-width:1000px){.vt-stk{--cw:270px}}
+.vt-stk .vt-it{position:absolute;left:0;top:0;width:100%;transform-origin:50% 100%;
+ transition:transform .3s cubic-bezier(.2,0,0,1),opacity .3s,filter .3s}
+.vt-stk a.vt-sl,.vt-stk img{-webkit-user-drag:none;-webkit-touch-callout:none}
+.vt-stk .vt-it[data-p="f"]{opacity:0;transition:none}
+.vt-stk .vt-it[data-p="0"]{z-index:5;touch-action:none;cursor:grab}
+.vt-stk .vt-it[data-p="1"]{z-index:4;transform:translateY(18px) scale(.93);filter:brightness(.72);pointer-events:none}
+.vt-stk .vt-it[data-p="2"]{z-index:3;transform:translateY(36px) scale(.86);filter:brightness(.5);pointer-events:none}
+.vt-stk .vt-it[data-p="3"]{z-index:2;transform:translateY(54px) scale(.79);opacity:0;pointer-events:none}
+.vt-stk .vt-it.vt-drag{transition:none;cursor:grabbing}
+.vt-stk .vt-it.vt-fly{z-index:6;pointer-events:none;transition:transform .34s cubic-bezier(.45,0,.8,.3),opacity .34s ease-in}
+.vt-stk .vt-it.vt-fl{transform:translate(-130%,-6%) rotate(-22deg);opacity:0}
+.vt-stk .vt-it.vt-flr{transform:translate(130%,-6%) rotate(22deg);opacity:0}
+.vt-stk .vt-it.vt-up{transform:translateY(-34%) scale(1.04);opacity:0;transition:transform .22s ease-in,opacity .22s ease-in}
+.vt-stk .vt-it.vt-bump{animation:vtBump .3s cubic-bezier(.2,0,0,1)}.vt-stk .vt-it.vt-bumpr{animation:vtBumpR .3s cubic-bezier(.2,0,0,1)}
+@keyframes vtBump{40%{transform:translateX(-10px) rotate(-1.5deg)}}@keyframes vtBumpR{40%{transform:translateX(10px) rotate(1.5deg)}}
+.vt-stk.vt-flat .vt-it{transform:none!important;transition:none!important}
+.vt-cnt{min-height:28px;padding:0 12px}
+@media (prefers-reduced-motion:reduce){.vt-stk .vt-it{transition:none!important;animation:none!important}}
+/* the caption box has three lines now: on desktop it shares the head's row, so it takes the room beside the heading and wraps (flex:none ran it
+   28px past a 1280 screen) */
+@media (min-width:1000px){#x2pVit .m7-hd .m7-cap{flex:0 1 auto;min-width:0}}
 
 </style>
 </head>
@@ -17193,14 +17281,19 @@ watch();
    the makeover... diegetically integrated"): the back of a round opened big (#x2pRm, the round's address) is a blackened steel vault
    plate carrying exactly the certificate's content and layout: the certificate's number on the title plate; one nameplate per model in
    the certificate's order (graded: right way by closeness, then wrong way; pending: as filed), each reading rank, logo, name, flag,
-   PASS or FAIL (punched), then the trade (Long +2.5% / Short -3.5%, the move enamel-filled green or red); the winner's plate gold with
+   PASS or FAIL (punched), then the trade (the signed move alone, +2.5% / -3.5%, enamel-filled green or red; H41, owner 2026-11-03: "we
+   have plus 2.5 and plus 1.5 and minus 1, we don't really need the long and short wording"); the winner's plate gold with
    a small cast crown on its top edge (both on a tie, none when nobody won); MARKET and the move (pending: the page's countdown) in the
-   black enamel window; the dates and the EZ. mark struck into the steel (pending: the empty die seat). Every part is painted (Hedra,
+   black enamel window; the dates and the EZ. mark struck into the steel (pending: the empty die seat). H41 (owner, 2026-11-03: "a little
+   bit tilted to the right, because stamps are usually never exactly properly stamped... a bit more of a holo design"): the mark is struck
+   7 degrees crooked and its letters carry a holographic foil (a rainbow sheen masked to the mark's own shape, media/cb-holo-mask-h41.webp,
+   overlay-blended so the steel and the struck relief show through) that drifts only while the back faces you (.cb-live), never with
+   reduced motion; the logo wells and marks about 22% larger. Every part is painted (Hedra,
    from the H36 plate d1; the crown H40) and laid out by the page so the plate fills the card at any shape.
    Media, written out in full for make_site.py: media/cb-plate-h38-shell-1200.jpg media/cb-plate-h38-shell-1800.jpg
    media/cb-plate-h38-title.webp media/cb-plate-h38-np.webp media/cb-plate-h38-npg.webp media/cb-plate-h38-mk.webp
    media/cb-plate-h38-wellc.webp media/cb-plate-h38-wellcg.webp media/cb-crown-h40.webp
-   media/cb-plate-h38-stamp.webp media/cb-plate-h38-stamp-steel.webp media/cb-plate-h38-die.webp
+   media/cb-plate-h38-stamp.webp media/cb-plate-h38-stamp-steel.webp media/cb-plate-h38-die.webp media/cb-holo-mask-h41.webp
    It sits over the page's certificate (graded: the back face; pending: the one face), which stays underneath, hidden, so the flip, the
    arrows, close and the holo levels keep working. Every word and number from ROUNDS / PENDING. window.__x2pCbStamp="steel" shows the
    plain struck-steel mark instead of the enamelled one (a mockup switch). Failures are kept in window.__x2pCbErr. */
@@ -17229,8 +17322,8 @@ function graded(n){var g=null;ROUNDS.forEach(function(r){if(r.n===n)g=r});if(!g)
   return {k:'g',n:n,co:g.co,t:g.ticker,a:g.a,rows:rows,W:W,filed:md(g.called),graded:md(g.resolves)}}
 function pending(n){var u=null;(window.PENDING||[]).forEach(function(q){if(q.n===n)u=q});if(!u)return null;
   return {k:'p',n:n,co:u.co,t:u.ticker,rows:(u.calls||[]).map(function(x){return {m:x.m,up:x.dir==='UP',v:Math.abs(parseFloat(x.mag))}}),filed:md(u.called),graded:u.resolves?md(u.resolves):'Soon'}}
-/* the trade: the word engraved, the move enamel-filled (green long, red short) */
-function trade(r){return '<span class="cb-tw cb-tb">'+(r.up?'Long':'Short')+'</span><b class="cb-tv cb-tb cb-en '+(r.up?'up':'dn')+'"><span aria-hidden="true">'+(r.up?'+':'−')+'</span><span class="sr">'+(r.up?'up ':'down ')+'</span>'+pct(r.v)+'</b>'}
+/* the trade: the signed move, enamel-filled (green long, red short); the sign says the side, so no Long / Short word (H41) */
+function trade(r){return '<b class="cb-tv cb-tb cb-en '+(r.up?'up':'dn')+'"><span aria-hidden="true">'+(r.up?'+':'−')+'</span><span class="sr">'+(r.up?'up ':'down ')+'</span>'+pct(r.v)+'</b>'}
 /* PASS / FAIL hand-punched: one letter punch per letter, each at its own tilt and depth, rubbed with paint */
 /* each word's four punches: tilt (deg), drop (em, summing to zero so the word stays centred on the plate's face), size */
 var PT=[[[-2.2,.04,1],[1.6,-.03,.97],[-1.1,.02,1.02],[2.6,-.03,.99]],[[1.8,-.03,1.01],[-2.6,.03,.98],[1.1,.02,1],[-1.4,-.02,1.03]],
@@ -17249,7 +17342,7 @@ function build(d,fb){var G=d.k==='g',h='<div class="cb-p"><i class="cb-sh" aria-
   h+='</ol><i class="cb-g" style="--g:1"></i>';
   h+='<div class="cb-mw"><b class="cb-ml cb-tb">Market</b>'+(G?move(d.a):'<b class="cb-mv cb-tb cb-cd"></b>')+'</div>';
   h+='<i class="cb-g" style="--g:1"></i><div class="cb-bt"><div class="cb-dt cb-np"><small class="cb-fit">Trades filed</small><b class="cb-fit">'+d.filed+'</b></div><div class="cb-dt cb-np"><small class="cb-fit">'+(G?'Graded on':'Final grade')+'</small><b class="cb-fit">'+d.graded+'</b></div>'+
-    '<span class="cb-st'+(G?'':' cb-die')+'" role="img" aria-label="'+(G?'Struck with the EZ. mark: graded by the market close':'The EZ. mark is struck once the market closes')+'"></span></div><i class="cb-g" style="--g:.5"></i>';
+    '<span class="cb-st'+(G?'':' cb-die')+'" role="img" aria-label="'+(G?'Struck with the EZ. mark: graded by the market close':'The EZ. mark is struck once the market closes')+'">'+(G?'<i class="cb-ho" aria-hidden="true"><i class="cb-hf"></i></i>':'')+'</span></div><i class="cb-g" style="--g:.5"></i>';
   h+=fb?'<button type="button" class="cb-flip" data-flip><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'+esc(fb)+'</button>':'<i class="cb-flip cb-nob" aria-hidden="true"></i>';
   return h+'</div>'}
 /* one line each: the type steps down to fit its plate, never below the 8 px floor (on screen, through the view's zoom); the rows share
@@ -17271,7 +17364,9 @@ function mount(){var rm=D.getElementById('x2pRm');if(!rm)return;var c=rm.querySe
   if(d.k==='p'){countdown(o,fin);o.__cd=setInterval(function(){if(!o.isConnected){clearInterval(o.__cd);return}countdown(o,fin)},30000)}
   var f=function(){if(o.isConnected)fit(o)};f();if(D.fonts&&D.fonts.ready)D.fonts.ready.then(f);setTimeout(f,400);
   /* refit once the plate is the face in front (a turned card lays out again) */
-  var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(f,120)}).observe(c,{attributes:true,attributeFilter:['class']})}
+  /* the foil drifts only while the back faces you (a graded card turned; the pending card's face has no foil) */
+  var lv=function(){o.classList.toggle('cb-live',d.k==='g'&&c.classList.contains('flipped'))};lv();
+  var t=0;new MutationObserver(function(){lv();clearTimeout(t);t=setTimeout(f,120)}).observe(c,{attributes:true,attributeFilter:['class']})}
 function run(){try{mount()}catch(e){window.__x2pCbErr=e}}
 function init(){new MutationObserver(function(ms){for(var i=0;i<ms.length;i++)for(var j=0;j<ms[i].addedNodes.length;j++){var x=ms[i].addedNodes[j];if(x.nodeType===1&&x.id==='x2pRm'){run();return}}}).observe(D.body,{childList:true});run();
   var lw=innerWidth;addEventListener('resize',function(){if(innerWidth===lw)return;lw=innerWidth;var o=D.querySelector('#x2pRm .cb');if(o){var c=o.closest('.card');o.style.setProperty('--cbz',zoomOf(c));fit(o)}})}
@@ -17326,18 +17421,18 @@ WEEKS.sort((a,b)=>b.k-a.k);
 WEEKS.forEach(w=>{if(w.k<0){w.t='Undated';w.a='Undated';return}const a=new Date(w.k),b=new Date(w.k+4*864e5);
   w.t=a.getUTCMonth()===b.getUTCMonth()?`${md(a)}–${b.getUTCDate()}`:`${md(a)}–${md(b)}`;w.a=`${md(a)} to ${a.getUTCMonth()===b.getUTCMonth()?b.getUTCDate():md(b)}`});
 /* ---- the slab ---- */
-function slab(r){const L=lab(r.n),f=(window.FILMS||{})[r.n];
+function slab(r,lz){const L=lab(r.n),f=(window.FILMS||{})[r.n];
   return `<a class="vt-sl${L.gr==='10'?' vt-10':''}" href="#/round/${r.n}" data-n="${r.n}" aria-label="${esc(`Round ${r.n}, ${r.co} (${r.ticker}): moved ${r.out}. Grade ${L.gr||''}${L.ds?', '+L.ds:''}. ${winT(r)}. Open the slab.`)}">`+
-   `<span class="vt-wn"><img src="${tile(r)}" alt="" loading="lazy" decoding="async">${f?'<i class="vt-pl" aria-hidden="true"></i>':''}</span><span class="vt-fr" aria-hidden="true"></span>`+
+   `<span class="vt-wn"><img ${lz?'data-src':'src'}="${tile(r)}" alt="" loading="lazy" decoding="async" draggable="false">${f?'<i class="vt-pl" aria-hidden="true"></i>':''}</span><span class="vt-fr" aria-hidden="true"></span>`+
    `<span class="vt-lb" aria-hidden="true"><span class="vt-l"><span class="vt-nm">${esc(r.co)}</span><span class="vt-tk">${esc(r.ticker)}</span></span><span class="vt-r"><span class="vt-ds">${esc(L.ds||'')}</span><span class="vt-gr">${esc(L.gr||'')}</span></span></span></a>`}
 function emptySlab(u,bet){const lg=logoF(u.ticker),co=u.co===u.ticker&&u.ticker==='AAPL'?'Apple':u.co;
   return `<span class="vt-sl vt-mt" role="img" aria-label="${esc(`Empty slot: ${co} (${u.ticker}), ${bet?'Bet #1':'to come'}`)}"><span class="vt-wn">${lg?`<img class="vt-ml${dark(u.ticker)?'':' vt-inv'}" src="${lg}" alt="" loading="lazy" decoding="async">`:''}<em class="vt-when">${bet?'Bet #1':'To come'}</em></span><span class="vt-fr" aria-hidden="true"></span>`+
    `<span class="vt-lb" aria-hidden="true"><span class="vt-l"><span class="vt-nm">${esc(co)}</span><span class="vt-tk">${esc(u.ticker)}</span></span><span class="vt-r"><span class="vt-ds">${bet?'Bet #1':'Soon'}</span><span class="vt-gr">?</span></span></span></span>`}
 function tag(r){const L=lab(r.n),W=wins(r);
   return `<span class="vt-tag" aria-hidden="true"><b>${esc(r.co)} <small>(${esc(r.ticker)})</small></b>${L.gr?`<span class="vt-tg">Grade ${esc(L.gr)}${L.ds?' · '+esc(L.ds):''}</span>`:''}<span class="vt-tw${W.length?'':' vt-no'}">${esc(winT(r))}</span></span>`}
-const item=r=>`<div class="vt-it" data-n="${r.n}">${slab(r)}${tag(r)}</div>`;
+const item=(r,lz)=>`<div class="vt-it" data-n="${r.n}">${slab(r,lz)}${tag(r)}</div>`;
 /* ---- the section ---- */
-const head=`<header class="m7-hd"><h2 class="t4-h2 m7-h2"><span class="t4-hw">Every round so far</span></h2><p class="m7-cap"><span class="m7-c1">Each round gets a grade from 1 to 10.</span> <span class="m7-c1">A 10 means all four AI<span class="x2p-lc">s</span> got it right, and close.</span></p></header>`;
+const head=`<header class="m7-hd"><h2 class="t4-h2 m7-h2"><span class="t4-hw">Every round so far</span></h2><p class="m7-cap"><span class="m7-c1">Each round gets a grade from 1 to 10.</span> <span class="m7-c1">A 1 means all four AI<span class="x2p-lc">s</span> got the direction wrong.</span> <span class="m7-c1">A 10 means all four got the direction right, and close to the real move.</span></p></header>`;
 const bay=(x,cls)=>`<div class="vt-bay ${cls||''}"><div class="vt-bin">${x}</div></div>`;
 const others=SL.filter(s=>!(s.r&&s.r===HERO));
 const caseH=`<div class="vt-case" role="group" aria-label="The Mag 7"><span class="vt-plate vt-plt" aria-hidden="true"><b>Mag 7</b></span>${HERO?bay(item(HERO),'vt-hero'):''}<div class="vt-bays">${others.map(s=>bay(s.r?item(s.r):emptySlab(s.u,s.t==='NVDA'),s.r?'':'vt-bmt')).join('')}</div></div>`;
@@ -17345,12 +17440,29 @@ const open=new Set(WEEKS.length?[0]:[]),all=new Set();
 const cols=()=>matchMedia('(min-width:1000px)').matches?8:matchMedia('(min-width:600px)').matches?4:matchMedia('(min-width:480px)').matches?3:2;
 function trayHTML(i){const w=WEEKS[i],k=all.has(i)?w.rs.length:Math.min(w.rs.length,cols()*2);
   const more=w.rs.length>cols()*2?`<button class="vt-plate vt-all" type="button" data-all="${i}" aria-expanded="${all.has(i)}"><b>${all.has(i)?'Show fewer':`Show all ${w.rs.length} in this drawer`}</b></button>`:'';
-  return `<div class="vt-tin">${w.rs.slice(0,k).map(item).join('')}</div>${more}`}
+  return `<div class="vt-tin">${w.rs.slice(0,k).map(r=>item(r)).join('')}</div>${more}`}
 const drawer=(w,i)=>{const o=open.has(i);return `<div class="vt-dw${o?' vt-open':''}" data-dw="${i}"><button class="vt-df" type="button" aria-expanded="${o}" aria-controls="vtTray${i}" aria-label="${esc(`Week of ${w.a}: ${w.rs.length} round${w.rs.length>1?'s':''}. ${o?'Close':'Open'} the drawer.`)}"><i class="vt-d1" aria-hidden="true"></i><i class="vt-d2" aria-hidden="true"></i><i class="vt-d3" aria-hidden="true"></i><span class="vt-card" aria-hidden="true"><b>${esc(w.t)}</b><span>${w.rs.length} round${w.rs.length>1?'s':''}</span></span></button>`+
   `<div class="vt-tray" id="vtTray${i}" role="group" aria-label="${esc('Rounds graded in the week of '+w.a)}"${o?'':' hidden'}>${o?trayHTML(i):''}</div></div>`};
 const cabH=`<div class="vt-cab" role="group" aria-label="Every other round, a drawer a week, newest on top"><span class="vt-plate vt-plt" aria-hidden="true"><b>Every other round · a drawer a week</b></span>${WEEKS.map(drawer).join('')}</div>`;
 const root=D.createElement('div');root.className='vt';root.id='x2pVit';
-root.innerHTML=head+caseH+cabH;
+/* ---- H41 the swiping element under the vitrine (owner, 2026-11-03: "the weekly drawer is too complex... underneath we just have sort of the
+   swiping element... the Tinder one"): every graded round, newest first (latest grading day, then the highest round number), one switch:
+   window.__x2pSwipe = 'belt' (default: take C's grading line, a belt scrolled sideways, brass date plates at each new close, Newer / Older)
+   or 'deck' (a stack: one slab in front, the next two peeking; swipe or drag left/right, the arrows or the arrow keys deal; swipe up opens).
+   The drawer cabinet is off; window.__x2pDrawers=1 brings it back under the line. Painting: media/vit-belt-h41.webp (the belt, take C's, tiled). */
+const NEWF=G.slice().sort((a,b)=>((day(b)||0)-(day(a)||0))||(b.n-a.n));
+const SW=String(window.__x2pSwipe||'belt').toLowerCase()==='deck'?'deck':'belt',DRW=window.__x2pDrawers==1;
+const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+let lineH='';
+if(SW==='belt'){let h='',prev=null;NEWF.forEach(r=>{const d=day(r),k=d?d.getTime():-1;if(k!==prev){prev=k;h+=`<span class="vt-plate vt-day" aria-hidden="true"><b>${d?esc(md(d)):'Undated'}</b></span>`}h+=item(r,1)});
+  lineH=`<div class="vt-line vt-sw-belt" role="group" aria-label="${esc(`The line: every graded round, newest first, ${NEWF.length} rounds. Scroll sideways, or use the arrow keys.`)}"><div class="vt-bw"><div class="vt-belt"><div class="vt-trk">${h}</div></div>`+
+   `<span class="vt-plate vt-bplt" aria-hidden="true"><b>The line · newest first</b></span></div>`+
+   `<div class="vt-nav"><button class="vt-plate vt-nv vt-nw" type="button" aria-label="Newer rounds"><b>‹ Newer</b></button><button class="vt-plate vt-nv vt-ol" type="button" aria-label="Older rounds"><b>Older ›</b></button></div></div>`}
+else lineH=`<div class="vt-line vt-sw-deck" role="group" aria-label="${esc(`Every graded round, newest first, one at a time (${NEWF.length}). Swipe left for older, right for newer, up to open; or the arrow keys.`)}">`+
+   `<div class="vt-stk"></div><div class="vt-nav"><button class="vt-plate vt-nv vt-nw" type="button" aria-label="Newer round"><b>‹ Newer</b></button>`+
+   `<span class="vt-plate vt-cnt" aria-live="polite"><b></b></span><button class="vt-plate vt-nv vt-ol" type="button" aria-label="Older round"><b>Older ›</b></button></div></div>`;
+root.innerHTML=head+caseH+lineH+(DRW?cabH:'');
+root.classList.add('vt-on-'+SW);
 sec.classList.add('vt-sec');sec.appendChild(root);
 /* desktop pairs the closed drawers two to a row; a closed drawer left alone in its row (before an open one, or the last) takes the whole row */
 function pair(){let c=0;const ds=[...root.querySelectorAll('.vt-dw')];ds.forEach((d,j)=>{d.classList.remove('vt-solo');if(open.has(+d.dataset.dw)){c=0;return}
@@ -17377,7 +17489,8 @@ function fitOne(lb){const nmE=lb.querySelector('.vt-nm'),tk=lb.querySelector('.v
   if(over(nmE)>0||!vfit()){/* two lines */lb.classList.add('vt-w2');f=f0;nmE.style.fontSize=f+'px';g=0;while((over(nmE)>0||!vfit())&&f>MIN&&g++<60){f=Math.max(MIN,f-.25);nmE.style.fontSize=f+'px'}
     if(over(nmE)>0||!vfit())lb.classList.add('vt-clip')}
   else if(tk&&tk.offsetWidth&&over(tk)>0)lb.classList.add('vt-nt')}
-function fit(scope){(scope||root).querySelectorAll('.vt-lb').forEach(fitOne)}
+function fit(scope){const st=root.querySelector('.vt-stk');st&&st.classList.add('vt-flat');
+  try{(scope||root).querySelectorAll('.vt-lb').forEach(lb=>{const it=lb.closest('.vt-belt .vt-it');if(it&&!scope&&!it.dataset.f)return;fitOne(lb)})}finally{st&&st.classList.remove('vt-flat')}}
 /* the Anton "1" is boxed to a full digit a frame later (x2p_more FONTS AND GOLD), which widens the grade: fit again then */
 let rq=0;const refit=()=>{if(rq)return;rq=requestAnimationFrame(()=>{rq=requestAnimationFrame(()=>{rq=0;try{fit()}catch(x){}})})};
 new MutationObserver(ms=>{if(ms.some(m=>[...m.addedNodes].some(n=>n.nodeType===1&&(n.classList.contains('uf1')||n.querySelector&&n.querySelector('.uf1')))))refit()}).observe(root,{childList:true,subtree:true});
@@ -17385,7 +17498,7 @@ new MutationObserver(ms=>{if(ms.some(m=>[...m.addedNodes].some(n=>n.nodeType===1
 let ptype='';root.addEventListener('pointerdown',e=>{ptype=e.pointerType||''},true);
 const unlift=()=>root.querySelectorAll('.vt-it.vt-lift').forEach(l=>l.classList.remove('vt-lift'));
 function place(it){const t=it.querySelector('.vt-tag');if(!t)return;t.style.left='';const r=it.getBoundingClientRect(),w=t.offsetWidth,vw=D.documentElement.clientWidth;
-  let x=r.left+r.width/2-w/2;x=Math.max(8,Math.min(vw-8-w,x));t.style.left=(x-r.left)+'px';t.style.setProperty('--tx',Math.max(10,Math.min(w-10,r.left+r.width/2-x))+'px')}
+  const bx=it.closest('.vt-belt'),B=bx?bx.getBoundingClientRect():{left:0,right:vw};let x=r.left+r.width/2-w/2;x=Math.max(B.left+8,Math.min(B.right-8-w,x));t.style.left=(x-r.left)+'px';t.style.setProperty('--tx',Math.max(10,Math.min(w-10,r.left+r.width/2-x))+'px')}
 root.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('.vt-it>a.vt-sl');if(!a)return;const it=a.parentNode;
   if((ptype==='touch'||ptype==='pen')&&!it.classList.contains('vt-lift')){e.preventDefault();e.stopPropagation();unlift();place(it);it.classList.add('vt-lift')}ptype=''},true);
 root.addEventListener('pointerover',e=>{const it=e.target.closest&&e.target.closest('.vt-it');if(it&&e.pointerType==='mouse')place(it)});
@@ -17394,9 +17507,69 @@ D.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('.vt-it.v
 addEventListener('scroll',()=>{const l=root.querySelector('.vt-lift');if(l){const r=l.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)unlift()}},{passive:true});
 /* ---- width changes: the open drawers re-deal to the new column count; every label refits ---- */
 let lw=innerWidth,lc=cols();addEventListener('resize',()=>{if(innerWidth===lw)return;lw=innerWidth;const c=cols();
-  if(c!==lc){lc=c;open.forEach(i=>{const t=root.querySelector('#vtTray'+i);if(t)t.innerHTML=trayHTML(i)})}fit()});
+  if(c!==lc){lc=c;open.forEach(i=>{const t=root.querySelector('#vtTray'+i);if(t)t.innerHTML=trayHTML(i)})}fit();LN.resize()});
 fit();D.fonts&&D.fonts.ready.then(()=>{fit();setTimeout(()=>{try{fit()}catch(x){}},700)});
-window.__x2pVit={WEEKS,REST,SL,HERO,setDrawer,fit};
+/* ===================================================== the line (belt or deck) ===================================================== */
+const LN=SW==='belt'?belt():deck();
+window.__x2pVit={WEEKS,REST,SL,HERO,setDrawer,fit,NEWF,SW,LN};
+/* ---- the belt: a sideways scroller (overflow-y hidden, so it never traps the page's scroll); slabs load and fit only once near its view ---- */
+function belt(){const ln=root.querySelector('.vt-line'),B=ln.querySelector('.vt-belt'),nw=ln.querySelector('.vt-nw'),ol=ln.querySelector('.vt-ol');
+  const its=[...B.querySelectorAll('.vt-it')],links=its.map(i=>i.querySelector('a.vt-sl'));
+  /* one tab stop on the belt (roving): the arrow keys walk it */
+  let cur=0;const rove=k=>{links.forEach((a,i)=>a.tabIndex=i===k?0:-1);cur=k};rove(0);
+  const seen=it=>{if(it.dataset.f)return;it.dataset.f=1;const im=it.querySelector('img[data-src]');if(im){im.src=im.dataset.src;im.removeAttribute('data-src')}fitOne(it.querySelector('.vt-lb'))};
+  let io=null;const near=new IntersectionObserver(es=>{if(!es.some(e=>e.isIntersecting)||io)return;near.disconnect();
+    io=new IntersectionObserver(es2=>es2.forEach(e=>{if(e.isIntersecting)seen(e.target)}),{root:B,rootMargin:'0px 100% 0px 100%'});its.forEach(i=>io.observe(i))},{rootMargin:'700px 0px'});near.observe(ln);
+  const ends=()=>{const m=B.scrollWidth-B.clientWidth;[[nw,B.scrollLeft<=2],[ol,B.scrollLeft>=m-2]].forEach(([b,x])=>{b.classList.toggle('vt-off',x);b.setAttribute('aria-disabled',x)})};
+  let sq=0;B.addEventListener('scroll',()=>{if(sq)return;sq=requestAnimationFrame(()=>{sq=0;ends();const l=B.querySelector('.vt-lift');if(l){const r=l.getBoundingClientRect(),R=B.getBoundingClientRect();if(r.right<R.left||r.left>R.right)unlift()}})},{passive:true});
+  const go=d=>{const m=B.scrollWidth-B.clientWidth;if(d<0&&B.scrollLeft<=2||d>0&&B.scrollLeft>=m-2)return;B.scrollBy({left:d*B.clientWidth*.8,behavior:RM()?'auto':'smooth'})};
+  nw.addEventListener('click',()=>go(-1));ol.addEventListener('click',()=>go(1));
+  const show=k=>{const it=its[k],R=B.getBoundingClientRect(),r=it.getBoundingClientRect();seen(it);if(r.left<R.left+8||r.right>R.right-8)B.scrollBy({left:r.left+r.width/2-(R.left+R.width/2),behavior:RM()?'auto':'smooth'})};
+  B.addEventListener('keydown',e=>{const k={ArrowRight:1,ArrowLeft:-1,Home:-1e9,End:1e9}[e.key];if(k==null)return;const i=links.indexOf(D.activeElement);if(i<0)return;e.preventDefault();
+    const j=Math.max(0,Math.min(links.length-1,i+k));rove(j);links[j].focus({preventScroll:true});show(j)});
+  B.addEventListener('focusin',e=>{const i=links.indexOf(e.target);if(i>=0){rove(i);show(i)}});
+  ends();
+  return {resize(){its.forEach(i=>{if(i.dataset.f){fitOne(i.querySelector('.vt-lb'))}});ends()},B,its}}
+/* ---- the deck: one slab in front, the next two peeking under it; a deal flies the front card off the way it was swiped and the next rises ---- */
+function deck(){const ln=root.querySelector('.vt-line'),S=ln.querySelector('.vt-stk'),nw=ln.querySelector('.vt-nw'),ol=ln.querySelector('.vt-ol'),cnt=ln.querySelector('.vt-cnt b');
+  let i=0;const N=NEWF.length,els=new Map();
+  const mk=r=>{const w=D.createElement('div');w.innerHTML=item(r);const it=w.firstChild;it.classList.add('vt-dk');return it};
+  function render(j,fromKb){const want=NEWF.slice(j,j+3);const keep=new Set(want.map(r=>r.n));
+    els.forEach((it,n)=>{if(!keep.has(n)&&!it.classList.contains('vt-fly')){it.dataset.p=3;it.inert=true;els.delete(n);setTimeout(()=>it.remove(),RM()?0:340)}});
+    want.forEach((r,p)=>{let it=els.get(r.n);if(!it){it=mk(r);it.dataset.p='f';S.appendChild(it);fitOne(it.querySelector('.vt-lb'));it.dataset.p=Math.min(3,p+1);els.set(r.n,it);void it.offsetWidth}
+      it.dataset.p=p;const a=it.querySelector('a.vt-sl');a.tabIndex=p?-1:0;it.inert=!!p;p?it.setAttribute('aria-hidden','true'):it.removeAttribute('aria-hidden')});
+    i=j;cnt.textContent=`R${NEWF[j].n} · ${j+1} of ${N}`;
+    [[nw,j<=0],[ol,j>=N-1]].forEach(([b,x])=>{b.classList.toggle('vt-off',x);b.setAttribute('aria-disabled',x)});
+    if(fromKb){const f=els.get(NEWF[j].n);f&&f.querySelector('a.vt-sl').focus({preventScroll:true})}}
+  const front=()=>els.get(NEWF[i].n);
+  function deal(step,kb){const j=i+step;if(j<0||j>=N){bump(step);return false}unlift();const f=front();
+    if(f&&!RM()){f.classList.add('vt-fly',step>0?'vt-fl':'vt-flr');f.style.transform='';f.inert=true;els.delete(NEWF[i].n);setTimeout(()=>f.remove(),360)}
+    else if(f){f.remove();els.delete(NEWF[i].n)}
+    render(j,kb);return true}
+  function bump(step){const f=front();if(!f||RM())return;f.classList.remove('vt-bump','vt-bumpr');void f.offsetWidth;f.classList.add(step>0?'vt-bump':'vt-bumpr')}
+  nw.addEventListener('click',()=>deal(-1));ol.addEventListener('click',()=>deal(1));
+  ln.addEventListener('keydown',e=>{if(e.target.closest('button'))return;const k={ArrowRight:1,ArrowLeft:-1}[e.key];if(!k)return;e.preventDefault();deal(k,true)});
+  /* the gesture, on the front card only (touch-action:none there; anywhere else the page scrolls as usual) */
+  let g=null,eat=0;
+  S.addEventListener('dragstart',e=>e.preventDefault());
+  S.addEventListener('pointerdown',e=>{const f=front();if(!f||!f.contains(e.target)||e.button>0)return;g={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now(),ax:null,f,ly:e.clientY,pt:e.pointerType}});
+  S.addEventListener('pointermove',e=>{if(!g||e.pointerId!==g.id)return;const dx=e.clientX-g.x,dy=e.clientY-g.y;
+    if(!g.ax){if(Math.hypot(dx,dy)<7)return;g.ax=Math.abs(dx)>=Math.abs(dy)?'x':dy<0?'up':'down';try{g.f.setPointerCapture(g.id)}catch(x){}g.f.classList.add('vt-drag');unlift()}
+    if(g.ax==='x')g.f.style.transform=`translate(${dx}px,${Math.max(-30,Math.min(30,dy*.25))}px) rotate(${dx/16}deg)`;
+    else if(g.ax==='up')g.f.style.transform=`translateY(${Math.min(0,dy)}px) scale(${1+Math.min(0,dy)/-2500})`;
+    else if(g.pt!=='mouse'){scrollBy(0,g.ly-e.clientY);g.ly=e.clientY}});
+  const end=e=>{if(!g||e.pointerId!==g.id)return;const G0=g;g=null;if(!G0.ax)return;eat=performance.now()+400;
+    const f=G0.f,dx=e.clientX-G0.x,dy=e.clientY-G0.y,dt=Math.max(1,performance.now()-G0.t),W=f.offsetWidth,H=f.offsetHeight;f.classList.remove('vt-drag');
+    if(e.type==='pointercancel'){f.style.transform='';return}
+    if(G0.ax==='x'&&(Math.abs(dx)>W*.28||Math.abs(dx)/dt>.45&&Math.abs(dx)>30)){if(deal(dx<0?1:-1))return}
+    if(G0.ax==='up'&&(-dy>H*.2||-dy/dt>.45&&-dy>36)){const n=NEWF[i].n;if(!RM()){f.classList.add('vt-up');f.style.transform=''}
+      setTimeout(()=>{eat=0;ptype='';const a=f.querySelector('a.vt-sl');a?a.click():(location.hash='#/round/'+n);setTimeout(()=>{f.classList.remove('vt-up')},400)},RM()?0:220);return}
+    f.style.transform=''};
+  S.addEventListener('pointerup',end);S.addEventListener('pointercancel',end);
+  /* a drag is not a tap: the click that may follow it neither lifts nor opens */
+  D.addEventListener('click',e=>{if(performance.now()<eat&&S.contains(e.target)){e.preventDefault();e.stopPropagation();eat=0}},true);
+  render(0);
+  return {resize(){[...S.children].forEach(it=>{S.classList.add('vt-flat');fitOne(it.querySelector('.vt-lb'));S.classList.remove('vt-flat')})},S,deal,get i(){return i}}}
 }
 })();
 
