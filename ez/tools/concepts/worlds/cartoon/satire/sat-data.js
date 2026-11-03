@@ -34,7 +34,7 @@ const $k=v=>{const a=Math.abs(v);return (v<0?'−':'+')+'$'+(a>=1000?(a/1000).to
 const pct=v=>v==null?'–':Math.round(v*100)+'%';
 const mv=a=>(a<0?'−':'+')+Math.abs(a).toFixed(2)+'%';
 const co=t=>(W.TICKERS&&TICKERS[t])||t;
-const tk=t=>String(t).split('.')[0];
+const tk=t=>{const p=String(t).split('.');return p.length>1&&XC[p[p.length-1]]?p.slice(0,-1).join('.'):String(t)};
 const coT=t=>co(t)+' ('+tk(t)+')';
 const logo=t=>{const L=W.CO_LOGOS&&CO_LOGOS[t];return L?{src:'../../../../../media/'+L.f,c:L.c,dark:!!L.dark}:null};
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -86,8 +86,8 @@ function compute(NOW){
 }
 /* Hyperliquid snapshot (the one input not from the sheet): ticker -> [[dex, open interest $M, 24h volume $M, max leverage, delisted]].
    Key rule: the sheet ticker without its exchange suffix (ASML.AS -> ASML), as the brief's figures use; live markets only. */
-function hlFor(HL,t){if(!HL)return null;const L=(HL[String(t).split('.')[0]]||[]).filter(x=>!x[4]);if(!L.length)return null;const b=L.slice().sort((a,c)=>c[1]-a[1])[0];
-  return {name:b[0]+':'+String(t).split('.')[0],oi:b[1],vol:b[2],lev:b[3],thin:b[1]<10,all:L.map(x=>x[0]+':'+String(t).split('.')[0])}}
+function hlFor(HL,t){if(!HL)return null;const k=tk(t);const L=(HL[k]||[]).filter(x=>!x[4]);if(!L.length)return null;const b=L.slice().sort((a,c)=>c[1]-a[1])[0];
+  return {name:b[0]+':'+k,oi:b[1],vol:b[2],lev:b[3],thin:b[1]<10,all:L.map(x=>x[0]+':'+k)}}
 function hlPnl(D,HL){const o={};D.MK.forEach(m=>o[m]={pnl:0,W:0,L:0,n:0});D.RS.forEach(r=>{if(!hlFor(HL,r.ticker))return;D.MK.forEach(m=>{const t=r.__t[m];if(!t)return;const q=o[m];q.pnl+=t.v;q.n++;if(t.v>0)q.W++;else q.L++})});return o}
 /* the plain range for a hit rate: Wilson 95% interval */
 function wilson(k,n){if(!n)return [0,1];const z=1.96,p=k/n,d=1+z*z/n,c=(p+z*z/(2*n))/d,h=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d;return [c-h,c+h]}

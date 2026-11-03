@@ -13,7 +13,10 @@ const {chromium}=require('playwright');
   await p.evaluate(()=>scrollTo(0,0));
   await p.waitForTimeout(2500);
   await p.evaluate(()=>new Promise(r=>{const v=document.getElementById('tvv');if(!v||v.readyState>=2&&!v.seeking)return r();v.addEventListener('seeked',()=>r(),{once:true});setTimeout(r,4000)}));
-  await p.screenshot({path:out,fullPage:true});
+  // capture in bands and stitch (one huge capture can crash the renderer)
+  const TH=await p.evaluate(()=>document.documentElement.scrollHeight),band=1600,parts=[];
+  for(let y=0,i=0;y<TH;y+=band,i++){const h=Math.min(band,TH-y),f=out.replace(/\.png$/,'')+'.part'+i+'.png';await p.screenshot({path:f,clip:{x:0,y,width:+w,height:h},fullPage:true});parts.push(f)}
+  require('child_process').execFileSync('convert',[...parts,'-append',out]);parts.forEach(f=>require('fs').unlinkSync(f));
   const m=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,h:document.body.scrollHeight}));
   console.log(JSON.stringify(m),errs.length?'ERRORS: '+errs.join(' | '):'no errors');
   await b.close();

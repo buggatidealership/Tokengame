@@ -88,6 +88,20 @@ function nextUp(){var all=[].concat(PENDING.map(function(p){return {u:p,inn:true
   var g={};all.forEach(function(x){var d=ymd(x.u.resolves)||ymd(x.u.called);if(!d)return;var k=key(d);(g[k]=g[k]||{k:k,d:d,items:[]}).items.push(x)});
   return Object.keys(g).sort().map(function(k){var o=g[k];o.items.sort(function(a,b){return (b.inn-a.inn)||((CAPS[b.u.ticker]||0)-(CAPS[a.u.ticker]||0))||(a.u.n-b.u.n)});return o})}
 
+
+/* the one input not from the sheet: Hyperliquid's markets, snapshot hl-markets-2026-11-03.json (one folder up), taken 2026-11-03.
+   Each ticker maps to [dex, open interest $M, 24h volume $M, max leverage, delisted]. A sheet ticker is looked up as it is, then
+   without its exchange suffix (ASML.AS -> ASML). Names that differ more (TSMC as TSM, SK Hynix, Samsung) are not guessed. */
+function hlKey(t){t=String(t).toUpperCase();if(HL&&HL[t])return t;var b=t.replace(/\.[A-Z]+$/,"");return b}
+var HL=null;
+function loadHL(cb){if(typeof fetch!=="function"){cb();return}
+  fetch(BASE+"tools/concepts/worlds/cartoon/hl-markets-2026-11-03.json").then(function(r){return r.json()}).then(function(j){HL=j;cb()}).catch(function(){cb()})}
+function market(t){if(!HL)return null;t=String(t).toUpperCase();var k=hlKey(t),ms=(HL[k]||[]).filter(function(x){return !x[4]});
+  if(!ms.length)return null;ms.sort(function(a,b){return b[1]-a[1]});var m=ms[0];return {name:m[0]+":"+k,dex:m[0],oi:m[1],vol:m[2],lev:m[3],thin:m[1]<10,url:"https://app.hyperliquid.xyz/trade/"+m[0]+":"+k}}
+function listedStats(){var o={};ORDER.forEach(function(m){o[m]={w:0,l:0,pl:0,n:0}});TR.forEach(function(x){if(!market(x.r.ticker))return;var a=o[x.m];a.n++;a.pl+=x.v;if(x.w)a.w++;else a.l++});return o}
+/* the sample: a 95% Wilson interval on a hit rate, said in plain words on the page */
+function wilson(w,n){if(!n)return null;var z=1.96,p=w/n,z2=z*z,c=(p+z2/(2*n))/(1+z2/n),h=z*Math.sqrt(p*(1-p)/n+z2/(4*n*n))/(1+z2/n);return [c-h,c+h]}
+
 /* formatting */
 function money(v,short){var s=v<0?"−":"+",a=Math.abs(Math.round(v));if(short&&a>=1000)return s+"$"+(a/1000).toFixed(a>=100000?0:1).replace(/\.0$/,"")+"K";return s+"$"+a.toLocaleString("en-US")}
 function pct(x,d){return (x*100).toFixed(d==null?0:d)+"%"}
@@ -105,5 +119,5 @@ function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp
 
 G.RH={BASE:BASE,MED:MED,ORDER:ORDER,COL:COL,NICE:NICE,FLAG:FLAG,R:R,TR:TR,WIN:WIN,stats:stats,rank:rank,series:series,sectors:sectors,noSector:noSector,
   bet:EZ5_BET,betDay:EZ5_DAY,nextUp:nextUp,money:money,pct:pct,mv:mv,coName:coName,logoSrc:logoSrc,logoDark:logoDark,film:film,mark:mark,flag:flag,esc:esc,
-  pv:pv,dirOf:dirOf,magOf:magOf,closeAt:closeAt,lastCloseDay:lastCloseDay,dayLabel:dayLabel,shortDay:shortDay,ymd:ymd,TODAY:TODAY,poolShare:SIM.poolShare,leadHours:SIM.leadHours}
+  pv:pv,dirOf:dirOf,magOf:magOf,closeAt:closeAt,lastCloseDay:lastCloseDay,dayLabel:dayLabel,shortDay:shortDay,ymd:ymd,TODAY:TODAY,poolShare:SIM.poolShare,leadHours:SIM.leadHours,loadHL:loadHL,market:market,listedStats:listedStats,wilson:wilson,hlLoaded:function(){return !!HL}}
 })(window);
