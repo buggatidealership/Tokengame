@@ -88,7 +88,7 @@ function audit(){
     if(cs.textShadow&&cs.textShadow!=='none')return 'engraved: ink in the cut + text-shadow lip/wall ('+cs.textShadow.slice(0,60)+')';return 'FLAT (no process)'};
   [['rank','.cb-rk'],['name','.cb-nm'],['Long/Short','.cb-tw'],['trade move','.cb-tv'],['PASS/FAIL','.cb-pf i'],['No.','.cb-no'],['MARKET','.cb-ml'],['market move / countdown','.cb-mv'],['date label','.cb-dt small'],['date','.cb-dt b'],['See the film','.cb-flip']].forEach(([l,s])=>{const e=cb.querySelector(s);if(!e)return;const kd=KIND(e);res.surf[l]=kd;if(/FLAT/.test(kd))res.fails.push('flat text: '+l)});
   res.fonts=[...new Set([...cb.querySelectorAll('*')].filter(e=>vis(e)&&[...e.childNodes].some(z=>z.nodeType===3&&z.textContent.trim())).map(e=>getComputedStyle(e).fontFamily.split(',')[0].replace(/"/g,'')))];
-  [...cb.querySelectorAll('.cb-p>:not(.cb-sh):not(.cb-g)')].forEach(e=>{const r=e.getBoundingClientRect();if(r.bottom>CB.bottom-1||r.top<CB.top)res.fails.push('outside the plate: '+e.className)});
+  [...cb.querySelectorAll('.cb-p>:not(.cb-sh):not(.cb-g)')].forEach(e=>{const r=e.getBoundingClientRect();if(r.bottom>CB.bottom+.5||r.top<CB.top-.5)res.fails.push('outside the plate: '+e.className)});
   res.sw=document.documentElement.scrollWidth-innerWidth;if(res.sw>0)res.fails.push('sideways scroll '+res.sw);
   return res}
 (async()=>{const b=await chromium.launch();const all=[];

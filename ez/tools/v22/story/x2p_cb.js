@@ -75,7 +75,7 @@ function mount(){var rm=D.getElementById('x2pRm');if(!rm)return;var c=rm.querySe
   var k=c.getAttribute('data-k'),d=k==='g'?graded(n):k==='p'?pending(n):null;if(!d)return;
   var fin=c.querySelector(k==='g'?'.face.back .fin':'.face.front .fin');if(!fin||fin.querySelector(':scope>.cb'))return;
   var fbt=fin.querySelector('.xc [data-flip]'),lab=fbt?fbt.textContent.replace(/↻/g,'').trim():'';
-  var o=D.createElement('div');o.className='cb cb-'+d.k+(window.__x2pCbStamp==='steel'?' cb-steel':'');o.style.setProperty('--cbz',zoomOf(c));
+  var o=D.createElement('div');o.className='cb cb-k'+d.k+(window.__x2pCbStamp==='steel'?' cb-steel':'');o.style.setProperty('--cbz',zoomOf(c));
   o.innerHTML=build(d,fbt?(lab||'See the film'):'');fin.insertBefore(o,fin.firstChild);fin.classList.add('cb-on');
   if(d.k==='p'){countdown(o,fin);o.__cd=setInterval(function(){if(!o.isConnected){clearInterval(o.__cd);return}countdown(o,fin)},30000)}
   var f=function(){if(o.isConnected)fit(o)};f();if(D.fonts&&D.fonts.ready)D.fonts.ready.then(f);setTimeout(f,400);
