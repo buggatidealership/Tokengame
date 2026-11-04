@@ -11633,20 +11633,24 @@ html.h48 #h48ov .h49-st.h49-done :is(.h49-pop img,.h49-sh,.h49-nm){animation:non
    off screen) out of layout until then: on a 4x slower phone the cover lifted at 22 s with it laid out, about 5 s without.
    The round view (x2plus.js open(), patched by build.py's _WCPATCH) copies a record card, so it wakes the record first and opens
    once it is laid out; a press on a round link wakes it ahead of the tap, and so does a quiet moment a few seconds after the
-   cover lifts. Waking does what loading did for it: the carousel back on its card, the name labels and tied winners fitted. */
+   cover lifts. Waking fits the name labels and tied winners, as loading did. */
 (function(){var H=document.documentElement;if(!H.classList.contains('wc-pre')||!H.classList.contains('h48'))return;
   var awake=false,started=false,q=[];
   function done(){awake=true;q.splice(0).forEach(function(f){try{f()}catch(e){}})}
   function wake(){if(started)return;started=true;H.classList.add('wc-rw');
-    try{if(window.__wcCarHome)window.__wcCarHome()}catch(e){}
+    /* not the carousel's home: X6+ never shows the carousel, and scrolling it there measured every card again (1.8 s at 4x) */
     try{if(window.__x2pNmFitIn)window.__x2pNmFitIn()}catch(e){}
     try{if(window.__wcTiesFit)window.__wcTiesFit(document.getElementById('record'))}catch(e){}
     requestAnimationFrame(function(){requestAnimationFrame(done)})}
   /* true when the record is awake; else wakes it and calls back once it is */
   window.__wcRecWake=function(cb){if(awake)return true;if(cb)q.push(cb);wake();return false};
   addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('a[href^="#/round/"]'))wake()},{capture:true,passive:true});
-  (function idle(){if(started)return;if(H.classList.contains('x2p-cur')){setTimeout(idle,500);return}
-    setTimeout(function(){if(window.requestIdleCallback)requestIdleCallback(wake,{timeout:8000});else wake()},4000)})()})();
+  /* the quiet moment: 4 s after the cover lifts and 2.5 s after the last scroll, touch or key (laying the record out takes the main
+     thread for a few seconds on a slow phone, so not while the visitor is moving through the page) */
+  var last=0;['scroll','touchstart','pointerdown','keydown','wheel'].forEach(function(t){addEventListener(t,function(){last=Date.now()},{capture:true,passive:true})});
+  function quiet(){if(started)return;var w=2500-(Date.now()-last);if(w>0){setTimeout(quiet,w+50);return}
+    if(window.requestIdleCallback)requestIdleCallback(function(){if(Date.now()-last<2500)quiet();else wake()},{timeout:4000});else wake()}
+  (function idle(){if(started)return;if(H.classList.contains('x2p-cur')){setTimeout(idle,500);return}setTimeout(quiet,4000)})()})();
 
 /* ===== H48 DATA (EZ Live X6+ only; owner, 2026-11-03: "do one version where you apply it to what we have today"). Every figure the
    new Overview and the Leaderboard's action strip print is worked out here from ez-data.js at render time (ROUNDS, PENDING, UPCOMING,
@@ -18572,7 +18576,7 @@ W.__m36={layout,measure:()=>{const fr=four.getBoundingClientRect(),b=e=>{const r
 
 
 }</script>
-<script id="x2p-more-js">
+<script id="x2p-more-js">if(!document.documentElement.classList.contains("h48")){
 /* X2+ OVERVIEW, round H24 (2026-11-02, the lead's picks; X2+ only): ground G1 (the board, gold edge fingers between beats), rounds D (the ledger grows),
    proof T1 (the scope) + C1 (the close), and the bet ported from X3+ (bet2x). Media: media/gr4-g1-board-p.jpg media/gr4-g1-board-l.jpg media/gr4-s1-fingers.jpg
    media/rounds-h24-ledger.jpg media/rounds-h24-wafer.jpg media/rounds-h24-die.jpg media/p5-scope.jpg media/p5-sockets.jpg media/p5-panel.jpg media/bet-chip-h2.jpg
@@ -19439,7 +19443,8 @@ D.fonts&&D.fonts.ready.then(()=>setTimeout(()=>{mo.disconnect();try{ones(D.body)
 })();
 
 /* round thumbnails, written out for make_site.py: media/tile-r1-f1.jpg media/tile-r1-t2.jpg media/tile-r10-f1.jpg media/tile-r10-t2.jpg media/tile-r11-f1.jpg media/tile-r11-t2.jpg media/tile-r12-f1.jpg media/tile-r12-t2.jpg media/tile-r13-f1.jpg media/tile-r13-t2.jpg media/tile-r14-f1.jpg media/tile-r14-t2.jpg media/tile-r15-f1.jpg media/tile-r15-t2.jpg media/tile-r16-f1.jpg media/tile-r16-t2.jpg media/tile-r17-f1.jpg media/tile-r17-t2.jpg media/tile-r18-f1.jpg media/tile-r18-t2.jpg media/tile-r19-f1.jpg media/tile-r19-t2.jpg media/tile-r2-f1.jpg media/tile-r2-t2.jpg media/tile-r20-f1.jpg media/tile-r20-t2.jpg media/tile-r21-f1.jpg media/tile-r21-t2.jpg media/tile-r22-f1.jpg media/tile-r22-t2.jpg media/tile-r23-f1.jpg media/tile-r23-t2.jpg media/tile-r24-f1.jpg media/tile-r24-t2.jpg media/tile-r25-f1.jpg media/tile-r25-t2.jpg media/tile-r26-f1.jpg media/tile-r26-t2.jpg media/tile-r27-f1.jpg media/tile-r27-t2.jpg media/tile-r28-f1.jpg media/tile-r28-t2.jpg media/tile-r29-f1.jpg media/tile-r29-t2.jpg media/tile-r3-f1.jpg media/tile-r3-t2.jpg media/tile-r30-f1.jpg media/tile-r30-t2.jpg media/tile-r31-f1.jpg media/tile-r31-t2.jpg media/tile-r32-f1.jpg media/tile-r32-t2.jpg media/tile-r33-f1.jpg media/tile-r33-t2.jpg media/tile-r34-f1.jpg media/tile-r34-t2.jpg media/tile-r35-f1.jpg media/tile-r35-t2.jpg media/tile-r36-f1.jpg media/tile-r36-t2.jpg media/tile-r37-f1.jpg media/tile-r37-t2.jpg media/tile-r38-f2.jpg media/tile-r38-t2.jpg media/tile-r39-f1.jpg media/tile-r39-t2.jpg media/tile-r4-f1.jpg media/tile-r4-t2.jpg media/tile-r40-f1.jpg media/tile-r40-t2.jpg media/tile-r41-f1.jpg media/tile-r41-t2.jpg media/tile-r42-f1.jpg media/tile-r42-t2.jpg media/tile-r43-f1.jpg media/tile-r43-t2.jpg media/tile-r44-f1.jpg media/tile-r44-t2.jpg media/tile-r45-f1.jpg media/tile-r45-t2.jpg media/tile-r46-f1.jpg media/tile-r46-t2.jpg media/tile-r47-f1.jpg media/tile-r47-t2.jpg media/tile-r48-f1.jpg media/tile-r48-t2.jpg media/tile-r49-f1.jpg media/tile-r49-t2.jpg media/tile-r5-f1.jpg media/tile-r5-t2.jpg media/tile-r50-f1.jpg media/tile-r50-t2.jpg media/tile-r51-f1.jpg media/tile-r51-t2.jpg media/tile-r52-f1.jpg media/tile-r52-t2.jpg media/tile-r53-f1.jpg media/tile-r53-t2.jpg media/tile-r54-f1.jpg media/tile-r54-t2.jpg media/tile-r55-f1.jpg media/tile-r55-t2.jpg media/tile-r56-f1.jpg media/tile-r56-t2.jpg media/tile-r57-f1.jpg media/tile-r57-t2.jpg media/tile-r58-f1.jpg media/tile-r58-t2.jpg media/tile-r59-f1.jpg media/tile-r59-t2.jpg media/tile-r6-f1.jpg media/tile-r6-t2.jpg media/tile-r60-f2.jpg media/tile-r60-t2.jpg media/tile-r61-f1.jpg media/tile-r61-t2.jpg media/tile-r62-f1.jpg media/tile-r62-t2.jpg media/tile-r63-f1.jpg media/tile-r63-t2.jpg media/tile-r64-f1.jpg media/tile-r64-t2.jpg media/tile-r65-f1.jpg media/tile-r65-t2.jpg media/tile-r66-f1.jpg media/tile-r66-t2.jpg media/tile-r67-f1.jpg media/tile-r67-t2.jpg media/tile-r68-f1.jpg media/tile-r68-t2.jpg media/tile-r69-f1.jpg media/tile-r69-t2.jpg media/tile-r7-f1.jpg media/tile-r7-t2.jpg media/tile-r70-f1.jpg media/tile-r70-t2.jpg media/tile-r71-f1.jpg media/tile-r71-t2.jpg media/tile-r72-f1.jpg media/tile-r72-t2.jpg media/tile-r73-f1.jpg media/tile-r73-t2.jpg media/tile-r74-f2.jpg media/tile-r74-t2.jpg media/tile-r75-f1.jpg media/tile-r75-t2.jpg media/tile-r76-f1.jpg media/tile-r76-t2.jpg media/tile-r77-f1.jpg media/tile-r77-t2.jpg media/tile-r78-f1.jpg media/tile-r78-t2.jpg media/tile-r79-f1.jpg media/tile-r79-t2.jpg media/tile-r8-f1.jpg media/tile-r8-t2.jpg media/tile-r80-f1.jpg media/tile-r80-t2.jpg media/tile-r81-f1.jpg media/tile-r81-t2.jpg media/tile-r82-f1.jpg media/tile-r82-t2.jpg media/tile-r83-t2.jpg media/tile-r84-t2.jpg media/tile-r9-f1.jpg media/tile-r9-t2.jpg */
-</script>
+
+}</script>
 <script id="x2p-sol-js">if(!document.documentElement.classList.contains("h48")){
 /* ===== H33 SMART OR LUCKY (owner, 2026-11-02: the agreed chart, H29 director's cut over sol9 A4; ported from
    tools/concepts/worlds/comic/story/h/h29/end/end.js + sol9/_a3core.js + h29/director/dir.js, without their mockup scaffolding).

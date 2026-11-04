@@ -592,7 +592,8 @@ try:
     assert _h6.count(_HT)==1 and _h6.count('<title>EZ Live X2+</title>')==1 and _h6.count('</body>')==1
     # (speed, 2026-11-04, launch day: the cover lifted at 22 s on a 4x slower phone) html.wc-pre as on the comic pages: the old
     # record sleeps out of layout until a round is asked for (h48_speed.js wakes it; h48_show.css; the _WCPATCH text patches), and
-    # X2+'s own Meet the models, chips, Smart or lucky and vitrine scripts, which X6+ never shows, do not run (22 s -> about 5 s)
+    # X2+'s own Meet the models, chips, Smart or lucky, vitrine and Overview (x2p_more: Mag 7, tears, bet) scripts, which X6+ never
+    # shows, do not run (22 s -> about 5 s)
     _h6=_h6.replace(_HT,_HT.replace('x2p-cur"','x2p-cur h48 wc-pre"'),1).replace('<title>EZ Live X2+</title>','<title>EZ Live X6+</title>',1)
     _h6=_h6.replace('</head>','<script>window.__x2pNeedWorld=1;window.__x2pLB=1</script>\n'+''.join('<link rel="preload" as="font" type="font/woff2" href="media/h48-%s.woff2" crossorigin>\n'%f for f in ['caprasimo','lilita','fredoka'])+'<style id="h48-css">\n'+_h6css+'\n</style>\n</head>',1)
     # the new Overview is built as soon as the data is in (right after ez-data.js and ez-learn.js), before X2's own scripts run: at the
@@ -611,7 +612,19 @@ try:
     for a,b in _WCPATCH:
         assert _h6.count(a)==1,a
         _h6=_h6.replace(a,b,1)
-    for _sid in ['x2p-chips-js','x2p-meet10-js','x2p-vit-js','x2p-sol-js']:
+    # round H50 (launch day, 2026-11-04): the top bar and the loading cover in the show's look, once the owner picks a take from
+    # tools/concepts/h50/ (install.js writes the picked take into story/): h50_head.css (its first line names the take: /* H50 take: X */)
+    # and h50_load.html/.css/.head (the cover's markup, its rules, preloads for <head>). Without those files the page is as before.
+    if os.path.exists(_S+'h50_head.css'):
+        _hc=open(_S+'h50_head.css').read();_tk=re.search(r'H50 take: ([A-Z])',_hc).group(1)
+        _h6=_h6.replace('x2p-cur h48 wc-pre"','x2p-cur h48 wc-pre h50 h50-%s"'%_tk,1)
+        _h6=_h6.replace('</head>','<style id="h50-head">\n'+_hc+'\n</style>\n</head>',1)
+    if os.path.exists(_S+'h50_load.html'):
+        _m=re.search(r'<div id="x2pLoad" aria-hidden="true">[\s\S]*?</svg></div>',_h6);assert _m
+        _h6=_h6.replace(_m.group(0),open(_S+'h50_load.html').read().strip(),1)
+        _h6=_h6.replace('</head>','<style id="h50-load">\n'+open(_S+'h50_load.css').read()+'\n</style>\n</head>',1)
+        _h6=_h6.replace('<head>','<head>\n'+open(_S+'h50_load.head').read().strip(),1)
+    for _sid in ['x2p-chips-js','x2p-meet10-js','x2p-vit-js','x2p-sol-js','x2p-more-js']:
         _a='<script id="%s">'%_sid
         assert _h6.count(_a)==1,_sid
         _i=_h6.index(_a)+len(_a);_j=_h6.index('</script>',_i)
