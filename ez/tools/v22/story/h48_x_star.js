@@ -22,7 +22,8 @@
    media/h49-star-stake4.webp */
 (function(){var W=window,d=document,H=d.documentElement;if(!H.classList.contains("h48"))return;
 var FIG={GPT:["media/h49-star-gpt.webp",.497],CLAUDE:["media/h49-star-claude.webp",.4545],GROK:["media/h49-star-grok.webp",.503],KIMI:["media/h49-star-kimi.webp",.5212]};
-var STAKE=["media/h49-star-stake1.webp","media/h49-star-stake2.webp","media/h49-star-stake3.webp","media/h49-star-stake4.webp"];
+/* one painted stake each (their stubs differ in length: the shorter ones go to the marks nearest the foot of the painting) */
+var STAKE={GPT:"media/h49-star-stake3.webp",CLAUDE:"media/h49-star-stake1.webp",GROK:"media/h49-star-stake4.webp",KIMI:"media/h49-star-stake2.webp"};
 var BILL=["GPT","CLAUDE","GROK","KIMI"];   /* the credits' billing order (the Starring row's order) */
 var mq=W.matchMedia?matchMedia("(prefers-reduced-motion: reduce)"):null;
 function still(){return !!(mq&&mq.matches)}
@@ -38,6 +39,13 @@ function premise(tcw){
   var s2=pm.querySelector(".h49-s2");if(s2){U.letter(s2,5,.55);s2.removeAttribute("aria-label")}
 }
 
+/* the punchline holds one line: its size scales down from the CSS size by its own one-line width, in one measurement (a step-down loop
+   forced a page layout per step before the cover lifts); floor 22px, below which it wraps, balanced */
+function fit(tcw){var s2=tcw.querySelector(".h49-s2");if(!s2)return;
+  s2.style.fontSize="";s2.style.textWrap="";s2.style.whiteSpace="nowrap";
+  var av=s2.clientWidth,nd=s2.scrollWidth,fs=parseFloat(getComputedStyle(s2).fontSize);s2.style.whiteSpace="";
+  if(!av||!nd)return;if(nd>av){fs=Math.floor(fs*(av-2)/nd*4)/4;if(fs<22){fs=22;s2.style.textWrap="balance"}s2.style.fontSize=fs+"px"}}
+
 /* 2. the cast in the painting */
 function stage(tcw,D){
   var tc=tcw.querySelector(".h8-tc"),old=tcw.querySelector(".h8-star");if(!tc||tc.querySelector(".h49-st"))return;
@@ -46,7 +54,7 @@ function stage(tcw,D){
     '<ul class="h49-cast" aria-labelledby="h49stl">'+BILL.map(function(m,i){var f=FIG[m];
       return '<li class="h49-f h49-'+m.toLowerCase()+'" style="--i:'+i+';--ar:'+f[1]+'"><span class="h49-sh" aria-hidden="true"></span>'+
         '<span class="h49-pop"><img src="'+f[0]+'" alt="" width="'+Math.round(330*f[1])+'" height="330" decoding="async"></span>'+
-        '<span class="h49-nm"><img src="'+STAKE[i]+'" alt=""><b>'+esc(E.NAME[m])+'</b></span></li>'}).join("")+'</ul></div>';
+        '<span class="h49-nm"><img src="'+STAKE[m]+'" alt=""><b>'+esc(E.NAME[m])+'</b></span></li>'}).join("")+'</ul></div>';
   tc.insertAdjacentHTML("beforeend",h);
   if(old)old.remove();
   return tc.querySelector(".h49-st")}
@@ -59,19 +67,29 @@ function place(tcw){
   else if(pm.parentNode!==cr){cr.insertBefore(pm,cr.firstChild);if(fl)cr.appendChild(fl)}
   tcw.classList.toggle("h49-dk",desk)}
 
-/* the entrance: once, the first time the cast is on screen after the cover lifts */
+/* the entrance: once, the first time the cast is really on screen: after the cover lifts, in a visible tab, with no round view open over
+   the Overview (a shared #/round/N link opens over it), and the figures at least 60% inside the window (above the desktop crawl) */
 function intro(st){
   if(!st||still()||!("IntersectionObserver" in W))return;
   st.classList.add("h49-wait");
-  var io,go=function(){if(io)io.disconnect();st.classList.add("h49-go");st.classList.remove("h49-wait");
-    /* after the last one lands nothing animates any more */
-    setTimeout(function(){st.classList.add("h49-done")},2600)};
-  var lifted=function(){return !H.classList.contains("x2p-cur")};
-  var cast=st.querySelector(".h49-cast"),seen=false;
-  io=new IntersectionObserver(function(es){seen=es[es.length-1].isIntersecting;if(seen&&lifted()&&!d.hidden)go()},{threshold:.6,rootMargin:"0px 0px -50px 0px"});
-  io.observe(cast);
-  (function wait(){if(st.classList.contains("h49-go"))return;if(lifted()){if(seen&&!d.hidden)go();return}setTimeout(wait,200)})();
-  if(mq){var mc=function(){if(mq.matches){st.classList.remove("h49-wait");st.classList.add("h49-done");if(io)io.disconnect()}};
+  var io,on=false,figs=[].slice.call(st.querySelectorAll(".h49-f")),
+    lifted=function(){return !H.classList.contains("x2p-cur")},
+    /* a round view is open while #x2pRm is in the page (closing it can leave the address on #/round/N, so the address only counts until then) */
+    gone=false,had=false,round=function(){var o=d.getElementById("x2pRm");if(o)had=true;return !!o||(!gone&&/^#\/round\//.test(location.hash||""))},
+    vis=function(){var r=figs[0].getBoundingClientRect(),vh=(W.innerHeight||0)-(W.matchMedia("(min-width:1000px)").matches?50:0);
+      return r.width>0&&r.top<vh-r.height*.6&&r.bottom>r.height*.6},
+    go=function(){if(on)return;on=true;if(io)io.disconnect();
+      st.classList.add("h49-go");st.classList.remove("h49-wait");
+      /* after the last stake's nod nothing animates any more */
+      var end=function(){st.classList.add("h49-done")},last=st.querySelector(".h49-f:last-child .h49-nm");
+      if(last)last.addEventListener("animationend",end,{once:true});setTimeout(end,6000)},
+    check=function(){if(!on&&lifted()&&!d.hidden&&!round()&&vis())go()};
+  io=new IntersectionObserver(check,{threshold:[0,.6,1]});figs.forEach(function(f){io.observe(f)});
+  var mo=new MutationObserver(function(){if(on)return mo.disconnect();if(had&&!d.getElementById("x2pRm")){gone=true;had=false;setTimeout(check,300)}});
+  mo.observe(d.body,{childList:true});
+  W.addEventListener("hashchange",function(){setTimeout(check,400)});d.addEventListener("visibilitychange",check);
+  (function wait(){if(on)return;if(lifted())return check();setTimeout(wait,200)})();
+  if(mq){var mc=function(){if(mq.matches){on=true;st.classList.remove("h49-wait");st.classList.add("h49-done");if(io)io.disconnect()}};
     if(mq.addEventListener)mq.addEventListener("change",mc);else if(mq.addListener)mq.addListener(mc)}
 }
 
@@ -79,8 +97,10 @@ function intro(st){
   var tcw=root.querySelector(".h8-tcw");if(!tcw)return;
   premise(tcw);
   var st=stage(tcw,D);
-  place(tcw);
-  if(W.matchMedia){var mm=W.matchMedia("(min-width:1000px)"),pl=function(){place(tcw)};if(mm.addEventListener)mm.addEventListener("change",pl);else if(mm.addListener)mm.addListener(pl)}
+  place(tcw);fit(tcw);
+  var lw=W.innerWidth;W.addEventListener("resize",function(){if(W.innerWidth!==lw){lw=W.innerWidth;fit(tcw)}});
+  if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){fit(tcw)});
+  if(W.matchMedia){var mm=W.matchMedia("(min-width:1000px)"),pl=function(){place(tcw);fit(tcw)};if(mm.addEventListener)mm.addEventListener("change",pl);else if(mm.addListener)mm.addListener(pl)}
   intro(st);
 });
 })();

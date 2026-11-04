@@ -25,8 +25,15 @@ function dress(o){var U=W.H48UI;if(!U||!H.classList.contains("h48")||!o.isConnec
   /* the graded seal carries the EZ. mark */
   [].forEach.call(o.querySelectorAll(".cb .cb-st:not(.cb-die)"),function(st){if(!st.querySelector(".h9s-ez"))st.insertAdjacentHTML("beforeend",'<img class="h9s-ez" src="media/icon.svg" alt="" aria-hidden="true" decoding="async">')});
   size(o)}
-function size(o){[].forEach.call(o.querySelectorAll(".fx .zlab .nm"),function(nm){fit(nm,"--h9nm",15,9)});
-  [].forEach.call(o.querySelectorAll(".face.front .cwin"),function(c){fit(c,"--h9w",15,9)})}
+/* the card's own scale: X2+ lays the card out at 226 px on a phone and up to 335 px on desktop with the same label; the show's
+   lettering grows with the card (at most 1.32x), so the desktop card reads as large as the phone's */
+function size(o){var c=o.querySelector(".card[data-n]"),u=1;if(c&&c.offsetWidth)u=Math.max(1,Math.min(1.32,c.offsetWidth/226));if(c)c.style.setProperty("--h9u",u.toFixed(3));
+  [].forEach.call(o.querySelectorAll(".fx .zlab .nm"),function(nm){fit(nm,"--h9nm",15*u,9)});
+  [].forEach.call(o.querySelectorAll(".face.front .cwin"),function(x){fit(x,"--h9w",15*u,9)});
+  /* a narrow label (a 320 px phone): the cert digits run under the hologram centred on the label; the bars and digits close up */
+  [].forEach.call(o.querySelectorAll(".fx .zb:not(.zwhy)"),function(zb){zb.classList.remove("h9s-tz");var hl=zb.querySelector(".holo"),tx=null;
+    for(var k=0;k<zb.childNodes.length;k++)if(zb.childNodes[k].nodeType===3&&zb.childNodes[k].nodeValue.trim())tx=zb.childNodes[k];if(!hl||!tx)return;
+    var rg=d.createRange();rg.selectNodeContents(tx);if(rg.getBoundingClientRect().right>hl.getBoundingClientRect().left-3)zb.classList.add("h9s-tz")})}
 var seen=null;
 function arrive(o){if(seen===o)return;seen=o;var t=0;(function step(){if(!o.isConnected)return;try{dress(o)}catch(e){W.__h49SlabErr=e}if(++t<8)setTimeout(step,t<3?60:250)})();
   if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){if(o.isConnected)size(o)})}
