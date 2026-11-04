@@ -13743,7 +13743,8 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     v.addEventListener("volumechange",function(){T("film",{a:v.muted?"mute":"unmute"},"film-snd-"+(v.muted?"off":"on"))})}
   /* the record: a swipe to another round, a flip, a round's film started by a tap */
   var car=document.getElementById("car");
-  if(car){var cn=function(){var c=car.querySelector(".card.cur");return c&&c.getAttribute("data-n")},c0=cn(),st=0;
+  /* not on X6+ (html.h48): its record is never shown, and waking it scrolls the carousel home, which read as a swipe */
+  if(car&&!document.documentElement.classList.contains("h48")){var cn=function(){var c=car.querySelector(".card.cur");return c&&c.getAttribute("data-n")},c0=cn(),st=0;
     car.addEventListener("scroll",function(){clearTimeout(st);st=setTimeout(function(){var n=cn();if(c0===null)c0=n;else if(n&&n!==c0)T("record",{a:"swipe"},"rec-swipe")},300)},{passive:true})}
   document.addEventListener("click",function(e){var t=e.target;if(!t.closest)return;
     var x=t.closest('a[href*="x.com/"]');if(x){T("follow",{where:x.classList.contains("x2p-xhd")?"header":x.classList.contains("x2p-xlink")?"record":"other"});return}

@@ -553,6 +553,24 @@ px=px.replace('</head>','<link id="x2p-kanit" href="https://fonts.googleapis.com
 # game" (tools/v22/story/x2p_top.*), in place of X2+'s hero and film bill + live strip. X2+ only: the world pages build from px without it.
 _tp=px.replace('</head>','<style id="x2p-top">\n'+open('tools/v22/story/x2p_top.css').read()+'\n'+open('tools/v22/story/x2p_chips.css').read()+'\n'+open('tools/v22/story/x2p_meet10.css').read()+'\n'+open('tools/v22/story/x2p_more.css').read()+'\n'+open('tools/v22/story/x2p_sol.css').read()+'\n'+open('tools/v22/story/x2p_up.css').read()+'\n'+open('tools/v22/story/x2p_lb.css').read()+'\n'+open('tools/v22/story/x2p_cb.css').read()+'\n'+open('tools/v22/story/x2p_vit.css').read()+'\n</style>\n</head>',1).replace('</body>','<script id="x2p-top-js">\n'+open('tools/v22/story/x2p_top.js').read()+'\n</script>\n<script id="x2p-chips-js">\n'+open('tools/v22/story/x2p_chips.js').read()+'\n</script>\n<script id="x2p-meet10-js">\n'+open('tools/v22/story/x2p_meet10.js').read()+'\n</script>\n<script id="x2p-more-js">\n'+open('tools/v22/story/x2p_more.js').read()+'\n/* round thumbnails, written out for make_site.py: '+' '.join('media/'+f for f in sorted(os.listdir('media')) if re.match(r'tile-r\d+-(f\d+|t2)\.jpg$',f))+' */\n</script>\n<script id="x2p-sol-js">\n'+open('tools/v22/story/x2p_sol.js').read()+'\n</script>\n<script id="x2p-up-js">\n'+open('tools/v22/story/x2p_up.js').read()+'\n</script>\n<script id="x2p-lb-js">\n'+open('tools/v22/story/x2p_lb.js').read()+'\n</script>\n<script id="x2p-cb-js">\n'+open('tools/v22/story/x2p_cb.js').read()+'\n</script>\n<script id="x2p-vit-js">\n'+open('tools/v22/story/x2p_vit.js').read()+'\n</script>\n</body>',1)
 open("v46-live-x2plus.html",'w').write(_tp); print("ok v46-live-x2plus.html",len(_tp))
+# (speed) text patches for a page whose record sleeps under html.wc-pre until woken (the comic pages X3+/X5+ since 2026-10-30, X6+
+# since 2026-11-04): see world() and the X6+ block below
+_WCPATCH=[
+        # v15's record: with the record asleep (no width) the centred card stays where it is, not the first one
+        ('function nearest(){var mid=','function nearest(){if(!car.clientWidth)return cur<0?START:cur;var mid='),
+        # ... and once it wakes, the carousel goes to it again, as on load (world-comic.js)
+        ('function home(){if(slides.length)go(cur<0?START:cur,false)}','function home(){if(slides.length)go(cur<0?START:cur,false)}\nwindow.__wcCarHome=function(){home()};'),
+        # x2plus.js's round pop-up copies a record card: wake the record first, X2's own layer hidden meanwhile
+        ('function open(rm){var c0=','function open(rm){if(window.__wcRecWake&&!window.__wcRecWake(function(){if(rm.isConnected&&!cur)open(rm)})){rm.classList.add("x2p-rmh");return}var c0='),
+        # x2plus.js's "AIs" fix: every check of a text's case forced a style pass after the last change (2.2 s when the comic
+        # went in); now all are read first, then changed, with the same result
+        ('hit.forEach(function(n){if(getComputedStyle(n.parentNode).textTransform!=="uppercase")return;var f=document.createDocumentFragment();',
+         'hit=hit.filter(function(n){return getComputedStyle(n.parentNode).textTransform==="uppercase"});hit.forEach(function(n){var f=document.createDocumentFragment();'),
+        # TIES fits a tied round's winners on one line: the record's ties are fitted again when it wakes (world-comic.js)
+        ('function run(){fit()}if(d.readyState==="loading")','function run(){fit()}window.__wcTiesFit=fit;if(d.readyState==="loading")'),
+        # STITCH levels the old board's figures on canvas: the comic never shows that board
+        ('function level(ol){','function level(ol){if(document.documentElement.classList.contains("wc-pre"))return;'),
+]
 # (owner, 2026-11-03, round H48: "do one version where you apply it to what we have today and make all the changes required") EZ Live X6+,
 # a preview of the live site redesigned on the H47 picks: X2+'s full build (_tp) with the Overview as the Saturday-morning cartoon told in
 # the humour magazine's words, and the Leaderboard tab as the satire scorecard in that look (tools/v22/story/h48_*.js/.css, briefs in
@@ -566,13 +584,16 @@ try:
     import glob as _gl
     _hx=lambda e:[] if os.environ.get('H48_NOX') else [os.path.basename(f) for f in sorted(_gl.glob(_S+'h48_x_*.'+e))]   # H48_NOX=1: without them (a production build while helpers are mid-edit)
     _h6css='\n'.join(open(_S+f).read() for f in ['h48_show.css','h48_ov.css','h48_lb.css','h48_crawl.css','h48_up.css']+_hx('css') if f in ('h48_show.css','h48_ov.css','h48_lb.css') or os.path.exists(_S+f))
-    _h6js='\n'.join(open(_S+f).read() for f in ['h48_data.js','h48_ui.js','h48_ov.js','h48_lb.js','h48_up.js']+_hx('js') if f!='h48_up.js' or os.path.exists(_S+f))
+    _h6js='\n'.join(open(_S+f).read() for f in ['h48_speed.js','h48_data.js','h48_ui.js','h48_ov.js','h48_lb.js','h48_up.js']+_hx('js') if f!='h48_up.js' or os.path.exists(_S+f))
     _lb='<script id="x2p-lb-js">\n'+open(_S+'x2p_lb.js').read()+'\n</script>\n'
     assert _tp.count(_lb)==1
     _h6=_tp.replace(_lb,'',1)
     _HT='<html lang="en" class="pt x2d x2p x2p-cur" data-theme="dark">'
     assert _h6.count(_HT)==1 and _h6.count('<title>EZ Live X2+</title>')==1 and _h6.count('</body>')==1
-    _h6=_h6.replace(_HT,_HT.replace('x2p-cur"','x2p-cur h48"'),1).replace('<title>EZ Live X2+</title>','<title>EZ Live X6+</title>',1)
+    # (speed, 2026-11-04, launch day: the cover lifted at 22 s on a 4x slower phone) html.wc-pre as on the comic pages: the old
+    # record sleeps out of layout until a round is asked for (h48_speed.js wakes it; h48_show.css; the _WCPATCH text patches), and
+    # X2+'s own Meet the models, chips, Smart or lucky and vitrine scripts, which X6+ never shows, do not run (22 s -> about 5 s)
+    _h6=_h6.replace(_HT,_HT.replace('x2p-cur"','x2p-cur h48 wc-pre"'),1).replace('<title>EZ Live X2+</title>','<title>EZ Live X6+</title>',1)
     _h6=_h6.replace('</head>','<script>window.__x2pNeedWorld=1;window.__x2pLB=1</script>\n'+''.join('<link rel="preload" as="font" type="font/woff2" href="media/h48-%s.woff2" crossorigin>\n'%f for f in ['caprasimo','lilita','fredoka'])+'<style id="h48-css">\n'+_h6css+'\n</style>\n</head>',1)
     # the new Overview is built as soon as the data is in (right after ez-data.js and ez-learn.js), before X2's own scripts run: at the
     # end of <body> it waited for every script above it (on a 4x slower phone the cover lifted on its 9.5 s net before it was drawn)
@@ -587,6 +608,14 @@ try:
     _FT='<div class="badge mark"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></div><small>$EZ \u00b7 EARNINGS ZEASON, WITH A Z<br>CALLS FILED BEFORE THE PRINT \u00b7 GRADED BY THE MARKET \u00b7 NEVER EDITED</small>'
     assert _h6.count(_FT)==1
     _h6=_h6.replace(_FT,'<img class="h8-ftl" src="media/icon.svg" alt="EZ." width="52" height="52"><small>$EZ \u00b7 Earnings Zeason, with a Z<br>Trades filed before the earnings \u00b7 graded at the close</small>',1)
+    for a,b in _WCPATCH:
+        assert _h6.count(a)==1,a
+        _h6=_h6.replace(a,b,1)
+    for _sid in ['x2p-chips-js','x2p-meet10-js','x2p-vit-js','x2p-sol-js']:
+        _a='<script id="%s">'%_sid
+        assert _h6.count(_a)==1,_sid
+        _i=_h6.index(_a)+len(_a);_j=_h6.index('</script>',_i)
+        _h6=_h6[:_i]+'if(!document.documentElement.classList.contains("h48")){'+_h6[_i:_j]+'\n}'+_h6[_j:]
     open("v50-live-x6plus.html",'w').write(_h6); print("ok v50-live-x6plus.html",len(_h6))
 except Exception as _e:
     print("FAILED v50-live-x6plus.html:",repr(_e))
@@ -651,22 +680,7 @@ def world(name,title,out,layer=None):
         w=w.replace('<head>','<head>\n<link rel="preload" as="image" href="media/load-lamp-lh.jpg" media="(max-aspect-ratio:1/1)" fetchpriority="high">\n<link rel="preload" as="image" href="media/load-lamp-lh-desk.jpg" media="(min-aspect-ratio:1001/1000)" fetchpriority="high">',1)
         w=w.replace('</head>','<link id="x3p-pop-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Luckiest+Guy&display=swap" media="print" onload="this.media=\'all\'">\n</head>',1)
     if name=="comic":
-        for a,b in [
-            # v15's record: with the record asleep (no width) the centred card stays where it is, not the first one
-            ('function nearest(){var mid=','function nearest(){if(!car.clientWidth)return cur<0?START:cur;var mid='),
-            # ... and once it wakes, the carousel goes to it again, as on load (world-comic.js)
-            ('function home(){if(slides.length)go(cur<0?START:cur,false)}','function home(){if(slides.length)go(cur<0?START:cur,false)}\nwindow.__wcCarHome=function(){home()};'),
-            # x2plus.js's round pop-up copies a record card: wake the record first, X2's own layer hidden meanwhile
-            ('function open(rm){var c0=','function open(rm){if(window.__wcRecWake&&!window.__wcRecWake(function(){if(rm.isConnected&&!cur)open(rm)})){rm.classList.add("x2p-rmh");return}var c0='),
-            # x2plus.js's "AIs" fix: every check of a text's case forced a style pass after the last change (2.2 s when the comic
-            # went in); now all are read first, then changed, with the same result
-            ('hit.forEach(function(n){if(getComputedStyle(n.parentNode).textTransform!=="uppercase")return;var f=document.createDocumentFragment();',
-             'hit=hit.filter(function(n){return getComputedStyle(n.parentNode).textTransform==="uppercase"});hit.forEach(function(n){var f=document.createDocumentFragment();'),
-            # TIES fits a tied round's winners on one line: the record's ties are fitted again when it wakes (world-comic.js)
-            ('function run(){fit()}if(d.readyState==="loading")','function run(){fit()}window.__wcTiesFit=fit;if(d.readyState==="loading")'),
-            # STITCH levels the old board's figures on canvas: the comic never shows that board
-            ('function level(ol){','function level(ol){if(document.documentElement.classList.contains("wc-pre"))return;'),
-        ]:
+        for a,b in _WCPATCH:
             assert w.count(a)==1,a
             w=w.replace(a,b,1)
     assert w.count('<title>EZ Live X2+</title>')==1

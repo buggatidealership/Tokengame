@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="pt x2d x2p x2p-cur h48" data-theme="dark">
+<html lang="en" class="pt x2d x2p x2p-cur h48 wc-pre" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -10311,6 +10311,8 @@ html.h48 main#top[hidden]{display:none!important}
 html.h48 main#top>:not(#h48ov):not(#record){display:none!important}
 html.h48 main#top>#record{position:absolute!important;left:-300vw!important;top:0!important;width:100vw!important;visibility:hidden!important;pointer-events:none!important;margin:0!important}
 html.h48 main#top>#record :is(#x2pVit,#x2pMag,.x2p-bis-w,.x2p-wallmore){display:none!important}
+/* (speed, 2026-11-04) the record sleeps out of layout until a round is asked for (h48_speed.js adds .wc-rw) */
+html.h48.wc-pre:not(.wc-rw) main#top>#record{display:none!important}
 /* the Leaderboard tab: X2's own board stays in the page, out of sight; the scorecard (#h48lb) takes its place */
 html.h48:not(.h48-lbx)[data-sec="leaderboard"] main#view>:not(#h48lb){display:none!important}
 html.h48 main#view>#h48lb{max-width:none}
@@ -11626,6 +11628,26 @@ html.h48 #h48ov .h49-st.h49-done :is(.h49-pop img,.h49-sh,.h49-nm){animation:non
 <script src="ez-data.js"></script>
 <script src="ez-learn.js"></script>
 <script id="h48-js">
+/* ===== H48 SPEED (2026-11-04, launch day): the old record sleeps until a round is asked for. build.py sets html.wc-pre before the
+   page is parsed (as on the comic pages) and h48_show.css keeps X2+'s record carousel (114 cards, about 9,700 elements, laid out
+   off screen) out of layout until then: on a 4x slower phone the cover lifted at 22 s with it laid out, about 5 s without.
+   The round view (x2plus.js open(), patched by build.py's _WCPATCH) copies a record card, so it wakes the record first and opens
+   once it is laid out; a press on a round link wakes it ahead of the tap, and so does a quiet moment a few seconds after the
+   cover lifts. Waking does what loading did for it: the carousel back on its card, the name labels and tied winners fitted. */
+(function(){var H=document.documentElement;if(!H.classList.contains('wc-pre')||!H.classList.contains('h48'))return;
+  var awake=false,started=false,q=[];
+  function done(){awake=true;q.splice(0).forEach(function(f){try{f()}catch(e){}})}
+  function wake(){if(started)return;started=true;H.classList.add('wc-rw');
+    try{if(window.__wcCarHome)window.__wcCarHome()}catch(e){}
+    try{if(window.__x2pNmFitIn)window.__x2pNmFitIn()}catch(e){}
+    try{if(window.__wcTiesFit)window.__wcTiesFit(document.getElementById('record'))}catch(e){}
+    requestAnimationFrame(function(){requestAnimationFrame(done)})}
+  /* true when the record is awake; else wakes it and calls back once it is */
+  window.__wcRecWake=function(cb){if(awake)return true;if(cb)q.push(cb);wake();return false};
+  addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('a[href^="#/round/"]'))wake()},{capture:true,passive:true});
+  (function idle(){if(started)return;if(H.classList.contains('x2p-cur')){setTimeout(idle,500);return}
+    setTimeout(function(){if(window.requestIdleCallback)requestIdleCallback(wake,{timeout:8000});else wake()},4000)})()})();
+
 /* ===== H48 DATA (EZ Live X6+ only; owner, 2026-11-03: "do one version where you apply it to what we have today"). Every figure the
    new Overview and the Leaderboard's action strip print is worked out here from ez-data.js at render time (ROUNDS, PENDING, UPCOMING,
    SHEET, RMETA, TICKERS, CO_LOGOS, SIM, CONFIG, FILMS). Nothing is typed in, with one exception, labelled on the page: Hyperliquid's
@@ -12487,11 +12509,12 @@ if(W.H48D)H48D.onHL(function(){var r=d.getElementById("h48up");if(!r||!X)return;
    pauses off screen. While the explainer film plays ("How it works": x2p_top.js's .f4-v, or X2+'s .x2p-vt) the loops hold still and never
    ask to play (x2plus.js holds scripted play() then); they carry on when it pauses or ends.
    Take b since 2026-11-04 (owner: "a bit more noticeable"): one clear beat each (Grok's grin and wink, Claude's grin and notebook taps,
-   GPT's grin and coin flip, Kimi's grin and helmet pats). Media (written out so make_site.py copies them): media/h49-cast-grok.mp4 media/h49-cast-grok.webm media/h49-cast-claude.mp4
+   GPT's grin and coin flip, Kimi's grin and helmet pats). Take c since 2026-11-04, later (owner: the old attitudes): Grok's arrogant
+   sideways smirk, Sam's trust-me-bro side-eye with the coin, Dario thumbing through the notebook, Kimi's little closed-mouth smirk. Media (written out so make_site.py copies them): media/h49-cast-grok.mp4 media/h49-cast-grok.webm media/h49-cast-claude.mp4
    media/h49-cast-claude.webm media/h49-cast-gpt.mp4 media/h49-cast-gpt.webm media/h49-cast-kimi.mp4 media/h49-cast-kimi.webm */
 (function(){var W=window,d=document,H=d.documentElement;if(!H.classList.contains("h48"))return;
-var LOOP={"h48-cast-grok.jpg":["media/h49-cast-grok-b.mp4","media/h49-cast-grok-b.webm"],"h48-cast-claude.jpg":["media/h49-cast-claude-b.mp4","media/h49-cast-claude-b.webm"],
-  "h48-cast-gpt.jpg":["media/h49-cast-gpt-b.mp4","media/h49-cast-gpt-b.webm"],"h48-cast-kimi.jpg":["media/h49-cast-kimi-b.mp4","media/h49-cast-kimi-b.webm"]};
+var LOOP={"h48-cast-grok.jpg":["media/h49-cast-grok-c.mp4","media/h49-cast-grok-c.webm"],"h48-cast-claude.jpg":["media/h49-cast-claude-c.mp4","media/h49-cast-claude-c.webm"],
+  "h48-cast-gpt.jpg":["media/h49-cast-gpt-c.mp4","media/h49-cast-gpt-c.webm"],"h48-cast-kimi.jpg":["media/h49-cast-kimi-c.mp4","media/h49-cast-kimi-c.webm"]};
 var SEL=".h8-pic>img, .h8-gtface>img, #h48lb .h8-por>img";
 var mq=W.matchMedia?matchMedia("(prefers-reduced-motion: reduce)"):null;
 function still(){var c=navigator.connection;return (mq&&mq.matches)||(c&&(c.saveData||/(^|-)2g$/.test(c.effectiveType||"")))}
@@ -12817,6 +12840,39 @@ function intro(st){
 });
 })();
 
+/* round H50 "track" (2026-11-04, launch day, owner: "we have to start on the Umami or Google Analytics, because we're planning to launch
+   today"): what X6+ reports, through x2plus.js's window.__x2pTrack (Umami Cloud, cookieless so no consent banner; the live domain only;
+   off until x2plus.js's UMAMI_ID holds the Website ID; localStorage "ez-track-debug" = 1 logs every event to the console instead).
+   x2plus.js already sends a page view on load and on every tab or round address (#/round/N), and "follow" for every x.com link. This file
+   adds, each kept small so a visit costs about 6 to 15 of the plan's events:
+     section   how far down the Overview a visit gets: eight milestones, once each per page load (again after leaving the Overview);
+     video     a film started by the visitor (the explainer, the TV in "One real round", a round's own film), once per kind per load;
+               the founders' muted loops never count;
+     follow-hl a tap on Follow on Hyperliquid, with the ticker and the tab it was on (every tap: it is the page's main action);
+     filter    a filter used on Upcoming or the Leaderboard (its group and value), once per value per load.
+   The calls go through window.__x2pTrack at the moment of each event: x2plus.js runs after this file. */
+(function(){var W=window,d=document,H=d.documentElement;if(!H.classList.contains("h48"))return;
+function T(n,o,once){try{if(W.__x2pTrack)W.__x2pTrack(n,o,once)}catch(e){}}
+function where(t){if(t&&t.closest&&t.closest("#x2pRm"))return "round";var s=H.getAttribute("data-sec")||"board";return s==="board"?"overview":s}
+/* the Overview's milestones, in reading order */
+var MS=[["h8-versec","verdict"],["h8-flw","next-trades"],["h8-prev","one-round"],["h8-rec","record"],["h8-castsec","cast"],["h8-solsec","smart-or-lucky"],["h8-betsec","bet"],["h8-endw","end"]];
+(W.H48HOOK=W.H48HOOK||[]).push(function(root){if(!("IntersectionObserver" in W))return;
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var k=e.target.getAttribute("data-h8ms");if(k)T("section",{s:k},"sec-"+k)})},{threshold:.35});
+  MS.forEach(function(m){var el=root.querySelector("."+m[0]);if(el){el.setAttribute("data-h8ms",m[1]);io.observe(el)}})});
+/* films: play events do not bubble, so they are caught on the way down */
+d.addEventListener("play",function(e){var v=e.target;if(!v||v.tagName!=="VIDEO"||v.loop||v.classList.contains("h49-lv"))return;
+  var k=v.closest("#x2pRm")?"round":v.closest("#h48ov")&&v.closest(".h8-prev,#h8tvv,.h8-tv")?"tv":"explainer";
+  T("video",{a:"play",f:k},"vid-"+k);
+  if(k==="explainer"&&!v.__h8end){v.__h8end=1;v.addEventListener("ended",function(){T("video",{a:"end",f:k},"vid-end-"+k)})}},true);
+d.addEventListener("click",function(e){var t=e.target;if(!t||!t.closest)return;
+  var a=t.closest("a.h8-hlb,a[href*='app.hyperliquid.xyz']");
+  if(a){var box=a.closest("[data-h8hl]"),m=/trade\/([^?#]+)/.exec(a.getAttribute("href")||"");
+    T("follow-hl",{t:box?box.getAttribute("data-h8hl"):(m?decodeURIComponent(m[1]):""),where:where(a)});return}
+  var b=t.closest("#h48up button.h8-sw,#h48lb button.h8-sw,#h48lb [role=tab]");
+  if(b){var g=b.getAttribute("data-uf")?"upcoming":(b.getAttribute("data-g")||"leaderboard"),v=b.getAttribute("data-uf")||b.getAttribute("data-k")||(b.textContent||"").trim().slice(0,24);
+    T("filter",{g:g,v:v},"flt-"+g+"-"+v)}},true);
+})();
+
 </script>
 <script>
 (function(){
@@ -13061,7 +13117,7 @@ function setCur(i){if(i===cur)return;cur=i;recNear(i);
   chipEls.forEach(function(c,j){if(j===i)c.setAttribute("aria-current","true");else c.removeAttribute("aria-current")});
   var ch=chipEls[i];if(ch)chips.scrollTo({left:ch.offsetLeft-(chips.clientWidth-ch.offsetWidth)/2,behavior:reduce?"auto":"smooth"});
   syncFilms()}
-function nearest(){var mid=car.scrollLeft+car.clientWidth/2,best=0,bd=1e9;
+function nearest(){if(!car.clientWidth)return cur<0?START:cur;var mid=car.scrollLeft+car.clientWidth/2,best=0,bd=1e9;
   slides.forEach(function(s,i){var d=Math.abs(s.offsetLeft+s.offsetWidth/2-mid);if(d<bd){bd=d;best=i}});return best}
 /* films: only the centred card loads and plays, only while the record is on screen and the card is face up */
 var filmT=null;
@@ -13118,6 +13174,7 @@ slides.forEach(function(c,i){
 if("IntersectionObserver" in window)new IntersectionObserver(function(es){carVis=es[0].isIntersecting;syncFilms()},{threshold:.3}).observe(car);
 else carVis=true;
 function home(){if(slides.length)go(cur<0?START:cur,false)}
+window.__wcCarHome=function(){home()};
 home();requestAnimationFrame(home);
 addEventListener("load",function(){if(cur===START||cur<0)go(START,false)});
 var rT=null;addEventListener("resize",function(){clearTimeout(rT);rT=setTimeout(function(){if(cur>=0)car.scrollTo({left:target(cur)})},120)});
@@ -15438,7 +15495,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
       if(n.parentNode&&/^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName))continue;
       RE.forEach(function(p){u=u.replace(p[0],p[1])});if(u!==t)n.textContent=u}
     var w2=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),m,hit=[];while(m=w2.nextNode())if(/\bAIs\b/.test(m.textContent)&&m.parentNode&&m.parentNode.nodeType===1&&!m.parentNode.closest("script,style,.x2p-lc"))hit.push(m);
-    hit.forEach(function(n){if(getComputedStyle(n.parentNode).textTransform!=="uppercase")return;var f=document.createDocumentFragment();
+    hit=hit.filter(function(n){return getComputedStyle(n.parentNode).textTransform==="uppercase"});hit.forEach(function(n){var f=document.createDocumentFragment();
       n.textContent.split(/(\bAIs\b)/).forEach(function(x){if(x==="AIs"){f.appendChild(document.createTextNode("AI"));var sp=document.createElement("span");sp.className="x2p-lc";sp.textContent="s";f.appendChild(sp)}else if(x)f.appendChild(document.createTextNode(x))});
       n.parentNode.replaceChild(f,n)})}
   fix(document.body);
@@ -15701,7 +15758,7 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     if(st==null)top.removeAttribute("style");else top.setAttribute("style",st);return r.width?{w:r.width,h:r.height}:null}
   var ON="M12 5.2a4 4 0 0 1 0 5.6M13.9 3.3a6.6 6.6 0 0 1 0 9.4",OFF="M11.5 5.5l4 4M15.5 5.5l-4 4";
   function faces(c,f){var fr=c.querySelector(".face.front"),bk=c.querySelector(".face.back");if(!fr||!bk)return;fr.setAttribute("aria-hidden",f?"true":"false");bk.setAttribute("aria-hidden",f?"false":"true");if("inert" in fr){fr.inert=f;bk.inert=!f}}
-  function open(rm){var c0=rm.querySelector(".card[data-n]"),n=c0&&c0.getAttribute("data-n");if(n&&window.__x2pRecFill)window.__x2pRecFill(n);/* its back, if it waits (build.py) */var src=n&&d.querySelector('#record .card[data-n="'+n+'"]');if(!src||!src.querySelector(".fx"))return;
+  function open(rm){if(window.__wcRecWake&&!window.__wcRecWake(function(){if(rm.isConnected&&!cur)open(rm)})){rm.classList.add("x2p-rmh");return}var c0=rm.querySelector(".card[data-n]"),n=c0&&c0.getAttribute("data-n");if(n&&window.__x2pRecFill)window.__x2pRecFill(n);/* its back, if it waits (build.py) */var src=n&&d.querySelector('#record .card[data-n="'+n+'"]');if(!src||!src.querySelector(".fx"))return;
     var sz=WH||(WH=recSize());if(!sz)return;
     var c=src.cloneNode(true);c.classList.remove("flipped");c.classList.add("cur");c.removeAttribute("data-i");c.style.width=sz.w+"px";c.style.height=sz.h+"px";c.style.flex="none";
     /* the certificate on its back is drawn again for the copy (its stamp and ids its own) */
@@ -15774,7 +15831,8 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     v.addEventListener("volumechange",function(){T("film",{a:v.muted?"mute":"unmute"},"film-snd-"+(v.muted?"off":"on"))})}
   /* the record: a swipe to another round, a flip, a round's film started by a tap */
   var car=document.getElementById("car");
-  if(car){var cn=function(){var c=car.querySelector(".card.cur");return c&&c.getAttribute("data-n")},c0=cn(),st=0;
+  /* not on X6+ (html.h48): its record is never shown, and waking it scrolls the carousel home, which read as a swipe */
+  if(car&&!document.documentElement.classList.contains("h48")){var cn=function(){var c=car.querySelector(".card.cur");return c&&c.getAttribute("data-n")},c0=cn(),st=0;
     car.addEventListener("scroll",function(){clearTimeout(st);st=setTimeout(function(){var n=cn();if(c0===null)c0=n;else if(n&&n!==c0)T("record",{a:"swipe"},"rec-swipe")},300)},{passive:true})}
   document.addEventListener("click",function(e){var t=e.target;if(!t.closest)return;
     var x=t.closest('a[href*="x.com/"]');if(x){T("follow",{where:x.classList.contains("x2p-xhd")?"header":x.classList.contains("x2p-xlink")?"record":"other"});return}
@@ -16800,7 +16858,7 @@ if(!window.__x2pBs){window.__x2pBs=1;var ft,lw=innerWidth;addEventListener('resi
   var c=d.createElement("canvas"),x=c.getContext("2d"),F=fz*10;c.width=Math.ceil(F*txt.length*.9+40);c.height=Math.ceil(F*2);x.font=cs.fontStyle+" "+cs.fontWeight+" "+F+"px "+cs.fontFamily;x.textBaseline="alphabetic";x.fillText(txt,10,F*1.4);
   var dt=x.getImageData(0,0,c.width,c.height).data,top=-1,bot=-1;for(var y=0;y<c.height;y++){for(var i=0;i<c.width;i++)if(dt[(y*c.width+i)*4+3]>100){if(top<0)top=y;bot=y;break}}
   return IK[key]=top<0?[fz*.72,0]:[(F*1.4-top)/10,(F*1.4-bot-1)/10]}
- function level(ol){[].slice.call(ol.querySelectorAll("li.lbr")).forEach(function(li){var R=li.getBoundingClientRect(),mid=R.top+R.height/2;
+ function level(ol){if(document.documentElement.classList.contains("wc-pre"))return;[].slice.call(ol.querySelectorAll("li.lbr")).forEach(function(li){var R=li.getBoundingClientRect(),mid=R.top+R.height/2;
    [li.querySelector(".lb-f2 .pn-rec"),li.querySelector(".lb-c:not(.roi)>b"),li.querySelector(".lb-c.roi>b")].forEach(function(c){if(!c)return;c.style.removeProperty("transform");var b=c.tagName==="B"?c:c.querySelector("b");if(!b)return;
     var p=d.createElement("span");p.style.cssText="display:inline-block;width:0;height:0;vertical-align:baseline";b.appendChild(p);var base=p.getBoundingClientRect().top;p.remove();
     var cs=getComputedStyle(b),k=inkOf(cs,b.textContent.replace(/\s+/g,"")),asc=k[0]-k[1];
@@ -17441,7 +17499,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
   /* the names are measured by their own boxes: the row is right-aligned, so it overflows to the left, which scrollWidth does not count */
   var wd=function(){var l=1e9,r=-1e9;[].forEach.call(v.children,function(k){var q=k.getBoundingClientRect();if(q.width){l=Math.min(l,q.left);r=Math.max(r,q.right)}});return r-l};
   var wn=v.querySelector(".wn"),z=wn?parseFloat(getComputedStyle(wn).fontSize):15,n=0;v.style.setProperty("--tz",z);while(wd()>room&&z>8&&n++<60){z-=.5;v.style.setProperty("--tz",z)}})}
- function run(){fit()}if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",function(){setTimeout(run,1500)});else setTimeout(run,1500);
+ function run(){fit()}window.__wcTiesFit=fit;if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",function(){setTimeout(run,1500)});else setTimeout(run,1500);
  addEventListener("load",function(){setTimeout(run,300)});var lw=innerWidth;addEventListener("resize",function(){if(innerWidth!==lw){lw=innerWidth;run()}});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(run);
  new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm")setTimeout(function(){fit(x)},60)})})}).observe(d.body,{childList:true});
  setInterval(function(){var c=d.querySelector("#record .card.f-tie.cur");if(c)fit(c,1)},2000);
@@ -18022,7 +18080,7 @@ D.documentElement.classList.add('t4-ready','t5-ready');
 }catch(e){window.__x2pTopErr=window.__q4Err=e;console.error(e)}})()})();
 
 </script>
-<script id="x2p-chips-js">
+<script id="x2p-chips-js">if(!document.documentElement.classList.contains("h48")){
 /* X2+ MEET THE MODELS, H24 chips8 (drop-in for tools/v22/story/x2p_chips.js), from tools/concepts/worlds/comic/story/h/chips8/_c8.js.
    Default take c (the founder says the line in a balloon); window.__C8T="a" shows take a (the line laser-etched; its images are listed too).
    Media (written out so make_site.py copies them): media/chip8a-grok-1200.jpg media/chip8a-grok-1200.webp media/chip8a-grok-1800.jpg media/chip8a-grok-1800.webp media/chip8a-claude-1200.jpg media/chip8a-claude-1200.webp media/chip8a-claude-1800.jpg media/chip8a-claude-1800.webp media/chip8a-gpt-1200.jpg media/chip8a-gpt-1200.webp media/chip8a-gpt-1800.jpg media/chip8a-gpt-1800.webp media/chip8a-kimi-1200.jpg media/chip8a-kimi-1200.webp media/chip8a-kimi-1800.jpg media/chip8a-kimi-1800.webp media/chip8c-grok-1200.jpg media/chip8c-grok-1200.webp media/chip8c-grok-1800.jpg media/chip8c-grok-1800.webp media/chip8c-claude-1200.jpg media/chip8c-claude-1200.webp media/chip8c-claude-1800.jpg media/chip8c-claude-1800.webp media/chip8c-gpt-1200.jpg media/chip8c-gpt-1200.webp media/chip8c-gpt-1800.jpg media/chip8c-gpt-1800.webp media/chip8c-kimi-1200.jpg media/chip8c-kimi-1200.webp media/chip8c-kimi-1800.jpg media/chip8c-kimi-1800.webp media/try8-1200.jpg media/try8-1200.webp media/try8-1800.jpg media/try8-1800.webp media/rays6.webp media/founder-grok-anim3-b.mp4 media/founder-grok-anim3-b.webm media/founder-grok-anim3-b.jpg media/founder-claude-anim.mp4 media/founder-claude-anim.webm media/founder-claude-anim.jpg media/founder-gpt-anim3-b.mp4 media/founder-gpt-anim3-b.webm media/founder-gpt-anim3-b.jpg media/founder-kimi-anim.mp4 media/founder-kimi-anim.webm media/founder-kimi-anim.jpg */
@@ -18157,8 +18215,9 @@ D.documentElement.classList.add('c8-ready');
 
 }catch(e){window.__x2pChipsErr=e;console.error(e)}})()})();
 
-</script>
-<script id="x2p-meet10-js">
+
+}</script>
+<script id="x2p-meet10-js">if(!document.documentElement.classList.contains("h48")){
 /* H32: the ledger strip is off (owner, 2026-11-02): its pulse loop never starts */window.__M10T=-1;
 /* X2+ MEET THE MODELS, H26 meet10, the owner's pick (2026-11-02): drop-in, load after tools/v22/story/x2p_chips.js (chips8 take c) and its CSS after x2p_chips.css.
    The strip S1 by default (window.__M10S='s2' gives the tape). Images from media/.
@@ -18511,7 +18570,8 @@ W.__m36={layout,measure:()=>{const fr=four.getBoundingClientRect(),b=e=>{const r
   head:h2&&getComputedStyle(h2).fontSize,s2:five&&b(five.querySelector('.m36-s2'))}}};
 }})();
 
-</script>
+
+}</script>
 <script id="x2p-more-js">
 /* X2+ OVERVIEW, round H24 (2026-11-02, the lead's picks; X2+ only): ground G1 (the board, gold edge fingers between beats), rounds D (the ledger grows),
    proof T1 (the scope) + C1 (the close), and the bet ported from X3+ (bet2x). Media: media/gr4-g1-board-p.jpg media/gr4-g1-board-l.jpg media/gr4-s1-fingers.jpg
@@ -19380,7 +19440,7 @@ D.fonts&&D.fonts.ready.then(()=>setTimeout(()=>{mo.disconnect();try{ones(D.body)
 
 /* round thumbnails, written out for make_site.py: media/tile-r1-f1.jpg media/tile-r1-t2.jpg media/tile-r10-f1.jpg media/tile-r10-t2.jpg media/tile-r11-f1.jpg media/tile-r11-t2.jpg media/tile-r12-f1.jpg media/tile-r12-t2.jpg media/tile-r13-f1.jpg media/tile-r13-t2.jpg media/tile-r14-f1.jpg media/tile-r14-t2.jpg media/tile-r15-f1.jpg media/tile-r15-t2.jpg media/tile-r16-f1.jpg media/tile-r16-t2.jpg media/tile-r17-f1.jpg media/tile-r17-t2.jpg media/tile-r18-f1.jpg media/tile-r18-t2.jpg media/tile-r19-f1.jpg media/tile-r19-t2.jpg media/tile-r2-f1.jpg media/tile-r2-t2.jpg media/tile-r20-f1.jpg media/tile-r20-t2.jpg media/tile-r21-f1.jpg media/tile-r21-t2.jpg media/tile-r22-f1.jpg media/tile-r22-t2.jpg media/tile-r23-f1.jpg media/tile-r23-t2.jpg media/tile-r24-f1.jpg media/tile-r24-t2.jpg media/tile-r25-f1.jpg media/tile-r25-t2.jpg media/tile-r26-f1.jpg media/tile-r26-t2.jpg media/tile-r27-f1.jpg media/tile-r27-t2.jpg media/tile-r28-f1.jpg media/tile-r28-t2.jpg media/tile-r29-f1.jpg media/tile-r29-t2.jpg media/tile-r3-f1.jpg media/tile-r3-t2.jpg media/tile-r30-f1.jpg media/tile-r30-t2.jpg media/tile-r31-f1.jpg media/tile-r31-t2.jpg media/tile-r32-f1.jpg media/tile-r32-t2.jpg media/tile-r33-f1.jpg media/tile-r33-t2.jpg media/tile-r34-f1.jpg media/tile-r34-t2.jpg media/tile-r35-f1.jpg media/tile-r35-t2.jpg media/tile-r36-f1.jpg media/tile-r36-t2.jpg media/tile-r37-f1.jpg media/tile-r37-t2.jpg media/tile-r38-f2.jpg media/tile-r38-t2.jpg media/tile-r39-f1.jpg media/tile-r39-t2.jpg media/tile-r4-f1.jpg media/tile-r4-t2.jpg media/tile-r40-f1.jpg media/tile-r40-t2.jpg media/tile-r41-f1.jpg media/tile-r41-t2.jpg media/tile-r42-f1.jpg media/tile-r42-t2.jpg media/tile-r43-f1.jpg media/tile-r43-t2.jpg media/tile-r44-f1.jpg media/tile-r44-t2.jpg media/tile-r45-f1.jpg media/tile-r45-t2.jpg media/tile-r46-f1.jpg media/tile-r46-t2.jpg media/tile-r47-f1.jpg media/tile-r47-t2.jpg media/tile-r48-f1.jpg media/tile-r48-t2.jpg media/tile-r49-f1.jpg media/tile-r49-t2.jpg media/tile-r5-f1.jpg media/tile-r5-t2.jpg media/tile-r50-f1.jpg media/tile-r50-t2.jpg media/tile-r51-f1.jpg media/tile-r51-t2.jpg media/tile-r52-f1.jpg media/tile-r52-t2.jpg media/tile-r53-f1.jpg media/tile-r53-t2.jpg media/tile-r54-f1.jpg media/tile-r54-t2.jpg media/tile-r55-f1.jpg media/tile-r55-t2.jpg media/tile-r56-f1.jpg media/tile-r56-t2.jpg media/tile-r57-f1.jpg media/tile-r57-t2.jpg media/tile-r58-f1.jpg media/tile-r58-t2.jpg media/tile-r59-f1.jpg media/tile-r59-t2.jpg media/tile-r6-f1.jpg media/tile-r6-t2.jpg media/tile-r60-f2.jpg media/tile-r60-t2.jpg media/tile-r61-f1.jpg media/tile-r61-t2.jpg media/tile-r62-f1.jpg media/tile-r62-t2.jpg media/tile-r63-f1.jpg media/tile-r63-t2.jpg media/tile-r64-f1.jpg media/tile-r64-t2.jpg media/tile-r65-f1.jpg media/tile-r65-t2.jpg media/tile-r66-f1.jpg media/tile-r66-t2.jpg media/tile-r67-f1.jpg media/tile-r67-t2.jpg media/tile-r68-f1.jpg media/tile-r68-t2.jpg media/tile-r69-f1.jpg media/tile-r69-t2.jpg media/tile-r7-f1.jpg media/tile-r7-t2.jpg media/tile-r70-f1.jpg media/tile-r70-t2.jpg media/tile-r71-f1.jpg media/tile-r71-t2.jpg media/tile-r72-f1.jpg media/tile-r72-t2.jpg media/tile-r73-f1.jpg media/tile-r73-t2.jpg media/tile-r74-f2.jpg media/tile-r74-t2.jpg media/tile-r75-f1.jpg media/tile-r75-t2.jpg media/tile-r76-f1.jpg media/tile-r76-t2.jpg media/tile-r77-f1.jpg media/tile-r77-t2.jpg media/tile-r78-f1.jpg media/tile-r78-t2.jpg media/tile-r79-f1.jpg media/tile-r79-t2.jpg media/tile-r8-f1.jpg media/tile-r8-t2.jpg media/tile-r80-f1.jpg media/tile-r80-t2.jpg media/tile-r81-f1.jpg media/tile-r81-t2.jpg media/tile-r82-f1.jpg media/tile-r82-t2.jpg media/tile-r83-t2.jpg media/tile-r84-t2.jpg media/tile-r9-f1.jpg media/tile-r9-t2.jpg */
 </script>
-<script id="x2p-sol-js">
+<script id="x2p-sol-js">if(!document.documentElement.classList.contains("h48")){
 /* ===== H33 SMART OR LUCKY (owner, 2026-11-02: the agreed chart, H29 director's cut over sol9 A4; ported from
    tools/concepts/worlds/comic/story/h/h29/end/end.js + sol9/_a3core.js + h29/director/dir.js, without their mockup scaffolding).
    One board, one chart at a time: 1 Hit rate, "Right way, round by round" (each AI's hit rate after every graded round, (right + 1) / (calls + 2),
@@ -19472,7 +19532,8 @@ P5.mountProof(take);
 }catch(e){window.__x2pSolErr=e;try{console.error('x2p_sol',e)}catch(x){}}
 })();
 
-</script>
+
+}</script>
 <script id="x2p-up-js">
 /* ===== H39 UPCOMING, "Departures" (owner, 2026-11-03: "A departure for now. HOT UPCOMING PREDICTIONS should have the large companies. All
    diegetically integrated."; take A of round H37, tools/concepts/worlds/comic/story/h/h37up, ported and fixed). The Upcoming tab is the
@@ -19865,7 +19926,7 @@ if(D.body)init();else D.addEventListener('DOMContentLoaded',init);
 }catch(e){window.__x2pCbErr=e}})();
 
 </script>
-<script id="x2p-vit-js">
+<script id="x2p-vit-js">if(!document.documentElement.classList.contains("h48")){
 /* ===== H39 X2P_VIT (owner, 2026-11-03: "The vitrine and its drawer pls. Push to prod as well."): "Every round so far" as the vitrine and its
    cabinet (take B of round H37, tools/concepts/worlds/comic/story/h/h37rounds/_h37.js, built). Runs after x2p_more's H32 X2P_MAG block and takes the
    section over: #x2pMag stays in the DOM, display:none (x2p_more's order() still moves #record into place).
@@ -20064,6 +20125,7 @@ function deck(){const ln=root.querySelector('.vt-line'),S=ln.querySelector('.vt-
 }
 })();
 
-</script>
+
+}</script>
 </body>
 </html>
