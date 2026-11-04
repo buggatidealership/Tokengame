@@ -55,11 +55,13 @@ function data(){
   /* next: rounds with trades in that have not closed yet, then the ones whose trades are still to come (not a date gone by) */
   var nxt=D.next.filter(function(u){if(u.in){var c=u.resolves?closeAt(u.ticker,(u.resolves[1]+1)+'/'+u.resolves[2]+'/'+(u.resolves[0]%100)):null;return !c||c>NOW}return !u.called||Date.UTC(u.called[0],u.called[1],u.called[2])>=today});
   var secs=[];Object.keys(SECT).forEach(function(k){var s=SECT[k];if(MK.some(function(m){return per[m].sect[s]}))secs.push(s)});
-  return {E:E,D:D,NOW:NOW,today:today,RS:RS,N:N,MK:MK,WIN:WIN,win:win,lc:lc,lcRs:lcRs,lcDay:lcDay,per:per,rank:rank,shared:shared,hp:hp,nL:nL,nxt:nxt,secs:secs,tr:tr}}
+  var lastR=RS.reduce(function(a,r){if(!a)return r;var ca=cl(a)||0,cr=cl(r)||0;return cr>ca||(cr===ca&&r.n>a.n)?r:a},null);
+  return {E:E,D:D,NOW:NOW,today:today,RS:RS,N:N,MK:MK,lastR:lastR,WIN:WIN,win:win,lc:lc,lcRs:lcRs,lcDay:lcDay,per:per,rank:rank,shared:shared,hp:hp,nL:nL,nxt:nxt,secs:secs,tr:tr}}
 
 var st={win:'season',rank:'pnl'},X=null,lastW=0;
 function esc(s){return H48UI.esc(s)}
 function build(root){
+  var V=build.__noV?'':lbV();if(V)return buildV(root,V);
   var E=X.E,D=X.D,U=H48UI,NM=E.NAME,MK=X.MK,P=X.per;
   var Wn=X.WIN[st.win],w=X.win[st.win],ord=X.rank(st.win,st.rank),m=ord[0],x=w[m],has=Wn.rs.length>0,wl=Wn.w;
   var gold=D.ord[0],B=D.BET,frz=B&&W.SIM&&SIM.leadHours!=null?B-SIM.leadHours*36e5:null;
@@ -130,14 +132,67 @@ function build(root){
   root.querySelectorAll('.h8-sw').forEach(function(b){b.addEventListener('click',function(){if(st[b.dataset.g]===b.dataset.k)return;st[b.dataset.g]=b.dataset.k;var y=b.getBoundingClientRect().top;build(root);
     var nb=root.querySelector('.h8-sw[data-g="'+b.dataset.g+'"][data-k="'+b.dataset.k+'"]');if(nb){scrollBy(0,nb.getBoundingClientRect().top-y);nb.focus({preventScroll:true})}})});
   XH=0;chart(root,true);balance(root)}
+/* ---------- H49c mockup takes (owner, 2026-11-04: "remove the scorecard and who to follow... you already have that section in the
+   overview... the page to start at rank by PNL season, the table... the filters at the right spot... how we have in the EZ Live X2 Plus...
+   you just have leaderboard. And then... season one, 84 rounds graded. And then rank by PNL, hit rate, and then season, 7 days, 24 hours").
+   Off unless window.__h48LbV or ?lb= is set; the live board is unchanged. A = X2+'s board in the show (one title, the Season 1 plate, the
+   filters right above the table, the table's columns follow Rank by, the chart beside it on desktop); B = the same top over today's full
+   table; C = A with the filters pinned while the board is on screen. ---------- */
+function lbV(){if(W.__h48LbV)return String(W.__h48LbV).toUpperCase();var q=/[?&]lb=([abcABC])/.exec(location.search);return q?q[1].toUpperCase():''}
+function buildV(root,V){
+  var E=X.E,D=X.D,U=H48UI,NM=E.NAME,MK=X.MK,P=X.per;
+  var Wn=X.WIN[st.win],w=X.win[st.win],ord=X.rank(st.win,st.rank),hit=st.rank==='hit',wcap=st.win==='season'?'season':Wn.w;
+  var pc1=function(v){return v==null?'–':(v*100).toFixed(1)+'%'};
+  var opt=function(g,k,t){return '<button type="button" class="h8-sw" data-g="'+g+'" data-k="'+k+'" aria-pressed="'+(st[g]===k)+'">'+t+'</button>'};
+  var mon=function(v,n){return n?'<span class="h8-num '+(v>=0?'h8-pos':'h8-neg')+'">'+E.money(v)+'</span>':'<span class="h8-num h8-dash">–</span>'};
+  var l5=function(q){var a=P[q].last5;return '<span class="h8-l5" role="img" aria-label="Last 5, oldest to newest: '+esc(a.map(function(t){return (t.w?'W':'L')+' on '+E.coName(t.r.ticker)}).join(', '))+'">'+a.map(function(t,i){return '<i class="'+(t.w?'h8-mw':'h8-ml')+(i===a.length-1?' h8-new':'')+'">'+(t.w?'W':'L')+'</i>'}).join('')+'</span>'};
+  var lr=X.lastR,h='';
+  h+='<section class="h8-page h8-p2 h8-g h8-lbv h8-v'+V+'" aria-labelledby="h8lbh1"><h1 class="h8-let h8-lbtt" id="h8lbh1" data-h8let="71" data-h8amp=".7">Leaderboard</h1>'+
+   '<p class="h8-lbcap h8-pl h8-t"><b>Season 1</b><span> · '+X.N+' rounds graded · $100K on every trade</span></p>'+
+   '<div class="h8-bar"><div class="h8-cg" role="group" aria-label="Rank by"><span class="h8-lbl">Rank by</span>'+opt('rank','pnl','P&amp;L')+opt('rank','hit','Hit rate')+'</div>'+
+   '<div class="h8-cg" role="group" aria-label="Window">'+opt('win','season','Season')+opt('win','d7','7 days')+opt('win','d1','24 hours')+'</div>'+
+   '<p class="h8-wn">'+esc(Wn.t+': '+(st.win==='season'?Wn.when.replace(/ · \d+ rounds?$/,''):Wn.when))+'</p></div><div class="h8-brd"><div class="h8-bt">';
+  if(V==='B'){var lcS=md(X.lcDay);
+    h+='<div class="h8-tbl" role="table" aria-label="Standings, '+esc(Wn.t)+'"><div class="h8-th h8-pl h8-t" role="row"><span class="h8-a1" role="columnheader">#</span><span class="h8-a2 h8-tm" role="columnheader">Model</span><span class="h8-a3" role="columnheader">P&amp;L · '+esc(wcap)+'</span>'+
+     '<span class="h8-a4" role="columnheader">Last 5 · old → new</span><span class="h8-a5" role="columnheader">W-L · '+esc(wcap)+'</span><span class="h8-a6" role="columnheader">Hit · '+esc(wcap)+'</span><span class="h8-a7" role="columnheader">'+esc(lcS)+' close</span></div>'+
+     ord.map(function(q,k){var y=w[q];return '<div class="h8-trw h8-pl'+(k===0?' h8-gold':'')+'" role="row"><div class="h8-tr"><span class="h8-tp" role="cell">'+(k+1)+'</span>'+
+       '<span class="h8-tm" role="cell">'+U.badge(q,24)+'<b>'+NM[q]+'</b>'+U.flag(q,22)+'</span>'+
+       '<span class="h8-tv h8-num '+(y.n?(y.pnl>=0?'h8-pos':'h8-neg'):'h8-dash')+'" role="cell">'+(y.n?E.money(y.pnl):'–')+'</span>'+
+       '<span class="h8-tl5" role="cell">'+l5(q)+'</span><span class="h8-twl h8-num" role="cell">'+(y.n?y.W+'-'+y.L:'–')+'</span><span class="h8-th2 h8-num" role="cell">'+pc1(y.hit)+'</span>'+
+       '<span class="h8-tc h8-num '+(X.lc[q].n?(X.lc[q].pnl>=0?'h8-pos':'h8-neg'):'h8-dash')+'" role="cell">'+(X.lc[q].n?E.money(X.lc[q].pnl):'–')+'</span></div></div>'}).join('')+'</div>'+
+     '<p class="h8-cap2">'+esc(lcS)+' close = the '+X.lcRs.length+' round'+(X.lcRs.length===1?'':'s')+' graded at the '+esc(wdmd(X.lcDay))+' close. Hit rate from 5 trades.</p>'}
+  else{
+    h+='<div class="h8-vt" role="table" aria-label="Standings, ranked by '+(hit?'hit rate':'P&amp;L')+', '+esc(Wn.t)+'"><div class="h8-vh" role="row"><span class="h8-vp" role="columnheader">#</span><span class="h8-vm" role="columnheader">Model</span>'+
+     '<span class="h8-vl" role="columnheader">Last 5</span><span class="h8-vs" role="columnheader">'+(hit?'W-L · '+esc(wcap):'Last round')+'</span><span class="h8-vv" role="columnheader">'+(hit?'Hit rate · ':'P&amp;L · ')+esc(wcap)+'</span></div>'+
+     ord.map(function(q,k){var y=w[q],t=lr?X.tr(lr,q):null;
+       return '<div class="h8-trw h8-pl h8-vr'+(k===0?' h8-gold':'')+'" role="row"><span class="h8-vp" role="cell">'+(k+1)+'</span><span class="h8-vm" role="cell">'+U.badge(q,24)+'<b>'+NM[q]+'</b>'+U.flag(q,20)+'</span>'+
+        '<span class="h8-vl" role="cell">'+l5(q)+'</span>'+
+        '<span class="h8-vs" role="cell">'+(hit?'<span class="h8-num'+(y.n?'':' h8-dash')+'">'+(y.n?y.W+'-'+y.L:'–')+'</span>':mon(t?t.v:0,!!t))+'</span>'+
+        '<span class="h8-vv" role="cell">'+(hit?'<span class="h8-num'+(y.hit==null?' h8-dash':'')+'">'+pc1(y.hit)+'</span>':mon(y.pnl,y.n))+'</span></div>'}).join('')+'</div>'+
+     '<p class="h8-cap2">'+(hit?'W-L and hit rate in this window. Hit rate from 5 trades.':(lr?'Last round = '+esc(E.coLabel(lr.ticker))+', round '+lr.n+', graded at the '+esc(wdmd(dOf(lr.resolves)))+' close.':''))+'</p>'}
+  h+='</div><div class="h8-bc"><div class="h8-chw"><p class="h8-grp">'+(hit?'Hit rate':'P&amp;L')+' · '+esc(Wn.t)+'</p><p class="h8-sub2">'+(hit?'Right on their long or short, round by round. Every line starts at 50%.':'$100K a trade, round by round, from $0.')+'</p>'+
+   '<figure class="h8-scene h8-sc" id="h8lbsc"><div class="h8-sf" id="h8lbsf"></div></figure></div>';
+  if(V==='B'){var hord=MK.slice().sort(function(a,b){return X.hp[b].pnl-X.hp[a].pnl});
+    h+='<div class="h8-hlt h8-pl"><h3>Only companies Hyperliquid lists today</h3><div class="h8-hg"><span class="h8-lbl">Model · season</span><span class="h8-lbl h8-r">W-L</span><span class="h8-lbl h8-r">P&amp;L</span>'+
+     hord.map(function(q){var y=X.hp[q];return '<span>'+U.badge(q,20)+NM[q]+'</span><span class="h8-r h8-num">'+y.W+'-'+y.L+'</span><span class="h8-r h8-num '+(y.pnl>=0?'h8-pos':'h8-neg')+'">'+E.money(y.pnl)+'</span>'}).join('')+'</div>'+
+     '<p>'+X.nL+' of '+X.N+' rounds. Listed '+esc(E.hlWhen())+'; most were not on Hyperliquid when the trade was made.</p></div>'}
+  h+='</div></div></section>';
+  var keep=d.createElement('div');build.__noV=1;try{build0(keep)}finally{build.__noV=0}
+  var tail=keep.querySelectorAll(':scope>.h8-spread')[1];
+  root.innerHTML=h;U.letterAll(root);if(tail)root.appendChild(tail);
+  root.querySelectorAll('.h8-sw').forEach(function(b){b.addEventListener('click',function(){if(st[b.dataset.g]===b.dataset.k)return;st[b.dataset.g]=b.dataset.k;var y=b.getBoundingClientRect().top;build(root);
+    var nb=root.querySelector('.h8-sw[data-g="'+b.dataset.g+'"][data-k="'+b.dataset.k+'"]');if(nb){scrollBy(0,nb.getBoundingClientRect().top-y);nb.focus({preventScroll:true})}})});
+  if(V==='C'){var hd=d.querySelector('header.top');root.style.setProperty('--h8hdr',(hd&&getComputedStyle(hd).position==='sticky'?hd.offsetHeight:0)+'px')}
+  XH=0;chart(root,true);balance(root)}
 /* desktop: the two pages of a spread end level. The table's page gives its spare height to the chart (the board painted taller, at most a
    third more); the sector page gives its spare to the rows' padding. Measured, not guessed: the empty run under each page's last block. */
 function used(p){var b=0;[].forEach.call(p.children,function(k){b=Math.max(b,k.getBoundingClientRect().bottom)});return b-p.getBoundingClientRect().top+parseFloat(getComputedStyle(p).paddingBottom)}
 function balance(root){var desk=W.matchMedia('(min-width:1000px)').matches,sct=root.querySelector('.h8-sct');if(sct)sct.style.removeProperty('--h8sxp');
   if(!desk){if(XH){XH=0;chart(root,false)}return}
   var p1=root.querySelector('.h8-p1'),p2=root.querySelector('.h8-p2'),p3=root.querySelector('.h8-p3'),p4=root.querySelector('.h8-p4');
-  var sc=root.querySelector('#h8lbsc'),dh=used(p1)-used(p2);if(sc&&dh>2){XH=Math.min(dh,sc.offsetHeight*.34);chart(root,true)}
+  var sc=root.querySelector('#h8lbsc'),dh=p1&&p2?used(p1)-used(p2):0;if(sc&&dh>2){XH=Math.min(dh,sc.offsetHeight*.34);chart(root,true)}
   var d2=used(p4)-used(p3),rs=root.querySelectorAll('.h8-sx:not(.h8-sh)').length;if(sct&&d2>2&&rs)sct.style.setProperty('--h8sxp',(9+d2/rs/2).toFixed(2)+'px')}
+function build0(r){var o=r.innerHTML;build(r)}
 var XH=0;
 function chart(root,anim){var sc=root.querySelector('#h8lbsc'),sf=root.querySelector('#h8lbsf');if(!sc||!sc.clientWidth)return;var U=H48UI,E=X.E,Wn=X.WIN[st.win],hit=st.rank==='hit';
   U.fit(sc,sf,U.BOX.sc,.92,XH);var ends={};E.MK.forEach(function(m){var y=X.win[st.win][m];ends[m]=y.n?(hit?(y.hit==null?(y.W+' of '+y.n):(y.hit*100).toFixed(1)+'%'):E.kmoney(y.pnl)):'–'});
