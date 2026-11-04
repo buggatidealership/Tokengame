@@ -108,12 +108,10 @@ open(os.path.join(OUT, '_headers'), 'w').write("""/media/*
 open(os.path.join(OUT, 'robots.txt'), 'w').write("User-agent: *\nAllow: /\n")
 # (overnight 2026-10-27, launch audit) a missing path answered with the page itself and a 200, which Cloudflare then cached under
 # /media for a year (R43, 2026-10-24); with a 404.html Pages answers a missing file with this page and a real 404
-# (launch-day QA) /favicon.ico answered 404 (browsers and some apps ask for it whatever the page links): the EZ. logo, 16/32/48 px
-try:
-    from PIL import Image as _Img
-    _Img.open(os.path.join(EZ, 'media', 'icon-180.png')).convert('RGBA').save(os.path.join(OUT, 'favicon.ico'), sizes=[(16, 16), (32, 32), (48, 48)])
-except Exception as _e:
-    print('favicon.ico not written:', _e)
+# (launch-day QA) /favicon.ico answered 404 (browsers and some apps ask for it whatever the page links): ez/favicon.ico, the EZ. logo at
+# 16/32/48 px (made once from media/icon-180.png with PIL; copied here so a build needs no image library)
+if os.path.exists(os.path.join(EZ, 'favicon.ico')):
+    shutil.copy(os.path.join(EZ, 'favicon.ico'), os.path.join(OUT, 'favicon.ico'))
 open(os.path.join(OUT, '404.html'), 'w', encoding='utf-8').write('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Not found \u00b7 Earnings Zeason</title><meta name="robots" content="noindex"><link rel="icon" href="/media/icon.svg" type="image/svg+xml"><style>html{color-scheme:dark}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0a14;color:#f8f0d9;font:600 18px/1.4 system-ui,sans-serif;text-align:center;padding:16px}a{color:#fdbc2a}img{width:96px;height:96px;display:block;margin:0 auto 18px}</style></head><body><main><img src="/media/icon.svg" alt="EZ."><p>Nothing here.</p><p><a href="/">Back to Earnings Zeason</a></p></main></body></html>\n')
 # every round its own link (owner, 2026-10-28): /r/<n> pages whose share picture is that round's own slab (tools/site/round_cards.js;
 # pictures cached in media/share by a hash of what they show, so a build draws only new or changed rounds). SITE_NOCARDS=1 skips it.
