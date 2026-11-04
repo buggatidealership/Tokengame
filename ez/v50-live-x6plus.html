@@ -12367,7 +12367,7 @@ W.__h49lg={mark:mark,geo:geo,scan:scan,BOX:BOX};
 (function(){try{
 var d=document,H=d.documentElement,W=window;
 var KEY={grok:"GROK",claude:"CLAUDE",gpt:"GPT",kimi:"KIMI"};
-function key(t){return KEY[String(t||"").replace(/[^a-z]/gi,"").toLowerCase()]}
+function key(t){var s=String(t||"").toLowerCase();return KEY[s.replace(/[^a-z]/g,"")]||(/gpt|openai/.test(s)?"GPT":/claude|anthropic/.test(s)?"CLAUDE":/grok|xai/.test(s)?"GROK":/kimi|moonshot/.test(s)?"KIMI":null)}
 /* a brushed cross, two strokes thick in the middle and tapered at the ends, red ink with the ink outline */
 var CROSS='<svg class="h9s-x" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.2 3.6c2.6 2 4.6 4.3 6.8 6.6 2.2-2.4 4.4-4.7 6.9-6.5 1.1-.8 2.5.6 1.6 1.7-2.1 2.4-4.3 4.7-6.5 6.6 2.4 2.2 4.6 4.4 6.6 6.9.8 1-.6 2.3-1.6 1.6-2.6-1.9-4.8-4.1-7-6.4-2.2 2.4-4.5 4.7-6.9 6.5-1 .7-2.3-.6-1.6-1.6 2-2.5 4.2-4.7 6.6-6.9-2.4-2.1-4.6-4.3-6.6-6.8-.8-1 .6-2.4 1.7-1.7z" fill="#c8321f" stroke="#24140c" stroke-width="1.3" stroke-linejoin="round"/></svg>';
 /* step a box's font size down until its content fits its width (never below the floor) */
@@ -12376,7 +12376,7 @@ function fit(el,prop,start,floor){if(!el||!el.clientWidth)return;var s=start;el.
 function dress(o){var U=W.H48UI;if(!U||!H.classList.contains("h48")||!o.isConnected)return;
   /* the winner: the cel badge after each name; nobody: the cross */
   [].forEach.call(o.querySelectorAll(".cwin .wn"),function(wn){if(wn.querySelector(".h9s-bd,.h9s-x"))return;var lg=wn.querySelector(".lg");if(!lg)return;
-    if(lg.classList.contains("nob")){lg.insertAdjacentHTML("afterend",CROSS);return}var m=key(lg.getAttribute("title")||wn.textContent);
+    if(lg.classList.contains("nob")){lg.insertAdjacentHTML("afterend",CROSS);return}var m=key(wn.firstChild&&wn.firstChild.nodeType===3?wn.firstChild.nodeValue:"")||key(lg.getAttribute("title"));
     if(m)lg.insertAdjacentHTML("afterend",'<span class="h9s-bd" aria-hidden="true">'+U.badge(m,22)+'</span>')});
   /* the back's nameplates: the badge in the well, the pennant for the flag */
   [].forEach.call(o.querySelectorAll(".cb .cb-r"),function(r){var nm=r.querySelector(".cb-nm"),m=nm&&key(nm.textContent);if(!m)return;
