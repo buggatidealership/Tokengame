@@ -89,18 +89,18 @@ function grade(r){var c=r.calls||[],nc=c.length,rw=c.filter(function(x){return (
   if(f===1){gr=8+pt;if(gr===10&&!(av<mv/2))gr=9.5;ds=gr===10?(av<1?"Pristine":"Gem"):"Perfect"}else if(f>=.66){gr=6+Math.min(pt,1.5);ds="Strong"}else if(f>=.5){gr=4+Math.min(pt,1.5);ds="Split"}else if(f>0){gr=2+Math.min(pt,1.5);ds="Rough"}else{gr=1;ds="Rekt"}
   return {gr:gr,ds:ds}}
 function nm(t){var l=E.coLabel(t),m=/^(.*?)\s*\(([^)]+)\)\s*$/.exec(l);return m?{n:m[1],t:m[2]}:{n:l,t:""}}
-function ep(r){var w=E.winners(r),g=grade(r),c=nm(r.ticker);
-  return '<a class="h8-ep2 h8-sl'+(g.gr===10?' h8-sl10':'')+'" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(E.coLabel(r.ticker))+', '+E.pct(r.a)+', grade '+g.gr+' '+g.ds+', '+(w.length?w.map(function(m){return E.NAME[m]}).join(" and ")+" won":"nobody won")+'. Open its graded card.">'+
+function ep(r){var w=E.winners(r),g=grade(r),c=nm(r.ticker),no=("0000000"+r.n).slice(-8);
+  /* owner, 2026-11-04 (second pass): exactly a PSA slab: a thin clear holder, the label on top (no move: the number is for after the click),
+     the card in its well; the art layer is the site's ink line and hard shadow; holo on the Pristine and Gem 10s */
+  return '<a class="h8-ep2 h8-sl'+(g.gr===10?' h8-sl10':'')+'" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(E.coLabel(r.ticker))+', grade '+g.gr+' '+g.ds+', '+(w.length?w.map(function(m){return E.NAME[m]}).join(" and ")+" won":"nobody won")+'. Open its graded card.">'+
   '<span class="h8-sll" aria-hidden="true"><span class="h8-sly">2026 <i class="s">$</i><i class="e">E</i><i class="z">Z</i> Season 1</span><span class="h8-sln">#'+r.n+'</span>'+
-    '<span class="h8-slco">'+esc(c.n)+(c.t?' <small>('+esc(c.t)+')</small>':'')+'</span><span class="h8-slg"><small>'+g.ds+'</small><b>'+g.gr+'</b></span>'+
-    '<span class="h8-slm h8-num '+(r.a>0?"h8-pos":"h8-neg")+'">'+E.pct(r.a)+'</span></span>'+
-  '<span class="h8-scr" aria-hidden="true"><img src="'+tile(r)+'" alt="" loading="lazy" decoding="async"></span>'+
-  '<span class="h8-slw'+(w.length?'':' h8-no')+'" aria-hidden="true"><small>Winner</small><span class="h8-slwn">'+(w.length?w.map(function(m){return E.NAME[m]}).join(" &amp; ")+'<span class="h8-slb">'+w.map(function(m){return U.badge(m,18)}).join("")+'</span>':'Nobody')+'</span></span></a>'}
-/* the three highlights (owner's picks, 2026-11-04): nobody won (UPS), the closest race (TSMC), the crypto pick (Strategy) */
-function hlTag(r){var w=E.winners(r);if(!w.length)return "All four wrong";if((r.ticker||"")==="MSTR")return "The Bitcoin stock";
-  var m=(r.calls||[]).filter(function(x){return (x[1].indexOf("DOWN")<0)===(r.a>0)}).map(function(x){return +x[2]}).sort(function(a,b){return a-b});
-  return m.length>1?"Won by "+(m[1]-m[0]).toFixed(2)+"%":"Closest race"}
-var HL=[51,30,76].map(function(n){return R.filter(function(r){return r.n===n})[0]}).filter(Boolean);
+    '<span class="h8-slco">'+esc(c.n)+(c.t?' <small>('+esc(c.t)+')</small>':'')+'</span><span class="h8-slds">'+g.ds+'</span>'+
+    '<span class="h8-slwn'+(w.length?'':' h8-no')+'"><small>Winner</small>'+(w.length?w.map(function(m){return E.NAME[m]}).join(" &amp; ")+'<span class="h8-slb">'+w.map(function(m){return U.badge(m,18)}).join("")+'</span>':'Nobody')+'</span>'+
+    '<span class="h8-slgr">'+g.gr+'</span><span class="h8-slbc"><i class="h8-bar"></i><span>'+no+'</span><i class="h8-holo"><i class="s">$</i><i class="e">E</i><i class="z">Z</i></i></span></span>'+
+  '<span class="h8-slw" aria-hidden="true"><span class="h8-scr"><img src="'+tile(r)+'" alt="" loading="lazy" decoding="async"></span></span></a>'}
+/* the two highlights (owner, 2026-11-04): the best round (TSMC: all four right, the lowest average miss of the season) and one where all four were wrong (UPS) */
+function hlTag(r){var w=E.winners(r);return w.length?"Best round":"All four wrong"}
+var HL=[30,51].map(function(n){return R.filter(function(r){return r.n===n})[0]}).filter(Boolean);
 var HLH=HL.length?'<div class="h8-hl3"><p class="h8-hl3h">Highlights</p><div class="h8-hl3r">'+HL.map(function(r){return '<div class="h8-hl3i"><span class="h8-hl3t">'+hlTag(r)+'</span>'+ep(r)+'</div>'}).join('')+'</div></div>':'';
 var rev=R.slice().reverse();
 h+='<div class="h8-bump h8-flip" aria-hidden="true"><p class="h8-bt"><small>The record</small><span data-h8let="4" data-h8amp=".7">Every round so far</span></p></div>';
