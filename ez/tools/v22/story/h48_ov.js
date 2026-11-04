@@ -80,17 +80,31 @@ h+='<section class="h8-prev h8-g" aria-label="One real round, start to finish: R
   '<p class="h8-payoff">'+pay+'</p></div></div></section>';
 
 /* ---------- 6. the record: every round so far ---------- */
-var shown=6;   /* owner, 2026-11-04: "I think it's okay to do 6" (was 12, 15 on desktop) */
+var shown=W.innerWidth>=1000?8:6; /* slabs: two rows of four on desktop, three of two on phones */   /* owner, 2026-11-04: "I think it's okay to do 6" (was 12, 15 on desktop) */
 function tile(r){var F2=(W.FILMS||{})[r.n];return 'media/tile-r'+r.n+'-'+(F2?(F2.t||'f1'):'t2')+'.jpg'}
-function ep(r){var w=E.winners(r);
-  return '<a class="h8-ep2" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(E.coLabel(r.ticker))+', '+E.pct(r.a)+', '+(w.length?w.map(function(m){return E.NAME[m]}).join(" and ")+" won":"nobody won")+'. Open its graded card.">'+
-  '<span class="h8-scr"><img src="'+tile(r)+'" alt="" loading="lazy" decoding="async"></span>'+
-  /* owner, 2026-11-04: the winner up top and bigger, the move smaller beside the company, one row fewer */
-  '<span class="h8-cap h8-pl h8-t"><span class="h8-r1"><span class="h8-wn'+(w.length?"":" h8-no")+'">'+(w.length?w.map(function(m){return U.badge(m,22)}).join("")+w.map(function(m){return E.NAME[m]}).join(" &amp; ")+" won":"Nobody won")+'</span><span class="h8-rn">R'+r.n+'</span></span>'+
-  '<span class="h8-r2"><span class="h8-cn">'+esc(E.coLabel(r.ticker))+'</span><span class="h8-mv h8-num '+(r.a>0?"h8-pos":"h8-neg")+'">'+E.pct(r.a)+'</span></span></span></a>'}
+/* owner, 2026-11-04: "that card design to be the default for when someone sees every round so far... I feel like the PSA graded": every
+   round is its graded slab (the round view's own case, label and winner plate, in small), with three highlights on top */
+function grade(r){var c=r.calls||[],nc=c.length,rw=c.filter(function(x){return (x[1].indexOf("DOWN")<0)===(r.a>0)}).map(function(x){return +x[2]}),hit=rw.length,f=nc?hit/nc:0,
+    av=hit?rw.reduce(function(a,b){return a+b},0)/hit:0,mv=Math.abs(r.a),pt=av<=1.5?2:av<=2?1.5:av<=2.5?1:av<=3?.5:0,gr,ds;
+  if(f===1){gr=8+pt;if(gr===10&&!(av<mv/2))gr=9.5;ds=gr===10?(av<1?"Pristine":"Gem"):"Perfect"}else if(f>=.66){gr=6+Math.min(pt,1.5);ds="Strong"}else if(f>=.5){gr=4+Math.min(pt,1.5);ds="Split"}else if(f>0){gr=2+Math.min(pt,1.5);ds="Rough"}else{gr=1;ds="Rekt"}
+  return {gr:gr,ds:ds}}
+function nm(t){var l=E.coLabel(t),m=/^(.*?)\s*\(([^)]+)\)\s*$/.exec(l);return m?{n:m[1],t:m[2]}:{n:l,t:""}}
+function ep(r){var w=E.winners(r),g=grade(r),c=nm(r.ticker);
+  return '<a class="h8-ep2 h8-sl'+(g.gr===10?' h8-sl10':'')+'" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(E.coLabel(r.ticker))+', '+E.pct(r.a)+', grade '+g.gr+' '+g.ds+', '+(w.length?w.map(function(m){return E.NAME[m]}).join(" and ")+" won":"nobody won")+'. Open its graded card.">'+
+  '<span class="h8-sll" aria-hidden="true"><span class="h8-sly">2026 <i class="s">$</i><i class="e">E</i><i class="z">Z</i> Season 1</span><span class="h8-sln">#'+r.n+'</span>'+
+    '<span class="h8-slco">'+esc(c.n)+(c.t?' <small>('+esc(c.t)+')</small>':'')+'</span><span class="h8-slg"><small>'+g.ds+'</small><b>'+g.gr+'</b></span>'+
+    '<span class="h8-slm h8-num '+(r.a>0?"h8-pos":"h8-neg")+'">'+E.pct(r.a)+'</span></span>'+
+  '<span class="h8-scr" aria-hidden="true"><img src="'+tile(r)+'" alt="" loading="lazy" decoding="async"></span>'+
+  '<span class="h8-slw'+(w.length?'':' h8-no')+'" aria-hidden="true"><small>Winner</small><span class="h8-slwn">'+(w.length?w.map(function(m){return E.NAME[m]}).join(" &amp; ")+'<span class="h8-slb">'+w.map(function(m){return U.badge(m,18)}).join("")+'</span>':'Nobody')+'</span></span></a>'}
+/* the three highlights (owner's picks, 2026-11-04): nobody won (UPS), the closest race (TSMC), the crypto pick (Strategy) */
+function hlTag(r){var w=E.winners(r);if(!w.length)return "All four wrong";if((r.ticker||"")==="MSTR")return "The Bitcoin stock";
+  var m=(r.calls||[]).filter(function(x){return (x[1].indexOf("DOWN")<0)===(r.a>0)}).map(function(x){return +x[2]}).sort(function(a,b){return a-b});
+  return m.length>1?"Won by "+(m[1]-m[0]).toFixed(2)+"%":"Closest race"}
+var HL=[51,30,76].map(function(n){return R.filter(function(r){return r.n===n})[0]}).filter(Boolean);
+var HLH=HL.length?'<div class="h8-hl3"><p class="h8-hl3h">Highlights</p><div class="h8-hl3r">'+HL.map(function(r){return '<div class="h8-hl3i"><span class="h8-hl3t">'+hlTag(r)+'</span>'+ep(r)+'</div>'}).join('')+'</div></div>':'';
 var rev=R.slice().reverse();
 h+='<div class="h8-bump h8-flip" aria-hidden="true"><p class="h8-bt"><small>The record</small><span data-h8let="4" data-h8amp=".7">Every round so far</span></p></div>';
-h+='<section class="h8-rec h8-g" aria-label="The record: every round so far"><div class="h8-wrap"><h2 class="h8-sr">The record: every round so far</h2><p class="h8-lede">Newest first. Tap one to open its graded card.</p>'+
+h+='<section class="h8-rec h8-g" aria-label="The record: every round so far"><div class="h8-wrap"><h2 class="h8-sr">The record: every round so far</h2>'+HLH+'<p class="h8-lede">Every round, newest first. Tap one to open its graded card.</p>'+
   '<p class="h8-key"><b>Won</b> = the trade closest to the move, among those that got the direction right. Both on a tie. <b>Nobody</b> when all four were wrong.</p>'+
   '<div class="h8-guide" id="h8guide">'+rev.slice(0,shown).map(ep).join("")+'</div>'+(nR>shown?'<div class="h8-more"><button class="h8-btn" id="h8more" type="button">Show all '+nR+' rounds</button></div>':'')+'</div></section>';
 
@@ -172,8 +186,17 @@ root.addEventListener("click",function(e){var a=e.target.closest&&e.target.close
    and x2plus.js TAPBIG puts the page back when the stepped view closes; reading it as a close had reset the address to "#/" and flashed the page */
 new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.removedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm"&&back&&H.classList.contains("x2p-rmkeep")){back=null;return}if(x.nodeType===1&&x.id==="x2pRm"&&back){var b=back;W.__x2pRmBack=null;
   setTimeout(function(){if(d.getElementById("x2pRm"))return;back=null;var put=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",b.h);scrollTo({top:b.el&&b.el.isConnected?b.el.getBoundingClientRect().top+scrollY-b.top:b.y,behavior:"instant"})}; /* back to the tile itself: the page above it can grow while the card is open */put();setTimeout(put,120);setTimeout(put,450)},40)}})})}).observe(d.body,{childList:true});
+/* the slabs' company name and winner step down until they fit their line (long names, small phones); measured in one pass, then set */
+function slFit(){var L=root.querySelectorAll(".h8-sl .h8-slco,.h8-sl .h8-slwn");if(!L.length||!L[0].clientWidth)return;
+  [].forEach.call(L,function(e){e.style.fontSize=""});
+  var over=[].filter.call(L,function(e){return e.scrollWidth>e.clientWidth+.5});
+  over.forEach(function(e){var w=e.classList.contains("h8-slwn"),k=parseFloat(getComputedStyle(e).fontSize)/parseFloat(getComputedStyle(e.closest(".h8-sl")).fontSize),mn=w?.66:.72,i=0;
+    while(e.scrollWidth>e.clientWidth+.5&&k>mn&&i<24){k-=.04;e.style.fontSize=k.toFixed(2)+"em";i++}})}
+var slW=0;function slGo(){var w=root.clientWidth;if(!w||w===slW)return;slW=w;slFit()}
+requestAnimationFrame(function(){requestAnimationFrame(slGo)});if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){slW=0;slGo()});
+W.addEventListener("resize",function(){clearTimeout(slGo.t);slGo.t=setTimeout(slGo,150)});W.addEventListener("hashchange",function(){setTimeout(function(){slW=0;slGo()},300)});
 var more=d.getElementById("h8more");
-if(more)more.addEventListener("click",function(){var g=d.getElementById("h8guide");g.insertAdjacentHTML("beforeend",rev.slice(shown).map(ep).join(""));this.parentNode.remove()});
+if(more)more.addEventListener("click",function(){var g=d.getElementById("h8guide");g.insertAdjacentHTML("beforeend",rev.slice(shown).map(ep).join(""));this.parentNode.remove();slW=0;slGo()});
 
 /* the two charts on their painted surfaces */
 function draw(){var a=d.getElementById("h8sc1"),b=d.getElementById("h8sc2");if(!a.clientWidth)return;var side=innerWidth>=1000,BX=U.BOX;
