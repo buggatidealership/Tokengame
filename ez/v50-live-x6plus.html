@@ -10461,6 +10461,10 @@ html.h48 .h8r .h8-chart text{font-family:"H8 Lilita",sans-serif;letter-spacing:.
 html.h48 .h8r .h8-chempty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;font-family:"H8 Lilita",sans-serif;font-size:17px;line-height:1.3}
 @media (min-width:1000px){html.h48 .h8r .h8-scene{margin:0;border:3px solid var(--h8ink);border-radius:6px}}
 
+/* (launch day, device QA) at 380 to 399px (iPhone 12 to 16 at 390/393) the X icon wrapped onto a row of its own and the sticky header
+   grew from 110 to 156px: a tighter gap keeps the logo, the In play pill and X on one row there */
+@media (min-width:380px) and (max-width:399px){html.h48 header.top .top-in{column-gap:6px!important}}
+
 /* ===== H48 OVERVIEW (EZ Live X6+ only): this week's episode, in the order the owner asked for (2026-11-03): what we do, who to follow,
    its next trades and where to follow them, then the proof (we track, you read; one real round; the record; the cast; smart or lucky),
    then our own stake (the cliffhanger), then next time. Ported from tools/concepts/worlds/cartoon/saturday/overview.html. ===== */
@@ -10548,7 +10552,7 @@ html.h48 #h48ov .h8-payoff b{color:#fff3c0}
 html.h48 #h48ov .h8-rec{--g:#1d4a3a;padding:20px 0 26px}
 html.h48 #h48ov .h8-key{font-size:14px;line-height:1.35;margin:8px 0 14px;color:#d7f0e0}
 html.h48 #h48ov .h8-key b{font-family:"H8 Lilita",sans-serif;font-weight:400;letter-spacing:.04em;color:#fff}
-html.h48 #h48ov .h8-guide{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}
+html.h48 #h48ov .h8-guide{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px}
 html.h48 #h48ov .h8-ep2{display:flex;flex-direction:column;filter:drop-shadow(3px 3px 0 rgba(8,3,0,.55));text-decoration:none;color:inherit;border-radius:16px}
 html.h48 #h48ov .h8-ep2 .h8-scr{position:relative;display:block;border:3px solid var(--h8ink);border-radius:16px/14px;overflow:hidden;aspect-ratio:3/4;background:#111}
 html.h48 #h48ov .h8-ep2 .h8-scr img{width:100%;height:100%;object-fit:cover;display:block}
@@ -10653,7 +10657,7 @@ html.h48 #h48ov .h8-small img{width:28px;height:28px;flex:none}
   html.h48 #h48ov .h8-cast{grid-template-columns:repeat(4,1fr);gap:18px}
   html.h48 #h48ov .h8-cc h3.h8-let{font-size:34px!important}
   html.h48 #h48ov .h8-cc .h8-fig .h8-num{font-size:24px}
-  html.h48 #h48ov .h8-guide{grid-template-columns:repeat(6,1fr);gap:16px 12px}
+  html.h48 #h48ov .h8-guide{grid-template-columns:repeat(6,minmax(0,1fr));gap:16px 12px}
   html.h48 #h48ov .h8-rec{padding:28px 0 34px}
   html.h48 #h48ov .h8-sol2{grid-template-columns:1fr 1fr;gap:28px}
   html.h48 #h48ov .h8-betsec{padding:30px 0 34px}
@@ -10874,7 +10878,9 @@ html.h48 #h48lb .h8-small .h8-plg :is(svg,img){width:28px;height:28px;display:bl
   html.h48 #h48lb .h8-l5 i{width:14px;height:14px;font-size:9.5px}
 }
 
-@media (min-width:1000px){
+/* (launch day, device QA) the two columns from 1200px: from 1000 to 1160 the table's P&L figures ran into the next column and the leader
+   card's +$162,950 out of its card (iPad landscape, 1024 windows); below 1200 the page keeps its one-column layout, clean at every width */
+@media (min-width:1200px){
   html.h48 #h48lb{--h8gut:32px}
   html.h48 #h48lb .h8-spread{grid-template-columns:minmax(0,.84fr) minmax(0,1.16fr)}
   html.h48 #h48lb .h8-spread.h8-even{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
@@ -11476,7 +11482,6 @@ html.h48 #h48ov .h49-grok .h49-nm b{transform:rotate(-1deg)}html.h48 #h48ov .h49
   html.h48 #h48ov .h49-st .h49-grok{--x:83.6;--y:84.8}
   html.h48 #h48ov .h49-st .h49-kimi{--x:90;--y:85.2}
   html.h48 #h48ov .h49-bn{--bx:68.4;--by:83.4;--bw:12cqw}
-}
 }
 
 /* ---------- 4. the entrance: once, in billing order; with reduced motion they simply stand on their marks ---------- */
@@ -12711,6 +12716,12 @@ d.addEventListener("click",function(e){if(e.defaultPrevented||e.metaKey||e.ctrlK
 /* the pill's own address, for a long press or a new tab */
 function pill(){var lc=d.getElementById("liveChip"),m=lc&&/#round-(\d+)/.exec(lc.getAttribute("href")||"");if(m)lc.setAttribute("href","#/round/"+m[1])}
 if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",function(){pill();setTimeout(pill,1500)});else pill();
+/* (device QA) on a short phone screen (iPhone Safari 390x664, SE 375x548) the round view's arrows, fixed at the foot, covered the
+   bottom of the card: once the card is laid out, it is zoomed down until it clears them by 8px (phones only, never below .7) */
+function clear(){var o=d.getElementById("x2pRm");if(!o||innerWidth>=760)return;var z=o.querySelector(".x2p-rmz"),rc=o.querySelector(".x2p-rmc"),n=o.querySelector(".x2p-rmn");if(!z||!rc||!n)return;
+  var a=rc.getBoundingClientRect(),t=n.getBoundingClientRect().top-8;if(a.bottom<=t||!a.height)return;var k=parseFloat(z.style.zoom||getComputedStyle(z).zoom)||1,f=Math.max(.5,(t-a.top)/a.height),k2=Math.max(.7,k*f);
+  if(k2>=k)return;z.style.zoom=k2;if(rc.style.width)rc.style.width=Math.round(parseFloat(rc.style.width)*k2/k)+"px"}
+new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm"){requestAnimationFrame(function(){requestAnimationFrame(clear)});[500,1200,2500].forEach(function(t){setTimeout(clear,t)});var rc=x.querySelector(".x2p-rmc");if(rc&&W.ResizeObserver){var ro=new ResizeObserver(function(){if(!x.isConnected){ro.disconnect();return}clear()});ro.observe(rc)}}})})}).observe(d.body,{childList:true});
 /* Back to a tab while a round is open closes the round (the router closes it over the Overview, not over Upcoming) */
 W.addEventListener("hashchange",function(){if(isRound()||!d.getElementById("x2pRm"))return;var x=d.querySelector("#x2pRm .x2p-rmx");if(x)x.click();else d.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))});
 /* closing: the round view (#x2pRm) leaves the page; once it is gone for good, the address is the tab under it again */
@@ -18609,7 +18620,7 @@ W.__m36={layout,measure:()=>{const fr=four.getBoundingClientRect(),b=e=>{const r
 
 
 }</script>
-<script id="x2p-more-js">if(!document.documentElement.classList.contains("h48")){
+<script id="x2p-more-js">
 /* X2+ OVERVIEW, round H24 (2026-11-02, the lead's picks; X2+ only): ground G1 (the board, gold edge fingers between beats), rounds D (the ledger grows),
    proof T1 (the scope) + C1 (the close), and the bet ported from X3+ (bet2x). Media: media/gr4-g1-board-p.jpg media/gr4-g1-board-l.jpg media/gr4-s1-fingers.jpg
    media/rounds-h24-ledger.jpg media/rounds-h24-wafer.jpg media/rounds-h24-die.jpg media/p5-scope.jpg media/p5-sockets.jpg media/p5-panel.jpg media/bet-chip-h2.jpg
@@ -19476,8 +19487,7 @@ D.fonts&&D.fonts.ready.then(()=>setTimeout(()=>{mo.disconnect();try{ones(D.body)
 })();
 
 /* round thumbnails, written out for make_site.py: media/tile-r1-f1.jpg media/tile-r1-t2.jpg media/tile-r10-f1.jpg media/tile-r10-t2.jpg media/tile-r11-f1.jpg media/tile-r11-t2.jpg media/tile-r12-f1.jpg media/tile-r12-t2.jpg media/tile-r13-f1.jpg media/tile-r13-t2.jpg media/tile-r14-f1.jpg media/tile-r14-t2.jpg media/tile-r15-f1.jpg media/tile-r15-t2.jpg media/tile-r16-f1.jpg media/tile-r16-t2.jpg media/tile-r17-f1.jpg media/tile-r17-t2.jpg media/tile-r18-f1.jpg media/tile-r18-t2.jpg media/tile-r19-f1.jpg media/tile-r19-t2.jpg media/tile-r2-f1.jpg media/tile-r2-t2.jpg media/tile-r20-f1.jpg media/tile-r20-t2.jpg media/tile-r21-f1.jpg media/tile-r21-t2.jpg media/tile-r22-f1.jpg media/tile-r22-t2.jpg media/tile-r23-f1.jpg media/tile-r23-t2.jpg media/tile-r24-f1.jpg media/tile-r24-t2.jpg media/tile-r25-f1.jpg media/tile-r25-t2.jpg media/tile-r26-f1.jpg media/tile-r26-t2.jpg media/tile-r27-f1.jpg media/tile-r27-t2.jpg media/tile-r28-f1.jpg media/tile-r28-t2.jpg media/tile-r29-f1.jpg media/tile-r29-t2.jpg media/tile-r3-f1.jpg media/tile-r3-t2.jpg media/tile-r30-f1.jpg media/tile-r30-t2.jpg media/tile-r31-f1.jpg media/tile-r31-t2.jpg media/tile-r32-f1.jpg media/tile-r32-t2.jpg media/tile-r33-f1.jpg media/tile-r33-t2.jpg media/tile-r34-f1.jpg media/tile-r34-t2.jpg media/tile-r35-f1.jpg media/tile-r35-t2.jpg media/tile-r36-f1.jpg media/tile-r36-t2.jpg media/tile-r37-f1.jpg media/tile-r37-t2.jpg media/tile-r38-f2.jpg media/tile-r38-t2.jpg media/tile-r39-f1.jpg media/tile-r39-t2.jpg media/tile-r4-f1.jpg media/tile-r4-t2.jpg media/tile-r40-f1.jpg media/tile-r40-t2.jpg media/tile-r41-f1.jpg media/tile-r41-t2.jpg media/tile-r42-f1.jpg media/tile-r42-t2.jpg media/tile-r43-f1.jpg media/tile-r43-t2.jpg media/tile-r44-f1.jpg media/tile-r44-t2.jpg media/tile-r45-f1.jpg media/tile-r45-t2.jpg media/tile-r46-f1.jpg media/tile-r46-t2.jpg media/tile-r47-f1.jpg media/tile-r47-t2.jpg media/tile-r48-f1.jpg media/tile-r48-t2.jpg media/tile-r49-f1.jpg media/tile-r49-t2.jpg media/tile-r5-f1.jpg media/tile-r5-t2.jpg media/tile-r50-f1.jpg media/tile-r50-t2.jpg media/tile-r51-f1.jpg media/tile-r51-t2.jpg media/tile-r52-f1.jpg media/tile-r52-t2.jpg media/tile-r53-f1.jpg media/tile-r53-t2.jpg media/tile-r54-f1.jpg media/tile-r54-t2.jpg media/tile-r55-f1.jpg media/tile-r55-t2.jpg media/tile-r56-f1.jpg media/tile-r56-t2.jpg media/tile-r57-f1.jpg media/tile-r57-t2.jpg media/tile-r58-f1.jpg media/tile-r58-t2.jpg media/tile-r59-f1.jpg media/tile-r59-t2.jpg media/tile-r6-f1.jpg media/tile-r6-t2.jpg media/tile-r60-f2.jpg media/tile-r60-t2.jpg media/tile-r61-f1.jpg media/tile-r61-t2.jpg media/tile-r62-f1.jpg media/tile-r62-t2.jpg media/tile-r63-f1.jpg media/tile-r63-t2.jpg media/tile-r64-f1.jpg media/tile-r64-t2.jpg media/tile-r65-f1.jpg media/tile-r65-t2.jpg media/tile-r66-f1.jpg media/tile-r66-t2.jpg media/tile-r67-f1.jpg media/tile-r67-t2.jpg media/tile-r68-f1.jpg media/tile-r68-t2.jpg media/tile-r69-f1.jpg media/tile-r69-t2.jpg media/tile-r7-f1.jpg media/tile-r7-t2.jpg media/tile-r70-f1.jpg media/tile-r70-t2.jpg media/tile-r71-f1.jpg media/tile-r71-t2.jpg media/tile-r72-f1.jpg media/tile-r72-t2.jpg media/tile-r73-f1.jpg media/tile-r73-t2.jpg media/tile-r74-f2.jpg media/tile-r74-t2.jpg media/tile-r75-f1.jpg media/tile-r75-t2.jpg media/tile-r76-f1.jpg media/tile-r76-t2.jpg media/tile-r77-f1.jpg media/tile-r77-t2.jpg media/tile-r78-f1.jpg media/tile-r78-t2.jpg media/tile-r79-f1.jpg media/tile-r79-t2.jpg media/tile-r8-f1.jpg media/tile-r8-t2.jpg media/tile-r80-f1.jpg media/tile-r80-t2.jpg media/tile-r81-f1.jpg media/tile-r81-t2.jpg media/tile-r82-f1.jpg media/tile-r82-t2.jpg media/tile-r83-t2.jpg media/tile-r84-t2.jpg media/tile-r9-f1.jpg media/tile-r9-t2.jpg */
-
-}</script>
+</script>
 <script id="x2p-sol-js">if(!document.documentElement.classList.contains("h48")){
 /* ===== H33 SMART OR LUCKY (owner, 2026-11-02: the agreed chart, H29 director's cut over sol9 A4; ported from
    tools/concepts/worlds/comic/story/h/h29/end/end.js + sol9/_a3core.js + h29/director/dir.js, without their mockup scaffolding).

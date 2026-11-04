@@ -592,8 +592,7 @@ try:
     assert _h6.count(_HT)==1 and _h6.count('<title>EZ Live X2+</title>')==1 and _h6.count('</body>')==1
     # (speed, 2026-11-04, launch day: the cover lifted at 22 s on a 4x slower phone) html.wc-pre as on the comic pages: the old
     # record sleeps out of layout until a round is asked for (h48_speed.js wakes it; h48_show.css; the _WCPATCH text patches), and
-    # X2+'s own Meet the models, chips, Smart or lucky, vitrine and Overview (x2p_more: Mag 7, tears, bet) scripts, which X6+ never
-    # shows, do not run (22 s -> about 5 s)
+    # X2+'s own Meet the models, chips, Smart or lucky and vitrine scripts, which X6+ never shows, do not run (22 s -> about 6 s)
     _h6=_h6.replace(_HT,_HT.replace('x2p-cur"','x2p-cur h48 wc-pre"'),1).replace('<title>EZ Live X2+</title>','<title>EZ Live X6+</title>',1)
     _h6=_h6.replace('</head>','<script>window.__x2pNeedWorld=1;window.__x2pLB=1</script>\n'+''.join('<link rel="preload" as="font" type="font/woff2" href="media/h48-%s.woff2" crossorigin>\n'%f for f in ['caprasimo','lilita','fredoka'])+'<style id="h48-css">\n'+_h6css+'\n</style>\n</head>',1)
     # the new Overview is built as soon as the data is in (right after ez-data.js and ez-learn.js), before X2's own scripts run: at the
@@ -631,7 +630,9 @@ try:
                 ('q?"calls in, final grade on "+md(r.resolves).t:"calls due "+md(r.called).t','q?"trades in, final grade on "+md(r.resolves).t:"trades due "+md(r.called).t')]:
         assert _h6.count(a)==1,a
         _h6=_h6.replace(a,b,1)
-    for _sid in ['x2p-chips-js','x2p-meet10-js','x2p-vit-js','x2p-sol-js','x2p-more-js']:
+    # (x2p_more stays on: it sets html classes the header's phone tabs and other shared rules depend on, uf/uf-a/hb-ready/g4...;
+    # gating it cut the Buybacks tab off on phones, found by the launch-day device QA)
+    for _sid in ['x2p-chips-js','x2p-meet10-js','x2p-vit-js','x2p-sol-js']:
         _a='<script id="%s">'%_sid
         assert _h6.count(_a)==1,_sid
         _i=_h6.index(_a)+len(_a);_j=_h6.index('</script>',_i)

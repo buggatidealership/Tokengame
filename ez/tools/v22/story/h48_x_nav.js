@@ -17,6 +17,12 @@ d.addEventListener("click",function(e){if(e.defaultPrevented||e.metaKey||e.ctrlK
 /* the pill's own address, for a long press or a new tab */
 function pill(){var lc=d.getElementById("liveChip"),m=lc&&/#round-(\d+)/.exec(lc.getAttribute("href")||"");if(m)lc.setAttribute("href","#/round/"+m[1])}
 if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",function(){pill();setTimeout(pill,1500)});else pill();
+/* (device QA) on a short phone screen (iPhone Safari 390x664, SE 375x548) the round view's arrows, fixed at the foot, covered the
+   bottom of the card: once the card is laid out, it is zoomed down until it clears them by 8px (phones only, never below .7) */
+function clear(){var o=d.getElementById("x2pRm");if(!o||innerWidth>=760)return;var z=o.querySelector(".x2p-rmz"),rc=o.querySelector(".x2p-rmc"),n=o.querySelector(".x2p-rmn");if(!z||!rc||!n)return;
+  var a=rc.getBoundingClientRect(),t=n.getBoundingClientRect().top-8;if(a.bottom<=t||!a.height)return;var k=parseFloat(z.style.zoom||getComputedStyle(z).zoom)||1,f=Math.max(.5,(t-a.top)/a.height),k2=Math.max(.7,k*f);
+  if(k2>=k)return;z.style.zoom=k2;if(rc.style.width)rc.style.width=Math.round(parseFloat(rc.style.width)*k2/k)+"px"}
+new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm"){requestAnimationFrame(function(){requestAnimationFrame(clear)});[500,1200,2500].forEach(function(t){setTimeout(clear,t)});var rc=x.querySelector(".x2p-rmc");if(rc&&W.ResizeObserver){var ro=new ResizeObserver(function(){if(!x.isConnected){ro.disconnect();return}clear()});ro.observe(rc)}}})})}).observe(d.body,{childList:true});
 /* Back to a tab while a round is open closes the round (the router closes it over the Overview, not over Upcoming) */
 W.addEventListener("hashchange",function(){if(isRound()||!d.getElementById("x2pRm"))return;var x=d.querySelector("#x2pRm .x2p-rmx");if(x)x.click();else d.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))});
 /* closing: the round view (#x2pRm) leaves the page; once it is gone for good, the address is the tab under it again */
