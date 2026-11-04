@@ -176,7 +176,10 @@ var STILLS={};
    put the board on the right, R36's on the left. Films take it too on X2+ (R44 Western Digital's first film, 2026-10-23, had its board on the right and took 90; its replacement of 2026-10-25 is centred and takes none; R43 Bloom Energy's film sits further right, so 100 keeps all of it from 320px; R37 Lam Research's film (2026-10-26) has its market clock at the right edge, 88; R39 Texas Instruments' honky-tonk film its calls at the left, 10). */
 /* company size, only to put the biggest company first on the live strip under the film (owner, 2026-10-28): market caps in $ billions
    read from companiesmarketcap.com on 26 Oct 2026 (top 200 only; a company not listed keeps its sheet order behind them) */
-var CAPS={NVDA:5094,AAPL:5074,MSFT:3894,GOOGL:3880,AMZN:2675,TSMC:2170,SPCX:2003,META:1637,TSLA:1471,"BRK.B":1160,LLY:1135,"005930.KS":1046,
+/* (2026-11-04, launch day, from the QA sweep: the Upcoming tab's "Big names" left out companies added to the sheet after 26 Oct)
+   added from companiesmarketcap.com ranks 101 to 200, read 2026-11-04: McDonald's 186, Novo Nordisk 177, SoftBank 154, Sony 148, Uber 136,
+   CVS 117 (the 200th was 114); the other companies to come are below the top 200 */
+var CAPS={MCD:186,NVO:177,SOFTBANK:154,"6758.T":148,UBER:136,CVS:117,NVDA:5094,AAPL:5074,MSFT:3894,GOOGL:3880,AMZN:2675,TSMC:2170,SPCX:2003,META:1637,TSLA:1471,"BRK.B":1160,LLY:1135,"005930.KS":1046,
   MU:993,JPM:881,AMD:844,XOM:753,"000660.KS":701,JNJ:635,"ASML.AS":606,MA:546,PLTR:473,INTC:460,CVX:457,COST:445,KO:399,ORCL:382,UNH:375,MRK:358,
   BAC:350,HD:319,CAT:316,PM:311,"HSBA.L":310,"SHEL.L":307,AMAT:299,GE:296,LRCX:288,"NOVN.SW":287,MS:281,SAP:275,NFLX:274,"AZN.L":266,TXN:260,
   GS:255,WFC:247,IBM:240,ARM:225,"SIE.DE":223,GEV:217,SHOP:217,AXP:210,C:200,DIS:194,QCOM:188,SNDK:179,NOW:164,BA:149,STX:143,KIOXIA:127,NET:116,SBUX:115};

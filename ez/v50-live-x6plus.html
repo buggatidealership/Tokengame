@@ -10860,6 +10860,12 @@ html.h48 #h48lb .h8-small .h8-plg :is(svg,img){width:28px;height:28px;display:bl
   html.h48 #h48lb .h8-tv{font-size:15px}html.h48 #h48lb :is(.h8-twl,.h8-th2,.h8-tc){font-size:13px}
   html.h48 #h48lb .h8-sx{grid-template-columns:minmax(0,1fr) repeat(4,minmax(40px,1fr))}
   html.h48 #h48lb .h8-sx .h8-ring{width:44px}
+  /* (launch day, QA at 320: "Industrials" ran into Grok's ringed 5/9 and the ring cut Tech's 18/23) the sector names a size down and
+     allowed to break, the figures and rings a size down, so every name stays in its own column */
+  html.h48 #h48lb .h8-sx{grid-template-columns:minmax(0,1.45fr) repeat(4,minmax(34px,1fr));column-gap:1px}
+  html.h48 #h48lb .h8-sx>span:first-child{font-size:12px;line-height:1.15}
+  html.h48 #h48lb .h8-sx>span{font-size:12.5px}
+  html.h48 #h48lb .h8-sx .h8-ring{width:46px;height:22px}
   html.h48 #h48lb .h8-wlr{grid-template-columns:48px minmax(0,1fr) minmax(0,1fr);gap:6px}
   html.h48 #h48lb .h8-face{width:44px;height:44px}
   html.h48 #h48lb .h8-bx .h8-am{font-size:17px}
@@ -11937,7 +11943,7 @@ h+='<section class="h8-flw h8-g" aria-label="'+E.NAME[L]+'&rsquo;s next trades">
   '<h2 class="h8-let h8-h2" data-h8let="10" data-h8amp=".7">'+E.NAME[L]+'&rsquo;s next trades</h2>'+
   (inN?'<div class="h8-nxs'+(inN===1?' h8-solo':'')+'">'+NU.filter(function(u){return u.in}).map(function(u){return U.nextCard(u,L,ord)}).join("")+'</div>':'<p class="h8-lede">No trades in yet for the next close. They drop before each company&rsquo;s earnings.</p>')+
   (wl.length?'<p class="h8-lbl h8-nxl">Next with a market on <span class="h8-hlw">Hyperliquid</span></p><div class="h8-nxs h8-wts">'+wl.map(function(u){return U.nextCard(u,L,ord)}).join("")+'</div>':'')+
-  '<p class="h8-fine">'+rest+' more companies on the schedule, NVIDIA last. '+restNo+' of the '+(NU.length-inN)+' still to come have no Hyperliquid market. Markets: <span class="h8-asof">'+E.hlAsOf()+'</span>.</p></div></section>';
+  '<p class="h8-fine">'+rest+' more companies on the schedule, NVIDIA last. Markets: <span class="h8-asof">'+E.hlAsOf()+'</span>.</p></div></section>';
 
 /* ---------- 4. the proof: we track, you read ---------- */
 h+='<div class="h8-bump" aria-hidden="true"><p class="h8-bt"><small>The proof</small><span data-h8let="2" data-h8amp=".7">We track. You read.</span></p></div>';
@@ -12686,6 +12692,33 @@ function watch(el,f){if(el&&!el.__lgxw&&"MutationObserver" in W){el.__lgxw=1;new
 W.__h49lg={mark:mark,sym:sym,geo:geo,scan:scan,BOX:BOX,SYM:SYM};
 })();
 
+/* round H50 "nav" (launch day, 2026-11-04, from the pre-launch QA sweep): the address follows the round view.
+   (1) A round link (a record tile, an Upcoming row, a next-trade card) used to open the round in place without touching the address
+       (routes.js: preventDefault, openRound), so Back left the site while a card was open. On X6+ the link now sets #/round/N: the
+       router opens the round over the tab as a shared link does, and Back closes it. The round view's own arrows already did this.
+   (2) The "In play" pill linked to #round-N and jumped X2+'s record carousel, which X6+ never shows: it now opens round N.
+   (3) Closing a round (the cross, Escape, a tap outside) left #/round/N in the address, so a reload opened the card again: the address
+       goes back to the tab under the card (the Overview, Upcoming or the Leaderboard), with no new history entry. */
+(function(){var W=window,d=document,H=d.documentElement;if(!H.classList.contains("h48"))return;
+function isRound(){return /^#\/round\//.test(location.hash)}
+d.addEventListener("click",function(e){if(e.defaultPrevented||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;var t=e.target;if(!t||!t.closest)return;
+  var lc=t.closest("#liveChip");
+  if(lc){var m=/#round-(\d+)/.exec(lc.getAttribute("href")||"")||/#\/round\/(\d+)/.exec(lc.getAttribute("href")||"");if(!m)return;
+    e.preventDefault();e.stopPropagation();location.hash="#/round/"+m[1];return}
+  var a=t.closest('a[href^="#/round/"]');if(!a||a.closest("#x2pRm"))return;
+  var h=a.getAttribute("href");if(location.hash===h)return;
+  e.preventDefault();location.hash=h},true);
+/* the pill's own address, for a long press or a new tab */
+function pill(){var lc=d.getElementById("liveChip"),m=lc&&/#round-(\d+)/.exec(lc.getAttribute("href")||"");if(m)lc.setAttribute("href","#/round/"+m[1])}
+if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",function(){pill();setTimeout(pill,1500)});else pill();
+/* Back to a tab while a round is open closes the round (the router closes it over the Overview, not over Upcoming) */
+W.addEventListener("hashchange",function(){if(isRound()||!d.getElementById("x2pRm"))return;var x=d.querySelector("#x2pRm .x2p-rmx");if(x)x.click();else d.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))});
+/* closing: the round view (#x2pRm) leaves the page; once it is gone for good, the address is the tab under it again */
+new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.removedNodes,function(x){if(x.nodeType!==1||x.id!=="x2pRm")return;
+  setTimeout(function(){if(d.getElementById("x2pRm")||!isRound())return;var s=H.getAttribute("data-sec");
+    history.replaceState(history.state,"",s==="upcoming"?"#/upcoming":s==="leaderboard"?"#/leaderboard":"#/")},500)})})}).observe(d.body,{childList:true});
+})();
+
 /* ===== H49 slab (EZ Live X6+ only, html.h48): a round opened big (#x2pRm) falls into the Saturday-morning show. CSS
    (h48_x_slab.css) repaints the case, the label, the card, the back and the chrome; this file only puts the show's own cels where
    X2+ had its icons: the model's cel badge (H48UI.badge) beside the winner's name and in each nameplate's well, the cel pennant
@@ -13005,8 +13038,8 @@ function sealedCard(u,i){
   return '<article class="card seal" data-i="'+i+'" data-n="'+u.n+'" data-k="s" role="group" aria-roledescription="card" aria-label="'+plain(u)+'. Sealed. Calls '+fmtDate(u.called)+'."><div class="cin">'+
     '<div class="face front"><div class="fin">'+topBar(u,false,true)+
     '<div class="art sealart"><span class="mark" aria-hidden="true"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span><span class="sl">Sealed</span></div>'+
-    '<div class="cwin"><small>Calls</small><span class="wv"><span class="wn">'+fmtDate(u.called)+'</span></span></div>'+
-    '<p class="cnote"><span>No calls yet.'+(u.resolves?' <b>The market answers <span class="nw">'+fmtDate(u.resolves)+'.</span></b>':'')+'</span>'+(tm?'<span>'+tm+'.</span>':'')+'</p></div></div></div></article>';
+    '<div class="cwin"><small>Trades</small><span class="wv"><span class="wn">'+fmtDate(u.called)+'</span></span></div>'+
+    '<p class="cnote"><span>No trades yet.'+(u.resolves?' <b>The market answers <span class="nw">'+fmtDate(u.resolves)+'.</span></b>':'')+'</span>'+(tm?'<span>'+tm+'.</span>':'')+'</p></div></div></div></article>';
 }
 
 /* flip behaviour for any graded .card */
@@ -15237,7 +15270,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
        average miss 1.5% or less and under half the move (else 9.5); Pristine = a 10 under 1% */
     var E=g?ezGrade(g):null,gr=E?E.gr:0,ds=E?E.ds:"",why=E?E.why:"",pr=E?E.pr:false;
     var h='<div class="zlab"><div class="zl"><span class="y">'+d.y+' <span class="s">$</span><span class="e">E</span><span class="z">Z</span> Season 1</span><span class="nm"><b>'+esc2(r.co)+'</b>'+(r.ticker?' <small>('+esc2(r.ticker)+')</small>':'')+'</span><span class="zb"><i></i>'+String(n).padStart(8,"0")+'<span class="holo"><i class="s">$</i><i class="e">E</i><i class="z">Z</i></span></span></div>'+
-      '<div class="zr"><span class="no">#'+n+'</span>'+(g?'<span class="ds">'+ds+'</span><span class="gr">'+gr+'</span>':(q?(r.resolves?'<span class="ds">Final grade on</span><span class="gr">'+md(r.resolves).t.toUpperCase()+'</span>':'<span class="ds">Final grade</span><span class="gr">SOON</span>'):'<span class="ds">Calls due</span><span class="gr">'+md(r.called).t.toUpperCase()+'</span>'))+'</div>'+
+      '<div class="zr"><span class="no">#'+n+'</span>'+(g?'<span class="ds">'+ds+'</span><span class="gr">'+gr+'</span>':(q?(r.resolves?'<span class="ds">Final grade on</span><span class="gr">'+md(r.resolves).t.toUpperCase()+'</span>':'<span class="ds">Final grade</span><span class="gr">SOON</span>'):'<span class="ds">Trades due</span><span class="gr">'+md(r.called).t.toUpperCase()+'</span>'))+'</div>'+
       '</div>';
     fs.forEach(function(f){var o=document.createElement("div");o.className="fx"+(gr===10?" perfect":"")+(pr?" pristine":"");o.setAttribute("aria-hidden","true");o.innerHTML=h;f.appendChild(o);
       /* the back says why, in one line, where the barcode sits on the front */
@@ -15246,7 +15279,7 @@ window.__x2pPnl=function(){if(window.__x2pPnlA)return window.__x2pPnlA;var A={};
         zb.innerHTML="<b>"+E.hit+" of "+E.nc+" right</b>"+(E.hit?" <small>\u00b7 "+E.av.toFixed(2)+"% off<em> on avg</em></small>":"")}
       /* (owner, 2026-10-21) a 10 gets the rolling foil on both faces (owner: it should not vanish when the card flips): rainbow bands that roll across without end; a sibling of .fx so it lights the film too */
       if(gr===10){var fl=document.createElement("i");fl.className="x2p-foil";fl.setAttribute("aria-hidden","true");fl.appendChild(document.createElement("i"));f.appendChild(fl);if(FRO)FRO.observe(f);else foilFit(f)}});if(!fresh){late.push.apply(late,fs);return}if(window.__x2pNmFit)window.__x2pNmFit();
-    var lab=(g?ds+" "+gr+" of 10, "+why.replace(" \u00b7",",").replace("off on avg","off on average"):q?"calls in, final grade on "+md(r.resolves).t:"calls due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")});
+    var lab=(g?ds+" "+gr+" of 10, "+why.replace(" \u00b7",",").replace("off on avg","off on average"):q?"trades in, final grade on "+md(r.resolves).t:"trades due "+md(r.called).t);c.setAttribute("aria-label",(c.getAttribute("aria-label")||"")+". Grade: "+lab+".")});
     if(late.length&&window.__x2pNmFitIn)window.__x2pNmFitIn(late)};
   /* (owner, 2026-10-21, later) the foil stays light over the film: the mask needs the film's top and bottom inside the face */
   /* (speed, 2026-10-23) every face is measured first and written after, so the page is laid out once, not once per face; the faces are
@@ -17289,7 +17322,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
    return '<a href="#/round/'+u.n+'"><b>'+esc(u.co)+'</b> <b class="'+(u.a<0?"dn":"up")+'">'+pct(u.a)+"</b> "+(w.length?esc(w.join(" & "))+(w.length>1?" tie":" wins"):"nobody")+"</a>"}).join(" · ")+"</span>");
   var lock=PENDING.filter(function(u){return u.calls&&u.calls.some(function(c){return c.dir})});
   if(lock.length)it.push('<span class="x2p-cw-i"><span class="x2p-cw-k">Locked, graded '+(K(lock[0].resolves)!=="9999"?wd(K(lock[0].resolves)):"soon")+"</span>"+lock.map(function(u){return '<a href="#/round/'+u.n+'"><b>'+esc(u.ticker)+"</b></a>"}).join(" ")+"</span>");
-  var nk=UPCOMING.map(function(u){return K(u.called)}).sort()[0];if(nk){var nx=UPCOMING.filter(function(u){return K(u.called)===nk});
+  var nk0=nyNow().k,nk=UPCOMING.map(function(u){return K(u.called)}).filter(function(k){return k>=nk0}).sort()[0];/* (2026-11-04) not a day already gone (R104 Berkshire, due Nov 2, never came in) */if(nk){var nx=UPCOMING.filter(function(u){return K(u.called)===nk});
    it.push('<span class="x2p-cw-i"><span class="x2p-cw-k">Trades due '+wd(nk)+"</span>"+nx.length+" · "+nx.slice(0,8).map(function(u){return esc(u.co)}).join(" · ")+(nx.length>8?" · more":"")+"</span>")}
   var q=nyNow(),open=q.h<16,day=new Date().getDay(),bell=(day>0&&day<6&&open)?(16*60-(q.h*60+q.m)):null;
   var bt=bell!=null?'<span>Next bell</span><b>'+(bell>=60?Math.floor(bell/60)+"h "+("0"+bell%60).slice(-2)+"m":bell+"m")+"</b>":'<span>Next bell</span><b>4:00 PM ET</b>';

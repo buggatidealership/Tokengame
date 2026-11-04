@@ -50,7 +50,7 @@ h+='<section class="h8-flw h8-g" aria-label="'+E.NAME[L]+'&rsquo;s next trades">
   '<h2 class="h8-let h8-h2" data-h8let="10" data-h8amp=".7">'+E.NAME[L]+'&rsquo;s next trades</h2>'+
   (inN?'<div class="h8-nxs'+(inN===1?' h8-solo':'')+'">'+NU.filter(function(u){return u.in}).map(function(u){return U.nextCard(u,L,ord)}).join("")+'</div>':'<p class="h8-lede">No trades in yet for the next close. They drop before each company&rsquo;s earnings.</p>')+
   (wl.length?'<p class="h8-lbl h8-nxl">Next with a market on <span class="h8-hlw">Hyperliquid</span></p><div class="h8-nxs h8-wts">'+wl.map(function(u){return U.nextCard(u,L,ord)}).join("")+'</div>':'')+
-  '<p class="h8-fine">'+rest+' more companies on the schedule, NVIDIA last. '+restNo+' of the '+(NU.length-inN)+' still to come have no Hyperliquid market. Markets: <span class="h8-asof">'+E.hlAsOf()+'</span>.</p></div></section>';
+  '<p class="h8-fine">'+rest+' more companies on the schedule, NVIDIA last. Markets: <span class="h8-asof">'+E.hlAsOf()+'</span>.</p></div></section>';
 
 /* ---------- 4. the proof: we track, you read ---------- */
 h+='<div class="h8-bump" aria-hidden="true"><p class="h8-bt"><small>The proof</small><span data-h8let="2" data-h8amp=".7">We track. You read.</span></p></div>';

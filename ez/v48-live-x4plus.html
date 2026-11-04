@@ -12926,7 +12926,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
    return '<a href="#/round/'+u.n+'"><b>'+esc(u.co)+'</b> <b class="'+(u.a<0?"dn":"up")+'">'+pct(u.a)+"</b> "+(w.length?esc(w.join(" & "))+(w.length>1?" tie":" wins"):"nobody")+"</a>"}).join(" · ")+"</span>");
   var lock=PENDING.filter(function(u){return u.calls&&u.calls.some(function(c){return c.dir})});
   if(lock.length)it.push('<span class="x2p-cw-i"><span class="x2p-cw-k">Locked, graded '+(K(lock[0].resolves)!=="9999"?wd(K(lock[0].resolves)):"soon")+"</span>"+lock.map(function(u){return '<a href="#/round/'+u.n+'"><b>'+esc(u.ticker)+"</b></a>"}).join(" ")+"</span>");
-  var nk=UPCOMING.map(function(u){return K(u.called)}).sort()[0];if(nk){var nx=UPCOMING.filter(function(u){return K(u.called)===nk});
+  var nk0=nyNow().k,nk=UPCOMING.map(function(u){return K(u.called)}).filter(function(k){return k>=nk0}).sort()[0];/* (2026-11-04) not a day already gone (R104 Berkshire, due Nov 2, never came in) */if(nk){var nx=UPCOMING.filter(function(u){return K(u.called)===nk});
    it.push('<span class="x2p-cw-i"><span class="x2p-cw-k">Calls due '+wd(nk)+"</span>"+nx.length+" · "+nx.slice(0,8).map(function(u){return esc(u.co)}).join(" · ")+(nx.length>8?" · more":"")+"</span>")}
   var q=nyNow(),open=q.h<16,day=new Date().getDay(),bell=(day>0&&day<6&&open)?(16*60-(q.h*60+q.m)):null;
   var bt=bell!=null?'<span>Next bell</span><b>'+(bell>=60?Math.floor(bell/60)+"h "+("0"+bell%60).slice(-2)+"m":bell+"m")+"</b>":'<span>Next bell</span><b>4:00 PM ET</b>';

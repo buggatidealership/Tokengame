@@ -624,6 +624,13 @@ try:
         _h6=_h6.replace(_m.group(0),open(_S+'h50_load.html').read().strip(),1)
         _h6=_h6.replace('</head>','<style id="h50-load">\n'+open(_S+'h50_load.css').read()+'\n</style>\n</head>',1)
         _h6=_h6.replace('<head>','<head>\n'+open(_S+'h50_load.head').read().strip(),1)
+    # (launch day, QA) the round view of a round still to come said "Calls due", "Calls" and "No calls yet": X6+ says trades
+    for a,b in [('<span class="ds">Calls due</span>','<span class="ds">Trades due</span>'),
+                ('<div class="cwin"><small>Calls</small>','<div class="cwin"><small>Trades</small>'),
+                ('<p class="cnote"><span>No calls yet.','<p class="cnote"><span>No trades yet.'),
+                ('q?"calls in, final grade on "+md(r.resolves).t:"calls due "+md(r.called).t','q?"trades in, final grade on "+md(r.resolves).t:"trades due "+md(r.called).t')]:
+        assert _h6.count(a)==1,a
+        _h6=_h6.replace(a,b,1)
     for _sid in ['x2p-chips-js','x2p-meet10-js','x2p-vit-js','x2p-sol-js','x2p-more-js']:
         _a='<script id="%s">'%_sid
         assert _h6.count(_a)==1,_sid
