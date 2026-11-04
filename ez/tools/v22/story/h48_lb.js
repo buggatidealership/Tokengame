@@ -120,13 +120,18 @@ function build(root){
      return '<div class="h8-sx" role="row"><span role="rowheader">'+esc(s)+'</span>'+v.map(function(q,i){var b=!all&&bm>=0&&rt[i]===bm;return '<span role="cell"'+(b?' aria-label="'+q.w+' of '+q.n+', the best in this row"':'')+'>'+(q.n?q.w+'/'+q.n:'–')+(b?U.ring():'')+'</span>'}).join('')+'</div>'}).join('')+'</div></section>';
 
   /* ---------- 4. the big score, the big ouch ---------- */
-  var bx=function(t,k){return '<div class="h8-bx h8-pl '+(k==='w'?'h8-bw':'h8-bl')+'"><span class="h8-k">'+(k==='w'?'Biggest W':'Biggest L')+'</span><span class="h8-bco">'+U.co(t.r.ticker,22)+esc(E.coLabel(t.r.ticker))+'</span>'+
-    '<span class="h8-am h8-num '+(t.v>=0?'h8-pos':'h8-neg')+'">'+E.money(t.v)+'</span><span class="h8-rr">Round '+t.r.n+' · moved '+E.pct(t.r.a)+'</span></div>'};
+  /* owner, 2026-11-04: each card says the AI's own trade and the day, and the round's film plays beside it (the films back in the spotlight) */
+  var bx=function(t,k,q){var c=q?X.tr(t.r,q):null,F=(W.FILMS||{})[t.r.n],tl='media/tile-r'+t.r.n+'-'+(F?(F.t||'f1'):'t2')+'.jpg';
+    return '<div class="h8-bx h8-pl '+(k==='w'?'h8-bw':'h8-bl')+'"><div class="h8-bxt"><span class="h8-k">'+(k==='w'?'Biggest W':'Biggest L')+'</span><span class="h8-bco">'+U.co(t.r.ticker,22)+esc(E.coLabel(t.r.ticker))+'</span>'+
+    '<span class="h8-am h8-num '+(t.v>=0?'h8-pos':'h8-neg')+'">'+E.money(t.v)+'</span>'+
+    (c?'<span class="h8-rcall"><b class="'+(c.up?'h8-pos':'h8-neg')+'">'+(c.up?'Long':'Short')+' '+esc(c.size)+'%</b>'+(t.r.resolves?' · '+md(dOf(t.r.resolves)):'')+'</span>':'')+
+    '<span class="h8-rr">Round '+t.r.n+' · moved '+E.pct(t.r.a)+'</span></div>'+
+    '<a class="h8-bxv" href="#/round/'+t.r.n+'" aria-label="Open round '+t.r.n+', '+esc(E.coLabel(t.r.ticker))+'">'+(F?'<video muted loop playsinline preload="none" poster="'+tl+'" aria-hidden="true"><source src="media/'+F.f+'.mp4" type="video/mp4"></video>':'<img src="'+tl+'" alt="" loading="lazy" decoding="async">')+'</a></div>'};
   var sh=X.shared,gag='';
   if(sh&&sh.ms.length>=2){var r0=X.RS.filter(function(r){return r.n===sh.n})[0],oth=MK.filter(function(q){return sh.ms.indexOf(q)<0&&P[q].best&&P[q].best.r.n===sh.n});
     gag='<p class="h8-gag h8-pl"><b>Same stock, same day.</b> '+esc(E.coLabel(r0.ticker))+', round '+sh.n+', is the biggest L for '+sh.ms.map(function(q){return NM[q]}).join(', ').replace(/, ([^,]*)$/,' and $1')+' ('+E.money(X.tr(r0,sh.ms[0]).v)+' each)'+(oth.length?', and the biggest W for '+oth.map(function(q){return NM[q]}).join(' and ')+' ('+E.money(X.tr(r0,oth[0]).v)+').':'.')+'</p>'}
   h+='<section class="h8-page h8-p4 h8-g" aria-labelledby="h8lbh4"><p class="h8-act">Biggest W and L · season</p><h2 class="h8-let" id="h8lbh4" data-h8let="75" data-h8amp=".7">The big score, the big ouch</h2>'+
-   '<div class="h8-wl">'+so.map(function(q){return '<div class="h8-wlr"><span class="h8-who2"><span class="h8-face"><img src="'+U.CAST[q]+'" alt="" loading="lazy" decoding="async"></span><span class="h8-fn">'+NM[q]+'</span></span>'+bx(P[q].best,'w')+bx(P[q].worst,'l')+'</div>'}).join('')+'</div>'+gag+
+   '<div class="h8-wl">'+so.map(function(q){return '<div class="h8-wlr"><span class="h8-who2"><span class="h8-face"><img src="'+U.CAST[q]+'" alt="" loading="lazy" decoding="async"></span><span class="h8-fn">'+NM[q]+'</span></span>'+bx(P[q].best,'w',q)+bx(P[q].worst,'l',q)+'</div>'}).join('')+'</div>'+gag+
    '<p class="h8-small"><span class="h8-plg" aria-hidden="true">'+'<img src="media/ez-mark.svg" alt="" width="28" height="28">'+'</span><span>Simulated record, $100K a trade, before fees. Not financial advice. Trading can lose money; the pool can be wiped out. Hyperliquid is not available in every country. Markets: <span class="h8-asof">'+esc(E.hlAsOf())+'</span>.</span></p></section></div>';
   root.innerHTML=h;U.letterAll(root);
   root.querySelectorAll('.h8-sw').forEach(function(b){b.addEventListener('click',function(){if(st[b.dataset.g]===b.dataset.k)return;st[b.dataset.g]=b.dataset.k;var y=b.getBoundingClientRect().top;build(root);
@@ -139,6 +144,10 @@ function build(root){
    filters right above the table, the table's columns follow Rank by, the chart beside it on desktop); B = the same top over today's full
    table; C = A with the filters pinned while the board is on screen. ---------- */
 function lbV(){if(W.__h48LbV)return String(W.__h48LbV).toUpperCase();var q=/[?&]lb=([abcABC0])/.exec(location.search);return q?(q[1]==='0'?'':q[1].toUpperCase()):'A'}/* (launch day, owner: "the leaderboard... shouldn't have the who to follow") take A is the default; ?lb=0 the old scorecard */
+function wlVids(root){var vs=root.querySelectorAll('.h8-bxv video');if(!vs.length||!W.IntersectionObserver)return;
+  var still=W.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,sd=navigator.connection&&navigator.connection.saveData;if(still||sd)return;
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting){var p=v.play();if(p&&p.catch)p.catch(function(){})}else v.pause()})},{threshold:.6});
+  [].forEach.call(vs,function(v){io.observe(v)})}
 function buildV(root,V){
   var E=X.E,D=X.D,U=H48UI,NM=E.NAME,MK=X.MK,P=X.per;
   var Wn=X.WIN[st.win],w=X.win[st.win],ord=X.rank(st.win,st.rank),hit=st.rank==='hit',wcap=st.win==='season'?'season':Wn.w;
@@ -146,6 +155,13 @@ function buildV(root,V){
   var opt=function(g,k,t){return '<button type="button" class="h8-sw" data-g="'+g+'" data-k="'+k+'" aria-pressed="'+(st[g]===k)+'">'+t+'</button>'};
   var mon=function(v,n){return n?'<span class="h8-num '+(v>=0?'h8-pos':'h8-neg')+'">'+E.money(v)+'</span>':'<span class="h8-num h8-dash">–</span>'};
   var l5=function(q){var a=P[q].last5;return '<span class="h8-l5" role="img" aria-label="Last 5, oldest to newest: '+esc(a.map(function(t){return (t.w?'W':'L')+' on '+E.coName(t.r.ticker)}).join(', '))+'">'+a.map(function(t,i){return '<i class="'+(t.w?'h8-mw':'h8-ml')+(i===a.length-1?' h8-new':'')+'">'+(t.w?'W':'L')+'</i>'}).join('')+'</span>'};
+  /* owner, 2026-11-04 ("is there anything we can fill it with that is interesting data... compute out of the sheet"): the streak now, the
+     side it leans to and the trades within 1% of the move, all from the sheet */
+  var xs=function(q){var tt=[];Wn.rs.forEach(function(r){var x=X.tr(r,q);if(x)tt.push({r:r,x:x})});var n=tt.length,sh=tt.filter(function(t){return !t.x.up}).length,
+      w1=tt.filter(function(t){return t.x.w&&Math.abs((t.x.up?1:-1)*parseFloat(t.x.size)-t.r.a)<=1}).length,sq=P[q].seq,lt=sq[sq.length-1],k=0,i;
+    for(i=sq.length-1;i>=0&&lt&&sq[i].w===lt.w;i--)k++;
+    var cell=function(v,l,c){return '<span class="h8-xs"><b class="h8-num'+(c?' '+c:'')+'">'+v+'</b><small>'+l+'</small></span>'};
+    return cell(lt?(lt.w?'W':'L')+k:'–','streak',lt?(lt.w?'h8-pos':'h8-neg'):'')+cell(n?Math.round(Math.max(sh,n-sh)/n*100)+'%':'–',n?(sh>=n-sh?'short':'long'):'bias')+cell(n?w1:'–','within 1%')};
   var lr=X.lastR,h='';
   h+='<section class="h8-page h8-p2 h8-g h8-lbv h8-v'+V+'" aria-labelledby="h8lbh1"><h1 class="h8-let h8-lbtt" id="h8lbh1" data-h8let="71" data-h8amp=".7">Leaderboard</h1>'+
    '<p class="h8-lbcap h8-pl h8-t"><b>Season 1</b><span> · '+X.N+' rounds graded · $100K on every trade</span></p>'+
@@ -163,10 +179,10 @@ function buildV(root,V){
      '<p class="h8-cap2">'+esc(lcS)+' close = the '+X.lcRs.length+' round'+(X.lcRs.length===1?'':'s')+' graded at the '+esc(wdmd(X.lcDay))+' close. Hit rate from 5 trades.</p>'}
   else{
     h+='<div class="h8-vt" role="table" aria-label="Standings, ranked by '+(hit?'hit rate':'P&amp;L')+', '+esc(Wn.t)+'"><div class="h8-vh" role="row"><span class="h8-vp" role="columnheader">#</span><span class="h8-vm" role="columnheader">Model</span>'+
-     '<span class="h8-vl" role="columnheader">Last 5</span><span class="h8-vs" role="columnheader">'+(hit?'W-L · '+esc(wcap):'Last round')+'</span><span class="h8-vv" role="columnheader">'+(hit?'Hit rate · ':'P&amp;L · ')+esc(wcap)+'</span></div>'+
+     '<span class="h8-vx" role="columnheader">Form · '+esc(wcap)+'</span><span class="h8-vl" role="columnheader">Last 5</span><span class="h8-vs" role="columnheader">'+(hit?'W-L · '+esc(wcap):'Last round')+'</span><span class="h8-vv" role="columnheader">'+(hit?'Hit rate · ':'P&amp;L · ')+esc(wcap)+'</span></div>'+
      ord.map(function(q,k){var y=w[q],t=lr?X.tr(lr,q):null;
        return '<div class="h8-trw h8-pl h8-vr'+(k===0?' h8-gold':'')+'" role="row"><span class="h8-vp" role="cell">'+(k+1)+'</span><span class="h8-vm" role="cell">'+U.badge(q,24)+'<b>'+NM[q]+'</b>'+U.flag(q,20)+'</span>'+
-        '<span class="h8-vl" role="cell">'+l5(q)+'</span>'+
+        '<span class="h8-vx" role="cell">'+xs(q)+'</span><span class="h8-vl" role="cell">'+l5(q)+'</span>'+
         '<span class="h8-vs" role="cell">'+(hit?'<span class="h8-num'+(y.n?'':' h8-dash')+'">'+(y.n?y.W+'-'+y.L:'–')+'</span>':mon(t?t.v:0,!!t))+'</span>'+
         '<span class="h8-vv" role="cell">'+(hit?'<span class="h8-num'+(y.hit==null?' h8-dash':'')+'">'+pc1(y.hit)+'</span>':mon(y.pnl,y.n))+'</span></div>'}).join('')+'</div>'+
      '<p class="h8-cap2">'+(hit?'W-L and hit rate in this window. Hit rate from 5 trades.':(lr?'Last round = '+esc(E.coLabel(lr.ticker))+', round '+lr.n+', graded at the '+esc(wdmd(dOf(lr.resolves)))+' close.':''))+'</p>'}
@@ -179,7 +195,7 @@ function buildV(root,V){
   h+='</div></div></section>';
   var keep=d.createElement('div');build.__noV=1;try{build0(keep)}finally{build.__noV=0}
   var tail=keep.querySelectorAll(':scope>.h8-spread')[1];
-  root.innerHTML=h;U.letterAll(root);if(tail)root.appendChild(tail);
+  root.innerHTML=h;U.letterAll(root);if(tail)root.appendChild(tail);wlVids(root);
   root.querySelectorAll('.h8-sw').forEach(function(b){b.addEventListener('click',function(){if(st[b.dataset.g]===b.dataset.k)return;st[b.dataset.g]=b.dataset.k;var y=b.getBoundingClientRect().top;build(root);
     var nb=root.querySelector('.h8-sw[data-g="'+b.dataset.g+'"][data-k="'+b.dataset.k+'"]');if(nb){scrollBy(0,nb.getBoundingClientRect().top-y);nb.focus({preventScroll:true})}})});
   if(V==='C'){var hd=d.querySelector('header.top');root.style.setProperty('--h8hdr',(hd&&getComputedStyle(hd).position==='sticky'?hd.offsetHeight:0)+'px')}
