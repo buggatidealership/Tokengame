@@ -167,9 +167,11 @@ if(tv){var near=function(){if(tv.preload!=="none")return;tv.preload="metadata";t
 
 /* the record: a tile opens the round's graded card (the page's own round view); closing it puts the page back where it was */
 var back=null;
-root.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a.h8-ep2");if(!a)return;back={y:scrollY,h:location.hash&&!/^#\/round\//.test(location.hash)?location.hash:"#/"}},true);
-new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.removedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm"&&back){var b=back;
-  setTimeout(function(){if(d.getElementById("x2pRm"))return;back=null;var put=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",b.h);scrollTo({top:b.y,behavior:"instant"})};put();setTimeout(put,120);setTimeout(put,450)},40)}})})}).observe(d.body,{childList:true});
+root.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a.h8-ep2");if(!a)return;back={y:scrollY,h:location.hash&&!/^#\/round\//.test(location.hash)?location.hash:"#/",sec:H.getAttribute("data-sec"),el:a,top:a.getBoundingClientRect().top};W.__x2pRmBack=back},true);
+/* (owner, 2026-11-04) stepping to the next or previous card takes the round view down for a moment (html.x2p-rmkeep): that is not a close,
+   and x2plus.js TAPBIG puts the page back when the stepped view closes; reading it as a close had reset the address to "#/" and flashed the page */
+new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.removedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm"&&back&&H.classList.contains("x2p-rmkeep")){back=null;return}if(x.nodeType===1&&x.id==="x2pRm"&&back){var b=back;W.__x2pRmBack=null;
+  setTimeout(function(){if(d.getElementById("x2pRm"))return;back=null;var put=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",b.h);scrollTo({top:b.el&&b.el.isConnected?b.el.getBoundingClientRect().top+scrollY-b.top:b.y,behavior:"instant"})}; /* back to the tile itself: the page above it can grow while the card is open */put();setTimeout(put,120);setTimeout(put,450)},40)}})})}).observe(d.body,{childList:true});
 var more=d.getElementById("h8more");
 if(more)more.addEventListener("click",function(){var g=d.getElementById("h8guide");g.insertAdjacentHTML("beforeend",rev.slice(shown).map(ep).join(""));this.parentNode.remove()});
 

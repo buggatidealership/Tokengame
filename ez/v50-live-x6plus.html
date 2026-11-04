@@ -10471,6 +10471,10 @@ html.h48 .h8r .h8-chempty{position:absolute;inset:0;display:grid;place-items:cen
 html.h48 svg circle[r="198.2"]{display:none!important}
 html.h48 svg:has(>circle[r="198.2"]){overflow:visible}
 html.h48 svg:has(>circle[r="198.2"])>path,html.h48 #x2pLoad g:has(>circle[r="198.2"])>path,html.h48 :is(.x2p-cw-lg,.mark.x2p-lg,.vb-lg,.ldA-plg)>svg>path{stroke:#24140c;stroke-width:22;stroke-linejoin:round;paint-order:stroke}
+/* (owner, 2026-11-04) stepping between cards in the round view: while the old view is down and the new one not yet up, the view's own
+   backdrop stays, so the page behind no longer flashes through */
+html.h48.x2p-rmkeep body:not(:has(>#x2pRm))::after{content:"";position:fixed;inset:0;z-index:319;pointer-events:none;
+  background:radial-gradient(110% 70% at 20% 0%,rgba(255,226,170,.16),rgba(255,226,170,0) 60%),url(media/h48-paper.jpg) center/560px auto,rgb(30,17,9)}
 
 /* ===== H48 OVERVIEW (EZ Live X6+ only): this week's episode, in the order the owner asked for (2026-11-03): what we do, who to follow,
    its next trades and where to follow them, then the proof (we track, you read; one real round; the record; the cast; smart or lucky),
@@ -12276,9 +12280,11 @@ if(tv){var near=function(){if(tv.preload!=="none")return;tv.preload="metadata";t
 
 /* the record: a tile opens the round's graded card (the page's own round view); closing it puts the page back where it was */
 var back=null;
-root.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a.h8-ep2");if(!a)return;back={y:scrollY,h:location.hash&&!/^#\/round\//.test(location.hash)?location.hash:"#/"}},true);
-new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.removedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm"&&back){var b=back;
-  setTimeout(function(){if(d.getElementById("x2pRm"))return;back=null;var put=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",b.h);scrollTo({top:b.y,behavior:"instant"})};put();setTimeout(put,120);setTimeout(put,450)},40)}})})}).observe(d.body,{childList:true});
+root.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a.h8-ep2");if(!a)return;back={y:scrollY,h:location.hash&&!/^#\/round\//.test(location.hash)?location.hash:"#/",sec:H.getAttribute("data-sec"),el:a,top:a.getBoundingClientRect().top};W.__x2pRmBack=back},true);
+/* (owner, 2026-11-04) stepping to the next or previous card takes the round view down for a moment (html.x2p-rmkeep): that is not a close,
+   and x2plus.js TAPBIG puts the page back when the stepped view closes; reading it as a close had reset the address to "#/" and flashed the page */
+new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.removedNodes,function(x){if(x.nodeType===1&&x.id==="x2pRm"&&back&&H.classList.contains("x2p-rmkeep")){back=null;return}if(x.nodeType===1&&x.id==="x2pRm"&&back){var b=back;W.__x2pRmBack=null;
+  setTimeout(function(){if(d.getElementById("x2pRm"))return;back=null;var put=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",b.h);scrollTo({top:b.el&&b.el.isConnected?b.el.getBoundingClientRect().top+scrollY-b.top:b.y,behavior:"instant"})}; /* back to the tile itself: the page above it can grow while the card is open */put();setTimeout(put,120);setTimeout(put,450)},40)}})})}).observe(d.body,{childList:true});
 var more=d.getElementById("h8more");
 if(more)more.addEventListener("click",function(){var g=d.getElementById("h8guide");g.insertAdjacentHTML("beforeend",rev.slice(shown).map(ep).join(""));this.parentNode.remove()});
 
@@ -12952,6 +12958,7 @@ d.addEventListener("click",function(e){if(e.defaultPrevented||e.metaKey||e.ctrlK
     e.preventDefault();e.stopPropagation();location.hash="#/round/"+m[1];return}
   var a=t.closest('a[href^="#/round/"]');if(!a||a.closest("#x2pRm"))return;
   var h=a.getAttribute("href");if(location.hash===h)return;
+  if(!W.__x2pRmBack){var sc=H.getAttribute("data-sec");W.__x2pRmBack={y:scrollY,h:/^#\/round\//.test(location.hash)||!location.hash?(sc==="upcoming"?"#/upcoming":sc==="leaderboard"?"#/leaderboard":"#/"):location.hash,sec:sc,el:a,top:a.getBoundingClientRect().top}}
   e.preventDefault();location.hash=h},true);
 /* the pill's own address, for a long press or a new tab */
 function pill(){var lc=d.getElementById("liveChip"),m=lc&&/#round-(\d+)/.exec(lc.getAttribute("href")||"");if(m)lc.setAttribute("href","#/round/"+m[1])}
@@ -17741,7 +17748,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
    a swipe down or the close button puts it back. "See the stats" still turns the card in place. */
 (function(){try{if(window.__x2pHoldTap)return;var d=document,H=d.documentElement,still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,from=null,slide=0,ret=null;
  function order(){return [].slice.call(d.querySelectorAll("#record .car>.card[data-n]")).map(function(c){return c.getAttribute("data-n")})}
- function go(n,src,dir){if(!ret)ret={y:scrollY,h:/^#\/round\//.test(location.hash)?"#/":(location.hash||"#/"),sec:H.getAttribute("data-sec")};from=src?src.getBoundingClientRect():null;slide=dir||0;location.hash="#/round/"+n}
+ function go(n,src,dir){if(!ret){var rb=window.__x2pRmBack;window.__x2pRmBack=null;ret=rb?{y:rb.y,h:rb.h,sec:rb.sec,el:rb.el,top:rb.top}:{y:scrollY,h:/^#\/round\//.test(location.hash)?"#/":(location.hash||"#/"),sec:H.getAttribute("data-sec")}} /* X6+ (2026-11-04): a round opened from a tile or row tells where the page was (__x2pRmBack), so a close after stepping returns there, not to the top */from=src?src.getBoundingClientRect():null;slide=dir||0;location.hash="#/round/"+n}
  d.addEventListener("click",function(e){if(H.classList.contains("x2p-wall"))return;var c=e.target.closest&&e.target.closest("#record .car>.card.cur[data-n]");
   if(!c||e.target.closest(".snd,a,button,[data-flip]"))return;e.preventDefault();e.stopPropagation();go(c.getAttribute("data-n"),c,0)},true);
  function step(dir){var o=order(),cur=d.querySelector("#x2pRm .card[data-n]");if(!cur)return;var i=o.indexOf(cur.getAttribute("data-n")),j=i+dir;if(i<0||j<0||j>=o.length)return;hold();go(o[j],null,dir)}
@@ -17775,7 +17782,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
        address back without telling the router, so the Overview stayed hidden under "#/" (2026-10-29): re-route once */
     var back=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",r.h);
      if(r.sec&&H.getAttribute("data-sec")!==r.sec&&!r.rr){r.rr=1;dispatchEvent(new HashChangeEvent("hashchange"))}
-     scrollTo({top:r.y,behavior:"instant"});H.classList.remove("x2p-rmkeep")};back();setTimeout(back,80);setTimeout(back,400)},60)})})}).observe(d.body,{childList:true});
+     scrollTo({top:r.el&&r.el.isConnected?r.el.getBoundingClientRect().top+scrollY-r.top:r.y,behavior:"instant"});H.classList.remove("x2p-rmkeep")};back();setTimeout(back,80);setTimeout(back,400)},60)})})}).observe(d.body,{childList:true});
 }catch(e){window.__x2pTapErr=e}})();
 
 /* TIES (owner, 2026-10-29: "Claude and Grok should be on the same line"): a tied round's winners on one line in the Winner box, the

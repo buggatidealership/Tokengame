@@ -15365,7 +15365,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
    a swipe down or the close button puts it back. "See the stats" still turns the card in place. */
 (function(){try{if(window.__x2pHoldTap)return;var d=document,H=d.documentElement,still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,from=null,slide=0,ret=null;
  function order(){return [].slice.call(d.querySelectorAll("#record .car>.card[data-n]")).map(function(c){return c.getAttribute("data-n")})}
- function go(n,src,dir){if(!ret)ret={y:scrollY,h:/^#\/round\//.test(location.hash)?"#/":(location.hash||"#/"),sec:H.getAttribute("data-sec")};from=src?src.getBoundingClientRect():null;slide=dir||0;location.hash="#/round/"+n}
+ function go(n,src,dir){if(!ret){var rb=window.__x2pRmBack;window.__x2pRmBack=null;ret=rb?{y:rb.y,h:rb.h,sec:rb.sec,el:rb.el,top:rb.top}:{y:scrollY,h:/^#\/round\//.test(location.hash)?"#/":(location.hash||"#/"),sec:H.getAttribute("data-sec")}} /* X6+ (2026-11-04): a round opened from a tile or row tells where the page was (__x2pRmBack), so a close after stepping returns there, not to the top */from=src?src.getBoundingClientRect():null;slide=dir||0;location.hash="#/round/"+n}
  d.addEventListener("click",function(e){if(H.classList.contains("x2p-wall"))return;var c=e.target.closest&&e.target.closest("#record .car>.card.cur[data-n]");
   if(!c||e.target.closest(".snd,a,button,[data-flip]"))return;e.preventDefault();e.stopPropagation();go(c.getAttribute("data-n"),c,0)},true);
  function step(dir){var o=order(),cur=d.querySelector("#x2pRm .card[data-n]");if(!cur)return;var i=o.indexOf(cur.getAttribute("data-n")),j=i+dir;if(i<0||j<0||j>=o.length)return;hold();go(o[j],null,dir)}
@@ -15399,7 +15399,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
        address back without telling the router, so the Overview stayed hidden under "#/" (2026-10-29): re-route once */
     var back=function(){if(/^#\/round\//.test(location.hash))history.replaceState(null,"",r.h);
      if(r.sec&&H.getAttribute("data-sec")!==r.sec&&!r.rr){r.rr=1;dispatchEvent(new HashChangeEvent("hashchange"))}
-     scrollTo({top:r.y,behavior:"instant"});H.classList.remove("x2p-rmkeep")};back();setTimeout(back,80);setTimeout(back,400)},60)})})}).observe(d.body,{childList:true});
+     scrollTo({top:r.el&&r.el.isConnected?r.el.getBoundingClientRect().top+scrollY-r.top:r.y,behavior:"instant"});H.classList.remove("x2p-rmkeep")};back();setTimeout(back,80);setTimeout(back,400)},60)})})}).observe(d.body,{childList:true});
 }catch(e){window.__x2pTapErr=e}})();
 
 /* TIES (owner, 2026-10-29: "Claude and Grok should be on the same line"): a tied round's winners on one line in the Winner box, the

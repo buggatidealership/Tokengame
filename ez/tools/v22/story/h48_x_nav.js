@@ -20,6 +20,7 @@ d.addEventListener("click",function(e){if(e.defaultPrevented||e.metaKey||e.ctrlK
     e.preventDefault();e.stopPropagation();location.hash="#/round/"+m[1];return}
   var a=t.closest('a[href^="#/round/"]');if(!a||a.closest("#x2pRm"))return;
   var h=a.getAttribute("href");if(location.hash===h)return;
+  if(!W.__x2pRmBack){var sc=H.getAttribute("data-sec");W.__x2pRmBack={y:scrollY,h:/^#\/round\//.test(location.hash)||!location.hash?(sc==="upcoming"?"#/upcoming":sc==="leaderboard"?"#/leaderboard":"#/"):location.hash,sec:sc,el:a,top:a.getBoundingClientRect().top}}
   e.preventDefault();location.hash=h},true);
 /* the pill's own address, for a long press or a new tab */
 function pill(){var lc=d.getElementById("liveChip"),m=lc&&/#round-(\d+)/.exec(lc.getAttribute("href")||"");if(m)lc.setAttribute("href","#/round/"+m[1])}
