@@ -85,9 +85,9 @@ function tile(r){var F2=(W.FILMS||{})[r.n];return 'media/tile-r'+r.n+'-'+(F2?(F2
 function ep(r){var w=E.winners(r);
   return '<a class="h8-ep2" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(E.coLabel(r.ticker))+', '+E.pct(r.a)+', '+(w.length?w.map(function(m){return E.NAME[m]}).join(" and ")+" won":"nobody won")+'. Open its graded card.">'+
   '<span class="h8-scr"><img src="'+tile(r)+'" alt="" loading="lazy" decoding="async"></span>'+
-  '<span class="h8-cap h8-pl h8-t"><span class="h8-r1"><span class="h8-rn">Round '+r.n+'</span><span class="h8-mv h8-num '+(r.a>0?"h8-pos":"h8-neg")+'">'+E.pct(r.a)+'</span></span>'+
-  '<span class="h8-cn">'+esc(E.coLabel(r.ticker))+'</span>'+
-  '<span class="h8-wn'+(w.length?"":" h8-no")+'">'+(w.length?w.map(function(m){return U.badge(m,20)}).join("")+w.map(function(m){return E.NAME[m]}).join(" &amp; ")+" won":"Nobody won")+'</span></span></a>'}
+  /* owner, 2026-11-04: the winner up top and bigger, the move smaller beside the company, one row fewer */
+  '<span class="h8-cap h8-pl h8-t"><span class="h8-r1"><span class="h8-wn'+(w.length?"":" h8-no")+'">'+(w.length?w.map(function(m){return U.badge(m,22)}).join("")+w.map(function(m){return E.NAME[m]}).join(" &amp; ")+" won":"Nobody won")+'</span><span class="h8-rn">R'+r.n+'</span></span>'+
+  '<span class="h8-r2"><span class="h8-cn">'+esc(E.coLabel(r.ticker))+'</span><span class="h8-mv h8-num '+(r.a>0?"h8-pos":"h8-neg")+'">'+E.pct(r.a)+'</span></span></span></a>'}
 var rev=R.slice().reverse();
 h+='<div class="h8-bump h8-flip" aria-hidden="true"><p class="h8-bt"><small>The record</small><span data-h8let="4" data-h8amp=".7">Every round so far</span></p></div>';
 h+='<section class="h8-rec h8-g" aria-label="The record: every round so far"><div class="h8-wrap"><h2 class="h8-sr">The record: every round so far</h2><p class="h8-lede">Newest first. Tap one to open its graded card.</p>'+
@@ -99,15 +99,20 @@ h+='<div class="h8-bump" aria-hidden="true"><p class="h8-bt"><small>Starring</sm
 h+='<section class="h8-castsec h8-g" aria-label="Meet the cast"><div class="h8-wrap"><h2 class="h8-sr">Meet the cast</h2><div class="h8-cast">'+ord.map(function(m,i){var s=D.season[m],sh=s.short,
    bias=sh*2>s.n?"Short on "+sh+" of "+s.n+" trades.":"Long on "+(s.n-sh)+" of "+s.n+" trades.";
    return '<article class="h8-cc" style="--mc:'+E.COL[m]+';--mc2:'+mc2[m]+'"><div class="h8-pic"><img src="'+U.CAST[m]+'" alt="'+E.NAME[m]+', drawn as a cartoon of its lab&rsquo;s founder" loading="lazy" decoding="async"></div>'+
-   '<div class="h8-card h8-pl"><div><span class="h8-rk">No. '+(i+1)+(s.first>1?' · joined in Round '+s.first:'')+'</span><div class="h8-nmr"><h3 class="h8-let" data-h8let="'+(20+i)+'" data-h8amp=".7">'+E.NAME[m]+'</h3>'+U.flag(m,30)+'</div></div>'+
+   '<div class="h8-card h8-pl"><div><span class="h8-rk">No. '+(i+1)+(s.first>1?' · joined in Round '+s.first:'')+'</span><div class="h8-nmr"><span class="h8-nml">'+U.badge(m,30)+'<h3 class="h8-let" data-h8let="'+(20+i)+'" data-h8amp=".7">'+E.NAME[m]+'</h3></span>'+U.flag(m,30)+'</div></div>'+
    '<div class="h8-fig"><div><span class="h8-lbl">Season P&amp;L</span><span class="h8-num '+(s.pl>=0?"h8-pos":"h8-neg")+'">'+E.money(s.pl)+'</span></div><div><span class="h8-lbl">W-L</span><span class="h8-num">'+s.w+'-'+s.l+'</span></div></div>'+
-   '<p class="h8-trait">'+bias+'</p></div></article>'}).join("")+'</div></div></section>';
+   '<p class="h8-trait">'+bias+'</p></div></article>'}).join("")+
+   /* No. 5 (owner, 2026-11-04: "there should be a card for number 5"): the models in tryouts, not signed yet */
+   '<article class="h8-cc h8-n5"><div class="h8-card h8-pl"><div class="h8-n5h"><span class="h8-rk">No. 5 · not signed yet</span><h3 class="h8-let h8-cr" data-h8let="24" data-h8amp=".6">In tryouts</h3></div>'+
+   '<ul class="h8-n5l">'+U.TRY.map(function(c){return '<li>'+U.tryBadge(c,30)+'<span class="h8-n5n"><b>'+esc(c.n)+'</b><small>'+esc(c.lab)+'</small></span>'+U.flag(c.cc,24)+'</li>'}).join("")+'</ul>'+
+   '<p class="h8-trait">One of them joins the cast in Season 2.</p></div></article>'+
+   '</div></div></section>';
 
 /* ---------- 8. smart or lucky ---------- */
 h+='<div class="h8-bump h8-flip" aria-hidden="true"><p class="h8-bt"><small>The question</small><span data-h8let="5" data-h8amp=".7">Smart or lucky?</span></p></div>';
 h+='<section class="h8-solsec h8-g" aria-label="Smart or lucky?"><div class="h8-wrap"><h2 class="h8-sr">Smart or lucky?</h2><p class="h8-lede"><b>'+nR+' rounds, '+nT+' trades.</b> Too few to say it is skill either way. Here is how it looks so far.</p>'+
   '<div class="h8-sol2"><div class="h8-bd"><h3 class="h8-let" data-h8let="31" data-h8amp=".6">Hit rate</h3><p class="h8-q">How often were they right on their long or short?</p><figure class="h8-scene h8-sc" id="h8sc1"><div class="h8-sf" id="h8sf1"></div></figure></div>'+
-  '<div class="h8-bd"><h3 class="h8-let" data-h8let="33" data-h8amp=".6">P&amp;L</h3><p class="h8-q">Would following them have made you money? $100K a trade.</p><figure class="h8-scene h8-ch" id="h8sc2"><div class="h8-sf" id="h8sf2"></div></figure></div></div></div></section>';
+  '<div class="h8-bd"><h3 class="h8-let" data-h8let="33" data-h8amp=".6">P&amp;L</h3><p class="h8-q">Would following them have made you money? $100K a trade.</p><figure class="h8-scene h8-sc" id="h8sc2"><div class="h8-sf" id="h8sf2"></div></figure></div></div></div></section>';
 
 /* ---------- 9. the cliffhanger: our own stake ---------- */
 var B=D.BET,P=Math.round(((W.SIM&&SIM.poolShare)!=null?SIM.poolShare:.69)*100),nyD=function(t,o){return new Date(t).toLocaleDateString("en-US",Object.assign({timeZone:"America/New_York"},o))};
@@ -171,11 +176,10 @@ if(more)more.addEventListener("click",function(){var g=d.getElementById("h8guide
 /* the two charts on their painted surfaces */
 function draw(){var a=d.getElementById("h8sc1"),b=d.getElementById("h8sc2");if(!a.clientWidth)return;var side=innerWidth>=1000,BX=U.BOX;
   /* side by side, both boards the same height: the screen gives up width to match the chalkboard */
-  var fc=.96,fs2=side?fc*(BX.ch.h*BX.ch.ar/BX.ch.w)/(BX.sc.h*BX.sc.ar/BX.sc.w):.92;
-  U.fit(a,d.getElementById("h8sf1"),BX.sc,fs2);U.fit(b,d.getElementById("h8sf2"),BX.ch,fc);
+  U.fit(a,d.getElementById("h8sf1"),BX.sc,.92);U.fit(b,d.getElementById("h8sf2"),BX.sc,.92);
   var eh={},ep={};E.MK.forEach(function(m){var s=D.season[m];eh[m]=s.n?(s.hit*100).toFixed(1)+"%":"–";ep[m]=E.kmoney(s.pl)});
   U.chart(d.getElementById("h8sf1"),"sc",{rs:R,ends:eh,anim:true,aria:"Hit rate round by round, every line starting at 50 percent"});
-  U.chart(d.getElementById("h8sf2"),"ch",{rs:R,ends:ep,anim:true,aria:"P&L round by round from $0, $100K a trade"})}
+  U.chart(d.getElementById("h8sf2"),"sc",{rs:R,ends:ep,anim:true,money:true,aria:"P&L round by round from $0, $100K a trade"})}
 var lw=0;function onR(){if(innerWidth!==lw){lw=innerWidth;draw()}}
 addEventListener("resize",onR);
 

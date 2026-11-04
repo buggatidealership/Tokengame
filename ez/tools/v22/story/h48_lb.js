@@ -103,7 +103,7 @@ function build(root){
      '<span class="h8-tc h8-num '+(X.lc[q].n?(X.lc[q].pnl>=0?'h8-pos':'h8-neg'):'h8-dash')+'" role="cell">'+(X.lc[q].n?E.money(X.lc[q].pnl):'–')+'</span></div></div>'}).join('')+'</div>'+
    '<p class="h8-cap2">'+esc(lcS)+' close = the '+X.lcRs.length+' round'+(X.lcRs.length===1?'':'s')+' graded at the '+esc(wdmd(X.lcDay))+' close. Hit rate from 5 trades.</p>'+
    '<div class="h8-chw"><h3 class="h8-let" data-h8let="73" data-h8amp=".6">'+(st.rank==='hit'?'Hit rate':'P&amp;L')+' · '+esc(Wn.t)+'</h3><p class="h8-sub2">'+(st.rank==='hit'?'Right on their long or short, round by round. Every line starts at 50%.':'$100K a trade, round by round, from $0.')+'</p>'+
-   '<figure class="h8-scene '+(st.rank==='hit'?'h8-sc':'h8-ch')+'" id="h8lbsc"><div class="h8-sf" id="h8lbsf"></div></figure></div>';
+   '<figure class="h8-scene h8-sc" id="h8lbsc"><div class="h8-sf" id="h8lbsf"></div></figure></div>';
   var hord=MK.slice().sort(function(a,b){return X.hp[b].pnl-X.hp[a].pnl});
   h+='<div class="h8-hlt h8-pl"><h3>Only companies Hyperliquid lists today</h3><div class="h8-hg"><span class="h8-lbl">Model · season</span><span class="h8-lbl h8-r">W-L</span><span class="h8-lbl h8-r">P&amp;L</span>'+
    hord.map(function(q){var y=X.hp[q];return '<span>'+U.badge(q,20)+NM[q]+'</span><span class="h8-r h8-num">'+y.W+'-'+y.L+'</span><span class="h8-r h8-num '+(y.pnl>=0?'h8-pos':'h8-neg')+'">'+E.money(y.pnl)+'</span>'}).join('')+'</div>'+
@@ -140,8 +140,8 @@ function balance(root){var desk=W.matchMedia('(min-width:1000px)').matches,sct=r
   var d2=used(p4)-used(p3),rs=root.querySelectorAll('.h8-sx:not(.h8-sh)').length;if(sct&&d2>2&&rs)sct.style.setProperty('--h8sxp',(9+d2/rs/2).toFixed(2)+'px')}
 var XH=0;
 function chart(root,anim){var sc=root.querySelector('#h8lbsc'),sf=root.querySelector('#h8lbsf');if(!sc||!sc.clientWidth)return;var U=H48UI,E=X.E,Wn=X.WIN[st.win],hit=st.rank==='hit';
-  U.fit(sc,sf,hit?U.BOX.sc:U.BOX.ch,hit?.92:.96,XH);var ends={};E.MK.forEach(function(m){var y=X.win[st.win][m];ends[m]=y.n?(hit?(y.hit==null?(y.W+' of '+y.n):(y.hit*100).toFixed(1)+'%'):E.kmoney(y.pnl)):'–'});
-  U.chart(sf,hit?'sc':'ch',{rs:Wn.rs,ends:ends,anim:anim,key:'lb-'+st.win+st.rank,empty:Wn.when,aria:(hit?'Hit rate':'P&L')+' round by round, '+Wn.t})}
+  U.fit(sc,sf,U.BOX.sc,.92,XH);var ends={};E.MK.forEach(function(m){var y=X.win[st.win][m];ends[m]=y.n?(hit?(y.hit==null?(y.W+' of '+y.n):(y.hit*100).toFixed(1)+'%'):E.kmoney(y.pnl)):'–'});
+  U.chart(sf,'sc',{money:!hit,rs:Wn.rs,ends:ends,anim:anim,key:'lb-'+st.win+st.rank,empty:Wn.when,aria:(hit?'Hit rate':'P&L')+' round by round, '+Wn.t})}
 
 /* ---------- mount: every time the router draws the tab ---------- */
 var timer=0;

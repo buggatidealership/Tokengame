@@ -27,7 +27,9 @@ function upOne(el){if(el.classList.contains("h8-lgx"))return;var im=el.querySele
   var h=mark(t,m?+m[1]:34);if(h)el.outerHTML=h}
 /* Every round so far: the tile's caption plate prints the company's logo above its name (the round's ticker, from its own link) */
 var RT=null;function roundTicker(n){if(!RT){RT={};(W.ROUNDS||[]).forEach(function(r){RT[r.n]=r.ticker})}return RT[n]}
-function upTile(a){var c=a.querySelector(".h8-cap");if(!c||c.querySelector(".h8-lgx"))return;var m=/#\/round\/(\d+)/.exec(a.getAttribute("href")||"");if(!m)return;
+/* (lead, 2026-11-04) no logo on the Every round so far tiles: the owner asked for a shorter caption (winner, then company and move),
+   and the tile's painting already shows the company */
+function upTile(a){return;var c=a.querySelector(".h8-cap");if(!c||c.querySelector(".h8-lgx"))return;var m=/#\/round\/(\d+)/.exec(a.getAttribute("href")||"");if(!m)return;
   var t=roundTicker(+m[1]),h=t&&mark(t,30,"h8-lgt",5.4);if(!h)return;var cn=c.querySelector(".h8-cn");if(cn)cn.insertAdjacentHTML("beforebegin",h)}
 function scan(r){if(!r||!r.querySelectorAll)return;
   if(r.matches&&r.matches(".h8r .h8-co:not(.h8-lgx)"))upOne(r);
