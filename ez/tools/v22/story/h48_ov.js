@@ -97,7 +97,7 @@ function ep(r){var w=E.winners(r),g=grade(r),c=nm(r.ticker),no=("0000000"+r.n).s
     '<span class="h8-slco">'+esc(c.n)+(c.t?' <small>('+esc(c.t)+')</small>':'')+'</span><span class="h8-slgr"><small>'+g.ds+'</small><b>'+g.gr+'</b></span>'+
     '<span class="h8-slbc"><i class="h8-bar"></i><i class="h8-holo"><i class="s">$</i><i class="e">E</i><i class="z">Z</i></i><span class="h8-slno">'+no+'</span></span></span>'+
   /* the winner at the foot of the card, lettered on a small plate over its corner (owner, 2026-11-04: "at the bottom... so it's obvious who won") */
-  '<span class="h8-slw" aria-hidden="true"><span class="h8-scr"><img src="'+tile(r)+'" alt="" loading="lazy" decoding="async"></span>'+
+  '<span class="h8-slw" aria-hidden="true"><span class="h8-scr"><img src="'+tile(r)+'" alt="" loading="lazy" decoding="async" onerror="this.parentNode.classList.add(\'h8-scrx\');this.remove()"><span class="h8-scrf">'+U.co(r.ticker,48)+'</span></span>'+
     '<span class="h8-slwin'+(w.length?'':' h8-no')+'"><small>Winner</small><span class="h8-slwn">'+(w.length?w.map(function(m){return E.NAME[m]}).join(" &amp; ")+'<span class="h8-slb">'+w.map(function(m){return U.badge(m,18)}).join("")+'</span>':'Nobody')+'</span></span></span></a>'}
 /* the two highlights (owner, 2026-11-04): the best round (TSMC: all four right, the lowest average miss of the season) and one where all four were wrong (UPS) */
 function hlTag(r){var w=E.winners(r);return w.length?"Best round":"All four wrong"}
