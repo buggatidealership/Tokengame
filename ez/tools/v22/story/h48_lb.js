@@ -88,7 +88,7 @@ function build(root){
       (t?'<span class="h8-stp '+(t.up?'h8-long':'h8-short')+'">'+U.badge(lead,20)+U.size(t)+'</span>':(u.in?'<span class="h8-stp h8-tbd">No trade from '+NM[lead]+'</span>':'<span class="h8-stp h8-tbd">Trades drop before the earnings</span>'))+
       (u.in&&u.tr.length>1?'<div class="h8-spl"><span class="h8-lbl">All '+u.tr.length+'</span>'+ln+' long, '+sn+' short</div>':'')+
       (mk?'<div class="h8-hl" data-h8hl="'+esc(u.ticker)+'">'+(t?'<a class="h8-btn h8-hlb" href="'+esc(mk.url)+'" target="_blank" rel="noopener">Follow on Hyperliquid</a>':'')+'<span class="h8-mkl"><b>'+esc(mk.name)+'</b> · $'+mk.oi.toFixed(1)+'M open interest'+(mk.thin?' · <em>thin market</em>':'')+'</span></div>'
-        :'<div class="h8-hl h8-none"><span class="h8-mkl">No Hyperliquid market</span></div>')+'</article>'}).join('')+'</div></section>';
+        :'')+'</article>'}).join('')+'</div></section>';   /* never "No Hyperliquid market" (owner, 2026-11-04) */
 
   /* ---------- 2. the table ---------- */
   var lcS=md(X.lcDay),wcap=st.win==='season'?'season':Wn.w;

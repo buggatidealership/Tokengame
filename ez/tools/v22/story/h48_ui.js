@@ -56,7 +56,7 @@ function follow(ticker,lead,t,o){var mk=E.hlMarket(ticker),h="";o=o||{};
       (o.row?'<span class="h8-mknm">'+esc(mk.name)+'</span>':'')+'</div>'}
   else if(mk){h+='<div class="h8-hl" data-h8hl="'+esc(ticker)+'">'+(t?'<a class="h8-btn h8-hlb" href="'+esc(mk.url)+'" target="_blank" rel="noopener">Follow '+E.NAME[lead]+'&rsquo;s '+(t.up?"long":"short")+' on Hyperliquid</a>':'')+
     '<span class="h8-mkl"><b>'+esc(mk.name)+'</b> · $'+mk.oi.toFixed(1)+'M open interest'+(mk.thin?' · <em>thin market</em>':'')+'</span></div>'}
-  else h+='<div class="h8-hl h8-none"><span class="h8-mkl">No Hyperliquid market</span></div>';
+  /* no market: nothing (owner, 2026-11-04: "there should never be like no hyperliquid market at the bottom") */
   return h}
 function when(u){return u.resolves?((E.dayKey(u.resolves)===E.dayKey(E.nyToday(Date.now()))?"Today, ":"")+E.fmtDay(u.resolves,true)):"Date to come"}
 /* one company coming up, on the Overview: the top model's trade only (owner, 2026-11-04: "we only want to focus on Grok... why show the
