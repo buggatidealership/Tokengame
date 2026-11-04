@@ -106,7 +106,7 @@ function list(rs,also){var ci=rs.filter(function(u){return u.nIn}),ro=rs.filter(
 function sw(on,txt,k){return '<button type="button" class="h8-sw" data-uf="'+k+'" aria-pressed="'+on+'">'+txt+'</button>'}
 
 function build(root){
-  var M=X,E=M.E,F=M.fut.filter(pass),P=plan(F,M),b=P.bell,on=anyOn(),h="",logo='<img src="media/icon.svg" alt="" width="28" height="28">';
+  var M=X,E=M.E,F=M.fut.filter(pass),P=plan(F,M),b=P.bell,on=anyOn(),h="",logo='<img src="media/ez-mark.svg" alt="" width="28" height="28">';
   /* ---------- 1. the tab's banner: the painted ribbon (owner, 2026-11-04: it takes the masthead's place) ---------- */
   h+='<div class="h8-bump h8-utop" aria-hidden="true"><p class="h8-bt"><small>Coming up</small><span data-h8let="83" data-h8amp=".7">The schedule</span></p></div><h1 class="h8-sr">Coming up: the schedule</h1>';
 

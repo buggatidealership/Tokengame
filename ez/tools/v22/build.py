@@ -607,7 +607,7 @@ try:
     # the footer in the show (h48_crawl.css): the EZ. logo for the old $EZ badge, and "trades" for "calls"
     _FT='<div class="badge mark"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></div><small>$EZ \u00b7 EARNINGS ZEASON, WITH A Z<br>CALLS FILED BEFORE THE PRINT \u00b7 GRADED BY THE MARKET \u00b7 NEVER EDITED</small>'
     assert _h6.count(_FT)==1
-    _h6=_h6.replace(_FT,'<img class="h8-ftl" src="media/icon.svg" alt="EZ." width="52" height="52"><small>$EZ \u00b7 Earnings Zeason, with a Z<br>Trades filed before the earnings \u00b7 graded at the close</small>',1)
+    _h6=_h6.replace(_FT,'<img class="h8-ftl" src="media/ez-mark.svg" alt="EZ." width="52" height="52"><small>$EZ \u00b7 Earnings Zeason, with a Z<br>Trades filed before the earnings \u00b7 graded at the close</small>',1)
     for a,b in _WCPATCH:
         assert _h6.count(a)==1,a
         _h6=_h6.replace(a,b,1)

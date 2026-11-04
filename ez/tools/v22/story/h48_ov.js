@@ -22,7 +22,7 @@ var mc2={GROK:"#9c968a",CLAUDE:"#c2552a",GPT:"#7a55d6",KIMI:"#2f84cf"};
 var DESK=W.matchMedia("(min-width:1000px)").matches;
 function sz(t){return U.size(t)}
 function byOrd(a){return ord.map(function(m){return a.filter(function(t){return t.m===m})[0]}).filter(Boolean)}
-var logo='<img src="media/icon.svg" alt="" width="30" height="30">';   /* the EZ. logo (media/icon.svg, the site's own icon) */
+var logo='<img src="media/ez-mark.svg" alt="" width="30" height="30">';   /* the EZ. logo (media/icon.svg, the site's own icon) */
 var h="";
 
 /* ---------- 1. the title card: what we do ---------- */

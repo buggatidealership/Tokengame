@@ -25,7 +25,7 @@ function dress(o){var U=W.H48UI;if(!U||!H.classList.contains("h48")||!o.isConnec
     var wc=r.querySelector(".cb-wc");if(wc&&!wc.querySelector(".h9s-wb"))wc.insertAdjacentHTML("beforeend",'<span class="h9s-wb" aria-hidden="true">'+U.badge(m,30)+'</span>');
     var fl=r.querySelector(".cb-fl");if(fl&&!r.querySelector(".h9s-fl"))fl.insertAdjacentHTML("afterend",'<span class="h9s-fl" aria-hidden="true">'+U.flag(m,20)+'</span>')});
   /* the graded seal carries the EZ. mark */
-  [].forEach.call(o.querySelectorAll(".cb .cb-st:not(.cb-die)"),function(st){if(!st.querySelector(".h9s-ez"))st.insertAdjacentHTML("beforeend",'<img class="h9s-ez" src="media/icon.svg" alt="" aria-hidden="true" decoding="async">')});
+  [].forEach.call(o.querySelectorAll(".cb .cb-st:not(.cb-die)"),function(st){if(!st.querySelector(".h9s-ez"))st.insertAdjacentHTML("beforeend",'<img class="h9s-ez" src="media/ez-mark.svg" alt="" aria-hidden="true" decoding="async">')});
   /* measured once on arrival (the label and the winner's line do not depend on the back's cels); again on fonts and on a width change */
   if(first)size(o)}
 /* the card's own scale: X2+ lays the card out at 226 px on a phone and up to 335 px on desktop with the same label; the show's

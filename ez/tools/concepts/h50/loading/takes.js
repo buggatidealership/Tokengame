@@ -126,7 +126,7 @@ html.x2p-rv #x2pLoad.ldA.ldA-fade .ldA-card{transform:none}
 /* ============ B: SIGN-ON (the set warms up on the network's test card; the cast are its colour bars) ============ */
 function takeB(){
   const t1=svgLine('Four AIs','cap',{seed:7,pad:.12,cls:'ldB-t'}),t2=svgLine('Trade Earnings','cap',{seed:7,k0:8,pad:.12,cls:'ldB-t'});
-  const st=svgLine('STAY TUNED','lil',{ls:.14,pad:.05});
+  const st=svgLine('LOADING','lil',{ls:.14,pad:.05}); /* owner, 2026-11-04: say it is loading, so people know something is coming */
   const nm=['GPT','Claude','Grok','Kimi'].map(n=>line(n,'lil',{ls:.04}));
   const col=['#b18cff','#ef8a55','#e4e0d6','#58b7ff'];
   /* the test card, 640 x 480 (a 4:3 tube), drawn in the show's gouache and ink */
@@ -151,7 +151,7 @@ function takeB(){
     '<circle cx="320" cy="214" r="62" fill="none" stroke="'+INK+'" stroke-width="5"/>'+
     bars+'</svg>';
   const html='<div id="x2pLoad" class="ldB" aria-hidden="true"><div class="ldB-room"></div><div class="ldB-col">'+
-    '<div class="ldB-cap"><div class="ldB-title"><svg width="0" height="0" style="position:absolute"><defs>'+grad('ldBt','#fff1e2','#ff7b52','#d8331d')+'</defs></svg>'+t1.svg+t2.svg+'</div>'+st.svg+'</div>'+
+    '<div class="ldB-cap"><div class="ldB-title"><svg width="0" height="0" style="position:absolute"><defs>'+grad('ldBt','#fff1e2','#ff7b52','#d8331d')+'</defs></svg>'+t1.svg+t2.svg+'</div>'+'<div class="ldB-ld">'+st.svg+'<span class="ldB-dots"><i></i><i></i><i></i></span></div>'+'</div>'+
     '<div class="ldB-set"><div class="ldB-ant"><i></i><i></i><b></b></div>'+
       '<div class="ldB-box"><div class="ldB-tube">'+scr+'<div class="ldB-roll"></div><div class="ldB-glass"></div></div>'+
       '<div class="ldB-low"><div class="ldB-grille"></div><div class="ldB-knobs"><i></i><i></i></div></div></div>'+
@@ -193,16 +193,23 @@ function takeB(){
 /* the caption under the set: the show's name in its own lettering, and the station's line */
 #x2pLoad.ldB .ldB-cap{position:relative;text-align:center;font-size:min(10.5vw,52px,7.4vh);flex:none}
 #x2pLoad.ldB .ldB-title{display:flex;flex-wrap:wrap;justify-content:center;column-gap:.18em;filter:drop-shadow(2px 2px 0 ${INK}) drop-shadow(3px 4px 0 rgba(0,0,0,.55))}
-#x2pLoad.ldB .ldB-t{display:block;height:1.24em!important;width:auto;fill:url(#ldBt);stroke:${INK};stroke-width:2px;paint-order:stroke}
+#x2pLoad.ldB .ldB-t{display:block;height:1.24em!important;width:auto!important;fill:url(#ldBt);stroke:${INK};stroke-width:2px;paint-order:stroke}
 #x2pLoad.ldB .ldB-t path{vector-effect:non-scaling-stroke}
 @media (orientation:landscape) and (max-height:600px){#x2pLoad.ldB{--w:min(44vw,calc((100vh - 64px) * .8),560px)}#x2pLoad.ldB .ldB-col{flex-direction:row;padding:20px 24px}#x2pLoad.ldB .ldB-cap{font-size:min(5vw,9vh,52px)}}
 #x2pLoad.ldB .ldB-cap>svg{display:block;margin:.35em auto 0;height:.36em!important;width:auto;fill:#f6e7c4;opacity:.92}
+/* "Loading" and three dots that light in turn: the station is coming on */
+#x2pLoad.ldB .ldB-ld{display:flex;align-items:flex-end;justify-content:center;gap:.1em;margin:.4em auto 0}
+#x2pLoad.ldB .ldB-ld>svg{display:block;height:.44em!important;width:auto!important;fill:#f6e7c4;opacity:.95}
+#x2pLoad.ldB .ldB-dots{display:flex;gap:.09em;padding-bottom:.085em}
+#x2pLoad.ldB .ldB-dots i{display:block;width:.085em;height:.085em;border-radius:50%;background:#f6e7c4;opacity:.95}
 @media (prefers-reduced-motion:no-preference){
   /* the tube warms up once (a line opens to the picture), then the signal rolls through, slowly: the station is signing on */
   #x2pLoad.ldB .ldB-tube>:is(.ldB-card,.ldB-roll){animation:ldBon .55s cubic-bezier(.2,.9,.3,1) both .1s}
   @keyframes ldBon{0%{transform:scale(.9,.008);filter:brightness(3)}45%{transform:scale(1,.02);filter:brightness(2.4)}100%{transform:none;filter:none}}
   #x2pLoad.ldB .ldB-roll{animation:ldBon .55s both .1s,ldBroll 3.2s linear .7s infinite}
-  @keyframes ldBroll{to{transform:translateY(430%)}}}
+  @keyframes ldBroll{to{transform:translateY(430%)}}
+  #x2pLoad.ldB .ldB-dots i{animation:ldBdot 1.2s ease-in-out infinite}#x2pLoad.ldB .ldB-dots i:nth-child(2){animation-delay:.2s}#x2pLoad.ldB .ldB-dots i:nth-child(3){animation-delay:.4s}
+  @keyframes ldBdot{0%,70%,100%{opacity:.22}35%{opacity:.95}}}
 /* the lift: the camera pushes into the screen and the show comes on */
 html.x2p-rv #x2pLoad.ldB{display:block;animation:ldBout .38s ease-in forwards;background:transparent}
 html.x2p-rv #x2pLoad.ldB .ldB-room{opacity:0;transition:opacity .2s}
