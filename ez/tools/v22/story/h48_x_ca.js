@@ -25,29 +25,32 @@ function copy(b){var v=b.getAttribute("data-h8ca"),done=function(){b.textContent
    the cliff's own canyon (the dev bag, the bag on fire, the pouch left), then where the fees go (the chute pouring 69% into the pool chest
    and 31% into the project's bucket, the pool wallet engraved on a brass plate), then the coin on a ticket. Every number from CONFIG and the
    chain; the art carries no words. Nothing claims the launch buy was planned (it was not). */
-function story(){var P=C.pool||"",burnTx=C.burnTx||"",kept=C.devPct||"6.9",rm=W.matchMedia&&W.matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* launch night, 2026-11-04, second pass (owner: "more coherence... we set our bag on fire should be the last thing on the page... eradicate
+   the where the fees go entirely... that's where the pool link should be"): one home per idea. The pool lives in the cliffhanger, whose
+   line names both halves of the fee (h48_ov.js) and now carries the pool wallet on a brass plate; the bag story closes the episode as a
+   post-credits scene after the end card, with the coin on its ticket. Every number from CONFIG and the chain; the art carries no words;
+   nothing claims the launch buy was planned (it was not). */
+function poolPlate(){var P=C.pool||"";return P?'<div class="h8-ezbr" role="group" aria-label="The pool wallet"><span class="h8-ezbl">The pool wallet &middot; '+Math.round(((W.SIM&&SIM.poolShare)!=null?SIM.poolShare:.69)*100)+'% of creator fees</span><code translate="no">'+esc(P)+'</code>'+
+  '<span class="h8-ezba"><button type="button" class="h8-cab" data-h8ca="'+esc(P)+'">Copy</button><a href="'+esc(PURL)+'" target="_blank" rel="noopener">Watch it fill&nbsp;&#8599;</a></span>'+
+  '<span class="h8-ezlk">The split is locked on-chain. Nobody can change it, us included.</span></div>':''}
+function story(){var burnTx=C.burnTx||"",kept=C.devPct||"6.9",rm=W.matchMedia&&W.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var vid=function(n,poster,cls){return rm?'<img src="'+poster+'" alt="" loading="lazy" decoding="async">':'<video class="'+cls+'" muted loop playsinline autoplay preload="none" poster="'+poster+'"><source src="'+n+'" type="video/mp4"></video>'};
   var panel=function(img,k,h,sm){return '<li class="h8-ezp"><figure class="h8-ezf">'+img+'</figure><div class="h8-ezc"><span class="h8-ezk">'+k+'</span><b>'+h+'</b><span>'+sm+'</span></div></li>'};
-  return '<section class="h8-ezs h8-g" aria-label="What we did with our own bag"><div class="h8-wrap">'+
-   '<h2 class="h8-let h8-ezh" data-h8let="88" data-h8amp=".6">We set our own bag on fire</h2>'+
+  return '<div class="h8-ezx"><div class="h8-bump" aria-hidden="true"><p class="h8-bt"><small>After the credits</small><span data-h8let="7" data-h8amp=".7">We burned our own bag</span></p></div>'+
+   '<section class="h8-ezs h8-g" aria-label="After the credits: we burned our own bag"><div class="h8-wrap"><h2 class="h8-sr">After the credits: we burned our own bag</h2>'+
    '<ol class="h8-ezr">'+
     panel('<img src="media/burn-h50-bag.jpg" alt="" loading="lazy" decoding="async">','Launch day','We bought 6.9K of our own coin.','That bought two-thirds of all $EZ.')+
     panel(vid('media/burn-h50-fire.mp4','media/burn-h50-fire.jpg','h8-ezv'),'Then','We set 90% of it on fire.',esc(C.burnAmt||'')+' $EZ to the burn address. Gone for good.'+(burnTx?' <a href="'+esc(burnTx)+'" target="_blank" rel="noopener">See the burn&nbsp;&#8599;</a>':''))+
     panel('<img src="media/burn-h50-pouch.jpg" alt="" loading="lazy" decoding="async">','What&rsquo;s left','We keep '+esc(kept)+'%.','For the culture.')+
    '</ol>'+
-   '<div class="h8-ezpool"><figure class="h8-ezf h8-ezpf">'+vid('media/ez-pool-h50.mp4','media/ez-pool-h50.jpg','h8-ezv')+'</figure>'+
-    '<div class="h8-ezpt"><h3 class="h8-let" data-h8let="89" data-h8amp=".5">Where the fees go</h3>'+
-     '<p>Every $EZ trade pays a creator fee. <b>69%</b> pours into the pool, the chest the AI bets with. <b>31%</b> runs the project.</p>'+
-     '<p class="h8-ezlk">The split is locked on-chain. Nobody can change it, us included.</p>'+
-     (P?'<div class="h8-ezbr" role="group" aria-label="The pool wallet"><span class="h8-ezbl">The pool</span><code translate="no">'+esc(P)+'</code>'+
-       '<span class="h8-ezba"><button type="button" class="h8-cab" data-h8ca="'+esc(P)+'">Copy</button><a href="'+esc(PURL)+'" target="_blank" rel="noopener">Watch it fill&nbsp;&#8599;</a></span></div>':'')+
-   '</div></div>'+
    '<div class="h8-eztk" role="group" aria-label="$EZ contract address"><span class="h8-ezts" aria-hidden="true"><b>$EZ</b><small>Solana</small></span>'+
     '<div class="h8-eztm"><span class="h8-ezbl">The coin</span><code translate="no">'+esc(CA)+'</code>'+
     '<span class="h8-ezba"><button type="button" class="h8-cab" data-h8ca="'+esc(CA)+'">Copy</button><a class="h8-ezbuy" href="'+esc(BUY)+'" target="_blank" rel="noopener">Buy on pump.fun</a></span>'+
     '<p>Paired with USDC: the pool&rsquo;s bets are placed on Hyperliquid, in USDC. This is the only address.</p></div></div>'+
-  '</div></section>'}
-function all(){var bs=d.querySelector("#h48ov .h8-betsec");if(bs&&!d.querySelector("#h48ov .h8-ezs")){var sx=mk(story());bs.parentNode.insertBefore(sx,bs.nextSibling);try{W.H48UI&&H48UI.letterAll(sx)}catch(e){}}
+  '</div></section></div>'}
+function all(){var ov=d.getElementById("h48ov"),tx=ov&&ov.querySelector(".h8-bettx");
+  if(tx&&!tx.querySelector(".h8-ezbr")){var pl=mk(poolPlate());if(pl){var tb=tx.querySelector(".h8-tbc");tx.insertBefore(pl,tb||null)}}
+  if(ov&&!ov.querySelector(".h8-ezx")){var sx=mk(story());ov.appendChild(sx);try{W.H48UI&&H48UI.letterAll(sx)}catch(e){}}
   var f=d.querySelector("body>footer");if(f&&!f.querySelector(".h8-ca")){var s=f.querySelector("small");f.insertBefore(mk(plate("ft")),s?s.nextSibling:null)}}
 d.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".h8-cab");if(b)copy(b)});
 (W.H48HOOK=W.H48HOOK||[]).push(function(){all()});
