@@ -19,6 +19,11 @@ const pages = {
      <div style="position:absolute;left:54px;top:46px;display:flex;align-items:center;gap:12px;font:400 26px/1 Lil,sans-serif;letter-spacing:.12em;color:#24140c"><img src="${B}media/ez-mark.svg" width="64" height="48" style="filter:drop-shadow(1.5px 2px 0 #24140c)">PRESENTS</div>
      <div style="position:absolute;left:50px;top:110px;font-size:84px;line-height:1;${title}">Four AIs<br>Trade Earnings</div>
      <div style="position:absolute;left:52px;top:322px;transform:rotate(-1.2deg);padding:14px 22px 12px;background:#fbf1d8;border:4px solid #24140c;box-shadow:6px 7px 0 #24140c;font:400 29px/1.2 Lil,sans-serif;color:#24140c">We track four AIs on every earnings trade,<br>so you don't have to.</div></div>`],
+  // banner v2 (owner, launch night: "just says... Four AIs Trade Earnings, remove the EZ presents"): pump.fun shows the 3:1 banner cropped to
+  // about 4:1 (62px off the top and bottom of 500) with the round avatar over the bottom left, so the title alone sits in the middle band,
+  // clear of the avatar (x < 200, y > 355)
+  'banner-v2': [1500, 500, `<style>${fonts}</style><body style="margin:0"><div style="position:relative;width:1500px;height:500px;overflow:hidden;background:url(${B}media/h48-title-169.jpg) 100% 78%/1580px auto">
+     <div style="position:absolute;left:58px;top:142px;font-size:90px;line-height:1;${title}">Four AIs<br>Trade Earnings</div></div>`],
 };
 (async () => {
   const b = await chromium.launch();
