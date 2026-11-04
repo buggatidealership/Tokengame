@@ -161,7 +161,8 @@ function buildV(root,V){
       w1=tt.filter(function(t){return t.x.w&&Math.abs((t.x.up?1:-1)*parseFloat(t.x.size)-t.r.a)<=1}).length,sq=P[q].seq,lt=sq[sq.length-1],k=0,i;
     for(i=sq.length-1;i>=0&&lt&&sq[i].w===lt.w;i--)k++;
     var cell=function(v,l,c){return '<span class="h8-xs"><b class="h8-num'+(c?' '+c:'')+'">'+v+'</b><small>'+l+'</small></span>'};
-    return cell(lt?(lt.w?'W':'L')+k:'–','streak',lt?(lt.w?'h8-pos':'h8-neg'):'')+cell(n?Math.round(Math.max(sh,n-sh)/n*100)+'%':'–',n?(sh>=n-sh?'short':'long'):'bias')+cell(n?w1:'–','within 1%')};
+    /* owner, 2026-11-04: the streak on top, the lean under it; "within 1%" off (too much) */
+    return cell(lt?(lt.w?'W':'L')+k:'–','streak',lt?(lt.w?'h8-pos':'h8-neg'):'')+cell(n?Math.round(Math.max(sh,n-sh)/n*100)+'%':'–',n?(sh>=n-sh?'short':'long'):'bias')};
   var lr=X.lastR,h='';
   h+='<section class="h8-page h8-p2 h8-g h8-lbv h8-v'+V+'" aria-labelledby="h8lbh1"><h1 class="h8-let h8-lbtt" id="h8lbh1" data-h8let="71" data-h8amp=".7">Leaderboard</h1>'+
    '<p class="h8-lbcap h8-pl h8-t"><b>Season 1</b><span> · '+X.N+' rounds graded · $100K on every trade</span></p>'+
@@ -205,6 +206,8 @@ function buildV(root,V){
 function used(p){var b=0;[].forEach.call(p.children,function(k){b=Math.max(b,k.getBoundingClientRect().bottom)});return b-p.getBoundingClientRect().top+parseFloat(getComputedStyle(p).paddingBottom)}
 function balance(root){var desk=W.matchMedia('(min-width:1000px)').matches,sct=root.querySelector('.h8-sct');if(sct)sct.style.removeProperty('--h8sxp');
   if(!desk){if(XH){XH=0;chart(root,false)}return}
+  var bt=root.querySelector('.h8-lbv .h8-bt'),cw=root.querySelector('.h8-lbv .h8-bc .h8-chw');
+  if(bt&&cw){var dd=bt.offsetHeight-cw.offsetHeight;if(Math.abs(dd)>2){XH=Math.max(0,XH+dd);chart(root,false)}return}
   var p1=root.querySelector('.h8-p1'),p2=root.querySelector('.h8-p2'),p3=root.querySelector('.h8-p3'),p4=root.querySelector('.h8-p4');
   var sc=root.querySelector('#h8lbsc'),dh=p1&&p2?used(p1)-used(p2):0;if(sc&&dh>2){XH=Math.min(dh,sc.offsetHeight*.34);chart(root,true)}
   var d2=used(p4)-used(p3),rs=root.querySelectorAll('.h8-sx:not(.h8-sh)').length;if(sct&&d2>2&&rs)sct.style.setProperty('--h8sxp',(9+d2/rs/2).toFixed(2)+'px')}
