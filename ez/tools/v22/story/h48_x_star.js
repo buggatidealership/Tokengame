@@ -34,17 +34,19 @@ function premise(tcw){
   var t=say.textContent.replace(/\s+/g," ").trim(),k=t.indexOf(", so "),U=W.H48UI,esc=U.esc;
   var pm=d.createElement("div");pm.className="h49-pm";
   var a=k>0?t.slice(0,k+1):t,b=k>0?t.slice(k+2):"";
-  pm.innerHTML='<p class="h8-say h49-say"><span class="h49-s1">'+esc(a)+'</span>'+(b?' <span class="h8-sr">'+esc(b)+'</span><span class="h49-s2 h8-let" aria-hidden="true">'+esc(b)+'</span>':'')+'</p>';
+  /* owner, 2026-11-04: "so you don't have to" in the same lettering as "We track 4 AIs on every earnings trade" (the red title lettering
+     clashed with the headline above it), the whole line on two lines */
+  pm.innerHTML='<p class="h8-say h49-say"><span class="h49-s1">'+esc(t)+'</span></p>';
   say.parentNode.replaceChild(pm,say);
-  var s2=pm.querySelector(".h49-s2");if(s2){U.letter(s2,5,.55);s2.removeAttribute("aria-label")}
 }
 
-/* the punchline holds one line: its size scales down from the CSS size by its own one-line width, in one measurement (a step-down loop
-   forced a page layout per step before the cover lifts); floor 22px, below which it wraps, balanced */
-function fit(tcw){var s2=tcw.querySelector(".h49-s2");if(!s2)return;
-  s2.style.fontSize="";s2.style.textWrap="";s2.style.whiteSpace="nowrap";
-  var av=s2.clientWidth,nd=s2.scrollWidth,fs=parseFloat(getComputedStyle(s2).fontSize);s2.style.whiteSpace="";
-  if(!av||!nd)return;if(nd>av){fs=Math.floor(fs*(av-2)/nd*4)/4;if(fs<22){fs=22;s2.style.textWrap="balance"}s2.style.fontSize=fs+"px"}}
+/* the line holds two lines, balanced: one measurement of its one-line width sets the size (two lines need about half of it, plus a word's
+   slack), then a check of the lines it really draws, stepping down 4% at a time at most three times */
+function fit(tcw){var s=tcw.querySelector(".h49-s1");if(!s)return;
+  s.style.fontSize="";s.style.whiteSpace="nowrap";
+  var av=s.clientWidth,one=s.scrollWidth,fs=parseFloat(getComputedStyle(s).fontSize);s.style.whiteSpace="";
+  if(!av||!one)return;var f=Math.min(fs,Math.floor(fs*av*2/(one*1.1)*4)/4);
+  for(var i=0;i<4;i++){s.style.fontSize=f+"px";var lh=parseFloat(getComputedStyle(s).lineHeight)||f*1.12;if(Math.round(s.getBoundingClientRect().height/lh)<=2)break;f=Math.floor(f*.96*4)/4}}
 
 /* 2. the cast in the painting */
 function stage(tcw,D){

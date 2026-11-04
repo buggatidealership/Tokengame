@@ -71,12 +71,14 @@ function nextCard(u,lead,ord){var t=u.in?u.tr.filter(function(x){return x.m===le
       '<div class="h8-nxtop h8-no">'+badge(lead,34)+'<div><span class="h8-nxlb">'+E.NAME[lead]+'</span><span class="h8-nxwt">No trade on this one</span></div></div>');
   return h+(u.in?follow(u.ticker,lead,t,{row:1}):'')+'</article>'}
 /* the golden ticket: the leader's founder face in its window, the record with its sample printed on the painted ticket */
-function ticket(m,s){return '<div class="h8-gt" role="group" aria-label="'+E.NAME[m]+' holds the golden ticket: right on '+s.w+' of '+s.n+' trades, '+(s.hit*100).toFixed(1)+' percent, '+E.money(s.pl)+' at $100K a trade">'+
+/* owner, 2026-11-04: "long slash short accuracy, 2 dots, and then underneath 64.5%, and then current season P&L, 2 dots, and underneath
+   plus 162,950", each on its own line (it read "Right on 49 of 76 trades / 64.5% / +$162,950 / at $100K a trade") */
+function ticket(m,s){return '<div class="h8-gt" role="group" aria-label="'+E.NAME[m]+' holds the golden ticket: long/short accuracy '+(s.hit*100).toFixed(1)+' percent, current season P&amp;L '+E.money(s.pl)+'">'+
   '<div class="h8-gtstub" aria-hidden="true"><span>Golden ticket</span></div>'+
   '<div class="h8-gtface"><img src="'+CAST[m]+'" alt="" decoding="async"></div>'+
   '<div class="h8-gtmain" aria-hidden="true"><span class="h8-gtn">'+badge(m,30)+'<b>'+E.NAME[m]+'</b></span>'+
-   '<span class="h8-gtk">Right on '+s.w+' of '+s.n+' trades</span><span class="h8-gtbig">'+(s.hit*100).toFixed(1)+'%</span>'+
-   '<span class="h8-gtbig '+(s.pl>=0?'h8-pos':'h8-neg')+'">'+E.money(s.pl)+'</span><span class="h8-gtk">at $100K a trade</span></div></div>'}
+   '<span class="h8-gtk">Long/short accuracy:</span><span class="h8-gtbig">'+(s.hit*100).toFixed(1)+'%</span>'+
+   '<span class="h8-gtk h8-gtk2">Current season P&amp;L:</span><span class="h8-gtbig '+(s.pl>=0?'h8-pos':'h8-neg')+'">'+E.money(s.pl)+'</span></div></div>'}
 /* ---------- the charts, drawn on the painted surfaces: the hit rate projected on the screening-room screen (from 50%), the P&L in
    coloured chalk on the classroom board (from $0). Each line starts before the model's first trade in the rounds shown; lines are told
    apart by colour and dash. A chart draws in once (never with reduced motion); a redraw after that shows it whole. ---------- */
