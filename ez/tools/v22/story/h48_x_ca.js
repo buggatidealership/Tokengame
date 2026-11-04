@@ -11,6 +11,7 @@ function plate(k){return '<div class="h8-ca'+(k==="ft"?' h8-caf':' h8-pl')+'" ro
   '<div class="h8-car"><code class="h8-cac" translate="no">'+esc(CA)+'</code><button type="button" class="h8-cab" data-h8ca="'+esc(CA)+'">Copy</button></div>'+
   '<p class="h8-cap"><b>Paired with USDC</b>, because the pool&rsquo;s bets are placed on Hyperliquid, in USDC.</p>'+
   '<p class="h8-cab2"><a class="h8-cabuy" href="'+esc(BUY)+'" target="_blank" rel="noopener">Buy on pump.fun</a><span>This is the only address. Check it before you buy.</span></p>'+
+  (C.burnTx?'<p class="h8-caburn"><span><b>'+esc(C.burnAmt)+' $EZ burned at launch.</b> 90% of the dev&rsquo;s bag, sent to the burn address. The dev keeps '+esc(C.devPct)+'% of the supply. <a href="'+esc(C.burnTx)+'" target="_blank" rel="noopener">See the transaction &#8599;</a></span></p>':'')+
   (POOL?'<div class="h8-capl"><p class="h8-cal">The pool wallet <span>69% of creator fees</span></p>'+
     '<div class="h8-car"><code class="h8-cac" translate="no">'+esc(POOL)+'</code><button type="button" class="h8-cab" data-h8ca="'+esc(POOL)+'">Copy</button></div>'+
     '<p class="h8-cab2"><a class="h8-capw" href="'+esc(PURL)+'" target="_blank" rel="noopener">Watch it fill on Solscan &#8599;</a><span>The 69% split is locked on-chain. Nobody can change it, us included.</span></p></div>':'')+'</div>'}
