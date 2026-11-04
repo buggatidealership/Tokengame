@@ -1,5 +1,5 @@
 # /usr/bin/python3 gen.py jobs.json [--estimate] : Hedra v3 image jobs in parallel (round H49, star). A job may carry "refs":[local files]
-# (uploaded via POST /v3/files, passed as images). Saves img/<name>.png at native size, appends log.jsonl. The key is read from the env, never printed.
+# (uploaded via POST /v3/files, passed as images). Saves img/<name>.png at native size (kept in the repo as .jpg q92), appends log.jsonl. The key is read from the env, never printed.
 import json,sys,os,time,urllib.request,threading,uuid
 K=os.environ['HEDRA_API_KEY'];B='https://api.hedra.com/v3'
 def req(m,p,body=None):

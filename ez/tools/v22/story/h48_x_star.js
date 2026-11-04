@@ -50,7 +50,7 @@ function fit(tcw){var s2=tcw.querySelector(".h49-s2");if(!s2)return;
 function stage(tcw,D){
   var tc=tcw.querySelector(".h8-tc"),old=tcw.querySelector(".h8-star");if(!tc||tc.querySelector(".h49-st"))return;
   var E=W.H48D,esc=W.H48UI.esc;
-  var h='<div class="h49-st"><div class="h49-bn"><img src="media/h49-star-banner.webp" alt="" width="700" height="457" decoding="async"><span class="h49-bt" id="h49stl">Starring</span></div>'+
+  var h='<div class="h49-st"><div class="h49-bn" aria-hidden="true"><img src="media/h49-star-banner.webp" alt="" width="700" height="457" decoding="async"><span class="h49-bt" id="h49stl">Starring</span></div>'+
     '<ul class="h49-cast" aria-labelledby="h49stl">'+BILL.map(function(m,i){var f=FIG[m];
       return '<li class="h49-f h49-'+m.toLowerCase()+'" style="--i:'+i+';--ar:'+f[1]+'"><span class="h49-sh" aria-hidden="true"></span>'+
         '<span class="h49-pop"><img src="'+f[0]+'" alt="" width="'+Math.round(330*f[1])+'" height="330" decoding="async"></span>'+
