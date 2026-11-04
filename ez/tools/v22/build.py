@@ -562,8 +562,11 @@ open("v46-live-x2plus.html",'w').write(_tp); print("ok v46-live-x2plus.html",len
 try:
     _S='tools/v22/story/'
     # h48_crawl.css: the desktop crawl at the bottom in the show's look; h48_up.*: the Upcoming tab (round H48b), read when present
-    _h6css='\n'.join(open(_S+f).read() for f in ['h48_show.css','h48_ov.css','h48_lb.css','h48_crawl.css','h48_up.css'] if f in ('h48_show.css','h48_ov.css','h48_lb.css') or os.path.exists(_S+f))
-    _h6js='\n'.join(open(_S+f).read() for f in ['h48_data.js','h48_ui.js','h48_ov.js','h48_lb.js','h48_up.js'] if f!='h48_up.js' or os.path.exists(_S+f))
+    # plus every h48_x_<name>.css/.js (round H49, 2026-11-04: one file pair per helper, patching what h48_ov.js builds), in name order
+    import glob as _gl
+    _hx=lambda e:[] if os.environ.get('H48_NOX') else [os.path.basename(f) for f in sorted(_gl.glob(_S+'h48_x_*.'+e))]   # H48_NOX=1: without them (a production build while helpers are mid-edit)
+    _h6css='\n'.join(open(_S+f).read() for f in ['h48_show.css','h48_ov.css','h48_lb.css','h48_crawl.css','h48_up.css']+_hx('css') if f in ('h48_show.css','h48_ov.css','h48_lb.css') or os.path.exists(_S+f))
+    _h6js='\n'.join(open(_S+f).read() for f in ['h48_data.js','h48_ui.js','h48_ov.js','h48_lb.js','h48_up.js']+_hx('js') if f!='h48_up.js' or os.path.exists(_S+f))
     _lb='<script id="x2p-lb-js">\n'+open(_S+'x2p_lb.js').read()+'\n</script>\n'
     assert _tp.count(_lb)==1
     _h6=_tp.replace(_lb,'',1)

@@ -75,7 +75,7 @@ h+='<section class="h8-prev h8-g" aria-label="One real round, start to finish: R
   '<p class="h8-payoff">'+pay+'</p></div></div></section>';
 
 /* ---------- 6. the record: every round so far ---------- */
-var shown=DESK?15:12;
+var shown=6;   /* owner, 2026-11-04: "I think it's okay to do 6" (was 12, 15 on desktop) */
 function tile(r){var F2=(W.FILMS||{})[r.n];return 'media/tile-r'+r.n+'-'+(F2?(F2.t||'f1'):'t2')+'.jpg'}
 function ep(r){var w=E.winners(r);
   return '<a class="h8-ep2" href="#/round/'+r.n+'" aria-label="Round '+r.n+', '+esc(E.coLabel(r.ticker))+', '+E.pct(r.a)+', '+(w.length?w.map(function(m){return E.NAME[m]}).join(" and ")+" won":"nobody won")+'. Open its graded card.">'+
@@ -183,7 +183,10 @@ var F=d.fonts?Promise.all(['400 40px "H8 Caprasimo"','400 20px "H8 Lilita"','500
 var done=false,lbw=0;function show(){if(done)return;
   /* arriving on the Leaderboard tab, the cover also waits for the scorecard (at most 4 s) */
   if(H.getAttribute("data-sec")==="leaderboard"&&!d.getElementById("h48lb")&&!W.__h48LbErr&&lbw++<80)return setTimeout(show,50);
-  done=true;onR();H.classList.add("x2p-world");W.__h48Ov=D;(W.__h48T=W.__h48T||{}).world=performance.now();
+  done=true;onR();
+  /* round H49: each helper file (h48_x_*.js) pushes a function onto window.H48HOOK; they patch the built Overview before the cover lifts */
+  (W.H48HOOK||[]).forEach(function(f){try{f(root,D)}catch(e){(W.__h48HookErr=W.__h48HookErr||[]).push(e);try{console.error("h48 hook",e)}catch(x){}}});
+  H.classList.add("x2p-world");W.__h48Ov=D;(W.__h48T=W.__h48T||{}).world=performance.now();
   var lift=function(){if(H.classList.contains("x2p-cur"))return setTimeout(lift,400);setTimeout(function(){E.refreshHL()},1500)};lift()}
 F.then(show,show);setTimeout(show,2500);
 }
