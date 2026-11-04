@@ -615,7 +615,7 @@ try:
     # tools/concepts/h50/ (install.js writes the picked take into story/): h50_head.css (its first line names the take: /* H50 take: X */)
     # and h50_load.html/.css/.head (the cover's markup, its rules, preloads for <head>). Without those files the page is as before.
     if os.path.exists(_S+'h50_head.css'):
-        _hc=open(_S+'h50_head.css').read();_tk=re.search(r'H50 take: ([A-Z])',_hc).group(1)
+        _hc=open(_S+'h50_head.css').read();_tk=re.search(r'H50 take: ([A-Z][0-9]?)',_hc).group(1)
         _h6=_h6.replace('x2p-cur h48 wc-pre"','x2p-cur h48 wc-pre h50 h50-%s"'%_tk,1)
         _h6=_h6.replace('</head>','<style id="h50-head">\n'+_hc+'\n</style>\n</head>',1)
     if os.path.exists(_S+'h50_load.html'):
