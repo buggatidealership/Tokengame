@@ -30,7 +30,6 @@ doc = re.sub(r'<title>[^<]*</title>', '<title>Earnings Zeason \u00b7 4 AIs trade
 # what a public page needs and an artifact did not: the canonical address and share tags (a share image comes next)
 meta = ('<link rel="canonical" href="' + URL + '">\n<meta property="og:type" content="website">\n<meta property="og:url" content="' + URL + '">\n'
         '<meta property="og:title" content="$EZ \u00b7 Earnings Zeason">\n<meta name="twitter:card" content="summary_large_image">\n')
-doc = doc.replace('</head>', meta + '</head>', 1)
 # (overnight, 2026-10-27) the share card and the icons: a link to the site on X showed a bare text card and browsers a blank tab.
 # The card is media/share-d.png (since 2026-10-28: the live headline "4 AIs trade earnings to run our buybacks." over the host; options a to d from ez/tools/concepts/share/share.js);
 # a new card needs a new file name (media is cached for a year, and X keeps a card for days). The icons are the EZ. logo.
@@ -45,7 +44,14 @@ meta2 = ('<meta name="description" content="' + DESC + '">\n<meta property="og:d
          '<meta property="og:site_name" content="Earnings Zeason">\n<meta name="twitter:site" content="@earningszn">\n'
          '<link rel="icon" href="media/icon.svg" type="image/svg+xml">\n<link rel="icon" href="media/icon-32.png" sizes="32x32" type="image/png">\n<link rel="apple-touch-icon" href="media/icon-180.png">\n')
 doc = re.sub(r'<meta name="description"[^>]*>\n?', '', doc)  # the page's own older line (it still said "Zeason one")
-doc = doc.replace('</head>', meta2 + '</head>', 1)
+# (launch day, QA) the title and the share tags go first in <head>: after about 1.26 MB of inline styles they were past what some link
+# preview fetchers read (Signal reads 1 MB; others are said to read less), so a link to the home page could show no picture
+_tm=re.search(r'<title>[^<]*</title>\n?', doc)
+_tt=_tm.group(0) if _tm else ''
+if _tm: doc = doc.replace(_tt, '', 1)
+_cs=re.search(r'<meta charset=[^>]*>\n?', doc[:5000], re.I)
+_at=(_cs.end() if _cs else doc.index('<head>')+len('<head>'))
+doc = doc[:_at] + ('\n' if not doc[:_at].endswith('\n') else '') + _tt.rstrip('\n') + '\n' + meta + meta2 + doc[_at:]
 # The standings as printed tickets and the proof on the ticket kept production on today's board and stats switch (2026-10-22/23,
 # window.__x2pClassicBoard / __x2pClassicProof, which x2plus.js still honours). Both live since 2026-10-23 (owner: "Everything"), so
 # production is X2+ as it is; SITE_CLASSIC=1 builds the old board and switch again if they are ever needed.
@@ -102,6 +108,12 @@ open(os.path.join(OUT, '_headers'), 'w').write("""/media/*
 open(os.path.join(OUT, 'robots.txt'), 'w').write("User-agent: *\nAllow: /\n")
 # (overnight 2026-10-27, launch audit) a missing path answered with the page itself and a 200, which Cloudflare then cached under
 # /media for a year (R43, 2026-10-24); with a 404.html Pages answers a missing file with this page and a real 404
+# (launch-day QA) /favicon.ico answered 404 (browsers and some apps ask for it whatever the page links): the EZ. logo, 16/32/48 px
+try:
+    from PIL import Image as _Img
+    _Img.open(os.path.join(EZ, 'media', 'icon-180.png')).convert('RGBA').save(os.path.join(OUT, 'favicon.ico'), sizes=[(16, 16), (32, 32), (48, 48)])
+except Exception as _e:
+    print('favicon.ico not written:', _e)
 open(os.path.join(OUT, '404.html'), 'w', encoding='utf-8').write('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Not found \u00b7 Earnings Zeason</title><meta name="robots" content="noindex"><link rel="icon" href="/media/icon.svg" type="image/svg+xml"><style>html{color-scheme:dark}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0a14;color:#f8f0d9;font:600 18px/1.4 system-ui,sans-serif;text-align:center;padding:16px}a{color:#fdbc2a}img{width:96px;height:96px;display:block;margin:0 auto 18px}</style></head><body><main><img src="/media/icon.svg" alt="EZ."><p>Nothing here.</p><p><a href="/">Back to Earnings Zeason</a></p></main></body></html>\n')
 # every round its own link (owner, 2026-10-28): /r/<n> pages whose share picture is that round's own slab (tools/site/round_cards.js;
 # pictures cached in media/share by a hash of what they show, so a build draws only new or changed rounds). SITE_NOCARDS=1 skips it.

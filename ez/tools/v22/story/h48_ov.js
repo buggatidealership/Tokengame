@@ -155,7 +155,7 @@ function tick(){if(!B){cd.textContent="Soon";return}var s=Math.max(0,Math.floor(
   cd.setAttribute("aria-label",dd+" days, "+hh+" hours, "+mm+" minutes until the bet")}
 tick();
 /* the one quiet loop on that screen: the seconds, only while the signpost is on screen */
-var tmr=0;function run(on){clearInterval(tmr);if(on)tmr=setInterval(tick,RM?60000:1000)}
+var tmr=0;function run(on){clearInterval(tmr);if(on){tick();tmr=setInterval(tick,RM?60000:1000)}}/* (launch-day QA) tick at once: it showed the time from when the page was built until the first interval */
 if("IntersectionObserver" in W)new IntersectionObserver(function(es){run(es[0].isIntersecting)}).observe(d.querySelector("#h48ov .h8-cliff"));else run(true);
 
 /* the TV: the round's film, paused where the trades are in (loaded when it comes near); a tap plays it with sound, inline */

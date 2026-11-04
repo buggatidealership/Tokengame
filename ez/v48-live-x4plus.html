@@ -11425,7 +11425,10 @@ wd=function(t,o){return t.toLocaleDateString("en-US",o)},m7=function(n){return !
     o.querySelector(".x2p-rmx").focus({preventScroll:true})}
   function shut(){if(!cur)return;[].forEach.call(cur.o.querySelectorAll("video"),function(v){try{v.pause()}catch(e){}});cur.o.remove();cur=null;if(window.__x2pCertLive)window.__x2pCertLive()}
   function init(){new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(x){if(x.nodeType===1&&x.classList.contains("rmod")){shut();open(x)}});
-    [].forEach.call(m.removedNodes,function(x){if(cur&&x===cur.rm)shut()})})}).observe(d.body,{childList:true})}
+    [].forEach.call(m.removedNodes,function(x){if(cur&&x===cur.rm)shut()})})}).observe(d.body,{childList:true});
+    /* (launch-day QA) on a slow connection X2's router opens a shared round (#/round/N, /r/N) before this script has arrived, so the
+       layer is already there and the observer never sees it come: take it now */
+    var ex=d.querySelector("body>.rmod");if(ex&&!cur)open(ex)}
   if(d.body)init();else d.addEventListener("DOMContentLoaded",init);
   /* keep the focus inside while it is open (X2's close hands focus back to the ticket once its layer is gone: let it) */
   d.addEventListener("focusin",function(e){if(!cur)return;if(!d.body.contains(cur.rm)){shut();return}if(!cur.o.contains(e.target)){var x=cur.o.querySelector(".x2p-rmx");if(x)x.focus({preventScroll:true})}});
@@ -12928,7 +12931,7 @@ addEventListener('resize',function(){if(innerWidth===w0)return;w0=innerWidth;soo
   if(lock.length)it.push('<span class="x2p-cw-i"><span class="x2p-cw-k">Locked, graded '+(K(lock[0].resolves)!=="9999"?wd(K(lock[0].resolves)):"soon")+"</span>"+lock.map(function(u){return '<a href="#/round/'+u.n+'"><b>'+esc(u.ticker)+"</b></a>"}).join(" ")+"</span>");
   var nk0=nyNow().k,nk=UPCOMING.map(function(u){return K(u.called)}).filter(function(k){return k>=nk0}).sort()[0];/* (2026-11-04) not a day already gone (R104 Berkshire, due Nov 2, never came in) */if(nk){var nx=UPCOMING.filter(function(u){return K(u.called)===nk});
    it.push('<span class="x2p-cw-i"><span class="x2p-cw-k">Calls due '+wd(nk)+"</span>"+nx.length+" · "+nx.slice(0,8).map(function(u){return esc(u.co)}).join(" · ")+(nx.length>8?" · more":"")+"</span>")}
-  var q=nyNow(),open=q.h<16,day=new Date().getDay(),bell=(day>0&&day<6&&open)?(16*60-(q.h*60+q.m)):null;
+  var q=nyNow(),open=q.h<16,day=new Date(q.k+"T12:00:00Z").getUTCDay()/* (launch-day QA) New York's weekday: the visitor's own mixed with New York's hours read Sunday as a trading day in Sydney */,bell=(day>0&&day<6&&open)?(16*60-(q.h*60+q.m)):null;
   var bt=bell!=null?'<span>Next bell</span><b>'+(bell>=60?Math.floor(bell/60)+"h "+("0"+bell%60).slice(-2)+"m":bell+"m")+"</b>":'<span>Next bell</span><b>4:00 PM ET</b>';
   var s=it.join(sep);if(!bar){bar=d.createElement("div");bar.className="x2p-cw";bar.setAttribute("role","region");bar.setAttribute("aria-label","Live scores");
    bar.innerHTML='<div class="x2p-cw-lg">'+X2P_LOGO+'</div><div class="x2p-cw-bug"><i></i><span>On air</span></div><div class="x2p-cw-run"><div class="x2p-cw-tr"></div></div><div class="x2p-cw-cl"></div>';d.body.appendChild(bar);H.classList.add("x2p-crawl")}

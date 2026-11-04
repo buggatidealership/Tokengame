@@ -6,6 +6,13 @@
    (3) Closing a round (the cross, Escape, a tap outside) left #/round/N in the address, so a reload opened the card again: the address
        goes back to the tab under the card (the Overview, Upcoming or the Leaderboard), with no new history entry. */
 (function(){var W=window,d=document,H=d.documentElement;if(!H.classList.contains("h48"))return;
+/* (launch-day QA) X2's old tab addresses (#/results, #/buyback, #/models, #/model/N) sat on the cover for its 9.5 s net before
+   landing on the Overview: they go straight there */
+if(/^#\/(results|buyback|models?)(\/|$)/.test(location.hash))history.replaceState(history.state,"",location.pathname+location.search+"#/");
+/* (launch-day QA) the page is built once, so a tab left open over night kept "Today, Wed Nov 4" and never saw newer results: when a
+   tab comes back into view on another New York day, or after six hours, it loads again (a round left open is the address it keeps) */
+var NYK=function(){try{return new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York"}).format(new Date())}catch(e){return ""}},k0=NYK(),t0=Date.now();
+d.addEventListener("visibilitychange",function(){if(d.hidden)return;if(NYK()!==k0||Date.now()-t0>6*3600e3)location.reload()});
 function isRound(){return /^#\/round\//.test(location.hash)}
 d.addEventListener("click",function(e){if(e.defaultPrevented||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;var t=e.target;if(!t||!t.closest)return;
   var lc=t.closest("#liveChip");

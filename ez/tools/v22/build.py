@@ -623,6 +623,27 @@ try:
         _h6=_h6.replace(_m.group(0),open(_S+'h50_load.html').read().strip(),1)
         _h6=_h6.replace('</head>','<style id="h50-load">\n'+open(_S+'h50_load.css').read()+'\n</style>\n</head>',1)
         _h6=_h6.replace('<head>','<head>\n'+open(_S+'h50_load.head').read().strip(),1)
+    # (launch day, QA) a hung Google Fonts connection (mainland China, filtering networks) kept the page blank for good: its four
+    # stylesheets blocked the first paint, the cover and the safety nets with it. They now load without blocking (the cover waits for
+    # the first screen's fonts as before; X6+'s own faces are self-hosted)
+    _h6,_nf=re.subn(r'<link ([^>]*href="https://fonts\.googleapis\.com/css2[^"]*"[^>]*?) ?rel="stylesheet">',lambda m:'<link '+m.group(1)+' rel="stylesheet" media="print" onload="this.media=\'all\'">',_h6)
+    assert _nf==4,_nf
+    # (launch day, QA) a phone that never scrolled downloaded 8.2 MB, 5.3 MB of it pictures for X2+'s own sections that X6+ never shows
+    # (x2p_top's frames and founders, x2p_more's bet scenes, the highlights' film posters): their <img> tags load lazily, which a hidden
+    # section never triggers, and the highlights (X2+'s MVP slabs) are not built
+    for _sid in ['x2p-top-js','x2p-more-js']:
+        _a='<script id="%s">'%_sid
+        _i=_h6.index(_a)+len(_a);_j=_h6.index('</script>',_i)
+        _h6=_h6[:_i]+_h6[_i:_j].replace('<img ','<img loading="lazy" ')+_h6[_j:]
+    _a='P5.stage=function(el,o){'
+    assert _h6.count(_a)==1
+    _h6=_h6.replace(_a,_a+'if(document.documentElement.classList.contains("h48"))return;',1)
+    _a='if(hs&&window.__x2pHlSlabs){var h2=d.createElement("div");'
+    assert _h6.count(_a)==1
+    _h6=_h6.replace(_a,'if(hs&&window.__x2pHlSlabs&&!d.documentElement.classList.contains("h48")){var h2=d.createElement("div");',1)
+    _a='function x2pResults(){try{hlSlabs();tkStamp()}catch(e){}}'
+    assert _h6.count(_a)==1
+    _h6=_h6.replace(_a,'function x2pResults(){if(document.documentElement.classList.contains("h48"))return;try{hlSlabs();tkStamp()}catch(e){}}',1)
     # (launch day, QA) the round view of a round still to come said "Calls due", "Calls" and "No calls yet": X6+ says trades
     for a,b in [('<span class="ds">Calls due</span>','<span class="ds">Trades due</span>'),
                 ('<div class="cwin"><small>Calls</small>','<div class="cwin"><small>Trades</small>'),
