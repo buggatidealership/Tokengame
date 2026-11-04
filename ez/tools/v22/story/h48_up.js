@@ -76,7 +76,7 @@ function cos(n){return n+" compan"+(n===1?"y":"ies")}
 function closeLine(cs){return cs.map(function(c){return c.ex+" close · "+hm(c.close,c.tz)}).join(" · ")}
 function tags(u){return (u.mag7?'<span class="h8-utg">Mag 7</span>':'')+(u.bet?'<span class="h8-utg">Bet #1</span>':'')}
 /* the market line, only where a market exists (owner, 2026-11-04: never "No Hyperliquid market"; the filter covers the rest) */
-function mktTxt(mk){return '<b>'+esc(mk.name)+'</b> · $'+mk.oi.toFixed(1)+'M open interest'+(mk.thin?' · <em>thin market</em>':'')}
+function mktTxt(mk){return '<b>'+esc(mk.name)+'</b><span class="h8-msep"> · </span>$'+mk.oi.toFixed(1)+'M open interest'+(mk.thin?' · <em>thin market</em>':'')}
 function srRow(u,line){return label(u)+", round "+u.n+(u.mag7?", Mag 7":"")+(u.bet?", Bet #1":"")+". "+line+". "+(u.hl?"On Hyperliquid: "+u.hl.name+", $"+u.hl.oi.toFixed(1)+"M open interest"+(u.hl.thin?", thin market":"")+". ":"")+"Open its round."}
 /* one company with no trades yet: a listing on a painted plate, the whole plate opens its round */
 function row(u){var past=u.called&&X.E.dayKey(u.called)<X.tk,line=past?"Trades not in yet":"Trades drop before the earnings";
@@ -89,12 +89,14 @@ function card(u){var E=X.E,U=H48UI,L=X.lead,ord=X.ord,t=u.tr.filter(function(x){
   var lg=u.tr.filter(function(x){return x.up}).length,sh=u.nIn-lg,nm=u.missing.length;
   var h='<li class="h8-uli h8-ucw"><article class="h8-nx h8-pl h8-ucd" aria-labelledby="h8un'+u.n+'">'+
     '<a class="h8-nxhd h8-ulk" href="#/round/'+u.n+'">'+U.co(u.ticker,38)+'<span class="h8-urt"><span class="h8-nxcn" id="h8un'+u.n+'">'+esc(label(u))+'</span><span class="h8-nxgd">Round '+u.n+' · '+u.nIn+' of '+ord.length+' trades in</span></span><span class="h8-sr">Open its round</span></a>';
-  h+=t?'<div class="h8-nxtop">'+U.badge(L,34)+'<div><span class="h8-nxlb">'+E.NAME[L]+'&rsquo;s trade</span><span class="h8-nxbig '+(t.up?"h8-long":"h8-short")+'">'+U.size(t)+'</span></div></div>':
+  /* owner, 2026-11-04, on this card: the size at the far end of the gold strip (as on the Overview's cards); the field's trades beside their
+     names; the split up beside "The field"; the market beside the Follow button. One row less, a smaller card. */
+  var cl=t?(t.up?"h8-long":"h8-short"):"";
+  h+=t?'<div class="h8-nxtop">'+U.badge(L,34)+'<div><span class="h8-nxbig '+cl+'">'+(t.up?"Long":"Short")+'</span></div><span class="h8-nxsz h8-nxbig '+cl+'">'+t.size+'%</span></div>':
     '<div class="h8-nxtop h8-no">'+U.badge(L,34)+'<div><span class="h8-nxlb">'+E.NAME[L]+'&rsquo;s trade</span><span class="h8-nxwt">Not in yet</span></div></div>';
-  h+='<div class="h8-ufld"><span class="h8-nxlb">The field</span><div class="h8-uf3">'+ord.filter(function(m){return m!==L}).map(function(m){var x=u.tr.filter(function(q){return q.m===m})[0];
+  h+='<div class="h8-ufld"><div class="h8-ufh"><span class="h8-nxlb">The field</span><p class="h8-usp"><span class="h8-nxlb">The split</span><span class="h8-usv"><b class="h8-long">'+lg+' long</b>, <b class="h8-short">'+sh+' short</b>'+(nm?' · '+nm+' not in yet':'')+'</span></p></div><div class="h8-uf3">'+ord.filter(function(m){return m!==L}).map(function(m){var x=u.tr.filter(function(q){return q.m===m})[0];
       return '<span class="h8-uf1'+(x?'':' h8-unin')+'"><span class="h8-ufn">'+U.badge(m,18)+E.NAME[m]+'</span>'+(x?'<i class="'+(x.up?"h8-long":"h8-short")+'">'+U.size(x)+'</i>':'<i>not in yet</i>')+'</span>'}).join("")+'</div></div>';
-  h+='<p class="h8-usp"><span class="h8-nxlb">The split</span><span class="h8-usv"><b class="h8-long">'+lg+' long</b>, <b class="h8-short">'+sh+' short</b>'+(nm?' · '+nm+' not in yet':'')+'</span></p>';
-  if(mk)h+='<div class="h8-hl" data-h8hl="'+esc(u.ticker)+'">'+(t?'<a class="h8-btn h8-hlb" href="'+esc(mk.url)+'" target="_blank" rel="noopener">Follow '+E.NAME[L]+'&rsquo;s '+(t.up?"long":"short")+' on Hyperliquid</a>':'')+'<span class="h8-mkl" data-h8mk="'+esc(u.ticker)+'">'+mktTxt(mk)+'</span></div>';
+  if(mk)h+='<div class="h8-hl h8-uhl" data-h8hl="'+esc(u.ticker)+'">'+(t?'<a class="h8-btn h8-hlb" href="'+esc(mk.url)+'" target="_blank" rel="noopener">Follow '+E.NAME[L]+'&rsquo;s '+(t.up?"long":"short")+' on Hyperliquid</a>':'')+'<span class="h8-mkl" data-h8mk="'+esc(u.ticker)+'">'+mktTxt(mk)+'</span></div>';
   return h+'</article></li>'}
 /* a group of companies graded at one close: the cards first, then the listings */
 function list(rs,also){var ci=rs.filter(function(u){return u.nIn}),ro=rs.filter(function(u){return !u.nIn}),h="";
@@ -139,7 +141,7 @@ function build(root){
 
   root.innerHTML=h;
   H48UI.letterAll(root);
-  logoCol(root);
+  logoCol(root);fitField(root);
   /* a filter redraws the tab in place: the scroll and the pressed switch's focus stay */
   root.querySelectorAll("[data-uf]").forEach(function(bt){bt.addEventListener("click",function(){var k=bt.getAttribute("data-uf"),y=scrollY;
     if(k==="all")st.f={};else st.f[k]=!st.f[k];build(root);scrollTo({top:y,behavior:"instant"});var f=root.querySelector('.h8-uflt [data-uf="'+k+'"]');if(f)f.focus({preventScroll:true})})});
@@ -149,6 +151,15 @@ function build(root){
    so every name starts on the same line */
 function logoCol(root){var w=0;root.querySelectorAll(".h8-urw>.h8-co").forEach(function(c){var q=c.getBoundingClientRect(),cs=getComputedStyle(c);w=Math.max(w,q.width+parseFloat(cs.marginLeft)+parseFloat(cs.marginRight))});
   if(w)root.style.setProperty("--h8ulw",Math.ceil(w)+"px")}
+/* the field's three trades sit on one row, each beside its name: one size for every card, the largest at which the widest row fits (floor
+   11px; below that a row may wrap) */
+function fitField(root){root.style.removeProperty("--uff");var r=1,f0=0;root.querySelectorAll(".h8-uf3").forEach(function(g){if(!g.clientWidth)return;
+    if(!f0)f0=parseFloat(getComputedStyle(g.querySelector(".h8-uf1")||g).fontSize);var need=0;[].forEach.call(g.children,function(c){need+=c.scrollWidth});need+=(g.children.length-1)*parseFloat(getComputedStyle(g).columnGap||6);r=Math.max(r,need/g.clientWidth)});
+  if(!(r>1&&f0))return;var f=Math.max(10.5,Math.floor(f0/r*4)/4),gs=[].slice.call(root.querySelectorAll(".h8-uf3"));
+  /* the marks and the gaps do not scale with the type: check the rows as drawn and step down until each is one line */
+  var over=function(){return gs.some(function(g){var k=g.children,t=k.length&&k[0].getBoundingClientRect().top;return [].some.call(k,function(c){return Math.abs(c.getBoundingClientRect().top-t)>2})})};
+  for(var i=0;i<14;i++){root.style.setProperty("--uff",f+"px");if(f<=10.5||!over())break;f-=.25}}
+if(d.fonts&&d.fonts.ready)d.fonts.ready.then(function(){var r=d.getElementById("h48up");if(r)fitField(r)});
 /* the countdowns tick once a minute (no seconds); when a bell rings, the page moves on to the next close */
 function clock(root){clearTimeout(tmr);var cs=[].slice.call(root.querySelectorAll("[data-h8ucd]")).map(function(e){return +e.getAttribute("data-h8ucd")}),bc=cs.length?Math.min.apply(null,cs):null;
   var set=function(){if(!root.isConnected)return false;var now=W.__H48NOW||Date.now();

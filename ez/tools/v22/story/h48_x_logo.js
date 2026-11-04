@@ -21,10 +21,21 @@ function n3(x){return Math.round(x*1000)/1000}
 function mark(t,size,extra,mx){var C=W.CO_LOGOS,L=C&&C[t];if(!L)return null;var f=L.f||L,g=geo(f,mx);if(!g)return null;
   return '<span class="h8-co h8-lgx'+(g.wide?' h8-lgw':'')+(L.dark?' h8-lgd':'')+(extra?' '+extra:'')+'" style="--cs:'+(size||34)+'px;--lar:'+n3(g.arc)+';--liw:'+n3(g.IW)+';--ll:'+n3(g.l)+';--lt:'+n3(g.t)+(L.c?';--bc:'+esc(L.c):'')+'" aria-hidden="true">'+
     '<img src="media/'+esc(f)+'" alt="" loading="lazy" decoding="async"></span>'}
+/* the small next-trade cards ("Next with a market on Hyperliquid"; owner, 2026-11-04: "I essentially want everything to look like the
+   Qualcomm one... for Lumentum... just have the tiny little stripes on the left... Cloudflare, just the cloud"): every logo in one square-ish
+   slot. Where a file carries the brand's symbol beside or above its wordmark, the slot shows the symbol alone (SYM: its box in the file,
+   measured: tools/v22/story's lead, from the ink); a wordmark with no symbol (Arm) prints whole, as wide as the slot. */
+var SYM={"LITE-2.png":[0.02,0.408,0.141,0.592],"NET-2.png":[0.502,0.342,0.959,0.549]};
+function sym(t,size){var C=W.CO_LOGOS,L=C&&C[t];if(!L)return null;var f=L.f||L,fn=f.split("/").pop(),s=SYM[fn];
+  if(!s)return mark(t,size,"h8-lgs",1.6);var b=BOX[fn],ih=b?b[4]:1,fw=s[2]-s[0],fh=(s[3]-s[1])*ih;if(fw<=0||fh<=0)return mark(t,size,"h8-lgs",1.6);
+  /* the slot is the symbol's own box, at most 34 x 26 px, so nothing of the wordmark beside or under it shows */
+  var ar=fw/fh,sh=ar>=34/26?34/ar:26,IW=1/fh;
+  return '<span class="h8-co h8-lgx h8-lgs'+(L.dark?' h8-lgd':'')+'" style="--lh:'+n3(sh)+'px;--lar:'+n3(ar)+';--liw:'+n3(IW)+';--ll:'+n3(-s[0]*IW)+';--lt:'+n3(-s[1]*ih*IW)+(L.c?';--bc:'+esc(L.c):'')+'" aria-hidden="true">'+
+    '<img src="media/'+esc(f)+'" alt="" loading="lazy" decoding="async"></span>'}
 /* an old card (built before this file ran): rebuild it in place, same ticker and size */
 function upOne(el){if(el.classList.contains("h8-lgx"))return;var im=el.querySelector("img");if(!im)return;
   var f=(im.getAttribute("src")||"").replace(/^media\//,""),t=byFile(f);if(!t)return;var m=/--cs:\s*([\d.]+)px/.exec(el.getAttribute("style")||"");
-  var h=mark(t,m?+m[1]:34);if(h)el.outerHTML=h}
+  var h=el.closest(".h8-wts")?sym(t,m?+m[1]:34):mark(t,m?+m[1]:34);if(h)el.outerHTML=h}
 /* Every round so far: the tile's caption plate prints the company's logo above its name (the round's ticker, from its own link) */
 var RT=null;function roundTicker(n){if(!RT){RT={};(W.ROUNDS||[]).forEach(function(r){RT[r.n]=r.ticker})}return RT[n]}
 /* (lead, 2026-11-04) no logo on the Every round so far tiles: the owner asked for a shorter caption (winner, then company and move),
@@ -39,7 +50,7 @@ function safe(f){return function(){try{return f.apply(this,arguments)}catch(e){(
 /* new renders (the Upcoming tab, the Leaderboard, the next-trade cards) come out printed, so nothing ever shows the old card first */
 var U=W.H48UI;if(U&&!U.__lgx){U.__lgx=1;var co0=U.co,nx0=U.nextCard;
   U.co=function(t,size){try{var h=mark(t,size);if(h)return h}catch(e){}return co0.apply(this,arguments)};
-  if(nx0)U.nextCard=function(){var h=nx0.apply(this,arguments);try{h=h.replace(/<span class="h8-co[^"]*" style="--cs:([\d.]+)px" aria-hidden="true"><img src="media\/([^"]+)"[^>]*><\/span>/g,function(s,cs,f){var t=byFile(f);return t&&mark(t,+cs)||s})}catch(e){}return h}}
+  if(nx0)U.nextCard=function(){var h=nx0.apply(this,arguments);try{var small=/^<article class="h8-nx[^"]*\bh8-wt\b/.test(h);h=h.replace(/<span class="h8-co[^"]*" style="--cs:([\d.]+)px" aria-hidden="true"><img src="media\/([^"]+)"[^>]*><\/span>/g,function(s,cs,f){var t=byFile(f);return t&&(small?sym(t,+cs):mark(t,+cs))||s})}catch(e){}return h}}
 /* the Overview, as h48_ov.js built it */
 (W.H48HOOK=W.H48HOOK||[]).push(safe(function(root){scan(root)}));
 /* anything added later, watched narrowly (a whole-page watch slowed the cover by seconds on a slow phone): the Upcoming tab and the
@@ -48,5 +59,5 @@ function watch(el,f){if(el&&!el.__lgxw&&"MutationObserver" in W){el.__lgxw=1;new
 (W.H48HOOK=W.H48HOOK||[]).push(safe(function(){watch(d.getElementById("h8guide"),scan)}));
 (function view(k){var v=d.getElementById("view");if(!v){if(k<200)setTimeout(function(){view(k+1)},50);return}
   watch(v,function(n){if(n.id==="h48up"||n.id==="h48lb")scan(n)});[].forEach.call(v.querySelectorAll(":scope>#h48up,:scope>#h48lb"),scan)})(0);
-W.__h49lg={mark:mark,geo:geo,scan:scan,BOX:BOX};
+W.__h49lg={mark:mark,sym:sym,geo:geo,scan:scan,BOX:BOX,SYM:SYM};
 })();

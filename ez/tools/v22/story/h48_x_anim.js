@@ -10,11 +10,12 @@
    video sits over it, hidden until it really plays a frame, so nothing ever flashes. A loop loads and plays only while on screen and
    pauses off screen. While the explainer film plays ("How it works": x2p_top.js's .f4-v, or X2+'s .x2p-vt) the loops hold still and never
    ask to play (x2plus.js holds scripted play() then); they carry on when it pauses or ends.
-   Media (written out so make_site.py copies them): media/h49-cast-grok.mp4 media/h49-cast-grok.webm media/h49-cast-claude.mp4
+   Take b since 2026-11-04 (owner: "a bit more noticeable"): one clear beat each (Grok's grin and wink, Claude's grin and notebook taps,
+   GPT's grin and coin flip, Kimi's grin and helmet pats). Media (written out so make_site.py copies them): media/h49-cast-grok.mp4 media/h49-cast-grok.webm media/h49-cast-claude.mp4
    media/h49-cast-claude.webm media/h49-cast-gpt.mp4 media/h49-cast-gpt.webm media/h49-cast-kimi.mp4 media/h49-cast-kimi.webm */
 (function(){var W=window,d=document,H=d.documentElement;if(!H.classList.contains("h48"))return;
-var LOOP={"h48-cast-grok.jpg":["media/h49-cast-grok.mp4","media/h49-cast-grok.webm"],"h48-cast-claude.jpg":["media/h49-cast-claude.mp4","media/h49-cast-claude.webm"],
-  "h48-cast-gpt.jpg":["media/h49-cast-gpt.mp4","media/h49-cast-gpt.webm"],"h48-cast-kimi.jpg":["media/h49-cast-kimi.mp4","media/h49-cast-kimi.webm"]};
+var LOOP={"h48-cast-grok.jpg":["media/h49-cast-grok-b.mp4","media/h49-cast-grok-b.webm"],"h48-cast-claude.jpg":["media/h49-cast-claude-b.mp4","media/h49-cast-claude-b.webm"],
+  "h48-cast-gpt.jpg":["media/h49-cast-gpt-b.mp4","media/h49-cast-gpt-b.webm"],"h48-cast-kimi.jpg":["media/h49-cast-kimi-b.mp4","media/h49-cast-kimi-b.webm"]};
 var SEL=".h8-pic>img, .h8-gtface>img, #h48lb .h8-por>img";
 var mq=W.matchMedia?matchMedia("(prefers-reduced-motion: reduce)"):null;
 function still(){var c=navigator.connection;return (mq&&mq.matches)||(c&&(c.saveData||/(^|-)2g$/.test(c.effectiveType||"")))}

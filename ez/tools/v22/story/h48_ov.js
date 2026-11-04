@@ -180,7 +180,14 @@ function draw(){var a=d.getElementById("h8sc1"),b=d.getElementById("h8sc2");if(!
   var eh={},ep={};E.MK.forEach(function(m){var s=D.season[m];eh[m]=s.n?(s.hit*100).toFixed(1)+"%":"–";ep[m]=E.kmoney(s.pl)});
   U.chart(d.getElementById("h8sf1"),"sc",{rs:R,ends:eh,anim:true,aria:"Hit rate round by round, every line starting at 50 percent"});
   U.chart(d.getElementById("h8sf2"),"sc",{rs:R,ends:ep,anim:true,money:true,aria:"P&L round by round from $0, $100K a trade"})}
-var lw=0;function onR(){if(innerWidth!==lw){lw=innerWidth;draw()}}
+/* the small next-trade cards: one size for every name and one for every "Trade drops" line, the largest at which the longest fits on one
+   line (owner, 2026-11-04: "each module the same size, but also the same layout... even if the writing has to be a bit smaller") */
+function fitWts(){var g=root.querySelector(".h8-nxs.h8-wts");if(!g||!g.clientWidth)return;g.style.removeProperty("--wtn");g.style.removeProperty("--wtd");
+  var one=function(sel,floor,v){var r=1,f0=0;g.querySelectorAll(sel).forEach(function(el){if(!f0)f0=parseFloat(getComputedStyle(el).fontSize);if(el.clientWidth)r=Math.max(r,el.scrollWidth/el.clientWidth)});
+    if(r>1&&f0)g.style.setProperty(v,Math.max(floor,Math.floor(f0/r*4)/4)+"px")};
+  one(".h8-nxcn",11,"--wtn");one(".h8-nxgd",9,"--wtd")}
+var lw=0;function onR(){if(innerWidth!==lw){lw=innerWidth;draw();fitWts()}}
+fitWts();if(d.fonts&&d.fonts.ready)d.fonts.ready.then(fitWts);
 addEventListener("resize",onR);
 
 /* Hyperliquid's own figures, once, after the page is up: the open interest goes live, else the snapshot stays with its date */
