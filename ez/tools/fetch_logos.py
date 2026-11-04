@@ -22,8 +22,17 @@ tickers = set(re.findall(r'^\s*\["\d+","([^"]+)"', src, re.M))
 tickers |= set(t for t in re.findall(r'ticker:"([^"]+)"', src))
 os.makedirs(OUT, exist_ok=True)
 entries = {}
+# (2026-11-04, round H49) an entry that points at a hand-picked file (logos/<T>-2.png, researched from the brand's own or Wikimedia
+# sources; see tools/concepts/worlds/cartoon/h49/logo/sources.json) is kept as it is while that file exists, so a run never undoes them
+old = {}
+_m0 = re.search(r"var CO_LOGOS=\{(.*?)\};", src, re.S)
+if _m0:
+    for _mm in re.finditer(r'"([^"]+)":(\{[^}]*\})', _m0.group(1)): old[_mm.group(1)] = _mm.group(0)
 for t in sorted(tickers):
     t = t.upper(); fn = re.sub(r"[^A-Z0-9.]", "", t) + ".png"; path = os.path.join(OUT, fn)
+    _kf = re.search(r'f:"logos/([^"]+)"', old.get(t, ""))
+    if _kf and _kf.group(1) != fn and os.path.exists(os.path.join(OUT, _kf.group(1))):
+        entries[t] = old[t]; continue
     if not os.path.exists(path):
         try:
             req = urllib.request.Request("https://financialmodelingprep.com/image-stock/%s.png" % ALIAS.get(t, t), headers={"User-Agent": "Mozilla/5.0"})
