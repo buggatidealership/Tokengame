@@ -3,7 +3,7 @@
    Mirrors the ARENA sheet cell for cell. Edit here once; all variants follow.
    Winners, distances, direction, ladder: derived, never typed.
    ===================================================================== */
-var CONFIG={ca:"FWT2aL9ehy2RrwJJurTdFV7GyrWwz6WaYg7fbgaSpump",buyUrl:"https://pump.fun/coin/FWT2aL9ehy2RrwJJurTdFV7GyrWwz6WaYg7fbgaSpump",chain:"Solana",x:"https://x.com/earningszn",tg:"",pool:"",poolUrl:"",betDate:"",
+var CONFIG={ca:"FWT2aL9ehy2RrwJJurTdFV7GyrWwz6WaYg7fbgaSpump",buyUrl:"https://pump.fun/coin/FWT2aL9ehy2RrwJJurTdFV7GyrWwz6WaYg7fbgaSpump",chain:"Solana",x:"https://x.com/earningszn",tg:"",pool:"8Ug8ZMC7QBbmetyZ1XAzjdWecTpCGN4ZaEegW9SJG8cp",poolUrl:"https://solscan.io/account/8Ug8ZMC7QBbmetyZ1XAzjdWecTpCGN4ZaEegW9SJG8cp",betDate:"",
   /* the buyback scoreboard: "$EZ bought back" (text, e.g. "$12.4K"); empty = "Opens at launch" */
   boughtBack:"",
   /* the road: launch comes after launchAt graded rounds; set launched:true once $EZ is live */

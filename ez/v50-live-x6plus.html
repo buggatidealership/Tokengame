@@ -11364,6 +11364,11 @@ html.h48 body>footer .h8-caf .h8-cal,html.h48 body>footer .h8-caf .h8-cap,html.h
 html.h48 body>footer .h8-caf .h8-cap b{color:inherit}
 html.h48 body>footer .h8-caf .h8-cabuy{background:#f2c443;color:#24140c}
 html.h48 body>footer .h8-caf .h8-cal span{background:#f6e7c4;color:#24140c}
+/* the pool wallet under the contract address (CONFIG.pool): parted by a dashed rule */
+html.h48 .h8-ca .h8-capl{margin:14px 0 0;padding:12px 0 0;border-top:2px dashed rgba(36,20,12,.35)}
+html.h48 body>footer .h8-caf .h8-capl{border-top-color:currentColor}
+html.h48 .h8-ca .h8-capw{font-family:"H8 Lilita",sans-serif;font-size:14px;color:var(--h8ink,#24140c);display:inline-flex;align-items:center;min-height:40px}
+html.h48 body>footer .h8-caf .h8-capw{color:#f2c443}
 
 /* round H50 "follow": past the report, the Follow line leaves the card (h48_x_follow.js) */
 html.h48 .h8-hl.h8-hl-off{display:none!important}
@@ -13088,13 +13093,16 @@ function len(p,q){return Math.hypot(q[0]-p[0],q[1]-p[1])}
    Overview, and in the footer on every tab. ?ca=test (or window.__h48CaTest) shows a sample address for mockups. */
 (function(){var W=window,d=document,H=d.documentElement;if(!H.classList.contains("h48"))return;
 var C=W.CONFIG||{},CA=C.ca||((W.__h48CaTest||/[?&]ca=test/.test(location.search))?"EZtEsT1111111111111111111111111111111pump":"");if(!CA)return;
-var BUY=C.buyUrl||("https://pump.fun/coin/"+CA);
+var BUY=C.buyUrl||("https://pump.fun/coin/"+CA),POOL=C.pool||"",PURL=C.poolUrl||("https://solscan.io/account/"+POOL);
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-function plate(k){return '<div class="h8-ca'+(k==="ft"?' h8-caf':' h8-pl')+'" role="group" aria-label="$EZ contract address">'+
+function plate(k){return '<div class="h8-ca'+(k==="ft"?' h8-caf':' h8-pl')+'" role="group" aria-label="$EZ contract address and pool wallet">'+
   '<p class="h8-cal">$EZ contract address <span>Solana</span></p>'+
   '<div class="h8-car"><code class="h8-cac" translate="no">'+esc(CA)+'</code><button type="button" class="h8-cab" data-h8ca="'+esc(CA)+'">Copy</button></div>'+
   '<p class="h8-cap"><b>Paired with USDC</b>, because the pool&rsquo;s bets are placed on Hyperliquid, in USDC.</p>'+
-  '<p class="h8-cab2"><a class="h8-cabuy" href="'+esc(BUY)+'" target="_blank" rel="noopener">Buy on pump.fun</a><span>This is the only address. Check it before you buy.</span></p></div>'}
+  '<p class="h8-cab2"><a class="h8-cabuy" href="'+esc(BUY)+'" target="_blank" rel="noopener">Buy on pump.fun</a><span>This is the only address. Check it before you buy.</span></p>'+
+  (POOL?'<div class="h8-capl"><p class="h8-cal">The pool wallet <span>69% of creator fees</span></p>'+
+    '<div class="h8-car"><code class="h8-cac" translate="no">'+esc(POOL)+'</code><button type="button" class="h8-cab" data-h8ca="'+esc(POOL)+'">Copy</button></div>'+
+    '<p class="h8-cab2"><a class="h8-capw" href="'+esc(PURL)+'" target="_blank" rel="noopener">Watch it fill on Solscan &#8599;</a><span>The 69% split is locked on-chain. Nobody can change it, us included.</span></p></div>':'')+'</div>'}
 function mk(h){var t=d.createElement("template");t.innerHTML=h;return t.content.firstChild}
 function copy(b){var v=b.getAttribute("data-h8ca"),done=function(){b.textContent="Copied";b.classList.add("h8-on");setTimeout(function(){b.textContent="Copy";b.classList.remove("h8-on")},1600)};
   var sel=function(){var c=b.parentNode.querySelector("code");try{var r=d.createRange();r.selectNodeContents(c);var s=getSelection();s.removeAllRanges();s.addRange(r)}catch(e){}};
