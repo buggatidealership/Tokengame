@@ -138,7 +138,7 @@ function build(root){
    Off unless window.__h48LbV or ?lb= is set; the live board is unchanged. A = X2+'s board in the show (one title, the Season 1 plate, the
    filters right above the table, the table's columns follow Rank by, the chart beside it on desktop); B = the same top over today's full
    table; C = A with the filters pinned while the board is on screen. ---------- */
-function lbV(){if(W.__h48LbV)return String(W.__h48LbV).toUpperCase();var q=/[?&]lb=([abcABC])/.exec(location.search);return q?q[1].toUpperCase():''}
+function lbV(){if(W.__h48LbV)return String(W.__h48LbV).toUpperCase();var q=/[?&]lb=([abcABC0])/.exec(location.search);return q?(q[1]==='0'?'':q[1].toUpperCase()):'A'}/* (launch day, owner: "the leaderboard... shouldn't have the who to follow") take A is the default; ?lb=0 the old scorecard */
 function buildV(root,V){
   var E=X.E,D=X.D,U=H48UI,NM=E.NAME,MK=X.MK,P=X.per;
   var Wn=X.WIN[st.win],w=X.win[st.win],ord=X.rank(st.win,st.rank),hit=st.rank==='hit',wcap=st.win==='season'?'season':Wn.w;
