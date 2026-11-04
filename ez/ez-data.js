@@ -157,7 +157,8 @@ function coMark(t,cls){t=String(t||"").toUpperCase();var L=CO_LOGOS[t],f=L&&(L.f
    it was 10x from 2026-10-12, "just do 10x leverage, not at least 5x").
    leadHours: the leaderboard freezes this many hours before NVIDIA reports, and the AI in first place makes the call (owner, 2026-10-12).
    stopLoss: none for now (owner, 2026-10-12); null = no stop loss, so a wrong call can wipe out the pot. */
-var SIM={feePct:null,leverage:5,volPct:25,betDate:null,poolShare:.69,leadHours:24,stopLoss:null};
+/* betDate (launch night, 2026-11-04): NVIDIA reports after the close on Tue, Nov 17, 2026 (its own notice: the call at 5 pm ET), so Bet #1 goes on at that close and the board freezes 24 hours before; the old rule (the weekday after the sheet date) put it on Nov 18, after the report */
+var SIM={feePct:null,leverage:5,volPct:25,betDate:"11/17/26",poolShare:.69,leadHours:24,stopLoss:null};
 /* the round films: webm/mp4/poster in media/, tall = 9:16 */
 /* all rounds: 1080x1080 at 60fps ("-hd"); the original files stay for Variant 1.
    pan: for 9:16 films shown in a square, [second, vertical position %] keyframes so the frame follows the action */
