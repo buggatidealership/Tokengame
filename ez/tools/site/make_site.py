@@ -35,7 +35,7 @@ meta = ('<link rel="canonical" href="' + URL + '">\n<meta property="og:type" con
 # a new card needs a new file name (media is cached for a year, and X keeps a card for days). The icons are the EZ. logo.
 # Since 2026-11-03 (X6+ live) the card is media/share-x6a.jpg: X6+'s own title card ("EZ. presents Four AIs Trade Earnings" over the
 # painted town), shot at 1200x630 with the header, the crawl and the week pills hidden (a week number on a card X keeps for days goes stale).
-SHARE = 'share-x6a.jpg'
+SHARE = 'share-x6b.jpg'  # 2026-11-04: the same title card with the EZ. logo without its disc and the cast walked on (owner: the logo everywhere without the background)
 DESC = "We track four AIs on every earnings trade, so you don't have to. $100K on every trade, graded at the close."
 meta2 = ('<meta name="description" content="' + DESC + '">\n<meta property="og:description" content="' + DESC + '">\n'
          '<meta property="og:image" content="' + URL + 'media/' + SHARE + '">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n'
