@@ -85,7 +85,7 @@ function ticket(m,s){return '<div class="h8-gt" role="group" aria-label="'+E.NAM
 var BOX={sc:{x:.207,y:.12,w:.598,h:.623,ar:.75},ch:{x:.13,y:.167,w:.765,h:.627,ar:.75}};
 /* place a surface on its painting (measured on the paintings, in % of the picture) */
 /* extra (px, desktop Leaderboard only): the board drawn that much taller, the painting stretched to match, so a page ends level with the one beside it */
-function fit(sc,sf,box,fill,extra){var W=sc.clientWidth,k=fill/box.w,pw=W*k,ph=pw*box.ar,x=W*(1-fill)/2-box.x*pw;if(extra>0)ph*=(box.h*ph+extra)/(box.h*ph);var y0=box.y*ph-W*.05;
+function fit(sc,sf,box,fill,extra){var W=sc.clientWidth,k=fill/box.w,pw=W*k,ph=pw*box.ar,x=W*(1-fill)/2-box.x*pw;if(extra)ph*=Math.max(.62,(box.h*ph+extra)/(box.h*ph));var y0=box.y*ph-W*.05;
   sc.style.backgroundSize=pw+"px "+ph+"px";sc.style.backgroundPosition=x+"px "+(-y0)+"px";sc.style.height=(box.h*ph+W*.1)+"px";sc.style.aspectRatio="auto";
   sf.style.left=(W*(1-fill)/2)+"px";sf.style.width=(W*fill)+"px";sf.style.top=(W*.05)+"px";sf.style.height=(box.h*ph)+"px"}
 var SEEN={},DASH={GROK:"",CLAUDE:"9 5",GPT:"2.5 4",KIMI:"10 4 2.5 4"};
