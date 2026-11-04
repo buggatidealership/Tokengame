@@ -39,19 +39,27 @@ function letter(el,seed,amp){var t=el.textContent,words=t.split(" "),k=0,a=amp||
 function letterAll(root){(root||document).querySelectorAll("[data-h8let]").forEach(function(el,i){letter(el,+el.dataset.h8let||i+1,+el.dataset.h8amp||1)})}
 function size(t){return (t.up?"Long ":"Short ")+t.size+"%"}
 /* the market line under a trade: follow it on Hyperliquid, thin market under $10M open interest, or no market */
-function follow(ticker,lead,t){var mk=E.hlMarket(ticker),h="";
-  if(mk){h+='<div class="h8-hl" data-h8hl="'+esc(ticker)+'">'+(t?'<a class="h8-btn h8-hlb" href="'+esc(mk.url)+'" target="_blank" rel="noopener">Follow '+E.NAME[lead]+'&rsquo;s '+(t.up?"long":"short")+' on Hyperliquid</a>':'')+
+/* o.row (the Overview, owner 2026-11-04): the button smaller with the open interest beside it, the market's name under them;
+   o.bare: the open interest only (a small card whose company is named above it). "Hyperliquid" in the button is green (owner). */
+function follow(ticker,lead,t,o){var mk=E.hlMarket(ticker),h="";o=o||{};
+  if(mk&&(o.row||o.bare)){var oi='<span class="h8-mkoi">$'+mk.oi.toFixed(1)+'M open interest'+(mk.thin?' · <em>thin market</em>':'')+'</span>';
+    h+='<div class="h8-hl h8-hlx'+(o.bare?' h8-hlbare':'')+'" data-h8hl="'+esc(ticker)+'">'+(o.row&&t?'<div class="h8-hlrow"><a class="h8-btn h8-hlb" href="'+esc(mk.url)+'" target="_blank" rel="noopener">Follow '+E.NAME[lead]+'&rsquo;s '+(t.up?"long":"short")+' on <span class="h8-hlw">Hyperliquid</span></a>'+oi+'</div>':oi)+
+      (o.row?'<span class="h8-mknm">'+esc(mk.name)+'</span>':'')+'</div>'}
+  else if(mk){h+='<div class="h8-hl" data-h8hl="'+esc(ticker)+'">'+(t?'<a class="h8-btn h8-hlb" href="'+esc(mk.url)+'" target="_blank" rel="noopener">Follow '+E.NAME[lead]+'&rsquo;s '+(t.up?"long":"short")+' on Hyperliquid</a>':'')+
     '<span class="h8-mkl"><b>'+esc(mk.name)+'</b> · $'+mk.oi.toFixed(1)+'M open interest'+(mk.thin?' · <em>thin market</em>':'')+'</span></div>'}
   else h+='<div class="h8-hl h8-none"><span class="h8-mkl">No Hyperliquid market</span></div>';
   return h}
 function when(u){return u.resolves?((E.dayKey(u.resolves)===E.dayKey(E.nyToday(Date.now()))?"Today, ":"")+E.fmtDay(u.resolves,true)):"Date to come"}
-/* one company coming up: the top model's trade on the gold strip, the other three as the field, and where to follow it */
-function nextCard(u,lead,ord){var t=u.in?u.tr.filter(function(x){return x.m===lead})[0]:null,f=u.in?ord.filter(function(m){return m!==lead}).map(function(m){return u.tr.filter(function(x){return x.m===m})[0]}).filter(Boolean):[];
-  var h='<article class="h8-nx h8-pl'+(u.in?'':' h8-wt')+'"><div class="h8-nxhd">'+co(u.ticker,38)+'<div><div class="h8-nxcn">'+esc(E.coLabel(u.ticker))+'</div><div class="h8-nxgd">'+(u.in?'Graded at the close · ':'Graded ')+'<span class="h8-nw">'+when(u)+'</span></div></div></div>';
-  if(u.in)h+=(t?'<div class="h8-nxtop">'+badge(lead,34)+'<div><span class="h8-nxlb">'+E.NAME[lead]+'&rsquo;s trade</span><span class="h8-nxbig '+(t.up?"h8-long":"h8-short")+'">'+size(t)+'</span></div></div>':
-      '<div class="h8-nxtop h8-no">'+badge(lead,34)+'<div><span class="h8-nxlb">'+E.NAME[lead]+'</span><span class="h8-nxwt">No trade on this one</span></div></div>')+
-    '<div class="h8-nxfld"><span class="h8-nxlb">The field</span>'+f.map(function(x){return '<span class="h8-nxf">'+badge(x.m,18)+E.NAME[x.m]+' <i class="'+(x.up?"h8-long":"h8-short")+'">'+size(x)+'</i></span>'}).join("")+'</div>';
-  return h+follow(u.ticker,lead,t)+'</article>'}
+/* one company coming up, on the Overview: the top model's trade only (owner, 2026-11-04: "we only want to focus on Grok... why show the
+   shittier models?"), Long or Short the big word and the size at the strip's right end ("the most important thing is people know he's
+   short"); a company whose trades are not in yet says when the leader's trade drops ("that's when he drops it"), not when it is graded */
+function drops(u,lead){if(!u.called)return E.NAME[lead]+"&rsquo;s trade: date to come";var k=E.dayKey(u.called),tk=E.dayKey(E.nyToday(Date.now()));
+  return E.NAME[lead]+"&rsquo;s trade "+(k===tk?"drops today":k>tk?'drops <span class="h8-nw">'+E.fmtDay(u.called,true)+'</span>':"not in yet")}
+function nextCard(u,lead,ord){var t=u.in?u.tr.filter(function(x){return x.m===lead})[0]:null;
+  var h='<article class="h8-nx h8-pl'+(u.in?'':' h8-wt')+'"><div class="h8-nxhd">'+co(u.ticker,38)+'<div><div class="h8-nxcn">'+esc(E.coLabel(u.ticker))+'</div><div class="h8-nxgd">'+(u.in?'Graded at the close · <span class="h8-nw">'+when(u)+'</span>':drops(u,lead))+'</div></div></div>';
+  if(u.in)h+=(t?'<div class="h8-nxtop">'+badge(lead,34)+'<div><span class="h8-nxlb">'+E.NAME[lead]+'&rsquo;s trade</span><span class="h8-nxbig '+(t.up?"h8-long":"h8-short")+'">'+(t.up?"Long":"Short")+'</span></div><span class="h8-nxsz h8-nxbig '+(t.up?"h8-long":"h8-short")+'">'+t.size+'%</span></div>':
+      '<div class="h8-nxtop h8-no">'+badge(lead,34)+'<div><span class="h8-nxlb">'+E.NAME[lead]+'</span><span class="h8-nxwt">No trade on this one</span></div></div>');
+  return h+follow(u.ticker,lead,t,u.in?{row:1}:{bare:1})+'</article>'}
 /* the golden ticket: the leader's founder face in its window, the record with its sample printed on the painted ticket */
 function ticket(m,s){return '<div class="h8-gt" role="group" aria-label="'+E.NAME[m]+' holds the golden ticket: right on '+s.w+' of '+s.n+' trades, '+(s.hit*100).toFixed(1)+' percent, '+E.money(s.pl)+' at $100K a trade">'+
   '<div class="h8-gtstub" aria-hidden="true"><span>Golden ticket</span></div>'+

@@ -49,7 +49,7 @@ var rest=NU.length-inN-wl.length,restNo=NU.filter(function(u){return !u.in&&!E.h
 h+='<section class="h8-flw h8-g" aria-label="'+E.NAME[L]+'&rsquo;s next trades"><div class="h8-wrap"><p class="h8-act">Coming up</p>'+
   '<h2 class="h8-let h8-h2" data-h8let="10" data-h8amp=".7">'+E.NAME[L]+'&rsquo;s next trades</h2>'+
   (inN?'<div class="h8-nxs'+(inN===1?' h8-solo':'')+'">'+NU.filter(function(u){return u.in}).map(function(u){return U.nextCard(u,L,ord)}).join("")+'</div>':'<p class="h8-lede">No trades in yet for the next close. They drop before each company&rsquo;s earnings.</p>')+
-  (wl.length?'<p class="h8-lbl h8-nxl">Next with a market on Hyperliquid · trades drop before each one&rsquo;s earnings</p><div class="h8-nxs h8-wts">'+wl.map(function(u){return U.nextCard(u,L,ord)}).join("")+'</div>':'')+
+  (wl.length?'<p class="h8-lbl h8-nxl">Next with a market on <span class="h8-hlw">Hyperliquid</span></p><div class="h8-nxs h8-wts">'+wl.map(function(u){return U.nextCard(u,L,ord)}).join("")+'</div>':'')+
   '<p class="h8-fine">'+rest+' more companies on the schedule, NVIDIA last. '+restNo+' of the '+(NU.length-inN)+' still to come have no Hyperliquid market. Markets: <span class="h8-asof">'+E.hlAsOf()+'</span>.</p></div></section>';
 
 /* ---------- 4. the proof: we track, you read ---------- */
@@ -61,17 +61,22 @@ h+='<section class="h8-proof h8-g" aria-label="We track. You read."><div class="
 
 /* ---------- 5. one real round, start to finish: the round's film on the painted TV, the beats under it ---------- */
 var rc=D.recap,rcT=rc.__h8.tr,rcR=rcT.filter(function(t){return t.w}),rcW=E.winners(rc),F=(W.FILMS||{})[rc.n];
-function tokTrade(t){return '<div class="h8-tk h8-pl h8-t">'+U.badge(t.m,28)+'<div class="h8-wh"><span class="h8-who">'+E.NAME[t.m]+'</span><span class="h8-sz '+(t.up?"h8-long":"h8-short")+'">'+sz(t)+'</span></div></div>'}
+/* owner, 2026-11-04: the size at the card's end ("don't put it that close, put it at the end here"), Long or Short under the name */
+function tokTrade(t){return '<div class="h8-tk h8-pl h8-t h8-tkx">'+U.badge(t.m,28)+'<div class="h8-wh"><span class="h8-who">'+E.NAME[t.m]+'</span><span class="h8-sz '+(t.up?"h8-long":"h8-short")+'">'+(t.up?"Long":"Short")+'</span></div><span class="h8-tkz h8-num '+(t.up?"h8-long":"h8-short")+'">'+t.size+'%</span></div>'}
 function tokGrade(t){return '<div class="h8-tk h8-pl h8-t '+(t.w?"h8-mw":"h8-ml")+'">'+U.badge(t.m,28)+'<div class="h8-wh"><span class="h8-who">'+E.NAME[t.m]+'</span><span class="h8-sz h8-num '+(t.v>0?"h8-pos":"h8-neg")+'">'+E.money(t.v)+'</span></div><span class="h8-st" role="img" aria-label="'+(t.w?"Win":"Loss")+'">'+(t.w?"W":"L")+'</span></div>'}
-var pay=rcR.length===1?'<b>'+E.NAME[rcR[0].m]+' was the only one right</b>'+(rcW.length===1&&rcW[0]===rcR[0].m?' and won the round.':'.'):(rcW.length?'<b>'+rcW.map(function(m){return E.NAME[m]}).join(" &amp; ")+' won the round.</b>':'<b>Nobody was right.</b>');
+var rcRn=byOrd(rcR).map(function(t){return E.NAME[t.m]}),rcWn=rcW.map(function(m){return E.NAME[m]}).join(" &amp; ");
+var pay=rcR.length===1?'<b>'+rcRn[0]+' was the only one right</b>'+(rcW.length===1&&rcW[0]===rcR[0].m?' and won the round.':'.'):
+  rcR.length?'<b>'+rcRn.slice(0,-1).join(", ")+' and '+rcRn[rcRn.length-1]+' were right.</b> '+(rcWn?rcWn+(rcW.length>1?' tied closest and won the round.':' was closest and won the round.'):''):'<b>Nobody was right.</b>';
+/* owner, 2026-11-04: the payoff leads into the record ("There have been 84. Here they are.") */
+pay+=' There have been '+nR+'. Here they are.';
 h+='<section class="h8-prev h8-g" aria-label="One real round, start to finish: Round '+rc.n+'"><div class="h8-pw">'+
   '<div class="h8-tvw">'+(F?'<div class="h8-tvs" id="h8tvs"><video id="h8tvv" muted playsinline preload="none" poster="media/'+esc(F.p)+'.jpg"><source src="media/'+esc(F.f)+'.mp4" type="video/mp4"><source src="media/'+esc(F.f)+'.webm" type="video/webm"></video>'+
     '<button type="button" aria-label="Play the film of Round '+rc.n+', '+esc(E.coLabel(rc.ticker))+'"></button><span class="h8-tvp" aria-hidden="true"></span></div>':'')+'</div>'+
   '<div class="h8-beats"><p class="h8-act">One real round, start to finish</p><h2 class="h8-let h8-cr" data-h8let="11" data-h8amp=".6">'+esc(E.coLabel(rc.ticker))+'</h2>'+
-  '<p class="h8-when">Round '+rc.n+' · graded at the close · '+E.fmtDay(rc.__h8.day,true)+'</p>'+
+  '<p class="h8-when">Round '+rc.n+'</p>'+
   '<div class="h8-beat"><p>Before its earnings, each AI placed a trade:</p><div class="h8-tok">'+byOrd(rcT).map(tokTrade).join("")+'</div></div>'+
-  '<div class="h8-beat"><p>Then the close:</p><div class="h8-close h8-pl h8-t"><span class="h8-num '+(rc.a>0?"h8-pos":"h8-neg")+'">'+E.pct(rc.a)+'</span><span class="h8-lbl">'+esc(rc.ticker)+' at the close</span></div></div>'+
-  '<div class="h8-beat"><p>Graded, <b>$100K a trade</b>:</p><div class="h8-tok">'+byOrd(rcT).map(tokGrade).join("")+'</div></div>'+
+  '<div class="h8-beat"><p>Then the close:</p><div class="h8-close h8-pl h8-t"><span class="h8-num '+(rc.a>0?"h8-pos":"h8-neg")+'">'+E.pct(rc.a)+'</span><span class="h8-lbl">At market close</span></div></div>'+
+  '<div class="h8-beat"><p><b>P&amp;L</b> on a <b>$100K trade</b>:</p><div class="h8-tok">'+byOrd(rcT).map(tokGrade).join("")+'</div></div>'+
   '<p class="h8-payoff">'+pay+'</p></div></div></section>';
 
 /* ---------- 6. the record: every round so far ---------- */
@@ -85,7 +90,7 @@ function ep(r){var w=E.winners(r);
   '<span class="h8-wn'+(w.length?"":" h8-no")+'">'+(w.length?w.map(function(m){return U.badge(m,20)}).join("")+w.map(function(m){return E.NAME[m]}).join(" &amp; ")+" won":"Nobody won")+'</span></span></a>'}
 var rev=R.slice().reverse();
 h+='<div class="h8-bump h8-flip" aria-hidden="true"><p class="h8-bt"><small>The record</small><span data-h8let="4" data-h8amp=".7">Every round so far</span></p></div>';
-h+='<section class="h8-rec h8-g" aria-label="The record: every round so far"><div class="h8-wrap"><h2 class="h8-sr">The record: every round so far</h2><p class="h8-lede"><b>'+nR+' rounds</b>, newest first. Tap one to open its graded card.</p>'+
+h+='<section class="h8-rec h8-g" aria-label="The record: every round so far"><div class="h8-wrap"><h2 class="h8-sr">The record: every round so far</h2><p class="h8-lede">Newest first. Tap one to open its graded card.</p>'+
   '<p class="h8-key"><b>Won</b> = the trade closest to the move, among those that got the direction right. Both on a tie. <b>Nobody</b> when all four were wrong.</p>'+
   '<div class="h8-guide" id="h8guide">'+rev.slice(0,shown).map(ep).join("")+'</div>'+(nR>shown?'<div class="h8-more"><button class="h8-btn" id="h8more" type="button">Show all '+nR+' rounds</button></div>':'')+'</div></section>';
 
@@ -175,7 +180,8 @@ var lw=0;function onR(){if(innerWidth!==lw){lw=innerWidth;draw()}}
 addEventListener("resize",onR);
 
 /* Hyperliquid's own figures, once, after the page is up: the open interest goes live, else the snapshot stays with its date */
-E.onHL(function(){root.querySelectorAll("[data-h8hl]").forEach(function(el){var mk=E.hlMarket(el.getAttribute("data-h8hl"));if(!mk)return;var s=el.querySelector(".h8-mkl");if(s)s.innerHTML='<b>'+esc(mk.name)+'</b> · $'+mk.oi.toFixed(1)+'M open interest'+(mk.thin?' · <em>thin market</em>':'')});
+E.onHL(function(){root.querySelectorAll("[data-h8hl]").forEach(function(el){var mk=E.hlMarket(el.getAttribute("data-h8hl"));if(!mk)return;var s=el.querySelector(".h8-mkl");if(s)s.innerHTML='<b>'+esc(mk.name)+'</b> · $'+mk.oi.toFixed(1)+'M open interest'+(mk.thin?' · <em>thin market</em>':'');
+    var oi=el.querySelector(".h8-mkoi");if(oi)oi.innerHTML='$'+mk.oi.toFixed(1)+'M open interest'+(mk.thin?' · <em>thin market</em>':'');var nm=el.querySelector(".h8-mknm");if(nm)nm.textContent=mk.name});
   root.querySelectorAll(".h8-asof").forEach(function(s){s.textContent=E.hlAsOf()})});
 
 /* the cover lifts once the faces are in (at most 2.5 s), as X2+ waits for its own */

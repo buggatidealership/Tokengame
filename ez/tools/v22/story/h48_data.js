@@ -55,7 +55,9 @@ function build(){
   var today=nyToday(Date.now()),ci=(W.SHEET_HEADER||[]).indexOf("CALL DATE (T-1)"),first=md((W.SHEET&&SHEET[0]&&SHEET[0][ci<0?2:ci])||"");
   var weekNo=first?Math.floor((Date.UTC(today[0],today[1],today[2])-Date.UTC(first[0],first[1],first[2]))/(7*864e5))+1:null;
   /* the walkthrough: the newest round with a film where exactly one AI was right, the move 10% or less (the Saturday take's rule) */
-  var recap=R.slice().reverse().filter(function(r){return W.FILMS&&FILMS[r.n]&&r.__h8.tr.filter(function(t){return t.w}).length===1&&Math.abs(r.a)<=10})[0]||R[N-1];
+  /* the round walked through on the Overview: Tesla (owner, 2026-11-04: "I would use one of the bigger companies. I would probably use
+     Tesla"), else the newest film round with one AI right */
+  var recap=R.filter(function(r){return r.ticker==="TSLA"&&W.FILMS&&FILMS[r.n]})[0]||R.slice().reverse().filter(function(r){return W.FILMS&&FILMS[r.n]&&r.__h8.tr.filter(function(t){return t.w}).length===1&&Math.abs(r.a)<=10})[0]||R[N-1];
   return {R:R,N:N,season:season,ord:ord,stats:stats,series:series,next:next,BET:BET,weekNo:weekNo,today:today,recap:recap,
     nT:R.reduce(function(a,r){return a+r.__h8.tr.length},0)}}
 
