@@ -188,7 +188,7 @@ function buildV(root,V){
         '<span class="h8-vs" role="cell">'+(hit?'<span class="h8-num'+(y.n?'':' h8-dash')+'">'+(y.n?y.W+'-'+y.L:'–')+'</span>':mon(t?t.v:0,!!t))+'</span>'+
         '<span class="h8-vv" role="cell">'+(hit?'<span class="h8-num'+(y.hit==null?' h8-dash':'')+'">'+pc1(y.hit)+'</span>':mon(y.pnl,y.n))+'</span></div>'}).join('')+'</div>'+
      '<p class="h8-cap2">'+(hit?'W-L and hit rate in this window. Hit rate from 5 trades.':(lr?'Last round = '+esc(E.coLabel(lr.ticker))+', round '+lr.n+', graded at the '+esc(wdmd(dOf(lr.resolves)))+' close.':''))+'</p>'}
-  h+='</div><div class="h8-bc"><div class="h8-chw"><p class="h8-grp">'+(hit?'Hit rate':'P&amp;L')+' · '+esc(Wn.t)+'</p><p class="h8-sub2">'+(hit?'Right on their long or short, round by round. Every line starts at 50%.':'$100K a trade, round by round, from $0.')+'</p>'+
+  h+='</div><div class="h8-bc"><div class="h8-chw"><div class="h8-chhd"><p class="h8-grp">'+(hit?'Hit rate':'P&amp;L')+' · '+esc(Wn.t)+'</p><p class="h8-sub2">'+(hit?'Right on their long or short, round by round. Every line starts at 50%.':'$100K a trade, round by round, from $0.')+'</p></div>'+
    '<figure class="h8-scene h8-sc" id="h8lbsc"><div class="h8-sf" id="h8lbsf"></div></figure></div>';
   if(V==='B'){var hord=MK.slice().sort(function(a,b){return X.hp[b].pnl-X.hp[a].pnl});
     h+='<div class="h8-hlt h8-pl"><h3>Only companies Hyperliquid lists today</h3><div class="h8-hg"><span class="h8-lbl">Model · season</span><span class="h8-lbl h8-r">W-L</span><span class="h8-lbl h8-r">P&amp;L</span>'+
@@ -207,10 +207,14 @@ function buildV(root,V){
    third more); the sector page gives its spare to the rows' padding. Measured, not guessed: the empty run under each page's last block. */
 function used(p){var b=0;[].forEach.call(p.children,function(k){b=Math.max(b,k.getBoundingClientRect().bottom)});return b-p.getBoundingClientRect().top+parseFloat(getComputedStyle(p).paddingBottom)}
 function balance(root){var desk=W.matchMedia('(min-width:1000px)').matches,sct=root.querySelector('.h8-sct');if(sct)sct.style.removeProperty('--h8sxp');
-  if(!desk){if(XH){XH=0;chart(root,false)}return}
+  if(!desk){var lv=root.querySelector('.h8-lbv');if(lv)lv.style.removeProperty('--h8wnh');if(XH){XH=0;chart(root,false)}return}
   /* the chart exactly as tall as the table's own height (measured unstretched), taller or shorter */
   var bt=root.querySelector('.h8-lbv .h8-bt'),cw=root.querySelector('.h8-lbv .h8-bc .h8-chw');
-  if(bt&&cw){bt.style.alignSelf='start';var nat=bt.offsetHeight;bt.style.alignSelf='';var dd=nat-cw.offsetHeight;if(Math.abs(dd)>2){XH=XH+dd;chart(root,false)}return}
+  /* (owner, launch night: "make the chart bigger on desktop... so that it starts here") the frame starts level with the window line above
+     the table ("Season: Since Sep 8"), its title a caption under it like the table's; it ends level with the table's caption */
+  var wn=root.querySelector('.h8-lbv .h8-bar .h8-wn'),lbv=root.querySelector('.h8-lbv');
+  if(bt&&cw&&wn&&lbv){lbv.style.setProperty('--h8wnh','0px');var off=Math.max(0,bt.getBoundingClientRect().top-wn.getBoundingClientRect().top);lbv.style.setProperty('--h8wnh',off.toFixed(1)+'px')}
+  if(bt&&cw){bt.style.alignSelf='start';var nat=bt.offsetHeight;bt.style.alignSelf='';var dd=nat+(wn?parseFloat(lbv.style.getPropertyValue('--h8wnh'))||0:0)-cw.offsetHeight;if(Math.abs(dd)>2){XH=XH+dd;chart(root,false)}return}
   var p1=root.querySelector('.h8-p1'),p2=root.querySelector('.h8-p2'),p3=root.querySelector('.h8-p3'),p4=root.querySelector('.h8-p4');
   var sc=root.querySelector('#h8lbsc'),dh=p1&&p2?used(p1)-used(p2):0;if(sc&&dh>2){XH=Math.min(dh,sc.offsetHeight*.34);chart(root,true)}
   var d2=used(p4)-used(p3),rs=root.querySelectorAll('.h8-sx:not(.h8-sh)').length;if(sct&&d2>2&&rs)sct.style.setProperty('--h8sxp',(9+d2/rs/2).toFixed(2)+'px')}
