@@ -81,6 +81,7 @@ const [kind, setName] = style.split(':');
   await pg.goto('file://' + path.join(__dirname, isLight ? 'render-light.html' : isDesk ? 'render-desk.html' : isSet ? 'render-set.html' : style === 'K' ? 'render-chalk.html' : cast ? 'render-cast.html' : 'render.html'));
   await pg.evaluate(async c => { for (const f of ['900 58px "Inter Display"', '700 20px "Inter"', '800 20px "Inter"', '700 20px "JetBrains Mono"', '600 20px "JetBrains Mono"']) await document.fonts.load(f); return await init(c) }, cfg);
   const TL = (cast || isSet) ? await pg.evaluate(() => tl) : { cd: [1.8, 3.3], boom: 3.3, close: [10.4, 11.3], T: 15 };
+  if (process.env.TLOUT) fs.writeFileSync(process.env.TLOUT, JSON.stringify(TL));
   if (process.env.STILLS) { for (const t of process.env.STILLS.split(',').map(Number)) { await pg.evaluate(async t => { if (typeof seek === 'function') await seek(t); draw(t) }, t);
       await pg.locator('#c').screenshot({ path: out.replace(/\.\w+$/, '') + '-' + t + '.png' }) } await b.close(); return }
   const fps = 30, DUR = Math.ceil(TL.T * 10) / 10, N = Math.round(DUR * fps);

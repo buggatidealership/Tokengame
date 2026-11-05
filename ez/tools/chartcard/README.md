@@ -50,3 +50,10 @@ Three letterings: A ticket (Anton + Barlow Condensed, cream, the ticket's green 
 logo's green and red edges and its gold dot, white, the winner on the logo's black), C show (Lilita One + Fredoka, the live site's faces).
 Fonts in `fonts/` (Google Fonts, OFL). The winner is the AI that made the most this round (ties share it). Mockups only so far:
 `ez/x2p-chartcard9-light.jpg`, `ez/x2p-chartcard9-tables.jpg`.
+
+## Sound (owner, 5 Nov: "what about sound?")
+A kit made once through Hedra (ElevenLabs sound effects and music, $1.36 in all; prompts and job ids in `sound/jobs.jsonl`):
+`sound/kit/` hit, whoosh, stamp, beep, riser, drop, ticker (seamless loop), bell, cash, cheer, slide; two music beds, m-trap and m-show.
+`python3 sound/mix.py <video.mp4> <timeline.json> <sfx|trap|show> <out.mp4>` puts every effect on the video's own beats
+(timeline from `TLOUT=<file> node make.js ...`) and shifts the music so its measured drop (trap 6.88 s, show 7.34 s) lands on the report;
+mixed to -14 LUFS. Takes on R78 Intel: `ez/x2p-chartcard9-sound-{sfx,trap,show}-r78-intel.mp4`.
