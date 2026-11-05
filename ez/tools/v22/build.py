@@ -661,6 +661,59 @@ try:
     open("v50-live-x6plus.html",'w').write(_h6); print("ok v50-live-x6plus.html",len(_h6))
 except Exception as _e:
     print("FAILED v50-live-x6plus.html:",repr(_e))
+# GR7, the Green Room (owner, 2026-11-05: "build a mock up using our current website layout but using this art style [the Green Room
+# Fighter Intros film]... Dont push to production. Push to easy live x2+ first... more crypto native. Fast, witty, sarcasm"): the live X6+
+# page as built above, every painting swapped for its Green Room counterpart (media/gr7-*, painted by Hedra from the owner's film; files in
+# tools/concepts/worlds/greenroom/), the three faces for the film's fight-plate letters (Bitter Black, Oswald, Roboto Condensed), the board
+# and whiteboard geometry re-measured, tools/v22/story/gr7.css/.js on top (html.gr7) and the copy in the fight-promo voice. A mockup for
+# the X2+ preview branch (SITE_PAGE=v51-gr-x6plus.html, --branch preview); production stays X6+. A painting not made yet keeps X6+'s.
+try:
+    if os.path.exists(_S+'gr7.css') and os.path.exists("v50-live-x6plus.html"):
+        _g=open("v50-live-x6plus.html").read()
+        _M={'h48-title-34.jpg':'gr7-title-34.jpg','h48-title-169.jpg':'gr7-title-169.jpg','h48-ticket.webp':'gr7-ticket.webp','h48-tv.jpg':'gr7-tv.jpg',
+            'h48-cliff.jpg':'gr7-cliff.jpg','h48-screen.jpg':'gr7-screen.jpg','h48-banner.jpg':'gr7-banner.jpg','h48-banner-wide.jpg':'gr7-banner-wide.jpg',
+            'h48-end-34.jpg':'gr7-end-34.jpg','h48-end-169.jpg':'gr7-end-169.jpg','h50-plate.webp':'gr7-plate.webp','h50-plate-gold.webp':'gr7-plate-gold.webp',
+            'burn-h50-bag.jpg':'gr7-burn-bag.jpg','burn-h50-fire.jpg':'gr7-burn-fire.jpg','burn-h50-fire.mp4':'gr7-burn-fire.mp4','burn-h50-pouch.jpg':'gr7-burn-pouch.jpg',
+            'h48-caprasimo.woff2':'gr7-title.woff2','h48-caprasimo-ext.woff2':'gr7-title.woff2','h48-lilita.woff2':'gr7-label.woff2','h48-fredoka.woff2':'gr7-body.woff2'}
+        for _m in ['grok','claude','gpt','kimi']:
+            _M['h48-cast-%s.jpg'%_m]='gr7-cast-%s.jpg'%_m
+            for _e2 in ['mp4','webm']:_M['h49-cast-%s-c.%s'%(_m,_e2)]=_M['h49-cast-%s.%s'%(_m,_e2)]='gr7-cast-%s.%s'%(_m,_e2)
+        for _a,_b in _M.items():
+            if os.path.exists('media/'+_b) and ('media/'+_a) in _g:_g=_g.replace('media/'+_a,'media/'+_b)
+        # the copy, in the trash-talk voice of the owner's film (every fact as before; each replaced exactly once)
+        _GC=[('<p class="h8-act">Who to follow</p>','<p class="h8-act">The champ, for now</p>'),
+             ('So far is the word. On ','Champ for now, not for life. On '),('%</b>. A lead, not a proof.','%</b>. A lead, not a title.'),
+             ('The field, season P&amp;L','The undercard, season P&amp;L'),('<p class="h8-act">Coming up</p>','<p class="h8-act">On the card</p>'),
+             ('<small>The proof</small>','<small>The receipts</small>'),
+             ('<b>Each one locked before the earnings, graded by the close.</b> Here is one, start to finish.','<b>Every trade locked before the earnings.</b> No edits, no quietly deleting the bad ones. Here is one on tape.'),
+             ('<p class="h8-act">One real round, start to finish</p>','<p class="h8-act">Fight tape: one real round</p>'),
+             ('Before its earnings, each AI placed a trade:','Before the earnings, each AI picked a side:'),('<p>Then the close:</p>','<p>Then the closing bell:</p>'),
+             ('<small>Starring</small><span data-h8let="3" data-h8amp=".7">Meet the cast</span>','<small>Tale of the tape</small><span data-h8let="3" data-h8amp=".7">Meet the fighters</span>'),
+             # a fighter's line from its own record, by stated rules: short on 85%+ of its trades, short on most, long on 68%+, long on most
+             ('bias=sh*2>s.n?"Short on "+sh+" of "+s.n+" trades.":"Long on "+(s.n-sh)+" of "+s.n+" trades.";',
+              'bias=sh*2>s.n?"Short on "+sh+" of "+s.n+" trades. "+(sh>=.85*s.n?"Has never met a stock it liked.":"A bear with manners."):"Long on "+(s.n-sh)+" of "+s.n+" trades. "+((s.n-sh)>=.68*s.n?"Buys every dip, and a few tops.":"Mostly an optimist.");'),
+             ('One of them joins the cast in Season 2.','One of them gets a locker in Season 2.'),
+             ('Too few to say it is skill either way. Here is how it looks so far.','Too early to call it skill. Too early to call it luck. Here is the tape so far.'),
+             ('<span data-h8let="6" data-h8amp=".7">The cliffhanger</span>','<span data-h8let="6" data-h8amp=".7">Main event</span>'),
+             ('We put our own pool on the top model&rsquo;s trade.','We put our own pool in the ring.'),
+             ('That&rsquo;s all for this week.','See you at the next bell.'),
+             # the fight boards on the tunnel wall (gr7-cliff.jpg, its quads in the bet helper's 1280 x 960 frame) and the whiteboard's writing surface
+             ('var Q=[[[52,69],[421,106],[424,226],[53,209]],','var Q=[[[69,60],[410,142],[410,253],[72,225]],'),
+             ('       [[54,265],[428,294],[432,405],[60,393]],','       [[77,305],[416,323],[416,436],[81,461]],'),
+             ('       [[63,474],[438,455],[440,558],[71,600]]];','       [[86,543],[420,504],[422,614],[93,700]]];'),
+             ('var BOX={sc:{x:.207,y:.12,w:.598,h:.623,ar:.75}','var BOX={sc:{x:.252,y:.176,w:.514,h:.442,ar:.75}'),
+             ('<title>EZ Live X6+</title>','<title>EZ Green Room</title>')]
+        for _a,_b in _GC:
+            assert _g.count(_a)==1,_a[:60]
+            _g=_g.replace(_a,_b,1)
+        _g=re.sub(r'(<html lang="en" class=")',r'\1gr7 ',_g,count=1)
+        _a='<script id="h48-js">'
+        _i=_g.index(_a);_j=_g.index('\n</script>',_i)
+        _g=_g[:_j]+'\n'+open(_S+'gr7.js').read().replace('</script','<\\/script')+_g[_j:]
+        _g=_g.replace('</head>','<style id="gr7-css">\n'+open(_S+'gr7.css').read()+'\n</style>\n</head>',1)
+        open("v51-gr-x6plus.html",'w').write(_g);print("ok v51-gr-x6plus.html",len(_g))
+except Exception as _e:
+    print("FAILED v51-gr-x6plus.html:",repr(_e))
 # The world pages (owner, 2026-10-29: "erase Easy Live X3 Plus and build the entire [comic book] one on [it]... create the arcade
 # one on a new page called Easy Live X4 Plus"): X2+'s build with a world drawn over it (tools/v22/world-<name>.css/.js, from the
 # overnight mockups in tools/concepts/worlds/), a Leaderboard tab (window.__x2pLB) and the cover waiting for the world
