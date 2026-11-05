@@ -13320,7 +13320,8 @@ W.__h49lg={mark:mark,sym:sym,geo:geo,scan:scan,BOX:BOX,SYM:SYM};
    (1) A round link (a record tile, an Upcoming row, a next-trade card) used to open the round in place without touching the address
        (routes.js: preventDefault, openRound), so Back left the site while a card was open. On X6+ the link now sets #/round/N: the
        router opens the round over the tab as a shared link does, and Back closes it. The round view's own arrows already did this.
-   (2) The "In play" pill linked to #round-N and jumped X2+'s record carousel, which X6+ never shows: it now opens round N.
+   (2) The "In play" pill linked to #round-N and jumped X2+'s record carousel, which X6+ never shows: it opened round N, and since
+       2026-11-05 (owner: "should redirect to upcoming tab") it opens the Upcoming tab at the top, where the next bell lists that round.
    (3) Closing a round (the cross, Escape, a tap outside) left #/round/N in the address, so a reload opened the card again: the address
        goes back to the tab under the card (the Overview, Upcoming or the Leaderboard), with no new history entry. */
 (function(){var W=window,d=document,H=d.documentElement;if(!H.classList.contains("h48"))return;
@@ -13334,14 +13335,14 @@ d.addEventListener("visibilitychange",function(){if(d.hidden)return;if(NYK()!==k
 function isRound(){return /^#\/round\//.test(location.hash)}
 d.addEventListener("click",function(e){if(e.defaultPrevented||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;var t=e.target;if(!t||!t.closest)return;
   var lc=t.closest("#liveChip");
-  if(lc){var m=/#round-(\d+)/.exec(lc.getAttribute("href")||"")||/#\/round\/(\d+)/.exec(lc.getAttribute("href")||"");if(!m)return;
-    e.preventDefault();e.stopPropagation();location.hash="#/round/"+m[1];return}
+  if(lc){e.preventDefault();e.stopPropagation();
+    if(location.hash==="#/upcoming")W.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});else location.hash="#/upcoming";return}
   var a=t.closest('a[href^="#/round/"]');if(!a||a.closest("#x2pRm"))return;
   var h=a.getAttribute("href");if(location.hash===h)return;
   if(!W.__x2pRmBack){var sc=H.getAttribute("data-sec");W.__x2pRmBack={y:scrollY,h:/^#\/round\//.test(location.hash)||!location.hash?(sc==="upcoming"?"#/upcoming":sc==="leaderboard"?"#/leaderboard":"#/"):location.hash,sec:sc,el:a,top:a.getBoundingClientRect().top}}
   e.preventDefault();location.hash=h},true);
 /* the pill's own address, for a long press or a new tab */
-function pill(){var lc=d.getElementById("liveChip"),m=lc&&/#round-(\d+)/.exec(lc.getAttribute("href")||"");if(m)lc.setAttribute("href","#/round/"+m[1])}
+function pill(){var lc=d.getElementById("liveChip");if(lc)lc.setAttribute("href","#/upcoming")}
 if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",function(){pill();setTimeout(pill,1500)});else pill();
 /* (device QA) on a short phone screen (iPhone Safari 390x664, SE 375x548) the round view's arrows, fixed at the foot, covered the
    bottom of the card: once the card is laid out, it is zoomed down until it clears them by 8px (phones only, never below .7) */
