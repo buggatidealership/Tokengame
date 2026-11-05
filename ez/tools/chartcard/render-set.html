@@ -25,7 +25,7 @@ function txt(c,s,X,Y,font,col,align='left',alpha=1,base='alphabetic'){if(alpha<=
 function fit(c,s,k,size,max,min=14){c.font=F(k,size);while(c.measureText(s).width>max&&size>min){size-=1;c.font=F(k,size)}return size}
 // a model's mark: on its own disc ('disc', the app icon's colours), printed in ink on a light face ('print'), or lit ('neon')
 function mark(c,m,cx,cy,r,mode,alpha=1){const M=C.models[m],p=P2[m];c.save();c.globalAlpha=alpha;
- if(mode==='disc'||mode==='big'){c.beginPath();c.arc(cx,cy,r,0,7);c.fillStyle=M.bg;c.fill()}
+ if(mode==='disc'||mode==='big'){c.beginPath();c.arc(cx,cy,r,0,7);c.fillStyle=M.bg;c.fill();if(Z.flat&&M.bg==='#000'){c.lineWidth=Math.max(1.5,r*.06);c.strokeStyle='rgba(255,255,255,.28)';c.stroke()}}
  const s=r*1.18/24;c.translate(cx-12*s,cy-12*s);c.scale(s,s);
  let col=M.fg;if(mode==='print')col=M.bg==='#000'?'#17141c':M.fg;
  if(mode==='neon'){c.shadowColor=m==='GROK'?'#ffffff':M.c;c.shadowBlur=22}
@@ -37,7 +37,7 @@ const kmoney=v=>Math.abs(v)>=10000?(v<0?'−':'+')+'$'+(Math.abs(v)/1000).toFixe
 const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(2)+'%';
 const callTxt=c=>(c.dir>0?'LONG ':'SHORT ')+c.mag+'%';
 const side=c=>c.dir>0?'LONG':'SHORT';
-const mcol=m=>C.models[m].c==='#111'?'#ece7da':C.models[m].c;
+const mcol=m=>Z&&Z.lc&&Z.lc[m]||(C.models[m].c==='#111'?'#ece7da':C.models[m].c);
 // ---- the price path: hours since the close before (x=0); the first hour at the fine step; the day before as the stock's own line
 function fine(){const b=C.bars[C.iRep];if(C.fine&&C.fine.length>1)return C.fine;
  const dn=b[4]<b[1];return[[b[0],b[1],dn?b[2]:b[3],dn?b[2]:b[3],dn?b[2]:b[3]],[b[0],dn?b[2]:b[3],dn?b[3]:b[2],dn?b[3]:b[2],dn?b[3]:b[2]],[b[0],b[4],b[4],b[4],b[4]]]}
@@ -72,7 +72,8 @@ function draw(t){const calls=C.calls,B=board(),cx=B.x+B.w/2;
  const sh=t>tl.boom?Math.max(0,1-(t-tl.boom)/.55)*10:0,sh2=[...tl.hits,tl.win[0]+.3].reduce((a,h)=>a+(t>=h&&t<h+.3?(1-(t-h)/.3)*5:0),0),shk=sh+sh2;
  const verdict=t>=tl.close[0],vv=verdict?ease(seg(t,tl.close[0],tl.close[1])):0,lead=t>=tl.boom&&!verdict?leaderAt(t):null,{xc,v}=clock(t);
  x.setTransform(1,0,0,1,0,0);x.fillStyle='#000';x.fillRect(0,0,W,H);x.translate(shk?Math.sin(t*90)*shk:0,shk?Math.cos(t*77)*shk*.8:0);
- x.drawImage(img.set,0,0,W,img.set.height*S);
+ if(img.set)x.drawImage(img.set,0,0,W,img.set.height*S);else{x.fillStyle=T.bg;x.fillRect(0,0,W,H);const rg=x.createRadialGradient(W/2,0,40,W/2,0,H*.9);rg.addColorStop(0,'rgba(80,110,170,.10)');rg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rg;x.fillRect(0,0,W,H);
+  rr(x,B.x,B.y,B.w,B.h,P(Z.br||0));x.fillStyle=Z.panel||'#0b0f16';x.fill();x.lineWidth=1.5;x.strokeStyle=Z.edge||'#1b2331';x.stroke()}
  g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);g.save();rr(g,B.x,B.y,B.w,B.h,P(Z.br||0));g.clip();
  const pad=B.w*.035,bx=B.x+pad,by=B.y+pad*.8,bw=B.w-2*pad,bh=B.h-pad*1.6;
  // ---- 1. the title card: the round, then the company (two hits)
@@ -82,9 +83,13 @@ function draw(t){const calls=C.calls,B=board(),cx=B.x+B.w/2;
   for(const h of tl.hits)if(t>=h&&t<h+.25){g.save();g.globalAlpha=.4*(1-(t-h)/.25);g.fillStyle='#fff';g.fillRect(B.x,B.y,B.w,B.h);g.restore()}}
  // ---- the header after the title card: the company and the round, nothing else
  const ho=ease(seg(t,tl.title[0]+.15,tl.title[1]+.1));
- if(ho>0&&t<tl.win[0]+.2){logoTile(g,bx,by+4,50);g.globalAlpha=1;txt(g,C.title,bx+64,by+46,F('tf',fit(g,C.title,'tf',50,bw*.5)),T.w,'left',ho);txt(g,'Round '+C.n,bx+bw,by+44,F('bf',28),T.mut,'right',ho)}
+ if(ho>0&&t<tl.win[0]+.2&&Z.hdr==='pill'){logoTile(g,bx,by+6,64);txt(g,C.title,bx+80,by+50,F('tf',fit(g,C.title,'tf',58,bw*.5)),T.w,'left',ho);txt(g,'Round '+C.n,bx+82,by+82,F('bf',24),T.mut,'left',ho);
+  const st=t<tl.cd[0]?'BEFORE EARNINGS':t<tl.boom?'EARNINGS IN':t<tl.close[0]?'LIVE':'CLOSED',lv=st==='LIVE';g.save();g.globalAlpha=ho;g.font=F('bf',21);const pw2=g.measureText(st).width+(lv?52:36),px2=bx+bw-pw2;rr(g,px2,by+8,pw2,40,20);g.fillStyle=lv?'#e5333f':'rgba(255,255,255,.08)';g.fill();
+  if(lv){g.beginPath();g.arc(px2+22,by+28,5.5,0,7);g.fillStyle='rgba(255,255,255,'+(.55+.45*Math.sin(t*7))+')';g.fill()}g.restore();txt(g,st,px2+(lv?36:18),by+35,F('bf',21),T.w,'left',ho);
+  if(t>=tl.boom){const pr=t>=tl.close[0]?C.fin:pAt(clock(t).xc),ch=100*(pr/C.prev-1);txt(g,pct(ch),bx+bw,by+98,F('nf',44),ch>=0?T.up:T.dn,'right',ease(seg(t,tl.boom,tl.boom+.4)))}}
+ else if(ho>0&&t<tl.win[0]+.2){logoTile(g,bx,by+4,50);g.globalAlpha=1;txt(g,C.title,bx+64,by+46,F('tf',fit(g,C.title,'tf',50,bw*.5)),T.w,'left',ho);txt(g,'Round '+C.n,bx+bw,by+44,F('bf',28),T.mut,'right',ho)}
  // ---- 2. the chart: the stock trading into the report, then each AI's P&L
- if(t>=tl.chart[0]&&t<tl.win[0]+.2){const TOP=by+96,BOT=by+bh-4,LW=bw*.34,px0=bx+2,px1=bx+bw-LW,py0=TOP+8,py1=BOT,xr0=PTS.xr0,G=PTS.grey,gx0=G.length?G[0][0]:0;
+ if(t>=tl.chart[0]&&t<tl.win[0]+.2){const TOP=by+(Z.top||96),BOT=by+bh-4,LW=bw*.34,px0=bx+2,px1=bx+bw-LW,py0=TOP+8,py1=BOT,xr0=PTS.xr0,G=PTS.grey,gx0=G.length?G[0][0]:0;
   const fg=lerp(.3,.12,ease(seg(t,tl.slow[0],tl.slow[0]+.8))),fo=xr0>0?.1:0;
   const Xp=xx=>xx<=0?px0+(px1-px0)*fg*(gx0?(xx-gx0)/(-gx0):1):xx<=xr0?px0+(px1-px0)*(fg+fo*xx/xr0):px0+(px1-px0)*(fg+fo+(1-fg-fo)*(xx-xr0)/v);
   const gd=seg(t,tl.chart[0],tl.chart[1]),gEnd=lerp(gx0,0,gd),post=t>=tl.boom,shownK=k=>t>=rk(k)+.6;
@@ -109,12 +114,12 @@ function draw(t){const calls=C.calls,B=board(),cx=B.x+B.w/2;
     const e=ends[ends.length-1],pl=pnl(calls[ks[0]],xc);g.save();g.beginPath();g.arc(e.x,e.y,8,0,7);g.fillStyle=pl>=0?T.up:T.dn;g.fill();g.lineWidth=3;g.strokeStyle=T.bg;g.stroke();g.restore()})}
   else calls.forEach((c,k)=>{if(shownK(k))ends.push({k,x:Xp(xr0),y:z0})});
   // labels at the line ends: logo, name, the round's P&L so far
-  const LH=50;ends.sort((p,q)=>p.y-q.y||p.k-q.k).forEach(e=>e.ly=clamp(e.y-LH/2,py0,py1-LH));for(let i=1;i<ends.length;i++)if(ends[i].ly<ends[i-1].ly+LH+4)ends[i].ly=ends[i-1].ly+LH+4;
+  const LS=Z.ls||1,LH=50*LS;ends.sort((p,q)=>p.y-q.y||p.k-q.k).forEach(e=>e.ly=clamp(e.y-LH/2,py0,py1-LH));for(let i=1;i<ends.length;i++)if(ends[i].ly<ends[i-1].ly+LH+4)ends[i].ly=ends[i-1].ly+LH+4;
   if(ends.length){const ov=ends[ends.length-1].ly+LH-py1;if(ov>0)ends.forEach(e=>e.ly=Math.max(py0-24,e.ly-ov))}
   ends.forEach(e=>{const c=calls[e.k],win=C.win.includes(c.m),isL=lead===c.m,a=verdict&&!win?1-.55*vv:1,pl=post?(verdict?c.fin:pnl(c,xc)):0,col=post?(pl>=0?T.up:T.dn):T.mut,lx=px1+16;
    g.save();g.strokeStyle=col;g.globalAlpha=.45*a;g.lineWidth=2;g.beginPath();g.moveTo(e.x+8,e.y);g.lineTo(lx-4,e.ly+LH/2);g.stroke();g.restore();
-   mark(g,c.m,lx+16,e.ly+LH/2,16,'disc',a);if(isL||(verdict&&win)){g.save();g.beginPath();g.arc(lx+16,e.ly+LH/2,20,0,7);g.lineWidth=3;g.strokeStyle=T.gold;g.shadowColor=T.gold;g.shadowBlur=12;g.stroke();g.restore()}
-   txt(g,NM[c.m],lx+42,e.ly+20,F('bf',21),win&&verdict?T.gold:T.w,'left',a);const s=post?money(pl):'$0';txt(g,s,lx+42,e.ly+LH-2,F('nf',fit(g,s,'nf',30,bx+bw-lx-44)),col,'left',a)});
+   mark(g,c.m,lx+16*LS,e.ly+LH/2,16*LS,'disc',a);if(isL||(verdict&&win)){g.save();g.beginPath();g.arc(lx+16*LS,e.ly+LH/2,20*LS,0,7);g.lineWidth=3;g.strokeStyle=T.gold;g.shadowColor=T.gold;g.shadowBlur=12;g.stroke();g.restore()}
+   txt(g,NM[c.m],lx+42*LS,e.ly+20*LS,F('bf',Math.round(21*LS)),win&&verdict?T.gold:T.w,'left',a);const s=post?money(pl):'$0';txt(g,s,lx+42*LS,e.ly+LH-2,F('nf',fit(g,s,'nf',Math.round(30*LS),bx+bw-lx-44*LS)),col,'left',a)});
  }
  // ---- 4. the winner, then 5. the round's table
  if(t>=tl.win[0]){const f=seg(t,tl.win[0],tl.win[0]+.25),gone=t>=tl.tab[0];g.save();g.globalAlpha=gone?1:.9*f;g.fillStyle=T.bg;g.fillRect(B.x,B.y,B.w,B.h);g.restore();
@@ -147,7 +152,7 @@ function draw(t){const calls=C.calls,B=board(),cx=B.x+B.w/2;
  // ---- the screen in the set's own medium
  if(T.fx==='led'){g.save();rr(g,B.x,B.y,B.w,B.h,P(Z.br||0));g.clip();g.fillStyle=g.createPattern(led,'repeat');g.fillRect(B.x,B.y,B.w,B.h);g.restore()}
  if(T.fx==='scan'){g.save();g.globalAlpha=.16;g.fillStyle='#000';for(let yy=B.y;yy<B.y+B.h;yy+=4)g.fillRect(B.x,yy,B.w,2);g.restore()}
- x.save();x.shadowColor='rgba(255,230,170,.35)';x.shadowBlur=T.fx==='glow'?14:T.fx==='led'?10:8;x.drawImage(L,0,0);x.restore();x.drawImage(L,0,0);
+ if(T.fx!=='clean'){x.save();x.shadowColor='rgba(255,230,170,.35)';x.shadowBlur=T.fx==='glow'?14:T.fx==='led'?10:8;x.drawImage(L,0,0);x.restore()}x.drawImage(L,0,0);
  // ---- the discs: each AI's logo; its trade on the plate (with the size there, not in the big reveal)
  Z.slots.forEach(([sx,sy],k)=>{const c=calls[k];if(!c)return;const m=c.m,qx=P(sx),qy=P(sy),r=P(Z.r),win=C.win.includes(m),isL=lead===m;
   const out=t>=rk(k)&&t<rk(k)+.75,dim=out?.85:verdict?(win?0:.55*vv):(t>=tl.boom&&!isL?.2:0);
@@ -157,6 +162,8 @@ function draw(t){const calls=C.calls,B=board(),cx=B.x+B.w/2;
   if((verdict&&win)||isL){x.save();x.beginPath();x.arc(qx,qy,r+P(14),0,7);x.lineWidth=9;x.strokeStyle=T.gold;x.shadowColor=T.gold;x.shadowBlur=28;x.stroke();x.restore()}
   if(verdict&&win)crown(x,qx,qy-r-P(30),30*vv,T.gold);
   const [px,py]=Z.plaques[k],pw=P(Z.pw),ph=P(Z.ph),shown=t>=rk(k)+.6,s=!shown?'?':Z.plate==='arrow'?(c.dir>0?'▲':'▼')+c.mag+'%':callTxt(c);x.save();
+  if(Z.plate==='name'){x.globalAlpha=verdict&&!win?1-.4*vv:1;x.textAlign='center';x.textBaseline='middle';x.font=F('bf',Math.round(ph*.36));x.fillStyle=verdict&&win?T.gold:T.w;x.fillText(NM[m],P(px),P(py)-ph*.2);
+   const s2=shown?callTxt(c):'?',f2=fit(x,s2,'nf',Math.round(ph*.32),pw-8,10);x.font=F('nf',f2);x.fillStyle=shown?(c.dir>0?T.up:T.dn):T.mut;x.fillText(s2,P(px),P(py)+ph*.24);x.restore();return}
   if(shown&&Z.plate==='two'){const pf=Z.pf||'nf',l1=side(c),l2=c.mag+'%',f1=fit(x,l1,pf,Math.round(ph*.36),pw-10,10),f2=fit(x,l2,pf,Math.round(ph*.46),pw-10,10);x.globalAlpha=verdict&&!win?1-.35*vv:1;x.textAlign='center';x.textBaseline='middle';
    x.fillStyle=c.dir>0?Z.pink.up:Z.pink.dn;x.font=F(pf,f1);x.fillText(l1,P(px),P(py)-ph*.2);x.font=F(pf,f2);x.fillText(l2,P(px),P(py)+ph*.2);x.restore();return}
   const pf=Z.pf||'nf',fs=fit(x,s,pf,Math.round(ph*.66),pw-8,12);x.font=F(pf,fs);x.textAlign='center';x.textBaseline='middle';x.globalAlpha=verdict&&!win?1-.35*vv:1;
