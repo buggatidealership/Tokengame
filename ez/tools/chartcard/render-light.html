@@ -1,0 +1,189 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Anton;src:url(fonts/Anton.woff2) format('woff2')}
+@font-face{font-family:Kanit;font-style:italic;font-weight:900;src:url(fonts/Kanit-ital-wght-1-900.woff2) format('woff2')}
+@font-face{font-family:Kanit;font-style:italic;font-weight:700;src:url(fonts/Kanit-ital-wght-1-700.woff2) format('woff2')}
+@font-face{font-family:SairaC;font-weight:700;src:url(fonts/Saira-Condensed-wght-700.woff2) format('woff2')}
+@font-face{font-family:SairaC;font-weight:800;src:url(fonts/Saira-Condensed-wght-800.woff2) format('woff2')}
+@font-face{font-family:BarlowC;font-weight:700;src:url(fonts/Barlow-Condensed-wght-700.woff2) format('woff2')}
+@font-face{font-family:BarlowC;font-weight:800;src:url(fonts/Barlow-Condensed-wght-800.woff2) format('woff2')}
+@font-face{font-family:Lilita;src:url(../../media/h48-lilita.woff2) format('woff2')}
+@font-face{font-family:Fredoka;src:url(../../media/h48-fredoka.woff2) format('woff2');font-weight:300 700}
+html,body{margin:0;background:#fff}canvas{display:block}</style></head><body>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script>
+// v9 "light" (owner, 5 Nov: "a bit cleaner... with the EZ branding... a sort of white background... EZ presents round whatever...
+// the lettering of the name of the company should definitely be different... use some of our fonts... at the end the winner needs to
+// stand out, the one that made the most money"). One P&L chart on a white screen, every word and line drawn crisp; three letterings:
+// A ticket (Anton, Barlow Condensed: the X2+ tickets), B logo (Kanit black italic with the logo's green and red edges, Saira Condensed),
+// C show (Lilita One, Fredoka: the live site). The winner = the most money this round.
+const cv=document.getElementById('c'),x=cv.getContext('2d'),W=1080,H=1350;
+const ease=t=>t<0?0:t>1?1:1-Math.pow(1-t,3),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),seg=(t,a,b)=>clamp((t-a)/(b-a),0,1),lerp=(a,b,f)=>a+(b-a)*f;
+const NM={GPT:'GPT',CLAUDE:'Claude',KIMI:'Kimi',GROK:'Grok'};
+const BR={ink:'#04070e',cream:'#f8f0d9',green:'#03c870',red:'#ff3a31',gold:'#fdbc2a'};
+const TAKES={
+ A:{bg:'#faf6ec',panel:'#ffffff',rule:'#e6dfcf',ink:BR.ink,mut:'#6f6a5e',up:'#08834a',dn:'#d4231b',disp:['','Anton'],lab:['800','BarlowC'],num:['','Anton'],caps:1,bands:1,winPlate:'gold',ls:.06},
+ B:{bg:'#ffffff',panel:'#ffffff',rule:'#e9eaee',ink:BR.ink,mut:'#6b7080',up:'#08834a',dn:'#d4231b',disp:['italic 900','Kanit'],lab:['800','SairaC'],num:['italic 700','Kanit'],caps:1,edge:1,dot:1,winPlate:'ink',ls:.04},
+ C:{bg:'#fffdf8',panel:'#ffffff',rule:'#ece6d8',ink:BR.ink,mut:'#6f6a5e',up:'#08834a',dn:'#d4231b',disp:['','Lilita'],lab:['600','Fredoka'],num:['','Lilita'],caps:0,drop:1,winPlate:'show',ls:.01}};
+// line colours on white: the site's chart colours, darkened to read on paper; Grok in ink
+const LC={GPT:'#7b4dff',CLAUDE:'#e0662a',KIMI:'#1e80ff',GROK:BR.ink};
+let C,K,tl,img={},P2={};
+const F=(k,size)=>{const f=K[k];return (f[0]?f[0]+' ':'')+size+'px "'+f[1]+'"'};
+function rnd(seed){let s=seed>>>0;return()=>((s=Math.imul(s^s>>>15,1|s)+0x6D2B79F5|0,((s^s>>>14)>>>0)/4294967296))}
+const li=(k,src)=>new Promise(r=>{if(!src)return r();const i=new Image();i.onload=()=>{img[k]=i;r()};i.onerror=r;i.src=src});
+function rr(c,X,Y,w,h,r){c.beginPath();c.roundRect(X,Y,w,h,r)}
+function txt(c,s,X,Y,font,col,align='left',alpha=1,ls=0){if(alpha<=0)return;c.save();c.globalAlpha*=alpha;c.font=font;c.textAlign=align;c.textBaseline='alphabetic';c.letterSpacing=ls+'px';c.fillStyle=col;c.fillText(s,X,Y);c.restore()}
+function tw(c,s,font,ls=0){c.save();c.font=font;c.letterSpacing=ls+'px';const w=c.measureText(s).width;c.restore();return w}
+function fit(c,s,k,size,max,min=12){while(tw(c,s,F(k,size))>max&&size>min)size-=1;return size}
+const up=s=>K.caps?s.toUpperCase():s;
+// the take's display lettering: A printed ink, B the logo's green and red edges and its gold dot, C ink with a gold drop
+function disp(c,s,X,Y,size,align='left',alpha=1,col,dot=0){if(alpha<=0)return 0;const f=F('disp',size),w=tw(c,s,f),x0=align==='center'?X-w/2:align==='right'?X-w:X;col=col||K.ink;
+ c.save();c.globalAlpha*=alpha;c.font=f;c.textAlign='left';c.textBaseline='alphabetic';
+ if(K.edge){const o=Math.max(2,size*.05);c.fillStyle=BR.green;c.fillText(s,x0-o,Y);c.fillStyle=BR.red;c.fillText(s,x0+o,Y)}
+ if(K.drop){const o=Math.max(2,size*.06);c.fillStyle=BR.gold;c.fillText(s,x0+o,Y+o)}
+ c.fillStyle=col;c.fillText(s,x0,Y);
+ if(K.dot&&dot){const q=size*.2;c.fillStyle=BR.gold;c.fillRect(x0+w+size*.06,Y-q,q,q)}c.restore();return w+(K.dot&&dot?size*.3:0)}
+// a model's mark on its own disc (the app icon), with a hairline where the disc is pale
+function mark(c,m,cx,cy,r,alpha=1){const M=C.models[m],p=P2[m];c.save();c.globalAlpha*=alpha;c.beginPath();c.arc(cx,cy,r,0,7);c.fillStyle=M.bg;c.fill();
+ if(M.bg!=='#000'){c.lineWidth=Math.max(1.5,r*.05);c.strokeStyle='rgba(4,7,14,.18)';c.stroke()}
+ const s=r*1.18/24;c.translate(cx-12*s,cy-12*s);c.scale(s,s);c.fillStyle=M.fg;c.fill(p.d,p.fr||'nonzero');if(p.dot){c.fillStyle=M.dotc||'#1e80ff';c.fill(p.dot)}c.restore()}
+function crown(c,cx,cy,s,col){c.save();c.translate(cx,cy);c.beginPath();c.moveTo(-s,s*.55);c.lineTo(-s,-s*.25);c.lineTo(-s*.5,s*.12);c.lineTo(0,-s*.6);c.lineTo(s*.5,s*.12);c.lineTo(s,-s*.25);c.lineTo(s,s*.55);c.closePath();c.fillStyle=col;c.fill();c.lineWidth=Math.max(2,s*.12);c.strokeStyle=BR.ink;c.lineJoin='round';c.stroke();c.restore()}
+function logoTile(c,X,Y,s,alpha=1){if(!img.co)return;c.save();c.globalAlpha*=alpha;rr(c,X,Y,s,s,s*.2);c.fillStyle='#fff';c.fill();c.lineWidth=2;c.strokeStyle=K.rule;c.stroke();const i=img.co,ar=i.width/i.height,p=s*.14,iw=ar>1?s-2*p:(s-2*p)*ar,ih=ar>1?(s-2*p)/ar:s-2*p;c.drawImage(i,X+(s-iw)/2,Y+(s-ih)/2,iw,ih);c.restore()}
+function ezLogo(c,X,Y,s,alpha=1){if(img.ez){c.save();c.globalAlpha*=alpha;c.drawImage(img.ez,X,Y,s,s);c.restore()}}
+const money=v=>(v<0?'−':'+')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US');
+const kmoney=v=>Math.abs(v)>=10000?(v<0?'−':'+')+'$'+(Math.abs(v)/1000).toFixed(Math.abs(v)>=100000?0:1)+'K':money(v);
+const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(2)+'%';
+const side=c=>c.dir>0?'LONG':'SHORT';
+// ---- the price path (as render-set): hours since the close before; the first hour at the fine step
+function fine(){const b=C.bars[C.iRep];if(C.fine&&C.fine.length>1)return C.fine;const dn=b[4]<b[1];return[[b[0],b[1],dn?b[2]:b[3],dn?b[2]:b[3],dn?b[2]:b[3]],[b[0],dn?b[2]:b[3],dn?b[3]:b[2],dn?b[3]:b[2],dn?b[3]:b[2]],[b[0],b[4],b[4],b[4],b[4]]]}
+let PTS;function pts(){const b=C.bars,ir=C.iRep,ip=C.iPrev??ir,Fn=fine(),n=Fn.length,o=[[0,C.prev]],xr0=ir-ip;for(let i=ip;i<ir;i++)o.push([i-ip+1,b[i][4]]);
+ Fn.forEach((f,j)=>o.push([xr0+(j+1)/n,f[4]]));for(let i=ir+1;i<b.length;i++)o.push([i-ip+1,b[i][4]]);
+ const gr=[];for(let i=Math.max(0,ip-24);i<ip;i++)gr.push([i-ip+1,b[i][4]]);return{pts:o,xr0,grey:gr,end:o[o.length-1][0]}}
+function pAt(xx){const p=PTS.pts;if(xx<=0)return p[0][1];for(let i=1;i<p.length;i++)if(p[i][0]>=xx){const f=(xx-p[i-1][0])/(p[i][0]-p[i-1][0]);return lerp(p[i-1][1],p[i][1],f)}return p[p.length-1][1]}
+function prep(){const mode=C.pnl||'flat';for(const c of C.calls){c.stake=mode==='size'?2e4*(+c.mag):1e5;c.key=mode==='flat'?String(c.dir):c.dir+'|'+c.mag;c.fin=pnl(c,PTS.end)}
+ const best=Math.max(...C.calls.map(c=>c.fin));C.top=best>0?C.calls.filter(c=>c.fin>best-1).map(c=>c.m):[]}
+function pnl(c,xx){if(xx<=0)return 0;return c.dir*c.stake*(pAt(xx)/C.prev-1)}
+async function init(cfg){C=cfg;K=TAKES[C.take||'A'];K.take=C.take||'A';
+ for(const k in C.models)P2[k]={d:new Path2D(C.models[k].d),dot:C.models[k].dot?new Path2D(C.models[k].dot):null,fr:C.models[k].fr};
+ await li('co',C.logo);await li('ez',C.ezLogo);for(const k of ['disp','lab','num'])await document.fonts.load(F(k,40));
+ const k=C.calls.length,R0=1.75,RS=.72,r1=R0+k*RS,ch=[r1+.05,r1+1.2],boom=ch[1]+1.5;
+ tl={hits:[.12,.62],title:[1.3,1.6],R0,RS,roll:[R0,r1],chart:ch,cd:[ch[1],boom],boom,slow:[boom+.2,boom+3.2],rest:[boom+3.2,boom+5.8],close:[boom+5.8,boom+6.5],win:[boom+7,boom+9.4],tab:[boom+9.4,boom+9.9],T:boom+12.5};
+ tl.lands=C.calls.map((c,i)=>R0+i*RS+.6);const nf=C.fine&&C.fine.length>1?C.fine.length:3;tl.ticks=[...Array(Math.min(nf,16))].map((_,j,a)=>tl.slow[0]+(j+1)*(tl.slow[1]-tl.slow[0])/a.length);
+ PTS=pts();prep();return tl.T}
+function clock(t){const np=PTS.end-PTS.xr0;if(t<tl.boom)return{xc:PTS.xr0,v:1};if(t<tl.rest[0]){const f=seg(t,tl.slow[0],tl.slow[1]);return{xc:PTS.xr0+f,v:1}}
+ const f=seg(t,tl.rest[0],tl.rest[1]),q=1+(np-1)*(1-Math.pow(1-f,1.5));return{xc:PTS.xr0+q,v:Math.max(1,q)}}
+const rk=k=>tl.R0+k*tl.RS;
+function confetti(c,cx,cy,f,seed,n=120,r=520){const R=rnd(seed),cols=[BR.gold,BR.green,BR.red,BR.ink];c.save();for(let i=0;i<n;i++){const a=R()*6.283,d=(30+R()*r)*ease(f*1.6),w=6+R()*10,h=4+R()*6;c.globalAlpha=Math.max(0,1-f*.9);c.fillStyle=cols[i%4];
+ c.save();c.translate(cx+Math.cos(a)*d,cy+Math.sin(a)*d*.7+f*f*160);c.rotate(R()*6+f*6*(R()-.5));c.fillRect(-w/2,-h/2,w,h);c.restore()}c.restore()}
+// ---- layout
+const M0=56,TOPB=40,HDR=128,CH0=270,CH1=1000,RO=1040,FOOT=1300;
+function frame(c){c.fillStyle=K.bg;c.fillRect(0,0,W,H);if(K.bands){c.fillStyle=BR.green;c.fillRect(0,0,W,14);c.fillStyle=BR.red;c.fillRect(0,H-14,W,14)}}
+function brandBar(c,a){if(a<=0)return;ezLogo(c,M0,TOPB-4,58,a);const s=K.caps?'PRESENTS':'presents';txt(c,s,M0+72,TOPB+38,F('lab',26),K.ink,'left',a,K.ls*26);
+ const w=tw(c,s,F('lab',26),K.ls*26);txt(c,'·  '+up('Round ')+C.n,M0+72+w+16,TOPB+38,F('lab',26),K.mut,'left',a,K.ls*26)}
+function footer(c){txt(c,'@earningszn',M0,FOOT+12,F('lab',24),K.mut,'left',1,K.ls*24);txt(c,'earningszn.xyz/r/'+C.n,W-M0,FOOT+12,F('lab',24),K.mut,'right',1,K.ls*24)}
+function pill(c,st,t,a){const lv=st==='LIVE',f=F('lab',22),w=tw(c,st,f,K.ls*22)+(lv?54:36),X=W-M0-w,Y=TOPB+2;c.save();c.globalAlpha*=a;rr(c,X,Y,w,44,K.take==='A'?6:22);
+ c.fillStyle=lv?BR.red:st==='CLOSED'?BR.ink:'#fff';c.fill();if(!lv&&st!=='CLOSED'){c.lineWidth=2;c.strokeStyle=K.ink;c.stroke()}
+ if(lv){c.beginPath();c.arc(X+23,Y+22,6,0,7);c.fillStyle='rgba(255,255,255,'+(.55+.45*Math.sin(t*7))+')';c.fill()}c.restore();
+ txt(c,st,X+(lv?38:18),Y+31,f,lv||st==='CLOSED'?'#fff':K.ink,'left',a,K.ls*22)}
+function draw(t){const calls=C.calls,cx=W/2;x.setTransform(1,0,0,1,0,0);
+ const sh=t>tl.boom?Math.max(0,1-(t-tl.boom)/.55)*9:0;frame(x);x.translate(sh?Math.sin(t*90)*sh:0,sh?Math.cos(t*77)*sh*.8:0);
+ const verdict=t>=tl.close[0],vv=verdict?ease(seg(t,tl.close[0],tl.close[1])):0,{xc,v}=clock(t),post=t>=tl.boom;
+ // ---- 1. title card: EZ. presents, the round, then the company in the take's lettering
+ if(t<tl.title[1]){const o=1-seg(t,tl.title[0],tl.title[1]);x.save();x.globalAlpha=o;
+  const p1=t>=tl.hits[0]?ease(seg(t,tl.hits[0],tl.hits[0]+.3)):0,p2=t>=tl.hits[1]?ease(seg(t,tl.hits[1],tl.hits[1]+.3)):0;
+  const ls=170,lx=cx-ls/2;ezLogo(x,lx,250,ls);const ps=K.caps?'PRESENTS':'presents';txt(x,ps,cx,486,F('lab',44),K.ink,'center',1,K.ls*44*2);
+  if(K.bands){x.fillStyle=K.rule;x.fillRect(cx-210,530,420,3);x.fillRect(cx-210,538,420,1.5)}
+  const rs=up('Round ')+C.n,fr=fit(x,rs,'disp',110,W*.7);x.save();x.translate(0,lerp(24,0,p1));disp(x,rs,cx,700,fr,'center',p1,K.take==='A'?K.mut:K.ink);x.restore();
+  const cn=up(C.co),fc=fit(x,cn,'disp',210,W-2*M0-40,60);x.save();x.translate(cx,960);x.scale(lerp(1.25,1,p2),lerp(1.25,1,p2));
+  disp(x,cn,0,fc*.35,fc,'center',p2,null,1);x.restore();
+  const tk='$'+C.tk.replace(/\..*/,''),ts=40,tl0=tw(x,tk,F('lab',ts),K.ls*ts),gs=76,gap=18,w0=gs+gap+tl0;logoTile(x,cx-w0/2,1060,gs,p2);txt(x,tk,cx-w0/2+gs+gap,1060+gs/2+ts*.36,F('lab',ts),K.mut,'left',p2,K.ls*ts);
+  x.restore()}
+ // ---- header after the title card: the brand bar, the company, the state
+ const ho=ease(seg(t,tl.title[0]+.15,tl.title[1]+.1));
+ if(ho>0&&t<tl.win[0]+.2){brandBar(x,ho);const st=t<tl.cd[0]?'BEFORE EARNINGS':t<tl.boom?'EARNINGS IN':t<tl.close[0]?'LIVE':'CLOSED';pill(x,st,t,ho);
+  logoTile(x,M0,HDR,92,ho);const cn=up(C.co),fs=fit(x,cn,'disp',84,560,40);x.save();x.globalAlpha=ho;disp(x,cn,M0+112,HDR+78,fs,'left',1,null,1);x.restore();
+  if(post){const pr=verdict?C.fin:pAt(xc),ch=100*(pr/C.prev-1),a=ease(seg(t,tl.boom,tl.boom+.4));txt(x,pct(ch),W-M0,HDR+66,F('num',64),ch>=0?K.up:K.dn,'right',a);txt(x,'$'+C.tk.replace(/\..*/,'')+(verdict?' at the close':' live'),W-M0,HDR+98,F('lab',24),K.mut,'right',a,K.ls*24)}
+  else txt(x,'$'+C.tk.replace(/\..*/,''),W-M0,HDR+66,F('num',44),K.mut,'right',ho)}
+ // ---- 2. the chart: the stock trading into the report, then each AI's P&L on one chart
+ if(t>=tl.chart[0]&&t<tl.win[0]+.2){const LW=290,px0=M0,px1=W-M0-LW,py0=CH0,py1=CH1,xr0=PTS.xr0,G=PTS.grey,gx0=G.length?G[0][0]:0;
+  const fg=lerp(.3,.12,ease(seg(t,tl.slow[0],tl.slow[0]+.8))),fo=xr0>0?.1:0;
+  const Xp=xx=>xx<=0?px0+(px1-px0)*fg*(gx0?(xx-gx0)/(-gx0):1):xx<=xr0?px0+(px1-px0)*(fg+fo*xx/xr0):px0+(px1-px0)*(fg+fo+(1-fg-fo)*(xx-xr0)/v);
+  const gd=seg(t,tl.chart[0],tl.chart[1]),gEnd=lerp(gx0,0,gd);
+  const vals=[0,2500,-2500];G.filter(p=>p[0]<=gEnd).forEach(p=>vals.push(100*(p[1]/C.prev-1)*1000));
+  if(post){const ps=PTS.pts.filter(p=>p[0]<=xc).map(p=>p[0]).concat([xc]);calls.forEach(c=>ps.forEach(xx=>vals.push(pnl(c,xx))))}
+  let hi=Math.max(...vals),lo=Math.min(...vals);const pd=(hi-lo)*.1;hi+=pd;lo-=pd;const Yp=d=>py1-(py1-py0)*(d-lo)/(hi-lo),z0=Yp(0);
+  x.save();rr(x,px0-16,py0-26,W-2*M0+32,py1-py0+52,K.take==='A'?4:18);x.fillStyle=K.panel;x.fill();x.lineWidth=2;x.strokeStyle=K.rule;x.stroke();x.restore();
+  if(post){x.save();x.globalAlpha=ease(seg(t,tl.boom,tl.boom+.5));x.fillStyle='rgba(3,200,112,.07)';x.fillRect(px0,py0,px1-px0,z0-py0);x.fillStyle='rgba(255,58,49,.07)';x.fillRect(px0,z0,px1-px0,py1-z0);x.restore();
+   const span=hi-lo,stp=[1e3,2e3,5e3,1e4,2e4,5e4,1e5].find(s=>span/s<=5)||2e5,ga=ease(seg(t,tl.boom+.3,tl.boom+.9));
+   for(let y=Math.ceil(lo/stp)*stp;y<=hi;y+=stp){if(Math.abs(y)<1)continue;x.save();x.strokeStyle=K.rule;x.globalAlpha=ga;x.lineWidth=1.5;x.beginPath();x.moveTo(px0,Yp(y));x.lineTo(px1,Yp(y));x.stroke();x.restore();if(Yp(y)>py0+18&&Yp(y)<py1-4)txt(x,kmoney(y),px0+4,Yp(y)-7,F('lab',20),K.mut,'left',ga)}}
+  x.save();x.strokeStyle=K.ink;x.globalAlpha=.6;x.setLineDash([7,7]);x.lineWidth=2;x.beginPath();x.moveTo(px0,z0);x.lineTo(px1,z0);x.stroke();x.beginPath();x.moveTo(Xp(xr0),py0);x.lineTo(Xp(xr0),py1);x.stroke();x.restore();
+  txt(x,up('Earnings'),Xp(xr0)+8,py0+14,F('lab',20),K.mut,'left',1,K.ls*20);if(post)txt(x,'$0',px0+4,z0-8,F('lab',21),K.ink,'left',.9);
+  if(G.length){const gp=G.filter(p=>p[0]<=gEnd).map(p=>[Xp(p[0]),Yp(100*(p[1]/C.prev-1)*1000)]);if(gd<1&&gp.length){const i=G.findIndex(p=>p[0]>gEnd);if(i>0){const a0=G[i-1],a1=G[i],f=(gEnd-a0[0])/(a1[0]-a0[0]);gp.push([Xp(gEnd),Yp(100*(lerp(a0[1],a1[1],f)/C.prev-1)*1000)])}}
+   x.save();x.globalAlpha=post?.25:.9;x.strokeStyle=K.mut;x.lineWidth=3.5;x.lineJoin='round';x.beginPath();gp.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.stroke();x.restore();
+   if(!post&&gp.length){const e=gp[gp.length-1];x.save();x.beginPath();x.arc(e[0],e[1],6,0,7);x.fillStyle=K.ink;x.fill();x.restore();txt(x,'$'+C.tk.replace(/\..*/,''),e[0]+12,e[1]-12,F('lab',22),K.mut,'left',.95)}}
+  const ends=[];if(post){const xs=PTS.pts.filter(p=>p[0]>xr0-1e-9&&p[0]<xc).map(p=>p[0]).concat([xc]);const groups={};calls.forEach((c,k)=>{(groups[c.key]=groups[c.key]||[]).push(k)});
+   Object.values(groups).forEach(ks=>{const n=ks.length,L=22;x.save();x.lineWidth=6;x.lineJoin='round';x.lineCap='round';
+    ks.forEach((k,i)=>{const c=calls[k],win=C.top.includes(c.m),P3=[[Xp(xr0),Yp(pnl(c,xr0))]].concat(xs.map(xx=>[Xp(xx),Yp(pnl(c,xx))]));x.strokeStyle=LC[c.m];x.globalAlpha=verdict&&!win?1-.6*vv:1;
+     x.setLineDash(n>1?[L,L*(n-1)]:[]);x.lineDashOffset=-i*L;x.beginPath();P3.forEach((p,j)=>j?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.stroke();if(i===0)ends.push(...ks.map(kk=>({k:kk,x:P3[P3.length-1][0],y:P3[P3.length-1][1]})))});x.restore();
+    const e=ends[ends.length-1];x.save();x.beginPath();x.arc(e.x,e.y,8,0,7);x.fillStyle=LC[calls[ks[0]].m];x.fill();x.lineWidth=3;x.strokeStyle='#fff';x.stroke();x.restore()})}
+  else calls.forEach((c,k)=>{if(t>=rk(k)+.6)ends.push({k,x:Xp(xr0),y:z0})});
+  const LH=62;ends.sort((p,q)=>p.y-q.y||p.k-q.k).forEach(e=>e.ly=clamp(e.y-LH/2,py0-14,py1-LH+14));for(let i=1;i<ends.length;i++)if(ends[i].ly<ends[i-1].ly+LH+4)ends[i].ly=ends[i-1].ly+LH+4;
+  if(ends.length){const ov=ends[ends.length-1].ly+LH-py1-14;if(ov>0)ends.forEach(e=>e.ly=Math.max(py0-40,e.ly-ov))}
+  ends.forEach(e=>{const c=calls[e.k],win=C.top.includes(c.m),a=verdict&&!win?1-.55*vv:1,pl=post?(verdict?c.fin:pnl(c,xc)):0,col=post?(pl>=0?K.up:K.dn):K.mut,lx=px1+18;
+   x.save();x.strokeStyle=LC[c.m];x.globalAlpha=.5*a;x.lineWidth=2;x.beginPath();x.moveTo(e.x+8,e.y);x.lineTo(lx-2,e.ly+LH/2);x.stroke();x.restore();
+   mark(x,c.m,lx+22,e.ly+LH/2,22,a);if(verdict&&win){x.save();x.beginPath();x.arc(lx+22,e.ly+LH/2,28,0,7);x.lineWidth=4;x.strokeStyle=BR.gold;x.stroke();x.restore()}
+   txt(x,NM[c.m],lx+54,e.ly+24,F('lab',24),K.ink,'left',a,K.ls*24);const s=post?money(pl):'$0';txt(x,s,lx+54,e.ly+LH-2,F('num',fit(x,s,'num',34,W-M0-lx-54)),col,'left',a)})}
+ // ---- the roster under the chart: each AI's trade
+ if(t>=tl.roll[0]&&t<tl.win[0]+.2){const cw=(W-2*M0)/4;calls.forEach((c,k)=>{const shown=t>=rk(k)+.6,qx=M0+cw*(k+.5),win=C.top.includes(c.m),a=verdict&&!win?1-.5*vv:1,land=seg(t,rk(k)+.52,rk(k)+.72),pop=land>0&&land<1?1+.12*Math.sin(land*Math.PI):1;
+   x.save();x.globalAlpha=a;x.translate(qx,RO+52);x.scale(pop,pop);mark(x,c.m,0,0,46);x.restore();if(verdict&&win){x.save();x.beginPath();x.arc(qx,RO+52,55,0,7);x.lineWidth=6;x.strokeStyle=BR.gold;x.stroke();x.restore();crown(x,qx,RO-14,22*vv,BR.gold)}
+   txt(x,NM[c.m],qx,RO+140,F('lab',30),K.ink,'center',a,K.ls*30);const s1=shown?side(c):'?';txt(x,s1,qx,RO+184,F('disp',fit(x,s1,'disp',40,cw-16)),shown?(c.dir>0?K.up:K.dn):K.mut,'center',a);
+   if(shown)txt(x,c.mag+'%',qx,RO+216,F('lab',24),K.mut,'center',a,K.ls*24)})}
+ // ---- 3. the reveal: each AI big with LONG or SHORT, the size small under it
+ calls.forEach((c,k)=>{const a=rk(k);if(t<a||t>a+.75)return;const o=ease(seg(t,a,a+.18)),bk=ease(seg(t,a+.5,a+.7)),stp=seg(t,a+.15,a+.3),f=o*(1-bk);
+  const cw=(W-2*M0)/4,R=lerp(46,170,f),qx=lerp(M0+cw*(k+.5),cx,f),qy=lerp(RO+52,560,f);x.save();x.globalAlpha=.88*f;x.fillStyle=K.bg;x.fillRect(-20,-20,W+40,H+40);x.restore();
+  x.save();x.shadowColor='rgba(4,7,14,.25)';x.shadowBlur=40*f;x.shadowOffsetY=14*f;mark(x,c.m,qx,qy,R);x.restore();
+  if(stp>0&&bk<.5){const al=1-bk*2;disp(x,up(NM[c.m]),cx,qy-R-40,72,'center',al);x.save();x.translate(cx,qy+R+150);const s3=lerp(1.6,1,ease(stp));x.scale(s3,s3);disp(x,side(c),0,0,150,'center',al,c.dir>0?K.up:K.dn);x.restore();
+   txt(x,'called '+(c.dir>0?'+':'−')+c.mag+'%',cx,qy+R+210,F('lab',38),K.mut,'center',al,K.ls*38)}});
+ // ---- 4. no more bets: 3-2-1, then the report lands
+ if(t>=tl.cd[0]&&t<tl.boom+1){const o=t<tl.boom?1:Math.max(0,1-(t-tl.boom)*1.3);x.save();x.globalAlpha=.9*o;x.fillStyle=K.bg;x.fillRect(-20,-20,W+40,H+40);x.restore();
+  if(t<tl.boom){const k=Math.floor((t-tl.cd[0])/.5),f2=((t-tl.cd[0])%.5)/.5;txt(x,up('Earnings in'),cx,420,F('lab',56),K.mut,'center',1,K.ls*56*2);disp(x,String(3-k),cx,860,Math.round(400-80*f2),'center',1-f2*.4)}
+  else{const f3=t-tl.boom;confetti(x,cx,640,f3,99,90,460);x.save();x.translate(cx,700);const s=1+.2*(1-Math.min(1,f3*1.5));x.scale(s,s);disp(x,up('Earnings!'),0,0,fit(x,up('Earnings!'),'disp',170,W*.86),'center',Math.max(0,1-f3*1.1));x.restore()}}
+ // ---- 5. the winner (the most money this round), then 6. the round's table
+ if(t>=tl.win[0]){const f=seg(t,tl.win[0],tl.win[0]+.25),gone=t>=tl.tab[0];x.save();x.globalAlpha=gone?1:f;frame(x);x.restore();
+  const W0=calls.filter(c=>C.top.includes(c.m));
+  if(!gone){const s0=tl.win[0]+.25,pop=ease(seg(t,s0,s0+.35));brandBar(x,1);confetti(x,cx,470,seg(t,s0,s0+1.6),17,130,520);
+   if(W0.length){const r=W0.length>1?110:150,sp=r*2.5;W0.forEach((c,i)=>{const lx=cx+(i-(W0.length-1)/2)*sp,rr0=r*lerp(1.5,1,pop);x.save();x.globalAlpha=Math.min(1,pop*1.5);x.shadowColor='rgba(4,7,14,.22)';x.shadowBlur=40;x.shadowOffsetY=16;mark(x,c.m,lx,470,rr0);x.restore();
+     x.save();x.globalAlpha=Math.min(1,pop*1.5);x.beginPath();x.arc(lx,470,rr0+10,0,7);x.lineWidth=12;x.strokeStyle=BR.gold;x.stroke();x.restore();crown(x,lx,470-rr0-46,46*pop,BR.gold)});
+    const wl=up(W0.map(c=>NM[c.m]).join(' & ')+(W0.length>1?' win':' wins')),fs=fit(x,wl,'disp',130,W*.84),ta=ease(seg(t,s0+.25,s0+.5));
+    x.save();x.translate(cx,830);x.scale(lerp(1.3,1,ta),lerp(1.3,1,ta));disp(x,wl,0,0,fs,'center',ta,null,1);x.restore();
+    const amt=W0[0].fin*ease(seg(t,s0+.55,s0+1.3)),as=money(amt),fa=fit(x,as,'num',150,W*.84),aa=ease(seg(t,s0+.5,s0+.7));txt(x,as,cx,1030,F('num',fa),W0[0].fin>=0?K.up:K.dn,'center',aa);
+    txt(x,up('Made this round')+'  ·  '+side(W0[0])+' '+W0[0].mag+'%',cx,1100,F('lab',34),K.mut,'center',aa,K.ls*34)}
+   else{const ta=ease(seg(t,s0,s0+.3));disp(x,up('Nobody made money'),cx,700,fit(x,up('Nobody made money'),'disp',110,W*.86),'center',ta);txt(x,'All four lost on '+C.co,cx,800,F('lab',40),K.mut,'center',ta)}
+   footer(x)}
+  else table(t)}
+ x.setTransform(1,0,0,1,0,0);if(!(t>=tl.win[0]))footer(x)}
+// ---- the round's table: the winner on its own plate, the rest under it
+function table(t){const e=seg(t,tl.tab[0],tl.tab[1]+.6),calls=C.calls;brandBar(x,1);
+ logoTile(x,M0,HDR,92);const cn=up(C.co);disp(x,cn,M0+112,HDR+78,fit(x,cn,'disp',84,520,40),'left',1,null,1);
+ txt(x,pct(C.a),W-M0,HDR+66,F('num',64),C.a>=0?K.up:K.dn,'right');txt(x,'$'+C.tk.replace(/\..*/,'')+' at the close',W-M0,HDR+98,F('lab',24),K.mut,'right',1,K.ls*24);
+ const rows=calls.slice().sort((a,b)=>b.fin-a.fin),top=rows.filter(c=>C.top.includes(c.m)),rest=rows.filter(c=>!C.top.includes(c.m));
+ const ph=top.length>1?300:380,rh=116,blk=top.length*(ph+28)+56+rest.length*rh;let y=Math.round(280+Math.max(0,(FOOT-90-280-blk)/2));
+ top.forEach((c,i)=>{const a=ease(e*3-i*.3),h=ph,X=M0,w=W-2*M0;x.save();x.globalAlpha=a;x.translate(0,lerp(30,0,a));
+  if(K.winPlate==='gold'){x.fillStyle=BR.gold;x.fillRect(X,y,w,h);x.fillStyle=K.bg;for(const yy of [y,y+h]){x.beginPath();x.arc(X,yy,22,0,7);x.arc(X+w,yy,22,0,7);x.fill()}
+   x.strokeStyle=BR.ink;x.lineWidth=2;x.strokeRect(X+16,y+16,w-32,h-32);x.lineWidth=1;x.strokeRect(X+22,y+22,w-44,h-44)}
+  else if(K.winPlate==='ink'){rr(x,X,y,w,h,24);x.fillStyle=BR.ink;x.fill()}
+  else{rr(x,X+8,y+10,w,h,28);x.fillStyle=BR.ink;x.fill();rr(x,X,y,w,h,28);x.fillStyle=BR.gold;x.fill();x.lineWidth=5;x.strokeStyle=BR.ink;x.stroke()}
+  const onDark=K.winPlate==='ink',tc=onDark?BR.cream:BR.ink,lab=up(top.length>1?'Winners · most money':'Winner · most money');
+  txt(x,lab,X+48,y+66,F('lab',28),onDark?BR.gold:BR.ink,'left',1,K.ls*28*1.5);txt(x,side(c)+' '+c.mag+'%',X+w-48,y+66,F('lab',28),onDark?'rgba(248,240,217,.7)':'rgba(4,7,14,.7)','right',1,K.ls*28);
+  const my=y+h*.6,R=h>320?78:64;mark(x,c.m,X+48+R,my,R);x.beginPath();x.arc(X+48+R,my,R+7,0,7);x.lineWidth=5;x.strokeStyle=onDark?BR.gold:BR.ink;x.stroke();crown(x,X+48+R,my-R-26,24,BR.gold);
+  const tx=X+48+2*R+40,tw2=X+w-48-tx,nmS=up(NM[c.m]),fn=fit(x,nmS,'disp',h>320?100:80,tw2);disp(x,nmS,tx,my-8,fn,'left',1,tc,1);
+  const ms=money(c.fin),fm=fit(x,ms,'num',h>320?112:88,tw2);txt(x,ms,tx,my+fm*.98,F('num',fm),onDark?BR.green:'#056b3c','left');x.restore();y+=h+28});
+ txt(x,up('The rest'),M0,y+34,F('lab',24),K.mut,'left',ease(e*3-1),K.ls*24*1.5);y+=56;
+ rest.forEach((c,k)=>{const a=ease(e*3-1-k*.3);x.save();x.globalAlpha=a;x.fillStyle=K.rule;x.fillRect(M0,y,W-2*M0,2);
+  mark(x,c.m,M0+38,y+rh/2+2,36);txt(x,NM[c.m],M0+92,y+rh/2+17,F('disp',fit(x,NM[c.m],'disp',54,280)),K.ink,'left');
+  txt(x,side(c)+' '+c.mag+'%',W*.56,y+rh/2+12,F('lab',32),c.dir>0?K.up:K.dn,'center',1,K.ls*32);
+  txt(x,money(c.fin),W-M0,y+rh/2+19,F('num',fit(x,money(c.fin),'num',56,320)),c.fin>=0?K.up:K.dn,'right');x.restore();y+=rh});
+ x.fillStyle=K.rule;x.fillRect(M0,y,W-2*M0,2);
+ const rule={flat:'$100K on every trade',size:'$20K per 1% called',bracket:'$100K, out at its own call'}[C.pnl||'flat']+' · paper trades';
+ txt(x,rule,M0,FOOT-50,F('lab',24),K.mut,'left',ease(e*2-1),K.ls*24);txt(x,C.next,W-M0,FOOT-50,F('lab',26),K.ink,'right',ease(e*2-1),K.ls*26);footer(x)}
+</script></body></html>

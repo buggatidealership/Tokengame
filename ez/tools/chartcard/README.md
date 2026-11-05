@@ -43,3 +43,10 @@ Owner, 5 Nov: slow the first move down "so people can actually see how crazy the
 
 ## v8 the clean screen (owner, 5 Nov: "all of them get traced on the exact same chart... remove the environment... just one screen", pointing at v3's full-frame look)
 `PNL=size node make.js <round> S:clean <out.mp4>`. `render-set.html` with the `clean` entry of `set/sets.json`: no painting (`flat`), the screen edge to edge on the logo black with one panel (`panel`, `edge`), v3's header (`hdr:"pill"`: logo, $TICKER, Round n under it, a state pill Before earnings / Earnings in / Live / Closed, the stock's live move once the report lands), one P&L chart with every AI's line in the site's chart colours (`lc`: GPT violet, Claude orange, Kimi blue, Grok cream) and its live P&L riding the line's end (`ls` scales the labels), the roster under it (logo disc, name, LONG/SHORT and the call: `plate:"name"`). Under the site's flat rule AIs on the same side draw one shared, striped line; `PNL=size` ($20K per 1% called) gives each its own line.
+
+## v9 light (owner, 5 Nov: cleaner, EZ branding, a white background, "EZ presents round n", the company in our fonts, the winner = the most money)
+`node make.js <round> L:<A|B|C> <out.mp4>` (render-light.html; `STILLS=0.95,12.4,19.5` writes stills instead of a video; `PNL=size` gives each AI its own line).
+Three letterings: A ticket (Anton + Barlow Condensed, cream, the ticket's green and red bands, the golden ticket), B logo (Kanit black italic with the
+logo's green and red edges and its gold dot, white, the winner on the logo's black), C show (Lilita One + Fredoka, the live site's faces).
+Fonts in `fonts/` (Google Fonts, OFL). The winner is the AI that made the most this round (ties share it). Mockups only so far:
+`ez/x2p-chartcard9-light.jpg`, `ez/x2p-chartcard9-tables.jpg`.
