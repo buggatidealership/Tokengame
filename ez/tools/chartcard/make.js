@@ -59,21 +59,29 @@ const coin = coinArg || 'xyz:' + r.ticker;
     'Paper, $100K per call. Not advice.\nearningszn.xyz/r/' + r.n].join('\n\n');
   if (!process.env.STILLS) fs.writeFileSync(out.replace(/\.\w+$/, '') + '.txt', post + '\n');
   const tmp = fs.mkdtempSync(path.join(process.env.CC_TMP || os.tmpdir(), 'cc-'));
-  const { chromium } = require('playwright'); const b = await chromium.launch(); const pg = await b.newPage({ viewport: { width: 1080, height: 1350 } });
-  await pg.goto('file://' + path.join(__dirname, 'render.html'));
-  await pg.evaluate(async c => { for (const f of ['900 58px "Inter Display"', '700 20px "Inter"', '800 20px "Inter"', '700 20px "JetBrains Mono"', '600 20px "JetBrains Mono"']) await document.fonts.load(f); await init(c) }, cfg);
-  if (process.env.STILLS) { for (const t of process.env.STILLS.split(',').map(Number)) { await pg.evaluate(t => draw(t), t);
+  const { chromium } = require('playwright'); const b = await chromium.launch({ args: ['--allow-file-access-from-files', '--disable-web-security'] }); const pg = await b.newPage({ viewport: { width: 1080, height: 1350 } });
+  const cast = style === 'C' || style === 'K';
+  if (style === 'K') cfg.setSrc = 'file://' + path.join(__dirname, 'set', 'chalk.jpg');
+  if (cast) cfg.cast = Object.fromEntries(calls.map(c => [c.m, { src: 'file://' + path.join(EZ, 'media', 'h49-cast-' + c.m.toLowerCase() + '-c.webm'),
+    head: { GROK: [150, 100, 300], CLAUDE: [190, 30, 300], GPT: [230, 60, 300], KIMI: [245, 90, 290] }[c.m] }]));
+  await pg.goto('file://' + path.join(__dirname, style === 'K' ? 'render-chalk.html' : cast ? 'render-cast.html' : 'render.html'));
+  await pg.evaluate(async c => { for (const f of ['900 58px "Inter Display"', '700 20px "Inter"', '800 20px "Inter"', '700 20px "JetBrains Mono"', '600 20px "JetBrains Mono"']) await document.fonts.load(f); return await init(c) }, cfg);
+  const TL = cast ? await pg.evaluate(() => tl) : { cd: [1.8, 3.3], boom: 3.3, close: [10.4, 11.3], T: 15 };
+  if (process.env.STILLS) { for (const t of process.env.STILLS.split(',').map(Number)) { await pg.evaluate(async t => { if (typeof seek === 'function') await seek(t); draw(t) }, t);
       await pg.locator('#c').screenshot({ path: out.replace(/\.\w+$/, '') + '-' + t + '.png' }) } await b.close(); return }
-  const fps = 30, N = 15 * fps;
-  for (let i = 0; i < N; i++) { const d = await pg.evaluate(t => { draw(t); return document.getElementById('c').toDataURL('image/jpeg', .93) }, i / fps);
+  const fps = 30, DUR = Math.ceil(TL.T * 10) / 10, N = Math.round(DUR * fps);
+  for (let i = 0; i < N; i++) { const d = await pg.evaluate(async t => { if (typeof seek === 'function') await seek(t); draw(t); return document.getElementById('c').toDataURL('image/jpeg', .93) }, i / fps);
     fs.writeFileSync(path.join(tmp, 'f' + String(i).padStart(4, '0') + '.jpg'), Buffer.from(d.split(',')[1], 'base64')) }
   await b.close();
   const bp = (t0, f, d, a) => `${a}*sin(2*PI*${f}*t)*between(t,${t0},${t0 + d})*sin(PI*(t-${t0})/${d})`;
-  const ex = [bp(1.8, 880, .12, .35), bp(2.3, 880, .12, .35), bp(2.8, 880, .12, .35),
-    '0.9*sin(2*PI*(42+40*exp(-(t-3.3)*7))*(t-3.3))*exp(-(t-3.3)*3.2)*gte(t,3.3)',
-    '0.18*sin(2*PI*1320*t)*exp(-(t-10.4)*5)*gte(t,10.4)', '0.12*sin(2*PI*1760*t)*exp(-(t-10.55)*5)*gte(t,10.55)'].join('+');
+  const c0 = TL.cd[0], bm = TL.boom, cl = TL.close[0];
+  const ex = [bp(c0, 880, .12, .35), bp(c0 + .5, 880, .12, .35), bp(c0 + 1, 880, .12, .35),
+    `0.9*sin(2*PI*(42+40*exp(-(t-${bm})*7))*(t-${bm}))*exp(-(t-${bm})*3.2)*gte(t,${bm})`,
+    `0.18*sin(2*PI*1320*t)*exp(-(t-${cl})*5)*gte(t,${cl})`, `0.12*sin(2*PI*1760*t)*exp(-(t-${cl + .15})*5)*gte(t,${cl + .15})`,
+    ...(cast ? [...calls.map((c, k) => { const s0 = 1.25 + k * 1.15; return `0.5*sin(2*PI*(70+50*exp(-(t-${s0})*12))*(t-${s0}))*exp(-(t-${s0})*9)*gte(t,${s0})` }),
+      `0.6*sin(2*PI*(60+40*exp(-(t-${TL.lock[0] + .1})*10))*(t-${TL.lock[0] + .1}))*exp(-(t-${TL.lock[0] + .1})*7)*gte(t,${TL.lock[0] + .1})`] : [])].join('+');
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(fps), '-i', path.join(tmp, 'f%04d.jpg'),
-    '-f', 'lavfi', '-i', `aevalsrc='${ex}':s=44100:d=15`, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '19', '-preset', 'slow',
+    '-f', 'lavfi', '-i', `aevalsrc='${ex}':s=44100:d=${DUR}`, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '19', '-preset', 'slow',
     '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', '-shortest', out]);
   fs.rmSync(tmp, { recursive: true, force: true });
   console.log(`R${r.n} ${r.co}: ${bars.length} bars, report at bar ${ir}, prev ${prev.toFixed(2)}, Hyperliquid ${hlMove.toFixed(2)}% vs sheet ${r.a}% -> ${out}`);

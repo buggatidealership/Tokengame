@@ -19,3 +19,7 @@ video views over 10 s), frame 0 is a complete still with no result (the first fr
 live on their target lines, a 1.5 s countdown, "Closest right now" moves between the AIs as the price runs (suspense
 by a gradual reveal), graded at the close, then an end card with every AI's round P&L, the season standings with rank
 changes, and the next round. Text 28 px or more at 1080 wide. Boards: `ez/x2p-chartcard2-*.mp4` (v1: `x2p-chartcard-*`).
+
+## v3 cast (`C`) and v4 chalk set (`K`), 5 Nov 2026
+- `C`: the live site's cast loops (`media/h49-cast-<m>-c.webm`) carry the round: each AI steps forward with its call, LOCKED, 3-2-1, the race, the winner's portrait, the end card. No new cost.
+- `K`: a painted set made once with Hedra (`set/chalk.jpg`, gpt-image-2 high 2K 3:4 with `media/h48-chalk.jpg` as the style reference, $0.28; `set/screen.jpg` is a second take, $0.28). Blank board, four brass frames, four plaques; measured slots in `render-chalk.html` (BD, FR, FY, PY). The cast loops play in the frames; non-data strokes (target and reference lines, LOCKED, the countdown, EARNINGS!) are chalk; every number, name and candle is drawn crisp, because hand-drawn fonts and cartoon-style bars lower a chart's credibility (Song, Cho, Bearfield & Stasko, IEEE TVCG, Jan 2026). Research: `ez/x-template-research.md`. `set/raw/` holds the 2K PNGs (not committed).
