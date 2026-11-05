@@ -18,9 +18,9 @@ at('hit',tl['hits'][0],.75);at('hit',tl['hits'][1],1)
 for k,l in enumerate(tl['lands']):
   r=tl['R0']+k*tl['RS'];at('whoosh',r-.08,.4);at('stamp',r+.26,.9);at('slide',l,.25)
 c0=tl['cd'][0];st=(tl['boom']-c0)/3;[at('beep',c0+i*st,.4) for i in range(3)];at('riser',tl['boom']-1.35,.5)
-at('drop',tl['boom'],.5);at('roar',tl['boom']+.05,.55) if not os.environ.get('NOFLOOR') else None;at('hit',tl['boom'],.7);at('ticker',tl['slow'][0],.22);at('ticker',tl['slow'][0]+3,.16);at('ticker',tl['slow'][0]+6,.1)  # the tape runs until the close (the kit's ticker loops seamlessly)
+at('drop',tl['boom'],.5);at('roar',tl['boom']+.05,.6);at('hit',tl['boom'],.7);at('ticker',tl['slow'][0],.22);at('ticker',tl['slow'][0]+3,.16);at('ticker',tl['slow'][0]+6,.1)  # the tape runs until the close (the kit's ticker loops seamlessly)
 at('bell',tl['close'][0],.45)
-w=tl['win'][0]+.25;at('cash',w+.05,.85);at('cheer',w,.35);at('roar',w,.35) if not os.environ.get('NOFLOOR') else None
+w=tl['win'][0]+.25;at('cash',w+.05,.85);at('cheer',w,.35)
 t0=tl['tab'][0];at('slide',t0,.45);[at('slide',t0+1.1*(1+.3*k)/3,.3) for k in range(3)]
 args=['ffmpeg','-y','-loglevel','error','-i',vid];fl=[];lab=[]
 for i,(n,t,g) in enumerate(ev):
@@ -28,7 +28,7 @@ for i,(n,t,g) in enumerate(ev):
   fl.append(f'[{i+1}:a]aresample=44100,aformat=channel_layouts=stereo,volume={g:.3f},adelay={ms}|{ms}[e{i}]');lab.append(f'[e{i}]')
 # the floor: a trading-floor murmur under the whole video (owner, 5 Nov: "trading floor murmur, whatever gets dopamine going"),
 # low under the title, dipped for the 3-2-1 so the beeps cut through, up with the race, swelling for the winner
-FL=not os.environ.get('NOFLOOR')
+FL=bool(os.environ.get('FLOOR'))  # owner, 5 Nov: the crowd only when earnings drop (FLOOR=1 brings the murmur back)
 c1,b=tl['cd'][0],tl['boom']
 if FL: args+=['-stream_loop','-1','-i',K+'floor.mp3'];j=len(ev)+1
 if FL:

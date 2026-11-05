@@ -169,7 +169,7 @@ function draw(t){const calls=C.calls,cx=W/2;x.setTransform(1,0,0,1,0,0);
     const wl=up(W0.map(c=>NM[c.m]).join(' & ')+(W0.length>1?' win':' wins')),fs=fit(x,wl,'disp',130,W*.84),ta=ease(seg(t,s0+.25,s0+.5));
     x.save();x.translate(cx,830);x.scale(lerp(1.3,1,ta),lerp(1.3,1,ta));disp(x,wl,0,0,fs,'center',ta,null,1);x.restore();
     const amt=W0[0].fin*ease(seg(t,s0+.55,s0+1.3)),as=money(amt),aa=ease(seg(t,s0+.5,s0+.7)),pw=tw(x,'P&L ',F('lab',60),K.ls*60),fa=fit(x,as,'num',140,W*.84-pw),aw=tw(x,as,F('num',fa)),ax=cx-(pw+aw)/2;
-    txt(x,'P&L',ax,1030,F('lab',60),K.mut,'left',aa,K.ls*60);txt(x,as,ax+pw,1030,F('num',fa),W0[0].fin>=0?K.up:K.dn,'left',aa)}
+    txt(x,'P&L',ax,1030,F('lab',60),K.mut,'left',aa,K.ls*60);txt(x,as,ax+pw,1030,F('num',fa),W0[0].fin>=0?K.up:K.dn,'left',aa);if(C.span){const hs='in '+C.span+' hours',hf=F('disp',56),hw=tw(x,hs,hf)+48;rr(x,cx-hw/2,1080,hw,84,42);x.save();x.globalAlpha=aa;x.fillStyle=BR.gold;x.fill();x.restore();txt(x,hs,cx,1140,hf,BR.ink,'center',aa)}}
    else{const ta=ease(seg(t,s0,s0+.3));disp(x,up('Nobody made money'),cx,700,fit(x,up('Nobody made money'),'disp',110,W*.86),'center',ta);txt(x,'All four lost on '+C.co,cx,800,F('lab',40),K.mut,'center',ta)}
    footer(x)}
   else table(t)}
@@ -179,12 +179,13 @@ function table(t){const e=seg(t,tl.tab[0],tl.tab[1]+.6),calls=C.calls;brandBar(x
  logoTile(x,M0,HDR,92);const cn=up(C.co);disp(x,cn,M0+112,HDR+78,fit(x,cn,'disp',84,520,40),'left',1,null,1);
  txt(x,pct(C.a),W-M0,HDR+66,F('num',64),C.a>=0?K.up:K.dn,'right');txt(x,'at the close',W-M0,HDR+98,F('lab',24),K.mut,'right',1,K.ls*24);
  // every AI as one line, "<name>  P&L +$x", the most money first and biggest; no columns
+ if(C.span)txt(x,up('P&L in '+C.span+' hours · close to close'),M0,272,F('lab',26),BR.gold,'left',ease(e*2),K.ls*26);
  const rows=calls.slice().sort((a,b)=>b.fin-a.fin),RH=c=>C.top.includes(c.m)?190:130,blk=rows.reduce((s2,c)=>s2+RH(c),0);let y=Math.round(290+Math.max(0,(FOOT-60-290-blk)/2));
  rows.forEach((c,k)=>{const top=C.top.includes(c.m),h=RH(c),a=ease(e*3-k*.35),my=y+h/2,R=top?62:42,X=M0+R+10;x.save();x.globalAlpha=a;x.translate(lerp(40,0,a),0);
   if(top){rr(x,M0-12,y+10,W-2*M0+24,h-20,26);x.fillStyle='#121722';x.fill();x.lineWidth=4;x.strokeStyle=BR.gold;x.stroke()}
   mark(x,c.m,X,my,R);if(top){x.beginPath();x.arc(X,my,R+7,0,7);x.lineWidth=5;x.strokeStyle=BR.gold;x.stroke();crown(x,X,my-R-22,20,BR.gold)}
-  const nx=X+R+30,nm=up(NM[c.m]),fn=top?76:52;disp(x,nm,nx,my+fn*.36,fn,'left',1,null,top?1:0);
   const ms=money(c.fin),fm=top?84:58,mw=tw(x,ms,F('num',fm)),lf=F('lab',top?40:30),lw=tw(x,'P&L',lf,K.ls*30)+14,rx=W-M0-(top?12:0);
+  const nx=X+R+30,nm=up(NM[c.m]),fn=fit(x,nm,'disp',top?76:52,rx-mw-14-lw-nx-(top?40:24),30);disp(x,nm,nx,my+fn*.36,fn,'left',1,null,top?1:0);
   txt(x,ms,rx,my+fm*.36,F('num',fm),c.fin>=0?K.up:K.dn,'right');txt(x,'P&L',rx-mw-14,my+fm*.36,lf,K.mut,'right',1,K.ls*30);x.restore();y+=h});
  const rule={flat:'$100K on every trade',size:'$20K per 1% called',bracket:'$100K, out at its own call'}[C.pnl||'flat']+' · paper trades';
  txt(x,rule,M0,FOOT-50,F('lab',24),K.mut,'left',ease(e*2-1),K.ls*24);txt(x,K.polish?'Next: '+(C.nextCo||''):C.next,W-M0,FOOT-50,F('lab',26),K.ink,'right',ease(e*2-1),K.ls*26);footer(x);
