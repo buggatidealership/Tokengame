@@ -58,7 +58,7 @@ const [kind, setName] = style.split(':');
   const nx = [...R, ...P, ...U].find(q => q.n === r.n + 1);
   const lg = CL[r.ticker]; const logo = lg ? 'data:image/png;base64,' + fs.readFileSync(path.join(EZ, 'media', lg.f)).toString('base64') : '';
   const ezLogo = 'data:image/svg+xml;base64,' + fs.readFileSync(path.join(EZ, 'tools/v22/x2p-logo.svg')).toString('base64');
-  const cfg = { fine, fineLab, fiv, iPrev: ip, n: r.n, co: r.co, tk: r.ticker, a: r.a, win, calls, bars, iRep: ir, prev, fin: prev * (1 + r.a / 100), style, logo, ezLogo, title,
+  const cfg = { pnl: process.env.PNL || 'flat', fine, fineLab, fiv, iPrev: ip, n: r.n, co: r.co, tk: r.ticker, a: r.a, win, calls, bars, iRep: ir, prev, fin: prev * (1 + r.a / 100), style, logo, ezLogo, title,
     sub: (r.co !== r.ticker && us(r.ticker) ? r.co + '  ·  ' : '') + 'Round ' + r.n, winLine, winSub, rows,
     next: nx ? 'Next: ' + (us(nx.ticker) ? '$' + nx.ticker : nx.co) + '  ·  Round ' + nx.n : '@earningszn',
     models: Object.fromEntries(Object.entries(MO).map(([k2, v]) => [k2, { d: v.d, dot: v.dot, dotc: v.dotc, fr: v.fr, bg: v.bg, fg: v.fg, c: v.c }])) };
@@ -93,8 +93,11 @@ const [kind, setName] = style.split(':');
     ...(cast ? [...calls.map((c, k) => { const s0 = 1.25 + k * 1.15; return `0.5*sin(2*PI*(70+50*exp(-(t-${s0})*12))*(t-${s0}))*exp(-(t-${s0})*9)*gte(t,${s0})` }),
       `0.6*sin(2*PI*(60+40*exp(-(t-${TL.lock[0] + .1})*10))*(t-${TL.lock[0] + .1}))*exp(-(t-${TL.lock[0] + .1})*7)*gte(t,${TL.lock[0] + .1})`] : []),
     ...(isSet ? [...TL.lands.map(s0 => `0.35*sin(2*PI*2400*(t-${s0}))*exp(-max(t-${s0},0)*45)*gte(t,${s0})+0.3*sin(2*PI*900*(t-${s0}))*exp(-max(t-${s0},0)*30)*gte(t,${s0})`),
-      `0.55*sin(2*PI*(60+40*exp(-max(t-${TL.lock[0] + .1},0)*10))*(t-${TL.lock[0] + .1}))*exp(-max(t-${TL.lock[0] + .1},0)*7)*gte(t,${TL.lock[0] + .1})`,
-      ...TL.ticks.filter((_, j, a) => a.length <= 16 || j % Math.ceil(a.length / 16) === 0).map(s0 => `0.16*sin(2*PI*3200*(t-${s0}))*exp(-max(t-${s0},0)*90)*gte(t,${s0})`),
+      ...(TL.hits || []).map(h => `0.7*sin(2*PI*(55+45*exp(-max(t-${h},0)*9))*(t-${h}))*exp(-max(t-${h},0)*6)*gte(t,${h})`),
+      ...(TL.lock ? [`0.55*sin(2*PI*(60+40*exp(-max(t-${TL.lock[0] + .1},0)*10))*(t-${TL.lock[0] + .1}))*exp(-max(t-${TL.lock[0] + .1},0)*7)*gte(t,${TL.lock[0] + .1})`] : []),
+      ...(TL.win ? [0, .12, .24].map((d, i) => { const s0 = TL.win[0] + .3 + d, f = [784, 988, 1319][i]; return `0.2*sin(2*PI*${f}*(t-${s0}))*exp(-max(t-${s0},0)*${i === 2 ? 2.5 : 6})*gte(t,${s0})` }) : []),
+      ...(TL.win ? [`0.5*sin(2*PI*(48+40*exp(-max(t-${TL.win[0] + .3},0)*8))*(t-${TL.win[0] + .3}))*exp(-max(t-${TL.win[0] + .3},0)*4)*gte(t,${TL.win[0] + .3})`] : []),
+      ...TL.ticks.filter((_, j, a) => a.length <= 16 || j % Math.ceil(a.length / 16) === 0).map(s0 => `0.1*sin(2*PI*3200*(t-${s0}))*exp(-max(t-${s0},0)*90)*gte(t,${s0})`),
       `0.07*sin(2*PI*(55+${r.a > 0 ? '' : '-'}12*(t-${TL.slow[0]}))*(t-${TL.slow[0]}))*between(t,${TL.slow[0]},${TL.slow[1]})`] : [])].join('+');
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(fps), '-i', path.join(tmp, 'f%04d.jpg'),
     '-f', 'lavfi', '-i', `aevalsrc='${ex}':s=44100:d=${DUR}`, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '19', '-preset', 'slow',
