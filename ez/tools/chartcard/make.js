@@ -61,7 +61,7 @@ const [kind, setName] = style.split(':');
   const ezLogo = 'data:image/svg+xml;base64,' + fs.readFileSync(path.join(EZ, 'tools/v22/x2p-logo.svg')).toString('base64');
   const cfg = { pnl: process.env.PNL || 'flat', fine, fineLab, fiv, iPrev: ip, n: r.n, co: r.co, tk: r.ticker, a: r.a, win, calls, bars, iRep: ir, prev, fin: prev * (1 + r.a / 100), style, logo, ezLogo, title,
     sub: (r.co !== r.ticker && us(r.ticker) ? r.co + '  ·  ' : '') + 'Round ' + r.n, winLine, winSub, rows,
-    nextCo: nx ? nx.co : '', next: nx ? 'Next: ' + (us(nx.ticker) ? '$' + nx.ticker : nx.co) + '  ·  Round ' + nx.n : '@earningszn',
+    span: Math.round((resT - prevT) / 3600e3), nextCo: nx ? nx.co : '', next: nx ? 'Next: ' + (us(nx.ticker) ? '$' + nx.ticker : nx.co) + '  ·  Round ' + nx.n : '@earningszn',
     models: Object.fromEntries(Object.entries(MO).map(([k2, v]) => [k2, { d: v.d, dot: v.dot, dotc: v.dotc, fr: v.fr, bg: v.bg, fg: v.fg, c: v.c }])) };
   // the post: no spoiler, the cashtag, the stake
   const ups = calls.filter(c => c.dir > 0).length, best = Math.min(...calls.filter(c => (c.dir > 0) === (r.a > 0)).map(c => c.off), 99);

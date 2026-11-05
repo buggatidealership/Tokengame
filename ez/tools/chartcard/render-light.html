@@ -128,7 +128,7 @@ function draw(t){const calls=C.calls,cx=W/2;x.setTransform(1,0,0,1,0,0);
    const span=hi-lo,stp=[1e3,2e3,5e3,1e4,2e4,5e4,1e5].find(s=>span/s<=5)||2e5,ga=ease(seg(t,tl.boom+.3,tl.boom+.9));
    for(let y=Math.ceil(lo/stp)*stp;y<=hi;y+=stp){if(Math.abs(y)<1)continue;x.save();x.strokeStyle=K.rule;x.globalAlpha=ga;x.lineWidth=1.5;x.beginPath();x.moveTo(px0,Yp(y));x.lineTo(px1,Yp(y));x.stroke();x.restore();if(Yp(y)>py0+18&&Yp(y)<py1-4)txt(x,kmoney(y),px0+4,Yp(y)-7,F('lab',20),K.mut,'left',ga)}}
   x.save();x.strokeStyle=K.ink;x.globalAlpha=.6;x.setLineDash([7,7]);x.lineWidth=2;x.beginPath();x.moveTo(px0,z0);x.lineTo(px1,z0);x.stroke();x.beginPath();x.moveTo(Xp(xr0),py0);x.lineTo(Xp(xr0),py1);x.stroke();x.restore();
-  txt(x,up('Earnings'),Xp(xr0)+8,py0+14,F('lab',20),K.mut,'left',1,K.ls*20);if(post)txt(x,'$0',px0+4,z0-8,F('lab',21),K.ink,'left',.9);
+  txt(x,up('Earnings'),Xp(xr0)+8,py0+14,F('lab',20),K.mut,'left',1,K.ls*20);if(C.span){const sp=up('Close to close')+' · '+C.span+'h';txt(x,sp,px1+LW-8,py0+4,F('lab',21),K.mut,'right',1,K.ls*21)}if(post)txt(x,'$0',px0+4,z0-8,F('lab',21),K.ink,'left',.9);
   if(G.length){const gp=G.filter(p=>p[0]<=gEnd).map(p=>[Xp(p[0]),Yp(100*(p[1]/C.prev-1)*1000)]);if(gd<1&&gp.length){const i=G.findIndex(p=>p[0]>gEnd);if(i>0){const a0=G[i-1],a1=G[i],f=(gEnd-a0[0])/(a1[0]-a0[0]);gp.push([Xp(gEnd),Yp(100*(lerp(a0[1],a1[1],f)/C.prev-1)*1000)])}}
    x.save();x.globalAlpha=post?.25:.9;x.strokeStyle=K.mut;x.lineWidth=3.5;x.lineJoin='round';x.beginPath();gp.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.stroke();x.restore();
    if(!post&&gp.length){const e=gp[gp.length-1];x.save();x.beginPath();x.arc(e[0],e[1],6,0,7);x.fillStyle=K.ink;x.fill();x.restore();txt(x,C.co,e[0]+12,e[1]-12,F('lab',22),K.mut,'left',.95)}}
