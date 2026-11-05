@@ -84,44 +84,46 @@ function draw(t){const bars=C.bars,ir=C.iRep,n=bars.length,prev=C.prev,np=n-ir,c
    txt(g,C.tk.replace(/\..*/,'')+' '+s,bx+bw,by+52,F('nf',fit(g,C.tk.replace(/\..*/,'')+' '+s,'nf',46,bw*.5)),mv>=0?T.up:T.dn,'right');
    const sub=verdict?'at the close':sl&&st.lab?st.lab+' · first hour':'since the close before';txt(g,sub,bx+bw,by+92,F('bf',25),sl?T.gold:T.mut,'right')}
   else txt(g,t>=tl.lock[0]?'locked':'before earnings',bx+bw,by+50,F('bf',28),T.mut,'right');
-  // ---- each AI's own P&L for the round: $100K on its trade, from the close before to the grading close
-  const TOP=by+108,BOT=by+bh,gp=Math.round(bw*.022),pw=(bw-gp)/2,ph=(BOT-TOP-gp)/2,xr0=PTS.xr0;
+  // ---- one chart: every AI's P&L on $100K through the night. Same side = same P&L, so a shared path is one line striped in each AI's colour
+  const TOP=by+112,BOT=by+bh-4,xr0=PTS.xr0,LW=bw*.35,px0=bx+2,px1=bx+bw-LW,py0=TOP+12,py1=BOT;
   const q=t<tl.boom?0:st.first?st.f:st.p,xc=xr0+q,v=Math.max(1,q),fp=xr0>0?.22:0,cur=pAt(xc);
-  // one y-scale for all four, following what has happened so far (the camera pulls back as the move breaks out)
-  const seen=PTS.pts.filter(p=>p[0]<=xc).map(p=>p[1]).concat([cur,C.prev]),mvs=seen.map(v=>100*(v/C.prev-1)).concat(verdict?[C.a]:[]);
-  const mx=Math.max(...mvs.map(Math.abs),...calls.map(c=>+c.mag),1)*1000,yr=mx*1.12;
-  calls.forEach((c,k)=>{const col=k%2,row=Math.floor(k/2),X0=bx+col*(pw+gp),Y0=TOP+row*(ph+gp),win=C.win.includes(c.m),shown=t>=rk(k)+.7,M=C.models[c.m];
-   const isL=lead===c.m,dimA=verdict&&!win?1-.5*vv:1,mc=M.c==='#111'?'#e8e4da':M.c;
-   // the panel
-   g.save();rr(g,X0,Y0,pw,ph,10);g.fillStyle='rgba(255,255,255,.045)';g.fill();g.lineWidth=verdict&&win?4:isL?3:1.5;g.strokeStyle=verdict&&win?T.gold:isL?T.gold:'rgba(255,255,255,.16)';g.stroke();g.restore();
-   const hh=40,px0=X0+12,px1=X0+pw-12,py0=Y0+hh+8,py1=Y0+ph-12;
-   mark(g,c.m,X0+26,Y0+22,15,'disc',dimA);const nm=NM[c.m];txt(g,nm,X0+50,Y0+32,F('tf',fit(g,nm,'tf',28,pw*.36)),verdict&&win?T.gold:T.w,'left',dimA);
-   if(verdict&&win)crown(g,X0+50+g.measureText(nm).width+24,Y0+19,14,T.gold);
-   const ok=(c.dir>0)===(C.a>0),tr=(shown?callTxt(c):'?')+(verdict&&vv>.3?(ok?'  ✓':'  ✗'):'');txt(g,tr,px1,Y0+32,F('nf',fit(g,tr,'nf',25,pw*.5)),shown?(c.dir>0?T.up:T.dn):T.mut,'right',dimA);
-   // the plot: $0, its called P&L, its P&L through the night
-   const Xp=x=>x<=xr0&&xr0>0?px0+(px1-px0)*fp*(x/xr0):px0+(px1-px0)*(fp+(1-fp)*(x-xr0)/v),Yp=d=>(py0+py1)/2-(py1-py0)/2*(d/yr);
-   g.save();g.beginPath();g.rect(X0,py0-6,pw,py1-py0+12);g.clip();
-   g.save();g.globalAlpha=.55;g.strokeStyle=T.mut;g.setLineDash([3,7]);g.lineWidth=1.6;g.beginPath();g.moveTo(px0,Yp(0));g.lineTo(px1,Yp(0));g.stroke();
-   if(xr0>0){g.setLineDash([5,7]);g.beginPath();g.moveTo(Xp(xr0),py0);g.lineTo(Xp(xr0),py1);g.stroke()}g.restore();
-   const ca=ease(seg(t,rk(k)+.55,rk(k)+.85));
-   if(ca>0){const cy=Yp(+c.mag*1000);g.save();g.globalAlpha=.85*dimA;g.strokeStyle=mc;g.setLineDash([10,8]);g.lineWidth=2.4;g.beginPath();g.moveTo(px0,cy);g.lineTo(px0+(px1-px0)*ca,cy);g.stroke();g.restore();
-    txt(g,'call '+kmoney(+c.mag*1000),px0+2,cy-7,F('bf',21),mc,'left',ca*.9*dimA)}
-   if(t>=tl.boom||xr0>0){const pts=PTS.pts.filter(p=>p[0]<xc).concat([[xc,cur]]).map(p=>[Xp(p[0]),Yp(c.dir*1e5*(p[1]/C.prev-1))]);
-    const last=pts[pts.length-1],pl=c.dir*1e5*(cur/C.prev-1),col=pl>=0?T.up:T.dn;
-    g.save();g.globalAlpha=.2*dimA;g.beginPath();g.moveTo(pts[0][0],Yp(0));pts.forEach(p=>g.lineTo(p[0],p[1]));g.lineTo(last[0],Yp(0));g.closePath();g.fillStyle=col;g.fill();g.restore();
-    g.save();g.globalAlpha=dimA;g.strokeStyle=col;g.lineWidth=4;g.lineJoin='round';g.beginPath();pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();
-    g.beginPath();g.arc(last[0],last[1],7,0,7);g.fillStyle=col;g.fill();g.restore();g.restore();
-    // the round's P&L at the end of the line
-    if(t>=tl.boom){const s=money(verdict?c.pl:pl),fs=fit(g,s,'nf',40,pw*.6);g.font=F('nf',fs);const w=g.measureText(s).width,z0=Yp(0),room=Math.abs(last[1]-z0)>fs+14;
-     let ly=pl>=0?(room?last[1]+fs+8:last[1]-12):(room?last[1]-12:last[1]+fs+8);ly=clamp(ly,py0+fs+2,py1-2);let lx=last[0]-14-w;if(lx<px0)lx=Math.min(last[0]+14,px1-w);
-     g.save();g.globalAlpha=.78*dimA;g.fillStyle=T.bg;rr(g,lx-8,ly-fs*.86,w+16,fs*1.1,8);g.fill();g.restore();txt(g,s,lx,ly,F('nf',fs),col,'left',dimA)}}
-   else g.restore();
-  });
-  // the first hour, slowed down: a tag where the four panels meet
-  if(t>=tl.slow[0]&&t<tl.rest[0]+.4){const a=t<tl.rest[0]?ease(seg(t,tl.slow[0],tl.slow[0]+.2)):1-seg(t,tl.rest[0],tl.rest[0]+.4),cx=bx+bw/2,cy=TOP+ph+gp/2;
+  const shownK=k=>t>=rk(k)+.7,gr=[1,-1].map(d=>({d,ks:calls.map((c,k)=>k).filter(k=>calls[k].dir===d&&shownK(k))})).filter(G=>G.ks.length);
+  // the y-scale follows what has happened so far: the camera pulls back as the move breaks out
+  const mvs=PTS.pts.filter(p=>p[0]<=xc).map(p=>100*(p[1]/C.prev-1)).concat([100*(cur/C.prev-1)],verdict?[C.a]:[]);
+  const dirs=[...new Set(calls.map(c=>c.dir))],vals=[0,...calls.map(c=>+c.mag*1000)];if(t>=tl.boom)dirs.forEach(d=>mvs.forEach(m=>vals.push(d*m*1000)));
+  let hi=Math.max(...vals),lo=Math.min(...vals);lo=Math.min(lo,-hi*.3);const pd=(hi-lo)*.1;hi+=pd;lo-=pd;
+  const Xp=x=>x<=xr0&&xr0>0?px0+(px1-px0)*fp*(x/xr0):px0+(px1-px0)*(fp+(1-fp)*(x-xr0)/v),Yp=d=>py1-(py1-py0)*(d-lo)/(hi-lo),z0=Yp(0);
+  // the ground: green above $0, red below, light rules every round number of dollars
+  g.save();g.globalAlpha=.09;g.fillStyle=T.up;g.fillRect(px0,py0,px1-px0,z0-py0);g.fillStyle=T.dn;g.fillRect(px0,z0,px1-px0,py1-z0);g.restore();
+  const span=hi-lo,stp=[1e3,2e3,5e3,1e4,2e4,5e4,1e5].find(s=>span/s<=6)||2e5;g.save();g.strokeStyle=T.mut;g.globalAlpha=.22;g.lineWidth=1;
+  for(let y=Math.ceil(lo/stp)*stp;y<=hi;y+=stp){if(Math.abs(y)<1)continue;g.beginPath();g.moveTo(px0,Yp(y));g.lineTo(px1,Yp(y));g.stroke()}g.restore();
+  for(let y=Math.ceil(lo/stp)*stp;y<=hi;y+=stp){if(Math.abs(y)<1||Yp(y)<py0+18||Yp(y)>py1-4)continue;txt(g,kmoney(y),px0+6,Yp(y)-6,F('bf',20),T.mut,'left',.8)}
+  g.save();g.strokeStyle=T.w;g.globalAlpha=.6;g.setLineDash([6,7]);g.lineWidth=2;g.beginPath();g.moveTo(px0,z0);g.lineTo(px1,z0);g.stroke();
+  if(xr0>0){g.beginPath();g.moveTo(Xp(xr0),py0);g.lineTo(Xp(xr0),py1);g.stroke()}g.restore();txt(g,'$0',px0+6,z0-7,F('bf',21),T.w,'left',.85);
+  // each AI's call, a short dashed tick at the right edge: the P&L it said it would make
+  calls.forEach((c,k)=>{const a=ease(seg(t,rk(k)+.55,rk(k)+.85));if(a<=0)return;const win=C.win.includes(c.m),mc=C.models[c.m].c==='#111'?'#e8e4da':C.models[c.m].c,y=Yp(+c.mag*1000);
+   g.save();g.globalAlpha=a*(verdict&&!win?1-.5*vv:1)*.9;g.strokeStyle=verdict&&win?T.gold:mc;g.lineWidth=3;g.setLineDash([7,5]);g.beginPath();g.moveTo(px1-58*a,y);g.lineTo(px1,y);g.stroke();g.restore();mark(g,c.m,px1-70,y,10,'disc',a*(verdict&&!win?1-.5*vv:1))});
+  // the lines
+  const pts=(t>=tl.boom||xr0>0)?PTS.pts.filter(p=>p[0]<xc).concat([[xc,cur]]):[],ends=[];
+  gr.forEach(G=>{if(!pts.length)return;const P2=pts.map(p=>[Xp(p[0]),Yp(G.d*1e5*(p[1]/C.prev-1))]),last=P2[P2.length-1],n=G.ks.length,L=22,pl=G.d*1e5*(cur/C.prev-1);
+   g.save();g.lineWidth=6;g.lineJoin='round';g.lineCap='butt';G.ks.forEach((k,i)=>{const m=calls[k].m,win=C.win.includes(m);g.strokeStyle=verdict&&win?T.gold:(C.models[m].c==='#111'?'#e8e4da':C.models[m].c);
+    g.globalAlpha=verdict&&!win?1-.55*vv:1;g.setLineDash(n>1?[L,L*(n-1)]:[]);g.lineDashOffset=-i*L;g.beginPath();P2.forEach((p,j)=>j?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke()});g.restore();
+   g.save();g.beginPath();g.arc(last[0],last[1],8,0,7);g.fillStyle=pl>=0?T.up:T.dn;g.fill();g.lineWidth=3;g.strokeStyle=T.bg;g.stroke();g.restore();ends.push({G,x:last[0],y:last[1],pl})});
+  // the labels at the line ends: the AIs on that side and the round's P&L
+  const LH=84;ends.sort((p,q2)=>p.y-q2.y).forEach(e=>e.ly=clamp(e.y-LH/2,py0,py1-LH));for(let i=1;i<ends.length;i++)if(ends[i].ly<ends[i-1].ly+LH+8)ends[i].ly=ends[i-1].ly+LH+8;
+  if(ends.length){const ov=ends[ends.length-1].ly+LH-py1;if(ov>0)ends.forEach(e=>e.ly=Math.max(py0-30,e.ly-ov))}
+  ends.forEach(e=>{const lx=px1+16,G=e.G,col=e.pl>=0?T.up:T.dn,val=verdict?calls[G.ks[0]].pl:e.pl;
+   g.save();g.strokeStyle=col;g.globalAlpha=.6;g.lineWidth=2;g.beginPath();g.moveTo(e.x+8,e.y);g.lineTo(lx-4,e.ly+LH/2);g.stroke();g.restore();
+   let x0=lx;G.ks.forEach(k=>{const m=calls[k].m,win=C.win.includes(m),isL=lead===m;mark(g,m,x0+17,e.ly+20,17,'disc',verdict&&!win?1-.55*vv:1);
+    if((verdict&&win)||isL){g.save();g.beginPath();g.arc(x0+17,e.ly+20,21,0,7);g.lineWidth=3.5;g.strokeStyle=T.gold;g.shadowColor=T.gold;g.shadowBlur=12;g.stroke();g.restore()}
+    if(verdict&&win)crown(g,x0+17,e.ly-8,12*vv,T.gold);x0+=42});
+   const nm=G.ks.map(k=>NM[calls[k].m]).join(' & ');txt(g,nm,x0+4,e.ly+29,F('bf',fit(g,nm,'bf',24,bx+bw-x0-6)),T.w,'left');
+   const s=money(val);txt(g,s,lx,e.ly+LH-6,F('nf',fit(g,s,'nf',46,bx+bw-lx)),col,'left')});
+  // the first hour, slowed down
+  if(t>=tl.slow[0]&&t<tl.rest[0]+.4){const a=t<tl.rest[0]?ease(seg(t,tl.slow[0],tl.slow[0]+.2)):1-seg(t,tl.rest[0],tl.rest[0]+.4),cx=(px0+px1)/2,cy=TOP-6;
    g.save();g.globalAlpha=a;g.font=F('tf',28);const w=g.measureText('SLOW-MO').width+30;rr(g,cx-w/2,cy-21,w,42,10);g.fillStyle=T.gold;g.fill();g.restore();txt(g,'SLOW-MO',cx,cy+10,F('tf',28),T.bg,'center',a)}
   // the question on the first frame
-  if(t<tl.R0+.25){const q='Who calls '+C.title+'?',fs=fit(g,q,'tf',66,bw*.8),cx=bx+bw/2,cy=TOP+(BOT-TOP)*.5;g.save();g.globalAlpha=1-seg(t,tl.R0,tl.R0+.25);g.fillStyle='rgba(0,0,0,.72)';rr(g,cx-g.measureText(q).width/2-24,cy-fs*.95,g.measureText(q).width+48,fs*1.35,14);g.fill();g.restore();
+  if(t<tl.R0+.25){const q='Who calls '+C.title+'?',fs=fit(g,q,'tf',66,bw*.8),cx=bx+bw/2,cy=TOP+(BOT-TOP)*.45;g.save();g.globalAlpha=1-seg(t,tl.R0,tl.R0+.25);g.fillStyle='rgba(0,0,0,.72)';rr(g,cx-g.measureText(q).width/2-24,cy-fs*.95,g.measureText(q).width+48,fs*1.35,14);g.fill();g.restore();
    txt(g,q,cx,cy,F('tf',fs),T.gold,'center',1-seg(t,tl.R0,tl.R0+.25))}
  }
  // ---- the result, on the same screen
