@@ -1,5 +1,5 @@
 // Round outcome as a chart video (1080x1350, 4:5, 15 s, with countdown beeps and the boom) plus its post text.
-// node make.js <round> <A|B> <out.mp4> [hlCoin]
+// node make.js <round> <A|B|C|K|S:<set>> <out.mp4> [hlCoin]   (S:casino, S:slot, S:sportsbook, S:den: set/sets.json)
 // Price path: Hyperliquid hourly candles of the company's HIP-3 market (xyz:<TICKER> by default).
 // The close is the sheet's: the path after the report is eased onto the sheet's move, and the
 // script stops if Hyperliquid's own move differs from the sheet's by more than 1.5 points.
@@ -21,6 +21,7 @@ function prevWeekday(ymd) { const t = new Date(Date.UTC(ymd[0], ymd[1] - 1, ymd[
 const prevT = sameDay ? ny(prevWeekday(md(r.resolves)), 16) : ny(md(r.called), 16);
 const repT = sameDay ? ny(md(r.resolves), 7) : prevT;
 const coin = coinArg || 'xyz:' + r.ticker;
+const [kind, setName] = style.split(':');
 (async () => {
   const res = await fetch('https://api.hyperliquid.xyz/info', { method: 'POST', headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ type: 'candleSnapshot', req: { coin, interval: '1h', startTime: repT - 48 * 3600e3, endTime: resT - 1 } }) });
@@ -29,6 +30,15 @@ const coin = coinArg || 'xyz:' + r.ticker;
   const ip = bars.findIndex(b => b[0] >= prevT), ir = bars.findIndex(b => b[0] >= repT);
   const prev = bars[ip - 1][4], hlMove = 100 * (bars[bars.length - 1][4] / prev - 1);
   if (Math.abs(hlMove - r.a) > 1.5) throw new Error(`Hyperliquid says ${hlMove.toFixed(2)}%, the sheet ${r.a}%: check before posting`);
+  // the first hour after the report at the finest step Hyperliquid still keeps (1m for about 3 days, 5m for about 17, 15m for about 52)
+  const age = Date.now() - repT, fiv = age < 3.2 * 864e5 ? 1 : age < 16.5 * 864e5 ? 5 : age < 50 * 864e5 ? 15 : 0, t1 = bars[ir][0];
+  let fine = [], fineLab = [];
+  if (fiv) { try { const fr = await fetch('https://api.hyperliquid.xyz/info', { method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ type: 'candleSnapshot', req: { coin, interval: fiv + 'm', startTime: t1, endTime: t1 + 3600e3 - 1 } }) });
+    fine = (await fr.json()).map(c => [c.t, +c.o, +c.h, +c.l, +c.c]).filter(b => b[0] >= t1 && b[0] < t1 + 3600e3); } catch (e) { fine = [] } }
+  if (fine.length > 1 && Math.abs(fine[fine.length - 1][4] / bars[ir][4] - 1) > .004) fine = []; // must land on the hourly close
+  const clk = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' });
+  fineLab = fine.map(b => clk.format(new Date(b[0] + fiv * 60e3)) + ' ET');
   const k = prev * (1 + r.a / 100) / bars[bars.length - 1][4], span = bars.length - 1 - ir;
   bars = bars.map((b, i) => { if (i < ir) return b; const f = 1 + (k - 1) * (span ? (i - ir) / span : 1); return [b[0], b[1] * f, b[2] * f, b[3] * f, b[4] * f] });
   const calls = r.calls.map(c => { const dir = /^UP/.test(c[1]) ? 1 : -1, mag = c[1].replace(/[^0-9.]/g, '');
@@ -48,10 +58,10 @@ const coin = coinArg || 'xyz:' + r.ticker;
   const nx = [...R, ...P, ...U].find(q => q.n === r.n + 1);
   const lg = CL[r.ticker]; const logo = lg ? 'data:image/png;base64,' + fs.readFileSync(path.join(EZ, 'media', lg.f)).toString('base64') : '';
   const ezLogo = 'data:image/svg+xml;base64,' + fs.readFileSync(path.join(EZ, 'tools/v22/x2p-logo.svg')).toString('base64');
-  const cfg = { n: r.n, co: r.co, tk: r.ticker, a: r.a, win, calls, bars, iRep: ir, prev, fin: prev * (1 + r.a / 100), style, logo, ezLogo, title,
+  const cfg = { fine, fineLab, fiv, iPrev: ip, n: r.n, co: r.co, tk: r.ticker, a: r.a, win, calls, bars, iRep: ir, prev, fin: prev * (1 + r.a / 100), style, logo, ezLogo, title,
     sub: (r.co !== r.ticker && us(r.ticker) ? r.co + '  ·  ' : '') + 'Round ' + r.n, winLine, winSub, rows,
     next: nx ? 'Next: ' + (us(nx.ticker) ? '$' + nx.ticker : nx.co) + '  ·  Round ' + nx.n : '@earningszn',
-    models: Object.fromEntries(Object.entries(MO).map(([k2, v]) => [k2, { d: v.d, dot: v.dot, dotc: v.dotc, fr: v.fr }])) };
+    models: Object.fromEntries(Object.entries(MO).map(([k2, v]) => [k2, { d: v.d, dot: v.dot, dotc: v.dotc, fr: v.fr, bg: v.bg, fg: v.fg, c: v.c }])) };
   // the post: no spoiler, the cashtag, the stake
   const ups = calls.filter(c => c.dir > 0).length, best = Math.min(...calls.filter(c => (c.dir > 0) === (r.a > 0)).map(c => c.off), 99);
   const post = [`4 AIs locked their ${title} calls before the print.`, `${ups} long, ${calls.length - ups} short.`,
@@ -60,13 +70,15 @@ const coin = coinArg || 'xyz:' + r.ticker;
   if (!process.env.STILLS) fs.writeFileSync(out.replace(/\.\w+$/, '') + '.txt', post + '\n');
   const tmp = fs.mkdtempSync(path.join(process.env.CC_TMP || os.tmpdir(), 'cc-'));
   const { chromium } = require('playwright'); const b = await chromium.launch({ args: ['--allow-file-access-from-files', '--disable-web-security'] }); const pg = await b.newPage({ viewport: { width: 1080, height: 1350 } });
-  const cast = style === 'C' || style === 'K';
+  const cast = style === 'C' || style === 'K', isSet = kind === 'S';
+  if (isSet) { const sets = JSON.parse(fs.readFileSync(path.join(__dirname, 'set', 'sets.json'), 'utf8')); if (!sets[setName]) throw new Error('no set ' + setName);
+    cfg.set = { ...sets[setName], srcUrl: 'file://' + path.join(__dirname, 'set', sets[setName].src) }; }
   if (style === 'K') cfg.setSrc = 'file://' + path.join(__dirname, 'set', 'chalk.jpg');
   if (cast) cfg.cast = Object.fromEntries(calls.map(c => [c.m, { src: 'file://' + path.join(EZ, 'media', 'h49-cast-' + c.m.toLowerCase() + '-c.webm'),
     head: { GROK: [150, 100, 300], CLAUDE: [190, 30, 300], GPT: [230, 60, 300], KIMI: [245, 90, 290] }[c.m] }]));
-  await pg.goto('file://' + path.join(__dirname, style === 'K' ? 'render-chalk.html' : cast ? 'render-cast.html' : 'render.html'));
+  await pg.goto('file://' + path.join(__dirname, isSet ? 'render-set.html' : style === 'K' ? 'render-chalk.html' : cast ? 'render-cast.html' : 'render.html'));
   await pg.evaluate(async c => { for (const f of ['900 58px "Inter Display"', '700 20px "Inter"', '800 20px "Inter"', '700 20px "JetBrains Mono"', '600 20px "JetBrains Mono"']) await document.fonts.load(f); return await init(c) }, cfg);
-  const TL = cast ? await pg.evaluate(() => tl) : { cd: [1.8, 3.3], boom: 3.3, close: [10.4, 11.3], T: 15 };
+  const TL = (cast || isSet) ? await pg.evaluate(() => tl) : { cd: [1.8, 3.3], boom: 3.3, close: [10.4, 11.3], T: 15 };
   if (process.env.STILLS) { for (const t of process.env.STILLS.split(',').map(Number)) { await pg.evaluate(async t => { if (typeof seek === 'function') await seek(t); draw(t) }, t);
       await pg.locator('#c').screenshot({ path: out.replace(/\.\w+$/, '') + '-' + t + '.png' }) } await b.close(); return }
   const fps = 30, DUR = Math.ceil(TL.T * 10) / 10, N = Math.round(DUR * fps);
@@ -79,7 +91,11 @@ const coin = coinArg || 'xyz:' + r.ticker;
     `0.9*sin(2*PI*(42+40*exp(-(t-${bm})*7))*(t-${bm}))*exp(-(t-${bm})*3.2)*gte(t,${bm})`,
     `0.18*sin(2*PI*1320*t)*exp(-(t-${cl})*5)*gte(t,${cl})`, `0.12*sin(2*PI*1760*t)*exp(-(t-${cl + .15})*5)*gte(t,${cl + .15})`,
     ...(cast ? [...calls.map((c, k) => { const s0 = 1.25 + k * 1.15; return `0.5*sin(2*PI*(70+50*exp(-(t-${s0})*12))*(t-${s0}))*exp(-(t-${s0})*9)*gte(t,${s0})` }),
-      `0.6*sin(2*PI*(60+40*exp(-(t-${TL.lock[0] + .1})*10))*(t-${TL.lock[0] + .1}))*exp(-(t-${TL.lock[0] + .1})*7)*gte(t,${TL.lock[0] + .1})`] : [])].join('+');
+      `0.6*sin(2*PI*(60+40*exp(-(t-${TL.lock[0] + .1})*10))*(t-${TL.lock[0] + .1}))*exp(-(t-${TL.lock[0] + .1})*7)*gte(t,${TL.lock[0] + .1})`] : []),
+    ...(isSet ? [...TL.lands.map(s0 => `0.35*sin(2*PI*2400*(t-${s0}))*exp(-max(t-${s0},0)*45)*gte(t,${s0})+0.3*sin(2*PI*900*(t-${s0}))*exp(-max(t-${s0},0)*30)*gte(t,${s0})`),
+      `0.55*sin(2*PI*(60+40*exp(-max(t-${TL.lock[0] + .1},0)*10))*(t-${TL.lock[0] + .1}))*exp(-max(t-${TL.lock[0] + .1},0)*7)*gte(t,${TL.lock[0] + .1})`,
+      ...TL.ticks.filter((_, j, a) => a.length <= 16 || j % Math.ceil(a.length / 16) === 0).map(s0 => `0.16*sin(2*PI*3200*(t-${s0}))*exp(-max(t-${s0},0)*90)*gte(t,${s0})`),
+      `0.07*sin(2*PI*(55+${r.a > 0 ? '' : '-'}12*(t-${TL.slow[0]}))*(t-${TL.slow[0]}))*between(t,${TL.slow[0]},${TL.slow[1]})`] : [])].join('+');
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(fps), '-i', path.join(tmp, 'f%04d.jpg'),
     '-f', 'lavfi', '-i', `aevalsrc='${ex}':s=44100:d=${DUR}`, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '19', '-preset', 'slow',
     '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', '-shortest', out]);
