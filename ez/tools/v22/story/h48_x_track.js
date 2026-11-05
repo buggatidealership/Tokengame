@@ -26,6 +26,7 @@ d.addEventListener("click",function(e){var t=e.target;if(!t||!t.closest)return;
   var a=t.closest("a.h8-hlb,a[href*='app.hyperliquid.xyz']");
   if(a){var box=a.closest("[data-h8hl]"),m=/trade\/([^?#]+)/.exec(a.getAttribute("href")||"");
     T("follow-hl",{t:box?box.getAttribute("data-h8hl"):(m?decodeURIComponent(m[1]):""),where:where(a)});return}
+  if(t.closest("#h48ov a.h8-btnup")){T("end-next",{},"end-next");return}
   var b=t.closest("#h48up button.h8-sw,#h48lb button.h8-sw,#h48lb [role=tab]");
   if(b){var g=b.getAttribute("data-uf")?"upcoming":(b.getAttribute("data-g")||"leaderboard"),v=b.getAttribute("data-uf")||b.getAttribute("data-k")||(b.textContent||"").trim().slice(0,24);
     T("filter",{g:g,v:v},"flt-"+g+"-"+v)}},true);
