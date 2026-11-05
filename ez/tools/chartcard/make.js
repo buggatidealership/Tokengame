@@ -1,5 +1,5 @@
 // Round outcome as a chart video (1080x1350, 4:5, 15 s, with countdown beeps and the boom) plus its post text.
-// node make.js <round> <A|B|C|K|S:<set>> <out.mp4> [hlCoin]   (S:casino, S:slot, S:sportsbook, S:den: set/sets.json)
+// node make.js <round> <A|B|C|K|S:<set>|T:<set>> <out.mp4> [hlCoin]   (S:casino, S:slot, S:sportsbook, S:den; T:desk, T:desk-cel the trader's terminal: set/sets.json)
 // Price path: Hyperliquid hourly candles of the company's HIP-3 market (xyz:<TICKER> by default).
 // The close is the sheet's: the path after the report is eased onto the sheet's move, and the
 // script stops if Hyperliquid's own move differs from the sheet's by more than 1.5 points.
@@ -70,13 +70,13 @@ const [kind, setName] = style.split(':');
   if (!process.env.STILLS) fs.writeFileSync(out.replace(/\.\w+$/, '') + '.txt', post + '\n');
   const tmp = fs.mkdtempSync(path.join(process.env.CC_TMP || os.tmpdir(), 'cc-'));
   const { chromium } = require('playwright'); const b = await chromium.launch({ args: ['--allow-file-access-from-files', '--disable-web-security'] }); const pg = await b.newPage({ viewport: { width: 1080, height: 1350 } });
-  const cast = style === 'C' || style === 'K', isSet = kind === 'S';
+  const cast = style === 'C' || style === 'K', isDesk = kind === 'T', isSet = kind === 'S' || isDesk;
   if (isSet) { const sets = JSON.parse(fs.readFileSync(path.join(__dirname, 'set', 'sets.json'), 'utf8')); if (!sets[setName]) throw new Error('no set ' + setName);
     cfg.set = { ...sets[setName], srcUrl: 'file://' + path.join(__dirname, 'set', sets[setName].src) }; }
   if (style === 'K') cfg.setSrc = 'file://' + path.join(__dirname, 'set', 'chalk.jpg');
   if (cast) cfg.cast = Object.fromEntries(calls.map(c => [c.m, { src: 'file://' + path.join(EZ, 'media', 'h49-cast-' + c.m.toLowerCase() + '-c.webm'),
     head: { GROK: [150, 100, 300], CLAUDE: [190, 30, 300], GPT: [230, 60, 300], KIMI: [245, 90, 290] }[c.m] }]));
-  await pg.goto('file://' + path.join(__dirname, isSet ? 'render-set.html' : style === 'K' ? 'render-chalk.html' : cast ? 'render-cast.html' : 'render.html'));
+  await pg.goto('file://' + path.join(__dirname, isDesk ? 'render-desk.html' : isSet ? 'render-set.html' : style === 'K' ? 'render-chalk.html' : cast ? 'render-cast.html' : 'render.html'));
   await pg.evaluate(async c => { for (const f of ['900 58px "Inter Display"', '700 20px "Inter"', '800 20px "Inter"', '700 20px "JetBrains Mono"', '600 20px "JetBrains Mono"']) await document.fonts.load(f); return await init(c) }, cfg);
   const TL = (cast || isSet) ? await pg.evaluate(() => tl) : { cd: [1.8, 3.3], boom: 3.3, close: [10.4, 11.3], T: 15 };
   if (process.env.STILLS) { for (const t of process.env.STILLS.split(',').map(Number)) { await pg.evaluate(async t => { if (typeof seek === 'function') await seek(t); draw(t) }, t);
