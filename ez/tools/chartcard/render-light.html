@@ -24,7 +24,10 @@ const BR={ink:'#04070e',cream:'#f8f0d9',green:'#03c870',red:'#ff3a31',gold:'#fdb
 const TAKES={
  A:{bg:'#faf6ec',panel:'#ffffff',rule:'#e6dfcf',ink:BR.ink,mut:'#6f6a5e',up:'#08834a',dn:'#d4231b',disp:['','Anton'],lab:['800','BarlowC'],num:['','Anton'],caps:1,bands:1,winPlate:'gold',ls:.06},
  B:{bg:'#ffffff',panel:'#ffffff',rule:'#e9eaee',ink:BR.ink,mut:'#6b7080',up:'#08834a',dn:'#d4231b',disp:['italic 900','Kanit'],lab:['800','SairaC'],num:['italic 700','Kanit'],caps:1,edge:1,dot:1,winPlate:'ink',ls:.04},
+ D:{bg:BR.ink,panel:'#0b0f16',rule:'#1d2533',ink:BR.cream,mut:'#8f95a3',up:BR.green,dn:BR.red,disp:['italic 900','Kanit'],lab:['800','SairaC'],num:['italic 700','Kanit'],caps:1,edge:1,dot:1,winPlate:'ink',ls:.04,dark:1,
+   lc:{GPT:'#b18cff',CLAUDE:'#ef8a55',KIMI:'#58b7ff',GROK:'#e4e0d6'}},
  C:{bg:'#fffdf8',panel:'#ffffff',rule:'#ece6d8',ink:BR.ink,mut:'#6f6a5e',up:'#08834a',dn:'#d4231b',disp:['','Lilita'],lab:['600','Fredoka'],num:['','Lilita'],caps:0,drop:1,winPlate:'show',ls:.01}};
+TAKES.E={...TAKES.D,mat:1};
 // line colours on white: the site's chart colours, darkened to read on paper; Grok in ink
 const LC={GPT:'#7b4dff',CLAUDE:'#e0662a',KIMI:'#1e80ff',GROK:BR.ink};
 let C,K,tl,img={},P2={};
@@ -45,11 +48,11 @@ function disp(c,s,X,Y,size,align='left',alpha=1,col,dot=0){if(alpha<=0)return 0;
  if(K.dot&&dot){const q=size*.2;c.fillStyle=BR.gold;c.fillRect(x0+w+size*.06,Y-q,q,q)}c.restore();return w+(K.dot&&dot?size*.3:0)}
 // a model's mark on its own disc (the app icon), with a hairline where the disc is pale
 function mark(c,m,cx,cy,r,alpha=1){const M=C.models[m],p=P2[m];c.save();c.globalAlpha*=alpha;c.beginPath();c.arc(cx,cy,r,0,7);c.fillStyle=M.bg;c.fill();
- if(M.bg!=='#000'){c.lineWidth=Math.max(1.5,r*.05);c.strokeStyle='rgba(4,7,14,.18)';c.stroke()}
+ if(M.bg!=='#000'){c.lineWidth=Math.max(1.5,r*.05);c.strokeStyle='rgba(4,7,14,.18)';c.stroke()}else if(K.dark){c.lineWidth=Math.max(1.5,r*.05);c.strokeStyle='rgba(248,240,217,.3)';c.stroke()}
  const s=r*1.18/24;c.translate(cx-12*s,cy-12*s);c.scale(s,s);c.fillStyle=M.fg;c.fill(p.d,p.fr||'nonzero');if(p.dot){c.fillStyle=M.dotc||'#1e80ff';c.fill(p.dot)}c.restore()}
 function crown(c,cx,cy,s,col){c.save();c.translate(cx,cy);c.beginPath();c.moveTo(-s,s*.55);c.lineTo(-s,-s*.25);c.lineTo(-s*.5,s*.12);c.lineTo(0,-s*.6);c.lineTo(s*.5,s*.12);c.lineTo(s,-s*.25);c.lineTo(s,s*.55);c.closePath();c.fillStyle=col;c.fill();c.lineWidth=Math.max(2,s*.12);c.strokeStyle=BR.ink;c.lineJoin='round';c.stroke();c.restore()}
 function logoTile(c,X,Y,s,alpha=1){if(!img.co)return;c.save();c.globalAlpha*=alpha;rr(c,X,Y,s,s,s*.2);c.fillStyle='#fff';c.fill();c.lineWidth=2;c.strokeStyle=K.rule;c.stroke();const i=img.co,ar=i.width/i.height,p=s*.14,iw=ar>1?s-2*p:(s-2*p)*ar,ih=ar>1?(s-2*p)/ar:s-2*p;c.drawImage(i,X+(s-iw)/2,Y+(s-ih)/2,iw,ih);c.restore()}
-function ezLogo(c,X,Y,s,alpha=1){if(img.ez){c.save();c.globalAlpha*=alpha;c.drawImage(img.ez,X,Y,s,s);c.restore()}}
+function ezLogo(c,X,Y,s,alpha=1){if(img.ez){c.save();c.globalAlpha*=alpha;c.drawImage(img.ez,X,Y,s,s);if(K.dark){c.beginPath();c.arc(X+s*.497,Y+s*.4985,s*.497,0,7);c.lineWidth=Math.max(1.5,s*.018);c.strokeStyle='rgba(248,240,217,.32)';c.stroke()}c.restore()}}
 const money=v=>(v<0?'−':'+')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US');
 const kmoney=v=>Math.abs(v)>=10000?(v<0?'−':'+')+'$'+(Math.abs(v)/1000).toFixed(Math.abs(v)>=100000?0:1)+'K':money(v);
 const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(2)+'%';
@@ -63,7 +66,7 @@ function pAt(xx){const p=PTS.pts;if(xx<=0)return p[0][1];for(let i=1;i<p.length;
 function prep(){const mode=C.pnl||'flat';for(const c of C.calls){c.stake=mode==='size'?2e4*(+c.mag):1e5;c.key=mode==='flat'?String(c.dir):c.dir+'|'+c.mag;c.fin=pnl(c,PTS.end)}
  const best=Math.max(...C.calls.map(c=>c.fin));C.top=best>0?C.calls.filter(c=>c.fin>best-1).map(c=>c.m):[]}
 function pnl(c,xx){if(xx<=0)return 0;return c.dir*c.stake*(pAt(xx)/C.prev-1)}
-async function init(cfg){C=cfg;K=TAKES[C.take||'A'];K.take=C.take||'A';
+async function init(cfg){C=cfg;K=TAKES[C.take||'A'];K.take=C.take||'A';if(K.lc)Object.assign(LC,K.lc);
  for(const k in C.models)P2[k]={d:new Path2D(C.models[k].d),dot:C.models[k].dot?new Path2D(C.models[k].dot):null,fr:C.models[k].fr};
  await li('co',C.logo);await li('ez',C.ezLogo);for(const k of ['disp','lab','num'])await document.fonts.load(F(k,40));
  const k=C.calls.length,R0=1.75,RS=.72,r1=R0+k*RS,ch=[r1+.05,r1+1.2],boom=ch[1]+1.5;
@@ -73,18 +76,18 @@ async function init(cfg){C=cfg;K=TAKES[C.take||'A'];K.take=C.take||'A';
 function clock(t){const np=PTS.end-PTS.xr0;if(t<tl.boom)return{xc:PTS.xr0,v:1};if(t<tl.rest[0]){const f=seg(t,tl.slow[0],tl.slow[1]);return{xc:PTS.xr0+f,v:1}}
  const f=seg(t,tl.rest[0],tl.rest[1]),q=1+(np-1)*(1-Math.pow(1-f,1.5));return{xc:PTS.xr0+q,v:Math.max(1,q)}}
 const rk=k=>tl.R0+k*tl.RS;
-function confetti(c,cx,cy,f,seed,n=120,r=520){const R=rnd(seed),cols=[BR.gold,BR.green,BR.red,BR.ink];c.save();for(let i=0;i<n;i++){const a=R()*6.283,d=(30+R()*r)*ease(f*1.6),w=6+R()*10,h=4+R()*6;c.globalAlpha=Math.max(0,1-f*.9);c.fillStyle=cols[i%4];
+function confetti(c,cx,cy,f,seed,n=120,r=520){const R=rnd(seed),cols=[BR.gold,BR.green,BR.red,K.dark?BR.cream:BR.ink];c.save();for(let i=0;i<n;i++){const a=R()*6.283,d=(30+R()*r)*ease(f*1.6),w=6+R()*10,h=4+R()*6;c.globalAlpha=Math.max(0,1-f*.9);c.fillStyle=cols[i%4];
  c.save();c.translate(cx+Math.cos(a)*d,cy+Math.sin(a)*d*.7+f*f*160);c.rotate(R()*6+f*6*(R()-.5));c.fillRect(-w/2,-h/2,w,h);c.restore()}c.restore()}
 // ---- layout
 const M0=56,TOPB=40,HDR=128,CH0=270,CH1=1000,RO=1040,FOOT=1300;
-function frame(c){c.fillStyle=K.bg;c.fillRect(0,0,W,H);if(K.bands){c.fillStyle=BR.green;c.fillRect(0,0,W,14);c.fillStyle=BR.red;c.fillRect(0,H-14,W,14)}}
+function frame(c){if(K.mat){c.fillStyle='#ffffff';c.fillRect(0,0,W,H);rr(c,22,22,W-44,H-44,34);c.fillStyle=K.bg;c.fill()}else{c.fillStyle=K.bg;c.fillRect(0,0,W,H)}if(K.bands){c.fillStyle=BR.green;c.fillRect(0,0,W,14);c.fillStyle=BR.red;c.fillRect(0,H-14,W,14)}}
 function brandBar(c,a){if(a<=0)return;ezLogo(c,M0,TOPB-4,58,a);const s=K.caps?'PRESENTS':'presents';txt(c,s,M0+72,TOPB+38,F('lab',26),K.ink,'left',a,K.ls*26);
  const w=tw(c,s,F('lab',26),K.ls*26);txt(c,'·  '+up('Round ')+C.n,M0+72+w+16,TOPB+38,F('lab',26),K.mut,'left',a,K.ls*26)}
 function footer(c){txt(c,'@earningszn',M0,FOOT+12,F('lab',24),K.mut,'left',1,K.ls*24);txt(c,'earningszn.xyz/r/'+C.n,W-M0,FOOT+12,F('lab',24),K.mut,'right',1,K.ls*24)}
 function pill(c,st,t,a){const lv=st==='LIVE',f=F('lab',22),w=tw(c,st,f,K.ls*22)+(lv?54:36),X=W-M0-w,Y=TOPB+2;c.save();c.globalAlpha*=a;rr(c,X,Y,w,44,K.take==='A'?6:22);
- c.fillStyle=lv?BR.red:st==='CLOSED'?BR.ink:'#fff';c.fill();if(!lv&&st!=='CLOSED'){c.lineWidth=2;c.strokeStyle=K.ink;c.stroke()}
+ c.fillStyle=lv?BR.red:st==='CLOSED'?(K.dark?BR.cream:BR.ink):(K.dark?'rgba(0,0,0,0)':'#fff');c.fill();if(!lv&&st!=='CLOSED'){c.lineWidth=2;c.strokeStyle=K.ink;c.stroke()}
  if(lv){c.beginPath();c.arc(X+23,Y+22,6,0,7);c.fillStyle='rgba(255,255,255,'+(.55+.45*Math.sin(t*7))+')';c.fill()}c.restore();
- txt(c,st,X+(lv?38:18),Y+31,f,lv||st==='CLOSED'?'#fff':K.ink,'left',a,K.ls*22)}
+ txt(c,st,X+(lv?38:18),Y+31,f,lv?'#fff':st==='CLOSED'?(K.dark?BR.ink:'#fff'):K.ink,'left',a,K.ls*22)}
 function draw(t){const calls=C.calls,cx=W/2;x.setTransform(1,0,0,1,0,0);
  const sh=t>tl.boom?Math.max(0,1-(t-tl.boom)/.55)*9:0;frame(x);x.translate(sh?Math.sin(t*90)*sh:0,sh?Math.cos(t*77)*sh*.8:0);
  const verdict=t>=tl.close[0],vv=verdict?ease(seg(t,tl.close[0],tl.close[1])):0,{xc,v}=clock(t),post=t>=tl.boom;
@@ -113,7 +116,7 @@ function draw(t){const calls=C.calls,cx=W/2;x.setTransform(1,0,0,1,0,0);
   if(post){const ps=PTS.pts.filter(p=>p[0]<=xc).map(p=>p[0]).concat([xc]);calls.forEach(c=>ps.forEach(xx=>vals.push(pnl(c,xx))))}
   let hi=Math.max(...vals),lo=Math.min(...vals);const pd=(hi-lo)*.1;hi+=pd;lo-=pd;const Yp=d=>py1-(py1-py0)*(d-lo)/(hi-lo),z0=Yp(0);
   x.save();rr(x,px0-16,py0-26,W-2*M0+32,py1-py0+52,K.take==='A'?4:18);x.fillStyle=K.panel;x.fill();x.lineWidth=2;x.strokeStyle=K.rule;x.stroke();x.restore();
-  if(post){x.save();x.globalAlpha=ease(seg(t,tl.boom,tl.boom+.5));x.fillStyle='rgba(3,200,112,.07)';x.fillRect(px0,py0,px1-px0,z0-py0);x.fillStyle='rgba(255,58,49,.07)';x.fillRect(px0,z0,px1-px0,py1-z0);x.restore();
+  if(post){x.save();x.globalAlpha=ease(seg(t,tl.boom,tl.boom+.5))*(K.dark?1.6:1);x.fillStyle='rgba(3,200,112,.07)';x.fillRect(px0,py0,px1-px0,z0-py0);x.fillStyle='rgba(255,58,49,.07)';x.fillRect(px0,z0,px1-px0,py1-z0);x.restore();
    const span=hi-lo,stp=[1e3,2e3,5e3,1e4,2e4,5e4,1e5].find(s=>span/s<=5)||2e5,ga=ease(seg(t,tl.boom+.3,tl.boom+.9));
    for(let y=Math.ceil(lo/stp)*stp;y<=hi;y+=stp){if(Math.abs(y)<1)continue;x.save();x.strokeStyle=K.rule;x.globalAlpha=ga;x.lineWidth=1.5;x.beginPath();x.moveTo(px0,Yp(y));x.lineTo(px1,Yp(y));x.stroke();x.restore();if(Yp(y)>py0+18&&Yp(y)<py1-4)txt(x,kmoney(y),px0+4,Yp(y)-7,F('lab',20),K.mut,'left',ga)}}
   x.save();x.strokeStyle=K.ink;x.globalAlpha=.6;x.setLineDash([7,7]);x.lineWidth=2;x.beginPath();x.moveTo(px0,z0);x.lineTo(px1,z0);x.stroke();x.beginPath();x.moveTo(Xp(xr0),py0);x.lineTo(Xp(xr0),py1);x.stroke();x.restore();
@@ -125,7 +128,7 @@ function draw(t){const calls=C.calls,cx=W/2;x.setTransform(1,0,0,1,0,0);
    Object.values(groups).forEach(ks=>{const n=ks.length,L=22;x.save();x.lineWidth=6;x.lineJoin='round';x.lineCap='round';
     ks.forEach((k,i)=>{const c=calls[k],win=C.top.includes(c.m),P3=[[Xp(xr0),Yp(pnl(c,xr0))]].concat(xs.map(xx=>[Xp(xx),Yp(pnl(c,xx))]));x.strokeStyle=LC[c.m];x.globalAlpha=verdict&&!win?1-.6*vv:1;
      x.setLineDash(n>1?[L,L*(n-1)]:[]);x.lineDashOffset=-i*L;x.beginPath();P3.forEach((p,j)=>j?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.stroke();if(i===0)ends.push(...ks.map(kk=>({k:kk,x:P3[P3.length-1][0],y:P3[P3.length-1][1]})))});x.restore();
-    const e=ends[ends.length-1];x.save();x.beginPath();x.arc(e.x,e.y,8,0,7);x.fillStyle=LC[calls[ks[0]].m];x.fill();x.lineWidth=3;x.strokeStyle='#fff';x.stroke();x.restore()})}
+    const e=ends[ends.length-1];x.save();x.beginPath();x.arc(e.x,e.y,8,0,7);x.fillStyle=LC[calls[ks[0]].m];x.fill();x.lineWidth=3;x.strokeStyle=K.bg;x.stroke();x.restore()})}
   else calls.forEach((c,k)=>{if(t>=rk(k)+.6)ends.push({k,x:Xp(xr0),y:z0})});
   const LH=62;ends.sort((p,q)=>p.y-q.y||p.k-q.k).forEach(e=>e.ly=clamp(e.y-LH/2,py0-14,py1-LH+14));for(let i=1;i<ends.length;i++)if(ends[i].ly<ends[i-1].ly+LH+4)ends[i].ly=ends[i-1].ly+LH+4;
   if(ends.length){const ov=ends[ends.length-1].ly+LH-py1-14;if(ov>0)ends.forEach(e=>e.ly=Math.max(py0-40,e.ly-ov))}
@@ -140,12 +143,12 @@ function draw(t){const calls=C.calls,cx=W/2;x.setTransform(1,0,0,1,0,0);
    if(shown)txt(x,c.mag+'%',qx,RO+216,F('lab',24),K.mut,'center',a,K.ls*24)})}
  // ---- 3. the reveal: each AI big with LONG or SHORT, the size small under it
  calls.forEach((c,k)=>{const a=rk(k);if(t<a||t>a+.75)return;const o=ease(seg(t,a,a+.18)),bk=ease(seg(t,a+.5,a+.7)),stp=seg(t,a+.15,a+.3),f=o*(1-bk);
-  const cw=(W-2*M0)/4,R=lerp(46,170,f),qx=lerp(M0+cw*(k+.5),cx,f),qy=lerp(RO+52,560,f);x.save();x.globalAlpha=.88*f;x.fillStyle=K.bg;x.fillRect(-20,-20,W+40,H+40);x.restore();
+  const cw=(W-2*M0)/4,R=lerp(46,170,f),qx=lerp(M0+cw*(k+.5),cx,f),qy=lerp(RO+52,560,f);x.save();x.globalAlpha=.88*f;x.fillStyle=K.bg;if(K.mat){rr(x,22,22,W-44,H-44,34);x.fill()}else x.fillRect(-20,-20,W+40,H+40);x.restore();
   x.save();x.shadowColor='rgba(4,7,14,.25)';x.shadowBlur=40*f;x.shadowOffsetY=14*f;mark(x,c.m,qx,qy,R);x.restore();
   if(stp>0&&bk<.5){const al=1-bk*2;disp(x,up(NM[c.m]),cx,qy-R-40,72,'center',al);x.save();x.translate(cx,qy+R+150);const s3=lerp(1.6,1,ease(stp));x.scale(s3,s3);disp(x,side(c),0,0,150,'center',al,c.dir>0?K.up:K.dn);x.restore();
    txt(x,'called '+(c.dir>0?'+':'−')+c.mag+'%',cx,qy+R+210,F('lab',38),K.mut,'center',al,K.ls*38)}});
  // ---- 4. no more bets: 3-2-1, then the report lands
- if(t>=tl.cd[0]&&t<tl.boom+1){const o=t<tl.boom?1:Math.max(0,1-(t-tl.boom)*1.3);x.save();x.globalAlpha=.9*o;x.fillStyle=K.bg;x.fillRect(-20,-20,W+40,H+40);x.restore();
+ if(t>=tl.cd[0]&&t<tl.boom+1){const o=t<tl.boom?1:Math.max(0,1-(t-tl.boom)*1.3);x.save();x.globalAlpha=.9*o;x.fillStyle=K.bg;if(K.mat){rr(x,22,22,W-44,H-44,34);x.fill()}else x.fillRect(-20,-20,W+40,H+40);x.restore();
   if(t<tl.boom){const k=Math.floor((t-tl.cd[0])/.5),f2=((t-tl.cd[0])%.5)/.5;txt(x,up('Earnings in'),cx,420,F('lab',56),K.mut,'center',1,K.ls*56*2);disp(x,String(3-k),cx,860,Math.round(400-80*f2),'center',1-f2*.4)}
   else{const f3=t-tl.boom;confetti(x,cx,640,f3,99,90,460);x.save();x.translate(cx,700);const s=1+.2*(1-Math.min(1,f3*1.5));x.scale(s,s);disp(x,up('Earnings!'),0,0,fit(x,up('Earnings!'),'disp',170,W*.86),'center',Math.max(0,1-f3*1.1));x.restore()}}
  // ---- 5. the winner (the most money this round), then 6. the round's table
@@ -157,7 +160,7 @@ function draw(t){const calls=C.calls,cx=W/2;x.setTransform(1,0,0,1,0,0);
     const wl=up(W0.map(c=>NM[c.m]).join(' & ')+(W0.length>1?' win':' wins')),fs=fit(x,wl,'disp',130,W*.84),ta=ease(seg(t,s0+.25,s0+.5));
     x.save();x.translate(cx,830);x.scale(lerp(1.3,1,ta),lerp(1.3,1,ta));disp(x,wl,0,0,fs,'center',ta,null,1);x.restore();
     const amt=W0[0].fin*ease(seg(t,s0+.55,s0+1.3)),as=money(amt),fa=fit(x,as,'num',150,W*.84),aa=ease(seg(t,s0+.5,s0+.7));txt(x,as,cx,1030,F('num',fa),W0[0].fin>=0?K.up:K.dn,'center',aa);
-    txt(x,up('Made this round')+'  ·  '+side(W0[0])+' '+W0[0].mag+'%',cx,1100,F('lab',34),K.mut,'center',aa,K.ls*34)}
+    txt(x,up('Made this round')+'  ·  '+side(W0[0]),cx,1100,F('lab',34),K.mut,'center',aa,K.ls*34)}
    else{const ta=ease(seg(t,s0,s0+.3));disp(x,up('Nobody made money'),cx,700,fit(x,up('Nobody made money'),'disp',110,W*.86),'center',ta);txt(x,'All four lost on '+C.co,cx,800,F('lab',40),K.mut,'center',ta)}
    footer(x)}
   else table(t)}
@@ -171,17 +174,17 @@ function table(t){const e=seg(t,tl.tab[0],tl.tab[1]+.6),calls=C.calls;brandBar(x
  top.forEach((c,i)=>{const a=ease(e*3-i*.3),h=ph,X=M0,w=W-2*M0;x.save();x.globalAlpha=a;x.translate(0,lerp(30,0,a));
   if(K.winPlate==='gold'){x.fillStyle=BR.gold;x.fillRect(X,y,w,h);x.fillStyle=K.bg;for(const yy of [y,y+h]){x.beginPath();x.arc(X,yy,22,0,7);x.arc(X+w,yy,22,0,7);x.fill()}
    x.strokeStyle=BR.ink;x.lineWidth=2;x.strokeRect(X+16,y+16,w-32,h-32);x.lineWidth=1;x.strokeRect(X+22,y+22,w-44,h-44)}
-  else if(K.winPlate==='ink'){rr(x,X,y,w,h,24);x.fillStyle=BR.ink;x.fill()}
+  else if(K.winPlate==='ink'){rr(x,X,y,w,h,24);x.fillStyle=K.dark?'#121722':BR.ink;x.fill();if(K.dark){x.lineWidth=4;x.strokeStyle=BR.gold;x.stroke()}}
   else{rr(x,X+8,y+10,w,h,28);x.fillStyle=BR.ink;x.fill();rr(x,X,y,w,h,28);x.fillStyle=BR.gold;x.fill();x.lineWidth=5;x.strokeStyle=BR.ink;x.stroke()}
   const onDark=K.winPlate==='ink',tc=onDark?BR.cream:BR.ink,lab=up(top.length>1?'Winners · most money':'Winner · most money');
-  txt(x,lab,X+48,y+66,F('lab',28),onDark?BR.gold:BR.ink,'left',1,K.ls*28*1.5);txt(x,side(c)+' '+c.mag+'%',X+w-48,y+66,F('lab',28),onDark?'rgba(248,240,217,.7)':'rgba(4,7,14,.7)','right',1,K.ls*28);
+  txt(x,lab,X+48,y+66,F('lab',28),onDark?BR.gold:BR.ink,'left',1,K.ls*28*1.5);txt(x,side(c),X+w-48,y+66,F('lab',28),onDark?'rgba(248,240,217,.7)':'rgba(4,7,14,.7)','right',1,K.ls*28);
   const my=y+h*.6,R=h>320?78:64;mark(x,c.m,X+48+R,my,R);x.beginPath();x.arc(X+48+R,my,R+7,0,7);x.lineWidth=5;x.strokeStyle=onDark?BR.gold:BR.ink;x.stroke();crown(x,X+48+R,my-R-26,24,BR.gold);
   const tx=X+48+2*R+40,tw2=X+w-48-tx,nmS=up(NM[c.m]),fn=fit(x,nmS,'disp',h>320?100:80,tw2);disp(x,nmS,tx,my-8,fn,'left',1,tc,1);
   const ms=money(c.fin),fm=fit(x,ms,'num',h>320?112:88,tw2);txt(x,ms,tx,my+fm*.98,F('num',fm),onDark?BR.green:'#056b3c','left');x.restore();y+=h+28});
  txt(x,up('The rest'),M0,y+34,F('lab',24),K.mut,'left',ease(e*3-1),K.ls*24*1.5);y+=56;
  rest.forEach((c,k)=>{const a=ease(e*3-1-k*.3);x.save();x.globalAlpha=a;x.fillStyle=K.rule;x.fillRect(M0,y,W-2*M0,2);
   mark(x,c.m,M0+38,y+rh/2+2,36);txt(x,NM[c.m],M0+92,y+rh/2+17,F('disp',fit(x,NM[c.m],'disp',54,280)),K.ink,'left');
-  txt(x,side(c)+' '+c.mag+'%',W*.56,y+rh/2+12,F('lab',32),c.dir>0?K.up:K.dn,'center',1,K.ls*32);
+  txt(x,side(c),W*.56,y+rh/2+14,F('disp',38),c.dir>0?K.up:K.dn,'center');
   txt(x,money(c.fin),W-M0,y+rh/2+19,F('num',fit(x,money(c.fin),'num',56,320)),c.fin>=0?K.up:K.dn,'right');x.restore();y+=rh});
  x.fillStyle=K.rule;x.fillRect(M0,y,W-2*M0,2);
  const rule={flat:'$100K on every trade',size:'$20K per 1% called',bracket:'$100K, out at its own call'}[C.pnl||'flat']+' · paper trades';
