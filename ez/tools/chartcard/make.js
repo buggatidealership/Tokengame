@@ -73,6 +73,7 @@ const [kind, setName] = style.split(':');
   const { chromium } = require('playwright'); const b = await chromium.launch({ args: ['--allow-file-access-from-files', '--disable-web-security'] }); const pg = await b.newPage({ viewport: { width: 1080, height: 1350 } });
   const cast = style === 'C' || style === 'K', isDesk = kind === 'T', isLight = kind === 'L', isSet = kind === 'S' || isDesk || isLight;
   if (isLight) cfg.take = setName || 'A';
+  if (isLight && process.env.BG) cfg.bgUrl = 'file://' + path.resolve(process.env.BG);
   if (isSet && !isLight) { const sets = JSON.parse(fs.readFileSync(path.join(__dirname, 'set', 'sets.json'), 'utf8')); if (!sets[setName]) throw new Error('no set ' + setName);
     cfg.set = { ...sets[setName], srcUrl: sets[setName].src ? 'file://' + path.join(__dirname, 'set', sets[setName].src) : '' }; }
   if (style === 'K') cfg.setSrc = 'file://' + path.join(__dirname, 'set', 'chalk.jpg');

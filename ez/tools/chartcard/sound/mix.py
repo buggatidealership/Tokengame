@@ -17,7 +17,7 @@ def at(name,t,g):
 at('hit',tl['hits'][0],.75);at('hit',tl['hits'][1],1)
 for k,l in enumerate(tl['lands']):
   r=tl['R0']+k*tl['RS'];at('whoosh',r-.08,.4);at('stamp',r+.26,.9);at('slide',l,.25)
-c0=tl['cd'][0];[at('beep',c0+i*.5,.4) for i in range(3)];at('riser',tl['boom']-1.35,.5)
+c0=tl['cd'][0];st=(tl['boom']-c0)/3;[at('beep',c0+i*st,.4) for i in range(3)];at('riser',tl['boom']-1.35,.5)
 at('drop',tl['boom'],.5);at('hit',tl['boom'],.7);at('ticker',tl['slow'][0],.22);at('ticker',tl['slow'][0]+3,.16);at('ticker',tl['slow'][0]+6,.1)  # the tape runs until the close (the kit's ticker loops seamlessly)
 at('bell',tl['close'][0],.45)
 w=tl['win'][0]+.25;at('cash',w+.05,.85);at('cheer',w,.35)
