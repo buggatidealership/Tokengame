@@ -84,6 +84,13 @@ var shown=W.innerWidth>=1000?8:6; /* slabs: two rows of four on desktop, three o
 function tile(r){var F2=(W.FILMS||{})[r.n];return 'media/tile-r'+r.n+'-'+(F2?(F2.t||'f1'):'t2')+'.jpg'}
 /* owner, 2026-11-04: "that card design to be the default for when someone sees every round so far... I feel like the PSA graded": every
    round is its graded slab (the round view's own case, label and winner plate, in small), with three highlights on top */
+/* a round without a film shows its stats side, never a picture (owner, 2026-11-06: "there should never be a card that shows just an image"):
+   the round view's back in small: each AI ranked (right calls by closeness, then wrong ones), PASS or FAIL, its call, the market */
+function stats(r){var w=E.winners(r),up=r.a>0,c=(r.calls||[]).map(function(x){var d=x[1].indexOf("DOWN")<0?1:-1;return {m:x[0],d:d,mag:x[1].replace(/[^0-9.]/g,""),off:+x[2],ok:(d>0)===up}});
+  c.sort(function(a,b){return (b.ok-a.ok)||(a.off-b.off)});
+  return '<span class="h8-scr h9-x"><span class="h9-xin">'+c.map(function(x,i){var win=w.indexOf(x.m)>=0;
+    return '<span class="h9-xr'+(win?' h9-xw':'')+'"><i class="h9-xi">'+(i+1)+'</i>'+U.badge(x.m,14)+'<b>'+esc(E.NAME[x.m])+'</b><em class="'+(x.ok?'h9-xp':'h9-xf')+'">'+(x.ok?'PASS':'FAIL')+'</em><span class="'+(x.d>0?'h9-xu':'h9-xd')+'">'+(x.d>0?'+':'−')+x.mag+'%</span></span>'}).join('')+
+    '<span class="h9-xm"><small>Market</small><span class="'+(up?'h9-xu':'h9-xd')+'">'+(r.a>0?'+':r.a<0?'−':'')+Math.abs(r.a).toFixed(2)+'%</span></span></span></span>'}
 function grade(r){var c=r.calls||[],nc=c.length,rw=c.filter(function(x){return (x[1].indexOf("DOWN")<0)===(r.a>0)}).map(function(x){return +x[2]}),hit=rw.length,f=nc?hit/nc:0,
     av=hit?rw.reduce(function(a,b){return a+b},0)/hit:0,mv=Math.abs(r.a),pt=av<=1.5?2:av<=2?1.5:av<=2.5?1:av<=3?.5:0,gr,ds;
   if(f===1){gr=8+pt;if(gr===10&&!(av<mv/2))gr=9.5;ds=gr===10?(av<1?"Pristine":"Gem"):"Perfect"}else if(f>=.66){gr=6+Math.min(pt,1.5);ds="Strong"}else if(f>=.5){gr=4+Math.min(pt,1.5);ds="Split"}else if(f>0){gr=2+Math.min(pt,1.5);ds="Rough"}else{gr=1;ds="Rekt"}
@@ -97,7 +104,7 @@ function ep(r){var w=E.winners(r),g=grade(r),c=nm(r.ticker),no=("0000000"+r.n).s
     '<span class="h8-slco">'+esc(c.n)+(c.t?' <small>('+esc(c.t)+')</small>':'')+'</span><span class="h8-slgr"><small>'+g.ds+'</small><b>'+g.gr+'</b></span>'+
     '<span class="h8-slbc"><i class="h8-bar"></i><i class="h8-holo"><i class="s">$</i><i class="e">E</i><i class="z">Z</i></i><span class="h8-slno">'+no+'</span></span></span>'+
   /* the winner at the foot of the card, lettered on a small plate over its corner (owner, 2026-11-04: "at the bottom... so it's obvious who won") */
-  '<span class="h8-slw" aria-hidden="true"><span class="h8-scr"><img src="'+tile(r)+'" alt="" loading="lazy" decoding="async" onerror="this.parentNode.classList.add(\'h8-scrx\');this.remove()"><span class="h8-scrf">'+U.co(r.ticker,48)+'</span></span>'+
+  '<span class="h8-slw" aria-hidden="true">'+((W.FILMS||{})[r.n]?'<span class="h8-scr"><img src="'+tile(r)+'" alt="" loading="lazy" decoding="async" onerror="this.parentNode.classList.add(\'h8-scrx\');this.remove()"><span class="h8-scrf">'+U.co(r.ticker,48)+'</span></span>':stats(r))+
     '<span class="h8-slwin'+(w.length?'':' h8-no')+'"><small>Winner</small><span class="h8-slwn">'+(w.length?w.map(function(m){return E.NAME[m]}).join(" &amp; ")+'<span class="h8-slb">'+w.map(function(m){return U.badge(m,18)}).join("")+'</span>':'Nobody')+'</span></span></span></a>'}
 /* the two highlights (owner, 2026-11-04): the best round (TSMC: all four right, the lowest average miss of the season) and one where all four were wrong (UPS) */
 function hlTag(r){var w=E.winners(r);return w.length?"Best round":"All four wrong"}
