@@ -111,7 +111,7 @@ var SHEET=[
  ["96","NINTENDO","11/05/26","DOWN","4","UP","4","UP","4","DOWN","1.3","11/06/26","-7.91","","Communication Services","Media & Entertainment","Gaming; Consumer electronics","FALSE"],
  ["97","NET","11/05/26","DOWN","6","UP","4","UP","7","DOWN","1.6","11/06/26","9.91","","Information Technology","Software & Services","AI; Cloud; Cybersecurity","FALSE"],
  ["98","ABNB","11/05/26","UP","3.5","UP","4","DOWN","4","DOWN","1.3","11/06/26","11.67","","Consumer Discretionary","Consumer Services","Travel","FALSE"],
- ["99","DKNG","11/05/26","DOWN","6","DOWN","4","UP","4","DOWN","1.4","11/06/26","21.13","","Consumer Discretionary","Consumer Services","Sports betting","FALSE"],
+ ["99","DKNG","11/05/26","DOWN","6","DOWN","4","UP","4","DOWN","1.4","11/06/26","-21.13","","Consumer Discretionary","Consumer Services","Sports betting","FALSE"],
  ["100","TTWO","11/09/26","","","","","","","","","11/10/26","","","Communication Services","Media & Entertainment","Gaming","FALSE"],
  ["101","HIMS","11/09/26","","","","","","","","","11/10/26","","","Health Care","Health Care Equipment & Services","Healthcare","FALSE"],
  ["102","BRK.B","11/2/26","","","","","","","","","","","","Financials","Financial Services","","FALSE"],
