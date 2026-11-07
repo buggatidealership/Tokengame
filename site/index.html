@@ -153,6 +153,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
 .app{padding-bottom:150px}
 @media(max-width:350px){#nbar{gap:8px;padding-left:12px}#nbar .nt{font-size:11.5px}#nbar a span{display:none}#nbar a{padding:0 10px}}
 @media(min-width:980px){#nbar{bottom:18px}.app{padding-bottom:90px}}
+
+/* in play (owner, 2026-11-07): trades in, waiting for the close, always first on Upcoming */
+.ip{border-color:#3a3020}
+.ip .tabs .n{background:#3a2a10;color:var(--ac)}
+.ipr{padding:16px 20px;border-bottom:1px solid var(--ln)}.ipr:last-child{border-bottom:0}
+.iph{display:flex;align-items:center;gap:12px}.iph .cn{display:block;font:700 16px/1.15 var(--sans)}.iph small{display:block;margin-top:4px;font:400 11.5px/1.3 var(--mono);color:var(--mu)}
+.iph .ut{margin-left:auto}
+.ipc{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.ipc div{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border-radius:10px;background:var(--pn2);border:1px solid var(--ln);min-width:0}
+.ipc b{font:600 11px/1 var(--mono);letter-spacing:.06em}.ipc span{font:500 13px/1 var(--mono);color:var(--tx)}
+.ipc .na{opacity:.45}
+.ips{margin-top:12px;font:400 11.5px/1.3 var(--mono);color:var(--mu)}
+@media(max-width:350px){.ipc{gap:5px}.ipc span{font-size:11.5px}}
 </style></head><body>
 <div class="app">
   <header class="top">
@@ -296,8 +309,16 @@ function upList(m){var L=UPCOMING.filter(function(u){return !st.hlo||HL[u.ticker
   return '<div class="uz">Times in your time zone ('+TZ+'). Each AI files long or short 1 to 2 hours before the report. The trade is priced from the last close before the report to the next close, nothing sold in between.</div>'+out}
 var S2=[["HPQ","HP","Nov 24",1],["DELL","Dell","Nov 24"],["CRWD","CrowdStrike","Dec 1"],["MRVL","Marvell","Dec 1"],["SNOW","Snowflake","Dec 2",1],["CRM","Salesforce","Dec 2"],["GME","GameStop","Dec 8"],["ORCL","Oracle","Dec 9"],["ADBE","Adobe","Dec 9"],["AVGO","Broadcom","Dec 10"],["COST","Costco","Dec 10"],["LULU","Lululemon","Dec 10"],["MU","Micron","Dec 16"],["ACN","Accenture","Dec 17"],["NKE","Nike","Dec 17"],["FDX","FedEx","Dec 17"],["JPM","JPMorgan","mid-Jan"],["TSM","TSMC","mid-Jan"],["NFLX","Netflix","late Jan"],["MSFT","Microsoft","late Jan"],["META","Meta","late Jan"],["TSLA","Tesla","late Jan"],["AAPL","Apple","late Jan"]];
 function s2(){var L=S2.filter(function(x){return !st.hlo||HL[x[0]]});return '<div class="sb s2"><b>SEASON 2</b><span>Starts after NVIDIA · first reports late November</span></div>'+L.map(function(x){var L2=CO_LOGOS[x[0]];return '<div class="ur s2r">'+(L2?coIcon(x[0]):'<span class="co k"><i class="ti">'+x[0].slice(0,1)+'</i></span>')+'<span class="um"><b class="cn">'+x[1]+hl(x[0])+'</b><small>'+x[0]+'</small></span><span class="ut"><small>'+(x[3]?'Confirmed':'Expected')+'</small><b>'+x[2]+'</b></span></div>'}).join("")}
-function upcoming(){return '<section class="pn"><div class="tabs"><button class="on">NEXT TRADES<span class="n">'+UPCOMING.length+'</span></button></div>'+
-  '<div class="alert"><b>Get the trades as they drop</b><span>No account needed.</span><div class="ab"><a href="https://x.com/earningszn" target="_blank" rel="noopener">Follow on X</a><button type="button">Add to calendar</button><button type="button">Telegram</button></div></div>'+
+function nyClose(d){for(var h=19;h<=22;h++){var t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),h,0));if(+new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",hour:"numeric",hour12:false}).format(t)===16)return t}return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),21,0))}
+function gradeDay(p){var r=pd(p.resolves);if(r)return {d:r,est:0};var c=pd(p.called);if(!c)return null;var d=new Date(c);do{d.setDate(d.getDate()+1)}while(d.getDay()===0||d.getDay()===6);return {d:d,est:1}}
+function inPlay(){var L=(PENDING||[]).filter(function(p){return p.calls&&p.calls.length});if(!L.length)return '';
+  return '<section class="pn ip"><div class="tabs"><button class="on">IN PLAY<span class="n">'+L.length+'</span></button></div>'+L.map(function(p){var g=gradeDay(p),cl=g&&nyClose(g.d),left=cl?Math.max(0,(cl-new Date())/36e5):0,
+      lab=cl?cl.toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"})+' · '+tm(cl):"Date to come",
+      cells=MK.map(function(m){var c=p.calls.filter(function(x){return x.m===m})[0];if(!c)return '<div class="na">'+aiIcon(m,26)+'<b>–</b><span>not in</span></div>';var lg=c.dir==="UP";return '<div>'+aiIcon(m,26)+'<b class="'+(lg?"u":"d")+'">'+(lg?"LONG":"SHORT")+'</b><span>'+(lg?"+":"−")+c.mag+'%</span></div>'}).join(""),
+      nl=p.calls.filter(function(x){return x.dir==="UP"}).length,ns=p.calls.length-nl;
+    return '<div class="ipr"><div class="iph">'+coIcon(p.ticker)+'<span class="um"><b class="cn">'+p.co+hl(p.ticker)+'</b><small>Graded at the close · '+lab+(g&&g.est?' (next close)':'')+'</small></span><span class="ut"><small>Graded in</small><b>'+(cl?(left>=24?Math.floor(left/24)+'d '+Math.floor(left%24)+'h':Math.floor(left)+'h '+Math.floor(left%1*60)+'m'):'–')+'</b></span></div><div class="ipc">'+cells+'</div><div class="ips">'+nl+' long · '+ns+' short · trades filed before the report</div></div>'}).join("")+'</section>'}
+function upcoming(){return inPlay()+'<section class="pn"><div class="tabs"><button class="on">NEXT TRADES<span class="n">'+UPCOMING.length+'</span></button></div>'+
+  '<div class="alert"><b>Get the trades as they drop</b><span>No account needed.</span><div class="ab"><a href="https://x.com/earningszn" target="_blank" rel="noopener">Follow on X</a></div></div>'+
   '<div class="flt"><button data-hlo="0" class="'+(st.hlo?'':'on')+'">All</button><button data-hlo="1" class="'+(st.hlo?'on':'')+'">'+'<span class="hlp" style="margin:0 6px 0 0">HL</span>On Hyperliquid</button></div>'+'<div class="sb"><b>SEASON 1</b><span>Ends with NVIDIA · Nov 17</span></div>'+upList()+s2()+'<div class="note">Season 2 dates are expected from last year\u2019s calendar until each company confirms. HL = it has a Hyperliquid market, so you can follow the trade there. Long or short, filed before the report, graded at the next market close. Report times are the companies’ own; ~ means they published only the call time.</div></section>'}
 var NAV=[["leaders","LEADERBOARD",'<path d="M5 20V11M12 20V5M19 20v-6"/>'],["profile","AI PROFILES",'<circle cx="9" cy="8" r="3.5"/><path d="M3 20c.5-3.5 3-5.5 6-5.5s5.5 2 6 5.5M16 4.6a3.4 3.4 0 010 6.6M18 14.6c2 .8 3 2.6 3.3 5.4"/>'],["next","UPCOMING",'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>']];
 function alignWL(){document.querySelectorAll('.lt').forEach(function(t){var hd=t.querySelector('.wlh');if(!hd)return;var dx=[];t.querySelectorAll('tbody tr').forEach(function(tr){var l5=tr.querySelector('.l5'),hr=tr.querySelector('.hr'),c=tr.querySelector('.wlc span');if(!l5||!hr||!c)return;c.style.transform='';var L=l5.getBoundingClientRect().right,Rr=hr.getBoundingClientRect().left,cr=c.getBoundingClientRect();var d=(L+Rr)/2-(cr.left+cr.width/2);dx.push(d)});if(!dx.length)return;var d=dx.reduce(function(a,b){return a+b},0)/dx.length;var sc=[];t.querySelectorAll('.wlc span').forEach(function(c){c.style.transform='translateX('+d.toFixed(1)+'px)';var r=c.getBoundingClientRect();sc.push(r.left+r.width/2)});var mid=sc.reduce(function(a,b){return a+b},0)/sc.length;hd.style.transform='';var hr2=hd.getBoundingClientRect(),ls=parseFloat(getComputedStyle(hd).letterSpacing)||0;hd.style.transform='translateX('+(mid-(hr2.left+(hr2.width-ls)/2)).toFixed(1)+'px)'})}
