@@ -126,6 +126,18 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
 @media (max-width:420px){.top .ib{display:none}.brand b{font-size:15px}}
 @media (max-width:370px){.lt td,.lt th{padding-right:12px}.lt td.ac{padding-left:12px}.nm2 small{display:none}.lrd .co{display:none}.pc b,.hr{font-size:14px}.lt .pc svg{width:54px}
  .st td b{font-size:11.5px}.st td.sn{padding-left:12px;font-size:11.5px;max-width:84px}.st th:first-child{padding-left:12px}.brand b{font-size:13.5px}.cta{font-size:12px;padding:11px 9px}}
+
+.uz{padding:14px 20px;font:400 11.5px/1.5 var(--mono);color:var(--mu);border-bottom:1px solid var(--ln)}
+.ud{padding:14px 20px 8px;font:600 11px/1 var(--mono);letter-spacing:.08em;color:var(--ac)}
+.ur{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--ln)}
+.ur .as{align-items:center}.ur .cn{display:block;font:600 15px/1.1 var(--sans)}.ur .as small{display:block;margin-top:4px;font:400 11px/1.2 var(--mono);color:var(--mu);white-space:normal}
+.ur .as>span{white-space:normal}
+.ut{text-align:right}.ut small{display:block;font:600 10px/1 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--mu)}.ut b{display:block;margin-top:5px;font:600 14px/1 var(--mono);color:var(--tx);white-space:nowrap}
+.ut .mu{color:var(--mu2)}.ur.dn{opacity:.6}
+.alert{margin:14px 20px;padding:14px 16px;border:1px solid #3a3020;border-radius:12px;background:#1a160f}
+.alert>b{display:block;font:700 15px/1.2 var(--sans)}.alert>span{display:block;margin-top:3px;font:400 12px/1.3 var(--mono);color:var(--mu)}
+.ab{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.ab a,.ab button{font:600 13px/1 var(--sans);padding:10px 12px;border-radius:8px;border:1px solid var(--ln);background:var(--pn2);color:var(--tx);text-decoration:none}
+.ab a{background:var(--ac);color:var(--acx);border-color:var(--ac)}
 </style>
 <div class="app">
   <header class="top">
@@ -200,7 +212,7 @@ function profile(){var m=st.m,a=agg(m,st.win),all=agg(m,"ALL"),M=MODELS[m],rk=ra
   var low='<section class="pn"><div class="tabs">'+[["trades","TRADES",trades.length],["open","OPEN",(PENDING||[]).length],["next","UPCOMING",UPCOMING.length]].map(function(t){return '<button data-low="'+t[0]+'" class="'+(st.low===t[0]?"on":"")+'">'+t[1]+'<span class="n">'+t[2]+'</span></button>'}).join("")+'</div>';
   if(st.low==="trades")low+='<div class="th"><span>Company</span><span>P&amp;L</span><span></span></div>'+shown.map(row).join("")+(trades.length>8?'<button class="more" data-all>'+(st.all?"SHOW LESS":"SHOW ALL "+trades.length)+'</button>':'');
   else if(st.low==="open")low+=(PENDING.length?PENDING.map(function(p){var c=p.calls.filter(function(c){return c.m===m})[0];return '<div class="row"><div class="rh">'+'<span class="as">'+coIcon(p.ticker)+'<span>'+p.co+'</span>'+(c?'<span class="chip '+(c.v>0?"u":"d")+'">'+(c.v>0?"LONG ":"SHORT ")+c.mag+'%</span>':'')+'</span><span class="cd">closes '+p.resolves+'</span><span></span></div></div>'}).join(""):'<div class="empty">No trades waiting for a close right now.<br>Next trades are due '+(UPCOMING[0]?new Date(pd(UPCOMING[0].called)).toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"}):"soon")+'.</div>');
-  else low+=UPCOMING.slice(0,12).map(function(u){var dd=pd(u.called);return '<div class="row"><div class="rh"><span class="as">'+coIcon(u.ticker)+'<span>'+u.co+'</span></span><span class="cd">'+(dd?"trade due "+dd.toLocaleDateString("en-US",{month:"short",day:"numeric"}):"date to come")+'</span><span></span></div></div>'}).join("");
+  else low+=upList(m);if(0)low+=UPCOMING.slice(0,12).map(function(u){var dd=pd(u.called);return '<div class="row"><div class="rh"><span class="as">'+coIcon(u.ticker)+'<span>'+u.co+'</span></span><span class="cd">'+(dd?"trade due "+dd.toLocaleDateString("en-US",{month:"short",day:"numeric"}):"date to come")+'</span><span></span></div></div>'}).join("");
   low+='</section>';
   return head+'<div class="pv"><div>'+top+'</div><div>'+low+'</div></div>'}
 function row(x){var k=x.r.n+x.r.ticker,op=st.open[k],r=x.r;
@@ -244,7 +256,28 @@ function leaders(){var w=st.lbw,ord=rank(w),WL={"24H":"LAST 24H","7D":"LAST 7 DA
    ks.map(function(k){var vals=ord.map(function(m){return sec[k][m]?sec[k][m].p:null}).filter(function(v){return v!==null}),mx=Math.max.apply(null,vals),allEq=vals.every(function(v){return v===mx});
      return '<tr><td class="sn" title="'+k+'">'+(SHORT[k]||k)+'</td>'+ord.map(function(m){var c=sec[k][m];return c?'<td class="'+(!allEq&&c.p===mx&&c.p>0?"bst":"")+'"><b class="'+(c.p>=0?"u":"d")+'">'+(c.p<0?'−':'+')+kfmt(Math.abs(c.p)).slice(1)+'</b><small>'+c.w+'-'+(c.n-c.w)+'</small></td>':'<td class="nil">–</td>'}).join("")+'</tr>'}).join("")+'</tbody></table></div></section>';
   return '<div class="lbg"><div>'+t1+'</div><div>'+t2+'</div></div>'+t3+'<div class="note">Paper P&amp;L: $100K on every trade, long or short as each AI calls it, graded at the next market close after earnings. The P&amp;L leader holds the golden ticket: we bet the pool on its call.</div>'}
-function upcoming(){return '<section class="pn"><div class="tabs"><button class="on">NEXT TRADES<span class="n">'+UPCOMING.length+'</span></button></div>'+UPCOMING.map(function(u){var dd=pd(u.called);return '<div class="row"><div class="rh"><span class="as">'+coIcon(u.ticker)+'<span>'+u.co+'</span></span><span class="cd">'+(dd?dd.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}):"date to come")+'</span><span></span></div></div>'}).join("")+'<div class="note">Each AI files a long or short before the report. Trades appear here the moment they are filed.</div></section>'}
+/* report times, researched 2026-11-07 from company IR (est = the company published only the call time or "after the close") */
+var REPORT={TTWO:{t:"2026-11-09T21:05:00Z",est:1,w:"after the close"},HIMS:{t:"2026-11-09T21:05:00Z",est:1,w:"after the close"},
+ "BRK.B":{t:"2026-11-07T13:00:00Z",w:"Saturday, before the open",done:1},USAR:{t:"2026-11-09T21:30:00Z",est:1,w:"after the close"},
+ CRWV:{t:"2026-11-10T21:05:00Z",est:1,w:"after the close"},RKLB:{t:"2026-11-09T21:05:00Z",est:1,w:"after the close"},
+ NBIS:{t:"2026-11-12T12:00:00Z",est:1,w:"before the open"},SOFTBANK:{t:"2026-11-10T06:30:00Z",w:"after Tokyo's close"},
+ "SIE.DE":{t:"2026-11-12T06:00:00Z",est:1,w:"before Frankfurt opens"},AMAT:{t:"2026-11-12T21:05:00Z",est:1,w:"after the close"},
+ DIS:{t:"2026-11-17T11:45:00Z",est:1,w:"before the open"},HD:{t:"2026-11-17T11:00:00Z",est:1,w:"before the open"},NVDA:{t:"2026-11-17T21:20:00Z",w:"after the close"}};
+var TZ=(function(){try{return new Intl.DateTimeFormat("en-US",{timeZoneName:"short"}).formatToParts(new Date()).filter(function(p){return p.type==="timeZoneName"})[0].value}catch(e){return "local"}})();
+function tm(d){return d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})}
+function rng(a,b){var A=tm(a),B=tm(b),m=/\s?[AP]M$/i,ma=A.match(m),mb=B.match(m);return (ma&&mb&&ma[0]===mb[0]?A.replace(m,''):A)+'–'+B}
+function dayKey(d){return d.toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"})}
+function upRow(u,m){var R=REPORT[u.ticker],c=m&&(PENDING||[]).filter(function(p){return p.n===u.n})[0];
+  if(!R)return '<div class="ur"><span class="as">'+coIcon(u.ticker)+'<span>'+u.co+'</span></span><span class="ut"><b>Date to come</b></span></div>';
+  var rep=new Date(R.t),a=new Date(+rep-2*36e5),b=new Date(+rep-36e5),past=rep<NOW;
+  return '<div class="ur'+(R.done?' dn':'')+'"><span class="as">'+coIcon(u.ticker)+'<span><b class="cn">'+u.co+'</b><small>'+(R.done?'Reported '+dayKey(rep)+' · no trades filed in time':'Reports '+(R.est?'~':'')+tm(rep)+' · '+R.w)+'</small></span></span>'+
+   (R.done?'<span class="ut"><b class="mu">Missed</b></span>':'<span class="ut"><small>Trades drop</small><b>'+tm(a)+'–'+tm(b)+'</b></span>')+'</div>'}
+function upList(m){var L=UPCOMING.slice().sort(function(x,y){var a=REPORT[x.ticker],b=REPORT[y.ticker];return (a?+new Date(a.t):9e15)-(b?+new Date(b.t):9e15)}),out="",last="";
+  L.forEach(function(u){var R=REPORT[u.ticker],k=R?(R.done?"Already reported":dayKey(new Date(new Date(R.t)-2*36e5))):"Date to come";if(k!==last){out+='<div class="ud">'+k.toUpperCase()+'</div>';last=k}out+=upRow(u,m)});
+  return '<div class="uz">Times in your time zone ('+TZ+'). Each AI files long or short 1 to 2 hours before the report.</div>'+out}
+function upcoming(){return '<section class="pn"><div class="tabs"><button class="on">NEXT TRADES<span class="n">'+UPCOMING.length+'</span></button></div>'+
+  '<div class="alert"><b>Get the trades as they drop</b><span>No account needed.</span><div class="ab"><a href="https://x.com/earningszn" target="_blank" rel="noopener">Follow on X</a><button type="button">Add to calendar</button><button type="button">Telegram</button></div></div>'+
+  upList()+'<div class="note">Long or short, filed before the report, graded at the next market close. Report times are the companies’ own; ~ means they published only the call time.</div></section>'}
 var NAV=[["leaders","LEADERBOARD",'<path d="M5 20V11M12 20V5M19 20v-6"/>'],["profile","AI PROFILES",'<circle cx="9" cy="8" r="3.5"/><path d="M3 20c.5-3.5 3-5.5 6-5.5s5.5 2 6 5.5M16 4.6a3.4 3.4 0 010 6.6M18 14.6c2 .8 3 2.6 3.3 5.4"/>'],["next","UPCOMING",'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>'],["bet","BUYBACK",'<circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10h4a1.7 1.7 0 010 3.4h-3a1.7 1.7 0 000 3.4h4"/>']];
 function draw(){var v=st.v==="home"?"leaders":st.v,h=v==="profile"?profile():v==="leaders"?leaders():v==="next"?upcoming():'<section class="pn"><div class="empty">Buyback: the pool, the golden ticket holder and Bet #1 NVIDIA live here.</div></section>';
   document.getElementById("main").innerHTML=h;
