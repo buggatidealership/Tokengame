@@ -27,5 +27,5 @@ t=t.replace('<script src="ez-data.js"></script>','<script src="ez-data.js?v='+v+
 assert 'ez-data.js?v=' in t
 if not t.lstrip().lower().startswith('<!doctype'):t='<!doctype html><html lang="en"><head>'+t.replace('</style>\n<div class="app">','</style></head><body>\n<div class="app">',1)
 open(os.path.join(SITE,'index.html'),'w').write(t)
-for f in ['share-term-a.jpg']:shutil.copy(os.path.join(EZ,'media',f),os.path.join(SITE,'media',f))
+for f in ['share-term-a.jpg','ground-916.jpg','ground-169.jpg']:shutil.copy(os.path.join(EZ,'media',f),os.path.join(SITE,'media',f))
 print('terminal ->',SITE,'index.html; show kept at show.html; data v',v)
