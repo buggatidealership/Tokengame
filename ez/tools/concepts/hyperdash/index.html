@@ -297,6 +297,31 @@ document.addEventListener("resize",function(){clearTimeout(window.__rz);window._
 var h0=(location.hash||"").slice(1);if(/^(profile|leaders|next|bet)$/.test(h0))st.v=h0;
 if(/^(grok|claude|gpt|kimi)$/i.test(h0)){st.m=h0.toUpperCase();st.v="profile"}
 if(!h0)st.v="leaders";draw();
+/* analytics (owner, 2026-11-07: "we have to turn on analytics"): Umami Cloud, cookieless, the same Website ID as the show
+   (x2plus.js), on earningszn.xyz only; localStorage ez-track-debug=1 logs to the console instead. A page view per view
+   (leaders, next, profile/<model>), and events: follow (where), hl (ticker), the window and tab switches, how-it-works,
+   and taps on the calendar and Telegram buttons (not built yet: the taps measure the demand). */
+(function(){try{
+  var ID="4d1b7959-74ab-47c2-b7f4-0ed45b8dd5c1",live=/^(www\.)?earningszn\.xyz$/.test(location.hostname),dbg=false;
+  try{dbg=localStorage.getItem("ez-track-debug")==="1"}catch(e){}
+  if(!live&&!dbg)return;var q=[],last="";
+  function send(n,d,u){if(dbg){console.log("[ez-track]",n||"pageview",d||{},u||"");return}
+    if(window.umami&&umami.track){if(n)umami.track(n,d);else umami.track(function(p){p.url=u;p.title=document.title;return p})}else q.push([n,d,u])}
+  if(!dbg){var sc=document.createElement("script");sc.defer=true;sc.src="https://cloud.umami.is/script.js";
+    sc.setAttribute("data-website-id",ID);sc.setAttribute("data-domains","earningszn.xyz,www.earningszn.xyz");sc.setAttribute("data-auto-pageview","false");
+    sc.onload=function(){var x;while(x=q.shift())send(x[0],x[1],x[2])};document.head.appendChild(sc)}
+  function pv(){var v=st.v==="home"?"leaders":st.v,k=v+(v==="profile"?"/"+String(st.m).toLowerCase():"");if(k===last)return;last=k;send(null,null,"/"+location.search+"#"+k)}
+  pv();
+  document.addEventListener("click",function(e){var t=e.target;if(!t.closest)return;
+    var a=t.closest('a[href*="x.com/"]');if(a){send("follow",{where:a.classList.contains("cta")?"header":t.closest(".alert")?"upcoming":"other",view:st.v});return}
+    var h=t.closest("a.hlp");if(h){var m=(h.getAttribute("href")||"").split(":").pop();send("hl",{coin:m,view:st.v});return}
+    var b=t.closest(".alert button");if(b){send("wish",{what:/telegram/i.test(b.textContent)?"telegram":"calendar"});return}
+    var B=t.closest("button");if(!B)return;var D=B.dataset;
+    if(D.lbw)send("window",{w:D.lbw,view:"leaders"});else if(D.win)send("window",{w:D.win,view:"profile"});
+    else if(D.tab)send("tab",{t:D.tab});else if(D.met)send("metric",{m:D.met});else if(D.hlo)send("filter",{hl:D.hlo});else if("how" in D)send("how",{});
+  },true);
+  document.addEventListener("click",function(){setTimeout(pv,0)});
+}catch(e){}})();
 })();
 </script>
 <style>
