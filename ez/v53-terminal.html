@@ -174,6 +174,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
 .tf i{font-style:normal;display:inline-flex;align-items:center;gap:5px;padding:6px 9px;border-radius:7px;border:1px solid #4a3a18;color:var(--ac);font:600 11.5px/1 var(--sans)}
 .tf svg{width:11px;height:11px}
 .tabs:has(.tf){gap:12px}@media(max-width:430px){.tf{gap:6px}.tf span{white-space:normal;width:78px;line-height:1.2;font:500 11px/1.2 var(--sans);text-align:right}.tf i{padding:6px 7px}}@media(max-width:374px){.tf span{display:none}}
+.sn .thin{display:block;margin-top:3px;font:400 10px/1.2 var(--mono);color:var(--mu2);white-space:nowrap}
 </style>
 <div class="app">
   <header class="top">
@@ -304,7 +305,8 @@ function leaders(){var w=st.lbw,ord=rank(w),WL={"24H":"LAST 24H","7D":"LAST 7 DA
   var t3='<section class="pn sx"><div class="tabs"><button class="on">BY SECTOR</button></div><div class="kick"><small>'+WL+' · RIGHT ON DIRECTION BY SECTOR</small><span>Gold = best hit rate in the sector (3+ trades) · W-L under each</span></div><div class="sw"><table class="st"><thead><tr><th>Sector</th>'+ord.map(function(m){return '<th>'+aiIcon(m,22)+'</th>'}).join("")+'</tr></thead><tbody>'+
    ks.map(function(k){/* (owner, 2026-11-07) direction only: the best is the highest hit rate on 3+ trades, ties to more wins; no P&L here */
      var sc=function(c){return c&&c.n>=3?c.w/c.n+c.w*1e-6:-1},cs=ord.map(function(m){return sc(sec[k][m])}),mx=Math.max.apply(null,cs),top=cs.filter(function(v){return v===mx}).length,allEq=cs.filter(function(v){return v>=0}).every(function(v){return v===mx});
-     return '<tr><td class="sn" title="'+k+'">'+(SHORT[k]||k)+'</td>'+ord.map(function(m){var c=sec[k][m];return c?'<td class="'+(mx>=0&&!allEq&&sc(c)===mx?"bst":"")+'"><b class="'+(c.w/c.n>=.5?"u":"d")+'">'+Math.round(100*c.w/c.n)+'%</b><small>'+c.w+'-'+(c.n-c.w)+'</small></td>':'<td class="nil">–</td>'}).join("")+'</tr>'}).join("")+'</tbody></table></div></section>';
+     var thin=Math.max.apply(null,MK.map(function(m){return (sec[k][m]||{}).n||0}))<=5;
+     return '<tr><td class="sn" title="'+k+'">'+(SHORT[k]||k)+(thin?'<small class="thin">(thin sample)</small>':'')+'</td>'+ord.map(function(m){var c=sec[k][m];return c?'<td class="'+(mx>=0&&!allEq&&sc(c)===mx?"bst":"")+'"><b class="'+(c.w/c.n>=.5?"u":"d")+'">'+Math.round(100*c.w/c.n)+'%</b><small>'+c.w+'-'+(c.n-c.w)+'</small></td>':'<td class="nil">–</td>'}).join("")+'</tr>'}).join("")+'</tbody></table></div></section>';
   return '<div class="lbg"><div>'+t1+'</div><div>'+t2+'</div></div>'+t3+'<div class="note">Paper P&amp;L: $100K on every trade, long or short as each AI calls it, graded at the next market close after earnings.</div>'+tryouts()}
 function tryouts(){var rz=MK.filter(function(m){return agg(m,"ALL").hr<.5});return '<section class="pn try"><div class="tabs"><button class="on">SEASON 2 TRYOUTS</button></div><div class="tr"><p><b>Under 50% hit rate at the end of Season 1 means relegation.</b> '+(rz.length?'Right now: '+rz.map(function(m){return MODELS[m].app}).join(" and ")+'.':'Nobody is under 50% right now.')+'</p><p>Waiting for a seat:</p><div class="tm"><span>'+flag("CN")+' DeepSeek</span><span>'+flag("CN")+' Qwen</span></div></div></section>'}
 /* report times, researched 2026-11-07 from company IR (est = the company published only the call time or "after the close") */
