@@ -251,11 +251,18 @@ function profile(){var m=st.m,a=agg(m,st.win),all=agg(m,"ALL"),M=MODELS[m],rk=ra
   var up=UPCOMING.concat(PENDING||[]).slice(0,40);
   var low='<section class="pn"><div class="tabs">'+[["trades","TRADES",trades.length],["open","OPEN",(PENDING||[]).length],["next","UPCOMING",UPCOMING.length]].map(function(t){return '<button data-low="'+t[0]+'" class="'+(st.low===t[0]?"on":"")+'">'+t[1]+'<span class="n">'+t[2]+'</span></button>'}).join("")+'</div>';
   if(st.low==="trades")low+='<div class="th"><span>Company</span><span>P&amp;L</span><span></span></div>'+shown.map(row).join("")+(trades.length>8?'<button class="more" data-all>'+(st.all?"SHOW LESS":"SHOW ALL "+trades.length)+'</button>':'');
-  else if(st.low==="open")low+=(PENDING.length?PENDING.map(function(p){var c=p.calls.filter(function(c){return c.m===m})[0];return '<div class="row"><div class="rh">'+'<span class="as">'+coIcon(p.ticker)+'<span>'+p.co+'</span>'+(c?'<span class="chip '+(c.v>0?"u":"d")+'">'+(c.v>0?"LONG ":"SHORT ")+c.mag+'%</span>':'')+'</span><span class="cd">closes '+p.resolves+'</span><span></span></div></div>'}).join(""):'<div class="empty">No trades waiting for a close right now.<br>Next trades are due '+(UPCOMING[0]?new Date(pd(UPCOMING[0].called)).toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"}):"soon")+'.</div>');
+  else if(st.low==="open")low+=(PENDING.length?PENDING.map(function(p,i){return orow(p,m,i)}).join(""):'<div class="empty">No trades waiting for a close right now.<br>Next trades are due '+(UPCOMING[0]?new Date(pd(UPCOMING[0].called)).toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"}):"soon")+'.</div>');
   else low+=upList(m);if(0)low+=UPCOMING.slice(0,12).map(function(u){var dd=pd(u.called);return '<div class="row"><div class="rh"><span class="as">'+coIcon(u.ticker)+'<span>'+u.co+'</span></span><span class="cd">'+(dd?"trade due "+dd.toLocaleDateString("en-US",{month:"short",day:"numeric"}):"date to come")+'</span><span></span></div></div>'}).join("");
   low+='</section>';
   return head+'<div class="pv"><div>'+top+'</div><div>'+low+'</div></div>'}
-function row(x){var k=x.r.n+x.r.ticker,op=st.open[k],r=x.r;
+function isOpen(k,dflt){return (k in st.open)?st.open[k]:dflt}
+function orow(p,m,i){var k="o"+p.n,op=isOpen(k,i<2),c=p.calls.filter(function(c){return c.m===m})[0],g=gradeDay(p),cl=g&&nyClose(g.d),left=cl?Math.max(0,(cl-new Date())/36e5):0,
+    lg=c&&c.v>0,dt=function(d){return d.toLocaleDateString("en-US",{month:"short",day:"numeric"})};
+  return '<div class="row'+(op?" op":"")+'"><button class="rh" data-row="'+k+'"><span class="as">'+coIcon(p.ticker)+'<span>'+p.co+'</span>'+(c?'<span class="chip '+(lg?"u":"d")+'">'+(lg?"LONG":"SHORT")+'</span>':'')+'</span><span class="pl '+(c?(lg?"u":"d"):"")+'">'+(c?(lg?"+":"−")+c.mag+'%':'not in')+'</span><svg class="car" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'+
+   '<div class="kv"><div><small>Called</small><b class="'+(lg?"u":"d")+'">'+(c?(lg?"+":"−")+c.mag+'%':'–')+'</b></div><div><small>Size</small><b>$100,000</b></div>'+
+   '<div><small>Locked</small><b>'+(pd(p.called)?dt(pd(p.called)):'–')+'</b></div><div><small>Resolves</small><b>'+(cl?dt(cl)+' · '+tm(cl):'Date to come')+'</b></div>'+
+   '<div><small>Resolves in</small><b>'+(cl?(left>=24?Math.floor(left/24)+'d '+Math.floor(left%24)+'h':Math.floor(left)+'h '+Math.floor(left%1*60)+'m'):'–')+'</b></div><div><small>P&amp;L</small><b>At the close</b></div></div></div>'}
+function row(x,i){var k=x.r.n+x.r.ticker,op=isOpen(k,i===0),r=x.r;
   return '<div class="row'+(op?" op":"")+'"><button class="rh" data-row="'+k+'"><span class="as">'+coIcon(r.ticker)+'<span>'+r.co+'</span><span class="chip '+(x.s>0?"u":"d")+'">'+(x.s>0?"LONG":"SHORT")+'</span></span><span class="pl '+(x.pnl>=0?"u":"d")+'">'+money(x.pnl,1)+'</span><svg class="car" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'+
    '<div class="kv"><div><small>Called</small><b class="'+(x.s>0?"u":"d")+'">'+(x.s>0?"+":"−")+x.mag+'%</b></div><div><small>Moved</small><b class="'+(r.a>0?"u":"d")+'">'+r.out+'</b></div>'+
    '<div><small>Size</small><b>$100,000</b></div><div><small>Off by</small><b>'+x.off.toFixed(2)+'%</b></div>'+
@@ -346,7 +353,7 @@ function draw(){var v=st.v==="home"?"leaders":st.v,h=v==="profile"?profile():v==
   document.getElementById("nav").innerHTML=nv;document.getElementById("dnav").innerHTML=NAV.map(function(n){return '<button data-go="'+n[0]+'" class="'+(st.v===n[0]?"on":"")+'">'+n[1]+'</button>'}).join("")}
 document.addEventListener("resize",function(){clearTimeout(window.__rz);window.__rz=setTimeout(draw,150)});document.addEventListener("click",function(e){var b=e.target.closest("button,tr[data-pick]");if(!b)return;var D=b.dataset;
   if(D.pick)st.m=D.pick;if(D.go)st.v=D.go;if(D.tab)st.tab=D.tab;if(D.met)st.met=D.met;if(D.win)st.win=D.win;if(D.low)st.low=D.low;if(D.lbw)st.lbw=D.lbw;if(D.hlo)st.hlo=D.hlo==="1";if("how" in D){st.how=!st.how;var fl=document.querySelector('.flip');if(fl){fl.classList.toggle('fl-on',st.how);return}}
-  if(D.row){st.open[D.row]=!st.open[D.row]}if("all" in D)st.all=!st.all;
+  if(D.row){var rr=b.closest('.row');st.open[D.row]=!(rr&&rr.classList.contains('op'))}if("all" in D)st.all=!st.all;
   if(D.pick||D.go)window.scrollTo(0,0);draw()});
 var h0=(location.hash||"").slice(1);if(/^(profile|leaders|next|bet)$/.test(h0))st.v=h0;
 if(/^(grok|claude|gpt|kimi)$/i.test(h0)){st.m=h0.toUpperCase();st.v="profile"}
