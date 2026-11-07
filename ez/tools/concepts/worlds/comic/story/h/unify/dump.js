@@ -1,0 +1,1 @@
+const [tag,W,re]=process.argv.slice(2);const d=require('./out/audit-'+tag+'-'+W+'.json');const ks=Object.keys(d.cols).sort();for(const k of ks)if(!re||new RegExp(re).test(k))console.log(k,'×'+d.cols[k].n,d.cols[k].ex.slice(0,3).join(' ; '))

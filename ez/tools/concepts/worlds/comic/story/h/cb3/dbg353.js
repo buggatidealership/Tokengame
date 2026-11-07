@@ -1,0 +1,6 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('/home/user/Tokengame/ez/tools/concepts/live-r1/_fonts.js');
+(async()=>{const W=+process.argv[2];const b=await chromium.launch();const p=await (await b.newContext({viewport:{width:W,height:844}})).newPage();await FONTS(p);
+await p.goto('http://127.0.0.1:8993/v46-live-x2plus.html?'+Date.now()+'#/round/57',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur')&&document.querySelector('#x2pRm .card'),null,{timeout:200000});await p.waitForTimeout(1200);
+await p.evaluate(()=>{const c=document.querySelector('#x2pRm .card');(c.querySelector('.face.front [data-flip]')||c).click()});await p.waitForTimeout(1500);
+console.log(JSON.stringify(await p.evaluate(()=>{const cb=document.querySelector('#x2pRm .cb');const z=getComputedStyle(cb).getPropertyValue('--cbz');const R=cb.getBoundingClientRect();
+return {z,w:R.width,h:R.height,fs:getComputedStyle(cb.querySelector('.cb-nm')).fontSize,rows:[...cb.querySelectorAll('.cb-r')].map(r=>r.getBoundingClientRect().height),rz:document.querySelector('.x2p-rmz')&&document.querySelector('.x2p-rmz').style.zoom}})));await b.close()})();

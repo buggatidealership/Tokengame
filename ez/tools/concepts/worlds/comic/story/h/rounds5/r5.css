@@ -1,0 +1,116 @@
+/* rounds5 (round H11): "Every round so far" opens on the print shop, Hot off the press. Laid over the live X3+ page (shot.js).
+   Every word and number is page text from ROUNDS / UPCOMING / MODELS / CO_LOGOS; the paintings are Hedra (img/). Mockup only. */
+:root{--r5ink:#0d0b10;--r5gold:#fdbc2a;--r5hg:#ffd21f;--r5g:#03c870;--r5r:#ff3a31}
+.r5{position:relative;margin:0 -16px 6px;overflow:hidden;isolation:isolate}
+@media(min-width:1000px){.r5{margin:0 0 10px}}
+.r5-st{position:relative;width:100%;aspect-ratio:9/16;max-height:none;background:#f6c600}
+.r5-st>img.r5-pl{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+@media(min-width:1000px){.r5-st{aspect-ratio:16/9}}
+/* the ink frame of the panel: an irregular hand-tuned outline (thick outer ink) */
+.r5-fr{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:9}
+/* the chapter heading: the Overview's one face, the bet's lettering (h_bet.css h2.hb-h), on the painted wall left calm for it */
+.r5-ttl{position:absolute;left:16px;right:16px;top:2.2%;z-index:6}
+.r5-h{margin:0;font:400 clamp(40px,11.6vw,92px)/.86 Bangers,Anton,sans-serif;letter-spacing:.015em;text-transform:uppercase;transform:rotate(-2.2deg);transform-origin:0 100%}
+.r5-h span{display:inline-block;color:var(--r5hg);-webkit-text-stroke:.075em var(--r5ink);paint-order:stroke fill;
+ text-shadow:.02em .02em 0 #e7930b,.04em .04em 0 #c42a20,.06em .06em 0 #c42a20,.08em .08em 0 #c42a20,.1em .1em 0 var(--r5ink),.12em .12em 0 var(--r5ink),.135em .14em 0 var(--r5ink)}
+.r5-k{display:inline-block;margin:.75em 0 0 4px;font:400 clamp(13px,3.5vw,19px)/1 Bangers;letter-spacing:.06em;color:var(--r5ink);transform:rotate(-2.2deg)}
+.r5-k b{color:#c42a20;font-weight:400}
+@media(min-width:1000px){.r5-ttl{left:40px;right:40px;top:3%;display:flex;align-items:flex-end;justify-content:space-between}.r5-ttl br{display:none}.r5-k{margin:0 0 .5em;font-size:22px;white-space:nowrap}.r5-h{font-size:68px;white-space:nowrap}}
+/* the wire: the painting's own wire, re-inked along its measured line so it reads at phone size */
+.r5-wire{position:absolute;left:0;width:100%;height:12px;margin-top:-6px;z-index:2;pointer-events:none;overflow:visible}
+/* a hanging sheet: the painted blank sheet (with its painted clip) is the paper; the cover is printed on it; the sprite's own ink and
+   shading are multiplied back over the print, so the curl, the outline and the clip sit on top of the ink */
+.r5-sh{all:unset;position:absolute;z-index:3;width:var(--w);aspect-ratio:576/900;cursor:pointer;transform-origin:50% 3%;-webkit-tap-highlight-color:transparent;
+ filter:drop-shadow(3px 4px 0 rgba(13,11,16,.55))}
+.r5-sh.far{z-index:2;filter:drop-shadow(2px 3px 0 rgba(13,11,16,.45))}
+.r5-sh:focus-visible{outline:3px solid var(--r5ink);outline-offset:3px}
+.r5-pp{position:absolute;inset:0;background:#fffdf6;-webkit-mask:url(img/spr-sheet.png) 0 0/100% 100% no-repeat;mask:url(img/spr-sheet.png) 0 0/100% 100% no-repeat}
+.r5-sh.b2 .r5-pp{-webkit-mask-image:url(img/spr-sheet2.png);mask-image:url(img/spr-sheet2.png)}
+.r5-ov{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:multiply;pointer-events:none;z-index:5}
+.r5-cv{position:absolute;left:12%;top:17.6%;width:76%;aspect-ratio:3/4;overflow:hidden;container-type:inline-size;background:#29a9e0}
+.r5-cv>img.art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.r5-mk{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:3}
+/* life (lesson 86, brief: at least two motions): every hanging sheet sways on its clip, slowly, each at its own pace */
+@keyframes r5sw{0%,100%{transform:rotate(calc(var(--a,1.2deg)*-1))}50%{transform:rotate(var(--a,1.2deg))}}
+.r5-sh{animation:r5sw var(--p,4s) ease-in-out var(--dl,0s) infinite}
+/* the newest: printing rolls onto the sheet when the chapter comes into view, then the wet ink runs */
+.r5-cv .r5-wet{position:absolute;inset:0;z-index:4;pointer-events:none;background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.55) 48%,transparent 56%) 0 0/300% 100% no-repeat;mix-blend-mode:screen;opacity:0}
+.r5-sh.roll .r5-cv{clip-path:inset(0 0 100% 0)}
+.r5-sh.roll.go .r5-cv{animation:r5roll 1.9s cubic-bezier(.45,0,.3,1) .2s forwards}
+@keyframes r5roll{to{clip-path:inset(0 0 0 0)}}
+.r5-rl{position:absolute;left:8%;width:84%;height:7%;top:17.6%;z-index:6;pointer-events:none;opacity:0}
+.r5-sh.roll.go .r5-rl{animation:r5rl 1.9s cubic-bezier(.45,0,.3,1) .2s forwards}
+@keyframes r5rl{0%{opacity:1;transform:translateY(-50%)}92%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--h) * .649 - 50%))}}
+.r5-sh.go .r5-wet{animation:r5glint 1.4s ease-out 2.1s 1 forwards}
+@keyframes r5glint{0%{opacity:1;background-position:120% 0}100%{opacity:1;background-position:-30% 0}}
+.r5-dr{position:absolute;left:12%;width:76%;top:82.4%;height:10%;z-index:4;pointer-events:none;overflow:visible}
+.r5-dr path{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0)}
+.r5-sh.go .r5-dr path{animation:r5drip var(--dd,7s) cubic-bezier(.5,0,.6,1) var(--dk,2.6s) infinite}
+@keyframes r5drip{0%{transform:scaleY(0);opacity:1}55%{transform:scaleY(1);opacity:1}85%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);opacity:0}}
+@media (prefers-reduced-motion:reduce){.r5-sh{animation:none}.r5-sh.roll .r5-cv{clip-path:none}.r5-sh .r5-dr path{transform:none;animation:none}.r5-rl{display:none}}
+
+/* ---------- treatment A: trade dress drawn by hand over the bright redrawn scene ---------- */
+.dA .cb{position:absolute;left:3cqw;top:3cqw;width:22cqw;z-index:3;text-align:center;color:var(--r5ink);padding:1.5cqw 0 2cqw}
+.dA .cb svg,.dB .cb svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.cb i,.cb b,.cb em{position:relative;display:block;font-style:normal}
+.cb i{font:900 4.6cqw/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase}
+.cb b{font:400 13cqw/.9 "Luckiest Guy";margin-top:.6cqw}
+.cb em{font:900 4.2cqw/1 "Barlow Condensed";letter-spacing:.04em;margin-top:.6cqw}
+.dA .mt{position:absolute;left:28cqw;right:3cqw;top:2.6cqw;z-index:3}
+.mt .pub{display:block;font:400 5cqw/1 Bangers;letter-spacing:.08em;color:var(--r5ink)}
+.mt .pub b{color:#c42a20;font-weight:400}
+.mt .co{display:block;font:400 var(--fs,19cqw)/.88 "Luckiest Guy";color:var(--bc,#ffd21f);-webkit-text-stroke:1.3cqw var(--r5ink);paint-order:stroke fill;text-shadow:1.1cqw 1.1cqw 0 var(--r5ink);white-space:nowrap;letter-spacing:.01em}
+.mt .tk{display:block;font:900 5cqw/1 "Barlow Condensed";letter-spacing:.12em;color:var(--r5ink);margin-top:1.4cqw}
+.bu{position:absolute;right:-1cqw;bottom:17cqw;width:47cqw;aspect-ratio:1.25;z-index:3;display:grid;place-items:center;transform:rotate(-8deg)}
+.bu svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.bu span{position:relative;font:400 9.6cqw/1 "Luckiest Guy";color:#fff;-webkit-text-stroke:.9cqw var(--r5ink);paint-order:stroke fill;text-shadow:.7cqw .7cqw 0 var(--r5ink)}
+.dA .cl{position:absolute;left:2cqw;right:12cqw;bottom:3cqw;z-index:3;padding:2.2cqw 4cqw 2.6cqw;transform:rotate(-2.5deg);transform-origin:0 100%}
+.dA .cl svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.cl span{position:relative;display:block;font:400 12.5cqw/.9 Bangers;letter-spacing:.02em;color:var(--r5ink);white-space:nowrap}
+.cl span.no{color:#c42a20}
+
+/* ---------- treatment B: the painter left the trade dress blank; the words are set inside the painted shapes (dress.json) ---------- */
+.dB .sf{position:absolute;z-index:3;display:grid;place-items:center;text-align:center}
+.dB .sf.bn{justify-items:start;padding-left:3cqw}
+.dB .sf.bn .co{font:400 var(--fs,15cqw)/.9 "Luckiest Guy";color:var(--r5ink);white-space:nowrap;letter-spacing:.01em}
+.dB .sf.bn .co small{font:900 4.6cqw/1 "Barlow Condensed";letter-spacing:.1em;margin-left:1.6cqw;vertical-align:.5em}
+.dB .sf.bx{color:var(--r5ink)}
+.dB .sf.bs span{font:400 9.6cqw/1 "Luckiest Guy";color:var(--mv);-webkit-text-stroke:.7cqw var(--r5ink);paint-order:stroke fill;transform:rotate(-8deg)}
+.dB .sf.rb span{font:400 11cqw/.9 Bangers;letter-spacing:.03em;color:var(--r5hg);-webkit-text-stroke:.7cqw var(--r5ink);paint-order:stroke fill;text-shadow:.6cqw .6cqw 0 var(--r5ink);white-space:nowrap;transform:rotate(-1.5deg)}
+
+/* ---------- treatment C: Silver Age go-go checks, the winner's mark in the corner box, the move in the price circle ---------- */
+.dC .gg{position:absolute;left:0;right:0;top:0;height:10cqw;z-index:3}
+.dC .gg svg{width:100%;height:100%;display:block}
+.dC .cx{position:absolute;left:3cqw;top:12.5cqw;width:23cqw;z-index:3}
+.dC .cx .box{position:relative;aspect-ratio:1;border-radius:1cqw;display:grid;place-items:center}
+.dC .cx .box svg.f{position:absolute;inset:-1.4cqw;width:calc(100% + 2.8cqw);height:calc(100% + 2.8cqw);overflow:visible}
+.dC .cx .box .mm{position:relative;width:64%;height:64%;display:flex;gap:2%}
+.dC .cx .box .mm svg{flex:1;height:100%}
+.dC .cx em{display:block;margin-top:2.2cqw;font:400 8.4cqw/1 "Luckiest Guy";color:#fff;-webkit-text-stroke:.8cqw var(--r5ink);paint-order:stroke fill;text-align:center;white-space:nowrap}
+.dC .mt{position:absolute;left:29cqw;right:3cqw;top:12.5cqw;z-index:3}.dC .mt .pub{display:none}
+.dC .pc{position:absolute;right:3cqw;top:45cqw;width:30cqw;aspect-ratio:1;z-index:3;display:grid;place-items:center;transform:rotate(9deg)}
+.dC .pc svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.dC .pc span{position:relative;font:400 7.6cqw/.95 "Luckiest Guy";color:#fff;-webkit-text-stroke:.8cqw var(--r5ink);paint-order:stroke fill;text-align:center}
+.dC .pc span small{display:block;font:900 4cqw/1 "Barlow Condensed";letter-spacing:.1em;-webkit-text-stroke:0;color:var(--r5ink)}
+.dC .sash{position:absolute;left:-14cqw;right:-14cqw;bottom:9cqw;height:17cqw;z-index:3;transform:rotate(-9deg);display:grid;place-items:center}
+.dC .sash svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.dC .sash span{position:relative;font:400 12.5cqw/1 Bangers;letter-spacing:.03em;color:var(--r5hg);-webkit-text-stroke:.8cqw var(--r5ink);paint-order:stroke fill;text-shadow:.7cqw .7cqw 0 var(--r5ink);white-space:nowrap}
+
+/* ---------- the blank sheets: the next prints are coming ---------- */
+.r5-sh.blank{cursor:default}
+.r5-pn{position:absolute;left:12%;top:17.6%;width:76%;aspect-ratio:3/4;container-type:inline-size;z-index:2;color:#5fa8d3;mix-blend-mode:multiply;filter:url(#r5pencil)}
+.r5-pn svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.r5-pn .p1{position:absolute;left:4cqw;top:5cqw;font:700 7cqw/1 Caveat,cursive}
+.r5-pn .p2{position:absolute;left:27cqw;right:2cqw;top:4cqw;font:700 15cqw/.9 Caveat,cursive;white-space:nowrap;overflow:hidden}
+.r5-pn .p3{position:absolute;left:28cqw;top:21cqw;font:700 7.5cqw/1 Caveat,cursive}
+.r5-pn .p4{position:absolute;left:6cqw;bottom:6cqw;font:700 9cqw/1 Caveat,cursive;transform:rotate(-3deg)}
+.r5-pn .p5{position:absolute;right:9cqw;bottom:31cqw;font:700 16cqw/1 Caveat,cursive}
+
+/* ---------- the tap: the sheet lets go of its clip and comes to you, then the round opens (the live slab) ---------- */
+.r5-scr{position:fixed;inset:0;z-index:80;background:rgba(13,11,16,.45);opacity:0;transition:opacity .35s}
+.r5-scr.on{opacity:1}
+.r5-fly{position:fixed;left:0;top:0;z-index:81;transform-origin:50% 50%;pointer-events:none}
+.r5-sh.gone{visibility:hidden}
+
+/* the archive below keeps its own heading, a step quieter, so the chapter has one loudest line (lesson 71) */
+.wc-season:has(.r5) .pp1-ttl .ez-hd,.wc-season:has(.r5) .pp1-ttl h2{font-size:.62em}

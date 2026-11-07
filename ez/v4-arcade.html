@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Earnings Zeason — The Arcade</title>
+<meta name="description" content="Three AI models play the earnings game. Six levels cleared, the boss is next. Every call filed before the bell, every score graded by the market.">
+<meta name="theme-color" content="#fff4d6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   EARNINGS ZEASON · v4 "THE ARCADE"
+   The season is a game. Six levels cleared, the boss is next.
+   Light cabinet, pixel edges, the films play on the level screens.
+   Maintenance: edit DATA at the top of the script. Nothing else.
+   Hard facts = the calls and the outcomes (verbatim). The rest is play.
+   ===================================================================== */
+:root{
+  --bg:#fff4d6;--bg2:#ffe9ad;--card:#fffdf5;--ink:#1d1a2b;--ink2:#4a4560;--dim:#8b8499;
+  --up:#1fbf5b;--dn:#ff4655;--gold:#ffc21a;--pink:#ff6ec7;--blue:#3d7bff;--violet:#7b4dff;--orange:#ff8a1f;
+  --px:4px;
+  --f8:'Press Start 2P',ui-monospace,monospace;--fb:'Space Grotesk',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;background:var(--bg);overflow-x:clip}
+body{background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:17px;line-height:1.55;
+  background-image:linear-gradient(rgba(29,26,43,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(29,26,43,.05) 1px,transparent 1px);background-size:24px 24px}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img,video{display:block;max-width:100%}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+.p8{font-family:var(--f8);letter-spacing:.02em;line-height:1.5}
+/* the pixel frame: a stepped border drawn with shadows */
+.px{position:relative;background:var(--card);box-shadow:0 calc(-1*var(--px)) 0 0 var(--ink),0 var(--px) 0 0 var(--ink),calc(-1*var(--px)) 0 0 0 var(--ink),var(--px) 0 0 0 var(--ink),var(--px) var(--px) 0 var(--px) rgba(29,26,43,.18)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:12px/1.2 var(--f8);text-decoration:none;padding:14px 16px;background:var(--gold);color:var(--ink);
+  box-shadow:0 -4px 0 0 var(--ink),0 4px 0 0 var(--ink),-4px 0 0 0 var(--ink),4px 0 0 0 var(--ink),inset -4px -4px 0 0 rgba(0,0,0,.18);transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 -4px 0 0 var(--ink),0 4px 0 0 var(--ink),-4px 0 0 0 var(--ink),4px 0 0 0 var(--ink),inset 4px 4px 0 0 rgba(0,0,0,.18)}
+.btn.g{background:var(--up)}.btn.r{background:var(--dn);color:#fff}.btn.w{background:var(--card)}
+.blink{animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ---------- HUD ---------- */
+.hud{position:sticky;top:0;z-index:40;background:var(--ink);color:#fff}
+.hud-in{max-width:1120px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px;font:10px/1.4 var(--f8)}
+.hud .logo{font-size:12px;text-decoration:none;white-space:nowrap}
+.hud .logo i{font-style:normal;color:var(--gold)}.hud .logo b{color:var(--up)}.hud .logo u{text-decoration:none;color:var(--dn)}
+.hud .hs{color:var(--gold);white-space:nowrap}
+.hud .t{margin-left:auto;white-space:nowrap}
+.hud .t b{color:var(--pink)}
+.hud .coin{font:10px/1 var(--f8);background:var(--gold);color:var(--ink);padding:9px 10px;text-decoration:none;white-space:nowrap;box-shadow:inset -3px -3px 0 rgba(0,0,0,.2)}
+@media(max-width:700px){.hud .hs{display:none}.hud-in{gap:10px}}
+@media(max-width:520px){.hud .logo .w,.hud .coin .w{display:none}.hud-in{font-size:9px}}
+@media(max-width:380px){.hud .t .l{display:none}}
+
+/* ---------- attract mode ---------- */
+.attract{padding:44px 0 56px;text-align:center;position:relative;overflow:hidden}
+.marquee{display:inline-block;padding:18px 22px;background:var(--ink);color:#fff;margin-bottom:26px}
+.marquee .p8{font-size:clamp(20px,5.6vw,52px);line-height:1.15}
+.marquee .p8 span:nth-child(1){color:var(--gold)}.marquee .p8 span:nth-child(2){color:var(--pink)}
+.marquee small{display:block;font:9px/1.6 var(--f8);color:#b9b3cc;margin-top:10px}
+.tag{font:clamp(22px,4.4vw,40px)/1.15 var(--fb);font-weight:700;letter-spacing:-.02em;max-width:820px;margin:0 auto}
+.tag em{font-style:normal;background:var(--up);padding:0 .15em}.tag s{text-decoration:none;background:var(--dn);color:#fff;padding:0 .15em}
+.sub{max-width:620px;margin:18px auto 0;color:var(--ink2);font-size:18px}
+.press{margin-top:30px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.press .p8{font-size:12px;color:var(--ink2)}
+.sprites{display:flex;justify-content:center;gap:clamp(18px,6vw,56px);margin-top:36px}
+.spr{display:flex;flex-direction:column;align-items:center;gap:10px;font:9px/1.4 var(--f8)}
+.bot{width:56px;height:56px;image-rendering:pixelated;animation:bob 1.2s steps(2) infinite}
+.spr:nth-child(2) .bot{animation-delay:.3s}.spr:nth-child(3) .bot{animation-delay:.6s}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.spr b{font-weight:400;color:var(--ink2)}
+
+/* ---------- section titles ---------- */
+.sec{padding:60px 0}
+.st{display:flex;align-items:center;gap:14px;margin-bottom:26px;flex-wrap:wrap}
+.st .p8{font-size:clamp(14px,2.6vw,20px)}
+.st .chip{font:9px/1 var(--f8);background:var(--ink);color:#fff;padding:8px 9px}
+.lede{color:var(--ink2);max-width:680px;margin:-8px 0 24px}
+
+/* ---------- stage select ---------- */
+.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+@media(max-width:980px){.levels{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.levels{grid-template-columns:1fr 1fr;gap:18px}}
+.lvl{display:flex;flex-direction:column;text-align:left;padding:0;overflow:visible;transition:transform .12s}
+.lvl:hover{transform:translate(-2px,-2px)}
+.lvl .shot{position:relative;aspect-ratio:1;overflow:hidden;background:var(--ink)}
+.lvl .shot img{width:100%;height:100%;object-fit:cover;filter:saturate(1.05)}
+.lvl .shot .pl{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(transparent 55%,rgba(29,26,43,.7))}
+.lvl .shot .pl span{width:46px;height:46px;display:grid;place-items:center;background:var(--gold);color:var(--ink);font:14px/1 var(--f8);box-shadow:0 0 0 4px var(--ink);opacity:0;transform:scale(.8);transition:all .15s}
+.lvl:hover .shot .pl span,.lvl:focus-visible .shot .pl span{opacity:1;transform:none}
+.lvl .no{position:absolute;top:8px;left:8px;font:9px/1 var(--f8);background:var(--card);padding:6px 7px;box-shadow:0 0 0 3px var(--ink)}
+.lvl .stamp{position:absolute;right:8px;bottom:8px;font:9px/1 var(--f8);padding:7px 8px;background:var(--up);box-shadow:0 0 0 3px var(--ink);transform:rotate(-4deg)}
+.lvl .stamp.x{background:var(--dn);color:#fff}
+.lvl .meta{padding:12px 12px 14px;display:flex;flex-direction:column;gap:6px}
+.lvl .co{font:10px/1.4 var(--f8)}
+.lvl .res{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.lvl .res b{font:15px/1 var(--f8)}
+.lvl .res span{font:500 13px/1.3 var(--fb);color:var(--ink2)}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.lvl.boss .shot{background:repeating-linear-gradient(45deg,#2a2540 0 10px,#231f36 10px 20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#fff;text-align:center;padding:10px}
+.lvl.boss .shot .p8{font-size:10px}
+.lvl.boss .shot .big{font:clamp(16px,2.6vw,22px)/1.2 var(--f8);color:var(--pink)}
+.lvl.boss .shot .cd{font:clamp(12px,2vw,15px)/1 var(--f8);color:var(--gold)}
+.lvl.lock .shot{background:repeating-linear-gradient(45deg,#e8dcb8 0 10px,#e2d4ab 10px 20px);display:grid;place-items:center;color:var(--dim);font:22px/1 var(--f8)}
+.lvl.lock{cursor:default}
+
+/* ---------- high score ---------- */
+.hi{display:grid;grid-template-columns:1.2fr .8fr;gap:26px;align-items:start}
+@media(max-width:860px){.hi{grid-template-columns:1fr}}
+.table{background:var(--ink);color:#fff;padding:22px 18px}
+.table h3{font:12px/1.4 var(--f8);color:var(--gold);text-align:center;margin-bottom:16px}
+.hrow{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:12px;padding:10px 0;border-bottom:2px dashed #3b3656;font:12px/1.4 var(--f8)}
+.hrow:last-of-type{border-bottom:0}
+.hrow .r{color:var(--dim)}
+.hrow:first-of-type .r{color:var(--gold)}
+.hrow .bar{height:12px;margin-top:8px;background:#3b3656;position:relative}
+.hrow .bar i{position:absolute;left:0;top:0;bottom:0;width:0;transition:width 1s steps(12)}
+.hrow .sc{font-size:22px;color:var(--gold)}
+.hrow small{display:block;font:500 12px/1.4 var(--fb);color:#b9b3cc;margin-top:6px;letter-spacing:0}
+.seat4{margin-top:14px;font:9px/1.7 var(--f8);color:#b9b3cc;text-align:center}
+.howto{padding:20px 18px}
+.howto h3{font:12px/1.4 var(--f8);margin-bottom:14px}
+.howto ol{list-style:none;display:grid;gap:14px}
+.howto li{display:grid;grid-template-columns:30px 1fr;gap:10px}
+.howto li b{font:12px/1.4 var(--f8);color:var(--violet)}
+.howto p{font-size:15.5px;color:var(--ink2)}
+.howto p strong{color:var(--ink)}
+
+/* ---------- player 4 ---------- */
+.p4{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:center}
+@media(max-width:860px){.p4{grid-template-columns:1fr}}
+.p4 .box{padding:22px 18px}
+.p4 h3{font:14px/1.5 var(--f8);margin-bottom:10px}
+.p4 p{color:var(--ink2);font-size:15.5px}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 4px 6px}
+.pick .btn{font-size:16px;padding:20px 10px}
+.pick .btn.on{outline:4px solid var(--pink);outline-offset:6px}
+.pick .btn[disabled]{opacity:.4;cursor:not-allowed}
+.saved{margin-top:16px;font:10px/1.8 var(--f8);color:var(--violet);display:none}
+.saved.on{display:block}
+.boss-cd{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.boss-cd div{text-align:center;padding:16px 4px 12px}
+.boss-cd b{display:block;font:clamp(20px,4vw,32px)/1 var(--f8)}
+.boss-cd span{font:8px/1 var(--f8);color:var(--dim)}
+.fine{font:500 13px/1.6 var(--fb);color:var(--ink2);margin-top:14px}
+
+/* ---------- the pot + continue ---------- */
+.pot{padding:22px 18px;margin-bottom:26px}
+.pot h3{font:12px/1.4 var(--f8);margin-bottom:12px}
+.cells{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin:10px 0 12px}
+.cells i{aspect-ratio:1;background:#eadfbf;box-shadow:0 0 0 3px var(--ink)}
+.cells i.f{background:var(--gold)}
+.cells i.n{animation:blink 1s steps(1) infinite;background:var(--gold)}
+.pot p{font-size:14.5px;color:var(--ink2)}
+.cont{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:860px){.cont{grid-template-columns:1fr}}
+.cont .box{padding:18px;display:flex;flex-direction:column;gap:10px}
+.cont .box .n{font:10px/1 var(--f8);color:var(--violet)}
+.cont .box h4{font:12px/1.5 var(--f8)}
+.cont .box p{font-size:15px;color:var(--ink2)}
+.ca{font:500 12.5px/1.5 var(--fb);background:var(--bg);padding:10px;box-shadow:0 0 0 3px var(--dim);overflow-wrap:anywhere;color:var(--ink2)}
+.ca.live{box-shadow:0 0 0 3px var(--ink);color:var(--ink);cursor:copy}
+.cont .btn{margin-top:auto}
+.btn.off{background:#e6dcc0;color:var(--dim);pointer-events:none}
+.risk{margin-top:30px;font:500 13px/1.6 var(--fb);color:var(--ink2);padding:14px 16px;background:var(--card);box-shadow:0 0 0 3px var(--ink)}
+
+/* ---------- game over ---------- */
+.over{padding:80px 0 110px;text-align:center}
+.over .go{font:clamp(18px,4vw,34px)/1.5 var(--f8)}
+.over .go .e{color:var(--up)}.over .go .z{color:var(--dn)}
+.over .mark{display:inline-block;margin-top:24px;background:var(--ink);padding:16px 20px;font:clamp(24px,5vw,40px)/1 var(--f8)}
+.over .mark .d{color:var(--gold)}.over .mark .e{color:var(--up)}.over .mark .z{color:var(--dn)}
+.over p{margin-top:18px;font:9px/1.8 var(--f8);color:var(--dim)}
+
+/* ---------- level screen (dialog) ---------- */
+dialog{border:0;padding:0;background:transparent;max-width:min(980px,calc(100vw - 24px));width:100%;margin:auto;overflow:visible}
+dialog::backdrop{background:rgba(29,26,43,.72);backdrop-filter:blur(3px)}
+.scr{background:var(--card);box-shadow:0 0 0 6px var(--ink),10px 10px 0 6px rgba(0,0,0,.25);display:grid;grid-template-columns:auto 1fr;max-height:calc(100dvh - 40px);overflow:auto}
+@media(max-width:760px){.scr{grid-template-columns:1fr}}
+.scr .film{background:#000;display:grid;place-items:center;position:relative}
+.scr .film video{max-height:calc(100dvh - 60px);width:auto;max-width:100%}
+.scr .film.sq video{width:min(520px,100%);height:auto}
+.scr .film.tall video{height:min(640px,calc(100dvh - 60px));max-height:none}
+@media(max-width:760px){.scr .film.tall video{height:auto;width:100%;max-height:70dvh;object-fit:contain}}
+.scr .side{padding:22px 20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.scr .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.scr .lv{font:9px/1.4 var(--f8);color:var(--violet)}
+.scr h2{font:14px/1.5 var(--f8);margin-top:6px}
+.x{font:12px/1 var(--f8);background:var(--dn);color:#fff;padding:9px 10px;box-shadow:0 0 0 3px var(--ink)}
+.brd{background:var(--ink);color:#fff;padding:14px 14px 12px;font:11px/1.9 var(--f8)}
+.brd .r{display:flex;justify-content:space-between;gap:8px}
+.brd hr{border:0;border-top:2px dashed #3b3656;margin:8px 0}
+.brd .o{color:var(--orange)}.brd .w{color:var(--up)}.brd .w.x2{color:var(--dn)}
+.brd small{font:500 12px/1 var(--fb);color:#b9b3cc}
+.scr .story{font-size:15.5px;color:var(--ink2)}
+.scr .story p+p{margin-top:10px}
+.acts{display:flex;flex-wrap:wrap;gap:12px;margin-top:auto;padding:4px}
+.acts .btn{font-size:10px;padding:11px 12px}
+
+.sy{font-family:var(--fb);font-weight:700;font-size:1.15em;line-height:1}
+.scr{position:relative}
+.xf{position:absolute;top:10px;right:10px;z-index:3;font:12px/1 var(--f8);background:var(--dn);color:#fff;padding:10px 11px;box-shadow:0 0 0 3px var(--ink)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);opacity:0;background:var(--ink);color:#fff;font:10px/1.4 var(--f8);padding:12px 14px;transition:all .2s;z-index:100;pointer-events:none;box-shadow:0 0 0 3px var(--gold)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .4s steps(4),transform .4s steps(4)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="hud">
+  <div class="hud-in">
+    <a class="logo" href="#top"><i>$</i><b>E</b><u>Z</u><span class="w"> ARCADE</span></a>
+    <span class="hs" id="hs">HI-SCORE —</span>
+    <span class="t"><span class="l">BOSS IN </span><b data-cd>—</b></span>
+    <a class="coin" href="#continue"><span class="w">INSERT </span>COIN</a>
+  </div>
+</header>
+
+<main id="top">
+<!-- ============ ATTRACT MODE ============ -->
+<section class="attract">
+  <div class="wrap">
+    <div class="marquee"><div class="p8"><span>EARNINGS</span> <span>ZEASON</span></div><small>SEASON ONE · 6 OF 10 LEVELS CLEARED</small></div>
+    <p class="tag">Three AI models play the earnings game. The market keeps score. <em>No saves.</em> <s>No continues.</s></p>
+    <p class="sub">Before every earnings print each machine files a call — up or down, and by how much. Twenty-four hours later the market grades it. Every level is a real company. Every score is final.</p>
+    <div class="press">
+      <a class="btn g" href="#levels"><span class="sy">▶</span> PRESS START</a>
+      <span class="p8 blink">1 PLAYER · 3 MACHINES · 0 EDITS</span>
+    </div>
+    <div class="sprites" id="sprites"></div>
+  </div>
+</section>
+
+<!-- ============ STAGE SELECT ============ -->
+<section class="sec" id="levels">
+  <div class="wrap">
+    <div class="st reveal"><span class="p8">STAGE SELECT</span><span class="chip">TAP A LEVEL TO WATCH IT</span></div>
+    <p class="lede reveal">Every cleared level has its film — the calls, the outcome, the winner, the way it went out on X. The boss is still dark.</p>
+    <div class="levels" id="grid"></div>
+  </div>
+</section>
+
+<!-- ============ HIGH SCORES ============ -->
+<section class="sec" id="scores">
+  <div class="wrap">
+    <div class="st reveal"><span class="p8">HIGH SCORES</span><span class="chip">SEASON ONE</span></div>
+    <div class="hi">
+      <div class="table px reveal" id="table"></div>
+      <div class="howto px reveal">
+        <h3>HOW TO PLAY</h3>
+        <ol>
+          <li><b>1</b><p><strong>Before the bell</strong> each machine files one call: direction and size. Timestamped, public, verbatim.</p></li>
+          <li><b>2</b><p><strong>The market moves.</strong> Twenty-four hours later the call is graded against the close. No appeals.</p></li>
+          <li><b>3</b><p><strong>Right direction, nearest number</strong> clears the level. Identical nearest calls share it. Nobody right? Nobody clears it.</p></li>
+          <li><b>4</b><p><strong>Nothing is ever edited.</strong> The market is the only judge, and it does not read the opinions of the judged.</p></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLAYER 4 ============ -->
+<section class="sec" id="p4">
+  <div class="wrap">
+    <div class="st reveal"><span class="p8">PLAYER 4 · THAT'S YOU</span></div>
+    <div class="p4">
+      <div class="box px reveal">
+        <h3>BOSS: ROUND 7 · MICRON</h3>
+        <p>Call it before the machines show their hands. Saved on this device only — no wallet, no account, not part of the record. Come back after the print to see who you beat.</p>
+        <div class="pick"><button class="btn g" type="button" data-d="UP"><span class="sy">▲</span> UP</button><button class="btn r" type="button" data-d="DOWN"><span class="sy">▼</span> DOWN</button></div>
+        <div class="saved" id="saved"></div>
+      </div>
+      <div class="reveal">
+        <div class="boss-cd"><div class="px"><b data-cd="d">—</b><span>DAYS</span></div><div class="px"><b data-cd="h">—</b><span>HRS</span></div><div class="px"><b data-cd="m">—</b><span>MIN</span></div><div class="px"><b data-cd="s">—</b><span>SEC</span></div></div>
+        <p class="fine">Calls lock Wed, Sep 30 · 4:30 pm ET. Date per Micron's announcement — the sheet will carry it officially.</p>
+        <div style="margin-top:18px;padding:4px"><button class="btn w" type="button" id="ics">+ ADD THE BOSS TO MY CALENDAR</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTINUE? ============ -->
+<section class="sec" id="continue">
+  <div class="wrap">
+    <div class="st reveal"><span class="p8">CONTINUE?</span><span class="chip blink">INSERT COIN</span></div>
+    <div class="pot px reveal">
+      <h3>THE POT · SEALED UNTIL LEVEL X</h3>
+      <div class="cells" id="cells" aria-label="6 of 10 rounds settled"></div>
+      <p>Accruing since Round I. Six of ten rounds settled. 69% to the season's winning machine. Settles in $EZ. No purse figures published yet — the ledger carries the number the day it is written.</p>
+    </div>
+    <div class="cont">
+      <div class="box px reveal"><span class="n">STEP 1</span><h4>CHECK THE ADDRESS</h4><p>The only official contract address lives here and on the pinned post. Anything posted elsewhere first is not us.</p><div class="ca" id="ca">Not posted yet — it appears here, and only here, at launch.</div></div>
+      <div class="box px reveal"><span class="n">STEP 2</span><h4>GET $EZ</h4><p>Only through the link on this page, against the address beside it.</p><a class="btn g off" id="buy" href="#continue" target="_blank" rel="noopener">OPENS AT LAUNCH</a></div>
+      <div class="box px reveal"><span class="n">STEP 3</span><h4>BE THERE FOR THE BOSS</h4><p>The calls post before the bell, the score after the close. Both land here first.</p><div id="follow" style="display:flex;flex-direction:column;gap:14px;margin-top:auto;padding:4px"></div></div>
+    </div>
+    <p class="risk">$EZ is a memecoin. Nothing here promises value, returns or a payout, and none of it is financial advice. The machines' calls are an experiment in public, not trading signals — six levels in, one of them beat all three.</p>
+  </div>
+</section>
+
+<section class="over">
+  <div class="wrap">
+    <div class="go">GAME OVER?<br>NOBODY SAID IT WOULD BE <span class="e">E</span><span class="z">Z</span></div>
+    <div class="mark" aria-label="$EZ"><span class="d">$</span><span class="e">E</span><span class="z">Z</span></div>
+    <p>CALLS FILED BEFORE THE BELL · GRADED +24H · NEVER EDITED</p>
+  </div>
+</section>
+</main>
+
+<dialog id="lvl" aria-labelledby="lvlTitle"><div class="scr" id="scr"></div></dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ===================================================================
+   DATA — the only block you edit.
+   Calls and outcomes are verbatim from the record. To add a round:
+   copy one entry, fill it in, drop its film in media/.
+   =================================================================== */
+var CONFIG={ca:"",buyUrl:"",chain:"",x:"",tg:""};
+var NEXT={n:7,co:"Micron",lockAt:"2026-09-30T20:30:00Z",calls:null,out:null,win:null};
+var MODELS={GPT:{c:"#3d7bff"},KIMI:{c:"#7b4dff"},CLAUDE:{c:"#ff8a1f"}};
+var LADDER=[{m:"GPT",won:3,dir:"4 / 6",avg:"3.96"},{m:"KIMI",won:2,dir:"4 / 6",avg:"4.46"},{m:"CLAUDE",won:1,dir:"3 / 6",avg:"4.61"}];
+var ROUNDS=[
+ {n:1,co:"GameStop",out:"+5.95%",win:"KIMI",head:"Kimi Calls GameStop",film:"round-1-gamestop",tall:true,
+  calls:[["GPT","UP 1%","4.95"],["KIMI","UP 4%","1.95"],["CLAUDE","UP 2%","3.95"]],
+  story:["Three machines called GameStop higher before the bell. The tape agreed — +5.95% — and the call came down to inches.","KIMI's UP 4 finished 1.95 points from the close. Nobody was closer."]},
+ {n:2,co:"Oracle",out:"−1.74%",win:"CLAUDE",head:"Oracle Fades; Claude Collects",film:"round-2-oracle",tall:true,
+  calls:[["GPT","UP 6%","7.74"],["KIMI","DOWN 6%","4.26"],["CLAUDE","DOWN 3%","1.26"]],
+  story:["Oracle fell, and CLAUDE saw it coming. DOWN 3, filed before the bell, finished 1.26 points from the close.","KIMI read the fall right too; GPT's guidance thesis did not survive the print."]},
+ {n:3,co:"AutoZone",out:"+3.25%",win:"GPT",head:"GPT Answers the Doubters",film:"round-3-autozone",
+  calls:[["GPT","UP 4%","0.75"],["KIMI","DOWN 5%","8.25"],["CLAUDE","DOWN 4.5%","7.75"]],
+  story:["AutoZone moved up, and GPT was the only machine that said so. UP 4 against a +3.25% close — 0.75 points off, the tightest call of the season.","The night before, he stood last in the standings."]},
+ {n:4,co:"General Mills",out:"+1.04%",win:"GPT & KIMI",head:"A Dead Heat at General Mills",film:"round-4-generalmills",
+  calls:[["GPT","UP 3%","1.96"],["KIMI","UP 3%","1.96"],["CLAUDE","DOWN 3%","4.04"]],
+  story:["Two machines filed the same call: UP 3. GPT and KIMI dead-heated at 1.96 points off — both marked winners.","Ties are not rounded away here; the record keeps them as they happened."]},
+ {n:5,co:"BlackBerry",out:"+4.10%",win:"GPT",head:"GPT Again, and the Standings Turn",film:"round-5-blackberry",
+  calls:[["GPT","UP 7%","2.90"],["KIMI","UP 9%","4.90"],["CLAUDE","UP 9%","4.90"]],
+  story:["BlackBerry printed +4.1%. GPT said UP 7 — high, but nearer than the two UP 9s beside it.","The machine written off after Oracle now leads the season."]},
+ {n:6,co:"Costco",out:"+2.95%",win:null,head:"The Call That Fooled All Three",film:"round-6-costco",
+  calls:[["GPT","DOWN 2.5%","5.45"],["KIMI","DOWN 2.5%","5.45"],["CLAUDE","DOWN 2.8%","5.75"]],
+  story:["Costco went up. All three machines said down. No direction check, no nearest call, no winner — the call belongs to nobody, and the record says so plainly."]}
+];
+var MEDIA="media/";
+
+/* =================================================================== */
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function toast(t){var x=$("#toast");x.textContent=t;x.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(function(){x.classList.remove("on")},2200)}
+function pad(n){return ("0"+n).slice(-2)}
+var LOCK=Date.parse(NEXT.lockAt),reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function isUp(s){return s.charAt(0)==="+"}
+/* the pixel font has no minus sign or arrows: set those in the body font */
+function sy(s){return String(s).replace(/[−★▲▼◀▶↗⚠]/g,function(c){return '<span class="sy">'+c+'</span>'})}
+
+/* pixel robots, one per machine (8x8 sprite, colour = identity) */
+function bot(c){var map=["..####..",".#....#.","#.#..#.#","#......#","#.####.#",".#....#.","..#..#..",".##..##."],s='<svg class="bot" viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true">';
+  map.forEach(function(row,y){for(var x=0;x<8;x++)if(row[x]==="#")s+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+(y===2&&(x===2||x===5)?"#1d1a2b":c)+'"/>'});
+  return s+'<rect x="2" y="2" width="1" height="1" fill="#fff"/><rect x="5" y="2" width="1" height="1" fill="#fff"/></svg>'}
+$("#sprites").innerHTML=LADDER.map(function(l){return '<div class="spr">'+bot(MODELS[l.m].c)+'<span>'+l.m+'</span><b>'+l.won+' CLEARED</b></div>'}).join("");
+$("#hs").textContent="HI-SCORE "+LADDER[0].m+" "+LADDER[0].won;
+
+/* stage select */
+(function(){
+  var g=$("#grid"),h="";
+  ROUNDS.forEach(function(r){
+    h+='<button class="lvl px reveal" type="button" data-r="'+r.n+'" aria-label="Level '+r.n+' · '+r.co+', watch the film"><div class="shot"><img loading="lazy" src="'+MEDIA+r.film+(r.n===3?'-end':'-poster')+'.jpg" alt=""><div class="pl"><span>▶</span></div><span class="no">LV '+r.n+'</span><span class="stamp'+(r.win?'':' x')+'">'+(r.win?'CLEARED':'NO WINNER')+'</span></div>'+
+      '<div class="meta"><span class="co">'+r.co.toUpperCase()+'</span><div class="res"><b class="'+(isUp(r.out)?'up':'dn')+'">'+sy(r.out)+'</b><span>'+(r.win?r.win+' wins':'nobody wins')+'</span></div></div></button>';
+  });
+  h+='<a class="lvl boss px reveal" href="#p4"><div class="shot"><span class="p8">'+sy('⚠')+' BOSS '+sy('⚠')+'</span><span class="big">'+NEXT.co.toUpperCase()+'</span><span class="cd" data-cd>—</span><span class="p8 blink">'+(NEXT.calls?'CALLS ARE IN':'CALLS LOCK SOON')+'</span></div><div class="meta"><span class="co">LV '+NEXT.n+' · ROUND '+NEXT.n+'</span><div class="res"><b>???</b><span>tap to call it</span></div></div></a>';
+  for(var i=NEXT.n+1;i<=10;i++)h+='<div class="lvl lock px reveal" aria-hidden="true"><div class="shot">?</div><div class="meta"><span class="co">LV '+i+'</span><div class="res"><b>---</b><span>locked</span></div></div></div>';
+  g.innerHTML=h;
+  $$(".lvl[data-r]").forEach(function(b){b.addEventListener("click",function(){open(+b.dataset.r)})});
+})();
+
+/* high scores */
+(function(){
+  var t='<h3><span class="sy">★</span> SEASON ONE <span class="sy">★</span></h3>';
+  LADDER.forEach(function(l,i){t+='<div class="hrow"><span class="r">'+(i+1)+(i===0?'ST':i===1?'ND':'RD')+'</span><div><span style="color:'+MODELS[l.m].c+'">'+l.m+'</span><div class="bar"><i data-w="'+(l.won/3*100)+'" style="background:'+MODELS[l.m].c+'"></i></div><small>direction '+l.dir+' · avg '+l.avg+' pts off</small></div><span class="sc">'+l.won+'</span></div>'});
+  t+='<p class="seat4">PLAYER SLOT 4 · GROK · INVITED</p>';$("#table").innerHTML=t;
+})();
+
+/* the pot */
+(function(){var c=$("#cells");for(var i=1;i<=10;i++){var e=document.createElement("i");if(i<=6)e.className="f";else if(i===7)e.className="n";c.appendChild(e)}})();
+
+/* level screen */
+var dlg=$("#lvl");
+function open(n,noHash){
+  var r=ROUNDS[n-1];if(!r)return;
+  var winners=r.win?r.win.split(" & "):[];
+  $("#scr").innerHTML='<div class="film '+(r.tall?'tall':'sq')+'"><video controls playsinline preload="metadata" poster="'+MEDIA+r.film+(r.n===3?'-end':'-poster')+'.jpg"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video></div>'+
+    '<div class="side"><div class="top"><div><div class="lv">LEVEL '+r.n+' · '+(r.win?'CLEARED':'NOBODY CLEARED IT')+'</div><h2 id="lvlTitle">ROUND '+r.n+' · '+r.co.toUpperCase()+'</h2></div></div>'+
+    '<div class="brd">'+r.calls.map(function(c){return '<div class="r"><span>'+(winners.indexOf(c[0])>-1?sy('★ '):'')+c[0]+'</span><span>'+c[1]+'</span></div>'}).join("")+
+    '<hr><div class="r o"><span>OUTCOME</span><span>'+sy(r.out)+'</span></div><hr><div class="r w'+(r.win?'':' x2')+'"><span>WINNER</span><span>'+(r.win||'NOBODY')+'</span></div>'+
+    '<hr><small>Points off the close: '+r.calls.map(function(c){return c[0]+' '+c[2]}).join(' · ')+'</small></div>'+
+    '<div class="story"><p><strong>'+r.head+'.</strong> '+r.story[0]+'</p>'+(r.story[1]?'<p>'+r.story[1]+'</p>':'')+'</div>'+
+    '<div class="acts">'+(n>1?'<button class="btn w" type="button" data-go="'+(n-1)+'">'+sy('◀')+' LV '+(n-1)+'</button>':'')+(n<ROUNDS.length?'<button class="btn w" type="button" data-go="'+(n+1)+'">LV '+(n+1)+' '+sy('▶')+'</button>':'<a class="btn g" href="#p4">BOSS '+sy('▶')+'</a>')+'<button class="btn" type="button" data-share>'+sy('↗')+' SHARE</button></div></div><button class="xf" type="button" aria-label="Close">X</button>';
+  var v=$("#scr video");
+  $("#scr .xf").addEventListener("click",close);
+  $$("#scr [data-go]").forEach(function(b){b.addEventListener("click",function(){open(+b.dataset.go)})});
+  $("#scr [data-share]").addEventListener("click",function(){share(r)});
+  $$("#scr a[href='#p4']").forEach(function(a){a.addEventListener("click",close)});
+  if(!dlg.open)dlg.showModal();
+  if(!noHash)history.replaceState(null,"","#round-"+n);
+  seen(n);
+  if(!reduce){var p=v.play();if(p&&p.catch)p.catch(function(){})}
+}
+function close(){var v=$("#scr video");if(v)v.pause();dlg.close();history.replaceState(null,"",location.pathname+location.search)}
+dlg.addEventListener("click",function(e){if(e.target===dlg)close()});
+dlg.addEventListener("cancel",function(e){e.preventDefault();close()});
+function share(r){var url=location.href.split("#")[0]+"#round-"+r.n;if(navigator.share)navigator.share({title:"Round "+r.n+" · "+r.co+" — Earnings Zeason",url:url}).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(url).then(function(){toast("LINK COPIED")});}
+function seen(n){var s={};try{s=JSON.parse(store("ez.arc.seen")||"{}")||{}}catch(e){}s[n]=1;store("ez.arc.seen",JSON.stringify(s))}
+var m=location.hash.match(/^#round-(\d+)$/);if(m)setTimeout(function(){open(+m[1],true)},300);
+
+/* player 4 */
+function mine(){var c=store("ez.arc.call"),s=$("#saved");$$(".pick .btn").forEach(function(b){b.classList.toggle("on",b.dataset.d===c)});
+  if(c){s.innerHTML="PLAYER 4 CALLED "+sy(c==="UP"?"▲ UP":"▼ DOWN")+"<br>SAVED ON THIS DEVICE · COME BACK AFTER THE PRINT";s.classList.add("on")}}
+$$(".pick .btn").forEach(function(b){b.addEventListener("click",function(){if(Date.now()>=LOCK)return;store("ez.arc.call",b.dataset.d);mine();toast("CALL SAVED · NO EDITS AFTER THE LOCK")})});
+mine();
+$("#ics").addEventListener("click",function(){
+  var d=new Date(LOCK).toISOString().replace(/[-:]/g,"").replace(/\.\d+/,""),e=new Date(LOCK+18e5).toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
+  var ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//EZ//Arcade//EN\r\nBEGIN:VEVENT\r\nUID:ez-round"+NEXT.n+"@ez\r\nDTSTAMP:"+d+"\r\nDTSTART:"+d+"\r\nDTEND:"+e+"\r\nSUMMARY:Earnings Zeason · Round "+NEXT.n+" · "+NEXT.co+" — calls lock\r\nEND:VEVENT\r\nEND:VCALENDAR";
+  var u=URL.createObjectURL(new Blob([ics],{type:"text/calendar"})),a=document.createElement("a");a.href=u;a.download="ez-round-"+NEXT.n+".ics";document.body.appendChild(a);a.click();a.remove();toast("BOSS ADDED TO CALENDAR")});
+
+/* countdown */
+function tick(){var ms=Math.max(0,LOCK-Date.now()),d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),mi=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
+  $$("[data-cd]").forEach(function(n){var k=n.dataset.cd;n.textContent=!k?(ms<=0?"LOCKED":(d?d+"D ":"")+pad(h)+":"+pad(mi)+":"+pad(s)):k==="d"?d:k==="h"?pad(h):k==="m"?pad(mi):pad(s)});
+  if(ms<=0)$$(".pick .btn").forEach(function(b){b.disabled=true})}
+tick();setInterval(tick,1000);
+
+/* config */
+(function(){
+  if(CONFIG.ca){var ca=$("#ca");ca.className="ca live";ca.textContent=(CONFIG.chain?CONFIG.chain+" · ":"")+CONFIG.ca;ca.addEventListener("click",function(){navigator.clipboard&&navigator.clipboard.writeText(CONFIG.ca).then(function(){toast("ADDRESS COPIED")})})}
+  if(CONFIG.buyUrl){var b=$("#buy");b.href=CONFIG.buyUrl;b.classList.remove("off");b.textContent="GET $EZ ↗"}
+  var f=$("#follow"),any=false;[["x","FOLLOW ON X"],["tg","TELEGRAM"]].forEach(function(k){if(CONFIG[k[0]]){any=true;var a=document.createElement("a");a.className="btn w";a.href=CONFIG[k[0]];a.target="_blank";a.rel="noopener";a.textContent=k[1]+" ↗";f.appendChild(a)}});
+  if(!any){var s=document.createElement("span");s.className="btn off";s.textContent="CHANNELS AT LAUNCH";f.appendChild(s)}
+})();
+
+/* reveals + score bars */
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;e.target.classList.add("in");$$(".bar i",e.target).forEach(function(i){i.style.width=i.dataset.w+"%"});io.unobserve(e.target)})},{threshold:.15});
+$$(".reveal").forEach(function(n){if(reduce){n.classList.add("in");$$(".bar i",n).forEach(function(i){i.style.width=i.dataset.w+"%"})}else io.observe(n)});
+</script>
+</body>
+</html>

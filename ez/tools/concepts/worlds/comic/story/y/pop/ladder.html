@@ -1,0 +1,38 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Luckiest+Guy&display=swap">
+<style>body{margin:0;background:#1b1820;padding:20px;display:flex;gap:14px;font-family:Bangers}
+.c{width:250px;height:330px;position:relative;flex:none}.c svg{width:100%;height:100%}
+.l{color:#f8f0d9;font:400 20px Bangers;letter-spacing:.05em;text-align:center;margin-top:8px}</style></head><body>
+<script>
+const W=250,H=330;
+function rays(cx,cy,n,c1,c2){let s='';for(let i=0;i<n;i++){const a0=i/n*6.283,a1=(i+.5)/n*6.283,R=500;s+=`<path d="M${cx} ${cy}L${cx+R*Math.cos(a0)} ${cy+R*Math.sin(a0)}L${cx+R*Math.cos(a1)} ${cy+R*Math.sin(a1)}Z" fill="${i%2?c1:c2}"/>`}return s}
+function burst(cx,cy,r1,r2,n,seed){let s=seed,p=[];const rnd=()=>(s=(s*9301+49297)%233280)/233280;for(let i=0;i<n*2;i++){const a=i/(n*2)*6.283-1.57,r=i%2?r2*(.85+.3*rnd()):r1*(.9+.25*rnd());p.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1))}return p.join(' ')}
+let gid=0;
+function T(txt,x,y,sz,lv,c1,c2,dk,rot=0){const id='g'+(gid++);let s=`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><g transform="rotate(${rot} ${x} ${y})" font-family="Luckiest Guy" font-size="${sz}" text-anchor="middle">`;
+ if(lv==1)return s+`<text x="${x}" y="${y}" fill="${c2=='#f8f0d9'?'#3a3340':c2}" font-family="Bangers">${txt}</text></g>`;
+ if(lv==2)return s+`<text x="${x+3}" y="${y+3}" fill="#0d0b10">${txt}</text><text x="${x}" y="${y}" fill="${c2}" stroke="#0d0b10" stroke-width="3" paint-order="stroke">${txt}</text></g>`;
+ const d=lv==3?5:7;for(let k=d;k>0;k--)s+=`<text x="${x+k}" y="${y+k}" fill="${dk}" stroke="#0d0b10" stroke-width="${k==d?6:0}" stroke-linejoin="round" paint-order="stroke">${txt}</text>`;
+ s+=`<text x="${x}" y="${y}" fill="${lv==3?c2:'url(#'+id+')'}" stroke="#0d0b10" stroke-width="4" stroke-linejoin="round" paint-order="stroke">${txt}</text>`;
+ if(lv>=4)s+=`<text x="${x-1.4}" y="${y-1.4}" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.1">${txt}</text>`;return s+'</g>'}
+const grok='M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.83c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815';
+function face(x,y,r,lv){const m=`<g transform="translate(${x-r*.62} ${y-r*.62}) scale(${r*1.24/24})"><path d="${grok}" fill="#15121a" fill-rule="evenodd"/></g>`;
+ if(lv==1)return `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="#0d0b10" stroke-width="2"/>`+m;
+ if(lv==2)return `<circle cx="${x+4}" cy="${y+4}" r="${r}" fill="#0d0b10"/><circle cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="#0d0b10" stroke-width="3.5"/>`+m;
+ const id='f'+(gid++);let s=`<defs><radialGradient id="${id}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#e9e3f2"/><stop offset="1" stop-color="#b9b0c8"/></radialGradient></defs>`;
+ for(let k=6;k>0;k--)s+=`<circle cx="${x+k}" cy="${y+k}" r="${r}" fill="${k==6?'#0d0b10':'#5a2a8a'}"/>`;
+ return s+`<circle cx="${x}" cy="${y}" r="${r}" fill="${lv>=4?'url(#'+id+')':'#fff'}" stroke="#0d0b10" stroke-width="4"/>${lv>=4?`<ellipse cx="${x-r*.38}" cy="${y-r*.45}" rx="${r*.28}" ry="${r*.14}" fill="#fff" opacity=".9" transform="rotate(-30 ${x-r*.38} ${y-r*.45})"/>`:''}`+m}
+function card(lv,label){let bg='';
+ if(lv==1)bg=`<rect width="${W}" height="${H}" fill="#fff4cf" stroke="#0d0b10" stroke-width="3"/>`;
+ if(lv==2)bg=`<rect width="${W}" height="${H}" fill="#ffd21f" stroke="#0d0b10" stroke-width="4"/>`;
+ if(lv==3)bg=`<rect width="${W}" height="${H}" fill="#ff8a1f"/>${rays(125,150,28,'#ff7a12','#ff9a2e')}<rect width="${W}" height="${H}" fill="none" stroke="#0d0b10" stroke-width="5"/>`;
+ if(lv>=4)bg=`<defs><pattern id="ht${lv}" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="1.8" fill="rgba(110,0,40,.45)"/></pattern><radialGradient id="mk${lv}"><stop offset=".35" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient><mask id="m${lv}"><rect width="${W}" height="${H}" fill="url(#mk${lv})"/></mask></defs>
+  <rect width="${W}" height="${H}" fill="${lv==5?'#e5175f':'#ff6a10'}"/>${rays(125,150,30,lv==5?'#ff3a7a':'#ff7a12',lv==5?'#c80a4c':'#ff5a0a')}<rect width="${W}" height="${H}" fill="url(#ht${lv})" mask="url(#m${lv})"/>`;
+ let fg='';
+ if(lv==5)fg+=`<polygon points="${burst(125,150,112,80,12,5)}" fill="#0d0b10" transform="translate(7 7)"/><polygon points="${burst(125,150,112,80,12,5)}" fill="#ffd21f" stroke="#0d0b10" stroke-width="4" stroke-linejoin="round"/><polygon points="${burst(125,150,92,66,12,5)}" fill="#fff27a"/>`;
+ fg+=face(125,118,lv==5?42:38,lv);
+ fg+=T('GROK',125,52,40,lv,'#fff27a','#ffc414','#a0520a',lv>=4?-4:0);
+ fg+=T('+$255,864',125,218,lv==5?38:34,lv,'#7dffb8','#03c870','#04622f',lv>=4?-3:0);
+ if(lv==5)fg+=`<g transform="rotate(-6 70 284)"><rect x="18" y="262" width="112" height="40" fill="#0d0b10" transform="translate(5 5)"/><rect x="18" y="262" width="112" height="40" fill="#2fd3ff" stroke="#0d0b10" stroke-width="3.5"/></g>`+T('45 OF 72',74,292,20,4,'#ffffff','#e9fbff','#0a6a8a',-6)+`<g transform="rotate(8 190 284)"><polygon points="${burst(192,284,40,28,9,2)}" fill="#0d0b10" transform="translate(4 4)"/><polygon points="${burst(192,284,40,28,9,2)}" fill="#ffd21f" stroke="#0d0b10" stroke-width="3"/></g>`+T('#1',192,296,30,4,'#ff6b5e','#ff3a31','#7a0c06',8);
+ else fg+=T('45 OF 72 RIGHT',125,282,lv==1?20:18,lv,'#ffffff','#f8f0d9','#6a5a3a');
+ return `<div><div class="c"><svg viewBox="0 0 ${W} ${H}">${bg}${fg}</svg></div><div class="l">${label}</div></div>`}
+document.body.innerHTML=[card(1,'1 · flat'),card(2,'2 · outline + drop'),card(3,'3 · extruded'),card(4,'4 · extruded, lit, halftone'),card(5,'5 · all in, more colour')].join('');
+</script></body></html>

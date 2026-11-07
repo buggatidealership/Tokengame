@@ -1,0 +1,470 @@
+H39 ONE FONT SYSTEM ON THE OVERVIEW (X2+, ez/v46-live-x2plus.html), 2026-11-03
+Owner: "Different fonts on the card on Bet#1. Make sure all fonts are the same across each beat or module or header."
+
+HOW IT WAS MEASURED
+Every visible text node of every Overview section (main > section: top, Every round so far, Meet the models,
+Smart or lucky, the bet + Season 2, Up next) was collected in Chromium with the site's real Google fonts.
+For each one: computed family, size, weight, case, letter-spacing, colour, and the faces that actually
+render the glyphs (CDP CSS.getPlatformFontsForNode). Hidden, clipped and off-screen text was left out.
+"Before" = the same build with x2p_more/x2p_sol/x2p_top taken back to commit 3c8114eb (the state before this
+pass), so other builders' work (the vitrine, the leaderboard) is identical on both sides.
+Scripts: scratchpad h39fonts/audit.js, roles.js, check.js, shot.js, board.py.
+
+THE SYSTEM AFTER (three faces only)
+  Bangers        lettering: section heading (gold), sub-heading (cream), every caption box and its kicker,
+                 the How a round works step captions, buttons and the rail switch.
+  Anton          numbers, and every label printed on an object: tabs on an edge, die and chip silkscreen,
+                 the Mag 7 plate, a slab's label, table titles, model names in a table, the lit RIGHT / WRONG,
+                 the step-number tabs, words lettered inside a painting (LONG/SHORT on the dies, WINNER, MON).
+  Shantell Sans  body lines (800): the lines under RIGHT / WRONG and the scam line; and the lower-case "s"
+                 of AIs inside Bangers capitals.
+Faces rendered on the Overview, glyph runs: before Bangers 46, Anton 191, Shantell 49, DejaVu Sans 1,
+Liberation Sans 2 (390px); after Bangers 48, Anton 223, Shantell 14, nothing else (390 and 1280).
+
+DECISIONS
+- The bet card's caption is now the page's caption box (cream #f8f0d9, 2.5px ink border, 3px 4px ink shadow,
+  -.8deg, Bangers capitals, .015em, line-height 1.02, the same size as Smart or lucky / Up next / Season 2).
+  Words unchanged; "69%" still from SIM.poolShare. The box hugs its words and still sits on the seam
+  (seam() re-measures it): at 390 it is 74px tall (was 98) and now clears the DAYS/HRS labels by 13px (was 1px).
+- "69%" inside the caption is lettered in Bangers like the rest of the box, as every other caption box letters
+  its numbers ("1 to 10", "$100K", "Season 1"). "Numbers: Anton" is applied to figures, not words of a caption.
+- Underlines dropped: no other caption box underlines anything (Smart or lucky, Up next, Season 2, Every round,
+  Meet the models). "the whole pool" and "#1 AI's" now read like the rest of the line.
+- The "s" of AIs stays lower case in Shantell 800 .86em in every caption box. In the gold section heading
+  ("Four AIs call earnings.") it is Bangers at .8em (the heading's own convention); left as is.
+- RIGHT / WRONG: the words are lit labels on the painting (Anton capitals, kept); the lines under them
+  ("Profits buy back $EZ.", "The pool shrinks or can be wiped out.") are body text, now the same style as the
+  page's other body line (the scam line under Up next).
+- Caption box sizes were already one at 390 (17px) but not on desktop: Meet the models and Smart or lucky
+  26px, the others 24px. Now 24px from 1000px everywhere (15-17px below 760, 17-26px between).
+- Tabs: "At the close · Nov 18" was Shantell 800, "Next earnings season" Anton; both Anton now, one size.
+- "Every other round · newest first" (the old slab box sub-heading) is set as a sub-heading with Season 2's
+  lettering, the dot dropped where it breaks to two lines. The vitrine (x2p_vit) now hides that block, so it is
+  only the fallback; the m7 slab-label rules (Anton, sizes scaled .82 for Anton's taller capitals) are the
+  same story: in place for the fallback, not visible today.
+- Fallback glyphs gone: the switch arrow (▸/◂ fell back to DejaVu Sans) and the schedule button's arrow (→ fell
+  back to Liberation Sans) are drawn with CSS clip-paths in the text colour.
+
+BEFORE / AFTER BY ROLE  (face | size | weight | case | letter-spacing   e.g. section:text)
+
+=== b390  (before, 390px)
+  section heading
+     Bangers | 48.36px | 400 | uppercase | 0.4836px   e.g. :Four AI call earnings. / :The market keeps score / :How a round works
+     Bangers | 38.69px | 400 | uppercase | 0.4836px   e.g. :s
+     Bangers | 48.36px | 400 | uppercase | 0.7254px   e.g. x2pSt:Bet #1:
+     Bangers | 35.79px | 400 | uppercase | 0.7254px   e.g. x2pSt:NVIDIA
+  sub-heading
+     Bangers | 30.03px | 400 | uppercase | 0.9009px   e.g. x2pSt:Season 2
+  caption box
+     Bangers | 17px | 400 | uppercase | 0.255px   e.g. record:Each round gets a grad / :Season 1 · ranked by c / :Season 2 · not signed 
+     Bangers+Shantell Sans Light | 17px | 400 | uppercase | 0.255px   e.g. record:A 10 means all four AI / learn:How often their long o / get:These companies report
+     Anton | 18.76px | 400 | none | 0.18759px   e.g. x2pSt:69%
+     Shantell Sans Light+Anton | 14.43px | 800 | none | normal   e.g. x2pSt:of $EZ creator fees fi
+     Shantell Sans Light | 14.43px | 800 | none | normal   e.g. x2pSt:For Season 1, we bet o / x2pSt:the whole pool / x2pSt:#1 AI's
+  caption kicker
+     Bangers | 12px | 400 | uppercase | 0.96px   e.g. :Call / :Close / :Ledger
+     Shantell Sans Light | 11.5px | 800 | none | 0.23px   e.g. learn:Hit rate
+  step caption (How a round works)
+     Bangers | 22.08px | 400 | uppercase | 0.36px   e.g. :1 / :2 / :3
+     Bangers | 24px | 400 | uppercase | 0.36px   e.g. :Each AI goes or before / :long / :short
+  "s" of AIs
+     Shantell Sans Light | 14.62px | 800 | none | normal   e.g. record:s / get:s
+  tab on an object
+     Shantell Sans Light | 12.87px | 800 | uppercase | 0.3861px   e.g. x2pSt:At the close · Nov 18
+     Anton | 13.26px | 400 | uppercase | 1.0608px   e.g. x2pSt:Next earnings season
+  printed label (die, plate, slab, chip)
+     Bangers | 16px | 400 | uppercase | 1.12px   e.g. record:Mag 7 / record:Show all 32 in this dr
+     Anton | 13.91px | 400 | uppercase | 0.139092px   e.g. record:Amazon
+     Shantell Sans Light | 9.27px | 700 | none | normal   e.g. record:AMZN
+     Shantell Sans Light | 8.35px | 700 | uppercase | 0.250366px   e.g. record:Strong
+     Anton | 8.43px | 400 | uppercase | 0.0843219px   e.g. record:Meta / record:Alphabet / record:Microsoft
+     Anton | 8.43px | 400 | uppercase | 0.0843391px   e.g. record:Tesla / record:NVIDIA
+     Bangers | 9px | 400 | uppercase | 0.27px   e.g. record:Bet #1 / record:To come
+     Bangers | 15.99px | 400 | uppercase | 1.1193px   e.g. record:Every other round · a 
+     Anton | 10.08px | 400 | uppercase | 0.2016px   e.g. record:Oct 26–30 / record:Oct 9–23 / record:Oct 2–6
+     Anton | 8px | 400 | uppercase | 0.32px   e.g. record:32 rounds / record:1 / record:1
+     Anton | 12.19px | 400 | uppercase | 0.1219px   e.g. record:Exxon Mobil / record:AstraZeneca / record:Intel
+     Shantell Sans Light | 9.47px | 700 | none | normal   e.g. record:XOM / record:AZN.L / record:INTC
+     Anton | 8.61px | 400 | uppercase | 0.4305px   e.g. :W-L / :SeasonP&L / :W-L
+     Shantell Sans Light | 17px | 800 | uppercase | 2.72px   e.g. x2pSt:days / x2pSt:hrs / x2pSt:min
+     Anton | 9.36px | 400 | uppercase | 0.5616px   e.g. x2pSt:More
+  lit word RIGHT / WRONG
+     Anton | 26.01px | 400 | uppercase | 2.08104px   e.g. x2pSt:Right / x2pSt:Wrong
+  table title / model name
+     Shantell Sans Light | 15px | 800 | none | normal   e.g. learn:Grok / learn:Claude / learn:GPT
+     Shantell Sans Light | 12px | 800 | none | normal   e.g. learn:W / learn:W / learn:W
+  number
+     Anton | 34.74px | 500 | none | normal   e.g. :GROK
+     Anton | 33.56px | 500 | none | normal   e.g. :CLAUDE
+     Anton | 35.04px | 500 | none | normal   e.g. :GPT
+     Anton | 34.1px | 500 | none | normal   e.g. :KIMI
+     Anton | 34.6px | 500 | none | normal   e.g. :THE WHOLE GAME / :1 / ::20
+     Anton | 78px | 500 | none | normal   e.g. :1 / :2 / :3
+     Anton | 20.09px | 400 | none | normal   e.g. record:6.5
+     Anton | 13.03px | 400 | none | normal   e.g. record:8 / record:5.5 / record:6
+     Anton | 20.48px | 400 | none | normal   e.g. record:5.5 / record:6 / record:4
+     Anton | 22.3px | 500 | none | 0.446px   e.g. :GROK / :CLAUDE / :GPT
+     Anton | 9.37px | 600 | none | 0.1874px   e.g. :4.7 / :FABLE 5. / :1
+     Anton | 74.24px | 500 | none | 1.4848px   e.g. :1 / :48,480 / :1
+     Anton | 13.95px | 500 | none | 0.279px   e.g. :Shorts almost everythi / :Somehow it's working. / :Never met a small
+     Anton | 14.86px | 500 | none | 0.2972px   e.g. :45 / :- / :27
+     Anton | 196px | 500 | none | normal   e.g. :1 / :2 / :3
+     Anton | 60px | 500 | none | 8.4px   e.g. :IN INFERENCE
+     Anton | 12px | 400 | none | normal   e.g. learn:30% / learn:40% / learn:50%
+     Anton | 16px | 400 | none | normal   e.g. learn:45 / learn:- / learn:27
+     Anton | 88px | 400 | none | normal   e.g. x2pSt:1 / x2pSt:5 / x2pSt:1
+     Anton | 13.8px | 400 | none | 0.552px   e.g. x2pSt:#2
+     Anton | 11.96px | 400 | none | 0.4784px   e.g. x2pSt:#3
+     Anton | 11.04px | 400 | none | 0.4416px   e.g. x2pSt:#4
+  body line
+     Shantell Sans Light | 13.03px | 800 | none | normal   e.g. x2pSt:Profits buy back $EZ. / x2pSt:The pool shrinks or ca
+     Shantell Sans Light | 12.5px | 600 | none | normal   e.g. get:$EZ isn’t live yet. Th
+     Shantell Sans Light | 12.5px | 900 | none | normal   e.g. get:Anyone DMing you one b
+  button
+     Bangers | 17px | 400 | uppercase | 1.02px   e.g. learn:Hit rate / learn:P&L
+     DejaVu Sans | 17px | 400 | none | normal   e.g. learn:▸
+     Bangers+Liberation Sans | 21px | 400 | uppercase | 0.84px   e.g. get:See the full schedule
+     Liberation Sans | 22.05px | 400 | uppercase | 0.84px   e.g. get:→
+  other
+     Anton | 213.9px | 500 | none | normal   e.g. :LONG
+     Anton | 110.2px | 500 | none | normal   e.g. :GPT
+     Anton | 211.8px | 500 | none | normal   e.g. :LONG
+     Anton | 109.1px | 500 | none | normal   e.g. :KIMI
+     Anton | 223.7px | 500 | none | normal   e.g. :SHORT
+     Anton | 116.8px | 500 | none | normal   e.g. :CLAUDE
+     Anton | 205.4px | 500 | none | normal   e.g. :SHORT
+     Anton | 114.4px | 500 | none | normal   e.g. :GROK
+     Anton | 127.8px | 500 | none | normal   e.g. :TESLA / :MARKET CLOSE
+     Anton | 316.9px | 500 | none | normal   e.g. :−3.08%
+     Anton | 115.2px | 500 | none | normal   e.g. :ROUND 40 / :TESLA / :−3.08%
+     Anton | 92.2px | 500 | none | normal   e.g. :WINNER
+     Anton | 74.24px | 500 | none | 1.4848px   e.g. :+$ / :+$ / :−$56,930
+     Anton | 62px | 500 | none | 2.48px   e.g. :MISTRAL / :QWEN / :GEMINI
+     Anton | 22px | 400 | none | normal   e.g. get:MON / get:MON / get:MON
+     Anton | 19px | 400 | none | normal   e.g. get:TUE / get:TUE / get:WED
+     Anton | 30px | 400 | none | normal   e.g. get:GET / get:FOLLOW
+     Anton | 34px | 400 | none | normal   e.g. get:$EZ / get:ON X
+     Anton | 26px | 400 | none | normal   e.g. get:OPENS AT LAUNCH / get:EVERY CALL FIRST
+
+=== a390  (after, 390px)
+  section heading
+     Bangers | 48.36px | 400 | uppercase | 0.4836px   e.g. :Four AI call earnings. / :The market keeps score / :How a round works
+     Bangers | 38.69px | 400 | uppercase | 0.4836px   e.g. :s
+     Bangers | 35.79px | 400 | uppercase | 0.357864px   e.g. x2pSt:NVIDIA
+  sub-heading
+     Bangers | 30.03px | 400 | uppercase | 0.9009px   e.g. x2pSt:Season 2
+  caption box
+     Bangers | 17px | 400 | uppercase | 0.255px   e.g. record:Each round gets a grad / :Season 1 · ranked by c / :Season 2 · not signed 
+     Bangers+Shantell Sans Light | 17px | 400 | uppercase | 0.255px   e.g. record:A 10 means all four AI / get:These companies report
+  caption kicker
+     Bangers | 12px | 400 | uppercase | 0.96px   e.g. :Call / :Close / :Ledger
+  step caption (How a round works)
+     Anton | 22.08px | 400 | uppercase | normal   e.g. :1 / :2 / :3
+     Bangers | 24px | 400 | uppercase | 0.36px   e.g. :Each AI goes or before / :long / :short
+  "s" of AIs
+     Shantell Sans Light | 14.62px | 800 | none | normal   e.g. record:s / get:s
+  tab on an object
+     Anton | 13.26px | 400 | uppercase | 1.0608px   e.g. x2pSt:At the close · Nov 8 / x2pSt:1 / x2pSt:Next earnings season
+  printed label (die, plate, slab, chip)
+     Bangers | 16px | 400 | uppercase | 1.12px   e.g. record:Mag 7 / record:Show all 32 in this dr
+     Anton | 13.91px | 400 | uppercase | 0.139092px   e.g. record:Amazon
+     Shantell Sans Light | 9.27px | 700 | none | normal   e.g. record:AMZN
+     Shantell Sans Light | 8.35px | 700 | uppercase | 0.250366px   e.g. record:Strong
+     Anton | 8.43px | 400 | uppercase | 0.0843219px   e.g. record:Meta / record:Alphabet / record:Microsoft
+     Anton | 8.43px | 400 | uppercase | 0.0843391px   e.g. record:Tesla / record:NVIDIA
+     Bangers | 9px | 400 | uppercase | 0.27px   e.g. record:Bet #1 / record:To come
+     Bangers | 15.99px | 400 | uppercase | 1.1193px   e.g. record:Every other round · a 
+     Anton | 10.08px | 400 | uppercase | 0.2016px   e.g. record:Oct 26–30 / record:Oct 9–23 / record:1
+     Anton | 8px | 400 | uppercase | 0.32px   e.g. record:32 rounds / record:1 / record:2 rounds
+     Anton | 12.19px | 400 | uppercase | 0.1219px   e.g. record:Exxon Mobil / record:AstraZeneca / record:Intel
+     Shantell Sans Light | 9.47px | 700 | none | normal   e.g. record:XOM / record:AZN.L / record:INTC
+     Anton | 8.61px | 400 | uppercase | 0.4305px   e.g. :W-L / :SeasonP&L / :W-L
+     Anton | 17px | 400 | uppercase | 2.72px   e.g. x2pSt:days / x2pSt:hrs / x2pSt:min
+     Anton | 9.36px | 400 | uppercase | 0.5616px   e.g. x2pSt:More
+  lit word RIGHT / WRONG
+     Anton | 26.01px | 400 | uppercase | 2.08104px   e.g. x2pSt:Right / x2pSt:Wrong
+  table title / model name
+     Anton | 15px | 400 | uppercase | 0.45px   e.g. learn:Grok / learn:Claude / learn:GPT
+     Anton | 12px | 400 | none | normal   e.g. learn:W / learn:W / learn:W
+  number
+     Anton | 34.74px | 500 | none | normal   e.g. :GROK
+     Anton | 33.56px | 500 | none | normal   e.g. :CLAUDE
+     Anton | 35.04px | 500 | none | normal   e.g. :GPT
+     Anton | 34.1px | 500 | none | normal   e.g. :KIMI
+     Anton | 34.6px | 500 | none | normal   e.g. :THE WHOLE GAME / :1 / ::20
+     Anton | 78px | 500 | none | normal   e.g. :1 / :2 / :3
+     Anton | 20.09px | 400 | none | normal   e.g. record:6.5
+     Anton | 13.03px | 400 | none | normal   e.g. record:8 / record:5.5 / record:6
+     Anton | 20.48px | 400 | none | normal   e.g. record:5.5 / record:6 / record:4
+     Anton | 22.3px | 500 | none | 0.446px   e.g. :GROK / :CLAUDE / :GPT
+     Anton | 9.37px | 600 | none | 0.1874px   e.g. :4.7 / :FABLE 5. / :1
+     Anton | 74.24px | 500 | none | 1.4848px   e.g. :1 / :48,480 / :1
+     Anton | 13.95px | 500 | none | 0.279px   e.g. :Shorts almost everythi / :Somehow it's working. / :Never met a small
+     Anton | 14.86px | 500 | none | 0.2972px   e.g. :45 / :- / :27
+     Anton | 196px | 500 | none | normal   e.g. :1 / :2 / :3
+     Anton | 60px | 500 | none | 8.4px   e.g. :IN INFERENCE
+     Anton | 12px | 400 | none | normal   e.g. learn:30% / learn:40% / learn:50%
+     Anton | 16px | 400 | none | normal   e.g. learn:45 / learn:- / learn:27
+     Anton | 88px | 400 | none | normal   e.g. x2pSt:1 / x2pSt:5 / x2pSt:1
+     Anton | 13.8px | 400 | none | 0.552px   e.g. x2pSt:#2
+     Anton | 11.96px | 400 | none | 0.4784px   e.g. x2pSt:#3
+     Anton | 11.04px | 400 | none | 0.4416px   e.g. x2pSt:#4
+  body line
+     Shantell Sans Light | 13.03px | 800 | none | normal   e.g. x2pSt:Profits buy back $EZ. / x2pSt:The pool shrinks or ca / get:$EZ isn’t live yet. Th
+  button
+     Bangers | 17px | 400 | uppercase | 1.02px   e.g. learn:Hit rate / learn:P&L
+     Bangers | 21px | 400 | uppercase | 0.84px   e.g. get:See the full schedule
+  other
+     Anton | 213.9px | 500 | none | normal   e.g. :LONG
+     Anton | 110.2px | 500 | none | normal   e.g. :GPT
+     Anton | 211.8px | 500 | none | normal   e.g. :LONG
+     Anton | 109.1px | 500 | none | normal   e.g. :KIMI
+     Anton | 223.7px | 500 | none | normal   e.g. :SHORT
+     Anton | 116.8px | 500 | none | normal   e.g. :CLAUDE
+     Anton | 205.4px | 500 | none | normal   e.g. :SHORT
+     Anton | 114.4px | 500 | none | normal   e.g. :GROK
+     Anton | 127.8px | 500 | none | normal   e.g. :TESLA / :MARKET CLOSE
+     Anton | 316.9px | 500 | none | normal   e.g. :−3.08%
+     Anton | 115.2px | 500 | none | normal   e.g. :ROUND 40 / :TESLA / :−3.08%
+     Anton | 92.2px | 500 | none | normal   e.g. :WINNER
+     Anton | 74.24px | 500 | none | 1.4848px   e.g. :+$ / :+$ / :−$56,930
+     Anton | 62px | 500 | none | 2.48px   e.g. :MISTRAL / :QWEN / :GEMINI
+     Anton | 22px | 400 | none | normal   e.g. get:MON / get:MON / get:MON
+     Anton | 19px | 400 | none | normal   e.g. get:TUE / get:TUE / get:WED
+     Anton | 30px | 400 | none | normal   e.g. get:GET / get:FOLLOW
+     Anton | 34px | 400 | none | normal   e.g. get:$EZ / get:ON X
+     Anton | 26px | 400 | none | normal   e.g. get:OPENS AT LAUNCH / get:EVERY CALL FIRST
+
+=== b1280  (before, 1280px)
+  section heading
+     Bangers | 68px | 400 | uppercase | 0.68px   e.g. :Four AI call earnings. / :The market keeps score / :How a round works
+     Bangers | 54.4px | 400 | uppercase | 0.68px   e.g. :s
+     Bangers | 69.12px | 400 | uppercase | 0.6912px   e.g. record:Every round so far / :Meet the / :models
+     Bangers | 86px | 400 | uppercase | 1.29px   e.g. x2pSt:Bet #1:
+     Bangers | 63.64px | 400 | uppercase | 1.29px   e.g. x2pSt:NVIDIA
+  sub-heading
+     Bangers | 50px | 400 | uppercase | 1.5px   e.g. x2pSt:Season 2
+  caption box
+     Bangers | 24px | 400 | uppercase | 0.36px   e.g. record:Each round gets a grad / x2pSt:NVIDIA is the first be / x2pSt:Season 2 ups the stake
+     Bangers+Shantell Sans Light | 24px | 400 | uppercase | 0.36px   e.g. record:A 10 means all four AI / get:These companies report
+     Bangers | 26px | 400 | uppercase | 0.39px   e.g. :Season 1 · ranked by c / :Season 2 · not signed 
+     Bangers+Shantell Sans Light | 26px | 400 | uppercase | 0.39px   e.g. learn:How often their long o
+     Anton | 22.1px | 400 | none | 0.221px   e.g. x2pSt:69%
+     Shantell Sans Light+Anton | 17px | 800 | none | normal   e.g. x2pSt:of $EZ creator fees fi
+     Shantell Sans Light | 17px | 800 | none | normal   e.g. x2pSt:For Season 1, we bet o / x2pSt:the whole pool / x2pSt:#1 AI's
+  caption kicker
+     Bangers | 15.88px | 400 | uppercase | 1.27px   e.g. :Call / :Close / :Ledger
+     Shantell Sans Light | 12px | 800 | none | 0.24px   e.g. learn:Hit rate
+  step caption (How a round works)
+     Bangers | 29.21px | 400 | uppercase | 0.47625px   e.g. :1 / :2 / :3
+     Bangers | 31.75px | 400 | uppercase | 0.47625px   e.g. :Each AI goes or before / :long / :short
+  "s" of AIs
+     Shantell Sans Light | 20.64px | 800 | none | normal   e.g. record:s / get:s
+  tab on an object
+     Shantell Sans Light | 15px | 800 | uppercase | 0.45px   e.g. x2pSt:At the close · Nov 18
+     Anton | 17px | 400 | uppercase | 1.36px   e.g. x2pSt:Next earnings season
+  printed label (die, plate, slab, chip)
+     Bangers | 16px | 400 | uppercase | 1.12px   e.g. record:Mag 7 / record:Every other round · a  / record:Show all 32 in this dr
+     Anton | 28.08px | 400 | uppercase | 0.2808px   e.g. record:Amazon
+     Shantell Sans Light | 18.72px | 700 | none | normal   e.g. record:AMZN
+     Shantell Sans Light | 16.85px | 700 | uppercase | 0.50544px   e.g. record:Strong
+     Anton | 15.24px | 400 | uppercase | 0.152395px   e.g. record:Meta / record:Tesla / record:Alphabet
+     Shantell Sans Light | 10.16px | 700 | none | normal   e.g. record:META / record:TSLA / record:GOOGL
+     Shantell Sans Light | 9.14px | 700 | uppercase | 0.274312px   e.g. record:Perfect / record:Split / record:Strong
+     Bangers | 18.63px | 400 | uppercase | 0.558783px   e.g. record:Bet #1 / record:To come
+     Anton | 14.4px | 400 | uppercase | 0.288px   e.g. record:Oct 26–30 / record:Oct 9–23 / record:Oct 2–6
+     Anton | 11.2px | 400 | uppercase | 0.448px   e.g. record:32 rounds / record:1 / record:1
+     Anton | 11.4px | 400 | uppercase | 0.114025px   e.g. record:Exxon Mobil / record:AstraZeneca / record:Intel
+     Shantell Sans Light | 8.92px | 700 | none | normal   e.g. record:XOM / record:AZN.L / record:INTC
+     Anton | 13.81px | 400 | uppercase | 0.6905px   e.g. :W-L / :SeasonP&L / :W-L
+     Shantell Sans Light | 17px | 800 | uppercase | 2.72px   e.g. x2pSt:days / x2pSt:hrs / x2pSt:min
+     Anton | 24.84px | 400 | uppercase | 1.4904px   e.g. x2pSt:More
+  lit word RIGHT / WRONG
+     Anton | 34px | 400 | uppercase | 2.72px   e.g. x2pSt:Right / x2pSt:Wrong
+  table title / model name
+     Shantell Sans Light | 15px | 800 | none | normal   e.g. learn:Grok / learn:Claude / learn:GPT
+     Shantell Sans Light | 12px | 800 | none | normal   e.g. learn:W / learn:W / learn:W
+  number
+     Anton | 28.8px | 500 | none | normal   e.g. :GROK
+     Anton | 27.75px | 500 | none | normal   e.g. :CLAUDE
+     Anton | 27.17px | 500 | none | normal   e.g. :GPT
+     Anton | 27.25px | 500 | none | normal   e.g. :KIMI
+     Anton | 22.2px | 500 | none | normal   e.g. :THE WHOLE GAME / :1 / ::20
+     Anton | 78px | 500 | none | normal   e.g. :1 / :2 / :3
+     Anton | 40.56px | 400 | none | normal   e.g. record:6.5
+     Anton | 22.01px | 400 | none | normal   e.g. record:8 / record:5.5 / record:6
+     Anton | 19.28px | 400 | none | normal   e.g. record:5.5 / record:6 / record:4
+     Anton | 35.79px | 500 | none | 0.7158px   e.g. :GROK / :CLAUDE / :GPT
+     Anton | 15.03px | 600 | none | 0.3006px   e.g. :4.7 / :FABLE 5. / :1
+     Anton | 74.24px | 500 | none | 1.4848px   e.g. :1 / :48,480 / :1
+     Anton | 18.6px | 500 | none | 0.372px   e.g. :Shorts almost everythi / :Somehow it's working. / :Never met a small move
+     Anton | 23.83px | 500 | none | 0.4766px   e.g. :45 / :- / :27
+     Anton | 196px | 500 | none | normal   e.g. :1 / :2 / :3
+     Anton | 60px | 500 | none | 8.4px   e.g. :IN INFERENCE
+     Anton | 14px | 400 | none | normal   e.g. learn:30% / learn:40% / learn:50%
+     Anton | 16px | 400 | none | normal   e.g. learn:45 / learn:- / learn:27
+     Anton | 88px | 400 | none | normal   e.g. x2pSt:1 / x2pSt:5 / x2pSt:1
+     Anton | 35.88px | 400 | none | 1.4352px   e.g. x2pSt:#2
+     Anton | 32.2px | 400 | none | 1.288px   e.g. x2pSt:#3
+     Anton | 29.44px | 400 | none | 1.1776px   e.g. x2pSt:#4
+  body line
+     Shantell Sans Light | 16px | 800 | none | normal   e.g. x2pSt:Profits buy back $EZ. / x2pSt:The pool shrinks or ca
+     Shantell Sans Light | 15px | 600 | none | normal   e.g. get:$EZ isn’t live yet. Th
+     Shantell Sans Light | 15px | 900 | none | normal   e.g. get:Anyone DMing you one b
+  button
+     Bangers | 17px | 400 | uppercase | 1.02px   e.g. learn:Hit rate / learn:P&L
+     DejaVu Sans | 17px | 400 | none | normal   e.g. learn:▸
+     Bangers+Liberation Sans | 24px | 400 | uppercase | 0.96px   e.g. get:See the full schedule
+     Liberation Sans | 25.2px | 400 | uppercase | 0.96px   e.g. get:→
+  other
+     Anton | 213.9px | 500 | none | normal   e.g. :LONG
+     Anton | 110.2px | 500 | none | normal   e.g. :GPT
+     Anton | 211.8px | 500 | none | normal   e.g. :LONG
+     Anton | 109.1px | 500 | none | normal   e.g. :KIMI
+     Anton | 223.7px | 500 | none | normal   e.g. :SHORT
+     Anton | 116.8px | 500 | none | normal   e.g. :CLAUDE
+     Anton | 205.4px | 500 | none | normal   e.g. :SHORT
+     Anton | 114.4px | 500 | none | normal   e.g. :GROK
+     Anton | 127.8px | 500 | none | normal   e.g. :TESLA / :MARKET CLOSE
+     Anton | 316.9px | 500 | none | normal   e.g. :−3.08%
+     Anton | 115.2px | 500 | none | normal   e.g. :ROUND 40 / :TESLA / :−3.08%
+     Anton | 92.2px | 500 | none | normal   e.g. :WINNER
+     Anton | 74.24px | 500 | none | 1.4848px   e.g. :+$ / :+$ / :−$56,930
+     Anton | 62px | 500 | none | 2.48px   e.g. :MISTRAL / :QWEN / :GEMINI
+     Anton | 22px | 400 | none | normal   e.g. get:MON / get:MON / get:MON
+     Anton | 19px | 400 | none | normal   e.g. get:WED / get:WED / get:WED
+     Anton | 30px | 400 | none | normal   e.g. get:GET / get:FOLLOW
+     Anton | 34px | 400 | none | normal   e.g. get:$EZ / get:ON X
+     Anton | 26px | 400 | none | normal   e.g. get:OPENS AT LAUNCH / get:EVERY CALL FIRST
+
+=== a1280  (after, 1280px)
+  section heading
+     Bangers | 68px | 400 | uppercase | 0.68px   e.g. :Four AI call earnings. / :The market keeps score / :How a round works
+     Bangers | 54.4px | 400 | uppercase | 0.68px   e.g. :s
+     Bangers | 69.12px | 400 | uppercase | 0.6912px   e.g. record:Every round so far / :Meet the / :models
+     Bangers | 86px | 400 | uppercase | 0.86px   e.g. x2pSt:Bet #1:
+     Bangers | 63.64px | 400 | uppercase | 0.6364px   e.g. x2pSt:NVIDIA
+  sub-heading
+     Bangers | 50px | 400 | uppercase | 1.5px   e.g. x2pSt:Season 2
+  caption box
+     Bangers | 24px | 400 | uppercase | 0.36px   e.g. record:Each round gets a grad / :Season 1 · ranked by c / :Season 2 · not signed 
+     Bangers+Shantell Sans Light | 24px | 400 | uppercase | 0.36px   e.g. record:A 10 means all four AI / get:These companies report
+  caption kicker
+     Bangers | 16px | 400 | uppercase | 1.28px   e.g. :Call / :Close / :Ledger
+  step caption (How a round works)
+     Anton | 29.21px | 400 | uppercase | normal   e.g. :1 / :2 / :3
+     Bangers | 31.75px | 400 | uppercase | 0.47625px   e.g. :Each AI goes or before / :long / :short
+  "s" of AIs
+     Shantell Sans Light | 20.64px | 800 | none | normal   e.g. record:s / get:s
+  tab on an object
+     Anton | 17px | 400 | uppercase | 1.36px   e.g. x2pSt:At the close · Nov 8 / x2pSt:1 / x2pSt:Next earnings season
+  printed label (die, plate, slab, chip)
+     Bangers | 16px | 400 | uppercase | 1.12px   e.g. record:Mag 7 / record:Every other round · a  / record:Show all 32 in this dr
+     Anton | 28.08px | 400 | uppercase | 0.2808px   e.g. record:Amazon
+     Shantell Sans Light | 18.72px | 700 | none | normal   e.g. record:AMZN
+     Shantell Sans Light | 16.85px | 700 | uppercase | 0.50544px   e.g. record:Strong
+     Anton | 15.24px | 400 | uppercase | 0.152395px   e.g. record:Meta / record:Tesla / record:Alphabet
+     Shantell Sans Light | 10.16px | 700 | none | normal   e.g. record:META / record:TSLA / record:GOOGL
+     Shantell Sans Light | 9.14px | 700 | uppercase | 0.274312px   e.g. record:Perfect / record:Split / record:Strong
+     Bangers | 18.63px | 400 | uppercase | 0.558783px   e.g. record:Bet #1 / record:To come
+     Anton | 14.4px | 400 | uppercase | 0.288px   e.g. record:Oct 26–30 / record:Oct 9–23 / record:1
+     Anton | 11.2px | 400 | uppercase | 0.448px   e.g. record:32 rounds / record:1 / record:2 rounds
+     Anton | 11.4px | 400 | uppercase | 0.114025px   e.g. record:Exxon Mobil / record:AstraZeneca / record:Intel
+     Shantell Sans Light | 8.92px | 700 | none | normal   e.g. record:XOM / record:AZN.L / record:INTC
+     Anton | 13.81px | 400 | uppercase | 0.6905px   e.g. :W-L / :SeasonP&L / :W-L
+     Anton | 17px | 400 | uppercase | 2.72px   e.g. x2pSt:days / x2pSt:hrs / x2pSt:min
+     Anton | 24.84px | 400 | uppercase | 1.4904px   e.g. x2pSt:More
+  lit word RIGHT / WRONG
+     Anton | 34px | 400 | uppercase | 2.72px   e.g. x2pSt:Right / x2pSt:Wrong
+  table title / model name
+     Anton | 15px | 400 | uppercase | 0.45px   e.g. learn:Grok / learn:Claude / learn:GPT
+     Anton | 12px | 400 | none | normal   e.g. learn:W / learn:W / learn:W
+  number
+     Anton | 28.8px | 500 | none | normal   e.g. :GROK
+     Anton | 27.75px | 500 | none | normal   e.g. :CLAUDE
+     Anton | 27.17px | 500 | none | normal   e.g. :GPT
+     Anton | 27.25px | 500 | none | normal   e.g. :KIMI
+     Anton | 22.2px | 500 | none | normal   e.g. :THE WHOLE GAME / :1 / ::20
+     Anton | 78px | 500 | none | normal   e.g. :1 / :2 / :3
+     Anton | 40.56px | 400 | none | normal   e.g. record:6.5
+     Anton | 22.01px | 400 | none | normal   e.g. record:8 / record:5.5 / record:6
+     Anton | 19.28px | 400 | none | normal   e.g. record:5.5 / record:6 / record:4
+     Anton | 35.79px | 500 | none | 0.7158px   e.g. :GROK / :CLAUDE / :GPT
+     Anton | 15.03px | 600 | none | 0.3006px   e.g. :4.7 / :FABLE 5. / :1
+     Anton | 74.24px | 500 | none | 1.4848px   e.g. :1 / :48,480 / :1
+     Anton | 18.6px | 500 | none | 0.372px   e.g. :Shorts almost everythi / :Somehow it's working. / :Never met a small move
+     Anton | 23.83px | 500 | none | 0.4766px   e.g. :45 / :- / :27
+     Anton | 196px | 500 | none | normal   e.g. :1 / :2 / :3
+     Anton | 60px | 500 | none | 8.4px   e.g. :IN INFERENCE
+     Anton | 14px | 400 | none | normal   e.g. learn:30% / learn:40% / learn:50%
+     Anton | 16px | 400 | none | normal   e.g. learn:45 / learn:- / learn:27
+     Anton | 88px | 400 | none | normal   e.g. x2pSt:1 / x2pSt:5 / x2pSt:1
+     Anton | 35.88px | 400 | none | 1.4352px   e.g. x2pSt:#2
+     Anton | 32.2px | 400 | none | 1.288px   e.g. x2pSt:#3
+     Anton | 29.44px | 400 | none | 1.1776px   e.g. x2pSt:#4
+  body line
+     Shantell Sans Light | 16px | 800 | none | normal   e.g. x2pSt:Profits buy back $EZ. / x2pSt:The pool shrinks or ca / get:$EZ isn’t live yet. Th
+  button
+     Bangers | 17px | 400 | uppercase | 1.02px   e.g. learn:Hit rate / learn:P&L
+     Bangers | 21px | 400 | uppercase | 0.84px   e.g. get:See the full schedule
+  other
+     Anton | 213.9px | 500 | none | normal   e.g. :LONG
+     Anton | 110.2px | 500 | none | normal   e.g. :GPT
+     Anton | 211.8px | 500 | none | normal   e.g. :LONG
+     Anton | 109.1px | 500 | none | normal   e.g. :KIMI
+     Anton | 223.7px | 500 | none | normal   e.g. :SHORT
+     Anton | 116.8px | 500 | none | normal   e.g. :CLAUDE
+     Anton | 205.4px | 500 | none | normal   e.g. :SHORT
+     Anton | 114.4px | 500 | none | normal   e.g. :GROK
+     Anton | 127.8px | 500 | none | normal   e.g. :TESLA / :MARKET CLOSE
+     Anton | 316.9px | 500 | none | normal   e.g. :−3.08%
+     Anton | 115.2px | 500 | none | normal   e.g. :ROUND 40 / :TESLA / :−3.08%
+     Anton | 92.2px | 500 | none | normal   e.g. :WINNER
+     Anton | 74.24px | 500 | none | 1.4848px   e.g. :+$ / :+$ / :−$56,930
+     Anton | 62px | 500 | none | 2.48px   e.g. :MISTRAL / :QWEN / :GEMINI
+     Anton | 22px | 400 | none | normal   e.g. get:MON / get:MON / get:MON
+     Anton | 19px | 400 | none | normal   e.g. get:WED / get:WED / get:WED
+     Anton | 30px | 400 | none | normal   e.g. get:GET / get:FOLLOW
+     Anton | 34px | 400 | none | normal   e.g. get:$EZ / get:ON X
+     Anton | 26px | 400 | none | normal   e.g. get:OPENS AT LAUNCH / get:EVERY CALL FIRST
+
+READING THE TABLES
+- "section heading": one size per width below 1000px (48.36 at 390), confirmed. "NVIDIA" in the bet heading is
+  the smaller second line of the bet's own lockup (35.79 at 390, 63.64 at 1280), as before.
+  Desktop is NOT one size: 68px (top and How a round works, fitted by fitHead to their 682px column), 69.12px
+  (the four others), 86px (the bet, the owner's 2026-11-02 call). Making them one would wrap "How a round works"
+  and "Smart or lucky?" at 86, or shrink the bet against the owner's call; left as is, asked in the report.
+  Letter-spacing is now .01em on every heading (the bet's was .015em).
+- "printed label": the rows in Bangers and Shantell 700 there are the vitrine (x2p_vit.*, another builder's file):
+  the "Mag 7" and "Every other round · a drawer a week" brass plates and the "Show all 32 in this drawer" plate in
+  Bangers, each slab label's ticker (AMZN) and grade word (Strong) in Shantell 700 beside the Anton name, the
+  empty slots' "Bet #1 / To come" in Bangers. Not changed (not my files); listed for the vitrine's builder.
+- "other": the words painted onto How a round works, Meet the models and Up next (LONG, SHORT, WINNER, TESLA,
+  MARKET CLOSE, MON, GET $EZ, OPENS AT LAUNCH...), all Anton.
+- Meet the models' computed quote ("Shorts almost everything. Somehow it's working.") is printed on the chip's
+  glass in Anton (x2p_meet10.js fits it with Anton metrics, 10.75px caps at 390). It reads as a quote; kept in
+  Anton as print on a lit chip screen, since Shantell is wider and would drop it under 9px. Asked in the report.
+- "button": the rail switch (Hit rate ▸ P&L) is its own kind, 17px; the push buttons (See the full schedule,
+  Show all) one style, 21px.
+
+CHECKS (measured)
+- Overflow and wrapping, every caption box, tab, body line, button, label, heading and step caption, at 320, 360,
+  390, 430, 1280 and 1536: no new overflow, no scrollWidth growth, nothing off screen; only heights that shrank or
+  grew by a line inside their own boxes (bet caption 98 -> 74 at 390, 94 -> 99 at 1280; Meet the models'
+  Season 2 caption 78 -> 49 at 1280; the RIGHT / WRONG lines +1 to 3px; the scam line 65 -> 56 at 320). Step
+  captions unchanged (119px at 390, 150 at 1280). The Smart or lucky model names report 3px "overflow": that is
+  Anton's tall content box against a 15px line box, not clipped ink.
+- No sideways scroll at any of the six widths; no page errors or console errors.
+- GPU: 40 MB cap at device-scale-factor 2.75 (measure.js), stops every 700px down the Overview, against the same
+  page uncapped: 0.0% of blocks dropped at every stop (before the change: also 0.0%).
+- CSS files brace-balanced (x2p_more 538/538, x2p_sol 89/89, x2p_top 398/398).
+- Not checked: Safari / iOS.
+
+FILES CHANGED
+  ez/tools/v22/story/x2p_more.css   the H39 FONT SYSTEM block at the end (and the m7 sub-heading/slab-label rules)
+  ez/tools/v22/story/x2p_more.js    the schedule button's arrow drawn (.p5-ar); "Every other round" markup split
+  ez/tools/v22/story/x2p_sol.css    the switch arrow drawn (.sx-ar)
+  ez/tools/v22/story/x2p_sol.js     the switch arrow markup
+  ez/tools/v22/story/x2p_top.css    the step caption kicker at the caption box kicker's size (12 / 16px)
+  ez/v46-live-x2plus.html           rebuilt (build.py)
+Boards: ez/x2p-h39-fonts-390.png, ez/x2p-h39-fonts-1280.png (each section, before | after).

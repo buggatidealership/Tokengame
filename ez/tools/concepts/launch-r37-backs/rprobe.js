@@ -1,0 +1,1 @@
+var D=R37.recData();R37.over(D.face,'<pre style="font:9px monospace;white-space:pre-wrap;color:#000;background:#fff;margin:0;height:100%">'+R37.esc(JSON.stringify(Object.assign({},D,{card:0,face:0,rows:D.rows.map(function(r){return Object.assign({},r,{svg:r.svg.length})})})))+'</pre>','x');
