@@ -114,7 +114,7 @@ var SHEET=[
  ["99","DKNG","11/05/26","DOWN","6","DOWN","4","UP","4","DOWN","1.4","11/06/26","-21.13","","Consumer Discretionary","Consumer Services","Sports betting","FALSE"],
  ["100","TTWO","11/09/26","","","","","","","","","11/10/26","","","Communication Services","Media & Entertainment","Gaming","FALSE"],
  ["101","HIMS","11/09/26","","","","","","","","","11/10/26","","","Health Care","Health Care Equipment & Services","Healthcare","FALSE"],
- ["102","BRK.B","11/2/26","","","UP","2.5","DOWN","1.5","DOWN","0.4","","","","Financials","Financial Services","","FALSE"],
+ ["102","BRK.B","11/2/26","UP","2","UP","2.5","DOWN","1.5","DOWN","0.4","","","","Financials","Financial Services","","FALSE"],
  ["103","USAR","11/5/26","","","","","","","","","","","","Materials","Materials","Power & electrification","FALSE"],
  ["104","CRWV","11/9/26","","","","","","","","","","","","Information Technology","Software & Services","AI; Cloud","FALSE"],
  ["105","RKLB","11/9/26","","","","","","","","","","","","Industrials","Capital Goods","Space; Defense","FALSE"],
