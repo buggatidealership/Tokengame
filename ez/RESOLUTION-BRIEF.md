@@ -12,7 +12,7 @@ The short film posted on X after each round is graded. One template, filled auto
   3. The verdict: "Grok, alone. +$29,270 on the call."
   4. End card: "Check the standings. earningszn.xyz". There is no season line and no next round.
 - **No coin flip anywhere.**
-- **Models as the main characters:** big brand-mark medallions, not small rows. Four layouts are in `x2p-resolution-faceoff.jpg` (D1 split, D2 horizon, D3 cards, D4 versus); the owner picks.
+- **Models as the main characters:** big brand-mark medallions, not small rows. Four layouts are in `x2p-resolution-faceoff.jpg`. **Picked: D3 cards**, staged diegetically on the site's own ground: green light above, black, a red glow on a glossy floor, with the EZ. brand top left. The cards stand on that stage and are lit by it (`x2p-resolution-d3-stage.jpg`, `tools/concepts/resolution/cards.html`).
 
 ## 1. Goal
 - **Primary:** a follow. The viewer should feel there is a scoreboard worth checking tomorrow.
