@@ -72,10 +72,11 @@ function med(m,px){var M=MODELS[m];return '<span class="med" style="width:'+px+'
 function co(t,px){var L=CO_LOGOS[t];return '<span style="width:'+px+'px;height:'+px+'px;border-radius:50%;background:#fff;display:inline-grid;place-items:center;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)">'+(L?'<img src="../../../media/'+L.f+'" style="width:76%;height:76%;object-fit:contain">':'')+'</span>'}
 var WIN=RD.win;
 /* ---- timeline ---- */
-var T={logo:[0,1.6],rise:[1.6,2.3],q:[2.4,6.75],deal:2.6,flip:[3.5,4.05,4.6,5.15],foot:[999,1000],collapse:[6.9,7.8],edin:[8.0,8.6],cd:[8.75,9.45,10.15],earn:10.85,race:[11.05,16.55],close:16.55,boom:17.15,crown:999,glide:[999,1000],std:[18.3,21.7],next:[21.7,25.6]};
+var T={logo:[0,1.6],rise:[1.6,2.3],q:[2.4,6.75],deal:2.6,flip:[3.5,4.05,4.6,5.15],foot:[999,1000],collapse:[6.9,7.8],edin:[8.0,8.6],cd:[8.75,9.45,10.15],earn:10.85,race:[11.05,16.55],close:16.55,boom:999,crown:999,glide:[999,1000],std:[17.75,21.15],next:[21.15,25.05]};
 /* ---- layout ---- */
 var CW=252,CH=430,GAP=12,CX0=(1080-(4*CW+3*GAP))/2,CY=640;function cardX(i){return CX0+i*(CW+GAP)}
-var SX=120,EX=720,Y0=675,KS=Math.min((Y0-300)/Math.max(PMAX,1),(1050-Y0)/Math.max(NMAX,1)),CT=300,CB=1050,LGAP=58,LOGAP=46,LR=30;
+/* the race centred between the stock line (bottom ~330) and the frame's foot (1250), as tall as that band allows */
+var CT=360,CB=1230,KS=(CB-CT)/Math.max(PMAX+NMAX,1),Y0=(CT+CB)/2+(PMAX-NMAX)*KS/2,SX=120,EX=720,LGAP=58,LOGAP=46,LR=30;
 function px(j){return SX+(EX-SX)*j/(NP-1)}function py(v){return Y0-v*KS}
 /* race state at time t: index, move, per-AI P&L */
 function raceAt(t){var rq=eio(seg(t,T.race[0],T.race[1])),fi=rq*(NP-1),i0=Math.floor(fi),fr=fi-i0,mv=t<T.race[0]?0:VS[i0]+(VS[Math.min(NP-1,i0+1)]-VS[i0])*fr;return {rq:rq,fi:fi,i0:i0,mv:mv}}
@@ -128,7 +129,7 @@ function ignite(t){var k=seg(t,T.earn,T.earn+.5);if(k<=0||k>=1)return;var x=mix(
  X.globalAlpha=.8*(1-k);var r=X.createRadialGradient(x,Y0,0,x,Y0,46);r.addColorStop(0,'rgba(255,245,210,1)');r.addColorStop(1,'rgba(253,188,42,0)');X.fillStyle=r;X.beginPath();X.arc(x,Y0,46,0,6.283);X.fill();X.globalAlpha=1}
 /* ---- frame ---- */
 window.R=function(t){X.clearRect(0,0,1080,1350);['L1','L2','L3','L4','L5'].forEach(function(id){$(id).style.display='none'});
- $("bg").style.transform='scale('+(1+.012*t/25.6)+')';
+ $("bg").style.transform='scale('+(1+.012*t/25.05)+')';
  /* impact punch-in (instead of a white flash) on Earnings and a small one at the close */
  var punch=.035*Math.sin(Math.PI*seg(t,T.earn,T.earn+.45))+.018*Math.sin(Math.PI*seg(t,T.close,T.close+.35));$("st").style.transform='scale('+(1+punch)+')';
  /* 1 header: the logo big in the centre, then one spin as it rises to the top, where it stays with the name */
