@@ -428,6 +428,7 @@ Every time the owner gives pointers and an iteration lands, update this file the
   2. Write the prompt an expert in that field would have written for the same want (the specialist's terms, the constraints that matter, what good looks like), and show it to him in a few lines at the top of the reply, so he can correct the reading before it costs a round.
   3. Answer that prompt, leading the design: go past the literal ask where the want calls for it, and say where you did.
   - **Guardrails:** his explicit asks, locks and "keep this" stay unless you flag why one fights the want; a word that could be read two ways still gets a question (the ask-don't-assume rule), asked alongside the mockups; the data rules never bend.
+- **Every input is a lead, never final; "improve" is scored** (owner, 2026-11-08): beat the literal version on at least one check (comprehension questions answerable sound-off, reading load, truth, measured craft, focus, velocity) and lose on none; report the check and its before/after numbers. The full list is in CLAUDE.md.
 - **Before the first mockup,** write a three-line brief per element:
   - **story:** the conflict or stakes in one line;
   - **facts → carriers:** which visual carries each fact;
