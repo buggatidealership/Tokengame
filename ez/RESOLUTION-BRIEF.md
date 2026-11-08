@@ -14,6 +14,19 @@ The short film posted on X after each round is graded. One template, filled auto
 - **No coin flip anywhere.**
 - **Models as the main characters:** big brand-mark medallions, not small rows. Four layouts are in `x2p-resolution-faceoff.jpg`. **Picked: D3 cards**, staged diegetically on the site's own ground: green light above, black, a red glow on a glossy floor, with the EZ. brand top left. The cards stand on that stage and are lit by it (`x2p-resolution-d3-stage.jpg`, `tools/concepts/resolution/cards.html`).
 
+## Scenes locked (owner, 2026-11-08, evening)
+- **Background:** G3, Hedra's gloss with green at the top and red at the bottom (`tools/concepts/launchvid/hedra/img/bk2-gloss-gr3.jpg`), fitted to the frame.
+- **1, the company:** logo, name, "Earnings · Round n".
+- **2, logo to the header:** crouch, spin, hop, bounce; "Pre-earnings predictions".
+- **3, the cards:** drop in (stretch, squash), flip in the sheet's order (hop, spin, land, LONG/SHORT stamped on). Long cards shed green sparkles that rise, a short card drops red embers that fall. No lights from the floor.
+- **4, "Then the market answered.":** then the cards turn into their logos and fly in arcs to $0.
+- **P&L in the video:** each AI's line and dollar figure are sized by its predicted move (more exciting than identical lines); the method is explained on the site in an FAQ, never in the film.
+- Built in `tools/concepts/resolution/animA9.html`; scenes from "Earnings drop in 3-2-1" on are still drafts.
+
+## Parked: the pack opening (owner, 2026-11-08: "an interesting concept for sure", but it adds work per round and slows content velocity)
+- A sealed EZ pack (Hedra, `hedra/img/pack-ez.jpg`, $0.27) with the company on its label tears open; the cards rise out of it; flares from the floor tell each card's side before its flip; the lone contrarian is flipped last.
+- Mockups `ez/x2p-res-pack.jpg` (`resolution/pack.html`: booster, walkout, scratch ticket), film `ez/x2p-res-anim-A8.mp4` (`resolution/animA8.html`).
+
 ## 1. Goal
 - **Primary:** a follow. The viewer should feel there is a scoreboard worth checking tomorrow.
 - **Secondary:** a visit to earningszn.xyz/r/<n>.
