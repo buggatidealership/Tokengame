@@ -2,6 +2,18 @@
 
 The short film posted on X after each round is graded. One template, filled automatically for every round.
 
+
+## Decisions (owner, 2026-11-08, later)
+- **Goal:** a site visit. No token or buyback talk in these videos for now.
+- **Sides only:** LONG or SHORT, no sizes. Under the flat $100K rule, everyone on the right side makes the same money.
+- **Beats:**
+  1. The face-off: "<Company> earnings, locked before the report", the four AIs on their sides, "Who called it?"
+  2. The answer: the move at the close.
+  3. The verdict: "Grok, alone. +$29,270 on the call."
+  4. End card: "Check the standings. earningszn.xyz". There is no season line and no next round.
+- **No coin flip anywhere.**
+- **Models as the main characters:** big brand-mark medallions, not small rows. Four layouts are in `x2p-resolution-faceoff.jpg` (D1 split, D2 horizon, D3 cards, D4 versus); the owner picks.
+
 ## 1. Goal
 - **Primary:** a follow. The viewer should feel there is a scoreboard worth checking tomorrow.
 - **Secondary:** a visit to earningszn.xyz/r/<n>.

@@ -1,0 +1,68 @@
+<!doctype html><meta charset="utf-8"><title>Resolution face-off mockups</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500;600;700;800&display=swap">
+<style>
+/* Resolution video mockups (2026-11-08): the four models as the main characters. R72 Reddit, real calls and result, flat $100K.
+   d=1 split, 2 horizon, 3 cards, 4 versus; beat=calls|verdict|end. */
+:root{--tx:#f5f1ea;--mu:#b3bcb6;--up:#3ee09a;--dn:#ff4d63;--ac:#fdbc2a;--sans:Inter,system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0}body{width:1080px;height:1350px;overflow:hidden;font-family:var(--sans);color:var(--tx);background:#050806;position:relative}
+#bg{position:absolute;inset:0;background:url(../launchvid/hedra/img/res-a-reddit.jpg) center/cover}
+#sh{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,6,5,.55),rgba(4,6,5,.2) 35%,rgba(4,6,5,.35) 70%,rgba(4,6,5,.85))}
+.top{position:absolute;left:0;right:0;top:84px;display:flex;flex-direction:column;align-items:center;gap:18px;z-index:5}
+.top .co{display:flex;align-items:center;gap:16px;font:800 40px/1 var(--sans);letter-spacing:-.02em}
+.lg{width:64px;height:64px;border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden}.lg img{width:76%;height:76%;object-fit:contain}
+.top .sub{font:600 24px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mu)}
+.med{position:relative;border-radius:50%;display:grid;place-items:center;flex:none}
+.med:before{content:"";position:absolute;inset:-7%;border-radius:50%;background:conic-gradient(from 200deg,#6c7570,#e8ece9,#7d8681,#3b423e,#cfd5d1,#6c7570);box-shadow:0 30px 60px rgba(0,0,0,.6)}
+.med i{position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 6px 16px rgba(255,255,255,.18),inset 0 -10px 24px rgba(0,0,0,.45)}
+.med svg{position:relative;width:52%;height:52%}
+.med .disc{position:absolute;inset:0;border-radius:50%}
+.med.gold:before{background:conic-gradient(from 200deg,#8a5a10,#ffe08a,#c98a1a,#5e3b08,#ffd55a,#8a5a10);box-shadow:0 0 80px rgba(253,188,42,.55),0 30px 60px rgba(0,0,0,.6)}
+.med.lost{filter:grayscale(.85) brightness(.5)}
+.nm{font:800 34px/1 var(--sans);letter-spacing:-.01em;text-align:center;margin-top:22px}
+.side{font:900 40px/1 var(--mono);letter-spacing:.14em}
+.u{color:var(--up)}.d{color:var(--dn)}
+.foot{position:absolute;left:0;right:0;bottom:80px;text-align:center;z-index:5}
+.foot .l1{font:700 58px/1.05 var(--sans);letter-spacing:-.03em}.foot .l2{margin-top:16px;font:600 26px/1 var(--mono);letter-spacing:.12em;color:var(--mu);text-transform:uppercase}
+.move{font:900 150px/1 var(--mono);letter-spacing:-.06em}
+.win{font:800 64px/1 var(--mono);letter-spacing:-.04em;color:var(--up)}
+.tag{position:absolute;left:24px;top:22px;font:700 18px/1 var(--mono);letter-spacing:.1em;color:rgba(255,255,255,.55);z-index:9}
+</style>
+<div id="bg"></div><div id="sh"></div><div id="w"></div>
+<script src="../../../ez-data.js"></script>
+<script>
+var q=new URLSearchParams(location.search),D=+(q.get('d')||1),B=q.get('beat')||'calls',RN=+(q.get('r')||72);
+var R=ROUNDS.filter(function(r){return r.n===RN})[0],L=CO_LOGOS[R.ticker];
+var C=R.calls.map(function(c){var s=c[1].indexOf('DOWN')===0?-1:1;return {m:c[0],s:s,ok:s*R.a>0}});
+var longs=C.filter(function(c){return c.s>0}),shorts=C.filter(function(c){return c.s<0}),right=C.filter(function(c){return c.ok});
+var P=Math.round(Math.abs(R.a)*1000),PS='$'+P.toLocaleString('en-US'),MV=(R.a<0?'−':'+')+Math.abs(R.a).toFixed(2)+'%';
+function med(m,px,cls){var M=MODELS[m];return '<span class="med '+(cls||'')+'" style="width:'+px+'px;height:'+px+'px"><span class="disc" style="background:'+M.bg+'"></span><svg viewBox="0 0 24 24"><path fill="'+M.fg+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+' d="'+M.d+'"/>'+(M.dot?'<path fill="'+M.dotc+'" d="'+M.dot+'"/>':'')+'</svg><i></i></span>'}
+function nm(m){return MODELS[m].app}
+var V=B==='verdict',E=B==='end';
+var winners=right.map(function(c){return nm(c.m)}),wtxt=right.length===0?'The market beat all four.':right.length===1?winners[0]+', alone.':right.length===4?'All four called it.':winners.join(' & ')+'.';
+var hd='<div class="top"><div class="co"><span class="lg">'+(L?'<img src="../../../media/'+L.f+'">':'')+'</span>'+R.co+' earnings</div>'+(V?'<div class="move '+(R.a<0?'d':'u')+'" style="font-size:120px;margin-top:6px">'+MV+'</div><div class="sub">At the close · '+right.length+' of 4 called it</div>':'<div class="sub">Locked before the report</div>')+'</div>';
+var foot=V?'<div class="foot"><div class="l1">'+wtxt+'</div><div class="l2">'+(right.length?'+'+PS+' on the call · $100K trade':'')+'</div></div>':'<div class="foot"><div class="l1">Who called it?</div><div class="l2">4 AIs · long or short</div></div>';
+var body='';
+function st(c){return V?(c.ok?'gold':'lost'):''}
+if(D===1){ // split
+ body='<div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;z-index:2">'+[['LONG ▲',longs,'u','rgba(62,224,154,'],['SHORT ▼',shorts,'d','rgba(255,77,99,']].map(function(x){var won=V&&x[1].length&&x[1][0].ok,lost=V&&!won;
+  return '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;padding-top:120px;background:linear-gradient(180deg,transparent,'+x[3]+(lost?'.03':won?'.22':'.1')+') 50%,transparent);'+(lost?'opacity:.5;transform:translateY(40px)':'')+'"><div class="side '+x[2]+'">'+x[0]+'</div>'+x[1].map(function(c){return '<div style="display:flex;flex-direction:column;align-items:center">'+med(c.m,x[1].length>2?150:210,st(c))+'<div class="nm">'+nm(c.m)+'</div></div>'}).join('')+'</div>'}).join('')+'</div><div style="position:absolute;left:50%;top:330px;bottom:300px;width:2px;background:linear-gradient(transparent,rgba(255,255,255,.35),transparent);z-index:2"></div>';
+}
+if(D===2){ // horizon
+ var path='M0,0 C120,-20 200,30 260,140 S420,260 560,250 S760,270 900,265';
+ body='<div style="position:absolute;left:0;right:0;top:'+(V?640:600)+'px;height:2px;background:rgba(255,255,255,'+(V?.15:.5)+');z-index:2"></div>'+(V?'<svg style="position:absolute;left:90px;top:640px;z-index:2;overflow:visible" width="900" height="300"><path d="'+path+'" fill="none" stroke="#ff4d63" stroke-width="8" stroke-linecap="round"/><circle cx="900" cy="265" r="14" fill="#ff4d63"/></svg>':'')+
+ '<div style="position:absolute;left:0;right:0;top:'+(V?440:390)+'px;display:flex;justify-content:center;gap:56px;z-index:3">'+longs.map(function(c){return '<div style="display:flex;flex-direction:column;align-items:center">'+med(c.m,170,st(c))+'<div class="nm">'+nm(c.m)+'</div></div>'}).join('')+'</div>'+
+ '<div class="side u" style="position:absolute;left:84px;top:'+(V?400:330)+'px;z-index:3;font-size:30px">LONG ▲</div><div class="side d" style="position:absolute;left:84px;top:'+(V?670:630)+'px;z-index:3;font-size:30px">SHORT ▼</div>'+
+ '<div style="position:absolute;left:0;right:0;top:'+(V?720:680)+'px;display:flex;justify-content:center;gap:56px;z-index:3">'+shorts.map(function(c){return '<div style="display:flex;flex-direction:column;align-items:center">'+med(c.m,V?230:170,st(c))+'<div class="nm">'+nm(c.m)+'</div></div>'}).join('')+'</div>';
+}
+if(D===3){ // cards
+ body='<div style="position:absolute;left:54px;right:54px;top:'+(V?420:380)+'px;display:grid;grid-template-columns:repeat(4,1fr);gap:22px;z-index:3">'+C.map(function(c){var w=V&&c.ok,l=V&&!c.ok;
+  return '<div style="height:520px;border-radius:30px;padding:30px 16px;display:flex;flex-direction:column;align-items:center;background:'+(w?'linear-gradient(160deg,#3a2a07,#151006 60%,#2c1f05)':'rgba(10,14,12,.7)')+';border:2px solid '+(w?'#fdbc2a':'rgba(255,255,255,.1)')+';box-shadow:'+(w?'0 0 70px rgba(253,188,42,.35)':'0 30px 60px rgba(0,0,0,.5)')+';'+(l?'opacity:.45;transform:translateY(30px) rotate('+(c.m.length%2?-2:2)+'deg)':(w?'transform:translateY(-30px) scale(1.04)':''))+'">'+med(c.m,150,st(c))+'<div class="nm" style="font-size:30px">'+nm(c.m)+'</div><div style="margin-top:auto;font:900 30px/1 var(--mono);letter-spacing:.1em;padding:12px 14px;border-radius:12px;border:3px solid currentColor;transform:rotate(-6deg)" class="'+(c.s>0?'u':'d')+'">'+(c.s>0?'LONG':'SHORT')+'</div>'+(V?'<div style="margin-top:22px;font:800 28px/1 var(--mono);color:'+(c.ok?'var(--up)':'var(--dn)')+'">'+(c.ok?'+':'−')+'$'+(P/1000).toFixed(1)+'K</div>':'<div style="margin-top:22px;font:600 22px/1 var(--mono);color:var(--mu)">locked</div>')+'</div>'}).join('')+'</div>';
+}
+if(D===4){ // versus
+ var big=longs.length>=shorts.length?longs:shorts,small=big===longs?shorts:longs;
+ function team(arr,lbl,cls,x){var won=V&&arr.length&&arr[0].ok,lost=V&&!won;return '<div style="position:absolute;'+x+';top:'+(V?(won?420:470):380)+'px;width:470px;display:flex;flex-direction:column;align-items:center;z-index:3;'+(lost?'opacity:.42;filter:grayscale(.7)':'')+'"><div class="side '+cls+'" style="font-size:44px">'+lbl+'</div><div style="margin-top:34px;display:flex;justify-content:center">'+arr.map(function(c,i){return '<div style="margin-left:'+(i?-46:0)+'px">'+med(c.m,arr.length>1?170:(won?300:250),st(c))+'</div>'}).join('')+'</div><div class="nm" style="font-size:'+(arr.length>1?30:40)+'px">'+arr.map(function(c){return nm(c.m)}).join(' · ')+'</div><div style="margin-top:16px;font:800 30px/1 var(--mono);color:var(--mu)">'+arr.length+(arr.length>1?' AIs':' AI')+'</div></div>'}
+ body=team(longs,'LONG ▲','u','left:40px')+team(shorts,'SHORT ▼','d','right:40px')+(V?'':'<div style="position:absolute;left:0;right:0;top:560px;text-align:center;font:900 italic 120px/1 var(--sans);letter-spacing:-.04em;color:rgba(255,255,255,.9);z-index:4;text-shadow:0 10px 50px rgba(0,0,0,.7)">VS</div>');
+}
+if(E){hd='';foot='';body='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:5;text-align:center"><div class="lg" style="width:96px;height:96px">'+(L?'<img src="../../../media/'+L.f+'">':'')+'</div><div style="margin-top:40px;font:800 84px/1.05 var(--sans);letter-spacing:-.04em">Check the standings.</div><div style="margin-top:26px;font:800 64px/1 var(--mono);letter-spacing:-.03em;color:var(--ac)">earningszn.xyz</div><div style="margin-top:34px;font:600 26px/1 var(--mono);letter-spacing:.12em;color:var(--mu)">@EARNINGSZN</div></div>'}
+document.getElementById('w').innerHTML=hd+body+foot+'<div class="tag">'+['','D1 SPLIT','D2 HORIZON','D3 CARDS','D4 VERSUS'][D]+' · '+B.toUpperCase()+'</div>';
+</script>
