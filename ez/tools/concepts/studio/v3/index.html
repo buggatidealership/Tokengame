@@ -52,7 +52,7 @@ html,body{width:1080px;height:1350px;overflow:hidden;background:#05070b}
   <div id="skyL">
    <div id="bgw"><img id="bgi" alt=""><video id="bgv" muted playsinline preload="auto"></video></div>
    <div id="warm"></div><div id="grade"></div>
-   <img id="planet" alt="">
+   <div id="pclip" style="position:absolute;left:0;top:-400px;width:1080px;height:1128px;overflow:hidden"><img id="planet" alt="" style="margin-top:400px"></div>
   </div>
   <div id="scnL">
    <div id="beam"></div><div id="bell"></div>
@@ -158,7 +158,7 @@ var winLine=(function(){if(NOBODY)return RIGHT.length?'Nobody closest.':'Nobody 
  if(RIGHT.length===ORDER.length)return 'All '+ORDER.length+' right. '+names[0]+' closest.';
  return names[0]+' was closest.'})();
 
-/* planet: its height is the price (Y0 at the report; 230 px per 30% move, capped) */
+/* planet: clipped at the painted horizon (y 728 in the sky layer), so a planet that sinks far sets behind the city; its height is the price (Y0 at the report; 230 px per 30% move, capped) */
 var Y0=330,PPX=230/30;
 /* bell under the eave: art/bell-eave.png is 1024x857, the beam's underside at y 196, the rod at x 515 */
 var BS=.879,TILT=650,BEAMH=196*BS;
@@ -230,5 +230,13 @@ window.R=function(t){return ready.then(function(){var jobs=[];
  setTop(top,to);setCap(cap,co,dy,ctop);
  var ez=document.getElementById('ezc');if(!ez.innerHTML)ez.innerHTML=EZ.replace('class="ez"','style="width:56px;height:56px"');ez.style.opacity=t<T.end?.92:0;
  return Promise.all(jobs)})};
+/* sound cues for mix.py (read by cues.js): the report-hour crash, the bell at 4:00, one snuff per lantern as it goes out */
+window.CUES=(function(){var c=[[T.night,'clock',.2]],tOf=function(h){var lo=0,hi=1;for(var j=0;j<40;j++){var mid=(lo+hi)/2;if(hoursAt(mid)<h)lo=mid;else hi=mid}return T.night+lo*(T.bell-T.night)};
+ /* the biggest 15-min drop or jump inside the first hour of the window */
+ var bi=1,bd=0;for(var i=1;i<=4&&i<NP;i++){var d=Math.abs(VS[i]-VS[i-1]);if(d>bd){bd=d;bi=i}}c.push([tOf((bi-.5)*HRS/(NP-1)),'boom',Math.min(.5,.15+bd/30)]);
+ var outs=PE.filter(function(e){return e.pf<0}),j=0;outs.forEach(function(e){var h=HRS;for(var i=0;i<NP;i++){if(pnlAt(e.m,VS[i])/Math.abs(e.pf)<=-.95){h=i*HRS/(NP-1);break}}c.push([Math.min(tOf(h),T.bell-.2)+.13*(j++),'v3-sfx-snuff.mp3',.42])});
+ c.push([T.bell+.85+.29,'bell',.6]);c.push([T.move+.5,'whoosh',.18]);
+ if(!NOBODY){c.push([T.out+.8,'v3-sfx-lantern.mp3',.4],[T.win+.05,'chime',.35],[T.win+.2,'cash',.25])}
+ c.push([T.end+.05,'whoosh',.2]);return {dur:T.dur,bell:T.bell,move:T.move,cues:c}})();
 var _t=Q.get('t');window.R(_t?+_t:0);
 </script>
