@@ -34,5 +34,5 @@ const {chromium}=require('playwright');const fs=require('fs');const O=__dirname+
   for(const [n,r] of list)await p.screenshot({path:O+'hi-'+n+'.png',fullPage:true,clip:{x:r[0],y:r[1],width:r[2],height:r[3]}});await c.close()};
  await hi('next',[['live',R.up.secs[0].r],['dk',R.up.lvit.find(x=>x.on).r],...R.up.ur.slice(0,3).map((x,i)=>['ur'+i,x.r])],async p=>{await p.evaluate(()=>{const o=document.querySelector('.lv-it.on [data-lvx]');if(o)o.click()});await p.waitForTimeout(400);await p.evaluate(()=>{const b=[...document.querySelectorAll('[data-lvx]')].find(e=>/DraftKings/.test(e.textContent));b&&b.click()});await p.waitForTimeout(600)});
  await hi('leaders',[['hit',R.lb.tables[1].r],['sec',R.lb.tables[2].r]]);
- for(const n of ['ur0','ur1','ur2','dk','sec'])require('child_process').execSync(`ffmpeg -loglevel error -y -i ${O}hi-${n}.png -vf "format=gray,lut=y='clip((val-70)*3\\,0\\,255)'" ${O}mask-${n}.png`); // gold masks: the bright ink only
+ for(const n of ['ur0','ur1','ur2','dk','sec','hit'])require('child_process').execSync(`ffmpeg -loglevel error -y -i ${O}hi-${n}.png -vf "format=gray,lut=y='clip((val-70)*3\\,0\\,255)'" ${O}mask-${n}.png`); // gold masks: the bright ink only
  fs.writeFileSync(O+'rects.json',JSON.stringify(R,null,1));console.log(JSON.stringify(R).slice(0,3000));console.log('errs',errs.join('|')||'none');await b.close()})();
