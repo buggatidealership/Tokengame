@@ -138,7 +138,7 @@ function seek(v,t){return new Promise(function(res){var tt=Math.max(0,Math.min(t
  var done=false;function f(){if(done)return;done=true;v.removeEventListener('seeked',f);res()}v.addEventListener('seeked',f);v.currentTime=tt;setTimeout(f,3000)})}
 
 /* ---------- timeline (seconds) ---------- */
-var T={night:3.6,bell:8.4,move:11.8,out:14.8,win:17.6,end:20.4,dur:24.8};
+var T={night:3.6,bell:8.0,move:11.4,out:14.8,win:17.6,end:20.3,dur:24.9};
 function cl(x){return x<0?0:x>1?1:x}function seg(t,a,b){return cl((t-a)/(b-a))}
 function eo(x){return 1-Math.pow(1-x,3)}function eio(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}
 function nz(t,i){return Math.sin(t*7.1+i*1.7)*.5+Math.sin(t*12.9+i*3.1)*.3+Math.sin(t*3.3+i)*.2}
@@ -218,10 +218,10 @@ window.R=function(t){return ready.then(function(){var jobs=[];
  if(t<T.night+.6){top='<div class="ttl">'+coLogo(104)+RD.co+' earnings</div>';to=1-seg(t,T.night+.3,T.night+.6);
   cap='<div class="l1">4 AIs traded before earnings.</div><div class="l2" style="font-size:46px;color:#f6ead0;letter-spacing:.08em">'+SIDES+'</div>';co=1-seg(t,T.night+.35,T.night+.6)}
  else if(t<T.bell){top='<div class="clk">'+clockStr(H)+'</div>';to=seg(t,T.night+.5,T.night+.8);cap='<div class="l1">'+(SAME?'Held to the close.':'Held to the next close.')+'</div>';co=seg(t,T.night+.6,T.night+.9);dy=12*(1-co)}
- else if(t<T.move){top='';cap='<div class="l1">'+CLOSE_LBL+'.<br>The close.</div>';co=seg(t,T.bell+.6,T.bell+.95);dy=12*(1-co);ctop=700}
+ else if(t<T.move){top='';cap='<div class="l1">'+CLOSE_LBL+'.<br>The close.</div>';co=seg(t,T.bell+.3,T.bell+.6);dy=12*(1-co);ctop=700}
  else if(t<T.out){/* the move replays along the real path in 1.2 s, never through values that did not happen */
-  var u=seg(t,T.move+.5,T.move+1.7),mvr=vAt(u);
-  cap='<div class="l2" style="margin:0 0 6px">'+RD.co+' at the close</div><div class="big" style="color:'+(RD.a<0?'#ff4b3e':'#2fe08a')+'">'+sgn(pct(mvr))+'</div>';co=seg(t,T.move+.4,T.move+.6)}
+  var u=seg(t,T.move+.5,T.move+1.7),mvr=vAt(u),nk=seg(t,T.move+.5,T.move+.62);
+  cap='<div class="l2" style="margin:0 0 6px">'+RD.co+' at the close</div><div class="big" style="opacity:'+nk.toFixed(2)+';color:'+(RD.a<0?'#ff4b3e':'#2fe08a')+'">'+sgn(pct(mvr))+'</div>';co=seg(t,T.move+.15,T.move+.4)}
  else if(t<T.win){cap='<div class="l1">'+winLine+'</div>';co=seg(t,T.out+.1,T.out+.45);dy=12*(1-co)}
  else if(t<T.end){if(NOBODY){cap='<div class="l1">The market wins.</div>'}else{var kw=eo(seg(t,T.win,T.win+1.4)),wv=WIN.map(function(m){return pnl(m)}),same=wv.every(function(v){return Math.round(v)===Math.round(wv[0])});
    cap='<div class="l1">'+WIN.map(function(m){return MODELS[m].app}).join(' & ')+(WIN.length>1?' win.':' wins.')+'</div><div class="big" style="color:#fdbc2a;font-size:'+(WIN.length>1&&!same?96:120)+'px;margin-top:6px">'+(same?sgn(money(wv[0]*kw))+(WIN.length>1?'<span class="l2" style="font-size:40px;margin-left:16px;color:#fdbc2a">each</span>':''):wv.map(function(v){return sgn(money(v*kw))}).join(' · '))+'</div>'}co=seg(t,T.win,T.win+.3)}

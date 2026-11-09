@@ -134,3 +134,57 @@
 3. Zones: is relegation under 50% hit rate still the rule? Should the gold zone say "Golden ticket"?
 4. Kickoff times are the terminal's estimates (`est:1`). Should estimated times carry a "~"?
 5. Should the site land on Today every day, or on the Table on days with nothing live (weekends)?
+
+---
+
+## Revision 1, after a fresh critic
+
+The critic found every figure correct and judged the structure better than the terminal's. Verdict: fix, then ship. All 20 fixes are applied.
+
+### What changed
+
+**Truth**
+- Estimated times carry "~" and "(est.)".
+- Rounds still to come get a pre-match page: "UP NEXT", "Not in yet", "Trades due before the report".
+- LIVE shows only while the grading exchange is open. Otherwise the card reads "IN PLAY · Grades Mon ~4:00 PM".
+
+**Comprehension**
+- Every mark is named, and every result row says "<AI> won" or "Nobody won".
+- The countdown reads "Closes in 2h 17m".
+- An arrival hero leads the page: "Grok leads. +$197,880 on 91 trades, $100K each", with the line "4 AIs trade every earnings report. $100K a trade, graded at the close."
+- The scorebug is one row, and Follow on X sits in the top bar.
+
+**Copy**
+- "Trades due".
+- "missed by 27.47%".
+- Times read "2:05 to 3:05 PM".
+- "Hyperliquid ›".
+- Each day is printed once.
+
+**Craft**
+- One dimmed style for all four marks.
+- Sides of three never wrap.
+- The live match page shows the line-up, the kickoff / full time / close strip and the Hyperliquid follow.
+- The tab bar highlights the right tab.
+- Desktop lists are centred at 820px.
+- Fixture rows are links.
+- Every tap target is at least 44px.
+- Company names come with tickers ("Rocket Lab RKLB").
+- Highlights play inline.
+- The REPORT and HL maps fall back to a snapshot (maps.js) and say when they do.
+
+**Film** (33.6 s, New York time)
+- The hero holds 2.8 s and the table 3 s.
+- It shows the Hyperliquid filter.
+- It ends on the EZ. card with Follow @earningszn.
+
+### Checks after the revision
+
+| Check | Result |
+|---|---|
+| Comprehension | First screen 4 of 6, within two scrolls 6 of 6 (terminal: 1 of 6 and 2 of 6). Every mark is named. |
+| Reading load | 88 words on the first screen, 232 on the whole landing page (terminal: 360). |
+| Truth | Clean, with estimates labelled. |
+| Craft | 0 overlaps and no sideways scroll across 10 views. Siblings equal. One clip at 390 ("Applied Materials AMAT" beside the pill). Ellipses on long names at 320. |
+| Focus | About 53% of the first screen. |
+| Speed | 436 KB, 435 DOM nodes, about 0.3 s. $0 Hedra. |
