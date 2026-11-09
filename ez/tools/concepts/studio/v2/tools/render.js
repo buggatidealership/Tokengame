@@ -4,4 +4,4 @@ const {chromium}=require('playwright');const fs=require('fs');const out=process.
  await p.goto('http://localhost:8996/tools/concepts/studio/v2/index.html');await p.evaluate(()=>window.READY);await p.waitForTimeout(800);
  fs.mkdirSync(out,{recursive:true});let k=0;
  for(let f=Math.round(from*fps);f<=Math.round(to*fps);f++){await p.evaluate(t=>window.R(t),f/fps);await p.screenshot({path:`${out}/f${String(k++).padStart(4,'0')}.jpg`,type:'jpeg',quality:92})}
- console.log('frames',k,'errs',errs.join('|')||'none');await b.close()})();
+ fs.writeFileSync(out+'/T.json',JSON.stringify(await p.evaluate(()=>window.__T)));console.log('frames',k,'errs',errs.join('|')||'none');await b.close()})();
