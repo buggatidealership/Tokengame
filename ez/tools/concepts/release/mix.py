@@ -26,13 +26,15 @@ cues=[(0.15,'tap',.45),(0.95,'whoosh',.25),(1.35,'tap',.5),(2.75,'whoosh',.35),(
 # One sound per section change; every effect levelled to its role's peak and placed so its own peak lands on the motion; runs of pops climb in pitch.
 ROLE=dict(word=[.15,1.35],strike=[1.12],cut=[3.0,8.0,11.65,14.0,18.0,21.9],lift=[3.85,9.5,15.35],card=[18.95,19.13,19.31],land=[4.05,10.05,15.95],
  pop=[[4.4,4.9],[5.9,6.4],[12.450,12.565,12.680,12.795,12.910,13.025,13.140,13.255,13.370,13.485],[20.00,20.22,20.44],[20.75,20.97,21.19]],gold=[10.35],money=[16.45],end=[22.05])
-PEAK=dict(word=.07,strike=.2,cut=.24,lift=.2,card=.14,land=.16,pop=.15,gold=.21,money=.25,end=.6)
+if os.environ.get('POL'): # the polished cut: AIs pop one after the other, LONG and SHORT land on their own sound, the 2 v 2 score, six sectors
+  ROLE['pop']=[[4.4,4.52],[5.9,6.02],[6.95],[12.450,12.565,12.680,12.795,12.910,13.025],[20.00,20.22,20.44],[20.75,20.97,21.19]];ROLE['side']=[4.9,6.4]
+PEAK=dict(side=.2,word=.07,strike=.2,cut=.24,lift=.2,card=.14,land=.16,pop=.15,gold=.21,money=.25,end=.6)
 SETS={'none':{}, # role: file (None = silent)
- 'soft':dict(word='sfx-tap',strike='sfx-strike',cut='r11-swell',lift='r11-thump',card='r11-thump',land='r11-bubble',pop='r11-bubble',gold='r11-sparkle',money='r11-sparkle',end='sfx-boom'),
- 'glass':dict(word='sfx-tap',strike='sfx-strike',cut='r11-slide',lift='r11-slide',card='r11-ping',land='r11-pluck',pop='r11-ping',gold='sfx-chime',money='sfx-chime',end='sfx-boom'),
- 'floor':dict(word='sfx-tap',strike='sfx-strike',cut='r11-swell',lift='r11-card',card='r11-card',land='r11-knock',pop='r11-flap',gold='sfx-coin',money='r11-kaching',end='sfx-boom'),
- 'quiet':dict(word='sfx-tap',strike='sfx-strike',cut=None,lift='r11-thump',card=None,land=None,pop='r11-knock',gold='r11-sparkle',money='r11-sparkle',end='sfx-boom'),
- 'pluck':dict(word='sfx-tap',strike='sfx-strike',cut='r11-tape',lift='r11-swell',card='r11-pluck',land='r11-pluck',pop='r11-pluck',gold='r11-sparkle',money='r11-sparkle',end='sfx-boom')}
+ 'soft':dict(side='r11-thump',word='sfx-tap',strike='sfx-strike',cut='r11-swell',lift='r11-thump',card='r11-thump',land='r11-bubble',pop='r11-bubble',gold='r11-sparkle',money='r11-sparkle',end='sfx-boom'),
+ 'glass':dict(side='r11-pluck',word='sfx-tap',strike='sfx-strike',cut='r11-slide',lift='r11-slide',card='r11-ping',land='r11-pluck',pop='r11-ping',gold='sfx-chime',money='sfx-chime',end='sfx-boom'),
+ 'floor':dict(side='r11-knock',word='sfx-tap',strike='sfx-strike',cut='r11-swell',lift='r11-card',card='r11-card',land='r11-knock',pop='r11-flap',gold='sfx-coin',money='r11-kaching',end='sfx-boom'),
+ 'quiet':dict(side='r11-knock',word='sfx-tap',strike='sfx-strike',cut=None,lift='r11-thump',card=None,land=None,pop='r11-knock',gold='r11-sparkle',money='r11-sparkle',end='sfx-boom'),
+ 'pluck':dict(side='r11-pluck',word='sfx-tap',strike='sfx-strike',cut='r11-tape',lift='r11-swell',card='r11-pluck',land='r11-pluck',pop='r11-pluck',gold='r11-sparkle',money='r11-sparkle',end='sfx-boom')}
 def place(t,name,peak,semi=0):
   s=load(H+name+'.mp3');m1=np.abs(s).max()
   if semi:
