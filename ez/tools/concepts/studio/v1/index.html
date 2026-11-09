@@ -1,0 +1,208 @@
+<!doctype html><meta charset="utf-8"><title>V1 Keynote type</title>
+<!-- V1 · "Keynote type": the resolution video as an Apple-keynote film of type and numbers only.
+     Black, one typeface (Inter Display), one statement per beat. window.R(t) draws frame t (seconds), 1080x1350.
+     ?r=<round> picks another round (default R72 Reddit). ?t=<s> shows one frame for checking.
+     Every figure is computed from ez-data.js and paths.js; nothing is typed. -->
+<style>
+:root{--f:"Inter Display",Inter,system-ui,sans-serif;--bg:#000;--tx:#f5f5f7;--mu:#86868b;--dim:#48484d;--up:#03c870;--dn:#ff3a31;--gd:#fdbc2a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1350px;overflow:hidden;background:var(--bg)}
+body{font-family:"Inter Display","Inter",system-ui,sans-serif;color:var(--tx);position:relative;font-feature-settings:"tnum" 1,"ss01" 1;-webkit-font-smoothing:antialiased}
+.e{position:absolute;white-space:nowrap;will-change:transform,opacity}
+.c{left:0;right:0;text-align:center}
+#chart{position:absolute;left:0;top:0}
+#S{position:absolute;left:0;top:0;width:1080px;height:1350px}
+</style>
+<div id="S"></div>
+<svg id="chart" width="1080" height="1350"></svg>
+<script src="../../../../ez-data.js"></script>
+<script src="../../resolution/paths.js"></script>
+<script>
+/* ---------- data (template: all of this is computed per round) ---------- */
+var Q=new URLSearchParams(location.search),RN=+(Q.get('r')||72);
+var ALL=[].concat(ROUNDS,typeof UPCOMING!=='undefined'?UPCOMING:[],typeof PENDING!=='undefined'?PENDING:[]);
+var RD=ROUNDS.filter(function(r){return r.n===RN})[0];
+function side(c){return c[1].indexOf('DOWN')===0?-1:1}
+function mag(c){return parseFloat(String(c[1]).replace(/[^0-9.]/g,''))}
+var CALLS=RD.calls.map(function(c){return {m:c[0],s:side(c),g:mag(c)}});
+var nUp=CALLS.filter(function(c){return c.s>0}).length,nDn=CALLS.length-nUp;
+/* order: the majority side first, the lone or minority side last (sheet order inside each side) */
+var majS=nUp>=nDn?1:-1;CALLS=CALLS.filter(function(c){return c.s===majS}).concat(CALLS.filter(function(c){return c.s!==majS}));
+var mvS=RD.a>0?1:(RD.a<0?-1:0);
+var RIGHT=CALLS.filter(function(c){return c.s===mvS});
+var WIN=(RD.win&&!/NO|NOBODY/i.test(RD.win))?RD.win.split(/\s*&\s*/):[];
+function app(m){return MODELS[m].app}
+/* P&L in the videos: $10,000 per 1% the AI predicted x side x the move */
+function pnl(c,v){return 10000*c.g*c.s*v/100}
+function money(v){var a=Math.round(Math.abs(v));return (v<0?'−':'+')+'$'+a.toLocaleString('en-US')}
+function pct(v){return (v<0?'−':(v>0?'+':''))+Math.abs(v).toFixed(2)+'%'}
+function dt(s){var m=String(s).match(/(\d+)\/(\d+)\/(\d+)/);return new Date(Date.UTC(2000+(+m[3]%100),+m[1]-1,+m[2]))}
+function wd(d,long){return d.toLocaleDateString('en-US',{weekday:long?'long':'short',timeZone:'UTC'})}
+function md(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'})}
+var dCalled=dt(RD.called),dRes=dt(RD.resolves);
+/* next: the first trade day after this round's close; companies biggest first (CAPS) */
+var later=ALL.filter(function(r){return r.called&&dt(r.called)>dRes});
+var nd=later.reduce(function(a,r){var d=dt(r.called);return !a||d<a?d:a},null);
+var NEXT=nd?later.filter(function(r){return +dt(r.called)===+nd}).sort(function(a,b){return (CAPS[b.ticker]||0)-(CAPS[a.ticker]||0)}):[];
+var NEXTW=NEXT.slice(0,2).map(function(r){return r.co});
+var nextLine=NEXTW.join(' · ')+(NEXT.length>2?' +'+(NEXT.length-2):'');
+var nextDay=nd?wd(nd,true)+', '+md(nd):'';
+var CO_C=(CO_LOGOS[RD.ticker]&&CO_LOGOS[RD.ticker].c)||'#f5f5f7';
+if(/^#(0|1|2)/.test(CO_C))CO_C='#f5f5f7'; /* a near-black brand colour cannot read on black: fall back to white */
+
+/* the hook line (thumbnail) */
+var NC=['','One','Two','Three','Four'][CALLS.length],NW=['No','One','Two','Three','Four'],sw=mvS>0?'long':'short';
+var HOOK=RIGHT.length===1?'Only one was '+sw+'.':(RIGHT.length===0?(mvS===0?'Flat at the close.':'None was '+sw+'.'):(RIGHT.length===CALLS.length?'All '+NC.toLowerCase()+' were '+sw+'.':NW[RIGHT.length]+' were '+sw+'.'));
+/* the verdict */
+var VERD=WIN.length===0?'Nobody won.':(WIN.length===1?app(WIN[0])+' won.':WIN.map(app).join(' and ')+' won.');
+var byM={};CALLS.forEach(function(c){byM[c.m]=c});
+var WINC=WIN.map(function(m){return byM[m]});
+var REST=CALLS.filter(function(c){return WIN.indexOf(c.m)<0}).sort(function(a,b){return pnl(b,RD.a)-pnl(a,RD.a)});
+
+/* intraday path: Hyperliquid 15-min closes from the report to the next close, scaled so the last point is the sheet's move */
+var PT=typeof PATHS!=='undefined'&&PATHS[RN],VS=null,NP=0,OPEN=0;
+if(PT){var pp=PT.path;NP=pp.length;var kk=(RD.a/100)/((pp[NP-1]/PT.p0)-1);VS=pp.map(function(v){return (v/PT.p0-1)*kk*100});VS[NP-1]=RD.a;OPEN=Math.round((NP-1)*17.75/24)}
+var closeDay=wd(dRes,true);
+
+/* ---------- timeline (s) ---------- */
+var T={h0:0,h1:4.2,            /* hook / thumbnail, held */
+       b0:4.5,l0:5.65,ls:.42,b2:9.6, /* before earnings + the four trades */
+       c0:9.9,cA:10.7,cB:11.55,cC:12.25,cD:14.5,bell:14.5,c1:15.1, /* held to the close: the line, then the number alone */
+       v0:16.2,vc:17.15,vr:18.2,v1:21.4, /* verdict */
+       e0:21.65,e1:25.0};
+var DUR=T.e1;
+
+/* ---------- motion curves ---------- */
+function cl(x){return x<0?0:x>1?1:x}function sg(t,a,b){return cl((t-a)/(b-a))}
+function oQ(x){return 1-Math.pow(1-x,5)}            /* ease-out quint: arrivals */
+function iC(x){return x*x*x}                         /* ease-in cubic: exits */
+function ioS(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2} /* ease-in-out cubic: moves */
+function lerp(a,b,x){return a+(b-a)*x}
+/* a word that arrives (rise 28px, 0.55 s) and leaves (lift 18px, 0.32 s) */
+function vis(t,a,b,rise){rise=rise==null?28:rise;var i=oQ(sg(t,a,a+.55)),o=b==null?0:iC(sg(t,b-.32,b));return {o:i*(1-o),y:(1-i)*rise-o*18}}
+function el(txt,css,v){if(v.o<=0.001)return '';return '<div class="e" style="'+css+';opacity:'+v.o.toFixed(3)+';transform:translateY('+v.y.toFixed(1)+'px)">'+txt+'</div>'}
+
+/* fit a line of type to a width by measuring it */
+var MC=document.createElement('canvas').getContext('2d');
+function fit(txt,weight,max,maxPx){MC.font=weight+' 100px "Inter Display"';var w=MC.measureText(txt).width;return Math.min(maxPx,Math.floor(100*max/w))}
+
+var LOGO='<svg width="W" height="W" viewBox="0 0 400 400"><circle cx="198.7" cy="199.4" r="198.2" fill="#04070e"/><path fill="#f8f0d9" d="M116.8,88.0 L86.2,152.0 L102.1,152.0 L55.0,274.5 L154.2,274.5 L188.5,225.8 L128.7,225.8 L137.5,204.0 L170.2,203.5 L193.2,162.0 L149.1,162.0 L154.8,145.0 L143.4,138.5 L217.9,138.2 L192.2,182.0 L234.9,182.0 L181.5,250.8 L136.0,315.8 L272.5,315.8 L292.5,265.0 L230.4,265.0 L328.2,130.8 L225.1,130.8 L253.0,87.8 Z"/><path fill="#03c870" d="M146.2,287.0 L133.0,287.0 L106.5,327.2 L119.0,326.5 Z M86.8,169.5 L74.8,169.5 L29.5,282.2 L43.7,282.2 Z M105.8,92.5 L89.5,95.8 L55.5,169.2 L69.0,169.2 Z"/><path fill="#ff3a31" d="M304.5,259.0 L300.5,269.5 L313.0,268.2 L317.0,258.8 Z M361.5,126.0 L344.0,126.5 L269.5,235.8 L256.0,257.5 L276.2,257.0 Z M279.0,87.8 L266.7,87.5 L251.5,117.2 L262.2,119.0 Z"/><path fill="#fdbc2a" d="M334.2,281.2 L302.0,281.2 L288.2,315.8 L321.0,315.5 Z"/></svg>';
+
+/* ---------- the line (path index <-> film time): the plunge, the night compressed, the session ---------- */
+function idxAt(t){if(!VS)return 0;var a=OPEN<8?Math.round(NP*.06):6;
+ if(t<T.cA)return 0;if(t<T.cB)return a*ioS(sg(t,T.cA,T.cB));if(t<T.cC)return a+(OPEN-a)*sg(t,T.cB,T.cC);return OPEN+(NP-1-OPEN)*ioS(sg(t,T.cC,T.cD))}
+/* Catmull-Rom through the 15-minute closes: one continuous, deliberate stroke */
+function smooth(P){if(P.length<2)return 'M'+P[0][0]+','+P[0][1];var d='M'+P[0][0].toFixed(1)+','+P[0][1].toFixed(1);
+ for(var i=0;i<P.length-1;i++){var p0=P[i-1]||P[i],p1=P[i],p2=P[i+1],p3=P[i+2]||p2,s=.5/3;
+  d+='C'+(p1[0]+(p2[0]-p0[0])*s).toFixed(1)+','+(p1[1]+(p2[1]-p0[1])*s).toFixed(1)+' '+(p2[0]-(p3[0]-p1[0])*s).toFixed(1)+','+(p2[1]-(p3[1]-p1[1])*s).toFixed(1)+' '+p2[0].toFixed(1)+','+p2[1].toFixed(1)}
+ return d}
+function vAt(k){var a=Math.floor(k);return a>=NP-1?VS[NP-1]:VS[a]+(VS[a+1]-VS[a])*(k-a)}
+/* New York clock along the path: 4:05 pm on the trade day to 4:00 pm at the close */
+function clockAt(k){var mins=16*60+5+Math.round(k/(NP-1)*(24*60-5)),day=mins>=24*60?dRes:dCalled,mm=mins%(24*60),h=Math.floor(mm/60),mi=mm%60;
+ return wd(day,false)+' '+((h%12)||12)+':'+String(mi).padStart(2,'0')+(h>=12?' PM':' AM')}
+
+var MV=pct(RD.a),MVW=fit(MV,800,880,300);
+/* the giant number has three places: over the line, alone at the centre (the bell), and up top as the verdict's context */
+MC.font='800 100px "Inter Display"';MC.letterSpacing='-5px';var MVU=MC.measureText(MV).width/100;MC.letterSpacing='0px';
+var HERO={f:MVW,l:(1080-MVW*MVU)/2,t:Math.round((1350-MVW)/2-60)};
+function numPos(t){var A={f:MVW*.92,l:110,t:310},C={f:64,l:110,t:190},h=ioS(sg(t,T.bell+.25,T.bell+.95)),m=ioS(sg(t,T.v0,T.v0+.8)),P1={f:lerp(A.f,HERO.f,h),l:lerp(A.l,HERO.l,h),t:lerp(A.t,HERO.t,h)};
+ return {f:lerp(P1.f,C.f,m),l:lerp(P1.l,C.l,m),t:lerp(P1.t,C.t,m)}}
+
+window.R=function(t){
+ var o='',svg='';
+ /* 1 · HOOK (also the X thumbnail: frame 0 is complete) */
+ if(t<T.h1+.05){var v=vis(t,-1,T.h1,0);
+  var Y=Math.round(675-(334+MVW)/2+62-30);
+  o+=el(RD.co,'top:'+Y+'px;font:700 128px/1 var(--f);letter-spacing:-.035em',v).replace('class="e"','class="e c"');
+  o+=el(MV,'top:'+(Y+166)+'px;font:800 '+MVW+'px/1 var(--f);letter-spacing:-.05em;color:var(--dn)'.replace('var(--dn)',RD.a<0?'var(--dn)':'var(--up)'),v).replace('class="e"','class="e c"');
+  o+=el(HOOK,'top:'+(Y+166+MVW+56)+'px;font:600 72px/1 var(--f);letter-spacing:-.025em',v).replace('class="e"','class="e c"');
+  o+=el(NC+' AIs traded','top:'+(Y-62)+'px;font:600 44px/1 var(--f);letter-spacing:-.015em;color:var(--mu)',v).replace('class="e"','class="e c"');
+  o+=el(LOGO.replace(/W/g,64),'left:508px;top:1206px',v);
+ }
+ /* 2 · BEFORE EARNINGS: the four trades as words */
+ if(t>=T.b0&&t<T.b2+.05){
+  o+=el(wd(dCalled,true)+', '+md(dCalled),'left:110px;top:290px;font:500 34px/1 var(--f);color:var(--mu)',vis(t,T.b0,T.b2,20));
+  o+=el('Before earnings.','left:110px;top:340px;font:700 92px/1 var(--f);letter-spacing:-.035em',vis(t,T.b0,T.b2));
+  CALLS.forEach(function(c,i){var a=T.l0+i*T.ls,y=560+i*150,v=vis(t,a,T.b2,34);
+   o+=el(app(c.m),'left:110px;top:'+y+'px;font:600 88px/1 var(--f);letter-spacing:-.03em',v);
+   o+=el(c.s>0?'Long':'Short','right:110px;top:'+y+'px;font:700 88px/1 var(--f);letter-spacing:-.03em;color:'+(c.s>0?'var(--up)':'var(--dn)'),v);
+  });
+ }
+ /* 3 · HELD TO THE CLOSE: one line, drawn with intent; the move as one giant number */
+ var big=null;
+ if(t>=T.c0&&t<T.v0+1){
+  var vh=vis(t,T.c0,T.c1);
+  var lbl='Held to '+closeDay+'’s close.';
+  o+=el(lbl,'left:110px;top:170px;font:700 72px/1 var(--f);letter-spacing:-.03em',vh);
+  var k=VS?idxAt(t):0,cur=VS?vAt(k):RD.a*ioS(sg(t,T.cA,T.cD)),done=t>=T.bell;
+  /* chart band */
+  var X0=110,X1=970,Y0=770,Y1=1140,lo=Math.min(0,Math.min.apply(null,VS||[RD.a])),hi=Math.max(0,Math.max.apply(null,VS||[RD.a]));
+  var sp=hi-lo||1;lo-=sp*.04;hi+=sp*.04;
+  function sx(i){return X0+(X1-X0)*i/(NP-1)}function sy(v){return Y0+(Y1-Y0)*(hi-v)/(hi-lo)}
+  var vo=vh.o;
+  if(!VS&&vo>0){var pr=ioS(sg(t,T.cA,T.cD)),dn=t>=T.bell,yy=960,xx=X0+(X1-X0)*pr;
+   svg+='<g opacity="'+vo.toFixed(3)+'"><line x1="'+X0+'" x2="'+X1+'" y1="'+yy+'" y2="'+yy+'" stroke="#2c2c2e" stroke-width="4" stroke-linecap="round"/><line x1="'+X0+'" x2="'+xx+'" y1="'+yy+'" y2="'+yy+'" stroke="#f5f5f7" stroke-width="6" stroke-linecap="round"/>';
+   svg+='<circle cx="'+X0+'" cy="'+yy+'" r="9" fill="#f5f5f7"/><text x="'+X0+'" y="'+(yy-36)+'" fill="#86868b" font-family="Inter Display" font-weight="500" font-size="30">Earnings out</text>';
+   svg+='<circle cx="'+X1+'" cy="'+yy+'" r="9" fill="#2c2c2e"/><text x="'+X1+'" y="'+(yy+62)+'" text-anchor="end" fill="'+(dn?'#f5f5f7':'#6e6e73')+'" font-family="Inter Display" font-weight="'+(dn?700:500)+'" font-size="30">Close \u00b7 '+wd(dRes,false)+'</text>';
+   svg+='<circle cx="'+xx+'" cy="'+yy+'" r="'+(dn?13:11)+'" fill="#f5f5f7"/></g>'}
+  if(VS&&vo>0){
+   var red=cl((t-T.bell)/.45);
+   var col='rgb('+Math.round(lerp(245,255,red))+','+Math.round(lerp(245,58,red))+','+Math.round(lerp(247,49,red))+')';
+   svg+='<g opacity="'+vo.toFixed(3)+'">';
+   svg+='<line x1="'+X0+'" x2="'+X1+'" y1="'+sy(0)+'" y2="'+sy(0)+'" stroke="#2c2c2e" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round"/>';
+   /* the open, a hairline tick, only once the line reaches it */
+   if(k>=OPEN){var oo=cl((k-OPEN)/3);svg+='<line x1="'+sx(OPEN)+'" x2="'+sx(OPEN)+'" y1="'+(Y0-6)+'" y2="'+(Y1+12)+'" stroke="#2c2c2e" stroke-width="2" opacity="'+oo+'"/><text x="'+sx(OPEN)+'" y="'+(Y0-22)+'" text-anchor="middle" fill="#6e6e73" font-family="Inter Display" font-weight="500" font-size="28" opacity="'+oo+'">Open</text>'}
+   if(t>=T.cA){var pts=[[sx(0),sy(VS[0])]];for(var j=1;j<=Math.floor(k);j++)pts.push([sx(j),sy(VS[j])]);if(k>Math.floor(k))pts.push([sx(k),sy(cur)]);var d=smooth(pts);
+    svg+='<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>'}
+   var e=cl(sg(t,T.c0+.3,T.c0+.8));
+   svg+='<circle cx="'+sx(0)+'" cy="'+sy(VS[0])+'" r="9" fill="#f5f5f7" opacity="'+e+'"/>';
+   svg+='<text x="'+sx(0)+'" y="'+(sy(VS[0])-34)+'" fill="#86868b" font-family="Inter Display" font-weight="500" font-size="30" opacity="'+e+'">Earnings out · '+clockAt(0)+'</text>';
+   if(t>=T.cA){svg+='<circle cx="'+sx(k)+'" cy="'+sy(cur)+'" r="'+(done?13:11)+'" fill="'+col+'"/>';
+    var tl=done?'Close · '+clockAt(NP-1):clockAt(k),anc=sx(k)>X1-160?'end':(sx(k)<X0+120?'start':'middle');
+    svg+='<text x="'+(anc==='end'?X1+14:sx(k))+'" y="'+(sy(cur)+62)+'" text-anchor="'+anc+'" fill="'+(done?'#f5f5f7':'#86868b')+'" font-family="Inter Display" font-weight="'+(done?700:500)+'" font-size="30">'+tl+'</text>'}
+   svg+='</g>';
+  }
+  /* the giant number: white while the night runs, red (or green) at the bell; then it travels up to label the verdict */
+  var hold=cl((t-T.bell)/.45),neg=RD.a<0;
+  var nc=hold>0?(neg?'rgb(255,'+Math.round(lerp(245,58,hold))+','+Math.round(lerp(247,49,hold))+')':'rgb('+Math.round(lerp(245,3,hold))+','+Math.round(lerp(245,200,hold))+','+Math.round(lerp(247,112,hold))+')'):'#f5f5f7';
+  var bo=t<T.cA?oQ(sg(t,T.c0+.2,T.c0+.75)):1,hp=numPos(t);
+  if(t<T.v0){o+='<div class="e" style="left:'+hp.l.toFixed(1)+'px;top:'+hp.t.toFixed(1)+'px;font:800 '+hp.f.toFixed(1)+'px/1 var(--f);letter-spacing:-.05em;color:'+nc+';opacity:'+(t<T.cA?bo*vh.o:1).toFixed(3)+'">'+(t<T.cA?pct(0):pct(cur))+'</div>';
+   o+=el('at '+closeDay+'\u2019s close','top:'+(HERO.t+MVW+44).toFixed(0)+'px;font:500 44px/1 var(--f);color:var(--mu)',vis(t,T.bell+.7,T.v0,16)).replace('class="e"','class="e c"');}
+ }
+ /* 4 · VERDICT: the move travels up as the context line; the winner's P&L counts up large */
+ if(t>=T.v0&&t<T.v1+.05){
+  var vo2=1-iC(sg(t,T.v1-.32,T.v1)),hp2=numPos(t);
+  o+='<div class="e" style="left:'+hp2.l.toFixed(1)+'px;top:'+hp2.t.toFixed(1)+'px;font:800 '+hp2.f.toFixed(1)+'px/1 var(--f);letter-spacing:-.05em;color:'+(RD.a<0?'var(--dn)':'var(--up)')+';opacity:'+vo2.toFixed(3)+'">'+MV+'</div>';
+  o+=el(RD.co+' at '+closeDay+'’s close','left:110px;top:140px;font:500 34px/1 var(--f);color:var(--mu)',vis(t,T.v0+.45,T.v1,14));
+  o+=el(VERD,'left:110px;top:400px;font:700 '+fit(VERD,700,860,112)+'px/1 var(--f);letter-spacing:-.04em',vis(t,T.vc-.55,T.v1));
+  if(WINC.length){var cu=oQ(sg(t,T.vc,T.vc+1.5));
+   if(WINC.length===1){var w=WINC[0],pv=pnl(w,RD.a);var wf=fit(money(pv),800,860,250);
+    o+=el(money(pv*cu),'left:104px;top:560px;font:800 '+wf+'px/1 var(--f);letter-spacing:-.05em;color:'+(pv>=0?'var(--up)':'var(--dn)'),vis(t,T.vc,T.v1,40));
+   }else{var tf=Math.min.apply(null,WINC.map(function(w){return fit(money(pnl(w,RD.a)),800,520,140)}));
+    WINC.forEach(function(w,i){var pv=pnl(w,RD.a),y=575+i*(tf+30),v=vis(t,T.vc+i*.15,T.v1,40);
+    o+=el(app(w.m),'left:110px;top:'+(y+tf*.3)+'px;font:600 64px/1 var(--f);letter-spacing:-.025em',v);
+    o+=el(money(pv*cu),'right:110px;top:'+y+'px;font:800 '+tf+'px/1 var(--f);letter-spacing:-.05em;color:'+(pv>=0?'var(--up)':'var(--dn)'),v)})}
+  }
+  /* the rest of the field, quieter */
+  var ry=WINC.length>1?620+WINC.length*170:(WINC.length?900:600);
+  REST.forEach(function(c,i){var v=vis(t,T.vr+i*.18,T.v1,20),pv=pnl(c,RD.a),y=ry+i*84;
+   o+=el(app(c.m),'left:110px;top:'+y+'px;font:600 52px/1 var(--f);letter-spacing:-.02em;color:#a1a1a6',v);
+   o+=el(money(pv),'right:110px;top:'+y+'px;font:700 52px/1 var(--f);letter-spacing:-.03em;color:'+(pv>=0?'var(--up)':'var(--dn)'),v)});
+ }
+ /* 5 · END: the logo, the address, what's next */
+ if(t>=T.e0){var ve=vis(t,T.e0,null,24);
+  o+=el(LOGO.replace(/W/g,150),'left:465px;top:360px',ve);
+  o+=el('earningszn.xyz','top:560px;font:700 92px/1 var(--f);letter-spacing:-.035em',ve).replace('class="e"','class="e c"');
+  if(NEXT.length){var vn=vis(t,T.e0+.9,null,22);
+   o+=el('Next','top:790px;font:500 34px/1 var(--f);color:var(--mu)',vn).replace('class="e"','class="e c"');
+   o+=el(nextLine,'top:844px;font:700 76px/1 var(--f);letter-spacing:-.03em',vn).replace('class="e"','class="e c"');
+   o+=el(nextDay,'top:942px;font:600 44px/1 var(--f);letter-spacing:-.02em;color:var(--mu)',vn).replace('class="e"','class="e c"');}
+ }
+ /* a slow push-in per beat (the camera breathing), never on the chart beat, whose line must stay exact */
+ var pu=t<T.h1+.05?1+.022*sg(t,0,T.h1):(t<T.b2+.05?1+.014*sg(t,T.b0,T.b2):(t<T.v0?1:(t<T.v1+.05?1+.018*sg(t,T.v0+.75,T.v1):1+.014*sg(t,T.e0,T.e1))));
+ var SS=document.getElementById('S');SS.style.transform='scale('+pu.toFixed(4)+')';SS.style.transformOrigin='540px 675px';
+ SS.innerHTML=o;document.getElementById('chart').innerHTML=svg;
+ return Promise.resolve();
+};
+window.DUR=DUR;window.R(Q.get('t')!=null?+Q.get('t'):0);
+</script>
