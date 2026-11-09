@@ -104,3 +104,52 @@ There is no manual layout work per round, because the panes sit on the fixed for
 - `shot.js`: stills at given times.
 - Render with `PAGE=../studio/v3/index.html node render.js <dir> 30 0 24.8` from `tools/concepts/launchvid/`.
 - Outputs: `ez/x2p-studio-v3.mp4` and `ez/x2p-studio-v3-board.jpg`.
+
+---
+
+## Revision 1, after a fresh critic (producer's note)
+
+Verdict: fix, then ship. It was the better film to scroll past but the weaker record: the planet sank on the clock rather than with the price, sizes were missing, losers were unreadable, the winner was held for 1 s, the bell broke the world, and there was a black band at the top. All 12 fixes are in. This round cost $0.98; V3 has spent about $4.41 in total.
+
+**The art is now the chart**
+- The world was regenerated without the planet.
+- A keyed Reddit planet (orange, Snoo's antenna) sits at the price on every frame: 7.67 px per 1%, taken from the PATHS[72] Hyperliquid 15-minute closes and scaled to the sheet.
+- Each lantern burns at its AI's running P&L. The three long lanterns gutter during the report hour, when the real crash happened.
+- The clock slows for the report hour.
+- The sky keeps clock time: a new Kling day clip plus a night grade done in code.
+
+**Opening:** 3.6 s, moving from frame 0, reading "Reddit earnings / 4 AIs traded before earnings. / 3 long, 1 short." The counts are computed.
+
+**Truth and colour**
+- Sizes are on the lanterns.
+- Sides are in ink; green and red are used only for P&L and the move.
+- Losers' paper is dimmed, with each loss in bright red and a keyline.
+- One formatter serves the lantern, the caption and the end card, so the figures always match.
+- The move counter runs along the real path: −16.71% first, ending at −29.27%.
+
+**Winner and end card**
+- "Grok wins. +$5,269" holds 2.7 s.
+- The end card leads with "Grok +$5,269" in gold.
+
+**Shots and art**
+- **Bell:** repainted hanging from the rooftop eave. One continuous tilt up, a pendulum swing, and "Oct 30 · 4:00 PM. The close."
+- **Top band, cloud streaks and lantern posts:** gone. Claude's mark sits on an ink disc.
+
+**Sound:** cued from the data (cues.js):
+- a thud on the biggest 15-minute drop;
+- three snuffs, as each loser crosses 95% of its final loss;
+- the bell on the swing.
+
+**Checks**
+- **Comprehension:** better than B, because the planet and the lanterns now carry the night.
+- **Hold times:** two shots run short:
+  - the opening, 4.0 s against 5.8 s;
+  - the end card, 4.6 s against 4.9 s.
+- **Truth:** clean. The sky is approximate.
+- **Overlaps:** 0. Panes match to 0 px.
+- **Cost:** $0.77 per round (world $0.21, emblem $0.21, Kling $0.35), about 7 minutes of wall time.
+
+**Open**
+- The gold turn on Grok's lantern is modest.
+- An up-move round has not been tested.
+- Non-US closes still read New York's 4:00 PM.
