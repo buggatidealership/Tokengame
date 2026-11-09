@@ -7,7 +7,7 @@ function headY(txt){var h=[].slice.call(document.querySelectorAll(".sh h2,.dh,.p
 function nm(sel,txt){return [].slice.call(document.querySelectorAll(sel)).filter(function(x){return x.textContent.indexOf(txt)>-1})[0]}
 var tabs=function(n){return el(".tabbar a",n)};
 /* scroll moves: [start, end, target y] ; taps: [time, element getter, route] */
-var S=[[2.0,3.8,function(){return headY("Live now")}],[4.6,6.2,function(){return headY("Tonight")}],[7.0,8.6,function(){return headY("Table")}],
+var S=[[2.4,4.0,function(){return headY("Live now")}],[4.6,6.2,function(){return headY("Tonight")}],[7.0,8.6,function(){return headY("Last matchday")}],
        [11.8,13.2,function(){return headY("Match timeline")}],[14.2,15.6,function(){return headY("Player of the match")}],
        [20.6,22.0,function(){return headY("Season so far")}],
        [25.6,27.2,function(){return headY("Tomorrow")}],[27.9,29.6,function(){var r=nm(".fr","NVIDIA");return r?r.getBoundingClientRect().top+scrollY-260:0}]];

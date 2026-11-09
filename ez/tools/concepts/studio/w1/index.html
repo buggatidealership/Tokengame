@@ -81,7 +81,7 @@ h1.hl .g{color:var(--soft)}
 .band .lgs{display:flex}
 .band .lgs .cl{border-radius:9px;margin-right:6px}
 .band a.go{margin-top:12px;font-size:14.5px;font-weight:600;color:var(--gold);display:flex;align-items:center;gap:6px;min-height:32px}
-@media (min-width:900px){.band{margin-top:64px;display:grid;grid-template-columns:auto 1fr auto;padding:28px 34px;align-items:center;gap:0 40px}
+@media (min-width:900px){.band .cd{margin-top:12px}.band{margin-top:64px;display:grid;grid-template-columns:auto 1fr auto;padding:28px 34px;align-items:center;gap:0 40px}
   .band .cd{font-size:72px}.band .who{margin:0;padding:0 0 0 40px;border:0;border-left:1px solid #2f2a24;grid-template-columns:auto 1fr;align-items:center;gap:18px;font-size:15px}
   .band a.go{margin:0}}
 
@@ -213,7 +213,7 @@ table.lb{width:100%;border-collapse:collapse;margin-top:26px}
 @media (min-width:900px){.betw{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:end}}
 
 /* ---------- footer ---------- */
-footer{margin-top:140px;padding:40px 0 60px;border-top:1px solid var(--hair)}
+footer{margin-top:72px;padding:40px 0 60px;border-top:1px solid var(--hair)}
 footer .wrap{display:grid;gap:18px}
 footer .x{display:flex;align-items:center;gap:14px}
 footer .x img{width:44px;height:44px}
@@ -497,7 +497,7 @@ $("rh").innerHTML='Every round.<br><span class="g">On the record.</span>';
 var nT=0;MK.forEach(function(m){nT+=TR[m].length});
 $("rl").innerHTML=ROUNDS.length+' rounds, '+nT+' trades. Each one placed before the earnings and graded at the close. Tap a round.';
 function tint(t){var L=CO_LOGOS[t],c=L&&L.c&&!/^#1[0-9a-f]{5}$/i.test(L.c)?L.c:"#8a8277";return "color-mix(in srgb,"+c+" 9%,#efeae2)"}
-function winTxt(r){if(!r.win)return '<span>Nobody</span>';var w=r.win.split(" & ");return w.map(function(m){return ob(m,20)}).join("")+'<span>'+w.map(app).join(" & ")+' won</span>'}
+function winTxt(r){if(!r.win)return '<span>Nobody</span>';var w=r.win.split(" & ");return w.map(function(m){return ob(m,20)}).join("")+'<span>'+(w.length>1?'Tie, both won':app(w[0])+' won')+'</span>'}
 function tile(r){return '<button class="tile" data-n="'+r.n+'" style="--tint:'+tint(r.ticker)+'">'+chip(r.ticker,34)+'<span class="no">'+r.n+'</span><span class="cn">'+r.co+'</span><span class="mv num '+(r.a>=0?"u":"d")+'">'+r.out.replace(/^\+/,"+")+'</span><span class="wn">'+winTxt(r)+'</span></button>'}
 function grid(){$("grid").innerHTML=REC.slice(0,SHOW).map(tile).join("");$("more").textContent=SHOW<REC.length?"Show all "+REC.length+" rounds":"Show fewer";TILED=0}
 var TILED=0;grid();
@@ -591,11 +591,11 @@ else{
   function sec(id,off){var el=$(id);return el.getBoundingClientRect().top+scrollY+(off||0)}
   /* the walkthrough: [t0,t1, from, to] scroll keys; actions at times */
   var K=null;function keys(){var four=$("four"),fh=four.offsetHeight-$("stk").offsetHeight,f0=four.offsetTop,F=function(p){return f0+fh*p},
-      T=sec("table",-12),T2=sec("seg",-70),N=sec("next",-12),N2=sec("ndue",-70),Rr=sec("record",-12),B=document.documentElement.scrollHeight-innerHeight;
+      T=sec("table",-12),T2=sec("seg",-70),N=sec("next",-12),N2=sec("ndue",-70),Rr=sec("record",-12),B=Math.min(document.documentElement.scrollHeight-innerHeight,sec("bet",96));
     var P=[[0,0],[3.0,0],[4.4,F(.02)],[5.4,F(.02)],[6.6,F(.25)],[7.8,F(.25)],[9.0,F(.47)],[10.0,F(.47)],[11.2,F(.71)],[12.2,F(.71)],[13.4,F(.95)],[14.4,F(.95)],
-      [15.6,T],[16.6,T],[17.4,T2],[20.2,T2],[21.4,N],[23.0,N],[24.2,N2],[25.4,N2],[26.6,Rr],[33,Rr],[34.2,B],[40,B]];
+      [15.6,T],[16.6,T],[17.4,T2],[20.2,T2],[21.4,N],[23.0,N],[24.2,N2],[25.4,N2],[26.6,Rr],[32.4,Rr],[33.6,B],[40,B]];
     return P}
-  var ACT=[[18.4,"seg","W"],[27.4,"tile",0],[32.4,"close"]],done={};
+  var ACT=[[18.4,"seg","W"],[27.4,"tile",0],[31.9,"close"]],done={};
   function tapAt(el,t,t0){var b=el.getBoundingClientRect(),a=cl((t-t0+.35)/.35,0,1),z=cl((t-t0)/.45,0,1);tap.style.left=(b.left+b.width/2)+"px";tap.style.top=(b.top+b.height/2)+"px";tap.style.opacity=(t<t0?a:1-z)*.95;tap.style.transform="scale("+(t<t0?1:1+.5*z)+")"}
   window.R=function(t){VT=t*1000;if(!K)K=keys();
     var y=K[K.length-1][1];for(var i=0;i<K.length-1;i++){var a0=K[i],a1=K[i+1];if(t>=a0[0]&&t<a1[0]){y=a0[1]+(a1[1]-a0[1])*eio((t-a0[0])/(a1[0]-a0[0]));break}}
@@ -604,7 +604,7 @@ else{
     ACT.forEach(function(a,j){var t0=a[0];if(t>=t0-.35&&t<=t0+.45){var el=a[1]==="seg"?$("seg").querySelector('button[data-w="'+a[2]+'"]'):a[1]==="tile"?$("grid").children[a[2]]:$("shx");if(el)tapAt(el,t,t0)}
       if(t>=t0&&!done[j]){done[j]=1;if(a[1]==="seg")setW(a[2]);else if(a[1]==="tile")openRound(REC[a[2]].n);else closeRound()}});
     tick();
-    var pn=$("shpn");if($("sh").dataset.open){pn.scrollTop=Math.round(300*eio((t-29.8)/1.1))}};
+    var pn=$("shpn");if($("sh").dataset.open){pn.scrollTop=Math.round(300*eio((t-29.6)/1.0))}};
   window.READY=true;
   window.openRound=openRound;
 }

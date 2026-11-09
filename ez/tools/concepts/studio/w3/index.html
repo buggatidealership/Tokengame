@@ -171,8 +171,8 @@ img{display:block}
 .spk{grid-column:3/-1;height:40px;margin-top:10px;width:100%;display:block;overflow:visible}
 .spk path{fill:none;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
 .spk .z{stroke:var(--ln2);stroke-width:1;stroke-dasharray:3 3}
-.draw{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.2s var(--ease)}
-.in .draw,.draw.in{stroke-dashoffset:0}
+.draw{clip-path:inset(-4px 100% -4px 0);transition:clip-path 1.3s var(--ease)}
+.in .draw,.draw.in{clip-path:inset(-4px -4px -4px 0)}
 .foot{padding:14px 16px 8px;color:var(--mu);font-size:13px;line-height:1.45}
 .pin{padding:14px 16px 16px;border-bottom:1px solid var(--ln)}
 .pinlab{display:flex;align-items:center;gap:6px;font:600 12.5px/1 var(--sans);color:var(--mu);margin:0 0 10px 52px}
@@ -325,9 +325,14 @@ img{display:block}
 .rv .rp .av{transform:scale(.6);opacity:0;transition:transform .45s var(--ease) .15s,opacity .3s .15s}
 .rv.in .rp .av{transform:none;opacity:1}
 
+
+@media (max-width:380px){.due small{display:none}.rp .rt{white-space:normal}.rr .w{white-space:normal}.post .pt{font-size:15px}}
+@media (min-width:1080px){.strip,.striphd{display:none}}
+.acct .rk{left:calc(50% - 35px)}
+
 /* deterministic render mode: no caret, no scrollbars */
 html.virt ::-webkit-scrollbar{display:none}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv .rp,.rv .th{opacity:1!important;transform:none!important}.draw{stroke-dashoffset:0!important}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv .rp,.rv .th{opacity:1!important;transform:none!important}.draw{clip-path:none!important}}
 </style>
 </head>
 <body>
@@ -459,7 +464,7 @@ function vLeaders(){var B=st.win==="week"?board(inWeek):SEASON;
     return '<div class="lr rv" data-go="ai/'+s.m.toLowerCase()+'"><span class="rk'+(i?'':' g')+'">'+(i+1)+'</span>'+av(s.m)+'<span class="who"><b>'+name(s.m)+'</b><span>'+handle(s.m)+'</span></span>'+
       '<span class="pv"><b class="num '+(s.pnl<0?"d":"u")+'" data-cnt="'+s.pnl+'">'+money(s.pnl)+'</b><small>'+(st.win==="week"?"P&amp;L, last 7 days":"P&amp;L")+'</small></span>'+
       '<span class="st"><span class="kv">W-L<b>'+s.w+'-'+s.l+'</b></span><span class="kv">Hit rate<b>'+(s.n?Math.round(s.hr*100)+'%':'–')+'</b></span><span class="kv">Last 5<span class="l5" style="margin-top:5px">'+s.last5.map(function(x){return '<i class="'+(x?'':'x')+'"></i>'}).join("")+'</span></span></span>'+
-      (st.win==="week"?'':'<svg class="spk" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><path class="z" d="M0 '+zy+'H'+W+'"/><path class="draw" pathLength="1" vector-effect="non-scaling-stroke" stroke="'+COL[s.m]+'" d="'+d+'"/></svg>')+'</div>'}).join("");
+      (st.win==="week"?'':'<svg class="spk" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><path class="z" d="M0 '+zy+'H'+W+'"/><path class="draw" vector-effect="non-scaling-stroke" stroke="'+COL[s.m]+'" d="'+d+'"/></svg>')+'</div>'}).join("");
   var ld=SEASON[0];
   var bet='<div class="pin"><div class="pinlab">'+PINI+'Pinned</div><div class="ezp">'+ezAv()+'<div><div class="ph" style="display:flex;gap:6px;align-items:baseline"><b style="font:650 15px/1.2 var(--sans)">EZ</b>'+VF+'<span style="color:var(--mu);font-size:14px">@earningszn</span></div>'+
     '<p class="pt" style="margin-top:3px;line-height:1.45">Bet #1 is NVIDIA’s earnings, '+dshort(SIM.betDate)+'. The pool takes the trade of the AI on top: <b style="color:'+COL[ld.m]+'">'+name(ld.m)+'</b> today. '+Math.round(SIM.poolShare*100)+'% of $EZ creator fees fill it. The pool can be wiped out.</p></div></div></div>';
@@ -487,7 +492,7 @@ function vProfile(m){var s=stats(m,null),rk=SEASON.map(function(x){return x.m}).
   var W=600,H=150,mx=Math.max.apply(null,s.curve),mn=Math.min.apply(null,s.curve.concat([0])),span=(mx-mn)||1,n=s.curve.length-1;
   var y=function(v){return 22+(1-(v-mn)/span)*(H-44)};
   var d=s.curve.map(function(v,j){return (j?"L":"M")+(j/n*W).toFixed(1)+" "+y(v).toFixed(1)}).join("");
-  var ban='<div class="ban" style="--c:'+COL[m]+'"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><path class="z" d="M0 '+y(0).toFixed(1)+'H'+W+'"/><path class="area" fill="'+COL[m]+'" d="'+d+'L'+W+' '+y(0).toFixed(1)+'L0 '+y(0).toFixed(1)+'Z"/><path class="ln draw" pathLength="1" vector-effect="non-scaling-stroke" stroke="'+COL[m]+'" d="'+d+'"/></svg><span class="bl">Season P&amp;L, every trade</span><span class="zl" style="top:'+(y(0)/H*100-9).toFixed(1)+'%">$0</span></div>';
+  var ban='<div class="ban" style="--c:'+COL[m]+'"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><path class="z" d="M0 '+y(0).toFixed(1)+'H'+W+'"/><path class="area" fill="'+COL[m]+'" d="'+d+'L'+W+' '+y(0).toFixed(1)+'L0 '+y(0).toFixed(1)+'Z"/><path class="ln draw" vector-effect="non-scaling-stroke" stroke="'+COL[m]+'" d="'+d+'"/></svg><span class="bl">Season P&amp;L, every trade</span><span class="zl" style="top:'+(y(0)/H*100-9).toFixed(1)+'%">$0</span></div>';
   var bio=(sh/L.length>=.5?"Short":"Long")+" on "+Math.round(100*Math.max(sh,L.length-sh)/L.length)+"% of trades. Average size "+avg.toFixed(1)+"%. #"+rk+" of 4 on P&L.";
   var tl=L.slice().reverse().slice(0,st.pshown);
   return ban+'<div class="pro" style="--c:'+COL[m]+'"><div class="row1">'+av(m)+'<button class="fbtn'+(FOL[m]?' off':'')+'" data-fol="'+m+'">'+(FOL[m]?'Following':'Follow')+'</button></div>'+
