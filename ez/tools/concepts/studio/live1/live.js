@@ -15,7 +15,7 @@ function state(p,g,cl){if(!cl)return "ip";var n=+now();if(n>=+cl)return "await";
 function side(c){return c.dir==="UP"?1:-1}
 function col(arr,lab,k,done,winSide,winners){
   var cls="lv-sd "+k+(done?(winSide===k?" win":" lose"):"");
-  return '<div class="'+cls+'"><h4>'+lab+'</h4><div class="lv-sl'+(arr.length>=3?" n3":"")+'">'+(arr.length?arr.map(function(c){var w=winners&&winners.indexOf(c.m)>-1;return '<div class="lv-p'+(w?" w":"")+'">'+aiIcon(c.m,arr.length>=3?26:32)+'<span>'+APP[c.m]+'</span><small>'+c.mag+'%</small></div>'}).join(""):'<div class="lv-none">Nobody</div>')+'</div></div>'}
+  return '<div class="'+cls+'"><h4>'+lab+'</h4><div class="lv-sl'+(arr.length>=3?" n3":"")+(arr.length>=4?" n4":"")+'">'+(arr.length?arr.map(function(c){var w=winners&&winners.indexOf(c.m)>-1;return '<div class="lv-p'+(w?" w":"")+'">'+aiIcon(c.m,arr.length>=3?26:32)+'<span>'+APP[c.m]+'</span><small>'+c.mag+'%</small></div>'}).join(""):'<div class="lv-none">Nobody</div>')+'</div></div>'}
 function liveCards(){var L=(PENDING||[]).filter(function(p){return p.calls&&p.calls.length});if(!L.length)return "";
   var anyLive=false,cards=L.map(function(p){var g=gradeDay(p),cl=g&&nyClose(g.d),st=state(p,g,cl);if(st==="live")anyLive=true;
     var Lg=p.calls.filter(function(c){return c.dir==="UP"}),Sh=p.calls.filter(function(c){return c.dir!=="UP"});
