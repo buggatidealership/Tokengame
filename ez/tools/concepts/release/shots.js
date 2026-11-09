@@ -8,7 +8,7 @@ const {chromium}=require('playwright');const fs=require('fs');const O=__dirname+
   return {secs:q('section.pn').map(e=>({r:r(e),t:e.innerText.slice(0,30).replace(/\n/g,' ')})),
    ur:q('.ur').slice(0,8).map(e=>({r:r(e),t:e.innerText.slice(0,60).replace(/\n/g,' ')})),
    lvit:q('.lv-it').map(e=>({r:r(e),on:e.classList.contains('on'),t:e.innerText.slice(0,40).replace(/\n/g,' ')})),
-   lvc:q('.lv-c').map(e=>({r:r(e)})),lvst:q('.lv-st').map(e=>({r:r(e)})),
+   lvc:q('.lv-c').map(e=>({r:r(e)})),lvst:q('.lv-st').map(e=>({r:r(e)})),lvsd:q('.lv-sd').map(e=>({r:r(e.querySelector('.lv-sl')?e:e)})),
    tables:q('table').map(e=>({r:r(e),rows:[...e.querySelectorAll('tbody tr')].map(x=>({r:r(x),t:x.innerText.slice(0,50).replace(/\s+/g,' ')}))})),
    h:document.documentElement.scrollHeight}});
  let [c,p]=await ctx();await p.goto('http://localhost:8997/#next');await p.waitForTimeout(2200);

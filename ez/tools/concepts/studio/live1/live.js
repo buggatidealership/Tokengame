@@ -21,7 +21,7 @@ function liveCards(){var L=(PENDING||[]).filter(function(p){return p.calls&&p.ca
     var Lg=p.calls.filter(function(c){return c.dir==="UP"}),Sh=p.calls.filter(function(c){return c.dir!=="UP"});
     var pill=st==="live"?'<span class="lv-st live"><i></i>LIVE</span>':st==="await"?'<span class="lv-st aw">RESULT DUE</span>':'<span class="lv-st ip"><i></i>IN PLAY</span>';
     var hdr=cl?(st==="await"?"Graded ":"Grades ")+cl.toLocaleDateString([],{weekday:"short"})+" "+(g.est?"~":"")+tm(cl):"Date to come";
-    var foot=st==="live"?'Trades in before the report. Today’s close grades all four. <b data-lvcd="'+(+cl)+'">Closes in '+dur(cl-now())+'</b>':
+    var foot=st==="live"?'Trades in before the report. Today’s close grades all four. <b data-lvcd="'+(+cl)+'">Resolves in '+dur(cl-now())+'</b>':
              st==="await"?'The close has rung. The result posts when the sheet updates.':
              'Trades in before the report. The market is shut; the close '+(cl?(g.est?"~":"")+day(cl)+" "+tm(cl):"")+' grades all four.'+(cl?' <b data-lvcd="'+(+cl)+'">In '+dur(cl-now())+'</b>':'');
     return '<div class="lv-c"><div class="lv-hd">'+pill+'<span>Round '+p.n+'</span><span class="r">'+hdr+'</span></div>'+
@@ -33,17 +33,19 @@ function lastDay(){var G=ROUNDS.filter(function(r){return r.resolves&&typeof r.a
   var rows=R.map(function(r){var W=String(r.win||"").toUpperCase().split(/\s*&\s*/).filter(function(m){return MK.indexOf(m)>-1}),calls={},mag={};
     r.calls.forEach(function(c){calls[c[0]]=c[1].indexOf("DOWN")===0?-1:1;mag[c[0]]=parseFloat(String(c[1]).replace(/[^0-9.]/g,""))});
     var lu=MK.filter(function(m){return calls[m]}).map(function(m){var ok=calls[m]*r.a>0,w=W.indexOf(m)>-1;return '<span class="lv-lu'+(ok?"":" no")+(w?" w":"")+'">'+aiIcon(m,20)+'</span>'}).join("");
-    var who=W.length?W.map(function(m){return APP[m]}).join(" & ")+" won":"Nobody won",open=!!LVOPEN[r.n];
+    var ws=W.length&&W.every(function(m){return calls[m]===calls[W[0]]})?' · '+(calls[W[0]]>0?"Long ":"Short ")+mag[W[0]]+'%':'';
+    var who=W.length?W.map(function(m){return APP[m]}).join(" & ")+" won the round"+ws:"Nobody won the round",open=!!LVOPEN[r.n];
     var ord=MK.filter(function(m){return calls[m]}).sort(function(x,y){var ox=calls[x]*r.a>0,oy=calls[y]*r.a>0;if(ox!==oy)return ox?-1:1;return Math.abs(mag[x]*calls[x]-r.a)-Math.abs(mag[y]*calls[y]-r.a)});
     var det=ord.map(function(m,i){var s=calls[m],pl=1000*s*r.a,w=W.indexOf(m)>-1;
-      return '<div class="lv-xr'+(w?" w":"")+'"><span class="rk">'+(i+1)+'</span>'+aiIcon(m,22)+'<span class="nm">'+APP[m]+'</span><span class="sd">'+(s>0?"Long ":"Short ")+mag[m]+'%</span><b class="'+(pl<0?"d":"u")+'">'+money(pl,1)+'</b></div>'}).join("");
-    return '<div class="lv-it'+(open?" on":"")+'"><button type="button" class="lv-rr" data-lvx="'+r.n+'" aria-expanded="'+open+'">'+coIcon(r.ticker)+'<span class="lv-who"><b>'+esc(r.co)+' <i>'+esc(r.ticker)+'</i></b><small>'+who+'</small></span><span class="mv '+(r.a<0?"d":"u")+'">'+pct(r.a)+'</span><span class="lus">'+lu+'</span><span class="cv" aria-hidden="true"></span></button>'+
+      return '<div class="lv-xr'+(w?" w":"")+'"><span class="rk">'+(i+1)+'</span><span class="lv-ic">'+(w?CRN:'')+aiIcon(m,22)+'</span><span class="nm">'+APP[m]+'</span><span class="sd">'+(s>0?"Long":"Short")+' ('+mag[m]+'%)</span><b class="'+(pl<0?"d":"u")+'">'+money(pl,1)+'</b></div>'}).join("");
+    det='<div class="lv-xr lv-xh"><span></span><span></span><span></span><span></span><span class="ph">P&amp;L</span></div>'+det;
+    return '<div class="lv-it'+(open?" on":"")+'"><button type="button" class="lv-rr" data-lvx="'+r.n+'" aria-expanded="'+open+'">'+coIcon(r.ticker)+'<span class="lv-who"><span class="lv-l1"><b>'+esc(r.co)+' <i>'+esc(r.ticker)+'</i></b><span class="lv-mk"><small>Market closed</small><span class="mv '+(r.a<0?"d":"u")+'">'+pct(r.a)+'</span></span></span><small>'+who+'</small></span><span class="cv" aria-hidden="true"></span></button>'+
       '<div class="lv-x"'+(open?'':' hidden')+'>'+det+'</div></div>'}).join("");
   return '<section class="pn lv"><div class="tabs"><button class="on">LAST MATCHDAY<span class="n">'+R.length+'</span></button><span class="lv-dt">'+day(last)+'</span></div><div class="lv-ls">'+rows+'</div></section>'}
-var LVOPEN={};document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-lvx]");if(!b)return;var n=b.getAttribute("data-lvx"),it=b.parentNode,x=it.querySelector(".lv-x");LVOPEN[n]=!LVOPEN[n];setTimeout(function(){var bb=document.querySelector('[data-lvx="'+n+'"]');if(!bb)return;var ii=bb.parentNode,xx=ii.querySelector(".lv-x");ii.classList.toggle("on",!!LVOPEN[n]);bb.setAttribute("aria-expanded",!!LVOPEN[n]);if(xx)xx.hidden=!LVOPEN[n]},0)});
+var CRN='<svg class="lv-cr" viewBox="0 0 24 16" aria-hidden="true"><path d="M2 14 L1 3 L7 8 L12 1 L17 8 L23 3 L22 14 Z" fill="#fdbc2a" stroke="#7a5a10" stroke-width="1.2" stroke-linejoin="round"/></svg>';var LVOPEN={};document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-lvx]");if(!b)return;var n=b.getAttribute("data-lvx"),it=b.parentNode,x=it.querySelector(".lv-x");LVOPEN[n]=!LVOPEN[n];setTimeout(function(){var bb=document.querySelector('[data-lvx="'+n+'"]');if(!bb)return;var ii=bb.parentNode,xx=ii.querySelector(".lv-x");ii.classList.toggle("on",!!LVOPEN[n]);bb.setAttribute("aria-expanded",!!LVOPEN[n]);if(xx)xx.hidden=!LVOPEN[n]},0)});
 window.__lvLive=liveCards;window.__lvLast=lastDay;
 if(AT==="up"){var U0=upcoming;inPlay=function(){return liveCards()};upcoming=function(){return U0()+lastDay()};}
 else{var Lo=leaders;leaders=function(){return liveCards()+lastDay()+Lo()};inPlay=function(){return ""};}
 draw();
-setInterval(function(){document.querySelectorAll("[data-lvcd]").forEach(function(b){var t=+b.getAttribute("data-lvcd");b.textContent=(b.textContent.indexOf("Closes")===0?"Closes in ":"In ")+dur(t-now())})},30000);
+setInterval(function(){document.querySelectorAll("[data-lvcd]").forEach(function(b){var t=+b.getAttribute("data-lvcd");b.textContent=(b.textContent.indexOf("Resolves")===0?"Resolves in ":"In ")+dur(t-now())})},30000);
 })();
