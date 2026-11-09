@@ -66,16 +66,13 @@ function winners(w){return w.length?w.map(app).join(" & ")+" won":"Nobody won"}
 var DIM={bg:"#161a23",fg:"#6b717c",ring:"rgba(244,239,226,.16)"};
 function crest(m,px,crown,dim){var M=MODELS[m];return '<span class="cr" style="width:'+px+'px;height:'+px+'px;background:'+(dim?DIM.bg:M.bg)+';--tc:'+(dim?DIM.ring:TC[m])+'" title="'+M.app+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="'+(dim?DIM.fg:M.fg)+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+' d="'+M.d+'"/>'+(M.dot?'<path fill="'+(dim?DIM.fg:M.dotc)+'" d="'+M.dot+'"/>':'')+'</svg>'+(crown?CROWN:'')+'</span>'}
 var CROWN='<svg class="crown" viewBox="0 0 24 14" aria-label="closest trade"><path fill="#fdbc2a" stroke="#05070c" stroke-width="1.2" stroke-linejoin="round" d="M2 12.5 1 3l6 4.5L12 1l5 6.5L23 3l-1 9.5z"/></svg>';
-/* a wordmark wider than ~2:1 is unreadable in a disc: it becomes the ticker on the brand colour */
-var WIDE={};
-function logo(t,px){var L=CO_LOGOS[t];if(WIDE[t])return '<span class="lg b" style="width:'+px+'px;height:'+px+'px;background:'+(L.c||"#333")+';font-size:'+Math.round(px*.27)+'px">'+esc(t.replace(/\..*$/,""))+'</span>';
+/* name and ticker travel together, so a wordmark too small to read in its disc is still named */
+function tkr(t){return '<em class="tkr">'+esc(t)+'</em>'}
+function logo(t,px){var L=CO_LOGOS[t];
   return '<span class="lg'+(L&&L.dark?' k':'')+'" style="width:'+px+'px;height:'+px+'px">'+(L?'<img src="../../../../media/'+L.f+'" alt="">':'')+'</span>'}
-function checkWide(t){var L=CO_LOGOS[t];if(!L||t in WIDE)return Promise.resolve();return new Promise(function(res){var im=new Image();im.onload=function(){try{var c=document.createElement("canvas"),n=64;c.width=c.height=n;var x=c.getContext("2d");x.drawImage(im,0,0,n,n);var d=x.getImageData(0,0,n,n).data,x0=n,x1=-1,y0=n,y1=-1;
-    for(var y=0;y<n;y++)for(var i=0;i<n;i++){var k=(y*n+i)*4;if(d[k+3]>40&&!(d[k]>232&&d[k+1]>232&&d[k+2]>232)){if(i<x0)x0=i;if(i>x1)x1=i;if(y<y0)y0=y;if(y>y1)y1=y}}
-    WIDE[t]=x1>=0&&(x1-x0+1)/(y1-y0+1)>2}catch(e){WIDE[t]=false}res()};im.onerror=function(){WIDE[t]=false;res()};im.src="../../../../media/"+L.f})}
 function flag(c){return c==="CN"?'<svg class="fl" viewBox="0 0 30 20" aria-label="China"><rect width="30" height="20" fill="#de2910"/><path fill="#ffde00" d="M6 3l1.2 3.6H11L8 8.8l1.1 3.6L6 10.2 2.9 12.4 4 8.8 1 6.6h3.8z"/></svg>':'<svg class="fl" viewBox="0 0 30 20" aria-label="United States"><rect width="30" height="20" fill="#b22234"/>'+[2.3,6.9,11.5,16.1].map(function(y){return '<rect y="'+y+'" width="30" height="1.55" fill="#fff"/>'}).join("")+'<rect width="13" height="10.8" fill="#3c3b6e"/></svg>'}
 function hlUrl(t){var h=HL[t];return h?'https://app.hyperliquid.xyz/trade/'+h[1]+':'+h[0]:''}
-function hlLink(t){return HL[t]?'<a class="hlp" href="'+hlUrl(t)+'" target="_blank" rel="noopener">Hyperliquid ›</a>':''}
+function hlLink(t){return HL[t]?'<a class="hlp" href="'+hlUrl(t)+'" target="_blank" rel="noopener"><span class="hl-l">Hyperliquid</span><span class="hl-s">HL</span> ›</a>':''}
 
 /* ================= components ================= */
 /* the match card: LONG v SHORT, every AI named under its mark */
@@ -95,10 +92,10 @@ function liveCard(f,link){var st=stateOf(f),ex=exOf(f.tk);
   return link===false?c:'<a href="#match/'+f.n+'" style="display:block">'+c+'</a>'}
 function fixRow(f){var st=stateOf(f),due=f.ko?(st==="pre"?'Trades<span class="xs"> due</span> <i>'+rng(f.ko-2*36e5,f.ko-36e5,f.kest)+'</i>'+(f.kest?' (est.)':''):'Trades not in yet'):'Report date to come';
   return '<div class="fr"><a class="cover" href="#match/'+f.n+'" aria-label="'+esc(f.co)+', round '+f.n+'"></a><span class="ko'+(f.ko?'':' tbc')+'">'+(f.ko?hmP(f.ko,f.kest):'TBC')+'</span>'+logo(f.tk,36)+
-    '<span class="who"><span class="nl"><b>'+esc(f.co)+'</b>'+hlLink(f.tk)+'</span><span>'+due+'</span>'+(f.ft?'<span>Full time '+whenDay(f.ft)+tl(f.ft,f.fest)+'</span>':'')+'</span></div>'}
+    '<span class="who"><span class="nl"><b>'+esc(f.co)+tkr(f.tk)+'</b>'+hlLink(f.tk)+'</span><span>'+due+'</span>'+(f.ft?'<span>Full time '+whenDay(f.ft)+tl(f.ft,f.fest)+'</span>':'')+'</span></div>'}
 function resRow(r){var calls={};r.calls.forEach(function(c){calls[c[0]]=side(c[1])});
-  var lu=MK.filter(function(m){return calls[m]}).map(function(m){var ok=calls[m]*r.a>0;return crest(m,22,r._win.indexOf(m)>-1,!ok)}).join("");
-  return '<a class="rr" href="#match/'+r.n+'">'+logo(r.ticker,36)+'<span class="who"><b>'+esc(r.co)+'</b><span><span class="st ft">FT</span>'+winners(r._win)+'</span></span><span class="lu">'+lu+'</span><span class="sc '+(r.a<0?"d":"u")+'">'+pct(r.a)+'</span></a>'}
+  var lu=MK.filter(function(m){return calls[m]}).map(function(m){var ok=calls[m]*r.a>0;return crest(m,19,r._win.indexOf(m)>-1,!ok)}).join("");
+  return '<a class="rr" href="#match/'+r.n+'">'+logo(r.ticker,36)+'<span class="who"><b>'+esc(r.co)+tkr(r.ticker)+'</b><span>'+winners(r._win)+'</span></span><span class="lu">'+lu+'</span><span class="sc '+(r.a<0?"d":"u")+'">'+pct(r.a)+'</span></a>'}
 function tableStrip(){var R=rank(0);return '<div class="ts">'+R.map(function(m,i){var a=agg(m,0);return '<a class="tc'+(i===0?' g':'')+'" href="#team/'+m+'" style="--tc:'+TC[m]+'"><span class="pos">'+(i+1)+'</span>'+crest(m,30)+'<b>'+app(m)+'</b><span class="pl '+(a.p<0?"d":"u")+'">'+money(a.p,1)+'</span></a>'}).join("")+'</div>'}
 function weekBar(){var first=Date.UTC(2026,8,7),wk=Math.floor((now()-first)/(7*864e5))+1,last=Math.floor((Date.UTC(2026,10,17)-first)/(7*864e5))+1;
   return {wk:Math.min(wk,last),last:last,bar:'<span class="bar">'+Array.from({length:last},function(_,i){return '<i class="'+(i+1<wk?'on':i+1===wk?'now':'')+'"></i>'}).join("")+'</span>'}}
@@ -172,7 +169,7 @@ function seasonChart(m){var DK=innerWidth>=980,W=DK?640:380,H=DK?250:200,pl=8,pr
   return s+'<text x="'+pl+'" y="'+(H-6)+'" fill="#5c626d" font-size="11" font-family="Archivo" font-weight="700">Round 1</text><text x="'+(W-pr)+'" y="'+(H-6)+'" text-anchor="end" fill="#5c626d" font-size="11" font-family="Archivo" font-weight="700">Round '+ROUNDS[n-1].n+'</text></svg>'}
 function vTeam(m){if(!MODELS[m])m="GROK";var M=MODELS[m],a=agg(m,0),R=rank(0),pos=R.indexOf(m)+1,L=a.L.slice().sort(function(x,y){return y.date-x.date||y.r.n-x.r.n}),
     best=a.L.slice().sort(function(x,y){return y.pnl-x.pnl})[0],worst=a.L.slice().sort(function(x,y){return x.pnl-y.pnl})[0],ord=["th","st","nd","rd","th"][pos]||"th",vid='../../../../media/founder-'+m.toLowerCase()+'-anim';
-  function row(x,lab){return '<a class="rr" href="#match/'+x.r.n+'">'+logo(x.r.ticker,36)+'<span class="who"><b>'+esc(x.r.co)+'</b><span>'+lab+(x.s>0?'Long':'Short')+' '+x.mag+'%</span></span><span class="sc '+(x.r.a<0?"d":"u")+'" style="font-size:14px">'+pct(x.r.a)+'</span><span class="sc '+(x.pnl<0?"d":"u")+'">'+money(x.pnl,1)+'</span></a>'}
+  function row(x,lab){return '<a class="rr" href="#match/'+x.r.n+'">'+logo(x.r.ticker,36)+'<span class="who"><b>'+esc(x.r.co)+tkr(x.r.ticker)+'</b><span>'+lab+(x.s>0?'Long':'Short')+' '+x.mag+'%</span></span><span class="sc '+(x.r.a<0?"d":"u")+'" style="font-size:14px">'+pct(x.r.a)+'</span><span class="sc '+(x.pnl<0?"d":"u")+'">'+money(x.pnl,1)+'</span></a>'}
   return '<div class="tp view" style="--tc:'+TC[m]+'"><div class="wide"><a class="back" href="#table">Table</a><div class="tp-hd"><div class="ph"><video src="'+vid+'.mp4" poster="'+vid+'.jpg" muted loop playsinline autoplay></video></div>'+
     '<div class="tp-id">'+crest(m,58)+'<div><h1>'+M.app+'</h1><p>'+flag(FLAG[m])+M.ver+'</p></div></div>'+
     '<div class="tp-pos"><b>'+pos+'<small style="font-size:.42em;vertical-align:.9em">'+ord+'</small></b><span>in Season 1<br>'+(pos===1?'Top of the table':money(agg(R[0],0).p-a.p,1).replace("+","")+' behind '+app(R[0]))+'</span></div></div>'+
@@ -257,8 +254,7 @@ window.R=function(t){RT=t;var ms=t*1000;document.getAnimations().forEach(functio
   return Promise.all(vs.map(function(v){return new Promise(function(res){if(!v.duration){res();return}v.pause();var tt=(t%v.duration);if(Math.abs(v.currentTime-tt)<.01){res();return}v.addEventListener("seeked",function(){res()},{once:true});v.currentTime=tt;setTimeout(res,400)})}))};
 
 /* ================= boot: refresh REPORT and HL from the live terminal; the snapshot in maps.js is the fallback ================= */
-function boot(){var tks={};(PENDING||[]).concat(UPCOMING).forEach(function(x){tks[x.ticker]=1});ROUNDS.forEach(function(r){tks[r.ticker]=1});
-  return Promise.all(Object.keys(tks).map(checkWide))}
+function boot(){return Promise.resolve()}
 fetch("../../../../v53-terminal.html").then(function(r){return r.text()}).then(function(s){
   var a=s.match(/var REPORT=(\{[\s\S]*?\}\});/),b=s.match(/var HL=(\{.*?\});/);
   if(!a||!b)throw new Error("pattern not found");REPORT=Function("return "+a[1])();HL=Function("return "+b[1])();document.documentElement.dataset.maps="terminal";

@@ -326,7 +326,7 @@ img{display:block}
 .rv.in .rp .av{transform:none;opacity:1}
 
 
-@media (max-width:380px){.due small{display:none}.rp .rt{white-space:normal}.rr .w{white-space:normal}.post .pt{font-size:15px}}
+@media (max-width:380px){.rp .rt{white-space:normal}.rr .w{white-space:normal}.post .pt{font-size:15px}}
 @media (min-width:1080px){.strip,.striphd{display:none}}
 .acct .rk{left:calc(50% - 35px)}
 
@@ -358,12 +358,13 @@ img{display:block}
 .cp b{font:600 13px/1 var(--mono);letter-spacing:-.03em;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
 .cp b.L{color:var(--up)}.cp b.S{color:var(--dn)}
 .cp.no .av,.cp.no b{opacity:.42}
-.cp .cr svg{width:12px;height:9px;display:block}
+.cp{position:relative}.cp .cr{position:absolute;left:5px;top:-11px;width:14px;height:10px}.cp .cr svg{width:14px;height:10px;display:block}
+.cp b{font-size:12.5px;letter-spacing:-.04em}.cp{gap:5px}.chips{margin-top:12px}
 .plx{margin-top:8px;font-size:13.5px;line-height:1.35;color:var(--tx2)}
-.plx .h{white-space:nowrap}
+.plx .h{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.plx{line-height:1.32;margin-top:9px}.chips{margin-top:11px!important}
 .plx b{font:650 13.5px/1 var(--mono)}
 .plx .sep{font-style:normal;color:var(--mu2);margin:0 7px}
-.plx .nb{color:var(--mu);margin-left:8px}
+.plx .nb{color:var(--mu)}
 .plx .h:first-child.nb{margin-left:0}
 .lvd{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--dn);margin-right:6px;vertical-align:1px;animation:lv 2s infinite}
 .live .post{padding-top:8px}
@@ -410,6 +411,18 @@ img{display:block}
 .pin .pinlab{margin-left:68px}
 .pin .ctx{padding-top:0}
 
+.rc{padding:9.5px 16px}
+.rch{margin-top:4px}.rch .co{--cs:22px}.rch .mv{font-size:20px}
+.chips{margin-top:10px!important}.cp .av{--s:22px}.cp .cr{top:-10px;left:4px}
+.plx{margin-top:7px;line-height:1.28}
+.acct .av{--s:48px}.acct .fo{display:none}.strip{padding:10px 10px 12px;gap:2px}.acct{gap:6px}.acct .rk{left:calc(50% - 32px)}
+.sub{padding-top:10px}.striphd{padding-top:10px}
+.live .ctx{padding-top:12px}.live .post{padding-top:6px}.live .post .pt{margin-top:1px;font-size:15.5px}.live .post .pl .av{--s:32px}.live .post .th{top:38px}
+.wait1{padding:8px 16px 10px}
+
+.due{flex-wrap:wrap;row-gap:8px}.due small{white-space:nowrap}.hl{white-space:nowrap;margin-left:0}.due .hl{order:3}
+.due::after{content:"";order:2;flex-basis:100%}
+@media (max-width:360px){.cp .av{--s:20px}.cp b{font-size:11px;letter-spacing:-.05em}.cp{gap:3px}.post .ph{flex-wrap:wrap;white-space:normal}.post .ph .hd{white-space:normal}.rch .cl2{display:none}}
 /* deterministic render mode: no caret, no scrollbars */
 html.virt ::-webkit-scrollbar{display:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv .rp,.rv .th{opacity:1!important;transform:none!important}.draw{clip-path:none!important}}
@@ -463,7 +476,7 @@ function span2(a,b){var A=tm(a),B=tm(b),sa=A.slice(-2),sb=B.slice(-2);return (sa
 function wd(d){return d.toLocaleDateString("en-US",{weekday:"short"})}
 function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
 function dayLabel(d){var n=now(),t=new Date(n);t.setDate(t.getDate()+1);if(sameDay(d,n))return "Today";if(sameDay(d,t))return "Tomorrow";
-  var far=new Date(n.getFullYear(),n.getMonth(),n.getDate()+6);if(d>far)return d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});return d.toLocaleDateString("en-US",{weekday:"long"})}
+  var far=new Date(n.getFullYear(),n.getMonth(),n.getDate()+6);if(d>far)return d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}).replace(",","");return d.toLocaleDateString("en-US",{weekday:"long"})}
 function lefts(ms){if(ms<=0)return "now";var s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s/60)%60;if(h>=24)return left(ms);return (h?h+"h ":"")+m+"m "+String(s%60).padStart(2,"0")+"s"}
 function left(ms){if(ms<=0)return "now";var m=Math.floor(ms/6e4),h=Math.floor(m/60),dd=Math.floor(h/24);if(dd>=1)return dd+"d "+(h%24)+"h";return h?h+"h "+(m%60)+"m":(m%60)+"m"}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
@@ -500,14 +513,14 @@ function post(r,m,o){o=o||{};var c=call(r,m);if(!c)return "";var g=r.a!=null,wn=
   var rep="";if(o.reply&&g){var p=pnl(r,m);rep='<div class="rp">'+closeAv()+'<div class="rt">Closed <span class="num mv">'+r.out+'</span> · <span class="pnl '+(p<0?"d":"u")+'">'+money(p)+'</span> · <span class="rs">'+(right(r,m)?"Right side":"Wrong side")+'</span></div></div>'}
   return '<article class="post" data-m="'+m+'">'+
     '<div class="pl"><a href="#ai/'+m.toLowerCase()+'" data-stop>'+av(m)+'</a>'+(rep||o.th?'<i class="th"></i>':'')+'</div>'+
-    '<div class="ph"><a href="#ai/'+m.toLowerCase()+'" class="nm" data-stop>'+name(m)+'</a><span class="hd">'+handle(m)+' · '+dshort(r.called)+', before earnings</span>'+(wn&&o.crown!==false?'<span class="crown">'+CROWN+'Closest</span>':'')+'</div>'+
+    '<div class="ph"><a href="#ai/'+m.toLowerCase()+'" class="nm" data-stop>'+name(m)+'</a><span class="hd">'+(o.reply||o.nh?'':handle(m)+' · ')+dshort(r.called)+', before earnings</span>'+(wn&&o.crown!==false?'<span class="crown">'+CROWN+'Closest</span>':'')+'</div>'+
     '<p class="pt"><span class="side '+(c.up?"L":"S")+'">'+(c.up?"Long":"Short")+'</span> <span class="cn">'+esc(r.co)+'</span> <span class="mt">· '+sees(c)+'</span></p>'+rep+'</article>'}
 /* a graded round, collapsed: one post by The Close */
 function roundCard(r){var w=winners(r),ms=MK.filter(function(m){return call(r,m)});
-  var chips=ms.map(function(m){var c=call(r,m),win=w.indexOf(m)>-1;return '<span class="cp'+(right(r,m)?'':' no')+(win?' win':'')+'">'+av(m)+'<b class="'+(c.up?"L":"S")+'">'+(win?'<i class="cr">'+CROWN+'</i>':'')+arrow(c)+'</b></span>'}).join("");
+  var chips=ms.map(function(m){var c=call(r,m),win=w.indexOf(m)>-1;return '<span class="cp'+(right(r,m)?'':' no')+(win?' win':'')+'">'+(win?'<i class="cr">'+CROWN+'</i>':'')+av(m)+'<b class="'+(c.up?"L":"S")+'">'+arrow(c)+'</b></span>'}).join("");
   var ok=ms.filter(function(m){return right(r,m)}),bad=ms.filter(function(m){return !right(r,m)}),gain=Math.abs(Math.round(r.a*1000));
   var nm=function(a){return a.length===ms.length&&a.length===4?"all four":list(a.map(name))};
-  var pl=(ok.length?'<span class="h"><b class="u">+$'+gain.toLocaleString("en-US")+'</b> '+nm(ok)+'</span>':'')+(ok.length&&bad.length?'<i class="sep">·</i>':'')+(bad.length?'<span class="h"><b class="d">−$'+gain.toLocaleString("en-US")+'</b> '+nm(bad)+'</span>':'');
+  var pl=(ok.length?'<span class="h"><b class="u">+$'+gain.toLocaleString("en-US")+'</b> '+nm(ok)+'</span>':'')+''+(bad.length?'<span class="h"><b class="d">−$'+gain.toLocaleString("en-US")+'</b> '+nm(bad)+'</span>':'');
   return '<article class="rc" data-r="'+r.n+'" tabindex="0" aria-label="'+esc(r.co)+' round '+r.n+'"><div class="pl">'+closeAv()+'</div><div class="rcb">'+
     '<div class="ph"><b class="nm">The Close</b>'+VF+'<span class="hd">@the-close · Round '+r.n+' · '+dshort(r.resolves)+'</span></div>'+
     '<div class="rch">'+coTile(r.ticker)+'<span class="cn">'+esc(r.co)+'</span><span class="cl2">closed</span><b class="mv '+(r.a<0?"d":"u")+'">'+r.out+'</b></div>'+
@@ -601,13 +614,13 @@ function vRound(n){var r=GR.filter(function(x){return x.n===n})[0];if(!r)return 
     '<text class="lab" x="'+Math.min(W-4,Math.max(4,X(r.a)+(X(r.a)<W/2?6:-6)))+'" y="14" text-anchor="'+(X(r.a)<W/2?"start":"end")+'" fill="'+(r.a<0?"#ff5248":"#16d47e")+'">Close '+r.out+'</text>'+
     pins.map(function(p){var y=Hh-34-p.l*30,win=w.indexOf(p.m)>-1,M=MODELS[p.m];return '<line x1="'+p.x+'" x2="'+p.x+'" y1="'+(y+11)+'" y2="'+(Hh-18)+'" stroke="'+COL[p.m]+'" stroke-width="1.2" opacity=".6"/><circle cx="'+p.x+'" cy="'+y+'" r="12" fill="'+M.bg+'" stroke="'+(win?"#fdbc2a":COL[p.m])+'" stroke-width="'+(win?2.4:1.6)+'"/><svg x="'+(p.x-7)+'" y="'+(y-7)+'" width="14" height="14" viewBox="0 0 24 24"><path fill="'+M.fg+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+' d="'+M.d+'"/>'+(M.dot?'<path fill="'+M.dotc+'" d="'+M.dot+'"/>':'')+'</svg>'}).join("")+'</svg>';
   var film=r.film?'<div class="film"><video muted playsinline loop preload="metadata" poster="'+MEDIA_ROOT+r.poster+'.jpg"><source src="'+MEDIA_ROOT+r.film+'.webm" type="video/webm"><source src="'+MEDIA_ROOT+r.film+'.mp4" type="video/mp4"></video></div>':'';
-  var res='<div class="res">'+ord.map(function(m){var c=call(r,m),p=pnl(r,m),win=w.indexOf(m)>-1;return '<div class="rr'+(win?' win':'')+'">'+av(m)+'<span class="w"><b>'+name(m)+'</b> <span>'+(c.up?"long":"short")+', '+sees(c)+(win?' · closest':'')+'</span></span><span class="p num '+(p<0?"d":"u")+'">'+money(p)+'<small>'+(right(r,m)?"Right side":"Wrong side")+'</small></span></div>'}).join("")+'</div>';
+  var res='<div class="res">'+ord.map(function(m){var c=call(r,m),p=pnl(r,m),win=w.indexOf(m)>-1;return '<div class="rr'+(win?' win':'')+'">'+av(m)+'<span class="w"><b>'+name(m)+'</b> <span>'+(c.up?"long":"short")+', '+sees(c)+'</span></span><span class="p num '+(p<0?"d":"u")+'">'+money(p)+'<small>'+(right(r,m)?"Right side":"Wrong side")+'</small></span></div>'}).join("")+'</div>';
   var verdict='<div class="verdict">'+closeAv()+'<div class="vb"><div class="ph" style="display:flex;gap:5px;align-items:baseline;white-space:nowrap"><b style="font:650 15px/1.2 var(--sans)">The Close</b>'+VF+'<span style="color:var(--mu);font-size:14px">@the-close · '+dshort(r.resolves)+'</span></div>'+
     '<div class="big '+(r.a<0?"d":"u")+'">'+r.out+'<small>'+esc(r.co)+' at the close. '+(w.length?list(w.map(name))+(w.length>1?' tie for closest.':' was closest.'):'Nobody took the right side.')+'</small></div>'+
     '<div class="nl">'+svg+'<div class="cap"><span>Pins: each AI’s trade</span><span>Shaded: the right side</span></div></div>'+res+film+'</div></div>';
   var nv=function(x,lab){return x?'<a href="#r/'+x.n+'">'+coTile(x.ticker)+'<span><small>'+lab+'</small><b>'+esc(x.co)+'</b></span></a>':'<span></span>'};
   return '<div class="enter"><div class="rhd">'+coTile(r.ticker)+'<div><h1>'+esc(r.co)+' earnings</h1><p>Round '+r.n+' · traded '+dshort(r.called)+', before earnings · graded at the close '+dshort(r.resolves)+'</p></div></div>'+
-    '<div class="thread">'+ord.map(function(m){return post(r,m,{th:1})}).join("")+'</div>'+verdict+
+    '<div class="thread">'+ord.map(function(m){return post(r,m,{th:1,nh:1})}).join("")+'</div>'+verdict+
     '<div class="nav2">'+nv(prev,"Older")+nv(next,"Newer")+'</div></div>'}
 
 /* ---------- rails (desktop) ---------- */
@@ -615,7 +628,7 @@ var NAV=[["live","Live",'<path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0
 function lrail(v){return '<div class="brand">'+(LOGO||'')+'<b>EZ<span>Four AIs trade earnings</span></b></div><nav class="dn">'+NAV.map(function(n){return '<a href="#'+n[0]+'" class="'+(v===n[0]?'on':'')+'"><svg viewBox="0 0 24 24">'+n[2]+'</svg>'+n[1]+'</a>'}).join("")+'</nav>'+
   '<div class="rlh">The four accounts</div>'+SEASON.map(function(s){return '<a class="fl" href="#ai/'+s.m.toLowerCase()+'">'+av(s.m)+'<span><b>'+name(s.m)+'</b><span>'+handle(s.m)+'</span></span></a>'}).join("")+'<div style="padding:16px 12px 0">'+followX()+'</div>'}
 function clockCard(){var P=pending(),g=P.length&&gradeAt(P[0]),N=REPORT.NVDA,t=N?new Date(N.t):null;
-  return '<div class="card clk">'+(g?'<div class="ck"><i class="lvd"></i><span>'+esc(P[0].co)+' grades in</span><b class="num" data-lefts="'+g.t.getTime()+'"'+(g.est?' data-est="1"':'')+'>'+(g.est?'~'+left(g.t-now()):lefts(g.t-now()))+'</b></div>':'')+
+  return '<div class="card clk">'+(g?'<div class="ck"><i class="lvd"></i><span>'+esc(P[0].co)+' grades in</span><b class="num" '+(g.est?'data-left="'+g.t.getTime()+'" data-pre="~"':'data-lefts="'+g.t.getTime()+'"')+'>'+(g.est?'~'+left(g.t-now()):lefts(g.t-now()))+'</b></div>':'')+
     (t?'<div class="ck">'+coTile("NVDA")+'<span>Bet #1 · NVIDIA reports in</span><b class="num" data-left="'+t.getTime()+'">'+left(t-now())+'</b></div>':'')+'</div>'}
 function rrail(v){var G=dueGroups().slice(0,3);
   return clockCard()+(v==="leaders"?'':'<div class="card"><h3>Who’s winning</h3>'+SEASON.map(function(s,i){return '<div class="mini" data-go="ai/'+s.m.toLowerCase()+'"><span class="rk'+(i?'':' g')+'">'+(i+1)+'</span>'+av(s.m)+'<span class="mt2"><b>'+name(s.m)+'</b><span>'+s.w+'-'+s.l+' · '+Math.round(s.hr*100)+'% hit rate</span></span><span class="p num '+(s.pnl<0?"d":"u")+'">'+kmoney(s.pnl)+'</span></div>'}).join("")+'<a class="lk" href="#leaders">Full leaderboard</a></div>')+

@@ -2,25 +2,26 @@
    node walk.js <outdir> [fps] [from] [to]   (frames f0000.jpg..., 1080x1919 at deviceScaleFactor 2.7692)
    Time is virtual: the page's W3.at(t) drives every CSS transition, count-up, countdown and the film. */
 const {chromium}=require('playwright');
-const [out,FPS0,FROM0,TO0]=process.argv.slice(2);const FPS=+(FPS0||30),FROM=+(FROM0||0),TO=+(TO0||33);
-const URL='http://localhost:8996/tools/concepts/studio/w3/index.html?virt=1&now=2026-11-09T15:00:00Z#following';
+const [out,FPS0,FROM0,TO0]=process.argv.slice(2);const FPS=+(FPS0||30),FROM=+(FROM0||0),TO=+(TO0||34);
+const URL='http://localhost:8996/tools/concepts/studio/w3/index.html?virt=1&now=2026-11-09T15:00:00Z#live';
 const TL=[
- {t:2.0, tap:'.strip [data-fol="KIMI"] .av', act:"W3.toggle('KIMI')"},
- {t:3.4, tap:'.strip [data-fol="KIMI"] .av', act:"W3.toggle('KIMI')"},
- {t:4.4, dur:2.8, to:'.rg[data-r="99"]', off:-118},
- {t:8.6, dur:1.3, to:'.rg[data-r="98"]', off:-118},
- {t:10.5, tap:'.rg[data-r="98"] .post[data-m="GROK"] .pl .av', act:"W3.go('ai/grok')"},
- {t:14.0, tap:'.pin[data-go] .post .pl .av', act:"W3.filmFrom=10.8;W3.go('r/72')"},
- {t:16.4, dur:1.6, to:'.verdict .big', off:-120},
- {t:19.4, dur:1.3, to:'.film', off:-150},
- {t:22.6, tap:'.back', act:"W3.go('ai/grok')"},
- {t:23.3, tap:'.back', act:"W3.go('following')"},
- {t:24.0, tap:'.tabs a[href="#leaders"]', act:"W3.go('leaders')"},
- {t:26.6, tap:'#seg button[data-win="week"]', act:"W3.st.win='week';W3.render(true)"},
- {t:28.0, tap:'.tabs a[href="#upcoming"]', act:"W3.go('upcoming')"},
- {t:30.0, dur:1.8, to:'.day:nth-of-type(2)', off:-120, by:330},
+ {t:0.6, dur:1.8, to:'.rc[data-r="99"]', off:-230},
+ {t:3.2, dur:1.5, to:'.rc[data-r="97"]', off:-240},
+ {t:5.3, tap:'.rc[data-r="97"] .rch', act:"W3.go('r/97')"},
+ {t:7.6, dur:1.5, to:'.verdict .big', off:-110},
+ {t:10.0, tap:'.back', act:"W3.back()"},
+ {t:10.7, dur:1.0, to:'.strip', off:-130},
+ {t:12.1, tap:'.strip a[href="#ai/grok"] .av', act:"W3.go('ai/grok')"},
+ {t:15.2, tap:'.pin[data-go] .post .pt', act:"W3.filmFrom=11.0;W3.go('r/72')"},
+ {t:17.4, dur:1.5, to:'.film', off:-170},
+ {t:22.4, tap:'.back', act:"W3.back()"},
+ {t:23.0, tap:'.back', act:"W3.back()"},
+ {t:23.6, tap:'.tabs a[href="#upcoming"]', act:"W3.go('upcoming')"},
+ {t:25.0, dur:1.4, to:'.day:nth-of-type(2)', off:-110},
+ {t:27.0, tap:'.tabs a[href="#leaders"]', act:"W3.go('leaders')"},
+ {t:29.8, dur:1.6, to:'.pin.bet', off:-200},
 ];
-(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:693},deviceScaleFactor:1080/390,timezoneId:'Europe/Berlin'});
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:693},deviceScaleFactor:1080/390,timezoneId:'America/New_York'});
  const errs=[];p.on('pageerror',e=>errs.push(e.message));
  await p.goto(URL,{waitUntil:'networkidle'});await p.waitForTimeout(1500);
  await p.evaluate(()=>W3.at(0));

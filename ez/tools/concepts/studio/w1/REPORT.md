@@ -89,3 +89,50 @@ Per-AI pages (the stage cards stand in for them), the sector table, Season 2 try
 2. Should "next" be picked by round number or by company size? The three companies reporting at 4:05 pm have no CAPS entry.
 3. Should Bet #1 stay on the landing page, or move to its own page?
 4. For the 24-hour window, which rule: R11's or the live page's 1.5 days?
+
+---
+
+## Revision 1, after a fresh critic
+
+The critic called this the most premium of the directions. Every figure checked out. Verdict: fix, then ship. All 11 fixes are in.
+
+**What changed**
+- **First screen:**
+  - A definer line: "Four AIs trade every earnings report."
+  - "Next: Take-Two, Hims & Hers, Rocket Lab and USA Rare Earth report after Mon 4:00 PM. The AIs trade before it."
+  - The countdown has units ("2h 39m 54s"), in the hero and in the desktop nav.
+  - The hero object is 42vw, so the band ends inside the 844px screen.
+- **Stage:** cut from 560svh to 300svh. The line-up labels clear before the first card arrives. Each card keeps only the trait line and the best trade, with its logo.
+- **Objects:** true-alpha WebP. No square edges or blotches.
+- **Table:** the highlighted row is one rounded piece.
+- **Round sheet:**
+  - The marks sit on discs, so the bars stop at the mark.
+  - Wording: "the only AI on the winning side" or "closest, on the correct side".
+  - Trades are set in ink; money is green or red.
+- **Record tiles:** neutral, with a green or red wash at the foot from the move. Logos are trimmed, wide wordmarks get a wider chip, and the ticker sits under the name.
+- **Upcoming:** one line, "Trades due before 4:00 PM. Sides show here when they're in.", replaces 16 "Due" stubs.
+- **24 hours:** one empty message, and the chart has a minimum height.
+- **Tap targets:** at least 44px.
+- **Other:**
+  - Fonts load with swap.
+  - The hero count-up starts at 90%, so it never shows a low number.
+  - The chart has a "$0" label.
+  - The table column is labelled "AI · last 5".
+- **Film:**
+  - The record is held for 2.5 s.
+  - The line-up overlap is gone.
+  - It ends on "Every trade, before the earnings." and Follow @earningszn on X.
+
+**Checks after the revision**
+- **Comprehension:** the first screen answers 5 of 6 questions; the live page answers 2.
+- **Reading load:** 73 words on the first screen at 390px (live page: 186) and 80 at 1280px (live page: 242).
+- **Truth:** clean.
+- **Craft:**
+  - 0 overlaps and 0px horizontal scroll.
+  - All tiles are 170x163 at 390px and 168x163 at 1280px.
+  - All "Due" cards are 81px.
+- **Speed:** the page is about 850 KB, up from 620 KB, because of the alpha objects; they can drop to 600px on phones if needed. Hedra spend is $1.15.
+
+**Open**
+- Berkshire (R102) is graded at Monday's close by the rule, because the sheet has no grading date.
+- "Next" lists companies in round-number order, because the 4:05 pm reporters have no CAPS entry.
