@@ -72,7 +72,7 @@ function cl(x){return x<0?0:x>1?1:x}function seg(t,a,b){return cl((t-a)/(b-a))}
 function eo(x){return 1-Math.pow(1-x,3)}function ei(x){return x*x*x}function eio(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}
 function lerp(a,b,x){return a+(b-a)*x}
 /* beats (s) */
-var T={fx0:0,st0:3.35,st1:4.0,lu1:7.6,tw1:8.1,L0:8.1,LR:8.6,L1:10.6,L2:12.0,L3:16.0,fin:16.0,po:18.4,nx:21.9,end:25.0};
+var T={fx0:0,st0:3.35,st1:4.0,lu1:7.6,tw1:8.1,L0:8.1,LR:8.6,L1:10.6,L2:11.8,L3:15.6,fin:15.6,po:18.0,nx:22.2,end:25.0};
 if(!NP){T.LR=T.L1=T.L2=T.L3=T.L0}  /* no path: straight to the bell */
 /* path index k at time t: the first hour (the report lands), overnight fast-forward, the session */
 var K1=NP?Math.min(4,NP-1):0;
@@ -104,7 +104,7 @@ function bug(x,y,a){/* the channel bug: EZ disc + "EARNINGS NIGHT" */
 function fixture(t){/* the thumbnail: it reads on frame 0. The company in its own colour against the four AIs */
  var z=1+.025*seg(t,0,T.st0);
  var s='<div class="abs" style="inset:0;transform:scale('+z+');transform-origin:50% 50%">';
- s+='<div class="abs cd" style="left:72px;top:230px;font-weight:800;font-size:40px;letter-spacing:.2em;color:var(--gold)">'+day(D0,{weekday:'long'}).toUpperCase()+' '+day(D0,{month:'short',day:'numeric'}).toUpperCase()+'</div>';
+ 
  s+='<div class="abs sl" style="--k:70px;left:-80px;right:90px;top:310px;height:390px;background:'+COC+'"></div>';
  s+='<div class="abs" style="left:72px;top:345px;display:flex;align-items:center;gap:40px">'+co(RD.ticker,320)+'<div class="cd" style="font-weight:900;font-style:italic;font-size:'+fitW(RD.co.toUpperCase(),560,210)+'px;line-height:.82;letter-spacing:-.01em;color:#fff">'+RD.co.toUpperCase()+'</div></div>';
  s+='<div class="abs sl" style="--k:70px;left:90px;right:-80px;top:750px;height:500px;background:var(--bar2)"></div>';
@@ -206,7 +206,7 @@ function final(t){/* the closing bell is the final whistle: the band wipes over 
  s+='<div class="abs" style="right:56px;top:46px;height:112px;display:flex;align-items:center;gap:20px">'+co(RD.ticker,96)+'<span class="cd" style="font-weight:900;font-size:76px">'+RD.ticker+'</span></div>';
  var k=eo(seg(t,T.fin+.15,T.fin+.55));
  s+='<div class="abs cd" style="left:50px;top:182px;font-weight:900;font-size:200px;line-height:1;letter-spacing:-.02em;color:'+(RD.a<0?'var(--dn)':'var(--up)')+';transform:translateY('+((1-k)*30)+'px);opacity:'+k+'">'+pct(RD.a)+'</div>';
- s+='<div class="abs cd" style="left:58px;top:400px;font-weight:800;font-size:38px;letter-spacing:.12em;color:var(--gold)">MARKET CLOSE · '+c.t+' · '+c.d+'</div>';
+ s+='<div class="abs cd" style="left:58px;top:400px;font-weight:800;font-size:38px;letter-spacing:.12em;color:var(--gold)">MARKET CLOSE · '+c.t+'</div>';
  s+='</div>';return s}
 
 function potm(t){/* player of the match: the sheet's winner (a tie crowns both, none says Nobody), its P&L counted up */
@@ -221,7 +221,7 @@ function potm(t){/* player of the match: the sheet's winner (a tie crowns both, 
   s+='<div class="abs" style="left:72px;top:315px;transform:translateX('+((1-pin)*-80)+'px);opacity:'+pin+'">'+med(m,330,'#fdbc2a')+'</div>';
   s+='<div class="abs" style="left:450px;top:340px;opacity:'+pin+'">'+crown(110)+'<div class="cd" style="margin-top:14px;font-weight:900;font-style:italic;font-size:'+fitW(name(m).toUpperCase(),560,170)+'px;line-height:.85;color:'+LC[m]+'">'+name(m).toUpperCase()+'</div><div style="margin-top:26px">'+sideChip(m,50)+'</div></div>';
   s+='<div class="abs" style="left:72px;top:760px"><div class="cd" style="font-weight:800;font-size:36px;letter-spacing:.2em;color:var(--mut)">P&amp;L ON THE NIGHT</div><div class="cd" style="margin-top:6px;font-weight:900;font-size:'+fitW(money(FIN[m]),940,270)+'px;line-height:1;letter-spacing:-.02em;color:'+(FIN[m]>=0?'var(--up)':'var(--dn)')+';opacity:'+seg(t,T.po+.55,T.po+.7)+'">'+money(FIN[m]*c)+'</div></div>';
-  var line=RIGHT.length===1?'The only one on the right side.':(RIGHT.length+' of 4 on the right side.');
+  var line=RIGHT.length===1?'The only '+(SIDE[m]<0?'short':'long')+'.':(RIGHT.length+' of 4 on the right side.');
   var lq=seg(t,T.po+1.7,T.po+2.0);s+='<div class="abs cd" style="left:74px;top:1150px;font-weight:800;font-size:60px;opacity:'+lq+';transform:translateY('+((1-lq)*16)+'px)">'+line+'</div>';
  }else{
   s+='<div class="abs cd" style="left:72px;top:205px;font-weight:800;font-size:42px;letter-spacing:.2em;color:var(--gold)">JOINT PLAYERS OF THE MATCH</div>';
@@ -236,7 +236,7 @@ function next(t){/* the next fixture: the first trade day after this round close
  s+='<div class="abs" style="inset:0;background:var(--bar);clip-path:polygon(0 0,'+(eo(a)*135)+'% 0,'+(eo(a)*135-35)+'% 100%,0 100%)">';
  s+='<div class="abs" style="left:0;right:0;top:0;height:16px;background:var(--cream)"></div>'+bug(72,70,1);
  if(NX.length){
-  s+='<div class="abs cd" style="left:72px;top:205px;font-weight:800;font-size:42px;letter-spacing:.2em;color:var(--gold)">NEXT FIXTURE</div>';
+  s+='<div class="abs cd" style="left:72px;top:205px;font-weight:800;font-size:42px;letter-spacing:.2em;color:var(--gold)">NEXT</div>';
   s+='<div class="abs cd" style="left:68px;top:265px;font-weight:900;font-style:italic;font-size:150px;line-height:.9">'+day(NXD,{weekday:'long'}).toUpperCase()+'</div>';
   s+='<div class="abs cd" style="left:74px;top:410px;font-weight:800;font-size:54px;letter-spacing:.1em;color:var(--mut)">'+day(NXD,{month:'short',day:'numeric'}).toUpperCase()+'</div>';
   var rh=NX.length>2?160:210;

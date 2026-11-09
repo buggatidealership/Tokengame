@@ -13,14 +13,14 @@ def lay(v0,v1,m0,g=.6,fi=.03,fo=.12):
   if a>0:x[:a]*=np.linspace(0,1,a)[:,None]
   if b>0:x[-b:]*=np.linspace(1,0,b)[:,None]
   o[i0:i0+n]+=g*x
-lay(0.0,16.0,0.0,fi=0,fo=.06)       # fixture to the bell
-lay(18.4,22.0,12.0,fo=.1)           # player of the match, from a phrase start
-lay(21.9,25.0,0.0,fo=1.2,g=.5)      # next fixture, the opening phrase again, fading
+lay(0.0,15.6,0.0,fi=0,fo=.06)       # fixture to the bell
+lay(18.0,22.3,12.0,fo=.1)           # player of the match, from a phrase start
+lay(22.2,25.0,0.0,fo=1.0,g=.5)      # next fixture, the opening phrase again, fading
 def put(t,n,g=1.0):
   s=load(SFX+f'sfx-{n}.mp3');i=int(t*SR);k=min(N-i,len(s));o[i:i+k]+=g*.5*s[:k]
 cues=[(3.33,'whoosh',.8),(3.58,'strike',.6)]+[(4.05+.16*i,'tap',.45) for i in range(4)]+[
- (7.58,'whoosh',.45),(8.6,'beep',.55),(8.62,'flip',.6),(10.6,'whoosh',.35),(12.0,'tick',.6),
- (16.0,'bell',1.0),(16.02,'strike',.7),(18.38,'whoosh',.7)]+[(18.62+.28*i,'coin',.32) for i in range(4)]+[(19.85,'cash',.55),(21.88,'whoosh',.6),(22.8,'chime',.6)]
+ (7.58,'whoosh',.45),(8.6,'beep',.55),(8.62,'flip',.6),(10.6,'whoosh',.35),(11.8,'tick',.6),
+ (15.6,'bell',1.0),(15.62,'strike',.7),(17.98,'whoosh',.7)]+[(18.22+.28*i,'coin',.32) for i in range(4)]+[(19.45,'cash',.55),(22.18,'whoosh',.6),(23.1,'chime',.6)]
 for c in cues: put(*c)
 o=np.tanh(o*1.15)/np.tanh(1.15)
 w=wave.open(sys.argv[1],'wb');w.setnchannels(2);w.setsampwidth(2);w.setframerate(SR);w.writeframes((np.clip(o,-1,1)*32767).astype('<i2').tobytes());w.close();print('wrote',sys.argv[1])
