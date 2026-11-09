@@ -10,6 +10,8 @@ const {chromium}=require('playwright');const fs=require('fs');const O=__dirname+
    lvit:q('.lv-it').map(e=>({r:r(e),on:e.classList.contains('on'),t:e.innerText.slice(0,40).replace(/\n/g,' ')})),
    lvc:q('.lv-c').map(e=>({r:r(e)})),lvst:q('.lv-st').map(e=>({r:r(e)})),lvsd:q('.lv-sd').map(e=>({r:r(e),h:r(e.querySelector('h4')),sl:r(e.querySelector('.lv-sl'))})),
    xr:q('.lv-it.on .lv-xr').map(e=>({r:r(e),h:e.classList.contains('lv-xh'),pl:r(e.lastElementChild),w:e.classList.contains('w')})),
+   logos:q('.lv-sd .lv-p').map(e=>({r:r(e.firstElementChild),side:e.closest('.lv-sd').classList.contains('L')?'L':'S'})),
+   bst:q('td.bst').map(e=>({r:r(e)})),
    ut:q('.ur .ut b').slice(0,3).map(e=>({r:r(e)})),
    hr62:(()=>{const t=document.querySelectorAll('table')[1];if(!t)return null;const td=t.querySelector('tbody tr').lastElementChild;const g=document.createRange();g.selectNodeContents(td);const b=g.getBoundingClientRect();return [Math.round(b.left),Math.round(b.top+scrollY),Math.round(b.width),Math.round(b.height)]})(),
    tables:q('table').map(e=>({r:r(e),rows:[...e.querySelectorAll('tbody tr')].map(x=>({r:r(x),t:x.innerText.slice(0,50).replace(/\s+/g,' ')}))})),
