@@ -96,3 +96,61 @@ $0.60 for one music bed (`v1-bed`).
 - "Won" means the closest trade, not the most money.
 - Is 25 s too long? It could be cut to about 22 s.
 - No sizes are shown, so the P&L differences between AIs on the same side are left to the FAQ. **Producer's note:** the owner later chose to keep sized P&L in the videos, and B shows the sizes; the critic should weigh this.
+
+---
+
+## Revision 1, after a fresh critic (verdict: fix, then ship)
+
+The critic scored V1 against B, out of 10:
+
+| | V1 | B |
+|---|---|---|
+| Comprehension | 6 | 8 |
+| Reading load | 6 | 3 |
+| Truth | 10 | 7 |
+| Craft | 7 | 6 |
+| Focus | 7 | 6 |
+| Hook | 8 | 5 |
+
+V1's main fault was that the trade sizes were missing, so the P&L looked arbitrary. The side words were also coloured green and red before the result, which told the wrong story. All 11 items are fixed.
+
+**Copy and colour**
+- Sizes are shown ("Long 8%").
+- "$10,000 per 1% traded" sits under the winner's P&L.
+- The side words are cream; green and red now mark money and the move only.
+- The model names use the site's line colours.
+
+**Chart beat**
+- The chart gets its own fact, "−16.7% in the first hour", computed from PATHS.
+- The static 0.00% is gone.
+- The bell solo is 1.1 s.
+
+**Pacing**
+- No empty frames at the cuts.
+- The end card reads "Next trades / Apple · Palantir / Mon, Nov 2" and holds 5 s, ending on the address.
+
+**Identity and layout**
+- On the hook, "Four AIs traded" is 60 px cream, the logo is 96 px with a cream ring, and "Reddit" is in its brand colour.
+- The Open tick moved so it no longer crosses the clock.
+- Every beat sits on one left grid.
+
+**Sound**
+- The bed is audible from frame 0.
+- Each trade row gets a tap.
+- The bed cuts at 13.29 s and the bell plays at 13.60 s, on the frame the line reaches the close.
+- A coin plays when the count-up ends.
+
+**Motion**
+- Every line enters with a masked line wipe.
+- The winner's P&L grows out of its row.
+
+**Checks after revision**
+- 0 overlaps and 0 empty frames on R72, R76 and R10.
+- Truth is unchanged and clean.
+- The dense beats now fail the hold rule:
+  - hook: 1.1 s short;
+  - trades block: 2 s short;
+  - verdict block: 2.1 s short.
+  Meeting it everywhere would take about 29 s.
+- Focus is 62%.
+- Render takes about 40 s per round and costs $0.
