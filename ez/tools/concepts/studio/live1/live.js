@@ -43,6 +43,11 @@ function lastDay(){var G=ROUNDS.filter(function(r){return r.resolves&&typeof r.a
       '<div class="lv-x"'+(open?'':' hidden')+'>'+det+'</div></div>'}).join("");
   return '<section class="pn lv"><div class="tabs"><button class="on">LAST MATCHDAY<span class="n">'+R.length+'</span></button><span class="lv-dt">'+day(last)+'</span></div><div class="lv-ls">'+rows+'</div></section>'}
 var CRN='<svg class="lv-cr" viewBox="0 0 24 16" aria-hidden="true"><path d="M2 14 L1 3 L7 8 L12 1 L17 8 L23 3 L22 14 Z" fill="#fdbc2a" stroke="#7a5a10" stroke-width="1.2" stroke-linejoin="round"/></svg>';var LVOPEN={};document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-lvx]");if(!b)return;var n=b.getAttribute("data-lvx"),it=b.parentNode,x=it.querySelector(".lv-x");LVOPEN[n]=!it.classList.contains("on");setTimeout(function(){var bb=document.querySelector('[data-lvx="'+n+'"]');if(!bb)return;var ii=bb.parentNode,xx=ii.querySelector(".lv-x");ii.classList.toggle("on",!!LVOPEN[n]);bb.setAttribute("aria-expanded",!!LVOPEN[n]);if(xx)xx.hidden=!LVOPEN[n]},0)});
+/* (owner, 2026-11-09: "it should be 3 p.m... add the date... is it today or tomorrow") the drop is the end of the window, 1 hour before an estimated report, floored to the half hour so it never promises later than it is; then the day */
+window.__lvDrop=function(b){var t=new Date(Math.floor(+b/18e5)*18e5),h=t.getMinutes()?t.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):t.toLocaleTimeString([],{hour:"numeric"});
+  var n=new Date(),d0=new Date(n.getFullYear(),n.getMonth(),n.getDate()),d1=new Date(t.getFullYear(),t.getMonth(),t.getDate()),k=Math.round((d1-d0)/864e5),
+  dd=k===0?"today":k===1?"tomorrow":t.toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"});
+  return '<small>Trades drop by</small><b class="ut-t">'+h+'</b><i class="ut-d">'+dd+'</i>'};
 window.__lvLive=liveCards;window.__lvLast=lastDay;
 if(AT==="up"){var U0=upcoming;inPlay=function(){return liveCards()};upcoming=function(){return U0()+lastDay()};}
 else{var Lo=leaders;leaders=function(){return liveCards()+lastDay()+Lo()};inPlay=function(){return ""};}

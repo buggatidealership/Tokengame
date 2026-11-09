@@ -8,14 +8,16 @@ css=open(os.path.join(D,'live.css')).read()
 JSB='/*LIVE1{ (owner, 2026-11-09: W2\'s Live now card and Last matchday on Upcoming) */'+js+'/*}LIVE1*/\n'
 CSSB='\n/*LIVE1{*/'+css+'/*}LIVE1*/'
 OLD_DROP='<small>Trades drop</small><b>\'+rng(a,b)+\'</b>'
-NEW_DROP='<small>Trades drop by</small><b>\'+tm(b)+\'</b>'
+MID_DROP='<small>Trades drop by</small><b>\'+tm(b)+\'</b>'
+NEW_DROP='\'+__lvDrop(b)+\''
 def put(s):
   s=re.sub(r'/\*LIVE1\{ \(owner[^\n]*?\*/.*?/\*\}LIVE1\*/\n','',s,flags=re.S)
   s=re.sub(r'\n/\*LIVE1\{\*/.*?/\*\}LIVE1\*/','',s,flags=re.S)
   a='var h0=(location.hash||"").slice(1);'
   assert s.count(a)==1
   s=s.replace(a,JSB+a).replace('</style>',CSSB+'</style>',1)
-  if OLD_DROP in s:s=s.replace(OLD_DROP,NEW_DROP)
+  for o in (OLD_DROP,MID_DROP):
+    if o in s:s=s.replace(o,NEW_DROP)
   assert NEW_DROP in s
   return s
 for p in ['ez/v53-terminal.html','ez/tools/concepts/hyperdash/index.html','site/index.html']:
