@@ -93,7 +93,8 @@ var EV=[{t:-1,o:ORDER.slice()}];(function(){for(var t=T.L0;t<=T.L3+.2;t+=1/240){
 var FL=.35;
 function evAt(t){var e=EV[0];for(var i=1;i<EV.length;i++)if(EV[i].t<=t)e=EV[i];return e}
 function flipX(t){var e=evAt(t);return e.prev?eio(seg(t,e.t,e.t+FL)):1}
-function slotAt(m,t){var e=evAt(t),x=flipX(t);return e.prev?lerp(e.prev.indexOf(m),e.o.indexOf(m),x):e.o.indexOf(m)}
+function slotAt(m,t){var e=evAt(t),x=flipX(t);if(!e.prev)return e.o.indexOf(m);var a=e.prev.indexOf(m),b=e.o.indexOf(m);return x<.5?a+(b-a)*.12*x*2:b-(b-a)*.12*(2-x*2)}
+function flipA(m,t){var e=evAt(t),x=flipX(t);if(!e.prev||x>=1||e.prev.indexOf(m)===e.o.indexOf(m))return 1;return x<.5?1-x*2:x*2-1}
 function upNow(m,t){var e=evAt(t);return !!e.prev&&flipX(t)<1&&e.o.indexOf(m)<e.prev.indexOf(m)}
 function settled(t,v){return Math.abs(v)>1e-9&&flipX(t)>=1}
 function moveAt(m,t){var e=evAt(t);if(!e.prev||t-e.t>3.0)return 0;return e.prev.indexOf(m)-e.o.indexOf(m)}
@@ -166,7 +167,7 @@ function rows(t){var f=eio(seg(t,T.lu1,T.tw1)),live=t>=T.L0,s='',k=kAt(t),v=live
  var L=ORDER.map(function(m,i){var slot=live?slotAt(m,t):i;return {m:m,i:i,slot:slot,climb:live?moveAt(m,t):0}});
  L.forEach(function(q){q.up=live&&upNow(q.m,t)});L.sort(function(a,b){return (a.up?1:0)-(b.up?1:0)});   /* the climber slides over the others */
  L.forEach(function(q){var ent=eo(seg(t,q.i*.16+T.st1+.05,T.st1+.6+q.i*.16)),fr=Math.abs(q.slot-Math.round(q.slot)),dx=q.up?36*Math.sin(Math.PI*fr):0;
-  s+='<div class="abs" style="inset:0;transform:translateX('+((1-ent)*1100+dx).toFixed(1)+'px)">'+row(q.m,q.slot,f,t,live)+'</div>'});
+  s+='<div class="abs" style="inset:0;opacity:'+(live?flipA(q.m,t):1).toFixed(3)+';transform:translateX('+((1-ent)*1100).toFixed(1)+'px)">'+row(q.m,q.slot,f,t,live)+'</div>'});
  return s}
 
 function scorebug(t){/* LIVE tag, the stock as the score, the New York clock and the session */
@@ -206,7 +207,7 @@ function lower(t){/* lower thirds: one event each, five words or fewer */
  return s}
 
 function final(t){/* the closing bell is the final whistle: the band wipes over the feed, the move is the final score */
- if(t<T.fin)return '';var out=seg(t,T.po-.3,T.po),w=1,s='';
+ if(t<T.fin)return '';var out=0,w=1,s='';
  var c=clockAt(NP-1,true);
  s+='<div class="abs" style="left:0;right:0;top:232px;height:470px;clip-path:inset(0 '+((1-w)*100)+'% 0 0);opacity:'+(1-out)+'">';
  s+='<div class="abs" style="inset:0;background:var(--ink)"></div><div class="abs" style="left:0;right:0;top:0;height:12px;background:var(--gold)"></div><div class="abs" style="left:0;right:0;bottom:0;height:4px;background:rgba(248,240,217,.12)"></div>';
@@ -218,7 +219,7 @@ function final(t){/* the closing bell is the final whistle: the band wipes over 
  s+='</div>';return s}
 
 function potm(t){/* player of the match: the sheet's winner (a tie crowns both, none says Nobody), its P&L counted up */
- var a=seg(t,T.po,T.po+.45),s='',W=WIN,fo=1-seg(t,T.nx-.3,T.nx);
+ var a=seg(t,T.po,T.po+.45),s='',W=WIN,fo=1-seg(t,T.nx-.35,T.nx-.1);
  /* the sheet crowns the closest trade; when that is not the P&L leader, the card says so */
  var top=FIN[FORD[0]],lead=W.length&&W.every(function(m){return FIN[m]>=top-.5}),TT=lead?(W.length>1?'JOINT PLAYERS OF THE MATCH':'PLAYER OF THE MATCH'):(W.length>1?'CLOSEST TRADES':'CLOSEST TRADE');
  s+='<div class="abs" style="inset:0;background:var(--ink);clip-path:polygon(0 0,'+(eo(a)*135)+'% 0,'+(eo(a)*135-35)+'% 100%,0 100%)">';
@@ -243,7 +244,7 @@ function potm(t){/* player of the match: the sheet's winner (a tie crowns both, 
  s+='</div></div>';return s}
 
 function next(t){/* the next fixture: the first trade day after this round closed, biggest companies first */
- var a=seg(t,T.nx,T.nx+.45),s='';
+ var a=seg(t,T.nx-.15,T.nx+.3),s='';
  s+='<div class="abs" style="inset:0;background:var(--bar);clip-path:polygon(0 0,'+(eo(a)*135)+'% 0,'+(eo(a)*135-35)+'% 100%,0 100%)">';
  s+='<div class="abs" style="left:0;right:0;top:0;height:16px;background:var(--cream)"></div>'+bug(72,70,1);
  if(NX.length){
@@ -264,7 +265,7 @@ window.R=function(t){
  if(t>=TCUT&&t<T.po+.5){o+=chart(t);o+=lineup(t);o+=rows(t);o+=scorebug(t);o+=lower(t);o+=final(t)}
  if(t>=T.st0&&t<T.st1+.05)o+=sting(t);window.__info&&(window.__info.cut=TCUT);
  if(t>=T.po)o+=potm(t);
- if(t>=T.nx)o+=next(t);
+ if(t>=T.nx-.15)o+=next(t);
  document.getElementById('G').innerHTML=o;
  return Promise.resolve()};
 T.cut=TCUT;T.ev=evT();window.__T=T;window.__info={round:RN,win:WIN,fin:FIN,next:NX.map(function(r){return r.co}),nextDay:NXD&&NXD.toISOString(),ev:EV.map(function(e){return [e.t.toFixed(3),e.o.join(',')]})};
