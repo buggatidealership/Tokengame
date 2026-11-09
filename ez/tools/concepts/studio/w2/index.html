@@ -277,6 +277,16 @@ main{max-width:1200px;margin:0 auto;padding:12px var(--gut) 104px}
   .mcx .wide{grid-column:1/-1}
   .fxg{display:grid;grid-template-columns:1fr 1fr;gap:0 28px}
 }
+@media (max-width:359px){
+  :root{--gut:12px}
+  .lt-h,.lt-r{grid-template-columns:22px minmax(0,1fr) 44px 34px 64px;gap:4px}
+  .lt-r .tm{gap:7px;padding-left:10px}.lt-r .tm .cr{width:24px!important;height:24px!important}
+  .fm{width:12px;height:12px;font-size:8px}.lt-r .tm small{gap:2px}
+  .rr{grid-template-columns:30px 1fr auto 62px;gap:7px}.rr .lu{gap:4px}.rr .lu .cr{width:18px!important;height:18px!important}.rr .sc{font-size:16px}
+  .fr{grid-template-columns:54px 30px 1fr auto;gap:7px}.fr .lg{width:30px!important;height:30px!important}
+  .mc-bd{grid-template-columns:1fr 104px 1fr}
+  .fr .who .xs,.bug-x .lab{display:none}.fr .who>span{font-size:11px}.bug-k{padding:0 9px}.bug-t{padding:10px 9px 9px}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -368,7 +378,7 @@ function matchCard(o){/* o: {n,co,tk,calls:[{m,s,mag}],state,move,win[],ft,ko,hr
 function liveCard(f){var st=stateOf(f),ex=exOf(f.tk);
   return matchCard({n:f.n,co:f.co,tk:f.tk,calls:f.calls,state:st,ft:f.ft,href:"#match/"+f.n,hd:"Round "+f.n,hdr:st==="live"?"Final whistle "+hm(f.ft):"",
     foot:st==="live"?'<span>Trades in before the report. The '+ex[3]+' close at <b>'+hm(f.ft)+'</b> grades all four.</span>':'<span>The close has rung. The result posts after the sheet updates.</span>'})}
-function fixRow(f){var st=stateOf(f),due=f.ko?(st==="pre"?'Line-ups due <i>'+hm(f.ko-2*36e5).replace(/ [AP]M/,"")+'–'+hm(f.ko-36e5)+'</i>':'Line-ups not in yet'):'Report date to come';
+function fixRow(f){var st=stateOf(f),due=f.ko?(st==="pre"?'Line-ups<span class="xs"> due</span> <i>'+hm(f.ko-2*36e5).replace(/ [AP]M/,"")+'–'+hm(f.ko-36e5)+'</i>':'Line-ups not in yet'):'Report date to come';
   return '<div class="fr"><span class="ko'+(f.ko?'':' tbc')+'">'+(f.ko?hmP(f.ko):'TBC')+'</span>'+logo(f.tk,36)+
     '<span class="who"><b>'+esc(f.co)+'</b><span>'+due+'</span>'+(f.ft?'<span>Full time '+(dkey(f.ft)===dkey(now())?'':dshort(f.ft).split(",")[0]+' ')+hm(f.ft)+'</span>':'')+'</span>'+
     (HL[f.tk]?hlLink(f.tk):'<span></span>')+'</div>'}

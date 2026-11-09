@@ -10,7 +10,7 @@ const TL=[
  {t:4.4, dur:2.8, to:'.rg[data-r="99"]', off:-118},
  {t:8.6, dur:1.3, to:'.rg[data-r="98"]', off:-118},
  {t:10.5, tap:'.rg[data-r="98"] .post[data-m="GROK"] .pl .av', act:"W3.go('ai/grok')"},
- {t:14.0, tap:'.pin[data-go] .post .pl .av', act:"W3.go('r/72')"},
+ {t:14.0, tap:'.pin[data-go] .post .pl .av', act:"W3.filmFrom=10.8;W3.go('r/72')"},
  {t:16.4, dur:1.6, to:'.verdict .big', off:-120},
  {t:19.4, dur:1.3, to:'.film', off:-150},
  {t:22.6, tap:'.back', act:"W3.go('ai/grok')"},
@@ -30,7 +30,7 @@ const TL=[
   for(let i=0;i<TL.length;i++){const e=TL[i];if(done.has(i)||t<e.t)continue;done.add(i);
     if(e.tap){const r=await p.evaluate(s=>{const el=document.querySelector(s);if(!el)return null;const b=el.getBoundingClientRect();return [b.left+b.width/2,b.top+b.height/2]},e.tap);
       if(r){await p.evaluate(([x,y])=>W3.tap(x,y),r);taps.push(t)}else console.log('no tap target',e.tap)}
-    if(e.act){await p.evaluate(e.act);}
+    if(e.act){await p.evaluate(e.act);if(/r\/72/.test(e.act))await p.waitForTimeout(2500);}
     if(e.to||e.by){const y0=await p.evaluate(()=>scrollY);let y1=y0+(e.by||0);
       if(e.to&&!e.by){y1=await p.evaluate(([s,o])=>{const el=document.querySelector(s);return el?el.getBoundingClientRect().top+scrollY+o:scrollY},[e.to,e.off||0]);}
       scroll={t0:t,d:e.dur,y0,y1};}

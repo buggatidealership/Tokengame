@@ -63,7 +63,7 @@ var LG={};function prepLogo(t){var L=CO_LOGOS[t];if(!L)return Promise.resolve();
  if((x1-x0)/(y1-y0+1)>1.8){var gap=0,e=x0;for(var xx=x0;xx<=x1;xx++){if(!col[xx]){gap++;if(gap>(y1-y0)*.12){e=xx-gap;break}}else gap=0}x1=e;y0=H;y1=-1;for(var yy=0;yy<H;yy++)for(var xx=x0;xx<=x1;xx++)if(ink((yy*W+xx)*4)){if(yy<y0)y0=yy;if(yy>y1)y1=yy}}
  var w=x1-x0+1,h=y1-y0+1,S=Math.max(w,h),o=document.createElement('canvas');o.width=o.height=S;o.getContext('2d').drawImage(c,x0,y0,w,h,(S-w)/2,(S-h)/2,w,h);LG[t]=o.toDataURL()}catch(e){}res()};im.onerror=function(){res()};im.src='../../../../media/'+L.f})}
 function tri(up,px,col){return '<svg width="'+px+'" height="'+px+'" viewBox="0 0 20 20" style="flex:none"><path d="'+(up?'M10 3 L18 16 L2 16 Z':'M10 17 L18 4 L2 4 Z')+'" fill="'+col+'"/></svg>'}
-function fitW(txt,w,px){var c=fitW.c||(fitW.c=document.createElement('canvas').getContext('2d'));c.font='italic 900 '+px+'px "Barlow Condensed"';var m=c.measureText(txt).width;return m>w?Math.floor(px*w/m):px}
+function fitW(txt,w,px,up){var c=fitW.c||(fitW.c=document.createElement('canvas').getContext('2d'));c.font=(up?'':'italic ')+'900 '+px+'px "Barlow Condensed"';var m=c.measureText(txt).width;return m>w?Math.floor(px*w/m):px}
 function crown(px){return '<svg width="'+px+'" height="'+(px*.7).toFixed(0)+'" viewBox="0 0 64 44" style="flex:none"><path d="M4 40 L8 10 L22 26 L32 4 L42 26 L56 10 L60 40 Z" fill="#fdbc2a"/></svg>'}
 function sideChip(m,fs){var s=SIDE[m];return '<span class="cd" style="display:inline-flex;align-items:center;gap:'+(fs*.18)+'px;padding:'+(fs*.14)+'px '+(fs*.32)+'px;background:'+(s>0?'var(--up)':'var(--dn)')+';color:#04070e;font-weight:800;font-size:'+fs+'px;line-height:1;letter-spacing:.02em;clip-path:polygon('+(fs*.22)+'px 0,100% 0,calc(100% - '+(fs*.22)+'px) 100%,0 100%)">'+(s>0?'LONG':'SHORT')+' '+MAG[m]+'%</span>'}
 
@@ -113,10 +113,13 @@ function fixture(t){/* the thumbnail: it reads on frame 0. The company in its ow
  s+='<div class="abs" style="left:150px;top:975px;display:flex;gap:28px">'+ORDER.map(function(m){return med(m,192)}).join('')+'</div>';
  s+='</div>';s+=bug(72,74,1);return s}
 
+/* the cut under the sting: the moment the trailing black slash covers the frame */
+function blackP(t){var x=seg(t,T.st0,T.st1);return eio(cl(x*1.35-4*.08))}
+var TCUT=(function(){for(var t=T.st0;t<T.st1;t+=1/600)if(blackP(t)>=.47)return t;return T.st1})();
 function sting(t){/* the EZ slashes sweep across: green, cream, red, gold, as in the logo */
  var x=seg(t,T.st0,T.st1),cols=['#03c870','#f8f0d9','#ff3a31','#fdbc2a','#04070e'],s='';
- cols.forEach(function(c,i){var p=eio(cl(x*1.35-i*.08));var L=lerp(-1500,1700,p);s+='<div class="abs" style="top:-200px;height:1750px;left:'+L+'px;width:'+(i===4?1500:260)+'px;background:'+c+';transform:skewX(-22deg)"></div>'});
- var lp=seg(t,T.st0+.22,T.st0+.5),lq=seg(t,T.st1-.2,T.st1);
+ cols.forEach(function(c,i){var p=eio(cl(x*1.35-i*.08));var L=i===4?lerp(-2400,1700,p):lerp(-1500,1700,p);s+='<div class="abs" style="top:-200px;height:1750px;left:'+L+'px;width:'+(i===4?2000:260)+'px;background:'+c+';transform:skewX(-22deg)"></div>'});
+ var lp=seg(t,T.st0+.22,T.st0+.45),lq=seg(t,TCUT+.04,TCUT+.2);
  if(lp>0&&lq<1)s+='<div class="abs" style="left:390px;top:525px;transform:scale('+(.6+.4*eo(lp))+');opacity:'+(1-lq)+'">'+logo(300)+'</div>';
  return s}
 
@@ -145,7 +148,7 @@ function row(m,slot,f,t,live){
  return s+'</div>'}
 
 function lineup(t){/* the team sheet: each AI and its side, in before the report */
- var s='',a=seg(t,T.st1-.05,T.st1+.25),f=eio(seg(t,T.lu1,T.tw1));
+ var s='',a=seg(t,TCUT+.05,TCUT+.3),f=eio(seg(t,T.lu1,T.tw1));
  /* header */
  var hy=lerp(180,40,f);
  s+='<div class="abs" style="left:56px;top:'+hy+'px;opacity:'+(a*(1-seg(t,T.lu1,T.lu1+.3)))+'"><div class="cd" style="font-weight:800;font-size:30px;letter-spacing:.2em;color:var(--gold)">THE LINE-UP</div><div class="cd" style="margin-top:12px;font-weight:900;font-style:italic;font-size:112px;line-height:.88">TRADED BEFORE<br>EARNINGS</div></div>';
@@ -163,10 +166,10 @@ function rows(t){var f=eio(seg(t,T.lu1,T.tw1)),live=t>=T.L0,s='',k=kAt(t),v=live
 function scorebug(t){/* LIVE tag, the stock as the score, the New York clock and the session */
  var a=eo(seg(t,T.lu1+.2,T.tw1+.2)),k=kAt(t),v=vAt(k),fin=t>=T.fin,c=clockAt(k,fin),ph=phaseAt(k),y=lerp(-160,40,a);
  var s='<div class="abs" style="left:40px;right:40px;top:'+y+'px;height:110px;display:flex;gap:10px">';
- s+='<div class="sl" style="--k:14px;width:110px;background:var(--ink);display:grid;place-items:center">'+logo(80)+'</div>';
- var live=!fin;s+='<div class="sl cd" style="--k:14px;width:150px;background:'+(live?'var(--dn)':'var(--cream)')+';color:'+(live?'#fff':'#04070e')+';display:flex;align-items:center;justify-content:center;gap:10px;font-weight:900;font-size:44px;letter-spacing:.06em">'+(live?'<span style="width:14px;height:14px;background:#fff;opacity:'+(Math.floor(t*2)%2?1:.35)+'"></span>LIVE':'FINAL')+'</div>';
- s+='<div class="sl" style="--k:14px;flex:1;background:var(--bar2);display:flex;align-items:center;gap:16px;padding:0 26px">'+co(RD.ticker,70)+'<span class="cd" style="font-weight:900;font-size:56px;letter-spacing:.02em">'+RD.ticker+'</span><span class="cd" style="margin-left:auto;font-weight:900;font-size:64px;color:'+(Math.abs(v)<.005?'var(--cream)':(v>0?'var(--up)':'var(--dn)'))+'">'+pct(v)+'</span></div>';
- s+='<div class="sl" style="--k:14px;width:290px;background:var(--cream);color:#04070e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"><span class="cd" style="font-weight:900;font-size:54px;line-height:1">'+c.t+'</span><span class="cd" style="font-weight:700;font-size:23px;letter-spacing:.08em;line-height:1;white-space:nowrap">'+c.d+' · NEW YORK</span></div>';
+ s+='<div class="sl" style="--k:14px;width:96px;flex:none;background:var(--ink);display:grid;place-items:center">'+logo(72)+'</div>';
+ var live=!fin;s+='<div class="sl cd" style="--k:14px;width:136px;flex:none;background:'+(live?'var(--dn)':'var(--cream)')+';color:'+(live?'#fff':'#04070e')+';display:flex;align-items:center;justify-content:center;gap:10px;font-weight:900;font-size:44px;letter-spacing:.06em">'+(live?'<span style="width:14px;height:14px;background:#fff;opacity:'+(Math.floor(t*2)%2?1:.35)+'"></span>LIVE':'FINAL')+'</div>';
+ s+='<div class="sl" style="--k:14px;flex:1;min-width:0;background:var(--bar2);display:flex;align-items:center;gap:12px;padding:0 24px">'+co(RD.ticker,60)+'<span class="cd" style="font-weight:900;font-size:50px;letter-spacing:.02em">'+RD.ticker+'</span><span class="cd" style="margin-left:auto;font-weight:900;font-size:58px;color:'+(Math.abs(v)<.005?'var(--cream)':(v>0?'var(--up)':'var(--dn)'))+'">'+pct(v)+'</span></div>';
+ s+='<div class="sl" style="--k:14px;width:290px;flex:none;background:var(--cream);color:#04070e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px"><span class="cd" style="font-weight:900;font-size:54px;line-height:1">'+c.t+'</span><span class="cd" style="font-weight:700;font-size:23px;letter-spacing:.08em;line-height:1;white-space:nowrap">'+c.d+' · NEW YORK</span></div>';
  s+='</div>';
  /* the session strip under the bug */
  var phs=['AFTER HOURS','OVERNIGHT','MARKET OPEN','CLOSE'];
@@ -220,7 +223,7 @@ function potm(t){/* player of the match: the sheet's winner (a tie crowns both, 
   s+='<div class="abs cd" style="left:72px;top:225px;font-weight:800;font-size:42px;letter-spacing:.2em;color:var(--gold)">PLAYER OF THE MATCH</div>';
   s+='<div class="abs" style="left:72px;top:315px;transform:translateX('+((1-pin)*-80)+'px);opacity:'+pin+'">'+med(m,330,'#fdbc2a')+'</div>';
   s+='<div class="abs" style="left:450px;top:340px;opacity:'+pin+'">'+crown(110)+'<div class="cd" style="margin-top:14px;font-weight:900;font-style:italic;font-size:'+fitW(name(m).toUpperCase(),560,170)+'px;line-height:.85;color:'+LC[m]+'">'+name(m).toUpperCase()+'</div><div style="margin-top:26px">'+sideChip(m,50)+'</div></div>';
-  s+='<div class="abs" style="left:72px;top:760px"><div class="cd" style="font-weight:800;font-size:36px;letter-spacing:.2em;color:var(--mut)">P&amp;L ON THE NIGHT</div><div class="cd" style="margin-top:6px;font-weight:900;font-size:'+fitW(money(FIN[m]),940,270)+'px;line-height:1;letter-spacing:-.02em;color:'+(FIN[m]>=0?'var(--up)':'var(--dn)')+';opacity:'+seg(t,T.po+.55,T.po+.7)+'">'+money(FIN[m]*c)+'</div></div>';
+  s+='<div class="abs" style="left:72px;top:760px"><div class="cd" style="font-weight:800;font-size:36px;letter-spacing:.2em;color:var(--mut)">P&amp;L ON THE NIGHT</div><div class="cd" style="margin-top:6px;font-weight:900;font-size:'+fitW(money(FIN[m]),930,270,1)+'px;line-height:1;letter-spacing:-.02em;color:'+(FIN[m]>=0?'var(--up)':'var(--dn)')+';opacity:'+seg(t,T.po+.55,T.po+.7)+'">'+money(FIN[m]*c)+'</div></div>';
   var line=RIGHT.length===1?'The only '+(SIDE[m]<0?'short':'long')+'.':(RIGHT.length+' of 4 on the right side.');
   var lq=seg(t,T.po+1.7,T.po+2.0);s+='<div class="abs cd" style="left:74px;top:1150px;font-weight:800;font-size:60px;opacity:'+lq+';transform:translateY('+((1-lq)*16)+'px)">'+line+'</div>';
  }else{
@@ -249,9 +252,9 @@ function next(t){/* the next fixture: the first trade day after this round close
 
 window.R=function(t){
  o='';
- if(t<T.st1)o+=fixture(t);
- if(t>=T.st1-.25&&t<T.po+.5){o+=chart(t);o+=lineup(t);o+=rows(t);o+=scorebug(t);o+=lower(t);o+=final(t)}
- if(t>=T.st0&&t<T.st1+.05)o+=sting(t);
+ if(t<TCUT)o+=fixture(t);
+ if(t>=TCUT&&t<T.po+.5){o+=chart(t);o+=lineup(t);o+=rows(t);o+=scorebug(t);o+=lower(t);o+=final(t)}
+ if(t>=T.st0&&t<T.st1+.05)o+=sting(t);window.__info&&(window.__info.cut=TCUT);
  if(t>=T.po)o+=potm(t);
  if(t>=T.nx)o+=next(t);
  document.getElementById('G').innerHTML=o;
