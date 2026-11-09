@@ -24,4 +24,10 @@ const {chromium}=require('playwright');const fs=require('fs');const O=__dirname+
  R.up=await rects(p);R.up.opened=n;await p.screenshot({path:O+'up.png',fullPage:true});await c.close();
  [c,p]=await ctx();await p.goto('http://localhost:8997/#leaders');await p.waitForTimeout(2200);await p.screenshot({path:O+'chrome-lb.png'});
  await p.evaluate(()=>{document.querySelector('nav.nav').style.display='none'});R.lb=await rects(p);await p.screenshot({path:O+'lb.png',fullPage:true});await c.close();
+ // the lifted pieces, shot again at 6x so they stay sharp when enlarged in a 2160px frame
+ const hi=async(hash,list,prep)=>{const c=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:6,timezoneId:'America/New_York'});const p=await c.newPage();await p.clock.setFixedTime(new Date(T));
+  await p.goto('http://localhost:8997/#'+hash);await p.waitForTimeout(2200);if(prep)await prep(p);await p.evaluate(()=>{document.querySelector('nav.nav').style.display='none';const h=document.querySelector('header.top');if(h)h.style.position='static';const l=document.querySelector('.lv-ls');if(l)l.style.maxHeight='none'});await p.waitForTimeout(300);
+  for(const [n,r] of list)await p.screenshot({path:O+'hi-'+n+'.png',fullPage:true,clip:{x:r[0],y:r[1],width:r[2],height:r[3]}});await c.close()};
+ await hi('next',[['live',R.up.secs[0].r],['dk',R.up.lvit.find(x=>x.on).r],...R.up.ur.slice(0,3).map((x,i)=>['ur'+i,x.r])],async p=>{await p.evaluate(()=>{const o=document.querySelector('.lv-it.on [data-lvx]');if(o)o.click()});await p.waitForTimeout(400);await p.evaluate(()=>{const b=[...document.querySelectorAll('[data-lvx]')].find(e=>/DraftKings/.test(e.textContent));b&&b.click()});await p.waitForTimeout(600)});
+ await hi('leaders',[['hit',R.lb.tables[1].r],['sec',R.lb.tables[2].r]]);
  fs.writeFileSync(O+'rects.json',JSON.stringify(R,null,1));console.log(JSON.stringify(R).slice(0,3000));console.log('errs',errs.join('|')||'none');await b.close()})();
