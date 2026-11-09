@@ -12,7 +12,8 @@ const {chromium}=require('playwright');const fs=require('fs');const O=__dirname+
    xr:q('.lv-it.on .lv-xr').map(e=>({r:r(e),h:e.classList.contains('lv-xh'),pl:r(e.lastElementChild),w:e.classList.contains('w')})),
    logos:q('.lv-sd .lv-p').map(e=>({r:r(e.firstElementChild),side:e.closest('.lv-sd').classList.contains('L')?'L':'S'})),
    bst:q('td.bst').map(e=>({r:r(e),row:[...e.closest('tbody').children].indexOf(e.parentNode)})),
-   sn:(()=>{const t=document.querySelectorAll('table')[2];return t?[...t.querySelectorAll('tbody tr')].map(x=>r(x.firstElementChild)):[]})(),
+   sn:(()=>{const t=document.querySelectorAll('table')[2];if(!t)return [];return [...t.querySelectorAll('tbody tr')].map(x=>{const td=x.firstElementChild,tn=[...td.childNodes].find(n=>n.nodeType===3&&n.textContent.trim())||td.firstChild;const g=document.createRange();g.selectNodeContents(tn);const b=g.getBoundingClientRect();return [Math.round(b.left)-2,Math.round(b.top+scrollY)-2,Math.round(b.width)+4,Math.round(b.height)+4]})})(),
+   plt:(()=>{const w=document.querySelector('.lv-it.on .lv-xr.w');if(!w)return null;const g=document.createRange();g.selectNodeContents(w.lastElementChild);const b=g.getBoundingClientRect();return [Math.round(b.left)-3,Math.round(b.top+scrollY)-3,Math.round(b.width)+6,Math.round(b.height)+6]})(),
    pl:q('.lv-sd .lv-p').map(e=>{const a=e.firstElementChild.getBoundingClientRect(),c=e.children[1].getBoundingClientRect(),x0=Math.min(a.left,c.left),x1=Math.max(a.right,c.right);return {r:[Math.round(x0)-1,Math.round(a.top+scrollY)-1,Math.round(x1-x0)+2,Math.round(c.bottom-a.top)+2],side:e.closest('.lv-sd').classList.contains('L')?'L':'S'}}),
    utT:q('.ur .ut-t').slice(0,3).map(e=>r(e)),utD:q('.ur .ut-d').slice(0,3).map(e=>r(e)),
    ut:q('.ur .ut b').slice(0,3).map(e=>({r:r(e)})),
@@ -33,4 +34,5 @@ const {chromium}=require('playwright');const fs=require('fs');const O=__dirname+
   for(const [n,r] of list)await p.screenshot({path:O+'hi-'+n+'.png',fullPage:true,clip:{x:r[0],y:r[1],width:r[2],height:r[3]}});await c.close()};
  await hi('next',[['live',R.up.secs[0].r],['dk',R.up.lvit.find(x=>x.on).r],...R.up.ur.slice(0,3).map((x,i)=>['ur'+i,x.r])],async p=>{await p.evaluate(()=>{const o=document.querySelector('.lv-it.on [data-lvx]');if(o)o.click()});await p.waitForTimeout(400);await p.evaluate(()=>{const b=[...document.querySelectorAll('[data-lvx]')].find(e=>/DraftKings/.test(e.textContent));b&&b.click()});await p.waitForTimeout(600)});
  await hi('leaders',[['hit',R.lb.tables[1].r],['sec',R.lb.tables[2].r]]);
+ for(const n of ['ur0','ur1','ur2','dk'])require('child_process').execSync(`ffmpeg -loglevel error -y -i ${O}hi-${n}.png -vf "format=gray,lut=y='clip((val-70)*3\\,0\\,255)'" ${O}mask-${n}.png`); // gold masks: the bright ink only
  fs.writeFileSync(O+'rects.json',JSON.stringify(R,null,1));console.log(JSON.stringify(R).slice(0,3000));console.log('errs',errs.join('|')||'none');await b.close()})();
