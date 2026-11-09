@@ -79,7 +79,7 @@ if(!NP){/* no intraday path: the night is skipped, the tower settles at the bell
 var XC=/\.[A-Z]+$/.test(RD.ticker)||/^\d/.test(RD.ticker);  /* a non-US listing: its own close, so no New York clock times */  /* no path: straight to the bell */
 /* path index k at time t: the first hour (the report lands), overnight fast-forward, the session */
 var K1=NP?Math.min(4,NP-1):0;
-function kAt(t){if(!NP)return t>=T.L3?1:0;if(t<=T.L0)return 0;if(t<=T.LR)return 0;if(t<T.L1)return lerp(0,K1,eo(seg(t,T.LR,T.L1)));if(t<T.L2)return lerp(K1,KOPEN,eio(seg(t,T.L1,T.L2)));if(t<T.L3)return lerp(KOPEN,NP-1,seg(t,T.L2,T.L3));return NP-1}
+function kAt(t){if(!NP)return t>=T.L3?1:0;if(t<=T.L0)return 0;if(t<=T.LR)return 0;if(t<T.L1)return lerp(0,K1,eio(seg(t,T.LR,T.L1)));if(t<T.L2)return lerp(K1,KOPEN,eio(seg(t,T.L1,T.L2)));if(t<T.L3)return lerp(KOPEN,NP-1,seg(t,T.L2,T.L3));return NP-1}
 function vAt(k){if(!NP)return k>=1?RD.a:0;var a=Math.floor(k);if(a>=NP-1)return VS[NP-1];return VS[a]+(VS[a+1]-VS[a])*(k-a)}
 /* New York clock: index 0 is the report (4:05 pm), index i>0 is 4:00 pm + 15i min */
 function minsAt(k){var m=k<1?lerp(16*60+5,16*60+15,k):16*60+15*k;return m}
