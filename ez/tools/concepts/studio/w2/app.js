@@ -198,13 +198,13 @@ function lineups(calls,r,f){/* graded: P&L and the miss; in play: side, size and
 function vMatch(n){var r=ROUNDS.filter(function(x){return x.n==n})[0];
   if(!r){var f=fixtures().filter(function(x){return x.n==n})[0];if(!f)return vToday();var st=stateOf(f),back=f.kind==="pend"?'<a class="back" href="#today">Today</a>':'<a class="back" href="#fixtures">Fixtures</a>';
     if(f.calls.length){/* in play */
-      return '<div class="mcx view"><div class="wide">'+back+liveCard(f,false)+'</div><div><div class="ev">'+(f.ko?'<div><small>Kickoff</small><b>'+whenDay(f.ko)+tl(f.ko,f.kest)+'</b></div>':'')+'<div><small>Full time</small><b>'+whenDay(f.ft)+tl(f.ft,f.fest)+'</b></div><div><small>'+(st==="await"?'Status':'Closes in')+'</small><b class="num"'+(st==="await"?'>Result due':' data-cd="'+f.ft+'">'+cdx(f.ft-now()))+'</b></div></div>'+
+      return '<div class="view narrow">'+back+liveCard(f,false)+'<div style="margin-top:12px"><div class="ev">'+(f.ko?'<div><small>Kickoff</small><b>'+whenDay(f.ko)+tl(f.ko,f.kest)+'</b></div>':'')+'<div><small>Full time</small><b>'+whenDay(f.ft)+tl(f.ft,f.fest)+'</b></div><div><small>'+(st==="await"?'Status':'Closes in')+'</small><b class="num"'+(st==="await"?'>Result due':' data-cd="'+f.ft+'">'+cdx(f.ft-now()))+'</b></div></div>'+
         (HL[f.tk]?'<a class="cta" href="'+hlUrl(f.tk)+'" target="_blank" rel="noopener">Follow '+esc(f.co)+' on Hyperliquid ›</a>':'')+'</div>'+
         '<div><div class="sh"><h2>Line-ups</h2><span class="sub">$100K each</span></div>'+lineups(f.calls.map(function(c){return {m:c.m,s:c.s,mag:c.mag}}),null,f)+'</div></div>'}
     /* still to come */
     var card=matchCard({n:f.n,co:f.co,tk:f.tk,calls:[],state:st==="pre"?"pre":st,ko:f.ko,kest:f.kest,hdr:f.ko?dshort(f.ko):"Date to come",
       foot:f.ko?'<span>Trades due before the report, <b>'+rng(f.ko-2*36e5,f.ko-36e5,f.kest)+'</b>'+(f.kest?' (est.)':'')+'.</span>':'<span>The report date is not set yet.</span>'});
-    return '<div class="mcx view"><div class="wide">'+back+card+'</div><div><div class="ev">'+(f.ko?'<div><small>Kickoff</small><b>'+whenDay(f.ko)+tl(f.ko,f.kest)+'</b></div>':'<div><small>Kickoff</small><b>To come</b></div>')+(f.ft?'<div><small>Full time</small><b>'+whenDay(f.ft)+tl(f.ft,f.fest)+'</b></div>':'')+'<div><small>Trades</small><b>Not in yet</b></div></div>'+
+    return '<div class="view narrow">'+back+card+'<div style="margin-top:12px"><div class="ev">'+(f.ko?'<div><small>Kickoff</small><b>'+whenDay(f.ko)+tl(f.ko,f.kest)+'</b></div>':'<div><small>Kickoff</small><b>To come</b></div>')+(f.ft?'<div><small>Full time</small><b>'+whenDay(f.ft)+tl(f.ft,f.fest)+'</b></div>':'')+'<div><small>Trades</small><b>Not in yet</b></div></div>'+
       (HL[f.tk]?'<a class="cta" href="'+hlUrl(f.tk)+'" target="_blank" rel="noopener">Follow '+esc(f.co)+' on Hyperliquid ›</a>':'')+'</div>'+
       '<div><p class="note">Each AI goes long or short on '+esc(f.co)+' before the report. The next market close after the report grades every trade.</p></div></div>'}
   var calls=r.calls.map(function(c){return {m:c[0],s:side(c[1]),mag:mag(c[1]),miss:+c[2]}}),win=r._win,ko=r._ft-24*36e5,film=FILMS&&FILMS[r.n],rightN=calls.filter(function(c){return c.s*r.a>0}).length;
@@ -249,8 +249,10 @@ function loop(){tick();if(RT==null)requestAnimationFrame(loop)}
 window.APP={go:function(h){history.pushState(null,"","#"+h);route()},state:STATE,route:route,
   touch:function(x,y,a){var el=document.getElementById("touch");el.style.left=x+"px";el.style.top=y+"px";el.style.opacity=a;el.style.transform="scale("+(.6+.4*a)+")"},
   end:function(a){var el=document.getElementById("endcard");el.style.opacity=a;el.style.transform="scale("+(1.03-.03*a)+")"}};
-window.R=function(t){RT=t;var ms=t*1000;document.getAnimations().forEach(function(a){if(a.__b==null)a.__b=ms<50?ms-2000:ms;a.pause();a.currentTime=Math.max(0,ms-a.__b)});
-  var vs=[].slice.call(document.querySelectorAll("video"));tick();if(window.WALK)window.WALK(t);
+window.R=function(t){RT=t;var ms=t*1000;tick();if(window.WALK)window.WALK(t);
+  /* animations born this frame start one frame in, so a new screen never flashes empty */
+  document.getAnimations().forEach(function(a){if(a.__b==null)a.__b=ms<50?ms-2000:ms-34;a.pause();a.currentTime=Math.max(0,ms-a.__b)});
+  var vs=[].slice.call(document.querySelectorAll("video"));
   return Promise.all(vs.map(function(v){return new Promise(function(res){if(!v.duration){res();return}v.pause();var tt=(t%v.duration);if(Math.abs(v.currentTime-tt)<.01){res();return}v.addEventListener("seeked",function(){res()},{once:true});v.currentTime=tt;setTimeout(res,400)})}))};
 
 /* ================= boot: refresh REPORT and HL from the live terminal; the snapshot in maps.js is the fallback ================= */

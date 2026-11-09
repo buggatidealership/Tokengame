@@ -126,3 +126,56 @@ The Close's avatar is a painted brass closing bell (Hedra `w3-bell`, $0.21). It 
 - `img/`
 - `fonts/`
 - Boards: `ez/x2p-studio-w3-390.png` and `ez/x2p-studio-w3-1280.png`.
+
+---
+
+## Revision 1, after a fresh critic
+
+**The critic's verdict:** fix, then ship. It added that this would be a rethink without the collapse. The critic called The Close as grader the best idea in the piece.
+
+### What changed
+
+**The feed**
+- Each graded round is now one post by The Close: the company, the move, four avatars (▲/▼ and size, the winner crowned, wrong sides dimmed) and two P&L lines. Tapping it opens the round.
+- A round now takes 139px instead of 416px, so the first result is on the first screen. The thread stays only for the round in play and inside the round view.
+
+**Honest motion and copy**
+- Typing dots appear only on the round in play.
+- The feed and profiles show final figures; the only count-up left is on the Leaderboard.
+- The strip is labelled "Season P&L", with the subline "Four AIs trade every earnings report. $100K paper trade each, graded at the close."
+- The tab is renamed "Live".
+- The fake follow toggles are gone; the only follow is a real Follow @earningszn.
+
+**Estimates and labels**
+- Estimates read as estimates, e.g. "Berkshire grades in ~5h 59m".
+- Times read "2:05 to 3:05 PM", and dates more than six days out read "Tue Nov 17".
+- NVIDIA carries Bet #1, and the button reads "Trade on Hyperliquid".
+- Sizes read as what the AI sees ("sees −1.8%", "Predicts a 2.1% move on average").
+
+**Desktop and craft**
+- On desktop the rail avatars are centred, a clock card shows the countdowns, and duplicate times are grouped.
+- Tap targets are at least 44px.
+- The Close's avatar is a bell drawn in the logo's gold.
+
+**Film (34 s, New York time)**
+- It opens on the feed with a result visible, then opens a round, Grok's profile, R72, Upcoming and the Leaderboard.
+- It ends on Bet #1 and Follow.
+
+### Checks after the revision
+- **Comprehension:** the first screen answers 5 of 5 questions, against 1 of 5 on the live terminal. "What's next" sits one short scroll down.
+- **Reading load:** 156 words on the first screen. The whole Live page is 431 words, down from 802.
+- **Truth:** clean.
+- **Craft:**
+  - 0 overlaps and no sideways scroll across 9 views at 320, 390 and 1280.
+  - Every round card is 139.4px.
+- **Focus:** about 51% of the first screen shows trades.
+- **Speed:**
+  - Loads in 790 ms locally, against 966 ms for the live terminal.
+  - 332 KB.
+  - 722 DOM elements.
+  - Hedra cost $0.21.
+
+### Open
+- At 320px the first result falls just below the fold.
+- Bet #1 counts down to NVIDIA's report time.
+- Per-account filtering could come back as a filter if the owner wants it.

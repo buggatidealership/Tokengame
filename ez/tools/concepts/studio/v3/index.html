@@ -1,136 +1,155 @@
 <!doctype html><meta charset="utf-8"><title>EZ resolution V3 · Painted cinema</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Barlow+Condensed:wght@600;700;800&display=swap">
 <style>
-/* V3 "Painted cinema": a resolution video for X, 1080x1350, window.R(t) seconds.
-   Four paper lanterns (the four AIs) keep a vigil on a rooftop over a world painted from the company; each lantern's paper carries
-   its AI and its side. Night passes to the next close, the bell rings, the lanterns on the wrong side go out, the winner's turns gold.
-   Painted layers (Hedra): art/fg.png (rooftop + lanterns, fixed, keyed), art/r<n>-world.jpg + art/r<n>-night.mp4 (per round),
-   art/bell.mp4 (fixed). Every word and number is set here from ez-data.js. ?r=<n> picks the round; ?t=<s> shows one frame. */
-:root{--cream:#f6ead0;--ink:#2a1b10;--up:#0d7a40;--dn:#b3221a;--gold:#fdbc2a;--disp:Fraunces,Georgia,serif;--cond:"Barlow Condensed",system-ui,sans-serif}
+/* V3 "Painted cinema" (rev 2, after the critic): a resolution video for X, 1080x1350, window.R(t) seconds.
+   Four paper lanterns (the four AIs) keep a vigil on a rooftop over a world painted from the company. The art is the chart:
+   the company's planet sits at the stock's price (PATHS, Hyperliquid 15-min closes) and each lantern burns at its AI's running P&L,
+   while the sky keeps clock time (a Kling day clip). At 4:00 pm the camera tilts up to the bell under the eave; then the verdict.
+   Painted layers (Hedra): art/fg.png (rooftop + lanterns, fixed), art/bell-eave.png (fixed), art/r<n>-world.jpg + art/r<n>-day.mp4
+   + art/r<n>-planet.png (per round). Every word and number is set here from ez-data.js. ?r=<n> picks the round; ?t=<s> one frame. */
+:root{--cream:#f6ead0;--ink:#2a1b10;--gold:#fdbc2a;--disp:Fraunces,Georgia,serif;--cond:"Barlow Condensed",system-ui,sans-serif}
 *{box-sizing:border-box;margin:0}
 html,body{width:1080px;height:1350px;overflow:hidden;background:#05070b}
 #st{position:absolute;inset:0;overflow:hidden}
 #cam{position:absolute;left:0;top:0;width:1080px;height:1350px;transform-origin:0 0}
-#bgw{position:absolute;left:-185px;top:60px;width:1450px;height:1450px;overflow:hidden;background:#05070b}
+#skyL,#scnL{position:absolute;left:0;top:0;width:1080px;height:1350px}
+#bgw{position:absolute;left:-285px;top:-300px;width:1650px;height:1650px;overflow:hidden;background:#05070b}
 #bgw img,#bgw video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #bgv{opacity:0}
-#sky{position:absolute;left:-185px;top:60px;width:1450px;height:1450px;pointer-events:none}
+#warm{position:absolute;left:-285px;top:-300px;width:1650px;height:1650px;pointer-events:none}
+#grade{position:absolute;left:-285px;top:-300px;width:1650px;height:1650px;pointer-events:none;background:linear-gradient(180deg,#060a1e 0%,#0a1230 60%,#1a1a2a 100%);mix-blend-mode:multiply;opacity:0}
+#planet{position:absolute;left:0;top:0;width:300px;transform-origin:50% 58.5%}
 #fg{position:absolute;left:0;top:-45px;width:1080px;height:1440px}
 .pane{position:absolute;overflow:hidden}
-.pane .glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(255,226,160,.0),rgba(255,226,160,0));mix-blend-mode:screen}
-.pane .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;mix-blend-mode:multiply;text-align:center}
-.pane .out{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,#3a2716 0%,#1d130b 100%);mix-blend-mode:multiply;opacity:0}
+.pane .glow{position:absolute;inset:0;mix-blend-mode:screen}
+.pane .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;mix-blend-mode:multiply;text-align:center}
+.pane .out{position:absolute;inset:0;background:#2a1a0e;mix-blend-mode:multiply;opacity:0}
 .pane .gold{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,#ffd36b 0%,#f2a81d 75%);mix-blend-mode:multiply;opacity:0}
+.pane .pv{position:absolute;left:0;right:0;bottom:30px;text-align:center;font:800 40px/1 var(--cond);letter-spacing:.01em;white-space:nowrap;opacity:0}
+.pv.dn{color:#ff4b3e;text-shadow:0 0 0 #000,-1.5px -1.5px 0 #2a1208,1.5px -1.5px 0 #2a1208,-1.5px 1.5px 0 #2a1208,1.5px 1.5px 0 #2a1208}
+.pv.up{color:#0c7a3e}
 .mk{position:relative;border-radius:50%;display:grid;place-items:center}
 .mk svg{width:58%;height:58%}
-.nm{font:700 34px/1 var(--cond);letter-spacing:.02em;color:var(--ink)}
-.sd{font:800 46px/1 var(--cond);letter-spacing:.03em;display:flex;flex-direction:column;align-items:center;gap:2px}
-.sd i{font-style:normal;font-size:40px;line-height:.8}
-.pl{font:800 40px/1 var(--cond);letter-spacing:.01em;white-space:nowrap}
+.nm{font:700 33px/1 var(--cond);letter-spacing:.02em;color:var(--ink)}
+.sd{font:800 38px/1 var(--cond);letter-spacing:.03em;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:3px}
+.sd i{font-style:normal;font-size:30px;line-height:.85}
+.sd b{font-weight:800;font-size:38px}
 .pool{position:absolute;pointer-events:none;mix-blend-mode:multiply;opacity:0;background:radial-gradient(ellipse at 50% 30%,rgba(20,12,6,.85),rgba(20,12,6,0) 70%)}
+#beam{position:absolute;left:0;width:1080px;background:url(art/bell-eave.png) center top/100% auto no-repeat}
+#bell{position:absolute;background:url(art/bell-eave.png) no-repeat}
 #top{position:absolute;left:0;right:0;top:44px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
-#cap{position:absolute;left:60px;right:60px;top:1012px;height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--cream)}
-.l1{font:700 64px/1.08 var(--disp);letter-spacing:-.01em;text-shadow:0 3px 18px rgba(0,0,0,.7)}
-.l2{font:600 34px/1.2 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:rgba(246,234,208,.72);margin-top:16px}
+#cap{position:absolute;left:50px;right:50px;top:1012px;height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--cream)}
+.l1{font:700 64px/1.08 var(--disp);letter-spacing:-.01em;text-shadow:0 3px 18px rgba(0,0,0,.75)}
+.l2{font:700 36px/1.2 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:rgba(246,234,208,.8);margin-top:14px;text-shadow:0 2px 12px rgba(0,0,0,.8)}
 .sg{font-family:var(--cond);font-weight:800;font-size:.86em;margin-right:.04em;position:relative;top:-.02em}
-.big{font:900 150px/1 var(--disp);letter-spacing:-.03em;font-variant-numeric:lining-nums tabular-nums}
+.big{font:900 150px/1 var(--disp);letter-spacing:-.03em;font-variant-numeric:lining-nums tabular-nums;text-shadow:0 4px 24px rgba(0,0,0,.6)}
 .ttl{font:900 92px/1 var(--disp);letter-spacing:-.02em;color:var(--cream);text-shadow:0 4px 30px rgba(0,0,0,.65);display:flex;align-items:center;gap:26px}
-.clk{font:700 40px/1 var(--cond);letter-spacing:.12em;color:var(--cream);padding:12px 22px;border:2px solid rgba(246,234,208,.55);border-radius:6px;background:rgba(5,7,11,.35);font-variant-numeric:tabular-nums}
-#bell{position:absolute;inset:0;opacity:0;background:#05070b}
-#bell video{position:absolute;left:-160px;top:-30px;width:1400px;height:1400px;object-fit:cover}
-#veil{position:absolute;inset:0;background:#05070b;opacity:0;pointer-events:none}
-.ez{width:78px;height:78px}
-.u{color:var(--up)}.d{color:var(--dn)}
+.clk{font:700 40px/1 var(--cond);letter-spacing:.12em;color:var(--cream);padding:12px 22px;border:2px solid rgba(246,234,208,.55);border-radius:6px;background:rgba(5,7,11,.4);font-variant-numeric:tabular-nums}
+.ez{width:64px;height:64px}
 </style>
 <div id="st">
  <div id="cam">
-  <div id="bgw"><img id="bgi" alt=""><video id="bgv" muted playsinline preload="auto"></video></div>
-  <div id="sky"></div>
-  <img id="fg" src="art/fg.png" alt="">
-  <div id="pools"></div>
-  <div id="panes"></div>
+  <div id="skyL">
+   <div id="bgw"><img id="bgi" alt=""><video id="bgv" muted playsinline preload="auto"></video></div>
+   <div id="warm"></div><div id="grade"></div>
+   <img id="planet" alt="">
+  </div>
+  <div id="scnL">
+   <div id="beam"></div><div id="bell"></div>
+   <img id="fg" src="art/fg.png" alt="">
+   <div id="pools"></div>
+   <div id="panes"></div>
+  </div>
  </div>
- <div id="bell"><video id="bellv" muted playsinline preload="auto"></video></div>
  <div id="top"></div>
  <div id="cap"></div>
  <div id="ezc" style="position:absolute;left:40px;top:40px;width:56px;height:56px"></div>
- <div id="veil"></div>
 </div>
 <script src="../../../../ez-data.js"></script>
+<script src="../../resolution/paths.js"></script>
 <script>
 /* ---------- the round, all from ez-data.js ---------- */
 var Q=new URLSearchParams(location.search),RN=+(Q.get('r')||72),RD=ROUNDS.filter(function(r){return r.n===RN})[0];
 var ORDER=RD.calls.map(function(c){return c[0]}),SIDE={},SIZE={};
 RD.calls.forEach(function(c){SIDE[c[0]]=/^DOWN/.test(c[1])?-1:1;SIZE[c[0]]=parseFloat(c[1].replace(/[^0-9.]/g,''))});
-/* video P&L: $10,000 per 1% predicted, x side x the move (the owner's rule for the videos) */
-function pnl(m){return 10000*SIZE[m]*SIDE[m]*RD.a/100}
+/* video P&L: $10,000 per 1% predicted x side x the move (the owner's rule for the videos); v = the move in % so far */
+function pnlAt(m,v){return 10000*SIZE[m]*SIDE[m]*v/100}
+function pnl(m){return pnlAt(m,RD.a)}
 var RIGHT=ORDER.filter(function(m){return SIDE[m]*RD.a>0});
 var WIN=(RD.win||'').toUpperCase().split(/\s*&\s*/).filter(function(m){return ORDER.indexOf(m)>=0});
 var NOBODY=WIN.length===0;
-function money(v){var a=Math.round(Math.abs(v));return (v<0?'−':'+')+'$'+a.toLocaleString('en-US')}
-function sgn(x){return '<span class="sg">'+x.charAt(0)+'</span>'+x.slice(1)}
+/* one formatter for every dollar figure (lanterns, captions, end card), so they always round the same way */
+function money(v){var a=Math.round(Math.abs(v));return (a===0?'':(v<0?'−':'+'))+'$'+a.toLocaleString('en-US')}
+function sgn(x){return /^[+−]/.test(x)?'<span class="sg">'+x.charAt(0)+'</span>'+x.slice(1):x}
 function pct(v){return (v<0?'−':'+')+Math.abs(v).toFixed(2)+'%'}
 function md(s){var m=String(s).match(/(\d+)\/(\d+)\/(\d+)/);return new Date(Date.UTC(2000+(+m[3]%100),+m[1]-1,+m[2]))}
 function fmt(d,o){return d.toLocaleDateString('en-US',Object.assign({timeZone:'UTC'},o))}
-var CLOSE=md(RD.resolves),OPEN=md(RD.called);
+var CLOSE=md(RD.resolves),OPEN=md(RD.called),SAME=+OPEN===+CLOSE;
+/* New York's 4:00 pm close; a foreign exchange needs its own close (the site's xcloseAt), not wired here */
+var CLOSE_LBL=fmt(CLOSE,{month:'short',day:'numeric'})+' · 4:00 PM';
 /* next: the first trade day after this round closed; its companies biggest first (CAPS) */
 var NEXT=(function(){var all=ROUNDS.concat(typeof PENDING!=='undefined'?PENDING:[],typeof UPCOMING!=='undefined'?UPCOMING:[]).filter(function(r){return r.called&&md(r.called)>CLOSE});
  if(!all.length)return null;var d0=Math.min.apply(null,all.map(function(r){return +md(r.called)})),day=all.filter(function(r){return +md(r.called)===d0});
  day.sort(function(a,b){return ((CAPS[b.ticker]||0)-(CAPS[a.ticker]||0))});return {d:new Date(d0),cos:day.map(function(r){return r.co})}})();
-/* close time: New York's 4:00 pm unless the exchange says otherwise (template: xcloseAt on the site) */
-var CLOSE_T='4:00 PM',SAME=+OPEN===+CLOSE; /* New York's close; a foreign exchange needs its own close (the site's xcloseAt), not wired here */
+var NL=ORDER.filter(function(m){return SIDE[m]>0}).length,NS=ORDER.length-NL;
+var SIDES=NL&&NS?NL+' long, '+NS+' short.':(NL?'All '+NL+' long.':'All '+NS+' short.');
 
-/* ---------- painted assets per round (fallbacks keep any round renderable) ---------- */
-var ART={world:'art/r'+RN+'-world.jpg',night:'art/r'+RN+'-night.mp4'};
-/* paper panes measured on art/fg.png (its own pixels); FGS scales them to the 1080 frame */
+/* ---------- the price path: Hyperliquid 15-min closes from the report (4:05 pm) to the next close, scaled so the end is the sheet's move ---------- */
+var HASPATH=typeof PATHS!=='undefined'&&PATHS[RN],NP=97,VS;
+if(HASPATH){var PT=PATHS[RN],pp=PT.path,p0=PT.p0;NP=pp.length;var kk=(RD.a/100)/((pp[NP-1]/p0)-1);VS=pp.map(function(v){return (v/p0-1)*kk*100});VS[NP-1]=RD.a}
+else{VS=[];for(var i=0;i<NP;i++)VS.push(RD.a*(1-Math.pow(1-i/(NP-1),2)))} /* no path: a smooth glide, said so in the report */
+function vAt(f){var k=f*(NP-1),a=Math.floor(k);return a>=NP-1?VS[NP-1]:VS[a]+(VS[a+1]-VS[a])*(k-a)}
+var HRS=SAME?6.5:23+55/60; /* the window the path covers */
+
+/* ---------- painted assets ---------- */
+var ART={world:'art/r'+RN+'-world.jpg',day:'art/r'+RN+'-day.mp4',planet:'art/r'+RN+'-planet.png'};
 var FGW=1536,FGS=1080/FGW,FGY=-45;
-/* measured centres (connected components on the lit paper, threshold L>62%); one pane size for all four so the siblings match */
-var PW=212,PH=420,PANES=[[223.5,1117.5],[588.5,1117.5],[948.5,1117.5],[1311,1117.5]].map(function(c){return [c[0]-PW/2,c[1]-PH/2,PW,PH]});
+/* lantern panes measured on art/fg.png (lit paper, L>62%); the four lanterns are one master, so one pane size */
+var PW=212,PH=420,PANES=[[223.6,1117.5],[588.4,1118.5],[946.6,1118.5],[1311.4,1117.5]].map(function(c){return [c[0]-PW/2,c[1]-PH/2,PW,PH]});
 
-/* ---------- marks ---------- */
-function mark(m,px){var M=MODELS[m];return '<span class="mk" style="width:'+px+'px;height:'+px+'px;background:'+M.bg+'"><svg viewBox="0 0 24 24"><path fill="'+M.fg+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+' d="'+M.d+'"/>'+(M.dot?'<path fill="'+M.dotc+'" d="'+M.dot+'"/>':'')+'</svg></span>'}
+/* ---------- marks: every AI on an ink disc so the four read as one set ---------- */
+function mark(m,px){var M=MODELS[m],bg=M.bg,fg=M.fg;if(m==='CLAUDE'){bg='#1b1410';fg='#e8875b'}
+ return '<span class="mk" style="width:'+px+'px;height:'+px+'px;background:'+bg+'"><svg viewBox="0 0 24 24"><path fill="'+fg+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+' d="'+M.d+'"/>'+(M.dot?'<path fill="'+M.dotc+'" d="'+M.dot+'"/>':'')+'</svg></span>'}
 var EZ='<svg class="ez" viewBox="0 0 400 400"><circle cx="198.7" cy="199.4" r="198.2" fill="#04070e"/><path fill="#f8f0d9" d="M116.8,88.0 L86.2,152.0 L102.1,152.0 L55.0,274.5 L154.2,274.5 L188.5,225.8 L128.7,225.8 L137.5,204.0 L170.2,203.5 L193.2,162.0 L149.1,162.0 L154.8,145.0 L143.4,138.5 L217.9,138.2 L192.2,182.0 L234.9,182.0 L181.5,250.8 L136.0,315.8 L272.5,315.8 L292.5,265.0 L230.4,265.0 L328.2,130.8 L225.1,130.8 L253.0,87.8 Z"/><path fill="#03c870" d="M146.2,287.0 L133.0,287.0 L106.5,327.2 L119.0,326.5 Z M86.8,169.5 L74.8,169.5 L29.5,282.2 L43.7,282.2 Z M105.8,92.5 L89.5,95.8 L55.5,169.2 L69.0,169.2 Z"/><path fill="#ff3a31" d="M304.5,259.0 L300.5,269.5 L313.0,268.2 L317.0,258.8 Z M361.5,126.0 L344.0,126.5 L269.5,235.8 L256.0,257.5 L276.2,257.0 Z M279.0,87.8 L266.7,87.5 L251.5,117.2 L262.2,119.0 Z"/><path fill="#fdbc2a" d="M334.2,281.2 L302.0,281.2 L288.2,315.8 L321.0,315.5 Z"/></svg>';
-/* the company's mark sits on a paper disc, the lanterns' own stock, so any logo reads on the night sky */
 function coLogo(px){var L=CO_LOGOS[RD.ticker];return L?'<span style="width:'+px+'px;height:'+px+'px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fbf1da,#e9d6ae);display:inline-grid;place-items:center;box-shadow:0 0 0 3px rgba(42,27,16,.6),0 10px 30px rgba(0,0,0,.5)"><img src="../../../../media/'+L.f+'" style="width:70%;height:70%;object-fit:contain"></span>':''}
 
-/* ---------- build the lantern panes once ---------- */
+/* ---------- lantern panes ---------- */
 var PE=[];
 (function(){var h='',p='';ORDER.forEach(function(m,i){var r=PANES[i],x=r[0]*FGS,y=r[1]*FGS+FGY,w=r[2]*FGS,hh=r[3]*FGS;
- h+='<div class="pane" id="pn'+i+'" style="left:'+x+'px;top:'+y+'px;width:'+w+'px;height:'+hh+'px"><div class="gold"></div><div class="in"></div><div class="out"></div><div class="glow"></div></div>';
+ h+='<div class="pane" id="pn'+i+'" style="left:'+x+'px;top:'+y+'px;width:'+w+'px;height:'+hh+'px"><div class="gold"></div><div class="in"></div><div class="out"></div><div class="glow"></div><div class="pv"></div></div>';
  p+='<div class="pool" id="po'+i+'" style="left:'+(x-30)+'px;top:'+(y+hh-6)+'px;width:'+(w+60)+'px;height:80px"></div>'});
  document.getElementById('panes').innerHTML=h;document.getElementById('pools').innerHTML=p;
- ORDER.forEach(function(m,i){var el=document.getElementById('pn'+i);PE.push({m:m,el:el,in:el.querySelector('.in'),out:el.querySelector('.out'),gold:el.querySelector('.gold'),glow:el.querySelector('.glow'),pool:document.getElementById('po'+i),w:PANES[i][2]*FGS,cx:(PANES[i][0]+PANES[i][2]/2)*FGS,cy:(PANES[i][1]+PANES[i][3]/2)*FGS+FGY,st:''})})})();
-function paneFace(e,mode,k){var m=e.m,s=SIDE[m],v=pnl(m),key=mode+'|'+(mode==='pnl'?Math.round(v*k):'');if(e.st===key)return;e.st=key;
- var body=mark(m,Math.round(e.w*.62))+'<div class="nm">'+MODELS[m].app+'</div>';
- if(mode==='side')body+='<div class="sd '+(s>0?'u':'d')+'"><i>'+(s>0?'▲':'▼')+'</i>'+(s>0?'LONG':'SHORT')+'</div>';
- if(mode==='pnl')body+='<div class="pl '+(v>=0?'u':'d')+'">'+money(v*k)+'</div>';
- e.in.innerHTML=body}
+ ORDER.forEach(function(m,i){var el=document.getElementById('pn'+i),pf=pnl(m);PE.push({m:m,i:i,el:el,in:el.querySelector('.in'),out:el.querySelector('.out'),gold:el.querySelector('.gold'),glow:el.querySelector('.glow'),pv:el.querySelector('.pv'),pool:document.getElementById('po'+i),w:PANES[i][2]*FGS,cx:(PANES[i][0]+PANES[i][2]/2)*FGS,cy:(PANES[i][1]+PANES[i][3]/2)*FGS+FGY,pf:pf,st:''})})})();
+/* the paper: the AI and its trade, printed in ink (green and red are kept for money) */
+function paneFace(e,mode){if(e.st===mode)return;e.st=mode;var m=e.m,s=SIDE[m];
+ var body=mark(m,Math.round(e.w*.56))+'<div class="nm">'+MODELS[m].app+'</div>';
+ if(mode==='side')body+='<div class="sd"><i>'+(s>0?'▲':'▼')+'</i>'+(s>0?'LONG':'SHORT')+'<b>'+SIZE[m]+'%</b></div>';
+ e.in.innerHTML=body;e.in.style.justifyContent=mode==='side'?'center':'flex-start';e.in.style.paddingTop=mode==='side'?'0':'34px'}
 
-/* ---------- media helpers ---------- */
-var bgi=document.getElementById('bgi'),bgv=document.getElementById('bgv'),bellv=document.getElementById('bellv'),HASNIGHT=false,HASBELL=false;
+/* ---------- media ---------- */
+var bgi=document.getElementById('bgi'),bgv=document.getElementById('bgv'),pl=document.getElementById('planet'),HASDAY=false;
 bgi.src=ART.world;bgi.onerror=function(){bgi.src='art/world-default.jpg'};
-/* videos load as blobs: a plain static server answers without byte ranges, and a video cannot seek without them */
+pl.src=ART.planet;pl.onerror=function(){pl.style.display='none'};
 function loadV(v,src,cb){return fetch(src).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(bl){return new Promise(function(res){var done=false;function d(ok){if(done)return;done=true;if(ok)cb();res()}
  v.onloadeddata=function(){d(true)};v.onerror=function(){d(false)};setTimeout(function(){d(v.readyState>=2)},8000);v.src=URL.createObjectURL(bl)})}).catch(function(){})}
-var ready=Promise.all([loadV(bgv,ART.night,function(){HASNIGHT=true}),loadV(bellv,'art/bell.mp4',function(){HASBELL=true}),
- new Promise(function(r){if(bgi.complete&&bgi.naturalWidth)r();else{bgi.addEventListener('load',r);setTimeout(r,6000)}})]);
+function imgReady(im){return new Promise(function(r){if(im.complete)r();else{im.addEventListener('load',r);im.addEventListener('error',r);setTimeout(r,6000)}})}
+var ready=Promise.all([loadV(bgv,ART.day,function(){HASDAY=true}),imgReady(bgi),imgReady(pl)]);
 function seek(v,t){return new Promise(function(res){var tt=Math.max(0,Math.min(t,(v.duration||5)-0.04));if(Math.abs(v.currentTime-tt)<0.002){res();return}
  var done=false;function f(){if(done)return;done=true;v.removeEventListener('seeked',f);res()}v.addEventListener('seeked',f);v.currentTime=tt;setTimeout(f,3000)})}
 
 /* ---------- timeline (seconds) ---------- */
-var T={night:6.2,bell:9.2,move:11.8,out:15.0,win:17.8,end:20.4,dur:24.8};
+var T={night:3.6,bell:8.4,move:11.8,out:14.8,win:17.6,end:20.4,dur:24.8};
 function cl(x){return x<0?0:x>1?1:x}function seg(t,a,b){return cl((t-a)/(b-a))}
 function eo(x){return 1-Math.pow(1-x,3)}function eio(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}
 function nz(t,i){return Math.sin(t*7.1+i*1.7)*.5+Math.sin(t*12.9+i*3.1)*.3+Math.sin(t*3.3+i)*.2}
-
-function clockAt(p){/* p 0..1 runs the report (4:05 pm on the call day) to the next close */
- /* the sheet has no report time: after-close reports run from 4:05 pm on the trade day; a same-day round (report before the open) runs the session from 9:30 am */
- var start=OPEN.getTime()+(SAME?9*60+30:16*60+5)*60000,end=CLOSE.getTime()+16*3600000;if(end<=start)end=start+60000;var d=new Date(start+(end-start)*p);
- var h=d.getUTCHours(),mi=d.getUTCMinutes();return fmt(d,{month:'short',day:'numeric'})+' · '+((h%12)||12)+':'+String(mi).padStart(2,'0')+' '+(h>=12?'PM':'AM')}
+/* the night's clock: the report hour slowed (the crash), the flat night quick, the session at reading pace */
+function hoursAt(u){if(SAME)return HRS*u;var K=[[0,0],[.34,1.25],[.56,13.5],[1,HRS]];for(var j=1;j<K.length;j++)if(u<=K[j][0]){var a=K[j-1],b=K[j];return a[1]+(b[1]-a[1])*(u-a[0])/(b[0]-a[0])}return HRS}
+function clockStr(h){var start=OPEN.getTime()+(SAME?9*60+30:16*60+5)*60000,d=new Date(start+h*3600000);var hh=d.getUTCHours(),mi=d.getUTCMinutes();
+ return fmt(d,{month:'short',day:'numeric'})+' · '+((hh%12)||12)+':'+String(mi).padStart(2,'0')+' '+(hh>=12?'PM':'AM')}
 
 var lastTop='',lastCap='';
 function setTop(h,op){var el=document.getElementById('top');if(h!==lastTop){el.innerHTML=h;lastTop=h}el.style.opacity=op}
-function setCap(h,op,dy){var el=document.getElementById('cap');if(h!==lastCap){el.innerHTML=h;lastCap=h}el.style.opacity=op;el.style.transform='translateY('+(dy||0)+'px)'}
+function setCap(h,op,dy,top){var el=document.getElementById('cap');if(h!==lastCap){el.innerHTML=h;lastCap=h}el.style.opacity=op;el.style.top=(top||1012)+'px';el.style.transform='translateY('+(dy||0)+'px)'}
 
 var winLine=(function(){if(NOBODY)return RIGHT.length?'Nobody closest.':'Nobody called it.';
  var names=WIN.map(function(m){return MODELS[m].app});
@@ -139,58 +158,77 @@ var winLine=(function(){if(NOBODY)return RIGHT.length?'Nobody closest.':'Nobody 
  if(RIGHT.length===ORDER.length)return 'All '+ORDER.length+' right. '+names[0]+' closest.';
  return names[0]+' was closest.'})();
 
+/* planet: its height is the price (Y0 at the report; 230 px per 30% move, capped) */
+var Y0=330,PPX=230/30;
+/* bell under the eave: art/bell-eave.png is 1024x857, the beam's underside at y 196, the rod at x 515 */
+var BS=.879,TILT=650,BEAMH=196*BS;
+(function(){var bm=document.getElementById('beam'),bl=document.getElementById('bell');
+ bm.style.height=(BEAMH+4)+'px';bm.style.top=(-TILT-BEAMH+52)+'px';bm.style.backgroundSize='1080px '+(857*1080/1024)+'px';bm.style.backgroundPosition='center top';
+ bm.style.height='52px';bm.style.top=(-TILT)+'px';bm.style.backgroundPosition='center '+(-(196*1080/1024-52))+'px';
+ var w=1024*BS,h=(857-196)*BS;bl.style.width=w+'px';bl.style.height=h+'px';bl.style.left=(540-515*BS)+'px';bl.style.top=(-TILT+52)+'px';
+ bl.style.backgroundSize=w+'px '+(857*BS)+'px';bl.style.backgroundPosition='0 '+(-196*BS)+'px';bl.style.transformOrigin=(515*BS)+'px 0'})();
+
 window.R=function(t){return ready.then(function(){var jobs=[];
- /* camera: slow push on the trades, push to the winner on the verdict, pull back for the end */
- var z=1,cx=540,cy=700;
- if(t<T.night){z=1+.035*eio(seg(t,0,T.night))}
- else if(t<T.bell){z=1.035-.035*eio(seg(t,T.night,T.night+1.2))}
- var W0=WIN.length?PE.filter(function(e){return WIN.indexOf(e.m)>=0}):[];
- var wx=W0.length?W0.reduce(function(a,e){return a+e.cx},0)/W0.length:540,wy=W0.length?W0[0].cy:700;
- if(t>=T.move&&t<T.end){var k=eio(seg(t,T.win-.4,T.win+1.4))*(W0.length?1:0);z=1+.34*k;cx=540+(wx-540)*k;cy=700+(1350-700)*k}
- if(t>=T.end){var k2=1-eio(seg(t,T.end,T.end+1.4));z=1+.34*k2*(W0.length?1:0);cx=540+(wx-540)*k2;cy=700+(1350-700)*k2}
+ /* clock and price */
+ var nu=seg(t,T.night,T.bell),H=t<T.night?0:hoursAt(nu),f=H/HRS,mv=vAt(f);
+ /* camera: tilt up to the bell, push in on the winner (bottom-anchored so the stone stays under the words) */
+ var tilt=TILT*(eio(seg(t,T.bell,T.bell+.9))-eio(seg(t,T.move,T.move+.7)));
+ var z=1,cx=540,cy=700;var W0=PE.filter(function(e){return WIN.indexOf(e.m)>=0});
+ var wx=W0.length?W0.reduce(function(a,e){return a+e.cx},0)/W0.length:540;
+ var kz=W0.length?eio(seg(t,T.win-.3,T.win+1.2))*(1-eio(seg(t,T.end,T.end+1.2))):0;
+ z=1+.32*kz;cx=540+(wx-540)*kz;cy=700+(1350-700)*kz;
+ if(t<T.night)z=1+.02*seg(t,0,T.night);
  var tx=540-cx*z,ty=700-cy*z;tx=Math.min(0,Math.max(1080-1080*z,tx));ty=Math.min(0,Math.max(1350-1350*z,ty));
- var cam=document.getElementById('cam');cam.style.transform='translate('+tx.toFixed(2)+'px,'+ty.toFixed(2)+'px) scale('+z.toFixed(4)+')';
+ document.getElementById('cam').style.transform='translate('+tx.toFixed(2)+'px,'+ty.toFixed(2)+'px) scale('+z.toFixed(4)+')';
+ document.getElementById('skyL').style.transform='translateY('+(tilt*.45).toFixed(1)+'px)';
+ document.getElementById('scnL').style.transform='translateY('+tilt.toFixed(1)+'px)';
 
- /* background: the world still, the night clip from T.night (5 s clip played over 3.8 s), its last frame after */
- var nightP=seg(t,T.night,T.bell);
- /* the clip drifts slowly while the trades are read (its first 1.2 s: clouds, the ring of lights), then runs the night to the close */
- var vd=bgv.duration||5,vt=t<T.night?1.2*t/T.night:1.2+(vd-1.25)*eio(nightP);
- if(HASNIGHT){bgv.style.opacity=1;jobs.push(seek(bgv,vt))}else{bgv.style.opacity=0}
- /* fallback without a night clip: the sky warms toward the close by code */
- document.getElementById('sky').style.background=HASNIGHT?'none':'linear-gradient(180deg,rgba(255,150,60,'+(.22*nightP)+'),rgba(0,0,0,0) 60%)';
+ /* sky keeps clock time: the clip drifts at dusk during the trades, then runs report to close */
+ var vd=bgv.duration||5,vt=t<T.night?.35*t/T.night:.35+(vd-.4)*f;
+ if(HASDAY){bgv.style.opacity=1;jobs.push(seek(bgv,vt))}else{bgv.style.opacity=0}
+ /* day-for-night grade by the clock: dark from about 6:30 pm to 6 am (hours after the 4:05 pm report) */
+ var nightK=SAME?0:Math.min(seg(H,.2,2.5),1-seg(H,13.8,16.3));document.getElementById('grade').style.opacity=(.78*nightK).toFixed(3);
+ document.getElementById('warm').style.background=HASDAY?'none':'linear-gradient(180deg,rgba(255,170,80,'+(.25*f)+'),rgba(0,0,0,0) 70%)';
 
- /* bell shot */
- var bell=document.getElementById('bell');var bo=t>=T.bell-.07&&t<T.move+.07?Math.min(seg(t,T.bell-.07,T.bell),1-seg(t,T.move,T.move+.07)):0; /* hard cuts, two frames */bell.style.opacity=bo;
- if(HASBELL&&bo>0)jobs.push(seek(bellv,Math.max(0,t-T.bell)*(bellv.duration||2.3)/(T.move-T.bell)));
+ /* the planet is the price: up a move, it rises; down, it sinks */
+ var py=Y0-PPX*Math.max(-30,Math.min(30,mv));pl.style.transform='translate('+(540-150)+'px,'+(py-0.585*pl.offsetHeight)+'px)';
 
- /* lanterns */
- PE.forEach(function(e,i){var right=SIDE[e.m]*RD.a>0,isW=WIN.indexOf(e.m)>=0,fl=nz(t,i);
-  var outK=0,goldK=0;
-  if(!isW&&!(right&&RIGHT.length===ORDER.length)){var order=PE.filter(function(x){return WIN.indexOf(x.m)<0});var j=order.indexOf(e);outK=eo(seg(t,T.out+.35+j*.42,T.out+.95+j*.42))}
-  if(isW)goldK=eo(seg(t,T.out+.35+(ORDER.length-WIN.length)*.42+.1,T.out+1.4+(ORDER.length-WIN.length)*.42))
-  if(right&&!isW&&!NOBODY)outK*=.45; /* right side but not closest: dims, stays lit */
-  e.out.style.opacity=(.86*outK).toFixed(3);e.gold.style.opacity=(.55*goldK).toFixed(3);
-  e.pool.style.opacity=(.9*outK).toFixed(3);
-  e.glow.style.background='radial-gradient(ellipse at 50% 55%,rgba(255,228,170,'+(Math.max(0,(.05+.03*fl)*(1-outK))).toFixed(3)+'),rgba(255,228,170,0) 75%)';
-  var mode=t<T.out+.35?'side':'pnl',k=1;
-  if(mode==='pnl'){var j0=isW?0:1;k=isW?eo(seg(t,T.win,T.win+1.6)):1;if(t<T.win&&isW)mode='side'}
-  paneFace(e,mode,k);
-  e.in.style.opacity=(1-.55*outK).toFixed(3)});
+ /* the bell swings at 4:00 (damped pendulum) */
+ var bt=t-(T.bell+.85),ang=bt>0?13*Math.sin(bt*2*Math.PI/1.15)*Math.exp(-bt*.55):0;
+ document.getElementById('bell').style.transform='rotate('+ang.toFixed(2)+'deg)';
 
- /* titles: the sky carries the round, the stone carries one line */
- var top='',to=1,cap='',co=1,dy=0;
- if(t<T.night){top='<div class="ttl">'+coLogo(104)+RD.co+'</div>';cap='<div class="l1">4 AIs traded before earnings.</div>';co=1}
- else if(t<T.bell-.07){top='<div class="clk">'+clockAt(eio(nightP))+'</div>';to=seg(t,T.night,T.night+.3);cap='<div class="l1">'+(SAME?'Held to the close.':'Held to the next close.')+'</div>';co=seg(t,T.night+.15,T.night+.5);dy=12*(1-co)}
- else if(t<T.move){top='';if(t<T.bell)co=0;cap='<div class="l1">'+CLOSE_T+'. The close.</div>';co=seg(t,T.bell+.2,T.bell+.6);dy=12*(1-co)}
- else if(t<T.out){var kk=eo(seg(t,T.move+.2,T.move+1.2));top='';cap='<div class="l2" style="margin:0 0 6px">'+RD.co+' at the close</div><div class="big '+(RD.a<0?'d':'u')+'" style="color:'+(RD.a<0?'#ff4b3e':'#2fe08a')+'">'+sgn(pct(RD.a*kk))+'</div>';co=seg(t,T.move,T.move+.25)}
+ /* lanterns burn at their running P&L: a loss gutters the flame toward out, the winner turns gold at the verdict */
+ PE.forEach(function(e){var p=t<T.night?0:pnlAt(e.m,mv),k=e.pf!==0?p/Math.abs(e.pf):0;k=Math.max(-1,Math.min(1,k));
+  if(t>=T.move)k=e.pf<0?-1:(e.pf>0?1:0);
+  var isW=WIN.indexOf(e.m)>=0,dim=Math.max(0,-k),fl=nz(t,e.i),gutter=dim>0&&dim<1?.12*Math.abs(nz(t*2.3,e.i+5)):0;
+  var goldK=isW?eo(seg(t,T.out+.8,T.out+1.8)):0;
+  e.out.style.opacity=Math.min(.5,.5*dim+gutter*.5).toFixed(3);
+  e.pool.style.opacity=(.85*dim).toFixed(3);
+  e.gold.style.opacity=(.5*goldK).toFixed(3);
+  var lift=Math.max(0,k)*.10;
+  e.glow.style.background='radial-gradient(ellipse at 50% 55%,rgba(255,228,170,'+Math.max(0,(.05+.035*fl+lift)*(1-dim)).toFixed(3)+'),rgba(255,228,170,0) 78%)';
+  var verdict=t>=T.out;paneFace(e,verdict?'pnl':'side');
+  e.in.style.opacity=(1-.35*dim).toFixed(3);
+  if(verdict){var kv=isW?eo(seg(t,T.win,T.win+1.4)):eo(seg(t,T.out+.1,T.out+.5));
+   var vv=isW?e.pf*kv:e.pf,txt=money(isW&&kv<1?vv:e.pf);if(isW&&kv<1)txt=money(vv);e.pv.textContent=txt;e.pv.className='pv '+(e.pf<0?'dn':'up');e.pv.style.opacity=isW?Math.min(1,seg(t,T.win-.1,T.win+.2)):kv}
+  else e.pv.style.opacity=0});
+
+ /* words */
+ var top='',to=1,cap='',co=1,dy=0,ctop=1012;
+ if(t<T.night+.6){top='<div class="ttl">'+coLogo(104)+RD.co+' earnings</div>';to=1-seg(t,T.night+.3,T.night+.6);
+  cap='<div class="l1">4 AIs traded before earnings.</div><div class="l2" style="font-size:46px;color:#f6ead0;letter-spacing:.08em">'+SIDES+'</div>';co=1-seg(t,T.night+.35,T.night+.6)}
+ else if(t<T.bell){top='<div class="clk">'+clockStr(H)+'</div>';to=seg(t,T.night+.5,T.night+.8);cap='<div class="l1">'+(SAME?'Held to the close.':'Held to the next close.')+'</div>';co=seg(t,T.night+.6,T.night+.9);dy=12*(1-co)}
+ else if(t<T.move){top='';cap='<div class="l1">'+CLOSE_LBL+'.<br>The close.</div>';co=seg(t,T.bell+.6,T.bell+.95);dy=12*(1-co);ctop=700}
+ else if(t<T.out){/* the move replays along the real path in 1.2 s, never through values that did not happen */
+  var u=seg(t,T.move+.5,T.move+1.7),mvr=vAt(u);
+  cap='<div class="l2" style="margin:0 0 6px">'+RD.co+' at the close</div><div class="big" style="color:'+(RD.a<0?'#ff4b3e':'#2fe08a')+'">'+sgn(pct(mvr))+'</div>';co=seg(t,T.move+.4,T.move+.6)}
  else if(t<T.win){cap='<div class="l1">'+winLine+'</div>';co=seg(t,T.out+.1,T.out+.45);dy=12*(1-co)}
- else if(t<T.end){if(NOBODY){cap='<div class="l1">The market wins.</div>'}else{var kw=eo(seg(t,T.win,T.win+1.6));var wv=WIN.map(function(m){return Math.round(pnl(m))}),same=wv.every(function(v){return v===wv[0]});
-  cap='<div class="l1">'+WIN.map(function(m){return MODELS[m].app}).join(' & ')+(WIN.length>1?' win.':' wins.')+'</div><div class="big" style="color:#fdbc2a;font-size:'+(WIN.length>1&&!same?96:120)+'px;margin-top:6px">'+(same?sgn(money(wv[0]*kw))+(WIN.length>1?'<span class="l2" style="font-size:40px;margin-left:16px;color:#fdbc2a">each</span>':''):WIN.map(function(m){return sgn(money(pnl(m)*kw))}).join(' · '))+'</div>'}co=seg(t,T.win,T.win+.35)}
- else{top='';cap='<div style="display:flex;align-items:center;gap:20px">'+EZ+'<div class="l1" style="font-size:66px">earningszn.xyz</div></div>'+(NEXT?'<div class="l2">Next: '+NEXT.cos.slice(0,2).join(' · ')+' · '+fmt(NEXT.d,{weekday:'short',month:'short',day:'numeric'})+'</div>':'');co=seg(t,T.end+.2,T.end+.55);dy=14*(1-co)}
- setTop(top,to);setCap(cap,co,dy);
- var ez=document.getElementById('ezc');if(!ez.innerHTML)ez.innerHTML=EZ.replace('class="ez"','style="width:56px;height:56px"');ez.style.opacity=t<T.end?.92:Math.max(0,1-seg(t,T.end,T.end+.4));
- /* hard cut fades only around the bell */
- document.getElementById('veil').style.opacity=0;
+ else if(t<T.end){if(NOBODY){cap='<div class="l1">The market wins.</div>'}else{var kw=eo(seg(t,T.win,T.win+1.4)),wv=WIN.map(function(m){return pnl(m)}),same=wv.every(function(v){return Math.round(v)===Math.round(wv[0])});
+   cap='<div class="l1">'+WIN.map(function(m){return MODELS[m].app}).join(' & ')+(WIN.length>1?' win.':' wins.')+'</div><div class="big" style="color:#fdbc2a;font-size:'+(WIN.length>1&&!same?96:120)+'px;margin-top:6px">'+(same?sgn(money(wv[0]*kw))+(WIN.length>1?'<span class="l2" style="font-size:40px;margin-left:16px;color:#fdbc2a">each</span>':''):wv.map(function(v){return sgn(money(v*kw))}).join(' · '))+'</div>'}co=seg(t,T.win,T.win+.3)}
+ else{var hero=NOBODY?'<div class="l1" style="font-size:56px">The market wins.</div>':'<div class="big" style="color:#fdbc2a;font-size:96px">'+WIN.map(function(m){return MODELS[m].app+' '+sgn(money(pnl(m)))}).join(' · ')+'</div>';
+  cap=hero+'<div style="display:flex;align-items:center;gap:18px;margin-top:18px">'+EZ+'<div class="l1" style="font-size:58px">earningszn.xyz</div></div>'+(NEXT?'<div class="l2" style="margin-top:10px">Next: '+NEXT.cos.slice(0,2).join(' · ')+' · '+fmt(NEXT.d,{weekday:'short',month:'short',day:'numeric'})+'</div>':'');co=1;ctop=990}
+ setTop(top,to);setCap(cap,co,dy,ctop);
+ var ez=document.getElementById('ezc');if(!ez.innerHTML)ez.innerHTML=EZ.replace('class="ez"','style="width:56px;height:56px"');ez.style.opacity=t<T.end?.92:0;
  return Promise.all(jobs)})};
 var _t=Q.get('t');window.R(_t?+_t:0);
 </script>
