@@ -30,14 +30,18 @@ function liveCards(){var L=(PENDING||[]).filter(function(p){return p.calls&&p.ca
   return '<section class="pn lv"><div class="tabs"><button class="on">'+(anyLive?'<span class="lvd"></span>LIVE NOW':'IN PLAY')+'<span class="n">'+L.length+'</span></button></div>'+cards+'</section>'}
 function lastDay(){var G=ROUNDS.filter(function(r){return r.resolves&&typeof r.a==="number"});if(!G.length)return "";
   var last=G.reduce(function(m,r){var d=pd(r.resolves);return d&&d>m?d:m},new Date(0)),R=G.filter(function(r){var d=pd(r.resolves);return d&&+d===+last}).sort(function(a,b){return (CAPS[b.ticker]||0)-(CAPS[a.ticker]||0)||b.n-a.n});
-  var rows=R.map(function(r){var W=String(r.win||"").toUpperCase().split(/\s*&\s*/).filter(function(m){return MK.indexOf(m)>-1}),calls={};
-    r.calls.forEach(function(c){calls[c[0]]=c[1].indexOf("DOWN")===0?-1:1});
+  var rows=R.map(function(r){var W=String(r.win||"").toUpperCase().split(/\s*&\s*/).filter(function(m){return MK.indexOf(m)>-1}),calls={},mag={};
+    r.calls.forEach(function(c){calls[c[0]]=c[1].indexOf("DOWN")===0?-1:1;mag[c[0]]=parseFloat(String(c[1]).replace(/[^0-9.]/g,""))});
     var lu=MK.filter(function(m){return calls[m]}).map(function(m){var ok=calls[m]*r.a>0,w=W.indexOf(m)>-1;return '<span class="lv-lu'+(ok?"":" no")+(w?" w":"")+'">'+aiIcon(m,20)+'</span>'}).join("");
-    var who=W.length?W.map(function(m){return APP[m]}).join(" & ")+" won":"Nobody won";
-    return '<a class="lv-rr" href="#round/'+r.n+'" data-round="'+r.n+'">'+coIcon(r.ticker)+'<span class="lv-who"><b>'+esc(r.co)+' <i>'+esc(r.ticker)+'</i></b><small>'+who+'</small></span><span class="lus">'+lu+'</span><span class="mv '+(r.a<0?"d":"u")+'">'+pct(r.a)+'</span></a>'}).join("");
-  return '<section class="pn lv"><div class="tabs"><button class="on">LAST MATCHDAY<span class="n">'+R.length+'</span></button><span class="lv-dt">'+day(last)+'</span></div>'+rows+'</section>'}
+    var who=W.length?W.map(function(m){return APP[m]}).join(" & ")+" won":"Nobody won",open=!!LVOPEN[r.n];
+    var det=MK.filter(function(m){return calls[m]}).sort(function(x,y){return (calls[y]*r.a)-(calls[x]*r.a)||Math.abs(mag[x]*calls[x]-r.a)-Math.abs(mag[y]*calls[y]-r.a)}).map(function(m){var s=calls[m],ok=s*r.a>0,pl=1000*s*r.a,w=W.indexOf(m)>-1;
+      return '<div class="lv-xr'+(ok?"":" no")+'">'+aiIcon(m,22)+'<span class="nm">'+APP[m]+(w?' <em>Closest</em>':'')+'</span><span class="sd">'+(s>0?"Long ":"Short ")+mag[m]+'%</span><span class="ok">'+(ok?"Right side":"Wrong side")+'</span><b class="'+(pl<0?"d":"u")+'">'+money(pl,1)+'</b></div>'}).join("");
+    return '<div class="lv-it'+(open?" on":"")+'"><button type="button" class="lv-rr" data-lvx="'+r.n+'" aria-expanded="'+open+'">'+coIcon(r.ticker)+'<span class="lv-who"><b>'+esc(r.co)+' <i>'+esc(r.ticker)+'</i></b><small>'+who+'</small></span><span class="lus">'+lu+'</span><span class="mv '+(r.a<0?"d":"u")+'">'+pct(r.a)+'</span><span class="cv" aria-hidden="true"></span></button>'+
+      '<div class="lv-x"'+(open?'':' hidden')+'>'+det+'<div class="lv-xf">'+esc(r.co)+' '+pct(r.a)+' at the close. $100K on every trade.</div></div></div>'}).join("");
+  return '<section class="pn lv"><div class="tabs"><button class="on">LAST MATCHDAY<span class="n">'+R.length+'</span></button><span class="lv-dt">'+day(last)+'</span></div><div class="lv-ls">'+rows+'</div></section>'}
+var LVOPEN={};document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-lvx]");if(!b)return;var n=b.getAttribute("data-lvx"),it=b.parentNode,x=it.querySelector(".lv-x");LVOPEN[n]=!LVOPEN[n];setTimeout(function(){var bb=document.querySelector('[data-lvx="'+n+'"]');if(!bb)return;var ii=bb.parentNode,xx=ii.querySelector(".lv-x");ii.classList.toggle("on",!!LVOPEN[n]);bb.setAttribute("aria-expanded",!!LVOPEN[n]);if(xx)xx.hidden=!LVOPEN[n]},0)});
 window.__lvLive=liveCards;window.__lvLast=lastDay;
-if(AT==="up"){var U=upcoming;inPlay=function(){return liveCards()+lastDay()};}
+if(AT==="up"){var U0=upcoming;inPlay=function(){return liveCards()};upcoming=function(){return U0()+lastDay()};}
 else{var Lo=leaders;leaders=function(){return liveCards()+lastDay()+Lo()};inPlay=function(){return ""};}
 draw();
 setInterval(function(){document.querySelectorAll("[data-lvcd]").forEach(function(b){var t=+b.getAttribute("data-lvcd");b.textContent=(b.textContent.indexOf("Closes")===0?"Closes in ":"In ")+dur(t-now())})},30000);
