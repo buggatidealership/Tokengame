@@ -29,6 +29,12 @@ html,body{overflow:hidden;background:#000;color:var(--tx);font-family:var(--sans
 .sc{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:20}
 .sw2{position:relative;display:inline-block}#hX{position:absolute;left:-4%;right:-4%;top:54%;height:9px;border-radius:5px;background:#ff3a31;transform:scaleX(0);transform-origin:left center}#hK{position:absolute;left:50%;bottom:92%;color:var(--ac);font-weight:800;white-space:nowrap;opacity:0}
 .ty{font:500 82px/1.08 var(--sans);letter-spacing:-.035em;text-align:center}.ty b{font-weight:800}
+/* brand (?brand=bug|presents|one|corner; owner, 2026-11-09: "no branding at all on the demo... something at the top that says EZ, either the logo, EZ presents") */
+#bug{position:absolute;left:0;right:0;top:27px;display:none;justify-content:center;align-items:center;gap:14px;z-index:26;opacity:0}#bug i{display:block;width:56px;height:56px}#bug svg,#fly svg,#pre svg{display:block;width:100%;height:100%}
+#bug span{font:800 35px/1 var(--sans);letter-spacing:-.035em;color:#f1ece0}#bug .e{color:#03c870}#bug .z{color:#ff3a31}
+#bug.corner{left:44px;right:auto;top:40px}#bug.corner i{width:64px;height:64px}#bug.corner span{display:none}
+#pre{display:none;flex-direction:column;align-items:center;gap:20px;margin-bottom:122px}#pre i{display:block;width:104px;height:104px}#pre span{font:700 25px/1 var(--sans);letter-spacing:.34em;text-transform:uppercase;color:#cfc9ba;padding-left:.34em}
+#fly{position:absolute;left:0;top:0;width:100px;height:100px;display:none;z-index:27;transform-origin:0 0;filter:drop-shadow(0 12px 30px rgba(0,0,0,.55))}
 .lab{position:absolute;left:0;right:0;top:118px;text-align:center;font:600 74px/1.05 var(--sans);letter-spacing:-.035em;z-index:25;text-shadow:0 10px 40px rgba(0,0,0,.6)}
 .lab b{font-weight:800}
 .lbl{font:600 30px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
@@ -45,13 +51,13 @@ html,body{overflow:hidden;background:#000;color:var(--tx);font-family:var(--sans
 </style>
 <div id="bg2"></div><div class="sd" id="sdl"><i></i></div><div class="sd" id="sdr"><i></i></div><div id="fr"><div id="st"><div id="bg"></div><svg id="rings" viewBox="0 0 2400 2400"></svg>
 <div id="cam"><div id="ph"><div class="body"></div><div class="scr"><img class="pg" id="pg" src="scr/up.png"><div class="ch" id="hd"></div><div class="ch" id="nv"></div></div><div class="isl"></div><div class="glare"></div><div id="pops"></div></div></div>
-<div class="lab" id="lab"></div>
-<div class="sc" id="s1"><div class="ty" id="h2" style="margin-top:60px">Start <span class="sw2"><b id="hT">trusting</b><i id="hX"></i><b id="hK">tracking</b></span> AIs</div></div>
+<div class="lab" id="lab"></div><div id="bug"><i></i><span><span class="e">E</span>arnings <span class="z">Z</span>eason</span></div><div id="fly"></div>
+<div class="sc" id="s1"><div id="pre"><i></i><span>presents</span></div><div class="ty" id="h2" style="margin-top:60px">Start <span class="sw2"><b id="hT">trusting</b><i id="hX"></i><b id="hK">tracking</b></span> AIs</div></div>
 <div class="sc" id="s6"></div>
 <canvas id="fx" width="1080" height="1350"></canvas></div></div>
 <script>
 if(new URLSearchParams(location.search).get('f')==='169')document.documentElement.classList.add('w169');
-var K=1.2,Q=new URLSearchParams(location.search),W169=Q.get('f')==='169',PQ=W169?.83:1.18,QR=1.18/PQ,LIFTK=0,END=Q.get('end')||'a',RX={};
+var K=1.2,Q=new URLSearchParams(location.search),W169=Q.get('f')==='169',BR=Q.get('f')==='169'?'':(Q.get('brand')||''),PQ=W169?.83:1.18,QR=1.18/PQ,LIFTK=0,END=Q.get('end')||'a',RX={};
 var TXT={a:['Next trades drop','Today · 3 PM ET'],b:['Trades drop before','every earnings report']}[END];
 function cl(x){return x<0?0:x>1?1:x}function seg(t,a,b){return cl((t-a)/(b-a))}function eo(x){return x===1?1:1-Math.pow(2,-10*x)}
 function eio(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}function back(x){var c=1.6,c3=c+1;return 1+c3*Math.pow(x-1,3)+c*Math.pow(x-1,2)}
@@ -109,12 +115,25 @@ function init(){var j=RE;
   $("s6").innerHTML='<div id="e0"><svg width="210" height="210" viewBox="0 0 400 400">'+L+'</svg></div><div class="ty" id="e2" style="margin-top:54px;font-size:60px;font-weight:600;color:#e9e4d6">Welcome to</div><div class="brand" id="e1" style="margin-top:14px"><span class="e">E</span>arnings <span class="z">Z</span>eason</div>'+
    '<div class="ty" id="e3" style="margin-top:70px;font-size:50px;font-weight:600;color:#cfc9ba">We track AIs so you <b style="color:#fff">don’t have to</b></div>'+
    '';
+  var SV='<svg viewBox="0 0 400 400">'+L+'</svg>';$('bug').firstChild.innerHTML=SV;$('pre').firstChild.innerHTML=SV;$('fly').innerHTML=SV;
+  if(BR){$('bug').style.display='flex';if(BR==='corner')$('bug').className='corner';if(BR==='presents'||BR==='one'){$('pre').style.display='flex';$('h2').style.marginTop='0'}if(BR==='one'){$('pre').firstChild.style.opacity=0;$('bug').firstChild.style.opacity=0;$('fly').style.display='block'}}
   window.READY=1;R(0)})}
 Promise.all(['hit','sec','dk','ur0','ur1','ur2'].map(function(n){return new Promise(function(ok){var im=new Image();im.onload=function(){var c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);CV[n]=c;ok()};im.src='scr/hi-'+n+'.png'})})).then(function(){return fetch('scr/rects.json')}).then(function(r){return r.json()}).then(function(j){RE=j;init()});
 function side(html,a,b,t){var m=html.split('<b>'),L=m[0].trim(),Rr=(m[1]||'').replace('</b>','').trim();[[$('sdl').firstChild,L],[$('sdr').firstChild,Rr]].forEach(function(x){var e=x[0];if(e.textContent!==x[1])e.textContent=x[1];if(t<a||t>b){e.style.opacity=0;return}rv(e,seg(t,a,a+.4));out(e,seg(t,b-.3,b))})}
 function lab(html,a,b,t){var e=$("lab");if(t<a||t>b){e.style.opacity=0;return}if(e.getAttribute('data-h')!==html){e.innerHTML=html;e.setAttribute('data-h',html)}rv(e,seg(t,a,a+.4));out(e,seg(t,b-.3,b))}
 /* timeline: the M1 bed from 4 s in, spliced at 14 s back to its 16 s hit (mix.py), so hits land on 0,4,8,14,18,22
    1 hook 0-4 | 2 Live now 4-8 | 3 trust 8-11.6, by sector 11.6-14 | 4 last matchday 14-18 | 5 trades drop 18-22 | 6 end 22-26 */
+/* brand: 'bug' = the lockup at the top from the first frame; 'presents' = the logo over "presents" on the opening line, then the lockup; 'one' = one logo for the whole film:
+   it opens over "presents", rises into the lockup at 3 s, and comes down as the end card's logo at 22 s; 'corner' = the logo alone, top left */
+function rc(e){var a=e.getBoundingClientRect(),b=$('st').getBoundingClientRect();return [a.left-b.left,a.top-b.top,a.width]}
+function brand(t){var B=$('bug'),k;
+ if(BR==='bug'||BR==='corner'){B.style.opacity=(1-seg(t,21.7,22)).toFixed(3);return}
+ if(BR==='presents'){B.style.opacity=(eo(seg(t,3.1,3.5))*(1-seg(t,21.7,22))).toFixed(3);return}
+ var F=$('fly'),a,b,u;B.style.opacity=1;B.lastChild.style.opacity=(eo(seg(t,3.2,3.6))*(1-seg(t,21.55,21.8))).toFixed(3);$('pre').lastChild.style.opacity=(1-seg(t,2.45,2.75)).toFixed(3);
+ var slot=rc(B.firstChild);
+ if(t<3.4){$('s1').style.display='flex';a=rc($('pre').firstChild);if(t>=3)$('s1').style.opacity=0;u=eio(seg(t,2.7,3.35));b=slot}
+ else{var s6=$('s6');if(t>=21.7&&t<22){s6.style.display='flex';s6.style.opacity=0}a=slot;if(t>=21.7){$('e0').style.opacity=0;$('e0').style.transform='none';b=rc($('e0'));u=eio(seg(t,21.75,22.45))}else{b=slot;u=0}}
+ var x=mix(a[0],b[0],u),y=mix(a[1],b[1],u),w=mix(a[2],b[2],u);F.style.transform='translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) scale('+(w/100).toFixed(4)+')'}
 window.R=function(t){if(!window.READY)return;LIFTK=0;X.clearRect(0,0,1080,1350);$("st").style.transform='';["s1","s6"].forEach(function(s){$(s).style.display='none'});
  [].forEach.call(document.querySelectorAll(".pop,.sub"),function(e){e.style.opacity=0;if(e.classList.contains("sub"))e.style.display="none"});[].forEach.call(document.querySelectorAll(".ink"),function(e){e.style.display="none"});$("rings").style.opacity=0;var ph=null,L=RE.L;
  var LB=[['Live <b>AI trades</b>',3.45,7.95],['Who’s right <b>and how often</b>',8.3,11.65],['Sector <b>leaders</b>',11.75,13.95],['Receipts <b>included</b>',14.3,17.95],['Get updates <b>on next trades</b>',18.3,21.95]].filter(function(x){return t>=x[1]&&t<=x[2]})[0];if(W169){if(LB)side(LB[0],LB[1],LB[2],t);else{$('sdl').firstChild.style.opacity=0;$('sdr').firstChild.style.opacity=0}}else if(LB)lab(LB[0],LB[1],LB[2],t);else $("lab").style.opacity=0;
@@ -144,6 +163,7 @@ window.R=function(t){if(!window.READY)return;LIFTK=0;X.clearRect(0,0,1080,1350);
    rv($("e2"),seg(t,22.5,22.85),20);var bb=seg(t,22.75,23.35);$("e1").style.opacity=eo(bb);$("e1").style.filter='blur('+((1-eo(bb))*20)+'px)';$("e1").style.transform='scale('+(1.14-.14*eo(bb))+')';
    rv($("e3"),seg(t,23.7,24.1),26);if(t>25.5)out(s6,seg(t,25.5,26))}
  if(ph)phone(ph);else phone({op:0});
+ if(BR)brand(t);
  if(W169){var g=Math.max(175,LIFTK)+56;$('sdl').style.left=(960-g-520)+'px';$('sdr').style.left=(960+g)+'px'}
 };
 </script>
