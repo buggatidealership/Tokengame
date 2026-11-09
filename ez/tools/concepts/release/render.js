@@ -1,6 +1,10 @@
-// node render.js <outdir> [query] : renders vid.html at 30 fps, 0 to 25 s, into <outdir>/f%04d.jpg (ez/ served on :8996)
-const {chromium}=require('playwright');const fs=require('fs');const out=process.argv[2],q=process.argv[3]||'',fps=30,D=26;
-(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1350}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
- await p.goto('http://localhost:8996/tools/concepts/release/vid.html'+q);await p.waitForFunction(()=>window.READY===1,null,{timeout:20000});await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(1500);
- fs.mkdirSync(out,{recursive:true});for(let f=0;f<D*fps;f++){await p.evaluate(t=>window.R(t),f/fps);await p.screenshot({path:`${out}/f${String(f).padStart(4,'0')}.jpg`,type:'jpeg',quality:92})}
- console.log('frames',D*fps,'errs',errs.join('|')||'none');await b.close()})();
+// node render.js <outdir> [query] : renders vid.html at 30 fps, 0 to 26 s, into <outdir>/f%04d.jpg (ez/ served on :8996).
+// A fresh browser every 150 frames (one long session ran out of memory), and frames already on disk are skipped.
+const {chromium}=require('playwright');const fs=require('fs');const out=process.argv[2],q=process.argv[3]||'',fps=30,D=26,N=D*fps,CH=150;
+(async()=>{fs.mkdirSync(out,{recursive:true});const errs=[];
+ for(let a=0;a<N;a+=CH){const todo=[];for(let f=a;f<Math.min(N,a+CH);f++)if(!fs.existsSync(`${out}/f${String(f).padStart(4,'0')}.jpg`))todo.push(f);if(!todo.length)continue;
+  for(let tries=0;tries<3;tries++){const b=await chromium.launch();try{const p=await b.newPage({viewport:{width:1080,height:1350}});p.on('pageerror',e=>errs.push(e.message));
+   await p.goto('http://localhost:8996/tools/concepts/release/vid.html'+q);await p.waitForFunction(()=>window.READY===1,null,{timeout:20000});await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(1200);
+   for(const f of todo){const fn=`${out}/f${String(f).padStart(4,'0')}.jpg`;if(fs.existsSync(fn))continue;await p.evaluate(t=>window.R(t),f/fps);await p.screenshot({path:fn+'.tmp',type:'jpeg',quality:92});fs.renameSync(fn+'.tmp',fn)}
+   await b.close();break}catch(e){errs.push('retry '+a+': '+e.message.split('\n')[0]);try{await b.close()}catch(_){}}}}
+ const n=fs.readdirSync(out).filter(x=>/^f\d{4}\.jpg$/.test(x)).length;console.log('frames',n,'of',N,'errs',errs.join('|')||'none')})();

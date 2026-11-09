@@ -8,11 +8,15 @@ const {chromium}=require('playwright');const fs=require('fs');const O=__dirname+
   return {secs:q('section.pn').map(e=>({r:r(e),t:e.innerText.slice(0,30).replace(/\n/g,' ')})),
    ur:q('.ur').slice(0,8).map(e=>({r:r(e),t:e.innerText.slice(0,60).replace(/\n/g,' ')})),
    lvit:q('.lv-it').map(e=>({r:r(e),on:e.classList.contains('on'),t:e.innerText.slice(0,40).replace(/\n/g,' ')})),
-   lvc:q('.lv-c').map(e=>({r:r(e)})),lvst:q('.lv-st').map(e=>({r:r(e)})),lvsd:q('.lv-sd').map(e=>({r:r(e.querySelector('.lv-sl')?e:e)})),
+   lvc:q('.lv-c').map(e=>({r:r(e)})),lvst:q('.lv-st').map(e=>({r:r(e)})),lvsd:q('.lv-sd').map(e=>({r:r(e),h:r(e.querySelector('h4')),sl:r(e.querySelector('.lv-sl'))})),
+   xr:q('.lv-it.on .lv-xr').map(e=>({r:r(e),h:e.classList.contains('lv-xh'),pl:r(e.lastElementChild),w:e.classList.contains('w')})),
+   ut:q('.ur .ut b').slice(0,3).map(e=>({r:r(e)})),
+   hr62:(()=>{const t=document.querySelectorAll('table')[1];if(!t)return null;const td=t.querySelector('tbody tr').lastElementChild;const g=document.createRange();g.selectNodeContents(td);const b=g.getBoundingClientRect();return [Math.round(b.left),Math.round(b.top+scrollY),Math.round(b.width),Math.round(b.height)]})(),
    tables:q('table').map(e=>({r:r(e),rows:[...e.querySelectorAll('tbody tr')].map(x=>({r:r(x),t:x.innerText.slice(0,50).replace(/\s+/g,' ')}))})),
    h:document.documentElement.scrollHeight}});
  let [c,p]=await ctx();await p.goto('http://localhost:8997/#next');await p.waitForTimeout(2200);
  await p.screenshot({path:O+'chrome-up.png'});
+ await p.evaluate(()=>{const o=document.querySelector('.lv-it.on [data-lvx]');if(o)o.click()});await p.waitForTimeout(400);
  const n=await p.evaluate(()=>{const b=[...document.querySelectorAll('[data-lvx]')].find(e=>/DraftKings/.test(e.textContent));if(b){b.click();return b.getAttribute('data-lvx')}return null});
  await p.waitForTimeout(600);await p.evaluate(()=>{document.querySelector('nav.nav').style.display='none';const l=document.querySelector('.lv-ls');if(l)l.style.maxHeight='none'});
  R.up=await rects(p);R.up.opened=n;await p.screenshot({path:O+'up.png',fullPage:true});await c.close();
