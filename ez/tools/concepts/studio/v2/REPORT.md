@@ -56,3 +56,49 @@ $0.60, for one ElevenLabs theme (`v2-theme-a`). It ignored the requested structu
 ## Open questions
 - Player of the match is the sheet's winner, the closest trade. Under sized P&L, another AI on the right side can make more money. Should it go to the closest trade or the biggest P&L?
 - The report time is not in the sheet.
+
+---
+
+## Revision 1, after a fresh critic
+
+The critic's verdict was "fix, then ship". Average scores: V2 6.0, B 5.4.
+
+### What changed
+
+**Truth**
+- **False ranks:** the serial swaps are gone. The order now changes in one parallel 0.35 s move, rank cells show "–" until the order settles and during the $0 tie, and gold appears only on a leader that is in profit.
+
+**Colour and tags**
+- **Side chips** are neutral cream (▲ LONG / ▼ SHORT). Green and red now appear only on P&L and the stock's move.
+- **Tags:** "REPLAY" (cream with a red dot) replaces LIVE. A gold FINAL tag lands as a hard cut, with a one-frame flash on the CLOSE tab.
+- **Chart:** removed under FINAL, so there's no double exposure.
+- **The stray "9" in the wipe:** fixed.
+
+**Frame 0 and end card**
+- **Frame 0:** "EARNINGS NIGHT · THU OCT 29" at 60px in the orange band, with the centre left clear for X's play button.
+- **End card:** "NEXT TRADES / MONDAY / NOV 2", Apple and Palantir, 4.65 s; the URL holds 3.6 s. The winner card is 3.2 s.
+
+**Chart and tower**
+- **Chart:** a piecewise time axis. The first hour takes 30% of the width, overnight 15% (shaded), the session 55%. Axis marks: REPORT, 5 PM, 9:30 AM, CLOSE.
+- **Gap and first hour:** a GAP column shows each AI's distance to the leader, and a lower third reads "FIRST HOUR · Reddit −16.7%", computed from PATHS.
+- **Session:** compressed from 3.8 s to 2.8 s.
+- **Session tabs:** AFTER HOURS / OVERNIGHT / PRE-MARKET / OPEN / CLOSE.
+
+**Winner card and template**
+- **Winner title:** "CLOSEST TRADE" when the sheet's winner isn't the P&L leader. AI counts come from the data.
+- **Sound:** mix.py reads its cues from T.json (window.__T), so rounds without a path stay in sync.
+
+### Checks after the revision
+**Reading load:** at most 12 words per shot. Four holds are still short of the 25 s cap:
+- fixture: 3.74 s held, 4.2 s needed;
+- market opens: 2.2 s held, 2.5 s needed;
+- FINAL: 3.2 s held, 3.7 s needed;
+- winner card: 3.1 s held, 5.6 s needed.
+
+**Truth:** clean.
+
+**Craft:** settled frames are clean, and mid-motion was checked frame by frame.
+
+**Focus:** 66% of runtime is on the AIs and the winner.
+
+**Speed:** about 45 s per round. Not done: odometer digit rolls.
