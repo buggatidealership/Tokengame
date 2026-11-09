@@ -5,13 +5,16 @@ SR=48000;D=26.0;N=int(SR*D);H=os.path.join(os.path.dirname(os.path.abspath(__fil
 def load(f):
   raw=subprocess.run(['ffmpeg','-loglevel','error','-i',f,'-ac','2','-ar',str(SR),'-f','s16le','-'],capture_output=True).stdout
   return np.frombuffer(raw,'<i2').reshape(-1,2).astype(float)/32768
-o=np.zeros((N,2));m=load(H+'m1-trailer.mp3')
+o=np.zeros((N,2));m=load(H+os.environ.get('TRACK','m1-trailer')+'.mp3');GAIN=float(os.environ.get('GAIN','.62'))
 # v9 (one-sentence hook, the live card from 3 s): video 0-8 = track 1-9 (its 4 s hit on the 3 s cut), 8-14 = track 8-14 (the 8 s hit on the 8 s cut), 14-26 = track 16-28
 segs=[(0,8,1),(8,14,8),(14,26,16)]
+# TRACK=<file in music/> picks another bed; SEGS='[[video0,video1,track0],...]' places it (a track scored to this cut: [[0,26,0]])
+if os.environ.get('SEGS'):
+  import json;segs=[tuple(x) for x in json.loads(os.environ['SEGS'])]
 for v0,v1,t0 in segs:
-  i0,i1=int(v0*SR),int(v1*SR);o[i0:i1]+=.62*m[int(t0*SR):int(t0*SR)+(i1-i0)]
+  i0,i1=int(v0*SR),int(v1*SR);seg=m[int(t0*SR):int(t0*SR)+(i1-i0)];o[i0:i0+len(seg)]+=GAIN*seg
 x=int(.012*SR)
-for v in (8,14):
+for v in ([b for b,_,_ in segs[1:]]):
   a=int(v*SR);o[a-x:a+x]*=np.concatenate([np.linspace(1,.3,x),np.linspace(.3,1,x)])[:,None]
 fi=int(.25*SR);o[:fi]*=np.linspace(0,1,fi)[:,None];fo=int(1.0*SR);o[-fo:]*=np.linspace(1,0,fo)[:,None]
 def put(t,name,g=1.0):
