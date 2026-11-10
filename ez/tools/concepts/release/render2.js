@@ -4,7 +4,7 @@
 // draft size (1080x1350); DSF=2 only for the master, after every layer is approved. A and B (seconds) limit the range.
 // FPC = frames per chunk (default 30, one mp4 per second; 10 at 4K keeps the samples on disk under about 300 MB), CRF the chunks' quality (default 7).
 const {chromium}=require('playwright');const fs=require('fs');const {execFileSync}=require('child_process');
-const FPC=+(process.env.FPC||30),CRF=process.env.CRF||'7',PIX=process.env.PIX||'yuv444p',out=process.argv[2],q=process.argv[3]||'',fps=30,D=26,DSF=+(process.env.DSF||1),A=+(process.env.A||0),B=+(process.env.B||D),FAST=[3,7,8,9,11,13,14,15,18,21,22],PAGE=process.env.PAGE||'vid2.html';
+const FPC=+(process.env.FPC||30),CRF=process.env.CRF||'7',PIX=process.env.PIX||'yuv444p',out=process.argv[2],q=process.argv[3]||'',fps=30,D=+(process.env.DUR||26),DSF=+(process.env.DSF||1),A=+(process.env.A||0),B=+(process.env.B||D),FAST=process.env.FAST?process.env.FAST.split(',').map(Number):[3,7,8,9,11,13,14,15,18,21,22],PAGE=process.env.PAGE||'vid2.html';
 (async()=>{fs.mkdirSync(out+'/tmp',{recursive:true});const errs=[];let list='';
  for(let sec=A;sec<B;sec++)for(let f0=0;f0<fps;f0+=FPC){const nm=`seg${String(sec).padStart(3,'0')}${FPC<fps?'-'+String(f0).padStart(2,'0'):''}.mp4`,seg=`${out}/${nm}`;list+=`file '${nm}'\n`;if(fs.existsSync(seg))continue;
   const M=FAST.includes(sec)?+(process.env.MBF||12):+(process.env.MB||4);

@@ -1,7 +1,7 @@
 """Release video mix: the M1 trailer bed (the owner's pick for v5 A) from 4 s in, so its hits land on the cuts (0,4,8,12,16,20),
 plus soft effects on each move. python3 mix.py <out.wav>"""
 import sys,subprocess,numpy as np,wave,os
-SR=48000;D=26.0;N=int(SR*D);H=os.path.join(os.path.dirname(os.path.abspath(__file__)),'../launchvid/hedra/music/')
+SR=48000;PF=os.environ.get('PF')=='1';DS=8*60/118;D=float(os.environ.get('DUR',26+DS if PF else 26));N=int(SR*D);H=os.path.join(os.path.dirname(os.path.abspath(__file__)),'../launchvid/hedra/music/')
 def load(f):
   raw=subprocess.run(['ffmpeg','-loglevel','error','-i',f,'-ac','2','-ar',str(SR),'-f','s16le','-'],capture_output=True).stdout
   return np.frombuffer(raw,'<i2').reshape(-1,2).astype(float)/32768
@@ -42,6 +42,12 @@ def place(t,name,peak,semi=0):
   pk=np.argmax(np.abs(s).max(1));i=int(t*SR)-pk
   if i<0: s=s[-i:];i=0
   k=min(N-i,len(s));o[i:i+k]+=peak/m1*s[:k]
+# PF=1 (2026-11-10): the AI PROFILES scene at 14 s, 8 beats long; every cue from 14 s on moves by DS, plus the scene's own cues
+if PF:
+  sh=lambda t:t if t<14 else t+DS
+  for k,v in list(ROLE.items()):
+    ROLE[k]=[[sh(x) for x in r] if isinstance(r,list) else sh(r) for r in v]
+  ROLE['cut']=sorted(ROLE['cut']+[14.0]);ROLE['lift']+= [14.6];ROLE['gold']+=[15.7];ROLE['pop']+=[[16.4,16.75,17.1]]
 SET=os.environ.get('SET')
 if SET:
   M=SETS[SET]
