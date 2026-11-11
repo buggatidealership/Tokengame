@@ -20,11 +20,12 @@ cream = float(sys.argv[3]) if len(sys.argv) > 3 else 1.0   # saturation kept in 
 sm = lambda e0, e1, x: np.clip((x - e0) / (e1 - e0), 0, 1) ** 2 * (3 - 2 * np.clip((x - e0) / (e1 - e0), 0, 1))
 H = hh.copy(); S = s.copy()
 red = (hh >= 330) | (hh < 22); H[red] = 3
+S[red] = s[red] * (.12 + .88 * sm(.45, .7, s[red]))                 # dim warm browns are not red: only saturated red stays red
 gz = (hh >= 22) & (hh < 70); H[gz] = 42
 S[gz] = s[gz] * (cream + (1 - cream) * sm(.55, .72, s[gz]))      # tan and clay -> cream; lit gold stays gold
 grn = (hh >= 70) & (hh < 170); H[grn] = 156
 oth = (hh >= 170) & (hh < 330); S[oth] = s[oth] * .12
-S = S * (.3 + .7 * sm(.08, .3, v))                                  # shadows toward the site's near-black
+S = S * (.15 + .85 * sm(.12, .45, v))                                # shadows toward the site's near-black
 # HSV -> RGB
 i = np.floor(H / 60) % 6; f = H / 60 - np.floor(H / 60); P = v * (1 - S); Q = v * (1 - f * S); T = v * (1 - (1 - f) * S)
 o = np.zeros_like(p)

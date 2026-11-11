@@ -1,0 +1,51 @@
+<!doctype html><meta charset="utf-8"><title>Glass pack</title>
+<!-- The glass card pack, three beats (2026-11-11). Hedra painted the pack and the cards with blank faces (img/p1a..p1c,
+     1536x2048); every word and mark is printed or etched where the world would put it, as live type:
+     a: the name etched deep into the pack's frosted panel, the EZ. back printed on the front card behind the glass
+     b: the pack opens, the front card shows its face (ChatGPT's, the long)
+     c: the four cards stand, each printed like a real card: mark in the circle, name, side, the trade, set line at the foot.
+     Page shows y 64..1984 (4:5). ?b=a|b|c -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Instrument+Serif&family=Figtree:wght@600;700;800&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{width:1536px;height:1920px;overflow:hidden;background:#0e0c0b}
+#bg{position:absolute;left:0;top:-64px;width:1536px;height:2048px}
+.a{position:absolute}
+/* deep-etched into frosted glass: the cut catches light on its lower lip and is shaded on its upper wall */
+.etch{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;text-align:center;color:rgba(70,62,54,.38);mix-blend-mode:multiply;
+ text-shadow:0 2px 0 rgba(255,255,255,.55),0 -2px 1px rgba(0,0,0,.25)}
+/* printed on the card stock, under the glass */
+.prt{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;text-align:center;mix-blend-mode:multiply;color:#1d1917}
+.sheen{position:absolute;pointer-events:none;mix-blend-mode:screen;background:linear-gradient(115deg,rgba(255,255,255,0) 30%,rgba(255,246,220,.16) 45%,rgba(255,255,255,0) 60%)}
+.mk{position:absolute;transform:translate(-50%,-50%);border-radius:50%}
+</style>
+<img id="bg"><div id="L"></div>
+<script>
+const b=new URLSearchParams(location.search).get('b')||'a',L=document.getElementById('L'),Y=64;
+document.getElementById('bg').src='img/q1'+b+'.png';
+const add=(cls,x,y,html,css)=>{const d=document.createElement('div');d.className=cls;d.style.left=x+'px';d.style.top=(y-Y)+'px';if(css)d.style.cssText+=css;d.innerHTML=html;L.appendChild(d);return d};
+const ink={GPT:'#1d1917',CLAUDE:'#d97757',KIMI:'#1d1917',GROK:'#1d1917'};
+fetch('models.json').then(r=>r.json()).then(M=>{
+ const mark=(m,x,y,sz)=>{const x0=M[m];const s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="'+sz+'" height="'+sz+'"><path fill="'+ink[m]+'"'+(x0.fr?' fill-rule="'+x0.fr+'"':'')+' d="'+x0.d+'"/>'+(x0.dot?'<path fill="#1e80ff" d="'+x0.dot+'"/>':'')+'</svg>';
+  return add('prt',x,y,s,'opacity:.9')};
+ if(b==='a'){
+  add('etch',855,640,'COREWEAVE','font:700 74px/1 "Cormorant Garamond";letter-spacing:.12em');
+  add('etch',855,745,'The trades are in','font:italic 500 54px/1 "Cormorant Garamond";letter-spacing:.04em');
+  add('etch',855,880,'Four cards inside · Earnings Zeason','font:600 22px/1 Figtree;letter-spacing:.2em;text-transform:uppercase');
+  add('prt',842,1350,'<img src="ezlogo.svg" style="width:220px;height:220px;opacity:.88">');
+  add('sheen',630,1060,'','width:430px;height:580px')}
+ if(b==='b'){
+  /* the front card, nearly square to the camera: ChatGPT's face */
+  mark('GPT',820,780,120);
+  add('prt',820,900,'ChatGPT','font:600 54px/1 "Cormorant Garamond";letter-spacing:.08em');
+  add('prt',820,1000,'LONG','font:800 30px/1 Figtree;letter-spacing:.4em;color:#0a7a45');
+  add('prt',820,1095,'+8%','font:400 120px/1 "Instrument Serif";color:#0a7a45')}
+ if(b==='c'){
+  const C=[['GPT','ChatGPT','LONG','+8%',266,732,1.12],['KIMI','Kimi','SHORT','−10%',637,1011,1],['CLAUDE','Claude','SHORT','−12%',996,1011,1],['GROK','Grok','SHORT','−1.6%',1304,1006,1]];
+  C.forEach(([m,n,side,v,x,cy,k],i)=>{const up=side==='LONG',col=up?'#0a7a45':'#b3261e';
+   mark(m,x,cy,Math.round(70*k));
+   add('prt',x,cy+118*k,n,'font:600 '+Math.round(46*k)+'px/1 "Cormorant Garamond";letter-spacing:.06em');
+   add('prt',x,cy+182*k,side,'font:800 '+Math.round(22*k)+'px/1 Figtree;letter-spacing:.4em;color:'+col);
+   add('prt',x,cy+272*k,v,'font:400 '+Math.round(104*k)+'px/1 "Instrument Serif";color:'+col);
+   add('prt',x,cy+390*k,'COREWEAVE · Nº 106 · WED 4PM ET','font:700 '+Math.round(11*k)+'px/1 Figtree;letter-spacing:.08em;color:#8e8680')})}
+ return Promise.all([document.fonts.ready,document.getElementById('bg').decode()])}).then(()=>window.READY=1);
+</script>
