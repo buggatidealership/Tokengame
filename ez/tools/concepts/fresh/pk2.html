@@ -1,0 +1,53 @@
+<!doctype html><meta charset="utf-8"><title>Card packs</title>
+<!-- Three more card-pack styles, diegetic (2026-11-11). Hedra painted each pack and its four blank cards (img/q2<s>.png,
+     graded into the palette); every word and mark is set as live type in the material's own technique:
+     f foil: metallic gold ink on the foil wrapper, ink printed into the card stock.
+     t felt: satin-stitch embroidery (thread stripes, raised, with a shadow) on the felt patch and the felt cards.
+     p paper: letterpress, inked and pressed into the cotton card (a dark wall above, a pale lip below).
+     Coordinates are the painting's own pixels (1536x2048); the page shows y 64..1984. ?s=f|t|p -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Instrument+Serif&family=Baloo+2:wght@700;800&family=Figtree:wght@700;800&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{width:1536px;height:1920px;overflow:hidden;background:#0e0c0b}
+#bg{position:absolute;left:0;top:-64px;width:1536px;height:2048px}
+svg#S{position:absolute;left:0;top:-64px;width:1536px;height:2048px}
+</style>
+<img id="bg"><svg id="S" viewBox="0 0 1536 2048"></svg>
+<script>
+const st=new URLSearchParams(location.search).get('s')||'f',S=document.getElementById('S');
+document.getElementById('bg').src='img/q2'+st+'.png';
+const NS='http://www.w3.org/2000/svg';
+/* each style: the pack's blank front (centre and width) and each card's circle centre, card width */
+const G={
+ f:{pack:[870,830,460],cards:[[269,993,300],[640,1260,270],[986,1260,270],[1318,1260,270]],down:150},
+ t:{pack:[787,896,470],cards:[[224,1037,290],[609,1234,280],[960,1234,280],[1311,1234,280]],down:150},
+ p:{pack:[749,560,700],cards:[[346,973,280],[704,1160,240],[998,1160,240],[1300,1160,240]],down:118}}[st];
+const T=[['GPT','ChatGPT','LONG','+8%'],['KIMI','Kimi','SHORT','−10%'],['CLAUDE','Claude','SHORT','−12%'],['GROK','Grok','SHORT','−1.6%']];
+const INK='#1d1917',UP={f:'#0a6b3f',t:'#1f7a52',p:'#0a6b3f'}[st],DN={f:'#9e221b',t:'#b3261e',p:'#9e221b'}[st];
+let defs='<defs>'+
+ /* satin stitch: tight diagonal thread lines in two tones, so a filled shape reads as embroidered */
+ ['#fdbc2a','#1d1917','#1f7a52','#b3261e','#d97757','#1e80ff','#f2ede6'].map((c,i)=>'<pattern id="sat'+i+'" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(38)"><rect width="7" height="7" fill="'+c+'"/><rect width="2.4" height="7" fill="rgba(255,255,255,.28)"/><rect x="4.6" width="1.2" height="7" fill="rgba(0,0,0,.28)"/></pattern>').join('')+
+ '<linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1c7"/><stop offset=".4" stop-color="#fdbc2a"/><stop offset=".62" stop-color="#b07f10"/><stop offset=".85" stop-color="#fdbc2a"/><stop offset="1" stop-color="#6e4f0a"/></linearGradient>'+
+ '<filter id="stitch" x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#000" flood-opacity=".55"/></filter>'+
+ '<filter id="press" x="-5%" y="-10%" width="110%" height="130%"><feOffset dy="-2" in="SourceAlpha" result="up"/><feComposite in="SourceAlpha" in2="up" operator="out" result="wall"/><feFlood flood-color="#000" flood-opacity=".35"/><feComposite in2="wall" operator="in" result="w"/><feOffset dy="2" in="SourceAlpha" result="dn"/><feComposite in="SourceAlpha" in2="dn" operator="out" result="lip"/><feFlood flood-color="#fff" flood-opacity=".55"/><feComposite in2="lip" operator="in" result="l"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="w"/><feMergeNode in="l"/></feMerge></filter>'+
+ '<filter id="foil" x="-5%" y="-10%" width="110%" height="130%"><feDropShadow dx="0" dy="1.5" stdDeviation=".6" flood-color="#000" flood-opacity=".6"/></filter></defs>';
+const satId=c=>'url(#sat'+['#fdbc2a','#1d1917','#1f7a52','#b3261e','#d97757','#1e80ff','#f2ede6'].indexOf(c)+')';
+const text=(x,y,s,o)=>{let fill=o.fill||INK,flt='',blend='multiply',fam=o.fam,ws=o.w||700;
+ if(st==='t'){fill=satId(o.thread||'#1d1917');flt='url(#stitch)';blend='normal';fam=o.tfam||'Baloo 2';ws=800}
+ if(st==='p'){flt='url(#press)'}
+ if(o.metal){fill='url(#gold)';flt='url(#foil)';blend='normal'}
+ return '<text x="'+x+'" y="'+y+'" text-anchor="middle" font-family="'+fam+'" font-weight="'+ws+'" font-size="'+o.sz+'" letter-spacing="'+(o.ls||0)+'" fill="'+fill+'"'+(flt?' filter="'+flt+'"':'')+' style="mix-blend-mode:'+blend+'">'+s+'</text>'};
+fetch('models.json').then(r=>r.json()).then(M=>{
+ let s=defs;const [px,py,pw]=G.pack,serif=st==='p'?'Fraunces':'Cormorant Garamond';
+ /* the pack's own printing */
+ s+=text(px,py-40,'COREWEAVE',{sz:Math.round(pw/6.2),fam:serif,ls:pw/60,metal:st!=='t',thread:'#fdbc2a'});
+ s+=text(px,py+40,'The trades are in',{sz:Math.round(pw/13),fam:st==='p'?'Fraunces':'Instrument Serif',w:600,fill:INK,thread:'#f2ede6',tfam:'Baloo 2'});
+ s+=text(px,py+100,'FOUR CARDS · EARNINGS ZEASON',{sz:Math.round(pw/26),fam:'Figtree',ls:3,fill:'#5f5853',thread:'#fdbc2a'});
+ /* the cards */
+ T.forEach(([m,n,side,v],i)=>{const [cx,cy,w]=G.cards[i],k=w/270,up=side==='LONG',col=up?UP:DN,th=up?'#1f7a52':'#b3261e',d=G.down;
+  const x0=M[m],ms=Math.round(64*k),mc=m==='CLAUDE'?'#d97757':INK,mfill=st==='t'?satId(m==='CLAUDE'?'#d97757':'#1d1917'):mc;
+  s+='<g transform="translate('+(cx-ms/2)+','+(cy-ms/2)+') scale('+(ms/24)+')"'+(st==='t'?' filter="url(#stitch)"':st==='p'?' filter="url(#press)"':'')+' style="mix-blend-mode:'+(st==='t'?'normal':'multiply')+'"><path fill="'+mfill+'"'+(x0.fr?' fill-rule="'+x0.fr+'"':'')+' d="'+x0.d+'"/>'+(x0.dot?'<path fill="'+(st==='t'?satId('#1e80ff'):'#1e80ff')+'" d="'+x0.dot+'"/>':'')+'</g>';
+  s+=text(cx,cy+d*k,n,{sz:Math.round(44*k),fam:serif,w:700});
+  s+=text(cx,cy+(d+54)*k,side,{sz:Math.round(20*k),fam:'Figtree',w:800,ls:6*k,fill:col,thread:th});
+  s+=text(cx,cy+(d+150)*k,v,{sz:Math.round(96*k),fam:st==='p'?'Fraunces':'Instrument Serif',w:st==='p'?800:400,fill:col,thread:th})});
+ S.innerHTML=s;return Promise.all([document.fonts.ready,document.getElementById('bg').decode()])}).then(()=>window.READY=1);
+</script>
