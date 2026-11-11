@@ -1,0 +1,143 @@
+<!doctype html><meta charset="utf-8"><title>In-app trades</title>
+<!-- Three generations of "the prediction shown from within our own app" (2026-11-11), CoreWeave 1 v 3, 9.5 s, 1080x1350.
+  ?g=1  phone, the live Upcoming tab: camera pushes in, the real In play card lifts out, LONG / SHORT / "1 v 3" pop in turn.
+  ?g=2  phone, a redesigned prediction card built inside the app's own header and tabs (side as headline, a 1-vs-3 bar),
+        then the card pops out of the screen as the hero.
+  ?g=3  the app in use, full bleed like a screen recording: a finger taps CoreWeave's In play card, it opens into a full-screen
+        sheet of the four trades (the same card design as g2), then the sheet is swiped closed back to the board.
+  All words are the app's own except none: there is no caption layer. Pure R(t) for the frame renderer (rs.js). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Geist+Mono:wght@500;600;700&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{width:1080px;height:1350px;overflow:hidden;background:#0e0c0b;font-family:Inter,sans-serif}
+#bg{position:absolute;inset:0;background:radial-gradient(ellipse 90% 45% at 50% 0%,rgba(3,200,112,.20),transparent 70%),radial-gradient(ellipse 90% 45% at 50% 100%,rgba(255,58,49,.14),transparent 70%),#0e0c0b}
+#cam{position:absolute;left:0;top:0;width:1080px;height:1350px;transform-origin:0 0}
+.ph{position:absolute;left:244px;top:62px;width:592px;height:1244px;border-radius:78px;background:#04070e;box-shadow:0 0 0 2px #2a2522,0 40px 120px rgba(0,0,0,.8)}
+.scr{position:absolute;left:16px;top:16px;width:560px;height:1212px;border-radius:62px;overflow:hidden;background:#0e0c0b url(scr/screen.png) 0 0/560px auto no-repeat}
+.dim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+.lift{position:absolute;transform-origin:0 0;border-radius:18px;background:url(scr/p-c.png) 0 0/100% 100%;opacity:0}
+.pc{position:absolute;transform-origin:50% 50%;opacity:0;border-radius:10px}
+.vl{position:absolute;inset:0;background:rgba(14,12,11,.6);opacity:0;border-radius:18px}
+/* G2: the redesigned card, in the app's tokens */
+.app{position:absolute;left:0;top:0;width:390px;transform-origin:0 0;font-family:Inter}
+.rc{width:358px;margin-left:16px;background:#161312;border:1px solid #2a2522;border-radius:20px;padding:16px;color:#f2ede6}
+.rh{display:flex;align-items:center;gap:8px;font:600 11px/1 "Geist Mono";color:#8e8680;letter-spacing:.06em}
+.rh .lv{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;background:rgba(232,87,107,.14);color:#e8576b;font-weight:700}
+.rh .lv i{width:7px;height:7px;border-radius:50%;background:#e8576b;box-shadow:0 0 8px #e8576b}.rh .r{margin-left:auto;color:#f2ede6}
+.hero{display:flex;align-items:center;gap:14px;margin:16px 0 14px}.hero .co{width:62px;height:62px;border-radius:50%;background:#f2ede6 url(crwv.png) center/78% no-repeat}
+.hero b{display:block;font:800 30px/1 Inter;letter-spacing:-.02em}.hero span{font:600 12px/1.6 "Geist Mono";color:#8e8680}
+.bar{display:flex;height:44px;border-radius:12px;overflow:hidden;background:#1d1917;font:800 15px/44px Inter;letter-spacing:.04em}
+.bar .L{background:#1f7a52;color:#e9fff4;padding-left:12px;white-space:nowrap;overflow:hidden}.bar .S{margin-left:auto;background:#b3261e;color:#ffeceb;text-align:right;padding-right:12px;white-space:nowrap;overflow:hidden}
+.rows{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.rw{display:flex;align-items:center;gap:12px;height:62px;padding:0 14px;border-radius:14px}
+.rw.up{background:rgba(85,214,162,.10);box-shadow:inset 0 0 0 1px rgba(85,214,162,.28)}.rw.dn{background:rgba(232,87,107,.08);box-shadow:inset 0 0 0 1px rgba(232,87,107,.22)}
+.rw .mk{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center}.rw .mk svg{width:24px;height:24px}
+.rw .nm{font:700 17px/1 Inter}.rw .sd{margin-left:auto;text-align:right}.rw .sd b{display:block;font:900 26px/1 Inter;letter-spacing:.01em}.rw .sd span{font:600 12px/1.5 "Geist Mono";color:#8e8680}
+.rw.up .sd b{color:#55d6a2}.rw.dn .sd b{color:#e8576b}
+.rf{margin-top:14px;font:600 12px/1 "Geist Mono";color:#8e8680}.rf b{color:#f2ede6}
+.mid{position:absolute;left:16px;top:118px;width:560px;bottom:96px;background:linear-gradient(180deg,#0b2a1c 0%,#0e0c0b 26%)}
+/* G3 */
+.desk{position:absolute;left:0;top:0;width:1440px;height:900px;background:url(scr/d-all.png) 0 0/1440px 900px}
+.zp{position:absolute;overflow:hidden;border-radius:8px;opacity:0}
+</style>
+<div id="bg"></div><div id="cam"></div><div id="top"></div>
+<script>
+const g=new URLSearchParams(location.search).get('g')||'1',cam=document.getElementById('cam'),top_=document.getElementById('top');
+const cl=x=>Math.max(0,Math.min(1,x)),seg=(t,a,b)=>cl((t-a)/(b-a)),eo=u=>1-Math.pow(1-u,3),eio=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2,
+ back=(u,s=1.7)=>1+(s+1)*Math.pow(u-1,3)+s*Math.pow(u-1,2),lerp=(a,b,u)=>a+(b-a)*u,
+ bump=(t,a,b,c)=>t<a?0:t<b?eo(seg(t,a,b)):1-eio(seg(t,b,c)); /* 0 -> 1 -> 0 */
+const camAt=(z,fx,fy,fyc=675)=>{cam.style.transform='translate('+(540-fx*z)+'px,'+(fyc-fy*z)+'px) scale('+z+')'};
+const el=(p,cls,css,html)=>{const d=document.createElement('div');d.className=cls;if(css)d.style.cssText=css;if(html)d.innerHTML=html;p.appendChild(d);return d};
+const S=560/390;window.D=9.5;
+let R=()=>{};
+fetch('models.json').then(r=>r.json()).then(M=>{
+ const mark=(m,c)=>{const x=M[m];return '<svg viewBox="0 0 24 24"><path fill="'+(c||x.fg)+'"'+(x.fr?' fill-rule="'+x.fr+'"':'')+' d="'+x.d+'"/>'+(x.dot?'<path fill="'+x.dotc+'" d="'+x.dot+'"/>':'')+'</svg>'};
+ if(g==='1'||g==='2'){
+  const ph=el(cam,'ph'),scr=el(ph,'scr'),dim=el(scr,'dim');
+  /* a world point on the phone screen (CSS px of the 390-wide page) -> world px */
+  const W=(x,y)=>[244+16+x*S,62+16+y*S];
+  if(g==='1'){
+   const C=[17,139,356,252],img0=[15,137,360,256];             /* card and its 6x image (2 px pad) in page CSS px */
+   const lift=el(top_,'lift'),vl=el(lift,'vl');
+   const piece=(n,r,glow)=>{const d=el(lift,'pc','background:url(scr/p-'+n+'.png) 0 0/100% 100%');d.r=[r[0]-2-img0[0],r[1]-2-img0[1],r[2]+4,r[3]+4];d.glow=glow;return d};
+   const P={L:piece('L',[33,203,99,95],'rgba(85,214,162,.95)'),S:piece('S',[258,206,99,88],'rgba(232,87,107,.95)'),sc:piece('sc',[170,282,50,30],'rgba(253,188,42,.95)'),ft:piece('ft',[33,326,324,48],'rgba(253,188,42,.7)')};
+   const [cx,cy]=W(C[0]+C[2]/2,C[1]+C[3]/2);
+   R=t=>{const enter=eo(seg(t,0,.7)),push=eio(seg(t,.7,1.8)),back_=eio(seg(t,7.6,8.6));
+    const z=lerp(1,1.3,push*(1-back_)),fx=lerp(540,cx,push*(1-back_)),fy=lerp(684,cy,push*(1-back_));
+    camAt(z,fx,fy,675+(1-enter)*500);cam.style.opacity=enter;ph.style.transform='perspective(1800px) rotateX('+((1-enter)*14)+'deg)';
+    /* the lift: from the card's place on the screen to 980 px wide, centred at y 640 */
+    const lu=eio(seg(t,1.8,2.5))*(1-eio(seg(t,7.0,7.7)));
+    const [wx,wy]=W(img0[0],img0[1]),fx0=540+(wx-fx)*z,fy0=675+(wy-fy)*z,w0=img0[2]*S*z;
+    const w1=980,h1=w1*img0[3]/img0[2],x1=50,y1=640-h1/2,w=lerp(w0,w1,lu),u=w/img0[2];
+    lift.style.width=img0[2]+'px';lift.style.height=img0[3]+'px';lift.style.opacity=t>1.8&&t<7.7?1:0;
+    lift.style.transform='translate('+lerp(fx0,x1,lu)+'px,'+lerp(fy0,y1,lu)+'px) scale('+u+')';
+    lift.style.boxShadow='0 '+(40*lu)+'px '+(120*lu)+'px rgba(0,0,0,'+(.85*lu)+')';
+    dim.style.opacity=.62*lu;scr.style.filter='blur('+(6*lu)+'px)';
+    /* the pops, one at a time; the rest of the card steps back under a veil */
+    const pops=[['L',2.7,3.1,3.9,1.32],['S',3.9,4.3,5.1,1.32],['sc',5.1,5.5,6.2,1.75],['ft',6.2,6.5,7.0,1.08]];let veil=0;
+    for(const [n,a,b,c,s] of pops){const d=P[n],k=bump(t,a,b,c);veil=Math.max(veil,k);
+     d.style.left=d.r[0]+'px';d.style.top=d.r[1]+'px';d.style.width=d.r[2]+'px';d.style.height=d.r[3]+'px';d.style.opacity=k>0?1:0;
+     d.style.transform='scale('+(1+(s-1)*back(Math.min(1,k*1.2),2.2))+')';d.style.filter='drop-shadow(0 0 '+(18*k)+'px '+d.glow+')';d.style.zIndex=5}
+    vl.style.opacity=veil*.9};
+  }
+  if(g==='2'){
+   const mid=el(scr,'mid');const rest=el(scr,'','position:absolute;left:0;width:560px;bottom:96px;background:url(scr/screen.png) 0 0/560px auto no-repeat');
+   const rows=[['GPT','ChatGPT','LONG','+8%','up'],['KIMI','Kimi','SHORT','−10%','dn'],['CLAUDE','Claude','SHORT','−12%','dn'],['GROK','Grok','SHORT','−1.6%','dn']];
+   const disc=m=>m==='CLAUDE'?'background:#f5f0e8':'background:#000;box-shadow:inset 0 0 0 1px #2a2522';
+   const app=el(top_,'app','','<div class="rc"><div class="rh"><span class="lv"><i></i>LIVE</span><span>Round 106</span><span class="r">Grades today 4:00 PM</span></div>'+
+    '<div class="hero"><span class="co"></span><div><b>CoreWeave</b><span>CRWV · earnings tonight</span></div></div>'+
+    '<div class="bar"><div class="L">1 LONG</div><div class="S">3 SHORT</div></div><div class="rows">'+
+    rows.map(([m,n,s,v,c])=>'<div class="rw '+c+'"><span class="mk" style="'+disc(m)+'">'+mark(m)+'</span><span class="nm">'+n+'</span><span class="sd"><b>'+s+'</b><span>'+v+'</span></span></div>').join('')+
+    '</div><div class="rf">Trades filed before the report · <b>Resolves in 1h 40m</b></div></div>');
+   const RW=[...app.querySelectorAll('.rw')],BL=app.querySelector('.bar .L'),BS=app.querySelector('.bar .S'),HR=app.querySelector('.hero'),BAR=app.querySelector('.bar'),FT=app.querySelector('.rf');
+   R=t=>{const enter=eo(seg(t,0,.6));camAt(1,540,684,675+(1-enter)*500);cam.style.opacity=enter;ph.style.transform='perspective(1800px) rotateX('+((1-enter)*14)+'deg)';
+    /* the card sits on the phone screen under the app's header, then lifts out to 2.75x, centred */
+    const lu=eio(seg(t,3.4,4.2))*(1-eio(seg(t,7.0,7.8)));const [ax,ay]=W(0,92),sc0=S,sc1=2.45,sc=lerp(sc0,sc1,lu);
+    const ay0=ay+(1-enter)*500,h=app.offsetHeight;app.style.transform='translate('+lerp(ax,540-195*sc1,lu)+'px,'+lerp(ay0,660-h*sc1/2,lu)+'px) scale('+sc+')';
+    app.style.opacity=enter;app.style.filter='drop-shadow(0 '+(30*lu)+'px '+(60*lu)+'px rgba(0,0,0,'+(.8*lu)+'))';
+    dim.style.opacity=.62*lu;scr.style.filter='blur('+(6*lu)+'px)';
+    /* build: hero, then the 1-vs-3 bar fills, then the four trades slam in */
+    HR.style.opacity=eo(seg(t,.5,.8));const bf=eo(seg(t,.65,1.05));BL.style.width=(25*bf)+'%';BS.style.width=(75*bf)+'%';BAR.style.opacity=seg(t,.6,.7);
+    RW.forEach((r,i)=>{const a=1.25+i*.32,u=seg(t,a,a+.3),p=bump(t,4.5+(i?.9:0),4.75+(i?.9:0),5.3+(i?.9:0));
+     r.style.opacity=u>0?1:0;r.style.transform='translateX('+((1-back(u,2))*60)+'px) scale('+(1+.06*p)+')';r.style.boxShadow=p>0?'0 0 '+(24*p)+'px '+(i?'rgba(232,87,107,.6)':'rgba(85,214,162,.6)'):''});
+    FT.style.opacity=seg(t,2.6,2.9);
+    if(!rest.done){const cb=92+app.offsetHeight+10;rest.style.top=(cb*S-16)+'px';rest.style.backgroundPosition='0 '+(-(391-8)*S)+'px';mid.style.bottom=(1212-cb*S+16)+'px';rest.done=1}};
+  }
+ }
+ if(g==='3'){
+  const Z=1080/390;                                     /* the 390-wide page fills the frame: 2.77 frame px per CSS px */
+  const page=el(cam,'','position:absolute;left:0;top:0;width:1080px;height:2338px;background:url(scr/screen.png) 0 0/1080px auto');
+  const C=[17,139,356,252],press=el(cam,'','position:absolute;left:'+C[0]*Z+'px;top:'+C[1]*Z+'px;width:'+C[2]*Z+'px;height:'+C[3]*Z+'px;border-radius:'+18*Z+'px;background:rgba(242,237,230,.0)');
+  const finger=el(top_,'','position:absolute;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(242,237,230,.55),rgba(242,237,230,.18) 60%,transparent 70%);opacity:0');
+  const ring=el(top_,'','position:absolute;width:120px;height:120px;border-radius:50%;border:4px solid rgba(253,188,42,.9);opacity:0');
+  /* the sheet: the app's own dark panel with a grab handle, holding the trades card */
+  const sheet=el(top_,'','position:absolute;left:0;top:0;width:1080px;height:1350px;background:#0e0c0b;border-radius:44px 44px 0 0;overflow:hidden;opacity:0;box-shadow:0 -20px 80px rgba(0,0,0,.7)');
+  el(sheet,'','position:absolute;left:490px;top:22px;width:100px;height:10px;border-radius:5px;background:#5f5853');
+  const rows=[['GPT','ChatGPT','LONG','+8%','up'],['KIMI','Kimi','SHORT','−10%','dn'],['CLAUDE','Claude','SHORT','−12%','dn'],['GROK','Grok','SHORT','−1.6%','dn']];
+  const disc=m=>m==='CLAUDE'?'background:#f5f0e8':'background:#000;box-shadow:inset 0 0 0 1px #2a2522';
+  const app=el(sheet,'app','left:0;top:0','<div class="rc" style="border:0;background:transparent"><div class="rh"><span class="lv"><i></i>LIVE</span><span>Round 106</span><span class="r">Grades today 4:00 PM</span></div>'+
+   '<div class="hero"><span class="co"></span><div><b>CoreWeave</b><span>CRWV · earnings tonight</span></div></div>'+
+   '<div class="bar"><div class="L" style="width:25%">1 LONG</div><div class="S" style="width:75%">3 SHORT</div></div><div class="rows">'+
+   rows.map(([m,n,s,v,c])=>'<div class="rw '+c+'"><span class="mk" style="'+disc(m)+'">'+mark(m)+'</span><span class="nm">'+n+'</span><span class="sd"><b>'+s+'</b><span>'+v+'</span></span></div>').join('')+
+   '</div><div class="rf">Trades filed before the report · <b>Resolves in 1h 40m</b></div></div>');
+  const RW=[...app.querySelectorAll('.rw')],sc=2.62,ah=()=>app.offsetHeight*sc;
+  R=t=>{const scroll=0;cam.style.transform='translate(0,'+(-scroll)+'px)';cam.style.opacity=1;
+   /* the finger comes in from below right, taps the card's centre at 1.1 s */
+   const fx=C[0]*Z+C[2]*Z*.55,fy=C[1]*Z+C[3]*Z*.55,fin=eo(seg(t,.45,1.05)),fout=seg(t,1.35,1.7);
+   finger.style.opacity=(fin>0?1:0)*(1-fout);finger.style.transform='translate('+(lerp(fx+260,fx,fin)-60)+'px,'+(lerp(fy+420,fy,fin)-60)+'px) scale('+(t>1.05&&t<1.3?.86:1)+')';
+   const rp=seg(t,1.08,1.6);ring.style.opacity=rp>0&&rp<1?1-rp:0;ring.style.transform='translate('+(fx-60)+'px,'+(fy-60)+'px) scale('+(1+rp*2.4)+')';
+   press.style.transform='scale('+(t>1.05&&t<1.3?.975:1)+')';page.style.transform=press.style.transform==='scale(0.975)'?'':'';
+   /* the card opens into the sheet (from the card's own rectangle to full frame), then closes by a swipe down */
+   const op=eio(seg(t,1.25,1.85)),cls=eio(seg(t,7.2,7.9)),k=op*(1-cls);
+   const x0=C[0]*Z,y0=C[1]*Z,w0=C[2]*Z,h0=C[3]*Z;sheet.style.opacity=k>0.001?1:0;
+   sheet.style.clipPath='inset('+lerp(y0,0,op)+'px '+lerp(1080-x0-w0,0,op)+'px '+lerp(1350-y0-h0,0,op)+'px '+lerp(x0,0,op)+'px round '+lerp(18*Z,44,op)+'px)';
+   sheet.style.transform='translateY('+(cls*1350)+'px)';
+   app.style.transform='translate('+(540-195*sc)+'px,'+(690-ah()/2)+'px) scale('+sc+')';app.style.opacity=seg(t,1.5,1.9);
+   RW.forEach((r,i)=>{const a=1.95+i*.3,u=seg(t,a,a+.3),p=bump(t,4.0+(i?.9:0),4.25+(i?.9:0),4.8+(i?.9:0));r.style.opacity=u>0?1:0;
+    r.style.transform='translateY('+((1-back(u,2))*40)+'px) scale('+(1+.06*p)+')';r.style.boxShadow=p>0?'0 0 '+(24*p)+'px '+(i?'rgba(232,87,107,.6)':'rgba(85,214,162,.6)'):''});
+   page.style.filter='brightness('+(1-.6*k)+')'};
+ }
+ window.R=R;R(0);return Promise.all([document.fonts.ready,...[...document.images].map(i=>i.decode&&i.decode().catch(()=>0))])}).then(()=>{
+  /* background images must be loaded before frames are shot */
+  const urls=['scr/screen.png','scr/p-c.png','scr/p-L.png','scr/p-S.png','scr/p-sc.png','scr/p-ft.png','scr/d-all.png','crwv.png'];
+  return Promise.all(urls.map(u=>new Promise(r=>{const i=new Image();i.onload=i.onerror=r;i.src=u})))}).then(()=>window.READY=1);
+</script>
