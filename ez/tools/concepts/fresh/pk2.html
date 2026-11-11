@@ -19,7 +19,7 @@ const NS='http://www.w3.org/2000/svg';
 /* each style: the pack's blank front (centre and width) and each card's circle centre, card width */
 const G={
  f:{pack:[870,830,460],cards:[[269,993,300,1745],[640,1260,270,1745],[986,1260,270,1745],[1318,1260,270,1745]],down:150},
- t:{pack:[787,896,470],cards:[[224,1037,290,1600],[609,1234,280,1700],[960,1234,280,1700],[1311,1234,280,1700]],down:150},
+ t:{pack:[787,896,470],cards:[[224,1037,290,1560],[609,1234,280,1700],[960,1234,280,1700],[1311,1234,280,1700]],down:150},
  p:{pack:[749,560,700],cards:[[346,973,280,1375],[704,1160,240,1555],[998,1160,240,1555],[1300,1160,240,1555]],down:118}}[st];
 const T=[['GPT','ChatGPT','LONG','+8%'],['KIMI','Kimi','SHORT','−10%'],['CLAUDE','Claude','SHORT','−12%'],['GROK','Grok','SHORT','−1.6%']];
 const INK='#1d1917',UP={f:'#0a6b3f',t:'#1f7a52',p:'#0a6b3f'}[st],DN={f:'#9e221b',t:'#b3261e',p:'#9e221b'}[st];
@@ -31,6 +31,12 @@ let defs='<defs>'+
  '<filter id="press" x="-5%" y="-10%" width="110%" height="130%"><feOffset dy="-2" in="SourceAlpha" result="up"/><feComposite in="SourceAlpha" in2="up" operator="out" result="wall"/><feFlood flood-color="#000" flood-opacity=".35"/><feComposite in2="wall" operator="in" result="w"/><feOffset dy="2" in="SourceAlpha" result="dn"/><feComposite in="SourceAlpha" in2="dn" operator="out" result="lip"/><feFlood flood-color="#fff" flood-opacity=".55"/><feComposite in2="lip" operator="in" result="l"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="w"/><feMergeNode in="l"/></feMerge></filter>'+
  '<filter id="foil" x="-5%" y="-10%" width="110%" height="130%"><feDropShadow dx="0" dy="1.5" stdDeviation=".6" flood-color="#000" flood-opacity=".6"/></filter></defs>';
 const satId=c=>'url(#sat'+['#fdbc2a','#1d1917','#1f7a52','#b3261e','#d97757','#1e80ff','#f2ede6'].indexOf(c)+')';
+const brand=(x,y,sz,word)=>{ /* logo then 'Earnings Zeason' beside it, centred on x; word=false: logo alone */
+ const flt=st==='t'?' filter="url(#stitch)"':st==='p'?' filter="url(#press)"':'',ww=word?sz*4.1:0,x0=x-(sz+ww)/2;
+ let g='<image href="ezlogo.svg" x="'+x0+'" y="'+(y-sz/2)+'" width="'+sz+'" height="'+sz+'"'+flt+'/>';
+ if(word){const E=st==='t'?satId('#1f7a52'):'#03a35b',Z=st==='t'?satId('#b3261e'):'#e0332b',I=st==='t'?satId(st==='t'?'#f2ede6':'#1d1917'):'#1d1917';
+  g+='<text x="'+(x0+sz*1.18)+'" y="'+(y+sz*.2)+'" font-family="Figtree" font-weight="800" font-size="'+Math.round(sz*.52)+'"'+flt+' style="mix-blend-mode:'+(st==='t'?'normal':'multiply')+'"><tspan fill="'+E+'">E</tspan><tspan fill="'+I+'">arnings </tspan><tspan fill="'+Z+'">Z</tspan><tspan fill="'+I+'">eason</tspan></text>'}
+ return g};
 const text=(x,y,s,o)=>{let fill=o.fill||INK,flt='',blend='multiply',fam=o.fam,ws=o.w||700;
  if(st==='t'){fill=satId(o.thread||'#1d1917');flt='url(#stitch)';blend='normal';fam=o.tfam||'Baloo 2';ws=800}
  if(st==='p'){flt='url(#press)'}
@@ -46,11 +52,12 @@ fetch('models.json').then(r=>r.json()).then(M=>{
   const ms=Math.round(lw/7);['GPT','KIMI','CLAUDE','GROK'].forEach((m,i)=>{const x0=M[m],mx=lx+(i-1.5)*ms*1.5,c=m==='CLAUDE'?'#d97757':INK;
    s+='<g transform="translate('+(mx-ms/2)+','+(lt+lh*.58-ms/2)+') scale('+(ms/24)+')"'+(st==='t'?' filter="url(#stitch)"':st==='p'?' filter="url(#press)"':'')+' style="mix-blend-mode:'+(st==='t'?'normal':'multiply')+'"><path fill="'+(st==='t'?satId(c):c)+'"'+(x0.fr?' fill-rule="'+x0.fr+'"':'')+' d="'+x0.d+'"/>'+(x0.dot?'<path fill="'+(st==='t'?satId('#1e80ff'):'#1e80ff')+'" d="'+x0.dot+'"/>':'')+'</g>'});
   s+=text(lx,lt+lh*.74,'FOUR CARDS INSIDE',{sz:Math.round(lw/17),fam:'Figtree',ls:3,fill:'#5f5853',thread:'#fdbc2a'});
-  s+=text(lx,lt+lh*.9,'Nº 106 · EARNINGS ZEASON',{sz:Math.round(lw/24),fam:'Figtree',ls:2,fill:'#8e8680',thread:'#fdbc2a'})}
+  s+=brand(lx,lt+lh*.88,Math.round(lw/7.5),true)}
  else{
  s+=text(px,py-40,'COREWEAVE',{sz:Math.round(pw/6.2),fam:serif,ls:pw/60,metal:st!=='t',thread:'#fdbc2a'});
  s+=text(px,py+40,'The trades are in',{sz:Math.round(pw/13),fam:st==='p'?'Fraunces':'Instrument Serif',w:600,fill:INK,thread:'#f2ede6',tfam:'Baloo 2'});
- s+=text(px,py+100,'FOUR CARDS · EARNINGS ZEASON',{sz:Math.round(pw/26),fam:'Figtree',ls:3,fill:'#5f5853',thread:'#fdbc2a'});}
+ s+=text(px,py+100,'FOUR CARDS INSIDE',{sz:Math.round(pw/26),fam:'Figtree',ls:3,fill:'#5f5853',thread:'#fdbc2a'});
+ s+=brand(px,py+{f:215,t:150,p:225}[st],Math.round(pw/{f:6,t:7,p:7.5}[st]),true);}
  /* the cards */
  if(!SEAL)T.forEach(([m,n,side,v],i)=>{const [cx,cy,w,B]=G.cards[i],k=w/270,up=side==='LONG',col=up?UP:DN,th=up?'#1f7a52':'#b3261e',d=G.down;
   const x0=M[m],ms=Math.round(64*k),mc=m==='CLAUDE'?'#d97757':INK,mfill=st==='t'?satId(m==='CLAUDE'?'#d97757':'#1d1917'):mc;
@@ -64,6 +71,7 @@ fetch('models.json').then(r=>r.json()).then(M=>{
   s+=text(cx,sdY+sideSz*.55+pc*.9,v,{sz:pc,fam:st==='p'?'Fraunces':'Instrument Serif',w:st==='p'?800:400,fill:col,thread:th});
   /* the lone side says so: it is the story of the round (1 against 3), printed where the tall card had room */
   if(alone)s+=text(cx,top+h*.8,'THE ONLY '+side,{sz:Math.round(w*.075),fam:'Figtree',w:800,ls:2,fill:'#b07f10',thread:'#fdbc2a'});
-  s+=text(cx,B-12*k,'Nº 106 · SETTLES WED 4PM',{sz:Math.round(w*.05),fam:'Figtree',w:800,ls:.5,fill:'#5f5853',thread:'#1d1917'})});
+  /* the card's foot: the EZ. logo struck in, with the round number beside it */
+  const ls=Math.round(w*.15);s+=brand(cx-w*.1,B-ls*.62,ls,false);s+=text(cx+w*.1,B-ls*.62+w*.022,'Nº 106',{sz:Math.round(w*.06),fam:'Figtree',w:800,ls:1,fill:'#5f5853',thread:'#1d1917'})});
  S.innerHTML=s;return Promise.all([document.fonts.ready,document.getElementById('bg').decode()])}).then(()=>window.READY=1);
 </script>
