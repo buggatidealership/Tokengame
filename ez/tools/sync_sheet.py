@@ -409,7 +409,9 @@ def main():
     for r in new:
         if r[act] == "":
             continue
-        a = float(r[act]); calls = []
+        try: a = float(r[act])
+        except ValueError: continue   # not a number: already a PROBLEM above, leave it out of the standings
+        calls = []
         for m in ("GPT", "KIMI", "CLAUDE", "GROK"):
             if m + " DIR" not in col: continue
             d, mg = r[want.index(m + " DIR")], r[want.index(m + " MAG (%)")]
