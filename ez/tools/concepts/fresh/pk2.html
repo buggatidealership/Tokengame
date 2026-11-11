@@ -13,14 +13,14 @@ svg#S{position:absolute;left:0;top:-64px;width:1536px;height:2048px}
 </style>
 <img id="bg"><svg id="S" viewBox="0 0 1536 2048"></svg>
 <script>
-const st=new URLSearchParams(location.search).get('s')||'f',S=document.getElementById('S');
-document.getElementById('bg').src='img/q2'+st+'.png';
+const Q=new URLSearchParams(location.search),st=Q.get('s')||'f',SEAL=Q.get('seal')==='1',S=document.getElementById('S');
+document.getElementById('bg').src=SEAL?'img/s3'+st+'g.png':'img/q2'+st+'.png';
 const NS='http://www.w3.org/2000/svg';
 /* each style: the pack's blank front (centre and width) and each card's circle centre, card width */
 const G={
- f:{pack:[870,830,460],cards:[[269,993,300],[640,1260,270],[986,1260,270],[1318,1260,270]],down:150},
- t:{pack:[787,896,470],cards:[[224,1037,290],[609,1234,280],[960,1234,280],[1311,1234,280]],down:150},
- p:{pack:[749,560,700],cards:[[346,973,280],[704,1160,240],[998,1160,240],[1300,1160,240]],down:118}}[st];
+ f:{pack:[870,830,460],cards:[[269,993,300,1745],[640,1260,270,1745],[986,1260,270,1745],[1318,1260,270,1745]],down:150},
+ t:{pack:[787,896,470],cards:[[224,1037,290,1600],[609,1234,280,1700],[960,1234,280,1700],[1311,1234,280,1700]],down:150},
+ p:{pack:[749,560,700],cards:[[346,973,280,1375],[704,1160,240,1555],[998,1160,240,1555],[1300,1160,240,1555]],down:118}}[st];
 const T=[['GPT','ChatGPT','LONG','+8%'],['KIMI','Kimi','SHORT','−10%'],['CLAUDE','Claude','SHORT','−12%'],['GROK','Grok','SHORT','−1.6%']];
 const INK='#1d1917',UP={f:'#0a6b3f',t:'#1f7a52',p:'#0a6b3f'}[st],DN={f:'#9e221b',t:'#b3261e',p:'#9e221b'}[st];
 let defs='<defs>'+
@@ -37,18 +37,33 @@ const text=(x,y,s,o)=>{let fill=o.fill||INK,flt='',blend='multiply',fam=o.fam,ws
  if(o.metal){fill='url(#gold)';flt='url(#foil)';blend='normal'}
  return '<text x="'+x+'" y="'+y+'" text-anchor="middle" font-family="'+fam+'" font-weight="'+ws+'" font-size="'+o.sz+'" letter-spacing="'+(o.ls||0)+'" fill="'+fill+'"'+(flt?' filter="'+flt+'"':'')+' style="mix-blend-mode:'+blend+'">'+s+'</text>'};
 fetch('models.json').then(r=>r.json()).then(M=>{
- let s=defs;const [px,py,pw]=G.pack,serif=st==='p'?'Fraunces':'Cormorant Garamond';
- /* the pack's own printing */
+ let s=defs;const [px,py,pw]=SEAL?{f:[806,1081,440],t:[777,1114,480],p:[768,1030,440]}[st]:G.pack,serif=st==='p'?'Fraunces':'Cormorant Garamond';
+ /* the pack's own printing. Sealed, the label is spread over its whole height: the name, the line, the four marks of the
+    cards inside, the set line (label box: centre x, top, bottom, width in painting px) */
+ if(SEAL){const [lx,lt,lb,lw]={f:[806,560,1610,440],t:[777,790,1450,480],p:[768,530,1540,440]}[st],lh=lb-lt;
+  s+=text(lx,lt+lh*.26,'COREWEAVE',{sz:Math.round(lw/6.2),fam:serif,ls:lw/60,metal:st!=='t',thread:'#fdbc2a'});
+  s+=text(lx,lt+lh*.36,'The trades are in',{sz:Math.round(lw/11),fam:st==='p'?'Fraunces':'Instrument Serif',w:600,fill:INK,thread:'#f2ede6',tfam:'Baloo 2'});
+  const ms=Math.round(lw/7);['GPT','KIMI','CLAUDE','GROK'].forEach((m,i)=>{const x0=M[m],mx=lx+(i-1.5)*ms*1.5,c=m==='CLAUDE'?'#d97757':INK;
+   s+='<g transform="translate('+(mx-ms/2)+','+(lt+lh*.58-ms/2)+') scale('+(ms/24)+')"'+(st==='t'?' filter="url(#stitch)"':st==='p'?' filter="url(#press)"':'')+' style="mix-blend-mode:'+(st==='t'?'normal':'multiply')+'"><path fill="'+(st==='t'?satId(c):c)+'"'+(x0.fr?' fill-rule="'+x0.fr+'"':'')+' d="'+x0.d+'"/>'+(x0.dot?'<path fill="'+(st==='t'?satId('#1e80ff'):'#1e80ff')+'" d="'+x0.dot+'"/>':'')+'</g>'});
+  s+=text(lx,lt+lh*.74,'FOUR CARDS INSIDE',{sz:Math.round(lw/17),fam:'Figtree',ls:3,fill:'#5f5853',thread:'#fdbc2a'});
+  s+=text(lx,lt+lh*.9,'Nº 106 · EARNINGS ZEASON',{sz:Math.round(lw/24),fam:'Figtree',ls:2,fill:'#8e8680',thread:'#fdbc2a'})}
+ else{
  s+=text(px,py-40,'COREWEAVE',{sz:Math.round(pw/6.2),fam:serif,ls:pw/60,metal:st!=='t',thread:'#fdbc2a'});
  s+=text(px,py+40,'The trades are in',{sz:Math.round(pw/13),fam:st==='p'?'Fraunces':'Instrument Serif',w:600,fill:INK,thread:'#f2ede6',tfam:'Baloo 2'});
- s+=text(px,py+100,'FOUR CARDS · EARNINGS ZEASON',{sz:Math.round(pw/26),fam:'Figtree',ls:3,fill:'#5f5853',thread:'#fdbc2a'});
+ s+=text(px,py+100,'FOUR CARDS · EARNINGS ZEASON',{sz:Math.round(pw/26),fam:'Figtree',ls:3,fill:'#5f5853',thread:'#fdbc2a'});}
  /* the cards */
- T.forEach(([m,n,side,v],i)=>{const [cx,cy,w]=G.cards[i],k=w/270,up=side==='LONG',col=up?UP:DN,th=up?'#1f7a52':'#b3261e',d=G.down;
+ if(!SEAL)T.forEach(([m,n,side,v],i)=>{const [cx,cy,w,B]=G.cards[i],k=w/270,up=side==='LONG',col=up?UP:DN,th=up?'#1f7a52':'#b3261e',d=G.down;
   const x0=M[m],ms=Math.round(64*k),mc=m==='CLAUDE'?'#d97757':INK,mfill=st==='t'?satId(m==='CLAUDE'?'#d97757':'#1d1917'):mc;
   s+='<g transform="translate('+(cx-ms/2)+','+(cy-ms/2)+') scale('+(ms/24)+')"'+(st==='t'?' filter="url(#stitch)"':st==='p'?' filter="url(#press)"':'')+' style="mix-blend-mode:'+(st==='t'?'normal':'multiply')+'"><path fill="'+mfill+'"'+(x0.fr?' fill-rule="'+x0.fr+'"':'')+' d="'+x0.d+'"/>'+(x0.dot?'<path fill="'+(st==='t'?satId('#1e80ff'):'#1e80ff')+'" d="'+x0.dot+'"/>':'')+'</g>';
-  s+=text(cx,cy+d*k,n,{sz:Math.round(44*k),fam:serif,w:700});
-  /* the side is the headline of the card (owner, 2026-11-11: "the long short has to be bigger than the numerical guidance") */
-  s+=text(cx,cy+(d+92)*k,side,{sz:Math.round(64*k),fam:'Figtree',w:800,ls:1.5*k,fill:col,thread:th});
-  s+=text(cx,cy+(d+156)*k,v,{sz:Math.round(38*k),fam:st==='p'?'Fraunces':'Instrument Serif',w:st==='p'?800:400,fill:col,thread:th})});
+  /* no dead space: the face from under the circle to the card's foot is shared out between the name, the side
+     (the headline), the size and the set line, so a tall card spreads its type instead of leaving its bottom empty */
+  const top=cy+62*k,h=B-top,sideSz=Math.round(Math.min(w*(up?.30:.235),h*.16)),pc=Math.round(Math.min(sideSz*.62,h*.12));
+  const alone=T.filter(t=>t[2]===side).length===1, nmY=top+h*.16, sdY=top+h*(alone?.42:.5);
+  s+=text(cx,nmY,n,{sz:Math.round(Math.min(w*.17,h*.1)),fam:serif,w:700});
+  s+=text(cx,sdY,side,{sz:sideSz,fam:'Figtree',w:800,ls:1.5*k,fill:col,thread:th});
+  s+=text(cx,sdY+sideSz*.55+pc*.9,v,{sz:pc,fam:st==='p'?'Fraunces':'Instrument Serif',w:st==='p'?800:400,fill:col,thread:th});
+  /* the lone side says so: it is the story of the round (1 against 3), printed where the tall card had room */
+  if(alone)s+=text(cx,top+h*.8,'THE ONLY '+side,{sz:Math.round(w*.075),fam:'Figtree',w:800,ls:2,fill:'#b07f10',thread:'#fdbc2a'});
+  s+=text(cx,B-12*k,'Nº 106 · SETTLES WED 4PM',{sz:Math.round(w*.05),fam:'Figtree',w:800,ls:.5,fill:'#5f5853',thread:'#1d1917'})});
  S.innerHTML=s;return Promise.all([document.fonts.ready,document.getElementById('bg').decode()])}).then(()=>window.READY=1);
 </script>
