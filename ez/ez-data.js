@@ -121,7 +121,7 @@ var SHEET=[
  ["106","CRWV","11/10/26","UP","8","DOWN","10","DOWN","12","DOWN","1.6","11/11/26","24.71","","Information Technology","Software & Services","AI; Cloud","FALSE"],
  ["107","SIE.DE","11/12/26","UP","2","DOWN","3.5","DOWN","4.5","DOWN","0.9","11/12/26","","","Industrials","Capital Goods","AI; Power & electrification","FALSE"],
  ["108","NBIS","11/12/26","UP","8","UP","8","DOWN","8","UP","2.1","11/12/26","","","Information Technology","Software & Services","AI; Cloud","FALSE"],
- ["109","AMAT","11/12/26","","","","","","","","","","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors","FALSE"],
+ ["109","AMAT","11/12/26","UP","4","","","UP","4","DOWN","1.8","","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors","FALSE"],
  ["110","DIS","11/17/26","","","","","","","","","","","","Communication Services","Media & Entertainment","Media; Travel","FALSE"],
  ["111","HD","11/17/26","","","","","","","","","","","","Consumer Discretionary","Consumer Discretionary Distribution & Retail","","FALSE"],
  ["112","NVDA","11/17/26","","","","","","","","","","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors; Gaming; Automotive","TRUE"]
