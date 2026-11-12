@@ -61,3 +61,16 @@ C1, C4, C6, C10, C12 to C15 pass on all five (checked frame by frame on the boar
 Fixes made after the first renders, from these checks: 2 and 3 had dead stretches after the reveal (retimed, shortened); 3 and 4 had the reveal picture late against the sound (110 ms, 443 ms); 4 trimmed to 10 s; 3 lacked the size of the move (C13); 5's end card lacked the company and ran past the safe area.
 
 What these checks cannot settle: whether any of the five earns more copy-link shares, replies or follows per view on X (the weights that matter, per the research). Only posting them on real rounds and comparing can.
+
+## "Smooth, more animation focused, higher quality" as numbers (owner, 2026-11-12, on cut 1)
+
+Measured on the six drafts with `tools/concepts/dopa/smooth.py` (before the final hold):
+
+| | 1 The sweat | 2 | 3 | 4 | 5 The number | 6 = 1 + 5's music |
+|---|---|---|---|---|---|---|
+| C17 motion share (frames where something moves) | **84%** | 76% | 77% | 67% | 73% | 84% |
+| C18 hard cuts | **0** | 0 | 0 | 0 | 6 | 0 |
+| C19 flow (moving frames within 3x of the typical rate) | 85% | 96% | 89% | 74% | 63% | 85% |
+
+Targets from now on: C17 at least 80%, C18 zero (every change of layout is a shared-element move: the same object travels to its new place), C19 at least 85%. Plus the craft rules behind cut 1 that are not measured by frames: motion blur of at least 3 samples a frame (a 180-degree shutter), every move eased (no linear start or stop), the camera never fully still, and the motion driven by real data (290 five-minute prices here), not by hand-set keyframes.
+Cut 6 is cut 1's picture with cut 5's music (m2-phonk, entered 7.29 s in so its drop lands on the bell at 7.5 s; measured 12 ms apart).
