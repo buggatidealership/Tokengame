@@ -36,7 +36,7 @@
   <div class="l"><span>COREWEAVE</span><span class="up">24.71% · 6.4×</span></div><div class="b" id="b2" style="background:#55d6a2"></div></div></div>
 <div class="sc" id="s7"><div id="s7m"></div><div class="num up" style="font-size:190px;margin-top:30px">+$24,710</div><div class="k au" style="margin-top:20px;color:#fdbc2a">THE ONLY LONG</div></div>
 <div class="sc" id="s8"><div class="mid" style="font-size:84px">Only <span class="au">GPT</span> went long.</div><div class="endg" id="endg"></div>
-  <div class="k" style="margin-top:34px">NEXT: <b style="color:#f2ede6">NEBIUS</b> · 3 LONG v 1 SHORT · TODAY'S CLOSE</div></div>
+  <div class="k" style="margin-top:34px">NEXT: <b style="color:#f2ede6">NEBIUS</b> · 3 LONG v 1 SHORT</div></div>
 <div id="vig"></div><canvas id="grain"></canvas>
 <script src="lib.js"></script>
 <script>
@@ -45,14 +45,14 @@ const R = L.R, P = 60 / 130, B = n => 0.423 + n * P;
 const SC = [['s0', 0, B(2)], ['s1', B(2), B(4)], ['s2', B(4), B(6)], ['s3', B(6), B(8)], ['s4', B(8), B(11)], ['s5', B(11), B(14)], ['s6', B(14), B(17)], ['s7', B(17), B(19)], ['s8', B(19), 99]];
 const TR = B(11);
 const build = () => {
-  L.$('#s0m').innerHTML = R.ai.map(a => `<div style="display:flex;flex-direction:column;align-items:center;gap:12px">${L.mark(a.k, 120)}<span style="font:800 24px Inter;letter-spacing:.06em;color:${a.side === 'LONG' ? '#55d6a2' : '#e8576b'}">${a.side}</span></div>`).join('');
+  L.$('#s0m').innerHTML = R.ai.map(a => `<div class="m0" style="display:flex;flex-direction:column;align-items:center;gap:12px">${L.mark(a.k, 120)}<span style="font:800 24px Inter;letter-spacing:.06em;color:${a.side === 'LONG' ? '#55d6a2' : '#e8576b'}">${a.side}</span></div>`).join('');
   L.$('#s1m').innerHTML = L.mark('GPT', 300);
   L.$('#s2m').innerHTML = ['KIMI', 'CLAUDE', 'GROK'].map(k => L.mark(k, 230)).join('');
   L.$('#s7m').innerHTML = L.mark('GPT', 220);
   L.$('#endg').innerHTML = R.ai.map(a => `<div style="${a.side === 'LONG' ? 'box-shadow:inset 0 0 0 3px #fdbc2a' : ''}"><div class="t">${L.mark(a.k, 52)}${a.name}<span style="color:${a.side === 'LONG' ? '#55d6a2' : '#e8576b'}">${a.side}</span></div><div class="v ${a.side === 'LONG' ? 'up' : 'dn'}">${L.money(a.pnl)}</div></div>`).join('');
 };
 let grain;
-window.CUES = [[B(2), 'r11-thump', .2], [B(4), 'r11-thump', .2], [B(6), 'sfx-stamp', .2], [B(8), 'r10-tick', .16], [B(9), 'r10-tick', .16], [B(10), 'r10-tick', .18], [TR, 'sfx-boom', .3], [B(14), 'sfx-whoosh', .14], [B(17), 'r11-kaching', .26], [B(19), 'sfx-whoosh', .12]];
+window.CUES = [[B(0), 'r11-pluck', .16], [B(1), 'r11-pluck', .16], [B(2), 'r11-thump', .2], [B(4), 'r11-thump', .2], [B(6), 'sfx-stamp', .2], [B(8), 'r10-tick', .16], [B(9), 'r10-tick', .16], [B(10), 'r10-tick', .18], [TR, 'sfx-boom', .3], [B(14), 'sfx-whoosh', .14], [B(17), 'r11-kaching', .26], [B(19), 'sfx-whoosh', .12]];
 window.MUSIC = { f: 'm2-phonk', at: 14.79 - TR };
 window.R = t => {
   grain(t);
@@ -62,6 +62,8 @@ window.R = t => {
     const r = id === 's3' ? -2 * (1 - L.eo(L.n(x, 0, .3))) : 0;
     el.style.transform = `scale(${s}) rotate(${r}deg)`;
   });
+  // frame 0 keeps its words still; on the first two beats the long, then the three shorts, pulse
+  L.$$('#s0m .m0').forEach((el, i) => { const b0 = i === 0 ? B(0) : B(1); const x = t - b0; el.style.transform = `scale(${1 + (x > 0 ? .16 * Math.exp(-x * 6) : 0)})` });
   // the counter: scrambles, then rolls onto the number in the last beat before the drop (reveal beat 1.38 s long)
   if (t >= B(8) && t < TR) { const k = L.n(t, B(8), TR); const c = L.eo5(L.n(k, .25, 1)); const v = R.move * c;
     const cn = L.$('#cnt'); cn.textContent = k < .25 ? '±' + (Math.abs(Math.sin(t * 37)) * 30).toFixed(2) + '%' : L.pct(v); cn.style.color = k < .25 ? '#5f5853' : '#55d6a2' }
