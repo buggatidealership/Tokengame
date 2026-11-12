@@ -1,0 +1,98 @@
+<!doctype html><meta charset="utf-8"><title>R106 · The balance</title>
+<!-- Take 2 "The balance" (one against three, the stakes as space). 11.5 s.
+  Four tanks, one per AI, each filled with its $100K account (the axis starts at $0, so heights are honest). The real price path
+  (Hyperliquid xyz:CRWV, scaled onto +24.71%) drives every level: the one long fills, the three shorts drain in step. Each surface
+  sloshes with the speed of the move. The close locks the levels: $124,710 against $75,290 three times. -->
+<style id="base"></style>
+<style>
+#glow{position:absolute;inset:0}
+#hd{position:absolute;left:56px;right:56px;top:128px;height:220px}
+#co{display:flex;align-items:center;gap:22px;font:900 92px/1 Inter;letter-spacing:-.04em}
+#co img{width:86px;height:86px;border-radius:20px;background:#f2ede6;padding:10px}
+#sub{position:absolute;left:0;top:118px;font:900 74px/1 Inter;letter-spacing:-.03em;white-space:nowrap}
+#sub i{font-style:normal;color:#5f5853;font-size:44px;font-weight:800;margin:0 14px;vertical-align:10px}
+#live{position:absolute;left:0;top:112px;display:flex;align-items:baseline;gap:22px;white-space:nowrap}
+#live .p{font:600 92px 'Geist Mono';letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+#live .c{font:600 24px 'Geist Mono';letter-spacing:.12em;color:#8e8680}
+#tanks{position:absolute;left:56px;top:390px;width:968px;height:840px}
+.lab{position:absolute;top:0;width:230px;text-align:center}
+.lab .nm{font:800 34px Inter;letter-spacing:-.02em;margin-top:12px}
+.lab .sd{display:inline-block;margin-top:10px;font:900 30px Inter;letter-spacing:.06em;padding:8px 16px 6px;border-radius:10px}
+.lab .mkw{display:flex;justify-content:center}
+.val{position:absolute;width:230px;text-align:center;font:700 40px 'Geist Mono';letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap;color:#0e0c0b}
+.val small{display:block;font:600 21px 'Geist Mono';letter-spacing:.02em;opacity:.72;margin-top:6px}
+#scale{position:absolute;left:0;top:0;width:968px;height:840px}
+#endl{position:absolute;left:56px;right:56px;top:1252px;text-align:center;font:600 24px 'Geist Mono';letter-spacing:.08em;color:#8e8680}
+#endl b{color:#f2ede6;font-weight:600}
+.fine{bottom:26px}
+</style>
+<div id="glow"></div>
+<div id="hd">
+  <div id="co"><img src="crwv.png" alt="">CoreWeave</div>
+  <div id="sub"><span class="up">1 LONG</span><i>vs</i><span class="dn">3 SHORT</span></div>
+  <div id="live"><span class="p" id="pp"></span><span class="c" id="pc"></span></div>
+</div>
+<div id="tanks"><svg id="scale" viewBox="0 0 968 840"></svg></div>
+<div id="endl"></div>
+<div id="vig"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script>
+<script>
+L.$('#base').textContent = L.css; L.chrome(document.body);
+const R = L.R, T = L.$('#tanks'), svg = L.$('#scale');
+const CW = 230, GAP = (968 - 4 * CW) / 3, TOP = 250, BOT = 810, VMAX = 135000, Y = v => BOT - v / VMAX * (BOT - TOP);
+let labs; const mkLabs = () => labs = R.ai.map((a, i) => { const d = document.createElement('div'); d.className = 'lab'; d.style.left = i * (CW + GAP) + 'px';
+  d.innerHTML = `<div class="mkw">${L.mark(a.k, 92)}</div><div class="nm">${a.name}</div><div class="sd" style="${a.side === 'LONG' ? 'color:#55d6a2;background:rgba(85,214,162,.15);box-shadow:inset 0 0 0 2px rgba(85,214,162,.55)' : 'color:#e8576b;background:rgba(232,87,107,.13);box-shadow:inset 0 0 0 2px rgba(232,87,107,.5)'}">${a.side}</div>`;
+  T.appendChild(d); return d });
+const vals = R.ai.map((a, i) => { const d = document.createElement('div'); d.className = 'val'; d.style.left = i * (CW + GAP) + 'px'; T.appendChild(d); return d });
+const K = [[1.3, 0], [2.2, 60], [3.0, 1050], [4.3, 1380], [5.9, 1440]], TR = 5.9;
+const mAt = t => { if (t <= K[0][0]) return 0; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) { const x = (t - K[i - 1][0]) / (K[i][0] - K[i - 1][0]); return L.lerp(K[i - 1][1], K[i][1], i === K.length - 1 ? 1 - Math.pow(1 - x, 1.7) : L.eio(x) * .3 + x * .7) } return 1440 };
+const vel = t => Math.abs(L.px(mAt(t + .02)) - L.px(mAt(t - .02))) / .04; // % per second on screen
+let grain;
+window.CUES = [[0.05, 'r11-swell', .12], [1.25, 'r11-slide', .16], [1.3, 'sfx-riser', .1], [2.2, 'r11-bubble', .2], [3.0, 'r11-bubble', .18], [4.3, 'sfx-riser', .14],
+  [TR, 'sfx-boom', .3], [TR + .05, 'r11-kaching', .24], [TR + .45, 'r11-thump', .16], [TR + .65, 'r11-thump', .16], [TR + .85, 'r11-thump', .16], [7.4, 'sfx-whoosh', .12], [8.6, 'sfx-chime', .14]];
+window.R = t => {
+  grain(t);
+  const m = mAt(t), mv = L.px(m), sp = L.cl(vel(t) / 25), settle = t > TR ? Math.exp(-(t - TR) * 2.2) : 1;
+  // header: the stakes line, then the live move, then the verdict
+  L.$('#sub').style.opacity = 1 - L.n(t, 1.05, 1.35);
+  const lv = L.$('#live'); lv.style.opacity = L.n(t, 1.2, 1.5);
+  L.$('#pp').textContent = L.pct(mv); L.$('#pp').className = 'p ' + (mv >= 0 ? 'up' : 'dn');
+  const c = L.clock(m); L.$('#pc').innerHTML = t < TR ? c.day + ' ' + c.t + '<br>NEW YORK' : '<span class="au">AT THE CLOSE</span><br>BIGGEST JUMP OF 106 ROUNDS';
+  L.$('#pp').style.transform = `scale(${1 + .14 * Math.sin(Math.PI * L.n(t, TR, TR + .5))})`; L.$('#pp').style.transformOrigin = '0 70%';
+  // tanks
+  let g = `<defs>${R.ai.map((a, i) => `<linearGradient id="f${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a.side === 'LONG' ? '#55d6a2' : '#e8576b'}" stop-opacity=".95"/><stop offset="1" stop-color="${a.side === 'LONG' ? '#55d6a2' : '#e8576b'}" stop-opacity=".28"/></linearGradient>`).join('')}
+   <linearGradient id="neu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2ede6" stop-opacity=".5"/><stop offset="1" stop-color="#f2ede6" stop-opacity=".1"/></linearGradient>
+   <filter id="gw"><feGaussianBlur stdDeviation="10"/></filter></defs>`;
+  // the $100K start line and a $ scale
+  g += `<line x1="0" x2="968" y1="${Y(100000)}" y2="${Y(100000)}" stroke="#8e8680" stroke-width="2" stroke-dasharray="10 9" opacity=".8"/>
+        <text x="968" y="${Y(100000) - 12}" text-anchor="end" fill="#8e8680" font-family="Geist Mono" font-size="20" letter-spacing="1">START $100K</text>`;
+  const ch = L.n(t, 1.3, 1.8); // colour comes in once the price moves
+  R.ai.forEach((a, i) => { const x0 = i * (CW + GAP), v = R.stake + (a.side === 'LONG' ? 1 : -1) * R.stake * mv / 100, y = Y(v);
+    // the surface: waves that grow with the speed of the move, and slosh out after the close
+    const amp = (3 + 20 * sp) * settle + (t > TR ? 10 * Math.exp(-(t - TR) * 3) * Math.abs(Math.sin((t - TR) * 14)) : 0);
+    let path = `M${x0} ${BOT}`; for (let k = 0; k <= 24; k++) { const xx = x0 + k / 24 * CW; const yy = y + amp * Math.sin(k / 24 * Math.PI * 2.2 + t * 7 + i * 1.7) * Math.sin(k / 24 * Math.PI); path += `L${xx.toFixed(1)} ${yy.toFixed(1)}` }
+    path += `L${x0 + CW} ${BOT}Z`;
+    const win = a.side === 'LONG' && t > TR;
+    g += `<rect x="${x0}" y="${TOP - 20}" width="${CW}" height="${BOT - TOP + 20}" rx="22" fill="#161312" stroke="${win ? '#fdbc2a' : '#2a2522'}" stroke-width="${win ? 4 : 2}"/>
+          <clipPath id="c${i}"><rect x="${x0}" y="${TOP - 20}" width="${CW}" height="${BOT - TOP + 20}" rx="22"/></clipPath>
+          <g clip-path="url(#c${i})"><path d="${path}" fill="url(#neu)" opacity="${1 - ch}"/><path d="${path}" fill="url(#f${i})" opacity="${ch}"/>
+          <path d="${path}" fill="none" stroke="#f2ede6" stroke-width="3" opacity=".55"/></g>
+          ${win ? `<rect x="${x0 - 6}" y="${TOP - 26}" width="${CW + 12}" height="${BOT - TOP + 32}" rx="26" fill="none" stroke="#fdbc2a" stroke-width="8" opacity="${.45 * L.n(t, TR, TR + .4)}" filter="url(#gw)"/>` : ''}`;
+    // the value rides on the surface
+    const vd = vals[i]; const p = v - R.stake;
+    vd.innerHTML = t < 1.35 ? `$100,000<small>EACH</small>` : `${L.money(p)}<small>${L.money(v, false)} NOW</small>`;
+    vd.style.color = ch < .5 ? '#0e0c0b' : '#0e0c0b';
+    vd.style.top = (Math.min(y, BOT - 120) + 26) + 'px';
+    const pop = t > TR ? L.spring(t - TR - (a.side === 'LONG' ? 0 : .45 + .2 * (i - 1)), 1.8, 6) : 0;
+    vd.style.transform = `scale(${1 + .16 * (pop > 0 ? Math.max(0, 1 - pop) * 0 + Math.sin(Math.PI * L.cl(t - TR - (a.side === 'LONG' ? 0 : .45 + .2 * (i - 1)), 0, .5) / .5) : 0)})`;
+  });
+  svg.innerHTML = g;
+  // the end line: what it does to GPT's season, and the next round
+  const e = L.$('#endl'); e.style.opacity = L.n(t, 7.3, 7.8);
+  e.innerHTML = t < 8.6 ? 'GPT SEASON: <b>−$24,740 → −$30</b>' : 'NEXT: <b>NEBIUS</b> · 3 LONG v 1 SHORT · TODAY\'S CLOSE';
+  if (t >= 8.6) e.style.opacity = L.n(t, 8.6, 9.0); else if (t > 8.2) e.style.opacity = 1 - L.n(t, 8.2, 8.6);
+  const w = L.cl(mv / 25), b = L.n(t, TR, TR + .5) * (1 - .5 * L.n(t, TR + .5, 8));
+  L.$('#glow').style.background = `radial-gradient(ellipse 50% 60% at 16% 60%,rgba(85,214,162,${.04 + .17 * w}),transparent 70%),radial-gradient(ellipse 80% 50% at 70% 100%,rgba(232,87,107,${.03 + .12 * w}),transparent 70%),radial-gradient(ellipse 40% 40% at 16% 45%,rgba(253,188,42,${.2 * b}),transparent 70%)`;
+};
+L.boot(async () => { mkLabs(); grain = L.grain(L.$('#grain'), .08); });
+</script>
