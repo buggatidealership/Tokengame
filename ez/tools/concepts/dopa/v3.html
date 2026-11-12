@@ -76,7 +76,7 @@ let grain;
 window.CUES = [[0.05, 'r11-swell', .12], [0.25, 'r11-card', .14], [0.37, 'r11-card', .14], [0.49, 'r11-card', .14], [0.61, 'r11-card', .14],
   [1.1, 'r11-pluck', .14], [1.5, 'r11-pluck', .14], [1.9, 'r11-pluck', .14], [2.3, 'r11-pluck', .14], [2.0, 'sfx-riser', .14], [TR, 'r10-tick', .18], [TE, 'sfx-boom', .3],
   [FLIP.KIMI + .18, 'sfx-flip', .2], [FLIP.KIMI + .3, 'r11-thump', .16], [FLIP.CLAUDE + .18, 'sfx-flip', .2], [FLIP.CLAUDE + .3, 'r11-thump', .16], [FLIP.GROK + .18, 'sfx-flip', .2], [FLIP.GROK + .3, 'r11-thump', .16],
-  [FLIP.GPT + .3, 'sfx-flip', .22], [FLIP.GPT + .45, 'r11-kaching', .28], [FLIP.GPT + .5, 'r11-sparkle', .14], [7.2, 'sfx-whoosh', .1], [8.6, 'sfx-chime', .14]];
+  [FLIP.GPT + .3, 'sfx-flip', .22], [FLIP.GPT + .45, 'r11-kaching', .28], [FLIP.GPT + .5, 'r11-sparkle', .14], [6.8, 'sfx-whoosh', .1], [8.4, 'sfx-chime', .14]];
 window.R = t => {
   grain(t);
   // frame 0 holds the stakes; the cards land from below one by one (they are already in place on frame 0's thumbnail)
@@ -94,7 +94,7 @@ window.R = t => {
     el.querySelector('.sh').style.opacity = a.side === 'LONG' ? Math.sin(Math.PI * L.n(t, ft + .6, ft + 1.4)) : 0;
     el.querySelector('.sh').style.transform = `translateX(${L.lerp(-480, 480, L.n(t, ft + .6, ft + 1.4))}px)`;
     // dim the cards while the close counter rolls
-    el.querySelector('.b').style.filter = `brightness(${1 - .35 * L.n(t, TR - .2, TR) * (1 - L.n(t, TE, TE + .3))})`;
+    el.querySelector('.b').style.filter = `brightness(${1 - .35 * L.n(t, TR - .2, TR) * (1 - L.n(t, TE - .03, TE + .04))})`;
   });
   L.$('#sub').style.opacity = 1;
   // the middle band: belief (1.0) -> the close (3.2)
@@ -103,11 +103,11 @@ window.R = t => {
   const r = L.eo5(L.n(t, TR, TE)); L.$('#cp').textContent = L.pct(R.move * r);
   L.$('#cp').style.transform = `scale(${1 + .1 * Math.sin(Math.PI * L.n(t, TE, TE + .4))})`; L.$('#cp').style.transformOrigin = '0 60%';
   // after the turn: the header line says the shock
-  if (t > 6.9) { L.$('#sub').innerHTML = '<span class="au">Only GPT went long.</span>'; L.$('#sub').style.opacity = L.n(t, 6.9, 7.3) }
+  if (t > 6.8) { L.$('#sub').innerHTML = '<span class="au">Only GPT went long.</span>'; L.$('#sub').style.opacity = L.n(t, 6.8, 7.1) }
   else L.$('#sub').innerHTML = '<span class="up">1 LONG</span><i>vs</i><span class="dn">3 SHORT</span>';
   const e = L.$('#endl');
-  e.innerHTML = t < 9.0 ? 'GPT SEASON: <b>−$24,740 → −$30</b>' : 'NEXT: <b>NEBIUS</b> · 3 LONG v 1 SHORT · TODAY\'S CLOSE';
-  e.style.opacity = t < 9.0 ? L.n(t, 7.4, 7.8) * (1 - L.n(t, 8.6, 9.0)) : L.n(t, 9.0, 9.4);
+  e.innerHTML = t < 8.4 ? 'GPT SEASON: <b>−$24,740 → −$30</b>' : 'NEXT: <b>NEBIUS</b> · 3 LONG v 1 SHORT · TODAY\'S CLOSE';
+  e.style.opacity = t < 8.4 ? L.n(t, 7.4, 7.7) * (1 - L.n(t, 8.1, 8.4)) : L.n(t, 8.4, 8.7);
   const b = L.n(t, FLIP.GPT + .4, FLIP.GPT + 1) * (1 - .5 * L.n(t, 7.5, 9));
   L.$('#glow').style.background = `radial-gradient(ellipse 70% 40% at 40% 32%,rgba(85,214,162,${.16 * L.n(t, TR, TE)}),transparent 70%),radial-gradient(ellipse 50% 40% at 28% 62%,rgba(253,188,42,${.22 * b}),transparent 70%)`;
   const push = 1 + .03 * L.eio(L.n(t, 1.0, TE)) - .03 * L.eio(L.n(t, TE + .1, 6.9));
