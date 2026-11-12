@@ -43,3 +43,21 @@ The owner asked for short resolution videos that excite ("dopamine", "getting pe
 ## Research and vocabulary
 
 See the research summary below (filled from the research brief) and `ez/x-dopamine-research.md`.
+
+## Scorecard of the 1080 drafts (measured 2026-11-12; `tools/concepts/dopa/measure.py`, `tools/concepts/fresh/palcheck.py`)
+
+| Check | 1 The sweat | 2 The balance | 3 The P&L cards | 4 The standings swing | 5 The number |
+|---|---|---|---|---|---|
+| C8 length | 12.0 s | 10.0 s | 10.5 s | 10.0 s | 12.0 s |
+| C2 reveal at | 7.5 s (63%) | 5.9 s (59%) | 4.4 s (42%) | 4.0 s (40%) | 5.5 s (46%) |
+| C3 picture against sound at the reveal | 18 ms | 12 ms | 43 ms | 43 ms | 43 ms |
+| C11 longest still stretch | 0.50 s | 1.20 s | 1.13 s | 1.10 s | 0.93 s |
+| C7 off-palette | 0.9% | 1.0% | 0.6% | 0.2% | 0.2% |
+| C16 reveal beat | the bell, instant, after a 1.9 s slow last hour | 1.6 s easing into the close (just over) | 1.2 s | 1.0 s | 1.4 s |
+| C9 final hold | 3.6 s | 3.6 s | 3.5 s | 2.7 s | 2.8 s |
+| C5 reading load | pass | pass | pass | pass | **fails once**: the shorts' calls line (34 characters) holds 0.92 s |
+
+C1, C4, C6, C10, C12 to C15 pass on all five (checked frame by frame on the board `ez/x2p-r106-five-cuts.jpg`).
+Fixes made after the first renders, from these checks: 2 and 3 had dead stretches after the reveal (retimed, shortened); 3 and 4 had the reveal picture late against the sound (110 ms, 443 ms); 4 trimmed to 10 s; 3 lacked the size of the move (C13); 5's end card lacked the company and ran past the safe area.
+
+What these checks cannot settle: whether any of the five earns more copy-link shares, replies or follows per view on X (the weights that matter, per the research). Only posting them on real rounds and comparing can.
