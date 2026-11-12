@@ -118,7 +118,7 @@ var SHEET=[
  ["103","RKLB","11/09/26","UP","5.5","UP","4","UP","3","DOWN","1.7","11/10/26","6.54","","Industrials","Capital Goods","Space; Defense","FALSE"],
  ["104","USAR","11/09/26","DOWN","6","UP","5","UP","4","DOWN","1.9","11/10/26","-9.59","","Materials","Materials","Power & electrification","FALSE"],
  ["105","SOFTBANK","11/10/26","DOWN","4.5","DOWN","4","DOWN","4.5","DOWN","1.4","11/11/26","-0.4","","Communication Services","Telecommunication Services","AI","FALSE"],
- ["106","CRWV","11/10/26","UP","8","DOWN","10","DOWN","12","DOWN","1.6","11/11/26","","","Information Technology","Software & Services","AI; Cloud","FALSE"],
+ ["106","CRWV","11/10/26","UP","8","DOWN","10","DOWN","12","DOWN","1.6","11/11/26","24.71","","Information Technology","Software & Services","AI; Cloud","FALSE"],
  ["107","SIE.DE","11/12/26","UP","2","DOWN","3.5","DOWN","4.5","DOWN","0.9","11/12/26","","","Industrials","Capital Goods","AI; Power & electrification","FALSE"],
  ["108","NBIS","11/12/26","UP","8","UP","8","DOWN","8","UP","2.1","11/12/26","","","Information Technology","Software & Services","AI; Cloud","FALSE"],
  ["109","AMAT","11/12/26","","","","","","","","","","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors","FALSE"],
