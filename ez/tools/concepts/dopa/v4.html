@@ -68,7 +68,7 @@ const build = () => {
 let grain;
 window.CUES = [[0.05, 'r11-swell', .1], [1.0, 'r10-tick', .14], [1.5, 'r10-tick', .12], [2.0, 'r10-tick', .14], [2.5, 'r10-tick', .16], [2.2, 'sfx-riser', .12],
   [TR, 'r11-ping', .2], [TE, 'sfx-boom', .24], [TE + .1, 'r11-card', .14], [TE + .2, 'r11-card', .14], [TE + .3, 'r11-card', .14], [TE + .4, 'r11-card', .14],
-  ...['GROK', 'CLAUDE', 'KIMI'].map(k => [LAND[k], 'r11-thump', .16]), [LAND.GPT, 'r11-kaching', .26], [LAND.GPT + .7, 'sfx-stamp', .2], [7.4, 'sfx-whoosh', .1], [8.6, 'sfx-chime', .14], [.8, 'r11-pluck', .1], [1.25, 'r11-pluck', .1], [1.7, 'r11-pluck', .1], [2.15, 'r11-pluck', .1]];
+  ...['GROK', 'CLAUDE', 'KIMI'].map(k => [LAND[k], 'r11-thump', .16]), [LAND.GPT, 'r11-kaching', .26], [LAND.GPT + .7, 'sfx-stamp', .2], [7.3, 'sfx-whoosh', .1], [8.3, 'sfx-chime', .14], [.8, 'r11-pluck', .1], [1.25, 'r11-pluck', .1], [1.7, 'r11-pluck', .1], [2.15, 'r11-pluck', .1]];
 const X0 = 478, SC = 440 / 210000; // the bar's $0 line and its scale
 window.R = t => {
   grain(t);
@@ -96,16 +96,16 @@ window.R = t => {
   rows.forEach((r, i) => { const k = ORDER[i], a = AI(k); const p = L.eo(L.n(t, LAND[k], LAND[k] + .7));
     const v = L.lerp(R.season0[k], R.season1[k], p); const val = r.querySelector('.val'); val.textContent = L.money(v);
     val.style.color = Math.abs(v) < 500 ? '#f2ede6' : v >= 0 ? '#55d6a2' : '#e8576b';
-    const w = v * SC, x = w >= 0 ? X0 : X0 + w, hit = Math.exp(-Math.max(0, t - LAND[k]) * 5) * (t > LAND[k] ? 1 : 0);
+    const w = v * SC, x = w >= 0 ? X0 : X0 + w, hit = Math.exp(-Math.max(0, t - LAND[k]) * 1.6) * (t > LAND[k] ? 1 : 0);
     r.querySelector('svg.bar').innerHTML = `<rect x="0" y="12" width="956" height="10" rx="5" fill="#1d1917"/><line x1="${X0}" x2="${X0}" y1="0" y2="34" stroke="#8e8680" stroke-width="2"/>
       <rect x="${x}" y="8" width="${Math.max(3, Math.abs(w))}" height="18" rx="6" fill="${Math.abs(v) < 500 ? '#f2ede6' : v >= 0 ? '#55d6a2' : '#e8576b'}"/>
       <text x="${X0}" y="-2" text-anchor="middle" fill="#5f5853" font-family="Geist Mono" font-size="16" ${i ? 'opacity="0"' : ''}>$0</text>`;
-    r.style.background = `rgba(${a.side === 'LONG' ? '85,214,162' : '232,87,107'},${.16 * hit})`;
+    r.style.background = `rgba(${a.side === 'LONG' ? '85,214,162' : '232,87,107'},${.3 * hit})`;
     if (k === 'GPT') { const g = L.n(t, LAND.GPT + .7, LAND.GPT + 1.0); const tg = r.querySelector('.tag'); tg.style.opacity = g; tg.style.transform = `scale(${L.lerp(1.6, 1, L.eo5(g))}) rotate(-3deg)`;
       r.style.boxShadow = `inset 4px 0 0 rgba(253,188,42,${L.n(t, LAND.GPT, LAND.GPT + .5)})` } });
   const e = L.$('#endl');
-  e.innerHTML = t < 8.6 ? 'GPT ERASED A SEASON\'S LOSS <b>IN ONE TRADE</b>' : 'NEXT: <b>NEBIUS</b> · 3 LONG v 1 SHORT · TODAY\'S CLOSE';
-  e.style.opacity = t < 8.6 ? L.n(t, 7.4, 7.7) * (1 - L.n(t, 8.3, 8.6)) : L.n(t, 8.6, 8.9);
+  e.innerHTML = t < 8.3 ? 'GPT ERASED A SEASON\'S LOSS <b>IN ONE TRADE</b>' : 'NEXT: <b>NEBIUS</b> · 3 LONG v 1 SHORT · TODAY\'S CLOSE';
+  e.style.opacity = t < 8.3 ? L.n(t, 7.3, 7.6) * (1 - L.n(t, 8.0, 8.3)) : L.n(t, 8.3, 8.6);
 };
 L.boot(async () => { build(); grain = L.grain(L.$('#grain'), .06); });
 </script>
