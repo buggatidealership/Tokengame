@@ -74,3 +74,7 @@ Measured on the six drafts with `tools/concepts/dopa/smooth.py` (before the fina
 
 Targets from now on: C17 at least 80%, C18 zero (every change of layout is a shared-element move: the same object travels to its new place), C19 at least 85%. Plus the craft rules behind cut 1 that are not measured by frames: motion blur of at least 3 samples a frame (a 180-degree shutter), every move eased (no linear start or stop), the camera never fully still, and the motion driven by real data (290 five-minute prices here), not by hand-set keyframes.
 Cut 6 is cut 1's picture with cut 5's music (m2-phonk, entered 7.29 s in so its drop lands on the bell at 7.5 s; measured 12 ms apart).
+
+## Cut 7, the owner's notes on cut 6 (2026-11-13)
+
+Smooth P&L glow bars in the chart's own gradient, the winner pronounced, then "GPT made +$24,710 this round", then the season P&L. Measured: length 15.5 s; reveal sync 33 ms; longest still stretch 0.9 s; off-palette 0.6%; C17 motion share 91%; C18 hard cuts 0; C20 winner row 2.21 times as bright as the brightest loser at 8.2 s (target 1.8); C19 flow 75%, under the 85% target: the frames outside the band are the four planned big moves (the hook docking, the bell, the exit to "GPT made", the number travelling into the season board) and the gentle drift while "GPT made" holds, not lurches. Flow as defined cannot tell an accent from a lurch; a better measure would score each move's easing (velocity at start and end), not frame-to-frame rate.
