@@ -94,7 +94,7 @@ const setup = () => {
   PATH = D.path;
   pxAt = m => { if (!PATH) return 0; if (m <= 0) return 0; if (m >= T) return D.move; let i = 1; while (i < PATH.length && PATH[i][0] < m) i++; const a = PATH[i - 1], b = PATH[i] || PATH[i - 1]; return L.lerp(a[1], b[1], (m - a[0]) / Math.max(1, b[0] - a[0])) };
   // the chart's scale follows the move: gridlines at a round step, the 0% line always in
-  const vals = PATH ? PATH.map(p => p[1]) : [0, D.move]; let lo = Math.min(0, ...vals), hi = Math.max(0, ...vals); const r = hi - lo;
+  const vals = PATH ? PATH.map(p => p[1]) : [0, D.move, ...D.ai.filter(a => a.call != null).map(a => a.call)]; let lo = Math.min(0, ...vals), hi = Math.max(0, ...vals); const r = hi - lo;
   const step = r > 24 ? 10 : r > 10 ? 5 : r > 4 ? 2 : r > 2 ? 1 : .5; y0 = Math.floor((lo - r * .08) / step) * step; y1 = Math.ceil((hi + r * .12) / step) * step;
   grid = []; for (let v = y0; v <= y1 + 1e-9; v += step) grid.push(+v.toFixed(2));
   X = m => 20 + m / T * (CW - 40); Y = v => CH - 30 - (v - y0) / (y1 - y0) * (CH - 60);
@@ -192,9 +192,12 @@ window.R = t => {
    ${xlabels.map(([mm, s, an]) => `<text x="${X(mm)}" y="${CH - 2}" text-anchor="${an}" fill="#5f5853" font-family="Geist Mono" font-size="19" letter-spacing="1.5">${s}</text>`).join('')}
    ${!PATH ? `<text x="${X(0) + 8}" y="40" fill="#8e8680" font-family="Geist Mono" font-size="20" letter-spacing="2">CLOSE TO CLOSE</text>` : ''}
    <rect x="${X(T - 60)}" y="16" width="${X(T) - X(T - 60)}" height="${CH - 60}" fill="#fdbc2a" opacity="${.07 * L.n(t, 5.4, 5.7)}"/>
+   ${!PATH ? D.ai.filter(a => a.call != null).map((a, i) => { const c = L.eio(L.n(t, 2.6 + i * .55, 3.2 + i * .55)); if (c <= 0) return ''; const y = Y(a.call), col = a.call > 0 ? '#55d6a2' : '#e8576b', x1 = L.lerp(X(T), X(0), c);
+      return `<line x1="${x1}" x2="${X(T)}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="2" stroke-dasharray="6 8" opacity="${.55 * c}"/><text x="${X(T) - 90}" y="${y - 10}" text-anchor="end" fill="${col}" opacity="${c}" font-family="Geist Mono" font-size="22" font-weight="600">${a.name.toUpperCase()} ${a.call > 0 ? '+' : '−'}${Math.abs(a.call)}%</text>` }).join('') : ''}
+   ${!PATH && t > 2.3 && t < TR + .3 ? `<line x1="${X(m)}" x2="${X(m)}" y1="16" y2="${CH - 30}" stroke="#f2ede6" stroke-width="2" opacity="${.35 * (1 - L.n(t, TR, TR + .3))}"/>` : ''}
    ${PATH ? `<path d="${area}" fill="url(#ga)"/>` : ''}<path d="${d}" fill="none" stroke="${lc}" stroke-width="10" opacity=".35" filter="url(#gw)"/>
    <path d="${d}" fill="none" stroke="${lc}" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round" ${PATH ? '' : 'stroke-dasharray="14 10"'}/>
-   <circle cx="${X(0)}" cy="${Y(0)}" r="${PATH ? 0 : 9}" fill="#8e8680"/>
+   <circle cx="${X(0)}" cy="${Y(0)}" r="${PATH ? 0 : 9}" fill="#8e8680"/>${!PATH && t < TR ? `<circle cx="${X(0)}" cy="${Y(0)}" r="${9 + 22 * (0.5 + 0.5 * Math.sin(t * 6))}" fill="none" stroke="#8e8680" stroke-width="2" opacity=".4"/>` : ''}
    <circle cx="${head[0]}" cy="${head[1]}" r="11" fill="#f2ede6"/><circle cx="${head[0]}" cy="${head[1]}" r="${11 + 26 * (0.5 + 0.5 * Math.sin(t * 9))}" fill="none" stroke="${lc}" stroke-width="2" opacity="${t < TR && PATH ? .5 : 0}"/>
    ${ring > 0 && ring < 1 ? [0, .18, .36].map(o => { const r = L.n(ring, o, o + .64); return r > 0 && r < 1 ? `<circle cx="${X(T)}" cy="${Y(D.move)}" r="${14 + 300 * L.eo(r)}" fill="none" stroke="#fdbc2a" stroke-width="${6 * (1 - r)}" opacity="${1 - r}"/>` : '' }).join('') : ''}`;
   // the live number rides the head (averaged over the last 0.2 s so it never snaps)
