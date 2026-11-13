@@ -77,7 +77,7 @@
 <script>
 L.$('#base').textContent = L.css;
 const RN = +(new URLSearchParams(location.search).get('r') || 106);
-let D, R, cam = L.$('#cam');
+let D, R, cam = L.$('#cam'), TS0 = 1, TS1 = .58; // the title's two scales; a long company name is fitted, never clipped
 const UP = '85,214,162', DN = '232,87,107', AU = '253,188,42';
 const TR = 7.5, BEAT = 60 / 130, B = n => TR + n * BEAT;
 const A0 = 8.45, A1 = B(4), C0 = B(9) - .3, C1 = B(10), S0 = C1, S1 = B(12) + .2, END = 15.5;
@@ -140,7 +140,7 @@ let grain;
 window.R = t => {
   grain(t);
   const T = D.total, k = L.eio(L.n(t, 1.45, 2.25));
-  const ti = L.$('#title'); ti.style.transform = `translate(${L.lerp(84, 56, k)}px,${L.lerp(150, 136, k)}px) scale(${L.lerp(1, .58, k)})`;
+  const ti = L.$('#title'); ti.style.transform = `translate(${L.lerp(84, 56, k)}px,${L.lerp(150, 136, k)}px) scale(${L.lerp(TS0, TS1, k)})`;
   const outA = L.eio(L.n(t, A0, A1)), outC = L.eio(L.n(t, A0, A0 + .45)), outL = L.eio(L.n(t, A0 + .1, A1));
   ti.style.opacity = 1 - outA;
   const vs = L.$('#vs'); vs.style.opacity = 1 - L.eio(L.n(t, 1.45, 1.85)); vs.style.transform = `translateY(${-60 * L.eo(L.n(t, 1.45, 1.9))}px)`;
@@ -254,5 +254,6 @@ window.R = t => {
   cam.style.transform = `translate(${kick}px,${kick * .6}px) scale(${push})`;
 };
 L.boot(async () => { D = await fetch('data/r' + RN + '.json').then(r => r.json()); setup(); grain = L.grain(L.$('#grain'), .08);
-  await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0))) });
+  await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  await document.fonts.load('900 128px Inter'); await document.fonts.ready; const tw = L.$('#title').offsetWidth; TS0 = Math.min(1, 912 / tw); TS1 = Math.min(.58, 600 / tw) });
 </script>
