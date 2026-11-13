@@ -39,9 +39,9 @@
 #now{position:absolute;font:600 74px 'Geist Mono';letter-spacing:-.03em;color:#55d6a2;white-space:nowrap;text-shadow:0 0 30px rgba(85,214,162,.35)}
 #final{position:absolute;left:540px;top:610px;font:900 150px/1 Inter;letter-spacing:.02em;color:#fdbc2a;border:10px solid #fdbc2a;border-radius:22px;padding:14px 34px 10px;transform-origin:50% 50%;opacity:0;white-space:nowrap}
 /* screen A: what the winner made */
-#made{position:absolute;left:0;right:0;top:330px;display:flex;flex-direction:column;align-items:center;opacity:0}
+#made{position:absolute;left:0;right:0;top:440px;display:flex;flex-direction:column;align-items:center;opacity:0}
 #made .who{display:flex;align-items:center;gap:26px;font:900 84px Inter;letter-spacing:-.03em}
-#made .amt{font:700 196px/1 'Geist Mono';letter-spacing:-.07em;color:#55d6a2;text-shadow:0 0 60px rgba(85,214,162,.45);margin-top:36px;font-variant-numeric:tabular-nums}
+#made .amt{font:700 196px/1 'Geist Mono';letter-spacing:-.07em;color:transparent;background:linear-gradient(100deg,#55d6a2 42%,#e8fff4 50%,#55d6a2 58%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 28px rgba(85,214,162,.45));margin-top:36px;font-variant-numeric:tabular-nums}
 #made .sub{font:600 30px 'Geist Mono';letter-spacing:.12em;color:#fdbc2a;margin-top:30px;text-align:center;line-height:1.6}
 /* screen B: the season */
 #ssn{position:absolute;left:56px;right:56px;top:150px;opacity:0}
@@ -67,7 +67,7 @@
   <div id="now"></div>
   <div id="rows"></div>
   <div id="final">FINAL</div>
-  <div id="made"><div class="who" id="mwho"></div><div class="amt" id="mamt">+$24,710</div><div class="sub">THIS ROUND · COREWEAVE +24.71%<br>THE ONLY LONG</div></div>
+  <div id="made"><div class="who" id="mwho"></div><div class="amt" id="mamt">+$24,710</div><div class="sub"><span id="ms1">THIS ROUND · COREWEAVE +24.71%</span><br><span id="ms2">THE ONLY LONG OF THE FOUR</span></div></div>
   <div id="ssn"><div class="h">Season P&amp;L</div><div class="k">$100K A TRADE · AFTER ROUND 106</div></div>
   <div id="srows"></div>
 </div>
@@ -94,7 +94,7 @@ const build = () => {
 const K = [[2.3, 0], [3.3, 60], [4.1, 1050], [5.6, 1380], [7.5, 1440]];
 const mAt = t => { if (t <= K[0][0]) return 0; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) { const x = (t - K[i - 1][0]) / (K[i][0] - K[i - 1][0]); const e = i === K.length - 1 ? 1 - Math.pow(1 - x, 1.6) : L.eio(x) * .3 + x * .7; return L.lerp(K[i - 1][1], K[i][1], e) } return 1440 };
 const TR = 7.5, BEAT = 60 / 130, B = n => TR + n * BEAT;
-const A0 = 9.0, A1 = B(4), C0 = B(9), C1 = B(10), S0 = C1, S1 = B(12) + .2, END = 15.5;
+const A0 = 8.7, A1 = B(4), C0 = B(9), C1 = B(10), S0 = C1, S1 = B(12) + .2, END = 15.5;
 const CW = 968, CH = 540, y0 = -3, y1 = 30, X = m => 20 + m / 1440 * (CW - 40), Y = v => CH - 30 - (v - y0) / (y1 - y0) * (CH - 60);
 const svg = L.$('#chart');
 let grain;
@@ -105,7 +105,7 @@ window.CUES = [];
   let last = -1; for (let t = 2.3; t < TR; t += 1 / 120) { const m = mAt(t); const h = Math.floor((m + 0.001) / 60); if (h !== last && m < 1380 && h > 0) { if (C.filter(c => c[1] === 'sfx-tick' && t - c[0] < .12).length === 0) C.push([+t.toFixed(3), 'sfx-tick', .1]); last = h } }
   for (let k = 50; k >= 0; k -= 10) { let t = 5.6; while (t < TR && mAt(t) < 1440 - k) t += 1 / 240; C.push([+t.toFixed(3), 'sfx-clock', .18]) }
   C.push([5.6, 'sfx-riser', .12], [TR, 'sfx-bell', .3], [TR + .12, 'sfx-stamp', .26], [TR + .5, 'r11-kaching', .24], [TR + .6, 'r11-sparkle', .12],
-    [A0, 'sfx-whoosh', .14], [A1, 'r11-thump', .16], [C0, 'sfx-whoosh', .12], [C1, 'r11-thump', .14], [S0 + .1, 'r11-card', .1], [S0 + .25, 'r11-card', .1], [S0 + .4, 'r11-card', .1], [S1, 'sfx-chime', .14]);
+    [A0, 'sfx-whoosh', .14], [A1, 'r11-thump', .16], [A1 + .75, 'r11-pluck', .12], [C0, 'sfx-whoosh', .12], [C1, 'r11-thump', .14], [S0 + .1, 'r11-card', .1], [S0 + .25, 'r11-card', .1], [S0 + .4, 'r11-card', .1], [S1, 'sfx-chime', .14]);
 })();
 // a smooth bar: gradient from clear to the colour, brightest at its leading edge
 const barCss = (rgb, a) => `linear-gradient(90deg,rgba(${rgb},0) 0%,rgba(${rgb},${.16 * a}) 55%,rgba(${rgb},${.42 * a}) 100%)`;
@@ -114,6 +114,7 @@ window.R = t => {
   const k = L.eio(L.n(t, 1.45, 2.25));
   const ti = L.$('#title'); ti.style.transform = `translate(${L.lerp(84, 56, k)}px,${L.lerp(150, 136, k)}px) scale(${L.lerp(1, .58, k)})`;
   const outA = L.eio(L.n(t, A0, A1)); // the round screen leaves as the winner's screen opens
+  const outC = L.eio(L.n(t, A0, A0 + .45)), outL = L.eio(L.n(t, A0 + .1, A1)); // the chart first, then the losers
   ti.style.opacity = 1 - outA;
   const vs = L.$('#vs'); vs.style.opacity = 1 - L.n(t, 1.45, 1.8); vs.style.transform = `translateY(${-60 * L.eo(L.n(t, 1.45, 1.9))}px)`;
   const m = mAt(t), mv = L.px(m);
@@ -145,13 +146,13 @@ window.R = t => {
     // after 9.0 the winner's row travels to the centre and opens; the losers sink and fade
     let tx = L.lerp(hx, 56, kk), ty = L.lerp(hy, ry, kk), sc = grow, op = 1;
     if (win) { tx = L.lerp(tx, 56, outA); ty = L.lerp(ty, 470, outA); sc = L.lerp(grow, 1.03, outA); op = 1 - L.n(t, A0 + .2, A1) }
-    else { ty += 120 * outA; op = 1 - outA }
+    else { ty += 120 * outL; op = 1 - outL }
     el.style.transform = `translate(${tx}px,${ty}px) scale(${sc})`; el.style.opacity = op;
     el.style.filter = !win && t > TR ? `brightness(${1 - .42 * L.n(t, TR + .15, TR + .6)}) saturate(${1 - .45 * L.n(t, TR + .15, TR + .6)})` : '';
   });
   // chart
-  const on = L.eo(L.n(t, 1.9, 2.4)) * (1 - outA);
-  svg.style.opacity = on; svg.style.transform = `translateY(${-60 * outA}px)`;
+  const on = L.eo(L.n(t, 1.9, 2.4)) * (1 - outC);
+  svg.style.opacity = on; svg.style.transform = `translateY(${-60 * outC}px)`;
   let d = '', area = ''; const pts = L.path.filter(p => p[0] <= m).map(p => [X(p[0]), Y(p[1])]); pts.push([X(m), Y(mv)]);
   if (pts.length > 1) { d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L'); area = d + `L${X(m).toFixed(1)} ${Y(0)}L${X(0)} ${Y(0)}Z` }
   const ring = L.n(t, TR, TR + 1.1);
@@ -168,12 +169,14 @@ window.R = t => {
   nw.style.left = Math.min(56 + X(m) + 24, 1024 - 300) + 'px'; nw.style.top = Math.max(300, 300 + Y(mv) - 100) + 'px';
   const c = L.clock(m); L.$('#cd').textContent = t < 2.3 ? 'NEW YORK' : c.day + ' · NEW YORK'; L.$('#ct').textContent = t < 2.3 ? '' : c.t;
   const left = 1440 - m; L.$('#cc').textContent = m >= 1380 && t < TR ? 'CLOSE IN ' + Math.floor(left) + ':' + String(Math.floor((left % 1) * 60)).padStart(2, '0') : t >= TR ? 'THE CLOSE' : '';
-  L.$('#clock').style.opacity = L.n(t, 2.0, 2.4) * (1 - outA);
-  const f = L.n(t, TR + .08, TR + .45), fo = 1 - L.n(t, 8.6, 9.0); const fe = L.$('#final');
+  L.$('#clock').style.opacity = L.n(t, 2.0, 2.4) * (1 - outC);
+  const f = L.n(t, TR + .08, TR + .45), fo = 1 - L.n(t, 8.3, 8.75); const fe = L.$('#final');
   fe.style.opacity = (f > 0 ? 1 : 0) * fo; fe.style.transform = `translate(-50%,-50%) rotate(-8deg) scale(${L.lerp(2.2, 1, L.eo5(f))})`;
   // screen A: GPT made +$24,710 this round (opens out of the winner's row)
   const ma = L.$('#made'), ain = L.eo(L.n(t, A0 + .25, A1 + .15)), aout = L.eio(L.n(t, C0, C1));
   ma.style.opacity = ain * (1 - L.n(t, C0, C0 + .25)); ma.style.transform = `translateY(${30 * (1 - ain)}px) scale(${L.lerp(.9, 1, ain) * (1 + .015 * L.n(t, A1, C0))})`;
+  L.$('#ms1').style.opacity = L.n(t, A1 + .1, A1 + .4); L.$('#ms2').style.opacity = L.n(t, A1 + .75, A1 + 1.05);
+  L.$('#mamt').style.backgroundPosition = `${L.lerp(100, 0, L.eio(L.n(t, A1 + .3, A1 + 1.5)))}% 0`;
   // the big number travels into GPT's season row
   const amt = L.$('#mamt'); const gi = SORDER.indexOf('GPT');
   amt.style.transform = aout > 0 ? `translate(${L.lerp(0, 300, aout)}px,${L.lerp(0, (420 + gi * 196 + 52) - 650, aout)}px) scale(${L.lerp(1, .3, aout)})` : '';
@@ -202,7 +205,7 @@ window.R = t => {
   const w = L.cl(mv / 25), b = L.n(t, TR, TR + .6) * (1 - .5 * L.n(t, TR + .6, 9.5)), ga = ain * (1 - aout);
   L.$('#glow').style.background = `radial-gradient(ellipse 80% 45% at 30% 20%,rgba(85,214,162,${(.05 + .16 * w) * (1 - outA) + .2 * ga}),transparent 70%),radial-gradient(ellipse 90% 40% at 50% 100%,rgba(232,87,107,${(.03 + .11 * w) * (1 - outA)}),transparent 70%),radial-gradient(ellipse 70% 50% at 50% 70%,rgba(253,188,42,${.18 * b * (1 - outA) + .1 * ga}),transparent 70%),radial-gradient(ellipse 70% 40% at 50% 60%,rgba(253,188,42,${.07 * sin}),transparent 70%)`;
   // camera: slow push, harder in the last hour, a kick at the bell, a gentle drift through the end screens
-  const push = 1 + .015 * L.n(t, 0, 2.3) + .03 * L.eio(L.n(t, 5.6, TR)) - .03 * L.eio(L.n(t, TR + .3, 8.6)) + .02 * L.n(t, A1, C0) - .02 * L.eio(L.n(t, C0, C1)) + .02 * L.n(t, C1, END);
+  const push = 1 + .015 * L.n(t, 0, 2.3) + .03 * L.eio(L.n(t, 5.6, TR)) - .03 * L.eio(L.n(t, TR + .3, 8.6)) + .045 * L.n(t, A1, C0) - .045 * L.eio(L.n(t, C0, C1)) + .02 * L.n(t, C1, END);
   const kick = t > TR ? Math.exp(-(t - TR) * 9) * Math.sin((t - TR) * 60) * 4 : 0;
   cam.style.transform = `translate(${kick}px,${kick * .6}px) scale(${push})`;
 };
