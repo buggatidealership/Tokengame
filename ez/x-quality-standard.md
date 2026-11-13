@@ -13,7 +13,7 @@ The owner, on cut 7 of the R106 CoreWeave resolution video: smooth means it "nee
 | Never dead: frames where something moves | ≥ 80% before the final hold; no still stretch over 1.2 s | `smooth.py`, `measure.py` |
 | Constant frame rate, no dropped frames | 30 fps, rendered offline frame by frame (never screen-recorded) | the render itself |
 
-Cut 7: ease ≥ 0.8 on 26 of 30 moves (the misses: the FINAL slam, a hit; the live % riding the price into the close, which stops where the price stops); 4 steps of 4.1 to 4.6%; 0 cuts; motion 91%; longest still 0.9 s.
+Cut 7 (final, 10.3 Mbps file `ez/x2p-r106-v7-x1080.mp4`): flow 85% (was 75% before the easing fixes); ease ≥ 0.8 on 26 of 30 moves (the misses: the FINAL slam, a hit; the live % riding the price into the close, which stops where the price stops); 4 steps of 4.1 to 4.6%; 0 cuts; motion 91%; longest still 0.9 s.
 
 ## 2. Better than the average chart video on X
 
