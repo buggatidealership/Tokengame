@@ -18,6 +18,11 @@ const longs = callers.filter(a => a.side === 'LONG').length, shorts = callers.le
 const split = longs === nC ? `ALL ${nC} LONG` : shorts === nC ? `ALL ${nC} SHORT` : `${longs} LONG vs ${shorts} SHORT`;
 const kind = longs === 0 || shorts === 0 ? 'unanimous' : Math.min(longs, shorts) === 1 ? 'lone' : 'clash';
 const lone = kind === 'lone' ? callers.find(a => a.side === (longs === 1 ? 'LONG' : 'SHORT')).k : null;
+// the lone AI's record when it stood alone before: graded rounds before this one where exactly one AI was on its side
+// against at least two others, and that AI was this one; right = its side matched the move
+let loneRec = null; if (lone) { let times = 0, right = 0; for (const r of rows) { const m = parseFloat(g(r, 'ACTUAL MOVE (%)')); if (!isFinite(m) || m === 0 || +g(r, 'ROUND') >= n) continue;
+    const ss = AIS.map(([k]) => [k, side(r, k)]).filter(x => x[1] !== 'NO CALL'), mine = ss.find(x => x[0] === lone); if (!mine || ss.length < 3) continue;
+    if (ss.filter(x => x[1] === mine[1]).length === 1) { times++; if ((mine[1] === 'LONG') === (m > 0)) right++ } } loneRec = { times, right } }
 const t = g(row, 'TICKER').toUpperCase();
 const EXCH = { DE: ['FRANKFURT', 17.5, 1, 'CET'], L: ['LONDON', 16.5, 0, 'GMT'], SW: ['ZURICH', 17.5, 1, 'CET'], AS: ['AMSTERDAM', 17.5, 1, 'CET'], T: ['TOKYO', 15.5, 9, 'JST'], KS: ['SEOUL', 15.5, 9, 'KST'], TW: ['TAIPEI', 13.5, 8, 'CST'] };
 const sfx = (t.match(/\.([A-Z]+)$/) || [])[1]; const [tz, closeH, utcOff, zone] = EXCH[sfx] || ['NEW YORK', 16, -5, 'ET'];
@@ -40,9 +45,9 @@ const hl = (() => { const m = html.match(/var HL=(\{[^;]*\});/); return m ? JSON
     if (b.length > 40) { const p0 = b[0][1]; run = { pts: b.map(x => [+((x[0] - start) / 3600e3).toFixed(2), +((x[1] / p0 - 1) * 100).toFixed(3)]), hours: (end - start) / 3600e3, last: b.at(-1)[1], move: +((b.at(-1)[1] / p0 - 1) * 100).toFixed(2), from: `${DAYS[d.getUTCDay()]} ${MON[d.getUTCMonth()]} ${d.getUTCDate()}` };
       note = `Hyperliquid ${coin} 1h, ${b.length} closes over the 5 sessions into the report, ${run.move}%` } else note = `Hyperliquid ${coin}: too few candles (${b.length})` }
   const order = AIS.map(x => x[0]).sort((a, b) => season[b] - season[a]);
-  const D = { n, ticker: t, co: ctx.TICKERS[t] || t, tz, zone, report, close, ai, season, order, split, longs, shorts, kind, lone, run, runNote: note };
+  const D = { n, ticker: t, co: ctx.TICKERS[t] || t, tz, zone, report, close, ai, season, order, split, longs, shorts, kind, lone, loneRec, run, runNote: note };
   const Lg = ctx.CO_LOGOS[t]; if (Lg) { fs.copyFileSync(EZ + '/media/' + (Lg.f || Lg), path.join(OUT, 'logo-' + n + '.png')); D.logo = 'data/logo-' + n + '.png' }
   fs.writeFileSync(path.join(OUT, 'c' + n + '.json'), JSON.stringify(D));
-  console.log(`R${n} ${D.co} · ${split} · ${kind}${lone ? ' (' + lone + ')' : ''} · report ${report} · graded ${close}\n  ${note}`);
+  console.log(`R${n} ${D.co} · ${split} · ${kind}${lone ? ' (' + lone + ', alone before ' + loneRec.times + ' times, right ' + loneRec.right + ')' : ''} · report ${report} · graded ${close}\n  ${note}`);
   for (const a of ai) console.log(`  ${a.name.padEnd(7)} ${a.side.padEnd(8)} ${a.size == null ? '' : a.size + '%'}  season ${season[a.k]}`);
 })();
