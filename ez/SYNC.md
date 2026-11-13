@@ -64,6 +64,14 @@ we take a checked snapshot into `ez-data.js`, then publish. The owner QAs afterw
    Include `ez-data.js`, and any new `media/` files, in the publish. (Primetime and Primetime Kraft previews were deleted on 2026-10-03; their source files are kept.)
 8. **Report to the owner** in plain words: what changed, the new standings, any warnings,
    and what to QA.
+9. **The X posts for every round (owner, 2026-11-13: "keep this format... the one that you did for Core Weave... for every single round
+   that gets resolved... a simple text-based tweet... here are the calls... and then 24 hours later, we quote tweet that one with the
+   outcome video").** When a round's calls come in: `node ez/tools/concepts/dopa/posts.js <round>` writes the calls post
+   (`ez/post/r<n>-<ticker>-calls.txt`); send it to the owner. When a round is graded: `bash ez/tools/concepts/dopa/outcome.sh <round>`
+   (about 15 minutes) writes the outcome video `ez/post/r<n>-<ticker>-outcome.mp4` (cut 7's design, every number from the sheet, the real
+   Hyperliquid path when the company has a market, only the two closes when it does not) and the quote-post caption, then runs
+   `qa.js`: every figure drawn on screen against the sheet, the file against X's specs. Send the video and caption only if it prints
+   `ALL CHECKS PASS`; a FAIL is a re-render, never a hand fix. The video shows the season as it stood right after that round.
 
 ## Notes
 - **The film is final (owner, 2026-10-14: "whatever the animation says, that's what it should be").** If a round's film

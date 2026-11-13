@@ -62,7 +62,7 @@ L.boot = async (extra) => {
 
 // the series bug (top) and the fine print (bottom), shared by every cut
 L.chrome = (root) => { root.insertAdjacentHTML('beforeend', `
-  <div class="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>ROUND 106</b></div>
+  <div class="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>ROUND ${L.R.n}</b></div>
   <div class="fine">Simulated $100K per trade · not advice</div>`) };
 L.css = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Geist+Mono:wght@500;600;700&display=swap');
