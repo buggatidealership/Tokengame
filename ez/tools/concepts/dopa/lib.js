@@ -66,6 +66,7 @@ L.chrome = (root) => { root.insertAdjacentHTML('beforeend', `
   <div class="fine">Simulated $100K per trade · not advice</div>`) };
 L.css = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Geist+Mono:wght@500;600;700&display=swap');
+@font-face{font-family:'Geist Mono';src:url(fonts/geistmono.woff2) format('woff2');font-weight:100 900}
 *{margin:0;box-sizing:border-box}html,body{width:1080px;height:1350px;overflow:hidden;background:#0e0c0b;color:#f2ede6;font-family:Inter,sans-serif}
 .mono{font-family:'Geist Mono',monospace;font-variant-numeric:tabular-nums}
 .mk{display:block;flex:none}
