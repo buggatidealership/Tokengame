@@ -116,11 +116,11 @@ window.R = t => {
   const outA = L.eio(L.n(t, A0, A1)); // the round screen leaves as the winner's screen opens
   const outC = L.eio(L.n(t, A0, A0 + .45)), outL = L.eio(L.n(t, A0 + .1, A1)); // the chart first, then the losers
   ti.style.opacity = 1 - outA;
-  const vs = L.$('#vs'); vs.style.opacity = 1 - L.n(t, 1.45, 1.8); vs.style.transform = `translateY(${-60 * L.eo(L.n(t, 1.45, 1.9))}px)`;
+  const vs = L.$('#vs'); vs.style.opacity = 1 - L.eio(L.n(t, 1.45, 1.85)); vs.style.transform = `translateY(${-60 * L.eo(L.n(t, 1.45, 1.9))}px)`;
   const m = mAt(t), mv = L.px(m);
   rows.forEach((el, i) => { const a = R.ai[i], win = a.side === 'LONG';
     const hx = 56 + i * 242, hy = 660, ry = 880 + i * 96;
-    const kk = L.eio(L.n(t, 1.55 + i * .06, 2.3 + i * .06));
+    const kk = L.eio(L.n(t, 1.5 + i * .06, 2.45 + i * .06));
     el.style.left = '0px'; el.style.top = '0px';
     el.style.width = L.lerp(232, 968, kk) + 'px'; el.style.height = L.lerp(440, 86, kk) + 'px';
     el.style.flexDirection = kk < .5 ? 'column' : 'row'; el.style.justifyContent = kk < .5 ? 'center' : 'flex-start';
@@ -142,7 +142,7 @@ window.R = t => {
     el.querySelector('.gl').style.opacity = goldK;
     if (win) { const w = el.querySelector('.win'); const wk = L.n(t, TR + .35, TR + .65); w.style.opacity = wk; w.style.transform = `scale(${L.lerp(1.6, 1, L.eo5(wk))})`;
       const sh = el.querySelector('.sh'); const sk = L.n(t, TR + .3, TR + 1.2); sh.style.opacity = Math.sin(Math.PI * sk); sh.style.backgroundPosition = '0 0'; sh.style.transform = `translateX(${L.lerp(-700, 700, sk)}px)`; el.querySelector('.pl').style.color = goldK > .5 ? '#ffd56b' : '' }
-    const grow = win ? 1 + .06 * L.eo(L.n(t, TR + .15, TR + .6)) : 1;
+    const grow = win ? 1 + .06 * L.eio(L.n(t, TR + .1, TR + .7)) : 1;
     // after 9.0 the winner's row travels to the centre and opens; the losers sink and fade
     let tx = L.lerp(hx, 56, kk), ty = L.lerp(hy, ry, kk), sc = grow, op = 1;
     if (win) { tx = L.lerp(tx, 56, outA); ty = L.lerp(ty, 470, outA); sc = L.lerp(grow, 1.03, outA); op = 1 - L.n(t, A0 + .2, A1) }
@@ -165,26 +165,26 @@ window.R = t => {
    <path d="${d}" fill="none" stroke="#55d6a2" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"/>
    <circle cx="${X(m)}" cy="${Y(mv)}" r="11" fill="#f2ede6"/><circle cx="${X(m)}" cy="${Y(mv)}" r="${11 + 26 * (0.5 + 0.5 * Math.sin(t * 9))}" fill="none" stroke="#55d6a2" stroke-width="2" opacity="${t < TR ? .5 : 0}"/>
    ${ring > 0 && ring < 1 ? [0, .18, .36].map(o => { const r = L.n(ring, o, o + .64); return r > 0 && r < 1 ? `<circle cx="${X(1440)}" cy="${Y(R.move)}" r="${14 + 300 * L.eo(r)}" fill="none" stroke="#fdbc2a" stroke-width="${6 * (1 - r)}" opacity="${1 - r}"/>` : '' }).join('') : ''}`;
-  const nw = L.$('#now'); nw.textContent = L.pct(mv); nw.style.opacity = on * (1 - L.n(t, TR + .3, TR + .6));
-  nw.style.left = Math.min(56 + X(m) + 24, 1024 - 300) + 'px'; nw.style.top = Math.max(300, 300 + Y(mv) - 100) + 'px';
+  const nw = L.$('#now'); nw.textContent = L.pct(mv); nw.style.opacity = on * (1 - L.eio(L.n(t, TR + .25, TR + .7)));
+  let nx = 0, ny = 0; for (let q = 0; q < 8; q++) { const tq = Math.max(0, t - q * .025), mq = mAt(tq); nx += Math.min(56 + X(mq) + 24, 1024 - 300); ny += Math.max(300, 300 + Y(L.px(mq)) - 100) } nw.style.left = nx / 8 + 'px'; nw.style.top = ny / 8 + 'px';
   const c = L.clock(m); L.$('#cd').textContent = t < 2.3 ? 'NEW YORK' : c.day + ' · NEW YORK'; L.$('#ct').textContent = t < 2.3 ? '' : c.t;
   const left = 1440 - m; L.$('#cc').textContent = m >= 1380 && t < TR ? 'CLOSE IN ' + Math.floor(left) + ':' + String(Math.floor((left % 1) * 60)).padStart(2, '0') : t >= TR ? 'THE CLOSE' : '';
   L.$('#clock').style.opacity = L.n(t, 2.0, 2.4) * (1 - outC);
-  const f = L.n(t, TR + .08, TR + .45), fo = 1 - L.n(t, 8.3, 8.75); const fe = L.$('#final');
+  const f = L.n(t, TR + .08, TR + .45), fo = 1 - L.eio(L.n(t, 8.25, 8.8)); const fe = L.$('#final');
   fe.style.opacity = (f > 0 ? 1 : 0) * fo; fe.style.transform = `translate(-50%,-50%) rotate(-8deg) scale(${L.lerp(2.2, 1, L.eo5(f))})`;
   // screen A: GPT made +$24,710 this round (opens out of the winner's row)
   const ma = L.$('#made'), ain = L.eo(L.n(t, A0 + .25, A1 + .15)), aout = L.eio(L.n(t, C0, C1));
-  ma.style.opacity = ain * (1 - L.n(t, C0, C0 + .25)); ma.style.transform = `translateY(${30 * (1 - ain)}px) scale(${L.lerp(.9, 1, ain) * (1 + .015 * L.n(t, A1, C0))})`;
+  const ain2 = L.eio(L.n(t, A0 + .25, A1 + .25)); ma.style.opacity = ain2 * (1 - L.eio(L.n(t, C0, C0 + .35))); ma.style.transform = `translateY(${30 * (1 - ain2)}px) scale(${L.lerp(.9, 1, ain2) * (1 + .02 * L.eio(L.n(t, A1, C0 + .3)))})`;
   L.$('#ms1').style.opacity = L.n(t, A1 + .1, A1 + .4); L.$('#ms2').style.opacity = L.n(t, A1 + .75, A1 + 1.05);
   L.$('#mamt').style.backgroundPosition = `${L.lerp(100, 0, L.eio(L.n(t, A1 + .3, A1 + 1.5)))}% 0`;
   // the big number travels into GPT's season row
   const amt = L.$('#mamt'); const gi = SORDER.indexOf('GPT');
   amt.style.transform = aout > 0 ? `translate(${L.lerp(0, 300, aout)}px,${L.lerp(0, (420 + gi * 196 + 52) - 650, aout)}px) scale(${L.lerp(1, .3, aout)})` : '';
   // screen B: the season, before the round -> after it
-  const sin = L.eo(L.n(t, C0 + .1, C1 + .2)); const sh = L.$('#ssn'); sh.style.opacity = sin; sh.style.transform = `translateY(${24 * (1 - sin)}px)`;
+  const sin = L.eio(L.n(t, C0 + .05, C1 + .3)); const sh = L.$('#ssn'); sh.style.opacity = sin; sh.style.transform = `translateY(${24 * (1 - sin)}px)`;
   const run = L.eio(L.n(t, S0 + .15, S1));
-  srows.forEach((el, i) => { const k = SORDER[i], win = k === 'GPT'; const kin = L.spring(t - C0 - .05 - i * .08, 1.6, 7);
-    el.style.opacity = L.cl(kin * 1.3) * (t > C0 ? 1 : 0); el.style.transform = `translateY(${(1 - kin) * 60}px)`;
+  srows.forEach((el, i) => { const k = SORDER[i], win = k === 'GPT'; const kx = L.n(t, C0 + .05 + i * .08, C0 + .75 + i * .08), kin = kx < .7 ? 1.04 * L.eio(kx / .7) : 1.04 - .04 * L.eio((kx - .7) / .3);
+    el.style.opacity = L.eio(L.n(t, C0 + .05 + i * .08, C0 + .45 + i * .08)); el.style.transform = `translateY(${(1 - kin) * 60}px)`;
     const v = L.lerp(R.season0[k], R.season1[k], run); const ve = el.querySelector('.v'); ve.textContent = L.money(v);
     ve.style.color = Math.abs(v) < 500 ? '#f2ede6' : v >= 0 ? '#55d6a2' : '#e8576b';
     el.querySelector('.ch').style.opacity = L.n(t, S0 + .1 + i * .05, S0 + .4 + i * .05);
