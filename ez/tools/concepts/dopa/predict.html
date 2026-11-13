@@ -135,8 +135,8 @@ const r2 = t => { const k = title(t, 1.2, 1.95); rt('', '', '', 0);
     el.querySelector('.cl').style.display = f < .5 ? 'none' : ''; el.querySelector('.cl').style.opacity = L.n(f, .6, 1);
     const cc = sgn(a) > 0 ? UP : DN; el.querySelector('.bg').style.background = `linear-gradient(90deg,rgba(${cc},${.1 * f + .3 * pu}),rgba(${cc},${.03 * f + .1 * pu})),linear-gradient(90deg,rgba(29,25,23,.9),rgba(22,19,18,.6))`;
     el.querySelector('.bg').style.boxShadow = `inset 0 0 0 2px rgba(${cc},${.4 * f}),0 0 ${50 * pu}px rgba(${cc},${.35 * pu})`;
-    const wait = j < 0 ? 1 : 1 - .35 * L.n(t, 2.0, 2.4) * (1 - L.n(t, tt - .1, tt + .1));
-    el.style.transform = `translate(${L.lerp(hx, sx, f)}px,${L.lerp(hy, sy, f) + arc}px) scale(${1 + .04 * pu})`; el.style.opacity = wait; el.style.zIndex = f > 0 && f < 1 ? 5 : 1 });
+    const inn = L.eio(L.n(t, .12 + i * .14, .62 + i * .14)); const wait = inn * (j < 0 ? 1 : 1 - .35 * L.n(t, 2.0, 2.4) * (1 - L.n(t, tt - .1, tt + .1)));
+    el.style.transform = `translate(${L.lerp(hx, sx, f)}px,${L.lerp(hy, sy, f) + arc + 50 * (1 - inn)}px) scale(${1 + .04 * pu})`; el.style.opacity = wait; el.style.zIndex = f > 0 && f < 1 ? 5 : 1 });
   [[s2.hL, nl, pL], [s2.hS, ns, pS]].forEach(([h, n, p]) => { h.style.opacity = hin; h.style.transform = `translateY(${30 * (1 - hin)}px)`; const b = h.querySelector('b'); b.textContent = n; b.style.transform = `scale(${1 + .25 * p})`; b.style.display = 'inline-block' });
   const e1 = L.eio(L.n(t, s2.tEnd, s2.tEnd + .45)), e2 = L.eio(L.n(t, s2.tEnd + .8, s2.tEnd + 1.2));
   s2.vs.style.opacity = e1; s2.vs.style.transform = `translateY(${30 * (1 - e1)}px) scale(${L.lerp(1.12, 1, L.eo5(L.n(t, s2.tEnd, s2.tEnd + .5)))})`; s2.end.style.opacity = e2; s2.end.style.transform = `translateY(${16 * (1 - e2)}px)`;
@@ -197,7 +197,7 @@ const doFace = t => { const o = fc, out = o.tOut ? L.eio(L.n(t, o.tOut, o.tOut +
 let sw = {}; const mkSwing = (o) => { sw = { ...o }; sw.M = Math.max(5, Math.ceil(Math.max(...D.ai.map(a => a.size || 0)) * 1.25)); sw.el = add(`<div id="sw"><div class="k" id="swk">IF IT CLOSES</div><div class="v" id="swv"></div><svg width="968" height="76"></svg></div>`);
   sw.rows = D.order.map((k, i) => { const a = D.ai.find(x => x.k === k); return add(`<div class="srow" style="top:${850 + i * 96}px"><div class="bg"></div>${L.mark(k, 58)}<span class="nm">${a.name}</span>${pill(a)}<svg class="bar" width="300" height="86"></svg><span class="p"></span></div>`) });
   // the sweep: 0 -> up -> down -> 0
-  const a = o.t0, b = a + o.d * .28, c = b + o.d * .46, e = c + o.d * .26; sw.m = t => t < a ? 0 : t < b ? sw.M * L.eio(L.n(t, a, b)) : t < c ? sw.M * (1 - 2 * L.eio(L.n(t, b, c))) : -sw.M * (1 - L.eio(L.n(t, c, e))); sw.tE = e;
+  const a = o.t0, e = a + o.d, b = a + o.d * .25, c = a + o.d * .75; sw.m = t => { const u = L.n(t, a, e), w = .2 * L.eio(u) + .8 * u; return sw.M * Math.sin(2 * Math.PI * w) }; sw.tE = e;
   for (let q = 0; q < 14; q++) C.push([+(a + (e - a) * q / 14).toFixed(3), 'sfx-tick', .05]); C.push([b, 'r11-ping', .1], [c, 'r11-ping', .1], [e + .1, 'sfx-chime', .16]) };
 const doSwing = t => { const o = sw, k = L.eio(L.n(t, o.tIn, o.tIn + .5)), m = o.m(t), end = L.n(t, o.tE, o.tE + .3), mc = Math.abs(m) < .05 ? '#f2ede6' : m > 0 ? G : Rd;
   o.el.style.opacity = k; o.el.style.transform = `translateY(${30 * (1 - k)}px)`; L.$('#swk').textContent = end > .5 ? 'THE CLOSE DECIDES' : 'IF IT CLOSES'; L.$('#swk').style.color = end > .5 ? '#fdbc2a' : '#8e8680';
@@ -216,11 +216,11 @@ const r4 = t => { title(t, 1.2, 1.95); doHook(t, 1.2); const p = doFace(t), s = 
   x < .5 ? rt('EARNINGS REPORT', rb, rc, o) : rt('GRADED AT THE CLOSE', cb, cc, o, 1); return { glow: .3 + .4 * Math.abs(s.m) / sw.M + .5 * s.end, tint: s.m / sw.M, push: 1 + .014 * L.n(t, 0, 2) + .02 * L.n(t, sw.tE, DUR), kick: p } };
 
 /* ---------- 5 trailer ---------- */
-const mk5 = () => { mkHook(); mkRows(); mkChart({ tIn: 1.6, d0: 1.9, d1: 3.6, tP: 4.1, dP: .55, tOut: 6.9 }); mkFace({ tL: 7.5, tS: 7.9, tV: 8.3 }); mkSwing({ tIn: 8.8, t0: 9.3, d: 3.1 }); L.$('#csub').textContent = 'EARNINGS · 4 AIs · $100K EACH';
+const mk5 = () => { mkHook(); mkRows(); mkChart({ tIn: 1.6, d0: 1.9, d1: 3.6, tP: 4.1, dP: .55, tOut: 6.9 }); mkFace({ tL: 7.62, tS: 8.08, tV: 8.55 }); mkSwing({ tIn: 8.9, t0: 9.4, d: 3.0 }); L.$('#csub').textContent = 'EARNINGS · 4 AIs · $100K EACH';
   C.push([.05, 'r11-swell', .1], [1.25, 'sfx-whoosh', .12], [5.9, 'sfx-riser', .12], [6.9, 'sfx-whoosh', .14]); window.MUSIC = { f: 'm2-phonk', at: 14.79 - 7.9 } };
 const r5 = t => { title(t, 1.2, 1.95); doHook(t, 1.2); const c = doChart(t); doRows(t, { tIn: 1.65, tOut: 6.9 }); const p = doFace(t), s = doSwing(t), [rb, rc] = repParts(), [cb, cc] = closeParts(), x = L.n(t, sw.tE - .1, sw.tE + .1), o = L.n(t, 1.9, 2.3) * (x > 0 && x < 1 ? Math.abs(1 - 2 * x) : 1);
   x < .5 ? rt('EARNINGS REPORT', rb, rc, o) : rt('GRADED AT THE CLOSE', cb, cc, o, 1);
-  return { glow: .25 + .5 * c.wall * (1 - L.n(t, 6.9, 7.4)) + .4 * Math.abs(s.m) / sw.M + .5 * s.end, tint: s.m / sw.M, push: 1 + .014 * L.n(t, 0, 2) + .028 * L.eio(L.n(t, 1.9, 3.6)) - .028 * L.eio(L.n(t, 3.7, 4.4)) + .03 * L.eio(L.n(t, 5.9, 7.4)) - .03 * L.eio(L.n(t, 7.9, 8.6)) + .02 * L.n(t, sw.tE, DUR), kick: c.wp + p } };
+  return { glow: .25 + .5 * c.wall * (1 - L.n(t, 6.9, 7.4)) + .4 * Math.abs(s.m) / sw.M + .5 * s.end, tint: s.m / sw.M, push: 1 + .014 * L.n(t, 0, 2) + .028 * L.eio(L.n(t, 1.9, 3.6)) - .028 * L.eio(L.n(t, 3.7, 4.4)) + .03 * L.eio(L.n(t, 5.9, 7.4)) - .03 * L.eio(L.n(t, 7.95, 8.7)) + .02 * L.n(t, sw.tE, DUR), kick: c.wp + p } };
 
 const MK = [0, mk1, mk2, mk3, mk4, mk5], RR = [0, r1, r2, r3, r4, r5];
 const setup = () => { L.R = { ...L.R, n: D.n }; L.chrome(document.body);
