@@ -24,6 +24,7 @@
 .sys .p{display:flex;align-items:center;gap:14px;font:600 22px 'Geist Mono';letter-spacing:.1em;color:#8e8680;background:#161312;box-shadow:inset 0 0 0 2px #2a2522;border-radius:999px;padding:11px 22px 10px}
 .sys .big{font:900 44px/1 Inter;letter-spacing:-.03em}
 .sys .big i{font-style:normal;color:#5f5853;font-size:30px;margin:0 14px;font-weight:800}
+.sys .st{font:700 31px/1 Inter;letter-spacing:-.015em;color:#f2ede6}.sys .st b{font-weight:800}
 .sys.gold .p{color:#fdbc2a;background:rgba(253,188,42,.08);box-shadow:inset 0 0 0 2px rgba(253,188,42,.5);font-size:26px;padding:14px 28px 13px}
 .msg{position:absolute;top:0;width:968px;left:56px;height:140px}
 .msg .av{position:absolute;top:34px}
@@ -39,6 +40,7 @@
 .bub .in{display:flex;align-items:baseline;gap:20px;padding:0 34px;white-space:nowrap}
 .bub .sdw{font:900 56px/1 Inter;letter-spacing:-.035em}
 .bub .cl{font:600 44px/1 'Geist Mono';letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.bub .lb{font:600 19px/1 'Geist Mono';letter-spacing:.14em;color:#8e8680;margin-right:-8px}
 .bub .dots{position:absolute;left:0;top:0;width:124px;height:100%;display:flex;align-items:center;justify-content:center;gap:11px}
 .msg.r .bub .dots{left:auto;right:0}
 .bub .dots i{width:14px;height:14px;border-radius:50%;background:#8e8680;display:block}
@@ -71,10 +73,10 @@ const setup = () => { L.R = { ...L.R, n: D.n }; L.chrome(document.body);
   const both = D.longs > 0 && D.shorts > 0; let t = 0;
   // the run-in line (real, Hyperliquid) or nothing
   if (D.run) { const p = D.run.pts, lo = Math.min(...p.map(q => q[1])), hi = Math.max(...p.map(q => q[1])), W = 120, Hh = 30, d = 'M' + p.map(q => (q[0] / D.run.hours * W).toFixed(1) + ' ' + (Hh - 2 - (q[1] - lo) / (hi - lo || 1) * (Hh - 4)).toFixed(1)).join('L'), c = D.run.move >= 0 ? G : Rd;
-    S.run = add(`<div class="sys" style="top:292px"><div class="p"><svg width="${W}" height="${Hh}"><path d="${d}" fill="none" stroke="${c}" stroke-width="2.6" stroke-linejoin="round"/></svg><span>$${D.ticker.replace(/\..*$/, '')} <b style="color:${c};font-weight:600">${L.pct(D.run.move, 1)}</b> IN THE 7 DAYS BEFORE</span></div></div>`) }
+    S.run = add(`<div class="sys" style="top:292px"><div class="p"><svg width="${W}" height="${Hh}"><path d="${d}" fill="none" stroke="${c}" stroke-width="2.6" stroke-linejoin="round"/></svg><span style="color:#f2ede6;opacity:.82">$${D.ticker.replace(/\..*$/, '')} <b style="color:${c};font-weight:600">${L.pct(D.run.move, 1)}</b> IN THE 7 DAYS BEFORE EARNINGS</span></div></div>`) }
   idx.forEach((i, j) => { const a = D.ai[i], last = j === idx.length - 1, right = both && sgn(a) < 0, rank = D.order.indexOf(a.k) + 1, sp = D.season[a.k];
     const el = add(`<div class="msg ${right ? 'r' : 'l'}"><div class="av">${L.mark(a.k, 76)}</div><div class="nr"><span class="nm">${a.name}</span><span class="tg">#<span class="rk">${rank}</span> · SEASON <span class="sv" style="color:${sp >= 0 ? G : Rd}">${money0(sp)}</span></span><span class="ty">typing</span></div>
-      <div class="bub"><div class="dots"><i></i><i></i><i></i></div><div class="in"><span class="sdw" style="color:${sgn(a) > 0 ? G : Rd}">${a.side}</span><span class="cl" style="color:${sgn(a) > 0 ? G : Rd}">${(sgn(a) > 0 ? '+' : '−') + a.size}%</span></div></div><div class="rx"></div></div>`);
+      <div class="bub"><div class="dots"><i></i><i></i><i></i></div><div class="in"><span class="sdw" style="color:${sgn(a) > 0 ? G : Rd}">${a.side}</span><span class="lb">CALLS</span><span class="cl" style="color:${sgn(a) > 0 ? G : Rd}">${(sgn(a) > 0 ? '+' : '−') + a.size}%</span></div></div><div class="rx"></div></div>`);
     // typing: the first three are quick; the last one waits, stops, starts again
     const ty = last && idx.length > 1 ? 2.3 : .55, a0 = OUT ? -9 : j === 0 ? -.3 : t + .4, s = OUT ? -9 : a0 + ty + (j === 0 ? .3 : 0);
     M.push({ a, i, el, right, last, a0, s, pause: last && idx.length > 1 ? [a0 + .9, a0 + 1.5] : null, y: Y0 + j * STEP }); t = s;
@@ -82,22 +84,22 @@ const setup = () => { L.R = { ...L.R, n: D.n }; L.chrome(document.body);
     if (!OUT) for (let q = a0 + .12; q < s - .1; q += .16) if (!(last && idx.length > 1 && q > a0 + .9 && q < a0 + 1.5) && q > 0) C.push([+q.toFixed(3), 'sfx-type', .035]) });
   // measure each bubble's full width once
   M.forEach(m => { const b = m.el.querySelector('.bub'); b.style.width = 'auto'; m.w = Math.ceil(b.querySelector('.in').getBoundingClientRect().width); b.style.width = '124px' });
-  const end = t, yb = Y0 + (idx.length - 1) * STEP + 140 + 24;
+  const end = t, yb = Y0 + (idx.length - 1) * STEP + 140 + 18;
   const sp = D.split.match(/^(\d+) LONG vs (\d+) SHORT$/);
   S.tally = add(`<div class="sys" style="top:${yb}px"><div class="big">${sp ? `<span class="up">${sp[1]} LONG</span><i>vs</i><span class="dn">${sp[2]} SHORT</span>` : `<span class="${/LONG/.test(D.split) ? 'up' : 'dn'}">${D.split}</span>`}</div></div>`);
   const lone = D.lone && D.loneRec && D.loneRec.times > 0 ? D.ai.find(a => a.k === D.lone) : null;
-  S.stat = add(`<div class="sys" style="top:${yb + 56}px"><div class="p" style="background:none;box-shadow:none;padding:0">${lone ? `${lone.name.toUpperCase()} ALONE BEFORE: ${D.loneRec.times} TIMES, RIGHT ${D.loneRec.right}` : D.kind === 'unanimous' ? 'NOBODY TOOK THE OTHER SIDE' : 'A SPLIT ROOM'}</div></div>`);
-  S.gold = add(`<div class="sys gold" style="top:${yb + 96}px"><div class="p">GRADED AT THE CLOSE · ${D.close || 'NEXT CLOSE'}</div></div>`);
-  S.tT = OUT ? -9 : end + .6; S.tS = OUT ? -9 : end + 1.1; S.tG = OUT ? -9 : end + 1.7; S.tM = OUT ? -.4 : end + 2.4; S.yM = yb + 166;
+  S.stat = add(`<div class="sys" style="top:${yb + 58}px"><div class="st">${lone ? `${lone.name} stood alone <b>${D.loneRec.times} times</b> before. Right <b class="au">${D.loneRec.right}</b>.` : D.kind === 'unanimous' ? 'Nobody took the other side.' : 'A split room.'}</div></div>`);
+  S.gold = add(`<div class="sys gold" style="top:${yb + 108}px"><div class="p">$100K EACH · GRADED AT THE CLOSE ${D.close || ''}</div></div>`);
+  S.tT = OUT ? -9 : end + .6; S.tS = OUT ? -9 : end + 1.1; S.tG = OUT ? -9 : end + 1.7; S.tM = OUT ? -.4 : end + 2.4; S.yM = yb + 178;
   // the market: a gold avatar; typing in the prediction, the move in the outcome
   S.mk = add(`<div class="msg l"><div class="av"><svg class="mk" width="76" height="76" viewBox="0 0 76 76" style="border-radius:20px;background:#1a1300;box-shadow:0 0 0 2.5px rgba(253,188,42,.6)"><path d="M14 50l12-12 9 8 13-18 14 10" fill="none" stroke="#fdbc2a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div class="nr"><span class="nm" style="color:#fdbc2a">The market</span><span class="tg">${D.close ? 'CLOSES ' + D.close : ''}</span><span class="ty">typing</span></div><div class="bub"><div class="dots"><i></i><i></i><i></i></div><div class="in"><span class="sdw" id="mkw"></span><span class="cl" id="mkc"></span></div></div></div>`);
+    <div class="nr"><span class="nm" style="color:#fdbc2a">The market</span><span class="tg">${D.close ? 'ANSWERS ' + D.close : ''}</span><span class="ty">typing</span></div><div class="bub"><div class="dots"><i></i><i></i><i></i></div><div class="in"><span class="sdw" id="mkw"></span><span class="cl" id="mkc"></span></div></div></div>`);
   if (!OUT) C.push([.02, 'r11-swell', .08], [S.tT, 'r11-card', .12], [S.tG, 'sfx-chime', .16], [S.tM, 'r11-ping', .08]); else for (let q = .1; q < 1.1; q += .16) C.push([+q.toFixed(3), 'sfx-type', .035]);
   if (OUT) { const mv = O.move, c = mv >= 0 ? G : Rd; L.$('#mkw').textContent = '$' + D.ticker.replace(/\..*$/, ''); L.$('#mkw').style.color = '#f2ede6'; L.$('#mkc').textContent = O.pct; L.$('#mkc').style.color = c;
     const b = S.mk.querySelector('.bub'); b.style.width = 'auto'; S.mw = Math.ceil(b.querySelector('.in').getBoundingClientRect().width); b.style.width = '124px';
     S.tA = 1.3; M.forEach((m, j) => { const o = O.ai.find(x => x.k === m.a.k); m.o = o; m.tr = S.tA + .7 + j * .32; m.el.querySelector('.rx').innerHTML = `${tick(o.right ? G : Rd)}<span style="color:${o.right ? G : Rd}">${money0(o.pnl)}</span>`; C.push([m.tr, o.right ? 'r11-kaching' : 'r11-knock', o.right ? .2 : .1]) });
     S.tW = S.tA + .7 + M.length * .32 + .5; C.push([S.tA, 'sfx-bell', .26], [S.tA + .05, 'r11-thump', .2], [S.tW, 'sfx-chime', .16]);
-    S.win = add(`<div class="sys gold" style="top:${yb + 96}px"><div class="p">${O.line1.toUpperCase()} · ${O.line3}</div></div>`); DUR = S.tW + 2.8 }
+    S.win = add(`<div class="sys gold" style="top:${yb + 108}px"><div class="p">${O.line1.toUpperCase()} · ${O.line3}</div></div>`); DUR = S.tW + 2.8 }
   else DUR = S.tM + 2.8;
   DUR = Math.ceil(DUR * 2) / 2; window.DUR = DUR; window.MUSIC = { f: 'c1-lofi', at: 4 } };
 const dots = (el, t, on, pause) => { const live = pause && t > pause[0] && t < pause[1] ? 0 : 1; el.style.opacity = on; [...el.children].forEach((d, k) => { const ph = (t * 1.5 - k * .16) % 1, up = live ? Math.max(0, Math.sin(ph * Math.PI * 2)) : 0; d.style.transform = `translateY(${-9 * up}px)`; d.style.opacity = .45 + .55 * up }) };
@@ -107,7 +109,7 @@ const bubble = (m, t, w, rgb, strong) => { const el = m.el, b = el.querySelector
   b.style.background = `linear-gradient(180deg,rgba(${rgb},${.07 + .13 * kk + .2 * pu}),rgba(${rgb},${.04 + .08 * kk + .1 * pu}))`; b.style.boxShadow = `inset 0 0 0 2.5px rgba(${rgb},${.22 + .33 * kk + .3 * pu}),0 0 ${(strong ? 90 : 50) * pu}px rgba(${rgb},${.5 * pu})`;
   dots(b.querySelector('.dots'), t, (1 - L.n(t, m.s - .04, m.s + .06)) * ap, m.pause); const inn = b.querySelector('.in'); inn.style.opacity = L.n(t, m.s + .05, m.s + .2); inn.style.transform = `translateY(${10 * (1 - L.eo(L.n(t, m.s + .03, m.s + .3)))}px)`; return pu };
 window.R = t => { grain(t); let kick = 0, gl = 0, gs = 0;
-  if (S.run) { const k = L.eio(L.n(t, -.2, .25)); S.run.style.opacity = k }
+  if (S.run) S.run.style.opacity = 1;
   M.forEach(m => { const a = m.a, rgb = sgn(a) > 0 ? UP : DN, pu = bubble(m, t, m.w, rgb, m.last && M.length > 1);
     m.el.style.transform = `translateY(${m.y + 26 * (1 - L.eo(L.n(t, m.a0, m.a0 + .3)))}px)`;
     if (m.last && M.length > 1) kick += pu; if (sgn(a) > 0) gl += pu; else gs += pu;
