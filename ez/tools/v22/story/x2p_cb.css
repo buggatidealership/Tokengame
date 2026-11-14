@@ -1,0 +1,195 @@
+/* x2p_cb (round H40): the round's card back as a blackened steel vault plate carrying the certificate's own content and layout
+   (No., one nameplate per model: rank, logo, name, flag, PASS/FAIL, the trade; MARKET and the move; the dates; the EZ. mark).
+   Painted parts (Hedra, from the H36 plate) laid out by the page: sizes in cqw of the plate's width (.cb is the size container), every
+   text at least 8 px on screen (--f8 = 8.2px through the view's zoom, --cbz, set by x2p_cb.js).
+   How each text is made, as a plate maker would make it:
+   - engraved (.cb-np text: rank, name, No., the date plates): dark ink in the cut, a dark wall above, a light lip below;
+   - enamel-filled engraving (.cb-en: the trade's move, the market's move): red or green paint sitting in the cut, a darker band where
+     the cut's upper wall shades it, the wall and the lit lip drawn by drop-shadows (a text-shadow would show through clipped paint);
+   - hand-punched (.cb-pf: PASS / FAIL): one letter punch per letter, each at its own tilt and depth, the recess rubbed with paint
+     that wears off in places, a faint raised burr around each letter;
+   - engraved through the black enamel (.cb-ml MARKET, the countdown): the cut shows the bright metal under the enamel;
+   - the EZ. mark (H41): struck 7 degrees crooked, a holographic foil laid on its letters, slashes and dot only (a rainbow gradient
+     masked by media/cb-holo-mask-h41.webp, cut from the stamp painting itself, overlay-blended so the steel, the enamel and the struck
+     wall and lip read through it); the foil's one moving part is a transform on one small layer, run only on .cb-live (the back facing
+     you) and never with reduced motion.
+   Vertical centring: every text box is trimmed to its capitals (text-box), and each plate's padding-top moves the centre onto the
+   painted face (np/title/date plates: the face runs 0.956 to -0.569 of the 2.9cqw bevel, so +.56cqw; the enamel window +.52cqw). */
+#x2pRm .fin.cb-on>.xc{visibility:hidden}
+html.x2p #x2pRm .card .fin>div.cb{visibility:visible!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;z-index:6;container:cb/size;display:flex!important;flex-direction:column!important;background:#0b0a0d;
+  --f8:calc(8.2px / var(--cbz,1));--ink:#24211d;--ink2:#4a463f;--lip:0 .16cqw 0 rgba(255,255,255,.55),0 -.12cqw 0 rgba(0,0,0,.3);
+  --red:#a5261c;--red2:#6e140e;--grn:#1e6f3f;--grn2:#0f4426;
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .86 0 0 0 0 .84 0 0 0 0 .79 -14 0 0 0 4.7'/%3E%3C/filter%3E%3Crect width='64' height='64' filter='url(%23n)'/%3E%3C/svg%3E");
+  font-family:Anton,Impact,sans-serif;font-weight:400;letter-spacing:0;text-transform:none;line-height:1;color:var(--ink);text-align:left}
+#x2pRm .cb *{box-sizing:border-box}
+#x2pRm .cb .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#x2pRm .cb :is(b,em,i,small,span){font-style:normal}
+/* every text box is its capitals: centring a box centres the letters */
+#x2pRm .cb .cb-tb{display:block;text-box:trim-both cap alphabetic;line-height:1;white-space:nowrap}
+/* the steel shell: corners and rivets whole, the edges and the field stretch */
+html.x2p #x2pRm .cb .cb-p{position:relative!important;flex:1 1 auto!important;min-height:0;display:flex!important;flex-direction:column!important;padding:7.2cqw 7.6cqw 0;margin:0}
+html.x2p #x2pRm .cb .cb-sh{display:block!important;position:absolute!important;inset:0!important;z-index:0!important;border:0 solid transparent;pointer-events:none;
+  border-image:image-set(url(media/cb-plate-h38-shell-1200.jpg) 1x,url(media/cb-plate-h38-shell-1800.jpg) 3x) 6.84% 9.11% fill / 9.1cqw stretch}
+html.x2p #x2pRm .cb .cb-p>:not(.cb-sh){position:relative;z-index:1;flex-shrink:0}
+html.x2p #x2pRm .cb .cb-p>.cb-g{display:block;flex:var(--g,1) 1 0;min-height:.8cqw}
+html.x2p #x2pRm .cb .cb-p>.cb-g0{min-height:3.4cqw}
+/* nickel nameplates (bevels whole, the brushed face stretches) */
+#x2pRm .cb-np{border:0 solid transparent;border-image:url(media/cb-plate-h38-np.webp) 16.9% 3.33% fill / 2.9cqw stretch}
+#x2pRm .cb-np :is(b,small,span,i):not(.cb-en,.cb-en *,.cb-pf,.cb-pf *){text-shadow:var(--lip)}
+#x2pRm .cb-np svg{filter:drop-shadow(0 .14cqw 0 rgba(255,255,255,.45))}
+/* the title plate: the certificate's number, engraved */
+#x2pRm .cb-ti{border-image-source:url(media/cb-plate-h38-title.webp);height:12.4cqw;display:flex;align-items:center;justify-content:center;padding:1.12cqw 4cqw 0;text-align:center}
+#x2pRm .cb-no{font-size:max(6.2cqw,var(--f8));letter-spacing:.07em;text-transform:uppercase;color:var(--ink);max-width:100%;overflow:hidden}
+#x2pRm .cb small{font-size:max(2.6cqw,var(--f8));letter-spacing:.09em;text-transform:uppercase;color:var(--ink2);white-space:nowrap;font-family:Anton,Impact,sans-serif}
+/* the four nameplates: one grid, every row on its columns (rank, well, name + flag, the space between, the move); PASS/FAIL sits
+   centred in the space between, so the marks share one column exactly halfway between the widest name + flag and the widest move,
+   and the moves end on one line */
+#x2pRm .cb-rows{--rs:1;list-style:none;margin:0;padding:0;display:grid;row-gap:2.2cqw;align-content:space-between;flex:2.2 0 auto;
+  grid-template-columns:auto auto max-content minmax(max-content,1fr) auto}
+#x2pRm .cb-rows.p{grid-template-columns:auto max-content minmax(max-content,1fr) auto}
+#x2pRm .cb-r{--rh:14cqw;--pt:1.12cqw;position:relative;grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center;height:var(--rh);padding:var(--pt) 3.5cqw 0 .7cqw}
+#x2pRm .cb-r.win{border-image-source:url(media/cb-plate-h38-npg.webp);--ink:#2a1a03;--ink2:#5b3d0b;--lip:0 .16cqw 0 rgba(255,240,190,.6),0 -.12cqw 0 rgba(60,30,0,.35)}
+#x2pRm .cb-rk{font-size:max(calc(4.2cqw * var(--rs)),var(--f8));color:var(--ink2);margin:0 1.3cqw 0 1.2cqw;justify-self:center}
+#x2pRm .cb-r .cb-rk{margin-left:3.3cqw}
+#x2pRm .cb-wc{position:relative;width:12.2cqw;height:12.2cqw;margin-right:1.8cqw;background:url(media/cb-plate-h38-wellc.webp) center/100% 100% no-repeat}
+#x2pRm .cb-rows.p .cb-wc{margin-left:0}
+#x2pRm .cb-r.win .cb-wc{background-image:url(media/cb-plate-h38-wellcg.webp)}
+#x2pRm .cb-wc .cb-mk{position:absolute;inset:19%;border-radius:50%;background:#131117;padding:19%;display:grid;place-items:center;
+  box-shadow:inset 0 .45cqw .8cqw rgba(0,0,0,.75),inset 0 -.2cqw .3cqw rgba(255,255,255,.08)}
+#x2pRm .cb-mk svg{width:100%;height:100%;display:block;filter:none}
+#x2pRm .cb-mk svg :is(path,circle,rect,polygon,ellipse){fill:var(--mc)!important}
+/* the name and its flag (the cell runs the plate's full height so the crown can sit on the plate's top edge) */
+#x2pRm .cb-id{position:relative;align-self:stretch;display:flex;align-items:center;gap:1.2cqw}
+#x2pRm .cb-nm{font-size:max(calc(5.2cqw * var(--rs)),var(--f8));letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+#x2pRm .cb-fl{width:calc(3.6cqw * var(--rs));height:calc(2.4cqw * var(--rs));min-width:9px;min-height:6px;flex:none;display:block;box-shadow:0 0 0 .22cqw rgba(0,0,0,.35)}
+#x2pRm .cb-pc{justify-self:center;display:flex;align-items:center;padding:0 1.4cqw}
+/* the trade: the signed move enamel-filled, every move ending on the same line */
+#x2pRm .cb-tv{justify-self:end;font-size:max(calc(4.8cqw * var(--rs)),var(--f8));letter-spacing:.02em}
+/* enamel in the cut: paint below the surface, its upper edge shaded by the cut's wall, the lit lip under it */
+#x2pRm .cb .cb-en{color:transparent!important;-webkit-background-clip:text;background-clip:text;padding:.14em 0;margin:-.14em 0;text-shadow:none!important;
+  background-image:linear-gradient(180deg,var(--e2) 0 22%,var(--e1) 40%,var(--e1) 80%,var(--e3) 100%);
+  filter:drop-shadow(0 -.1cqw 0 rgba(0,0,0,.42)) drop-shadow(0 .15cqw 0 rgba(255,255,255,.5))}
+#x2pRm .cb .cb-en.dn{--e1:var(--red);--e2:var(--red2);--e3:#b8392d}
+#x2pRm .cb .cb-en.up{--e1:var(--grn);--e2:var(--grn2);--e3:#2a8250}
+#x2pRm .cb-r.win .cb-en{filter:drop-shadow(0 -.1cqw 0 rgba(60,30,0,.45)) drop-shadow(0 .15cqw 0 rgba(255,240,190,.55))}
+/* PASS / FAIL: struck with letter punches into the plate and rubbed with paint; no box, the word is the mark */
+#x2pRm .cb-pf{display:flex;align-items:center;gap:.28cqw;font-size:max(calc(3.9cqw * var(--rs)),var(--f8));
+  filter:drop-shadow(0 0 .22cqw rgba(255,255,255,.16))}
+#x2pRm .cb .cb-pf i{display:block;text-box:trim-both cap alphabetic;line-height:1;color:transparent;text-shadow:none!important;-webkit-background-clip:text;background-clip:text;padding:.14em .02em;margin:-.14em -.02em;
+  transform:translateY(var(--py)) rotate(var(--pr)) scale(var(--ps));
+  background-image:var(--noise),linear-gradient(180deg,var(--p2) 0 26%,var(--p1) 46%,var(--p1) 82%,var(--p3));background-size:11cqw 11cqw,100% 100%;
+  filter:drop-shadow(0 -.12cqw 0 rgba(0,0,0,.55)) drop-shadow(0 .16cqw 0 rgba(255,255,255,.6))}
+#x2pRm .cb-pf.p{--p1:#23864c;--p2:#0f4a28;--p3:#3b9a62}
+#x2pRm .cb-pf.f{--p1:#b42a1f;--p2:#6a120c;--p3:#c8473a}
+#x2pRm .cb-r.win .cb-pf i{filter:drop-shadow(0 -.12cqw 0 rgba(60,30,0,.55)) drop-shadow(0 .16cqw 0 rgba(255,240,190,.62))}
+/* the crown: cast gold, lit from above like the rivets, seated on the winning plate's top edge above the name, its shadow on the steel */
+#x2pRm .cb-cr{position:absolute;left:-.4cqw;top:calc(-1 * var(--pt) - 2.75cqw);width:6.4cqw;height:4.5cqw;pointer-events:none;
+  background:url(media/cb-crown-h40.webp) center/100% 100% no-repeat;filter:saturate(.86) brightness(.97) drop-shadow(0 .32cqw .26cqw rgba(0,0,0,.6))}
+/* the market's window: black enamel; MARKET and the move engraved through it, the move filled with enamel */
+#x2pRm .cb-mw{height:16.2cqw;display:flex;align-items:center;justify-content:space-between;gap:2cqw;padding:1.03cqw 5.6cqw 0;
+  border:0 solid transparent;border-image:url(media/cb-plate-h38-mk.webp) 16% 3.64% fill / 3.1cqw stretch}
+#x2pRm .cb .cb-ml,#x2pRm .cb .cb-cd{color:transparent!important;-webkit-background-clip:text;background-clip:text;padding:.14em 0;margin:-.14em 0;text-shadow:none;
+  background-image:linear-gradient(180deg,#5c574d 0 24%,#c9c1ae 44%,#e6decb 82%,#f4ecd8);filter:drop-shadow(0 -.1cqw 0 #000) drop-shadow(0 .14cqw 0 rgba(255,250,235,.32))}
+#x2pRm .cb-ml{font-size:max(4.6cqw,var(--f8));letter-spacing:.16em;text-transform:uppercase}
+#x2pRm .cb-mv{font-size:max(8.4cqw,var(--f8));letter-spacing:.01em;white-space:nowrap}
+#x2pRm .cb .cb-mw .cb-en.dn{--e1:#d3402f;--e2:#7e1a12;--e3:#e25a47}
+#x2pRm .cb .cb-mw .cb-en.up{--e1:#2fa25a;--e2:#135a30;--e3:#47b872}
+#x2pRm .cb .cb-mw .cb-en{filter:drop-shadow(0 -.12cqw 0 #000) drop-shadow(0 .16cqw 0 rgba(255,250,235,.38))}
+#x2pRm .cb-mv.cb-cd{font-size:max(4.6cqw,var(--f8));letter-spacing:.08em;text-transform:uppercase}
+/* the foot: two date plates and the EZ. mark struck into the steel */
+#x2pRm .cb-bt{display:flex;align-items:center;gap:3.2cqw;height:26.4cqw}
+#x2pRm .cb-dt{width:25.6cqw;height:14.4cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5cqw;padding:1.12cqw 1.6cqw 0}
+#x2pRm .cb-dt :is(small,b){display:block;text-box:trim-both cap alphabetic;line-height:1}
+#x2pRm .cb-dt small{font-size:max(2.4cqw,var(--f8))}
+#x2pRm .cb-dt b{font-size:max(5.2cqw,var(--f8));letter-spacing:.03em;white-space:nowrap;color:var(--ink)}
+#x2pRm .cb-st{flex:none;margin-left:auto;width:31.2cqw;height:31.2cqw;margin-right:-1.8cqw;background:url(media/cb-plate-h38-stamp.webp) center/100% 100% no-repeat}
+#x2pRm .cb-steel .cb-st{background-image:url(media/cb-plate-h38-stamp-steel.webp)}
+#x2pRm .cb-st.cb-die{background-image:url(media/cb-plate-h38-die.webp)}
+/* H41: struck a little crooked (a hand strike is never square), the foil on the mark's own shape */
+#x2pRm .cb-st:not(.cb-die){position:relative;transform:rotate(7deg);isolation:isolate}
+#x2pRm .cb-ho{position:absolute;inset:0;overflow:hidden;pointer-events:none;mix-blend-mode:overlay;opacity:.7;
+  -webkit-mask:url(media/cb-holo-mask-h41.webp) center/100% 100% no-repeat;mask:url(media/cb-holo-mask-h41.webp) center/100% 100% no-repeat}
+/* the foil: rainbow bands (cyan, violet, magenta, gold, a pale glint, mint) under a fine diffraction grain; the mask lays it full on
+   the letters and at about a third on the slashes and the dot, so the logo's green, red and gold still read */
+#x2pRm .cb-hf{position:absolute;top:-10%;bottom:-10%;left:0;width:300%;transform:translateX(-28%);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='1' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.6 -.55'/%3E%3C/filter%3E%3Crect width='48' height='48' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/4cqw 4cqw,
+    linear-gradient(112deg,#2ad4ff 0%,#8b6bff 7%,#ff4fc8 14%,#ffcf3a 21%,#fff8e0 23.5%,#3cf2a6 28%,#2ad4ff 35%,#8b6bff 42%,#ff4fc8 49%,#ffcf3a 56%,#fff8e0 58.5%,#3cf2a6 63%,#2ad4ff 70%,#8b6bff 77%,#ff4fc8 84%,#ffcf3a 91%,#2ad4ff 100%)}
+@media (prefers-reduced-motion:no-preference){
+  #x2pRm .cb.cb-live .cb-hf{animation:cbHolo 9s ease-in-out -4s infinite alternate;will-change:transform}
+}
+@keyframes cbHolo{from{transform:translateX(0)}to{transform:translateX(-66.667%)}}
+/* H43 "See the film": a nickel push-plate riveted into the foot under the two date plates and as wide as the pair (the date plates'
+   nameplate stock, the shell's own rivets), the words and the play triangle engraved like the dates, the EZ. mark beside them; on a
+   tall card (a 320 px phone) it sits under the mark, centred. Every size of the plate in em of the label (max(3cqw, the 8 px floor)).
+   The plate stands proud: a short cast shadow under it. Pressed (:active), it sinks (translateY, about a pixel on screen), the bevel
+   turns over so its lit edge is at the bottom (a recess), the engraving's lip and wall swap and the cast shadow goes.
+   The foot block keeps 5 px (on screen) above the shell's inner frame line (3.6cqw from the plate's foot). The button box is at least
+   44 px tall on screen with the plate centred in it; negative block margins take the extra back, so the layout sees only the plate. */
+#x2pRm .cb-bt.cb-btf{display:grid;grid-template-columns:minmax(0,25.6cqw) minmax(0,25.6cqw) minmax(max-content,1fr);grid-template-rows:auto auto;column-gap:3.2cqw;row-gap:3cqw;
+  align-content:center;height:31.2cqw;margin-bottom:calc(3.6cqw + 5px / var(--cbz,1))}
+#x2pRm .cb-btf .cb-dt{grid-row:1;width:auto}
+/* the mark where the flex row had it: its column as wide as the mark (the date plates give way first, as the row's did), flush right;
+   lifted a little (its turned box clear of the frame line under it) */
+#x2pRm .cb-btf .cb-st{grid-column:3;grid-row:1/3;justify-self:end;align-self:center;margin-left:0;margin-bottom:1.2cqw}
+html.x2p #x2pRm .cb .cb-p>.cb-btf + .cb-g{min-height:0}
+html.x2p #x2pRm .cb .cb-flip:not(.cb-nob){--fz:max(3cqw,var(--f8));--B:.66em;grid-column:1/3;grid-row:2;justify-self:stretch;display:flex;align-items:center;
+  background:none!important;border:0!important;box-shadow:none!important;border-radius:0;width:auto;padding:0;
+  min-height:calc(44.5px / var(--cbz,1));margin:calc(-1 * max(0px, 22.25px / var(--cbz,1) - 1.25em)) 0;
+  font:400 var(--fz)/1 Anton,Impact,sans-serif;letter-spacing:0;text-transform:none;color:var(--ink);cursor:pointer;text-shadow:none;
+  -webkit-tap-highlight-color:transparent;outline:none}
+html.x2p #x2pRm .cb .cb-flip.cb-nob{min-height:6cqw;margin:0}
+#x2pRm .cb-fp{position:relative;flex:1 1 auto;display:flex;align-items:center;justify-content:center;height:2.5em;padding:calc(var(--B) * .387) calc(var(--B) * 1.16 + 1.5em) 0;
+  border-radius:.14em;box-shadow:0 .2em .26em -.06em rgba(0,0,0,.72),0 .05em .06em rgba(0,0,0,.5);transition:transform .06s,box-shadow .06s;
+  --lip:0 .053em 0 rgba(255,255,255,.55),0 -.04em 0 rgba(0,0,0,.3)}
+#x2pRm .cb-fpb{position:absolute;inset:0;border:0 solid transparent;border-image:url(media/cb-plate-h38-np.webp) 16.9% 3.33% fill / var(--B) stretch;transition:transform .06s}
+#x2pRm .cb-rv{position:absolute;top:calc(50% + var(--B) * .1935 - .3em);width:.6em;height:.6em;background:url(media/cb-rivet-h43.webp) center/100% 100% no-repeat;
+  filter:drop-shadow(0 .05em .05em rgba(0,0,0,.6))}
+#x2pRm .cb-rv.l{left:calc(var(--B) * 1.16 + .42em)}
+#x2pRm .cb-rv.r{right:calc(var(--B) * 1.16 + .42em)}
+#x2pRm .cb-fpt{position:relative;display:flex;align-items:center;gap:.48em}
+#x2pRm .cb .cb-fpl{font-size:1em;letter-spacing:.14em;margin-right:-.14em;text-transform:uppercase;color:var(--ink);text-shadow:var(--lip)}
+#x2pRm .cb-fg{display:block;height:1cap;width:auto;flex:none;fill:var(--ink);overflow:visible;
+  filter:drop-shadow(0 .053em 0 rgba(255,255,255,.55)) drop-shadow(0 -.04em 0 rgba(0,0,0,.3))}
+#x2pRm .cb-flip:active .cb-fp{transform:translateY(max(.3cqw,1px / var(--cbz,1)));box-shadow:0 .02em .03em rgba(0,0,0,.45);
+  --lip:0 -.053em 0 rgba(255,255,255,.5),0 .04em 0 rgba(0,0,0,.34)}
+#x2pRm .cb-flip:active .cb-fpb{transform:scaleY(-1)}
+#x2pRm .cb-flip:active .cb-fg{filter:drop-shadow(0 -.053em 0 rgba(255,255,255,.5)) drop-shadow(0 .04em 0 rgba(0,0,0,.34))}
+/* the focus ring for the keyboard only, round the plate (not the larger tap box) */
+html.x2p #x2pRm .cb .cb-flip:focus-visible{outline:none}
+#x2pRm .cb-flip:focus-visible .cb-fp{outline:2px solid #e9b94a;outline-offset:3px}
+@media (prefers-reduced-motion:reduce){#x2pRm .cb-fp,#x2pRm .cb-fpb{transition:none}}
+/* H43 mockup (window.__x2pCbWin=1): Winner engraved small under the name on the gold plate; the name and the word one group, centred */
+#x2pRm .cb-nw{display:flex;flex-direction:column;align-items:flex-start;gap:calc(1.1cqw * var(--rs))}
+#x2pRm .cb-nr{display:flex;align-items:center;gap:1.2cqw}
+#x2pRm .cb .cb-wn{font-size:max(calc(2.4cqw * var(--rs)),var(--f8));letter-spacing:.2em;color:var(--ink2);text-shadow:var(--lip)}
+/* a card a little shorter than the painting (desktop, tablets; height under 1.4 x width): the plates a touch smaller (H41: from 1.35 to
+   1.4, so the larger wells still leave every plate its room) */
+@container cb (min-aspect-ratio: 5/7){
+  #x2pRm .cb-ti{height:11.2cqw}#x2pRm .cb-rows{row-gap:2cqw}#x2pRm .cb-mw{height:14.8cqw}
+  #x2pRm .cb-bt{height:23.4cqw}#x2pRm .cb-st{width:28.6cqw;height:28.6cqw}#x2pRm .cb-dt{height:13.4cqw}html.x2p #x2pRm .cb .cb-p{padding-top:6.2cqw}
+  #x2pRm .cb-r{--rh:13.4cqw}
+  #x2pRm .cb-bt.cb-btf{height:28.6cqw;row-gap:2.4cqw}}
+/* a wide, short card (tablets from about 540 to 759 px; height under 1.3 x width): plates smaller again, the wells a little smaller,
+   still larger than H40's (H41; H40 ran 15 to 29 px past the plate at 680 to 759 px) */
+@container cb (min-aspect-ratio: 10/13){
+  html.x2p #x2pRm .cb .cb-p{padding-top:6cqw}#x2pRm .cb-ti{height:10.4cqw}#x2pRm .cb-rows{row-gap:1.9cqw}#x2pRm .cb-r{--rh:11.6cqw}
+  #x2pRm .cb-wc{width:10.4cqw;height:10.4cqw}#x2pRm .cb-mw{height:13.6cqw}#x2pRm .cb-bt{height:22.4cqw}#x2pRm .cb-dt{height:12.4cqw}
+  #x2pRm .cb-st{width:26cqw;height:26cqw}#x2pRm .cb-bt.cb-btf{height:26cqw;row-gap:2.2cqw}}
+/* a tall card (a 320 px phone): taller nameplates and bigger wells, still one line; the dates over the mark (H41: the mark clear of
+   the dates and of "See the film" now it turns; the title and the market window a touch shorter to make that room; only from a
+   height of 1.85 x the width, the least this stack needs: H40 used it from 1.6 and ran 2 to 15 px past the plate at 345 to 354 px) */
+@container cb (max-aspect-ratio: 20/37){
+  html.x2p #x2pRm .cb .cb-p{padding:8cqw 7.4cqw 0}
+  #x2pRm .cb-ti{height:14cqw}
+  #x2pRm .cb-r{--rh:17cqw;padding-left:1cqw}
+  #x2pRm .cb-rows{row-gap:2.6cqw}
+  #x2pRm .cb-wc{width:15.4cqw;height:15.4cqw;margin-right:1.4cqw}
+  #x2pRm .cb-rk{margin-right:.9cqw}
+  #x2pRm .cb-mw{height:19.4cqw}
+  #x2pRm .cb-bt{height:auto;flex-wrap:wrap;justify-content:space-between;row-gap:2.6cqw}
+  #x2pRm .cb-dt{width:41cqw;height:16cqw}
+  #x2pRm .cb-st{width:32cqw;height:32cqw;margin:0 auto .6cqw}
+  #x2pRm .cb-bt.cb-btf{display:flex;height:auto;row-gap:2.6cqw}
+  #x2pRm .cb-btf .cb-st{margin:0 auto}
+  #x2pRm .cb-btf .cb-dt{width:41cqw}
+  html.x2p #x2pRm .cb .cb-flip:not(.cb-nob){flex:0 0 100%}}

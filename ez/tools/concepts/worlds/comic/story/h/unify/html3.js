@@ -1,0 +1,2 @@
+const {open}=require('./lib');(async()=>{const s=process.argv[2];const {b,p}=await open(390,844);
+const h=await p.evaluate(s=>{const e=document.querySelector(s);const c=e.cloneNode(true);c.querySelectorAll('image').forEach(x=>x.setAttribute('href','..'));c.querySelectorAll('path').forEach(x=>{if((x.getAttribute('d')||'').length>40)x.setAttribute('d','..')});return c.outerHTML.replace(/\s+/g,' ')},s);console.log(h.slice(0,+process.argv[3]||6000));await b.close()})();

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Are They Learning?</title>
+<meta name="description" content="Earnings Zeason: three AI models call every earnings print. The only question that matters is whether they get better. Here's the running answer.">
+<meta name="theme-color" content="#0e1116">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* EARNINGS ZEASON · V8 · THE QUESTION
+   Question-led: a stats show that opens on the one question a viewer would ask,
+   "Are they learning?", and answers it live from the sheet. Highlights are the evidence,
+   the bet is what's at stake. Broadcast graphics package in black, paper and signal orange.
+   Data: ez-data.js + ez-learn.js. */
+:root{color-scheme:light;--paper:#f6f5f1;--card:#fff;--line:#e2e0d8;--ink:#0e1116;--ink2:#525661;--black:#0e1116;--sig:#ff5a1f;--sig2:#d9430e;--up:#15803d;--dn:#c81e1e;--gold:#ffc72c;
+  --fd:'Archivo','Arial Narrow',system-ui,sans-serif;--fm:'JetBrains Mono',ui-monospace,Menlo,monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--paper);overflow-x:clip;scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font:500 16px/1.5 var(--fd);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px}
+.lg{display:inline-grid;place-items:center;width:1em;height:1em;border-radius:22.5%;flex:none;vertical-align:middle;box-shadow:0 0 0 1.5px rgba(0,0,0,.16)}
+.lg svg{width:62%;height:62%}
+.cx{font-stretch:68%}
+/* bar */
+.net{background:var(--black);color:#fff;position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.net-in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.brand{font:900 21px/1 var(--fd);font-stretch:72%;text-decoration:none;white-space:nowrap;letter-spacing:.01em}
+.brand .d{color:var(--gold)}.brand .e{color:#4ade80}.brand .z{color:#f87171}
+.nav{display:flex;gap:18px;margin-left:16px;font:700 13px/1 var(--fm);text-transform:uppercase;letter-spacing:.04em}
+.nav a{text-decoration:none;color:#aeb3bf}.nav a:hover{color:#fff}
+@media(max-width:860px){.nav{display:none}}
+.net .buy{margin-left:auto;font:800 14px/1 var(--fd);letter-spacing:.06em;background:var(--sig);color:#fff;padding:9px 14px;border-radius:3px;text-decoration:none;white-space:nowrap}
+.tick{background:#1b1f27;color:#fff;display:flex;border-bottom:3px solid var(--sig)}
+.tick .tl{background:#fff;color:var(--black);font:800 12px/1 var(--fm);letter-spacing:.08em;padding:9px 12px;display:flex;align-items:center;flex:none}
+.tick .tw{overflow:hidden;flex:1;display:flex;align-items:center}
+.tick .tt{display:inline-flex;white-space:nowrap;animation:tick 60s linear infinite}
+.tick:hover .tt{animation-play-state:paused}
+.tick span{font:700 13px/1 var(--fm);padding:0 18px;border-right:1px solid rgba(255,255,255,.14)}
+.tick b{color:var(--gold)}.tick .u{color:#4ade80}.tick .d{color:#f87171}
+@keyframes tick{to{transform:translateX(-50%)}}
+/* hero: the question */
+.q-hero{padding:34px 0 10px}
+.kick{display:inline-flex;align-items:center;gap:8px;font:700 13px/1 var(--fm);text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+.kick i{width:9px;height:9px;border-radius:50%;background:var(--sig);animation:blink 1.2s steps(1) infinite}
+@keyframes blink{50%{opacity:.25}}
+.q-hero h1{font:900 clamp(64px,13vw,168px)/.86 var(--fd);font-stretch:62%;text-transform:uppercase;letter-spacing:-.01em;margin-top:10px;text-wrap:balance}
+.q-hero h1 em{font-style:normal;color:var(--sig)}
+.ans{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0;margin-top:18px;max-width:880px;border-radius:6px;overflow:hidden;box-shadow:0 14px 30px -18px rgba(14,17,22,.6)}
+@media(max-width:640px){.ans{grid-template-columns:1fr}}
+.ans .al{background:var(--sig);color:#fff;padding:12px 16px;font:800 13px/1.2 var(--fm);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center}
+.ans .ar{background:var(--black);color:#fff;padding:12px 16px;font:900 clamp(22px,3vw,32px)/1.05 var(--fd);font-stretch:70%;text-transform:uppercase}
+.ans .ar small{display:block;font:500 14px/1.45 var(--fd);font-stretch:100%;text-transform:none;color:#c6cad3;margin-top:4px}
+.sub{font:500 17px/1.55 var(--fd);color:var(--ink2);max-width:64ch;margin-top:16px}
+.sub b{color:var(--ink)}
+/* the two steps */
+.steps{display:grid;gap:16px;margin-top:26px}
+.step{background:var(--card);border-radius:8px;box-shadow:0 0 0 1px var(--line);overflow:hidden}
+.step .sb{display:flex;align-items:stretch;background:var(--black);color:#fff}
+.step .sb em{font:800 13px/1 var(--fm);font-style:normal;background:var(--sig);padding:12px 12px;display:flex;align-items:center;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.step .sb h2{font:900 clamp(20px,2.8vw,30px)/1.05 var(--fd);font-stretch:70%;text-transform:uppercase;padding:10px 14px;display:flex;align-items:center}
+.step .bd{padding:16px}
+.step .bd>p{font:500 15.5px/1.5 var(--fd);color:var(--ink2);margin-bottom:12px;max-width:72ch}
+.lx{--lx-ink:var(--black);--lx-text:var(--ink);--lx-mute:#6b6f7a;--lx-grid:var(--line);--lx-surface:#fff;--lx-tipbg:var(--black);--lx-tipfg:#fff;--lx-font:var(--fd)}
+.bench{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+@media(max-width:860px){.bench{grid-template-columns:1fr}}
+.bn{background:var(--card);border-radius:8px;box-shadow:0 0 0 1px var(--line);padding:14px 16px}
+.bn small{display:block;font:700 11.5px/1.2 var(--fm);text-transform:uppercase;letter-spacing:.06em;color:var(--sig2)}
+.bn b{display:block;font:900 34px/1 var(--fd);font-stretch:66%;margin-top:6px;font-variant-numeric:tabular-nums}
+.bn p{font:500 14px/1.45 var(--fd);color:var(--ink2);margin-top:4px}
+details.nums{margin-top:12px;background:var(--card);border-radius:8px;box-shadow:0 0 0 1px var(--line);padding:4px 14px}
+details.nums summary{cursor:pointer;font:700 13px/1 var(--fm);text-transform:uppercase;letter-spacing:.04em;padding:13px 0}
+details.nums[open]{padding-bottom:12px}
+/* sections */
+.sec{padding:60px 0 6px;scroll-margin-top:60px}
+.sh{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px;border-bottom:3px solid var(--black);padding-bottom:10px}
+.sh .no{font:800 12px/1 var(--fm);background:var(--black);color:#fff;padding:6px 8px;border-radius:2px}
+.sh h2{font:900 clamp(34px,5.4vw,64px)/.9 var(--fd);font-stretch:64%;text-transform:uppercase}
+.sh span{font:700 13px/1.2 var(--fm);text-transform:uppercase;letter-spacing:.04em;color:var(--sig2);padding-bottom:4px}
+.lede{font:500 16.5px/1.55 var(--fd);color:var(--ink2);max-width:66ch;margin:-4px 0 18px}
+/* evidence: split-screen replay */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:16px;align-items:start}
+@media(max-width:980px){.stage{grid-template-columns:minmax(0,1fr)}}
+.tv{display:grid;grid-template-columns:minmax(0,56.25fr) minmax(0,43.75fr);background:var(--black);border-radius:8px;overflow:hidden;aspect-ratio:16/9}
+@media(max-width:700px){.tv{grid-template-columns:1fr;aspect-ratio:auto}}
+.film{position:relative;background:#000;overflow:hidden;aspect-ratio:1/1;max-width:100%}
+.film .bgp{position:absolute;inset:-30px;background-size:cover;background-position:center;filter:blur(26px) brightness(.5)}
+.film video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.film .onair{position:absolute;top:10px;left:10px;z-index:2;font:700 11.5px/1 var(--fm);background:var(--sig);color:#fff;padding:5px 7px;border-radius:2px}
+.gfx{color:#fff;padding:16px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.gfx .k{font:700 12px/1 var(--fm);color:var(--gold);text-transform:uppercase}
+.gfx h3{font:900 clamp(28px,3.4vw,44px)/.92 var(--fd);font-stretch:64%;text-transform:uppercase}
+.gfx .row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;background:rgba(255,255,255,.07);border-radius:4px;padding:6px 8px;font:700 14.5px/1.1 var(--fd);opacity:0;transform:translateX(14px);transition:opacity .35s,transform .45s cubic-bezier(.3,1.3,.5,1)}
+.gfx.on .row{opacity:1;transform:none}
+.gfx .row .lg{font-size:22px;box-shadow:none}
+.gfx .row small{font:500 12px/1 var(--fd);color:#aeb3bf;margin-left:3px}
+.gfx .row .v{font:700 12.5px/1 var(--fm);white-space:nowrap}.gfx .row .v.ok{color:#4ade80}.gfx .row .v.no{color:#f87171}
+.gfx .mk{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid rgba(255,255,255,.15);padding-top:8px;font:700 12px/1 var(--fm);color:#aeb3bf;text-transform:uppercase}
+.gfx .mk b{font:900 30px/1 var(--fd);font-stretch:66%}.gfx .mk b.u{color:#4ade80}.gfx .mk b.d{color:#f87171}
+.gfx .wn{margin-top:auto;display:flex;align-items:center;gap:10px;background:var(--sig);color:#fff;border-radius:4px;padding:8px 10px;font:900 22px/1 var(--fd);font-stretch:66%;text-transform:uppercase;transform:scaleX(0);transform-origin:left;transition:transform .5s .5s cubic-bezier(.3,1.2,.5,1)}
+.gfx.on .wn{transform:none}
+.gfx .wn small{display:block;font:700 10.5px/1 var(--fm);font-stretch:100%;letter-spacing:.06em}
+.gfx .wn .lg{font-size:30px;box-shadow:none}
+.tvbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+.tvbar button{font:700 13px/1 var(--fm);text-transform:uppercase;background:var(--black);color:#fff;padding:10px 12px;border-radius:3px}
+.tvbar button.alt{background:var(--card);color:var(--black);box-shadow:inset 0 0 0 2px var(--black)}
+.tvbar .now{margin-left:auto;font:600 13px/1 var(--fd);color:var(--ink2)}
+.side{background:var(--card);border-radius:8px;padding:10px;box-shadow:0 0 0 1px var(--line)}
+.side h3{font:700 12px/1 var(--fm);text-transform:uppercase;color:var(--sig2);margin:4px 4px 8px}
+.rps{display:grid;gap:2px}
+@media(max-width:980px){.rps{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}}
+.rp{display:grid;grid-template-columns:60px 1fr;gap:10px;align-items:center;padding:6px;border-radius:4px;text-align:left;width:100%}
+.rp:hover,.rp.on{background:#f0eee7}.rp.on{box-shadow:inset 3px 0 0 var(--sig)}
+.rp img{width:60px;height:40px;object-fit:cover;border-radius:3px}
+.rp b{display:block;font:800 16px/1.05 var(--fd);font-stretch:70%;text-transform:uppercase}
+.rp span{display:flex;align-items:center;gap:5px;font:500 12px/1.2 var(--fd);color:var(--ink2);margin-top:2px}
+.rp span .lg{font-size:14px}
+/* standings strip */
+.stand{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border-radius:8px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
+@media(max-width:860px){.stand{grid-template-columns:1fr}}
+.st{background:var(--card);display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px}
+.st .p{font:900 44px/.8 var(--fd);font-stretch:62%;color:#b7b4aa}
+.st.first .p{color:var(--sig)}
+.st .lg{font-size:40px}
+.st b{font:900 24px/1 var(--fd);font-stretch:68%;text-transform:uppercase}
+.st small{display:block;font:500 12.5px/1.3 var(--fd);color:var(--ink2);margin-top:3px}
+.st .w{text-align:right;font:900 38px/1 var(--fd);font-stretch:62%}.st .w small{font:700 10px/1 var(--fm)}
+/* main event */
+.fight{background:var(--black);color:#fff;border-radius:10px;padding:24px 18px;overflow:hidden;position:relative}
+.fight::before{content:"";position:absolute;inset:0;background:radial-gradient(50% 70% at 50% 0,rgba(255,90,31,.25),transparent 70%)}
+.fight>*{position:relative}
+.fk{text-align:center;font:700 12.5px/1.3 var(--fm);text-transform:uppercase;letter-spacing:.08em;color:var(--gold)}
+.vs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px;margin:18px 0}
+.fcn{text-align:center;min-width:0}
+.tile{display:inline-grid;place-items:center;width:clamp(92px,14vw,130px);height:clamp(92px,14vw,130px);border-radius:22px;background:#fff;box-shadow:0 0 0 4px var(--sig)}
+.tile .lg{box-shadow:none}
+.trio{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px}
+.trio .lg{font-size:clamp(32px,4.6vw,44px)}.trio .lg:last-child{grid-column:1/3;justify-self:center}
+.tile.nv{background:#000;box-shadow:0 0 0 4px #76b900}.tile.nv .lg{font-size:clamp(76px,11vw,110px)}
+.fcn b{display:block;margin-top:12px;font:900 clamp(24px,3.6vw,40px)/1 var(--fd);font-stretch:64%;text-transform:uppercase}
+.fcn small{display:block;font:500 13px/1.35 var(--fd);color:#c6cad3;margin-top:4px}
+.vsx{font:900 clamp(44px,7vw,86px)/1 var(--fd);font-stretch:62%;color:var(--sig)}
+.tape{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.12);border-radius:6px;overflow:hidden}
+@media(max-width:860px){.tape{grid-template-columns:1fr 1fr}.tape .tp:last-child{grid-column:1/3}}
+.tp{background:#171b22;padding:12px 8px;text-align:center;min-width:0}
+.tp small{display:block;font:700 10.5px/1 var(--fm);text-transform:uppercase;color:var(--gold)}
+.tp b{display:flex;justify-content:center;align-items:center;gap:6px;font:800 19px/1.1 var(--fd);font-stretch:72%;margin-top:6px;text-transform:uppercase}
+.tp b .lg{font-size:20px}
+.fine{font:500 13px/1.6 var(--fd);color:#c6cad3;text-align:center;margin-top:14px}
+/* listings */
+.guide{background:var(--card);border-radius:8px;box-shadow:0 0 0 1px var(--line);overflow:hidden}
+.gr{display:grid;grid-template-columns:130px 56px minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px;border-top:1px solid var(--line)}
+.gr:first-child{border-top:0}
+.gr .t{font:700 12.5px/1.2 var(--fm);text-transform:uppercase;color:var(--ink2)}
+.gr .r{font:900 24px/1 var(--fd);font-stretch:62%;color:var(--sig2)}
+.gr b{font:900 24px/1 var(--fd);font-stretch:68%;text-transform:uppercase}
+.gr .calls{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.gr .calls span{display:inline-flex;align-items:center;gap:5px;font:600 13px/1 var(--fd);background:#f0eee7;padding:5px 8px 5px 5px;border-radius:999px}
+.gr .calls .lg{font-size:18px}
+.gr .tag{font:700 11.5px/1 var(--fm);text-transform:uppercase;padding:6px 8px;border-radius:2px;background:#f0eee7;white-space:nowrap}
+.gr.hot{background:#fff4ee}.gr.hot .tag{background:var(--sig);color:#fff}
+@media(max-width:640px){.gr{grid-template-columns:44px minmax(0,1fr) auto;gap:10px}.gr .t{grid-column:2;grid-row:2}.gr .r{grid-row:1/3}.gr .tag{grid-row:1/3}}
+/* desk */
+.desk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media(max-width:860px){.desk{grid-template-columns:1fr}}
+.box{background:var(--card);border-radius:8px;box-shadow:0 0 0 1px var(--line);padding:18px}
+.box .q{font:700 12px/1.3 var(--fm);text-transform:uppercase;color:var(--sig2)}
+.box h3{font:900 28px/1 var(--fd);font-stretch:66%;text-transform:uppercase;margin-top:8px}
+.box p{font:500 15.5px/1.55 var(--fd);color:var(--ink2);margin-top:8px}
+.box p b{color:var(--ink)}.box a{color:var(--sig2);font-weight:700}
+.box.big{grid-column:1/-1;background:var(--black);color:#fff;box-shadow:none}
+.box.big h3{font-size:clamp(30px,4.4vw,48px)}.box.big p{color:#d3d6de;max-width:72ch}.box.big .q{color:var(--gold)}
+.pr{margin-top:12px;background:#1b1f27;border-radius:6px;padding:14px;font:500 14.5px/1.65 var(--fm)}
+.pr i{font-style:normal;color:var(--gold)}
+.prl{display:block;font:700 11px/1 var(--fm);text-transform:uppercase;color:#aeb3bf;margin-top:14px}
+.sign{margin-top:12px;font:900 28px/1 var(--fd);font-stretch:64%;text-transform:uppercase;color:var(--sig2)}
+/* get */
+.get{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media(max-width:860px){.get{grid-template-columns:1fr}}
+.get .box b.n{font:700 12px/1 var(--fm);color:var(--sig2)}
+.ca{margin-top:10px;font:500 12.5px/1.5 var(--fm);border:1.5px dashed #cfccc2;border-radius:6px;padding:10px;color:var(--ink2);overflow-wrap:anywhere}
+.btn{display:block;text-align:center;margin-top:12px;font:800 16px/1 var(--fd);letter-spacing:.04em;text-transform:uppercase;background:var(--sig);color:#fff;border-radius:3px;padding:13px;text-decoration:none}
+.btn.off{background:transparent;color:var(--ink2);box-shadow:inset 0 0 0 2px #cfccc2;pointer-events:none}
+.risk{font:500 12.5px/1.6 var(--fd);color:var(--ink2);margin-top:14px}
+footer{margin-top:60px;background:var(--black);color:#fff;text-align:center;padding:44px 16px 54px}
+.motto{font:900 clamp(34px,6vw,70px)/1 var(--fd);font-stretch:62%;text-transform:uppercase}
+.motto .e{color:#4ade80}.motto .z{color:#f87171}
+footer small{display:block;margin-top:12px;font:700 11.5px/1.5 var(--fm);text-transform:uppercase;color:#aeb3bf}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="net"><div class="net-in">
+  <a class="brand" href="#top"><span class="d">$</span><span class="e">E</span>ARNINGS <span class="z">Z</span>EASON</a>
+  <nav class="nav"><a href="#evidence">Evidence</a><a href="#stakes">Stakes</a><a href="#guide">Next data</a><a href="#desk">Method</a></nav>
+  <a class="buy" href="#get">GET $EZ</a>
+</div></header>
+<div class="tick"><span class="tl">SCORES</span><div class="tw"><div class="tt" id="tt"></div></div></div>
+
+<main id="top" class="wrap">
+  <section class="q-hero">
+    <span class="kick"><i></i>The question of the season · updated every print</span>
+    <h1>Are they <em>learning?</em></h1>
+    <div class="ans"><div class="al">Current answer</div><div class="ar" id="ansR">Too early to call<small></small></div></div>
+    <p class="sub">Three AI models call every earnings print the day before. The market grades them. <b>They used to call it stock picking. We call it model picking.</b> Picking a model only makes sense if it gets better, so we check two things, in order.</p>
+    <div class="steps">
+      <div class="step"><div class="sb"><em>Step 1</em><h2>Up or down: do they get it right?</h2></div><div class="bd">
+        <p>Share of calls in the right direction so far. A coin flip lands on 50% over time. Learning looks like a line that climbs away from the dashed line and stays there.</p><div id="lxDir"></div></div></div>
+      <div class="step"><div class="sb"><em>Step 2</em><h2>Right way. How close?</h2></div><div class="bd">
+        <p>When the direction was right, how many points off. Wrong-way calls don't count here: they already failed step 1. Learning looks like shorter bars.</p><div id="lxDist"></div></div></div>
+    </div>
+    <div class="bench" id="bench"></div>
+    <details class="nums"><summary>Every call, in numbers</summary><div id="lxTbl"></div></details>
+  </section>
+
+  <section class="sec" id="evidence"><div class="sh"><span class="no">01</span><h2>The evidence</h2><span>Every round, replayed</span></div>
+    <div class="stage">
+      <div>
+        <div class="tv">
+          <div class="film"><div class="bgp" id="tvBg"></div><video id="tvV" playsinline muted preload="metadata"></video><span class="onair" id="onair"></span></div>
+          <div class="gfx" id="gfx" aria-live="polite"></div>
+        </div>
+        <div class="tvbar"><button type="button" id="snd">🔇 Sound</button><button type="button" class="alt" id="nxt">Next round ▶</button><span class="now" id="now"></span></div>
+      </div>
+      <aside class="side"><h3>Replays</h3><div class="rps" id="rps"></div></aside>
+    </div>
+  </section>
+
+  <section class="sec" id="standings"><div class="sh"><span class="no">02</span><h2>Standings</h2><span id="standSub">Season one</span></div><div class="stand" id="stand"></div></section>
+
+  <section class="sec" id="stakes"><div class="sh"><span class="no">03</span><h2>The stakes</h2><span>The first real bet</span></div>
+    <p class="lede">If they are learning, it should show up in money. 69% of every $EZ trading fee goes into one pool. The machines take it to Hyperliquid for their first real bet.</p>
+    <div class="fight">
+      <div class="fk">The main event · live on Hyperliquid</div>
+      <div class="vs">
+        <div class="fcn"><span class="tile trio" id="trio"></span><b>The machines</b><small>funded by 69% of every $EZ trading fee</small></div>
+        <div class="vsx">VS</div>
+        <div class="fcn"><span class="tile nv" id="nvt"></span><b>NVIDIA</b><small>its next earnings print</small></div>
+      </div>
+      <div class="tape" id="tape"></div>
+      <p class="fine">Leveraged means it can be wiped out. The pool can shrink as fast as it grows, and none of it is paid out to holders. No promise of returns.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="guide"><div class="sh"><span class="no">04</span><h2>Next data points</h2><span>Each one moves the charts</span></div><div class="guide" id="gd"></div></section>
+
+  <section class="sec" id="desk"><div class="sh"><span class="no">05</span><h2>The method</h2><span>Straight talk</span></div>
+    <div class="desk">
+      <div class="box big"><span class="q">How the calls are made</span><h3>One question. Full freedom.</h3>
+        <p>Every model gets the same short prompt, every round. No list of factors, no hints. Tell a model what to look at and it only looks there. We'd rather it find its own way in, and own its own mistakes.</p>
+        <span class="prl" id="prl">The shape of the prompt</span><div class="pr" id="pr"></div></div>
+      <div class="box"><span class="q">"Is this the right way to do it?"</span><h3>Honestly? Nobody knows.</h3><p>Nobody has figured out how to get a machine to read an earnings print. Our bet: freedom beats instructions. <a href="https://arxiv.org/abs/2506.01578" target="_blank" rel="noopener">One recent study</a> found elaborate forecasting prompts don't help and sometimes hurt. A hint, not proof.</p></div>
+      <div class="box"><span class="q">"How do they get better?"</span><h3>Same question, over and over.</h3><p>No clever prompt. The same thing every print: same question, public grade, no edits. Each graded call goes into what the next session starts from. <b>Consistency is the method.</b></p></div>
+      <div class="box"><span class="q">"Why is the one with the most tools last?"</span><h3>Three different rigs.</h3><p>Same prompt, different setups: GPT and Kimi in chat workspaces; Claude as an agent with the most tools and data. After six rounds, the one with the most tools is last. Interesting. Not proof.</p></div>
+      <div class="box"><span class="q">"So what now?"</span><h3>Time will tell.</h3><p>Six rounds prove nothing, either way. Until the charts above have enough points to mean something, we stop talking and make the next call.</p><div class="sign">Shut up and call the print.</div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="get"><div class="sh"><span class="no">06</span><h2>Get $EZ</h2><span>Back the experiment</span></div>
+    <div class="get">
+      <div class="box"><b class="n">STEP 1</b><h3>Check the address</h3><div class="ca" id="ca">Not posted yet. It appears here, and only here, at launch.</div></div>
+      <div class="box"><b class="n">STEP 2</b><h3>Get $EZ</h3><p>Only through the link on this page.</p><a class="btn off" id="buyL" href="#get" target="_blank" rel="noopener">Opens at launch</a></div>
+      <div class="box"><b class="n">STEP 3</b><h3>Watch the answer change</h3><p id="nextTxt">Every print adds a point to the charts.</p></div>
+    </div>
+    <p class="risk">$EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p>
+  </section>
+</main>
+<footer><div class="motto">Nobody said it would be <span class="e">E</span><span class="z">Z</span></div><small>$EZ · Earnings Zeason, with a Z · calls filed before the print · graded +24h · never edited</small></footer>
+
+<script src="ez-data.js"></script>
+<script src="ez-learn.js"></script>
+<script>
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return [].slice.call((r||document).querySelectorAll(s))}
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function callOk(r,c){return ((/^DOWN/.test(c[1])?-1:1)>0)===(r.a>0)?1:0}
+/* ticker */
+var t='<span><b>STANDINGS</b> '+LADDER.map(function(l){return l.m+' '+l.won}).join(' · ')+'</span>'+ROUNDS.map(function(r){return '<span>R'+r.n+' '+r.co.toUpperCase()+' <b class="'+(r.a>0?'u':'d')+'">'+r.out+'</b> · '+(r.win?r.win+' WINS':'NO WINNER')+'</span>'}).join("")+
+  PENDING.map(function(u){return '<span>R'+u.n+' '+u.co.toUpperCase()+' · <b>CALLS ARE IN</b></span>'}).join("")+
+  UPCOMING.map(function(u){return '<span>R'+u.n+' '+u.co.toUpperCase()+' · CALLS '+fmtDate(u.called).toUpperCase()+'</span>'}).join("");
+$("#tt").innerHTML=t+t;
+/* the answer, computed */
+EZLearn.direction($("#lxDir"));EZLearn.distance($("#lxDist"));EZLearn.table($("#lxTbl"));
+var S=EZLearn.summary(),B=EZLearn.baselines(),best=Math.max.apply(null,S.map(function(x){return x.right}));
+var nx=PENDING[0]||UPCOMING[0];
+var worst=Math.min.apply(null,S.map(function(x){return x.right}));
+$("#ansR").innerHTML='Too early to call<small>'+B.rounds+' rounds on the record. Direction so far: '+worst+' to '+best+' of '+B.rounds+' right. '+(best>B.alwaysUp?'The best model beats':'No model beats')+' simply saying "UP" every time ('+B.alwaysUp+' of '+B.rounds+').'+(nx?' Next data point: '+nx.co+', '+fmtDate(PENDING[0]?nx.resolves:nx.called)+'.':'')+'</small>';
+var coin=0;for(var k=best;k<=B.rounds;k++){var c=1;for(var j=0;j<k;j++)c=c*(B.rounds-j)/(j+1);coin+=c}coin=coin/Math.pow(2,B.rounds);
+$("#bench").innerHTML='<div class="bn"><small>Bar to beat · always say UP</small><b>'+B.alwaysUp+' of '+B.rounds+'</b><p>A model with no insight at all, that only ever says UP, would have the best direction record so far.</p></div>'+
+  '<div class="bn"><small>Luck check · coin flip</small><b>'+Math.round(coin*100)+'%</b><p>Chance a coin gets '+best+' or more of '+B.rounds+' right. '+(coin>.05?'The best model so far is inside luck range.':'The best model is now outside easy luck range.')+'</p></div>'+
+  '<div class="bn"><small>What would settle it</small><b>Dozens of rounds</b><p>Not six. Then the lines pull away from the coin flip and the bars shrink, or they don’t.</p></div>';
+/* evidence */
+var i=0,v=$("#tvV"),soundOn=false;
+$("#rps").innerHTML=ROUNDS.map(function(r,k){return '<button class="rp" type="button" data-k="'+k+'"><img src="'+MEDIA+r.poster+'.jpg" alt=""><div><b>R'+r.n+' · '+r.co+'</b><span>'+(r.win?winLogos(r)+' '+r.win+' won':'No winner')+'</span></div></button>'}).join("");
+function gfx(r){var rows=r.calls.slice().sort(function(a,b){return (callOk(r,b)-callOk(r,a))||(parseFloat(a[2])-parseFloat(b[2]))});
+  return '<span class="k">R'+r.n+' · called '+fmtDate(r.called)+'</span><h3>'+r.co+'</h3><div>'+rows.map(function(c,k){var o=callOk(r,c);
+    return '<div class="row" style="margin-top:6px;transition-delay:'+(0.15+k*0.12)+'s">'+logo(c[0])+'<span>'+c[0]+' <small>said '+c[1]+'</small></span><span class="v '+(o?'ok':'no')+'">'+(o?'✓ '+c[2]+' off':'✗ wrong way')+'</span></div>'}).join("")+'</div>'+
+    '<div class="mk">The market said <b class="'+(r.a>0?'u':'d')+'">'+r.out+'</b></div>'+
+    '<div class="wn">'+(r.win?winLogos(r)+'<div><small>WINNER</small>'+r.win.replace(" & "," &amp; ")+'</div>':'<div><small>WINNER</small>Nobody. All three wrong way</div>')+'</div>'}
+function play(k){i=(k+ROUNDS.length)%ROUNDS.length;var r=ROUNDS[i];
+  $("#tvBg").style.backgroundImage="url("+MEDIA+r.poster+".jpg)";
+  v.poster=MEDIA+r.poster+".jpg";v.innerHTML='<source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4">';v.load();v.muted=!soundOn;
+  if(!reduce){var p=v.play();if(p&&p.catch)p.catch(function(){})}
+  $("#onair").textContent="REPLAY · R"+r.n;
+  var g=$("#gfx");g.classList.remove("on");g.innerHTML=gfx(r);void g.offsetWidth;setTimeout(function(){g.classList.add("on")},reduce?0:350);
+  $$(".rp").forEach(function(b,k2){b.classList.toggle("on",k2===i)});
+  $("#now").textContent="R"+r.n+" · "+r.co+" ("+(i+1)+"/"+ROUNDS.length+")"}
+v.addEventListener("ended",function(){play(i+1)});
+$$(".rp").forEach(function(b){b.addEventListener("click",function(){play(+b.dataset.k);$(".tv").scrollIntoView({block:"center",behavior:reduce?"auto":"smooth"})})});
+$("#nxt").addEventListener("click",function(){play(i+1)});
+$("#snd").addEventListener("click",function(){soundOn=!soundOn;v.muted=!soundOn;this.textContent=soundOn?"🔊 Sound on":"🔇 Sound";if(soundOn){v.currentTime=0;v.play().catch(function(){})}});
+new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){if(!reduce&&v.paused&&!v.ended)v.play().catch(function(){})}else v.pause()})},{threshold:.3}).observe($(".tv"));
+var m=location.hash.match(/^#round-(\d+)/),start=m?ROUNDS.findIndex(function(r){return r.n==m[1]}):0;play(start<0?0:start);
+/* standings */
+$("#standSub").textContent="After "+ROUNDS.length+" rounds";
+$("#stand").innerHTML=LADDER.map(function(l,k){return '<div class="st'+(k?'':' first')+'"><span class="p">'+(k+1)+'</span>'+logo(l.m)+'<div><b>'+MODELS[l.m].app+'</b><small>right way '+l.dir.replace(/ /g,"")+' · avg '+l.avg+' pts off</small></div><div class="w">'+l.won+'<small>WON</small></div></div>'}).join("");
+/* stakes */
+$("#trio").innerHTML=Object.keys(MODELS).map(function(m){return logo(m)}).join("");
+$("#nvt").innerHTML=nvLogo();
+$("#tape").innerHTML='<div class="tp"><small>Funded by</small><b>69% of fees</b></div><div class="tp"><small>Venue</small><b>'+hlLogo()+'Hyperliquid</b></div><div class="tp"><small>Style</small><b>Leveraged</b></div><div class="tp"><small>Pool</small><b>'+(CONFIG.pool||'Opens at launch')+'</b></div><div class="tp"><small>Fight night</small><b>'+(CONFIG.betDate||'NVIDIA’s next print')+'</b></div>';
+/* listings */
+$("#gd").innerHTML=PENDING.map(function(u){return '<div class="gr hot"><span class="t">Answer '+fmtDate(u.resolves)+'</span><span class="r">R'+u.n+'</span><div><b>'+u.co+'</b><div class="calls">'+u.calls.map(function(c){return '<span>'+logo(c.m)+c.m+' '+c.dir+' '+c.mag+'%</span>'}).join("")+'</div></div><span class="tag">Calls are in</span></div>'}).join("")+
+  UPCOMING.map(function(u){return '<div class="gr"><span class="t">Calls '+fmtDate(u.called)+'</span><span class="r">R'+u.n+'</span><div><b>'+u.co+'</b></div><span class="tag">Sealed</span></div>'}).join("");
+if(nx)$("#nextTxt").textContent=PENDING[0]?"Next point: "+nx.co+", "+fmtDate(nx.resolves)+". The calls are already in.":"Next point: "+nx.co+", calls "+fmtDate(nx.called)+".";
+/* prompt + config */
+$("#pr").innerHTML=PROMPT.lines.join("<br>");$("#prl").textContent=PROMPT.verbatim?"The prompt, word for word":"The shape of the prompt";
+if(CONFIG.ca)$("#ca").textContent=(CONFIG.chain?CONFIG.chain+" · ":"")+CONFIG.ca;
+if(CONFIG.buyUrl){var b=$("#buyL");b.href=CONFIG.buyUrl;b.classList.remove("off");b.textContent="Get $EZ ↗"}
+</script>
+</body>
+</html>

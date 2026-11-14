@@ -1,0 +1,183 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style></head><body>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script>
+// v7 "the trader's terminal" (owner, 5 Nov: "what crypto people use to track their P&Ls... a computer screen at night of a trencher...
+// each one needs to have their own charts... at the edge of each... the P&L live going up and down... the environment very secondary";
+// "It should always be a horizontal screen. Always."). A night desk painted once by Hedra with a blank landscape monitor (set/sets.json);
+// the screen is a P&L terminal drawn in code: the stock in the header, one position row per AI with its own P&L line and the live P&L
+// riding the line's end at the right edge; the round, the fills, 3-2-1, the report, the close, the winner's P&L card, the closed positions.
+const cv=document.getElementById('c'),x=cv.getContext('2d'),W=1080,H=1350;
+const L=document.createElement('canvas');L.width=W;L.height=H;const g=L.getContext('2d');
+const ROOM=document.createElement('canvas');ROOM.width=W;ROOM.height=H;
+const ease=t=>t<0?0:t>1?1:1-Math.pow(1-t,3),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),seg=(t,a,b)=>clamp((t-a)/(b-a),0,1),lerp=(a,b,f)=>a+(b-a)*f;
+const NM={GPT:'GPT',CLAUDE:'Claude',KIMI:'Kimi',GROK:'Grok'};
+// the terminal's own colours: near-black panels, hairlines, one green, one red, the logo's gold for the winner only
+const TH={bg:'#07090d',pn:'#0d1117',pn2:'#121823',ln:'#1d2533',tx:'#eef1f5',mu:'#8a94a6',dm:'#4b5566',up:'#1fe08f',dn:'#ff4d5f',gold:'#fdbc2a'};
+const UI='Inter',DSP='Inter Display',MN='JetBrains Mono';
+const fnt=(w,s,fam=UI)=>w+' '+Math.round(s)+'px "'+fam+'"';
+let C,Z,S,OX,OY,tl,img={},P2={};
+function rnd(seed){let s=seed>>>0;return()=>((s=Math.imul(s^s>>>15,1|s)+0x6D2B79F5|0,((s^s>>>14)>>>0)/4294967296))}
+const li=(k,src)=>new Promise(r=>{if(!src)return r();const i=new Image();i.onload=()=>{img[k]=i;r()};i.onerror=r;i.src=src});
+function rr(c,X,Y,w,h,r){c.beginPath();c.roundRect(X,Y,w,h,r)}
+function txt(c,s,X,Y,font,col,align='left',alpha=1,base='alphabetic'){if(alpha<=0)return;c.save();c.globalAlpha=alpha;c.font=font;c.textAlign=align;c.textBaseline=base;c.fillStyle=col;c.fillText(s,X,Y);c.restore()}
+function fitS(c,s,w,fam,size,max,min=10){c.font=fnt(w,size,fam);while(c.measureText(s).width>max&&size>min){size-=1;c.font=fnt(w,size,fam)}return size}
+function mark(c,m,cx,cy,r,alpha=1){const M=C.models[m],p=P2[m];c.save();c.globalAlpha=alpha;c.beginPath();c.arc(cx,cy,r,0,7);c.fillStyle=M.bg;c.fill();
+ if(M.bg==='#000'){c.lineWidth=Math.max(1,r*.06);c.strokeStyle='rgba(255,255,255,.18)';c.stroke()}
+ const s=r*1.18/24;c.translate(cx-12*s,cy-12*s);c.scale(s,s);c.fillStyle=M.fg;c.fill(p.d,p.fr||'nonzero');if(p.dot){c.fillStyle=M.dotc||'#1e80ff';c.fill(p.dot)}c.restore()}
+function crown(c,cx,cy,s,col){c.save();c.translate(cx,cy);c.beginPath();c.moveTo(-s,s*.55);c.lineTo(-s,-s*.25);c.lineTo(-s*.5,s*.12);c.lineTo(0,-s*.6);c.lineTo(s*.5,s*.12);c.lineTo(s,-s*.25);c.lineTo(s,s*.55);c.closePath();c.fillStyle=col;c.shadowColor='rgba(0,0,0,.6)';c.shadowBlur=8;c.fill();c.restore()}
+const money=v=>(Math.round(v)<0?'−':'+')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US');
+const kmoney=v=>(v<0?'−':'+')+'$'+(Math.abs(v)>=1000?(Math.abs(v)/1000).toFixed(Math.abs(v)>=100000?0:Math.abs(v)>=10000?0:1)+'K':Math.round(Math.abs(v)));
+const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(2)+'%';
+const side=c=>c.dir>0?'LONG':'SHORT';
+const mcol=m=>C.models[m].c==='#111'?'#e4e0d6':C.models[m].c;
+const usd=v=>'$'+(v>=1000?v.toFixed(0):v>=100?v.toFixed(2):v.toFixed(2));
+function logoTile(c,X,Y,s){if(!img.co)return;rr(c,X,Y,s,s,s*.22);c.fillStyle='#fff';c.fill();const i=img.co,ar=i.width/i.height,p=s*.14,iw=ar>1?s-2*p:(s-2*p)*ar,ih=ar>1?(s-2*p)/ar:s-2*p;c.drawImage(i,X+(s-iw)/2,Y+(s-ih)/2,iw,ih)}
+function burst(c,cx,cy,f,seed,cols,n=90,r=420){const R=rnd(seed);c.save();for(let i=0;i<n;i++){const a=R()*6.283,d=(40+R()*r)*ease(f*1.7);c.globalAlpha=Math.max(0,.9-f);c.fillStyle=cols[i%cols.length];c.beginPath();c.arc(cx+Math.cos(a)*d,cy+Math.sin(a)*d*.62,2+R()*6,0,7);c.fill()}c.restore()}
+// ---- the price path (as v6): x = hours since the close before; the first hour at the fine step; the day before for the header's chart
+function fine(){const b=C.bars[C.iRep];if(C.fine&&C.fine.length>1)return C.fine;
+ const dn=b[4]<b[1];return[[b[0],b[1],dn?b[2]:b[3],dn?b[2]:b[3],dn?b[2]:b[3]],[b[0],dn?b[2]:b[3],dn?b[3]:b[2],dn?b[3]:b[2],dn?b[3]:b[2]],[b[0],b[4],b[4],b[4],b[4]]]}
+let PTS;function pts(){const b=C.bars,ir=C.iRep,ip=C.iPrev??ir,Fn=fine(),n=Fn.length,o=[[0,C.prev]],xr0=ir-ip;for(let i=ip;i<ir;i++)o.push([i-ip+1,b[i][4]]);
+ Fn.forEach((f,j)=>o.push([xr0+(j+1)/n,f[4]]));for(let i=ir+1;i<b.length;i++)o.push([i-ip+1,b[i][4]]);
+ const gr=[];for(let i=Math.max(0,ip-24);i<ip;i++)gr.push([i-ip+1,b[i][4]]);return{pts:o,xr0,grey:gr,end:o[o.length-1][0]}}
+function pAt(xx){const p=PTS.pts;if(xx<=0){const G=PTS.grey;if(!G.length)return p[0][1];if(xx<=G[0][0])return G[0][1];const q=G.concat([[0,C.prev]]);for(let i=1;i<q.length;i++)if(q[i][0]>=xx){const f=(xx-q[i-1][0])/(q[i][0]-q[i-1][0]);return lerp(q[i-1][1],q[i][1],f)}return C.prev}
+ for(let i=1;i<p.length;i++)if(p[i][0]>=xx){const f=(xx-p[i-1][0])/(p[i][0]-p[i-1][0]);return lerp(p[i-1][1],p[i][1],f)}return p[p.length-1][1]}
+// ---- P&L rules: flat (the site's: $100K on every trade), size ($20K per 1% called), bracket ($100K, out at its own call either way)
+function prep(){const mode=C.pnl||'flat';for(const c of C.calls){c.stake=mode==='size'?2e4*(+c.mag):1e5;c.exitX=Infinity;c.exitV=0;c.exitK='';
+  if(mode==='bracket'){const p=PTS.pts;for(let i=1;i<p.length;i++){const m0=c.dir*100*(p[i-1][1]/C.prev-1),m1=c.dir*100*(p[i][1]/C.prev-1),lim=+c.mag;
+    const hitTP=m1>=lim,hitSL=m1<=-lim;if(hitTP||hitSL){const tgt=hitTP?lim:-lim,f=(m1-m0)?clamp((tgt-m0)/(m1-m0),0,1):1;c.exitX=lerp(p[i-1][0],p[i][0],f);c.exitV=tgt*1000;c.exitK=hitTP?'TP HIT':'STOPPED';break}}}
+  c.fin=pnl(c,PTS.end)}}
+function pnl(c,xx){if(xx<=0)return 0;if(xx>=c.exitX)return c.exitV;return c.dir*c.stake*(pAt(xx)/C.prev-1)}
+async function init(cfg){C=cfg;Z=C.set;
+ for(const k in C.models)P2[k]={d:new Path2D(C.models[k].d),dot:C.models[k].dot?new Path2D(C.models[k].dot):null,fr:C.models[k].fr};
+ await li('set',Z.srcUrl);await li('co',C.logo);await li('ez',C.ezLogo);
+ for(const f of ['900 60px "Inter Display"','800 30px "Inter"','600 30px "Inter"','800 30px "JetBrains Mono"','600 30px "JetBrains Mono"'])await document.fonts.load(f);
+ // the painting placed so its screen is centred and Z.view.sw wide, its middle at Z.view.cy; the room dimmed once (secondary)
+ const [sx,sy,sw,sh]=Z.screen;S=Z.view.sw/sw;OX=W/2-(sx+sw/2)*S;OY=Z.view.cy-(sy+sh/2)*S;
+ const r=ROOM.getContext('2d');r.fillStyle='#000';r.fillRect(0,0,W,H);r.filter='brightness('+(Z.view.room||.62)+') saturate(.9)';r.drawImage(img.set,OX,OY,img.set.width*S,img.set.height*S);r.filter='none';
+ const k=C.calls.length,R0=1.75,RS=.62,r1=R0+k*RS,ch=[r1+.05,r1+1.05],boom=ch[1]+1.5;
+ tl={hits:[.12,.62],title:[1.3,1.6],R0,RS,roll:[R0,r1],chart:ch,cd:[ch[1],boom],boom,slow:[boom+.15,boom+3.2],rest:[boom+3.2,boom+5.8],close:[boom+5.8,boom+6.5],win:[boom+7,boom+9.6],tab:[boom+9.6,boom+10.1],T:boom+13.5};
+ tl.lands=C.calls.map((c,i)=>R0+i*RS+.15);
+ const nf=C.fine&&C.fine.length>1?C.fine.length:3;tl.ticks=[...Array(Math.min(nf,16))].map((_,j,a)=>tl.slow[0]+(j+1)*(tl.slow[1]-tl.slow[0])/a.length);
+ PTS=pts();prep();return tl.T}
+// hours since the close before shown at time t (xc) and how many hours after the report the view spans (v)
+function clock(t){const np=PTS.end-PTS.xr0,xr0=PTS.xr0;if(t<tl.boom)return{xc:xr0*seg(t,tl.chart[0],tl.cd[0]),v:1};if(t<tl.rest[0]){const f=seg(t,tl.slow[0],tl.slow[1]);return{xc:xr0+f,v:1}}
+ const f=seg(t,tl.rest[0],tl.rest[1]),q=1+(np-1)*(1-Math.pow(1-f,1.5));return{xc:xr0+q,v:Math.max(1,q)}}
+const rk=k=>tl.R0+k*tl.RS;
+function scr(){const [sx,sy,sw,sh]=Z.screen,ins=Z.inset||0;return{x:OX+sx*S+ins,y:OY+sy*S+ins,w:sw*S-2*ins,h:sh*S-2*ins}}
+function draw(t){const calls=C.calls,B=scr(),u=B.w/1040,cx=B.x+B.w/2,cy=B.y+B.h/2;
+ const sh=t>tl.boom?Math.max(0,1-(t-tl.boom)/.55)*9:0,sh2=[...tl.hits,tl.win[0]+.3].reduce((a,h)=>a+(t>=h&&t<h+.3?(1-(t-h)/.3)*4:0),0),shk=sh+sh2;
+ const verdict=t>=tl.close[0],vv=verdict?ease(seg(t,tl.close[0],tl.close[1])):0,{xc,v}=clock(t),post=t>=tl.boom,mc=C.a>=0?TH.up:TH.dn;
+ x.setTransform(1,0,0,1,0,0);x.fillStyle='#000';x.fillRect(0,0,W,H);x.translate(shk?Math.sin(t*90)*shk:0,shk?Math.cos(t*77)*shk*.8:0);
+ x.drawImage(ROOM,0,0);
+ // the room answers the screen: the report lights it in the market's colour, then a low glow stays
+ if(post){const a=t<tl.close[1]?.55*Math.max(0,1-(t-tl.boom)/.8)+.16*seg(t,tl.boom,tl.boom+.4):.16*(1-seg(t,tl.close[1],tl.close[1]+1));if(a>0){x.save();x.globalCompositeOperation='lighter';const rg=x.createRadialGradient(cx,cy,B.w*.3,cx,cy,B.w*.95);rg.addColorStop(0,mc);rg.addColorStop(1,'rgba(0,0,0,0)');x.globalAlpha=a*.5;x.fillStyle=rg;x.fillRect(0,0,W,H);x.restore()}}
+ g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);g.save();rr(g,B.x,B.y,B.w,B.h,4*u);g.clip();g.fillStyle=TH.bg;g.fillRect(B.x,B.y,B.w,B.h);
+ const pd=16*u,X0=B.x+pd,X1=B.x+B.w-pd;
+ // ---- 1. the title: the round, then the company (two hits)
+ if(t<tl.title[1]){const o=1-seg(t,tl.title[0],tl.title[1]),p1=t>=tl.hits[0]&&t<tl.hits[0]+.35?1+.22*Math.sin(Math.PI*seg(t,tl.hits[0],tl.hits[0]+.35)):1,p2=t>=tl.hits[1]&&t<tl.hits[1]+.35?1+.18*Math.sin(Math.PI*seg(t,tl.hits[1],tl.hits[1]+.35)):1;
+  if(t>=tl.hits[0]){const rs='ROUND '+C.n,f1=fitS(g,rs,900,DSP,150*u,B.w*.8);g.save();g.globalAlpha=o;g.translate(cx,B.y+B.h*.4);g.scale(p1,p1);txt(g,rs,0,f1*.34,fnt(900,f1,DSP),TH.gold,'center');g.restore()}
+  if(t>=tl.hits[1]){const f2=fitS(g,C.title,900,DSP,118*u,B.w*.6),tw=g.measureText(C.title).width,ls=f2*.95,gap=ls*.22,w2=ls+gap+tw;g.save();g.globalAlpha=o;g.translate(cx,B.y+B.h*.75);g.scale(p2,p2);logoTile(g,-w2/2,-ls*.62,ls);txt(g,C.title,-w2/2+ls+gap,f2*.3,fnt(900,f2,DSP),TH.tx,'left');g.restore()}
+  for(const h of tl.hits)if(t>=h&&t<h+.25){g.save();g.globalAlpha=.35*(1-(t-h)/.25);g.fillStyle='#fff';g.fillRect(B.x,B.y,B.w,B.h);g.restore()}}
+ const ho=ease(seg(t,tl.title[0]+.15,tl.title[1]+.15)),live=t>=tl.title[0]&&t<tl.win[0]+.2;
+ // ---- 2. the header: the company, the stock's own little chart (it trades into the report), the mark price
+ if(live){const HY=B.y+12*u,HH=78*u;g.save();g.globalAlpha=ho;
+  logoTile(g,X0,HY+6*u,62*u);const tf=fitS(g,C.title,900,DSP,50*u,280*u);txt(g,C.title,X0+78*u,HY+42*u,fnt(900,tf,DSP),TH.tx);
+  txt(g,C.co!==C.title.replace('$','')?C.co+' · Round '+C.n:'Round '+C.n,X0+78*u,HY+70*u,fnt(600,21*u),TH.mu);
+  const pr=verdict?C.fin:pAt(post?xc:lerp(PTS.grey.length?PTS.grey[0][0]:0,0,seg(t,tl.R0,tl.cd[0]))+(post?0:xc)),chg=100*(pr/C.prev-1),ccol=Math.abs(chg)<.005?TH.mu:chg>0?TH.up:TH.dn;
+  txt(g,usd(pr),X1,HY+42*u,fnt(800,44*u,MN),TH.tx,'right');const cs=pct(chg)+(post?'':' '),cw=(g.font=fnt(700,21*u,MN),g.measureText(cs).width);
+  rr(g,X1-cw-18*u,HY+52*u,cw+18*u,28*u,6*u);g.fillStyle=ccol;g.globalAlpha=ho*.16;g.fill();g.globalAlpha=ho;txt(g,cs,X1-9*u,HY+73*u,fnt(700,21*u,MN),ccol,'right');
+  // the little chart: the day before, then what came after
+  const sx0=X0+390*u,sx1=X1-250*u,sy0=HY+8*u,sy1=HY+HH-4*u,G=PTS.grey,gx0=G.length?G[0][0]:0,ge=post?xc:lerp(gx0,0,seg(t,tl.R0,tl.cd[0]))+xc;
+  const pp=G.concat(PTS.pts).filter(p=>p[0]<=ge);pp.push([ge,pAt(ge)]);const xa=gx0,xb=Math.max(ge,post?ge:1),ys=pp.map(p=>p[1]);let lo=Math.min(...ys,C.prev),hi=Math.max(...ys,C.prev);const sp=(hi-lo)||C.prev*.004;lo-=sp*.1;hi+=sp*.1;
+  const SX=xx=>sx0+(sx1-sx0)*(xx-xa)/((xb-xa)||1),SY=p=>sy1-(sy1-sy0)*(p-lo)/(hi-lo);
+  g.save();g.strokeStyle=TH.ln;g.setLineDash([3*u,4*u]);g.lineWidth=1.5*u;g.beginPath();g.moveTo(sx0,SY(C.prev));g.lineTo(sx1,SY(C.prev));g.stroke();g.restore();
+  g.save();g.lineWidth=2.6*u;g.lineJoin='round';g.strokeStyle=post?ccol:TH.mu;g.beginPath();pp.forEach((p,i)=>i?g.lineTo(SX(p[0]),SY(p[1])):g.moveTo(SX(p[0]),SY(p[1])));g.stroke();
+  const e=pp[pp.length-1];g.beginPath();g.arc(SX(e[0]),SY(e[1]),4.5*u,0,7);g.fillStyle=post?ccol:TH.tx;g.fill();g.restore();
+  if(post&&PTS.xr0>=0){const rx=SX(PTS.xr0);g.save();g.strokeStyle=TH.gold;g.globalAlpha=ho*.7;g.lineWidth=1.5*u;g.beginPath();g.moveTo(rx,sy0);g.lineTo(rx,sy1);g.stroke();g.restore();txt(g,'EARNINGS',rx+5*u,sy0+12*u,fnt(700,12*u),TH.gold,'left',.85)}
+  g.restore();g.save();g.globalAlpha=ho;g.fillStyle=TH.ln;g.fillRect(B.x,HY+HH+10*u,B.w,1.5*u);g.restore()}
+ // ---- 3. the positions: one row per AI, its own P&L line, the live P&L riding the line's end
+ if(live){const RY0=B.y+(12+78+22)*u,RY1=B.y+B.h-12*u,gap=8*u,RH=(RY1-RY0-gap*3)/4,CX0=X0+300*u,TAGW=212*u,CX1=X1-TAGW-14*u;
+  // one $ scale for all four, so a bigger P&L looks bigger
+  let ext=2500*Math.max(...calls.map(c=>c.stake))/1e5;if(post){const xs=PTS.pts.filter(p=>p[0]>=PTS.xr0&&p[0]<=xc).map(p=>p[0]).concat([xc]);calls.forEach(c=>xs.forEach(xx=>ext=Math.max(ext,Math.abs(pnl(c,xx)))))}
+  else if(PTS.xr0>0)calls.forEach(c=>PTS.pts.filter(p=>p[0]<=xc).forEach(p=>ext=Math.max(ext,Math.abs(pnl(c,p[0])))));ext*=1.12;
+  const pf=post?lerp(1,PTS.xr0>0?.16:.07,ease(seg(t,tl.boom,tl.boom+.6))):1;
+  const XQ=xx=>xx<=PTS.xr0?CX0+(CX1-CX0)*pf*(PTS.xr0>0?xx/PTS.xr0:1):CX0+(CX1-CX0)*(pf+(1-pf)*(xx-PTS.xr0)/v);
+  calls.forEach((c,k)=>{const a0=rk(k);if(t<a0)return;const enter=ease(seg(t,a0,a0+.3)),Y=RY0+k*(RH+gap),ym=Y+RH/2,win=C.win.includes(c.m),dimA=verdict&&!win?1-.38*vv:1;
+   g.save();g.globalAlpha=enter*dimA;g.translate((1-enter)*60*u,0);
+   rr(g,X0,Y,X1-X0,RH,10*u);g.fillStyle=TH.pn;g.fill();g.lineWidth=(verdict&&win?3:1.5)*u;g.strokeStyle=verdict&&win?TH.gold:TH.ln;g.stroke();
+   g.save();rr(g,X0,Y,X1-X0,RH,10*u);g.clip();g.fillStyle=mcol(c.m);g.fillRect(X0,Y,5*u,RH);g.restore();
+   mark(g,c.m,X0+46*u,ym,27*u);const nf=fitS(g,NM[c.m],800,UI,34*u,150*u);txt(g,NM[c.m],X0+86*u,ym-6*u,fnt(800,nf),verdict&&win?TH.gold:TH.tx);
+   if(verdict&&win){g.font=fnt(800,nf);crown(g,X0+86*u+g.measureText(NM[c.m]).width+22*u,ym-20*u,13*u*vv,TH.gold)}
+   // the trade: LONG or SHORT big, the call and the size small beside it
+   const stp=seg(t,a0+.12,a0+.3),ps=lerp(1.6,1,ease(stp)),sd=side(c),scol=c.dir>0?TH.up:TH.dn;g.save();g.font=fnt(800,22*u);const sw=g.measureText(sd).width+22*u;g.translate(X0+86*u+sw/2,ym+21*u);g.scale(ps,ps);g.globalAlpha*=stp>0?1:0;
+   rr(g,-sw/2,-16*u,sw,32*u,7*u);g.fillStyle=scol;g.globalAlpha*=.18;g.fill();g.globalAlpha/=.18;txt(g,sd,0,8*u,fnt(800,22*u),scol,'center');g.restore();
+   const det=(c.dir>0?'+':'−')+c.mag+'%'+((C.pnl||'flat')==='flat'?'':'  ·  $'+Math.round(c.stake/1000)+'K');txt(g,det,X0+86*u+sw+12*u,ym+29*u,fnt(600,19*u,MN),TH.mu,'left',stp);
+   // its own chart: $0 dashed, the P&L line, green above and red below
+   const cy0=Y+10*u,cy1=Y+RH-10*u,YQ=d=>lerp(cy1,cy0,(d+ext)/(2*ext)),z0=YQ(0);
+   g.save();g.strokeStyle=TH.dm;g.setLineDash([4*u,5*u]);g.lineWidth=1.5*u;g.beginPath();g.moveTo(CX0,z0);g.lineTo(CX1,z0);g.stroke();g.restore();
+   const xs=PTS.pts.filter(p=>p[0]<xc).map(p=>p[0]).concat([xc]),P3=[[CX0,z0]].concat(xs.map(xx=>[XQ(xx),YQ(pnl(c,xx))]));if(!post&&PTS.xr0===0)P3.push([CX1,z0]);
+   const pl=verdict?c.fin:post?pnl(c,xc):(PTS.xr0>0?pnl(c,xc):0),lc=Math.abs(pl)<.5?TH.mu:pl>0?TH.up:TH.dn,e=P3[P3.length-1];
+   g.save();g.beginPath();g.rect(CX0,cy0,CX1-CX0,z0-cy0);g.clip();g.beginPath();P3.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.lineTo(e[0],z0);g.closePath();const ga=g.createLinearGradient(0,cy0,0,z0);ga.addColorStop(0,'rgba(31,224,143,.38)');ga.addColorStop(1,'rgba(31,224,143,0)');g.fillStyle=ga;g.fill();g.restore();
+   g.save();g.beginPath();g.rect(CX0,z0,CX1-CX0,cy1-z0);g.clip();g.beginPath();P3.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.lineTo(e[0],z0);g.closePath();const gb=g.createLinearGradient(0,z0,0,cy1);gb.addColorStop(0,'rgba(255,77,95,0)');gb.addColorStop(1,'rgba(255,77,95,.38)');g.fillStyle=gb;g.fill();g.restore();
+   g.save();g.lineWidth=3.4*u;g.lineJoin='round';g.strokeStyle=lc;g.beginPath();P3.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();g.restore();
+   if(post&&!verdict){const pu=.5+.5*Math.sin(t*9);g.save();g.beginPath();g.arc(e[0],e[1],(7+5*pu)*u,0,7);g.fillStyle=lc;g.globalAlpha*=.25;g.fill();g.restore()}
+   g.save();g.beginPath();g.arc(e[0],e[1],5.5*u,0,7);g.fillStyle=lc;g.fill();g.restore();
+   // the live P&L: a price tag riding the line's end at the right edge
+   const th=50*u,ty=clamp(e[1],Y+th/2+4*u,Y+RH-th/2-4*u),tx0=X1-TAGW-6*u,z=Math.abs(pl)<.5,fill=t<a0+.75?'FILLED':z?'$0':money(pl),soft=fill==='FILLED'||z,tcol=soft?TH.mu:lc;
+   g.save();g.strokeStyle=tcol;g.globalAlpha*=.5;g.lineWidth=1.5*u;g.setLineDash([2*u,4*u]);g.beginPath();g.moveTo(e[0]+8*u,e[1]);g.lineTo(tx0,ty);g.stroke();g.restore();
+   g.save();g.beginPath();g.moveTo(tx0-10*u,ty);g.lineTo(tx0,ty-th/2);g.lineTo(tx0+TAGW,ty-th/2);g.lineTo(tx0+TAGW,ty+th/2);g.lineTo(tx0,ty+th/2);g.closePath();g.fillStyle=tcol;g.globalAlpha*=soft?.18:.92;g.fill();g.restore();
+   const tf2=fitS(g,fill,800,MN,36*u,TAGW-20*u);txt(g,fill,tx0+TAGW/2,ty+tf2*.36,fnt(800,tf2,MN),soft?TH.tx:'#05070a','center');
+   if(c.exitK&&xc>=c.exitX){txt(g,c.exitK,CX1,cy0+16*u,fnt(800,15*u,MN),lc,'right')}
+   g.restore()});
+  // the round's own clock beside the positions header: just the state, no time of day
+ }
+ // ---- 4. the countdown and the report
+ if(t>=tl.cd[0]&&t<tl.boom+1){const o=t<tl.boom?1:Math.max(0,1-(t-tl.boom)*1.3);g.save();g.globalAlpha=.84*o;g.fillStyle=TH.bg;g.fillRect(B.x,B.y,B.w,B.h);g.globalAlpha=1;
+  if(t<tl.boom){const k=Math.floor((t-tl.cd[0])/.5),f2=((t-tl.cd[0])%.5)/.5;txt(g,'EARNINGS IN',cx,B.y+B.h*.24,fnt(800,44*u,MN),TH.gold,'center');txt(g,String(3-k),cx,B.y+B.h*.86,fnt(900,Math.round(B.h*.62-60*u*f2),DSP),TH.tx,'center',1-f2*.4)}
+  else{const f3=t-tl.boom;burst(g,cx,cy,f3,99,[TH.gold,mc,'#fff'],90,B.w*.45);g.save();g.globalAlpha=Math.max(0,.55-f3*2.2);g.fillStyle='#fff';g.fillRect(B.x,B.y,B.w,B.h);g.restore();
+   const bw=fitS(g,'EARNINGS!',900,DSP,170*u,B.w*.86);txt(g,'EARNINGS!',cx,cy+bw*.35,fnt(900,Math.round(bw*(1+.18*(1-Math.min(1,f3*1.5)))),DSP),TH.gold,'center',Math.max(0,1-f3*1.1))}
+  g.restore()}
+ // ---- the close: the bell, every position closed at the market's close
+ if(t>=tl.close[0]&&t<tl.win[0]+.2){const f=seg(t,tl.close[0],tl.close[0]+.25),out=1-seg(t,tl.close[1]+.2,tl.win[0]);g.save();g.translate(cx,cy);g.rotate(-.05);const s=lerp(1.5,1,ease(f));g.scale(s,s);g.globalAlpha=ease(f)*out;
+  const w='MARKET CLOSED',fs=fitS(g,w,900,DSP,96*u,B.w*.7),tw=g.measureText(w).width;rr(g,-tw/2-30*u,-fs*.72,tw+60*u,fs*1.25,14*u);g.fillStyle='rgba(7,9,13,.88)';g.fill();g.lineWidth=5*u;g.strokeStyle=TH.tx;g.stroke();txt(g,w,0,fs*.34,fnt(900,fs,DSP),TH.tx,'center');g.restore()}
+ // ---- 5. the winner's P&L card, then 6. the closed positions
+ if(t>=tl.win[0]){const f=seg(t,tl.win[0],tl.win[0]+.25),gone=t>=tl.tab[0];g.save();g.globalAlpha=gone?1:.9*f;g.fillStyle=TH.bg;g.fillRect(B.x,B.y,B.w,B.h);g.restore();
+  const W0=calls.filter(c=>C.win.includes(c.m));
+  if(!gone){const s0=tl.win[0]+.25,pop=ease(seg(t,s0,s0+.4)),KW=B.w*.84,KH=B.h*.82,KX=cx-KW/2,KY=cy-KH/2+(1-pop)*40*u;
+   g.save();g.globalAlpha=pop;rr(g,KX,KY,KW,KH,22*u);const bg=g.createLinearGradient(KX,KY,KX+KW,KY+KH);bg.addColorStop(0,'#141a24');bg.addColorStop(1,'#090c11');g.fillStyle=bg;g.fill();
+   const bd=g.createLinearGradient(KX,KY,KX+KW,KY+KH);bd.addColorStop(0,TH.gold);bd.addColorStop(.5,'#6b5214');bd.addColorStop(1,TH.gold);g.lineWidth=4*u;g.strokeStyle=bd;g.stroke();
+   // the card's ground: the winner's own P&L path, faint
+   if(W0.length){const c=W0[0],xs=PTS.pts.filter(p=>p[0]>=PTS.xr0).map(p=>p[0]),mx=Math.max(...xs.map(xx=>Math.abs(pnl(c,xx))),1);g.save();rr(g,KX,KY,KW,KH,22*u);g.clip();g.beginPath();xs.forEach((xx,i)=>{const px=KX+KW*.42+KW*.56*(xx-PTS.xr0)/((PTS.end-PTS.xr0)||1),py=KY+KH*.62-KH*.4*pnl(c,xx)/mx;i?g.lineTo(px,py):g.moveTo(px,py)});g.lineWidth=5*u;g.strokeStyle=c.fin>=0?TH.up:TH.dn;g.globalAlpha=.16*pop;g.stroke();g.restore()}
+   burst(g,cx,KY+KH*.4,seg(t,s0,s0+1.4),17,[TH.gold,'#fff4c9',TH.up],110,B.w*.5);
+   txt(g,'earningszn',KX+(img.ez?62:28)*u,KY+44*u,fnt(800,22*u),TH.mu);if(img.ez)g.drawImage(img.ez,KX+24*u,KY+20*u,32*u,32*u);txt(g,'Round '+C.n,KX+KW-28*u,KY+44*u,fnt(700,22*u),TH.mu,'right');
+   if(W0.length){const r=Math.min(KH*.2,92*u),mxp=KX+KW*.2,myp=KY+KH*.54;W0.forEach((c,i)=>{const ly=myp+(i-(W0.length-1)/2)*r*2.3,rr0=r*lerp(1.5,1,pop)/(W0.length>1?1.25:1);mark(g,c.m,mxp,ly,rr0);g.save();g.beginPath();g.arc(mxp,ly,rr0+6*u,0,7);g.lineWidth=7*u;g.strokeStyle=TH.gold;g.shadowColor=TH.gold;g.shadowBlur=26*u;g.stroke();g.restore();crown(g,mxp,ly-rr0-22*u,30*u*pop,TH.gold)});
+    const RX=KX+KW*.4,RW=KW*.56,wl=(W0.map(c=>NM[c.m]).join(' & ')+(W0.length>1?' WIN':' WINS')).toUpperCase(),fs=fitS(g,wl,900,DSP,84*u,RW),ta=ease(seg(t,s0+.2,s0+.45));
+    txt(g,wl,RX,KY+KH*.36,fnt(900,fs,DSP),TH.gold,'left',ta);
+    const tr=side(W0[0])+' '+C.title+'  ·  called '+(W0[0].dir>0?'+':'−')+W0[0].mag+'%';txt(g,tr,RX,KY+KH*.48,fnt(700,fitS(g,tr,700,MN,26*u,RW),MN),W0[0].dir>0?TH.up:TH.dn,'left',ta);
+    const amt=W0[0].fin*ease(seg(t,s0+.5,s0+1.3)),as=money(amt),fa=fitS(g,as,800,MN,104*u,RW);txt(g,as,RX,KY+KH*.74,fnt(800,fa,MN),W0[0].fin>=0?TH.up:TH.dn,'left',ease(seg(t,s0+.45,s0+.65)));
+    txt(g,'this round',RX,KY+KH*.86,fnt(700,30*u),TH.tx,'left',ease(seg(t,s0+.6,s0+.8)))}
+   else{const ta=ease(seg(t,s0,s0+.3)),wl='NOBODY CALLED IT',fs=fitS(g,wl,900,DSP,96*u,KW*.86);txt(g,wl,cx,KY+KH*.55,fnt(900,fs,DSP),TH.dn,'center',ta);txt(g,'All four on the wrong side',cx,KY+KH*.72,fnt(700,32*u),TH.tx,'center',ta)}
+   g.restore()}
+  else{const e=seg(t,tl.tab[0],tl.tab[1]+.6),flat=(C.pnl||'flat')==='flat';let y=B.y+56*u;txt(g,'Closed positions',X0,y,fnt(900,40*u,DSP),TH.tx);logoTile(g,X0+fitW(g,'Closed positions',fnt(900,40*u,DSP))+18*u,y-36*u,44*u);
+   txt(g,C.tk.replace(/\..*/,'')+' '+pct(C.a)+' at the close',X1,y-4*u,fnt(700,26*u,MN),C.a>=0?TH.up:TH.dn,'right');
+   y+=40*u;const cS=X0+330*u,cZ=X0+560*u;txt(g,'TRADE',cS,y,fnt(700,16*u),TH.mu);if(!flat)txt(g,'SIZE',cZ,y,fnt(700,16*u),TH.mu);txt(g,'P&L',X1,y,fnt(700,16*u),TH.mu,'right');g.fillStyle=TH.ln;g.fillRect(X0,y+10*u,X1-X0,1.5*u);
+   const rows=calls.slice().sort((a,b)=>b.fin-a.fin||(C.win.includes(b.m)-C.win.includes(a.m))),rh=Math.min(92*u,(B.y+B.h-58*u-y)/rows.length);
+   rows.forEach((c,k)=>{const a=ease(e*3-.3-k*.35),yy=y+rh*(k+.72),win=C.win.includes(c.m);mark(g,c.m,X0+26*u,yy-12*u,26*u,a);
+    const nf=fitS(g,NM[c.m],800,UI,38*u,200*u);txt(g,NM[c.m],X0+66*u,yy,fnt(800,nf),win?TH.gold:TH.tx,'left',a);if(win){g.font=fnt(800,nf);crown(g,X0+66*u+g.measureText(NM[c.m]).width+24*u,yy-26*u,13*u*a,TH.gold)}
+    txt(g,side(c),cS,yy,fnt(800,28*u),c.dir>0?TH.up:TH.dn,'left',a);g.font=fnt(800,28*u);txt(g,(c.dir>0?'+':'−')+c.mag+'%',cS+g.measureText(side(c)).width+12*u,yy,fnt(600,22*u,MN),TH.mu,'left',a);
+    if(!flat)txt(g,'$'+Math.round(c.stake/1000)+'K',cZ,yy,fnt(600,26*u,MN),TH.mu,'left',a);
+    txt(g,money(c.fin),X1,yy,fnt(800,fitS(g,money(c.fin),800,MN,40*u,240*u),MN),c.fin>=0?TH.up:TH.dn,'right',a)});
+   const rule={flat:'$100K on every trade',size:'Size: $20K per 1% called',bracket:'$100K, out at its own call'}[C.pnl||'flat']+' · paper';
+   txt(g,rule,X0,B.y+B.h-20*u,fnt(600,19*u),TH.mu,'left',ease(e*2-1));txt(g,C.next,X1,B.y+B.h-18*u,fnt(800,fitS(g,C.next,800,UI,26*u,B.w*.5)),TH.tx,'right',ease(e*2-1))}}
+ g.restore();
+ // ---- the screen in the room: its light on the wall, a faint sheen on the glass
+ x.save();x.shadowColor='rgba(150,180,255,.35)';x.shadowBlur=60;x.drawImage(L,0,0);x.restore();x.drawImage(L,0,0);
+ x.save();rr(x,B.x,B.y,B.w,B.h,4*u);x.clip();const sg=x.createLinearGradient(B.x,B.y,B.x+B.w*.6,B.y+B.h);sg.addColorStop(0,'rgba(255,255,255,.05)');sg.addColorStop(.45,'rgba(255,255,255,0)');x.fillStyle=sg;x.fillRect(B.x,B.y,B.w,B.h);
+ const vg=x.createRadialGradient(cx,cy,B.h*.4,cx,cy,B.w*.62);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.28)');x.fillStyle=vg;x.fillRect(B.x,B.y,B.w,B.h);x.restore();
+ // ---- the floor: who posted it
+ x.save();const gr=x.createLinearGradient(0,H-120,0,H);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,0,0,.85)');x.fillStyle=gr;x.fillRect(0,H-120,W,120);
+ x.font='600 28px Inter';x.fillStyle='rgba(248,240,217,.95)';x.textBaseline='middle';x.textAlign='left';if(img.ez)x.drawImage(img.ez,40,H-58,40,40);x.fillText('@earningszn',92,H-38);x.textAlign='right';x.fillText('earningszn.xyz/r/'+C.n,W-40,H-38);x.restore();
+}
+function fitW(c,s,font){c.font=font;return c.measureText(s).width}
+</script></body></html>

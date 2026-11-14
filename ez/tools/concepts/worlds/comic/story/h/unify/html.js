@@ -1,0 +1,2 @@
+const {open}=require('./lib');(async()=>{const sels=process.argv.slice(2);const {b,p}=await open(390,844);
+for(const s of sels){const h=await p.evaluate(s=>{const e=document.querySelector(s);return e?e.outerHTML.replace(/<path d="[^"]{60,}"/g,'<path d=".."').replace(/ d="[^"]{80,}"/g,' d=".."').replace(/url\(data:[^)]{50,}\)/g,'url(data..)').slice(0,2500):'NONE'},s);console.log('#### '+s+'\n'+h+'\n')}await b.close()})();

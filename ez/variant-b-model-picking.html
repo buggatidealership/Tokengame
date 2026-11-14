@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Earnings Zeason — Model Picking</title>
+<meta name="description" content="Stock picking, then fund picking, then index picking. Next: model picking. Three AI models, six graded earnings calls, every number public.">
+<meta name="theme-color" content="#f6f4ee">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   EARNINGS ZEASON — VARIANT B · "MODEL PICKING"
+   Angle: the shift from stock picking to model picking, argued with
+   statistics. A research note, not a poster. Honest about sample size.
+   Hard facts: the calls and outcomes (verbatim). Everything else on the
+   page is derived arithmetic on those numbers, labelled as such.
+   Palette validated (dataviz validate_palette.js, light, all pairs):
+   GPT #2a78d6 · KIMI #4a3aa7 · CLAUDE #eb6834 — orange carries a
+   contrast WARN, so every mark is also direct-labelled / tabled.
+   ===================================================================== */
+:root{
+  --bg:#f6f4ee;--surface:#fcfbf7;--ink:#16181d;--ink2:#40434b;--muted:#6f727a;--grid:#e3e0d6;--rule:#cfcbbf;
+  --gpt:#2a78d6;--kimi:#4a3aa7;--claude:#eb6834;--blend:#16181d;--base:#9a968a;
+  --wrong:rgba(214,62,48,.07);--good:#1b7a45;--bad:#b3362a;
+  --fs:'IBM Plex Sans',system-ui,sans-serif;--fr:'IBM Plex Serif',Georgia,serif;--fm:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--fr);font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.wrap{max-width:1140px;margin:0 auto;padding:0 16px}
+.narrow{max-width:720px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* masthead */
+.top{border-bottom:1px solid var(--ink)}
+.top-in{max-width:1140px;margin:0 auto;padding:0 16px;height:56px;display:flex;align-items:center;gap:18px}
+.brand{font:600 15px/1 var(--fs);letter-spacing:.02em;text-decoration:none;white-space:nowrap}
+.brand span{font-weight:400;color:var(--muted)}
+.top nav{display:flex;gap:18px;margin-left:auto}
+.top nav a{font:500 13px/1 var(--fs);color:var(--ink2);text-decoration:none}
+.top nav a:hover{color:var(--ink);text-decoration:underline}
+.top .cta{font:600 13px/1 var(--fs);text-decoration:none;border:1px solid var(--ink);padding:10px 14px;border-radius:3px;white-space:nowrap}
+.top .cta:hover{background:var(--ink);color:var(--bg)}
+@media(max-width:860px){.top nav{display:none}.top .cta{margin-left:auto}}
+
+.note-meta{display:flex;flex-wrap:wrap;gap:6px 22px;padding:14px 0;border-bottom:1px solid var(--rule);font:500 12px/1.4 var(--fm);color:var(--muted);letter-spacing:.02em}
+.note-meta b{color:var(--ink);font-weight:600}
+header.title{padding:64px 0 40px}
+.kicker{font:600 12px/1 var(--fs);letter-spacing:.16em;text-transform:uppercase;color:var(--gpt)}
+h1{font:500 clamp(40px,6.2vw,80px)/1.02 var(--fr);letter-spacing:-.02em;margin:18px 0 22px;max-width:980px}
+h1 s{text-decoration-thickness:.06em;text-decoration-color:var(--bad);color:var(--muted)}
+.deck{font:400 clamp(19px,2vw,23px)/1.5 var(--fr);color:var(--ink2);max-width:760px}
+.byline{margin-top:22px;font:500 13px/1.5 var(--fs);color:var(--muted)}
+
+/* key figures */
+.figs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin:10px 0 0}
+.fig{padding:20px 18px 18px;border-right:1px solid var(--rule)}
+.fig:last-child{border-right:0}
+.fig .v{font:500 clamp(34px,4vw,48px)/1 var(--fs);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.fig .v small{font-size:.45em;color:var(--muted);font-weight:500;margin-left:4px}
+.fig .l{font:500 13px/1.4 var(--fs);color:var(--ink2);margin-top:8px}
+.fig .s{font:500 11px/1.4 var(--fm);color:var(--muted);margin-top:6px}
+@media(max-width:860px){.figs{grid-template-columns:1fr 1fr}.fig:nth-child(2){border-right:0}.fig:nth-child(-n+2){border-bottom:1px solid var(--rule)}}
+
+/* body sections */
+section{padding:72px 0 20px}
+h2{font:500 clamp(28px,3.4vw,40px)/1.12 var(--fr);letter-spacing:-.01em;margin-bottom:16px}
+h2 .no{font:600 13px/1 var(--fm);color:var(--muted);display:block;margin-bottom:12px;letter-spacing:.04em}
+p.body{color:var(--ink2);margin-bottom:16px;max-width:720px}
+p.body b{color:var(--ink);font-weight:600}
+.pull{font:italic 400 clamp(22px,2.6vw,30px)/1.35 var(--fr);border-left:3px solid var(--ink);padding:4px 0 4px 20px;margin:30px 0;max-width:760px}
+.eras{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:30px 0 10px;border:1px solid var(--ink)}
+.era{padding:18px 16px;border-right:1px solid var(--rule);background:var(--surface)}
+.era:last-child{border-right:0;background:var(--ink);color:var(--bg)}
+.era .y{font:500 12px/1 var(--fm);color:var(--muted)}
+.era:last-child .y{color:#b9bcc4}
+.era b{display:block;font:600 19px/1.2 var(--fs);margin:10px 0 6px}
+.era p{font:400 14.5px/1.45 var(--fs);color:var(--ink2)}
+.era:last-child p{color:#d5d7dc}
+@media(max-width:860px){.eras{grid-template-columns:1fr 1fr}.era:nth-child(2){border-right:0}.era:nth-child(-n+2){border-bottom:1px solid var(--rule)}}
+
+/* charts */
+.chart{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:20px 18px 14px;margin:26px 0 8px;position:relative}
+.chart h3{font:600 16px/1.3 var(--fs)}
+.chart .sub{font:400 13.5px/1.45 var(--fs);color:var(--muted);margin:4px 0 12px;max-width:760px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font:500 12.5px/1 var(--fs);color:var(--ink2);margin-bottom:10px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend svg{width:14px;height:14px}
+.chart svg.plot{width:100%;height:auto;display:block;overflow:visible}
+.plot .gl{stroke:var(--grid);stroke-width:1}
+.plot .ax{stroke:var(--ink2);stroke-width:1}
+.plot text{font:500 11px var(--fm);fill:var(--muted)}
+.plot .lab{font:600 11px var(--fs);fill:var(--ink2)}
+.plot .hit{cursor:pointer}
+.plot .mk{stroke:var(--surface);stroke-width:2}
+.plot .hit:hover .mk,.plot .hit:focus .mk{stroke:var(--ink);stroke-width:2}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font:500 12px/1.5 var(--fs);padding:9px 11px;border-radius:4px;opacity:0;transition:opacity .12s;white-space:nowrap;z-index:5;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.tip b{font-weight:600}
+.tip.on{opacity:1}
+.cap{font:500 12px/1.5 var(--fm);color:var(--muted);margin-top:8px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:900px){.two{grid-template-columns:1fr}}
+details.tv{margin-top:10px}
+details.tv summary{font:600 12.5px/1 var(--fs);color:var(--ink2);cursor:pointer;padding:6px 0}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font:400 14px/1.4 var(--fs);font-variant-numeric:tabular-nums}
+th{font:600 11.5px/1.2 var(--fs);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right;padding:10px 8px;border-bottom:1px solid var(--ink)}
+td{text-align:right;padding:9px 8px;border-bottom:1px solid var(--grid)}
+th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+td .sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}
+td.ok{color:var(--good)}td.no{color:var(--bad)}
+tr.best td{font-weight:600}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tscroll table{min-width:620px}
+
+/* callouts */
+.callouts{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:26px 0}
+@media(max-width:860px){.callouts{grid-template-columns:1fr}}
+.co{border:1px solid var(--ink);padding:20px;background:var(--surface)}
+.co .t{font:600 12px/1 var(--fs);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.co .v{font:500 44px/1 var(--fs);letter-spacing:-.02em;margin:12px 0 8px;font-variant-numeric:tabular-nums}
+.co p{font:400 15.5px/1.5 var(--fs);color:var(--ink2)}
+.co.warn{border-color:var(--bad)}
+.co.warn .t{color:var(--bad)}
+
+/* the allocator */
+.alloc{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;margin-top:26px}
+@media(max-width:900px){.alloc{grid-template-columns:1fr}}
+.panel{border:1px solid var(--rule);background:var(--surface);border-radius:4px;padding:20px}
+.sl{display:grid;grid-template-columns:80px 1fr 56px;align-items:center;gap:12px;margin:14px 0}
+.sl label{font:600 14px/1 var(--fs)}
+.sl input{width:100%}
+.sl output{font:600 15px/1 var(--fm);text-align:right}
+#w-GPT{accent-color:var(--gpt)}#w-KIMI{accent-color:var(--kimi)}#w-CLAUDE{accent-color:var(--claude)}
+.stack{display:flex;height:12px;border-radius:2px;overflow:hidden;gap:2px;margin:6px 0 4px}
+.stack i{display:block;height:100%}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--rule)}
+.res div{padding:16px;border-right:1px solid var(--rule)}
+.res div:last-child{border-right:0}
+.res b{display:block;font:500 34px/1 var(--fs);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.res span{font:500 12px/1.4 var(--fs);color:var(--muted)}
+.cmp{margin-top:14px;font:400 14.5px/1.55 var(--fs);color:var(--ink2)}
+.cmp b{color:var(--ink)}
+.save{margin-top:14px;font:600 13px/1 var(--fs);border:1px solid var(--ink);padding:11px 14px;border-radius:3px}
+.save:hover{background:var(--ink);color:var(--bg)}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.presets button{font:500 12px/1 var(--fs);border:1px solid var(--rule);padding:8px 10px;border-radius:3px;background:var(--bg)}
+.presets button:hover{border-color:var(--ink)}
+
+/* round 7 + $EZ */
+.r7{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}
+@media(max-width:860px){.r7{grid-template-columns:1fr}}
+.cdn{display:flex;gap:10px;margin:12px 0}
+.cdn div{flex:1;border:1px solid var(--ink);padding:10px 4px;text-align:center;background:var(--surface)}
+.cdn b{display:block;font:500 34px/1 var(--fs);font-variant-numeric:tabular-nums}
+.cdn span{font:500 10.5px/1 var(--fm);color:var(--muted);letter-spacing:.1em}
+.fine{font:400 13px/1.55 var(--fm);color:var(--muted)}
+.ez{border-top:1px solid var(--ink);margin-top:60px;padding-top:40px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:20px}
+@media(max-width:860px){.steps{grid-template-columns:1fr}}
+.step{border:1px solid var(--rule);background:var(--surface);padding:18px;display:flex;flex-direction:column;gap:10px}
+.step .n{font:600 12px/1 var(--fm);color:var(--muted)}
+.step h4{font:600 18px/1.25 var(--fs)}
+.step p{font:400 15px/1.5 var(--fs);color:var(--ink2)}
+.ca{font:500 12px/1.5 var(--fm);border:1px dashed var(--rule);padding:10px;background:var(--bg);color:var(--muted);overflow-wrap:anywhere}
+.ca.live{border:1px solid var(--ink);color:var(--ink);cursor:copy}
+.go{margin-top:auto;display:block;text-align:center;font:600 13px/1 var(--fs);text-decoration:none;border:1px solid var(--ink);padding:12px;border-radius:3px}
+.go:hover{background:var(--ink);color:var(--bg)}
+.go.off{border-style:dashed;color:var(--muted);border-color:var(--rule);pointer-events:none}
+.disc{margin:34px 0 0;font:400 12.5px/1.65 var(--fm);color:var(--muted);border-top:1px solid var(--rule);padding-top:16px}
+footer{padding:60px 16px 80px;text-align:center;border-top:1px solid var(--ink);margin-top:60px}
+.motto{font:italic 500 clamp(26px,3.6vw,44px)/1.2 var(--fr)}
+.motto .e{color:var(--good)}.motto .z{color:var(--bad)}
+.mark{margin-top:16px;font:700 26px/1 var(--fs);letter-spacing:.02em}
+.mark .d{color:#b8860b}.mark .e{color:var(--good)}.mark .z{color:var(--bad)}
+.colo{margin-top:12px;font:500 11.5px/1.5 var(--fm);color:var(--muted);letter-spacing:.08em}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--bg);font:500 13px/1 var(--fs);padding:12px 16px;border-radius:4px;transition:all .2s;pointer-events:none;z-index:50}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <a class="brand" href="#top">Earnings Zeason <span>/ Research</span></a>
+  <nav aria-label="Sections"><a href="#thesis">Thesis</a><a href="#evidence">Evidence</a><a href="#honesty">Caveats</a><a href="#portfolio">Build a portfolio</a><a href="#round7">Round 7</a></nav>
+  <a class="cta" href="#ez">$EZ</a>
+</div></div>
+
+<main id="top">
+<div class="wrap">
+  <div class="note-meta"><span>Research note <b>No. 1</b></span><span>Sample: <b>6 rounds · 18 calls</b></span><span>Next data point: <b>Round 7 · Micron</b>, calls lock <b data-cd>—</b></span></div>
+  <header class="title">
+    <div class="kicker">Earnings Zeason · Season One</div>
+    <h1><s>Stock picking.</s> Model picking.</h1>
+    <p class="deck">Before every earnings print, three AI models file a call: direction and size. The market grades them twenty-four hours later, in public, with nothing edited. Six rounds in, here is what the numbers say — and what they can't say yet.</p>
+    <p class="byline">Every call and outcome below is verbatim from the record. Every other figure is arithmetic on those numbers, and says so.</p>
+  </header>
+  <div class="figs" id="figs"></div>
+</div>
+
+<!-- ============ THESIS ============ -->
+<section id="thesis"><div class="wrap">
+  <div class="narrow">
+    <h2><span class="no">01 — THE THESIS</span>Every era of investing hands the decision to a different thing.</h2>
+    <p class="body">First you picked the stock. Then you picked the manager who picked the stock. Then the index made managers optional. Each shift moved the decision one layer further from the company and one layer closer to a process you could measure.</p>
+    <p class="body">The next layer is the model. When the same question — <b>which way does this stock move after earnings, and how far?</b> — goes to several machines at once, the interesting choice stops being which stock. It becomes <b>which model do you trust, and how much?</b></p>
+  </div>
+  <div class="eras">
+    <div class="era"><span class="y">20th century</span><b>Stock picking</b><p>You read the filings. You are the model.</p></div>
+    <div class="era"><span class="y">1970s →</span><b>Manager picking</b><p>You buy someone else's judgment, fees included.</p></div>
+    <div class="era"><span class="y">2000s →</span><b>Index picking</b><p>You stop picking and buy the average.</p></div>
+    <div class="era"><span class="y">Now</span><b>Model picking</b><p>Machines make the call. You choose which ones — and they're graded in public.</p></div>
+  </div>
+  <p class="pull narrow">You can't compare managers who get to rewrite last quarter's letter. You can compare models whose every call is timestamped before the bell.</p>
+</div></section>
+
+<!-- ============ EVIDENCE ============ -->
+<section id="evidence"><div class="wrap">
+  <div class="narrow">
+    <h2><span class="no">02 — THE EVIDENCE</span>Eighteen calls, one scatter plot.</h2>
+    <p class="body">Each dot is one call: what the machine said on the horizontal, what the stock did on the vertical. A perfect call sits on the diagonal. Dots in the shaded corners got the <b>direction</b> wrong — no amount of precision saves those.</p>
+  </div>
+  <div class="chart" id="c1">
+    <h3>Call vs. outcome, all 18 calls</h3>
+    <p class="sub">Percent move, Rounds 1–6. Diagonal = perfect call. Shaded = wrong direction. Hover a dot for the round.</p>
+    <div class="legend" id="lg1"></div>
+    <svg class="plot" id="scatter" role="img" aria-label="Scatter plot of predicted move versus actual move for 18 calls"></svg>
+    <div class="tip" id="tip1"></div>
+    <p class="cap">Source: the EZ record. Positions are the verbatim calls and outcomes.</p>
+  </div>
+
+  <div class="two">
+    <div class="chart" id="c2">
+      <h3>Distance from the close, by round</h3>
+      <p class="sub">Points off the actual move. Lower is better. The black ring is the average of all three calls.</p>
+      <div class="legend" id="lg2"></div>
+      <svg class="plot" id="dots" role="img" aria-label="Distance from the close per model per round"></svg>
+      <div class="tip" id="tip2"></div>
+    </div>
+    <div class="chart" id="c3">
+      <h3>Average distance, season to date</h3>
+      <p class="sub">Mean points off the close across six rounds. The blend is the plain average of the three calls, every round.</p>
+      <svg class="plot" id="bars" role="img" aria-label="Average distance per model and for the blend"></svg>
+      <div class="tip" id="tip3"></div>
+      <p class="cap">Model averages match the record (3.96 · 4.46 · 4.61). Blend is derived.</p>
+    </div>
+  </div>
+
+  <details class="tv"><summary>Table view — all 18 calls</summary><div class="tscroll"><table id="tbl"></table></div></details>
+</div></section>
+
+<!-- ============ HONESTY ============ -->
+<section id="honesty"><div class="wrap">
+  <div class="narrow">
+    <h2><span class="no">03 — WHAT THE NUMBERS DON'T PROVE YET</span>The bars the machines still have to clear.</h2>
+    <p class="body">A research note that only prints the flattering numbers is marketing. These are the bars the machines have to clear before anyone should call this a signal.</p>
+  </div>
+  <div class="callouts" id="callouts"></div>
+  <p class="body narrow">None of this is a verdict on the models — six rounds is a warm-up. The record keeps growing, and the statistical layer gets serious somewhere around <b>50 to 100 rounds</b>. Until then, the honest claim is narrower: <b>the calls are real, public, and graded the same way every time.</b> That's the part a stock picker could never offer you.</p>
+</div></section>
+
+<!-- ============ PORTFOLIO ============ -->
+<section id="portfolio"><div class="wrap">
+  <div class="narrow">
+    <h2><span class="no">04 — PICK YOUR MODELS</span>Build a model portfolio, backtest it on the season.</h2>
+    <p class="body">Weight the three machines however you like. Your blended call each round is the weighted average of theirs. The backtest below re-runs Rounds 1–6 with your weights — hypothetical, but computed from the real calls.</p>
+  </div>
+  <div class="alloc">
+    <div class="panel">
+      <div class="presets"><button type="button" data-p="34,33,33">Equal weight</button><button type="button" data-p="100,0,0">All GPT</button><button type="button" data-p="0,100,0">All KIMI</button><button type="button" data-p="0,0,100">All CLAUDE</button><button type="button" data-p="50,30,20">Ranked 50/30/20</button></div>
+      <div id="sliders"></div>
+      <div class="stack" id="stack" aria-hidden="true"></div>
+      <p class="fine">Weights always sum to 100%.</p>
+      <button type="button" class="save" id="saveW">Save these weights for Round 7</button>
+    </div>
+    <div class="panel">
+      <div class="res"><div><b id="bErr">—</b><span>avg points off the close</span></div><div><b id="bDir">—</b><span>rounds with the direction right</span></div></div>
+      <p class="cmp" id="bCmp"></p>
+      <details class="tv"><summary>Round by round</summary><div class="tscroll"><table id="bTbl"></table></div></details>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ ROUND 7 ============ -->
+<section id="round7"><div class="wrap">
+  <div class="narrow"><h2><span class="no">05 — THE NEXT DATA POINT</span>Round 7 · Micron</h2></div>
+  <div class="r7">
+    <div>
+      <div class="cdn"><div><b data-cd="d">—</b><span>DAYS</span></div><div><b data-cd="h">—</b><span>HRS</span></div><div><b data-cd="m">—</b><span>MIN</span></div><div><b data-cd="s">—</b><span>SEC</span></div></div>
+      <p class="fine">Calls lock Wed, Sep 30 · 4:30 pm ET. Date per Micron's announcement — the sheet will carry it officially.</p>
+    </div>
+    <div class="panel">
+      <p class="body" style="margin:0" id="r7txt">When the three machines file, your saved weights turn into a blended Micron call here — before the market says a word. Then the market grades it with everyone else's.</p>
+    </div>
+  </div>
+
+  <div class="ez" id="ez">
+    <div class="narrow">
+      <h2><span class="no">06 — WHERE $EZ FITS</span>The record is free. The purse settles in $EZ.</h2>
+      <p class="body">A purse has been accruing since Round I. It stays sealed until Round X, and 69% of it goes to the season's winning machine. It settles in $EZ. No purse figures are published yet — the ledger will carry the number the day it is written.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">01</span><h4>Verify the address</h4><p>The only official contract address is published here and on the pinned post.</p><div class="ca" id="ca">Not posted yet. It appears here — and only here — at launch.</div></div>
+      <div class="step"><span class="n">02</span><h4>Get $EZ</h4><p>Only through the link on this page, against the address beside it.</p><a class="go off" id="buy" href="#ez" target="_blank" rel="noopener">Opens at launch</a></div>
+      <div class="step"><span class="n">03</span><h4>Follow the record</h4><p>Round 7 adds three more calls to the sample. The notes get sharper as the sample grows.</p><div id="follow" style="display:flex;flex-direction:column;gap:8px;margin-top:auto"></div></div>
+    </div>
+    <p class="disc">$EZ is a memecoin. Nothing here is investment advice or a promise of value, return, or payout. The model calls are an experiment published in public, not trading signals; the sample is small and past rounds say nothing reliable about the next one. Backtests on this page are hypothetical arithmetic on six data points.</p>
+  </div>
+</div></section>
+</main>
+
+<footer>
+  <div class="motto">Nobody said it would be <span class="e">E</span><span class="z">Z</span>.</div>
+  <div class="mark" aria-label="$EZ"><span class="d">$</span><span class="e">E</span><span class="z">Z</span></div>
+  <div class="colo">EARNINGS ZEASON · CALLS FILED BEFORE THE BELL · GRADED +24H · NEVER EDITED</div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+var CONFIG={ca:"",buyUrl:"",chain:"",x:"",tg:""};
+var LOCK_AT=Date.parse("2026-09-30T20:30:00Z");
+/* Round 7 calls go here once filed, e.g. {GPT:3,KIMI:-2,CLAUDE:1.5} */
+var R7_CALLS=null;
+
+/* ================== THE RECORD — verbatim (signed %) ================== */
+var M=["GPT","KIMI","CLAUDE"];
+var COL={GPT:"#2a78d6",KIMI:"#4a3aa7",CLAUDE:"#eb6834"};
+var SHAPE={GPT:"circle",KIMI:"square",CLAUDE:"triangle"};
+var ROUNDS=[
+ {n:1,co:"GameStop",o:5.95,os:"+5.95%",c:{GPT:1,KIMI:4,CLAUDE:2},win:"KIMI"},
+ {n:2,co:"Oracle",o:-1.74,os:"−1.74%",c:{GPT:6,KIMI:-6,CLAUDE:-3},win:"CLAUDE"},
+ {n:3,co:"AutoZone",o:3.25,os:"+3.25%",c:{GPT:4,KIMI:-5,CLAUDE:-4.5},win:"GPT"},
+ {n:4,co:"General Mills",o:1.04,os:"+1.04%",c:{GPT:3,KIMI:3,CLAUDE:-3},win:"GPT & KIMI"},
+ {n:5,co:"BlackBerry",o:4.10,os:"+4.10%",c:{GPT:7,KIMI:9,CLAUDE:9},win:"GPT"},
+ {n:6,co:"Costco",o:2.95,os:"+2.95%",c:{GPT:-2.5,KIMI:-2.5,CLAUDE:-2.8},win:"no winner"}
+];
+/* as published on the record */
+var PUBLISHED={GPT:{dir:"4 / 6",avg:"3.96",won:3},KIMI:{dir:"4 / 6",avg:"4.46",won:2},CLAUDE:{dir:"3 / 6",avg:"4.61",won:1}};
+
+/* ================== derived — arithmetic only ================== */
+function fmtPct(v){return (v>0?"+":v<0?"−":"")+Math.abs(v).toFixed(v%1?(Math.abs(v*100)%10?2:1):0)+"%"}
+function sign(v){return v>0?1:v<0?-1:0}
+function r2(v){return Math.round(v*100)/100}
+var D={};
+M.forEach(function(m){var err=0,hit=0;ROUNDS.forEach(function(r){err+=Math.abs(r.c[m]-r.o);if(sign(r.c[m])===sign(r.o))hit++});D[m]={avg:err/6,hit:hit}});
+ROUNDS.forEach(function(r){r.blend=(r.c.GPT+r.c.KIMI+r.c.CLAUDE)/3;r.blendErr=Math.abs(r.blend-r.o);
+  var votes=M.reduce(function(s,m){return s+sign(r.c[m])},0);r.vote=sign(votes)});
+D.blend={avg:ROUNDS.reduce(function(s,r){return s+r.blendErr},0)/6,hit:ROUNDS.filter(function(r){return sign(r.blend)===sign(r.o)}).length};
+D.vote={hit:ROUNDS.filter(function(r){return r.vote===sign(r.o)}).length};
+D.alwaysUp={hit:ROUNDS.filter(function(r){return r.o>0}).length};
+function binomAtLeast(k,n){function C(n,k){var c=1;for(var i=0;i<k;i++)c=c*(n-i)/(i+1);return c}var p=0;for(var i=k;i<=n;i++)p+=C(n,i);return p/Math.pow(2,n)}
+var pChance4=binomAtLeast(4,6);
+var best=M.slice().sort(function(a,b){return D[a].avg-D[b].avg})[0];
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function toast(t){var x=$("#toast");x.textContent=t;x.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(function(){x.classList.remove("on")},2200)}
+function pad(n){return ("0"+n).slice(-2)}
+var NS="http://www.w3.org/2000/svg";
+function sv(t,a,txt){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e}
+function marker(shape,x,y,r,fill){
+  if(shape==="square")return sv("rect",{"class":"mk",x:x-r*.9,y:y-r*.9,width:r*1.8,height:r*1.8,rx:2,fill:fill});
+  if(shape==="triangle")return sv("path",{"class":"mk",d:"M"+x+" "+(y-r*1.15)+" L"+(x+r*1.05)+" "+(y+r*.8)+" L"+(x-r*1.05)+" "+(y+r*.8)+"Z",fill:fill,"stroke-linejoin":"round"});
+  return sv("circle",{"class":"mk",cx:x,cy:y,r:r,fill:fill});
+}
+function legendHTML(extra){
+  function ic(shape,c){var s='<svg viewBox="-7 -7 14 14">';s+=shape==="square"?'<rect x="-5" y="-5" width="10" height="10" rx="2" fill="'+c+'"/>':shape==="triangle"?'<path d="M0 -6 L5.5 4.2 L-5.5 4.2Z" fill="'+c+'"/>':shape==="ring"?'<circle r="4.5" fill="none" stroke="'+c+'" stroke-width="2"/>':'<circle r="5" fill="'+c+'"/>';return s+'</svg>'}
+  return M.map(function(m){return '<span>'+ic(SHAPE[m],COL[m])+m+'</span>'}).join("")+(extra?'<span>'+ic("ring","#16181d")+'Blend (average of three)</span>':'');
+}
+function tipper(chart,tip){return {show:function(e,html){tip.innerHTML=html;tip.classList.add("on");var a=chart.getBoundingClientRect(),x=e.clientX-a.left,y=e.clientY-a.top;var w=tip.offsetWidth;tip.style.left=Math.min(Math.max(8,x-w/2),a.width-w-8)+"px";tip.style.top=(y-tip.offsetHeight-14)+"px"},hide:function(){tip.classList.remove("on")}}}
+
+/* key figures */
+$("#figs").innerHTML=[
+  ['6<small>rounds</small>','Graded so far','18 calls, all public'],
+  [PUBLISHED[best].avg+'<small>pts</small>','Best average distance — '+best,'as published'],
+  [r2(D.blend.avg).toFixed(2)+'<small>pts</small>','Average of all three calls','derived — beats every single model'],
+  [Math.round(pChance4*100)+'<small>%</small>','Odds of 4/6 by coin flip','derived — why 6 rounds proves little']
+].map(function(f){return '<div class="fig"><div class="v">'+f[0]+'</div><div class="l">'+f[1]+'</div><div class="s">'+f[2]+'</div></div>'}).join("");
+
+/* ---------- chart 1: scatter ---------- */
+function cw(s){return Math.max(290,s.parentNode.clientWidth-36)}
+function drawScatter(){
+  var s=$("#scatter");s.innerHTML="";var W=cw(s),H=Math.round(Math.min(470,Math.max(300,W*.72))),L=46,R=W-14,T=14,B=H-44,lo=-7,hi=10,nar=W<500;
+  s.setAttribute("viewBox","0 0 "+W+" "+H);
+  function x(v){return L+(v-lo)/(hi-lo)*(R-L)}function y(v){return B-(v-lo)/(hi-lo)*(B-T)}
+  // wrong-direction quadrants
+  s.appendChild(sv("rect",{x:x(lo),y:y(hi),width:x(0)-x(lo),height:y(0)-y(hi),fill:"rgba(214,62,48,.07)"}));
+  s.appendChild(sv("rect",{x:x(0),y:y(0),width:x(hi)-x(0),height:y(lo)-y(0),fill:"rgba(214,62,48,.07)"}));
+  for(var v=lo+1;v<=hi;v+=1){if(v%2)continue;s.appendChild(sv("line",{"class":"gl",x1:x(v),x2:x(v),y1:T,y2:B}));s.appendChild(sv("line",{"class":"gl",x1:L,x2:R,y1:y(v),y2:y(v)}));
+    s.appendChild(sv("text",{x:x(v),y:B+18,"text-anchor":"middle"},(v>0?"+":"")+v));s.appendChild(sv("text",{x:L-8,y:y(v)+4,"text-anchor":"end"},(v>0?"+":"")+v))}
+  s.appendChild(sv("line",{"class":"ax",x1:x(0),x2:x(0),y1:T,y2:B}));s.appendChild(sv("line",{"class":"ax",x1:L,x2:R,y1:y(0),y2:y(0)}));
+  s.appendChild(sv("line",{x1:x(lo),y1:y(lo),x2:x(hi),y2:y(hi),stroke:"#16181d","stroke-width":1.5,"stroke-dasharray":"5 5"}));
+  s.appendChild(sv("text",{"class":"lab",x:x(9.6),y:y(9)+14,"text-anchor":"end"},"perfect call"));
+  s.appendChild(sv("text",{"class":"lab",x:x(-6.8),y:y(9.3)},nar?"said DOWN, went UP":"said DOWN · went UP"));
+  s.appendChild(sv("text",{"class":"lab",x:x(9.7),y:y(-6.4),"text-anchor":"end"},nar?"said UP, went DOWN":"said UP · went DOWN"));
+  s.appendChild(sv("text",{x:(L+R)/2,y:H-6,"text-anchor":"middle"},"THE CALL (%)"));
+  var yl=sv("text",{x:14,y:(T+B)/2,"text-anchor":"middle",transform:"rotate(-90 14 "+((T+B)/2)+")"},"THE OUTCOME (%)");s.appendChild(yl);
+  var T1=tipper($("#c1"),$("#tip1"));
+  // offset identical points so none hides another
+  var seen={};
+  ROUNDS.forEach(function(r){M.forEach(function(m){
+    var k=r.c[m]+"|"+r.o,dup=seen[k]||0;seen[k]=dup+1;
+    var cx=x(r.c[m])+dup*9,cy=y(r.o);
+    var g=sv("g",{"class":"hit",tabindex:"0"});g.appendChild(sv("circle",{cx:cx,cy:cy,r:14,fill:"transparent"}));g.appendChild(marker(SHAPE[m],cx,cy,6.5,COL[m]));
+    var html='<b>Round '+r.n+' · '+r.co+'</b><br>'+m+' called '+fmtPct(r.c[m])+' · outcome '+r.os+'<br>'+r2(Math.abs(r.c[m]-r.o)).toFixed(2)+' pts off · '+(sign(r.c[m])===sign(r.o)?'direction right':'direction wrong');
+    g.addEventListener("mousemove",function(e){T1.show(e,html)});g.addEventListener("mouseleave",T1.hide);
+    g.addEventListener("focus",function(){var b=g.getBoundingClientRect();T1.show({clientX:b.left+b.width/2,clientY:b.top},html)});g.addEventListener("blur",T1.hide);
+    s.appendChild(g)})});
+}
+$("#lg1").innerHTML=legendHTML(false);
+
+/* ---------- chart 2: distance by round ---------- */
+function drawDots(){
+  var s=$("#dots");s.innerHTML="";var W=cw(s),rowH=46,T=10,L=112,R=W-16,H=T+rowH*6+34,mx=9;
+  s.setAttribute("viewBox","0 0 "+W+" "+H);
+  function x(v){return L+v/mx*(R-L)}
+  for(var v=0;v<=mx;v+=3){s.appendChild(sv("line",{"class":"gl",x1:x(v),x2:x(v),y1:T,y2:T+rowH*6}));s.appendChild(sv("text",{x:x(v),y:T+rowH*6+18,"text-anchor":"middle"},v))}
+  s.appendChild(sv("text",{x:(L+R)/2,y:H-2,"text-anchor":"middle"},"POINTS OFF THE CLOSE"));
+  var T2=tipper($("#c2"),$("#tip2"));
+  ROUNDS.forEach(function(r,i){var cy=T+rowH*i+rowH/2;
+    s.appendChild(sv("text",{"class":"lab",x:0,y:cy+4},r.n+" · "+r.co));
+    s.appendChild(sv("line",{"class":"gl",x1:L,x2:R,y1:cy,y2:cy}));
+    var bx=x(r.blendErr);s.appendChild(sv("circle",{cx:bx,cy:cy,r:9,fill:"none",stroke:"#16181d","stroke-width":2}));
+    var seen={};
+    M.forEach(function(m){var e=Math.abs(r.c[m]-r.o),k=e.toFixed(2),d=seen[k]||0;seen[k]=d+1;
+      var cx=x(e),cy2=cy+(d?(d%2?-9:9):0),g=sv("g",{"class":"hit",tabindex:"0"});
+      g.appendChild(sv("circle",{cx:cx,cy:cy2,r:12,fill:"transparent"}));g.appendChild(marker(SHAPE[m],cx,cy2,5.5,COL[m]));
+      var html='<b>Round '+r.n+' · '+r.co+'</b><br>'+m+': '+e.toFixed(2)+' pts off<br>Blend: '+r.blendErr.toFixed(2)+' pts off (derived)';
+      g.addEventListener("mousemove",function(ev){T2.show(ev,html)});g.addEventListener("mouseleave",T2.hide);s.appendChild(g)});
+  });
+}
+$("#lg2").innerHTML=legendHTML(true);
+
+/* ---------- chart 3: average distance bars ---------- */
+function drawBars(){
+  var s=$("#bars");s.innerHTML="";var W=cw(s),T=6,L=W<420?104:130,R=W-64,bh=30,gap=16,rows=M.slice().sort(function(a,b){return D[a].avg-D[b].avg}).map(function(m){return {k:m,v:D[m].avg,lab:m+" · "+PUBLISHED[m].avg,c:COL[m]}});
+  rows.unshift({k:"blend",v:D.blend.avg,lab:"Blend · "+D.blend.avg.toFixed(2),c:"#16181d",derived:true});
+  var H=T+rows.length*(bh+gap)+26,mx=5;s.setAttribute("viewBox","0 0 "+W+" "+H);
+  function x(v){return L+v/mx*(R-L)}
+  for(var v=0;v<=mx;v++){s.appendChild(sv("line",{"class":"gl",x1:x(v),x2:x(v),y1:T,y2:H-24}));s.appendChild(sv("text",{x:x(v),y:H-8,"text-anchor":"middle"},v))}
+  var T3=tipper($("#c3"),$("#tip3"));
+  rows.forEach(function(r,i){var y=T+i*(bh+gap);
+    s.appendChild(sv("text",{"class":"lab",x:0,y:y+bh/2+4},r.k==="blend"?"Blend (derived)":r.k));
+    var w=x(r.v)-L,g=sv("g",{"class":"hit"});
+    g.appendChild(sv("path",{d:"M"+L+" "+y+" H"+(L+w-4)+" Q"+(L+w)+" "+y+" "+(L+w)+" "+(y+4)+" V"+(y+bh-4)+" Q"+(L+w)+" "+(y+bh)+" "+(L+w-4)+" "+(y+bh)+" H"+L+"Z",fill:r.c,opacity:r.k==="blend"?1:.95}));
+    g.appendChild(sv("text",{x:L+w+8,y:y+bh/2+4,"class":"lab"},(r.k==="blend"?r.v.toFixed(2):PUBLISHED[r.k].avg)+" pts"));
+    g.addEventListener("mousemove",function(e){T3.show(e,'<b>'+(r.k==="blend"?"Blend of all three":r.k)+'</b><br>'+(r.k==="blend"?r.v.toFixed(2)+' pts avg (derived)':PUBLISHED[r.k].avg+' pts avg (as published)')) });g.addEventListener("mouseleave",T3.hide);
+    s.appendChild(g)});
+}
+function drawAll(){drawScatter();drawDots();drawBars()}
+drawAll();
+var rz;addEventListener("resize",function(){clearTimeout(rz);rz=setTimeout(drawAll,150)});
+
+/* ---------- table view ---------- */
+(function(){
+  var h='<thead><tr><th>Round</th><th>Model</th><th>Call</th><th>Outcome</th><th>Direction</th><th>Pts off</th><th>Winner</th></tr></thead><tbody>';
+  ROUNDS.forEach(function(r){M.forEach(function(m,i){var ok=sign(r.c[m])===sign(r.o);
+    h+='<tr><td>'+(i?'':r.n+' · '+r.co)+'</td><td><span class="sw" style="background:'+COL[m]+'"></span>'+m+'</td><td>'+fmtPct(r.c[m])+'</td><td>'+(i?'':r.os)+'</td><td class="'+(ok?'ok':'no')+'">'+(ok?'✓ right':'✗ wrong')+'</td><td>'+Math.abs(r.c[m]-r.o).toFixed(2)+'</td><td>'+(i?'':r.win)+'</td></tr>'})});
+  $("#tbl").innerHTML=h+'</tbody>';
+})();
+
+/* ---------- callouts ---------- */
+$("#callouts").innerHTML=
+ '<div class="co warn"><div class="t">Benchmark 1 · direction</div><div class="v">'+D.alwaysUp.hit+' / 6</div><p>A strategy of <b>always saying UP</b> would have called the direction right in '+D.alwaysUp.hit+' of 6 rounds — the stocks rose in all but Oracle. The best machines managed '+Math.max(D.GPT.hit,D.KIMI.hit,D.CLAUDE.hit)+' / 6. On direction alone, nobody has beaten the lazy baseline yet.</p></div>'+
+ '<div class="co"><div class="t">Benchmark 2 · distance</div><div class="v">'+D.blend.avg.toFixed(2)+' pts</div><p>Averaging the three calls every round lands closer than any single machine: '+D.blend.avg.toFixed(2)+' points off on average, against '+PUBLISHED[best].avg+' for the best model. The committee beats every member — which is exactly what model picking predicts, and exactly why picking one model is the harder bet.</p></div>'+
+ '<div class="co"><div class="t">Sample size</div><div class="v">'+Math.round(pChance4*100)+'%</div><p>The chance of getting 4 of 6 directions right by flipping a coin, or better. At this sample size a coin and a frontier model can post the same record. It takes many more rounds to tell them apart.</p></div>'+
+ '<div class="co"><div class="t">Majority vote</div><div class="v">'+D.vote.hit+' / 6</div><p>Going with whichever direction two of three machines chose would have been right '+D.vote.hit+' times — no better than the best single model on direction, but never worse than the worst.</p></div>';
+
+/* ---------- the allocator ---------- */
+var W8={GPT:34,KIMI:33,CLAUDE:33};
+try{var sw=JSON.parse(store("ez.b.w")||"null");if(sw&&sw.GPT+sw.KIMI+sw.CLAUDE===100)W8=sw}catch(e){}
+(function(){$("#sliders").innerHTML=M.map(function(m){return '<div class="sl"><label for="w-'+m+'" style="color:'+COL[m]+'">'+m+'</label><input type="range" id="w-'+m+'" min="0" max="100" step="1" value="'+W8[m]+'"><output id="o-'+m+'">'+W8[m]+'%</output></div>'}).join("")})();
+function rebalance(changed,val){
+  var others=M.filter(function(m){return m!==changed}),rest=100-val,sum=W8[others[0]]+W8[others[1]];
+  W8[changed]=val;
+  if(sum===0){W8[others[0]]=Math.round(rest/2);W8[others[1]]=rest-Math.round(rest/2)}
+  else{var a=Math.round(W8[others[0]]/sum*rest);W8[others[0]]=a;W8[others[1]]=rest-a}
+}
+function backtest(){
+  var err=0,hit=0,rows="";
+  ROUNDS.forEach(function(r){var b=M.reduce(function(s,m){return s+r.c[m]*W8[m]/100},0),e=Math.abs(b-r.o),ok=sign(b)===sign(r.o);err+=e;if(ok)hit++;
+    rows+='<tr><td>'+r.n+' · '+r.co+'</td><td></td><td>'+fmtPct(r2(b))+'</td><td>'+r.os+'</td><td class="'+(ok?'ok':'no')+'">'+(ok?'✓':'✗')+'</td><td>'+e.toFixed(2)+'</td></tr>'});
+  err/=6;
+  $("#bErr").textContent=err.toFixed(2);$("#bDir").textContent=hit+" / 6";
+  var bestSingle=D[best].avg;
+  $("#bCmp").innerHTML='Best single model: <b>'+best+' '+PUBLISHED[best].avg+'</b> pts. Equal-weight blend: <b>'+D.blend.avg.toFixed(2)+'</b> pts. Always-UP direction: <b>'+D.alwaysUp.hit+' / 6</b>. '+(err<bestSingle?'Your mix beats every single model on distance.':'Your mix trails the best single model on distance.');
+  $("#bTbl").innerHTML='<thead><tr><th>Round</th><th></th><th>Your call</th><th>Outcome</th><th>Dir.</th><th>Pts off</th></tr></thead><tbody>'+rows+'</tbody>';
+  M.forEach(function(m){$("#w-"+m).value=W8[m];$("#o-"+m).textContent=W8[m]+"%"});
+  $("#stack").innerHTML=M.map(function(m){return W8[m]?'<i style="flex:'+W8[m]+';background:'+COL[m]+'"></i>':''}).join("");
+  r7();
+}
+M.forEach(function(m){$("#w-"+m).addEventListener("input",function(e){rebalance(m,+e.target.value);backtest()})});
+$$(".presets button").forEach(function(b){b.addEventListener("click",function(){var p=b.dataset.p.split(",").map(Number);M.forEach(function(m,i){W8[m]=p[i]});backtest()})});
+$("#saveW").addEventListener("click",function(){store("ez.b.w",JSON.stringify(W8));toast("Weights saved for Round 7 — on this device only")});
+
+function r7(){
+  var t=$("#r7txt");
+  if(R7_CALLS){var b=M.reduce(function(s,m){return s+R7_CALLS[m]*W8[m]/100},0);
+    t.innerHTML='The machines have filed: '+M.map(function(m){return m+' '+fmtPct(R7_CALLS[m])}).join(' · ')+'. With your weights ('+M.map(function(m){return W8[m]+'%'}).join(' / ')+'), <b>your blended Micron call is '+fmtPct(r2(b))+'</b>.'}
+  else t.innerHTML='When the three machines file, your weights ('+M.map(function(m){return m+' '+W8[m]+'%'}).join(' · ')+') turn into a blended Micron call here — before the market says a word. Then the market grades it with everyone else’s.';
+}
+backtest();
+
+/* countdown */
+function tick(){var ms=Math.max(0,LOCK_AT-Date.now()),d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
+  $$("[data-cd]").forEach(function(n){var k=n.dataset.cd;n.textContent=!k?(ms<=0?"locked":(d?d+"d ":"")+pad(h)+":"+pad(m)+":"+pad(s)):k==="d"?d:k==="h"?pad(h):k==="m"?pad(m):pad(s)})}
+tick();setInterval(tick,1000);
+
+/* launch config */
+(function(){
+  if(CONFIG.ca){var ca=$("#ca");ca.className="ca live";ca.textContent=(CONFIG.chain?CONFIG.chain+" · ":"")+CONFIG.ca;ca.addEventListener("click",function(){navigator.clipboard&&navigator.clipboard.writeText(CONFIG.ca).then(function(){toast("Address copied")})})}
+  if(CONFIG.buyUrl){var b=$("#buy");b.href=CONFIG.buyUrl;b.className="go";b.textContent="Get $EZ ↗"}
+  var f=$("#follow"),any=false;[["x","Follow on X"],["tg","Telegram"]].forEach(function(k){if(CONFIG[k[0]]){any=true;var a=document.createElement("a");a.className="go";a.href=CONFIG[k[0]];a.target="_blank";a.rel="noopener";a.textContent=k[1]+" ↗";f.appendChild(a)}});
+  if(!any){var s=document.createElement("span");s.className="go off";s.textContent="Channels post at launch";f.appendChild(s)}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+/* Round 31, bet section "The fight card" (see fightcard.js). Every look is the site's own: the section head and the strap are the
+   other sections' markup, the NVIDIA ticket is untouched, and the Season 2 ticket is cut from the bet ticket's own die: its
+   classes (.bt-sh, .bt-hs, .bt-p, .bt-pp, .bt-r1, .bt-r2, .bt-st) and its variables, so the paper, the printed double rule, the
+   green and red strips with their reversed-out capitals and both shadows are the main event's, only smaller and without a stub. */
+
+/* the first screen is the film alone: the standings follow at the first screen's tight rhythm (A1) */
+html.x2p.r31-fc section.x2o-bet + section#standings{padding-top:48px}
+@media (min-width:600px){html.x2p.r31-fc section.x2o-bet + section#standings{padding-top:72px}}
+
+/* the head in one column, like the standings' and the highlights' */
+html.x2p-launch #x2pFc .sh{grid-template-columns:1fr}
+
+/* the stakes: right in the board's green fold, wrong in target red (#d7262e, the Avg miss rings' red), not the highlights' salmon */
+html.x2p.x2d[data-theme] #x2pFc .x2p-strap .x2o-ul li b.fc-ok{background-image:linear-gradient(162deg,#8ff5c0 0 52%,#2fae6b 52% 100%)}
+html.x2p.x2d[data-theme] #x2pFc .x2p-strap .x2o-ul li b.fc-ng{background-image:linear-gradient(162deg,#f4453d 0 52%,#d7262e 52% 100%)}
+
+/* the main event: the NVIDIA ticket as it is */
+html.x2p.x2d.x2pbt #x2pFc .fc-main{margin-top:26px}
+html.x2p.x2d.x2pbt #x2pFc .fc-main .x2p-bt{margin:0}
+
+/* the Season 2 ticket: the bet ticket's geometry (same corner bites, strips and frame insets), the perforation and its notches
+   moved off the card (no stub: nothing to tear off yet), no body column */
+html.x2p.x2d.x2pbt #x2pFc .fc-s2{--ink:rgba(20,18,23,.88);--rb:11px;--rn:8px;--hr:1.7px;--hp:6.5px;--b:0px;--px:-60px;
+  --st:clamp(15px,4vw,17px);--sb:var(--st);--fi:5px;--fg:2.5px;--rc:4.5px;--rq:3.5px;--pad:calc(var(--st) + 12px);
+  position:relative;isolation:isolate;margin:20px 0 0;max-width:560px;color:#141217}
+html.x2p.x2d.x2pbt #x2pFc .fc-s2 .fc-p{display:block;padding:var(--pad) 12px}
+/* the strip words centred on the card (the trailing letter-space evened out) */
+html.x2p.x2d.x2pbt #x2pFc .fc-s2 .bt-st .fc-c{flex:1;justify-content:center;padding:0 12px 0 calc(12px + .22em)}
+/* the bouts: one printed row, evenly spaced, no rules between them */
+html.x2p #x2pFc .fc-bouts{position:relative;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));margin:0;padding:0;list-style:none}
+html.x2p #x2pFc .fc-bouts li{display:grid;justify-items:center;align-content:center;gap:5px;min-width:0;margin:0;padding:0;border:0}
+html.x2p #x2pFc .fc-bouts li::before{display:none!important}
+/* each logo printed into the card in one ink, multiplied into the stock, its edge and coverage roughened as the PRINTLOGO block does */
+html.x2p #x2pFc .fc-lg{position:relative;display:block;width:28px;height:20px}
+html.x2p #x2pFc .fc-lg img{display:block;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;filter:url(#fcInkL) url(#fcPrint)}
+html.x2p #x2pFc .fc-lg.dk img{filter:url(#fcInkD) url(#fcPrint)}
+/* the tickers in the ticket's ink, pressed in ("BET #1:"'s letterpress lip) */
+html.x2p #x2pFc .fc-bouts b{display:block;max-width:100%;font:400 10px/1 Anton,Impact,sans-serif;letter-spacing:.03em;text-rendering:geometricPrecision;text-transform:uppercase;white-space:nowrap;color:rgba(20,18,23,.88);text-shadow:0 .9px 0 rgba(255,251,238,.75)}
+/* "& more": an ampersand set in the ticket's red ink where a logo would be, "More" under it in the same red, so it reads as one
+   phrase and not as an eighth ticker */
+html.x2p #x2pFc .fc-more b{color:rgba(176,38,30,.94)}
+html.x2p #x2pFc .fc-amp{display:grid;place-items:center;font:400 21px/1 Anton,Impact,sans-serif;color:rgba(176,38,30,.94);text-shadow:0 .9px 0 rgba(255,251,238,.7);filter:url(#fcPrint)}
+
+/* narrow phones (under 360px): the row a size down so the marks and tickers keep clear of each other */
+@media (max-width:359.98px){
+  html.x2p.x2d.x2pbt #x2pFc .fc-s2{--pad:calc(var(--st) + 10px)}
+  html.x2p.x2d.x2pbt #x2pFc .fc-s2 .fc-p{padding:var(--pad) 9px}
+  html.x2p #x2pFc .fc-lg{width:24px;height:18px}
+  html.x2p #x2pFc .fc-bouts b{font-size:9px;letter-spacing:.02em}
+  html.x2p #x2pFc .fc-amp{font-size:19px}
+}
+/* phones: as wide as the NVIDIA ticket (16px in), as the bet ticket's own phone rule */
+@media (max-width:599.98px){html.x2p.x2d.x2pbt #x2pFc .fc-s2{max-width:none;overflow-x:clip}}
+/* a 560px ticket: the same row, a size up, stacked under the main event at every width (as the film and the proof) */
+@media (min-width:600px){
+  html.x2p.x2d.x2pbt #x2pFc .fc-s2{--pad:calc(var(--st) + 15px);margin-top:22px}
+  /* the strap no wider than the tickets: its lower corners on the tickets' edges (the skew leans its top right) */
+  html.x2p #x2pFc .x2p-strap{max-width:564px}
+  html.x2p.x2d.x2pbt #x2pFc .fc-s2 .fc-p{padding:var(--pad) 16px}
+  html.x2p #x2pFc .fc-lg{width:38px;height:27px}
+  html.x2p #x2pFc .fc-bouts li{gap:7px}
+  html.x2p #x2pFc .fc-bouts b{font-size:12.5px}
+  html.x2p #x2pFc .fc-amp{font-size:28px}
+}

@@ -1,0 +1,976 @@
+<!doctype html>
+<!--
+EZ FILM, ROUND 2: "THE BIG BOARD" (slug board, night). Spec: scratchpad/films-r2/spec-board.md (2026-10-12).
+One physical flip-disc board, one take, writes the story in clattering waves while the words sit still.
+Square 1080, 60 fps, 26.0 s = 1560 frames, 120 BPM. Loops to frame 0 in picture and sound.
+FIX R1 (2026-10-12, films-r2/board/fix-r1.md): one more 2 s bar for the fee story (B1 3.0..6.0, B2 6.0..9.0, all later beats +2.0 s);
+  the money layers flip with the board's waves per disc; a 2x coin stream and a $EZ flip ripple in B0; paying trades fire;
+  "69% OF FEES"; "THE #1 AI MAKES THE CALL."; every time derives from the T table.
+CONTRACT (teaser/render.js): window.N, window.FPS, window.renderAt(t) (pure in t), window.renderAudio() (base64 WAV),
+  window.__ready / window.__err, a 1080 #stage.
+URL: v=uk|nonuk (alias variant=), asof=ISO (required), theme=night|day, marks=1|0 (AI logo flaps), big=mona|instrument,
+  end=chip|board, ns=N (subframe override), upto=SECONDS (N becomes upto*60, for the motion test).
+STATE: every disc's face is a pure function of t. At load the page builds an event table (every flip of every disc, at 240
+  ticks a second) from the beat layouts, the waves and the moving elements (coins, grains, tape, bars, selector, ratchet,
+  countdown); renderAt(t) only reads it. Exposes R2B_T (timing), R2B_EVENTS (flips, coin steps, grains, hits, ticks) and
+  R2B_STRINGS (every on-screen string and its source in ez-data.js).
+DATA: ../ez-data.js at render time: SIM.poolShare, SIM.leverage, SIM.leadHours, SIM.stopLoss, CONFIG.launched, ROUNDS (race,
+  site rule), LADDER (check), UPCOMING (NVDA row), MODELS (marks), SIM/CONFIG.betDate else the site's fallback rule.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EZ Big Board</title>
+<meta name="viewport" content="width=1080">
+<style>
+@font-face{font-family:"MS";src:url(r2-mona-sans-wdth.woff2) format("woff2");font-weight:200 900;font-stretch:75% 125%}
+@font-face{font-family:"IS";src:url(fonts/instrument-sans-latin-wdth-normal.woff2) format("woff2");font-weight:400 700;font-stretch:75% 100%}
+@font-face{font-family:"GM";src:url(fonts/geist-mono-latin-wght-normal.woff2) format("woff2");font-weight:100 900}
+html,body{margin:0;background:#060b20}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#070d26}
+#cv{position:absolute;left:0;top:0;width:1080px;height:1080px}
+.ab{position:absolute}
+#scrim{left:0;top:0;width:1080px;height:150px;background:#060b20}
+#rail{left:48px;top:26px;height:46px;display:flex;align-items:center;gap:18px}
+#ad{font:700 30px/1 "GM";letter-spacing:.04em;color:#f3ede0;border:2px solid #f3ede0;border-radius:4px;padding:5px 10px 5px 12px}
+#brand{font:500 24px/1 "GM";letter-spacing:.06em;color:rgba(243,237,224,.88);white-space:nowrap}
+#stamp{right:48px;top:34px;font:500 28px/1 "GM";letter-spacing:0;color:rgba(243,237,224,.86);text-align:right;white-space:nowrap}
+#legal{left:48px;top:82px;font-family:"IS";font-weight:600;font-stretch:100%;font-size:28px;line-height:1.2;color:rgba(243,237,224,.86);white-space:nowrap}
+#band{left:24px;right:24px;bottom:96px;height:160px;background:#fff;border-radius:4px;box-sizing:border-box}
+#band::before{content:"";position:absolute;inset:4px;border:2px solid #000;border-radius:2px}
+#band p{position:absolute;left:20px;right:20px;top:50%;transform:translateY(-50%);margin:0;font-family:"IS";font-weight:700;font-stretch:100%;font-size:36px;line-height:1.18;color:#000}
+#below{left:0;width:1080px;top:984px;height:96px;background:#060b20}
+#card{left:48px;right:48px;box-sizing:border-box;border:1px solid rgba(243,237,224,.42);border-radius:4px;background:rgba(6,11,32,.88);
+  font-family:"IS";font-weight:600;font-stretch:100%;font-size:40px;line-height:1.22;color:#f3ede0;padding:12px 20px 13px;text-wrap:balance}
+.day #scrim,.day #below{background:#f4efe6}.day #ad{color:#101a3a;border-color:#101a3a}.day #brand,.day #legal,.day #stamp{color:rgba(16,26,58,.88)}
+.day #card{background:rgba(244,239,230,.96);color:#101a3a;border-color:rgba(16,26,58,.42)}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="cv" width="1080" height="1080"></canvas></div>
+<script src="../ez-data.js"></script>
+<script src="ez-r2-board-audio.js"></script>
+<script>
+(function(){
+"use strict";
+function main(){
+var Q=new URLSearchParams(location.search);
+var VAR=Q.get("v")||Q.get("variant")||"uk",UK=VAR==="uk";
+if(VAR!=="uk"&&VAR!=="nonuk")throw new Error("v must be uk or nonuk");
+var FPS=60,DUR=26.0,NFULL=Math.round(DUR*FPS);   /* T.end must equal DUR (checked below) */
+var N=Q.get("upto")?Math.round(+Q.get("upto")*FPS):NFULL;
+window.FPS=FPS;window.N=N;
+var NSQ=Q.get("ns")?+Q.get("ns"):null,DAY=Q.get("theme")==="day",MARKS=Q.get("marks")!=="0",BIGF=Q.get("big")==="instrument"?"instrument":"mona",
+    ENDCHIP=Q.get("end")!=="board",ASOF_S=Q.get("asof"),DBG=Q.get("dbg")==="1",HERO=Q.get("hero")||"dots",HCAP=Q.get("hcap")?+Q.get("hcap"):null;
+
+/* =====================================================================================================
+   1. DATA (ez-data.js at render). Every string on screen is registered with S(text, source).
+   ===================================================================================================== */
+var STRINGS=[];function S(text,src){STRINGS.push({text:text,src:src});return text}
+var LABS={GPT:"OpenAI",KIMI:"Moonshot AI",CLAUDE:"Anthropic",GROK:"xAI"};
+var LEGAL1="Not affiliated with NVIDIA, OpenAI, Moonshot AI, xAI, Anthropic",LEGAL2="or any company shown.";
+var MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+function md(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null}
+function nyClose(y,m,d){var f=new Date(Date.UTC(y,2,1)).getUTCDay(),a=Date.UTC(y,2,8+(7-f)%7),g=new Date(Date.UTC(y,10,1)).getUTCDay(),b=Date.UTC(y,10,1+(7-g)%7),t=Date.UTC(y,m,d);
+  return Date.UTC(y,m,d,t>=a&&t<b?20:21)}
+function boardData(){
+  if(!ASOF_S)throw new Error("asof=ISO is required (the countdown and the AS OF stamp start from it)");
+  var asof=Date.parse(ASOF_S);if(!isFinite(asof))throw new Error("asof is not a date: "+ASOF_S);
+  if(MODEL_KEYS.length!==4)throw new Error("the board needs exactly 4 AIs in MODEL_KEYS, got "+MODEL_KEYS.length);
+  MODEL_KEYS.forEach(function(m){if(!LABS[m])throw new Error("no lab name for model "+m+" (update LABS and the fixed legal line)")});
+  var set=MODEL_KEYS.map(function(m){return LABS[m]}).sort().join("|");
+  if(set!==["OpenAI","Moonshot AI","xAI","Anthropic"].sort().join("|"))throw new Error("the lab set differs from the fixed legal line: "+set);
+  if(SIM.leverage==null||SIM.poolShare==null||SIM.leadHours==null)throw new Error("SIM.leverage, SIM.poolShare and SIM.leadHours must be set");
+  if(SIM.stopLoss!==null)throw new Error("SIM.stopLoss is not null: the pour of the whole pot would be untrue");
+  if(CONFIG.launched)throw new Error("CONFIG.launched is true: the pre-launch copy (FROM LAUNCH) needs review");
+  if(!ROUNDS.length)throw new Error("no graded rounds");
+  var RS=ROUNDS.slice().sort(function(a,b){return a.n-b.n}),LAST=RS[RS.length-1];
+  var gap=[].concat(PENDING,UPCOMING).filter(function(u){return u.n<LAST.n}).map(function(u){return u.n});
+  if(gap.length)throw new Error("round(s) "+gap.join(",")+" not graded but round "+LAST.n+" is; the AS OF stamp would be wrong");
+  /* the race by the site rule: wins, then the smaller average miss; equal wins do not share a place */
+  var tal={};MODEL_KEYS.forEach(function(m){tal[m]={won:0,n:0,err:0}});
+  var steps=RS.map(function(r){var wn=r.win?r.win.split(" & "):[];
+    r.calls.forEach(function(c){var p=c[1].split(" "),v=(p[0]==="DOWN"?-1:1)*parseFloat(p[1]),T=tal[c[0]];T.n++;T.err+=Math.abs(v-r.a)});
+    wn.forEach(function(m){tal[m].won++});
+    var ranked=MODEL_KEYS.filter(function(m){return tal[m].n}).sort(function(x,y){return (tal[y].won-tal[x].won)||(parseFloat((tal[x].err/tal[x].n).toFixed(2))-parseFloat((tal[y].err/tal[y].n).toFixed(2)))});
+    var unr=MODEL_KEYS.filter(function(m){return !tal[m].n});
+    var won={},has={};MODEL_KEYS.forEach(function(m){won[m]=tal[m].won;has[m]=tal[m].n>0});
+    return {n:r.n,order:ranked.concat(unr),ranked:ranked.length,won:won,has:has,lead:ranked[0]}});
+  var fin=steps[steps.length-1];
+  LADDER.forEach(function(L){if(fin.won[L.m]!==L.won)throw new Error("race tally for "+L.m+" ("+fin.won[L.m]+") disagrees with LADDER ("+L.won+")")});
+  if(fin.lead!==LADDER[0].m)throw new Error("race leader disagrees with LADDER[0]");
+  /* states shown: each lead change whose leader differs from the final leader (at most the last 3), then the final state */
+  var ch=[];steps.forEach(function(s,j){if((j===0||s.lead!==steps[j-1].lead)&&s.lead!==fin.lead)ch.push(s)});
+  var states=ch.slice(-3).concat([fin]);
+  var maxWon=Math.max.apply(null,MODEL_KEYS.map(function(m){return fin.won[m]}));
+  if(maxWon>10)throw new Error("a win count passes 10; the win blocks do not fit");
+  var firstGrok={};MODEL_KEYS.forEach(function(m){var s=steps.filter(function(x){return x.has[m]})[0];firstGrok[m]=s?s.n:null});
+  /* the bet moment: SIM.betDate || CONFIG.betDate, else the NVDA row's call date plus one weekday, 16:00 New York */
+  var nv=[].concat(UPCOMING,PENDING).filter(function(u){return u.ticker==="NVDA"})[0];
+  var b=md(SIM.betDate||CONFIG.betDate),betSrc="SIM.betDate || CONFIG.betDate",BET=null,bd=null;
+  if(b){BET=nyClose(b[0],b[1],b[2]);bd=new Date(Date.UTC(b[0],b[1],b[2]))}
+  else if(nv&&md(nv.called)){var c0=md(nv.called),dt=new Date(Date.UTC(c0[0],c0[1],c0[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);
+    BET=nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate());bd=dt;betSrc="UPCOMING NVDA row (round "+nv.n+") call date "+nv.called+", next weekday, 16:00 New York (the site's rule)"}
+  if(!BET)throw new Error("no bet date can be found (no SIM.betDate, CONFIG.betDate or NVDA row)");
+  if(!nv)throw new Error("no NVDA row in UPCOMING or PENDING (the ticket shows its ticker)");
+  if(asof>BET-SIM.leadHours*3600e3)throw new Error("asof is past the freeze ("+SIM.leadHours+" h before the bet)");
+  var secs=Math.floor((BET-asof)/1e3);
+  var ad=new Date(asof);
+  return {asof:asof,asofTxt:MON[ad.getUTCMonth()]+" "+ad.getUTCDate(),RS:RS,LAST:LAST,steps:steps,states:states,fin:fin,maxWon:maxWon,firstCall:firstGrok,
+    BET:BET,betSrc:betSrc,betTxt:MON[bd.getUTCMonth()]+" "+bd.getUTCDate(),secs:secs,nv:nv,
+    pool:Math.round(SIM.poolShare*100),ops:100-Math.round(SIM.poolShare*100),lev:SIM.leverage,lead:SIM.leadHours}}
+var D=boardData();window.R2B_DATA={asofTxt:D.asofTxt,betTxt:D.betTxt,betSrc:D.betSrc,secs:D.secs,states:D.states.map(function(s){return {n:s.n,order:s.order,won:s.won,lead:s.lead}})};
+
+/* the copy, bound to its sources */
+var C={};
+C.hero=[S("WE’RE PUTTING","owner copy (CLAUDE.md hero)"),S("BUYBACKS IN THE","owner copy"),S("HANDS OF AN AI.","owner copy")];
+C.ez=S("$EZ","fixed (the coin)");
+C.fromLaunch=S("FROM LAUNCH,","CONFIG.launched=false (ca empty)");
+C.sell=S("SELL ▼","fixed (tape)");C.buy=S("BUY ▲","fixed (tape)");C.fee=S("FEE","fixed");
+C.pool=S(D.pool+"%","SIM.poolShare ("+SIM.poolShare+")");
+C.ofFees=S("OF $EZ FEES","fixed (69% of every $EZ trading fee; FIX R2: names the coin, so the fees are not read as stock-trade fees)");
+C.toPot=S("→ THE $ POT","fixed (gold $ glyph)");
+C.ops=S(D.ops+"% RUNS EZ","100 - SIM.poolShare");
+C.four=[S(MODEL_KEYS.length+" AIs CALL","MODEL_KEYS.length"),S("EARNINGS.","fixed")];
+C.wins=S("WINS","fixed (the count column: rounds won)");
+C.names={};MODEL_KEYS.forEach(function(m){C.names[m]=S(MODELS[m].name.toUpperCase(),"MODELS["+m+"].name")});
+D.states.forEach(function(s,k){S("STATE "+(k+1)+" after round "+s.n+": "+s.order.map(function(m){return m+" "+(s.has[m]?s.won[m]:"(no calls yet)")}).join(", ")+"; #1 "+s.lead,"ROUNDS[].win tally, site rank rule")});
+C.freeze=[S(D.lead+" HOURS BEFORE","SIM.leadHours ("+D.lead+")"),S("NVIDIA REPORTS,","fixed"),S("THE LEADERBOARD","fixed"),S("FREEZES.","fixed (the snowflake read as an asterisk: dropped)")];
+C.call=[S("THE #1 AI MAKES","fixed (X2: the AI in first place makes the call)"),S("THE CALL.","fixed")];
+C.nvda=S(D.nv.ticker,"UPCOMING NVDA row (round "+D.nv.n+")");
+C.pair=[S(D.lev+"x LEVERAGE.","SIM.leverage ("+D.lev+")"),S("THE POT CAN","fixed (paired with leverage)"),S("BE WIPED OUT.","fixed (paired with leverage)")];
+C.lanes=[S("✓ RIGHT","fixed"),S("✗ WRONG","fixed"),S("BUYBACK","fixed"),S("WIPEOUT","fixed")];
+C.bet=[S("NVIDIA BET IN","fixed (NVIDIA has not announced its date)"),S("PLANNED · "+D.betTxt,D.betSrc)];
+C.units=["DAYS","HRS","MIN","SEC"];
+C.st={fees:S("FEES FROM LAUNCH","CONFIG.launched=false"),hl:S("PLANNED · ON HYPERLIQUID","fixed (the bet venue)"),
+  end:S("PLANNED "+D.betTxt+" · AS OF "+D.asofTxt,D.betSrc+"; asof param"),
+  race:D.states.map(function(s,k){return k<D.states.length-1?S("AFTER ROUND "+s.n,"race state "+(k+1)):S("AS OF "+D.asofTxt+" · ROUND "+s.n,"asof param; ROUNDS latest graded .n")})};
+C.legal=[S(LEGAL1,"fixed (brief; checked against LABS[MODEL_KEYS])"),S(LEGAL2,"fixed")];
+C.card=S("$EZ is a memecoin. Not financial advice. The pot can be wiped out.","fixed (disclaimer, once)");
+C.fca=UK?S("Don’t invest unless you’re prepared to lose all the money you invest. This is a high-risk investment and you should not expect to be protected if something goes wrong.","fixed: FCA risk warning, exact (ez-hype.html #band)"):null;
+S(D.secs+" s from AS OF to the bet (countdown start)","asof param; "+D.betSrc);
+/* banned words in anything on screen */
+STRINGS.forEach(function(s){var t=s.text;
+  if(/\block(s|ed)?\b/i.test(t)||/at least/i.test(t)||/[—–]/.test(t)||/10X/.test(t)||/jackpot/i.test(t)||/guaranteed/i.test(t))throw new Error("banned word in on-screen string: "+t)});
+window.R2B_STRINGS=STRINGS;
+
+/* =====================================================================================================
+   2. THE BOARD. 120 x 120 discs: columns 0..119, rows -24..95. Poster pose: columns 0..95 x rows 0..95 at 11.25 px.
+   ===================================================================================================== */
+var W=120,H=120,RO=24,NC=W*H,PITCH=11.25;
+function ix(c,r){return (r+RO)*W+c}
+var OFF=0,IV=1,GO=2,GR=3,RD=4,SL=5,SB=6;
+var ROFF=UK?0:7;            /* nonuk: the story rows sit 7 rows lower (a 72-row budget, centred); the poster is re-laid */
+function R(r){return r+ROFF}
+var MAXROW=UK?71:85;
+
+/* ---- 5x7 face. Digits are X2's chip table F (v24-live-x2.html). ---- */
+var G5={};function defG(ch,s){var rows=s.split(" ");G5[ch]={w:rows[0].length,r:rows}}
+var F={0:"01110100011000110001100011000101110",1:"00100011000010000100001000010001110",2:"01110100010000100010001000100011111",3:"11110000010000101110000010000111110",
+4:"00010001100101010010111110001000010",5:"11111100001111000001000011000101110",6:"00110010001000011110100011000101110",7:"11111000010001000100010000100001000",
+8:"01110100011000101110100011000101110",9:"01110100011000101111000010001001100"};
+Object.keys(F).forEach(function(d){var s=F[d],a=[];for(var i=0;i<7;i++)a.push(s.slice(i*5,i*5+5));defG(d,a.join(" "))});
+var L5={A:"01110 10001 10001 11111 10001 10001 10001",B:"11110 10001 10001 11110 10001 10001 11110",C:"01110 10001 10000 10000 10000 10001 01110",
+D:"11110 10001 10001 10001 10001 10001 11110",E:"11111 10000 10000 11110 10000 10000 11111",F:"11111 10000 10000 11110 10000 10000 10000",
+G:"01110 10001 10000 10111 10001 10001 01111",H:"10001 10001 10001 11111 10001 10001 10001",I:"111 010 010 010 010 010 111",J:"00111 00010 00010 00010 00010 10010 01100",
+K:"10001 10010 10100 11000 10100 10010 10001",L:"10000 10000 10000 10000 10000 10000 11111",M:"10001 11011 10101 10101 10001 10001 10001",
+N:"10001 10001 11001 10101 10011 10001 10001",O:"01110 10001 10001 10001 10001 10001 01110",P:"11110 10001 10001 11110 10000 10000 10000",
+Q:"01110 10001 10001 10001 10101 10010 01101",R:"11110 10001 10001 11110 10100 10010 10001",S:"01111 10000 10000 01110 00001 00001 11110",
+T:"11111 00100 00100 00100 00100 00100 00100",U:"10001 10001 10001 10001 10001 10001 01110",V:"10001 10001 10001 10001 10001 01010 00100",
+W:"10001 10001 10001 10101 10101 10101 01010",X:"10001 10001 01010 00100 01010 10001 10001",Y:"10001 10001 01010 00100 00100 00100 00100",
+Z:"11111 00001 00010 00100 01000 10000 11111",x:"00000 00000 10001 01010 00100 01010 10001",s:"00000 00000 01111 10000 01110 00001 11110",
+".":"0 0 0 0 0 0 1",",":"00 00 00 00 00 01 01 10",":":"0 0 1 0 0 1 0","%":"11001 11010 00010 00100 01000 01011 10011",
+"$":"00100 01111 10100 01110 00101 11110 00100","'":"1 1 0 0 0 0 0","#":"01010 01010 11111 01010 11111 01010 01010","?":"01110 10001 00001 00010 00100 00000 00100",
+"·":"0 0 0 1 0 0 0",
+"▲":"0001000 0011100 0011100 0111110 0111110 1111111 1111111","▼":"1111111 1111111 0111110 0111110 0011100 0011100 0001000",
+"✓":"0000000 0000001 0000011 1000110 1101100 0111000 0010000","✗":"1000001 1100011 0110110 0011100 0110110 1100011 1000001",
+"❄":"1001001 0101010 0011100 1111111 0011100 0101010 1001001","→":"0000000 0000100 0000010 1111111 0000010 0000100 0000000"};
+Object.keys(L5).forEach(function(k){defG(k,L5[k])});
+/* 3x5 mini face for the unit labels */
+var G3={};[["D","110 101 101 101 110"],["A","010 101 111 101 101"],["Y","101 101 010 010 010"],["S","011 100 010 001 110"],["H","101 101 111 101 101"],
+ ["R","110 101 110 101 101"],["M","10001 11011 10101 10001 10001"],["I","111 010 010 010 111"],["N","1001 1101 1011 1001 1001"],["E","111 100 110 100 111"],["C","011 100 100 100 011"]]
+ .forEach(function(p){var r=p[1].split(" ");G3[p[0]]={w:r[0].length,r:r}});
+function tw(s,tab){tab=tab||G5;var w=0,ch=Array.from(s);ch.forEach(function(c,i){if(c===" ")w+=2;else{if(!tab[c])throw new Error("no glyph for "+c);w+=tab[c].w+1}});return w-1}
+
+/* ---- big type: Mona Sans 75/800 (font H) rasterised onto the disc grid, 8x8 supersampled, 0.42 coverage ---- */
+var SS=8,BIGFAM=BIGF==="mona"?"MS":"IS",BIGW=BIGF==="mona"?800:700;
+function bigCtx(px){var g=document.createElement("canvas").getContext("2d");g.font=BIGW+" "+px+"px "+BIGFAM;g.fontStretch="condensed";return g}
+var CAPR=(function(){return 0})();
+function capRatio(){var g=bigCtx(1000);var m=g.measureText("H");return m.actualBoundingBoxAscent/1000}
+function rast(cols,rows,draw){var cv=document.createElement("canvas");cv.width=cols*SS;cv.height=rows*SS;var g=cv.getContext("2d");g.fillStyle="#fff";draw(g);
+  var d=g.getImageData(0,0,cv.width,cv.height).data,m=new Float32Array(cols*rows);
+  for(var y=0;y<rows;y++)for(var x=0;x<cols;x++){var a=0;for(var i=0;i<SS;i++){var o=((y*SS+i)*cols*SS+x*SS)*4+3;for(var j=0;j<SS;j++)a+=d[o+j*4]}m[y*cols+x]=a/(SS*SS*255)}
+  return {w:cols,h:rows,m:m}}
+/* a string with its cap height = cap rows; returns the mask and capTop (rows above the cap line) */
+function bigText(str,cap){var px=cap*SS/CAPR,g=bigCtx(px),tm=g.measureText(str);
+  var asc=tm.actualBoundingBoxAscent,des=Math.max(0,tm.actualBoundingBoxDescent),lft=tm.actualBoundingBoxLeft,rgt=tm.actualBoundingBoxRight;
+  var capPx=cap*SS,above=Math.max(0,Math.ceil((asc-capPx)/SS-0.15)),below=Math.max(0,Math.ceil(des/SS-0.15));
+  var cols=Math.ceil((lft+rgt)/SS)+1,rows=above+cap+below;
+  var r=rast(cols,rows,function(c){c.font=BIGW+" "+px+"px "+BIGFAM;c.fontStretch="condensed";c.textBaseline="alphabetic";c.fillText(str,lft+2,(above+cap)*SS)});
+  r.capTop=above;return trimMask(r,0.42)}
+function trimMask(r,th){var x0=r.w,x1=-1,y0=r.h,y1=-1;for(var y=0;y<r.h;y++)for(var x=0;x<r.w;x++)if(r.m[y*r.w+x]>th){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  var w=x1-x0+1,h=r.h,m=new Uint8Array(w*h);for(var y2=0;y2<h;y2++)for(var x2=0;x2<w;x2++)m[y2*w+x2]=r.m[y2*r.w+x2+x0]>th?1:0;
+  return {w:w,h:h,m:m,capTop:r.capTop||0,y0:y0,y1:y1}}
+/* a glyph fitted to a box (w x h discs), centred, mask threshold th */
+function fitGlyph(ch,w,h,th){var px=400,g=bigCtx(px),tm=g.measureText(ch);var gh=tm.actualBoundingBoxAscent+tm.actualBoundingBoxDescent,gw=tm.actualBoundingBoxLeft+tm.actualBoundingBoxRight;
+  var sc=Math.min(h*SS/gh,w*SS/gw);var r=rast(w,h,function(c){c.font=BIGW+" "+(px*sc)+"px "+BIGFAM;c.fontStretch="condensed";c.textBaseline="alphabetic";
+    c.fillText(ch,(w*SS-gw*sc)/2+tm.actualBoundingBoxLeft*sc,(h*SS-gh*sc)/2+tm.actualBoundingBoxAscent*sc)});
+  var m=new Uint8Array(w*h);for(var i=0;i<w*h;i++)m[i]=r.m[i]>(th||0.45)?1:0;return {w:w,h:h,m:m}}
+function polyMask(pts,w,h){var r=rast(w,h,function(c){c.beginPath();pts.forEach(function(p,i){var x=p[0]*w*SS,y=p[1]*h*SS;if(i)c.lineTo(x,y);else c.moveTo(x,y)});c.closePath();c.fill()});
+  var m=new Uint8Array(w*h);for(var i=0;i<w*h;i++)m[i]=r.m[i]>0.45?1:0;return {w:w,h:h,m:m}}
+var UPT=[[.5,0],[1,1],[0,1]],DNT=[[0,0],[1,0],[.5,1]];
+
+/* =====================================================================================================
+   3. LAYOUTS. A layout is a full board of faces plus the element boxes it reserves (collision and channel checks).
+   ===================================================================================================== */
+function Lay(name,base){this.name=name;this.f=base?new Uint8Array(base.f):new Uint8Array(NC);this.own=base?new Int16Array(base.own):new Int16Array(NC).fill(-1);
+  this.ids=base?base.ids.slice():[];this.col=null}
+Lay.prototype.set=function(c,r,v){if(c<0||c>=W||r<-RO||r>=H-RO)return;var i=ix(c,r);this.f[i]=v;if(this.col&&v)this.col.push(i)};
+Lay.prototype.clear=function(r0,r1,c0,c1){c0=c0==null?0:c0;c1=c1==null?W-1:c1;for(var r=r0;r<=r1;r++)for(var c=c0;c<=c1;c++){if(c<0||c>=W||r<-RO||r>=H-RO)continue;var i=ix(c,r);this.f[i]=OFF;this.own[i]=-1}};
+/* reservations are cells (lit cells, or a whole tile) with a 1-disc margin: two elements may not touch */
+Lay.prototype.claim=function(name,cells,grp){var id=this.ids.length,me=this;this.ids.push({name:name,grp:grp||null});
+  cells.forEach(function(i){var c=i%W,r=Math.floor(i/W);for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){var cc=c+dc,rr=r+dr;if(cc<0||cc>=W||rr<0||rr>=H)continue;var o=me.own[rr*W+cc];
+    if(o>=0&&o!==id&&!(grp&&me.ids[o].grp===grp)){var msg="layout "+me.name+": "+name+" collides with "+me.ids[o].name+" at c"+cc+" r"+(rr-RO);if(DBG){if(!me.__w)console.log("COLLIDE "+msg);me.__w=1}else throw new Error(msg)}}});
+  cells.forEach(function(i){me.own[i]=id})};
+Lay.prototype.reserve=function(name,c0,r0,c1,r1,grp){var cells=[];for(var r=r0;r<=r1;r++)for(var c=c0;c<=c1;c++)if(c>=0&&c<W&&r>=-RO&&r<H-RO)cells.push(ix(c,r));this.claim(name,cells,grp)};
+Lay.prototype.begin=function(){this.col=[]};Lay.prototype.end=function(name,grp){var cells=this.col;this.col=null;if(name)this.claim(name,cells,grp);return cells};
+/* 1x board face; col is a number or [lo,hi] (centred); fc: face or function(char,index) -> face */
+Lay.prototype.text=function(s,c,r,fc,opt){opt=opt||{};var tab=opt.tab||G5,w=tw(s,tab)+(opt.gapBefore?Array.from(s).filter(opt.gapBefore).length*2:0);
+  if(tab===G5&&w>92)throw new Error("1x line wider than 92 discs: "+s+" ("+w+")");
+  if(Array.isArray(c))c=Math.round((c[0]+c[1]+1-w)/2);
+  var x=c,me=this,chs=Array.from(s);this.begin();
+  chs.forEach(function(ch,k){if(ch===" "){x+=2;return}var g=tab[ch],face=typeof fc==="function"?fc(ch,k):fc;
+    if(opt.gapBefore&&opt.gapBefore(ch))x+=1;
+    g.r.forEach(function(row,ry){for(var rx=0;rx<row.length;rx++)if(row[rx]==="1")me.set(x+rx,r+ry,face)});x+=g.w+1;
+    if(opt.gapBefore&&opt.gapBefore(ch))x+=1});
+  this.end(opt.noReserve?null:(opt.name||s),opt.grp);
+  return {c0:c,c1:x-2,w:x-1-c}};
+Lay.prototype.mask=function(mk,c,r,fc,name,grp){this.begin();for(var y=0;y<mk.h;y++)for(var x=0;x<mk.w;x++)if(mk.m[y*mk.w+x])this.set(c+x,r+y,typeof fc==="function"?fc(x,y):fc);
+  this.end(name,grp);return c+mk.w};
+Lay.prototype.rect=function(c0,r0,c1,r1,v){for(var r=r0;r<=r1;r++)for(var c=c0;c<=c1;c++)this.set(c,r,v)};
+Lay.prototype.frame=function(c0,r0,c1,r1,v){for(var c=c0;c<=c1;c++){this.set(c,r0,v);this.set(c,r1,v)}for(var r=r0;r<=r1;r++){this.set(c0,r,v);this.set(c1,r,v)}};
+/* checks every story layout must pass */
+function checkLay(L){for(var r=0;r<H-RO;r++)for(var c=0;c<W;c++){var v=L.f[ix(c,r)];if(!v)continue;
+    if(r>=14&&r>MAXROW)throw new Error("layout "+L.name+": story disc below the "+(UK?"band (row 72+)":"bottom limit")+" at c"+c+" r"+r)}}
+
+/* ---- the $ vessel: Mona Sans "$" fitted to its box; rim (ivory, 2 discs where the stroke allows), interior fills gold from the bottom ---- */
+var RIMDEEP=6;
+function makeVessel(w,h,rimDeep){var RD0=RIMDEEP;if(rimDeep)RIMDEEP=rimDeep;try{return makeVessel0(w,h)}finally{RIMDEEP=RD0}}
+function makeVessel0(w,h){var g=fitGlyph("$",w,h,0.5),m=g.m,dist=new Int16Array(w*h).fill(99),q=[];
+  for(var y=0;y<h;y++)for(var x=0;x<w;x++){var i=y*w+x;if(!m[i]){dist[i]=0;q.push(i)}}
+  for(var x2=-1;x2<=w;x2++){}
+  /* cells on the box edge that are inside count as next to the outside */
+  for(var y3=0;y3<h;y3++)for(var x3=0;x3<w;x3++){var i3=y3*w+x3;if(m[i3]&&(x3===0||y3===0||x3===w-1||y3===h-1)&&dist[i3]>1){dist[i3]=1;q.push(i3)}}
+  for(var qi=0;qi<q.length;qi++){var p=q[qi],px=p%w,py=(p-px)/w,dv=dist[p];[[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){var nx=px+d[0],ny=py+d[1];if(nx<0||ny<0||nx>=w||ny>=h)return;var j=ny*w+nx;if(dist[j]>dv+1){dist[j]=dv+1;q.push(j)}})}
+  var maxd=0;for(var k=0;k<w*h;k++)if(m[k])maxd=Math.max(maxd,dist[k]);
+  /* rim: dist 1, plus dist 2 where the local stroke is deep enough to keep an interior */
+  var rim=new Uint8Array(w*h),inn=new Uint8Array(w*h);
+  for(var y4=0;y4<h;y4++)for(var x4=0;x4<w;x4++){var i4=y4*w+x4;if(!m[i4])continue;var d4=dist[i4];
+    if(d4===1)rim[i4]=1;else if(d4===2){var deep=false;for(var a=-2;a<=2&&!deep;a++)for(var b2=-2;b2<=2;b2++){var nx2=x4+a,ny2=y4+b2;if(nx2>=0&&ny2>=0&&nx2<w&&ny2<h&&dist[ny2*w+nx2]>=RIMDEEP){deep=true;break}}rim[i4]=deep?1:0;inn[i4]=deep?0:1}
+    else inn[i4]=1}
+  var top=h,bot=-1;for(var y5=0;y5<h;y5++)for(var x5=0;x5<w;x5++)if(inn[y5*w+x5]){top=Math.min(top,y5);bot=Math.max(bot,y5)}
+  /* the neck: the topmost interior cells (the stem) */
+  var neck=[];for(var x6=0;x6<w;x6++)if(inn[top*w+x6])neck.push(x6);
+  var cnt=0;for(var k2=0;k2<w*h;k2++)if(inn[k2])cnt++;
+  var bx0=w,bx1=-1,by0=h,by1=-1;for(var y7=0;y7<h;y7++)for(var x7=0;x7<w;x7++)if(m[y7*w+x7]){bx0=Math.min(bx0,x7);bx1=Math.max(bx1,x7);by0=Math.min(by0,y7);by1=Math.max(by1,y7)}
+  return {w:w,h:h,m:m,rim:rim,inn:inn,top:top,bot:bot,neck:neck,nIn:cnt,maxd:maxd,bb:[bx0,by0,bx1,by1],topRim:(function(){for(var y=0;y<h;y++)for(var x=0;x<w;x++)if(m[y*w+x])return y;return 0})()}}
+/* the level row for a fill fraction (0 = empty, 1 = full) */
+function vLevelRow(V,frac){return V.bot+1-(V.bot-V.top+1)*Math.max(0,Math.min(1,frac))}
+function drawVessel(L,V,c,r,frac,name,grp){var lr=vLevelRow(V,frac);for(var y=0;y<V.h;y++)for(var x=0;x<V.w;x++){var i=y*V.w+x;
+    if(V.rim[i])L.set(c+x,r+y,IV);else if(V.inn[i])L.set(c+x,r+y,y>=lr-1e-9?GO:OFF)}
+  if(name){var cells=[];for(var y2=0;y2<V.h;y2++)for(var x2=0;x2<V.w;x2++)if(V.m[y2*V.w+x2])cells.push(ix(c+x2,r+y2));L.claim(name,cells,grp)}}
+
+var PALN={1:"#f3ede0",2:"#ffc72c",3:"#1fcf6b",4:"#ff4136",5:"#7681b6",6:"#a9b1e2"};
+/* =====================================================================================================
+   4. THE TIMELINE (one table, read by picture and sound). Seconds.
+   ===================================================================================================== */
+/* FIX R1: the fee story has one more 2 s bar (B1 3.0..6.0 with a 2.25 s locked read, B2 6.0..9.0); every later beat is +2.0 s, so
+   the downbeats and the sound stay on the bar grid. coin0: B0's 2x coin stream (one every 0.5 s); ripple: the $EZ flip ripples;
+   glintH: one glint across the ticket heap in B6; capClear: the lane captions flip off before the disclaimer card lands. */
+var T={b0:0,coin0:{every:0.5,first:-0.5,last:2.5},ripple:[0.5,1.5,2.5],b1:3.0,mv1:[3.0,3.375],lockRead:[3.375,5.625],coins1:[3.75,4.25,4.75,5.25],
+  mv2:[5.625,6.0],card:5.625,b2:6.0,pot:6.125,ops:6.25,
+  b3:9.0,settle:9.75,b4:11.0,open:[11.25,12.0],freeze:12.0,frameTrace:[12.0,12.2],glintF:[12.1,12.7],callIn:13.325,quiet:[13.6,14.0],
+  b5:14.0,punch:[14.0,14.6],ticket:14.75,pour:[15.0,15.5],ratchet:[15.25,16.0],b6:16.0,glintH:[17.0,17.8],b7:19.0,lanes:[19.25,20.0],capClear:21.1,
+  b8:21.0,dis1:[21.4,21.9],glintC:[23.0,24.5],dis2:[25.5,25.75],b9:25.75,end:26.0};
+/* FIX R2 (films-r2/board/fix-r2.md), clarity holds by the rule 0.6 s + 0.33 s a word:
+   callIn: "THE #1 AI MAKES / THE CALL." clacks in over the frozen card at 13.325 s (it came with the hit at 14.0 and held 1.97 s; it
+     needs 2.58 s). The head of the freeze card now lands in one clack at T.b4 (it was typed word by word until 11.375 s), so it still
+     holds 2.25 s or more. No beat moves: the hit stays at 14.0, the pair at 16.0.
+   capClear: BUYBACK | WIPEOUT stay until 21.1 s (they held 1.70 s; the lane read needs 1.92 s): the B8 radial rewrite leaves their
+     rows, they clack off at T.capClear (21.1 s) and the disclaimer card lands on the cleared rows after that flip (card0 below).
+   dis1: the chip dissolve ends at 21.9 s, before the first LED tick at 22.0 s (the tick landed mid-dissolve). */
+T.card0=Math.ceil((T.capClear+3/60)*FPS-1e-9);T.card1=Math.round(T.b9*FPS)-1;   /* the disclaimer: f1269..f1544, 276 frames (4.6 s) */
+if(T.card0<Math.round(T.b8*FPS))throw new Error("the disclaimer card must not land before B8");
+if(T.dis1[1]>T.b8+1)throw new Error("the chip dissolve must end before the first LED tick");
+if(!(T.callIn>T.freeze&&T.callIn<T.quiet[0]))throw new Error("the call line must land inside the freeze's still stretch, before the quiet");
+if(T.end!==DUR)throw new Error("T.end ("+T.end+") must equal DUR ("+DUR+")");
+if(T.card1-T.card0+1<274)throw new Error("the disclaimer must hold 4.5 s or more (and 4.56 s, the hold rule for its 12 words)");
+window.R2B_T=T;
+
+/* =====================================================================================================
+   5. LAYOUTS FOR EACH BEAT (uk rows; nonuk shifts the story rows by ROFF, the poster is re-laid)
+   ===================================================================================================== */
+CAPR=capRatio();
+var LAYS={},MK={};
+/* ---- B0 poster ---- */
+(function(){var L=new Lay("B0 poster");
+  var capEZ=UK?22:24,capH=UK?9:11;
+  /* $EZ: three glyphs, own colours, 2-disc gaps */
+  var gS=bigText("$",capEZ),gE=bigText("E",capEZ),gZ=bigText("Z",capEZ);
+  /* nonuk: the $EZ + hero block is centred in the 72-row budget */
+  var blockH=(gS.h)+6+2*10+7,shift=UK?0:Math.max(0,Math.floor((85-14-blockH)/2));
+  var top=15+shift+Math.max(gS.capTop,0);   /* cap line row */
+  var x=3;x=L.mask(gS,x,top-gS.capTop,GO)+2;x=L.mask(gE,x,top-gE.capTop,GR)+2;x=L.mask(gZ,x,top-gZ.capTop,RD);
+  L.reserve("$EZ",3,15+shift,x-1,top-gS.capTop+gS.h-1);MK.ezEnd=x;MK.ezBot=top-gS.capTop+gS.h-1;
+  /* hero: the largest cap (<= capH) at which every line fits 92 discs */
+  if(HERO==="dots"){var p1=UK?9:10,y1=UK?Math.max(MK.ezBot+5,71-6-2*p1):MK.ezBot+7;C.hero.forEach(function(t,k){L.text(t.replace("’","'"),3,y1+k*p1,IV,{name:"hero"+k})});MK.heroRows=[y1,y1+p1,y1+2*p1];MK.heroCap=7}
+  else{var cap=HCAP||capH,hs;for(;cap>=7;cap--){hs=C.hero.map(function(t){return bigText(t,cap)});if(hs.every(function(h){return h.w<=92}))break}
+  if(cap<8)throw new Error("hero does not fit at cap 8");MK.heroCap=cap;MK.heroW=hs.map(function(h){return h.w});
+  var y0=UK?38:(MK.ezBot+5),pitch=UK?Math.floor((71-38-cap+1)/2):cap+3;
+  hs.forEach(function(h,k){var r=y0+k*pitch;L.mask(h,3,r-h.capTop,IV,"hero"+k)});
+  MK.heroRows=[y0,y0+pitch,y0+2*pitch]}
+  checkLay(L);LAYS.b0=L})();
+/* ---- the vessel for B1/B2 ---- */
+var VB=makeVessel(32,48),VBc=60,VBr=R(23);
+/* ---- B1 top section + vessel ---- */
+(function(){var L=new Lay("B1 fee machine");
+  drawVessel(L,VB,VBc,VBr,0.10,"vessel");
+  /* top section (rows -24..13): hidden at the poster pose */
+  L.text(C.fromLaunch,43,-11,IV,{name:"FROM LAUNCH (top)"});
+  /* the gate */
+  for(var r=-2;r<=6;r++)L.set(76,r,IV);
+  /* ivory: it is the mechanic, not a label. FIX R2: at column 83 (was 80), 4 discs clear of the coin channel (columns 74..78), more
+     than the face's word space (3), so the falling gold $ never sits beside it as a "$FEE" cashtag */
+  MK.feeCol=83;L.text(C.fee,MK.feeCol,7,IV,{name:"FEE"});
+  LAYS.b1=L})();
+MK.gateCol=76;MK.tapeRow=-1;
+/* ---- B2 card ---- */
+var B2={};
+(function(){var L=new Lay("B2 card");drawVessel(L,VB,VBc,VBr,0.12,"vessel");
+  var t=L.text(C.fromLaunch,3,R(15),IV,{name:"FROM LAUNCH card"});B2.fl=t;
+  /* FIX R1: "69%" at cap 18 (rows 24..41) and "OF FEES" under it (rows 44..50), so the card reads
+     "FROM LAUNCH, 69% OF FEES -> THE $ POT. 31% RUNS EZ." Everything stays in columns 3..58, clear of the vessel at column 60. */
+  var g69=bigText(C.pool,18);L.mask(g69,3,R(24)-g69.capTop,GO,"69%");B2.g69=g69;B2.r69=R(24)-g69.capTop;
+  var tf=L.text(C.ofFees,3,R(44),IV,{name:"OF FEES"});B2.of=tf;
+  LAYS.b2a=L;
+  var L2=new Lay("B2 card +pot",L);
+  var tp=L2.text(C.toPot,3,R(53),function(ch){return ch==="$"?GO:IV},{name:"THE $ POT",gapBefore:function(ch){return ch==="$"}});
+  LAYS.b2b=L2;
+  var L3=new Lay("B2 card +ops",L2);var o=L3.text(C.ops,3,R(63),SB,{name:"31% RUNS EZ"});
+  /* the vessel's box starts at column 60; the reservations (1-disc margins) already keep the text off the $ itself */
+  [3+g69.w-1,tf.c1,tp.c1,o.c1].forEach(function(c){if(c>59)throw new Error("B2 card text passes column 59 (the vessel box is at 60): "+c)});
+  /* the 31% lands at the end of its own line (a tray glyph read as a letter in the first styleframes) */
+  B2.tray=[o.c1+2,o.c1+2,R(63),R(67)];
+  checkLay(L3);LAYS.b2c=L3})();
+/* ---- B3 race ---- */
+var RACE={rows:[35,44,53,62].map(R),logoC:15,nameC:24,blkC:62,cntC:88};
+RACE.bw=D.maxWon>7?2:3;RACE.bstep=RACE.bw+1;
+function raceLay(state,name,base){var L=new Lay(name);
+  L.text(C.four[0],3,R(15),IV,{name:"head1"});L.text(C.four[1],3,R(25),IV,{name:"head2"});
+  L.text(C.wins,RACE.cntC+5-tw(C.wins),R(25),SB,{name:"WINS"});   /* labels the count column (right edge = a 1-digit count's) */
+  var order=state?state.order:MODEL_KEYS;
+  order.forEach(function(m,k){var r=RACE.rows[k],ranked=state&&state.has[m];
+    if(ranked)L.text("#"+(k+1),3,r,k===0?GO:SL,{name:"rank"+k});
+    L.reserve("logo"+k,RACE.logoC,r,RACE.logoC+6,r+6);
+    L.text(C.names[m],RACE.nameC,r,IV,{name:"name"+k});
+    if(ranked){var n=state.won[m];for(var b=0;b<n;b++)L.rect(RACE.blkC+b*RACE.bstep,r+1,RACE.blkC+b*RACE.bstep+RACE.bw-1,r+5,GO);
+      if(n)L.reserve("blocks"+k,RACE.blkC,r+1,RACE.blkC+n*RACE.bstep-2,r+5);
+      L.text(String(n),RACE.cntC,r,IV,{name:"count"+k})}});
+  checkLay(L);return L}
+LAYS.b3=[raceLay(null,"B3 names")].concat(D.states.map(function(s,k){return raceLay(s,"B3 state "+(k+1))}));
+/* ---- B4 freeze ---- */
+var FZ={bars:[52,57,62,67].map(R),blkC0:3,barC0:9,frame:[1,R(50),94,R(71)]};
+(function(){var L=new Lay("B4 freeze words");
+  LAYS.b4w=[];
+  var l1=C.freeze[0],l2=C.freeze[1];
+  /* build word by word: each step is a layout with one more word (FIX R2: only the last step, the full head, is used now) */
+  var parts=[l1.split(" "),l2.split(" ")];
+  var steps=[[parts[0].slice(0,2).join(" "),null],[l1,null],[l1,parts[1][0]],[l1,l2]];
+  steps.forEach(function(st,k){var Lw=new Lay("B4 words "+(k+1));Lw.text(st[0],3,R(15),IV,{name:"fl1"});if(st[1])Lw.text(st[1],3,R(24),IV,{name:"fl2"});LAYS.b4w.push(Lw)});
+  /* the four-line card plus the frame */
+  var Lf=new Lay("B4 frozen");Lf.text(l1,3,R(15),IV,{name:"fl1"});Lf.text(l2,3,R(24),IV,{name:"fl2"});Lf.text(C.freeze[2],3,R(33),IV,{name:"fl3"});
+  Lf.text(C.freeze[3],3,R(42),IV,{name:"fl4"});Lf.reserve("frame",FZ.frame[0],FZ.frame[1],FZ.frame[2],FZ.frame[3]);
+  checkLay(Lf);LAYS.b4f=Lf})();
+/* ---- B5 call ---- */
+var CALL={};
+/* FIX R2: the call's second line sits at row 24 (was 25), the freeze card's pitch: it lands at T.callIn over the frozen card (lines 3 and 4
+   start at row 33) and stays put through the hit */
+CALL.r=[R(15),R(24)];
+(function(){var L=new Lay("B5 call");L.text(C.call[0],3,CALL.r[0],IV,{name:"c1"});L.text(C.call[1],3,CALL.r[1],IV,{name:"c2"});
+  var g1=bigText("#1",24);var x=L.mask(g1,3,R(34)-g1.capTop,GO,"#1 big");
+  var up=polyMask(UPT,18,16),dn=polyMask(DNT,18,16);var ax=Math.max(x+6,44),r0=R(34)+4;
+  L.mask(up,ax,r0,GR,"up",'sel');L.mask(dn,ax+26,r0,RD,"dn",'sel');
+  CALL.bigSel=[[ax-2,r0-2,ax+18+1,r0+16+1],[ax+26-2,r0-2,ax+26+18+1,r0+16+1]];
+  checkLay(L);LAYS.b5a=L;
+  /* 12.75: the vessel (left) and the call ticket (right) */
+  var L2=new Lay("B5 ticket");L2.text(C.call[0],3,CALL.r[0],IV,{name:"c1"});L2.text(C.call[1],3,CALL.r[1],IV,{name:"c2"});
+  CALL.V=makeVessel(20,28);CALL.vc=3;CALL.vr=R(44);CALL.level=0.5;
+  drawVessel(L2,CALL.V,CALL.vc,CALL.vr,CALL.level,"vessel small");
+  var bx=[46,R(44),92,R(71)];CALL.box=bx;L2.frame(bx[0],bx[1],bx[2],bx[3],IV);L2.reserve("ticket",bx[0],bx[1],bx[2],bx[3],"ticket");
+  /* ratchet: 10 slate cells (3 x 2) inside the top edge */
+  CALL.ratchet=[];for(var k=0;k<10;k++){var c0=bx[0]+3+k*4;CALL.ratchet.push([c0,R(46),c0+2,R(47)]);L2.rect(c0,R(46),c0+2,R(47),SL)}
+  var lr=R(49);var t1=L2.text("#1",bx[0]+3,lr,GO,{name:"t#1",grp:"ticket"});
+  var ua=t1.c1+5,da=ua+10;
+  L2.text("▲",ua,lr,GR,{name:"t▲",grp:"ticket"});L2.text("▼",da,lr,RD,{name:"t▼",grp:"ticket"});
+  CALL.sel=[[ua-1,lr-1,ua+7,lr+7],[da-1,lr-1,da+7,lr+7]];
+  L2.text(C.nvda,bx[0]+3,R(59),IV,{name:"NVDA",grp:"ticket"});
+  CALL.heap={c0:da+2,c1:bx[2]-2,rTop:R(58),rBot:bx[3]-1};
+  checkLay(L2);LAYS.b5b=L2})();
+/* the heap: a mound in [c0,c1] x [rTop,rBot]; frac 0..1 of its full height. Returns the cells, bottom rows first */
+function heapCells(hp,frac){var out=[],cw=hp.c1-hp.c0+1,full=hp.rBot-hp.rTop+1;
+  for(var c=hp.c0;c<=hp.c1;c++){var u=(c-hp.c0+.5)/cw*2-1,hgt=Math.round(full*frac*Math.max(0,1-Math.pow(Math.abs(u),2.2)*0.85));
+    for(var k=0;k<hgt;k++)out.push([c,hp.rBot-k])}
+  return out}
+/* ---- B6 pair ---- */
+(function(){var L=new Lay("B6 pair",LAYS.b5b);L.clear(R(14),R(43));
+  C.pair.forEach(function(t,k){L.text(t,3,R(15)+k*10,IV,{name:"pair"+k})});checkLay(L);LAYS.b6=L})();
+/* ---- B7 lanes ---- */
+var LN={};
+(function(){var L=new Lay("B7 lanes");
+  for(var r=R(15);r<=R(66);r++){L.set(47,r,SL);L.set(48,r,SL)}L.reserve("divider",47,R(15),48,R(66));
+  L.text(C.lanes[0],[2,45],R(15),function(ch){return ch==="✓"?GR:IV},{name:"right"});
+  L.text(C.lanes[1],[50,93],R(15),function(ch){return ch==="✗"?RD:IV},{name:"wrong"});
+  var bl=[2,R(25),45,R(56)],br=[50,R(25),93,R(56)];LN.bl=bl;LN.br=br;
+  L.frame(bl[0],bl[1],bl[2],bl[3],IV);L.frame(br[0],br[1],br[2],br[3],IV);L.reserve("boxL",bl[0],bl[1],bl[2],bl[3]);L.reserve("boxR",br[0],br[1],br[2],br[3]);
+  L.text(C.lanes[2],[2,45],R(60),IV,{name:"BUYBACK"});L.text(C.lanes[3],[50,93],R(60),IV,{name:"WIPEOUT"});
+  /* left object: $EZ at its own colours; right: the empty $ vessel in the same box height */
+  var cap=12,gS=bigText("$",cap),gE=bigText("E",cap),gZ=bigText("Z",cap);var w=gS.w+gE.w+gZ.w+4,c=Math.round((bl[0]+bl[2]+1-w)/2),top=R(28)+gS.capTop;
+  var cells=[];function put(g,x,face){for(var y=0;y<g.h;y++)for(var xx=0;xx<g.w;xx++)if(g.m[y*g.w+xx])cells.push([x+xx,top-g.capTop+y,face]);return x+g.w+2}
+  var x=put(gS,c,GO);x=put(gE,x,GR);put(gZ,x,RD);LN.ez=cells;
+  var ezBot=Math.max.apply(null,cells.map(function(p){return p[1]})),ezTop=Math.min.apply(null,cells.map(function(p){return p[1]}));LN.ezTop=ezTop;LN.ezBot=ezBot;
+  /* visual weight = sum of disc luminance (sRGB relative luminance of each face) */
+  var LUM={};[IV,GO,GR,RD,SL,SB].forEach(function(f){var n=parseInt(PALN[f].slice(1),16),c=[(n>>16)&255,(n>>8)&255,n&255].map(function(v){v/=255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4)});LUM[f]=.2126*c[0]+.7152*c[1]+.0722*c[2]});
+  var ezW=cells.reduce(function(a,p){return a+LUM[p[2]]},0),vh=bl[3]-bl[1]-3,best=null;
+  for(var vw=12;vw<=26;vw++){var V=makeVessel(vw,vh,99),n=0;for(var i=0;i<vw*vh;i++)if(V.rim[i])n++;var wt=n*LUM[IV];if(!best||Math.abs(wt-ezW)<Math.abs(best.wt-ezW))best={V:V,wt:wt,n:n}}
+  LN.V=best.V;LN.vc=Math.round((br[0]+br[2]+1-LN.V.w)/2);LN.vr=bl[1]+2;LN.wt=[ezW,best.wt];LN.n=[cells.length,best.n];
+  drawVessel(L,LN.V,LN.vc,LN.vr,0);
+  /* the left heap holds as many gold discs as the right vessel's interior */
+  var nIn=LN.V.nIn,hp={c0:bl[0]+6,c1:bl[2]-6,rTop:ezBot+3,rBot:bl[3]-1};while(heapCells(hp,1).length>nIn*1.08&&hp.c1-hp.c0>8){hp.c0++;hp.c1--}LN.hl=hp;
+  checkLay(L);LAYS.b7=L})();
+/* ---- B8 countdown on the board, laid out as X2's chip dies ---- */
+var CD={c0:18,r0:R(40)};CD.blocks=[CD.c0,CD.c0+14,CD.c0+35,CD.c0+49];CD.lab=CD.r0+8;
+(function(){var L=new Lay("B8 bet");L.text(C.bet[0],3,R(15),IV,{name:"bet1"});L.text(C.bet[1],3,R(25),SB,{name:"bet2"});
+  CD.blocks.forEach(function(c,k){L.reserve("block"+k,c,CD.r0,c+10,CD.r0+6);var u=C.units[k];var w=tw(u,G3);L.text(u,k%2?c:c+11-w,CD.lab,SB,{tab:G3,name:"unit"+k})});
+  /* colons between the two blocks of each die (X2: none between the dies) */
+  [CD.c0+12,CD.c0+47].forEach(function(c){L.set(c,CD.r0+2,IV);L.set(c,CD.r0+4,IV)});
+  checkLay(L);LAYS.b8=L})();
+/* the coin glyph */
+var COIN=G5["$"];
+/* channel check: B0 columns 70..79 rows 14..40 hold only the 2x coin stream, and its spray zone (columns 63..86, rows 32..41) is clear
+   with a free row under it (the hero starts at row 47 in uk, 55 in nonuk);
+   B1/B2 columns 73..79 the fall path (rows 7..neck-1) */
+var C2={c0:70,c1:79,burst:40,spray:[63,86,32,41]};
+(function(){function chk(L,r0,r1,c0,c1){for(var r=r0;r<=r1;r++)for(var c=c0;c<=c1;c++)if(L.f[ix(c,r)]&&!(L===LAYS.b1&&c===76&&r<=6))throw new Error("coin channel holds a story disc in "+L.name+" at c"+c+" r"+r)}
+  chk(LAYS.b0,14,C2.burst,C2.c0,C2.c1);chk(LAYS.b0,C2.spray[2],C2.spray[3],C2.spray[0],C2.spray[1]);
+  for(var c=C2.spray[0];c<=C2.spray[1];c++)if(LAYS.b0.f[ix(c,C2.spray[3]+1)])throw new Error("the B0 spray zone touches a story disc at c"+c);
+  chk(LAYS.b1,7,VBr+VB.topRim-1,73,79);chk(LAYS.b2c,14,VBr+VB.topRim-1,73,79);
+  /* FIX R2: "FEE" keeps more than a word space (3 discs) from the coin's right edge (column 78), so no "$FEE" cashtag forms */
+  if(MK.feeCol-79<4)throw new Error("FEE sits "+(MK.feeCol-79)+" discs from the coin channel; it needs 4 or more")})();
+
+/* =====================================================================================================
+   6. TRANSITIONS (base layouts with waves) and MOVING ELEMENTS
+   ===================================================================================================== */
+function hash(i){var x=(i*2654435761)>>>0;x^=x>>>15;x=(x*2246822519)>>>0;x^=x>>>13;return (x>>>0)/4294967296}
+/* wave delay functions, seconds; each adds a little per-disc jitter so the clatter is organic */
+function wTB(r0,speed,jit){return function(c,r,i){return Math.max(0,(r-r0)/speed)+hash(i*7+1)*(jit||0)}}
+function wLR(c0,speed,jit){return function(c,r,i){return Math.max(0,(c-c0)/speed)+hash(i*7+2)*(jit||0)}}
+function wRad(c0,r0,speed,jit){return function(c,r,i){return Math.hypot(c-c0,r-r0)/speed+hash(i*7+3)*(jit||0)}}
+function wClack(){return function(){return 0}}
+function wRows(r0,r1,fn){return function(c,r,i){return (r>=r0&&r<=r1)?fn(c,r,i):Infinity}}
+var TR=[];   /* {t, lay, d(c,r,i) -> delay; rows: [r0,r1] limit (others untouched)} */
+function tr(t,lay,d,rows,cols){var x={t:t,lay:lay,d:d,rows:rows||null,cols:cols||null};TR.push(x);return x}
+var JIT=1.2/60;
+/* the waves that the moving money layers follow (FIX R1): a layer's old face stays at a disc until that disc's flip starts, and the
+   next beat's moving faces start there only once its flip has finished (flipStart + 3/60) */
+var W1=tr(T.b1,LAYS.b1,wTB(-24,300,JIT));
+tr(T.card,LAYS.b2a,wLR(0,220,JIT),[R(14),R(22)]);       /* "FROM LAUNCH," of the 69% card flips in during move 2 (69% waits for T.b2) */
+TR[TR.length-1].lay=(function(){var L=new Lay("B2 FROM LAUNCH only",LAYS.b1);L.text(C.fromLaunch,3,R(15),IV,{noReserve:true});return L})();
+tr(T.b2,LAYS.b2a,wRad(3+B2.g69.w/2,B2.r69+9,190,JIT*.5),[R(23),R(51)]);   /* 69% OF FEES */
+tr(T.pot,LAYS.b2b,wLR(0,400,JIT*.5),[R(52),R(60)]);
+tr(T.ops,LAYS.b2c,wLR(0,400,JIT*.5),[R(61),R(71)]);
+/* B2 -> clear the top section once out of frame (the camera is back at the poster pose at T.b2) */
+tr(T.b2,(function(){var L=new Lay("B2 top cleared",LAYS.b2c);L.clear(-24,13);return L})(),wClack(),[-24,13]);
+/* B3 */
+var W3=tr(T.b3,LAYS.b3[0],wLR(0,260,JIT));
+var raceT=D.states.map(function(s,k){return D.states.length>1?T.b3+0.25+k*((T.settle-T.b3-0.25)/(D.states.length-1)):T.settle});
+D.states.forEach(function(s,k){tr(raceT[k],LAYS.b3[k+1],wLR(0,1600,JIT*.3),[R(34),R(70)])});
+T.race=raceT;
+/* B4: words and bars */
+var W4;
+(function(){
+  /* FIX R2: the head "24 HOURS BEFORE / NVIDIA REPORTS," lands in one clack at T.b4 (rows 14..31; it was typed word by word until
+     11.375 s, complete at about 11.6 s); the race below still clears with the top-to-bottom wave. The head is then complete from
+     about 11.05 s, which gives the call line (T.callIn) its 2.58 s and still leaves the head 2.25 s. */
+  var Lc=LAYS.b4w[LAYS.b4w.length-1];LAYS.b4c=Lc;var wb=wTB(R(14),320,JIT);
+  W4=tr(T.b4,Lc,function(c,r,i){return r<=R(31)?0:wb(c,r,i)});
+  tr(T.freeze,LAYS.b4f,wClack(),[R(32),R(49)]);
+  /* FIX R2: the call line replaces the head over the frozen board at T.callIn, in one clack (rows 14..31 of the B5 layout: the two call
+     lines); the hit at T.b5 then brings the giant #1, the selector and the punch-in, and the call lines do not flip again */
+  tr(T.callIn,LAYS.b5a,wClack(),[R(14),R(31)])})();
+/* B5 */
+var W5=tr(T.b5,LAYS.b5a,wClack());
+var WT=tr(T.ticket,LAYS.b5b,wTB(R(34),260,JIT),[R(34),R(71)]);
+/* B6: the pair in one clack on the same frame */
+tr(T.b6,LAYS.b6,wClack(),[R(14),R(43)]);
+/* B7 */
+/* FIX R2: 500 rows/s (was 380), so BUYBACK | WIPEOUT are written about 2 frames sooner */
+var W7=tr(T.b7,LAYS.b7,wTB(R(14),500,JIT));
+/* B8 radial rewrite from the centre. FIX R2: it leaves the caption rows (58..68: BUYBACK | WIPEOUT and the divider's foot), which
+   clack off at T.capClear; the disclaimer card lands on those rows once that flip is done (T.card0; uk card y 690..814) */
+var CAPROWS=[R(58),R(68)],w8=wRad(48,R(42),330,JIT*.5);
+var W8=tr(T.b8,LAYS.b8,function(c,r,i){return (r>=CAPROWS[0]&&r<=CAPROWS[1])?Infinity:w8(c,r,i)});
+tr(T.capClear,(function(){var L=new Lay("B7 captions cleared",LAYS.b7);L.clear(CAPROWS[0],CAPROWS[1]);return L})(),wClack(),CAPROWS);
+/* B9 seam: back to the poster, top to bottom, rows 14..86 in 9 frames, settled 3 frames before the end */
+var SEAMV=72/(9/60);
+var W9=tr(T.b9,LAYS.b0,wTB(14,SEAMV,JIT*.3));
+TR.sort(function(a,b){return a.t-b.t});
+/* effective start per disc (monotonic per disc) */
+TR.forEach(function(x,j){x.eff=new Float32Array(NC);for(var r=-RO;r<H-RO;r++)for(var c=0;c<W;c++){var i=ix(c,r),inr=(!x.rows||(r>=x.rows[0]&&r<=x.rows[1]))&&(!x.cols||(c>=x.cols[0]&&c<=x.cols[1]));
+  x.eff[i]=inr?x.t+x.d(c,r,i):Infinity;
+  if(inr&&j)for(var q=j-1;q>=0;q--){var pe=TR[q].eff[i];if(pe<Infinity){if(pe>x.eff[i])x.eff[i]=pe+1e-4;break}}}});
+/* per-disc gates on a wave X: old(X) keeps a layer's face until the disc's flip starts; nu(X) starts one when the flip is done */
+var FLIPT0=3/60;
+function waveOld(X,c,r,t){return t<X.eff[ix(c,r)]}
+function waveNew(X,c,r,t){return t>=X.eff[ix(c,r)]+FLIPT0}
+/* a put that only lands between two waves (either may be null) */
+function gated(put,t,Xin,Xout){return function(c,r,face,md){if(c<0||c>=W||r<-RO||r>=H-RO)return;if(Xin&&!waveNew(Xin,c,r,t))return;if(Xout&&!waveOld(Xout,c,r,t))return;put(c,r,face,md)}}
+/* B1/B2 rows outside a transition's limits keep their previous face: handled by Infinity (never applied) */
+
+/* ---------- moving elements, each a pure function of t writing into the state ---------- */
+/* put(c, r, face, md): md 0 = a board flip (3 frames, heard as a click); md 1 = a grain (lands only on an off disc; fast 1.5-frame
+   flips, sounded by its own event); md 2 = a moving object (fast flips, its own sound, drawn over anything). FIX R1: every layer here
+   is gated per disc on the waves that bracket its beat (gated(put, t, waveIn, waveOut)), so nothing pops off or on ahead of the board. */
+var DYN=[];
+function coinAt(put,c0,top,face,mode){var g=COIN;for(var y=0;y<7;y++)for(var x=0;x<5;x++)if(g.r[y][x]==="1")put(c0+x,top+y,face,mode)}
+
+/* ---- B0: the $EZ flip ripple at T.ripple: a diagonal wave across the mark only. Each disc turns a full 360 degrees in 6 frames
+   (its face edge-on to the dark back over 3 frames, then back over 3); the wave crosses the mark in RIPX. The hero stays still. ---- */
+var RIPX=24/60;   /* the ripple crosses the mark in 24 frames (a soft rolling wave: few discs edge-on at once) */
+var EZC=(function(){var a=[];for(var r=14;r<=MK.ezBot;r++)for(var c=0;c<MK.ezEnd;c++){var v=LAYS.b0.f[ix(c,r)];if(v===GO||v===GR||v===RD)a.push([c,r])}
+  var u=a.map(function(p){return p[0]+(p[1]-14)*0.6}),u0=Math.min.apply(null,u),u1=Math.max.apply(null,u);
+  return a.map(function(p,k){return [p[0],p[1],(u[k]-u0)/(u1-u0)*RIPX]})})();
+DYN.push(function(t,put){if(t>=T.b1)return;T.ripple.forEach(function(t0){if(t<t0||t>=t0+RIPX+2*FLIPT0+0.02)return;
+  EZC.forEach(function(p){var a=t-t0-p[2];if(a>=0&&a<FLIPT0)put(p[0],p[1],OFF,0)})})});
+
+/* ---- B0: the 2x coin stream. The 5x7 "$" doubled to 10 x 14 discs in columns C2.c0..C2.c1. A coin leaves the strip (rows -1..12,
+   hidden) every T.coin0.every s, falls with B1's acceleration (22 rows/s plus 60 rows/s^2: 1 row per 2.7 frames, about 1 a frame at the
+   floor) and shreds at row C2.burst (40): each coin row that reaches the floor turns into gold grains (one per disc) that spray out and go
+   dark within 5 to 8 frames, above the hero. Frame 0 shows the coin that left at -0.5 s whole (rows 17..30). The coin that leaves at DUR-0.5 s comes in
+   behind the B9 wave, so the last frame runs into frame 0. ---- */
+var COIN2=(function(){var g=G5["$"],m=[];for(var y=0;y<14;y++){var row=[];for(var x=0;x<10;x++)row.push(g.r[y>>1][x>>1]==="1");m.push(row)}return m})();
+var C2V0=22,C2A=60,C2G=320;
+function c2Top(dt){return Math.floor(C2V0*dt+0.5*C2A*dt*dt)-1}
+function c2TimeAt(d){return (-C2V0+Math.sqrt(C2V0*C2V0+2*C2A*d))/C2A}   /* when the fall reaches d rows (c2Top = d - 1) */
+var C2SPAWN=[];for(var q0=0;T.coin0.first+q0*T.coin0.every<=T.coin0.last+1e-9;q0++)C2SPAWN.push(T.coin0.first+q0*T.coin0.every);
+var C2SEAM=DUR+T.coin0.first;
+var C2GR=(function(){var out=[],k=0;for(var y=13;y>=0;y--){var dt=c2TimeAt(C2.burst+1-y);   /* coin row y reaches the floor */
+    for(var x=0;x<10;x++)if(COIN2[y][x]){out.push({dt:dt+hash(1030+k*3)*0.012,c:C2.c0+x,vx:(x-4.5)*9+(hash(900+k*17)-.5)*12,vy:-(20+hash(950+k*13)*30),life:(5+Math.floor(hash(990+k*7)*4))/60});k++}}
+  return out})();
+var C2SHRED=[c2TimeAt(C2.burst+1-13),c2TimeAt(C2.burst+1)];   /* the bottom row, then the top row, reach the floor */
+(function(){/* the spray must stay in its zone */var z=C2.spray;C2GR.forEach(function(g){for(var a=0;a<g.life;a+=1/240){var c=Math.round(g.c+g.vx*a),r=Math.round(C2.burst+g.vy*a+0.5*C2G*a*a);
+  if(c<z[0]||c>z[1]||r<z[2]||r>z[3])throw new Error("a B0 grain leaves its spray zone at c"+c+" r"+r)}})})();
+function c2Draw(put,t,ts){var dt=t-ts;if(dt<0||dt>C2SHRED[1]+0.12)return;var top=c2Top(dt);
+  for(var y=0;y<14;y++){var r=top+y;if(r>=C2.burst)continue;for(var x=0;x<10;x++)if(COIN2[y][x])put(C2.c0+x,r,GO,2)}
+  C2GR.forEach(function(g){var a=dt-g.dt;if(a<0||a>=g.life)return;put(Math.round(g.c+g.vx*a),Math.round(C2.burst+g.vy*a+0.5*C2G*a*a),GO,1)})}
+DYN.push(function(t,put){
+  if(t<T.b1+0.3){var gp=gated(put,t,null,W1);C2SPAWN.forEach(function(ts){c2Draw(gp,t,ts)})}
+  if(t>=T.b9){var gs=gated(put,t,W9,null);c2Draw(gs,t,C2SEAM);c2Draw(gs,t,DUR)}});   /* (the DUR coin only exists at t = DUR, i.e. frame 0) */
+
+/* ---- B1/B2 coins: from the gate (top row 7) down the channel, accelerating, bursting into grains at the neck ---- */
+var NECK=VBr+VB.topRim;      /* first rim row of the vessel */
+var GV0=22,GA=60;            /* rows/s, rows/s^2 */
+function coinY(dt,y0){return y0+GV0*dt+0.5*GA*dt*dt}
+function coinBurstT(y0){var d=NECK-7-y0;return (-GV0+Math.sqrt(GV0*GV0+2*GA*d))/GA}   /* coin bottom (top+6) reaches NECK-1 */
+/* B1 tape: SELL v | gate | BUY ^ alternating, scrolls left 30 col/s until the lock, then still */
+var TAPE=(function(){var items=[],x=0;var a=tw(C.sell),b=tw(C.buy),gap=7;for(var k=0;k<8;k++){items.push({s:k%2?C.buy:C.sell,x:x});x+=(k%2?b:a)+gap}
+  /* rest: the SELL item index 2 ends at col 72 */
+  var off=72-(items[2].x+a-1);return {items:items,off:off,period:x,sellArrow:items[2].x+off+a-7,buyArrow:items[3].x+off+b-7}})();
+/* the tape stays until the top section is cleared at T.b2 (out of frame then); paying cues only while the tape is in full view */
+var TAPE_ON=T.b1+(-1+24)/300,TAPE_OFF=T.b2,CUE_END=T.mv2[0]+0.125;
+var COINS=[];T.coins1.forEach(function(tc,k){COINS.push({t0:tc,y0:7,beat:"B1",pay:k%2?"BUY":"SELL"})});
+/* B2: a coin every 0.25 s from T.mv2[0]+0.125 until 0.5 s before B3 (an even number, so BUY and SELL stay equal) */
+var B2C0=T.mv2[0]+0.125,B2N=Math.floor((T.b3-0.5-B2C0)/0.25+1e-9)+1;if(B2N%2)B2N--;
+for(var k2=0;k2<B2N;k2++)COINS.push({t0:B2C0+k2*0.25-(coinBurstT(7)),y0:7,beat:"B2",pay:k2%2?"BUY":"SELL"});
+COINS.forEach(function(cn){cn.tb=cn.t0+coinBurstT(cn.y0);cn.cue=cn.t0+1/60<CUE_END});
+(function(){var s=0,b=0;COINS.forEach(function(cn){if(cn.pay==="SELL")s++;else b++});if(s!==b)throw new Error("BUY and SELL coins are not equal: "+s+" / "+b)})();
+/* the paying trade (FIX R1): 6 frames before its coin, the whole paying item ("SELL ▼" or "BUY ▲") ripples gold toward the gate
+   (each disc gold for one 3-frame flip, the wave crossing the item in 3 frames), then the gate bar flashes gold for 4 frames as the
+   coin leaves it */
+var CUES=COINS.filter(function(cn){return cn.cue}).map(function(cn){return {t0:cn.t0,item:cn.pay==="SELL"?2:3}});
+DYN.push(function(t,put){if(t<TAPE_ON||t>=TAPE_OFF)return;var sh=t<T.mv1[1]?Math.floor(30*(T.mv1[1]-t)):0;
+  TAPE.items.forEach(function(it,ii){var x=it.x+TAPE.off+sh,w=tw(it.s),isSell=it.s===C.sell,cue=null;
+    if(!sh)CUES.forEach(function(q){if(q.item===ii&&t>=q.t0-6/60&&t<q.t0+1/60)cue=q});
+    Array.from(it.s).reduce(function(cx,ch){if(ch===" ")return cx+2;var g=G5[ch];
+      var fc=ch==="▼"?RD:ch==="▲"?GR:IV;
+      for(var y=0;y<7;y++)for(var xx=0;xx<g.w;xx++)if(g.r[y][xx]==="1"){var cc=cx+xx;if(cc<0||cc>=W||(cc>=73&&cc<=79))continue;var f2=fc;
+        if(cue){var fr=isSell?(cc-x)/Math.max(1,w-1):(x+w-1-cc)/Math.max(1,w-1),a=t-(cue.t0-6/60)-fr*3/60;if(a>=0&&a<FLIPT0)f2=GO}
+        put(cc,MK.tapeRow+y,f2,0)}
+      return cx+g.w+1},x)});
+  CUES.forEach(function(q){if(t>=q.t0-2/60&&t<q.t0+2/60)for(var r=-2;r<=6;r++)put(MK.gateCol,r,GO,2)})});
+/* grains: each lit disc of a coin becomes one grain at the burst. B1: all into the $. B2: Bresenham on SIM.poolShare */
+var GRAINS=[],acc=0,nGold=0,nSlate=0;
+var VB_NECKC=VB.neck.map(function(x){return VBc+x});
+COINS.forEach(function(cn,ci){var k=0;for(var y=0;y<7;y++)for(var x=0;x<5;x++)if(COIN.r[y][x]==="1"){
+  var gold=true;if(cn.beat==="B2"){var nb=Math.floor((acc+1)*SIM.poolShare+1e-9)-Math.floor(acc*SIM.poolShare+1e-9);gold=nb===1;acc++;if(gold)nGold++;else nSlate++}
+  GRAINS.push({t0:cn.tb+(6-y)*0.012+hash(ci*31+k)*0.02,c:74+x,r:cn.tb?coinY(cn.tb-cn.t0,cn.y0)+y:0,gold:gold,beat:cn.beat,k:k++})}});
+if(nGold+nSlate){if(Math.abs(nGold-Math.round((nGold+nSlate)*SIM.poolShare))>1)throw new Error("grain split is not "+D.pool+"/"+D.ops)}
+T.grainSplit=[nGold,nSlate];
+/* the level: B1 coins 0.10 -> 0.13, B2 gold grains 0.13 -> 0.55 */
+var LV={b1:[0.10,0.13],b2:[0.13,0.55]};var GRV0=20,GRA=200;
+/* gold grains fall inside the $ (centre columns) to the level surface; slate grains slide down the left gutter to the tray */
+var VCOL=VBc+Math.round(VB.w/2)-1;
+function surfaceRow(frac){return VBr+vLevelRow(VB,frac)}
+(function(){var landed={B1:0,B2:0},tot={B1:GRAINS.filter(function(g){return g.beat==="B1"}).length,B2:nGold};
+  GRAINS.sort(function(a,b){return a.t0-b.t0});
+  GRAINS.forEach(function(g,k){if(g.gold){var lv=g.beat==="B1"?LV.b1:LV.b2,fr=lv[0]+(lv[1]-lv[0])*landed[g.beat]/tot[g.beat];
+      g.col=VCOL+((g.k%3)-1);var tgt=surfaceRow(fr)-1;g.r0=NECK;g.r1=tgt;g.v0=GRV0;g.dur=(-g.v0+Math.sqrt(g.v0*g.v0+2*GRA*Math.max(0,tgt-NECK)))/GRA;g.t1=g.t0+g.dur;landed[g.beat]++;g.n=landed[g.beat]}
+    else{g.path=B2.tray;g.dur=0.55;g.t1=g.t0+g.dur}})})();
+function levelAt(t){/* B1 then B2, from landed gold grains */
+  var b1=0,b2=0,n1=0,n2=0;GRAINS.forEach(function(g){if(!g.gold)return;if(g.beat==="B1"){n1++;if(t>=g.t1)b1++}else{n2++;if(t>=g.t1)b2++}});
+  if(n2&&b2)return LV.b2[0]+(LV.b2[1]-LV.b2[0])*b2/n2;return LV.b1[0]+(LV.b1[1]-LV.b1[0])*(n1?b1/n1:0)}
+var gutter=(function(){/* from the neck's left edge out and down, two discs outside the left side of the $, into the tray */
+  var lm=[];for(var y=0;y<VB.h;y++){var c=null;for(var x=0;x<VB.w;x++)if(VB.m[y*VB.w+x]){c=VBc+x;break}lm.push(c)}
+  var pts=[[VB_NECKC[0]-2,NECK-1]],last=VB_NECKC[0]-2,endC=B2.tray[0],endR=B2.tray[3]-1;
+  for(var r=NECK;r<=endR-4;r++){var y2=r-VBr,m=W;for(var d=-2;d<=2;d++){var v=lm[y2+d];if(v!=null)m=Math.min(m,v)}var gc=m<W?m-2:last;gc=Math.max(gc,endC);pts.push([gc,r]);last=gc}
+  pts.push([endC,endR]);return pts})();
+T.gutter=gutter;
+function polyAt(pts,u){var segs=[],tot=0;for(var i=1;i<pts.length;i++){var l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);segs.push(l);tot+=l}
+  var d=u*tot;for(var j=0;j<segs.length;j++){if(d<=segs[j]||j===segs.length-1){var f=segs[j]?Math.min(1,d/segs[j]):1;return [pts[j][0]+(pts[j+1][0]-pts[j][0])*f,pts[j][1]+(pts[j+1][1]-pts[j][1])*f]}d-=segs[j]}}
+/* coins in flight */
+DYN.push(function(t,put){COINS.forEach(function(cn){if(t<cn.t0||t>=cn.tb)return;var top=Math.floor(coinY(t-cn.t0,cn.y0));coinAt(put,74,top,GO,0)})});
+/* grains in flight + the vessel level (B1, B2): from the B1 wave's flip at each disc until the B3 wave's */
+DYN.push(function(t,put){if(t<T.b1||t>=T.b3+0.6)return;var gp=gated(put,t,W1,W3);
+  var lv=levelAt(t),lr=vLevelRow(VB,lv);
+  for(var y=0;y<VB.h;y++)for(var x=0;x<VB.w;x++){var i=y*VB.w+x;if(VB.inn[i])gp(VBc+x,VBr+y,y>=lr-1e-9?GO:OFF,0)}
+  GRAINS.forEach(function(g){if(t<g.t0||t>=g.t1)return;var dt=t-g.t0;
+    if(g.gold){var r=Math.floor(g.r0+g.v0*dt+GRA/2*dt*dt);gp(g.col,r,GO,1)}
+    else{var p=polyAt(gutter,Math.min(1,dt/g.dur));gp(Math.round(p[0]),Math.round(p[1]),SL,1)}})});
+/* the tray fills with slate as the 31% lands */
+DYN.push(function(t,put){if(t<T.ops||t>=T.b3+0.6)return;var gp=gated(put,t,null,W3);var n=GRAINS.filter(function(g){return !g.gold&&t>=g.t1}).length,cap=(B2.tray[1]-B2.tray[0]-1)*3,fill=Math.min(cap,Math.round(n*cap/Math.max(1,nSlate)*0.9));
+  var k=0;for(var r=B2.tray[3]-1;r>=B2.tray[3]-3&&k<fill;r--)for(var c=B2.tray[0]+1;c<B2.tray[1]&&k<fill;c++,k++)gp(c,r,SL,0)});
+/* B3: nothing moves but the waves. B4: bars and the #1 block */
+var BARS=(function(){var fin=D.fin,base=MODEL_KEYS.map(function(){return 0});var s=D.fin.order.map(function(m){return 12+6*fin.won[m]});
+  var seq=[s];var rng=12345;function rr(){rng=(rng*1103515245+12345)>>>0;return rng/4294967296}
+  for(var k=0;k<3;k++){seq.push(s.map(function(v){return 14+Math.round(rr()*62)}))}
+  var last=s.map(function(v){return 14+Math.round(rr()*58)}).sort(function(a,b){return b-a});last[0]=Math.max(last[0],last[1]+6);seq.push(last);return seq})();
+var BAR_T=[T.b4+0.06,T.b4+0.25,T.b4+0.5,T.b4+0.75,T.freeze];
+DYN.push(function(t,put){if(t<BAR_T[0]||t>=T.b5)return;var gp=gated(put,t,W4,W5);var k=0;for(var j=0;j<BAR_T.length;j++)if(t>=BAR_T[j])k=j;var L=BARS[k];
+  var lead=0;for(var q=1;q<4;q++)if(L[q]>L[lead])lead=q;if(t>=T.freeze)lead=0;
+  /* grow/shrink from the previous lengths over 4 frames for a clatter, never after the freeze */
+  var prev=k?BARS[k-1]:L.map(function(){return 0}),u=Math.min(1,(t-BAR_T[k])/(4/60));
+  for(var b=0;b<4;b++){var len=Math.round(prev[b]+(L[b]-prev[b])*(t>=T.freeze?1:u)),r0=FZ.bars[b];
+    for(var r=r0;r<r0+4;r++)for(var c=FZ.barC0;c<FZ.barC0+len;c++)gp(c,r,SL,0);
+    if(b===lead)for(var r2=r0;r2<r0+4;r2++)for(var c2=FZ.blkC0;c2<FZ.blkC0+4;c2++)gp(c2,r2,GO,0)}
+  /* the frame traces from the freeze for 0.2 s, then stays */
+  if(t>=T.freeze){var fr=FZ.frame,per=[];for(var c3=fr[0];c3<=fr[2];c3++)per.push([c3,fr[1]]);for(var r3=fr[1]+1;r3<=fr[3];r3++)per.push([fr[2],r3]);
+    for(var c4=fr[2]-1;c4>=fr[0];c4--)per.push([c4,fr[3]]);for(var r4=fr[3]-1;r4>fr[1];r4--)per.push([fr[0],r4]);
+    var n=Math.floor(per.length*Math.min(1,(t-T.frameTrace[0])/(T.frameTrace[1]-T.frameTrace[0])));for(var p=0;p<n;p++)gp(per[p][0],per[p][1],IV,0)}});
+/* B5/B6: the selector hops between up and down on quarter notes (the call is not made): the big one until the ticket wave, the small one
+   from the ticket wave until B7's */
+function selIndex(t){return Math.floor((t-T.b5)/0.5+1e-9)%2}
+DYN.push(function(t,put){if(t<T.b5||t>=T.b7+0.4)return;var s=selIndex(t);
+  [[CALL.bigSel[s],gated(put,t,W5,WT)],[CALL.sel[s],gated(put,t,WT,W7)]].forEach(function(q){var bx=q[0],p=q[1];
+    for(var c=bx[0];c<=bx[2];c++){p(c,bx[1],IV,1);p(c,bx[3],IV,1)}for(var r=bx[1];r<=bx[3];r++){p(bx[0],r,IV,1);p(bx[2],r,IV,1)}})});
+/* B5: the pour. The whole gold content lifts out as one arcing stream into the ticket; the vessel ends empty (no stop loss) */
+var POUR=(function(){var V=CALL.V,nIn=0;var lr=vLevelRow(V,CALL.level);for(var i=0;i<V.w*V.h;i++)if(V.inn[i]&&Math.floor(i/V.w)>=lr)nIn++;
+  var ng=90,gs=[];var p0=[CALL.vc+V.neck[Math.floor(V.neck.length/2)],CALL.vr+V.top-1],p3=[CALL.box[2]-4,CALL.heap.rTop+3],p1=[p0[0]+16,R(30)],p2=[p3[0]+1,R(30)];
+  for(var k=0;k<ng;k++){var t0=T.pour[0]+k*0.3/ng;gs.push({t0:t0,t1:t0+0.2,j:hash(k*13+5)})}
+  return {gs:gs,p:[p0,p1,p2,p3],n:ng}})();
+function bez3(P,u){var a=(1-u)*(1-u)*(1-u),b=3*u*(1-u)*(1-u),c=3*u*u*(1-u),d=u*u*u;return [a*P[0][0]+b*P[1][0]+c*P[2][0]+d*P[3][0],a*P[0][1]+b*P[1][1]+c*P[2][1]+d*P[3][1]]}
+function pourFrac(t){var n=0;POUR.gs.forEach(function(g){if(t>=g.t0)n++});return n/POUR.n}
+function heapFrac(t){var n=0;POUR.gs.forEach(function(g){if(t>=g.t1)n++});return n/POUR.n}
+DYN.push(function(t,put){if(t<T.ticket||t>=T.b7+0.4)return;var gp=gated(put,t,WT,W7),ga=gated(put,t,null,W7);
+  /* vessel content: level falls from CALL.level to 0 over the pour */
+  var V=CALL.V,lv=CALL.level*(1-pourFrac(t)),lr=vLevelRow(V,lv);
+  for(var y=0;y<V.h;y++)for(var x=0;x<V.w;x++){var i=y*V.w+x;if(V.inn[i])gp(CALL.vc+x,CALL.vr+y,y>=lr-1e-9&&lv>0.001?GO:OFF,0)}
+  POUR.gs.forEach(function(g){if(t<g.t0||t>=g.t1)return;var u=(t-g.t0)/(g.t1-g.t0),p=bez3(POUR.p,u*u*(3-2*u)*0.3+u*0.7);var px=Math.round(p[0]+(g.j-.5)*1.2),py=Math.round(p[1]);ga(px,py,GO,1);ga(px,py+1,GO,1)});
+  heapCells(CALL.heap,heapFrac(t)).forEach(function(p){gp(p[0],p[1],GO,0)})});
+/* B5: the ratchet, 10 cells flip gold one by one, accelerating (no numerals) */
+var RATCHET_T=[];for(var q=0;q<10;q++)RATCHET_T.push(T.ratchet[0]+(T.ratchet[1]-T.ratchet[0])*(1-Math.pow(1-(q+1)/10,1.7))*0.97);
+DYN.push(function(t,put){if(t<T.ratchet[0]||t>=T.b7+0.4)return;var gp=gated(put,t,WT,W7);CALL.ratchet.forEach(function(rc,k){if(t>=RATCHET_T[k])for(var r=rc[1];r<=rc[3];r++)for(var c=rc[0];c<=rc[2];c++)gp(c,r,GO,0)})});
+/* B7: two equal lanes, the same 45 frames; their objects appear behind the B7 wave and leave with the B8 wave */
+var LANE_N=Math.round((T.lanes[1]-T.lanes[0])*60);
+DYN.push(function(t,put){if(t<T.b7||t>=T.b8+0.4)return;var gp=gated(put,t,W7,W8);var u=Math.max(0,Math.min(1,(t-T.lanes[0])/(T.lanes[1]-T.lanes[0])));
+  /* left: the heap streams up into the $EZ mark, which lights bottom-up */
+  var hl=heapCells(LN.hl,1-u);
+  hl.forEach(function(p){gp(p[0],p[1],GO,0)});
+  var lit=LN.ezBot+1-(LN.ezBot-LN.ezTop+1)*u;LN.ez.forEach(function(p){if(p[1]>=lit-1e-9)gp(p[0],p[1],p[2],0)});
+  if(u>0&&u<1){var sc=Math.round((LN.hl.c0+LN.hl.c1)/2);for(var k=0;k<3;k++){var ph=((t*60+k*5)%15)/15,r=Math.round(LN.hl.rTop-1-(LN.hl.rTop-1-lit)*ph);gp(sc+(k%2),r,GO,1)}}
+  /* right: the same gold flips off top-down, leaving the empty $ vessel */
+  var V=LN.V,lr=vLevelRow(V,1-u);for(var y=0;y<V.h;y++)for(var x=0;x<V.w;x++){var i=y*V.w+x;if(V.inn[i]&&y>=lr-1e-9&&u<1)gp(LN.vc+x,LN.vr+y,GO,0)}});
+/* B8: the countdown ticks once per film second; only changed digits flip. Each digit disc appears behind the B8 wave and leaves with
+   the B9 wave */
+function cdVal(t){var s=Math.max(0,D.secs-Math.floor(Math.max(0,t-T.b8)));return [Math.floor(s/86400),Math.floor(s%86400/3600),Math.floor(s%3600/60),s%60]}
+DYN.push(function(t,put){if(t<T.b8)return;var gp=gated(put,t,W8,W9),v=cdVal(t);
+  v.forEach(function(n,b){var s=(n<10?"0":"")+Math.min(n,99);for(var d=0;d<2;d++){var g=G5[s[d]],c0=CD.blocks[b]+d*6;
+    for(var y=0;y<7;y++)for(var x=0;x<5;x++)if(g.r[y][x]==="1")gp(c0+x,CD.r0+y,IV,0)}})});
+
+/* =====================================================================================================
+   7. THE EVENT TABLE: every flip of every disc, 240 ticks a second
+   ===================================================================================================== */
+var TICK=240,KN=Math.round(DUR*TICK),FLIPT=3/60,FLIPD=1.5/60;
+var cur=new Uint8Array(NC),mode=new Uint8Array(NC),base=new Uint8Array(NC),prev=new Uint8Array(NC),pdyn=new Uint8Array(NC);
+var EV=[];for(var e=0;e<NC;e++)EV.push(null);
+var FLIPS=new Uint16Array(NFULL),FLIPSC=new Float32Array(NFULL),FLIPSD=new Uint16Array(NFULL);
+/* per disc: the transitions that touch it, ordered by their effective time there */
+var TLo=new Int32Array(NC+1),TLe,TLj;
+(function(){var E=[],J=[],off=0;for(var i=0;i<NC;i++){TLo[i]=off;var a=[];for(var j=0;j<TR.length;j++){var ef=TR[j].eff[i];if(ef<Infinity)a.push([ef,j])}
+  a.sort(function(x,y){return x[0]-y[0]||x[1]-y[1]});a.forEach(function(p){E.push(p[0]);J.push(p[1])});off+=a.length}TLo[NC]=off;TLe=Float64Array.from(E);TLj=Int16Array.from(J)})();
+var tptr=new Int32Array(NC),B0F=LAYS.b0.f;
+function stateAt(t){for(var i=0;i<NC;i++){var o=TLo[i],p=tptr[i],end=TLo[i+1]-o;while(p<end&&TLe[o+p]<=t)p++;tptr[i]=p;
+    var v=p?TR[TLj[o+p-1]].lay.f[i]:B0F[i];cur[i]=v;base[i]=v;mode[i]=0}
+  for(var d=0;d<DYN.length;d++)DYN[d](t,put)}
+function put(c,r,face,md){if(c<0||c>=W||r<-RO||r>=H-RO)return;var i=ix(c,r);if(md===1&&base[i]!==OFF)return;cur[i]=face;mode[i]=md>=1?2:1}
+var INIT=new Uint8Array(NC);
+(function build(){var t0=performance.now();stateAt(0);INIT.set(cur);prev.set(cur);pdyn.set(mode);
+  for(var k=1;k<=KN;k++){stateAt(k/TICK);var fr=Math.min(NFULL-1,Math.floor(k/4));
+    for(var i=0;i<NC;i++){if(cur[i]!==prev[i]){var dyn=mode[i]===2||pdyn[i]===2;if(!EV[i])EV[i]=[];EV[i].push(k,cur[i],dyn?1:0);
+        if(k<KN){FLIPS[fr]++;FLIPSC[fr]+=i%W;if(dyn)FLIPSD[fr]++}}}
+    prev.set(cur);pdyn.set(mode)}
+  window.R2B_BUILD_MS=performance.now()-t0})();
+/* the loop: the end state must equal frame 0 */
+(function(){var diff=0,where=[];for(var i=0;i<NC;i++){var ev=EV[i],ef=ev?ev[ev.length-2]:INIT[i];if(ef!==INIT[i]){diff++;if(where.length<8)where.push("c"+(i%W)+" r"+(Math.floor(i/W)-RO))}}
+  window.R2B_LOOP_DIFF=diff;if(diff)console.log("loop: "+diff+" discs differ between the end and frame 0: "+where.join(", "))})();
+/* disc face at time t: {a: previous face, b: face, p: flip progress 0..1 (1 = settled)} */
+function discAt(i,t){var ev=EV[i];if(!ev)return [INIT[i],INIT[i],1];var k=t*TICK,lo=0,hi=ev.length/3-1,n=-1;
+  while(lo<=hi){var m=(lo+hi)>>1;if(ev[m*3]<=k+1e-6){n=m;lo=m+1}else hi=m-1}
+  if(n<0)return [INIT[i],INIT[i],1];var b=ev[n*3+1],a=n?ev[n*3-2]:INIT[i],dur=ev[n*3+2]?FLIPD:FLIPT,p=(t-ev[n*3]/TICK)/dur;return [a,b,p>=1?1:p]}
+
+/* FIX R2: hold measures from the event table, with the verifiers' convention: a line is complete on the first frame where every one of
+   its discs has settled on its face, and gone on the first frame where any of them shows another face (past half a flip); held =
+   (gone - complete) / FPS. need = 0.6 s + 0.33 s per word (words: tokens with a letter or digit; the ✓ ✗ ▲ ▼ glyphs do not count).
+   Exposed as R2B_HOLDS (r2-board-timing.js writes it to timing.json; r2-board-qa.py checks it). */
+function cellsOf(L,name){var id=-1;L.ids.forEach(function(x,k){if(x.name===name)id=k});if(id<0)throw new Error("no element "+name+" in "+L.name);
+  var a=[];for(var i=0;i<NC;i++)if(L.own[i]===id&&L.f[i])a.push(i);if(!a.length)throw new Error("element "+name+" has no lit disc");return a}
+function holdOf(name,L,names,text,t0){var cells=[],face=[];names.forEach(function(nm){cellsOf(L,nm).forEach(function(i){cells.push(i);face.push(L.f[i])})});
+  var f=Math.max(0,Math.round(t0*FPS)),fc=-1,fg=-1;
+  function shows(i,k,t){var st=discAt(i,t);return (st[2]>=.5?st[1]:st[0])===face[k]}
+  function settled(i,k,t){var st=discAt(i,t);return st[2]>=1&&st[1]===face[k]}
+  for(;f<NFULL;f++){var t=f/FPS,ok=true;for(var k=0;k<cells.length&&ok;k++)ok=settled(cells[k],k,t);if(ok){fc=f;break}}
+  if(fc<0)throw new Error("hold "+name+": never complete");
+  for(f=fc+1;f<NFULL;f++){var t2=f/FPS,all=true;for(var k2=0;k2<cells.length&&all;k2++)all=shows(cells[k2],k2,t2);if(!all){fg=f;break}}
+  if(fg<0)fg=NFULL;
+  var words=text.split(/\s+/).filter(function(w){return /[A-Za-z0-9]/.test(w)}).length;
+  return {name:name,text:text,words:words,need:+(0.6+0.33*words).toFixed(2),complete:fc,gone:fg,held:+((fg-fc)/FPS).toFixed(3)}}
+var HOLDS=[
+  holdOf("hero (first play)",LAYS.b0,["hero0","hero1","hero2"],C.hero.join(" "),0),
+  holdOf("69% card: OF $EZ FEES",LAYS.b2a,["OF FEES"],C.ofFees,T.b2),
+  holdOf("freeze head",LAYS.b4f,["fl1","fl2"],C.freeze[0]+" "+C.freeze[1],T.b4),
+  holdOf("freeze lines 3-4",LAYS.b4f,["fl3","fl4"],C.freeze[2]+" "+C.freeze[3],T.freeze),
+  holdOf("call line",LAYS.b5a,["c1","c2"],C.call.join(" "),T.callIn),
+  holdOf("10x pair",LAYS.b6,["pair0","pair1","pair2"],C.pair.join(" "),T.b6),
+  holdOf("lane labels",LAYS.b7,["right","wrong"],C.lanes[0]+" "+C.lanes[1],T.b7),
+  holdOf("lane captions (lane read, 4 words)",LAYS.b7,["BUYBACK","WIPEOUT"],C.lanes.join(" "),T.b7),
+  holdOf("bet lines",LAYS.b8,["bet1","bet2"],C.bet.join(" "),T.b8)];
+HOLDS.push({name:"disclaimer card (DOM)",text:C.card,words:12,need:+(0.6+0.33*12).toFixed(2),complete:T.card0,gone:T.card1+1,held:+((T.card1-T.card0+1)/FPS).toFixed(3)});
+HOLDS.push({name:"chip solid before the first LED tick",text:"",words:0,need:0,complete:Math.round(T.dis1[1]*FPS),gone:Math.round((T.b8+1)*FPS),held:+(T.b8+1-T.dis1[1]).toFixed(3)});
+window.R2B_HOLDS=HOLDS;
+
+/* events for the sound (pictures first; the sound lands one frame after) */
+var EVS={flips:Array.from(FLIPS),flipCol:Array.from(FLIPSC).map(function(s,f){return FLIPS[f]?s/FLIPS[f]:48}),dynFlips:Array.from(FLIPSD),
+  coins:COINS.map(function(cn){var steps=[],y=Math.floor(coinY(0,cn.y0));for(var t=cn.t0;t<cn.tb;t+=1/240){var yy=Math.floor(coinY(t-cn.t0,cn.y0));if(yy!==y){steps.push([t,yy]);y=yy}}
+    return {t0:cn.t0,tb:cn.tb,beat:cn.beat,pay:cn.pay,steps:steps}}),
+  /* B0's coin stream: per coin its row steps (while any of it shows below the strip), its shred window and its grains, as the picture
+     shows them (the coin that leaves at -0.5 s from t = 0; the seam coin behind the B9 wave) */
+  b0coins:C2SPAWN.concat([C2SEAM]).map(function(ts){var seam=ts===C2SEAM,ok=function(t){return seam?(t>=T.b9+0.06&&t<DUR):(t>=0&&t<T.b1)},steps=[],prev=c2Top(0);
+    for(var k=1;k<=Math.ceil(C2SHRED[1]*240)+2;k++){var dt=k/240,tp=c2Top(dt);if(tp!==prev){prev=tp;if(tp>=1&&tp<C2.burst&&ok(ts+dt))steps.push([ts+dt,tp])}}
+    var sh=[ts+C2SHRED[0],ts+C2SHRED[1]];
+    return {ts:ts,steps:steps,shred:ok(sh[0])?sh:null,grains:C2GR.map(function(g){return ts+g.dt}).filter(ok)}}),
+  ripple:T.ripple.slice(),cues:CUES.map(function(q){return q.t0}),
+  grains:GRAINS.map(function(g){return [g.t1,g.gold?1:0,g.beat==="B1"?1:2]}),
+  pour:POUR.gs.map(function(g){return [g.t0,g.t1]}),ratchet:RATCHET_T.slice(),
+  race:raceT.slice(),raceBlocks:D.states.map(function(s){return MODEL_KEYS.reduce(function(a,m){return a+(s.has[m]?s.won[m]:0)},0)}),
+  bars:BAR_T.slice(1,4),sel:(function(){var a=[];for(var t=T.b5+0.5;t<T.b7-1e-6;t+=0.5)a.push(t);return a})(),
+  led:(function(){var a=[];for(var t=T.b8+1;t<T.b9-1e-6;t+=1)a.push(t);return a})(),
+  hits:{slam:0,cascade1:T.b1,slam69:T.b2,pot:T.pot,ops:T.ops,cascade3:T.b3,settle:T.settle,cascade4:T.b4,callIn:T.callIn,freeze:T.freeze,hit:T.b5,ticket:T.ticket,
+    pour:T.pour[0],clack:T.b6,lanes:T.b7,capClear:T.capClear,radial:T.b8,dis1:T.dis1[0],dis2:T.dis2[0],seam:T.b9},
+  T:T};
+window.R2B_EVENTS=EVS;
+
+/* =====================================================================================================
+   8. CAMERA (one take). Pinhole over the board plane; locked at an integer pitch while words are read.
+   ===================================================================================================== */
+var FOC=540/Math.tan(20*Math.PI/180);
+var STORYC=UK?484:563;
+var POSE0={tu:48,tv:48,z:1,yaw:0,pit:0,cx:540,cy:540};
+var POSE1={tu:75,tv:(UK?10.5:14),z:1.3,yaw:10*Math.PI/180,pit:-6*Math.PI/180,cx:540,cy:STORYC};
+function eio(x){x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)}
+function eOut(x){x=Math.max(0,Math.min(1,x));return 1-Math.pow(1-x,3)}
+function eio5(x){x=Math.max(0,Math.min(1,x));return x<.5?16*x*x*x*x*x:1-Math.pow(-2*x+2,5)/2}
+function lerpPose(a,b,u){var o={};for(var k in a)o[k]=a[k]+(b[k]-a[k])*u;return o}
+function camAt(t){
+  if(t<T.mv1[0])return POSE0;
+  if(t<T.mv1[1])return lerpPose(POSE0,POSE1,eio((t-T.mv1[0])/(T.mv1[1]-T.mv1[0])));
+  if(t<T.mv2[0])return POSE1;
+  if(t<T.mv2[1])return lerpPose(POSE1,POSE0,eio((t-T.mv2[0])/(T.mv2[1]-T.mv2[0])));
+  if(t<T.b4)return POSE0;
+  var p=Object.assign({},POSE0);p.cy=STORYC;p.tv=48-(540-STORYC)/PITCH;
+  if(t<T.freeze){p.z=1+0.015*(t-T.b4);return p}
+  if(t<T.b5){p.z=1.015;return p}
+  if(t<T.punch[1]){var u=(t-T.b5)/(T.punch[1]-T.b5),pz=1.015+0.04*eOut(Math.min(1,u*6));p.z=pz+(1-pz)*eio((u-1/6)/(5/6));return p}
+  return POSE0}
+function camMoving(t){return (t>=T.mv1[0]&&t<T.mv2[1])||(t>=T.b4&&t<T.freeze)||(t>=T.b5&&t<T.punch[1])}
+/* project board point (u,v) (disc units, centres at c+.5) -> [x, y, scale px per disc, depth ratio] */
+function mkProj(P){var cy=Math.cos(P.yaw),sy=Math.sin(P.yaw),cp=Math.cos(P.pit),sp=Math.sin(P.pit),dist=FOC/(PITCH*P.z);
+  return function(u,v){var X=u-P.tu,Y=v-P.tv,x1=X*cy,z1=X*sy,y2=Y*cp-z1*sp,z2=Y*sp+z1*cp,Z=dist+z2,s=FOC/Z;return [P.cx+x1*s,P.cy+y2*s,s,Z/dist]}}
+
+/* =====================================================================================================
+   9. RENDERER: discs from sprites on a 2x canvas, subframes accumulated, downsampled to 1080.
+   ===================================================================================================== */
+var PAL=DAY?{0:["#e7dfcd","#d4cab3","#f5efe2"],1:["#14204a","#0a1233","#3a4a7a"],2:["#f0b21c","#c98f12","#ffe07a"],3:["#14b25a","#0e8a45","#5fe39a"],4:["#e8382c","#b52a20","#ff8a7f"],5:["#8b8faa","#6f7390","#b4b7cc"],6:["#6f7aa8","#59628c","#959fcc"]}
+  :{0:["#16204a","#0f1838","#25305e"],1:["#f3ede0","#d2c9b6","#ffffff"],2:["#ffc72c","#c98f12","#ffe48a"],3:["#1fcf6b","#14994d","#7df0ad"],4:["#ff4136","#c42d24","#ff9a8f"],5:["#7681b6","#58628f","#a9b2de"],6:["#a9b1e2","#8790c2","#d4d9f4"]};
+var PANEL=DAY?"#e2d9c6":"#070d26";
+var SHADES=[1,.82,.64,.46],BLURS=[0,1.2,2.4,3.8,5.5],SPR={};
+function hexMul(h,k){var n=parseInt(h.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;return "rgb("+Math.round(r*k)+","+Math.round(g*k)+","+Math.round(b*k)+")"}
+/* sprite: a disc with a soft top-left highlight, a rim shadow and a faint axle line */
+function sprite(face,sh,bl,sz,vr){var key=face+"_"+sh+"_"+bl+"_"+sz+"_"+vr;var s=SPR[key];if(s)return s;
+  var pad=Math.ceil(BLURS[bl]*2)+2,cv=document.createElement("canvas");cv.width=cv.height=sz+pad*2;var g=cv.getContext("2d");
+  if(bl)g.filter="blur("+BLURS[bl]+"px)";var p=PAL[face],k=SHADES[sh],cx=pad+sz/2,cy=pad+sz/2,r=sz/2;
+  var hx=cx-r*(.32+vr*.06),hy=cy-r*(.42-vr*.05);
+  var gr=g.createRadialGradient(hx,hy,r*.05,cx,cy,r*1.02);gr.addColorStop(0,hexMul(p[2],k));gr.addColorStop(.42,hexMul(p[0],k));gr.addColorStop(1,hexMul(p[1],k));
+  g.fillStyle=gr;g.beginPath();g.arc(cx,cy,r,0,7);g.fill();
+  g.lineWidth=Math.max(1,sz*.05);g.strokeStyle="rgba(0,0,0,"+(face?.32:.45)+")";g.beginPath();g.arc(cx,cy,r-g.lineWidth/2,0,7);g.stroke();
+  g.lineWidth=Math.max(.8,sz*.04);g.strokeStyle="rgba(0,0,0,"+(face?.16:.22)+")";g.beginPath();g.moveTo(cx-r*.92,cy+.5);g.lineTo(cx+r*.92,cy+.5);g.stroke();
+  s={cv:cv,pad:pad,sz:sz};SPR[key]=s;return s}
+var SPEC=(function(){var cv=document.createElement("canvas");cv.width=cv.height=64;var g=cv.getContext("2d"),gr=g.createRadialGradient(26,24,2,32,32,30);
+  gr.addColorStop(0,"rgba(255,255,255,.95)");gr.addColorStop(.5,"rgba(255,255,255,.35)");gr.addColorStop(1,"rgba(255,255,255,0)");g.fillStyle=gr;g.beginPath();g.arc(32,32,30,0,7);g.fill();return cv})();
+var SZS=[16,18,20,22,24,27,30,34,38];
+function pickSz(d){for(var k=0;k<SZS.length;k++)if(SZS[k]>=d*0.97)return SZS[k];return SZS[SZS.length-1]}
+var X2=document.createElement("canvas");X2.width=X2.height=2160;var x2=X2.getContext("2d");
+var OUT=document.getElementById("cv"),ox=OUT.getContext("2d");
+var ACC=document.createElement("canvas");ACC.width=ACC.height=1080;var ax=ACC.getContext("2d");
+/* region rows hidden by the strips (no need to draw) */
+var YMIN=150,YMAX=UK?824:1080;
+/* glints: [t0,t1, row range] diagonal sweeps (highlights only) */
+function glint(t,u,v){var g=0;
+  if(t<1.25){var ph=t/1.25,d=(u+v)/192-ph*1.6+0.3;g=Math.max(g,Math.exp(-d*d*90)*.22*(1-ph*0.3))}
+  if(t>=T.glintF[0]&&t<T.glintF[1]&&v>=FZ.frame[1]-0.5&&v<=FZ.frame[3]+1.5){var ph2=(t-T.glintF[0])/(T.glintF[1]-T.glintF[0]),d2=(u*1.0+(v-60)*0.6)/110-ph2*1.4+0.2;g=Math.max(g,Math.exp(-d2*d2*120)*.38)}
+  /* B6: one glint across the gold heap in the ticket (the pot sits on the call) */
+  var hp=CALL.heap;if(t>=T.glintH[0]&&t<T.glintH[1]&&u>=hp.c0-1&&u<=hp.c1+2&&v>=hp.rTop-1&&v<=hp.rBot+1.5){var ph3=(t-T.glintH[0])/(T.glintH[1]-T.glintH[0]),w3=hp.c1-hp.c0+1,
+    d3=((u-hp.c0)+(v-hp.rTop)*0.7)/(w3+(hp.rBot-hp.rTop)*0.7)-ph3*1.5+0.25;g=Math.max(g,Math.exp(-d3*d3*40)*.42)}
+  return g}
+var IMG={};
+function drawBoard(t,P,ctx,sc){var pr=mkProj(P),c0=Math.floor(P.tu-60),c1=Math.ceil(P.tu+60),r0=Math.floor(P.tv-60),r1=Math.ceil(P.tv+60);
+  c0=Math.max(0,c0);c1=Math.min(W-1,c1);r0=Math.max(-RO,r0);r1=Math.min(H-RO-1,r1);
+  var cyw=Math.cos(P.yaw),cpp=Math.cos(P.pit),moving=P.yaw!==0||P.pit!==0;
+  for(var r=r0;r<=r1;r++){for(var c=c0;c<=c1;c++){var q=pr(c+.5,r+.5),x=q[0]*sc,y=q[1]*sc,dd=q[2]*0.88*sc;
+      if(x<-dd||x>1080*sc+dd||y<YMIN*sc-dd||y>YMAX*sc+dd)continue;
+      var i=ix(c,r),st=discAt(i,t),face,vs,sh;
+      if(st[2]>=1){face=st[1];vs=1;sh=0}else{var ang=st[2]*Math.PI,cs=Math.cos(ang);face=st[2]<.5?st[0]:st[1];vs=Math.max(.07,Math.abs(cs));sh=vs>.8?0:vs>.55?1:vs>.3?2:3}
+      var bl=0;if(moving){var dz=Math.abs(q[3]-1);bl=dz<.015?0:dz<.035?1:dz<.06?2:dz<.09?3:4}
+      var sz=pickSz(dd),s=sprite(face,sh,bl,sz,(i*7)%3===0?1:0),k=dd/sz,w=(sz+s.pad*2)*k*cyw,h=(sz+s.pad*2)*k*cpp*vs;
+      ctx.drawImage(s.cv,x-w/2,y-h/2,w,h);
+      var gl=glint(t,c+.5,r+.5);if(gl>0.01){ctx.globalAlpha=gl;var hw=dd*1.0;ctx.drawImage(SPEC,x-hw/2,y-hw*vs/2,hw,hw*vs);ctx.globalAlpha=1}}}}
+/* logo flaps (B3): printed 7 x 7 tiles, MODELS[m].d in ivory on navy, all four the same */
+var LOGO=MARKS?MODEL_KEYS.reduce(function(o,m){o[m]=new Path2D(MODELS[m].d);return o},{}):null;
+function flapsAt(t){/* [{row k, m, squash}] */
+  if(!MARKS||t<T.b3||t>=T.b4+0.3)return [];var out=[];var dl=function(tt,c){return tt+c/260};
+  for(var k=0;k<4;k++){var r=RACE.rows[k];
+    /* the model on row k for each state; flip when it changes */
+    var seq=[{t:dl(T.b3,18),m:MODEL_KEYS[k]}];D.states.forEach(function(s,j){seq.push({t:raceT[j]+18/1600,m:s.order[k]})});seq.push({t:T.b4+(r-R(14))/320,m:null});
+    var cur=null,ts=null,prevm=null;for(var j=0;j<seq.length;j++){if(t>=seq[j].t){if(seq[j].m!==cur){prevm=cur;cur=seq[j].m;ts=seq[j].t}}}
+    if(ts===null)continue;var p=(t-ts)/(4/60);var m=cur,sq=1;if(p<1){var ang=p*Math.PI;sq=Math.max(.06,Math.abs(Math.cos(ang)));m=p<.5?prevm:cur}
+    if(m)out.push({k:k,m:m,sq:sq,r:r})}
+  return out}
+function drawFlaps(t,P,ctx,sc){var fl=flapsAt(t);if(!fl.length)return;var pr=mkProj(P);
+  fl.forEach(function(f){var q=pr(RACE.logoC+3.5,f.r+3.5),s=q[2]*sc,w=7*s*0.94,h=w*f.sq;ctx.save();ctx.translate(q[0]*sc,q[1]*sc);ctx.scale(1,f.sq);
+    ctx.fillStyle=DAY?"#e9e1cf":"#101a44";ctx.strokeStyle="rgba(243,237,224,.42)";ctx.lineWidth=1.5*sc;
+    ctx.beginPath();if(ctx.roundRect)ctx.roundRect(-w/2,-w/2,w,w,7*sc);else ctx.rect(-w/2,-w/2,w,w);ctx.fill();ctx.stroke();
+    var lw=w*0.62;ctx.translate(-lw/2,-lw/2);ctx.scale(lw/24,lw/24);ctx.fillStyle=DAY?"#101a3a":"#f3ede0";ctx.fill(LOGO[f.m],MODELS[f.m].fr||"nonzero");ctx.restore()})}
+/* the chip (B8): ez-gpu2.jpg scaled so 17.2 image px = 1 disc pitch; X2's LED cells drawn at the disc positions */
+var CHIP={P:17.2,CS:13.6,x0:497,y0:649,k:PITCH/17.2};
+function chipAlpha(t){if(!ENDCHIP||t<T.dis1[0]||t>=T.dis2[1])return 0;if(t<T.dis1[1])return eio((t-T.dis1[0])/(T.dis1[1]-T.dis1[0]));if(t<T.dis2[0])return 1;return 1-eio((t-T.dis2[0])/(T.dis2[1]-T.dis2[0]))}
+var CHIPROWS=[R(32),R(61)+(UK?0:7)];
+function drawChip(t,ctx,sc){var a=chipAlpha(t);if(a<=0)return;var img=IMG.chip,k=CHIP.k*sc;
+  /* image px -> screen: disc centre of (block0 first cell) = (c0+.5, r0+.5) */
+  var ox0=(CD.c0+.5)*PITCH*sc-(CHIP.x0+CHIP.CS/2)*k,oy0=(CD.r0+.5)*PITCH*sc-(CHIP.y0+CHIP.CS/2)*k;
+  var y0=CHIPROWS[0]*PITCH*sc,y1=(CHIPROWS[1]+1)*PITCH*sc;
+  ctx.save();ctx.globalAlpha=a;ctx.beginPath();ctx.rect(0,y0,1080*sc,y1-y0);ctx.clip();
+  ctx.imageSmoothingQuality="high";ctx.drawImage(img,ox0,oy0,2000*k,1500*k);
+  /* the soft gold glint 21.0..22.5 */
+  /* FIX R1: a vertical band that starts and ends fully off the frame (the slanted band was still on the lower pads when it ended) */
+  if(t>=T.glintC[0]&&t<T.glintC[1]){var ph=(t-T.glintC[0])/(T.glintC[1]-T.glintC[0]),gx=(-160+ph*(1080+320))*sc;var gr=ctx.createLinearGradient(gx-160*sc,0,gx+160*sc,0);
+    gr.addColorStop(0,"rgba(255,240,200,0)");gr.addColorStop(.5,"rgba(255,240,200,.16)");gr.addColorStop(1,"rgba(255,240,200,0)");ctx.globalCompositeOperation="soft-light";ctx.fillStyle=gr;ctx.fillRect(0,y0,1080*sc,y1-y0);
+    ctx.globalCompositeOperation="lighter";ctx.globalAlpha=a*.35;ctx.fillRect(0,y0,1080*sc,y1-y0);ctx.globalCompositeOperation="source-over";ctx.globalAlpha=a}
+  /* soft edges on the band */
+  var fe=PITCH*sc*1.2;[[y0,y0+fe,0],[y1-fe,y1,1]].forEach(function(e){var g2=ctx.createLinearGradient(0,e[0],0,e[1]);g2.addColorStop(e[2]?0:1,"rgba(7,13,38,0)");g2.addColorStop(e[2]?1:0,"rgba(7,13,38,.9)");ctx.fillStyle=g2;ctx.fillRect(0,e[0],1080*sc,e[1]-e[0])});
+  /* block backs, LED cells, colons, unit labels in X2's style */
+  var v=cdVal(t),pit=PITCH*sc,cs=CHIP.CS*k;
+  CD.blocks.forEach(function(cb,b){var bx=(cb+.5)*pit-cs/2-7*k,by=(CD.r0+.5)*pit-cs/2-7*k,bw=(10*CHIP.P+CHIP.CS+14)*k,bh=(6*CHIP.P+CHIP.CS+14)*k;
+    ctx.save();ctx.shadowColor="rgba(0,0,0,.55)";ctx.shadowBlur=3*k;ctx.shadowOffsetY=2*k;ctx.fillStyle="#141518";ctx.beginPath();if(ctx.roundRect)ctx.roundRect(bx,by,bw,bh,4*k);else ctx.rect(bx,by,bw,bh);ctx.fill();ctx.restore();
+    ctx.lineWidth=2*k;ctx.strokeStyle="#3a3c42";ctx.beginPath();if(ctx.roundRect)ctx.roundRect(bx,by,bw,bh,4*k);else ctx.rect(bx,by,bw,bh);ctx.stroke();
+    var s=(v[b]<10?"0":"")+Math.min(v[b],99);
+    for(var d=0;d<2;d++){var f=F[s[d]];for(var rr=0;rr<7;rr++)for(var cc=0;cc<5;cc++){var on=f[rr*5+cc]==="1",x=(cb+d*6+cc+.5)*pit-cs/2,y=(CD.r0+rr+.5)*pit-cs/2;
+      ctx.save();if(on){ctx.shadowColor="#ff2a1f";ctx.shadowBlur=4*k*1.6}ctx.fillStyle=on?"#ff3b2f":"#26282d";ctx.strokeStyle=on?"#ff9a8f":"#34363c";ctx.lineWidth=(on?.8:1)*k;
+      ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,cs,cs,2*k);else ctx.rect(x,y,cs,cs);ctx.fill();ctx.restore();ctx.lineWidth=(on?.8:1)*k;ctx.strokeStyle=on?"#ff9a8f":"#34363c";ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,cs,cs,2*k);else ctx.rect(x,y,cs,cs);ctx.stroke()}}
+    /* FIX R1: the unit labels at 28 px (1080 scale), so DAYS HRS MIN SEC still read at feed size */
+    var LF=28*sc;ctx.font="800 "+LF+"px GM";ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.lineJoin="round";ctx.lineWidth=5*sc;ctx.strokeStyle="#0b0b0d";ctx.fillStyle="#f2efe6";
+    if(ctx.letterSpacing!==undefined)ctx.letterSpacing=(LF*.12)+"px";var lx=(cb+5.5)*pit,ly=(CD.r0+7)*pit+LF*1.05;ctx.strokeText(C.units[b],lx,ly);ctx.fillText(C.units[b],lx,ly);if(ctx.letterSpacing!==undefined)ctx.letterSpacing="0px"});
+  [CD.c0+12,CD.c0+47].forEach(function(c){[2,4].forEach(function(rr){ctx.save();ctx.shadowColor="#ff2a1f";ctx.shadowBlur=4*k;ctx.fillStyle="#ff3b2f";ctx.beginPath();ctx.arc((c+.5)*pit,(CD.r0+rr+.5)*pit,5*k,0,7);ctx.fill();ctx.restore()})});
+  ctx.restore()}
+function nsAt(f){if(NSQ)return NSQ;var t=f/60;
+  if((t>=T.mv1[0]&&t<T.mv1[1])||(t>=T.mv2[0]&&t<T.mv2[1]))return 8;
+  if(t>=T.b5&&t<T.b5+0.1)return 6;
+  var fl=FLIPS[Math.min(NFULL-1,f)]+(f>0?FLIPS[f-1]:0);
+  if(fl>300)return 4;if(t>=T.b5&&t<T.punch[1])return 4;if(fl>0||(t>=T.b4&&t<T.freeze))return 2;return 1}
+/* one frame */
+function renderFrame(t){var f=Math.round(t*FPS),ns=nsAt(f),sc=2;
+  for(var s=0;s<ns;s++){var ts=ns>1?t+((s+.5)/ns-.5)*(0.5/FPS):t;if(ts<0)ts+=DUR;
+    var P=camAt(ts);x2.setTransform(1,0,0,1,0,0);x2.fillStyle=PANEL;x2.fillRect(0,0,2160,2160);
+    drawBoard(ts,P,x2,sc);drawFlaps(ts,P,x2,sc);drawChip(ts,x2,sc);
+    /* a soft studio falloff: the board is an object in a dark room */
+    var vg=x2.createRadialGradient(1080,1000,500,1080,1080,1700);vg.addColorStop(0,"rgba(3,6,20,0)");vg.addColorStop(1,"rgba(3,6,20,.32)");x2.fillStyle=vg;x2.fillRect(0,0,2160,2160);
+    if(ns===1){ox.globalAlpha=1;ox.imageSmoothingQuality="high";ox.drawImage(X2,0,0,1080,1080)}
+    else{ax.globalAlpha=s?1/(s+1):1;ax.imageSmoothingQuality="high";ax.drawImage(X2,0,0,1080,1080)}}
+  if(ns>1){ox.globalAlpha=1;ox.drawImage(ACC,0,0)}
+  return ns}
+
+/* =====================================================================================================
+   10. COMPLIANCE AND LABELS (DOM, screen space, never animate except the disclaimer's one on and off)
+   ===================================================================================================== */
+var STG=document.getElementById("stage");if(DAY)STG.classList.add("day");
+function h(id,html,parent){var e=document.createElement("div");e.className="ab";e.id=id;if(html!=null)e.innerHTML=html;(parent||STG).appendChild(e);return e}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+var E={};E.scrim=h("scrim");E.rail=h("rail",'<div id="ad">AD</div><div id="brand">'+esc("$EZ · EARNINGS ZEASON")+"</div>");
+E.stamp=h("stamp","");E.legal=h("legal",esc(C.legal[0])+"<br>"+esc(C.legal[1]));
+E.below=h("below");   /* both variants: a solid strip over the bottom 96 px (X's player controls), so no story pixel lands there */
+if(UK){E.band=h("band","<p>"+esc(C.fca)+"</p>")}
+E.card=h("card",C.card.split(/(?<=\.) /).map(function(s){return '<span style="white-space:nowrap">'+esc(s)+"</span>"}).join(" "));
+E.card.style.top=(UK?690:856)+"px";E.card.style.display="none";
+/* FIX R1: FEES FROM LAUNCH stays up through B1 and B2 (the fee story); each race stamp switches when its board wave has landed */
+var STAMP_LAG=0.12;
+function stampAt(t){if(t<T.b3||t>=T.b9)return C.st.fees;if(t>=T.b3&&t<T.b4){var k=-1;raceT.forEach(function(rt,j){if(t>=rt+STAMP_LAG)k=j});return k>=0?C.st.race[k]:""}
+  if(t>=T.b5&&t<T.b7)return C.st.hl;if(t>=T.b8&&t<T.b9)return C.st.end;return ""}
+var STAMP_FS=28,STAMP_MIN=22,STAMP_GAP=16;
+function fitStamp(txt){E.stamp.textContent=txt;E.stamp.style.display=txt?"":"none";if(!txt)return;var rr=document.getElementById("rail").getBoundingClientRect().right;
+  for(var fs=STAMP_FS;fs>=STAMP_MIN;fs--){E.stamp.style.fontSize=fs+"px";if(E.stamp.getBoundingClientRect().left>=rr+STAMP_GAP)return fs}
+  throw new Error("the rail stamp \""+txt+"\" overlaps the rail even at "+STAMP_MIN+" px")}
+function legalCheck(){var t=E.legal.textContent;if(t!==C.legal[0]+C.legal[1])throw new Error("legal line text mismatch")}
+
+/* =====================================================================================================
+   11. THE CONTRACT
+   ===================================================================================================== */
+var lastNs=1;
+window.renderAt=function(t){t=((t%DUR)+DUR)%DUR;var f=Math.round(t*FPS);lastNs=renderFrame(t);
+  fitStamp(stampAt(t));E.card.style.display=(f>=T.card0&&f<=T.card1)?"block":"none";return lastNs};
+window.frameName=null;
+window.R2B_NS=function(f){return nsAt(f)};
+window.renderAudio=function(){return window.__r2bAudio()};
+window.R2B_LAYOUTS=Object.keys(LAYS);window.R2B_DUMP=function(name,r0,r1){var L=name.split(".").reduce(function(o,k){return o[k]},LAYS),out=[];for(var r=r0;r<=r1;r++){var row="";for(var c=0;c<96;c++)row+=" #$GR:;"[L.f[ix(c,r)]];out.push(("  "+r).slice(-3)+"|"+row)}return out.join("\n")};window.R2B_MK=MK;window.R2B_GEOM={VB:{c:VBc,r:VBr,w:VB.w,h:VB.h,neck:NECK,nIn:VB.nIn,maxd:VB.maxd},B2:B2,CALL:{box:CALL.box,sel:CALL.sel,heap:CALL.heap},LN:{bl:LN.bl,br:LN.br,ezTop:LN.ezTop,ezBot:LN.ezBot,vc:LN.vc,vw:LN.V.w},CD:CD,gutter:gutter,tape:TAPE};
+/* lane equality: lit discs of the two lane objects at the end of B7 */
+window.R2B_LANES={ezDiscs:LN.n[0],vesselRim:LN.n[1],ezWeight:+LN.wt[0].toFixed(1),vesselWeight:+LN.wt[1].toFixed(1),vesselIn:LN.V.nIn,heapL:heapCells(LN.hl,1).length,vw:LN.V.w,vh:LN.V.h};
+
+var img=new Image();img.onload=function(){IMG.chip=img;
+  /* every stamp must fit beside the rail */
+  [C.st.fees,C.st.hl,C.st.end].concat(C.st.race).forEach(fitStamp);legalCheck();
+  window.renderAt(0);window.__ready=true};
+img.onerror=function(){window.__err="could not load ../media/ez-gpu2.jpg"};
+img.src="../media/ez-gpu2.jpg";
+}
+var FL=["800 100px MS","condensed 800 100px MS","700 100px IS","condensed 700 100px IS","600 26px IS","700 36px IS","600 40px IS","500 24px GM","700 30px GM","800 25px GM"];
+Promise.all(FL.map(function(f){return document.fonts.load(f)})).then(function(){return document.fonts.ready}).then(function(){
+  try{main()}catch(e){window.__err=String(e&&e.stack||e);console.error(e)}});
+})();
+</script>
+</body>
+</html>

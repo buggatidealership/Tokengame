@@ -1,0 +1,111 @@
+<!doctype html><meta charset="utf-8"><title>R106 · The standings swing</title>
+<!-- Take 4 "The standings swing" (social comparison, inside the app: the terminal's own tokens, Inter + Geist Mono). 10 s (trimmed from 11.5).
+  0.0  frame 0: the app's Leaderboard, a result card on top: CoreWeave, round 106, 1 LONG vs 3 SHORT, grading at the close.
+  1.0  the card grades (a ring runs to the close); 3.0 the reveal beat: +24.71%, each AI's round P&L resolves on its chip.
+  4.2  the chips fly into the season rows; bars and figures run to the new totals; GPT lands last, back to even (-$30).
+  7.2  the end hold: the board as it stands, the next round. Season figures from the flat $100K P&L (ez-data.js). -->
+<style id="base"></style>
+<style>
+.bug{display:none}
+#app{position:absolute;inset:0}
+#top{position:absolute;left:0;right:0;top:0;height:132px;display:flex;align-items:flex-end;gap:30px;padding:0 56px 22px;border-bottom:2px solid #2a2522;background:#0e0c0b}
+#top img{width:54px;height:54px}
+#top .tb{font:700 30px Inter;color:#8e8680;padding-bottom:8px}#top .tb.on{color:#f2ede6;box-shadow:0 4px 0 #fdbc2a}
+#top .lv{margin-left:auto;font:600 22px 'Geist Mono';letter-spacing:.1em;color:#8e8680;padding-bottom:12px}
+#card{position:absolute;left:56px;right:56px;top:166px;height:358px;border-radius:24px;background:#161312;box-shadow:inset 0 0 0 2px #2a2522;padding:26px 28px;transform-origin:50% 0}
+#card .r1{display:flex;align-items:center;gap:18px;font:800 46px Inter;letter-spacing:-.03em}
+#card .r1 img{width:64px;height:64px;border-radius:14px;background:#f2ede6;padding:8px}
+#card .st{margin-left:auto;font:700 20px 'Geist Mono';letter-spacing:.1em;padding:9px 14px 7px;border-radius:10px;color:#fdbc2a;background:#1a1300;box-shadow:inset 0 0 0 2px rgba(253,188,42,.4);display:flex;align-items:center;gap:10px}
+#card .mid{display:flex;align-items:center;gap:22px;margin-top:20px;height:92px}
+#card .vs{font:900 54px Inter;letter-spacing:-.02em}#card .vs i{font-style:normal;color:#5f5853;font-size:34px;margin:0 10px;vertical-align:6px}
+#card .mv{font:600 86px 'Geist Mono';letter-spacing:-.05em;color:#55d6a2;font-variant-numeric:tabular-nums}
+#card .chips{display:flex;gap:14px;margin-top:16px}
+.chip{flex:1;height:112px;border-radius:16px;background:#1d1917;box-shadow:inset 0 0 0 2px #2a2522;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;column-gap:12px;row-gap:8px;padding:12px 14px;position:relative}
+.chip .mk{grid-row:1}.chip .s{font:800 20px Inter;letter-spacing:.06em}.chip .v{grid-column:1/3;font:700 30px 'Geist Mono';letter-spacing:-.04em;white-space:nowrap}
+#scan{position:absolute;top:0;bottom:0;width:180px;background:linear-gradient(90deg,transparent,rgba(253,188,42,.13),transparent);pointer-events:none}
+#cflood{position:absolute;inset:0;border-radius:24px;pointer-events:none}
+#card{overflow:hidden}
+#lb{position:absolute;left:56px;right:56px;top:560px}
+#lb .h{display:flex;font:600 20px 'Geist Mono';letter-spacing:.12em;color:#8e8680;padding:0 6px 14px;border-bottom:2px solid #2a2522}
+#lb .h span:last-child{margin-left:auto}
+.row{position:absolute;left:0;width:968px;height:150px;border-bottom:2px solid #2a2522;padding:22px 6px 0}
+.row .a{display:flex;align-items:center;gap:18px}
+.row .rk{font:600 30px 'Geist Mono';color:#8e8680;width:40px}
+.row .nm{font:800 42px Inter;letter-spacing:-.02em}
+.row .val{margin-left:auto;font:600 50px 'Geist Mono';letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.row .tag{font:900 20px Inter;letter-spacing:.1em;color:#0e0c0b;background:#fdbc2a;padding:7px 12px 5px;border-radius:8px}
+.row svg.bar{position:absolute;left:6px;bottom:16px;overflow:visible}
+.fly{position:absolute;font:700 34px 'Geist Mono';letter-spacing:-.04em;padding:8px 14px;border-radius:12px;white-space:nowrap;z-index:30}
+#endl{position:absolute;left:56px;right:56px;top:1252px;text-align:center;font:600 24px 'Geist Mono';letter-spacing:.08em;color:#8e8680}
+#endl b{color:#f2ede6;font-weight:600}
+.fine{bottom:26px}
+</style>
+<div id="app">
+  <div id="top"><img src="ezlogo.svg" alt=""><span class="tb on">Leaderboard</span><span class="tb">Upcoming</span><span class="lv">SEASON 1 · P&amp;L</span></div>
+  <div id="card"><div class="r1"><img src="crwv.png" alt="">CoreWeave<span style="font:600 24px 'Geist Mono';color:#8e8680;letter-spacing:.06em;margin-left:6px">R106</span><span class="st" id="st"></span></div>
+    <div class="mid" id="mid"></div><div class="chips" id="chips"></div><div id="scan"></div><div id="cflood"></div></div>
+  <div id="lb"><div class="h"><span>SEASON P&amp;L · $100K A TRADE</span><span>NOW</span></div></div>
+  <div id="endl"></div>
+</div>
+<div id="vig"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script>
+<script>
+L.$('#base').textContent = L.css; L.chrome(document.body);
+const R = L.R, TR = 3.0, TE = 4.0;
+const ORDER = ['GROK', 'CLAUDE', 'GPT', 'KIMI']; // the board's order (unchanged by this round)
+const LAND = { GROK: 4.95, CLAUDE: 5.35, KIMI: 5.75, GPT: 6.35 };
+const AI = k => R.ai.find(a => a.k === k);
+let rows, chips, flies;
+const build = () => {
+  chips = R.ai.map(a => { const d = document.createElement('div'); d.className = 'chip';
+    d.innerHTML = `${L.mark(a.k, 40)}<span class="s" style="color:${a.side === 'LONG' ? '#55d6a2' : '#e8576b'}">${a.side}</span><span class="v"></span>`; L.$('#chips').appendChild(d); return d });
+  rows = ORDER.map((k, i) => { const a = AI(k); const d = document.createElement('div'); d.className = 'row'; d.style.top = (64 + i * 150) + 'px';
+    d.innerHTML = `<div class="a"><span class="rk">${i + 1}</span>${L.mark(k, 58)}<span class="nm">${a.name}</span><span class="tag" style="opacity:0">BACK TO EVEN</span><span class="val"></span></div><svg class="bar" width="956" height="34"></svg>`;
+    L.$('#lb').appendChild(d); return d });
+  flies = R.ai.map(a => { const d = document.createElement('div'); d.className = 'fly'; d.textContent = L.money(a.pnl);
+    d.style.color = a.side === 'LONG' ? '#0e0c0b' : '#f2ede6'; d.style.background = a.side === 'LONG' ? '#55d6a2' : '#e8576b'; document.body.appendChild(d); return d });
+};
+let grain;
+window.CUES = [[0.05, 'r11-swell', .1], [1.0, 'r10-tick', .14], [1.5, 'r10-tick', .12], [2.0, 'r10-tick', .14], [2.5, 'r10-tick', .16], [2.2, 'sfx-riser', .12],
+  [TR, 'r11-ping', .2], [TE, 'sfx-boom', .24], [TE + .1, 'r11-card', .14], [TE + .2, 'r11-card', .14], [TE + .3, 'r11-card', .14], [TE + .4, 'r11-card', .14],
+  ...['GROK', 'CLAUDE', 'KIMI'].map(k => [LAND[k], 'r11-thump', .16]), [LAND.GPT, 'r11-kaching', .26], [LAND.GPT + .7, 'sfx-stamp', .2], [7.3, 'sfx-whoosh', .1], [8.3, 'sfx-chime', .14], [.8, 'r11-pluck', .1], [1.25, 'r11-pluck', .1], [1.7, 'r11-pluck', .1], [2.15, 'r11-pluck', .1]];
+const X0 = 478, SC = 440 / 210000; // the bar's $0 line and its scale
+window.R = t => {
+  grain(t);
+  // the card: grading -> graded
+  const st = L.$('#st'), ring = L.n(t, 1.0, TR);
+  st.innerHTML = t < TR ? `<svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8" fill="none" stroke="#3a3128" stroke-width="3"/><circle cx="11" cy="11" r="8" fill="none" stroke="#fdbc2a" stroke-width="3" stroke-dasharray="${50.3 * ring} 60" transform="rotate(-90 11 11)"/></svg>GRADING AT THE CLOSE` : 'GRADED · WED CLOSE';
+  if (t >= TR) { st.style.color = '#55d6a2'; st.style.background = 'rgba(85,214,162,.12)'; st.style.boxShadow = 'inset 0 0 0 2px rgba(85,214,162,.45)' }
+  const mid = L.$('#mid');
+  if (t < TR) mid.innerHTML = `<span class="vs"><span class="up">1 LONG</span><i>vs</i><span class="dn">3 SHORT</span></span>`;
+  else mid.innerHTML = `<span class="mv">${L.pct(R.move * L.eo5(L.n(t, TR, TE)))}</span><span style="font:600 22px 'Geist Mono';letter-spacing:.1em;color:#fdbc2a;line-height:1.5">${t > TE ? 'BIGGEST JUMP<br>OF 106 ROUNDS' : ''}</span>`;
+  L.$('#card').style.transform = `scale(${1 + .025 * Math.sin(Math.PI * L.n(t, TE, TE + .5))})`;
+  const sc = L.$('#scan'); const sx = ((t - .6) % 1.1) / 1.1; sc.style.left = (-200 + 1170 * sx) + 'px'; sc.style.opacity = t > .6 && t < TR ? 1 : 0;
+  L.$('#cflood').style.background = t >= TE ? `rgba(85,214,162,${.38 * Math.exp(-(t - TE) * 3.2)})` : 'transparent';
+  chips.forEach((c, i) => { const a = R.ai[i]; const v = c.querySelector('.v');
+    const lit = t > .8 && t < TR ? Math.max(0, 1 - Math.abs(((t - .8) / .45) % 4 - i) * 2.2) : 0; c.style.background = `rgba(253,188,42,${.16 * lit})`; c.style.transform = `translateY(${-6 * lit}px)`;
+    v.textContent = t < TE ? '?' : L.money(a.pnl); v.style.color = t < TE ? '#5f5853' : a.side === 'LONG' ? '#55d6a2' : '#e8576b';
+    c.style.boxShadow = t > TE && a.side === 'LONG' ? 'inset 0 0 0 3px #fdbc2a' : 'inset 0 0 0 2px #2a2522' });
+  // the chips fly into the board
+  flies.forEach((f, i) => { const a = R.ai[i]; const land = LAND[a.k], t0 = land - .55, k = L.n(t, t0, land);
+    const c = chips[i].getBoundingClientRect(); const r = rows[ORDER.indexOf(a.k)]; const rr = r.getBoundingClientRect();
+    const x0 = c.left + c.width / 2 - 90, y0 = c.top + 20, x1 = 56 + 968 - 250, y1 = rr.top + 26;
+    const e = L.eio(k); f.style.left = L.lerp(x0, x1, e) + 'px'; f.style.top = (L.lerp(y0, y1, e) - 120 * Math.sin(Math.PI * e)) + 'px';
+    f.style.opacity = k > 0 && k < 1 ? 1 : 0; f.style.transform = `scale(${1 + .3 * Math.sin(Math.PI * e)})` });
+  // the rows: figures and bars run from before to after when their chip lands
+  rows.forEach((r, i) => { const k = ORDER[i], a = AI(k); const p = L.eo(L.n(t, LAND[k], LAND[k] + .7));
+    const v = L.lerp(R.season0[k], R.season1[k], p); const val = r.querySelector('.val'); val.textContent = L.money(v);
+    val.style.color = Math.abs(v) < 500 ? '#f2ede6' : v >= 0 ? '#55d6a2' : '#e8576b';
+    const w = v * SC, x = w >= 0 ? X0 : X0 + w, hit = Math.exp(-Math.max(0, t - LAND[k]) * 1.6) * (t > LAND[k] ? 1 : 0);
+    r.querySelector('svg.bar').innerHTML = `<rect x="0" y="12" width="956" height="10" rx="5" fill="#1d1917"/><line x1="${X0}" x2="${X0}" y1="0" y2="34" stroke="#8e8680" stroke-width="2"/>
+      <rect x="${x}" y="8" width="${Math.max(3, Math.abs(w))}" height="18" rx="6" fill="${Math.abs(v) < 500 ? '#f2ede6' : v >= 0 ? '#55d6a2' : '#e8576b'}"/>
+      <text x="${X0}" y="-2" text-anchor="middle" fill="#5f5853" font-family="Geist Mono" font-size="16" ${i ? 'opacity="0"' : ''}>$0</text>`;
+    r.style.background = `rgba(${a.side === 'LONG' ? '85,214,162' : '232,87,107'},${.3 * hit})`;
+    if (k === 'GPT') { const g = L.n(t, LAND.GPT + .7, LAND.GPT + 1.0); const tg = r.querySelector('.tag'); tg.style.opacity = g; tg.style.transform = `scale(${L.lerp(1.6, 1, L.eo5(g))}) rotate(-3deg)`;
+      r.style.boxShadow = `inset 4px 0 0 rgba(253,188,42,${L.n(t, LAND.GPT, LAND.GPT + .5)})` } });
+  const e = L.$('#endl');
+  e.innerHTML = t < 8.3 ? 'GPT ERASED A SEASON\'S LOSS <b>IN ONE TRADE</b>' : 'NEXT: <b>NEBIUS</b> · 3 LONG v 1 SHORT · TODAY\'S CLOSE';
+  e.style.opacity = t < 8.3 ? L.n(t, 7.3, 7.6) * (1 - L.n(t, 8.0, 8.3)) : L.n(t, 8.3, 8.6);
+};
+L.boot(async () => { build(); grain = L.grain(L.$('#grain'), .06); });
+</script>

@@ -1,0 +1,40 @@
+<!doctype html><meta charset="utf-8"><title>Resolution style frames</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500;600;700;800&display=swap">
+<style>
+/* Resolution video style frames (2026-11-08): one painted plate per direction (Hedra), crisp live data on top. R72 Reddit, real numbers. */
+:root{--tx:#f5f1ea;--mu:#a9b3ad;--up:#55d6a2;--dn:#ff5a6e;--ac:#fdbc2a;--sans:Inter,system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0}body{width:1080px;height:1350px;overflow:hidden;font-family:var(--sans);color:var(--tx);background:#050806}
+#bg{position:absolute;inset:0;background-size:cover;background-position:center}
+#sh{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,6,5,.35) 0%,rgba(4,6,5,.15) 30%,rgba(4,6,5,.55) 70%,rgba(4,6,5,.9) 100%)}
+.w{position:absolute;inset:0;padding:96px 84px 80px;display:flex;flex-direction:column}
+.co{display:flex;align-items:center;gap:22px}.co .lg{width:84px;height:84px;border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden}.co .lg img{width:76%;height:76%;object-fit:contain}
+.co b{font:800 46px/1 var(--sans);letter-spacing:-.02em}.co small{display:block;margin-top:8px;font:600 22px/1 var(--mono);letter-spacing:.14em;color:var(--mu);text-transform:uppercase}
+.big{margin-top:70px;font:900 190px/0.9 var(--mono);letter-spacing:-.06em}.big small{display:block;font:600 26px/1 var(--mono);letter-spacing:.14em;color:var(--mu);text-transform:uppercase;margin-top:22px}
+.h1{margin-top:90px;font:700 92px/1.02 var(--sans);letter-spacing:-.04em}.h1 span{color:var(--mu)}
+.rows{margin-top:auto;display:flex;flex-direction:column;gap:14px}
+.r{display:grid;grid-template-columns:64px 1fr auto auto;align-items:center;gap:22px;padding:20px 26px;border-radius:24px;background:rgba(10,14,12,.62);border:1.5px solid rgba(255,255,255,.08);backdrop-filter:blur(14px)}
+.r .n{font:700 38px/1 var(--sans)}.r .c{font:700 28px/1 var(--mono);padding:9px 14px;border-radius:12px}.c.u{background:rgba(85,214,162,.14);color:var(--up)}.c.d{background:rgba(255,90,110,.14);color:var(--dn)}
+.r .v{font:800 40px/1 var(--mono);letter-spacing:-.03em;min-width:250px;text-align:right}
+.r.dim{opacity:.42}.r.win{border-color:var(--ac);background:rgba(30,24,6,.72);box-shadow:0 0 60px rgba(253,188,42,.25)}
+.ai{width:64px;height:64px;border-radius:50%;display:grid;place-items:center}.ai svg{width:58%;height:58%}
+.ft{margin-top:34px;display:flex;justify-content:space-between;font:600 24px/1 var(--mono);letter-spacing:.08em;color:var(--mu)}
+.tag{position:absolute;right:84px;top:108px;font:800 24px/1 var(--mono);letter-spacing:.14em;color:#1a1300;background:var(--ac);padding:12px 16px;border-radius:12px}
+</style>
+<div id="bg"></div><div id="sh"></div><div class="w" id="w"></div>
+<script src="../../../ez-data.js"></script>
+<script>
+var q=new URLSearchParams(location.search),BG=q.get('bg'),BEAT=q.get('beat')||'verdict',RN=+(q.get('r')||72);
+document.getElementById('bg').style.backgroundImage='url(../launchvid/hedra/img/'+BG+'.jpg)';
+var R=ROUNDS.filter(function(r){return r.n===RN})[0],L=CO_LOGOS[R.ticker];
+function ai(m){var M=MODELS[m];return '<span class="ai" style="background:'+M.bg+'"><svg viewBox="0 0 24 24"><path fill="'+M.fg+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+' d="'+M.d+'"/>'+(M.dot?'<path fill="'+M.dotc+'" d="'+M.dot+'"/>':'')+'</svg></span>'}
+function money(v){return (v<0?'−':'+')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US')}
+var calls=R.calls.map(function(c){var s=c[1].indexOf('DOWN')===0?-1:1;return {m:c[0],s:s,mag:parseFloat(c[1].replace(/[^0-9.]/g,'')),pnl:1000*s*R.a}});
+var right=calls.filter(function(c){return c.pnl>0}).length;
+if(BEAT!=='calls')calls.sort(function(a,b){return b.pnl-a.pnl||(a.m===R.win?-1:1)});
+var head='<div class="co"><span class="lg">'+(L?'<img src="../../../media/'+L.f+'">':'')+'</span><div><b>'+R.co+'</b><small>Round '+R.n+' · Earnings</small></div></div>';
+var rows=function(v){return '<div class="rows">'+calls.map(function(c){var w=v&&c.m===R.win,d=v&&!w&&c.pnl<0;return '<div class="r'+(w?' win':'')+(d?' dim':'')+'">'+ai(c.m)+'<span class="n">'+MODELS[c.m].app+'</span><span class="c '+(c.s>0?'u':'d')+'">'+(c.s>0?'LONG +':'SHORT −')+c.mag+'%</span><span class="v" style="color:'+(v?(c.pnl>=0?'var(--up)':'var(--dn)'):'var(--mu)')+'">'+(v?money(c.pnl):'locked')+'</span></div>'}).join('')+'</div>';};
+var ft='<div class="ft"><span>$100K on every trade</span><span>earningszn.xyz</span></div>';
+document.getElementById('w').innerHTML= BEAT==='calls'
+ ? head+'<div class="h1">4 AIs called it.<br><span>'+calls.filter(function(c){return c.s>0}).length+' long · '+calls.filter(function(c){return c.s<0}).length+' short.</span></div>'+rows(false)+ft
+ : head+'<div class="big" style="color:'+(R.a<0?'var(--dn)':'var(--up)')+'">'+(R.a<0?'−':'+')+Math.abs(R.a).toFixed(2)+'%<small>At the close · '+right+' of 4 called it</small></div>'+rows(true)+ft;
+</script>

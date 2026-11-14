@@ -1,0 +1,11 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();for(const W of [390,1280]){const ctx=await b.newContext({viewport:{width:W,height:W<600?844:900},deviceScaleFactor:1});const p=await ctx.newPage();await FONTS(p);
+await p.goto('http://localhost:8991/v46-live-x2plus.html',{waitUntil:'load',timeout:150000});
+await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});await p.waitForTimeout(1500);
+const r=await p.evaluate(()=>{const q=s=>{const e=document.querySelector(s);if(!e)return null;const r=e.getBoundingClientRect();return [s,Math.round(r.top+scrollY),Math.round(r.height),Math.round(r.left),Math.round(r.width)]};
+const out=['section.t4','.t4-b1','.t4-b2','.t4-b3','.t4-b3 .t4-h2','.t4-b3 .t4-bleed','main > section:nth-of-type(2)'].map(q);
+const secs=[...document.querySelectorAll('main section')].filter(s=>s.offsetHeight).slice(0,5).map(s=>{const r=s.getBoundingClientRect();return [s.id||s.className.slice(0,40),Math.round(r.top+scrollY),Math.round(r.height),getComputedStyle(s).paddingTop,getComputedStyle(s).marginTop]});
+const gs=[...document.querySelectorAll('.t5-bg')].map(g=>{const r=g.getBoundingClientRect();return ['gut',Math.round(r.top+scrollY),Math.round(r.height)]});
+return {out,secs,gs}});console.log(W,JSON.stringify(r,null,0));
+await p.screenshot({path:`/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8/scratchpad/live${W}.png`,fullPage:false});
+const y=r.out[3][1]-300;await p.evaluate(y=>scrollTo(0,y),y);await p.waitForTimeout(600);await p.screenshot({path:`/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8/scratchpad/livefilm${W}.png`});await ctx.close()}await b.close()})();

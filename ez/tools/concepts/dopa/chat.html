@@ -1,0 +1,133 @@
+<!doctype html><meta charset="utf-8"><title>Round prediction: the group chat</title>
+<!-- The prediction video as a group chat (owner, 2026-11-13: "Improvise... carte blanche... reach, memorable, sharable, unique at
+  highest quality craft"). chat.html?r=<round> reads data/c<round>.json (prep-calls.js, the sheet only).
+  The four AIs are characters who say their calls: each one types, then posts its side and size. LONG on the left, SHORT on the
+  right, so the split is the picture. The lone dissenter (or the last to file) types longest and lands last. It ends on
+  "The market is typing", where the outcome picks up. ?o=1 plays the outcome for a graded round (data/r<round>.json): the market
+  posts the move, every call is marked, the right side is paid.
+  Truth rules: a bubble holds only what the sheet holds (side, size). No invented words, no timestamps (the sheet has no posting
+  time), no result in the prediction. The typing pause is staging, not a claim about how any AI behaved. -->
+<style id="base"></style>
+<style>
+#cam{position:absolute;inset:0;transform-origin:50% 60%}
+#glow{position:absolute;inset:0}
+#hd{position:absolute;left:56px;right:56px;top:124px;height:128px;display:flex;align-items:center;gap:26px}
+#hd img{width:108px;height:108px;border-radius:26px;background:#f2ede6;padding:13px;object-fit:contain;flex:none}
+#hd .co{font:900 60px/1 Inter;letter-spacing:-.04em;white-space:nowrap;transform-origin:0 50%}
+#hd .sub{font:600 25px 'Geist Mono';letter-spacing:.1em;color:#8e8680;margin-top:12px;white-space:nowrap}
+#hd .sub b{color:#fdbc2a;font-weight:600}
+#hd .who{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+#hd .who .ms{display:flex;gap:8px}
+#hd .who span{font:600 19px 'Geist Mono';letter-spacing:.12em;color:#8e8680;white-space:nowrap}
+#rule{position:absolute;left:56px;right:56px;top:268px;height:2px;background:linear-gradient(90deg,#2a2522,#2a2522 70%,transparent)}
+.sys{position:absolute;left:0;right:0;display:flex;justify-content:center;white-space:nowrap}
+.sys .p{display:flex;align-items:center;gap:14px;font:600 22px 'Geist Mono';letter-spacing:.1em;color:#8e8680;background:#161312;box-shadow:inset 0 0 0 2px #2a2522;border-radius:999px;padding:11px 22px 10px}
+.sys .big{font:900 44px/1 Inter;letter-spacing:-.03em}
+.sys .big i{font-style:normal;color:#5f5853;font-size:30px;margin:0 14px;font-weight:800}
+.sys .st{font:700 31px/1 Inter;letter-spacing:-.015em;color:#f2ede6}.sys .st b{font-weight:800}
+.sys.gold .p{color:#fdbc2a;background:rgba(253,188,42,.08);box-shadow:inset 0 0 0 2px rgba(253,188,42,.5);font-size:26px;padding:14px 28px 13px}
+.msg{position:absolute;top:0;width:968px;left:56px;height:140px}
+.msg .av{position:absolute;top:34px}
+.msg.l .av{left:0}.msg.r .av{right:0}
+.msg .nr{position:absolute;top:0;display:flex;align-items:baseline;gap:14px;white-space:nowrap}
+.msg.l .nr{left:96px}.msg.r .nr{right:96px;flex-direction:row-reverse}
+.msg .nm{font:800 30px/1 Inter;letter-spacing:-.02em}
+.msg .tg{font:600 21px/1 'Geist Mono';letter-spacing:.04em;color:#8e8680}
+.msg .ty{font:600 21px/1 'Geist Mono';letter-spacing:.06em;color:#5f5853}
+.bub{position:absolute;top:40px;height:100px;border-radius:34px;overflow:hidden;display:flex;align-items:center}
+.msg.l .bub{left:96px;border-bottom-left-radius:10px;transform-origin:0 100%}
+.msg.r .bub{right:96px;border-bottom-right-radius:10px;transform-origin:100% 100%;justify-content:flex-end}
+.bub .in{display:flex;align-items:baseline;gap:20px;padding:0 34px;white-space:nowrap}
+.bub .sdw{font:900 56px/1 Inter;letter-spacing:-.035em}
+.bub .cl{font:600 44px/1 'Geist Mono';letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.bub .lb{font:600 19px/1 'Geist Mono';letter-spacing:.14em;color:#8e8680;margin-right:-8px}
+.bub .dots{position:absolute;left:0;top:0;width:124px;height:100%;display:flex;align-items:center;justify-content:center;gap:11px}
+.msg.r .bub .dots{left:auto;right:0}
+.bub .dots i{width:14px;height:14px;border-radius:50%;background:#8e8680;display:block}
+.rx{position:absolute;top:58px;display:flex;align-items:center;gap:14px;font:600 40px/1 'Geist Mono';letter-spacing:-.03em;white-space:nowrap}
+.rx svg{flex:none}
+.fine{bottom:30px}
+</style>
+<div id="cam"><div id="glow"></div>
+  <div id="hd"><img id="clogo" alt=""><div><div class="co" id="cname"></div><div class="sub" id="csub"></div></div><div class="who"><div class="ms" id="hms"></div><span>4 AIs · $100K EACH</span></div></div>
+  <div id="rule"></div><div id="stage"></div>
+</div>
+<div id="vig"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script>
+<script>
+L.$('#base').textContent = L.css;
+const QS = new URLSearchParams(location.search), RN = +(QS.get('r') || 109), OUT = QS.get('o') === '1';
+const UP = '85,214,162', DN = '232,87,107', AU = '253,188,42', G = '#55d6a2', Rd = '#e8576b';
+let D, O, grain, cam = L.$('#cam'), stage = L.$('#stage'), M = [], S = {}, DUR;
+const C = window.CUES = [];
+const add = h => { stage.insertAdjacentHTML('beforeend', h); return stage.lastElementChild };
+const sgn = a => a.side === 'LONG' ? 1 : a.side === 'SHORT' ? -1 : 0;
+const money0 = v => (v < 0 ? '−' : '+') + '$' + Math.abs(v).toLocaleString('en-US');
+const Y0 = 352, STEP = 150;
+const tick = (c, s = 44) => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="rgba(${c === G ? UP : DN},.16)" stroke="${c}" stroke-width="3"/>${c === G ? `<path d="M12.5 22.5l6.5 6.5 12.5-13.5" fill="none" stroke="${c}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>` : `<path d="M14.5 14.5l15 15M29.5 14.5l-15 15" fill="none" stroke="${c}" stroke-width="4.5" stroke-linecap="round"/>`}</svg>`;
+const setup = () => { L.R = { ...L.R, n: D.n }; L.chrome(document.body);
+  L.$('#cname').textContent = D.co; L.$('#clogo').src = D.logo || 'ezlogo.svg'; L.$('#csub').innerHTML = `EARNINGS · <b>${D.report || 'THIS WEEK'}</b>`;
+  L.$('#hms').innerHTML = D.ai.map(a => L.mark(a.k, 50)).join('');
+  // who files when: the pack first, the lone dissenter last (sheet order otherwise); both sides present -> SHORT sits on the right
+  const idx = D.ai.map((a, i) => i).filter(i => sgn(D.ai[i])); if (D.lone) idx.sort((x, y) => (D.ai[x].k === D.lone) - (D.ai[y].k === D.lone));
+  const both = D.longs > 0 && D.shorts > 0; let t = 0;
+  // the run-in line (real, Hyperliquid) or nothing
+  if (D.run) { const p = D.run.pts, lo = Math.min(...p.map(q => q[1])), hi = Math.max(...p.map(q => q[1])), W = 120, Hh = 30, d = 'M' + p.map(q => (q[0] / D.run.hours * W).toFixed(1) + ' ' + (Hh - 2 - (q[1] - lo) / (hi - lo || 1) * (Hh - 4)).toFixed(1)).join('L'), c = D.run.move >= 0 ? G : Rd;
+    S.run = add(`<div class="sys" style="top:292px"><div class="p"><svg width="${W}" height="${Hh}"><path d="${d}" fill="none" stroke="${c}" stroke-width="2.6" stroke-linejoin="round"/></svg><span style="color:#f2ede6;opacity:.82">$${D.ticker.replace(/\..*$/, '')} <b style="color:${c};font-weight:600">${L.pct(D.run.move, 1)}</b> IN THE 7 DAYS BEFORE EARNINGS</span></div></div>`) }
+  idx.forEach((i, j) => { const a = D.ai[i], last = j === idx.length - 1, right = both && sgn(a) < 0, rank = D.order.indexOf(a.k) + 1, sp = D.season[a.k];
+    const el = add(`<div class="msg ${right ? 'r' : 'l'}"><div class="av">${L.mark(a.k, 76)}</div><div class="nr"><span class="nm">${a.name}</span><span class="tg">#<span class="rk">${rank}</span> · SEASON <span class="sv" style="color:${sp >= 0 ? G : Rd}">${money0(sp)}</span></span><span class="ty">typing</span></div>
+      <div class="bub"><div class="dots"><i></i><i></i><i></i></div><div class="in"><span class="sdw" style="color:${sgn(a) > 0 ? G : Rd}">${a.side}</span><span class="lb">CALLS</span><span class="cl" style="color:${sgn(a) > 0 ? G : Rd}">${(sgn(a) > 0 ? '+' : '−') + a.size}%</span></div></div><div class="rx"></div></div>`);
+    // typing: the first three are quick; the last one waits, stops, starts again
+    const ty = last && idx.length > 1 ? 2.3 : .55, a0 = OUT ? -9 : j === 0 ? -.3 : t + .4, s = OUT ? -9 : a0 + ty + (j === 0 ? .3 : 0);
+    M.push({ a, i, el, right, last, a0, s, pause: last && idx.length > 1 ? [a0 + .9, a0 + 1.5] : null, y: Y0 + j * STEP }); t = s;
+    if (!OUT) C.push([s, 'r11-bubble', last ? .2 : .14]); if (last && idx.length > 1) C.push([a0 + .1, 'sfx-riser', .1], [s + .02, 'r11-thump', .22]);
+    if (!OUT) for (let q = a0 + .12; q < s - .1; q += .16) if (!(last && idx.length > 1 && q > a0 + .9 && q < a0 + 1.5) && q > 0) C.push([+q.toFixed(3), 'sfx-type', .035]) });
+  // measure each bubble's full width once
+  M.forEach(m => { const b = m.el.querySelector('.bub'); b.style.width = 'auto'; m.w = Math.ceil(b.querySelector('.in').getBoundingClientRect().width); b.style.width = '124px' });
+  const end = t, yb = Y0 + (idx.length - 1) * STEP + 140 + 18;
+  const sp = D.split.match(/^(\d+) LONG vs (\d+) SHORT$/);
+  S.tally = add(`<div class="sys" style="top:${yb}px"><div class="big">${sp ? `<span class="up">${sp[1]} LONG</span><i>vs</i><span class="dn">${sp[2]} SHORT</span>` : `<span class="${/LONG/.test(D.split) ? 'up' : 'dn'}">${D.split}</span>`}</div></div>`);
+  const lone = D.lone && D.loneRec && D.loneRec.times > 0 ? D.ai.find(a => a.k === D.lone) : null;
+  S.stat = add(`<div class="sys" style="top:${yb + 58}px"><div class="st">${lone ? `${lone.name} stood alone <b>${D.loneRec.times} times</b> before. Right <b class="au">${D.loneRec.right}</b>.` : D.kind === 'unanimous' ? 'Nobody took the other side.' : 'A split room.'}</div></div>`);
+  S.gold = add(`<div class="sys gold" style="top:${yb + 108}px"><div class="p">$100K EACH · GRADED AT THE CLOSE ${D.close || ''}</div></div>`);
+  S.tT = OUT ? -9 : end + .6; S.tS = OUT ? -9 : end + 1.1; S.tG = OUT ? -9 : end + 1.7; S.tM = OUT ? -.4 : end + 2.4; S.yM = yb + 178;
+  // the market: a gold avatar; typing in the prediction, the move in the outcome
+  S.mk = add(`<div class="msg l"><div class="av"><svg class="mk" width="76" height="76" viewBox="0 0 76 76" style="border-radius:20px;background:#1a1300;box-shadow:0 0 0 2.5px rgba(253,188,42,.6)"><path d="M14 50l12-12 9 8 13-18 14 10" fill="none" stroke="#fdbc2a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="nr"><span class="nm" style="color:#fdbc2a">The market</span><span class="tg">${D.close ? 'ANSWERS ' + D.close : ''}</span><span class="ty">typing</span></div><div class="bub"><div class="dots"><i></i><i></i><i></i></div><div class="in"><span class="sdw" id="mkw"></span><span class="cl" id="mkc"></span></div></div></div>`);
+  if (!OUT) C.push([.02, 'r11-swell', .08], [S.tT, 'r11-card', .12], [S.tG, 'sfx-chime', .16], [S.tM, 'r11-ping', .08]); else for (let q = .1; q < 1.1; q += .16) C.push([+q.toFixed(3), 'sfx-type', .035]);
+  if (OUT) { const mv = O.move, c = mv >= 0 ? G : Rd; L.$('#mkw').textContent = '$' + D.ticker.replace(/\..*$/, ''); L.$('#mkw').style.color = '#f2ede6'; L.$('#mkc').textContent = O.pct; L.$('#mkc').style.color = c;
+    const b = S.mk.querySelector('.bub'); b.style.width = 'auto'; S.mw = Math.ceil(b.querySelector('.in').getBoundingClientRect().width); b.style.width = '124px';
+    S.tA = 1.3; M.forEach((m, j) => { const o = O.ai.find(x => x.k === m.a.k); m.o = o; m.tr = S.tA + .7 + j * .32; m.el.querySelector('.rx').innerHTML = `${tick(o.right ? G : Rd)}<span style="color:${o.right ? G : Rd}">${money0(o.pnl)}</span>`; C.push([m.tr, o.right ? 'r11-kaching' : 'r11-knock', o.right ? .2 : .1]) });
+    S.tW = S.tA + .7 + M.length * .32 + .5; C.push([S.tA, 'sfx-bell', .26], [S.tA + .05, 'r11-thump', .2], [S.tW, 'sfx-chime', .16]);
+    S.win = add(`<div class="sys gold" style="top:${yb + 108}px"><div class="p">${O.line1.toUpperCase()} · ${O.line3}</div></div>`); DUR = S.tW + 2.8 }
+  else DUR = S.tM + 2.8;
+  DUR = Math.ceil(DUR * 2) / 2; window.DUR = DUR; window.MUSIC = { f: 'c1-lofi', at: 4 } };
+const dots = (el, t, on, pause) => { const live = pause && t > pause[0] && t < pause[1] ? 0 : 1; el.style.opacity = on; [...el.children].forEach((d, k) => { const ph = (t * 1.5 - k * .16) % 1, up = live ? Math.max(0, Math.sin(ph * Math.PI * 2)) : 0; d.style.transform = `translateY(${-9 * up}px)`; d.style.opacity = .45 + .55 * up }) };
+const bubble = (m, t, w, rgb, strong) => { const el = m.el, b = el.querySelector('.bub'), ap = L.eio(L.n(t, m.a0, m.a0 + .28)), k = t < m.s ? 0 : L.cl(L.spring(t - m.s, 2.4, 9), 0, 1.2), kk = L.n(t, m.s, m.s + .22), pu = t > m.s ? Math.exp(-(t - m.s) * 3) : 0;
+  el.style.opacity = ap; el.querySelector('.av').style.transform = `scale(${L.lerp(.6, 1, L.eo5(L.n(t, m.a0, m.a0 + .3))) * (1 + .1 * pu * (strong ? 1.6 : 1))})`;
+  el.querySelector('.ty').style.opacity = 1 - kk; b.style.width = L.lerp(124, w, k) + 'px';
+  b.style.background = `linear-gradient(180deg,rgba(${rgb},${.07 + .13 * kk + .2 * pu}),rgba(${rgb},${.04 + .08 * kk + .1 * pu}))`; b.style.boxShadow = `inset 0 0 0 2.5px rgba(${rgb},${.22 + .33 * kk + .3 * pu}),0 0 ${(strong ? 90 : 50) * pu}px rgba(${rgb},${.5 * pu})`;
+  dots(b.querySelector('.dots'), t, (1 - L.n(t, m.s - .04, m.s + .06)) * ap, m.pause); const inn = b.querySelector('.in'); inn.style.opacity = L.n(t, m.s + .05, m.s + .2); inn.style.transform = `translateY(${10 * (1 - L.eo(L.n(t, m.s + .03, m.s + .3)))}px)`; return pu };
+window.R = t => { grain(t); let kick = 0, gl = 0, gs = 0;
+  if (S.run) S.run.style.opacity = 1;
+  M.forEach(m => { const a = m.a, rgb = sgn(a) > 0 ? UP : DN, pu = bubble(m, t, m.w, rgb, m.last && M.length > 1);
+    m.el.style.transform = `translateY(${m.y + 26 * (1 - L.eo(L.n(t, m.a0, m.a0 + .3)))}px)`;
+    if (m.last && M.length > 1) kick += pu; if (sgn(a) > 0) gl += pu; else gs += pu;
+    if (OUT) { const k = L.n(t, m.tr, m.tr + .28), rx = m.el.querySelector('.rx'), b = m.el.querySelector('.bub'); rx.style.opacity = k; rx.style.transform = `scale(${L.lerp(1.8, 1, L.eo5(k))})`; rx.style.transformOrigin = m.right ? '100% 50%' : '0 50%';
+      rx.style[m.right ? 'right' : 'left'] = (96 + m.w + 22) + 'px'; rx.style.flexDirection = m.right ? 'row-reverse' : 'row';
+      const dim = !m.o.right ? L.n(t, m.tr, m.tr + .4) : 0, win = m.o.right ? L.eo(L.n(t, m.tr, m.tr + .5)) : 0; b.style.filter = `saturate(${1 - .7 * dim}) brightness(${1 - .35 * dim})`;
+      const kv = L.eio(L.n(t, m.tr + .1, m.tr + .8)), sv = Math.round(L.lerp(O.season0[m.a.k], O.season1[m.a.k], kv)), se = m.el.querySelector('.sv'); se.textContent = money0(sv); se.style.color = sv >= 0 ? G : Rd; m.el.querySelector('.rk').textContent = (kv > .5 ? O.order : O.order0).indexOf(m.a.k) + 1;
+      if (win > 0) b.style.boxShadow = `inset 0 0 0 3px rgba(${AU},${.9 * win}),0 0 ${60 * win}px rgba(${AU},${.45 * win})` } });
+  const e = (el, t0, d = .4) => { const k = L.eio(L.n(t, t0, t0 + d)); el.style.opacity = k; el.style.transform = `translateY(${18 * (1 - k)}px)`; return k };
+  const kt = L.n(t, S.tT, S.tT + .3); S.tally.style.opacity = kt > 0 ? 1 : 0; S.tally.style.transform = `scale(${L.lerp(1.5, 1, L.eo5(kt))})`; e(S.stat, S.tS); const kg = e(S.gold, S.tG);
+  // the market
+  const mm = { el: S.mk, a0: S.tM, s: OUT ? S.tA : 1e9, pause: null }, pm = bubble(mm, t, S.mw || 124, OUT && O.move < 0 ? DN : OUT ? UP : AU, true);
+  S.mk.style.transform = `translateY(${S.yM + 26 * (1 - L.eo(L.n(t, S.tM, S.tM + .3)))}px)`; if (OUT) { kick += pm; const kw = e(S.win, S.tW); S.gold.style.opacity = 1 - kw; if (S.run) S.run.style.opacity = 1 }
+  const mv = OUT ? L.n(t, S.tA, S.tA + .5) * Math.sign(O.move) : 0;
+  L.$('#glow').style.background = `radial-gradient(ellipse 70% 50% at 12% 45%,rgba(${UP},${.05 + .14 * gl + .08 * Math.max(0, mv)}),transparent 70%),radial-gradient(ellipse 70% 50% at 92% 62%,rgba(${DN},${.04 + .2 * gs + .08 * Math.max(0, -mv)}),transparent 70%),radial-gradient(ellipse 80% 40% at 50% 96%,rgba(${AU},${.03 + .09 * kg}),transparent 70%)`;
+  const k = kick * Math.sin(t * 60) * 1.5; cam.style.transform = `translate(${k}px,${k * .6}px) scale(${1 + .012 * L.n(t, 0, DUR) + .012 * L.eio(L.n(t, M.at(-1).a0, M.at(-1).s)) - .012 * L.eio(L.n(t, M.at(-1).s, M.at(-1).s + .5))})` };
+L.boot(async () => { D = await fetch('data/c' + RN + '.json').then(r => r.json()); if (OUT) O = await fetch('data/r' + RN + '.json').then(r => r.json());
+  await Promise.all(['900 60px Inter', '800 30px Inter', '900 56px Inter', '600 44px "Geist Mono"', '600 22px "Geist Mono"'].map(f => document.fonts.load(f))); await document.fonts.ready;
+  setup(); grain = L.grain(L.$('#grain'), .08); await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  const co = L.$('#cname'), w = co.getBoundingClientRect().width; if (w > 560) co.style.transform = `scale(${560 / w})` });
+</script>

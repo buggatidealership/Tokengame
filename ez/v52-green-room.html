@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>EZ Green Room</title>
+<meta name="description" content="We're putting buybacks in the hands of an AI. Four AIs trade every earnings report. The best P&amp;L calls the $EZ buyback.">
+<meta name="theme-color" content="#0a0908">
+<meta name="color-scheme" content="only dark">
+<link rel="icon" href="media/gr7-logo.svg" type="image/svg+xml">
+<link rel="preload" href="media/gr7-title.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="media/gr7-label.woff2" as="font" type="font/woff2" crossorigin>
+<!-- EZ GREEN ROOM (mockup, 2026-11-05). A page built from nothing on one promise: "We're putting buybacks in the hands of an AI."
+     The world is the green room backstage of a fight night (the owner's Hedra video): four fighters, painted caricatures of the labs'
+     founders, trade every earnings report. The page keeps only what a visitor from X comes for (who holds the buyback now, what they
+     trade next and when the bell grades it, the receipts, how the buyback works, the contract) and two reasons to come back (the next
+     bell, your own call graded on your next visit) and one to follow (the trades post on X before the earnings). Every number is
+     computed from ez-data.js; every joke is a rule on those numbers, so it stays true as the sheet moves. Not on production. -->
+<style>
+@font-face{font-family:"GR T";src:url(media/gr7-title.woff2) format("woff2");font-weight:900;font-display:swap}
+@font-face{font-family:"GR L";src:url(media/gr7-label.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"GR B";src:url(media/gr7-body.woff2) format("woff2");font-weight:100 900;font-display:swap}
+:root{--ink:#0a0908;--wall:#100d0b;--cream:#f3e9d0;--dim:#c9bb9c;--mute:#8f8269;--gold:#e8b54a;--gold2:#ffd77a;--red:#ff5a48;--redk:#c8261a;--green:#3fd46f;--greenk:#138a3e;
+  --T:"GR T",Georgia,"Times New Roman",serif;--L:"GR L","Oswald","Arial Narrow",Arial,sans-serif;--B:"GR B","Roboto Condensed","Arial Narrow",Arial,sans-serif;
+  --gut:16px;--max:1180px;color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--ink);-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--ink);color:var(--cream);font-family:var(--B);font-size:17px;line-height:1.45;overflow-x:clip}
+img,video{max-width:100%;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit}
+.wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--gut)}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.num{font-family:var(--L);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.up{color:var(--green)}.dn{color:var(--red)}
+
+/* ---------- the room: every section is a wall of the green room, lit by one red and one green practical ---------- */
+.room{position:relative;isolation:isolate;padding-block:64px;background:
+  radial-gradient(70% 55% at 0% 0%,rgba(205,38,24,.30),transparent 70%),
+  radial-gradient(70% 55% at 100% 4%,rgba(38,170,86,.22),transparent 70%),
+  radial-gradient(120% 80% at 50% 120%,rgba(0,0,0,.65),transparent 70%),var(--wall)}
+.room::before{content:"";position:absolute;inset:0;z-index:-1;background:url(media/gr7-grit.jpg) center/420px repeat;mix-blend-mode:overlay;opacity:.32;pointer-events:none}
+.room.flip{background:
+  radial-gradient(70% 55% at 100% 0%,rgba(205,38,24,.28),transparent 70%),
+  radial-gradient(70% 55% at 0% 6%,rgba(38,170,86,.22),transparent 70%),
+  radial-gradient(120% 80% at 50% 120%,rgba(0,0,0,.65),transparent 70%),var(--wall)}
+.room+.room{border-top:2px solid #000;box-shadow:inset 0 1px 0 rgba(255,236,200,.06)}
+
+/* ---------- lettering: fight-poster slab type, cream under a hard ink shadow; the kicker is the red neon of the doorway ---------- */
+.kick{font-family:var(--L);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#ff6a52;margin:0 0 10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.kick i{font-style:normal;color:var(--dim)}
+h1,h2{font-family:var(--T);font-weight:900;margin:0;line-height:1.02;letter-spacing:-.005em;text-wrap:balance;color:var(--cream);text-shadow:0 3px 0 #000,0 0 22px rgba(0,0,0,.6)}
+h2{font-size:clamp(30px,8.4vw,54px)}
+h2 em,h1 em{font-style:normal;color:var(--gold2)}
+.lede{color:var(--dim);font-size:17px;margin:12px 0 0;max-width:38em}
+.lede b{color:var(--cream);font-weight:700}
+
+/* ---------- plates: the fight night's name plates (the painted black plate, a gold one for the one that matters) ---------- */
+.pl{border:16px solid transparent;border-image:url(media/gr7-plate.webp) 46 fill / 16px stretch;color:var(--cream);filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))}
+.pl.g{border-image-source:url(media/gr7-plate-gold.webp);color:#1a1206}
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:6px 18px;font-family:var(--L);font-weight:700;font-size:16px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;cursor:pointer;
+  border:14px solid transparent;border-image:url(media/gr7-plate-gold.webp) 46 fill / 14px stretch;color:#1a1206;background:none;filter:drop-shadow(0 5px 0 #000)}
+.btn.dk{border-image-source:url(media/gr7-plate.webp);color:var(--cream)}
+.btn:active{transform:translateY(2px);filter:drop-shadow(0 3px 0 #000)}
+.btn:focus-visible{outline:3px solid var(--gold2);outline-offset:4px}
+.btn svg{width:18px;height:18px;flex:none}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+
+/* ---------- header ---------- */
+.top{position:sticky;top:0;z-index:50;background:linear-gradient(#0b0908,#0b0908ee);border-bottom:2px solid #000;box-shadow:0 1px 0 rgba(255,236,200,.07),0 6px 18px rgba(0,0,0,.5)}
+.top .wrap{display:flex;align-items:center;gap:10px;min-height:58px;padding-top:env(safe-area-inset-top,0px)}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;margin-right:auto;min-width:0}
+.brand img{width:38px;height:38px}
+.brand b{font-family:var(--T);font-size:17px;line-height:1;white-space:nowrap}
+.brand b span:first-child{color:#2fd27a}.brand b span+span{color:#ff4a3c}
+.bellpill{display:flex;align-items:center;gap:7px;text-decoration:none;font-family:var(--L);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  padding:7px 11px;border:1px solid #5a1a14;background:#1d0b09;color:var(--cream);white-space:nowrap}
+.bellpill .dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 rgba(255,90,72,.7);animation:pulse 1.6s infinite}
+.bellpill .t{color:var(--gold2)}
+@keyframes pulse{70%{box-shadow:0 0 0 7px rgba(255,90,72,0)}100%{box-shadow:0 0 0 0 rgba(255,90,72,0)}}
+.xbtn{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:50%;background:var(--cream);color:#0a0908;text-decoration:none}
+.xbtn svg{width:17px;height:17px}
+@media (max-width:479px){.brand b{display:none}}
+@media (max-width:359px){.bellpill .l{display:none}}
+
+/* ---------- 1 · the cover: the green room itself ---------- */
+.cover{position:relative;background:#0b0a09}
+.cover .art{position:relative;aspect-ratio:3/4;background:url(media/gr7-title-34.jpg) center top/cover no-repeat;overflow:clip}
+.cover .art::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,6,5,.88) 0%,rgba(8,6,5,.55) 24%,rgba(8,6,5,0) 42%,rgba(8,6,5,0) 80%,#0b0a09 100%);pointer-events:none}
+.cover .head{position:absolute;z-index:2;left:0;right:0;top:0;padding:18px var(--gut) 0;text-align:center}
+.cover .kick{justify-content:center;margin-bottom:8px}
+.cover h1{font-size:clamp(30px,9.1vw,44px);text-transform:uppercase;letter-spacing:.005em;
+  background:linear-gradient(180deg,#fffaf0 0%,#f6e4b8 52%,#d4a75a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:1.2px #160d05;
+  text-shadow:none;filter:drop-shadow(0 3px 0 #000) drop-shadow(0 0 18px rgba(0,0,0,.7))}
+.cover h1 .ai{background:linear-gradient(180deg,#fff3c4 0%,#ffcf5a 55%,#d88a12 100%);-webkit-background-clip:text;background-clip:text}
+.np{position:absolute;z-index:2;left:var(--x);top:var(--y);transform:translate(-50%,-50%) rotate(var(--r,0deg));padding:2px 9px 1px;font-family:var(--L);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+  border:10px solid transparent;border-image:url(media/gr7-plate.webp) 46 fill / 10px stretch;color:var(--cream);white-space:nowrap;filter:drop-shadow(0 4px 6px rgba(0,0,0,.7))}
+.np.lead{border-image-source:url(media/gr7-plate-gold.webp);color:#1a1206}
+.nps{position:absolute;inset:0;z-index:2;pointer-events:none}
+.cover .foot{position:relative;z-index:3;margin-top:-34px;padding:0 var(--gut) 40px}
+.cover .say{max-width:560px;margin:0 auto;padding:4px 6px;font-size:17px;line-height:1.4}
+.cover .say p{margin:0}
+.cover .say p+p{margin-top:8px}
+.holds{display:flex;align-items:center;gap:12px;margin-top:2px}
+.holds img{width:52px;height:52px;border:2px solid var(--gold);flex:none;object-fit:cover}
+.holds b{font-family:var(--L);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:14px;color:var(--gold2);display:block}
+.holds span{font-family:var(--T);font-size:20px;line-height:1.1}
+.cover .btns{justify-content:center}
+@media (min-width:1000px){
+  .cover .art{aspect-ratio:auto;height:min(56.25vw,780px);background-image:url(media/gr7-title-169.jpg);background-position:center 20%}
+  .cover .art::after{background:linear-gradient(90deg,rgba(8,6,5,.9) 0%,rgba(8,6,5,.6) 34%,rgba(8,6,5,0) 52%),linear-gradient(180deg,transparent 78%,#0b0a09 100%)}
+  .cover .head{right:auto;width:min(52%,620px);left:max(var(--gut),calc((100% - var(--max))/2 + var(--gut)));top:50%;transform:translateY(-58%);text-align:left;padding:0}
+  .cover .kick{justify-content:flex-start}
+  .cover h1{font-size:clamp(44px,4.4vw,70px)}
+  .cover .foot{position:absolute;left:max(var(--gut),calc((100% - var(--max))/2 + var(--gut)));bottom:6%;margin:0;padding:0;width:min(46%,560px)}
+  .cover .say{margin:0}
+  .cover .btns{justify-content:flex-start}
+  .np{font-size:clamp(14px,1.2vw,19px)}
+}
+
+/* ---------- 2 · who holds the buyback: the fight card, ranked by P&L ---------- */
+.card1{display:grid;grid-template-columns:1fr;gap:0;margin-top:26px;background:#0d0b0a;border:2px solid #000;box-shadow:0 0 0 1px rgba(232,181,74,.55),0 14px 40px rgba(0,0,0,.6)}
+.card1 .vid{position:relative;aspect-ratio:3/4;background:#000 center/cover no-repeat}
+.card1 .vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.card1 .vid .tag{position:absolute;left:12px;top:12px;z-index:2}
+.card1 .body{padding:18px 18px 20px;position:relative}
+.belt{display:inline-block;padding:2px 10px;font-family:var(--L);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;border:10px solid transparent;border-image:url(media/gr7-plate-gold.webp) 46 fill / 10px stretch;color:#1a1206}
+.fname{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.fname b{font-family:var(--T);font-size:clamp(40px,11vw,64px);line-height:.95;text-transform:uppercase;letter-spacing:.01em}
+.fname i{font-style:normal;font-family:var(--L);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.pnl{font-family:var(--L);font-weight:700;font-size:clamp(42px,12vw,72px);line-height:1;margin:10px 0 2px;font-variant-numeric:tabular-nums}
+.pnlk{font-family:var(--L);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.stats{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;margin-top:14px}
+.stat b{display:block;font-family:var(--L);font-weight:700;font-size:22px;line-height:1.05;font-variant-numeric:tabular-nums}
+.stat span{font-family:var(--L);font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.form{display:flex;gap:4px;margin-top:2px}
+.form i{width:16px;height:16px;display:grid;place-items:center;font-style:normal;font-family:var(--L);font-weight:700;font-size:10px;color:#0a0908}
+.form i.w{background:var(--green)}.form i.l{background:var(--red)}
+.trash{margin:16px 0 0;font-family:var(--T);font-size:21px;line-height:1.2;color:var(--cream)}
+.trash::before{content:"\201C";color:var(--gold)}.trash::after{content:"\201D";color:var(--gold)}
+.bias{margin:6px 0 0;color:var(--dim);font-size:15px}
+.rows{display:grid;gap:10px;margin-top:14px}
+.row{display:grid;grid-template-columns:auto 64px 1fr auto;align-items:center;gap:12px;padding:10px 12px 10px 10px;background:#0d0b0a;border:2px solid #000;box-shadow:0 0 0 1px rgba(255,236,200,.09)}
+.row .rk{font-family:var(--L);font-weight:700;font-size:20px;color:var(--mute);width:22px;text-align:center}
+.row img{width:64px;height:64px;object-fit:cover;filter:saturate(.95)}
+.row .who b{font-family:var(--T);font-size:22px;text-transform:uppercase;line-height:1}
+.row .who p{margin:3px 0 0;font-size:14px;line-height:1.3;color:var(--dim)}
+.row .rt{text-align:right}
+.row .rt .num{display:block;font-size:22px;font-weight:700;line-height:1}
+.row .rt small{font-family:var(--L);font-weight:700;font-size:12px;letter-spacing:.06em;color:var(--mute)}
+.rule{margin:18px 0 0;padding:4px 6px;font-size:16px}
+.rule b{color:var(--gold2)}
+.board{position:relative;margin-top:28px;aspect-ratio:1.378;background:url(media/gr7-screen.jpg) no-repeat;background-size:161.3% auto;background-position:52.6% 25%;border:2px solid #000;box-shadow:0 14px 40px rgba(0,0,0,.6)}
+.board svg{position:absolute;left:8.4%;top:12.7%;width:82.9%;height:73.7%;overflow:visible}
+.board text{font-family:var(--L);font-weight:700}
+.boardcap{margin:10px 2px 0;font-size:15px;color:var(--dim)}
+@media (min-width:860px){
+  .hands .grid{display:grid;grid-template-columns:1.05fr 1fr;gap:28px;align-items:start;margin-top:26px}
+  .card1{margin-top:0;grid-template-columns:44% 1fr}
+  .card1 .vid{aspect-ratio:auto;min-height:100%}
+  .rows{margin-top:0}
+  .board{margin-top:0}
+  .hands .col2{display:grid;gap:18px}
+}
+
+/* ---------- 3 · next bell: the fight card for the next close ---------- */
+.clock{display:flex;gap:8px;margin-top:16px;align-items:stretch}
+.clock div{min-width:62px;padding:6px 8px 4px;text-align:center;background:#060504;border:2px solid #000;box-shadow:inset 0 0 0 1px rgba(255,90,72,.35),0 0 18px rgba(255,90,72,.12)}
+.clock b{display:block;font-family:var(--L);font-weight:700;font-size:30px;line-height:1;color:var(--red);text-shadow:0 0 12px rgba(255,90,72,.55);font-variant-numeric:tabular-nums}
+.when{margin:10px 0 0;font-size:15px;color:var(--dim)}
+.when b{color:var(--cream)}
+.clock span{font-family:var(--L);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.fights{display:grid;gap:14px;margin-top:22px}
+.fight{background:#0d0b0a;border:2px solid #000;box-shadow:0 0 0 1px rgba(255,236,200,.1),0 10px 28px rgba(0,0,0,.5)}
+.fight.main{box-shadow:0 0 0 1px rgba(232,181,74,.6),0 10px 28px rgba(0,0,0,.5)}
+.fh{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(255,236,200,.08)}
+.co{width:44px;height:44px;flex:none;display:grid;place-items:center;background:#f3ecdc;border:2px solid #000}
+.co img{width:76%;height:76%;object-fit:contain}
+.co.dk{background:#141210}
+.co b{font-family:var(--L);font-size:12px;color:#0a0908}
+.fh .nm{min-width:0}
+.fh .nm b{display:block;font-family:var(--T);font-size:20px;line-height:1.05}
+.fh .nm span{font-family:var(--L);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.fh .me{margin-left:auto;font-family:var(--L);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#1a1206;background:var(--gold);padding:3px 7px;white-space:nowrap}
+.sides{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,236,200,.08)}
+.side{background:#0d0b0a;padding:10px 12px;min-width:0}
+.side h4{margin:0 0 8px;font-family:var(--L);font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.side.l h4{color:var(--green)}.side.s h4{color:var(--red)}
+.side ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.side li{display:flex;align-items:center;gap:8px;min-width:0}
+.side li img{width:30px;height:30px;object-fit:cover;flex:none;border:1px solid #000}
+.side li b{font-family:var(--L);font-weight:700;font-size:15px;letter-spacing:.03em;text-transform:uppercase}
+.side li .num{margin-left:auto;font-size:15px;font-weight:700}
+.side .none{font-size:14px;color:var(--mute)}
+.fsay{margin:0;padding:11px 14px 13px;font-family:var(--T);font-size:18px;line-height:1.25;border-top:1px solid rgba(255,236,200,.08)}
+.yc{padding:14px;border-top:1px solid rgba(255,236,200,.08);background:linear-gradient(90deg,rgba(232,181,74,.08),transparent)}
+.yc p{margin:0 0 10px;font-size:16px}
+.yc p b{font-family:var(--L);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold2)}
+.yc .pick{display:flex;gap:10px}
+.yc .pick button{flex:1;min-height:48px;cursor:pointer;font-family:var(--L);font-weight:700;font-size:16px;letter-spacing:.08em;text-transform:uppercase;border:2px solid #000;background:#16120f;color:var(--cream);box-shadow:0 4px 0 #000}
+.yc .pick button.u{box-shadow:0 4px 0 #000,inset 0 0 0 1px rgba(63,212,111,.5)}
+.yc .pick button.d{box-shadow:0 4px 0 #000,inset 0 0 0 1px rgba(255,90,72,.5)}
+.yc .pick button:active{transform:translateY(3px);box-shadow:0 1px 0 #000}
+.yc .pick button:focus-visible{outline:3px solid var(--gold2);outline-offset:3px}
+.yc .done{font-size:16px}
+.yc .done b{color:var(--gold2)}
+.back{margin:18px 0 0;padding:4px 6px;font-size:16px}
+.back b{color:var(--gold2)}
+.later{margin-top:22px}
+.later h3{margin:0 0 10px;font-family:var(--L);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.later ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.later li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 10px;background:#0d0b0a;border:2px solid #000}
+.later li .d{font-family:var(--L);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold2);min-width:84px}
+.later li .cos{display:flex;gap:6px;flex-wrap:wrap}
+.later li .co{width:32px;height:32px}
+.later li .q{margin-left:auto;font-size:13px;color:var(--mute)}
+.xcall{display:flex;align-items:center;gap:14px;margin-top:22px;padding:14px;flex-wrap:wrap}
+.xcall p{margin:0;flex:1 1 220px;font-size:17px}
+.xcall p b{font-family:var(--T);font-size:20px;display:block;line-height:1.15}
+.bell .grid>div+div{margin-top:24px}
+@media (min-width:860px){
+  .bell .grid>div+div{margin-top:0}
+  .bell .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:start}
+  .bell .fights{margin-top:0}
+}
+
+/* ---------- 4 · the tape: last bell's results, every film one tap away ---------- */
+.night{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:20px}
+.night div{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#0d0b0a;border:2px solid #000}
+.night img{width:36px;height:36px;object-fit:cover;flex:none}
+.night b{font-family:var(--L);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;display:block;line-height:1.1}
+.night .num{font-size:19px;font-weight:700;line-height:1.1}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+.tile{position:relative;display:block;padding:0;border:2px solid #000;background:#0d0b0a;cursor:pointer;text-align:left;box-shadow:0 0 0 1px rgba(255,236,200,.09)}
+.tile:focus-visible{outline:3px solid var(--gold2);outline-offset:2px}
+.tile .pic{position:relative;aspect-ratio:1;background:#16120f center/cover no-repeat;overflow:hidden}
+.tile .pic .co{position:absolute;z-index:2;left:50%;top:50%;width:50%;height:50%;transform:translate(-50%,-50%) rotate(-3deg);border:3px solid #000;border-radius:50%;box-shadow:0 6px 0 #000}
+.tile .pic .co img{width:64%;height:64%}
+.tile .pic::before{content:"";position:absolute;inset:0;background:url(media/gr7-grit.jpg) center/300px;mix-blend-mode:multiply;opacity:.55}
+.tile .pic::after{content:"";position:absolute;inset:0;background:radial-gradient(80% 70% at 50% 40%,transparent 40%,rgba(0,0,0,.55))}
+.tile .pic .mv{position:absolute;z-index:2;left:0;right:0;bottom:7%;text-align:center;font-family:var(--L);font-weight:700;font-size:clamp(22px,6.5vw,30px);text-shadow:0 3px 0 #000}
+.tile .play{position:absolute;right:8px;bottom:8px;width:34px;height:34px;border-radius:50%;background:rgba(10,9,8,.8);border:2px solid var(--cream);display:grid;place-items:center}
+.tile .play::before{content:"";margin-left:3px;border-left:11px solid var(--cream);border-top:7px solid transparent;border-bottom:7px solid transparent}
+.tile .cap{padding:8px 10px 10px}
+.tile .cap b{display:flex;justify-content:space-between;gap:6px;font-family:var(--L);font-weight:700;font-size:15px;letter-spacing:.03em;text-transform:uppercase}
+.tile .cap b span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile .cap p{margin:5px 0 0;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--dim);line-height:1.2}
+.tile .cap p img{width:22px;height:22px;object-fit:cover;flex:none}
+.tape .note{margin:16px 2px 0;font-size:15px;color:var(--mute)}
+@media (min-width:700px){.night{grid-template-columns:repeat(4,1fr)}.tiles{grid-template-columns:repeat(4,1fr)}}
+
+/* the film, big: a dark room with one screen */
+.theatre{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:rgba(4,3,2,.94);padding:16px}
+.theatre[hidden]{display:none}
+.theatre .scr{width:min(92vw,82vh,860px)}
+.theatre video{width:100%;aspect-ratio:1;background:#000;border:2px solid #000;box-shadow:0 0 0 1px rgba(232,181,74,.5)}
+.theatre .x{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:12px;width:46px;height:46px;border-radius:50%;border:2px solid var(--cream);background:#0a0908;cursor:pointer;font-size:24px;line-height:1}
+.theatre p{margin:10px 0 0;text-align:center;font-family:var(--L);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--dim)}
+
+/* ---------- 5 · the buyback: the tunnel to the ring, the pool in a chest, three boards on the wall ---------- */
+.tunnel{position:relative;margin-top:24px;aspect-ratio:3/4;max-height:78vh;background:url(media/gr7-cliff.jpg) 0% 50%/cover no-repeat;border:2px solid #000;box-shadow:0 14px 40px rgba(0,0,0,.6);overflow:hidden}
+@media (min-width:700px){.tunnel{aspect-ratio:4/3;max-height:none;background-position:center}}
+.tunnel .bd{position:absolute;left:0;top:0;transform-origin:0 0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:#f6eedb;padding:4px}
+.tunnel .bd b{font-family:var(--T);font-weight:900;line-height:.98;text-transform:uppercase;text-shadow:0 2px 0 #000}
+.tunnel .bd span{font-family:var(--L);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold2);line-height:1.1}
+.tunnel .bd .r{color:var(--red)}.tunnel .bd .gr{color:var(--green)}
+.steps{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:12px;counter-reset:s}
+.steps li{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;padding:12px 14px;background:#0d0b0a;border:2px solid #000;box-shadow:0 0 0 1px rgba(255,236,200,.09)}
+.steps li::before{counter-increment:s;content:counter(s);font-family:var(--T);font-size:30px;line-height:1;color:var(--gold);text-align:center}
+.steps li p{margin:0;font-size:17px}
+.steps li>div{min-width:0}
+.steps .pool{display:flex;gap:12px;align-items:center;margin-top:10px}
+.steps .pool img{width:72px;height:72px;object-fit:cover;flex:none;border:2px solid #000}
+.steps .pool span{font-size:14px;color:var(--mute)}
+.steps li p b{color:var(--cream)}
+.steps li small{display:block;margin-top:4px;font-size:14px;color:var(--mute)}
+.outcome{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.outcome div{padding:8px 10px;border:2px solid #000;font-size:15px;line-height:1.3}
+.outcome .w{background:rgba(19,138,62,.18);box-shadow:inset 0 0 0 1px rgba(63,212,111,.4)}
+.outcome .x{background:rgba(200,38,26,.16);box-shadow:inset 0 0 0 1px rgba(255,90,72,.4)}
+.outcome b{display:block;font-family:var(--L);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:13px}
+.outcome .w b{color:var(--green)}.outcome .x b{color:var(--red)}
+.ca{margin-top:22px;padding:6px 8px}
+.ca h3{margin:0 0 6px;font-family:var(--L);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2)}
+.ca code{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;word-break:break-all;color:var(--cream);background:#060504;padding:10px;border:1px solid #2a221b;user-select:all}
+.ca p{margin:8px 0 0;font-size:14px;color:var(--dim)}
+.ca .btns{margin-top:12px}
+.burn{display:flex;gap:12px;align-items:center;margin-top:14px;font-size:15px;color:var(--dim)}
+.burn img{width:64px;height:64px;object-fit:cover;flex:none;border:2px solid #000}
+.burn a{color:var(--gold2)}
+@media (min-width:860px){
+  .buyback .grid{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;align-items:start;margin-top:24px}
+  .tunnel{margin-top:0}
+  .steps{margin-top:0}
+}
+
+/* ---------- 6 · the arena: see you at the next bell ---------- */
+.arena{position:relative;aspect-ratio:3/4;background:url(media/gr7-end-34.jpg) center/cover no-repeat;display:flex;align-items:flex-end;justify-content:center;text-align:center;border-top:2px solid #000}
+.arena::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,6,5,0) 30%,rgba(8,6,5,.92) 82%);pointer-events:none}
+.arena .in{position:relative;z-index:2;padding:0 var(--gut) 44px;max-width:640px}
+.arena h2{font-size:clamp(34px,9.6vw,62px);text-transform:uppercase}
+.arena p{margin:10px 0 0;color:var(--dim)}
+.arena .btns{justify-content:center}
+@media (min-width:1000px){.arena{aspect-ratio:auto;height:min(56.25vw,760px);background-image:url(media/gr7-end-169.jpg)}}
+footer{padding:22px 0 calc(28px + env(safe-area-inset-bottom,0px));background:#070605;color:var(--mute);font-size:13px;line-height:1.5;border-top:2px solid #000}
+footer p{margin:0 0 6px}
+footer b{color:var(--dim)}
+.mock{position:fixed;left:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:60;font-family:var(--L);font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:4px 7px;background:#ff5a48;color:#120604;pointer-events:none}
+
+/* motion: things that enter once on screen; nothing moves with reduced motion */
+.in-v{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
+.in-v.on{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.in-v{opacity:1;transform:none;transition:none}.bellpill .dot{animation:none}}
+.board path.ln{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);transition:stroke-dashoffset 1.6s cubic-bezier(.3,.6,.2,1)}
+.board.on path.ln{stroke-dashoffset:0}
+@media (prefers-reduced-motion:reduce){.board path.ln{stroke-dasharray:none;stroke-dashoffset:0;transition:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#cover" aria-label="Earnings Zeason, back to the top"><img src="media/gr7-logo.svg" alt=""><b><span>E</span>arnings <span>Z</span>eason</b></a>
+    <a class="bellpill" id="bellpill" href="#bell"><i class="dot"></i><span class="l">Next bell</span> <span class="t" id="bellpillT">soon</span></a>
+    <a class="xbtn" id="xtop" href="https://x.com/earningszn" target="_blank" rel="noopener" aria-label="Follow @earningszn on X"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+  </div>
+</header>
+
+<main>
+<!-- 1 · the green room -->
+<section class="cover" id="cover" aria-labelledby="h1">
+  <div class="art">
+    <div class="head">
+      <p class="kick">Earnings Zeason <i id="cvSeason">Season 1</i></p>
+      <h1 id="h1">We&rsquo;re putting buybacks in the hands of <span class="ai">an AI.</span></h1>
+    </div>
+    <div class="nps" id="nps" aria-hidden="true"></div>
+  </div>
+  <div class="foot">
+    <div class="say pl">
+      <p>Four AIs trade every earnings report, <b>$100K a trade</b>. The one with the best P&amp;L calls our buyback. What could go wrong.</p>
+      <div class="holds" id="holds"></div>
+    </div>
+    <div class="btns"><a class="btn" href="#hands">Who&rsquo;s got it</a><a class="btn dk" href="#bell">Next bell</a></div>
+  </div>
+</section>
+
+<!-- 2 · who holds the buyback -->
+<section class="room hands" id="hands" aria-labelledby="hH">
+  <div class="wrap">
+    <p class="kick">The card <i>· ranked by P&amp;L</i></p>
+    <h2 id="hH">Right now, it&rsquo;s in <em id="hName">the leader</em>&rsquo;s hands.</h2>
+    <p class="lede" id="hLede"></p>
+    <div class="grid">
+      <article class="card1 in-v" id="card1"></article>
+      <div class="col2">
+        <div class="rows" id="rows"></div>
+        <p class="rule pl" id="rule"></p>
+        <div><figure class="board in-v" id="board" style="margin-left:0;margin-right:0;margin-bottom:0"><svg id="race" role="img" aria-label="Season P&amp;L, round by round"></svg></figure>
+        <p class="boardcap" id="boardcap"></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · next bell -->
+<section class="room flip bell" id="bell" aria-labelledby="bH">
+  <div class="wrap">
+    <p class="kick" id="bKick">Next bell</p>
+    <h2 id="bH">The next bell.</h2>
+    <div class="clock" id="clock" aria-live="off"></div>
+    <p class="when" id="bWhen"></p>
+    <p class="back pl" id="backMsg" hidden></p>
+    <div class="grid" style="margin-top:22px">
+      <div class="fights" id="fights"></div>
+      <div>
+        <div class="later" id="later" style="margin-top:0"></div>
+        <div class="xcall pl">
+          <p><b>The trades hit X before the earnings.</b>Every AI, every trade, posted before the report. Be early or be exit liquidity.</p>
+          <a class="btn" href="https://x.com/earningszn" target="_blank" rel="noopener" data-x>Follow @earningszn</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · the tape -->
+<section class="room tape" id="tape" aria-labelledby="tH">
+  <div class="wrap">
+    <p class="kick" id="tKick">Last bell</p>
+    <h2 id="tH">The tape.</h2>
+    <p class="lede" id="tLede"></p>
+    <div class="night" id="night"></div>
+    <div class="tiles" id="tiles"></div>
+    <p class="note" id="tNote"></p>
+  </div>
+</section>
+
+<!-- 5 · the buyback -->
+<section class="room flip buyback" id="buyback" aria-labelledby="yH">
+  <div class="wrap">
+    <p class="kick">Main event <i>· Bet #1</i></p>
+    <h2 id="yH">How an AI gets <em>the buyback</em>.</h2>
+    <div class="grid">
+      <figure class="tunnel" id="tunnel" style="margin-left:0;margin-right:0;margin-bottom:0" role="img" aria-label="The tunnel to the ring: the pool in a chest of gold, three boards on the wall"></figure>
+      <div>
+        <ol class="steps" id="steps"></ol>
+        <div class="ca pl" id="ca"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · the arena -->
+<section class="arena" id="end" aria-labelledby="eH">
+  <div class="in">
+    <h2 id="eH">See you at the next bell.</h2>
+    <p id="eLine">The trades hit X before the earnings. Graded at the close. No edits, no deleting the bad ones.</p>
+    <div class="btns"><a class="btn" href="https://x.com/earningszn" target="_blank" rel="noopener" data-x>Follow @earningszn</a></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b>An experiment with real money.</b> Not financial advice. The AIs paper-trade $100K on every earnings report; the pool&rsquo;s bet is real, and the pool can go to zero.</p>
+    <p>Every number on this page comes from the public record and is graded at the market close. Earnings Zeason &middot; Season 1.</p>
+  </div>
+</footer>
+
+<div class="theatre" id="theatre" hidden role="dialog" aria-modal="true" aria-label="Round film">
+  <button class="x" id="thX" aria-label="Close">&times;</button>
+  <div class="scr"><video id="thV" controls playsinline preload="none"></video><p id="thP"></p></div>
+</div>
+<div class="mock" aria-hidden="true">Mockup · not live</div>
+
+<script src="ez-data.js"></script>
+<script>
+(function(){
+"use strict";
+var d=document,W=window;
+var $=function(id){return d.getElementById(id)};
+var NAME={GPT:"GPT",KIMI:"Kimi",CLAUDE:"Claude",GROK:"Grok"};
+var FACE=function(m){return "media/gr7-face-"+m.toLowerCase()+".jpg"};
+var LAB={GPT:"Sam's model",KIMI:"Kimi",CLAUDE:"Dario's model",GROK:"Elon's model"};
+var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+var money=function(v){var a=Math.abs(Math.round(v));return (v<0?"−":"+")+"$"+a.toLocaleString("en-US")};
+var short=function(v){var a=Math.abs(v),s=a>=1000?"$"+(a>=100000?Math.round(a/1000):(Math.round(a/100)/10))+"K":"$"+Math.round(a);return s};
+var pct=function(a){return (a<0?"−":"+")+Math.abs(a).toFixed(2).replace(/\.?0+$/,"")+"%"};
+var cls=function(v){return v<0?"dn":"up"};
+var co=function(t){return (TICKERS[t]||t).replace(/\s*\(.*\)$/,"")};
+var WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],WDL=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var andList=function(a){return a.length<2?(a[0]||""):a.slice(0,-1).join(", ")+" and "+a[a.length-1]};
+
+/* ---- the clock: each exchange's own close (the same rule as the live site's xcloseAt) ---- */
+function xclose(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);if(!m)return null;var y=2000+(+m[3]),mo=+m[1],dd=+m[2],nov=new Date(Date.UTC(y,10,1)),fs=1+(7-nov.getUTCDay())%7,mar=new Date(Date.UTC(y,2,1)),ss=1+(7-mar.getUTCDay())%7+7;
+  var dst=(mo>3&&mo<11)||(mo===3&&dd>=ss)||(mo===11&&dd<fs);return Date.UTC(y,mo-1,dd,dst?20:21)}
+function closeAt(s,tk){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);if(!m)return null;var y=2000+(+m[3]),mo=+m[1],dd=+m[2],x=(String(tk||"").match(/\.([A-Z]+)$/)||[])[1];
+  if(x==="KS"||x==="KQ"||x==="T")return Date.UTC(y,mo-1,dd,6,30);if(x==="TW")return Date.UTC(y,mo-1,dd,5,30);if(x==="HK")return Date.UTC(y,mo-1,dd,8);
+  if(x==="L"||x==="AS"||x==="DE"||x==="SW"||x==="PA"||x==="MI"||x==="MC"){var ls=function(mm){var t=new Date(Date.UTC(y,mm,0));return t.getUTCDate()-t.getUTCDay()},
+    su=(mo>3&&mo<10)||(mo===3&&dd>=ls(3))||(mo===10&&dd<ls(10)),h=(x==="L"?16:17)-1-(su?1:0);return Date.UTC(y,mo-1,dd,h+(x==="L"?1:0),30)}
+  return xclose(s)}
+var CITY=function(tk){var x=(String(tk||"").match(/\.([A-Z]+)$/)||[])[1];return {KS:"Seoul",KQ:"Seoul",T:"Tokyo",TW:"Taipei",HK:"Hong Kong",L:"London",AS:"Amsterdam",DE:"Frankfurt",SW:"Zurich",PA:"Paris",MI:"Milan",MC:"Madrid"}[x]||"New York"};
+var nyDay=function(ms){var p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",month:"short",day:"numeric"}).format(new Date(ms));return p};
+var localTime=function(ms){return new Intl.DateTimeFormat(undefined,{hour:"numeric",minute:"2-digit"}).format(new Date(ms))};
+var left=function(ms){var s=Math.max(0,Math.floor(ms/1000)),dd=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return dd?dd+"d "+h+"h":h?h+"h "+m+"m":m+"m "+(s%60)+"s"};
+var dateOf=function(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?new Date(Date.UTC(2000+(+m[3]),+m[1]-1,+m[2],12)):null};
+var dayName=function(s){var t=dateOf(s);return t?WDL[t.getUTCDay()]:""};
+var dayShort=function(s){var t=dateOf(s);return t?WD[t.getUTCDay()]+" "+MO[t.getUTCMonth()]+" "+t.getUTCDate():"Date to come"};
+var size=function(t){return (CAPS&&CAPS[t])||0};
+
+/* ---- the season, from the sheet: $100K on every trade, P&L = $100K x the move, long or short ---- */
+var MK=MODEL_KEYS.slice(),R=ROUNDS.slice().sort(function(a,b){return a.n-b.n}),S={};
+MK.forEach(function(m){S[m]={m:m,pl:0,w:0,l:0,up:0,n:0,form:[],ser:[],best:null,worst:null}});
+R.forEach(function(r){var seen={};r.calls.forEach(function(c){var s=S[c[0]];if(!s)return;var dir=/^UP/.test(c[1])?1:-1,v=Math.round(1000*dir*r.a),ok=(dir>0)===(r.a>0);
+  s.pl+=v;s.n++;ok?s.w++:s.l++;if(dir>0)s.up++;s.form.push(ok);seen[c[0]]=1;
+  if(!s.best||v>s.best.v)s.best={v:v,r:r};if(!s.worst||v<s.worst.v)s.worst={v:v,r:r}});
+  MK.forEach(function(m){S[m].ser.push(S[m].pl)})});
+var RK=MK.map(function(m){return S[m]}).filter(function(s){return s.n}).sort(function(a,b){return b.pl-a.pl});
+var L=RK[0],TRADES=R.reduce(function(a,r){return a+r.calls.length},0),maxW=Math.max.apply(null,RK.map(function(s){return s.w}));
+/* lead changes: how many times the P&L lead changed hands, round by round */
+var leads=0,prev=null;R.forEach(function(r,i){var top=null,tv=-1e18;MK.forEach(function(m){if(S[m].ser[i]>tv){tv=S[m].ser[i];top=m}});if(prev&&top!==prev)leads++;prev=top});
+var leadSince=(function(){var since=R.length;for(var i=R.length-1;i>=0;i--){var top=null,tv=-1e18;MK.forEach(function(m){if(S[m].ser[i]>tv){tv=S[m].ser[i];top=m}});if(top!==L.m)break;since=i}return R[since]})();
+
+/* every line of trash talk is a rule on the numbers, so it stays true when the sheet moves */
+function talk(s,i){
+  if(i===0){if(s.n<R.length)return "Sat out "+(R.length-s.n)+" rounds. Still on top.";return "On top by "+short(s.pl-RK[1].pl)+". Don't get comfortable."}
+  if(s.w===maxW&&s.pl<L.pl)return "Most wins on the card. Not the most money.";
+  if(s.pl<0&&s.w>s.l)return "More wins than losses. Still down "+short(-s.pl)+". Explain that.";
+  if(s.pl<0&&s.w<s.l)return "Wrong more often than right. Consistent, at least.";
+  if(s.pl<0)return "Down "+short(-s.pl)+". Posting through it.";
+  return short(L.pl-s.pl)+" behind the buyback.";
+}
+function bias(s){var u=Math.round(100*s.up/s.n),sh=100-u;
+  if(sh>=85)return "Short "+sh+"% of the time. Has never met a stock it liked.";
+  if(sh>=60)return "Short "+sh+"% of the time. A bear with manners.";
+  if(u>=68)return "Long "+u+"% of the time. Buys every dip, and a few tops.";
+  if(u>=55)return "Long "+u+"% of the time. Mostly an optimist.";
+  return "Long "+u+"%, short "+sh+"%. Picks a side every time.";}
+var formHtml=function(s){return '<span class="form" aria-label="Last 5: '+s.form.slice(-5).map(function(o){return o?"win":"loss"}).join(", ")+'">'+s.form.slice(-5).map(function(o){return '<i class="'+(o?"w":"l")+'">'+(o?"W":"L")+'</i>'}).join("")+'</span>'};
+
+/* ---- 1 · cover ---- */
+var wk=(function(){var a=dateOf(R[0]&&R[0].called),b=new Date();if(!a)return null;return Math.floor((b-a)/(7*864e5))+1})();
+$("cvSeason").textContent="Season 1"+(wk?" · Week "+wk:"");
+var NP={GROK:["17%","86%","54%","64%","-3deg"],CLAUDE:["43%","81%","70%","50%","2deg"],GPT:["65%","87%","80%","65%","-2deg"],KIMI:["87%","66%","91%","43%","3deg"]};
+var nps=$("nps"),desk=function(){return matchMedia("(min-width:1000px)").matches};
+nps.innerHTML=MK.map(function(m){var p=NP[m];if(!p)return "";return '<span class="np'+(m===L.m?" lead":"")+'" data-m="'+m+'" style="--r:'+p[4]+'">'+NAME[m]+'</span>'}).join("");
+function placeNps(){var dk=desk();[].forEach.call(nps.children,function(e){var p=NP[e.getAttribute("data-m")];e.style.left=dk?p[2]:p[0];e.style.top=dk?p[3]:p[1]});
+  /* the plates are marks on the painting: lay their box over the painting as background-size:cover places it */
+  var art=nps.parentNode,r=art.getBoundingClientRect(),w=r.width,h=r.height;if(!w||!h)return;var ar=dk?16/9:3/4,k=Math.max(w/ar,h),dw=ar*k,dh=k,
+    bp=(getComputedStyle(art).backgroundPosition.split(",")[0]||"50% 50%").trim().split(/\s+/),pos=function(v,f){return /%$/.test(v)?f*parseFloat(v)/100:parseFloat(v)||0};
+  nps.style.cssText="inset:auto;left:"+pos(bp[0],w-dw)+"px;top:"+pos(bp[1]||"50%",h-dh)+"px;width:"+dw+"px;height:"+dh+"px"}
+placeNps();if(W.ResizeObserver)new ResizeObserver(placeNps).observe(nps.parentNode);else W.addEventListener("resize",placeNps);
+$("holds").innerHTML='<img src="'+FACE(L.m)+'" alt=""><div><b>Holding it right now</b><span>'+NAME[L.m]+', <span class="num up">'+money(L.pl)+'</span></span></div>';
+
+/* ---- 2 · who holds the buyback ---- */
+$("hName").textContent=NAME[L.m];
+$("hLede").innerHTML="Ranked by P&amp;L on $100K a trade. "+(leads?"The lead has changed hands <b>"+leads+" time"+(leads>1?"s":"")+"</b> this season; "+NAME[L.m]+" has held it since round "+leadSince.n+" ("+esc(co(leadSince.ticker))+").":NAME[L.m]+" has led from the first round.");
+var m1=L.m.toLowerCase();
+$("card1").innerHTML='<div class="vid" style="background-image:url(media/gr7-cast-'+m1+'.jpg)"><video muted loop playsinline autoplay preload="none" poster="media/gr7-cast-'+m1+'.jpg" aria-hidden="true"><source src="media/gr7-cast-'+m1+'.webm" type="video/webm"><source src="media/gr7-cast-'+m1+'.mp4" type="video/mp4"></video><span class="tag belt">Holds the buyback</span></div>'+
+  '<div class="body"><div class="fname"><b>'+NAME[L.m]+'</b><i>'+esc((MODELS[L.m]||{}).ver||"")+' &middot; '+LAB[L.m]+'</i></div>'+
+  '<div class="pnl num '+cls(L.pl)+'">'+money(L.pl)+'</div><div class="pnlk">Season P&amp;L &middot; $100K a trade</div>'+
+  '<div class="stats"><div class="stat"><b>'+L.w+'&ndash;'+L.l+'</b><span>W&ndash;L</span></div><div class="stat"><b>'+Math.round(100*L.w/L.n)+'%</b><span>Right</span></div><div class="stat">'+formHtml(L)+'<span>Last 5</span></div></div>'+
+  '<p class="trash">'+esc(talk(L,0))+'</p><p class="bias">'+esc(bias(L))+' Best trade: '+esc(co(L.best.r.ticker))+', <span class="num up">'+money(L.best.v)+'</span>.</p></div>';
+$("rows").innerHTML=RK.slice(1).map(function(s,i){return '<div class="row in-v"><span class="rk">'+(i+2)+'</span><img src="'+FACE(s.m)+'" alt=""><div class="who"><b>'+NAME[s.m]+'</b><p>'+esc(talk(s,i+1))+'</p></div><div class="rt"><span class="num '+cls(s.pl)+'">'+money(s.pl)+'</span><small>'+s.w+'&ndash;'+s.l+'</small></div></div>'}).join("");
+var bet=closeAt(SIM.betDate,"NVDA"),freeze=bet-SIM.leadHours*3600e3;
+$("rule").innerHTML='Whoever is on top <b>'+nyDay(freeze)+', 4:00 pm New York</b> calls Bet #1: NVIDIA, long or short. '+NAME[L.m]+' holds it today. '+(RK[1]?NAME[RK[1].m]+' is '+short(L.pl-RK[1].pl)+' back.':'');
+
+/* the race on the whiteboard: each fighter's season P&L, round by round, in marker */
+(function(){var svg=$("race"),VW=420,VH=271,pad={l:4,r:92,t:62,b:12},n=R.length,all=[];MK.forEach(function(m){all=all.concat(S[m].ser)});
+  var lo=Math.min(0,Math.min.apply(null,all)),hi=Math.max(0,Math.max.apply(null,all)),X=function(i){return pad.l+(VW-pad.l-pad.r)*(n<2?1:i/(n-1))},Y=function(v){return pad.t+(VH-pad.t-pad.b)*(1-(v-lo)/(hi-lo||1))};
+  var INK={GROK:"#1b1a1d",CLAUDE:"#d4622f",GPT:"#0e8a68",KIMI:"#1e6fe0"};
+  var h='<text x="'+pad.l+'" y="15" font-size="16" fill="#2a2522" letter-spacing="1">P&amp;L, $100K A TRADE</text>'+
+    '<line x1="'+pad.l+'" x2="'+(VW-pad.r)+'" y1="'+Y(0)+'" y2="'+Y(0)+'" stroke="#8a8378" stroke-width="1.5" stroke-dasharray="6 6"/><text x="'+(VW-pad.r+6)+'" y="'+(Y(0)+4)+'" font-size="14" fill="#6f685d">$0</text>';
+  var ends=RK.map(function(s){return {m:s.m,y:Y(s.pl)}}).sort(function(a,b){return a.y-b.y});for(var i=1;i<ends.length;i++)if(ends[i].y-ends[i-1].y<19)ends[i].y=ends[i-1].y+19;
+  MK.forEach(function(m){var s=S[m];if(!s.n)return;var dd=s.ser.map(function(v,i){return (i?"L":"M")+X(i).toFixed(1)+" "+Y(v).toFixed(1)}).join(" ");
+    h+='<path class="ln" pathLength="1" style="--len:1" d="'+dd+'" fill="none" stroke="'+INK[m]+'" stroke-width="'+(m===L.m?4.2:2.6)+'" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/>'});
+  ends.forEach(function(e){var s=S[e.m];h+='<text x="'+(VW-pad.r+6)+'" y="'+(e.y+6)+'" font-size="17" fill="'+INK[e.m]+'">'+NAME[e.m].toUpperCase()+'</text>'});
+  svg.setAttribute("viewBox","0 0 "+VW+" "+VH);svg.innerHTML=h})();
+$("boardcap").textContent="The race so far: "+R.length+" rounds, every trade graded at the close.";
+
+/* ---- 3 · next bell ---- */
+var now=Date.now(),PEND=PENDING.map(function(p){return {p:p,at:closeAt(p.resolves,p.ticker)}}).filter(function(x){return x.at}).sort(function(a,b){return a.at-b.at||size(b.p.ticker)-size(a.p.ticker)});
+var due=PEND.filter(function(x){return x.at<=now}),fut=PEND.filter(function(x){return x.at>now}),bellAt=fut.length?fut[0].at:null;
+var bellR=fut.filter(function(x){return x.at===bellAt}).map(function(x){return x.p}).sort(function(a,b){return size(b.ticker)-size(a.ticker)||a.n-b.n});
+var main=bellR[0];
+function logoTag(t,big){var Lg=CO_LOGOS[t],f=Lg&&(Lg.f||Lg);return f?'<span class="co'+(Lg.dark?" dk":"")+'"><img src="media/'+f+'" alt="" loading="lazy"></span>':'<span class="co"><b>'+esc(String(t).replace(/\..*$/,"").slice(0,5))+'</b></span>'}
+var said={};
+function verdict(p){var c=p.calls,lo=c.filter(function(x){return x.dir==="UP"}),sh=c.filter(function(x){return x.dir!=="UP"}),C=co(p.ticker),nm=function(a){return andList(a.map(function(x){return NAME[x.m]}))};
+  if(!lo.length||!sh.length)return "All "+(c.length===4?"four":c.length===3?"three":c.length)+" "+(lo.length?"long":"short")+" "+C+". Groupthink or genius?";
+  var lone=lo.length===1&&sh.length>1?[lo,"long"]:sh.length===1&&lo.length>1?[sh,"short"]:null;
+  if(lone){var k=lone[0][0].m+lone[1],n=said[k]=(said[k]||0)+1;
+    return n===1?nm(lone[0])+" is the only one "+lone[1]+" "+C+". Brave or wrong.":n===2?nm(lone[0])+" again, alone on the "+lone[1]+" side.":"Same story on "+C+". "+nm(lone[0])+" "+lone[1]+", "+(lone[1]==="long"?sh:lo).length+" against."}
+  return lo.length+" long, "+sh.length+" short on "+C+". Somebody's getting paid.";}
+function sideList(p,up){var a=p.calls.filter(function(x){return (x.dir==="UP")===up}).sort(function(x,y){return parseFloat(y.mag)-parseFloat(x.mag)});
+  if(!a.length)return '<p class="none">Nobody.</p>';return '<ul>'+a.map(function(x){return '<li><img src="'+FACE(x.m)+'" alt=""><b>'+NAME[x.m]+'</b><span class="num '+(up?"up":"dn")+'">'+(up?"+":"−")+esc(x.mag)+'%</span></li>'}).join("")+'</ul>'}
+/* your call: one pick on the main event, kept in this browser, graded on the next visit */
+var KEY="ez-gr-call",picks={};try{picks=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){}
+function savePicks(){try{localStorage.setItem(KEY,JSON.stringify(picks))}catch(e){}}
+function ycHtml(p){var k=String(p.n),pk=picks[k];
+  if(pk)return '<div class="yc"><p class="done">You said <b>'+co(p.ticker)+' '+(pk==="UP"?"up":"down")+'</b>. Locked. Come back after the bell: we&rsquo;ll tell you which AIs you beat.</p></div>';
+  return '<div class="yc"><p><b>Your call.</b> '+esc(co(p.ticker))+', up or down at the close? We grade you like the AIs.</p><div class="pick"><button class="u" data-n="'+p.n+'" data-d="UP">Up</button><button class="d" data-n="'+p.n+'" data-d="DOWN">Down</button></div></div>'}
+function fightHtml(p,isMain){return '<article class="fight'+(isMain?" main":"")+'"><div class="fh">'+logoTag(p.ticker)+'<div class="nm"><b>'+esc(co(p.ticker))+'</b><span>'+esc(p.ticker)+' &middot; Round '+p.n+'</span></div>'+(isMain?'<span class="me">Main event</span>':'')+'</div>'+
+  '<div class="sides"><div class="side l"><h4>Long</h4>'+sideList(p,true)+'</div><div class="side s"><h4>Short</h4>'+sideList(p,false)+'</div></div><p class="fsay">'+esc(verdict(p))+'</p>'+(isMain?ycHtml(p):"")+'</article>'}
+function drawBell(){var f=$("fights");
+  if(!bellR.length){$("bKick").textContent="Next bell";$("bH").textContent=due.length?"The bell rang. Results soon.":"Between bells.";$("clock").innerHTML="";
+    f.innerHTML=due.length?due.map(function(x){return fightHtml(x.p,false)}).join(""):'<p class="lede">No trades waiting on a close right now. The next ones drop on X before the earnings.</p>';return}
+  var tz={"New York":"America/New_York",Seoul:"Asia/Seoul",Tokyo:"Asia/Tokyo",Taipei:"Asia/Taipei","Hong Kong":"Asia/Hong_Kong",London:"Europe/London",Amsterdam:"Europe/Amsterdam",Frankfurt:"Europe/Berlin",Zurich:"Europe/Zurich",Paris:"Europe/Paris",Milan:"Europe/Rome",Madrid:"Europe/Madrid"}[CITY(main.ticker)];
+  var there=new Intl.DateTimeFormat("en-US",{timeZone:tz,hour:"numeric",minute:"2-digit"}).format(new Date(bellAt)).toLowerCase();
+  $("bKick").innerHTML="Next bell <i>&middot; "+esc(nyDay(bellAt))+"</i>";
+  $("bWhen").innerHTML="The <b>"+CITY(main.ticker)+"</b> close, "+esc(there)+" there. That&rsquo;s <b>"+esc(localTime(bellAt))+"</b> where you are.";
+  $("bH").innerHTML=bellR.length===1?"One fight at the close.":"<em>"+bellR.length+"</em> fights at the close.";
+  f.innerHTML=bellR.map(function(p,i){return fightHtml(p,i===0)}).join("")}
+drawBell();
+d.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".yc button[data-n]");if(!b)return;picks[b.getAttribute("data-n")]=b.getAttribute("data-d");savePicks();drawBell()});
+/* back after the bell: grade every pick this browser made that the close has since graded */
+(function(){var out=[];Object.keys(picks).forEach(function(k){var r=R.filter(function(x){return String(x.n)===k})[0];if(!r)return;var up=picks[k]==="UP",ok=up===(r.a>0),
+  beat=r.calls.filter(function(c){return (/^UP/.test(c[1]))!==(r.a>0)}).map(function(c){return NAME[c[0]]}),with_=r.calls.filter(function(c){return (/^UP/.test(c[1]))===(r.a>0)}).map(function(c){return NAME[c[0]]});
+  out.push('You said <b>'+esc(co(r.ticker))+' '+(up?"up":"down")+'</b>. It closed <span class="num '+cls(r.a)+'">'+pct(r.a)+'</span>. '+(ok?(beat.length?"Right. You beat "+andList(beat)+".":"Right, and so were all four AIs."):("Wrong. "+(with_.length?andList(with_)+" got it.":"So were all four AIs, if that helps."))));
+  delete picks[k]});
+  if(out.length){var b=$("backMsg");b.innerHTML="<b>Since you were here.</b> "+out.join(" ");b.hidden=false;savePicks()}})();
+/* what comes after this bell */
+(function(){var groups={},order=[],key=function(s){var t=dateOf(s);return t?String(t.getTime()):"tbd"},add=function(k,lab,at,p,inn){if(!groups[k]){groups[k]={k:lab,at:at,inn:[],out:[]};order.push(k)}groups[k][inn?"inn":"out"].push(p)};
+  fut.filter(function(x){return x.at!==bellAt}).forEach(function(x){add(key(x.p.resolves),x.p.resolves,x.at,x.p,1)});
+  UPCOMING.forEach(function(u){if(!u.resolves){add("tbd","",9e15,u,0);return}var at=closeAt(u.resolves,u.ticker);if(at&&at<now)return;add(key(u.resolves),u.resolves,at||9e15,u,0)});
+  var G=order.map(function(k){return groups[k]}).sort(function(a,b){return a.at-b.at}).slice(0,3);
+  if(!G.length){$("later").innerHTML="";return}
+  $("later").innerHTML='<h3>After that</h3><ul>'+G.map(function(g){var all=g.inn.concat(g.out).sort(function(a,b){return size(b.ticker)-size(a.ticker)});
+    return '<li><span class="d">'+esc(dayShort(g.k))+'</span><span class="cos">'+all.slice(0,6).map(function(p){return logoTag(p.ticker)}).join("")+'</span><span class="q">'+(g.inn.length?g.inn.length+" locked":"")+(g.inn.length&&g.out.length?", ":"")+(g.out.length?g.out.length+" to come":"")+'</span></li>'}).join("")+'</ul>'})();
+function tick(){var t=Date.now(),c=$("clock");
+  if(bellAt){var s=Math.max(0,Math.floor((bellAt-t)/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),sec=s%60;
+    c.innerHTML=(h>=24?'<div><b>'+Math.floor(h/24)+'</b><span>Days</span></div>':'')+'<div><b>'+String(h%24).padStart(2,"0")+'</b><span>Hrs</span></div><div><b>'+String(m).padStart(2,"0")+'</b><span>Min</span></div><div><b>'+String(sec).padStart(2,"0")+'</b><span>Sec</span></div>';
+    $("bellpillT").textContent=left(bellAt-t);if(s===0)setTimeout(function(){location.reload()},65000)}
+  else $("bellpillT").textContent=due.length?"results soon":"soon";
+  var bt=$("betLeft");if(bt)bt.textContent=bet>t?left(bet-t):"on";}
+tick();setInterval(tick,1000);
+
+/* ---- 4 · the tape: the newest close that graded anything ---- */
+(function(){var at=function(r){return closeAt(r.resolves,r.ticker)||0},last=R.reduce(function(a,r){return at(r)>a?at(r):a},0),day=R.filter(function(r){return r.resolves&&dateOf(r.resolves)&&nyDay(at(r))===nyDay(last)}).sort(function(a,b){return size(b.ticker)-size(a.ticker)||a.n-b.n});
+  if(!day.length)return;
+  var night={};MK.forEach(function(m){night[m]=0});day.forEach(function(r){r.calls.forEach(function(c){night[c[0]]+=Math.round(1000*(/^UP/.test(c[1])?1:-1)*r.a)})});
+  var NR=MK.filter(function(m){return day.some(function(r){return r.calls.some(function(c){return c[0]===m})})}).sort(function(a,b){return night[b]-night[a]});
+  var best=NR[0],worst=NR[NR.length-1];
+  $("tKick").innerHTML="Last bell <i>&middot; "+esc(nyDay(last))+" &middot; "+day.length+" fight"+(day.length>1?"s":"")+"</i>";
+  $("tH").innerHTML=night[best]>0?NAME[best]+" got paid. <em>"+(night[worst]<0?NAME[worst]+" did not.":"Everyone ate.")+"</em>":"Nobody got paid.";
+  /* the night's worst trade: the biggest move against the AIs that called it the wrong way */
+  var big=day.slice().sort(function(a,b){return Math.abs(b.a)-Math.abs(a.a)})[0],wrong=big.calls.filter(function(c){return (/^UP/.test(c[1]))!==(big.a>0)}).map(function(c){return NAME[c[0]]});
+  $("tLede").innerHTML=(wrong.length?esc(andList(wrong))+" went "+(big.a>0?"short":"long")+" "+esc(co(big.ticker))+". It "+(big.a>0?"rose":"fell")+" "+Math.abs(big.a)+"%. That&rsquo;s <span class=\"num dn\">"+money(-Math.abs(big.a)*1000)+"</span>"+(wrong.length>1?" each":"")+".":"Everyone called "+esc(co(big.ticker))+" right. It "+(big.a>0?"rose":"fell")+" "+Math.abs(big.a)+"%.")+" Tap a fight for the tape.";
+  $("night").innerHTML=NR.map(function(m){return '<div><img src="'+FACE(m)+'" alt=""><span><b>'+NAME[m]+'</b><span class="num '+cls(night[m])+'">'+money(night[m])+'</span></span></div>'}).join("");
+  $("tiles").innerHTML=day.map(function(r){var f=FILMS[r.n],ws=r.win?r.win.split(" & "):[],Lg=CO_LOGOS[r.ticker];
+    var pic=f?'<div class="pic" style="background-image:url(media/'+f.p+'.jpg)"><span class="play" aria-hidden="true"></span></div>':'<div class="pic" style="background:'+((Lg&&Lg.c)||"#2a221b")+'">'+logoTag(r.ticker)+'</div>';
+    var who=ws.length?ws.map(function(m){return '<img src="'+FACE(m)+'" alt="">'}).join("")+esc(andList(ws.map(function(m){return NAME[m]})))+(ws.length>1?" tied":" got closest"):"Nobody called it";
+    var inner=pic+'<div class="cap"><b><span>'+esc(co(r.ticker))+'</span><span class="num '+cls(r.a)+'">'+pct(r.a)+'</span></b><p>'+who+'</p></div>';
+    return f?'<button class="tile" data-film="'+f.f+'" data-poster="'+f.p+'" data-cap="Round '+r.n+' &middot; '+esc(co(r.ticker))+' '+pct(r.a)+'" aria-label="Play the film of round '+r.n+', '+esc(co(r.ticker))+'">'+inner+'</button>':'<div class="tile" style="cursor:default">'+inner+'</div>'}).join("");
+  $("tNote").textContent=R.length+" rounds, "+TRADES.toLocaleString("en-US")+" trades, every one locked before the earnings and graded at the close. None edited. None deleted.";})();
+/* the theatre: one film, big, with sound */
+var th=$("theatre"),tv=$("thV"),lastFocus=null;
+d.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest(".tile[data-film]");if(!t)return;lastFocus=t;
+  tv.innerHTML='<source src="media/'+t.getAttribute("data-film")+'.mp4" type="video/mp4">';tv.poster="media/"+t.getAttribute("data-poster")+".jpg";$("thP").innerHTML=t.getAttribute("data-cap");
+  th.hidden=false;tv.load();var p=tv.play();if(p&&p.catch)p.catch(function(){});$("thX").focus()});
+function closeTh(){tv.pause();tv.removeAttribute("src");tv.innerHTML="";th.hidden=true;if(lastFocus)lastFocus.focus()}
+$("thX").addEventListener("click",closeTh);th.addEventListener("click",function(e){if(e.target===th)closeTh()});d.addEventListener("keydown",function(e){if(e.key==="Escape"&&!th.hidden)closeTh()});
+
+/* ---- 5 · the buyback: three boards on the tunnel wall (their corners measured on the painting, 1280 x 960) ---- */
+(function(){var C=CONFIG||{},share=Math.round(100*(SIM.poolShare||.69)),tn=$("tunnel"),IW=1280,IH=960,
+  Q=[[[69,60],[410,142],[410,253],[72,225]],[[77,305],[416,323],[416,436],[81,461]],[[86,543],[420,504],[422,614],[93,700]]],
+  T=['<b style="font-size:54px">'+share+'%</b><span style="font-size:16px">of creator fees</span>',
+     '<b style="font-size:42px">NVDA</b><span style="font-size:16px"><span id="betLeft">soon</span> to go</span>',
+     '<b style="font-size:25px"><span class="gr">Win:</span> buyback</b><b style="font-size:25px"><span class="r">Lose:</span> wiped</b>'];
+  /* a rectangle mapped onto each board's four corners (a homography as a CSS matrix3d) */
+  function H(w,h,q){var x0=q[0][0],y0=q[0][1],x1=q[1][0],y1=q[1][1],x2=q[2][0],y2=q[2][1],x3=q[3][0],y3=q[3][1],dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,
+    den=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/den,hh=(dx1*dy3-dx3*dy1)/den,a=x1-x0+g*x1,b=x3-x0+hh*x3,c=x0,dd=y1-y0+g*y1,e=y3-y0+hh*y3,f=y0;
+    a/=w;dd/=w;g/=w;b/=h;e/=h;hh/=h;return "matrix3d("+[a,dd,0,g,b,e,0,hh,0,0,1,0,c,f,0,1].join(",")+")"}
+  tn.innerHTML=T.map(function(t){return '<div class="bd" aria-hidden="true">'+t+'</div>'}).join("");
+  function lay(){var w0=tn.clientWidth,h0=tn.clientHeight,sc=Math.max(w0/IW,h0/IH),bp=(getComputedStyle(tn).backgroundPosition.split(",")[0]||"50% 50%").trim().split(/\s+/),
+      pos=function(v,f){return /%$/.test(v)?f*parseFloat(v)/100:parseFloat(v)||0},ox=pos(bp[0],w0-IW*sc),oy=pos(bp[1]||"50%",h0-IH*sc);
+    [].forEach.call(tn.children,function(el,i){var q=Q[i].map(function(p){return [ox+p[0]*sc,oy+p[1]*sc]}),w=200,h=Math.round(200*(Math.hypot(q[3][0]-q[0][0],q[3][1]-q[0][1])/Math.hypot(q[1][0]-q[0][0],q[1][1]-q[0][1])));
+      el.style.width=w+"px";el.style.height=h+"px";el.style.transform=H(w,h,q)})}
+  lay();if(W.ResizeObserver)new ResizeObserver(lay).observe(tn);
+  $("steps").innerHTML=
+    '<li><div><p><b>'+share+'% of $EZ creator fees fill the pool.</b> Every trade of the coin tops it up.</p><div class="pool"><img src="media/gr7-burn-bag.jpg" alt=""><span>The pool sits in its own wallet, in the open. <a href="'+esc(C.poolUrl||"#")+'" target="_blank" rel="noopener" style="color:var(--gold2)">Check it &#8599;</a></span></div></div></li>'+
+    '<li><div><p><b>NVIDIA reports '+esc(nyDay(bet).replace(/^\w+, /,""))+'.</b> Whoever is on top of the card the day before calls it, long or short. We put the whole pool on that call.</p><small>Right now that&rsquo;s '+NAME[L.m]+'. '+(RK[1]?NAME[RK[1].m]+' is '+short(L.pl-RK[1].pl)+' back.':'')+'</small></div></li>'+
+    '<li><div><p><b>Then the close decides.</b></p><div class="outcome"><div class="w"><b>Right call</b>The profit buys back $EZ.</div><div class="x"><b>Wrong call</b>The pool shrinks, or gets wiped out.</div></div></div></li>';
+  if(C.ca){$("ca").innerHTML='<h3>$EZ &middot; the only address</h3><code id="caT">'+esc(C.ca)+'</code><p>'+esc(C.chain||"Solana")+', paired with USDC. Check it before you buy.</p>'+
+    '<div class="btns"><button class="btn dk" id="caCopy" type="button">Copy</button>'+(C.buyUrl?'<a class="btn" href="'+esc(C.buyUrl)+'" target="_blank" rel="noopener">Buy on pump.fun</a>':'')+'</div>'+
+    (C.burnTx?'<div class="burn"><img src="media/gr7-burn-fire.jpg" alt=""><span>We already burned <b>'+esc(C.burnAmt||"")+' $EZ</b> at launch. <a href="'+esc(C.burnTx)+'" target="_blank" rel="noopener">See the burn &#8599;</a></span></div>':'');
+    $("caCopy").addEventListener("click",function(){var b=this,done=function(){b.textContent="Copied";setTimeout(function(){b.textContent="Copy"},1600)};
+      if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(C.ca).then(done,function(){var r=d.createRange();r.selectNodeContents($("caT"));var s=getSelection();s.removeAllRanges();s.addRange(r)});})}
+  else $("ca").hidden=true})();
+
+/* the end card names the next bell */
+if(bellR.length)$("eLine").innerHTML="Next bell: "+esc(andList(bellR.map(function(p){return co(p.ticker)})))+", "+esc(nyDay(bellAt))+". The trades hit X before the earnings. No edits, no deleting the bad ones.";
+
+/* the leader's loop plays only while on screen; reveals once */
+var vid=d.querySelector("#card1 video"),rm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(rm&&vid){vid.removeAttribute("autoplay");vid.pause()}
+if("IntersectionObserver" in W){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.target===vid){if(rm)return;if(e.isIntersecting){var p=vid.play();if(p&&p.catch)p.catch(function(){})}else vid.pause();return}
+  if(e.isIntersecting){e.target.classList.add("on");io.unobserve(e.target)}})},{threshold:.18});
+  [].forEach.call(d.querySelectorAll(".in-v"),function(e){io.observe(e)});if(vid)io.observe(vid)}
+else [].forEach.call(d.querySelectorAll(".in-v"),function(e){e.classList.add("on")});
+})();
+</script>
+</body>
+</html>

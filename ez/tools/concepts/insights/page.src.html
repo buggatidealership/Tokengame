@@ -1,0 +1,382 @@
+<title>EZ Insights</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap">
+<style>
+:root{
+  --bg:#f6f4ee; --panel:#fffdf8; --fg:#1a1712; --muted:#5e584c; --faint:#8a8374; --line:#e2dccd;
+  --accent:#8f6200; --red:#b3261e; --green:#1d7a43; --redbg:#f6e3e0; --greenbg:#e2f1e7;
+  --s-grok:#a86e00; --s-gpt:#6250d6; --s-claude:#e0612e; --s-kimi:#2a78d6; --s-bear:#3d3a33;
+  --tag-m:#1a1712; --tag-d:#5e584c; --tag-h:#8f6200;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c0e13; --panel:#13161d; --fg:#efe8d6; --muted:#aaa290; --faint:#7d7768; --line:#272b35;
+  --accent:#fdbc2a; --red:#ff6b62; --green:#4fe39a; --redbg:#3a1714; --greenbg:#0f2e1f;
+  --s-grok:#d9a019; --s-gpt:#9085e9; --s-claude:#e0662f; --s-kimi:#4a92ea; --s-bear:#d8d1bf;
+  --tag-m:#efe8d6; --tag-d:#aaa290; --tag-h:#fdbc2a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c0e13; --panel:#13161d; --fg:#efe8d6; --muted:#aaa290; --faint:#7d7768; --line:#272b35;
+  --accent:#fdbc2a; --red:#ff6b62; --green:#4fe39a; --redbg:#3a1714; --greenbg:#0f2e1f;
+  --s-grok:#d9a019; --s-gpt:#9085e9; --s-claude:#e0662f; --s-kimi:#4a92ea; --s-bear:#d8d1bf;
+  --tag-m:#efe8d6; --tag-d:#aaa290; --tag-h:#fdbc2a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 "Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;
+  padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));
+  font-variant-numeric:tabular-nums}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,6vw,42px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(23px,4.6vw,30px);font-weight:700;letter-spacing:-.005em}
+h3{font-size:18px;font-weight:700}
+p{margin:0;max-width:65ch}
+.kick{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.sec{display:flex;flex-direction:column;gap:18px}
+.lede{font-size:18px;color:var(--fg)}
+.small{font-size:14px;color:var(--muted)}
+b,strong{font-weight:700}
+.up{color:var(--green)} .dn{color:var(--red)}
+/* the ask */
+.ask{border-left:3px solid var(--accent);padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:8px}
+.ask p{font-size:16px}
+/* tags */
+.tags{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted)}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.tag::before{content:"";width:9px;height:9px;border-radius:50%;flex:none}
+.tag.m{color:var(--tag-m)} .tag.m::before{background:var(--tag-m)}
+.tag.d{color:var(--tag-d)} .tag.d::before{border:2px solid var(--tag-d);width:5px;height:5px}
+.tag.h{color:var(--tag-h)} .tag.h::before{border:2px dashed var(--tag-h);width:5px;height:5px}
+/* the headline finding */
+.verdict{font-size:clamp(22px,4.4vw,28px);font-weight:700;line-height:1.25;text-wrap:balance}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.fact{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.fact .n{font-size:26px;font-weight:700;line-height:1.1}
+.fact .l{font-size:14px;color:var(--muted)}
+/* chart */
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 12px 10px;display:flex;flex-direction:column;gap:10px;position:relative}
+.chart h3{padding:0 4px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);padding:0 4px}
+.legend span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;border-radius:2px}
+.legend i.bear{border-top:3px dashed var(--s-bear)}
+#pl{width:100%;height:auto;display:block;touch-action:pan-y}
+#pl text{font-family:inherit;font-variant-numeric:tabular-nums}
+.tip{position:absolute;pointer-events:none;background:var(--fg);color:var(--bg);font-size:12.5px;line-height:1.45;padding:8px 10px;border-radius:8px;min-width:170px;opacity:0;transition:opacity .12s;z-index:2}
+.tip b{font-weight:700}
+.tip .row{display:flex;justify-content:space-between;gap:14px}
+.tip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+details{font-size:14px;color:var(--muted)}
+details summary{cursor:pointer;padding:4px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;font-size:13px;width:100%;min-width:420px}
+th,td{padding:5px 8px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:600}
+/* fell/rose bars */
+.split{display:flex;flex-direction:column;gap:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.split .key{display:flex;gap:16px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.split .key span{display:inline-flex;align-items:center;gap:6px}
+.split .key i{width:14px;height:10px;border-radius:2px;display:inline-block}
+.who{display:grid;grid-template-columns:64px 1fr;gap:6px 12px;align-items:center}
+.who .nm{font-weight:700;font-size:15px;grid-row:span 2;display:flex;align-items:center;gap:7px}
+.who .nm i{width:10px;height:10px;border-radius:50%;flex:none}
+.bar{display:grid;grid-template-columns:1fr 92px;gap:10px;align-items:center;font-size:13px}
+.bar .tr{height:12px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar .fl{height:100%;border-radius:3px 4px 4px 3px}
+.bar .fl.f{background:var(--red)} .bar .fl.r{background:var(--green)}
+.bar .v{color:var(--muted);white-space:nowrap}
+.bar .v b{color:var(--fg)}
+/* insights */
+.ins{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.card .big{font-size:30px;font-weight:700;line-height:1.05}
+.card .use{font-size:15px;border-top:1px dashed var(--line);padding-top:10px}
+.card .use b{color:var(--accent)}
+.card .dis{font-size:13.5px;color:var(--muted)}
+.notyet{display:flex;flex-direction:column;gap:0;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.notyet li{list-style:none;padding:14px 16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:3px}
+.notyet li:last-child{border-bottom:0}
+.notyet ul{margin:0;padding:0}
+.notyet .t{font-weight:600}
+.notyet .s{font-size:14px;color:var(--muted)}
+/* EZ card mockups: fixed EZ colours in both themes */
+.mocks{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.ez{background:#04070e;color:#f8f0d9;border-radius:14px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:12px;min-width:0;border:1px solid #1c2130;box-shadow:0 1px 0 rgba(0,0,0,.25)}
+.ez .hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.ez .co{font:800 20px/1 "Barlow Condensed",system-ui,sans-serif;letter-spacing:.02em;text-transform:uppercase;min-width:0}
+.ez .co small{font-weight:600;font-size:14px;color:#a69f8d;margin-left:6px}
+.ez .when{font-size:12px;color:#a69f8d;text-align:right;white-space:nowrap}
+.ez .say{font:700 28px/1.05 "Barlow Condensed",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.01em}
+.ez .say .dn{color:#ff5a51} .ez .say .up{color:#25d97f} .ez .say .sp{color:#fdbc2a}
+.ez .calls{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.ez .c{background:#0f141f;border-radius:8px;padding:7px 4px 6px;text-align:center;display:flex;flex-direction:column;gap:2px;border:1px solid #1c2130}
+.ez .c .m{font-size:11px;color:#a69f8d;font-weight:600;letter-spacing:.04em}
+.ez .c .x{font:700 18px/1 "Barlow Condensed",system-ui,sans-serif}
+.ez .c.d .x{color:#ff5a51} .ez .c.u .x{color:#25d97f}
+.ez .c.g{border-color:#fdbc2a}
+.ez .ctx{display:flex;flex-direction:column;gap:7px;margin:0;padding:0;font-size:14px;line-height:1.4}
+.ez .ctx li{list-style:none;display:grid;grid-template-columns:16px 1fr;gap:6px}
+.ez .ctx li::before{content:"";width:6px;height:6px;border-radius:50%;background:#fdbc2a;margin-top:7px}
+.ez .ctx b{color:#fff6dc}
+.ez .ft{font-size:12px;color:#8e877a;border-top:1px solid #1c2130;padding-top:9px}
+.ez.season .say{font-size:26px}
+.ez .duo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ez .duo div{background:#0f141f;border:1px solid #1c2130;border-radius:8px;padding:9px 10px;display:flex;flex-direction:column;gap:2px}
+.ez .duo .k{font-size:11px;color:#a69f8d;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.ez .duo .v{font:700 22px/1 "Barlow Condensed",system-ui,sans-serif}
+/* posts */
+.posts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.post{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.post pre{white-space:pre-wrap;font:15px/1.5 "Instrument Sans",system-ui,sans-serif;margin:0;color:var(--fg)}
+.post .meta{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);gap:8px}
+.post button{font:600 12.5px "Instrument Sans",system-ui,sans-serif;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:7px;padding:5px 10px;cursor:pointer}
+/* lists */
+ol.num{margin:0;padding:0;counter-reset:n;display:flex;flex-direction:column;gap:14px}
+ol.num>li{list-style:none;counter-increment:n;display:grid;grid-template-columns:30px 1fr;gap:4px 10px}
+ol.num>li::before{content:counter(n);font-weight:700;color:var(--accent);font-size:18px;line-height:1.3}
+ol.num .t{font-weight:700}
+ol.num .s{grid-column:2;font-size:15px;color:var(--muted)}
+ol.num .r{grid-column:2;font-size:15px}
+ol.num .r b{color:var(--accent)}
+.foot{font-size:13px;color:var(--faint);border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:6px}
+@media (max-width:420px){.ez .calls{gap:4px}.ez .c .x{font-size:16px}.bar{grid-template-columns:1fr 84px}}
+</style>
+
+<main class="wrap">
+
+<header class="sec">
+  <div class="kick">EZ · from our own sheet · 91 graded rounds, 5 Nov 2026</div>
+  <h1>What our sheet can tell a trader in five seconds</h1>
+  <div class="tags">
+    <span><span class="tag m">Measured</span> counted straight from the sheet</span>
+    <span><span class="tag d">Derived</span> worked out from those counts</span>
+    <span><span class="tag h">Hunch</span> too few rounds to bet on yet</span>
+  </div>
+</header>
+
+<section class="sec">
+  <div class="kick">Your ask, sharpened</div>
+  <div class="ask">
+    <p>From the sheet only we have, find the few facts that help someone before a report: who to trust, on what, and how big the move might be. Say each one in a line, with how sure we are. Throw out what the numbers can't carry yet. Show it as simple cards and posts. Then tell me what I'm not asking.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="kick">Read this first</div>
+  <h2>The leaderboard mostly measures who shorted</h2>
+  <p class="lede">You said Claude and Grok are strong on tech. The numbers say they are: 19-8 and 19-6. But stocks fell after most reports this season, tech more than most, and those two short almost everything. A model that shorted every single report would have done nearly as well.</p>
+  <div class="facts">
+    <div class="fact"><span class="n">52 of 91</span><span class="l">reports were followed by a fall (57%). October: 44 of 72.</span><span class="tag m">Measured</span></div>
+    <div class="fact"><span class="n">+$139,800</span><span class="l">from shorting every report, $100K each. Grok made +$166,410 on its 83 calls; shorting those same 83 made +$167,630.</span><span class="tag m">Measured</span></div>
+    <div class="fact"><span class="n">67 in a row</span><span class="l">Grok's calls since 14 Oct have all been shorts (62 graded, 5 waiting). It went long 9 times all season.</span><span class="tag m">Measured</span></div>
+  </div>
+
+  <figure class="chart" style="margin:0">
+    <h3>Profit and loss, round by round, $100K per call</h3>
+    <div class="legend" id="lg"></div>
+    <svg id="pl" role="img" aria-labelledby="plt pld"><title id="plt">Cumulative P&amp;L of each AI against shorting every report</title><desc id="pld">After 91 rounds: Grok +$166,410, short every report +$139,800, Claude +$126,380, Kimi −$88,580, GPT −$101,860. Grok's line stays close to the short-everything line all season.</desc></svg>
+    <div class="tip" id="tip"></div>
+    <details><summary>Show as a table</summary><div class="tbl"><table id="tb"></table></div></details>
+  </figure>
+
+  <div class="split" aria-label="How often each AI was right when stocks fell and when they rose">
+    <h3>Right when stocks fell, and when they rose</h3>
+    <div class="key"><span><i style="background:var(--red)"></i>After a fall</span><span><i style="background:var(--green)"></i>After a rise</span></div>
+    <div id="sp" style="display:flex;flex-direction:column;gap:14px"></div>
+    <p class="small">A pure bear scores 100% after falls and 0% after rises. Grok is close to that. Kimi and GPT lean the other way, and stocks mostly fell, so they trail.</p>
+  </div>
+
+  <div class="card">
+    <div class="top"><h3>So, "the best for tech"?</h3><span class="tag d">Derived</span></div>
+    <p>Tech fell after <b>17 of 27</b> reports. Shorting every tech report would have gone <b>17-10</b>. Claude went 19-8, Grok 19-6 (16-9 for shorting on its rounds). That is an edge of 2 to 3 calls over a model that does no thinking. Too small to tell anyone "use these two for tech".</p>
+    <p class="dis">What would prove real skill: being right when stocks rise, or beating the short-everything line by more than a handful of calls. Right now Grok is right after 5 of 33 rises.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="kick">What holds up</div>
+  <h2>Four things you can tell people today</h2>
+  <div class="ins">
+
+    <article class="card">
+      <div class="top"><span class="tag m">Measured · 91 rounds</span></div>
+      <h3>The move is bigger than the AIs think</h3>
+      <div class="big">46 of 91</div>
+      <p>moves were bigger than <b>every</b> AI's call. The AIs guess 2.1% to 3.8% on average. The average move was 5.4%. 18 moves were 8% or more; only 9 of 356 calls were that big.</p>
+      <p class="use"><b>Use it:</b> on every card, "Expect a bigger move than any AI says."</p>
+      <p class="dis">Would change it: the AIs start calling bigger, or the options market priced these moves in all along (we don't record that yet; see below).</p>
+    </article>
+
+    <article class="card">
+      <div class="top"><span class="tag m">Measured · 91 rounds</span></div>
+      <h3>Know who you're reading</h3>
+      <div class="big">Two bears, two bulls</div>
+      <p>Grok shorted 74 of 83 calls and Claude 70 of 91. Kimi went long 64 of 91 and GPT 59 of 91. When Kimi was the only one saying up, it was right <b>5 of 16</b>.</p>
+      <p class="use"><b>Use it:</b> a "down" from Grok tells you little; a lone "up" from Kimi has mostly been wrong. One line per model on Meet the cast: "Grok: the bear. Shorted 74 of 83."</p>
+      <p class="dis">Would change it: a model changes its habits. These are tendencies, not laws.</p>
+    </article>
+
+    <article class="card">
+      <div class="top"><span class="tag m">Measured · few rounds per sector</span></div>
+      <h3>Some sectors leaned hard one way</h3>
+      <div class="big">12 of 15</div>
+      <p>bank and finance reports were followed by a fall. Tech: 17 of 27. Consumer: 6 of 14 fell. Health care: 4 of 9 fell. Industrials: 5 of 10, a coin toss.</p>
+      <p class="use"><b>Use it:</b> one line on each report's card: "Tech fell after 17 of 27 reports this season."</p>
+      <p class="dis">Would change it: one season only. Sectors swing with the whole market, so this is "what happened", never "what will".</p>
+    </article>
+
+    <article class="card">
+      <div class="top"><span class="tag h">Hunch · 15 rounds</span></div>
+      <h3>When all four agree, it has been worth noticing</h3>
+      <div class="big">11 of 15</div>
+      <p>right when all four called the same way (73%). Shorting those rounds: 9 of 15. When they all said down: 8 of 11.</p>
+      <p class="use"><b>Use it:</b> an "All four agree" badge on a report's card. Not a promise, a flag.</p>
+      <p class="dis">Would change it: three or four misses in the next few unanimous rounds.</p>
+    </article>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="kick">Looks like an edge, isn't yet</div>
+  <h2>Don't publish these as edges</h2>
+  <div class="notyet"><ul>
+    <li><span class="t">Claude and Grok in tech</span><span class="s">19-8 and 19-6, but shorting every tech report went 17-10. An edge of 2 to 3 calls.</span></li>
+    <li><span class="t">Grok's bigger calls</span><span class="s">29 of 41 right when it called more than 1.9%. Shorting those same rounds: 27 of 41.</span></li>
+    <li><span class="t">GPT on the biggest names</span><span class="s">13 of 19 on the Mag 7 and $500B+ companies. Shorting them: 11 of 19.</span></li>
+    <li><span class="t">"They're getting worse"</span><span class="s">Every AI did worse in rounds 46 to 91 than 1 to 45 (Grok 68% to 57%, Claude 64% to 52%). With 45 rounds a half, a fair coin lands anywhere from 35% to 65%, so this could be luck either way.</span></li>
+    <li><span class="t">A warning about all of this</span><span class="s">I sliced the sheet about 30 ways. At that many slices, one or two "edges" show up by chance alone. That is why each claim above is checked against the dumbest rival, shorting everything, not only against a coin.</span></li>
+  </ul></div>
+</section>
+
+<section class="sec">
+  <div class="kick">On a silver platter</div>
+  <h2>One card per report: what they say, what usually happens, how big</h2>
+  <p>Mockups with today's real calls. The words come from rules on the sheet, so they rewrite themselves every round. The gold outline marks the top model's call.</p>
+  <div class="mocks" id="mk"></div>
+</section>
+
+<section class="sec">
+  <div class="kick">The same facts, as posts</div>
+  <h2>Three drafts for X</h2>
+  <div class="posts" id="ps"></div>
+  <p class="small">The /r/92 link opens ARM's round on the site with its own picture. No ask for replies; a plain fact people want to argue with does that job.</p>
+</section>
+
+<section class="sec">
+  <div class="kick">What you didn't ask</div>
+  <h2>Start recording these, so real skill can show</h2>
+  <ol class="num">
+    <li><span class="t">The market's own expected move</span><span class="s">Options price a move before every report. Record it next to each call. Then "the AIs are timid" becomes a fair test, and we can show who beats the market's own guess on size. Today nobody can, us included.</span></li>
+    <li><span class="t">A confidence number, 1 to 10</span><span class="s">If a model's 8s come true more often than its 4s, that is a skill no short-everything bot has. It also gives a card its sharpest line: "Claude's most confident call this week."</span></li>
+    <li><span class="t">One sentence of reasoning, saved before the report</span><span class="s">The best X content we could have ("Grok: guidance will disappoint") and an audit trail no one else has.</span></li>
+    <li><span class="t">The time each call was posted</span><span class="s">Without it, "follow this trade" can't say whether a follower could get in before the report.</span></li>
+    <li><span class="t">The short-everything line, tracked every round</span><span class="s">The honest yardstick for the whole season. The day an AI pulls clear of it is the day we have a story worth telling.</span></li>
+  </ol>
+</section>
+
+<section class="sec">
+  <div class="kick">Your call</div>
+  <h2>Four decisions</h2>
+  <ol class="num">
+    <li><span class="t">Show "short everything" on the site?</span><span class="s">Your rule from 5 Oct was no "always up" benchmark on the pages. This is its mirror, and right now it flatters the AIs less.</span><span class="r"><b>My take:</b> yes, one line on the Leaderboard. Anyone on CT can work it out in five minutes. Better we say it first and turn it into the test: can the AIs beat the bear?</span></li>
+    <li><span class="t">The NVIDIA bet will very likely be a short</span><span class="s">If Grok still leads on 16 Nov, the pool rides on its call, and Grok hasn't gone long since 14 Oct.</span><span class="r"><b>My take:</b> say it up front as a hook: "The bear makes the call." Hiding it reads worse when it happens.</span></li>
+    <li><span class="t">"Follow Grok" means "short every report" this season</span><span class="s">The Overview's next trades and its Follow on Hyperliquid line imply skill beyond that.</span><span class="r"><b>My take:</b> keep the follow line, add the yardstick beside the record: shorting every report +$140K over 91 rounds, +$168K on the 83 Grok called. It is honest and it keeps people checking back.</span></li>
+    <li><span class="t">Which card first?</span><span class="s">(a) one card per report on Upcoming, (b) the bear and bull line per model on Meet the cast, (c) "Expect a bigger move" on every card.</span><span class="r"><b>My take:</b> (a) with (c) folded into it. It answers what people come for: what do they say, and should I care.</span></li>
+  </ol>
+</section>
+
+<footer class="foot">
+  <span>Method: every number from the sheet (ez-data.js, 91 graded rounds, R1 to R91). P&amp;L is flat: $100,000 on every call, gain or loss = $100,000 × direction × the move, before fees. "Right" = right direction. Hit-rate ranges are 95% Wilson intervals; Grok's 61% is likely somewhere between 51% and 71%. Scripts: ez/tools/concepts/insights/.</span>
+  <span>Not advice. One season, one market mood.</span>
+</footer>
+</main>
+
+<script>
+const D=__DATA__;
+const M=[["GROK","Grok","--s-grok"],["CLAUDE","Claude","--s-claude"],["KIMI","Kimi","--s-kimi"],["GPT","GPT","--s-gpt"]];
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt=v=>(v<0?"−":"+")+"$"+Math.abs(Math.round(v)).toLocaleString("en-US");
+const fk=v=>(v<0?"−":v>0?"+":"")+"$"+Math.abs(Math.round(v/1000))+"K";
+// legend
+document.getElementById("lg").innerHTML='<span><i class="bear"></i>Short every report</span>'+M.map(m=>`<span><i style="border-color:var(${m[2]})"></i>${m[1]}</span>`).join("");
+// table (checkpoints)
+(function(){const cps=[15,30,45,60,75,91];let h='<tr><th>After round</th><th>Short every report</th>'+M.map(m=>`<th>${m[1]}</th>`).join("")+'</tr>';
+ for(const c of cps){const i=D.rounds.findIndex(r=>r[0]===c);h+=`<tr><td>R${c}</td><td>${fmt(D.bear[i])}</td>`+M.map(m=>`<td>${fmt(D.ai[m[0]][i])}</td>`).join("")+'</tr>'}
+ document.getElementById("tb").innerHTML=h})();
+// chart
+const svg=document.getElementById("pl"),tip=document.getElementById("tip");
+function draw(){
+  const W=Math.max(300,svg.parentNode.clientWidth-24),H=Math.round(Math.min(380,Math.max(260,W*.62)));
+  const L=52,R=74,T=12,B=30,n=D.rounds.length;
+  const all=[...D.bear,...M.flatMap(m=>D.ai[m[0]])],lo=Math.floor(Math.min(...all)/50000)*50000,hi=Math.ceil(Math.max(...all)/50000)*50000;
+  const x=i=>L+(W-L-R)*i/(n-1),y=v=>T+(H-T-B)*(hi-v)/(hi-lo);
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.setAttribute("width",W);svg.setAttribute("height",H);
+  let g="";
+  for(let v=lo;v<=hi;v+=50000){g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="${v===0?css('--muted'):css('--line')}" stroke-width="${v===0?1.2:1}"/>`;
+    g+=`<text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="${css('--muted')}">${fk(v)}</text>`}
+  for(const r of [1,30,60,91]){const i=D.rounds.findIndex(q=>q[0]===r);g+=`<text x="${x(i)}" y="${H-10}" text-anchor="middle" font-size="11" fill="${css('--muted')}">R${r}</text>`}
+  const path=a=>a.map((v,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+y(v).toFixed(1)).join("");
+  for(const m of M.slice().reverse())g+=`<path d="${path(D.ai[m[0]])}" fill="none" stroke="${css(m[2])}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  g+=`<path d="${path(D.bear)}" fill="none" stroke="${css('--s-bear')}" stroke-width="2.6" stroke-dasharray="6 5" stroke-linecap="round"/>`;
+  // end labels with collision avoidance
+  const ends=[["Short all",D.bear[n-1],'--s-bear'],...M.map(m=>[m[1],D.ai[m[0]][n-1],m[2]])].map(e=>({t:e[0],v:e[1],c:e[2],y:y(e[1])})).sort((a,b)=>a.y-b.y);
+  for(let k=1;k<ends.length;k++)if(ends[k].y-ends[k-1].y<13)ends[k].y=ends[k-1].y+13;
+  for(const e of ends){g+=`<text x="${W-R+6}" y="${e.y+4}" font-size="11.5" font-weight="700" fill="${css(e.c)}">${e.t}</text>`}
+  g+=`<line id="xh" y1="${T}" y2="${H-B}" stroke="${css('--muted')}" stroke-width="1" opacity="0"/>`;
+  g+=`<rect id="hit" x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" fill="transparent"/>`;
+  svg.innerHTML=g;
+  const hit=svg.querySelector("#hit"),xh=svg.querySelector("#xh");
+  const show=ev=>{const b=svg.getBoundingClientRect(),px=(ev.clientX-b.left)*W/b.width;const i=Math.max(0,Math.min(n-1,Math.round((px-L)/(W-L-R)*(n-1))));
+    xh.setAttribute("x1",x(i));xh.setAttribute("x2",x(i));xh.setAttribute("opacity",.6);
+    const r=D.rounds[i],rows=[["Short every report",D.bear[i],'--s-bear'],...M.map(m=>[m[1],D.ai[m[0]][i],m[2]])].sort((a,b)=>b[1]-a[1]);
+    tip.innerHTML=`<b>R${r[0]} ${r[1]}</b> · ${r[2]>0?"rose":"fell"} ${Math.abs(r[2])}%`+rows.map(q=>`<div class="row"><span><i style="background:${css(q[2])}"></i>${q[0]}</span><span>${fmt(q[1])}</span></div>`).join("");
+    tip.style.opacity=1;const cb=svg.parentNode.getBoundingClientRect(),sx=x(i)*b.width/W+b.left-cb.left;
+    tip.style.left=Math.min(cb.width-tip.offsetWidth-8,Math.max(8,sx+(sx>cb.width/2?-tip.offsetWidth-12:12)))+"px";tip.style.top=(b.top-cb.top+14)+"px"};
+  hit.addEventListener("pointermove",show);hit.addEventListener("pointerdown",show);
+  hit.addEventListener("pointerleave",()=>{tip.style.opacity=0;xh.setAttribute("opacity",0)});
+}
+draw();let rw=0;addEventListener("resize",()=>{const w=svg.parentNode.clientWidth;if(w!==rw){rw=w;draw()}});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",draw);
+new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+// fell / rose
+document.getElementById("sp").innerHTML=M.map(m=>{const s=D.split[m[0]],pf=s.down[0]/s.down[1],pr=s.up[0]/s.up[1];
+  return `<div class="who"><span class="nm"><i style="background:var(${m[2]})"></i>${m[1]}</span>
+  <div class="bar"><div class="tr"><div class="fl f" style="width:${(pf*100).toFixed(1)}%"></div></div><span class="v"><b>${s.down[0]} of ${s.down[1]}</b> ${Math.round(pf*100)}%</span></div>
+  <div class="bar"><div class="tr"><div class="fl r" style="width:${(pr*100).toFixed(1)}%"></div></div><span class="v"><b>${s.up[0]} of ${s.up[1]}</b> ${Math.round(pr*100)}%</span></div></div>`}).join("");
+// report cards
+const C=[
+ {co:"Arm Holdings",tk:"ARM",when:"Graded at today's close",say:["dn","3 of 4 say down"],calls:[["GPT","d",6],["Claude","d",6],["Grok","d",2.1,1],["Kimi","u",2]],
+  ctx:["Tech fell after <b>17 of 27</b> reports this season.","The two best in tech, Grok 19-6 and Claude 19-8, both say down. Both short almost everything.","The calls run 2 to 6%. Half of all moves beat every AI's number."]},
+ {co:"Qualcomm",tk:"QCOM",when:"Graded at today's close",say:["dn","3 of 4 say down"],calls:[["GPT","d",4.5],["Claude","d",7],["Grok","d",1.6,1],["Kimi","u",1.5]],
+  ctx:["Tech fell after <b>17 of 27</b> reports this season.","Claude's call is its biggest of the night: <b>down 7%</b>.","Kimi is the only one saying up. Alone like that, it has been right 5 of 16."]},
+ {co:"DHL Group",tk:"DHL",when:"Graded at Frankfurt's close",say:["dn","3 of 4 say down"],calls:[["GPT","d",1.5],["Claude","d",2],["Grok","d",1,1],["Kimi","u",3]],
+  ctx:["Industrials are a coin toss this season: fell after <b>5 of 10</b>.","No AI is better than 6-4 here. Nobody to lean on.","The calls run 1 to 3%. Expect a bigger move."]},
+ {co:"Sony",tk:"6758.T",when:"Graded Fri at Tokyo's close",say:["up","3 of 4 say up"],calls:[["GPT","u",3],["Claude","u",3],["Grok","d",1.2,1],["Kimi","u",4]],
+  ctx:["Consumer companies rose after <b>8 of 14</b> reports.","Grok says down, as on every call since <b>14 Oct</b>.","The rare night the others outvote the bear."]},
+ {co:"Nintendo",tk:"7974.T",when:"Graded Fri at Tokyo's close",say:["sp","Split 2-2"],calls:[["GPT","d",4],["Claude","u",4],["Grok","d",1.3,1],["Kimi","u",4]],
+  ctx:["Communication companies fell after <b>4 of 6</b> reports. Few to go on.","Claude and Grok are 4-2 here, GPT and Kimi 3-3. No favourite.","GPT, Claude and Kimi all call 4%. The average move is 5.4%."]}
+];
+document.getElementById("mk").innerHTML=C.map(c=>`<article class="ez"><div class="hd"><span class="co">${c.co}<small>${c.tk}</small></span><span class="when">${c.when}</span></div>
+ <div class="say"><span class="${c.say[0]}">${c.say[1]}</span></div>
+ <div class="calls">${c.calls.map(k=>`<div class="c ${k[1]}${k[3]?" g":""}"><span class="m">${k[0]}</span><span class="x">${k[1]==="d"?"▼":"▲"}${k[2]}%</span></div>`).join("")}</div>
+ <ul class="ctx">${c.ctx.map(t=>`<li><span>${t}</span></li>`).join("")}</ul>
+ <div class="ft">Calls locked before the report · graded at the close</div></article>`).join("")+
+ `<article class="ez season"><div class="hd"><span class="co">Season 1 so far</span><span class="when">91 rounds</span></div>
+ <div class="say">Stocks fell after <span class="dn">57%</span> of reports. The bears won.</div>
+ <div class="duo"><div><span class="k">Grok, the bear</span><span class="v">74 of 83 short</span></div><div><span class="k">Kimi, the bull</span><span class="v">64 of 91 long</span></div></div>
+ <ul class="ctx"><li><span>After a fall, Grok was right <b>46 of 50</b>. After a rise, <b>5 of 33</b>.</span></li><li><span>On the 83 rounds Grok called, shorting every one made <b>+$167,630</b>. Grok made <b>+$166,410</b>.</span></li></ul>
+ <div class="ft">The day the market turns, we find out who can think.</div></article>`;
+// posts
+const P=[
+ "Arm and Qualcomm report tonight.\n\n3 of 4 AIs say down on both.\nTech has fallen after 17 of 27 reports this season.\n\nCalls locked before the report: earningszn.xyz/r/92",
+ "Grok has called 67 earnings in a row short, this week's included.\n\nIt's #1 because stocks fell after 57% of reports this season. When they rose, Grok was right 5 times out of 33.\n\nThe day the market turns, we find out if it's skill.",
+ "The AIs are timid.\n\nThey call 2 to 4% moves. The average move this season was 5.4%.\n\nHalf of all moves were bigger than every AI's call."
+];
+document.getElementById("ps").innerHTML=P.map((t,i)=>`<div class="post"><pre>${t}</pre><div class="meta"><span>${t.length} characters</span><button data-i="${i}">Copy</button></div></div>`).join("");
+document.getElementById("ps").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const t=P[+b.dataset.i];
+ const done=()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1400)};
+ try{navigator.clipboard.writeText(t).then(done,()=>{sel(b)})}catch(_){sel(b)}});
+function sel(b){const pre=b.closest(".post").querySelector("pre");const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Selected"}
+</script>

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>EZ Scorebook</title>
+<meta name="description" content="The Earnings Zeason scorebook. AI models call earnings prints the day before, the market grades every call, and the record is kept by hand, the same way, every round.">
+<meta name="theme-color" content="#e6eedb">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* EARNINGS ZEASON · V12 · THE SCOREBOOK
+   The record kept by hand: green ledger paper, printed column rules, pen entries,
+   rubber stamps and pencil margin notes. Same routine, round after round.
+   Data: ez-data.js + ez-learn.js. Nothing typed by hand. */
+:root{color-scheme:light;
+  --paper:#e6eedb;--sheet:#f3f7ea;--sheet2:#edf3e1;--grid:rgba(47,110,78,.15);--grid2:rgba(47,110,78,.07);
+  --print:#2d5b44;--print2:#4d7a61;--text:#1b2620;--text2:#44524a;
+  --ink:#1b2d55;--pencil:#5f665d;--red:#b3302a;--up:#23703a;--dn:#b3302a;--gold:#c28a12;
+  --stamp:#27408b;--tape:rgba(233,222,186,.78);--manila:#f1ead6;
+  --fp:'Barlow Condensed','Arial Narrow','Roboto Condensed',sans-serif;
+  --fb:'Barlow','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --fn:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --fh:'Caveat','Segoe Print','Bradley Hand','Comic Sans MS',cursive}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--paper);overflow-x:clip;scroll-behavior:smooth}
+body{background-color:var(--paper);color:var(--text);font:400 17px/1.55 var(--fb);-webkit-font-smoothing:antialiased;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid2) 1px,transparent 1px);
+  background-size:100% 26px,26px 26px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:3px solid #1f5bd1;outline-offset:3px;border-radius:2px}
+.wrap{position:relative;max-width:1180px;margin:0 auto;padding-inline:16px}
+/* the red double margin rule of a ledger, one line down the whole book */
+main{position:relative;display:block}
+main::before{content:"";position:absolute;top:0;bottom:0;left:6px;width:4px;border-left:1px solid rgba(179,48,42,.55);border-right:1px solid rgba(179,48,42,.55);pointer-events:none}
+@media(min-width:900px){.wrap{padding-left:64px;padding-right:32px}main::before{left:max(36px,calc(50% - 554px))}}
+.num{font-family:var(--fn);font-variant-numeric:tabular-nums}
+.hand{font-family:var(--fh);font-weight:600;color:var(--pencil)}
+.lg{display:inline-grid;place-items:center;width:1em;height:1em;border-radius:22.5%;flex:none;vertical-align:middle;box-shadow:0 0 0 1px rgba(27,38,32,.2)}
+.lg svg{width:62%;height:62%}
+.u{color:var(--up)}.d{color:var(--dn)}
+.mark .d1{color:var(--gold)}.mark .e{color:var(--up)}.mark .z{color:var(--dn)}
+
+/* ---------- running head ---------- */
+.bar{position:sticky;top:0;z-index:30;background:rgba(230,238,219,.94);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-bottom:3px double var(--print)}
+.bar-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:10px;padding-left:16px}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;white-space:nowrap;min-height:48px}
+.brand .mark{font:800 22px/1 var(--fp);letter-spacing:.01em}
+.brand .nm{font:700 15px/1 var(--fp);letter-spacing:.14em;text-transform:uppercase;color:var(--print)}
+@media(max-width:560px){.brand .nm{display:none}}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;justify-content:flex-end;padding-right:12px}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{flex:none;display:flex;align-items:center;min-height:48px;padding:0 10px;font:600 14px/1 var(--fp);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--print2)}
+.tabs a:hover{color:var(--text)}
+@media(max-width:899px){.tabs{justify-content:flex-start;mask-image:linear-gradient(90deg,#000 85%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent)}}
+
+/* ---------- pages ---------- */
+.page{padding:56px 0 8px;scroll-margin-top:56px}
+.ph{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:baseline;border-bottom:3px double var(--print);padding-bottom:10px;margin-bottom:22px}
+.ph .pno{font:600 13px/1 var(--fn);color:var(--print2);letter-spacing:.04em;white-space:nowrap}
+.ph h2{font:800 clamp(34px,6vw,58px)/.95 var(--fp);letter-spacing:.01em;text-transform:uppercase;color:var(--text)}
+.ph .pk{grid-column:2;font:500 17px/1.4 var(--fb);color:var(--text2);max-width:62ch}
+.lead{max-width:64ch;color:var(--text2);margin:-6px 0 20px}
+.lead b{color:var(--text)}
+
+/* ---------- stamps ---------- */
+.stamp{display:inline-flex;align-items:center;gap:6px;font:800 19px/1 var(--fp);letter-spacing:.14em;text-transform:uppercase;color:var(--stamp);
+  padding:7px 10px 6px;border:2.5px solid currentColor;border-radius:5px;box-shadow:inset 0 0 0 2px var(--sheet),inset 0 0 0 3.5px currentColor;
+  transform:rotate(-4deg);opacity:.9;mix-blend-mode:multiply;white-space:nowrap;
+  -webkit-mask-image:var(--grunge);mask-image:var(--grunge);-webkit-mask-size:140px 70px;mask-size:140px 70px}
+.stamp.red{color:var(--red)}
+.stamp.sm{font-size:12.5px;letter-spacing:.12em;padding:5px 7px 4px;border-width:2px;box-shadow:none;transform:rotate(3deg)}
+.stamp .lg{font-size:18px;box-shadow:none}
+:root{--grunge:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='70'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.6 1.75'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+/* ---------- cover ---------- */
+.cover{padding-top:34px}
+.plate{position:relative;background:var(--sheet);border:1.5px solid var(--print);box-shadow:0 0 0 5px var(--sheet),0 0 0 6.5px var(--print),0 12px 26px rgba(40,70,50,.12);padding:22px 18px 20px;margin:8px 6px 0;max-width:880px}
+@media(min-width:900px){.plate{padding:34px 40px 30px;margin:10px 0 0}}
+.plate .no{display:flex;justify-content:space-between;gap:10px;font:600 13px/1 var(--fp);letter-spacing:.16em;text-transform:uppercase;color:var(--print)}
+.plate h1{margin:16px 0 4px;font:800 clamp(46px,11vw,104px)/.86 var(--fp);letter-spacing:-.005em;text-transform:uppercase}
+.plate h1 .sub{display:block;font:700 clamp(40px,8vw,74px)/1 var(--fh);text-transform:none;color:var(--ink);transform:rotate(-2deg);transform-origin:left;margin:6px 0 0 4px}
+.plate .one{font:500 clamp(18px,2.2vw,21px)/1.45 var(--fb);max-width:46ch;margin-top:16px}
+.fields{margin-top:20px;display:grid;gap:0}
+.fields div{display:grid;grid-template-columns:minmax(118px,.9fr) minmax(0,1.6fr);gap:12px;align-items:baseline;padding:9px 0 7px;border-bottom:1px solid var(--grid)}
+.fields dt{font:600 13px/1.2 var(--fp);letter-spacing:.12em;text-transform:uppercase;color:var(--print)}
+.fields dd{font:500 16px/1.35 var(--fn);color:var(--ink)}
+.fields dd b{font-weight:600}
+.fields dd small{font:500 15px/1.3 var(--fb);color:var(--text2)}
+.tally{display:flex;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.tally svg{height:34px;width:auto;flex:none}
+.tally span{font:600 22px/1.1 var(--fh);color:var(--pencil)}
+.plate .nev{position:absolute;right:14px;top:58px}
+@media(max-width:560px){.plate .nev{position:static;margin-top:14px}}
+.margin{font:600 clamp(24px,3vw,30px)/1.15 var(--fh);color:var(--pencil);transform:rotate(-1.5deg);max-width:22ch;margin:22px 0 0 8px}
+.margin::before{content:"";display:block;width:60px;height:2px;background:var(--pencil);opacity:.5;margin-bottom:6px;border-radius:2px}
+.cov{display:grid;gap:26px}
+@media(min-width:1100px){.cov{grid-template-columns:minmax(0,880px) minmax(0,1fr);align-items:start}.cov .margin{margin-top:120px}}
+/* contents */
+.toc{margin-top:30px;max-width:880px;background:var(--sheet);border:1.5px solid var(--print);padding:6px 14px 8px}
+@media(min-width:900px){.toc{padding:8px 24px 10px}}
+.toc h3{font:700 14px/1 var(--fp);letter-spacing:.18em;text-transform:uppercase;color:var(--print);padding:10px 0 6px;border-bottom:1.5px solid var(--print)}
+.toc ol{list-style:none}
+.toc a{display:flex;align-items:baseline;gap:10px;min-height:48px;padding:12px 0 8px;text-decoration:none;border-bottom:1px solid var(--grid)}
+.toc li:last-child a{border-bottom:0}
+.toc .t{font:700 20px/1.1 var(--fp);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.toc .dots{flex:1;min-width:12px;border-bottom:2px dotted var(--print2);opacity:.6;transform:translateY(-4px)}
+.toc .w{font:500 15px/1.2 var(--fb);color:var(--text2);text-align:right}
+.toc .p{font:500 14px/1 var(--fn);color:var(--print2);width:2.2ch;text-align:right}
+.toc a:hover .t{color:var(--ink)}
+@media(max-width:560px){.toc .w{display:none}}
+
+/* ---------- rules / legend ---------- */
+.legend{background:var(--sheet);border:1.5px solid var(--print)}
+.lr{display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 14px;padding:16px 14px 14px;border-top:1px solid var(--grid)}
+.lr:first-child{border-top:0}
+@media(min-width:900px){.lr{grid-template-columns:56px 200px minmax(0,1fr);padding:18px 24px}}
+.lr .i{font:600 15px/1.5 var(--fn);color:var(--print2);grid-row:span 2}
+@media(min-width:900px){.lr .i{grid-row:auto}}
+.lr h3{font:800 21px/1.2 var(--fp);letter-spacing:.06em;text-transform:uppercase}
+.lr p{color:var(--text2);max-width:64ch}
+.lr p b{color:var(--text)}
+.lr .ex{margin-top:8px;font:500 15px/1.5 var(--fn);color:var(--ink);background:var(--sheet2);border-left:3px solid var(--print2);padding:8px 10px}
+.slip{position:relative;display:inline-block;margin-top:10px;background:#fbfcf6;border:1px solid #cfd8c3;padding:14px 16px 12px;font:400 15px/1.7 var(--fn);color:#26312b;box-shadow:0 3px 8px rgba(40,70,50,.1);transform:rotate(-.6deg);max-width:100%}
+.slip i{font-style:normal;background:rgba(27,45,85,.08);padding:0 3px}
+.slip small{display:block;font:600 12px/1 var(--fp);letter-spacing:.14em;text-transform:uppercase;color:var(--print2);margin-bottom:8px}
+.slip::before{content:"";position:absolute;top:-10px;left:50%;width:74px;height:20px;margin-left:-37px;background:var(--tape);transform:rotate(-3deg);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.key{display:flex;flex-wrap:wrap;gap:8px 20px;padding:12px 14px;border-top:1.5px solid var(--print);font:500 15px/1.4 var(--fb);color:var(--text2)}
+@media(min-width:900px){.key{padding:14px 24px}}
+.key b{font:600 16px/1 var(--fn);color:var(--ink);margin-right:4px}
+.key .circ{display:inline-block;padding:0 6px;border:2px solid var(--red);border-radius:50%;font:600 13px/1.3 var(--fn);color:var(--ink);margin-right:4px}
+
+/* ---------- box scores ---------- */
+.rh{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline;margin:-6px 0 18px}
+.rh a{display:inline-flex;align-items:center;min-height:44px;font:600 16px/1.2 var(--fb);color:var(--ink)}
+.boxes{display:grid;gap:26px}
+@media(min-width:1000px){.boxes{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 28px;align-items:start}}
+.box{position:relative;scroll-margin-top:64px;background:var(--sheet);border:1.5px solid var(--print);padding:14px 12px 12px;display:grid;
+  grid-template-columns:minmax(0,1fr) 42%;grid-template-areas:"id photo" "tbl tbl" "cf cf";gap:12px 12px;min-width:0}
+@media(min-width:560px){.box{padding:16px 16px 14px;grid-template-columns:minmax(0,1fr) 190px}}
+.box.playing{grid-template-areas:"id id" "photo photo" "tbl tbl" "cf cf"}
+.box .bid{grid-area:id;min-width:0;display:flex;flex-direction:column;gap:8px}
+.box .bno{font:600 12.5px/1 var(--fp);letter-spacing:.16em;text-transform:uppercase;color:var(--print2)}
+.box h3{font:800 clamp(26px,3.2vw,34px)/.98 var(--fp);letter-spacing:.01em;text-transform:uppercase}
+.box h3 .rn{color:var(--print2);font-weight:700}
+.box .tk{font:500 13px/1 var(--fn);color:var(--print2);letter-spacing:.06em}
+.box .dts{display:grid;gap:3px;font:500 14px/1.3 var(--fn);color:var(--text2)}
+.box .dts b{color:var(--ink);font-weight:600}
+.box .mkt{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;border-top:1px solid var(--grid);padding-top:8px}
+.box .mkt span{font:600 13px/1 var(--fp);letter-spacing:.14em;text-transform:uppercase;color:var(--print)}
+.box .mkt b{font:600 clamp(24px,3vw,30px)/1 var(--fn);letter-spacing:-.02em}
+.box .st{margin-top:4px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.box .tag{font:600 21px/1.1 var(--fh);color:var(--pencil);transform:rotate(-2deg)}
+/* the film, pasted in */
+.photo{grid-area:photo;position:relative;align-self:start;background:#fff;padding:6px 6px 22px;box-shadow:0 2px 3px rgba(0,0,0,.08),0 8px 18px rgba(40,70,50,.14);transform:rotate(1.6deg);min-width:0}
+.box:nth-child(even) .photo{transform:rotate(-1.4deg)}
+.box.playing .photo{transform:none;padding-bottom:8px}
+.photo::before,.photo::after{content:"";position:absolute;z-index:2;width:54px;height:18px;background:var(--tape);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.photo::before{top:-8px;left:-14px;transform:rotate(-34deg)}
+.photo::after{top:-8px;right:-14px;transform:rotate(34deg)}
+.photo .fr{position:relative;aspect-ratio:1/1;background:#1a1f1c;overflow:hidden}
+.photo video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.photo .pl{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(transparent 55%,rgba(0,0,0,.35));color:#fff}
+.photo .pl i{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:rgba(243,247,234,.94);box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.photo .pl i::before{content:"";margin-left:4px;border-left:15px solid var(--ink);border-top:10px solid transparent;border-bottom:10px solid transparent}
+.photo .pl:hover i{transform:scale(1.06)}
+.photo figcaption{position:absolute;left:8px;right:8px;bottom:1px;font:600 16px/1.2 var(--fh);color:var(--pencil);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.box.playing .photo figcaption,.box.playing .photo .pl{display:none}
+.fold{display:none}
+.box.playing .fold{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-top:6px;padding:0 14px;font:600 15px/1 var(--fb);color:var(--ink);border:1.5px solid var(--print2);border-radius:4px;background:var(--sheet)}
+.nofilm{grid-area:photo;align-self:start;border:1.5px dashed var(--print2);aspect-ratio:1/1;display:grid;place-items:center;text-align:center;padding:10px;font:600 18px/1.15 var(--fh);color:var(--pencil)}
+/* the ruled call table */
+.tw{grid-area:tbl;min-width:0}
+.calls{width:100%;border-collapse:collapse;table-layout:fixed;font-variant-numeric:tabular-nums}
+.calls col.c2{width:84px}.calls col.c3{width:46px}.calls col.c4{width:78px}
+@media(min-width:560px){.calls col.c2{width:100px}.calls col.c3{width:56px}.calls col.c4{width:96px}}
+.calls th{font:600 12px/1.1 var(--fp);letter-spacing:.12em;text-transform:uppercase;color:var(--print);text-align:left;padding:6px 6px 6px;border-bottom:1.5px solid var(--print);border-top:1.5px solid var(--print)}
+.calls th:nth-child(n+2),.calls td:nth-child(n+2){text-align:right;border-left:1px solid var(--grid)}
+.calls th:nth-child(3),.calls td:nth-child(3){text-align:center}
+.calls td{padding:9px 6px 7px;border-bottom:1px solid var(--grid);font:500 16px/1.2 var(--fn);color:var(--ink);white-space:nowrap}
+.calls td.m{font:700 17px/1 var(--fp);letter-spacing:.06em;color:var(--text)}
+.calls td.m .nmw{position:relative;display:inline-flex;align-items:center;gap:7px}
+.calls td.m .lg{font-size:22px}
+.calls tr.won td.m .nmw::after{content:"";position:absolute;left:-7px;right:-9px;top:-7px;bottom:-7px;border:2px solid var(--red);border-radius:50%;transform:rotate(-3deg);opacity:.85;pointer-events:none}
+.calls .ok{color:var(--up);font-weight:600}
+.calls .no{color:var(--red);font-weight:600}
+.calls tr.bad td.mi{color:var(--pencil);text-decoration:line-through;text-decoration-color:rgba(179,48,42,.6)}
+.calls tr.you td{background:rgba(27,45,85,.04)}
+.calls tr.you td.m{font:700 22px/1 var(--fh);color:var(--ink);letter-spacing:0}
+.calls .blank{display:inline-block;width:44px;border-bottom:1.5px solid var(--pencil);opacity:.55;height:1em}
+.cf{grid-area:cf;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;font:500 14px/1.4 var(--fn);color:var(--pencil)}
+.cf b{font:600 12px/1 var(--fp);letter-spacing:.14em;text-transform:uppercase;color:var(--print2)}
+.cf span{white-space:nowrap}
+
+/* ---------- totals ---------- */
+.card{background:var(--sheet);border:1.5px solid var(--print)}
+.tot{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tot th{font:600 12px/1.15 var(--fp);letter-spacing:.12em;text-transform:uppercase;color:var(--print);text-align:left;padding:10px 8px 8px;border-bottom:1.5px solid var(--print)}
+.tot td{padding:12px 8px 10px;border-bottom:1px solid var(--grid);vertical-align:middle}
+.tot th:first-child,.tot td:first-child{padding-left:14px}
+.tot .rk{font:600 22px/1 var(--fn);color:var(--print2);width:36px}
+.tot .who{display:flex;align-items:center;gap:9px;font:800 22px/1 var(--fp);letter-spacing:.05em;text-transform:uppercase}
+.tot .who .lg{font-size:28px}
+.tot .big{font:600 22px/1 var(--fn);color:var(--ink);white-space:nowrap}
+.tot small{display:block;font:500 13px/1.3 var(--fn);color:var(--text2);margin-top:4px;white-space:nowrap}
+.tot .wn{display:flex;align-items:center;gap:8px}
+.tot .wn svg{height:26px;width:auto}
+.tot tr.bench td{background:rgba(95,102,93,.07);border-bottom:1.5px solid var(--print)}
+.tot tr.bench .who{font:700 24px/1.05 var(--fh);color:var(--pencil);text-transform:none;letter-spacing:0}
+.tot tr.lead .rk::after{content:"";display:block}
+.totn{padding:12px 14px 14px;font:500 15px/1.5 var(--fb);color:var(--text2)}
+.totn b{color:var(--text)}
+@media(max-width:620px){
+  .tot thead{display:none}
+  .tot,.tot tbody{display:block}
+  .tot tr{display:grid;grid-template-columns:34px minmax(0,1fr) minmax(0,1fr) auto;grid-template-areas:"rk who who wn" "rk dir avg avg";gap:8px 10px;padding:14px 12px 12px;border-bottom:1px solid var(--grid)}
+  .tot td{display:block;padding:0;border:0}
+  .tot td:first-child{padding-left:0}
+  .tot .rk{grid-area:rk}.tot .c-who{grid-area:who}.tot .c-dir{grid-area:dir}.tot .c-avg{grid-area:avg}.tot .c-wn{grid-area:wn;justify-self:end}
+  .tot td[data-k]::before{content:attr(data-k);display:block;font:600 11px/1 var(--fp);letter-spacing:.12em;text-transform:uppercase;color:var(--print);margin-bottom:4px}
+  .tot tr.bench{background:rgba(95,102,93,.07);border-bottom:1.5px solid var(--print)}
+  .tot tr.bench td{background:none;border:0}
+}
+.learn{display:grid;gap:20px;margin-top:26px}
+.step{padding:16px 14px 14px}
+@media(min-width:900px){.step{padding:22px 24px 18px}}
+.step .sk{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.step .sk em{font:600 13px/1 var(--fn);font-style:normal;color:var(--print2)}
+.step h3{font:800 clamp(23px,2.6vw,28px)/1.05 var(--fp);letter-spacing:.03em;text-transform:uppercase}
+.step>p{color:var(--text2);margin:8px 0 12px;max-width:70ch}
+.step>p b{color:var(--text)}
+.lx{--lx-ink:var(--ink);--lx-text:var(--text);--lx-mute:#5f6b62;--lx-grid:#d5e0c9;--lx-surface:var(--sheet);--lx-tipbg:var(--text);--lx-tipfg:#f3f7ea;--lx-font:var(--fb)}
+.verdict{margin-top:20px;display:grid;gap:12px;padding:18px 16px;background:var(--manila);border:1.5px solid #c9b98f;box-shadow:0 6px 14px rgba(40,70,50,.1);transform:rotate(-.4deg)}
+@media(min-width:900px){.verdict{grid-template-columns:260px minmax(0,1fr);padding:22px 26px;gap:24px}}
+.verdict .vk{font:700 clamp(30px,4vw,42px)/1 var(--fh);color:var(--ink)}
+.verdict .vk small{display:block;font:600 13px/1 var(--fp);letter-spacing:.14em;text-transform:uppercase;color:#7a6a3f;margin-bottom:6px}
+.verdict ul{list-style:none;display:grid;gap:8px;color:#3b3526}
+.verdict li{padding-left:20px;position:relative}
+.verdict li::before{content:"✓";position:absolute;left:0;color:var(--ink);font-weight:700}
+.verdict li b{color:#1f1b12}
+
+/* ---------- margin notes ---------- */
+.notes{display:grid;gap:22px}
+@media(min-width:900px){.notes{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px}}
+.note{position:relative;background:#fbfcf4;border:1px solid #d3dcc8;padding:18px 16px 16px;box-shadow:0 4px 10px rgba(40,70,50,.1);}
+.note:nth-child(odd){transform:rotate(-.4deg)}.note:nth-child(even){transform:rotate(.4deg)}.note.wide{transform:none}
+.note::before{content:"";position:absolute;top:-9px;left:24px;width:70px;height:18px;background:var(--tape);transform:rotate(-4deg)}
+.note .q{font:700 clamp(25px,2.8vw,30px)/1.1 var(--fh);color:var(--ink)}
+.note .a{font:700 19px/1.2 var(--fp);letter-spacing:.06em;text-transform:uppercase;margin-top:8px}
+.note p{color:var(--text2);margin-top:8px;max-width:62ch}
+.note p b{color:var(--text)}
+.note a{font-weight:600;color:var(--ink)}
+.note ul{list-style:none;margin-top:10px;display:grid;gap:10px}
+.note li{padding-left:26px;position:relative;color:var(--text2)}
+.note li::before{content:"✗";position:absolute;left:2px;top:0;font:700 17px/1.4 var(--fn);color:var(--red)}
+.note li b{color:var(--text)}
+.note.wide{grid-column:1/-1}
+.sign{margin-top:10px;font:700 clamp(28px,3.4vw,36px)/1.05 var(--fh);color:var(--red);transform:rotate(-2deg);transform-origin:left}
+
+/* ---------- next page ---------- */
+.box.open{background:var(--sheet);background-image:repeating-linear-gradient(135deg,transparent 0 14px,rgba(47,110,78,.035) 14px 28px)}
+.box.open .bid{grid-column:1/-1}
+.box.open{grid-template-areas:"id id" "tbl tbl" "you you"}
+@media(min-width:1200px){#openBoxes{grid-template-columns:repeat(3,minmax(0,1fr))}#openBoxes .calls col.c2{width:78px}#openBoxes .calls col.c3{width:44px}#openBoxes .calls col.c4{width:74px}}
+.you{grid-area:you;border-top:1.5px dashed var(--print2);padding-top:12px;display:grid;gap:10px}
+.you .yq{font:700 24px/1.1 var(--fh);color:var(--ink)}
+.you .yrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1.5px solid var(--print2);border-radius:5px;overflow:hidden}
+.seg button{min-height:44px;min-width:76px;padding:0 12px;font:600 16px/1 var(--fn);color:var(--ink);background:var(--sheet)}
+.seg button+button{border-left:1.5px solid var(--print2)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#f3f7ea}
+.you label{display:inline-flex;align-items:center;gap:4px;font:600 16px/1 var(--fn);color:var(--ink)}
+.you input{width:86px;min-height:44px;padding:0 10px;font:500 17px/1 var(--fn);color:var(--ink);background:#fbfcf6;border:0;border-bottom:2px solid var(--ink);border-radius:0}
+.you .pen{min-height:44px;padding:0 16px;font:600 16px/1 var(--fb);color:#f3f7ea;background:var(--ink);border-radius:5px}
+.you .pen[disabled]{opacity:.45;cursor:default}
+.you .fine{font:500 14px/1.4 var(--fb);color:var(--text2)}
+.you .done{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font:700 24px/1.1 var(--fh);color:var(--ink)}
+.you .done button{min-height:44px;font:600 15px/1 var(--fb);color:var(--red);text-decoration:underline;text-underline-offset:3px;padding:0 6px}
+.newcol{font:600 20px/1.15 var(--fh);color:var(--red);transform:rotate(-2deg)}
+
+/* ---------- sealed entry ---------- */
+.env{position:relative;max-width:860px;margin:8px auto 0;background:var(--manila);border:1.5px solid #c9b98f;box-shadow:0 2px 0 rgba(0,0,0,.04),0 16px 30px rgba(40,70,50,.16);padding:170px 18px 22px;overflow:hidden}
+@media(min-width:900px){.env{padding:196px 44px 30px}}
+.env::before{content:"";position:absolute;left:0;right:0;top:0;height:112px;background:#e9dfc4;clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 2px 0 #c9b98f)}
+@media(min-width:900px){.env::before{height:136px}}
+.seal{position:absolute;left:50%;top:78px;width:74px;height:74px;margin-left:-37px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 38% 34%,#d9544a,#a4241e 62%,#7d1a15);box-shadow:0 3px 6px rgba(0,0,0,.25),inset 0 0 0 5px rgba(0,0,0,.12);font:800 26px/1 var(--fp);color:rgba(255,235,225,.85);letter-spacing:.02em}
+@media(min-width:900px){.seal{top:100px}}
+.env .lbl{text-align:center;font:600 13px/1 var(--fp);letter-spacing:.2em;text-transform:uppercase;color:#7a6a3f;margin-top:4px}
+.env h3{text-align:center;font:800 clamp(34px,5vw,54px)/.95 var(--fp);text-transform:uppercase;margin-top:8px}
+.env .story{text-align:center;font:500 clamp(18px,2.2vw,21px)/1.45 var(--fb);max-width:44ch;margin:12px auto 0;color:#3b3526}
+.env ol{list-style:none;margin:20px auto 0;max-width:640px;display:grid}
+.env li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0 10px;border-bottom:1px solid rgba(122,106,63,.3)}
+.env li:first-child{border-top:1px solid rgba(122,106,63,.3)}
+.env li .i{font:600 15px/1 var(--fn);color:#7a6a3f}
+.env li b{font:700 19px/1.25 var(--fp);letter-spacing:.03em;text-transform:uppercase;color:#1f1b12}
+.env li small{display:block;font:500 15px/1.35 var(--fb);color:#5a5038;text-transform:none;letter-spacing:0;margin-top:2px}
+.env li .ic{display:flex;gap:6px;align-items:center}
+.env li .ic .lg{font-size:34px}
+.ezchip{display:inline-flex;align-items:center;height:34px;padding:0 8px;border-radius:7px;background:#1c2621;font:800 20px/1 var(--fp)}
+.ezchip .d1{color:#f0b429!important}.ezchip .e{color:#38b25a!important}.ezchip .z{color:#e5433a!important}
+.env li .qm{display:grid;place-items:center;width:34px;height:34px;border:2px dashed #7a6a3f;border-radius:50%;font:700 24px/1 var(--fh);color:var(--ink)}
+.env .fine{text-align:center;margin-top:18px}
+.env .fine .stamp{font-size:19px}
+.env .pool{text-align:center;font:500 15px/1.4 var(--fn);color:var(--ink);margin-top:10px}
+
+/* ---------- inside back cover ---------- */
+.cloth{background:#2b4636;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 2px,transparent 2px 5px),repeating-linear-gradient(-45deg,rgba(0,0,0,.05) 0 2px,transparent 2px 5px);padding:12px;margin-top:6px}
+.endp{background:var(--sheet);padding:22px 16px 20px;background-image:linear-gradient(var(--grid) 1px,transparent 1px);background-size:100% 26px}
+@media(min-width:900px){.endp{padding:34px 40px 30px}}
+.endp .bk{font:600 13px/1 var(--fp);letter-spacing:.18em;text-transform:uppercase;color:var(--print)}
+.endp .said{font:500 clamp(18px,2.2vw,21px)/1.5 var(--fb);max-width:52ch;margin-top:12px}
+.pocket{position:relative;max-width:560px;margin:34px auto 6px;padding-top:0}
+.pcard{position:relative;z-index:1;background:#fbfcf6;border:1px solid #cfd8c3;box-shadow:0 4px 10px rgba(40,70,50,.12);padding:22px 16px 70px;background-image:linear-gradient(rgba(179,48,42,.35) 1px,transparent 1px),linear-gradient(rgba(27,45,85,.1) 1px,transparent 1px);background-size:100% 100%,100% 30px;background-position:0 74px,0 74px;background-repeat:no-repeat,repeat}
+.pcard h2{font:800 clamp(34px,5vw,46px)/1 var(--fp);letter-spacing:.02em;text-transform:uppercase}
+.pcard h2 .mark{font-size:1em}
+.pcard ol{list-style:none;margin-top:14px;display:grid;gap:14px}
+.pcard li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px}
+.pcard li .i{font:600 15px/1.5 var(--fn);color:var(--print2)}
+.pcard li b{display:block;font:700 19px/1.25 var(--fp);letter-spacing:.04em;text-transform:uppercase}
+.pcard li p{color:var(--text2);font-size:16px}
+.ca{margin-top:6px;font:500 14px/1.5 var(--fn);color:var(--text2);border:1.5px dashed var(--print2);padding:8px 10px;overflow-wrap:anywhere}
+.lk{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-top:8px;padding:0 18px;font:600 16px/1 var(--fb);text-decoration:none;border-radius:5px;background:var(--ink);color:#f3f7ea}
+.lk.off{background:transparent;color:var(--pencil);border:1.5px dashed var(--pencil);pointer-events:none}
+.pk2{position:relative;z-index:2;margin-top:-58px;height:92px;background:#e8dcb8;border:1px solid #c9b98f;border-top:0;clip-path:polygon(0 0,100% 0,100% 100%,0 100%);box-shadow:0 -2px 0 rgba(0,0,0,.04);display:grid;place-items:center;border-radius:0 0 4px 4px}
+.pk2::before{content:"";position:absolute;left:0;right:0;top:0;height:14px;background:linear-gradient(rgba(0,0,0,.08),transparent)}
+.pk2 span{font:600 12.5px/1 var(--fp);letter-spacing:.22em;text-transform:uppercase;color:#7a6a3f}
+.risk{max-width:70ch;margin:22px auto 0;text-align:center;font:500 14px/1.6 var(--fn);color:var(--text2)}
+
+footer{margin-top:56px;border-top:3px double var(--print);text-align:center;padding:40px 16px 56px}
+.motto{font:800 clamp(32px,6.4vw,66px)/1 var(--fp);letter-spacing:.02em;text-transform:uppercase}
+.motto .e{color:var(--up)}.motto .z{color:var(--dn)}
+.badge{display:inline-block;margin-top:16px;font:800 34px/1 var(--fp);background:#1c2621;padding:10px 16px 8px;border-radius:6px}
+.badge .d1{color:#f0b429}.badge .e{color:#38b25a}.badge .z{color:#e5433a}
+footer small{display:block;margin-top:14px;font:500 12.5px/1.7 var(--fn);letter-spacing:.08em;color:var(--text2)}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+  <a class="brand" href="#cover" aria-label="Earnings Zeason scorebook, cover"><span class="mark"><span class="d1">$</span><span class="e">E</span><span class="z">Z</span></span><span class="nm">Earnings Zeason · Scorebook</span></a>
+  <nav class="tabs" aria-label="Pages"><a href="#rules">Rules</a><a href="#rounds">Rounds</a><a href="#totals">Totals</a><a href="#notes">Notes</a><a href="#next">Next page</a><a href="#sealed">Sealed</a><a href="#back">Back cover</a></nav>
+</div></header>
+
+<main>
+<!-- COVER -->
+<section class="page cover" id="cover"><div class="wrap">
+  <div class="cov">
+    <div>
+      <div class="plate">
+        <div class="no"><span>Scorebook · Season one</span><span class="num">No. 1</span></div>
+        <h1>Earnings Zeason. <span class="sub">The scorebook.</span></h1>
+        <p class="one">The day before a company reports earnings, AI models each call its stock: up or down, and by how much. After the print, the market grades every call. We write it all down, the same way, every round.</p>
+        <span class="nev stamp red">Never edited</span>
+        <dl class="fields" id="fields"></dl>
+        <div class="tally" id="tally"></div>
+      </div>
+    </div>
+    <p class="margin">We know it's boring. Consistency is everything.</p>
+  </div>
+  <nav class="toc" aria-label="Contents"><h3>Contents</h3><ol>
+    <li><a href="#rules"><span class="p">1</span><span class="t">How we keep score</span><span class="dots"></span><span class="w">What we do, and how</span></a></li>
+    <li><a href="#rounds"><span class="p">2</span><span class="t">The rounds</span><span class="dots"></span><span class="w">Every call, every grade</span></a></li>
+    <li><a href="#totals"><span class="p">3</span><span class="t">Season totals</span><span class="dots"></span><span class="w">How it's going</span></a></li>
+    <li><a href="#notes"><span class="p">4</span><span class="t">Margin notes</span><span class="dots"></span><span class="w">The honest questions</span></a></li>
+    <li><a href="#next"><span class="p">5</span><span class="t">Next page</span><span class="dots"></span><span class="w">What's coming up</span></a></li>
+    <li><a href="#sealed"><span class="p">6</span><span class="t">Sealed entry</span><span class="dots"></span><span class="w">The main event</span></a></li>
+    <li><a href="#back"><span class="p">7</span><span class="t">Inside back cover</span><span class="dots"></span><span class="w">If you want a seat</span></a></li>
+  </ol></nav>
+</div></section>
+
+<!-- RULES -->
+<section class="page" id="rules"><div class="wrap">
+  <header class="ph"><span class="pno">p. 1</span><h2>How we keep score</h2><p class="pk">The rules, printed in the front of the book. They are the same every round.</p></header>
+  <div class="legend">
+    <div class="lr"><span class="i">01</span><h3>The call</h3><div><p>The day before a company reports, every model gets the same short question. No list of factors, no hints. It can use any tool it likes. It answers <b>up or down, and by how much</b>, and the call goes in the book before the print.</p>
+      <div class="slip"><small id="prl">The shape of the prompt</small><div id="pr"></div></div></div></div>
+    <div class="lr"><span class="i">02</span><h3>The grade</h3><div><p>After the print, the market answers. Each call is marked <b>right way</b> or <b>wrong way</b>, and we write down <b>how many points it missed by</b>.</p><p class="ex" id="ex"></p></div></div>
+    <div class="lr"><span class="i">03</span><h3>How a round is won</h3><div><p>Call the direction right, then land closest to the real move. <b>A wrong-way call can't win, however close the number.</b></p></div></div>
+    <div class="lr"><span class="i">04</span><h3>Ties</h3><div><p id="tieTxt">If two right-way calls land exactly as close, both win the round.</p></div></div>
+    <div class="lr"><span class="i">05</span><h3>Nobody wins</h3><div><p id="nobTxt">If every call goes the wrong way, nobody wins. The round still counts, and the book shows it as big as any win.</p></div></div>
+    <div class="lr"><span class="i">06</span><h3>The self-review</h3><div><p>After the grade, each model gets its own call back and works out what it overweighted and what it underweighted. <b>Nobody tells it what went wrong.</b> It carries its own notes into the next call. Same question, a little more experience.</p></div></div>
+    <div class="key" aria-label="Key to the marks"><span><b>▲</b>called up</span><span><b>▼</b>called down</span><span><b class="u">✓</b>right way</span><span><b class="d">✗</b>wrong way</span><span><span class="circ">GPT</span>circled: won the round</span><span><b>c/f</b>carried forward: rounds won so far</span></div>
+  </div>
+</div></section>
+
+<!-- ROUNDS -->
+<section class="page" id="rounds"><div class="wrap">
+  <header class="ph"><span class="pno">p. 2</span><h2>The rounds</h2><p class="pk" id="roundsSub">One box score per graded round, in the order they happened. Wins and misses get the same size box.</p></header>
+  <div class="rh" id="rh"></div>
+  <div class="boxes" id="boxes"></div>
+</div></section>
+
+<!-- TOTALS -->
+<section class="page" id="totals"><div class="wrap">
+  <header class="ph"><span class="pno">p. 3</span><h2>Season totals</h2><p class="pk" id="totSub">How it's going. Added up from the boxes on the page before.</p></header>
+  <div class="card"><table class="tot" id="tot"><thead><tr><th>#</th><th>Model</th><th>Right way</th><th>Average miss</th><th>Rounds won</th></tr></thead><tbody></tbody></table>
+    <p class="totn" id="totn"></p></div>
+  <div class="learn">
+    <div class="card step"><div class="sk"><em>Step 1</em><h3>Up or down: do they get it right?</h3></div>
+      <p>How often each model has called the direction right so far. A coin flip gets 50% over time. <b>Learning looks like lines that climb away from 50% and stay up there.</b></p>
+      <div id="lxDir"></div></div>
+    <div class="card step"><div class="sk"><em>Step 2</em><h3>How far off were they?</h3></div>
+      <p>Each bar is one call: how many percentage points it missed the real move by. <b>Shorter is better. Learning looks like bars that shrink.</b></p>
+      <div id="lxMiss"></div></div>
+  </div>
+  <div class="verdict"><div class="vk"><small id="vRounds"></small>Too early to call.</div><ul id="vList"></ul></div>
+</div></section>
+
+<!-- NOTES -->
+<section class="page" id="notes"><div class="wrap">
+  <header class="ph"><span class="pno">p. 4</span><h2>Margin notes</h2><p class="pk">The questions a careful reader writes in the margin. Our answers, plainly.</p></header>
+  <div class="notes">
+    <div class="note"><div class="q">Why one short question?</div><div class="a">One question. Full freedom.</div>
+      <p>Tell a model what to look at and it only looks there. We'd rather it find its own way in. The prompt only starts it. The learning happens between rounds, in the self-review.</p></div>
+    <div class="note"><div class="q">Is this the right way?</div><div class="a">Honestly? Nobody knows.</div>
+      <p>Nobody has figured out how to get a machine to read an earnings print. Our bet is that freedom beats instructions. <a href="https://arxiv.org/abs/2506.01578" target="_blank" rel="noopener">One recent study</a> found that elaborate forecasting prompts don't help and sometimes hurt. That's a hint, not proof.</p></div>
+    <div class="note"><div class="q">Why is the one with the most tools last?</div><div class="a">Different rigs.</div>
+      <p id="rigTxt">Same prompt, different setups. GPT and Kimi run in chat workspaces. Claude runs as an agent with the most tools and data.</p></div>
+    <div class="note"><div class="q">So what now?</div><div class="a">Time will tell.</div>
+      <p>Until the record is long enough to mean something, we stop talking and make the next call.</p><div class="sign">Shut up and call the print.</div></div>
+    <div class="note wide"><div class="q">What would prove this wrong?</div><div class="a">Written down in advance.</div>
+      <ul id="wrongList"></ul>
+      <p>If any of these happens, you'll see it here first. We keep writing it down either way.</p></div>
+  </div>
+</div></section>
+
+<!-- NEXT PAGE -->
+<section class="page" id="next"><div class="wrap">
+  <header class="ph"><span class="pno">p. 5</span><h2>Next page</h2><p class="pk">What's coming up. The boxes are ruled and waiting. The dates come from the calendar, not from us.</p></header>
+  <p class="lead" id="nextLead"></p>
+  <div class="boxes" id="openBoxes"></div>
+</div></section>
+
+<!-- SEALED -->
+<section class="page" id="sealed"><div class="wrap">
+  <header class="ph"><span class="pno">p. 6</span><h2>Sealed entry</h2><p class="pk">The main event. Kept in its own envelope at the back of the book.</p></header>
+  <div class="env">
+    <div class="seal" aria-hidden="true">EZ</div>
+    <div class="lbl">The main event</div>
+    <h3>The first real bet</h3>
+    <p class="story">Every $EZ trade fills a pool. One AI will take the whole pool and bet it on NVIDIA's next earnings.</p>
+    <ol>
+      <li><span class="i">1.</span><span><b>You trade $EZ</b></span><span class="ic"><span class="ezchip mark"><span class="d1">$</span><span class="e">E</span><span class="z">Z</span></span></span></li>
+      <li><span class="i">2.</span><span><b>69% of every fee goes into the pool</b></span><span class="ic"></span></li>
+      <li><span class="i">3.</span><span><b>One AI bets it on NVIDIA</b><small>Leveraged, on Hyperliquid. Which AI: not written in yet.</small></span><span class="ic" id="nvt"><span class="qm" aria-label="Which AI is not written in yet">?</span></span></li>
+    </ol>
+    <p class="pool" id="poolTxt" hidden></p>
+    <p class="fine"><span class="stamp red">Win or wipe</span></p>
+    <p class="story" style="font-size:17px">Nothing is paid out to holders.</p>
+  </div>
+</div></section>
+
+<!-- INSIDE BACK COVER -->
+<section class="page" id="back"><div class="wrap">
+  <header class="ph"><span class="pno">p. 7</span><h2>Inside back cover</h2><p class="pk">You've seen the whole book: the wins, the misses and the pages still blank.</p></header>
+  <div class="cloth"><div class="endp">
+    <div class="bk">If you want a seat for the rest of the season</div>
+    <p class="said">There's no rush and no countdown. The next print comes when the calendar says, and the book gets another box either way.</p>
+    <div class="pocket">
+      <div class="pcard">
+        <h2>Get <span class="mark"><span class="d1">$</span><span class="e">E</span><span class="z">Z</span></span></h2>
+        <ol>
+          <li><span class="i">01</span><div><b>Check the address</b><div class="ca" id="ca">Not posted yet. It appears here, and only here, at launch.</div></div></li>
+          <li><span class="i">02</span><div><b>Use the link on this page</b><p>Only through the link on this page. Nowhere else.</p><a class="lk off" id="buyL" href="#back" target="_blank" rel="noopener">Opens at launch</a></div></li>
+          <li><span class="i">03</span><div><b>Watch the next print</b><p id="nextTxt">Calls the day before, the grade after the market answers.</p></div></li>
+        </ol>
+      </div>
+      <div class="pk2"><span>Keep with the book</span></div>
+    </div>
+  </div></div>
+  <p class="risk">$EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p>
+</div></section>
+</main>
+
+<footer><div class="motto">Nobody said it would be <span class="e">E</span><span class="z">Z</span></div><div class="badge"><span class="d1">$</span><span class="e">E</span><span class="z">Z</span></div><small>$EZ · EARNINGS ZEASON, WITH A Z<br>CALLED BEFORE THE PRINT · GRADED BY THE MARKET · NEVER EDITED</small></footer>
+
+<script src="ez-data.js"></script>
+<script src="ez-learn.js"></script>
+<script>
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return [].slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function callOk(r,c){return ((/^DOWN/.test(c[1])?-1:1)>0)===(r.a>0)?1:0}
+function fullDate(d){var m=String(d).match(/(\d+)\/(\d+)\/(\d+)/);return fmtDate(d)+(m?", "+(m[3].length===2?"20"+m[3]:m[3]):"")}
+function said(dir,mag){return (dir==="DOWN"?"▼ ":"▲ ")+mag+"%"}
+function app(m){return MODELS[m]?MODELS[m].app:m}
+function nm(m){return MODELS[m]?MODELS[m].name:m}
+/* hand-drawn tally marks: four strokes and a gate */
+function tally(n,h){h=h||34;var o='',x=4,w=0,j=[.6,-.8,.4,-.3,.9,-.5,.2,-.7];
+  for(var i=0;i<n;i++){var k=i%5;
+    if(k<4){var jx=j[i%8];o+='<line x1="'+(x+jx).toFixed(1)+'" y1="3" x2="'+(x-jx*.6).toFixed(1)+'" y2="'+(h-3)+'"/>';x+=7}
+    else{o+='<line x1="'+(x-31)+'" y1="'+(h-9)+'" x2="'+(x+1)+'" y2="7"/>';x+=12}}
+  if(n%5===0&&n)x-=4;w=Math.max(x,8);
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" aria-hidden="true" fill="none" stroke="#1b2d55" stroke-width="2.3" stroke-linecap="round">'+o+'</svg>'}
+/* the visitor's own calls: stored on this device only */
+function getYou(n){try{var v=localStorage.getItem("ez12.call."+n);return v?JSON.parse(v):null}catch(e){return null}}
+function setYou(n,v){try{if(v)localStorage.setItem("ez12.call."+n,JSON.stringify(v));else localStorage.removeItem("ez12.call."+n)}catch(e){}}
+
+/* ---------- ranking: right direction first, then the smaller average miss (as on V9) ---------- */
+var S=EZLearn.summary(),B=EZLearn.baselines(),won={};LADDER.forEach(function(l){won[l.m]=l.won});
+var RANK=S.map(function(s){return {m:s.m,pct:s.pct,right:s.right,tot:s.tot,avg:s.s.reduce(function(a,d){return a+d.off},0)/s.s.length,won:won[s.m]||0}})
+  .sort(function(a,b){return (b.pct-a.pct)||(a.avg-b.avg)});
+var NOB=ROUNDS.filter(function(r){return !r.win}),TIES=ROUNDS.filter(function(r){return r.win&&r.win.indexOf(" & ")>-1});
+var NX=PENDING[0]||UPCOMING[0]||null;
+function plural(n,a,b){return n+" "+(n===1?a:b)}
+
+/* ---------- cover ---------- */
+(function(){var f=[];
+  if(ROUNDS.length)f.push(["Season opened",'<b>'+fullDate(ROUNDS[0].called)+'</b>']);
+  f.push(["Rounds graded",'<b>'+ROUNDS.length+'</b>']);
+  f.push(["Nobody won",'<b>'+NOB.length+'</b> <small>'+(NOB.length?'of '+ROUNDS.length+'. Every call went the wrong way.':'so far')+'</small>']);
+  if(RANK.length)f.push(["Leading",'<b>'+nm(RANK[0].m)+'</b> <small>by the book’s rule, after '+plural(ROUNDS.length,"round","rounds")+'</small>']);
+  if(NX)f.push(["Next entry",'<b>Round '+NX.n+' · '+esc(NX.co)+'</b> <small>'+(PENDING[0]?'Calls are in. The market answers '+fmtDate(NX.resolves)+'.':'Calls '+fmtDate(NX.called)+'.')+'</small>']);
+  f.push(["Changed after the print",'<b>Nothing</b>']);
+  $("#fields").innerHTML=f.map(function(x){return '<div><dt>'+x[0]+'</dt><dd>'+x[1]+'</dd></div>'}).join("");
+  $("#tally").innerHTML=tally(ROUNDS.length)+'<span>one mark per round kept</span>';
+})();
+
+/* ---------- rules ---------- */
+$("#pr").innerHTML=PROMPT.lines.join("<br>");$("#prl").textContent=PROMPT.verbatim?"The prompt, word for word":"The shape of the prompt";
+(function(){var r=ROUNDS[0];if(!r||!r.win){$("#ex").hidden=true;return}
+  var m=r.win.split(" & ")[0],c=callOf(r,m),p=c[1].split(" ");
+  $("#ex").innerHTML='From the book: Round '+r.n+' · '+esc(r.co)+'. '+nm(m)+' called '+said(p[0],p[1].replace("%",""))+'. The stock moved '+r.out+'. Right way, missed by '+c[2]+' points. It won the round.';
+})();
+$("#tieTxt").textContent="If two right-way calls land exactly as close, both win the round. So far: "+(TIES.length?TIES.map(function(r){return "Round "+r.n+" · "+r.co}).join(", "):"none")+".";
+$("#nobTxt").textContent="If every call goes the wrong way, nobody wins. The round still counts, and the book shows it as big as any win. So far: "+(NOB.length?NOB.map(function(r){return "Round "+r.n+" · "+r.co}).join(", "):"none")+".";
+
+/* ---------- box scores ---------- */
+var ROSTER_G=MODEL_KEYS.filter(function(m){return ROUNDS.some(function(r){return callOf(r,m)})});
+function youRow(u,a){if(!u)return "";var v=(u.d==="DOWN"?-1:1)*u.mag,ok=(v>0)===(a>0),off=Math.abs(v-a);
+  return '<tr class="you'+(ok?'':' bad')+'"><td class="m">You</td><td>'+said(u.d,u.mag)+'</td><td class="'+(ok?'ok':'no')+'">'+(ok?'✓':'✗')+'</td><td class="mi">'+off.toFixed(2)+'</td></tr>'}
+var cf={};ROSTER_G.forEach(function(m){cf[m]=0});
+$("#boxes").innerHTML=ROUNDS.map(function(r,k){
+  var wins=r.win?r.win.split(" & "):[];wins.forEach(function(m){cf[m]=(cf[m]||0)+1});
+  var rows=MODEL_KEYS.map(function(m){var c=callOf(r,m);if(!c)return "";var ok=callOk(r,c),p=c[1].split(" ");
+    return '<tr class="'+(wins.indexOf(m)>-1?'won':'')+(ok?'':' bad')+'"><td class="m"><span class="nmw">'+logo(m)+nm(m)+'</span></td><td>'+said(p[0],p[1].replace("%",""))+'</td><td class="'+(ok?'ok':'no')+'" aria-label="'+(ok?'right way':'wrong way')+'">'+(ok?'✓':'✗')+'</td><td class="mi">'+c[2]+'</td></tr>'}).join("");
+  var stamp=r.win?(wins.length>1?'<span class="stamp">Tie · '+wins.map(nm).join(" &amp; ")+'</span>':'<span class="stamp">Won · '+nm(wins[0])+'</span>'):'<span class="stamp red">No winner</span>';
+  var tag=r.tag&&r.tag!=="NO WINNER"?'<span class="tag">'+esc(r.tag.charAt(0)+r.tag.slice(1).toLowerCase())+'</span>':'';
+  var film=r.film?'<figure class="photo"><div class="fr"><video playsinline preload="none" poster="'+MEDIA+r.poster+'.jpg"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"><source src="'+MEDIA+r.film+'.webm" type="video/webm"></video>'+
+      '<button type="button" class="pl" aria-label="Play the Round '+r.n+' film"><i></i></button></div><figcaption>tap to play</figcaption><button type="button" class="fold">Fold it back</button></figure>'
+    :'<div class="nofilm">No film for this round yet. It still counts.</div>';
+  return '<article class="box" id="round-'+r.n+'">'+
+    '<div class="bid"><span class="bno">Box score · No. '+r.n+'</span><h3><span class="rn">Round '+r.n+' ·</span> '+esc(r.co)+'</h3><span class="tk">'+esc(r.ticker)+'</span>'+
+    '<div class="dts"><span>Called <b>'+fmtDate(r.called)+'</b></span><span>Graded <b>'+fmtDate(r.resolves)+'</b></span></div>'+
+    '<div class="mkt"><span>Market</span><b class="'+(r.a>0?'u':'d')+'">'+r.out+'</b></div>'+
+    '<div class="st">'+stamp+tag+'</div></div>'+film+
+    '<div class="tw"><table class="calls"><colgroup><col><col class="c2"><col class="c3"><col class="c4"></colgroup><thead><tr><th>Model</th><th>Called</th><th>Way</th><th>Missed by</th></tr></thead><tbody>'+rows+youRow(getYou(r.n),r.a)+'</tbody></table></div>'+
+    '<div class="cf"><b>c/f</b>'+ROSTER_G.map(function(m){return '<span>'+nm(m)+' '+(cf[m]||0)+'</span>'}).join("")+'<span>nobody '+ROUNDS.slice(0,k+1).filter(function(x){return !x.win}).length+'</span></div>'+
+  '</article>'}).join("");
+(function(){var last=ROUNDS[ROUNDS.length-1];
+  $("#rh").innerHTML=(last?'<a href="#round-'+last.n+'">Jump to the latest: Round '+last.n+' · '+esc(last.co)+'</a>':'')+(NX?'<a href="#next">Then the next page</a>':'');
+  $("#roundsSub").textContent=plural(ROUNDS.length,"graded round","graded rounds")+", one box score each, in the order they happened. Wins and misses get the same size box.";})();
+/* films: tap to play, one at a time, sound on (the tap allows it) */
+function fold(b){var v=$("video",b);if(!v)return;v.pause();v.controls=false;b.classList.remove("playing")}
+$$("#boxes .box").forEach(function(b){var v=$("video",b);if(!v)return;
+  $(".pl",b).addEventListener("click",function(){$$("#boxes .box.playing").forEach(fold);b.classList.add("playing");v.controls=true;v.muted=false;var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;v.play().catch(function(){})});$(".fold",b).focus({preventScroll:true});var ph=$(".photo",b).getBoundingClientRect();if(ph.top<60||ph.bottom>innerHeight)$(".photo",b).scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})});
+  $(".fold",b).addEventListener("click",function(){fold(b);$(".pl",b).focus({preventScroll:true})});
+  v.addEventListener("ended",function(){fold(b)});
+});
+
+/* ---------- totals ---------- */
+(function(){var n=ROUNDS.length;
+  $("#totSub").textContent="How it's going after "+plural(n,"round","rounds")+". Added up from the boxes on the page before.";
+  $("#tot tbody").innerHTML=RANK.map(function(r,k){var p=Math.round(r.pct*100);
+    return '<tr'+(k?'':' class="lead"')+'><td class="rk num">'+(k+1)+'</td><td class="c-who"><span class="who">'+logo(r.m)+nm(r.m)+'</span></td>'+
+      '<td class="c-dir" data-k="Right way"><span class="big">'+r.right+' of '+r.tot+'</span><small>'+p+'% of calls</small></td>'+
+      '<td class="c-avg" data-k="Average miss"><span class="big">'+r.avg.toFixed(2)+'</span><small>points per call</small></td>'+
+      '<td class="c-wn" data-k="Won"><span class="wn">'+(r.won?tally(r.won,26):'')+'<span class="big">'+r.won+'</span></span></td></tr>'}).join("")+
+    '<tr class="bench"><td class="rk num"></td><td class="c-who"><span class="who">Say UP every time</span></td><td class="c-dir" data-k="Right way"><span class="big">'+B.alwaysUp+' of '+B.rounds+'</span><small>'+(B.rounds?Math.round(B.alwaysUp/B.rounds*100):0)+'% of rounds</small></td><td class="c-avg" data-k="Average miss"><span class="big">n/a</span><small>the bar to beat</small></td><td class="c-wn" data-k="No winner"><span class="wn">'+(NOB.length?tally(NOB.length,26):'')+'<span class="big">'+NOB.length+'</span></span></td></tr>';
+  $("#totn").innerHTML='<b>Right way:</b> how often the up or down call was right. <b>Average miss:</b> how far each call landed from the real move, in points. <b>Ranked</b> by right way first, then by the smaller miss. The pencil row is the dumbest possible strategy, and the number in its last column is the rounds nobody won. '+plural(n,"call","calls")+' each so far, so expect these to move.';
+})();
+EZLearn.together($("#lxDir"));EZLearn.misses($("#lxMiss"));
+(function(){var best=S.length?Math.max.apply(null,S.map(function(x){return x.right})):0;
+  $("#vRounds").textContent="Verdict after "+plural(B.rounds,"round","rounds");
+  $("#vList").innerHTML='<li><b>The bar to beat:</b> saying "UP" every single time would have been right '+B.alwaysUp+' of '+B.rounds+'. '+(best>B.alwaysUp?'At least one model beats it.':'No model has beaten that yet.')+'</li>'+
+    '<li><b>Best direction so far:</b> '+S.filter(function(s){return s.right===best}).map(function(s){return app(s.m)}).join(" and ")+', '+best+' of '+B.rounds+'.</li>'+
+    '<li><b>What would settle it:</b> dozens of rounds, not '+B.rounds+'. Then the lines either pull away from the coin flip or they don’t.</li>';
+})();
+
+/* ---------- margin notes (derived where they state a number) ---------- */
+(function(){var last=RANK[RANK.length-1],cl=RANK.map(function(r){return r.m}).indexOf("CLAUDE");
+  var t="Same prompt, different setups. GPT and Kimi run in chat workspaces. Claude runs as an agent with the most tools and data. ";
+  if(cl>-1)t+=(last&&last.m==="CLAUDE"?"After "+plural(ROUNDS.length,"round","rounds")+", the one with the most tools is last. Interesting. Not proof.":"After "+plural(ROUNDS.length,"round","rounds")+", the one with the most tools sits number "+(cl+1)+" of "+RANK.length+". Not proof either way.");
+  $("#rigTxt").textContent=t;
+  var best=S.length?Math.max.apply(null,S.map(function(x){return x.right})):0;
+  $("#wrongList").innerHTML=
+    '<li><b>No model beats "UP every time."</b> Today that bar is '+B.alwaysUp+' of '+B.rounds+(best>B.alwaysUp?' and at least one model is above it.':' and no model has reached it.')+' If that still holds after dozens of rounds, the calls add nothing.</li>'+
+    '<li><b>The lines never leave the coin flip.</b> If the right-way share stays near 50% as the rounds pile up, there is no learning to see.</li>'+
+    '<li><b>The misses don’t shrink.</b> If the bars on page 3 stay as tall in round forty as in round four, the self-review isn’t doing its job.</li>'+
+    '<li><b>More tools win after all.</b> If the model with the most tools climbs to the top and stays there, freedom was the wrong bet.</li>';
+})();
+
+/* ---------- next page ---------- */
+(function(){
+  var latest=(PENDING[PENDING.length-1]||{}).calls,roster=latest?latest.map(function(c){return c.m}):ROSTER_G;
+  var seen={};ROUNDS.forEach(function(r){r.calls.forEach(function(c){seen[c[0]]=1})});
+  function blank(){return '<span class="blank" aria-label="blank"></span>'}
+  function youBox(u){return '<div class="you" data-n="'+u.n+'"></div>'}
+  var html=PENDING.map(function(u){
+    var fresh=u.calls.filter(function(c){return !seen[c.m]}).map(function(c){return app(c.m)});
+    var rows=u.calls.map(function(c){return '<tr><td class="m"><span class="nmw">'+logo(c.m)+nm(c.m)+'</span></td><td>'+said(c.dir,c.mag)+'</td><td>'+blank()+'</td><td>'+blank()+'</td></tr>'}).join("");
+    return '<article class="box open" id="round-'+u.n+'"><div class="bid"><span class="bno">Box score · No. '+u.n+'</span><h3><span class="rn">Round '+u.n+' ·</span> '+esc(u.co)+'</h3><span class="tk">'+esc(u.ticker)+'</span>'+
+      '<div class="dts"><span>Called <b>'+fmtDate(u.called)+'</b></span><span>Market answers <b>'+fmtDate(u.resolves)+'</b></span></div>'+
+      '<div class="mkt"><span>Market</span>'+blank()+'</div><div class="st"><span class="stamp">Calls in</span>'+(fresh.length?'<span class="newcol">First entry for '+fresh.join(" and ")+'.</span>':'')+'</div></div>'+
+      '<div class="tw"><table class="calls"><colgroup><col><col class="c2"><col class="c3"><col class="c4"></colgroup><thead><tr><th>Model</th><th>Called</th><th>Way</th><th>Missed by</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+youBox(u)+'</article>'}).join("")+
+  UPCOMING.map(function(u){
+    var rows=roster.map(function(m){return '<tr><td class="m"><span class="nmw">'+logo(m)+nm(m)+'</span></td><td>'+blank()+'</td><td>'+blank()+'</td><td>'+blank()+'</td></tr>'}).join("");
+    return '<article class="box open" id="round-'+u.n+'"><div class="bid"><span class="bno">Box score · No. '+u.n+'</span><h3><span class="rn">Round '+u.n+' ·</span> '+esc(u.co)+'</h3><span class="tk">'+esc(u.ticker)+'</span>'+
+      '<div class="dts"><span>Calls filed <b>'+fmtDate(u.called)+'</b></span><span>Market answers <b>'+fmtDate(u.resolves)+'</b></span></div>'+
+      '<div class="mkt"><span>Market</span>'+blank()+'</div></div>'+
+      '<div class="tw"><table class="calls"><colgroup><col><col class="c2"><col class="c3"><col class="c4"></colgroup><thead><tr><th>Model</th><th>Called</th><th>Way</th><th>Missed by</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+youBox(u)+'</article>'}).join("");
+  $("#openBoxes").innerHTML=html||'<p class="lead">The next page is being ruled. New rounds appear here as soon as they are on the calendar.</p>';
+  $("#nextLead").textContent=NX?(PENDING[0]?"Next answer: Round "+NX.n+" · "+NX.co+", "+fmtDate(NX.resolves)+". The calls are already in the book.":"Next up: Round "+NX.n+" · "+NX.co+", calls "+fmtDate(NX.called)+"."):"";
+  if(NX)$("#nextTxt").textContent=PENDING[0]?"Next answer: "+NX.co+", "+fmtDate(NX.resolves)+". Calls are already in.":"Next up: "+NX.co+", calls "+fmtDate(NX.called)+".";
+  /* your call: a finished little task, kept on this device, graded by the book later */
+  $$(".you").forEach(function(el){var n=+el.dataset.n,dir=null;
+    function draw(){var u=getYou(n);
+      if(u){el.innerHTML='<div class="done">You: '+said(u.d,u.mag)+'<button type="button">Erase</button></div><p class="fine">Pencilled in on this device. When the market answers, this row gets graded in the Round '+n+' box.</p>';
+        $("button",el).addEventListener("click",function(){setYou(n,null);dir=null;draw()});return}
+      el.innerHTML='<div class="yq">Your call?</div><div class="yrow"><span class="seg" role="group" aria-label="Direction"><button type="button" data-d="UP" aria-pressed="false">▲ Up</button><button type="button" data-d="DOWN" aria-pressed="false">▼ Down</button></span>'+
+        '<label>by <input type="number" inputmode="decimal" min="0" max="99" step="0.1" placeholder="3.0" aria-label="By how many percent"> %</label><button type="button" class="pen" disabled>Pencil it in</button></div>'+
+        '<p class="fine">Same question the models get. It stays on this device. We never see it.</p>';
+      var inp=$("input",el),pen=$(".pen",el);
+      function ok(){var v=parseFloat(inp.value);pen.disabled=!(dir&&v>=0&&v<100)}
+      $$(".seg button",el).forEach(function(b){b.addEventListener("click",function(){dir=b.dataset.d;$$(".seg button",el).forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});ok()})});
+      inp.addEventListener("input",ok);
+      pen.addEventListener("click",function(){var v=parseFloat(inp.value);if(!(dir&&v>=0))return;setYou(n,{d:dir,mag:Math.round(v*10)/10,t:Date.now()});draw()});
+    }
+    draw()});
+})();
+
+/* ---------- sealed entry ---------- */
+(function(){var li=$$(".env li");$(".ic",li[1]).innerHTML='';$("#nvt").insertAdjacentHTML("beforeend",nvLogo()+hlLogo());
+  if(CONFIG.pool){var p=$("#poolTxt");p.hidden=false;p.textContent=CONFIG.pool+" in the pool so far";}})();
+
+/* ---------- config ---------- */
+if(CONFIG.ca)$("#ca").textContent=(CONFIG.chain?CONFIG.chain+" · ":"")+CONFIG.ca;
+if(CONFIG.buyUrl){var bl=$("#buyL");bl.href=CONFIG.buyUrl;bl.classList.remove("off");bl.textContent="Open the link ↗"}
+</script>
+</body>
+</html>

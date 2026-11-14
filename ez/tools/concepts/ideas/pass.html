@@ -1,0 +1,48 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Kanit:ital,wght@1,900&family=Saira+Condensed:wght@600;700&family=Barlow+Condensed:wght@700;800&family=Archivo:ital,wdth,wght@1,62..100,900&display=swap">
+<script src="../../../ez-data.js"></script>
+<style>
+*{box-sizing:border-box;margin:0}body{background:#15131d;width:1240px;padding:36px 40px 44px;color:#f3ead6;font:600 18px/1.3 "Saira Condensed",sans-serif}
+h1{font:900 italic 44px/1 Kanit,sans-serif;text-transform:uppercase;text-shadow:-.065em .03em 0 #03c870}h1 span{text-shadow:.065em .03em 0 #ff3a31}
+.sub{color:#cfc6b3;margin:10px 0 24px;max-width:1150px;font-size:20px}
+.row{display:flex;gap:36px;align-items:flex-start}.col{width:358px}
+.lbl{font:700 16px/1 "Saira Condensed",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#f2b632;margin-bottom:12px}
+.ps{position:relative;background:#f8f0d9;color:#1d1a1e;filter:drop-shadow(4px 5px 0 #000);
+ -webkit-mask:radial-gradient(circle 9px at 0 0,#0000 98%,#000) top left,radial-gradient(circle 9px at 100% 0,#0000 98%,#000) top right,radial-gradient(circle 9px at 0 100%,#0000 98%,#000) bottom left,radial-gradient(circle 9px at 100% 100%,#0000 98%,#000) bottom right;-webkit-mask-size:51% 51%;-webkit-mask-repeat:no-repeat}
+.bd{height:31px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font:700 14.5px/1 "Barlow Condensed",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#f8f0d9}.g{background:#1f7a45}.r{background:#b3261e}
+.in{padding:12px 14px 12px;display:grid;gap:10px;border:1.5px solid #1d1a1e;margin:8px;outline:1px solid #1d1a1e;outline-offset:2px}
+.tp{display:flex;justify-content:space-between;align-items:flex-end}
+.no small{display:block;font:900 italic 12px/1 Archivo,sans-serif;font-stretch:62%;letter-spacing:.1em;text-transform:uppercase;color:#b3261e;margin-bottom:3px}
+.no b{font:400 34px/1 Anton,sans-serif}
+.st{font:900 italic 12px/1.15 Archivo,sans-serif;font-stretch:62%;letter-spacing:.08em;text-transform:uppercase;text-align:right;color:#57504a}.st b{display:block;font:400 22px/1 Anton,sans-serif;color:#1d1a1e;font-style:normal;letter-spacing:.02em}
+.grid{display:grid;grid-template-columns:repeat(23,1fr);gap:3px 2px;padding:8px 0 4px;border-top:1px dashed #1d1a1e;border-bottom:1px dashed #1d1a1e}
+.h{aspect-ratio:1;border-radius:50%;border:1px solid rgba(29,26,30,.35);display:grid;place-items:center;font:700 6px/1 "Barlow Condensed";color:rgba(29,26,30,.4)}
+.h.p{background:#15131d;border-color:#15131d;box-shadow:inset 0 1px 0 rgba(0,0,0,.6)}
+.h.gold{border:none;background:radial-gradient(circle at 40% 35%,#ffe28a,#c8901c);}
+.h.gold.p{background:#15131d}
+.h.now{border:1.5px solid #b3261e;background:rgba(179,38,30,.12)}
+.ky{display:flex;gap:14px;font:900 italic 11px/1 Archivo,sans-serif;font-stretch:62%;letter-spacing:.08em;text-transform:uppercase;color:#57504a;align-items:center}
+.ky i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.fs{display:flex;justify-content:space-between;gap:10px;font:700 15px/1.15 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.03em}
+.fs b{display:block;font:400 18px/1 Anton,sans-serif;letter-spacing:.02em}.fs small{font:900 italic 10.5px/1 Archivo,sans-serif;font-stretch:62%;letter-spacing:.1em;color:#57504a;display:block;margin-bottom:3px}
+.stamp{position:absolute;right:26px;bottom:52px;transform:rotate(-9deg);border:2.5px solid #1f7a45;color:#1f7a45;padding:5px 8px;font:400 15px/1 Anton,sans-serif;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;opacity:.85;mix-blend-mode:multiply}
+.stamp small{display:block;font:900 italic 8px/1 Archivo,sans-serif;font-stretch:62%;letter-spacing:.12em;margin-top:2px}
+.btn{margin-top:14px;display:flex;gap:10px}.btn b{flex:1;text-align:center;padding:11px 0;border:2px solid #f2b632;color:#f2b632;font:700 15px/1 "Saira Condensed",sans-serif;letter-spacing:.12em;text-transform:uppercase;transform:skewX(-8deg)}
+.notes{flex:1;display:grid;gap:12px;color:#cfc6b3;font-size:18px}.notes b{color:#f3ead6}
+</style>
+<h1>Your season <span>pass</span></h1>
+<p class="sub">Every visitor gets a pass the first time they come. Each round graded while they're watching gets punched: every hole is a close they saw. No wallet, no sign-up, no prize. It rewards showing up early and coming back at the bell, and it's a picture worth posting.</p>
+<div class="row" id="row"></div>
+<script>
+const T=ROUNDS.length+PENDING.length+UPCOMING.length;
+function pass(code,first,punched,now,label,stamp,nx){nx=nx||'Thu Oct 29';let g='';for(let n=1;n<=T;n++){const p=punched.includes(n),last=n===T;g+='<span class="h'+(p?' p':'')+(last?' gold':'')+(n===now&&!p?' now':'')+'" title="R'+n+'">'+(p||last?'':'')+'</span>'}
+return '<div class="col"><div class="lbl">'+label+'</div><div class="ps"><div class="bd g"><span>Season 1 · Pass</span><span>★ Earnings Zeason ★</span></div><div class="in">'+
+'<div class="tp"><div class="no"><small>Pass No.</small><b>'+code+'</b></div><div class="st">First at the bell<b>'+first+'</b></div></div>'+
+'<div class="grid">'+g+'</div><div class="ky"><span><i style="background:#15131d"></i>You were there</span><span><i style="border:1.5px solid #b3261e"></i>Next close</span><span><i style="background:radial-gradient(circle at 40% 35%,#ffe28a,#c8901c)"></i>Bet #1: NVIDIA</span></div>'+
+'<div class="fs"><span><small>Closes seen</small><b>'+punched.length+' of '+T+'</b></span><span><small>Next close</small><b>'+nx+'</b></span><span style="width:84px"></span></div></div>'+
+'<div class="bd r"><span>Admit one · Not for sale</span><span>№ '+String(punched.length).padStart(3,'0')+'</span></div>'+(stamp?'<div class="stamp">Early<small>Before $EZ launched</small></div>':'')+'</div>'+
+'<div class="btn"><b>Post my pass</b></div></div>'}
+const first=pass('EZ-7Q4K','R54 · SK Hynix',[54,55,56,57],58,'1 · First visit, today',true);
+const back=pass('EZ-7Q4K','R54 · SK Hynix',[54,55,56,57,58,59,60,61,62,63,64,66,67,69,70,71,72,73],74,'2 · Same pass, a week later (example)',true,'Wed Nov 4');
+document.getElementById('row').innerHTML=first+back+'<div class="notes"><span><b>How it is made:</b> the code and the punches live in the visitor\'s browser (localStorage), so it works on day one with no backend. Honest limit: a new phone is a new pass.</span><span><b>Why not a counter</b> ("You are visitor No. 37")? A low number tells everyone how few people came. The code says nothing about traffic.</span><span><b>A punch</b> is earned by having the site open within an hour after a round is graded (or opening its card that day), so it rewards the ritual at the close, not refreshing.</span><span><b>Later, once $EZ is live:</b> a pass could be claimed on-chain by holders; not before, and never with a prize attached.</span><span><b>Where it lives:</b> a small tab in the header ("Your pass"), opening this ticket. It never sits in the way of the record.</span></div>';
+</script>

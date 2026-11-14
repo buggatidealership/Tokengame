@@ -1,0 +1,2 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1350}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
+for(const d of ['A','B','C'])for(const f of [1,2]){await p.goto('http://localhost:8999/sb2.html?d='+d+'&f='+f);await p.waitForFunction(()=>window.READY===1);await p.waitForTimeout(400);await p.screenshot({path:'n'+d+f+'.png'})}console.log(errs.join('|')||'ok');await b.close()})();

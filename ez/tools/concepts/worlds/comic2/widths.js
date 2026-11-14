@@ -1,0 +1,4 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();const out=[];for(const w of [320,360,390,768,1000,1200,1280,1536,1920])for(const h of ['','#/leaderboard','#/upcoming']){const p=await b.newPage({viewport:{width:w,height:860}});await FONTS(p);const er=[];p.on('pageerror',e=>er.push(e.message));
+await p.goto('http://localhost:8897/x2p-comic-remake.html'+h);await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});await p.waitForTimeout(1200);
+const o=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth,bt:(()=>{const r=document.querySelector('#x2pSt .x2p-bt');return r?Math.round(r.getBoundingClientRect().width):0})()}));out.push(`${w}${h||'#/'} sw=${o.sw} iw=${o.iw} bt=${o.bt} ${er.join('|')||'ok'}`);await p.close()}console.log(out.join('\n'));await b.close()})();
