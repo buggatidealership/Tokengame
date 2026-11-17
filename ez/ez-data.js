@@ -124,7 +124,7 @@ var SHEET=[
  ["109","AMAT","11/12/26","UP","4","UP","4","UP","4","DOWN","1.8","11/13/26","-2.74","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors","FALSE"],
  ["110","DIS","11/17/26","UP","3","DOWN","4","UP","3.5","DOWN","1.6","","","","Communication Services","Media & Entertainment","Media; Travel","FALSE"],
  ["111","HD","11/17/26","DOWN","4","DOWN","2.5","DOWN","1.5","DOWN","2.4","","","","Consumer Discretionary","Consumer Discretionary Distribution & Retail","","FALSE"],
- ["112","NVDA","11/17/26","","","","","","","","","","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors; Gaming; Automotive","TRUE"]
+ ["112","NVDA","11/17/26","UP","6","UP","4","UP","4.5","UP","3.2","","","","Information Technology","Semiconductors & Semiconductor Equipment","AI; Semiconductors; Gaming; Automotive","TRUE"]
 ];
 
 /* presentation only — names, films, and the words on each card (never numbers) */

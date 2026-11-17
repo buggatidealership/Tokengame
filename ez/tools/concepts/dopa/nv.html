@@ -127,7 +127,7 @@ function buildRace() {
   S.tC0 = Math.min(...S.rows.map(r => r.tc)); S.tEnd = Math.max(...S.rows.map(r => r.tc)); S.prevC = Math.max(...S.rows.filter(r => !r.last).map(r => r.tc), S.tC0); S.tS = b(21); S.tG = b(22); DUR = b(27);
   S.tl = add(`<div class="tb L" style="left:56px;top:968px">LONG <b>0</b></div>`); S.ts = add(`<div class="tb S" style="left:552px;top:968px">SHORT <b>0</b></div>`);
   const lone = D.lone && D.ai.find(x => x.k === D.lone);
-  S.st = add(`<div class="st" style="top:1108px">${lone ? `${lone.name} stood alone <b>${D.loneRec.times} times</b> before. Right <b class="au">${D.loneRec.right}</b>.` : D.kind === 'unanimous' ? 'Nobody took the other side.' : 'A split room.'}</div>`);
+  S.st = add(`<div class="st" style="top:1108px">${lone ? `${lone.name} stood alone <b>${D.loneRec.times} times</b> before. Right <b class="au">${D.loneRec.right}</b>.` : D.kind === 'unanimous' ? (D.unanRec ? `All four went ${D.longs ? 'long' : 'short'} <b>${D.unanRec.st} time${D.unanRec.st === 1 ? '' : 's'}</b> before. Right <b class="au">${D.unanRec.sr}</b>.` : 'Nobody took the other side.') : 'A split room.'}</div>`);
   S.gp = add(`<div class="gp" style="top:1166px"><div class="p"><i></i>$100K EACH · GRADED ${D.close || 'AT THE CLOSE'}</div></div>`);
   C.push([.05, 'r11-swell', .09]); for (let r = 10; r <= n; r += 10) C.push([+(S.r0 + (S.r1 - S.r0) * invE(r / n)).toFixed(3), 'sfx-tick', .035]);
   C.push([S.tB, 'sfx-whoosh', .09], [S.tT, 'r11-thump', .15]); S.rows.forEach(r => C.push([r.tc, r.last ? 'r11-knock' : 'r11-card', r.last ? .2 : .13])); C.push([S.tS, 'r11-ping', .07], [S.tG, 'sfx-chime', .16]);
@@ -169,6 +169,7 @@ function rRace(t) {
   const kt = e(S.tl, S.tC0 - .35), kt2 = e(S.ts, S.tC0 - .27); S.tl.lastElementChild.textContent = nl; S.ts.lastElementChild.textContent = ns;
   S.tl.lastElementChild.style.transform = `scale(${1 + .28 * bl * bl})`; S.ts.lastElementChild.style.transform = `scale(${1 + .28 * bs * bs})`;
   S.tl.style.filter = `brightness(${nl ? 1 : .55})`; S.ts.style.filter = `brightness(${ns ? 1 : .55})`;
+  if (D.kind === 'unanimous') { const ku = L.eio(L.n(t, S.tEnd + .45, S.tEnd + .95)), W1 = D.longs ? S.tl : S.ts, W0 = D.longs ? S.ts : S.tl; W1.style.left = L.lerp(D.longs ? 56 : 552, 56, ku) + 'px'; W1.style.width = L.lerp(472, 968, ku) + 'px'; W0.style.opacity = Math.min(+W0.style.opacity, 1 - ku); W1.firstChild.textContent = ku > .5 ? 'ALL ' + (D.longs ? 'LONG ' : 'SHORT ') : (D.longs ? 'LONG ' : 'SHORT ') }
   e(S.st, S.tS); const kg = e(S.gp, S.tG, .4, 20), sh = S.gp.querySelector('i'), sp2 = ((t - S.tG - .3) % 2.6) / 1.1; sh.style.opacity = kg && sp2 > 0 && sp2 < 1 ? 1 : 0; sh.style.transform = `translateX(${L.lerp(-140, 760, sp2)}px)`;
   const push = 1 + .03 * (t / DUR); cam.style.transform = `scale(${push})`;
 }
@@ -193,10 +194,10 @@ async function buildChip() {
     const die = S.pl.lastElementChild, sp = die.previousElementSibling;
     const cell = add(`<div class="cell" style="left:${56 + j * 242}px;top:922px">${L.mark(k, 60)}<div><div class="nm">${a.name}</div><div class="cl">${dots()}<span style="color:${c};opacity:0"></span></div></div></div>`);
     return { a, die, sp, cell, j, tc: b(cb[j + 4 - rev.length] ?? cb[j]), last: j === rev.length - 1, nc } });
-  S.tC0 = Math.min(...S.dies.map(d => d.tc)); S.tG = b(13); DUR = b(18);
+  S.tC0 = Math.min(...S.dies.map(d => d.tc)); S.tEnd = Math.max(...S.dies.map(d => d.tc)); S.tG = b(13); DUR = b(18);
   S.tl = add(`<div class="tb L" style="left:56px;top:1030px">LONG <b>0</b></div>`); S.ts = add(`<div class="tb S" style="left:552px;top:1030px">SHORT <b>0</b></div>`);
   const lone = D.lone && D.ai.find(x => x.k === D.lone); S.tS = b(11.5);
-  S.st = add(`<div class="st" style="top:1164px">${lone ? `${lone.name} stood alone <b>${D.loneRec.times} times</b> before. Right <b class="au">${D.loneRec.right}</b>.` : D.kind === 'unanimous' ? 'Nobody took the other side.' : 'A split room.'}</div>`);
+  S.st = add(`<div class="st" style="top:1164px">${lone ? `${lone.name} stood alone <b>${D.loneRec.times} times</b> before. Right <b class="au">${D.loneRec.right}</b>.` : D.kind === 'unanimous' ? (D.unanRec ? `All four went ${D.longs ? 'long' : 'short'} <b>${D.unanRec.st} time${D.unanRec.st === 1 ? '' : 's'}</b> before. Right <b class="au">${D.unanRec.sr}</b>.` : 'Nobody took the other side.') : 'A split room.'}</div>`);
   S.gp = add(`<div class="gp" style="top:1212px"><div class="p"><i></i>$100K EACH · GRADED ${D.close || 'AT THE CLOSE'}</div></div>`);
   L.$('.fine').style.bottom = '30px';
   C.push([.05, 'r11-swell', .1]); S.dies.forEach(d => C.push([d.tc, d.last ? 'r11-knock' : 'r11-card', d.last ? .2 : .13])); C.push([S.tS, 'r11-ping', .07], [S.tG, 'sfx-chime', .16]);
@@ -217,6 +218,7 @@ function rChip(t) {
     if (on && !d.nc) { if (sgn(d.a) > 0) { nl++; bl = Math.max(bl, 1 - L.n(dt, 0, .4)) } else { ns++; bs = Math.max(bs, 1 - L.n(dt, 0, .4)) } } });
   e(S.tl, S.tC0 - .35); e(S.ts, S.tC0 - .27); S.tl.lastElementChild.textContent = nl; S.ts.lastElementChild.textContent = ns;
   S.tl.lastElementChild.style.transform = `scale(${1 + .28 * bl * bl})`; S.ts.lastElementChild.style.transform = `scale(${1 + .28 * bs * bs})`; S.tl.style.filter = `brightness(${nl ? 1 : .55})`; S.ts.style.filter = `brightness(${ns ? 1 : .55})`;
+  if (D.kind === 'unanimous') { const ku = L.eio(L.n(t, S.tEnd + .45, S.tEnd + .95)), W1 = D.longs ? S.tl : S.ts, W0 = D.longs ? S.ts : S.tl; W1.style.left = L.lerp(D.longs ? 56 : 552, 56, ku) + 'px'; W1.style.width = L.lerp(472, 968, ku) + 'px'; W0.style.opacity = Math.min(+W0.style.opacity, 1 - ku); W1.firstChild.textContent = ku > .5 ? 'ALL ' + (D.longs ? 'LONG ' : 'SHORT ') : (D.longs ? 'LONG ' : 'SHORT ') }
   e(S.st, S.tS); const kg = e(S.gp, S.tG, .4, 20), sh = S.gp.querySelector('i'), sp2 = ((t - S.tG - .3) % 2.6) / 1.1; sh.style.opacity = kg && sp2 > 0 && sp2 < 1 ? 1 : 0; sh.style.transform = `translateX(${L.lerp(-140, 760, sp2)}px)`;
 }
 
