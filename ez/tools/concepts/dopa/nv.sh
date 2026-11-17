@@ -3,7 +3,7 @@
 # data/c<n>.json exists (node prep-calls.js <n>; SAMPLE=... for mock-ups). Writes ez/x2p-r<round>-nv-<take><suffix>-draft.mp4.
 # 30 fps, 3-sample motion blur, four renderers side by side, the page's own bed (i4-house, hits on its beats) and cues.
 set -e
-F=$(cd "$(dirname "$0")" && pwd); N=$1; V=$2; X=$3; SFX=$4; DUR=13.7; [ "$V" = chip ] && DUR=9.15; NF=$(python3 -c "print(round($DUR*30))")
+F=$(cd "$(dirname "$0")" && pwd); N=$1; V=$2; X=$3; SFX=$4; DUR=13.7; [ "$V" = chip ] && DUR=9.2; NF=$(python3 -c "import math; print(math.floor($DUR*30+.5))")
 W=/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8/scratchpad/nvr/r$N-$V$SFX; mkdir -p "$W"
 # the chip take's living-light frames (Hedra, hchip.py): every second frame of hedra/chip-a.mp4 at 1440 wide (the size it is shown at)
 if [ "$V" = chip ] && [ -f "$F/hedra/chip-a.mp4" ] && [ ! -f "$F/hedra/chip-a/meta.json" ]; then mkdir -p "$F/hedra/chip-a"

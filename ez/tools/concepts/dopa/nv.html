@@ -34,6 +34,7 @@
 .row .bg{position:absolute;inset:0;border-radius:20px;background:linear-gradient(90deg,rgba(29,25,23,.9),rgba(22,19,18,.6));z-index:-3}
 .row .tn{position:absolute;inset:0;z-index:-2;opacity:0}
 .row .sw{position:absolute;top:0;bottom:0;width:340px;left:0;z-index:-1;opacity:0}
+.row .au2{position:absolute;inset:0;border-radius:20px;z-index:-1;opacity:0;background:linear-gradient(90deg,rgba(253,188,42,.22),rgba(253,188,42,.06));box-shadow:inset 0 0 0 2px rgba(253,188,42,.7)}
 .row .rk{font:600 26px 'Geist Mono';color:#5f5853;width:48px}
 .row .nb{display:flex;flex-direction:column;gap:7px}
 .row .nm{font:800 44px/1 Inter;letter-spacing:-.02em}
@@ -115,7 +116,7 @@ function buildRace() {
   S.sub = add(`<div class="sub" style="top:306px">${fin()}</div>`);
   S.c1 = add(`<div class="colh2" style="left:707px;top:422px;width:136px;text-align:center">SIDE</div>`); S.c2 = add(`<div class="colh2" style="left:869px;top:422px;width:129px;text-align:right">CALLS</div>`);
   S.rows = ord.map((k, i) => { const a = D.ai.find(x => x.k === k), sp = D.season[k], nc = a.side === 'NO CALL';
-    const el = add(`<div class="row" style="top:${462 + i * 124}px"><div class="bg"></div><div class="tn" style="background:linear-gradient(90deg,transparent 30%,${col(a)}22)"></div><div class="sw" style="background:linear-gradient(90deg,transparent,${col(a)}55,transparent)"></div>
+    const el = add(`<div class="row" style="top:${462 + i * 124}px"><div class="bg"></div><div class="tn" style="background:linear-gradient(90deg,transparent 30%,${col(a)}22)"></div><div class="sw" style="background:linear-gradient(90deg,transparent,${col(a)}55,transparent)"></div><div class="au2"></div>
       <span class="rk">#${i + 1}</span>${L.mark(k, 66)}<div class="nb"><div class="nm">${a.name}</div><div class="se">SEASON <span style="color:${sp >= 0 ? G : Rd}">${money0(sp)}</span></div></div>
       <div class="slot">${dots()}<span class="sd ${nc ? 'N' : sgn(a) > 0 ? 'L' : 'S'}" style="opacity:0">${a.side}</span><span class="cl" style="color:${col(a)};opacity:0"></span></div></div>`);
     return { a, el, i, y: 462 + i * 124, nc } });
@@ -123,7 +124,7 @@ function buildRace() {
   const b = x => +(x * BT).toFixed(3);
   S.r0 = .3; S.r1 = b(8) - .12; S.tB = b(9); S.tT = b(10); S.tR = b(10.6);
   const cb = [13, 15, 17, 20]; rev.forEach((k, j) => { const r = S.rows.find(x => x.a.k === k); r.tc = b(cb[j + 4 - rev.length] ?? cb[j]); r.last = j === rev.length - 1 });
-  S.tC0 = Math.min(...S.rows.map(r => r.tc)); S.tEnd = Math.max(...S.rows.map(r => r.tc)); S.tS = b(21); S.tG = b(22); DUR = b(27);
+  S.tC0 = Math.min(...S.rows.map(r => r.tc)); S.tEnd = Math.max(...S.rows.map(r => r.tc)); S.prevC = Math.max(...S.rows.filter(r => !r.last).map(r => r.tc), S.tC0); S.tS = b(21); S.tG = b(22); DUR = b(27);
   S.tl = add(`<div class="tb L" style="left:56px;top:968px">LONG <b>0</b></div>`); S.ts = add(`<div class="tb S" style="left:552px;top:968px">SHORT <b>0</b></div>`);
   const lone = D.lone && D.ai.find(x => x.k === D.lone);
   S.st = add(`<div class="st" style="top:1108px">${lone ? `${lone.name} stood alone <b>${D.loneRec.times} times</b> before. Right <b class="au">${D.loneRec.right}</b>.` : D.kind === 'unanimous' ? 'Nobody took the other side.' : 'A split room.'}</div>`);
@@ -162,7 +163,7 @@ function rRace(t) {
     const dt = t - r.tc, on = dt >= 0, sd = r.el.querySelector('.sd'), cl = r.el.querySelector('.cl');
     dotsR(r.el.querySelector('.dots'), t + r.i * .4, on ? 0 : ke); sd.style.opacity = on ? 1 : 0; sd.style.transform = `scale(${on ? .6 + .4 * L.spring(dt, 2.4, 9) : .6})`;
     cl.style.opacity = on ? L.n(dt, .04, .16) : 0; if (!r.nc) cl.textContent = callTxt(r.a, r.a.size * L.eo(L.n(dt, .04, .4)));
-    r.el.querySelector('.tn').style.opacity = on ? L.n(dt, 0, .3) : 0; const sw2 = r.el.querySelector('.sw'), sk = L.n(dt, 0, .55), hs = L.n(t, S.tG + .5 + r.i * .45, S.tG + 1.25 + r.i * .45);
+    r.el.querySelector('.tn').style.opacity = on ? L.n(dt, 0, .3) : 0; if (r.last) { const w0 = S.prevC + .35, wk = L.n(t, w0, r.tc); r.el.querySelector('.au2').style.opacity = on ? 0 : wk > 0 ? .25 + .75 * Math.pow(Math.sin(wk * Math.PI * 2), 2) : 0 } const sw2 = r.el.querySelector('.sw'), sk = L.n(dt, 0, .55), hs = L.n(t, S.tG + .5 + r.i * .45, S.tG + 1.25 + r.i * .45);
     const loop = hs > 0 && hs < 1; sw2.style.opacity = on && sk < 1 ? 1 - sk * sk : loop ? .55 * Math.sin(hs * Math.PI) : 0; sw2.style.transform = `translateX(${L.lerp(-340, 968, loop ? L.eio(hs) : L.eo(sk))}px)`;
     if (on && !r.nc) { if (sgn(r.a) > 0) { nl++; bl = Math.max(bl, 1 - L.n(dt, 0, .4)) } else { ns++; bs = Math.max(bs, 1 - L.n(dt, 0, .4)) } } });
   const kt = e(S.tl, S.tC0 - .35), kt2 = e(S.ts, S.tC0 - .27); S.tl.lastElementChild.textContent = nl; S.ts.lastElementChild.textContent = ns;
