@@ -12,7 +12,11 @@ const rows = ctx.SHEET.filter(r => +g(r, 'ROUND')), row = rows.find(r => +g(r, '
 const side = (r, k) => ({ UP: 'LONG', DOWN: 'SHORT' })[g(r, k + ' DIR').toUpperCase()] || 'NO CALL';
 const season = {}; AIS.forEach(([k]) => season[k] = 0);
 for (const r of rows) { const m = parseFloat(g(r, 'ACTUAL MOVE (%)')); if (!isFinite(m) || +g(r, 'ROUND') >= n) continue; AIS.forEach(([k]) => { const s = side(r, k); season[k] += Math.round((s === 'LONG' ? 1 : s === 'SHORT' ? -1 : 0) * m * 1000) }) }
-const ai = AIS.map(([k, name]) => { const s = side(row, k); return { k, name, side: s, size: s === 'NO CALL' ? null : Math.abs(parseFloat(g(row, k + ' MAG (%)').replace('−', '-'))) } });
+// SAMPLE="GPT:LONG:6,KIMI:LONG:4,CLAUDE:LONG:3.5,GROK:SHORT:3" stands in for calls that are not in the sheet yet (owner, 2026-11-17, for
+// mock-ups of the NVIDIA video only). The file is marked sample:true and every page prints SAMPLE CALLS on the frame while it is.
+const SAMPLE = process.env.SAMPLE ? Object.fromEntries(process.env.SAMPLE.split(',').map(x => { const [k, s, z] = x.split(':'); return [k, [s, +z]] })) : null;
+const ai = AIS.map(([k, name]) => { if (SAMPLE) return { k, name, side: SAMPLE[k] ? SAMPLE[k][0] : 'NO CALL', size: SAMPLE[k] ? SAMPLE[k][1] : null };
+  const s = side(row, k); return { k, name, side: s, size: s === 'NO CALL' ? null : Math.abs(parseFloat(g(row, k + ' MAG (%)').replace('−', '-'))) } });
 const callers = ai.filter(a => a.side !== 'NO CALL'); if (!callers.length) throw new Error('round ' + n + ' has no calls yet');
 const longs = callers.filter(a => a.side === 'LONG').length, shorts = callers.length - longs, nC = callers.length;
 const split = longs === nC ? `ALL ${nC} LONG` : shorts === nC ? `ALL ${nC} SHORT` : `${longs} LONG vs ${shorts} SHORT`;
@@ -32,7 +36,10 @@ const res = g(row, 'RESOLUTION DATE/TIME'); let close = null, resDay = null;
 if (/^\d+\/\d+\/\d+/.test(res)) { const [mm, dd, yy] = res.split('/').map(Number); resDay = new Date(Date.UTC(2000 + yy, mm - 1, dd)); close = `${DAYS[resDay.getUTCDay()]} ${hr(closeH)} ${zone}` }
 const html = fs.readFileSync(EZ + '/v53-terminal.html', 'utf8');
 const rep = (() => { const m = html.match(new RegExp('[{,]"?' + t.replace('.', '\\.') + '"?:\\{t:"([^"]+)"')); return m ? Date.parse(m[1]) : null })();
-let report = null; if (rep) { const loc = new Date(rep + utcOff * 3600e3); report = `${DAYS[loc.getUTCDay()]} ${hr(loc.getUTCHours() + loc.getUTCMinutes() / 60)} ${zone}` }
+let report = null; if (rep) { const loc = new Date(rep + utcOff * 3600e3); report = `${DAYS[loc.getUTCDay()]} ${hr(loc.getUTCHours() + loc.getUTCMinutes() / 60)} ${zone}`;
+  // no resolution date in the sheet yet: the next close of its own exchange after the report (the site's rule)
+  if (!resDay) { let d = new Date(Date.UTC(loc.getUTCFullYear(), loc.getUTCMonth(), loc.getUTCDate())); if (loc.getUTCHours() + loc.getUTCMinutes() / 60 >= closeH) d = new Date(d.getTime() + 864e5);
+    while ([0, 6].includes(d.getUTCDay())) d = new Date(d.getTime() + 864e5); resDay = d; close = `${DAYS[d.getUTCDay()]} ${hr(closeH)} ${zone}` } }
 const hl = (() => { const m = html.match(/var HL=(\{[^;]*\});/); return m ? JSON.parse(m[1]) : {} })()[t];
 (async () => {
   let run = null, note = 'no Hyperliquid market: no run-in chart';
@@ -45,7 +52,11 @@ const hl = (() => { const m = html.match(/var HL=(\{[^;]*\});/); return m ? JSON
     if (b.length > 40) { const p0 = b[0][1]; run = { pts: b.map(x => [+((x[0] - start) / 3600e3).toFixed(2), +((x[1] / p0 - 1) * 100).toFixed(3)]), hours: (end - start) / 3600e3, last: b.at(-1)[1], move: +((b.at(-1)[1] / p0 - 1) * 100).toFixed(2), from: `${DAYS[d.getUTCDay()]} ${MON[d.getUTCMonth()]} ${d.getUTCDate()}` };
       note = `Hyperliquid ${coin} 1h, ${b.length} closes over the 5 sessions into the report, ${run.move}%` } else note = `Hyperliquid ${coin}: too few candles (${b.length})` }
   const order = AIS.map(x => x[0]).sort((a, b) => season[b] - season[a]);
-  const D = { n, ticker: t, co: ctx.TICKERS[t] || t, tz, zone, report, close, ai, season, order, split, longs, shorts, kind, lone, loneRec, run, runNote: note };
+  const D = { n, ticker: t, co: ctx.TICKERS[t] || t, tz, zone, report, close, ai, season, order, split, longs, shorts, kind, lone, loneRec, run, runNote: note, sample: !!SAMPLE };
+  // the season's flat P&L after every graded round before this one (for the season race), and the rounds still open before this one
+  const gr = rows.filter(r => +g(r, 'ROUND') < n && isFinite(parseFloat(g(r, 'ACTUAL MOVE (%)'))) && parseFloat(g(r, 'ACTUAL MOVE (%)')) !== 0).sort((a, b) => +g(a, 'ROUND') - +g(b, 'ROUND'));
+  D.race = { rounds: gr.length, s: {} }; AIS.forEach(([k]) => { let v = 0; D.race.s[k] = [0]; gr.forEach(r => { const s = side(r, k), m = parseFloat(g(r, 'ACTUAL MOVE (%)')); v += Math.round((s === 'LONG' ? 1 : s === 'SHORT' ? -1 : 0) * m * 1000); D.race.s[k].push(v) }) });
+  D.last = n === Math.max(...rows.map(r => +g(r, 'ROUND')));
   const Lg = ctx.CO_LOGOS[t]; if (Lg) { fs.copyFileSync(EZ + '/media/' + (Lg.f || Lg), path.join(OUT, 'logo-' + n + '.png')); D.logo = 'data/logo-' + n + '.png' }
   fs.writeFileSync(path.join(OUT, 'c' + n + '.json'), JSON.stringify(D));
   console.log(`R${n} ${D.co} · ${split} · ${kind}${lone ? ' (' + lone + ', alone before ' + loneRec.times + ' times, right ' + loneRec.right + ')' : ''} · report ${report} · graded ${close}\n  ${note}`);

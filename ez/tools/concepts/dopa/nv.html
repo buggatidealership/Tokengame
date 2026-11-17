@@ -1,0 +1,230 @@
+<!doctype html><meta charset="utf-8"><title>Finale prediction</title>
+<!-- The prediction video for the season's last round (owner, 2026-11-17: "it's NVIDIA earnings. I definitely want to do a prediction
+  video for that one... full freedom... Hedra or not... good cinematics, motion, visual effects, clean execution, no dead noise, simplicity").
+  nv.html?r=<round>&v=race|chip reads data/c<round>.json (prep-calls.js: the sheet only; SAMPLE=... for mock-ups, then SAMPLE CALLS is
+  printed on every frame).
+  race  14.2 s  the whole season as one P&L race (every graded round, $100K flat), which folds into the corner; then the four calls
+                land from 4th place to the leader, the LONG and SHORT counts tick, graded at the close
+  chip  10.4 s  the site's painted NVIDIA chip (media/bet-chip-h2.jpg; hedra/chip-a frames when present: the same painting with living
+                light, camera locked); its four dies are the four AIs, each lights green or red with its side, the calls under it
+  No result, no "locked N minutes before": the sheet has no posting time. window.R(t), READY, CUES, MUSIC as the other pages. -->
+<style id="base"></style>
+<style>
+#cam{position:absolute;inset:0;transform-origin:50% 46%}
+#smp{position:absolute;right:56px;top:66px;font:600 22px 'Geist Mono';letter-spacing:.14em;color:#e8576b;padding:7px 12px 6px;border-radius:8px;box-shadow:inset 0 0 0 2px rgba(232,87,107,.6);z-index:45}
+.title{position:absolute;left:56px;top:0;display:flex;align-items:center;gap:26px;transform-origin:0 50%;white-space:nowrap}
+.title img{width:120px;height:120px;border-radius:26px;background:#f2ede6;padding:14px;object-fit:contain}
+.title .co{font:900 128px/1 Inter;letter-spacing:-.045em}
+.sub{position:absolute;left:56px;font:600 28px 'Geist Mono';letter-spacing:.1em;color:#8e8680;white-space:nowrap}
+.sub b{color:#fdbc2a;font-weight:600}
+/* race */
+#hdA{position:absolute;left:56px;top:150px}
+#hdA .h1{font:900 128px/1 Inter;letter-spacing:-.045em}
+#hdA .h2{font:600 28px 'Geist Mono';letter-spacing:.1em;color:#8e8680;margin-top:16px}
+#ctr{position:absolute;right:56px;top:158px;text-align:right}
+#ctr .a{font:600 24px 'Geist Mono';letter-spacing:.16em;color:#8e8680}
+#ctr .b{font:600 104px/1 'Geist Mono';letter-spacing:-.04em;font-variant-numeric:tabular-nums;margin-top:6px}
+#ch{position:absolute;left:0;top:0;width:1080px;height:1350px;overflow:visible}
+.gl{position:absolute;left:66px;font:600 24px 'Geist Mono';letter-spacing:.02em;color:#5f5853;transform:translateY(-34px)}
+.hd{position:absolute;left:0;top:0;display:flex;align-items:center;gap:12px;white-space:nowrap;transform-origin:0 50%}
+.hd .v{font:600 30px 'Geist Mono';letter-spacing:-.02em;font-variant-numeric:tabular-nums;padding:5px 9px 4px;border-radius:9px;background:rgba(14,12,11,.78)}
+#ml{position:absolute;font:600 24px 'Geist Mono';letter-spacing:.1em;color:#8e8680;white-space:nowrap;text-align:right}
+.colh2{position:absolute;font:600 24px 'Geist Mono';letter-spacing:.16em;color:#5f5853}
+.row{position:absolute;left:56px;top:0;width:968px;height:108px;display:flex;align-items:center;gap:20px;border-radius:20px;padding:0 26px 0 20px;overflow:hidden}
+.row .bg{position:absolute;inset:0;border-radius:20px;background:linear-gradient(90deg,rgba(29,25,23,.9),rgba(22,19,18,.6));z-index:-3}
+.row .tn{position:absolute;inset:0;z-index:-2;opacity:0}
+.row .sw{position:absolute;top:0;bottom:0;width:340px;left:0;z-index:-1;opacity:0}
+.row .rk{font:600 26px 'Geist Mono';color:#5f5853;width:48px}
+.row .nb{display:flex;flex-direction:column;gap:7px}
+.row .nm{font:800 44px/1 Inter;letter-spacing:-.02em}
+.row .se{font:600 24px/1 'Geist Mono';letter-spacing:.02em;color:#8e8680}
+.row .slot{margin-left:auto;display:flex;align-items:center;gap:26px;position:relative;height:108px}
+.row .cl{font:600 56px 'Geist Mono';letter-spacing:-.03em;font-variant-numeric:tabular-nums;width:186px;text-align:right}
+.sd{font:800 28px Inter;letter-spacing:.08em;padding:10px 0 9px;border-radius:11px;width:136px;text-align:center;white-space:nowrap;transform-origin:50% 50%}
+.sd.L{background:rgba(85,214,162,.16);color:#55d6a2;box-shadow:inset 0 0 0 2px rgba(85,214,162,.5)}
+.sd.S{background:rgba(232,87,107,.14);color:#e8576b;box-shadow:inset 0 0 0 2px rgba(232,87,107,.45)}
+.dots{position:absolute;right:86px;top:50%;display:flex;gap:11px;transform:translateY(-50%)}
+.dots i{width:13px;height:13px;border-radius:50%;background:#8e8680;display:block}
+.tb{position:absolute;width:472px;height:112px;border-radius:22px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font:900 64px Inter;letter-spacing:-.03em}
+.tb b{font:600 92px 'Geist Mono';letter-spacing:-.04em;display:inline-block;transform-origin:100% 50%}
+.tb.L{color:#55d6a2;background:rgba(85,214,162,.10);box-shadow:inset 0 0 0 3px rgba(85,214,162,.45)}
+.tb.S{color:#e8576b;background:rgba(232,87,107,.09);box-shadow:inset 0 0 0 3px rgba(232,87,107,.4)}
+.st{position:absolute;left:0;right:0;text-align:center;font:700 32px/1 Inter;letter-spacing:-.015em;white-space:nowrap}.st b{font-weight:800}
+.gp{position:absolute;left:0;right:0;display:flex;justify-content:center}
+.gp .p{font:600 32px 'Geist Mono';letter-spacing:.08em;color:#fdbc2a;padding:17px 28px 15px;border-radius:16px;background:rgba(253,188,42,.09);box-shadow:inset 0 0 0 2px rgba(253,188,42,.5);white-space:nowrap;position:relative;overflow:hidden}
+.gp .p i{position:absolute;top:0;bottom:0;width:120px;left:0;background:linear-gradient(90deg,transparent,rgba(253,188,42,.35),transparent)}
+/* chip */
+#pl{position:absolute;left:0;top:0;width:2048px;height:1152px;transform-origin:0 0}
+#pl canvas,#pl .lt{position:absolute;left:0;top:0;width:2048px;height:1152px}
+#pl .lt{mix-blend-mode:screen;background:url(chip.jpg) 0 0/2048px 1152px}
+#msk{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#0e0c0b 0,#0e0c0b 232px,rgba(14,12,11,0) 400px,rgba(14,12,11,0) 880px,#0e0c0b 980px),linear-gradient(90deg,#0e0c0b 0,rgba(14,12,11,0) 70px,rgba(14,12,11,0) 1010px,#0e0c0b 1080px)}
+.die{position:absolute;left:0;top:0;width:200px;height:260px;transform-origin:0 0}
+.die .gw{position:absolute;inset:0;border-radius:14px;opacity:0}
+.die .fl{position:absolute;inset:0;border-radius:14px;background:#f2ede6;opacity:0}
+.die .mkw{position:absolute;left:50%;top:30px;transform:translateX(-50%)}
+.die .w{position:absolute;left:0;right:0;top:158px;text-align:center;font:900 50px/1 Inter;letter-spacing:.02em;transform-origin:50% 50%;opacity:0}
+.die .gz{position:absolute;inset:0;border-radius:14px;background:linear-gradient(118deg,rgba(242,237,230,.16) 0,rgba(242,237,230,.03) 38%,rgba(242,237,230,0) 60%)}
+.sp{position:absolute;left:0;top:0;width:200px;height:260px;transform-origin:0 0;mix-blend-mode:screen;opacity:0}
+.sp i{position:absolute;inset:-120px -110px;border-radius:50%;display:block}
+.cell{position:absolute;top:0;width:242px;height:92px;display:flex;align-items:center;gap:14px;padding-left:6px}
+.cell .nm{font:800 34px/1 Inter;letter-spacing:-.02em}
+.cell .cl{font:600 44px/1 'Geist Mono';letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:8px;height:44px;position:relative}
+.cell .dots{right:auto;left:2px}
+</style>
+<div id="cam"></div><div id="vig"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script>
+<script>
+const q = new URLSearchParams(location.search), N = +q.get('r') || 112, V = q.get('v') || 'race';
+const G = '#55d6a2', Rd = '#e8576b', Au = '#fdbc2a';
+const cam = L.$('#cam'), add = h => { cam.insertAdjacentHTML('beforeend', h); return cam.lastElementChild };
+let D, DUR = 12, S = {}, C = [], grain;
+const sgn = a => a.side === 'LONG' ? 1 : -1, col = a => sgn(a) > 0 ? G : Rd;
+const callTxt = (a, v = a.size) => (sgn(a) > 0 ? '+' : '−') + (Math.round(v * 10) / 10) + '%';
+const money0 = v => (v < 0 ? '−' : '+') + '$' + Math.abs(Math.round(v)).toLocaleString('en-US');
+const e = (el, t0, d = .35, dy = 26) => { const k = L.eo(L.n(S.t, t0, t0 + d)); el.style.opacity = k; el.style.transform = `translateY(${(1 - k) * dy}px)`; return k };
+const dots = () => `<span class="dots"><i></i><i></i><i></i></span>`;
+const dotsR = (el, t, on) => { el.style.opacity = on; [...el.children].forEach((d, i) => { const w = .5 + .5 * Math.sin(t * 7 - i * .9); d.style.opacity = .3 + .7 * w; d.style.transform = `translateY(${-5 * w}px)` }) };
+const BT = 60 / 118.4;                     // one beat of the bed (i4-house: 118.4 BPM, first beat at 0.042 s, measured); the hits sit on beats
+function common() {
+  add(`<div class="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>SEASON 1</b></div>`);
+  if (D.sample) add(`<div id="smp">SAMPLE CALLS</div>`);
+  add(`<div class="fine">Simulated $100K per trade · not advice</div>`);
+}
+const fin = () => (D.last ? '<b>SEASON 1 FINALE</b> · ' : '') + 'EARNINGS ' + (D.report || '');
+
+/* ───────── race ───────── */
+function buildRace() {
+  const Rr = D.race, n = Rr.rounds, ord = D.order, rev = [...ord].reverse();
+  S.n = n; S.ahead = Math.max(1, D.n - n);
+  let lo = 0, hi = 0; ord.forEach(k => Rr.s[k].forEach(v => { lo = Math.min(lo, v); hi = Math.max(hi, v) })); const pad = (hi - lo) * .07; S.lo = lo - pad; S.hi = hi + pad;
+  S.hdA = add(`<div id="hdA"><div class="h1">SEASON 1</div><div class="h2">4 AIs · $100K A TRADE</div></div>`);
+  S.ctr = add(`<div id="ctr"><div class="a">ROUND</div><div class="b">0</div></div>`);
+  S.ch = add(`<div id="ch"><svg width="1080" height="1350" style="position:absolute;left:0;top:0;overflow:visible"><defs><linearGradient id="sg" gradientUnits="userSpaceOnUse" x1="0" x2="0"><stop offset="0" stop-color="${G}"/><stop id="s1" stop-color="${G}"/><stop id="s2" stop-color="${Rd}"/><stop offset="1" stop-color="${Rd}"/></linearGradient>
+    <filter id="gf" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter></defs>
+    <g id="grid"></g><line id="z" stroke="#8e8680" stroke-width="2" stroke-dasharray="3 9" stroke-linecap="round"/>
+    <g id="glow" filter="url(#gf)" opacity=".45"></g><g id="lines"></g><rect id="wall" fill="${Au}" rx="2"/></svg></div>`);
+  const step = (S.hi - S.lo) / 5 > 60000 ? 100000 : 50000; S.grid = [];
+  for (let v = Math.ceil(S.lo / step) * step; v <= S.hi; v += step) { const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line'); ln.setAttribute('stroke', 'rgba(242,237,230,.07)'); ln.setAttribute('stroke-width', 2); L.$('#grid').appendChild(ln);
+    const lb = v === 0 ? null : (S.ch.insertAdjacentHTML('beforeend', `<div class="gl">${v < 0 ? '−' : '+'}$${Math.abs(v) / 1000}K</div>`), S.ch.lastElementChild); S.grid.push({ v, ln, lb }) }
+  S.zl = (S.ch.insertAdjacentHTML('beforeend', `<div class="gl">$0</div>`), S.ch.lastElementChild);
+  S.ln = ord.map(k => { const mk = t => { const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('fill', 'none'); p.setAttribute('stroke', 'url(#sg)'); p.setAttribute('stroke-linecap', 'round'); p.setAttribute('stroke-linejoin', 'round'); L.$(t).appendChild(p); return p };
+    const g = mk('#glow'), p = mk('#lines'); S.ch.insertAdjacentHTML('beforeend', `<div class="hd"><span class="m">${L.mark(k, 44)}</span><span class="v mono"></span></div>`); return { k, g, p, hd: S.ch.lastElementChild } });
+  S.ml = add(`<div id="ml">${n} ROUNDS SO FAR</div>`);
+  S.title = add(`<div class="title" style="top:150px">${D.logo ? `<img src="${D.logo}" style="visibility:hidden">` : ''}<div class="co">${D.co}</div></div>`);
+  S.lg = D.logo ? add(`<div class="title" style="left:0;top:0;transform-origin:0 0"><img src="${D.logo}"></div>`) : null;
+  S.sub = add(`<div class="sub" style="top:306px">${fin()}</div>`);
+  S.c1 = add(`<div class="colh2" style="left:707px;top:422px;width:136px;text-align:center">SIDE</div>`); S.c2 = add(`<div class="colh2" style="left:869px;top:422px;width:129px;text-align:right">CALLS</div>`);
+  S.rows = ord.map((k, i) => { const a = D.ai.find(x => x.k === k), sp = D.season[k], nc = a.side === 'NO CALL';
+    const el = add(`<div class="row" style="top:${462 + i * 124}px"><div class="bg"></div><div class="tn" style="background:linear-gradient(90deg,transparent 30%,${col(a)}22)"></div><div class="sw" style="background:linear-gradient(90deg,transparent,${col(a)}55,transparent)"></div>
+      <span class="rk">#${i + 1}</span>${L.mark(k, 66)}<div class="nb"><div class="nm">${a.name}</div><div class="se">SEASON <span style="color:${sp >= 0 ? G : Rd}">${money0(sp)}</span></div></div>
+      <div class="slot">${dots()}<span class="sd ${nc ? 'N' : sgn(a) > 0 ? 'L' : 'S'}" style="opacity:0">${a.side}</span><span class="cl" style="color:${col(a)};opacity:0"></span></div></div>`);
+    return { a, el, i, y: 462 + i * 124, nc } });
+  // beats: the race, the fold, the title, then a call every two beats from last place up; the leader waits a beat longer
+  const b = x => +(x * BT).toFixed(3);
+  S.r0 = .3; S.r1 = b(8) - .12; S.tB = b(9); S.tT = b(10); S.tR = b(10.6);
+  const cb = [13, 15, 17, 20]; rev.forEach((k, j) => { const r = S.rows.find(x => x.a.k === k); r.tc = b(cb[j + 4 - rev.length] ?? cb[j]); r.last = j === rev.length - 1 });
+  S.tC0 = Math.min(...S.rows.map(r => r.tc)); S.tEnd = Math.max(...S.rows.map(r => r.tc)); S.tS = b(22); S.tG = b(23); DUR = b(28);
+  S.tl = add(`<div class="tb L" style="left:56px;top:968px">LONG <b>0</b></div>`); S.ts = add(`<div class="tb S" style="left:552px;top:968px">SHORT <b>0</b></div>`);
+  const lone = D.lone && D.ai.find(x => x.k === D.lone);
+  S.st = add(`<div class="st" style="top:1108px">${lone ? `${lone.name} stood alone <b>${D.loneRec.times} times</b> before. Right <b class="au">${D.loneRec.right}</b>.` : D.kind === 'unanimous' ? 'Nobody took the other side.' : 'A split room.'}</div>`);
+  S.gp = add(`<div class="gp" style="top:1166px"><div class="p"><i></i>$100K EACH · GRADED ${D.close || 'AT THE CLOSE'}</div></div>`);
+  C.push([.05, 'r11-swell', .09]); for (let r = 10; r <= n; r += 10) C.push([+(S.r0 + (S.r1 - S.r0) * invE(r / n)).toFixed(3), 'sfx-tick', .035]);
+  C.push([S.tB, 'sfx-whoosh', .09], [S.tT, 'r11-thump', .15]); S.rows.forEach(r => C.push([r.tc, r.last ? 'r11-knock' : 'r11-card', r.last ? .2 : .13])); C.push([S.tS, 'r11-ping', .07], [S.tG, 'sfx-chime', .16]);
+  window.MUSIC = { f: 'i4-house', at: +(q.get('at') || .042) };
+}
+const raceE = x => L.eio(x) * .5 + x * .5, invE = y => { let a = 0, b = 1; for (let i = 0; i < 30; i++) { const m = (a + b) / 2; raceE(m) < y ? a = m : b = m } return (a + b) / 2 };
+function rRace(t) {
+  const n = S.n, p = raceE(L.n(t, S.r0, S.r1)), fi = p * n, k = L.eio(L.n(t, S.tB, S.tB + .7));
+  const bx = { x: L.lerp(56, 742, k), y: L.lerp(366, 146, k), w: L.lerp(740, 268, k), h: L.lerp(850, 196, k) };
+  const X = r => bx.x + bx.w * r / (n + S.ahead), Y = v => bx.y + bx.h * (S.hi - v) / (S.hi - S.lo), y0 = Y(0);
+  const sg = L.$('#sg'); sg.setAttribute('y1', bx.y); sg.setAttribute('y2', bx.y + bx.h); const off = (y0 - bx.y) / bx.h; L.$('#s1').setAttribute('offset', off); L.$('#s2').setAttribute('offset', off);
+  const z = L.$('#z'); z.setAttribute('x1', bx.x); z.setAttribute('x2', bx.x + bx.w); z.setAttribute('y1', y0); z.setAttribute('y2', y0);
+  const ga = 1 - L.n(k, 0, .3); S.grid.forEach(g => { const y = Y(g.v); g.ln.setAttribute('x1', bx.x); g.ln.setAttribute('x2', bx.x + bx.w); g.ln.setAttribute('y1', y); g.ln.setAttribute('y2', y); g.ln.style.opacity = g.v === 0 ? 0 : ga; if (g.lb) { g.lb.style.top = y + 'px'; g.lb.style.opacity = ga } });
+  S.zl.style.top = y0 + 'px'; S.zl.style.opacity = ga;
+  const i0 = Math.floor(fi), fr = fi - i0, sw = L.lerp(5, 3, k), hy = [];
+  S.ln.forEach((l, j) => { const s = D.race.s[l.k]; let d = ''; for (let i = 0; i <= i0; i++) d += (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(s[i]).toFixed(1);
+    const v = i0 >= n ? s[n] : L.lerp(s[i0], s[i0 + 1], fr), hx = X(fi), y = Y(v); if (i0 < n) d += 'L' + hx.toFixed(1) + ' ' + y.toFixed(1);
+    l.p.setAttribute('d', d); l.p.setAttribute('stroke-width', sw); l.g.setAttribute('d', d); l.g.setAttribute('stroke-width', sw * 2.4); hy[j] = { y, v, hx } });
+  // head labels: pushed apart smoothly where two heads come close
+  const gap = L.lerp(56, 0, k); hy.forEach((h, j) => { let o = 0; hy.forEach((g, m) => { if (m === j) return; const d = h.y - g.y; if (Math.abs(d) < gap) o += (gap - Math.abs(d)) / 2 * Math.tanh(d / 3 + (j - m) * .3) }); h.o = o });
+  S.ln.forEach((l, j) => { const h = hy[j], ms = L.lerp(1, .5, k), a0 = L.n(fi, .2, 2.5);
+    l.hd.style.transform = `translate(${h.hx - 22 * ms}px,${h.y + h.o - 22}px) scale(${ms})`; l.hd.style.opacity = a0; const v = l.hd.lastElementChild; v.textContent = money0(Math.round(h.v / 10) * 10); v.style.color = h.v >= 0 ? G : Rd; v.style.opacity = 1 - L.n(k, 0, .5) });
+  const wl = L.$('#wall'), wk = 1, pulse = .62 + .38 * (.5 + .5 * Math.sin(t * Math.PI * 2 / (BT * 2) - 1.2));
+  if (S.lg) { const z2 = L.lerp(64, 120 * S.ts0, k) / 120; S.lg.style.transform = `translate(${L.lerp(796 - 32, 56, k)}px,${L.lerp(366 - 82, 214 - 60 * S.ts0, k)}px) scale(${z2})` }
+  wl.setAttribute('x', bx.x + bx.w - 2); wl.setAttribute('width', 5); wl.setAttribute('y', bx.y + bx.h * (1 - wk) / 2); wl.setAttribute('height', bx.h * wk); wl.style.opacity = wk * pulse;
+  S.ml.style.left = '674px'; S.ml.style.width = '350px'; S.ml.style.top = '356px'; S.ml.style.opacity = L.n(t, S.tB + .6, S.tB + 1);
+  const oA = 1 - L.n(t, S.tB - .1, S.tB + .25); S.hdA.style.opacity = oA; S.hdA.style.transform = `translateY(${-30 * (1 - oA)}px)`; S.ctr.style.opacity = oA;
+  S.ctr.lastElementChild.textContent = Math.round(fi);
+  const tk = L.spring(t - S.tT, 1.6, 6) * L.n(t, S.tT, S.tT + .02); S.title.style.opacity = L.n(t, S.tT, S.tT + .12); S.title.style.transform = `translateY(${(1 - tk) * 60}px) scale(${S.ts0})`;
+  e(S.sub, S.tT + .22); [S.c1, S.c2].forEach(c => c.style.opacity = L.n(t, S.tR + .3, S.tR + .6));
+  let nl = 0, ns = 0, bl = 0, bs = 0;
+  S.rows.forEach(r => { const ke = L.eo(L.n(t, S.tR + r.i * .08, S.tR + r.i * .08 + .4)); r.el.style.opacity = ke; r.el.style.transform = `translateY(${(1 - ke) * 34}px)`;
+    const dt = t - r.tc, on = dt >= 0, sd = r.el.querySelector('.sd'), cl = r.el.querySelector('.cl');
+    dotsR(r.el.querySelector('.dots'), t + r.i * .4, on ? 0 : ke); sd.style.opacity = on ? 1 : 0; sd.style.transform = `scale(${on ? .6 + .4 * L.spring(dt, 2.4, 9) : .6})`;
+    cl.style.opacity = on ? L.n(dt, .04, .16) : 0; if (!r.nc) cl.textContent = callTxt(r.a, r.a.size * L.eo(L.n(dt, .04, .4)));
+    r.el.querySelector('.tn').style.opacity = on ? L.n(dt, 0, .3) : 0; const sw2 = r.el.querySelector('.sw'), sk = L.n(dt, 0, .55), hs = L.n(t, S.tG + .5 + r.i * .45, S.tG + 1.25 + r.i * .45);
+    const loop = hs > 0 && hs < 1; sw2.style.opacity = on && sk < 1 ? 1 - sk * sk : loop ? .55 * Math.sin(hs * Math.PI) : 0; sw2.style.transform = `translateX(${L.lerp(-340, 968, loop ? L.eio(hs) : L.eo(sk))}px)`;
+    if (on && !r.nc) { if (sgn(r.a) > 0) { nl++; bl = Math.max(bl, 1 - L.n(dt, 0, .4)) } else { ns++; bs = Math.max(bs, 1 - L.n(dt, 0, .4)) } } });
+  const kt = e(S.tl, S.tC0 - .35), kt2 = e(S.ts, S.tC0 - .27); S.tl.lastElementChild.textContent = nl; S.ts.lastElementChild.textContent = ns;
+  S.tl.lastElementChild.style.transform = `scale(${1 + .28 * bl * bl})`; S.ts.lastElementChild.style.transform = `scale(${1 + .28 * bs * bs})`;
+  S.tl.style.filter = `brightness(${nl ? 1 : .55})`; S.ts.style.filter = `brightness(${ns ? 1 : .55})`;
+  e(S.st, S.tS); const kg = e(S.gp, S.tG, .4, 20), sh = S.gp.querySelector('i'), sp2 = ((t - S.tG - .3) % 2.6) / 1.1; sh.style.opacity = kg && sp2 > 0 && sp2 < 1 ? 1 : 0; sh.style.transform = `translateX(${L.lerp(-140, 760, sp2)}px)`;
+  const push = 1 + .03 * (t / DUR); cam.style.transform = `scale(${push})`;
+}
+
+/* ───────── chip ───────── */
+const QUADS = [[[647.5, 491], [787.5, 469], [864, 610], [714, 636.5]], [[842.5, 460], [987.5, 439], [1070, 578.5], [920, 605]], [[1040, 427.5], [1179, 409], [1267.5, 549], [1121, 572.5]], [[1227.5, 399], [1360, 380], [1456, 512.5], [1316, 537.5]]];
+function H2M(w, h, Q, m = 0) { const P = [[-m, -m], [w + m, -m], [w + m, h + m], [-m, h + m]];   // rect (0,0)-(w,h) -> quad Q (TL,TR,BR,BL), as a CSS matrix3d
+  const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = Q, dx1 = x1 - x2, dx2 = x3 - x2, dx3 = x0 - x1 + x2 - x3, dy1 = y1 - y2, dy2 = y3 - y2, dy3 = y0 - y1 + y2 - y3;
+  const den = dx1 * dy2 - dx2 * dy1, g = (dx3 * dy2 - dx2 * dy3) / den, hh = (dx1 * dy3 - dx3 * dy1) / den, a = x1 - x0 + g * x1, b = x3 - x0 + hh * x3, d = y1 - y0 + g * y1, ee = y3 - y0 + hh * y3;
+  return `matrix3d(${a / w},${d / w},0,${g / w},${b / h},${ee / h},0,${hh / h},0,0,1,0,${x0},${y0},0,1)` }
+async function buildChip() {
+  const rev = [...D.order].reverse();                                    // dies left to right: last place to the leader
+  cam.insertAdjacentHTML('afterbegin', `<div id="pl"><canvas width="2048" height="1152"></canvas><div class="lt"></div></div><div id="msk"></div>`); S.pl = L.$('#pl'); S.cv = L.$('#pl canvas'); S.lt = L.$('#pl .lt');
+  const still = new Image(); still.src = 'chip.jpg'; await still.decode(); S.still = still; S.fr = null;
+  if (q.get('still') !== '1') try { const m = await fetch('hedra/chip-a/meta.json').then(r => r.ok ? r.json() : null); if (m) { S.fr = await Promise.all(Array.from({ length: m.n }, (_, i) => { const im = new Image(); im.src = `hedra/chip-a/${String(i).padStart(3, '0')}.jpg`; return im.decode().then(() => im) })); S.fps = m.fps; S.lt.style.display = 'none' } } catch (x) { S.fr = null }
+  S.title = add(`<div class="title" style="top:118px">${D.logo ? `<img src="${D.logo}">` : ''}<div class="co">${D.co}</div></div>`); S.sub = add(`<div class="sub" style="top:270px">${fin()}</div>`);
+  const b = x => +(x * BT).toFixed(3), cb = [5, 7, 9, 12];
+  S.dies = rev.map((k, j) => { const a = D.ai.find(x => x.k === k), c = col(a), nc = a.side === 'NO CALL';
+    S.pl.insertAdjacentHTML('beforeend', `<div class="sp" style="transform:${H2M(200, 260, QUADS[j])}"><i style="background:radial-gradient(closest-side,${c}cc,${c}44 45%,transparent 72%)"></i></div>
+      <div class="die" style="transform:${H2M(200, 260, QUADS[j])}"><div class="gw" style="background:radial-gradient(120% 100% at 50% 60%,${c}66,${c}1f 70%);box-shadow:inset 0 0 0 4px ${c}"></div>
+      <div class="mkw">${L.mark(k, 104, false)}</div><div class="w" style="color:${c}">${a.side}</div><div class="gz"></div><div class="fl"></div></div>`);
+    const die = S.pl.lastElementChild, sp = die.previousElementSibling;
+    const cell = add(`<div class="cell" style="left:${56 + j * 242}px;top:922px">${L.mark(k, 60)}<div><div class="nm">${a.name}</div><div class="cl">${dots()}<span style="color:${c};opacity:0"></span></div></div></div>`);
+    return { a, die, sp, cell, j, tc: b(cb[j + 4 - rev.length] ?? cb[j]), last: j === rev.length - 1, nc } });
+  S.tC0 = Math.min(...S.dies.map(d => d.tc)); S.tG = b(16); DUR = b(21);
+  S.tl = add(`<div class="tb L" style="left:56px;top:1030px">LONG <b>0</b></div>`); S.ts = add(`<div class="tb S" style="left:552px;top:1030px">SHORT <b>0</b></div>`);
+  const lone = D.lone && D.ai.find(x => x.k === D.lone); S.tS = b(14);
+  S.st = add(`<div class="st" style="top:1164px">${lone ? `${lone.name} stood alone <b>${D.loneRec.times} times</b> before. Right <b class="au">${D.loneRec.right}</b>.` : D.kind === 'unanimous' ? 'Nobody took the other side.' : 'A split room.'}</div>`);
+  S.gp = add(`<div class="gp" style="top:1212px"><div class="p"><i></i>$100K EACH · GRADED ${D.close || 'AT THE CLOSE'}</div></div>`);
+  L.$('.fine').style.bottom = '30px';
+  C.push([.05, 'r11-swell', .1]); S.dies.forEach(d => C.push([d.tc, d.last ? 'r11-knock' : 'r11-card', d.last ? .2 : .13])); C.push([S.tS, 'r11-ping', .07], [S.tG, 'sfx-chime', .16]);
+  window.MUSIC = { f: 'i4-house', at: +(q.get('at') || .042) };
+}
+function rChip(t) {
+  const x = S.cv.getContext('2d');
+  if (S.fr) { const nF = S.fr.length, per = 2 * (nF - 1), f = (t * S.fps) % per, g = f > nF - 1 ? per - f : f, i = Math.min(nF - 2, Math.floor(g)); x.globalAlpha = 1; x.drawImage(S.fr[i], 0, 0, 2048, 1152); x.globalAlpha = g - i; x.drawImage(S.fr[i + 1], 0, 0, 2048, 1152); x.globalAlpha = 1 }
+  else { if (!S.drawn) { x.drawImage(S.still, 0, 0, 2048, 1152); S.drawn = 1 } const ph = (t / 4.2) % 1; S.lt.style.opacity = .16 + .1 * Math.sin(t * 1.7); S.lt.style.webkitMaskImage = S.lt.style.maskImage = `linear-gradient(100deg,transparent ${ph * 160 - 60}%,#000 ${ph * 160 - 30}%,transparent ${ph * 160}%)` }
+  const s = .7 * (1 + .05 * L.eo(L.n(t, 0, DUR)) + .06 * (1 - L.eo5(L.n(t, 0, 1.6)))), cx = 1060, cy = 580;       // a slow push in on the chip's centre
+  S.pl.style.transform = `translate(${540 - cx * s}px,${622 - cy * s}px) scale(${s})`; S.pl.style.opacity = .55 + .45 * L.eo(L.n(t, 0, .9));
+  S.title.style.transform = `scale(${S.ts0 * (1 + .05 * (1 - L.eo5(L.n(t, 0, 1.2))))})`; S.sub.style.opacity = .5 + .5 * L.n(t, .2, .7);
+  let nl = 0, ns = 0, bl = 0, bs = 0;
+  S.dies.forEach(d => { const dt = t - d.tc, on = dt >= 0, br = .9 + .1 * Math.sin(t * 2.3 + d.j);
+    d.die.querySelector('.mkw').style.opacity = on ? 1 : .2 + .2 * L.n(t, .3, 1); d.die.querySelector('.gw').style.opacity = on ? L.n(dt, 0, .25) * br : 0; d.die.querySelector('.fl').style.opacity = on ? .85 * (1 - L.eo(L.n(dt, 0, .4))) : 0;
+    const w = d.die.querySelector('.w'); w.style.opacity = on ? 1 : 0; w.style.transform = `scale(${on ? .55 + .45 * L.spring(dt, 2.4, 9) : .55})`; d.sp.style.opacity = on ? (.5 + .5 * (1 - L.eo(L.n(dt, 0, .7)))) * .62 * br : 0;
+    const ce = e(d.cell, -.4 + d.j * .12), sp = d.cell.querySelector('.cl span:last-child'); dotsR(d.cell.querySelector('.dots'), t + d.j * .4, on ? 0 : ce); sp.style.opacity = on ? L.n(dt, .04, .16) : 0; if (!d.nc) sp.textContent = callTxt(d.a, d.a.size * L.eo(L.n(dt, .04, .4)));
+    if (on && !d.nc) { if (sgn(d.a) > 0) { nl++; bl = Math.max(bl, 1 - L.n(dt, 0, .4)) } else { ns++; bs = Math.max(bs, 1 - L.n(dt, 0, .4)) } } });
+  e(S.tl, S.tC0 - .35); e(S.ts, S.tC0 - .27); S.tl.lastElementChild.textContent = nl; S.ts.lastElementChild.textContent = ns;
+  S.tl.lastElementChild.style.transform = `scale(${1 + .28 * bl * bl})`; S.ts.lastElementChild.style.transform = `scale(${1 + .28 * bs * bs})`; S.tl.style.filter = `brightness(${nl ? 1 : .55})`; S.ts.style.filter = `brightness(${ns ? 1 : .55})`;
+  e(S.st, S.tS); const kg = e(S.gp, S.tG, .4, 20), sh = S.gp.querySelector('i'), sp2 = ((t - S.tG - .3) % 2.6) / 1.1; sh.style.opacity = kg && sp2 > 0 && sp2 < 1 ? 1 : 0; sh.style.transform = `translateX(${L.lerp(-140, 760, sp2)}px)`;
+}
+
+window.R = t => { S.t = t; (V === 'chip' ? rChip : rRace)(t); grain(t) };
+(async () => {
+  L.$('#base').textContent = L.css; [D, L.models] = await Promise.all([fetch(`data/c${N}.json`).then(r => r.json()), fetch('models.json').then(r => r.json())]);
+  common(); if (V === 'chip') await buildChip(); else buildRace();
+  await document.fonts.load('900 128px Inter'); await document.fonts.load('600 56px "Geist Mono"'); await document.fonts.load('800 40px Inter'); await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  S.ts0 = Math.min(1, (V === 'chip' ? 968 : 640) / S.title.offsetWidth);
+  grain = L.grain(L.$('#grain'), .06); window.CUES = C; window.DUR = DUR; R(0); window.READY = 1;
+})();
+</script>
