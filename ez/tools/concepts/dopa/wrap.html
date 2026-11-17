@@ -32,6 +32,7 @@
 .pan.W{left:56px;background:linear-gradient(160deg,rgba(85,214,162,.2),rgba(85,214,162,.07));box-shadow:inset 0 0 0 3px rgba(85,214,162,.5)}
 .pan.L{left:550px;background:linear-gradient(160deg,rgba(232,87,107,.18),rgba(232,87,107,.06));box-shadow:inset 0 0 0 3px rgba(232,87,107,.45)}
 .pan .t{font:600 26px 'Geist Mono';letter-spacing:.14em}
+.pan .sh{position:absolute;top:0;bottom:0;left:0;width:280px;background:linear-gradient(90deg,transparent,rgba(242,237,230,.2),transparent);opacity:0;transform:skewX(-12deg)}
 .pan .cx{display:flex;align-items:center;gap:12px;font:800 30px Inter;letter-spacing:-.01em;color:#f2ede6}.pan .cx img{width:44px;height:44px;border-radius:10px;background:#f2ede6;padding:5px;object-fit:contain}
 .pan .ms{display:flex;gap:12px;margin-top:4px}
 .pan .nm{font:800 40px/1.1 Inter;letter-spacing:-.02em}
@@ -98,7 +99,7 @@ function build() {
   S.bco = same ? add(`<div id="bco">${W.logo ? `<img src="${W.logo}">` : ''}<div class="co">${W.co}</div><div class="mv" style="color:${W.move < 0 ? Rd : G}">${pct(W.move)}</div></div>`) : null;
   const pan = (x, cls, ttl, c) => add(`<div class="pan ${cls}"><div class="t" style="color:${c}">${ttl}</div>${same ? '' : `<div class="cx">${x.logo ? `<img src="${x.logo}">` : ''}${x.co} <span class="mono" style="color:${x.move < 0 ? Rd : G}">${pct(x.move)}</span></div>`}
     <div class="ms">${x.ais.map(k => L.mark(k, x.ais.length > 2 ? 96 : 120)).join('')}</div><div class="nm">${x.ais.map(k => A(k).name).join(', ').replace(/, ([^,]*)$/, ' and $1')}</div><div class="sd" style="color:${x.side === 'LONG' ? G : Rd}">WENT ${x.side}</div>
-    <div class="am" style="color:${c}"></div><div class="ea" style="color:${c}">${x.ais.length > 1 ? 'EACH' : ''}</div></div>`);
+    <div class="am" style="color:${c}"></div><div class="ea" style="color:${c}">${x.ais.length > 1 ? 'EACH' : ''}</div><div class="sh"></div></div>`);
   S.pw = pan(W, 'W', 'BIGGEST WIN', G); S.pl = pan(Lo, 'L', 'BIGGEST LOSS', Rd);
   // 4 the standings
   S.sl = add(`<div class="lab" style="top:394px">${D.final ? 'FINAL STANDINGS' : 'STANDINGS AFTER ' + n + ' OF ' + D.total + ' ROUNDS'}</div>`);
@@ -141,7 +142,7 @@ function R(t) {
   // 3
   const o3 = 1 - L.n(t, T.stand - .45, T.stand - .1), sh3 = (1 - o3) * 40; S.bl.style.opacity = L.n(t, T.big - .1, T.big + .25) * o3;
   if (S.bco) { const kb = L.spring(t - T.big, 1.6, 6) * L.n(t, T.big, T.big + .02); S.bco.style.opacity = L.n(t, T.big, T.big + .12) * o3; S.bco.style.transform = `translateY(${(1 - kb) * 50 + sh3}px) scale(${S.kB})` }
-  [[S.pw, T.win, D.win], [S.pl, T.loss, D.loss]].forEach(([el, t0, x]) => { const dt = t - t0, kp = dt > 0 ? L.spring(dt, 2, 8) : 0; el.style.opacity = L.n(dt, 0, .12) * o3; el.style.transform = `translateY(${(1 - kp) * 60 + sh3}px) scale(${.92 + .08 * kp})`;
+  [[S.pw, T.win, D.win], [S.pl, T.loss, D.loss]].forEach(([el, t0, x], pi) => { { const hs = L.n(t, T.loss + .9 + pi * .85, T.loss + 1.75 + pi * .85), sh = el.querySelector('.sh'); sh.style.opacity = hs > 0 && hs < 1 ? Math.sin(hs * Math.PI) : 0; sh.style.transform = `translateX(${L.lerp(-300, 500, L.eio(hs))}px) skewX(-12deg)` } const dt = t - t0, kp = dt > 0 ? L.spring(dt, 2, 8) : 0; el.style.opacity = L.n(dt, 0, .12) * o3; el.style.transform = `translateY(${(1 - kp) * 60 + sh3}px) scale(${.92 + .08 * kp})`;
     const am = el.querySelector('.am'); am.textContent = money0(Math.round(x.p * L.eo(L.n(dt, .05, .6)) / 10) * 10); am.style.transform = `scale(${1 + .12 * Math.exp(-Math.max(0, dt - .6) * 7) * (dt > .6 ? 1 : 0)})` });
   // 4
   const o4 = 1 - L.n(t, T.s2 - .4, T.s2 - .05); S.sl.style.opacity = L.n(t, T.stand, T.stand + .3) * o4; [S.ch1, S.ch2, S.ch3].forEach(c => c.style.opacity = L.n(t, T.stand + .2, T.stand + .5) * o4);
