@@ -12,7 +12,7 @@ const day=isNaN(D)?'the next close':D.toLocaleDateString('en-US',{weekday:'short
 const calls=AIS.filter(([k])=>side(k));const L=calls.filter(([k])=>side(k)==='LONG').length,S=calls.length-L;
 const split=L===calls.length?`all ${L} long`:S===calls.length?`all ${S} short`:`${L} long vs ${S} short`;
 const tick=cash==='$'?co:`${co} (${cash})`;
-const pre=`Round ${n}: ${tick} earnings.\n\n`+AIS.map(([k,nm])=>`${nm}: ${side(k)||'no call'}`).join('\n')+`\n\n${split[0].toUpperCase()+split.slice(1)}. $100K each, graded at the close ${day}.`;
+const pre=`Round ${n}: ${tick} earnings.\n\n`+AIS.map(([k,nm])=>`${nm}: ${side(k)||'no call'}`).join('\n')+`\n\n${split[0].toUpperCase()+split.slice(1)}. $100K each, graded at ${isNaN(D)?'the next close':'the close '+day}.`;
 const base=path.join(OUT,`r${n}-${t.replace(/[^A-Z0-9]/g,'')}`);fs.writeFileSync(base+'-calls.txt',pre+'\n');console.log('--- calls post\n'+pre);
 const dp=path.join(__dirname,'data','r'+n+'.json');
 if(fs.existsSync(dp)){const R=JSON.parse(fs.readFileSync(dp));const $=v=>(v<0?'−':'+')+'$'+Math.abs(v).toLocaleString('en-US');
