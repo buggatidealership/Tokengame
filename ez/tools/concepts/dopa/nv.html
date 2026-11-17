@@ -180,7 +180,7 @@ function H2M(w, h, Q, m = 0) { const P = [[-m, -m], [w + m, -m], [w + m, h + m],
   return `matrix3d(${a / w},${d / w},0,${g / w},${b / h},${ee / h},0,${hh / h},0,0,1,0,${x0},${y0},0,1)` }
 async function buildChip() {
   const rev = [...D.order].reverse();                                    // dies left to right: last place to the leader
-  cam.insertAdjacentHTML('afterbegin', `<div id="pl"><canvas width="2048" height="1152"></canvas><div class="lt"></div></div><div id="msk"></div>`); S.pl = L.$('#pl'); S.cv = L.$('#pl canvas'); S.lt = L.$('#pl .lt');
+  cam.insertAdjacentHTML('afterbegin', `<div id="pl"><canvas width="1440" height="810"></canvas><div class="lt"></div></div><div id="msk"></div>`); S.pl = L.$('#pl'); S.cv = L.$('#pl canvas'); S.lt = L.$('#pl .lt');
   const still = new Image(); still.src = 'chip.jpg'; await still.decode(); S.still = still; S.fr = null;
   if (q.get('still') !== '1') try { const m = await fetch('hedra/chip-a/meta.json').then(r => r.ok ? r.json() : null); if (m) { S.fr = await Promise.all(Array.from({ length: m.n }, (_, i) => { const im = new Image(); im.src = `hedra/chip-a/${String(i).padStart(3, '0')}.jpg`; return im.decode().then(() => im) })); S.fps = m.fps; S.lt.style.display = 'none' } } catch (x) { S.fr = null }
   S.title = add(`<div class="title" style="top:118px">${D.logo ? `<img src="${D.logo}">` : ''}<div class="co">${D.co}</div></div>`); S.sub = add(`<div class="sub" style="top:270px">${fin()}</div>`);
@@ -203,8 +203,8 @@ async function buildChip() {
 }
 function rChip(t) {
   const x = S.cv.getContext('2d');
-  if (S.fr) { const nF = S.fr.length, per = 2 * (nF - 1), f = (t * S.fps) % per, g = f > nF - 1 ? per - f : f, i = Math.min(nF - 2, Math.floor(g)); x.globalAlpha = 1; x.drawImage(S.fr[i], 0, 0, 2048, 1152); x.globalAlpha = g - i; x.drawImage(S.fr[i + 1], 0, 0, 2048, 1152); x.globalAlpha = 1 }
-  else { if (!S.drawn) { x.drawImage(S.still, 0, 0, 2048, 1152); S.drawn = 1 } const ph = (t / 4.2) % 1; S.lt.style.opacity = .16 + .1 * Math.sin(t * 1.7); S.lt.style.webkitMaskImage = S.lt.style.maskImage = `linear-gradient(100deg,transparent ${ph * 160 - 60}%,#000 ${ph * 160 - 30}%,transparent ${ph * 160}%)` }
+  if (S.fr) { const nF = S.fr.length, per = 2 * (nF - 1), f = (t * S.fps) % per, g = f > nF - 1 ? per - f : f, i = Math.min(nF - 2, Math.floor(g)); x.globalAlpha = 1; x.drawImage(S.fr[i], 0, 0, 1440, 810); x.globalAlpha = g - i; x.drawImage(S.fr[i + 1], 0, 0, 1440, 810); x.globalAlpha = 1 }
+  else { if (!S.drawn) { x.drawImage(S.still, 0, 0, 1440, 810); S.drawn = 1 } const ph = (t / 4.2) % 1; S.lt.style.opacity = .16 + .1 * Math.sin(t * 1.7); S.lt.style.webkitMaskImage = S.lt.style.maskImage = `linear-gradient(100deg,transparent ${ph * 160 - 60}%,#000 ${ph * 160 - 30}%,transparent ${ph * 160}%)` }
   const s = .7 * (1 + .05 * L.eo(L.n(t, 0, DUR)) + .06 * (1 - L.eo5(L.n(t, 0, 1.6)))), cx = 1060, cy = 580;       // a slow push in on the chip's centre
   S.pl.style.transform = `translate(${540 - cx * s}px,${622 - cy * s}px) scale(${s})`; S.pl.style.opacity = .55 + .45 * L.eo(L.n(t, 0, .9));
   S.title.style.transform = `scale(${S.ts0 * (1 + .05 * (1 - L.eo5(L.n(t, 0, 1.2))))})`; S.sub.style.opacity = .5 + .5 * L.n(t, .2, .7);
