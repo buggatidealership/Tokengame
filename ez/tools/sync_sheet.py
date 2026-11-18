@@ -158,6 +158,7 @@ VOID_KEYS = {(t, day(d)): why for (t, d), why in VOID.items()}
 VOID_TICKERS = {t for (t, d) in VOID}
 OVERRIDE_KEYS = {(t, day(d)): n for (t, d), n in ROUND_OVERRIDES.items()}
 KEEP_KEYS = {(t, day(d)): c for (t, d), c in KEEP.items()}
+SEASON1_LAST = 112
 
 
 def main():
@@ -222,6 +223,12 @@ def main():
         if (tk, dd) in OVERRIDE_KEYS and str(OVERRIDE_KEYS[(tk, dd)]) != rn:
             print("OVERRIDE: %s (call date %s) is R%s in the sheet; the site uses R%s (owner). Drop the override once the sheet says R%s." % (tk, cd, rn, OVERRIDE_KEYS[(tk, dd)], OVERRIDE_KEYS[(tk, dd)]))
             rn = str(OVERRIDE_KEYS[(tk, dd)])
+        # Season 1 ended with NVIDIA, round 112 (owner, 2026-11-18: Alibaba, R113, is "Season 2, round 1"). Rows after it are
+        # Season 2's: they are held off the Season 1 record (ez-data.js) until the site has a Season 2 record to put them in.
+        if rn.isdigit() and int(rn) > SEASON1_LAST:
+            calls = sum(1 for k in ("GPT DIR", "KIMI DIR", "CLAUDE DIR", "GROK DIR") if g(k).strip())
+            print("HELD (Season 2): R%s %s, %d of 4 calls in, market %s. Not written to the Season 1 record." % (rn, tk.upper(), calls, g("ACTUAL MOVE (%)").strip() or "not in"))
+            continue
         if rn in seen:
             problems.append("round %s appears twice (%s and %s); give one of them another number" % (rn, seen[rn], tk.upper()))
         seen[rn] = tk.upper()
