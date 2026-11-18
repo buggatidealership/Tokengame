@@ -1,0 +1,174 @@
+<title>EZ Finale Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a screening room. One dark stage (the videos are made for black), sections in posting order, a row of 4:5 screens per section,
+   each with its measured facts under it and a verdict control. Single look by choice: the page shows video drafts in the brand's own night colours. */
+:root{
+  color-scheme:dark;
+  --bg:#0e0c0b; --panel:#161312; --raise:#1d1917; --line:#2a2522;
+  --fg:#f2ede6; --mute:#8e8680; --dim:#5f5853;
+  --gold:#fdbc2a; --green:#55d6a2; --red:#e8576b;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:44px}
+h1{font:800 clamp(28px,5vw,44px)/1.05 var(--sans);letter-spacing:-.03em;margin:0;text-wrap:balance}
+h2{font:800 22px/1.15 var(--sans);letter-spacing:-.02em;margin:0;text-wrap:balance}
+h3{font:600 17px/1.2 var(--sans);letter-spacing:-.01em;margin:0}
+p{margin:0}
+.lab{font:500 11px/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.lede{color:var(--mute);max-width:66ch}
+header{display:flex;flex-direction:column;gap:12px}
+section{display:flex;flex-direction:column;gap:18px}
+.sh{display:flex;flex-direction:column;gap:6px}
+
+/* tonight's order: a real sequence, so it is numbered */
+.order{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;counter-reset:o}
+.order li{counter-increment:o;display:flex;gap:12px;align-items:baseline;padding:12px 14px;background:var(--panel);border-radius:12px;min-width:0}
+.order li::before{content:counter(o);font:600 13px var(--mono);color:var(--gold)}
+.order b{font-weight:600}
+.order span{display:block;color:var(--mute);font-size:13px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px 18px;align-items:start}
+@media (min-width:860px){.grid.c3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid.c3 .screen{max-width:340px}}
+.card{display:flex;flex-direction:column;gap:12px;min-width:0}
+.screen{position:relative;aspect-ratio:4/5;width:100%;max-width:100%;background:#000;border-radius:14px;overflow:hidden;outline:1px solid var(--line)}
+.screen video{width:100%;height:100%;display:block;object-fit:cover;background:#000}
+.wait{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px;color:var(--mute);
+  background:repeating-linear-gradient(135deg,var(--panel) 0 14px,var(--bg) 14px 28px)}
+.wait b{font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--fg)}
+.wait span{font-size:13px;max-width:24ch}
+.top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font:600 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 7px;border-radius:5px;background:var(--raise);color:var(--mute)}
+.chip.ok{color:var(--bg);background:var(--green)} .chip.new{color:var(--bg);background:var(--gold)} .chip.old{color:var(--mute)} .chip.hold{color:var(--red)}
+.idea{color:var(--fg)}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font:400 12.5px/1.45 var(--mono);color:var(--mute)}
+dt{color:var(--dim)} dd{margin:0;color:var(--fg);font-variant-numeric:tabular-nums}
+dd.bad{color:var(--red)}
+.gap{font-size:13px;color:var(--mute)} .gap b{color:var(--red);font-weight:600}
+.fb{display:flex;flex-direction:column;gap:8px;padding-top:4px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{font:600 12px var(--sans);color:var(--mute);background:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.seg button:hover{color:var(--fg);border-color:var(--dim)}
+.seg button[aria-pressed="true"]{color:var(--bg);background:var(--fg);border-color:var(--fg)}
+.seg button[aria-pressed="true"][data-v="Post this"]{background:var(--green);border-color:var(--green)}
+.seg button[aria-pressed="true"][data-v="No"]{background:var(--red);border-color:var(--red)}
+textarea{font:400 13px/1.4 var(--sans);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:38px;resize:vertical;width:100%}
+textarea::placeholder{color:var(--dim)}
+button:focus-visible,textarea:focus-visible,video:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:0;padding:0;list-style:none}
+.rules li{padding:14px;background:var(--panel);border-radius:12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.rules q{quotes:none;color:var(--mute);font-size:13px} .rules b{font-weight:600}
+.qs{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;max-width:70ch}
+.send{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));align-self:center;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;background:var(--raise);border:1px solid var(--line);border-radius:999px;padding:8px 8px 8px 18px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.send span{font-size:13px;color:var(--mute)}
+.send button{font:600 13px var(--sans);color:var(--bg);background:var(--gold);border:0;border-radius:999px;padding:9px 16px;cursor:pointer}
+#out{position:absolute;left:-9999px}
+@media (prefers-reduced-motion:no-preference){.seg button,.send button{transition:background .15s,color .15s,border-color .15s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="lab">Earnings Zeason · Season 1 · 111 of 112 rounds graded</span>
+    <h1>Finale review</h1>
+    <p class="lede">Every video for the end of Season 1 and the first Season 2 mockups, in posting order. Drafts use 111 rounds; the final renders swap in NVIDIA's result tonight with no other change. Mark each one and leave a note, then copy your feedback and paste it to me.</p>
+  </header>
+
+  <section>
+    <div class="sh"><span class="lab">Tonight</span><h2>The four posts, in order</h2></div>
+    <ol class="order">
+      <li><div><b>Disney outcome</b><span>Re-rendering with the real price path</span></div></li>
+      <li><div><b>Home Depot outcome</b><span>Approved</span></div></li>
+      <li><div><b>NVIDIA outcome, finale cut</b><span>After the 4 pm New York close</span></div></li>
+      <li><div><b>Season 1 conclusion</b><span>Your pick from the takes below</span></div></li>
+    </ol>
+  </section>
+
+  <div id="sections"></div>
+
+  <section>
+    <div class="sh"><span class="lab">Your definition, made checkable</span><h2>What "polished" is measured as</h2>
+      <p class="lede">The round 3 cuts are built against these. Round 2 cuts were made before you said it, and fail the first one.</p></div>
+    <ul class="rules">
+      <li><b>Two data points a scene</b><q>"each screen is to show 2 data points max, and the 2 data points need to correlate"</q><span>At most two numbers or verdicts at full contrast, about the same subject. A table arrives one row a scene.</span></li>
+      <li><b>Not crowded, not empty</b><q>"not having too much dead space... not too crowded"</q><span>At most 12 words a scene. Content centred, 35 to 70% of the frame's height, no empty band over 30%.</span></li>
+      <li><b>Glass</b><q>"this glassy aspect with Apple"</q><span>One frosted sheet a scene over slow brand-colour light, bright only on its top edge. On take K, the NVIDIA finale beats and Season 2 mockup A.</span></li>
+      <li><b>Calm motion</b><q>"max animation... cleaner"</q><span>Nothing ever frozen, at most two things moving at once, every arrival under half a second.</span></li>
+    </ul>
+    <p class="gap">The cost: with two data points a scene, a big round can no longer show all four models' P&amp;L at once. Round 3 shows the move and the one model that stood out; all four P&amp;Ls appear once, in the final table.</p>
+  </section>
+
+  <section>
+    <div class="sh"><span class="lab">Still yours to decide</span><h2>Open questions</h2></div>
+    <ol class="qs">
+      <li>"The bears got paid. The bulls got rekt." is my line for the two shorts-heavy models winning and the two longs-heavy models losing. Keep "rekt", or soften it?</li>
+      <li>"Short everything: +$179,410. No AI beat that." is true today and undercuts the winner. Keep it as the line people argue with, or drop it? It disappears by itself if NVIDIA closes up more than about 3.5%.</li>
+      <li>Alibaba is held as Season 2, round 1. The site has no Season 2 record yet, so its calls have nowhere to show. Start Season 2 on the site when the calls come in, or post on X only until the launch video?</li>
+    </ol>
+  </section>
+
+  <div class="send"><span id="count">Nothing marked yet</span><button id="copy" type="button">Copy my feedback</button></div>
+  <textarea id="out" aria-hidden="true" tabindex="-1"></textarea>
+</div>
+
+<script>
+// One entry per video. v: file stem in v/ (mp4 + jpg); no v = not rendered yet (wait says why).
+const SECTIONS = [
+  { lab: 'Post 4 · the last Season 1 post', h: 'Season 1 conclusion', lede: 'Three takes with nothing in common. Each exists as round 2 (what you have seen) and is being rebuilt as round 3: ends on the winner then one small "Season 2 soon.", my wording instead of yours, Kimi relegated, and your polish rules.', items: [
+    { id: 'K round 3', name: 'K · The keynote, glass', chip: ['new', 'Round 3'], idea: 'By topic. One idea a scene on glass over slow light. The closest to an Apple teaser.', wait: ['Rebuilding', 'Glass sheets, two data points a scene, ends on "Grok wins Season 1."'] },
+    { id: 'L round 3', name: 'L · One line', chip: ['new', 'Round 3'], idea: 'By time. One camera rides the season\'s P&L race without a cut, then returns to the finish for the winner.', wait: ['Revising', 'Only the leader\'s number is bright during the ride; two big rounds, not three.'] },
+    { id: 'C round 3', name: 'C · The report cards', chip: ['new', 'Round 3'], idea: 'By character. Full-colour cards cut on the beat, last place to first, then a gold winner card.', wait: ['Revising', 'Each report card split into beats of two data points.'] },
+    { id: 'K round 2', v: 'k1', name: 'K · The keynote', chip: ['old', 'Round 2'], idea: 'Black stage, giant counting numbers, a recap grid, then a Season 2 card.',
+      facts: [['Length', '58.0 s'], ['Hook complete', '0.8 s'], ['Longest still', '0.67 s'], ['Cuts', '0'], ['Off-brand colour', '0.3%']], gap: 'Old wording and Season 2 ending. The recap grid shows about twelve numbers at once.' },
+    { id: 'L round 2', v: 'l1', name: 'L · One line', chip: ['old', 'Round 2'], idea: 'The race with three big-round cards, bears against bulls, accuracy, Season 2.',
+      facts: [['Length', '57.5 s'], ['Hook complete', '2.3 s'], ['Longest still', '0.43 s'], ['Cuts', '0'], ['Off-brand colour', '0.9%']], gap: 'Old wording and ending. The densest take: four live numbers during the ride, smallest type.' },
+    { id: 'C round 2', v: 'c1', name: 'C · The report cards', chip: ['old', 'Round 2'], idea: 'Four report cards with a verdict, P&L, hit rate and best and worst trade, then the lesson.',
+      facts: [['Length', '55.7 s'], ['Hook complete', '2.1 s'], ['Longest still', '0.00 s'], ['Cuts', '39, on the beat'], ['Off-brand colour', '0.7%']], gap: 'Old wording and ending. About eight numbers a card; one line holds 3.4 s against a 4.0 s reading target.', bad: [] },
+  ] },
+  { lab: 'Post 3 · tonight, after the close', h: 'NVIDIA outcome, finale cut', lede: 'Same structure as Home Depot\'s outcome video, titled as the Season 1 finale, a few seconds longer, ending on the final standings and the winner. It cannot be rendered until NVIDIA\'s move is in the sheet.', items: [
+    { id: 'NVIDIA finale test', name: 'Finale cut, tested on Home Depot', chip: ['new', 'In build'], idea: 'The added finale beats, shown on a graded round so you can judge them before tonight.', wait: ['In build', 'Test render on round 111 comes first; the NVIDIA render follows the close.'] },
+  ] },
+  { lab: 'Posts 1 and 2', h: 'Outcome videos', lede: 'Disney and Home Depot have no Hyperliquid market, so their charts now use the exchange\'s own 5-minute prices, pre-market included.', items: [
+    { id: 'Disney outcome', name: 'Disney · round 110', chip: ['hold', 'Re-rendering'], idea: 'Kimi and Grok short, GPT and Claude long. Closed at -1.48% after a +3% pre-market spike.', wait: ['Re-rendering', 'The first cut had an empty chart and was withdrawn.'] },
+    { id: 'Home Depot outcome', v: 'hd', name: 'Home Depot · round 111', chip: ['ok', 'Approved'], idea: 'All four short. Closed at -2.50%; each made $2,500.',
+      facts: [['Length', '15.5 s'], ['Checks', 'all pass'], ['Longest still', '1.20 s']] },
+  ] },
+  { lab: 'After Season 1 · first mockups', h: 'Season 2 launch', lede: 'Gemini and Qwen join, Kimi is out, five models. The new thing: every call comes with its reasoning. Two styles to react to; neither shows invented reasoning or model versions.', items: [
+    { id: 'Season 2 mockup A', name: 'A · Show your work', chip: ['new', 'In build'], idea: 'Calm glass. "Season 1 told you long or short. Season 2 tells you why."', wait: ['In build', 'One mark a scene on its own glass tile; the chip opens into blurred lines.'] },
+    { id: 'Season 2 mockup B', name: 'B · Official', chip: ['new', 'In build'], idea: 'Squad news in the form X knows from transfer announcements, on cream instead of black.', wait: ['In build', '"Official: Gemini joins." "Out: Kimi." "New rule: show your work."'] },
+  ] },
+];
+
+const KEY = 'ez-finale-review', esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let FB = {}; try { FB = JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(FB)) } catch (e) {} };
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+document.getElementById('sections').outerHTML = SECTIONS.map(s => `<section>
+  <div class="sh"><span class="lab">${esc(s.lab)}</span><h2>${esc(s.h)}</h2><p class="lede">${esc(s.lede)}</p></div>
+  <div class="grid${s.items.length === 6 ? ' c3' : ''}">${s.items.map(it => { const f = FB[it.id] || {}, sid = slug(it.id); return `<article class="card" data-id="${esc(it.id)}">
+    <div class="screen">${it.v ? `<video controls playsinline preload="none" poster="v/${it.v}.jpg" src="v/${it.v}.mp4" aria-label="${esc(it.name)}"></video>` : `<div class="wait"><b>${esc(it.wait[0])}</b><span>${esc(it.wait[1])}</span></div>`}</div>
+    <div class="top"><h3>${esc(it.name)}</h3><span class="chip ${it.chip[0]}">${esc(it.chip[1])}</span></div>
+    <p class="idea">${esc(it.idea)}</p>
+    ${it.facts ? `<dl>${it.facts.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
+    ${it.gap ? `<p class="gap"><b>Fails:</b> ${esc(it.gap)}</p>` : ''}
+    ${it.v ? `<div class="fb"><div class="seg" role="group" aria-label="Verdict for ${esc(it.name)}">${['Post this', 'Close, fix it', 'No'].map(v => `<button type="button" data-v="${v}" aria-pressed="${f.v === v}">${v}</button>`).join('')}</div>
+      <textarea id="note-${sid}" placeholder="What to change" aria-label="Note for ${esc(it.name)}">${esc(f.n || '')}</textarea></div>` : ''}
+  </article>` }).join('')}</div></section>`).join('');
+
+const count = () => { const n = Object.values(FB).filter(f => f.v || (f.n && f.n.trim())).length; document.getElementById('count').textContent = n ? `${n} marked` : 'Nothing marked yet' };
+document.addEventListener('click', e => { const b = e.target.closest('.seg button'); if (!b) return; const id = b.closest('.card').dataset.id; FB[id] = FB[id] || {};
+  FB[id].v = FB[id].v === b.dataset.v ? null : b.dataset.v; b.parentNode.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.v === FB[id].v)); save(); count() });
+document.addEventListener('input', e => { const t = e.target.closest('.card textarea'); if (!t) return; const id = t.closest('.card').dataset.id; FB[id] = FB[id] || {}; FB[id].n = t.value; save(); count() });
+// one video at a time
+document.addEventListener('play', e => { document.querySelectorAll('video').forEach(v => { if (v !== e.target) v.pause() }) }, true);
+document.getElementById('copy').addEventListener('click', async ev => { const lines = Object.entries(FB).filter(([, f]) => f.v || (f.n && f.n.trim())).map(([id, f]) => `${id}: ${f.v || 'no verdict'}${f.n && f.n.trim() ? ' · ' + f.n.trim() : ''}`);
+  const txt = lines.length ? 'Finale review feedback\n' + lines.join('\n') : 'Finale review feedback: nothing marked yet'; const b = ev.currentTarget;
+  try { await navigator.clipboard.writeText(txt); b.textContent = 'Copied. Paste it to Claude' } catch (e) { const o = document.getElementById('out'); o.value = txt; o.style.position = 'static'; o.removeAttribute('aria-hidden'); o.rows = Math.max(3, lines.length + 1); o.focus(); o.select(); b.textContent = 'Select all and copy' }
+  setTimeout(() => { b.textContent = 'Copy my feedback' }, 2600) });
+count();
+</script>
