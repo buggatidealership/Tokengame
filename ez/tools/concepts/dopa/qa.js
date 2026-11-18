@@ -18,13 +18,13 @@ const s0=await at(12.1,sv),s1=await at(15.3,sv);
 D.ai.forEach(a=>{ok(s0[a.k]===M(D.season0[a.k]),`season before ${a.name} ${s0[a.k]} = ${M(D.season0[a.k])}`);ok(s1[a.k]===M(D.season1[a.k]),`season after ${a.name} ${s1[a.k]} = ${M(D.season1[a.k])}`);ok(D.season0[a.k]+a.pnl===D.season1[a.k],`${a.name} before + round = after`)});
 const words=[];for(const t of [0,3,8,10.6,15.3])words.push(await at(t,'document.body.innerText'));const txt=words.join(' ');
 ok(!/\b(up|down)\b/i.test(txt),'no "up" or "down" on screen');ok(txt.includes('Simulated $100K per trade · not advice'),'footer present');ok(!/-\$/.test(txt),'minus sign is U+2212');
+// a round the page cannot draw (2026-11-18: R110 had no resolution date, so the clock and chart were NaN while every number above passed)
+for(const tt of [2.6,4,6,8.2,12]){const tx=await p.evaluate(t=>{window.R(t);return document.body.innerText},tt);ok(!/undefined|NaN|Infinity|null/.test(tx),`no undefined/NaN on screen at ${tt} s`)}
+ok(D.total>0&&D.open>0,`the clock has a timeline (${D.total} min, open at ${D.open})`);ok(perr.length===0,`no page errors (${perr.length}${perr.length?': '+perr[0].slice(0,80):''})`);
 await b.close();
 if(vid){const pr=JSON.parse(execSync(`ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate:format=duration,bit_rate,size -of json "${vid}"`));const v=pr.streams.find(s=>s.width),a=pr.streams.find(s=>!s.width);
   ok(v.width===1080&&v.height===1350&&v.r_frame_rate==='30/1'&&v.codec_name==='h264'&&a.codec_name==='aac',`1080x1350 30 fps h264+aac`);ok(Math.abs(+pr.format.duration-15.5)<.05,`duration ${(+pr.format.duration).toFixed(2)} s`);
   ok(+pr.format.bit_rate>=5e6,`bitrate ${(pr.format.bit_rate/1e6).toFixed(1)} Mb/s (X minimum 5)`);ok(+pr.format.size<15e6||+pr.format.bit_rate>=5e6,`size ${(pr.format.size/1e6).toFixed(1)} MB`);
   const y=execSync(`ffmpeg -loglevel error -i "${vid}" -frames:v 1 -vf scale=64:80,format=gray -f rawvideo -`);ok(y.reduce((s,x)=>s+x,0)/y.length>12,'frame 0 is drawn (not black)');
   const pk=execSync(`ffmpeg -i "${vid}" -af volumedetect -f null - 2>&1 | grep max_volume`).toString();ok(+pk.match(/(-?[\d.]+) dB/)[1]<=-1,'audio peak '+pk.trim().split(':').pop())}
-// a round the page cannot draw (2026-11-18: R110 had no resolution date, so the clock and chart were NaN while every number above passed)
-for(const tt of [2.6,4,6,8.2,12]){const tx=await p.evaluate(t=>{window.R(t);return document.body.innerText},tt);ok(!/undefined|NaN|Infinity|null/.test(tx),`no undefined/NaN on screen at ${tt} s`)}
-ok(D.total>0&&D.open>0,`the clock has a timeline (${D.total} min, open at ${D.open})`);ok(perr.length===0,`no page errors (${perr.length}${perr.length?': '+perr[0].slice(0,80):''})`);
 console.log(bad?`${bad} CHECK(S) FAILED`:'ALL CHECKS PASS');process.exit(bad?1:0)})();
