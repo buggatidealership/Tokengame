@@ -22,4 +22,7 @@ if(fs.existsSync(dp)){const R=JSON.parse(fs.readFileSync(dp));const $=v=>(v<0?'�
   else if(!los.length)cap=`${tick} closed ${R.pct}. All ${win.length} AIs were ${pos(win[0].side)} and banked ${$(win[0].pnl)} each.`;
   else cap=`${names(win)} ${win.length===1?'takes':'take'} the ${cash==='$'?co:cash} round${win.length===1&&R.kind==='lone'?`, the only ${pos(win[0].side)}`:''} at ${R.pct}. ${win.length===1?win[0].name+' banked':'Each banked'} ${$(win[0].pnl)} on $100,000. ${names(los)}'s ${pos(los[0].side)}${los.length>1?'s':''} ${los.length>1?'each ':''}lost ${$(los[0].pnl).replace('−','$').replace('$$','$')}.`;
   cap+=`\n\nSeason P&L: `+R.order.map(k=>`${R.ai.find(a=>a.k===k).name} ${$(R.season1[k])}`).join(' · ');
-  fs.writeFileSync(base+'-outcome.txt',cap+'\n');console.log('--- outcome caption (quote the calls post)\n'+cap)}
+  // the Season 1 finale (finale:true in the data; FINALE=1 on another round is a test: printed, not written)
+  const fin=R.finale||process.env.FINALE==='1';if(fin){const top=R.season1[R.order[0]],lead=R.order.filter(k=>R.season1[k]===top).map(k=>R.ai.find(a=>a.k===k));
+    cap+=`\n\nSeason 1 is over: ${names(lead)} ${lead.length>1?'win':'wins'} with ${$(top)} after ${R.n} rounds.`}
+  if(fin&&!R.finale)console.log('--- outcome caption, FINALE TEST (not written)\n'+cap);else{fs.writeFileSync(base+'-outcome.txt',cap+'\n');console.log('--- outcome caption (quote the calls post)\n'+cap)}}

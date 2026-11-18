@@ -54,6 +54,11 @@ const T0 = at(prev, closeH), T1 = at(resDay, closeH), OPEN = at(resDay, openH);
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 const hl = (() => { const m = fs.readFileSync(EZ + '/v53-terminal.html', 'utf8').match(/var HL=(\{[^;]*\});/); return m ? JSON.parse(m[1]) : {} })()[t];
 const rep = (() => { const m = fs.readFileSync(EZ + '/v53-terminal.html', 'utf8').match(new RegExp('[{,\\s]"?' + t.replace('.', '\\.') + '"?:\\{t:"([^"]+)"')); return m ? Date.parse(m[1]) : null })();
+// the Season 1 finale cut (owner, 2026-11-18): the last round of Season 1, once every round of the season is graded, gets the longer
+// video that ends on the final standings and the winner (outcome.html's finale mode; 20.8 s instead of 15.5). SEASON1_LAST is the same
+// number as in ez/tools/sync_sheet.py.
+const SEASON1_LAST = 112;
+const finale = n === SEASON1_LAST && rows.filter(r => +g(r, 'ROUND') <= SEASON1_LAST).every(r => isFinite(parseFloat(g(r, 'ACTUAL MOVE (%)'))));
 (async () => {
   let pathPts = null, note = 'no Hyperliquid market: only the two closes are shown';
   if (hl) {
@@ -82,10 +87,11 @@ const rep = (() => { const m = fs.readFileSync(EZ + '/v53-terminal.html', 'utf8'
       else note = `Yahoo Finance ${t} moved ${hm.toFixed(2)}% against the sheet's ${move}%: path refused; only the two closes are shown` } } catch (e) { note = 'no Hyperliquid market and no exchange prices (' + e.message.slice(0, 60) + '): only the two closes are shown' } }
   const D = { n, ticker: t, co: ctx.TICKERS[t] || t, move, pct, tz, closeLabel: (closeH % 1 ? Math.floor(closeH) - 12 + ':30' : closeH - 12 + ':00') + ' PM',
     day0: DAYS[prev.getUTCDay()], day1: DAYS[resDay.getUTCDay()], total: (T1 - T0) / 60e3, open: (OPEN - T0) / 60e3, report: rep ? Math.round((rep - T0) / 60e3) : null,
-    utcOff, closeH, path: pathPts, pathNote: note, ai, season0, season1, split, longs, shorts, kind, amt, line1, line3,
+    utcOff, closeH, path: pathPts, pathNote: note, ai, season0, season1, split, longs, shorts, kind, amt, line1, line3, finale, dur: finale ? 20.8 : 15.5,
     winners: right.map(a => a.k), order: [...AIS.map(x => x[0])].sort((a, b) => season1[b] - season1[a]), order0: [...AIS.map(x => x[0])].sort((a, b) => season0[b] - season0[a]) };
   const L = ctx.CO_LOGOS[t]; if (L) { fs.copyFileSync(EZ + '/media/' + (L.f || L), path.join(OUT, 'logo-' + n + '.png')); D.logo = 'data/logo-' + n + '.png' }
   fs.writeFileSync(path.join(OUT, 'r' + n + '.json'), JSON.stringify(D));
+  if (finale) console.log('SEASON 1 FINALE: the finale cut (20.8 s), final standings ' + D.order.map(k => k + ' ' + season1[k]).join(' · '));
   console.log(`R${n} ${D.co} ${pct} · ${split} · ${kind} · winners ${D.winners.join(',') || 'none'}\n  ${line1}\n  THIS ROUND · ${D.co.toUpperCase()} ${pct}\n  ${line3}\n  path: ${note}`);
   for (const a of ai) console.log(`  ${a.name.padEnd(7)} ${a.side.padEnd(8)} ${$(a.pnl).padStart(10)}  season ${$(season0[a.k]).padStart(10)} -> ${$(season1[a.k]).padStart(10)}`);
 })();

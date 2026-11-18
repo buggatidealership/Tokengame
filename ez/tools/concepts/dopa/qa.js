@@ -1,10 +1,11 @@
 // node qa.js <round> [video.mp4] : the outcome video's QA. Reads every number drawn on screen at the key moments straight from the page
 // and checks it against data/r<round>.json (which prep.js built from the sheet); then checks the file with ffprobe. Exits 1 on any miss.
+// The Season 1 finale cut (finale:true in the data, or FINALE=1 to test it on another round) adds its own checks and expects 20.8 s.
 const {chromium}=require('playwright');const fs=require('fs');const {execSync}=require('child_process');
 const [n,vid]=process.argv.slice(2);const D=JSON.parse(fs.readFileSync(__dirname+'/data/r'+n+'.json'));let bad=0;
 const $=v=>(v<0?'−':'+')+'$'+Math.abs(v).toLocaleString('en-US'),M=v=>v===0?'$0':$(v);
 const ok=(c,msg)=>{console.log((c?'PASS ':'FAIL ')+msg);if(!c)bad++};
-(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1350}});const perr=[];p.on('pageerror',e=>perr.push(e.message));p.on('console',m=>{if(m.type()==='error')perr.push(m.text())});await p.goto('http://localhost:8993/outcome.html?r='+n);await p.waitForFunction(()=>window.READY===1,null,{timeout:120000});
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1350}});const perr=[];p.on('pageerror',e=>perr.push(e.message));p.on('console',m=>{if(m.type()==='error')perr.push(m.text())});const FIN=!!D.finale||process.env.FINALE==='1',DUR=FIN?20.8:15.5;await p.goto('http://localhost:8993/outcome.html?r='+n+(FIN&&!D.finale?'&finale=1':''));await p.waitForFunction(()=>window.READY===1,null,{timeout:120000});
 const at=async(t,f)=>p.evaluate(([t,f])=>{window.R(t);return eval(f)},[t,f]);
 const vis='[...document.querySelectorAll(".row")].map(r=>({pl:r.querySelector(".pl").textContent,side:r.querySelector(".sd").textContent,win:!!r.querySelector(".win")&&+getComputedStyle(r.querySelector(".win")).opacity>.9}))';
 const f8=await at(8.2,vis);
@@ -21,9 +22,17 @@ ok(!/\b(up|down)\b/i.test(txt),'no "up" or "down" on screen');ok(txt.includes('S
 // a round the page cannot draw (2026-11-18: R110 had no resolution date, so the clock and chart were NaN while every number above passed)
 for(const tt of [2.6,4,6,8.2,12]){const tx=await p.evaluate(t=>{window.R(t);return document.body.innerText},tt);ok(!/undefined|NaN|Infinity|null/.test(tx),`no undefined/NaN on screen at ${tt} s`)}
 ok(D.total>0&&D.open>0,`the clock has a timeline (${D.total} min, open at ${D.open})`);ok(perr.length===0,`no page errors (${perr.length}${perr.length?': '+perr[0].slice(0,80):''})`);
+// the Season 1 finale cut: the label, the winner and the final P&L on the sheet against the data; a normal round must not show any of it
+const fin=await at(20.2,'({who:document.querySelector("#fwho").textContent,verb:document.querySelector("#fverb").textContent,amt:document.querySelector("#famt").textContent,lab:document.querySelector("#flab").textContent,op:+getComputedStyle(document.querySelector("#fsheet")).opacity,tag:getComputedStyle(document.querySelector("#tfin")).display,txt:document.body.innerText})');
+if(FIN){const top=D.season1[D.order[0]],lead=D.order.filter(k=>D.season1[k]===top).map(k=>D.ai.find(a=>a.k===k).name),nm=lead.length>1?lead.slice(0,-1).join(', ')+' and '+lead.at(-1):lead[0];
+  ok(fin.op>.99&&fin.who.trim()===nm,`finale: the sheet names "${fin.who.trim()}", the season leader is "${nm}"`);ok(fin.verb===(lead.length>1?'win':'wins')+' Season 1.',`finale: "${fin.verb}"`);
+  ok(fin.amt===M(top),`finale: final P&L on screen ${fin.amt} = data ${M(top)}`);ok(fin.lab===`FINAL · ${D.n} ROUNDS`,`finale: label "${fin.lab}"`);ok(fin.tag==='block','finale: SEASON 1 FINALE marker in the title');
+  const lb=await at(16.4,'document.querySelector("#ssk").textContent');ok(lb===`FINAL · ${D.n} ROUNDS`,`finale: the board's label reads "${lb}" at 16.4 s`);
+  ok(!/undefined|NaN|Infinity|null/.test(fin.txt),'finale: no undefined/NaN on screen at 20.2 s');ok(D.finale?D.n===112:true,'finale data is round 112'+(D.finale?'':' (forced test on round '+D.n+')'))}
+else ok(fin.op===0&&fin.tag==='none','not the finale: no finale marker, no winner sheet');
 await b.close();
 if(vid){const pr=JSON.parse(execSync(`ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate:format=duration,bit_rate,size -of json "${vid}"`));const v=pr.streams.find(s=>s.width),a=pr.streams.find(s=>!s.width);
-  ok(v.width===1080&&v.height===1350&&v.r_frame_rate==='30/1'&&v.codec_name==='h264'&&a.codec_name==='aac',`1080x1350 30 fps h264+aac`);ok(Math.abs(+pr.format.duration-15.5)<.05,`duration ${(+pr.format.duration).toFixed(2)} s`);
+  ok(v.width===1080&&v.height===1350&&v.r_frame_rate==='30/1'&&v.codec_name==='h264'&&a.codec_name==='aac',`1080x1350 30 fps h264+aac`);ok(Math.abs(+pr.format.duration-DUR)<.05,`duration ${(+pr.format.duration).toFixed(2)} s (expected ${DUR})`);
   ok(+pr.format.bit_rate>=5e6,`bitrate ${(pr.format.bit_rate/1e6).toFixed(1)} Mb/s (X minimum 5)`);ok(+pr.format.size<15e6||+pr.format.bit_rate>=5e6,`size ${(pr.format.size/1e6).toFixed(1)} MB`);
   const y=execSync(`ffmpeg -loglevel error -i "${vid}" -frames:v 1 -vf scale=64:80,format=gray -f rawvideo -`);ok(y.reduce((s,x)=>s+x,0)/y.length>12,'frame 0 is drawn (not black)');
   const pk=execSync(`ffmpeg -i "${vid}" -af volumedetect -f null - 2>&1 | grep max_volume`).toString();ok(+pk.match(/(-?[\d.]+) dB/)[1]<=-1,'audio peak '+pk.trim().split(':').pop())}
