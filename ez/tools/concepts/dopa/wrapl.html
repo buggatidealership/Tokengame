@@ -39,7 +39,7 @@
 .pin{position:absolute;left:0;top:0;width:44px;height:44px;border-radius:11px;background:#f2ede6;padding:6px;transform-origin:50% 50%}
 .pin img{width:32px;height:32px;object-fit:contain;display:block}
 #tet{position:absolute;left:0;top:0;overflow:visible}
-.card{position:absolute;left:56px;top:150px;width:968px;border-radius:30px;padding:30px 34px 30px;background:rgba(24,21,19,.96);box-shadow:inset 0 0 0 2px rgba(242,237,230,.14);display:flex;flex-direction:column;gap:22px;transform-origin:50% 50%}
+.card{position:absolute;left:56px;top:185px;width:968px;border-radius:30px;padding:30px 34px 30px;background:rgba(24,21,19,.96);box-shadow:inset 0 0 0 2px rgba(242,237,230,.14);display:flex;flex-direction:column;gap:22px;transform-origin:50% 50%}
 .card .c1{display:flex;justify-content:space-between;align-items:baseline;font:600 30px/1 'Geist Mono';letter-spacing:.1em;color:#fdbc2a;white-space:nowrap}
 .card .c1 b{font-weight:600;color:#8e8680}
 .card .c2{display:flex;align-items:center;gap:22px;white-space:nowrap}
@@ -119,8 +119,8 @@ function pchip(P) { const n = P.length, h = [], d = [], m = []; for (let i = 0; 
   return t => { if (t <= P[0][0]) return P[0][1]; if (t >= P[n - 1][0]) return P[n - 1][1]; let i = 0; while (t > P[i + 1][0]) i++; const s = (t - P[i][0]) / h[i], s2 = s * s, s3 = s2 * s;
     return (2 * s3 - 3 * s2 + 1) * P[i][1] + (s3 - 2 * s2 + s) * h[i] * m[i] + (-2 * s3 + 3 * s2) * P[i + 1][1] + (s3 - s2) * h[i] * m[i + 1] } }
 // the cut, in seconds; every hit sits on a beat of the bed (120 BPM, beats on the half second)
-const T = { trio: [1, 1.5, 2], go: [4.7, 6], marks: [5, 5.25, 5.5, 5.75], race0: 6, cards: [11, 15, 19], hold: 3.4, race1: 26, stand: 28, toB1: [32, 33], b1: 33, toB2: [37.9, 39], b2: 39, toC: [43, 44], c: 44, rise: [50, 52], s2: 52, end: 57.5 };
-const PX = -700, B1Y = 3500, B2Y = 4850, CY = 6400, TY = -1950;
+const T = { trio: [1, 1.5, 2], go: [4.7, 6], marks: [5, 5.25, 5.5, 5.75], race0: 6, cards: [11, 15, 19], hold: 3.4, race1: 26, stand: 28, toB1: [31.9, 33.1], b1: 33, toB2: [37.6, 39.2], b2: 39, toC: [43, 44], c: 44, rise: [50, 52], s2: 52, end: 57.5 };
+const PX = -700, B1Y = 2800, B2Y = 4150, CY = 5700, TY = -1950;
 function build() {
   const n = D.rounds, ord = D.order; A = k => D.ai.find(a => a.k === k); S.n = n; FINAL = D.final || q.get('final') === '1';
   const of = FINAL ? `${D.total} ROUNDS` : `AFTER ${n} OF ${D.total} ROUNDS`;
@@ -129,6 +129,7 @@ function build() {
   S.big = D.big.slice(0, 3).map((x, r) => ({ x, r, i: L.cl(x.n - D.open.filter(o => o.n < x.n).length, 1, n) })).sort((a, b) => a.i - b.i);
   S.big.forEach((b, j) => { b.tc = T.cards[j]; b.tf = b.tc + T.hold; b.top = Math.max(...ord.map(k => D.s[k][b.i])) });
   const P = [[T.race0, 0]]; S.big.forEach(b => { const prev = P[P.length - 1][1]; P.push([b.tc - (b === S.big[0] ? .6 : .35), Math.max(prev + .05, b.i - 1)], [b.tc, b.i], [b.tf, Math.min(n, b.i + .4)]) }); P.push([T.race1, n]); S.fi = pchip(P);
+  S.cdr = t => S.big.reduce((a, b) => a + L.n(t, b.tc - .3, b.tc) * (1 - L.n(t, b.tf, b.tf + .3)) * (40 - 80 * (t - b.tc) / T.hold), 0);
   const last = S.big[S.big.length - 1]; S.kc = t => L.eio(L.n(t, S.big[0].tc - .7, S.big[0].tc - .05)) * (1 - L.eio(L.n(t, last.tf + .05, last.tf + .7)));
   // what the ride's camera frames: the heads of the last dozen rounds, smoothed
   const env = []; for (let i = 0; i <= n; i++) { let a = 0, b = 0; for (let j = Math.max(0, i - 12); j <= Math.min(n, i + 2); j++) ord.forEach(k => { a = Math.min(a, D.s[k][j]); b = Math.max(b, D.s[k][j]) }); env.push([a, b]) }
@@ -210,10 +211,10 @@ const mix = (a, b, k) => ({ cx: L.lerp(a.cx, b.cx, k), cy: L.lerp(a.cy, b.cy, k)
 function camera(t) {
   const u = (a, b) => (t - a) / (b - a), n = S.n;
   const prem = { cx: PX - 80 + 160 * sm(L.n(t, -.4, 5.4)), cy: -125, z: 1 };
-  const f = S.fi(t), lo = at(S.elo, f), hi = at(S.ehi, f), span = Math.max(hi - lo, 68000) * 1.24, kc = S.kc(t), zr = 900 / (span * YS) * L.lerp(1, 470 / 900, kc) * (1 + .05 * kc * sm(L.n(t, S.big[0].tc, S.big[S.big.length - 1].tf)));
-  const ride = { cx: X(f) - (L.lerp(640, 600, kc) - 540) / zr, cy: Y((hi + lo) / 2) - (L.lerp(700, 1030, kc) - 675) / zr, z: zr };
+  const f = S.fi(t), lo = at(S.elo, f), hi = at(S.ehi, f), span = Math.max(hi - lo, 68000) * 1.24, kc = S.kc(t), zr = 900 / (span * YS) * L.lerp(1, 440 / 900, kc) * (1 + .05 * kc * sm(L.n(t, S.big[0].tc, S.big[S.big.length - 1].tf)));
+  const ride = { cx: X(f) - (L.lerp(640, 600, kc) - 540) / zr, cy: Y((hi + lo) / 2) - (L.lerp(700, 1010, kc) + S.cdr(t) - 675) / zr, z: zr };
   const pull = { cx: S.pc.cx, cy: S.pc.cy + (-60 + 120 * u(T.stand - .5, T.toB1[0] + .5)) / S.pc.z, z: S.pc.z };
-  const b1 = { cx: S.ZX, cy: B1Y - 75 + 150 * u(T.b1 - .5, T.toB2[0] + .3), z: 1 }, b2 = { cx: S.ZX, cy: B2Y - 65 + 130 * u(T.b2 - .5, T.toC[0] + .4), z: 1 }, c = { cx: S.ZX, cy: CY - 80 + 160 * u(T.c - .5, T.rise[0] + .8), z: 1 };
+  const b1 = { cx: S.ZX, cy: B1Y - 75 + 150 * u(T.b1 - .5, T.toB2[0] + .5), z: 1 }, b2 = { cx: S.ZX, cy: B2Y - 65 + 130 * u(T.b2 - .5, T.toC[0] + .4), z: 1 }, c = { cx: S.ZX, cy: CY - 80 + 160 * u(T.c - .5, T.rise[0] + .8), z: 1 };
   const kt = (t - T.s2) / (T.end - T.s2), ttl = { cx: S.ZX, cy: TY + 70 - 170 * kt, z: 1 + .05 * L.cl(kt) };
   let cam = mix(prem, ride, L.eio(L.n(t, T.go[0], T.go[1]))); cam = mix(cam, pull, L.eio(L.n(t, T.race1 - .6, T.stand))); cam = mix(cam, b1, L.eio(L.n(t, T.toB1[0], T.toB1[1]))); cam = mix(cam, b2, L.eio(L.n(t, T.toB2[0], T.toB2[1]))); cam = mix(cam, c, L.eio(L.n(t, T.toC[0], T.toC[1])));
   const kr = L.eio(L.n(t, T.rise[0], T.rise[1])); cam = mix(cam, ttl, kr); cam.z *= 1 - .68 * Math.pow(Math.sin(Math.PI * L.n(t, T.rise[0], T.rise[1])), 1.4); return cam }
@@ -234,39 +235,39 @@ function R(t) {
     l.hd.style.opacity = L.n(ap, 0, .1) * (1 - L.n(t, T.toB1[0] + .15, T.toB1[0] + .5)); l.hd.style.transform = `translate(${h.x - 22 * ms}px,${h.y + h.o * (1 - kp * .4) - 22}px) scale(${ms * pop})`; const v = l.hd.lastElementChild;
     if (fi < .3) { v.textContent = A(l.k).name; v.style.color = '#f2ede6'; v.style.opacity = L.n(ap, .05, .25) * (1 - L.n(fi, .05, .3)) } else { v.textContent = money0(Math.round(h.vq / 10) * 10); v.style.color = h.vq >= 0 ? G : Rd; v.style.opacity = L.n(fi, .3, 2) * (1 - L.n(kp, .1, .6)) }
     l.hd.querySelector('i').style.opacity = L.cl((h.v - others) / 4000 + .5) * L.n(fi, 3, 6) });
-  const sp50 = 50000 * YS * z; S.grid.forEach(g => { const y = sy(Y(g.v)), on = g.v % 100000 === 0 ? 1 : L.n(sp50, 60, 90); g.ln.style.opacity = on; g.lb.style.top = y + 'px'; g.lb.style.opacity = on * inChart * (y > 150 + (kc > .3 ? S.cardH + 60 : 0) && y < 1300 ? 1 : 0) }); S.zl.style.top = sy(0) + 'px'; S.zl.style.opacity = inChart;
+  const sp50 = 50000 * YS * z; S.grid.forEach(g => { const y = sy(Y(g.v)), on = g.v % 100000 === 0 ? 1 : L.n(sp50, 60, 90); g.ln.style.opacity = on; g.lb.style.top = y + 'px'; g.lb.style.opacity = on * inChart * (y > 150 + (kc > .3 ? S.cardH + 85 + S.cdr(t) : 0) && y < 1300 ? 1 : 0) }); S.zl.style.top = sy(0) + 'px'; S.zl.style.opacity = inChart;
   S.wall.style.opacity = .62 + .38 * (.5 + .5 * Math.sin(t * Math.PI - 1.2));
   S.ctr.style.opacity = L.n(t, T.race0 - .3, T.race0) * (1 - Math.min(1, kc * 3)) * (1 - L.n(t, T.race1 + .2, T.race1 + .6)); S.ctr.lastElementChild.textContent = Math.round(fq);
   S.cap.style.opacity = L.n(t, T.go[0] + .5, T.go[0] + .8) * (1 - L.n(t, T.race0 + 2.3, T.race0 + 2.7)); S.cap.style.transform = `translateY(${(1 - L.eo(L.n(t, T.go[0] + .5, T.go[0] + .9))) * 24}px)`;
   // the big rounds: the card grows out of the spike, holds, folds back into a pin on the line
   let tet = 0; S.big.forEach(b => { const d = t - b.tc, px = sx(X(b.i)), py = sy(Y(b.top)), on = d >= 0 && t < b.tf + .34, el = b.card; b.mk.setAttribute('opacity', .32 * L.n(d, 0, .3) * inChart);
     const pk = L.n(t, b.tf + .1, b.tf + .34), ps = pk > 0 ? .4 + .6 * L.spring(t - b.tf - .1, 2.2, 8) : 0; b.pin.style.opacity = L.n(pk, 0, .3) * inChart; b.pin.style.transform = `translate(${px - 22}px,${py - 70 * L.lerp(1, .82, kp) - 22}px) scale(${ps * L.lerp(1, .82, kp)})`;
-    el.style.display = on ? 'flex' : 'none'; if (!on) return; const k = d < T.hold ? L.spring(d, 1.7, 7) : 1 - L.ei(L.n(t, b.tf, b.tf + .3)), cx0 = 540, cy0 = 150 + S.cardH / 2, ks = Math.max(.02, k) * (1 + .05 * L.n(d, .3, T.hold));
-    el.style.opacity = d < T.hold ? L.n(d, 0, .08) : 1 - L.n(t, b.tf + .12, b.tf + .3); el.style.transform = `translate(${(px - cx0) * (1 - k)}px,${(py - cy0) * (1 - k)}px) scale(${ks})`;
+    el.style.display = on ? 'flex' : 'none'; if (!on) return; const k = d < T.hold ? .25 + .75 * L.spring(d, 1.7, 9.5) : 1 - L.ei(L.n(t, b.tf, b.tf + .3)), dr = 40 - 80 * Math.min(d, T.hold) / T.hold, cx0 = 540, cy0 = 185 + dr + S.cardH / 2, ks = Math.max(.02, k) * (1 + .035 * L.n(d, .3, T.hold));
+    el.style.opacity = d < T.hold ? 1 : 1 - L.n(t, b.tf + .12, b.tf + .3); el.style.transform = `translate(${(px - cx0) * (1 - k)}px,${dr + (py - cy0) * (1 - k)}px) scale(${ks})`;
     L.$$('.chip', el).forEach((c, j) => { const dc = d - .4 - j * .4, kk = dc > 0 ? L.spring(dc, 2.2, 8) : 0, p = +c.dataset.p, hl = +c.dataset.ok ? Math.sin(Math.PI * L.n(d, 2.35, 3.05)) : 0; c.style.opacity = L.n(dc, 0, .1); c.style.transform = `translateY(${(1 - kk) * 40}px) scale(${1 + .06 * hl})`; c.querySelector('.o').style.opacity = hl; if (+c.dataset.ok) c.style.background = `rgba(85,214,162,${.13 + .3 * hl})`;
       c.querySelector('.p').textContent = p ? money0(Math.round(p * L.eo(L.n(dc, .05, .55)) / 10) * 10) : '$0' });
     const c4 = el.querySelector('.c4'); c4.style.opacity = L.n(d, .15, .4); c4.style.transform = `translateX(${(1 - L.eo5(L.n(d, .15, .65))) * -30}px)`;
-    tet = Math.max(tet, L.n(d, .25, .5) * (1 - L.n(t, b.tf - .05, b.tf + .1))); const ln = S.tet.firstElementChild; ln.setAttribute('x1', px); ln.setAttribute('y1', py - 10); ln.setAttribute('x2', L.cl(px, 160, 920)); ln.setAttribute('y2', 150 + S.cardH + 8); ln.setAttribute('stroke-dashoffset', -t * 22) });
+    tet = Math.max(tet, L.n(d, .25, .5) * (1 - L.n(t, b.tf - .05, b.tf + .1))); const ln = S.tet.firstElementChild; ln.setAttribute('x1', px); ln.setAttribute('y1', py - 10); ln.setAttribute('x2', L.cl(px, 160, 920)); ln.setAttribute('y2', 185 + dr + S.cardH + 8); ln.setAttribute('stroke-dashoffset', -t * 22) });
   S.tet.style.opacity = tet * .7;
   // 3 the standings land on the first drop
-  S.sl.style.opacity = L.n(t, T.stand - .4, T.stand); S.rows.forEach(r => { const d = t - T.stand - (S.rows.length - 1 - r.i) * .07, on = d >= 0, k = on ? L.spring(d, 1.9, 7.5) : 0; r.el.style.opacity = L.n(d, 0, .1); r.el.style.transform = `translateY(${(1 - k) * 46}px)`;
+  L.$('#ps').style.opacity = 1 - L.n(t, T.toB1[0] + .05, T.toB1[0] + .4); S.sl.style.opacity = L.n(t, T.stand - .4, T.stand); S.rows.forEach(r => { const d = t - T.stand - (S.rows.length - 1 - r.i) * .035, on = d >= 0, k = on ? L.spring(d, 1.9, 7.5) : 0; r.el.style.opacity = on ? 1 : 0; r.el.style.transform = `translateY(${(1 - k) * 70}px)`;
     r.el.querySelector('.pl').textContent = money0(Math.round(r.a.pnl * L.eo(L.n(d, .05, .8)) / 10) * 10); if (!r.i) { r.el.querySelector('.au').style.opacity = on ? .72 + .28 * Math.sin((t - T.stand) * Math.PI * 2) : 0; r.el.querySelector('.tg').style.opacity = L.n(d, .1, .3) } });
   // 4 bears against bulls
-  { const d0 = t - T.b1 + .35; [...S.b1h.children].forEach((s, j) => { const k = L.eo5(L.n(d0, j * .12, .5 + j * .12)); s.style.opacity = L.n(d0, j * .12, j * .12 + .15); s.style.transform = `translateY(${(1 - k) * 30}px)` }); S.b1c.forEach(c => c.style.opacity = L.n(t, T.b1 + .2, T.b1 + .5));
-    S.brow.forEach(r => { const d = t - T.b1 - .25 - r.i * .25, k = d > 0 ? L.spring(d, 2, 8) : 0, kb = L.eo5(L.n(d, .1, .8)), kl = L.eo5(L.n(d, .35, 1.05)), s = r.el.querySelector('.s'), l = r.el.querySelector('.l'); r.el.style.opacity = L.n(d, 0, .1); r.el.style.transform = `translateY(${(1 - k) * 36}px)`;
+  { const d0 = t - T.b1 + .95; [...S.b1h.children].forEach((s, j) => { const k = L.eo5(L.n(d0, j * .12, .5 + j * .12)); s.style.opacity = L.n(d0, j * .12, j * .12 + .15); s.style.transform = `translateY(${(1 - k) * 30}px)` }); S.b1c.forEach(c => c.style.opacity = L.n(t, T.b1 - .5, T.b1 - .2));
+    S.brow.forEach(r => { const d = t - T.b1 + .25 - r.i * .25, k = d > 0 ? L.spring(d, 2, 8) : 0, kb = L.eo5(L.n(d, .1, .8)), kl = L.eo5(L.n(d, .35, 1.05)), s = r.el.querySelector('.s'), l = r.el.querySelector('.l'); r.el.style.opacity = L.n(d, 0, .1); r.el.style.transform = `translateY(${(1 - k) * 36}px)`;
       s.style.width = Math.max(0, (r.ws - 3) * kb) + 'px'; l.style.width = Math.max(0, (440 - r.ws - 3) * kl) + 'px'; s.style.color = `rgba(14,12,11,${r.ws >= 43 ? L.n(kb, .8, 1) : 0})`; l.style.color = `rgba(14,12,11,${440 - r.ws >= 43 ? L.n(kl, .8, 1) : 0})`; r.el.querySelector('.pl').textContent = money0(Math.round(r.a.pnl * L.eo(L.n(d, .2, .9)) / 10) * 10) });
     [...S.b1s.children].forEach((w, j) => { const d = t - T.b1 - 2 - j * .13, k = d > 0 ? L.spring(d, 2.2, 8) : 0; w.style.opacity = L.n(d, 0, .08); w.style.transform = `translateY(${(1 - k) * 30}px)` }) }
   // 4b the simplest strategy
-  { const d0 = t - T.b2; let ai = 0; S.vrow.forEach(r => { const tr = r.mkt ? (r.v >= 0 ? .5 : 1) : (ai++) * .09, d = d0 - tr, k = r.mkt ? (d > 0 ? L.spring(d, 1.8, 7) : 0) : L.eo5(L.n(d, 0, .7)), w = r.w * Math.max(0, k);
+  { const d0 = t - T.b2; let ai = 0; S.vrow.forEach(r => { const tr = r.mkt ? (r.v >= 0 ? .5 : 1) : (ai++) * .09 - .35, d = d0 - tr, k = r.mkt ? (d > 0 ? L.spring(d, 1.8, 7) : 0) : L.eo5(L.n(d, 0, .7)), w = r.w * Math.max(0, k);
       r.el.style.opacity = L.n(d, -.05, .1); r.f.style.width = w + 'px'; if (r.mkt) r.f.style.backgroundPositionX = (t * 26 * (r.pos ? 1 : -1)) + 'px';
       r.vv.textContent = money0(Math.round(r.v * L.eo(L.n(d, .05, .7)) / 10) * 10); const tx = r.inside ? (r.pos ? 541 + w - 14 - S.vw[r.i] : 539 - w + 14) : (r.pos ? 541 + w + 12 : 539 - w - 12 - S.vw[r.i]); r.vv.style.left = tx + 'px'; r.vv.style.opacity = L.n(d, .15, .4) });
     [...S.b2h.children].forEach((s, j) => { const d = d0 - .5 - j * .2, k = d > 0 ? L.spring(d, 2, 8) : 0; s.style.opacity = L.n(d, 0, .1); s.style.transform = `translateY(${(1 - k) * 34}px)` }) }
   // 5 accuracy and the relegation
-  { const d0 = t - T.c, sw = t - T.c - 4; [...S.ch.children].forEach((s, j) => { const k = L.eo5(L.n(d0 + .3, j * .12, .5 + j * .12)); s.style.opacity = L.n(d0 + .3, j * .12, j * .12 + .15); s.style.transform = `translateY(${(1 - k) * 30}px)` });
-    S.arow.forEach(r => { const d = d0 - r.i * .18, kf = L.eio(L.n(d, .25, 1.45)), out = r.rel ? L.eio(L.n(sw, 0, .45)) : 0, old = r.el.querySelector('.old'), pcx = r.el.querySelector('.pc'), w = Math.max(0, r.w * kf * (1 - out)); r.el.style.opacity = L.n(d, 0, .15);
+  { const d0 = t - T.c, sw = t - T.c - 4; [...S.ch.children].forEach((s, j) => { const k = L.eo5(L.n(d0 + .9, j * .12, .5 + j * .12)); s.style.opacity = L.n(d0 + .9, j * .12, j * .12 + .15); s.style.transform = `translateY(${(1 - k) * 30}px)` });
+    S.arow.forEach(r => { const d = d0 + .35 - r.i * .18, kf = L.eio(L.n(d, .25, 1.45)), out = r.rel ? L.eio(L.n(sw, 0, .45)) : 0, old = r.el.querySelector('.old'), pcx = r.el.querySelector('.pc'), w = Math.max(0, r.w * kf * (1 - out)); r.el.style.opacity = L.n(d, 0, .15);
       r.el.querySelector('.fl').style.width = w + 'px'; pcx.textContent = (r.a.hitx * kf).toFixed(0) + '%'; if (r.rel) { pcx.style.right = (968 - 270 - r.w * kf + 14) + 'px'; pcx.style.color = '#0e0c0b'; pcx.style.opacity = L.n(d, .7, .9) } else { pcx.style.left = (270 + r.w * kf + 14) + 'px'; pcx.style.opacity = L.n(d, .3, .5) }
       if (r.rel) { const pu = Math.exp(-Math.max(0, d0 - 2) * 4) * (d0 >= 2 ? 1 : 0); r.el.querySelector('.tr').style.background = `rgba(232,87,107,${.07 + .2 * pu})`; r.el.querySelector('.tr').style.opacity = 1 - L.n(sw, .2, .5); old.style.opacity = 1 - L.n(sw, .1, .5); const nw = r.el.querySelector('.nw'), kn = sw > .35 ? L.spring(sw - .35, 2, 8) : 0; nw.style.opacity = L.n(sw, .35, .5); nw.style.transform = `scale(${.96 + .04 * kn})` } });
-    S.h50.style.opacity = L.n(d0, .2, .5); S.l50.style.opacity = L.n(d0, .2, .5); const [c1, c2] = S.cs.children, k1 = L.eo5(L.n(d0, 2, 2.5)); c1.style.opacity = L.n(d0, 2, 2.15); c1.style.transform = `translateX(${(1 - k1) * -30}px)`; c2.style.opacity = L.n(d0, 3, 3.08); c2.style.transform = `scale(${d0 > 3 ? 1 + .3 * Math.exp(-(d0 - 3) * 9) : 1})`; c2.style.transformOrigin = '0 50%';
+    S.h50.style.opacity = L.n(d0, -.3, 0); S.l50.style.opacity = L.n(d0, -.3, 0); const [c1, c2] = S.cs.children, k1 = L.eo5(L.n(d0, 2, 2.5)); c1.style.opacity = L.n(d0, 2, 2.15); c1.style.transform = `translateX(${(1 - k1) * -30}px)`; c2.style.opacity = L.n(d0, 3, 3.08); c2.style.transform = `scale(${d0 > 3 ? 1 + .3 * Math.exp(-(d0 - 3) * 9) : 1})`; c2.style.transformOrigin = '0 50%';
     if (S.stamp) { const d = d0 - 3, k = d > 0 ? L.spring(d, 2.4, 9) : 0; S.stamp.style.opacity = L.n(d, 0, .06) * (1 - L.n(sw, 0, .3)); S.stamp.style.transform = `rotate(-6deg) scale(${2.2 - 1.2 * k})` } }
   // 6 Season 2, on the second drop
   { const d = t - T.s2, a = S.tl.querySelector('.a'), k = d > 0 ? L.spring(d, 1.5, 6) : 0; a.style.opacity = L.n(d, -.02, .06); a.style.transform = `scale(${S.k2 * (1.5 - .5 * k)})`; const im = S.tl.querySelector('img'); im.style.opacity = L.n(d, -.9, -.5); im.style.transform = `scale(${.8 + .2 * L.eo(L.n(d, -.9, 0))})`;
