@@ -62,18 +62,18 @@ function build() {
   { const s = scene(0, 9.5, [0, 0, .62]);
     line(s, 0, `${N} AIs bet on ${tot}<br>earnings reports.`, { snd: 'r11-swell', gain: .07 });
     put(s, 1, `<div class="ms">${D.ai.map(a => L.mark(a.k, 116)).join('')}</div>`);
-    line(s, 2.5, `Each time: will the stock<br>go ${c('up', G)}, or ${c('down', Rd)}?`);
-    line(s, 5, `${c('$100K', Au)} a bet.<br>Not real money.`) }
+    line(s, 2.5, `Each time:<br>${c('long', G)} or ${c('short', Rd)}?`);
+    line(s, 5, `${c('$100K', Au)} on every trade.`) }
 
   // 2 one example: the biggest move where exactly one AI was right (else where one was wrong, else the biggest move)
   { const x = D.big.find(b => b.right.length === 1) || D.big.find(b => b.wrong.length === 1) || D.big[0], solo = x.right.length === 1 ? A(x.right[0]) : x.wrong.length === 1 ? A(x.wrong[0]) : null, won = solo && x.right.length === 1;
-    const dir = sd => sd === 'SHORT' ? 'fall' : 'rise', amt = K(x.move * 1000), others = solo ? D.ai.filter(a => a !== solo && x.p[a.k]).length : 0, s = scene(9.5, 22, x.move < 0 ? [0, .8, 0] : [.45, 0, 0]);
+    const dir = sd => sd === 'SHORT' ? 'short' : 'long', amt = K(x.move * 1000), others = solo ? D.ai.filter(a => a !== solo && x.p[a.k]).length : 0, s = scene(9.5, 22, x.move < 0 ? [0, .8, 0] : [.45, 0, 0]);
     line(s, 9.5, `One example: ${x.co}.`); if (x.logo) put(s, 10.5, `<img class="logo${x.dark ? ' dk' : ''}" src="${x.logo}">`);
     line(s, 11.5, `After earnings,<br>the stock ${c((x.move < 0 ? 'fell ' : 'rose ') + Math.round(Math.abs(x.move)) + '%', x.move < 0 ? Rd : G)}.`);
     const ms = put(s, 14, `<div class="ms">${D.ai.map(a => L.mark(a.k, 96)).join('')}</div>`), mks = L.$$('.mk', ms.el);
-    if (solo) { line(s, 15, `Only ${solo.name} bet on a ${dir(x.side[solo.k])}.`, { fn: () => { const k = L.eio(L.n(t, 15, 15.5)); mks.forEach((m, i) => { const me = D.ai[i] === solo; m.style.opacity = me ? 1 : 1 - .68 * k; m.style.transform = `scale(${me ? 1 + .1 * k : 1 - .06 * k})`; m.style.boxShadow = me ? `0 0 0 ${5 * k}px ${won ? G : Rd}` : '' }) } });
+    if (solo) { line(s, 15, `Only ${solo.name} went ${dir(x.side[solo.k])}.`, { fn: () => { const k = L.eio(L.n(t, 15, 15.5)); mks.forEach((m, i) => { const me = D.ai[i] === solo; m.style.opacity = me ? 1 : 1 - .68 * k; m.style.transform = `scale(${me ? 1 + .1 * k : 1 - .06 * k})`; m.style.boxShadow = me ? `0 0 0 ${5 * k}px ${won ? G : Rd}` : '' }) } });
       line(s, 17, others === N - 1 ? `${solo.name} ${c((won ? 'made ' : 'lost ') + amt, won ? G : Rd)}. The other<br>${NUM[others]} ${c((won ? 'lost ' : 'made ') + amt, won ? Rd : G)} each.` : `${solo.name} ${c((won ? 'made ' : 'lost ') + amt, won ? G : Rd)}.`) }
-    else { const r = D.ai.filter(a => x.right.includes(a.k)); line(s, 15, r.length ? `${r.length} of ${N} bet on a ${dir(x.side[r[0].k])}.` : `All ${NUM[N]} bet the wrong way.`); line(s, 17, r.length ? `They ${c('made ' + amt, G)} each.` : `Each ${c('lost ' + amt, Rd)}.`) } }
+    else { const r = D.ai.filter(a => x.right.includes(a.k)); line(s, 15, r.length ? `${r.length} of ${N} went ${dir(x.side[r[0].k])}.` : `All ${NUM[N]} were on the wrong side.`); line(s, 17, r.length ? `They ${c('made ' + amt, G)} each.` : `Each ${c('lost ' + amt, Rd)}.`) } }
 
   // 3 who won, counted from last place up; the winner lands on the bed's drop, in gold
   { const lit = a => a.pnl >= 0 ? [.45, 0, 0] : [0, .75, 0], s = scene(22, 33, lit(D.ai.at(-1))); s.fx2 = [...D.ai].reverse().map((a, j) => [24 + j * 2, j === N - 1 ? [0, 0, .95] : lit(a)]);
@@ -85,9 +85,9 @@ function build() {
   // 4 why: the winner's lean, and whether the market leaned the same way
   { const s = scene(33, 46, first.lean === 'BEAR' ? [0, .75, 0] : [.45, 0, 0]), bear = first.lean === 'BEAR', share = bear ? first.shorts / first.calls : first.longs / first.calls, n10 = Math.round(share * 10), way = bear ? 'fall' : 'rise', agree = bear ? mk.down > mk.up : mk.up > mk.down, plain = bear ? mk.short : mk.long;
     line(s, 33, D.final ? `How did ${first.name} win?` : `How is ${first.name} winning?`);
-    line(s, 34.5, `It bet on a ${way}<br>${c(n10 >= 10 ? 'every single time' : n10 + ' times out of 10', Au)}.`);
+    line(s, 34.5, `It went ${bear ? 'short' : 'long'}<br>${c(n10 >= 10 ? 'every single time' : n10 + ' times out of 10', Au)}.`);
     if (agree) line(s, 37, `And most stocks did ${way}:<br>${c((bear ? mk.down : mk.up) + ' of ' + nm, bear ? Rd : G)}.`);
-    if (agree && plain > first.pnl) line(s, 39.5, `Betting on a ${way} every<br>single time would have<br>${c('made even more', G)}.`) }
+    if (agree && plain > first.pnl) line(s, 39.5, `Going ${bear ? 'short' : 'long'} every<br>single time would have<br>${c('made even more', G)}.`) }
 
   // 5 who is out (who replaces it is not this video's news)
   { const out = D.ai.filter(a => D.releg.includes(a.k)), s = scene(46, 52, out.length ? [0, .85, 0] : [.45, 0, 0], false);

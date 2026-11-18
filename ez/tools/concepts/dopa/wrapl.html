@@ -68,21 +68,21 @@ function build() {
   S.ln = ord.map(k => { const g = svg('g', {}, S.svg), mk = (st, o) => svg('path', { fill: 'none', stroke: st, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: o }, g);
     return { k, g, u: mk('#0e0c0b', .7), p: mk('url(#sg)', 1), o: mk(k === lead.k ? Au : '#5f5853', 0), hd: add(`<div class="hd">${L.mark(k, 44)}<i class="rc"></i><i class="rg"></i></div>`, hud) } });
   // --- the script ---
-  const mkI = (k, s = 64) => L.mark(k, s), nm = a => a.name, up = ex.move > 0, sideW = up ? 'rise' : 'fall', numW = ['no', 'one', 'two', 'three', 'four'][ex.wrong.length] || ex.wrong.length;
+  const mkI = (k, s = 64) => L.mark(k, s), nm = a => a.name, up = ex.move > 0, sideW = up ? 'long' : 'short', numW = ['no', 'one', 'two', 'three', 'four'][ex.wrong.length] || ex.wrong.length;
   const ord4 = ['1st', '2nd', '3rd', '4th', '5th', '6th'], col = (v, s) => `<b style="color:${v >= 0 ? G : Rd}">${s}</b>`;
   // a scene: its lines and pictures in order. A line steps back to 35% when the next line arrives; a picture goes with the line above it.
   const sc = (id, t0, t1, els) => { const el = add(`<div class="sc" id="${id}">${els.map(e => `<div class="${e.c || 'ln'}">${e.h}</div>`).join('')}</div>`, hud); let nextLine = 1e9;
     for (let i = els.length - 1; i >= 0; i--) { const e = els[i]; e.el = el.children[i]; e.dim = e.keep ? 1e9 : nextLine; if (!e.pic && !e.keep) nextLine = e.t } return { id, t0, t1, els, el } };
   S.sc = [
-    sc('c1', T.s1.t, T.s1.end, [{ t: T.s1.t, h: `${D.ai.length} AIs bet on ${D.total} earnings reports.` }, { t: T.s1.l2, h: 'Each time: will the stock go up, or down?' }, { t: T.s1.l3, h: '$100K a bet. Not real money.' }]),
+    sc('c1', T.s1.t, T.s1.end, [{ t: T.s1.t, h: `${D.ai.length} AIs bet on ${D.total} earnings reports.` }, { t: T.s1.l2, h: `Each time: ${col(1, 'long')} or ${col(-1, 'short')}?` }, { t: T.s1.l3, h: '$100K on every trade.' }]),
     sc('c2', T.s2.t, T.s2.end, [{ t: T.s2.t, h: `${ex.logo ? `<img src="${ex.logo}"${ex.dark ? ' style="background:#2a2522"' : ''}>` : ''}One example: ${ex.co}.` }, { t: T.s2.l2, h: `After earnings, the stock ${col(ex.move, (up ? 'rose ' : 'fell ') + Math.round(Math.abs(ex.move)) + '%')}.` },
-      { t: T.s2.l3, h: `${mkI(S.exK)}Only ${nm(A(S.exK))} bet on a ${sideW}.` }, { t: T.s2.l4, h: `${nm(A(S.exK))} ${col(1, 'made ' + K(ex.p[S.exK]))}. The other ${numW} ${col(-1, 'lost ' + K(ex.p[ex.wrong[0]] || 0))} each.` }]),
+      { t: T.s2.l3, h: `${mkI(S.exK)}Only ${nm(A(S.exK))} went ${sideW}.` }, { t: T.s2.l4, h: `${nm(A(S.exK))} ${col(1, 'made ' + K(ex.p[S.exK]))}. The other ${numW} ${col(-1, 'lost ' + K(ex.p[ex.wrong[0]] || 0))} each.` }]),
     sc('c3', T.s3.t, T.s3.end, [{ t: T.s3.t, h: FINAL ? `After ${D.total} reports:` : `After ${n} of ${D.total} reports:` }, ...[...D.ai].reverse().map((a, j) => ({ t: T.s3.v[j] ?? T.s3.v[T.s3.v.length - 1], gold: a === lead,
       h: `${mkI(a.k, 60)}${ord4[a.rank - 1]} · ${nm(a)} · ${a === lead ? (a.pnl >= 0 ? 'made ' : 'lost ') + K(a.pnl) : col(a.pnl, (a.pnl >= 0 ? 'made ' : 'lost ') + K(a.pnl))}` }))]),
-    sc('c4', T.s4.t, T.s4.end, [{ t: T.s4.t, h: FINAL ? `How did ${nm(lead)} win?` : `How is ${nm(lead)} winning?` }, { t: T.s4.l2, h: `It bet on a ${bear ? 'fall' : 'rise'} ${col(bear ? -1 : 1, Math.round((bear ? lead.shortPct : 100 - lead.shortPct) / 10) + ' times out of 10')}.` },
+    sc('c4', T.s4.t, T.s4.end, [{ t: T.s4.t, h: FINAL ? `How did ${nm(lead)} win?` : `How is ${nm(lead)} winning?` }, { t: T.s4.l2, h: `It went ${bear ? 'short' : 'long'} ${col(bear ? -1 : 1, Math.round((bear ? lead.shortPct : 100 - lead.shortPct) / 10) + ' times out of 10')}.` },
       { t: T.s4.dots, pic: 1, c: 'dots', h: Array.from({ length: 10 }, () => '<i></i>').join('') },
       ...((bear ? M.down > M.up : M.up > M.down) ? [{ t: T.s4.l3, h: `And most stocks did ${bear ? 'fall' : 'rise'}: ${col(bear ? -1 : 1, (bear ? M.down : M.up) + ' of ' + n)}.` }, { t: T.s4.bar, pic: 1, c: 'bar', h: `<i style="background:${bear ? Rd : G}"></i>` }] : []),
-      ...(bear && M.short > lead.pnl ? [{ t: T.s4.l4, h: 'Betting on a fall every single time would have made even more.' }] : [])]),
+      ...(bear && M.short > lead.pnl ? [{ t: T.s4.l4, h: 'Going short every single time would have made even more.' }] : [])]),
     sc('c5', T.s5.t, T.s5.end, rel.length ? [{ t: T.s5.t, h: rel.length > 1 ? `${['', 'One', 'Two', 'Three'][rel.length] || rel.length} AIs are out.` : 'One AI is out.' }, { t: T.s5.l2, h: `${rel.map(a => mkI(a.k)).join('')}${rel.map(nm).join(' and ')} ${rel.length > 1 ? 'were' : 'was'} wrong more often than right.` }, { t: T.s5.l3, h: `<b style="color:${Rd}">Relegated.</b>` }]
       : [{ t: T.s5.t, h: 'No AI is out.' }, { t: T.s5.l2, h: 'All four were right more often than wrong.' }]),
     sc('c6', T.s6.t, T.s6.end, [{ t: T.s6.t, keep: 1, c: 'ln g6', h: `<span class="mkw">${L.mark(lead.k, 72)}<i></i></span>${nm(lead)} ${FINAL ? 'wins' : 'leads'} Season 1.` }, { t: T.s6.num, keep: 1, c: 'num', h: '' }, { t: T.s6.sm, keep: 1, c: 'sm', h: 'Season 2 soon.' }])];

@@ -1,0 +1,171 @@
+<!doctype html><meta charset="utf-8"><title>Season 1, the last round, in glass</title>
+<!-- The last round of Season 1 (R112 NVIDIA) in the Season 2 mockup's glass look (owner, 2026-11-18: "Use the glass, aspect, motions,
+  effects... as the last round of the season"; wording: long or short only, never "up or down", "a fall", "not real money", "every
+  earnings report"). s2a.html's engine: one frosted sheet that changes shape with every scene over slow brand-colour light, each
+  element arriving alone with a focus pull. Every number comes from data/r<n>.json (prep.js: the sheet, and Hyperliquid's price path
+  scaled onto the sheet's move). Six scenes, one thought each, rolled out one element at a time:
+  1 the company, the last trade of Season 1   2 all four went long   3 the report, the path, the move at the close
+  4 what each lost (or made)   5 Season 1 is over: the final standings, 4th to 1st   6 the winner and its exact total
+  ?r=<round>. The bed m2-phonk drops (14.79 s into it) on the move. window.R(t), READY, CUES, MUSIC, DUR as the other pages.
+  Render: bash wrapx.sh "nvglass.html?r=112" 28 post/r112-NVDA-finale-glass m2-phonk 0 .32 -->
+<style id="base"></style>
+<style>
+#st{position:absolute;inset:0;overflow:hidden}
+#fld{position:absolute;inset:0}
+.bl{position:absolute;left:0;top:0;border-radius:50%}
+.bar{position:absolute;left:50%;top:50%;width:2200px;margin-left:-1100px;transform-origin:50% 50%}
+#rg{position:absolute;left:0;top:0;width:1080px;height:1350px;overflow:visible}
+#cam{position:absolute;inset:0}
+#gl{position:absolute;left:0;top:0;overflow:hidden;
+  background:linear-gradient(158deg,rgba(242,237,230,.15),rgba(242,237,230,.055) 42%,rgba(242,237,230,.085));
+  -webkit-backdrop-filter:blur(26px) saturate(160%) brightness(1.12);backdrop-filter:blur(26px) saturate(160%) brightness(1.12);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5),inset 1.5px 0 0 rgba(255,255,255,.16),inset 0 -1.5px 0 rgba(0,0,0,.4),inset -1px 0 0 rgba(0,0,0,.18),0 34px 90px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.35)}
+#gl .sp{position:absolute;inset:-60%;background:linear-gradient(118deg,transparent 44%,rgba(255,255,255,.2) 48.5%,rgba(255,255,255,.05) 51.5%,transparent 56%)}
+#gl .tp{position:absolute;left:0;right:0;top:0;height:46%;background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.sc{position:absolute;inset:0}
+.c{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.hl{font:900 150px/1 Inter;letter-spacing:-.045em}
+.sub{font:800 72px/1 Inter;letter-spacing:-.03em}
+.lab{font:600 34px 'Geist Mono';letter-spacing:.2em;color:#a39b94}
+.fit{display:inline-block}
+.g{color:#55d6a2}.r{color:#e8576b}.au{color:#fdbc2a}
+.row{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:34px}
+.row .m{display:flex;flex-direction:column;align-items:center;gap:18px;font:600 30px 'Geist Mono';letter-spacing:.04em;color:#a39b94}
+.lg{display:inline-block;width:240px;height:240px;border-radius:58px;background:#fff;box-shadow:0 18px 50px rgba(0,0,0,.45);overflow:hidden}
+.lg img{width:100%;height:100%;object-fit:contain;padding:26px;display:block}
+#ch{position:absolute;left:0;top:0;width:1080px;height:1350px;overflow:visible}
+.tag{position:absolute;font:800 46px/1 Inter;letter-spacing:-.02em;padding:12px 20px;border-radius:20px;background:rgba(14,12,11,.55);box-shadow:inset 0 0 0 1.5px rgba(242,237,230,.14)}
+.ax{position:absolute;font:600 24px 'Geist Mono';letter-spacing:.14em;color:#8e8680;white-space:nowrap}
+.sr{position:absolute;left:150px;width:780px;height:132px;display:flex;align-items:center;gap:26px}
+.sr .rk{width:92px;font:600 32px 'Geist Mono';letter-spacing:.06em;color:#8e8680}
+.sr .nm{font:800 62px/1 Inter;letter-spacing:-.03em;flex:1}
+.sr .am{font:800 62px/1 Inter;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.sr:not(:last-child)::after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:1.5px;background:rgba(242,237,230,.1)}
+.ring{display:inline-block;border-radius:56px;box-shadow:0 0 0 6px #fdbc2a,0 0 44px rgba(253,188,42,.5)}
+.tot{font:700 96px/1 'Geist Mono';letter-spacing:-.02em;color:#fdbc2a;font-variant-numeric:tabular-nums}
+.bug b{color:#fdbc2a}
+</style>
+<div id="st">
+  <div id="fld"></div>
+  <div id="cam"><div id="gl"><div class="tp"></div><div class="sp"></div></div><div id="scs"></div></div>
+  <div class="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>SEASON 1 · FINAL ROUND</b></div>
+  <div class="fine" id="fine"></div>
+  <div id="vig"></div><canvas id="grain"></canvas>
+</div>
+<script src="lib.js"></script>
+<script>
+const q = new URLSearchParams(location.search), RN = +(q.get('r') || 112);
+// scene starts: company | sides | report, path, move | the money | the standings | the winner
+const T = [0, 3.2, 7.4, 14.8, 19.0, 24.2], DUR = 28, MV = T[2] + 5.4; T.push(DUR + 9);
+const G = [[540, 640, 860, 760, 88], [540, 640, 940, 720, 88], [540, 695, 1000, 960, 72], [540, 650, 900, 690, 88], [540, 690, 900, 910, 80], [540, 650, 860, 770, 96]];
+const Gn = '#55d6a2', Rd = '#e8576b', Au = '#fdbc2a';
+const S = {}, C = []; let t = 0, grain, D;
+const add = (h, p) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
+const sp = (x, f = 1.15, d = 8.5) => x <= 0 ? 0 : 1 - Math.exp(-d * x) * Math.cos(2 * Math.PI * f * x);
+const arrive = (el, t0, dur = .45, dy = 22, bl = 9) => { const k = L.eo(L.n(t, t0, t0 + dur)); el.style.opacity = k; el.style.transform = `translateY(${dy * (1 - k)}px)`; el.style.filter = k < 1 ? `blur(${(bl * (1 - k)).toFixed(2)}px)` : 'none'; return k };
+const pop = (el, a, s0 = .84, bl = 9) => { const x = sp(t - a, 1.25, 8); el.style.opacity = L.n(t, a, a + .16); el.style.transform = `scale(${(s0 + (1 - s0) * x).toFixed(4)})`; el.style.filter = t < a + .4 ? `blur(${(bl * (1 - L.n(t, a, a + .4))).toFixed(2)}px)` : 'none' };
+const DAY = { MON: 'Monday', TUE: 'Tuesday', WED: 'Wednesday', THU: 'Thursday', FRI: 'Friday', SAT: 'Saturday', SUN: 'Sunday' };
+const NUM = ['No', 'One', 'Two', 'Three', 'All four'], Kk = v => (v < 0 ? '−' : '+') + '$' + Math.round(Math.abs(v) / 1000) + 'K', ORD = ['1st', '2nd', '3rd', '4th', '5th'];
+
+function build() {
+  const fld = L.$('#fld'), scs = L.$('#scs'), A = k => D.ai.find(a => a.k === k), n = D.ai.length, down = D.move < 0;
+  const longs = D.ai.filter(a => a.side === 'LONG'), shorts = D.ai.filter(a => a.side === 'SHORT'), one = !longs.length || !shorts.length, right = D.ai.filter(a => a.right), wrong = D.ai.filter(a => !a.right);
+  S.one = one; S.sideC = one ? (longs.length ? Gn : Rd) : Au; S.resC = !wrong.length ? Gn : !right.length ? Rd : Au;
+  // light: gold behind the sheet; green and red keep to their corners and come in only while the gold is out (as s2a)
+  S.LT = [0, T[1], T[2], T[2] + 3, T[3], T[4], T[5]];
+  const sg = one ? (longs.length ? 1 : 0) : .6, sr = one ? (longs.length ? 0 : 1) : .6, pk0 = (D.path || []).reduce((m, p) => Math.max(m, p[1]), 0);
+  S.bl = [['253,188,42', 980, [1, 0, 0, 0, 0, .85, 1.15], [540, 660], [540, 660], 150, 120, 15, 0],
+    ['85,214,162', 780, [.4, .12 + .88 * sg, down ? (pk0 > 1 ? .9 : .15) : .5, down ? .1 : 1, !wrong.length ? 1 : .1, .3, .3], [20, 90], [270, 540], 60, 70, 13, 2.1],
+    ['232,87,107', 780, [.4, .12 + .88 * sr, down ? .2 : .2, down ? 1 : .1, !right.length ? 1 : wrong.length ? .5 : .1, .3, .3], [1070, 1290], [820, 900], 60, 70, 17, 4.2]]
+    .map(([c, sz, K, far, near, ax, ay, per, ph]) => ({ K, far, near, ax, ay, per, ph, el: add(`<div class="bl" style="width:${sz}px;height:${sz}px;margin:${-sz / 2}px 0 0 ${-sz / 2}px;background:radial-gradient(closest-side,rgba(${c},.5),rgba(${c},.2) 38%,rgba(${c},0) 74%)"></div>`, fld) }));
+  S.rg = add(`<svg id="rg">${[150, 250, 350, 450, 550, 650, 750, 850, 950, 1050].map(r => `<circle cx="0" cy="0" r="${r}" fill="none" stroke="rgba(242,237,230,.13)" stroke-width="1.5"/>`).join('')}</svg>`, fld);
+  S.bars = [['242,237,230', .2, -31, 9, 0], ['242,237,230', .16, -31, 5, .5]].map(([c, a, rot, h, off]) => ({ rot, off, el: add(`<div class="bar" style="height:${h}px;margin-top:${-h / 2}px;background:linear-gradient(90deg,rgba(${c},0),rgba(${c},${a}) 30%,rgba(${c},${a}) 70%,rgba(${c},0))"></div>`, fld) }));
+  const sc = () => add('<div class="sc"></div>', scs);
+  // 1 the company
+  { const s = sc(); S.lg = add(`<div class="c" style="top:322px"><span class="lg"><img src="${D.logo}" alt=""></span></div>`, s); S.co = add(`<div class="c hl" style="top:622px"><span class="fit">${D.co}</span></div>`, s);
+    S.l1 = add(`<div class="c sub" style="top:846px;font-size:58px;font-weight:700"><span class="fit">The last trade of Season 1.</span></div>`, s) }
+  // 2 the sides
+  { const s = sc(); S.h2 = add(`<div class="c sub" style="top:360px;font-size:84px">${one ? (n === 4 ? 'All four AIs' : `All ${n} AIs`) : `${longs.length} long. ${shorts.length} short.`}</div>`, s);
+    S.b2 = add(`<div class="c hl" style="top:476px;font-size:176px;color:${S.sideC}"><span class="fit">${one ? `went ${longs.length ? 'long' : 'short'}.` : ''}</span></div>`, s);
+    S.r2 = add(`<div class="row" style="top:${one ? 742 : 560}px">${D.ai.map(a => `<div class="m">${L.mark(a.k, 144)}<span style="color:${a.side === 'LONG' ? Gn : Rd}">${a.side}</span></div>`).join('')}</div>`, s); S.m2 = L.$$('.m', S.r2) }
+  // 3 the report, the path, the move
+  { const s = sc(); S.h3 = add(`<div class="c sub" style="top:252px;font-size:64px"><span class="fit">Then ${D.co} reported earnings.</span></div>`, s);
+    const X0 = 120, X1 = 960, Y0 = 440, Y1 = 800, P = D.path && D.path.length > 2 ? D.path : [[0, 0], [D.total, D.move]], hi = Math.max(0, ...P.map(p => p[1])), lo = Math.min(0, ...P.map(p => p[1])), pad = (hi - lo) * .1;
+    const X = m => X0 + (X1 - X0) * m / D.total, Y = v => Y0 + (hi + pad - v) / (hi - lo + 2 * pad) * (Y1 - Y0), pts = P.map(p => [X(p[0]), Y(p[1])]), cum = [0];
+    for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    // the turn worth a pause: the furthest point against the final move, when it is a real swing (over 1%) before the close
+    let pk = -1; P.forEach((p, i) => { if (Math.sign(p[1]) === -Math.sign(D.move) && Math.abs(p[1]) > 1 && (pk < 0 || Math.abs(p[1]) > Math.abs(P[pk][1]))) pk = i });
+    const y0 = Y(0), off = ((y0 - Y0 + 60) / (Y1 - Y0 + 120) * 100).toFixed(2);
+    S.ch = add(`<svg id="ch"><defs><linearGradient id="lg1" gradientUnits="userSpaceOnUse" x1="0" y1="${Y0 - 60}" x2="0" y2="${Y1 + 60}"><stop offset="${off}%" stop-color="${Gn}"/><stop offset="${off}%" stop-color="${Rd}"/></linearGradient></defs>
+      <line x1="${X0}" y1="${y0}" x2="${X1}" y2="${y0}" stroke="rgba(242,237,230,.28)" stroke-width="2" stroke-dasharray="3 9"/>
+      <path id="pl" d="M${pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L')}" fill="none" stroke="url(#lg1)" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="${cum[cum.length - 1].toFixed(1)}" filter="drop-shadow(0 0 10px rgba(0,0,0,.4))"/>
+      <circle id="dot" r="11" fill="#f2ede6"/></svg>`, s);
+    S.pl = L.$('#pl', S.ch); S.dot = L.$('#dot', S.ch); S.pts = pts; S.cum = cum; S.len = cum[cum.length - 1]; S.fp = pk > 0 ? cum[pk] / S.len : 0; S.y0 = y0;
+    S.axA = add(`<div class="ax" style="left:${X0}px;top:${y0 + (P.slice(0, Math.ceil(P.length * .3)).reduce((a, p) => a + p[1], 0) > 0 ? 16 : -44)}px">${(DAY[D.day0] || D.day0).toUpperCase()}'S CLOSE</div>`, s);
+    if (pk > 0) { const v = P[pk][1]; S.tag = add(`<div class="tag" style="left:${pts[pk][0] - 4}px;top:${pts[pk][1] - 84}px;color:${v > 0 ? Gn : Rd}">${v > 0 ? '+' : '−'}${Math.round(Math.abs(v))}%</div>`, s);
+      S.c3 = add(`<div class="c sub" style="top:900px;font-size:76px">${v > 0 ? 'First it jumped.' : 'First it dropped.'}</div>`, s) }
+    S.mv = add(`<div class="c hl" style="top:866px;font-size:178px;color:${down ? Rd : Gn}">${L.pct(D.move)}</div>`, s);
+    S.mvl = add(`<div class="c lab" style="top:1072px">BY ${(DAY[D.day1] || D.day1).toUpperCase()}'S CLOSE</div>`, s) }
+  // 4 the money
+  { const s = sc(), same = one, amt = '$' + D.amt.toLocaleString('en-US');
+    S.h4 = add(`<div class="c sub" style="top:378px;font-size:74px"><span class="fit">${same ? `${D.ai[0].side === 'LONG' ? 'Long' : 'Short'} was the ${right.length ? 'right' : 'wrong'} side.` : `${NUM[right.length] || right.length} ${right.length === 1 ? 'was' : 'were'} on the right side.`}</span></div>`, s);
+    S.r4 = add(`<div class="row" style="top:512px;gap:26px">${D.ai.map(a => `<div class="m">${L.mark(a.k, 118)}${same ? '' : `<span style="color:${a.right ? Gn : Rd}">${a.right ? '+' : '−'}${amt}</span>`}</div>`).join('')}</div>`, s); S.m4 = L.$$('.m', S.r4);
+    S.b4 = add(`<div class="c hl" style="top:${same ? 690 : 742}px;font-size:${same ? 188 : 120}px;color:${S.resC}"><span class="fit">${same ? (right.length ? '+' : '−') + amt : `${right.map(a => a.name).join(', ')} made ${amt}.`}</span></div>`, s);
+    S.e4 = add(`<div class="c lab" style="top:${same ? 902 : 888}px">${same ? 'EACH' : ''}</div>`, s) }
+  // 5 the standings, arriving 4th to 1st
+  { const s = sc(); S.h5 = add(`<div class="c sub" style="top:296px;font-size:84px">Season 1 is over.</div>`, s);
+    S.rows = D.order.map((k, i) => add(`<div class="sr" style="top:${452 + i * 150}px"><span class="rk">${ORD[i]}</span>${L.mark(k, 96)}<span class="nm"${i ? '' : ` style="color:${Au}"`}>${A(k).name}</span><span class="am" style="color:${i ? (D.season1[k] < 0 ? Rd : Gn) : Au}">${Kk(D.season1[k])}</span></div>`, s)) }
+  // 6 the winner
+  { const s = sc(), w = A(D.order[0]); S.w6 = add(`<div class="c" style="top:338px"><span class="ring">${L.mark(w.k, 210)}</span></div>`, s);
+    S.a6 = add(`<div class="c hl" style="top:606px;font-size:132px"><span class="fit">${w.name} wins</span></div>`, s); S.b6 = add(`<div class="c hl" style="top:738px;font-size:132px;color:${Au}">Season 1.</div>`, s);
+    S.t6 = add(`<div class="c tot" style="top:908px">${L.money(D.season1[w.k])}</div>`, s) }
+  S.all = L.$$('.sc', scs);
+  L.$('#fine').textContent = `$100K on every trade${D.path ? ' · price path: ' + (/Hyperliquid/.test(D.pathNote || '') ? 'Hyperliquid ' + D.ticker : 'exchange prices') : ''}`;
+  // sound: sparing; the bed drops on the move
+  C.push([.1, 'r11-swell', .1], [T[1] + .8, 'r11-pluck', .09], [T[2] + .1, 'r11-ping', .08], [MV - 1.6, 'sfx-riser', .12], [MV, 'sfx-boom', .22], [T[3] + 1.6, 'r11-thump', .16], [T[4] + .1, 'r11-ping', .08],
+    ...[0, 1, 2].map(j => [T[4] + .9 + j * .62, 'r11-card', .11]), [T[4] + 2.9, 'sfx-chime', .13], [T[5] + .1, 'r11-sparkle', .1], [T[5] + .95, 'r11-kaching', .1]);
+  window.MUSIC = { f: q.get('bed') || 'm2-phonk', at: +(q.get('at') || (14.79 - MV).toFixed(2)) };
+}
+
+function R(tt) { t = tt; if (grain) grain(t);
+  let i = 0; while (i < 5 && t >= T[i + 1]) i++;
+  // the light
+  let li = 0; while (li < 6 && t >= S.LT[li + 1] - .3) li++;
+  S.bl.forEach((o, j) => { const a0 = o.K[Math.max(0, li - 1)], b0 = o.K[li], k = li ? L.eio(L.n(t, S.LT[li] - .3, S.LT[li] + .5)) : 1, st = L.lerp(a0, b0, k), nr = j ? L.cl((st - .35) / .5) : 0;
+    const a = 2 * Math.PI * t / o.per + o.ph, x = L.lerp(o.far[0], o.near[0], nr) + o.ax * Math.sin(a), y = L.lerp(o.far[1], o.near[1], nr) + o.ay * Math.cos(a * .8);
+    o.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${(1 + .1 * Math.sin(a * 1.3)).toFixed(3)})`; o.el.style.opacity = Math.min(1, st).toFixed(3) });
+  S.rg.style.transform = `translate(${(880 - 14 * t).toFixed(1)}px,${(230 + 9 * t).toFixed(1)}px)`;
+  S.bars.forEach(o => { const p = (t / 26 + o.off) % 1; o.el.style.transform = `rotate(${o.rot}deg) translateY(${(-1100 + 2200 * p).toFixed(1)}px)` });
+  // the sheet springs from the last scene's box to this one's
+  const PU = .04, end = j => Math.min(T[j + 1], DUR), pu = 1 + PU * L.n(t, T[i], end(i)), k = i ? sp(t - T[i]) : 1, A = G[Math.max(0, i - 1)], B = G[i], g = A.map((v, j) => L.lerp(v * (j > 1 && j < 4 ? 1 + PU : 1), B[j], k) * (j > 1 && j < 4 ? pu : 1));
+  const w = Math.max(60, g[2]), h = Math.max(60, g[3]), gl = L.$('#gl'), in0 = sp(t - .05, 1.05, 9);
+  gl.style.width = w.toFixed(1) + 'px'; gl.style.height = h.toFixed(1) + 'px'; gl.style.borderRadius = Math.min(g[4], h / 2).toFixed(1) + 'px';
+  gl.style.transform = `translate(${(g[0] - w / 2).toFixed(1)}px,${(g[1] - h / 2 + 40 * (1 - Math.min(1, in0))).toFixed(1)}px) scale(${(.92 + .08 * in0).toFixed(4)})`; gl.style.opacity = L.n(t, .02, .3);
+  gl.firstElementChild.nextElementSibling.style.transform = `translateX(${(-62 + 124 * L.eio(L.n(t, T[i] + 1.2, end(i) - .2))).toFixed(2)}%)`;
+  S.all.forEach((s, j) => { const out = j < 5 ? 1 - L.n(t, T[j + 1] - .2, T[j + 1] - .02) : 1, on = t >= T[j] - .02 && t < T[j + 1] + .05; s.style.display = on ? 'block' : 'none'; s.style.opacity = out;
+    if (on) { s.style.transformOrigin = `${G[j][0]}px ${G[j][1]}px`; s.style.transform = `scale(${(1 + PU * L.n(t, T[j], end(j))).toFixed(5)})` } s.style.filter = out < 1 ? `blur(${(8 * (1 - out)).toFixed(2)}px)` : 'none' });
+  if (i === 0) { pop(S.lg.firstElementChild, .12, .8); S.lg.style.opacity = 1; arrive(S.co, .5, .45, 26); arrive(S.l1, 1.3, .45) }
+  if (i === 1) { const t0 = T[1]; arrive(S.h2, t0 + .1, .4); pop(S.b2, t0 + .85, .86); S.m2.forEach((m, j) => { const a = t0 + (S.one ? 1.6 : .9) + j * .2, x = sp(t - a, 1.3, 8); m.style.opacity = L.n(t, a, a + .16); m.style.transform = `translateY(${(18 * (1 - Math.min(1, x))).toFixed(1)}px) scale(${(.84 + .16 * x).toFixed(4)})` }) }
+  if (i === 2) { const t0 = T[2]; arrive(S.h3, t0 + .1, .4); S.ch.style.opacity = L.n(t, t0 + .8, t0 + 1.1); S.axA.style.opacity = L.n(t, t0 + .8, t0 + 1.1);
+    // the line draws to the turn, rests there while it is named, then runs to the close, where the move lands on the bed's drop
+    const f = S.fp ? L.lerp(0, S.fp, L.eo(L.n(t, t0 + 1.1, t0 + 2.1))) + (1 - S.fp) * L.eio(L.n(t, t0 + 3.3, MV - .15)) : L.eio(L.n(t, t0 + 1.1, MV - .15)), d = f * S.len;
+    S.pl.setAttribute('stroke-dashoffset', (S.len - d).toFixed(1)); let n = 1; while (n < S.cum.length - 1 && S.cum[n] < d) n++; const u = (d - S.cum[n - 1]) / Math.max(1e-6, S.cum[n] - S.cum[n - 1]), a = S.pts[n - 1], b = S.pts[n];
+    const dx = L.lerp(a[0], b[0], L.cl(u)), dy = L.lerp(a[1], b[1], L.cl(u)); S.dot.setAttribute('cx', dx.toFixed(1)); S.dot.setAttribute('cy', dy.toFixed(1)); S.dot.setAttribute('fill', dy <= S.y0 ? Gn : Rd);
+    S.dot.setAttribute('r', (11 + 7 * Math.exp(-6 * Math.max(0, t - MV)) * (t >= MV ? 1 : 0)).toFixed(1));
+    if (S.tag) { pop(S.tag, t0 + 2.1, .8, 5); const o = 1 - L.n(t, MV - .5, MV - .2); S.c3.style.opacity = 0; arrive(S.c3, t0 + 2.3, .4); S.c3.style.opacity = +S.c3.style.opacity * o; if (o < 1) S.c3.style.filter = `blur(${(8 * (1 - o)).toFixed(2)}px)` }
+    pop(S.mv, MV, .8, 12); arrive(S.mvl, MV + .55, .4, 12) }
+  if (i === 3) { const t0 = T[3]; arrive(S.h4, t0 + .1, .4); S.m4.forEach((m, j) => { const a = t0 + .9 + j * .16, x = sp(t - a, 1.3, 8); m.style.opacity = L.n(t, a, a + .16); m.style.transform = `translateY(${(16 * (1 - Math.min(1, x))).toFixed(1)}px) scale(${(.86 + .14 * x).toFixed(4)})` });
+    pop(S.b4, t0 + 1.6, .82, 12); arrive(S.e4, t0 + 2.1, .35, 10) }
+  if (i === 4) { const t0 = T[4], n = S.rows.length; arrive(S.h5, t0 + .1, .4); S.rows.forEach((r, j) => { const a = t0 + .9 + (n - 1 - j) * .62 + (j ? 0 : .15), k = L.eo(L.n(t, a, a + .45)); r.style.opacity = k; r.style.transform = `translateX(${(-30 * (1 - k)).toFixed(1)}px) scale(${j ? 1 : (1 + .06 * Math.exp(-5 * Math.max(0, t - a))).toFixed(4)})`; r.style.filter = k < 1 ? `blur(${(8 * (1 - k)).toFixed(2)}px)` : 'none' }) }
+  if (i === 5) { const t0 = T[5]; pop(S.w6.firstElementChild, t0 + .05, .78); S.w6.style.opacity = 1; arrive(S.a6, t0 + .25, .4, 24); arrive(S.b6, t0 + .5, .4, 24); pop(S.t6, t0 + 1.2, .86, 10) }
+}
+window.R = R;
+(async () => {
+  await new Promise(res => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = (L.css.match(/@import url\('([^']+)'\)/) || [])[1]; l.onload = l.onerror = res; document.head.appendChild(l); setTimeout(res, 20000) });
+  L.$('#base').textContent = L.css; [L.models, D] = await Promise.all([fetch('models.json').then(r => r.json()), fetch(`data/r${RN}.json`).then(r => r.json())]); build();
+  const smp = L.$('#st').textContent + ' 0123456789+−$%,.KLONGSHORT';
+  await Promise.all(['900 150px Inter', '800 72px Inter', '700 58px Inter', '600 30px "Geist Mono"', '700 96px "Geist Mono"'].map(f => document.fonts.load(f, smp))); await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  S.all.forEach(s => s.style.display = 'block'); L.$$('.fit').forEach(f => { const w = f.offsetWidth, mx = 800; if (w > mx) f.parentNode.style.fontSize = Math.floor(parseFloat(getComputedStyle(f.parentNode).fontSize) * mx / w) + 'px' });
+  grain = L.grain(L.$('#grain'), .05); window.CUES = C; window.DUR = DUR; R(0); window.READY = 1;
+})();
+</script>

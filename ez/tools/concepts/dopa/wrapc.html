@@ -64,12 +64,12 @@ function build() {
   const n4 = D.ai.length, lead = D.ai[0], last = [...D.ai].reverse(); C.push([.03, 'r11-thump', .18]);
   // 1. what this is (cream: nobody is judged yet)
   scene(0, 23, Cr, false, `<div class="t e" data-m="0">${n4} AIs bet on ${D.total} earnings reports.</div><div class="mrow e" data-m="2">${D.ai.map(a => mk(a.k, 150)).join('')}</div>
-    <div class="t e" data-m="7">Each time: will the stock go <span class="cg">up</span>, or <span class="cr">down</span>?</div><div class="t e" data-m="15">$100K a bet. Not real money.</div>`);
+    <div class="t e" data-m="7">Each time: <span class="cg">long</span> or <span class="cr">short</span>?</div><div class="t e" data-m="15">$100K on every trade.</div>`);
   // 2. one example: the biggest move on which exactly one AI was right (black)
   const x = D.big.find(r => r.right.length === 1) || D.big[0], hero = ai(x.right[0] || D.ai[0].k), fell = x.move < 0, others = x.wrong.length, hs = x.side[hero.k] === 'SHORT';
   scene(23, 28, K, true, `<div class="t e" data-m="0">One example: ${x.logo ? `<span class="lgi"><img src="${x.logo}"></span>` : ''}${x.co}.</div>
     <div class="t e" data-m="4">After earnings, the stock <span class="${fell ? 'r' : 'g'} nw">${fell ? 'fell' : 'rose'} ${Math.round(Math.abs(x.move))}%</span>.</div>
-    <div class="t e" data-m="11">Only ${hero.name} bet on a ${hs ? 'fall' : 'rise'}.</div><div class="mrow e" data-m="13">${D.ai.map(a => mk(a.k, 116, a === hero ? 'on' : 'off')).join('')}</div>
+    <div class="t e" data-m="11">Only ${hero.name} went ${hs ? 'short' : 'long'}.</div><div class="mrow e" data-m="13">${D.ai.map(a => mk(a.k, 116, a === hero ? 'on' : 'off')).join('')}</div>
     <div class="t e" data-m="16"><span class="g">${hero.name} made ${kk(x.p[hero.k])}.</span> The other ${NUM[others] || others} <span class="r nw">lost ${kk(x.p[x.wrong[0]])}</span> each.</div>`);
   // 3. who won, 4th to 1st: a ground a place (red for a loss, green for a gain, gold for the first), the first on the bed's drop
   const hdr = FIN ? `After ${D.total} reports:` : `After ${D.rounds} of ${D.total} reports:`; let m = 51;
@@ -79,9 +79,9 @@ function build() {
   // 4. why (cream)
   const bear = lead.lean === 'BEAR', n10 = Math.round((bear ? lead.shorts : lead.longs) / lead.calls * 10), most = bear ? D.mkt.down > D.mkt.up : D.mkt.up > D.mkt.down, more = bear && D.mkt.short > lead.pnl;
   scene(m, 32, Cr, false, `<div class="t e" data-m="0">${FIN ? `How did ${lead.name} win?` : `How did ${lead.name} get ahead?`}</div>
-    <div class="t e" data-m="4">It bet on a ${bear ? 'fall' : 'rise'} <span class="ck">${n10} times out of 10</span>.</div>
+    <div class="t e" data-m="4">It went ${bear ? 'short' : 'long'} <span class="ck">${n10} times out of 10</span>.</div>
     ${most ? `<div class="t e" data-m="11">And most stocks did ${bear ? 'fall' : 'rise'}: <span class="ck">${bear ? D.mkt.down : D.mkt.up} of ${D.rounds}</span>.</div>` : ''}
-    ${more ? '<div class="t e" data-m="18">Betting on a fall every single time would have made even more.</div>' : ''}`); m += 32;
+    ${more ? '<div class="t e" data-m="18">Going short every single time would have made even more.</div>' : ''}`); m += 32;
   // 5. who is out (red: a loser is named)
   const out = D.ai.filter(a => D.releg.includes(a.k));
   if (out.length) { const o = out[0]; scene(m, 16, Rd, false, `<div class="t e" data-m="0">${out.length > 1 ? `${NUM[out.length][0].toUpperCase() + NUM[out.length].slice(1)} AIs are out.` : 'One AI is out.'}</div>
