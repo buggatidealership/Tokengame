@@ -79,3 +79,51 @@ money, bulls lost it), the accuracy, Kimi's relegation and its replacement, and 
 - Full draft: `bash wrapx.sh wrapk.html <seconds> x2p-s1-wrap-k-draft` (10 s chunks, one render at a time on the machine).
 - Bed: `python3 ../launchvid/hedra/ha.py <name> elevenlabs-music '<json>'` ($0.60; see `jobs.jsonl` for s1-wrap's input).
 - Checks: `python3 measure.py <mp4>`, `python3 smooth.py <mp4>`, `python3 ../fresh/palcheck.py <frames>`.
+
+---
+
+# Round 3 (owner, 2026-11-18, afternoon, after seeing takes C and L)
+
+The owner's decisions (asked, answered):
+- **Season 1 ends on Season 1.** The conclusion video is the last Season 1 post. It ends on the final leaderboard and the
+  winner, then **one small line**: "Season 2 soon." No Season 2 card, no empty seat, no "?" seat, no "new model" line.
+- **Kimi is out, and the Season 1 video says so** (under 50% on direction). Who replaces it is NOT said here: that is the
+  Season 2 launch video's news (Gemini and Qwen join; five models).
+- **Not the owner's wording** ("do not use my wording, use your own... optimized for Twitter crowd"). The deck below is
+  mine; the "top plan" claim is gone (unverified, and his words).
+- Post order tonight: Disney outcome, Home Depot outcome, NVIDIA outcome (a finale cut), then the Season 1 conclusion.
+- Alibaba (R113 in the sheet) is Season 2, round 1: Season 1 is 112 rounds and `wrap.json` never counts past 112.
+
+## The copy deck (every line is printed only while the data makes it true; numbers come from `wrap.json`)
+
+Hooks, one per take, complete by 3.0 s:
+- **K:** "4 AIs. 112 earnings reports." / "$100K on every trade." then "One made $172K. One lost $147K."
+  (the first and last P&L rounded to $K; only while the first is up and the last is down).
+- **L:** "We made 4 AIs trade earnings for a whole season." / "112 reports. Long or short. $100K a trade."
+- **C:** "4 AIs traded 112 earnings reports." / "Paper money. Real calls. Public record." / "The report cards."
+
+Shared lines:
+- Standings label: "Final P&L · 112 rounds" (draft: "P&L after 111 of 112 rounds").
+- A big round's verdict, by rule: one AI right: "Only Grok was short." (or long); one AI wrong: "Only GPT missed.";
+  nobody right: "All four got it wrong."; otherwise "Grok and Claude called it."
+- "64 of 111 stocks fell on earnings."
+- "The bears got paid. The bulls got rekt." (only while every BEAR is up and every BULL is down; else "Shorts beat longs.")
+- "Grok shorted 93 of its 103 calls." (the leader, while its `lean` is BEAR)
+- "Short everything: +$179,410. No AI beat that." (while `mkt.short > ai[0].pnl`; else "Short everything: +$X. Grok beat it.")
+- Accuracy head: "How often did they pick the right side?"
+- Relegation: "Kimi was wrong more often than right." / "Relegated." (for each AI in `releg`; no replacement named)
+- The winner, the last big beat: "Grok wins Season 1." with its P&L, on the bed's biggest moment.
+- The last line, small, under the winner: "Season 2 soon."
+
+Never: "coin flip", "top plan", "starting capital", "coming soon" as a card, a date for Season 2, a request to the viewer.
+
+## What each take changes
+
+- **K:** relegation shot without the "?" seat (Kimi's mark, its %, the line, the stamp); the recap grid ends with the winner's
+  tile growing to take the frame ("Grok wins Season 1." and the P&L) on the bed's drop at 48.0 s; "Season 2 soon." small at
+  the foot; cut the Season 2 card (the video may end 3 to 5 s earlier).
+- **L:** after the accuracy lanes and the relegation, the camera travels back to the end of the race for the last beat:
+  the final standings with the winner ringed in gold, "Grok wins Season 1.", on the bed's second drop (52.0 s);
+  "Season 2 soon." small; no empty lane, no end title card.
+- **C:** Kimi's card keeps RELEGATED; the run ends on the final table and then a full-bleed gold winner card
+  ("Grok wins Season 1.", the P&L) on the bed's last lift; "Season 2 soon." small; no seats, no "?".
