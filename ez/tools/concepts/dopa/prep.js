@@ -67,6 +67,19 @@ const rep = (() => { const m = fs.readFileSync(EZ + '/v53-terminal.html', 'utf8'
         pathPts[0] = [0, 0]; pathPts.push([(T1 - T0) / 60e3, move]); note = `Hyperliquid ${coin} 5m, close to close ${hm.toFixed(2)}%, scaled x${k.toFixed(4)} onto the sheet's ${move}%` }
       else note = `Hyperliquid ${coin} moved ${hm.toFixed(2)}% against the sheet's ${move}%: path refused` }
   }
+  // no Hyperliquid market (owner, 2026-11-18, on Disney: "it doesn't have the graph of the Disney trading"): for a US listing take the
+  // exchange's own 5-minute prices with the pre-market and after-hours sessions (Yahoo Finance chart API), fitted the same way: the
+  // close-to-close move must agree with the sheet's, and the path is scaled onto the sheet's move. Nobody trades between 8 pm and 4 am
+  // New York, so the line runs straight across the night.
+  if (!pathPts && tz === 'NEW YORK') { try {
+    const r = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(t)}?interval=5m&period1=${Math.floor(T0 / 1e3) - 3600}&period2=${Math.floor(T1 / 1e3) + 600}&includePrePost=true`, { headers: { 'user-agent': 'Mozilla/5.0' } });
+    const j = (await r.json()).chart.result[0], cl = j.indicators.quote[0].close, b = j.timestamp.map((x, i) => [x * 1e3, cl[i]]).filter(x => x[1] != null);
+    const near = ms => b.reduce((p, x) => Math.abs(x[0] - ms) < Math.abs(p[0] - ms) ? x : p);
+    if (b.length > 50) { const p0 = near(T0 - 300e3)[1], p1 = near(T1 - 300e3)[1], hm = (p1 / p0 - 1) * 100;
+      if (Math.abs(near(T0 - 300e3)[0] - (T0 - 300e3)) < 600e3 && Math.abs(near(T1 - 300e3)[0] - (T1 - 300e3)) < 600e3 && Math.abs(hm - move) <= Math.max(1.5, .15 * Math.abs(move))) { const k = move / hm;
+        pathPts = b.filter(x => x[0] > T0 - 300e3 && x[0] < T1 - 300e3).map(x => [Math.round((x[0] + 300e3 - T0) / 60e3), +((x[1] / p0 - 1) * 100 * k).toFixed(3)]);
+        pathPts[0] = [0, 0]; pathPts.push([(T1 - T0) / 60e3, move]); note = `exchange prices (Yahoo Finance ${t} 5m with pre-market and after-hours), close to close ${hm.toFixed(2)}%, scaled x${k.toFixed(4)} onto the sheet's ${move}%` }
+      else note = `Yahoo Finance ${t} moved ${hm.toFixed(2)}% against the sheet's ${move}%: path refused; only the two closes are shown` } } catch (e) { note = 'no Hyperliquid market and no exchange prices (' + e.message.slice(0, 60) + '): only the two closes are shown' } }
   const D = { n, ticker: t, co: ctx.TICKERS[t] || t, move, pct, tz, closeLabel: (closeH % 1 ? Math.floor(closeH) - 12 + ':30' : closeH - 12 + ':00') + ' PM',
     day0: DAYS[prev.getUTCDay()], day1: DAYS[resDay.getUTCDay()], total: (T1 - T0) / 60e3, open: (OPEN - T0) / 60e3, report: rep ? Math.round((rep - T0) / 60e3) : null,
     utcOff, closeH, path: pathPts, pathNote: note, ai, season0, season1, split, longs, shorts, kind, amt, line1, line3,
