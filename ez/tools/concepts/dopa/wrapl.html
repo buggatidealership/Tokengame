@@ -182,7 +182,7 @@ function build() {
   S.h50 = add(`<div id="h50" style="left:${x50 - 1.5}px;top:540px;height:${D.ai.length * 124}px"></div>`, pc); S.l50 = add(`<div id="l50" style="left:${x50}px;top:504px">50%</div>`, pc);
   const rl = S.arow.filter(r => r.rel), names = rl.map(r => r.a.name).join(' and ');
   S.cs = add(`<div id="cs" style="top:${552 + D.ai.length * 124 + 24}px"><span>${rl.length ? names + ': right less than half the time.' : 'All four: right more often than wrong.'}</span><span style="color:${Rd}">${rl.length ? 'Relegated.' : ''}</span></div>`, pc);
-  S.stamp = rl.length ? add(`<div id="stamp" style="left:${56 + 270 + 290}px;top:${552 + rl[0].i * 124 + 6}px">RELEGATED</div>`, pc) : null;
+  S.stamp = rl.length ? add(`<div id="stamp" style="left:${56 + 270 + rl[0].w + 14}px;top:${552 + rl[0].i * 124 + 6}px">RELEGATED</div>`, pc) : null;
   // 6 the end title, above the chart
   const tl = page('tl', { cx: ZX, cy: TY, z: 1 }), stay = ord.filter(k => !D.releg.includes(k)), nr = D.releg.length;
   S.tl = tl; add(`<img src="ezlogo.svg" alt=""><div class="a">SEASON 2</div><div class="b">COMING SOON</div><div class="ms">${stay.map(k => L.mark(k, 96)).join('')}${D.releg.map(() => '<div class="q mk">?</div>').join('')}</div><div class="zl">${nr ? stay.length + ' RETURN · ' + nr + ' NEW MODEL' + (nr > 1 ? 'S' : '') : ''}</div>`, tl);
@@ -281,6 +281,7 @@ window.R = R;
   const fit = (el, w, prop = 'fontSize') => { const sw = Math.max(...[...el.children].map(c => { const r = document.createRange(); r.selectNodeContents(c); return r.getBoundingClientRect().width * (1080 / (el.closest('.pg') ? el.closest('.pg').getBoundingClientRect().width : 1080)) })); if (sw > w) el.style.fontSize = Math.floor(parseFloat(getComputedStyle(el).fontSize) * w / sw) + 'px' };
   world.style.transform = 'none'; S.k1 = 1; fit(S.p1, 808); [S.b1h, S.b2h, S.ch, S.cs].forEach(e => fit(e, 968)); { const w = S.b1s.scrollWidth; if (w > 968) S.b1s.style.fontSize = Math.floor(74 * 968 / w) + 'px' }
   S.k2 = Math.min(1, 968 / S.tl.querySelector('.a').scrollWidth);
+  if (S.stamp) { const avail = 1024 - parseFloat(S.stamp.style.left), w = S.stamp.offsetWidth; if (w > avail) { const f = Math.max(30, Math.floor(60 * avail / w)); S.stamp.style.fontSize = f + 'px'; S.stamp.style.padding = '9px 14px 7px'; S.stamp.style.boxShadow = 'inset 0 0 0 4px #e8576b' } S.stamp.style.top = (parseFloat(S.stamp.style.top) + 44 - S.stamp.offsetHeight / 2) + 'px' }
   L.$$('.card').forEach(c => { const co = c.querySelector('.co'), mv = c.querySelector('.mv'), room = 968 - 68 - (c.querySelector('.c2 img') ? 126 : 0) - mv.offsetWidth - 26; if (co.scrollWidth > room) co.style.fontSize = Math.floor(92 * room / co.scrollWidth) + 'px'; L.$$('.chip .p', c).forEach(p => { p.textContent = money0(+p.parentElement.dataset.p) }) });
   S.cardH = Math.max(...L.$$('.card').map(c => c.offsetHeight)); L.$$('.card').forEach(c => c.style.height = S.cardH + 'px');
   S.vw = S.vrow.map(r => { r.vv.textContent = money0(r.v); return r.vv.offsetWidth });
