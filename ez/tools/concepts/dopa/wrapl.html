@@ -49,6 +49,7 @@ const win = (t, a, b, f = .35) => L.n(t, a, a + f) * (1 - L.n(t, b - f, b));    
 // the cut, in seconds: every arrival on a beat of the bed (120 BPM); the drop at 30.0, the lift at 54.0
 const T = { s1: { t: 0, marks: 1, l2: 2.5, l3: 4.5, end: 9.2 }, s2: { t: 9.5, ride: [10.2, 12.2], l2: 12.5, l3: 14.5, l4: 16.5, end: 21.6 }, s3: { t: 21.9, race: [22.6, 24.9], p: [25, 26.5, 28, 30], end: 33.3 },
   s4: { t: 33.5, l2: 34.5, dots: 36, l3: 37.5, bar: 39, l4: 40.5, end: 47 }, s5: { t: 47.5, l2: 48.5, l3: 50.5, end: 53.6 }, s6: { t: 54, num: 55, sm: 56.5, end: 59 } };
+T.s3.v = T.s3.p.map((t, j) => j === 3 ? t - .12 : t);   // when each place shows (the sounds stay on T.s3.p)
 function build() {
   const n = D.rounds, ord = D.order; A = k => D.ai.find(a => a.k === k); S.n = n; FINAL = D.final || q.get('final') === '1';
   let lo = 0, hi = 0; ord.forEach(k => D.s[k].forEach(v => { lo = Math.min(lo, v); hi = Math.max(hi, v) })); const pad = (hi - lo) * .06; S.lo = lo - pad; S.hi = hi + pad;
@@ -76,7 +77,7 @@ function build() {
     sc('c1', T.s1.t, T.s1.end, [{ t: T.s1.t, h: `${D.ai.length} AIs bet on ${D.total} earnings reports.` }, { t: T.s1.l2, h: 'Each time: will the stock go up, or down?' }, { t: T.s1.l3, h: '$100K a bet. Not real money.' }]),
     sc('c2', T.s2.t, T.s2.end, [{ t: T.s2.t, h: `${ex.logo ? `<img src="${ex.logo}"${ex.dark ? ' style="background:#2a2522"' : ''}>` : ''}One example: ${ex.co}.` }, { t: T.s2.l2, h: `After earnings, the stock ${col(ex.move, (up ? 'rose ' : 'fell ') + Math.round(Math.abs(ex.move)) + '%')}.` },
       { t: T.s2.l3, h: `${mkI(S.exK)}Only ${nm(A(S.exK))} bet on a ${sideW}.` }, { t: T.s2.l4, h: `${nm(A(S.exK))} ${col(1, 'made ' + K(ex.p[S.exK]))}. The other ${numW} ${col(-1, 'lost ' + K(ex.p[ex.wrong[0]] || 0))} each.` }]),
-    sc('c3', T.s3.t, T.s3.end, [{ t: T.s3.t, h: FINAL ? `After ${D.total} reports:` : `After ${n} of ${D.total} reports:` }, ...[...D.ai].reverse().map((a, j) => ({ t: T.s3.p[j] ?? T.s3.p[T.s3.p.length - 1], gold: a === lead,
+    sc('c3', T.s3.t, T.s3.end, [{ t: T.s3.t, h: FINAL ? `After ${D.total} reports:` : `After ${n} of ${D.total} reports:` }, ...[...D.ai].reverse().map((a, j) => ({ t: T.s3.v[j] ?? T.s3.v[T.s3.v.length - 1], gold: a === lead,
       h: `${mkI(a.k, 60)}${ord4[a.rank - 1]} · ${nm(a)} · ${a === lead ? (a.pnl >= 0 ? 'made ' : 'lost ') + K(a.pnl) : col(a.pnl, (a.pnl >= 0 ? 'made ' : 'lost ') + K(a.pnl))}` }))]),
     sc('c4', T.s4.t, T.s4.end, [{ t: T.s4.t, h: FINAL ? `How did ${nm(lead)} win?` : `How is ${nm(lead)} winning?` }, { t: T.s4.l2, h: `It bet on a ${bear ? 'fall' : 'rise'} ${col(bear ? -1 : 1, Math.round((bear ? lead.shortPct : 100 - lead.shortPct) / 10) + ' times out of 10')}.` },
       { t: T.s4.dots, pic: 1, c: 'dots', h: Array.from({ length: 10 }, () => '<i></i>').join('') },
@@ -111,8 +112,8 @@ function camera(t) {
 // what each line is doing: its light, its colour, whether it has dropped away
 function state(k, t) { const lead = k === S.lead.k, isRel = S.rel.some(a => a.k === k); let a = 1, ring = 0;
   const s2 = win(t, T.s2.l3, T.s3.t + .3, .4); a = L.lerp(a, k === S.exK ? 1 : L.lerp(.35, .8, win(t, T.s2.l4 - .15, T.s2.l4 + 1.7, .3)), s2); if (k === S.exK) ring = Math.max(ring, s2);   // the three that lost light up while they drop
-  [...D.ai].reverse().forEach((ai, j) => { const tp = T.s3.p[j], te = j < 3 ? T.s3.p[j + 1] + .35 : T.s4.t + .3, w = win(t, tp, te, .35); a = L.lerp(a, ai.k === k ? 1 : .3, w); if (ai.k === k && !lead) ring = Math.max(ring, w) });
-  const gold = lead ? L.n(t, T.s3.p[3], T.s3.p[3] + .3) : 0, s4 = win(t, T.s4.t, T.s5.t + .3, .5); a = L.lerp(a, lead ? .32 : .1, s4);
+  [...D.ai].reverse().forEach((ai, j) => { const tp = T.s3.v[j], te = j < 3 ? T.s3.v[j + 1] + .35 : T.s4.t + .3, w = win(t, tp, te, .35); a = L.lerp(a, ai.k === k ? 1 : .3, w); if (ai.k === k && !lead) ring = Math.max(ring, w) });
+  const gold = lead ? L.n(t, T.s3.v[3], T.s3.v[3] + .3) : 0, s4 = win(t, T.s4.t, T.s5.t + .3, .5); a = L.lerp(a, lead ? L.lerp(.32, .12, L.n(t, T.s4.l4 - .3, T.s4.l4 + .2)) : L.lerp(.1, .05, L.n(t, T.s4.l4 - .3, T.s4.l4 + .2)), s4);   // the drawing steps further back when the last line of words reaches it
   const s5 = L.n(t, T.s5.l2, T.s5.l2 + .4); a = L.lerp(a, isRel ? 1 : .3, s5 * (1 - L.n(t, T.s6.t - .5, T.s6.t - .1))); if (isRel) ring = Math.max(ring, s5 * (1 - L.n(t, T.s5.l3, T.s5.l3 + .4)));
   const grey = isRel ? L.n(t, T.s5.l3, T.s5.l3 + .5) : 0, drop = isRel ? L.eio(L.n(t, T.s5.l3 + .15, T.s5.l3 + 1.6)) : 0, s6 = L.n(t, T.s6.t - .5, T.s6.t - .05); a = L.lerp(a, lead ? 1 : 0, s6);
   return { a: a * (1 - L.n(drop, .5, 1)), ring, gold, grey, drop } }
