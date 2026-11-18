@@ -20,18 +20,19 @@
 .dk .mk{box-shadow:0 0 0 3px #0e0c0b}.lt .mk{box-shadow:0 0 0 2px rgba(242,237,230,.25)}
 .blk{width:940px;display:flex;flex-direction:column;align-items:center;flex:none}
 .e{transform-origin:50% 50%}
-.t{font:900 80px/1.06 Inter;letter-spacing:-.035em;max-width:940px;text-align:center;text-wrap:balance}
-.cg,.cr,.ck{padding:0 .14em;border-radius:.14em;white-space:nowrap}.cg{background:#55d6a2;color:#0e0c0b}.cr{background:#e8576b;color:#0e0c0b}.ck{background:#0e0c0b;color:#f2ede6}
+.t{font:900 80px/1.1 Inter;letter-spacing:-.035em;max-width:940px;text-align:center;text-wrap:balance}
+.cg,.cr,.ck{display:inline-block;line-height:.98;padding:.02em .14em .07em;border-radius:.14em;white-space:nowrap}.cg{background:#55d6a2;color:#0e0c0b}.cr{background:#e8576b;color:#0e0c0b}.ck{background:#0e0c0b;color:#f2ede6}
 .g{color:#55d6a2}.r{color:#e8576b}.nw{white-space:nowrap}
 .mrow{display:flex;gap:26px;justify-content:center}.mrow .mk{transition:none}
 .mrow .off{opacity:.28}.mrow .on{box-shadow:0 0 0 6px #55d6a2}
-.lgi{display:inline-block;width:1em;height:1em;border-radius:.22em;background:#f2ede6;padding:.12em;vertical-align:-.16em;margin:0 .06em}.lgi img{width:100%;height:100%;object-fit:contain;display:block}
+.lgi{display:inline-block;width:1em;height:1em;border-radius:.22em;background:#f2ede6;padding:.12em;vertical-align:-.16em;margin:0 .12em 0 .06em}.lgi img{width:100%;height:100%;object-fit:contain;display:block}
 /* who won: one ground a place, one template */
-.hd.was{opacity:.42}
+.hd.was{opacity:.5}
 .pl{display:flex;flex-direction:column;align-items:center;gap:22px}
-.ord{font:900 290px/.84 Inter;letter-spacing:-.06em}
+.ord{font:900 268px/.84 Inter;letter-spacing:-.06em}
 .who{display:flex;align-items:center;gap:30px;font:900 150px/1 Inter;letter-spacing:-.045em}
 .res{font:900 132px/1 Inter;letter-spacing:-.045em;white-space:nowrap}
+.lad{display:flex;flex-direction:column;align-items:center;gap:12px;opacity:.62}.lr{display:flex;align-items:center;gap:16px;font:800 44px/1 Inter;letter-spacing:-.02em;white-space:nowrap}
 /* who is out, the end */
 .unit{display:flex;flex-direction:column;align-items:center;gap:26px}
 .slab{margin:0 -70px;width:1080px;height:190px;background:#0e0c0b;display:flex;align-items:center;justify-content:center}.slab span{font:900 140px/1 Inter;letter-spacing:-.045em;color:#e8576b}
@@ -60,7 +61,7 @@ function scene(m0, len, bg, dark, blk, draw) { const el = add(`<div class="sc ${
 const slam = (el, dt, from = 1.16) => { el.style.opacity = dt >= 0 ? 1 : 0; if (dt >= 0) el.style.transform = `scale(${from + (1 - from) * L.spring(dt, 2.2, 10)})` };
 
 function build() {
-  const n4 = D.ai.length, lead = D.ai[0], last = [...D.ai].reverse();
+  const n4 = D.ai.length, lead = D.ai[0], last = [...D.ai].reverse(); C.push([.03, 'r11-thump', .18]);
   // 1. what this is (cream: nobody is judged yet)
   scene(0, 23, Cr, false, `<div class="t e" data-m="0">${n4} AIs bet on ${D.total} earnings reports.</div><div class="mrow e" data-m="2">${D.ai.map(a => mk(a.k, 150)).join('')}</div>
     <div class="t e" data-m="7">Each time: will the stock go <span class="cg">up</span>, or <span class="cr">down</span>?</div><div class="t e" data-m="15">$100K a bet. Not real money.</div>`);
@@ -73,7 +74,7 @@ function build() {
   // 3. who won, 4th to 1st: a ground a place (red for a loss, green for a gain, gold for the first), the first on the bed's drop
   const hdr = FIN ? `After ${D.total} reports:` : `After ${D.rounds} of ${D.total} reports:`; let m = 51;
   last.forEach((a, j) => { const first = a.rank === 1, len = j === 0 ? 7 : first ? 8 : 5, bg = first ? Au : a.pnl >= 0 ? G : Rd;
-    scene(m, len, bg, false, `<div class="t hd ${j ? 'was' : 'e'}" data-m="0">${hdr}</div><div class="pl e" data-m="${j ? 0 : 2}" data-s="${first ? 'sfx-boom' : 'r11-thump'}" data-v="${first ? .32 : .2}"><div class="ord">${ORD[a.rank - 1]}</div><div class="who">${mk(a.k, 150)}<span>${a.name}</span></div><div class="res">${a.pnl >= 0 ? 'made' : 'lost'} ${kk(a.pnl)}</div></div>`);
+    scene(m, len, bg, false, `<div class="t hd ${j ? 'was' : 'e'}" data-m="0">${hdr}</div><div class="pl e" data-m="${j ? 0 : 2}" data-s="${first ? 'sfx-boom' : 'r11-thump'}" data-v="${first ? .32 : .2}"><div class="ord">${ORD[a.rank - 1]}</div><div class="who">${mk(a.k, 150)}<span>${a.name}</span></div><div class="res">${a.pnl >= 0 ? 'made' : 'lost'} ${kk(a.pnl)}</div></div>${j ? `<div class="lad was">${last.slice(0, j).reverse().map(o => `<div class="lr">${mk(o.k, 54)}<span>${ORD[o.rank - 1]} · ${o.name} · ${o.pnl >= 0 ? 'made' : 'lost'} ${kk(o.pnl)}</span></div>`).join('')}</div>` : ''}`);
     if (first) FLT.push(b(m)); m += len });
   // 4. why (cream)
   const bear = lead.lean === 'BEAR', n10 = Math.round((bear ? lead.shorts : lead.longs) / lead.calls * 10), most = bear ? D.mkt.down > D.mkt.up : D.mkt.up > D.mkt.down, more = bear && D.mkt.short > lead.pnl;
