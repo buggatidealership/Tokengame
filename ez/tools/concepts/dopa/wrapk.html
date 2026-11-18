@@ -20,7 +20,7 @@
 /* the one sheet of glass: a faint cream fill, the field blurred and saturated behind it, a bright edge where the light would hit
    (top and top-left), a faint shade at the foot, a soft shadow; one slow specular band */
 #glass{position:absolute;left:80px;width:920px;border-radius:60px;overflow:hidden;background:linear-gradient(165deg,rgba(242,237,230,.115),rgba(242,237,230,.06) 46%,rgba(242,237,230,.085));
-  -webkit-backdrop-filter:blur(26px) saturate(150%);backdrop-filter:blur(26px) saturate(150%);box-shadow:inset 0 -26px 46px -30px rgba(0,0,0,.5),0 34px 90px -26px rgba(0,0,0,.7)}
+  -webkit-backdrop-filter:blur(26px) saturate(135%);backdrop-filter:blur(26px) saturate(135%);box-shadow:inset 0 -26px 46px -30px rgba(0,0,0,.5),0 34px 90px -26px rgba(0,0,0,.7)}
 #glass:before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.6px;background:linear-gradient(152deg,rgba(242,237,230,.62),rgba(242,237,230,.14) 30%,rgba(242,237,230,0) 58%,rgba(242,237,230,.16));
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
 #glass .sp{position:absolute;top:-30%;bottom:-30%;left:0;width:340px;background:linear-gradient(90deg,transparent,rgba(242,237,230,.07),transparent);transform:skewX(-16deg)}
@@ -59,7 +59,7 @@ function build() {
   add(`<img id="bug" src="ezlogo.svg" alt="">`, document.body); if (!D.final) add(`<div id="dr">DRAFT · ${n} OF ${tot}</div>`, document.body);
 
   // 1 what this is
-  { const s = scene(0, 9.5, [.5, .45, .35]);
+  { const s = scene(0, 9.5, [0, 0, .62]);
     line(s, 0, `${N} AIs bet on ${tot}<br>earnings reports.`, { snd: 'r11-swell', gain: .07 });
     put(s, 1, `<div class="ms">${D.ai.map(a => L.mark(a.k, 116)).join('')}</div>`);
     line(s, 2.5, `Each time: will the stock<br>go ${c('up', G)}, or ${c('down', Rd)}?`);
@@ -67,7 +67,7 @@ function build() {
 
   // 2 one example: the biggest move where exactly one AI was right (else where one was wrong, else the biggest move)
   { const x = D.big.find(b => b.right.length === 1) || D.big.find(b => b.wrong.length === 1) || D.big[0], solo = x.right.length === 1 ? A(x.right[0]) : x.wrong.length === 1 ? A(x.wrong[0]) : null, won = solo && x.right.length === 1;
-    const dir = sd => sd === 'SHORT' ? 'fall' : 'rise', amt = K(x.move * 1000), others = solo ? D.ai.filter(a => a !== solo && x.p[a.k]).length : 0, s = scene(9.5, 22, x.move < 0 ? [.25, .75, .15] : [.75, .25, .15]);
+    const dir = sd => sd === 'SHORT' ? 'fall' : 'rise', amt = K(x.move * 1000), others = solo ? D.ai.filter(a => a !== solo && x.p[a.k]).length : 0, s = scene(9.5, 22, x.move < 0 ? [0, .8, 0] : [.8, 0, 0]);
     line(s, 9.5, `One example: ${x.co}.`); if (x.logo) put(s, 10.5, `<img class="logo${x.dark ? ' dk' : ''}" src="${x.logo}">`);
     line(s, 11.5, `After earnings,<br>the stock ${c((x.move < 0 ? 'fell ' : 'rose ') + Math.round(Math.abs(x.move)) + '%', x.move < 0 ? Rd : G)}.`);
     const ms = put(s, 14, `<div class="ms">${D.ai.map(a => L.mark(a.k, 96)).join('')}</div>`), mks = L.$$('.mk', ms.el);
@@ -76,21 +76,21 @@ function build() {
     else { const r = D.ai.filter(a => x.right.includes(a.k)); line(s, 15, r.length ? `${r.length} of ${N} bet on a ${dir(x.side[r[0].k])}.` : `All ${NUM[N]} bet the wrong way.`); line(s, 17, r.length ? `They ${c('made ' + amt, G)} each.` : `Each ${c('lost ' + amt, Rd)}.`) } }
 
   // 3 who won, counted from last place up; the winner lands on the bed's drop, in gold
-  { const s = scene(22, 33, [.4, .5, .2]); s.fx2 = [[30, [.2, .08, .95]]];
+  { const lit = a => a.pnl >= 0 ? [.7, 0, 0] : [0, .75, 0], s = scene(22, 33, lit(D.ai.at(-1))); s.fx2 = [...D.ai].reverse().map((a, j) => [24 + j * 2, j === N - 1 ? [0, 0, .95] : lit(a)]);
     line(s, 22, D.final ? `After ${tot} reports:` : `After ${n} of ${tot} reports:`); const slots = D.ai.map(() => add(`<div></div>`, s.blk));
     [...D.ai].reverse().forEach((a, j) => { const i = N - 1 - j, win = i === 0, at = 24 + j * 2, col = win ? Au : a.pnl >= 0 ? G : Rd;
       const x = put(s, at, `<div class="ln rw" style="${win ? 'color:' + Au : ''}"><span>${ORD[i + 1]}</span><i>·</i>${L.mark(a.k, 68)}<span>${a.name}</span><i>·</i><span style="color:${col}">${a.pnl >= 0 ? 'made' : 'lost'} ${K(a.pnl)}</span></div>`, { into: slots[i], line: true, snd: win ? 'sfx-boom' : 'r11-card', gain: win ? .3 : .08 });
       if (win) { C.push([at, 'sfx-riser', .1]); x.fn = () => { const d = t - at; x.el.style.transform = `scale(${d <= 0 ? 1 : 1 + .14 * Math.exp(-d * 5)})` } } }) }
 
   // 4 why: the winner's lean, and whether the market leaned the same way
-  { const s = scene(33, 46, [.3, .65, .2]), bear = first.lean === 'BEAR', share = bear ? first.shorts / first.calls : first.longs / first.calls, n10 = Math.round(share * 10), way = bear ? 'fall' : 'rise', agree = bear ? mk.down > mk.up : mk.up > mk.down, plain = bear ? mk.short : mk.long;
+  { const s = scene(33, 46, first.lean === 'BEAR' ? [0, .75, 0] : [.75, 0, 0]), bear = first.lean === 'BEAR', share = bear ? first.shorts / first.calls : first.longs / first.calls, n10 = Math.round(share * 10), way = bear ? 'fall' : 'rise', agree = bear ? mk.down > mk.up : mk.up > mk.down, plain = bear ? mk.short : mk.long;
     line(s, 33, D.final ? `How did ${first.name} win?` : `How is ${first.name} winning?`);
     line(s, 34.5, `It bet on a ${way}<br>${c(n10 >= 10 ? 'every single time' : n10 + ' times out of 10', Au)}.`);
     if (agree) line(s, 37, `And most stocks did ${way}:<br>${c((bear ? mk.down : mk.up) + ' of ' + nm, bear ? Rd : G)}.`);
     if (agree && plain > first.pnl) line(s, 39.5, `Betting on a ${way} every<br>single time would have<br>${c('made even more', G)}.`) }
 
   // 5 who is out (who replaces it is not this video's news)
-  { const out = D.ai.filter(a => D.releg.includes(a.k)), s = scene(46, 52, out.length ? [.1, .85, .1] : [.7, .2, .2], false);
+  { const out = D.ai.filter(a => D.releg.includes(a.k)), s = scene(46, 52, out.length ? [0, .85, 0] : [.75, 0, 0], false);
     if (out.length) { const a = out[0], names = out.map(x => x.name);
       line(s, 46, out.length === 1 ? 'One AI is out.' : `${CAP(NUM[out.length])} AIs are out.`); put(s, 46.75, `<div class="ms">${out.map(x => L.mark(x.k, 170)).join('')}</div>`);
       line(s, 47.5, `${names.length < 2 ? a.name + ' was' : names.slice(0, -1).join(', ') + ' and ' + names.at(-1) + ' were'} ${c('wrong', Rd)} more<br>often than right.`);
@@ -98,7 +98,7 @@ function build() {
     else { line(s, 46, 'No AI is out.'); put(s, 46.75, `<div class="ms">${D.ai.map(a => L.mark(a.k, 116)).join('')}</div>`); line(s, 47.5, `All ${NUM[N]} were right more<br>often than wrong.`) } }
 
   // 6 the end: the winner, the one exact number, one small line
-  { const s = scene(52, 60, [.25, .05, .95], false);
+  { const s = scene(52, 60, [0, 0, .95], false);
     line(s, 52, `${first.name} ${D.final ? 'wins' : 'leads'} Season 1.`, { snd: 'sfx-chime', gain: .14 }); put(s, 53, L.mark(first.k, 190, false).replace('class="mk"', 'class="mk ring"'));
     const b = put(s, 54, `<div class="big" style="color:${Au}">${money0(first.pnl)}</div>`, { snd: 'r11-kaching', gain: .13 }); b.fn = () => { b.el.textContent = money0(Math.round(first.pnl * L.eo5(L.n(t, 54, 54.8)) / 10) * 10) }; S.big = b.el;
     put(s, 55.5, `<div class="sm">Season 2 soon.</div>`, { snd: 0 }) }
@@ -117,7 +117,7 @@ function R(tt) {
   const g = S.glass; g.style.height = H.toFixed(1) + 'px'; g.style.top = (675 - H / 2).toFixed(1) + 'px'; const cur = SH.findLast(s => t >= s.t0) || SH[0], xs = L.n(t, cur.t0, cur.t1); S.sp.style.transform = `translateX(${L.lerp(-420, 1000, .5 - .5 * Math.cos(Math.PI * xs))}px) skewX(-16deg)`;
   S.cam.style.transform = `scale(${(1.015 - .015 * Math.cos(t * 2 * Math.PI / 14.5)).toFixed(5)})`;
   // the field: three slow lights; how bright each is comes from the scene
-  S.fl.forEach(([el, x, y, ax, ay, px, py, ph], j) => { el.style.transform = `translate(${(x + ax * Math.sin(t / px * 2 + ph)).toFixed(1)}px,${(y + ay * Math.cos(t / py * 2 + ph)).toFixed(1)}px)`; el.style.opacity = (.1 + .5 * fx[j]).toFixed(3) });
+  S.fl.forEach(([el, x, y, ax, ay, px, py, ph], j) => { el.style.transform = `translate(${(x + ax * Math.sin(t / px * 2 + ph)).toFixed(1)}px,${(y + ay * Math.cos(t / py * 2 + ph)).toFixed(1)}px)`; el.style.opacity = (.5 * fx[j]).toFixed(3) });
   grain(t);
 }
 window.R = R;
@@ -136,6 +136,6 @@ window.R = R;
   SH.forEach(s => { s.el.style.display = 'flex'; const ls = L.$$('.ln', s.el), m = Math.max(...ls.map(tw)); if (m > 820) ls.forEach(x => x.style.fontSize = Math.floor(84 * 820 / m) + 'px');
     s.H = Math.round(Math.min(1040, Math.max(560, s.blk.offsetHeight + 150))); s.el.style.display = 'none' });
   if (S.big) { const sh = SH.at(-1); sh.el.style.display = 'flex'; const w = tw(S.big); if (w > 820) S.big.style.fontSize = Math.floor(200 * 820 / w) + 'px'; sh.H = Math.round(Math.min(1040, Math.max(560, sh.blk.offsetHeight + 150))); sh.el.style.display = 'none' }
-  S.glass = L.$('#glass'); S.sp = L.$('#glass .sp'); grain = L.grain(L.$('#grain'), .04); window.CUES = C; window.DUR = DUR; window.SCENES = SH.map(s => ({ t0: s.t0, t1: Math.min(s.t1, DUR), els: s.els.map(x => ({ at: x.at, text: x.el.innerText.replace(/\s+/g, ' ').trim(), line: x.line })) })); R(0); window.READY = 1;
+  S.glass = L.$('#glass'); S.sp = L.$('#glass .sp'); grain = L.grain(L.$('#grain'), .04); window.CUES = C; window.DUR = DUR; window.SCENES = SH.map(s => ({ t0: s.t0, t1: Math.min(s.t1, DUR), els: s.els.map(x => ({ at: x.at, text: x.el.tagName === 'svg' || x.el.tagName === 'IMG' || x.el.classList.contains('ms') ? '(picture)' : x.el.innerText.replace(/\s+/g, ' ').trim(), line: x.line })) })); R(0); window.READY = 1;
 })();
 </script>

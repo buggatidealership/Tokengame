@@ -93,7 +93,7 @@ function build() {
   // --- sound: one soft tap a line, the picture's own moves, the drop ---
   C.push([.05, 'r11-swell', .09]); S.sc.forEach((s, i) => s.els.forEach((e, j) => { if ((i || j) && !e.pic && !(i === 2 && j) && !(i === 5 && !j)) C.push([e.t, 'sfx-tap', .06]) }));
   C.push([T.s1.marks, 'r11-pluck', .09], [T.s2.ride[0] + .6, 'sfx-whoosh', .05], [T.s2.l4 + .1, 'r11-thump', .16], [T.s3.race[0] + .9, 'sfx-whoosh', .06]);
-  T.s3.p.forEach((t, j) => C.push([t, j < 3 ? 'r11-card' : 'sfx-boom', j < 3 ? .12 : .26])); C.push([T.s3.p[3], 'sfx-riser', .12], [T.s3.p[3] + .25, 'sfx-chime', .13], [T.s4.dots, 'r11-pluck', .07], [T.s4.bar, 'r11-pluck', .07]);
+  T.s3.p.forEach((t, j) => C.push([t, j < 3 ? 'r11-card' : 'sfx-boom', j < 3 ? .12 : .26])); C.push([T.s3.p[3] - 1.5, 'sfx-riser', .12], [T.s6.t - 1.5, 'sfx-riser', .1], [T.s3.p[3] + .25, 'sfx-chime', .13], [T.s4.dots, 'r11-pluck', .07], [T.s4.bar, 'r11-pluck', .07]);
   if (rel.length) C.push([T.s5.l3, 'sfx-stamp', .2]); C.push([T.s6.t, 'sfx-boom', .22], [T.s6.num, 'sfx-chime', .13]);
   window.MUSIC = { f: q.get('bed') || 's1-l4', at: +(q.get('at') || 0) };
 }
@@ -110,7 +110,7 @@ function camera(t) {
   return mix(mix(mix(start, ride, L.eio(L.n(t, T.s2.ride[0], T.s2.ride[0] + 1))), whole, L.eio(L.n(t, T.s3.race[0], T.s3.race[1]))), last, L.eio(L.n(t, T.s5.end - .2, T.s6.t + .6))) }
 // what each line is doing: its light, its colour, whether it has dropped away
 function state(k, t) { const lead = k === S.lead.k, isRel = S.rel.some(a => a.k === k); let a = 1, ring = 0;
-  const s2 = win(t, T.s2.l3, T.s3.t + .3, .4); a = L.lerp(a, k === S.exK ? 1 : .35, s2); if (k === S.exK) ring = Math.max(ring, s2);
+  const s2 = win(t, T.s2.l3, T.s3.t + .3, .4); a = L.lerp(a, k === S.exK ? 1 : L.lerp(.35, .8, win(t, T.s2.l4 - .15, T.s2.l4 + 1.7, .3)), s2); if (k === S.exK) ring = Math.max(ring, s2);   // the three that lost light up while they drop
   [...D.ai].reverse().forEach((ai, j) => { const tp = T.s3.p[j], te = j < 3 ? T.s3.p[j + 1] + .35 : T.s4.t + .3, w = win(t, tp, te, .35); a = L.lerp(a, ai.k === k ? 1 : .3, w); if (ai.k === k && !lead) ring = Math.max(ring, w) });
   const gold = lead ? L.n(t, T.s3.p[3], T.s3.p[3] + .3) : 0, s4 = win(t, T.s4.t, T.s5.t + .3, .5); a = L.lerp(a, lead ? .32 : .1, s4);
   const s5 = L.n(t, T.s5.l2, T.s5.l2 + .4); a = L.lerp(a, isRel ? 1 : .3, s5 * (1 - L.n(t, T.s6.t - .5, T.s6.t - .1))); if (isRel) ring = Math.max(ring, s5 * (1 - L.n(t, T.s5.l3, T.s5.l3 + .4)));
