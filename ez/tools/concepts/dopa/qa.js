@@ -23,13 +23,18 @@ ok(!/\b(up|down)\b/i.test(txt),'no "up" or "down" on screen');ok(txt.includes('S
 for(const tt of [2.6,4,6,8.2,12]){const tx=await p.evaluate(t=>{window.R(t);return document.body.innerText},tt);ok(!/undefined|NaN|Infinity|null/.test(tx),`no undefined/NaN on screen at ${tt} s`)}
 ok(D.total>0&&D.open>0,`the clock has a timeline (${D.total} min, open at ${D.open})`);ok(perr.length===0,`no page errors (${perr.length}${perr.length?': '+perr[0].slice(0,80):''})`);
 // the Season 1 finale cut: the label, the winner and the final P&L on the sheet against the data; a normal round must not show any of it
-const fin=await at(20.2,'({who:document.querySelector("#fwho").textContent,verb:document.querySelector("#fverb").textContent,amt:document.querySelector("#famt").textContent,lab:document.querySelector("#flab").textContent,op:+getComputedStyle(document.querySelector("#fsheet")).opacity,tag:getComputedStyle(document.querySelector("#tfin")).display,txt:document.body.innerText})');
+const fq='({line:document.querySelector("#fline").textContent,lop:+getComputedStyle(document.querySelector("#fline")).opacity,who:document.querySelector("#fwho").textContent,verb:document.querySelector("#fverb").textContent,amt:document.querySelector("#famt").textContent,aop:+getComputedStyle(document.querySelector("#famt")).opacity,op:+getComputedStyle(document.querySelector("#fsheet")).opacity,tag:getComputedStyle(document.querySelector("#tfin")).display,rows:Math.max(...[...document.querySelectorAll(".srow")].map(r=>+getComputedStyle(r).opacity)),head:+getComputedStyle(document.querySelector("#ssn")).opacity,txt:document.body.innerText})';
+const fin=await at(20.2,fq);
 if(FIN){const top=D.season1[D.order[0]],lead=D.order.filter(k=>D.season1[k]===top).map(k=>D.ai.find(a=>a.k===k).name),nm=lead.length>1?lead.slice(0,-1).join(', ')+' and '+lead.at(-1):lead[0];
   ok(fin.op>.99&&fin.who.trim()===nm,`finale: the sheet names "${fin.who.trim()}", the season leader is "${nm}"`);ok(fin.verb===(lead.length>1?'win':'wins')+' Season 1.',`finale: "${fin.verb}"`);
-  ok(fin.amt===M(top),`finale: final P&L on screen ${fin.amt} = data ${M(top)}`);ok(fin.lab===`FINAL · ${D.n} ROUNDS`,`finale: label "${fin.lab}"`);ok(fin.tag==='block','finale: SEASON 1 FINALE marker in the title');
-  const lb=await at(16.4,'document.querySelector("#ssk").textContent');ok(lb===`FINAL · ${D.n} ROUNDS`,`finale: the board's label reads "${lb}" at 16.4 s`);
-  ok(!/undefined|NaN|Infinity|null/.test(fin.txt),'finale: no undefined/NaN on screen at 20.2 s');ok(D.finale?D.n===112:true,'finale data is round 112'+(D.finale?'':' (forced test on round '+D.n+')'))}
-else ok(fin.op===0&&fin.tag==='none','not the finale: no finale marker, no winner sheet');
+  ok(fin.aop>.99&&fin.amt===M(top),`finale: final total on screen ${fin.amt} = data ${M(top)}`);ok(fin.tag==='block','finale: SEASON 1 FINALE marker in the title');
+  // one thing at a time (WRAP-BRIEF.md round 4): the line alone, then the sheet without its number, then the number; nothing else left on screen
+  const a1=await at(16.8,fq),a2=await at(17.95,fq);
+  ok(a1.line==='Season 1 is over.'&&a1.lop>.99&&a1.op===0&&a1.rows<.01,`finale: "${a1.line}" stands alone at 16.8 s (sheet ${a1.op}, board ${a1.rows.toFixed(2)})`);
+  ok(a2.op>.99&&a2.aop===0,`finale: at 17.95 s the sheet is in and its number is not yet (${a2.aop})`);
+  ok(fin.head<.01&&fin.rows<.01&&!/FINAL ·|IN FRONT/.test(fin.txt),`finale: the last scene carries no board, no "Season P&L" heading (${fin.head}) and no bare label`);
+  ok(!/undefined|NaN|Infinity|null/.test(fin.txt)&&!/undefined|NaN|Infinity|null/.test(a1.txt),'finale: no undefined/NaN on screen at 16.8 and 20.2 s');ok(D.finale?D.n===112:true,'finale data is round 112'+(D.finale?'':' (forced test on round '+D.n+')'))}
+else ok(fin.op===0&&fin.lop===0&&fin.tag==='none','not the finale: no finale marker, no line, no winner sheet');
 await b.close();
 if(vid){const pr=JSON.parse(execSync(`ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate:format=duration,bit_rate,size -of json "${vid}"`));const v=pr.streams.find(s=>s.width),a=pr.streams.find(s=>!s.width);
   ok(v.width===1080&&v.height===1350&&v.r_frame_rate==='30/1'&&v.codec_name==='h264'&&a.codec_name==='aac',`1080x1350 30 fps h264+aac`);ok(Math.abs(+pr.format.duration-DUR)<.05,`duration ${(+pr.format.duration).toFixed(2)} s (expected ${DUR})`);

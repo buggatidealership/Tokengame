@@ -8,7 +8,8 @@ F=$(cd "$(dirname "$0")" && pwd); N=$1; W=/tmp/claude-0/-home-user-Tokengame/49a
 mkdir -p "$W" "$F/../../../post"
 node "$F/prep.js" "$N"
 T=$(node -e "console.log(require('$F/data/r$N.json').ticker.replace(/[^A-Z0-9]/g,''))")
-curl -s -o /dev/null localhost:8993 || { setsid nohup python3 -m http.server 8993 --directory "$F" </dev/null >/dev/null 2>&1 & disown; python3 -c "import time;time.sleep(1.5)"; }
+# the server must not inherit the render lock (flock's fd 3, wrapx.sh's fd 9): a server holding it blocks every later render
+curl -s -o /dev/null localhost:8993 || { setsid nohup python3 -m http.server 8993 --directory "$F" </dev/null >/dev/null 2>&1 3>&- 4>&- 5>&- 6>&- 7>&- 8>&- 9>&- & disown; python3 -c "import time;time.sleep(1.5)"; }
 # the length comes from the data: 15.5 s, or 20.8 s for the Season 1 finale cut (finale:true in the data; FINALE=1 forces it on any
 # round for a test, which must also name its own output: FINALE=1 OUT=/path/test.mp4 bash outcome.sh 111; a forced test writes no post).
 FIN=$(node -e "console.log(require('$F/data/r$N.json').finale?1:0)"); Q="outcome.html?r=$N"; DUR=15.5
