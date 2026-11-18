@@ -103,7 +103,7 @@ const fiAt = t => { const i = S.exI; return (i - 1) * L.eio(L.n(t, T.s2.ride[0],
 const mix = (a, b, k) => ({ cx: L.lerp(a.cx, b.cx, k), cy: L.lerp(a.cy, b.cy, k), z: Math.exp(L.lerp(Math.log(a.z), Math.log(b.z), k)) });
 function camera(t) {
   const u = (a, b) => L.cl((t - a) / (b - a)), f = fiAt(t), lo = at(S.elo, f), hi = at(S.ehi, f), span = Math.max(hi - lo, 60000) * 1.24, zr = 400 / (span * YS);
-  const z0 = 400 / (60000 * 1.24 * YS), start = { cx: (540 - 230) / z0 + 14 * u(0, 10.2), cy: -(BY - 675) / z0, z: z0 * (1 + .03 * u(0, 10.2)) };
+  const z0 = 400 / (60000 * 1.24 * YS), start = { cx: (540 - 230) / z0 + 14 * u(0, 10.2), cy: -(950 - 675) / z0, z: z0 * (1 + .03 * u(0, 10.2)) };
   const ride = { cx: X(f) - (700 - 540) / zr, cy: Y((hi + lo) / 2) - (BY - 675) / zr, z: zr * (1 + .04 * u(T.s2.ride[1], T.s3.race[0])) };
   const whole = { cx: S.pc.cx, cy: S.pc.cy, z: S.pc.z * (1 + .03 * u(T.s3.race[1], T.s5.end)) };
   const gy = (Y(Math.max(...D.s[S.lead.k])) + Y(0)) / 2, last = { cx: S.pc.cx, cy: gy - (940 - 675) / (S.pc.z * 1.12), z: S.pc.z * 1.12 * (1 + .03 * u(T.s6.t, T.s6.end)) };
@@ -126,7 +126,9 @@ function R(t) {
     const sw = L.lerp(5, 4, kw) * (1 + .5 * st.gold) / z, ov = Math.max(st.gold, st.grey), dy = st.drop * 300 / z; [l.u, l.p, l.o].forEach(p => p.setAttribute('d', d)); l.u.setAttribute('stroke-width', sw * 2.2); l.p.setAttribute('stroke-width', sw); l.o.setAttribute('stroke-width', sw);
     l.p.setAttribute('opacity', 1 - ov); l.o.setAttribute('opacity', ov); l.g.setAttribute('opacity', st.a); l.g.setAttribute('transform', `translate(0 ${dy})`); hy[j] = { st, x: sx(X(Math.min(fi, n))), y: sy(Y(v) + dy) } });
   const big = 1 - L.eio(L.n(fi, 0, 3)), pop = t >= T.s1.marks ? .5 + .5 * L.spring(t - T.s1.marks, 2.2, 8) : 0, gap = L.lerp(52, 40, kw);
-  hy.forEach((h, j) => { let o = 0; hy.forEach((g, m) => { if (m === j) return; const d = h.y - g.y; if (Math.abs(d) < gap) o += (gap - Math.abs(d)) / 2 * Math.tanh(d / 3 + (j - m) * 1.2) }); h.o = o * (1 - big) + (j - (hy.length - 1) / 2) * 88 * big });
+  // the marks never sit on each other: pairs closer than the gap push apart, in a few passes, in the order of their lines
+  const off = hy.map(() => 0); for (let it = 0; it < 14; it++) { const ad = hy.map(() => 0); hy.forEach((h, j) => hy.forEach((g, m) => { if (m <= j) return; const dir = Math.tanh((h.y - g.y) / 3 + (j - m) * 1.2), sg = dir < 0 ? -1 : 1, q = (gap * Math.abs(dir) - ((h.y + off[j]) - (g.y + off[m])) * sg) / 2; if (q > 0) { ad[j] += q * sg; ad[m] -= q * sg } })); ad.forEach((v, j) => off[j] += v * .6) }
+  hy.forEach((h, j) => { h.o = off[j] * (1 - big) + (j - (hy.length - 1) / 2) * 88 * big });
   S.ln.forEach((l, j) => { const h = hy[j], st = h.st, sc = L.lerp(1, 1.5, big) * L.lerp(1, .82, kw) * pop * (1 + .12 * Math.max(st.ring, st.gold));
     l.hd.style.opacity = (t >= T.s1.marks ? 1 : 0) * Math.max(st.a, 0); l.hd.style.transform = `translate(${h.x - 22}px,${h.y + h.o - 22}px) scale(${sc})`; l.hd.style.filter = st.grey ? `grayscale(${st.grey})` : '';
     l.hd.querySelector('.rc').style.opacity = st.ring * (1 - st.gold); l.hd.querySelector('.rg').style.opacity = st.gold });
