@@ -1,0 +1,149 @@
+<!doctype html><meta charset="utf-8"><title>Season 1 wrap-up, glass</title>
+<!-- Season 1's wrap-up in the glass look (owner, 2026-11-18, night: the glass take "is a lot smoother"; wording rules of WRAP-BRIEF.md
+  round 5: an AI is long or short, nothing else; no "not real money", no "every earnings report", none of his spoken phrasing).
+  nvglass.html's engine: one frosted sheet that changes shape with every scene over slow brand-colour light. One thought a scene, one
+  element at a time, a plain line before any number. Eight scenes, four questions (what is this, who won, why, who is out):
+  1 we tracked 4 AIs through N earnings   2 each time long or short, $100K a trade   3 one example: the biggest move one AI alone got
+  4 who was on which side, what it paid   5 the standings, 4th to 1st (the bed's drop on 1st)   6 why the winner won
+  7 who is out   8 the winner, its exact total, "Season 2 soon."
+  Every number from data/wrap.json (node prep-wrap.js). Render: bash wrapx.sh wrapg.html 44.6 x2p-s1-wrap-g-draft s1-g 0 .34 -->
+<style id="base"></style>
+<style>
+#st{position:absolute;inset:0;overflow:hidden}
+#fld{position:absolute;inset:0}
+.bl{position:absolute;left:0;top:0;border-radius:50%}
+.bar{position:absolute;left:50%;top:50%;width:2200px;margin-left:-1100px;transform-origin:50% 50%}
+#rg{position:absolute;left:0;top:0;width:1080px;height:1350px;overflow:visible}
+#cam{position:absolute;inset:0}
+#gl{position:absolute;left:0;top:0;overflow:hidden;
+  background:linear-gradient(158deg,rgba(242,237,230,.15),rgba(242,237,230,.055) 42%,rgba(242,237,230,.085));
+  -webkit-backdrop-filter:blur(26px) saturate(160%) brightness(1.12);backdrop-filter:blur(26px) saturate(160%) brightness(1.12);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5),inset 1.5px 0 0 rgba(255,255,255,.16),inset 0 -1.5px 0 rgba(0,0,0,.4),inset -1px 0 0 rgba(0,0,0,.18),0 34px 90px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.35)}
+#gl .sp{position:absolute;inset:-60%;background:linear-gradient(118deg,transparent 44%,rgba(255,255,255,.2) 48.5%,rgba(255,255,255,.05) 51.5%,transparent 56%)}
+#gl .tp{position:absolute;left:0;right:0;top:0;height:46%;background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.sc{position:absolute;inset:0}
+.c{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.hl{font:900 150px/1 Inter;letter-spacing:-.045em}
+.sub{font:800 72px/1 Inter;letter-spacing:-.03em}
+.lab{font:600 36px 'Geist Mono';letter-spacing:.2em;color:#a39b94}
+.fit{display:inline-block}
+.g{color:#55d6a2}.r{color:#e8576b}.au{color:#fdbc2a}
+.row{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:30px}
+.row .m{display:flex;flex-direction:column;align-items:center;gap:18px;font:600 30px 'Geist Mono';letter-spacing:.06em;color:#a39b94}
+.row .m .w{position:relative;display:block}.row .m .w i{position:absolute;inset:-8px;border-radius:44px;opacity:0}
+.lg{display:inline-block;width:200px;height:200px;border-radius:50px;background:#fff;box-shadow:0 18px 50px rgba(0,0,0,.45);overflow:hidden}
+.lg img{width:100%;height:100%;object-fit:contain;padding:22px;display:block}
+.sr{position:absolute;left:120px;width:840px;height:132px;display:flex;align-items:center;gap:24px}
+.sr .rk{width:88px;font:600 32px 'Geist Mono';letter-spacing:.06em;color:#8e8680}
+.sr .nm{font:800 62px/1 Inter;letter-spacing:-.03em;flex:1}
+.sr .am{font:800 52px/1 Inter;letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sr:not(:last-child)::after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:1.5px;background:rgba(242,237,230,.1)}
+.dots{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:16px}.dots i{width:46px;height:46px;border-radius:50%;background:rgba(242,237,230,.16)}
+.ring{display:inline-block;border-radius:56px;box-shadow:0 0 0 6px #fdbc2a,0 0 44px rgba(253,188,42,.5)}
+.tot{font:700 96px/1 'Geist Mono';letter-spacing:-.02em;color:#fdbc2a;font-variant-numeric:tabular-nums}
+.bug b{color:#fdbc2a}
+</style>
+<div id="st">
+  <div id="fld"></div>
+  <div id="cam"><div id="gl"><div class="tp"></div><div class="sp"></div></div><div id="scs"></div></div>
+  <div class="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>SEASON 1</b></div>
+  <div class="fine">$100K on every trade</div>
+  <div id="vig"></div><canvas id="grain"></canvas>
+</div>
+<script src="lib.js"></script>
+<script>
+const q = new URLSearchParams(location.search);
+// scene starts: tracked | long or short | the example | its sides and money | standings | why | who is out | the winner
+const T = [0, 4.2, 8.6, 12.6, 17.6, 25.0, 33.0, 38.2], NS = T.length, DUR = 44.6, DROP = T[4] + 3.0; T.push(DUR + 9);   // the bed s1-g drops at 20.6 s
+const G = [[540, 640, 900, 760, 88], [540, 670, 900, 800, 96], [540, 650, 860, 820, 88], [540, 640, 940, 780, 88], [540, 690, 920, 920, 80], [540, 670, 940, 900, 88], [540, 650, 880, 770, 88], [540, 660, 860, 860, 96]];
+const Gn = '#55d6a2', Rd = '#e8576b', Au = '#fdbc2a';
+// light per scene: gold (behind the sheet), green, red; green and red come near only while the gold is out
+const LK = [[1, 0, 0, 0, .8, 0, 0, 1.15], [.4, .95, .12, .9, .3, .12, .1, .3], [.4, .95, 1, .5, .3, 1, 1, .3]];
+const S = { it: [] }, C = []; let t = 0, grain, D;
+const add = (h, p) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
+const sp = (x, f = 1.15, d = 8.5) => x <= 0 ? 0 : 1 - Math.exp(-d * x) * Math.cos(2 * Math.PI * f * x);
+const arrive = (el, t0, dur = .45, dy = 22, bl = 9) => { const k = L.eo(L.n(t, t0, t0 + dur)); el.style.opacity = k; el.style.transform = `translateY(${dy * (1 - k)}px)`; el.style.filter = k < 1 ? `blur(${(bl * (1 - k)).toFixed(2)}px)` : 'none'; return k };
+const pop = (el, a, s0 = .84, bl = 9) => { const x = sp(t - a, 1.25, 8); el.style.opacity = L.n(t, a, a + .16); el.style.transform = `scale(${(s0 + (1 - s0) * x).toFixed(4)})`; el.style.filter = t < a + .4 ? `blur(${(bl * (1 - L.n(t, a, a + .4))).toFixed(2)}px)` : 'none' };
+const Kb = v => '$' + Math.round(Math.abs(v) / 1000) + 'K', ORD = ['1st', '2nd', '3rd', '4th', '5th'], NUM = ['no', 'one', 'two', 'three', 'four'];
+
+function build() {
+  const fld = L.$('#fld'), scs = L.$('#scs'), A = k => D.ai.find(a => a.k === k), n = D.ai.length, win = D.ai[0];
+  S.bl = [['253,188,42', 980, [540, 660], [540, 660], 150, 120, 15, 0], ['85,214,162', 780, [20, 90], [270, 540], 60, 70, 13, 2.1], ['232,87,107', 780, [1070, 1290], [820, 900], 60, 70, 17, 4.2]]
+    .map(([c, sz, far, near, ax, ay, per, ph], j) => ({ K: LK[j], far, near, ax, ay, per, ph, el: add(`<div class="bl" style="width:${sz}px;height:${sz}px;margin:${-sz / 2}px 0 0 ${-sz / 2}px;background:radial-gradient(closest-side,rgba(${c},.5),rgba(${c},.2) 38%,rgba(${c},0) 74%)"></div>`, fld) }));
+  S.rg = add(`<svg id="rg">${[150, 250, 350, 450, 550, 650, 750, 850, 950, 1050].map(r => `<circle cx="0" cy="0" r="${r}" fill="none" stroke="rgba(242,237,230,.13)" stroke-width="1.5"/>`).join('')}</svg>`, fld);
+  S.bars = [['242,237,230', .2, -31, 9, 0], ['242,237,230', .16, -31, 5, .5]].map(([c, a, rot, h, off]) => ({ rot, off, el: add(`<div class="bar" style="height:${h}px;margin-top:${-h / 2}px;background:linear-gradient(90deg,rgba(${c},0),rgba(${c},${a}) 30%,rgba(${c},${a}) 70%,rgba(${c},0))"></div>`, fld) }));
+  S.sc = T.slice(0, NS).map(() => add('<div class="sc"></div>', scs));
+  // an element of scene i that arrives a seconds into it ('a' rises into focus, 'p' pops)
+  const it = (i, h, a, kind = 'a') => { const el = add(h, S.sc[i]); S.it.push({ i, el, a: T[i] + a, kind }); return el };
+  const marks = (i, top, size, a, lab) => { const r = add(`<div class="row" style="top:${top}px">${D.ai.map(m => `<div class="m"><span class="w">${L.mark(m.k, size)}<i></i></span>${lab ? lab(m) : ''}</div>`).join('')}</div>`, S.sc[i]); const ms = L.$$('.m', r); ms.forEach((el, j) => S.it.push({ i, el, a: T[i] + a + j * .18, kind: 'm' })); return ms };
+  // 1 what this is
+  it(0, `<div class="c sub" style="top:330px;font-size:84px">We tracked</div>`, .1); it(0, `<div class="c hl" style="top:432px;font-size:196px">${n} AIs</div>`, .55, 'p');
+  marks(0, 668, 124, 1.3); it(0, `<div class="c sub" style="top:858px;font-size:70px"><span class="fit">through <span class="au">${D.total}</span> earnings.</span></div>`, 2.4);
+  // 2 how it works
+  it(1, `<div class="c sub" style="top:350px;font-size:76px">Each time, they went</div>`, .1); it(1, `<div class="c hl" style="top:468px;font-size:190px;color:${Gn}">long</div>`, .95, 'p');
+  it(1, `<div class="c lab" style="top:668px">OR</div>`, 1.35); it(1, `<div class="c hl" style="top:724px;font-size:190px;color:${Rd}">short.</div>`, 1.6, 'p');
+  it(1, `<div class="c sub" style="top:952px;font-size:62px"><span class="au">$100K</span> on every trade.</div>`, 2.8);
+  // 3 one example: the biggest move that exactly one AI was right on
+  const x = D.big.find(r => r.right.length === 1) || D.big[0], hero = A(x.right[0]), fell = x.move < 0, hs = x.side[hero.k] === 'SHORT', amt = Kb(x.move * 1000), oth = x.wrong.length;
+  it(2, `<div class="c" style="top:300px"><span class="lg"${x.dark ? ' style="background:#2a2522"' : ''}><img src="${x.logo}" alt=""></span></div>`, .1, 'p'); it(2, `<div class="c sub" style="top:548px"><span class="fit">One example: ${x.co}.</span></div>`, .4);
+  it(2, `<div class="c sub" style="top:700px;font-size:62px">After earnings, it ${fell ? 'fell' : 'jumped'}</div>`, 1.5); it(2, `<div class="c hl" style="top:786px;font-size:220px;color:${fell ? Rd : Gn}">${Math.round(Math.abs(x.move))}%</div>`, 2.1, 'p');
+  // 4 the sides and the money
+  it(3, `<div class="c sub" style="top:330px;font-size:82px"><span class="fit">Only ${hero.name} was ${hs ? 'short' : 'long'}.</span></div>`, .1);
+  S.m3 = marks(3, 476, 136, .9, m => `<span style="color:${x.side[m.k] === 'LONG' ? Gn : Rd}">${x.side[m.k] || ''}</span>`); S.hero = D.ai.indexOf(hero);
+  it(3, `<div class="c sub" style="top:748px;font-size:78px;color:${Gn}"><span class="fit">${hero.name} made ${amt}.</span></div>`, 2.0);
+  it(3, `<div class="c sub" style="top:866px;font-size:58px"><span class="fit">The other ${NUM[oth] || oth} <span class="r">lost ${amt}</span> each.</span></div>`, 3.0);
+  // 5 the standings, 4th to 1st
+  it(4, `<div class="c sub" style="top:284px;font-size:80px">After ${D.total} trades:</div>`, .1);
+  S.rows = D.ai.map((a, i) => { const at = i ? .9 + (n - 1 - i) * .7 : 3.0; return it(4, `<div class="sr" style="top:${432 + i * 150}px"><span class="rk">${ORD[i]}</span>${L.mark(a.k, 96)}<span class="nm"${i ? '' : ` style="color:${Au}"`}>${a.name}</span><span class="am" style="color:${i ? (a.pnl < 0 ? Rd : Gn) : Au}">${a.pnl < 0 ? 'lost' : 'made'} ${Kb(a.pnl)}</span></div>`, at, i ? 'x' : 'w') });
+  // 6 why
+  const bear = win.lean === 'BEAR', n10 = Math.round((bear ? win.shorts : win.longs) / win.calls * 10), cW = bear ? Rd : Gn, M = D.mkt, most = bear ? M.down > M.up : M.up > M.down;
+  it(5, `<div class="c sub" style="top:300px;font-size:80px"><span class="fit">How did ${win.name} win?</span></div>`, .1);
+  it(5, `<div class="c sub" style="top:446px;font-size:66px">It went <span style="color:${cW}">${bear ? 'short' : 'long'}</span></div>`, 1.0); it(5, `<div class="c hl" style="top:532px;font-size:104px"><span class="fit">${n10 >= 10 ? 'every time.' : n10 + ' times out of 10.'}</span></div>`, 1.0);
+  S.dots = L.$$('i', add(`<div class="dots" style="top:676px">${'<i></i>'.repeat(10)}</div>`, S.sc[5])); S.n10 = n10; S.cW = cW;
+  if (most) { it(5, `<div class="c sub" style="top:808px;font-size:54px"><span class="fit">And most stocks ${bear ? 'fell' : 'rose'} after earnings:</span></div>`, 3.7); it(5, `<div class="c hl" style="top:886px;font-size:116px;color:${cW}">${bear ? M.down : M.up} of ${M.up + M.down}.</div>`, 4.5, 'p') }
+  // 7 who is out
+  const out = (D.releg || []).map(A)[0];
+  if (out) { it(6, `<div class="c sub" style="top:340px;font-size:84px">One AI is out.</div>`, .1); it(6, `<div class="c" style="top:474px"><span style="display:inline-block;border-radius:52px;box-shadow:0 0 0 5px ${Rd}">${L.mark(out.k, 190)}</span></div>`, .9, 'p');
+    it(6, `<div class="c sub" style="top:736px;font-size:52px"><span class="fit">${out.name} was wrong more often than right.</span></div>`, 1.7); it(6, `<div class="c hl" style="top:838px;font-size:130px;color:${Rd}">Relegated.</div>`, 2.9, 'p') }
+  // 8 the winner
+  it(7, `<div class="c" style="top:300px"><span class="ring">${L.mark(win.k, 210)}</span></div>`, .05, 'p'); it(7, `<div class="c hl" style="top:566px;font-size:132px"><span class="fit">${win.name} wins</span></div>`, .25); it(7, `<div class="c hl" style="top:698px;font-size:132px;color:${Au}">Season 1.</div>`, .5);
+  it(7, `<div class="c tot" style="top:868px">${L.money(win.pnl)}</div>`, 1.3, 'p'); it(7, `<div class="c sub" style="top:1010px;font-size:44px;font-weight:700;color:#a39b94">Season 2 soon.</div>`, 2.9);
+  // sound: sparing
+  C.push([.1, 'r11-swell', .09], [T[1] + .95, 'r11-pluck', .08], [T[1] + 1.6, 'r11-pluck', .08], [T[2] + 2.1, 'r11-thump', .14], [T[3] + 2, 'r11-kaching', .08],
+    ...[0, 1, 2].map(j => [T[4] + .9 + j * .7, 'r11-card', .1]), [DROP - 1.4, 'sfx-riser', .1], [DROP, 'sfx-boom', .2], [T[5] + 4.5, 'r11-thump', .12], [T[6] + 2.9, 'r11-thump', .16], [T[7] + .1, 'r11-sparkle', .1], [T[7] + 1.3, 'sfx-chime', .12]);
+  window.MUSIC = { f: q.get('bed') || 's1-g', at: +(q.get('at') || 0) };
+}
+
+function R(tt) { t = tt; if (grain) grain(t);
+  let i = 0; while (i < NS - 1 && t >= T[i + 1]) i++;
+  let li = 0; while (li < NS - 1 && t >= T[li + 1] - .3) li++;
+  S.bl.forEach((o, j) => { const a0 = o.K[Math.max(0, li - 1)], b0 = o.K[li], k = li ? L.eio(L.n(t, T[li] - .3, T[li] + .5)) : 1, st = L.lerp(a0, b0, k), nr = j ? L.cl((st - .35) / .5) : 0;
+    const a = 2 * Math.PI * t / o.per + o.ph, x = L.lerp(o.far[0], o.near[0], nr) + o.ax * Math.sin(a), y = L.lerp(o.far[1], o.near[1], nr) + o.ay * Math.cos(a * .8);
+    o.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${(1 + .1 * Math.sin(a * 1.3)).toFixed(3)})`; o.el.style.opacity = Math.min(1, st).toFixed(3) });
+  S.rg.style.transform = `translate(${(880 - 9 * t).toFixed(1)}px,${(230 + 6 * t).toFixed(1)}px)`;
+  S.bars.forEach(o => { const p = (t / 26 + o.off) % 1; o.el.style.transform = `rotate(${o.rot}deg) translateY(${(-1100 + 2200 * p).toFixed(1)}px)` });
+  const PU = .04, end = j => Math.min(T[j + 1], DUR), pu = 1 + PU * L.n(t, T[i], end(i)), k = i ? sp(t - T[i]) : 1, A = G[Math.max(0, i - 1)], B = G[i], g = A.map((v, j) => L.lerp(v * (j > 1 && j < 4 ? 1 + PU : 1), B[j], k) * (j > 1 && j < 4 ? pu : 1));
+  const w = Math.max(60, g[2]), h = Math.max(60, g[3]), gl = L.$('#gl'), in0 = sp(t - .05, 1.05, 9), bump = 1 + .03 * Math.exp(-5 * Math.max(0, t - DROP)) * (t >= DROP ? 1 : 0);
+  gl.style.width = w.toFixed(1) + 'px'; gl.style.height = h.toFixed(1) + 'px'; gl.style.borderRadius = Math.min(g[4], h / 2).toFixed(1) + 'px';
+  gl.style.transform = `translate(${(g[0] - w / 2).toFixed(1)}px,${(g[1] - h / 2 + 40 * (1 - Math.min(1, in0))).toFixed(1)}px) scale(${((.92 + .08 * in0) * bump).toFixed(4)})`; gl.style.opacity = L.n(t, .02, .3);
+  gl.firstElementChild.nextElementSibling.style.transform = `translateX(${(-62 + 124 * L.eio(L.n(t, T[i] + 1.2, end(i) - .2))).toFixed(2)}%)`;
+  S.sc.forEach((s, j) => { const out = j < NS - 1 ? 1 - L.n(t, T[j + 1] - .2, T[j + 1] - .02) : 1, on = t >= T[j] - .02 && t < T[j + 1] + .05; s.style.display = on ? 'block' : 'none'; s.style.opacity = out;
+    if (on) { s.style.transformOrigin = `${G[j][0]}px ${G[j][1]}px`; s.style.transform = `scale(${(1 + PU * L.n(t, T[j], end(j))).toFixed(5)})` } s.style.filter = out < 1 ? `blur(${(8 * (1 - out)).toFixed(2)}px)` : 'none' });
+  S.it.forEach(o => { if (o.i !== i) return; const el = o.el, a = o.a;
+    if (o.kind === 'a') arrive(el, a); else if (o.kind === 'p') { const c = el.firstElementChild && el.classList.contains('c') && !el.classList.contains('hl') && !el.classList.contains('tot') ? el.firstElementChild : el; if (c !== el) el.style.opacity = 1; pop(c, a, .82) }
+    else if (o.kind === 'm') { const x = sp(t - a, 1.3, 8); el.style.opacity = L.n(t, a, a + .16); el.style.transform = `translateY(${(18 * (1 - Math.min(1, x))).toFixed(1)}px) scale(${(.84 + .16 * x).toFixed(4)})` }
+    else { const k = L.eo(L.n(t, a, a + .45)), w1 = o.kind === 'w'; el.style.opacity = k; el.style.transform = `translateX(${(-30 * (1 - k)).toFixed(1)}px) scale(${w1 ? (1 + .07 * Math.exp(-5 * Math.max(0, t - a))).toFixed(4) : 1})`; el.style.filter = k < 1 ? `blur(${(8 * (1 - k)).toFixed(2)}px)` : 'none' } });
+  // the example: the one that was right lights up, the others step back, when the money is named
+  if (i === 3) { const k = L.eio(L.n(t, T[3] + 1.9, T[3] + 2.4)); S.m3.forEach((m, j) => { const me = j === S.hero, r = m.querySelector('i'); if (L.n(t, T[3] + .9 + j * .18 + .2, T[3] + .9 + j * .18 + .21) >= 1) m.style.opacity = me ? 1 : (1 - .55 * k).toFixed(3); r.style.opacity = me ? k : 0; r.style.boxShadow = `0 0 0 5px ${Gn},0 0 30px rgba(85,214,162,.45)` }) }
+  if (i === 5) S.dots.forEach((d, j) => { const a = T[5] + 1.9 + j * .11, k = L.eo(L.n(t, a, a + .25)); d.style.opacity = L.n(t, T[5] + 1.8, T[5] + 2); d.style.background = j < S.n10 && k > 0 ? S.cW : 'rgba(242,237,230,.16)'; d.style.transform = `scale(${j < S.n10 ? (.7 + .3 * sp(t - a, 1.3, 8)).toFixed(3) : 1})` });
+}
+window.R = R;
+(async () => {
+  await new Promise(res => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = (L.css.match(/@import url\('([^']+)'\)/) || [])[1]; l.onload = l.onerror = res; document.head.appendChild(l); setTimeout(res, 20000) });
+  L.$('#base').textContent = L.css; [L.models, D] = await Promise.all([fetch('models.json').then(r => r.json()), fetch('data/wrap.json').then(r => r.json())]); build();
+  const smp = L.$('#st').textContent + ' 0123456789+−$%,.KLONGSHORT';
+  await Promise.all(['900 150px Inter', '800 72px Inter', '700 58px Inter', '600 30px "Geist Mono"', '700 96px "Geist Mono"'].map(f => document.fonts.load(f, smp))); await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  S.sc.forEach(s => s.style.display = 'block'); L.$$('.fit').forEach(f => { const w = f.offsetWidth, mx = 800; if (w > mx) f.parentNode.style.fontSize = Math.floor(parseFloat(getComputedStyle(f.parentNode).fontSize) * mx / w) + 'px' });
+  grain = L.grain(L.$('#grain'), .05); window.CUES = C; window.DUR = DUR; R(0); window.READY = 1;
+})();
+</script>

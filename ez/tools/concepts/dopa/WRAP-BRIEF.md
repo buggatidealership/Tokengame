@@ -205,3 +205,11 @@ anything about us. So the video is no longer a stats recap. It is six small scen
 6. **The end.** "Grok wins Season 1." (its mark, gold) → "+$172,340" (the one exact number) → small: "Season 2 soon."
 
 About 45 to 50 s. If a scene cannot hold R1 to R3 in its time, the video gets longer; a scene never gets denser.
+
+## Round 5 wording (owner, 2026-11-18, night): replaces the side words in round 4
+
+- An AI's side is **long** or **short**. Never "up or down", "bet on a fall", "bet on a rise". The stock may fall or jump.
+- Never "Not real money" (or simulated, paper). Never "every earnings report". Never his spoken phrasing as copy.
+- Script lines changed: "Each time: long or short?" / "$100K on every trade." / "Only Grok went short." / "It went short 9 times
+  out of 10." / "Going short every single time would have made even more."
+- The look to build on is glass (s2a.html's engine; `nvglass.html` is the last round in it). Music: not s2-a.
