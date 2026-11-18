@@ -39,7 +39,7 @@ const hr = h => { const Hh = Math.floor(h), mi = Math.round((h % 1) * 60); retur
 const res = g(row, 'RESOLUTION DATE/TIME'); let close = null, resDay = null;
 if (/^\d+\/\d+\/\d+/.test(res)) { const [mm, dd, yy] = res.split('/').map(Number); resDay = new Date(Date.UTC(2000 + yy, mm - 1, dd)); close = `${DAYS[resDay.getUTCDay()]} ${hr(closeH)} ${zone}` }
 const html = fs.readFileSync(EZ + '/v53-terminal.html', 'utf8');
-const rep = (() => { const m = html.match(new RegExp('[{,]"?' + t.replace('.', '\\.') + '"?:\\{t:"([^"]+)"')); return m ? Date.parse(m[1]) : null })();
+const rep = (() => { const m = html.match(new RegExp('[{,\\s]"?' + t.replace('.', '\\.') + '"?:\\{t:"([^"]+)"')); return m ? Date.parse(m[1]) : null })();
 let report = null; if (rep) { const loc = new Date(rep + utcOff * 3600e3); report = `${DAYS[loc.getUTCDay()]} ${hr(loc.getUTCHours() + loc.getUTCMinutes() / 60)} ${zone}`;
   // no resolution date in the sheet yet: the next close of its own exchange after the report (the site's rule)
   if (!resDay) { let d = new Date(Date.UTC(loc.getUTCFullYear(), loc.getUTCMonth(), loc.getUTCDate())); if (loc.getUTCHours() + loc.getUTCMinutes() / 60 >= closeH) d = new Date(d.getTime() + 864e5);

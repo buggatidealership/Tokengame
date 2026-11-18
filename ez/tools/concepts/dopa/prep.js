@@ -41,13 +41,19 @@ const split = longs === nC ? `ALL ${nC} LONG` : shorts === nC ? `ALL ${nC} SHORT
 const t = g(row, 'TICKER').toUpperCase();
 const EXCH = { DE: ['FRANKFURT', 17.5, 9, 1], L: ['LONDON', 16.5, 8, 0], SW: ['ZURICH', 17.5, 9, 1], AS: ['AMSTERDAM', 17.5, 9, 1], T: ['TOKYO', 15.5, 9, 9], KS: ['SEOUL', 15.5, 9, 9], TW: ['TAIPEI', 13.5, 9, 8] };
 const sfx = (t.match(/\.([A-Z]+)$/) || [])[1]; const [tz, closeH, openH, utcOff] = EXCH[sfx] || (/^(SIEMENS|SIE)/.test(t) ? EXCH.DE : ['NEW YORK', 16, 9.5, -5]);
-const res = g(row, 'RESOLUTION DATE/TIME'), [mm, dd, yy] = res.split('/').map(Number), resDay = new Date(Date.UTC(2000 + yy, mm - 1, dd));
+// the grading day: the sheet's resolution date; when the sheet has none (R110 to R112), the next close of the round's own
+// exchange after the report time in the terminal's REPORT map (the site's rule). Neither: stop, never draw a clock from nothing.
+const res = g(row, 'RESOLUTION DATE/TIME'); let resDay;
+if (/^\d+\/\d+\/\d+/.test(res)) { const [mm, dd, yy] = res.split('/').map(Number); resDay = new Date(Date.UTC(2000 + yy, mm - 1, dd)) }
+else { const m = fs.readFileSync(EZ + '/v53-terminal.html', 'utf8').match(new RegExp('[{,\\s]"?' + t.replace('.', '\\.') + '"?:\\{t:"([^"]+)"')); if (!m) throw new Error('round ' + n + ': no resolution date in the sheet and no report time on the site');
+  const loc = new Date(Date.parse(m[1]) + utcOff * 3600e3); let d = new Date(Date.UTC(loc.getUTCFullYear(), loc.getUTCMonth(), loc.getUTCDate())); if (loc.getUTCHours() + loc.getUTCMinutes() / 60 >= closeH) d = new Date(d.getTime() + 864e5);
+  while ([0, 6].includes(d.getUTCDay())) d = new Date(d.getTime() + 864e5); resDay = d; console.log('NOTE: no resolution date in the sheet; graded at the close of ' + d.toISOString().slice(0, 10) + ' (next close after the report)') }
 let prev = new Date(resDay); do { prev = new Date(prev.getTime() - 864e5) } while ([0, 6].includes(prev.getUTCDay()));
 const at = (d, h) => d.getTime() + (h - utcOff) * 3600e3; // local exchange hour -> UTC ms
 const T0 = at(prev, closeH), T1 = at(resDay, closeH), OPEN = at(resDay, openH);
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 const hl = (() => { const m = fs.readFileSync(EZ + '/v53-terminal.html', 'utf8').match(/var HL=(\{[^;]*\});/); return m ? JSON.parse(m[1]) : {} })()[t];
-const rep = (() => { const m = fs.readFileSync(EZ + '/v53-terminal.html', 'utf8').match(new RegExp('[{,]"?' + t.replace('.', '\\.') + '"?:\\{t:"([^"]+)"')); return m ? Date.parse(m[1]) : null })();
+const rep = (() => { const m = fs.readFileSync(EZ + '/v53-terminal.html', 'utf8').match(new RegExp('[{,\\s]"?' + t.replace('.', '\\.') + '"?:\\{t:"([^"]+)"')); return m ? Date.parse(m[1]) : null })();
 (async () => {
   let pathPts = null, note = 'no Hyperliquid market: only the two closes are shown';
   if (hl) {

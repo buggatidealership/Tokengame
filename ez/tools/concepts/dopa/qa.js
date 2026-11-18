@@ -4,7 +4,7 @@ const {chromium}=require('playwright');const fs=require('fs');const {execSync}=r
 const [n,vid]=process.argv.slice(2);const D=JSON.parse(fs.readFileSync(__dirname+'/data/r'+n+'.json'));let bad=0;
 const $=v=>(v<0?'−':'+')+'$'+Math.abs(v).toLocaleString('en-US'),M=v=>v===0?'$0':$(v);
 const ok=(c,msg)=>{console.log((c?'PASS ':'FAIL ')+msg);if(!c)bad++};
-(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1350}});await p.goto('http://localhost:8993/outcome.html?r='+n);await p.waitForFunction(()=>window.READY===1,null,{timeout:120000});
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1350}});const perr=[];p.on('pageerror',e=>perr.push(e.message));p.on('console',m=>{if(m.type()==='error')perr.push(m.text())});await p.goto('http://localhost:8993/outcome.html?r='+n);await p.waitForFunction(()=>window.READY===1,null,{timeout:120000});
 const at=async(t,f)=>p.evaluate(([t,f])=>{window.R(t);return eval(f)},[t,f]);
 const vis='[...document.querySelectorAll(".row")].map(r=>({pl:r.querySelector(".pl").textContent,side:r.querySelector(".sd").textContent,win:!!r.querySelector(".win")&&+getComputedStyle(r.querySelector(".win")).opacity>.9}))';
 const f8=await at(8.2,vis);
@@ -24,4 +24,7 @@ if(vid){const pr=JSON.parse(execSync(`ffprobe -v error -show_entries stream=code
   ok(+pr.format.bit_rate>=5e6,`bitrate ${(pr.format.bit_rate/1e6).toFixed(1)} Mb/s (X minimum 5)`);ok(+pr.format.size<15e6||+pr.format.bit_rate>=5e6,`size ${(pr.format.size/1e6).toFixed(1)} MB`);
   const y=execSync(`ffmpeg -loglevel error -i "${vid}" -frames:v 1 -vf scale=64:80,format=gray -f rawvideo -`);ok(y.reduce((s,x)=>s+x,0)/y.length>12,'frame 0 is drawn (not black)');
   const pk=execSync(`ffmpeg -i "${vid}" -af volumedetect -f null - 2>&1 | grep max_volume`).toString();ok(+pk.match(/(-?[\d.]+) dB/)[1]<=-1,'audio peak '+pk.trim().split(':').pop())}
+// a round the page cannot draw (2026-11-18: R110 had no resolution date, so the clock and chart were NaN while every number above passed)
+for(const tt of [2.6,4,6,8.2,12]){const tx=await p.evaluate(t=>{window.R(t);return document.body.innerText},tt);ok(!/undefined|NaN|Infinity|null/.test(tx),`no undefined/NaN on screen at ${tt} s`)}
+ok(D.total>0&&D.open>0,`the clock has a timeline (${D.total} min, open at ${D.open})`);ok(perr.length===0,`no page errors (${perr.length}${perr.length?': '+perr[0].slice(0,80):''})`);
 console.log(bad?`${bad} CHECK(S) FAILED`:'ALL CHECKS PASS');process.exit(bad?1:0)})();
