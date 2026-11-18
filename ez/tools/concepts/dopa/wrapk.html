@@ -67,7 +67,7 @@ function build() {
 
   // 2 one example: the biggest move where exactly one AI was right (else where one was wrong, else the biggest move)
   { const x = D.big.find(b => b.right.length === 1) || D.big.find(b => b.wrong.length === 1) || D.big[0], solo = x.right.length === 1 ? A(x.right[0]) : x.wrong.length === 1 ? A(x.wrong[0]) : null, won = solo && x.right.length === 1;
-    const dir = sd => sd === 'SHORT' ? 'fall' : 'rise', amt = K(x.move * 1000), others = solo ? D.ai.filter(a => a !== solo && x.p[a.k]).length : 0, s = scene(9.5, 22, x.move < 0 ? [0, .8, 0] : [.8, 0, 0]);
+    const dir = sd => sd === 'SHORT' ? 'fall' : 'rise', amt = K(x.move * 1000), others = solo ? D.ai.filter(a => a !== solo && x.p[a.k]).length : 0, s = scene(9.5, 22, x.move < 0 ? [0, .8, 0] : [.45, 0, 0]);
     line(s, 9.5, `One example: ${x.co}.`); if (x.logo) put(s, 10.5, `<img class="logo${x.dark ? ' dk' : ''}" src="${x.logo}">`);
     line(s, 11.5, `After earnings,<br>the stock ${c((x.move < 0 ? 'fell ' : 'rose ') + Math.round(Math.abs(x.move)) + '%', x.move < 0 ? Rd : G)}.`);
     const ms = put(s, 14, `<div class="ms">${D.ai.map(a => L.mark(a.k, 96)).join('')}</div>`), mks = L.$$('.mk', ms.el);
@@ -76,21 +76,21 @@ function build() {
     else { const r = D.ai.filter(a => x.right.includes(a.k)); line(s, 15, r.length ? `${r.length} of ${N} bet on a ${dir(x.side[r[0].k])}.` : `All ${NUM[N]} bet the wrong way.`); line(s, 17, r.length ? `They ${c('made ' + amt, G)} each.` : `Each ${c('lost ' + amt, Rd)}.`) } }
 
   // 3 who won, counted from last place up; the winner lands on the bed's drop, in gold
-  { const lit = a => a.pnl >= 0 ? [.7, 0, 0] : [0, .75, 0], s = scene(22, 33, lit(D.ai.at(-1))); s.fx2 = [...D.ai].reverse().map((a, j) => [24 + j * 2, j === N - 1 ? [0, 0, .95] : lit(a)]);
+  { const lit = a => a.pnl >= 0 ? [.45, 0, 0] : [0, .75, 0], s = scene(22, 33, lit(D.ai.at(-1))); s.fx2 = [...D.ai].reverse().map((a, j) => [24 + j * 2, j === N - 1 ? [0, 0, .95] : lit(a)]);
     line(s, 22, D.final ? `After ${tot} reports:` : `After ${n} of ${tot} reports:`); const slots = D.ai.map(() => add(`<div></div>`, s.blk));
     [...D.ai].reverse().forEach((a, j) => { const i = N - 1 - j, win = i === 0, at = 24 + j * 2, col = win ? Au : a.pnl >= 0 ? G : Rd;
       const x = put(s, at, `<div class="ln rw" style="${win ? 'color:' + Au : ''}"><span>${ORD[i + 1]}</span><i>·</i>${L.mark(a.k, 68)}<span>${a.name}</span><i>·</i><span style="color:${col}">${a.pnl >= 0 ? 'made' : 'lost'} ${K(a.pnl)}</span></div>`, { into: slots[i], line: true, snd: win ? 'sfx-boom' : 'r11-card', gain: win ? .3 : .08 });
       if (win) { C.push([at, 'sfx-riser', .1]); x.fn = () => { const d = t - at; x.el.style.transform = `scale(${d <= 0 ? 1 : 1 + .14 * Math.exp(-d * 5)})` } } }) }
 
   // 4 why: the winner's lean, and whether the market leaned the same way
-  { const s = scene(33, 46, first.lean === 'BEAR' ? [0, .75, 0] : [.75, 0, 0]), bear = first.lean === 'BEAR', share = bear ? first.shorts / first.calls : first.longs / first.calls, n10 = Math.round(share * 10), way = bear ? 'fall' : 'rise', agree = bear ? mk.down > mk.up : mk.up > mk.down, plain = bear ? mk.short : mk.long;
+  { const s = scene(33, 46, first.lean === 'BEAR' ? [0, .75, 0] : [.45, 0, 0]), bear = first.lean === 'BEAR', share = bear ? first.shorts / first.calls : first.longs / first.calls, n10 = Math.round(share * 10), way = bear ? 'fall' : 'rise', agree = bear ? mk.down > mk.up : mk.up > mk.down, plain = bear ? mk.short : mk.long;
     line(s, 33, D.final ? `How did ${first.name} win?` : `How is ${first.name} winning?`);
     line(s, 34.5, `It bet on a ${way}<br>${c(n10 >= 10 ? 'every single time' : n10 + ' times out of 10', Au)}.`);
     if (agree) line(s, 37, `And most stocks did ${way}:<br>${c((bear ? mk.down : mk.up) + ' of ' + nm, bear ? Rd : G)}.`);
     if (agree && plain > first.pnl) line(s, 39.5, `Betting on a ${way} every<br>single time would have<br>${c('made even more', G)}.`) }
 
   // 5 who is out (who replaces it is not this video's news)
-  { const out = D.ai.filter(a => D.releg.includes(a.k)), s = scene(46, 52, out.length ? [0, .85, 0] : [.75, 0, 0], false);
+  { const out = D.ai.filter(a => D.releg.includes(a.k)), s = scene(46, 52, out.length ? [0, .85, 0] : [.45, 0, 0], false);
     if (out.length) { const a = out[0], names = out.map(x => x.name);
       line(s, 46, out.length === 1 ? 'One AI is out.' : `${CAP(NUM[out.length])} AIs are out.`); put(s, 46.75, `<div class="ms">${out.map(x => L.mark(x.k, 170)).join('')}</div>`);
       line(s, 47.5, `${names.length < 2 ? a.name + ' was' : names.slice(0, -1).join(', ') + ' and ' + names.at(-1) + ' were'} ${c('wrong', Rd)} more<br>often than right.`);

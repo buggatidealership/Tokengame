@@ -84,6 +84,7 @@ body.fin #ffield{display:block}
 #fsheet .fa{font:700 150px/1 'Geist Mono';letter-spacing:-.06em;margin-top:26px;font-variant-numeric:tabular-nums;white-space:nowrap;color:transparent;background-image:linear-gradient(100deg,#fdbc2a 42%,#ffe9a8 50%,#fdbc2a 58%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 14px rgba(253,188,42,.3))}
 #fline{position:absolute;left:0;right:0;top:0;text-align:center;font:900 84px/1 Inter;letter-spacing:-.035em;opacity:0;white-space:nowrap;transform-origin:50% 50%;display:none}
 body.fin #fline{display:block}
+.srow .sw{position:absolute;inset:0;border-radius:22px;mix-blend-mode:screen;opacity:0;pointer-events:none}
 </style>
 <div id="cam">
   <div id="glow"></div>
@@ -168,6 +169,7 @@ const setup = () => {
     L.$('#tfin').style.display = 'block'; document.body.classList.add('fin');
     L.$('#fwho').innerHTML = `<span class="mks">${LEAD.map(k => L.mark(k, LEAD.length > 1 ? 84 : 128)).join('')}</span><span>${ln.length > 1 ? ln.slice(0, -1).join(', ') + ' and ' + ln.at(-1) : ln[0]}</span>`;
     if (LEAD.length > 1) L.$('#fwho').classList.add('two');
+    srows.forEach(el => { if (LEAD.includes(el.dataset.k)) el.insertAdjacentHTML('beforeend', '<div class="sw"></div>') });
     L.$('#fverb').textContent = (LEAD.length > 1 ? 'win' : 'wins') + ' Season 1.'; L.$('#fline').textContent = 'Season 1 is over.';
     C.push([F1, 'sfx-whoosh', .12], [F2, 'r11-thump', .14], [F3 - .05, 'sfx-whoosh', .14], [F3, 'r11-swell', .12], [FL, 'r11-kaching', .22], [FL + .1, 'sfx-chime', .14]);
     for (let q = 0; q < 5; q++) C.push([+(FA + .04 + q * .08).toFixed(3), 'sfx-tick', .05]) }
@@ -285,6 +287,8 @@ window.R = t => {
       <rect x="${w >= 0 ? x0 + ww - 3 : x0}" y="8" width="3" height="24" rx="1.5" fill="rgb(${rgb})"/>
       <line x1="${Z}" x2="${Z}" y1="0" y2="40" stroke="#8e8680" stroke-width="2"/>`;
     // the finale cut: the whole board leaves in one move, so the last scene can build one thing at a time
+    // while the final board is read, one slow light crosses the leader's row (the hold is never frozen)
+    if (FIN) { const sw = el.querySelector('.sw'); if (sw) { const q = L.n(t, S1 + .55, F1 - .1), x = L.lerp(-18, 118, L.eio(q)); sw.style.opacity = Math.sin(Math.PI * q); sw.style.background = `linear-gradient(100deg,transparent ${x - 16}%,rgba(255,224,150,.34) ${x}%,transparent ${x + 16}%)` } }
     if (FIN && t > F1) { const f0 = L.eio(L.n(t, F1, F1 + .35)); el.style.opacity = 1 - f0; el.style.transform = `translateY(${50 * f0}px)` }
   });
   if (FIN) { // the last scene, built like a sentence (WRAP-BRIEF.md round 4, R1 to R3): the board leaves; a plain line alone; then the
