@@ -127,3 +127,34 @@ Never: "coin flip", "top plan", "starting capital", "coming soon" as a card, a d
   "Season 2 soon." small; no empty lane, no end title card.
 - **C:** Kimi's card keeps RELEGATED; the run ends on the final table and then a full-bleed gold winner card
   ("Grok wins Season 1.", the P&L) on the bed's last lift; "Season 2 soon." small; no seats, no "?".
+
+## Round 3b: what "polished" means (owner, 2026-11-18, right after round 3)
+
+His words: "not having too much dead space, but also not having too many numbers within one screen... each screen is to
+show 2 data points max, and the 2 data points need to correlate... no overflow of information... an Apple launch video
+teaser... this glassy aspect... cleaner... not too crowded". A lead, not a spec. Made computable; every take must pass:
+
+- **P1, two data points a scene.** A scene (the stretch between two transitions) puts at most TWO data points at full
+  contrast, and both are about the same subject (a company and its move; an AI and its P&L; a strategy and its result).
+  A data point is one number or one verdict word. Anything else on screen is a small grey label, or something an earlier
+  scene already introduced, kept at 35% opacity or less. A table is built one row a scene (each row is "who, how much").
+  The report lists every scene with its data points.
+- **P2, few words.** At most 12 words on screen in a scene, labels included; at most 3 type sizes.
+- **P3, no dead space, no crowd.** The full-contrast content of a scene sits centred (within 4% of the frame's centre),
+  is 35% to 70% of the frame's height and at least 70% of its width, with no empty band taller than 30% of the frame
+  between two of its elements.
+- **P4, glass (take K, the NVIDIA finale's added beats, one Season 2 mockup; not L or C).** Apple's own description of
+  its material: it "reflects and refracts its surroundings" and reacts to movement "with specular highlights"
+  (Apple newsroom, June 2025). In CSS terms (LogRocket and others, 2025): a sheet with a white fill of about 8 to 12%,
+  backdrop blur 16 to 30px and saturate 140 to 200%, a bright edge only where light would hit (top, top-left), a faint
+  inner shade at the foot, radius 36px or more, and a soft shadow. Glass only reads over something that moves, so a slow
+  field of brand-colour light (green, red, gold on black) drifts behind it. One sheet a scene. `palcheck` stays under 2%.
+  If `backdrop-filter` makes frames slow or uneven in the renderer, pre-blur a copy of the field under the sheet instead.
+- **P5, calm motion.** One transition per scene change; things arrive in 0.5 s or less on a spring or ease; at most two
+  things move at once; a held scene drifts slowly (scale 1 to 1.03) so it is never frozen, never busy.
+- **P6, so the content is cut, not squeezed.** 45 to 60 s stays. Big rounds: two, each the move and the one AI that
+  stood out (the four P&Ls appear once, in the table built row by row). Leans: the winner's only. Accuracy: the best
+  and the relegated one get numbers; the others can be bars without numbers.
+
+Trade-off to tell the owner: with two data points a scene, "each model's P&L on every big round" no longer fits; the
+table carries all four once.
