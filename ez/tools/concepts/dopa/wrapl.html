@@ -114,8 +114,8 @@ function build() {
   S.ln.forEach(l => { l.p = svg('path', { ...ve, stroke: 'url(#sg)', 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, S.cg); l.hd = add(`<div class="hd"><span class="m">${L.mark(l.k, 44)}<i></i></span><span class="nm">${A(l.k).name.toUpperCase()}</span><span class="v mono"></span></div>`, hud) });
   const page = (id, cam) => { const el = add(`<div class="pg" id="${id}"></div>`, world), z = cam.z || 1, w = 1080 / z, h = 1350 / z, x = cam.cx - 540 / z, y = cam.cy - 675 / z; el.style.transform = `translate(${x}px,${y}px) scale(${1 / z})`; S.pages.push({ el, x, y, w, h }); return el }; S.pages = [];
   // 1, 2 the hook, two blocks on the baseline before round 1 (the baseline crosses these pages at y 980)
-  S.h1 = add(`<div class="blk"><div class="big"><span>We made <b style="color:${Au};font-weight:900">${D.ai.length} AIs</b></span><span>trade earnings</span><span>for a whole</span><span>season.</span></div></div>`, page('pa', { cx: PA, cy: HY }));
-  S.h2 = add(`<div class="blk"><div class="big" style="line-height:1.42"><span><b style="color:${Au};font-weight:900">${D.total}</b> reports.</span><span>Long or short.</span><span><b style="color:${Au};font-weight:900">$100K</b> a trade.</span></div></div>`, page('pb', { cx: PB, cy: HY }));
+  S.h1 = add(`<div class="blk"><div class="big" style="font-size:118px"><span>We made <b style="color:${Au};font-weight:900">${D.ai.length} AIs</b></span><span>trade earnings</span><span>for a whole</span><span>season.</span></div></div>`, page('pa', { cx: PA, cy: HY }));
+  S.h2 = add(`<div class="blk"><div class="big" style="font-size:118px;line-height:1.42"><span><b style="color:${Au};font-weight:900">${D.total}</b> reports.</span><span>Long or short.</span><span><b style="color:${Au};font-weight:900">$100K</b> a trade.</span></div></div>`, page('pb', { cx: PB, cy: HY }));
   // 6 to 9 and 15, 16: the whole season, the standings one block a scene, the winner
   const ps = page('ps', S.pc); S.ps = ps; const rest = D.ai.slice(1).reverse();                       // last place first; the winner waits for the end
   S.rl = add(`<div class="lb hx" style="top:176px">${FINAL ? 'FINAL P&amp;L · ' + D.total + ' ROUNDS' : 'P&amp;L AFTER ' + n + ' OF ' + D.total + ' ROUNDS'}</div>`, ps);
@@ -139,7 +139,7 @@ function build() {
   S.f4 = add(`<div class="blk" style="height:0"><div class="big hd4" style="position:absolute;left:0;width:1080px"><span>How often did they</span><span>pick the right side?</span></div>
     <div class="big rl4" style="position:absolute;left:0;width:1080px"><span>${rl.length ? list(rl.map(a => a.k)) + (rl.length > 1 ? ' were' : ' was') + ' wrong' : 'All four were right'}</span><span>more often than ${rl.length ? 'right.' : 'wrong.'}</span></div></div>`, f4);
   S.lane = D.ai.map((a, i) => { const rel = D.releg.includes(a.k), el = add(`<div class="lane">${L.mark(a.k, 72)}<div class="tr"></div><div class="fl" style="background:${rel ? Rd : G}"></div><div class="pc" style="color:${rel ? '#0e0c0b' : G}"></div></div>`, f4); return { a, i, rel, best: a === best, el, w: a.hitx * sc } });
-  S.h50 = add(`<div id="h50"></div>`, f4); S.l50 = add(`<div class="lb" style="position:absolute;transform:translateX(-50%);left:${x50}px">50%</div>`, f4); S.x50 = x50;
+  S.h50 = add(`<div id="h50"></div>`, f4); S.l50 = add(`<div class="lb" style="position:absolute;transform:translateX(-50%);left:${x50}px;font-size:44px;letter-spacing:0">50%</div>`, f4); S.x50 = x50;
   S.stamp = rl.length ? add(`<div id="stamp">RELEGATED</div>`, f4) : null; S.rel = rl;
   // --- on the frame ---
   add(`<div class="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>SEASON 1</b></div>`, document.body);
@@ -214,7 +214,7 @@ function R(t) {
   { const d = t - T.f[2], k = L.eo5(L.n(d, 0, .9)); S.f3.querySelector('.num').textContent = money0(Math.round(D.mkt.short * L.eo(L.n(d, 0, .9)) / 10) * 10); const m = S.f3.querySelector('.mk'); m.style.width = Math.max(8, S.f3w * k) + 'px'; m.style.backgroundPositionX = t * 22 + 'px' }
   // 13 accuracy (the best one's number), 14 the relegation (the head gives way to the line, the relegated lane takes the light)
   { const d = t - T.f[3], r = L.n(t, T.rel, T.rel + .45); S.f4.querySelector('.hd4').style.opacity = 1 - r; S.f4.querySelector('.rl4').style.opacity = r;
-    S.lane.forEach(l => { const kf = L.eio(L.n(d, -.1 + l.i * .06, 1 + l.i * .06)), pc = l.el.querySelector('.pc'), fl = l.el.querySelector('.fl'); fl.style.width = Math.max(0, l.w * kf) + 'px'; fl.style.opacity = l.rel ? 1 : l.best ? L.lerp(1, .35, r) : L.lerp(.55, .35, r);
+    S.lane.forEach(l => { const kf = L.eio(L.n(d, -.1 + l.i * .06, 1 + l.i * .06)), pc = l.el.querySelector('.pc'), fl = l.el.querySelector('.fl'); fl.style.width = Math.max(0, l.w * kf) + 'px'; fl.style.opacity = l.rel ? L.lerp(.55, 1, r) : l.best ? L.lerp(1, .35, r) : L.lerp(.55, .35, r);
       pc.textContent = (l.a.hitx * kf).toFixed(0) + '%'; if (l.rel) { pc.style.right = (872 - l.w * kf + 14) + 'px'; pc.style.opacity = r } else { pc.style.left = (96 + l.w * kf + 16) + 'px'; pc.style.opacity = l.best ? L.n(d, .4, .7) * L.lerp(1, .35, r) : 0 }
       l.el.querySelector('.mk').style.opacity = l.rel ? L.lerp(.55, 1, r) : l.best ? L.lerp(1, .35, r) : L.lerp(.55, .35, r) });
     if (S.stamp) { const ds = t - T.stamp, k = ds > 0 ? L.spring(ds, 2.4, 9) : 0; S.stamp.style.opacity = ds >= 0 ? 1 : 0; S.stamp.style.transform = `rotate(-6deg) scale(${2 - k})` } }
