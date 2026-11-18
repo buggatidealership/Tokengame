@@ -1,250 +1,145 @@
-<!doctype html><meta charset="utf-8"><title>Season 1, the keynote</title>
-<!-- Take K of the Season 1 conclusion (WRAP-BRIEF.md, owner 2026-11-18): by topic, an Apple-event keynote. A black stage, one idea
-  per shot, giant numerals that count, every shot handed over by a zoom-through (never a hard cut), a recap grid of tiles, Season 2.
-  Reads data/wrap.json (node prep-wrap.js); nothing is typed here. While D.final is false it prints DRAFT and "after N of M rounds";
-  ?final=1 forces the final labels (for checking only). The bed s1-k is exactly 120 BPM from 0.007 s: its beat enters at 8.0 s
-  ("Here's how it went."), it drops out at 47 s and drops at 48.0 s (the recap); Season 2 lands on the bar at 52.0 s.
-  window.R(t), READY, CUES, MUSIC, DUR as the other pages. Render: bash wrapx.sh wrapk.html 58 x2p-s1-wrap-k-draft -->
+<!doctype html><meta charset="utf-8"><title>Season 1, the keynote (glass)</title>
+<!-- Take K of the Season 1 conclusion, round 3 (WRAP-BRIEF.md "Round 3" and "Round 3b", owner 2026-11-18): the polished, glassy one.
+  One sheet of glass over a slow field of brand-colour light; sixteen scenes, each with at most two related data points at full
+  contrast (P1), at most 12 words and 3 type sizes (P2), centred and filling 35 to 70% of the height (P3), calm motion (P5).
+  It ends on the winner, on the bed's drop at 48.0 s, then one small line: "Season 2 soon." No Season 2 card, no replacement named.
+  Reads data/wrap.json (node prep-wrap.js); nothing is typed here; every line of the copy deck is printed only while the data makes
+  it true. While D.final is false: a DRAFT tag, "P&L after N of M rounds", "leads" for "wins". ?final=1 forces the final labels.
+  The bed s1-k is exactly 120 BPM from 0.007 s: its beat enters at 8.0 s (the tease), it drops out at 47 s and drops at 48.0 s.
+  The round-2 cut (zoom-through keynote with a recap grid and a Season 2 card) is git fb6654d6 and ez/x2p-s1-wrap-k-draft.mp4.
+  window.R(t), READY, CUES, MUSIC, DUR as the other pages. Render: bash wrapx.sh wrapk.html 54 x2p-s1-wrap-k2-draft s1-k 0 .3 -->
 <style id="base"></style>
 <style>
+#field{position:absolute;inset:0;overflow:hidden}
+#field i{position:absolute;left:0;top:0;width:1240px;height:1240px;margin:-620px 0 0 -620px;border-radius:50%}
+#cam{position:absolute;inset:0;transform-origin:50% 50%}
+/* the one sheet of glass: a faint cream fill, the field blurred and saturated behind it, a bright edge where the light would hit
+   (top and top-left), a faint shade at the foot, a soft shadow; one slow specular band */
+#glass{position:absolute;left:80px;width:920px;border-radius:60px;overflow:hidden;background:linear-gradient(165deg,rgba(242,237,230,.115),rgba(242,237,230,.06) 46%,rgba(242,237,230,.085));
+  -webkit-backdrop-filter:blur(26px) saturate(150%);backdrop-filter:blur(26px) saturate(150%);box-shadow:inset 0 -26px 46px -30px rgba(0,0,0,.5),0 34px 90px -26px rgba(0,0,0,.7)}
+#glass:before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.6px;background:linear-gradient(152deg,rgba(242,237,230,.62),rgba(242,237,230,.14) 30%,rgba(242,237,230,0) 58%,rgba(242,237,230,.16));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+#glass .sp{position:absolute;top:-30%;bottom:-30%;left:0;width:340px;background:linear-gradient(90deg,transparent,rgba(242,237,230,.075),transparent);transform:skewX(-16deg)}
 #stage{position:absolute;inset:0}
-.shot{position:absolute;inset:0;display:none;will-change:transform,opacity,filter}
-.gt{background:linear-gradient(105deg,var(--c2) 0,var(--c2) 43%,var(--c1) 50%,var(--c2) 57%,var(--c2) 100%);background-size:320% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;color:transparent}
-.ct{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.shot{position:absolute;left:100px;width:880px;top:0;height:1350px;display:none;align-items:center;justify-content:center}
+.blk{display:flex;flex-direction:column;align-items:center;text-align:center;white-space:nowrap}
+.big{font:900 300px/1 Inter;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
+.ln{font:900 96px/1.1 Inter;letter-spacing:-.045em}
+.lb{font:600 32px/1.2 'Geist Mono';letter-spacing:.14em;color:#8e8680;padding-left:.14em}
 .mono{font-family:'Geist Mono',monospace;font-variant-numeric:tabular-nums}
-.kick{font:600 35px 'Geist Mono';letter-spacing:.16em;color:#fdbc2a;padding-left:.16em}
-.num{font:900 400px/1 Inter;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
-/* chrome */
-#bug{position:absolute;left:56px;top:54px;display:flex;align-items:center;gap:16px;font:600 30px 'Geist Mono';letter-spacing:.12em;color:#8e8680;z-index:40}#bug img{width:48px;height:48px}
-#dr{position:absolute;right:56px;top:54px;font:600 30px 'Geist Mono';letter-spacing:.1em;color:#e8576b;padding:6px 14px 5px;border-radius:10px;box-shadow:inset 0 0 0 2px rgba(232,87,107,.6);z-index:40}
-#chap{position:absolute;left:56px;top:1226px;width:968px;display:flex;gap:16px;z-index:40}#chap i{flex:1;height:4px;border-radius:2px;background:rgba(242,237,230,.12);overflow:hidden}#chap b{display:block;height:4px;background:#fdbc2a;transform-origin:0 50%}
-#fine{position:absolute;left:0;right:0;top:1250px;text-align:center;font:500 30px 'Geist Mono';letter-spacing:.02em;color:#5f5853;z-index:40}
-/* A the hook */
-#A h1{position:absolute;left:0;right:0;top:268px;text-align:center;font:900 126px/1.04 Inter;letter-spacing:-.045em}
-#A h1 span{display:inline-block;white-space:pre}
-#A .ms{position:absolute;left:144px;top:800px;width:792px;display:flex;justify-content:space-between}
-#A .m{width:168px;display:flex;flex-direction:column;align-items:center;gap:22px;font:800 42px Inter;letter-spacing:-.02em}
-/* B the job */
-#B .num{top:262px}#B .l1{top:668px;font:900 96px/1 Inter;letter-spacing:-.04em}
-#B .l2{position:absolute;left:0;right:0;top:848px;display:flex;justify-content:center;align-items:center;gap:22px;font:900 60px/1 Inter;letter-spacing:-.03em;white-space:nowrap}
-#B .pill{padding:16px 32px 14px;border-radius:24px}#B .or{font:700 50px Inter;color:#8e8680}
-#B .l3{top:1022px;font:900 76px/1 Inter;letter-spacing:-.04em}
-/* C how it went */
-#C .ti{position:absolute;left:0;top:0;font:900 108px/1 Inter;letter-spacing:-.045em;white-space:nowrap;transform-origin:0 0}
-#C .sub{top:266px;font:600 35px 'Geist Mono';letter-spacing:.14em;color:#8e8680;padding-left:.14em}
-.row{position:absolute;left:56px;width:968px;height:188px;border-radius:30px;background:#1d1917;display:flex;align-items:center;padding:0 30px 0 26px;gap:20px;overflow:hidden}
-.row .au{position:absolute;inset:0;border-radius:30px;box-shadow:inset 0 0 0 3px #fdbc2a;opacity:0}
-.row .nb{width:214px;flex:none;display:flex;flex-direction:column;gap:8px}.row .nm{font:900 58px/1 Inter;letter-spacing:-.03em}.row .tg{font:600 35px/1 'Geist Mono';letter-spacing:.1em;color:#fdbc2a;height:35px;white-space:nowrap}
-.row svg.sp{flex:none;overflow:visible}.row .pl{margin-left:auto;font:600 58px/1 'Geist Mono';letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
-/* D the biggest moves */
-.D .kick{top:196px}.D .co{position:absolute;left:0;right:0;top:268px;display:flex;justify-content:center;align-items:center;gap:26px;font:900 100px/1 Inter;letter-spacing:-.045em;white-space:nowrap}
-.D .co img{width:116px;height:116px;border-radius:28px;background:#f2ede6;padding:14px;object-fit:contain}.D .co img.dk{background:#1d1917;box-shadow:inset 0 0 0 2px rgba(242,237,230,.2)}
-.D .num{top:414px;font-size:250px}.D .lb{top:674px;font:600 35px 'Geist Mono';letter-spacing:.14em;color:#8e8680;padding-left:.14em}
-.D .cap{top:770px;font:900 60px/1 Inter;letter-spacing:-.035em}
-.D .cells{position:absolute;left:56px;top:894px;width:968px;display:flex;gap:20px}
-.cell{position:relative;overflow:hidden;flex:1;height:288px;border-radius:28px;display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:22px;white-space:nowrap}
-.cell .nm{font:800 38px/1 Inter;letter-spacing:-.02em}.cell .sd{font:600 35px/1 'Geist Mono';letter-spacing:.12em}.cell .pl{font:600 36px/1 'Geist Mono';letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:6px}
-.cell.w{background:rgba(85,214,162,.12);box-shadow:inset 0 0 0 2px rgba(85,214,162,.5)}.cell.l{background:rgba(232,87,107,.1);box-shadow:inset 0 0 0 2px rgba(232,87,107,.42)}.cell.n{background:#1d1917}
-/* E1 62 fell */
-#E1 .num{top:150px;font-size:430px}#E1 .l1{top:566px;font:900 88px/1 Inter;letter-spacing:-.04em}#E1 .l2{top:664px;font:900 88px/1 Inter;letter-spacing:-.04em}
-#E1 .dots{position:absolute;left:84px;top:826px;width:912px;display:flex;flex-wrap:wrap;gap:12px}#E1 .dots i{width:30px;height:30px;border-radius:50%;background:#2a2522}
-#E1 .lg{top:1062px;font:600 35px 'Geist Mono';letter-spacing:.12em;color:#8e8680;display:flex;justify-content:center;gap:56px}#E1 .lg span{display:flex;align-items:center;gap:14px}#E1 .lg i{width:24px;height:24px;border-radius:50%}
-/* E2 short everything */
-#E2 .k1{top:262px}#E2 .k2{top:726px}#E2 .kk{font:600 36px 'Geist Mono';letter-spacing:.16em;color:#f2ede6;padding-left:.16em}
-#E2 .n1{top:322px;font-size:176px}#E2 .n2{top:786px;font-size:176px}
-#E2 .c1{top:534px;font:900 62px/1 Inter;letter-spacing:-.035em;color:#fdbc2a}#E2 .c2{top:1002px;font:600 35px 'Geist Mono';letter-spacing:.12em;color:#8e8680;padding-left:.12em}
-#E2 .hr{position:absolute;left:56px;width:968px;top:662px;height:2px;background:rgba(242,237,230,.12);transform-origin:50% 50%}
-/* E3 the leans */
-#E3 h2{position:absolute;left:0;right:0;top:186px;text-align:center;font:900 92px/1.06 Inter;letter-spacing:-.045em;white-space:nowrap}
-#E3 .row{height:170px}#E3 .nb{width:342px;gap:12px}#E3 .nm{font-size:52px;display:flex;align-items:center;gap:14px}
-#E3 .lean{font:600 35px/1 'Geist Mono';letter-spacing:.08em;padding:5px 11px 4px;border-radius:10px;box-shadow:inset 0 0 0 2px rgba(242,237,230,.35);color:#f2ede6}
-#E3 .sb{font:600 35px/1 'Geist Mono';letter-spacing:.02em;white-space:nowrap}
-#E3 .bar{flex:none;width:136px;height:22px;border-radius:11px;background:#55d6a2;overflow:hidden;transform-origin:0 50%}#E3 .bar b{display:block;height:22px;background:#e8576b;transform-origin:0 50%}
-#E3 .pl{font-size:50px}
-/* F1 accuracy */
-#F1 h2{position:absolute;left:0;right:0;top:186px;text-align:center;font:900 64px/1 Inter;letter-spacing:-.04em;white-space:nowrap}
-#F1 .sub{top:270px;font:600 35px 'Geist Mono';letter-spacing:.14em;color:#8e8680;padding-left:.14em}
-#F1 .col{position:absolute;top:0;width:227px;height:1350px}#F1 .bar{position:absolute;left:48px;width:130px;bottom:320px;border-radius:20px 20px 0 0;transform-origin:50% 100%}
-#F1 .v{position:absolute;left:-20px;right:-20px;top:438px;text-align:center;font:900 94px/1 Inter;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
-#F1 .col .mk{position:absolute;left:71px;top:1048px}#F1 .col .nm{position:absolute;left:0;right:0;top:1146px;text-align:center;font:800 36px/1 Inter;letter-spacing:-.02em}
-#F1 .half{position:absolute;left:56px;width:968px;top:649px;height:0;border-top:3px dashed #f2ede6;opacity:.75;transform-origin:0 50%}#F1 .hl{position:absolute;left:254px;width:76px;top:630px;text-align:center;font:600 35px/40px 'Geist Mono';color:#f2ede6;background:#0e0c0b}
-#F1 .base{position:absolute;left:56px;width:968px;top:1030px;height:2px;background:rgba(242,237,230,.2)}
-/* F2 relegated */
-#F2 .who{position:absolute;left:0;right:0;top:178px;display:flex;flex-direction:column;align-items:center;gap:18px;font:900 64px/1 Inter;letter-spacing:-.03em}
-#F2 .num{top:408px;font-size:280px}#F2 .ga{position:absolute;left:160px;top:694px;width:760px;height:24px;border-radius:12px;background:#2a2522}#F2 .ga b{display:block;height:24px;border-radius:12px;background:#e8576b;transform-origin:0 50%}#F2 .ga i{position:absolute;left:50%;top:-13px;width:4px;margin-left:-2px;height:50px;border-radius:2px;background:#f2ede6}
-#F2 .w2 .seat{width:150px;height:150px;border-radius:39px}#F2 .l1{top:764px;font:900 56px/1 Inter;letter-spacing:-.035em}
-#F2 .st{position:absolute;left:50%;top:866px;font:900 106px/1 Inter;letter-spacing:.02em;color:#e8576b;padding:16px 30px 12px;border:9px solid #e8576b;border-radius:22px;background:rgba(14,12,11,.9);white-space:nowrap}
-#F2 .l2{top:1094px;font:800 54px/1 Inter;letter-spacing:-.03em}
-.seat{width:132px;height:132px;border-radius:34px;border:4px dashed #fdbc2a;display:flex;align-items:center;justify-content:center;font:900 70px/1 Inter;color:#fdbc2a;flex:none}
-/* G the recap */
-#G .kick{top:118px}
-.tile{position:absolute;border-radius:30px;background:#1d1917;box-shadow:inset 0 0 0 2px rgba(242,237,230,.07);overflow:hidden;white-space:nowrap}
-.tile .lb{font:600 35px/1 'Geist Mono';letter-spacing:.05em;color:#8e8680}
-.shn{position:absolute;top:-20%;bottom:-20%;left:0;width:240px;background:linear-gradient(90deg,transparent,rgba(242,237,230,.14),transparent);transform:skewX(-14deg);opacity:0;pointer-events:none}
-#G .t1{box-shadow:inset 0 0 0 3px #fdbc2a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}#G .t1 .lb{color:#fdbc2a}#G .t1 .nm{font:900 76px/1 Inter;letter-spacing:-.04em}#G .t1 .pl{font:600 60px/1 'Geist Mono';letter-spacing:-.04em;color:#55d6a2}
-#G .t2{display:flex;flex-direction:column;justify-content:center;gap:26px;padding:0 26px}#G .t2 div{display:flex;align-items:center;gap:16px;font:800 38px/1 Inter;letter-spacing:-.02em}#G .t2 b{margin-left:auto;font:600 36px/1 'Geist Mono';letter-spacing:-.04em}
-#G .t3,#G .t5,#G .t6{display:flex;align-items:center;gap:20px;padding:0 26px}#G .t3 .n{font:900 128px/1 Inter;letter-spacing:-.05em;color:#e8576b}#G .t3 .x{font:800 36px/1.2 Inter;letter-spacing:-.02em;white-space:normal}
-#G .t4{display:flex;flex-direction:column;justify-content:center;gap:18px;padding:0 26px}#G .t4 .v{font:600 66px/1 'Geist Mono';letter-spacing:-.05em;color:#55d6a2}
-#G .t5 img{width:84px;height:84px;border-radius:20px;background:#f2ede6;padding:10px;object-fit:contain;flex:none}#G .t5 .c{display:flex;flex-direction:column;gap:12px}#G .t5 .nm{font:900 42px/1 Inter;letter-spacing:-.03em}#G .t5 .nm .mono{font-size:38px;letter-spacing:-.04em}#G .t5 .v{font:600 50px/1 'Geist Mono';letter-spacing:-.04em}
-#G .t6 .c{display:flex;flex-direction:column;gap:14px}#G .t6 .nm{font:900 50px/1 Inter;letter-spacing:-.01em;color:#e8576b}
-#G .t7{display:flex;align-items:center;justify-content:space-between;padding:44px 34px 0}#G .t7 .lb{position:absolute;left:34px;top:22px}#G .t7 .g{display:flex;align-items:center;gap:14px;font:900 58px/1 Inter;letter-spacing:-.05em}
-/* H Season 2 */
-#H img.lg{position:absolute;left:465px;top:214px;width:150px;height:150px}
-#H .a{position:absolute;left:0;top:0;font:900 230px/1 Inter;letter-spacing:-.05em;white-space:nowrap;transform-origin:50% 50%}
-#H .b{top:668px;font:600 48px 'Geist Mono';letter-spacing:.34em;color:#fdbc2a;padding-left:.34em}
-#H .ss{position:absolute;left:0;right:0;top:826px;display:flex;justify-content:center;gap:36px}#H .ss .s{position:relative;width:132px;height:132px}#H .ss .s>*{position:absolute;left:0;top:0}
-#H .c{top:1026px;font:800 50px/1 Inter;letter-spacing:-.03em}
+.dimmed{opacity:.35}
+#bug{position:absolute;left:56px;top:54px;width:52px;height:52px;z-index:40}
+#dr{position:absolute;right:56px;top:56px;font:600 30px 'Geist Mono';letter-spacing:.1em;color:#e8576b;padding:6px 14px 5px;border-radius:10px;box-shadow:inset 0 0 0 2px rgba(232,87,107,.6);z-index:40}
+.ms{display:flex;gap:40px;margin-top:44px}.ms .m{display:flex;flex-direction:column;align-items:center;gap:16px;font:600 32px/1.2 'Geist Mono';letter-spacing:.06em;color:#8e8680}
+.co{display:flex;align-items:center;gap:24px}.co img{width:112px;height:112px;border-radius:28px;background:#f2ede6;padding:14px;object-fit:contain}.co img.dk{background:#1d1917;box-shadow:inset 0 0 0 2px rgba(242,237,230,.2)}
+.who{display:flex;align-items:center;gap:22px}
+/* accuracy */
+.acc{position:relative;width:820px;height:540px;margin-top:34px}
+.acc .c{position:absolute;bottom:0;width:190px;height:540px}.acc .bar{position:absolute;left:35px;width:120px;bottom:96px;border-radius:18px 18px 0 0;transform-origin:50% 100%}
+.acc .mk{position:absolute;left:55px;bottom:0}.acc .v{position:absolute;left:-30px;right:-30px;font:900 112px/1 Inter;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
+.acc .nm{position:absolute;left:-30px;right:-30px;font:600 32px/1.2 'Geist Mono';letter-spacing:.06em;color:#8e8680}
+.acc .half{position:absolute;left:0;right:0;height:0;border-top:3px dashed rgba(242,237,230,.6);transform-origin:0 50%}
+/* relegated */
+.st{font:900 132px/1 Inter;letter-spacing:.02em;color:#e8576b;padding:18px 34px 12px;border:10px solid #e8576b;border-radius:26px;margin-top:54px}
+/* the table, one row a scene: the row of the scene in the middle, the rows before it small and dim at the foot */
+.tb{display:grid;grid-template-rows:1fr auto 1fr;height:900px;width:880px;justify-items:center}
+.tb .top{align-self:start;padding-top:8px}.tb .hero{display:flex;flex-direction:column;align-items:center}
+.tb .foot{align-self:end;display:flex;flex-direction:column;align-items:center;gap:14px;padding-bottom:4px}
+.tb .li{display:flex;justify-content:center;gap:40px}.tb .it{display:flex;align-items:center;gap:12px;font:600 32px/1 'Geist Mono';letter-spacing:-.02em;color:#f2ede6;opacity:.35}
+.tb .s2{font:600 34px/1.2 'Geist Mono';letter-spacing:.04em;color:#8e8680}
+.ring{border-radius:26%;box-shadow:0 0 0 6px #fdbc2a}
 </style>
-<div id="stage"></div><div id="vig"></div><canvas id="grain"></canvas>
+<div id="field"><i id="fg"></i><i id="fr"></i><i id="fa"></i></div>
+<div id="cam"><div id="glass"><div class="sp"></div></div><div id="stage"></div></div><div id="vig"></div><canvas id="grain"></canvas>
 <script src="lib.js"></script>
 <script>
-const q = new URLSearchParams(location.search), G = '#55d6a2', Rd = '#e8576b', Au = '#fdbc2a', Cr = '#f2ede6', BG = [14, 12, 11];
+const q = new URLSearchParams(location.search), G = '#55d6a2', Rd = '#e8576b', Au = '#fdbc2a', Cr = '#f2ede6';
 const stage = L.$('#stage'), add = (h, p = stage) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
 let D, DUR, S = {}, C = [], grain, t = 0; const SH = [];
-const money0 = v => (v < 0 ? '−' : '+') + '$' + Math.abs(Math.round(v)).toLocaleString('en-US'), pct = (v, d = 2) => (v < 0 ? '−' : '+') + Math.abs(v).toFixed(d) + '%', col = v => v >= 0 ? G : Rd;
-const mix = (hex, a) => { const c = [1, 3, 5].map(i => parseInt(hex.substr(i, 2), 16)); return `rgb(${c.map((x, i) => Math.round(x * a + BG[i] * (1 - a))).join(',')})` };
-const dim = c => mix(c, c === Cr ? .86 : .76), gt = c => `--c1:${c};--c2:${dim(c)}`;                                       // text that a highlight can travel across
-const sheen = (el, ...ts) => { let k = 0; ts.forEach(t0 => { const x = L.n(t, t0, t0 + .9); if (x > 0 && x < 1) k = L.eio(x) }); el.style.backgroundPosition = (100 - 100 * k) + '% 0' };
-const e = (el, t0, d = .45, dy = 36) => { const k = L.eo5(L.n(t, t0, t0 + d)); el.style.opacity = L.n(t, t0, t0 + d * .55); el.style.transform = `translateY(${(1 - k) * dy}px)`; return k };
-const pop = (el, t0, s0 = .7, f = 2.1, dm = 8.5) => { const x = t - t0; el.style.opacity = L.n(x, 0, .1); el.style.transform = `scale(${x <= 0 ? s0 : s0 + (1 - s0) * L.spring(x, f, dm)})` };
-const shine = (el, t0, d = .9) => { const sh = el._sh || (el._sh = el.querySelector('.shn')), w = el._w || (el._w = el.offsetWidth), ks = L.n(t, t0, t0 + d); sh.style.opacity = ks > 0 && ks < 1 ? Math.sin(ks * Math.PI) : 0; sh.style.transform = `translateX(${L.lerp(-260, w + 40, L.eio(ks))}px) skewX(-14deg)` };
-const and = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a.at(-1);
-// the cut, in seconds: the bed is 120 BPM, so every time here is on its half-second beat (or the quarter between two)
-const T = { A: 0, B: 4, C: 8, D: [14, 18, 22], E1: 26, E2: 30, E3: 34, F1: 38.5, F2: 42, G: 48, H: 52, END: 58 };
-const shot = (id, t0, t1, ox = 50, oy = 46, cls = '') => { const el = add(`<div class="shot ${cls}" id="${id}" style="transform-origin:${ox}% ${oy}%"></div>`); const s = { id, t0, t1, el, fn: null, o: [ox * 10.8, oy * 13.5] }; SH.push(s); return s };
+const money0 = v => (v < 0 ? '−' : '+') + '$' + Math.abs(Math.round(v)).toLocaleString('en-US'), moneyK = v => (v < 0 ? '−' : '+') + '$' + Math.round(Math.abs(v) / 1000) + 'K', pct = (v, d = 2) => (v < 0 ? '−' : '+') + Math.abs(v).toFixed(d) + '%', col = v => v >= 0 ? G : Rd;
+// calm arrivals: half a second or less, on an ease or a spring
+const e = (el, t0, d = .45, dy = 30) => { const k = L.eo5(L.n(t, t0, t0 + d)); el.style.opacity = L.n(t, t0, t0 + d * .6); el.style.transform = `translateY(${(1 - k) * dy}px)`; return k };
+const pop = (el, t0, s0 = .8, f = 1.8, dm = 9) => { const x = t - t0; el.style.opacity = L.n(x, 0, .12); el.style.transform = `scale(${x <= 0 ? s0 : s0 + (1 - s0) * L.spring(x, f, dm)})` };
+const and = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a.at(-1), ord = n => n === 1 ? '' : (['', '', '2ND', '3RD'][n] || n + 'TH') + ' ';
+// the cut, in seconds; the bed is 120 BPM from 0.007 s, so every time is on a half-second beat. The winner lands on its drop (48.0).
+const T = [0, 2, 5, 8, 11.5, 15.5, 19.5, 23.5, 27.5, 31.5, 36, 40, 42, 44, 46, 48, 54];
+// a scene: its content, and the light behind the glass [green, red, gold] (the light says which way the number went)
+const scene = (i, fx, html) => { const el = add(`<div class="shot"><div class="blk">${html}</div></div>`), s = { i, t0: T[i], t1: T[i + 1], fx, el, blk: el.firstChild, fn: () => 0, fit: [] }; SH.push(s); return s };
 
 function build() {
   if (q.get('final')) D.final = true;
-  const A = k => D.ai.find(a => a.k === k), n = D.rounds, tot = D.total, mk = D.mkt, nm = mk.up + mk.down; DUR = T.END;
-  // chrome: the series, the draft tag, the six chapters, the fine print
-  add(`<div id="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span></div>`, document.body);
-  if (!D.final) add(`<div id="dr">DRAFT · ${n} OF ${tot}</div>`, document.body);
-  S.chap = add(`<div id="chap">${'<i><b></b></i>'.repeat(6)}</div>`, document.body); S.chT = [[T.A, T.C], [T.C, T.D[0]], [T.D[0], T.E1], [T.E1, T.F1], [T.F1, T.G], [T.G, T.END]];
-  add(`<div id="fine">Simulated · $100K on every trade · not advice</div>`, document.body);
+  const A = k => D.ai.find(a => a.k === k), n = D.rounds, tot = D.total, mk = D.mkt, nm = mk.up + mk.down, first = D.ai[0], last = D.ai.at(-1); DUR = T.at(-1);
+  add(`<img id="bug" src="ezlogo.svg" alt="">`, document.body); if (!D.final) add(`<div id="dr">DRAFT · ${n} OF ${tot}</div>`, document.body);
 
-  // A the hook
-  { const s = shot('A', T.A, T.B), el = s.el, w = (x, c = Cr) => x.split(' ').map(y => `<span class="gt" style="${gt(c)}">${y} </span>`).join('');
-    add(`<h1>${w('We paid for')}<br>${w('the')}${w('top plan', Au)}<br>${w('of ' + D.ai.length + ' AIs.')}</h1>`, el);
-    add(`<div class="ms">${D.ai.map(a => `<div class="m">${L.mark(a.k, 168)}<span>${a.name}</span></div>`).join('')}</div>`, el);
-    const ws = L.$$('h1 span', el), ms = L.$$('.m', el);
-    D.ai.forEach((a, j) => C.push([.5 + j * .5, 'r11-pluck', .07])); C.push([.05, 'r11-swell', .08]);
-    s.fn = () => { ws.forEach((x, j) => { e(x, .08 + j * .07, .5, 44); sheen(x, 2.35 + j * .05) }); ms.forEach((m, j) => { pop(m, .5 + j * .5); if (t > 2.6) m.style.transform = `translateY(${-8 * Math.sin((t - 2.6) * 2.6 - j * .7) * L.n(t, 2.6, 3)}px)` }) } }
-
-  // B the job
-  { const s = shot('B', T.B, T.C), el = s.el;
-    const k = add(`<div class="ct kick" style="top:204px">THEIR JOB</div>`, el), nu = add(`<div class="ct num gt" style="${gt(Cr)}">0</div>`, el), l1 = add(`<div class="ct l1">earnings reports.</div>`, el);
-    const l2 = add(`<div class="l2"><span class="pill" style="color:${G};background:rgba(85,214,162,.14);box-shadow:inset 0 0 0 3px rgba(85,214,162,.55)">LONG</span><span class="or">or</span><span class="pill" style="color:${Rd};background:rgba(232,87,107,.13);box-shadow:inset 0 0 0 3px rgba(232,87,107,.5)">SHORT</span><span>on each.</span></div>`, el);
-    const l3 = add(`<div class="ct l3"><span style="color:${Au}">$100K</span> on every trade.</div>`, el), ps = L.$$('.l2 > *', el);
-    C.push([T.B, 'sfx-whoosh', .05], [T.B + 1, 'r11-thump', .1]);
-    s.fn = () => { e(k, T.B + .1); nu.textContent = Math.round(tot * L.eo(L.n(t, T.B, T.B + 1))); nu.style.opacity = L.n(t, T.B - .05, T.B + .2); sheen(nu, T.B + 2.5); e(l1, T.B + .25);
-      ps.forEach((p, j) => { const x = t - (T.B + .6 + j * .08); p.style.opacity = L.n(x, 0, .12); p.style.transform = `translateY(${(1 - L.spring(Math.max(0, x), 1.9, 8)) * 40 + (j % 2 ? 0 : -5 * Math.sin((t - T.B - 1.6) * 3 + j) * L.n(t, T.B + 1.8, T.B + 2.2))}px)` });
-      e(l3, T.B + 1); } }
-
-  // C how it went: the title becomes the header, then last place to first, each number riding its own season line
-  { const s = shot('C', T.C, T.D[0]), el = s.el; let lo = 0, hi = 0; D.order.forEach(k => D.s[k].forEach(v => { lo = Math.min(lo, v); hi = Math.max(hi, v) }));
-    const ti = add(`<div class="ti gt" style="${gt(Cr)}">Here’s how it went.</div>`, el), sub = add(`<div class="ct sub">${D.final ? 'FINAL P&amp;L · ALL ' + tot + ' ROUNDS' : 'P&amp;L AFTER ' + n + ' OF ' + tot + ' ROUNDS'}</div>`, el);
-    const SW = 216, SHh = 108, Y = v => SHh * (hi - v) / (hi - lo), rows = D.ai.map((a, i) => { const ser = D.s[a.k], pts = ser.map((v, j) => `${(j / (ser.length - 1) * SW).toFixed(1)},${Y(v).toFixed(1)}`).join(' '), tc = T.C + 1.5 + (D.ai.length - 1 - i) * .5;
-      const r = add(`<div class="row" style="top:${342 + i * 212}px"><div class="au"></div>${L.mark(a.k, 104)}<div class="nb"><div class="nm">${a.name}</div><div class="tg">${i ? '' : D.final ? 'WINNER' : 'IN FRONT'}</div></div>
-        <svg class="sp" width="${SW}" height="${SHh}"><line x1="0" x2="${SW}" y1="${Y(0)}" y2="${Y(0)}" stroke="#5f5853" stroke-width="2" stroke-dasharray="3 7"/><polyline points="${pts}" pathLength="1" fill="none" stroke="${col(a.pnl)}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 1"/><circle r="7" fill="${col(a.pnl)}"/></svg>
-        <div class="pl gt" style="${gt(col(a.pnl))}"></div><div class="shn"></div></div>`, el);
-      C.push([tc, i ? 'r11-card' : 'r11-kaching', i ? .08 : .12]); return { a, i, tc, ser, r, pl: r.querySelector('.pl'), ln: r.querySelector('polyline'), dot: r.querySelector('circle'), au: r.querySelector('.au'), tg: r.querySelector('.tg') } });
-    S.Cti = ti; s.fn = () => { const km = L.eio(L.n(t, T.C + .95, T.C + 1.55)), z = L.lerp(S.kC, .6 * S.kC, km), x = t - T.C;
-      const zz = z * (x < 0 ? .8 : .8 + .2 * L.spring(x, 1.6, 7)); ti.style.transform = `translate(${540 - S.wC * zz / 2}px,${L.lerp(560, 178, km)}px) scale(${zz})`; sheen(ti, T.C + .25); e(sub, T.C + 1.5);
-      rows.forEach(r => { const dt = t - r.tc, ke = L.eo5(L.n(dt, 0, .45)), kp = L.eo(L.n(dt, .05, 1.25)), idx = Math.round(kp * (r.ser.length - 1)), v = kp >= 1 ? r.a.pnl : Math.round(r.ser[idx] / 10) * 10;
-        r.r.style.opacity = L.n(dt, 0, .15); r.r.style.transform = `translateY(${(1 - ke) * 70}px) scale(${.94 + .06 * ke})`; r.pl.textContent = money0(v); r.pl.style.setProperty('--c1', col(v)); r.pl.style.setProperty('--c2', dim(col(v))); sheen(r.pl, T.C + 4.2 + r.i * .14); shine(r.r, T.C + 4.25 + r.i * .16, 1);
-        r.ln.setAttribute('stroke-dashoffset', 1 - kp); const p = idx / (r.ser.length - 1); r.dot.setAttribute('cx', p * SW); r.dot.setAttribute('cy', Y(r.ser[idx])); r.dot.setAttribute('r', 7 + 3 * Math.sin(t * 5 + r.i));
-        if (!r.i) { r.au.style.opacity = L.n(dt, .9, 1.3) * (.8 + .2 * Math.sin((dt - 1.3) * 3.2)); r.tg.style.opacity = L.n(dt, 1.1, 1.4) } }) } }
-
-  // D the three biggest moves: the company, the move, who was right, what each AI made
-  D.big.slice(0, 3).forEach((x, i) => { const t0 = T.D[i], s = shot('D' + i, t0, i < 2 ? T.D[i + 1] : T.E1, 50, 42, 'D'), el = s.el, c = col(x.move);
-    const cap = x.right.length === 1 ? `Only ${A(x.right[0]).name} got it right.` : x.wrong.length === 1 ? `Only ${A(x.wrong[0]).name} got it wrong.` : !x.wrong.length ? 'All four got it right.' : !x.right.length ? 'All four got it wrong.' : `${and(D.ai.filter(a => x.right.includes(a.k)).map(a => a.name))} were right.`;
-    const k = add(`<div class="ct kick">THE BIGGEST MOVES · ${i + 1} OF 3</div>`, el), co = add(`<div class="co">${x.logo ? `<img src="${x.logo}" class="${x.dark ? 'dk' : ''}">` : ''}<span>${x.co}</span></div>`, el);
-    const nu = add(`<div class="ct num gt" style="${gt(c)}">${pct(x.move)}</div>`, el), lb = add(`<div class="ct lb">STOCK MOVE AFTER EARNINGS</div>`, el), cp = add(`<div class="ct cap">${cap}</div>`, el);
-    const cells = add(`<div class="cells">${D.ai.map(a => { const p = x.p[a.k], sd = x.side[a.k]; return `<div class="cell ${p > 0 ? 'w' : p < 0 ? 'l' : 'n'}">${L.mark(a.k, 84)}<div class="nm">${a.name}</div><div class="sd" style="color:${sd === 'LONG' ? G : sd ? Rd : '#8e8680'}">${sd || 'NO CALL'}</div><div class="pl" style="color:${p ? col(p) : '#8e8680'}" data-p="${p}"></div><div class="shn"></div></div>` }).join('')}</div>`, el), cs = L.$$('.cell', el);
-    C.push([t0 + .5, 'r11-thump', .13]); if (!i) C.push([t0, 'sfx-whoosh', .05]);
-    s.fit = [[nu, 940, 250], [co, 968, 100]]; s.fn = () => { e(k, t0 + .05); e(co, t0 + .05, .45, 30); const kc = L.eo(L.n(t, t0 + .05, t0 + .5)); nu.textContent = pct(x.move * kc); nu.style.opacity = L.n(t, t0, t0 + .2); nu.style.transform = `scale(${1 + .08 * Math.exp(-Math.max(0, t - t0 - .5) * 7) * (t > t0 + .5)})`; sheen(nu, t0 + 2.2); e(lb, t0 + .4); e(cp, t0 + .5);
-      cs.forEach((cl, j) => { const dt = t - (t0 + 1 + j * .12); cl.style.opacity = L.n(dt, 0, .12); cl.style.transform = `translateY(${(1 - L.spring(Math.max(0, dt), 1.8, 8)) * 60 + (cl.classList.contains('w') ? -7 * Math.sin((t - t0 - 2.1) * 4.2) * L.n(t, t0 + 2.1, t0 + 2.5) : 0)}px)`; const pl = cl.querySelector('.pl'), p = +pl.dataset.p; pl.textContent = p ? money0(Math.round(p * L.eo(L.n(dt, .05, .6)) / 10) * 10) : '$0'; shine(cl, t0 + 2.75 + j * .12, .8) }) } });
-
-  // E1 how many reports sent the stock down: one dot a report
-  { const s = shot('E1', T.E1, T.E2), el = s.el, t0 = T.E1;
-    const nu = add(`<div class="ct num gt" style="${gt(Rd)}">0</div>`, el), l1 = add(`<div class="ct l1">of ${nm} stocks <span style="color:${Rd}">fell</span></div>`, el), l2 = add(`<div class="ct l2">after earnings.</div>`, el);
-    const dc = Math.ceil(nm / 5), dw = Math.floor((912 - (dc - 1) * 12) / dc), dots = add(`<div class="dots" style="width:${dc * dw + (dc - 1) * 12}px;left:${540 - (dc * dw + (dc - 1) * 12) / 2}px">${`<i style="width:${dw}px;height:${dw}px"></i>`.repeat(nm)}</div>`, el), ds = L.$$('i', dots), lg = add(`<div class="ct lg"><span><i style="background:${Rd}"></i>${mk.down} FELL</span><span><i style="background:${G}"></i>${mk.up} ROSE</span></div>`, el);
-    C.push([t0, 'sfx-whoosh', .05], [t0 + 1.5, 'r11-thump', .1]);
-    s.fn = () => { const pr = L.eo(L.n(t, t0 + .15, t0 + 1.5)) * mk.down, pg = L.eio(L.n(t, t0 + 2, t0 + 3)) * mk.up; nu.textContent = Math.round(pr); nu.style.opacity = L.n(t, t0 - .05, t0 + .2); sheen(nu, t0 + 2.9); e(l1, t0 + .1); e(l2, t0 + .2); e(dots, t0 + .15, .4, 20); e(lg, t0 + 1.5);
-      ds.forEach((d, j) => { const k = j < mk.down ? L.cl(pr - j) : L.cl(pg - (j - mk.down)); d.style.background = k > 0 ? (j < mk.down ? Rd : G) : '#2a2522'; d.style.transform = `scale(${k > 0 ? 1 + .5 * (1 - k) : 1})` }) } }
-
-  // E2 $100K short on every report against $100K long on every report
-  { const s = shot('E2', T.E2, T.E3), el = s.el, t0 = T.E2, beat = mk.short > D.ai[0].pnl;
-    const k1 = add(`<div class="ct kk k1">SHORT EVERY REPORT</div>`, el), n1 = add(`<div class="ct num n1 gt" style="${gt(col(mk.short))}">${money0(mk.short)}</div>`, el), c1 = add(`<div class="ct c1">${beat ? 'No AI beat that.' : D.ai[0].name + ' beat that.'}</div>`, el), hr = add(`<div class="hr"></div>`, el);
-    const k2 = add(`<div class="ct kk k2">LONG EVERY REPORT</div>`, el), n2 = add(`<div class="ct num n2 gt" style="${gt(col(mk.long))}">${money0(mk.long)}</div>`, el), c2 = add(`<div class="ct c2">$100K A TRADE, ALL ${nm} REPORTS</div>`, el);
-    C.push([t0 + 1.5, 'r11-kaching', .11]); s.fit = [[n1, 968, 176], [n2, 968, 176]];
-    s.fn = () => { const k = L.eo5(L.n(t, t0 + .15, t0 + 1.5)); e(k1, t0 + .05); e(k2, t0 + .15); n1.textContent = money0(Math.round(mk.short * k / 10) * 10); n2.textContent = money0(Math.round(mk.long * k / 10) * 10); n1.style.opacity = n2.style.opacity = L.n(t, t0, t0 + .25);
-      n1.style.transform = `translateY(${(1 - k) * 46}px)`; n2.style.transform = `translateY(${(k - 1) * 46}px)`; sheen(n1, t0 + 2.25); sheen(n2, t0 + 2.6); hr.style.transform = `scaleX(${L.eo5(L.n(t, t0 + .1, t0 + .9))})`; e(c2, t0 + .3); pop(c1, t0 + 1.5, .6) } }
-
-  // E3 who leaned which way, and what it made
-  { const s = shot('E3', T.E3, T.F1), el = s.el, t0 = T.E3;
-    const h = add(`<h2><span>Bears <span style="color:${G}">got paid.</span></span><br><span>Bulls <span style="color:${Rd}">paid.</span></span></h2>`, el), hs = [...h.children].filter(x => x.tagName === 'SPAN');
-    const rows = D.ai.map((a, i) => { const bear = a.lean === 'BEAR', r = add(`<div class="row" style="top:${446 + i * 190}px">${L.mark(a.k, 96)}<div class="nb"><div class="nm">${a.name}<span class="lean">${a.lean}</span></div><div class="sb" style="color:${bear ? Rd : G}">${bear ? 'SHORT ' + a.shorts : 'LONG ' + a.longs} OF ${a.calls}</div></div>
-      <div class="bar"><b style="width:${a.shorts / a.calls * 100}%"></b></div><div class="pl gt" style="${gt(col(a.pnl))}">${money0(a.pnl)}</div><div class="shn"></div></div>`, el); return { a, i, r, bar: r.querySelector('.bar'), pl: r.querySelector('.pl') } });
-    C.push([t0, 'sfx-whoosh', .05]);
-    s.fn = () => { hs.forEach((x, j) => { x.style.display = 'inline-block'; e(x, t0 + .08 + j * .22, .5, 40) }); rows.forEach(r => { const dt = t - (t0 + .4 + r.i * .2), ke = L.eo5(L.n(dt, 0, .45)); r.r.style.opacity = L.n(dt, 0, .15); r.r.style.transform = `translateX(${(1 - ke) * (r.a.lean === 'BEAR' ? -90 : 90)}px)`;
-      r.bar.style.transform = `scaleX(${L.eo5(L.n(dt, .15, 1))})`; sheen(r.pl, t0 + 2.5 + r.i * .16); shine(r.r, t0 + 2.6 + r.i * .16, 1) }) } }
-
-  // F1 how often each was on the right side, against half
-  { const s = shot('F1', T.F1, T.F2, 50, 46), el = s.el, t0 = T.F1, H = 760, by = 1030;
-    const h = add(`<h2>How often were they right?</h2>`, el), sub = add(`<div class="ct sub">CALLS ON THE RIGHT SIDE</div>`, el); add(`<div class="base"></div>`, el);
-    const cols = D.ai.map((a, i) => { const c = a.hitx < 50 ? Rd : G, cl = add(`<div class="col" style="left:${56 + i * 247}px"><div class="bar" style="height:${H * a.hitx / 100}px;background:linear-gradient(180deg,${c},${mix(c, .45)})"></div><div class="v gt" style="${gt(c)}">0%</div>${L.mark(a.k, 84)}<div class="nm">${a.name}</div></div>`, el); return { a, i, cl, bar: cl.querySelector('.bar'), v: cl.querySelector('.v') } });
-    const half = add(`<div class="half"></div>`, el), hl = add(`<div class="hl">50%</div>`, el), ri = D.ai.findIndex(a => D.releg.includes(a.k)); if (ri >= 0) s.fo = [56 + ri * 247 + 113, 560];
-    C.push([t0, 'sfx-whoosh', .05]);
-    s.fn = () => { e(h, t0 + .05); e(sub, t0 + .2); half.style.transform = `scaleX(${L.eo5(L.n(t, t0 + .2, t0 + 1))})`; e(hl, t0 + .7, .4, 0);
-      cols.forEach(c => { const dt = t - (t0 + .5 + c.i * .15), k = L.eo5(L.n(dt, 0, 1.15)); c.cl.style.opacity = L.n(dt, -.1, .1); c.bar.style.transform = `scaleY(${Math.max(.001, k)})`; c.v.textContent = Math.round(c.a.hit * k) + '%'; c.v.style.opacity = L.n(dt, 0, .2); c.v.style.transform = `translateY(${(1 - L.eo5(L.n(dt, 0, .5))) * 30}px)`; sheen(c.v, t0 + 2.3 + c.i * .16) }) } }
-
-  // F2 under half: relegated, and the seat it leaves
-  { const r = D.ai.find(a => D.releg.includes(a.k)) || D.ai.at(-1), has = D.releg.length > 0, s = shot('F2', T.F2, T.G), el = s.el, t0 = T.F2;
-    const who = add(`<div class="who">${L.mark(r.k, 150)}<span>${r.name}</span></div>`, el), nu = add(`<div class="ct num gt" style="${gt(has ? Rd : G)}">0%</div>`, el), l1 = add(`<div class="ct l1">${has ? 'Right less than half the time.' : 'Last, but right more than half the time.'}</div>`, el);
-    const ga = add(`<div class="ga"><b style="width:${r.hitx}%"></b><i></i></div>`, el), gb = ga.querySelector('b'), w2 = has ? add(`<div class="who w2"><div class="seat">?</div><span style="color:${Au}">New model</span></div>`, el) : null;
-    const st = add(`<div class="st">${has ? 'RELEGATED' : 'STAYS'}</div>`, el), l2 = add(`<div class="ct l2">${has ? 'A new model takes its place.' : 'All four are back for Season 2.'}</div>`, el);
-    if (!has) st.style.cssText += `color:${G};border-color:${G}`; C.push([t0 + 2, 'sfx-stamp', .24]); if (has) C.push([t0 + 4, 'r11-pluck', .1]);
-    s.fn = () => { pop(who, t0 + .05, .8); nu.textContent = Math.round(r.hit * L.eo(L.n(t, t0 + .05, t0 + .9))) + '%'; nu.style.opacity = L.n(t, t0, t0 + .2); sheen(nu, t0 + 1.05); e(l1, t0 + .1);
-      const x = t - (t0 + 2), ks = x <= 0 ? 0 : L.spring(x, 2.4, 9); st.style.opacity = L.n(x, 0, .06); st.style.transform = `translate(-50%,0) rotate(-6deg) scale(${2.4 - 1.4 * ks})`; const sk = x > 0 ? 6 * Math.exp(-x * 9) * Math.sin(x * 80) : 0; l1.style.transform = `translateX(${sk}px)`; nu.style.transform = `translateX(${-sk}px)`;
-      e(l2, t0 + 2.5); e(ga, t0 + .2, .4, 16); gb.style.transform = `scaleX(${L.eio(L.n(t, t0 + .3, t0 + 1.9))})`; nu.textContent = Math.round(r.hit * L.eio(L.n(t, t0 + .3, t0 + 1.9))) + '%';
-      // the number, its gauge, the line and the stamp are Kimi's: they leave with its mark, so the new seat never stands over "46% · RELEGATED"
-      const kd = w2 ? L.eio(L.n(t, t0 + 3.8, t0 + 4.2)) : 0; nu.style.opacity = L.n(t, t0, t0 + .2) * (1 - kd); ga.style.opacity = L.n(t, t0 + .2, t0 + .45) * (1 - kd); st.style.opacity = L.n(x, 0, .06) * (1 - kd); l1.style.opacity = (+l1.style.opacity || 0) * (1 - kd);
-      if (w2) { const kx = L.ei(L.n(t, t0 + 4, t0 + 4.3)), xs = t - (t0 + 4.28); if (kx > 0) { who.style.opacity = 1 - kx; who.style.transform = `translateX(${-kx * 320}px)` } w2.style.opacity = L.n(xs, 0, .15); w2.style.transform = `translate(${xs <= 0 ? 320 : 320 * (1 - L.spring(xs, 1.7, 7.5))}px,${330 * kd}px)`; l2.style.transform = (l2.style.transform || '') + ` translateY(${-150 * kd}px)`; w2.firstChild.style.transform = `scale(${1 + .05 * Math.sin((t - t0) * 6)})` } } }
-
-  // G the season in one frame: seven tiles, one every sixteenth
-  { const s = shot('G', T.G, T.H), el = s.el, t0 = T.G, w = D.ai[0], b0 = D.big[0], rg = D.ai.find(a => D.releg.includes(a.k)), X = [56, 303, 550, 797], Yy = [180, 388, 596, 804, 1012], W2 = 474, W4 = 968, H1 = 188, H2 = 396;
-    const k = add(`<div class="ct kick">SEASON 1 IN ONE FRAME</div>`, el), tl = (cls, x, y, wd, ht, h) => add(`<div class="tile ${cls}" style="left:${x}px;top:${y}px;width:${wd}px;height:${ht}px">${h}<div class="shn"></div></div>`, el);
-    const ts = [tl('t1', X[0], Yy[0], W2, H2, `<div class="lb">${D.final ? 'WINNER' : 'IN FRONT'}</div>${L.mark(w.k, 124)}<div class="nm">${w.name}</div><div class="pl">${money0(w.pnl)}</div>`),
-      tl('t2', X[2], Yy[0], W2, H2, D.ai.slice(1).map(a => `<div>${L.mark(a.k, 60)}${a.name}<b style="color:${col(a.pnl)}">${money0(a.pnl)}</b></div>`).join('')),
-      tl('t3', X[0], Yy[2], W2, H1, `<div class="n">${mk.down}</div><div class="x">of ${nm} stocks fell after earnings</div>`),
-      tl('t4', X[2], Yy[2], W2, H1, `<div class="lb">SHORT EVERY REPORT</div><div class="v" style="color:${col(mk.short)}">${money0(mk.short)}</div>`),
-      tl('t5', X[0], Yy[3], W2, H1, `${b0.logo ? `<img src="${b0.logo}">` : ''}<div class="c"><div class="lb">BIGGEST MOVE</div><div class="nm">${b0.co} <span class="mono" style="color:${col(b0.move)};font-weight:600">${pct(b0.move)}</span></div></div>`),
-      tl('t6', X[2], Yy[3], W2, H1, rg ? `${L.mark(rg.k, 92)}<div class="c"><div class="nm">RELEGATED</div><div class="lb">${rg.hit}% RIGHT</div></div>` : `<div class="c"><div class="nm" style="color:${G}">NO ONE OUT</div><div class="lb">ALL FOUR OVER HALF</div></div>`),
-      tl('t7', X[0], Yy[4], W4, H1, `<div class="lb">RIGHT SIDE OF THE MOVE</div>${D.ai.map(a => `<div class="g">${L.mark(a.k, 60)}<span style="color:${a.hitx < 50 ? Rd : Cr}">${a.hit}%</span></div>`).join('')}`)];
-    ts.forEach((x, j) => { if (j % 2 === 0) C.push([t0 + j * .125, 'r11-card', .06]) });
-    s.fn = () => { e(k, t0 + .05, .4, 16); ts.forEach((x, j) => { pop(x, t0 + j * .125, .78, 1.9, 9); shine(x, t0 + 1.5 + j * .12); shine(x, t0 + 2.9 + j * .1, .7) }) } }
-
-  // H Season 2, and the seat that is open
-  { const s = shot('H', T.H, T.END + 9), el = s.el, t0 = T.H, has = D.releg.length > 0, outN = D.ai.filter(a => D.releg.includes(a.k)).map(a => a.name);
-    const lg = add(`<img class="lg" src="ezlogo.svg" alt="">`, el), a = add(`<div class="a gt" style="${gt(Cr)}">SEASON 2</div>`, el), b = add(`<div class="ct b">COMING SOON</div>`, el);
-    const ss = add(`<div class="ss">${D.ai.map(x => `<div class="s">${D.releg.includes(x.k) ? '<div class="seat">?</div>' : ''}${L.mark(x.k, 132)}</div>`).join('')}</div>`, el), seats = L.$$('.s', ss);
-    const c = add(`<div class="ct c">${has ? `A new model takes ${and(outN)}’s seat.` : 'Same four. New season.'}</div>`, el); S.Ha = a;
-    C.push([t0, 'sfx-riser', .1], [t0, 'sfx-boom', .32], [t0 + 1, 'sfx-chime', .13], [t0 + 2.5, 'r11-pluck', .09]);
-    s.fn = () => { const x = t - t0; lg.style.opacity = L.n(x, .1, .5); lg.style.transform = `scale(${.7 + .3 * L.eo5(L.n(x, .1, .8))})`; const ks = x <= 0 ? 0 : L.spring(x, 1.5, 6.5);
-      a.style.opacity = L.n(x, 0, .08); a.style.transform = `translate(${540 - S.wH / 2}px,418px) scale(${S.kH * (1.7 - .7 * ks) * (1 + .035 * L.eio(L.n(x, 1, 6)))})`; sheen(a, t0 + .3, t0 + 1.7, t0 + 3.3, t0 + 4.9);
-      b.style.opacity = L.n(x, 1, 1.3); b.style.letterSpacing = L.lerp(.7, .34, L.eo5(L.n(x, 1, 2.6))) + 'em';
-      seats.forEach((sx, j) => { const dj = x - 1.5 - j * .12; sx.style.opacity = L.n(dj, 0, .12); sx.style.transform = `translateY(${(1 - L.spring(Math.max(0, dj), 2, 8)) * 50}px)`; const st = sx.querySelector('.seat'); if (st) { const m = sx.querySelector('.mk'), ko = L.eio(L.n(x, 2.5, 3.1)); m.style.opacity = 1 - ko; m.style.transform = `translateY(${ko * 90}px) scale(${1 - .2 * ko})`; st.style.opacity = L.n(x, 2.7, 3); st.style.transform = `scale(${.96 + .06 * Math.sin(x * 5.2)})` } });
-      e(c, t0 + 2); } }
+  // 1 the cast: [4]
+  { const s = scene(0, [.5, .45, .35], `<div class="big" style="font-size:330px">${D.ai.length} AIs.</div><div class="ms">${D.ai.map(a => `<div class="m">${L.mark(a.k, 150)}<span>${a.name}</span></div>`).join('')}</div>`), b = s.blk.firstChild, ms = L.$$('.m', s.el);
+    s.fit = [[[b], 800, 330]]; C.push([.05, 'r11-swell', .08]);
+    s.fn = () => { pop(b, .05, .9, 1.5, 8); ms.forEach((m, j) => e(m, .35 + j * .12, .4, 24)) } }
+  // 2 the job: [112], the stake as its label (the hook is complete here, before 3.0 s)
+  { const s = scene(1, [.5, .4, .4], `<div class="big" style="font-size:420px">0</div><div class="ln" style="margin-top:6px">earnings reports.</div><div class="lb" style="margin-top:40px">$100K ON EVERY TRADE</div>`), [b, l, lb] = s.blk.children;
+    s.fit = [[[l], 820, 110]]; s.fn = () => { b.textContent = Math.round(tot * L.eo(L.n(t, s.t0, s.t0 + .7))); e(l, s.t0 + .15); e(lb, s.t0 + .55, .4, 14) } }
+  // 3 the stake: [$100K]
+  { const s = scene(2, [.3, .25, .8], `<div class="big" style="color:${Au}">$100K</div><div class="ln" style="margin-top:44px">on every trade.</div><div class="lb" style="margin-top:44px;letter-spacing:.08em;padding-left:.08em">LONG OR SHORT · SIMULATED · NOT ADVICE</div>`), [b, l, lb] = s.blk.children;
+    s.fit = [[[b], 800, 320], [[l], 820, 120]]; s.fn = () => { pop(b, s.t0 + .05, .9, 1.5, 8); e(l, s.t0 + .3); e(lb, s.t0 + .8, .4, 14) } }
+  // 4 the tease, where the bed's beat enters: [first P&L, last P&L] (only while the first is up and the last is down)
+  { const two = first.pnl > 0 && last.pnl < 0, s = scene(3, [.7, .7, .15], `<div class="ln">${two ? 'One made' : 'First place:'}</div><div class="big" style="color:${col(first.pnl)}">${moneyK(first.pnl)}</div><div class="ln" style="margin-top:30px">${two ? 'One lost' : 'Last place:'}</div><div class="big" style="color:${col(last.pnl)}">${moneyK(last.pnl)}</div>`), [l1, b1, l2, b2] = s.blk.children;
+    if (two) { b1.textContent = '$' + Math.round(first.pnl / 1000) + 'K.'; b2.textContent = '$' + Math.round(-last.pnl / 1000) + 'K.' }
+    s.fit = [[[b1, b2], 780, 240], [[l1, l2], 820, 84]]; C.push([s.t0, 'r11-thump', .1], [s.t0 + 1, 'r11-thump', .1]);
+    s.fn = () => { e(l1, s.t0 + .02, .4); pop(b1, s.t0 + .1, .88, 1.6, 8); e(l2, s.t0 + 1, .4); pop(b2, s.t0 + 1.08, .88, 1.6, 8) } }
+  // 5 and 6 the two big rounds where one AI stood out: [the move, the verdict]
+  { const lone = D.big.filter(x => x.right.length === 1 || x.wrong.length === 1), pick = [...lone, ...D.big.filter(x => !lone.includes(x))].slice(0, 2);
+    pick.forEach((x, j) => { const c = col(x.move), r1 = x.right.length === 1, w1 = x.wrong.length === 1, who = r1 ? A(x.right[0]) : w1 ? A(x.wrong[0]) : null;
+      const v = r1 ? `Only ${who.name} was ${x.side[who.k] === 'LONG' ? 'long' : 'short'}.` : w1 ? `Only ${who.name} missed.` : !x.right.length ? 'All four got it wrong.' : `${and(D.ai.filter(a => x.right.includes(a.k)).map(a => a.name))} called it.`;
+      const s = scene(4 + j, x.move < 0 ? [.15, .85, .1] : [.85, .15, .1], `<div class="lb">THE ${ord(D.big.indexOf(x) + 1)}BIGGEST MOVE</div><div class="co ln" style="margin-top:30px">${x.logo ? `<img src="${x.logo}" class="${x.dark ? 'dk' : ''}">` : ''}<span>${x.co}</span></div><div class="big" style="color:${c};margin-top:8px">${pct(x.move)}</div><div class="who ln" style="margin-top:26px">${who ? L.mark(who.k, 84) : ''}<span>${v}</span></div>`), [lb, co, b, vd] = s.blk.children;
+      s.fx2 = r1 ? [.8, .25, .15] : s.fx; s.fit = [[[b], 820, 300], [[co.lastChild, vd.lastChild], 700, 88]]; C.push([s.t0 + 1, 'r11-card', .08]);
+      s.fn = () => { e(lb, s.t0 + .05, .4, 14); e(co, s.t0 + .05); b.textContent = pct(x.move * L.eo(L.n(t, s.t0 + .1, s.t0 + .6))); b.style.opacity = L.n(t, s.t0, s.t0 + .25); e(vd, s.t0 + 1) } }) }
+  // 7 the season's tilt: [how many fell, of how many]
+  { const dn = mk.down >= mk.up, s = scene(6, dn ? [.1, .9, .1] : [.9, .1, .1], `<div class="big" style="font-size:360px;color:${dn ? Rd : G}">0</div><div class="ln">of ${nm} stocks</div><div class="ln"><span style="color:${dn ? Rd : G}">${dn ? 'fell' : 'rose'}</span> on earnings.</div>`), [b, l1, l2] = s.blk.children;
+    s.fit = [[[l1, l2], 820, 120]]; s.fn = () => { b.textContent = Math.round((dn ? mk.down : mk.up) * L.eo(L.n(t, s.t0 + .05, s.t0 + .8))); e(l1, s.t0 + .2); e(l2, s.t0 + .45) } }
+  // 8 the plain strategy: [what it made, whether any AI beat it]
+  { const sh = mk.short >= mk.long, v = sh ? mk.short : mk.long, beat = v > first.pnl, s = scene(7, [.85, .1, .35], `<div class="ln">${sh ? 'Short' : 'Long'}</div><div class="ln">everything:</div><div class="big" style="color:${col(v)};margin-top:16px">${money0(v)}</div><div class="ln" style="color:${Au};margin-top:30px">${beat ? 'No AI beat that.' : first.name + ' beat it.'}</div><div class="lb" style="margin-top:40px">$100K ${sh ? 'SHORT' : 'LONG'}, EVERY REPORT</div>`), [l1, l2, b, l3, lb] = s.blk.children;
+    s.fit = [[[b], 820, 220], [[l1, l2, l3], 800, 112]]; C.push([s.t0 + 1.5, 'r11-card', .08]);
+    s.fn = () => { e(l1, s.t0 + .05); e(l2, s.t0 + .12); b.textContent = money0(Math.round(v * L.eo5(L.n(t, s.t0 + .2, s.t0 + 1)) / 10) * 10); b.style.opacity = L.n(t, s.t0 + .15, s.t0 + .4); e(lb, s.t0 + .7, .4, 14); e(l3, s.t0 + 1.5) } }
+  // 9 the winner's lean: [its shorts, its calls]
+  { const bear = first.lean === 'BEAR', k = bear ? first.shorts : first.longs, s = scene(8, bear ? [.5, .6, .2] : [.6, .5, .2], `<div class="who ln">${L.mark(first.k, 104)}<span>${first.name} ${bear ? 'shorted' : 'went long on'}</span></div><div class="big" style="font-size:330px">0</div><div class="ln">of its ${first.calls} calls.</div>`), [w, b, l] = s.blk.children;
+    s.fit = [[[w.lastChild, l], 700, 110]]; s.fn = () => { e(w, s.t0 + .05); b.textContent = Math.round(k * L.eo(L.n(t, s.t0 + .2, s.t0 + 1))); b.style.opacity = L.n(t, s.t0 + .15, s.t0 + .4); e(l, s.t0 + .6) } }
+  // 10 accuracy: [the best, the lowest]; the other two are bars without numbers
+  { const best = D.ai.reduce((a, b) => b.hitx > a.hitx ? b : a), low = D.ai.find(a => D.releg.includes(a.k)) || D.ai.reduce((a, b) => b.hitx < a.hitx ? b : a), H = 330, MAX = 75, hy = v => H * Math.min(MAX, v) / MAX;
+    const s = scene(9, [.6, .6, .1], `<div class="ln">How often did they</div><div class="ln">pick the right side?</div><div class="acc">${D.ai.map((a, i) => { const on = a === best || a === low, c = a.hitx < 50 ? Rd : G; return `<div class="c${on ? '' : ' dimmed'}" style="left:${i * 210}px"><div class="bar" style="height:${hy(a.hitx)}px;background:${c}"></div>${L.mark(a.k, 80)}${on ? `<div class="v" style="color:${c};bottom:${96 + Math.max(hy(a.hitx), hy(50)) + 56}px">0%</div><div class="nm" style="bottom:${96 + Math.max(hy(a.hitx), hy(50)) + 16}px">${a.name}</div>` : ''}</div>` }).join('')}<div class="half" style="bottom:${96 + hy(50)}px"></div></div>`), [l1, l2, ac] = s.blk.children, cs = L.$$('.c', ac), half = ac.querySelector('.half');
+    S.low = low; s.fit = [[[l1, l2], 820, 88]];
+    s.fn = () => { e(l1, s.t0 + .05); e(l2, s.t0 + .15); half.style.transform = `scaleX(${L.eo5(L.n(t, s.t0 + .5, s.t0 + 1.1))})`;
+      cs.forEach((c, i) => { const a = D.ai[i], dt = t - (s.t0 + .6 + i * .1), k = L.eo5(L.n(dt, 0, .9)); c.querySelector('.bar').style.transform = `scaleY(${Math.max(.001, k)})`; c.querySelector('.mk').style.opacity = L.n(dt, -.1, .1); const v = c.querySelector('.v'); if (v) { v.textContent = Math.round(a.hit * k) + '%'; v.style.opacity = L.n(dt, .1, .4); c.querySelector('.nm').style.opacity = L.n(dt, .3, .6) } }) } }
+  // 11 the lowest one: [its hit rate]
+  { const a = S.low, rel = D.releg.includes(a.k), s = scene(10, rel ? [.1, .85, .1] : [.6, .3, .2], `<div class="who">${L.mark(a.k, 130)}</div><div class="ln" style="margin-top:22px">${a.name} was ${rel ? 'wrong' : 'right'} more</div><div class="ln">often than ${rel ? 'right' : 'wrong'}.</div><div class="big" style="font-size:280px;color:${rel ? Rd : G};margin-top:8px">0%</div>`), [w, l1, l2, b] = s.blk.children;
+    s.fit = [[[l1, l2], 820, 96]]; s.fn = () => { pop(w, s.t0 + .05); e(l1, s.t0 + .1); e(l2, s.t0 + .2); b.textContent = Math.round(a.hit * L.eo(L.n(t, s.t0 + .5, s.t0 + 1.3))) + '%'; b.style.opacity = L.n(t, s.t0 + .45, s.t0 + .7) } }
+  // 12 the verdict: [relegated]; who replaces it is not this video's news
+  { const a = S.low, rel = D.releg.includes(a.k), s = scene(11, rel ? [.05, .9, .05] : [.8, .1, .2], `<div class="who">${L.mark(a.k, 250)}</div><div class="st" ${rel ? '' : `style="color:${G};border-color:${G}"`}>${rel ? 'RELEGATED' : 'STAYS'}</div>`), [w, st] = s.blk.children, m = w.firstChild;
+    C.push([s.t0, 'sfx-stamp', .24]); s.fn = () => { const x = t - s.t0, ks = x <= 0 ? 0 : L.spring(x, 2.2, 9); st.style.opacity = L.n(x, 0, .06); st.style.transform = `rotate(-5deg) scale(${1.9 - .9 * ks})`; w.style.opacity = L.n(t, s.t0 - .2, s.t0); if (rel) m.style.opacity = 1 - .5 * L.eio(L.n(x, .1, .9)) } }
+  // 13 to 16 the table, one row a scene from last place up, then the winner on the bed's drop: [who, how much]
+  { const lab = D.final ? `FINAL P&amp;L · ${tot} ROUNDS` : `P&amp;L AFTER ${n} OF ${tot} ROUNDS`, rows = [...D.ai].reverse();
+    rows.forEach((a, j) => { const win = j === rows.length - 1, prev = rows.slice(0, j).reverse(), c = col(a.pnl);
+      const s = scene(12 + j, win ? [.25, .05, .95] : a.pnl >= 0 ? [.85, .1, .15] : [.1, .85, .1], `<div class="tb"><div class="top lb">${win ? '' : lab}</div><div class="hero">${L.mark(a.k, win ? 210 : 160, !win).replace('class="mk"', `class="mk${win ? ' ring' : ''}"`)}<div class="ln" style="margin-top:${win ? 34 : 18}px">${win ? `${a.name} ${D.final ? 'wins' : 'leads'} Season 1.` : a.name}</div><div class="big" style="color:${c};margin-top:6px">${money0(a.pnl)}</div></div>
+        <div class="foot"><div class="li">${prev.map(p => `<div class="it">${L.mark(p.k, 44)}${win ? '' : `<span style="font-family:Inter;font-weight:800;letter-spacing:-.01em">${p.name}</span>`}<span style="color:${col(p.pnl)}">${money0(p.pnl)}</span></div>`).join('')}</div>${win ? `<div class="s2">Season 2 soon.</div>` : ''}</div></div>`), tb = s.blk.firstChild, top = tb.children[0], hero = tb.children[1], [m, nmEl, b] = hero.children, its = L.$$('.it', tb), s2 = tb.querySelector('.s2');
+      s.fit = [[[b], 820, win ? 190 : 210], [[nmEl], 820, win ? 96 : 130]]; C.push(win ? [s.t0, 'sfx-boom', .3] : [s.t0, 'r11-card', .09]); if (win) C.push([s.t0, 'sfx-riser', .1], [s.t0 + .5, 'sfx-chime', .13]);
+      s.fn = () => { top.style.opacity = j ? 1 : L.n(t, s.t0, s.t0 + .3); win ? pop(m, s.t0, .6, 1.5, 7) : pop(m, s.t0 + .02, .85); e(nmEl, s.t0 + .08, .4); b.textContent = money0(Math.round(a.pnl * L.eo5(L.n(t, s.t0 + .1, s.t0 + (win ? 1.1 : .7))) / 10) * 10); b.style.opacity = L.n(t, s.t0 + .08, s.t0 + .3);
+        its.forEach((it, i) => { const k = i === 0 ? L.eo5(L.n(t, s.t0 + .05, s.t0 + .5)) : 1; it.style.opacity = .35 * k; it.style.transform = `translateY(${(1 - k) * -26}px)` }); if (s2) e(s2, s.t0 + 2.5, .5, 12) } }) }
   window.MUSIC = { f: q.get('bed') || 's1-k', at: +(q.get('at') || 0) };
 }
 function R(tt) {
-  t = tt;
-  SH.forEach((s, i) => { const vis = t >= s.t0 - .2 && t <= s.t1 + .2; s.el.style.display = vis ? 'block' : 'none'; if (!vis) return; const first = i === 0, kin = first ? 1 : L.eo5(L.n(t, s.t0 - .16, s.t0 + .55)), kout = L.ei(L.n(t, s.t1 - .42, s.t1 + .18)), x = L.n(t, s.t0, Math.min(s.t1, DUR));
-    s.fn(); const xe = .55 * x + .45 * L.eio(x), dur = Math.min(s.t1, DUR) - s.t0, dd = Math.min(30, 5 * dur) * (i % 2 ? -1 : 1), push = .87 + .065 * xe;   // the camera never rests: a push and a slow drift, inside the safe margin
-    s.el.style.opacity = (first ? 1 : L.eio(L.n(t, s.t0 - .16, s.t0 + .22))) * (1 - L.eio(L.n(t, s.t1 - .2, s.t1 + .18))); const so = L.lerp(1, 1.34, kout), fo = s.fo ? [(1 - so) * (s.fo[0] - s.o[0]), (1 - so) * (s.fo[1] - s.o[1])] : [0, 0];
-    s.el.style.transform = `translate(${(fo[0] + dd * (1 - 2 * xe)).toFixed(2)}px,${(fo[1] + 7 * (1 - 2 * xe)).toFixed(2)}px) scale(${L.lerp(.84, 1, kin) * so * push})`; const bl = (1 - kin) * 5 + kout * 6; s.el.style.filter = bl > .15 ? `blur(${bl.toFixed(2)}px)` : 'none' });
-  L.$$('#chap b').forEach((b, j) => { b.style.transform = `scaleX(${L.n(t, S.chT[j][0], S.chT[j][1])})` }); grain(t);
+  t = tt; let H = SH[0].H, fx = SH[0].fx;
+  SH.forEach((s, i) => { const vis = t >= s.t0 - .12 && t <= s.t1 + .12; s.el.style.display = vis ? 'flex' : 'none';
+    if (i) { const k = L.eio(L.n(t, s.t0 - .22, s.t0 + .3)); H = L.lerp(H, s.H, k); const kf = L.eio(L.n(t, s.t0 - .4, s.t0 + .7)); fx = fx.map((v, j) => L.lerp(v, s.fx[j], kf)) }
+    if (s.fx2) { const kf = L.eio(L.n(t, s.t0 + .8, s.t0 + 1.8)); fx = fx.map((v, j) => L.lerp(v, s.fx2[j], kf)) }
+    if (!vis) return; s.fn(); const x = L.n(t, s.t0, s.t1), kin = i ? L.eo5(L.n(t, s.t0 - .06, s.t0 + .44)) : 1, kout = s.t1 >= DUR ? 0 : L.ei(L.n(t, s.t1 - .26, s.t1 + .04));
+    s.el.style.opacity = (i ? L.eio(L.n(t, s.t0 - .06, s.t0 + .3)) : L.n(t, 0, .25)) * (1 - L.eio(L.n(t, s.t1 - .26, s.t1 + .04)) * (s.t1 >= DUR ? 0 : 1));
+    s.el.style.transform = `translateY(${((1 - kin) * 28 - kout * 22 + 7 - 14 * x).toFixed(2)}px) scale(${.975 + .025 * kin})` });
+  // the glass takes each scene's height; its specular band crosses once a scene; the whole stage breathes between 1 and 1.03
+  const g = S.glass; g.style.height = H.toFixed(1) + 'px'; g.style.top = (675 - H / 2).toFixed(1) + 'px'; const cur = SH.findLast(s => t >= s.t0) || SH[0], xs = L.n(t, cur.t0, cur.t1); S.sp.style.transform = `translateX(${L.lerp(-420, 1000, .5 - .5 * Math.cos(Math.PI * xs))}px) skewX(-16deg)`;
+  L.$('#cam').style.transform = `scale(${1.015 - .015 * Math.cos(t * 2 * Math.PI / 13)})`;
+  // the field: three slow lights; how bright each is comes from the scene
+  [['#fg', G, 300, 430, 150, 130, 7.3, 9.1, 0], ['#fr', Rd, 790, 930, 140, 120, 8.2, 6.7, 1.3], ['#fa', Au, 560, 640, 190, 170, 10.4, 7.9, 2.6]].forEach(([id, c, x, y, ax, ay, px, py, ph], j) => { const el = L.$(id);
+    el.style.transform = `translate(${(x + ax * Math.sin(t / px * 2 + ph)).toFixed(1)}px,${(y + ay * Math.cos(t / py * 2 + ph)).toFixed(1)}px)`; el.style.opacity = (.1 + .5 * fx[j]).toFixed(3) });
+  grain(t);
 }
 window.R = R;
 (async () => {
@@ -252,11 +147,14 @@ window.R = R;
   // web Inter changes every width by several percent, and two renderers must never disagree on the type)
   await new Promise(res => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = (L.css.match(/@import url\('([^']+)'\)/) || [])[1]; l.onload = l.onerror = res; document.head.appendChild(l); setTimeout(res, 20000) });
   L.$('#base').textContent = L.css; [D, L.models] = await Promise.all([fetch('data/wrap.json').then(r => r.json()), fetch('models.json').then(r => r.json())]); build();
-  const smp = 'SEASON 2 We paid for the top plan of 4 AIs. Here’s how it went. −+$%,·0123456789';
-  await Promise.all(['700 50px Inter', '800 42px Inter', '900 400px Inter', '500 30px "Geist Mono"', '600 58px "Geist Mono"'].map(f => document.fonts.load(f, smp))); await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  const smp = 'SEASON 2 SOON. 4 AIs. Only Grok was short. −+$%,·:?&0123456789K';
+  await Promise.all(['800 42px Inter', '900 400px Inter', '500 30px "Geist Mono"', '600 58px "Geist Mono"'].map(f => document.fonts.load(f, smp))); await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
   window.FONTS = [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family.replace(/"/g, '') + ' ' + f.weight).filter((x, i, a) => a.indexOf(x) === i);
-  SH.forEach(s => { s.el.style.display = 'block'; (s.fit || []).forEach(([el, w, fs]) => { const r = document.createRange(); r.selectNodeContents(el); const sw = r.getBoundingClientRect().width; if (sw > w) el.style.fontSize = Math.floor(fs * w / sw) + 'px' }) });
-  S.wC = S.Cti.offsetWidth; S.kC = Math.min(1, 968 / S.wC); S.wH = S.Ha.offsetWidth; S.kH = Math.min(1, 920 / S.wH); SH.forEach(s => s.el.style.display = 'none');
-  grain = L.grain(L.$('#grain'), .045); window.CUES = C; window.DUR = DUR; R(0); window.READY = 1;
+  [['#fg', G], ['#fr', Rd], ['#fa', Au]].forEach(([id, c]) => L.$(id).style.background = `radial-gradient(closest-side,${c},${c}66 34%,${c}1c 66%,transparent)`);
+  // fit: a group of lines takes one size (the largest at which the widest of them fits), so a scene keeps to three type sizes
+  const tw = el => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width };
+  SH.forEach(s => { s.el.style.display = 'flex'; s.fit.forEach(([els, w, fs]) => { els.forEach(x => x.style.fontSize = fs + 'px'); const m = Math.max(...els.map(tw)); if (m > w) els.forEach(x => x.style.fontSize = Math.floor(fs * w / m) + 'px') });
+    s.H = Math.round(Math.min(1000, Math.max(560, s.blk.offsetHeight + 150))); s.el.style.display = 'none' });
+  S.glass = L.$('#glass'); S.sp = L.$('#glass .sp'); grain = L.grain(L.$('#grain'), .04); window.CUES = C; window.DUR = DUR; R(0); window.READY = 1;
 })();
 </script>

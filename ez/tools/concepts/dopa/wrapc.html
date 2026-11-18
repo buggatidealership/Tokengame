@@ -1,97 +1,60 @@
 <!doctype html><meta charset="utf-8"><title>Season 1 report cards</title>
-<!-- Take C of the Season 1 conclusion (owner, 2026-11-18; WRAP-BRIEF.md): by character, the loud one. Full-bleed colour cards cut hard on the
-  beat (the Slam's grammar): the premise, then one report card per AI from last place to first (verdict BULL or BEAR, season P&L, hit rate,
-  best and worst trade; under 50% is stamped RELEGATED), the rounds that split them, the lesson (the bears won), the table, Season 2 with
-  the relegated seat empty. Every number from data/wrap.json (node prep-wrap.js); ?final=1 only forces the final labels.
-  Bed s1-c (Hedra elevenlabs-music): 140.0 BPM, beats at 0.414 s + n x 0.4286 s, the full beat enters on bed beat 21 (9.41 s), the drop's
-  downbeat is bed beat 61 (26.56 s), the last phrase starts on bed beat 125 (53.99 s), the track ends at 56.1 s (all measured). The video's
-  beat m is bed beat m + 3, so the first report card lands on the beat coming in, the first-place card on the drop, Season 2 on the last phrase.
+<!-- Take C of the Season 1 conclusion, round 3 (owner, 2026-11-18; WRAP-BRIEF.md "Round 3" and "Round 3b"): by character, the loud one.
+  Full-bleed colour cards cut hard on the beat. Every scene shows at most two data points about one subject (P1), at most 12 words (P2),
+  as one centred block (P3); a held scene drifts 1 to 1.03 and breathes on the beat (P5); content is cut, not squeezed (P6).
+  The run: the premise, the report cards from last place to first (each AI: its P&L; BULL or BEAR with its lean; for the relegated and
+  the first also the hit rate against 50%), two big rounds (the move, then the one AI that stood out), the lesson (the stocks fell, the
+  bears were paid, shorting everything), the table built from the bottom one row a beat, and the gold winner card. No Season 2 card:
+  one small line. Every number from data/wrap.json (node prep-wrap.js); ?final=1 only forces the final labels.
+  Bed s1-c (Hedra elevenlabs-music): 140.0 BPM, bed beat k at 0.414 s + k x 0.4286 s, the full beat enters on bed beat 21, the drop's
+  downbeat is bed beat 61 (26.56 s), the last phrase starts on bed beat 125 (53.99 s), the track ends at 56.1 s (all measured). The bed
+  plays from 0, so the video's beat m sits 15 ms after bed beat m - 1: the first report card lands on the beat coming in (m 22), the
+  first-place card on the drop (m 62), the winner on the last phrase (m 126).
   window.R(t), READY, CUES, MUSIC, DUR as the other pages. -->
 <style id="base"></style>
 <style>
 #cam{position:absolute;inset:0;overflow:hidden;background:#0e0c0b}
 .sc{position:absolute;inset:0;overflow:hidden;display:none;will-change:transform}
-.sc .in{position:absolute;inset:0;transform-origin:50% 50%}
+.in{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 70px;transform-origin:50% 50%}
 .dk{color:#0e0c0b}.lt{color:#f2ede6}
-.wp{position:absolute;left:-320px;top:-270px;width:1720px;height:1900px;transform:rotate(-7deg);pointer-events:none}
-.wp div{white-space:nowrap;font:900 230px/1.02 Inter;letter-spacing:-.04em;will-change:transform}.wp span{margin-right:.3em}
-.dk .wp{color:rgba(14,12,11,.075)}.wp.soft{opacity:.7}.lt .wp{color:rgba(242,237,230,.045)}
 .dk .mk{box-shadow:0 0 0 3px #0e0c0b}.lt .mk{box-shadow:0 0 0 2px rgba(242,237,230,.25)}
-.sc .in>div,.sc .in>i,.half>div{position:absolute;white-space:nowrap}
-.top{left:70px;right:70px;top:60px;display:flex;justify-content:space-between;align-items:center;font:600 32px 'Geist Mono';letter-spacing:.06em}
-.top span{opacity:.74}.top .tag{opacity:1;background:#0e0c0b;color:#fdbc2a;padding:8px 16px 6px;border-radius:10px;transform-origin:100% 50%}
-/* hook */
-.h1{left:66px;top:84px;font:900 132px/1 Inter;letter-spacing:-.045em;transform-origin:0 0}
-.hm{left:70px;top:508px;width:940px;display:flex;justify-content:space-between}
-.hm .m,.tm .m{display:flex;flex-direction:column;align-items:center;gap:12px;font:800 36px Inter;letter-spacing:-.02em;transform-origin:50% 45%}
-.h2{left:68px;top:744px;font:900 84px/1 Inter;letter-spacing:-.04em;transform-origin:0 50%}
-.h3{left:70px;top:846px;font:900 132px/1 Inter;letter-spacing:-.045em;display:flex;align-items:center;gap:.16em;transform-origin:0 50%}
-.h3 span{padding:.04em .16em .02em;border-radius:.16em}.h3 i{font-style:normal;font-size:.55em;opacity:.6}
-.h4{left:0;right:0;top:1028px;height:176px;display:flex;align-items:center}
-.h4 .bd{position:absolute;inset:0;background:#0e0c0b;transform-origin:0 50%}.h4 span{position:relative;left:70px;font:900 88px/1 Inter;letter-spacing:-.04em;color:#fdbc2a;transform-origin:0 50%;display:inline-block}
-/* title */
-.tt{left:62px;top:132px;font:900 240px/.93 Inter;letter-spacing:-.05em}.tt div{transform-origin:0 60%}
-.tl{left:70px;top:850px;font:900 66px/1 Inter;letter-spacing:-.03em}
-.tm{left:70px;top:958px;width:940px;display:flex;justify-content:space-between}.tm .m{font:600 32px 'Geist Mono';letter-spacing:.04em}
-/* report card */
-.mkw{left:70px;top:128px;transform-origin:50% 50%}
-.nm{left:286px;top:146px;font:900 150px/1 Inter;letter-spacing:-.045em}
-.vd{left:64px;top:344px;font:900 208px/1 Inter;letter-spacing:-.05em;transform-origin:0 60%}
-.ln{left:652px;top:362px;display:flex;flex-direction:column;gap:6px;font:600 30px 'Geist Mono';letter-spacing:.05em}.ln b{font:900 84px/1 Inter;letter-spacing:-.04em}.ln span{opacity:.78}
-.plb{left:70px;top:582px;font:600 30px 'Geist Mono';letter-spacing:.05em;opacity:.78}
-.pn{left:62px;top:620px;font:600 190px/1 'Geist Mono';letter-spacing:-.06em;font-variant-numeric:tabular-nums;transform-origin:0 60%}
-.hp{left:68px;top:836px;font:900 108px/1 Inter;letter-spacing:-.045em;transform-origin:0 60%}
-.hl{left:330px;top:840px;font:600 30px 'Geist Mono';letter-spacing:.04em}
-.hb{left:330px;top:890px;width:680px;height:44px;border-radius:10px;background:rgba(14,12,11,.17);overflow:hidden}.hf{position:absolute;left:0;top:0;bottom:0;background:#0e0c0b;border-radius:10px}
-.tk{position:absolute;left:668px;top:876px;width:4px;height:72px;background:#0e0c0b}.tk2{position:absolute;left:668px;top:890px;width:4px;height:44px}
-.t50{left:642px;top:954px;font:600 30px 'Geist Mono'}
-.bw{left:70px;right:70px;display:flex;align-items:baseline;font:600 30px 'Geist Mono';letter-spacing:.05em}.bw span{width:252px;opacity:.78}.bw b{font:900 52px/1 Inter;letter-spacing:-.03em;flex:1}.bw em{font:600 52px/1 'Geist Mono';font-style:normal;letter-spacing:-.04em}
-.b1{top:1040px}.b2{top:1128px}
-.stamp{left:86px;top:306px;width:908px;background:#0e0c0b;color:#f2ede6;border-radius:18px;padding:20px 34px 22px;display:flex;flex-direction:column;gap:6px;transform-origin:50% 50%;box-shadow:0 0 0 4px #0e0c0b,0 0 0 8px rgba(242,237,230,.9),0 0 0 12px #0e0c0b}
-.stamp b{font:900 132px/1 Inter;letter-spacing:-.04em;color:#e8576b}.stamp span{font:900 46px/1 Inter;letter-spacing:-.02em}
-/* round card */
-.lg{left:70px;top:124px;width:160px;height:160px;border-radius:34px;background:#f2ede6;padding:22px;transform-origin:50% 50%}.lg img{width:100%;height:100%;object-fit:contain}
-.co{left:258px;top:126px;font:900 128px/1 Inter;letter-spacing:-.045em}
-.sb{left:264px;top:258px;font:600 30px 'Geist Mono';letter-spacing:.05em;color:#8e8680}
-.mv{left:62px;top:320px;font:600 240px/1 'Geist Mono';letter-spacing:-.06em;transform-origin:0 60%}
-.chips{left:70px;top:612px;width:940px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.chip{position:relative;height:228px;border-radius:26px;color:#0e0c0b;transform-origin:50% 50%}.chip .mk{position:absolute;left:20px;top:20px;box-shadow:0 0 0 3px #0e0c0b}
-.chip b{position:absolute;left:132px;top:22px;font:900 52px/1 Inter;letter-spacing:-.03em}.chip span{position:absolute;left:134px;top:84px;font:600 30px 'Geist Mono';letter-spacing:.04em;opacity:.8}
-.chip em{position:absolute;left:18px;bottom:12px;font:600 82px/1 'Geist Mono';font-style:normal;letter-spacing:-.05em}
-.vl{left:68px;top:1110px;font:900 92px/1 Inter;letter-spacing:-.04em;transform-origin:0 60%}
+.blk{width:940px;display:flex;flex-direction:column;align-items:flex-start;flex:none}
+.x{font:900 150px/.98 Inter;letter-spacing:-.045em;white-space:nowrap;width:max-content;transform-origin:0 55%}
+.n{font:600 190px/1 'Geist Mono';letter-spacing:-.06em;font-variant-numeric:tabular-nums;white-space:nowrap;width:max-content;transform-origin:0 55%}
+.sl{font:600 30px/1 'Geist Mono';letter-spacing:.06em;opacity:.62;white-space:nowrap}
+.lab{position:absolute;left:70px;top:62px;display:flex;align-items:center;gap:16px;font:600 30px/1 'Geist Mono';letter-spacing:.06em;white-space:nowrap}.lab span{opacity:.62}
+.lgs{width:60px;height:60px;border-radius:14px;background:#f2ede6;padding:8px}.lgs img{width:100%;height:100%;object-fit:contain;display:block}
+.un{transform-origin:0 50%}
+/* the hook */
+.mrow{display:flex;justify-content:space-between;width:940px}.mrow .mk{transform-origin:50% 50%}
+.bnd{margin:0 -70px 12px;width:1080px;height:178px;display:flex;align-items:center;padding-left:70px;color:#0e0c0b;transform-origin:0 50%}.bnd .x{font-size:108px}
+.tt .x{font-size:240px;line-height:.93;letter-spacing:-.05em}
+/* a report card's three beats */
+.nr{display:flex;align-items:center;gap:36px}.nr .x{font-size:190px}
+.vd{font-size:360px;line-height:.86;letter-spacing:-.05em}.ln{font-size:120px}
+.pb{width:940px;height:56px;border-radius:12px;background:rgba(14,12,11,.17);overflow:hidden;position:relative}.pb i{position:absolute;left:0;top:0;bottom:0;background:#0e0c0b;border-radius:12px;transform-origin:0 50%}
+.pb.two{height:64px;background:#f2ede6}
+.hp{font-size:400px;line-height:.86;letter-spacing:-.05em}
+.hbw{position:relative;width:940px;height:124px}.hbw .pb{position:absolute;left:0;top:0;height:70px}
+.tk{position:absolute;left:468px;top:-12px;width:4px;height:94px;background:#0e0c0b}.tk2{position:absolute;left:468px;top:0;width:4px;height:70px}.t50{position:absolute;left:440px;top:94px}
+.hl .x{font-size:96px}
+.stamp{position:absolute;left:104px;background:#0e0c0b;border-radius:18px;padding:14px 34px 18px;transform-origin:50% 50%;box-shadow:0 0 0 4px #0e0c0b,0 0 0 8px rgba(242,237,230,.9),0 0 0 12px #0e0c0b}
+.stamp b{font:900 124px/1 Inter;letter-spacing:-.04em;color:#e8576b;white-space:nowrap;display:block}
+/* a round's two beats */
+.lg{width:240px;height:240px;border-radius:50px;background:#f2ede6;padding:34px;flex:none}.lg img{width:100%;height:100%;object-fit:contain;display:block}
+.mv{font-size:250px}.ms{display:flex;gap:18px}.rv{font-size:160px}
 /* the lesson */
-.big{left:52px;top:118px;font:900 500px/.9 Inter;letter-spacing:-.06em;transform-origin:0 70%}
-.of{left:716px;top:232px;display:flex;flex-direction:column;font:900 116px/1 Inter;letter-spacing:-.045em}.of span{font-size:.58em;margin-top:.07em}
-.l2{left:66px;top:626px;font:900 150px/.98 Inter;letter-spacing:-.045em}.l2 div{transform-origin:0 60%}
-.sp{left:70px;top:984px;width:940px;height:150px;display:flex;font:900 60px/1 Inter;letter-spacing:-.03em}
-.sp div{height:100%;display:flex;align-items:center;padding-left:30px;font-size:70px;transform-origin:0 50%;overflow:hidden}.sp .d{background:#0e0c0b;color:#f2ede6;border-radius:18px 0 0 18px}.sp .u{background:#f2ede6;border-radius:0 18px 18px 0;flex:1}
-.half{position:absolute;left:0;right:0;height:675px;overflow:hidden;will-change:transform}
-.hh{left:68px;top:46px;font:900 92px/1 Inter;letter-spacing:-.04em;transform-origin:0 60%}
-.row{left:70px;right:70px;height:190px}.row .mk{position:absolute;left:0;top:10px}.row b{position:absolute;left:186px;top:12px;font:900 86px/1 Inter;letter-spacing:-.04em}
-.row span{position:absolute;left:190px;top:116px;font:600 30px 'Geist Mono';letter-spacing:.04em;opacity:.8}.row em{position:absolute;right:0;top:20px;font:600 78px/1 'Geist Mono';font-style:normal;letter-spacing:-.05em}
-.s3{left:60px;top:118px;font:900 200px/.95 Inter;letter-spacing:-.05em}.s3 div{transform-origin:0 60%}
-.lb2{left:70px;top:716px;font:600 30px 'Geist Mono';letter-spacing:.05em;opacity:.78}
-.pn3{left:62px;top:752px;font:600 190px/1 'Geist Mono';letter-spacing:-.06em;transform-origin:0 60%}
-.band{left:-60px;right:-60px;top:988px;height:200px;background:#0e0c0b;display:flex;align-items:center;justify-content:center;transform-origin:50% 50%}
-.band span{font:900 112px/1 Inter;letter-spacing:-.04em;color:#fdbc2a;transform-origin:50% 50%;display:inline-block}
-/* the table and Season 2 */
-.gold{left:0;right:0;top:0;bottom:0;background:#fdbc2a;transform-origin:50% 100%}
-.th{left:62px;top:150px;font:900 230px/1 Inter;letter-spacing:-.05em;transform-origin:0 60%}
-.ts{left:70px;top:414px;font:900 62px/1 Inter;letter-spacing:-.03em}
-.s2l{left:70px;top:64px;width:124px;height:124px;transform-origin:50% 50%}.s2l img{width:100%;height:100%}
-.s2a{left:60px;top:206px;font:900 250px/1 Inter;letter-spacing:-.05em;transform-origin:0 60%}
-.s2b{left:66px;top:436px;font:900 124px/1 Inter;letter-spacing:-.045em;transform-origin:0 60%}
-.seats{left:70px;top:596px;width:940px;height:440px}
-.seat{position:absolute;top:0;width:226px;height:440px;border-radius:24px;background:#0e0c0b;color:#f2ede6;transform-origin:50% 50%}
-.seat .rk{position:absolute;left:20px;top:18px;font:600 30px 'Geist Mono';opacity:.7}.seat .mk{position:absolute;left:20px;top:66px;box-shadow:0 0 0 2px rgba(242,237,230,.25)}
-.seat b{position:absolute;left:20px;top:232px;font:900 54px/1 Inter;letter-spacing:-.03em}.seat span{position:absolute;left:20px;top:300px;font:600 30px 'Geist Mono'}
-.seat em{position:absolute;left:18px;bottom:24px;font:600 35px/1 'Geist Mono';font-style:normal;letter-spacing:-.04em}
-.seat.new{background:none;color:#0e0c0b;border:6px dashed #0e0c0b}.seat.new i{position:absolute;left:0;right:0;top:44px;text-align:center;font:900 210px/1 Inter;font-style:normal}
-.seat.new span{left:0;right:0;top:296px;text-align:center}.seat.new span+span{top:340px}
-.out{left:68px;top:1076px;font:900 64px/1 Inter;letter-spacing:-.03em}.out b{font-weight:900;display:inline-block;transform-origin:0 60%}
-.fp{left:70px;top:1176px;font:600 30px 'Geist Mono';letter-spacing:.04em;opacity:.7}
-#ft{position:absolute;left:70px;right:70px;top:1262px;height:42px;display:flex;align-items:center;gap:14px;font:600 30px 'Geist Mono';letter-spacing:.05em;z-index:200;white-space:nowrap}
-#ft img{width:42px;height:42px}#ft b{margin-left:auto;font-weight:600}
+.big{font-size:440px;line-height:.84;letter-spacing:-.06em}.l1{font-size:120px}
+.bnd2{margin:0 -70px;width:1080px;height:330px;display:flex;align-items:center;justify-content:space-between;padding:0 70px;color:#0e0c0b}.bnd2 .mk{box-shadow:0 0 0 3px #0e0c0b}.bnd2 .x{font-size:140px}
+.l3{font-size:150px}
+.slab{margin:0 -70px;width:1080px;height:176px;background:#0e0c0b;display:flex;align-items:center;padding-left:70px;transform-origin:50% 50%}.slab .x{font-size:112px;color:#fdbc2a}
+/* the table and the winner */
+.trow{width:940px;height:150px;border-radius:26px;background:#1d1917;display:flex;align-items:center;gap:26px;padding:0 28px 0 19px}.trow .x{font-size:84px}.trow .n{font-size:84px;margin-left:auto}
+.trow.top{background:#fdbc2a;color:#0e0c0b}.trow.top .mk{box-shadow:0 0 0 3px #0e0c0b}
+.w{font-size:180px}.s2{margin-top:14px;font-size:34px;opacity:.72}
+.fp{position:absolute;left:132px;top:1269px}
+#ft{position:absolute;left:70px;right:70px;top:1262px;height:42px;display:flex;align-items:center;font:600 30px/1 'Geist Mono';letter-spacing:.06em;z-index:200;white-space:nowrap}
+#ft img{width:42px;height:42px}#ft b{margin-left:auto;font-weight:600;opacity:.62}
 #fl{position:absolute;inset:0;background:#f2ede6;opacity:0;pointer-events:none;z-index:190}
 #grain{z-index:210}
 </style>
@@ -101,123 +64,104 @@
 const q = new URLSearchParams(location.search), G = '#55d6a2', Rd = '#e8576b', Au = '#fdbc2a', Cr = '#f2ede6', K = '#0e0c0b';
 const cam = L.$('#cam'), add = (h, p = cam) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
 const BT = 60 / 140, b = x => +(x * BT).toFixed(4);             // s1-c: 140.0 BPM (measured)
-let D, FIN, DUR, SC = [], C = [], grain, FT, FL, FLT = [];
-const mk = (k, s) => L.mark(k, s, false), money = L.money, up = s => s.toUpperCase();
-const names = ks => { const n = ks.map(k => up(D.ai.find(a => a.k === k).name)); return n.length < 2 ? n[0] : n.slice(0, -1).join(', ') + ' AND ' + n.at(-1) };
-const wp = (w, c = '') => `<div class="wp ${c}" data-w="${w}"></div>`;
-function scene(m0, m1, bg, dark, html, draw) { const el = add(`<div class="sc ${dark ? 'lt' : 'dk'}" style="background:${bg}"><div class="in">${html}</div></div>`);
-  const s = { el, inn: el.firstElementChild, m0, m1, t0: b(m0), t1: b(m1), dark, i: SC.length, draw, shake: 0, $: x => el.querySelector(x), $$: x => [...el.querySelectorAll(x)] }; SC.push(s); return s }
-// entrances: all pure functions of dt (seconds since the element's beat)
-const slam = (el, dt, from = 1.6) => { el.style.opacity = dt >= 0 ? 1 : 0; if (dt >= 0) el.style.transform = `scale(${from + (1 - from) * L.spring(dt, 2.3, 9)})` };
-const pop = (el, dt) => { el.style.opacity = dt >= 0 ? 1 : 0; if (dt >= 0) el.style.transform = `scale(${.45 + .55 * L.spring(dt, 2.6, 8)})` };
-const rise = (el, dt, dy = 60, d = .26, o = 1) => { const k = L.eo5(L.n(dt, 0, d)); el.style.opacity = dt >= 0 ? o * Math.min(1, k * 2.5) : 0; el.style.transform = `translateY(${(1 - k) * dy}px)` };
-const slideX = (el, dt, dx = 240, d = .28) => { const k = L.eo5(L.n(dt, 0, d)); el.style.opacity = dt >= 0 ? 1 : 0; el.style.transform = `translateX(${(1 - k) * dx}px)` };
+let D, FIN, DUR, SC = [], C = [], grain, FT, FL, FLT = [], WIN;
+const mk = (k, s) => L.mark(k, s, false), money = L.money, up = s => s.toUpperCase(), ai = k => D.ai.find(a => a.k === k);
+const names = ks => { const n = ks.map(k => up(ai(k).name)); return n.length < 2 ? n[0] : n.slice(0, -1).join(', ') + ' AND ' + n.at(-1) };
+// a scene: the stretch between two cuts. lab = the small label top left, blk = the one centred block of content.
+function scene(m0, len, bg, dark, lab, blk, draw, extra = '') { const el = add(`<div class="sc ${dark ? 'lt' : 'dk'}" style="background:${bg}"><div class="in">${lab ? `<div class="lab">${lab}</div>` : ''}${blk}${extra}</div></div>`);
+  const s = { el, inn: el.firstElementChild, m0, m1: m0 + len, t0: b(m0), t1: b(m0 + len), dark, i: SC.length, draw, shake: 0, $: x => el.querySelector(x), $$: x => [...el.querySelectorAll(x)] }; SC.push(s); return s }
+// arrivals: pure functions of dt (seconds since the element's beat), settled within 0.5 s
+const slam = (el, dt, from = 1.35) => { el.style.opacity = dt >= 0 ? 1 : 0; if (dt >= 0) el.style.transform = `scale(${from + (1 - from) * L.spring(dt, 2.3, 10)})` };
+const pop = (el, dt) => { el.style.opacity = dt >= 0 ? 1 : 0; if (dt >= 0) el.style.transform = `scale(${.5 + .5 * L.spring(dt, 2.6, 9)})` };
+const rise = (el, dt, dy = 50, d = .26, o = 1) => { const k = L.eo5(L.n(dt, 0, d)); el.style.opacity = dt >= 0 ? o * Math.min(1, k * 2.5) : 0; el.style.transform = `translateY(${(1 - k) * dy}px)` };
 const cnt = (v, k) => (v < 0 ? '−' : '+') + '$' + Math.round(Math.abs(v) * k).toLocaleString('en-US');
+const grow = (el, dt, d = .45) => { el.style.transform = `scaleX(${L.eo5(L.n(dt, 0, d))})` };
 
 function build() {
-  const rev = [...D.ai].reverse(), n4 = D.ai.length, dr = FIN ? `FINAL · ${D.total} ROUNDS` : `DRAFT · ${D.rounds} OF ${D.total} ROUNDS`;
-  // 1. the hook: the premise, complete by beat 5 (2.1 s)
-  scene(0, 12, Cr, false, `${wp('EARNINGS', 'soft')}<div class="h1">WE PAID FOR<br>THE TOP PLAN<br>OF ${n4} AIs.</div>
-    <div class="hm">${D.ai.map(a => `<div class="m">${mk(a.k, 150)}<span>${a.name}</span></div>`).join('')}</div>
-    <div class="h2">${D.total} EARNINGS REPORTS.</div>
-    <div class="h3"><span style="background:${G}">LONG</span><i>OR</i><span style="background:${Rd}">SHORT.</span></div>
-    <div class="h4"><div class="bd"></div><span>$100K ON EVERY TRADE.</span></div>`, function (dt) { const B = x => dt - b(x);
-    this.$('.h1').style.transform = `scale(${1 + .04 * (1 - L.eo5(L.n(dt, 0, .55)))})`;
-    this.$$('.hm .m').forEach((m, j) => { const d = B(j * .5); m.style.transform = `scale(${1 + (d >= 0 ? .16 * Math.exp(-d * 9) * Math.cos(d * 14) : 0)})` });
-    slam(this.$('.h2'), B(2), 1.5); slam(this.$('.h3'), B(4), 1.5);
-    this.$('.h4 .bd').style.transform = `scaleX(${L.eo5(L.n(B(5), -.02, .2))})`; slam(this.$('.h4 span'), B(5) - .04, 1.5) });
-  C.push([.03, 'r11-thump', .18], [b(2), 'r11-knock', .14], [b(4), 'r11-knock', .14], [b(5), 'r11-thump', .22]);
-  // 2. the title
-  scene(12, 18, Au, false, `${wp('SEASON 1')}<div class="top"><span>SEASON 1</span><span>${n4} AIs · ${D.total} REPORTS</span></div>
-    <div class="tt"><div>THE</div><div>REPORT</div><div>CARDS.</div></div><div class="tl">LAST PLACE FIRST.</div>
-    <div class="tm">${rev.map(a => `<div class="m">${mk(a.k, 150)}<span>#${a.rank}</span></div>`).join('')}</div>`, function (dt) { const B = x => dt - b(x);
-    this.$$('.tt div').forEach((d, j) => slam(d, B(j * .25), 1.5)); rise(this.$('.tl'), B(.4)); this.$$('.tm .m').forEach((m, j) => pop(m, B(2 + j * .75))) });
-  C.push([b(12), 'r11-thump', .2], [b(18), 'sfx-riser', .1]);
-  // 3. the report cards, last place to first: 40 beats for the cards before the leader's (the bed's groove), the leader's on the drop
-  const rel0 = rev.slice(0, -1).find(a => D.releg.includes(a.k)) || rev[0]; let m = 18;
-  rev.forEach(a => { const first = a.rank === 1, rel = D.releg.includes(a.k), bg = first ? Au : a.pnl >= 0 ? G : Rd, sh = a.lean === 'BEAR', len = first ? 12 : (40 - 4) / (n4 - 1) + (a === rel0 ? 4 : 0), m0 = m; m += len;
-    scene(m0, m, bg, false, `${wp(a.lean)}<div class="top"><span>#${a.rank} OF ${n4}</span>${first ? `<span class="tag">${FIN ? 'SEASON 1 WINNER' : 'LEADS SEASON 1'}</span>` : '<span>SEASON 1 REPORT CARD</span>'}</div>
-      <div class="mkw">${mk(a.k, 190)}</div><div class="nm">${up(a.name)}</div>
-      <div class="vd">${a.lean}</div><div class="ln"><span>WENT ${sh ? 'SHORT' : 'LONG'} ON</span><b>${sh ? a.shorts : a.longs} OF ${a.calls}</b><span>CALLS</span></div>
-      <div class="plb">SEASON P&amp;L · $100K ON EVERY TRADE</div><div class="pn">${cnt(a.pnl, 1)}</div>
-      <div class="hp">${a.hit}%</div><div class="hl">RIGHT ON DIRECTION · ${a.w} OF ${a.w + a.l}</div><div class="hb"><i class="hf"></i></div><i class="tk"></i><i class="tk2" style="background:${bg}"></i><div class="t50">50%</div>
-      <div class="bw b1"><span>BEST TRADE</span><b>${a.best.co}</b><em>${money(a.best.p)}</em></div><div class="bw b2"><span>WORST TRADE</span><b>${a.worst.co}</b><em>${money(a.worst.p)}</em></div>
-      ${rel ? '<div class="stamp"><b>RELEGATED</b><span>RIGHT LESS THAN HALF THE TIME.</span></div>' : ''}`, function (dt) { const B = x => dt - b(x);
-      pop(this.$('.mkw'), B(0) - .02); slideX(this.$('.nm'), B(0)); const tg = this.$('.tag'); if (tg) slam(tg, B(0) - .1, 1.5);
-      slam(this.$('.vd'), B(1), 1.5); rise(this.$('.ln'), B(.5), 50);
-      rise(this.$('.plb'), B(2), 20, .2, .78); const pn = this.$('.pn'); slam(pn, B(2), 1.3); pn.textContent = cnt(a.pnl, L.eo(L.n(dt, b(2), b(3.5))));
-      const hp = this.$('.hp'); slam(hp, B(3), 1.4); hp.textContent = Math.round(a.hit * L.eo(L.n(dt, b(3), b(4)))) + '%'; rise(this.$('.hl'), B(3), 20, .2);
-      const kb = L.n(B(3), 0, .15); this.$('.hb').style.opacity = kb; this.$('.hf').style.width = a.hitx * L.eo5(L.n(dt, b(3), b(4.3))) + '%'; ['.tk', '.tk2', '.t50'].forEach(x => this.$(x).style.opacity = L.n(B(3.5), 0, .12));
-      rise(this.$('.b1'), B(3.5), 50); rise(this.$('.b2'), B(4.25), 50);
-      const st = this.$('.stamp'); if (st) { const ds = B(8); st.style.opacity = ds >= 0 ? 1 : 0; if (ds >= 0) st.style.transform = `rotate(-4deg) scale(${1 + 1.5 * (1 - L.spring(ds, 2.2, 10))})`; this.shake = ds >= 0 ? Math.exp(-ds * 9) * Math.sin(ds * 70) * 14 : 0 } });
-    C.push([b(m0), first ? 'sfx-boom' : 'r11-thump', first ? .26 : .2]); if (rel) C.push([b(m0 + 8), 'sfx-boom', .24], [b(m0 + 8), 'r11-knock', .2]); if (first) FLT.push(b(m0)) });
-  // 4. the rounds that split them: the biggest move, then the round all four got wrong
-  const rA = D.big[0], rB = D.worstR.n !== rA.n ? D.worstR : D.big[1];
-  [rA, rB].forEach(x => { const m0 = m; m += 8; const nr = x.right.length, tk = x.t.replace(/\..*$/, '');
-    scene(m0, m, K, true, `${wp(tk)}<div class="top"><span>${x.n === D.big[0].n ? 'THE BIGGEST MOVE OF SEASON 1' : x.n === D.worstR.n ? 'THE WORST ROUND FOR THE FOUR' : 'ONE OF THE BIGGEST MOVES'}</span><span>ROUND ${x.n}</span></div>
-      <div class="lg"${x.dark ? ` style="background:#1d1917;box-shadow:0 0 0 2px rgba(242,237,230,.25)"` : ''}>${x.logo ? `<img src="${x.logo}">` : ''}</div><div class="co">${up(x.co)}</div><div class="sb">THE STOCK AFTER EARNINGS</div>
-      <div class="mv" style="color:${x.move < 0 ? Rd : G}">${L.pct(x.move)}</div>
-      <div class="chips">${D.ai.map(a => { const p = x.p[a.k], sd = x.side[a.k]; return `<div class="chip" style="background:${p > 0 ? G : p < 0 ? Rd : '#8e8680'}">${mk(a.k, 92)}<b>${a.name}</b><span>${sd ? 'WENT ' + sd : 'NO CALL'}</span><em>${sd ? money(p) : '$0'}</em></div>` }).join('')}</div>
-      <div class="vl">${nr === 0 ? 'ALL FOUR WERE WRONG.' : nr === n4 ? 'ALL FOUR WERE RIGHT.' : nr === 1 ? `ONLY ${names(x.right)} WAS RIGHT.` : `${names(x.right)} WERE RIGHT.`}</div>`, function (dt) { const B = x2 => dt - b(x2);
-      pop(this.$('.lg'), B(0) - .02); slideX(this.$('.co'), B(0)); rise(this.$('.sb'), B(0) - .1, 20, .2);
-      const mv = this.$('.mv'); slam(mv, B(.5), 1.4); mv.textContent = L.pct(x.move * L.eo(L.n(dt, b(.5), b(1.25))));
-      this.$$('.chip').forEach((c, j) => pop(c, B(.5 + j * .25))); slam(this.$('.vl'), B(1.75), 1.4) });
-    C.push([b(m0), 'r11-thump', .2], [b(m0 + 1.75), 'r11-knock', .14]) });
-  // 5. the lesson: the market fell, the bears were paid, shorting everything beat (or did not beat) the leader
-  const mL = m, bears = D.ai.filter(a => a.lean === 'BEAR'), bulls = D.ai.filter(a => a.lean === 'BULL'), dp = D.mkt.down / (D.mkt.down + D.mkt.up) * 100;
-  scene(m, m += 8, Rd, false, `${wp('DOWN')}<div class="top"><span>THE MARKET</span><span>SEASON 1</span></div><div class="big">${D.mkt.down}</div><div class="of">OF ${D.rounds}<span>REPORTS</span></div>
-    <div class="l2"><div>SENT THE</div><div>STOCK DOWN.</div></div><div class="sp"><div class="d" style="width:${dp}%">${D.mkt.down} DOWN</div><div class="u">${D.mkt.up} UP</div></div>`, function (dt) { const B = x => dt - b(x);
-    const bg = this.$('.big'); slam(bg, B(0) - .03, 1.5); bg.textContent = Math.round(D.mkt.down * L.eo(L.n(dt, 0, b(1.5)))); rise(this.$('.of'), B(.5), 50);
-    this.$$('.l2 div').forEach((d, j) => slam(d, B(1 + j * .5), 1.4)); this.$('.sp .d').style.transform = `scaleX(${L.eo5(L.n(B(3), 0, .3))})`; this.$('.sp .u').style.transform = `scaleX(${L.eo5(L.n(B(3.5), 0, .3))})` });
-  const half = (top, bg, hd, list, w) => `<div class="half" style="top:${top}px;background:${bg}">${wp(w)}<div class="hh">${hd}</div>${list.map((a, j) => { const sh = a.lean === 'BEAR'; return `<div class="row" style="top:${168 + j * (list.length > 2 ? 166 : 204)}px">${mk(a.k, list.length > 2 ? 140 : 164)}<b>${up(a.name)}</b><span>WENT ${sh ? 'SHORT' : 'LONG'} ON ${sh ? a.shorts : a.longs} OF ${a.calls}</span><em>${money(a.pnl)}</em></div>` }).join('')}</div>`;
-  scene(m, m += 10, G, false, half(0, G, bears.length && bears.every(a => a.pnl > 0) ? 'THE BEARS MADE MONEY.' : 'THE BEARS.', bears, 'SHORT') + half(675, Rd, bulls.length && bulls.every(a => a.pnl < 0) ? 'THE BULLS PAID FOR IT.' : 'THE BULLS.', bulls, 'LONG'), function (dt) { const B = x => dt - b(x);
-    this.$$('.half').forEach((h, i) => { const d = B(i), k = L.eo5(L.n(d, 0, .16)); h.style.transform = `translateX(${(i ? 1 : -1) * (1 - k) * 1080}px)`; slam(h.querySelector('.hh'), d - .06, 1.4);
-      [...h.querySelectorAll('.row')].forEach((r, j) => { slideX(r, d - .14 - j * .1, i ? 300 : -300); const a = (i ? bulls : bears)[j]; r.querySelector('em').textContent = cnt(a.pnl, L.eo(L.n(d, .2 + j * .1, .9 + j * .1))) }) }) });
-  const beat = D.mkt.short > D.ai[0].pnl;
-  scene(m, m += 8, G, false, `${wp('SHORT')}<div class="top"><span>THE LESSON</span><span>SEASON 1</span></div><div class="s3"><div>SHORT</div><div>EVERY</div><div>REPORT:</div></div>
-    <div class="lb2">$100K SHORT ON ALL ${D.rounds} REPORTS</div><div class="pn3">${cnt(D.mkt.short, 1)}</div><div class="band"><span>${beat ? 'NO AI BEAT THAT.' : `ONLY ${up(D.ai.filter(a => a.pnl > D.mkt.short).map(a => a.name).join(' AND '))} BEAT THAT.`}</span></div>`, function (dt) { const B = x => dt - b(x);
-    this.$$('.s3 div').forEach((d, j) => slam(d, B(j * .33) - .03, 1.5)); rise(this.$('.lb2'), B(0) - .1, 20, .2, .78); const pn = this.$('.pn3'); slam(pn, B(1), 1.3); pn.textContent = cnt(D.mkt.short, L.eo(L.n(dt, b(1), b(2))));
-    const bd = this.$('.band'), d = B(2); bd.style.opacity = d >= 0 ? 1 : 0; bd.style.transform = `rotate(-2.5deg) scaleY(${L.eo5(L.n(d, 0, .14))})`; slam(bd.firstElementChild, d - .05, 1.7); this.shake = d >= 0 ? Math.exp(-d * 9) * Math.sin(d * 70) * 10 : 0 });
-  C.push([b(mL), 'r11-thump', .2], [b(mL + 8), 'r11-thump', .2], [b(mL + 9), 'r11-thump', .2], [b(mL + 18), 'r11-thump', .2], [b(mL + 20), 'sfx-boom', .2]);
-  // 6. the table, the empty seat, Season 2
-  const mT = m, out = D.ai.filter(a => D.releg.includes(a.k)), w = 226, gp = (940 - w * n4) / (n4 - 1); DUR = b(mT + 18);
-  scene(mT, mT + 18, Cr, false, `<div class="gold"></div>${wp('SEASON 1', 'soft')}${wp('SEASON 2')}<div class="th">THE TABLE.</div><div class="ts">${FIN ? `FINAL. ALL ${D.total} ROUNDS.` : `AFTER ${D.rounds} OF ${D.total} ROUNDS.`}</div>
-    <div class="s2l"><img src="ezlogo.svg"></div><div class="s2a">SEASON 2</div><div class="s2b">COMING SOON.</div>
-    <div class="seats">${D.ai.map((a, i) => (D.releg.includes(a.k) ? `<div class="seat new" style="left:${i * (w + gp)}px"><i>?</i><span>NEW MODEL</span><span>SEASON 2</span></div>` : '') + `<div class="seat old${D.releg.includes(a.k) ? ' rel' : ''}" style="left:${i * (w + gp)}px"><div class="rk">#${a.rank}</div>${mk(a.k, 150)}<b>${a.name}</b><span>${a.hit}% RIGHT</span><em style="color:${a.pnl >= 0 ? G : Rd}">${money(a.pnl)}</em></div>`).join('')}</div>
-    <div class="out">${out.length ? `<b>${names(out.map(a => a.k))} ${out.length > 1 ? 'ARE' : 'IS'} OUT.</b> <b>${out.length > 1 ? 'NEW MODELS ARE' : 'A NEW MODEL IS'} IN.</b>` : '<b></b><b>THE SAME FOUR ARE BACK.</b>'}</div>
-    <div class="fp">SIMULATED · $100K PER TRADE · NOT ADVICE</div>`, function (dt) { const B = x => dt - b(x), s2 = B(10), on2 = s2 >= 0;
-    this.$('.gold').style.transform = `scaleY(${L.eo5(L.n(s2, 0, .2))})`; const [w1, w2] = this.$$('.wp'); w1.style.opacity = on2 ? 0 : 1; w2.style.opacity = on2 ? 1 : 0;
-    const th = this.$('.th'), ts = this.$('.ts'); slam(th, B(0) - .03, 1.5); rise(ts, B(.5)); if (on2) { th.style.opacity = 0; ts.style.opacity = 0 }
-    pop(this.$('.s2l'), s2); slam(this.$('.s2a'), s2, 1.8); slam(this.$('.s2b'), B(10.5), 1.5);
-    this.$$('.seat.old').forEach((e, j) => { const k = L.eo5(L.n(B(.1 + j * .15), 0, .3)); e.style.opacity = B(.1 + j * .15) >= 0 ? 1 : 0; let tr = `translateY(${(1 - k) * 500}px)`;
-      if (e.classList.contains('rel')) { const f = L.ei(L.n(B(7), 0, .55)); tr = `translateY(${f * 1000}px) rotate(${f * 22}deg)` } else if (on2) tr = `scale(${1 + .06 * Math.exp(-s2 * 8)})`; e.style.transform = tr });
-    this.$$('.seat.new').forEach(e => pop(e, B(8.5))); const [o1, o2] = this.$$('.out b'); slam(o1, B(7), 1.4); slam(o2, B(8.5), 1.4); rise(this.$('.fp'), B(1), 20, .25, .7) });
-  C.push([b(mT), 'r11-thump', .2], [b(mT + 7), 'r11-slide', .16], [b(mT + 7.6), 'r11-thump', .16], [b(mT + 8.5), 'r11-ping', .12], [b(mT + 10), 'sfx-boom', .28], [b(mT + 10), 'sfx-chime', .16]); FLT.push(b(mT + 10));
-  FT = add(`<div id="ft"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>${dr}</b></div>`); FL = add('<div id="fl"></div>');
-  window.MUSIC = { f: 's1-c', at: +(.414 + 3 * BT).toFixed(3) };
+  const rev = [...D.ai].reverse(), n4 = D.ai.length, lead = D.ai[0]; let m = 0;
+  // 1. the hook (22 beats, the bed's quiet intro): the premise is whole on the first frame
+  scene(m, 9, Cr, false, '', `<div class="blk" style="gap:44px"><div class="mrow">${D.ai.map(a => mk(a.k, 180)).join('')}</div>
+    <div class="un"><div class="x" data-g="h1" data-f="940">${n4} AIs TRADED</div><div class="x" data-g="h1">${D.total} EARNINGS</div><div class="x" data-g="h1">REPORTS.</div></div></div>`, function (dt) {
+    this.$('.un').style.transform = `scale(${1 + .04 * (1 - L.eo5(L.n(dt, 0, .5)))})`; this.$$('.mrow .mk').forEach((e, j) => { const d = dt - b(j); e.style.transform = `scale(${1 + (d >= 0 ? .14 * Math.exp(-d * 9) * Math.cos(d * 14) : 0)})` }) });
+  C.push([.03, 'r11-thump', .18], [b(1), 'r11-knock', .1], [b(2), 'r11-knock', .1], [b(3), 'r11-knock', .1]); m += 9;
+  scene(m, 7, K, true, '', `<div class="blk">${[['PAPER MONEY.', Au], ['REAL CALLS.', G], ['PUBLIC RECORD.', Cr]].map(([w, c]) => `<div class="bnd" style="background:${c}"><div class="x" data-g="h2" data-f="940">${w}</div></div>`).join('')}</div>`, function (dt) {
+    this.$$('.bnd').forEach((e, j) => { const d = dt - b(j); e.style.opacity = d >= 0 ? 1 : 0; e.style.transform = `scaleX(${L.eo5(L.n(d, 0, .22))})`; slam(e.firstElementChild, d - .06) }) });
+  C.push([b(m), 'r11-thump', .2], [b(m + 1), 'r11-thump', .2], [b(m + 2), 'r11-thump', .2]); m += 7;
+  scene(m, 6, Au, false, '', `<div class="blk" style="gap:26px"><div class="tt"><div class="x" data-g="tt" data-f="948">THE</div><div class="x" data-g="tt">REPORT</div><div class="x" data-g="tt">CARDS.</div></div><div class="sl">LAST PLACE FIRST</div></div>`, function (dt) {
+    slam(this.$('.tt'), dt - .02); this.$('.tt').style.transformOrigin = '0 50%'; rise(this.$('.sl'), dt - .1, 20, .2, .62) });
+  C.push([b(m), 'r11-thump', .2], [b(m + 6), 'sfx-riser', .1]); m += 6;
+  // 2. the report cards, last place to first: 40 beats before the leader (the bed's groove), the leader on the drop
+  const relFirst = rev.slice(0, -1).find(a => D.releg.includes(a.k));
+  rev.forEach(a => { const first = a.rank === 1, rel = D.releg.includes(a.k), three = first || a === relFirst, bg = a.pnl >= 0 ? G : Rd, sh = a.lean === 'BEAR', N = up(a.name), nn = sh ? a.shorts : a.longs;
+    const la = first ? 4 : 4, lb = 6, lc = first ? 5 : 10;
+    scene(m, la, bg, false, `<span>#${a.rank} OF ${n4}</span>`, `<div class="blk" style="gap:34px"><div class="nr un">${mk(a.k, 240)}<div class="x" data-g="nm" data-f="664">${N}</div></div><div class="n" data-g="pn" data-f="940">${cnt(a.pnl, 1)}</div><div class="sl">SEASON P&amp;L · $100K A TRADE</div></div>`, function (dt) {
+      slam(this.$('.nr'), dt - .02, 1.25); const pn = this.$('.n'); slam(pn, dt - .04, 1.25); pn.textContent = cnt(a.pnl, L.eo(L.n(dt, 0, .4))); rise(this.$('.sl'), dt - .1, 16, .2, .62) });
+    C.push([b(m), first ? 'sfx-boom' : 'r11-thump', first ? .28 : .22]); if (first) FLT.push(b(m)); m += la;
+    scene(m, lb, bg, false, `${mk(a.k, 60)}<span>${N} · #${a.rank} OF ${n4}</span>`, `<div class="blk" style="gap:30px"><div class="x vd" data-g="vd" data-f="940">${a.lean}</div><div class="x ln" data-g="ln" data-f="940">${sh ? 'SHORT' : 'LONG'} ON ${nn} OF ${a.calls}</div><div class="pb"><i style="width:${nn / a.calls * 100}%"></i></div></div>`, function (dt) {
+      slam(this.$('.vd'), dt - .02); rise(this.$('.ln'), dt - .17, 40); this.$('.pb').style.opacity = L.n(dt, .17, .3); grow(this.$('.pb i'), dt - .2) });
+    C.push([b(m), 'r11-knock', .16]); m += lb;
+    if (three) { scene(m, lc, bg, false, mk(a.k, 60), `<div class="blk" style="gap:26px"><div class="x hp" data-g="hp">${a.hit}%</div><div class="hbw"><div class="pb"><i style="width:${a.hitx}%"></i></div><i class="tk"></i><i class="tk2" style="background:${bg}"></i><div class="t50 sl">50%</div></div>
+        <div class="hl">${rel ? `<div class="x" data-g="hl" data-f="940">${N} WAS WRONG MORE</div><div class="x" data-g="hl">OFTEN THAN RIGHT.</div>` : '<div class="x" data-g="hl">CALLS RIGHT.</div>'}</div></div>`, function (dt) {
+        const hp = this.$('.hp'); slam(hp, dt - .02); hp.textContent = Math.round(a.hit * L.eo(L.n(dt, 0, .4))) + '%'; grow(this.$('.pb i'), dt - .02, .5); rise(this.$('.hl'), dt - b(.75), 40);
+        const st = this.$('.stamp'); if (st) { const ds = dt - b(5); st.style.opacity = ds >= 0 ? 1 : 0; if (ds >= 0) st.style.transform = `rotate(-5deg) scale(${1 + 1.4 * (1 - L.spring(ds, 2.2, 10))})`; this.shake = ds >= 0 ? Math.exp(-ds * 9) * Math.sin(ds * 70) * 12 : 0 } },
+        rel ? '<div class="stamp"><b>RELEGATED.</b></div>' : '');
+      C.push([b(m), 'r11-knock', .16]); if (rel) C.push([b(m + 5), 'sfx-boom', .24], [b(m + 5), 'r11-knock', .2]); m += lc } });
+  // 3. two big rounds: the biggest moves on which one AI stood alone (right or wrong); each: the move, then that AI and its P&L
+  const solo = D.big.filter(x => x.right.length === 1 || x.wrong.length === 1), rounds = [...solo, ...D.big.filter(x => !solo.includes(x))].slice(0, 2);
+  rounds.forEach(x => { const CO = up(x.co), nr = x.right.length, nw = x.wrong.length, who = nr === 1 ? x.right : nw === 1 ? x.wrong : nr === 0 ? x.wrong : x.right, p = x.p[who[0]], bg = p >= 0 ? G : Rd;
+    const v = nr === 1 ? [`ONLY ${names(who)}`, `WAS ${x.side[who[0]]}.`] : nw === 1 ? [`ONLY ${names(who)}`, 'MISSED.'] : nr === 0 ? ['ALL FOUR', 'GOT IT WRONG.'] : [names(who), 'CALLED IT.'];
+    scene(m, 4, K, true, `<span>ROUND ${x.n}</span>`, `<div class="blk" style="gap:34px"><div class="nr un"><div class="lg"${x.dark ? ' style="background:#1d1917"' : ''}>${x.logo ? `<img src="${x.logo}">` : ''}</div><div class="x" data-g="co" data-f="664">${CO}</div></div><div class="n mv" data-g="mv" data-f="940" style="color:${x.move < 0 ? Rd : G}">${L.pct(x.move)}</div></div>`, function (dt) {
+      slam(this.$('.nr'), dt - .02, 1.25); const mv = this.$('.mv'); slam(mv, dt - .04, 1.25); mv.textContent = L.pct(x.move * L.eo(L.n(dt, 0, .4))) });
+    C.push([b(m), 'r11-thump', .22]); m += 4;
+    scene(m, 6, bg, false, `<div class="lgs">${x.logo ? `<img src="${x.logo}">` : ''}</div><span>ON ${CO}</span>`, `<div class="blk" style="gap:30px"><div class="ms">${who.map(k => mk(k, who.length > 1 ? 150 : 200)).join('')}</div><div class="un"><div class="x rv" data-g="rv" data-f="940">${v[0]}</div><div class="x rv" data-g="rv">${v[1]}</div></div><div class="n" data-g="rp" data-f="940">${cnt(p, 1)}</div></div>`, function (dt) {
+      pop(this.$('.ms'), dt - .02); slam(this.$('.un'), dt - .02, 1.25); const pn = this.$('.n'); slam(pn, dt - b(1), 1.25); pn.textContent = cnt(p, L.eo(L.n(dt, b(1), b(1) + .4))) });
+    C.push([b(m), 'r11-knock', .16], [b(m + 1), 'r11-thump', .18]); m += 6 });
+  // 4. the lesson: the stocks fell, the bears were paid, shorting everything
+  const dp = D.mkt.down / (D.mkt.down + D.mkt.up) * 100, bears = D.ai.filter(a => a.lean === 'BEAR'), bulls = D.ai.filter(a => a.lean === 'BULL'), clean = bears.length && bulls.length && bears.every(a => a.pnl > 0) && bulls.every(a => a.pnl < 0), beat = D.mkt.short > lead.pnl;
+  scene(m, 9, Rd, false, '', `<div class="blk" style="gap:24px"><div class="x big">${D.mkt.down}</div><div class="un"><div class="x l1" data-g="l1" data-f="940">OF ${D.rounds} STOCKS</div><div class="x l1" data-g="l1">FELL ON EARNINGS.</div></div><div class="pb two"><i style="width:${dp}%"></i></div></div>`, function (dt) {
+    const bg = this.$('.big'); slam(bg, dt - .02); bg.textContent = Math.round(D.mkt.down * L.eo(L.n(dt, 0, .4))); rise(this.$('.un'), dt - .1, 40); this.$('.pb').style.opacity = L.n(dt, b(1.5), b(1.5) + .1); grow(this.$('.pb i'), dt - b(1.5)) });
+  C.push([b(m), 'r11-thump', .22]); m += 9;
+  const band = (bg, l1, l2, list) => `<div class="bnd2" style="background:${bg}"><div><div class="x" data-g="l2" data-f="640">${l1}</div><div class="x" data-g="l2">${l2}</div></div><div class="ms">${list.map(a => mk(a.k, 136)).join('')}</div></div>`;
+  scene(m, 6, K, true, '', `<div class="blk">${clean ? band(G, 'THE BEARS', 'GOT PAID.', bears) + band(Rd, 'THE BULLS', 'GOT REKT.', bulls) : band(G, 'SHORTS', 'BEAT LONGS.', bears)}</div>`, function (dt) {
+    this.$$('.bnd2').forEach((e, i) => { const k = L.eo5(L.n(dt, 0, .3)); e.style.transform = `translateX(${(i ? 1 : -1) * (1 - k) * 1080}px)` }) });
+  C.push([b(m), 'r11-thump', .22]); m += 6;
+  scene(m, 8, G, false, '', `<div class="blk" style="gap:28px"><div class="un"><div class="x l3" data-g="l3" data-f="940">SHORT</div><div class="x l3" data-g="l3">EVERYTHING:</div></div><div class="n" data-f="940">${cnt(D.mkt.short, 1)}</div><div class="slab"><div class="x" data-f="940">${beat ? 'NO AI BEAT THAT.' : `${up(lead.name)} BEAT IT.`}</div></div></div>`, function (dt) {
+    slam(this.$('.un'), dt - .02, 1.25); const pn = this.$('.n'); slam(pn, dt - .04, 1.25); pn.textContent = cnt(D.mkt.short, L.eo(L.n(dt, 0, .45)));
+    const sb = this.$('.slab'), d = dt - b(2); sb.style.opacity = d >= 0 ? 1 : 0; sb.style.transform = `scaleY(${L.eo5(L.n(d, 0, .14))})`; slam(sb.firstElementChild, d - .05, 1.5); this.shake = d >= 0 ? Math.exp(-d * 9) * Math.sin(d * 70) * 8 : 0 });
+  C.push([b(m), 'r11-thump', .22], [b(m + 2), 'sfx-boom', .2]); m += 8;
+  // 5. the table, from the bottom, one row a beat: only the newest row at full contrast
+  const mT = m; scene(m, 6, K, true, `<span>${FIN ? `FINAL P&amp;L · ${D.total} ROUNDS` : `P&amp;L AFTER ${D.rounds} OF ${D.total}`}</span>`, `<div class="blk" style="gap:16px">${D.ai.map(a => `<div class="trow${a.rank === 1 ? ' top' : ''}">${mk(a.k, 112)}<div class="x" data-g="tn" data-f="300">${up(a.name)}</div><div class="n" data-g="tp" data-f="420"${a.rank === 1 ? '' : ` style="color:${a.pnl >= 0 ? G : Rd}"`}>${cnt(a.pnl, 1)}</div></div>`).join('')}</div>`, function (dt) {
+    this.$$('.trow').forEach((e, i) => { const o = n4 - 1 - i, d = dt - b(o), k = L.eo5(L.n(d, 0, .28)), dim = i ? 1 - .65 * L.eo(L.n(dt - b(o + 1), 0, .2)) : 1; e.style.opacity = d >= 0 ? dim * Math.min(1, k * 2.5) : 0; e.style.transform = `translateY(${(1 - k) * 70}px)` }) });
+  for (let j = 0; j < n4; j++) C.push([b(m + j), j === n4 - 1 ? 'r11-thump' : 'r11-knock', j === n4 - 1 ? .22 : .16]); m += 6;
+  // 6. the winner, on the bed's last phrase; Season 2 is one small line
+  WIN = scene(m, 8, Au, false, '', `<div class="blk" style="gap:30px">${mk(lead.k, 230)}<div class="un"><div class="x w" data-g="w" data-f="940">${up(lead.name)} ${FIN ? 'WINS' : 'LEADS'}</div><div class="x w" data-g="w">SEASON 1.</div></div><div class="n" data-f="940">${cnt(lead.pnl, 1)}</div><div class="sl s2">SEASON 2 SOON.</div></div>`, function (dt) {
+    pop(this.$('.blk .mk'), dt - .1); slam(this.$('.un'), dt - .1, 1.3); const pn = this.$('.n'); slam(pn, dt - b(1), 1.3); pn.textContent = cnt(lead.pnl, L.eo(L.n(dt, b(1), b(1) + .45))); rise(this.$('.s2'), dt - b(2), 20, .3, .72); rise(this.$('.fp'), dt - b(2), 0, .3, .62) }, '<div class="fp sl">SIMULATED · NOT ADVICE</div>');
+  C.push([b(m), 'sfx-boom', .3], [b(m), 'sfx-chime', .16], [b(m + 1), 'r11-thump', .2]); FLT.push(b(m)); m += 8; DUR = b(m);
+  FT = add(`<div id="ft"><img src="ezlogo.svg" alt="">${FIN ? '' : '<b>DRAFT</b>'}</div>`); FL = add('<div id="fl"></div>');
+  window.MUSIC = { f: 's1-c', at: 0 };
 }
 function R(t) {
   let cur = SC[0];
   SC.forEach(s => { const dt = t - s.t0, nx = SC[s.i + 1], on = dt >= 0 && (!nx || t < nx.t0 + .15); s.el.style.display = on ? 'block' : 'none'; if (!on) return; if (dt >= 0) cur = s;
     const k = L.eo5(L.n(dt, 0, .13)), d = s.i % 4; s.el.style.zIndex = 10 + s.i;
-    s.el.style.transform = !s.i ? 'none' : d === 1 ? `translateY(${(1 - k) * 1350}px)` : d === 2 ? `translateX(${(1 - k) * 1080}px)` : d === 3 ? `translateY(${-(1 - k) * 1350}px)` : `translateX(${-(1 - k) * 1080}px)`;
+    if (s === WIN) { s.el.style.transform = 'none'; s.el.style.clipPath = k < 1 ? `inset(${(1 - k) * WIN.r0}px 0 ${(1 - k) * (1350 - WIN.r1)}px 0)` : 'none' }
+    else s.el.style.transform = !s.i ? 'none' : d === 1 ? `translateY(${(1 - k) * 1350}px)` : d === 2 ? `translateX(${(1 - k) * 1080}px)` : d === 3 ? `translateY(${-(1 - k) * 1350}px)` : `translateX(${-(1 - k) * 1080}px)`;
     s.shake = 0; s.draw(dt, t);
-    const bk = Math.exp(-(dt % BT) * 10); s.inn.style.transform = `translateX(${s.shake}px) scale(${1 + .02 * L.n(t, s.t0, s.t1) + .008 * bk})`;
-    s.wps.forEach(w => w.rows.forEach((r, j) => { const x = ((t * 150 + j * 173) % w.P + w.P) % w.P; r.style.transform = `translateX(${j % 2 ? x - w.P : -x}px)` })) });
-  FT.style.color = cur.dark ? '#f2ede6' : '#0e0c0b'; FT.style.opacity = cur.dark ? .7 : .82;
+    // a held scene is never frozen and never busy: a slow push from 1 to 1.03, and one small breath on each beat
+    s.inn.style.transform = `translateX(${s.shake}px) scale(${1 + .03 * L.n(t, s.t0, s.t1) + .012 * Math.exp(-(dt % BT) * 5)})` });
+  FT.style.color = cur.dark ? '#f2ede6' : '#0e0c0b';
   let f = 0; FLT.forEach(x => { const d = t - x; if (d >= 0) f = Math.max(f, .6 * (1 - L.eo(L.n(d, 0, .26)))) }); FL.style.opacity = f; grain(t);
 }
 window.R = R;
 (async () => {
   L.$('#base').textContent = L.css; [D, L.models] = await Promise.all([fetch('data/wrap.json').then(r => r.json()), fetch('models.json').then(r => r.json())]); FIN = D.final || q.get('final') === '1'; build();
-  await Promise.all(['900 230px Inter', '800 36px Inter', '600 190px "Geist Mono"', '600 30px "Geist Mono"'].map(f => document.fonts.load(f))); await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
-  const fit = (el, w) => { if (!el) return; const fs = parseFloat(getComputedStyle(el).fontSize), ow = Math.max(el.scrollWidth, el.offsetWidth); if (ow > w) el.style.fontSize = (fs * w / ow).toFixed(2) + 'px' };
-  SC.forEach(s => { s.el.style.display = 'block';
-    [['.h1', 940], ['.h2', 940], ['.h3', 940], ['.h4 span', 940], ['.tt', 948], ['.tl', 940], ['.nm', 724], ['.vd', 560], ['.ln b', 360], ['.pn', 948], ['.co', 752], ['.mv', 948], ['.vl', 944], ['.big', 640], ['.of', 300], ['.l2', 944], ['.s3', 948], ['.pn3', 948], ['.band span', 940], ['.th', 948], ['.ts', 940], ['.s2a', 948], ['.s2b', 944], ['.out', 944]].forEach(([x, w]) => s.$$(x).forEach(e => fit(e, w)));
-    s.$$('.hh').forEach(e => fit(e, 944)); s.$$('.bw b').forEach(e => { const fs = 52, ow = e.scrollWidth, cw = e.clientWidth; if (ow > cw) e.style.fontSize = (fs * cw / ow) + 'px' });
-    s.$$('.row').forEach(r => { const bn = r.querySelector('b'), em = r.querySelector('em'), room = 940 - 186 - em.offsetWidth - 26; if (bn.offsetWidth > room) bn.style.fontSize = (86 * room / bn.offsetWidth) + 'px' });
-    s.$$('.chip em').forEach(e => { if (e.offsetWidth > 428) e.style.fontSize = (82 * 428 / e.offsetWidth) + 'px' }); s.$$('.seat.old em').forEach(e => { if (e.offsetWidth > 190) e.style.fontSize = (35 * 190 / e.offsetWidth) + 'px' }); s.$$('.seat.old b').forEach(e => { if (e.offsetWidth > 190) e.style.fontSize = (54 * 190 / e.offsetWidth) + 'px' });
-    s.wps = s.$$('.wp').map(el => { const wd = el.dataset.w; el.innerHTML = Array.from({ length: 8 }, () => `<div>${`<span>${wd}</span>`.repeat(16)}</div>`).join(''); const sp = el.querySelector('span'); return { el, rows: [...el.children], P: sp.offsetWidth + 69 } }) });
+  await Promise.all(['900 230px Inter', '600 190px "Geist Mono"', '600 30px "Geist Mono"'].map(f => document.fonts.load(f))); await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  SC.forEach(s => s.el.style.display = 'block');
+  // one type size per slot across sibling scenes: a group takes the size at which its widest member fits
+  const grp = {}; L.$$('[data-g]').forEach(e => (grp[e.dataset.g] = grp[e.dataset.g] || []).push(e)); L.$$('[data-f]:not([data-g])').forEach((e, i) => grp['_' + i] = [e]);
+  Object.values(grp).forEach(els => { const w = +(els.find(e => e.dataset.f) || { dataset: { f: 940 } }).dataset.f; let r = 1; els.forEach(e => { r = Math.min(r, w / Math.max(e.scrollWidth, e.offsetWidth)) }); if (r < 1) els.forEach(e => { e.style.fontSize = (parseFloat(getComputedStyle(e).fontSize) * r).toFixed(2) + 'px' }) });
+  SC.forEach(s => { const st = s.$('.stamp'); if (st) { const hp = s.$('.hp'); st.style.top = (hp.offsetTop + hp.offsetHeight * .5 - 90) + 'px' } });
+  const tr = SC[WIN.i - 1].$('.trow.top'); WIN.r0 = tr.offsetParent === SC[WIN.i - 1].inn ? tr.offsetTop : tr.getBoundingClientRect().top; WIN.r1 = WIN.r0 + tr.offsetHeight;
   grain = L.grain(L.$('#grain'), .035); window.CUES = C; window.DUR = DUR; R(0); window.READY = 1;
 })();
 </script>
