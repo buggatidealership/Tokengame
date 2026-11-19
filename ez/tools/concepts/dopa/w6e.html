@@ -14,14 +14,6 @@ html,body{background:#04070e}
 #st{position:absolute;inset:0;overflow:hidden;background:#04070e}
 #gnd{position:absolute;inset:0;overflow:hidden}
 #gv{position:absolute;left:-54px;top:-104px;width:1188px;height:1584px;transform-origin:50% 76%}
-#rays{position:absolute;left:-760px;top:-200px;width:2600px;height:2600px;mix-blend-mode:screen;
-  background:repeating-conic-gradient(from 0deg,rgba(253,188,42,0) 0deg,rgba(253,188,42,.2) 3deg,rgba(253,188,42,0) 7deg,rgba(253,188,42,0) 11deg,rgba(255,226,150,.14) 13deg,rgba(253,188,42,0) 16deg);
-  -webkit-mask:radial-gradient(closest-side,#000 0,rgba(0,0,0,.7) 30%,transparent 78%)}
-#raysw{position:absolute;left:0;top:0;width:1080px;height:1096px;overflow:hidden}
-.rimg{position:absolute;top:0;width:520px;height:1350px;mix-blend-mode:screen}
-#rimL{left:0;background:radial-gradient(ellipse 100% 60% at 0% 62%,rgba(3,200,112,.55),rgba(3,200,112,0) 70%)}
-#rimR{right:0;background:radial-gradient(ellipse 100% 60% at 100% 62%,rgba(255,58,49,.55),rgba(255,58,49,0) 70%)}
-#dim{position:absolute;inset:0;background:#04070e}
 #cam{position:absolute;inset:0;perspective:1900px;perspective-origin:50% 46%}
 .g{position:absolute;inset:0;display:none}
 .abs{position:absolute;left:0;top:0}
@@ -87,7 +79,7 @@ html,body{background:#04070e}
 #vig{z-index:49;background:radial-gradient(ellipse 78% 68% at 50% 50%,transparent 58%,rgba(0,0,0,.6))}
 </style>
 <div id="st">
-  <div id="gnd" data-chrome><canvas id="gv" width="540" height="720"></canvas><div id="raysw"><div id="rays"></div></div><div class="rimg" id="rimL"></div><div class="rimg" id="rimR"></div><div id="dim"></div></div>
+  <div id="gnd" data-chrome><canvas id="gv" width="540" height="720"></canvas></div>
   <div id="cam"></div>
   <div class="bug" data-chrome><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>SEASON 1</b></div>
   <div class="fine" data-chrome>$100K ON EVERY TRADE</div>
@@ -208,19 +200,21 @@ function build() {
 
 // the ground: the living painted light (a seamless loop of the clip), rays turning, rim lights
 const LV = [[0, 1.05], [B(2), .95], [B(6), .9], [B(10), .62], [B(16), .46], [D1, .52], [B(34), .46], [B(47), .5], [B(54), .4], [B(58), .16], [D2, 1.25], [B(65), .8], [B(69), .9], [B(74), 1.05]];
-function ground() { const u = t * 24, i = Math.floor(u) % GN, x = E.gx;
-  if (GF.length) { x.globalAlpha = 1; x.drawImage(GF[GA + i], 0, 0); if (i >= GN - GA) { x.globalAlpha = (i - (GN - GA) + 1) / (GA + 1); x.drawImage(GF[i - (GN - GA)], 0, 0) } }
+function ground() { const u = t * 24, i = Math.floor(u) % GN, x = E.gx, f = GF.length ? GF[GA + i] : E.gstill;
+  x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; x.drawImage(f, 0, 0, 540, 720); if (GF.length && i >= GN - GA) { x.globalAlpha = (i - (GN - GA) + 1) / (GA + 1); x.drawImage(GF[i - (GN - GA)], 0, 0) }
   let j = 0; while (j < LV.length - 1 && t >= LV[j + 1][0]) j++; const lv = j && t < LV[j][0] + .22 ? L.lerp(LV[j - 1][1], LV[j][1], L.eo(L.n(t, LV[j][0], LV[j][0] + .22))) : LV[j][1];
-  const kk = kick(t), tense = 1 - music(t), fl = tense * (.5 + .5 * Math.sin(t * 46)) * .12, br = lv * (1 + .34 * kk) + fl + 1.2 * Math.exp(-9 * Math.max(0, t - D2)) * (t >= D2) + .5 * Math.exp(-9 * Math.max(0, t - D1)) * (t >= D1);
-  E.dim.style.opacity = L.cl(1 - br, 0, .92).toFixed(3); E.gv.style.filter = br > 1 ? `brightness(${br.toFixed(3)})` : 'none';
-  tf(E.gv, `scale(${(1.05 + .05 * Math.sin(t * .5) + .035 * kk).toFixed(4)}) translateX(${(10 * Math.sin(t * .37)).toFixed(1)}px)`);
-  tf(E.rays, `rotate(${(t * 7).toFixed(2)}deg) scale(${(1 + .1 * kk).toFixed(3)})`); E.rays.style.opacity = L.cl(lv * (.45 + .75 * kk) + fl * 2).toFixed(3);
-  const gl = on(B(12), B(16)) ? 1 : .35 + .5 * kk + tense * .25 * (.5 + .5 * Math.sin(t * 9)); E.rimL.style.opacity = (gl * (on(B(12), B(16)) && t < B(12.5) ? 1 : .9)).toFixed(3); E.rimR.style.opacity = (gl * .9).toFixed(3) }
+  const kk = kick(t), tense = 1 - music(t), fl = tense * (.5 + .5 * Math.sin(t * 46)) * .12, br = lv * (1 + .4 * kk) + fl + 1.2 * Math.exp(-9 * Math.max(0, t - D2)) * (t >= D2) + .5 * Math.exp(-9 * Math.max(0, t - D1)) * (t >= D1);
+  if (br > 1) { x.globalCompositeOperation = 'lighter'; x.globalAlpha = Math.min(1, br - 1); x.drawImage(f, 0, 0, 540, 720) } else { x.globalAlpha = L.cl(1 - br, 0, .92); x.fillStyle = '#04070e'; x.fillRect(0, 0, 540, 720) }
+  // the rim lights: green from the left, red from the right, on the beat (both full under "long or short")
+  const ls = on(B(12), B(16)), gl = ls ? 1 : .32 + .55 * kk + tense * .25 * (.5 + .5 * Math.sin(t * 9)); x.globalCompositeOperation = 'lighter';
+  [[24, E.grL, gl], [516, E.grR, (ls && t < B(12.5) ? .3 : 1) * gl * .9]].forEach(([cx, g, a]) => { x.save(); x.translate(cx, 428); x.scale(1, 1.56); x.globalAlpha = L.cl(a); x.fillStyle = g; x.fillRect(-240, -240, 480, 480); x.restore() });
+  x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1;
+  tf(E.gv, `scale(${(1.05 + .05 * Math.sin(t * .5) + .035 * kk).toFixed(4)}) translateX(${(10 * Math.sin(t * .37)).toFixed(1)}px)`) }
 
 // cuts: a flash on the hard ones, a streak of light on the whips
 const FL = [[0, .28], [B(10), .4], [D1, .8], [B(37), .16], [B(50), .16], [D2, 1], [B(65), .22], [B(66), .2], [B(69), .4], [B(74), .5]], WH = [[B(2), 1, 640], [B(6), -1, 700], [B(12), 1, 470], [B(12.5), -1, 980], [B(16), -1, 700], [B(41), 1, 900], [B(74), 1, 430]];
-function fx() { let f = 0; FL.forEach(([a, v]) => { if (t >= a) f = Math.max(f, v * Math.exp(-13 * (t - a))) }); E.flash.style.opacity = f.toFixed(3);
-  let o = 0, x = 0, y = 0; WH.forEach(([a, d, yy]) => { const k = L.n(t, a - .06, a + .22); if (k > 0 && k < 1) { o = Math.sin(Math.PI * k); x = d * (-1500 + 3000 * L.eio(k)); y = yy } }); E.streak.style.opacity = o.toFixed(3); tf(E.streak, `translate(${x.toFixed(0)}px,${y}px)`) }
+function fx() { let f = 0; FL.forEach(([a, v]) => { if (t >= a) f = Math.max(f, v * Math.exp(-13 * (t - a))) }); E.flash.style.opacity = f.toFixed(3); E.flash.style.display = f > .004 ? 'block' : 'none';
+  let o = 0, x = 0, y = 0; WH.forEach(([a, d, yy]) => { const k = L.n(t, a - .06, a + .22); if (k > 0 && k < 1) { o = Math.sin(Math.PI * k); x = d * (-1500 + 3000 * L.eio(k)); y = yy } }); E.streak.style.opacity = o.toFixed(3); E.streak.style.display = o > .004 ? 'block' : 'none'; tf(E.streak, `translate(${x.toFixed(0)}px,${y}px)`) }
 
 function g0() { const b = B(6); if (!show(E.g0, on(0, b))) return; const ex = out(b);
   tf(E.g0, `translateY(${(-1500 * ex).toFixed(1)}px)`); blur(E.g0, 16 * ex);
@@ -328,12 +322,12 @@ window.R = R;
   const css = h => new Promise(res => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; l.onload = l.onerror = res; document.head.appendChild(l); setTimeout(res, 20000) });
   await Promise.all([css((L.css.match(/@import url\('([^']+)'\)/) || [])[1]), css('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Kanit:ital,wght@1,800;1,900&display=swap')]);
   L.$('#base').textContent = L.css; [L.models, D] = await Promise.all([fetch('models.json').then(r => r.json()), fetch('data/wrap.json').then(r => r.json())]);
-  ['cam', 'gv', 'rays', 'rimL', 'rimR', 'dim', 'flash', 'streak'].forEach(k => E[k] = L.$('#' + k)); E.fine = L.$('.fine'); E.gx = E.gv.getContext('2d'); build();
+  ['cam', 'gv', 'flash', 'streak'].forEach(k => E[k] = L.$('#' + k)); E.fine = L.$('.fine'); E.gx = E.gv.getContext('2d'); [['grL', '3,200,112'], ['grR', '255,58,49']].forEach(([k, c]) => { const g = E.gx.createRadialGradient(0, 0, 0, 0, 0, 236); g.addColorStop(0, `rgba(${c},.5)`); g.addColorStop(.7, `rgba(${c},0)`); E[k] = g }); build();
   const smp = L.$('#st').textContent + ' 0123456789+−–$%,KLONGSHORT&';
   await Promise.all(['400 100px "Bebas Neue"', 'italic 900 100px Kanit', '600 30px "Geist Mono"', '700 96px "Geist Mono"', '600 19px "Geist Mono"'].map(f => document.fonts.load(f, smp))); await document.fonts.ready;
   await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
   GF = await Promise.all(Array.from({ length: NG }, (_, i) => fetch(`w6/e/gl/g${String(i + 1).padStart(3, '0')}.jpg`).then(r => r.blob()).then(b => createImageBitmap(b)))).catch(() => []);
-  if (!GF.length) { const im = new Image(); im.src = 'w6/e/ground.jpg'; await im.decode(); E.gx.drawImage(im, 0, 0, 540, 720) }
+  if (!GF.length) { const im = new Image(); im.src = 'w6/e/ground.jpg'; await im.decode(); E.gstill = im }
   // fit the lines marked data-w to their width
   L.$$('.g').forEach(s => s.style.display = 'block'); L.$$('.fit[data-w]').forEach(f => { const p = f.parentNode, w = f.getBoundingClientRect().width, fs = parseFloat(getComputedStyle(p).fontSize); p.style.fontSize = (fs * +f.dataset.w / w).toFixed(1) + 'px' }); L.$$('.g').forEach(s => s.style.display = 'none');
   grain = L.grain(L.$('#grain'), .05);
