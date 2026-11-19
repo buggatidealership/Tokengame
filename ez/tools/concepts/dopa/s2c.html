@@ -1,0 +1,257 @@
+<!doctype html><meta charset="utf-8"><title>Season 2 launch, take C</title>
+<!-- Season 2 launch video, take C (owner, 2026-11-19: "for the intro of SEASON 2 video, we need to add some elements as we used to show in
+  app pop ups to show a preview of the feed at the end. So we start by saying who gets kicked out which is Kimi with an effect and
+  animation and then we introduce the 2 new models joining. Then we show a teaser of the feed").
+  Mockup A's world (s2a.html: one glass sheet that changes shape every scene over a slow field of brand-colour light, Inter type), now:
+  1 Season 1's four on the sheet; Kimi's tile goes red, RELEGATED is stamped on it, it cracks and shatters, the three close up, Kimi is out
+  2 Gemini joins  3 Qwen joins  4 Five AIs (drop 1)  5 Season 1 told you long or short
+  6 the feed (drop 2): the sheet becomes a phone; on its screen the site's Feed tab with Season 2's first round, Intuit, each AI's real
+    side and size from the sheet (R113: GPT long 4.5, Claude short 4, Grok short 2.4, Gemini long 5, Qwen long 4); posts lift out of
+    the phone and grow, as the release video's cards did (layout zoom, never scale under perspective); the reasoning is shown as lines
+    that never become words, since the sheet has no reasoning yet (nothing is invented)
+  7 Every trade, every reason, soon.
+  Bed s2-p-k: s2-p (100 BPM, beat 0.6 s, first beat 0.02 s, drop at beat 16) recut by bedx.py so its break and drop come twice: drop 1 at
+  beat 16 (9.62 s, the five), drop 2 at beat 32 (19.22 s, the feed). Scene starts on beats 0 8 12 16 24 32 44, end at beat 50.
+  Render: CRF=20 bash wrapx.sh s2c.html 30.06 x2p-s2-intro-c-draft s2-p-k 0 .34 -->
+<style id="base"></style>
+<style>
+#st{position:absolute;inset:0;overflow:hidden}
+#fld{position:absolute;inset:0}
+.bl{position:absolute;left:0;top:0;width:1100px;height:1100px;margin:-550px 0 0 -550px;border-radius:50%}
+.bar{position:absolute;left:50%;top:50%;width:2200px;margin-left:-1100px;transform-origin:50% 50%}
+#rg{position:absolute;left:0;top:0;width:1080px;height:1350px;overflow:visible}
+#cam{position:absolute;inset:0;transform-origin:50% 50%}
+#gl{position:absolute;left:0;top:0;overflow:hidden;
+  background:linear-gradient(158deg,rgba(242,237,230,.15),rgba(242,237,230,.055) 42%,rgba(242,237,230,.085));
+  -webkit-backdrop-filter:blur(26px) saturate(160%) brightness(1.12);backdrop-filter:blur(26px) saturate(160%) brightness(1.12);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5),inset 1.5px 0 0 rgba(255,255,255,.16),inset 0 -1.5px 0 rgba(0,0,0,.4),inset -1px 0 0 rgba(0,0,0,.18),0 34px 90px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.35)}
+#gl .sp{position:absolute;inset:-60%;background:linear-gradient(118deg,transparent 44%,rgba(255,255,255,.2) 48.5%,rgba(255,255,255,.05) 51.5%,transparent 56%)}
+#gl .tp{position:absolute;left:0;right:0;top:0;height:46%;background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.sc{position:absolute;inset:0}
+.c{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.hl{font:900 150px/1 Inter;letter-spacing:-.045em}
+.kk{font:600 30px 'Geist Mono';letter-spacing:.2em;color:#8e8680}
+.lab{font:600 36px 'Geist Mono';letter-spacing:.24em;color:#8e8680}
+.sub{font:700 66px/1 Inter;letter-spacing:-.03em}
+.fit{display:inline-block}
+.row5{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:34px}
+.row5 .m{display:flex;flex-direction:column;align-items:center;gap:20px;font:600 30px 'Geist Mono';letter-spacing:.04em;color:#8e8680}
+.row5 .m .w{position:relative}.row5 .m .w i{position:absolute;inset:-7px;border-radius:44px;box-shadow:0 0 0 4px #fdbc2a,0 0 26px rgba(253,188,42,.45)}
+.big{font:900 196px/1 Inter;letter-spacing:-.05em}
+.or{font:600 40px 'Geist Mono';letter-spacing:.2em;color:#8e8680}
+#soon{font:700 48px/1 Inter;letter-spacing:-.01em}
+.bug b{color:#fdbc2a}
+/* 1 Kimi out: four tiles on the sheet; Kimi's composite (red plate, mark, name, stamp) is drawn whole until it shatters into shards */
+.t4{position:absolute;top:0;left:0;width:200px;display:flex;flex-direction:column;align-items:center;gap:22px;font:600 30px 'Geist Mono';letter-spacing:.04em;color:#8e8680}
+#kz{position:absolute;left:0;top:0;width:240px;height:300px}
+.kc{position:absolute;left:0;top:0;width:240px;height:300px}
+.kc .pl{position:absolute;left:20px;top:8px;width:200px;height:284px;border-radius:40px;background:linear-gradient(160deg,rgba(232,87,107,.32),rgba(232,87,107,.12) 55%,rgba(232,87,107,.2));box-shadow:inset 0 0 0 2.5px rgba(232,87,107,.75),0 0 46px rgba(232,87,107,.35)}
+.kc .mw{position:absolute;left:45px;top:30px}
+.kc .nm{position:absolute;left:0;right:0;top:206px;text-align:center;font:600 30px 'Geist Mono';letter-spacing:.04em;color:#8e8680}
+.kc .stp{position:absolute;left:50%;top:104px;transform:translate(-50%,-50%) rotate(-9deg);padding:6px 14px 8px;border:5px solid #e8576b;border-radius:12px;font:900 33px/1 Inter;letter-spacing:.03em;color:#e8576b;background:rgba(4,7,14,.72);white-space:nowrap}
+.shd{position:absolute;left:0;top:0;width:240px;height:300px}
+#ck{position:absolute;left:0;top:0;overflow:visible}
+#fl{position:absolute;inset:0;background:radial-gradient(ellipse at 80% 46%,rgba(255,240,240,.9),rgba(232,87,107,.4) 40%,rgba(232,87,107,0) 70%);opacity:0;pointer-events:none;z-index:40}
+/* 6 the phone: the sheet becomes its glass body; the screen is the site's Feed tab, laid out at 468 x 1013 and scaled to the sheet */
+#ph{position:absolute;left:0;top:0;width:468px;height:1013px;transform-origin:0 0}
+#ph .scr{position:absolute;inset:10px;border-radius:64px;overflow:hidden;background:linear-gradient(180deg,#0f1513,#0a0e0d);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+#ph .isl{position:absolute;left:50%;top:16px;width:112px;height:32px;margin-left:-56px;border-radius:18px;background:#000;z-index:3}
+.hdr{position:absolute;left:22px;right:22px;top:62px;height:40px;display:flex;align-items:center;gap:10px}
+.hdr img{width:36px;height:36px}
+.hdr .wm{font:800 20px/1 Inter;letter-spacing:-.02em;color:#f2ede6}.hdr .wm .e{color:#03c870}.hdr .wm .z{color:#ff3a31}
+.hdr .s2{margin-left:auto;font:700 13px/1 'Geist Mono';letter-spacing:.12em;color:#fdbc2a;padding:7px 10px;border-radius:8px;background:rgba(253,188,42,.12);box-shadow:inset 0 0 0 1px rgba(253,188,42,.35)}
+.tabs{position:absolute;left:22px;right:22px;top:122px;display:flex;gap:26px;font:600 14px/1 'Geist Mono';letter-spacing:.12em;color:#7d8a83;border-bottom:1px solid rgba(242,237,230,.08);padding-bottom:14px}
+.tabs .on{color:#f2ede6;position:relative}.tabs .on::after{content:'';position:absolute;left:0;right:0;bottom:-15px;height:3px;border-radius:2px;background:#fdbc2a}
+.tabs .nw{display:inline-block;width:7px;height:7px;border-radius:50%;background:#55d6a2;margin-left:6px;vertical-align:2px;box-shadow:0 0 8px #55d6a2}
+#fd{position:absolute;left:0;right:0;top:166px;bottom:0;overflow:hidden}
+#fdl{position:absolute;left:16px;right:16px;top:12px;display:flex;flex-direction:column;gap:12px}
+.pc{position:relative;width:436px;box-sizing:border-box;padding:18px 18px 20px;border-radius:20px;background:linear-gradient(180deg,#19201e,#131817);box-shadow:inset 0 0 0 1px rgba(242,237,230,.12)}
+.pc .r1{display:flex;align-items:center;gap:12px}
+.pc .r1 .mk{flex:none}
+.pc .who{display:flex;flex-direction:column;gap:7px;min-width:0}
+.pc .who b{font:700 21px/1 Inter;letter-spacing:-.01em;color:#f2ede6}
+.pc .co{display:flex;align-items:center;gap:8px;font:600 13px/1 'Geist Mono';letter-spacing:.06em;color:#8e9a93}
+.pc .co i{display:block;width:62px;height:20px;border-radius:6px;background:#236cff}
+.pc .co i svg{display:block;width:62px;height:20px}
+.pc .sd{margin-left:auto;display:flex;align-items:center;gap:10px}
+.pc .tg{font:700 14px/1 'Geist Mono';letter-spacing:.12em;padding:7px 10px;border-radius:7px}
+.pc .tg.lo{color:#55d6a2;background:rgba(85,214,162,.13);box-shadow:inset 0 0 0 1px rgba(85,214,162,.3)}
+.pc .tg.sh{color:#e8576b;background:rgba(232,87,107,.13);box-shadow:inset 0 0 0 1px rgba(232,87,107,.3)}
+.pc .sz{font:700 21px/1 'Geist Mono';letter-spacing:-.02em;color:#f2ede6}
+.pc .why{margin-top:18px;display:flex;gap:14px}
+.pc .why em{font:700 12px/1 'Geist Mono';font-style:normal;letter-spacing:.16em;color:#fdbc2a;padding-top:2px}
+.pc .why .ls{flex:1;display:flex;flex-direction:column;gap:9px}
+.pc .why .ls i{display:block;height:11px;border-radius:6px;background:rgba(242,237,230,.24);filter:blur(2.6px);transform-origin:0 50%}
+#pops{position:absolute;inset:0;pointer-events:none;z-index:30}
+.pw{position:absolute;left:0;top:0;display:none}
+.pw .pc{box-shadow:inset 0 0 0 1px rgba(242,237,230,.14),0 40px 90px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.04)}
+.pw .pc.gd{box-shadow:inset 0 0 0 1.5px rgba(253,188,42,.55),0 40px 90px rgba(0,0,0,.65),0 0 60px rgba(253,188,42,.18)}
+</style>
+<div id="st">
+  <div id="fld"></div>
+  <div id="cam"><div id="gl"><div class="tp"></div><div class="sp"></div></div><div id="scs"></div></div>
+  <div id="pops"></div>
+  <div class="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>SEASON 2</b></div>
+  <div id="fl"></div><div id="vig"></div><canvas id="grain"></canvas>
+</div>
+<script src="lib.js"></script>
+<script>
+const q = new URLSearchParams(location.search), BT = +(q.get('bt') || .6), PH = +(q.get('ph') || .02), b = n => PH + n * BT;
+// scene starts, in beats: Kimi out | Gemini | Qwen | Five (drop 1) | long or short | the feed (drop 2) | every reason
+const T = [0, b(8), b(12), b(16), b(24), b(32), b(44)], DUR = +(q.get('dur') || (b(50) + .04).toFixed(2)); T.push(DUR + 9);
+const NEW = { GEMINI: { name: 'Gemini', lab: 'GOOGLE', d: 'M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81' },
+  QWEN: { name: 'Qwen', lab: 'ALIBABA', fr: 'evenodd', d: 'M12.604 1.34c.393.69.784 1.382 1.174 2.075a.18.18 0 00.157.091h5.552c.174 0 .322.11.446.327l1.454 2.57c.19.337.24.478.024.837-.26.43-.513.864-.76 1.3l-.367.658c-.106.196-.223.28-.04.512l2.652 4.637c.172.301.111.494-.043.77-.437.785-.882 1.564-1.335 2.34-.159.272-.352.375-.68.37-.777-.016-1.552-.01-2.327.016a.099.099 0 00-.081.05 575.097 575.097 0 01-2.705 4.74c-.169.293-.38.363-.725.364-.997.003-2.002.004-3.017.002a.537.537 0 01-.465-.271l-1.335-2.323a.09.09 0 00-.083-.049H4.982c-.285.03-.553-.001-.805-.092l-1.603-2.77a.543.543 0 01-.002-.54l1.207-2.12a.198.198 0 000-.197 550.951 550.951 0 01-1.875-3.272l-.79-1.395c-.16-.31-.173-.496.095-.965.465-.813.927-1.625 1.387-2.436.132-.234.304-.334.584-.335a338.3 338.3 0 012.589-.001.124.124 0 00.107-.063l2.806-4.895a.488.488 0 01.422-.246c.524-.001 1.053 0 1.583-.006L11.704 1c.341-.003.724.032.9.34zm-3.432.403a.06.06 0 00-.052.03L6.254 6.788a.157.157 0 01-.135.078H3.253c-.056 0-.07.025-.041.074l5.81 10.156c.025.042.013.062-.034.063l-2.795.015a.218.218 0 00-.2.116l-1.32 2.31c-.044.078-.021.118.068.118l5.716.008c.046 0 .08.02.104.061l1.403 2.454c.046.081.092.082.139 0l5.006-8.76.783-1.382a.055.055 0 01.096 0l1.424 2.53a.122.122 0 00.107.062l2.763-.02a.04.04 0 00.035-.02.041.041 0 000-.04l-2.9-5.086a.108.108 0 010-.113l.293-.507 1.12-1.977c.024-.041.012-.062-.035-.062H9.2c-.059 0-.073-.026-.043-.077l1.434-2.505a.107.107 0 000-.114L9.225 1.774a.06.06 0 00-.053-.031zm6.29 8.02c.046 0 .058.02.034.06l-.832 1.465-2.613 4.585a.056.056 0 01-.05.029.058.058 0 01-.05-.029L8.498 9.841c-.02-.034-.01-.052.028-.054l.216-.012 6.722-.012z' } };
+const OLD = { GROK: 'Grok', CLAUDE: 'Claude', GPT: 'GPT', KIMI: 'Kimi' };
+const mark = (k, s) => NEW[k] ? `<svg class="mk" width="${s}" height="${s}" viewBox="-4 -4 32 32" style="border-radius:${s * .26}px;background:#000;box-shadow:0 0 0 ${Math.max(1.5, s * .03)}px rgba(242,237,230,.18)"><path d="${NEW[k].d}" fill="#fff"${NEW[k].fr ? ' fill-rule="evenodd"' : ''}/></svg>` : L.mark(k, s);
+// Intuit's own wordmark (Simple Icons, CC0), white on Intuit blue
+const INTU = '<svg viewBox="-3 8.6 30 6.8"><path fill="#fff" d="M12.32 12.38c0 1.174.974 2.033 2.211 2.033 1.237 0 2.212-.859 2.212-2.033v-2.7h-1.198v2.56c0 .633-.44 1.06-1.017 1.06s-1.017-.424-1.017-1.06V9.68h-1.198l.008 2.699zm7.624-1.619h1.429v3.563h1.198V10.76H24V9.68h-4.056v1.082zM19.17 9.68h-1.198v4.645h1.198V9.679zM7.482 10.761h1.43v3.563h1.197V10.76h1.428V9.68H7.482v1.082zM1.198 9.68H0v4.645h1.198V9.679zm5.13 1.97c0-1.175-.974-2.034-2.211-2.034-1.237 0-2.212.859-2.212 2.033v2.701h1.198v-2.56c0-.633.44-1.06 1.017-1.06s1.017.425 1.017 1.06v2.56h1.198L6.33 11.65z"/></svg>';
+// Season 2's first round as the sheet has it (R113 Intuit, called 11/19/26): side and size per AI; the feed's order, newest first
+const FEED = [['GEMINI', 'LONG', 5], ['QWEN', 'LONG', 4], ['CLAUDE', 'SHORT', 4], ['GPT', 'LONG', 4.5], ['GROK', 'SHORT', 2.4]];
+const NM = k => NEW[k] ? NEW[k].name : OLD[k];
+const post = ([k, s, z], lw) => `<div class="pc"><div class="r1">${mark(k, 46)}<div class="who"><b>${NM(k)}</b><span class="co"><i>${INTU}</i>INTU</span></div><div class="sd"><span class="tg ${s === 'LONG' ? 'lo' : 'sh'}">${s}</span><span class="sz">${z}%</span></div></div>
+  <div class="why"><em>WHY</em><div class="ls">${(lw || [94, 86, 58]).map(w => `<i style="width:${w}%"></i>`).join('')}</div></div></div>`;
+// the sheet's box in every scene: centre x, centre y, width, height, corner radius (scene 1's is the box after Kimi has gone)
+const G = [[540, 640, 800, 420, 92], [540, 550, 520, 520, 124], [540, 550, 520, 520, 124], [540, 520, 968, 330, 88], [540, 720, 860, 560, 100], [540, 806, 470, 1017, 74], [540, 960, 330, 118, 59]];
+                                  // the phone's scale: its 468 px layout on the sheet's 404 px
+const KX = [190, 420, 650, 880], K3 = [310, 540, 770], KY = 452, KI = 3;   // the four tiles' centres, the three after; Kimi is the fourth
+const S = {}, C = []; let t = 0, grain;
+const add = (h, p) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
+const sp = (x, f = 1.15, d = 8.5) => x <= 0 ? 0 : 1 - Math.exp(-d * x) * Math.cos(2 * Math.PI * f * x);
+const arrive = (el, t0, dur = .45, dy = 22, bl = 9) => { const k = L.eo(L.n(t, t0, t0 + dur)); el.style.opacity = k; el.style.transform = `translateY(${dy * (1 - k)}px)`; el.style.filter = k < 1 ? `blur(${(bl * (1 - k)).toFixed(2)}px)` : 'none'; return k };
+// Kimi's beats: red, stamp, crack, shatter
+const KR = b(1.5), KS = b(2), KC = b(3.5), KB = b(4), KH = b(4.6);
+
+function build() {
+  const fld = L.$('#fld'), scs = L.$('#scs');
+  S.bl = [['253,188,42', 980, [[540, 600, .8], [540, 560, 1], [540, 560, 1], [540, 540, .95], [540, 700, 0], [540, 780, .85], [540, 760, .75]], 150, 120, 15, 0],
+    ['85,214,162', 760, [[20, 90, .42], [10, 80, .4], [10, 80, .4], [0, 70, .4], [250, 540, .95], [0, 60, .3], [10, 80, .32]], 60, 70, 13, 2.1],
+    ['232,87,107', 760, [[930, 560, .7], [1080, 1300, .4], [1080, 1300, .4], [1090, 1310, .4], [840, 930, .95], [1090, 1310, .3], [1080, 1300, .32]], 60, 70, 17, 4.2]]
+    .map(([c, sz, K, ax, ay, per, ph]) => ({ K, ax, ay, per, ph, el: add(`<div class="bl" style="width:${sz}px;height:${sz}px;margin:${-sz / 2}px 0 0 ${-sz / 2}px;background:radial-gradient(closest-side,rgba(${c},.5),rgba(${c},.2) 38%,rgba(${c},0) 74%)"></div>`, fld) }));
+  S.rg = add(`<svg id="rg">${[150, 250, 350, 450, 550, 650, 750, 850, 950, 1050].map(r => `<circle cx="0" cy="0" r="${r}" fill="none" stroke="rgba(242,237,230,.13)" stroke-width="1.5"/>`).join('')}</svg>`, fld);
+  S.bars = [['242,237,230', .2, -31, 9, 0], ['242,237,230', .16, -31, 5, .5]].map(([c, a, rot, h, off]) => ({ rot, off, el: add(`<div class="bar" style="height:${h}px;margin-top:${-h / 2}px;background:linear-gradient(90deg,rgba(${c},0),rgba(${c},${a}) 30%,rgba(${c},${a}) 70%,rgba(${c},0))"></div>`, fld) }));
+  const sc = () => add('<div class="sc"></div>', scs);
+  // 1 Kimi out
+  { const s = sc(); S.s1 = s; S.k1 = add('<div class="c kk" style="top:340px">SEASON 1</div>', s);
+    S.t4 = ['GROK', 'CLAUDE', 'GPT'].map(k => add(`<div class="t4">${mark(k, 150)}<span>${OLD[k]}</span></div>`, s));
+    const comp = '<div class="kc"><div class="pl"></div><div class="mw">' + mark('KIMI', 150) + '</div><div class="nm">Kimi</div><div class="stp">RELEGATED</div></div>';
+    S.kz = add(`<div id="kz">${comp}</div>`, s); S.kcp = L.$('.kc', S.kz); S.kpl = L.$('.pl', S.kz); S.kst = L.$('.stp', S.kz);
+    // the cracks: jagged rays from where the stamp hit, then a few branches (in the composite's own 240 x 300 box)
+    let sd = 7; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647, O = [120, 104], rays = [];
+    for (let i = 0; i < 9; i++) { const a = i / 9 * 2 * Math.PI + rnd() * .5, L0 = 120 + rnd() * 90; let p = [O.slice()]; for (let j = 1; j <= 5; j++) { const r = L0 * j / 5, aa = a + (rnd() - .5) * .35; p.push([O[0] + r * Math.cos(aa), O[1] + r * Math.sin(aa)]) } rays.push(p);
+      if (i % 2) { const q0 = p[2], a2 = a + (rnd() > .5 ? .7 : -.7); rays.push([q0, [q0[0] + 40 * Math.cos(a2), q0[1] + 40 * Math.sin(a2)], [q0[0] + 70 * Math.cos(a2 + .2), q0[1] + 70 * Math.sin(a2 + .2)]]) } }
+    S.ck = add(`<svg id="ck" width="240" height="300" viewBox="0 0 240 300">${rays.map(p => `<polyline points="${p.map(v => v.map(x => x.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="rgba(255,244,244,.92)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>`).join('')}</svg>`, S.kz);
+    // the shards: a jittered grid cut into triangles, each a clipped copy of the composite
+    const NX = 4, NY = 5, P = []; for (let y = 0; y <= NY; y++) for (let x = 0; x <= NX; x++) { const e = x === 0 || x === NX || y === 0 || y === NY; P.push([x * 240 / NX + (e && (x === 0 || x === NX) ? 0 : (rnd() - .5) * 36), y * 300 / NY + (e && (y === 0 || y === NY) ? 0 : (rnd() - .5) * 36)]) }
+    const id = (x, y) => y * (NX + 1) + x, tri = []; for (let y = 0; y < NY; y++) for (let x = 0; x < NX; x++) { const a = P[id(x, y)], b2 = P[id(x + 1, y)], c = P[id(x + 1, y + 1)], d = P[id(x, y + 1)]; if ((x + y) % 2) tri.push([a, b2, c], [a, c, d]); else tri.push([a, b2, d], [b2, c, d]) }
+    S.sh = tri.map(tr => { const cx = (tr[0][0] + tr[1][0] + tr[2][0]) / 3, cy = (tr[0][1] + tr[1][1] + tr[2][1]) / 3, dx = cx - O[0], dy = cy - O[1], dl = Math.hypot(dx, dy) || 1;
+      const el = add(`<div class="shd" style="clip-path:polygon(${tr.map(v => `${v[0].toFixed(1)}px ${v[1].toFixed(1)}px`).join(',')});display:none">${comp}</div>`, s);
+      return { el, cx, cy, vx: dx / dl * (180 + 260 * rnd()) + (rnd() - .5) * 120, vy: dy / dl * (140 + 200 * rnd()) - 260 - 220 * rnd(), w: (rnd() - .5) * 520, d: rnd() * .08 } });
+    S.h1 = add('<div class="c hl" style="top:906px;font-size:156px"><span class="fit"><span style="color:#e8576b">Kimi</span> is out</span></div>', s) }
+  // 2 and 3: the two new models, one a scene
+  S.nw = ['GEMINI', 'QWEN'].map((k, i) => { const s = sc(); return { s, kk: add(`<div class="c kk" style="top:216px"></div>`, s), mk: add(`<div class="c" style="top:400px"><span style="display:inline-block">${mark(k, 300)}</span></div>`, s),
+    hl: add(`<div class="c hl" style="top:868px;font-size:128px"><span class="fit">${NEW[k].name} joins</span></div>`, s), lab: add(`<div class="c lab" style="top:1030px">${NEW[k].lab}</div>`, s) } });
+  // 4 the five
+  { const s = sc(); S.s4 = s; S.row = add(`<div class="row5" style="top:412px">${['GROK', 'CLAUDE', 'GPT', 'GEMINI', 'QWEN'].map(k => `<div class="m"><span class="w">${mark(k, 144)}${NEW[k] ? '<i></i>' : ''}</span><span>${NM(k)}</span></div>`).join('')}</div>`, s);
+    S.ms = L.$$('.m', S.row); S.h4 = add('<div class="c hl" style="top:770px;font-size:176px">Five AIs</div>', s); S.u4 = add('<div class="c sub" style="top:968px">Three stay<span style="display:inline-block;width:.9em"></span>Two join</div>', s) }
+  // 5 long or short
+  { const s = sc(); S.s5 = s; S.h5 = add('<div class="c sub" style="top:308px;font-size:84px;font-weight:800">Season 1 told you</div>', s); S.lo = add('<div class="c big" style="top:488px;color:#55d6a2">LONG</div>', s); S.or = add('<div class="c or" style="top:700px">OR</div>', s); S.sh5 = add('<div class="c big" style="top:768px;color:#e8576b">SHORT</div>', s) }
+  // 6 the feed: the headline over the phone; the phone's screen is the site's Feed tab
+  { const s = sc(); S.s6 = s; S.h6 = add('<div class="c sub" style="top:150px;font-size:82px;font-weight:800"><span class="fit">Season 2 tells you <span style="color:#fdbc2a">why</span></span></div>', s);
+    S.ph = add(`<div id="ph"><div class="scr"><div class="hdr"><img src="ezlogo.svg" alt=""><span class="wm"><span class="e">E</span>arnings <span class="z">Z</span>eason</span><span class="s2">SEASON 2</span></div>
+      <div class="tabs"><span>LEADERBOARD</span><span>UPCOMING</span><span class="on">FEED<i class="nw"></i></span></div><div id="fd"><div id="fdl">${FEED.map(f => post(f)).join('')}</div></div></div><div class="isl"></div></div>`, s);
+    S.scr = L.$('.scr', S.ph); S.hdr = L.$('.hdr', S.ph); S.tabs = L.$('.tabs', S.ph); S.fdl = L.$('#fdl', S.ph); S.pcs = L.$$('.pc', S.fdl) }
+  // the posts that lift out of the phone: Gemini's long, then Claude's short
+  S.pops = [[0, b(34), b(38.4)], [2, b(39), b(43.2)]].map(([i, a, z]) => { const w = add(`<div class="pw">${post(FEED[i], [97, 90, 74, 52])}</div>`, L.$('#pops')); const pc = w.firstElementChild; pc.classList.add('gd'); return { i, a, z, w, pc, ls: L.$$('.ls i', pc) } });
+  // 7 the end
+  { const s = sc(); S.s7 = s; S.e1 = add('<div class="c hl" style="top:404px;font-size:132px"><span class="fit">Every trade</span></div>', s); S.e2 = add('<div class="c hl" style="top:556px;font-size:132px;color:#fdbc2a"><span class="fit">Every reason</span></div>', s); S.soon = add('<div class="c" id="soon" style="top:936px">Soon</div>', s) }
+  S.all = [S.s1, S.nw[0].s, S.nw[1].s, S.s4, S.s5, S.s6, S.s7];
+  // sound: the bed carries it; a stamp, a crack and the glass for Kimi, the rest sparing and on the beat
+  C.push([.3, 'r11-sparkle', .1], [KS, 'sfx-stamp', .17], [KC, 'r11-knock', .12], [KB, 'sfx-shatter', .2], [KB, 'sfx-boom', .1],
+    [T[1] + .02, 'r11-ping', .1], [T[2] + .02, 'r11-ping', .1], [T[3], 'sfx-boom', .14], [T[3] + .02, 'r11-pluck', .09],
+    [T[5], 'sfx-boom', .14], [T[5] + .1, 'r11-swell', .12], ...S.pops.map(o => [o.a, 'sfx-whoosh', .08]), ...S.pops.map(o => [o.a + .42, 'r11-card', .07]), [T[6] + .02, 'r11-sparkle', .08]);
+  window.MUSIC = { f: q.get('bed') || 's2-p-k', at: +(q.get('at') || 0) };
+}
+
+function kimi() { const t0 = T[0], close = L.eio(L.n(t, KB + .25, KB + .85));
+  arrive(S.k1, .1, .4);
+  // the three: arrive, dim a little while Kimi is judged, then close up to the middle
+  S.t4.forEach((el, j) => { const a = .08 + j * .07, x = sp(t - a, 1.3, 8), cx = L.lerp(KX[j], K3[j], close), dim = 1 - .4 * L.n(t, KR, KR + .3) * (1 - L.n(t, KB + .3, KB + .8));
+    el.style.opacity = (L.n(t, a, a + .2) * dim).toFixed(3); el.style.transform = `translate(${(cx - 100).toFixed(1)}px,${(KY + 16 * (1 - Math.min(1, x))).toFixed(1)}px)` });
+  // Kimi: arrives with the others, goes red, takes the stamp, cracks, then breaks
+  const a = .08 + 3 * .07, x = sp(t - a, 1.3, 8), red = L.eo(L.n(t, KR, KR + .3)), kx = KX[KI] - 120, ky = KY - 30 + 16 * (1 - Math.min(1, x));
+  const whole = t < KB;
+  S.kz.style.display = whole ? '' : 'none'; S.kz.style.opacity = L.n(t, a, a + .2).toFixed(3);
+  const jolt = t >= KS ? Math.exp(-(t - KS) / .09) : 0, jc = t >= KC ? Math.exp(-(t - KC) / .06) : 0;
+  S.kz.style.transform = `translate(${(kx + 9 * jolt * Math.sin(t * 90) + 5 * jc * Math.sin(t * 120)).toFixed(1)}px,${(ky + 6 * jolt * Math.cos(t * 77)).toFixed(1)}px)`;
+  S.kpl.style.opacity = red.toFixed(3); { const nc = 'rgb(' + Math.round(L.lerp(142, 242, red)) + ',' + Math.round(L.lerp(134, 201, red)) + ',' + Math.round(L.lerp(128, 207, red)) + ')'; L.$$('.nm', S.s1).forEach(n => n.style.color = nc) }
+  const ks = L.eo5(L.n(t, KS, KS + .14)); S.kst.style.opacity = t >= KS ? 1 : 0; S.kst.style.transform = `translate(-50%,-50%) rotate(-9deg) scale(${L.lerp(2.6, 1, ks).toFixed(4)})`;
+  L.$$('polyline', S.ck).forEach((p, j) => p.setAttribute('stroke-dashoffset', (1 - L.eo(L.n(t, KC + j * .012, KC + .16 + j * .012))).toFixed(3)));
+  // the shards fall under gravity, turning, and fade
+  S.sh.forEach(o => { const u = t - KB - o.d; if (u < 0 || t >= T[1]) { o.el.style.display = t < KB ? 'none' : (u < 0 ? '' : 'none'); if (u < 0 && t >= KB) o.el.style.transform = `translate(${kx}px,${ky}px)`; return }
+    o.el.style.display = ''; const dx = o.vx * u, dy = o.vy * u + 1300 * u * u, r = o.w * u;
+    o.el.style.transform = `translate(${(kx + dx).toFixed(1)}px,${(ky + dy).toFixed(1)}px) rotate(${r.toFixed(1)}deg)`; o.el.style.transformOrigin = `${o.cx.toFixed(0)}px ${o.cy.toFixed(0)}px`; o.el.style.opacity = (1 - L.n(u, .25, .8)).toFixed(3) });
+  L.$('#fl').style.opacity = (t >= KB ? .55 * Math.exp(-(t - KB) / .1) : 0) + (t >= KS ? .18 * Math.exp(-(t - KS) / .08) : 0);
+  arrive(S.h1, KH, .42, 24) }
+
+function feed() { const t0 = T[5], g = S.g;
+  // the phone sits on the sheet's box (which springs into it on the drop); its screen comes up once the box has settled
+  const sc = g[2] / 468; S.ph.style.transform = `translate(${(g[0] - g[2] / 2).toFixed(1)}px,${(g[1] - g[3] / 2).toFixed(1)}px) scale(${sc.toFixed(4)})`;
+  S.scr.style.opacity = L.n(t, t0 + .18, t0 + .42).toFixed(3); arrive(S.h6, t0 + .1, .4);
+  [S.hdr, S.tabs].forEach((el, j) => { const k = L.eo(L.n(t, t0 + .3 + j * .08, t0 + .62 + j * .08)); el.style.opacity = k; el.style.transform = `translateY(${(14 * (1 - k)).toFixed(1)}px)` });
+  S.fdl.style.transform = `translateY(${(-28 * L.eio(L.n(t, t0 + 1.2, T[6]))).toFixed(1)}px)`;
+  S.pcs.forEach((p, j) => { const a = t0 + .5 + j * .12, k = L.eo(L.n(t, a, a + .4)); p.style.opacity = k; p.style.transform = `translateY(${(36 * (1 - k)).toFixed(1)}px)`;
+    L.$$('.ls i', p).forEach((l, m) => l.style.transform = `scaleX(${L.eo(L.n(t, a + .25 + m * .1, a + .65 + m * .1)).toFixed(4)})`) });
+  // a post lifts out of the phone and grows (layout zoom, so it stays sharp), the phone darkens behind it, then it goes back
+  let dimk = 0;
+  S.pops.forEach(o => { const up = L.eo5(L.n(t, o.a, o.a + .5)), dn = L.eio(L.n(t, o.z, o.z + .42)), k = up * (1 - dn), on = t >= o.a && t < o.z + .42 && t < T[6];
+    o.w.style.display = on ? 'block' : 'none'; const src = S.pcs[o.i]; src.style.visibility = on ? 'hidden' : ''; if (!on) return; dimk = Math.max(dimk, k);
+    const r = src.getBoundingClientRect(), z0 = r.width / 436, z1 = 2.04, z = L.lerp(z0, z1, k), h = o.pc.offsetHeight, x = L.lerp(r.left, 540 - 218 * z1, k), y = L.lerp(r.top, 700 - h * z1 / 2, k) + (-24 * Math.sin(Math.PI * k));
+    o.w.style.left = x.toFixed(1) + 'px'; o.w.style.top = y.toFixed(1) + 'px'; o.pc.style.zoom = z.toFixed(4);
+    o.w.style.transform = `rotate(${(-1.6 * Math.sin(Math.PI * L.n(t, o.a, o.a + .5)) * (1 - dn)).toFixed(2)}deg)`;
+    // the reason draws in, line by line, and never becomes words
+    o.ls.forEach((l, m) => { const a = o.a + .45 + m * .16; l.style.transform = `scaleX(${L.eo(L.n(t, a, a + .5)).toFixed(4)})`; l.style.filter = `blur(${(2.6 + .8 * Math.sin(t * 5 + m)).toFixed(2)}px)` }) });
+  S.scr.style.filter = dimk > .01 ? `brightness(${(1 - .55 * dimk).toFixed(3)}) blur(${(2.4 * dimk).toFixed(2)}px)` : 'none' }
+
+function R(tt) { t = tt; if (grain) grain(t);
+  let i = 0; while (i < 6 && t >= T[i + 1]) i++;
+  S.bl.forEach((o, j) => { const A = o.K[Math.max(0, i - 1)], B = o.K[i];
+    const k = !i ? 1 : j === 0 ? (B[2] < A[2] ? L.eio(L.n(t, T[i] - .35, T[i] + .15)) : L.eio(L.n(t, T[i] - .02, T[i] + .65))) : (i === 4 ? L.eio(L.n(t, T[i] + .05, T[i] + .85)) : L.eio(L.n(t, T[i] - .5, T[i] + .05)));
+    const a = 2 * Math.PI * t / o.per + o.ph, x = L.lerp(A[0], B[0], k) + o.ax * Math.sin(a), y = L.lerp(A[1], B[1], k) + o.ay * Math.cos(a * .8);
+    o.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${(1 + .1 * Math.sin(a * 1.3)).toFixed(3)})`; o.el.style.opacity = Math.min(1, L.lerp(A[2], B[2], k)).toFixed(3) });
+  S.rg.style.transform = `translate(${(880 - 14 * t).toFixed(1)}px,${(230 + 9 * t).toFixed(1)}px)`;
+  S.bars.forEach(o => { const p = (t / 26 + o.off) % 1; o.el.style.transform = `rotate(${o.rot}deg) translateY(${(-1100 + 2200 * p).toFixed(1)}px)` });
+  // the sheet: its box springs from the last scene's to this one's on the beat; in the first scene it narrows from four tiles to three
+  const PU = .05, pu = 1 + PU * L.n(t, T[i], Math.min(T[i + 1], DUR)), k = i ? sp(t - T[i]) : 1, A = G[Math.max(0, i - 1)], B = G[i];
+  let g = A.map((v, j) => L.lerp(v * (j > 1 && j < 4 ? 1 + PU : 1), B[j], k) * (j > 1 && j < 4 ? pu : 1));
+  if (i === 0) g[2] = L.lerp(1000, 800, L.eio(L.n(t, KB + .25, KB + .85))) * pu;
+  if (i === 5) g = [g[0], g[1], g[2] / pu, g[3] / pu, g[4]];           // the phone keeps its size (the scene's push is the phone's own)
+  S.g = g;
+  const w = Math.max(60, g[2]), h = Math.max(60, g[3]), gl = L.$('#gl'), in0 = sp(t - .05, 1.05, 9);
+  const pr = i === 2 ? 1 - .085 * Math.exp(-9 * (t - T[2])) * Math.cos(14 * (t - T[2])) : 1;
+  gl.style.width = w.toFixed(1) + 'px'; gl.style.height = h.toFixed(1) + 'px'; gl.style.borderRadius = Math.min(g[4], h / 2).toFixed(1) + 'px';
+  gl.style.transform = `translate(${(g[0] - w / 2).toFixed(1)}px,${(g[1] - h / 2 + 40 * (1 - Math.min(1, in0))).toFixed(1)}px) scale(${(pr * (.92 + .08 * in0)).toFixed(4)})`; gl.style.opacity = L.n(t, .02, .3);
+  { const a0 = T[i] + [.8, .6, .6, 1.5, 2.1, 1.1, 1.4][i], a1 = Math.min(T[i + 1], DUR) - .2; gl.firstElementChild.nextElementSibling.style.transform = `translateX(${(-62 + 124 * L.eio(L.n(t, a0, a1))).toFixed(2)}%)` }
+  S.all.forEach((s, j) => { const out = j < 6 ? 1 - L.n(t, T[j + 1] - .2, T[j + 1] - .02) : 1, on = t >= T[j] - .02 && t < T[j + 1] + .05; s.style.display = on ? 'block' : 'none'; s.style.opacity = out;
+    if (on) { s.style.transformOrigin = `${G[j][0]}px ${G[j][1]}px`; s.style.transform = j === 5 ? `scale(${(1 + .025 * L.n(t, T[j], T[j + 1])).toFixed(5)})` : `scale(${(1 + PU * L.n(t, T[j], Math.min(T[j + 1], DUR))).toFixed(5)})` } s.style.filter = out < 1 ? `blur(${(8 * (1 - out)).toFixed(2)}px)` : 'none' });
+  if (i === 0) kimi(); else { S.sh.forEach(o => o.el.style.display = 'none'); L.$('#fl').style.opacity = 0 }
+  if (i === 1 || i === 2) { const o = S.nw[i - 1], t0 = T[i]; arrive(o.kk, t0 + .06, .3); const x = sp(t - t0, 1.25, 7.5); o.mk.style.opacity = L.n(t, t0, t0 + .16); o.mk.firstElementChild.style.transform = `translateX(${((i === 2 ? 150 : 0) * (1 - Math.min(1, x))).toFixed(1)}px) scale(${(.8 + .2 * x).toFixed(4)})`; arrive(o.hl, t0 + .1, .35); arrive(o.lab, t0 + .3, .35) }
+  if (i === 3) { const t0 = T[3]; S.ms.forEach((m, j) => { const nw = j > 2, a = nw ? t0 + (j - 2) * BT : t0 + .06 + j * .07, x = sp(t - a, 1.3, 8); m.style.opacity = nw ? L.n(t, a, a + .16) : L.n(t, a, a + .25) * (.35 + .65 * L.eo(L.n(t, t0 + .45, t0 + .8))); m.style.transform = `translateY(${(18 * (1 - Math.min(1, x))).toFixed(1)}px) scale(${(nw ? .82 + .18 * x : 1).toFixed(4)})`; const r = m.querySelector('i'); if (r) r.style.opacity = L.n(t, a + .1, a + .4) * (1 - .55 * L.n(t, T[4] - 1.2, T[4] - .6)) });
+    arrive(S.h4, t0 + .12, .38); arrive(S.u4, t0 + .4, .4) }
+  if (i === 4) { const t0 = T[4]; arrive(S.h5, t0 + .1, .38); [[S.lo, t0 + BT], [S.sh5, t0 + 2 * BT]].forEach(([el, a]) => { const x = sp(t - a, 1.3, 8); el.style.opacity = L.n(t, a, a + .16); el.style.transform = `scale(${(.86 + .14 * x).toFixed(4)})`; el.style.filter = t < a + .4 ? `blur(${(8 * (1 - L.n(t, a, a + .4))).toFixed(2)}px)` : 'none' }); arrive(S.or, t0 + 1.5 * BT, .3, 0);
+    const ph = (t - (t0 + 3 * BT)) / BT; if (ph >= 0) { const n = Math.floor(ph), x = ph - n, on = 1 - L.eio(L.n(x, .55, 1)), a = n % 2 ? S.sh5 : S.lo, o = n % 2 ? S.lo : S.sh5, up = L.eo(L.n(x, 0, .3));
+      a.style.transform = `scale(${(1 + .045 * up * on).toFixed(4)})`; a.style.opacity = 1; o.style.opacity = (1 - .42 * up * on).toFixed(3) } }
+  if (i === 5) feed(); else S.pops.forEach(o => o.w.style.display = 'none');
+  if (i === 6) { const t0 = T[6]; arrive(S.e1, t0 + .1, .4); arrive(S.e2, t0 + .1 + .5 * BT, .4); arrive(S.soon, t0 + 2 * BT, .45, 10) }
+}
+window.R = R;
+(async () => {
+  await new Promise(res => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = (L.css.match(/@import url\('([^']+)'\)/) || [])[1]; l.onload = l.onerror = res; document.head.appendChild(l); setTimeout(res, 20000) });
+  L.$('#base').textContent = L.css; L.models = await fetch('models.json').then(r => r.json()); build();
+  const smp = 'Season 1 2 Gemini Qwen joins Five AIs Three stay Two join told you LONG SHORT OR tells why Every trade reason Soon GOOGLE ALIBABA Grok Claude GPT Kimi is out RELEGATED Earnings Zeason LEADERBOARD UPCOMING FEED WHY INTU 0123456789.%';
+  await Promise.all(['900 190px Inter', '800 84px Inter', '700 66px Inter', '700 21px Inter', '600 30px "Geist Mono"', '600 36px "Geist Mono"', '700 14px "Geist Mono"'].map(f => document.fonts.load(f, smp))); await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  S.all.forEach(s => s.style.display = 'block'); L.$$('.fit').forEach(f => { const w = f.offsetWidth; if (w > 920) f.parentNode.style.fontSize = Math.floor(parseFloat(getComputedStyle(f.parentNode).fontSize) * 920 / w) + 'px' });
+  S.pops.forEach(o => { o.w.style.display = 'block'; o.h = o.pc.offsetHeight; o.w.style.display = 'none' });
+  grain = L.grain(L.$('#grain'), .05); window.CUES = C; window.DUR = DUR; window.BEAT = { bpm: 60 / BT, at: PH }; window.DROPS = [T[3], T[5]];
+  window.SHOTS = T.slice(0, 7); R(0); window.READY = 1;
+})().catch(e => { document.title = 'ERR ' + e.message; throw e });
+</script>
