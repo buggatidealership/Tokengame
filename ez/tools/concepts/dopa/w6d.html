@@ -1,0 +1,330 @@
+<!doctype html><meta charset="utf-8"><title>Season 1 wrap-up, take D: the terminal</title>
+<!-- Season 1's wrap-up, round 6, take D (W6-BRIEF.md, owner 2026-11-19: "a PDF slideshow... no charts... not hype"): the product itself, the
+  EZ Terminal, drawn full frame at video scale. The frame is the screen: a header with the EZ. logo, dark panels with hairlines, Geist
+  Mono for every figure, the logo's heavy italic (Kanit) for names and headlines. Five messages:
+  1 brand open (the logo, "Season 1" typed at the prompt)   2 what it was (4 AIs, 112 earnings trades, long or short, $100K on every trade)
+  3 the season as one live P&L chart with the trade tape under it, finishing on drop 1 with each final P&L at its line's end
+  4 the leaderboard by P&L, then a click on Accuracy re-fills it with accuracy and W-L (Kimi relegated)
+  5 on drop 2 the winner's row opens to the whole frame: Grok wins Season 1, P&L +$169,450, Season 2 soon, the logo.
+  Panels re-lay themselves out on the beat (a chart maximised, the readouts as four tiles, a pair of rows opened) instead of a camera zooming
+  into small type. Every number from data/wrap.json (node prep-wrap.js) and w6/d/trades.json (node w6/d/prep.js); nothing typed by hand.
+  Bed w6-techno-x at 0: 140 BPM, a beat every 0.428571 s, drop 1 at 12.857 s (beat 30), drop 2 at 26.571 s (beat 62).
+  Draft render (the main session): CRF=20 bash wrapx.sh w6d.html 34.5 x2p-s1-wrap6-d-draft w6-techno-x 0 .34 -->
+<style id="base"></style>
+<style>
+html,body{background:#0a0908}
+#st{position:absolute;inset:0;overflow:hidden;background:#0a0908}
+#bg{position:absolute;inset:0}
+#bg .dots{position:absolute;inset:-60px;background-image:radial-gradient(rgba(242,237,230,.16) 1.6px,transparent 2.2px);background-size:54px 54px}
+#bg .gl{position:absolute;left:0;top:0;border-radius:50%}
+#bg .scan{position:absolute;left:0;right:0;top:0;height:420px;background:linear-gradient(180deg,transparent,rgba(242,237,230,.06) 35%,rgba(242,237,230,.11) 50%,rgba(242,237,230,.06) 65%,transparent)}
+#cam{position:absolute;inset:0;transform-origin:0 0}
+.sc{position:absolute;inset:0;display:none}
+.kan{font-family:Kanit,sans-serif;font-style:italic;font-weight:900;line-height:1;white-space:nowrap}
+.mo{font-family:'Geist Mono',monospace;font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap}
+.ab{position:absolute;left:0;top:0;white-space:nowrap}
+.g{color:#55d6a2}.r{color:#e8576b}.au{color:#fdbc2a}.mu{color:rgba(242,237,230,.5)}
+.kk::after{content:'K'}
+.pn{position:absolute;background:linear-gradient(180deg,rgba(242,237,230,.06),rgba(242,237,230,.03));border:1.5px solid rgba(242,237,230,.16);border-radius:18px;overflow:hidden}
+/* header, status strip, ticker: the terminal's own chrome */
+#hdr{position:absolute;left:0;right:0;top:0;height:104px;background:#0a0908;border-bottom:1.5px solid rgba(242,237,230,.18);display:flex;align-items:center;padding:0 30px;gap:16px;z-index:30}
+#hdr img{width:64px;height:64px}
+#hdr .nm{font:italic 800 37px/1 Kanit;letter-spacing:.005em}#hdr .nm i{font-style:italic}#hdr .nm .e{color:#03c870}#hdr .nm .z{color:#ff3a31}
+#hdr .tabs{margin-left:auto;display:flex;align-items:center;gap:20px;font:600 27px/1 'Geist Mono';letter-spacing:.08em}
+#hdr .tabs b{font-weight:600;padding:37px 0 33px;border-bottom:5px solid #fdbc2a}
+#hdr .tabs em{font-style:normal;padding:9px 13px;border-radius:8px;background:#fdbc2a;color:#1a1300;font-weight:700}
+#strip{position:absolute;left:0;right:0;top:104px;height:50px;background:#0a0908;border-bottom:1.5px solid rgba(242,237,230,.12);display:flex;align-items:center;justify-content:space-between;padding:0 30px;font:500 24px/1 'Geist Mono';letter-spacing:.05em;color:rgba(242,237,230,.6);z-index:29}
+#strip b{font-weight:600;color:#f2ede6}
+#tick{position:absolute;left:0;right:0;bottom:0;height:66px;background:#0a0908;border-top:1.5px solid rgba(242,237,230,.18);overflow:hidden;z-index:29}
+#tick div{position:absolute;left:0;top:0;height:66px;display:flex;align-items:center;gap:44px;font:600 28px/1 'Geist Mono';white-space:nowrap}
+#tick span i{font-style:normal;margin-left:12px}
+#cur{position:absolute;left:0;top:0;z-index:35;overflow:visible}
+#rip{position:absolute;left:0;top:0;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:5px solid #fdbc2a;z-index:34;opacity:0}
+#fl{position:absolute;inset:0;background:#fff3c8;opacity:0;z-index:36;pointer-events:none}
+/* 1 brand */
+#bT span{display:inline-block}
+#bCur,#wCur{position:absolute;left:0;top:0;background:#fdbc2a}
+/* 2 the premise */
+.km{display:flex;flex-direction:column;align-items:center;gap:16px;font:italic 800 46px/1 Kanit}
+/* order ticket */
+.ob{position:absolute;display:flex;align-items:center;justify-content:center;font:italic 900 124px/1 Kanit}
+/* 3 the chart */
+#cSvg{position:absolute;left:0;top:0;overflow:visible}
+#cSvg text{font:500 25px 'Geist Mono';fill:rgba(242,237,230,.55)}
+.tip{position:absolute;left:0;top:0;display:flex;align-items:center;gap:12px;height:64px;margin-top:-32px;border-radius:32px;font:700 54px/1 'Geist Mono';white-space:nowrap}
+.tip .tv{display:inline-block;overflow:hidden}
+.hc{position:absolute;left:0;top:0;border-radius:14px;background:rgba(242,237,230,.05);border:1.5px solid rgba(242,237,230,.16);overflow:hidden}
+.hc .bar{position:absolute;left:0;right:0;top:0;height:6px}
+#tape{position:absolute;left:0;top:0;overflow:hidden}
+.tr{position:absolute;left:0;top:0;height:60px;width:1080px;font:600 28px/60px 'Geist Mono'}
+.tr .tl{position:absolute;left:24px;top:0;width:220px;padding-left:10px}.tr .tl i{font-style:normal;color:rgba(242,237,230,.45);margin-right:12px}
+.tr .ch{position:absolute;top:8px;width:199px;height:44px;border-radius:8px;text-align:center;line-height:44px;letter-spacing:.06em}
+/* 4 the leaderboard */
+.tab{position:absolute;top:170px;height:78px;padding:0 20px;font:600 46px/74px 'Geist Mono';letter-spacing:.03em;border-radius:12px;display:flex;align-items:center;gap:12px}
+.tab svg{flex:none}
+.lr{position:absolute;left:0;top:0;width:1080px}
+.lr .ln{position:absolute;left:24px;right:24px;top:0;height:1.5px;background:rgba(242,237,230,.16)}
+.lr .hi{position:absolute;left:12px;right:12px;top:6px;bottom:6px;border-radius:20px;border:4px solid #fdbc2a;background:rgba(253,188,42,.1);box-shadow:0 0 60px rgba(253,188,42,.35);opacity:0}
+.vb{position:absolute;right:36px;top:0;overflow:hidden}
+.vb span{position:absolute;right:0;top:0;font:700 100px/1 'Geist Mono'}
+.stp{position:absolute;left:0;top:0;border:3.5px solid #e8576b;color:#e8576b;border-radius:8px;font:700 100px/1 'Geist Mono';letter-spacing:.12em;padding:.22em .4em .2em;transform-origin:0 50%}
+/* 5 the winner */
+#wP{position:absolute;left:0;top:0;border-radius:26px;border:4px solid #fdbc2a;background:linear-gradient(170deg,rgba(253,188,42,.2),rgba(253,188,42,.04) 46%,rgba(253,188,42,.12));box-shadow:0 0 110px rgba(253,188,42,.3),inset 0 0 90px rgba(253,188,42,.08);overflow:hidden}
+#wP .sw{position:absolute;inset:-60%;background:linear-gradient(112deg,transparent 45%,rgba(255,243,200,.2) 49%,rgba(255,243,200,.05) 52%,transparent 56%)}
+.foil{color:transparent!important;background-image:linear-gradient(100deg,#fdbc2a 36%,#fff3c8 50%,#fdbc2a 64%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 18px rgba(253,188,42,.4))}
+.star{position:absolute;left:0;top:0;overflow:visible}
+#grain{z-index:50}#vig{z-index:49;background:radial-gradient(ellipse 80% 70% at 50% 50%,transparent 60%,rgba(0,0,0,.42))}
+</style>
+<div id="st">
+  <div id="bg" data-chrome><div class="dots"></div><div class="gl" id="g1"></div><div class="gl" id="g2"></div><div class="scan"></div></div>
+  <div id="cam"></div>
+  <div id="hdr" data-chrome><img src="ezlogo.svg" alt=""><span class="nm"><i class="e">E</i>ARNINGS <i class="z">Z</i>EASON</span><span class="tabs"><b>SEASON 1</b><em id="hSt">FINAL</em></span></div>
+  <div id="strip" data-chrome></div>
+  <div id="tick" data-chrome><div></div></div>
+  <div id="rip" data-chrome></div>
+  <svg id="cur" data-chrome width="60" height="80" viewBox="0 0 30 40"><path d="M2 2L2 31L9.5 24.5L14.5 36L19.5 33.8L14.6 22.6L24.5 22.6Z" fill="#f2ede6" stroke="#0a0908" stroke-width="2.2" stroke-linejoin="round"/></svg>
+  <div id="fl" data-chrome></div>
+  <div id="vig"></div><canvas id="grain"></canvas>
+</div>
+<script src="lib.js"></script>
+<script>
+const B = 60 / 140, bt = n => +(n * B).toFixed(3), DUR = 34.5;
+// the shots, each on a beat of the bed: brand | 4 AIs and 112 trades | long or short, $100K | chart (split, maximised, the four readouts, split) |
+// drop 1: the finished chart | P&L board (all, top pair, bottom pair, all) | accuracy board (same four) | drop 2: the winner | its P&L | hold | the logo
+const T = { kpi: bt(4), ord: bt(10), ch: bt(14), c2: bt(18), c3: bt(21), c4: bt(24), d1: bt(30), b1: bt(34), b2: bt(37), b3: bt(40), b4: bt(43), a1: bt(46), a2: bt(50), a3: bt(54), a4: bt(58), d2: bt(62), w2: bt(66), w3: bt(70), w4: bt(76) };
+const SHOTS = [0, ...Object.values(T)];
+const Gn = '#55d6a2', Rd = '#e8576b', Au = '#fdbc2a', Cr = '#f2ede6', BG = '#0a0908';
+const COL = { GROK: Au, CLAUDE: Gn, GPT: Cr, KIMI: Rd };           // one colour an AI, on the chart, its readout and its row
+const VT = 160, VB = 1276, VC = (VT + VB) / 2;                      // the panel area between the header and the ticker
+const S = {}, C = []; let t = 0, grain, D, TR, AI, EM = {};
+const add = (h, p) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
+const sp = (x, f = 1.5, d = 9) => x <= 0 ? 0 : 1 - Math.exp(-d * x) * Math.cos(2 * Math.PI * f * x);    // a snap with one small overshoot
+const k3 = (a, u) => u < .5 ? L.lerp(a[0], a[1], u * 2) : L.lerp(a[1], a[2], (u - .5) * 2);
+const kick = () => Math.exp(-7 * (t % B)) * (t >= 24.86 && t < 26.571 ? .4 : 1);   // 1 on every beat, gone before the next; held back in the bed's break
+const Kr = v => (v < 0 ? '−' : '+') + '$' + Math.round(Math.abs(v) / 1000);                              // the K is the .kk class
+const pos = (el, x, y, s) => el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)` + (s == null ? '' : ` scale(${s.toFixed(4)})`);
+const tw = (s, font) => { const c = tw.c || (tw.c = document.createElement('canvas').getContext('2d')); c.font = font; return c.measureText(s).width };
+const mkSize = (el, s) => { el.style.width = el.style.height = s.toFixed(1) + 'px'; el.style.borderRadius = (s * .26).toFixed(1) + 'px' };
+
+function build() {
+  const cam = L.$('#cam'); AI = D.ai; const n = AI.length;
+  const sc = id => add(`<div class="sc" id="${id}"></div>`, cam);
+  EM.mono = tw('0', '600 100px "Geist Mono"') / 100; AI.forEach(a => EM[a.k] = tw(a.name, 'italic 900 100px Kanit') / 100); EM.max = Math.max(...AI.map(a => EM[a.k]));
+  // ---- 1 brand
+  let s = S.brand = sc('sBrand');
+  S.bL = add(`<img class="ab" src="ezlogo.svg" alt="" style="width:520px;height:520px">`, s);
+  S.bT = add(`<div class="ab kan" id="bT" style="font-size:212px;letter-spacing:-.01em">${[...'SEASON 1'].map((c, i) => `<span style="${i > 6 ? `color:${Au};text-shadow:.045em 0 0 #ff3a31` : 'text-shadow:-.045em 0 0 #03c870'}">${c === ' ' ? '&nbsp;' : c}</span>`).join('')}</div>`, s);
+  S.bC = add(`<i id="bCur" style="width:26px;height:170px"></i>`, s);
+  S.bS = add(`<div class="ab mo" style="font:600 50px/1 'Geist Mono';letter-spacing:.3em;color:${Cr}">FINAL</div>`, s);
+  S.bB = add(`<svg class="ab" width="1080" height="60" style="top:1160px"><rect data-chrome x="120" y="8" width="840" height="34" rx="6" fill="rgba(242,237,230,.12)"/><rect id="bFill" x="120" y="8" width="0" height="34" rx="6" fill="${Au}"/></svg>`, s);
+  // ---- 2 what it was: two tiles, then the order ticket
+  s = S.kpi = sc('sKpi');
+  S.kA = add(`<div class="pn" style="left:24px;width:1032px"><div class="ab" id="kL1" style="width:1032px;transform-origin:516px 0;display:flex;justify-content:center;align-items:baseline;gap:34px;height:250px"><span class="mo" style="font:700 250px/1 'Geist Mono';color:${Au}">${n}</span><span class="kan" style="font-size:196px">AIs</span></div><div class="ab" id="kMs" style="width:1032px;transform-origin:516px 0;display:flex;justify-content:center;gap:62px">${AI.map(a => `<div class="km">${L.mark(a.k, 150)}<span>${a.name}</span></div>`).join('')}</div></div>`, s);
+  S.kM = L.$$('.km', S.kA);
+  const cw = (984 - 15 * 10) / 16;
+  S.kB = add(`<div class="pn" style="left:24px;width:1032px;height:544px"><span class="ab mo" id="kN" style="left:36px;top:24px;font:700 236px/1 'Geist Mono';color:${Au}">${D.total}</span><div class="ab kan" style="left:500px;top:40px;font-size:100px;line-height:1.02">EARNINGS<br>TRADES</div><svg class="ab" width="1032" height="290" style="top:262px">${TR.map((x, i) => `<rect x="${(24 + (i % 16) * (cw + 10)).toFixed(1)}" y="${Math.floor(i / 16) * 38}" width="${cw.toFixed(1)}" height="28" rx="5"/>`).join('')}</svg></div>`, s);
+  S.kC = L.$$('rect', S.kB); S.kN = L.$('#kN', S.kB);
+  s = S.ord = sc('sOrd');
+  S.oR = L.$$('rect', add(`<svg class="ab" width="1080" height="1350" style="overflow:visible"><rect x="26" y="170" width="504" height="488" rx="26" stroke-width="4" style="transform-box:fill-box;transform-origin:50% 50%"/><rect x="550" y="170" width="504" height="488" rx="26" stroke-width="4" style="transform-box:fill-box;transform-origin:50% 50%"/></svg>`, s));
+  S.oL = add(`<div class="ob" style="left:24px;top:168px;width:508px;height:492px">LONG</div>`, s); S.oS = add(`<div class="ob" style="left:548px;top:168px;width:508px;height:492px">SHORT</div>`, s);
+  add(`<div class="ab mo" style="z-index:2;left:494px;top:368px;width:92px;height:92px;border-radius:50%;background:${BG};border:2px solid rgba(242,237,230,.3);font:600 34px/88px 'Geist Mono';text-align:center;color:rgba(242,237,230,.8)">OR</div>`, s);
+  S.oK = add(`<div class="ab mo" style="left:0;width:1080px;top:690px;text-align:center;font:700 292px/1 'Geist Mono';color:${Au};letter-spacing:-.02em">$100K</div>`, s);
+  S.oT = add(`<div class="ab kan" style="left:0;width:1080px;top:1098px;text-align:center;font-size:110px">ON EVERY TRADE</div>`, s);
+  // ---- 3 the chart, the readouts and the tape
+  s = S.chart = sc('sChart');
+  S.cT = add(`<div class="ab kan" style="left:30px;top:170px;font-size:62px;font-weight:800">SEASON 1 <span class="au">P&amp;L</span></div>`, s);
+  S.cLv = add(`<div class="ab mo" data-chrome style="left:0;top:178px;font:600 30px/1 'Geist Mono';letter-spacing:.1em;padding:10px 16px;border-radius:10px;border:2px solid ${Gn};color:${Gn}"><i style="display:inline-block;width:16px;height:16px;border-radius:50%;background:${Gn};margin-right:12px"></i><span>REPLAY</span></div>`, s);
+  S.cS = add(`<svg id="cSvg" width="1080" height="1350"><defs><linearGradient id="cAg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${Au}" stop-opacity=".3"/><stop offset="1" stop-color="${Au}" stop-opacity="0"/></linearGradient></defs><g data-chrome id="cGr"></g><path id="cAr" data-chrome fill="url(#cAg)"/><g id="cLn"></g><g data-chrome><line id="cHx" stroke-width="2.5" stroke-dasharray="4 9"/><circle id="cRg" fill="none" stroke-width="4"/></g></svg>`, s);
+  const ORDZ = ['KIMI', 'GPT', 'CLAUDE', 'GROK']; S.cP = {}; ORDZ.forEach(k => { add(`<path data-chrome fill="none" stroke="${COL[k]}" stroke-opacity=".2" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"/>`, L.$('#cLn', s)); S.cP[k] = [L.$('#cLn', s).lastElementChild, add(`<path fill="none" stroke="${COL[k]}" stroke-width="${k === 'GROK' ? 7 : 5}" stroke-linejoin="round" stroke-linecap="round"/>`, L.$('#cLn', s))] });
+  // an svg element made through insertAdjacentHTML on an svg parent keeps the svg namespace
+  S.tip = AI.map(a => add(`<div class="tip">${L.mark(a.k, 52)}<span class="tv" style="color:${COL[a.k]}"><span class="kk">${Kr(a.pnl)}</span></span></div>`, s));
+  S.hL = add(`<div class="hc"><span class="ab mo mu" style="left:16px;top:20px;font:600 28px/1 'Geist Mono';letter-spacing:.1em;color:rgba(242,237,230,.6)">TRADE</span><span class="ab mo" id="cN" style="left:14px;top:58px;font:700 62px/1 'Geist Mono'">000</span><i class="ab" style="left:16px;top:124px;width:188px;height:6px;background:rgba(242,237,230,.14);border-radius:3px"><i id="cPb" style="display:block;height:6px;background:${Au};border-radius:3px;width:0"></i></i></div>`, s);
+  S.hc = AI.map(a => { const el = add(`<div class="hc"><i class="bar" style="background:${COL[a.k]}"></i>${L.mark(a.k, 44)}<span class="ab kan nm" style="font-weight:800">${a.name}</span><span class="ab mo pv" style="font-weight:700">+$0</span></div>`, s); const m = el.querySelector('svg'); m.style.position = 'absolute'; m.style.left = m.style.top = '0'; return { el, m, nm: el.querySelector('.nm'), pv: el.querySelector('.pv') } });
+  S.tape = add(`<div id="tape"></div>`, s);
+  S.tr = Array.from({ length: 9 }, () => { const el = add(`<div class="tr"><svg class="ab" width="1080" height="60">${AI.map((a, j) => `<rect x="${249 + j * 203}" y="9" width="197" height="42" rx="8" stroke-width="2"/>`).join('')}</svg><span class="tl" data-chrome><i></i><b style="font-weight:600"></b></span>${AI.map((a, j) => `<span class="ch" data-chrome style="left:${248 + j * 203}px"></span>`).join('')}</div>`, S.tape); return { el, n: el.querySelector('i'), tk: el.querySelector('b'), ch: L.$$('.ch', el), rc: L.$$('rect', el) } });
+  // running extremes of the four series, for the live scale
+  S.mx = [0]; S.mn = [0]; for (let i = 1; i <= D.rounds; i++) { S.mx[i] = Math.max(S.mx[i - 1], ...AI.map(a => D.s[a.k][i])); S.mn[i] = Math.min(S.mn[i - 1], ...AI.map(a => D.s[a.k][i])) }
+  // ---- 4 the leaderboard
+  s = S.board = sc('sBoard');
+  const arrow = `<svg width="30" height="22" viewBox="0 0 30 22"><path d="M2 3L28 3L15 20Z" fill="${Au}"/></svg>`;
+  S.tP = add(`<div class="tab" style="left:24px">P&amp;L${arrow}</div>`, s); S.tA = add(`<div class="tab" style="left:262px">ACCURACY${arrow}</div>`, s);
+  S.wlH = add(`<div class="ab mo" style="top:190px;font:600 40px/1 'Geist Mono';letter-spacing:.06em;color:rgba(242,237,230,.7)">W-L</div>`, s);
+  S.mid = add(`<div class="ab mo" data-chrome style="left:440px;width:200px;text-align:center;top:264px;font:600 30px/1 'Geist Mono';color:rgba(242,237,230,.55)"></div>`, s);
+  S.bars = add(`<svg class="ab" width="1080" height="1350">${AI.map(() => `<rect data-chrome rx="6" x="36" width="1008" fill="rgba(242,237,230,.07)"/><rect rx="6"/><rect data-chrome x="538.5" width="3" fill="rgba(242,237,230,.75)"/>`).join('')}</svg>`, s);
+  const mxP = Math.max(...AI.map(a => Math.abs(a.pnl)));
+  S.row = AI.map((a, i) => { const acc = Math.round(100 * a.w / (a.w + a.l)), el = add(`<div class="lr"><i class="ln"></i><i class="hi"></i><span class="ab mo rk" style="font-weight:700;color:${i ? 'rgba(242,237,230,.55)' : Au}">${i + 1}</span>${L.mark(a.k, 100)}<span class="ab kan nm">${a.name}</span><span class="ab mo wl" style="font-weight:600;color:rgba(242,237,230,.82)">${a.w}–${a.l}</span><div class="vb"><span class="vp kk" style="color:${i ? (a.pnl < 0 ? Rd : Gn) : Au}">${Kr(a.pnl)}</span><span class="va" style="color:${i ? (acc < 50 ? Rd : Gn) : Au}">${acc}%</span></div>${D.releg.includes(a.k) ? '<span class="stp">RELEGATED</span>' : ''}</div>`, s);
+    const m = el.querySelector('svg'); m.style.position = 'absolute'; m.style.left = m.style.top = '0';
+    return { a, el, m, rk: el.querySelector('.rk'), nm: el.querySelector('.nm'), wl: el.querySelector('.wl'), vb: el.querySelector('.vb'), vp: el.querySelector('.vp'), va: el.querySelector('.va'), st: el.querySelector('.stp'), hi: el.querySelector('.hi'), acc,
+      bt: S.bars.querySelectorAll('rect')[i * 3], bv: S.bars.querySelectorAll('rect')[i * 3 + 1], bm: S.bars.querySelectorAll('rect')[i * 3 + 2], bp: a.pnl / mxP * 470, ba: (a.w / (a.w + a.l) * 100 - 50) / 12 * 470, cp: i ? (a.pnl < 0 ? Rd : Gn) : Au, ca: i ? (acc < 50 ? Rd : Gn) : Au } });
+  // ---- 5 the winner, the close
+  const w = AI[0]; s = S.win = sc('sWin');
+  S.wP = add(`<div id="wP"><i class="sw"></i></div>`, s);
+  const gs = D.s[w.k], gmx = Math.max(...gs), gmn = Math.min(...gs), gp = gs.map((v, i) => `${(i / (gs.length - 1) * 960).toFixed(1)},${(200 - (v - gmn) / (gmx - gmn) * 190).toFixed(1)}`);
+  S.wS = add(`<svg class="ab" width="960" height="210" viewBox="0 0 960 210" style="overflow:visible"><defs><clipPath id="wCl"><rect id="wClr" x="-10" y="-20" width="0" height="250"/></clipPath><linearGradient id="wAg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${Au}" stop-opacity=".34"/><stop offset="1" stop-color="${Au}" stop-opacity="0"/></linearGradient></defs><g clip-path="url(#wCl)"><path data-chrome d="M0,210L${gp.join('L')}L960,210Z" fill="url(#wAg)"/><path d="M${gp.join('L')}" fill="none" stroke="${Au}" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/></g><circle id="wDot" r="11" fill="#fff3c8" data-chrome/></svg>`, s); S.wPts = gp.map(p => p.split(',').map(Number));
+  S.wM = add(`<div class="ab" style="border-radius:26%;box-shadow:0 0 0 7px ${Au},0 0 70px rgba(253,188,42,.55)">${L.mark(w.k, 100, false)}</div>`, s); S.wMs = S.wM.firstElementChild;
+  S.wH1 = add(`<div class="ab kan" style="left:0;width:1080px;text-align:center;text-shadow:-.04em 0 0 #03c870">${w.name.toUpperCase()} WINS</div>`, s);
+  S.wH2 = add(`<div class="ab kan" style="left:0;width:1080px;text-align:center"><span class="foil">SEASON 1</span></div>`, s);
+  S.wL = add(`<div class="ab" style="left:0;width:1080px;text-align:center;top:0"><span class="kan" style="font-weight:800;font-size:92px;margin-right:30px">P&amp;L</span><span class="mo foil" id="wV" style="font:700 128px/1 'Geist Mono'">${L.money(w.pnl)}</span></div>`, s); S.wV = L.$('#wV', s);
+  S.wT = add(`<div class="ab mo" style="left:0;top:1196px;font:600 46px/1 'Geist Mono';letter-spacing:.24em;color:rgba(242,237,230,.86)"></div>`, s); S.wC = add(`<i id="wCur" data-chrome style="width:26px;height:46px"></i>`, s);
+  S.stars = [[120, 1010, 26, 0], [962, 1000, 22, .35], [980, 1170, 28, .7], [96, 1180, 20, 1.05], [540, 1016, 15, .5], [860, 236, 22, .9], [215, 262, 18, .2]].map(([x, y, r, ph]) => ({ x, y, ph, el: add(`<svg class="star" data-chrome><path d="M0 ${-r}C${r * .12} ${-r * .12} ${r * .12} ${-r * .12} ${r} 0C${r * .12} ${r * .12} ${r * .12} ${r * .12} 0 ${r}C${-r * .12} ${r * .12} ${-r * .12} ${r * .12} ${-r} 0C${-r * .12} ${-r * .12} ${-r * .12} ${-r * .12} 0 ${-r}Z" fill="#fff3c8" style="filter:drop-shadow(0 0 8px rgba(253,188,42,.9))"/></svg>`, s) }));
+  s = S.close = sc('sClose');
+  S.xL = add(`<img class="ab" src="ezlogo.svg" alt="" style="left:220px;top:172px;width:640px;height:640px">`, s);
+  S.xN = add(`<div class="ab kan" style="left:0;width:1080px;text-align:center;top:858px;font-size:112px"><span style="color:#03c870">E</span>ARNINGS <span style="color:#ff3a31">Z</span>EASON</div>`, s);
+  S.xS = add(`<div class="ab mo" style="left:0;width:1080px;text-align:center;top:1142px;font:600 56px/1 'Geist Mono';letter-spacing:.24em;color:${Au}">SEASON 2 SOON</div>`, s);
+  // ---- chrome: the status strip and the ticker (every trade's stock and its move after earnings, in order)
+  L.$('#strip').innerHTML = `<span><b>${n}</b> AIs</span><span><b>${D.total}</b> TRADES</span><span><b>LONG</b> OR <b>SHORT</b></span><span><b>$100K</b> ON EVERY TRADE</span>`;
+  S.tk = L.$('#tick div'); S.tk.innerHTML = TR.map(x => `<span>${x.t}<i style="color:${x.m < 0 ? Rd : Gn}">${L.pct(x.m)}</i></span>`).join('');
+  // the pointer: [t, x, y] of its tip; clicks ring on the beat
+  const oc = [[300, 560], [824, 560]];
+  S.curK = [[[T.ord, ...oc[0]], [T.ord + B * .45, ...oc[0]], [T.ord + B, ...oc[1]], [T.ord + B * 1.45, ...oc[1]], [T.ord + 2 * B, ...oc[0]], [T.ord + B * 2.45, ...oc[0]], [T.ord + 3 * B, ...oc[1]], [T.ch, ...oc[1]]],
+    [[T.b4, 930, 1120], [T.a1 - .05, 470, 222], [T.a1 + .5, 470, 222], [T.a2, 1130, 700]], [[T.a4 + .1, 1130, 1000], [T.a4 + .95, 800, 420], [T.d2 + .12, 800, 420]]];
+  S.clk = [T.ord, T.ord + B, T.ord + 2 * B, T.ord + 3 * B, T.a1, T.d2];
+  // sound: sparing, on the bed's grid
+  C.push([.02, 'r11-thump', .16], [.43, 'sfx-type', .1], [T.kpi, 'r11-thump', .12], [bt(6), 'r11-thump', .12], [T.ord, 'sfx-tap', .12], [T.ord + B, 'sfx-tap', .12], [T.ord + 2 * B, 'sfx-tap', .1], [T.ord + 3 * B, 'sfx-tap', .1],
+    [T.ch, 'sfx-whoosh', .08], [T.d1 - 1.45, 'sfx-riser', .1], [T.d1, 'sfx-boom', .18], [T.a1, 'sfx-tap', .14], [T.a1 + .1, 'r11-flap', .08], [bt(55), 'sfx-stamp', .14], [T.d2 - 1.45, 'sfx-riser', .12], [T.d2, 'sfx-boom', .22], [T.w2, 'r11-kaching', .12], [T.w4, 'sfx-chime', .1]);
+}
+
+// ---- the season at trade r (fractional): values, scale, layout
+const rAt = tt => D.rounds * Math.pow(L.n(tt, T.ch + .15, T.d1), 1.06);
+const val = (k, r) => { const s = D.s[k], i = Math.min(D.rounds - 1, Math.floor(r)), f = Math.min(1, r - i); return s[i] + (s[i + 1] - s[i]) * f };
+const spread = (ys, sm, gap, lo, hi) => { const o = ys.map((y, i) => ({ y, i })).sort((a, b) => sm[b.i] - sm[a.i]); for (let it = 0; it < 14; it++) for (let j = 1; j < o.length; j++) { const d = o[j].y - o[j - 1].y; if (d < gap) { o[j - 1].y -= (gap - d) / 2; o[j].y += (gap - d) / 2 } }
+  const top = Math.min(...o.map(x => x.y)), bot = Math.max(...o.map(x => x.y)), sh = top < lo ? lo - top : bot > hi ? hi - bot : 0; const out = []; o.forEach(x => out[x.i] = x.y + sh); return out };
+
+function chart() { const r = rAt(t), ri = Math.floor(r), done = t >= T.d1;
+  const kMax = sp(t - T.c2) - sp(t - T.c3) + sp(t - T.d1), k2 = sp(t - T.c3) - sp(t - T.c4), Hc = 550 + 462 * kMax - 300 * k2, kE = L.eo(L.n(t, T.d1, T.d1 + .2));
+  const px0 = 26, px1 = L.lerp(968, 748, kE), py0 = 268, py1 = 250 + Hc - 40, xm = Math.max(12, r);
+  const hiV = Math.max(30000, S.mx[ri], ...AI.map(a => val(a.k, r))), loV = Math.min(-30000, S.mn[ri], ...AI.map(a => val(a.k, r))), pad = (hiV - loV) * .07, hi = hiV + pad, lo = loV - pad;
+  const X = i => px0 + i / xm * (px1 - px0), Y = v => py1 - (v - lo) / (hi - lo) * (py1 - py0);
+  // grid: the scale every $50K ($100K once it is crowded), the trade count along the foot
+  const step = [10000, 25000, 50000, 100000].find(s => (py1 - py0) / ((hi - lo) / s) >= 62) || 100000; let g = '';
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line x1="${px0}" x2="${px1}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="rgba(242,237,230,${v ? .2 : .55})" stroke-width="${v ? 1.5 : 2.5}" stroke-dasharray="${v ? '2 9' : 'none'}"/><text x="${px0 + 8}" y="${(Y(v) - 9).toFixed(1)}">${v ? Kr(v) + 'K' : '$0'}</text>`;
+  for (let i = 20; i <= r; i += 20) g += `<text x="${X(i).toFixed(1)}" y="${py1 + 32}" text-anchor="middle">${i}</text><line x1="${X(i).toFixed(1)}" x2="${X(i).toFixed(1)}" y1="${py0}" y2="${py1}" stroke="rgba(242,237,230,.1)" stroke-width="1.5"/>`;
+  L.$('#cGr').innerHTML = g;
+  const tipY = {}; let lead = AI[0].k, lv = -1e9;
+  AI.forEach(a => { const s = D.s[a.k]; let d = ''; for (let i = 0; i <= ri; i++) d += (i ? 'L' : 'M') + X(i).toFixed(1) + ',' + Y(s[i]).toFixed(1); const v = val(a.k, r); if (r > ri) d += 'L' + X(r).toFixed(1) + ',' + Y(v).toFixed(1); if (!ri && r <= 0) d = `M${px0},${Y(0)}`;
+    S.cP[a.k].forEach(p => p.setAttribute('d', d)); tipY[a.k] = Y(v); if (v > lv) { lv = v; lead = a.k } });
+  // the leader: its area, a crosshair on its tip
+  const ls = D.s[lead], tx = X(r); let ad = `M${px0},${Y(0).toFixed(1)}`; for (let i = 0; i <= ri; i++) ad += 'L' + X(i).toFixed(1) + ',' + Y(ls[i]).toFixed(1); ad += `L${tx.toFixed(1)},${tipY[lead].toFixed(1)}L${tx.toFixed(1)},${Y(0).toFixed(1)}Z`;
+  const ar = L.$('#cAr'); ar.setAttribute('d', ad); ar.style.opacity = r > .5 ? 1 : 0; L.$('#cAg').querySelectorAll('stop').forEach(s => s.setAttribute('stop-color', COL[lead]));
+  const hx = L.$('#cHx'); hx.setAttribute('x1', px0); hx.setAttribute('x2', px1 + 14); hx.setAttribute('y1', tipY[lead].toFixed(1)); hx.setAttribute('y2', tipY[lead].toFixed(1)); hx.setAttribute('stroke', COL[lead]); hx.style.opacity = r > .5 ? .8 : 0;
+  const rg = L.$('#cRg'), pu = (t % B) / B; rg.setAttribute('cx', tx.toFixed(1)); rg.setAttribute('cy', tipY[lead].toFixed(1)); rg.setAttribute('r', (12 + 34 * pu).toFixed(1)); rg.setAttribute('stroke', COL[lead]); rg.style.opacity = r > .5 ? (1 - pu).toFixed(3) : 0;
+  // each line's end: its AI's mark; at the finish the tag opens on the final P&L. Marks that would sit on each other step apart (averaged over a moment)
+  const gap = L.lerp(Math.min(60, (py1 - py0 - 10) / 3.2), 84, kE), raw = AI.map(a => tipY[a.k]), off = AI.map(() => 0), cr = x => Math.max(0, Math.min(D.rounds, x)), N = 3;
+  for (let j = 0; j < N; j++) { const tj = t + (j - 1) * .05, rr = cr(rAt(tj)), ys = AI.map(a => Y(val(a.k, rr))), sm = AI.map((a, i) => -(ys[i] + Y([-.14, -.07, 0, .07, .14].reduce((q, d) => q + val(a.k, cr(rAt(tj + d))) / 5, 0))) / 2), so = spread(ys, sm, gap, py0 + 14, py1 - 6); so.forEach((y, i) => off[i] += (y - ys[i]) / N) }
+  const tIn = L.n(t, T.ch + .1, T.ch + .3), pop = 1 + .22 * Math.exp(-6 * Math.max(0, t - T.d1)) * (done ? 1 : 0);
+  S.tip.forEach((el, i) => { const k = AI[i].k, tv = el.lastElementChild; pos(el, px1 + 22, raw[i] + off[i], pop); el.style.transformOrigin = '0 50%'; el.style.opacity = tIn; tv.style.display = kE > 0 ? 'inline-block' : 'none'; tv.style.width = (kE * (tv.firstElementChild.offsetWidth + 16)).toFixed(1) + 'px'; el.style.zIndex = k === lead ? 3 : 1;
+    el.firstElementChild.style.boxShadow = `0 0 0 ${k === lead ? 5 : 3}px ${COL[k]}` + (k === lead ? `,0 0 26px ${COL[k]}` : '') });
+  // title, live or final
+  const lv2 = S.cLv, fin = done; lv2.lastElementChild.textContent = fin ? 'FINAL' : 'REPLAY'; lv2.style.borderColor = lv2.style.color = fin ? Au : Gn; lv2.firstElementChild.style.background = fin ? Au : Gn; lv2.firstElementChild.style.opacity = fin ? 1 : (.35 + .65 * kick()).toFixed(2); pos(lv2, 1050 - lv2.offsetWidth, 0);
+  // the readouts: four across under the chart, or four tiles; the tape of every trade under them
+  const top = 250 + Hc + 20, rd = Math.min(D.rounds, Math.max(0, r));
+  pos(S.hL, 24 - 280 * k2, top); S.hL.style.width = '220px'; S.hL.style.height = '138px'; S.hL.style.opacity = 1 - k2; L.$('#cN').textContent = String(Math.min(D.rounds, Math.ceil(rd))).padStart(3, '0'); L.$('#cPb').style.width = (188 * rd / D.rounds).toFixed(1) + 'px';
+  const order = AI.map(a => val(a.k, r)), rk = order.map(v => order.filter(x => x > v).length);
+  S.hc.forEach((o, j) => { const a = AI[j], v = val(a.k, r), x = L.lerp(248 + j * 203, 24 + (j % 2) * 522, k2), y = L.lerp(top, top + Math.floor(j / 2) * 290, k2), w = L.lerp(199, 510, k2), h = L.lerp(138, 280, k2), ms = L.lerp(44, 104, k2), fn = L.lerp(34, 84, k2), fp = Math.min(L.lerp(32, 88, k2), (w - 24) / (9.2 * EM.mono));
+    pos(o.el, x, y); o.el.style.width = w.toFixed(1) + 'px'; o.el.style.height = h.toFixed(1) + 'px'; const ld = a.k === lead && r > .5; o.el.style.borderColor = ld ? COL[a.k] : 'rgba(242,237,230,.16)'; o.el.style.background = ld ? 'rgba(242,237,230,.13)' : 'rgba(242,237,230,.05)';
+    mkSize(o.m, ms); pos(o.m, L.lerp(12, 28, k2), L.lerp(20, 34, k2)); o.nm.style.fontSize = fn.toFixed(1) + 'px'; pos(o.nm, L.lerp(12, 28, k2) + ms + L.lerp(10, 22, k2), L.lerp(20, 34, k2) + (ms - fn) / 2);
+    o.pv.style.fontSize = fp.toFixed(1) + 'px'; o.pv.textContent = L.money(Math.round(v / 10) * 10); o.pv.style.color = v < 0 ? Rd : Gn; pos(o.pv, L.lerp(12, 28, k2), L.lerp(84, 164, k2)) });
+  const RH = 60, tt = top + L.lerp(150, 590, k2), fr = r - Math.floor(r); pos(S.tape, 0, tt); S.tape.style.width = '1080px'; S.tape.style.height = Math.max(0, VB - tt) + 'px';
+  S.tr.forEach((o, i) => { const idx = Math.floor(r) + 1 - i, x = TR[idx - 1]; if (!x || r <= 0 || idx > D.rounds) { o.el.style.display = 'none'; return } o.el.style.display = 'block'; pos(o.el, 0, (i + fr - 1) * RH);
+    if (o.cur !== idx) { o.cur = idx; o.n.textContent = String(x.n).padStart(3, '0'); o.tk.textContent = x.t; AI.forEach((a, j) => { const sd = x.s[a.k], c = o.ch[j], col = sd > 0 ? Gn : Rd, ok = x.p[a.k] > 0; const rc = o.rc[j]; c.textContent = sd ? (sd > 0 ? 'LONG' : 'SHORT') : ''; c.style.color = ok ? '#0a0908' : col; rc.setAttribute('fill', ok ? col : 'none'); rc.setAttribute('stroke', col); rc.style.display = sd ? 'block' : 'none'; rc.style.opacity = c.style.opacity = ok ? 1 : .8 }) }
+    o.el.style.opacity = i === 0 ? fr : 1 });
+}
+
+function board() { const roll = j => L.eio(L.n(t, T.a1 + .04 + j * .07, T.a1 + .34 + j * .07)), acc = t >= T.a1;
+  const m1 = sp(t - T.b2) - sp(t - T.b3) + sp(t - T.a2) - sp(t - T.a3), m2 = sp(t - T.b3) - sp(t - T.b4) + sp(t - T.a3) - sp(t - T.a4);
+  const hl = L.eio(L.n(t, T.a4 + .45, T.a4 + 1.1)), out = L.eo(L.n(t, T.d2, T.d2 + .25));
+  // the two sort tabs: the active one gold with its arrow
+  [[S.tP, !acc], [S.tA, acc]].forEach(([el, on]) => { el.style.color = on ? Au : 'rgba(242,237,230,.6)'; el.style.background = on ? 'rgba(253,188,42,.13)' : 'transparent'; el.style.boxShadow = on ? `inset 0 -5px 0 ${Au}` : 'inset 0 0 0 1.5px rgba(242,237,230,.2)'; el.lastElementChild.style.display = on ? 'block' : 'none' });
+  const pr = Math.exp(-9 * Math.max(0, t - T.a1)) * (acc ? 1 : 0); S.tA.style.transform = `scale(${(1 - .06 * pr).toFixed(4)})`;
+  S.mid.textContent = roll(0) > .5 ? '50%' : '$0'; let y = 264; const r0 = roll(1.5); S.wlH.style.opacity = r0;
+  S.row.forEach((o, i) => { const h = 250 + 125 * (i < 2 ? m1 - m2 : m2 - m1), u = L.cl((h - 125) / 250), a = o.a, rl = roll(i), tin = T.b1 + i * B / 2, kin = L.eo(L.n(t, tin, tin + .2));
+    const cy = k3([54, 90, 124], u), fr = k3([30, 42, 50], u), ms = k3([64, 112, 140], u), mx = k3([82, 90, 94], u), nx = mx + ms + k3([18, 24, 24], u); let fn = k3([52, 86, 100], u), fv = k3([56, 88, 110], u); const fw = k3([32, 44, 56], u), WX = 806;
+    const vW = Math.max((String(o.vp.textContent).length + 1) * (1 - rl), String(o.va.textContent).length * rl) * EM.mono * fv, wW = o.wl.textContent.length * EM.mono * fw, free = Math.min(1044 - vW, rl > .02 ? WX - wW : 1e4) - 26 - nx; fn = Math.min(fn, free / EM.max);
+    pos(o.el, (1 - kin) * 1080, y + out * (i ? 1500 : 0)); o.el.style.height = h.toFixed(1) + 'px'; o.el.style.opacity = (i ? 1 - .55 * hl : 1 - L.n(t, T.d2, T.d2 + .1)).toFixed(3);
+    o.rk.style.fontSize = fr + 'px'; pos(o.rk, 34, cy - fr / 2); mkSize(o.m, ms); pos(o.m, mx, cy - ms / 2); o.nm.style.fontSize = fn.toFixed(1) + 'px'; pos(o.nm, nx, cy - fn / 2);
+    // the figure: P&L counts in, then rolls over to accuracy with its W-L
+    const cu = L.eo(L.n(t, tin + .05, tin + .6)); o.vp.textContent = Kr(a.pnl * cu); o.vb.style.height = (fv * 1.04).toFixed(1) + 'px'; o.vb.style.width = '560px'; pos(o.vb, 0, cy - fv * .52); o.vp.style.fontSize = o.va.style.fontSize = fv.toFixed(1) + 'px';
+    o.vp.style.transform = `translateY(${(-104 * rl).toFixed(1)}%)`; o.va.style.transform = `translateY(${(104 * (1 - rl)).toFixed(1)}%)`; o.vp.style.visibility = rl < 1 ? 'visible' : 'hidden'; o.va.style.visibility = rl > 0 ? 'visible' : 'hidden';
+    o.wl.style.fontSize = fw.toFixed(1) + 'px'; const wx = WX - wW; pos(o.wl, wx + 40 * (1 - rl), cy - fw * .46); o.wl.style.opacity = rl; if (!i) pos(S.wlH, WX - S.wlH.offsetWidth, 0);
+    // the bar: from $0 for P&L, from 50% for accuracy
+    const by = y + k3([106, 186, 274], u), bh = k3([8, 32, 48], u), bw = L.lerp(o.bp * cu, o.ba, rl), ox = (1 - kin) * 1080 + 0, oy = out * (i ? 1500 : 0);
+    o.bt.setAttribute('y', (by + oy).toFixed(1)); o.bt.setAttribute('height', bh.toFixed(1)); o.bt.setAttribute('transform', `translate(${ox.toFixed(1)},0)`); o.bt.style.opacity = i ? 1 - .55 * hl : 1 - out;
+    o.bv.setAttribute('y', (by + oy).toFixed(1)); o.bv.setAttribute('height', bh.toFixed(1)); o.bv.setAttribute('x', (540 + Math.min(0, bw) + ox).toFixed(1)); o.bv.setAttribute('width', Math.max(3, Math.abs(bw)).toFixed(1)); o.bv.setAttribute('fill', rl > .5 ? o.ca : o.cp); o.bv.style.opacity = i ? 1 - .55 * hl : 1 - out; o.bm.setAttribute('y', (by + oy - 7).toFixed(1)); o.bm.setAttribute('height', (bh + 14).toFixed(1)); o.bm.setAttribute('transform', `translate(${ox.toFixed(1)},0)`); o.bm.style.opacity = i ? 1 - .55 * hl : 1 - out;
+    if (o.st) { const ts = bt(55), k = L.n(t, ts, ts + .12), fs = k3([28, 28, 36], u), sx = u < .25 ? nx + EM[a.k] * fn + 26 : nx, sy = u < .25 ? cy : k3([54, 158, 220], u); o.st.style.fontSize = fs + 'px'; o.st.style.opacity = k; o.st.style.transform = `translate(${sx.toFixed(1)}px,${(sy - fs * .8).toFixed(1)}px) rotate(-3deg) scale(${(1 + 1.3 * (1 - L.eo(k)) + .12 * Math.exp(-8 * Math.max(0, t - ts - .12))).toFixed(3)})` }
+    o.hi.style.opacity = i ? 0 : hl * (1 - out); o.hi.style.boxShadow = `0 0 ${(50 + 50 * kick()).toFixed(0)}px rgba(253,188,42,${(.3 + .25 * kick()).toFixed(2)})`;
+    y += h });
+  S.mid.style.opacity = 0;   // each bar's centre tick reads by itself; a label there would sit on the W-L header
+}
+
+function winner() { const u = t - T.d2, kx = L.eo(L.n(u, 0, .3)), k2 = sp(t - T.w2, 1.3, 8), k3w = sp(t - T.w3, 1.3, 8), W = (a, b, c) => L.lerp(L.lerp(a, b, k2), c, k3w);
+  // the row opens to the whole panel area
+  const X0 = L.lerp(12, 24, kx), Y0 = L.lerp(270, VT + 6, kx), W0 = L.lerp(1056, 1032, kx), H0 = L.lerp(238, VB - VT - 12, kx); pos(S.wP, X0, Y0); S.wP.style.width = W0.toFixed(1) + 'px'; S.wP.style.height = H0.toFixed(1) + 'px';
+  S.wP.firstElementChild.style.transform = `translateX(${(-60 + 120 * (((t - T.d2) / 2.6) % 1)).toFixed(2)}%)`;
+  const ms = L.lerp(112, W(372, 240, 200), kx), mx = L.lerp(90, 540 - ms / 2, kx), my = L.lerp(264 + 90 - 56, W(192, 184, 182), kx) - 10 * Math.sin(Math.PI * kx); pos(S.wM, mx, my); mkSize(S.wMs, ms); S.wM.style.borderRadius = (ms * .26).toFixed(1) + 'px';
+  S.wM.style.boxShadow = `0 0 0 ${(4 + 4 * kx).toFixed(1)}px ${Au},0 0 ${(60 + 50 * kick()).toFixed(0)}px rgba(253,188,42,${(.45 + .3 * kick()).toFixed(2)})`;
+  const hs = W(188, 146, 140), h1 = sp(u - .04, 1.4, 8), h2 = sp(u - .04 - B / 2, 1.4, 8);
+  S.wH1.style.fontSize = S.wH2.style.fontSize = hs.toFixed(1) + 'px'; pos(S.wH1, 0, W(604, 436, 394) + 60 * (1 - Math.min(1, h1)), .8 + .2 * h1); S.wH1.style.opacity = L.n(u, .04, .14); pos(S.wH2, 0, W(790, 578, 530) + 60 * (1 - Math.min(1, h2)), .8 + .2 * h2); S.wH2.style.opacity = L.n(u, .04 + B / 2, .14 + B / 2);
+  const gp = (v, per, a, b) => `${(100 - 100 * L.n(((v % per) + per) % per, a, b)).toFixed(1)}% 0`; S.wH2.firstElementChild.style.backgroundPosition = gp(u - .5, 1.714, .1, 1.0); S.wV.style.backgroundPosition = gp(t - T.w2 - .6, 1.714, .1, 1.0);
+  // the season's own line under the name, then under the P&L
+  const sy = W(1016, 752, 696), sh = W(1.16, 1.25, 1.14); S.wS.style.transformOrigin = '0 0'; pos(S.wS, 60, sy, 1); S.wS.style.transform += ` scale(1,${sh.toFixed(3)})`; const dr = L.eo(L.n(u, .1, .85)); L.$('#wClr').setAttribute('width', (dr * 990).toFixed(1));
+  const dp = dr < 1 ? dr : ((t - T.d2 - .85) / 2.571) % 1, di = dp * (S.wPts.length - 1), d0 = S.wPts[Math.floor(di)], d1 = S.wPts[Math.min(S.wPts.length - 1, Math.floor(di) + 1)], df = di - Math.floor(di), dot = L.$('#wDot'); dot.setAttribute('cx', L.lerp(d0[0], d1[0], df).toFixed(1)); dot.setAttribute('cy', L.lerp(d0[1], d1[1], df).toFixed(1)); dot.setAttribute('r', (9 + 5 * kick()).toFixed(1));
+  // P&L: counts to the total and locks
+  const v2 = t - T.w2, cu = L.eo5(L.n(v2, 0, .5)); S.wV.textContent = L.money(Math.round(AI[0].pnl * cu / (cu < 1 ? 10 : 1)) * (cu < 1 ? 10 : 1)); pos(S.wL, 0, L.lerp(1110, 1014, k3w), .7 + .3 * sp(v2, 1.4, 7) + .05 * Math.exp(-6 * Math.max(0, v2 - .5)) * (v2 > .5 ? 1 : 0)); S.wL.style.opacity = L.n(v2, 0, .1);
+  // Season 2 soon, typed at the prompt
+  const v3 = t - T.w3 - .12, txt = 'SEASON 2 SOON', nch = Math.max(0, Math.min(txt.length, Math.floor(v3 / .05))); S.wT.textContent = txt.slice(0, nch); const full = tw(txt, '600 46px "Geist Mono"') + txt.length * 46 * .24, cw2 = nch ? tw(txt.slice(0, nch), '600 46px "Geist Mono"') + nch * 46 * .24 : 0; pos(S.wT, 540 - full / 2, 0);
+  pos(S.wC, 540 - full / 2 + cw2 + 4, 1196); S.wC.style.opacity = t < T.w3 ? 0 : (nch < txt.length || (t % (2 * B)) < B ? 1 : 0);
+  S.stars.forEach(o => { const v = t - T.w2 - .3 - o.ph * .9, k = v < 0 ? 0 : Math.pow(Math.sin(Math.PI * ((v / 1.2857) % 1)), 3); o.el.style.transform = `translate(${o.x}px,${o.y}px) scale(${k.toFixed(3)})`; o.el.style.opacity = k.toFixed(3) });
+}
+
+function R(tt) { t = tt; if (grain) grain(t);
+  let si = 0; while (si < SHOTS.length - 1 && t >= SHOTS[si + 1]) si++; const t0 = SHOTS[si], t1 = SHOTS[si + 1] ?? DUR, k = kick();
+  // ground: the grid drifts, a light kicks on the beat, a scan line runs down
+  L.$('#bg .dots').style.transform = `translate(${(-(t * 14) % 54).toFixed(2)}px,${(-(t * 9) % 54).toFixed(2)}px)`; L.$('#bg .dots').style.opacity = (.55 + .45 * k).toFixed(3);
+  const big = t >= T.d1 && t < 24.7 || t >= T.d2, gl = (el, c, sz, x, y, a) => { el.style.cssText = `width:${sz}px;height:${sz}px;transform:translate(${(x - sz / 2).toFixed(1)}px,${(y - sz / 2).toFixed(1)}px);opacity:${a.toFixed(3)};background:radial-gradient(closest-side,rgba(${c},.5),rgba(${c},.16) 45%,rgba(${c},0) 75%)` };
+  gl(L.$('#g1'), t >= T.d2 ? '253,188,42' : '85,214,162', 1500, 240 + 120 * Math.sin(t * .9), 380 + 90 * Math.cos(t * .7), (big ? .22 : .14) + (big ? .24 : .15) * k); gl(L.$('#g2'), t >= T.d2 ? '253,188,42' : '232,87,107', 1500, 860 + 120 * Math.cos(t * .8), 1040 + 90 * Math.sin(t * .6), (big ? .22 : .14) + (big ? .24 : .15) * k);
+  L.$('#bg .scan').style.transform = `translateY(${(-420 + 1770 * ((t / 1.7143) % 1)).toFixed(1)}px)`;
+  // camera: every shot lands with a push, drifts in, and breathes on the beat
+  const z = 1 + .05 * Math.exp(-9 * (t - t0)) * (si ? 1 : 0) + .014 * L.n(t, t0, t1) + (big ? .011 : .007) * k, cy = 560;   // scaled from high in the panel area, so the head row never slides under the strip
+  L.$('#cam').style.transform = `translate(${(540 - 540 * z).toFixed(2)}px,${(cy - cy * z).toFixed(2)}px) scale(${z.toFixed(5)})`;
+  // scenes: a cut on the beat, or a push
+  const on = (el, a, b) => { const v = t >= a && t < b; el.style.display = v ? 'block' : 'none'; return v }, push = (o, n, at, d = .17) => { const p = L.eo(L.n(t, at, at + d)); if (t >= at - 1e-6 && t < at + d) { o.style.display = 'block'; o.style.transform = `translateX(${(-1080 * p).toFixed(1)}px)`; n.style.transform = `translateX(${(1080 * (1 - p)).toFixed(1)}px)` } else { n.style.transform = 'none'; o.style.transform = 'none' } };
+  const vB = on(S.brand, 0, T.kpi), vK = on(S.kpi, T.kpi, T.ord), vO = on(S.ord, T.ord, T.ch), vC = on(S.chart, T.ch, T.b1), vL = on(S.board, T.b1, T.d2 + .3), vW = on(S.win, T.d2, T.w4), vX = on(S.close, T.w4, DUR + 1);
+  push(S.kpi, S.ord, T.ord); push(S.ord, S.chart, T.ch); push(S.chart, S.board, T.b1, .14);
+  // chrome: header from the first beat, strip and ticker with the terminal's panels
+  const hk = L.eo(L.n(t, .43, .68)); L.$('#hdr').style.transform = `translateY(${(-110 * (1 - hk)).toFixed(1)}px)`; const sk = L.eo(L.n(t, T.kpi, T.kpi + .2)) * (1 - L.n(t, T.w4, T.w4 + .01));
+  L.$('#strip').style.transform = `translateY(${(-60 * (1 - sk)).toFixed(1)}px)`; L.$('#strip').style.opacity = sk; L.$('#tick').style.transform = `translateY(${(70 * (1 - L.eo(L.n(t, T.kpi, T.kpi + .2)))).toFixed(1)}px)`; S.tk.style.transform = `translateX(${(1080 - (t - T.kpi) * 230).toFixed(1)}px)`;
+  L.$('#hSt').style.transform = `scale(${(1 + .08 * k).toFixed(3)})`;
+  if (vB) { const tk = sp(t - .43, 1.3, 8), s0 = .82 + .18 * sp(t + .04, 1.6, 9); pos(S.bL, 280, L.lerp(415, 176, tk), L.lerp(1.5 * s0, 1, tk) * (1 + .02 * k));
+    const sps = S.bT.children, nch = Math.max(0, Math.min(8, Math.floor((t - .46) / .06) + 1)); [...sps].forEach((c, i) => c.style.visibility = i < nch ? 'visible' : 'hidden'); const bw = S.bT.offsetWidth, bx = 540 - bw / 2; pos(S.bT, bx, 742); S.bT.style.opacity = t < .43 ? 0 : 1;
+    const cx = nch ? sps[nch - 1].offsetLeft + sps[nch - 1].offsetWidth : 0; pos(S.bC, bx + cx + 10, 762); S.bC.style.opacity = t < .43 ? 0 : (nch < 8 || (t % B) < B * .55 ? 1 : 0);
+    const s2 = sp(t - .3, 1.4, 8); S.bS.style.opacity = L.n(t, .3, .38); pos(S.bS, 540 - S.bS.offsetWidth / 2 + 7, 1068 + 30 * (1 - Math.min(1, s2))); S.bB.style.opacity = L.n(t, .3, .38); L.$('#bFill').setAttribute('width', (840 * L.eio(L.n(t, .3, T.kpi - .06))).toFixed(1)) }
+  if (vK) { const kb = sp(t - bt(6), 1.4, 8), hA = L.lerp(VB - VT - 8, 544, kb), s1 = L.lerp(1.45, 1, kb), s2 = L.lerp(1.16, 1, kb), gv = L.lerp(96, 40, kb), gh = 250 * s1 + gv + 214 * s2, y1 = (hA - gh) / 2 + 2, tin = sp(t - T.kpi, 1.5, 8); pos(S.kA, 0, VT + 4 + 50 * (1 - Math.min(1, tin))); S.kA.style.height = hA.toFixed(1) + 'px'; S.kA.style.opacity = L.n(t, T.kpi, T.kpi + .06);
+    L.$('#kL1').style.transform = `translate(0px,${y1.toFixed(1)}px) scale(${s1.toFixed(4)})`; L.$('#kMs').style.transform = `translate(0px,${(y1 + 250 * s1 + gv).toFixed(1)}px) scale(${s2.toFixed(4)})`;
+    S.kM.forEach((m, j) => { const a = T.kpi + .1 + j * .1, x = sp(t - a, 1.5, 8); m.style.opacity = L.n(t, a, a + .08); m.style.transform = `translateY(${(26 * (1 - Math.min(1, x))).toFixed(1)}px) scale(${(.7 + .3 * x).toFixed(4)})` });
+    pos(S.kB, 0, VT + 4 + hA + 16 + 620 * (1 - Math.min(1.02, kb)) * (kb < 1 ? 1 : 0) + (kb >= 1 ? 620 * (1 - kb) : 0)); S.kB.style.opacity = t < bt(6) ? 0 : 1;
+    const cn = Math.round(D.total * L.eo(L.n(t, bt(6) + .05, bt(6) + .75))); S.kN.textContent = cn; S.kC.forEach((c, i) => { const lit = i < cn, m = TR[i].m, fl = Math.exp(-8 * Math.max(0, (t - bt(6) - .05) - .7 * Math.pow(i / D.total, 1.4))) ; c.setAttribute('fill', lit ? (m < 0 ? Rd : Gn) : 'rgba(242,237,230,.1)'); c.style.opacity = lit ? (.62 + .38 * Math.max(fl, i % 16 === Math.floor((t - bt(6)) / B * 16) % 16 ? .8 : 0)).toFixed(2) : 1 }) }
+  if (vO) { const j = Math.max(0, Math.floor((t - T.ord + 1e-6) / B)), lit = j % 2, pr = Math.exp(-8 * (t - T.ord - j * B));
+    [[S.oL, Gn, '85,214,162', 0], [S.oS, Rd, '232,87,107', 1]].forEach(([el, c, rgb, me]) => { const o = lit === me, rc = S.oR[me], sc = `scale(${(o ? 1 - .05 * pr : .965).toFixed(4)})`; rc.setAttribute('fill', o ? c : `rgba(${rgb},.1)`); rc.setAttribute('stroke', c); rc.style.filter = o ? `drop-shadow(0 0 ${(18 + 30 * pr).toFixed(0)}px rgba(${rgb},.6))` : 'none'; rc.style.transform = sc; el.style.color = o ? '#0a0908' : c; el.style.transform = sc });
+    const sk2 = sp(t - T.ord - .06, 1.4, 8); S.oK.style.transform = `scale(${(.8 + .2 * sk2 + .025 * k).toFixed(4)})`; S.oT.style.transform = `translateY(${(40 * (1 - Math.min(1, sp(t - T.ord - .12, 1.4, 8)))).toFixed(1)}px)` }
+  if (vC) chart(); if (vL) board(); if (vW) winner();
+  if (vX) { const u = t - T.w4, x = sp(u, 1.3, 8); S.xL.style.transform = `scale(${((1.5 - .5 * x) * (1 + .018 * k)).toFixed(4)}) rotate(${(-8 * (1 - Math.min(1, x))).toFixed(2)}deg)`; S.xL.style.transformOrigin = '50% 50%';
+    const a = sp(u - B / 2, 1.4, 8); S.xN.style.opacity = L.n(u, B / 2, B / 2 + .08); S.xN.style.transform = `translateY(${(50 * (1 - Math.min(1, a))).toFixed(1)}px) scale(${(.85 + .15 * a).toFixed(4)})`; const b = sp(u - B, 1.4, 8); S.xS.style.opacity = L.n(u, B, B + .08); S.xS.style.transform = `translateY(${(30 * (1 - Math.min(1, b))).toFixed(1)}px)`; S.xS.style.letterSpacing = (.24 + .05 * L.n(u, B, DUR - T.w4)).toFixed(4) + 'em' }
+  // the pointer and its clicks
+  const cur = L.$('#cur'), trk = S.curK.find(K => t >= K[0][0] && t < K[K.length - 1][0]); cur.style.display = trk ? 'block' : 'none'; let cxy = null;
+  if (trk) { let i = 0; while (i < trk.length - 2 && t >= trk[i + 1][0]) i++; const a = trk[i], b = trk[i + 1], p = L.eio(L.n(t, a[0], b[0])); cxy = [L.lerp(a[1], b[1], p), L.lerp(a[2], b[2], p)]; const ck = Math.max(...S.clk.map(c => t >= c ? Math.exp(-14 * (t - c)) : 0)); cur.style.transform = `translate(${cxy[0].toFixed(1)}px,${cxy[1].toFixed(1)}px) scale(${(1 - .16 * ck).toFixed(3)})` }
+  const rp = L.$('#rip'), lc = S.clk.filter(c => t >= c && t < c + .32).pop(); if (lc != null && S.curK.some(K => lc >= K[0][0] - .01 && lc <= K[K.length - 1][0])) { const K = S.curK.find(K => lc >= K[0][0] - .01 && lc <= K[K.length - 1][0]); let i = 0; while (i < K.length - 2 && lc >= K[i + 1][0]) i++; const a = K[i], b = K[i + 1], p = L.eio(L.n(lc, a[0], b[0])), q = L.n(t, lc, lc + .32); rp.style.opacity = (1 - q).toFixed(3); rp.style.transform = `translate(${L.lerp(a[1], b[1], p).toFixed(1)}px,${L.lerp(a[2], b[2], p).toFixed(1)}px) scale(${(.3 + 1.1 * L.eo(q)).toFixed(3)})` } else rp.style.opacity = 0;
+  // a flash on the two drops, a blink on every cut
+  const f1 = t >= T.d1 ? Math.exp(-7 * (t - T.d1)) * .5 : 0, f2 = t >= T.d2 ? Math.exp(-6 * (t - T.d2)) * .7 : 0, fc = si ? Math.exp(-22 * (t - t0)) * .1 : 0; L.$('#fl').style.opacity = Math.max(f1, f2, fc).toFixed(3);
+}
+window.R = R;
+(async () => {
+  await Promise.all([(L.css.match(/@import url\('([^']+)'\)/) || [])[1], 'https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&display=swap'].map(href => new Promise(res => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href; l.onload = l.onerror = res; document.head.appendChild(l); setTimeout(res, 20000) })));
+  L.$('#base').textContent = L.css; [L.models, D, TR] = await Promise.all([fetch('models.json').then(r => r.json()), fetch('data/wrap.json').then(r => r.json()), fetch('w6/d/trades.json').then(r => r.json())]);
+  const smp = 'SEASON 1 FINAL RESULTS AIs EARNINGS TRADES LONG OR SHORT ON EVERY TRADE P&L ACCURACY W-L RELEGATED WINS SOON ZEASON LEADERBOARD LIVE GrokClaudeGPTKimi 0123456789+−$%,K-';
+  await Promise.all(['italic 900 100px Kanit', 'italic 800 100px Kanit', '500 30px "Geist Mono"', '600 30px "Geist Mono"', '700 96px "Geist Mono"'].map(f => document.fonts.load(f, smp))); await document.fonts.ready;
+  build(); await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  grain = L.grain(L.$('#grain'), .045); window.CUES = C; window.DUR = DUR; window.MUSIC = { f: 'w6-techno-x', at: 0 };
+  window.SHOTS = SHOTS; window.BEAT = { bpm: 140, at: 0 }; window.DROPS = [T.d1, T.d2]; window.CHART = [[T.ch, T.d2]];
+  R(0); window.READY = 1;
+})();
+</script>
