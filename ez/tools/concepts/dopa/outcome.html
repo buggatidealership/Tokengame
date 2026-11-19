@@ -95,6 +95,28 @@ body.fin #fline{display:block}
 body.gls .row .bg,body.gls .srow .bg{background:linear-gradient(158deg,rgba(242,237,230,.135),rgba(242,237,230,.045) 42%,rgba(242,237,230,.08));-webkit-backdrop-filter:blur(24px) saturate(160%) brightness(1.1);backdrop-filter:blur(24px) saturate(160%) brightness(1.1);
   box-shadow:inset 0 1.5px 0 rgba(255,255,255,.42),inset 1.5px 0 0 rgba(255,255,255,.13),inset 0 -1.5px 0 rgba(0,0,0,.4),inset -1px 0 0 rgba(0,0,0,.16),0 18px 44px rgba(0,0,0,.42)}
 body.gls #made{isolation:isolate}
+/* owner, 2026-11-19: "All four wrong", the stock's move, then the P&L by name; nothing unlabelled; no punctuation on screen */
+#made .mid,#made .lbl{display:none}
+body.gls #made .sub{display:none}
+body.gls #made .mid{display:block;font:800 68px/1 Inter;letter-spacing:-.03em;margin-top:30px;white-space:nowrap;opacity:0}
+body.gls #made .who.long{font-size:78px}
+body.gls #made .mr{display:flex;align-items:baseline;gap:22px;margin-top:44px}
+body.gls #made .lbl{display:block;font:800 76px/1 Inter;letter-spacing:-.03em;color:#f2ede6;opacity:0}
+body.gls #made .amt{margin-top:0;font-size:134px}
+body.gls #made .amt small{font-size:44px}
+/* shine (finale): a rim of gold light that travels round the leader's row and the winner's sheet, a specular pass over each row as it
+   lands, the leader's name and the winner's name in gold foil with a moving glint, small stars round the final P&L */
+.rim{position:absolute;inset:-4px;padding:4px;pointer-events:none;opacity:0;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.srow .rim{border-radius:26px}
+body.gls .srow .bg{background:linear-gradient(158deg,rgba(242,237,230,.19),rgba(242,237,230,.075) 42%,rgba(242,237,230,.115));box-shadow:inset 0 2px 0 rgba(255,255,255,.55),inset 1.5px 0 0 rgba(255,255,255,.16),inset 0 -1.5px 0 rgba(0,0,0,.4),inset -1px 0 0 rgba(0,0,0,.16),0 18px 44px rgba(0,0,0,.42)}
+#fsheet .rim{border-radius:62px}
+.sp{position:absolute;inset:0;border-radius:inherit;mix-blend-mode:screen;opacity:0;pointer-events:none}
+.foil{color:transparent!important;background-image:linear-gradient(100deg,#fdbc2a 38%,#fff3c8 50%,#fdbc2a 62%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 16px rgba(253,188,42,.34))}
+#fsheet .fr{display:flex;align-items:baseline;gap:26px;margin-top:30px}
+#fsheet .fr .fp{font:800 84px/1 Inter;letter-spacing:-.03em;opacity:0}
+#fsheet .fr .fa{margin-top:0;font-size:132px}
+#fsheet .stars{position:absolute;inset:0;pointer-events:none}
+#fsheet .stars svg{position:absolute;left:0;top:0;overflow:visible}
 body.gls #made::before{content:"";position:absolute;left:70px;right:70px;top:-84px;bottom:-70px;border-radius:58px;z-index:-1;
   background:linear-gradient(158deg,rgba(242,237,230,.14),rgba(242,237,230,.05) 42%,rgba(242,237,230,.08));-webkit-backdrop-filter:blur(26px) saturate(160%) brightness(1.1);backdrop-filter:blur(26px) saturate(160%) brightness(1.1);
   box-shadow:inset 0 2px 0 rgba(255,255,255,.5),inset 2px 0 0 rgba(255,255,255,.16),inset 0 -1.5px 0 rgba(0,0,0,.4),0 40px 96px rgba(0,0,0,.55)}
@@ -108,11 +130,11 @@ body.gls #made::before{content:"";position:absolute;left:70px;right:70px;top:-84
   <div id="now"></div>
   <div id="rows"></div>
   <div id="final">FINAL</div>
-  <div id="made"><div class="who" id="mwho"></div><div class="amt" id="mamt"></div><div class="sub"><span id="ms1"></span><br><span id="ms2"></span></div></div>
+  <div id="made"><div class="who" id="mwho"></div><div class="mid" id="mmid"></div><div class="lbl" id="mlbl">P&amp;L</div><div class="amt" id="mamt"></div><div class="sub"><span id="ms1"></span><br><span id="ms2"></span></div></div>
   <div id="ffield"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
   <div id="ssn"><div class="h">Season P&amp;L</div><div class="k" id="ssk"></div></div>
   <div id="srows"></div>
-  <div id="fsheet"><div class="fw" id="fwho"></div><div class="fv" id="fverb"></div><div class="fa" id="famt"></div></div>
+  <div id="fsheet"><div class="rim"></div><div class="sp"></div><div class="stars" id="fstars"></div><div class="fw" id="fwho"></div><div class="fv" id="fverb"></div><div class="fr"><span class="fp" id="fpl">P&amp;L</span><span class="fa" id="famt"></span></div></div>
   <div id="fline"></div>
 </div>
 <div id="vig"></div><canvas id="grain"></canvas>
@@ -125,7 +147,7 @@ const UP = '85,214,162', DN = '232,87,107', AU = '253,188,42';
 const TR = 7.5, BEAT = 60 / 130, B = n => TR + n * BEAT;
 const A0 = 8.45, A1 = B(4), C0 = B(9) - .3, C1 = B(10), S0 = C1, S1 = B(12) + .2, END = 15.5;
 // the finale cut's added beats, on the bed's grid: its last strong hit is B(24), then the outro plays under the hold
-const FQ = new URLSearchParams(location.search).get('finale') === '1', F1 = B(18), F2 = B(19), F3 = B(21), FA = B(23), FL = B(24), ENDF = 20.8; let FIN = false, LEAD = [];
+const FQ = new URLSearchParams(location.search).get('finale') === '1', F1 = B(18), F2 = B(19), F3 = B(21), FA = B(23), FL = B(24), ENDF = 20.8; let FIN = false, LEAD = [], GLS = false, SEP = ' · ';
 const CW = 968, CH = 540;
 let rows, srows, K, mAt, X, Y, y0, y1, grid, PATH, pxAt, barFull, xlabels;
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -189,12 +211,22 @@ const setup = () => {
       bl.forEach((o, j) => { const a = 2 * Math.PI * t / o.per + o.ph; o.el.style.transform = `translate(${(o.p[0] + o.ax * Math.sin(a)).toFixed(1)}px,${(o.p[1] + o.ay * Math.cos(a * .8)).toFixed(1)}px) scale(${(1 + .1 * Math.sin(a * 1.3)).toFixed(3)})`; o.el.style.opacity = st[j].toFixed(3) });
       rg.style.transform = `translate(${(880 - 14 * t).toFixed(1)}px,${(230 + 9 * t).toFixed(1)}px)`; rg.style.opacity = (.35 + .65 * out).toFixed(3);
       bars.forEach(o => { const p = (t / 22 + o.off) % 1; o.el.style.transform = `rotate(-31deg) translateY(${(-1100 + 2200 * p).toFixed(1)}px)` }) };
-    const fn = document.querySelector('.fine'); if (fn) fn.textContent = '$100K on every trade · not advice' }
+    GLS = true; SEP = '\u2003'; const fn = document.querySelector('.fine'); if (fn) fn.textContent = '$100K on every trade\u2003\u2003not advice';
+    // no punctuation on screen: the small separators become a wide space
+    ['#title .sub', '#ssk'].forEach(q => { const e = L.$(q); e.textContent = e.textContent.replaceAll(' · ', '\u2003') }); xlabels.forEach(x => x[1] = x[1].replaceAll(' · ', '\u2003'));
+    const mw = L.$('#mwho').lastElementChild; if (D.kind === 'all-wrong') mw.textContent = mw.textContent.replace(/ lost$/, ' wrong'); L.$('#mwho').classList.toggle('long', mw.textContent.length > 13);
+    L.$('#mwho').firstElementChild.innerHTML = (D.ai.filter(a => a.right).length ? D.ai.filter(a => a.right) : D.ai).map(a => L.mark(a.k, 62)).join('');
+    { const mr = document.createElement('div'); mr.className = 'mr'; L.$('#mamt').before(mr); mr.append(L.$('#mlbl'), L.$('#mamt')) }
+    L.$('#mmid').innerHTML = `${D.co} <span style="color:${D.move >= 0 ? '#55d6a2' : '#e8576b'}">${D.pct}</span>`;
+    srows.forEach(el => el.insertAdjacentHTML('beforeend', '<div class="sp"></div>')) }
   if (FIN) { LEAD = D.order.filter(k => D.season1[k] === D.season1[D.order[0]]); const ln = LEAD.map(k => D.ai.find(a => a.k === k).name);
     L.$('#tfin').style.display = 'block'; document.body.classList.add('fin');
     L.$('#fwho').innerHTML = `<span class="mks">${LEAD.map(k => L.mark(k, LEAD.length > 1 ? 84 : 128)).join('')}</span><span>${ln.length > 1 ? ln.slice(0, -1).join(', ') + ' and ' + ln.at(-1) : ln[0]}</span>`;
     if (LEAD.length > 1) L.$('#fwho').classList.add('two');
-    srows.forEach(el => { if (LEAD.includes(el.dataset.k)) el.insertAdjacentHTML('beforeend', '<div class="sw"></div>') });
+    srows.forEach(el => { if (LEAD.includes(el.dataset.k)) el.insertAdjacentHTML('beforeend', '<div class="sw"></div><div class="rim"></div>') });
+    L.$('#fwho').lastElementChild.classList.add('foil');
+    L.$('#fstars').innerHTML = [[96, 300, 30, 0], [820, 262, 22, .35], [742, 470, 34, .7], [150, 452, 20, 1.05], [468, 250, 16, .5], [856, 392, 18, .9], [56, 380, 16, .2]].map(([x, y, r, ph]) => `<svg data-ph="${ph}" data-x="${x}" data-y="${y}"><path d="M0 ${-r}C${r * .12} ${-r * .12} ${r * .12} ${-r * .12} ${r} 0C${r * .12} ${r * .12} ${r * .12} ${r * .12} 0 ${r}C${-r * .12} ${r * .12} ${-r * .12} ${r * .12} ${-r} 0C${-r * .12} ${-r * .12} ${-r * .12} ${-r * .12} 0 ${-r}Z" fill="#fff3c8" style="filter:drop-shadow(0 0 8px rgba(253,188,42,.9))"/></svg>`).join('');
+    C.forEach(c => { if (c[1] === 'r11-pluck' && Math.abs(c[0] - (A1 + .75)) < .01) c[0] = +(A0 + 2).toFixed(3) }); C.push([S1 + .05, 'r11-sparkle', .1], [FL + .25, 'r11-sparkle', .12]);
     L.$('#fverb').textContent = (LEAD.length > 1 ? 'win' : 'wins') + ' Season 1'; L.$('#fline').textContent = 'Season 1 is over';
     C.push([F1, 'sfx-whoosh', .12], [F2, 'r11-thump', .14], [F3 - .05, 'sfx-whoosh', .14], [F3, 'r11-swell', .12], [FL, 'r11-kaching', .22], [FL + .1, 'sfx-chime', .14]);
     for (let q = 0; q < 5; q++) C.push([+(FA + .04 + q * .08).toFixed(3), 'sfx-tick', .05]) }
@@ -273,18 +305,19 @@ window.R = t => {
   // the live number rides the head (averaged over the last 0.2 s so it never snaps)
   const nw = L.$('#now'); nw.textContent = L.pct(mv); nw.style.opacity = on * (PATH ? 1 : L.n(t, TR, TR + .2)) * (1 - L.eio(L.n(t, TR + .25, TR + .7)));
   let nx = 0, ny = 0; for (let q = 0; q < 8; q++) { const tq = Math.max(0, t - q * .025), mq = mAt(tq), vq = PATH ? pxAt(mq) : mv; nx += Math.min(56 + (PATH ? X(mq) : head[0]) + 24, 1024 - 330); ny += Math.min(Math.max(300, 300 + (PATH ? Y(vq) : head[1]) - 100), 760) } nw.style.left = nx / 8 + 'px'; nw.style.top = ny / 8 + 'px';
-  const c = clock(m); L.$('#cd').textContent = t < 2.3 ? D.tz : c.day + ' · ' + D.tz; L.$('#ct').textContent = t < 2.3 ? '' : (t >= TR ? D.closeLabel : c.t);
+  const c = clock(m); L.$('#cd').textContent = t < 2.3 ? D.tz : c.day + SEP + D.tz; L.$('#ct').textContent = t < 2.3 ? '' : (t >= TR ? D.closeLabel : c.t);
   const left = T - m; L.$('#cc').textContent = m >= T - 60 && t < TR ? 'CLOSE IN ' + Math.floor(left) + ':' + String(Math.floor((left % 1) * 60)).padStart(2, '0') : t >= TR ? 'THE CLOSE' : '';
   L.$('#clock').style.opacity = L.n(t, 2.0, 2.4) * (1 - outC);
   const f = L.n(t, TR + .08, TR + .45), fo = 1 - L.eio(L.n(t, 8.25, 8.8)); const fe = L.$('#final');
   fe.style.opacity = (f > 0 ? 1 : 0) * fo; fe.style.transform = `translate(-50%,-50%) rotate(-8deg) scale(${L.lerp(2.2, 1, L.eo5(f))})`;
   // the winners' screen: the amount counts up from $0 as it opens
   const ma = L.$('#made'), ain2 = L.eio(L.n(t, A0 + .25, A1 + .25)), aout = L.eio(L.n(t, C0, C1));
-  ma.style.opacity = ain2 * (1 - L.eio(L.n(t, C0, C0 + .35))); ma.style.transform = `translateY(${30 * (1 - ain2)}px) scale(${L.lerp(.9, 1, ain2) * (1 + .02 * L.eio(L.n(t, A1, C0 + .3)))})`;
-  const cnt = Math.round(D.amt * L.eo(L.n(t, A0 + .3, A0 + .9)));
+  ma.style.opacity = (GLS ? L.eio(L.n(t, A0 + .2, A0 + .5)) : ain2) * (1 - L.eio(L.n(t, C0, C0 + .35))); ma.style.transform = `translateY(${30 * (1 - ain2)}px) scale(${L.lerp(.9, 1, ain2) * (1 + .02 * L.eio(L.n(t, A1, C0 + .3)))})`;
+  const c0 = GLS ? A0 + 1.45 : A0 + .3, cnt = Math.round(D.amt * L.eo(L.n(t, c0, c0 + .6)));
+  if (GLS) { const md = L.$('#mmid'), m2 = L.eo(L.n(t, A0 + .75, A0 + 1.05)); md.style.opacity = m2; md.style.transform = `translateY(${(14 * (1 - m2)).toFixed(1)}px)`; L.$('#mlbl').style.opacity = L.n(t, A0 + 1.25, A0 + 1.45); L.$('#mamt').style.opacity = L.n(t, c0 - .05, c0 + .1) }
   L.$('#mamt').innerHTML = `${D.kind === 'all-wrong' ? '−' : '+'}$${cnt.toLocaleString('en-US')}${L.$('#mamt').dataset.each ? '<small> EACH</small>' : ''}`;
   L.$('#ms1').style.opacity = L.n(t, A1 + .1, A1 + .4); L.$('#ms2').style.opacity = L.n(t, A1 + .75, A1 + 1.05);
-  L.$('#mamt').style.backgroundPosition = `${L.lerp(100, 0, L.eio(L.n(t, A1 + .3, A1 + 1.5)))}% 0`;
+  const g0 = GLS ? c0 + .6 : A1 + .3; L.$('#mamt').style.backgroundPosition = `${L.lerp(100, 0, L.eio(L.n(t, g0, g0 + (GLS ? .9 : 1.2))))}% 0`;
   const first = D.winners.length ? D.order.indexOf(D.winners[0]) : 1;
   L.$('#mamt').style.transform = aout > 0 ? `translate(${L.lerp(0, 300, aout)}px,${L.lerp(0, (420 + first * 196 + 52) - 650, aout)}px) scale(${L.lerp(1, .3, aout)})` : '';
   // the season: before the round -> after it; a changed rank swaps places while the totals roll
@@ -300,7 +333,7 @@ window.R = t => {
     ve.style.color = Math.abs(v) < 500 ? '#f2ede6' : v >= 0 ? '#55d6a2' : '#e8576b';
     el.querySelector('.ch').style.opacity = L.n(t, S0 + .1 + i * .05, S0 + .4 + i * .05);
     el.querySelector('.gl').style.opacity = win ? L.eo(L.n(t, S1 - .2, S1 + .3)) : 0;
-    el.style.filter = !win ? `brightness(${1 - .25 * L.n(t, S1 - .2, S1 + .3)})` : '';
+    el.style.filter = !win && !FIN ? `brightness(${1 - .25 * L.n(t, S1 - .2, S1 + .3)})` : '';
     const smax = Math.max(...D.order.map(q => Math.max(Math.abs(D.season0[q]), Math.abs(D.season1[q])))) * 1.05;
     const Z = 462, w = v / smax * 440, rgb = Math.abs(v) < 500 ? '242,237,230' : v >= 0 ? UP : DN;
     const x0 = w >= 0 ? Z : Z + w, ww = Math.max(4, Math.abs(w));
@@ -314,6 +347,9 @@ window.R = t => {
     // the finale cut: the whole board leaves in one move, so the last scene can build one thing at a time
     // while the final board is read, one slow light crosses the leader's row (the hold is never frozen)
     if (FIN) { const sw = el.querySelector('.sw'); if (sw) { const q = L.n(t, S1 + .55, F1 - .1), x = L.lerp(-18, 118, L.eio(q)); sw.style.opacity = Math.sin(Math.PI * q); sw.style.background = `linear-gradient(100deg,transparent ${x - 16}%,rgba(255,224,150,.34) ${x}%,transparent ${x + 16}%)` } }
+    if (GLS) { const q = L.n(t, C0 + .4 + i * .08, C0 + 1.05 + i * .08), x = L.lerp(-18, 118, L.eio(q)), sp = el.querySelector('.sp'); sp.style.opacity = Math.sin(Math.PI * q); sp.style.background = `linear-gradient(100deg,transparent ${x - 14}%,rgba(255,255,255,.26) ${x}%,transparent ${x + 14}%)` }
+    if (FIN && LEAD.includes(kk)) { const on = L.eo(L.n(t, S1 - .05, S1 + .35)), rm = el.querySelector('.rim'), a = ((t - S1) * 70 % 360).toFixed(1), nm = el.querySelector('.nm'); rm.style.opacity = on; rm.style.background = `conic-gradient(from ${a}deg,rgba(253,188,42,.9) 0deg,#fff6d6 16deg,rgba(253,188,42,.9) 38deg,rgba(253,188,42,.5) 170deg,#ffedb8 196deg,rgba(253,188,42,.5) 222deg,rgba(253,188,42,.9) 360deg)`;
+      el.querySelector('.gl').style.cssText = `opacity:${on.toFixed(3)};inset:0;border-radius:22px;background:linear-gradient(100deg,rgba(253,188,42,.2),rgba(253,188,42,.05) 55%,rgba(253,188,42,.12));box-shadow:0 0 80px rgba(253,188,42,.4)`; el.querySelector('.rk').style.color = t >= S1 ? '#fdbc2a' : ''; nm.classList.toggle('foil', t >= S1); nm.style.backgroundPosition = `${(100 - 100 * L.n((t - S1) % 1.7, .1, 1.1)).toFixed(1)}% 0` }
     if (FIN && t > F1) { const f0 = L.eio(L.n(t, F1, F1 + .35)); el.style.opacity = 1 - f0; el.style.transform = `translateY(${50 * f0}px)` }
   });
   if (FIN) { // the last scene, built like a sentence (WRAP-BRIEF.md round 4, R1 to R3): the board leaves; a plain line alone; then the
@@ -325,6 +361,12 @@ window.R = t => {
     const a3 = L.eio(L.n(t, F3, F3 + .32)), sp = t > F3 ? L.spring(t - F3, 1.5, 8) : 0, fs = L.$('#fsheet'), tot = D.season1[LEAD[0]], land = t > FL ? Math.exp(-(t - FL) * 7) : 0;
     fs.style.opacity = a3; fs.style.transform = `translateY(${(1 - sp) * 46}px) scale(${(.95 + .05 * sp) * (1 + .03 * L.n(t, F3 + .4, ENDF)) * (1 + .012 * land)})`;
     const cv = Math.round(tot * L.eo(L.n(t, FA, FL))), fa = L.$('#famt'); fa.textContent = cv === 0 ? '$0' : L.money(cv); fa.style.opacity = L.n(t, FA, FA + .1);
+    { const fp = L.$('#fpl'), p1 = L.eo(L.n(t, FA - .42, FA - .17)); fp.style.opacity = p1; fp.style.transform = `translateY(${(12 * (1 - p1)).toFixed(1)}px)`;
+      fa.style.filter = `drop-shadow(0 0 ${(16 + 30 * land).toFixed(1)}px rgba(253,188,42,${(.34 + .4 * land).toFixed(3)}))`;
+      const a = ((t - F3) * 62 % 360).toFixed(1), rm = fs.querySelector('.rim'); rm.style.opacity = L.eo(L.n(t, F3 + .1, F3 + .6)); rm.style.background = `conic-gradient(from ${a}deg,rgba(253,188,42,.9) 0deg,#fff6d6 16deg,rgba(253,188,42,.9) 38deg,rgba(253,188,42,.5) 170deg,#ffedb8 196deg,rgba(253,188,42,.5) 222deg,rgba(253,188,42,.9) 360deg)`;
+      const q1 = L.n(t, F3 + .2, F3 + 1.0), q2 = L.n(t, FL + .1, FL + 1.0), q = q1 < 1 ? q1 : q2, x = L.lerp(-20, 120, L.eio(q)), sp = fs.querySelector('.sp'); sp.style.opacity = .9 * Math.sin(Math.PI * q); sp.style.background = `linear-gradient(104deg,transparent ${x - 13}%,rgba(255,244,214,.3) ${x}%,transparent ${x + 13}%)`;
+      L.$('#fwho').lastElementChild.style.backgroundPosition = `${(100 - 100 * L.n((t - F3) % 2.1, .5, 1.5)).toFixed(1)}% 0`;
+      fs.querySelectorAll('.stars svg').forEach(sv => { const u = t - FL - +sv.dataset.ph * .9, k = u < 0 ? 0 : Math.pow(Math.sin(Math.PI * ((u / 1.25) % 1)), 3); sv.style.transform = `translate(${sv.dataset.x}px,${sv.dataset.y}px) scale(${k.toFixed(3)})`; sv.style.opacity = k.toFixed(3) }) }
     fa.style.backgroundPosition = `${L.lerp(100, 0, L.eio(L.n(t, FL, FL + 1.4)))}% 0`;
     const ff = L.$('#ffield'), u = t - F3; ff.style.opacity = L.eio(L.n(t, F3 - .25, F3 + .5));
     const pos = [[290 + 80 * Math.sin(u * .5 + .4), 500 + 60 * Math.cos(u * .42)], [840 + 70 * Math.cos(u * .46 + 1), 950 + 60 * Math.sin(u * .55)], [170 + 50 * Math.sin(u * .6 + 2), 1080 + 40 * Math.cos(u * .5 + 1)]];

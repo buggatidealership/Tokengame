@@ -12,13 +12,13 @@ const f8=await at(8.2,vis);
 D.ai.forEach((a,i)=>{ok(f8[i].pl===M(a.pnl),`FINAL ${a.name} shows ${f8[i].pl}, data ${M(a.pnl)}`);ok(f8[i].side===a.side,`${a.name} side ${f8[i].side}`);ok(f8[i].win===a.right,`${a.name} WINNER badge ${f8[i].win}`)});
 ok(['GPT','Kimi','Claude','Grok'].join()===D.ai.map(a=>a.name).join(),'card order GPT, Kimi, Claude, Grok');
 const sum=await at(10.6,'[document.querySelector("#mwho").textContent,document.querySelector("#mamt").textContent,document.querySelector("#ms1").textContent,document.querySelector("#ms2").textContent]');
-ok((sum[0]+' '+sum[1].replace(' EACH',' each')).replace(/\s+/g,' ').trim()===D.line1,`summary "${sum[0]} ${sum[1]}" = "${D.line1}"`);
+const L1=FIN?D.line1.replace(' lost ',' wrong '):D.line1;ok((sum[0]+' '+sum[1].replace(' EACH',' each')).replace(/\s+/g,' ').trim()===L1,`summary "${sum[0]} ${sum[1]}" = "${D.line1}"`);
 ok(sum[2]===`THIS ROUND · ${D.co.toUpperCase()} ${D.pct}`&&sum[3]===D.line3,`summary lines "${sum[2]}" / "${sum[3]}"`);
 const sv='Object.fromEntries([...document.querySelectorAll(".srow")].map(r=>[r.dataset.k,r.querySelector(".v").textContent]))';
 const s0=await at(12.1,sv),s1=await at(15.3,sv);
 D.ai.forEach(a=>{ok(s0[a.k]===M(D.season0[a.k]),`season before ${a.name} ${s0[a.k]} = ${M(D.season0[a.k])}`);ok(s1[a.k]===M(D.season1[a.k]),`season after ${a.name} ${s1[a.k]} = ${M(D.season1[a.k])}`);ok(D.season0[a.k]+a.pnl===D.season1[a.k],`${a.name} before + round = after`)});
 const words=[];for(const t of [0,3,8,10.6,15.3])words.push(await at(t,'document.body.innerText'));const txt=words.join(' ');
-ok(!/\b(up|down)\b/i.test(txt),'no "up" or "down" on screen');ok(txt.includes('Simulated $100K per trade · not advice')||txt.includes('$100K on every trade · not advice'),'footer present');ok(!/-\$/.test(txt),'minus sign is U+2212');
+ok(!/\b(up|down)\b/i.test(txt),'no "up" or "down" on screen');ok(txt.includes('Simulated $100K per trade · not advice')||/\$100K on every trade\s+not advice/.test(txt),'footer present');if(FIN){const pm=txt.match(/[.,:;!?·](?!\d)/g);ok(!pm,'finale: no punctuation on screen'+(pm?' (found '+[...new Set(pm)].join(' ')+')':''));ok(/P&L\s*−\$2,890/.test(words[3].replace(/\n/g,' ')),'finale: the round result is labelled P&L')};ok(!/-\$/.test(txt),'minus sign is U+2212');
 // a round the page cannot draw (2026-11-18: R110 had no resolution date, so the clock and chart were NaN while every number above passed)
 for(const tt of [2.6,4,6,8.2,12]){const tx=await p.evaluate(t=>{window.R(t);return document.body.innerText},tt);ok(!/undefined|NaN|Infinity|null/.test(tx),`no undefined/NaN on screen at ${tt} s`)}
 ok(D.total>0&&D.open>0,`the clock has a timeline (${D.total} min, open at ${D.open})`);ok(perr.length===0,`no page errors (${perr.length}${perr.length?': '+perr[0].slice(0,80):''})`);
@@ -27,7 +27,7 @@ const fq='({line:document.querySelector("#fline").textContent,lop:+getComputedSt
 const fin=await at(20.2,fq);
 if(FIN){const top=D.season1[D.order[0]],lead=D.order.filter(k=>D.season1[k]===top).map(k=>D.ai.find(a=>a.k===k).name),nm=lead.length>1?lead.slice(0,-1).join(', ')+' and '+lead.at(-1):lead[0];
   ok(fin.op>.99&&fin.who.trim()===nm,`finale: the sheet names "${fin.who.trim()}", the season leader is "${nm}"`);ok(fin.verb===(lead.length>1?'win':'wins')+' Season 1',`finale: "${fin.verb}"`);
-  ok(fin.aop>.99&&fin.amt===M(top),`finale: final total on screen ${fin.amt} = data ${M(top)}`);ok(fin.tag==='block','finale: SEASON 1 FINALE marker in the title');
+  ok(/P&L\s*\+?[−+]?\$/.test(fin.txt.replace(/\n/g,' ')),'finale: the final total is labelled P&L');ok(fin.aop>.99&&fin.amt===M(top),`finale: final total on screen ${fin.amt} = data ${M(top)}`);ok(fin.tag==='block','finale: SEASON 1 FINALE marker in the title');
   // one thing at a time (WRAP-BRIEF.md round 4): the line alone, then the sheet without its number, then the number; nothing else left on screen
   const a1=await at(16.8,fq),a2=await at(17.95,fq);
   ok(a1.line==='Season 1 is over'&&a1.lop>.99&&a1.op===0&&a1.rows<.01,`finale: "${a1.line}" stands alone at 16.8 s (sheet ${a1.op}, board ${a1.rows.toFixed(2)})`);

@@ -40,12 +40,21 @@
 .sr:not(:last-child)::after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:1.5px;background:rgba(242,237,230,.1)}
 .dots{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:16px}.dots i{width:46px;height:46px;border-radius:50%;background:rgba(242,237,230,.16)}
 .ring{display:inline-block;border-radius:56px;box-shadow:0 0 0 6px #fdbc2a,0 0 44px rgba(253,188,42,.5)}
+/* shine (owner, 2026-11-19: "make it more shiny, like the end leaderboard... who wins season 1"): a rim of gold light travelling round the
+   leader's row and the winner's sheet, gold foil with a moving glint on the leader, small stars round the final P&L */
+.rim{position:absolute;inset:0;padding:4px;border-radius:inherit;pointer-events:none;opacity:0;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.foil{color:transparent!important;background-image:linear-gradient(100deg,#fdbc2a 38%,#fff3c8 50%,#fdbc2a 62%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 16px rgba(253,188,42,.34))}
+.sr .rg{position:absolute;left:-26px;right:-26px;top:-4px;bottom:-4px;border-radius:30px;z-index:-1;opacity:0;background:linear-gradient(100deg,rgba(253,188,42,.2),rgba(253,188,42,.05) 55%,rgba(253,188,42,.13));box-shadow:0 0 70px rgba(253,188,42,.3)}
+.sr .rg .rim{opacity:1}
+.tot .plb{font:800 70px/1 Inter;letter-spacing:-.03em;color:#f2ede6;margin-right:22px}
+.stars{position:absolute;left:0;top:0;pointer-events:none}
+.stars svg{position:absolute;left:0;top:0;overflow:visible}
 .tot{font:700 96px/1 'Geist Mono';letter-spacing:-.02em;color:#fdbc2a;font-variant-numeric:tabular-nums}
 .bug b{color:#fdbc2a}
 </style>
 <div id="st">
   <div id="fld"></div>
-  <div id="cam"><div id="gl"><div class="tp"></div><div class="sp"></div></div><div id="scs"></div></div>
+  <div id="cam"><div id="gl"><div class="tp"></div><div class="sp"></div><i class="rim" id="glrim"></i></div><div id="scs"></div></div>
   <div class="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>SEASON 1</b></div>
   <div class="fine">$100K on every trade</div>
   <div id="vig"></div><canvas id="grain"></canvas>
@@ -91,10 +100,10 @@ function build() {
   it(3, `<div class="c sub" style="top:330px;font-size:82px"><span class="fit">Only ${hero.name} was ${hs ? 'short' : 'long'}</span></div>`, .1);
   S.m3 = marks(3, 476, 136, .9, m => `<span style="color:${x.side[m.k] === 'LONG' ? Gn : Rd}">${x.side[m.k] || ''}</span>`); S.hero = D.ai.indexOf(hero);
   it(3, `<div class="c sub" style="top:748px;font-size:78px;color:${Gn}"><span class="fit">${hero.name} P&amp;L +${amt}</span></div>`, 2.0);
-  it(3, `<div class="c sub" style="top:866px;font-size:58px"><span class="fit">The other ${NUM[oth] || oth} <span class="r">−${amt}</span> each</span></div>`, 3.0);
+  it(3, `<div class="c sub" style="top:866px;font-size:58px"><span class="fit">The other ${NUM[oth] || oth} P&amp;L <span class="r">−${amt}</span> each</span></div>`, 3.0);
   // 5 the standings, 4th to 1st
   it(4, `<div class="c sub" style="top:284px;font-size:80px">P&amp;L after ${D.total} trades</div>`, .1);
-  S.rows = D.ai.map((a, i) => { const at = i ? .9 + (n - 1 - i) * .7 : 3.0; return it(4, `<div class="sr" style="top:${432 + i * 150}px"><span class="rk">${ORD[i]}</span>${L.mark(a.k, 96)}<span class="nm"${i ? '' : ` style="color:${Au}"`}>${a.name}</span><span class="am" style="color:${i ? (a.pnl < 0 ? Rd : Gn) : Au}">${a.pnl < 0 ? '−' : '+'}${Kb(a.pnl)}</span></div>`, at, i ? 'x' : 'w') });
+  S.rows = D.ai.map((a, i) => { const at = i ? .9 + (n - 1 - i) * .7 : 3.0; return it(4, `<div class="sr" style="top:${432 + i * 150}px">${i ? '' : '<i class="rg"><i class="rim"></i></i>'}<span class="rk"${i ? '' : ` style="color:${Au}"`}>${ORD[i]}</span>${L.mark(a.k, 96)}<span class="nm${i ? '' : ' foil'}">${a.name}</span><span class="am${i ? '' : ' foil'}" style="color:${i ? (a.pnl < 0 ? Rd : Gn) : Au}">${a.pnl < 0 ? '−' : '+'}${Kb(a.pnl)}</span></div>`, at, i ? 'x' : 'w') });
   // 6 why
   const bear = win.lean === 'BEAR', n10 = Math.round((bear ? win.shorts : win.longs) / win.calls * 10), cW = bear ? Rd : Gn, M = D.mkt, most = bear ? M.down > M.up : M.up > M.down;
   it(5, `<div class="c sub" style="top:300px;font-size:80px"><span class="fit">Why ${win.name} won</span></div>`, .1);
@@ -106,8 +115,9 @@ function build() {
   if (out) { it(6, `<div class="c sub" style="top:340px;font-size:84px">One AI is out</div>`, .1); it(6, `<div class="c" style="top:474px"><span style="display:inline-block;border-radius:52px;box-shadow:0 0 0 5px ${Rd}">${L.mark(out.k, 190)}</span></div>`, .9, 'p');
     it(6, `<div class="c sub" style="top:736px;font-size:52px"><span class="fit">${out.name} was wrong more often than right</span></div>`, 1.7); it(6, `<div class="c hl" style="top:838px;font-size:130px;color:${Rd}">Relegated</div>`, 2.9, 'p') }
   // 8 the winner
-  it(7, `<div class="c" style="top:300px"><span class="ring">${L.mark(win.k, 210)}</span></div>`, .05, 'p'); it(7, `<div class="c hl" style="top:566px;font-size:132px"><span class="fit">${win.name} wins</span></div>`, .25); it(7, `<div class="c hl" style="top:698px;font-size:132px;color:${Au}">Season 1</div>`, .5);
-  it(7, `<div class="c tot" style="top:868px">${L.money(win.pnl)}</div>`, 1.3, 'p'); it(7, `<div class="c sub" style="top:1010px;font-size:44px;font-weight:700;color:#a39b94">Season 2 soon</div>`, 2.9);
+  it(7, `<div class="c" style="top:300px"><span class="ring">${L.mark(win.k, 210)}</span></div>`, .05, 'p'); it(7, `<div class="c hl" style="top:566px;font-size:132px"><span class="fit">${win.name} wins</span></div>`, .25); it(7, `<div class="c hl" style="top:698px;font-size:132px;"><span class="foil">Season 1</span></div>`, .5);
+  it(7, `<div class="c tot" style="top:868px"><span class="plb">P&amp;L</span><span class="foil">${L.money(win.pnl)}</span></div>`, 1.3, 'p');
+  S.stars = L.$$('svg', add(`<div class="stars">${[[150, 850, 28, 0], [930, 820, 22, .35], [880, 990, 30, .7], [205, 1000, 18, 1.05], [540, 800, 15, .5], [968, 912, 17, .9], [112, 926, 16, .2]].map(([x, y, r, ph]) => `<svg data-ph="${ph}" data-x="${x}" data-y="${y}"><path d="M0 ${-r}C${r * .12} ${-r * .12} ${r * .12} ${-r * .12} ${r} 0C${r * .12} ${r * .12} ${r * .12} ${r * .12} 0 ${r}C${-r * .12} ${r * .12} ${-r * .12} ${r * .12} ${-r} 0C${-r * .12} ${-r * .12} ${-r * .12} ${-r * .12} 0 ${-r}Z" fill="#fff3c8" style="filter:drop-shadow(0 0 8px rgba(253,188,42,.9))"/></svg>`).join('')}</div>`, S.sc[7])); it(7, `<div class="c sub" style="top:1010px;font-size:44px;font-weight:700;color:#a39b94">Season 2 soon</div>`, 2.9);
   // sound: sparing
   C.push([.1, 'r11-swell', .09], [T[1] + .95, 'r11-pluck', .08], [T[1] + 1.6, 'r11-pluck', .08], [T[2] + 2.1, 'r11-thump', .14], [T[3] + 2, 'r11-kaching', .08],
     ...[0, 1, 2].map(j => [T[4] + .9 + j * .7, 'r11-card', .1]), [DROP - 1.4, 'sfx-riser', .1], [DROP, 'sfx-boom', .2], [T[5] + 4.5, 'r11-thump', .12], [T[6] + 2.9, 'r11-thump', .16], [T[7] + .1, 'r11-sparkle', .1], [T[7] + 1.3, 'sfx-chime', .12]);
@@ -135,6 +145,11 @@ function R(tt) { t = tt; if (grain) grain(t);
     else { const k = L.eo(L.n(t, a, a + .45)), w1 = o.kind === 'w'; el.style.opacity = k; el.style.transform = `translateX(${(-30 * (1 - k)).toFixed(1)}px) scale(${w1 ? (1 + .07 * Math.exp(-5 * Math.max(0, t - a))).toFixed(4) : 1})`; el.style.filter = k < 1 ? `blur(${(8 * (1 - k)).toFixed(2)}px)` : 'none' } });
   // the example: the one that was right lights up, the others step back, when the money is named
   if (i === 3) { const k = L.eio(L.n(t, T[3] + 1.9, T[3] + 2.4)); S.m3.forEach((m, j) => { const me = j === S.hero, r = m.querySelector('i'); if (L.n(t, T[3] + .9 + j * .18 + .2, T[3] + .9 + j * .18 + .21) >= 1) m.style.opacity = me ? 1 : (1 - .55 * k).toFixed(3); r.style.opacity = me ? k : 0; r.style.boxShadow = `0 0 0 5px ${Gn},0 0 30px rgba(85,214,162,.45)` }) }
+  // shine: the leader's row from the drop, the winner's sheet in the last scene
+  const RIM = a => `conic-gradient(from ${a.toFixed(1)}deg,rgba(253,188,42,.9) 0deg,#fff6d6 16deg,rgba(253,188,42,.9) 38deg,rgba(253,188,42,.5) 170deg,#ffedb8 196deg,rgba(253,188,42,.5) 222deg,rgba(253,188,42,.9) 360deg)`, gp = (u, per, a, b) => `${(100 - 100 * L.n(((u % per) + per) % per, a, b)).toFixed(1)}% 0`;
+  if (i === 4) { const r = S.rows[0], u = t - DROP, rg = r.querySelector('.rg'); rg.style.opacity = L.eo(L.n(t, DROP + .05, DROP + .45)); rg.firstElementChild.style.background = RIM(((u * 70) % 360 + 360) % 360); r.querySelectorAll('.foil').forEach(e => e.style.backgroundPosition = gp(u - .3, 1.8, .1, 1.1)) }
+  const gr = L.$('#glrim'); gr.style.opacity = i === 7 ? L.eo(L.n(t, T[7] + .35, T[7] + .9)) : 0; if (i === 7) { const u = t - T[7]; gr.style.background = RIM(u * 62 % 360); S.sc[7].querySelectorAll('.foil').forEach((e, j) => e.style.backgroundPosition = gp(u - 1.5 - j * .25, 2.2, .1, 1.1));
+    S.stars.forEach(sv => { const v = t - T[7] - 1.7 - +sv.dataset.ph * .9, k = v < 0 ? 0 : Math.pow(Math.sin(Math.PI * ((v / 1.25) % 1)), 3); sv.style.transform = `translate(${sv.dataset.x}px,${sv.dataset.y}px) scale(${k.toFixed(3)})`; sv.style.opacity = k.toFixed(3) }) }
   if (i === 5) S.dots.forEach((d, j) => { const a = T[5] + 1.9 + j * .11, k = L.eo(L.n(t, a, a + .25)); d.style.opacity = L.n(t, T[5] + 1.8, T[5] + 2); d.style.background = j < S.n10 && k > 0 ? S.cW : 'rgba(242,237,230,.16)'; d.style.transform = `scale(${j < S.n10 ? (.7 + .3 * sp(t - a, 1.3, 8)).toFixed(3) : 1})` });
 }
 window.R = R;
