@@ -40,7 +40,6 @@ html,body{background:#04070e}
 .fine{bottom:40px;font-size:19px;color:#6d665f}
 .tk{position:absolute;left:0;top:0;transform-origin:0 0;font:600 24px/1 'Geist Mono',monospace;color:#8e8680;white-space:nowrap}
 #fl{position:absolute;inset:0;background:#f2ede6;opacity:0;pointer-events:none;z-index:45}
-#zx{position:absolute;left:539px;top:0;width:2px;background:rgba(242,237,230,.38)}
 #end svg{position:absolute;left:0;top:0;overflow:visible}
 </style>
 <div id="st">
@@ -95,7 +94,6 @@ function build() {
   S.call = add(`<div class="ab k" style="font-size:112px"></div>`, ov);
   S.cnt = add(`<div class="ab m" style="left:auto;right:56px;transform-origin:100% 0;font-size:64px;color:${CR}"><span style="font-size:32px;letter-spacing:.16em;color:#a39b94;font-weight:600;margin-right:18px">TRADE</span><b style="font-weight:700"></b></div>`, ov);
   S.pg = add(`<div class="ab" style="width:968px;height:10px;border-radius:5px;background:rgba(242,237,230,.14)"><i style="position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:${CR};box-shadow:0 0 14px rgba(242,237,230,.5)"></i></div>`, ov);
-  S.zx = add(`<div id="zx"></div>`, rows);
   S.tkr = []; for (let r = 0; r <= 110; r += 10) S.tkr.push({ r, el: add(`<div class="tk">${r}</div>`, ax) });
   S.tkv = [200000, 100000, 0, -100000].map(v => ({ v, el: add(`<div class="tk">${v ? (v < 0 ? '−' : '+') + '$' + Math.abs(v) / 1000 + 'K' : '$0'}</div>`, ax) }));
   // the four AIs: a tag at its line's head, which becomes its leaderboard row
@@ -109,7 +107,7 @@ function build() {
     a.wl = add(`<div class="ab m" style="font-size:44px;font-weight:600;color:#b9b1a8">${a.w}–${a.l}</div>`, rows);
     a.rk = add(`<div class="ab m rkb" style="background:${a.col}">${i + 1}</div>`, rows);
   });
-  S.wlh = add(`<div class="ab m" style="font-size:30px;font-weight:600;letter-spacing:.12em;color:#a39b94">W–L</div>`, rows);
+  S.wlh = add(`<div class="ab m" style="font-size:34px;font-weight:700;letter-spacing:.1em;color:#d5cdc3">W–L</div>`, rows);
   S.out = S.ai.find(a => (D.releg || []).includes(a.k));
   S.rel = add(`<div class="ab k rd" style="transform-origin:50% 50%;font-size:58px;padding:0 22px 6px 16px;border:5px solid ${RD};border-radius:14px;background:rgba(4,7,14,.86)">RELEGATED</div>`, rows);
   // the winner
@@ -161,7 +159,7 @@ function flight(t) { t = Math.max(0, t); let i = 0; while (i < 3 && t >= T.g[i +
 function camChart(t) { const f = flight(t), fi = S.FI(t), tw = Math.min(t, T.brd);
   const fl = { psi: 0, zh: f.zh, hx: 540, cy: 675, camR: 56, camV: 0, pv: 470 / 45000, hF: 620 };
   const rc = { psi: 62 + 2.5 * Math.sin((t - T.race) * 2.3), zh: 750, hx: 735, cy: 650, camR: fi, camV: S.CV(fi), pv: S.PV(fi), hF: 260 };
-  const wh = { psi: 3.5 * Math.sin((tw - T.d1) * 1.1), zh: 9600 * (1 - .01 * L.n(tw, T.d1, T.brd)), hx: 410, cy: 730, camR: 56, camV: 27500, pv: .001973, hF: 2460 };
+  const wh = { psi: 3.5 * Math.sin((tw - T.d1) * 1.1), zh: 9600 * (1 - .01 * L.n(tw, T.d1, T.brd)), hx: 410, cy: 740, camR: 56, camV: 27500, pv: .00205, hF: 2460 };
   return mixS(mixS(fl, rc, L.eio(L.n(t, T.race - .3, T.race + .4))), wh, L.eo5(L.n(t, T.d1, T.d1 + .9))) }
 function camGround(t) { const c = camChart(t); if (t <= T.brd) return c; const j = (t - T.brd) * 120, i = Math.min(S.cr.length - 2, Math.floor(j));
   return mixS(c, { psi: -90, zh: 1500, hx: 240, cy: 600, camR: S.cr[i] + (S.cr[i + 1] - S.cr[i]) * (j - i), camV: 27500, pv: .001973, hF: 420 }, L.eio(L.n(t, T.brd, T.brd + 1.1))) }
@@ -215,24 +213,28 @@ function lines(t, c, fi) { const on = t >= T.race, n = on ? Math.min(112, Math.f
     for (let j = 0; j <= n + (fi > n ? 1 : 0); j++) { const r = j <= n ? j : fi, p = chartPt(c, r, j <= n ? a.s[j] : sv(a, fi)); pts.push([p[0], p[1]]); w.push(w0 * L.cl(c.zh / p[2], .14, 1.5)) }
     const head = pts[pts.length - 1].slice();
     if (kb > 0) for (let j = 0; j <= 112; j++) { const u = j / 112, k = L.eio(L.cl(kb * 1.3 - .3 * u)); let X = L.lerp(540 + a.Lp * u, BX0 + a.La * u, ka), Y = yb, W = 26;
-      if (kw > 0) { X = L.lerp(X, 60 + 960 * u, kw); Y = L.lerp(Y, 1030 - (a.s[j] - S.g0) / (S.g1 - S.g0) * 215, kw); W = L.lerp(26, 11, kw) }
+      if (kw > 0) { X = L.lerp(X, 60 + 960 * u, kw); Y = L.lerp(Y, 1030 - (a.s[j] - S.g0) / (S.g1 - S.g0) * 215, kw); W = L.lerp(26, 14, kw) }
       pts[j] = [L.lerp(pts[j][0], X, k), L.lerp(pts[j][1], Y, k)]; w[j] = L.lerp(w[j], W, k) }
     else { let s = 0; while (s < pts.length - 2 && pts[s + 1][0] < -160) s++; if (s) { pts.splice(0, s); w.splice(0, s) } }
     if (kb > 0 && S.ga !== 1) for (let j = 0; j < pts.length; j++) { pts[j] = [540 + (pts[j][0] - 540) * S.ga, S.gy + (pts[j][1] - S.gy) * S.ga]; w[j] *= S.ga }
     return { a, i, pts, w, head, kb, ka, kw, yb } }) }
-function ribbon(x, pts, w, f = 1) { const n = pts.length; if (n < 2) return; const A = [], B = [];
-  for (let i = 0; i < n; i++) { const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)]; let dx = b[0] - a[0], dy = b[1] - a[1]; const l = Math.hypot(dx, dy) || 1, h = w[i] * f / 2; dx /= l; dy /= l; A.push(pts[i][0] - dy * h, pts[i][1] + dx * h); B.push(pts[i][0] + dy * h, pts[i][1] - dx * h) }
-  x.beginPath(); x.moveTo(A[0], A[1]); for (let i = 1; i < n; i++) x.lineTo(A[2 * i], A[2 * i + 1]); for (let i = n - 1; i >= 0; i--) x.lineTo(B[2 * i], B[2 * i + 1]); x.closePath(); x.fill();
-  x.beginPath(); x.arc(pts[0][0], pts[0][1], w[0] * f / 2, 0, 7); x.fill(); x.beginPath(); x.arc(pts[n - 1][0], pts[n - 1][1], w[n - 1] * f / 2, 0, 7); x.fill() }
+function ribbon(x, pts, w, f = 1) { const n = pts.length; if (n < 2) return; const A = [], B = []; let d0, d1;
+  for (let i = 0; i < n; i++) { const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)]; let dx = b[0] - a[0], dy = b[1] - a[1]; const l = Math.hypot(dx, dy) || 1, h = w[i] * f / 2; dx /= l; dy /= l; if (!i) d0 = [dx, dy]; d1 = [dx, dy]; A.push(pts[i][0] - dy * h, pts[i][1] + dx * h); B.push(pts[i][0] + dy * h, pts[i][1] - dx * h) }
+  // one outline: along one side, round the head, back along the other side, round the tail (so a see-through pass never doubles up)
+  x.beginPath(); x.moveTo(A[0], A[1]); for (let i = 1; i < n; i++) x.lineTo(A[2 * i], A[2 * i + 1]); const a1 = Math.atan2(d1[0], -d1[1]); x.arc(pts[n - 1][0], pts[n - 1][1], w[n - 1] * f / 2, a1, a1 - Math.PI, true);
+  for (let i = n - 1; i >= 0; i--) x.lineTo(B[2 * i], B[2 * i + 1]); const a0 = Math.atan2(-d0[0], d0[1]); x.arc(pts[0][0], pts[0][1], w[0] * f / 2, a0, a0 - Math.PI, true); x.closePath(); x.fill() }
 function drawLines(LN, t, fi, pm) { const cv = S.lc; if (t < T.race - .2) { if (cv._d !== 0) { cv.style.display = 'none'; cv._d = 0 } return } if (cv._d !== 1) { cv.style.display = ''; cv._d = 1 }
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; const ext = (x, y, m) => { x0 = Math.min(x0, x - m); y0 = Math.min(y0, y - m); x1 = Math.max(x1, x + m); y1 = Math.max(y1, y + m) };
-  LN.forEach(l => { l.pts.forEach((p, j) => ext(p[0], p[1], l.w[j] * 1.7 + 4)); if (l.ka > 0 && l.kw < 1) { ext(BX0, l.yb, 14); ext(BX1, l.yb, 14) } });
+  LN.forEach(l => { l.pts.forEach((p, j) => ext(p[0], p[1], l.w[j] * 1.7 + 4 + (l.kw > 0 ? 16 : 0))); if (l.ka > 0 && l.kw < 1) { ext(BX0, l.yb, 14); ext(BX1, l.yb, 14) } });
   const rings = S.ev.filter(e => t >= e.t && t < e.t + .45 && t < T.d1), hd = t < T.brd ? 1 : 0; if (hd) LN.forEach(l => ext(l.head[0], l.head[1], 26)); rings.forEach(e => ext(LN[e.i].head[0], LN[e.i].head[1], 150));
   x0 = Math.max(0, Math.floor(x0)); y0 = Math.max(0, Math.floor(y0)); x1 = Math.min(1080, Math.ceil(x1)); y1 = Math.min(1350, Math.ceil(y1)); const W = Math.max(2, x1 - x0), H = Math.max(2, y1 - y0);
   cv.width = W; cv.height = H; cv.style.width = W + 'px'; cv.style.height = H + 'px'; cv.style.transform = `translate(${x0}px,${y0}px)`; const x = S.lx; x.setTransform(1, 0, 0, 1, -x0, -y0);
   LN.forEach(l => { if (l.ka > 0 && l.kw < 1) { x.globalAlpha = .13 * l.ka * (1 - l.kw); x.fillStyle = CR; const y = S.gy + (l.yb - S.gy) * S.ga, sx = v => 540 + (v - 540) * S.ga; ribbon(x, [[sx(BX0), y], [sx(BX1), y]], [26 * S.ga, 26 * S.ga]) } });
+  LN.forEach(l => { const o = L.eio(l.kb) * (1 - l.ka); if (o > 0 && t < T.acc + 2) { x.globalAlpha = .55 * o; x.fillStyle = CR; x.fillRect(539, l.yb - 24, 2.5, 48) } });
   const ord = [...LN].sort((p, r) => (p.i === S.ld) - (r.i === S.ld) || r.i - p.i);
-  ord.forEach(l => { const col = l.a.col; x.fillStyle = col; x.globalCompositeOperation = 'lighter'; x.globalAlpha = .07 + .05 * pm; ribbon(x, l.pts, l.w, 3.4); x.globalAlpha = .16 + .08 * pm; ribbon(x, l.pts, l.w, 1.9);
+  ord.forEach(l => { const col = l.a.col;
+    if (l.kw > 0) { const n = l.pts.length, by = Math.max(...l.pts.map(p => p[1])) + 14 * S.ga, g = x.createLinearGradient(0, by - 240 * S.ga, 0, by); g.addColorStop(0, 'rgba(253,188,42,.34)'); g.addColorStop(1, 'rgba(253,188,42,0)'); x.globalCompositeOperation = 'lighter'; x.globalAlpha = l.kw; x.fillStyle = g;
+      x.beginPath(); x.moveTo(l.pts[0][0], by); l.pts.forEach(p => x.lineTo(p[0], p[1])); x.lineTo(l.pts[n - 1][0], by); x.closePath(); x.fill(); const h = l.pts[n - 1]; x.globalAlpha = l.kw * (.5 + .4 * pm); x.fillStyle = AU; x.beginPath(); x.arc(h[0], h[1], 26 * S.ga, 0, 7); x.fill(); x.globalAlpha = l.kw; x.fillStyle = '#fff'; x.beginPath(); x.arc(h[0], h[1], 9 * S.ga, 0, 7); x.fill() } x.fillStyle = col; x.globalCompositeOperation = 'lighter'; x.globalAlpha = .07 + .05 * pm; ribbon(x, l.pts, l.w, 3.4); x.globalAlpha = .16 + .08 * pm; ribbon(x, l.pts, l.w, 1.9);
     x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; ribbon(x, l.pts, l.w, 1); x.fillStyle = '#fff'; x.globalAlpha = .38; ribbon(x, l.pts, l.w, .3);
     // a pulse of light that runs along the line to its head
     const n = l.pts.length; if (n > 8) { const u = ((t * 1.25 + l.i * .23) % 1), j = Math.floor(u * (n - 5)); x.globalCompositeOperation = 'lighter'; x.globalAlpha = .75; x.fillStyle = '#fff'; ribbon(x, l.pts.slice(j, j + 5), l.w.slice(j, j + 5), .62) }
@@ -299,14 +301,14 @@ function R(tt) { t = tt; if (grain) grain(t); const pm = pump(t), fi = S.FI(t), 
       put(a.vA, BX1 - a.wA + exr, top + 24 + 88 * (1 - ka), 1, ka > 0 && !gone && kw < 1 ? 1 : 0); clip(a.vA, 0, 0, 88 * (1 - ka), 0);
       const kl = L.eo(L.n(t, T.acc + i * BT + .1, T.acc + i * BT + .42)); put(a.wl, 800 - a.wWL + exr, top + 46 + 44 * (1 - kl), 1, kl > 0 && !gone && kw < 1 ? 1 : 0); clip(a.wl, 0, 0, 44 * (1 - kl), 0) }
     if (a === S.out) put(S.rel, 770 - S.wRel / 2, top + BARY - 40, 1 + 1.7 * (1 - L.eo5(relk)), relk > 0 && !gone ? 1 : 0, ' rotate(-4deg)') });
-  { const kb = L.eio(L.n(t, T.brd + .25, T.brd + .7)), ka = L.n(t, T.acc, T.acc + .25), o = kb * (1 - ka); S.zx.style.top = RY0 + 'px'; S.zx.style.height = (3 * RP + RH) * kb + 'px'; S.zx.style.display = o > 0 ? '' : 'none'; S.zx.style.opacity = o;
-    const kh = L.eo(L.n(t, T.acc + .12, T.acc + .45)); put(S.wlh, 800 - S.wWLH, 348 + 30 * (1 - kh) - 460 * L.ei(L.n(t, T.win - .05, T.win + .2)), 1, kh > 0 && t < T.win + .2 ? 1 : 0); clip(S.wlh, 0, 0, 30 * (1 - kh), 0) }
+  {
+    const kh = L.eo(L.n(t, T.acc + .12, T.acc + .45)); put(S.wlh, 800 - S.wWLH, 344 + 34 * (1 - kh) - 460 * L.ei(L.n(t, T.win - .05, T.win + .2)), 1, kh > 0 && t < T.win + .2 ? 1 : 0); clip(S.wlh, 0, 0, 34 * (1 - kh), 0) }
   const gt = `scale(${S.ga.toFixed(4)})`, go = `540px ${S.gy}px`; for (const id of ['#rows', '#win']) { const e = L.$(id); e.style.transformOrigin = go; e.style.transform = gt }
   // the winner: WINS and SEASON 1 slam in on drop 2, the exact P&L counts up and lands five beats later
   { const k1 = L.eo5(L.n(t, T.win, T.win + .26)), k2 = L.eo5(L.n(t, T.win + .09, T.win + .36)), u = t - T.win;
     put(S.wins, S.XW + 1200 * (1 - k1), S.YG, S.SG, t >= T.win ? 1 : 0);
     put(S.s1, 540 - S.wS1 / 2 - 1300 * (1 - k2), 572, 1, t >= T.win + .09 ? 1 : 0); S.s1.style.backgroundPosition = `${(100 - 100 * L.n(((u - .5) % 2.4 + 2.4) % 2.4, .1, 1.1)).toFixed(1)}% 0`;
-    const tp = T.pnl - 1.5 * BT, kp = L.eo5(L.n(t, tp, tp + .28)), nv = Math.round(S.ai[0].pnl * L.eo(L.n(t, tp + .05, T.pnl)) / 10) * 10, ns = S.pl.lastElementChild, tx = L.money(nv); if (ns._t !== tx) { ns.textContent = tx; ns._t = tx }
+    const tp = T.win + BT, kp = L.eo5(L.n(t, tp, tp + .28)), nv = Math.round(S.ai[0].pnl * L.eio(L.n(t, tp + .05, T.pnl)) / 10) * 10, ns = S.pl.lastElementChild, tx = L.money(nv); if (ns._t !== tx) { ns.textContent = tx; ns._t = tx }
     ns.style.backgroundPosition = `${(100 - 100 * L.n(((t - T.pnl - .2) % 2.2 + 2.2) % 2.2, .1, 1.1)).toFixed(1)}% 0`;
     put(S.pl, 540 - S.wPl / 2, 1068 + 340 * (1 - kp), 1 + (t >= T.pnl ? .16 * Math.exp(-(t - T.pnl) / .11) : 0), t >= tp ? 1 : 0);
     S.stars.forEach(o => { const v = t - T.pnl - o.ph * .8, k = v < 0 ? 0 : Math.pow(Math.sin(Math.PI * ((v / 1.1) % 1)), 2); put(o.el, o.x, o.y, .3 + k, k > .02 ? k : 0) }) }
