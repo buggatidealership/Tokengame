@@ -7,6 +7,8 @@
   Shots (beats): 0 logo | 2 golden ticket, Season 1 | 6 4 AIs | 10 112 earnings trades | 12 long or short | 16, 20, 24 the P&L chart
   (wide, the last 22 rounds, wide again) | 30 the chart's end on drop 1 | 34, 37, 41 P&L board | 47, 50, 54 accuracy board | 58 Grok's row and
   the trophy in the dark | 61 the winner on drop 2 | 65 Grok wins Season 1 | 69 P&L +$169,450 | 74 logo close, Season 2 soon.
+  Glass: no backdrop-filter (under 3D transforms the renderer left stale tiles of earlier frames in the sheet); each sheet has its own frost,
+  a small canvas that paints the ground behind it, blurred, every frame (fr()). The ground, its level, the beat and the rim lights are one canvas.
   Render: CRF=20 bash wrapx.sh w6e.html 34.29 x2p-s1-wrap6-e-draft w6-trailer-x 0 .34 -->
 <style id="base"></style>
 <style>
@@ -25,11 +27,11 @@ html,body{background:#04070e}
 .cr{color:#f2ede6}.dm{color:#a39b94}.gn{color:#55d6a2}.rd{color:#e8576b}.au{color:#fdbc2a}
 .foil{color:transparent!important;background-image:linear-gradient(100deg,#fdbc2a 34%,#fff3c8 50%,#fdbc2a 66%);background-size:300% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 4px 0 rgba(120,70,0,.9)) drop-shadow(0 0 26px rgba(253,188,42,.4))}
 .ink{color:#17110a;text-shadow:0 2px 0 rgba(255,236,170,.6),0 -1px 0 rgba(90,50,0,.35)}
-.gl{position:absolute;left:0;top:0;overflow:hidden;border-radius:44px;
-  background:linear-gradient(158deg,rgba(242,237,230,.15),rgba(242,237,230,.05) 42%,rgba(242,237,230,.085));
-  -webkit-backdrop-filter:blur(26px) saturate(160%) brightness(1.1);backdrop-filter:blur(26px) saturate(160%) brightness(1.1);
-  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5),inset 1.5px 0 0 rgba(255,255,255,.16),inset 0 -1.5px 0 rgba(0,0,0,.4),inset -1px 0 0 rgba(0,0,0,.18),0 34px 90px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.35)}
-.gl.gd{background:linear-gradient(158deg,rgba(242,237,230,.13),rgba(242,237,230,.04) 42%,rgba(242,237,230,.075)),rgba(4,7,14,.5)}
+.gl{position:absolute;left:0;top:0;overflow:hidden;border-radius:44px;box-shadow:0 34px 90px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.35)}
+.gl>.fr{position:absolute;left:0;top:0;width:100%;height:100%}
+.gl>.gt{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(158deg,rgba(242,237,230,.15),rgba(242,237,230,.05) 42%,rgba(242,237,230,.085));
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5),inset 1.5px 0 0 rgba(255,255,255,.16),inset 0 -1.5px 0 rgba(0,0,0,.4),inset -1px 0 0 rgba(0,0,0,.18)}
+.gl.gd>.gt{background:linear-gradient(158deg,rgba(242,237,230,.13),rgba(242,237,230,.04) 42%,rgba(242,237,230,.075)),rgba(4,7,14,.5)}
 .gl .sp{position:absolute;inset:-60%;background:linear-gradient(118deg,transparent 44%,rgba(255,255,255,.2) 48.5%,rgba(255,255,255,.05) 51.5%,transparent 56%);pointer-events:none}
 .gl .tp{position:absolute;left:0;right:0;top:0;height:40%;background:linear-gradient(180deg,rgba(255,255,255,.07),transparent);pointer-events:none}
 .rim{position:absolute;inset:0;padding:4px;border-radius:inherit;pointer-events:none;opacity:0;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
@@ -142,12 +144,12 @@ function build() {
   E.cells = L.$$('rect', add(`<svg class="abs" style="left:69px;top:676px;overflow:visible" width="942" height="534">${Array.from({ length: D.total }, (_, i) => `<rect x="${(i % 14) * 68}" y="${Math.floor(i / 14) * 68}" width="58" height="58" rx="9"/>`).join('')}</svg>`, E.wA));
   E.wB = add('<div class="abs" style="width:1080px;height:1350px"></div>', g);
   E.wh = add(`<div class="c bb cr" style="top:138px;font-size:110px;letter-spacing:.1em"><span class="fit" data-w="930">${D.total} earnings trades</span></div>`, E.wB);
-  E.wL = add(`<div class="gl slab" style="left:50px;top:282px;width:980px;height:420px;background:linear-gradient(158deg,rgba(85,214,162,.3),rgba(85,214,162,.1) 50%,rgba(85,214,162,.2))"><div class="tp"></div><div class="sp"></div><div class="c bb" style="top:14px;font-size:440px;color:#55d6a2;text-shadow:0 0 60px rgba(3,200,112,.6)"><span class="fit" data-w="800">Long</span></div></div>`, E.wB);
+  E.wL = add(`<div class="gl slab" style="left:50px;top:282px;width:980px;height:420px"><canvas class="fr" data-chrome></canvas><div class="gt" style="background:linear-gradient(158deg,rgba(85,214,162,.34),rgba(85,214,162,.12) 50%,rgba(85,214,162,.22))"></div><div class="tp"></div><div class="sp"></div><div class="c bb" style="top:14px;font-size:440px;color:#55d6a2;text-shadow:0 0 60px rgba(3,200,112,.6)"><span class="fit" data-w="800">Long</span></div></div>`, E.wB);
   E.wor = add(`<div class="c bb dm" style="top:712px;font-size:62px;letter-spacing:.4em;text-indent:.4em">or</div>`, E.wB);
-  E.wS = add(`<div class="gl slab" style="left:50px;top:786px;width:980px;height:420px;background:linear-gradient(158deg,rgba(232,87,107,.3),rgba(232,87,107,.1) 50%,rgba(232,87,107,.2))"><div class="tp"></div><div class="sp"></div><div class="c bb" style="top:14px;font-size:440px;color:#e8576b;text-shadow:0 0 60px rgba(255,58,49,.6)"><span class="fit" data-w="860">Short</span></div></div>`, E.wB);
+  E.wS = add(`<div class="gl slab" style="left:50px;top:786px;width:980px;height:420px"><canvas class="fr" data-chrome></canvas><div class="gt" style="background:linear-gradient(158deg,rgba(232,87,107,.34),rgba(232,87,107,.12) 50%,rgba(232,87,107,.22))"></div><div class="tp"></div><div class="sp"></div><div class="c bb" style="top:14px;font-size:440px;color:#e8576b;text-shadow:0 0 60px rgba(255,58,49,.6)"><span class="fit" data-w="860">Short</span></div></div>`, E.wB);
   // 3 the season as one live P&L chart
   g = G(3);
-  E.cg = add(`<div class="gl gd" style="left:40px;top:132px;width:1000px;height:1128px"><div class="tp"></div><div class="sp"></div><i class="rim"></i></div>`, g);
+  E.cg = add(`<div class="gl gd" style="left:40px;top:132px;width:1000px;height:1128px"><canvas class="fr" data-chrome></canvas><div class="gt"></div><div class="tp"></div><div class="sp"></div><i class="rim"></i></div>`, g);
   add(`<div class="abs kn foil" style="left:40px;top:22px;font-size:118px">P&amp;L</div>`, E.cg);
   add(`<div class="abs bb dm" style="left:600px;top:66px;font-size:46px;width:140px;text-align:right">Round</div>`, E.cg);
   E.crn = add(`<div class="abs mo cr" style="left:752px;top:30px;width:208px;text-align:right;font-weight:700;font-size:104px;letter-spacing:-.04em">0</div>`, E.cg);
@@ -163,7 +165,7 @@ function build() {
   E.lead = D.lead.map(l => ({ r: l.i, k: l.k, t: tOf(l.i) }));
   // 4 the P&L board
   g = G(4); const mxp = Math.max(...D.ai.map(a => a.pnl)), mnp = Math.min(...D.ai.map(a => a.pnl)), Z = -mnp / (mxp - mnp) * 684; E.Z = Z; E.SC = 684 / (mxp - mnp);
-  E.pg = add(`<div class="gl gd" style="left:50px;top:124px;width:980px;height:1140px"><div class="tp"></div><div class="sp"></div></div>`, g);
+  E.pg = add(`<div class="gl gd" style="left:50px;top:124px;width:980px;height:1140px"><canvas class="fr" data-chrome></canvas><div class="gt"></div><div class="tp"></div><div class="sp"></div></div>`, g);
   E.pin = add('<div class="abs" style="width:980px;height:1150px"></div>', E.pg);
   add(`<div class="abs kn foil" style="left:40px;top:26px;font-size:150px">P&amp;L</div>`, E.pin);
   add(`<div class="abs bb cr" style="left:auto;right:44px;top:92px;font-size:66px;letter-spacing:.12em">${D.total} trades</div>`, E.pin);
@@ -172,7 +174,7 @@ function build() {
   // 5 the accuracy board
   g = G(5); const pc = a => Math.round(100 * a.w / (a.w + a.l)), acc = D.ai.slice().sort((x, y) => pc(y) - pc(x) || y.w - x.w);
   E.sil = add(obj('tr', 'sil', 'w6/e/trophy.webp', 950 / TRR, 950), g);
-  E.ag = add(`<div class="gl gd" style="left:50px;top:124px;width:980px;height:1140px"><div class="tp"></div><div class="sp"></div><i class="rim"></i></div>`, g);
+  E.ag = add(`<div class="gl gd" style="left:50px;top:124px;width:980px;height:1140px"><canvas class="fr" data-chrome></canvas><div class="gt"></div><div class="tp"></div><div class="sp"></div><i class="rim"></i></div>`, g);
   E.ain = add('<div class="abs" style="width:980px;height:1150px"></div>', E.ag);
   E.ahd = add(`<div class="abs" style="width:980px;height:220px"><div class="abs kn foil" style="left:40px;top:34px;font-size:132px"><span class="fit" data-w="640">Accuracy</span></div><div class="abs bb dm" style="left:550px;top:172px;width:150px;text-align:center;font-size:44px;letter-spacing:.1em">W–L</div></div>`, E.ain);
   E.ar = acc.map((a, i) => { const el = add(`<div class="br${i === 3 ? ' last' : ''}" style="top:${222 + i * 228}px">${i ? '' : '<i class="rg"><i class="rim"></i></i>'}<span class="rk bb"${i ? '' : ` style="color:${Au}"`}>${i + 1}</span><span class="mw">${L.mark(a.k, 112)}</span><span class="nm bb">${a.name}</span><span class="wl mo" style="width:150px;text-align:center">${a.w}–${a.l}</span><span class="pc mo" style="color:${i ? Cr : Au}">${pc(a)}%</span>
@@ -184,7 +186,7 @@ function build() {
   E.wn = add(`<div class="c kn" style="top:92px;font-size:330px"><span class="fit foil" data-w="900" style="padding:0 .06em">${win.name}</span></div>`, g);
   E.ww = add(`<div class="c kn cr" style="top:424px;font-size:300px;text-shadow:0 6px 0 rgba(0,0,0,.6),0 0 50px rgba(4,7,14,.9)"><span class="fit" data-w="900" style="padding:0 .06em">wins</span></div>`, g);
   E.ws = add(`<div class="c kn cr" style="top:724px;font-size:200px;text-shadow:0 6px 0 rgba(0,0,0,.6),0 0 50px rgba(4,7,14,.9)"><span class="fit" data-w="900" style="padding:0 .06em">Season 1</span></div>`, g);
-  E.wp = add(`<div class="gl" style="left:50px;top:986px;width:980px;height:232px;border-radius:40px"><div class="tp"></div><div class="sp"></div><i class="rim"></i><div class="abs bb cr" style="left:52px;top:62px;font-size:124px;letter-spacing:.06em">P&amp;L</div><div class="abs mo foil" id="wpn" style="left:auto;right:46px;top:54px;font-weight:700;font-size:128px;letter-spacing:-.05em">${L.money(win.pnl)}</div></div>`, g);
+  E.wp = add(`<div class="gl" style="left:50px;top:986px;width:980px;height:232px;border-radius:40px"><canvas class="fr" data-chrome></canvas><div class="gt" style="background:linear-gradient(158deg,rgba(242,237,230,.15),rgba(242,237,230,.05) 42%,rgba(242,237,230,.085)),rgba(4,7,14,.64)"></div><div class="tp"></div><div class="sp"></div><i class="rim"></i><div class="abs bb cr" style="left:52px;top:62px;font-size:124px;letter-spacing:.06em">P&amp;L</div><div class="abs mo foil" id="wpn" style="left:auto;right:46px;top:54px;font-weight:700;font-size:128px;letter-spacing:-.05em">${L.money(win.pnl)}</div></div>`, g);
   E.wpn = L.$('#wpn', g);
   E.stars = L.$$('svg', add(`<div class="stars">${[[96, 960, 30, 0], [990, 968, 24, .35], [930, 1240, 28, .7], [150, 1236, 20, 1.05], [540, 962, 16, .5], [1010, 1110, 18, .9], [70, 1100, 17, .2]].map(([x, y, r, ph]) => `<svg data-ph="${ph}" data-x="${x}" data-y="${y}"><path d="M0 ${-r}C${r * .12} ${-r * .12} ${r * .12} ${-r * .12} ${r} 0C${r * .12} ${r * .12} ${r * .12} ${r * .12} 0 ${r}C${-r * .12} ${r * .12} ${-r * .12} ${r * .12} ${-r} 0C${-r * .12} ${-r * .12} ${-r * .12} ${-r * .12} 0 ${-r}Z" fill="#fff3c8" style="filter:drop-shadow(0 0 8px rgba(253,188,42,.9))"/></svg>`).join('')}</div>`, g));
   // 7 the close: the logo, and Season 2 on a golden ticket
@@ -192,11 +194,18 @@ function build() {
   E.xhalo = add('<div class="halo" style="width:1300px;height:1300px;left:-110px;top:-220px"></div>', g);
   E.xlogo = add('<img class="abs" src="ezlogo.svg" style="width:640px;height:640px" alt="">', g);
   E.xtk = add(obj('tk', 'xtk', 'w6/e/ticket.webp', 850, 850 * TKR, `<div class="tin"><div class="kn ink" style="font-size:96px"><span class="fit" data-w="620">Season 2 soon</span></div></div>`), g);
+  frost('wL', 50, 282, 980, 420); frost('wS', 50, 786, 980, 420); frost('cg', 40, 132, 1000, 1128); frost('pg', 50, 124, 980, 1140); frost('ag', 50, 124, 980, 1140); frost('wp', 50, 986, 980, 232);
   // sound: the bed carries it; hits on the drops, air on the whips
   C.push([0, 'sfx-boom', .14], [B(2), 'sfx-whoosh', .08], [B(6), 'sfx-whoosh', .08], [B(10), 'r11-thump', .12], [B(12), 'sfx-whoosh', .07], [B(12.5), 'sfx-whoosh', .07], [B(16), 'sfx-whoosh', .08],
     [D1 - 1.5, 'sfx-riser', .13], [D1, 'sfx-boom', .22], [B(34), 'sfx-flip', .1], [B(42), 'sfx-stamp', .16], [B(47), 'sfx-flip', .1], [B(58), 'r11-swell', .1], [D2 - 1.5, 'sfx-riser', .13], [D2, 'sfx-boom', .24], [D2 + .12, 'r11-sparkle', .1],
     [B(65), 'r11-thump', .12], [B(66), 'r11-thump', .12], [B(69), 'sfx-chime', .13], [B(74), 'sfx-whoosh', .08], [B(74) + .12, 'r11-thump', .12]);
 }
+
+// frost: the piece of the ground behind a sheet (its home place moved by dx, dy; h its height now), blurred into the sheet's own canvas
+const FR = {}, frost = (k, x0, y0, w, h) => { const c = L.$('.fr', E[k]); c.width = Math.round(w / 4); c.height = Math.round(h / 4); FR[k] = { x0, y0, w, h, c, x: c.getContext('2d') } };
+function fr(k, dx = 0, dy = 0, h) { const o = FR[k], s = E.gs, P = 44, q = 1 / (2.2 * s), X = v => ((v - 540) / s + 540 - E.gtx + 54) / 2.2, Y = v => ((v - 1099.84) / s + 1099.84 + 104) / 2.2, x = o.x; h = h || o.h;
+  const kx = o.c.width / o.w, ky = o.c.height / h; x.filter = 'blur(6px) saturate(160%) brightness(1.1)';
+  x.drawImage(E.gv, X(o.x0 + dx - P), Y(o.y0 + dy - P), (o.w + 2 * P) * q, (h + 2 * P) * q, -P * kx, -P * ky, (o.w + 2 * P) * kx, (h + 2 * P) * ky) }
 
 // the ground: the living painted light (a seamless loop of the clip), rays turning, rim lights
 const LV = [[0, 1.05], [B(2), .95], [B(6), .9], [B(10), .62], [B(16), .46], [D1, .52], [B(34), .46], [B(47), .5], [B(54), .4], [B(58), .16], [D2, 1.25], [B(65), .8], [B(69), .9], [B(74), 1.05]];
@@ -209,7 +218,7 @@ function ground() { const u = t * 24, i = Math.floor(u) % GN, x = E.gx, f = GF.l
   const ls = on(B(12), B(16)), gl = ls ? 1 : .32 + .55 * kk + tense * .25 * (.5 + .5 * Math.sin(t * 9)); x.globalCompositeOperation = 'lighter';
   [[24, E.grL, gl], [516, E.grR, (ls && t < B(12.5) ? .3 : 1) * gl * .9]].forEach(([cx, g, a]) => { x.save(); x.translate(cx, 428); x.scale(1, 1.56); x.globalAlpha = L.cl(a); x.fillStyle = g; x.fillRect(-240, -240, 480, 480); x.restore() });
   x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1;
-  tf(E.gv, `scale(${(1.05 + .05 * Math.sin(t * .5) + .035 * kk).toFixed(4)}) translateX(${(10 * Math.sin(t * .37)).toFixed(1)}px)`) }
+  E.gs = 1.05 + .05 * Math.sin(t * .5) + .035 * kk; E.gtx = 10 * Math.sin(t * .37); tf(E.gv, `scale(${E.gs.toFixed(4)}) translateX(${E.gtx.toFixed(1)}px)`) }
 
 // cuts: a flash on the hard ones, a streak of light on the whips
 const FL = [[0, .28], [B(10), .4], [D1, .8], [B(37), .16], [B(50), .16], [D2, 1], [B(65), .22], [B(66), .2], [B(69), .4], [B(74), .5]], WH = [[B(2), 1, 640], [B(6), -1, 700], [B(12), 1, 470], [B(12.5), -1, 980], [B(16), -1, 700], [B(41), 1, 900], [B(74), 1, 430]];
@@ -243,6 +252,7 @@ function g2() { const a = B(10), m = B(12), b = B(16); if (!show(E.g2, on(a, b))
   if (show(E.wB, t >= m)) { const k = ramp(m, .3), dr = L.n(t, m, b); tf(E.wB, `translateY(${(1400 * (1 - k)).toFixed(1)}px)`); blur(E.wB, 12 * (1 - k));
     E.wh.firstElementChild.style.letterSpacing = (.1 + .018 * dr).toFixed(4) + 'em';
     const kl = ramp(m + .04, .3), ks = ramp(B(12.5), .3), vs = t >= B(12.5);
+    fr('wL', -1200 * (1 - kl) + 14 * dr + 1400 * 0, 1400 * (1 - k)); if (vs) fr('wS', 1200 * (1 - ks) - 14 * dr, 1400 * (1 - k));
     tf(E.wL, `translateX(${(-1200 * (1 - kl) + 14 * dr).toFixed(1)}px) rotateY(${(7 - 5 * dr).toFixed(2)}deg) scale(${(1 + .03 * kick(t)).toFixed(4)})`);
     E.wS.style.opacity = vs ? 1 : 0; E.wor.style.opacity = vs ? 1 : 0; tf(E.wS, `translateX(${(1200 * (1 - ks) - 14 * dr).toFixed(1)}px) rotateY(${(-7 + 5 * dr).toFixed(2)}deg) scale(${(1 + .03 * kick(t)).toFixed(4)})`);
     tf(L.$('.sp', E.wL), `translateX(${(-62 + 124 * L.eio(L.n(t, m + .2, b))).toFixed(1)}%)`); tf(L.$('.sp', E.wS), `translateX(${(62 - 124 * L.eio(L.n(t, m + .4, b))).toFixed(1)}%)`) } }
@@ -250,6 +260,7 @@ function g2() { const a = B(10), m = B(12), b = B(16); if (!show(E.g2, on(a, b))
 function g3() { const a = B(16), b = B(34); if (!show(E.g3, on(a, b))) return;
   const k = ramp(a, .36), ex = out(b, .14), u = L.n(t, a, b), c2 = ramp(B(20), .34), c3 = ramp(B(24), .5), hit = t >= D1 ? Math.exp(-6 * (t - D1)) : 0;
   const ry = L.lerp(-58, -7, k) + 4 * L.n(t, a, B(20)) + 9 * c2 - 6 * c3 - 2 * L.n(t, B(24), D1) + 90 * ex, rx = 3 * c2 - 3 * c3 + 2 * Math.sin(t * .8), sc = (1 + .02 * u) * (1 + .05 * hit) * (1 + .008 * kick(t));
+  fr('cg', 1300 * (1 - k), 0);
   tf(E.cg, `translateX(${(1300 * (1 - k)).toFixed(1)}px) rotateY(${ry.toFixed(2)}deg) rotateX(${rx.toFixed(2)}deg) scale(${sc.toFixed(4)})`);
   tf(L.$('.sp', E.cg), `translateX(${(-62 + 124 * ((t - a) / 3.4 % 1)).toFixed(1)}%)`);
   const rim = L.$('.rim', E.cg); rim.style.opacity = t >= D1 ? L.eo(L.n(t, D1, D1 + .3)) : 0; if (t >= D1) rim.style.background = RIM((t - D1) * 150 % 360);
@@ -271,6 +282,7 @@ function g3() { const a = B(16), b = B(34); if (!show(E.g3, on(a, b))) return;
 function g4() { const a = B(34), b = B(47); if (!show(E.g4, on(a, b))) return; const k = L.eo5(L.n(t, a, a + .3)), ex = out(b, .14), p2 = ramp(B(37), .34), p3 = ramp(B(41), .32), p4 = ramp(B(44), .45), kk = kick(t);
   // the camera: on beat 37 it leans in on the top two rows, on 41 it swings to the bottom two, on 44 it is back on the whole board
   const sc = 1 + .03 * (p2 - p4) + .01 * kk, ry = -88 * (1 - k) + 8 * p2 - 15 * p3 + 7 * p4 + 2.5 * Math.sin(t * .7), rx = 5 * p2 - 10 * p3 + 5 * p4 - 88 * ex, ty = 30 * p2 - 60 * p3 + 30 * p4;
+  fr('pg', 0, ty);
   tf(E.pg, `translateY(${ty.toFixed(1)}px) rotateY(${ry.toFixed(2)}deg) rotateX(${rx.toFixed(2)}deg) scale(${sc.toFixed(4)})`);
   tf(L.$('.sp', E.pg), `translateX(${(-62 + 124 * ((t - a) / 2.6 % 1)).toFixed(1)}%)`);
   E.pr.forEach((o, i) => { const s0 = a + i * BT / 2, kr = L.eo5(L.n(t, s0, s0 + .28)), kb = sp(t - s0 - .06, 1.1, 6.5), kn = L.eo(L.n(t, s0, s0 + .36)), lit = i < 2 ? 1 - .5 * (p3 - p4) : 1 - .5 * (p2 - p3);
@@ -284,6 +296,7 @@ function g5() { const a = B(47), s3 = B(54), s4 = B(58), b = D2; if (!show(E.g5,
   const sc = L.lerp(1 + .045 * a2 + .025 * dr, 1, m) * (1 + .01 * kk), ry = (-9 * a2 + 15 * a3 - 4 * dr + 2.5 * Math.sin(t * .7)) * (1 - m), rx = 88 * (1 - k) + (-4 * a2 + 8 * a3) * (1 - m);
   // on beat 58 the sheet closes down to Grok's row, and the trophy stands in the dark behind it
   const H = L.lerp(1140, 236, m); E.ag.style.height = H.toFixed(1) + 'px';
+  fr('ag', 0, 26 * m + 24 * a2 * (1 - a3) * (1 - m), H);
   tf(E.ag, `translateY(${(26 * m + 24 * a2 * (1 - a3) * (1 - m)).toFixed(1)}px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) scale(${sc.toFixed(4)})`); tf(E.ain, `translateY(${(-206 * m).toFixed(1)}px)`);
   tf(L.$('.sp', E.ag), `translateX(${(-62 + 124 * ((t - a) / 2.6 % 1)).toFixed(1)}%)`); E.ahd.style.opacity = m > .5 ? 0 : 1;
   const rim = L.$('.rim', E.ag); rim.style.opacity = m; rim.style.background = RIM((t - s4) * 140 % 360);
@@ -303,7 +316,7 @@ function g6() { const a = D2, w2 = B(65), w3 = B(69), b = B(74); if (!show(E.g6,
   sweep(L.$('.sw', E.wtr), ((t - a) / 1.9) % 1); tf(E.whalo, `scale(${(1 + .12 * kk + .2 * (1 - k)).toFixed(3)})`); E.whalo.style.opacity = (.55 + .45 * kk).toFixed(3);
   const kn = L.eo5(L.n(t, a + .04, a + .3)); tf(E.wn, `scale(${(L.lerp(1.6, 1, kn) * (1 + .03 * dr)).toFixed(4)})`); blur(E.wn, 14 * (1 - kn)); foil(E.wn.firstElementChild, t - a - .5, 2);
   [[E.ww, w2, -1], [E.ws, B(66), 1]].forEach(([el, s0, d]) => { const kr = L.eo5(L.n(t, s0, s0 + .28)); el.style.opacity = t >= s0 ? 1 : 0; tf(el, `translateX(${(d * 1200 * (1 - kr)).toFixed(1)}px) scale(${(1 + .02 * L.n(t, s0, b)).toFixed(4)})`); blur(el, 14 * (1 - kr)) });
-  const kp = L.eo5(L.n(t, w3, w3 + .3)), kc = L.eo5(L.n(t, w3 + .02, w3 + .75)); E.wp.style.opacity = t >= w3 ? 1 : 0; tf(E.wp, `translateY(${(420 * (1 - kp)).toFixed(1)}px) rotateX(${(50 * (1 - kp)).toFixed(2)}deg) scale(${(1 + .02 * kk).toFixed(4)})`);
+  const kp = L.eo5(L.n(t, w3, w3 + .3)), kc = L.eo5(L.n(t, w3 + .02, w3 + .75)); E.wp.style.opacity = t >= w3 ? 1 : 0; if (t >= w3) fr('wp', 0, 420 * (1 - kp)); tf(E.wp, `translateY(${(420 * (1 - kp)).toFixed(1)}px) rotateX(${(50 * (1 - kp)).toFixed(2)}deg) scale(${(1 + .02 * kk).toFixed(4)})`);
   E.wpn.textContent = L.money(Math.round(D.ai[0].pnl * kc / 10) * 10); foil(E.wpn, t - w3 - .9, 1.8); tf(L.$('.sp', E.wp), `translateX(${(-62 + 124 * L.eio(L.n(t, w3 + .5, b))).toFixed(1)}%)`);
   const rim = L.$('.rim', E.wp); rim.style.opacity = t >= w3 ? 1 : 0; rim.style.background = RIM((t - w3) * 130 % 360);
   E.stars.forEach(sv => { const v = t - w3 - .5 - +sv.dataset.ph * .7, q = v < 0 ? 0 : Math.pow(Math.sin(Math.PI * ((v / .9) % 1)), 3); tf(sv, `translate(${sv.dataset.x}px,${sv.dataset.y}px) scale(${q.toFixed(3)})`); sv.style.opacity = q.toFixed(3) }) }
