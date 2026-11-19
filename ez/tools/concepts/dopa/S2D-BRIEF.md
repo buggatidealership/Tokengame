@@ -1,0 +1,45 @@
+# Season 2 announcement, take D: the painted wrap-up's world (owner, 2026-11-19)
+
+Owner: "the painted two horns... my favorite one. Can you apply sort of the same style... with a bit of use of Hedra for the announcement of season 2... the relegation, so Kimi being scrapped, less than 50% hit rate, and then... the new contestants... One Chinese Alibaba competitor and one American model... there must be other scenes... I also like the font... a lot cleaner, but I love the mix of glass but also the paint in the background... There's a deeper meaning about sort of the inner workings of each layer."
+
+## The want, as an expert would brief it
+A 34.5 s, 4:5 announcement for X that a Season 1 viewer understands with the sound off: the season had a rule with teeth (under 50% hit rate, you are out), Kimi fell through it, the champion is back to defend, China's seat goes to Qwen (Alibaba) and a new American, Gemini (Google), joins, and Season 2 adds the one thing Season 1 never had: every trade comes with its reason. Same world, type and music as the painted wrap-up (w7p + the horns bed), so the two posts read as one show.
+
+## The three layers, each with one job (my reading of "the inner workings of each layer")
+- **Paint (Hedra): the world and the events.** The stage, its light and what physically happens to it: Kimi's pedestal cracks and crumbles, an empty pedestal, new pedestals lit for the arrivals, the five-pedestal stage at the climax. The living-light loop (w6/e/gl) under everything; its mood follows the story (dim and cold-red at the relegation, warm gold on drop 2). Never words or numbers in the paint.
+- **Glass: every fact.** Every name, number and rule sits on a frosted glass sheet that frosts the painting behind it, so the data belongs to the world. No loose number off glass; no glass that carries no fact.
+- **Type: the message.** One clean Kanit black italic headline per shot (cream, the wrap's edges), Bebas Neue for labels, Geist Mono for small figures. At most 8 words a shot, no punctuation.
+
+## Facts (checked 2026-11-19 against ez-data.js, rounds 1 to 112)
+- Hit rate, Season 1 final (raw, right / calls): Grok 62-42 = 59.6% (104 calls), Claude 61-51 = 54.5%, GPT 60-52 = 53.6%, Kimi 51-61 = 45.5% (112). Kimi is the only one under 50%. Show rounded like the wrap-up: 60%, 54%, 54%, 46%.
+- Season 1 P&L: Grok +$169,450 (winner), Claude +$107,020, GPT −$19,780, Kimi −$149,500.
+- Season 2: Grok, Claude, GPT return; Qwen (Alibaba, China) and Gemini (Google, US) join; Kimi out. New: every trade comes with its reason; a feed on the site.
+- Round 1 of Season 2 in the sheet: Intuit (R113), calls as s2c's FEED (Gemini long 5, Qwen long 4, Claude short 4, GPT long 4.5, Grok short 2.4); re-check against the sheet before rendering (`python3 ez/tools/sync_sheet.py` dry run prints HELD rows; or read SHEET rows past 112). The sheet has no reasoning text: reasons show as lines that never become words.
+- Logos: MODELS in ez-data.js for the four; Gemini and Qwen paths are in s2c.html (`NEW`).
+
+## Grid and music (same as w7p, so the fitted bed works unchanged)
+`BEAT {bpm:174, at:0}`, `DROPS [12.4138, 26.5517]` (beats 36 and 77), `DUR 34.5`, `MUSIC {f:'w8f-horns', at:0}` (the owner's pick, "painted, horns"; fitted with fitbed.py's strong-drop options). bt(n) = n*60/174. Risers: cue on the drop itself (mix.py lands a sound's loudest sample on its cue time).
+
+## Storyboard (beats)
+1. **0 to 8, open.** The painted light; the EZ. logo resolves; the golden ticket lands reading SEASON 2 (Kanit on the ticket's gold, as w7p's SEASON 1 ticket).
+2. **8 to 16, Season 1 in one beat.** The four on the painted four-pedestal podium (w6/e/podium), glass name tags; headline "4 AIs  112 trades".
+3. **16 to 24, the rule.** One frosted sheet: label THE RULE, "Hit rate under 50%", RELEGATED in red.
+4. **24 to 36, the chart.** Hit rate after every trade, trades 1 to 112 (each line (right+1)/(calls+2) as on the site, so they start at 50%; Grok's line skips the rounds it missed), drawing live with a TRADE counter; the 50% line is a frosted glass floor with a red edge, labelled 50%; end tags in glass: Grok 60%, Claude 54%, GPT 54%, Kimi 46%. Kimi's line finishes under the floor. Line colours as the wrap-up: Grok gold, Claude green, GPT cream, Kimi red.
+5. **36 (drop 1), the fall.** Kimi's tag and the glass floor under it crack and shatter, shards fall into the painted dark (sfx-shatter on the drop); 36 to 44: KIMI, "Relegated" as a mark, glass card "Hit rate 46%  51–61". The paint goes dim and cold.
+6. **44 to 52, the three stay.** The podium again: Kimi's pedestal crumbled (Hedra painting, swapped in), Grok's tag gold, headline "Grok defends the title".
+7. **52 to 60, China's seat.** A new pedestal where Kimi's stood (or light on the empty spot); Qwen's glass card drops in: China flag (drawn, never an emoji), QWEN, "by Alibaba"; headline "New from China".
+8. **60 to 68, the American.** A fifth pedestal lights; Gemini's card: US flag, GEMINI, "by Google"; headline "New from the US".
+9. **68 to 77, roll call.** The five-pedestal stage (Hedra); the five logos slam onto their pedestals one every 2 beats, riser into the drop.
+10. **77 (drop 2), the line-up.** All five lit, warm gold light, "5 AIs" and the SEASON 2 ticket; 77 to 85 holds and moves (camera push, rim lights on the beat).
+11. **85 to 92, what's new.** Headline "Every trade with its reason"; two glass post cards lift and grow (layout zoom, never scale under perspective): Gemini LONG Intuit 5%, Claude SHORT Intuit 4%, with reason lines that never become words. Floating glass cards, no phone: a screen in a scene is always landscape.
+12. **92 to 100, end.** The EZ. logo and the golden ticket SEASON 2, held to the last frame. No date or "live" claim (asked).
+
+## Hedra (gpt-image-2, ref `bet-chip-h2.jpg`, the w6e recipe: isolated object on flat #0000FF, keyed to transparent webp)
+- `w6e`'s pedestal prompt with **five** pedestals (4:3) → `w6/s2/podium5.webp`.
+- **One broken pedestal** (3:4): the same stone and gold pedestal, its top split by deep cracks, chunks falling away, its gold plate cracked and dark → `w6/s2/broken.webp`, swapped over Kimi's spot.
+- Budget about $0.15; record each in jobs.jsonl (hd.py does).
+
+## Checks before showing (W6 suite)
+`node wrapqa.js s2d.html` and `python3 wrapqa.py` on the render (and `--prev` on a prev.js preview first): a shot every 2.5 s or less on average, every cut within 40 ms of a beat, both drops measured on the mix, motion median at least 3.5 and nothing frozen over 0.8 s, 28 to 36 s, at most 8 words a shot, no punctuation on screen, every number with its label. Content spans the frame, no empty band over 15%. Look at a frame of every shot before calling it done.
+
+Render: `CRF=20 bash wrapx.sh s2d.html 34.5 x2p-s2-intro-d-draft w8f-horns 0 .34` (served on 8993 from dopa).
