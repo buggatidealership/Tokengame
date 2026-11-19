@@ -85,6 +85,8 @@
 #pops{position:absolute;inset:0;pointer-events:none;z-index:30}
 .pw{position:absolute;left:0;top:0;display:none}
 .pw .pc{box-shadow:inset 0 0 0 1px rgba(242,237,230,.14),0 40px 90px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.04)}
+.pc .psw{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,transparent 40%,rgba(255,244,214,.10) 48%,rgba(255,244,214,.03) 54%,transparent 60%);overflow:hidden}
+.pw .pc{overflow:hidden}
 .pw .pc.gd{box-shadow:inset 0 0 0 1.5px rgba(253,188,42,.55),0 40px 90px rgba(0,0,0,.65),0 0 60px rgba(253,188,42,.18)}
 </style>
 <div id="st">
@@ -117,6 +119,7 @@ const KX = [190, 420, 650, 880], K3 = [310, 540, 770], KY = 452, KI = 3;   // th
 const S = {}, C = []; let t = 0, grain;
 const add = (h, p) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
 const sp = (x, f = 1.15, d = 8.5) => x <= 0 ? 0 : 1 - Math.exp(-d * x) * Math.cos(2 * Math.PI * f * x);
+const kick = x => x < PH ? 0 : Math.exp(-7 * ((x - PH) % BT)) * (1 - L.n(x, DUR - 1.2, DUR));
 const arrive = (el, t0, dur = .45, dy = 22, bl = 9) => { const k = L.eo(L.n(t, t0, t0 + dur)); el.style.opacity = k; el.style.transform = `translateY(${dy * (1 - k)}px)`; el.style.filter = k < 1 ? `blur(${(bl * (1 - k)).toFixed(2)}px)` : 'none'; return k };
 // Kimi's beats: red, stamp, crack, shatter
 const KR = b(1.5), KS = b(2), KC = b(3.5), KB = b(4), KH = b(4.6);
@@ -161,7 +164,7 @@ function build() {
       <div class="tabs"><span>LEADERBOARD</span><span>UPCOMING</span><span class="on">FEED<i class="nw"></i></span></div><div id="fd"><div id="fdl">${FEED.map(f => post(f)).join('')}</div></div></div><div class="isl"></div></div>`, s);
     S.scr = L.$('.scr', S.ph); S.hdr = L.$('.hdr', S.ph); S.tabs = L.$('.tabs', S.ph); S.fdl = L.$('#fdl', S.ph); S.pcs = L.$$('.pc', S.fdl) }
   // the posts that lift out of the phone: Gemini's long, then Claude's short
-  S.pops = [[0, b(34), b(38.4)], [2, b(39), b(43.2)]].map(([i, a, z]) => { const w = add(`<div class="pw">${post(FEED[i], [97, 90, 74, 52])}</div>`, L.$('#pops')); const pc = w.firstElementChild; pc.classList.add('gd'); return { i, a, z, w, pc, ls: L.$$('.ls i', pc) } });
+  S.pops = [[0, b(34), b(38.4)], [2, b(39), b(43.2)]].map(([i, a, z]) => { const w = add(`<div class="pw">${post(FEED[i], [97, 90, 74, 52])}</div>`, L.$('#pops')); const pc = w.firstElementChild; pc.classList.add('gd'); const sw = add('<i class="psw"></i>', pc); return { i, a, z, w, pc, sw, ls: L.$$('.ls i', pc) } });
   // 7 the end
   { const s = sc(); S.s7 = s; S.e1 = add('<div class="c hl" style="top:404px;font-size:132px"><span class="fit">Every trade</span></div>', s); S.e2 = add('<div class="c hl" style="top:556px;font-size:132px;color:#fdbc2a"><span class="fit">Every reason</span></div>', s); S.soon = add('<div class="c" id="soon" style="top:936px">Soon</div>', s) }
   S.all = [S.s1, S.nw[0].s, S.nw[1].s, S.s4, S.s5, S.s6, S.s7];
@@ -191,14 +194,14 @@ function kimi() { const t0 = T[0], close = L.eio(L.n(t, KB + .25, KB + .85));
     o.el.style.display = ''; const dx = o.vx * u, dy = o.vy * u + 1300 * u * u, r = o.w * u;
     o.el.style.transform = `translate(${(kx + dx).toFixed(1)}px,${(ky + dy).toFixed(1)}px) rotate(${r.toFixed(1)}deg)`; o.el.style.transformOrigin = `${o.cx.toFixed(0)}px ${o.cy.toFixed(0)}px`; o.el.style.opacity = (1 - L.n(u, .25, .8)).toFixed(3) });
   L.$('#fl').style.opacity = (t >= KB ? .55 * Math.exp(-(t - KB) / .1) : 0) + (t >= KS ? .18 * Math.exp(-(t - KS) / .08) : 0);
-  arrive(S.h1, KH, .42, 24) }
+  arrive(S.h1, KH, .42, 24); S.h1.firstElementChild.style.transform = `scale(${(1 + .03 * kick(t) * L.n(t, KH, KH + .4)).toFixed(4)})` }
 
 function feed() { const t0 = T[5], g = S.g;
   // the phone sits on the sheet's box (which springs into it on the drop); its screen comes up once the box has settled
   const sc = g[2] / 468; S.ph.style.transform = `translate(${(g[0] - g[2] / 2).toFixed(1)}px,${(g[1] - g[3] / 2).toFixed(1)}px) scale(${sc.toFixed(4)})`;
   S.scr.style.opacity = L.n(t, t0 + .18, t0 + .42).toFixed(3); arrive(S.h6, t0 + .1, .4);
   [S.hdr, S.tabs].forEach((el, j) => { const k = L.eo(L.n(t, t0 + .3 + j * .08, t0 + .62 + j * .08)); el.style.opacity = k; el.style.transform = `translateY(${(14 * (1 - k)).toFixed(1)}px)` });
-  S.fdl.style.transform = `translateY(${(-28 * L.eio(L.n(t, t0 + 1.2, T[6]))).toFixed(1)}px)`;
+  S.fdl.style.transform = `translateY(${(-150 * L.n(t, t0 + 1, T[6])).toFixed(1)}px)`;
   S.pcs.forEach((p, j) => { const a = t0 + .5 + j * .12, k = L.eo(L.n(t, a, a + .4)); p.style.opacity = k; p.style.transform = `translateY(${(36 * (1 - k)).toFixed(1)}px)`;
     L.$$('.ls i', p).forEach((l, m) => l.style.transform = `scaleX(${L.eo(L.n(t, a + .25 + m * .1, a + .65 + m * .1)).toFixed(4)})`) });
   // a post lifts out of the phone and grows (layout zoom, so it stays sharp), the phone darkens behind it, then it goes back
@@ -207,21 +210,23 @@ function feed() { const t0 = T[5], g = S.g;
     o.w.style.display = on ? 'block' : 'none'; const src = S.pcs[o.i]; src.style.visibility = on ? 'hidden' : ''; if (!on) return; dimk = Math.max(dimk, k);
     const r = src.getBoundingClientRect(), z0 = r.width / 436, z1 = 2.04, z = L.lerp(z0, z1, k), h = o.pc.offsetHeight, x = L.lerp(r.left, 540 - 218 * z1, k), y = L.lerp(r.top, 700 - h * z1 / 2, k) + (-24 * Math.sin(Math.PI * k));
     o.w.style.left = x.toFixed(1) + 'px'; o.w.style.top = y.toFixed(1) + 'px'; o.pc.style.zoom = z.toFixed(4);
-    o.w.style.transform = `rotate(${(-1.6 * Math.sin(Math.PI * L.n(t, o.a, o.a + .5)) * (1 - dn)).toFixed(2)}deg)`;
+    o.w.style.transform = `translateY(${(14 * Math.sin((t - o.a) * 2.4) * k).toFixed(1)}px) rotate(${(-1.6 * Math.sin(Math.PI * L.n(t, o.a, o.a + .5)) * (1 - dn) + .8 * Math.sin((t - o.a) * 1.7) * k).toFixed(2)}deg)`;
+    o.sw.style.transform = `translateX(${(-130 + 260 * (((t - o.a - .5) / 1.6) % 1 + 1) % 1).toFixed(1)}%)`; o.sw.style.opacity = (L.n(t, o.a + .5, o.a + .7) * (1 - dn)).toFixed(3);
     // the reason draws in, line by line, and never becomes words
     o.ls.forEach((l, m) => { const a = o.a + .45 + m * .16; l.style.transform = `scaleX(${L.eo(L.n(t, a, a + .5)).toFixed(4)})`; l.style.filter = `blur(${(2.6 + .8 * Math.sin(t * 5 + m)).toFixed(2)}px)` }) });
   S.scr.style.filter = dimk > .01 ? `brightness(${(1 - .55 * dimk).toFixed(3)}) blur(${(2.4 * dimk).toFixed(2)}px)` : 'none' }
 
-function R(tt) { t = tt; if (grain) grain(t);
+function R(tt) { t = tt; if (grain) grain(t); const kk = kick(t);
+  L.$('#cam').style.transform = `translate(${(7 * Math.sin(t * .9)).toFixed(2)}px,${(6 * Math.cos(t * .7)).toFixed(2)}px) scale(${(1 + .016 * kk).toFixed(4)})`;
   let i = 0; while (i < 6 && t >= T[i + 1]) i++;
   S.bl.forEach((o, j) => { const A = o.K[Math.max(0, i - 1)], B = o.K[i];
     const k = !i ? 1 : j === 0 ? (B[2] < A[2] ? L.eio(L.n(t, T[i] - .35, T[i] + .15)) : L.eio(L.n(t, T[i] - .02, T[i] + .65))) : (i === 4 ? L.eio(L.n(t, T[i] + .05, T[i] + .85)) : L.eio(L.n(t, T[i] - .5, T[i] + .05)));
-    const a = 2 * Math.PI * t / o.per + o.ph, x = L.lerp(A[0], B[0], k) + o.ax * Math.sin(a), y = L.lerp(A[1], B[1], k) + o.ay * Math.cos(a * .8);
-    o.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${(1 + .1 * Math.sin(a * 1.3)).toFixed(3)})`; o.el.style.opacity = Math.min(1, L.lerp(A[2], B[2], k)).toFixed(3) });
-  S.rg.style.transform = `translate(${(880 - 14 * t).toFixed(1)}px,${(230 + 9 * t).toFixed(1)}px)`;
-  S.bars.forEach(o => { const p = (t / 26 + o.off) % 1; o.el.style.transform = `rotate(${o.rot}deg) translateY(${(-1100 + 2200 * p).toFixed(1)}px)` });
+    const a = 2 * Math.PI * t / (o.per * .5) + o.ph, x = L.lerp(A[0], B[0], k) + 1.6 * o.ax * Math.sin(a), y = L.lerp(A[1], B[1], k) + 1.6 * o.ay * Math.cos(a * .8);
+    o.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${(1 + .12 * Math.sin(a * 1.3) + .08 * kk).toFixed(3)})`; o.el.style.opacity = Math.min(1, L.lerp(A[2], B[2], k) * (.85 + .25 * kk)).toFixed(3) });
+  S.rg.style.transform = `translate(${(880 - 30 * t).toFixed(1)}px,${(230 + 20 * t).toFixed(1)}px) scale(${(1 + .03 * kk).toFixed(4)})`;
+  S.bars.forEach(o => { const p = (t / 9 + o.off) % 1; o.el.style.transform = `rotate(${o.rot}deg) translateY(${(-1100 + 2200 * p).toFixed(1)}px)` });
   // the sheet: its box springs from the last scene's to this one's on the beat; in the first scene it narrows from four tiles to three
-  const PU = .05, pu = 1 + PU * L.n(t, T[i], Math.min(T[i + 1], DUR)), k = i ? sp(t - T[i]) : 1, A = G[Math.max(0, i - 1)], B = G[i];
+  const PU = .08, pu = 1 + PU * L.n(t, T[i], Math.min(T[i + 1], DUR)), k = i ? sp(t - T[i]) : 1, A = G[Math.max(0, i - 1)], B = G[i];
   let g = A.map((v, j) => L.lerp(v * (j > 1 && j < 4 ? 1 + PU : 1), B[j], k) * (j > 1 && j < 4 ? pu : 1));
   if (i === 0) g[2] = L.lerp(1000, 800, L.eio(L.n(t, KB + .25, KB + .85))) * pu;
   if (i === 5) g = [g[0], g[1], g[2] / pu, g[3] / pu, g[4]];           // the phone keeps its size (the scene's push is the phone's own)
