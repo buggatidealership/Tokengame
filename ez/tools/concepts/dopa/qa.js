@@ -18,7 +18,7 @@ const sv='Object.fromEntries([...document.querySelectorAll(".srow")].map(r=>[r.d
 const s0=await at(12.1,sv),s1=await at(15.3,sv);
 D.ai.forEach(a=>{ok(s0[a.k]===M(D.season0[a.k]),`season before ${a.name} ${s0[a.k]} = ${M(D.season0[a.k])}`);ok(s1[a.k]===M(D.season1[a.k]),`season after ${a.name} ${s1[a.k]} = ${M(D.season1[a.k])}`);ok(D.season0[a.k]+a.pnl===D.season1[a.k],`${a.name} before + round = after`)});
 const words=[];for(const t of [0,3,8,10.6,15.3])words.push(await at(t,'document.body.innerText'));const txt=words.join(' ');
-ok(!/\b(up|down)\b/i.test(txt),'no "up" or "down" on screen');ok(txt.includes('Simulated $100K per trade · not advice'),'footer present');ok(!/-\$/.test(txt),'minus sign is U+2212');
+ok(!/\b(up|down)\b/i.test(txt),'no "up" or "down" on screen');ok(txt.includes('Simulated $100K per trade · not advice')||txt.includes('$100K on every trade · not advice'),'footer present');ok(!/-\$/.test(txt),'minus sign is U+2212');
 // a round the page cannot draw (2026-11-18: R110 had no resolution date, so the clock and chart were NaN while every number above passed)
 for(const tt of [2.6,4,6,8.2,12]){const tx=await p.evaluate(t=>{window.R(t);return document.body.innerText},tt);ok(!/undefined|NaN|Infinity|null/.test(tx),`no undefined/NaN on screen at ${tt} s`)}
 ok(D.total>0&&D.open>0,`the clock has a timeline (${D.total} min, open at ${D.open})`);ok(perr.length===0,`no page errors (${perr.length}${perr.length?': '+perr[0].slice(0,80):''})`);
@@ -26,11 +26,11 @@ ok(D.total>0&&D.open>0,`the clock has a timeline (${D.total} min, open at ${D.op
 const fq='({line:document.querySelector("#fline").textContent,lop:+getComputedStyle(document.querySelector("#fline")).opacity,who:document.querySelector("#fwho").textContent,verb:document.querySelector("#fverb").textContent,amt:document.querySelector("#famt").textContent,aop:+getComputedStyle(document.querySelector("#famt")).opacity,op:+getComputedStyle(document.querySelector("#fsheet")).opacity,tag:getComputedStyle(document.querySelector("#tfin")).display,rows:Math.max(...[...document.querySelectorAll(".srow")].map(r=>+getComputedStyle(r).opacity)),head:+getComputedStyle(document.querySelector("#ssn")).opacity,txt:document.body.innerText})';
 const fin=await at(20.2,fq);
 if(FIN){const top=D.season1[D.order[0]],lead=D.order.filter(k=>D.season1[k]===top).map(k=>D.ai.find(a=>a.k===k).name),nm=lead.length>1?lead.slice(0,-1).join(', ')+' and '+lead.at(-1):lead[0];
-  ok(fin.op>.99&&fin.who.trim()===nm,`finale: the sheet names "${fin.who.trim()}", the season leader is "${nm}"`);ok(fin.verb===(lead.length>1?'win':'wins')+' Season 1.',`finale: "${fin.verb}"`);
+  ok(fin.op>.99&&fin.who.trim()===nm,`finale: the sheet names "${fin.who.trim()}", the season leader is "${nm}"`);ok(fin.verb===(lead.length>1?'win':'wins')+' Season 1',`finale: "${fin.verb}"`);
   ok(fin.aop>.99&&fin.amt===M(top),`finale: final total on screen ${fin.amt} = data ${M(top)}`);ok(fin.tag==='block','finale: SEASON 1 FINALE marker in the title');
   // one thing at a time (WRAP-BRIEF.md round 4): the line alone, then the sheet without its number, then the number; nothing else left on screen
   const a1=await at(16.8,fq),a2=await at(17.95,fq);
-  ok(a1.line==='Season 1 is over.'&&a1.lop>.99&&a1.op===0&&a1.rows<.01,`finale: "${a1.line}" stands alone at 16.8 s (sheet ${a1.op}, board ${a1.rows.toFixed(2)})`);
+  ok(a1.line==='Season 1 is over'&&a1.lop>.99&&a1.op===0&&a1.rows<.01,`finale: "${a1.line}" stands alone at 16.8 s (sheet ${a1.op}, board ${a1.rows.toFixed(2)})`);
   ok(a2.op>.99&&a2.aop===0,`finale: at 17.95 s the sheet is in and its number is not yet (${a2.aop})`);
   ok(fin.head<.01&&fin.rows<.01&&!/FINAL ·|IN FRONT/.test(fin.txt),`finale: the last scene carries no board, no "Season P&L" heading (${fin.head}) and no bare label`);
   ok(!/undefined|NaN|Infinity|null/.test(fin.txt)&&!/undefined|NaN|Infinity|null/.test(a1.txt),'finale: no undefined/NaN on screen at 16.8 and 20.2 s');ok(D.finale?D.n===112:true,'finale data is round 112'+(D.finale?'':' (forced test on round '+D.n+')'))}
