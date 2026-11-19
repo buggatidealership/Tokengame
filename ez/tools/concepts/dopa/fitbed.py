@@ -6,10 +6,13 @@
 3. Lay it so the arrival lands on drop 1, then jump back 8 beats before the arrival so it lands again on drop 2 (the run-in plays twice).
    Beat grids line up at every cut, 15 ms crossfades. If the bed would start before the video, its intro repeats whole beats.
 4. When the arrival is a small rise (under 4 dB), each run-in is filtered: a low-passed copy opens into the full bed by the drop.
+Options in the take json (for flat beds): "lp" low-pass Hz (350), "att" dB down at the run-in start (4), "curve" how late the filter opens (2),
+"gap" beats ducked 18 dB just before each drop (0), "force" filter even a real rise (false), "d2bed" the bed time to play from drop 2 on (its own break into a slam).
 Writes launchvid/hedra/music/<out name>.mp3 and prints what it measured."""
 import subprocess, sys, json, math, numpy as np
 H = '/home/user/Tokengame/ez/tools/concepts/launchvid/hedra/music/'; SR = 48000
 bed, T, out = sys.argv[1], json.loads(sys.argv[2]), sys.argv[3]
+LP = T.get('lp', 350); ATT = T.get('att', 4); GAP = T.get('gap', 0); FORCE = T.get('force', False); D2B = T.get('d2bed'); CURVE = T.get('curve', 2)
 def dec(af=None):
     a = ['ffmpeg', '-loglevel', 'error', '-i', H + bed + '.mp3'] + (['-af', af] if af else []) + ['-ac', '2', '-ar', str(SR), '-f', 's16le', '-']
     return np.frombuffer(subprocess.run(a, capture_output=True).stdout, '<i2').reshape(-1, 2).astype(float) / 32768
@@ -24,8 +27,8 @@ def tempo(x, lo, hi):  # beat.py's onset autocorrelation, on 10 ms frames
 x = dec(); B = T['bpm']
 b0, _, _ = tempo(x, B * .85 / 1, B * 1.15)            # the bed's tempo near the video's (a half-time bed shows its double-time hats)
 r = B / b0
-if abs(r - 1) > .004: x = dec(f'rubberband=tempo={r:.6f}'); lpx = dec(f'rubberband=tempo={r:.6f},lowpass=f=350,lowpass=f=350')
-else: lpx = dec('lowpass=f=350,lowpass=f=350'); r = 1.0
+if abs(r - 1) > .004: x = dec(f'rubberband=tempo={r:.6f}'); lpx = dec(f'rubberband=tempo={r:.6f},lowpass=f={LP},lowpass=f={LP}')
+else: lpx = dec(f'lowpass=f={LP},lowpass=f={LP}'); r = 1.0
 n = min(len(x), len(lpx)); x, lpx = x[:n], lpx[:n]; dur = n / SR
 p = 60 / B; _, on, fps = tempo(x, B - .5, B + .5)
 ph = max(np.arange(0, p, .005), key=lambda o: on[np.clip(np.round((o + np.arange(0, dur - o, p)) * fps).astype(int), 0, len(on) - 1)].sum())
@@ -39,12 +42,12 @@ cands = [ph + k * p for k in range(int((coarse - 1.2 - ph) / p), int((coarse + 1
 drop = max(cands, key=jump)
 d1, d2, D, at = T['d1'], T['d2'], T['dur'], T['at']; P = 8 * p
 o1 = drop - d1; o2 = drop - d2
-segs = [[0, d2 - P, o1], [d2 - P, D, o2]]              # [video from, video to, bed = video + offset]
+segs = [[0, d2 - P, o1], [d2 - P, D, o2]] if D2B is None else [[0, d2 - P, o1], [d2 - P, d2, o2], [d2, D, D2B - d2]]              # [video from, video to, bed = video + offset]
 if o1 < 0:                                            # the bed's arrival comes earlier than drop 1: repeat whole beats of its intro
     K = math.ceil(-o1 / p) * p; T0 = ph - o1
     segs = [[0, T0, o1 + K], [T0, d2 - P, o1]] + segs[1:]
 N = int(D * SR); xf = int(.015 * SR); o = np.zeros((N, 2)); w = np.zeros(N)
-filt = rise < 4
+filt = rise < 4 or FORCE
 for v0, v1, off in segs:
     a, b = int(v0 * SR), int(v1 * SR); i0 = max(0, a - xf); i1 = min(N, b + xf)
     src = np.arange(i0, i1) + int(round(off * SR)); ok = (src >= 0) & (src < n); seg = np.zeros((i1 - i0, 2)); seg[ok] = x[src[ok]]
@@ -52,9 +55,11 @@ for v0, v1, off in segs:
         for dd in (d1, d2):
             r0, r1 = int((dd - P) * SR), int(dd * SR); lo, hi = max(r0, i0), min(r1, i1)
             if lo < hi:
-                k = ((np.arange(lo, hi) - r0) / (r1 - r0)) ** 2; idx = np.arange(lo, hi) - i0; s2 = src[idx]; ok2 = (s2 >= 0) & (s2 < n)
+                k = ((np.arange(lo, hi) - r0) / (r1 - r0)) ** CURVE; idx = np.arange(lo, hi) - i0; s2 = src[idx]; ok2 = (s2 >= 0) & (s2 < n)
                 lpseg = np.zeros((hi - lo, 2)); lpseg[ok2] = lpx[s2[ok2]]
-                seg[idx] = (seg[idx] * k[:, None] + lpseg * (1 - k[:, None]) * 1.6) * 10 ** (-4 * (1 - k) / 20)[:, None]
+                seg[idx] = (seg[idx] * k[:, None] + lpseg * (1 - k[:, None]) * 1.6) * 10 ** (-ATT * (1 - k) / 20)[:, None]
+                if GAP:
+                    g0 = max(lo, r1 - int(GAP * p * SR)); gi = np.arange(g0, hi) - i0; seg[gi] *= 10 ** (-18 / 20)
     env = np.ones(i1 - i0); q = min(2 * xf, len(env)); ramp = np.sin(np.linspace(0, np.pi / 2, q))   # equal-power crossfades
     if a > 0: env[:q] = ramp
     if b < N: env[-q:] = ramp[::-1]

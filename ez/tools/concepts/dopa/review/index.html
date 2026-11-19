@@ -129,6 +129,10 @@ button:focus-visible,textarea:focus-visible,video:focus-visible{outline:2px soli
 <script>
 // One entry per video. v: file stem in v/ (mp4 + jpg); no v = not rendered yet (wait says why).
 const SECTIONS = [
+  { lab: 'New · 19 Nov, new music', h: 'The painted wrap-up, five new kinds of music', lede: 'The same painted video with five new tracks, each a different style: synthwave, hip hop with horns, jungle, chiptune and pop punk. All five play at the same speed as the video. The chart finishes on the first drop and Grok lands on the second. Tap a style under the video to swap the music at the same moment. These are not a chill to hype ladder. They all sit around the middle, since you said the right one was somewhere there. The old five levels are still on the painted card further down.', ladder: true, items: [
+    { id: 'W7 Painted, new music', v: 'w7p', lv: 'p', name: 'Painted wrap-up, five new tracks', chip: ['new', 'Draft'], idea: 'Synthwave: neon night drive, gated snare. Hip hop: boom bap drums with big brass horns. Jungle: 90s amen breaks and rave piano. Chiptune: an 8-bit victory theme. Pop punk: live drums and guitars.',
+      facts: [['Length', '34.5 s'], ['Tempo', '174 BPM, all five'], ['Drop 1', '+7 to +13 dB'], ['Drop 2', '+7 to +12 dB']], gap: 'None of the five tracks built up on their own, so each drop is made by a filter that opens and a short gap before the hit. Pop punk has a real break of its own before drop 2. I cannot hear them.' },
+  ] },
   { lab: 'New · 19 Nov, Season 2', h: 'Season 2 intro: Kimi out, two join, the feed', lede: 'It opens on Season 1\'s four. Kimi\'s tile goes red, RELEGATED is stamped on it, it cracks and shatters, and the three close up. Gemini joins, Qwen joins, the five land on the first drop. On the second drop the glass sheet becomes a phone showing a Feed tab with Season 2\'s first round, Intuit, and each AI\'s real side and size from the sheet. Posts lift out of the phone like the cards in the release video. The reasoning shows as lines that never become words, since the sheet has no reasoning yet.', items: [
     { id: 'S2 take C', v: 's2c', name: 'Season 2 · Kimi out, the feed', chip: ['new', 'Draft'], idea: 'Kimi relegated and shattered. Gemini joins. Qwen joins. Five AIs. Season 1 told you long or short. Season 2 tells you why: the feed on a phone, Gemini\'s long and Claude\'s short lifting out. Every trade, every reason. Soon.',
       facts: [['Length', '30.1 s'], ['Scenes', '7'], ['Motion', '5.5'], ['Music', 'phonk, recut: drops on the five and the feed']], gap: 'The phone\'s own text is small; the lifted posts carry it. The feed shows Intuit\'s real calls, which grade on Friday 20 Nov, so after that the post is out of date.' },
@@ -199,6 +203,9 @@ const SECTIONS = [
   ] },
 ];
 
+const LVN = { p: ['Synth\u00adwave', 'Hip hop horns', 'Jungle', 'Chiptune', 'Pop punk'] };
+const IDLV = {}; SECTIONS.forEach(x => x.items.forEach(it => { if (it.lv) IDLV[it.id] = it.lv }));
+const lvName = (k, l) => LVN[k] ? LVN[k][l - 1] : LV[l - 1][k === 'b' || k === 'm' ? 1 : 0];
 const LV = [['Ambient', 'Ambient'], ['Lo-fi', 'Lo-fi'], ['Garage', 'Liquid DnB'], ['Future bass', 'Melodic DnB'], ['Hype', 'Hype']];
 const KEY = 'ez-finale-review', esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 let FB = {}; try { FB = JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) {}
@@ -209,7 +216,7 @@ document.getElementById('sections').outerHTML = SECTIONS.map(s => `<section>
   <div class="sh"><span class="lab">${esc(s.lab)}</span><h2>${esc(s.h)}</h2><p class="lede">${esc(s.lede)}</p></div>
   <div class="grid${s.items.length === 6 ? ' c3' : ''}">${s.items.map(it => { const f = FB[it.id] || {}, sid = slug(it.id); return `<article class="card" data-id="${esc(it.id)}">
     <div class="screen">${it.lv ? `<video playsinline muted preload="none" poster="v/${it.v}.jpg" src="v/${it.v}.mp4" aria-label="${esc(it.name)}, tap to play"></video><button type="button" class="pp" aria-label="Play ${esc(it.name)}"><span></span></button><i class="prog"><i></i></i><audio preload="none" data-k="${it.lv}"></audio>` : it.v ? `<video controls playsinline preload="none" poster="v/${it.v}.jpg" src="v/${it.v}.mp4" aria-label="${esc(it.name)}"></video>` : `<div class="wait"><b>${esc(it.wait[0])}</b><span>${esc(it.wait[1])}</span></div>`}</div>
-    ${it.lv ? `<div class="lvl" role="group" aria-label="Music level for ${esc(it.name)}"><span class="lab">Music</span>${LV.map((n, i) => `<button type="button" data-l="${i + 1}" aria-pressed="${(f.l || 1) === i + 1}"><b>${i + 1}</b><span>${n[it.lv === 'b' || it.lv === 'm' ? 1 : 0]}</span></button>`).join('')}</div>` : ''}
+    ${it.lv ? `<div class="lvl" role="group" aria-label="Music level for ${esc(it.name)}"><span class="lab">Music</span>${LV.map((n, i) => `<button type="button" data-l="${i + 1}" aria-pressed="${(f.l || 1) === i + 1}"><b>${i + 1}</b><span>${esc(lvName(it.lv, i + 1))}</span></button>`).join('')}</div>` : ''}
     <div class="top"><h3>${esc(it.name)}</h3><span class="chip ${it.chip[0]}">${esc(it.chip[1])}</span></div>
     <p class="idea">${esc(it.idea)}</p>
     ${it.facts ? `<dl>${it.facts.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
@@ -224,7 +231,7 @@ document.addEventListener('click', e => { const b = e.target.closest('.seg butto
 document.addEventListener('input', e => { const t = e.target.closest('.card textarea'); if (!t) return; const id = t.closest('.card').dataset.id; FB[id] = FB[id] || {}; FB[id].n = t.value; save(); count() });
 // one video at a time
 document.addEventListener('play', e => { if (e.target.tagName !== 'VIDEO') return; document.querySelectorAll('video').forEach(v => { if (v !== e.target) v.pause() }); document.querySelectorAll('audio').forEach(x => { if (!e.target.closest('.card').contains(x)) x.pause() }) }, true);
-document.getElementById('copy').addEventListener('click', async ev => { const lines = Object.entries(FB).filter(([, f]) => f.v || f.l || (f.n && f.n.trim())).map(([id, f]) => `${id}: ${f.v || 'no verdict'}${f.l ? ' · music level ' + f.l + ' (' + LV[f.l - 1][id.includes(' B ') || id.includes('Mix') ? 1 : 0] + ')' : ''}${f.n && f.n.trim() ? ' · ' + f.n.trim() : ''}`);
+document.getElementById('copy').addEventListener('click', async ev => { const lines = Object.entries(FB).filter(([, f]) => f.v || f.l || (f.n && f.n.trim())).map(([id, f]) => `${id}: ${f.v || 'no verdict'}${f.l ? ' · music level ' + f.l + ' (' + lvName(IDLV[id], f.l) + ')' : ''}${f.n && f.n.trim() ? ' · ' + f.n.trim() : ''}`);
   const txt = lines.length ? 'Finale review feedback\n' + lines.join('\n') : 'Finale review feedback: nothing marked yet'; const b = ev.currentTarget;
   try { await navigator.clipboard.writeText(txt); b.textContent = 'Copied. Paste it to Claude' } catch (e) { const o = document.getElementById('out'); o.value = txt; o.style.position = 'static'; o.removeAttribute('aria-hidden'); o.rows = Math.max(3, lines.length + 1); o.focus(); o.select(); b.textContent = 'Select all and copy' }
   setTimeout(() => { b.textContent = 'Copy my feedback' }, 2600) });
