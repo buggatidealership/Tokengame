@@ -1,4 +1,4 @@
-// node w6/an/prep.js (from dopa/): writes w6/an/data.json for the four animation samples (an-feed1, an-feed2, an-in1, an-in2).
+// node w6/an/prep.js (from dopa/): writes w6/an/data.json for the animation samples (an-feed1, an-feed2, an-in1, an-in2, an-in3; graded = the grading day, for in-3).
 // Every word and number from the files: data/s2-calls/calls.csv (side, called move, confidence, the WHY line), tools/concepts/feed/words.json
 // (the trims, the highlighted clause, our plain words for Grok) and dopa/data/close-2026-11-20.json (the PREVIEW moves and P&L).
 // Refuses to write if a kept text or a highlight is not verbatim, or the sheet and the close JSON disagree (the feed mockup's own checks).
@@ -20,7 +20,7 @@ CL.rounds.forEach(R => {
     must(row.why.indexOf(core) > -1, 'NOT VERBATIM ' + R.ticker + ' ' + m); must(w.keep.indexOf(w.hl) > -1, 'highlight outside the kept text ' + R.ticker + ' ' + m);
     must(row.side === j.side && +row.size_pct === Math.abs(j.call), 'sheet vs close JSON ' + R.ticker + ' ' + m);
     const pnl = Math.round((row.side === 'LONG' ? 1 : -1) * R.move * 1000); must(pnl === j.pnl, 'P&L ' + R.ticker + ' ' + m);
-    trades.push({ k, name: NAME[k], lab: LAB[k], flag: FLAG[k], t: R.ticker, side: row.side, call: +row.size_pct, conf: +row.confidence_pct, why: row.why, keep: w.keep, hl: w.hl, plain: w.plain || '', pnl: j.pnl, right: j.right, called: row.called }) }) });
+    trades.push({ k, name: NAME[k], lab: LAB[k], flag: FLAG[k], t: R.ticker, side: row.side, call: +row.size_pct, conf: +row.confidence_pct, why: row.why, keep: w.keep, hl: w.hl, plain: w.plain || '', pnl: j.pnl, right: j.right, called: row.called, graded: row.graded_at_close }) }) });
 if (fails.length) { console.error('DATA CHECK FAILED\n' + fails.join('\n')); process.exit(1) }
 const marks = {}; Object.keys(M5).forEach(k => marks[k] = { d: M5[k].d, fr: M5[k].fr || '', bg: M5[k].bg, fg: M5[k].fg });
 marks.GEMINI.fg = '#7dd3fc'; marks.QWEN.fg = '#a78bfa';   // the Season 2 colours (feed mockup, posts)

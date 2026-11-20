@@ -98,7 +98,7 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
   /* numbers and words as printed vs the files */
   const sg=v=>(v<0?'−':'+')+'$'+Math.abs(v).toLocaleString('en-US');let bad=[],seen=0;
   for(const k in report)report[k].nums.forEach(x=>{const it=items.find(i=>i.k+'-'+i.t===x.id);seen++;
-    if(x.side!==null&&x.side!==it.side+' '+String(it.move)+'%')bad.push(k+' '+x.id+' side '+x.side);
+    if(x.side!==null&&x.side!==it.side+' ('+(it.side==='LONG'?'+':'\u2212')+String(it.move)+'%)')bad.push(k+' '+x.id+' side '+x.side);
     if(x.conf!==null&&x.conf!==it.conf+'% confident')bad.push(k+' '+x.id+' confidence '+x.conf);
     if(x.pnl!==null&&x.pnl!=='P&L '+sg(it.pnl))bad.push(k+' '+x.id+' P&L '+x.pnl);
     if(x.quote!==null&&x.quote!==it.keep&&x.quote!==it.hl&&x.quote!=='“'+it.hl+'”')bad.push(k+' '+x.id+' words "'+x.quote.slice(0,50)+'"');

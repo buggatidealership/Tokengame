@@ -14,7 +14,7 @@ NAV.splice(1,0,["feed","FEED",'<path d="M4 5.5h16v10.5H10l-4.5 3.5V16H4z"/><path
 function fnum(v){return String(+v)}                          /* 4.0 -> 4, 4.5 -> 4.5 (as the sheet shows them) */
 function fco(c,px){return '<span class="fco" style="width:'+px+'px;height:'+px+'px"><img src="'+c.logo+'" alt=""></span>'}
 function fcoN(c){return '<span class="fcn"><b>'+c.co+'</b> <span>'+c.ticker+'</span></span>'}
-function fside(x,cls){return '<span class="fsd '+(x.side==="LONG"?"L":"S")+(cls?" "+cls:"")+'"><b>'+x.side+'</b> <span class="fmv">'+fnum(x.move)+'%</span></span>'}
+function fside(x,cls){return '<span class="fsd '+(x.side==="LONG"?"L":"S")+(cls?" "+cls:"")+'"><b>'+x.side+'</b> <span class="fmv">('+(x.side==="LONG"?"+":"\u2212")+fnum(x.move)+'%)</span></span>'}   /* owner, 2026-11-20: "LONG (+4%)", the side with its called move in brackets */
 function fconf(x){return '<span class="fcf">'+x.conf+'% confident</span>'}
 function fq(x,only){var k=x.keep,h=x.hl,i=k.indexOf(h);if(only)return '<span class="hlk">'+esc(h)+'</span>';   /* the tape's one-line form: the key clause alone, quoted, under a gold rule (a marker on every row reads as a wall) */
   return esc(k.slice(0,i))+'<mark class="hl">'+esc(h)+'</mark>'+esc(k.slice(i+h.length))}
