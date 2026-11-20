@@ -28,7 +28,7 @@ html,body{background:#050403}
 /* the clock: hands drawn over the painted face, the house mark on the dial */
 #clk{position:absolute;left:0;top:0;width:1536px;height:2048px;overflow:visible;pointer-events:none}
 /* the bell on its bracket */
-#bell{position:absolute;left:1135px;top:368px;width:142px;transform-origin:50% 3%}
+#bell{position:absolute;left:1135px;top:368px;width:142px;transform-origin:50% 3%;filter:brightness(.93) drop-shadow(-12px 16px 10px rgba(0,0,0,.5))}
 #rings{position:absolute;left:0;top:0;width:1536px;height:2048px;overflow:visible;pointer-events:none}
 /* the board: split-flap modules in the painted frame */
 #board{position:absolute;left:220px;top:721px;width:1096px;height:623px;overflow:hidden}
@@ -54,11 +54,11 @@ html,body{background:#050403}
   background:radial-gradient(ellipse 34% 46% at 13.7% -8%,rgba(255,206,120,.22),transparent 70%),radial-gradient(ellipse 34% 46% at 86.2% -8%,rgba(255,206,120,.22),transparent 70%),
   linear-gradient(90deg,rgba(3,200,112,.20),transparent 7%,transparent 93%,rgba(255,58,49,.22));mix-blend-mode:screen}
 #bshade{position:absolute;inset:0;pointer-events:none;z-index:21;box-shadow:inset 0 22px 26px -8px rgba(0,0,0,.7),inset 0 -40px 50px -20px rgba(0,0,0,.55)}
-#lead{position:absolute;pointer-events:none;z-index:19;opacity:0;mix-blend-mode:screen;background:radial-gradient(ellipse 50% 120% at 30% 50%,rgba(253,188,42,.38),rgba(253,188,42,.08) 60%,transparent 80%)}
+#lead{position:absolute;pointer-events:none;z-index:19;opacity:0;mix-blend-mode:screen;background:radial-gradient(closest-side,rgba(253,188,42,.34),rgba(253,188,42,.1) 55%,rgba(253,188,42,0))}
 /* the fine print: gilt letters on the wall panel under the board */
 #fine{position:absolute;left:565px;top:1437px;width:440px;height:42px;display:flex;align-items:center;justify-content:center;gap:34px;font:700 21px/1 'Barlow Condensed',sans-serif;letter-spacing:.16em;color:#ffe7a6;text-shadow:0 1.5px 0 rgba(30,18,4,.9),0 0 10px rgba(253,188,42,.35);white-space:nowrap}
 #flash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 50% 40%,rgba(255,214,140,.55),rgba(255,180,80,.15) 60%,transparent 80%);mix-blend-mode:screen;opacity:0;z-index:30}
-#pv{position:absolute;right:56px;top:66px;z-index:60;font:700 19px 'Geist Mono';letter-spacing:.12em;color:#0e0c0b;background:#fdbc2a;padding:7px 12px 5px;border-radius:7px;display:none}
+#pv{position:absolute;left:56px;top:66px;z-index:60;font:700 19px 'Geist Mono';letter-spacing:.12em;color:#0e0c0b;background:#fdbc2a;padding:7px 12px 5px;border-radius:7px;display:none}
 </style>
 <div id="st"><div id="w">
   <img id="hall" src="w6/oc-d/hall.webp">
@@ -76,8 +76,9 @@ html,body{background:#050403}
 <script>
 L.$('#base').textContent = L.css;
 const Q = new URLSearchParams(location.search), DATE = Q.get('d') || '2026-11-20', QUOTES = Q.get('q') !== '0';
-const BEAT = 60 / 130, BAR = 4 * BEAT, TR = 32 * BEAT, B = n => TR + n * BEAT;
-const T_TITLE = .25, T_NAMES = 4 * BEAT, T_CO = 6 * BEAT, CO_LEN = 8 * BEAT, T_SORT = B(8), T_LEAD = B(10) + .1;
+// the grid: the title alone, names on beat 2, a company every CB beats from beat 5 (8 with the reasons, 4 without), the camera pulls back for 2 beats, the bell
+const BEAT = 60 / 130, BAR = 4 * BEAT, CB = QUOTES ? 8 : 4, TR = (5 + 3 * CB + 2) * BEAT, B = n => TR + n * BEAT;
+const T_TITLE = .25, T_NAMES = 2 * BEAT, T_CO = 5 * BEAT, CO_LEN = CB * BEAT, T_SORT = B(9), T_LEAD = B(11) + .1, DUR = +(TR + 7.65).toFixed(2);
 const CX = 768;                                   // the board's centre line in the painting
 const SPIN = { c: .42, w: .32, g: .3 }, STEP = .055;
 const POOL = { c: 'ABCDEFGHIKLMNOPRSTUVWXYZ0123456789$%+', w: ['LONG', 'SHORT', 'CLOSE', 'GROK', 'QWEN', 'GPT', 'GEMINI', 'CLAUDE', ''] };
@@ -91,9 +92,13 @@ const mk = (kind, x, y, w, h, fs, opt = {}) => { const el = document.createEleme
   el.innerHTML = `<div class="t" style="font-size:${fs}px${opt.al ? ';justify-content:' + opt.al + ';padding:0 ' + (opt.pad || 0) + 'px' : ''}"></div><div class="ff"></div>${opt.lamp ? '<div class="lp"></div>' : ''}`;
   board.insertBefore(el, L.$('#lead')); const o = { el, t: el.firstChild, ff: el.children[1], lp: el.querySelector('.lp'), kind, sched: [], id: mods.length, last: null, opt }; mods.push(o); return o };
 const at = (o, t, v, meta) => { const s = o.sched, p = s.length ? s[s.length - 1][1] : ''; if (p === v) return; s.push([t, v, meta || {}]) };
+// a row of character flaps right-aligned in a field: n slots, the slot n-4 (where the decimal point or the thousands comma falls) half width
+const chars = (x, y, wf, h, n, gap, fs, opt = {}) => { const u = (wf - (n - 1) * gap) / (n - .5), os = []; let xx = x;
+  for (let c = 0; c < n; c++) { const w = c === n - 4 ? u / 2 : u; os.push(mk('c', xx, y, w, h, fs, opt)); xx += w + gap } return os };
+const putStr = (os, t0, str, cls, step = .025) => { const s = str.padStart(os.length, ' '); os.forEach((o, c) => at(o, t0 + c * step, s[c] === ' ' ? '' : s[c], { cls })) };
 const html = (o, v) => o.kind === 'g' ? (v ? (v.startsWith('co:') ? `<img src="${v.slice(3)}" width="${o.opt.ls}" height="${o.opt.ls}" style="border-radius:${o.opt.ls * .2}px">` : mark(v, o.opt.ls)) : '') : (o.opt.fmt ? o.opt.fmt(v) : v);
 const drawMod = (o, t) => { const s = o.sched; let k = -1; for (let i = 0; i < s.length; i++) if (s[i][0] <= t) k = i;
-  const cur = k < 0 ? ['', '', {}] : s[k], dt = k < 0 ? 99 : t - cur[0], sp = SPIN[o.kind] * (o.opt.slow || 1);
+  const cur = k < 0 ? ['', '', {}] : s[k], dt = k < 0 ? 99 : t - cur[0], sp = o.opt.quick && cur[1] === '' && cur[0] > o.opt.quick ? .12 : SPIN[o.kind] * (o.opt.slow || 1);
   let key, h, meta = cur[2];
   if (dt < sp) { const n = Math.floor(dt / STEP), ph = (dt % STEP) / STEP;
     if (o.kind === 'c') { const P = POOL.c; h = P[hash(o.id, n) % P.length]; meta = {} }
@@ -123,18 +128,18 @@ const setup = () => {
   // the CLOSE row: its label, the moves in character flaps
   mk('w', G.rk[0], G.yC, G.rk[1], 56, 30); mk('w', G.mkc[0], G.yC, G.mkc[1], 56, 30);
   const cl = mk('w', G.nm[0], G.yC, G.nm[1], 56, 32); at(cl, T_NAMES + .04, 'CLOSE');
-  D.rounds.forEach((r, j) => { const cs = [], w = 28, g = 3, x0 = G.co[j] + (G.cw - (6 * w + 5 * g)) / 2;
-    for (let c = 0; c < 6; c++) { const o = mk('c', x0 + c * (w + g), G.yC, w, 56, 40, { slow: 1.4 }); cs.push(o) }
-    const s = r.pct.padStart(6, ' '); cs.forEach((o, c) => at(o, TR + .1 + j * .16 + c * .03, s[c] === ' ' ? '' : s[c], { cls: r.move < 0 ? 'd' : 'u' })); M.mov.push(cs) });
+  const NM = Math.max(6, ...D.rounds.map(r => r.pct.length));
+  D.rounds.forEach((r, j) => { const cs = chars(G.co[j] + 8, G.yC, G.cw - 16, 56, NM, 3, 38);
+    putStr(cs, TR + .08 + j * .08, r.pct, r.move < 0 ? 'd' : 'u', .015); M.mov.push(cs) });
   mk('w', G.pl[0], G.yC, G.pl[1], 56, 30);
   // the five AI rows: rank, mark, name, a side per company, the P&L in character flaps
-  const ord0 = D.ais.map(a => a.k), ord1 = D.order, pnl = D.season1;
+  const ord0 = D.ais.map(a => a.k), ord1 = D.order, pnl = D.season1, NP = Math.max(8, ...D.ais.map(a => money0(pnl[a.k]).length));
   for (let s = 0; s < 5; s++) { const y = G.yR(s), row = {};
     row.rk = mk('c', G.rk[0], y, G.rk[1], G.rh, 38);
     row.mk = mk('g', G.mkc[0], y + 3.5, G.mkc[1], 56, 0, { ls: 46 });
     row.nm = mk('w', G.nm[0], y, G.nm[1], G.rh, 36, { pool: ['GPT', 'CLAUDE', 'GROK', 'GEMINI', 'QWEN', ''] });
     row.sd = D.rounds.map((r, j) => mk('w', G.co[j] + 16, y, G.cw - 32, G.rh, 42, { lamp: 1, pool: ['LONG', 'SHORT', ''] }));
-    row.pl = []; { const w = 21.5, g = 2.4, x0 = G.pl[0] + G.pl[1] - (8 * w + 7 * g); for (let c = 0; c < 8; c++) row.pl.push(mk('c', x0 + c * (w + g), y, w, G.rh, 36)) }
+    row.pl = chars(G.pl[0], y, G.pl[1], G.rh, NP, 2, 38);
     M.rows.push(row);
     const tn = T_NAMES + s * BEAT / 5, a0 = ord0[s], a1 = ord1[s], ts = T_SORT + s * .07, nm = k => D.ais.find(a => a.k === k).name.toUpperCase();
     at(row.mk, tn, a0); at(row.nm, tn + .03, nm(a0));
@@ -144,32 +149,33 @@ const setup = () => {
       at(o, T_CO + j * CO_LEN + .9 + s * .1, c0.side, { cls: c0.side === 'LONG' ? 'u' : 'd', right: c0.right, j });
       if (a1 !== a0 && c1.side !== c0.side) at(o, ts + .04 * (j + 1), c1.side, { cls: c1.side === 'LONG' ? 'u' : 'd', right: c1.right, j, re: 1 });
       else if (a1 !== a0) o.sched.push([ts + .04 * (j + 1), c1.side, { cls: c1.side === 'LONG' ? 'u' : 'd', right: c1.right, j, re: 1, hold: 1 }]) });
-    const put = (t0, v, cls) => { const s8 = money0(v).padStart(8, ' '); row.pl.forEach((o, c) => at(o, t0 + c * .025, s8[c] === ' ' ? '' : s8[c], { cls })) };
+    const put = (t0, v, cls) => putStr(row.pl, t0, money0(v), cls);
     put(tn + .12, 0, '');
-    put(TR + 1.3 + s * .09, pnl[a0], pnl[a0] > 0 ? 'u' : pnl[a0] < 0 ? 'd' : '');
+    put(TR + 1.55 + s * .08, pnl[a0], pnl[a0] > 0 ? 'u' : pnl[a0] < 0 ? 'd' : '');
     if (a1 !== a0) put(ts + .1, pnl[a1], pnl[a1] > 0 ? 'u' : pnl[a1] < 0 ? 'd' : '') }
   // the wire row: the most confident AI's reason for each company as it posts; at the end the board's line
   { const y = G.yW; mk('c', G.rk[0], y, G.rk[1], G.wh, 36); M.wire.mk = mk('g', G.mkc[0], y + 3.5, G.mkc[1], 56, 0, { ls: 46 });
     M.wire.nm = mk('w', G.nm[0], y, G.nm[1], G.wh, 34, { pool: ['GPT', 'CLAUDE', 'GROK', 'GEMINI', 'QWEN', ''] }); M.wire.ch = [];
-    const w = 24, g = 1, x0 = G.co[0]; for (let c = 0; c < 32; c++) M.wire.ch.push(mk('c', x0 + c * (w + g), y, w, G.wh, 34));
-    const line = (t0, s, cls) => { const u = s.toUpperCase().padEnd(32, ' '); M.wire.ch.forEach((o, c) => at(o, t0 + c * .018, u[c] === ' ' ? '' : u[c], { cls })) };
+    const NW = 33, g = 1, w = (800 - (NW - 1) * g) / NW, x0 = G.co[0]; for (let c = 0; c < NW; c++) M.wire.ch.push(mk('c', x0 + c * (w + g), y, w, G.wh, 33, { wire: 1 }));
+    const line = (t0, s, cls) => { const u = s.toUpperCase().padEnd(NW, ' '); M.wire.ch.forEach((o, c) => at(o, t0 + c * .012, u[c] === ' ' ? '' : u[c], { cls })) };
     if (QUOTES) D.rounds.forEach((r, j) => { const ls = LN[r.ticker], k = Object.keys(ls).sort((a, b) => ls[b].conf - ls[a].conf)[0], t0 = T_CO + j * CO_LEN + .15;
       at(M.wire.mk, t0, k); at(M.wire.nm, t0 + .03, D.ais.find(a => a.k === k).name.toUpperCase()); line(t0 + .08, ls[k].line, '') });
-    at(M.wire.mk, TR + .05, ''); at(M.wire.nm, TR + .05, ''); line(TR + .05, '', '');
-    line(T_SORT + .45, `P&L after ${D.after} trades`, '') }
+    at(M.wire.mk, TR + .25, ''); at(M.wire.nm, TR + .25, ''); M.wire.ch.forEach(o => { o.opt.quick = TR; at(o, TR + .25, '') });
+    line(T_SORT + .05, `P&L after ${D.after} trades`, '') }
   window.M = M;
   // the clock face's mark: the house logo under the centre, where the hands never rest
   const C = window.CUES = [[0.05, 'r11-swell', .12], [T_TITLE, 'r11-sparkle', .08], [T_NAMES, 'r11-card', .1]];
-  for (let n = 0; n < 8; n++) C.push([+(n * BAR + .001).toFixed(3), 'sfx-tick', .07]);
+  for (let n = TR - BAR; n > 0; n -= BAR) C.push([+n.toFixed(3), 'sfx-tick', .07]);                       // the clock's minute jumps
   D.rounds.forEach((r, j) => { const t0 = T_CO + j * CO_LEN; C.push([+t0.toFixed(3), 'r11-slide', .12], [+(t0 + .9).toFixed(3), 'r11-card', .1]) });
-  C.push([TR - 1.6, 'sfx-riser', .12], [TR, 'sfx-bell', .32], [TR + .12, 'r11-slide', .12], [TR + .9, 'sfx-stamp', .16], [TR + 1.35, 'r11-kaching', .18], [TR + 1.45, 'r11-sparkle', .08],
+  C.push([TR, 'sfx-riser', .12],                    // mix.py lands a sound's loudest sample on its cue: the riser peaks on the bell
+    [TR, 'sfx-bell', .32], [TR + .12, 'r11-slide', .12], [TR + 1, 'sfx-stamp', .12], [TR + 1.2, 'sfx-stamp', .1], [TR + 1.4, 'sfx-stamp', .1], [TR + 1.6, 'r11-kaching', .18], [TR + 1.7, 'r11-sparkle', .08],
     [T_SORT, 'sfx-whoosh', .12], [T_SORT + .05, 'r11-slide', .12], [T_LEAD, 'sfx-chime', .14], [T_LEAD + .05, 'r11-sparkle', .1]);
-  window.MUSIC = { f: 'm2-phonk', at: +(14.79 - TR).toFixed(3) }; window.DUR = 22;
+  window.MUSIC = { f: 'm2-phonk', at: +(14.79 - TR).toFixed(3) }; window.DUR = DUR;
 };
 const clockOf = m => { const tot = 16 * 60 + Math.round(m), mm = tot % 1440; let h = Math.floor(mm / 60); const mi = mm % 60, ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + ':' + String(mi).padStart(2, '0') + ' ' + ap };
 // the camera: [t, centre x, centre y, scale] in the painting's pixels, eased between keys
-const CAM = () => [[0, 772, 610, 1.2], [1.7, 772, 640, 1.16], [2.75, CX, 1010, .975], [6.4, CX, 1018, .982], [10.1, CX, 1024, .985], [13.7, CX, 1030, .985],
-  [14.45, CX, 820, .955], [TR + .7, CX, 840, .965], [TR + 2.2, CX, 960, .985], [T_SORT, CX, 960, .985], [22, CX, 920, .985]];
+const CAM = () => [[0, CX, 812, .93], [T_CO - .2, CX, 838, .945], [T_CO + .55, CX, 1012, .955], [T_CO + 3 * CO_LEN - .1, CX, 1028, .962],
+  [TR - .35, CX, 830, .945], [TR + .7, CX, 845, .955], [TR + 2.2, CX, 965, .962], [T_SORT, CX, 965, .962], [DUR, CX, 930, .962]];
 const camAt = t => { const K = CAM(); let i = 1; while (i < K.length - 1 && K[i][0] < t) i++; const a = K[i - 1], b = K[i], x = L.eio(L.n(t, a[0], b[0])); return [0, 1, 2, 3].map(q => L.lerp(a[q], b[q], x)).slice(1) };
 window.R = t => {
   grain(t);
@@ -177,10 +183,11 @@ window.R = t => {
   const [cx, cy, s] = camAt(t), kick = t > TR ? Math.exp(-(t - TR) * 8) * Math.sin((t - TR) * 55) * 7 : 0;
   W.style.transform = `translate(${(540 - cx * s + kick).toFixed(2)}px,${(675 - cy * s + kick * .5).toFixed(2)}px) scale(${s.toFixed(4)})`;
   // the plate: the title engraved in behind a glint; at the sort, the board's name
-  const p0 = L.eo(L.n(t, T_TITLE, T_TITLE + .7)), p1 = L.eo(L.n(t, T_SORT, T_SORT + .7));
+  // (the old line is polished off left to right, then the new one engraved in behind the same glint)
+  const p0 = L.eo(L.n(t, T_TITLE, T_TITLE + .7)), q0 = L.eio(L.n(t, T_SORT, T_SORT + .35)), p1 = L.eo(L.n(t, T_SORT + .35, T_SORT + 1));
   const clip = (a, b) => `inset(0 ${(100 - 100 * a).toFixed(2)}% 0 ${(100 * b).toFixed(2)}%)`;
-  ['#pl0', '#pi0'].forEach(q => L.$(q).style.clipPath = clip(p0, p1)); ['#pl1', '#pi1'].forEach(q => L.$(q).style.clipPath = clip(p1, 0));
-  const gq = t < T_SORT - .2 ? p0 : p1, gl = L.$('#pgl'); gl.style.left = (-120 + 763 * gq) + 'px'; gl.style.opacity = gq > 0 && gq < 1 ? .9 : 0;
+  ['#pl0', '#pi0'].forEach(q => L.$(q).style.clipPath = clip(p0, q0)); ['#pl1', '#pi1'].forEach(q => L.$(q).style.clipPath = clip(p1, 0));
+  const gq = t < T_SORT ? p0 : t < T_SORT + .35 ? q0 : p1, gl = L.$('#pgl'); gl.style.left = (-120 + 763 * gq) + 'px'; gl.style.opacity = gq > 0 && gq < 1 ? .9 : 0;
   // the clock: a minute a bar to 4:00 on the drop, the gold second hand sweeping each bar
   const mins = t < TR ? 240 - Math.ceil((TR - t) / BAR - 1e-6) : 240 + Math.floor((t - TR) / BAR + 1e-6);
   const since = t < TR ? BAR - (((TR - t) / BAR) % 1) * BAR : (t - TR) % BAR, jump = Math.min(1, since / .09), over = since < .25 ? Math.sin(Math.min(1, since / .25) * Math.PI) * 1.6 : 0;
@@ -197,7 +204,7 @@ window.R = t => {
   // the board: every flap
   mods.forEach(o => { const r = drawMod(o, t), m = r.meta;
     if (o.lp) { // grading: a right trade's lamp lights and its word glows; a wrong one goes dark
-      let g = 0; if (r.landed && m.j != null) { const tg = TR + .85 + m.j * .18; g = m.re ? (t >= tg ? 1 : 0) : L.n(t, tg, tg + .25) }
+      let g = 0; if (r.landed && m.j != null) { const tg = TR + 1 + m.j * .2; g = m.re ? (t >= tg ? 1 : 0) : L.n(t, tg, tg + .25) }
       const on = m.right ? g : 0, off = m.right === false ? g : 0, col = m.cls === 'u' ? '118,226,178' : '255,124,136';
       o.lp.style.background = on ? `radial-gradient(circle at 40% 35%,#fffbe0,#fdbc2a 55%,#a86e08)` : '';
       o.lp.style.boxShadow = on ? `0 0 0 1.2px #000,0 0 ${12 * on}px ${4 * on}px rgba(253,188,42,${.75 * on})` : '';
@@ -208,7 +215,7 @@ window.R = t => {
   const lo = L.n(t, T_LEAD, T_LEAD + .4), r0 = M.rows[0];
   r0.rk.el.classList.toggle('gold', lo > 0); r0.nm.t.classList.toggle('foil', lo > 0);
   if (lo > 0) r0.nm.t.style.backgroundPosition = `${(100 - 100 * L.n((t - T_LEAD) % 2.4, .3, 1.5)).toFixed(1)}% 0`;
-  const ld = L.$('#lead'); ld.style.cssText = `left:${G.rk[0] - 30}px;top:${G.yR(0) - 30}px;width:${1096 - 2 * G.rk[0] + 60}px;height:${G.rh + 60}px;opacity:${(.9 * lo).toFixed(3)}`;
+  const ld = L.$('#lead'); ld.style.cssText = `left:-60px;top:${G.yR(0) - 70}px;width:1216px;height:${G.rh + 140}px;opacity:${(.9 * lo).toFixed(3)}`;
 };
 (async () => {
   [MOD, D, LN] = await Promise.all([fetch('models5.json').then(r => r.json()), fetch('data/close-' + DATE + '.json').then(r => r.json()), fetch('w6/oc-d/lines.json').then(r => r.json())]);
