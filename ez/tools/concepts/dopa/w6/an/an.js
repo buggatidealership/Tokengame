@@ -16,8 +16,10 @@ AN.tr = (k, t) => AN.D.trades.find(x => x.k === k && x.t === t);
 AN.logo = s => `<img src="ezlogo.svg" width="${s}" height="${s}" style="display:block">`;
 AN.brand = () => `<div class="tb"><span class="lgo">${AN.logo(76)}</span><b class="nmx"><i class="e">E</i>arnings <i class="z">Z</i>eason</b><span class="ssn">SEASON 2</span></div>`;
 // the highlighted clause as words, each with a marker copy over it that a sweep uncovers left to right, line by line in reading order
-const words = (s, cls) => { const w = s.split(/\s+/).filter(Boolean).flatMap(x => x.split(/(?<=-)(?=\w)/));
-  return w.map((x, i) => { const t = x + (i < w.length - 1 && !x.endsWith('-') ? ' ' : ''); return `<span class="hw">${AN.esc(t)}<i class="${cls || ''}">${AN.esc(t)}</i></span>` }).join('') };
+// (spaces stay outside the words, so a long clause still wraps between them; each word's marker reaches over the space after it, and
+// overlaps its neighbour by a pixel, so the marker reads as one stroke with no seams)
+const words = (s, cls) => { const w = s.split(/\s+/).filter(Boolean).flatMap(x => x.split(/(?<=-)(?=\w)/)); let o = '';
+  w.forEach((x, i) => { const sp = i < w.length - 1 && !x.endsWith('-'); o += `<span class="hw${sp ? ' sp' : ''}">${AN.esc(x)}<i class="${cls || ''}">${AN.esc(x)}</i></span>${sp ? ' ' : ''}` }); return o };
 AN.quote = (keep, hl, cls) => { const i = keep.indexOf(hl); if (i < 0) throw new Error('highlight not in text: ' + hl);
   return AN.esc(keep.slice(0, i)) + `<span class="hlc">${words(hl, cls)}</span>` + AN.esc(keep.slice(i + hl.length)) };
 // the X posts drop every punctuation mark from the AI's words and break at its sentences (x2p-post-a1/a2); prove the words are the same words
@@ -27,8 +29,8 @@ AN.checkLines = (why, lines) => { const a = AN.strip(why), b = lines.map(l => l.
 // lines with one [bracketed] span = the highlighted clause
 AN.lines = (lines, cls) => lines.map(l => { const m = l.match(/^(.*)\[(.*)\](.*)$/); return `<p>${m ? AN.esc(m[1]) + `<span class="hlc">${words(m[2], cls)}</span>` + AN.esc(m[3]) : AN.esc(l)}</p>` }).join('');
 // a marker sweep: p from 0 to 1 over the clause's letters, word by word
-AN.sweep = (el, p) => { const ws = [...el.querySelectorAll('.hw')], n = ws.reduce((s, w) => s + w.firstChild.textContent.length, 0); let c = 0;
-  ws.forEach(w => { const L = w.firstChild.textContent.length, x = Math.min(1, Math.max(0, (p * n - c) / L)); c += L;
+AN.sweep = (el, p) => { const ln = w => w.firstChild.textContent.length + (w.classList.contains('sp') ? 1 : 0), ws = [...el.querySelectorAll('.hw')], n = ws.reduce((s, w) => s + ln(w), 0); let c = 0;
+  ws.forEach(w => { const L = ln(w), x = Math.min(1, Math.max(0, (p * n - c) / L)); c += L;
     w.lastChild.style.clipPath = `inset(-12% ${((1 - x) * 100).toFixed(2)}% -12% 0)`; w.lastChild.style.opacity = x > 0 ? 1 : 0 }) };
 // a cubic Hermite step from (p0, slope v0) to (p1, slope v1) over T seconds; x in seconds from its start
 AN.herm = (p0, v0, p1, v1, T, x) => { const s = Math.min(1, Math.max(0, x / T)), s2 = s * s, s3 = s2 * s;
@@ -49,7 +51,8 @@ AN.css = `
 .tb .ssn{margin-left:auto;font:600 27px/1 'Geist Mono';letter-spacing:.1em;color:#fdbc2a;padding:15px 20px 13px;border-radius:14px;background:rgba(253,188,42,.1);box-shadow:inset 0 0 0 2px rgba(253,188,42,.35)}
 .hlc{white-space:normal}
 .hw{position:relative;white-space:nowrap}
-.hw i{position:absolute;left:0;right:0;top:-.1em;bottom:-.1em;padding:.1em 0 0;font-style:normal;white-space:pre;line-height:normal;color:#1a1405;background:#f3c04a;opacity:0}
+.hw i{position:absolute;left:0;right:-1.5px;top:-.1em;bottom:-.1em;padding:.1em 0 0;font-style:normal;white-space:pre;line-height:normal;color:#1a1405;background:#f3c04a;opacity:0}
+.hw.sp i{right:-.3em}
 .hw:first-child i{left:-.1em;padding-left:.1em;border-radius:.1em 0 0 .1em}.hw:last-child i{right:-.1em;border-radius:0 .1em .1em 0}
 .hw i.pg{background:#fdbc2a;color:#1a1300}
 .pvt{font:700 22px/1 'Geist Mono';letter-spacing:.1em;color:#fdbc2a;padding:9px 12px 7px;border:2px dashed #fdbc2a;border-radius:9px;background:#1a160f;white-space:nowrap}

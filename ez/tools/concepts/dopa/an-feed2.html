@@ -8,13 +8,15 @@
 <style>
 :root{--pn:rgba(14,19,17,.95);--pn2:#151c19;--ln:#24302b;--tx:#f2ede6;--mu:#8e9a93;--mu2:#5d6963;--up:#55d6a2;--dn:#ff5a6e;--ac:#fdbc2a}
 #chrome{position:relative;z-index:27}
+#vig{opacity:.55}
 #stage{position:absolute;left:0;right:0;top:140px;bottom:0;overflow:hidden;-webkit-mask:linear-gradient(transparent 0,#000 26px);mask:linear-gradient(transparent 0,#000 26px)}
+#room::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(100deg,transparent 40%,rgba(255,250,235,.15) 50%,transparent 60%);background-size:300% 100%;background-position:var(--sx,150%) 0;opacity:var(--so,0)}
 #room{position:absolute;left:36px;width:1008px;top:16px;transform-origin:50% 0;border-radius:34px;background:var(--pn);box-shadow:inset 0 0 0 2px var(--ln),0 30px 80px rgba(0,0,0,.5);padding:0 0 34px}
 .rh{display:flex;align-items:center;gap:26px;padding:34px 38px 20px}
 .rh .cn b{font:800 52px/1 Inter;letter-spacing:-.02em}.rh .cn span{font:500 32px/1 'Geist Mono';color:var(--mu);margin-left:16px;letter-spacing:.04em}
 .rh .cn small{display:block;margin-top:14px;font:500 27px/1 'Geist Mono';color:var(--mu)}
 .mv{margin-left:auto;text-align:right;opacity:0}
-.mv .tk{font:600 36px/1 'Geist Mono';color:var(--mu);margin-right:16px;letter-spacing:.04em}
+.mv .tk{font:600 36px/1 'Geist Mono';color:var(--mu);margin-right:26px;letter-spacing:.04em}
 .mv #mvn{display:inline-block}
 .mv b{display:block;font:700 66px/1 'Geist Mono';letter-spacing:-.03em;color:var(--dn);font-variant-numeric:tabular-nums}
 .mv .pvt{display:inline-block;margin-top:14px}
@@ -96,17 +98,18 @@ const X = '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>', V =
 // the chat grows as it is read: a message takes the dots' height while its AI types, then its full height as the bubble lands
 const mwH = (i, u) => { const m = MS[i]; return u < m.b - TYPE ? 0 : u < m.b ? DOTH * L.eio(L.n(u, m.b - TYPE, m.b - TYPE + .2)) : L.lerp(DOTH, m.h, L.eio(L.n(u, m.b, m.b + .45))) };
 const roomH = u => H0 + MS.reduce((s, m, i) => s + mwH(i, u), 0);
-// the camera: while the room fits it sits centred; once taller, the reading point (moving down each message while it is read, until the
-// next one arrives) is held at 820 px; for the move and the receipts it rises back to the top of the room (the header and both bubbles);
-// a critically damped follow smooths it, so it never jumps and never quite stops
-const readY = u => { let y = 0; MS.forEach((m, i) => { const t1 = i < 2 ? MS[i + 1].b : T_CL - .8; if (u >= m.b) y = m.top + 60 + Math.min(1, (u - m.b) / (t1 - m.b)) * (m.h - 120) }); return y };
-const tgt = u => { const H = roomH(u); if (u > T_CL - .8) return 16; return H + 32 <= SH ? (SH - H) / 2 : Math.max(SH - H - 24, Math.min(16, 820 - readY(u))) };
+// the camera: the room sits centred until the first message; then the reading point runs down each message over its reading time (to
+// the next message, or to the move) and is held at 740 px, so the chat keeps scrolling up as it is read, like a real chat; for the move
+// and the receipts it rises back to the top of the room. A critically damped follow smooths it, so it never jumps
+const readY = u => { let y = 0; MS.forEach((m, i) => { const t1 = i < 2 ? MS[i + 1].b - TYPE : T_CL - .8; if (u >= m.b) y = m.top + 30 + Math.min(1, (u - m.b) / (t1 - m.b)) * (m.h - 30) }); return y };
+const tgt = u => { if (u > T_CL - .8) return 16; if (u < MS[0].b) return (SH - roomH(u)) / 2; return Math.min(16 + 300, 740 - readY(u)) };
 const camY = t => { let y = tgt(0), v = 0, w = 6.5, dt = 1 / 120; for (let u = 0; u < t; u += dt) { const a = w * w * (tgt(u) - y) - 2 * w * v; v += a * dt; y += v * dt } return y };
 window.R = t => {
   grain(t); gl(t);
+  { const t0 = T_RC[1] + .35, q = t < t0 ? 0 : ((t - t0) % 1.5) / 1.1; room.style.setProperty('--so', t < t0 || q > 1 ? 0 : Math.sin(Math.PI * q).toFixed(3)); room.style.setProperty('--sx', (150 - 150 * L.eio(Math.min(1, q))).toFixed(1) + '%') }
   // the line alone, then it lifts away as the room comes up under it
-  const ln = L.$('#line'), li = L.eo5(L.n(t, T_LINE, T_LINE + .45)), lo = L.eio(L.n(t, T_ROOM - .1, T_ROOM + .5));
-  ln.style.opacity = (li * (1 - lo)).toFixed(3); ln.style.transform = `translateY(${(500 + 40 * (1 - li) - 260 * lo).toFixed(1)}px) scale(${(1 - .15 * lo).toFixed(3)})`;
+  const ln = L.$('#line'), li = L.eo(L.n(t, T_LINE, T_LINE + .8)), lo = L.eio(L.n(t, T_ROOM - .1, T_ROOM + .5)), rise = 1 - Math.pow(1 - L.n(t, T_LINE, T_ROOM + .2), 2);
+  ln.style.opacity = (li * (1 - lo)).toFixed(3); ln.style.transform = `translateY(${(500 + 100 * (1 - rise) - 260 * lo).toFixed(1)}px) scale(${(1 + .05 * L.n(t, T_LINE, T_ROOM) - .15 * lo).toFixed(3)})`;
   const ri = L.eio(L.n(t, T_ROOM, T_ROOM + .65)); L.$('#chrome').style.opacity = ri;
   // the room: it grows with the chat; the camera keeps it centred, then follows the reading, then rises to the top for the move
   MS.forEach((m, i) => { msgEls[i].style.height = mwH(i, t).toFixed(1) + 'px' });
@@ -119,7 +122,7 @@ window.R = t => {
     if (m.s) AN.sweep(el.querySelector('.hlc'), L.eio(L.n(t, m.s, m.s + m.sw))) });
   // the move lands on the drop: counted from 0 to the PREVIEW move, the night washes red; the receipts stamp, the right side lights
   const mv = L.$('.mv'), mk = L.n(t, T_CL - .35, T_CL + .05); mv.style.opacity = L.cl(mk * 3); const v = AN.D.cos.INTU.move * L.eo(L.n(t, T_CL - .35, T_CL));
-  L.$('#mvn').textContent = (t >= T_CL ? AN.D.cos.INTU.pct : (v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%'); L.$('#mvn').style.transform = `scale(${(1 + .25 * Math.exp(-Math.max(0, t - T_CL) * 7) * (t >= T_CL ? 1 : 0)).toFixed(3)})`; L.$('#mvn').style.transformOrigin = '100% 50%';
+  L.$('#mvn').textContent = (t >= T_CL ? AN.D.cos.INTU.pct : (v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%'); L.$('#mvn').style.transform = `scale(${(1 + .14 * Math.exp(-Math.max(0, t - T_CL) * 7) * (t >= T_CL ? 1 : 0)).toFixed(3)})`; L.$('#mvn').style.transformOrigin = '100% 50%';
   const pv = L.$('.pvl'); pv.style.opacity = L.n(t, T_CL + .2, T_CL + .6); pv.style.height = (34 * L.eio(L.n(t, T_CL - .4, T_CL))).toFixed(1) + 'px';
   L.$('#wash').style.opacity = (L.n(t, T_CL, T_CL + .2) * (1 - .6 * L.n(t, T_CL + .2, T_CL + 1.6))).toFixed(3);
   [Q, G].forEach((x, i) => { const rc = msgEls[i].querySelector('.rc'), s = L.n(t, T_RC[i], T_RC[i] + .22);

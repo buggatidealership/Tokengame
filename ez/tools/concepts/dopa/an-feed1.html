@@ -91,8 +91,8 @@ window.R = t => {
   grain(t); gl(t);
   const S = scroll(t);
   // the line alone, then it docks into the FEED tab's headline
-  const kh = L.$('#kh'), dk = L.eio(L.n(t, T_DOCK, T_DOCK + .62)), tin = L.eo(L.n(t, T_LINE, T_LINE + .85)), sc = 113 / 50 * (1 + .035 * L.n(t, T_LINE, T_DOCK) * (1 - dk));
-  const kx = 44 + kh.offsetLeft, ky = 140 + kh.offsetTop - S, bx = 540 - kh.offsetWidth * sc / 2, by = 470 + 70 * (1 - tin);
+  const kh = L.$('#kh'), dk = L.eio(L.n(t, T_DOCK, T_DOCK + .62)), tin = L.eo(L.n(t, T_LINE, T_LINE + .85)), rise = 1 - Math.pow(1 - L.n(t, T_LINE, T_DOCK + .3), 2), sc = 113 / 50 * (1 + .05 * L.n(t, T_LINE, T_DOCK) * (1 - dk));
+  const kx = 44 + kh.offsetLeft, ky = 140 + kh.offsetTop - S, bx = 540 - kh.offsetWidth * sc / 2, by = 470 + 100 * (1 - rise);   // the line keeps rising slowly while it is alone, so the first second is never still
   kh.style.transform = `translate(${L.lerp(bx - kx, 0, dk).toFixed(1)}px,${L.lerp(by - ky, 0, dk).toFixed(1)}px) scale(${L.lerp(sc, 1, dk).toFixed(4)})`; kh.style.opacity = L.cl(tin * 1.6).toFixed(3);
   L.$('.kk small').style.opacity = L.n(t, T_DOCK + .4, T_DOCK + .8);
   // the terminal assembles round the line: the brand bar from the top, the tab bar from the bottom; the tab light slides to the new FEED tab

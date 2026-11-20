@@ -8,9 +8,11 @@
 <style>
 :root{--pn:#161312;--pn2:#1d1917;--ln:#2a2522;--tx:#f2ede6;--mu:#8e8680;--mu2:#5f5853;--up:#55d6a2;--dn:#e8576b;--ac:#fdbc2a}
 #chrome{position:relative;z-index:27}
+#vig{opacity:.55}
 #stage{position:absolute;left:0;right:0;top:132px;bottom:0;overflow:hidden;-webkit-mask:linear-gradient(transparent 0,#000 24px);mask:linear-gradient(transparent 0,#000 24px)}
 #doc{position:absolute;left:34px;width:1012px;top:0;transform-origin:50% 0}
-.pn{background:var(--pn);border-radius:32px;box-shadow:inset 0 0 0 2px var(--ln),0 26px 70px rgba(0,0,0,.45);overflow:hidden}
+.pn::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(100deg,transparent 40%,rgba(255,250,235,.16) 50%,transparent 60%);background-size:300% 100%;background-position:var(--sx,150%) 0;opacity:var(--so,0)}
+.pn{position:relative;background:var(--pn);border-radius:32px;box-shadow:inset 0 0 0 2px var(--ln),0 26px 70px rgba(0,0,0,.45);overflow:hidden}
 .pn+.pn{margin-top:26px}
 #pb .mb p{overflow:hidden}
 .hd{display:flex;align-items:center;gap:26px;padding:28px 38px;border-bottom:2px solid var(--ln);font:500 28px/1 'Geist Mono';letter-spacing:.08em;color:var(--mu);white-space:nowrap}
@@ -98,16 +100,17 @@ const tgt = u => { const H = docH(u); return H + 60 <= SH ? (SH - H) / 2 : Math.
 const camY = t => { let y = tgt(0), v = 0, w = 4.6, dt = 1 / 120; for (let u = 0; u < t; u += dt) { const a = w * w * (tgt(u) - y) - 2 * w * v; v += a * dt; y += v * dt } return y };
 window.R = t => {
   grain(t); gl(t);
+  { const t0 = T_FIT + .75, q = t < t0 ? 0 : ((t - t0) % 1.6) / 1.2; doc.style.setProperty('--so', t < t0 || q > 1 ? 0 : Math.sin(Math.PI * q).toFixed(3)); doc.style.setProperty('--sx', (150 - 150 * L.eio(Math.min(1, q))).toFixed(1) + '%') }
   rows.forEach((r, i) => r.style.height = rowH(i, t).toFixed(1) + 'px'); lines.forEach((p, i) => p.style.height = lineH(i, t).toFixed(1) + 'px');
   const pbe = L.$('#pb'); pbe.style.display = t < T_MSG ? 'none' : '';
   // the line alone; its two halves fly into the card: the name, then the subline (crossfade into the card's own type as they land)
-  const li = L.eo5(L.n(t, T_LINE, T_LINE + .45)), dk = L.eio(L.n(t, T_DOCK, T_DOCK + .6)), cy = camY(t), sc = L.lerp(1.06, 1, L.eio(L.n(t, 0, DUR)));
+  const li = L.eo(L.n(t, T_LINE, T_LINE + .85)), dk = L.eio(L.n(t, T_DOCK, T_DOCK + .6)), cy = camY(t), sc = L.lerp(1.06, 1, L.eio(L.n(t, 0, DUR)));
   // after the last line: the camera pulls back to the whole post (the card as it is posted), centred
   const H = docH(DUR), fit = Math.min(1, (SH - 50) / H), pk = L.eio(L.n(t, T_FIT, T_FIT + .9)), fy = (SH - H * fit) / 2;
   doc.style.transform = `translateY(${(L.lerp(cy, fy, pk) + 260 * (1 - L.eio(L.n(t, T_DOCK - .1, T_DOCK + .6)))).toFixed(1)}px) scale(${L.lerp(sc, fit, pk).toFixed(4)})`;
   doc.style.opacity = L.n(t, T_DOCK - .05, T_DOCK + .35).toFixed(3);
   const l1 = L.$('#l1'), l2 = L.$('#l2'); l1.style.transform = l2.style.transform = 'none'; l1._tx = l1._ty = l2._tx = l2._ty = 0;
-  const ln = L.$('#line'); ln.style.transform = `translateY(${(500 + 40 * (1 - li)).toFixed(1)}px)`;
+  const ln = L.$('#line'), rise = 1 - Math.pow(1 - L.n(t, T_LINE, T_DOCK + .3), 2); ln.style.transform = `translateY(${(500 + 100 * (1 - rise)).toFixed(1)}px) scale(${(1 + .05 * L.n(t, T_LINE, T_DOCK)).toFixed(4)})`;
   [[l1, L.$('#cnb')], [l2, L.$('#cns')]].forEach(([a, b]) => { const s = a.getBoundingClientRect(), d = b.getBoundingClientRect(), k = d.height / s.height;
     a.style.transform = `translate(${(dk * (d.left - s.left)).toFixed(1)}px,${(dk * (d.top - s.top)).toFixed(1)}px) scale(${L.lerp(1, k, dk).toFixed(4)})`;
     a.style.opacity = (li * (1 - L.n(t, T_DOCK + .45, T_DOCK + .6))).toFixed(3); b.style.opacity = L.n(t, T_DOCK + .45, T_DOCK + .6).toFixed(3) });
