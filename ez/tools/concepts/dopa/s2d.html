@@ -10,13 +10,14 @@
   Built from s2d.src.html by mk-s2d.py (it pastes Gemini's, Qwen's and Intuit's marks from s2c.html).
   Render: CRF=20 bash wrapx.sh s2d.html 34.5 x2p-s2-intro-d-draft w8f-horns 0 .34
   0 the EZ. logo, EARNINGS ZEASON, the golden ticket SEASON 2 | 1.38 push to the ticket | 2.76 Season 1: the four on the podium, 4 AIs |
-  4.14 112 TRADES | 5.52 the rule on glass: hit rate under 50% | 6.90 RELEGATED stamped | 8.28 the hit-rate chart, every trade, the 50% floor
-  in glass | 10.34 push to the line ends | 12.41 drop 1: Kimi's tag shatters, the floor cracks, RELEGATED | 13.79 Kimi on the broken
-  pedestal, hit rate 46% 51-61 | 15.17 3 STAY | 16.55 GROK DEFENDS THE TITLE | 17.93 NEW FROM CHINA, Qwen's card | 19.31 Qwen takes the
-  seat | 20.69 NEW FROM THE US, Gemini's card on the five-pedestal stage | 22.07 Gemini takes the fifth | 23.45 roll call, one a beat
-  pair | 24.83 push in | 26.55 drop 2: 5 AIs | 27.93 SAME RULE: hit rate under 50%, RELEGATED stamped over the five (owner, 19 Nov: the rule
-  carries into Season 2) | 29.31 EVERY TRADE WITH ITS REASON, Season 2's first posts (Intuit, from the sheet) | 30.69 Gemini's post lifts |
-  31.72 the logo, the ticket SEASON 2 and, on glass, EVERYONE STARTS AT P&L $0 (owner, 19 Nov: every AI starts Season 2 at $0), held to the end.
+  4.14 112 TRADES | 5.52 the rule on glass: hit rate under 50% | 6.90 RELEGATED stamped | 8.28 HIT RATE, SEASON 1: the chart of every trade,
+  the 50% floor in glass | 10.34 push to the line ends | 12.41 drop 1: Kimi's tag shatters, the floor cracks, RELEGATED | 13.79 KIMI falls on
+  the broken pedestal | 14.48 its record on glass, hit rate 46%, 51-61 | 15.17 RELEGATED stamped, held to 16.55 (owner, 20 Nov: longer) |
+  16.55 3 STAY | 17.93 GROK DEFENDS THE TITLE | 19.31 NEW COMPETITOR FROM CHINA, Qwen's card | 20.69 Qwen takes the seat | 22.07 NEW
+  COMPETITOR FROM THE US, Gemini's card on the five-pedestal stage | 23.45 Gemini takes the fifth | 24.83 roll call, one a beat into the drop |
+  26.55 drop 2: 5 AIs | 27.93 SAME RULE: hit rate under 50%, RELEGATED stamped over the five (owner, 19 Nov: the rule carries into Season 2) |
+  29.31 the logo, the ticket SEASON 2 / STARTING NOW (30.00) and, on glass, EVERYONE STARTS AT P&L $0 (30.69), held to the end.
+  The top bug is the logo and EARNINGS ZEASON only (owner, 20 Nov: no season in it; each scene says its season).
   The newcomers' cards carry the versions the owner named, checked on the labs' own pages on 19 Nov: Qwen4-Max (Alibaba, released 16 Nov 2026)
   and Gemini 4 Argon (Google; a limited release when checked). The chart's first trades are dimmed (tiny samples, lesson 16). -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Kanit:ital,wght@1,700;1,800;1,900&display=swap">
@@ -80,7 +81,7 @@ html,body{background:#04070e}
     <div id="cam"><div id="sc"></div><canvas id="ln" data-content></canvas><div id="ov"></div></div>
     <div id="hd"></div>
   </div>
-  <div class="ab bug" data-chrome style="display:flex;align-items:center"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>SEASON 2</b></div>
+  <div class="ab bug" data-chrome style="display:flex;align-items:center"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span></div>
   <div id="fl" data-chrome></div><div id="vig" data-chrome></div><canvas id="grain" data-chrome></canvas>
 </div>
 <script src="lib.js"></script>
@@ -90,10 +91,11 @@ const BPM = 174, BT = 60 / BPM, bt = n => n * BT, DUR = 34.5;
 const CR = '#f2ede6', GN = '#55d6a2', RD = '#e8576b', AU = '#fdbc2a', BK = '#04070e';
 const COL = { GROK: AU, CLAUDE: GN, GPT: CR, KIMI: RD }, RGB = { GROK: '253,188,42', CLAUDE: '85,214,162', GPT: '242,237,230', KIMI: '232,87,107', QWEN: '242,237,230', GEMINI: '242,237,230' };
 // the story's beats, on the bed's grid (beats 36 and 77 are the bed's drops)
-const T = { tick: bt(4), s1: bt(8), s1b: bt(12), rule: bt(16), stamp: bt(20), chart: bt(24), chart2: bt(30), cend: bt(34), d1: bt(36), kimi: bt(40), stay: bt(44), grok: bt(48),
-  cn: bt(52), cn2: bt(56), us: bt(60), us2: bt(64), roll: bt(68), roll2: bt(72), win: bt(77), same: bt(81), feed: bt(85), feed2: bt(89), close: bt(85), now: bt(87), pnl: bt(89) };   // the feed scene is cut (owner, 20 Nov): the close starts on beat 85
+const T = { tick: bt(4), s1: bt(8), s1b: bt(12), rule: bt(16), stamp: bt(20), chart: bt(24), chart2: bt(30), cend: bt(34), d1: bt(36), kimi: bt(40), stay: bt(48), grok: bt(52),
+  cn: bt(56), cn2: bt(60), us: bt(64), us2: bt(68), roll: bt(72), roll2: bt(74), win: bt(77), same: bt(81), feed: bt(85), feed2: bt(89), close: bt(85), now: bt(87), pnl: bt(89) };   // the feed scene is cut (owner, 20 Nov): the close starts on beat 85
 T.sst = T.same + 2 * BT;   // the second RELEGATED stamp
-const SHOTS = [0, 4, 8, 12, 16, 20, 24, 30, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 77, 81, 85].map(bt);
+T.kcard = T.kimi + 2 * BT; T.kst = T.kimi + 4 * BT;   // Kimi's record lands, then RELEGATED, then a held beat (owner, 20 Nov: the Kimi scene longer)
+const SHOTS = [0, 4, 8, 12, 16, 20, 24, 30, 36, 40, 48, 52, 56, 60, 64, 68, 72, 77, 81, 85].map(bt);
 const NEW = { GEMINI: { name: 'Gemini', lab: 'GOOGLE', d: 'M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81' },
   QWEN: { name: 'Qwen', lab: 'ALIBABA', fr: 'evenodd', d: 'M12.604 1.34c.393.69.784 1.382 1.174 2.075a.18.18 0 00.157.091h5.552c.174 0 .322.11.446.327l1.454 2.57c.19.337.24.478.024.837-.26.43-.513.864-.76 1.3l-.367.658c-.106.196-.223.28-.04.512l2.652 4.637c.172.301.111.494-.043.77-.437.785-.882 1.564-1.335 2.34-.159.272-.352.375-.68.37-.777-.016-1.552-.01-2.327.016a.099.099 0 00-.081.05 575.097 575.097 0 01-2.705 4.74c-.169.293-.38.363-.725.364-.997.003-2.002.004-3.017.002a.537.537 0 01-.465-.271l-1.335-2.323a.09.09 0 00-.083-.049H4.982c-.285.03-.553-.001-.805-.092l-1.603-2.77a.543.543 0 01-.002-.54l1.207-2.12a.198.198 0 000-.197 550.951 550.951 0 01-1.875-3.272l-.79-1.395c-.16-.31-.173-.496.095-.965.465-.813.927-1.625 1.387-2.436.132-.234.304-.334.584-.335a338.3 338.3 0 012.589-.001.124.124 0 00.107-.063l2.806-4.895a.488.488 0 01.422-.246c.524-.001 1.053 0 1.583-.006L11.704 1c.341-.003.724.032.9.34zm-3.432.403a.06.06 0 00-.052.03L6.254 6.788a.157.157 0 01-.135.078H3.253c-.056 0-.07.025-.041.074l5.81 10.156c.025.042.013.062-.034.063l-2.795.015a.218.218 0 00-.2.116l-1.32 2.31c-.044.078-.021.118.068.118l5.716.008c.046 0 .08.02.104.061l1.403 2.454c.046.081.092.082.139 0l5.006-8.76.783-1.382a.055.055 0 01.096 0l1.424 2.53a.122.122 0 00.107.062l2.763-.02a.04.04 0 00.035-.02.041.041 0 000-.04l-2.9-5.086a.108.108 0 010-.113l.293-.507 1.12-1.977c.024-.041.012-.062-.035-.062H9.2c-.059 0-.073-.026-.043-.077l1.434-2.505a.107.107 0 000-.114L9.225 1.774a.06.06 0 00-.053-.031zm6.29 8.02c.046 0 .058.02.034.06l-.832 1.465-2.613 4.585a.056.056 0 01-.05.029.058.058 0 01-.05-.029L8.498 9.841c-.02-.034-.01-.052.028-.054l.216-.012 6.722-.012z' } };
 const INTU = '<svg viewBox="-3 8.6 30 6.8"><path fill="#fff" d="M12.32 12.38c0 1.174.974 2.033 2.211 2.033 1.237 0 2.212-.859 2.212-2.033v-2.7h-1.198v2.56c0 .633-.44 1.06-1.017 1.06s-1.017-.424-1.017-1.06V9.68h-1.198l.008 2.699zm7.624-1.619h1.429v3.563h1.198V10.76H24V9.68h-4.056v1.082zM19.17 9.68h-1.198v4.645h1.198V9.679zM7.482 10.761h1.43v3.563h1.197V10.76h1.428V9.68H7.482v1.082zM1.198 9.68H0v4.645h1.198V9.679zm5.13 1.97c0-1.175-.974-2.034-2.211-2.034-1.237 0-2.212.859-2.212 2.033v2.701h1.198v-2.56c0-.633.44-1.06 1.017-1.06s1.017.425 1.017 1.06v2.56h1.198L6.33 11.65z"/></svg>';
@@ -178,6 +180,7 @@ function build() {
   S.h.rc = add(`<div class="cc bb cr sh" style="top:150px;font-size:430px;letter-spacing:.04em"><span class="au"></span> AI<i style="font-style:normal;font-size:.66em"></i></div>`, hd);
   S.h.five = add(`<div class="cc bb cr sh" style="top:150px;font-size:430px;letter-spacing:.04em"><span data-fit="900">5 AI<span style="font-size:.66em">s</span></span></div>`, hd);
   S.h.hit = add(`<div class="ab k cr sh" style="font-size:150px">HIT RATE</div>`, hd);
+  S.h.hs1 = add(`<div class="ab bb sh" style="font-size:64px;letter-spacing:.22em;color:#d5cdc3">SEASON 1</div>`, hd);
   S.h.cnt = add(`<div class="ab m" style="left:auto;right:56px;transform-origin:100% 0;font-size:64px;color:${CR}"><span style="font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:46px;letter-spacing:.14em;color:#d5cdc3;margin-right:18px">TRADE</span><b style="font-weight:700"></b></div>`, hd);
   S.h.kimi = add(`<div class="cc k rd sh" style="top:110px;font-size:230px"><span data-fit="760">KIMI</span></div>`, hd);
   // the rule on one tall sheet; RELEGATED stamped on it
@@ -243,9 +246,9 @@ function build() {
   const R1 = [0, 1, 2, 3].map(i => T.s1 + .12 + i * BT * .5);
   C.push([0, 'r11-thump', .12], [T.tick - .1, 'sfx-whoosh', .07], [T.s1 - .08, 'sfx-whoosh', .07], ...R1.map(x => [x, 'r11-card', .06]), [T.s1b, 'r11-thump', .09],
     [T.rule - .08, 'sfx-whoosh', .08], [T.stamp, 'sfx-stamp', .16], [T.chart - .08, 'sfx-whoosh', .07], [T.chart2, 'r11-ping', .05],
-    [T.d1, 'sfx-riser', .1], [T.d1, 'sfx-shatter', .2], [T.d1, 'sfx-boom', .18], [T.d1 + BT, 'sfx-stamp', .13], [T.kimi, 'r11-thump', .1],
+    [T.d1, 'sfx-riser', .1], [T.d1, 'sfx-shatter', .2], [T.d1, 'sfx-boom', .18], [T.d1 + BT, 'sfx-stamp', .13], [T.kimi, 'r11-thump', .1], [T.kcard - .06, 'sfx-whoosh', .06], [T.kcard + .1, 'r11-card', .07], [T.kst, 'sfx-stamp', .15],
     [T.stay - .08, 'sfx-whoosh', .07], [T.grok, 'r11-sparkle', .09], [T.cn - .08, 'sfx-whoosh', .08], [T.cn + .3, 'r11-thump', .09], [T.cn2 + .3, 'r11-thump', .12],
-    [T.us - .08, 'sfx-whoosh', .08], [T.us + .3, 'r11-thump', .09], [T.us2 + .3, 'r11-thump', .12], ...[0, 2, 4, 6, 8].map(i => [bt(68 + i), 'r11-card', .08]),
+    [T.us - .08, 'sfx-whoosh', .08], [T.us + .3, 'r11-thump', .09], [T.us2 + .3, 'r11-thump', .12], ...[0, 1, 2, 3, 4].map(i => [T.roll + i * BT, 'r11-card', .08]),
     [T.win, 'sfx-riser', .12], [T.win, 'sfx-boom', .22], [T.win + .12, 'r11-sparkle', .1], [T.same - .06, 'sfx-whoosh', .08], [T.same + .1, 'r11-thump', .09], [T.sst, 'sfx-stamp', .15],
     [T.close - .06, 'sfx-whoosh', .08], [T.close + .12, 'r11-thump', .12], [T.now, 'sfx-stamp', .1], [T.pnl - .06, 'sfx-whoosh', .06], [T.pnl + .1, 'r11-card', .07]);
   window.MUSIC = { f: q.get('bed') || 'w8f-horns', at: +(q.get('at') || 0) };
@@ -263,7 +266,7 @@ function ground(t) { const x = S.gx; x.setTransform(1, 0, 0, 1, 0, 0); x.globalA
   if (br > 1) { x.globalCompositeOperation = 'lighter'; x.globalAlpha = Math.min(1, br - 1); x.drawImage(f, 0, 0, 540, 720) }
   x.restore(); x.globalCompositeOperation = 'source-over'; if (br < 1) { x.globalAlpha = L.cl(1 - br, 0, .92); x.fillStyle = BK; x.fillRect(0, 0, 1080, 1350) }
   // the red veil: the rule's stamp and the fall
-  const rv = (t >= T.stamp && t < T.chart ? .16 * L.n(t, T.stamp, T.stamp + .1) : 0) + (t >= T.d1 && t < T.stay ? .2 * (1 - .4 * L.n(t, T.kimi, T.stay)) : 0) + (t >= T.sst && t < T.feed ? .14 * L.n(t, T.sst, T.sst + .1) : 0);
+  const rv = (t >= T.stamp && t < T.chart ? .16 * L.n(t, T.stamp, T.stamp + .1) : 0) + (t >= T.d1 && t < T.stay ? .2 * (1 - .4 * L.n(t, T.kimi, T.kst)) + (t >= T.kst ? .08 * L.n(t, T.kst, T.kst + .1) : 0) : 0) + (t >= T.sst && t < T.feed ? .14 * L.n(t, T.sst, T.sst + .1) : 0);
   if (rv > 0) { x.globalAlpha = rv; x.fillStyle = '#7a0f1c'; x.globalCompositeOperation = 'source-over'; x.fillRect(0, 0, 1080, 1350) }
   // the rim lights: green from the left, red from the right, on the beat; China's arrival leans red, the American's green
   const rl = .32 + .45 * kk + tense * .25 * (.5 + .5 * Math.sin(t * 9)), wl = rl * (win(T.us, T.roll) ? 1.6 : 1), wr = rl * .9 * (win(T.cn, T.us) || win(T.d1, T.stay) || win(T.sst, T.feed) ? 1.6 : 1); x.globalCompositeOperation = 'lighter';
@@ -292,7 +295,7 @@ function cam(t) { const E = L.eio, e5 = L.eo5;
 /* ───────── a frame ───────── */
 function R(tt) { t = tt; if (grain) grain(t); const kk = kick(t);
   ground(t); S.gr = S.gc.getBoundingClientRect();
-  const [cs, ox, oy] = cam(t), j1 = t >= T.d1 ? Math.exp(-(t - T.d1) / .16) : 0, j2 = t >= T.win ? Math.exp(-(t - T.win) / .18) : 0, js = (t >= T.stamp ? Math.exp(-(t - T.stamp) / .12) : 0) + (t >= T.sst ? Math.exp(-(t - T.sst) / .12) : 0), jo = j1 + j2 + .6 * js;
+  const [cs, ox, oy] = cam(t), j1 = t >= T.d1 ? Math.exp(-(t - T.d1) / .16) : 0, j2 = t >= T.win ? Math.exp(-(t - T.win) / .18) : 0, js = (t >= T.stamp ? Math.exp(-(t - T.stamp) / .12) : 0) + (t >= T.kst ? Math.exp(-(t - T.kst) / .12) : 0) + (t >= T.sst ? Math.exp(-(t - T.sst) / .12) : 0), jo = j1 + j2 + .6 * js;
   L.$('#cam').style.transform = `translate(${(ox * (1 - cs)).toFixed(2)}px,${(oy * (1 - cs)).toFixed(2)}px) scale(${cs.toFixed(4)})`;
   L.$('#sh').style.transform = `translate(${(9 * jo * Math.sin(t * 71)).toFixed(2)}px,${(7 * jo * Math.cos(t * 83)).toFixed(2)}px) scale(${(1 + .01 * kk + .03 * jo).toFixed(4)})`;
   let fla = .3 * Math.exp(-t / .1) + .5 * j1 + .62 * j2 + .3 * js + (t >= T.close ? .4 * Math.exp(-(t - T.close) / .09) : 0);
@@ -352,7 +355,7 @@ function rule(t, kk) { const g = S.rule, ki = L.eo5(L.n(t, T.rule, T.rule + .32)
 // 8.28 the hit-rate chart, every trade; 10.34 push to the ends; 12.41 drop 1: Kimi's tag shatters, the floor cracks
 function chart(t, kk) { const on = win(T.chart, T.kimi + .3), kin = L.eo5(L.n(t, T.chart, T.chart + .3)), kout = L.ei(L.n(t, T.kimi - .02, T.kimi + .26)), u0 = L.n(t, T.chart + .12, T.cend), f = 112 * (.7 * u0 + .3 * L.eio(u0)), dy = 1300 * kout;
   // headline and counter
-  put(S.h.hit, 56 - 500 * (1 - kin), 126 - 300 * kout, 1, on ? 1 : 0);
+  put(S.h.hit, 56 - 500 * (1 - kin), 126 - 300 * kout, 1, on ? 1 : 0); put(S.h.hs1, 62 - 500 * (1 - L.eo5(L.n(t, T.chart + .1, T.chart + .4))), 290 - 300 * kout, 1, on ? 1 : 0);
   { const n = Math.min(112, Math.floor(f) + 1), b = S.h.cnt.lastElementChild; if (b._t !== n) { b.textContent = n; b._t = n } put(S.h.cnt, 400 * (1 - kin), 152 - 300 * kout, 1, on ? 1 : 0) }
   // the floor and its label
   const kf = L.eo5(L.n(t, T.chart + .1, T.chart + .45));
@@ -388,21 +391,21 @@ function chart(t, kk) { const on = win(T.chart, T.kimi + .3), kin = L.eo5(L.n(t,
   if (vis(S.crack, on && u >= 0)) { S.crack.style.strokeDashoffset = (1 - L.eo(L.n(u, 0, .22))).toFixed(3); S.crack.style.transform = `translateY(${dy.toFixed(1)}px)` }
   const kr = L.eo5(L.n(t, T.d1 + BT, T.d1 + BT + .14)); put(S.rf, CXJ(112) - S.wRF / 2 - 40, FY + 70 + dy, 1 + 1.8 * (1 - kr), on && t >= T.d1 + BT ? 1 : 0, ' rotate(-6deg)') }
 
-// 13.79 Kimi on the broken pedestal: the record on glass, RELEGATED on the cracked plate
+// 13.79 Kimi on the broken pedestal; 14.48 the record on glass; 15.17 RELEGATED on the cracked plate; held to 16.55
 function kimi(t, kk) { const on = win(T.kimi, T.stay + .2), ki = L.eo5(L.n(t, T.kimi, T.kimi + .35)), ko = L.ei(L.n(t, T.stay - .02, T.stay + .2)), dy = 500 * (1 - ki) + 1200 * ko;
   const s = 470 / BKW, top = 1262 - BKH * s; if (on) put(S.bk, 540 - BKC * s, top + dy, s, 1, BKR(1.2 * Math.sin(t * 2)));
   // Kimi's mark drops onto what is left of its pedestal and tips over a little
   const sp = L.spring(t - T.kimi - .18, 1.8, 6), rest = top + .13 * BKH * s - 214, my = L.lerp(-300, rest, L.cl(sp, 0, 1.15));
   put(S.km, 430, my + 1200 * ko + (t < T.kimi + .5 ? 0 : 0), 1, on && t >= T.kimi + .1 ? 1 : 0, ` rotate(${(-4 - 9 * L.eio(L.n(t, T.kimi + .6, T.stay))).toFixed(2)}deg)`);
-  const kc = L.eo5(L.n(t, T.kimi + .12, T.kimi + .45)); if (on) { S.kc.on = 1; S.kc.el.style.transform = `translateY(${(-500 * (1 - kc) - 1200 * ko).toFixed(1)}px) scale(${(1 + .012 * kk).toFixed(4)})` }
+  const kc = L.eo5(L.n(t, T.kcard, T.kcard + .33)); if (on && t >= T.kcard) { S.kc.on = 1; S.kc.el.style.opacity = kc.toFixed(3); S.kc.el.style.transform = `translateY(${(-160 * (1 - kc) - 1200 * ko).toFixed(1)}px) scale(${(1 + .012 * kk).toFixed(4)})` }
   { const k = L.eo5(L.n(t, T.kimi + .1, T.kimi + .38)); put(S.h.kimi, 0, -200 * (1 - k) - 600 * ko, 1, on ? k : 0) }
-  const ks = L.eo5(L.n(t, T.kimi + 2 * BT, T.kimi + 2 * BT + .14)); put(S.rk, 540 - S.wRK / 2, top + .58 * BKH * s - 62 + dy, 1 + 1.8 * (1 - ks), on && t >= T.kimi + 2 * BT ? 1 : 0, ' rotate(-7deg)') }
+  const ks = L.eo5(L.n(t, T.kst, T.kst + .14)); put(S.rk, 540 - S.wRK / 2, top + .58 * BKH * s - 62 + dy, 1 + 1.8 * (1 - ks), on && t >= T.kst ? 1 : 0, ' rotate(-7deg)') }
 
 // 20.69 the five-pedestal stage: Gemini's card, the fifth pedestal rises, Gemini takes it; 23.45 the roll call
 function newcomers(t, kk) { const on = win(T.us, T.feed + .3), rise = L.eo5(L.n(t, T.us + .15, T.us + .6)), kout = L.ei(L.n(t, T.feed - .02, T.feed + .28)), dy = 700 * kout;
   put(S.p5, 20, 912 + dy, 1, on ? 1 : 0); S.p5.style.clipPath = t < T.roll ? `inset(0 ${(1040 - 805 * PS5).toFixed(1)}px 0 0)` : '';
   put(S.p5e, 20, 912 + dy + 380 * (1 - rise), 1, on && rise > 0 && t < T.roll ? 1 : 0);
-  const slam = j => bt(68 + 2 * j), lit = j => t >= T.roll ? t >= slam(j) : j < 4;
+  const slam = j => T.roll + j * BT, lit = j => t >= T.roll ? t >= slam(j) : j < 4;
   S.beams5.forEach((b, j) => { const fl = t >= T.roll && t >= slam(j) ? .5 * Math.exp(-(t - slam(j)) / .2) : 0; put(b, 0, dy, 1, on ? (j === 4 && t < T.roll ? rise : lit(j) ? 1 : .25) * (.45 + .45 * kk + fl + (t >= T.win ? .3 : 0)) : 0) });
   ORD5.forEach((k, j) => { const el = S.m5[k], nm = S.n5[k]; let y = 714, o = on ? 1 : 0, s = 1 + .04 * kk;
     if (t >= T.roll && t >= slam(j)) s *= 1 + .22 * Math.exp(-(t - slam(j)) / .12);
@@ -411,10 +414,10 @@ function newcomers(t, kk) { const on = win(T.us, T.feed + .3), rise = L.eo5(L.n(
     const nOn = t >= T.roll && t >= slam(j), kn = L.eo5(L.n(t, t >= T.roll ? slam(j) : T.us2 + .42, (t >= T.roll ? slam(j) : T.us2 + .42) + .12));
     put(nm, PX5[j] - 90, PL5 - 20 + dy, 1 + .6 * (1 - kn), on && nOn ? kn * (1 - L.n(t, T.same, T.same + .18)) : 0) });   // the names give way to the rule
   const hs = (el, a, b) => { const k = L.eo5(L.n(t, a, a + .28)), o = L.ei(L.n(t, b - .04, b + .18)); put(el, 0, 60 * (1 - k) - 300 * o, 1, t >= a && t < b + .18 ? k * (1 - o) : 0); blr(el, 10 * (1 - k)) };
-  hs(S.h.us, T.us + .05, T.roll);
+  hs(S.h.us, T.us + .05, T.roll - .14);   // gone before the count lands
   // the roll call's count, then 5 AIs on drop 2
-  { const c = t >= T.roll ? Math.min(5, 1 + Math.floor((t - T.roll) / (2 * BT) + 1e-6)) : 0, el = S.h.rc; if (el._t !== c) { el.firstElementChild.textContent = c; el.lastElementChild.textContent = c > 1 ? 's' : ''; el._t = c }
-    const ks = t >= T.roll ? 1 + .25 * Math.exp(-((t - T.roll) % (2 * BT)) / .1) : 1; put(el, 0, 0, 1, win(T.roll, T.win) ? 1 : 0, ''); el.style.transform += ` scale(${ks.toFixed(4)})` }
+  { const c = t >= T.roll ? Math.min(5, 1 + Math.floor((t - T.roll) / BT + 1e-6)) : 0, el = S.h.rc; if (el._t !== c) { el.firstElementChild.textContent = c; el.lastElementChild.textContent = c > 1 ? 's' : ''; el._t = c }
+    const ks = t >= T.roll ? 1 + .25 * Math.exp(-((t - T.roll) % BT) / .1) : 1; put(el, 0, 0, 1, win(T.roll, T.win) ? 1 : 0, ''); el.style.transform += ` scale(${ks.toFixed(4)})` }
   hs(S.h.five, T.win, T.same);
   // Gemini's card
   cardRun(S.gc2, T.us, T.us2, T.roll, kk) }

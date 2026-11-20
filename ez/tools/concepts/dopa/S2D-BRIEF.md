@@ -58,3 +58,9 @@ Owner: the under-50% rule carries into Season 2 ("under 50% and you're out"); ev
 - **End card:** the EZ. logo, the golden ticket now reading SEASON 2 / STARTING NOW (the second line stamped in on beat 87 with sfx-stamp), then EVERYONE STARTS AT / P&L $0 on glass on beat 89, held to the last frame.
 - Newcomer plate names stay hidden until the roll call (Qwen's plate showed through on the China shot).
 - Post file: `ez/post/s2-announce.mp4` (`bash wrapx.sh s2d.html 34.5 post/s2-announce w8f-horns 0 .34`, CRF 14).
+
+## Revision 4 (owner, 2026-11-20: "remove the season 2... at the top... just have our logo and earnings season"; "maybe somewhere you put like for season 1" on the hit rate; the Kimi scene "a bit too short... needs to be a bit longer for people to realize, okay, Kimmy got relegated"; "the rest is fine")
+- **Top bug:** the EZ. logo and EARNINGS ZEASON only. Each scene names its own season (SEASON 1 on the podium and the chart, SEASON 2 on the tickets), so the bug never contradicts the scene under it.
+- **Chart:** SEASON 1 under HIT RATE, in the podium's SEASON 1 type (Bebas, letter-spaced, muted cream), sliding in with the headline.
+- **Kimi, 1.38 s to 2.76 s (beats 40 to 48), staged one element at a time:** KIMI and the fall on the broken pedestal (13.79), the record on glass, hit rate 46%, W–L 51–61 (14.48, a whoosh and a card hit), RELEGATED stamped on the cracked plate (15.17, sfx-stamp, a shake and a red flash like the rule's stamp), held 1.38 s. The stamp used to land at 14.48 and stay 0.69 s.
+- **Where the four beats came from:** the roll call, 9 beats to 5. It counts 1 to 5 one a beat into drop 2 (24.83 to 26.21) instead of one every two beats; it carries no new fact (5 AIs lands on the drop anyway). Every scene from 3 STAY to Gemini keeps its length and moves 1.38 s later; drop 2, SAME RULE and the close are where they were. The US headline leaves before the count lands.
