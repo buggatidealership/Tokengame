@@ -19,6 +19,10 @@
 .st{display:inline-flex;align-items:center;gap:14px;padding:14px 18px;border-radius:14px;font:700 27px/1 'Geist Mono';letter-spacing:.1em;background:var(--pn2);color:var(--tx);box-shadow:inset 0 0 0 2px var(--ln)}
 .st i{width:15px;height:15px;border-radius:50%;background:#f2ede6}
 .mt{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;padding:36px 28px 32px}
+.mt{position:relative}.mt>*{position:relative}
+.mt .gw{position:absolute;top:0;bottom:0;pointer-events:none;opacity:0}
+.mt .gwL{left:0;width:62%;background:radial-gradient(ellipse 70% 80% at 40% 55%,rgba(85,214,162,.34),rgba(85,214,162,.08) 55%,transparent 75%)}
+.mt .gwR{right:0;width:34%;background:radial-gradient(ellipse 75% 80% at 55% 55%,rgba(232,87,107,.42),rgba(232,87,107,.1) 55%,transparent 75%)}
 .cn2{display:flex;flex-direction:column;align-items:center;gap:24px}
 .sl{display:flex;gap:6px}
 .p{display:flex;flex-direction:column;align-items:center;gap:13px;width:122px}
@@ -53,7 +57,7 @@ const DROP = 12.41, DUR = 16.8;
 const GL = ['Broad software selloff dragged ESTC back to its pre Q1 price [despite four straight beats] and real AI search momentum'];
 const QL = ['Market grades Elastic on subscription acceleration', '[not beats]', 'Whisper sits above guidance and Datadog just guided consumption flat'];
 const LONGS = ['GPT', 'CLAUDE', 'GROK', 'GEMINI'];
-const T_LINE = .12, T_DOCK = 1.0, T_LC = 1.6, PT = [1.95, 2.65, 3.35, 4.05], T_SC = 4.75, T_Q = 5.15, T_NOTE = 5.75, T_RING = 6.15,
+const T_LINE = .12, T_DOCK = 1.0, T_LC = 1.6, PT = [1.95, 2.65, 3.35, 4.05], T_SC = 4.6, T_Q = 5.0, T_NOTE = 5.75, T_RING = 6.15,
   T_B = 6.5, GLN = [6.85], T_GS = 7.2, T_C = 10.45, QLN = [10.8, 11.25, 13.25], T_QS = 11.45, T_TURN = 14.1, T_FIT = 14.9;
 const SH = 1218, GAP = 26;
 let grain, gl, doc, ps, glines, qlines, A0, BH, CH, B0, C0, GLH, QLH;
@@ -65,7 +69,7 @@ let grain, gl, doc, ps, glines, qlines, A0, BH, CH, B0, C0, GLH, QLH;
   const p = x => `<span class="p" data-k="${x.k}"><span class="rg">${AN.mark(x.k, 84)}</span><b>${x.name}</b><small>${x.side === 'LONG' ? '+' : '−'}${AN.num(x.call)}%</small></span>`;
   const msg = (id, x, ls) => `<div class="gp" id="g${id}"></div><div class="pn" id="${id}"><div class="mh">${AN.mark(x.k, 88)}<b>${x.name}</b><span class="chip ${x.side === 'LONG' ? 'u' : 'd'}">${x.side}</span><span class="r">IN ITS OWN WORDS</span></div><div class="mb">${AN.lines(ls, 'pg')}</div></div>`;
   L.$('#doc').innerHTML = `<div class="pn" id="pa"><div class="hd"><span class="st"><i></i>IN PLAY</span><span>TRADE ${C.s2n}</span><span class="r" id="hdr">REPORTS AFTER THE CLOSE</span></div>
-    <div class="mt"><div class="cn2"><span class="chip u" id="cl">LONG</span><div class="sl">${LONGS.map(k => p(tr(k))).join('')}</div></div>
+    <div class="mt"><i class="gw gwL"></i><i class="gw gwR"></i><div class="cn2"><span class="chip u" id="cl">LONG</span><div class="sl">${LONGS.map(k => p(tr(k))).join('')}</div></div>
       <div class="md">${AN.co('ESTC', 112, .24)}<span class="cn" id="cnb">${C.co}</span><span class="tk">${C.ticker}</span><span class="sc"><b class="u" id="nl">0</b><i>v</i><b class="d" id="ns">0</b></span></div>
       <div class="cn2"><span class="chip d" id="cs">SHORT</span><div class="sl">${p(Q)}</div></div></div>
     <div class="note"><span>Called move under each name</span><span>Graded Fri at the close</span></div></div>
@@ -121,14 +125,19 @@ window.R = t => {
   chipIn(L.$('#cl'), T_LC); chipIn(L.$('#cs'), T_SC);
   const land = [...PT, T_Q]; let nl = 0, ns = 0;
   ps.forEach((e, i) => { const t0 = land[i], hard = i === 4, sp = L.spring(t - t0, hard ? 2.2 : 1.8, hard ? 6 : 8);
-    e.style.opacity = t < t0 ? 0 : L.cl((t - t0) * 6).toFixed(3); e.style.transform = t < t0 ? '' : `translateY(${((hard ? -120 : 60) * (1 - sp)).toFixed(1)}px) scale(${L.lerp(hard ? 1.5 : .7, 1, L.cl(sp)).toFixed(3)})`;
+    e.style.opacity = t < t0 ? 0 : L.cl((t - t0) * 4).toFixed(3); e.style.transform = t < t0 ? '' : `translateY(${((hard ? -300 : 320) * (1 - sp)).toFixed(1)}px) scale(${L.lerp(hard ? 1.6 : .8, 1, L.cl(sp)).toFixed(3)})`;   // each AI rises into its side; Qwen drops onto the SHORT side
     if (t >= t0 + .1) i < 4 ? nl++ : ns++;
     // the two who disagree take a gold ring; the other three step back
     const k = e.dataset.k, sp2 = k === 'GEMINI' || k === 'QWEN', r = L.eio(L.n(t, T_RING, T_RING + .4));
     e.querySelector('.rg').style.setProperty('--ro', sp2 ? r : 0); if (t >= t0 + .5) e.style.opacity = sp2 ? 1 : (1 - .45 * r).toFixed(3) });
   const bump = (el, v, tl) => { el.textContent = v; el.style.opacity = v ? 1 : .3; const q = L.n(t, tl, tl + .3); el.style.transform = `scale(${(1 + .3 * Math.sin(Math.PI * q)).toFixed(3)})` };
   bump(L.$('#nl'), nl, (nl ? PT[nl - 1] : -9) + .1); bump(L.$('#ns'), ns, T_Q + .1);
+  // each trade lands with a pulse of its side's light, and the side's light grows with the count (the LONG side fills green, one AI at a time;
+  // Qwen's lone SHORT lands with a harder red pulse); it settles to a low glow when the two who disagree take their rings
+  const pulse = ts => ts.reduce((s, t0) => s + (t >= t0 ? Math.exp(-(t - t0) * 3.2) : 0), 0), settle = 1 - .6 * L.n(t, T_RING, T_RING + .8);
+  L.$('.gwL').style.opacity = Math.min(1, (.12 * nl + .55 * pulse(PT)) * settle).toFixed(3); L.$('.gwR').style.opacity = Math.min(1, (.3 * ns + .9 * pulse([T_Q])) * settle).toFixed(3);
   L.$('.note').style.opacity = L.n(t, T_NOTE, T_NOTE + .35);
+  { const k = t > T_Q ? Math.exp(-(t - T_Q) * 8) * Math.sin((t - T_Q) * 55) * 7 : 0; L.$('#pa').style.transform = `translate(${k.toFixed(1)}px,${(k * .5).toFixed(1)}px)` }
   // the reasons: each card rises; its lines come in one after the other; the marker sweeps the clause; then the two clauses light in turn
   [[pb, T_B, glines, GLN], [pc, T_C, qlines, QLN]].forEach(([c, t0, ls, tl]) => { const sp = L.spring(t - t0, 1.6, 7.5); c.style.opacity = L.cl((t - t0) * 2.6).toFixed(3); c.style.transform = `translateY(${(110 * (1 - sp)).toFixed(1)}px)`;
     ls.forEach((e, i) => { const q = L.n(t, tl[i], tl[i] + .45); e.style.opacity = q.toFixed(3); e.style.transform = `translateY(${(32 * (1 - L.eo(q))).toFixed(1)}px)` }) });
