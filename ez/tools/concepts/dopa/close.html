@@ -21,7 +21,7 @@
 #gfld .gbar{position:absolute;left:50%;top:50%;width:2200px;margin-left:-1100px;transform-origin:50% 50%}
 #gfld svg{position:absolute;left:0;top:0;width:1080px;height:1350px;overflow:visible}
 #title{position:absolute;left:0;top:0;transform-origin:0 0;white-space:nowrap}
-#title .h{font:900 132px/1 Inter;letter-spacing:-.045em}
+#title .h{font:900 124px/1.02 Inter;letter-spacing:-.045em}
 #title .s{font:600 28px 'Geist Mono';letter-spacing:.14em;color:#8e8680;margin-top:22px}
 .co{position:absolute;left:0;top:0;display:flex;flex-direction:column;align-items:center;gap:14px;transform-origin:50% 50%}
 .co img{display:block;border-radius:24%;box-shadow:0 0 0 2px rgba(242,237,230,.16),0 18px 40px rgba(0,0,0,.45)}
@@ -70,7 +70,7 @@
   <div id="clock"><div class="d" id="cd"></div><div class="t" id="ct"></div><div class="c" id="cc"></div></div>
   <div id="chs"></div>
   <div id="rows"></div>
-  <div id="ssn"><div class="h">Season 2 P&amp;L</div><div class="k" id="ssk"></div></div>
+  <div id="ssn"><div class="h">Season 2 leaderboard</div><div class="k" id="ssk"></div></div>
   <div id="final">FINAL</div>
 </div>
 <div id="pv"></div>
@@ -88,8 +88,10 @@ const DAYS3 = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 const money0 = v => v === 0 ? '$0' : L.money(v);
 const setup = () => {
   N = D.rounds.length; const T = D.total;
-  L.$('#th').textContent = D.day[0] + D.day.slice(1).toLowerCase() + ' close';
-  L.$('#ts').textContent = ['SEASON 2', N + (N === 1 ? ' TRADE' : ' TRADES'), D.ais.length + ' AIs'].join(SEP);
+  // the title says what you are watching (owner, 2026-11-20: "Friday close, probably nobody understands... you're watching the first 3
+  // trades of season 2"); from the second close on, which trades of Season 2 these are
+  L.$('#th').innerHTML = D.before ? `Season 2<br>trades ${D.before + 1} to ${D.after}` : N === 1 ? 'First trade<br>of Season 2' : `First ${N} trades<br>of Season 2`;
+  L.$('#ts').style.display = 'none';
   if (D.preview) { const pv = L.$('#pv'); pv.style.display = 'block'; const d = new Date(D.previewAt), h = (d.getUTCHours() + 24 - 5) % 24;
     pv.textContent = ['PREVIEW', 'PRICES AT ' + clock(D.total).t + ' ET', 'NOT FINAL'].join(SEP) }
   L.chrome(document.body); L.$('.bug b').remove(); L.$('.fine').textContent = '$100K on every trade' + SEP + SEP + 'not advice';
@@ -118,7 +120,7 @@ const setup = () => {
       <div class="in"><span class="rk"></span><span class="mkw">${mark(a.k, 50)}</span><span class="nm">${a.name}</span><span class="pl"></span></div><span class="tn"></span>
       ${D.rounds.map((r, j) => { const c = r.calls.find(x => x.k === a.k); return `<div class="cell ${c.side[0]}${N > 4 ? ' p' : ''}" style="left:${cols[j] - (N > 4 ? 20 : 48)}px">${N > 4 ? '' : c.side}</div>` }).join('')}`;
     L.$('#rows').appendChild(el); return el });
-  L.$('#ssk').textContent = D.before ? `${D.after} TRADES${SEP}${N} TONIGHT` : `AFTER ${D.after} TRADES`;
+  L.$('#ssk').textContent = D.before ? `P&L AFTER ${D.after} TRADES${SEP}${N} TONIGHT` : `P&L AFTER ${D.after} TRADES`;
   SROLL = D.before > 0;
   // sound
   const C = window.CUES = [[0.05, 'r11-swell', .12], [T_DOCK - .05, 'sfx-whoosh', .16], [T_NIGHT - .1, 'r11-slide', .14]];
@@ -153,13 +155,13 @@ window.R = t => {
   const T = D.total, m = mAt(t), dk = L.eio(L.n(t, T_DOCK, T_DOCK + .55)), fold = L.eio(L.n(t, T_FOLD, T_FOLD + .6));
   // the title: alone, then the companies under it; then it docks top left
   const th = L.$('#title'), tin = L.eo5(L.n(t, T_LINE, T_LINE + .4)), tw = th.offsetWidth;
-  th.style.transform = `translate(${L.lerp(540 - tw / 2, 56, dk)}px,${L.lerp(330 + 30 * (1 - tin), 128, dk)}px) scale(${L.lerp(1, .42, dk)})`; th.style.opacity = tin * (1 - fold);
+  th.style.transform = `translate(${L.lerp(540 - tw / 2, 56, dk)}px,${L.lerp(250 + 30 * (1 - tin), 122, dk)}px) scale(${L.lerp(1, .36, dk)})`; th.style.opacity = tin * (1 - fold);
   L.$('#ts').style.opacity = 1 - L.n(t, T_DOCK, T_DOCK + .25);
   const span = Math.min(300, 920 / N), bx = 540 - span * (N - 1) / 2;
   const vNow = D.rounds.map(r => r.px(m));
   const hy = spread(vNow.map(v => Y(v)));
   cos.forEach((el, j) => { const t0 = T_CO + j * coGap(), k = L.n(t, t0, t0 + .3), s = L.spring(t - t0, 2, 8);
-    el.style.transform = `translate(${bx + span * j - el.offsetWidth / 2}px,${560 + 40 * (1 - s)}px) scale(${L.lerp(.6, 1, L.eo5(k)) * (1 - .5 * dk)})`; el.style.opacity = (t >= t0 ? 1 : 0) * L.cl(k * 3) * (1 - dk) });
+    el.style.transform = `translate(${bx + span * j - el.offsetWidth / 2}px,${600 + 40 * (1 - s)}px) scale(${L.lerp(.6, 1, L.eo5(k)) * (1 - .5 * dk)})`; el.style.opacity = (t >= t0 ? 1 : 0) * L.cl(k * 3) * (1 - dk) });
   // the line heads: each company's mark and its live move, riding its line's end
   heads.forEach((el, j) => { const r = D.rounds[j], v = vNow[j], on = L.n(t, T_DOCK + .2, T_NIGHT + .1) * (1 - fold), sp = el.lastElementChild;
     sp.textContent = L.pct(v); sp.style.color = Math.abs(v) < .005 ? '#f2ede6' : v > 0 ? '#55d6a2' : '#e8576b';
@@ -221,13 +223,13 @@ window.R = t => {
     else { rk.style.color = ''; el.querySelector('.nm').classList.remove('foil') }
     el.style.filter = !lead && t > T_LEAD ? `brightness(${1 - .22 * L.n(t, T_LEAD - .1, T_LEAD + .35)})` : '';
     // a light pass over each row as the board lands
-    const q = L.n(t, T_SSN + .1 + i * .08, T_SSN + .8 + i * .08), xq = L.lerp(-18, 118, L.eio(q)), sp = el.querySelector('.sp'); sp.style.opacity = Math.sin(Math.PI * q); sp.style.background = `linear-gradient(100deg,transparent ${xq - 14}%,rgba(255,255,255,.24) ${xq}%,transparent ${xq + 14}%)` });
+    const lq = t - (T_SSN + .1 + i * .08), q = lq < 0 ? 0 : L.n(lq % 2.2, 0, .9), xq = L.lerp(-18, 118, L.eio(q)), sp = el.querySelector('.sp'); sp.style.opacity = Math.sin(Math.PI * q); sp.style.background = `linear-gradient(100deg,transparent ${xq - 14}%,rgba(255,255,255,.24) ${xq}%,transparent ${xq + 14}%)` });
   // Season 2 P&L
   const sin = L.eio(L.n(t, T_SSN - .1, T_SSN + .35)), sh = L.$('#ssn'); sh.style.opacity = sin; sh.style.transform = `translateY(${200 + 24 * (1 - sin)}px)`;
   // the colour of the night: the larger side's colour washes in with the move; gold at the bell
   const net = D.rounds.reduce((s, r, j) => s + vNow[j], 0) / N, w = L.cl(Math.abs(net) / 6), mc = net >= 0 ? UP : DN, oc = net >= 0 ? DN : UP, b = L.n(t, TR, TR + .6) * (1 - .6 * L.n(t, TR + .6, 9.5));
   L.$('#glow').style.background = `radial-gradient(ellipse 80% 40% at 30% 18%,rgba(${mc},${(.05 + .14 * w) * (1 - fold)}),transparent 70%),radial-gradient(ellipse 90% 35% at 50% 100%,rgba(${oc},${(.03 + .08 * w)}),transparent 70%),radial-gradient(ellipse 70% 45% at 50% 45%,rgba(253,188,42,${.16 * b}),transparent 70%)`;
-  const push = 1 + .015 * L.n(t, 0, T_NIGHT) + .025 * L.eio(L.n(t, 5.8, TR)) - .025 * L.eio(L.n(t, TR + .3, T_SORT)) + .02 * L.n(t, T_SSN, 15.5);
+  const push = 1 + .015 * L.n(t, 0, T_NIGHT) + .025 * L.eio(L.n(t, 5.8, TR)) - .025 * L.eio(L.n(t, TR + .3, T_SORT)) + .04 * L.n(t, T_SSN, 15.5);
   const kick = t > TR ? Math.exp(-(t - TR) * 9) * Math.sin((t - TR) * 60) * 4 : 0;
   cam.style.transform = `translate(${kick}px,${kick * .6}px) scale(${push})`;
 };

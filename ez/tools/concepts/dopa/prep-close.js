@@ -15,8 +15,14 @@ const SEASON1_LAST = 112; // as in ez/tools/sync_sheet.py
 // Season 2's five, in the sheet's column order; the sheet's own headers (one reads "Gemin MAG (%)")
 const AIS = [['GPT', 'GPT', 'GPT DIR', 'GPT MAG (%)'], ['CLAUDE', 'Claude', 'CLAUDE DIR', 'CLAUDE MAG (%)'], ['GROK', 'Grok', 'GROK DIR', 'GROK MAG (%)'],
   ['GEMINI', 'Gemini', 'GEMINI DIR', /^GEMINI? MAG/], ['QWEN', 'Qwen', 'QWEN DIR', 'QWEN MAG (%)']];
-// company names and their logo files (data/co/<ticker>.*); a ticker missing here stops the prep
-const CO = { INTU: ['Intuit', 'co/INTU.svg'], KEYS: ['Keysight', 'co/KEYS.png'], ESTC: ['Elastic', 'co/ESTC.svg'] };
+// company names, logo files (data/co/<ticker>.*) and TradingView exchanges; a ticker missing here stops the prep
+const CO = { INTU: ['Intuit', 'co/INTU.svg', 'NASDAQ'], KEYS: ['Keysight', 'co/KEYS.png', 'NYSE'], ESTC: ['Elastic', 'co/ESTC.svg', 'NYSE'] };
+// TradingView is the source of truth for moves (owner, 2026-11-20: "TradingView is our source of truth that we all use"). When the sheet
+// has no move yet, the move is TradingView's close-to-close change for the day, read from the endpoint TradingView's own screener page
+// uses (not an official API; its data runs 15 minutes behind, so it is read only from 4:20 pm New York on the grading day).
+const tv = async t => { const r = await fetch('https://scanner.tradingview.com/america/scan', { method: 'POST', headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ symbols: { tickers: [CO[t][2] + ':' + t] }, columns: ['close', 'change', 'description'] }) }).then(x => x.json());
+  const d = r.data && r.data[0] && r.data[0].d; if (!d || !isFinite(d[1])) throw new Error('TradingView has no change for ' + t); return { close: d[0], move: +d[1].toFixed(2) } };
 const csv = t => { const rows = [[]]; let f = '', q = false; for (let i = 0; i < t.length; i++) { const c = t[i];
   if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++ } else q = false } else f += c }
   else if (c === '"') q = true; else if (c === ',') { rows.at(-1).push(f); f = '' } else if (c === '\n') { rows.at(-1).push(f.replace(/\r$/, '')); f = ''; rows.push([]) } else f += c }
@@ -44,7 +50,9 @@ const nyDate = s => { const [m, d, y] = s.split('/').map(Number); return `${2000
   for (const r of tonight) {
     const t = g(r, 'TICKER').toUpperCase(); if (!CO[t]) throw new Error('no name and logo for ' + t + ' in prep-close.js CO');
     for (const a of AIS) if (!side(r, a)) throw new Error(`R${g(r, 'ROUND')} ${t}: ${a[1]} has no side in the sheet`);
-    let move = parseFloat(g(r, 'ACTUAL MOVE (%)'));
+    let move = parseFloat(g(r, 'ACTUAL MOVE (%)')), src = 'the sheet';
+    if (!isFinite(move) && !PREVIEW) { if (Date.now() < T1c + 20 * 60e3) throw new Error(`R${g(r, 'ROUND')} ${t}: no move in the sheet, and TradingView's close is final only from 4:20 pm New York`);
+      const q = await tv(t); move = q.move; src = `TradingView (close ${q.close}, change ${q.move}%)` }
     const y = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${t}?interval=5m&period1=${Math.floor(T0 / 1e3) - 3600}&period2=${Math.floor(Math.min(T1c, Date.now()) / 1e3) + 600}&includePrePost=true`, { headers: { 'user-agent': 'Mozilla/5.0' } }).then(x => x.json());
     const j = y.chart.result[0], cl = j.indicators.quote[0].close, b = j.timestamp.map((x, i) => [x * 1e3, cl[i]]).filter(x => x[1] != null);
     const near = ms => b.reduce((p, x) => Math.abs(x[0] - ms) < Math.abs(p[0] - ms) ? x : p), p0 = near(T0 - 300e3);
@@ -56,8 +64,8 @@ const nyDate = s => { const [m, d, y] = s.split('/').map(Number); return `${2000
     const hm = (pend[1] / p0[1] - 1) * 100; let pts = null;
     if (Math.abs(hm - move) <= Math.max(1.5, .15 * Math.abs(move))) { const k = move / hm;
       pts = b.filter(x => x[0] > T0 - 300e3 && x[0] < end).map(x => [Math.round((x[0] + 300e3 - T0) / 60e3), +((x[1] / p0[1] - 1) * 100 * k).toFixed(3)]);
-      pts.unshift([0, 0]); pts.push([Math.round((end + 300e3 - T0) / 60e3), move]); note = note || `Yahoo ${t} 5m with pre and post, close to close ${hm.toFixed(2)}%, scaled x${k.toFixed(4)} onto the sheet's ${move}%` }
-    else note = `Yahoo ${t} moved ${hm.toFixed(2)}% against the sheet's ${move}%: path refused, only the two closes`;
+      pts.unshift([0, 0]); pts.push([Math.round((end + 300e3 - T0) / 60e3), move]); note = note || `move from ${src}; path Yahoo ${t} 5m with pre and post, close to close ${hm.toFixed(2)}%, scaled x${k.toFixed(4)} onto ${move}%` }
+    else note = `move from ${src}; Yahoo ${t} moved ${hm.toFixed(2)}% against ${move}%: path refused, only the two closes`;
     const calls = AIS.map(a => { const s = side(r, a), p = pnl(s, move); return { k: a[0], side: s, call: mag(r, a) * (s === 'LONG' ? 1 : -1), pnl: p, right: p > 0 } });
     rounds.push({ n: +g(r, 'ROUND'), s2n: +g(r, 'ROUND') - SEASON1_LAST, ticker: t, co: CO[t][0], logo: 'data/' + CO[t][1], move, pct: (move < 0 ? '−' : '+') + Math.abs(move).toFixed(2) + '%', path: pts, pathNote: note, calls });
   }
