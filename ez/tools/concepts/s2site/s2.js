@@ -41,10 +41,14 @@ function ag2(TT,m){var L=TT[m]||[],p=0,ok=0,off=0;L.forEach(function(x){p+=x.pnl
 function order(K,TT,key){var A={};K.forEach(function(m){A[m]=ag2(TT,m)});var o=K.slice().sort(function(a,b){return key==="hr"?((A[b].hr-A[a].hr)||(A[b].w-A[a].w)||(A[a].off-A[b].off)):((A[b].p-A[a].p)||(A[a].off-A[b].off))});
   var rk={};o.forEach(function(m,i){var prev=o[i-1];rk[m]=(i&&(key==="hr"?(A[prev].hr===A[m].hr&&A[prev].w===A[m].w):A[prev].p===A[m].p))?rk[prev]:i+1});return {o:o,rk:rk,A:A}}
 var S1C=order(S1K,S1T,"p").o[0],S1REL=S1K.filter(function(m){return ag2(S1T,m).hr<.5});
+/* R110 to R112 have no resolution date in the sheet, so the live Last matchday stops at Nov 13; the owner's rule (graded at the next
+   close after the report) and the page's REPORT times give Nov 17 (Disney, Home Depot) and Nov 18 (NVIDIA). Mockup only. */
+ROUNDS.forEach(function(r){if(r.resolves||typeof r.a!=="number")return;var R=REPORT[r.ticker],d;if(R){var t=new Date(R.t);d=new Date(t);if(+t>=+nyClose(t))do{d.setDate(d.getDate()+1)}while(d.getDay()===0||d.getDay()===6)}else{var c=pd(r.called);d=new Date(c);do{d.setDate(d.getDate()+1)}while(d.getDay()===0||d.getDay()===6)}
+  r.resolves=(d.getMonth()+1)+"/"+d.getDate()+"/"+String(d.getFullYear()).slice(2);r.s2fill=1});
 var S1D0=null,S1D1=null;ROUNDS.forEach(function(r){var a=pd(r.called),b=pd(r.resolves)||a;if(a&&(!S1D0||a<S1D0))S1D0=a;if(b&&(!S1D1||b>S1D1))S1D1=b});
 function md(d){return d.toLocaleDateString("en-US",{month:"short",day:"numeric"})}
 
-function nameCell(m,rank,gold,o){var crown=o.crown===m,tag=o.tags[m]?'<em class="s2tg '+o.tags[m][0]+'">'+o.tags[m][1]+'</em>':'';
+function nameCell(m,rank,gold,o){var crown=!o.bare&&o.crown===m,tag=!o.bare&&o.tags[m]?'<em class="s2tg '+o.tags[m][0]+'">'+o.tags[m][1]+'</em>':'';
   return '<td class="ac"><span class="nm2"><span class="no'+(gold?" g":"")+'">'+rank+'</span><span class="s2mk">'+(crown?CRN:'')+aiIcon(m,24)+'</span><span><b>'+MODELS[m].app+' '+flag(FLAG[m])+tag+'</b><small>'+MODELS[m].ver+'</small></span></span></td>'}
 function lr2(TT,m){var x=(TT[m]||[]).slice().sort(function(a,b){return b.r.n-a.r.n})[0];return x?'<span class="lrd">'+coIcon(x.r.ticker)+'<span><span class="pl '+(x.pnl>=0?"u":"d")+'">'+kfmt(x.pnl)+'</span><small>'+x.r.ticker.replace(/\..*$/,'')+'</small></span></span>':'<span class="s2nil">–</span>'}
 function sp2(TT,m){var L=(TT[m]||[]).slice().sort(function(a,b){return a.date-b.date});if(!L.length)return '<svg viewBox="0 0 96 24"><line x1="0" y1="12" x2="96" y2="12" stroke="#5f5853" stroke-width="1.4" stroke-dasharray="3 3"/></svg>';
@@ -61,8 +65,8 @@ function board(sea,o){var K=sea===1?S1K:S2K,TT=sea===1?S1T:T2,P=order(K,TT,"p"),
    P.o.map(function(m){var a=P.A[m],z=!a.L.length;return '<tr data-s2row="'+m+'">'+nameCell(m,any?P.rk[m]:"–",any&&P.rk[m]===1,o)+'<td>'+lr2(TT,m)+'</td><td class="pc"><b class="pl '+(z?"z":a.p>=0?"u":"d")+'">'+(z?"$0":money(a.p,1))+'</b>'+sp2(TT,m)+'</td></tr>'}).join("")+'</tbody></table></section>'+BACK+'</div>';
   var t2='<section class="pn"><div class="tabs"><button class="on">HIT RATE</button></div>'+
    '<div class="kick"><small>'+lab+' · RIGHT ON DIRECTION</small><span>'+(sea===1?"Under 50% hit rate: relegated":"Under 50% hit rate at season’s end is relegated")+'</span></div>'+
-   '<table class="lt s2lt"><thead><tr><th>AI</th><th class="c">Last 5</th><th class="c"><span class="wlh">W/L</span></th><th class="c">Hit rate</th></tr></thead><tbody>'+
-   H.o.map(function(m){var a=H.A[m],z=!a.L.length;return '<tr data-s2row="'+m+'">'+nameCell(m,any?H.rk[m]:"–",any&&H.rk[m]===1,o)+'<td class="c"><span class="l5">'+l52(TT,m)+'</span></td><td class="c mono wlc"><span>'+a.w+'/'+a.l+'</span></td><td class="c"><b class="hr '+(z?"z":a.hr>=.5?"u":"d")+'">'+(z?'–':(100*a.hr).toFixed(sea===1?1:0)+'%')+'</b></td></tr>'}).join("")+'</tbody></table></section>';
+   '<table class="lt s2lt s2hit"><thead><tr><th>AI</th><th class="c">Last 5</th><th class="c"><span class="wlh">W/L</span></th><th class="c">Hit rate</th></tr></thead><tbody>'+
+   H.o.map(function(m){var a=H.A[m],z=!a.L.length;return '<tr data-s2row="'+m+'">'+nameCell(m,any?H.rk[m]:"–",any&&H.rk[m]===1,{bare:1})+'<td class="c"><span class="l5">'+l52(TT,m)+'</span></td><td class="c mono wlc"><span>'+a.w+'/'+a.l+'</span></td><td class="c"><b class="hr '+(z?"z":a.hr>=.5?"u":"d")+'">'+(z?'–':(100*a.hr).toFixed(sea===1?1:0)+'%')+'</b>'+(sea===1&&a.hr<.5?'<em class="s2tg rel s2rz">RELEGATED</em>':'')+'</td></tr>'}).join("")+'</tbody></table></section>';
   var t3='';if(sea===1){var tmp=document.createElement("div");tmp.innerHTML=leaders0();var sx=tmp.querySelector(".pn.sx");if(sx){t3=sx.outerHTML.replace("ALL TIME · RIGHT ON DIRECTION BY SECTOR","SEASON 1 FINAL · RIGHT ON DIRECTION BY SECTOR")}}
   return '<div class="lbg"><div>'+t1+'</div><div>'+t2+'</div></div>'+t3+'<div class="note">P&amp;L: $100K on every trade, long or short as each AI calls it, graded at the next market close after earnings.</div>'}
 var leaders0=leaders;
@@ -78,13 +82,13 @@ function lineup(foot){var kr=ag2(S1T,"KIMI");return '<section class="pn s2lu"><d
   (foot?'<div class="s2lf">Grok, Claude and GPT return. Kimi was relegated: '+(100*kr.hr).toFixed(1)+'% hit rate in Season 1.</div>':'')+'</section>'}
 
 /* take A: the season switch, in the terminal's own tab style */
-function seasonTabs(){return '<section class="pn ssw"><div class="tabs">'+[[2,"SEASON 2"],[1,"SEASON 1"]].map(function(x){return '<button type="button" data-s2s="'+x[0]+'" class="'+(S2SEA===x[0]?"on":"")+'">'+x[1]+(x[0]===2?'<span class="n">'+S2K.length+' AIs</span>':'')+'</button>'}).join("")+
+function seasonTabs(){return '<section class="pn ssw"><div class="tabs">'+[[2,"SEASON 2"],[1,"SEASON 1"]].map(function(x){return '<button type="button" data-s2s="'+x[0]+'" class="'+(S2SEA===x[0]?"on":"")+'">'+x[1]+'</button>'}).join("")+
   '<span class="lv-dt">'+(S2SEA===2?(TAKE==="D"?"1 of 3 graded":"Day 1 · 3 in play"):"Final · Grok wins")+'</span></div></section>'}
 
 /* take B: the Season 1 champion strip; it opens Season 1's final table in place (the live Season 2 collapse idiom) */
 function champStrip(){var g=ag2(S1T,S1C),P=order(S1K,S1T,"p");
-  var tb='<table class="lt s2lt s1lt"><thead><tr><th>AI</th><th class="c"><span class="wlh">W/L</span></th><th class="c">Hit rate</th><th>Final P&amp;L</th></tr></thead><tbody>'+
-   P.o.map(function(m){var a=P.A[m];return '<tr data-s2row="'+m+'">'+nameCell(m,P.rk[m],P.rk[m]===1,{crown:S1C,tags:S1REL.indexOf(m)>-1?(function(){var t={};t[m]=["rel","RELEGATED"];return t})():{}})+'<td class="c mono wlc"><span>'+a.w+'/'+a.l+'</span></td><td class="c"><b class="hr '+(a.hr>=.5?"u":"d")+'">'+(100*a.hr).toFixed(1)+'%</b></td><td class="pc"><b class="pl '+(a.p>=0?"u":"d")+'">'+money(a.p,1)+'</b></td></tr>'}).join("")+'</tbody></table>';
+  var tb='<table class="lt s2lt s1lt"><thead><tr><th>AI</th><th class="c">Hit rate</th><th>Final P&amp;L</th></tr></thead><tbody>'+
+   P.o.map(function(m){var a=P.A[m];return '<tr data-s2row="'+m+'">'+nameCell(m,P.rk[m],P.rk[m]===1,{crown:S1C,tags:{}})+'<td class="c"><b class="hr '+(a.hr>=.5?"u":"d")+'">'+(100*a.hr).toFixed(1)+'%</b>'+(a.hr<.5?'<em class="s2tg rel s2rz">RELEGATED</em>':'')+'</td><td class="pc"><b class="pl '+(a.p>=0?"u":"d")+'">'+money(a.p,1)+'</b></td></tr>'}).join("")+'</tbody></table>';
   return '<section class="pn s1c'+(S1OPEN?" on":"")+'"><button type="button" class="s1h" data-s1c aria-expanded="'+S1OPEN+'"><span class="s2mk">'+CRN+aiIcon(S1C,34)+'</span>'+
    '<span class="um"><small>SEASON 1 CHAMPION</small><b class="cn">'+MODELS[S1C].app+' <span class="pl u">P&amp;L '+money(g.p,1)+'</span></b></span>'+
    S1REL.map(function(m){return '<span class="s1k">'+aiIcon(m,22)+'<span><b>'+MODELS[m].app+'</b><em class="s2tg rel">RELEGATED</em></span></span>'}).join("")+
@@ -93,14 +97,14 @@ function champStrip(){var g=ag2(S1T,S1C),P=order(S1K,S1T,"p");
 function exBanner(){return TAKE==="D"?'<div class="s2ex">EXAMPLE STATE · Intuit −3.00% is made up to show the board after the first close. No Season 2 result is in yet.</div>':''}
 
 leaders=function(){
-  if(TAKE==="A"){var o2={crown:S2SEA===2?S1C:S1C,tags:{}};if(S2SEA===2){S2NEW.forEach(function(m){o2.tags[m]=["new","NEW"]});o2.top=firstClose()}else{S1REL.forEach(function(m){o2.tags[m]=["rel","RELEGATED"]})}
+  if(TAKE==="A"){var o2={crown:S2SEA===2?S1C:S1C,tags:{}};if(S2SEA===2){S2NEW.forEach(function(m){o2.tags[m]=["new","NEW"]});o2.top=firstClose()}else{}
     return seasonTabs()+board(S2SEA,o2)+(S2SEA===2?lineup(true):'')}
   /* B and D: no tabs; the champion strip on top, Season 2 under it */
   var o={crown:null,tags:{},top:firstClose(),kick1:TAKE==="D"?'After round 1 · EXAMPLE move':'$100K on every trade'};S2NEW.forEach(function(m){o.tags[m]=["new","NEW"]});
   return exBanner()+champStrip()+board(2,o)+lineup(false)};
 
 /* take C: Upcoming in Season 2. The live In play card takes five AIs as they are; the rounds count from Season 2's first */
-var lc0=liveCards;liveCards=function(){return lc0().replace(/<span>Round (\d+)<\/span>/g,'<span>S2 · Round $1</span>').replace(/grades all four/g,"grades all five")};
+var lc0=liveCards;liveCards=function(){return lc0().replace(/grades all four/g,"grades all five")};
 function nextS2(){var L=S2.filter(function(x){return !st.hlo||HL[x[0]]}),N=window.__s2all?L:L.slice(0,8);
   return '<section class="pn"><div class="tabs"><button class="on">NEXT TRADES<span class="n">'+L.length+'</span></button><a class="tf" href="https://x.com/earningszn" target="_blank" rel="noopener"><span>Get the trades as they drop</span><i><svg viewBox="0 0 24 24"><path fill="currentColor" d="M17.8 3h3.1l-6.8 7.8 8 10.2h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.8 3h6.4l4.4 5.9L17.8 3zm-1.1 16.2h1.7L7.3 4.7H5.5l11.2 14.5z"/></svg>Follow</i></a></div>'+
    '<div class="flt"><button data-hlo="0" class="'+(st.hlo?'':'on')+'">All</button><button data-hlo="1" class="'+(st.hlo?'on':'')+'"><span class="hlp" style="margin:0 6px 0 0">HL</span>On Hyperliquid</button></div>'+
@@ -108,9 +112,11 @@ function nextS2(){var L=S2.filter(function(x){return !st.hlo||HL[x[0]]}),N=windo
    '<div class="uz">Each AI files long or short 1 hour before the earnings report. The trade closes at the next market close after earnings.</div>'+
    N.map(function(x){return '<div class="ur">'+coIcon(x[0])+'<span class="um"><b class="cn">'+x[1]+hl(x[0])+'</b><small>'+x[0]+'</small></span><span class="ut"><small>'+(x[3]?'Confirmed':'Expected')+'</small><b>'+x[2]+'</b></span></div>'}).join("")+
    (L.length>8?'<button class="more" data-s2all>'+(window.__s2all?"SHOW LESS":"SHOW ALL "+L.length)+'</button>':'')+'</section>'}
-upcoming=function(){return liveCards()+nextS2()+lastDay().replace('LAST MATCHDAY<','LAST MATCHDAY · SEASON 1<')};
+upcoming=function(){return liveCards()+nextS2()+lastDay()};
 
 document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-s2s],[data-s1c],[data-s2all]");if(!b)return;
   if(b.dataset.s2s)S2SEA=+b.dataset.s2s;if("s1c" in b.dataset)S1OPEN=!S1OPEN;if("s2all" in b.dataset)window.__s2all=!window.__s2all},true);
+/* the live W/L centring measures the Last 5 column; where that column folds (320) the W/L stays where the table puts it */
+var alignWL0=alignWL;alignWL=function(){if(innerWidth<=350){document.querySelectorAll('.s2hit .wlc span,.s2hit .wlh').forEach(function(e){e.style.transform=''});document.querySelectorAll('.lt:not(.s2hit)').length&&alignWL0();return}alignWL0()};
 window.__s2=function(){return {TAKE:TAKE,S2K:S2K,S2R:S2R,T2:T2,S1C:S1C,S1REL:S1REL}};
 /*}S2SITE*/

@@ -1,8 +1,8 @@
 /*S2SITE{ mockup CSS, injected at render time by run.js; the terminal's tokens only (--pn, --pn2, --ln, --tx, --mu, --mu2, --up, --dn, --ac, Geist Mono + Inter) */
 /* the mark slot: the site's own winner crown (CRN) sits over the champion's mark */
 .s2mk{position:relative;display:inline-flex;flex:none}
-.s2mk .lv-cr{left:4px;top:-10px}
-.s1h .s2mk .lv-cr{left:8px;top:-12px;width:19px;height:13px}
+.s2mk .lv-cr{left:4px;top:-11px}
+.s1h .s2mk .lv-cr{left:8px;top:-13px;width:19px;height:13px}
 /* one tag slot after the name: NEW (Season 2's signings) or RELEGATED (Season 1's under 50%) */
 .s2tg{display:inline-block;margin-left:6px;padding:2px 5px 2px;border-radius:4px;font:700 9px/1 var(--mono);font-style:normal;letter-spacing:.06em;vertical-align:1px;white-space:nowrap}
 .s2tg.new{color:var(--tx);box-shadow:inset 0 0 0 1px #4a423c}
@@ -14,10 +14,10 @@
 .ssw .tabs{align-items:center;border-bottom:0}
 .ssw .lv-dt{margin-left:auto;font:400 11.5px/1 var(--mono);color:var(--mu);white-space:nowrap}
 .ssw .tabs .n{background:#1f3a2f;color:var(--up)}
-@media(max-width:374px){.ssw .lv-dt{display:none}.ssw .tabs{gap:20px}}
+@media(max-width:420px){.ssw .lv-dt{display:none}}
 /* the first close of Season 2, a row that opens Upcoming */
 .s2fc{display:grid;grid-template-columns:auto minmax(0,1fr) 14px;gap:12px;align-items:center;width:100%;padding:13px 20px;border-bottom:1px solid var(--ln);text-align:left;background:#14110d}
-.s2fc .cos{display:flex}.s2fc .cos .co+.co{margin-left:-7px;box-shadow:0 0 0 2px #14110d}
+.s2fc .cos{display:flex;gap:4px}
 .s2fc .cn{font:600 14.5px/1.2 var(--sans)}.s2fc small{display:block;margin-top:4px;font:400 11.5px/1.3 var(--mono);color:var(--mu)}
 .s2fc .cn .d{color:var(--dn);font-family:var(--mono);font-weight:600}.s2fc .cn .u{color:var(--up);font-family:var(--mono);font-weight:600}
 .s2ch{width:8px;height:8px;border-right:2px solid var(--mu);border-top:2px solid var(--mu);transform:rotate(45deg);justify-self:end}
@@ -28,7 +28,7 @@
 .s2lr{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--ln)}
 .s2lr:last-of-type{border-bottom:0}
 .s2lr .cn{font:700 16px/1.1 var(--sans)}.s2lr small{display:block;margin-top:5px;font:500 11.5px/1 var(--mono);color:var(--mu)}
-.s2lab{display:inline-flex;align-items:center;gap:7px}.s2lab b{font:600 13px/1 var(--mono);color:var(--tx)}.s2lab .fl{width:18px;height:12px}
+.s2lab{display:inline-flex;align-items:center;gap:7px;width:96px}.s2lab b{font:600 13px/1 var(--mono);color:var(--tx)}.s2lab .fl{width:18px;height:12px}
 .s2lf{padding:12px 20px 14px;border-top:1px solid var(--ln);font:400 11.5px/1.5 var(--mono);color:var(--mu)}
 /* take B: the Season 1 champion strip */
 .s1c{border-color:#3a3020}
@@ -49,4 +49,24 @@
 .s2ex-t{display:inline-block;margin-left:4px;padding:2px 5px;border-radius:4px;border:1px dashed var(--ac);font:700 9px/1 var(--mono);font-style:normal;letter-spacing:.06em;color:var(--ac);vertical-align:2px}
 /* take C: Season 2's bar */
 .sb.s2b{margin-top:6px;background:#14181a}.sb.s2b b{color:#5ee0bf}
+/* relegation sits under the hit rate it comes from (out of flow, so every row keeps one height) */
+.lt td:has(.s2rz){position:relative}
+.s2tg.s2rz{position:absolute;left:50%;top:calc(50% + 10px);transform:translateX(-50%);margin:0;padding:1px 4px;font-size:8px}
+/* at 320 the hit table folds its Last 5 column (the live board pokes 18.6px out of its panel there) */
+@media(max-width:350px){.s2hit th:nth-child(2),.s2hit td:nth-child(2){display:none}}
+/* the strip's Season 1 table: versions only from 521px */
+@media(max-width:520px){.s1lt .nm2 small{display:none}}
+/* five AIs on a match card: each side two to a row, so every card is the same height for 3 v 2 and 4 v 1, names never collide */
+.lv-bd{align-items:start}.lv-mid{align-self:center}
+.lv-sl,.lv-sl.n3,.lv-sl.n4{display:grid;grid-template-columns:repeat(2,minmax(0,auto));justify-content:center;justify-items:center;gap:10px 8px}
+.lv-sl:has(>.lv-p:only-child){grid-template-columns:auto}
+.lv-sl>.lv-p:last-child:nth-child(odd):not(:only-child){grid-column:1/-1}
+.lv-sl .lv-p span,.lv-sl.n3 .lv-p span{font-size:10.5px}
+@media(max-width:360px){.lv-bd{grid-template-columns:1fr 76px 1fr;gap:6px}.lv-sl .lv-p span,.lv-sl.n3 .lv-p span{font-size:9px}.lv-sl,.lv-sl.n3,.lv-sl.n4{gap:8px 4px}.lv-mid .sc{font-size:24px}.lv-hd>span:nth-child(2){display:none}}
+/* the hit rate keeps its column when it reads "–" (the W/L centring needs both neighbours) */
+.s2hit th:last-child,.s2hit td:last-child{width:62px}
+/* phones under 360: the NEW tag a step smaller; the lineup's lab under the version; the tab strips tighter (the live board scrolls its tabs at 320) */
+@media(max-width:360px){.s2tg{font-size:8px;padding:1px 3px;margin-left:4px}.s2lr{grid-template-columns:36px minmax(0,1fr)}.s2lab{grid-column:2;width:auto}
+ .th2{gap:10px}.hiw{font-size:11px;padding:7px 8px!important}.lv .tabs{gap:14px}.lv-dt{font-size:10.5px}}
+@media(max-width:345px){.nm2 .s2mk .lv-cr{display:none}}
 /*}S2SITE*/
