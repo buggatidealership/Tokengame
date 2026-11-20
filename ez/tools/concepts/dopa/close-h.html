@@ -75,7 +75,7 @@ html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f
 .co img,.hd img,.ch img{display:block;box-shadow:0 0 0 2px rgba(242,237,230,.22),0 10px 22px rgba(0,0,0,.45)}
 .co .nm{font-size:38px;line-height:1;white-space:nowrap}
 .tb .co .nm{font-size:28px}
-.co .tk{font-size:28px;line-height:1;letter-spacing:.18em;color:rgba(242,237,230,.72)}
+.co .tk{font-size:30px;line-height:1;letter-spacing:.18em;color:rgba(242,237,230,.72)}
 .hd .in{display:flex;align-items:center;gap:12px;padding-left:9px}
 .hd img{width:46px;height:46px;border-radius:11px}
 .hd span{font-size:38px;line-height:1;display:inline-block;width:132px;text-align:left}
@@ -106,13 +106,13 @@ html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f
 .row .str{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none}
 .row .str svg{position:absolute}
 .cell{position:absolute;top:50%;width:112px;height:42px;margin:-21px 0 0 -56px;display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1;letter-spacing:.05em;border-radius:21px}
-.tb .cell{border-radius:4px;font-size:22px;letter-spacing:.09em;clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 7px,100% calc(100% - 7px),calc(100% - 7px) 100%,7px 100%,0 calc(100% - 7px),0 7px)}
+.tb .cell{border-radius:4px;font-size:24px;letter-spacing:.07em;clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 7px,100% calc(100% - 7px),calc(100% - 7px) 100%,7px 100%,0 calc(100% - 7px),0 7px)}
 .ta .cell{font-family:Kanit,sans-serif;font-style:italic;font-weight:800}
 .tb .cell{font-family:Archivo,sans-serif;font-stretch:100%;font-weight:800}
 .cell.L{color:#6fe3b3;box-shadow:inset 0 0 0 2px rgba(85,214,162,.62),inset 0 1px 0 2px rgba(255,255,255,.08);background:linear-gradient(180deg,rgba(85,214,162,.2),rgba(85,214,162,.08))}
 .cell.S{color:#f07a8b;box-shadow:inset 0 0 0 2px rgba(232,87,107,.6),inset 0 1px 0 2px rgba(255,255,255,.08);background:linear-gradient(180deg,rgba(232,87,107,.2),rgba(232,87,107,.08))}
-.tb .cell.L{box-shadow:none;background:linear-gradient(180deg,rgba(85,214,162,.24),rgba(85,214,162,.1))}
-.tb .cell.S{box-shadow:none;background:linear-gradient(180deg,rgba(232,87,107,.24),rgba(232,87,107,.1))}
+.tb .cell.L{box-shadow:inset 0 0 0 1.5px rgba(85,214,162,.5);background:linear-gradient(180deg,rgba(85,214,162,.24),rgba(85,214,162,.1))}
+.tb .cell.S{box-shadow:inset 0 0 0 1.5px rgba(232,87,107,.5);background:linear-gradient(180deg,rgba(232,87,107,.24),rgba(232,87,107,.1))}
 .cell .fl{position:absolute;inset:0;border-radius:inherit;opacity:0}
 .cell.L .fl{background:linear-gradient(180deg,#7cf0c0,#3fbf8a);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(0,0,0,.18)}
 .cell.S .fl{background:linear-gradient(180deg,#ff8f9d,#d84a5e);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(0,0,0,.18)}
@@ -178,7 +178,7 @@ const DECO = `<svg viewBox="0 0 22 22"><path d="M0 22V8h4V4h4V0h14" fill="none" 
 const decoHTML = () => [['-1px', '-1px', ''], ['', '-1px', 'scaleX(-1)'], ['-1px', '', 'scaleY(-1)'], ['', '', 'scale(-1,-1)']].map(([l, t, tf], i) => `<i style="position:absolute;${i % 2 ? 'right:-1px' : 'left:' + l};${i > 1 ? 'bottom:-1px' : 'top:' + t};width:22px;height:22px;transform:${tf || 'none'}">${DECO}</i>`).join('');
 function glass(parent, x, y, w, h, r, inner = '', cls = '') {
   const el = add(`<div class="gl ${cls}" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;${r != null ? `border-radius:${r}px` : ''}"><canvas class="fr"></canvas><div class="gt"></div><div class="gn" style="background-image:url(${noiseURL})"></div><div class="tp"></div><div class="sp"></div><i class="dc">${decoHTML()}</i><i class="ed"></i><i class="rim"></i><div class="in">${inner}</div></div>`, parent);
-  const cv = el.querySelector('.fr'); cv.width = Math.max(8, Math.round(w / 4)); cv.height = Math.max(8, Math.round(h / 4)); const g = { el, cv, fx: cv.getContext('2d'), w, h, sp: el.querySelector('.sp'), ph: Math.random() * 7 }; G.push(g); return g }
+  const cv = el.querySelector('.fr'); cv.width = Math.max(8, Math.round(w / 4)); cv.height = Math.max(8, Math.round(h / 4)); const g = { el, cv, fx: cv.getContext('2d'), w, h, sp: el.querySelector('.sp'), ph: (G.length * 1.37) % 6.5 };   // phases fixed, so the four renderers agree G.push(g); return g }
 function frost(g, t) { const o = +getComputedStyle(g.el).opacity; if (o < .01) return; const r = g.el.getBoundingClientRect(); if (r.width < 4 || r.bottom < 0 || r.top > 1350 || r.right < 0 || r.left > 1080) return;
   const k = 1080 / gr.width, sx = (r.left - gr.left) * k, sy = (r.top - gr.top) * k, sw = r.width * k, sh = r.height * k, P = 40, ax = g.cv.width / sw, ay = g.cv.height / sh, x = g.fx;
   x.filter = TAKE === 'a' ? 'blur(3px) saturate(160%) brightness(1.1)' : 'blur(3.5px) saturate(135%) brightness(1.05)'; x.drawImage(gc, sx - P, sy - P, sw + 2 * P, sh + 2 * P, -P * ax, -P * ay, (sw + 2 * P) * ax, (sh + 2 * P) * ay);
@@ -240,7 +240,8 @@ const setup = () => {
 const GA = 20, GNL = 60;
 const LV = [[0, .9], [T_DOCK, .58], [5.8, .62], [TR, .62], [T_SORT, .58], [T_FOLD, .5], [T_LEAD, .56]];
 const lvAt = t => { let j = 0; while (j < LV.length - 1 && t >= LV[j + 1][0]) j++; return j && t < LV[j][0] + .5 ? L.lerp(LV[j - 1][1], LV[j][1], L.eio(L.n(t, LV[j][0], LV[j][0] + .5))) : LV[j][1] };
-const beatK = t => { if (t < TR - .02) { const b = (t - TR) / (BEAT * 2), f = b - Math.floor(b); return .35 * Math.exp(-f * BEAT * 2 * 6) } const b = (t - TR) / BEAT, f = b - Math.floor(b); return Math.exp(-f * BEAT * 7) };
+// the room's light answers the bed: a pulse on every beat (softer before the drop on the bell), as s2d's ground did
+const beatK = t => { if (t < TR - .02) { const b = (t - TR) / BEAT, f = b - Math.floor(b); return .6 * Math.exp(-f * BEAT * 7) } const b = (t - TR) / BEAT, f = b - Math.floor(b); return Math.exp(-f * BEAT * 7) };
 function ground(t, vNow) { const x = gx; x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1; x.globalCompositeOperation = 'source-over'; x.filter = 'none'; x.fillStyle = BK; x.fillRect(0, 0, 1080, 1350);
   const s = 1.035 + .014 * Math.sin(t * .42) + .01 * L.n(t, 0, 15.5), dx = 8 * Math.sin(t * .31), dy = 6 * Math.cos(t * .27) - (TAKE === 'a' ? 60 : 40);
   x.save(); x.translate(540 + dx, 675 + dy); x.scale(s, s); x.translate(-540, -720);
@@ -254,14 +255,14 @@ function ground(t, vNow) { const x = gx; x.setTransform(1, 0, 0, 1, 0, 0); x.glo
   if (fl + pre > .01) { x.globalCompositeOperation = 'lighter'; x.globalAlpha = L.cl(.5 * fl + .16 * pre); x.drawImage(still, 0, 0, 1080, 1440); x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1 }
   x.restore();
   // the level: bright for the line, dim under the data, a lift on the beat after the bell
-  const lv = lvAt(t) * (1 + .1 * beatK(t) * (t >= TR ? 1 : .5)) + .25 * fl;
+  const lv = lvAt(t) * (1 + .2 * beatK(t)) + .25 * fl;
   if (lv < 1) { x.globalAlpha = L.cl(1 - lv, 0, .9); x.fillStyle = BK; x.fillRect(0, 0, 1080, 1350); x.globalAlpha = 1 }
   // the colour of the night: the side the moves went washes in with them, gold at the bell
   const net = vNow.reduce((a, b) => a + b, 0) / N, w = L.cl(Math.abs(net) / 8) * L.n(t, T_NIGHT, T_NIGHT + 1) * (1 - .6 * L.n(t, T_FOLD, T_FOLD + .6)), mc = net >= 0 ? UP : DN;
   x.globalCompositeOperation = 'lighter';
   if (w > .01) { const g = x.createRadialGradient(540, 520, 0, 540, 520, 760); g.addColorStop(0, `rgba(${mc},${(.16 * w).toFixed(3)})`); g.addColorStop(1, `rgba(${mc},0)`); x.fillStyle = g; x.fillRect(0, 0, 1080, 1350) }
   // the rim lights: green from the left, red from the right, on the beat (half-time before the bell)
-  const bk = beatK(t), rl = .14 + .3 * bk;
+  const bk = beatK(t), rl = .14 + .5 * bk;
   [[0, UP], [1080, DN]].forEach(([cx, c]) => { const g = x.createRadialGradient(cx, 900, 0, cx, 900, 640); g.addColorStop(0, `rgba(${c},${(.36 * rl).toFixed(3)})`); g.addColorStop(.7, `rgba(${c},0)`); x.fillStyle = g; x.fillRect(0, 0, 1080, 1350) });
   // the bell's own light (take a), drawn into the ground so the glass frosts it too
   if (TAKE === 'a' && HB > .01) { const g = x.createRadialGradient(540, 150 - BUP, 0, 540, 150 - BUP, 300 + 60 * HB); g.addColorStop(0, `rgba(255,214,120,${(.42 * HB).toFixed(3)})`); g.addColorStop(.5, `rgba(253,188,42,${(.14 * HB).toFixed(3)})`); g.addColorStop(1, 'rgba(253,188,42,0)'); x.fillStyle = g; x.fillRect(0, 0, 1080, 1350) }
@@ -287,7 +288,7 @@ window.R = t => {
   th.style.transform = `translate(${L.lerp(540 - tw / 2, 54, dk).toFixed(1)}px,${L.lerp(262 + 30 * (1 - tin), 132, dk).toFixed(1)}px) scale(${L.lerp(1, dS, dk).toFixed(4)})`; th.style.opacity = (tin * (1 - fold)).toFixed(3);
   const span = Math.min(310, 960 / N), bx = 540 - span * (N - 1) / 2;
   cos.forEach((g, j) => { const t0 = T_CO + j * coGap(), k = L.n(t, t0, t0 + .3), s = L.spring(t - t0, 2, 8), el = g.el;
-    el.style.transform = `translate(${(bx + span * j - g.w / 2).toFixed(1)}px,${(596 + 46 * (1 - s)).toFixed(1)}px) scale(${(L.lerp(.6, 1, L.eo5(k)) * (1 - .5 * dk)).toFixed(4)})`; el.style.opacity = ((t >= t0 ? 1 : 0) * L.cl(k * 3) * (1 - dk)).toFixed(3) });
+    el.style.transform = `translate(${(bx + span * j - g.w / 2).toFixed(1)}px,${(596 + 46 * (1 - s)).toFixed(1)}px) scale(${(L.lerp(.86, 1, L.eo5(k)) * (1 - .3 * dk)).toFixed(4)})`; el.style.opacity = ((t >= t0 ? 1 : 0) * L.cl(k * 3) * L.cl(1 - 2.6 * dk)).toFixed(3) });
   // the chart's glass
   const con = L.eo(L.n(t, T_DOCK + .1, T_NIGHT)) * (1 - fold), cg = L.$('#cg');
   cg.style.opacity = con.toFixed(3); cg.style.transform = `translateY(${(-70 * fold + 40 * (1 - L.eo(L.n(t, T_DOCK + .1, T_NIGHT)))).toFixed(1)}px)`;
@@ -363,7 +364,7 @@ window.R = t => {
   const push = 1 + .012 * L.n(t, 0, T_NIGHT) + .02 * L.eio(L.n(t, 5.8, TR)) - .02 * L.eio(L.n(t, TR + .3, T_SORT)) + .03 * L.n(t, T_SSN, 15.5);
   const kick = t > TR ? Math.exp(-(t - TR) * 9) * Math.sin((t - TR) * 60) * 4 : 0;
   L.$('#cam').style.transform = `translate(${kick.toFixed(2)}px,${(kick * .6).toFixed(2)}px) scale(${push.toFixed(4)})`;
-  L.$('#sh').style.transform = `scale(${(1 + .004 * beatK(t) * (t >= TR ? 1 : 0)).toFixed(4)})`;
+  L.$('#sh').style.transform = `scale(${(1 + .008 * beatK(t)).toFixed(4)})`;
   G.forEach(g => frost(g, t));
 };
 (async () => {
