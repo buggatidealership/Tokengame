@@ -1,20 +1,23 @@
 <!doctype html><meta charset="utf-8"><title>Callouts and receipts</title>
 <!-- Season 2 outcome video, concept A: CALLOUTS AND RECEIPTS (oc BRIEF, 2026-11-20). A trader's call channel: before the report each AI
-  posts its trade as a message (mark, name, LONG or SHORT with the called move); at the close every message gets its receipt, a signed
-  P&L stamped onto it, right trades lit and wrong ones dimmed; the channel ends on the Season 2 leaderboard. Same contract as close.html
+  posts its trade as a message (its mark, LONG or SHORT with the called move); at the close every message gets its receipt, a signed P&L
+  stamped onto it, right trades lit and wrong ones dimmed; the channel ends on the Season 2 leaderboard. Same contract as close.html
   (window.R(t), READY, DUR, MUSIC, CUES, lib.js), so wrapx.sh renders it unchanged. Data: data/close-<date>.json (prep-close.js).
-  The room is a Hedra painting (w6/oc-a/ground.jpg: a night trading desk, green screens on the left wall, red on the right). Messages
-  sit on the side of their trade: LONG on the green side, SHORT on the red side. At the close the room takes the colour of the night.
-  Reading load (the brief's 15 trades and 15 reasons cannot all be read in 20 s): one company per screen; every call shows its side and
-  called move (a colour pattern, scanned); ONE reason per company is shown in full: the trade against the crowd (the side fewer AIs took;
-  of two, the one with the higher confidence). Its message opens the thread so it is on screen longest.
-  Beats (130 BPM, B = 0.4615 s; the bed's drop at 14.79 s in the file lands on the close, beat 25):
+  The room is a Hedra painting (w6/oc-a/ground.jpg: a night trading desk, green screens on the left wall, red on the right; the bell,
+  w6/oc-a/bell.webp, is the market's mark). Messages sit on the side of their trade: LONG on the green side, SHORT on the red side.
+  At the close the room takes the colour of the night (the larger side of the three moves).
+  Reading load (15 trades with 15 reasons need about 72 s of reading; the video has about 20): one company per screen; every call is one
+  line (mark, side, called move), read as a pattern; ONE reason per company is shown in full: the trade against the crowd (the side
+  fewer AIs took; of two, the higher confidence). Its message opens the thread, so it is on screen longest (2.95 s, the longest reason
+  needs 2.92). The quote names its AI; the other calls carry the AI's mark only; the board names all five.
+  Beats (130 BPM, B = 0.4615 s; the bed's drop at 14.79 s in the file lands on the close, beat 25; MUSIC.at = 3.252):
   0      the channel name alone: First 3 trades of Season 2
   b4     it docks as the channel header; THU BEFORE EARNINGS; the Intuit thread: the contrarian's message with its reason, then the rest
   b11    Keysight thread          b18  Elastic thread
-  b25    DROP: the bell rings in Elastic's header, FRI CLOSE and the move; receipts stamp on every message (right lit, wrong dimmed)
-  b30    scroll back up to Keysight: its close and receipts          b35  back up to Intuit: its close and receipts (the night's biggest)
-  b40    the Season 2 leaderboard, P&L after 3 trades, each AI's three receipts beside its P&L; b42 the leader's gold rim; end b47.
+  b25    DROP: the bell rings in Elastic's header, FRI CLOSE and the move; half a beat later the receipts stamp on every message
+  b30.5  scroll back up to Keysight: its close and receipts          b36  back up to Intuit: its close and receipts (the night's biggest)
+  b41.5  the Season 2 leaderboard, P&L after 3 trades, each AI's three receipts beside its P&L; b43.5 the leader's gold rim; end b47.5
+  (21.92 s). ?ch=0 drops the docked channel name after the first thread (4 words fewer on every later shot).
   Words on screen: no punctuation of any kind; sides are LONG or SHORT; every number carries its label; $100K on every trade. -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Kanit:ital,wght@1,800;1,900&display=swap">
 <style id="base"></style>
@@ -74,10 +77,10 @@ html,body{background:#05060a}
 .st.dn{border-color:rgba(232,87,107,.85);background:rgba(232,87,107,.14)}
 .st.dn i{color:#ff7a8c}
 /* the leaderboard */
-#board{position:absolute;left:56px;top:236px;width:968px;height:1030px;display:flex;flex-direction:column;justify-content:center;gap:18px}
+#board{position:absolute;left:56px;top:170px;width:968px;height:1110px;display:flex;flex-direction:column;justify-content:center;gap:18px}
 #board .h{font:italic 900 74px/1 Kanit;letter-spacing:-.01em;color:#f2ede6;white-space:nowrap}
 #board .k{font:400 38px/1 'Bebas Neue';letter-spacing:.16em;color:#b9b1a8;margin:2px 0 14px}
-.br{position:relative;height:118px;border-radius:26px;display:flex;align-items:center;padding:0 30px 0 22px}
+.br{position:relative;height:132px;border-radius:26px;display:flex;align-items:center;padding:0 30px 0 22px}
 .br .rk{position:relative;font:700 34px/1 'Geist Mono';color:#9d958c;width:44px}
 .br .av{position:relative;margin:0}
 .br .nm{position:relative;font:italic 900 54px/1 Kanit;color:#f2ede6;margin-left:22px;width:214px;white-space:nowrap}
@@ -156,7 +159,7 @@ const setup = () => {
   });
   // the leaderboard rows, in the season's order; each row carries the AI's three receipts (lit right, dimmed wrong)
   const rows = L.$('#rows');
-  D.order.forEach((k, i) => { const el = document.createElement('div'); el.className = 'br'; el.style.marginTop = i ? '18px' : '0'; const v = D.season1[k];
+  D.order.forEach((k, i) => { const el = document.createElement('div'); el.className = 'br'; el.style.marginTop = i ? '20px' : '0'; const v = D.season1[k];
     el.innerHTML = `<div class="gl"></div><div class="rim"></div><span class="rk">${i + 1}</span><div class="av">${mark(k, 68)}</div><span class="nm">${D.ais.find(a => a.k === k).name}</span>
       <span class="rcs">${D.rounds.map(r => { const c = r.calls.find(x => x.k === k); return `<img class="${c.right ? 'ok' : 'no'}" src="${r.logo}">` }).join('')}</span>
       <span class="pl" style="color:${v > 0 ? '#6ff0bb' : v < 0 ? '#ff7a8c' : '#f2ede6'}">${v === 0 ? '$0' : L.money(v)}</span>`;
@@ -190,7 +193,7 @@ window.R = t => {
     radial-gradient(ellipse 60% 70% at ${downNight ? 100 : 0}% 45%,rgba(${hiC},${.22 * nc * w}),rgba(${hiC},0) 70%)`;
   // the channel name: alone, then docked as the header
   const ti = L.$('#title'), tin = L.eo5(L.n(t, .12, .55)), dk = L.eio(L.n(t, T_DOCK - .1, T_DOCK + .4)), tw = ti.offsetWidth, th0 = ti.offsetHeight;
-  ti.style.transform = `translate(${L.lerp(540 - tw / 2, 56, dk)}px,${L.lerp(540 - th0 / 2 + 30 * (1 - tin), 132, dk)}px) scale(${L.lerp(1, .35, dk)})`; ti.style.opacity = tin * (1 - L.n(t, T_BOARD, T_BOARD + .3));
+  ti.style.transform = `translate(${L.lerp(540 - tw / 2, 56, dk)}px,${L.lerp(540 - th0 / 2 + 30 * (1 - tin), 132, dk)}px) scale(${L.lerp(1, .35, dk)})`; ti.style.opacity = tin * (1 - L.n(t, T_BOARD, T_BOARD + .3)) * (Q.get('ch') === '0' ? 1 - L.n(t, S(1) - .35 * B, S(1)) : 1);
   // the channel scroll: one thread a screen before the close; back up through them for the receipts; away for the board
   const P = PH();
   const keys = [[T_DOCK - .1, -.25], [T_DOCK + .35, 0], [S(1) - .35 * B, 0], [S(1), 1], [S(2) - .35 * B, 1], [S(2), 2], [P[1].t0 - .35 * B, 2], [P[1].t0, 1], [P[2].t0 - .35 * B, 1], [P[2].t0, 0]];
