@@ -9,7 +9,7 @@
      +0    the company on the scoreboard, the AIs walk to their corners (LONG left, SHORT right), each with its called move
      +0.5  the LONG corner's case in a balloon (its boldest call speaks), +1.5 the SHORT corner's case
      +1.5..5 the real price path as a tug of war on the top rope: the tag is the stock's live move, pulled toward LONG when the stock is up
-           and toward SHORT when it is down (one scale for the night), the pull lit in green or red, the ground it covered faint
+           and toward SHORT when it is down (one square-root scale for the night), the pull lit in green or red, the ground it covered faint
      +5    the bell (5.56, 10.17, 14.79 = the drop): the final move stamped, the winning corner lit (gold rims, its cushion glows), every
            AI's called move turns into its signed P&L, the losing corner dimmed; held 2.3 s
    B(5)  the Season 2 leaderboard (17.10), P&L after 3 trades, each AI's three trades as lit or dimmed company marks; B(9) the leader's gold
@@ -62,7 +62,7 @@ html,body{background:#04070e}
 .bill .co .nm{font-size:36px;color:#f2ede6}
 .bill .co .tk{font-size:28px;letter-spacing:.12em;color:#a49a90}
 .ring{border-radius:14px}
-.bill .me{position:absolute;left:50%;top:-17px;transform:translateX(-50%);z-index:4;font-size:24px;letter-spacing:.16em;color:#17110a;background:#fdbc2a;padding:6px 14px 4px;border-radius:8px;box-shadow:0 6px 16px rgba(0,0,0,.45)}
+.bill .me{position:absolute;left:50%;top:-21px;transform:translateX(-50%);z-index:4;font-size:24px;letter-spacing:.16em;color:#17110a;background:#fdbc2a;padding:6px 14px 4px;border-radius:8px;box-shadow:0 3px 5px rgba(0,0,0,.35)}
 /* fighters: one tile component for every AI in every corner */
 .tile{width:470px;height:84px}
 .tile .mkw{position:absolute;left:14px;top:12px}
@@ -84,9 +84,9 @@ html,body{background:#04070e}
 .lbr{width:712px;height:128px}
 .lbr .rk{position:absolute;left:20px;top:45px;font-size:38px;color:#a49a90;width:30px;text-align:center}
 .lbr .mkw{position:absolute;left:66px;top:28px}
-.lbr .nm{position:absolute;left:160px;top:22px;font-size:46px;color:#f2ede6}
-.lbr .rec{position:absolute;left:162px;top:80px;display:flex;gap:9px}
-.lbr .rec img{width:30px;height:30px;border-radius:24%;display:block}
+.lbr .nm{position:absolute;left:160px;top:20px;font-size:46px;color:#f2ede6}
+.lbr .rec{position:absolute;left:162px;top:78px;display:flex;gap:9px}
+.lbr .rec img{width:34px;height:34px;border-radius:24%;display:block}
 .lbr .pl{position:absolute;right:28px;top:42px;font-size:46px}
 #dt{font-size:27px;color:rgba(242,237,230,.82);transform-origin:0 0;font-weight:800}
 .bug{left:54px;top:50px;gap:16px;color:#f2ede6;letter-spacing:.02em}
@@ -107,7 +107,7 @@ html,body{background:#04070e}
 <script src="lib.js"></script>
 <script>
 L.$('#base').textContent = L.css;
-const Q = new URLSearchParams(location.search), DATE = Q.get('d') || '2026-11-20';
+const Q = new URLSearchParams(location.search), DATE = Q.get('d') || '2026-11-20', SHOWCALL = Q.get('called') !== '0';   // ?called=0: no called moves before the bell (fewer words)
 const GN = '#55d6a2', RD = '#e8576b', AU = '#fdbc2a', CR = '#f2ede6', MU = '#a49a90';
 const BPM = 130, BT = 60 / BPM, TD = 14.79, B = n => TD + n * BT;      // TD: the main event's bell, on the bed's drop
 const T_TITLE = .12, T_BILL = [B(-30), B(-29), B(-28)], S0 = B(-25), BOUT = 10 * BT, T_LB = B(5), T_LEAD = B(9), DUR = 21.8;
@@ -121,6 +121,9 @@ const LINES = {
   ESTC: { GPT: 'Cloud sales up 27%', CLAUDE: 'Down 27% backlog still rising', GROK: 'AI adoption better than feared', GEMINI: 'Four straight beats sold anyway', QWEN: 'Datadog just guided flat' } };
 let D, MOD, grain, BO, VMAX, EL = {};
 const sc = () => L.$('#sc');
+// the pull: up is toward LONG (left), down toward SHORT (right); one scale for the night, square-rooted so a 2% fight still swings
+// visibly while the biggest move still pulls furthest (order kept; the tag carries the exact figure)
+const PULL = v => -Math.sign(v) * Math.sqrt(Math.min(1, Math.abs(v) / VMAX)) * KMAX;
 const add = (h, p = sc()) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
 const put = (el, x, y, s = 1, o = 1, ex = '') => { if (!(o > .001)) { if (el._d !== 0) { el.style.display = 'none'; el._d = 0 } return 0 } if (el._d !== 1) { el.style.display = ''; el._d = 1 }
   el.style.opacity = o >= 1 ? '' : o.toFixed(3); el.style.transform = `translate(${x.toFixed(2)}px,${y.toFixed(2)}px) scale(${s.toFixed(4)})${ex}`; return 1 };
@@ -175,7 +178,7 @@ const setup = () => {
   // the tag on the rope
   EL.kn = glass('', 176, 80, `<span class="bb"></span><span class="m"></span>`, 22); EL.kn.id = 'kn'; EL.knT = EL.kn.querySelector('.bb'); EL.knV = EL.kn.querySelector('.m');
   // the leaderboard: P&L after the night, each AI's trades as lit or dimmed company marks (in the order they were fought)
-  EL.lb = D.order.map((k, i) => { const rec = BO.map(r => { const c = r.calls.find(x => x.k === k); return `<img src="${r.logo}" alt="" style="${c.right ? `box-shadow:0 0 0 3px ${GN}` : 'opacity:.4;filter:grayscale(1)'}">` }).join('');
+  EL.lb = D.order.map((k, i) => { const rec = BO.map(r => { const c = r.calls.find(x => x.k === k); return `<img src="${r.logo}" alt="" style="${c.right ? `box-shadow:0 0 0 3px ${GN}` : 'opacity:.45;filter:grayscale(1)'}">` }).join('');
     const v = D.season1[k]; const el = glass('lbr', 712, 128, `<span class="m rk">${i + 1}</span><span class="mkw">${mark(k, 72)}</span><span class="k nm">${NAME(k)}</span><span class="rec">${rec}</span>
       <span class="m pl" style="color:${v > 0 ? GN : v < 0 ? RD : CR}">${v === 0 ? '$0' : L.money(v)}</span>`, 26); el._k = k; return el });
   // chrome
@@ -226,7 +229,7 @@ window.R = t => {
   put(EL.cwR, 894 - wd(EL.cwR), CW_Y, cwS('SHORT'), cwo * cwO('SHORT')); EL.cwR.style.filter = w === 'SHORT' ? `drop-shadow(0 0 ${22 * wk}px rgba(232,87,107,.85))` : '';
   // the night's card
   EL.bill.forEach((el, j) => { const t0 = T_BILL[j], k = L.n(t, t0, t0 + .35), s = L.spring(t - t0, 2.2, 8);
-    put(el, 150, 870 + j * 120 + 50 * (1 - L.cl(s)) + 40 * tout, 1, (t >= t0 ? 1 : 0) * L.cl(k * 3) * (1 - tout)) });
+    put(el, 150, 866 + j * 128 + 50 * (1 - L.cl(s)) + 40 * tout, 1, (t >= t0 ? 1 : 0) * L.cl(k * 3) * (1 - tout)) });
   // the docked title, under the bug, through the bouts
   put(L.$('#dt'), 58, 128, 1, L.n(t, S0 - .2, S0 + .2) * (1 - L.n(t, T_LB - .3, T_LB)));
   // the bouts
@@ -240,7 +243,7 @@ window.R = t => {
       const isW = won && sd === r.win, isL = won && sd !== r.win;
       put(el, x, y, isW ? 1 + .04 * Math.sin(Math.PI * L.n(t, r.p1 + .05 * i, r.p1 + .4 + .05 * i)) : 1, L.cl(sp * 1.5) * (1 - out));
       // the losing corner dims: its marks and names fade and go grey, its P&L stays readable
-      const dm = isL ? g : 0; el._mk.style.opacity = 1 - .62 * dm; el._mk.style.filter = dm ? `grayscale(${dm})` : ''; el._nm.style.opacity = 1 - .55 * dm; el._vb.style.opacity = 1 - .1 * dm;
+      const flipNow = won && t >= r.p1 + .12, dm = isL ? g : 0; el._mk.style.opacity = 1 - .62 * dm; el._mk.style.filter = dm ? `grayscale(${dm})` : ''; el._nm.style.opacity = 1 - .55 * dm; el._vb.style.opacity = (1 - .1 * dm) * (SHOWCALL || flipNow ? 1 : 0); el.style.width = SHOWCALL ? '' : L.lerp(300, 470, L.eo(L.n(t, r.p1 + .05, r.p1 + .35))) + 'px';
       el.style.filter = dm ? `brightness(${1 - .18 * dm})` : '';
       const flip = won && t >= r.p1 + .12; if (el._f !== flip) { el._f = flip; el._lab.textContent = flip ? 'P&L' : 'CALLED'; el._val.textContent = flip ? (el._c.pnl === 0 ? '$0' : L.money(el._c.pnl)) : called(el._c.call) }
       el._val.style.color = flip ? (el._c.pnl > 0 ? GN : el._c.pnl < 0 ? RD : CR) : (sd === 'LONG' ? GN : RD);
@@ -258,10 +261,10 @@ window.R = t => {
   // the tug of war on the top rope
   const ln = L.$('#ln'); let svg = '';
   if (cur && t < T_LB) {
-    const r = cur, u = L.n(t, r.p0, r.p1), uu = u < 1 ? L.eio(u) * .2 + u * .8 : 1, v = t < r.p0 ? 0 : r.at(uu), off = -v / VMAX * KMAX, kx = CX + off;
+    const r = cur, u = L.n(t, r.p0, r.p1), uu = u < 1 ? L.eio(u) * .2 + u * .8 : 1, v = t < r.p0 ? 0 : r.at(uu), kx = CX + PULL(v);
     // the ground it covered so far (faint) and the pull from the start line (lit)
     let lo = 0, hi = 0; if (t >= r.p0) { const n = 60; for (let i = 0; i <= n; i++) { const q = r.at(uu * i / n); lo = Math.min(lo, q); hi = Math.max(hi, q) } }
-    const xa = CX - hi / VMAX * KMAX, xb = CX - lo / VMAX * KMAX, col = v >= 0 ? GN : RD, on = r.o;
+    const xa = CX + PULL(hi), xb = CX + PULL(lo), col = v >= 0 ? GN : RD, on = r.o;
     svg += `<defs><filter id="gw" x="-20%" y="-200%" width="140%" height="500%"><feGaussianBlur stdDeviation="5"/></filter></defs>`;
     svg += `<g opacity="${on.toFixed(3)}"><line x1="${xa}" y1="${ROPE}" x2="${xb}" y2="${ROPE}" stroke="rgba(242,237,230,.2)" stroke-width="16" stroke-linecap="round"/>
       <line x1="${CX}" y1="${ROPE}" x2="${kx}" y2="${ROPE}" stroke="${col}" stroke-width="12" opacity=".55" filter="url(#gw)"/>
