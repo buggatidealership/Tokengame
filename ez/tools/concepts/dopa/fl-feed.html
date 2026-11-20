@@ -8,7 +8,12 @@
   The feed, Coming soon, the logo. ?open=owner gives the owner's own opening (SEASON 1 / Long or short over Season 1's Disney row, then
   SEASON 2 / Now the why at the tap). Data: w6/fl/data.json (w6/fl/prep.py: calls.csv, feed/words.json verbatim, ez-data.js rows 110 to 112).
   Bed i4-house (118.4 BPM, beat 0.5068 s, first beat 0.025 s), every cut and lift on a beat.
-  Switches: ?copy=a|b, any line by ?s1k=&s1=&s1b=&s2k=&s2=&s2b=&s4=&ek=&e1=&e2= ({g word} green, {r word} red, {y word} gold), ?end=soon|live. -->
+  Switches: ?copy=a|b, any line by ?s1k=&s1=&s1b=&s2k=&s2=&s2b=&s4=&ek=&e1=&e2= ({g word} green, {r word} red, {y word} gold), ?end=soon|live.
+  ?pace=up (owner, 2026-11-20: "missing some type of excitement... a bit more upbeat"): the same story and words, faster: bed fl-up (r10-house,
+  122 BPM, cut by bedx.py so its kick drops back in on Qwen's pop-out at 6.9 s and again on the end card at 22.6 s, its breaks under the tab tap and
+  under the plain-words read), a camera that moves on the beat (a dolly by layout zoom down to the tab bar, up to the feed, a punch in; on the
+  glass: push, focus Qwen, focus Claude, then into the plain-words panel), the words of the plain reading lit in reading order, a stronger kick
+  light; every move starts on a beat; 25.6 s. -->
 <style>
 :root{--tx:#f5f1ea;--mu:#8e9a93;--mu2:#5d6963;--up:#55d6a2;--dn:#ff5a6e;--ac:#fdbc2a;--cr:#f8f0d9;--ln:#24302b}
 #st{position:absolute;inset:0;overflow:hidden}
@@ -125,7 +130,7 @@
 </div>
 <script src="lib.js"></script>
 <script>
-const Q = new URLSearchParams(location.search), BT = .5068, B = n => .025 + n * BT, DUR = 26.0;
+const Q = new URLSearchParams(location.search), PU = Q.get('pace') === 'up', BT = PU ? .4918 : .5068, PH = PU ? .020 : .025, B = n => PH + n * BT, DUR = PU ? 25.6 : 26.0;
 const END = Q.get('end') || 'soon', OWN = Q.get('open') === 'owner';
 // the on-screen lines; the default is the coordinator's set after the owner's Grok research; ?open=owner keeps the owner's own opening.
 // {g w} green, {r w} red, {y w} gold; any line can be set by its own parameter
@@ -165,7 +170,18 @@ const T = {   // every hold is at least 1 s + 0.08 s a character of the longest 
   qUp: B(14), qMk: B(15), cUp: B(17), cMk: B(17.6), dn3: B(26), flick: B(26.1),
   gUp: B(27), gMk: B(28), tap2: B(30), s4in: B(30), s4out: B(45.7), gDn: B(46),
   endIn: B(46), endT: B(47), endP: B(47.5) };
-const ARRIVE = [0, 1, 2, 3, 4].map(i => T.view + .45 + i * .17);   // the feed's posts arrive one by one after the tap
+if (PU) Object.assign(T, {   // pace=up: the same beats on fl-up's grid (122 BPM), every move on a beat; the kick drops back in at B(14) and B(46)
+  s1in: B(0), s1out: B(8), tabIn: B(8), view: B(9), s2out: B(14), cMk: B(18), dn3: B(25), flick: B(25), gUp: B(26), gMk: B(27), tap2: B(28), s4in: B(28),
+  s4out: B(34), endP: B(48) });
+const ARRIVE = PU ? [10, 11, 12, 13, 13].map(B) : [0, 1, 2, 3, 4].map(i => T.view + .45 + i * .17);   // the feed's posts arrive one by one after the tap
+// pace=up: the camera. CAM dollies the phone (layout zoom about a pivot, so the screen stays crisp); GLAS moves the lifted glass (its zoom too).
+// Each key: [beat, {s scale, x, y shift of the pivot, r roll deg, ox, oy pivot in the frame}]; a move starts on its beat and lands in .75 s.
+const CAM = [[0, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }], [8, { s: 1.5, x: 0, y: -330, r: 0, ox: 540, oy: 1250 }], [10, { s: 1.3, x: 0, y: 60, r: 0, ox: 540, oy: 560 }],
+  [12, { s: 1.5, x: 0, y: 20, r: -1.2, ox: 540, oy: 640 }], [14, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }], [25, { s: 1.15, x: 0, y: 0, r: 1, ox: 540, oy: 700 }], [26, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }]];
+let GLAS = [[1, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 1290 }], [4, { s: 1.035, x: -18, y: 0, r: -.5 }], [6, { s: 1.02, x: 16, y: -4, r: .4 }], [8, { s: 1, x: 0, y: 0, r: 0 }],
+  [14, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 700 }], [16, { s: 1.05, y: -10, r: .4 }], [17, { s: 1, y: 0, r: 0, ox: 540, oy: 675 }], [20, { s: 1.05, y: 70, r: -.3 }], [22, { s: 1.05, y: -70, r: .3 }], [24, { s: 1, y: 0, r: 0 }],
+  [26, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 750 }], [31, { s: 1.03, x: -12, r: -.4 }]];   // the push into the plain-words panel (from B(34)) is added once its place is measured
+const trk = (K, t) => { const s = Object.assign({}, K[0][1]); for (let i = 1; i < K.length; i++) { const a = B(K[i][0]); if (t < a) break; const e = spr(n(t, a, a + .75)), g = K[i][1]; for (const k in g) s[k] = lerp(s[k], g[k], e) } return s };
 
 (async () => {
   D = await fetch('w6/fl/data.json').then(r => r.json());
@@ -204,7 +220,12 @@ const ARRIVE = [0, 1, 2, 3, 4].map(i => T.view + .45 + i * .17);   // the feed's
   window.CUES = [[.05, 'r11-swell', .14], [T.cardUp, 'sfx-whoosh', .1], ...T.rows.map(t => [t, 'r11-pluck', .08]), [T.tabIn + .2, 'r11-ping', .07], [T.tap1, 'sfx-tap', .14], [T.view, 'r11-slide', .1],
     [T.qUp, 'sfx-whoosh', .11], [T.qMk + .2, 'r11-slide', .06], [T.cUp, 'sfx-whoosh', .11], [T.cMk + .2, 'r11-slide', .06], [T.dn3, 'r11-card', .08],
     [T.gUp, 'sfx-whoosh', .11], [T.tap2, 'sfx-tap', .14], [T.tap2 + .1, 'r11-card', .08], [T.gDn, 'r11-card', .07], [T.endT, 'sfx-chime', .13], [T.endP, 'r11-sparkle', .08]];
-  window.MUSIC = { f: 'i4-house', at: 0 }; window.DUR = DUR;
+  if (PU) window.CUES.push([T.tap1 - BT, 'sfx-whoosh', .07], [B(10), 'sfx-whoosh', .06], [B(12), 'sfx-whoosh', .06], [B(34), 'sfx-whoosh', .06], [B(14), 'r11-swell', .1]);
+  if (PU) {   // the plain reading's words, lit in reading order; and where its panel sits once Grok's post is up and open (the push's pivot)
+    const pq = lifts.grok.c.querySelector('.ppi p'); pq.innerHTML = pq.textContent.split(' ').map(w => `<span class="kw">${esc(w)}</span>`).join(' ');
+    window.__noG = 1; window.R(T.s4out - .01); const r = lifts.grok.pp.getBoundingClientRect(); window.__noG = 0;
+    const px = r.left + r.width / 2, py = r.top + r.height / 2; GLAS.push([34, { s: 1.3, x: 540 - px, y: 700 - py, r: 0, ox: px, oy: py }], [38, { s: 1.33, x: 550 - px, y: 694 - py, r: .5 }], [42, { s: 1.36, x: 530 - px, y: 700 - py, r: -.4 }]) }
+  window.MUSIC = PU ? { f: 'fl-up', at: 0 } : { f: 'i4-house', at: 0 }; window.DUR = DUR;
   window.R(0); await raf(); window.R(.5); await raf(); window.READY = 1;
 })().catch(e => { document.title = 'ERR ' + e.message; console.error(e) });
 const raf = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
@@ -235,9 +256,11 @@ function lift(id, t, up, dn, tgt) {
   const o = lifts[id], kU = spr(n(t, up, up + .78)), kD = eio(n(t, dn, dn + .5)), k = kU * (1 - kD);
   if (t < up) { o.w.style.display = 'none'; return 0 }
   if (k <= .001 && t > dn) { o.w.style.display = 'none'; o.el.style.opacity = 1; return 0 }
-  o.w.style.display = 'block'; const r = o.el.getBoundingClientRect(), z0 = r.width / 358, g = tgt(t), z = lerp(z0, g.z, k);
+  o.w.style.display = 'block'; const r = o.el.getBoundingClientRect(), z0 = r.width / 358, g = tgt(t);
+  if (PU && !window.__noG) { const G = trk(GLAS, t); g.x = G.ox + G.s * (g.x - G.ox) + G.x; g.y = G.oy + G.s * (g.y - G.oy) + G.y; g.z *= G.s; g.r = G.r }
+  const z = lerp(z0, g.z, k);
   const x = lerp(r.left, g.x - 358 * z / 2, k), y = lerp(r.top, g.y, k), fl = k * 5 * Math.sin(t * 1.3 + id.length);
-  o.w.style.transform = `translate(${x.toFixed(2)}px,${(y + fl).toFixed(2)}px) rotate(${(k * .35 * Math.sin(t * .9 + id.length)).toFixed(3)}deg)`; o.c.style.zoom = z.toFixed(4);
+  o.w.style.transform = `translate(${x.toFixed(2)}px,${(y + fl).toFixed(2)}px) rotate(${(k * (.35 * Math.sin(t * .9 + id.length) + (g.r || 0))).toFixed(3)}deg)`; o.c.style.zoom = z.toFixed(4);
   o.el.style.opacity = k > .02 ? 0 : 1;
   o.c.style.setProperty('--gx', (50 + 38 * Math.sin(t * .55 + id.length)).toFixed(1) + '%'); o.c.style.setProperty('--gy', (22 + 30 * Math.sin(t * .42 + 1)).toFixed(1) + '%');
   return k }
@@ -252,14 +275,19 @@ const fitZ = (h, top, bot, zmax) => Math.min(zmax, (bot - top) / h);
 window.R = t => {
   grain(t); gl(t);
   // the ground's brand light swells on every kick of the bed and settles before the next (the picture keeps time with the music)
-  const bp = t < .025 ? 0 : Math.exp(-((t - .025) % BT) / .16); L.$('#pulse').style.opacity = bp.toFixed(3);   // an overlay's opacity, not a filter on the ground (cheap to draw)
+  const bp = t < PH ? 0 : Math.exp(-((t - PH) % BT) / (PU ? .2 : .16)); L.$('#pulse').style.opacity = bp.toFixed(3);   // an overlay's opacity, not a filter on the ground (cheap to draw)
   // the camera never rests: a slow push and drift; the phone breathes in 3D, lit by the ground
   const end = eio(n(t, T.endIn, T.endIn + 1)), enter = spr(n(t, T.inPh, T.inPh + 1.1));
   const pw = L.$('#phw'), py = 358 + 1000 * (1 - enter) + 230 * end, ps = 1 - .28 * end;
+  if (PU) {   // the dolly: the phone's own layout zoom grows about the camera's pivot (crisp), the roll on top
+    const C = trk(CAM, t), z = 1.13 * C.s, L0 = C.ox + C.s * (319.6 - C.ox) + C.x, T0 = C.oy + C.s * (py - C.oy) + C.y;
+    pw.style.left = (L0 - 319.6).toFixed(1) + 'px'; pw.style.width = (390 * z).toFixed(1) + 'px'; pw.style.height = (844 * z).toFixed(1) + 'px'; L.$('#ph').style.zoom = z.toFixed(4);
+    pw.style.transform = `translate3d(319.6px,${T0.toFixed(1)}px,0) translateY(${(10 * Math.sin(t * .7)).toFixed(1)}px) rotateX(${(5 * (1 - enter) + 2.2 + 1.6 * Math.sin(t * .43)).toFixed(3)}deg) rotateY(${(3.2 * Math.sin(t * .51 + .6)).toFixed(3)}deg) rotateZ(${(.5 * Math.sin(t * .37) + C.r).toFixed(3)}deg) scale(${ps.toFixed(4)})`;
+  } else
   pw.style.transform = `translate3d(0px,${py.toFixed(1)}px,0) translateY(${(10 * Math.sin(t * .7)).toFixed(1)}px) rotateX(${(5 * (1 - enter) + 2.2 + 1.6 * Math.sin(t * .43)).toFixed(3)}deg) rotateY(${(3.2 * Math.sin(t * .51 + .6)).toFixed(3)}deg) rotateZ(${(.5 * Math.sin(t * .37)).toFixed(3)}deg) scale(${ps.toFixed(4)})`;
   pw.style.transformOrigin = '50% 0%';
-  L.$('#lift').style.transform = `scale(${(1 + .004 * bp).toFixed(4)})`;   // the lifted glass breathes with the kick too
-  L.$('#cam').style.transform = `scale(${(1.0 + .025 * n(t, 0, DUR) + .012 * Math.sin(t * .6) + .005 * bp).toFixed(4)}) translateX(${(8 * Math.sin(t * .33)).toFixed(1)}px)`;
+  L.$('#lift').style.transform = `scale(${(1 + (PU ? .01 : .004) * bp).toFixed(4)})`;   // the lifted glass breathes with the kick too
+  L.$('#cam').style.transform = `scale(${(1.0 + .025 * n(t, 0, DUR) + .012 * Math.sin(t * .6) + (PU ? .014 : .005) * bp).toFixed(4)}) translateX(${(8 * Math.sin(t * .33)).toFixed(1)}px)`;
   L.$('.glare').style.backgroundPosition = `${(40 + 40 * Math.sin(t * .4)).toFixed(1)}% ${(30 + 30 * Math.cos(t * .3)).toFixed(1)}%`;
   // the new FEED tab slides into the tab bar, the fingertip taps it, the feed slides in (with ?open=owner the chip turns SEASON 1 to SEASON 2)
   const tabIn = eio(n(t, T.tabIn, T.tabIn + .5)), sw = eio(n(t, T.tap1, T.tap1 + .45));
@@ -288,6 +316,7 @@ window.R = t => {
   const zg = fitZ(go.h0 + go.hp, 200, 1300, 2.35), hg = (go.h0 + go.hp * op) * zg;
   const k4 = lift('grok', t, T.gUp, T.gDn, () => ({ x: 540, y: 200 + (1100 - hg) / 2, z: zg }));
   // markers on the key clauses, and the side on each post given a small pulse as it is read
+  if (PU) lifts.grok.c.querySelectorAll('.ppi p .kw').forEach((w, i) => { const a = T.tap2 + .6 + i * .3; w.style.opacity = (.42 + .58 * eo(n(t, a, a + .25))).toFixed(3) });
   sweep(lifts.qwen.hlc, eio(n(t, T.qMk, T.qMk + .55))); sweep(lifts.claude.hlc, eio(n(t, T.cMk, T.cMk + .7))); sweep(lifts.grok.hlc, eio(n(t, T.gMk, T.gMk + .95)));
   [['qwen', T.qMk + .7], ['claude', T.cMk + .85]].forEach(([id, a]) => { const q = n(t, a, a + .45); lifts[id].c.querySelector('.tc .sd').style.transform = `scale(${(1 + .14 * Math.sin(Math.PI * q)).toFixed(3)})` });
   if (OWN) lifts.card.c.querySelectorAll('.ch').forEach((c, i) => { const q = n(t, T.rows[i], T.rows[i] + .4); c.style.transform = `scale(${(1 + .12 * Math.sin(Math.PI * q)).toFixed(3)})`; c.style.boxShadow = q > 0 && q < 1 ? `inset 0 0 0 ${(1.2 + 1.3 * Math.sin(Math.PI * q)).toFixed(2)}px ${i % 2 ? 'rgba(255,90,110,.8)' : 'rgba(85,214,162,.8)'}` : '' });
