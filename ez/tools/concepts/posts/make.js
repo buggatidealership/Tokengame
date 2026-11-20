@@ -191,14 +191,14 @@ const BOARD_CSS = `
 const BIG_CSS = `
 .big{display:flex;align-items:center;gap:12px;padding:13px 14px 12px}
 .big .cn{font:800 20px/1 var(--sans)}.big .tk{display:block;margin-top:5px;font:500 11px/1 var(--mono);color:var(--mu);letter-spacing:.05em}
-.big .mv{margin-left:auto;text-align:right}.big .mv b{display:block;font:700 32px/1 var(--mono);letter-spacing:-.02em}
+.big .mv{margin-left:auto;text-align:right}.big .mv b{display:block;font:700 34px/1 var(--sans);letter-spacing:-.01em}
 .big .mv small{display:inline-block;margin-top:6px;font:700 9px/1 var(--mono);letter-spacing:.08em;color:var(--ac);border:1px dashed var(--ac);border-radius:4px;padding:3px 5px}`;
 { const r = RD.INTU, ord = [...r.calls].sort((a, b) => b.pnl - a.pnl || b.conf - a.conf);
   OUT.b1 = page('b1', BIG_CSS + BOARD_CSS + `
 .tb th:nth-child(2){width:64px}.tb th:nth-child(3){width:84px}.tb td.pl{font-weight:600}.tb td{height:38px}.tb .nm{font-size:15px}.tb .n{font-size:14.5px}`,
-  top('<span class="pv">PREVIEW</span>') +
+  top(J.preview ? '<span class="pv">PREVIEW</span>' : '<span class="ssn">SEASON 2</span>') +
   `<div class="pn"><div class="hd"><span class="st cl"><i></i>GRADED</span><span>TRADE ${r.s2n}</span><span class="r">FRI CLOSE</span></div>
-   <div class="big">${co('INTU', 38)}<div><span class="cn">${r.co}</span><span class="tk">${r.ticker}  AT THE CLOSE</span></div><div class="mv"><b class="${r.move < 0 ? 'd' : 'u'}">${movePct(r)}</b><small>PREVIEW</small></div></div>
+   <div class="big">${co('INTU', 38)}<div><span class="cn">${r.co}</span><span class="tk">${r.ticker}  AT THE CLOSE</span></div><div class="mv"><b class="${r.move < 0 ? 'd' : 'u'}">${movePct(r)}</b>${J.preview ? '<small>PREVIEW</small>' : ''}</div></div>
    <table class="tb"><tr><th>AI</th><th>Side</th><th>Called move</th><th>P&amp;L</th></tr>
    ${ord.map(c => `<tr class="${c.k === 'QWEN' ? 'lo' : c.k === 'GROK' ? 'hi' : ''}"><td><span class="nm">${mark(c.k, 22)}${NAME[c.k]}</span></td><td>${side(c.side)}</td><td class="n">${pctS(c.call)}</td><td class="n pl ${c.pnl < 0 ? 'd' : 'u'}">${money(c.pnl)}</td></tr>`).join('')}
    </table></div>` + board());
@@ -251,12 +251,13 @@ ${tk.map(({ c, y }) => `<line x1="${W - padR - 2}" x2="${W - padR + 4}" y1="${Y(
 .cap{display:flex;justify-content:space-between;padding:0 14px 0;font:500 9.5px/1 var(--mono);letter-spacing:.06em;color:var(--mu)}
 .sr{display:grid;grid-template-columns:62px auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px 14px;border-top:1px solid var(--ln)}
 .sr .ms{display:flex}.sr .ms .ai+.ai{margin-left:-5px}
+.sr .chip{justify-self:start}
 .sr .nmz{font:600 12px/1 var(--sans);white-space:nowrap;color:#d9d2ca;word-spacing:3px}
 .sr b{font:600 13px/1 var(--mono);text-align:right;white-space:nowrap}.sr b small{display:block;margin-top:4px;font:500 9px/1 var(--mono);color:var(--mu);letter-spacing:.08em}
 .ft{margin-top:8px;display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--pn);border:1px solid var(--ln);border-radius:12px;font:600 12.5px/1 var(--sans)}
 .ft .ai{box-shadow:0 0 0 2px var(--ac)}.ft b{margin-left:auto;font:600 13px/1 var(--mono)}`,
-  top('<span class="pv">PREVIEW</span>') +
-  `<div class="pn"><div class="big" style="padding-bottom:6px">${co('INTU', 38)}<div><span class="cn">${r.co}</span><span class="tk">${r.ticker}  SINCE THU CLOSE</span></div><div class="mv"><b class="d">${movePct(r)}</b><small>PREVIEW</small></div></div>
+  top(J.preview ? '<span class="pv">PREVIEW</span>' : '<span class="ssn">SEASON 2</span>') +
+  `<div class="pn"><div class="big" style="padding-bottom:6px">${co('INTU', 38)}<div><span class="cn">${r.co}</span><span class="tk">${r.ticker}  SINCE THU CLOSE</span></div><div class="mv"><b class="d">${movePct(r)}</b>${J.preview ? '<small>PREVIEW</small>' : ''}</div></div>
    <div class="cap"><span>PRICE</span><span>CALLED MOVE</span></div>
    <div class="cw" style="margin-left:12px">${svg}${lab}</div>
    ${sr('SHORT')}${sr('LONG')}</div>
@@ -294,7 +295,7 @@ ${l.map(c => NAME[c.k]).slice(0, -1).join(', ')} and ${NAME[l.at(-1).k]} were LO
 .gr .tot{font:700 13.5px/1 var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
 .gr tr.lo td{background:#241417}.gr tr.lo td:first-child{box-shadow:inset 3px 0 0 var(--dn)}
 .gr tr.ld td:first-child .ai{box-shadow:0 0 0 2px var(--ac)}`,
-  top('<span class="pv">PREVIEW</span>') +
+  top(J.preview ? '<span class="pv">PREVIEW</span>' : '<span class="ssn">SEASON 2</span>') +
   `<div class="pn"><div class="hd"><span class="st cl"><i></i>GRADED</span><span>FRI CLOSE</span><span class="r">FIRST 3 TRADES OF SEASON 2</span></div>
    <table class="gr"><tr><th></th>${T.map(t => `<th><span class="ch">${co(t, 26)}<b>${RD[t].co}</b><small>${t}</small><em class="${RD[t].move < 0 ? 'd' : 'u'}">${movePct(RD[t])}</em></span></th>`).join('')}<th><span class="tt">Season 2<br>P&amp;L</span></th></tr>
    ${ks.map((k, i) => `<tr class="${k === 'GPT' ? 'lo' : i === 0 ? 'ld' : ''}"><td><span class="nm"><i>${i + 1}</i>${mark(k, 20)}${NAME[k]}</span></td>${T.map(t => { const c = RD[t].calls.find(x => x.k === k); return `<td><span class="cl"><small>${c.side}</small><b class="${c.pnl < 0 ? 'd' : 'u'}">${money(c.pnl)}</b></span></td>` }).join('')}<td class="tot ${J.season1[k] < 0 ? 'd' : 'u'}">${money(J.season1[k])}</td></tr>`).join('')}
@@ -308,6 +309,6 @@ ${NAME.GPT}'s P&L after ${J.after} trades: ${money(J.season1.GPT)}, last of ${ks
 const PRE = `[PREVIEW numbers from pre-market prices at ${J.previewAt.slice(11, 16)} UTC. Replace with the close at 4:20 pm New York before posting.]\n\n`;
 for (const id of ['a1', 'a2', 'a3', 'b1', 'b2', 'b3']) {
   fs.writeFileSync(HERE + '/' + id + '.html', OUT[id]);
-  fs.writeFileSync(EZ + '/x2p-post-' + id + '.txt', (id[0] === 'b' ? PRE : '') + OUT[id + 't'] + '\n');
+  fs.writeFileSync(EZ + '/x2p-post-' + id + '.txt', (id[0] === 'b' && J.preview ? PRE : '') + OUT[id + 't'] + '\n');
   console.log('--- ' + id + ' (' + OUT[id + 't'].length + ' chars)\n' + OUT[id + 't']);
 }
