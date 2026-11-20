@@ -96,7 +96,9 @@ const docH = u => A0 + (u < T_B ? 0 : gp(T_B, u) + bH(u)) + (u < T_C ? 0 : gp(T_
 // the camera: centred while the post fits, then a reading point on the newest card's newest line, held at 720 px; a critically damped
 // follow smooths it; after the last line it pulls back to the whole post
 const focus = u => { let y = A0 / 2; if (u >= T_B) y = A0 + GAP + B0 + 60; if (u >= T_C) y = A0 + GAP + bH(u) + GAP + C0 - 20; QLN.forEach((t, i) => { if (u >= t - .1) y = A0 + 2 * GAP + bH(u) + C0 + QLH.slice(0, i + 1).reduce((s, h) => s + h, 0) - 30 }); return y };
-const tgt = u => { const H = docH(u); return H + 60 <= SH ? (SH - H) / 2 : Math.max(SH - H - 30, Math.min(30, 720 - focus(u))) };
+// while Gemini's words are read the camera keeps leaning towards them (26 px a second up the page), so the hold is never still
+const lean = u => 26 * Math.max(0, Math.min(u, T_C) - (T_GS + .3));
+const tgt = u => { const H = docH(u); return H + 60 <= SH ? (SH - H) / 2 - lean(u) : Math.max(SH - H - 30, Math.min(30, 720 - focus(u))) };
 const camY = t => { let y = tgt(0), v = 0, w = 4.6, dt = 1 / 120; for (let u = 0; u < t; u += dt) { const a = w * w * (tgt(u) - y) - 2 * w * v; v += a * dt; y += v * dt } return y };
 window.R = t => {
   grain(t); gl(t);

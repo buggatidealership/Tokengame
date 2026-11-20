@@ -58,7 +58,9 @@ const QL = ['[Priced for AI ruin at 13x]', 'Guide already reset', 'quarter is Qu
 const ORDER = ['GEMINI', 'QWEN', 'GPT', 'GROK', 'CLAUDE'];   // a1's order: LONG first, then SHORT, most confident first
 const T_LINE = .12, T_DOCK = 1.0, T_HEAD = 1.55, ROW = [2.05, 2.75, 3.45, 4.15, 4.85], T_LIT = 5.55, T_MSG = 5.8, T_L1 = 6.25, T_SW = 6.7, LN = [T_L1, 9.85, 10.45, 11.05, 11.65];
 let grain, gl, rows, lines, doc, tr, cq, RH, A0, ROWS0, LH, B0, LINES0;
-const SH = 1218, GAP = 26, T_FIT = 12.25;
+const SH = 1218, GAP = 26, T_FIT = 7.4, T_FIT1 = 13.5, T_SHEEN = 13.3;
+// a ramp with eased ends (trapezoid speed): a long camera move that never crawls to a stop in its middle
+const ramp = (x, a = .12) => x <= 0 ? 0 : x >= 1 ? 1 : x < a ? x * x / (2 * a) / (1 - a) : x < 1 - a ? (x - a / 2) / (1 - a) : (1 - a - (1 - x) * (1 - x) / (2 * a)) / (1 - a);
 (async () => {
   await AN.load();
   L.$('#chrome').innerHTML = AN.brand();
@@ -100,13 +102,13 @@ const tgt = u => { const H = docH(u); return H + 60 <= SH ? (SH - H) / 2 : Math.
 const camY = t => { let y = tgt(0), v = 0, w = 4.6, dt = 1 / 120; for (let u = 0; u < t; u += dt) { const a = w * w * (tgt(u) - y) - 2 * w * v; v += a * dt; y += v * dt } return y };
 window.R = t => {
   grain(t); gl(t);
-  { const t0 = T_FIT + .75, q = t < t0 ? 0 : ((t - t0) % 1.6) / 1.2; doc.style.setProperty('--so', t < t0 || q > 1 ? 0 : Math.sin(Math.PI * q).toFixed(3)); doc.style.setProperty('--sx', (150 - 150 * L.eio(Math.min(1, q))).toFixed(1) + '%') }
+  { const t0 = T_SHEEN, q = t < t0 ? 0 : ((t - t0) % 1.6) / 1.4; doc.style.setProperty('--so', t < t0 || q > 1 ? 0 : Math.pow(Math.sin(Math.PI * q), .5).toFixed(3)); doc.style.setProperty('--sx', (100 - 100 * Math.min(1, q)).toFixed(1) + '%') }
   rows.forEach((r, i) => r.style.height = rowH(i, t).toFixed(1) + 'px'); lines.forEach((p, i) => p.style.height = lineH(i, t).toFixed(1) + 'px');
   const pbe = L.$('#pb'); pbe.style.display = t < T_MSG ? 'none' : '';
   // the line alone; its two halves fly into the card: the name, then the subline (crossfade into the card's own type as they land)
   const li = L.eo(L.n(t, T_LINE, T_LINE + .85)), dk = L.eio(L.n(t, T_DOCK, T_DOCK + .6)), cy = camY(t), sc = L.lerp(1.06, 1, L.eio(L.n(t, 0, DUR)));
-  // after the last line: the camera pulls back to the whole post (the card as it is posted), centred
-  const H = docH(DUR), fit = Math.min(1, (SH - 50) / H), pk = L.eio(L.n(t, T_FIT, T_FIT + .9)), fy = (SH - H * fit) / 2;
+  // while Qwen's words come in, the camera steps back slowly to the whole post (the card as it is posted), centred
+  const H = docH(DUR), fit = Math.min(1, (SH - 50) / H), pk = ramp(L.n(t, T_FIT, T_FIT1)), fy = (SH - H * fit) / 2;
   doc.style.transform = `translateY(${(L.lerp(cy, fy, pk) + 260 * (1 - L.eio(L.n(t, T_DOCK - .1, T_DOCK + .6)))).toFixed(1)}px) scale(${L.lerp(sc, fit, pk).toFixed(4)})`;
   doc.style.opacity = L.n(t, T_DOCK - .05, T_DOCK + .35).toFixed(3);
   const l1 = L.$('#l1'), l2 = L.$('#l2'); l1.style.transform = l2.style.transform = 'none'; l1._tx = l1._ty = l2._tx = l2._ty = 0;
