@@ -8,40 +8,43 @@
   2.77  orders fill, one AI every two beats: its account opens and its three positions fill (market, LONG or SHORT and $100K, the
         called move), the open count runs 0 to 15
   7.85  the night: the New York clock runs, the sky turns from dusk to night to dawn, every mark moves on its real path, each position's
-        P&L ticks (a green or red flash on each tick), each account's P&L is the sum of its three
-  12.0  the bell (the drop): a gold sweep closes every position, CLOSED 15, the P&Ls freeze
-  13.38 the blotter collapses: each account's three rows fold into three chips, the account P&L moves right
-  14.31 the accounts sort by P&L into the Season 2 leaderboard; 15.69 the leader takes the gold rim; held to 19 s.
+        P&L ticks (a green or red glow on a big tick), each account's P&L is the sum of its three
+  12.0  the bell (the drop): a gold scan line runs down the blotter, each position reads CLOSED as it passes, the count runs to
+        CLOSED 15, the P&Ls freeze
+  13.85 the blotter collapses: each account's three rows fold into three chips, the account P&L lands at the right
+  14.77 the accounts sort by P&L into the Season 2 leaderboard; 16.15 the leader takes the gold rim; held to 19.5 s.
+  Overnight the marks hold their last price (no prints between 8 PM and 4 AM) and the clock runs through those hours fast.
   Words on screen: no punctuation of any kind; sides are LONG or SHORT; the called move is labelled CALLED MOVE, never size; every
-  number carries its label; money is a signed P&L. Type sizes chosen for a phone (see the report in ez/x2p-oc-b-board.png's notes). -->
+  number carries its label; money is a signed P&L. Type sized for a phone: position and account P&L 40 to 42 px (about 11 pt in X's feed,
+  14 pt full screen), called move 38 px, side 28 px, column heads 17 px; the board's totals 58 px. Board of key frames: ez/x2p-oc-b-board.png. -->
 <style id="base"></style>
 <style>
-#cam{position:absolute;inset:0;transform-origin:50% 40%}
+#cam{position:absolute;inset:0;transform-origin:50% 47%}
 #sky{position:absolute;inset:0;overflow:hidden}
 #sky img{position:absolute;left:-36px;top:0;width:1152px;height:1536px}
 #tint,#scrim,#dim{position:absolute;inset:0;pointer-events:none}
 #dim{background:radial-gradient(ellipse 80% 70% at 50% 60%,rgba(6,5,10,.75),rgba(6,5,10,.5));opacity:0}
 #scrim{background:linear-gradient(180deg,rgba(4,6,14,.82) 0%,rgba(4,6,14,.5) 30%,rgba(4,6,14,.35) 60%,rgba(4,6,14,.55) 100%)}
-.gls{position:absolute;left:0;top:0;border-radius:20px;overflow:hidden}
+.gls{position:absolute;left:0;top:0;border-radius:20px}
 .gls>.bg{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(158deg,rgba(242,237,230,.12),rgba(242,237,230,.035) 42%,rgba(242,237,230,.075)),rgba(7,9,18,.52);
   -webkit-backdrop-filter:blur(22px) saturate(150%);backdrop-filter:blur(22px) saturate(150%);
   box-shadow:inset 0 1.5px 0 rgba(255,255,255,.38),inset 1.5px 0 0 rgba(255,255,255,.11),inset 0 -1.5px 0 rgba(0,0,0,.45),inset -1px 0 0 rgba(0,0,0,.18)}
 .gls>.sh{position:absolute;inset:0;border-radius:inherit;box-shadow:0 16px 40px rgba(0,0,0,.42);pointer-events:none}
 .ab{position:absolute;left:0;top:0;white-space:nowrap;line-height:1}
 .mono{font-family:'Geist Mono',monospace;font-variant-numeric:tabular-nums}
-.lbl{font:600 17px 'Geist Mono',monospace;letter-spacing:.14em;color:#9a918a}
+.lbl{font:600 17px/1 'Geist Mono',monospace;letter-spacing:.14em;color:#9a918a}
 #tbig{position:absolute;left:0;top:0;font:900 132px/1 Inter;letter-spacing:-.045em;text-align:center;width:1080px;text-shadow:0 6px 40px rgba(0,0,0,.55);transform-origin:50% 50%}
 #tdock{position:absolute;left:56px;top:124px;font:900 46px/1 Inter;letter-spacing:-.035em;white-space:nowrap}
 #clock{position:absolute;right:56px;top:124px;height:46px;display:flex;align-items:center;gap:14px;white-space:nowrap}
 #clock .t{font:600 38px/1 'Geist Mono';letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.tile{width:312px;height:144px}
+.tile{width:312px;height:146px}
 .tile .lg{position:absolute;left:16px;top:16px;width:52px;height:52px;border-radius:12px;box-shadow:0 0 0 2px rgba(242,237,230,.16)}
 .tile .nm{position:absolute;left:80px;top:24px;font:800 30px/1 Inter;letter-spacing:-.02em;white-space:nowrap}
 .tile .nm b{font:600 21px 'Geist Mono';letter-spacing:.08em;color:#9a918a;margin-left:9px}
 .tile .ml{position:absolute;left:16px;top:80px}
-.tile .mv{position:absolute;left:16px;top:103px;font:600 32px/1 'Geist Mono';letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.tile .mv{position:absolute;left:16px;top:105px;font:600 32px/1 'Geist Mono';letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .tile svg{position:absolute;left:156px;top:80px;width:140px;height:50px;overflow:visible}
-#hdr{position:absolute;left:56px;top:346px;width:968px;height:20px}
+#hdr{position:absolute;left:56px;top:350px;width:968px;height:20px}
 #hdr .ab{top:0}
 .blk{width:968px}
 .blk .dv{position:absolute;left:232px;top:14px;bottom:14px;width:1.5px;background:rgba(242,237,230,.12)}
@@ -50,17 +53,17 @@
 .blk .rk{font:600 30px/1 'Geist Mono';color:#9a918a}
 .blk .ap{font-family:'Geist Mono',monospace;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .blk .pl{font-family:'Geist Mono',monospace;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.blk .plb{position:absolute;left:0;top:0;border-radius:10px;opacity:0}
-.blk .sd{font:800 27px/1 Inter;letter-spacing:.05em}
+.blk .sd{font:800 28px/1 Inter;letter-spacing:.05em}
 .blk .sz{font:600 25px/1 'Geist Mono';color:#a39b93;letter-spacing:-.01em}
-.blk .cm{font:600 34px/1 'Geist Mono';letter-spacing:-.03em;color:#f2ede6;font-variant-numeric:tabular-nums}
+.blk .cm{font:600 38px/1 'Geist Mono';letter-spacing:-.03em;color:#f2ede6;font-variant-numeric:tabular-nums}
 .blk .st{font:700 17px/1 'Geist Mono';letter-spacing:.12em;color:#fdbc2a}
 .blk .dot{position:absolute;left:0;top:0;width:12px;height:12px;border-radius:50%;background:#f2ede6}
 .blk .lgo{position:absolute;left:0;top:0;border-radius:24%;box-shadow:0 0 0 2px rgba(242,237,230,.16)}
 .blk .gl{position:absolute;inset:-4px;border-radius:24px;box-shadow:0 0 0 3px #fdbc2a,0 0 70px rgba(253,188,42,.5),inset 0 0 40px rgba(253,188,42,.16);opacity:0;pointer-events:none}
 .blk .rim{position:absolute;inset:-4px;padding:4px;border-radius:24px;pointer-events:none;opacity:0;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
 .blk .fl{position:absolute;inset:0;border-radius:20px;pointer-events:none;opacity:0}
-#sweep{position:absolute;left:40px;width:1000px;height:120px;pointer-events:none;opacity:0;background:linear-gradient(180deg,rgba(253,188,42,0),rgba(253,188,42,.28) 70%,rgba(255,243,200,.85) 96%,rgba(253,188,42,0));mix-blend-mode:screen;z-index:20}
+#sweep{position:absolute;left:30px;width:1020px;height:120px;pointer-events:none;opacity:0;background:linear-gradient(180deg,rgba(253,188,42,0),rgba(253,188,42,.07) 55%,rgba(253,188,42,.22) 86%,rgba(255,240,190,.9) 91.5%,rgba(253,188,42,.18) 95%,rgba(253,188,42,0));
+  -webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mix-blend-mode:screen;z-index:20}
 #ssn{position:absolute;left:56px;top:118px;opacity:0;white-space:nowrap}
 #ssn .h{font:900 84px/1 Inter;letter-spacing:-.035em}
 #ssn .k{margin-top:18px;font:600 24px 'Geist Mono';letter-spacing:.14em;color:#9a918a}
@@ -87,10 +90,10 @@ L.$('#base').textContent = L.css;
 const Q = new URLSearchParams(location.search), DATE = Q.get('d') || '2026-11-20';
 const UP = '85,214,162', DN = '232,87,107', AU = '253,188,42', CR = '242,237,230';
 const TR = 12.0, BEAT = 60 / 130, B = n => TR + n * BEAT;
-const T_LINE = .12, T_ON = B(-23), T_FILL = B(-20), T_NIGHT = B(-9), T_FOLD = B(3), T_SORT = B(5), T_LEAD = B(8), DUR = 19;
+const T_LINE = .12, T_ON = B(-23), T_FILL = B(-20), T_NIGHT = B(-9), T_FOLD = B(4), T_SORT = B(6), T_LEAD = B(9), DUR = 19.5;
 const SEP = ' ', DAYS3 = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 // the blotter's grid (block-local x in px; the block is 968 wide): identity | market and side | called move | status | P&L
-const BW = 968, BHA = 170, BHB = 180, GA = 9.5, GB = 12, Y0A = 376, Y0B = 300, ROWH = 52, ROW0 = 33;
+const BW = 968, BHA = 168, BHB = 180, GA = 9, GB = 12, Y0A = 378, Y0B = 300, ROWH = 52, ROW0 = 32;
 const X_LOGO = 250, X_SIDE = 304, X_SIZE = 420, X_CALL = 652, X_ST = 676, X_PL = 946;
 let D, MOD, N, grain, K, mAt, tiles, blks, hdr, PX, V0, V1;
 const money0 = v => Math.round(v) === 0 ? '$0' : L.money(v);
@@ -108,7 +111,14 @@ const setup = () => {
   L.chrome(document.body); L.$('.bug b').remove(); L.$('.fine').textContent = 'not advice';
   // the night's time map: the first 90 minutes after the close (the reports land), then the night to the last price (or the open and the session)
   const o = D.open;
-  K = o != null ? [[T_NIGHT, 0], [T_NIGHT + 1.3, 90], [T_NIGHT + 1.9, o], [TR - 1.1, T - 60], [TR - .05, T]] : [[T_NIGHT, 0], [T_NIGHT + 1.7, 90], [TR - .1, T]];
+  // no prints overnight: a mark holds its last price through a gap of more than an hour (a blotter's marks only move when something trades),
+  // and the clock runs through those dead hours fast
+  D.rounds.forEach(r => { if (!r.path) return; const H = [r.path[0]]; for (let i = 1; i < r.path.length; i++) { const a = r.path[i - 1], c = r.path[i]; if (c[0] - a[0] > 60) H.push([c[0] - .5, a[1]]); H.push(c) } r.path = H });
+  const P0 = (D.rounds.find(r => r.path) || {}).path; let gs = null, ge = null;
+  if (P0) { let best = 0; for (let i = 1; i < P0.length; i++) { const g = P0[i][0] - P0[i - 1][0]; if (g > best) { best = g; gs = P0[i - 1][0]; ge = P0[i][0] } } if (best < 120 || gs <= 90) gs = ge = null }
+  const TN = T_NIGHT;
+  K = o != null ? [[TN, 0], [TN + 1.1, 90], ...(gs != null && ge < o ? [[TN + 1.55, gs], [TN + 1.9, ge]] : []), [TN + 2.4, o], [TR - 1.0, T - 60], [TR - .05, T]]
+    : [[TN, 0], [TN + 1.3, 90], ...(gs != null ? [[TN + 1.9, gs], [TN + 2.35, ge]] : []), [TR - .1, T]];
   mAt = t => { if (t <= K[0][0]) return 0; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) { const x = (t - K[i - 1][0]) / (K[i][0] - K[i - 1][0]); return L.lerp(K[i - 1][1], K[i][1], i === K.length - 1 ? 1 - Math.pow(1 - x, 1.6) : L.eio(x) * .3 + x * .7) } return T };
   D.rounds.forEach(r => { r.px = m => { const P = r.path; if (!P) return m >= T ? r.move : 0; if (m <= 0) return 0; if (m >= T) return r.move; let i = 1; while (i < P.length && P[i][0] < m) i++; const a = P[i - 1], b = P[i] || P[i - 1]; return L.lerp(a[1], b[1], (m - a[0]) / Math.max(1, b[0] - a[0])) } });
   // one shared scale for the three sparklines, so a 3% move looks like a 3% move in every tile
@@ -118,13 +128,13 @@ const setup = () => {
     el.innerHTML = `<div class="sh"></div><div class="bg"></div><img class="lg" src="${r.logo}"><div class="nm">${r.co}<b>${r.ticker}</b></div><div class="ml lbl">MOVE</div><div class="mv"></div><svg viewBox="0 0 140 50"></svg>`;
     L.$('#tiles').appendChild(el); return el });
   // the column heads
-  hdr = {}; [['op', 'OPEN 0', 18, 0], ['po', 'POSITION', X_LOGO, 0], ['cm', 'CALLED MOVE', X_CALL, 1], ['pl', 'P&L', X_PL, 1]].forEach(([k, s, x, ax]) => {
+  hdr = {}; [['ac', 'ACCOUNT P&L', 18, 0], ['op', 'OPEN 0', X_LOGO, 0], ['cm', 'CALLED MOVE', X_CALL, 1], ['pl', 'P&L', X_PL, 1]].forEach(([k, s, x, ax]) => {
     const el = document.createElement('div'); el.className = 'ab lbl'; el.textContent = s; el.style.left = x + 'px'; if (ax) el.style.transform = 'translateX(-100%)'; L.$('#hdr').appendChild(el); hdr[k] = el });
   // the accounts: one glass block an AI, its three positions as rows
   blks = D.ais.map((a, i) => { const el = document.createElement('div'); el.className = 'gls blk';
     el.innerHTML = `<div class="sh"></div><div class="bg"></div><div class="fl"></div><div class="dv"></div>
       ${D.rounds.map(() => `<div class="sep"></div>`).join('')}
-      <div class="ab rk"></div><div class="ab mkw">${mark(a.k, 52)}</div><div class="ab nm">${a.name}</div><div class="ab lbl apl">P&L</div><div class="ab ap"></div>
+      <div class="ab rk"></div><div class="ab mkw">${mark(a.k, 52)}</div><div class="ab nm">${a.name}</div><div class="ab ap"></div>
       ${D.rounds.map((r, j) => { const c = r.calls.find(x => x.k === a.k); return `<div class="pos" data-j="${j}"><img class="lgo" src="${r.logo}"><div class="ab sd" style="color:rgb(${c.side === 'LONG' ? UP : DN})">${c.side}</div><div class="ab sz">$100K</div><div class="ab cm">${pctc(c.call)}</div><div class="dot"></div><div class="ab st"></div><div class="ab pl"></div></div>` }).join('')}
       <div class="gl"></div><div class="rim"></div>`;
     L.$('#blks').appendChild(el); return { el, a, k: a.k, i, pos: L.$$('.pos', el), seps: L.$$('.sep', el) } });
@@ -152,7 +162,9 @@ const spark = (r, m) => { const W = 140, H = 50, T = D.total, X = mm => mm / T *
 window.R = t => {
   grain(t);
   const T = D.total, m = mAt(t), on = L.eio(L.n(t, T_ON - .1, T_ON + .45)), fz = L.n(t, T_FOLD, T_FOLD + .2), fold = L.eio(L.n(t, T_FOLD + .12, T_FOLD + .8)), fb = L.eo(L.n(t, T_FOLD + .55, T_FOLD + .9)), srt = L.eio(L.n(t, T_SORT, T_SORT + .7));
-  const closedT = j => TR + .08 + j * .03;                                    // the gold sweep reaches block row j
+  // the bell's sweep: a gold scan line runs down the blotter in SW_D seconds; each position closes as the line reaches its row
+  const SW_T = TR + .04, SW_D = .5, SPAN = 5 * (BHA + GA), swY = tt => Y0A + SPAN * L.n(tt, SW_T, SW_T + SW_D);
+  const closeAt = (i, j) => SW_T + SW_D * (i * (BHA + GA) + ROW0 + j * ROWH) / SPAN;
   // the sky is the clock: dusk at Thursday's close, night, dawn at the last price (and the day after it for a full session)
   const night = L.n(m, 45, 150) * (1 - L.n(m, 760, 860)), dawn = L.eio(L.n(m, 800, 900));
   L.$('#sk2').style.opacity = dawn; L.$('#tint').style.background = `rgba(3,5,16,${(.45 * night).toFixed(3)})`;
@@ -171,7 +183,7 @@ window.R = t => {
     L.$('svg', el).innerHTML = spark(r, m) });
   // the column heads; the open count runs with the fills and flips to CLOSED at the bell
   const filled = blks.reduce((s, b) => s + [0, 1, 2].filter(q => t >= T_FILL + b.i * 2 * BEAT + .12 + q * .15).length, 0);
-  const cl = t >= TR + .1; hdr.op.textContent = cl ? `CLOSED ${N * D.ais.length}` : `OPEN ${filled}`; hdr.op.style.color = cl ? '#fdbc2a' : filled ? '#f2ede6' : '';
+  const ncl = D.ais.reduce((s, a, i) => s + D.rounds.filter((r, j) => t >= closeAt(i, j)).length, 0); hdr.op.textContent = ncl ? `CLOSED ${ncl}` : `OPEN ${filled}`; hdr.op.style.color = ncl ? '#fdbc2a' : filled ? '#f2ede6' : '';
   L.$('#hdr').style.opacity = L.n(t, T_FILL - .2, T_FILL + .1) * (1 - fold);
   // the accounts
   blks.forEach(b => { const { el, k, i } = b, t0 = T_FILL + i * 2 * BEAT, ki = L.spring(t - t0, 1.8, 9), ka = L.n(t, t0, t0 + .2);
@@ -179,24 +191,25 @@ window.R = t => {
     const yA = Y0A + p0 * (BHA + GA), yB = Y0B + pos * (BHB + GB), y = L.lerp(yA, yB, fold), h = L.lerp(BHA, BHB, fold);
     el.style.height = h.toFixed(1) + 'px'; el.style.transform = `translate(56px,${(y + 60 * (1 - ki)).toFixed(1)}px)`; el.style.opacity = t >= t0 ? ka : 0; el.style.zIndex = 10 - Math.round(pos);
     // live P&L of each position and of the account; a flash on every tick, green when it rose and red when it fell
-    const closed = j => t >= closedT(j), mm = t < T_NIGHT ? 0 : m, mp = t - .1 < T_NIGHT ? 0 : mAt(t - .1);
+    const closedT = j => closeAt(i, j), closed = j => t >= closedT(j), mm = t < T_NIGHT ? 0 : m, mp = t - .1 < T_NIGHT ? 0 : mAt(t - .1);
     const pv = D.rounds.map((r, j) => t < T_NIGHT ? 0 : PX(k, j, mm, closed(j))), pp = D.rounds.map((r, j) => t - .1 < T_NIGHT ? 0 : PX(k, j, mp, t - .1 >= closedT(j)));
     const acc = pv.reduce((s, v) => s + v, 0), accp = pp.reduce((s, v) => s + v, 0);
     // identity: mark and name; the account P&L under them, then (folded) at the right, big
-    put(L.$('.mkw', el), L.lerp(18, 58, fold), L.lerp(46, 54, fold)); L.$('.mkw svg', el).style.width = L.$('.mkw svg', el).style.height = L.lerp(52, 62, fold) + 'px';
-    const nm = L.$('.nm', el); nm.style.fontSize = L.lerp(34, 44, fold) + 'px'; put(nm, L.lerp(82, 138, fold), L.lerp(47, 54, fold));
-    const rk = L.$('.rk', el); rk.textContent = Math.round(pos) + 1; put(rk, 20, 54, 0, fold * L.n(t, T_SORT - .3, T_SORT + .2));
-    put(L.$('.apl', el), 18, 102, 0, 1 - fz);
+    put(L.$('.mkw', el), L.lerp(18, 58, fold), L.lerp(48, 54, fold)); L.$('.mkw svg', el).style.width = L.$('.mkw svg', el).style.height = L.lerp(52, 62, fold) + 'px';
+    const nm = L.$('.nm', el); nm.style.fontSize = L.lerp(34, 44, fold) + 'px'; put(nm, L.lerp(82, 138, fold), L.lerp(49, 54, fold));
+    const rk = L.$('.rk', el); rk.textContent = p2 + 1; put(rk, 20, 54, 0, L.n(t, T_SORT + .55, T_SORT + .85));
     const ap = L.$('.ap', el); ap.textContent = money0(acc); ap.style.color = Math.abs(acc) < 1 ? '#f2ede6' : acc > 0 ? `rgb(${UP})` : `rgb(${DN})`;
     // the account P&L leaves its cell with the row words and lands at the right once the chips are in (no flight across the rows)
-    const apIn = fz >= 1; ap.style.fontSize = (apIn ? 60 : 40) + 'px'; if (apIn) put(ap, X_PL + 30 * (1 - fb), 90, 1, fb); else put(ap, 18, 135, 0, 1 - fz);
+    const apIn = fz >= 1; ap.style.fontSize = (apIn ? 58 : 42) + 'px'; if (apIn) put(ap, X_PL + 30 * (1 - fb), 90, 1, fb); else put(ap, 18, 124, 0, 1 - fz);
     const dA = acc - accp, fa = t < TR + .1 ? L.cl((Math.abs(dA) - 150) / 1200) * (1 - fold) : 0;
     ap.style.textShadow = fa > 0 ? `0 0 ${(26 * fa).toFixed(1)}px rgba(${dA > 0 ? UP : DN},${(.85 * fa).toFixed(2)})` : 'none';
     L.$('.dv', el).style.opacity = 1 - fz;
-    b.seps.forEach((s, q) => { if (q >= 2) { s.style.opacity = 0; return } s.style.left = '244px'; s.style.width = '712px'; s.style.top = (7 + (q + 1) * ROWH) + 'px'; s.style.opacity = (1 - fz) * L.n(t, t0 + .27 + q * .15, t0 + .4 + q * .15) });
-    b.pos.forEach((p, j) => { const tf = t0 + .12 + j * .15, kf = L.eo(L.n(t, tf, tf + .25)), fj = L.eio(L.n(t, T_FOLD + .12 + j * .07, T_FOLD + .66 + j * .07)), cy = L.lerp(ROW0 + j * ROWH, 126, fj), cx = 138 + j * 182;
+    b.seps.forEach((s, q) => { if (q >= 2) { s.style.opacity = 0; return } s.style.left = '244px'; s.style.width = '712px'; s.style.top = (6 + (q + 1) * ROWH) + 'px'; s.style.opacity = (1 - fz) * L.n(t, t0 + .27 + q * .15, t0 + .4 + q * .15) });
+    b.pos.forEach((p, j) => { const tf = t0 + .12 + j * .15, kf = L.eo(L.n(t, tf, tf + .25)), fj = L.eio(L.n(t, T_FOLD + .12 + j * .07, T_FOLD + .66 + j * .07)), cy = L.lerp(ROW0 + j * ROWH, 126, fj), cx = 138 + j * 172;
       const lg = L.$('.lgo', p), ls = L.lerp(40, 36, fj), sl = 28 * (1 - kf); lg.style.width = lg.style.height = ls + 'px';
-      lg.style.transform = `translate(${L.lerp(X_LOGO + sl, cx, fj).toFixed(1)}px,${(cy - ls / 2).toFixed(1)}px)`; lg.style.opacity = kf;
+      // the logo leaves with the row's words and comes back beside its P&L once the P&L has reached its chip (no logos crossing the rows)
+      const lgIn = fj >= .7; lg.style.transform = `translate(${(lgIn ? cx : X_LOGO + sl).toFixed(1)}px,${((lgIn ? 126 : ROW0 + j * ROWH) - ls / 2).toFixed(1)}px)`;
+      lg.style.opacity = lgIn ? L.n(fj, .7, 1) : kf * (1 - fz);
       put(L.$('.sd', p), X_SIDE + sl, cy, 0, kf * (1 - fz)); put(L.$('.sz', p), X_SIZE + sl, cy, 0, kf * (1 - fz));
       put(L.$('.cm', p), X_CALL + sl, cy, 1, kf * (1 - fz));
       // status: FILLED as the order lands, a live dot through the night, CLOSED when the bell's sweep reaches it
@@ -207,7 +220,7 @@ window.R = t => {
       dt.style.background = t >= T_NIGHT && Math.abs(pv[j]) >= 1 ? `rgb(${pv[j] > 0 ? UP : DN})` : '#f2ede6';
       // the position's P&L: right column, then (folded) a chip under the name
       const pl = L.$('.pl', p), v = pv[j]; pl.textContent = money0(v); pl.style.color = Math.abs(v) < 1 ? '#f2ede6' : v > 0 ? `rgb(${UP})` : `rgb(${DN})`;
-      pl.style.fontSize = L.lerp(40, 28, fj) + 'px'; const px = L.lerp(X_PL, cx + 46, fj); put(pl, px, cy, 1 - fj, kf);
+      pl.style.fontSize = L.lerp(40, 28, Math.max(fz, fj)) + 'px'; const px = L.lerp(X_PL, cx + 46, fj); put(pl, px, cy, 1 - fj, kf);
       const dv = v - pp[j], fv = t < closedT(j) ? L.cl((Math.abs(dv) - 100) / 900) * (1 - fold) : 0;
       pl.style.textShadow = fv > 0 ? `0 0 ${(24 * fv).toFixed(1)}px rgba(${dv > 0 ? UP : DN},${(.85 * fv).toFixed(2)})` : 'none';
       // the bell: each P&L pops once as it closes
@@ -222,10 +235,10 @@ window.R = t => {
     else { rk.style.color = ''; nm.classList.remove('foil') }
     el.style.filter = !lead && t > T_LEAD ? `brightness(${1 - .12 * L.n(t, T_LEAD - .1, T_LEAD + .35)})` : '' });
   // the bell's sweep: a gold light down the blotter
-  const sw = L.n(t, TR - .02, TR + .5), swe = L.$('#sweep'); swe.style.opacity = sw > 0 && sw < 1 ? Math.sin(Math.PI * sw) : 0; swe.style.top = (Y0A - 120 + (5 * (BHA + GA) + 120) * L.eio(sw)).toFixed(1) + 'px';
+  const sw = L.n(t, SW_T - .05, SW_T + SW_D + .12), swe = L.$('#sweep'); swe.style.opacity = sw > 0 && sw < 1 ? Math.min(1, 4 * Math.sin(Math.PI * sw)) : 0; swe.style.top = (swY(t) - 110).toFixed(1) + 'px';
   // Season 2 leaderboard
   const sin = L.eio(L.n(t, T_SORT - .25, T_SORT + .3)), sh = L.$('#ssn'); sh.style.opacity = sin; sh.style.transform = `translateY(${(24 * (1 - sin)).toFixed(1)}px)`;
-  const push = 1 + .012 * L.n(t, T_ON, T_NIGHT) + .02 * L.eio(L.n(t, T_NIGHT, TR)) - .02 * L.eio(L.n(t, TR + .2, T_FOLD + .5));
+  const push = 1 + .004 * L.n(t, T_ON, T_NIGHT) + .006 * L.eio(L.n(t, T_NIGHT, TR)) - .01 * L.eio(L.n(t, TR + .2, T_FOLD + .5));
   const kick = t > TR ? Math.exp(-(t - TR) * 9) * Math.sin((t - TR) * 60) * 4 : 0;
   L.$('#cam').style.transform = `translate(${kick.toFixed(2)}px,${(kick * .6).toFixed(2)}px) scale(${push.toFixed(4)})`;
 };
