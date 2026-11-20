@@ -91,9 +91,9 @@ const CR = '#f2ede6', GN = '#55d6a2', RD = '#e8576b', AU = '#fdbc2a', BK = '#040
 const COL = { GROK: AU, CLAUDE: GN, GPT: CR, KIMI: RD }, RGB = { GROK: '253,188,42', CLAUDE: '85,214,162', GPT: '242,237,230', KIMI: '232,87,107', QWEN: '242,237,230', GEMINI: '242,237,230' };
 // the story's beats, on the bed's grid (beats 36 and 77 are the bed's drops)
 const T = { tick: bt(4), s1: bt(8), s1b: bt(12), rule: bt(16), stamp: bt(20), chart: bt(24), chart2: bt(30), cend: bt(34), d1: bt(36), kimi: bt(40), stay: bt(44), grok: bt(48),
-  cn: bt(52), cn2: bt(56), us: bt(60), us2: bt(64), roll: bt(68), roll2: bt(72), win: bt(77), same: bt(81), feed: bt(85), feed2: bt(89), close: bt(92) };
+  cn: bt(52), cn2: bt(56), us: bt(60), us2: bt(64), roll: bt(68), roll2: bt(72), win: bt(77), same: bt(81), feed: bt(85), feed2: bt(89), close: bt(85), now: bt(87), pnl: bt(89) };   // the feed scene is cut (owner, 20 Nov): the close starts on beat 85
 T.sst = T.same + 2 * BT;   // the second RELEGATED stamp
-const SHOTS = [0, 4, 8, 12, 16, 20, 24, 30, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 77, 81, 85, 89, 92].map(bt);
+const SHOTS = [0, 4, 8, 12, 16, 20, 24, 30, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 77, 81, 85].map(bt);
 const NEW = { GEMINI: { name: 'Gemini', lab: 'GOOGLE', d: 'M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81' },
   QWEN: { name: 'Qwen', lab: 'ALIBABA', fr: 'evenodd', d: 'M12.604 1.34c.393.69.784 1.382 1.174 2.075a.18.18 0 00.157.091h5.552c.174 0 .322.11.446.327l1.454 2.57c.19.337.24.478.024.837-.26.43-.513.864-.76 1.3l-.367.658c-.106.196-.223.28-.04.512l2.652 4.637c.172.301.111.494-.043.77-.437.785-.882 1.564-1.335 2.34-.159.272-.352.375-.68.37-.777-.016-1.552-.01-2.327.016a.099.099 0 00-.081.05 575.097 575.097 0 01-2.705 4.74c-.169.293-.38.363-.725.364-.997.003-2.002.004-3.017.002a.537.537 0 01-.465-.271l-1.335-2.323a.09.09 0 00-.083-.049H4.982c-.285.03-.553-.001-.805-.092l-1.603-2.77a.543.543 0 01-.002-.54l1.207-2.12a.198.198 0 000-.197 550.951 550.951 0 01-1.875-3.272l-.79-1.395c-.16-.31-.173-.496.095-.965.465-.813.927-1.625 1.387-2.436.132-.234.304-.334.584-.335a338.3 338.3 0 012.589-.001.124.124 0 00.107-.063l2.806-4.895a.488.488 0 01.422-.246c.524-.001 1.053 0 1.583-.006L11.704 1c.341-.003.724.032.9.34zm-3.432.403a.06.06 0 00-.052.03L6.254 6.788a.157.157 0 01-.135.078H3.253c-.056 0-.07.025-.041.074l5.81 10.156c.025.042.013.062-.034.063l-2.795.015a.218.218 0 00-.2.116l-1.32 2.31c-.044.078-.021.118.068.118l5.716.008c.046 0 .08.02.104.061l1.403 2.454c.046.081.092.082.139 0l5.006-8.76.783-1.382a.055.055 0 01.096 0l1.424 2.53a.122.122 0 00.107.062l2.763-.02a.04.04 0 00.035-.02.041.041 0 000-.04l-2.9-5.086a.108.108 0 010-.113l.293-.507 1.12-1.977c.024-.041.012-.062-.035-.062H9.2c-.059 0-.073-.026-.043-.077l1.434-2.505a.107.107 0 000-.114L9.225 1.774a.06.06 0 00-.053-.031zm6.29 8.02c.046 0 .058.02.034.06l-.832 1.465-2.613 4.585a.056.056 0 01-.05.029.058.058 0 01-.05-.029L8.498 9.841c-.02-.034-.01-.052.028-.054l.216-.012 6.722-.012z' } };
 const INTU = '<svg viewBox="-3 8.6 30 6.8"><path fill="#fff" d="M12.32 12.38c0 1.174.974 2.033 2.211 2.033 1.237 0 2.212-.859 2.212-2.033v-2.7h-1.198v2.56c0 .633-.44 1.06-1.017 1.06s-1.017-.424-1.017-1.06V9.68h-1.198l.008 2.699zm7.624-1.619h1.429v3.563h1.198V10.76H24V9.68h-4.056v1.082zM19.17 9.68h-1.198v4.645h1.198V9.679zM7.482 10.761h1.43v3.563h1.197V10.76h1.428V9.68H7.482v1.082zM1.198 9.68H0v4.645h1.198V9.679zm5.13 1.97c0-1.175-.974-2.034-2.211-2.034-1.237 0-2.212.859-2.212 2.033v2.701h1.198v-2.56c0-.633.44-1.06 1.017-1.06s1.017.425 1.017 1.06v2.56h1.198L6.33 11.65z"/></svg>';
@@ -173,12 +173,10 @@ function build() {
   S.h.stay = add(`<div class="cc k cr sh" style="top:250px;font-size:290px"><span data-fit="820"><span class="au">3</span> STAY</span></div>`, hd);
   S.h.def1 = add(`<div class="cc k cr sh" style="top:136px;font-size:165px"><span data-fit="960"><span class="foil fz">GROK</span> DEFENDS</span></div>`, hd);
   S.h.def2 = add(`<div class="cc k cr sh" style="top:306px;font-size:165px"><span data-fit="960">THE TITLE</span></div>`, hd);
-  S.h.cn = add(`<div class="cc k cr sh" style="top:146px;font-size:150px"><span data-fit="960">NEW FROM <span class="rd">CHINA</span></span></div>`, hd);
-  S.h.us = add(`<div class="cc k cr sh" style="top:146px;font-size:150px"><span data-fit="960">NEW FROM THE <span class="gn">US</span></span></div>`, hd);
+  S.h.cn = add(`<div class="cc k cr sh" style="top:124px;font-size:104px;line-height:1.02"><span data-fit="940">NEW COMPETITOR</span><br><span data-fit="940">FROM <span class="rd">CHINA</span></span></div>`, hd);
+  S.h.us = add(`<div class="cc k cr sh" style="top:124px;font-size:104px;line-height:1.02"><span data-fit="940">NEW COMPETITOR</span><br><span data-fit="940">FROM THE <span class="gn">US</span></span></div>`, hd);
   S.h.rc = add(`<div class="cc bb cr sh" style="top:150px;font-size:430px;letter-spacing:.04em"><span class="au"></span> AI<i style="font-style:normal;font-size:.66em"></i></div>`, hd);
   S.h.five = add(`<div class="cc bb cr sh" style="top:150px;font-size:430px;letter-spacing:.04em"><span data-fit="900">5 AI<span style="font-size:.66em">s</span></span></div>`, hd);
-  S.h.f1 = add(`<div class="cc k cr sh" style="top:124px;font-size:150px"><span data-fit="960">EVERY TRADE</span></div>`, hd);
-  S.h.f2 = add(`<div class="cc k cr sh" style="top:290px;font-size:150px"><span data-fit="960">WITH ITS <span class="au">REASON</span></span></div>`, hd);
   S.h.hit = add(`<div class="ab k cr sh" style="font-size:150px">HIT RATE</div>`, hd);
   S.h.cnt = add(`<div class="ab m" style="left:auto;right:56px;transform-origin:100% 0;font-size:64px;color:${CR}"><span style="font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:46px;letter-spacing:.14em;color:#d5cdc3;margin-right:18px">TRADE</span><b style="font-weight:700"></b></div>`, hd);
   S.h.kimi = add(`<div class="cc k rd sh" style="top:110px;font-size:230px"><span data-fit="760">KIMI</span></div>`, hd);
@@ -213,7 +211,7 @@ function build() {
   S.rk = add(`<div class="ab stamp" style="font-size:96px;padding:4px 30px 14px 22px;transform-origin:50% 50%">RELEGATED</div>`, ov);
   // the newcomers' cards: flag, mark, name, lab
   // name, the version the lab ships (Qwen4-Max, Gemini 4 Argon), the lab; the country is the flag's job
-  const card = (k, kind, ver, lab) => { const g = glass(ov, 70, 340, 940, 300, 52, `<div class="ab cmk" style="transform:translate(322px,75px)">${mark(k, 150)}</div>
+  const card = (k, kind, ver, lab) => { const g = glass(ov, 70, 352, 940, 300, 52, `<div class="ab cmk" style="transform:translate(322px,75px)">${mark(k, 150)}</div>
       <div style="position:absolute;left:504px;top:0;height:300px;display:flex;flex-direction:column;justify-content:center;gap:5px"><div class="k cr" style="font-size:132px"><span data-fit="392">${NAME[k]}</span></div><div class="k cr" style="font-size:64px;font-weight:800;opacity:.84"><span data-fit="392">${ver}</span></div><div class="bb" style="font-size:52px;letter-spacing:.16em;color:#d5cdc3">${lab}</div></div>`, kind === 'CN' ? 'rgba(232,87,107,.7)' : 'rgba(85,214,162,.7)');
     g.flag = flag(g.el.querySelector('.in'), kind, 260, 172); g.flag.cv.style.transform = 'translate(40px,50px)'; g.mk = g.el.querySelector('.cmk'); return g };
   S.qc = card('QWEN', 'CN', '4 MAX', 'ALIBABA'); S.gc2 = card('GEMINI', 'US', '4 ARGON', 'GOOGLE');
@@ -235,7 +233,8 @@ function build() {
   // the close: the logo and the golden ticket
   S.xhalo = add('<div class="halo" style="width:1300px;height:1300px;left:-110px;top:-370px"></div>', ov);
   S.xlogo = add('<img src="ezlogo.svg" alt="" style="position:absolute;left:0;top:0;width:480px;height:480px">', ov);
-  S.xtk = add(obj('tk', 'w6/e/ticket.webp', 850, 850 * TKR, `<div class="tin"><div class="k ink" style="font-size:170px"><span data-fit="600">SEASON 2</span></div></div>`), ov);
+  S.xtk = add(obj('tk', 'w6/e/ticket.webp', 850, 850 * TKR, `<div class="tin"><div class="k ink" style="font-size:170px"><span data-fit="600">SEASON 2</span></div><div class="k ink xsn" style="font-size:70px;font-weight:800;margin-top:4px;opacity:0"><span data-fit="560">STARTING NOW</span></div></div>`), ov);
+  S.xsn = S.xtk.querySelector('.xsn');
   // the fresh start, on glass under the ticket
   S.xs = glass(ov, 90, 1052, 900, 214, 52, `<div class="cc bb" style="top:32px;font-size:58px;letter-spacing:.18em;color:#d5cdc3;transform-origin:450px 50%">EVERYONE STARTS AT</div>
     <div class="cc k cr sh" style="top:94px;font-size:100px;transform-origin:450px 50%">P&amp;L <span class="m au" style="font-style:normal;font-weight:800;letter-spacing:-.04em">$0</span></div>`, 'rgba(253,188,42,.55)');
@@ -248,13 +247,13 @@ function build() {
     [T.stay - .08, 'sfx-whoosh', .07], [T.grok, 'r11-sparkle', .09], [T.cn - .08, 'sfx-whoosh', .08], [T.cn + .3, 'r11-thump', .09], [T.cn2 + .3, 'r11-thump', .12],
     [T.us - .08, 'sfx-whoosh', .08], [T.us + .3, 'r11-thump', .09], [T.us2 + .3, 'r11-thump', .12], ...[0, 2, 4, 6, 8].map(i => [bt(68 + i), 'r11-card', .08]),
     [T.win, 'sfx-riser', .12], [T.win, 'sfx-boom', .22], [T.win + .12, 'r11-sparkle', .1], [T.same - .06, 'sfx-whoosh', .08], [T.same + .1, 'r11-thump', .09], [T.sst, 'sfx-stamp', .15],
-    [T.feed - .06, 'sfx-whoosh', .07], [T.feed + 2 * BT, 'r11-card', .07], [T.feed2, 'sfx-chime', .12], [T.close - .06, 'sfx-whoosh', .08], [T.close + .12, 'r11-thump', .12]);
+    [T.close - .06, 'sfx-whoosh', .08], [T.close + .12, 'r11-thump', .12], [T.now, 'sfx-stamp', .1], [T.pnl - .06, 'sfx-whoosh', .06], [T.pnl + .1, 'r11-card', .07]);
   window.MUSIC = { f: q.get('bed') || 'w8f-horns', at: +(q.get('at') || 0) };
 }
 
 /* ───────── the ground: the living painted light, its level by beat, the rim lights, a red veil for the relegation ───────── */
 const NG = 80, GA = 20, GNL = 60; let GF = [];
-const LV = [[0, 1.05], [T.s1, .92], [T.rule, .62], [T.stamp, .5], [T.chart, .46], [T.d1, .62], [T.kimi, .34], [T.stay, .72], [T.cn, .95], [T.us, .95], [T.roll, .82], [T.roll2, .3], [T.win, 1.25], [T.same, .78], [T.sst, .6], [T.feed, .62], [T.close, 1.05]];
+const LV = [[0, 1.05], [T.s1, .92], [T.rule, .62], [T.stamp, .5], [T.chart, .46], [T.d1, .62], [T.kimi, .34], [T.stay, .72], [T.cn, .95], [T.us, .95], [T.roll, .82], [T.roll2, .3], [T.win, 1.25], [T.same, .78], [T.sst, .6], [T.close, 1.05]];
 function ground(t) { const x = S.gx; x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1; x.globalCompositeOperation = 'source-over'; x.fillStyle = BK; x.fillRect(0, 0, 1080, 1350);
   const kk = kick(t), i = Math.floor(t * 24) % GNL, f = GF.length ? GF[GA + i] : S.gstill, gs = 1.06 + .05 * Math.sin(t * .5) + .025 * kk, gtx = 10 * Math.sin(t * .37);
   x.save(); x.transform(2.2 * gs, 0, 0, 2.2 * gs, 540 + gs * (gtx - 594), 1099.84 - gs * 1203.84);
@@ -300,7 +299,7 @@ function R(tt) { t = tt; if (grain) grain(t); const kk = kick(t);
   SHOTS.forEach((s, i) => { if (i && t >= s) fla += .08 * Math.exp(-(t - s) / .06) }); L.$('#fl').style.opacity = Math.min(.8, fla).toFixed(3);
   const bug = L.$('.bug'), kb = L.eo(L.n(t, T.s1, T.s1 + .4)); bug.style.opacity = t >= T.s1 && t < T.close ? 1 : 0; bug.style.clipPath = kb < 1 ? `inset(0 ${((1 - kb) * 86).toFixed(1)}% 0 0)` : '';
   S.glass.forEach(g => g.on = 0);
-  opening(t, kk); podium4(t, kk); rule(t, kk); chart(t, kk); kimi(t, kk); newcomers(t, kk); same(t, kk); feed(t, kk); close(t, kk);
+  opening(t, kk); podium4(t, kk); rule(t, kk); chart(t, kk); kimi(t, kk); newcomers(t, kk); same(t, kk); close(t, kk);
   S.glass.forEach(g => { if (vis(g.el, g.on)) { frost(g); L.$('.sp', g.el).style.transform = `translateX(${(-62 + 124 * ((t * .35 + g.w * .001) % 1)).toFixed(1)}%)` } }) }
 
 // 0: the logo punches in through the camera, the name, the golden ticket; 1.38 the push to the ticket
@@ -315,9 +314,9 @@ function opening(t, kk) { const on = t < T.s1 + .3, ko = L.ei(L.n(t, T.s1 - .02,
 function cardRun(g, a, b, c, kk) { if (!win(a, c)) return; const kc = L.eo5(L.n(t, a + .1, a + .45)); g.on = 1; const tr = `translateY(${(-700 * (1 - kc)).toFixed(1)}px)`;
   g.el.style.transform = kc < 1 ? `${tr} perspective(1900px) rotateX(${(40 * (1 - kc)).toFixed(2)}deg)` : `${tr} scale(${(1 + .012 * kk).toFixed(4)})`;
   g.mk.style.opacity = t >= b ? (1 - .7 * L.n(t, b, b + .2)).toFixed(3) : ''; drawFlag(g.flag, t) }
-// a mark flying from its card (centre 467, 490 at 150 px) to its seat (centre cx, cy at size px), in an arc, with a landing pop
+// a mark flying from its card (centre 467, 502 at 150 px) to its seat (centre cx, cy at size px), in an arc, with a landing pop
 function fly(el, t0, cx, cy, size, kk) { const u = L.eio(L.n(t, t0, t0 + .42)), sc = L.lerp(150 / size, 1, u) * (1 + .18 * (t >= t0 + .42 ? Math.exp(-(t - t0 - .42) / .1) : 0)) * (1 + .04 * kk);
-  const x = L.lerp(467, cx, u), y = L.lerp(490, cy, u) - 60 * Math.sin(Math.PI * u); el.style.zIndex = 5; put(el, x - size / 2 * sc, y - size / 2 * sc, sc, t >= t0 ? 1 : 0) }
+  const x = L.lerp(467, cx, u), y = L.lerp(502, cy, u) - 60 * Math.sin(Math.PI * u); el.style.zIndex = 5; put(el, x - size / 2 * sc, y - size / 2 * sc, sc, t >= t0 ? 1 : 0) }
 
 // 2.76 Season 1: the four on the podium; 4 AIs, then 112 TRADES; 5.52 the rule comes down over them; 15.17 3 STAY (Kimi's pedestal broken);
 // 16.55 Grok defends; 17.93 Qwen's card, 19.31 Qwen flies to the seat
@@ -336,7 +335,7 @@ function podium4(t, kk) { const pre = t < T.stay, on = win(T.s1, T.chart + .3) |
     el.classList.toggle('pm', k === 'GROK' && t >= T.grok);
     put(nm, PX4[j] - 100, PL4 - 22 + dy, 1, o && (t < T.rule || (stay && t < T.cn)) ? 1 : 0) });
   if (win(T.cn2, T.us)) fly(S.m4.QWEN, T.cn2, PX4[3], 694 + 86 + dy, 172, kk); else put(S.m4.QWEN, 0, 0, 1, 0);
-  { const k = L.eo5(L.n(t, T.cn2 + .42, T.cn2 + .56)); put(S.n4.QWEN, PX4[3] - 100, PL4 - 22 + dy, 1 + .6 * (1 - k), win(T.cn2 + .42, T.us) ? k : 0) }
+  { const k = L.eo5(L.n(t, T.cn2 + .42, T.cn2 + .56)); put(S.n4.QWEN, 0, 0, 1, 0) }
   // headlines: SEASON 1 + 4 AIs, 112 TRADES; 3 STAY; GROK DEFENDS THE TITLE; NEW FROM CHINA
   const hs = (el, a, b, d = 0) => { const k = L.eo5(L.n(t, a, a + .28)), o = L.ei(L.n(t, b - .04, b + .18)); put(el, 0, 60 * (1 - k) - 260 * o + d, 1, t >= a && t < b + .18 ? k * (1 - o) : 0); blr(el, 10 * (1 - k)) };
   hs(S.h.s1, T.s1, T.rule); hs(S.h.ais, T.s1 + .06, T.s1b); hs(S.h.n112, T.s1b, T.rule); hs(S.h.trades, T.s1b + .06, T.rule);
@@ -409,7 +408,7 @@ function newcomers(t, kk) { const on = win(T.us, T.feed + .3), rise = L.eo5(L.n(
     if (t >= T.roll && t >= slam(j)) s *= 1 + .22 * Math.exp(-(t - slam(j)) / .12);
     if (k === 'GEMINI' && t < T.roll) { if (t >= T.us2) fly(el, T.us2, PX5[4], 714 + 75 + dy, 150, kk); else put(el, 0, 0, 1, 0) } else put(el, PX5[j] - 75 * s, y + dy - 75 * (s - 1), s, o);
     el.classList.toggle('pm', k === 'GROK' && t >= T.win);
-    const nOn = t >= T.roll ? t >= slam(j) : t >= T.us2 + .42 && k === 'GEMINI', kn = L.eo5(L.n(t, t >= T.roll ? slam(j) : T.us2 + .42, (t >= T.roll ? slam(j) : T.us2 + .42) + .12));
+    const nOn = t >= T.roll && t >= slam(j), kn = L.eo5(L.n(t, t >= T.roll ? slam(j) : T.us2 + .42, (t >= T.roll ? slam(j) : T.us2 + .42) + .12));
     put(nm, PX5[j] - 90, PL5 - 20 + dy, 1 + .6 * (1 - kn), on && nOn ? kn * (1 - L.n(t, T.same, T.same + .18)) : 0) });   // the names give way to the rule
   const hs = (el, a, b) => { const k = L.eo5(L.n(t, a, a + .28)), o = L.ei(L.n(t, b - .04, b + .18)); put(el, 0, 60 * (1 - k) - 300 * o, 1, t >= a && t < b + .18 ? k * (1 - o) : 0); blr(el, 10 * (1 - k)) };
   hs(S.h.us, T.us + .05, T.roll);
@@ -444,8 +443,9 @@ function close(t, kk) { const on = t >= T.close, k = L.eo5(L.n(t, T.close, T.clo
   if (vis(S.xhalo, on)) { S.xhalo.style.transform = `scale(${(.52 + .1 * kk + .06 * dr).toFixed(3)})`; S.xhalo.style.opacity = ((.55 + .45 * kk) * k).toFixed(3) }
   if (vis(S.xtk, t >= T7)) { S.xtk.style.transform = `translate(${(115 - 1400 * (1 - kt)).toFixed(1)}px,566px) perspective(1700px) rotateZ(${(4 - 2 * dr).toFixed(2)}deg) rotateY(${(L.lerp(70, 14, kt) - 22 * L.n(t, T7, DUR)).toFixed(2)}deg) rotateX(${(6 * dr).toFixed(2)}deg) scale(${(1 + .03 * dr).toFixed(4)})`;
     blr(S.xtk, 14 * (1 - kt)); sweep(L.$('.sw', S.xtk), L.eio(L.n(t, T7 + .3, DUR - .3))) }
-  // EVERYONE STARTS AT P&L $0 rises on glass a beat after the ticket lands, and stays
-  const T8 = T7 + .4 + BT, ks = L.eo5(L.n(t, T8, T8 + .34)); if (t >= T8) { S.xs.on = 1; S.xs.el.style.transform = `translateY(${(320 * (1 - ks)).toFixed(1)}px) perspective(1900px) rotateX(${(28 * (1 - ks)).toFixed(2)}deg) scale(${(1 + .008 * kk).toFixed(4)})`; S.xs.el.style.opacity = ks.toFixed(3) } }
+  { const kn = L.eo5(L.n(t, T.now, T.now + .14)); S.xsn.style.opacity = t >= T.now ? kn.toFixed(3) : 0; S.xsn.style.transform = `scale(${(1 + .9 * (1 - kn)).toFixed(4)})` }
+  // EVERYONE STARTS AT P&L $0 rises on glass on beat 89, and stays
+  const T8 = T.pnl, ks = L.eo5(L.n(t, T8, T8 + .34)); if (t >= T8) { S.xs.on = 1; S.xs.el.style.transform = `translateY(${(320 * (1 - ks)).toFixed(1)}px) perspective(1900px) rotateX(${(28 * (1 - ks)).toFixed(2)}deg) scale(${(1 + .008 * kk).toFixed(4)})`; S.xs.el.style.opacity = ks.toFixed(3) } }
 
 window.R = R;
 (async () => {
