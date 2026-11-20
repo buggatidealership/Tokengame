@@ -107,8 +107,9 @@ add('Grok', GR, 'ESTC', 'LONG', 2.8, 58,
     other_reasoning="Search AI platform / observability / security growth story is less fully owned than mega-cap AI names. Last print was a beat with a large positive close. Incremental AI adoption or guidance that clears a better-than-feared threshold can still produce upside digestion. Options wide (~+/-15%). Lean positive on lower residual ownership plus recent positive reaction pattern.",
     sources_shown='40 pages', process_notes='Final line "ESTC: LONG, +2.8 %".')
 
-# outcomes, once graded (round -> TradingView close-to-close move, %); empty until the close
-MOVES = {}
+# outcomes (round -> close-to-close move, %; the sheet's moves, entered by the owner on 20 Nov after the close; TradingView's
+# 15-minute-delayed read at 21:15 UTC: INTU -12.79, KEYS -6.93, ESTC -2.02, all within 0.3 of the sheet, which wins)
+MOVES = {113: -12.79, 114: -7.07, 115: -2.20}
 order = {'INTU': 0, 'KEYS': 1, 'ESTC': 2}; mo = {'GPT': 0, 'Claude': 1, 'Grok': 2, 'Gemini': 3, 'Qwen': 4}
 R.sort(key=lambda r: (order[r['ticker']], mo[r['model']]))
 for r in R:
