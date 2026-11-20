@@ -236,7 +236,7 @@ const cl = L.cl, n = L.n, eio = L.eio, eo = L.eo, lerp = L.lerp;
 // headline: a kicker and one or two big lines (each line its own start); words rise in one by one and leave together
 let hlKey = '';
 function lab(t) {
-  const sets = [[T.s1in, T.s1out, CP.s1k, [[CP.s1, T.s1in], [CP.s1b, T.s1b]]], [T.s2in, T.s2out, CP.s2k, [[CP.s2, T.s2in], [CP.s2b, T.s2in + .1]]], [T.s4in, T.s4out, '', [[CP.s4, T.s4in]]]];
+  const sets = [[T.s1in, T.s1out, CP.s1k, [[CP.s1, T.s1in], [CP.s1b, T.s1b]]], [T.s2in, T.s2out, CP.s2k, [[CP.s2, T.s2in], [CP.s2b, T.s2in + (PU ? 0 : .1)]]], [T.s4in, T.s4out, '', [[CP.s4, T.s4in]]]];
   const h = L.$('#hl'), s = sets.find(x => t >= x[0] && t < x[1] + .45);
   if (!s) { h.style.opacity = 0; return } h.style.opacity = 1;
   const ls = s[3].filter(x => x[0]), key = s[2] + '|' + ls.map(x => x[0]).join('|');
@@ -311,7 +311,7 @@ window.R = t => {
   const lc = lifts.card, k1 = lift('card', t, T.cardUp, T.cardDn, () => { const z = fitZ(lc.h0, 300, 1290, 2.45); return { x: 540, y: 300 + (990 - lc.h0 * z) * .35, z } });
   const hq = lifts.qwen.h0, hc = lifts.claude.h0, zp = fitZ(hq + hc + 24 / 2.2, 70, 1300, 2.35), y0 = 70 + (1230 - (hq + hc) * zp - 24) / 2;
   const k2 = lift('qwen', t, T.qUp, T.dn3, tt => { const m = eio(n(tt, T.cUp, T.cUp + .6)), z1 = fitZ(hq, 160, 1250, 2.5); return { x: 540, y: lerp(160 + (1090 - hq * z1) / 2, y0, m), z: lerp(z1, zp, m) } });
-  const k3 = lift('claude', t, T.cUp, T.dn3 + .08, () => ({ x: 540, y: y0 + hq * zp + 24, z: zp }));
+  const k3 = lift('claude', t, T.cUp, T.dn3 + (PU ? 0 : .08), () => ({ x: 540, y: y0 + hq * zp + 24, z: zp }));
   const go = lifts.grok, op = eio(n(t, T.tap2 + .05, T.tap2 + .55)); go.pp.style.height = (go.hp * op).toFixed(2) + 'px'; L.$('#p2 .pp').style.height = (go.hp * op).toFixed(2) + 'px';
   L.$$('.pt .cv').forEach(c => c.style.transform = `rotate(${(180 * op).toFixed(1)}deg)`); go.pp.querySelector('.ppi').style.opacity = n(t, T.tap2 + .2, T.tap2 + .55);
   const zg = fitZ(go.h0 + go.hp, 200, 1300, 2.35), hg = (go.h0 + go.hp * op) * zg;
@@ -331,7 +331,7 @@ window.R = t => {
   const e = L.$('#end'); e.style.opacity = t >= T.endIn ? 1 : 0;
   const lg = spr(n(t, T.endIn + .1, T.endIn + .9)); e.querySelector('img').style.transform = `translateY(${(40 * (1 - lg)).toFixed(1)}px) scale(${(.7 + .3 * lg).toFixed(3)})`; e.querySelector('img').style.opacity = cl(lg * 2).toFixed(3);
   const kq = eo(n(t, T.endIn + .35, T.endIn + .75)); e.querySelector('small').style.opacity = kq.toFixed(3); e.querySelector('small').style.transform = `translateY(${(14 * (1 - kq)).toFixed(1)}px)`;
-  e.querySelectorAll('h3 .w>i').forEach(w => { const k = +w.dataset.n, i = eo(n(t, T.endT + k * .08, T.endT + .5 + k * .08)); w.style.transform = `translateY(${((1 - i) * 112).toFixed(1)}%)` });
+  e.querySelectorAll('h3 .w>i').forEach(w => { const k = +w.dataset.n, i = eo(n(t, T.endT + k * .08, T.endT + .5 + k * .08)); w.style.transform = `translateY(${((1 - i) * 112).toFixed(1)}%)`; w.style.opacity = i > 0 ? 1 : 0 });
   const pp = n(t, T.endP, T.endP + .5), p = e.querySelector('p'); p.style.opacity = pp.toFixed(3); p.style.transform = `scale(${lerp(1.25, 1, L.eo5(pp)).toFixed(4)})`;
   p.style.letterSpacing = (.14 + .04 * (1 - n(t, T.endP, T.endP + 2.5))).toFixed(3) + 'em';
 };
