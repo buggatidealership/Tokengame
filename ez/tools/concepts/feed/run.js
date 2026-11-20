@@ -39,7 +39,7 @@ const srv=http.createServer((q,s)=>{const u=decodeURIComponent(q.url.split('?')[
   s.writeHead(200,{'content-type':MIME[path.extname(f)]||'application/octet-stream'});fs.createReadStream(f).pipe(s)});
 const CLOCK='2026-11-20T18:09:00Z';   // 1:09 PM in New York, Fri Nov 20 (the trades are in, the close is tonight)
 // [name, query]
-let SHOTS=[['F1','f=1'],['F2','f=2'],['F3','f=3'],['F4','f=4&open=GROK-INTU'],['F1g','f=1&g=1'],['F2g','f=2&g=1'],['F3g','f=3&g=1'],['F4g','f=4&g=1&open=GROK-INTU']];
+let SHOTS=[['F1','f=1'],['F2','f=2'],['F3','f=3'],['F4','f=4&open=GROK-INTU'],['F1g','f=1&g=1&only=INTU'],['F2g','f=2&g=1&only=INTU'],['F3g','f=3&g=1&only=INTU'],['F4g','f=4&g=1&only=INTU&open=GROK-INTU']];
 const WIDTHS=[320,390,1280];if(process.env.ONLY){const o=process.env.ONLY.split(',');SHOTS=SHOTS.filter(s=>o.indexOf(s[0])>-1)}
 const TEASE=process.env.ONLY&&!/T/.test(process.env.ONLY)?[]:[['T1','teaser=T1&g=1'],['T2','teaser=T2']];
 
@@ -73,7 +73,7 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
   set('F2 cards',[...document.querySelectorAll('main .f2')],[['logo','.f2h .fco','l'],['company','.f2h .fcn','l'],['bar','.f2s','l']]);
   groups('main .f2r').forEach((g,i)=>set('F2 rows'+i,g,[['mark','.ai','l'],['name','.fnm','l'],['side','.f2t .fsd','r'],['meter','.f2m','l'],['confidence','.fcf','l'],['reason','.fq','l'],['receipt','.frc','l']]));
   groups('main .f3').forEach((g,i)=>set('F3 posts'+i,g,[['mark','.f3h .ai','l'],['name','.fnm','l'],['side','.f3sd','r'],['reason','.f3q','l'],['logo','.f3c .fco','l'],['company','.f3c .fcn','l'],['card side','.f3cs','r'],['receipt','.frc','r']]));
-  groups('main .f4r').forEach((g,i)=>set('F4 rows'+i,g,[['mark','.ai','l'],['name','.fnm','l'],['logo','.f4co .fco','l'],['side','.f4sd','l'],['confidence','.fcf','l'],['line','.f4k','l'],['caret','.f4cv','r']]));
+  groups('main .f4r').forEach((g,i)=>set('F4 rows'+i,g,[['mark','.ai','l'],['name','.fnm','l'],['logo','.f4co .fco','l'],['side','.f4sd',innerWidth<980?'r':'l'],['confidence','.fcf','l'],['line','.f4k','l'],['caret','.f4cv','r']]));
   // 5 the numbers and words as printed, per trade
   document.querySelectorAll('main [data-call]').forEach(e=>{const q=s=>{const x=[...e.querySelectorAll(s)].find(y=>vis(y));return x?x.textContent.replace(/\s+/g,' ').trim():null};
     res.nums.push({id:e.getAttribute('data-call'),side:q('.fsd'),conf:q('.fcf'),pnl:q('.frc'),quote:q('.fq'),plain:q('.fpl p')})});
@@ -89,10 +89,10 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
     await p.addStyleTag({content:'.nav{position:static!important}.app{padding-bottom:16px!important}'});await p.waitForTimeout(120);
     if(w>320)await p.screenshot({path:`${OUT}/${n}-${w}.png`,fullPage:true});await ctx.close()}
   /* the X images: one card filling a 1080x1350 frame. Find the width at which the frame (header + card) is 4:5, then shoot at 1080/w */
-  for(const [n,q] of TEASE){let best=null;for(let w=330;w<=520;w+=10){const ctx=await b.newContext({viewport:{width:w,height:Math.round(w*1.25)},deviceScaleFactor:1,timezoneId:'America/New_York'});
+  for(const [n,q] of TEASE){let best=null;for(const w of [360,400,432,480,540]){const ctx=await b.newContext({viewport:{width:w,height:Math.round(w*1.25)},deviceScaleFactor:1,timezoneId:'America/New_York'});
       const p=await go(ctx,q);const h=await p.evaluate(()=>{const c=document.querySelector('.fts>*').getBoundingClientRect();return c.bottom+18});await ctx.close();
       if(h<=w*1.25){best=w;break}}
-    best=best||520;const ctx=await b.newContext({viewport:{width:best,height:Math.round(best*1.25)},deviceScaleFactor:1080/best,timezoneId:'America/New_York'});const p=await go(ctx,q);
+    best=best||540;const ctx=await b.newContext({viewport:{width:best,height:Math.round(best*1.25)},deviceScaleFactor:1080/best,timezoneId:'America/New_York'});const p=await go(ctx,q);
     report[n+'@'+best]=await p.evaluate(measure);await p.screenshot({path:`${OUT}/${n}.png`});await ctx.close();console.log(n,'frame width',best,'css px, scale',(1080/best).toFixed(3))}
   fs.writeFileSync(`${OUT}/report.json`,JSON.stringify({errs,report},null,1));
   /* numbers and words as printed vs the files */
@@ -101,7 +101,7 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
     if(x.side!==null&&x.side!==it.side+' '+String(it.move)+'%')bad.push(k+' '+x.id+' side '+x.side);
     if(x.conf!==null&&x.conf!==it.conf+'% confident')bad.push(k+' '+x.id+' confidence '+x.conf);
     if(x.pnl!==null&&x.pnl!=='P&L '+sg(it.pnl))bad.push(k+' '+x.id+' P&L '+x.pnl);
-    if(x.quote!==null&&x.quote!==it.keep&&x.quote!==it.hl)bad.push(k+' '+x.id+' words "'+x.quote.slice(0,50)+'"');
+    if(x.quote!==null&&x.quote!==it.keep&&x.quote!==it.hl&&x.quote!=='“'+it.hl+'”')bad.push(k+' '+x.id+' words "'+x.quote.slice(0,50)+'"');
     if(x.plain!==null&&x.plain!==it.plain)bad.push(k+' '+x.id+' plain words')});
   for(const k in report){const m=report[k],off=Object.entries(m.slots).filter(([s,v])=>v.dx>1);
     console.log(k.padEnd(10),'sw',m.sw+'/'+m.W,'poke',m.poke.length,'cut',m.trunc.length,'spill',m.spill.length,'overlap',m.overlap.length,'slots',Object.keys(m.slots).length,'off>1px',off.length?off.map(([s,v])=>s+' dx'+v.dx).join('; '):'none');

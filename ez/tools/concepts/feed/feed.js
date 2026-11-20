@@ -16,14 +16,14 @@ function fco(c,px){return '<span class="fco" style="width:'+px+'px;height:'+px+'
 function fcoN(c){return '<span class="fcn"><b>'+c.co+'</b> <span>'+c.ticker+'</span></span>'}
 function fside(x,cls){return '<span class="fsd '+(x.side==="LONG"?"L":"S")+(cls?" "+cls:"")+'"><b>'+x.side+'</b> <span class="fmv">'+fnum(x.move)+'%</span></span>'}
 function fconf(x){return '<span class="fcf">'+x.conf+'% confident</span>'}
-function fq(x,only){var k=x.keep,h=x.hl,i=k.indexOf(h);if(only)return '<mark class="hl">'+esc(h)+'</mark>';
+function fq(x,only){var k=x.keep,h=x.hl,i=k.indexOf(h);if(only)return '<span class="hlk">'+esc(h)+'</span>';   /* the tape's one-line form: the key clause alone, quoted, under a gold rule (a marker on every row reads as a wall) */
   return esc(k.slice(0,i))+'<mark class="hl">'+esc(h)+'</mark>'+esc(k.slice(i+h.length))}
 function fplain(x,cls){return x.plain?'<div class="fpl'+(cls?" "+cls:"")+'"><small>In plain words <i>· our reading, not '+APP[x.k]+'’s words</i></small><p>'+esc(x.plain)+'</p></div>':''}
 var FCK='<svg viewBox="0 0 12 12"><path d="M2.2 6.4l2.4 2.4 5.2-5.6"/></svg>',FX='<svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6"/></svg>';
 function frc(x,cls){if(!FG)return "";return '<span class="frc '+(x.right?"ok":"no")+(cls?" "+cls:"")+'">'+(x.right?FCK:FX)+'<b>P&amp;L '+money(x.pnl,true)+'</b></span>'}
 function fmove(c){return FG?'<span class="fmo '+(c.move<0?"d":"u")+'">'+c.ticker+' '+c.pct+'</span><em class="fpt">PREVIEW</em>':''}
 function fdata(x){return ' data-call="'+x.k+'-'+x.t+'"'}
-var FCO=FEEDD.cos,FIT=FEEDD.items;               /* companies newest first (ESTC, KEYS, INTU); items newest first */
+var FONLY=FQ.get("only"),FCO=FEEDD.cos.filter(function(c){return !FONLY||c.ticker===FONLY}),FIT=FEEDD.items.filter(function(x){return !FONLY||x.t===FONLY});   /* &only=INTU narrows to one company (the receipt board) */               /* companies newest first (ESTC, KEYS, INTU); items newest first */
 function fby(t){return FIT.filter(function(x){return x.t===t})}
 
 /* the header every layout shares: what this is, in the terminal's own kick line */
@@ -32,12 +32,12 @@ function fhead(){return '<section class="pn fdh"><div class="kick"><small>FEED</
   (FG?'<p class="fpv"><em class="fpt">PREVIEW</em> Moves from pre-market prices at 7:26 AM ET Nov 20, not the close</p>':'')+'</section>'}
 
 /* F1 the room: one chat per company, each AI says its reason; longs sit left, shorts right, so the split is the layout */
-function f1room(c,only){var A=fby(c.ticker),L=A.filter(function(x){return !only||only.indexOf(x.k)>-1}),nL=A.filter(function(x){return x.side==="LONG"}).length;
+function f1room(c,only){var A=fby(c.ticker),L=only?only.map(function(k){return A.filter(function(x){return x.k===k})[0]}):A,nL=A.filter(function(x){return x.side==="LONG"}).length;
   var ms=L.map(function(x){var s=x.side==="LONG"?"L":"S";
     return '<div class="f1m '+s+'"'+fdata(x)+'>'+aiIcon(x.k,34)+'<div class="f1b"><div class="f1w"><b class="fnm">'+APP[x.k]+'</b>'+fside(x)+'</div>'+
       '<p class="fq">'+fq(x)+'</p><div class="f1f">'+fconf(x)+frc(x)+'</div></div></div>'+
       (x.plain?'<div class="f1m E '+s+'"><span class="f1ez">EZ</span><div class="f1b">'+fplain(x,"f1p")+'</div></div>':'')}).join("");
-  return '<section class="pn f1"><header class="f1h">'+fco(c,34)+'<div>'+fcoN(c)+'<small>Nov 19 · trade '+c.n+'</small></div>'+fmove(c)+'</header>'+
+  return '<section class="pn f1"><header class="f1h">'+fco(c,34)+'<div>'+fcoN(c)+'<small>Nov 19 · trade '+c.n+'</small></div>'+(FG?'<div class="f2v">'+fmove(c)+'</div>':'')+'</header>'+
     '<div class="f1s"><span class="L">LONG '+nL+'</span><span class="S">'+(A.length-nL)+' SHORT</span></div><div class="f1ms">'+ms+'</div></section>'}
 function F1(){return '<div class="f1g">'+FCO.map(function(c){return f1room(c)}).join("")+'</div>'}
 
@@ -73,7 +73,7 @@ function F4(){var hd='<div class="f4hd"><span></span><span>AI</span><span>COMPAN
       (x.plain?'<div class="f4x">'+fplain(x)+'</div>':'')+'</div>'}).join("")+'</section>'}
 
 function feedHTML(){if(FT==="T1"){var x=FIT.filter(function(i){return i.k==="CLAUDE"&&i.t==="INTU"})[0];return '<div class="fts">'+f3post(x)+'</div>'}
-  if(FT==="T2")return '<div class="fts">'+f1room(FCO.filter(function(c){return c.ticker==="INTU"})[0],["QWEN","GROK"])+'</div>';
+  if(FT==="T2")return '<div class="fts">'+f1room(FCO.filter(function(c){return c.ticker==="INTU"})[0],["QWEN","GROK"],1)+'</div>';
   return fhead()+[F1,F2,F3,F4][FL-1]()}
 var draw0=draw,fFirst=true;
 draw=function(){if(fFirst){fFirst=false;var h=(location.hash||"").slice(1);if(!h||h==="feed")st.v="feed"}
