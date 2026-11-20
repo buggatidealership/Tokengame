@@ -22,6 +22,9 @@
 html,body{background:#04070e}
 #cam{position:absolute;left:0;top:0;width:1080px;height:1350px;transform-origin:540px 600px}
 #gnd{position:absolute;left:0;top:0;width:1080px;height:1350px;display:block}
+/* MOTION: the arena is live: spotlight beams sweep the ring, a light pass crosses the winners and the board */
+#beams{overflow:hidden}#beams i{position:absolute;top:-60px;width:520px;height:1300px;margin-left:-260px;transform-origin:50% 0;mix-blend-mode:screen;background:radial-gradient(ellipse 34% 62% at 50% 0%,rgba(255,214,140,.30),rgba(255,214,140,.10) 45%,rgba(255,214,140,0) 72%)}
+.sw{position:absolute;inset:0;border-radius:inherit;z-index:2;pointer-events:none;opacity:0;background:linear-gradient(100deg,rgba(255,255,255,0) 40%,rgba(255,244,214,.16) 50%,rgba(255,255,255,0) 60%) no-repeat;background-size:260% 100%}
 .lay{position:absolute;left:0;top:0;width:1080px;height:1350px;pointer-events:none}
 .ab{position:absolute;left:0;top:0;transform-origin:50% 50%;white-space:nowrap}
 .k{font-family:Kanit,sans-serif;font-style:italic;font-weight:900;line-height:1;white-space:nowrap}
@@ -97,6 +100,7 @@ html,body{background:#04070e}
 </style>
 <div id="cam">
   <img id="gnd" src="w6/oc-c/ring.webp" alt="">
+  <div class="lay" id="beams"><i></i><i></i><i></i></div>
   <div class="lay" id="glw"><div class="cg" id="cgL"></div><div class="cg" id="cgR"></div><div class="lay" id="veil"></div></div>
   <svg class="lay" id="ln" viewBox="0 0 1080 1350"></svg>
   <div class="lay" id="sc"></div>
@@ -181,6 +185,9 @@ const setup = () => {
   EL.lb = D.order.map((k, i) => { const rec = BO.map(r => { const c = r.calls.find(x => x.k === k); return `<img src="${r.logo}" alt="" style="${c.right ? `box-shadow:0 0 0 3px ${GN}` : 'opacity:.45;filter:grayscale(1)'}">` }).join('');
     const v = D.season1[k]; const el = glass('lbr', 712, 128, `<span class="m rk">${i + 1}</span><span class="mkw">${mark(k, 72)}</span><span class="k nm">${NAME(k)}</span><span class="rec">${rec}</span>
       <span class="m pl" style="color:${v > 0 ? GN : v < 0 ? RD : CR}">${v === 0 ? '$0' : L.money(v)}</span>`, 26); el._k = k; return el });
+  BO.forEach(r => r.tiles.forEach(el => { el.insertAdjacentHTML('beforeend', '<i class="sw"></i>'); el._sw = el.lastChild }));
+  EL.lb.forEach(el => { el.insertAdjacentHTML('beforeend', '<i class="sw"></i>'); el._sw = el.lastChild });
+  EL.beams = [...document.querySelectorAll('#beams i')];
   // chrome
   L.chrome(document.body); const bug = L.$('.bug'); bug.querySelector('b').remove(); bug.style.display = 'flex'; bug.style.alignItems = 'center';
   L.$('.fine').textContent = '$100K on every trade' + '  ' + 'not advice';
@@ -247,6 +254,7 @@ window.R = t => {
       el.style.filter = dm ? `brightness(${1 - .18 * dm})` : '';
       const flip = won && t >= r.p1 + .12; if (el._f !== flip) { el._f = flip; el._lab.textContent = flip ? 'P&L' : 'CALLED'; el._val.textContent = flip ? (el._c.pnl === 0 ? '$0' : L.money(el._c.pnl)) : called(el._c.call) }
       el._val.style.color = flip ? (el._c.pnl > 0 ? GN : el._c.pnl < 0 ? RD : CR) : (sd === 'LONG' ? GN : RD);
+      { const q = isW ? ((t - r.p1 - .45 - i * .14) % 1.6) / 1.6 : -1; el._sw.style.opacity = q >= 0 && t > r.p1 + .45 ? (1 - out) : 0; if (q >= 0) el._sw.style.backgroundPosition = (130 - 160 * q).toFixed(1) + '% 0' }
       const rm = el.querySelector('.rim'); rm.style.opacity = isW ? g : 0; if (isW) rm.style.background = RIM((t - r.p1) * 90 + i * 40) });
     ['LONG', 'SHORT'].forEach(sd => { const el = r.bal[sd]; if (!el) return; if (!on) { put(el, 0, 0, 1, 0); return }
       const t0 = r.s + (sd === 'LONG' ? A_LONG : A_SHORT), k = L.n(t, t0, t0 + .32), x = BALX[sd], y = BAL_Y;
@@ -290,11 +298,15 @@ window.R = t => {
     const lead = D.season1[el._k] === D.season1[D.order[0]], go = lead ? L.eo(L.n(t, T_LEAD - .1, T_LEAD + .35)) : 0, rm = el.querySelector('.rim'), nm = el.querySelector('.nm'), rk = el.querySelector('.rk');
     rm.style.opacity = go; if (go > 0) { rm.style.background = RIM((t - T_LEAD) * 70); nm.classList.add('foil'); nm.style.backgroundPosition = `${(100 - 100 * L.n((t - T_LEAD) % 2.1, .4, 1.4)).toFixed(1)}% 0`; rk.style.color = AU }
     else { nm.classList.remove('foil'); rk.style.color = '' }
+    { const t1 = T_LB + .6 + i * .3, q = t > t1 ? ((t - t1) % 2.2) / 2.2 : -1; el._sw.style.opacity = q >= 0 ? 1 : 0; if (q >= 0) el._sw.style.backgroundPosition = (130 - 160 * q).toFixed(1) + '% 0' }
     el.style.filter = !lead && t > T_LEAD ? `brightness(${1 - .2 * L.n(t, T_LEAD - .1, T_LEAD + .35)})` : '' });
   // the camera: a slow push through each bout, a kick on every bell
   let kick = 0; BO.forEach(r => { if (t > r.p1) kick += Math.exp(-(t - r.p1) * 9) * Math.sin((t - r.p1) * 60) * (r.main ? 6 : 3.5) });
   const push = 1 + .012 * L.n(t, 0, S0) + (cur && t < T_LB ? .018 * L.eio(L.n(t, cur.s, cur.p1)) : 0) + .02 * L.n(t, T_LB, DUR);
-  L.$('#cam').style.transform = `translate(${kick}px,${kick * .5}px) scale(${push.toFixed(4)})`;
+  if (EL.beams) EL.beams.forEach((b, j) => { const a = [18, -16, 9][j] * Math.sin(t * [.62, .51, .83][j] + [0, 2.1, 4.2][j]);
+    b.style.left = [250, 830, 540][j] + 'px'; b.style.transform = `rotate(${a.toFixed(2)}deg)`; b.style.opacity = (.55 + .35 * Math.sin(t * [1.1, .9, 1.3][j] + j)).toFixed(3) });
+  const dx = 9 * Math.sin(t * .55), dy = 5 * Math.sin(t * .8 + 1), br = .008 * Math.sin(t * .45);
+  L.$('#cam').style.transform = `translate(${(kick + dx).toFixed(2)}px,${(kick * .5 + dy).toFixed(2)}px) scale(${(push + br).toFixed(4)})`;
 };
 (async () => {
   [MOD, D] = await Promise.all([fetch('models5.json').then(r => r.json()), fetch('data/close-' + DATE + '.json').then(r => r.json())]);
