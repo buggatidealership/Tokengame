@@ -13,7 +13,12 @@
   122 BPM, cut by bedx.py so its kick drops back in on Qwen's pop-out at 6.9 s and again on the end card at 22.6 s, its breaks under the tab tap and
   under the plain-words read), a camera that moves on the beat (a dolly by layout zoom down to the tab bar, up to the feed, a punch in; on the
   glass: push, focus Qwen, focus Claude, then into the plain-words panel), the words of the plain reading lit in reading order, a stronger kick
-  light; every move starts on a beat; 25.6 s. -->
+  light; every move starts on a beat; 25.6 s.
+  ?pace=up&bed=m3 (owner, same night: "directionally the up draft, but the music, I prefer the pre-teaser's"): the same picture on m3-electro's grid
+  (124 BPM), bed fl-m3 (m3-electro cut by bedx.py: its intro's last 14 beats, the kick in on Qwen's pop-out at 6.80 s, 24 beats of groove, the intro's
+  8-beat build again under the plain-words read, the kick in again on the end card at 22.28 s); Claude lifts a beat sooner and the pair holds a beat
+  longer, so Claude's marked clause is held 4.36 s. In both pace=up cuts the push into the plain-words panel now keeps Grok's whole card in the frame
+  (24 px clear), and &light=0 turns off the plain reading's word-by-word light. -->
 <style>
 :root{--tx:#f5f1ea;--mu:#8e9a93;--mu2:#5d6963;--up:#55d6a2;--dn:#ff5a6e;--ac:#fdbc2a;--cr:#f8f0d9;--ln:#24302b}
 #st{position:absolute;inset:0;overflow:hidden}
@@ -131,7 +136,8 @@
 </div>
 <script src="lib.js"></script>
 <script>
-const Q = new URLSearchParams(location.search), PU = Q.get('pace') === 'up', BT = PU ? .4918 : .5068, PH = PU ? .020 : .025, B = n => PH + n * BT, DUR = PU ? 25.6 : 26.0;
+const Q = new URLSearchParams(location.search), PU = Q.get('pace') === 'up', M3 = PU && Q.get('bed') === 'm3', LIGHT = PU && Q.get('light') !== '0';
+const BT = M3 ? .4839 : PU ? .4918 : .5068, PH = M3 ? .025 : PU ? .020 : .025, B = n => PH + n * BT, DUR = PU ? 25.6 : 26.0;
 const END = Q.get('end') || 'soon', OWN = Q.get('open') === 'owner';
 // the on-screen lines; the default is the coordinator's set after the owner's Grok research; ?open=owner keeps the owner's own opening.
 // {g w} green, {r w} red, {y w} gold; any line can be set by its own parameter
@@ -174,14 +180,19 @@ const T = {   // every hold is at least 1 s + 0.08 s a character of the longest 
 if (PU) Object.assign(T, {   // pace=up: the same beats on fl-up's grid (122 BPM), every move on a beat; the kick drops back in at B(14) and B(46)
   s1in: B(0), s1out: B(8), tabIn: B(8), view: B(9), s2out: B(14), cMk: B(18), dn3: B(25), flick: B(25), gUp: B(26), gMk: B(27), tap2: B(28), s4in: B(28),
   s4out: B(34), endP: B(48) });
+if (M3) Object.assign(T, {   // bed=m3 (124 BPM): the reading line leaves a frame after its beat (its 18 characters need 2.44 s); Claude a beat sooner, the pair a beat longer
+  s2out: B(14) + .03, cUp: B(16), cMk: B(17), dn3: B(26), flick: B(26), gUp: B(27), gMk: B(28), tap2: B(29), s4in: B(29), s4out: B(35) });
 const ARRIVE = PU ? [10, 11, 12, 13, 13].map(B) : [0, 1, 2, 3, 4].map(i => T.view + .45 + i * .17);   // the feed's posts arrive one by one after the tap
 // pace=up: the camera. CAM dollies the phone (layout zoom about a pivot, so the screen stays crisp); GLAS moves the lifted glass (its zoom too).
 // Each key: [beat, {s scale, x, y shift of the pivot, r roll deg, ox, oy pivot in the frame}]; a move starts on its beat and lands in .75 s.
 const CAM = [[0, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }], [8, { s: 1.5, x: 0, y: -260, r: 0, ox: 540, oy: 1250 }], [10, { s: 1.3, x: 0, y: 60, r: 0, ox: 540, oy: 560 }],
-  [12, { s: 1.5, x: 0, y: 20, r: -1.2, ox: 540, oy: 640 }], [14, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }], [25, { s: 1.15, x: 0, y: 0, r: 1, ox: 540, oy: 700 }], [26, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }]];
+  [12, { s: 1.5, x: 0, y: 20, r: -1.2, ox: 540, oy: 640 }], [14, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }], [M3 ? 26 : 25, { s: 1.15, x: 0, y: 0, r: 1, ox: 540, oy: 700 }], [M3 ? 27 : 26, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }]];
 let GLAS = [[1, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 1290 }], [4, { s: 1.035, x: -18, y: 0, r: -.5 }], [6, { s: 1.02, x: 16, y: -4, r: .4 }], [8, { s: 1, x: 0, y: 0, r: 0 }],
   [14, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 700 }], [16, { s: 1.05, y: -10, r: .4 }], [17, { s: 1, y: 0, r: 0, ox: 540, oy: 675 }], [20, { s: 1.05, y: 70, r: -.3 }], [22, { s: 1.05, y: -70, r: .3 }], [24, { s: 1, y: 0, r: 0 }],
   [26, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 750 }], [31, { s: 1.03, x: -12, r: -.4 }]];   // the push into the plain-words panel (from B(34)) is added once its place is measured
+if (M3) GLAS = [[1, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 1290 }], [4, { s: 1.035, x: -18, y: 0, r: -.5 }], [6, { s: 1.02, x: 16, y: -4, r: .4 }], [8, { s: 1, x: 0, y: 0, r: 0 }],
+  [14, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 700 }], [16, { s: 1, y: 0, r: 0, ox: 540, oy: 675 }], [19, { s: 1.05, y: 70, r: -.3 }], [21, { s: 1.05, y: -70, r: .3 }], [23, { s: 1, y: 0, r: 0 }],
+  [25, { s: 1.03, y: 0, r: .3 }], [27, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 750 }], [32, { s: 1.03, x: -12, r: -.4 }]];
 const trk = (K, t) => { const s = Object.assign({}, K[0][1]); for (let i = 1; i < K.length; i++) { const a = B(K[i][0]); if (t < a) break; const e = spr(n(t, a, a + .75)), g = K[i][1]; for (const k in g) s[k] = lerp(s[k], g[k], e) } return s };
 
 (async () => {
@@ -221,12 +232,14 @@ const trk = (K, t) => { const s = Object.assign({}, K[0][1]); for (let i = 1; i 
   window.CUES = [[.05, 'r11-swell', .14], [T.cardUp, 'sfx-whoosh', .1], ...T.rows.map(t => [t, 'r11-pluck', .08]), [T.tabIn + .2, 'r11-ping', .07], [T.tap1, 'sfx-tap', .14], [T.view, 'r11-slide', .1],
     [T.qUp, 'sfx-whoosh', .11], [T.qMk + .2, 'r11-slide', .06], [T.cUp, 'sfx-whoosh', .11], [T.cMk + .2, 'r11-slide', .06], [T.dn3, 'r11-card', .08],
     [T.gUp, 'sfx-whoosh', .11], [T.tap2, 'sfx-tap', .14], [T.tap2 + .1, 'r11-card', .08], [T.gDn, 'r11-card', .07], [T.endT, 'sfx-chime', .13], [T.endP, 'r11-sparkle', .08]];
-  if (PU) window.CUES.push([T.tap1 - BT, 'sfx-whoosh', .07], [B(10), 'sfx-whoosh', .06], [B(12), 'sfx-whoosh', .06], [B(34), 'sfx-whoosh', .06], [B(14), 'r11-swell', .1]);
+  if (PU) window.CUES.push([T.tap1 - BT, 'sfx-whoosh', .07], [B(10), 'sfx-whoosh', .06], [B(12), 'sfx-whoosh', .06], [T.s4out, 'sfx-whoosh', .06], [B(14), 'r11-swell', .1]);
   if (PU) {   // the plain reading's words, lit in reading order; and where its panel sits once Grok's post is up and open (the push's pivot)
-    const pq = lifts.grok.c.querySelector('.ppi p'); pq.innerHTML = pq.textContent.split(' ').map(w => `<span class="kw">${esc(w)}</span>`).join(' ');
-    window.__noG = 1; window.R(T.s4out - .01); const r = lifts.grok.pp.getBoundingClientRect(); window.__noG = 0;
-    const px = r.left + r.width / 2, py = r.top + r.height / 2; GLAS.push([34, { s: 1.26, x: 540 - px, y: 700 - py, r: 0, ox: px, oy: py }], [38, { s: 1.28, x: 548 - px, y: 694 - py, r: .5 }], [42, { s: 1.3, x: 532 - px, y: 700 - py, r: -.4 }]) }
-  window.MUSIC = PU ? { f: 'fl-up', at: 0 } : { f: 'i4-house', at: 0 }; window.DUR = DUR;
+    if (LIGHT) { const pq = lifts.grok.c.querySelector('.ppi p'); pq.innerHTML = pq.textContent.split(' ').map(w => `<span class="kw">${esc(w)}</span>`).join(' ') }
+    // the push: Grok's whole card, centred and as big as the frame allows with 24 px clear on every side (it used to run past the frame)
+    window.__noG = 1; window.R(T.s4out - .01); const r = lifts.grok.c.getBoundingClientRect(); window.__noG = 0;
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2, sf = Math.min(1032 / r.width, 1302 / r.height, 1.3), b0 = M3 ? 35 : 34;
+    GLAS.push([b0, { s: sf * .97, x: 540 - cx, y: 675 - cy, r: 0, ox: cx, oy: cy }], [38, { s: sf * .985, x: 546 - cx, y: 675 - cy, r: .35 }], [42, { s: sf, x: 534 - cx, y: 675 - cy, r: -.3 }]); window.__push = { sf, w: r.width, h: r.height } }
+  window.MUSIC = M3 ? { f: 'fl-m3', at: 0 } : PU ? { f: 'fl-up', at: 0 } : { f: 'i4-house', at: 0 }; window.DUR = DUR;
   window.R(0); await raf(); window.R(.5); await raf(); window.READY = 1;
 })().catch(e => { document.title = 'ERR ' + e.message; console.error(e) });
 const raf = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
@@ -317,7 +330,7 @@ window.R = t => {
   const zg = fitZ(go.h0 + go.hp, 200, 1300, 2.35), hg = (go.h0 + go.hp * op) * zg;
   const k4 = lift('grok', t, T.gUp, T.gDn, () => ({ x: 540, y: 200 + (1100 - hg) / 2, z: zg }));
   // markers on the key clauses, and the side on each post given a small pulse as it is read
-  if (PU) lifts.grok.c.querySelectorAll('.ppi p .kw').forEach((w, i) => { const a = T.tap2 + .6 + i * .3; w.style.opacity = (.42 + .58 * eo(n(t, a, a + .25))).toFixed(3) });
+  if (LIGHT) lifts.grok.c.querySelectorAll('.ppi p .kw').forEach((w, i) => { const a = T.tap2 + .6 + i * .3; w.style.opacity = (.42 + .58 * eo(n(t, a, a + .25))).toFixed(3) });
   sweep(lifts.qwen.hlc, eio(n(t, T.qMk, T.qMk + .55))); sweep(lifts.claude.hlc, eio(n(t, T.cMk, T.cMk + .7))); sweep(lifts.grok.hlc, eio(n(t, T.gMk, T.gMk + .95)));
   [['qwen', T.qMk + .7], ['claude', T.cMk + .85]].forEach(([id, a]) => { const q = n(t, a, a + .45); lifts[id].c.querySelector('.tc .sd').style.transform = `scale(${(1 + .14 * Math.sin(Math.PI * q)).toFixed(3)})` });
   if (OWN) lifts.card.c.querySelectorAll('.ch').forEach((c, i) => { const q = n(t, T.rows[i], T.rows[i] + .4); c.style.transform = `scale(${(1 + .12 * Math.sin(Math.PI * q)).toFixed(3)})`; c.style.boxShadow = q > 0 && q < 1 ? `inset 0 0 0 ${(1.2 + 1.3 * Math.sin(Math.PI * q)).toFixed(2)}px ${i % 2 ? 'rgba(255,90,110,.8)' : 'rgba(85,214,162,.8)'}` : '' });

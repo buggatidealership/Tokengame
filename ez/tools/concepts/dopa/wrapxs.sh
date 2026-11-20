@@ -15,7 +15,7 @@ curl -s -o /dev/null localhost:8993 || { setsid nohup python3 -m http.server 899
 NF=$(python3 -c "import math;print(math.floor($DUR*30+.5))"); C=${CHUNK:-300}; P=4; : > "$W/list.txt"
 for ((c0=0; c0<NF; c0+=C)); do c1=$((c0+C)); [ $c1 -gt $NF ] && c1=$NF; n=$((c1-c0)); Q=$(( (n + P - 1) / P ))
   for i in $(seq 0 $((P-1))); do a=$((c0+i*Q)); b=$((a+Q)); [ $b -gt $c1 ] && b=$c1; [ $a -lt $c1 ] && ( DUR=$DUR MB=${MB:-3} F0=$a F1=$b node "$F/render.js" "$PAGE" "$W" all | grep -v "errs none" || true ) & done; wait
-  got=$(ls "$W" | grep -c 'jpg$' || true); [ "$got" = "$((n*3))" ] || { echo "chunk $c0: $got of $((n*3)) frames"; exit 1; }
+  got=$(ls "$W" | grep -c 'jpg$' || true); [ "$got" = "$((n*${MB:-3}))" ] || { echo "chunk $c0: $got of $((n*${MB:-3})) frames"; exit 1; }
   ffmpeg -loglevel error -y -framerate $((30*${MB:-3})) -start_number $((c0*${MB:-3})) -i "$W/%05d.jpg" -vf "tmix=frames=${MB:-3},select='eq(mod(n\,${MB:-3})\,$((${MB:-3}-1)))',setpts=N/30/TB,scale=1080:1350,format=yuv420p" -r 30 \
     -c:v libx264 -preset slow -crf ${CRF:-14} -profile:v high -frames:v $n "$W/c$c0.mp4"
   rm -f "$W"/*.jpg; echo "file 'c$c0.mp4'" >> "$W/list.txt"; echo "chunk $c0-$c1 of $NF done"
