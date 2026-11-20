@@ -53,6 +53,7 @@ html,body{background:#050403}
 #blite{position:absolute;inset:0;pointer-events:none;z-index:20;
   background:radial-gradient(ellipse 34% 46% at 13.7% -8%,rgba(255,206,120,.22),transparent 70%),radial-gradient(ellipse 34% 46% at 86.2% -8%,rgba(255,206,120,.22),transparent 70%),
   linear-gradient(90deg,rgba(3,200,112,.20),transparent 7%,transparent 93%,rgba(255,58,49,.22));mix-blend-mode:screen}
+#sweep{position:absolute;top:-40px;bottom:-40px;width:340px;left:-400px;pointer-events:none;z-index:22;mix-blend-mode:screen;opacity:0;transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(255,226,160,.16) 40%,rgba(255,240,200,.30) 50%,rgba(255,226,160,.16) 60%,transparent)}
 #bshade{position:absolute;inset:0;pointer-events:none;z-index:21;box-shadow:inset 0 22px 26px -8px rgba(0,0,0,.7),inset 0 -40px 50px -20px rgba(0,0,0,.55)}
 #lead{position:absolute;pointer-events:none;z-index:19;opacity:0;mix-blend-mode:screen;background:radial-gradient(closest-side,rgba(253,188,42,.34),rgba(253,188,42,.1) 55%,rgba(253,188,42,0))}
 /* the fine print: gilt letters on the wall panel under the board */
@@ -66,7 +67,7 @@ html,body{background:#050403}
   <svg id="clk" viewBox="0 0 1536 2048"></svg>
   <svg id="rings" viewBox="0 0 1536 2048"></svg>
   <img id="bell" src="w6/oc-d/bell.webp">
-  <div id="board"><div id="lead"></div><div id="blite"></div><div id="bshade"></div></div>
+  <div id="board"><div id="lead"></div><div id="blite"></div><div id="bshade"></div><div id="sweep"></div></div>
   <div id="fine"><span>$100K ON EVERY TRADE</span><span>NOT ADVICE</span></div>
   <div id="flash"></div>
 </div></div>
@@ -180,8 +181,13 @@ const camAt = t => { const K = CAM(); let i = 1; while (i < K.length - 1 && K[i]
 window.R = t => {
   grain(t);
   // the camera, with the bell's knock
-  const [cx, cy, s] = camAt(t), kick = t > TR ? Math.exp(-(t - TR) * 8) * Math.sin((t - TR) * 55) * 7 : 0;
-  W.style.transform = `translate(${(540 - cx * s + kick).toFixed(2)}px,${(675 - cy * s + kick * .5).toFixed(2)}px) scale(${s.toFixed(4)})`;
+  // the motion pass: a slow hand-held drift and breath (lv scales it; ?lv=0 is the locked-off camera)
+  const LV = +(new URLSearchParams(location.search).get('lv') ?? 1.6), dx = LV * 9 * Math.sin(t * .55 * LV), dy = LV * 6 * Math.sin(t * .8 * LV + 1), br = LV * .008 * Math.sin(t * .45 * LV);
+  const [cx, cy, s0] = camAt(t), s = s0 * (1 + br), kick = t > TR ? Math.exp(-(t - TR) * 8) * Math.sin((t - TR) * 55) * 7 : 0;
+  W.style.transform = `translate(${(540 - cx * s + kick + dx).toFixed(2)}px,${(675 - cy * s + kick * .5 + dy).toFixed(2)}px) scale(${s.toFixed(4)})`;
+  // the lamps breathe over the board, and a light passes across the glass once a bar
+  L.$('#blite').style.opacity = (.82 + .18 * Math.sin(t * 2.1) * Math.sin(t * .7 + .4)).toFixed(3);
+  { const sq = t < T_NAMES ? -1 : ((t - T_NAMES) % BAR) / .95, sw = L.$('#sweep'); sw.style.left = (-400 + 1700 * L.eio(Math.max(0, Math.min(1, sq)))).toFixed(1) + 'px'; sw.style.opacity = sq >= 0 && sq <= 1 ? (LV > 0 ? .9 : 0) : 0 }
   // the plate: the title engraved in behind a glint; at the sort, the board's name
   // (the old line is polished off left to right, then the new one engraved in behind the same glint)
   const p0 = L.eo(L.n(t, T_TITLE, T_TITLE + .7)), q0 = L.eio(L.n(t, T_SORT, T_SORT + .35)), p1 = L.eo(L.n(t, T_SORT + .35, T_SORT + 1));
