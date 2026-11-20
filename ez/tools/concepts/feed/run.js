@@ -75,7 +75,7 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
   groups('main .f3').forEach((g,i)=>set('F3 posts'+i,g,[['mark','.f3h .ai','l'],['name','.fnm','l'],['side','.f3sd','r'],['reason','.f3q','l'],['logo','.f3c .fco','l'],['company','.f3c .fcn','l'],['card side','.f3cs','r'],['receipt','.frc','r']]));
   groups('main .f4r').forEach((g,i)=>set('F4 rows'+i,g,[['mark','.ai','l'],['name','.fnm','l'],['logo','.f4co .fco','l'],['side','.f4sd','l'],['confidence','.fcf','l'],['line','.f4k','l'],['caret','.f4cv','r']]));
   // 5 the numbers and words as printed, per trade
-  document.querySelectorAll('main [data-call]').forEach(e=>{const q=s=>{const x=e.querySelector(s);return x&&vis(x)?x.textContent.replace(/\s+/g,' ').trim():null};
+  document.querySelectorAll('main [data-call]').forEach(e=>{const q=s=>{const x=[...e.querySelectorAll(s)].find(y=>vis(y));return x?x.textContent.replace(/\s+/g,' ').trim():null};
     res.nums.push({id:e.getAttribute('data-call'),side:q('.fsd'),conf:q('.fcf'),pnl:q('.frc'),quote:q('.fq'),plain:q('.fpl p')})});
   return res}
 

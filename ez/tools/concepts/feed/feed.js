@@ -32,42 +32,45 @@ function fhead(){return '<section class="pn fdh"><div class="kick"><small>FEED</
   (FG?'<p class="fpv"><em class="fpt">PREVIEW</em> Moves from pre-market prices at 7:26 AM ET Nov 20, not the close</p>':'')+'</section>'}
 
 /* F1 the room: one chat per company, each AI says its reason; longs sit left, shorts right, so the split is the layout */
-function f1room(c,only){var L=fby(c.ticker).filter(function(x){return !only||only.indexOf(x.k)>-1}),nL=L.filter(function(x){return x.side==="LONG"}).length;
+function f1room(c,only){var A=fby(c.ticker),L=A.filter(function(x){return !only||only.indexOf(x.k)>-1}),nL=A.filter(function(x){return x.side==="LONG"}).length;
   var ms=L.map(function(x){var s=x.side==="LONG"?"L":"S";
     return '<div class="f1m '+s+'"'+fdata(x)+'>'+aiIcon(x.k,34)+'<div class="f1b"><div class="f1w"><b class="fnm">'+APP[x.k]+'</b>'+fside(x)+'</div>'+
       '<p class="fq">'+fq(x)+'</p><div class="f1f">'+fconf(x)+frc(x)+'</div></div></div>'+
       (x.plain?'<div class="f1m E '+s+'"><span class="f1ez">EZ</span><div class="f1b">'+fplain(x,"f1p")+'</div></div>':'')}).join("");
   return '<section class="pn f1"><header class="f1h">'+fco(c,34)+'<div>'+fcoN(c)+'<small>Nov 19 · trade '+c.n+'</small></div>'+fmove(c)+'</header>'+
-    '<div class="f1s"><span class="L">LONG '+nL+'</span><span class="S">'+(L.length-nL)+' SHORT</span></div><div class="f1ms">'+ms+'</div></section>'}
+    '<div class="f1s"><span class="L">LONG '+nL+'</span><span class="S">'+(A.length-nL)+' SHORT</span></div><div class="f1ms">'+ms+'</div></section>'}
 function F1(){return '<div class="f1g">'+FCO.map(function(c){return f1room(c)}).join("")+'</div>'}
 
+/* the split: who is LONG and who is SHORT, as a bar of marks (F2's card head and F3's rail use the same component) */
+function fsplit(L,px){var lo=L.filter(function(x){return x.side==="LONG"}),sh=L.filter(function(x){return x.side==="SHORT"}),ic=function(x){return aiIcon(x.k,px||20)};
+  return '<div class="fsp"><div class="L" style="flex:'+lo.length+' 1 auto"><b>LONG</b>'+lo.map(ic).join("")+'</div><div class="S" style="flex:'+sh.length+' 1 auto">'+sh.map(ic).join("")+'<b>SHORT</b></div></div>'}
+
 /* F2 one card per company: the split as a bar of marks, then the five AIs (longs first, most confident first) */
-function F2(){return FCO.map(function(c){var L=fby(c.ticker).slice().sort(function(a,b){return (a.side===b.side?0:a.side==="LONG"?-1:1)||(b.conf-a.conf)}),
-    lo=L.filter(function(x){return x.side==="LONG"}),sh=L.filter(function(x){return x.side==="SHORT"});
-  var bar='<div class="f2s"><div class="L" style="flex:'+lo.length+'"><b>LONG</b>'+lo.map(function(x){return aiIcon(x.k,20)}).join("")+'</div><div class="S" style="flex:'+sh.length+'">'+sh.map(function(x){return aiIcon(x.k,20)}).join("")+'<b>SHORT</b></div></div>';
+function F2(){return FCO.map(function(c){var L=fby(c.ticker).slice().sort(function(a,b){return (a.side===b.side?0:a.side==="LONG"?-1:1)||(b.conf-a.conf)});
   var rows=L.map(function(x){return '<article class="f2r"'+fdata(x)+'><div class="f2t">'+aiIcon(x.k,28)+'<b class="fnm">'+APP[x.k]+'</b>'+fside(x)+'</div>'+
-    '<div class="f2c"><span class="f2m"><i style="width:'+x.conf+'%"></i></span>'+fconf(x)+'</div><p class="fq">'+fq(x)+'</p>'+fplain(x)+(FG?'<div class="f2g">'+frc(x)+'</div>':'')+'</article>'}).join("");
-  return '<section class="pn f2"><header class="f2h">'+fco(c,44)+'<div class="f2n">'+fcoN(c)+'<small>Nov 19 · trade '+c.n+(FG?'':' · grades at the Nov 20 close')+'</small></div>'+(FG?'<div class="f2v">'+fmove(c)+'</div>':'')+'</header>'+bar+'<div class="f2rs">'+rows+'</div></section>'}).join("")}
+    '<div class="f2c"><span class="f2m"><i style="width:'+x.conf+'%"></i></span>'+fconf(x)+'</div><p class="fq">'+fq(x)+'</p>'+fplain(x,"f2pi")+(FG?'<div class="f2g">'+frc(x)+'</div>':'')+'</article>'}).join("");
+  /* on desktop our plain words leave the column and run under the five, so one long gloss does not stretch every column */
+  var pw=L.filter(function(x){return x.plain}).map(function(x){return fplain(x,"f2pw")}).join("");
+  return '<section class="pn f2"><header class="f2h">'+fco(c,44)+'<div class="f2n">'+fcoN(c)+'<small>Nov 19 · trade '+c.n+'</small></div>'+(FG?'<div class="f2v">'+fmove(c)+'</div>':'')+'</header>'+fsplit(L)+'<div class="f2rs">'+rows+'</div>'+(pw?'<div class="f2pd">'+pw+'</div>':'')+'</section>'}).join("")}
 
 /* F3 posts: each trade a post by its AI, the reason as the post, the trade attached like a link card; the receipt lands on it */
 function f3post(x){var c=FCO.filter(function(o){return o.ticker===x.t})[0];
-  return '<article class="pn f3"'+fdata(x)+'><header class="f3h">'+aiIcon(x.k,40)+'<div><b class="fnm">'+APP[x.k]+'</b><small>'+flag(FLAG[x.k])+' '+LAB[x.k]+' · Nov 19</small></div>'+fside(x,"f3sd")+'</header>'+
+  return '<article class="pn f3"'+fdata(x)+'><header class="f3h">'+aiIcon(x.k,40)+'<div><b class="fnm">'+APP[x.k]+'</b><small>'+flag(FLAG[x.k])+' '+LAB[x.k]+' · Nov 19</small></div></header>'+
     '<p class="fq f3q">'+fq(x)+'</p>'+fplain(x,"f3p")+
     '<div class="f3c">'+fco(c,36)+'<div class="f3n">'+fcoN(c)+'<small>'+fconf(x)+'</small></div>'+fside(x,"f3cs")+'</div>'+
     (FG?'<div class="f3r">'+fmove(c)+frc(x)+'</div>':'')+'</article>'}
-function F3(){var rail='<aside class="pn f3a"><div class="kick"><small>WHO IS ON WHICH SIDE</small></div>'+FCO.map(function(c){var L=fby(c.ticker);
-    return '<div class="f3ar">'+fco(c,26)+fcoN(c)+'<span class="L">'+L.filter(function(x){return x.side==="LONG"}).map(function(x){return aiIcon(x.k,20)}).join("")+'</span><span class="S">'+L.filter(function(x){return x.side==="SHORT"}).map(function(x){return aiIcon(x.k,20)}).join("")+'</span></div>'}).join("")+
-    '<div class="f3al"><span class="L">LONG</span><span class="S">SHORT</span></div></aside>';
+function F3(){var rail='<aside class="pn f3a"><div class="kick"><small>WHO IS ON WHICH SIDE</small></div>'+FCO.map(function(c){
+    return '<div class="f3ar"><div class="f3at">'+fco(c,26)+fcoN(c)+'<span class="f3am">'+fmove(c)+'</span></div>'+fsplit(fby(c.ticker))+'</div>'}).join("")+'</aside>';
   return '<div class="f3g"><div class="f3col">'+FIT.map(f3post).join("")+'</div>'+rail+'</div>'}
 
 /* F4 the tape: one row per trade, the key clause as its line; a row opens to the whole reason (and our plain words) */
-function F4(){var hd='<div class="f4hd"><span>AI</span><span>COMPANY</span><span>SIDE</span><span>CONFIDENCE</span><span>THE KEY LINE</span></div>';
-  return '<section class="pn f4">'+hd+FIT.map(function(x){var c=FCO.filter(function(o){return o.ticker===x.t})[0],op=FOPEN.indexOf(x.k+'-'+x.t)>-1;
+function F4(){var hd='<div class="f4hd"><span></span><span>AI</span><span>COMPANY</span><span>SIDE</span><span>CONFIDENCE</span><span>THE KEY LINE</span>'+(FG?'<span>P&amp;L <em class="fpt">PREVIEW</em></span>':'')+'<span></span></div>';
+  return '<section class="pn f4'+(FG?' fg':'')+'">'+hd+FIT.map(function(x){var c=FCO.filter(function(o){return o.ticker===x.t})[0],op=FOPEN.indexOf(x.k+'-'+x.t)>-1;
     return '<div class="f4r'+(op?" op":"")+'"'+fdata(x)+'><button class="f4h" aria-expanded="'+op+'">'+aiIcon(x.k,26)+'<b class="fnm">'+APP[x.k]+'</b>'+
       '<span class="f4co">'+fco(c,20)+fcoN(c)+'</span>'+fside(x,"f4sd")+'<span class="f4cf">'+fconf(x)+'</span>'+
-      '<p class="fq f4k">'+fq(x,true)+'</p>'+(FG?'<span class="f4pl">'+frc(x)+'</span>':'')+
+      '<p class="fq f4k">'+fq(x,!op)+'</p>'+(FG?'<span class="f4pl">'+frc(x)+'</span>':'')+
       '<svg class="car f4cv" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'+
-      '<div class="f4x"><small>THE WHOLE REASON</small><p class="fq">'+fq(x)+'</p>'+fplain(x)+'</div></div>'}).join("")+'</section>'}
+      (x.plain?'<div class="f4x">'+fplain(x)+'</div>':'')+'</div>'}).join("")+'</section>'}
 
 function feedHTML(){if(FT==="T1"){var x=FIT.filter(function(i){return i.k==="CLAUDE"&&i.t==="INTU"})[0];return '<div class="fts">'+f3post(x)+'</div>'}
   if(FT==="T2")return '<div class="fts">'+f1room(FCO.filter(function(c){return c.ticker==="INTU"})[0],["QWEN","GROK"])+'</div>';
