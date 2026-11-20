@@ -96,6 +96,7 @@
 #hl .w{display:inline-block;overflow:hidden;vertical-align:top;padding:.04em .04em .16em;margin:-.04em -.04em -.16em}.w>i{display:inline-block;font-style:normal}
 #hl .g,#end .g{color:#03c870}#hl .r,#end .r{color:#ff3a31}#hl .y,#end .y{color:var(--ac)}
 #end{position:absolute;left:0;right:0;top:70px;text-align:center;opacity:0}
+#end .w{display:inline-block;overflow:hidden;vertical-align:top;padding:.04em .04em .16em;margin:-.04em -.04em -.16em}   /* the end words rise out of a mask, as the lines do */
 #end img{width:150px;height:150px;display:block;margin:0 auto}
 #end h3{margin-top:30px;font:900 118px/1 Inter;letter-spacing:-.05em}
 #end p{margin-top:30px;font:800 50px/1 'Geist Mono';letter-spacing:.14em;color:var(--ac)}
@@ -176,7 +177,7 @@ if (PU) Object.assign(T, {   // pace=up: the same beats on fl-up's grid (122 BPM
 const ARRIVE = PU ? [10, 11, 12, 13, 13].map(B) : [0, 1, 2, 3, 4].map(i => T.view + .45 + i * .17);   // the feed's posts arrive one by one after the tap
 // pace=up: the camera. CAM dollies the phone (layout zoom about a pivot, so the screen stays crisp); GLAS moves the lifted glass (its zoom too).
 // Each key: [beat, {s scale, x, y shift of the pivot, r roll deg, ox, oy pivot in the frame}]; a move starts on its beat and lands in .75 s.
-const CAM = [[0, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }], [8, { s: 1.5, x: 0, y: -330, r: 0, ox: 540, oy: 1250 }], [10, { s: 1.3, x: 0, y: 60, r: 0, ox: 540, oy: 560 }],
+const CAM = [[0, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }], [8, { s: 1.5, x: 0, y: -260, r: 0, ox: 540, oy: 1250 }], [10, { s: 1.3, x: 0, y: 60, r: 0, ox: 540, oy: 560 }],
   [12, { s: 1.5, x: 0, y: 20, r: -1.2, ox: 540, oy: 640 }], [14, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }], [25, { s: 1.15, x: 0, y: 0, r: 1, ox: 540, oy: 700 }], [26, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 800 }]];
 let GLAS = [[1, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 1290 }], [4, { s: 1.035, x: -18, y: 0, r: -.5 }], [6, { s: 1.02, x: 16, y: -4, r: .4 }], [8, { s: 1, x: 0, y: 0, r: 0 }],
   [14, { s: 1, x: 0, y: 0, r: 0, ox: 540, oy: 700 }], [16, { s: 1.05, y: -10, r: .4 }], [17, { s: 1, y: 0, r: 0, ox: 540, oy: 675 }], [20, { s: 1.05, y: 70, r: -.3 }], [22, { s: 1.05, y: -70, r: .3 }], [24, { s: 1, y: 0, r: 0 }],
@@ -224,7 +225,7 @@ const trk = (K, t) => { const s = Object.assign({}, K[0][1]); for (let i = 1; i 
   if (PU) {   // the plain reading's words, lit in reading order; and where its panel sits once Grok's post is up and open (the push's pivot)
     const pq = lifts.grok.c.querySelector('.ppi p'); pq.innerHTML = pq.textContent.split(' ').map(w => `<span class="kw">${esc(w)}</span>`).join(' ');
     window.__noG = 1; window.R(T.s4out - .01); const r = lifts.grok.pp.getBoundingClientRect(); window.__noG = 0;
-    const px = r.left + r.width / 2, py = r.top + r.height / 2; GLAS.push([34, { s: 1.3, x: 540 - px, y: 700 - py, r: 0, ox: px, oy: py }], [38, { s: 1.33, x: 550 - px, y: 694 - py, r: .5 }], [42, { s: 1.36, x: 530 - px, y: 700 - py, r: -.4 }]) }
+    const px = r.left + r.width / 2, py = r.top + r.height / 2; GLAS.push([34, { s: 1.26, x: 540 - px, y: 700 - py, r: 0, ox: px, oy: py }], [38, { s: 1.28, x: 548 - px, y: 694 - py, r: .5 }], [42, { s: 1.3, x: 532 - px, y: 700 - py, r: -.4 }]) }
   window.MUSIC = PU ? { f: 'fl-up', at: 0 } : { f: 'i4-house', at: 0 }; window.DUR = DUR;
   window.R(0); await raf(); window.R(.5); await raf(); window.READY = 1;
 })().catch(e => { document.title = 'ERR ' + e.message; console.error(e) });
