@@ -193,7 +193,11 @@ window.R = t => {
   // the side light: the ground glows in the speaker's side colour (green long, red short), breathing on the beat
   const g = L.$('#glow'); if (inC) { const sd = sp[cur].side === 'LONG', ph = k % 1, br = .55 + .45 * Math.exp(-4 * ph);
     g.style.background = sd ? 'radial-gradient(80% 38% at 50% 100%,rgba(85,214,162,.38),transparent 70%)' : 'radial-gradient(80% 38% at 50% 100%,rgba(232,87,107,.42),transparent 70%)';
-    g.style.opacity = (br * L.n(k, T.c0, T.c0 + 1)).toFixed(3) } else g.style.opacity = 0;
+    g.style.opacity = (br * L.n(k, T.c0, T.c0 + 1)).toFixed(3) }
+  else if (k < T.dock + 2) { const ph = k % 1;   // the opener: the brand's green and red light breathing on the bed's beat under the line
+    g.style.background = 'radial-gradient(80% 34% at 50% 100%,rgba(232,87,107,.34),transparent 70%),radial-gradient(80% 28% at 50% 0%,rgba(85,214,162,.3),transparent 70%)';
+    g.style.opacity = ((.5 + .5 * Math.exp(-4 * ph)) * (1 - L.n(k, T.dock, T.dock + 2))).toFixed(3) }
+  else g.style.opacity = 0;
   const sheen = (el, k0, ev, du) => { const q = k < k0 ? 2 : ((k - k0) % ev) / du; el.style.setProperty('--so', q > 1 ? 0 : Math.pow(Math.sin(Math.PI * q), .5).toFixed(3)); el.style.setProperty('--sx', (100 - 100 * Math.min(1, q)).toFixed(1) + '%') };
   cards.forEach((c, i) => sheen(c, T.starts[i] + 2, 3, 2.5));
   sheen(board, k < T.c0 ? T.rows[4] + 1 : k >= T.end ? T.end + 1.5 : 1e9, 3, 2.5);
