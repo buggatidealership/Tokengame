@@ -26,6 +26,8 @@
 .mc{position:absolute;left:0;top:0;padding:10px 11px 11px;border-radius:15px;background:rgba(14,19,17,.97);box-shadow:inset 0 0 0 1.4px var(--ln)}
 .mc .h{display:flex;align-items:center;gap:7px}.mc .h b{font:700 14px/1 Inter}.mc .h .sd{margin-left:auto;font:700 12px/1 'Geist Mono';white-space:nowrap}.mc .h .sd span{font-size:11px}
 .mc p{margin-top:8px;font:500 12.5px/1.36 Inter;color:#d9d3ca}
+.mc .gr{display:flex;justify-content:space-between;margin-top:7px;font:700 11.5px/1 'Geist Mono';letter-spacing:.04em;opacity:0}.mc .gr i{font-style:normal}
+.clo{display:flex;align-items:center;gap:8px;height:0;overflow:hidden;font:700 12px/1 'Geist Mono';letter-spacing:.1em;color:var(--ac)}.clo b{margin-left:auto;font-size:14px;color:var(--dn)}
 .mc.Lm{box-shadow:inset 0 0 0 1.4px rgba(85,214,162,.35)}.mc.Sm{box-shadow:inset 0 0 0 1.4px rgba(255,90,110,.35)}
 /* the diptych: LONG and SHORT, the five slam cards, the count bar */
 #lab b{position:absolute;top:118px;font-size:168px;line-height:1;text-shadow:0 10px 50px rgba(0,0,0,.55);z-index:20}
@@ -42,6 +44,7 @@
 .cnt .bar{position:absolute;left:0;right:0;top:64px;height:18px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
 .cnt .bar i{position:absolute;top:0;bottom:0;border-radius:9px}.cnt .bar .bl{left:0;background:var(--g);box-shadow:0 0 18px rgba(3,200,112,.7)}.cnt .bar .bs{right:0;background:var(--r);box-shadow:0 0 18px rgba(255,58,49,.7)}
 .cnt b{position:absolute;top:0;font-size:56px;line-height:1}.cnt .nL{left:0;color:var(--g)}.cnt .nS{right:0;color:var(--r)}
+.cnt .ezm{position:absolute;left:50%;top:22px;width:104px;height:104px;margin-left:-52px;z-index:2;filter:drop-shadow(0 8px 24px rgba(0,0,0,.6)) drop-shadow(0 0 18px rgba(253,188,42,.35))}
 .cnt span{position:absolute;top:18px;font:700 26px/1 'Geist Mono';letter-spacing:.14em;color:#c9c2b5}.cnt .tL{left:52px}.cnt .tS{right:52px}
 /* the clash: the two reasons meet at the seam, Intuit on the seam above them */
 #co{position:absolute;left:540px;top:360px;transform:translateX(-50%);display:flex;align-items:center;gap:16px;padding:14px 26px 14px 16px;border-radius:22px;z-index:24;opacity:0;
@@ -62,7 +65,7 @@
 <div id="shk"><div id="cam"><div id="gnd"><div id="gfl"></div></div><div id="seam"></div>
   <div id="ph"></div>
   <div id="dip"><div id="lab"><b class="lL">LONG</b><b class="lS">SHORT</b></div><div id="cards"></div>
-    <div class="cnt"><b class="nL">0</b><span class="tL">LONG</span><b class="nS">0</b><span class="tS">SHORT</span><div class="bar"><i class="bl"></i><i class="bs"></i></div></div></div>
+    <div class="cnt"><img class="ezm" src="ezlogo.svg" alt=""><b class="nL">0</b><span class="tL">LONG</span><b class="nS">0</b><span class="tS">SHORT</span><div class="bar"><i class="bl"></i><i class="bs"></i></div></div></div>
   <div id="clash"><div id="co"></div><div class="cl" id="cq"></div><div class="cl" id="cc"></div></div>
   <div id="fls"></div>
 </div></div>
@@ -75,10 +78,10 @@
 <script src="w6/nt/fva/fv.js"></script>
 <script>
 const Q = new URLSearchParams(location.search), B = FV.B, n = FV.n, cl = FV.cl, lerp = FV.lerp, eo = FV.eo, eio = FV.eio, spr = FV.spr, $ = FV.$, $$ = FV.$$;
-const S1 = Q.get('s1') || 'Same report', S2 = Q.get('s2') || 'Opposite reasons', NAME = Q.get('name') || 'Both sides', DUR = 17.7;
+const S1 = Q.get('s1') || 'Same report', S2 = Q.get('s2') || 'Opposite reasons', NAME = Q.get('name') || 'Both sides', DUR = 18.2;
 const LS = ['QWEN', 'GEMINI', 'GPT'], SS = ['CLAUDE', 'GROK'];   // Intuit: LONG Qwen, Gemini, GPT; SHORT Claude, Grok (calls.csv)
 // ---- the beats (m3-electro as it is: the kick drops in at B(16), the clash) ----
-const T = { tap: B(3), split: B(3.5), dip: B(6), slams: [8, 9, 10, 11, 12].map(B), hold: B(13), clash: B(16), m1: B(19), m2: B(21.5), app: B(24), end: B(28) };
+const T = { tap: B(3), split: B(3.5), dip: B(6), slams: [8, 9, 10, 11, 12].map(B), hold: B(13), clash: B(16), m1: B(19), m2: B(21.5), app: B(24), grade: B(25), end: B(29) };
 const SLOT = { QWEN: [56, 336], GEMINI: [56, 568], GPT: [56, 800], CLAUDE: [580, 336], GROK: [580, 568] };   // the diptych's card places
 let grain, P = {};
 (async () => {
@@ -87,9 +90,9 @@ let grain, P = {};
     FV.line($('#l1'), S1); FV.line($('#l2'), S2);
     const D = FV.D, co = D.cos.INTU, F = FV.F;
     // the app: Intuit's five posts, first as a list, then parted into a LONG and a SHORT column
-    const mini = k => { const x = F(k); return `<div class="mc ${x.side[0]}m" data-k="${k}"><div class="h">${FV.mark(k, 26)}<b>${x.name}</b><span class="sd ${x.side[0]}">${FV.sideTxt(x)}</span></div><p>${FV.esc(x.hl)}</p></div>` };
+    const mini = k => { const x = F(k); return `<div class="mc ${x.side[0]}m" data-k="${k}"><div class="h">${FV.mark(k, 26)}<b>${x.name}</b><span class="sd ${x.side[0]}">${FV.sideTxt(x)}</span></div><p>${FV.esc(x.hl)}</p><div class="gr"><i class="${x.side === 'SHORT' ? 'L' : 'S'}">${x.side === 'SHORT' ? 'RIGHT' : 'WRONG'}</i><i class="${x.side === 'SHORT' ? 'L' : 'S'}">P&amp;L ${x.side === 'SHORT' ? '+' : '−'}$12,790</i></div></div>` };
     $('#ph').innerHTML = FV.phone(`<div class="vw" id="v1"><div class="vtop"><img src="${co.logo}" alt=""><b>${co.co}</b><span>INTU</span><small>NOV 19</small></div>
-      <div class="seg"><i></i><div>ALL</div><div>SPLIT</div></div><div id="mcs" style="position:relative;height:560px"><div class="colh L">LONG 3</div><div class="colh S">2 SHORT</div>${['QWEN', 'CLAUDE', 'GEMINI', 'GROK', 'GPT'].map(mini).join('')}</div></div>`);
+      <div class="seg"><i></i><div>ALL</div><div>SPLIT</div></div><div class="clo">CLOSED NOV 20<b>INTU −12.79%</b></div><div id="mcs" style="position:relative;height:560px"><div class="colh L">LONG 3</div><div class="colh S">2 SHORT</div>${['QWEN', 'CLAUDE', 'GEMINI', 'GROK', 'GPT'].map(mini).join('')}</div></div>`);
     $('.phw').style.zoom = 1.13;
     // the diptych cards
     $('#cards').innerHTML = LS.concat(SS).map(k => { const x = F(k); return `<div class="sc ${x.side[0]}c" data-k="${k}" style="left:${SLOT[k][0]}px;top:${SLOT[k][1]}px"><div class="h">${FV.mark(k, 56)}<div><b>${x.name}</b><small>${x.conf}% confident</small></div><span class="sd ${x.side[0]}">${FV.sideTxt(x)}</span></div><p>${FV.esc(x.hl)}</p></div>` }).join('');
@@ -107,7 +110,7 @@ let grain, P = {};
   P = { L0, S0 }; $('#mcs .colh.L').style.left = '2px'; $('#mcs .colh.S').style.right = '2px';
   grain = L.grain($('#grain'), .055);
   FV.navOn($('#ph'), 'FEED');
-  window.CUES = [[.05, 'r11-swell', .1], [T.tap, 'sfx-tap', .14], [T.split, 'r11-slide', .09], [T.dip - .05, 'sfx-whoosh', .11], [T.dip, 'r11-thump', .1],
+  window.CUES = [FV.STING, [.05, 'r11-swell', .1], [T.grade, 'r11-pluck', .08], [T.tap, 'sfx-tap', .14], [T.split, 'r11-slide', .09], [T.dip - .05, 'sfx-whoosh', .11], [T.dip, 'r11-thump', .1],
     ...T.slams.map(t => [t, 'r11-card', .1]), ...T.slams.map(t => [t, 'r11-thump', .06]), [T.clash, 'sfx-boom', .14], [T.clash, 'sfx-strike', .08],
     [T.m1, 'sfx-whoosh', .05], [T.app, 'sfx-whoosh', .09], [T.end, 'sfx-chime', .12], [T.end + FV.BT, 'r11-sparkle', .07]];
   window.MUSIC = { f: 'm3-electro', at: 0 }; window.DUR = DUR;
@@ -127,10 +130,10 @@ window.R = t => {
   const [sx, sy] = shake(t, [T.dip, ...T.slams, T.clash], 9); const [cx2, cy2] = shake(t, [T.clash], 14);
   $('#shk').style.transform = `translate(${(sx + cx2).toFixed(1)}px,${(sy + cy2).toFixed(1)}px)`;
   // ---- the app (B0 to B6, and B24 to the end) ----
-  const ph = $('.phw'), enter = spr(n(t, 0, 1.1)), back = spr(n(t, T.app, T.app + .9)), out = eio(n(t, T.end, T.end + 1.2));
+  const ph = $('.phw'), enter = spr(n(t, 0, 1.1)) * .96 + .04, back = spr(n(t, T.app, T.app + .9)), out = eio(n(t, T.end, T.end + 1.2));
   const vis = t < T.dip || t >= T.app; ph.style.display = vis ? 'block' : 'none';
   if (vis) { const a = t < T.dip; const z = a ? 1.13 + .12 * spr(n(t, B(2), B(2) + .8)) + .1 * spr(n(t, T.split, T.split + .8)) : lerp(1.6, 1.13, back) - .25 * out;
-    const yy = a ? 330 + 900 * (1 - enter) - 90 * spr(n(t, T.split, T.split + .8)) : lerp(160, 330, back) + 260 * out;
+    const yy = a ? 330 + 60 * (1 - enter) - 90 * spr(n(t, T.split, T.split + .8)) : lerp(160, 330, back) + 260 * out;
     ph.style.zoom = z.toFixed(4); ph.style.left = ((540 - 195 * z) / z).toFixed(2) + 'px'; ph.style.top = (yy / z).toFixed(2) + 'px';
     ph.style.transform = `rotate(${(a ? .6 * Math.sin(t * .8) : -.5 * Math.sin(t * .7)).toFixed(3)}deg)`; ph.style.opacity = (1 - .85 * out).toFixed(3) }
   // the both-sides view: the segment slides to SPLIT, the posts part into their columns
@@ -139,6 +142,9 @@ window.R = t => {
   $$('#mcs .mc').forEach((m, i) => { const k = m.dataset.k, a = P.L0[k], b = P.S0[k], e = spr(n(t, T.split + i * .05, T.split + .75 + i * .05));
     m.style.width = lerp(a[2], b[2], e).toFixed(1) + 'px'; m.style.transform = `translate(${lerp(a[0], b[0], e).toFixed(1)}px,${lerp(a[1], b[1], e).toFixed(1)}px)` });
   $$('#mcs .colh').forEach(h => h.style.opacity = eo(n(t, T.split + .2, T.split + .6)).toFixed(3));
+  // after the close (the second phone shot): the view is graded, RIGHT and WRONG as large as each other, each P&L
+  const gk = eo(n(t, T.grade, T.grade + .5)); $('.clo').style.height = (26 * gk).toFixed(1) + 'px'; $('.clo').style.marginBottom = (10 * gk).toFixed(1) + 'px';
+  $$('#mcs .mc .gr').forEach(g => g.style.opacity = gk.toFixed(3)); $$('#mcs .mc.Lm').forEach(m => m.style.opacity = (1 - .25 * gk).toFixed(3));
   FV.touch(0, 0, 0, 0, 0); FV.tap(t, T.tap, $$('.seg div')[1]);
   // ---- the diptych (B6 to B24): LONG and SHORT slam in, then the five cards, then the count ----
   const dip = t >= T.dip && t < T.app; $('#dip').style.display = dip ? 'block' : 'none';
@@ -166,7 +172,7 @@ window.R = t => {
     $('#clash').style.transform = `translateY(${C.y.toFixed(1)}px) scale(${C.s.toFixed(4)}) rotate(${C.r.toFixed(3)}deg)`; $('#clash').style.transformOrigin = '540px 760px' }
   $('#fls').style.opacity = (t >= T.clash ? Math.exp(-(t - T.clash) * 6) * .9 + .12 * bp * (cv ? 1 : 0) : 0).toFixed(3);
   // our two lines
-  FV.lineR($('#l1'), t, .1, T.dip - .3); FV.lineR($('#l2'), t, B(16.5), T.app - .35);
+  FV.lineR($('#l1'), t, -.65, T.dip - .3); FV.lineR($('#l2'), t, B(16.5), T.app - .35);
   FV.endR(t, T.end);
 };
 </script>

@@ -1,8 +1,9 @@
 // nt-ov.js: shared pieces of the outcome-film desk's five takes (night studio, 2026-11-20): nt-ov1.html to nt-ov5.html.
 // Every take reads data/close-<date>.json (prep-close.js) through OV.load(), so a script fills it for any close of 1 to 10 companies:
 // nt-ov<n>.html?d=<YYYY-MM-DD>. Needs lib.js first (L.* easing, L.grain).
-// The house bug (night BRIEF): the EZ. logo 64 px tall, "Earnings Zeason" beside it in the take's own face, 44 px from the top and left
-// edges of the 1080 x 1350 frame, on top of everything from the first frame to the end card. The end card: the logo held >= 1.5 s.
+// The house bug (research B4 and B8, 23:25 update): exactly s2d.html's .bug, the EZ. logo 64 px and EARNINGS ZEASON in Kanit italic 800
+// 31 px, left 54 top 50, the same in every film (a signature: the branding that counts is the mark inside each shot's main object, B1 and
+// B3, which every take places itself). The end card: the logo and the same logotype, held >= 1.5 s.
 // Colours: only the brand palette (logo black, cream, green, red, gold) and each company's own logo colours.
 const OV = {};
 OV.Q = new URLSearchParams(location.search);
@@ -43,17 +44,17 @@ OV.mark = (k, s, extra = '') => { const m = OV.MOD[k];
 // a model's mark alone (no tile), in one colour: for print and engraving
 OV.glyph = (k, s, col) => { const m = OV.MOD[k];
   return `<svg class="gl" width="${s}" height="${s}" viewBox="0 0 24 24" style="display:block;flex:none"><path d="${m.d}" fill="${col}"${m.fr ? ' fill-rule="evenodd"' : ''}/></svg>` };
-OV.wm = (cls = '') => `<span class="ovwm ${cls}"><i class="e">E</i>arnings <i class="z">Z</i>eason</span>`;
-// the house bug: call once with the take's face (font shorthand without size), e.g. OV.bug("800 30px Inter")
+OV.wm = (cls = '') => `<span class="ovwm ${cls}">EARNINGS ZEASON</span>`;
+{ const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&display=swap'; document.head.appendChild(l); OV.kanit = new Promise(r => { l.onload = r; l.onerror = r }) }
+// the house bug and the end card (the take's own face only for the end card's small line)
 OV.bug = (font, opts = {}) => {
   const st = document.createElement('style'); st.textContent = `
-#ovbug{position:absolute;left:44px;top:44px;height:64px;display:flex;align-items:center;gap:16px;z-index:900;pointer-events:none;white-space:nowrap}
+#ovbug{position:absolute;left:54px;top:50px;height:64px;display:flex;align-items:center;gap:16px;z-index:900;pointer-events:none;white-space:nowrap}
 #ovbug img{width:64px;height:64px;display:block;filter:drop-shadow(0 4px 14px rgba(0,0,0,.55))}
-#ovbug .ovwm{font:${font};color:${opts.color || OV.CR};text-shadow:0 2px 12px rgba(0,0,0,.65);${opts.css || ''}}
-.ovwm i{font-style:normal}.ovwm .e{color:${OV.G}}.ovwm .z{color:${OV.R}}
+#ovbug .ovwm{font:italic 800 31px/1 Kanit,sans-serif;letter-spacing:.01em;color:${OV.CR};text-shadow:0 2px 12px rgba(0,0,0,.65)}
 #ovend{position:absolute;inset:0;z-index:950;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;opacity:0;pointer-events:none}
 #ovend img{width:360px;height:360px;display:block}
-#ovend .ovwm{font:${opts.endFont || font};font-size:${opts.endSize || 64}px;color:${OV.CR}}
+#ovend .ovwm{font:italic 800 64px/1 Kanit,sans-serif;letter-spacing:.01em;color:${OV.CR}}
 #ovend .sub{font:${opts.subFont || font};font-size:30px;letter-spacing:.2em;color:${OV.AU};margin-top:-14px}`;
   document.head.appendChild(st);
   document.body.insertAdjacentHTML('beforeend', `<div id="ovbug"><img src="ezlogo.svg" alt="">${OV.wm()}</div>
@@ -68,7 +69,12 @@ OV.endR = (t, t0) => { const e = L.$('#ovend'), k = L.n(t, t0, t0 + .35), s = L.
 // the grain over everything (above the scene, below the bug)
 OV.grain = (alpha = .06) => { const cv = document.createElement('canvas'); cv.id = 'ovgrain'; cv.style.cssText = 'position:absolute;inset:0;width:1080px;height:1350px;mix-blend-mode:overlay;pointer-events:none;z-index:800';
   document.body.appendChild(cv); return L.grain(cv, alpha) };
-OV.ready = async (fontsList = []) => { for (const f of fontsList) await document.fonts.load(f); await document.fonts.ready;
+OV.ready = async (fontsList = []) => { await OV.kanit; await document.fonts.load('italic 800 31px Kanit'); for (const f of fontsList) await document.fonts.load(f); await document.fonts.ready;
   await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0))); window.READY = 1 };
 // beat grid of a bed: B(n) = drop + n x beat, with MUSIC.at chosen so the bed's measured drop lands on the film's drop
 OV.grid = (bpm, dropFilm, dropFile, bed) => { const p = 60 / bpm; window.MUSIC = { f: bed, at: +(dropFile - dropFilm).toFixed(4) }; return { p, B: n => dropFilm + n * p } };
+// the sonic mark (research B7): one short sting inside the first 2 s of every take, the same file in all five (swap it here)
+OV.STING = 'sfx-chime';
+OV.sting = (C, t = .12) => C.push([t, OV.STING, .2]);
+// the EZ. mark drawn alone (no disc), for marks cast, printed or engraved into a scene object: letters in `ink`, slashes in brand colours
+OV.markSvg = (w, ink = '#f8f0d9', slash = true, extra = '') => `<svg width="${w}" height="${(w * 260 / 340).toFixed(1)}" viewBox="25 80 345 255" style="display:block;${extra}"><path fill="${ink}" d="M116.8,88.0 L86.2,152.0 L102.1,152.0 L55.0,274.5 L154.2,274.5 L188.5,225.8 L128.7,225.8 L137.5,204.0 L170.2,203.5 L193.2,162.0 L149.1,162.0 L154.8,145.0 L143.4,138.5 L217.9,138.2 L192.2,182.0 L234.9,182.0 L181.5,250.8 L136.0,315.8 L272.5,315.8 L292.5,265.0 L230.4,265.0 L328.2,130.8 L225.1,130.8 L253.0,87.8 Z"/>${slash ? `<path fill="${OV.G}" d="M146.2,287.0 L133.0,287.0 L106.5,327.2 L119.0,326.5 Z M86.8,169.5 L74.8,169.5 L29.5,282.2 L43.7,282.2 Z M105.8,92.5 L89.5,95.8 L55.5,169.2 L69.0,169.2 Z"/><path fill="${OV.R}" d="M304.5,259.0 L300.5,269.5 L313.0,268.2 L317.0,258.8 Z M361.5,126.0 L344.0,126.5 L269.5,235.8 L256.0,257.5 L276.2,257.0 Z M279.0,87.8 L266.7,87.5 L251.5,117.2 L262.2,119.0 Z"/><path fill="${OV.AU}" d="M334.2,281.2 L302.0,281.2 L288.2,315.8 L321.0,315.5 Z"/>` : ''}</svg>`;

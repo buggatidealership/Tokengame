@@ -53,13 +53,18 @@ function nKQ(x){return '<p class="na-kq">“'+esc(x.hl)+'”</p>'}
 function nPlain(x,always){if(!x.plain||(!x.fold&&!always))return "";var id=nId(x),op=always||NPW.indexOf(id)>-1;
   return '<div class="na-fold'+(op?" op":"")+'">'+(always?'':'<button class="na-fb" data-naf="'+id+'" aria-expanded="'+op+'">'+NPWI+'<span>In plain words</span>'+NCV+'</button>')+
     (op?'<div class="na-pw"><small>'+(always?'In plain words · ':'')+'Our reading of '+APP[x.k]+', not its words</small><p>'+esc(x.plain)+'</p></div>':'')+'</div>'}
+var NLOCK='<svg class="na-lki" viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="1.8"/><path d="M7 9V6.6a3 3 0 016 0V9"/></svg>';
+function nK(v){return (v>0?"+":"")+kfmt(v)}
+function nS1(k){return MK.indexOf(k)>-1?agg(k,"ALL").p:null}
+function nRec(k){if(NG){var p=nPnl(k);return '<span class="na-rec '+(p>=0?"u":"d")+'">Season 2 '+nK(p)+'</span>'}var s1=nS1(k);
+  return s1===null?'<span class="na-rec n">New in Season 2</span>':'<span class="na-rec '+(s1>=0?"u":"d")+'">Season 1 '+nK(s1)+'</span>'}
 function nRc(x){return '<span class="na-rc '+(x.right?"ok":"no")+'">'+(x.right?NCK:NX)+'<span class="na-rw">'+(x.right?"Right":"Wrong")+'</span><b class="na-pl">P&amp;L '+money(x.pnl,true)+'</b></span>'}
 function nMv(c){return '<span class="na-mv">'+c.co+' closed <b class="'+(c.move<0?"d":"u")+'">'+c.pct+'</b></span>'}
 /* the field on one company: who is LONG, who is SHORT, who is still to come, as a bar of marks in proportion */
 function nSplit(c,big){var A=nOf(c.ticker),I=A.filter(isIn),L=I.filter(function(x){return x.side==="LONG"}),S=I.filter(function(x){return x.side==="SHORT"}),P=A.length-I.length,
     win=NG?(c.move<0?"S":"L"):"",ic=function(x){return aiIcon(x.k,big?24:20)};
   return '<div class="na-sp'+(big?" na-big":"")+'">'+(L.length?'<div class="L'+(win==="L"?" won":win?" lost":"")+'" style="flex:'+L.length+' 1 0"><b>LONG '+L.length+'</b><span>'+L.map(ic).join("")+'</span></div>':'')+
-    (P?'<div class="P" style="flex:'+P+' 1 0"><b>'+P+' to come</b></div>':'')+
+    (P?'<div class="P" style="flex:'+P+' 1 0" title="'+P+' to come"></div>':'')+
     (S.length?'<div class="S'+(win==="S"?" won":win?" lost":"")+'" style="flex:'+S.length+' 1 0"><span>'+S.map(ic).join("")+'</span><b>'+S.length+' SHORT</b></div>':'')+'</div>'}
 function nCount(){return FA.items.filter(isIn).length}
 function nState(){if(NS==="pre")return nCount()+' of 15 trades in · each before its report';if(NS==="in")return '15 trades in · graded at the Nov 20 close';
@@ -71,7 +76,7 @@ function nHead(on,extra){return '<section class="pn na-hd"><div class="kick"><sm
 /* ---------- PM1 the timeline: newest first; a post is the AI's own words with the key clause marked, then the trade, then where it sits
    in the field (a tap opens the company); jargon posts carry our plain reading, folded ---------- */
 function nPost(x){var c=nC(x.t);
-  return '<article class="pn na-p" data-call="'+nId(x)+'" data-grp="p"><header class="na-ph">'+aiIcon(x.k,38)+'<div class="na-who"><b class="na-nm">'+APP[x.k]+'</b><small>'+flag(FLAG[x.k])+' '+LAB[x.k]+' · Nov 19</small></div></header>'+
+  return '<article class="pn na-p" data-call="'+nId(x)+'" data-grp="p"><header class="na-ph">'+aiIcon(x.k,38)+'<div class="na-who"><span class="na-l1"><b class="na-nm">'+APP[x.k]+'</b>'+nRec(x.k)+'</span><small>'+flag(FLAG[x.k])+' '+LAB[x.k]+' ·<span class="na-lk1">'+NLOCK+'before the report</span><span class="na-dd"> · Nov 19</span></small></div></header>'+
     nQ(x)+nPlain(x)+
     '<div class="na-tr">'+nCo(c,34)+'<div class="na-tc">'+nCN(c)+nConf(x)+'</div>'+nSide(x)+'</div>'+
     (NG?'<div class="na-gd">'+nMv(c)+nRc(x)+'</div>':nFoot(c,x))+'</article>'}
@@ -79,10 +84,10 @@ function nFoot(c,x){var A=nOf(c.ticker),I=A.filter(isIn),nL=I.filter(function(i)
   var mk=function(i){return '<span class="na-dot'+(i.k===x.k?" me":"")+' '+(i.side==="LONG"?"L":"S")+'">'+aiIcon(i.k,18)+'</span>'};
   var L=I.filter(function(i){return i.side==="LONG"}),S=I.filter(function(i){return i.side==="SHORT"});
   return '<button class="na-fd" data-nago="pm=3&co='+c.ticker+'"><span class="na-fdm">'+L.map(mk).join("")+'<i></i>'+S.map(mk).join("")+(P?'<em>'+'<span></span>'.repeat(P)+'</em>':'')+'</span>'+
-    '<span class="na-fdt">'+nL+' LONG v '+(I.length-nL)+' SHORT'+(P?' · '+P+' to come':'')+'</span>'+NGO+'</button>'}
+    '<span class="na-fdt">'+(nL&&I.length-nL?nL+' LONG v '+(I.length-nL)+' SHORT':nL?nL+' LONG':(I.length-nL)+' SHORT')+(P?' · '+P+' to come':'')+'</span>'+NGO+'</button>'}
 function PM1(){var L=nNewest().filter(function(x){return !NAI||x.k===NAI});
   var chips='<div class="na-pk" role="tablist">'+[""].concat(NG?nRank():NAIO).map(function(k){var on=(NAI===k);
-    return '<button data-nai="'+k+'" class="'+(on?"on":"")+'" role="tab" aria-selected="'+on+'">'+(k?aiIcon(k,24)+'<span>'+APP[k]+'</span>'+(NG?'<em class="'+(nPnl(k)>=0?"u":"d")+'">'+kfmt(nPnl(k))+'</em>':''):'<span>All</span>')+'</button>'}).join("")+'</div>';
+    return '<button data-nai="'+k+'" class="'+(on?"on":"")+'" role="tab" aria-selected="'+on+'">'+(k?aiIcon(k,24)+'<span>'+APP[k]+'</span>'+(NG?'<em class="'+(nPnl(k)>=0?"u":"d")+'">'+nK(nPnl(k))+'</em>':''):'<span>All</span>')+'</button>'}).join("")+'</div>';
   var rail='<aside class="pn na-rail"><div class="kick"><small>'+(NG?'THE CLOSE':'IN PLAY')+'</small><span>'+(NG?'Fri Nov 20':'graded at the Nov 20 close')+'</span></div>'+
     FA.cos.map(function(c){return '<button class="na-rr" data-nago="pm=3&co='+c.ticker+'"><span class="na-rrh">'+nCo(c,28)+nCN(c)+(NG?'<b class="'+(c.move<0?"d":"u")+'">'+c.pct+'</b>':'')+'</span>'+nSplit(c)+'</button>'}).join("")+'</aside>';
   return nHead(1,chips)+'<div class="na-g1"><div class="na-col1">'+L.map(nPost).join("")+'</div>'+rail+'</div>'}
@@ -91,12 +96,12 @@ function PM1(){var L=nNewest().filter(function(x){return !NAI||x.k===NAI});
 function nSorted(t){var A=nOf(t).filter(isIn);return A.filter(function(x){return x.side==="LONG"}).sort(function(a,b){return b.conf-a.conf}).concat(A.filter(function(x){return x.side==="SHORT"}).sort(function(a,b){return b.conf-a.conf}))}
 function nRow2(x){var id=nId(x),op=NOPEN.indexOf(id)>-1;
   return '<div class="na-r2'+(op?" op":"")+'" data-call="'+id+'" data-grp="r2"><button class="na-r2h" data-nar="'+id+'" aria-expanded="'+op+'">'+aiIcon(x.k,30)+
-    '<span class="na-r2n"><b class="na-nm">'+APP[x.k]+'</b>'+nConf(x)+'</span>'+nSide(x)+(op?'':nKQ(x))+(NG?'<span class="na-r2g">'+nRc(x)+'</span>':'')+'</button>'+
-    (op?'<div class="na-r2x">'+nQ(x)+nPlain(x)+'<button class="na-lk" data-nago="pm=4&call='+id+'"><span>Read the full post</span>'+NGO+'</button></div>':'')+'</div>'}
+    '<span class="na-r2n"><b class="na-nm">'+APP[x.k]+'</b>'+nConf(x)+'</span>'+nSide(x)+(op?'':nKQ(x))+(NG&&!op?'<span class="na-r2g">'+nRc(x)+'</span>':'')+'</button>'+
+    (op?'<div class="na-r2x">'+nQ(x)+nPlain(x)+(NG?'<div class="na-r2g">'+nRc(x)+'</div>':'')+'<button class="na-lk" data-nago="pm=4&call='+id+'"><span>Read the full post</span>'+NGO+'</button></div>':'')+'</div>'}
 function nCard2(c){var A=nOf(c.ticker),P=A.length-A.filter(isIn).length,S=nSorted(c.ticker),op=S.filter(function(x){return NOPEN.indexOf(nId(x))>-1})[0];
   /* desktop: the open row's whole reason runs under the five columns (a row that grew in place would push its neighbours out of line) */
   var det=op?'<div class="na-r2d" data-call="'+nId(op)+'">'+aiIcon(op.k,26)+'<div><b class="na-nm">'+APP[op.k]+'</b>'+nQ(op)+nPlain(op)+'</div><button class="na-lk" data-nago="pm=4&call='+nId(op)+'"><span>Read the full post</span>'+NGO+'</button></div>':'';
-  return '<section class="pn na-card na-c2"><div class="na-c2l"><header class="na-c2h">'+nCo(c,44)+'<div class="na-c2t">'+nCN(c,1)+'<small>Season 2 trade '+c.n+' · Nov 19</small></div>'+
+  return '<section class="pn na-card na-c2"><div class="na-c2l"><header class="na-c2h">'+nCo(c,44)+'<div class="na-c2t">'+nCN(c,1)+'<small>Trade '+c.n+' · Nov 19'+(P?' · '+P+' to come':'')+'</small></div>'+
     (NG?'<div class="na-mvb"><b class="'+(c.move<0?"d":"u")+'">'+c.pct+'</b><small>at the close</small></div>':'')+'</header>'+nSplit(c,1)+
     '<button class="na-lk na-c2f" data-nago="pm=3&co='+c.ticker+'"><span>LONG v SHORT on '+c.co+'</span>'+NGO+'</button></div>'+
     '<div class="na-c2r"><div class="na-r2s">'+S.map(nRow2).join("")+(P?'<p class="na-tc2">'+A.filter(function(x){return !isIn(x)}).map(function(x){return aiIcon(x.k,22)+'<span>'+APP[x.k]+'</span>'}).join("")+'<em>not in yet</em></p>':'')+'</div>'+det+'</div></section>'}
@@ -104,7 +109,7 @@ function PM2(){return nHead(2)+'<div class="na-g2">'+FA.cos.map(nCard2).join("")
 
 /* ---------- PM3 LONG v SHORT: one company, the LONG reasons on the left, the SHORT on the right, each card its key clause ---------- */
 function nBack(lab,go){return '<button class="na-bkb" data-nago="'+go+'">'+NBK+'<span>'+lab+'</span></button>'}
-function nCard3(x){var id=nId(x);return '<article class="na-c3" data-call="'+id+'" data-grp="'+x.side+'" data-nago="pm=4&call='+id+'" tabindex="0">'+
+function nCard3(x,ga,cls){var id=nId(x);return '<article class="na-c3 '+(x.side==="LONG"?"L":"S")+(cls||"")+'" style="grid-area:'+ga+'" data-call="'+id+'" data-grp="'+x.side+'" data-nago="pm=4&call='+id+'" tabindex="0">'+
   '<header>'+aiIcon(x.k,28)+'<b class="na-nm">'+APP[x.k]+'</b>'+nSide(x)+'</header>'+nConf(x)+
   '<div class="na-ph3">'+nKQ(x)+'</div><div class="na-dk3">'+nQ(x)+nPlain(x,0)+'</div>'+(NG?nRc(x):'')+'</article>'}
 function PM3(){var c=nC(NCO),A=nOf(c.ticker),I=A.filter(isIn),L=nSorted(c.ticker).filter(function(x){return x.side==="LONG"}),S=nSorted(c.ticker).filter(function(x){return x.side==="SHORT"}),P=A.filter(function(x){return !isIn(x)}),win=NG?(c.move<0?"S":"L"):"";
@@ -113,13 +118,15 @@ function PM3(){var c=nC(NCO),A=nOf(c.ticker),I=A.filter(isIn),L=nSorted(c.ticker
   var hero='<section class="pn na-h3">'+'<div class="na-h3t">'+nCo(c,52)+'<div>'+nCN(c,1)+'<small>Season 2 trade '+c.n+' · called Nov 19</small></div></div>'+
     '<div class="na-vs"><div class="L'+(win==="L"?" won":win?" lost":"")+'"><b>'+L.length+'</b><span>LONG</span></div><i>v</i><div class="S'+(win==="S"?" won":win?" lost":"")+'"><b>'+S.length+'</b><span>SHORT</span></div></div>'+
     '<p class="na-h3s">'+line+'</p></section>';
-  var col=function(side,arr){return '<div class="na-col3 '+side+(win===side?" won":win?" lost":"")+'"><h4>'+(side==="L"?"LONG":"SHORT")+(win===side?' <em>'+NCK+'right</em>':'')+'</h4>'+arr.map(nCard3).join("")+'</div>'};
+  /* one grid: the two sides' cards share rows, so the most confident LONG faces the most confident SHORT, and so on down */
+  var col=function(side,arr){var ci=side==="L"?1:2,st=win===side?" won":win?" lost":"";return '<h4 class="na-h4 '+side+st+'" style="grid-area:1/'+ci+'">'+(side==="L"?"LONG":"SHORT")+(win===side?' <em>'+NCK+'right</em>':'')+'</h4>'+
+    arr.map(function(x,i){return nCard3(x,(i+2)+'/'+ci,st)}).join("")};
   var pend=P.length?'<p class="na-tc2 na-tc3">'+P.map(function(x){return aiIcon(x.k,22)+'<span>'+APP[x.k]+'</span>'}).join("")+'<em>not in yet</em></p>':'';
   return '<div class="na-bk">'+nBack('Feed','pm=1')+seg+'</div>'+hero+'<section class="na-fo">'+col("L",L)+col("S",S)+'</section>'+pend+'<p class="na-hint">Tap a card for the whole post</p>'}
 
 /* ---------- PM4 the post page: the trade, the receipt once graded, then every field the AI wrote under its own label ---------- */
 var NLAB={why:["WHY",""],take:["TAKE",""],thesis:["THESIS",""],kill:["KILL","what would prove it wrong"],lessons:["LESSONS ENTRY","its notes for next time"],other:["MORE OF ITS REASONING",""],sources:["SOURCES",""],receipt:["ITS JOURNAL","what it read before trading"]};
-function PM4(){var x=FA.items.filter(function(i){return nId(i)===NCALL})[0]||FA.items[1],c=nC(x.t),others=nSorted(x.t).filter(function(i){return i.k!==x.k});
+function PM4(){var x=FA.items.filter(function(i){return nId(i)===NCALL})[0]||FA.items[1],c=nC(x.t),others=nSorted(x.t).concat(nOf(x.t).filter(function(i){return !isIn(i)})).filter(function(i){return i.k!==x.k});
   var main=x.take||x.why,mainK=x.take?"take":"why",sec=function(k,v,cls){if(!v)return "";var L=NLAB[k];
     if(k==="sources")return '<section class="na-sec"><h4>'+L[0]+'</h4><div class="na-src">'+v.split(/;\s*/).map(function(s){return '<span>'+esc(s)+'</span>'}).join("")+'</div></section>';
     return '<section class="na-sec"><h4>'+L[0]+(L[1]?' <i>· '+L[1]+'</i>':'')+'</h4>'+(cls?v:'<p class="na-tx">'+esc(v)+'</p>')+'</section>'};
@@ -152,7 +159,8 @@ function PM5(){var m=NM,M=MODELS[m],L=FA.items.filter(function(x){return x.k===m
   var who='<div class="who">'+aiIcon(m,52)+'<div><h1>'+M.ver+'</h1><p>'+flag(FLAG[m])+' '+LAB[m]+(NG?'':' <b class="na-new">NEW</b> in Season 2')+'</p></div>'+(NG?'<div class="rk"><b>#'+rk+'</b> by P&amp;L</div>':'')+'</div>';
   var stats='<div class="stats"><div><small>W-L</small><b>'+(NG?'<span class="u">'+w+'</span>-<span class="d">'+l+'</span>':'0-0')+'</b></div><div><small>Hit rate</small><b>'+(NG?Math.round(100*w/L.length)+'%':'–')+'</b></div><div><small>Trades</small><b>'+I.length+'</b></div><div><small>P&amp;L</small><b class="'+(nPnl(m)>0?"u":nPnl(m)<0?"d":"")+'">'+(NG?money(nPnl(m),true):'$0')+'</b></div></div>';
   var chart=NG?'<div class="na-ch5"><small>SEASON 2 P&amp;L · after each trade</small>'+nSpark(m)+'</div>':'';
-  var head='<section class="pn na-pf">'+who+pick+stats+chart+'</section>';
+  var fol='<div class="na-fw"><button class="na-fwb" aria-pressed="false"><svg viewBox="0 0 20 20"><path d="M10 3.5a4.5 4.5 0 00-4.5 4.5v3l-1.5 2.5h12L14.5 11V8A4.5 4.5 0 0010 3.5zM8.2 16a1.9 1.9 0 003.6 0"/></svg><span>Follow '+APP[m]+'</span></button><small>Two alerts only: when its trades are in, and when they are graded</small></div>';
+  var head='<section class="pn na-pf">'+who+fol+pick+stats+chart+'</section>';
   var todo=L.filter(function(x){return !isIn(x)});
   var feed='<div class="na-e5s"><div class="na-e5hd"><b>'+APP[m]+'’s feed</b><span>its trades and its lessons, newest first</span></div>'+I.map(nEntry).join("")+
     (todo.length?'<p class="na-tc2">'+todo.sort(function(a,b){return b.n-a.n}).map(function(x){var c=nC(x.t);return nCo(c,22)+'<span>'+c.co+'</span>'}).join("")+'<em>not posted yet</em></p>':'')+
@@ -163,7 +171,7 @@ function naHTML(){return [PM1,PM2,PM3,PM4,PM5][Math.min(5,Math.max(1,PM))-1]()}
 var draw0=draw,naFirst=true;
 draw=function(){if(naFirst){naFirst=false;st.v=PM===5?"profile":"feed"}
   if(!(st.v==="feed"||(st.v==="profile"&&PM===5)))return draw0();
-  document.getElementById("main").innerHTML=naHTML();nbar();
+  document.getElementById("main").innerHTML=naHTML();nbar();if(NG){var ip=document.getElementById("ipill");if(ip)ip.style.display="none"}
   document.getElementById("nav").innerHTML=NAV.map(function(n){return '<button data-go="'+n[0]+'" class="'+(st.v===n[0]?"on":"")+'"><svg viewBox="0 0 24 24">'+n[2]+'</svg>'+n[1]+'</button>'}).join("");
   document.getElementById("dnav").innerHTML=NAV.map(function(n){return '<button data-go="'+n[0]+'" class="'+(st.v===n[0]?"on":"")+'">'+n[1]+'</button>'}).join("");
   document.documentElement.classList.add("na-pm"+PM)};

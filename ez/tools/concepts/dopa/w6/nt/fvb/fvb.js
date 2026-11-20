@@ -29,8 +29,8 @@ FB.ICON = { LEADERBOARD: '<path d="M5 20V10M12 20V4M19 20v-7"/>', FEED: '<path d
 FB.DAY = { '2026-11-19': 'Nov 19' };
 // a feed post (fl-feed.html's): head, the words with the key clause, optional rows (o.rows: html placed before the trade row), the trade row
 FB.postHTML = (x, o = {}) => `<div class="post"${o.id ? ` id="${o.id}"` : ''}><div class="ph">${FB.mark(x.k, 40)}<div><b>${x.name}</b><small>${FB.flag(x.flag, 19)}${x.lab}<span class="d">${FB.DAY[x.called] || x.called}</span></small></div>${o.head || ''}</div>
-  ${o.noq ? '' : `<div class="pq">${FB.quote(x.keep, x.hl)}</div>`}${o.rows || ''}
-  <div class="tc"><img src="${x.logo}" alt=""><div class="cn"><b>${x.co}</b><span>${x.t}</span><small>${x.conf}% confident</small></div><div class="sd ${x.side[0]}">${FB.sideTxt(x)}</div></div></div>`;
+  ${o.noq ? '' : o.qid ? `<div class="pqx" id="${o.qid}"><div class="pq">${FB.quote(x.keep, x.hl)}</div></div>` : `<div class="pq">${FB.quote(x.keep, x.hl)}</div>`}${o.rows || ''}
+  <div class="tc"><img src="${x.logo}" alt=""><div class="cn"><b>${x.co}</b><span>${x.t}</span><small>${x.conf}% confident</small></div><div class="sd ${x.side[0]}">${FB.sideTxt(x)}</div></div>${o.tail || ''}</div>`;
 // the phone: body, screen, the app (header with the logo, the name and the SEASON 2 chip; views; the tab bar), island, glare
 FB.phoneHTML = (views = '', tabs = ['LEADERBOARD', 'FEED', 'AI PROFILES', 'UPCOMING']) => `<div class="phw"><div class="phn"><div class="body"></div><div class="scr"><div class="app">
   <div class="tb"><img src="ezlogo.svg" alt=""><b><i class="e">E</i>arnings <i class="z">Z</i>eason</b><div class="ssn">SEASON 2</div></div>
@@ -54,8 +54,11 @@ FB.words = (s, cls = 'w') => { if (FB.NOP.test(s.replace(/\{[gryc] /g, '').repla
 FB.rise = (el, t, a, b, k = .07, dir = 1) => { if (!el) return; const on = t >= a - .05 && t < b + .5; el.style.visibility = on ? 'visible' : 'hidden'; if (!on) return;
   el.querySelectorAll('i[data-n]').forEach(w => { const j = +w.dataset.n, i = FB.eo(FB.n(t, a + j * k, a + .45 + j * k)), o = Math.pow(FB.n(t, b + j * .025, b + .3 + j * .025), 3);
     w.style.transform = `translateY(${(dir * ((1 - i) * 112) - dir * o * 118).toFixed(1)}%)` }) };
-// the house bug (one rule for every video kind): top left, 44 px in, the logo 64 px tall, "Earnings Zeason" in the piece's face beside it
-FB.bug = (root, face, wt = 700, size = 30, ls = '0') => { root.insertAdjacentHTML('beforeend', `<div id="bug"><img src="ezlogo.svg" alt=""><b style="font-family:${face};font-weight:${wt};font-size:${size}px;letter-spacing:${ls}"><i class="e">E</i>arnings <i class="z">Z</i>eason</b></div>`) };
+// the house bug (coordinator, 23:25: exactly s2d.html's .bug, one fixed logotype in every film): the EZ. logo 64 px and EARNINGS ZEASON in
+// Kanit italic 800 31 px, left 54, top 50, above everything to the last frame. A signature: it does not count as the in-scene branding (B4).
+FB.bug = (root) => { root.insertAdjacentHTML('beforeend', `<div id="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span></div>`) };
+// an in-scene brand mark (B1, B3): the EZ. mark inside the shot's object; class bm so the brand check can find it
+FB.EZ = (s, cls = '') => `<img class="bm ${cls}" src="ezlogo.svg" alt="" style="width:${s}px;height:${s}px">`;
 // the end card: the logo, SEASON 2, the feature's name; the logo arrives by t0 + .8 and holds to the last frame
 FB.endHTML = (name, face, cls = '') => `<div id="endc" class="${cls}"><img src="ezlogo.svg" alt=""><small>SEASON 2</small><h3 style="font-family:${face}">${FB.words(name, 'ew')}</h3></div>`;
 FB.endR = (t, t0) => { const e = document.getElementById('endc'); if (!e) return; e.style.opacity = t >= t0 ? 1 : 0; if (t < t0) return;
@@ -83,9 +86,12 @@ FB.lift = (id, t, up, dn, tgt, o = {}) => { const L0 = FB.lifts[id], kU = (o.spr
   if (!o.keepSrc) L0.el.style.opacity = k > .02 ? 0 : 1;
   L0.c.style.setProperty('--gx', (50 + 38 * Math.sin(t * .55 + id.length)).toFixed(1) + '%'); L0.c.style.setProperty('--gy', (22 + 30 * Math.sin(t * .42 + 1)).toFixed(1) + '%');
   return k };
+// the graded receipt (research F2.10: a reason beside its outcome; wrong as loud as right): the EZ. mark, the close, RIGHT or WRONG, the P&L
+FB.rcHTML = (x, day = 'NOV 20', s = 22) => `<div class="rc">${FB.EZ(s)}<span>${day}</span><span class="${x.right ? 'ok' : 'no'}">${x.right ? 'RIGHT' : 'WRONG'}</span><span class="pnl ${x.pnl >= 0 ? 'L' : 'S'}">P&amp;L ${FB.money(x.pnl)}</span></div>`;
 FB.raf = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 FB.load = async (fontsCSS, preload = []) => {
-  const st = document.createElement('style'); st.textContent = L.css + FB.css + (fontsCSS || ''); document.head.prepend(st);
+  const st = document.createElement('style'); st.textContent = `@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&display=swap');` + (fontsCSS || '') + L.css + FB.css; document.head.prepend(st);
+  preload = ["italic 800 31px Kanit"].concat(preload);
   FB.D = await fetch('w6/nt/fvb/data.json').then(r => r.json());
   for (const f of preload) await document.fonts.load(f);
 };
@@ -132,6 +138,9 @@ html,body{background:#04070e}
 .hw i{position:absolute;left:0;right:-1.5px;top:-.08em;bottom:-.08em;padding:.08em 0 0;font-style:normal;white-space:pre;line-height:normal;color:#1a1405;background:#fdbc2a;opacity:0}
 .hw.sp i{right:-.3em}.hw:first-child i{left:-.1em;padding-left:.1em;border-radius:.12em 0 0 .12em}.hw:last-child i{right:-.1em;border-radius:0 .12em .12em 0}
 #lift{position:absolute;inset:0;pointer-events:none}
+.rc{display:flex;align-items:center;gap:9px;margin-top:10px;padding:8px 11px;border-radius:14px;background:rgba(3,5,7,.6);box-shadow:inset 0 0 0 1.2px var(--ln);font:600 12.5px/1 'Geist Mono';letter-spacing:.06em;color:var(--mu);white-space:nowrap}
+.rc .bm{flex:none;border-radius:50%}.rc .ok,.rc .no{font:800 15px/1 'Geist Mono';letter-spacing:.08em;padding:5px 8px;border-radius:7px}
+.rc .ok{color:#04070e;background:#03c870}.rc .no{color:#04070e;background:#ff3a31}.rc .pnl{margin-left:auto;font:700 18px/1 'Geist Mono';letter-spacing:-.01em}
 .lw{position:absolute;left:0;top:0;width:0;height:0;display:none}.lw>.lc{position:absolute;left:0;top:0}
 .lc.glass{background:linear-gradient(162deg,rgba(248,240,217,.17) 0%,rgba(248,240,217,.07) 34%,rgba(6,10,12,.76) 70%,rgba(5,8,10,.84) 100%);box-shadow:inset 0 0 0 1px rgba(248,240,217,.26),inset 0 1px 0 rgba(255,255,255,.34),0 26px 60px rgba(0,0,0,.62),0 0 0 .5px rgba(0,0,0,.7);overflow:hidden}
 .lc.glass::before{content:'';position:absolute;left:var(--gx,30%);top:var(--gy,0%);width:300px;height:220px;margin:-110px 0 0 -150px;border-radius:50%;background:radial-gradient(closest-side,var(--gc,rgba(3,200,112,.26)),transparent);mix-blend-mode:screen;pointer-events:none}
@@ -142,8 +151,9 @@ html,body{background:#04070e}
 #tr{position:absolute;left:0;top:0;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;border:2.5px solid rgba(255,255,255,.75);opacity:0;pointer-events:none;z-index:60}
 .w,.ew{display:inline-block;overflow:hidden;vertical-align:top;padding:.04em .04em .16em;margin:-.04em -.04em -.16em}.w>i,.ew>i{display:inline-block;font-style:normal}
 i.g{color:#03c870}i.r{color:#ff3a31}i.y{color:#fdbc2a}i.c{color:#f8f0d9}
-#bug{position:absolute;left:44px;top:44px;height:64px;display:flex;align-items:center;gap:16px;z-index:100;color:#f8f0d9;white-space:nowrap;text-shadow:0 2px 14px rgba(0,0,0,.55)}
+#bug{position:absolute;left:54px;top:50px;display:flex;align-items:center;gap:16px;z-index:100;color:#f2ede6;letter-spacing:.02em;white-space:nowrap;text-shadow:0 2px 14px rgba(0,0,0,.55)}
 #bug img{width:64px;height:64px;display:block;filter:drop-shadow(0 4px 14px rgba(0,0,0,.5))}
+#bug span{font:italic 800 31px/1 Kanit,sans-serif;letter-spacing:.01em}
 #endc{position:absolute;left:0;right:0;top:330px;text-align:center;opacity:0;z-index:90;color:#f8f0d9}
 #endc img{width:230px;height:230px;display:block;margin:0 auto;filter:drop-shadow(0 18px 50px rgba(0,0,0,.6))}
 #endc small{display:block;margin-top:40px;font:700 34px/1 'Geist Mono';letter-spacing:.3em;color:#fdbc2a}

@@ -9,6 +9,9 @@
 #cam{position:absolute;left:-60px;top:-75px;width:1200px;height:1500px;transform-origin:600px 750px}
 #ring{position:absolute;inset:0;width:1200px;height:1500px;object-fit:cover}
 #haze{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen}
+#floor{position:absolute;left:600px;top:1190px;width:0;height:0;perspective:900px}
+#floor img{position:absolute;left:-230px;top:-230px;width:460px;height:460px;transform:rotateX(68deg);opacity:.9;filter:drop-shadow(0 0 30px rgba(253,188,42,.35))}
+#ct .bp{display:flex;justify-content:center;margin-bottom:4px}
 #vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(80% 60% at 50% 46%,transparent 45%,rgba(0,0,0,.7));z-index:5}
 #card{position:absolute;left:44px;right:44px;top:132px;height:178px;z-index:30;display:flex;align-items:center;gap:26px;padding:0 30px;
   background:linear-gradient(180deg,rgba(4,7,14,.86),rgba(4,7,14,.78));border-radius:6px;box-shadow:inset 0 0 0 2px rgba(253,188,42,.55),0 20px 50px rgba(0,0,0,.6)}
@@ -32,11 +35,13 @@
 #ct{position:absolute;left:0;right:0;top:470px;text-align:center;z-index:40;pointer-events:none}
 #ct .n{display:inline-flex;align-items:center;gap:40px;font:400 330px/1 Anton;text-shadow:0 20px 60px rgba(0,0,0,.8)}
 #ct .n i{font-style:normal;font-size:150px;color:#f8f0d9}
+#ct .lk{margin-top:22px;font:700 50px/1 "Barlow Condensed";font-style:italic;color:#f8f0d9;text-shadow:0 6px 24px rgba(0,0,0,.9)}
 #ct .l{display:flex;justify-content:center;gap:200px;margin-top:4px;font:400 60px/1 Anton;letter-spacing:.14em}
 #tally{position:absolute;right:74px;top:270px;z-index:35;font:400 40px/1 Anton;letter-spacing:.06em;padding:8px 16px 6px;background:#04070e;border-radius:4px;box-shadow:inset 0 0 0 2px rgba(253,188,42,.6);white-space:nowrap}
 #q{position:absolute;left:44px;right:44px;top:1052px;height:256px;z-index:45;padding:26px 34px;border-radius:6px;overflow:hidden;
   background:linear-gradient(180deg,rgba(248,240,217,.97),rgba(240,229,200,.97));box-shadow:0 24px 60px rgba(0,0,0,.65)}
 #q .who{display:flex;align-items:center;gap:16px;font:400 40px/1 Anton;letter-spacing:.06em;color:#04070e}
+#q .bk{position:absolute;left:50%;top:16px;margin-left:-30px}
 #q .who span.s{font:800 34px/1 'Barlow Condensed';letter-spacing:.04em;padding:6px 12px 4px;border-radius:4px;color:#04070e}
 #q .who em{margin-left:auto;font:600 26px/1 'Barlow Condensed';letter-spacing:.14em;color:rgba(4,7,14,.55);font-style:normal;text-transform:uppercase}
 #q .cl{margin-top:20px;font:700 76px/1.04 'Barlow Condensed';font-style:italic;color:#04070e;letter-spacing:-.005em}
@@ -45,7 +50,7 @@
 #end span{font:600 46px/1 'Barlow Condensed';font-style:italic;color:#f8f0d9}
 #flash{position:absolute;inset:0;background:#f8f0d9;mix-blend-mode:overlay;opacity:0;z-index:60;pointer-events:none}
 </style>
-<div id="cam"><img id="ring" src="w6/nt/pv/pv2-ring.jpg"><div id="haze"></div>
+<div id="cam"><img id="ring" src="w6/nt/pv/pv2-ring.jpg"><div id="floor"><img src="ezlogo.svg"></div><div id="haze"></div>
   <div class="col" id="cL"></div><div class="col" id="cS"></div></div>
 <div id="vig"></div>
 <div id="card"></div>
@@ -58,7 +63,7 @@ let T = {}, ord, weigh, grain, fcs = {};
 (async () => {
   await PV.load('INTU', 'https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,600;1,700&display=swap');
   PV.$('#bugw').innerHTML = PV.bug();
-  PV.$('#card').innerHTML = `<span class="me">MAIN EVENT</span>${PV.coLogo(112)}<span class="co">${PV.esc(PV.co.co)}</span><span class="wh"><b>REPORTS ${PV.co.callDay.toUpperCase()}</b>after the close</span>`;
+  PV.$('#card').innerHTML = `<span class="me">LOCKED BEFORE THE REPORT</span>${PV.coLogo(112)}<span class="co">${PV.esc(PV.co.co)}</span><span class="wh"><b>REPORTS ${PV.co.callDay.toUpperCase()}</b>after the close</span>`;
   // the weigh-in order: by corner, the bigger corner first; the words alternate the corners (PV.alt)
   weigh = [...PV.calls.filter(x => x.side === PV.maj), ...PV.calls.filter(x => x.side !== PV.maj)];
   ord = PV.alt();
@@ -67,12 +72,12 @@ let T = {}, ord, weigh, grain, fcs = {};
       <span class="sd" style="color:${PV.side(x)}">${PV.call(x)}</span><i class="lit"></i></div>`).join('');
   PV.$('#cL').innerHTML = col('LONG'); PV.$('#cS').innerHTML = col('SHORT');
   PV.$$('.fc').forEach(e => fcs[e.dataset.k] = e);
-  PV.$('#ct').innerHTML = `<div class="n"><span style="color:${PV.C.green}">${PV.nL}</span><i>v</i><span style="color:${PV.C.red}">${PV.nS}</span></div><div class="l"><span style="color:${PV.C.green}">LONG</span><span style="color:${PV.C.red}">SHORT</span></div>`;
+  PV.$('#ct').innerHTML = `<div class="bp">${PV.logo(120)}</div><div class="n"><span style="color:${PV.C.green}">${PV.nL}</span><i>v</i><span style="color:${PV.C.red}">${PV.nS}</span></div><div class="l"><span style="color:${PV.C.green}">LONG</span><span style="color:${PV.C.red}">SHORT</span></div>`;
   PV.$('#end').innerHTML = `${PV.logo(300)}<b><i style="color:${PV.C.green}">E</i>ARNINGS <i style="color:${PV.C.red}">Z</i>EASON</b><span>${PV.graded}</span>`;
   grain = PV.grain(PV.$('#grain'), .07);
   // the timeline in beats: the card, the weigh-in one a beat, the count on the hit (beat 8), the words (5 or 6 beats each), the end card
   const len = ord.map(x => PV.need(x.clause) > 2.9 ? 6 : 5), starts = []; let b = 10; len.forEach(l => { starts.push(b); b += l });
-  T = { weigh: weigh.map((_, i) => 2 + i), count: 8, starts, len, end: b, dur: b + 5 };
+  T = { weigh: weigh.map((_, i) => 2 + i), count: 8, starts, len, end: b, dur: b + 4.8 };
   window.TL = { count: +G.at(8).toFixed(3), starts: starts.map(s => +G.at(s).toFixed(3)), end: +G.at(b).toFixed(3), dur: +G.at(T.dur).toFixed(3) };
   window.HOLD = ord.map((x, i) => ({ k: x.k, clause: x.clause, need: +PV.need(x.clause).toFixed(2), onScreen: +((len[i] - .8) * B).toFixed(2) }));
   window.CUES = [[.04, 'r11-swell', .1], [G.at(.5), 'sfx-strike', .1]];
@@ -86,7 +91,7 @@ let T = {}, ord, weigh, grain, fcs = {};
 })();
 let qk = '';
 const fillQ = x => { if (qk === x.k) return; qk = x.k;
-  PV.$('#q').innerHTML = `<div class="who">${PV.mark(x.k, 58)}${x.name.toUpperCase()}<span class="s" style="background:${PV.side(x)}">${PV.call(x)}</span><em>In its own words</em></div><div class="cl">${PV.words(x.clause)}</div>` };
+  PV.$('#q').innerHTML = `<div class="who">${PV.mark(x.k, 58)}${x.name.toUpperCase()}<span class="s" style="background:${PV.side(x)}">${PV.call(x)}</span><em>In its own words</em></div><span class="bk">${PV.logo(60)}</span><div class="cl">${PV.words(x.clause)}</div>` };
 window.R = t => {
   grain(t); const k = G.beat(t);
   const cur = T.starts.filter(s => k >= s).length - 1, inW = cur >= 0 && k < T.end, sp = inW ? ord[cur] : null;
@@ -95,7 +100,7 @@ window.R = t => {
   let px = 0, sc = 1.02 + .02 * Math.sin(t * .5);
   if (k < 2) sc = 1.16 - .14 * PV.eo(PV.n(k, 0, 2));
   if (inW) { const side = sp.side === 'LONG' ? 1 : -1, prev = cur ? (ord[cur - 1].side === 'LONG' ? 1 : -1) : 0, w = PV.eio(PV.n(k, T.starts[cur], T.starts[cur] + .5));
-    px = 46 * PV.lerp(prev, side, w); sc = 1.05 + .03 * PV.n(k, T.starts[cur], T.starts[cur] + T.len[cur]) }
+    px = 46 * PV.lerp(prev, side, w); const m2 = PV.eio(PV.n(k, T.starts[cur] + 3, T.starts[cur] + 3.5)); sc = 1.05 + .03 * PV.n(k, T.starts[cur], T.starts[cur] + T.len[cur]) + .06 * m2; px += 30 * side * m2 }
   sc += punch(8) + punch(16) + punch(24) + punch(32) + punch(T.end);
   T.weigh.forEach(w => sc += .4 * punch(w));
   const shake = k >= 8 && k < 8.6 ? 10 * Math.exp(-6 * (k - 8)) * Math.sin(k * 40) : 0;
@@ -103,7 +108,7 @@ window.R = t => {
   // the spotlight haze breathes on the beat
   const ph = ((k % 1) + 1) % 1; PV.$('#haze').style.background = `radial-gradient(34% 40% at ${50 + 3 * Math.sin(t * .7)}% 24%,rgba(253,188,42,${(.16 + .14 * Math.exp(-5 * ph)).toFixed(3)}),transparent 70%)`;
   // the fight card: in from the top on the first beat
-  const c0 = PV.n(k, 0, .8); PV.$('#card').style.transform = `translateY(${(-60 * (1 - PV.eo5(c0))).toFixed(1)}px) scale(${PV.lerp(1.08, 1, PV.eo5(c0)).toFixed(3)})`; PV.$('#card').style.opacity = PV.cl(c0 * 2) * (1 - PV.n(k, T.end, T.end + .6));
+  const c0 = PV.n(k, -.8, .4); PV.$('#card').style.transform = `translateY(${(-60 * (1 - PV.eo5(c0))).toFixed(1)}px) scale(${PV.lerp(1.08, 1, PV.eo5(c0)).toFixed(3)})`; PV.$('#card').style.opacity = PV.cl(c0 * 2) * (1 - PV.n(k, T.end, T.end + .6));
   // the corner labels and the weigh-in: each card slams in on its beat
   PV.$$('.col h3').forEach(h => h.style.opacity = PV.n(k, 1.4, 2).toFixed(3));
   weigh.forEach((x, i) => { const e = fcs[x.k], w = T.weigh[i], a = PV.n(k, w - .3, w), s = PV.n(k, w, w + .5), dir = x.side === 'LONG' ? -1 : 1;

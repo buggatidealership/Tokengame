@@ -29,16 +29,20 @@ html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f
 .moon img{width:70px;height:70px;border-radius:16px;box-shadow:0 0 0 2px rgba(248,240,217,.35),0 10px 26px rgba(0,0,0,.6)}
 .moon .mv{font:700 36px/1 'Space Grotesk';padding:6px 12px 5px;border-radius:10px;background:rgba(4,7,14,.82);box-shadow:inset 0 0 0 1.5px rgba(253,188,42,.35)}
 /* the plaques: dark bronze with a bevel, a gold keyline and a brushed sheen */
-.pq{position:absolute;left:0;top:0;width:250px;padding:18px 18px 16px;border-radius:22px;
+.pq{position:absolute;left:0;top:0;width:274px;padding:18px 15px 16px;border-radius:22px;
   background:linear-gradient(160deg,rgba(253,188,42,.16),rgba(253,188,42,0) 38%),repeating-linear-gradient(90deg,rgba(248,240,217,.025) 0 1px,transparent 1px 4px),linear-gradient(180deg,#1c150b,#0b0906 70%,#120d07);
   box-shadow:inset 0 0 0 2px rgba(253,188,42,.42),inset 0 2px 0 rgba(255,236,170,.4),inset 0 -3px 0 rgba(0,0,0,.6),0 26px 50px rgba(0,0,0,.65)}
 .pq .hd{display:flex;align-items:center;gap:12px}
 .pq .hd b{font:800 32px/1 Cinzel;letter-spacing:.02em}
 .pq .rws{margin-top:14px;display:flex;flex-direction:column;gap:7px}
-.pq .rw{display:flex;align-items:center;gap:10px;height:36px;padding:0 8px;border-radius:9px}
+.pq .rw{display:flex;align-items:center;gap:8px;height:38px;padding:0 7px;border-radius:9px}
 .pq .rw img{width:30px;height:30px;border-radius:7px}
-.pq .rw span{font:700 26px/1 'Space Grotesk';letter-spacing:.03em}
-.pq .pl{margin-top:12px;font:700 36px/1 'Space Grotesk';text-align:right}
+.pq .rw span{position:relative;font:700 26px/1 'Space Grotesk';letter-spacing:.03em}
+.pq .rw span i{position:absolute;left:-4px;right:-4px;top:50%;height:3px;margin-top:-1px;background:#ff3a31;transform-origin:0 50%;transform:scaleX(0)}
+.pq .rw em{margin-left:auto;font:800 24px/1 Cinzel;letter-spacing:.06em;font-style:normal;opacity:0}
+#emb{position:absolute;left:78px;top:132px;width:104px}
+#emb .a,#emb .b{position:absolute;left:0;top:0}
+.pq .pl{margin-top:12px;font:700 35px/1 'Space Grotesk';text-align:right;white-space:nowrap}
 .pq .pl small{font:700 22px/1 Cinzel;letter-spacing:.08em;color:rgba(248,240,217,.7);float:left;margin-top:9px}
 .pq .rk{position:absolute;left:-16px;top:-16px;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 32px/1 'Space Grotesk';background:#04070e;color:#f8f0d9;box-shadow:inset 0 0 0 2px rgba(253,188,42,.6),0 6px 16px rgba(0,0,0,.6);opacity:0}
 .pq .flash{position:absolute;inset:0;border-radius:22px;pointer-events:none;opacity:0;background:radial-gradient(80% 70% at 50% 40%,rgba(255,240,200,.65),rgba(253,188,42,.18) 60%,transparent)}
@@ -56,7 +60,7 @@ html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f
   <div id="vg"></div>
   <div id="bellglow"></div>
   <svg id="shock" viewBox="0 0 1080 1350"></svg>
-  <div id="bellw"><img src="w6/nt/ov/ov5-bell.webp" alt=""></div>
+  <div id="bellw"><img src="w6/nt/ov/ov5-bell.webp" alt=""><div id="emb"><div class="a"></div><div class="b"></div></div></div>
   <div id="moons"></div>
   <div id="pqs"></div>
   <div id="title"><div class="a"></div><div class="b"></div></div>
@@ -72,12 +76,14 @@ const setup = () => {
   OV.bug("700 30px Cinzel", { css: 'letter-spacing:.04em', endFont: "800 60px Cinzel", subFont: "800 30px Cinzel" });
   grain = OV.grain(.065);
   L.$('#title .a').textContent = D.title[0]; L.$('#title .b').textContent = D.title[1];
+  // the mark cast into the bell's waist: a dark cast shadow and the lit bronze letters
+  L.$('#emb .a').innerHTML = OV.markSvg(104, 'rgba(40,24,6,.85)', false, 'transform:translate(1.5px,2.5px)'); L.$('#emb .b').innerHTML = OV.markSvg(104, '#ffe3a0', true);
   const N = D.N, small = N > 5;
   // plaques: the AIs in the sheet's order round the pentagon, 1 to 5 by Season 2 P&L after the turn
   D.ais.forEach((a, i) => { ANG0.push(-90 + 72 * i); ANG1.push(-90 + 72 * a.rank);
     const el = document.createElement('div'); el.className = 'pq';
     el.innerHTML = `<div class="flash"></div><div class="rim"></div><div class="rk">${a.rank + 1}</div><div class="hd">${OV.mark(a.k, 46, 'box-shadow:0 0 0 2px rgba(253,188,42,.4)')}<b>${a.name}</b></div>
-      <div class="rws">${D.rounds.map((r, j) => `<div class="rw" data-j="${j}"><img src="${r.logo}" alt=""><span style="color:${a.calls[j].side === 'LONG' ? OV.G : OV.R}">${small ? a.calls[j].side[0] : a.calls[j].side}</span></div>`).join('')}</div>
+      <div class="rws">${D.rounds.map((r, j) => `<div class="rw" data-j="${j}"><img src="${r.logo}" alt=""><span style="color:${a.calls[j].side === 'LONG' ? OV.G : OV.R}">${small ? a.calls[j].side[0] : a.calls[j].side}<i></i></span>${small ? '' : `<em style="color:${a.calls[j].right ? OV.AU : OV.R}">${a.calls[j].right ? 'RIGHT' : 'WRONG'}</em>`}</div>`).join('')}</div>
       <div class="pl num"><small>P&amp;L</small><span></span></div>`;
     if (small) { const rw = el.querySelector('.rws'); rw.style.cssText = 'display:grid;grid-template-columns:repeat(5,1fr);gap:6px' }
     L.$('#pqs').appendChild(el); PQ.push(el) });
@@ -87,7 +93,7 @@ const setup = () => {
     el.innerHTML = `<img src="${r.logo}" alt=""><div class="mv num"></div>`; el.dataset.a = gaps[j % 5] + (j >= 5 ? 0 : 0); el.dataset.r = j >= 5 ? RM + 70 : RM;
     if (N > 5) { el.style.zoom = .8 } L.$('#moons').appendChild(el); MO.push(el) });
   // sound
-  const C = window.CUES = [[.05, 'r11-swell', .14]];
+  const C = window.CUES = [[.05, 'r11-swell', .14]]; OV.sting(C);
   D.ais.forEach((a, i) => C.push([+B(-13 + i).toFixed(3), 'r11-card', .1]));
   D.rounds.forEach((r, j) => C.push([+(B(-8) + j * .5 * G.p).toFixed(3), 'r11-ping', .08]));
   C.push([B(-8), 'r11-slide', .1], [B(-4), 'sfx-riser', .12], [B(-4), 'sfx-clock', .14], [B(-2), 'sfx-clock', .14],
@@ -110,20 +116,23 @@ window.R = t => {
   L.$('#bellglow').style.transform = `scale(${(1 + .6 * strike).toFixed(3)})`;
   // the bell
   const sw = swing(t); L.$('#bellw').style.transform = `rotate(${sw.toFixed(2)}deg)`;
+  // the cast mark catches the light three times: the opening, the strike, the second ring (brand moments B3)
+  const gl = Math.max(...[[.2, 1], [TR, 1.2], [B(9), 1]].map(([t0, a]) => t >= t0 ? a * Math.exp(-(t - t0) * 1.6) : 0));
+  L.$('#emb .b').style.filter = `brightness(${(.78 + .7 * gl).toFixed(3)}) drop-shadow(0 0 ${(16 * gl).toFixed(1)}px rgba(253,188,42,${(.9 * gl).toFixed(2)}))`; L.$('#emb .b').style.opacity = (.82 + .18 * gl).toFixed(3);
   // the shock: three rings run out from the bell on the strike (and a small one on the second ring)
   const rings = []; [[TR, 0], [TR + .1, 1], [TR + .22, 2], [B(9), 3]].forEach(([t0, i]) => { const q = L.n(t, t0, t0 + (i === 3 ? .9 : 1.1)); if (q > 0 && q < 1) { const r = (i === 3 ? 500 : 1000) * L.eo(q);
     rings.push(`<circle cx="${CX}" cy="${CY}" r="${r.toFixed(1)}" fill="none" stroke="${i === 1 ? '#f8f0d9' : '#fdbc2a'}" stroke-width="${((i === 0 ? 26 : 10) * (1 - q)).toFixed(1)}" opacity="${(1 - q).toFixed(3)}"/>`) } });
   L.$('#shock').innerHTML = rings.join('');
   const shockR = t >= TR ? 1000 * L.eo(L.n(t, TR, TR + 1.1)) : 0;
   // title: alone, then it gives way to the band
-  const ti = L.$('#title'), tin = L.eo5(L.n(t, .08, .5)); ti.style.opacity = tin * (1 - L.n(t, B(-13) - .1, B(-13) + .15));
+  const ti = L.$('#title'), tin = 1 - .25 * (1 - L.eo5(L.n(t, 0, .5))); ti.style.opacity = tin * (1 - L.n(t, B(-13) - .1, B(-13) + .15));
   ti.style.transform = `translateY(${(40 * (1 - tin) - 30 * L.n(t, 0, B(-13))).toFixed(1)}px)`;
   // the band at the foot: the title small, then New York's clock, then the close, then the board's name
   const c = OV.clock(mNow(t)), bk = L.$('#bk'), bc = L.$('#bc'), bb = L.$('#bb');
-  bk.textContent = D.title.join(' '); bk.style.fontSize = '36px';
-  bk.style.opacity = L.n(t, B(-13), B(-12.5)) * (1 - L.n(t, B(-8) - .1, B(-8) + .1));
+  bk.textContent = `ONE BELL GRADES ${D.N * D.ais.length} TRADES`; bk.style.fontSize = '42px';
+  bk.style.opacity = L.n(t, B(-13), B(-12.5)) * (1 - L.n(t, B(-6) - .1, B(-6) + .1));
   bc.innerHTML = t < TR ? `${c.day} <span class="num">${c.t}</span> NEW YORK` : 'THE CLOSE'; bc.style.color = t < TR ? '#f8f0d9' : '#fdbc2a';
-  bc.style.opacity = L.n(t, B(-8) - .1, B(-8) + .1) * (1 - L.n(t, B(5) - .1, B(5) + .1));
+  bc.style.opacity = L.n(t, B(-6) - .1, B(-6) + .1) * (1 - L.n(t, B(5) - .1, B(5) + .1));
   bb.textContent = 'SEASON 2 LEADERBOARD'; bb.style.color = '#fdbc2a'; bb.style.opacity = L.n(t, B(5) + .1, B(5) + .3);
   [bk, bc, bb].forEach(x => x.style.transform = `scale(${(1 + .06 * strike).toFixed(3)})`);
   // the companies: they drop in one a half beat, sway, their moves live; stamped on the strike; they fade before the turn
@@ -142,13 +151,14 @@ window.R = t => {
     const hitT = TR + 1.1 * (1 - Math.cbrt(1 - Math.min(.999, (RP - 60) / 1000))), hk = t >= hitT ? Math.exp(-(t - hitT) * 7) : 0;
     const jol = 26 * hk * Math.cos((t - hitT) * 30);
     const ox = (out + jol) * Math.cos(ra), oy = (out + jol) * Math.sin(ra);
-    const h = el.offsetHeight; el.style.transform = `translate(${(x - 125 + ox).toFixed(1)}px,${(y - h / 2 + oy).toFixed(1)}px) rotate(${(3 * hk * Math.sin((t - hitT) * 40)).toFixed(2)}deg)`;
+    const h = el.offsetHeight; el.style.transform = `translate(${(x - 137 + ox).toFixed(1)}px,${(y - h / 2 + oy).toFixed(1)}px) rotate(${(3 * hk * Math.sin((t - hitT) * 40)).toFixed(2)}deg)`;
     el.style.opacity = t >= t0 ? L.cl(k * 1.6) : 0;
     el.querySelector('.flash').style.opacity = (hk * 1.2).toFixed(3);
     const graded = t >= hitT;
     el.querySelectorAll('.rw').forEach((rw, j) => { const cc = a.calls[j], gk = graded ? L.n(t, hitT, hitT + .25) : 0;
       if (cc.right) { rw.style.background = `rgba(253,188,42,${(.22 * gk).toFixed(3)})`; rw.style.boxShadow = gk ? `inset 0 0 0 2px rgba(253,188,42,${(.8 * gk).toFixed(2)})` : ''; rw.style.opacity = 1 }
-      else { rw.style.background = ''; rw.style.boxShadow = ''; rw.style.opacity = (1 - .62 * gk).toFixed(3); rw.style.filter = `saturate(${(1 - .9 * gk).toFixed(2)})` } });
+      else { rw.style.background = `rgba(255,58,49,${(.1 * gk).toFixed(3)})`; rw.style.boxShadow = gk ? `inset 0 0 0 2px rgba(255,58,49,${(.85 * gk).toFixed(2)})` : ''; rw.querySelector('span i').style.transform = `scaleX(${L.eo(gk).toFixed(3)})` }
+      const em = rw.querySelector('em'); if (em) em.style.opacity = gk });
     const v = graded ? a.night : Math.round(D.rounds.reduce((s, r, j) => s + (a.calls[j].side === 'LONG' ? 1 : -1) * live(r, T0) * 1000, 0));
     const shown = t >= B(5) && D.before ? Math.round(L.lerp(a.night, a.s1, turn)) : v;
     const sp = el.querySelector('.pl span'); sp.textContent = t < B(-8) ? '$0' : OV.money(shown); sp.style.color = OV.sgn(shown);

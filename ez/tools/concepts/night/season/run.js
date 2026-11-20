@@ -31,13 +31,15 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
     if(own(e)){const f=c.fontFamily.split(',')[0].replace(/["']/g,'').trim();res.faces[f]=(res.faces[f]||0)+1;
       const rg=document.createRange();rg.selectNodeContents(e);const t=rg.getBoundingClientRect();if(c.display!=='inline'&&t.width>r.width+1.5&&c.overflow!=='hidden')res.spill.push((e.className||e.tagName)+' "'+e.textContent.trim().slice(0,24)+'" '+t.width.toFixed(0)+'>'+r.width.toFixed(0));
       if(t.right>W+.5||t.left<-.5)res.spill.push('offscreen '+(e.className||e.tagName)+' "'+e.textContent.trim().slice(0,24)+'"');
-      res.text.push({x:r.left+scrollX,y:r.top+scrollY,w:r.width,h:r.height,c:c.color,fs:parseFloat(c.fontSize),t:e.textContent.trim().slice(0,30),sel:e.tagName+'.'+(e.className.baseVal!==undefined?'':e.className)})}});
+      const r1=(c.display==='inline'&&e.getClientRects().length)?e.getClientRects()[0]:r;
+      res.text.push({nav:!!e.closest('nav.nav'),x:r1.left+scrollX,y:r1.top+scrollY,w:r1.width,h:r1.height,c:c.color,fs:parseFloat(c.fontSize),t:e.textContent.trim().slice(0,30),sel:e.tagName+'.'+(e.className.baseVal!==undefined?'':e.className)})}});
   /* tap targets: every button and link in the header, main and the bottom nav */
   document.querySelectorAll('header.top button, header.top a, main button, main a, nav.nav button').forEach(e=>{const r=vis(e);if(!r)return;if(r.height<43.5||r.width<43.5)res.tap.push((e.className||e.tagName)+' "'+e.textContent.trim().slice(0,22)+'" '+r.width.toFixed(0)+'x'+r.height.toFixed(0))});
   /* overlapping text atoms inside main */
   const at=[...document.querySelectorAll('main *')].filter(e=>own(e)||e.matches('.ai,.co2,.okm,.fm i')).filter(e=>!e.closest('.ai,.co2,.okm')||e.matches('.ai,.co2,.okm')).map(e=>[e,vis(e)]).filter(x=>x[1]);
   for(let i=0;i<at.length;i++)for(let j=i+1;j<at.length;j++){const [a,ra]=at[i],[b,rb]=at[j];if(a.contains(b)||b.contains(a))continue;const ix=Math.min(ra.right,rb.right)-Math.max(ra.left,rb.left),iy=Math.min(ra.bottom,rb.bottom)-Math.max(ra.top,rb.top);
     if(ix>1&&iy>1)res.overlap.push((a.className||a.tagName)+' "'+a.textContent.trim().slice(0,14)+'" x '+(b.className||b.tagName)+' "'+b.textContent.trim().slice(0,14)+'" '+ix.toFixed(1)+'x'+iy.toFixed(1))}
+  res.wide=[];if(res.sw>W)document.querySelectorAll('body *').forEach(e=>{const r=e.getBoundingClientRect();if(r.width&&r.right>W+.5&&!e.closest('.a-chips,.b-chips,.c-chips,.s2pk,.tabs,.sub,.pick')){let x=e.parentElement,inner=false;while(x){const c=getComputedStyle(x);if(/auto|scroll|hidden|clip/.test(c.overflowX)){inner=true;break}x=x.parentElement}if(!inner)res.wide.push((e.className&&e.className.baseVal===undefined?e.className:e.tagName)+' '+r.right.toFixed(0))}});res.wide=res.wide.slice(0,6);
   return res}
 (async()=>{await new Promise(r=>srv.listen(0,r));const port=srv.address().port;const b=await chromium.launch();const report={},errs=[];
   for(const [n,q,h] of VIEWS){if(only&&!only.some(o=>n===o||n.startsWith(o+'-')||n.startsWith(o)))continue;
@@ -47,6 +49,8 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
     await p.goto(`http://localhost:${port}/__season.html?${q}${h}`,{waitUntil:'networkidle'}).catch(e=>errs.push(n+' goto '+e.message));
     await p.evaluate(()=>document.fonts&&document.fonts.ready);await p.waitForTimeout(700);
     const m=await p.evaluate(measure);report[n+'@'+w]=m;
+    if(w<500){const NT='header.top *, main *, nav.nav *{color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important;text-decoration-color:transparent!important}';
+      const h=await p.addStyleTag({content:NT});await p.waitForTimeout(80);await p.screenshot({path:`${OUT}/${n}-${w}-vp-nt.png`});await h.evaluate(e=>e.remove());await p.waitForTimeout(60)}
     /* a full-page shot keeps the fixed bottom nav at the first screen's foot: put it at the end of the page for the board */
     await p.addStyleTag({content:'.nav{position:static!important;margin:16px auto 0!important;left:auto!important;right:auto!important;bottom:auto!important}.app{padding-bottom:16px!important}'});await p.waitForTimeout(150);
     const H=await p.evaluate(()=>document.documentElement.scrollHeight),cap=w<500?2400:1700,clip={x:0,y:0,width:w,height:Math.min(H,cap)};
@@ -55,5 +59,5 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
     if(w!==320){await p.addStyleTag({content:'header.top *, main *, nav.nav *{color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important;text-decoration-color:transparent!important}'});await p.waitForTimeout(100);await p.screenshot({path:`${OUT}/${n}-${w}-nt.png`,clip})}
     await ctx.close()}}
   fs.writeFileSync(`${OUT}/report.json`,JSON.stringify({errs,report},null,1));
-  for(const k in report){const m=report[k];console.log(k.padEnd(12),'sw',m.sw+'/'+m.W,'trunc',m.trunc.length,'spill',m.spill.length,'overlap',m.overlap.length,'tap<44',m.tap.length,'faces',Object.keys(m.faces).join('|'))}
+  for(const k in report){const m=report[k];console.log(k.padEnd(12),'sw',m.sw+'/'+m.W,'trunc',m.trunc.length,'spill',m.spill.length,'overlap',m.overlap.length,'tap<44',m.tap.length,'faces',Object.keys(m.faces).join('|'),m.wide&&m.wide.length?'WIDE '+m.wide.join(';'):'')}
   console.log('errors',errs.length?errs.join('\n'):'none');await b.close();srv.close()})();

@@ -13,7 +13,9 @@
 #st{background:#f8f0d9}
 #gnd{position:absolute;left:-40px;top:-50px;width:1160px;height:1450px;background:url(w6/nt/fv2/ground.jpg) center/cover;transform-origin:540px 600px}
 #lite{position:absolute;inset:0;background:radial-gradient(60% 45% at 50% 44%,rgba(253,188,42,.22),transparent 70%);opacity:0;pointer-events:none}
-#bug b{font-family:'Instrument Serif',serif;font-weight:400;font-size:42px;color:#04070e;text-shadow:none;letter-spacing:-.005em}
+#bug{color:#04070e}
+#stamp{position:absolute;left:716px;top:890px;display:flex;align-items:center;gap:14px;padding:14px 22px 14px 14px;border:4px solid rgba(4,7,14,.82);border-radius:22px;transform-origin:50% 50%;opacity:0;z-index:20;mix-blend-mode:multiply}
+#stamp img{width:96px;height:96px}#stamp b{font:700 40px/1 'Geist Mono';letter-spacing:.14em;color:rgba(4,7,14,.86)}
 #bug img{filter:none}
 #pg{position:absolute;inset:0;transform-origin:0 0}
 #kick{position:absolute;left:72px;top:250px;display:flex;align-items:center;gap:16px;font:700 30px/1 'Geist Mono';letter-spacing:.12em;color:#04070e}
@@ -41,7 +43,7 @@
 <div id="st">
 <div id="gnd"></div><div id="lite"></div>
 <div id="pg"><div id="kick"></div><div class="par" id="jg"></div><div class="par" id="pl"></div><div id="cur"></div><svg id="sq"></svg></div>
-<div id="phw"></div>
+<div id="phw"></div><div id="stamp"><img src="ezlogo.svg" alt=""><b>OURS</b></div>
 <div class="ln" id="l1"></div><div class="ln" id="l2"></div>
 <div id="lift"></div>
 <div id="td"></div><div id="tr"></div>
@@ -58,7 +60,7 @@ const PL = [['Already', 'sold', 'hard', 'on', '*AI', 'fears.'], ['A', '*beat', '
 const MAP = [0, -1, 1, 2];   // jargon group -> plain group (-1: left out, it crumbles)
 const SQ = [[0, 1], [0, 4], [1, 1, 2], [2, 3, 4]];   // the red pencil: under washout, overhang, residual owned, re-anchor ownership
 // ---- the beats ----
-const T = { type0: B(0) + .15, type1: B(3.6), sq: [4, 5, 6, 7].map(B), drop: B(8), g: [B(8), B(11), B(14)], crumble: B(8), wide: B(17), mark: B(17.5), phone: B(20), end: B(24.5) };
+const T = { tap: B(2), dive: B(3), cut: B(3.6), sq: [4, 5, 6, 7].map(B), drop: B(8), g: [B(8), B(11), B(14)], crumble: B(8), wide: B(17), mark: B(17.5), phone: B(20), end: B(24.5) };
 let grain, M = {};
 (async () => {
   await FV.boot(async () => {
@@ -75,7 +77,8 @@ let grain, M = {};
     // the phone: Grok's post with its In plain words panel open (the app's own UI)
     $('#phw').innerHTML = FV.phone(`<div class="vw" id="v2"><div class="vh"><small>FEED</small><b>Season 2</b></div>${FV.post(g, { id: 'gp', plain: 1 })}</div>`);
   }, ['400 88px "Instrument Serif"', '400 42px "Instrument Serif"']);
-  $('#gp .pp').style.height = 'auto';
+  { const pp = $('#gp .pp'); pp.style.height = 'auto'; M.hp = pp.offsetHeight; pp.style.height = '0px'; }
+  { const ph = $('#phw .phw'); ph.style.zoom = 1; ph.style.left = '0px'; ph.style.top = '0px'; const r0 = ph.getBoundingClientRect(), q = $('#gp .pq').getBoundingClientRect(); M.ax = q.left + q.width / 2 - r0.left; M.ay = q.top + q.height / 2 - r0.top; }
   FV.navOn($('#phw'), 'FEED');
   // measure: every word of both layers at its own place (no transforms)
   const rect = e => { const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height, cx: r.left + r.width / 2, cy: r.top + r.height / 2 } };
@@ -89,10 +92,10 @@ let grain, M = {};
   $('#sq').innerHTML = SQ.map(([g, ...ws], i) => { const r = ws.map(k => M.j.find(w => w.g === g && w.e.dataset.w == k).r), x0 = r[0].x - 4, x1 = r[r.length - 1].x + r[r.length - 1].w + 4, y = r[0].y + r[0].h - 2;
     let d = `M${x0.toFixed(1)} ${y.toFixed(1)}`; for (let x = x0; x < x1; x += 14) d += ` q7 ${i % 2 ? -7 : 7} 14 0`; return `<path d="${d}" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>` }).join('');
   // the camera on the paper: wide, the pencil, then each phrase in close-up, then wide again (scale about the frame centre)
-  const foc = g => { const r = M.gr(g); return { s: 1.45, x: r.cx, y: r.cy } };
+  const foc = g => { const r = M.gr(g); return { s: 1.12, x: 540, y: r.cy } };   // a tilt and a small push: the paragraph stays whole across the frame
   M.cam = [[0, { s: 1, x: 540, y: 560 }], [4, { s: 1.08, x: 540, y: 500 }], [8, foc(0)], [11, foc(1)], [14, foc(2)], [17, { s: 1, x: 540, y: 600 }], [20, { s: .92, x: 540, y: 640 }]];
   grain = L.grain($('#grain'), .04);
-  window.CUES = [[T.type0, 'sfx-type', .08], [B(1.5), 'sfx-type', .07], [B(2.8), 'sfx-type', .06], ...T.sq.map(t => [t, 'r11-tape', .06]), [T.drop, 'sfx-whoosh', .1], [T.drop, 'r11-thump', .08],
+  window.CUES = [FV.STING, [T.tap, 'sfx-tap', .13], [T.dive, 'sfx-whoosh', .09], [T.cut, 'r11-slide', .07], [T.drop, 'sfx-stamp', .1], ...T.sq.map(t => [t, 'r11-tape', .06]), [T.drop, 'sfx-whoosh', .1], [T.drop, 'r11-thump', .08],
     [T.g[1], 'r11-slide', .08], [T.g[2], 'r11-slide', .08], [T.mark, 'r11-sparkle', .06], [T.phone, 'sfx-whoosh', .09], [T.end, 'sfx-chime', .12]];
   window.MUSIC = { f: 'm3-electro', at: AT }; window.DUR = DUR;
   window.R(0); await FV.raf(); window.R(.5); await FV.raf(); window.READY = 1;
@@ -108,7 +111,7 @@ window.R = t => {
   $('#pg').style.transform = `translate(${(540 - C.x * s + sway).toFixed(2)}px,${(640 - C.y * s).toFixed(2)}px) scale(${s.toFixed(4)}) rotate(${(.25 * Math.sin(t * .4)).toFixed(3)}deg)`;
   $('#gnd').style.transform = `scale(${(1 + (s - 1) * .4 + .004 * bp * drop).toFixed(4)}) translate(${((540 - C.x) * .15).toFixed(1)}px,${((640 - C.y) * .1).toFixed(1)}px)`;
   // typing: word by word, a block cursor after the last one
-  const nj = M.j.length, typed = (t - T.type0) / (T.type1 - T.type0) * nj;
+  const typed = t >= T.cut ? 1e9 : -1; $('#pg').style.opacity = eo(n(t, T.cut - .08, T.cut + .12)).toFixed(3);
   let last = null; const gone = eio(n(t, T.phone - .2, T.phone + .5));
   M.j.forEach((w, i) => { const on = i < typed; let o = on ? 1 : 0, tf = '', blur = 0;
     if (on) last = w;
@@ -124,7 +127,7 @@ window.R = t => {
         c.style.transform = `translate(${(40 * (r - .5) * d).toFixed(1)}px,${(520 * d * d).toFixed(1)}px) rotate(${(140 * (r - .5) * d).toFixed(1)}deg)`; c.style.opacity = (1 - d).toFixed(3) }) }
     }
     w.e.style.opacity = o.toFixed(3); w.e.style.transform = tf; w.e.style.filter = blur > .1 ? `blur(${blur.toFixed(1)}px)` : '' });
-  const cu = $('#cur'); if (last && t < T.type1 + .5) { cu.style.left = (last.r.x + last.r.w + 6) + 'px'; cu.style.top = (last.r.y + 6) + 'px'; cu.style.opacity = Math.floor(t * 4) % 2 ? .8 : .2 } else cu.style.opacity = 0;
+  const cu = $('#cur'); if (false) { cu.style.left = (last.r.x + last.r.w + 6) + 'px'; cu.style.top = (last.r.y + 6) + 'px'; cu.style.opacity = Math.floor(t * 4) % 2 ? .8 : .2 } else cu.style.opacity = 0;
   // the pencil
   $$('#sq path').forEach((p, i) => { const a = T.sq[i], k = eo(n(t, a, a + .35)); p.style.strokeDashoffset = (1 - k).toFixed(3); p.style.opacity = (t < T.drop + .1 ? 1 : 1 - n(t, T.drop + .1, T.drop + .5)).toFixed(3) });
   // the plain words: each group condenses out of its jargon group on its beat; an anchor glides from its twin's place, in gold
@@ -139,13 +142,20 @@ window.R = t => {
     w.e.style.background = w.an && t >= T.mark ? `linear-gradient(transparent 60%,rgba(253,188,42,.75) 60%) no-repeat 0 0/${(100 * eo(n(t, T.mark, T.mark + .4))).toFixed(0)}% 100%` : '' });
   $('#kick').style.opacity = (eo(n(t, 0, .4)) * (1 - n(t, T.wide - .2, T.wide + .1))).toFixed(3); $('#kick').style.transform = `translateY(${(14 * (1 - eo(n(t, 0, .5)))).toFixed(1)}px)`;
   // the phone: rises into the frame; the paragraph flies into its In plain words panel
-  const ph = $('#phw .phw'), kp = spr(n(t, T.phone, T.phone + 1)), out = eio(n(t, T.end, T.end + 1.1)), z = 1.3 + .08 * n(t, T.phone, T.end) - .3 * out;
-  ph.style.display = t >= T.phone - .1 ? 'block' : 'none';
-  if (t >= T.phone - .1) { ph.style.zoom = z.toFixed(4); ph.style.left = ((540 - 195 * z) / z).toFixed(2) + 'px'; ph.style.top = ((lerp(1500, 150, kp) + 300 * out) / z).toFixed(2) + 'px';
+  const ph = $('#phw .phw'), kp = spr(n(t, T.phone, T.phone + 1)), out = eio(n(t, T.end, T.end + 1.1)), z = 1.2 + .08 * n(t, T.phone, T.end) - .3 * out;
+  const open = t < T.cut, ok = eo(n(t, T.tap + .05, T.tap + .5)); $('#gp .pp').style.height = (M.hp * (open ? 0 : 1)).toFixed(2) + 'px'; $('#gp .pt').style.color = open && ok > 0 && ok < 1 ? '#fff3c8' : '';
+  ph.style.display = open || t >= T.phone - .1 ? 'block' : 'none'; FV.touch(0, 0, 0, 0, 0);
+  if (open) {   // the opening: Grok's post in the app; the fingertip opens In plain words; the camera dives into the words
+    const dv = eio(n(t, T.dive, T.cut)), zz = 1.25 * (1 + 1.7 * dv) * (1 + .015 * Math.sin(t * 2)), ax = lerp(195, M.ax, dv), ay = lerp(422, M.ay, dv);
+    ph.style.zoom = zz.toFixed(4); ph.style.left = ((540 - ax * zz) / zz).toFixed(2) + 'px'; ph.style.top = ((lerp(735, 640, dv) - ay * zz) / zz).toFixed(2) + 'px'; ph.style.transform = `rotate(${(.6 * Math.sin(t * .9)).toFixed(3)}deg)`; ph.style.opacity = 1;
+    FV.tap(t, T.tap, $('#gp .pt'));
+  } else if (t >= T.phone - .1) { ph.style.zoom = z.toFixed(4); ph.style.left = ((540 - 195 * z) / z).toFixed(2) + 'px'; ph.style.top = ((lerp(1500, 330, kp) + 300 * out) / z).toFixed(2) + 'px';
     ph.style.transform = `rotate(${(2.5 * (1 - kp) - .6 * Math.sin(t * .7)).toFixed(3)}deg)`; ph.style.opacity = (1 - .9 * out).toFixed(3);
     $('#gp .ppi').style.opacity = n(t, T.phone + .5, T.phone + .9).toFixed(3) }
   if (t >= T.phone - .2) { const pr = $('#gp .ppi p').getBoundingClientRect(), pc = M.gr(1), fly = eio(n(t, T.phone - .1, T.phone + .7));
     $('#pl').style.transform = `translate(${((pr.left + pr.width / 2 - pc.cx) * fly).toFixed(1)}px,${((pr.top + pr.height / 2 - pc.cy) * fly).toFixed(1)}px) scale(${lerp(1, pr.width / 936, fly).toFixed(3)})`; $('#pl').style.transformOrigin = `${(pc.cx - 72).toFixed(0)}px ${(pc.cy - 350).toFixed(0)}px` } else $('#pl').style.transform = '';
+  const sk = FV.slam(n(t, T.drop - .07, T.drop + .35)), so = 1 - n(t, T.phone - .3, T.phone + .1); $('#stamp').style.opacity = (t >= T.drop - .07 ? cl(sk * 3) * so : 0).toFixed(3);
+  $('#stamp').style.transform = `rotate(-6deg) scale(${lerp(1.7, 1, sk).toFixed(3)})`;
   FV.lineR($('#l1'), t, T.drop + .05, T.g[2] + 1.2); FV.lineR($('#l2'), t, T.wide + .1, T.end - .35);
   FV.endR(t, T.end);
 };

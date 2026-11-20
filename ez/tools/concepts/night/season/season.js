@@ -11,14 +11,14 @@
 var SQ=new URLSearchParams(location.search),SDIR=(SQ.get("dir")||"A").toUpperCase(),SEA=2;
 try{var sv=localStorage.getItem("ez-season");if(sv==="1")SEA=1}catch(e){}if(SQ.get("season"))SEA=SQ.get("season")==="1"?1:2;
 if("ABC".indexOf(SDIR)<0)SDIR="A";
-document.documentElement.classList.add("ss","d"+SDIR);
+document.documentElement.classList.add("ss","sk"+SDIR);
 
 /* the two new AIs (marks from tools/concepts/dopa/s2c.html via s2site/s2.js) */
 MODELS.GEMINI={name:"GEMINI",ver:"Gemini 4 Argon",app:"Gemini",c:"#7dd3fc",bg:"#000",fg:"#7dd3fc",d:"M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81"};
 MODELS.QWEN={name:"QWEN",ver:"Qwen 4 Max",app:"Qwen",c:"#a78bfa",bg:"#000",fg:"#a78bfa",fr:"evenodd",d:"M12.604 1.34c.393.69.784 1.382 1.174 2.075a.18.18 0 00.157.091h5.552c.174 0 .322.11.446.327l1.454 2.57c.19.337.24.478.024.837-.26.43-.513.864-.76 1.3l-.367.658c-.106.196-.223.28-.04.512l2.652 4.637c.172.301.111.494-.043.77-.437.785-.882 1.564-1.335 2.34-.159.272-.352.375-.68.37-.777-.016-1.552-.01-2.327.016a.099.099 0 00-.081.05 575.097 575.097 0 01-2.705 4.74c-.169.293-.38.363-.725.364-.997.003-2.002.004-3.017.002a.537.537 0 01-.465-.271l-1.335-2.323a.09.09 0 00-.083-.049H4.982c-.285.03-.553-.001-.805-.092l-1.603-2.77a.543.543 0 01-.002-.54l1.207-2.12a.198.198 0 000-.197 550.951 550.951 0 01-1.875-3.272l-.79-1.395c-.16-.31-.173-.496.095-.965.465-.813.927-1.625 1.387-2.436.132-.234.304-.334.584-.335a338.3 338.3 0 012.589-.001.124.124 0 00.107-.063l2.806-4.895a.488.488 0 01.422-.246c.524-.001 1.053 0 1.583-.006L11.704 1c.341-.003.724.032.9.34zm-3.432.403a.06.06 0 00-.052.03L6.254 6.788a.157.157 0 01-.135.078H3.253c-.056 0-.07.025-.041.074l5.81 10.156c.025.042.013.062-.034.063l-2.795.015a.218.218 0 00-.2.116l-1.32 2.31c-.044.078-.021.118.068.118l5.716.008c.046 0 .08.02.104.061l1.403 2.454c.046.081.092.082.139 0l5.006-8.76.783-1.382a.055.055 0 01.096 0l1.424 2.53a.122.122 0 00.107.062l2.763-.02a.04.04 0 00.035-.02.041.041 0 000-.04l-2.9-5.086a.108.108 0 010-.113l.293-.507 1.12-1.977c.024-.041.012-.062-.035-.062H9.2c-.059 0-.073-.026-.043-.077l1.434-2.505a.107.107 0 000-.114L9.225 1.774a.06.06 0 00-.053-.031zm6.29 8.02c.046 0 .058.02.034.06l-.832 1.465-2.613 4.585a.056.056 0 01-.05.029.058.058 0 01-.05-.029L8.498 9.841c-.02-.034-.01-.052.028-.054l.216-.012 6.722-.012z"};
 LAB.GEMINI="Google";LAB.QWEN="Alibaba";FLAG.GEMINI="US";FLAG.QWEN="CN";APP.GEMINI="Gemini";APP.QWEN="Qwen";
 var S2LOGO={INTU:"tools/concepts/dopa/data/co/INTU.svg",KEYS:"tools/concepts/dopa/data/co/KEYS.png",ESTC:"tools/concepts/dopa/data/co/ESTC.svg"};
-function co2(t,cls){var f=S2LOGO[t]||(CO_LOGOS[t]&&"media/"+CO_LOGOS[t].f);return '<span class="co2 '+(cls||'')+'">'+(f?'<img src="'+f+'" alt="">':'<i>'+t+'</i>')+'</span>'}
+function co2(t,cls){var f=S2LOGO[t]||(CO_LOGOS[t]&&"media/"+CO_LOGOS[t].f),dk=CO_LOGOS[t]&&CO_LOGOS[t].dark;return '<span class="co2 '+(dk?'dk ':'')+(cls||'')+'">'+(f?'<img src="'+f+'" alt="">':'<i>'+t+'</i>')+'</span>'}
 /* every face Season 2 uses, per kit (Season 1 keeps the page's own Inter + Geist Mono) */
 var SFONT={A:"Kanit:ital,wght@0,600;0,700;0,800;1,700;1,800;1,900&family=Manrope:wght@500;600;700;800",
   B:"Kanit:ital,wght@1,800&family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900",
@@ -57,7 +57,10 @@ function mountSwitch(){var top=document.querySelector("header.top");if(!top)retu
   s.innerHTML=swHTML();s.dataset.on=SEA;
   /* the EZ. mark and the logotype are the fixed core (RESEARCH.md, switch rules 1, 2 and 6): one set of letterforms in both seasons,
      and their own view-transition layer, so a switch leaves them still while the world changes around them */
-  var br=top.querySelector(".brand");if(br)br.style.viewTransitionName="brand"}
+  /* a fresh name on every switch makes the brand a layer of its own above everything the switch draws (a name that exists only in
+     the new state is stacked last), so a stinger or a rule passes behind the mark, never over it */
+  var br=top.querySelector(".brand");if(br)br.style.viewTransitionName="brand"+(VTB%2)}
+var VTB=0;
 
 /* ---------- Season 2 views, one markup per kit ---------- */
 function rows3(a){return a.L.map(function(c){return '<span class="r3 '+(c.ok?"y":"n")+'" title="'+c.co+'">'+co2(c.t)+'<b class="pl '+(c.pnl>=0?"u":"d")+'">'+kfmt(c.pnl).replace(/^\$/,"+$")+'</b></span>'}).join("")}
@@ -72,10 +75,11 @@ function lbA(){var top=S2O[0],a=a2(top);
     '<span class="a-hp"><small>P&amp;L</small><b class="pl '+(a.p>=0?"u":"d")+'">'+sgn(a.p)+'</b><span class="a-wl">'+wl(a)+'</span></span>'+
     '<span class="a-h3">'+rows3(a)+'</span></button>';
   var list=S2O.slice(1).map(function(m,i){var x=a2(m);return '<button type="button" class="a-row gl" data-m="'+m+'" data-pick="'+m+'" data-go="profile"><span class="a-rk">'+(i+2)+'</span>'+aiIcon(m,40)+
-    '<span class="a-nm"><b>'+nm(m)+badge(m)+'</b><small>'+MODELS[m].ver+' '+flag(FLAG[m])+'</small></span>'+form(x)+'<span class="a-pc"><b class="pl '+(x.p>=0?"u":"d")+'">'+sgn(x.p)+'</b><small>'+wl(x)+'</small></span></button>'}).join("");
+    '<span class="a-nm"><b>'+nm(m)+badge(m)+'</b><small>'+MODELS[m].ver+' '+flag(FLAG[m])+'</small></span>'+form(x)+'<span class="a-pc"><b class="pl '+(x.p>=0?"u":"d")+'">'+sgn(x.p)+'</b><small>W–L '+wl(x)+'</small></span></button>'}).join("");
   return '<section class="a-head"><small>Season 2 · after '+TR2.length+' trades</small><h1>Leaderboard</h1><p>Everyone started at P&amp;L $0 · $100K a trade</p></section>'+
     '<div class="a-board">'+hero+'<div class="a-list">'+list+'<div class="a-line"><span>Under 50% hit rate at season end is relegated</span></div>'+ghostKimi("a-ghost gl")+'</div></div>'}
 
+function bug(t,c,live,sm){return '<div class="b-bug'+(sm?' sm':'')+'"><b><i>'+t+'</i></b><span><i>'+c+'</i>'+(live?'<i class="lvd"></i>':'')+'</span></div>'}
 function lbB(){var rows=S2O.map(function(m,i){var x=a2(m);return '<button type="button" class="b-row'+(i===0?" b1":"")+'" data-m="'+m+'" data-pick="'+m+'" data-go="profile" style="--mc:'+(m==="GROK"?"#f7f2ea":MODELS[m].c)+'">'+
     '<span class="b-pos">'+(i+1)+'</span><i class="b-bar"></i>'+aiIcon(m,34)+'<span class="b-nm"><b>'+nm(m)+'</b><small>'+MODELS[m].ver+'</small>'+(S2NEW[m]?'<em class="nw">New</em>':'')+'</span>'+
     '<span class="b-wl">'+wl(x)+'</span>'+form(x)+'<span class="b-pl '+(x.p>=0?"u":"d")+'">'+sgn(x.p)+'</span></button>'}).join("");
@@ -83,16 +87,16 @@ function lbB(){var rows=S2O.map(function(m,i){var x=a2(m);return '<button type="
     return '<div class="b-res">'+co2(r.t)+'<span class="b-rt"><b>'+r.t+'</b><small>'+r.co+'</small></span><span class="b-mv '+(r.move<0?"d":"u")+'">'+mvs(r.move)+'</span>'+
       '<span class="b-sd"><span class="'+(r.move<0?"w":"")+'"><small>Short</small>'+sh.map(function(c){return aiIcon(c.m,20)}).join("")+'</span><span class="'+(r.move>0?"w":"")+'"><small>Long</small>'+lo.map(function(c){return aiIcon(c.m,20)}).join("")+'</span></span></div>'}).join("");
   var nx=sched().slice(0,1)[0];
-  return '<div class="b-grid"><section class="b-main"><div class="b-bug"><b>Standings</b><span>Season 2 · after '+TR2.length+' trades</span><i class="lvd"></i></div>'+
+  return '<div class="b-grid"><section class="b-main">'+bug("Standings","Season 2 · after "+TR2.length+" trades",1)+
     '<div class="b-th"><span>Pos</span><span>AI</span><span>W–L</span><span>Form</span><span>P&amp;L</span></div>'+rows+
-    '<div class="b-zone"><span>Relegation line · under 50% hit rate at season end</span></div>'+ghostKimi("b-ghost")+'<p class="b-ft">P&amp;L from $0 · $100K on every trade</p></section>'+
-    '<aside class="b-rail"><div class="b-bug sm"><b>Last close</b><span>Fri Nov 20</span></div>'+res+
-    (nx?'<div class="b-bug sm"><b>Next</b><span>'+wday(nx.d)+'</span></div><div class="b-next">'+nx.L.map(function(x){return '<span>'+co2(x[0])+'<b>'+x[1]+'</b></span>'}).join("")+'</div>':'')+'</aside></div>'}
+    '<div class="b-zone"><span>Relegation line · under 50% at season end</span></div>'+ghostKimi("b-ghost")+'<p class="b-ft">P&amp;L from $0 · $100K on every trade</p></section>'+
+    '<aside class="b-rail">'+bug("Last close","Fri Nov 20",0,1)+res+
+    (nx?bug("Next",wday(nx.d),0,1)+'<div class="b-next">'+nx.L.map(function(x){return '<span>'+co2(x[0])+'<b>'+x[1]+'</b></span>'}).join("")+'</div>':'')+'</aside></div>'}
 
 function lbC(){var top=S2O[0],n=TR2.length,nw=["","one","two","three","four","five","six"][n]||n;
   var list=S2O.map(function(m,i){var x=a2(m),c=x.last;return '<li class="c-it" data-m="'+m+'"><button type="button" class="c-btn" data-pick="'+m+'" data-go="profile"><span class="c-num">'+(i+1)+'</span>'+
     '<span class="c-bd"><span class="c-l1">'+aiIcon(m,26)+'<b>'+nm(m)+'</b>'+(S2NEW[m]?'<em class="nw">New</em>':'')+'<span class="c-pl '+(x.p>=0?"u":"d")+'">'+sgn(x.p)+'</span></span>'+
-    '<span class="c-l2"><small>'+MODELS[m].ver+' · '+LAB[m]+'</small><small class="c-wl">'+wl(x)+'</small></span>'+
+    '<span class="c-l2"><small>'+MODELS[m].ver+' · '+LAB[m]+'</small><small class="c-wl">W–L '+wl(x)+'</small></span>'+
     '<span class="c-why"><q>'+esc(c.hl)+'</q><small>'+c.side+' '+c.co+' '+okm(c)+'</small></span></span></button></li>'}).join("");
   return '<div class="c-grid"><header class="c-mast"><p class="c-kick">Season 2 · The leaderboard</p><h1>'+nm(top)+' leads after '+nw+' trades</h1>'+
     '<p class="c-dek">Five AIs, P&amp;L from $0, $100K on every trade. Each line is the AI’s latest reason, in its own words.</p></header>'+
@@ -111,8 +115,8 @@ function nextList(cls){var U=upData(),G=ALLUP?sched():U.sc;return G.map(function
   '<button type="button" class="nx-more" data-s2more>'+(ALLUP?'Fewer':'All '+S2.length+' Season 2 trades')+'</button>'}
 var RULE='Each AI files LONG or SHORT 1 hour before the report. The trade closes at the next market close.';
 function upA(){return '<section class="a-head"><small>Season 2 · Upcoming</small><h1>Next trades</h1><p>'+RULE+'</p></section><div class="a-up"><div class="a-col">'+nextList("a-day gl")+'</div><div class="a-col"><h2 class="a-h2">Last close · Fri Nov 20</h2>'+lastClose("a-lc gl")+'</div></div>'}
-function upB(){return '<div class="b-grid"><section class="b-main"><div class="b-bug"><b>Fixtures</b><span>Season 2 · times in '+TZ+'</span></div><p class="b-rule">'+RULE+'</p>'+nextList("b-day")+'</section>'+
-  '<aside class="b-rail"><div class="b-bug sm"><b>Results</b><span>Fri Nov 20</span></div>'+lastClose("b-lc")+'</aside></div>'}
+function upB(){return '<div class="b-grid"><section class="b-main">'+bug("Fixtures","Season 2 · times in "+TZ)+'<p class="b-rule">'+RULE+'</p>'+nextList("b-day")+'</section>'+
+  '<aside class="b-rail">'+bug("Results","Fri Nov 20",0,1)+lastClose("b-lc")+'</aside></div>'}
 function upC(){return '<div class="c-grid"><header class="c-mast"><p class="c-kick">Season 2 · Upcoming</p><h1>The week ahead</h1><p class="c-dek">'+RULE+'</p></header><div class="c-main">'+nextList("c-day")+
   '<h2 class="c-h2">The last close, Friday November 20</h2>'+lastClose("c-lc")+'</div></div>'}
 
@@ -124,10 +128,10 @@ function post(c,cls){var r=RD2.filter(function(x){return x.n===c.n})[0];
     '<p class="po-w">'+words(c)+'</p><footer class="po-r '+(c.ok?"y":"n")+'">'+okm(c)+'<span>'+c.co+' '+mvs(r.move)+' at the close</span><b class="pl '+(c.pnl>=0?"u":"d")+'">P&amp;L '+sgn(c.pnl)+'</b></footer></article>'}
 function feedL(cls){var L=C2.slice().sort(function(a,b){return (b.n-a.n)||(S2K.indexOf(a.m)-S2K.indexOf(b.m))});if(FEEDF)L=L.filter(function(c){return c.t===FEEDF});return L.map(function(c){return post(c,cls)}).join("")}
 function chips(cls){return '<div class="'+cls+'" role="tablist">'+[[null,"All"]].concat(RD2.slice().reverse().map(function(r){return [r.t,r.co]})).map(function(x){return '<button type="button" data-ff="'+(x[0]||"")+'" aria-selected="'+(FEEDF===x[0])+'">'+x[1]+'</button>'}).join("")+'</div>'}
-function feedA(){return '<section class="a-head"><small>Season 2 · Feed</small><h1>Every call, with its why</h1><p>'+C2.length+' calls · the AIs’ own words · key line marked</p></section>'+chips("a-chips")+'<div class="a-feed">'+feedL("a-po gl")+'</div>'}
-function feedB(){return '<div class="b-grid"><section class="b-main"><div class="b-bug"><b>Live feed</b><span>'+C2.length+' calls · their own words</span><i class="lvd"></i></div>'+chips("b-chips")+feedL("b-po")+'</section>'+
-  '<aside class="b-rail"><div class="b-bug sm"><b>Standings</b><span>After '+TR2.length+' trades</span></div>'+S2O.map(function(m,i){var x=a2(m);return '<div class="b-mini"><span class="b-pos">'+(i+1)+'</span>'+aiIcon(m,22)+'<b>'+nm(m)+'</b><span class="b-pl '+(x.p>=0?"u":"d")+'">'+sgn(x.p)+'</span></div>'}).join("")+'</aside></div>'}
-function feedC(){return '<div class="c-grid"><header class="c-mast"><p class="c-kick">Season 2 · The feed</p><h1>Why they called it</h1><p class="c-dek">Every call comes with its reason, in the AI’s own words. The line that carries it is marked.</p></header>'+chips("c-chips")+'<div class="c-main">'+feedL("c-po")+'</div></div>'}
+function feedA(){return '<section class="a-head"><small>Season 2 · Feed</small><h1>The feed</h1><p>'+C2.length+' calls · the AIs’ own words · key line marked</p></section>'+chips("a-chips")+'<div class="a-feed">'+feedL("a-po gl")+'</div>'}
+function feedB(){return '<div class="b-grid"><section class="b-main">'+bug("Live feed",C2.length+" calls · their own words",1)+chips("b-chips")+feedL("b-po")+'</section>'+
+  '<aside class="b-rail">'+bug("Standings","After "+TR2.length+" trades",0,1)+S2O.map(function(m,i){var x=a2(m);return '<div class="b-mini"><span class="b-pos">'+(i+1)+'</span>'+aiIcon(m,22)+'<b>'+nm(m)+'</b><span class="b-pl '+(x.p>=0?"u":"d")+'">'+sgn(x.p)+'</span></div>'}).join("")+'</aside></div>'}
+function feedC(){return '<div class="c-grid"><header class="c-mast"><p class="c-kick">Season 2 · The feed</p><h1>In their own words</h1><p class="c-dek">Every call comes with its reason, in the AI’s own words. The line that carries it is marked.</p></header>'+chips("c-chips")+'<div class="c-main">'+feedL("c-po")+'</div></div>'}
 
 /* AI profiles in Season 2: one card per AI with its trades and reasons */
 function profS2(){var m=S2K.indexOf(st.m)>-1?st.m:S2O[0],x=a2(m),i=S2O.indexOf(m);var pk='<div class="s2pk">'+S2O.map(function(k){return '<button type="button" data-pick="'+k+'" data-go="profile" aria-pressed="'+(k===m)+'">'+aiIcon(k,22)+nm(k)+'</button>'}).join("")+'</div>';
@@ -154,7 +158,7 @@ draw=function(){var de=document.documentElement;de.classList.toggle("s1",SEA===1
 function goSeason(n){if(n===SEA)return;var de=document.documentElement;de.dataset.vt=(n===2?SDIR:"S1");
   var fx=n===2&&SDIR==="B"?"vt-stinger":n===2&&SDIR==="C"?"vt-rule":null;
   try{localStorage.setItem("ez-season",String(n))}catch(e){}
-  var apply=function(){SEA=n;draw();if(fx){var x=document.createElement("i");x.id=fx;x.setAttribute("aria-hidden","true");document.body.appendChild(x)}};
+  var apply=function(){SEA=n;VTB++;draw();if(fx){var x=document.createElement("i");x.id=fx;x.setAttribute("aria-hidden","true");document.body.prepend(x)}};
   if(!document.startViewTransition||matchMedia("(prefers-reduced-motion: reduce)").matches){apply();delete de.dataset.vt;return}
   var t=document.startViewTransition(apply);window.__vt=t;t.finished.finally(function(){delete de.dataset.vt;var x=fx&&document.getElementById(fx);if(x)x.remove()})}
 window.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-sea],[data-ff],[data-s2more]");if(!b)return;e.stopPropagation();

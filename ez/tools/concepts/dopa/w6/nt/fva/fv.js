@@ -43,7 +43,7 @@ FV.phone = (inner) => `<div class="phw"><div class="phn"><div class="body"></div
 FV.navOn = (root, name) => { const ds = FV.$$('.nav div', root); ds.forEach(d => d.classList.toggle('on', d.dataset.n === name)); const d = ds.find(d => d.dataset.n === name), tb = FV.$('.tab', root);
   if (d && tb) { tb.style.left = (d.offsetLeft + d.offsetWidth * .22).toFixed(1) + 'px'; tb.style.width = (d.offsetWidth * .56).toFixed(1) + 'px' } };
 // the house bug: the EZ. logo 64 px tall, 44 px from the top-left corner, "Earnings Zeason" beside it in the film's face (set by the page's CSS)
-FV.bug = () => `<div id="bug"><img src="ezlogo.svg" alt=""><b><i class="e">E</i>arnings <i class="z">Z</i>eason</b></div>`;
+FV.bug = () => `<div id="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span></div>`;   // s2d.html's .bug (coordinator, 23:25 UTC): one fixed logotype in every film
 FV.end = (k, name) => { FV.check(k, name); return `<div id="end"><img src="ezlogo.svg" alt=""><small>${k}</small><h3>${name.split(' ').map((w, i) => `<span class="w"><i data-n="${i}">${FV.esc(w)}</i></span>`).join(' ')}</h3></div>` };
 // the end card: logo springs in, the season, the feature name word by word; held to the last frame
 FV.endR = (t, t0) => { const e = FV.$('#end'); if (!e) return; e.style.opacity = t >= t0 ? 1 : 0; if (t < t0) return;
@@ -76,21 +76,25 @@ FV.lift = (id, t, up, dn, tgt, dd = .5) => { const o = FV.lifts[id], kU = FV.spr
   o.el.style.opacity = k > .02 ? 0 : 1; o.w.style.opacity = g.o == null ? 1 : g.o;
   o.c.style.setProperty('--gx', (50 + 38 * Math.sin(t * .55 + id.length)).toFixed(1) + '%'); o.c.style.setProperty('--gy', (22 + 30 * Math.sin(t * .42 + 1)).toFixed(1) + '%');
   return k };
+// the sonic mark: the same short chime in the first second of every film (RESEARCH.md B7)
+FV.STING = [.25, 'sfx-chime', .1];
 FV.raf = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 // boot: data, the app's CSS (L.css: Inter and Geist Mono), the shared CSS, fonts and images; then the page's own build()
 FV.boot = async (build, fonts = []) => {
   D = await fetch('w6/fl/data.json').then(r => r.json()); FV.D = D;
   const st = document.createElement('style'); st.textContent = L.css + FV.css; document.head.prepend(st);
   await build();
-  for (const f of ['800 92px Inter', '500 15.5px Inter', '700 13px "Geist Mono"', '500 13px "Geist Mono"'].concat(fonts)) await document.fonts.load(f);
+  for (const f of ['italic 800 31px Kanit', '800 92px Inter', '500 15.5px Inter', '700 13px "Geist Mono"', '500 13px "Geist Mono"'].concat(fonts)) await document.fonts.load(f);
   await document.fonts.ready; await Promise.all(FV.$$('img').map(i => i.decode().catch(() => 0)));
 };
 FV.css = `
 :root{--tx:#f5f1ea;--mu:#8e9a93;--mu2:#5d6963;--up:#55d6a2;--dn:#ff5a6e;--ac:#fdbc2a;--cr:#f8f0d9;--ln:#24302b;--g:#03c870;--r:#ff3a31;--k:#04070e}
 #st{position:absolute;inset:0;overflow:hidden;background:#04070e}
-#bug{position:absolute;left:44px;top:44px;height:64px;display:flex;align-items:center;gap:16px;z-index:90;pointer-events:none}
-#bug img{width:64px;height:64px;display:block;filter:drop-shadow(0 4px 14px rgba(0,0,0,.5))}
-#bug b{font-size:32px;line-height:1;white-space:nowrap;color:var(--cr);text-shadow:0 2px 12px rgba(0,0,0,.55)}#bug i{font-style:normal}
+@font-face{font-family:Kanit;font-style:italic;font-weight:800;src:url(w6/c/kanit800i.woff2) format('woff2')}
+@font-face{font-family:Kanit;font-style:italic;font-weight:900;src:url(w6/c/kanit900i.woff2) format('woff2')}
+#bug{position:absolute;left:54px;top:50px;height:64px;display:flex;align-items:center;gap:16px;z-index:90;pointer-events:none;color:#f2ede6;letter-spacing:.02em}
+#bug img{width:64px;height:64px;display:block}
+#bug span{font:italic 800 31px/1 Kanit,sans-serif;letter-spacing:.01em;white-space:nowrap}
 .e{color:var(--g)!important}.z{color:var(--r)!important}
 #end{position:absolute;left:0;right:0;top:330px;text-align:center;opacity:0;z-index:60}
 #end img{width:190px;height:190px;display:block;margin:0 auto;filter:drop-shadow(0 18px 50px rgba(0,0,0,.6))}
@@ -109,7 +113,7 @@ FV.css = `
 .lc.glass.foc .pq .rest{color:rgba(231,225,217,.5)}
 .lc .ph small,.lc .tc .cn span,.lc .tc .cn small{color:#a9b4ad}
 /* the phone (fl-feed's), at 390 x 844 css px inside; .phw is placed and zoomed by the page */
-.phw{position:absolute;left:0;top:0;width:390px;height:844px}
+.phw{position:absolute;left:0;top:0;width:390px;height:844px;will-change:transform}   /* composited: without it swiftshader paints the frame black around the phone */
 .phn{position:absolute;left:0;top:0;width:390px;height:844px}
 .phn .body{position:absolute;inset:-14px;border-radius:66px;background:linear-gradient(145deg,#5a605c 0%,#1d201e 13%,#0b0d0c 32%,#0b0d0c 68%,#1c1f1d 87%,#4b514d 100%);box-shadow:0 60px 120px rgba(0,0,0,.7),0 -20px 60px -26px rgba(40,200,130,.4),0 22px 70px -26px rgba(255,60,70,.36),inset 0 0 0 2px rgba(255,255,255,.12),inset 0 6px 6px -4px rgba(90,235,170,.55),inset 0 -6px 6px -4px rgba(255,84,94,.5)}
 .phn .body::after{content:'';position:absolute;inset:8px;border-radius:59px;box-shadow:0 0 0 2px #020302,0 0 0 3px rgba(255,255,255,.05)}

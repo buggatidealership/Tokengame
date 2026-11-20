@@ -1,0 +1,212 @@
+<!doctype html><meta charset="utf-8"><title>Pocket</title>
+<!-- Night studio outcome take 1, POCKET (2026-11-20): the close arrives where people are at 4 pm, on the lock screen. A phone held in front
+  of a rain-streaked window (w6/nt/ov/ov1-rain.jpg, Hedra gpt-image-2 in oil). The lock screen runs as a time-lapse from the close before
+  to this close; the EZ app's Live Activity at its foot carries the premise (the first trades of Season 2), each company with its LONG
+  and SHORT line-up and its live move. At 4:00 (the drop) the phone buzzes and one notification per company drops in and lifts out of
+  the phone (layout zoom, never scale under perspective): the company, its move, the SHORT and LONG line-ups each marked RIGHT or WRONG
+  with the P&L each AI took. A fingertip taps the stack and the app opens on the Season 2 leaderboard (tonight's three trades as lit or
+  dark company marks, the P&L), the leader in gold; the end card.
+  Brand inside the main object (research B1, B3): the EZ app icon on the Live Activity from frame 0, on every notification, the app's
+  header on the board. Faces: Inter (words, the app's own) and Geist Mono (every figure, tabular). Bed m3-electro (124 BPM), its kick
+  (7.767 s in the file) on 4:00: TR = 4.84 s, MUSIC.at = 2.927. Data: data/close-<date>.json (nt-ov1.html?d=<YYYY-MM-DD>); one lifted
+  notification per company, three beats each, so each company past three adds 1.45 s (10 companies: 25.2 s); the Live Activity lists up
+  to 5 rows and pages after that.
+  Words of our own on screen: no punctuation; sides are LONG or SHORT; every money figure is a signed P&L with its label. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Geist+Mono:wght@500;600;700&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}
+html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f8f0d9;font-family:Inter,sans-serif}
+.mono{font-family:'Geist Mono',monospace;font-variant-numeric:tabular-nums}
+#st{position:absolute;inset:0;overflow:hidden}
+#gnd{position:absolute;left:-60px;top:-80px;width:1200px;height:1600px}
+#gnd img{width:100%;height:100%;display:block;object-fit:cover}
+#bok{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen}
+#bok i{position:absolute;border-radius:50%;display:block}
+#dim{position:absolute;inset:0;background:rgba(4,7,14,.35)}
+#phw{position:absolute;left:0;top:0;width:390px;height:844px;transform-origin:0 0}
+#ph{position:absolute;left:0;top:0;width:390px;height:844px}
+#ph .body{position:absolute;inset:-13px;border-radius:64px;background:linear-gradient(145deg,#5c605e 0%,#1d201f 13%,#0b0d0c 32%,#0b0d0c 68%,#1c1f1d 87%,#4d514f 100%);box-shadow:0 60px 120px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.06)}
+#ph .body::after{content:'';position:absolute;inset:8px;border-radius:57px;box-shadow:0 0 0 2px #020302}
+#scr{position:absolute;inset:0;border-radius:52px;overflow:hidden;background:#04070e}
+#wall{position:absolute;inset:0;background:radial-gradient(80% 45% at 18% 8%,rgba(3,200,112,.30),transparent 70%),radial-gradient(80% 45% at 88% 96%,rgba(255,58,49,.26),transparent 70%),radial-gradient(60% 40% at 50% 50%,rgba(253,188,42,.07),transparent 70%),#04070e}
+#wall .wm{position:absolute;left:55px;top:330px;width:280px;opacity:.07}
+#isl{position:absolute;left:50%;top:11px;width:104px;height:30px;margin-left:-52px;border-radius:18px;background:#000;z-index:9}
+#lk{position:absolute;left:0;right:0;top:78px;text-align:center}
+#lk .d{font:600 17px/1 Inter;color:rgba(248,240,217,.82)}
+#lk .t{font:700 94px/1 Inter;letter-spacing:-.03em;margin-top:6px;font-variant-numeric:tabular-nums}
+/* the Live Activity and the notifications: the app's glass */
+.gls{background:linear-gradient(160deg,rgba(248,240,217,.13),rgba(248,240,217,.05) 45%,rgba(248,240,217,.08)),rgba(12,16,22,.88);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.45)}
+#la{position:absolute;left:16px;width:358px;top:560px;border-radius:26px;padding:13px 14px 12px}
+.ah{display:flex;align-items:center;gap:7px;font:700 10.5px/1 Inter;letter-spacing:.08em;color:rgba(248,240,217,.75)}
+.ah img{width:20px;height:20px;border-radius:6px}
+.ah .r{margin-left:auto;font:600 10.5px/1 'Geist Mono';letter-spacing:.04em;color:#fdbc2a}
+#la .tt{font:800 17px/1.1 Inter;letter-spacing:-.01em;margin:9px 0 8px}
+.lr{display:flex;align-items:center;gap:7px;height:34px;border-top:1px solid rgba(248,240,217,.08)}
+.lr img.co{width:24px;height:24px;border-radius:6px}
+.lr b{font:700 14px/1 Inter;width:64px;white-space:nowrap;overflow:hidden}
+.lr .sd{display:flex;align-items:center;gap:2px;padding:3px 4px;border-radius:7px}
+.lr .sd.L{box-shadow:inset 0 0 0 1.2px rgba(3,200,112,.6)}.lr .sd.S{box-shadow:inset 0 0 0 1.2px rgba(255,58,49,.6)}
+.lr .mv{margin-left:auto;font:700 15px/1 'Geist Mono'}
+.nt{position:absolute;left:16px;width:358px;border-radius:22px;padding:11px 13px 10px}
+.nt .nh{display:flex;align-items:center;gap:9px;margin-top:8px}
+.nt .nh img{width:34px;height:34px;border-radius:8px}
+.nt .nh b{font:800 20px/1 Inter;letter-spacing:-.01em}
+.nt .nh .mv{margin-left:auto;font:700 22px/1 'Geist Mono'}
+.nt .sr{display:flex;align-items:center;gap:5px;margin-top:7px;height:32px;padding:0 8px 0 6px;border-radius:10px}
+.nt .sr .sd{font:800 12px/1 Inter;letter-spacing:.06em;width:44px}
+.nt .sr .ok{font:800 10.5px/1 Inter;letter-spacing:.08em;padding:4px 6px 3px;border-radius:6px;margin-left:4px}
+.nt .sr .pl{margin-left:auto;font:700 14px/1 'Geist Mono'}
+#app{position:absolute;inset:0;background:radial-gradient(90% 30% at 50% 0%,rgba(3,200,112,.14),transparent 70%),#04070e;opacity:0}
+#app .tb{position:absolute;left:16px;right:16px;top:50px;height:46px;display:flex;align-items:center;gap:9px}
+#app .tb img{width:30px;height:30px}
+#app .tb b{font:800 18px/1 Inter;letter-spacing:-.01em;white-space:nowrap}
+#app .tb .e{color:#03c870}#app .tb .z{color:#ff3a31}
+#app .ssn{margin-left:auto;height:26px;padding:0 10px;font:600 11px/26px 'Geist Mono';letter-spacing:.1em;color:#fdbc2a;border-radius:8px;background:rgba(253,188,42,.1);box-shadow:inset 0 0 0 1.5px rgba(253,188,42,.35)}
+#app .vh{position:absolute;left:18px;top:112px}
+#app .vh small{display:block;font:700 11px/1 'Geist Mono';letter-spacing:.16em;color:#fdbc2a;margin-bottom:8px}
+#app .vh b{font:800 25px/1 Inter;letter-spacing:-.03em}
+.br{position:absolute;left:16px;width:358px;height:54px;border-radius:16px;display:flex;align-items:center;gap:9px;padding:0 12px 0 10px;background:rgba(14,19,24,.96);box-shadow:inset 0 0 0 1.5px rgba(248,240,217,.1)}
+.br .rk{font:700 15px/1 'Geist Mono';width:16px;color:rgba(248,240,217,.6)}
+.br .nm{font:800 17px/1 Inter;width:62px}
+.br .cs{display:flex;gap:4px}
+.br .cs span{width:22px;height:22px;border-radius:6px;display:block;position:relative}
+.br .cs span img{width:22px;height:22px;border-radius:6px;display:block}
+.br .pl{margin-left:auto;font:700 18px/1 'Geist Mono';white-space:nowrap}
+.br .rim{position:absolute;inset:-3px;border-radius:19px;box-shadow:0 0 0 2.5px #fdbc2a,0 0 30px rgba(253,188,42,.45);opacity:0}
+#tap{position:absolute;left:0;top:0;width:120px;height:120px;border-radius:50%;margin:-60px 0 0 -60px;background:radial-gradient(circle at 45% 40%,rgba(248,240,217,.55),rgba(248,240,217,.18) 55%,rgba(248,240,217,0) 72%);opacity:0;pointer-events:none;z-index:700}
+#rip{position:absolute;left:0;top:0;border-radius:50%;border:4px solid #f8f0d9;opacity:0;z-index:700}
+#veil{position:absolute;inset:0;background:rgba(4,7,14,.6);opacity:0;pointer-events:none}
+#lift{position:absolute;left:0;top:0;width:358px;transform-origin:0 0;z-index:500}
+#lift .nt{position:relative;left:0;top:0}
+#cap{position:absolute;left:0;right:0;top:150px;text-align:center;font:800 64px/1.02 Inter;letter-spacing:-.035em;z-index:600;text-shadow:0 4px 30px rgba(0,0,0,.7)}
+#cap .g{color:#fdbc2a}
+.foil{color:transparent!important;background-image:linear-gradient(100deg,#fdbc2a 38%,#fff1c2 50%,#fdbc2a 62%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text}
+</style>
+<div id="st">
+  <div id="gnd"><img src="w6/nt/ov/ov1-rain.jpg" alt=""></div><div id="bok"></div><div id="dim"></div>
+  <div id="phw"><div id="ph"><div class="body"></div><div id="scr">
+    <div id="wall"><img class="wm" src="ezlogo.svg" alt=""></div>
+    <div id="lk"><div class="d"></div><div class="t"></div></div>
+    <div id="nts"></div>
+    <div id="la" class="gls"></div>
+    <div id="app"></div>
+    <div id="isl"></div>
+  </div></div></div>
+  <div id="veil"></div>
+  <div id="lift"></div>
+  <div id="cap"></div>
+  <div id="tap"></div><div id="rip"></div>
+</div>
+<script src="lib.js"></script><script src="nt-ov.js"></script>
+<script>
+const TR = 4.84;
+let D, G, grain, S, NT = [], BR = [], DAYD;
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const FULLD = { SUN: 'Sunday', MON: 'Monday', TUE: 'Tuesday', WED: 'Wednesday', THU: 'Thursday', FRI: 'Friday', SAT: 'Saturday' };
+const callsRow = (r, cls = 'L') => `<span class="sd ${cls}">${(cls === 'L' ? r.longs : r.shorts).map(c => OV.mark(c.k, 15)).join('')}</span>`;
+const notif = (r) => { const grp = (cs, side) => { if (!cs.length) return ''; const ok = cs[0].right;
+    return `<div class="sr" style="background:${ok ? 'rgba(253,188,42,.13)' : 'rgba(255,58,49,.10)'};box-shadow:inset 0 0 0 1.5px ${ok ? 'rgba(253,188,42,.7)' : 'rgba(255,58,49,.65)'}">
+      <span class="sd" style="color:${side === 'LONG' ? OV.G : OV.R}">${side}</span>${cs.map(c => OV.mark(c.k, 22)).join('')}
+      <span class="ok" style="background:${ok ? '#fdbc2a' : '#ff3a31'};color:${ok ? '#04070e' : '#f8f0d9'}">${ok ? 'RIGHT' : 'WRONG'}</span>
+      <span class="pl" style="color:${OV.sgn(cs[0].pnl)}">P&amp;L ${OV.money(cs[0].pnl)}</span></div>` };
+  const first = r.win === 'LONG' ? [r.longs, 'LONG', r.shorts, 'SHORT'] : [r.shorts, 'SHORT', r.longs, 'LONG'];
+  return `<div class="ah"><img src="ezlogo.svg" alt="">EARNINGS ZEASON<span class="r">now</span></div>
+    <div class="nh"><img src="${r.logo}" alt=""><b>${r.co} closed</b><span class="mv" style="color:${OV.sgn(r.move)}">${OV.pct(r.move)}</span></div>
+    ${grp(first[0], first[1])}${grp(first[2], first[3])}` };
+const setup = () => {
+  G = OV.grid(124, TR, 7.767, 'm3-electro'); const B = G.B, p = G.p;
+  S = Math.max(0, D.N - 3) * 3 * p; window.DUR = +(15.0 + S).toFixed(2);
+  OV.bug('800 30px Inter', {}); grain = OV.grain(.05);
+  const dt = new Date(D.date + 'T12:00:00Z'), d0 = new Date(dt - 86400000);
+  DAYD = [`${FULLD[D.day0]} ${MONTHS[d0.getUTCMonth()]} ${d0.getUTCDate()}`, `${FULLD[D.day1]} ${MONTHS[dt.getUTCMonth()]} ${dt.getUTCDate()}`];
+  // the Live Activity
+  L.$('#la').innerHTML = `<div class="ah"><img src="ezlogo.svg" alt="">EARNINGS ZEASON<span class="r"></span></div><div class="tt">${D.title.join(' ')}</div>
+    ${D.rounds.slice(0, 5).map(r => `<div class="lr"><img class="co" src="${r.logo}" alt=""><b>${r.co}</b>${callsRow(r, 'L')}${callsRow(r, 'S')}<span class="mv mono"></span></div>`).join('')}`;
+  if (D.N <= 3) L.$('#la').style.top = (844 - 34 - L.$('#la').offsetHeight) + 'px'; else L.$('#la').style.top = (844 - 24 - L.$('#la').offsetHeight) + 'px';
+  // the notifications in the phone, and the lifted copy
+  D.rounds.forEach(r => { const el = document.createElement('div'); el.className = 'nt gls'; el.innerHTML = notif(r); L.$('#nts').appendChild(el); NT.push(el) });
+  // the app: the Season 2 leaderboard
+  L.$('#app').innerHTML = `<div class="tb"><img src="ezlogo.svg" alt=""><b><i class="e" style="font-style:normal">E</i>arnings <i class="z" style="font-style:normal">Z</i>eason</b><span class="ssn">SEASON 2</span></div>
+    <div class="vh"><small>P&amp;L AFTER ${D.after} TRADES</small><b>Season 2 leaderboard</b></div>`;
+  D.ranked.forEach((a, i) => { const el = document.createElement('div'); el.className = 'br';
+    el.innerHTML = `<div class="rim"></div><span class="rk">${i + 1}</span>${OV.mark(a.k, 30)}<span class="nm">${a.name}</span>
+      <span class="cs">${D.rounds.slice(0, 5).map((r, j) => `<span style="box-shadow:0 0 0 2px ${a.calls[j].right ? '#fdbc2a' : '#ff3a31'};opacity:${a.calls[j].right ? 1 : .55}"><img src="${r.logo}" alt=""></span>`).join('')}</span>
+      <span class="pl mono" style="color:${OV.sgn(a.s1)}">${OV.money(a.s1)}</span>`;
+    el.style.top = (176 + i * 62) + 'px'; L.$('#app').appendChild(el); BR.push(el) });
+  L.$('#cap').innerHTML = 'Every trade lands<br>at the <span class="g">4 PM</span> close';
+  // bokeh
+  L.$('#bok').innerHTML = Array.from({ length: 14 }, (_, i) => { const c = [OV.rgb.AU, OV.rgb.G, OV.rgb.R, OV.rgb.CR][i % 4], s = 40 + (i * 37) % 90;
+    return `<i data-i="${i}" style="width:${s}px;height:${s}px;background:radial-gradient(closest-side,rgba(${c},.35),rgba(${c},.12) 60%,transparent)"></i>` }).join('');
+  // sound
+  const C = window.CUES = [[.05, 'r11-swell', .12]]; OV.sting(C);
+  C.push([B(-8), 'sfx-whoosh', .1], [B(-3), 'sfx-whoosh', .1], [B(-1), 'sfx-clock', .14], [TR - .02, 'sfx-beep', .14], [TR, 'r11-thump', .22], [TR + .03, 'r11-ping', .2]);
+  D.rounds.forEach((r, j) => { const t0 = TR + j * 3 * p; C.push([+(t0 + .02).toFixed(3), 'r11-ping', .16], [+(t0 + .1).toFixed(3), 'sfx-whoosh', .08]); if (j) C.push([+t0.toFixed(3), 'sfx-tap', .06]) });
+  C.push([B(9) + S, 'sfx-tap', .2], [B(9.5) + S, 'sfx-whoosh', .12]);
+  BR.forEach((_, i) => C.push([+(B(10) + S + i * .5 * p).toFixed(3), 'r11-card', .07]));
+  C.push([B(14) + S, 'sfx-chime', .14], [B(14) + S + .05, 'r11-sparkle', .1], [B(16) + S, 'sfx-whoosh', .12], [B(16) + S + .12, 'r11-thump', .12]);
+};
+const mNow = t => OV.night(OV.fr(t), .15, TR - .03);
+const live = (r, t) => t >= TR ? r.move : r.px(mNow(t));
+// camera keys: [t, zoom, focus x, focus y (phone px), screen x, screen y]
+const KEYS = () => { const B = G.B, b9 = B(9) + S;
+  return [[0, 1.18, 195, 422, 540, 790], [B(-8), 1.18, 195, 422, 540, 790], [B(-8) + .5, 2.25, 195, 660, 540, 700], [B(-3), 2.3, 195, 660, 540, 700], [B(-3) + .45, 2.05, 195, 175, 540, 600],
+    [TR - .05, 2.1, 195, 175, 540, 600], [TR + .4, 1.2, 195, 422, 540, 800], [b9, 1.24, 195, 422, 540, 790], [b9 + .5 * G.p + .5, 2.62, 195, 330, 540, 872], [B(16) + S, 2.67, 195, 330, 540, 872]] };
+let KS;
+const camAt = t => { let i = 1; while (i < KS.length - 1 && KS[i][0] < t) i++; const a = KS[i - 1], b = KS[i]; const x = L.eio(L.cl((t - a[0]) / Math.max(.001, b[0] - a[0])));
+  return a.slice(1).map((v, k) => L.lerp(v, b[k + 1], x)) };
+window.R = t => {
+  const B = G.B, p = G.p, T0 = OV.fr(t); grain(t); KS = KS || KEYS();
+  const b9 = B(9) + S, bL = B(14) + S, bE = B(16) + S;
+  // the camera: the phone at a layout zoom, a handheld drift, the buzz on 4:00
+  const [Z, fx, fy, sx, sy] = camAt(t), buzz = t >= TR && t < TR + .5 ? Math.sin((t - TR) * 140) * 7 * (1 - (t - TR) / .5) : 0;
+  const hx = 6 * Math.sin(t * 1.1) + 3 * Math.sin(t * 2.7), hy = 5 * Math.cos(t * .9) + buzz * .3;
+  const phw = L.$('#phw'); phw.style.left = ((sx - fx * Z + hx + buzz) / Z).toFixed(2) + 'px'; phw.style.top = ((sy - fy * Z + hy) / Z).toFixed(2) + 'px'; phw.style.zoom = Z.toFixed(4);
+  L.$('#gnd').style.transform = `translate(${(-hx * 2 - (Z - 1.2) * 18).toFixed(1)}px,${(-hy * 2).toFixed(1)}px) scale(${(1 + .04 * (Z - 1.2)).toFixed(4)})`;
+  L.$$('#bok i').forEach((b, i) => { const x = (i * 211 + t * (14 + i % 5 * 6)) % 1300 - 110, y = (i * 137) % 1350 + 30 * Math.sin(t * .6 + i); b.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`; b.style.opacity = (.5 + .3 * Math.sin(t * 1.3 + i)).toFixed(3) });
+  // the lock screen: a time-lapse clock and date, 4:00 on the drop
+  const m = mNow(t), c = OV.clock(m), day2 = c.day === D.day1 || t >= TR;
+  L.$('#lk .d').textContent = day2 ? DAYD[1] : DAYD[0]; L.$('#lk .t').textContent = t >= TR ? '4:00' : c.h + ':' + c.mi;
+  L.$('#lk .t').style.transform = `scale(${(1 + .1 * (t >= TR ? Math.exp(-(t - TR) * 6) : 0)).toFixed(3)})`;
+  L.$('#lk .t').style.color = t >= TR && t < TR + .6 ? '#fdbc2a' : '#f8f0d9';
+  // the Live Activity: the line-ups and the live moves; CLOSED on the drop
+  const left = D.total - m; L.$('#la .ah .r').textContent = t >= TR ? 'CLOSED' : left > 60 ? `CLOSE IN ${Math.floor(left / 60)}H ${String(Math.floor(left % 60)).padStart(2, '0')}M` : `CLOSE IN ${Math.ceil(left)}M`;
+  L.$$('#la .lr .mv').forEach((el, j) => { const v = live(D.rounds[j], T0); el.textContent = OV.pct(v); el.style.color = Math.abs(v) < .005 ? '#f8f0d9' : v > 0 ? OV.G : OV.R });
+  L.$('#la').style.opacity = 1 - L.n(t, TR + .2, TR + .6);
+  L.$('#la').style.transform = `translateY(${(40 * L.n(t, TR + .2, TR + .6)).toFixed(1)}px)`;
+  // the notifications: each drops in at its beat at the top, lifts out of the phone, then joins the stack under the clock
+  NT.forEach((el, j) => { const t0 = TR + j * 3 * p, k = L.eo5(L.n(t, t0, t0 + .3)), stackY = 212 + 0 * j, back = L.eio(L.n(t, t0 + 3 * p, t0 + 3 * p + .35));
+    const ny = L.lerp(-150, 230, k); const depth = NT.filter((_, q) => q > j && t >= TR + q * 3 * p).length;
+    el.style.top = (back > 0 ? L.lerp(230, stackY + 10 * Math.min(2, depth), back) : ny).toFixed(1) + 'px';
+    el.style.opacity = t >= t0 ? 1 : 0; el.style.transform = `scale(${(1 - .05 * Math.min(2, depth) * back).toFixed(3)})`; el.style.zIndex = 20 + j;
+    el.style.filter = depth && back ? `brightness(${(1 - .25 * Math.min(2, depth)).toFixed(2)})` : ''; el.style.opacity = (t >= t0 ? 1 : 0) * (1 - L.n(t, b9 + .02, b9 + .25)) });
+  L.$('#lk').style.opacity = 1 - L.n(t, b9 + .02, b9 + .25);
+  L.$('#lk').style.transform = `translateY(${(-20 * L.n(t, TR + .2, TR + .6)).toFixed(1)}px) scale(${(1 - .3 * L.n(t, TR + .2, TR + .6)).toFixed(3)})`;
+  // the lifted copy: the newest notification out of the phone at about 2.55 x, on glass, the phone dims behind it
+  let cur = -1; D.rounds.forEach((r, j) => { if (t >= TR + j * 3 * p + .12 && t < b9) cur = j });
+  const lf = L.$('#lift'), vl = L.$('#veil');
+  if (cur >= 0) { const t0 = TR + cur * 3 * p + .12, k = L.eo5(L.n(t, t0, t0 + .32)), out = cur === D.N - 1 ? L.n(t, b9 - .3, b9) : L.n(t, t0 + 3 * p - .2, t0 + 3 * p);
+    if (lf.dataset.c !== String(cur)) { lf.innerHTML = `<div class="nt gls">${notif(D.rounds[cur])}</div>`; lf.dataset.c = cur }
+    const zz = L.lerp(1.2, 2.58, k) * (1 - .5 * L.eio(out)), w = 358 * zz;
+    lf.style.zoom = zz.toFixed(4); lf.style.left = ((540 - w / 2) / zz).toFixed(2) + 'px'; lf.style.top = ((L.lerp(420, 470, k) + 80 * L.eio(out)) / zz).toFixed(2) + 'px';
+    lf.style.opacity = (L.cl(k * 3) * (1 - out)).toFixed(3); lf.style.filter = `drop-shadow(0 ${(30 * k).toFixed(1)}px ${(50 * k).toFixed(1)}px rgba(0,0,0,.6))` } else { lf.style.opacity = 0 }
+  vl.style.opacity = (cur >= 0 ? .75 * L.n(t, TR + .1, TR + .4) * (1 - L.n(t, b9 - .3, b9)) : 0).toFixed(3);
+  // the caption: the single-minded line, then gone
+  const cp = L.$('#cap'); cp.style.opacity = (1 - L.n(t, B(-3) - .2, B(-3) + .1)).toFixed(3); cp.style.transform = `translateY(${(-20 * L.n(t, 0, B(-3))).toFixed(1)}px)`;
+  // the tap: a fingertip on the stack, the ripple, the app opens
+  const tp = L.$('#tap'), rp = L.$('#rip'), tq = L.n(t, b9 - .35, b9), tu = L.n(t, b9, b9 + .3);
+  const tx = 540, ty = 790 - (422 - 280) * 1.24; tp.style.transform = `translate(${tx}px,${(ty + 140 * (1 - L.eo(tq))).toFixed(1)}px) scale(${(1 - .12 * tq + .12 * tu).toFixed(3)})`;
+  tp.style.opacity = (tq * (1 - tu)).toFixed(3); const rq = L.n(t, b9, b9 + .5);
+  rp.style.opacity = (rq > 0 && rq < 1 ? 1 - rq : 0).toFixed(3); rp.style.width = rp.style.height = (40 + 160 * L.eo(rq)).toFixed(1) + 'px'; rp.style.transform = `translate(${(tx - (20 + 80 * L.eo(rq))).toFixed(1)}px,${(ty - (20 + 80 * L.eo(rq))).toFixed(1)}px)`;
+  // the app: the Season 2 leaderboard, rows landing a half beat apart, the leader's gold rim and foil
+  const ap = L.$('#app'), ao = L.eo(L.n(t, b9 + .05, b9 + .4)); ap.style.opacity = ao; ap.style.transform = `scale(${(.94 + .06 * ao).toFixed(4)})`;
+  BR.forEach((el, i) => { const t0 = B(10) + S + i * .5 * p, k = L.eo5(L.n(t, t0, t0 + .3)); el.style.opacity = k; el.style.transform = `translateX(${(120 * (1 - k)).toFixed(1)}px)`;
+    const a = D.ranked[i], lead = D.lead.includes(a.k), go = lead ? L.eo(L.n(t, bL - .1, bL + .3)) : 0; el.querySelector('.rim').style.opacity = go;
+    const nm = el.querySelector('.nm'); if (go > 0) { nm.classList.add('foil'); nm.style.backgroundPosition = `${(100 - 100 * L.n((t - bL) % 1.5, .2, 1.1)).toFixed(1)}% 0` } else nm.classList.remove('foil');
+    el.style.filter = !lead && t > bL ? `brightness(${(1 - .2 * L.n(t, bL, bL + .3)).toFixed(3)})` : '' });
+  OV.endR(t, bE);
+};
+(async () => {
+  D = await OV.load(); setup();
+  await OV.ready(['800 64px Inter', '700 94px Inter', '700 15px "Geist Mono"', '800 17px Inter']);
+})();
+</script>

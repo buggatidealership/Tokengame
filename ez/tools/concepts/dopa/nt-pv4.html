@@ -1,0 +1,133 @@
+<!doctype html><meta charset="utf-8"><title>pv4 departures</title>
+<!-- Night prediction film 4, "The board" (2026-11-20). One line: tonight's board is in, five calls and five reasons before the report.
+  A split-flap board in a painted night station hall (Hedra, w6/nt/pv/pv4-hall.jpg). The board's head flaps in (the EZ. mark, the company,
+  when it reports); each AI's row clatters in on the beat (side, called move, confidence) with its own words flapping in under it; the status
+  line flaps the count on the bed's first drop; then the camera rides the board row by row, the lit row's key clause marked; the status line
+  flaps the grading line, and the logo lands on the second drop. The AI's words are shown in capitals, as a flap board prints them.
+  Space Mono (the flaps) and Space Grotesk (the board's labels). Bed w6-dnb-x (174 BPM, drops at 11.03 and 26.55 s), entered at 6.21 s.
+  ?co=INTU|KEYS|ESTC. window.R(t), READY, DUR, MUSIC, CUES. No outcome anywhere. -->
+<style>
+#hall{position:absolute;left:-80px;top:-100px;width:1240px;height:1653px;object-fit:cover;transform-origin:620px 800px}
+#cam{position:absolute;inset:0;transform-origin:540px 700px}
+#bd{position:absolute;left:30px;width:1020px;top:236px;padding:16px 22px 18px;border-radius:14px;
+  background:linear-gradient(180deg,#0b0e14,#07090e);box-shadow:inset 0 0 0 3px #1b1f27,inset 0 0 0 7px #04070e,inset 0 0 0 9px rgba(253,188,42,.35),0 40px 90px rgba(0,0,0,.75)}
+#bd .hd{display:flex;align-items:center;justify-content:center;gap:16px;height:64px;margin-bottom:8px;border-bottom:2px solid rgba(248,240,217,.1)}
+#bd .hd span{font:700 30px/1 'Space Grotesk';letter-spacing:.24em;color:#fdbc2a}
+.ln{display:flex;gap:3px}
+.c{position:relative;display:inline-grid;place-items:center;background:linear-gradient(180deg,#1a1d24 0 49%,#0d0f14 51% 100%);border-radius:5px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.8),0 2px 0 rgba(0,0,0,.6);
+  font-family:'Space Mono';font-weight:700;color:#f8f0d9;overflow:hidden}
+.c::after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:rgba(0,0,0,.85)}
+.c .f{position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,#22262e,#16191f);transform-origin:50% 100%;opacity:0}
+.L .c{width:40px;height:54px;font-size:40px}
+.M .c{width:23.4px;height:38px;font-size:28px}
+.H .c{width:58px;height:76px;font-size:58px}
+.S .c{width:24.6px;height:40px;font-size:28px}
+#co{justify-content:center;margin:4px 0 8px}
+#wh{justify-content:center;margin-bottom:12px}
+.lab{display:flex;gap:12px;padding:0 0 8px 74px;font:700 24px/1 'Space Grotesk';letter-spacing:.16em;color:rgba(248,240,217,.55)}
+.row{position:relative;padding:8px 10px 8px 10px;border-radius:8px;margin-bottom:4px}
+.row .top{display:flex;align-items:center;gap:12px}
+.row .top .pvm{flex:none}
+.row .grp{display:flex;gap:3px}
+.row .rm{margin:7px 0 0 64px}
+.row .lit{position:absolute;inset:0;border-radius:8px;background:linear-gradient(90deg,rgba(253,188,42,.16),rgba(253,188,42,.04));box-shadow:inset 6px 0 0 #fdbc2a;opacity:0}
+.row .hl{position:absolute;top:0;height:42px;border-radius:5px;background:#fdbc2a;mix-blend-mode:normal;opacity:0}
+#st{display:flex;justify-content:center;margin-top:12px;padding-top:16px;border-top:2px solid rgba(248,240,217,.1)}
+#lamp{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 30% at 50% 0%,rgba(253,188,42,.22),transparent 70%);mix-blend-mode:screen}
+#vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(85% 65% at 50% 48%,transparent 50%,rgba(0,0,0,.7))}
+#end{position:absolute;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;background:radial-gradient(55% 40% at 50% 45%,rgba(253,188,42,.18),transparent 70%),rgba(4,7,14,.92);opacity:0}
+#end b{font:italic 800 70px/1 Kanit;color:#f8f0d9}
+#end span{font:700 40px/1 'Space Grotesk';letter-spacing:.04em;color:#f8f0d9}
+</style>
+<img id="hall" src="w6/nt/pv/pv4-hall.jpg">
+<div id="cam"><div id="bd"></div></div>
+<div id="lamp"></div><div id="vig"></div><div id="end"></div>
+<div id="bugw"></div><canvas id="grain"></canvas>
+<script src="w6/nt/pv/pv.js"></script>
+<script>
+const B = 60 / 174, AT = 19 * 60 / 174;          // w6-dnb-x: 174 BPM from 0; entered at its beat 19, so its drops (beats 32 and 77) are film beats 13 and 58
+const G = { B, at: n => n * B, beat: t => t / B };
+const CH = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+%'.split('');
+let T = {}, rows, grain, flaps = [];          // every flap line: { cells, text, t0 (beats), colour }
+const line = (cls, n, id = '') => `<div class="ln ${cls}"${id ? ` id="${id}"` : ''}>${'<span class="c"><b></b><i class="f"></i></span>'.repeat(n)}</div>`;
+const pad = (s, n) => (s + ' '.repeat(n)).slice(0, n);
+// a flap line: each cell runs through a few random characters (more for cells further right) and settles on its letter, flipping on each change
+const addFlap = (el, text, t0, col, spread = .05, steps = 5, until = 1e9) => { const cells = PV.$$('.c', el); flaps.push({ cells, text: text.padEnd(cells.length), t0, col, spread, steps, until }) };
+const drawFlap = (F, k) => F.cells.forEach((c, i) => { const ch = F.text[i] || ' ', s0 = F.t0 + i * F.spread, n = ch === ' ' ? 0 : F.steps + (i % 3), dt = (k - s0) * B * 22;
+  const b = c.firstChild, f = c.lastChild; let shown = ' ', ph = 1;
+  if (k < s0) shown = ' '; else if (dt >= n) shown = ch; else { const j = Math.floor(dt); shown = CH[(i * 7 + j * 11 + (F.text.charCodeAt(i) || 0)) % CH.length]; ph = dt - j }
+  if (b.textContent !== (shown === '-' ? '−' : shown)) b.textContent = shown === '-' ? '−' : shown;
+  b.style.color = dt >= n ? (typeof F.col === 'function' ? F.col(i) : F.col) : '#f8f0d9';
+  f.style.opacity = ph < 1 && k >= s0 ? (1 - ph).toFixed(2) : 0; f.style.transform = `scaleY(${(1 - ph).toFixed(3)})` });
+(async () => {
+  await PV.load('INTU', 'https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&family=Space+Grotesk:wght@500;700&display=swap');
+  PV.$('#bugw').innerHTML = PV.bug();
+  // rows in the board's order: the bigger side first, then by confidence; the camera rides them in that order
+  rows = [...PV.calls.filter(x => x.side === PV.maj).sort((a, b) => b.conf - a.conf), ...PV.calls.filter(x => x.side !== PV.maj).sort((a, b) => b.conf - a.conf)];
+  const NAME = 6, SIDE = 5, MOVE = 5, CONF = 3, RM = 38;
+  PV.$('#bd').innerHTML = `<div class="hd">${PV.logo(54)}<span>LOCKED BEFORE THE REPORT</span></div>${line('H', 9, 'co')}${line('S', 34, 'wh')}
+    <div class="lab"><span style="width:${NAME * 43}px">AI</span><span style="width:${SIDE * 43}px">SIDE</span><span style="width:${MOVE * 43}px">CALLED</span><span>CONFIDENT</span></div>
+    ${rows.map(x => `<div class="row" data-k="${x.k}"><i class="lit"></i><div class="top">${PV.mark(x.k, 52)}<div class="grp">${line('L', NAME)}</div><div class="grp">${line('L', SIDE)}</div><div class="grp">${line('L', MOVE)}</div><div class="grp">${line('L', CONF)}</div></div>
+      <div class="rm">${line('M', RM)}</div></div>`).join('')}<div id="st">${line('L', 16)}</div>`;
+  const tight = s => s.toUpperCase().replace(/’/g, "'");
+  // the board head: the company and the report line
+  T = {};
+  addFlap(PV.$('#co'), pad(tight(PV.co.co), 9).replace(/^(.*?)( *)$/, (m, a, b) => (' '.repeat(Math.floor(b.length / 2)) + a).padEnd(9)), -2.6, '#f8f0d9', .07, 4);
+  const wh = tight(PV.reports); addFlap(PV.$('#wh'), (' '.repeat(Math.floor((34 - wh.length) / 2)) + wh).padEnd(34), -1.4, '#fdbc2a', .02, 3, 'WH');
+  // each row: name, side, called move, confidence on its beat; its words flap in under it a beat later
+  const rowT = rows.map((_, i) => 3 + 2 * i);
+  rows.forEach((x, i) => { const r = PV.$$('.row')[i], g = PV.$$('.grp', r), col = PV.side(x), t0 = rowT[i];
+    addFlap(g[0], pad(x.name.toUpperCase(), NAME), t0, '#f8f0d9', .04, 4); addFlap(g[1], pad(x.side, SIDE), t0 + .3, col, .04, 4);
+    addFlap(g[2], pad((x.side === 'LONG' ? '+' : '-') + PV.num(x.call) + '%', MOVE), t0 + .55, col, .04, 4); addFlap(g[3], pad(x.conf + '%', CONF), t0 + .8, '#f8f0d9', .04, 4);
+    addFlap(PV.$('.rm', r), pad(tight(x.clause.replace(/[.,;:!?]/g, '')), RM), t0 + 1, '#f8f0d9', .025, 3) });
+  // the status line: the count on the first drop, the grading line at the end
+  const stL = PV.$('#st'), cnt = `${PV.nL} LONG  ${PV.nS} SHORT`, cntP = (' '.repeat(Math.floor((16 - cnt.length) / 2)) + cnt).padEnd(16);
+  const gr = tight(PV.graded), grP = (' '.repeat(Math.floor((34 - gr.length) / 2)) + gr).padEnd(34);
+  const cntCol = i => i >= cntP.indexOf('SHORT') - 2 ? PV.C.red : PV.C.green;
+  T.count = 13; T.stCount = { text: cntP, col: cntCol };
+  // the ride: the camera visits each row while its words are marked (8 beats a row, 9 for a long clause), then the grading line, then the logo
+  const len = rows.map(x => 8), starts = []; let b = 14; len.forEach(l => { starts.push(b); b += l });
+  T.starts = starts; T.len = len; T.end = b; T.logo = b + 4; T.dur = b + 9.5; T.rowT = rowT;
+  addFlap(stL, cntP, 13, cntCol, .05, 5); flaps.forEach(F => { if (F.until === 'WH') F.until = b }); addFlap(PV.$('#wh'), grP, b, '#fdbc2a', .025, 4);
+  rows.forEach((x, i) => { const r = PV.$$('.row')[i], h = document.createElement('i'); h.className = 'hl'; r.appendChild(h); x._hl = h; x._row = r });
+  PV.$('#end').innerHTML = `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
+  grain = PV.grain(PV.$('#grain'), .05);
+  window.TL = { count: +G.at(13).toFixed(3), starts: starts.map(s => +G.at(s).toFixed(3)), end: +G.at(b).toFixed(3), logo: +G.at(T.logo).toFixed(3), dur: +G.at(T.dur).toFixed(3), drop2: +(26.55 - AT).toFixed(3) };
+  window.HOLD = rows.map((x, i) => ({ k: x.k, clause: x.clause, need: +PV.need(x.clause).toFixed(2), onScreen: +((T.logo - rowT[i] - 2) * B).toFixed(2), inFocus: +((len[i] - 1) * B).toFixed(2) }));
+  window.CUES = [[.03, 'r11-flap', .12]];
+  rowT.forEach(r => CUES.push([G.at(r), 'r11-flap', .14], [G.at(r + 1), 'r11-flap', .09]));
+  CUES.push([G.at(13), 'r11-flap', .16], [G.at(13) + .01, 'r11-thump', .14]);
+  starts.forEach(s => CUES.push([G.at(s), 'sfx-whoosh', .08]));
+  CUES.push([G.at(b), 'r11-flap', .14], [G.at(T.logo), 'sfx-chime', .1]);
+  window.MUSIC = { f: 'w6-dnb-x', at: AT }; window.DUR = +G.at(T.dur).toFixed(3);
+  await PV.ready(['700 46px "Space Mono"', '700 30px "Space Grotesk"']);
+  await PV.go();
+})();
+window.R = t => {
+  grain(t); const k = G.beat(t);
+  const cur = T.starts.filter(s => k >= s).length - 1, inR = cur >= 0 && k < T.end, sp = inR ? rows[cur] : null;
+  flaps.forEach(F => { if (k >= F.until) return; if (k < F.t0 - .01 && F.cells[0].parentNode.id === 'wh' && F.t0 > 0) return; drawFlap(F, k) });
+  // the camera: the whole board while it fills; then rides to each row (push in, the row centred); back out for the grading line
+  const punch = d => { const x = k - d; return x < 0 ? 0 : .035 * Math.exp(-3.5 * x) };
+  let sc = 1 + .012 * Math.sin(t * .9), cy = PV.lerp(560, 700, PV.eo(PV.n(k, 0, 4))), cx = 540;
+  if (inR) { const r = sp._row, y = r.offsetTop + PV.$('#bd').offsetTop + r.offsetHeight / 2, p = PV.eio(PV.n(k, T.starts[cur], T.starts[cur] + 1.2));
+    const prevY = cur ? rows[cur - 1]._row.offsetTop + PV.$('#bd').offsetTop + rows[cur - 1]._row.offsetHeight / 2 : 700;
+    cy = PV.cl(PV.lerp(prevY, y, p), 640, 860); const m2 = PV.eio(PV.n(k, T.starts[cur] + 4, T.starts[cur] + 4.6)); sc = PV.lerp(cur ? 1.07 : 1, 1.07, p) + .02 * PV.n(k, T.starts[cur], T.starts[cur] + T.len[cur]) + .05 * m2; cx += 40 * m2 * (cur % 2 ? -1 : 1) }
+  if (k >= T.end) { const p = PV.eio(PV.n(k, T.end, T.end + 1.2)); cy = PV.lerp(860, 740, p); sc = PV.lerp(1.07, 1.02, p) }
+  sc += punch(T.count) + punch(T.end) + punch(T.logo);
+  T.rowT.forEach(r => sc += .3 * punch(r));
+  const ox = 12 * Math.sin(t * .7), oy = 8 * Math.cos(t * .5);
+  PV.$('#cam').style.transform = `translate(${(540 - cx + ox).toFixed(1)}px,${(675 - cy + oy).toFixed(1)}px) scale(${sc.toFixed(4)})`; PV.$('#cam').style.transformOrigin = `${cx}px ${cy}px`;
+  PV.$('#hall').style.transform = `translate(${(-ox * 2).toFixed(1)}px,${(-oy * 2 + (cy - 700) * -.12).toFixed(1)}px) scale(${(1 + (sc - 1) * .35).toFixed(4)})`;
+  // the lamp breathes on the beat
+  const ph = ((k % 1) + 1) % 1; PV.$('#lamp').style.opacity = (.6 + .4 * Math.exp(-5 * ph)).toFixed(3);
+  // the lit row and its marked clause (the marker sweeps cell by cell)
+  rows.forEach((x, i) => { const on = inR && cur === i, li = on ? PV.eo(PV.n(k, T.starts[i], T.starts[i] + .6)) : 0; x._row.querySelector('.lit').style.opacity = li.toFixed(3);
+    x._row.style.opacity = inR && !on ? (1 - .55 * PV.n(k, T.starts[0], T.starts[0] + 1)).toFixed(3) : 1;
+    const cells = PV.$$('.rm .c', x._row), n = x.clause.length, p = on ? PV.eio(PV.n(k, T.starts[i] + 1, T.starts[i] + 4)) : (inR && i < cur) || k >= T.end ? 0 : 0;
+    cells.forEach((c, j) => { const lit = on && j < n && j < p * n + .5; c.style.background = lit ? 'linear-gradient(180deg,#fdbc2a 0 49%,#e7a91c 51% 100%)' : ''; c.firstChild.style.color = lit ? '#1a1300' : c.firstChild.style.color }) });
+  // the end card on the bed's second drop
+  const ce = PV.n(k, T.logo, T.logo + .6), en = PV.$('#end'); en.style.opacity = ce.toFixed(3);
+  en.querySelector('img').style.transform = `scale(${(1.2 - .2 * PV.eo5(ce) + .02 * Math.exp(-5 * ph)).toFixed(3)})`;
+};
+</script>

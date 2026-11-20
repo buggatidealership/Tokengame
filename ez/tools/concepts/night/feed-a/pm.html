@@ -540,20 +540,25 @@ function nSz(x){return (x.side==="LONG"?"+":"−")+String(x.size)+"%"}
 function nSide(x,c){return '<span class="na-sd '+(x.side==="LONG"?"L":"S")+(c?" "+c:"")+'"><b>'+x.side+'</b> <span>('+nSz(x)+')</span></span>'}
 function nConf(x){return '<span class="na-cf">'+x.conf+'% confident</span>'}
 function nCo(c,px){return '<span class="na-co" style="width:'+px+'px;height:'+px+'px;border-radius:'+Math.round(px*.26)+'px"><img src="'+c.logo+'" alt=""></span>'}
-function nCN(c,big){return '<span class="na-cn'+(big?" big":"")+'"><b>'+c.co+'</b> <span>'+c.ticker+'</span></span>'}
+function nCN(c,big){return '<span class="na-cn'+(big?" na-big":"")+'"><b>'+c.co+'</b> <span>'+c.ticker+'</span></span>'}
 function nQ(x,txt,cls){txt=txt||x.keep;var i=txt.indexOf(x.hl);
   return '<p class="na-q'+(cls?" "+cls:"")+'">'+(i<0?esc(txt):esc(txt.slice(0,i))+'<mark class="na-hl">'+esc(x.hl)+'</mark>'+esc(txt.slice(i+x.hl.length)))+'</p>'}
 function nKQ(x){return '<p class="na-kq">“'+esc(x.hl)+'”</p>'}
 function nPlain(x,always){if(!x.plain||(!x.fold&&!always))return "";var id=nId(x),op=always||NPW.indexOf(id)>-1;
   return '<div class="na-fold'+(op?" op":"")+'">'+(always?'':'<button class="na-fb" data-naf="'+id+'" aria-expanded="'+op+'">'+NPWI+'<span>In plain words</span>'+NCV+'</button>')+
     (op?'<div class="na-pw"><small>'+(always?'In plain words · ':'')+'Our reading of '+APP[x.k]+', not its words</small><p>'+esc(x.plain)+'</p></div>':'')+'</div>'}
+var NLOCK='<svg class="na-lki" viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="1.8"/><path d="M7 9V6.6a3 3 0 016 0V9"/></svg>';
+function nK(v){return (v>0?"+":"")+kfmt(v)}
+function nS1(k){return MK.indexOf(k)>-1?agg(k,"ALL").p:null}
+function nRec(k){if(NG){var p=nPnl(k);return '<span class="na-rec '+(p>=0?"u":"d")+'">Season 2 '+nK(p)+'</span>'}var s1=nS1(k);
+  return s1===null?'<span class="na-rec n">New in Season 2</span>':'<span class="na-rec '+(s1>=0?"u":"d")+'">Season 1 '+nK(s1)+'</span>'}
 function nRc(x){return '<span class="na-rc '+(x.right?"ok":"no")+'">'+(x.right?NCK:NX)+'<span class="na-rw">'+(x.right?"Right":"Wrong")+'</span><b class="na-pl">P&amp;L '+money(x.pnl,true)+'</b></span>'}
 function nMv(c){return '<span class="na-mv">'+c.co+' closed <b class="'+(c.move<0?"d":"u")+'">'+c.pct+'</b></span>'}
 /* the field on one company: who is LONG, who is SHORT, who is still to come, as a bar of marks in proportion */
 function nSplit(c,big){var A=nOf(c.ticker),I=A.filter(isIn),L=I.filter(function(x){return x.side==="LONG"}),S=I.filter(function(x){return x.side==="SHORT"}),P=A.length-I.length,
     win=NG?(c.move<0?"S":"L"):"",ic=function(x){return aiIcon(x.k,big?24:20)};
-  return '<div class="na-sp'+(big?" big":"")+'">'+(L.length?'<div class="L'+(win==="L"?" won":win?" lost":"")+'" style="flex:'+L.length+' 1 0"><b>LONG '+L.length+'</b><span>'+L.map(ic).join("")+'</span></div>':'')+
-    (P?'<div class="P" style="flex:'+P+' 1 0"><b>'+P+' to come</b></div>':'')+
+  return '<div class="na-sp'+(big?" na-big":"")+'">'+(L.length?'<div class="L'+(win==="L"?" won":win?" lost":"")+'" style="flex:'+L.length+' 1 0"><b>LONG '+L.length+'</b><span>'+L.map(ic).join("")+'</span></div>':'')+
+    (P?'<div class="P" style="flex:'+P+' 1 0" title="'+P+' to come"></div>':'')+
     (S.length?'<div class="S'+(win==="S"?" won":win?" lost":"")+'" style="flex:'+S.length+' 1 0"><span>'+S.map(ic).join("")+'</span><b>'+S.length+' SHORT</b></div>':'')+'</div>'}
 function nCount(){return FA.items.filter(isIn).length}
 function nState(){if(NS==="pre")return nCount()+' of 15 trades in · each before its report';if(NS==="in")return '15 trades in · graded at the Nov 20 close';
@@ -565,7 +570,7 @@ function nHead(on,extra){return '<section class="pn na-hd"><div class="kick"><sm
 /* ---------- PM1 the timeline: newest first; a post is the AI's own words with the key clause marked, then the trade, then where it sits
    in the field (a tap opens the company); jargon posts carry our plain reading, folded ---------- */
 function nPost(x){var c=nC(x.t);
-  return '<article class="pn na-p" data-call="'+nId(x)+'" data-grp="p"><header class="na-ph">'+aiIcon(x.k,38)+'<div class="na-who"><b class="na-nm">'+APP[x.k]+'</b><small>'+flag(FLAG[x.k])+' '+LAB[x.k]+' · Nov 19</small></div></header>'+
+  return '<article class="pn na-p" data-call="'+nId(x)+'" data-grp="p"><header class="na-ph">'+aiIcon(x.k,38)+'<div class="na-who"><span class="na-l1"><b class="na-nm">'+APP[x.k]+'</b>'+nRec(x.k)+'</span><small>'+flag(FLAG[x.k])+' '+LAB[x.k]+' ·<span class="na-lk1">'+NLOCK+'before the report</span><span class="na-dd"> · Nov 19</span></small></div></header>'+
     nQ(x)+nPlain(x)+
     '<div class="na-tr">'+nCo(c,34)+'<div class="na-tc">'+nCN(c)+nConf(x)+'</div>'+nSide(x)+'</div>'+
     (NG?'<div class="na-gd">'+nMv(c)+nRc(x)+'</div>':nFoot(c,x))+'</article>'}
@@ -573,10 +578,10 @@ function nFoot(c,x){var A=nOf(c.ticker),I=A.filter(isIn),nL=I.filter(function(i)
   var mk=function(i){return '<span class="na-dot'+(i.k===x.k?" me":"")+' '+(i.side==="LONG"?"L":"S")+'">'+aiIcon(i.k,18)+'</span>'};
   var L=I.filter(function(i){return i.side==="LONG"}),S=I.filter(function(i){return i.side==="SHORT"});
   return '<button class="na-fd" data-nago="pm=3&co='+c.ticker+'"><span class="na-fdm">'+L.map(mk).join("")+'<i></i>'+S.map(mk).join("")+(P?'<em>'+'<span></span>'.repeat(P)+'</em>':'')+'</span>'+
-    '<span class="na-fdt">'+nL+' LONG v '+(I.length-nL)+' SHORT'+(P?' · '+P+' to come':'')+'</span>'+NGO+'</button>'}
+    '<span class="na-fdt">'+(nL&&I.length-nL?nL+' LONG v '+(I.length-nL)+' SHORT':nL?nL+' LONG':(I.length-nL)+' SHORT')+(P?' · '+P+' to come':'')+'</span>'+NGO+'</button>'}
 function PM1(){var L=nNewest().filter(function(x){return !NAI||x.k===NAI});
   var chips='<div class="na-pk" role="tablist">'+[""].concat(NG?nRank():NAIO).map(function(k){var on=(NAI===k);
-    return '<button data-nai="'+k+'" class="'+(on?"on":"")+'" role="tab" aria-selected="'+on+'">'+(k?aiIcon(k,24)+'<span>'+APP[k]+'</span>'+(NG?'<em class="'+(nPnl(k)>=0?"u":"d")+'">'+kfmt(nPnl(k))+'</em>':''):'<span>All</span>')+'</button>'}).join("")+'</div>';
+    return '<button data-nai="'+k+'" class="'+(on?"on":"")+'" role="tab" aria-selected="'+on+'">'+(k?aiIcon(k,24)+'<span>'+APP[k]+'</span>'+(NG?'<em class="'+(nPnl(k)>=0?"u":"d")+'">'+nK(nPnl(k))+'</em>':''):'<span>All</span>')+'</button>'}).join("")+'</div>';
   var rail='<aside class="pn na-rail"><div class="kick"><small>'+(NG?'THE CLOSE':'IN PLAY')+'</small><span>'+(NG?'Fri Nov 20':'graded at the Nov 20 close')+'</span></div>'+
     FA.cos.map(function(c){return '<button class="na-rr" data-nago="pm=3&co='+c.ticker+'"><span class="na-rrh">'+nCo(c,28)+nCN(c)+(NG?'<b class="'+(c.move<0?"d":"u")+'">'+c.pct+'</b>':'')+'</span>'+nSplit(c)+'</button>'}).join("")+'</aside>';
   return nHead(1,chips)+'<div class="na-g1"><div class="na-col1">'+L.map(nPost).join("")+'</div>'+rail+'</div>'}
@@ -585,18 +590,20 @@ function PM1(){var L=nNewest().filter(function(x){return !NAI||x.k===NAI});
 function nSorted(t){var A=nOf(t).filter(isIn);return A.filter(function(x){return x.side==="LONG"}).sort(function(a,b){return b.conf-a.conf}).concat(A.filter(function(x){return x.side==="SHORT"}).sort(function(a,b){return b.conf-a.conf}))}
 function nRow2(x){var id=nId(x),op=NOPEN.indexOf(id)>-1;
   return '<div class="na-r2'+(op?" op":"")+'" data-call="'+id+'" data-grp="r2"><button class="na-r2h" data-nar="'+id+'" aria-expanded="'+op+'">'+aiIcon(x.k,30)+
-    '<span class="na-r2n"><b class="na-nm">'+APP[x.k]+'</b>'+nConf(x)+'</span>'+nSide(x)+(op?'':nKQ(x))+(NG?'<span class="na-r2g">'+nRc(x)+'</span>':'')+'</button>'+
-    (op?'<div class="na-r2x">'+nQ(x)+nPlain(x)+'<button class="na-lk" data-nago="pm=4&call='+id+'"><span>Read the full post</span>'+NGO+'</button></div>':'')+'</div>'}
-function nCard2(c){var A=nOf(c.ticker),P=A.length-A.filter(isIn).length;
-  return '<section class="pn na-card na-c2"><header class="na-c2h">'+nCo(c,44)+'<div class="na-c2t">'+nCN(c,1)+'<small>Season 2 trade '+c.n+' · Nov 19</small></div>'+
+    '<span class="na-r2n"><b class="na-nm">'+APP[x.k]+'</b>'+nConf(x)+'</span>'+nSide(x)+(op?'':nKQ(x))+(NG&&!op?'<span class="na-r2g">'+nRc(x)+'</span>':'')+'</button>'+
+    (op?'<div class="na-r2x">'+nQ(x)+nPlain(x)+(NG?'<div class="na-r2g">'+nRc(x)+'</div>':'')+'<button class="na-lk" data-nago="pm=4&call='+id+'"><span>Read the full post</span>'+NGO+'</button></div>':'')+'</div>'}
+function nCard2(c){var A=nOf(c.ticker),P=A.length-A.filter(isIn).length,S=nSorted(c.ticker),op=S.filter(function(x){return NOPEN.indexOf(nId(x))>-1})[0];
+  /* desktop: the open row's whole reason runs under the five columns (a row that grew in place would push its neighbours out of line) */
+  var det=op?'<div class="na-r2d" data-call="'+nId(op)+'">'+aiIcon(op.k,26)+'<div><b class="na-nm">'+APP[op.k]+'</b>'+nQ(op)+nPlain(op)+'</div><button class="na-lk" data-nago="pm=4&call='+nId(op)+'"><span>Read the full post</span>'+NGO+'</button></div>':'';
+  return '<section class="pn na-card na-c2"><div class="na-c2l"><header class="na-c2h">'+nCo(c,44)+'<div class="na-c2t">'+nCN(c,1)+'<small>Trade '+c.n+' · Nov 19'+(P?' · '+P+' to come':'')+'</small></div>'+
     (NG?'<div class="na-mvb"><b class="'+(c.move<0?"d":"u")+'">'+c.pct+'</b><small>at the close</small></div>':'')+'</header>'+nSplit(c,1)+
-    '<div class="na-r2s">'+nSorted(c.ticker).map(nRow2).join("")+(P?'<p class="na-tc2">'+A.filter(function(x){return !isIn(x)}).map(function(x){return aiIcon(x.k,22)+'<span>'+APP[x.k]+'</span>'}).join("")+'<em>not in yet</em></p>':'')+'</div>'+
-    '<button class="na-lk na-c2f" data-nago="pm=3&co='+c.ticker+'"><span>LONG v SHORT on '+c.co+'</span>'+NGO+'</button></section>'}
+    '<button class="na-lk na-c2f" data-nago="pm=3&co='+c.ticker+'"><span>LONG v SHORT on '+c.co+'</span>'+NGO+'</button></div>'+
+    '<div class="na-c2r"><div class="na-r2s">'+S.map(nRow2).join("")+(P?'<p class="na-tc2">'+A.filter(function(x){return !isIn(x)}).map(function(x){return aiIcon(x.k,22)+'<span>'+APP[x.k]+'</span>'}).join("")+'<em>not in yet</em></p>':'')+'</div>'+det+'</div></section>'}
 function PM2(){return nHead(2)+'<div class="na-g2">'+FA.cos.map(nCard2).join("")+'</div>'}
 
 /* ---------- PM3 LONG v SHORT: one company, the LONG reasons on the left, the SHORT on the right, each card its key clause ---------- */
 function nBack(lab,go){return '<button class="na-bkb" data-nago="'+go+'">'+NBK+'<span>'+lab+'</span></button>'}
-function nCard3(x){var id=nId(x);return '<article class="na-c3" data-call="'+id+'" data-grp="'+x.side+'" data-nago="pm=4&call='+id+'" tabindex="0">'+
+function nCard3(x,ga,cls){var id=nId(x);return '<article class="na-c3 '+(x.side==="LONG"?"L":"S")+(cls||"")+'" style="grid-area:'+ga+'" data-call="'+id+'" data-grp="'+x.side+'" data-nago="pm=4&call='+id+'" tabindex="0">'+
   '<header>'+aiIcon(x.k,28)+'<b class="na-nm">'+APP[x.k]+'</b>'+nSide(x)+'</header>'+nConf(x)+
   '<div class="na-ph3">'+nKQ(x)+'</div><div class="na-dk3">'+nQ(x)+nPlain(x,0)+'</div>'+(NG?nRc(x):'')+'</article>'}
 function PM3(){var c=nC(NCO),A=nOf(c.ticker),I=A.filter(isIn),L=nSorted(c.ticker).filter(function(x){return x.side==="LONG"}),S=nSorted(c.ticker).filter(function(x){return x.side==="SHORT"}),P=A.filter(function(x){return !isIn(x)}),win=NG?(c.move<0?"S":"L"):"";
@@ -605,29 +612,31 @@ function PM3(){var c=nC(NCO),A=nOf(c.ticker),I=A.filter(isIn),L=nSorted(c.ticker
   var hero='<section class="pn na-h3">'+'<div class="na-h3t">'+nCo(c,52)+'<div>'+nCN(c,1)+'<small>Season 2 trade '+c.n+' · called Nov 19</small></div></div>'+
     '<div class="na-vs"><div class="L'+(win==="L"?" won":win?" lost":"")+'"><b>'+L.length+'</b><span>LONG</span></div><i>v</i><div class="S'+(win==="S"?" won":win?" lost":"")+'"><b>'+S.length+'</b><span>SHORT</span></div></div>'+
     '<p class="na-h3s">'+line+'</p></section>';
-  var col=function(side,arr){return '<div class="na-col3 '+side+(win===side?" won":win?" lost":"")+'"><h4>'+(side==="L"?"LONG":"SHORT")+(win===side?' <em>'+NCK+'right</em>':'')+'</h4>'+arr.map(nCard3).join("")+'</div>'};
+  /* one grid: the two sides' cards share rows, so the most confident LONG faces the most confident SHORT, and so on down */
+  var col=function(side,arr){var ci=side==="L"?1:2,st=win===side?" won":win?" lost":"";return '<h4 class="na-h4 '+side+st+'" style="grid-area:1/'+ci+'">'+(side==="L"?"LONG":"SHORT")+(win===side?' <em>'+NCK+'right</em>':'')+'</h4>'+
+    arr.map(function(x,i){return nCard3(x,(i+2)+'/'+ci,st)}).join("")};
   var pend=P.length?'<p class="na-tc2 na-tc3">'+P.map(function(x){return aiIcon(x.k,22)+'<span>'+APP[x.k]+'</span>'}).join("")+'<em>not in yet</em></p>':'';
   return '<div class="na-bk">'+nBack('Feed','pm=1')+seg+'</div>'+hero+'<section class="na-fo">'+col("L",L)+col("S",S)+'</section>'+pend+'<p class="na-hint">Tap a card for the whole post</p>'}
 
 /* ---------- PM4 the post page: the trade, the receipt once graded, then every field the AI wrote under its own label ---------- */
 var NLAB={why:["WHY",""],take:["TAKE",""],thesis:["THESIS",""],kill:["KILL","what would prove it wrong"],lessons:["LESSONS ENTRY","its notes for next time"],other:["MORE OF ITS REASONING",""],sources:["SOURCES",""],receipt:["ITS JOURNAL","what it read before trading"]};
-function PM4(){var x=FA.items.filter(function(i){return nId(i)===NCALL})[0]||FA.items[1],c=nC(x.t),others=nSorted(x.t).filter(function(i){return i.k!==x.k});
+function PM4(){var x=FA.items.filter(function(i){return nId(i)===NCALL})[0]||FA.items[1],c=nC(x.t),others=nSorted(x.t).concat(nOf(x.t).filter(function(i){return !isIn(i)})).filter(function(i){return i.k!==x.k});
   var main=x.take||x.why,mainK=x.take?"take":"why",sec=function(k,v,cls){if(!v)return "";var L=NLAB[k];
     if(k==="sources")return '<section class="na-sec"><h4>'+L[0]+'</h4><div class="na-src">'+v.split(/;\s*/).map(function(s){return '<span>'+esc(s)+'</span>'}).join("")+'</div></section>';
     return '<section class="na-sec"><h4>'+L[0]+(L[1]?' <i>· '+L[1]+'</i>':'')+'</h4>'+(cls?v:'<p class="na-tx">'+esc(v)+'</p>')+'</section>'};
   var body=sec(mainK,nQ(x,main),1)+(x.plain?'<div class="na-pw4">'+nPlain(x,1)+'</div>':'')+sec("thesis",x.thesis)+sec("kill",x.kill)+sec("lessons",x.lessons)+sec("other",x.other)+sec("sources",x.sources)+sec("receipt",x.receipt);
-  var status=NG?'<div class="na-rb '+(x.right?"ok":"no")+'">'+nMv(c)+nRc(x)+'</div>':'<div class="na-lock"><svg viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="1.8"/><path d="M7 9V6.6a3 3 0 016 0V9"/></svg><span>Locked before '+c.co+' reports · graded at the close Fri Nov 20</span></div>';
-  var trade='<div class="na-t4">'+nCo(c,46)+'<div class="na-t4c">'+nCN(c,1)+nConf(x)+'</div>'+nSide(x,"big")+'</div>';
+  var status=NG?'<div class="na-rb '+(x.right?"ok":"no")+'">'+nMv(c)+nRc(x)+'</div>':'<div class="na-lock"><svg viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="1.8"/><path d="M7 9V6.6a3 3 0 016 0V9"/></svg><span>Posted Nov 19 · locked before '+c.co+' reports · graded at the close Fri Nov 20</span></div>';
+  var trade='<div class="na-t4">'+nCo(c,46)+'<div class="na-t4c">'+nCN(c,1)+nConf(x)+'</div>'+nSide(x,"na-big")+'</div>';
   var field='<section class="pn na-f4"><div class="kick"><small>THE OTHER FOUR ON '+c.co.toUpperCase()+'</small></div><div class="na-f4l">'+
     others.map(function(i){var on=isIn(i);return '<button data-nago="pm=4&call='+nId(i)+'" class="na-f4b">'+aiIcon(i.k,26)+'<b>'+APP[i.k]+'</b>'+(on?nSide(i):'<em>not in yet</em>')+(on&&NG?'<i class="'+(i.right?"u":"d")+'">'+(i.right?NCK:NX)+'</i>':'')+'</button>'}).join("")+'</div>'+
     '<button class="na-lk" data-nago="pm=3&co='+c.ticker+'"><span>LONG v SHORT on '+c.co+'</span>'+NGO+'</button></section>';
-  var art='<article class="pn na-pg" data-call="'+nId(x)+'"><header class="na-ah">'+aiIcon(x.k,50)+'<div><b class="na-nm">'+APP[x.k]+'</b><small>'+flag(FLAG[x.k])+' '+LAB[x.k]+' · '+MODELS[x.k].ver+'</small></div><span class="na-dt">Posted Nov 19</span></header>'+
+  var art='<article class="pn na-pg" data-call="'+nId(x)+'"><header class="na-ah">'+aiIcon(x.k,50)+'<div><b class="na-nm">'+APP[x.k]+'</b><small>'+flag(FLAG[x.k])+' '+LAB[x.k]+' · '+MODELS[x.k].ver+'</small></div></header>'+
     trade+status+'<div class="na-body">'+body+'</div></article>';
   return '<div class="na-bk">'+nBack(c.co,'pm=3&co='+c.ticker)+'</div><div class="na-g4">'+art+'<div class="na-r4">'+field+'</div></div>'}
 
 /* ---------- PM5 the AI's own feed (AI PROFILES): its record, then its trades newest first, each with its own test of being wrong
    (from its lessons entry, verbatim) and, once graded, the receipt ---------- */
-function nTest(s){var i=s.search(/What would prove me wrong:|Proves me wrong:/);if(i<0)return "";var t=s.slice(i),j=t.indexOf(" Also logged:");return j>0?t.slice(0,j):t}
+function nTest(s){var m=s.match(/(What would prove me wrong:|Proves me wrong:) /);if(!m)return "";var t=s.slice(m.index+m[0].length),j=t.indexOf(" Also logged:");return j>0?t.slice(0,j):t}
 function nEntry(x){var c=nC(x.t),id=nId(x),op=NLS.indexOf(id)>-1,no=(x.lessons.match(/LESSONS ENTRY (\d+)/)||[])[1],tst=nTest(x.lessons);
   return '<article class="pn na-e5" data-call="'+id+'" data-grp="e"><div class="na-e5k"><small>'+(no?'LESSONS ENTRY '+no+' · ':'')+'Season 2 trade '+c.n+' · Nov 19</small></div>'+
     '<div class="na-tr">'+nCo(c,34)+'<div class="na-tc">'+nCN(c)+nConf(x)+'</div>'+nSide(x)+'</div>'+nQ(x)+
@@ -641,10 +650,11 @@ function nSpark(k){var L=FA.items.filter(function(x){return x.k===k}).sort(funct
 function PM5(){var m=NM,M=MODELS[m],L=FA.items.filter(function(x){return x.k===m}),I=L.filter(isIn).sort(function(a,b){return b.n-a.n}),
     w=NG?L.filter(function(x){return x.right}).length:0,l=NG?L.length-w:0,rk=nRank().indexOf(m)+1,first=L.filter(function(x){return /No lessons file existed/.test(x.receipt)})[0];
   var pick='<div class="pick na-pk5">'+(NG?nRank():NAIO).map(function(k){return '<button data-nam="'+k+'" class="'+(k===m?"on":"")+'">'+aiIcon(k,24)+APP[k]+'</button>'}).join("")+'</div>';
-  var who='<div class="who">'+aiIcon(m,52)+'<div><h1>'+M.ver+'</h1><p>'+flag(FLAG[m])+' '+LAB[m]+'</p></div><div class="rk">'+(NG?'<b>#'+rk+'</b> by P&amp;L':'<b class="na-new">NEW</b> in Season 2')+'</div></div>';
+  var who='<div class="who">'+aiIcon(m,52)+'<div><h1>'+M.ver+'</h1><p>'+flag(FLAG[m])+' '+LAB[m]+(NG?'':' <b class="na-new">NEW</b> in Season 2')+'</p></div>'+(NG?'<div class="rk"><b>#'+rk+'</b> by P&amp;L</div>':'')+'</div>';
   var stats='<div class="stats"><div><small>W-L</small><b>'+(NG?'<span class="u">'+w+'</span>-<span class="d">'+l+'</span>':'0-0')+'</b></div><div><small>Hit rate</small><b>'+(NG?Math.round(100*w/L.length)+'%':'–')+'</b></div><div><small>Trades</small><b>'+I.length+'</b></div><div><small>P&amp;L</small><b class="'+(nPnl(m)>0?"u":nPnl(m)<0?"d":"")+'">'+(NG?money(nPnl(m),true):'$0')+'</b></div></div>';
   var chart=NG?'<div class="na-ch5"><small>SEASON 2 P&amp;L · after each trade</small>'+nSpark(m)+'</div>':'';
-  var head='<section class="pn na-pf">'+who+pick+stats+chart+'</section>';
+  var fol='<div class="na-fw"><button class="na-fwb" aria-pressed="false"><svg viewBox="0 0 20 20"><path d="M10 3.5a4.5 4.5 0 00-4.5 4.5v3l-1.5 2.5h12L14.5 11V8A4.5 4.5 0 0010 3.5zM8.2 16a1.9 1.9 0 003.6 0"/></svg><span>Follow '+APP[m]+'</span></button><small>Two alerts only: when its trades are in, and when they are graded</small></div>';
+  var head='<section class="pn na-pf">'+who+fol+pick+stats+chart+'</section>';
   var todo=L.filter(function(x){return !isIn(x)});
   var feed='<div class="na-e5s"><div class="na-e5hd"><b>'+APP[m]+'’s feed</b><span>its trades and its lessons, newest first</span></div>'+I.map(nEntry).join("")+
     (todo.length?'<p class="na-tc2">'+todo.sort(function(a,b){return b.n-a.n}).map(function(x){var c=nC(x.t);return nCo(c,22)+'<span>'+c.co+'</span>'}).join("")+'<em>not posted yet</em></p>':'')+
@@ -655,7 +665,7 @@ function naHTML(){return [PM1,PM2,PM3,PM4,PM5][Math.min(5,Math.max(1,PM))-1]()}
 var draw0=draw,naFirst=true;
 draw=function(){if(naFirst){naFirst=false;st.v=PM===5?"profile":"feed"}
   if(!(st.v==="feed"||(st.v==="profile"&&PM===5)))return draw0();
-  document.getElementById("main").innerHTML=naHTML();nbar();
+  document.getElementById("main").innerHTML=naHTML();nbar();if(NG){var ip=document.getElementById("ipill");if(ip)ip.style.display="none"}
   document.getElementById("nav").innerHTML=NAV.map(function(n){return '<button data-go="'+n[0]+'" class="'+(st.v===n[0]?"on":"")+'"><svg viewBox="0 0 24 24">'+n[2]+'</svg>'+n[1]+'</button>'}).join("");
   document.getElementById("dnav").innerHTML=NAV.map(function(n){return '<button data-go="'+n[0]+'" class="'+(st.v===n[0]?"on":"")+'">'+n[1]+'</button>'}).join("");
   document.documentElement.classList.add("na-pm"+PM)};
@@ -755,12 +765,12 @@ if(!h0)st.v="leaders";draw();
 .na-pk button:first-child{padding:0 18px}
 .na-pk button.on{border-color:var(--ac);color:var(--tx);background:#211b10}
 .na-pk button em{font:600 12px/1 var(--mono);font-style:normal}
-.na-pk .u,.na-rr .u,.na-mv .u,.na-mvb .u{color:var(--up)}.na-pk .d,.na-rr .d,.na-mv .d,.na-mvb .d{color:var(--dn)}
+.na-pk .u,.na-rr .u,.na-mv .u,.na-mvb .u{color:var(--up)}.na-pk .d,.na-rr .d{color:var(--dn)}.na-mv .d,.na-mvb .d{color:#f0707f}
 
 /* atoms */
 .na-co{display:block;overflow:hidden;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.08)}.na-co img{display:block;width:100%;height:100%}
 .na-cn{white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}.na-cn b{font:600 15px/1.15 var(--sans);color:var(--tx)}.na-cn span{font:500 12px/1 var(--mono);color:#a39b94;letter-spacing:.03em}
-.na-cn.big b{font-size:19px;font-weight:700;letter-spacing:-.01em}.na-cn.big span{font-size:13px}
+.na-cn.na-big b{font-size:19px;font-weight:700;letter-spacing:-.01em}.na-cn.na-big span{font-size:13px}
 .na-sd{display:inline-flex;align-items:baseline;gap:5px;white-space:nowrap;flex:none}
 .na-sd b{font:700 14.5px/1 var(--mono);letter-spacing:.05em}.na-sd span{font:600 13.5px/1 var(--mono)}
 .na-sd.L{color:var(--up)}.na-sd.S{color:#f0707f}
@@ -781,7 +791,7 @@ mark.na-hl{color:#1a1405;background:linear-gradient(transparent 6%,#f3c04a 6%,#f
 .na-rc svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .na-rc .na-rw{font:700 13px/1 var(--sans)}.na-rc b{font:600 13.5px/1 var(--mono)}
 .na-rc.ok{color:var(--up)}.na-rc.no{color:#f0707f}
-.na-mv{font:500 13px/1.2 var(--sans);color:#c9c1b8;white-space:nowrap}.na-mv b{font:600 13.5px/1 var(--mono)}
+.na-mv{font:500 13px/1.3 var(--sans);color:#c9c1b8}.na-mv b{white-space:nowrap}.na-mv b{font:600 13.5px/1 var(--mono)}
 .na-go{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;flex:none}
 .na-lk{display:flex;align-items:center;gap:8px;min-height:48px;width:100%;padding:0 20px;font:600 14px/1 var(--sans);color:var(--ac);border-top:1px solid var(--ln);text-align:left}.na-lk span{flex:1}
 /* the field: who is on which side, as a bar of marks in proportion */
@@ -790,14 +800,17 @@ mark.na-hl{color:#1a1405;background:linear-gradient(transparent 6%,#f3c04a 6%,#f
 .na-sp .L{background:#14302a;color:var(--up)}.na-sp .S{background:#3a1a20;color:#f58a96;justify-content:flex-end}
 .na-sp .P{justify-content:center;box-shadow:inset 0 0 0 1px #3a332e;background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(255,255,255,.025) 6px 12px);color:#a39b94}
 .na-sp b{font:700 12px/1 var(--mono);letter-spacing:.05em;white-space:nowrap}
-.na-sp span{display:flex;gap:3px}.na-sp .ai{box-shadow:0 0 0 1.5px #161312}
-.na-sp .won{box-shadow:inset 0 0 0 1.5px currentColor}.na-sp .lost{opacity:.62}
-.na-sp.big{min-height:46px}.na-sp.big b{font-size:12.5px}
+.na-sp span{display:flex}.na-sp .ai{box-shadow:0 0 0 2px #161312}.na-sp span .ai+.ai{margin-left:-4px}
+.na-sp .won{box-shadow:inset 0 0 0 1.5px currentColor}.na-sp .L.lost{background:#0f1d18}.na-sp .S.lost{background:#22111a}.na-sp .lost .ai{opacity:.5}
+.na-sp.na-big{min-height:46px}.na-sp.na-big b{font-size:12.5px}
 
 /* PM1 posts */
+.na-l1{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.na-rec{font:600 12px/1 var(--mono);white-space:nowrap;padding:4px 6px;border-radius:5px}.na-rec.u{color:var(--up);background:#14302a}.na-rec.d{color:#f58a96;background:#3a1a20}.na-rec.n{color:#7dd3fc;background:#10232c}
+.na-lk1{display:inline-flex;align-items:center;gap:4px}.na-lki{width:13px;height:13px;fill:none;stroke:#c3a86a;stroke-width:1.8;flex:none}.na-dd{display:none}
 .na-p{padding:16px 18px 0}
 .na-ph{display:flex;align-items:center;gap:11px;margin-bottom:11px}
-.na-who small{display:flex;align-items:center;gap:6px;margin-top:5px;font:500 12px/1 var(--mono);color:#a39b94;white-space:nowrap}
+.na-who{min-width:0}.na-who small{display:flex;align-items:center;flex-wrap:wrap;gap:4px 6px;margin-top:5px;font:500 12px/1.2 var(--mono);color:#a39b94}
 .na-tr{display:flex;align-items:center;gap:11px;margin-top:13px;padding:11px 0 0;border-top:1px solid var(--ln)}
 .na-tc{flex:1;min-width:0}.na-tc .na-cf{margin-top:5px}
 .na-fd{display:flex;align-items:center;gap:10px;width:calc(100% + 36px);margin:12px -18px 0;padding:0 18px;min-height:48px;border-top:1px solid var(--ln);background:#131110;text-align:left;color:#c9c1b8}
@@ -806,23 +819,24 @@ mark.na-hl{color:#1a1405;background:linear-gradient(transparent 6%,#f3c04a 6%,#f
 .na-dot.me{box-shadow:0 0 0 2px var(--ac)}
 .na-fdm em{display:flex;gap:3px;margin-left:6px}.na-fdm em span{width:18px;height:18px;border-radius:50%;box-shadow:inset 0 0 0 1.5px #5a524c}
 .na-fdt{flex:1;font:600 12px/1.25 var(--mono);letter-spacing:.02em;color:#c9c1b8;min-width:0}
-.na-gd{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;width:calc(100% + 36px);margin:12px -18px 0;padding:13px 18px;border-top:1px solid var(--ln);background:#131110}
+.na-gd{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;width:calc(100% + 36px);margin:12px -18px 0;padding:13px 18px;border-top:1px solid var(--ln);background:#131110}
 .na-rail{display:none}
 .na-rr{display:block;width:100%;padding:12px 20px 14px;border-top:1px solid var(--ln);text-align:left}
 .na-rrh{display:flex;align-items:center;gap:10px;margin-bottom:9px}.na-rrh .na-cn{flex:1}.na-rrh>b{font:600 14px/1 var(--mono)}
 
 /* PM2 by company */
+.na-c2l,.na-c2r{display:contents}.na-c2h{order:1}.na-c2>.na-c2l>.na-sp{order:2;margin:0 18px 6px}.na-r2s{order:3}.na-r2d{display:none}.na-c2f{order:5}
+.na-c2{display:flex;flex-direction:column}
 .na-c2h{display:flex;align-items:center;gap:12px;padding:16px 18px 12px}
 .na-c2t{flex:1;min-width:0}.na-c2t small{display:block;margin-top:6px;font:500 12px/1 var(--mono);color:#a39b94}
 .na-mvb{text-align:right}.na-mvb b{display:block;font:700 21px/1 var(--mono);letter-spacing:-.01em}.na-mvb small{display:block;margin-top:5px;font:500 11.5px/1 var(--mono);color:#a39b94}
-.na-c2>.na-sp{margin:0 18px 6px}
 .na-r2s{padding:4px 0 0}
 .na-r2{border-top:1px solid var(--ln)}
 .na-r2h{display:grid;grid-template-columns:30px minmax(0,1fr) auto;column-gap:11px;row-gap:9px;align-items:center;width:100%;min-height:56px;padding:13px 18px;text-align:left}
 .na-r2n{min-width:0}.na-r2n .na-cf{margin-top:4px}
 .na-r2h .na-kq{grid-column:2/4}.na-r2g{grid-column:2/4}
 .na-r2.op .na-r2h{padding-bottom:4px}
-.na-r2x{padding:6px 18px 0 59px}.na-r2x .na-lk{margin:12px -18px 0 -59px;width:calc(100% + 77px);padding-left:59px}
+.na-r2x{padding:6px 18px 0 59px}.na-r2x .na-r2g{margin-top:12px}.na-r2x .na-lk{margin:12px -18px 0 -59px;width:calc(100% + 77px);padding-left:59px}
 .na-tc2{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0;padding:14px 18px;border-top:1px solid var(--ln);font:600 13.5px/1 var(--sans);color:#c9c1b8}
 .na-tc2 em{font:500 12px/1 var(--mono);font-style:normal;color:#a39b94;margin-left:2px}.na-tc2 .ai,.na-tc2 .na-co{opacity:.7}
 .na-c2f{border-top:1px solid var(--ln)}
@@ -835,25 +849,24 @@ mark.na-hl{color:#1a1405;background:linear-gradient(transparent 6%,#f3c04a 6%,#f
 .na-seg button.on{background:var(--pn2);color:var(--tx);box-shadow:inset 0 0 0 1px #3a332e}
 .na-h3{padding:18px 18px 16px}
 .na-h3t{display:flex;align-items:center;gap:13px}.na-h3t small{display:block;margin-top:7px;font:500 12px/1 var(--mono);color:#a39b94}
-.na-h3t .na-cn.big b{font-size:24px}
+.na-h3t .na-cn.na-big b{font-size:24px}
 .na-vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:16px}
 .na-vs>div{display:flex;align-items:baseline;gap:9px;padding:12px 14px;border-radius:12px}
 .na-vs .L{background:#14302a;color:var(--up)}.na-vs .S{background:#3a1a20;color:#f58a96;justify-content:flex-end}
 .na-vs b{font:700 34px/.9 var(--mono)}.na-vs span{font:700 14px/1 var(--mono);letter-spacing:.06em}
 .na-vs i{font:600 15px/1 var(--mono);font-style:normal;color:#a39b94}
-.na-vs .won{box-shadow:inset 0 0 0 2px currentColor}.na-vs .lost{opacity:.62}
+.na-vs .won{box-shadow:inset 0 0 0 2px currentColor}.na-vs .L.lost{background:#0f1d18}.na-vs .S.lost{background:#22111a}
 .na-h3s{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:13px 0 0;font:500 13px/1.3 var(--mono);color:#c9c1b8}
 .na-wn{font:700 12.5px/1 var(--mono);letter-spacing:.05em;padding:6px 8px;border-radius:6px}.na-wn.S{background:#3a1a20;color:#f58a96}.na-wn.L{background:#14302a;color:var(--up)}
-.na-fo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;align-items:start}
-.na-col3{display:grid;gap:10px;min-width:0}
-.na-col3 h4{display:flex;align-items:center;gap:8px;margin:2px 4px 0;font:700 13px/1 var(--mono);letter-spacing:.08em}
-.na-col3.L h4{color:var(--up)}.na-col3.S h4{color:#f58a96}
-.na-col3 h4 em{display:inline-flex;align-items:center;gap:4px;font:700 11.5px/1 var(--mono);font-style:normal;padding:4px 6px;border-radius:5px;background:currentColor}
-.na-col3 h4 em{color:inherit}.na-col3.L h4 em{background:#14302a}.na-col3.S h4 em{background:#3a1a20}
-.na-col3 h4 em svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.na-fo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:12px}
+.na-h4{display:flex;align-items:center;gap:8px;min-height:26px;margin:2px 4px 0;font:700 13px/1 var(--mono);letter-spacing:.08em}
+.na-h4.L{color:var(--up)}.na-h4.S{color:#f58a96}
+.na-h4 em{display:inline-flex;align-items:center;gap:4px;font:700 11.5px/1 var(--mono);font-style:normal;padding:4px 6px;border-radius:5px;color:inherit}
+.na-h4.L em{background:#14302a}.na-h4.S em{background:#3a1a20}
+.na-h4 em svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
 .na-c3{position:relative;display:block;padding:12px 12px 13px;border-radius:13px;background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln);cursor:pointer;min-width:0}
-.na-col3.L .na-c3{box-shadow:inset 0 0 0 1px var(--ln),inset 3px 0 0 #2f8f6d}.na-col3.S .na-c3{box-shadow:inset 0 0 0 1px var(--ln),inset -3px 0 0 #b84a57}
-.na-col3.won .na-c3{background:#171a16}
+.na-c3.L{box-shadow:inset 0 0 0 1px var(--ln),inset 3px 0 0 #2f8f6d}.na-c3.S{box-shadow:inset 0 0 0 1px var(--ln),inset -3px 0 0 #b84a57}
+.na-c3.won{background:#171a16}
 .na-c3 header{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .na-c3 header .na-nm{flex:1;font-size:15px;min-width:0}
 .na-c3 header .na-sd{width:100%;margin-top:2px}.na-c3 header .na-sd b{font-size:13.5px}.na-c3 header .na-sd span{font-size:12.5px}
@@ -865,11 +878,11 @@ mark.na-hl{color:#1a1405;background:linear-gradient(transparent 6%,#f3c04a 6%,#f
 
 /* PM4 the post page */
 .na-pg{padding:18px 18px 6px}
-.na-ah{display:flex;align-items:center;gap:12px}.na-ah>div{flex:1;min-width:0}.na-ah small{display:flex;align-items:center;gap:6px;margin-top:6px;font:500 12px/1 var(--mono);color:#a39b94;white-space:nowrap}
+.na-ah{display:flex;align-items:center;gap:12px}.na-ah>div{flex:1;min-width:0}.na-ah small{display:flex;align-items:center;flex-wrap:wrap;gap:4px 6px;margin-top:6px;font:500 12px/1.3 var(--mono);color:#a39b94}
 .na-ah .na-nm{font-size:19px}.na-dt{align-self:flex-start;font:500 12px/1 var(--mono);color:#a39b94;white-space:nowrap}
 .na-t4{display:grid;grid-template-columns:46px minmax(0,1fr);gap:4px 12px;align-items:center;margin-top:16px;padding:14px;border-radius:14px;background:#120f0e;box-shadow:inset 0 0 0 1px var(--ln)}
 .na-t4c{min-width:0}.na-t4c .na-cf{margin-top:6px;font-size:13px}
-.na-sd.big{grid-column:1/3;margin-top:8px}.na-sd.big b{font-size:24px}.na-sd.big span{font-size:20px}
+.na-sd.na-big{grid-column:1/3;margin-top:8px}.na-sd.na-big b{font-size:24px}.na-sd.na-big span{font-size:20px}
 .na-lock{display:flex;align-items:center;gap:10px;margin-top:10px;padding:12px 14px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--ln);font:500 12.5px/1.35 var(--mono);color:#c9c1b8}
 .na-lock svg{width:18px;height:18px;fill:none;stroke:var(--ac);stroke-width:1.7;flex:none}
 .na-rb{display:flex;flex-direction:column;gap:10px;margin-top:10px;padding:14px;border-radius:12px}
@@ -890,6 +903,9 @@ mark.na-hl{color:#1a1405;background:linear-gradient(transparent 6%,#f3c04a 6%,#f
 .na-f4b i.u{color:var(--up);background:#14302a}.na-f4b i.d{color:#f58a96;background:#3a1a20}
 
 /* PM5 the AI's own feed */
+.na-fw{display:flex;align-items:center;gap:12px;padding:0 20px 16px}.na-fw small{font:500 12px/1.35 var(--mono);color:#a39b94}
+.na-fwb{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 16px 0 12px;border-radius:10px;background:var(--ac);color:var(--acx);font:700 14.5px/1 var(--sans);white-space:nowrap;flex:none}
+.na-fwb svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
 .na-pf .na-pk5{padding-bottom:14px}.na-pk5 button{min-height:44px;padding:0 13px 0 9px;font-size:12.5px;color:#c9c1b8}
 .na-new{display:inline-block;font:700 12px/1 var(--mono)!important;letter-spacing:.08em;padding:5px 7px;border-radius:5px;background:#211b10;color:var(--ac)}
 .na-pf .stats small{color:#a39b94}
@@ -933,28 +949,31 @@ mark.na-hl{color:#1a1405;background:linear-gradient(transparent 6%,#f3c04a 6%,#f
   .na-col1{max-width:none}
   .na-rail{display:block;position:sticky;top:76px}
   .na-p{padding:18px 22px 0}.na-fd,.na-gd{width:calc(100% + 44px);margin-left:-22px;margin-right:-22px;padding-left:22px;padding-right:22px}
-  .na-q{font-size:16.5px}
-  /* PM2: a company is one wide row: who and the tally on the left, the five as columns on the right */
-  .na-c2{display:grid;grid-template-columns:300px minmax(0,1fr);grid-template-rows:auto auto 1fr auto}
-  .na-c2h{grid-column:1;grid-row:1;padding:20px 20px 12px}.na-c2>.na-sp{grid-column:1;grid-row:2;margin:0 20px 12px;flex-direction:column;gap:6px}
-  .na-c2>.na-sp>div{min-height:40px;flex:none!important}
-  .na-r2s{grid-column:2;grid-row:1/5;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:0;border-left:1px solid var(--ln)}
+  .na-q{font-size:16.5px}.na-dd{display:inline}
+  /* PM2: a company is one wide row: who and the tally on the left, the five as columns on the right, the open reason under them */
+  .na-c2{display:grid;grid-template-columns:300px minmax(0,1fr)}
+  .na-c2l{display:flex;flex-direction:column;border-right:1px solid var(--ln)}.na-c2r{display:block;min-width:0}
+  .na-c2h{padding:20px 20px 12px}.na-c2>.na-c2l>.na-sp{margin:0 20px 14px;flex-direction:column;gap:6px}
+  .na-c2l>.na-sp>div{min-height:40px;flex:none!important}
+  .na-c2f{margin-top:auto}
+  .na-r2s{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:0}
   .na-r2{border-top:0;border-left:1px solid var(--ln)}.na-r2:first-child{border-left:0}
   .na-r2h{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:16px 14px 14px;min-height:0;height:100%}
-  .na-r2h .na-sd{order:-1;margin-bottom:2px}.na-r2h .na-kq{font-size:14px}.na-r2h .na-r2g{margin-top:auto;padding-top:6px}
-  .na-r2.op{grid-column:span 2}.na-r2x{padding:0 14px 14px}.na-r2x .na-lk{margin:12px -14px 0;width:calc(100% + 28px);padding-left:14px}
+  .na-r2h .na-r2g .na-rc{flex-wrap:wrap;row-gap:4px}.na-r2h .na-sd{order:-1;margin-bottom:2px}.na-r2h .na-kq{font-size:14px}.na-r2h .na-r2g{margin-top:auto;padding-top:6px}
+  .na-r2.op .na-r2x{display:none}.na-r2.op .na-r2h{background:#211b10;box-shadow:inset 0 -3px 0 var(--ac)}
+  .na-r2d{display:grid;grid-template-columns:26px minmax(0,1fr) 220px;gap:14px;align-items:start;padding:16px 18px 6px;border-top:1px solid var(--ln);background:#131110}
+  .na-r2d .na-nm{display:block;margin:4px 0 8px}.na-r2d .na-lk{border-top:0;padding:0;min-height:44px}
   .na-tc2{grid-column:1/-1}
-  .na-c2f{grid-column:1;grid-row:4;border-top:1px solid var(--ln)}
   /* PM3: the two sides as two wide columns with the whole reasons */
   .na-h3{display:grid;grid-template-columns:minmax(0,1fr) 420px;align-items:center;column-gap:24px;padding:22px 24px}
-  .na-h3t .na-cn.big b{font-size:28px}.na-vs{margin-top:0;grid-column:2;grid-row:1/3}.na-h3s{grid-column:1}
-  .na-fo{gap:16px}.na-col3{gap:12px}.na-c3{padding:16px 18px 16px}
+  .na-h3t .na-cn.na-big b{font-size:28px}.na-vs{margin-top:0;grid-column:2;grid-row:1/3}.na-h3s{grid-column:1}
+  .na-fo{gap:12px 16px}.na-c3{padding:16px 18px 16px}
   .na-c3 header .na-sd{width:auto;margin:0 0 0 auto}.na-c3 header .na-nm{flex:0 1 auto}
   .na-ph3{display:none}.na-dk3{display:block;margin-top:12px}.na-dk3 .na-q{font-size:15.5px}
   .na-bk .na-seg{margin-left:0}
   /* PM4: the post as an article, the field in a rail */
   .na-g4{grid-template-columns:minmax(0,1fr) 340px;align-items:start}
-  .na-pg{padding:26px 32px 10px}.na-t4{grid-template-columns:52px minmax(0,1fr) auto}.na-sd.big{grid-column:3;margin:0}
+  .na-pg{padding:26px 32px 10px}.na-t4{grid-template-columns:52px minmax(0,1fr) auto}.na-sd.na-big{grid-column:3;margin:0}
   .na-rb{flex-direction:row;align-items:center;justify-content:space-between}
   .na-r4{position:sticky;top:76px}
   /* PM5: the profile on the left, its feed on the right */

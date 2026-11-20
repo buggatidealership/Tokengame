@@ -38,11 +38,12 @@ TK.forEach(t=>{const R=CL.rounds.find(r=>r.ticker===t);ARR.forEach(k=>{const mk=
     (txt.match(/\d+(\.\d+)?/g)||[]).forEach(n=>must(all.indexOf(n)>-1,'READING HOLDS A NUMBER THE AI DID NOT WRITE '+t+' '+k+': '+n));
     must(!/\b(bet|bets|paper|simulated)\b|\b(go|goes|going) (up|down)\b|said it would/i.test(txt),'banned word in reading '+t+' '+k+': '+txt);return [txt,ix]});
   if(pl.wrong)must(all.indexOf(pl.wrong)>-1,'"proves it wrong" NOT VERBATIM '+t+' '+k);
+  const words=pl.s.map(x=>x[0]).join(' ').split(/\s+/).length;must(words<=25,'READING LONGER THAN 25 WORDS '+t+' '+k+': '+words);
   const notes=pl.notes?row[pl.notes]:'';
   must(row.side===j.side&&+row.size_pct===Math.abs(j.call),'sheet vs close JSON '+t+' '+k);
   const pnl=Math.round((row.side==='LONG'?1:-1)*R.move*1000);must(pnl===j.pnl&&pnl===+row.pnl_usd,'P&L '+t+' '+k+' '+pnl+' vs '+j.pnl+' vs '+row.pnl_usd);
   must((row.right==='yes')===j.right,'right/wrong '+t+' '+k);
-  items.push({k,t,side:row.side,size:+row.size_pct,conf:+row.confidence_pct,why:shown,hl:w.hl,srcs,plain:s,wrong:pl.wrong||'',notes,notesField:pl.notes||'',pnl,right:j.right,move:R.move})})});
+  items.push({words,k,t,side:row.side,size:+row.size_pct,conf:+row.confidence_pct,why:shown,hl:w.hl,srcs,plain:s,wrong:pl.wrong||'',notes,notesField:pl.notes||'',pnl,right:j.right,move:R.move})})});
 if(fails.length){console.error('DATA CHECK FAILED\n'+fails.join('\n'));process.exit(1)}
 const day={};ARR.forEach(k=>{day[k]=items.filter(x=>x.k===k).reduce((a,x)=>a+x.pnl,0)});
 must(day.GROK===17660&&day.CLAUDE===3520&&day.GEMINI===-7920&&day.QWEN===-17660&&day.GPT===-22060,'day P&L does not match the Season 2 board');
@@ -86,6 +87,7 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
   root.querySelectorAll('[data-sib], .pn').forEach(pn=>{const at=[];[...pn.querySelectorAll('*')].forEach(e=>{if(e.closest('.ai,.bco,.fl')&&!e.matches('.ai,.bco,.fl'))return;if(!vis(e))return;if(e.closest('.fb-scroll')&&!pn.matches('.fb-scroll'))return;
       const own=e.matches('.ai,.bco,svg.fl')||[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim());if(!own)return;
       let rs;if(e.matches('.ai,.bco,svg.fl'))rs=[e.getBoundingClientRect()];else{rs=[];[...e.childNodes].forEach(n=>{if(n.nodeType!==3||!n.textContent.trim())return;const rg=document.createRange();rg.selectNodeContents(n);rs.push(...rg.getClientRects())})}
+      const cl=e.closest('[data-clamp]');if(cl){const cb=cl.getBoundingClientRect();rs=[...rs].filter(r=>r.top<cb.bottom-1&&r.bottom>cb.top+1)}   /* lines hidden by a line clamp are not drawn */
       rs.forEach(r=>at.push([e,r]))});
     for(let i=0;i<at.length;i++)for(let j=i+1;j<at.length;j++){const [a,ra]=at[i],[b,rb]=at[j];if(a===b||a.contains(b)||b.contains(a))continue;
       const ix=Math.min(ra.right,rb.right)-Math.max(ra.left,rb.left),iy=Math.min(ra.bottom,rb.bottom)-Math.max(ra.top,rb.top);
@@ -112,13 +114,34 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
   root.querySelectorAll('button,a,[role=button],[tabindex="0"]').forEach(e=>{const r=vis(e);if(!r)return;res.taps.n++;if(r.width<43.5||r.height<43.5)res.taps.fails.push((e.className||e.tagName)+' "'+e.textContent.trim().slice(0,18)+'" '+r.width.toFixed(0)+'x'+r.height.toFixed(0))});
   return res}
 
+/* FILM=1: the screens the walkthrough film (dopa/nt-pmB.html) uses, and where things are on them, into dopa/w6/nt/pmB/ */
+const FD=path.join(EZ,'tools/concepts/dopa/w6/nt/pmB');
+const FS=[['f6a','pm=6&s=in',C.in,{p:['[data-call="GROK-INTU"] .b6h','.b6t']}],['f6b','pm=6&s=in&open=GROK-INTU',C.in,{p:['[data-call="GROK-INTU"] .b6h','[data-call="GROK-INTU"] .bpl','[data-call="GROK-INTU"] .bq']}],
+ ['f7a','pm=7&s=in',C.in,{w:1280,p:['[data-call="GROK-INTU"].b7p','.b7r','.b7m','.b7l']}],['f7b','pm=7&s=in&open=GROK-INTU',C.in,{w:1280,p:['[data-call="GROK-INTU"].b7p','.b7r','.b7r .bpl','.b7r .b7hd']}],
+ ['f8a','pm=8&s=pre&n=1','2026-11-19T19:10:00Z',{p:['.b8s','.b8sl:nth-child(2)','.b8cd','.b8ps']}],['f8b','pm=8&s=pre&n=2','2026-11-19T19:21:00Z',{p:['.b8s','.b8sl:nth-child(2)','.b8p.new','.b8cd']}],
+ ['f8c','pm=8&s=pre&n=3','2026-11-19T19:34:00Z',{p:['.b8s','.b8sl:nth-child(3)','.b8p.new']}],['f8d','pm=8&s=lock',C.lock,{p:['.b8s','.b8cd','.b8in']}],
+ ['f9a','pm=9&s=in',C.in,{p:['.b9p .b9more','.b9p .b9r','.b9p']}],['f9b','pm=9&s=in&open=CLAUDE-INTU&src=1',C.in,{p:['.b9p.op .b9r','.b9p.op .b9w','.b9p.op']}],
+ ['f10a','pm=10&s=g',C.g,{p:['.b10v','.b10f [data-bf="right"]','.b10p','.b10hl']}],['f10b','pm=10&s=g&f=right',C.g,{p:['.b10p','.b10p .b10rc','.b10f [data-bf="right"]']}]];
+async function filmShots(b,port){fs.mkdirSync(FD,{recursive:true});const geo={};
+  for(const [n,q,clock,o] of FS){const w=o.w||390,dsf=w>500?1.5:3;
+    const ctx=await b.newContext({viewport:{width:w,height:w>500?800:844},deviceScaleFactor:dsf,timezoneId:'America/New_York',locale:'en-US'});const p=await ctx.newPage();
+    await p.clock.setFixedTime(new Date(clock));await p.goto(`http://localhost:${port}/__fb.html?${q}#feed`,{waitUntil:'networkidle'});await p.evaluate(()=>document.fonts&&document.fonts.ready);await p.waitForTimeout(500);
+    if(w>500){await p.screenshot({path:path.join(FD,n+'.jpg'),type:'jpeg',quality:92})}
+    else{if(n==='f6a'){await p.locator('#nav').screenshot({path:path.join(FD,'nav.jpg'),type:'jpeg',quality:92})}
+      await p.addStyleTag({content:'.nav{display:none!important}.app{padding-bottom:20px!important}.top{position:relative!important}.b8cur{animation:none!important}'});await p.waitForTimeout(150);
+      const H=await p.evaluate(()=>document.documentElement.scrollHeight);await p.screenshot({path:path.join(FD,n+'.jpg'),type:'jpeg',quality:90,fullPage:true,clip:{x:0,y:0,width:w,height:Math.min(H,2600)}})}
+    geo[n]=await p.evaluate(sels=>{const r={top:document.querySelector('.top').getBoundingClientRect().bottom+scrollY,H:Math.min(document.documentElement.scrollHeight,2600)};sels.forEach(s=>{const e=document.querySelector(s);if(e){const b=e.getBoundingClientRect();r[s]=[b.left,b.top+scrollY,b.width,b.height].map(v=>+v.toFixed(1))}});return r},o.p);
+    await ctx.close()}
+  fs.writeFileSync(path.join(FD,'geo.json'),JSON.stringify(geo,null,1));console.log('film screens',Object.keys(geo).length,'->',FD)}
 (async()=>{await new Promise(r=>srv.listen(0,r));const port=srv.address().port;const b=await chromium.launch();const report={},errs=[];
+  if(process.env.FILM){await filmShots(b,port);if(process.env.FILM==='only'){await b.close();srv.close();return}}
   for(const [n,q,clock,widths,opt] of SHOTS)for(const w of widths){
     const ctx=await b.newContext({viewport:{width:w,height:w<500?844:860},deviceScaleFactor:w<500?2:1,timezoneId:'America/New_York',locale:'en-US'});
     const p=await ctx.newPage();p.on('pageerror',e=>errs.push(n+'@'+w+': '+e.message));p.on('console',m=>{if(m.type()==='error')errs.push(n+'@'+w+' console: '+m.text())});
     await p.clock.setFixedTime(new Date(clock));
     await p.goto(`http://localhost:${port}/__fb.html?${q}#feed`,{waitUntil:'networkidle'}).catch(e=>errs.push(n+' goto '+e.message));
     await p.evaluate(()=>document.fonts&&document.fonts.ready);await p.waitForTimeout(600);
+    if(process.env.EVAL){console.log(n+'@'+w,JSON.stringify(await p.evaluate(process.env.EVAL)));await ctx.close();continue}
     report[n+'@'+w]=await p.evaluate(measure);
     if(w===320){await ctx.close();continue}
     if(opt&&opt.vp){await p.screenshot({path:`${OUT}/${n}-${w}.png`})}

@@ -8,7 +8,7 @@
 // sideways scroll, anything poking out of its panel, cut or spilled text, overlapping atoms, sibling slots, text contrast, tap targets,
 // and every printed side, confidence, P&L, quote and plain reading against the files.
 const http=require('http'),fs=require('fs'),path=require('path');const {chromium}=require('playwright');
-const EZ=path.resolve(__dirname,'../../../..'),HERE=__dirname,OUT=path.resolve(process.argv[2]||'faout');fs.mkdirSync(OUT,{recursive:true});
+const EZ=path.resolve(__dirname,'../../../..'),HERE=__dirname,OUT=path.resolve(require.main===module&&process.argv[2]||'/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8/scratchpad/fa/out');fs.mkdirSync(OUT,{recursive:true});
 const readCSV=require(path.join(EZ,'tools/concepts/feed/csv.js'));
 const MIME={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.webp':'image/webp','.json':'application/json'};
 
@@ -41,7 +41,7 @@ cos.forEach(c=>{const R=CL.rounds.find(r=>r.ticker===c.ticker);AIO.forEach(k=>{
 // every jargon post must have a reading
 items.forEach(x=>must(!x.fold||x.plain,'jargon post without a plain reading '+x.k+'-'+x.t));
 if(fails.length){console.error('DATA CHECK FAILED\n'+fails.join('\n'));process.exit(1)}
-console.log('jargon scores',items.map(x=>x.k+'-'+x.t+' '+x.jargon+(x.fold?' FOLD':'')).join(', '));
+if(require.main===module)console.log('jargon scores',items.map(x=>x.k+'-'+x.t+' '+x.jargon+(x.fold?' FOLD':'')).join(', '));
 const FA={cos,items,marks:{GEMINI:{d:M5.GEMINI.d},QWEN:{d:M5.QWEN.d,fr:M5.QWEN.fr}}};
 
 function page(base){let t=fs.readFileSync(path.join(EZ,'v53-terminal.html'),'utf8');
@@ -68,7 +68,7 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
   all.forEach(e=>{if(!vis(e))return;const c=getComputedStyle(e);if((c.textOverflow==='ellipsis'||c.overflow==='hidden')&&(e.scrollWidth>e.clientWidth+1||e.scrollHeight>e.clientHeight+1)&&e.textContent.trim()&&!e.matches('.na-co,.ai,.pn,.na-clamp,.na-fold,.na-pk,.pick'))res.trunc.push(e.tagName+'.'+e.className+' "'+e.textContent.trim().slice(0,40)+'"')});
   all.forEach(e=>{if(!vis(e))return;if(![...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()))return;const c=getComputedStyle(e);if(c.display==='inline')return;
     const rg=document.createRange();rg.selectNodeContents(e);const t=rg.getBoundingClientRect(),b=e.getBoundingClientRect();if(t.width>b.width+1.5||t.right>b.right+1.5)res.spill.push((e.className||e.tagName)+' "'+e.textContent.trim().slice(0,24)+'" '+t.width.toFixed(0)+'>'+b.width.toFixed(0))});
-  document.querySelectorAll('main [data-call], main .na-card').forEach(pn=>{const at=[];[...pn.querySelectorAll('*')].forEach(e=>{if(e.closest('.ai,.na-co,.na-fl')&&!e.matches('.ai,.na-co,.na-fl'))return;if(!vis(e))return;
+  document.querySelectorAll('main [data-call], main .na-card').forEach(pn=>{const at=[];[...pn.querySelectorAll('*')].forEach(e=>{if(e.closest('.ai,.na-co,.na-fl')&&!e.matches('.ai,.na-co,.na-fl'))return;if(e.closest('.na-sp span'))return;if(!vis(e))return;
       const own=e.matches('.ai,.na-co,svg')||[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim());if(!own)return;if(e.closest('.na-clamp'))return;
       let rs;if(e.matches('.ai,.na-co,svg'))rs=[e.getBoundingClientRect()];else{rs=[];[...e.childNodes].forEach(n=>{if(n.nodeType!==3||!n.textContent.trim())return;const rg=document.createRange();rg.selectNodeContents(n);rs.push(...rg.getClientRects())})}
       rs.forEach(r=>at.push([e,r]))});
@@ -80,10 +80,10 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
       xs.push([b.left-rr.left,(b.left+b.right)/2-rr.left,b.right-rr.left])});if(xs.length<2)return;
     const i={l:0,c:1,r:2}[edge],v=xs.map(x=>x[i]);res.slots[name+' '+k]={n:xs.length,dx:+(Math.max(...v)-Math.min(...v)).toFixed(2),edge}})};
   const groups=sel=>{const g={};document.querySelectorAll(sel).forEach(r=>{const k=Math.round(r.getBoundingClientRect().width)+'|'+(r.dataset.grp||'');(g[k]=g[k]||[]).push(r)});return Object.values(g)};
-  groups('main .na-p').forEach((g,i)=>set('post'+i,g,[['mark','.na-ph .ai','l'],['name','.na-nm','l'],['logo','.na-tr .na-co','l'],['company','.na-tr .na-cn','l'],['side','.na-tr .na-sd','r'],['conf','.na-tr .na-cf','l'],['receipt','.na-rc','l']]));
-  groups('main .na-r2').forEach((g,i)=>set('pm2 row'+i,g,[['mark','.ai','l'],['name','.na-nm','l'],['side','.na-sd','r'],['conf','.na-cf','l'],['clause','.na-kq','l'],['receipt','.na-rc','r']]));
+  groups('main .na-p').forEach((g,i)=>set('post'+i,g,[['mark','.na-ph .ai','l'],['name','.na-nm','l'],['logo','.na-tr .na-co','l'],['company','.na-tr .na-cn','l'],['side','.na-tr .na-sd','r'],['conf','.na-tr .na-cf','l'],['receipt','.na-rc','r']]));
+  groups('main .na-r2').forEach((g,i)=>set('pm2 row'+i,g,[['mark','.ai','l'],['name','.na-nm','l'],['side','.na-sd',W>=980?'l':'r'],['conf','.na-cf','l'],['clause','.na-kq','l'],['receipt','.na-rc','l']]));
   groups('main .na-c3').forEach((g,i)=>set('pm3 card'+i,g,[['mark','.ai','l'],['name','.na-nm','l'],['side','.na-sd','r'],['conf','.na-cf','l'],['clause','.na-kq','l'],['receipt','.na-rc','l']]));
-  groups('main .na-e5').forEach((g,i)=>set('pm5 entry'+i,g,[['logo','.na-co','l'],['company','.na-cn','l'],['side','.na-sd','r'],['test','.na-tst','l'],['receipt','.na-rc','l']]));
+  groups('main .na-e5').forEach((g,i)=>set('pm5 entry'+i,g,[['logo','.na-co','l'],['company','.na-cn','l'],['side','.na-sd','r'],['test','.na-tst','l'],['receipt','.na-rc','r']]));
   groups('main .na-pk button').forEach((g,i)=>set('chip'+i,g,[['mark','.ai','l']]));
   // contrast: every own text against the first opaque ground behind it (alpha grounds composited up the tree); WCAG 2 relative luminance
   const P=s=>{const m=s.match(/rgba?\(([^)]+)\)/);if(!m)return null;const a=m[1].split(/[ ,\/]+/).filter(Boolean).map(Number);return [a[0],a[1],a[2],a.length>3?a[3]:1]};
@@ -103,7 +103,8 @@ function measure(){const W=innerWidth,vis=e=>{const r=e.getBoundingClientRect();
     res.nums.push({id:e.getAttribute('data-call'),side:q('.na-sd'),conf:q('.na-cf'),pnl:q('.na-rc .na-pl'),quote:q('.na-q'),kq:q('.na-kq'),plain:q('.na-pw p')})});
   return res}
 
-(async()=>{await new Promise(r=>srv.listen(0,r));const port=srv.address().port;const b=await chromium.launch();const report={},errs=[];
+module.exports={page,FA,items,CLOCK,srv};
+if(require.main===module)(async()=>{await new Promise(r=>srv.listen(0,r));const port=srv.address().port;const b=await chromium.launch();const report={},errs=[];
   for(const [n,q,s] of SHOTS)for(const w of WIDTHS){
     const ctx=await b.newContext({viewport:{width:w,height:w<500?844:860},deviceScaleFactor:w<500?2:1,timezoneId:'America/New_York',locale:'en-US'});const p=await ctx.newPage();
     p.on('pageerror',e=>errs.push(n+'@'+w+': '+e.message));p.on('console',m=>{if(m.type()==='error')errs.push(n+'@'+w+' console: '+m.text())});
