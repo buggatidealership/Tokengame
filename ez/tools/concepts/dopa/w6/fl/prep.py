@@ -9,10 +9,11 @@ W = json.load(open(os.path.join(EZ, 'tools/concepts/feed/words.json')))
 AN = json.load(open(os.path.join(H, '../an/data.json')))
 LAB = {'GPT': ('OpenAI', 'US'), 'Claude': ('Anthropic', 'US'), 'Grok': ('xAI', 'US'), 'Gemini': ('Google', 'US'), 'Qwen': ('Alibaba', 'CN')}
 # Our short reading of Grok's Intuit reason for the video (owner, 2026-11-20: about 15 words is fine; faithful, labelled as ours).
+# (The X research's own 15-word version said "beat confirms slower growth", which Grok did not say, so it is not used.)
 # Grok: "Heavy washout and AI-disruption overhang leave residual owned slower-growth story as confirmation; beat unlikely to re-anchor
 # ownership before next close." -> heavy washout + AI-disruption overhang = already sold hard on AI fears; beat unlikely to re-anchor
-# ownership = even a beat may not bring buyers back. Nothing added that Grok did not say. The full reading stays in words.json.
-SHORT = {('INTU', 'Grok'): ['Already sold hard on AI fears.', 'Even a beat may not bring buyers back.']}
+# ownership before next close = a beat is unlikely to bring buyers back by the close. Nothing added that Grok did not say. The full reading stays in words.json.
+SHORT = {('INTU', 'Grok'): ['Already sold hard on AI fears.', 'A beat is unlikely to bring buyers back by the close.']}   # the coordinator's line (2026-11-20): 17 words, 84 characters
 bad = []
 def trade(t, m):
     r = [x for x in rows if x['ticker'] == t and x['model'] == m]; assert len(r) == 1, (t, m); r = r[0]; w = W[t][m]
@@ -20,7 +21,7 @@ def trade(t, m):
     if core not in r['why']: bad.append('not verbatim %s %s' % (t, m))
     if w['hl'] not in keep: bad.append('hl not in keep %s %s' % (t, m))
     sh = SHORT.get((t, m))
-    if sh and len(' '.join(sh).split()) > 15: bad.append('short reading over 15 words')
+    if sh and len(' '.join(sh).split()) > 17: bad.append('short reading over 17 words')
     return {'k': m.upper(), 'name': m, 'lab': LAB[m][0], 'flag': LAB[m][1], 't': t, 'co': r['company'], 'side': r['side'], 'size': '%g' % float(r['size_pct']),
             'conf': int(r['confidence_pct']), 'keep': keep, 'hl': w['hl'], 'plain': sh or [], 'called': r['called']}
 FEED = [trade('INTU', m) for m in ['Qwen', 'Claude', 'Grok', 'Gemini', 'GPT']]
