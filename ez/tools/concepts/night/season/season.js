@@ -8,7 +8,8 @@
    Switches: ?dir=A|B|C  the Season 2 kit (A Glass, B Broadcast, C The why)   ?season=1  open on Season 1   #leaders #feed #next #profile
              ?vt=<ms>     freeze the switch transition at that moment (board stills; run.js)
    Data: data.js (prep.py, the 15 calls verbatim from ez/data/s2-calls/calls.csv); Season 1 from ez-data.js through the live page. */
-var SQ=new URLSearchParams(location.search),SDIR=(SQ.get("dir")||"A").toUpperCase(),SEA=SQ.get("season")==="1"?1:2;
+var SQ=new URLSearchParams(location.search),SDIR=(SQ.get("dir")||"A").toUpperCase(),SEA=2;
+try{var sv=localStorage.getItem("ez-season");if(sv==="1")SEA=1}catch(e){}if(SQ.get("season"))SEA=SQ.get("season")==="1"?1:2;
 if("ABC".indexOf(SDIR)<0)SDIR="A";
 document.documentElement.classList.add("ss","d"+SDIR);
 
@@ -20,8 +21,8 @@ var S2LOGO={INTU:"tools/concepts/dopa/data/co/INTU.svg",KEYS:"tools/concepts/dop
 function co2(t,cls){var f=S2LOGO[t]||(CO_LOGOS[t]&&"media/"+CO_LOGOS[t].f);return '<span class="co2 '+(cls||'')+'">'+(f?'<img src="'+f+'" alt="">':'<i>'+t+'</i>')+'</span>'}
 /* every face Season 2 uses, per kit (Season 1 keeps the page's own Inter + Geist Mono) */
 var SFONT={A:"Kanit:ital,wght@0,600;0,700;0,800;1,700;1,800;1,900&family=Manrope:wght@500;600;700;800",
-  B:"Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900",
-  C:"Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&family=Bricolage+Grotesque:opsz,wght@12..96,500..800"};
+  B:"Kanit:ital,wght@1,800&family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900",
+  C:"Kanit:ital,wght@1,800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&family=Bricolage+Grotesque:opsz,wght@12..96,500..800"};
 (function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family="+SFONT[SDIR]+"&display=swap";document.head.appendChild(l)})();
 
 /* ---------- Season 2 numbers: one flat $100K trade per call, P&L = $100K x side x move (the sheet's own P&L column) ---------- */
@@ -54,8 +55,9 @@ function swHTML(){return '<span class="sw-in">'+
 function mountSwitch(){var top=document.querySelector("header.top");if(!top)return;var s=document.getElementById("ssw");
   if(!s){s=document.createElement("div");s.id="ssw";s.className="ssw";s.setAttribute("role","tablist");s.setAttribute("aria-label","Season");top.querySelector(".brand").after(s)}
   s.innerHTML=swHTML();s.dataset.on=SEA;
-  /* the wordmark is set in the season's own face (the logo mark never changes) */
-  var b=top.querySelector(".brand b");if(b&&!b.dataset.s1)b.dataset.s1=b.innerHTML}
+  /* the EZ. mark and the logotype are the fixed core (RESEARCH.md, switch rules 1, 2 and 6): one set of letterforms in both seasons,
+     and their own view-transition layer, so a switch leaves them still while the world changes around them */
+  var br=top.querySelector(".brand");if(br)br.style.viewTransitionName="brand"}
 
 /* ---------- Season 2 views, one markup per kit ---------- */
 function rows3(a){return a.L.map(function(c){return '<span class="r3 '+(c.ok?"y":"n")+'" title="'+c.co+'">'+co2(c.t)+'<b class="pl '+(c.pnl>=0?"u":"d")+'">'+kfmt(c.pnl).replace(/^\$/,"+$")+'</b></span>'}).join("")}
@@ -142,9 +144,7 @@ function vtNames(){var seen={};document.querySelectorAll('main tr[data-pick], ma
 
 var draw1=draw;
 draw=function(){var de=document.documentElement;de.classList.toggle("s1",SEA===1);de.classList.toggle("s2",SEA===2);mountSwitch();
-  var b=document.querySelector("header.top .brand b");
-  if(SEA===1){if(st.v==="feed")st.v="leaders";if(b&&b.dataset.s1)b.innerHTML=b.dataset.s1;draw1();requestAnimationFrame(vtNames);vtNames();return}
-  if(b)b.innerHTML='<i class="e">E</i>arnings <i class="z">Z</i>eason';
+  if(SEA===1){if(st.v==="feed")st.v="leaders";draw1();vtNames();return}
   var v=st.v==="home"?"leaders":st.v;var h=v==="feed"?FD2[SDIR]():v==="next"?UP2[SDIR]():v==="profile"?profS2():LB2[SDIR]();
   document.getElementById("main").innerHTML='<div class="s2v s2-'+v+'">'+h+'</div>';var ip=document.getElementById("ipill");if(ip)ip.hidden=true;
   document.getElementById("nav").innerHTML=NAV2.map(function(n){return '<button data-go="'+n[0]+'" class="'+(v===n[0]?"on":"")+'"><svg viewBox="0 0 24 24">'+n[2]+'</svg>'+n[1]+'</button>'}).join("");
@@ -153,6 +153,7 @@ draw=function(){var de=document.documentElement;de.classList.toggle("s1",SEA===1
 /* the switch: the arriving season's motion grammar (data-vt on <html>), then the rows glide */
 function goSeason(n){if(n===SEA)return;var de=document.documentElement;de.dataset.vt=(n===2?SDIR:"S1");
   var fx=n===2&&SDIR==="B"?"vt-stinger":n===2&&SDIR==="C"?"vt-rule":null;
+  try{localStorage.setItem("ez-season",String(n))}catch(e){}
   var apply=function(){SEA=n;draw();if(fx){var x=document.createElement("i");x.id=fx;x.setAttribute("aria-hidden","true");document.body.appendChild(x)}};
   if(!document.startViewTransition||matchMedia("(prefers-reduced-motion: reduce)").matches){apply();delete de.dataset.vt;return}
   var t=document.startViewTransition(apply);window.__vt=t;t.finished.finally(function(){delete de.dataset.vt;var x=fx&&document.getElementById(fx);if(x)x.remove()})}
