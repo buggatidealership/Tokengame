@@ -514,3 +514,13 @@ Every time the owner gives pointers and an iteration lands, update this file the
     - Simplifying for a stranger means fewer things per screen and more time, never a different vocabulary than the people the post is for.
     - Never soften the stake either ("not real money"): the P&L is the product. And never claim more than is true to sound big ("every earnings report").
     - *Taught by:* the owner on the round 4 wrap copy, 18 Nov: "long or short is the only wording we use, nothing else".
+207. **Name a new feature by the change the viewer feels, not by what it contains.**
+    - "Every trade with its reason" describes the feature from our side. A viewer can't tell what is new or why it matters.
+    - People understand a new thing by contrast with what they already know: you had the side, now you get the why. The before must be on screen too, so the after has something to beat.
+    - Show the feature inside the product (in app, the real UI, one element popped out at a time). A launch shown off the product reads as a promise; shown in it, it reads as a fact.
+    - *Taught by:* the owner on feed-1, 20 Nov: "Every trade with its reason, I think that's non-understandable... Season 1 gave you the what... Season 2 gives you the why".
+208. **Each kind of video has one job, and a format that is good at one job is wrong for another.**
+    - A prediction video shows who stands where and why, before anything is known. An outcome video shows who was right. A feature launch shows what is new and where to find it. A season video closes or opens a story.
+    - Before judging a sample, name its kind. A liked element moves to the kind it serves. in-1's table belongs to predictions, feed-2's plain words to the app and the feed launch.
+    - Show every voice the job needs: one AI's reason is an anecdote, five are the contest.
+    - *Taught by:* the owner sorting the four samples by kind, 20 Nov.
