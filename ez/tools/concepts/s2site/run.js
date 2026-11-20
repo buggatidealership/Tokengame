@@ -19,7 +19,7 @@ const PRE='2026-11-20T18:09:00Z',POST='2026-11-20T23:30:00Z';   // 1:09 PM and 6
 // [name, query, hash, clock, board?]
 const SHOTS=[['A-s2','take=A','',PRE,1],['A-s1','take=A&season=1','',PRE,1],['B','take=B','',PRE,1],['B-open','take=B&open=1','',PRE,1],
  ['C','take=C','#next',PRE,1],['D','take=D','',POST,1],['live-lb','LIVE','',PRE,0],['live-up','LIVE','#next',PRE,0]];
-const WIDTHS=[320,390,1280];
+const WIDTHS=[320,390,1280];if(process.env.ONLY){const o=process.env.ONLY.split(',');SHOTS.splice(0,SHOTS.length,...SHOTS.filter(s=>o.indexOf(s[0])>-1))}
 function measure(){const W=innerWidth,R=[],vis=e=>{const r=e.getBoundingClientRect();if(r.width<.5||r.height<.5)return null;if(e.closest('[hidden]')||e.closest('.flip:not(.fl-on)>.bk')||e.closest('.flip.fl-on>.fr'))return null;
     let x=e;while(x&&x!==document.body){const c=getComputedStyle(x);if(c.display==='none'||c.visibility==='hidden'||+c.opacity===0)return null;x=x.parentElement}return r};
   const res={W,sw:document.documentElement.scrollWidth,fonts:[...document.fonts].filter(f=>f.status==='loaded').map(f=>f.family).filter((v,i,a)=>a.indexOf(v)===i),poke:[],trunc:[],overlap:[],slots:{}};
@@ -30,6 +30,9 @@ function measure(){const W=innerWidth,R=[],vis=e=>{const r=e.getBoundingClientRe
   document.querySelectorAll('main .tabs').forEach(t=>{if(vis(t)&&t.scrollWidth>t.clientWidth+1)res.poke.push('tabs scroll '+t.textContent.trim().slice(0,40)+' '+t.scrollWidth+'>'+t.clientWidth)});
   // 2 truncated text
   all.forEach(e=>{if(!vis(e))return;const c=getComputedStyle(e);if((c.textOverflow==='ellipsis'||c.overflow==='hidden')&&e.scrollWidth>e.clientWidth+1&&e.textContent.trim())res.trunc.push(e.tagName+'.'+e.className+' "'+e.textContent.trim().slice(0,40)+'"')});
+  // 2b text spilling out of a box squeezed narrower than its words (a 0-wide grid cell has no rect, so 3 cannot see it)
+  res.spill=[];all.forEach(e=>{if(e.closest('[hidden]')||e.closest('.flip:not(.fl-on)>.bk'))return;if(![...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()))return;let x=e,ok=true;while(x&&x!==document.body){const c=getComputedStyle(x);if(c.display==='none'||c.visibility==='hidden'){ok=false;break}x=x.parentElement}if(!ok)return;
+    const c=getComputedStyle(e);if(c.overflow==='hidden'||c.textOverflow==='ellipsis')return;const rg=document.createRange();rg.selectNodeContents(e);const t=rg.getBoundingClientRect(),b=e.getBoundingClientRect();if(t.width>b.width+1.5&&c.display!=='inline')res.spill.push((e.className||e.tagName)+' "'+e.textContent.trim().slice(0,24)+'" '+t.width.toFixed(0)+'>'+b.width.toFixed(0))});
   // 3 overlapping atoms in each panel: text-bearing elements and marks (ai, co, flag, crown, svg charts)
   document.querySelectorAll('main .pn, main .s2ex').forEach(pn=>{const at=[...pn.querySelectorAll('*')].filter(e=>{if(e.closest('.ai,.co,svg.fl,svg.lv-cr')&&!e.matches('.ai,.co,svg.fl,svg.lv-cr'))return false;
       if(e.matches('.ai,.co,svg.fl,svg.lv-cr,.pc svg,.l5 i'))return true;return [...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())}).map(e=>[e,vis(e)]).filter(x=>x[1]);
@@ -56,8 +59,11 @@ function measure(){const W=innerWidth,R=[],vis=e=>{const r=e.getBoundingClientRe
     const url=q==='LIVE'?`http://localhost:${port}/v53-terminal.html${h}`:`http://localhost:${port}/__s2.html?${q}${h}`;
     await p.goto(url,{waitUntil:'networkidle'}).catch(e=>errs.push(n+' goto '+e.message));await p.evaluate(()=>document.fonts&&document.fonts.ready);await p.waitForTimeout(900);
     const m=await p.evaluate(measure);report[n+'@'+w]=m;
-    if(w!==320||!bd)await p.screenshot({path:`${OUT}/${n}-${w}.png`,fullPage:true});await ctx.close()}
+    /* a full-page shot keeps the fixed bottom nav at the first screen's foot: put it at the end of the page for the board */
+    await p.addStyleTag({content:'.nav{position:static!important}.app{padding-bottom:16px!important}'});await p.waitForTimeout(150);
+    if(bd){for(let k=0;k<3;k++){try{await p.screenshot({path:`${OUT}/${n}-${w}.png`,fullPage:true});break}catch(e){errs.push(n+'@'+w+' screenshot try '+(k+1)+': '+e.message.split('\n')[0]);await p.waitForTimeout(1500)}}}
+    await ctx.close()}
   fs.writeFileSync(`${OUT}/report.json`,JSON.stringify({errs,report},null,1));
   for(const k in report){const m=report[k],bad=Object.entries(m.slots).filter(([s,v])=>v.dx>1||v.dy>1);
-    console.log(k.padEnd(14),'sw',m.sw+'/'+m.W,'poke',m.poke.length,'trunc',m.trunc.length,'overlap',m.overlap.length,'slots',Object.keys(m.slots).length,'off>1px',bad.length?bad.map(([s,v])=>s+' dx'+v.dx+' dy'+v.dy).join('; '):'none')}
-  console.log('fonts',report['A-s2@390'].fonts.join(', '));console.log('errors',errs.length?errs.join('\n'):'none');await b.close();srv.close()})();
+    console.log(k.padEnd(14),'sw',m.sw+'/'+m.W,'poke',m.poke.length,'trunc',m.trunc.length,'spill',m.spill.length,'overlap',m.overlap.length,'slots',Object.keys(m.slots).length,'off>1px',bad.length?bad.map(([s,v])=>s+' dx'+v.dx+' dy'+v.dy).join('; '):'none')}
+  console.log('fonts',(Object.values(report)[0]||{fonts:[]}).fonts.join(', '));console.log('errors',errs.length?errs.join('\n'):'none');await b.close();srv.close()})();
