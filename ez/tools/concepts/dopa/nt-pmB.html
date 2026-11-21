@@ -191,13 +191,13 @@ window.R = t => {
     if (t >= B(9) && t < B(9) + .55) { const s = stage(cx + 52 + 6, cy + 420 + 4); touch(s.x, s.y, 0, 0, n(t, B(9), B(9) + .55)) }
     const pl = G.f7b['.b7r .bpl'], fx = 52 + 8 + S * (pl[0] + pl[2] / 2), fy = 420 + 8 + S * (pl[1] + pl[3] / 2);
     const push = eio(n(t, B(10), B(11))) * (1 - .3 * eio(n(t, B(12.5), B(14))));
-    const drift = .02 * n(t, a, B(14)); cam(1 + drift + .75 * push, 840, 420); $('#scrim').style.opacity = push.toFixed(3);
+    const drift = .05 * n(t, a, B(14)); cam(1 + drift + .75 * push, 840, 420, 0, -40 * eio(n(t, B(10.5), B(14))));   /* the camera keeps reading down the post through the hold */ $('#scrim').style.opacity = push.toFixed(3);
     return }
   /* phone shots */
   const list = P[sec], st = phoneAt(list, t);
   const mp = {}; if (st.prevPic && st.x < 1 && st.prevPic !== st.pic) mp[st.prevPic] = [st.sc, 1]; mp[st.pic] = [st.sc, st.prevPic && st.prevPic !== st.pic ? st.x : 1]; showLayers(mp);
   /* the phone enters on a cut with a small spring (a camera move), breathes slowly */
-  const a = B(SH.find(s => s[2] === 'PM' + sec)[0]), kin = sec === 6 ? 1 : spr(n(t, a, a + .8));
+  const a = B(SH.find(s => s[2] === 'PM' + sec)[0]), kin = sec === 6 ? spr(n(t, 0, .9)) : spr(n(t, a, a + .8));   /* the first shot rises in too, so the opening half second moves */
   phw.style.transform = `translateY(${(ke * 420 + 90 * (1 - kin) + 6 * Math.sin(t * .8)).toFixed(1)}px)`;
   if (sec === 6) {
     /* tap Grok's row; its reason opens; our plain reading lifts out on the glass */
