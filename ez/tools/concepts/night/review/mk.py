@@ -24,6 +24,19 @@ def video(rel, key):
         subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-ss', str(round(dur(src) * .4, 2)), '-i', src, '-frames:v', '1', '-vf', 'scale=720:-1', '-q:v', '4', post], check=True)
     return 'v/' + key + '.mp4', 'v/' + key + '.jpg'
 
+QA = {}
+def qa(rel):
+    # wrapqa's motion line on the rendered file, cached by modification time
+    src = os.path.join(EZ, rel); k = rel + ':' + str(int(os.path.getmtime(src)))
+    cache = os.path.join(H, 'qa-cache.json'); C = json.load(open(cache)) if os.path.exists(cache) else {}
+    if k not in C:
+        out = subprocess.run(['python3', 'wrapqa.py', src], capture_output=True, text=True, cwd=os.path.join(EZ, 'tools', 'concepts', 'dopa')).stdout
+        import re
+        fr = re.search(r'\((\d+) frozen windows', out); md = re.search(r'median ([\d.]+) grey', out)
+        C[k] = {'frozen': int(fr.group(1)) if fr else None, 'median': float(md.group(1)) if md else None, 'dur': round(dur(src), 1)}
+        json.dump(C, open(cache, 'w'))
+    return C[k]
+
 def board(rel, key):
     src = os.path.join(EZ, rel)
     if not os.path.exists(src): missing.append(rel); return None
@@ -36,8 +49,11 @@ shutil.copyfile(os.path.join(EZ, 'tools', 'v22', 'x2p-logo.svg'), os.path.join(D
 for s in M['sections']:
     for it in s.get('items', []):
         if it.get('src'):
-            v, p = video(it.pop('src'), it['id'].lower().replace(' ', '-'))
-            if v: it['video'], it['poster'] = v, p
+            rel = it.pop('src'); v, p = video(rel, it['id'].lower().replace(' ', '-'))
+            if v:
+                it['video'], it['poster'] = v, p; q = qa(rel)
+                ok = q['frozen'] == 0 and (q['median'] or 0) >= 3.5
+                it.setdefault('kv', []).append(['Measured', f"<span class='{'ok' if ok else 'no'}'>{q['dur']} s, motion {q['median']}, {q['frozen']} frozen half-seconds</span>"])
         if it.get('srcb'):
             bs = [board(b, it['id'].lower().replace(' ', '-') + '-' + str(n)) for n, b in enumerate(it.pop('srcb'))]
             bs = [b for b in bs if b]
