@@ -42,6 +42,18 @@
   - A page that decodes 64 images at once in four renderers runs out of resources. Fetch them 8 at a time instead.
   - `wrapxs.sh` takes `P`, the number of renderers (default 4). PM-B's screenshots are 7,800 px tall and only render with `P=2`.
 - The page's comment watch is not registered (this session holds the maximum of 10 webhook triggers). The owner's notes reach me by the page's Copy all notes button, pasted in chat.
+- **The owner's notes on the night studio (21 Nov, evening; waiting for the owner):**
+  - Close: "the one with the bell at the top" (my reading: close-h-a, the painted hall) is his direction. It is `LOOK=h TAKE=a bash close.sh <date>`; the default close is unchanged.
+  - Prediction: PV1 Sealed liked, with fixes. Built as `dopa/nt-pv1b.html` (Sealed v2; the first stays as PV1):
+    - no EZ logo on the envelopes, only Locked;
+    - each seal is wax in the AI's own colour with its mark pressed in, 156 px;
+    - the opening is physical: the seal squeezes, cracks and scatters; the flap turns on its hinge; the letter slides out, unfolds and comes to the lens, kept below the company header; the side stamp jolts; the confidence counts up;
+    - the letter has the AI's mark and name at the top, with no Earnings Zeason;
+    - film `ez/x2p-night-pv1b.mp4`: 21.7 s, 0 frozen, motion 11.83.
+  - Feed films:
+    - out: "your words made measurable", FV1 (the "$10 concept films"), FV2, FV5, FV7, FV8;
+    - liked: FV3 Receipts, FV4 Ping ("from a feature perspective, that's the best one", follow an AI and get its trade on the phone), FV6's motion, FV9's model page with reasons and right/wrong, FV10's most-confident sort.
+  - The ping, two ways: board `ez/x2p-ping-channels.png` (`tools/concepts/ping/board.html`), A a web app alert, B a Telegram bot; my pick B first. On the review page (version 6), section "Your notes, round 2".
 - **Video kinds, each its own format (owner, 2026-11-20, on the four animated samples):** prediction videos (a company's trades are in, before the report), outcome videos (the close), product videos (the site redesign's release video), season closing and season opening videos, and new feature launches. Picks so far:
   - **Prediction videos:** in-1's structure: the company card, rows one at a time with the LONG v SHORT count, each AI's called move and confidence. Show every AI's reason, not only one; in-2's layout is not liked, but showing each model's reasoning is. Being built as `dopa/an-in3.html`.
   - **The feed launch (a new feature launch):** in app, a phone with the real app UI, zoom ins and pop outs, a glass layer, crisp type, one thing in focus per shot, in the spirit of the release video. Feed-1's post layout is liked: the AI's words with the key clause marked, then the company row with "LONG (+4%)" (not "called +4%") and "58% confident". Being built as `dopa/fl-feed.html`.
