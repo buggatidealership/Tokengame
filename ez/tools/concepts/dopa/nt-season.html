@@ -164,6 +164,7 @@ window.CUES = [[.12, 'sfx-chime', .12], [B(16), 'sfx-riser', .1], [TAP1, 'sfx-ta
   await Promise.all([...document.images].map(i => i.decode().catch(() => 0)));
   // warm the screens so a frame never waits on a first decode
   const all = ['s1', 's2'].concat([...Array(NF).keys()].map(i => 'up-' + String(i).padStart(2, '0')), [...Array(NF).keys()].map(i => 'bk-' + String(i).padStart(2, '0')));
-  await Promise.all(all.map(f => { const im = new Image(); im.src = 'w6/nt/season/' + f + '.jpg'; return im.decode().catch(() => 0) }));
+  /* warm the cache 8 at a time without decoding (64 decodes at once in four renderers ran out of resources); R decodes each screen as it shows */
+  for (let i = 0; i < all.length; i += 8) await Promise.all(all.slice(i, i + 8).map(f => fetch('w6/nt/season/' + f + '.jpg').then(r => r.blob()).catch(() => 0)));
   await window.R(0); window.READY = 1 })();
 </script>
