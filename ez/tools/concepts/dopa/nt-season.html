@@ -73,21 +73,21 @@ let EL = null;
 /* the camera: z = phone zoom; (fx, fy) a point on the 390x844 screen placed at (px, py) on the frame. Each move starts on a beat. */
 const CAM = [
   [0,      1.92, 150, 142, 500, 430],    // the header, Season 1: the mark and the switch big
-  [B(3),   1.60, 195, 466, 540, 640],   // down to the board: Grok on top
+  [B(3),   1.45, 195, 480, 540, 900],   // down to the board: Grok on top
   [B(6),   1.02, 195, 422, 540, 660],   // the whole phone
   [B(7),   2.30, 160, 138, 520, 560],    // up to the switch
   [B(9),   2.38, 180, 139, 520, 565],
   [B(12),  2.50, 200, 139, 520, 570],    // the fingertip arrives
   [B(16),  2.50, 200, 139, 520, 570],    // tap, on the kick
-  [B(16) + .12, 1.70, 195, 306, 540, 560], // the page re-sets: pull out as it resolves
+  [B(16) + .12, 1.70, 195, 306, 540, 700], // the page re-sets: pull out as it resolves
   [B(18),  1.06, 195, 422, 540, 652],   // the whole phone in Season 2
   [B(20),  .86, 195, 422, 540, 690],    // back, so the rows can lift
   [B(24),  .82, 195, 422, 545, 700],
   [B(26),  2.30, 160, 138, 520, 560],    // the header again: same mark
   [B(28),  2.42, 130, 139, 560, 565],    // toward Season 1
   [B(30),  2.42, 130, 139, 560, 565],    // tap back
-  [B(30) + .12, 1.62, 195, 466, 540, 640], // Season 1's board
-  [B(32),  1.50, 195, 516, 540, 660],
+  [B(30) + .12, 1.45, 195, 480, 540, 925], // Season 1's board
+  [B(32),  1.40, 195, 520, 540, 900],
   [B(34),  1.04, 195, 422, 540, 650],   // the whole phone
   [B(36),  .98, 195, 422, 540, 660],
   [B(37),  .62, 195, 422, 540, 1500],   // it drops away for the mark
@@ -105,10 +105,10 @@ function screenAt(t) { if (t < TAP1) return 'w6/nt/season/s1.jpg'; if (t < TAP1 
   if (t < TAP2) return 'w6/nt/season/s2.jpg'; if (t < TAP2 + NF * STEP) return 'w6/nt/season/bk-' + String(Math.floor((t - TAP2) / STEP)).padStart(2, '0') + '.jpg'; return 'w6/nt/season/s1.jpg' }
 /* the lines: [from, to, kicker, line] (no punctuation; at most 8 words; held 1 s + 0.08 s a character or more) */
 const LN = [[0, B(6), 'Season 1', 'Grok wins'], [B(7), B(15), 'One tap', 'New season new look'], [B(16), B(20), '', 'Season 2'],
-  [B(20), B(26), 'Two new AIs', 'Kimi out'], [B(26), B(32), 'Same mark', 'Same colours'], [B(32), B(37), 'One tap away', 'Season 1 stays']];
+  [B(20), B(26), 'Two new AIs', 'Kimi out'], [B(26), B(32), 'Same mark', 'Same colours'], [B(32), B(37), '', 'Season 1 stays']];
 function lines(t) { const L = LN.find(x => t >= x[0] && t < x[1]), e = $('#ln');
-  if (!L) { e.style.opacity = 0; return } const k = eo(n(t, L[0], L[0] + .32)) * (1 - eio(n(t, L[1] - .18, L[1])));
-  e.style.opacity = k.toFixed(3); e.style.transform = `translateY(${((1 - eo(n(t, L[0], L[0] + .4))) * 40).toFixed(1)}px)`;
+  if (!L) { e.style.opacity = 0; return } const k = (L[0] === 0 ? 1 : eo(n(t, L[0], L[0] + .32))) * (1 - eio(n(t, L[1] - .18, L[1])));
+  e.style.opacity = k.toFixed(3); e.style.transform = `translateY(${(L[0] === 0 ? 0 : (1 - eo(n(t, L[0], L[0] + .4))) * 40).toFixed(1)}px)`;
   if (e.dataset.k !== L[3]) { e.dataset.k = L[3]; e.querySelector('small').textContent = L[2]; e.querySelector('small').style.display = L[2] ? 'block' : 'none';
     e.querySelector('h2').innerHTML = L[3].split(' ').map(w => '<span>' + w + '</span>').join(' ') }
   // the words of the line arrive one by one, on a 0.12 s step
@@ -120,7 +120,7 @@ function touch(c, sx, sy, k, pr, rp) { const [x, y] = toF(c, sx, sy), d = $('#td
 function finger(t, c) { const s2 = EL.s1.sw2, s1 = EL.s2.sw1;
   if (t > B(10) && t < TAP1 + .7) { const x = s2[0] + s2[2] * .5, y = s2[1] + s2[3] * .55, a = eo(n(t, B(10), B(12))), off = 1 - a;
     touch(c, x + off * 120, y + off * 210, a * (1 - n(t, TAP1 + .25, TAP1 + .6)), n(t, B(15), TAP1) * (1 - n(t, TAP1, TAP1 + .15)), n(t, TAP1, TAP1 + .6)); return }
-  if (t > B(27) && t < TAP2 + .7) { const x = s1[0] + s1[2] * .5, y = s1[1] + s1[3] * .55, a = eo(n(t, B(27), B(28.5))), off = 1 - a;
+  if (t > B(27) && t < TAP2 + .7) { const x = s1[0] + s1[2] * .5, y = s1[1] + s1[3] * .55, a = eo(n(t, B(27), B(28))), off = 1 - a;
     touch(c, x - off * 60, y + off * 230, a * (1 - n(t, TAP2 + .25, TAP2 + .6)), n(t, B(29), TAP2) * (1 - n(t, TAP2, TAP2 + .15)), n(t, TAP2, TAP2 + .6)); return }
   $('#td').style.opacity = 0; $('#tr').style.opacity = 0 }
 /* a lift: the real row grows out of its place on the screen (or from the phone's foot) to a place on the frame, then settles back */
@@ -140,14 +140,14 @@ window.R = async t => {
   $('#pulse').style.opacity = (t >= TAP1 && t < B(37) ? .18 + .5 * kick : .08 + kick).toFixed(3);
   $('#flash').style.opacity = (Math.max(0, 1 - n(t, TAP1, TAP1 + .5)) * (t >= TAP1 ? .85 : 0) + Math.max(0, 1 - n(t, TAP2, TAP2 + .4)) * (t >= TAP2 ? .45 : 0)).toFixed(3);
   // the screen behind the lifts dims and blurs
-  const dim = Math.max(eio(n(t, B(20), B(20) + .5)) * (1 - eio(n(t, B(25.6), B(26)))), eio(n(t, B(3), B(3) + .4)) * (1 - eio(n(t, B(5.6), B(6)))) * .7);
+  const dim = Math.max(eio(n(t, B(20), B(20) + .5)) * (1 - eio(n(t, B(26) - .42, B(26)))), eio(n(t, B(3), B(3) + .4)) * (1 - eio(n(t, B(6) - .42, B(6)))) * .7);
   $('#ph').style.filter = dim > .01 ? `blur(${(dim * 5).toFixed(2)}px) brightness(${(1 - .42 * dim).toFixed(3)})` : 'none';
   $('.glare').style.backgroundPosition = `${(20 + 60 * n(t, 0, DUR)).toFixed(1)}% 0`;
   // Season 1: Grok's row on top; Season 2: the two new rows, then Kimi out
-  lift('#lfGrok1', t, B(3), B(5.6), EL.s1['row-GROK'], [540, 520, 900, -1.2], c);
-  lift('#lfGem', t, B(20), B(25.6), EL.s2['row-GEMINI'], [540, 330, 900, -1.5], c);
-  lift('#lfQwen', t, B(21), B(25.6), EL.s2['row-QWEN'], [540, 540, 900, 1.2], c);
-  lift('#lfKimi', t, B(22.5), B(25.6), [EL.s2kimi[0], 844, EL.s2kimi[2], EL.s2kimi[3]], [540, 760, 860, -.8], c);
+  lift('#lfGrok1', t, B(3), B(6) - .42, EL.s1['row-GROK'], [540, 520, 900, -1.2], c);
+  lift('#lfGem', t, B(20), B(26) - .42, EL.s2['row-GEMINI'], [540, 330, 900, -1.5], c);
+  lift('#lfQwen', t, B(21), B(26) - .42, EL.s2['row-QWEN'], [540, 540, 900, 1.2], c);
+  lift('#lfKimi', t, B(23), B(26) - .42, [EL.s2kimi[0], 844, EL.s2kimi[2], EL.s2kimi[3]], [540, 760, 860, -.8], c);
   finger(t, c); lines(t);
   // the end card: the phone falls away, the mark arrives and holds
   const ke = eo(n(t, B(37) + .15, B(38) + .2)); const e = $('#end'); e.style.opacity = ke.toFixed(3); e.style.transform = `translateY(${((1 - ke) * 50).toFixed(1)}px) scale(${(.94 + .06 * ke + .01 * Math.sin(t * 2)).toFixed(4)})`;
@@ -155,10 +155,10 @@ window.R = async t => {
   if (grainF) grainF(t) };
 // grain tiles, picked by frame so renders repeat
 (function () { const cv = $('#grain'), W = 540, H = 675; cv.width = W; cv.height = H; const tiles = []; for (let k = 0; k < 6; k++) { const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'), im = x.createImageData(W, H); let s = 1234 + k * 977; const r = () => (s = (s * 16807) % 2147483647) / 2147483647; for (let i = 0; i < im.data.length; i += 4) { const v = r() * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255 } x.putImageData(im, 0, 0); tiles.push(c) } grainF = t => cv.getContext('2d').drawImage(tiles[Math.floor(t * 24) % 6], 0, 0) })();
-window.DUR = DUR;
+window.DUR = DUR; window.__LN = LN;
 window.MUSIC = { f: 'm3-electro', at: 0 };
 // sounds: the EZ chime as the sonic mark at the start (a placeholder until the owner picks one), the taps, a whoosh per lift, the riser into the kick
-window.CUES = [[.12, 'sfx-chime', .12], [B(16), 'sfx-riser', .1], [TAP1, 'sfx-tap', .16], [B(3), 'sfx-whoosh', .06], [B(20), 'sfx-whoosh', .08], [B(21), 'sfx-whoosh', .07], [B(22.5), 'sfx-whoosh', .07], [TAP2, 'sfx-tap', .14], [B(37), 'r11-swell', .09]];
+window.CUES = [[.12, 'sfx-chime', .12], [B(16), 'sfx-riser', .1], [TAP1, 'sfx-tap', .16], [B(3), 'sfx-whoosh', .06], [B(20), 'sfx-whoosh', .08], [B(21), 'sfx-whoosh', .07], [B(23), 'sfx-whoosh', .07], [TAP2, 'sfx-tap', .14], [B(37), 'r11-swell', .09]];
 (async () => { EL = await fetch('w6/nt/season/el.json').then(r => r.json()); await document.fonts.ready;
   await Promise.all([...document.images].map(i => i.decode().catch(() => 0)));
   // warm the screens so a frame never waits on a first decode

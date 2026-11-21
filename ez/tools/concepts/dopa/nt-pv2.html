@@ -74,7 +74,7 @@ let T = {}, ord, weigh, grain, fcs = {};
   PV.$$('.fc').forEach(e => fcs[e.dataset.k] = e);
   PV.$('#ct').innerHTML = `<div class="bp">${PV.logo(120)}</div><div class="n"><span style="color:${PV.C.green}">${PV.nL}</span><i>v</i><span style="color:${PV.C.red}">${PV.nS}</span></div><div class="l"><span style="color:${PV.C.green}">LONG</span><span style="color:${PV.C.red}">SHORT</span></div>`;
   PV.$('#end').innerHTML = `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
-  grain = PV.grain(PV.$('#grain'), .07);
+  grain = PV.grain(PV.$('#grain'), .07); pulse = PV.pulse('253,188,42', '50% 16%');
   // the timeline in beats: the card, the weigh-in one a beat, the count on the hit (beat 8), the words (5 or 6 beats each), the end card
   const len = ord.map(x => PV.need(x.clause) > 2.9 ? 6 : 5), starts = []; let b = 10; len.forEach(l => { starts.push(b); b += l });
   T = { weigh: weigh.map((_, i) => 2 + i), count: 8, starts, len, end: b, dur: b + 4.8 };
@@ -92,8 +92,9 @@ let T = {}, ord, weigh, grain, fcs = {};
 let qk = '';
 const fillQ = x => { if (qk === x.k) return; qk = x.k;
   PV.$('#q').innerHTML = `<div class="who">${PV.mark(x.k, 58)}${x.name.toUpperCase()}<span class="s" style="background:${PV.side(x)}">${PV.call(x)}</span><em>In its own words</em></div><span class="bk">${PV.logo(60)}</span><div class="cl">${PV.words(x.clause)}</div>` };
+let pulse = () => {};
 window.R = t => {
-  grain(t); const k = G.beat(t);
+  grain(t); const k = G.beat(t); pulse(k);
   const cur = T.starts.filter(s => k >= s).length - 1, inW = cur >= 0 && k < T.end, sp = inW ? ord[cur] : null;
   // the camera: a slow push over the ring, a whip to the speaker's corner, punches on the hits
   const punch = d => { const x = k - d; return x < 0 ? 0 : .045 * Math.exp(-3.5 * x) };

@@ -80,7 +80,7 @@ let T = {}, ord, grain, slips = {};
   PV.$('#alone').textContent = lone;
   PV.$('#gr').textContent = PV.graded;
   PV.$('#end').innerHTML = `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
-  grain = PV.grain(PV.$('#grain'), .06);
+  grain = PV.grain(PV.$('#grain'), .06); pulse = PV.pulse('253,188,42', '50% 14%');
   // the timeline in beats: the urns (0 to 6), the ballots fall and the count on the drop (6), each ballot read (6 beats; 7 for a long clause), the end
   const fall = ord.map((_, i) => 1.4 + i);           // each slip lands on a beat (2 to 6), the last on the drop
   const len = ord.map(x => PV.need(x.clause) > 3.5 ? 7 : 6), starts = []; let b = 8; len.forEach(l => { starts.push(b); b += l });
@@ -100,8 +100,9 @@ let bk = '';
 const fillBal = x => { if (bk === x.k) return; bk = x.k;
   PV.$('#bal').innerHTML = `<span class="seal">${PV.logo(80)}</span><div class="hd">${PV.mark(x.k, 92)}<b>${x.name}</b></div><span class="sd" style="background:${PV.side(x)}">${x.side} <span>(${PV.mv(x)})</span></span>
     <div class="cf">${PV.conf(x)}</div><div class="ow">In its own words</div><div class="cl">${PV.words(x.clause)}</div>` };
+let pulse = () => {};
 window.R = t => {
-  grain(t); const k = G.beat(t);
+  grain(t); const k = G.beat(t); pulse(k);
   const cur = T.starts.filter(s => k >= s).length - 1, inB = cur >= 0 && k < T.end, sp = inB ? ord[cur] : null;
   // the camera: a slow orbit by parallax (the hall moves less than the urns), a lean toward the urn of the ballot in hand, punches on the drops
   const punch = d => { const x = k - d; return x < 0 ? 0 : .035 * Math.exp(-3.5 * x) };

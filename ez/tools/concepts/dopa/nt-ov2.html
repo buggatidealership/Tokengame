@@ -130,8 +130,8 @@ const setup = () => {
   [['#03c870', 0], ['#fdbc2a', 1], ['#ff3a31', 2], ['#f8f0d9', 3]].forEach(([c, i]) => { const s = document.createElement('div'); s.className = 'stripe'; s.style.background = c; s.style.zIndex = 650; L.$('#st').appendChild(s); stripes.push(s) });
   const bars = [['#03c870', 470], ['#fdbc2a', 780], ['#ff3a31', 805]]; L.$('#slam').insertAdjacentHTML('afterbegin', bars.map(([c, y]) => `<div class="bar" style="top:${y}px;background:${c}"></div>`).join(''));
   // sound
-  const C = window.CUES = [[.05, 'r11-swell', .12], [.3, 'sfx-whoosh', .12], [B(-20), 'sfx-whoosh', .12]]; OV.sting(C);
-  D.rounds.forEach((r, j) => C.push([+(B(-20) + (j % UPR) * 2 * G.p).toFixed(3), 'r11-card', .1]));
+  const C = window.CUES = [[.05, 'r11-swell', .12], [.3, 'sfx-whoosh', .12], [B(-18), 'sfx-whoosh', .12]]; OV.sting(C);
+  D.rounds.forEach((r, j) => C.push([+(B(-18) + (j % UPR) * 2 * G.p).toFixed(3), 'r11-card', .1]));
   C.push([B(-14), 'r11-slide', .1], [B(-10), 'sfx-whoosh', .1], [B(-6), 'sfx-whoosh', .1], [B(-4), 'sfx-clock', .14], [B(-2), 'sfx-clock', .14], [B(-1), 'sfx-riser', .1],
     [TR, 'sfx-bell', .32], [TR + .02, 'r11-thump', .22], [TR + .08, 'sfx-stamp', .2], [B(2), 'sfx-whoosh', .12], [B(2.5), 'r11-kaching', .16], [B(5), 'sfx-whoosh', .08], [B(10), 'sfx-whoosh', .14]);
   TRS.forEach((_, i) => C.push([+(B(10.5) + i * .5 * G.p).toFixed(3), 'r11-card', .08]));
@@ -147,24 +147,24 @@ window.R = t => {
   const g = L.$('#gnd'); g.style.transform = `scale(${(1 + .05 * L.n(t, 0, window.DUR)).toFixed(4)}) translate(${(-8 * Math.sin(t * .4)).toFixed(1)}px,${(-14 * L.n(t, 0, window.DUR)).toFixed(1)}px)`;
   L.$$('#flood > div').forEach((b, i) => { b.style.transform = `rotate(${(-14 + 9 * i + 6 * Math.sin(t * .9 + i * 1.7)).toFixed(2)}deg)`; b.style.opacity = (.55 + .25 * Math.sin(t * 2.3 + i) + .9 * Math.exp(-Math.max(0, t - TR) * 3) * (t >= TR ? 1 : 0)).toFixed(3) });
   // the wipes: four slanted stripes cross the frame at the opening, the title-to-board change, the table and the end card
-  const wipes = [0, B(-20) - .18, TB - .18, TE - .18];
+  const wipes = [0, B(-18) - .18, TB - .18, TE - .18];
   stripes.forEach((s, i) => { let y = -400; for (const w0 of wipes) { const q = L.n(t, w0 + i * .035, w0 + .42 + i * .035); if (q > 0 && q < 1) y = L.lerp(-300, 1700, L.eio(q)) } s.style.top = (y + i * 52) + 'px' });
   // the title
-  const ti = L.$('#title'), tin = 1 - .3 * (1 - L.eo5(L.n(t, 0, .45))), tout = L.n(t, B(-20) - .1, B(-20) + .1);
+  const ti = L.$('#title'), tin = 1 - .3 * (1 - L.eo5(L.n(t, 0, .45))), tout = L.n(t, B(-18) - .1, B(-18) + .1);
   ti.querySelector('.lg').style.transform = `scale(${(.92 + .08 * L.spring(t, 1.4, 6)).toFixed(4)}) rotate(${(-6 * (1 - L.eo(L.n(t, 0, .6)))).toFixed(2)}deg)`;
-  ti.style.opacity = tin * (1 - tout); ti.querySelector('.h').style.transform = `translateX(${(-80 * (1 - tin) + 40 * L.n(t, 0, B(-20))).toFixed(1)}px)`;
-  ti.querySelector('.s').style.transform = `translateX(calc(-50% + ${(60 * (1 - L.eo5(L.n(t, 0, .5))) - 30 * L.n(t, 0, B(-20))).toFixed(1)}px))`;
+  ti.style.opacity = tin * (1 - tout); ti.querySelector('.h').style.transform = `translateX(${(-80 * (1 - tin) + 40 * L.n(t, 0, B(-18))).toFixed(1)}px)`;
+  ti.querySelector('.s').style.transform = `translateX(calc(-50% + ${(60 * (1 - L.eo5(L.n(t, 0, .5))) - 30 * L.n(t, 0, B(-18))).toFixed(1)}px))`;
   // the board (fixtures page by page)
-  const bon = L.n(t, B(-20) - .05, B(-20) + .1) * (1 - L.n(t, TB - .1, TB + .1));
+  const bon = L.n(t, B(-18) - .05, B(-18) + .1) * (1 - L.n(t, TB - .1, TB + .1));
   L.$('#board').style.opacity = bon;
-  const pgAt = t < TR ? Math.min(NPG - 1, Math.max(0, Math.floor((t - B(-20)) / (4 * p * 1.5)))) : Math.min(NPG - 1, Math.max(0, Math.floor((t - B(4)) / pgLen)));
-  const hin = L.eo5(L.n(t, B(-20), B(-20) + .3)); L.$('#hd').style.transform = `translateX(${(-1100 * (1 - hin)).toFixed(1)}px)`;
+  const pgAt = t < TR ? Math.min(NPG - 1, Math.max(0, Math.floor((t - B(-18)) / (4 * p * 1.5)))) : Math.min(NPG - 1, Math.max(0, Math.floor((t - B(4)) / pgLen)));
+  const hin = L.eo5(L.n(t, B(-18), B(-18) + .3)); L.$('#hd').style.transform = `translateX(${(-1100 * (1 - hin)).toFixed(1)}px)`;
   L.$('#hd .ft').style.opacity = L.n(t, B(2), B(2) + .1); L.$('#hd .ft').style.transform = `scale(${(1 + .3 * (1 - L.eo5(L.n(t, B(2), B(2) + .3)))).toFixed(3)})`;
   const sin = L.eo5(L.n(t, B(-14), B(-14) + .35)); L.$('#strip').style.transform = `translateY(${(200 * (1 - sin)).toFixed(1)}px)`;
   const nOn = Math.min(UPR, D.N), SP = Math.min(290, (1180 - 282) / nOn), FH = Math.min(262, SP - 18);
   const big = D.rounds.reduce((b, r, j) => Math.abs(r.move) > Math.abs(D.rounds[b].move) ? j : b, 0) % UPR;
   const foc = L.eio(L.n(t, B(-10), B(-10) + .3)) * (1 - L.eio(L.n(t, B(-6), B(-6) + .3)));
-  FX.forEach((el, j) => { const r = D.rounds[j], pg = Math.floor(j / UPR), slot = j % UPR, t0 = B(-20) + slot * 2 * p;
+  FX.forEach((el, j) => { const r = D.rounds[j], pg = Math.floor(j / UPR), slot = j % UPR, t0 = B(-18) + slot * 2 * p;
     const k = L.eo5(L.n(t, t0, t0 + .32)), dir = slot % 2 ? 1 : -1;
     el.style.top = (282 + slot * SP) + 'px'; el.style.height = FH + 'px'; el.style.opacity = (pg === pgAt ? 1 : 0) * (1 - .62 * foc * (slot === big ? 0 : 1)); el.style.transform = `translateX(${(dir * 1100 * (1 - k)).toFixed(1)}px)`;
     const v = live(r, T0), sc = el.querySelector('.sc'); sc.textContent = OV.pct(v); sc.style.color = Math.abs(v) < .005 ? '#f8f0d9' : v > 0 ? OV.G : OV.R;
@@ -182,12 +182,12 @@ window.R = t => {
       sd.querySelectorAll('.lab,.mks').forEach(x => { x.style.opacity = paid || !w ? 1 : 1 - .35 * f; x.style.filter = paid || !w ? '' : `saturate(${(1 - .8 * f).toFixed(2)})` });
       const cs = s === 'l' ? r.longs : r.shorts, pl = sd.querySelector('.pl');
       if (cs.length) { pl.textContent = 'P&L ' + OV.money(cs[0].pnl); pl.style.color = OV.sgn(cs[0].pnl); pl.style.opacity = L.n(t, B(2.5) + slot * .1, B(2.5) + .2 + slot * .1) }
-      else { pl.textContent = 'NO AI'; pl.style.color = 'rgba(248,240,217,.5)'; pl.style.opacity = L.n(t, B(-20), B(-19)) } });
+      else { pl.textContent = 'NO AI'; pl.style.color = 'rgba(248,240,217,.5)'; pl.style.opacity = L.n(t, B(-18), B(-19)) } });
   });
   // the live P&L strip: each AI's P&L tonight, the sum of its trades
   D.ais.forEach((a, i) => { const v = Math.round(D.rounds.reduce((s, r, j) => s + (a.calls[j].side === 'LONG' ? 1 : -1) * live(r, T0) * 1000, 0)); STRIP[i].textContent = OV.money(v); STRIP[i].style.color = OV.sgn(v) });
   // the match clock: New York, from the close before to this close
-  const c = OV.clock(mNow(t)), ck = L.$('#clk'); ck.style.opacity = L.n(t, B(-20), B(-20) + .2) * (1 - L.n(t, TE - .1, TE + .1));
+  const c = OV.clock(mNow(t)), ck = L.$('#clk'); ck.style.opacity = L.n(t, B(-18), B(-18) + .2) * (1 - L.n(t, TE - .1, TE + .1));
   ck.querySelector('b').textContent = t >= TR ? 'FT' : c.day; ck.querySelector('.tm span').textContent = t >= TR ? '4:00 PM' : c.t;
   ck.querySelector('.lv').style.opacity = t < TR ? 1 : 0; ck.querySelector('.lv i').style.opacity = .4 + .6 * (Math.sin(t * 8) > 0 ? 1 : 0);
   // the slam

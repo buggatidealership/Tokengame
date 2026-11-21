@@ -43,7 +43,7 @@ html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f
 #emb{position:absolute;left:78px;top:132px;width:104px}
 #emb .a,#emb .b{position:absolute;left:0;top:0}
 .pq .pl{margin-top:12px;font:700 35px/1 'Space Grotesk';text-align:right;white-space:nowrap}
-.pq .pl small{font:700 22px/1 Cinzel;letter-spacing:.08em;color:rgba(248,240,217,.7);float:left;margin-top:9px}
+.pq .pl small{font:700 24px/1 Cinzel;letter-spacing:.08em;color:rgba(248,240,217,.7);float:left;margin-top:9px}
 .pq .rk{position:absolute;left:-16px;top:-16px;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 32px/1 'Space Grotesk';background:#04070e;color:#f8f0d9;box-shadow:inset 0 0 0 2px rgba(253,188,42,.6),0 6px 16px rgba(0,0,0,.6);opacity:0}
 .pq .flash{position:absolute;inset:0;border-radius:22px;pointer-events:none;opacity:0;background:radial-gradient(80% 70% at 50% 40%,rgba(255,240,200,.65),rgba(253,188,42,.18) 60%,transparent)}
 .pq .rim{position:absolute;inset:-5px;padding:5px;border-radius:26px;pointer-events:none;opacity:0;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
@@ -66,7 +66,7 @@ html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f
   <div id="title"><div class="a"></div><div class="b"></div></div>
   <div id="band"><div class="tx" id="bk"></div><div class="tx" id="bc"></div><div class="tx" id="bb"></div></div>
 </div></div>
-<script src="lib.js"></script><script src="nt-ov.js"></script>
+<script src="lib.js"></script><script src="nt-ov.js"></script><script src="nt-ovx.js"></script>
 <script>
 const TR = 6.923, CX = 540, CY = 730, RP = 410, RM = 250;
 let D, G, grain, PQ = [], MO = [], ANG0 = [], ANG1 = [];
@@ -149,7 +149,7 @@ window.R = t => {
     const [x, y] = AT(ang), out = 500 * (1 - k), ra = ang * Math.PI / 180;
     // the shock: when the ring reaches the plaque it jolts outward and flashes
     const hitT = TR + 1.1 * (1 - Math.cbrt(1 - Math.min(.999, (RP - 60) / 1000))), hk = t >= hitT ? Math.exp(-(t - hitT) * 7) : 0;
-    const jol = 26 * hk * Math.cos((t - hitT) * 30);
+    const jol = 26 * hk * Math.cos((t - hitT) * 30) + 9 * OV.kick(t, G, B(-13));
     const ox = (out + jol) * Math.cos(ra), oy = (out + jol) * Math.sin(ra);
     const h = el.offsetHeight; el.style.transform = `translate(${(x - 137 + ox).toFixed(1)}px,${(y - h / 2 + oy).toFixed(1)}px) rotate(${(3 * hk * Math.sin((t - hitT) * 40)).toFixed(2)}deg)`;
     el.style.opacity = t >= t0 ? L.cl(k * 1.6) : 0;
@@ -172,10 +172,12 @@ window.R = t => {
     el.style.filter = !lead && t > B(9) ? `brightness(${(1 - .25 * L.n(t, B(9), B(9) + .3)).toFixed(3)})` : '';
     el.style.zIndex = 10 + (lead && t > B(5) ? 5 : 0) });
   // camera: a push toward the bell before the strike, the kick, a pull back for the turn
+  const drift = 26 * Math.sin((t - TR) * 1.3) * L.n(t, B(1), B(2)) * (1 - L.n(t, B(5), B(6)));
   const push = 1 + .02 * L.n(t, 0, B(-8)) + .07 * L.eio(L.n(t, B(-4), TR)) - .08 * L.eio(L.n(t, TR + .2, B(2))) + .03 * L.n(t, B(5), B(12));
   const kick = t > TR ? Math.exp(-(t - TR) * 7) * Math.sin((t - TR) * 48) * 14 : 0;
-  L.$('#cam').style.transform = `translate(${kick.toFixed(2)}px,${(kick * .7).toFixed(2)}px) scale(${push.toFixed(4)})`;
+  L.$('#cam').style.transform = `translate(${(kick + drift).toFixed(2)}px,${(kick * .7).toFixed(2)}px) scale(${push.toFixed(4)})`;
   OV.endR(t, B(12));
+  OV.beat(t, G, [L.$('#gnd'), L.$('#bellglow')], L.$('#cam'), .45, .014); OV.endFx(t, B(12), G);
 };
 (async () => {
   D = await OV.load(); setup();

@@ -100,7 +100,7 @@ const waxPath = (r, seed) => { let d = ''; for (let i = 0; i <= 40; i++) { const
     (x.side === 'LONG' ? PV.$('#tL') : PV.$('#tS')).insertBefore(el, (x.side === 'LONG' ? PV.$('#tL') : PV.$('#tS')).querySelector('.lb')); cardEls[x.k] = el });
   PV.$('#big').innerHTML = `<div class="ct"><span style="color:${PV.C.green}">${PV.nL}</span><small style="color:${PV.C.green}">LONG</small><i>v</i><span style="color:${PV.C.red}">${PV.nS}</span><small style="color:${PV.C.red}">SHORT</small></div><div class="gr">${PV.graded}</div>`;
   PV.$('#end').innerHTML = `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
-  grain = PV.grain(PV.$('#grain'), .06);
+  grain = PV.grain(PV.$('#grain'), .06); pulse = PV.pulse('253,188,42', '50% 26%');
   // the timeline in beats
   const starts = []; let b = OPEN; SLOT.forEach(s => { starts.push(b); b += s });
   T = { starts, count: b, end: b + 3, dur: b + 3 + 5 };
@@ -120,11 +120,12 @@ let shown = -1;
 const fillCard = i => { if (shown === i) return; shown = i; const x = ord[i];
   PV.$('#card').innerHTML = `<div class="lh">${PV.logo(58)}<span>EARNINGS ZEASON</span></div><div class="hd">${PV.mark(x.k, 84)}<b>${x.name}</b></div><span class="sd" style="background:${PV.side(x)}">${x.side} <span class="nm">(${PV.mv(x)})</span></span>
     <div class="cf">${PV.conf(x)}</div><div class="rl"></div><div class="ow">In its own words</div><div class="cl">${PV.words(x.clause)}</div>` };
+let pulse = () => {};
 window.R = t => {
-  grain(t); const k = t / B;
+  grain(t); const k = t / B; pulse(k);
   const cur = T.starts.filter(s => k >= s).length - 1;                    // the envelope in hand (-1 in the opener)
   // the camera: wide over the desk in the opener and the count; pushes onto the envelope in hand; drifts all the time
-  const dr = [Math.sin(t * .7) * 22, Math.cos(t * .53) * 16], rot = Math.sin(t * .41) * 1.2;
+  const dr = [Math.sin(t * .7) * 34, Math.cos(t * .53) * 24], rot = Math.sin(t * .41) * 1.6;
   let cx = 540, cy = 760, sc = 1, ro = 0;
   if (cur >= 0 && k < T.count) { const s0 = T.starts[cur], [ex, ey, er] = POS[cur], p = PV.eio(PV.n(k, s0, s0 + 1)), q = PV.eio(PV.n(k, s0 + SLOT[cur] - 1.6, s0 + SLOT[cur] - .2));
     const nx = cur + 1 < 5 ? POS[cur + 1] : [540, 780, 0];

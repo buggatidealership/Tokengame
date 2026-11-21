@@ -105,7 +105,7 @@ const drawIso = t => { const W = 600, H = 735, N = 60, M = 74, c = ictx; c.clear
   tl = PV.$$('.tl');
   PV.$('#gr').textContent = PV.graded;
   PV.$('#end').innerHTML = `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
-  iso = PV.$('#iso'); ictx = iso.getContext('2d'); grain = PV.grain(PV.$('#grain'), .06);
+  iso = PV.$('#iso'); ictx = iso.getContext('2d'); grain = PV.grain(PV.$('#grain'), .06); pulse = PV.pulse('248,240,217', '50% 42%', '80% 60%', .04, .085);
   // the timeline in beats: the forecast card (0 to 7), the strip and the count on the drop (7), one outlook a tile (6 beats; 7 for a long clause), the end
   const len = tiles.map(x => PV.need(x.clause) > 3.4 ? 7 : 6), starts = []; let b = 8; len.forEach(l => { starts.push(b); b += l });
   T = { drop: 5, starts, len, end: b, logo: b + 2, dur: b + 6 };
@@ -122,8 +122,9 @@ let ok = '';
 const fillOl = x => { if (ok === x.k) return; ok = x.k;
   PV.$('#ol').innerHTML = `<div class="tp">${PV.logo(44)}<span>OUTLOOK</span></div><div class="hd">${PV.mark(x.k, 96)}<b>${x.name}</b><span class="sd" style="background:${PV.side(x)}">${x.side} <span>(${PV.mv(x)})</span></span></div>
     <div class="cf"><span>${PV.conf(x)}</span><span class="gg"><i style="width:${x.conf}%"></i></span></div><div class="ow">In its own words</div><div class="cl">${PV.words(x.clause)}</div>` };
+let pulse = () => {};
 window.R = t => {
-  grain(t); const k = G.beat(t);
+  grain(t); const k = G.beat(t); pulse(k);
   T.push = .5 + .5 * Math.sin(t * .45);
   const cur = T.starts.filter(s => k >= s).length - 1, inO = cur >= 0 && k < T.end, sp = inO ? tiles[cur] : null;
   // the camera over the map: a slow fly-in to the pin during the forecast card, a drift after, a dip on each outlook, a punch on the drop

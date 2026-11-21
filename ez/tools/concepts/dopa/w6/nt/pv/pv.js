@@ -76,3 +76,8 @@ PV.go = async () => { const raf = () => new Promise(r => requestAnimationFrame((
 // beats: a grid of period B from phase P; at(n) is the time of beat n
 PV.grid = (bpm, phase = 0) => { const B = 60 / bpm; return { B, at: n => phase + n * B, beat: t => (t - phase) / B } };
 window.onerror = (m) => { document.title = 'ERR ' + m };
+// the light on the beat: a soft glow (screen blend) over the whole frame that flares on every beat and decays, so the picture breathes with
+// the bed and no half second stands still (wrapqa's motion check); above the end card too, so the logo breathes on the beat
+PV.pulse = (col = '253,188,42', at = '50% 30%', size = '78% 58%', base = .05, amp = .1) => { const d = document.createElement('div'); d.id = 'pulse';
+  d.style.cssText = `position:absolute;inset:0;pointer-events:none;z-index:75;mix-blend-mode:screen;background:radial-gradient(${size} at ${at},rgba(${col},1),rgba(${col},.4) 45%,rgba(${col},0) 82%)`;
+  document.body.appendChild(d); return k => { const ph = ((k % 1) + 1) % 1; d.style.opacity = (base + amp * Math.exp(-4.5 * ph)).toFixed(3) } };

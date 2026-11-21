@@ -92,7 +92,7 @@ const drawFlap = (F, k) => F.cells.forEach((c, i) => { const ch = F.text[i] || '
   addFlap(stL, cntP, 13, cntCol, .05, 5); flaps.forEach(F => { if (F.until === 'WH') F.until = b }); addFlap(PV.$('#wh'), grP, b, '#fdbc2a', .025, 4);
   rows.forEach((x, i) => { const r = PV.$$('.row')[i], h = document.createElement('i'); h.className = 'hl'; r.appendChild(h); x._hl = h; x._row = r });
   PV.$('#end').innerHTML = `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
-  grain = PV.grain(PV.$('#grain'), .05);
+  grain = PV.grain(PV.$('#grain'), .05); pulse = PV.pulse('253,188,42', '50% 6%');
   window.TL = { count: +G.at(13).toFixed(3), starts: starts.map(s => +G.at(s).toFixed(3)), end: +G.at(b).toFixed(3), logo: +G.at(T.logo).toFixed(3), dur: +G.at(T.dur).toFixed(3), drop2: +(26.55 - AT).toFixed(3) };
   window.HOLD = rows.map((x, i) => ({ k: x.k, clause: x.clause, need: +PV.need(x.clause).toFixed(2), onScreen: +((T.logo - rowT[i] - 2) * B).toFixed(2), inFocus: +((len[i] - 1) * B).toFixed(2) }));
   window.CUES = [[.03, 'r11-flap', .12]];
@@ -104,8 +104,9 @@ const drawFlap = (F, k) => F.cells.forEach((c, i) => { const ch = F.text[i] || '
   await PV.ready(['700 46px "Space Mono"', '700 30px "Space Grotesk"']);
   await PV.go();
 })();
+let pulse = () => {};
 window.R = t => {
-  grain(t); const k = G.beat(t);
+  grain(t); const k = G.beat(t); pulse(k);
   const cur = T.starts.filter(s => k >= s).length - 1, inR = cur >= 0 && k < T.end, sp = inR ? rows[cur] : null;
   flaps.forEach(F => { if (k >= F.until) return; if (k < F.t0 - .01 && F.cells[0].parentNode.id === 'wh' && F.t0 > 0) return; drawFlap(F, k) });
   // the camera: the whole board while it fills; then rides to each row (push in, the row centred); back out for the grading line
