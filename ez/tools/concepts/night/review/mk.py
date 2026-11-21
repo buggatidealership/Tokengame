@@ -19,8 +19,8 @@ def video(rel, key):
     if not os.path.exists(src): missing.append(rel); return None, None
     out, post = os.path.join(D, 'v', key + '.mp4'), os.path.join(D, 'v', key + '.jpg')
     if not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(src):
-        if os.path.getsize(src) <= 14e6: shutil.copyfile(src, out)
-        else: subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', src, '-c:v', 'libx264', '-crf', '26', '-preset', 'medium', '-c:a', 'copy', '-movflags', '+faststart', out], check=True)
+        if os.path.getsize(src) <= 6e6: shutil.copyfile(src, out)
+        else: subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', src, '-c:v', 'libx264', '-crf', '25', '-preset', 'medium', '-threads', '2', '-c:a', 'copy', '-movflags', '+faststart', out], check=True)
         subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-ss', str(round(dur(src) * .4, 2)), '-i', src, '-frames:v', '1', '-vf', 'scale=720:-1', '-q:v', '4', post], check=True)
     return 'v/' + key + '.mp4', 'v/' + key + '.jpg'
 
