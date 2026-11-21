@@ -39,9 +39,10 @@
 #grain{opacity:.04!important}
 #vig{background:radial-gradient(ellipse 80% 70% at 50% 48%,transparent 60%,rgba(70,50,20,.22))}
 #l2{top:160px}
+#kp{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:multiply;background:radial-gradient(75% 62% at 50% 46%,transparent 38%,rgba(150,96,24,.55) 100%),linear-gradient(180deg,rgba(3,200,112,.16),transparent 22%,transparent 80%,rgba(255,58,49,.14))}
 </style>
 <div id="st">
-<div id="gnd"></div><div id="lite"></div>
+<div id="gnd"></div><div id="lite"></div><div id="kp"></div>
 <div id="pg"><div id="kick"></div><div class="par" id="jg"></div><div class="par" id="pl"></div><div id="cur"></div><svg id="sq"></svg></div>
 <div id="phw"></div><div id="stamp"><img src="ezlogo.svg" alt=""><b>OURS</b></div>
 <div class="ln" id="l1"></div><div class="ln" id="l2"></div>
@@ -105,7 +106,8 @@ const rnd = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x 
 window.R = t => {
   grain(t);
   const BT = FV.BT, bp = t < FV.PH ? 0 : Math.exp(-((t - FV.PH) % BT) / .22), drop = t >= T.drop ? 1 : .3;
-  $('#lite').style.opacity = (.35 + .65 * bp * drop).toFixed(3);
+  $('#lite').style.opacity = (.35 + .65 * bp * drop).toFixed(3); $('#kp').style.opacity = (bp * (drop === 1 ? .95 : .45)).toFixed(3);   // the kick: the paper's edges darken and its light swells on every kick
+  $('#end').style.transform = `scale(${(1 + .035 * n(t, T.end, DUR) + .008 * bp).toFixed(4)})`;
   // the camera: scale s about the point (x, y), which is brought to (540, 640)
   const C = FV.trk(M.cam, t, .9), s = C.s, sway = 3 * Math.sin(t * .6);
   $('#pg').style.transform = `translate(${(540 - C.x * s + sway).toFixed(2)}px,${(640 - C.y * s).toFixed(2)}px) scale(${s.toFixed(4)}) rotate(${(.25 * Math.sin(t * .4)).toFixed(3)}deg)`;
@@ -146,7 +148,7 @@ window.R = t => {
   const open = t < T.cut, ok = eo(n(t, T.tap + .05, T.tap + .5)); $('#gp .pp').style.height = (M.hp * (open ? 0 : 1)).toFixed(2) + 'px'; $('#gp .pt').style.color = open && ok > 0 && ok < 1 ? '#fff3c8' : '';
   ph.style.display = open || t >= T.phone - .1 ? 'block' : 'none'; FV.touch(0, 0, 0, 0, 0);
   if (open) {   // the opening: Grok's post in the app; the fingertip opens In plain words; the camera dives into the words
-    const dv = eio(n(t, T.dive, T.cut)), zz = 1.25 * (1 + 1.7 * dv) * (1 + .015 * Math.sin(t * 2)), ax = lerp(195, M.ax, dv), ay = lerp(422, M.ay, dv);
+    const dv = eio(n(t, T.dive, T.cut)), zz = 1.25 * (1 + 1.7 * dv) * (1 + .06 * eo(n(t, 0, T.dive)) + .012 * bp), ax = lerp(195, M.ax, dv), ay = lerp(422, M.ay, dv);
     ph.style.zoom = zz.toFixed(4); ph.style.left = ((540 - ax * zz) / zz).toFixed(2) + 'px'; ph.style.top = ((lerp(735, 640, dv) - ay * zz) / zz).toFixed(2) + 'px'; ph.style.transform = `rotate(${(.6 * Math.sin(t * .9)).toFixed(3)}deg)`; ph.style.opacity = 1;
     FV.tap(t, T.tap, $('#gp .pt'));
   } else if (t >= T.phone - .1) { ph.style.zoom = z.toFixed(4); ph.style.left = ((540 - 195 * z) / z).toFixed(2) + 'px'; ph.style.top = ((lerp(1500, 330, kp) + 300 * out) / z).toFixed(2) + 'px';

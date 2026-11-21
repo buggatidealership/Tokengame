@@ -61,8 +61,9 @@ OV.bug = (font, opts = {}) => {
     <div id="ovend"><div id="ovendbg"></div><img src="ezlogo.svg" alt="">${OV.wm()}<div class="sub">${opts.sub || 'SEASON 2'}</div></div>`);
 };
 // the end card from t0: the ground darkens to logo black, the logo lands with a spring, its ring of light breathes to the last frame
-OV.endR = (t, t0) => { const e = L.$('#ovend'), k = L.n(t, t0, t0 + .35), s = L.spring(t - t0, 1.6, 7);
-  e.style.opacity = k; e.style.background = `radial-gradient(60% 45% at 50% 46%,rgba(253,188,42,${(.16 + .05 * Math.sin((t - t0) * 4)).toFixed(3)}),transparent 70%),rgba(4,7,14,${(.96 * k).toFixed(3)})`;
+OV.endR = (t, t0) => { const e = L.$('#ovend'), k = L.n(t, t0, t0 + .35), s = L.spring(t - t0, 1.6, 7), st = L.$('#st');
+  if (st) st.style.visibility = k >= 1 ? 'hidden' : '';  // the scene under a fully opaque end card is not drawn (renders faster)
+  e.style.opacity = k; e.style.background = `radial-gradient(60% 45% at 50% 46%,rgba(253,188,42,${(.16 + .05 * Math.sin((t - t0) * 4)).toFixed(3)}),transparent 70%),rgba(4,7,14,${(k >= 1 ? 1 : .96 * k).toFixed(3)})`;
   const im = e.querySelector('img'); im.style.transform = `scale(${(.7 + .3 * s).toFixed(4)}) rotate(${(-8 * (1 - L.eo(L.n(t, t0, t0 + .6)))).toFixed(2)}deg)`;
   e.querySelector('.ovwm').style.transform = `translateY(${(30 * (1 - L.eo5(L.n(t, t0 + .12, t0 + .5)))).toFixed(1)}px)`; e.querySelector('.ovwm').style.opacity = L.n(t, t0 + .12, t0 + .4);
   const sb = e.querySelector('.sub'); sb.style.opacity = L.n(t, t0 + .3, t0 + .6); };

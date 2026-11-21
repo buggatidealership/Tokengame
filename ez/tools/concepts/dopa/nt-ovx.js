@@ -9,7 +9,7 @@ OV.beat = (t, G, grounds, cam, amp = .22, punch = .010, from = -1e9, to = 1e9) =
   if (cam) cam.style.transform += ` scale(${(1 + punch * k).toFixed(4)})`; return k };
 OV.endFx = (t, t0, G) => { const e = L.$('#ovend'); if (!e) return;
   let r = L.$('#ovrays'); if (!r) { r = document.createElement('div'); r.id = 'ovrays';
-    r.style.cssText = 'position:absolute;left:50%;top:46%;width:1700px;height:1700px;margin:-850px 0 0 -850px;border-radius:50%;pointer-events:none;' +
+    r.style.cssText = 'position:absolute;left:50%;top:46%;width:1200px;height:1200px;margin:-600px 0 0 -600px;border-radius:50%;pointer-events:none;' +
       'background:repeating-conic-gradient(from 0deg,rgba(253,188,42,.5) 0deg 5deg,rgba(253,188,42,0) 5deg 15deg);' +
       '-webkit-mask:radial-gradient(closest-side,#000 18%,rgba(0,0,0,.55) 45%,transparent 100%);mask:radial-gradient(closest-side,#000 18%,rgba(0,0,0,.55) 45%,transparent 100%)';
     e.insertBefore(r, e.firstChild) }

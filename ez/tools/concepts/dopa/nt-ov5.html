@@ -22,12 +22,12 @@ html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f
 #gnd img{width:100%;height:100%;display:block}
 #vg{position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 52%,rgba(4,7,14,0) 40%,rgba(4,7,14,.78) 100%),linear-gradient(180deg,rgba(4,7,14,.55),rgba(4,7,14,0) 20%,rgba(4,7,14,0) 80%,rgba(4,7,14,.85))}
 #shock{position:absolute;left:0;top:0;width:1080px;height:1350px;pointer-events:none}
-#bellw{position:absolute;left:410px;top:573px;width:260px;height:314px;transform-origin:50% 6%}
+#bellw{position:absolute;left:410px;top:588px;width:260px;height:314px;transform-origin:50% 6%}
 #bellw img{width:260px;height:314px;display:block;filter:drop-shadow(0 20px 40px rgba(0,0,0,.7))}
-#bellglow{position:absolute;left:290px;top:480px;width:500px;height:500px;border-radius:50%;background:radial-gradient(closest-side,rgba(253,188,42,.55),rgba(253,188,42,.15) 45%,rgba(253,188,42,0) 75%);mix-blend-mode:screen;pointer-events:none}
-.moon{position:absolute;left:0;top:0;width:170px;display:flex;flex-direction:column;align-items:center;gap:8px}
+#bellglow{position:absolute;left:290px;top:495px;width:500px;height:500px;border-radius:50%;background:radial-gradient(closest-side,rgba(253,188,42,.55),rgba(253,188,42,.15) 45%,rgba(253,188,42,0) 75%);mix-blend-mode:screen;pointer-events:none}
+.moon{position:absolute;left:0;top:0;width:150px;display:flex;flex-direction:column;align-items:center;gap:8px}
 .moon img{width:70px;height:70px;border-radius:16px;box-shadow:0 0 0 2px rgba(248,240,217,.35),0 10px 26px rgba(0,0,0,.6)}
-.moon .mv{font:700 36px/1 'Space Grotesk';padding:6px 12px 5px;border-radius:10px;background:rgba(4,7,14,.82);box-shadow:inset 0 0 0 1.5px rgba(253,188,42,.35)}
+.moon .mv{font:700 32px/1 'Space Grotesk';padding:6px 9px 5px;border-radius:10px;background:rgba(4,7,14,.82);box-shadow:inset 0 0 0 1.5px rgba(253,188,42,.35)}
 /* the plaques: dark bronze with a bevel, a gold keyline and a brushed sheen */
 .pq{position:absolute;left:0;top:0;width:274px;padding:18px 15px 16px;border-radius:22px;
   background:linear-gradient(160deg,rgba(253,188,42,.16),rgba(253,188,42,0) 38%),repeating-linear-gradient(90deg,rgba(248,240,217,.025) 0 1px,transparent 1px 4px),linear-gradient(180deg,#1c150b,#0b0906 70%,#120d07);
@@ -68,7 +68,7 @@ html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f
 </div></div>
 <script src="lib.js"></script><script src="nt-ov.js"></script><script src="nt-ovx.js"></script>
 <script>
-const TR = 6.923, CX = 540, CY = 730, RP = 410, RM = 250;
+const TR = 6.923, CX = 540, CY = 745, RP = 370, RM = 215;  // (radius and push keep every plaque 20 px or more inside the frame, director's frame check 01:00)
 let D, G, grain, PQ = [], MO = [], ANG0 = [], ANG1 = [];
 const AT = a => [CX + RP * Math.cos(a * Math.PI / 180), CY + RP * Math.sin(a * Math.PI / 180)];
 const setup = () => {
@@ -138,7 +138,7 @@ window.R = t => {
   // the companies: they drop in one a half beat, sway, their moves live; stamped on the strike; they fade before the turn
   MO.forEach((el, j) => { const r = D.rounds[j], t0 = B(-8) + j * .5 * p, k = L.spring(t - t0, 1.8, 7), a = (+el.dataset.a + 4 * Math.sin(t * 1.3 + j)) * Math.PI / 180, R0 = +el.dataset.r;
     const x = CX + R0 * Math.cos(a), y = CY + R0 * Math.sin(a) - 60 * (1 - k);
-    el.style.transform = `translate(${(x - 85).toFixed(1)}px,${(y - 60).toFixed(1)}px) scale(${(1 + .18 * Math.exp(-Math.max(0, t - TR - .15) * 5) * (t > TR + .1 ? 1 : 0)).toFixed(3)})`;
+    el.style.transform = `translate(${(x - 75).toFixed(1)}px,${(y - 60).toFixed(1)}px) scale(${(1 + .08 * Math.exp(-Math.max(0, t - TR - .15) * 5) * (t > TR + .1 ? 1 : 0)).toFixed(3)})`;
     el.style.opacity = (t >= t0 ? L.cl(k * 2) : 0) * (1 - L.n(t, B(5) - .1, B(5) + .2));
     const v = live(r, T0), mv = el.querySelector('.mv'); mv.textContent = OV.pct(v); mv.style.color = Math.abs(v) < .005 ? '#f8f0d9' : v > 0 ? OV.G : OV.R;
     mv.style.boxShadow = t >= TR ? `inset 0 0 0 2.5px #fdbc2a,0 0 ${(30 * strike).toFixed(1)}px rgba(253,188,42,.8)` : 'inset 0 0 0 1.5px rgba(253,188,42,.35)' });
@@ -149,9 +149,9 @@ window.R = t => {
     const [x, y] = AT(ang), out = 500 * (1 - k), ra = ang * Math.PI / 180;
     // the shock: when the ring reaches the plaque it jolts outward and flashes
     const hitT = TR + 1.1 * (1 - Math.cbrt(1 - Math.min(.999, (RP - 60) / 1000))), hk = t >= hitT ? Math.exp(-(t - hitT) * 7) : 0;
-    const jol = 26 * hk * Math.cos((t - hitT) * 30) + 9 * OV.kick(t, G, B(-13));
+    const jol = 14 * hk * Math.cos((t - hitT) * 30) + 6 * OV.kick(t, G, B(-13));
     const ox = (out + jol) * Math.cos(ra), oy = (out + jol) * Math.sin(ra);
-    const h = el.offsetHeight; el.style.transform = `translate(${(x - 137 + ox).toFixed(1)}px,${(y - h / 2 + oy).toFixed(1)}px) rotate(${(3 * hk * Math.sin((t - hitT) * 40)).toFixed(2)}deg)`;
+    const h = el.offsetHeight; el.style.transform = `translate(${(x - 137 + ox).toFixed(1)}px,${(y - h / 2 + oy).toFixed(1)}px) rotate(${(3 * hk * Math.sin((t - hitT) * 40)).toFixed(2)}deg) scale(${(1 - .2 * Math.sin(Math.PI * turn)).toFixed(4)})`;
     el.style.opacity = t >= t0 ? L.cl(k * 1.6) : 0;
     el.querySelector('.flash').style.opacity = (hk * 1.2).toFixed(3);
     const graded = t >= hitT;
@@ -172,9 +172,9 @@ window.R = t => {
     el.style.filter = !lead && t > B(9) ? `brightness(${(1 - .25 * L.n(t, B(9), B(9) + .3)).toFixed(3)})` : '';
     el.style.zIndex = 10 + (lead && t > B(5) ? 5 : 0) });
   // camera: a push toward the bell before the strike, the kick, a pull back for the turn
-  const drift = 26 * Math.sin((t - TR) * 1.3) * L.n(t, B(1), B(2)) * (1 - L.n(t, B(5), B(6)));
-  const push = 1 + .02 * L.n(t, 0, B(-8)) + .07 * L.eio(L.n(t, B(-4), TR)) - .08 * L.eio(L.n(t, TR + .2, B(2))) + .03 * L.n(t, B(5), B(12));
-  const kick = t > TR ? Math.exp(-(t - TR) * 7) * Math.sin((t - TR) * 48) * 14 : 0;
+  const drift = 10 * Math.sin((t - TR) * 1.3) * L.n(t, B(1), B(2)) * (1 - L.n(t, B(5), B(6)));
+  const push = 1 + .01 * L.n(t, 0, B(-8)) + .03 * L.eio(L.n(t, B(-4), TR)) - .03 * L.eio(L.n(t, TR + .2, B(2))) + .02 * L.n(t, B(5), B(12));
+  const kick = t > TR ? Math.exp(-(t - TR) * 7) * Math.sin((t - TR) * 48) * 8 : 0;
   L.$('#cam').style.transform = `translate(${(kick + drift).toFixed(2)}px,${(kick * .7).toFixed(2)}px) scale(${push.toFixed(4)})`;
   OV.endR(t, B(12));
   OV.beat(t, G, [L.$('#gnd'), L.$('#bellglow')], L.$('#cam'), .45, .014); OV.endFx(t, B(12), G);

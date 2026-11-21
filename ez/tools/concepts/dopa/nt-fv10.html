@@ -68,7 +68,7 @@ const ARC = (w, h, stroke) => `<svg class="ar" viewBox="0 0 100 58"><path d="M8 
   ${Array.from({ length: 11 }, (_, i) => { const a = Math.PI * (1 - i / 10), r1 = 42 - stroke / 2 - 2, r2 = r1 - (i % 5 ? 4 : 7); return `<line x1="${(50 + r1 * Math.cos(a)).toFixed(2)}" y1="${(52 - r1 * Math.sin(a)).toFixed(2)}" x2="${(50 + r2 * Math.cos(a)).toFixed(2)}" y2="${(52 - r2 * Math.sin(a)).toFixed(2)}" stroke="rgba(248,240,217,.5)" stroke-width="1.2"/>` }).join('')}
   <line class="ndl" x1="50" y1="52" x2="50" y2="16" stroke="#fdbc2a" stroke-width="2.6" stroke-linecap="round"/><circle cx="50" cy="52" r="4" fill="#fdbc2a"/></svg>`;
 const setDial = (svg, v, col) => { if (!svg) return; const f = cl((v - 50) / 50), a = -90 + 180 * f; svg.querySelector('.ndl').setAttribute('transform', `rotate(${a.toFixed(2)} 50 52)`);
-  const fl = svg.querySelector('.fill'); fl.setAttribute('stroke-dasharray', `${(100 * f).toFixed(2)} 100`); fl.setAttribute('stroke', col) };
+  const fl = svg.querySelector('.fill'); fl.setAttribute('stroke-dasharray', `${(100 * f).toFixed(2)} 100`); fl.setAttribute('stroke', col); fl.style.opacity = f > .005 ? 1 : 0 };
 (async () => {
   await FB.load(`@import url('https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@700;800&display=swap');`, ["800 104px 'Saira Condensed'", "800 26px 'Saira Condensed'"]);
   const D = FB.D, P = k => FB.post(k, 'INTU'); ORD = CHRONO.slice().sort((a, b) => P(b).conf - P(a).conf);

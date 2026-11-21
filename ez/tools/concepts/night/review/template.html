@@ -1,0 +1,127 @@
+<title>EZ Night Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,600;1,800&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: one column of review cards on the phone, two from 900px; each section a band on the logo's black. Single dark look on purpose (the brand's own ground). */
+:root{
+  --bg:#04070e; --panel:#0c111b; --line:#1d2533; --fg:#f8f0d9; --mute:#a9a291;
+  --green:#03c870; --red:#ff3a31; --gold:#fdbc2a;
+  --disp:"Kanit",system-ui,sans-serif; --label:"Barlow Condensed","Arial Narrow",sans-serif; --body:Inter,system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 80px}
+header.top{display:flex;align-items:center;gap:14px;padding-block:8px 18px;border-bottom:1px solid var(--line)}
+header.top img{width:52px;height:52px}
+header.top .wm{font:italic 800 22px/1 var(--disp);letter-spacing:.01em}
+header.top .wm small{display:block;font:600 13px/1.3 var(--label);letter-spacing:.12em;color:var(--mute);text-transform:uppercase;margin-top:4px}
+h1{font:italic 800 clamp(30px,6vw,52px)/1.02 var(--disp);margin:26px 0 10px;text-wrap:balance}
+h1 b{color:var(--gold);font-weight:800}
+.lede{max-width:68ch;color:var(--fg);margin:0 0 6px}
+.lede.m{color:var(--mute)}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px}
+nav.toc a{font:600 14px/1 var(--label);letter-spacing:.08em;text-transform:uppercase;color:var(--fg);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:9px 13px;background:var(--panel)}
+nav.toc a:hover,nav.toc a:focus-visible{border-color:var(--gold);outline:none}
+section.sec{margin-top:46px}
+.sec>h2{font:italic 800 clamp(24px,4.4vw,36px)/1.05 var(--disp);margin:0 0 6px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sec>h2 .n{font:700 15px/1 var(--label);letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
+.sec>.why{max-width:72ch;color:var(--mute);margin:0 0 16px}
+.rec{border-left:3px solid var(--gold);background:linear-gradient(90deg,rgba(253,188,42,.09),transparent 70%);padding:10px 14px;margin:0 0 18px;max-width:80ch}
+.rec b{font:700 13px/1 var(--label);letter-spacing:.12em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:4px}
+.grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:900px){.grid{grid-template-columns:1fr 1fr}.grid.one{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.card.star{border-color:rgba(253,188,42,.6)}
+.card .hd{display:flex;align-items:baseline;gap:10px;padding:12px 14px 4px;flex-wrap:wrap}
+.card .id{font:700 14px/1 var(--label);letter-spacing:.1em;color:var(--gold);text-transform:uppercase}
+.card .t{font:italic 600 19px/1.15 var(--disp)}
+.card .pick{margin-left:auto;font:700 12px/1 var(--label);letter-spacing:.12em;text-transform:uppercase;color:#04070e;background:var(--gold);border-radius:4px;padding:5px 7px}
+.card .msg{padding:0 14px 10px;color:var(--fg);font-weight:500}
+.media{background:#000;display:flex;justify-content:center}
+.media video{width:100%;max-height:78vh;aspect-ratio:4/5;background:#000;display:block}
+.media img{width:100%;height:auto;display:block}
+.boards{display:flex;flex-direction:column;gap:2px;background:#000}
+.boards a{display:block}
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+dl.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:14px}
+dl.kv dt{font:600 13px/1.5 var(--label);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+dl.kv dd{margin:0;min-width:0}
+.ok{color:var(--green)} .no{color:var(--red)}
+.weak{font-size:14px;color:var(--mute)}
+.weak b{color:var(--fg);font-weight:600}
+textarea{width:100%;min-height:64px;resize:vertical;background:#070b13;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px;font:14px/1.45 var(--body)}
+textarea:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+label.nl{font:600 13px/1 var(--label);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+table.ck{width:100%;border-collapse:collapse;font-size:14px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table.ck th,table.ck td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+table.ck th{font:700 13px/1.2 var(--label);letter-spacing:.1em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
+table.ck tr:last-child td{border-bottom:0}
+.find{display:grid;gap:10px;max-width:86ch}
+.find p{margin:0}
+.find a{color:var(--gold)}
+pre.grok{white-space:pre-wrap;background:#070b13;border:1px solid var(--line);border-radius:8px;padding:12px;max-height:340px;overflow:auto;font:13px/1.5 ui-monospace,Menlo,monospace}
+.bar{position:sticky;bottom:0;margin-top:40px;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:rgba(4,7,14,.94);border-top:1px solid var(--line);display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)))}
+button{font:700 15px/1 var(--label);letter-spacing:.1em;text-transform:uppercase;border:0;border-radius:8px;padding:13px 16px;min-height:44px;cursor:pointer;background:var(--gold);color:#04070e}
+button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+button:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.bar .st{color:var(--mute);font-size:14px}
+#all{position:absolute;left:-9999px;width:1px;height:1px}
+</style>
+
+<div class="wrap">
+  <header class="top"><img src="i/ezlogo.svg" alt="EZ."><div class="wm">EARNINGS ZEASON<small>Night studio · 20 to 21 Nov 2026</small></div></header>
+  <h1>Your feed, your videos, <b>your seasons</b></h1>
+  <p class="lede">Everything the studio made overnight, in one place. Play any film with sound, write a note under any piece, and press <b>Copy all notes</b> at the bottom to send them back to me in one message.</p>
+  <p class="lede m" id="counts"></p>
+  <nav class="toc" id="toc"></nav>
+  <div id="secs"></div>
+  <div class="bar"><button id="copy">Copy all notes</button><button class="ghost" id="clear">Clear notes</button><span class="st" id="st">Notes stay in this browser until you clear them.</span></div>
+  <textarea id="all" aria-hidden="true" tabindex="-1"></textarea>
+</div>
+
+<script>
+const DATA = __DATA__;
+const $ = (s, r = document) => r.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const store = { get(k){ try { return localStorage.getItem('ezn-' + k) || '' } catch { return '' } }, set(k, v){ try { localStorage.setItem('ezn-' + k, v) } catch {} } };
+let nV = 0, nI = 0;
+function card(it){
+  const media = it.video ? `<div class="media"><video controls playsinline preload="none" poster="${esc(it.poster)}" src="${esc(it.video)}"></video></div>`
+    : it.boards ? `<div class="boards">${it.boards.map(b => `<a href="${esc(b)}" target="_blank" rel="noopener"><img loading="lazy" src="${esc(b)}" alt="${esc(it.title)} board"></a>`).join('')}</div>` : '';
+  if (it.video) nV++; if (it.boards) nI++;
+  const kv = (it.kv || []).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v}</dd>`).join('');
+  return `<article class="card${it.pick ? ' star' : ''}" id="c-${esc(it.id)}">
+    <div class="hd"><span class="id">${esc(it.id)}</span><span class="t">${esc(it.title)}</span>${it.pick ? '<span class="pick">My pick</span>' : ''}</div>
+    ${it.msg ? `<div class="msg">${esc(it.msg)}</div>` : ''}${media}
+    <div class="body">${kv ? `<dl class="kv">${kv}</dl>` : ''}${it.weak ? `<div class="weak"><b>Weak:</b> ${it.weak}</div>` : ''}
+      <label class="nl" for="n-${esc(it.id)}">Your note</label><textarea id="n-${esc(it.id)}" data-k="${esc(it.id)}" placeholder="What works, what doesn't"></textarea></div></article>`;
+}
+function build(){
+  const secs = $('#secs'), toc = $('#toc');
+  DATA.sections.forEach((s, i) => {
+    toc.insertAdjacentHTML('beforeend', `<a href="#${s.key}">${esc(s.short || s.title)}</a>`);
+    const html = s.html || '';
+    secs.insertAdjacentHTML('beforeend', `<section class="sec" id="${s.key}"><h2><span class="n">${String(i + 1).padStart(2, '0')}</span>${esc(s.title)}</h2>
+      ${s.why ? `<p class="why">${s.why}</p>` : ''}${s.rec ? `<div class="rec"><b>My recommendation</b>${s.rec}</div>` : ''}${html}
+      ${s.items ? `<div class="grid${s.one ? ' one' : ''}">${s.items.map(card).join('')}</div>` : ''}</section>`);
+  });
+  $('#counts').textContent = `${nV} films and ${nI} sets of mockup boards. Built ${DATA.built}.`;
+  document.querySelectorAll('textarea[data-k]').forEach(t => { t.value = store.get(t.dataset.k); t.addEventListener('input', () => store.set(t.dataset.k, t.value)); });
+  document.querySelectorAll('video').forEach(v => v.addEventListener('play', () => document.querySelectorAll('video').forEach(o => o !== v && o.pause())));
+}
+function notes(){
+  const out = [];
+  document.querySelectorAll('textarea[data-k]').forEach(t => { const v = t.value.trim(); if (v) out.push(`${t.dataset.k}: ${v}`); });
+  return out.length ? 'Night studio notes\n' + out.join('\n') : '';
+}
+$('#copy').addEventListener('click', () => {
+  const txt = notes(), st = $('#st');
+  if (!txt) { st.textContent = 'No notes yet. Write one under any piece first.'; return; }
+  const fall = () => { const a = $('#all'); a.value = txt; a.removeAttribute('aria-hidden'); a.style.cssText = 'position:static;width:100%;height:160px;margin-top:8px'; a.select(); st.textContent = 'Copy blocked here: the notes are selected below, copy them by hand.'; };
+  try { navigator.clipboard.writeText(txt).then(() => st.textContent = 'Copied. Paste it into our chat.', fall) } catch { fall() }
+});
+$('#clear').addEventListener('click', () => { document.querySelectorAll('textarea[data-k]').forEach(t => { t.value = ''; store.set(t.dataset.k, '') }); $('#st').textContent = 'Notes cleared.'; });
+build();
+</script>
