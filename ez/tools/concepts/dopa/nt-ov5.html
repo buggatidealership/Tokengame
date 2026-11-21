@@ -146,7 +146,7 @@ window.R = t => {
   const turn = L.eio(L.n(t, B(5), B(5) + 1.15));
   PQ.forEach((el, i) => { const a = D.ais[i], t0 = B(-13 + i), k = L.eo5(L.n(t, t0, t0 + .4));
     let ang = ANG0[i]; let d1 = ANG1[i] - ANG0[i]; if (d1 > 180) d1 -= 360; if (d1 < -180) d1 += 360; ang += d1 * turn;
-    const [x, y] = AT(ang), out = 500 * (1 - k), ra = ang * Math.PI / 180;
+    const sep = 80 * Math.sign(d1) * Math.sin(Math.PI * turn), [x, y] = [CX + (RP + sep) * Math.cos(ang * Math.PI / 180), CY + (RP + sep) * Math.sin(ang * Math.PI / 180)], out = 500 * (1 - k), ra = ang * Math.PI / 180;  // plaques turning one way pass outside, the other way inside
     // the shock: when the ring reaches the plaque it jolts outward and flashes
     const hitT = TR + 1.1 * (1 - Math.cbrt(1 - Math.min(.999, (RP - 60) / 1000))), hk = t >= hitT ? Math.exp(-(t - hitT) * 7) : 0;
     const jol = 14 * hk * Math.cos((t - hitT) * 30) + 6 * OV.kick(t, G, B(-13));
