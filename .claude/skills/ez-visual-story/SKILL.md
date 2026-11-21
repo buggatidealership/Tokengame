@@ -519,8 +519,17 @@ Every time the owner gives pointers and an iteration lands, update this file the
     - People understand a new thing by contrast with what they already know: you had the side, now you get the why. The before must be on screen too, so the after has something to beat.
     - Show the feature inside the product (in app, the real UI, one element popped out at a time). A launch shown off the product reads as a promise; shown in it, it reads as a fact.
     - *Taught by:* the owner on feed-1, 20 Nov: "Every trade with its reason, I think that's non-understandable... Season 1 gave you the what... Season 2 gives you the why".
+    - Correction from the evidence the same day: before/after contrast in *words* did badly on X ("AI has always given answers / Now it finally shows its work" 0.16x its author's usual, Robinhood's "Markets move. Cortex tells you why." 0.43x). Carry the contrast in the *picture* (the pre-teaser scrolls the real Season 1 page into the feed) and keep the words a plain premise ("Same report / Five AIs disagree").
 208. **Each kind of video has one job, and a format that is good at one job is wrong for another.**
     - A prediction video shows who stands where and why, before anything is known. An outcome video shows who was right. A feature launch shows what is new and where to find it. A season video closes or opens a story.
     - Before judging a sample, name its kind. A liked element moves to the kind it serves. in-1's table belongs to predictions, feed-2's plain words to the app and the feed launch.
     - Show every voice the job needs: one AI's reason is an anecdote, five are the contest.
     - *Taught by:* the owner sorting the four samples by kind, 20 Nov.
+209. **The brand lives inside the object the story is about, not on top of the picture.**
+    - A logo laid over a film is learned as wallpaper and skipped; the same mark on the phone's header, the ticket, the envelope or the board is read with the story. The corner bug is a series signature, not the branding.
+    - Check, not taste: the mark inside the main object by 2 s, centred in the middle 60% of the frame, at least three separate times, the end card counting once; one fixed logotype everywhere and in every season.
+    - *Taught by:* the night studio's research, 21 Nov (TikTok and System1, 887 ads, 2025: logo overlays reduced brand lift, logos in context raised it; Meta and Toluna 2026: several brand moments beat one end-frame logo 1.8x).
+210. **Never show a reason without its receipt.**
+    - A written reason makes people trust an AI more whether it is right or wrong; what calibrates the trust is the record beside it. A reason alone sells false confidence, and commentary is free now.
+    - So every reason is shown as locked before the result and, once graded, with its outcome and P&L at the same size whether right or wrong; the disagreement between AIs stays in view.
+    - *Taught by:* the night studio's research, 21 Nov (CHI 2025, 308 people; Public.com closing its social feed in June 2025 because AI writes that content), and the owner's "we're trying to sell trust".
