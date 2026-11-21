@@ -18,6 +18,9 @@ def video(rel, key):
     src = os.path.join(EZ, rel)
     if not os.path.exists(src): missing.append(rel); return None, None
     out, post = os.path.join(D, 'v', key + '.mp4'), os.path.join(D, 'v', key + '.jpg')
+    pub = os.path.join(H, 'published.json'); P = json.load(open(pub)) if os.path.exists(pub) else {}
+    if not os.path.exists(out) and P.get('v/' + key + '.mp4') == int(os.path.getmtime(src)):
+        return 'v/' + key + '.mp4', 'v/' + key + '.jpg'   # already on the artifact from this same source; local copy deleted to save disk
     if not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(src):
         if os.path.getsize(src) <= 6e6: shutil.copyfile(src, out)
         else: subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', src, '-c:v', 'libx264', '-crf', '25', '-preset', 'medium', '-threads', '2', '-c:a', 'copy', '-movflags', '+faststart', out], check=True)
