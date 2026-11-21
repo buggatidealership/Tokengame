@@ -62,6 +62,7 @@ FB.EZ = (s, cls = '') => `<img class="bm ${cls}" src="ezlogo.svg" alt="" style="
 // the end card: the logo, SEASON 2, the feature's name; the logo arrives by t0 + .8 and holds to the last frame
 FB.endHTML = (name, face, cls = '') => `<div id="endc" class="${cls}"><img src="ezlogo.svg" alt=""><small>SEASON 2</small><h3 style="font-family:${face}">${FB.words(name, 'ew')}</h3></div>`;
 FB.endR = (t, t0) => { const e = document.getElementById('endc'); if (!e) return; e.style.opacity = t >= t0 ? 1 : 0; if (t < t0) return;
+  e.style.transform = `translateY(${(-14 * FB.eo(FB.n(t, t0, t0 + 3))).toFixed(1)}px) scale(${(1 + .05 * FB.eo(FB.n(t, t0, t0 + 3.2))).toFixed(4)})`;   // a slow push in on the hold
   const lg = FB.spr(FB.n(t, t0, t0 + .8)), im = e.querySelector('img'); im.style.transform = `translateY(${(50 * (1 - lg)).toFixed(1)}px) scale(${(.6 + .4 * lg).toFixed(3)})`; im.style.opacity = FB.cl(lg * 2).toFixed(3);
   const kq = FB.eo(FB.n(t, t0 + .3, t0 + .7)), sm = e.querySelector('small'); sm.style.opacity = kq.toFixed(3); sm.style.transform = `translateY(${(16 * (1 - kq)).toFixed(1)}px)`;
   sm.style.letterSpacing = (.32 - .08 * FB.eo(FB.n(t, t0 + .3, t0 + 2.5))).toFixed(3) + 'em';
