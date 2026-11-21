@@ -40,7 +40,7 @@ FB.phoneHTML = (views = '', tabs = ['LEADERBOARD', 'FEED', 'AI PROFILES', 'UPCOM
 // place a phone: centre (cx, cy) in the frame, z its layout zoom (1 = 390 x 844), rotations in degrees, s an extra transform scale (keep it near 1)
 FB.place = (w, o) => { const z = o.z, ph = w.firstElementChild; ph.style.zoom = z.toFixed(4); w.style.width = (390 * z).toFixed(1) + 'px'; w.style.height = (844 * z).toFixed(1) + 'px';
   w.style.left = (o.cx - 195 * z).toFixed(1) + 'px'; w.style.top = (o.cy - 422 * z).toFixed(1) + 'px';
-  w.style.transform = `rotateX(${(o.rx || 0).toFixed(3)}deg) rotateY(${(o.ry || 0).toFixed(3)}deg) rotateZ(${(o.rz || 0).toFixed(3)}deg) scale(${(o.s || 1).toFixed(4)})`;
+  w.style.transform = (Math.abs(o.rx || 0) < .001 && Math.abs(o.ry || 0) < .001 ? '' : `rotateX(${(o.rx || 0).toFixed(3)}deg) rotateY(${(o.ry || 0).toFixed(3)}deg) `) + `rotate(${(o.rz || 0).toFixed(3)}deg) scale(${(o.s || 1).toFixed(4)})`;
   const gl = w.querySelector('.glare'); if (gl) gl.style.backgroundPosition = `${(40 + 40 * Math.sin((o.t || 0) * .4)).toFixed(1)}% ${(30 + 30 * Math.cos((o.t || 0) * .3)).toFixed(1)}%` };
 // a track of camera keys [[time, {props}], ...]: each key starts at its time and lands in dur s on the lift spring (or ease if o.ease)
 FB.track = (K, t, dur = .75, ez = FB.spr) => { const s = Object.assign({}, K[0][1]); for (let i = 1; i < K.length; i++) { const a = K[i][0]; if (t < a) break;
