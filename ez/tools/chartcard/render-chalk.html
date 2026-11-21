@@ -1,0 +1,139 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Lilita;src:url(../../media/h48-lilita.woff2) format('woff2')}
+@font-face{font-family:Fredoka;src:url(../../media/h48-fredoka.woff2) format('woff2');font-weight:300 700}
+html,body{margin:0;background:#000}canvas{display:block}</style></head><body>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script>
+// v4 "chalk set", 4:5. The set is painted once (set/chalk.jpg, Hedra gpt-image-2, $0.28, blank board, frames and plaques);
+// code draws every word and number in the set's own media: chalk on the board, the cast loops in the brass frames,
+// ink on the plaques. Sequence: the stock into earnings -> each AI steps out of its frame with its call and chalks its line
+// -> LOCKED -> 3-2-1 -> EARNINGS -> the price runs, "closest" moves between the frames -> the close -> the board is wiped
+// and the result chalked: winner, every AI's P&L, the season, next round.
+const cv=document.getElementById('c'),x=cv.getContext('2d'),W=1080,H=1350;
+const ch=document.createElement('canvas');ch.width=W;ch.height=H;const c2=ch.getContext('2d');// chalk layer
+const ease=t=>t<0?0:t>1?1:1-Math.pow(1-t,3),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),seg=(t,a,b)=>clamp((t-a)/(b-a),0,1),lerp=(a,b,f)=>a+(b-a)*f;
+const K={w:'#f4f1e8',up:'#9fe8ae',dn:'#ff9d92',gold:'#ffd86e',mut:'#b9c7bb',GPT:'#d2c0ff',CLAUDE:'#ffb68c',KIMI:'#a6d4ff',GROK:'#f3ecd9'};
+const NM={GPT:'GPT',CLAUDE:'Claude',KIMI:'Kimi',GROK:'Grok'},S=1080/1536;
+// geometry measured on the painting (1536x2048), scaled to 1080
+const BD={x:114*S,y:279*S,w:(1419-114)*S,h:(1254-279)*S},FR=[230,589,948,1302].map(v=>v*S),FY=1607*S,FRI=111*S,FRO=150*S,PY=1796*S,PW=196*S,PH=42*S;
+const RS=1.15,R0=1.0;let tl,C,img={},V={},noise;
+function rnd(seed){let s=seed>>>0;return()=>((s=Math.imul(s^s>>>15,1|s)+0x6D2B79F5|0,((s^s>>>14)>>>0)/4294967296))}
+async function init(cfg){C=cfg;const k=C.calls.length,r1=R0+k*RS;
+ tl={roll:[R0,r1],lock:[r1+.1,r1+1.2],cd:[r1+1.3,r1+2.8],boom:r1+2.8,post:[r1+2.8,r1+8.7],close:[r1+8.7,r1+9.6],wipe:[r1+10.1,r1+10.6],end:[r1+10.6,r1+11.6],T:r1+14};
+ const li=(k2,src)=>new Promise(r=>{if(!src)return r();const i=new Image();i.onload=()=>{img[k2]=i;r()};i.onerror=r;i.src=src});
+ await li('set',C.setSrc);await li('co',C.logo);await li('ez',C.ezLogo);
+ for(const c of C.calls){const v=document.createElement('video');v.muted=true;v.preload='auto';v.src=C.cast[c.m].src;await new Promise(r=>{v.onloadeddata=r;v.onerror=r});V[c.m]=v}
+ // chalk grain: speckled alpha so strokes look rubbed on, not printed
+ noise=document.createElement('canvas');noise.width=noise.height=256;const n2=noise.getContext('2d'),id=n2.createImageData(256,256),R=rnd(7);
+ for(let i=0;i<id.data.length;i+=4){const v=R();id.data[i]=id.data[i+1]=id.data[i+2]=255;id.data[i+3]=v<.16?40:v<.3?150:235}n2.putImageData(id,0,0);
+ await document.fonts.load('80px Lilita');await document.fonts.load('600 40px Fredoka');return tl.T}
+async function seek(t){await Promise.all(Object.values(V).map(v=>new Promise(r=>{const d=v.duration||5,tt=t%d;if(Math.abs(v.currentTime-tt)<1e-3)return r();v.onseeked=()=>r();v.currentTime=tt})))}
+// ---- chalk primitives (drawn on c2, grained when composited)
+function cline(pts,col,w,dash,seed=1){const R=rnd(seed);c2.save();c2.strokeStyle=col;c2.lineCap='round';c2.lineJoin='round';if(dash)c2.setLineDash(dash);
+ for(let p=0;p<2;p++){c2.globalAlpha=p?.55:.9;c2.lineWidth=w*(p?.6:1);c2.beginPath();pts.forEach((q,i)=>{const jx=(R()-.5)*1.6,jy=(R()-.5)*1.6;i?c2.lineTo(q[0]+jx,q[1]+jy):c2.moveTo(q[0]+jx,q[1]+jy)});c2.stroke()}c2.restore()}
+function ctext(t,X,Y,size,col,align='left',font='Lilita',rot=0,alpha=1){c2.save();c2.globalAlpha=alpha;c2.translate(X,Y);c2.rotate(rot);c2.font=size+'px '+font;c2.textAlign=align;c2.textBaseline='alphabetic';
+ c2.fillStyle=col;c2.fillText(t,0,0);c2.globalAlpha=alpha*.35;c2.fillText(t,1.2,-.8);c2.restore()}
+let Q=[];// crisp data, drawn after the chalk layer
+function xtext(t,X,Y,size,col,align='left',font='Lilita',rot=0,alpha=1){Q.push(()=>{x.save();x.globalAlpha=alpha;x.translate(X,Y);x.rotate(rot);x.font=(font==='Fredoka'?'600 ':'')+size+'px '+font;x.textAlign=align;x.textBaseline='alphabetic';
+ x.shadowColor='rgba(0,0,0,.35)';x.shadowOffsetY=2;x.shadowBlur=3;x.fillStyle=col;x.fillText(t,0,0);x.restore()})}
+function cfit(t,size,max,font='Lilita'){c2.font=size+'px '+font;while(c2.measureText(t).width>max&&size>20){size-=2;c2.font=size+'px '+font}return size}
+function grain(){c2.save();c2.globalCompositeOperation='destination-in';c2.fillStyle=c2.createPattern(noise,'repeat');c2.fillRect(0,0,W,H);c2.restore()}
+function rr(g,X,Y,w,h,r){g.beginPath();g.roundRect(X,Y,w,h,r)}
+function crown(g,cx,cy,s,col){g.save();g.translate(cx,cy);g.beginPath();g.moveTo(-s,s*.55);g.lineTo(-s,-s*.25);g.lineTo(-s*.5,s*.12);g.lineTo(0,-s*.6);g.lineTo(s*.5,s*.12);g.lineTo(s,-s*.25);g.lineTo(s,s*.55);g.closePath();g.fillStyle=col;g.fill();g.restore()}
+function setImg(){x.drawImage(img.set,0,0,W,img.set.height*S)}
+function frameFace(k,m,dim,ring){const cx=FR[k];x.save();x.beginPath();x.arc(cx,FY,FRI,0,7);x.clip();const v=V[m],hb=C.cast[m].head,s=FRI*2;
+ if(v)x.drawImage(v,hb[0],hb[1],hb[2],hb[2],cx-FRI,FY-FRI,s,s);if(dim>0){x.fillStyle='rgba(6,10,8,'+dim+')';x.fillRect(cx-FRI,FY-FRI,s,s)}x.restore();
+ // the painted brass ring back over the face's edge
+ x.save();x.beginPath();x.arc(cx,FY,FRO,0,7);x.arc(cx,FY,FRI-3,0,7,true);x.clip();setImg();x.restore();
+ if(ring){x.save();x.beginPath();x.arc(cx,FY,FRI+9,0,7);x.lineWidth=10;x.strokeStyle=ring;x.shadowColor=ring;x.shadowBlur=26;x.stroke();x.restore()}}
+function plaque(k,txt,col){const cx=FR[k];x.save();x.font='600 '+Math.min(30,PH*.78)+'px Fredoka';let fs=30;while(x.measureText(txt).width>PW-14&&fs>14){fs-=1;x.font='600 '+fs+'px Fredoka'}
+ x.textAlign='center';x.textBaseline='middle';x.fillStyle=col;x.globalAlpha=.92;x.fillText(txt,cx,PY+2);x.restore()}
+const money=v=>(v<0?'−':'+')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US');
+const kmoney=v=>Math.abs(v)>=10000?(v<0?'−':'+')+'$'+(Math.abs(v)/1000).toFixed(Math.abs(v)>=100000?0:1)+'K':money(v);
+const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(2)+'%';
+const callTxt=c=>(c.dir>0?'LONG ':'SHORT ')+c.mag+'%';
+function postP(t){if(t<tl.boom)return 0;const s=seg(t,tl.post[0],tl.post[1]);return (C.bars.length-C.iRep)*(1-Math.pow(1-s,1.5))}
+function priceAt(t){const p=postP(t),ir=C.iRep,b=C.bars;if(p<=0)return C.prev;const i=Math.min(b.length-1,ir+Math.floor(p-1e-9)),f=p-Math.floor(p-1e-9),bar=b[i];return f>=1?bar[4]:bar[1]+(bar[4]-bar[1])*f}
+function leaderAt(t){const pr=t>=tl.close[0]?C.fin:priceAt(t);let best=null,d=1e9;for(const c of C.calls){const e=Math.abs(pr-c.lv);if(e<d){d=e;best=c.m}}return best}
+const rk=k=>R0+k*RS;
+function draw(t){
+ const bars=C.bars,ir=C.iRep,n=bars.length,prev=C.prev,np=n-ir,calls=C.calls;
+ const sk=t>tl.boom?Math.max(0,1-(t-tl.boom)/.5):0;
+ x.setTransform(1,0,0,1,0,0);x.fillStyle='#000';x.fillRect(0,0,W,H);x.translate(sk?Math.sin(t*90)*9*sk:0,sk?Math.cos(t*77)*7*sk:0);setImg();
+ c2.setTransform(1,0,0,1,0,0);c2.clearRect(0,0,W,H);Q=[];
+ const verdict=t>=tl.close[0],vv=verdict?ease(seg(t,tl.close[0],tl.close[1])):0,lead=t>=tl.boom&&!verdict?leaderAt(t):null,wiped=t>=tl.wipe[0];
+ const bx=BD.x+26,by=BD.y+24,bw=BD.w-52,bh=BD.h-44;
+ if(!wiped||t<tl.wipe[1]){
+  // board header: the ticker and round in chalk, the live move on the right
+  const tf=cfit(C.title,74,430);xtext(C.title,bx,by+66,tf,K.w);xtext(C.sub,bx+2,by+108,34,K.mut,'left','Fredoka');
+  if(t>=tl.boom){const mv=verdict?C.a:100*(priceAt(t)/prev-1);xtext(pct(mv),bx+bw,by+76,cfit(pct(mv),84,360),mv>=0?K.up:K.dn,'right');xtext(verdict?'at the close':'since the close before',bx+bw,by+110,28,K.mut,'right','Fredoka')}
+  else xtext(t>=tl.lock[0]?'locked':'before earnings',bx+bw,by+60,32,K.mut,'right','Fredoka');
+  // chart
+  const L=bx,Rr=bx+bw*.64,TOP=by+150,BOT=by+bh-10,preW=(Rr-L)*.5,xr=L+preW,postW=Rr-xr;
+  const lo0=Math.min(...bars.map(b=>b[3]),...calls.map(c=>c.lv),C.fin),hi0=Math.max(...bars.map(b=>b[2]),...calls.map(c=>c.lv),C.fin),pad=(hi0-lo0)*.06,lo=lo0-pad,hi=hi0+pad;
+  const Y=v=>BOT-(BOT-TOP)*(v-lo)/(hi-lo),bwA=preW/ir,bwB=postW/np,X=i=>i<ir?L+bwA*(i+.5):xr+bwB*(i-ir+.5);
+  cline([[xr,TOP-14],[xr,BOT]],K.mut,2,[6,10],3);xtext('earnings',xr,TOP-20,28,K.mut,'center','Fredoka');
+  cline([[L,Y(prev)],[Rr,Y(prev)]],K.mut,1.6,[3,9],4);
+  calls.forEach((c,k)=>{const g=ease(seg(t,rk(k)+.72,rk(k)+1.05));if(g<=0)return;const win=C.win.includes(c.m);
+   cline([[xr,Y(c.lv)],[xr+(Rr-xr)*g,Y(c.lv)]],verdict&&win?K.gold:K[c.m],verdict&&win?6:(lead===c.m?5:3.4),[14,10],10+k)});
+  const p=postP(t),full=ir+Math.floor(p),f=p-Math.floor(p),show=bars.slice(0,Math.min(n,full));
+  if(f>0&&full<n){const b=bars[full],c4=b[1]+(b[4]-b[1])*f;show.push([b[0],b[1],Math.max(b[1],c4)+(b[2]-Math.max(b[1],b[4]))*f,Math.min(b[1],c4)-(Math.min(b[1],b[4])-b[3])*f,c4])}
+  Q.push(()=>show.forEach((b,i)=>{const up=b[4]>=b[1],cx=X(i),w2=i<ir?bwA:bwB,col=up?'#5fd88a':'#ff6f62';x.save();x.strokeStyle=x.fillStyle=col;x.lineWidth=Math.max(2,w2*.16);
+   x.beginPath();x.moveTo(cx,Y(b[2]));x.lineTo(cx,Y(b[3]));x.stroke();const y1=Y(Math.max(b[1],b[4])),y2=Y(Math.min(b[1],b[4]));x.fillRect(cx-w2*.34,y1,w2*.68,Math.max(3,y2-y1));x.restore()}));
+  // labels at the line ends (spread apart)
+  const lab=calls.map((c,k)=>({...c,k,y:Y(c.lv)})).sort((a,b)=>a.y-b.y);for(let k=1;k<lab.length;k++)if(lab[k].y-lab[k-1].y<56)lab[k].y=lab[k-1].y+56;
+  const ov=lab[lab.length-1].y-(BOT-10);if(ov>0)lab.forEach(q=>q.y-=ov);
+  for(const q of lab){const g=seg(t,rk(q.k)+.95,rk(q.k)+1.2);if(g<=0)continue;const win=C.win.includes(q.m),a=verdict&&!win?1-.6*vv:1;
+   cline([[Rr+4,Y(q.lv)],[Rr+22,q.y]],K[q.m],2,null,40+q.k);xtext(NM[q.m],Rr+30,q.y+13,40,verdict&&win?K.gold:K[q.m],'left','Lilita',0,g*a);
+   xtext((q.dir>0?'▲':'▼')+q.mag+'%',bx+bw,q.y+13,36,q.dir>0?K.up:K.dn,'right','Fredoka',0,g*a);
+   if(verdict&&vv>.3){const ok=(q.dir>0)===(C.a>0);x.font='40px Lilita';xtext(ok?'✓':'✗',Rr+30+x.measureText(NM[q.m]).width+14,q.y+13,36,ok?K.up:K.dn,'left','Fredoka',0,ease((vv-.3)/.7))}}
+  // the question on frame 0
+  if(t<R0+.3)ctext('Who calls '+C.title+'?',(xr+bx+bw)/2+30,TOP+(BOT-TOP)*.42,cfit('Who calls '+C.title+'?',58,bx+bw-xr-20),K.gold,'center','Lilita',-.03,1-seg(t,R0,R0+.3));
+ }
+ // the wipe: a felt eraser sweep, then the result chalked on the clean board
+ if(wiped){const g=seg(t,tl.wipe[0],tl.wipe[1]),ex=BD.x+BD.w*g;if(t<tl.wipe[1])c2.clearRect(BD.x,BD.y,ex-BD.x,BD.h);else c2.clearRect(BD.x,BD.y,BD.w,BD.h);
+  if(t>=tl.wipe[1]){const e=seg(t,tl.end[0],tl.end[1]);let y=by+86;
+   if(C.win.length){crown(c2,bx+34,y-50,30,K.gold)}xtext(C.winLine,bx+(C.win.length?80:0),y,cfit(C.winLine,84,bw-90),C.win.length?K.gold:K.dn,'left','Lilita',0,ease(e*2));
+   xtext(C.winSub,bx+2,y+44,30,K.mut,'left','Fredoka',0,ease(e*2));y+=110;xtext('THIS ROUND',bx+bw*.66,y,24,K.mut,'right','Fredoka',0,ease(e*2-.2));xtext('SEASON',bx+bw,y,24,K.mut,'right','Fredoka',0,ease(e*2-.2));
+   C.rows.forEach((rw,k)=>{const a=ease(e*3-.5-k*.3),yy=y+70+k*88,ok=(rw.dir>0)===(C.a>0),win=C.win.includes(rw.m);xtext(NM[rw.m],bx,yy,50,win?K.gold:K[rw.m],'left','Lilita',0,a);
+    xtext(ok?'✓':'✗',bx+bw*.3,yy,46,ok?K.up:K.dn,'center','Fredoka',0,a);xtext(kmoney(rw.pl),bx+bw*.66,yy,44,rw.pl>=0?K.up:K.dn,'right','Fredoka',0,a);
+    xtext(kmoney(rw.season)+(rw.mv?(rw.mv>0?' ▲':' ▼'):''),bx+bw,yy,44,rw.season>=0?K.up:K.dn,'right','Fredoka',0,a);
+    if(k<C.rows.length-1)cline([[bx,yy+28],[bx+bw,yy+28]],K.mut,1.2,[2,10],70+k)});
+   xtext(C.next,bx+bw/2,by+bh-16,38,K.w,'center','Lilita',0,ease(e*2-1))}
+  if(t<tl.wipe[1]){x.save();rr(x,ex-60,BD.y+BD.h*.35,70,160,10);x.fillStyle='#6b4a2b';x.fill();rr(x,ex-60,BD.y+BD.h*.35+120,70,40,6);x.fillStyle='#3b3b3b';x.fill();x.restore()}}
+ grain();x.save();x.globalAlpha=.94;x.drawImage(ch,0,0);x.restore();Q.forEach(f=>f());Q=[];
+ // second chalk pass: the big moments over a dimmed board
+ const bigOn=(t>=tl.lock[0]&&t<tl.cd[0]+.1)||(t>=tl.cd[0]&&t<tl.boom+1);
+ if(bigOn){const o=t<tl.boom?1:Math.max(0,1-(t-tl.boom)*1.2);x.save();x.globalAlpha=.62*o;x.fillStyle='#132018';x.fillRect(BD.x,BD.y,BD.w,BD.h);x.restore();
+  c2.setTransform(1,0,0,1,0,0);c2.clearRect(0,0,W,H);
+  // LOCKED, chalked big with a padlock
+  if(t>=tl.lock[0]&&t<tl.cd[0]+.1){const g=ease(seg(t,tl.lock[0],tl.lock[0]+.3)),o=1-seg(t,tl.cd[0]-.15,tl.cd[0]+.1);
+   const cx=BD.x+BD.w/2,cy=BD.y+BD.h*.52;c2.save();c2.globalAlpha=o;c2.strokeStyle=K.gold;c2.lineWidth=10;c2.lineCap='round';c2.beginPath();c2.arc(cx-300,cy-60,34,Math.PI,0);c2.lineTo(cx-266,cy-30);c2.moveTo(cx-334,cy-30);c2.lineTo(cx-334,cy-60);c2.stroke();
+   c2.fillStyle=K.gold;c2.fillRect(cx-350,cy-34,100,78);c2.restore();ctext('LOCKED',cx-225,cy+36,130*lerp(1.25,1,g),K.gold,'left','Lilita',-.03,o);ctext('before the earnings report',cx,cy+100,36,K.w,'center','Fredoka',0,o)}
+  // countdown in chalk
+  if(t>=tl.cd[0]&&t<tl.boom){const k=Math.floor((t-tl.cd[0])/.5),f2=((t-tl.cd[0])%.5)/.5;
+   ctext('earnings in',BD.x+BD.w/2,BD.y+BD.h*.3,44,K.mut,'center','Fredoka');ctext(String(3-k),BD.x+BD.w/2,BD.y+BD.h*.74,320-70*f2,K.w,'center','Lilita',0,1-f2*.4)}
+  // EARNINGS: a burst of chalk dust and the word
+  if(t>=tl.boom&&t<tl.boom+1){const f3=t-tl.boom,R=rnd(99),cx=BD.x+BD.w/2,cy=BD.y+BD.h*.52;c2.save();for(let i=0;i<70;i++){const a=R()*6.283,d=(60+R()*380)*ease(f3*1.6);c2.globalAlpha=Math.max(0,.8-f3);c2.fillStyle=K.gold;c2.beginPath();c2.arc(cx+Math.cos(a)*d,cy+Math.sin(a)*d*.7,2+R()*6,0,7);c2.fill()}c2.restore();
+   ctext('EARNINGS!',cx,cy+50,150*(1+.2*(1-Math.min(1,f3*1.5))),K.gold,'center','Lilita',-.06,Math.max(0,1-f3*1.1))}
+
+  grain();x.save();x.globalAlpha=.96;x.drawImage(ch,0,0);x.restore()}
+ // the frames: each AI's loop in its brass frame, its call on the plaque
+ calls.forEach((c,k)=>{const win=C.win.includes(c.m),isL=lead===c.m,shown=t>=rk(k)+.95,out=t>=rk(k)&&t<rk(k)+1.1;
+  const dim=out?.85:verdict?(win?0:.45*vv):(t>=tl.boom&&!isL?.3:0);frameFace(k,c.m,dim,(verdict&&win)?'#ffd86e':isL?'#ffd86e':null);
+  if(verdict&&win)crown(x,FR[k],FY-FRO-6,32*vv,'#ffd86e');
+  if(isL){x.save();x.font='26px Lilita';x.textAlign='center';x.fillStyle='#ffd86e';x.shadowColor='#000';x.shadowBlur=6;x.fillText('CLOSEST',FR[k],FY-FRO-8);x.restore()}
+  plaque(k,NM[c.m],'#3b2a1a')});
+ // the rollout: an AI steps out of its frame with its call, then goes back in
+ calls.forEach((c,k)=>{const a=rk(k);if(t<a||t>a+1.1)return;const out=ease(seg(t,a,a+.25)),back=ease(seg(t,a+.75,a+1.05)),stp=seg(t,a+.25,a+.42),f=out*(1-back);
+  const big={w:400,h:533},cx=BD.x+BD.w/2,cy=BD.y+BD.h*.47,w=lerp(FRI*2,big.w,f),h=lerp(FRI*2,big.h,f),X0=lerp(FR[k],cx,f)-w/2,Y0=lerp(FY,cy,f)-h/2;
+  x.save();x.globalAlpha=.55*f;x.fillStyle='#08100b';x.fillRect(0,0,W,H);x.restore();
+  const v=V[c.m];x.save();rr(x,X0,Y0,w,h,lerp(FRI,22,f));x.clip();if(v)x.drawImage(v,0,0,v.videoWidth||600,v.videoHeight||800,X0,Y0,w,h);x.restore();
+  x.save();rr(x,X0,Y0,w,h,lerp(FRI,22,f));x.lineWidth=8;x.strokeStyle='#c99a4a';x.stroke();x.restore();
+  if(stp>0&&back<.5){x.save();x.globalAlpha=1-back*2;x.translate(cx,Y0+h-30);x.rotate(-.07);const s3=lerp(1.6,1,ease(stp));x.scale(s3,s3);x.font='96px Lilita';x.textAlign='center';x.lineWidth=18;x.strokeStyle='#0c1410';
+   x.strokeText(callTxt(c),0,0);x.fillStyle=c.dir>0?'#7ee69a':'#ff8075';x.fillText(callTxt(c),0,0);x.font='60px Lilita';x.fillStyle='#f4f1e8';x.lineWidth=12;x.strokeText(NM[c.m],0,-h+90);x.fillText(NM[c.m],0,-h+90);x.restore()}});
+ // footer on the floor
+ x.save();x.font='600 28px Fredoka';x.fillStyle='rgba(248,240,217,.9)';x.textBaseline='middle';x.textAlign='left';if(img.ez)x.drawImage(img.ez,40,H-58,40,40);x.fillText('@earningszn',90,H-38);x.textAlign='right';x.fillText('earningszn.xyz/r/'+C.n,W-40,H-38);x.restore();
+}
+</script></body></html>

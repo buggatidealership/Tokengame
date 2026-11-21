@@ -1,0 +1,237 @@
+<!doctype html><meta charset="utf-8"><title>Season 1 wrap-up, round 6, take C: Slam</title>
+<!-- Season 1's wrap-up as full-bleed kinetic type and bar charts, hard cuts on the beat (W6-BRIEF.md, take C; owner, 2026-11-19: the glass
+  wrap-up was "a PDF slideshow... no charts... not hype"). Bed w6-phonk-x: 150 BPM, a beat every 0.4 s from 0.02 s, drops at 12.42 s and
+  26.42 s (python3 beat.py w6-phonk-x). Every cut sits on a beat (B(n) = 0.02 + 0.4 n); the chart finishes on drop 1, the winner lands on drop 2.
+  Five messages: the brand and Season 1 | 4 AIs, 112 earnings trades, long or short, $100K on every trade | the season as one live P&L chart |
+  the P&L board, then the accuracy board (the bars are the hit rates; Kimi's stops short of the 50% line: Relegated) | Grok wins Season 1.
+  One colour per AI all video long (Grok gold, Claude green, GPT cream, Kimi red); only the logo's colours. Every number from data/wrap.json.
+  window.R(t) is a pure function of t. Draft: CRF=20 bash wrapx.sh w6c.html 34 x2p-s1-wrap6-c-draft w6-phonk-x 0 .34 -->
+<style>
+@font-face{font-family:Anton;src:url(w6/c/anton.woff2) format('woff2');font-weight:400;font-style:normal}
+@font-face{font-family:Kanit;src:url(w6/c/kanit900i.woff2) format('woff2');font-weight:900;font-style:italic}
+@font-face{font-family:Kanit;src:url(w6/c/kanit800i.woff2) format('woff2');font-weight:800;font-style:italic}
+*{margin:0;box-sizing:border-box}
+html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f2ede6}
+#st{position:absolute;inset:0;overflow:hidden}
+#cam{position:absolute;inset:0;transform-origin:50% 50%}
+.sc{position:absolute;inset:0;overflow:hidden;display:none}
+.in{position:absolute;inset:0;transform-origin:50% 50%}
+.t{position:absolute;white-space:nowrap;line-height:1;font-family:Anton;font-weight:400;font-style:italic;transform-origin:50% 50%}
+.t.K{font-family:Kanit;font-style:italic;font-weight:900}.t.k{font-family:Kanit;font-style:italic;font-weight:800}
+.mk{display:block;flex:none}
+.mw{position:absolute;display:block;transform-origin:50% 50%}
+.abs{position:absolute}
+#bug{position:absolute;left:36px;top:30px;display:flex;align-items:center;gap:14px;z-index:40;font:italic 800 28px Kanit;letter-spacing:.06em;white-space:nowrap}
+#bug img{width:64px;height:64px;display:block}
+#fl{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:45}
+#grain{position:absolute;inset:0;width:1080px;height:1350px;mix-blend-mode:overlay;pointer-events:none;z-index:50}
+.half{position:absolute;left:0;width:1080px;height:675px;overflow:hidden}
+.row{position:absolute;left:0;width:1080px;overflow:hidden;background:#04070e}
+.row svg.bar{position:absolute;left:0;top:0;display:block}
+.lc{position:absolute;left:36px;top:0;width:500px;height:240px;transform-origin:0 0}
+.shn{position:absolute;top:-30%;bottom:-30%;left:0;width:240px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);pointer-events:none}
+.strip{position:absolute;left:0;top:0;width:1080px;height:120px;background:#04070e}
+.tag{position:absolute;left:0;top:0;display:flex;align-items:center;gap:10px;height:60px;white-space:nowrap;font:italic 400 78px/1 Anton;transform-origin:0 50%}
+.gl{position:absolute;left:44px;top:0;font:italic 800 28px/1 Kanit;color:rgba(242,237,230,.55);white-space:nowrap}
+.stamp{position:absolute;left:0;top:0;padding:10px 22px 12px;background:#04070e;box-shadow:0 0 0 5px #f2ede6;font:italic 400 70px/1 Anton;color:#ff3a31;white-space:nowrap;transform-origin:50% 50%}
+.or{position:absolute;left:465px;top:600px;width:150px;height:150px;border-radius:50%;background:#f2ede6;color:#04070e;display:flex;align-items:center;justify-content:center;font:italic 900 62px/1 Kanit;box-shadow:0 0 0 8px #04070e}
+.foil{box-sizing:content-box;padding:0 .3em .1em 0;color:transparent!important;background-image:linear-gradient(100deg,#fdbc2a 42%,#fff6d6 50%,#fdbc2a 58%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text}
+.rays{position:absolute;left:-460px;top:-325px;width:2000px;height:2000px;border-radius:50%;background:repeating-conic-gradient(rgba(255,255,255,.2) 0 7.5deg,rgba(255,255,255,0) 7.5deg 15deg)}
+</style>
+<div id="st"><div id="cam"></div>
+  <div id="bug" data-chrome><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span></div>
+  <div id="fl" data-chrome></div><canvas id="grain"></canvas></div>
+<script src="lib.js"></script>
+<script>
+const BK = '#04070e', CR = '#f2ede6', GN = '#03c870', RD = '#ff3a31', AU = '#fdbc2a';
+const COL = { GROK: AU, CLAUDE: GN, GPT: CR, KIMI: RD };                 // one colour per AI, on the chart and on both boards
+const BT = .4, B0 = .02, B = n => +(B0 + BT * n).toFixed(2), DUR = 34;     // the bed's beat grid
+const bph = t => (t - B0 + 1e-6) % BT, bp = (t, k = 9) => t < B0 ? 0 : Math.exp(-k * bph(t)), bi = t => Math.floor((t - B0 + 1e-6) / BT);
+const cam = L.$('#cam'), add = (h, p = cam) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
+const S = {}, SC = [], C = [], SH = [], FL = []; let D, grain;
+const sl = u => L.eo5(L.n(u, 0, .14));                                    // a slam: in place within four frames
+const Kf = v => (v < 0 ? '−' : '+') + '$' + Math.round(Math.abs(v) / 1000) + 'K';
+const hide = el => { el.style.visibility = 'hidden' }, vis = el => { el.style.visibility = 'visible' };
+// type: a line set by its cap top (y) and either a font size or a width to fill
+const FN = { A: f => `400 ${f}px Anton`, K: f => `italic 900 ${f}px Kanit`, k: f => `italic 800 ${f}px Kanit` }, mc = document.createElement('canvas').getContext('2d'), MET = {};
+const met = f => { if (!MET[f]) { mc.font = FN[f](1000); const m = mc.measureText('H'), a = m.fontBoundingBoxAscent, d = m.fontBoundingBoxDescent; MET[f] = { base: ((1000 - a - d) / 2 + a) / 1000, cap: m.actualBoundingBoxAscent / 1000 } } return MET[f] };
+const tw = (s, f = 'A') => { mc.font = FN[f](1000); return mc.measureText(s.replace(/&amp;/g, '&')).width / 1000 };
+// Anton is set slanted like the logo's letters (the browser's oblique): its caps lean past the line's box on the right by OV(f) em
+let IT = .25; const OV = f => f === 'A' ? IT * met('A').cap : 0, fit = (s, w, f = 'A') => w / (tw(s, f) + OV(f));
+function T(p, s, o) { const f = o.f || 'A', m = met(f), w1 = tw(s, f), fs = o.fs || fit(s, o.w, f), ov = OV(f) * fs, w = w1 * fs + ov, top = o.y - (m.base - m.cap) * fs;
+  const x = o.x != null ? o.x : o.cx != null ? o.cx - w / 2 : o.rx - w, pos = o.ra ? `right:${(1080 - o.rx + ov).toFixed(1)}px` : `left:${x.toFixed(1)}px`;
+  const el = add(`<div class="t ${f}" style="${pos};top:${top.toFixed(1)}px;font-size:${fs.toFixed(1)}px;color:${o.c || 'inherit'}">${s}</div>`, p);
+  el.X = x; el.Y = o.y; el.W = w; el.H = m.cap * fs; el.FS = fs; if (o.al) { el.style.width = (w - ov + 2).toFixed(1) + 'px'; el.style.textAlign = o.al } if (o.or) el.style.transformOrigin = o.or; else if (o.ra) el.style.transformOrigin = '100% 50%'; return el }
+const M = (k, s, ring, x, y, p) => add(`<span class="mw" style="left:${x}px;top:${y}px;border-radius:${s * .26}px${ring ? `;box-shadow:0 0 0 ${Math.max(3, s * .022).toFixed(1)}px ${ring}` : ''}">${L.mark(k, s, false)}</span>`, p);
+// a line or a mark that punches in from big (z) or slams in from a side
+const punch = (el, u, s0 = 1.6, extra = 1) => { if (u < 0) return hide(el); vis(el); el.style.transform = `scale(${((s0 + (1 - s0) * L.spring(u, 2.4, 9)) * extra).toFixed(4)})` };
+const slam = (el, u, dx, dy, extra = 1) => { if (u < 0) return hide(el); vis(el); const k = 1 - sl(u); el.style.transform = `translate(${(dx * k).toFixed(1)}px,${(dy * k).toFixed(1)}px) scale(${extra.toFixed(4)})` };
+const sheen = (el, u, w = 1080, d = .42) => { const k = L.n(u, 0, d); el.style.opacity = u > 0 && k < 1 ? 1 : 0; el.style.transform = `translateX(${(-300 + (w + 360) * k).toFixed(1)}px) skewX(-14deg)` };
+function scene(id, bg, spans, bug, draw) { const el = add(`<div class="sc" id="s-${id}" style="background:${bg}"><div class="in"></div></div>`); const o = { id, el, in: el.firstElementChild, bg, spans, bug, draw }; SC.push(o); return o }
+const push = (o, t, a, b, k = .04, org) => { o.in.style.transformOrigin = org || '50% 50%'; o.in.style.transform = `scale(${(1 + k * L.n(t, a, b)).toFixed(5)})` };
+
+function build() {
+  const A = k => D.ai.find(a => a.k === k), win = D.ai[0], N = D.total;
+  // ---- 1 the brand: the logo, then Season 1
+  { const t0 = 0, t1 = B(2), o = scene('logo', CR, [[t0, t1]], 0, t => { const u = t - t0;
+      o.lg.style.transform = `scale(${(1 + .28 * Math.exp(-u * 13) * Math.cos(u * 17) + .05 * bp(t, 7)).toFixed(4)}) rotate(${(-7 * Math.exp(-u * 9)).toFixed(2)}deg)`;
+      o.rg.forEach((c, j) => { const v = t - (B0 + j * BT), k = L.n(v, 0, .5); c.setAttribute('r', (500 + 620 * L.eo(k)).toFixed(1)); c.style.opacity = v > 0 && k < 1 ? (.9 * (1 - k)).toFixed(3) : 0 }); push(o, t, t0, t1, .03) });
+    o.svg = add(`<svg class="abs" width="1080" height="1350" style="left:0;top:0;overflow:visible" data-chrome>${[0, 1].map(() => `<circle cx="540" cy="675" r="500" fill="none" stroke="${BK}" stroke-width="30"/>`).join('')}</svg>`, o.in); o.rg = L.$$('circle', o.svg);
+    o.lg = add(`<img class="abs" src="ezlogo.svg" alt="" style="left:20px;top:155px;width:1040px;height:1040px;transform-origin:50% 50%">`, o.in); SH.push([B0, 14]); C.push([B0, 'sfx-boom', .16], [B(1), 'r11-thump', .1]) }
+  { const t0 = B(2), t1 = B(4), o = scene('season', BK, [[t0, t1]], 'cr', t => { const u = t - t0, b = 1 + .03 * bp(t);
+      slam(o.a, u, -1100, 0, b); punch(o.one, u - BT / 2, 2.2, b); punch(o.lg, u - BT, .3, b); if (u >= BT) o.lg.style.transform += ` rotate(${(-10 * Math.exp(-(u - BT) * 9)).toFixed(2)}deg)`; push(o, t, t0, t1) });
+    o.a = T(o.in, 'SEASON', { w: 1008, x: 36, y: 132 }); const y0 = 132 + o.a.H + 44, hh = 1290 - y0;
+    o.one = T(o.in, '1', { fs: hh / met('A').cap, x: 0, y: y0, c: AU }); const lw = 510, gap = 20, x0 = (1080 - lw - gap - o.one.W) / 2; o.one.style.left = (x0 + lw + gap) + 'px'; o.one.style.transformOrigin = '50% 55%';
+    o.lg = add(`<img class="abs" src="ezlogo.svg" alt="" style="left:${x0}px;top:${y0 + (hh - lw) / 2}px;width:${lw}px;height:${lw}px;transform-origin:50% 50%">`, o.in);
+    SH.push([t0, 8], [t0 + BT / 2, 10]); FL.push([t0 + BT / 2, AU, .3, .12]); C.push([t0, 'r11-thump', .12], [t0 + BT / 2, 'r11-thump', .14], [t0 + BT, 'r11-pluck', .07]) }
+  // ---- 2 what it was: 4 AIs | 112 earnings trades | long or short | $100K on every trade
+  { const t0 = B(4), t1 = B(6), o = scene('four', CR, [[t0, t1]], 'bk', t => { const u = t - t0, b = 1 + .035 * bp(t); punch(o.a, u, 1.7, b);
+      o.m.forEach((m, j) => { const v = u - .06 - j * .08; if (v < 0) return hide(m); vis(m); m.style.transform = `scale(${((.4 + .6 * L.spring(v, 2.6, 8)) * (u > BT ? b : 1)).toFixed(4)}) rotate(${((j % 2 ? 1 : -1) * 8 * Math.exp(-v * 10)).toFixed(2)}deg)` }); push(o, t, t0, t1) });
+    o.in.style.color = BK; o.a = T(o.in, '4 AIs', { w: 1000, cx: 540, y: 130 }); const ms = 322, g = 30, x0 = (1080 - 2 * ms - g) / 2, y0 = 130 + o.a.H + 40;
+    o.m = Object.keys(D.s).map((k, j) => M(k, ms, BK, x0 + (j % 2) * (ms + g), y0 + (j >> 1) * (ms + g), o.in)); SH.push([t0, 9]); C.push([t0, 'r11-thump', .13], [t0 + .1, 'r11-card', .06]) }
+  { const t0 = B(6), t1 = B(9), o = scene('n112', BK, [[t0, t1]], 'cr', t => { const u = t - t0, b = 1 + .03 * bp(t);
+      o.a.textContent = Math.max(1, Math.round(N * L.eo(L.n(u, 0, .3)))); punch(o.a, u, 1.5, b); slam(o.b, u - BT, 1200, 0, b); slam(o.c, u - 1.5 * BT, -1200, 0, b); push(o, t, t0, t1) });
+    const hB = met('A').cap * fit('EARNINGS', 1008), g = 36, hA = 1290 - 126 - 2 * hB - 2 * g;
+    o.a = T(o.in, String(N), { fs: hA / met('A').cap, cx: 540, y: 126, c: AU, al: 'center', or: '50% 55%' });
+    o.b = T(o.in, 'EARNINGS', { w: 1008, cx: 540, y: 126 + hA + g }); o.c = T(o.in, 'TRADES', { fs: o.b.FS, cx: 540, y: 126 + hA + hB + 2 * g });
+    SH.push([t0, 9], [t0 + BT, 6], [t0 + 1.5 * BT, 8]); [0, 1, 1.5].forEach(j => C.push([t0 + j * BT, 'r11-thump', .12])) }
+  { const t0 = B(9), t1 = B(12), o = scene('ls', BK, [[t0, t1]], 'bk', t => { const u = t - t0, b = 1 + .04 * bp(t);
+      o.h[0].style.transform = `translateY(${(-675 * (1 - sl(u))).toFixed(1)}px)`; o.h[1].style.transform = `translateY(${(675 * (1 - sl(u - BT))).toFixed(1)}px)`; o.h[1].style.visibility = u < BT ? 'hidden' : 'visible';
+      punch(o.a, u - .03, 1.5, b); punch(o.b, u - BT - .03, 1.5, b); punch(o.or, u - BT - .06, .2); sheen(o.s[0], u - .12); sheen(o.s[1], u - BT - .12); push(o, t, t0, t1) });
+    o.h = [GN, RD].map((c, j) => add(`<div class="half" style="top:${j * 675}px;background:${c};color:${BK}"><i class="shn"></i></div>`, o.in)); o.s = o.h.map(h => h.firstElementChild);
+    o.a = T(o.h[0], 'LONG', { w: 1000, cx: 540, y: 0 }); o.a.style.top = (parseFloat(o.a.style.top) + (675 - o.a.H) / 2 + 22) + 'px'; o.b = T(o.h[1], 'SHORT', { w: 1000, cx: 540, y: 0 }); o.b.style.top = (parseFloat(o.b.style.top) + (675 - o.b.H) / 2 - 6) + 'px';
+    o.or = add(`<div class="or">OR</div>`, o.in); SH.push([t0, 10], [t0 + BT, 10]); C.push([t0, 'r11-thump', .14], [t0 + BT, 'r11-thump', .14]) }
+  { const t0 = B(12), t1 = B(15), o = scene('k100', CR, [[t0, t1]], 'bk', t => { const u = t - t0, b = 1 + .03 * bp(t);
+      o.a.textContent = '$' + Math.round(100 * L.eo(L.n(u, 0, .28))) + 'K'; punch(o.a, u, 1.5, b); slam(o.b, u - BT, 1200, 0, b); slam(o.c, u - 1.5 * BT, -1200, 0, b); push(o, t, t0, t1) });
+    o.in.style.color = BK; o.a = T(o.in, '$100K', { w: 1004, x: 38, y: 128 }); o.b = T(o.in, 'ON EVERY', { w: 1004, x: 38, y: 128 + o.a.H + 36 }); o.c = T(o.in, 'TRADE', { w: 1004, x: 38, y: o.b.Y + o.b.H + 36 });
+    SH.push([t0, 9], [t0 + BT, 6], [t0 + 1.5 * BT, 8]); C.push([t0, 'sfx-cash', .07], [t0, 'r11-thump', .12], [t0 + BT, 'r11-thump', .1], [t0 + 1.5 * BT, 'r11-thump', .12]) }
+  buildChart(); buildBoard('pnl', B(35), [[B(35), B(41)], [B(45), B(47)]]); buildDuo('pd1', 'pnl', [0, 1], B(41), B(43)); buildDuo('pd2', 'pnl', [2, 3], B(43), B(45));
+  buildBoard('acc', B(47), [[B(47), B(53)], [B(57), B(66)]]); buildDuo('ad1', 'acc', [0, 1], B(53), B(55)); buildDuo('ad2', 'acc', [2, 3], B(55), B(57));
+  // ---- 5 the winner, on the second drop
+  { const t0 = B(66), t1 = B(69), o = scene('grok', AU, [[t0, t1]], 'bk', t => { const u = t - t0, b = 1 + .035 * bp(t); punch(o.a, u, 1.9, b); punch(o.m, u - .05, .2, b);
+      if (u >= .05) o.m.style.transform += ` rotate(${(-14 * Math.exp(-(u - .05) * 8)).toFixed(2)}deg)`; o.ry.style.transform = `rotate(${(u * 16).toFixed(2)}deg)`; sheen(o.sn, u - .25, 1080, .5); sheen(o.sn2, u - BT * 2 - .05, 1080, .4); push(o, t, t0, t1, .05) });
+    o.ry = add(`<div class="rays" data-chrome></div>`, o.in); o.in.style.color = BK; const ms = 460;
+    o.sn = add(`<i class="shn" style="width:300px"></i>`, o.in); o.sn2 = add(`<i class="shn" style="width:300px"></i>`, o.in); o.a = T(o.in, win.name.toUpperCase(), { w: 1104, cx: 540, y: 146 + ms + 84 }); o.m = M(win.k, ms, 0, 540 - ms / 2, 146, o.in);
+    SH.push([t0, 18]); FL.push([t0, '#ffffff', .95, .1]); C.push([t0, 'sfx-boom', .24], [t0 + .02, 'sfx-shatter', .06]) }
+  { const t0 = B(69), t1 = B(72), o = scene('wins', CR, [[t0, t1]], 'bk', t => { const u = t - t0, b = 1 + .03 * bp(t); slam(o.top, u, 0, -420, b); punch(o.a, u, 1.6, b); slam(o.b, u - BT, 1200, 0, b); sheen(o.sn, u - 2 * BT, 1080, .38); push(o, t, t0, t1) });
+    o.in.style.color = BK; const nmW = (tw(win.name.toUpperCase()) + OV('A')) * 240, ms = 200, x0 = (1080 - ms - 30 - nmW) / 2; o.sn = add(`<i class="shn"></i>`, o.in); o.top = add(`<div class="abs" style="left:0;top:0;width:1080px;height:360px"></div>`, o.in);
+    M(win.k, ms, 0, x0, 134, o.top); T(o.top, win.name.toUpperCase(), { fs: 240, x: x0 + ms + 30, y: 134 }); o.a = T(o.in, 'WINS', { w: 976, cx: 540, y: 134 + 206 + 48 }); o.b = T(o.in, 'SEASON 1', { w: 976, cx: 540, y: o.a.Y + o.a.H + 48 });
+    SH.push([t0, 10], [t0 + BT, 8]); C.push([t0, 'r11-thump', .14], [t0 + BT, 'r11-thump', .14]) }
+  { const t0 = B(72), t1 = B(79), tL = B(75), s = D.s[win.k], lo = Math.min(...s), hi = Math.max(...s), Y0 = 668, Y1 = 1262, yv = v => Y1 - (v - lo) / (hi - lo) * (Y1 - Y0), xv = i => i / N * 1004;
+    const o = scene('total', BK, [[t0, t1]], 'cr', t => { const u = t - t0, k = L.eo(L.n(t, t0 + .08, tL)), r = N * k, n = Math.floor(r), land = t - tL, b = 1 + .028 * bp(t) * (land > 0 ? 1 : .4);
+      slam(o.top, u, -700, 0); slam(o.pl, u, 700, 0); o.num.textContent = L.money(k < 1 ? Math.round(win.pnl * k / 10) * 10 : win.pnl); punch(o.num, u, 1.3, b * (1 + .12 * Math.exp(-Math.max(0, land) * 9) * (land > 0 ? 1 : 0))); o.num.style.backgroundPosition = `${(130 - 160 * L.n(((land - .15) % 1.6 + 1.6) % 1.6, 0, .7)).toFixed(1)}% 0`;
+      let d = ''; for (let i = 0; i <= n; i++) d += (i ? 'L' : 'M') + xv(i).toFixed(1) + ' ' + yv(s[i]).toFixed(1); const hx = xv(r), hy = yv(n < N ? L.lerp(s[n], s[n + 1], r - n) : s[N]); if (n < N) d += 'L' + hx.toFixed(1) + ' ' + hy.toFixed(1);
+      o.ln.setAttribute('d', d); o.ar.setAttribute('d', d + `L${hx.toFixed(1)} 1360L0 1360Z`); o.dot.setAttribute('cx', hx.toFixed(1)); o.dot.setAttribute('cy', hy.toFixed(1));
+      const rp = L.n(bph(t), 0, .36); o.rg.setAttribute('cx', hx.toFixed(1)); o.rg.setAttribute('cy', hy.toFixed(1)); o.rg.setAttribute('r', (16 + 60 * L.eo(rp)).toFixed(1)); o.rg.style.opacity = land > 0 ? (.8 * (1 - rp)).toFixed(3) : 0;
+      push(o, t, t0, t1, .035, '50% 40%') });
+    o.top = add(`<div class="abs" style="left:0;top:0;width:700px;height:300px"></div>`, o.in); M(win.k, 150, 'rgba(242,237,230,.22)', 36, 130, o.top); const nm = T(o.top, win.name.toUpperCase(), { fs: 176, x: 212, y: 130, c: CR });
+    o.pl = T(o.in, 'P&amp;L', { f: 'K', fs: 150, rx: 1044, y: 130 + nm.H - met('K').cap * 150, c: CR }); 
+    o.num = T(o.in, L.money(win.pnl), { w: 1004, x: 38, y: 130 + nm.H + 56, c: AU, al: 'center' }); o.num.classList.add('foil');
+    const sv = add(`<svg class="abs" width="1080" height="1350" style="left:0;top:0"><g data-chrome><line x1="0" x2="1080" y1="${yv(0)}" y2="${yv(0)}" stroke="rgba(242,237,230,.35)" stroke-width="3" stroke-dasharray="4 12"/></g><path class="ar" fill="rgba(253,188,42,.16)" stroke="none"/><path class="ln" fill="none" stroke="${AU}" stroke-width="18" stroke-linejoin="round" stroke-linecap="round"/><circle class="rg" r="16" fill="none" stroke="${AU}" stroke-width="6"/><circle class="dot" r="17" fill="${AU}"/></svg>`, o.in);
+    o.ln = L.$('.ln', sv); o.ar = L.$('.ar', sv); o.dot = L.$('.dot', sv); o.rg = L.$('.rg', sv);
+    SH.push([t0, 8], [tL, 12]); FL.push([tL, AU, .34, .14]); C.push([t0, 'r11-thump', .12], [tL, 'r11-kaching', .1], [tL, 'sfx-boom', .14], [tL + 2 * BT, 'r11-sparkle', .06]) }
+  { const t0 = B(79), t1 = DUR + .5, o = scene('close', AU, [[t0, t1]], 0, t => { const u = t - t0;
+      punch(o.lg, u, 1.7, 1 + .04 * bp(t, 7)); o.lg.style.transform += ` rotate(${(-9 * Math.exp(-u * 8)).toFixed(2)}deg)`; slam(o.a, u - BT, 0, 500, 1 + .02 * bp(t)); slam(o.b, u - 2 * BT, 0, 400);
+      o.rg.forEach((c, j) => { const v = t - (t0 + j * BT), k = L.n(v, 0, .55); c.setAttribute('r', (392 + 560 * L.eo(k)).toFixed(1)); c.style.opacity = v > 0 && k < 1 ? (.85 * (1 - k)).toFixed(3) : 0 }); o.ry.style.transform = `rotate(${(u * 14).toFixed(2)}deg)`; push(o, t, t0, DUR, .04, '50% 36%') });
+    o.ry = add(`<div class="rays" data-chrome style="top:-510px"></div>`, o.in); o.in.style.color = BK; const ls = 800, ly = 92;
+    o.svg = add(`<svg class="abs" width="1080" height="1350" style="left:0;top:0;overflow:visible" data-chrome>${[0, 1, 2, 3, 4, 5].map(() => `<circle cx="540" cy="${ly + ls / 2}" r="392" fill="none" stroke="${BK}" stroke-width="22"/>`).join('')}</svg>`, o.in); o.rg = L.$$('circle', o.svg);
+    o.lg = add(`<img class="abs" src="ezlogo.svg" alt="" style="left:${540 - ls / 2}px;top:${ly}px;width:${ls}px;height:${ls}px;transform-origin:50% 50%">`, o.in);
+    o.a = T(o.in, 'EARNINGS ZEASON', { f: 'K', w: 960, cx: 540, y: ly + ls + 62 }); o.b = T(o.in, 'SEASON 2 SOON', { f: 'k', fs: 66, cx: 540, y: o.a.Y + o.a.H + 70 });
+    SH.push([t0, 12]); FL.push([t0, '#ffffff', .6, .1]); C.push([t0, 'sfx-boom', .16], [t0 + 2 * BT, 'sfx-chime', .1]) }
+  window.MUSIC = { f: 'w6-phonk-x', at: 0 };
+}
+
+// ---- 3 how the season played out: every AI's P&L after each of the 112 trades, drawn live; the leader's P&L counts above it
+function buildChart() { const t0 = B(15), tD = B(31), t1 = B(35), TL0 = t0 + .1, TL1 = tD - .02, N = D.total, KS = ['KIMI', 'GPT', 'CLAUDE', 'GROK'], HX = 736, Y0 = 548, Y1 = 1262;
+  const rt = t => N * L.n(t, TL0, TL1), tr = i => TL0 + i / N * (TL1 - TL0), val = (k, r) => { const s = D.s[k], n = Math.min(N, Math.floor(r)); return n >= N ? s[N] : L.lerp(s[n], s[n + 1], r - n) };
+  // the value range eases between a keyframe every 8 rounds, each looking 10 rounds ahead, so no line ever leaves the frame
+  const KF = []; for (let j = 0; j * 8 <= N + 8; j++) { const e = Math.min(N, j * 8 + 10); let lo = 0, hi = 0; KS.forEach(k => { for (let i = 0; i <= e; i++) { lo = Math.min(lo, D.s[k][i]); hi = Math.max(hi, D.s[k][i]) } }); const sp = Math.max(hi - lo, 36000); KF.push([Math.min(lo, -sp * .22) - sp * .05, hi + sp * .06]) }
+  const rng = r => { const j = Math.min(KF.length - 2, Math.floor(r / 8)), k = L.eio(L.cl(r / 8 - j)); return [L.lerp(KF[j][0], KF[j + 1][0], k), L.lerp(KF[j][1], KF[j + 1][1], k)] };
+  const leadAt = r => { let e = D.lead[0]; D.lead.forEach(x => { if (x.i <= r + 1e-6) e = x }); return e };
+  D.lead.forEach((e, j) => { const nx = D.lead[j + 1], hold = (nx ? nx.i : N + 1) - e.i; if (e.i > 3 && hold >= 3 && COL[e.k] !== CR) FL.push([tr(e.i), COL[e.k], .26, .16]) });
+  const o = scene('chart', BK, [[t0, t1]], 'cr', t => { const u = t - t0, fin = t - tD, r = rt(t), n = Math.min(N, Math.floor(r)), [lo, hi] = rng(r), yv = v => Y1 - (v - lo) / (hi - lo) * (Y1 - Y0), xs = HX / Math.max(r, 14), le = leadAt(r), lk = fin >= 0 ? D.ai[0].k : le.k, b = bp(t);
+    o.tick.textContent = `TRADE ${Math.max(1, Math.min(N, Math.ceil(r)))} OF ${N}`;
+    // the leader: mark, name, its P&L counting
+    Object.keys(o.mks).forEach(k => o.mks[k].style.display = k === lk ? 'block' : 'none'); const un = t - tr(le.i), pn = 1 + .22 * Math.exp(-Math.max(0, un) * 12) * (le.i > 1 ? 1 : 0);
+    o.nm.textContent = lk; o.nm.style.color = COL[lk]; o.nm.style.transform = `scale(${pn.toFixed(4)})`; o.mk.style.transform = `scale(${pn.toFixed(4)})`; slam(o.top, u, 0, -500);
+    o.num.textContent = L.money(fin >= 0 ? D.ai[0].pnl : Math.round(val(lk, r) / 10) * 10); o.num.style.color = COL[lk]; o.num.style.transform = `scale(${(1 + .03 * b + (fin >= 0 ? .2 * Math.exp(-fin * 9) : 0)).toFixed(4)})`; o.num.style.visibility = u < .04 ? 'hidden' : 'visible';
+    // gridlines
+    o.gv.forEach((g, j) => { const y = yv(g.v), on = y > Y0 - 30 && y < Y1 + 40; g.ln.setAttribute('y1', y.toFixed(1)); g.ln.setAttribute('y2', y.toFixed(1)); g.ln.style.opacity = on ? 1 : 0; g.lb.style.transform = `translateY(${(y - 34).toFixed(1)}px)`; g.lb.style.opacity = on ? 1 : 0 });
+    // the four lines up to this round, heads at the same x; marks ride the heads, kept clear of each other
+    const hd = KS.map(k => { const s = D.s[k]; let d = ''; for (let i = 0; i <= n; i++) d += (i ? 'L' : 'M') + (i * xs).toFixed(1) + ' ' + yv(s[i]).toFixed(1); const hx = Math.min(r, N) * xs, hy = yv(val(k, r)); if (n < N) d += 'L' + hx.toFixed(1) + ' ' + hy.toFixed(1);
+      const p = o.ps[k]; p.halo.setAttribute('d', d); p.ln.setAttribute('d', d); p.ln.setAttribute('stroke-width', k === lk ? 20 : 14); p.dot.setAttribute('cx', hx.toFixed(1)); p.dot.setAttribute('cy', hy.toFixed(1)); p.dot.setAttribute('r', (k === lk ? 15 : 11) + 5 * b);
+      p.rg.setAttribute('cx', hx.toFixed(1)); p.rg.setAttribute('cy', hy.toFixed(1)); const rp = L.n(bph(t), 0, .34); p.rg.setAttribute('r', (14 + 46 * L.eo(rp)).toFixed(1)); p.rg.style.opacity = k === lk && t > B0 ? (.75 * (1 - rp)).toFixed(3) : 0; return { k, hx, y: hy, ty: hy } });
+    const srt = [...hd].sort((a, b2) => a.y - b2.y), GAP = fin >= 0 ? 84 : 64; for (let i = 1; i < srt.length; i++) srt[i].ty = Math.max(srt[i].ty, srt[i - 1].ty + GAP); const over = srt[3].ty - (Y1 + 50); if (over > 0) { srt[3].ty -= over; for (let i = 2; i >= 0; i--) srt[i].ty = Math.min(srt[i].ty, srt[i + 1].ty - GAP) }
+    hd.forEach((h, j) => { const g = o.tg[h.k], rank = D.ai.findIndex(a => a.k === h.k), v = fin - .04 - rank * .07, on = fin >= 0 && v >= 0; g.fig.style.display = on ? 'block' : 'none';
+      const hit = fin >= 0 ? .1 * Math.exp(-Math.max(0, t - (tD + (1 + rank % 3) * BT)) * 9) * (t >= tD + (1 + rank % 3) * BT ? 1 : 0) : 0;
+      g.el.style.transform = `translate(${(h.hx + 24).toFixed(1)}px,${(h.ty - 30).toFixed(1)}px) scale(${(1 - (on ? .3 * Math.exp(-v * 10) : 0) + hit * .5).toFixed(4)})`; g.el.style.visibility = u < .1 ? 'hidden' : 'visible' });
+    push(o, t, fin >= 0 ? tD : t0, fin >= 0 ? t1 : tD, fin >= 0 ? .035 : .0, '74% 60%') });
+  const p = o.in; o.tick = add(`<div class="t k" data-chrome style="right:36px;top:44px;font-size:36px;letter-spacing:.05em;color:${CR}"></div>`, p);
+  o.top = add(`<div class="abs" style="left:0;top:0;width:1080px;height:260px"></div>`, p); o.mk = add(`<div class="abs" style="left:36px;top:132px;width:112px;height:112px;transform-origin:50% 50%"></div>`, o.top); o.mks = {}; KS.forEach(k => o.mks[k] = M(k, 112, 'rgba(242,237,230,.25)', 0, 0, o.mk));
+  o.nm = T(o.top, 'CLAUDE', { fs: 130, x: 172, y: 132, or: '0 50%' }); T(o.top, 'P&amp;L', { f: 'K', fs: 86, rx: 1044, y: 132 + o.nm.H - met('K').cap * 86, c: CR }); o.num = T(p, '+$0', { fs: 250, x: 36, y: 276 });
+  const sv = add(`<svg class="abs" width="1080" height="1350" style="left:0;top:0"><g data-chrome class="g"></g><g class="l"></g></svg>`, p), gg = L.$('.g', sv), gl = L.$('.l', sv);
+  o.gv = [-100000, 0, 100000, 200000].map(v => ({ v, ln: add(`<line x1="0" x2="1080" stroke="rgba(242,237,230,${v ? .16 : .42})" stroke-width="${v ? 2 : 3}" ${v ? '' : 'stroke-dasharray="4 12"'}/>`, gg), lb: add(`<div class="gl" data-chrome>${v ? Kf(v) : ''}</div>`, p) }));
+  o.ps = {}; KS.forEach(k => { const c = COL[k]; o.ps[k] = { halo: add(`<path fill="none" stroke="${BK}" stroke-width="26" stroke-linejoin="round" stroke-linecap="round"/>`, gl), ln: add(`<path fill="none" stroke="${c}" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>`, gl) } });
+  KS.forEach(k => { const c = COL[k]; o.ps[k].rg = add(`<circle r="14" fill="none" stroke="${c}" stroke-width="5"/>`, gl); o.ps[k].dot = add(`<circle r="12" fill="${c}" stroke="${BK}" stroke-width="5"/>`, gl) });
+  o.tg = {}; KS.forEach(k => { const el = add(`<div class="tag" style="color:${COL[k]}">${L.mark(k, 58)}<span>${Kf(D.ai.find(a => a.k === k).pnl)}</span></div>`, p); o.tg[k] = { el, fig: el.lastElementChild } });
+  SH.push([tD, 16]); FL.push([tD, '#ffffff', .9, .1]); C.push([t0, 'sfx-whoosh', .07], [tD - .03, 'sfx-riser', .09], [tD, 'sfx-boom', .22], [tD + BT, 'r11-kaching', .07]) }
+
+// ---- 4 the two boards: four full-width bars, slammed in 4th to 1st on successive beats. P&L: solid bars. Accuracy: each bar as long as
+// its hit rate (0 to 100% of the frame), the W-L at the bar's end, the percent beyond it; then the bars are knocked out from the bottom.
+function buildBoard(mode, t0, spans) { const acc = mode === 'acc', RH = 307.5, E = acc ? [B(62), B(63), B(64)] : [], tS = B(58), tEnd = spans[spans.length - 1][1];
+  const lay = (k, i) => [120 + i * 1230 / k, 1230 / k], SL = { 4: 1, 3: 1.3, 2: 1.55, 1: 2.1 };
+  const o = scene(mode, BK, spans, 'cr', t => { let nd = 0; E.forEach(e => { if (t >= e) nd++ }); const ka = 4 - nd, kb = nd ? ka + 1 : 4, kk = nd ? sl(t - E[nd - 1]) : 1, nb = bi(t), b = bp(t);
+    o.rows.forEach((r, i) => { const u = t - (t0 + (3 - i) * BT), el = r.el, gone = i >= ka, uo = nd ? t - E[nd - 1] : 0;
+      if (u < 0 || (gone && (i > ka || uo > .2))) { el.style.display = 'none'; return } el.style.display = 'block'; el.style.zIndex = gone ? 1 : 2;
+      const [ta0, ha0] = lay(kb, i), [tb0, hb0] = gone ? [ta0, ha0] : lay(ka, i), top = L.lerp(ta0, tb0, kk), h = L.lerp(ha0, hb0, kk), s = gone ? SL[kb] : L.lerp(SL[kb], SL[ka], kk);
+      const dx = gone ? 1150 * L.ei(L.n(uo, 0, .18)) : (i % 2 ? 1 : -1) * 1080 * (1 - sl(u)); el.style.top = top.toFixed(1) + 'px'; el.style.height = h.toFixed(1) + 'px'; el.style.transform = `translateX(${dx.toFixed(1)}px)`;
+      const fw = acc ? r.fw * Math.min(1.04, L.spring(u - .03, 1.3, 11) || 0) : 1080; r.rc.setAttribute('width', Math.max(0, fw).toFixed(1)); r.rc.setAttribute('height', (h - 6).toFixed(1));
+      // one bar takes the hit on every beat once all four are in: its figure kicks, a light crosses it
+      const live = t >= t0 + 4 * BT && !nd, mine = live && (nb % 4) === i, kick = 1 + (mine ? .08 * b : live ? .012 * b : nd === 3 ? .05 * bp(t, 6) : 0), lt = (h - 6 - 239 * s * (nd === 3 ? kick : 1)) / 2;
+      r.lc.style.transform = `translateY(${lt.toFixed(1)}px) scale(${(s * (nd === 3 ? kick : 1)).toFixed(4)})`; sheen(r.sn, mine ? bph(t) - .02 : -1, 1080, .34);
+      if (acc) { r.pc.textContent = Math.round(r.a.hit * L.eo(L.n(u, .06, .42))) + '%'; r.pc.style.transform = `translateY(${((h - 6 - r.pc.H) / 2).toFixed(1)}px) scale(${(kick * (1 + .25 * Math.exp(-Math.max(0, u - .06) * 10))).toFixed(4)})`;
+        const uw = u - .3; r.wl.style.visibility = uw < 0 ? 'hidden' : 'visible'; r.wl.style.transform = `translateY(${(lt + 52 * s - r.wl.H / 2).toFixed(1)}px) scale(${(1 + .4 * Math.exp(-Math.max(0, uw) * 11)).toFixed(4)})`; r.tk.style.height = (h - 6) + 'px';
+        if (r.st) { const us = t - tS; if (us < 0 || nd) hide(r.st); else { vis(r.st); r.st.style.transform = `translate(${r.sx}px,${r.sy}px) rotate(-5deg) scale(${(1 + 1.6 * (1 - L.eo5(L.n(us, 0, .13))) + .05 * b * (us > BT ? 1 : 0)).toFixed(4)})` } } }
+      else { r.fg.textContent = Kf(r.a.pnl * L.eo(L.n(u, .05, .36))); r.fg.style.transform = `scale(${(kick * (1 + .22 * Math.exp(-Math.max(0, u - .05) * 10))).toFixed(4)})` } });
+    // alone: the last bar holds its breath before the drop
+    const al = nd === 3 ? t - E[2] : -1; push(o, t, al >= 0 ? E[2] : t0 + 4 * BT, al >= 0 ? tEnd : (E[0] || tEnd), al >= 0 ? .045 : .025, al >= 0 ? '30% 50%' : '50% 50%') });
+  const p = o.in, st = add(`<div class="strip" data-chrome></div>`, p);       // the bar under the bug carries the column heads
+  if (acc) { T(st, 'ACCURACY', { f: 'K', fs: 58, rx: 1048, y: 41, c: CR }) } else T(st, 'P&amp;L', { f: 'K', fs: 78, rx: 1048, y: 34, c: CR });
+  o.rows = D.ai.map((a, i) => { const c = COL[a.k], fw = acc ? a.w / (a.w + a.l) * 1080 : 1080, el = add(`<div class="row" style="top:${120 + i * RH}px;height:${RH}px;color:${BK}">${acc ? `<i class="abs tk" data-chrome style="left:539px;top:0;width:0;border-left:3px dashed rgba(242,237,230,.6)"></i>` : ''}<svg class="bar" width="1080" height="1240"><rect x="0" y="0" width="${fw}" height="${RH - 6}" fill="${c}"/></svg><div class="abs shc" style="left:0;top:0;bottom:6px;width:${fw.toFixed(1)}px;overflow:hidden"><i class="shn"></i></div></div>`, p), r = { a, el, fw, rc: L.$('rect', el), sn: L.$('.shn', el), tk: L.$('.tk', el) };
+    r.lc = add(`<div class="lc"></div>`, el); M(a.k, 104, a.k === 'CLAUDE' || a.k === 'GPT' ? BK : 0, 0, 0, r.lc); T(r.lc, a.name.toUpperCase(), { fs: 124, x: 0, y: 132 });
+    if (acc) { const pct = Math.round(100 * a.w / (a.w + a.l)); r.a = Object.assign({}, a, { hit: pct });
+      r.wl = T(el, `${a.w}–${a.l}`, { fs: 84, rx: fw - 22, y: 0, ra: 1 }); r.wl.style.top = (-(met('A').base - met('A').cap) * 84) + 'px'; r.pc = T(el, pct + '%', { fs: 172, rx: 1052, y: 0, ra: 1, c }); r.pc.style.top = (-(met('A').base - met('A').cap) * 172) + 'px';
+      if (D.releg.includes(a.k)) { r.st = add(`<div class="stamp">RELEGATED</div>`, el); r.sx = 292; r.sy = 168; add(`<div class="gl" data-chrome style="left:552px;top:${RH - 44}px">50%</div>`, el) } }
+    else r.fg = T(el, Kf(a.pnl), { fs: 220, rx: 1052, y: 56, ra: 1 });
+    return r });
+  if (acc) { const g = o.rows[0]; T(st, 'W–L', { f: 'K', fs: 58, rx: g.fw - 22, y: 41, c: CR }) }
+  D.ai.forEach((a, i) => { const ta = t0 + (3 - i) * BT; SH.push([ta, i ? 7 : 13]); C.push([ta, 'r11-thump', i ? .13 : .16]) }); FL.push([t0 + 3 * BT, AU, .32, .12]);
+  if (acc) { SH.push([tS, 11], [E[0], 8], [E[1], 8], [E[2], 10]); C.push([tS, 'sfx-stamp', .16], [E[0], 'r11-knock', .15], [E[1], 'r11-knock', .15], [E[2], 'r11-knock', .17], [B(65), 'r11-thump', .1]) } }
+
+// two bars at a time, each half the frame: the figure as wide as the frame
+function buildDuo(id, mode, ix, t0, t1) { const acc = mode === 'acc';
+  const o = scene(id, BK, [[t0, t1]], 'bk', t => { const u = t - t0, b = 1 + .04 * bp(t);
+    o.h.forEach((h, j) => { h.el.style.transform = `translateX(${((j ? 1 : -1) * 1080 * (1 - sl(u))).toFixed(1)}px)`; h.fg.style.transform = `scale(${((1 + .14 * Math.exp(-u * 10)) * (u > BT * .9 ? b : 1)).toFixed(4)})`; sheen(h.sn, u - .1 - j * .14, 1080, .4) }); push(o, t, t0, t1) });
+  o.h = ix.map((i, j) => { const a = D.ai[i], el = add(`<div class="half" style="top:${j * 675}px;background:${COL[a.k]};color:${BK}"><i class="shn"></i></div>`, o.in), y1 = 116, sn = el.firstElementChild;
+    M(a.k, 150, a.k === 'CLAUDE' || a.k === 'GPT' ? BK : 0, 36, y1, el); const nm = T(el, a.name.toUpperCase(), { fs: 176, x: 212, y: y1 }), kc = met('K').cap, yb = y1 + nm.H, y2 = yb + 42;
+    let fg; if (acc) { const pct = Math.round(100 * a.w / (a.w + a.l)); T(el, 'ACCURACY', { f: 'K', fs: 58, rx: 1044, y: yb - kc * 58 }); fg = T(el, pct + '%', { fs: 336, x: 36, y: y2 + 14, or: '30% 60%' }); const wl = T(el, `${a.w}–${a.l}`, { fs: 92, rx: 1044, y: y2 + 14 + fg.H - met('A').cap * 92 }); T(el, 'W–L', { f: 'K', fs: 54, rx: 1044, y: wl.Y - 18 - kc * 54 }) }
+    else { T(el, 'P&amp;L', { f: 'K', fs: 100, rx: 1044, y: yb - kc * 100 }); fg = T(el, Kf(a.pnl), { fs: 350, x: 36, y: y2 + 8, or: '50% 60%' }) }
+    return { el, fg, sn } });
+  SH.push([t0, 7]); C.push([t0, 'r11-knock', .1]) }
+
+function R(t) { if (grain) grain(t); let cur = null;
+  SC.forEach(s => { const on = s.spans.some(([a, b]) => t >= a - 1e-6 && t < b - 1e-6); s.el.style.display = on ? 'block' : 'none'; if (on) { cur = s; s.draw(t) } });
+  if (!cur) return; L.$('#st').style.background = cur.bg; const bug = L.$('#bug'); bug.style.display = cur.bug ? 'flex' : 'none'; bug.style.color = cur.bug === 'bk' ? BK : CR;
+  let sx = 0, sy = 0; SH.forEach(([th, a]) => { const v = t - th; if (v >= 0 && v < .5) { const e = a * Math.exp(-v * 13); sx += e * Math.sin(v * 95 + th * 7); sy += e * Math.cos(v * 81 + th * 3) } }); cam.style.transform = `translate(${sx.toFixed(2)}px,${sy.toFixed(2)}px)`;
+  let fa = 0, fc = '#fff'; FL.forEach(([th, c, a, d]) => { const v = t - th; if (v >= 0 && v < d) { const e = a * (1 - v / d) * (1 - v / d); if (e > fa) { fa = e; fc = c } } }); const fl = L.$('#fl'); fl.style.opacity = fa.toFixed(3); fl.style.background = fc }
+window.R = R;
+(async () => {
+  [L.models, D] = await Promise.all([fetch('models.json').then(r => r.json()), fetch('data/wrap.json').then(r => r.json())]);
+  await Promise.all(['400 100px Anton', 'italic 900 100px Kanit', 'italic 800 100px Kanit'].map(f => document.fonts.load(f, 'AZaz09+−$%,&–'))); await document.fonts.ready;
+  { mc.font = 'italic 400 1000px Anton'; const a = mc.measureText('H'); mc.font = FN.A(1000); const b = mc.measureText('H'), k = (a.actualBoundingBoxRight - b.actualBoundingBoxRight) / b.actualBoundingBoxAscent; if (k > .1 && k < .4) IT = k; window.IT = IT }
+  build(); await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  grain = L.grain(L.$('#grain'), .045); window.CUES = C.map(([t, f, p]) => [+t.toFixed(3), f, p]); window.DUR = DUR; window.BEAT = { bpm: 150, at: B0 }; window.DROPS = [B(31), B(66)];
+  window.SHOTS = [0, 2, 4, 6, 9, 12, 15, 31, 35, 41, 43, 45, 47, 53, 55, 57, 62, 66, 69, 72, 79].map(n => n ? B(n) : 0); window.CHART = [[B(15), B(35)], [B(35), B(64)]];
+  R(0); window.READY = 1;
+})();
+</script>

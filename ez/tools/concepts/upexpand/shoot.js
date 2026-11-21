@@ -1,0 +1,4 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1820,height:960},deviceScaleFactor:2});const e=[];p.on('pageerror',x=>e.push(x.message));
+await p.goto('http://localhost:8996/tools/concepts/upexpand/up.html');await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(1200);
+const ov=await p.evaluate(()=>{const o=[];document.querySelectorAll('.ph *').forEach(el=>{if(el.scrollWidth>el.clientWidth+1&&getComputedStyle(el).overflow!=='visible')o.push(el.className);const ph=el.closest('.ph').getBoundingClientRect(),r=el.getBoundingClientRect();if(r.width&&r.right>ph.right+0.5)o.push('out:'+el.tagName+'.'+el.className+' '+Math.round(r.right-ph.right))});return o.slice(0,12)});
+await p.screenshot({path:process.argv[2],fullPage:true});console.log('errs',e.join('|')||'none','overflow',JSON.stringify(ov));await b.close()})();

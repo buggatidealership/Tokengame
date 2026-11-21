@@ -1,0 +1,6 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const fs=require('fs');
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1280,height:900}});
+await p.goto('http://localhost:8987/v46-live-x2plus.html',{waitUntil:'domcontentloaded',timeout:150000});
+await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur')&&window.__x2pPnl&&document.getElementById('learn'),null,{timeout:120000});await p.waitForTimeout(1500);
+await p.addStyleTag({content:fs.readFileSync('s10.css','utf8')});await p.addScriptTag({content:fs.readFileSync('s10.js','utf8')});await p.evaluate(()=>__S10('n1'));
+console.log(await p.evaluate(()=>{const L=document.getElementById('learn'),r0=L.getBoundingClientRect().top;return [...L.querySelectorAll('*')].filter(e=>{const r=e.getBoundingClientRect();return r.height>20&&getComputedStyle(e).display!=='none'}).slice(0,8).map(e=>e.tagName+'.'+String(e.className.baseVal??e.className).slice(0,30)+' top='+(e.getBoundingClientRect().top-r0|0)+' h='+(e.getBoundingClientRect().height|0)).join('\n')+'\nbefore:'+getComputedStyle(L,'::before').content+' '+getComputedStyle(L,'::before').height+' pad:'+getComputedStyle(L).padding}));await b.close()})();

@@ -1,0 +1,32 @@
+// node rec.js <out.mp4> <section: cliff|bet> <takes e.g. c1,c2,c3> [width 390]: each take's motion as the section comes into view,
+// frames from a screenshot loop at their real timing, joined by ffmpeg, a label burned in per take
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../live-r1/_fonts.js');const fs=require('fs'),cp=require('child_process'),path=require('path'),os=require('os');
+const OUT=path.resolve(process.argv[2]),SEC=process.argv[3],TS=process.argv[4].split(','),W=+(process.argv[5]||390),H=W<600?844:900;
+const SEL={cliff:'.wc-cliff',bet:'.wc-bet'}[SEC];const NAME=JSON.parse(fs.readFileSync(__dirname+'/names.json','utf8'));
+const rd=f=>fs.existsSync(__dirname+'/'+f)?fs.readFileSync(__dirname+'/'+f,'utf8'):'';
+const TMP=fs.mkdtempSync(path.join(os.tmpdir(),'sbrec-'));
+(async()=>{const b=await chromium.launch({args:['--disable-dev-shm-usage']});const list=[];let k=0;
+ for(const t of TS){const p=await b.newPage({viewport:{width:W,height:H},deviceScaleFactor:1});await FONTS(p);
+  await p.goto('http://localhost:8897/v47-live-x3plus.html',{waitUntil:'load'});
+  await p.waitForFunction(()=>document.documentElement.classList.contains('x2p-world')&&!document.documentElement.classList.contains('x2p-cur'),null,{timeout:90000});
+  /* no scroll through the whole page: the 30 Oct 02:37 build's renderer crashes on the way down (see the report); go straight to the section */
+  await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(300);
+  await p.addStyleTag({content:rd('_sb.css')+'\n'+rd(t+'.css')});await p.addScriptTag({content:rd('_sb.js')});await p.addScriptTag({content:rd(t+'.js')});
+  await p.waitForFunction(()=>document.fonts.status==='loaded');await p.waitForTimeout(700);
+  await p.evaluate(()=>{const h=document.querySelector('header.top');if(h)h.style.visibility='hidden';[...document.body.querySelectorAll('*')].forEach(x=>{const c=getComputedStyle(x);if(c.position==='fixed'&&x.offsetHeight<120&&x.offsetHeight>0)x.style.visibility='hidden'})});
+  await p.evaluate(s=>{const n=document.querySelector(s);scrollTo({top:n.getBoundingClientRect().top+scrollY-(innerWidth<600?10:30)-(n.querySelector('.wc-chipw')&&innerWidth<600?140:0),behavior:'instant'})},SEL);
+  /* deterministic frames: once the take's motion starts (sb-in), pause every animation and step it 40 ms per frame (25 fps) */
+  await p.waitForFunction(s=>document.querySelector(s+' .sb-in, '+s+'.sb-in'),SEL,{timeout:15000,polling:10});
+  /* stop the page's timers so the countdown doesn't race ahead while frames are taken slower than real time */
+  await p.evaluate(()=>{const top=setTimeout(()=>{},0);for(let i=0;i<=top;i++){clearInterval(i);clearTimeout(i)}document.getAnimations().forEach(a=>{a.pause();a.__t0=a.currentTime||0})});
+  let last=null;const N=80;
+  for(let i=0;i<N;i++){await p.evaluate(ms=>{document.getAnimations().forEach(a=>{if(!('__t0' in a)){a.pause();a.__t0=(a.currentTime||0)-ms}a.currentTime=a.__t0+ms})},i*40);
+    const f=`${TMP}/f${String(k++).padStart(5,'0')}.png`;for(let r=0;;r++){try{await p.screenshot({path:f});break}catch(e){if(r>3)throw e;await p.waitForTimeout(500)}}last={f,d:.04,lab:NAME[t]};list.push(last)}
+  last.d=1.2;await p.close()}
+ await b.close();
+ // label each frame (one label image per take, overlaid), then concat with durations
+ const cc=list.map(x=>`file '${x.f}'\nduration ${x.d.toFixed(3)}`).join('\n')+`\nfile '${list[list.length-1].f}'\n`;fs.writeFileSync(TMP+'/list.txt','ffconcat version 1.0\n'+cc);
+ // burn the take's name: split by take with drawtext per segment is awkward; draw it into the frames instead
+ for(const x of list){cp.execFileSync('/usr/bin/python3',[__dirname+'/label.py',x.f,x.lab])}
+ cp.execFileSync('ffmpeg',['-y','-loglevel','error','-f','concat','-safe','0','-i',TMP+'/list.txt','-vf','scale=trunc(iw/2)*2:trunc(ih/2)*2,fps=25,format=yuv420p','-c:v','libx264','-crf','23','-movflags','+faststart',OUT]);
+ fs.rmSync(TMP,{recursive:true});console.log('wrote',OUT,list.length,'frames')})();

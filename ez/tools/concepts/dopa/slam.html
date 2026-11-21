@@ -1,0 +1,125 @@
+<!doctype html><meta charset="utf-8"><title>Slam prediction</title>
+<!-- The loud prediction video (owner, 2026-11-17: "make it spectacle like... there's so much around this earnings... 3 different versions,
+  all must be very different from one another"). slam.html?r=<round> reads data/c<round>.json (prep-calls.js, the sheet only).
+  Type only, full frame: the question on four counted beats, then one full-bleed card per AI on the music's drop (m2-phonk: 130 BPM, drop at
+  14.805 s, both measured), last place to the leader, each in its side's colour; then the four as columns under the split, the record, the close.
+  No result, no "locked N minutes before". window.R(t), READY, CUES, MUSIC as the other pages. -->
+<style id="base"></style>
+<style>
+#cam{position:absolute;inset:0;transform-origin:50% 50%;overflow:hidden}
+#smp{position:absolute;right:56px;top:66px;font:600 22px 'Geist Mono';letter-spacing:.14em;color:#e8576b;padding:7px 12px 6px;border-radius:8px;box-shadow:inset 0 0 0 2px rgba(232,87,107,.6);z-index:60}
+.lay{position:absolute;inset:0}
+.ct{position:absolute;left:0;right:0;display:flex;justify-content:center;align-items:center;white-space:nowrap}
+#it{top:270px;gap:34px;transform-origin:50% 50%}
+#it img{width:190px;height:190px;border-radius:40px;background:#f2ede6;padding:22px;object-fit:contain}
+#it .co{font:900 196px/1 Inter;letter-spacing:-.045em}
+#is1{top:520px;font:600 40px 'Geist Mono';letter-spacing:.14em;color:#fdbc2a}
+#is2{top:590px;font:600 32px 'Geist Mono';letter-spacing:.12em;color:#8e8680}
+#iq{top:730px;font:900 128px/1 Inter;letter-spacing:-.04em;gap:26px}
+#iq i{font-style:normal;color:#5f5853;font-size:76px;font-weight:800}
+#im{top:960px;gap:44px}
+#im .m{display:flex;flex-direction:column;align-items:center;gap:16px;font:800 38px Inter;letter-spacing:-.02em;transform-origin:50% 40%}
+.card{position:absolute;inset:0;overflow:hidden;color:#0e0c0b;will-change:transform}
+.card .in{position:absolute;inset:0;transform-origin:50% 55%}
+.card .top{position:absolute;left:56px;right:56px;top:64px;display:flex;justify-content:space-between;font:600 34px 'Geist Mono';letter-spacing:.08em;opacity:.72}
+.card .mkw{position:absolute;left:56px;top:150px}
+.card .nm{position:absolute;left:330px;top:176px;font:900 150px/1 Inter;letter-spacing:-.045em;transform-origin:0 50%;white-space:nowrap}
+.card .se{position:absolute;left:336px;top:340px;font:600 36px 'Geist Mono';letter-spacing:.04em;opacity:.78;white-space:nowrap}
+.card .sd{position:absolute;left:44px;top:470px;font:900 390px/1 Inter;letter-spacing:-.055em;transform-origin:0 60%;white-space:nowrap}
+.card .lb{position:absolute;left:60px;top:900px;font:600 38px 'Geist Mono';letter-spacing:.16em;opacity:.72}
+.card .cl{position:absolute;left:48px;top:940px;font:600 290px/1 'Geist Mono';letter-spacing:-.06em;font-variant-numeric:tabular-nums;transform-origin:0 60%;white-space:nowrap}
+.card .sh{position:absolute;top:-20%;bottom:-20%;width:300px;left:0;background:linear-gradient(90deg,transparent,rgba(242,237,230,.34),transparent);transform:skewX(-14deg)}
+#fin{position:absolute;inset:0;background:#0e0c0b;z-index:30}
+#ft{position:absolute;left:56px;top:74px;display:flex;align-items:center;gap:22px;transform-origin:0 50%;white-space:nowrap}
+#ft img{width:104px;height:104px;border-radius:23px;background:#f2ede6;padding:12px;object-fit:contain}
+#ft .co{font:900 108px/1 Inter;letter-spacing:-.045em}
+#fs{position:absolute;right:56px;top:92px;text-align:right;font:600 28px/1.5 'Geist Mono';letter-spacing:.1em;color:#8e8680}
+#fs b{color:#fdbc2a;font-weight:600;display:block}
+.strip{position:absolute;top:236px;width:262px;height:770px;border-radius:22px;color:#0e0c0b;overflow:hidden}
+.strip .rk{position:absolute;right:18px;top:16px;font:600 30px 'Geist Mono';opacity:.7}
+.strip .mkw{position:absolute;left:24px;top:24px}
+.strip .nm{position:absolute;left:24px;top:150px;font:900 52px/1 Inter;letter-spacing:-.03em}
+.strip .sw{position:absolute;left:24px;bottom:100px;font:900 54px/1 Inter;letter-spacing:.01em}
+.strip .cl{position:absolute;left:22px;bottom:26px;font:600 64px/1 'Geist Mono';letter-spacing:-.05em}
+.strip .sh{position:absolute;left:0;right:0;height:240px;top:0;background:linear-gradient(180deg,transparent,rgba(242,237,230,.32),transparent)}
+#band{position:absolute;left:-40px;right:-40px;top:520px;height:226px;background:#0e0c0b;box-shadow:0 0 0 3px #0e0c0b;display:flex;align-items:center;justify-content:center;transform-origin:50% 50%}
+#band .t{font:900 176px/1 Inter;letter-spacing:-.045em;white-space:nowrap;transform-origin:50% 50%}
+#band .t i{font-style:normal;color:#5f5853;font-size:.55em;margin:0 .14em;vertical-align:.18em}
+#st{position:absolute;left:0;right:0;top:1046px;text-align:center;font:700 40px/1 Inter;letter-spacing:-.015em;white-space:nowrap}#st b{font-weight:900}
+.gp{position:absolute;left:0;right:0;top:1122px;display:flex;justify-content:center}
+.gp .p{font:600 36px 'Geist Mono';letter-spacing:.08em;color:#fdbc2a;padding:20px 30px 18px;border-radius:18px;background:rgba(253,188,42,.09);box-shadow:inset 0 0 0 2px rgba(253,188,42,.5);white-space:nowrap;position:relative;overflow:hidden}
+.gp .p i{position:absolute;top:0;bottom:0;width:130px;left:0;background:linear-gradient(90deg,transparent,rgba(253,188,42,.35),transparent)}
+#fl{position:absolute;inset:0;background:#f2ede6;opacity:0;pointer-events:none;z-index:55}
+</style>
+<div id="cam"></div><div id="vig"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script>
+<script>
+const q = new URLSearchParams(location.search), N = +q.get('r') || 112, G = '#55d6a2', Rd = '#e8576b';
+const cam = L.$('#cam'), add = (h, p = cam) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
+let D, DUR, S = {}, C = [], grain;
+const BT = 60 / 130, b = x => +(x * BT).toFixed(3);          // m2-phonk: 130 BPM; the bed starts four beats before its drop
+const sgn = a => a.side === 'LONG' ? 1 : -1, col = a => a.side === 'LONG' ? G : a.side === 'SHORT' ? Rd : '#8e8680';
+const callTxt = (a, v = a.size) => (sgn(a) > 0 ? '+' : '−') + (Math.round(v * 10) / 10) + '%';
+const money0 = v => (v < 0 ? '−' : '+') + '$' + Math.abs(Math.round(v)).toLocaleString('en-US');
+const fit = (el, w) => { const k = Math.min(1, w / el.offsetWidth); el.dataset.k = k; return k };
+function build() {
+  const ord = D.order, rev = [...ord].reverse(), fin = (D.last ? 'SEASON 1 FINALE' : 'ROUND ' + D.n);
+  S.bug = add(`<div class="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>ROUND ${D.n}</b></div>`); if (D.sample) add(`<div id="smp">SAMPLE CALLS</div>`);
+  // the question, four counted beats
+  S.intro = add(`<div class="lay"><div class="ct" id="it">${D.logo ? `<img src="${D.logo}">` : ''}<div class="co">${D.co}</div></div><div class="ct" id="is1">${fin}</div><div class="ct" id="is2">EARNINGS ${D.report || ''}</div>
+    <div class="ct" id="iq"><span style="color:${G}">LONG</span><i>or</i><span style="color:${Rd}">SHORT</span><span style="color:#5f5853">?</span></div>
+    <div class="ct" id="im">${rev.map(k => `<div class="m">${L.mark(k, 150)}<span>${D.ai.find(a => a.k === k).name}</span></div>`).join('')}</div></div>`);
+  // one full-bleed card per AI, last place to the leader
+  S.cards = rev.map((k, j) => { const a = D.ai.find(x => x.k === k), rank = ord.indexOf(k) + 1, sp = D.season[k];
+    const el = add(`<div class="card" style="background:${col(a)}"><div class="in"><div class="top"><span>#${rank} OF ${ord.length}</span><span>${D.ticker.replace(/\..*$/, '')} · ROUND ${D.n}</span></div>
+      <div class="mkw">${L.mark(k, 240)}</div><div class="nm">${a.name.toUpperCase()}</div><div class="se">SEASON ${money0(sp)}</div>
+      <div class="sd">${a.side}</div><div class="lb">CALLS</div><div class="cl"></div><div class="sh"></div></div></div>`);
+    return { a, el, j, t0: b(4 + j * 2), last: j === rev.length - 1 } });
+  S.tF = b(4 + rev.length * 2); S.tS = S.tF + b(3); S.tG = S.tF + b(6); DUR = S.tF + b(11);
+  // the four as columns under the split
+  S.fin = add(`<div id="fin"><div id="ft">${D.logo ? `<img src="${D.logo}">` : ''}<div class="co">${D.co}</div></div><div id="fs"><b>${fin}</b>EARNINGS ${D.report || ''}</div></div>`);
+  S.strips = ord.map((k, i) => { const a = D.ai.find(x => x.k === k), gap = 10, w = (968 - gap * (ord.length - 1)) / ord.length;
+    return { a, i, el: add(`<div class="strip" style="left:${56 + i * (w + gap)}px;width:${w}px;background:${col(a)}"><span class="rk">#${i + 1}</span><div class="mkw">${L.mark(k, 104)}</div><div class="nm">${a.name}</div><div class="sw">${a.side}</div><div class="cl">${a.size == null ? '' : callTxt(a)}</div><div class="sh"></div></div>`, S.fin) } });
+  const sp = D.split.replace(' vs ', '<i>vs</i>'), c1 = D.longs && D.shorts ? '#f2ede6' : D.longs ? G : Rd;
+  S.band = add(`<div id="band"><div class="t" style="color:${c1}">${D.longs && D.shorts ? sp.replace(/(\d+ LONG)/, `<span style="color:${G}">$1</span>`).replace(/(\d+ SHORT)/, `<span style="color:${Rd}">$1</span>`) : sp}</div></div>`, S.fin);
+  const lone = D.lone && D.ai.find(x => x.k === D.lone), u = D.unanRec;
+  S.st = add(`<div id="st">${lone ? `${lone.name} stood alone <b>${D.loneRec.times} times</b> before. Right <b class="au">${D.loneRec.right}</b>.` : D.kind === 'unanimous' && u ? `All four went ${D.longs ? 'long' : 'short'} <b>${u.st} time${u.st === 1 ? '' : 's'}</b> before. Right <b class="au">${u.sr}</b>.` : D.kind === 'unanimous' ? 'Nobody took the other side.' : 'A split room.'}</div>`, S.fin);
+  S.gp = add(`<div class="gp"><div class="p"><i></i>$100K EACH · GRADED ${D.close || 'AT THE CLOSE'}</div></div>`, S.fin);
+  add(`<div class="fine" style="bottom:40px">Simulated $100K per trade · not advice</div>`, S.fin); S.fl = add(`<div id="fl"></div>`);
+  rev.forEach((k, j) => C.push([b(j), 'r11-pluck', .09])); S.cards.forEach(c => C.push([c.t0, c.last ? 'sfx-boom' : 'r11-thump', c.last ? .2 : .2])); C.push([S.tF, 'sfx-boom', .24], [S.tS, 'r11-ping', .08], [S.tG, 'sfx-chime', .16]);
+  window.MUSIC = { f: 'm2-phonk', at: +(14.805 - 4 * BT).toFixed(3) };
+}
+function R(t) {
+  S.t = t; const tD = b(4); S.bug.style.opacity = t < tD ? 1 : 0;
+  // intro
+  S.intro.style.opacity = t < tD + .2 ? 1 : 0; L.$('#it').style.transform = `scale(${S.kT * (1 + .05 * (1 - L.eo5(L.n(t, 0, 1))) + .02 * t)})`;
+  L.$$('#im .m').forEach((m, j) => { const dt = t - b(j), on = dt >= 0; m.style.opacity = on ? 1 : .32; m.style.transform = `scale(${on ? .86 + .14 * L.spring(dt, 2.6, 8) + .14 * Math.exp(-dt * 9) : .86})` });
+  const qk = 1 + .04 * Math.exp(-((t % BT)) * 8) * (t < tD ? 1 : 0); L.$('#iq').style.transform = `scale(${qk})`;
+  // cards
+  S.cards.forEach((c, j) => { const dt = t - c.t0, nx = S.cards[j + 1] ? S.cards[j + 1].t0 : S.tF, on = dt >= 0 && t < nx + (S.cards[j + 1] ? .2 : 0); c.el.style.display = on ? 'block' : 'none'; if (!on) return;
+    const kin = L.eo5(L.n(dt, 0, .16)), dir = j % 2 ? 1 : -1; c.el.style.transform = j % 2 ? `translateX(${(1 - kin) * 1080 * dir}px)` : `translateY(${(1 - kin) * 1350}px)`; c.el.style.zIndex = 10 + j;
+    const hold = L.n(dt, 0, nx - c.t0); c.el.firstElementChild.style.transform = `scale(${1 + .045 * hold})`;
+    const nm = c.el.querySelector('.nm'), sd = c.el.querySelector('.sd'), cl = c.el.querySelector('.cl'), sh = c.el.querySelector('.sh');
+    nm.style.transform = `translateX(${(1 - L.eo5(L.n(dt, .02, .3))) * 220}px) scale(${nm.dataset.k})`; c.el.querySelector('.mkw').style.transform = `scale(${.7 + .3 * L.spring(dt - .02, 2.4, 9)})`;
+    const ks = dt > .1 ? L.spring(dt - .1, 2.2, 8) : 0; sd.style.opacity = dt > .1 ? 1 : 0; sd.style.transform = `scale(${sd.dataset.k * (1.5 - .5 * ks)})`;
+    const kc = L.n(dt, .24, .36); cl.style.opacity = kc; if (c.a.size != null) cl.textContent = callTxt(c.a, c.a.size * L.eo(L.n(dt, .24, .62))); cl.style.transform = `scale(${cl.dataset.k})`; c.el.querySelector('.lb').style.opacity = .72 * kc;
+    sh.style.transform = `translateX(${L.lerp(-400, 1300, L.n(dt, .3, .85))}px) skewX(-14deg)` });
+  // finale
+  const dF = t - S.tF, onF = dF >= 0; S.fin.style.display = onF ? 'block' : 'none'; S.fl.style.opacity = onF ? .7 * (1 - L.eo(L.n(dF, 0, .28))) : 0;
+  if (onF) { S.strips.forEach(s => { const k = L.eo5(L.n(dF, .03 + s.i * .05, .3 + s.i * .05)); s.el.style.transform = `translateY(${(1 - k) * 760}px)`; const hs = ((t - S.tG - .4 - s.i * .3) % 2.4) / .9, sh = s.el.querySelector('.sh');
+      const o = dF > .5 ? L.n(dF, .5 + s.i * .12, 1.3 + s.i * .12) : 0, v = t > S.tG + .4 && hs > 0 && hs < 1 ? hs : o > 0 && o < 1 ? o : -1; sh.style.opacity = v < 0 ? 0 : 1; sh.style.transform = `translateY(${L.lerp(-260, 700, v < 0 ? 0 : v)}px)` });
+    const kb = L.spring(dF - .12, 2, 7), bt = S.band.firstElementChild; S.band.style.transform = `scaleY(${L.eo5(L.n(dF, .08, .26))})`; bt.style.opacity = dF > .12 ? 1 : 0; bt.style.transform = `scale(${bt.dataset.k * (1.7 - .7 * kb) * (1 + .03 * Math.exp(-((t - S.tF) % (BT * 2)) * 6))})`;
+    const e = (el, t0, d = .35, dy = 26) => { const k = L.eo(L.n(t, t0, t0 + d)); el.style.opacity = k; el.style.transform = `translateY(${(1 - k) * dy}px)`; return k };
+    e(S.st, S.tS); const kg = e(S.gp, S.tG, .4, 20), sh = S.gp.querySelector('i'), sp2 = ((t - S.tG - .3) % 2.4) / 1; sh.style.opacity = kg && sp2 > 0 && sp2 < 1 ? 1 : 0; sh.style.transform = `translateX(${L.lerp(-150, 800, sp2)}px)`;
+    L.$('#ft').style.transform = `scale(${S.kF})` }
+  cam.style.transform = `scale(${1 + .02 * L.n(t, S.tF, DUR)})`; grain(t);
+}
+window.R = R;
+(async () => {
+  L.$('#base').textContent = L.css; [D, L.models] = await Promise.all([fetch(`data/c${N}.json`).then(r => r.json()), fetch('models.json').then(r => r.json())]); build();
+  await Promise.all(['900 196px Inter', '900 390px Inter', '800 38px Inter', '700 40px Inter', '600 290px "Geist Mono"', '600 36px "Geist Mono"'].map(f => document.fonts.load(f))); await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  S.cards.forEach(c => { c.el.style.display = 'block'; fit(c.el.querySelector('.nm'), 690); fit(c.el.querySelector('.sd'), 990); const cl = c.el.querySelector('.cl'); cl.textContent = c.a.size == null ? '' : callTxt(c.a); fit(cl, 980) });
+  S.kT = Math.min(1, 968 / L.$('#it').offsetWidth); S.fin.style.display = 'block'; fit(S.band.firstElementChild, 1000); S.kF = Math.min(1, 600 / L.$('#ft').offsetWidth);
+  grain = L.grain(L.$('#grain'), .05); window.CUES = C; window.DUR = DUR; R(0); window.READY = 1;
+})();
+</script>

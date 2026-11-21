@@ -1,0 +1,66 @@
+/* X3+ chrome, round H (owner, 2026-10-31, picks from tools/concepts/worlds/comic/story/h/chrome, board x2p-x3p-h-chrome-390.png).
+   Part 1, L3 "Ring at night": the loading cover (#x2pLoad, the CURTAIN block of skin-x2plus.css) is the boxing ring seen from above
+   under one lamp; the EZ. logo, the page's own svg kept crisp on top, is printed on the canvas in perspective and breathes as today.
+   Pure CSS on #x2pLoad, so it works from the first paint (this sheet sits in <head>, before the cover exists). Phones and portrait
+   screens take the portrait painting (media/load-ring-l3.jpg, 720x1280), landscape screens the whole ring centred on the night
+   (media/load-ring-l3-desk.jpg, 2276x1280, the same painting with its sides feathered into the ground), height-fit, so the lamp and the
+   four corners always show. Until the picture arrives the ground is the same night with the lamp's pool drawn in CSS. */
+html.x2p-cur #x2pLoad{opacity:1;animation:none}
+/* the ground on html.x2p (not only x2p-cur), so the ring stays under the logo through the 0.2 s fade-out after the lift */
+/* Lh (owner, 2026-10-31: "I will go for hanging factory lamp"; ground3's take, replaces L3's ring): total dark, one enamel factory
+   lamp, the EZ. logo (the page's own svg, never painted) standing in its pool, lit by it: a warm rim on its top edge, a glow, a cast shadow.
+   media/load-lamp-lh.jpg (720x1280, portrait) and load-lamp-lh-desk.jpg (1280x720, landscape, height-fit). */
+html.x2p #x2pLoad{background:url(media/load-lamp-lh.jpg) 50% 50%/cover no-repeat,radial-gradient(ellipse 50% 32% at 50% 62%,#2a2217 0,#0b0907 60%,#020203 100%) #020203}
+@media (min-aspect-ratio:1001/1000){
+  html.x2p #x2pLoad{background:url(media/load-lamp-lh-desk.jpg) 50% 50%/auto 100% no-repeat,radial-gradient(ellipse 26% 40% at 50% 62%,#2a2217 0,#0b0907 60%,#020203 100%) #020203}
+}
+html.x2p #x2pLoad svg{height:112px;position:relative;top:21vh;filter:drop-shadow(0 -1.5px 0 rgba(255,214,150,.85)) drop-shadow(0 0 14px rgba(255,190,90,.28)) drop-shadow(0 10px 6px rgba(0,0,0,.75));
+  animation:hcLoadBreathe 1.4s ease-in-out infinite alternate}
+@media (min-aspect-ratio:1001/1000){html.x2p #x2pLoad svg{top:calc(35vh - 62px);height:120px}}
+html.x2p #x2pLoad::after{display:none}
+/* the breathing moves from the whole cover to the logo alone (the ring stays lit); still with reduced motion, as before */
+@keyframes hcLoadBreathe{from{opacity:.98}to{opacity:.68}}
+@media (prefers-reduced-motion:reduce){html.x2p #x2pLoad svg{animation:none;opacity:.98}}
+/* the cover fades out as the page fades in (the page's x2p-rv), from full strength now */
+html.x2p-rv #x2pLoad{animation:hcLoadOut .2s ease-out forwards}
+html.x2p-rv #x2pLoad svg{animation:none}
+@keyframes hcLoadOut{from{opacity:1}to{opacity:0}}
+
+/* Part 2, F3 "Through the page": the explainer film on the cover is seen through a hole torn in a comic page; a yellow caption box
+   presents it ("[logo] presents / How it works"), the running time sits in a red-and-gold burst at the film's corner. The film, its
+   play and sound buttons and the corner player are the page's own and unchanged; only the frame changes. Built by h_chrome.js, which
+   sets html.hc-f3 (X3+ only, never with the dark layer cd-on). The painting is media/film-tear-f3.webp (the hole cut to alpha). */
+html.hc-f3:not(.cd-on) #wc-book .sh-film{--hc-k:.96;--hc-mt:28px;--hc-ml:16px;--hc-mr:12px;
+  border:0!important;outline:0!important;background:none!important;box-shadow:none!important;padding:var(--hc-mt) 0!important}
+html.hc-f3:not(.cd-on) #wc-book .sh-film::before,html.hc-f3:not(.cd-on) #wc-book .sh-film::after{display:none!important}
+@media (max-width:359px){html.hc-f3:not(.cd-on) #wc-book .sh-film{--hc-ml:13px;--hc-mr:8px}}
+@media (min-width:600px){html.hc-f3:not(.cd-on) #wc-book .sh-film{--hc-k:.9;--hc-mt:40px}}
+@media (min-width:1000px){html.hc-f3:not(.cd-on) #wc-book .sh-film{--hc-k:.86;--hc-mt:52px;--hc-ml:28px;--hc-mr:28px}}
+/* the old frame's words: the caption box and the burst say them now; the film's h2 stays for screen readers */
+html.hc-f3:not(.cd-on) #wc-book .sh-film .wc-film-cap{visibility:hidden!important}
+html.hc-f3:not(.cd-on) #wc-book .sh-film .x2p-vt .vt-tag{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;margin:0!important;padding:0!important}
+/* on a phone the page bleeds to the cover's inner edges (the slot's own side margins); from 1000px it keeps 28px either side */
+/* the film a touch smaller than its box, centred, so the torn paper shows round it */
+html.hc-f3:not(.cd-on) #wc-book .sh-film .x2p-vt .vt-p{width:calc(var(--hc-k)*100%)!important;margin:0 auto!important}
+html.hc-f3:not(.cd-on) #wc-book .sh-film .x2p-vt{isolation:isolate}
+/* stage dark behind the film, seen only through the hole; until the painting arrives it reads as a plain dark frame */
+html.hc-f3 .hcf-bk{position:absolute;z-index:-1;top:calc(-1*var(--hc-mt));bottom:calc(-1*var(--hc-mt));left:calc(-1*var(--hc-ml));right:calc(-1*var(--hc-mr));background:#07080c;pointer-events:none}
+/* the painting over the film (the paper's torn edge overlaps the picture's corners); the play and sound buttons (z 4) stay above it */
+html.hc-f3 .hcf{position:absolute;z-index:3;top:calc(-1*var(--hc-mt));bottom:calc(-1*var(--hc-mt));left:calc(-1*var(--hc-ml));right:calc(-1*var(--hc-mr));pointer-events:none}
+html.hc-f3 .hcf-c{position:absolute;inset:0;overflow:hidden}
+html.hc-f3 .hcf-p{position:absolute;display:block;max-width:none;height:auto;left:0;top:0;width:100%}
+html.hc-f3 .hcf-cap,html.hc-f3 .hcf-bu{position:absolute;width:max-content;white-space:nowrap}
+html.hc-f3 .hcf-ib{position:absolute;left:-4px;top:-4px;z-index:0;pointer-events:none;overflow:visible}
+html.hc-f3 .hcf-ib~*{position:relative;z-index:1}
+/* the caption box: a hand-cut yellow box (wobbly ink outline, a shade band), the logo and "presents / How it works" */
+html.hc-f3 .hcf-cap{left:6px;top:4px;transform:rotate(-2deg);display:flex;align-items:center;gap:7px;padding:5px 12px 6px 7px;color:#15121a}
+html.hc-f3 .hcf-cap small{display:block;font:700 10px/1 'Shantell Sans',sans-serif;text-transform:uppercase;letter-spacing:.08em}
+html.hc-f3 .hcf-cap b{display:block;font:400 20px/1 Bangers,Anton,sans-serif;letter-spacing:.04em;font-weight:400}
+html.hc-f3 .hcf-lg svg{width:28px;height:28px;display:block}
+/* the running time in a red-and-gold burst at the film's bottom-right corner (it counts down while the film plays, as the page's own) */
+html.hc-f3 .hcf-bu{width:74px;height:52px;transform:rotate(-8deg)}
+html.hc-f3 .hcf-bu svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+html.hc-f3 .hcf-bu b{position:absolute;inset:0;display:grid;place-items:center;font:400 19px/1 Bangers,Anton,sans-serif;color:#15121a;letter-spacing:.03em;padding-top:2px}
+@media (max-width:359px){html.hc-f3 .hcf-cap b{font-size:17px}html.hc-f3 .hcf-lg svg{width:24px;height:24px}html.hc-f3 .hcf-bu{width:64px;height:45px}html.hc-f3 .hcf-bu b{font-size:16px}}
+@media (min-width:760px){html.hc-f3 .hcf-cap b{font-size:30px}html.hc-f3 .hcf-cap small{font-size:13px}html.hc-f3 .hcf-lg svg{width:40px;height:40px}
+  html.hc-f3 .hcf-cap{padding:7px 16px 8px 9px;gap:9px}html.hc-f3 .hcf-bu{width:104px;height:73px}html.hc-f3 .hcf-bu b{font-size:27px}}

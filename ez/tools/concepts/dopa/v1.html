@@ -1,0 +1,143 @@
+<!doctype html><meta charset="utf-8"><title>R106 · The sweat</title>
+<!-- Take 1 "The sweat" (suspense spread over time; Ely, Frankel & Kamenica 2015). 12 s.
+  0.0  frame 0 states the stakes in words: CoreWeave, 1 LONG vs 3 SHORT, the four AIs and their sides (no result).
+  1.5  the title docks into a header, the four AIs fly from the hook row into their P&L rows, the chart opens.
+  2.3  the real path (Hyperliquid xyz:CRWV, 5 min, scaled onto the sheet's +24.71%) plays from the Tue close to the Wed close:
+       the first hour after the report, the night, the session, then the last hour in slow motion with the clock.
+       Every P&L ticks live: $100K x side x the move so far.
+  7.5  the bell (the reveal): the path locks at +24.71%, FINAL is struck, GPT's row takes the light.
+  8.4  the end hold: the same screen as the proof, the headline "Biggest jump of 106 rounds", the next round. -->
+<style id="base"></style>
+<style>
+#cam{position:absolute;inset:0;transform-origin:50% 45%}
+#glow{position:absolute;inset:0}
+.title{position:absolute;left:0;top:0;display:flex;align-items:center;gap:26px;transform-origin:0 50%;white-space:nowrap}
+.title img{width:120px;height:120px;border-radius:26px;background:#f2ede6;padding:14px}
+.title .co{font:900 128px/1 Inter;letter-spacing:-.045em}
+.title .sub{font:600 30px 'Geist Mono';letter-spacing:.12em;color:#8e8680;margin-top:10px}
+.vs{position:absolute;left:0;right:0;top:440px;text-align:center;font:900 118px/1 Inter;letter-spacing:-.04em;white-space:nowrap}
+.vs i{font-style:normal;color:#5f5853;font-size:76px;vertical-align:28px;margin:0 22px;font-weight:800}
+.row{position:absolute;left:56px;width:968px;height:86px;display:flex;align-items:center;gap:22px;border-radius:18px;padding:0 22px 0 14px}
+.row .nm{font:800 40px Inter;letter-spacing:-.02em;width:150px}
+.row .sd{font:800 26px Inter;letter-spacing:.08em;padding:9px 16px 8px;border-radius:10px;width:122px;text-align:center}
+.sd.L{background:rgba(85,214,162,.16);color:#55d6a2;box-shadow:inset 0 0 0 2px rgba(85,214,162,.5)}
+.sd.S{background:rgba(232,87,107,.14);color:#e8576b;box-shadow:inset 0 0 0 2px rgba(232,87,107,.45)}
+.row .pl{margin-left:auto;font:600 52px 'Geist Mono';letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.row .bg{position:absolute;inset:0;border-radius:18px;background:#161312;box-shadow:inset 0 0 0 2px #2a2522;z-index:-1}
+.row .gl{position:absolute;inset:-3px;border-radius:21px;box-shadow:0 0 0 3px #fdbc2a,0 0 60px rgba(253,188,42,.45);opacity:0;z-index:-1}
+#chart{position:absolute;left:56px;top:300px;width:968px;height:540px}
+#clock{position:absolute;right:56px;top:150px;text-align:right}
+#clock .d{font:600 22px 'Geist Mono';letter-spacing:.16em;color:#8e8680}
+#clock .t{font:600 58px 'Geist Mono';letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+#clock .c{font:700 22px 'Geist Mono';letter-spacing:.12em;color:#fdbc2a;height:28px}
+#now{position:absolute;font:600 74px 'Geist Mono';letter-spacing:-.03em;color:#55d6a2;white-space:nowrap;text-shadow:0 0 30px rgba(85,214,162,.35)}
+#final{position:absolute;left:540px;top:610px;font:900 150px/1 Inter;letter-spacing:.02em;color:#fdbc2a;border:10px solid #fdbc2a;border-radius:22px;padding:14px 34px 10px;transform-origin:50% 50%;opacity:0;white-space:nowrap}
+#head{position:absolute;left:56px;top:150px;font:900 66px/1.05 Inter;letter-spacing:-.03em;opacity:0;white-space:nowrap}
+#head small{display:block;font:600 26px 'Geist Mono';letter-spacing:.1em;color:#fdbc2a;margin-top:12px}
+#next{position:absolute;left:56px;right:56px;top:1262px;text-align:center;font:600 24px 'Geist Mono';letter-spacing:.08em;color:#8e8680;opacity:0}
+#next b{color:#f2ede6;font-weight:600}
+.fine{bottom:30px}
+</style>
+<div id="cam">
+  <div id="glow"></div>
+  <svg id="chart" viewBox="0 0 968 540"></svg>
+  <div class="title" id="title"><img src="crwv.png" alt=""><div><div class="co">CoreWeave</div><div class="sub">EARNINGS · 4 AIs · $100K EACH</div></div></div>
+  <div class="vs" id="vs"><span class="up">1 LONG</span><i>vs</i><span class="dn">3 SHORT</span></div>
+  <div id="clock"><div class="d" id="cd"></div><div class="t" id="ct"></div><div class="c" id="cc"></div></div>
+  <div id="now"></div>
+  <div id="head">+24.71% at the close<small>BIGGEST JUMP OF 106 ROUNDS</small></div>
+  <div id="rows"></div>
+  <div id="final">FINAL</div>
+  <div id="next">NEXT: <b>NEBIUS</b> · 3 LONG v 1 SHORT · TODAY'S CLOSE</div>
+</div>
+<div id="vig"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script>
+<script>
+L.$('#base').textContent = L.css; L.chrome(document.body);
+const R = L.R, cam = L.$('#cam');
+// rows
+const rows = R.ai.map((a, i) => { const el = document.createElement('div'); el.className = 'row';
+  el.innerHTML = `<div class="bg"></div><div class="gl"></div><span class="mkw"></span><span class="nm">${a.name}</span><span class="sd ${a.side[0]}">${a.side}</span><span class="pl mono"></span>`;
+  L.$('#rows').appendChild(el); return el });
+// time map: video seconds -> market minutes since the Tue close
+const K = [[2.3, 0], [3.3, 60], [4.1, 1050], [5.6, 1380], [7.5, 1440]];
+const mAt = t => { if (t <= K[0][0]) return 0; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) { const x = (t - K[i - 1][0]) / (K[i][0] - K[i - 1][0]); const e = i === K.length - 1 ? 1 - Math.pow(1 - x, 1.6) : L.eio(x) * .3 + x * .7; return L.lerp(K[i - 1][1], K[i][1], e) } return 1440 };
+const TR = 7.5; // the bell
+// chart geometry
+const CW = 968, CH = 540, y0 = -3, y1 = 30, X = m => 20 + m / 1440 * (CW - 40), Y = v => CH - 30 - (v - y0) / (y1 - y0) * (CH - 60);
+const svg = L.$('#chart');
+let grain;
+window.CUES = [];
+(function cues() { // sound cues tied to the picture: each new hour on the clock ticks, the last ten minutes count down
+  const C = window.CUES; C.push([0.05, 'r11-swell', .12], [1.45, 'sfx-whoosh', .16], [2.25, 'r11-slide', .14]);
+  let last = -1; for (let t = 2.3; t < TR; t += 1 / 120) { const m = mAt(t); const h = Math.floor((m + 0.001) / 60); if (h !== last && m < 1380 && h > 0) { if (C.filter(c => c[1] === 'sfx-tick' && t - c[0] < .12).length === 0) C.push([+t.toFixed(3), 'sfx-tick', .12]); last = h } }
+  for (let k = 50; k >= 0; k -= 10) { let t = 5.6; while (t < TR && mAt(t) < 1440 - k) t += 1 / 240; C.push([+t.toFixed(3), 'sfx-clock', .2]) }
+  C.push([5.6, 'sfx-riser', .14], [TR, 'sfx-bell', .34], [TR + .12, 'sfx-stamp', .3], [TR + .55, 'r11-kaching', .26], [8.5, 'r11-thump', .14], [9.3, 'sfx-whoosh', .1]);
+})();
+window.R = t => {
+  grain(t);
+  // hook -> layout
+  const k = L.eio(L.n(t, 1.45, 2.25));
+  const ti = L.$('#title'); const s = L.lerp(1, .58, k);
+  ti.style.transform = `translate(${L.lerp(84, 56, k)}px,${L.lerp(150, 136, k)}px) scale(${s})`;
+  ti.style.opacity = 1 - L.n(t, 8.0, 8.4);
+  const vs = L.$('#vs'); vs.style.opacity = 1 - L.n(t, 1.45, 1.8); vs.style.transform = `translateY(${-60 * L.eo(L.n(t, 1.45, 1.9))}px)`;
+  // rows: hook row (marks in a line under "1 LONG vs 3 SHORT") -> P&L rows
+  rows.forEach((el, i) => { const a = R.ai[i];
+    const hx = 56 + i * 242, hy = 660, ry = 880 + i * 96;
+    const kk = L.eio(L.n(t, 1.55 + i * .06, 2.3 + i * .06));
+    el.style.left = '0px'; el.style.top = '0px';
+    const w = L.lerp(232, 968, kk), h = L.lerp(440, 86, kk);
+    el.style.width = w + 'px'; el.style.height = h + 'px';
+    el.style.transform = `translate(${L.lerp(hx, 56, kk)}px,${L.lerp(hy, ry, kk)}px)`;
+    el.style.flexDirection = kk < .5 ? 'column' : 'row'; el.style.justifyContent = kk < .5 ? 'center' : 'flex-start';
+    el.style.gap = (kk < .5 ? 16 : 22) + 'px'; el.style.padding = kk < .5 ? '0' : '0 22px 0 14px';
+    const ms = Math.round(L.lerp(140, 58, kk)); const mw = el.querySelector('.mkw'); if (mw.dataset.s != ms) { mw.innerHTML = L.mark(a.k, ms); mw.dataset.s = ms }
+    el.querySelector('.nm').style.cssText = kk < .5 ? 'width:auto;font-size:36px;text-align:center' : '';
+    const pl = el.querySelector('.pl'); pl.style.display = kk < .5 ? 'none' : '';
+    const m = mAt(t), mv = L.px(m), v = (a.side === 'LONG' ? 1 : -1) * R.stake * mv / 100;
+    pl.textContent = t < 2.3 ? '$0' : L.money(v); pl.className = 'pl mono ' + (t < 2.35 ? '' : v >= 0 ? 'up' : 'dn');
+    // the bell: the winner takes the light, the losers stay full size
+    const g = el.querySelector('.gl'); g.style.opacity = a.side === 'LONG' ? L.eo(L.n(t, TR + .2, TR + .7)) : 0;
+    const pop = a.side === 'LONG' ? 1 + .05 * Math.sin(Math.PI * L.n(t, TR + .2, TR + .8)) : 1;
+    el.style.transform += ` scale(${pop})`;
+    el.style.filter = a.side === 'SHORT' && t > TR ? `saturate(${1 - .35 * L.n(t, TR + .2, TR + .8)})` : '';
+  });
+  // chart
+  const m = mAt(t), mv = L.px(m), on = L.eo(L.n(t, 1.9, 2.4));
+  svg.style.opacity = on;
+  let d = '', area = ''; const pts = L.path.filter(p => p[0] <= m).map(p => [X(p[0]), Y(p[1])]); pts.push([X(m), Y(mv)]);
+  if (pts.length > 1) { d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L'); area = d + `L${X(m).toFixed(1)} ${Y(0)}L${X(0)} ${Y(0)}Z` }
+  const ring = L.n(t, TR, TR + 1.1);
+  svg.innerHTML = `<defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#55d6a2" stop-opacity=".34"/><stop offset="1" stop-color="#55d6a2" stop-opacity="0"/></linearGradient>
+   <filter id="gw"><feGaussianBlur stdDeviation="6"/></filter></defs>
+   ${[0, 10, 20, 30].map(v => `<line x1="20" x2="${CW - 20}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v ? '#2a2522' : '#5f5853'}" stroke-width="2" ${v ? '' : 'stroke-dasharray="8 8"'}/><text x="${CW - 20}" y="${Y(v) - 10}" text-anchor="end" fill="#5f5853" font-family="Geist Mono" font-size="20">${v ? '+' + v + '%' : '0%'}</text>`).join('')}
+   ${[[0, 'TUE 4 PM · REPORT'], [1050, 'WED OPEN'], [1440, 'CLOSE']].map(([mm, s], i) => `<text x="${X(mm)}" y="${CH - 2}" text-anchor="${['start', 'middle', 'end'][i]}" fill="#5f5853" font-family="Geist Mono" font-size="19" letter-spacing="1.5">${s}</text>`).join('')}
+   <rect x="${X(1380)}" y="16" width="${X(1440) - X(1380)}" height="${CH - 60}" fill="#fdbc2a" opacity="${.07 * L.n(t, 5.4, 5.7)}"/>
+   <path d="${area}" fill="url(#ga)"/><path d="${d}" fill="none" stroke="#55d6a2" stroke-width="10" opacity=".35" filter="url(#gw)"/>
+   <path d="${d}" fill="none" stroke="#55d6a2" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"/>
+   <circle cx="${X(m)}" cy="${Y(mv)}" r="11" fill="#f2ede6"/><circle cx="${X(m)}" cy="${Y(mv)}" r="${11 + 26 * (0.5 + 0.5 * Math.sin(t * 9))}" fill="none" stroke="#55d6a2" stroke-width="2" opacity="${t < TR ? .5 : 0}"/>
+   ${ring > 0 && ring < 1 ? [0, .18, .36].map(o => { const r = L.n(ring, o, o + .64); return r > 0 && r < 1 ? `<circle cx="${X(1440)}" cy="${Y(R.move)}" r="${14 + 300 * L.eo(r)}" fill="none" stroke="#fdbc2a" stroke-width="${6 * (1 - r)}" opacity="${1 - r}"/>` : '' }).join('') : ''}`;
+  // the live number beside the head
+  const nw = L.$('#now'); nw.textContent = L.pct(mv); nw.style.opacity = on * (1 - L.n(t, TR + .3, TR + .6));
+  const nx = Math.min(56 + X(m) + 24, 1024 - 300), ny = 300 + Y(mv) - 100; nw.style.left = nx + 'px'; nw.style.top = Math.max(300, ny) + 'px';
+  // clock
+  const c = L.clock(m); L.$('#cd').textContent = t < 2.3 ? 'NEW YORK' : c.day + ' · NEW YORK'; L.$('#ct').textContent = t < 2.3 ? '' : c.t;
+  const left = 1440 - m; L.$('#cc').textContent = m >= 1380 && t < TR ? 'CLOSE IN ' + Math.floor(left) + ':' + String(Math.floor((left % 1) * 60)).padStart(2, '0') : t >= TR ? 'THE CLOSE' : '';
+  L.$('#clock').style.opacity = L.n(t, 2.0, 2.4) * (1 - L.n(t, 8.0, 8.4));
+  // FINAL struck
+  const f = L.n(t, TR + .08, TR + .45), fo = 1 - L.n(t, 8.6, 9.0); const fe = L.$('#final');
+  fe.style.opacity = (f > 0 ? 1 : 0) * fo; fe.style.transform = `translate(-50%,-50%) rotate(-8deg) scale(${L.lerp(2.2, 1, L.eo5(f))})`;
+  // end hold headline + next
+  L.$('#head').style.opacity = L.n(t, 8.3, 8.8); L.$('#head').style.transform = `translateY(${16 * (1 - L.eo(L.n(t, 8.3, 8.9)))}px)`;
+  L.$('#next').style.opacity = L.n(t, 9.3, 9.8);
+  // colour script: green from above as the long wins, red from below for the shorts, gold at the bell
+  const w = L.cl(mv / 25), b = L.n(t, TR, TR + .6) * (1 - .5 * L.n(t, TR + .6, 9.5));
+  L.$('#glow').style.background = `radial-gradient(ellipse 80% 45% at 30% 20%,rgba(85,214,162,${.05 + .16 * w}),transparent 70%),radial-gradient(ellipse 90% 40% at 50% 100%,rgba(232,87,107,${.03 + .11 * w}),transparent 70%),radial-gradient(ellipse 70% 50% at 50% 70%,rgba(253,188,42,${.16 * b}),transparent 70%)`;
+  // camera: a slow push, harder in the last hour, a small kick at the bell
+  const push = 1 + .015 * L.n(t, 0, 2.3) + .03 * L.eio(L.n(t, 5.6, TR)) - .03 * L.eio(L.n(t, TR + .3, 8.6));
+  const kick = t > TR ? Math.exp(-(t - TR) * 9) * Math.sin((t - TR) * 60) * 4 : 0;
+  cam.style.transform = `translate(${kick}px,${kick * .6}px) scale(${push})`;
+};
+L.boot(async () => { grain = L.grain(L.$('#grain'), .08); });
+</script>

@@ -1,0 +1,77 @@
+<!doctype html><meta charset="utf-8"><title>Card packs</title>
+<!-- Three more card-pack styles, diegetic (2026-11-11). Hedra painted each pack and its four blank cards (img/q2<s>.png,
+     graded into the palette); every word and mark is set as live type in the material's own technique:
+     f foil: metallic gold ink on the foil wrapper, ink printed into the card stock.
+     t felt: satin-stitch embroidery (thread stripes, raised, with a shadow) on the felt patch and the felt cards.
+     p paper: letterpress, inked and pressed into the cotton card (a dark wall above, a pale lip below).
+     Coordinates are the painting's own pixels (1536x2048); the page shows y 64..1984. ?s=f|t|p -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Instrument+Serif&family=Baloo+2:wght@700;800&family=Figtree:wght@700;800&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{width:1536px;height:1920px;overflow:hidden;background:#0e0c0b}
+#bg{position:absolute;left:0;top:-64px;width:1536px;height:2048px}
+svg#S{position:absolute;left:0;top:-64px;width:1536px;height:2048px}
+</style>
+<img id="bg"><svg id="S" viewBox="0 0 1536 2048"></svg>
+<script>
+const Q=new URLSearchParams(location.search),st=Q.get('s')||'f',SEAL=Q.get('seal')==='1',S=document.getElementById('S');
+document.getElementById('bg').src=SEAL?'img/s3'+st+'g.png':'img/q2'+st+'.png';
+const NS='http://www.w3.org/2000/svg';
+/* each style: the pack's blank front (centre and width) and each card's circle centre, card width */
+const G={
+ f:{pack:[870,830,460],cards:[[269,993,300,1745],[640,1260,270,1745],[986,1260,270,1745],[1318,1260,270,1745]],down:150},
+ t:{pack:[787,896,470],cards:[[224,1037,290,1560],[609,1234,280,1700],[960,1234,280,1700],[1311,1234,280,1700]],down:150},
+ p:{pack:[749,560,700],cards:[[346,973,280,1375],[704,1160,240,1555],[998,1160,240,1555],[1300,1160,240,1555]],down:118}}[st];
+const T=[['GPT','ChatGPT','LONG','+8%'],['KIMI','Kimi','SHORT','−10%'],['CLAUDE','Claude','SHORT','−12%'],['GROK','Grok','SHORT','−1.6%']];
+const INK='#1d1917',UP={f:'#0a6b3f',t:'#1f7a52',p:'#0a6b3f'}[st],DN={f:'#9e221b',t:'#b3261e',p:'#9e221b'}[st];
+let defs='<defs>'+
+ /* satin stitch: tight diagonal thread lines in two tones, so a filled shape reads as embroidered */
+ ['#fdbc2a','#1d1917','#1f7a52','#b3261e','#d97757','#1e80ff','#f2ede6'].map((c,i)=>'<pattern id="sat'+i+'" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(38)"><rect width="7" height="7" fill="'+c+'"/><rect width="2.4" height="7" fill="rgba(255,255,255,.28)"/><rect x="4.6" width="1.2" height="7" fill="rgba(0,0,0,.28)"/></pattern>').join('')+
+ '<linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1c7"/><stop offset=".4" stop-color="#fdbc2a"/><stop offset=".62" stop-color="#b07f10"/><stop offset=".85" stop-color="#fdbc2a"/><stop offset="1" stop-color="#6e4f0a"/></linearGradient>'+
+ '<filter id="stitch" x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#000" flood-opacity=".55"/></filter>'+
+ '<filter id="press" x="-5%" y="-10%" width="110%" height="130%"><feOffset dy="-2" in="SourceAlpha" result="up"/><feComposite in="SourceAlpha" in2="up" operator="out" result="wall"/><feFlood flood-color="#000" flood-opacity=".35"/><feComposite in2="wall" operator="in" result="w"/><feOffset dy="2" in="SourceAlpha" result="dn"/><feComposite in="SourceAlpha" in2="dn" operator="out" result="lip"/><feFlood flood-color="#fff" flood-opacity=".55"/><feComposite in2="lip" operator="in" result="l"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="w"/><feMergeNode in="l"/></feMerge></filter>'+
+ '<filter id="foil" x="-5%" y="-10%" width="110%" height="130%"><feDropShadow dx="0" dy="1.5" stdDeviation=".6" flood-color="#000" flood-opacity=".6"/></filter></defs>';
+const satId=c=>'url(#sat'+['#fdbc2a','#1d1917','#1f7a52','#b3261e','#d97757','#1e80ff','#f2ede6'].indexOf(c)+')';
+const brand=(x,y,sz,word)=>{ /* logo then 'Earnings Zeason' beside it, centred on x; word=false: logo alone */
+ const flt=st==='t'?' filter="url(#stitch)"':st==='p'?' filter="url(#press)"':'',ww=word?sz*4.1:0,x0=x-(sz+ww)/2;
+ let g='<image href="ezlogo.svg" x="'+x0+'" y="'+(y-sz/2)+'" width="'+sz+'" height="'+sz+'"'+flt+'/>';
+ if(word){const E=st==='t'?satId('#1f7a52'):'#03a35b',Z=st==='t'?satId('#b3261e'):'#e0332b',I=st==='t'?satId(st==='t'?'#f2ede6':'#1d1917'):'#1d1917';
+  g+='<text x="'+(x0+sz*1.18)+'" y="'+(y+sz*.2)+'" font-family="Figtree" font-weight="800" font-size="'+Math.round(sz*.52)+'"'+flt+' style="mix-blend-mode:'+(st==='t'?'normal':'multiply')+'"><tspan fill="'+E+'">E</tspan><tspan fill="'+I+'">arnings </tspan><tspan fill="'+Z+'">Z</tspan><tspan fill="'+I+'">eason</tspan></text>'}
+ return g};
+const text=(x,y,s,o)=>{let fill=o.fill||INK,flt='',blend='multiply',fam=o.fam,ws=o.w||700;
+ if(st==='t'){fill=satId(o.thread||'#1d1917');flt='url(#stitch)';blend='normal';fam=o.tfam||'Baloo 2';ws=800}
+ if(st==='p'){flt='url(#press)'}
+ if(o.metal){fill='url(#gold)';flt='url(#foil)';blend='normal'}
+ return '<text x="'+x+'" y="'+y+'" text-anchor="middle" font-family="'+fam+'" font-weight="'+ws+'" font-size="'+o.sz+'" letter-spacing="'+(o.ls||0)+'" fill="'+fill+'"'+(flt?' filter="'+flt+'"':'')+' style="mix-blend-mode:'+blend+'">'+s+'</text>'};
+fetch('models.json').then(r=>r.json()).then(M=>{
+ let s=defs;const [px,py,pw]=SEAL?{f:[806,1081,440],t:[777,1114,480],p:[768,1030,440]}[st]:G.pack,serif=st==='p'?'Fraunces':'Cormorant Garamond';
+ /* the pack's own printing. Sealed, the label is spread over its whole height: the name, the line, the four marks of the
+    cards inside, the set line (label box: centre x, top, bottom, width in painting px) */
+ if(SEAL){const [lx,lt,lb,lw]={f:[806,560,1610,440],t:[777,790,1450,480],p:[768,530,1540,440]}[st],lh=lb-lt;
+  s+=text(lx,lt+lh*.26,'COREWEAVE',{sz:Math.round(lw/6.2),fam:serif,ls:lw/60,metal:st!=='t',thread:'#fdbc2a'});
+  s+=text(lx,lt+lh*.36,'The trades are in',{sz:Math.round(lw/11),fam:st==='p'?'Fraunces':'Instrument Serif',w:600,fill:INK,thread:'#f2ede6',tfam:'Baloo 2'});
+  const ms=Math.round(lw/7);['GPT','KIMI','CLAUDE','GROK'].forEach((m,i)=>{const x0=M[m],mx=lx+(i-1.5)*ms*1.5,c=m==='CLAUDE'?'#d97757':INK;
+   s+='<g transform="translate('+(mx-ms/2)+','+(lt+lh*.58-ms/2)+') scale('+(ms/24)+')"'+(st==='t'?' filter="url(#stitch)"':st==='p'?' filter="url(#press)"':'')+' style="mix-blend-mode:'+(st==='t'?'normal':'multiply')+'"><path fill="'+(st==='t'?satId(c):c)+'"'+(x0.fr?' fill-rule="'+x0.fr+'"':'')+' d="'+x0.d+'"/>'+(x0.dot?'<path fill="'+(st==='t'?satId('#1e80ff'):'#1e80ff')+'" d="'+x0.dot+'"/>':'')+'</g>'});
+  s+=text(lx,lt+lh*.74,'FOUR CARDS INSIDE',{sz:Math.round(lw/17),fam:'Figtree',ls:3,fill:'#5f5853',thread:'#fdbc2a'});
+  s+=brand(lx,lt+lh*.88,Math.round(lw/7.5),true)}
+ else{
+ s+=text(px,py-40,'COREWEAVE',{sz:Math.round(pw/6.2),fam:serif,ls:pw/60,metal:st!=='t',thread:'#fdbc2a'});
+ s+=text(px,py+40,'The trades are in',{sz:Math.round(pw/13),fam:st==='p'?'Fraunces':'Instrument Serif',w:600,fill:INK,thread:'#f2ede6',tfam:'Baloo 2'});
+ s+=text(px,py+100,'FOUR CARDS INSIDE',{sz:Math.round(pw/26),fam:'Figtree',ls:3,fill:'#5f5853',thread:'#fdbc2a'});
+ s+=brand(px,py+{f:215,t:150,p:225}[st],Math.round(pw/{f:6,t:7,p:7.5}[st]),true);}
+ /* the cards */
+ if(!SEAL)T.forEach(([m,n,side,v],i)=>{const [cx,cy,w,B]=G.cards[i],k=w/270,up=side==='LONG',col=up?UP:DN,th=up?'#1f7a52':'#b3261e',d=G.down;
+  const x0=M[m],ms=Math.round(64*k),mc=m==='CLAUDE'?'#d97757':INK,mfill=st==='t'?satId(m==='CLAUDE'?'#d97757':'#1d1917'):mc;
+  s+='<g transform="translate('+(cx-ms/2)+','+(cy-ms/2)+') scale('+(ms/24)+')"'+(st==='t'?' filter="url(#stitch)"':st==='p'?' filter="url(#press)"':'')+' style="mix-blend-mode:'+(st==='t'?'normal':'multiply')+'"><path fill="'+mfill+'"'+(x0.fr?' fill-rule="'+x0.fr+'"':'')+' d="'+x0.d+'"/>'+(x0.dot?'<path fill="'+(st==='t'?satId('#1e80ff'):'#1e80ff')+'" d="'+x0.dot+'"/>':'')+'</g>';
+  /* no dead space: the face from under the circle to the card's foot is shared out between the name, the side
+     (the headline), the size and the set line, so a tall card spreads its type instead of leaving its bottom empty */
+  const top=cy+62*k,h=B-top,sideSz=Math.round(Math.min(w*(up?.30:.235),h*.16)),pc=Math.round(Math.min(sideSz*.62,h*.12));
+  const alone=T.filter(t=>t[2]===side).length===1, nmY=top+h*.16, sdY=top+h*(alone?.42:.5);
+  s+=text(cx,nmY,n,{sz:Math.round(Math.min(w*.17,h*.1)),fam:serif,w:700});
+  s+=text(cx,sdY,side,{sz:sideSz,fam:'Figtree',w:800,ls:1.5*k,fill:col,thread:th});
+  s+=text(cx,sdY+sideSz*.55+pc*.9,v,{sz:pc,fam:st==='p'?'Fraunces':'Instrument Serif',w:st==='p'?800:400,fill:col,thread:th});
+  /* the lone side says so: it is the story of the round (1 against 3), printed where the tall card had room */
+  if(alone)s+=text(cx,top+h*.8,'THE ONLY '+side,{sz:Math.round(w*.075),fam:'Figtree',w:800,ls:2,fill:'#b07f10',thread:'#fdbc2a'});
+  /* the card's foot: the EZ. logo struck in, with the round number beside it */
+  const ls=Math.round(w*.15);s+=brand(cx-w*.1,B-ls*.62,ls,false);s+=text(cx+w*.1,B-ls*.62+w*.022,'Nº 106',{sz:Math.round(w*.06),fam:'Figtree',w:800,ls:1,fill:'#5f5853',thread:'#1d1917'})});
+ S.innerHTML=s;return Promise.all([document.fonts.ready,document.getElementById('bg').decode()])}).then(()=>window.READY=1);
+</script>

@@ -1,0 +1,116 @@
+<!doctype html><meta charset="utf-8"><title>Season 1 in six scenes</title>
+<!-- Take C of the Season 1 conclusion, round 4 (owner, 2026-11-18, evening; WRAP-BRIEF.md "Round 4"): the fixed script of six small
+  scenes (what this is, one example, who won from 4th to 1st, why, who is out, the end), in this take's look: full-bleed brand-colour
+  grounds, big dark type, a hard cut on the beat BETWEEN scenes. Inside a scene nothing cuts: every line arrives alone on the same
+  ground (a spring in, then still), at least two beats (0.86 s) after the one before, and stays; a line is given its reading time
+  (0.08 s a character) before the next one comes, and the last one 1 s more (R1 to R3). The ground's colour means something: cream or
+  black when nobody is judged, red while a loser is named, green for a winner, gold for the first place and the last card.
+  Numbers are rounded (R5); the one exact number is the winner's total on the last card. Every word follows data/wrap.json
+  (node prep-wrap.js); ?final=1 only forces the final wording.
+  Bed s1-cx = s1-c (Hedra elevenlabs-music, 140.0 BPM, measured) cut on bar lines by scratch recut.py: its beats 21 to 49, then 21 to
+  the end, so the drums play from the first beat, the drop falls on video beat 68 ("1st") and the last phrase on beat 124 (the last
+  card); the groove before the drop is 3.3 dB lower so the drop is a rise of 6 dB or more (R7).
+  window.R(t), READY, CUES, MUSIC, DUR as the other pages. -->
+<style id="base"></style>
+<style>
+#cam{position:absolute;inset:0;overflow:hidden;background:#0e0c0b}
+.sc{position:absolute;inset:0;overflow:hidden;display:none;will-change:transform}
+.in{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 70px;transform-origin:50% 50%}
+.dk{color:#0e0c0b}.lt{color:#f2ede6}
+.dk .mk{box-shadow:0 0 0 3px #0e0c0b}.lt .mk{box-shadow:0 0 0 2px rgba(242,237,230,.25)}
+.blk{width:940px;display:flex;flex-direction:column;align-items:center;flex:none}
+.e{transform-origin:50% 50%}
+.t{font:900 80px/1.1 Inter;letter-spacing:-.035em;max-width:940px;text-align:center;text-wrap:balance}
+.cg,.cr,.ck{display:inline-block;line-height:.98;padding:.02em .14em .07em;border-radius:.14em;white-space:nowrap}.cg{background:#55d6a2;color:#0e0c0b}.cr{background:#e8576b;color:#0e0c0b}.ck{background:#0e0c0b;color:#f2ede6}
+.g{color:#55d6a2}.r{color:#e8576b}.nw{white-space:nowrap}
+.mrow{display:flex;gap:26px;justify-content:center}.mrow .mk{transition:none}
+.mrow .off{opacity:.28}.mrow .on{box-shadow:0 0 0 6px #55d6a2}
+.lgi{display:inline-block;width:1em;height:1em;border-radius:.22em;background:#f2ede6;padding:.12em;vertical-align:-.16em;margin:0 .12em 0 .06em}.lgi img{width:100%;height:100%;object-fit:contain;display:block}
+/* who won: one ground a place, one template */
+.hd.was{opacity:.5}
+.pl{display:flex;flex-direction:column;align-items:center;gap:22px}
+.ord{font:900 268px/.84 Inter;letter-spacing:-.06em}
+.who{display:flex;align-items:center;gap:30px;font:900 150px/1 Inter;letter-spacing:-.045em}
+.res{font:900 132px/1 Inter;letter-spacing:-.045em;white-space:nowrap}
+.lad{display:flex;flex-direction:column;align-items:center;gap:12px;opacity:.62}.lr{display:flex;align-items:center;gap:16px;font:800 44px/1 Inter;letter-spacing:-.02em;white-space:nowrap}
+/* who is out, the end */
+.unit{display:flex;flex-direction:column;align-items:center;gap:26px}
+.slab{margin:0 -70px;width:1080px;height:190px;background:#0e0c0b;display:flex;align-items:center;justify-content:center}.slab span{font:900 140px/1 Inter;letter-spacing:-.045em;color:#e8576b}
+.big{font:900 150px/1 Inter;letter-spacing:-.045em;text-align:center}
+.n{font:600 184px/1 'Geist Mono';letter-spacing:-.06em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sm{font:600 36px/1 'Geist Mono';letter-spacing:.05em;opacity:.72}
+#ft{position:absolute;left:70px;right:70px;top:1262px;height:42px;display:flex;align-items:center;font:600 30px/1 'Geist Mono';letter-spacing:.06em;z-index:200;white-space:nowrap}
+#ft img{width:42px;height:42px}#ft b{margin-left:auto;font-weight:600;opacity:.62}
+#fl{position:absolute;inset:0;background:#f2ede6;opacity:0;pointer-events:none;z-index:190}
+#grain{z-index:210}
+</style>
+<div id="cam"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script>
+<script>
+const q = new URLSearchParams(location.search), G = '#55d6a2', Rd = '#e8576b', Au = '#fdbc2a', Cr = '#f2ede6', K = '#0e0c0b';
+const cam = L.$('#cam'), add = (h, p = cam) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
+const BT = 60 / 140, b = x => +(x * BT).toFixed(4);             // s1-c: 140.0 BPM (measured); two beats = 0.857 s
+let D, FIN, DUR, SC = [], C = [], grain, FT, FL, FLT = [];
+const mk = (k, s, c = '') => L.mark(k, s, false).replace('class="mk"', `class="mk ${c}"`), ai = k => D.ai.find(a => a.k === k);
+const kk = v => '$' + Math.round(Math.abs(v) / 1000) + 'K', ORD = ['1st', '2nd', '3rd', '4th', '5th', '6th'], NUM = ['zero', 'one', 'two', 'three', 'four', 'five'];
+const exact = (v, k = 1) => (v < 0 ? '−' : '+') + '$' + Math.round(Math.abs(v) * k).toLocaleString('en-US');
+// a scene: one ground, one centred block; every element with class e arrives on its own beat (data-m, counted from the scene's start) and stays
+function scene(m0, len, bg, dark, blk, draw) { const el = add(`<div class="sc ${dark ? 'lt' : 'dk'}" style="background:${bg}"><div class="in"><div class="blk" style="gap:38px">${blk}</div></div></div>`);
+  const s = { el, inn: el.firstElementChild, m0, m1: m0 + len, t0: b(m0), t1: b(m0 + len), dark, i: SC.length, draw, shake: 0, $: x => el.querySelector(x), $$: x => [...el.querySelectorAll(x)] };
+  s.es = s.$$('.e').map(e => ({ e, m: +e.dataset.m })); s.es.forEach(x => { if (m0 + x.m > 0) C.push([b(m0 + x.m), x.e.dataset.s || 'r11-knock', +(x.e.dataset.v || .1)]) }); SC.push(s); return s }
+const slam = (el, dt, from = 1.16) => { el.style.opacity = dt >= 0 ? 1 : 0; if (dt >= 0) el.style.transform = `scale(${from + (1 - from) * L.spring(dt, 2.2, 10)})` };
+
+function build() {
+  const n4 = D.ai.length, lead = D.ai[0], last = [...D.ai].reverse(); C.push([.03, 'r11-thump', .18]);
+  // 1. what this is (cream: nobody is judged yet)
+  scene(0, 23, Cr, false, `<div class="t e" data-m="0">${n4} AIs bet on ${D.total} earnings reports.</div><div class="mrow e" data-m="2">${D.ai.map(a => mk(a.k, 150)).join('')}</div>
+    <div class="t e" data-m="7">Each time: <span class="cg">long</span> or <span class="cr">short</span>?</div><div class="t e" data-m="15">$100K on every trade.</div>`);
+  // 2. one example: the biggest move on which exactly one AI was right (black)
+  const x = D.big.find(r => r.right.length === 1) || D.big[0], hero = ai(x.right[0] || D.ai[0].k), fell = x.move < 0, others = x.wrong.length, hs = x.side[hero.k] === 'SHORT';
+  scene(23, 28, K, true, `<div class="t e" data-m="0">One example: ${x.logo ? `<span class="lgi"><img src="${x.logo}"></span>` : ''}${x.co}.</div>
+    <div class="t e" data-m="4">After earnings, the stock <span class="${fell ? 'r' : 'g'} nw">${fell ? 'fell' : 'rose'} ${Math.round(Math.abs(x.move))}%</span>.</div>
+    <div class="t e" data-m="11">Only ${hero.name} went ${hs ? 'short' : 'long'}.</div><div class="mrow e" data-m="13">${D.ai.map(a => mk(a.k, 116, a === hero ? 'on' : 'off')).join('')}</div>
+    <div class="t e" data-m="16"><span class="g">${hero.name} made ${kk(x.p[hero.k])}.</span> The other ${NUM[others] || others} <span class="r nw">lost ${kk(x.p[x.wrong[0]])}</span> each.</div>`);
+  // 3. who won, 4th to 1st: a ground a place (red for a loss, green for a gain, gold for the first), the first on the bed's drop
+  const hdr = FIN ? `After ${D.total} reports:` : `After ${D.rounds} of ${D.total} reports:`; let m = 51;
+  last.forEach((a, j) => { const first = a.rank === 1, len = j === 0 ? 7 : first ? 8 : 5, bg = first ? Au : a.pnl >= 0 ? G : Rd;
+    scene(m, len, bg, false, `<div class="t hd ${j ? 'was' : 'e'}" data-m="0">${hdr}</div><div class="pl e" data-m="${j ? 0 : 2}" data-s="${first ? 'sfx-boom' : 'r11-thump'}" data-v="${first ? .32 : .2}"><div class="ord">${ORD[a.rank - 1]}</div><div class="who">${mk(a.k, 150)}<span>${a.name}</span></div><div class="res">${a.pnl >= 0 ? 'made' : 'lost'} ${kk(a.pnl)}</div></div>${j ? `<div class="lad was">${last.slice(0, j).reverse().map(o => `<div class="lr">${mk(o.k, 54)}<span>${ORD[o.rank - 1]} · ${o.name} · ${o.pnl >= 0 ? 'made' : 'lost'} ${kk(o.pnl)}</span></div>`).join('')}</div>` : ''}`);
+    if (first) FLT.push(b(m)); m += len });
+  // 4. why (cream)
+  const bear = lead.lean === 'BEAR', n10 = Math.round((bear ? lead.shorts : lead.longs) / lead.calls * 10), most = bear ? D.mkt.down > D.mkt.up : D.mkt.up > D.mkt.down, more = bear && D.mkt.short > lead.pnl;
+  scene(m, 32, Cr, false, `<div class="t e" data-m="0">${FIN ? `How did ${lead.name} win?` : `How did ${lead.name} get ahead?`}</div>
+    <div class="t e" data-m="4">It went ${bear ? 'short' : 'long'} <span class="ck">${n10} times out of 10</span>.</div>
+    ${most ? `<div class="t e" data-m="11">And most stocks did ${bear ? 'fall' : 'rise'}: <span class="ck">${bear ? D.mkt.down : D.mkt.up} of ${D.rounds}</span>.</div>` : ''}
+    ${more ? '<div class="t e" data-m="18">Going short every single time would have made even more.</div>' : ''}`); m += 32;
+  // 5. who is out (red: a loser is named)
+  const out = D.ai.filter(a => D.releg.includes(a.k));
+  if (out.length) { const o = out[0]; scene(m, 16, Rd, false, `<div class="t e" data-m="0">${out.length > 1 ? `${NUM[out.length][0].toUpperCase() + NUM[out.length].slice(1)} AIs are out.` : 'One AI is out.'}</div>
+    <div class="unit e" data-m="3">${mk(o.k, 170)}<div class="t">${o.name} was wrong more often than right.</div></div><div class="slab e" data-m="10" data-s="sfx-boom" data-v=".22"><span>Relegated.</span></div>`, function (dt) { const d = dt - b(10); this.shake = d >= 0 ? Math.exp(-d * 9) * Math.sin(d * 70) * 10 : 0 }) } m += 16;
+  // 6. the end (gold), on the bed's last phrase: the one exact number of the video
+  FLT.push(b(m)); scene(m, 13, Au, false, `<div class="unit e" data-m="0" data-s="sfx-boom" data-v=".3">${mk(lead.k, 210)}<div class="big">${lead.name} ${FIN ? 'wins' : 'leads'}<br>Season 1.</div></div><div class="n e" data-m="4" data-s="r11-thump" data-v=".2">${exact(lead.pnl)}</div><div class="sm e" data-m="7">Season 2 soon.</div>`, function (dt) {
+    const d = dt - b(4); this.$('.n').textContent = exact(lead.pnl, L.eo(L.n(d, 0, .45))) }); C.push([b(m), 'sfx-chime', .16]); m += 13; DUR = b(m);
+  SC.forEach(s => { if (s.i) C.push([s.t0, 'r11-thump', .16]) });
+  FT = add(`<div id="ft"><img src="ezlogo.svg" alt="">${FIN ? '' : '<b>DRAFT</b>'}</div>`); FL = add('<div id="fl"></div>');
+  window.MUSIC = { f: 's1-cx', at: 0 };
+}
+function R(t) {
+  let cur = SC[0];
+  SC.forEach(s => { const dt = t - s.t0, nx = SC[s.i + 1], on = dt >= 0 && (!nx || t < nx.t0 + .15); s.el.style.display = on ? 'block' : 'none'; if (!on) return; if (dt >= 0) cur = s;
+    const k = L.eo5(L.n(dt, 0, .13)), d = s.i % 4; s.el.style.zIndex = 10 + s.i;
+    s.el.style.transform = !s.i ? 'none' : d === 1 ? `translateY(${(1 - k) * 1350}px)` : d === 2 ? `translateX(${(1 - k) * 1080}px)` : d === 3 ? `translateY(${-(1 - k) * 1350}px)` : `translateX(${-(1 - k) * 1080}px)`;
+    s.shake = 0; s.es.forEach(x => slam(x.e, dt - b(x.m))); if (s.draw) s.draw(dt, t);
+    // still, but never frozen: a slow push from 1 to 1.03 over the scene and one small breath on each beat of the bed
+    s.inn.style.transform = `translateX(${s.shake}px) scale(${1 + .03 * L.n(t, s.t0, s.t1) + .006 * Math.exp(-(dt % BT) * 3)})` });
+  FT.style.color = cur.dark ? '#f2ede6' : '#0e0c0b';
+  let f = 0; FLT.forEach(x => { const d = t - x; if (d >= 0) f = Math.max(f, .55 * (1 - L.eo(L.n(d, 0, .26)))) }); FL.style.opacity = f; grain(t);
+}
+window.R = R;
+(async () => {
+  L.$('#base').textContent = L.css; [D, L.models] = await Promise.all([fetch('data/wrap.json').then(r => r.json()), fetch('models.json').then(r => r.json())]); FIN = D.final || q.get('final') === '1'; build();
+  // the type wraps by its measured width, so both families must really be in first (the stylesheet with Inter arrives by @import)
+  const got = fam => [...document.fonts].some(f => f.family.replace(/["']/g, '') === fam && f.status === 'loaded');
+  for (let i = 0; i < 400 && !(got('Inter') && got('Geist Mono')); i++) { await Promise.all(['900 150px Inter', '600 184px "Geist Mono"'].map(f => document.fonts.load(f, 'AIs 0123456789 −+$%.,:'))); await new Promise(r => setTimeout(r, 50)) }
+  await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  grain = L.grain(L.$('#grain'), .035); window.CUES = C; window.DUR = DUR; R(0); window.READY = 1;
+})();
+</script>

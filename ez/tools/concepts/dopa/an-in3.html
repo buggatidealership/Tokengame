@@ -1,0 +1,206 @@
+<!doctype html><meta charset="utf-8"><title>in 3</title>
+<!-- Animation sample in-3 (2026-11-20): the prediction video, once a company's trades are in and before its report. in-1's structure
+  (the company, the five rows landing one at a time with the LONG v SHORT count, each AI's side with its called move and its confidence)
+  with every AI's reason in turn (in-2's want): the speaking AI's row lights and its card says the reason in its own words, the key clause
+  big under a marker (feed/words.json) and at most one more line of the same words. Order: the majority side opens, the other side answers
+  on the bed's first drop, the majority's last voice closes; the whole board comes back on the second drop with "Graded <day> at the close".
+  The AIs' words keep their spelling (apostrophes, hyphens) but lose the sentence marks (. , ; :) as the posts do; every line is checked
+  against calls.csv's WHY in setup and the page fails on any difference. No P&L: nothing is graded. ?co=INTU|KEYS|ESTC.
+  Bed w8f-horns (174 BPM, drops at 12.41 and 26.55 s in the file), entered one beat in so the drops land on beats 35 and 76. -->
+<style>
+:root{--pn:#161312;--pn2:#1d1917;--ln:#2a2522;--tx:#f2ede6;--mu:#a59d96;--up:#55d6a2;--dn:#e8576b;--ac:#fdbc2a;--k:1;--e:0;--f:1}
+#chrome{position:relative;z-index:27}
+#chrome .tb .ssn{font-size:28px}
+#vig{opacity:.55}
+#glow{position:absolute;inset:0;pointer-events:none;opacity:0}
+#cam{position:absolute;left:0;top:0;width:1080px;height:1350px;transform-origin:540px 760px}
+#poster{position:absolute;left:0;right:0;top:0;transform-origin:50% 50%;display:flex;flex-direction:column;align-items:center;text-align:center}
+#poster .pl{display:block}
+#poster h1{font:800 196px/1 Inter;letter-spacing:-.045em;margin-top:34px;white-space:nowrap}
+#poster h2{font:800 112px/1.04 Inter;letter-spacing:-.04em;margin-top:30px;white-space:nowrap}
+.fly{display:inline-block;transform-origin:0 0}
+.pn{position:absolute;left:34px;width:1012px;background:var(--pn);border-radius:32px;box-shadow:inset 0 0 0 2px var(--ln),0 26px 70px rgba(0,0,0,.45);overflow:hidden}
+#board{top:150px}
+.pn::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(100deg,transparent 38%,rgba(255,250,235,.14) 50%,transparent 62%);background-size:300% 100%;background-position:var(--sx,150%) 0;opacity:var(--so,0);z-index:3}
+.bh{display:flex;align-items:center;gap:calc(22px + 8px * var(--k));height:calc(130px + 60px * var(--k));padding:0 38px;border-bottom:2px solid var(--ln)}
+.bh .col{width:calc(84px + 24px * var(--k));height:calc(84px + 24px * var(--k))}
+.bh .cn b{display:flex;align-items:baseline;gap:16px;font:800 calc(56px + 16px * var(--k))/1 Inter;letter-spacing:-.025em;white-space:nowrap}.bh .cn b small{font:500 calc(28px + 2px * var(--k))/1 'Geist Mono';letter-spacing:.06em;color:var(--mu)}
+.bh .cn>span{display:block;margin-top:calc(10px + 6px * var(--k));font:500 calc(28px + 4px * var(--k))/1 Inter;color:var(--mu);white-space:nowrap}
+.ty{margin-left:auto;display:flex;align-items:flex-start;gap:14px}
+.ty .c{display:flex;flex-direction:column;align-items:center;gap:10px}
+.ty .c b{display:block;font:700 calc(64px + 14px * var(--k))/1 'Geist Mono';font-variant-numeric:tabular-nums}
+.ty .c small{font:700 28px/1 'Geist Mono';letter-spacing:.08em}
+.ty .v{font:500 calc(30px + 6px * var(--k))/1 'Geist Mono';color:var(--mu);margin-top:calc(18px + 12px * var(--k))}
+.u{color:var(--up)}.d{color:var(--dn)}
+.tr{position:relative;display:grid;grid-template-columns:calc(260px + 30px * var(--k)) 1fr auto;column-gap:20px;align-items:center;height:calc(100px + 66px * var(--k));padding:0 38px;box-shadow:inset 0 -2px 0 var(--ln)}
+.tr .lit{position:absolute;inset:0;background:linear-gradient(90deg,rgba(253,188,42,.16),rgba(253,188,42,.05) 60%,rgba(253,188,42,.02));opacity:0}
+.tr .bar{position:absolute;left:0;top:0;bottom:0;width:9px;background:var(--ac);transform:scaleY(0)}
+.tr>*:not(.bar):not(.lit){position:relative}
+.tr .nm{display:flex;align-items:center;gap:calc(20px + 4px * var(--k));font:600 calc(40px + 10px * var(--k))/1 Inter;white-space:nowrap}
+.tr .nm .aim{width:calc(58px + 26px * var(--k))!important;height:calc(58px + 26px * var(--k))!important}
+.tr .nm .aim svg{width:58%!important;height:58%!important}
+.chip{display:inline-block;justify-self:start;font:700 calc(30px + 6px * var(--k))/1 'Geist Mono';letter-spacing:.02em;padding:.42em .42em .36em;border-radius:.38em;white-space:nowrap}
+.chip.u{background:#173328;color:var(--up)}.chip.d{background:#3a1a20;color:var(--dn)}
+.tr .cf{font:500 calc(30px + 6px * var(--k))/1 'Geist Mono';font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}.tr .cf i{font-style:normal;color:var(--mu)}
+.bf{display:flex;align-items:center;justify-content:center;gap:calc(20px + 10px * var(--e));height:calc((84px + 46px * var(--e)) * var(--f));overflow:hidden;border-top:2px solid var(--ln)}
+.bf img{width:calc(60px + 36px * var(--e));height:calc(60px + 36px * var(--e))}
+.bf b{font:700 calc(40px + 18px * var(--e))/1 Inter;letter-spacing:-.015em;white-space:nowrap}
+.rc{padding:40px 44px 0}
+.rh{display:flex;align-items:center;gap:24px;height:88px}
+.rh b{font:700 56px/1 Inter;letter-spacing:-.015em}
+.rh .chip{font-size:32px}
+.ld{margin-top:28px;font-weight:700;letter-spacing:-.02em;color:var(--tx);display:flex;align-items:center}.mo{display:flex;align-items:center}.mo>span{display:block;width:100%;text-wrap:balance}
+.ld span.in{display:block;width:100%;text-wrap:balance}
+.mo{margin-top:22px;font-weight:400;color:#d9d2ca;letter-spacing:-.01em}
+.hw i.pg{background:#fdbc2a;color:#1a1300}
+#line{display:none}
+</style>
+<div id="gnd"></div><div id="glow"></div>
+<div id="chrome"></div>
+<div id="cam"><div id="poster"></div><div class="pn" id="board"></div><div id="cards"></div></div>
+<div id="vig"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script><script src="w6/an/an.js"></script>
+<script>
+const Q = new URLSearchParams(location.search), CO = (Q.get('co') || 'INTU').toUpperCase();
+// per company: who speaks in which order (the majority side opens, the other side answers, the majority's last voice closes) and the one
+// more line of each AI's own words beside its marked clause (feed/words.json); every line is checked against calls.csv's WHY below
+const CFG = {
+  INTU: { order: ['GEMINI', 'GPT', 'CLAUDE', 'GROK', 'QWEN'], more: { GEMINI: 'Down 52% YTD to 15x earnings', GPT: 'should lift subscription and payment revenue',
+    CLAUDE: "Intuit's own guide says growth slows again tonight", GROK: 'Heavy washout and AI-disruption overhang', QWEN: 'Relief bounce beats fear' } },
+  KEYS: { order: ['GPT', 'QWEN', 'GEMINI', 'GROK', 'CLAUDE'], more: { GPT: 'Test gear orders ran ahead of shipments', QWEN: 'Orders up 56% and record backlog',
+    GEMINI: "echoing August's post-earnings drop", GROK: 'Residual owned AI test-demand story', CLAUDE: 'keeps beating its own guide' } },
+  ESTC: { order: ['GEMINI', 'CLAUDE', 'GPT', 'QWEN', 'GROK'], more: { GEMINI: 'Broad software selloff dragged ESTC back to its pre-Q1 price', CLAUDE: 'Elastic fell 27% in three weeks',
+    GPT: 'Annual cloud sales grew 27%', QWEN: 'Datadog just guided consumption flat', GROK: 'Lower residual ownership of search-AI growth' } } };
+const REPORT = { INTU: 'after the close', KEYS: 'after the close', ESTC: 'after the close' };
+const B = 60 / 174;                       // w8f-horns: 174 BPM, first beat at 0.000 in the file
+const DROP1 = 36, DROP2 = 77;             // the file's drops in beats (12.41 and 26.55 s)
+// the sentence marks the posts drop; spelling marks (apostrophes, hyphens) stay, so every word is the AI's word as written
+const strip = s => s.replace(/[.,;:!?"“”()]/g, ' ').replace(/\s+/g, ' ').trim();
+const need = (ld, mo) => Math.max(1 + .08 * ld.length, 1 + .25 * B + .08 * mo.length) + .03;   // each line held 1 s + 0.08 s a character (see the fades in R)
+let T = {};                               // the timeline in beats, filled in setup
+let grain, gl, cam, board, rows, cards, tr, sp, N;
+(async () => {
+  await AN.load();
+  const cfg = CFG[CO], C = AN.D.cos[CO]; if (!cfg || !C) throw new Error('no company ' + CO);
+  tr = AN.D.trades.filter(x => x.t === CO);
+  const rowsOrder = [...tr.filter(x => x.side === 'LONG').sort((a, b) => b.conf - a.conf), ...tr.filter(x => x.side === 'SHORT').sort((a, b) => b.conf - a.conf)];
+  sp = cfg.order.map(k => { const x = tr.find(y => y.k === k), ld = strip(x.hl), mo = cfg.more[k], w = strip(x.why);
+    if (!(' ' + w + ' ').includes(' ' + ld + ' ')) throw new Error('clause not in the WHY: ' + k);
+    if (!(' ' + w + ' ').includes(' ' + mo + ' ')) throw new Error('more line not in the WHY: ' + k + ' | ' + mo);
+    if (/[.,;:!?]/.test(ld + mo)) throw new Error('sentence mark left: ' + k);
+    return { ...x, ld, mo } });
+  const nL = tr.filter(x => x.side === 'LONG').length, nS = tr.length - nL;
+  const day = new Date(tr[0].graded + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+  const endLine = `Graded ${day} at the close`;
+  L.$('#chrome').innerHTML = AN.brand();
+  L.$('#poster').innerHTML = `<span class="fly pl" id="pl">${AN.co(CO, 360, .24)}</span><h1><span class="fly" id="pn" data-rd="${C.co}">${C.co}</span></h1><h2><span class="fly" id="ps" data-rd="reports ${REPORT[CO]}">reports after<br>the close</span></h2>`;
+  const chip = x => `${x.side} (${x.side === 'LONG' ? '+' : '−'}${AN.num(x.call)}%)`;
+  L.$('#board').innerHTML = `<div class="bh"><span id="hl">${AN.co(CO, 120, .24)}</span><div class="cn"><b><span id="hn" data-rd="${C.co}">${C.co}</span><small id="htk">${C.ticker}</small></b><span id="hs" data-rd="reports ${REPORT[CO]}">reports ${REPORT[CO]}</span></div>
+      <div class="ty"><div class="c"><b class="u" id="nl">0</b><small class="u">LONG</small></div><span class="v">v</span><div class="c"><b class="d" id="ns">0</b><small class="d">SHORT</small></div></div></div>
+    ${rowsOrder.map(x => `<div class="tr" data-k="${x.k}"><i class="lit"></i><i class="bar"></i><span class="nm">${AN.mark(x.k, 84)}<span data-rd="${x.name}">${x.name}</span></span>
+      <span class="chip ${x.side === 'LONG' ? 'u' : 'd'}" data-rd="${chip(x)}">${chip(x)}</span><span class="cf" data-rd="${x.conf}% confident">${x.conf}% <i>confident</i></span></div>`).join('')}
+    <div class="bf">${AN.logo(116).replace('width="116" height="116"', '')}<b data-rd="${endLine}">${endLine}</b></div>`;
+  L.$('#cards').innerHTML = sp.map(x => `<div class="pn rc" data-k="${x.k}"><div class="rh">${AN.mark(x.k, 84)}<b data-rd="${x.name}">${x.name}</b><span class="chip ${x.side === 'LONG' ? 'u' : 'd'}">${x.side}</span></div>
+    <div class="ld"><span class="in" data-rd="${AN.esc(x.ld)}">${AN.lines(['[' + x.ld + ']'], 'pg').replace(/^<p>|<\/p>$/g, '')}</span></div><div class="mo"><span data-rd="${AN.esc(x.mo)}">${AN.esc(x.mo)}</span></div></div>`).join('');
+  cam = L.$('#cam'); board = L.$('#board'); rows = L.$$('.tr'); cards = L.$$('.rc'); N = rowsOrder;
+  gl = AN.ground(L.$('#gnd'), 1); grain = L.grain(L.$('#grain'), .07);
+  await AN.ready();
+  // one type size per slot across the five cards: the largest at which every clause fits two lines and every more line two lines
+  const fit = (sel, hi, lo, lh) => { for (let s = hi; s >= lo; s--) { const ok = L.$$(sel).every(e => { e.style.fontSize = s + 'px'; e.style.lineHeight = lh; return e.firstElementChild.offsetHeight <= 2 * s * lh + 3 });
+      if (ok) return s } return lo };
+  L.$$('.rc .ld, .rc .mo').forEach(e => e.style.width = '924px');
+  const sL = fit('.rc .ld', 70, 44, 1.14), sM = fit('.rc .mo', 46, 32, 1.26);
+  const lines = (sel, s, lh) => Math.max(...L.$$(sel).map(e => Math.round(e.firstElementChild.offsetHeight / (s * lh))));
+  const nLL = lines('.rc .ld', sL, 1.14), nML = lines('.rc .mo', sM, 1.26);
+  L.$$('.rc .ld').forEach(e => e.style.height = (nLL * sL * 1.14).toFixed(1) + 'px'); L.$$('.rc .mo').forEach(e => e.style.height = (nML * sM * 1.26).toFixed(1) + 'px');
+  window.FIT = { sL, sM, nLL, nML };
+  // the board's two sizes (k = 1 while it is the whole frame, k = 0 beside a card) and the card under it
+  board.style.setProperty('--k', 0); board.style.setProperty('--f', 0); const HC = board.offsetHeight;
+  board.style.setProperty('--k', 1); board.style.setProperty('--f', 1); const HB = board.offsetHeight;
+  const CT = 150 + HC + 26, CH = Math.max(...cards.map(c => c.offsetHeight)); cards.forEach(c => { c.style.top = CT + 'px'; c.style.height = CH + 'px' });
+  window.GEO = { HC, HB, CT, CH, bottom: CT + CH };
+  // the poster: logo, name and the line, a column centred between the brand bar and the foot
+  const po = L.$('#poster'); po.style.top = (116 + (1350 - 116 - po.offsetHeight) / 2).toFixed(0) + 'px';
+  // the timeline in beats: the line alone, the dock, a row a beat, then each card for its reading time rounded up to the beat
+  const len = sp.map(x => Math.ceil(need(x.ld, x.mo) / B - 1e-9));
+  // the drops are 41 beats apart: the other side answers on the first, the board comes back on the second (the last voice holds longer)
+  const c0 = 11, tn = sp.findIndex((x, i) => i && x.side !== sp[i - 1].side); if (tn > 0) { const rest = len.slice(tn).reduce((a, b) => a + b, 0); if (rest < DROP2 - DROP1) len[len.length - 1] += DROP2 - DROP1 - rest }
+  const starts = []; let b = c0; len.forEach(l => { starts.push(b); b += l });
+  T = { dock: 3, rows: [5, 6, 7, 8, 9], c0, starts, len, end: b, dur: b + 10 };
+  T.at = Math.max(0, DROP2 - T.end);                              // the bed enters so its second drop lands on the end
+  window.TL = { ...T, sec: { starts: starts.map(x => +(x * B).toFixed(3)), end: +(T.end * B).toFixed(3), dur: +(T.dur * B).toFixed(3), drop1: +((DROP1 - T.at) * B).toFixed(3), drop2: +((DROP2 - T.at) * B).toFixed(3) } };
+  // where the poster's pieces land in the header (measured at the board's full size, no transforms)
+  const r = e => e.getBoundingClientRect(); window._dst = { pl: r(L.$('#hl')), pn: r(L.$('#hn')), ps: r(L.$('#hs')) }; window._src = { pl: r(L.$('#pl')), pn: r(L.$('#pn')), ps: r(L.$('#ps')) };
+  const s = x => +(x * B).toFixed(3);
+  window.CUES = [[0.05, 'r11-swell', .14], [s(T.dock), 'sfx-whoosh', .12]];
+  T.rows.forEach(t => CUES.push([s(t), 'sfx-stamp', .13], [s(t) + .01, 'r11-card', .07]));
+  CUES.push([s(c0), 'sfx-whoosh', .1]);
+  starts.forEach((t, i) => { if (i) CUES.push([s(t), 'sfx-whoosh', .1]); CUES.push([s(t + 1), 'r11-slide', .1]) });
+  const turn = starts.findIndex((t, i) => i && sp[i].side !== sp[i - 1].side); if (turn > 0) CUES.push([s(starts[turn]), 'r11-thump', .16]);
+  CUES.push([s(T.end), 'r11-thump', .14], [s(T.end + 2), 'sfx-bell', .1]);
+  window.MUSIC = { f: 'w8f-horns', at: +(T.at * B).toFixed(4) }; window.DUR = +(T.dur * B).toFixed(3);
+  await AN.go();
+})();
+const bt = x => x * B;
+window.R = t => {
+  grain(t); gl(t);
+  const k = t / B;                                                  // time in beats
+  // the board's size: whole frame until the first card, beside the cards, whole again on the second drop
+  const toC = L.eio(L.n(k, T.c0, T.c0 + 1.3)), toE = L.eio(L.n(k, T.end, T.end + 1.4));
+  const kk = 1 - toC + toE; board.style.setProperty('--k', kk.toFixed(4));
+  board.style.setProperty('--f', (1 - toC + toE).toFixed(4)); board.style.setProperty('--e', toE.toFixed(4));
+  // the camera: a slow sway on an eight-beat period, a push on each card, a punch on each drop
+  const cur = T.starts.filter(s => k >= s).length - 1, inC = k >= T.c0 && k < T.end;
+  const prog = inC ? L.n(k, T.starts[cur], T.starts[cur] + T.len[cur]) : k < T.c0 ? L.n(k, T.dock, T.c0) : L.n(k, T.end, T.dur);
+  const punch = d => { const x = k - d; return x < 0 ? 0 : .022 * Math.exp(-3.2 * x) };
+  const sc = 1 + (k >= T.end ? .008 : .015) * L.eio(prog) + punch(DROP1 - T.at) + punch(DROP2 - T.at) - .022 * L.eio(L.n(k, T.dur - 4, T.dur)) * 0;
+  const swk = L.eio(L.n(k, T.dock, T.dock + 2)), sway = 14 * swk * Math.sin(2 * Math.PI * k / 8), swx = 9 * swk * Math.sin(2 * Math.PI * k / 13 + 1);   // the poster holds still; the camera sways from the dock on
+  cam.style.transform = `translate(${swx.toFixed(2)}px,${sway.toFixed(2)}px) scale(${sc.toFixed(4)})`;
+  // the poster: in, held alone, then its pieces fly into the header
+  const pin = L.eo(L.n(t, 0, .4)), dk = L.eio(L.n(k, T.dock, T.dock + 2));
+  L.$('#poster').style.opacity = 1; L.$('#poster').style.transform = `scale(${(1.05 - .05 * pin).toFixed(4)})`;
+  ['pl', 'pn', 'ps'].forEach(id => { const a = L.$('#' + id), s = _src[id], d = _dst[id], kx = d.width / s.width, ky = d.height / s.height, kq = id === 'ps' ? ky : kx;
+    a.style.transform = `translate(${(dk * (d.left - s.left)).toFixed(1)}px,${(dk * (d.top - s.top) - 40 * (1 - pin) * 0).toFixed(1)}px) scale(${L.lerp(1, kq, dk).toFixed(4)})`;
+    a.style.opacity = ((.45 + .55 * pin) * (1 - L.n(k, T.dock + 1.6, T.dock + 2))).toFixed(3) });
+  ['hl', 'hn', 'htk', 'hs'].forEach(id => L.$('#' + id).style.opacity = L.n(k, T.dock + 1.6, T.dock + 2).toFixed(3));
+  // the board: its ground in with the dock, the rows rise under the header, each row's trade lands on its beat
+  const bin = L.n(k, T.dock, T.dock + 1.2); board.style.opacity = bin.toFixed(3);
+  L.$('.ty').style.opacity = L.n(k, T.dock + 1.2, T.dock + 2).toFixed(3);
+  let nl = 0, ns = 0, lastL = -9, lastS = -9;
+  rows.forEach((r, i) => { const x = N[i], ra = T.dock + .3 + i * .25, q = L.spring(bt(k - ra), 1.4, 7.5), land = T.rows[i];
+    r.style.opacity = k < ra ? 0 : L.cl(L.n(k, ra, ra + .8) * 1.4).toFixed(3); r.style.transform = k < ra ? 'translateY(220px)' : `translateY(${(220 * (1 - q)).toFixed(1)}px)`;
+    const ch = r.querySelector('.chip'), cf = r.querySelector('.cf'), s = L.n(k, land, land + .5);
+    ch.style.opacity = s > 0 ? 1 : 0; ch.style.transform = `scale(${L.lerp(1.7, 1, L.eo5(s)).toFixed(3)})`;
+    const c = L.n(k, land + .25, land + .9); cf.style.opacity = c.toFixed(3); cf.style.transform = `translateX(${(40 * (1 - L.eo(c))).toFixed(1)}px)`;
+    if (k >= land) { if (x.side === 'LONG') { nl++; lastL = land } else { ns++; lastS = land } }
+    // the speaking AI's row lights; the others step back; on the second drop every row is back in full
+    const spk = inC && sp[cur].k === x.k, li = spk ? L.eio(L.n(k, T.starts[cur], T.starts[cur] + .8)) : 0;
+    r.querySelector('.lit').style.opacity = li.toFixed(3); r.querySelector('.bar').style.transform = `scaleY(${li.toFixed(3)})`;
+    const dim = inC ? (spk ? 0 : .42 * L.n(k, T.c0, T.c0 + 1)) : 0; [r.querySelector('.nm'), ch, cf].forEach(e => e.style.filter = dim ? `brightness(${(1 - dim).toFixed(3)})` : '') });
+  const bump = (el, v, tl) => { el.textContent = v; const q = L.n(k, tl, tl + 1); el.style.transform = `scale(${(1 + .35 * Math.sin(Math.PI * q)).toFixed(3)})`; el.style.opacity = v ? 1 : .35 };
+  bump(L.$('#nl'), nl, lastL); bump(L.$('#ns'), ns, lastS);
+  // the cards: each slides in on its beat, its clause marked a beat later, its more line under it; the last one leaves on the second drop
+  cards.forEach((c, i) => { const s0 = T.starts[i], s1 = s0 + T.len[i], a = L.n(k, s0, s0 + .75), o = L.n(k, s1, s1 + .9);
+    const vis = k >= s0 - .01 && k < s1 + 1; c.style.display = vis ? '' : 'none'; if (!vis) return;
+    const sa = L.spring(bt(k - s0), 1.5, 8);
+    c.style.opacity = (L.cl(a * 2) * (1 - o)).toFixed(3); c.style.transform = `translateX(${(150 * (1 - sa) - 150 * L.eo(o)).toFixed(1)}px)`;
+    const ld = c.querySelector('.ld'), mo = c.querySelector('.mo'), ql = L.n(k, s0 + .2, s0 + .7), qm = L.n(k, s0 + .45, s0 + .95);
+    ld.style.opacity = ql.toFixed(3); ld.style.transform = `translateY(${(28 * (1 - L.eo(ql))).toFixed(1)}px)`;
+    mo.style.opacity = qm.toFixed(3); mo.style.transform = `translateY(${(24 * (1 - L.eo(qm))).toFixed(1)}px)`;
+    AN.sweep(c.querySelector('.hlc'), L.eio(L.n(k, s0 + 1, s0 + 3)));
+    // the speaker's mark nods on the beat while its words are up
+    const ph = (k - s0) % 1, nod = k > s0 + 1 ? .05 * Math.exp(-6 * ph) : 0; c.querySelector('.rh .aim').style.transform = `scale(${(1 + nod).toFixed(3)})` });
+  // the side light: the ground glows in the speaker's side colour (green long, red short), breathing on the beat
+  const g = L.$('#glow'); if (inC) { const sd = sp[cur].side === 'LONG', ph = k % 1, br = .55 + .45 * Math.exp(-4 * ph);
+    g.style.background = sd ? 'radial-gradient(80% 38% at 50% 100%,rgba(85,214,162,.38),transparent 70%)' : 'radial-gradient(80% 38% at 50% 100%,rgba(232,87,107,.42),transparent 70%)';
+    g.style.opacity = (br * L.n(k, T.c0, T.c0 + 1)).toFixed(3) }
+  else if (k < T.dock + 2) { const ph = k % 1;   // the opener: the brand's green and red light breathing on the bed's beat under the line
+    g.style.background = 'radial-gradient(80% 34% at 50% 100%,rgba(232,87,107,.34),transparent 70%),radial-gradient(80% 28% at 50% 0%,rgba(85,214,162,.3),transparent 70%)';
+    g.style.opacity = ((.5 + .5 * Math.exp(-4 * ph)) * (1 - L.n(k, T.dock, T.dock + 2))).toFixed(3) }
+  else g.style.opacity = 0;
+  const sheen = (el, k0, ev, du) => { const q = k < k0 ? 2 : ((k - k0) % ev) / du; el.style.setProperty('--so', q > 1 ? 0 : Math.pow(Math.sin(Math.PI * q), .5).toFixed(3)); el.style.setProperty('--sx', (100 - 100 * Math.min(1, q)).toFixed(1) + '%') };
+  cards.forEach((c, i) => sheen(c, T.starts[i] + 2, 3, 2.5));
+  sheen(board, k < T.c0 ? T.rows[4] + 1 : k >= T.end ? T.end + 1.5 : 1e9, 3, 2.5);
+  L.$('#chrome').style.opacity = 1;
+};
+</script>

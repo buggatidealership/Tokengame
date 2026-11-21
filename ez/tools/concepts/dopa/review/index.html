@@ -1,0 +1,258 @@
+<title>EZ Finale Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a screening room. One dark stage (the videos are made for black), sections in posting order, a row of 4:5 screens per section,
+   each with its measured facts under it and a verdict control. Single look by choice: the page shows video drafts in the brand's own night colours. */
+:root{
+  color-scheme:dark;
+  --bg:#0e0c0b; --panel:#161312; --raise:#1d1917; --line:#2a2522;
+  --fg:#f2ede6; --mute:#8e8680; --dim:#5f5853;
+  --gold:#fdbc2a; --green:#55d6a2; --red:#e8576b;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:44px}
+h1{font:800 clamp(28px,5vw,44px)/1.05 var(--sans);letter-spacing:-.03em;margin:0;text-wrap:balance}
+h2{font:800 22px/1.15 var(--sans);letter-spacing:-.02em;margin:0;text-wrap:balance}
+h3{font:600 17px/1.2 var(--sans);letter-spacing:-.01em;margin:0}
+p{margin:0}
+.lab{font:500 11px/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.lede{color:var(--mute);max-width:66ch}
+header{display:flex;flex-direction:column;gap:12px}
+section{display:flex;flex-direction:column;gap:18px}
+.sh{display:flex;flex-direction:column;gap:6px}
+
+/* tonight's order: a real sequence, so it is numbered */
+.order{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;counter-reset:o}
+.order li{counter-increment:o;display:flex;gap:12px;align-items:baseline;padding:12px 14px;background:var(--panel);border-radius:12px;min-width:0}
+.order li::before{content:counter(o);font:600 13px var(--mono);color:var(--gold)}
+.order b{font-weight:600}
+.order span{display:block;color:var(--mute);font-size:13px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px 18px;align-items:start}
+@media (min-width:860px){.grid.c3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid.c3 .screen{max-width:340px}}
+.card{display:flex;flex-direction:column;gap:12px;min-width:0}
+.screen{position:relative;aspect-ratio:4/5;width:100%;max-width:100%;background:#000;border-radius:14px;overflow:hidden;outline:1px solid var(--line)}
+.screen video{width:100%;height:100%;display:block;object-fit:cover;background:#000}
+.wait{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px;color:var(--mute);
+  background:repeating-linear-gradient(135deg,var(--panel) 0 14px,var(--bg) 14px 28px)}
+.wait b{font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--fg)}
+.wait span{font-size:13px;max-width:24ch}
+.top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font:600 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 7px;border-radius:5px;background:var(--raise);color:var(--mute)}
+.chip.ok{color:var(--bg);background:var(--green)} .chip.new{color:var(--bg);background:var(--gold)} .chip.old{color:var(--mute)} .chip.hold{color:var(--red)}
+.idea{color:var(--fg)}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font:400 12.5px/1.45 var(--mono);color:var(--mute)}
+dt{color:var(--dim)} dd{margin:0;color:var(--fg);font-variant-numeric:tabular-nums}
+dd.bad{color:var(--red)}
+.gap{font-size:13px;color:var(--mute)} .gap b{color:var(--red);font-weight:600}
+.fb{display:flex;flex-direction:column;gap:8px;padding-top:4px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{font:600 12px var(--sans);color:var(--mute);background:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.seg button:hover{color:var(--fg);border-color:var(--dim)}
+.seg button[aria-pressed="true"]{color:var(--bg);background:var(--fg);border-color:var(--fg)}
+.seg button[aria-pressed="true"][data-v="Post this"]{background:var(--green);border-color:var(--green)}
+.seg button[aria-pressed="true"][data-v="No"]{background:var(--red);border-color:var(--red)}
+textarea{font:400 13px/1.4 var(--sans);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:38px;resize:vertical;width:100%}
+textarea::placeholder{color:var(--dim)}
+button:focus-visible,textarea:focus-visible,video:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:0;padding:0;list-style:none}
+.rules li{padding:14px;background:var(--panel);border-radius:12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.rules q{quotes:none;color:var(--mute);font-size:13px} .rules b{font-weight:600}
+.qs{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;max-width:70ch}
+.send{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));align-self:center;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;background:var(--raise);border:1px solid var(--line);border-radius:999px;padding:8px 8px 8px 18px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.send span{font-size:13px;color:var(--mute)}
+.send button{font:600 13px var(--sans);color:var(--bg);background:var(--gold);border:0;border-radius:999px;padding:9px 16px;cursor:pointer}
+#out{position:absolute;left:-9999px}
+.pp{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;border:0;background:rgba(14,12,11,.72);cursor:pointer;display:grid;place-items:center;transition:opacity .2s}
+.pp span{width:0;height:0;border-left:18px solid var(--fg);border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px}
+.card.on .pp{opacity:0} .card.on .pp:focus-visible{opacity:1}
+.prog{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(242,237,230,.15)} .prog i{display:block;height:100%;width:0;background:var(--gold)}
+.lvl{display:grid;grid-template-columns:auto repeat(5,minmax(0,1fr));gap:5px;align-items:stretch}
+.lvl .lab{align-self:center;padding-right:4px}
+.lvl button{font:500 10.5px/1.15 var(--sans);color:var(--mute);background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:6px 2px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;text-align:center}
+.lvl button b{font:600 15px/1 var(--mono);color:var(--fg)}
+.lvl button span{overflow-wrap:anywhere}
+.lvl button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:var(--bg)} .lvl button[aria-pressed="true"] b{color:var(--bg)}
+@media (prefers-reduced-motion:no-preference){.seg button,.send button{transition:background .15s,color .15s,border-color .15s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="lab">Earnings Zeason · Season 1 · 112 of 112 rounds graded</span>
+    <h1>Finale review</h1>
+    <p class="lede">Every video for the end of Season 1 and the first Season 2 mockups, in posting order. Drafts use 111 rounds; the final renders swap in NVIDIA's result tonight with no other change. Mark each one and leave a note, then copy your feedback and paste it to me.</p>
+  </header>
+
+  <section>
+    <div class="sh"><span class="lab">Tonight</span><h2>The four posts, in order</h2></div>
+    <ol class="order">
+      <li><div><b>Disney outcome</b><span>Ready, with the real price path</span></div></li>
+      <li><div><b>Home Depot outcome</b><span>Approved</span></div></li>
+      <li><div><b>NVIDIA outcome, finale cut</b><span>After the 4 pm New York close</span></div></li>
+      <li><div><b>Season 1 conclusion</b><span>Your pick from the takes below</span></div></li>
+    </ol>
+  </section>
+
+  <div id="sections"></div>
+
+  <section>
+    <div class="sh"><span class="lab">Your definition, made checkable</span><h2>What "polished" is measured as</h2>
+      <p class="lede">Round 4 is built against these. Round 2 was made before you said it and fails the first two.</p></div>
+    <ul class="rules">
+      <li><b>It rolls out</b><q>"roll it out step by step, so somebody understands what they are looking at"</q><span>Each scene opens with a plain line alone for 0.7 s. Things arrive one at a time, 0.7 s apart, and stay. The scene holds 1.6 s after the last one. Words come before numbers; numbers are rounded.</span></li>
+      <li><b>Two data points a scene</b><q>"each screen is to show 2 data points max, and the 2 data points need to correlate"</q><span>At most two numbers or verdicts at full contrast, about the same subject. A table arrives one row a scene.</span></li>
+      <li><b>Not crowded, not empty</b><q>"not having too much dead space... not too crowded"</q><span>At most 12 words a scene. Content centred, 35 to 70% of the frame's height, no empty band over 30%.</span></li>
+      <li><b>Glass</b><q>"this glassy aspect with Apple"</q><span>One frosted sheet a scene over slow brand-colour light, bright only on its top edge. On take K, the NVIDIA finale beats and Season 2 mockup A.</span></li>
+      <li><b>Calm motion</b><q>"max animation... cleaner"</q><span>Nothing ever frozen, at most two things moving at once, every arrival under half a second.</span></li>
+    </ul>
+    <p class="gap">The cost: the video answers four questions instead of eight. What was this, who won, why, who is out. One example round instead of three; no accuracy bars, no recap grid.</p>
+  </section>
+
+  <section>
+    <div class="sh"><span class="lab">Still yours to decide</span><h2>Open questions</h2></div>
+    <ol class="qs">
+      <li>"The bears got paid. The bulls got rekt." is my line for the two shorts-heavy models winning and the two longs-heavy models losing. Keep "rekt", or soften it?</li>
+      <li>"Short everything: +$179,410. No AI beat that." is true today and undercuts the winner. Keep it as the line people argue with, or drop it? It disappears by itself if NVIDIA closes up more than about 3.5%.</li>
+      <li>Alibaba is held as Season 2, round 1. The site has no Season 2 record yet, so its calls have nowhere to show. Start Season 2 on the site when the calls come in, or post on X only until the launch video?</li>
+    </ol>
+  </section>
+
+  <div class="send"><span id="count">Nothing marked yet</span><button id="copy" type="button">Copy my feedback</button></div>
+  <textarea id="out" aria-hidden="true" tabindex="-1"></textarea>
+</div>
+
+<script>
+// One entry per video. v: file stem in v/ (mp4 + jpg); no v = not rendered yet (wait says why).
+const SECTIONS = [
+  { lab: 'New · 20 Nov, Season 2 in the painted world, revised', h: 'Season 2 announcement: the painted wrap-up\'s look and its horns music', lede: 'Built from the painted wrap-up you picked: the same painted moving light, glass for every fact, the same clean type, the horns track. The rule (hit rate under 50% means relegated), the chart of every trade with 50% as a glass floor, the floor shattering under Kimi on the first drop, Grok defends the title, Qwen from China takes Kimi\'s seat, Gemini from the US joins, the five on the second drop, then the same rule for the five, every trade with its reason, and the end card: everyone starts at P&L $0.', items: [
+    { id: 'S2 take D', v: 's2d', name: 'Season 2 · painted, horns', chip: ['new', 'To post'], idea: 'The cut to post tonight: the top bug is the logo and EARNINGS ZEASON only, SEASON 1 under HIT RATE on the chart, Kimi relegated held 2.8 s (was 1.4) with the stamp landing after the record, NEW COMPETITOR FROM CHINA and FROM THE US, SAME RULE, then SEASON 2 STARTING NOW and EVERYONE STARTS AT P&L $0. The post file is ez/post/s2-announce.mp4.',
+      facts: [['Length', '34.5 s'], ['A new shot every', '1.5 s'], ['Motion', '13.6'], ['Drops', '+12.3 / +11.5 dB'], ['Kimi', '51–61, 45.5%']], gap: 'Gemini 4 Argon is a limited release from Google: which Gemini do you actually call? The Intuit cards still show grey lines where the reason goes; send Gemini\'s and Claude\'s Intuit reasoning and a real line goes there. $100K on every trade is left to the post text.' },
+  ] },
+  { lab: 'New · 19 Nov, new music', h: 'The painted wrap-up, five new kinds of music', lede: 'The same painted video with five new tracks, each a different style: synthwave, hip hop with horns, jungle, chiptune and pop punk. All five play at the same speed as the video. The chart finishes on the first drop and Grok lands on the second. Tap a style under the video to swap the music at the same moment. These are not a chill to hype ladder. They all sit around the middle, since you said the right one was somewhere there. The old five levels are still on the painted card further down.', ladder: true, items: [
+    { id: 'W7 Painted, new music', v: 'w7p', lv: 'p', name: 'Painted wrap-up, five new tracks', chip: ['new', 'Draft'], idea: 'Synthwave: neon night drive, gated snare. Hip hop: boom bap drums with big brass horns. Jungle: 90s amen breaks and rave piano. Chiptune: an 8-bit victory theme. Pop punk: live drums and guitars.',
+      facts: [['Length', '34.5 s'], ['Tempo', '174 BPM, all five'], ['Drop 1', '+7 to +13 dB'], ['Drop 2', '+7 to +12 dB']], gap: 'None of the five tracks built up on their own, so each drop is made by a filter that opens and a short gap before the hit. Pop punk has a real break of its own before drop 2. I cannot hear them.' },
+  ] },
+  { lab: 'New · 19 Nov, Season 2', h: 'Season 2 intro: Kimi out, two join, the feed', lede: 'It opens on Season 1\'s four. Kimi\'s tile goes red, RELEGATED is stamped on it, it cracks and shatters, and the three close up. Gemini joins, Qwen joins, the five land on the first drop. On the second drop the glass sheet becomes a phone showing a Feed tab with Season 2\'s first round, Intuit, and each AI\'s real side and size from the sheet. Posts lift out of the phone like the cards in the release video. The reasoning shows as lines that never become words, since the sheet has no reasoning yet.', items: [
+    { id: 'S2 take C', v: 's2c', name: 'Season 2 · Kimi out, the feed', chip: ['new', 'Draft'], idea: 'Kimi relegated and shattered. Gemini joins. Qwen joins. Five AIs. Season 1 told you long or short. Season 2 tells you why: the feed on a phone, Gemini\'s long and Claude\'s short lifting out. Every trade, every reason. Soon.',
+      facts: [['Length', '30.1 s'], ['Scenes', '7'], ['Motion', '5.5'], ['Music', 'phonk, recut: drops on the five and the feed']], gap: 'The phone\'s own text is small; the lifted posts carry it. The feed shows Intuit\'s real calls, which grade on Friday 20 Nov, so after that the post is out of date.' },
+  ] },
+  { lab: 'New · 19 Nov, the mix', h: 'The Race with the title sequence: its ending, then its look throughout', lede: 'The Race exactly as it was up to the second drop. On that drop the other rows fall away, the trophy lights up behind them, Grok\'s name flies up to be the headline and its logo flies into the trophy. Then WINS, SEASON 1, the P&L on glass, and the camera pulls back through the EZ. logo to the golden ticket SEASON 2 SOON. It has the same five music levels as the Race.', ladder: true, items: [
+    { id: 'W7 Mix painted', v: 'w7p', lv: 'm', name: 'Race + Title sequence, painted throughout', chip: ['new', 'Draft'], idea: 'The same moves, timing and music as the mix, with the title sequence\'s painted light behind every shot. The golden ticket carries Season 1. The four AIs stand on the podium. The race\'s tags and both leaderboards are glass.',
+      facts: [['Length', '34.5 s'], ['A new beat every', '1.8 s'], ['Motion', '10.8'], ['Chart and boards', '21.0 s'], ['Music', '174 BPM']], gap: 'The painting is dimmed under the race so the lines read. Where lines cross at a lead change, the tags blur. LONG and SHORT glow but have no glass slabs.' },
+    { id: 'W7 Mix', v: 'w7m', lv: 'm', name: 'Race + Title sequence', chip: ['new', 'Draft'], idea: 'The Race\'s one continuous shot up to the accuracy board. The title sequence\'s trophy, glass and golden ticket after drop 2, still in the Race\'s chart world: no cut.',
+      facts: [['Length', '34.5 s'], ['A new beat every', '1.8 s'], ['Motion', '10.3'], ['Chart and boards', '21.0 s'], ['Music', '174 BPM']], gap: 'Grok\'s season line under the headline is gone; the trophy takes its place. The logo close is held 2.8 s.' },
+  ] },
+  { lab: 'New · 19 Nov, music ladder', h: 'Season 1 wrap-up, five shows, five music levels', lede: 'Same five pictures. Each now has five music levels, from most chill to most hype: tap a level under any take and it swaps the music in place, at the same moment in the video. Levels 1 to 4 are new beds, cut so the chart still finishes on the first drop and Grok lands on the second; level 5 is the hype bed it had. Whooshes and hits get quieter on the chill levels. Pick a level and a take.', ladder: true, items: [
+    { id: 'W6 A Broadcast', v: 'w6a', lv: 'a', name: 'A · Broadcast', chip: ['new', 'Draft'], idea: 'A championship broadcast package: a scorebug, slanted plates that wipe in, the season as a race trace with the leader called in a lower third, a timing tower for each leaderboard.',
+      facts: [['Length', '33.2 s'], ['A new shot every', '2.1 s'], ['Motion', '14.9'], ['Chart and boards', '18.4 s'], ['Music', '150 BPM']], gap: 'The background stripes step on every beat and may read as busy. The logo close is the plainest shot.' },
+    { id: 'W6 B Race', v: 'w6b', lv: 'b', name: 'B · The Race', chip: ['new', 'Draft'], idea: 'One continuous shot. The camera rides beside the four P&L lines, pulls back on the drop to the whole season, the line ends become the P&L leaderboard, then accuracy, then Grok\'s bar unrolls into its season line.',
+      facts: [['Length', '34.5 s'], ['A new beat every', '1.8 s'], ['Motion', '9.2'], ['Chart and boards', '21.0 s'], ['Music', '174 BPM']], gap: 'The calmest take: camera moves, no cuts. "112 earnings trades" is up about 1 s. The P&L board holds 4.8 s with nothing new arriving.' },
+    { id: 'W6 C Slam', v: 'w6c', lv: 'c', name: 'C · Slam', chip: ['new', 'Draft'], idea: 'Full-frame type on flat black, cream, green, red and gold, hard cuts on the beat. The chart draws under the leader\'s P&L in giant digits. Leaderboards as four full-width bars, with two-bar close-ups.',
+      facts: [['Length', '34.0 s'], ['A new shot every', '1.6 s'], ['Motion', '34.7'], ['Chart and boards', '19.6 s'], ['Music', '150 BPM']], gap: 'The fastest take: some opening words are up 0.6 to 0.8 s. Six colour flashes on lead changes between 8 and 10 s. The winner sits on gold rays.' },
+    { id: 'W6 D Terminal', v: 'w6d', lv: 'd', name: 'D · Terminal', chip: ['new', 'Draft'], idea: 'The site\'s trading terminal, full frame. The chart draws like a live trading chart over a tape of all 112 trades, then the leaderboard, and a pointer clicks Accuracy to switch it.',
+      facts: [['Length', '34.5 s'], ['A new shot every', '1.7 s'], ['Motion', '18.6'], ['Chart and boards', '20.6 s'], ['Music', '140 BPM']], gap: 'The rows do not re-order on the Accuracy click: both leaderboards have the same order. The premise lines are up about 1.7 s each.' },
+    { id: 'W6 E Title', v: 'w6e', lv: 'e', name: 'E · Title sequence', chip: ['new', 'Draft'], idea: 'A film title sequence: glass panels over Hedra paintings in the chip\'s style. A golden ticket for Season 1, four pedestals, and a trophy that stands dark until the Grok drop switches the lights on.',
+      facts: [['Length', '34.3 s'], ['A new shot every', '1.7 s'], ['Motion', '13.8'], ['Chart and boards', '18.0 s'], ['Music', '140 BPM'], ['Hedra', '$0.55']], gap: '"$100K on every trade" has no shot of its own: it sits in the chart\'s head. The paintings are 768 px wide, shown slightly enlarged.' },
+  ] },
+  { lab: 'New · 19 Nov', h: 'P&L by name, no punctuation, shine', lede: 'The NVIDIA resolution video is back in the Disney and Home Depot format, with glass. Every number carries its label. Nothing on screen has punctuation. A rim of gold light on the leader and on the winner.', items: [
+    { id: 'NVIDIA outcome glass', v: 'nvo', name: 'NVIDIA · resolution video', chip: ['new', 'Ready'], idea: 'All 4 long. The price path with the clock and the four P&L rows. FINAL. All four wrong, NVIDIA −2.89%, P&L −$2,890 each. The season board. Season 1 is over. Grok wins Season 1, P&L +$169,450.',
+      facts: [['Length', '20.8 s'], ['Format', 'as Disney and Home Depot'], ['Music', 'the same bed'], ['File', 'ez/post/r112-NVDA-outcome.mp4']] },
+    { id: 'Wrap glass 2', v: 'g6', name: 'Season 1 wrap-up · glass, round 2', chip: ['new', 'Draft'], idea: 'We tracked 4 AIs through 112 earnings. Long or short. The Reddit trade: Grok P&L +$29K, the other three P&L −$29K each. P&L after 112 trades, 4th to 1st. Why Grok won. Kimi relegated. Grok wins Season 1, P&L +$169,450.',
+      facts: [['Length', '44.6 s'], ['Scenes', '8'], ['Music', 'phonk bed, drop on 1st place']] },
+    { id: 'S2 glass 3', v: 's2a3', name: 'Season 2 · glass, no punctuation', chip: ['new', 'Draft'], idea: 'Season 2. Gemini joins. Qwen joins. Five AIs, three stay, two join. Season 1 told you long or short. Season 2 tells you why. Every trade, every reason. Soon.',
+      facts: [['Length', '21.7 s'], ['Scenes', '7'], ['Music', 'phonk bed, steady, no drop']] },
+  ] },
+  { lab: 'New · 18 Nov, night', h: 'Glass, with the new wording', lede: 'Both in the Season 2 mockup\'s glass look. An AI is long or short, nothing else. One thought a scene, one element at a time. Final numbers.', items: [
+    { id: 'NVIDIA glass', v: 'nvg', name: 'NVIDIA · the last round', chip: ['new', 'Ready'], idea: 'NVIDIA, the last trade of Season 1. All four went long. The real price path: it jumped, then closed −2.89%. Each lost $2,890. The final standings. Grok wins Season 1.',
+      facts: [['Length', '28.0 s'], ['Scenes', '6'], ['Music', 'the Disney and Home Depot bed'], ['Drop', 'on −2.89%']] },
+    { id: 'Wrap glass', v: 'g5', name: 'Season 1 wrap-up · glass', chip: ['new', 'Draft'], idea: 'We tracked 4 AIs through 112 earnings. Each time, long or short. One example: Reddit. The standings, 4th to 1st. How Grok won. Kimi relegated. Grok wins Season 1.',
+      facts: [['Length', '44.6 s'], ['Scenes', '8'], ['Music', 'new phonk bed, drop on 1st place']] },
+    { id: 'S2 glass 2', v: 's2a2', name: 'Season 2 · glass, reworded', chip: ['new', 'Draft'], idea: 'Season 2. Gemini joins. Qwen joins. Five AIs: three stay, two join. Season 1 told you long or short. Season 2 tells you why. Every trade. Every reason. Soon.',
+      facts: [['Length', '21.7 s'], ['Scenes', '7'], ['Music', 'new phonk bed, steady, no drop']] },
+  ] },
+  { lab: 'Post 4 · the last Season 1 post', h: 'Season 1 conclusion', lede: 'Round 2 is what you watched and rejected. Round 4 is one new script for all three looks: six small scenes that each build one thought, a plain line first, one thing arriving at a time, time to take it in, rounded numbers, a bed that moves. It ends on "Grok wins Season 1." and one small "Season 2 soon."', items: [
+    { id: 'K round 4', v: 'k4', name: 'K · Glass', chip: ['new', 'Round 4'], idea: 'The new script on one glass sheet over slow coloured light. Each new line is bright; the lines before it dim. New music.',
+      facts: [['Length', '58.0 s'], ['Scenes', '6'], ['Music drop on 1st', '+8.4 dB'], ['Off-brand colour', '0.4%']], gap: 'Too still: motion in 29% of frames and a 3.9 s stretch where nothing moves. The light behind the glass and a slow push-in need to carry the holds.' },
+    { id: 'L round 4', v: 'l4', name: 'L · One line', chip: ['new', 'Round 4'], idea: 'The new script over the four lines as a drawing: no axis, no numbers on the chart, one camera, no cuts. The words say it; the lines show it.',
+      facts: [['Length', '59.0 s'], ['Scenes', '6'], ['Longest still', '0.77 s'], ['Music drop on 1st', '+8.7 dB'], ['Lift on the last card', '+9.4 dB'], ['Off-brand colour', '0.2%']] },
+    { id: 'C round 4', v: 'c4', name: 'C · Colour cards', chip: ['new', 'Round 4'], idea: 'The new script on full-colour grounds. A hard cut between scenes; inside a scene the lines write themselves one by one.',
+      facts: [['Length', '58.7 s'], ['Scenes', '6'], ['Says in the draft', '"Grok leads"; "wins" once all 112 are in']] },
+    { id: 'K round 2', v: 'k1', name: 'K · The keynote', chip: ['old', 'Round 2'], idea: 'Black stage, giant counting numbers, a recap grid, then a Season 2 card.',
+      facts: [['Length', '58.0 s'], ['Hook complete', '0.8 s'], ['Longest still', '0.67 s'], ['Cuts', '0'], ['Off-brand colour', '0.3%']], gap: 'Old wording and Season 2 ending. The recap grid shows about twelve numbers at once.' },
+    { id: 'L round 2', v: 'l1', name: 'L · One line', chip: ['old', 'Round 2'], idea: 'The race with three big-round cards, bears against bulls, accuracy, Season 2.',
+      facts: [['Length', '57.5 s'], ['Hook complete', '2.3 s'], ['Longest still', '0.43 s'], ['Cuts', '0'], ['Off-brand colour', '0.9%']], gap: 'Old wording and ending. The densest take: four live numbers during the ride, smallest type.' },
+    { id: 'C round 2', v: 'c1', name: 'C · The report cards', chip: ['old', 'Round 2'], idea: 'Four report cards with a verdict, P&L, hit rate and best and worst trade, then the lesson.',
+      facts: [['Length', '55.7 s'], ['Hook complete', '2.1 s'], ['Longest still', '0.00 s'], ['Cuts', '39, on the beat'], ['Off-brand colour', '0.7%']], gap: 'Old wording and ending. About eight numbers a card; one line holds 3.4 s against a 4.0 s reading target.', bad: [] },
+  ] },
+  { lab: 'Post 3 · tonight, after the close', h: 'NVIDIA outcome, finale cut', lede: 'Same structure as Home Depot\'s outcome video, titled as the Season 1 finale, a few seconds longer, ending on the final standings and the winner. It cannot be rendered until NVIDIA\'s move is in the sheet.', items: [
+    { id: 'NVIDIA finale test', v: 'fin', name: 'Finale cut, tested on Home Depot', chip: ['new', 'Test'], idea: 'The same outcome video with a "Season 1 finale" tag, then three added beats: "Season 1 is over.", "Grok wins Season 1.", the total. Shown on Home Depot\'s round because NVIDIA is not graded yet.',
+      facts: [['Length', '20.8 s'], ['Checks', 'all pass'], ['Longest still', '1.17 s'], ['Off-brand colour', '0.9%']] },
+  ] },
+  { lab: 'Posts 1 and 2', h: 'Outcome videos', lede: 'Disney and Home Depot have no Hyperliquid market, so their charts now use the exchange\'s own 5-minute prices, pre-market included.', items: [
+    { id: 'Disney outcome', v: 'dis', name: 'Disney · round 110', chip: ['new', 'Ready'], idea: 'Kimi and Grok short, GPT and Claude long. Closed at -1.48% after a +3% pre-market spike.',
+      facts: [['Length', '15.5 s'], ['Checks', 'all pass'], ['Longest still', '1.17 s']] },
+    { id: 'Home Depot outcome', v: 'hd', name: 'Home Depot · round 111', chip: ['ok', 'Approved'], idea: 'All four short. Closed at -2.50%; each made $2,500.',
+      facts: [['Length', '15.5 s'], ['Checks', 'all pass'], ['Longest still', '1.20 s']] },
+  ] },
+  { lab: 'After Season 1 · first mockups', h: 'Season 2 launch', lede: 'Gemini and Qwen join, Kimi is out, five models. The new thing: every call comes with its reasoning. Two styles to react to; neither shows invented reasoning or model versions.', items: [
+    { id: 'Season 2 mockup A', v: 's2a', name: 'A · Show your work', chip: ['new', 'First mockup'], idea: 'One glass sheet that changes shape on each beat. Gemini joins, Qwen joins, five AIs, then "Season 1 told you long or short. Season 2 tells you why."',
+      facts: [['Length', '21.6 s'], ['Hook complete', '0.9 s'], ['Longest still', '0.70 s'], ['Off-brand colour', '1.5%']], gap: 'It was built before your rollout rule: two lines leave a little early ("Gemini joins." 1.9 s against 2.0), and the small "New model · 1 of 2" label is the kind you called confusing.' },
+    { id: 'Season 2 mockup B', v: 's2b', name: 'B · Official', chip: ['new', 'First mockup'], idea: 'Squad news in the form X knows from transfer announcements, on cream instead of black. One notice a scene, then "New rule: show your work."',
+      facts: [['Length', '32.7 s'], ['Longest still', '0.73 s'], ['Off-brand colour', '0.2%']], gap: 'Longer than the 15 to 22 s I aimed for: seven scenes at your pace need 31 s. Without Kimi\'s card it is 27.7 s.' },
+  ] },
+];
+
+const LVN = { p: ['Synth\u00adwave', 'Hip hop horns', 'Jungle', 'Chiptune', 'Pop punk'] };
+const IDLV = {}; SECTIONS.forEach(x => x.items.forEach(it => { if (it.lv) IDLV[it.id] = it.lv }));
+const lvName = (k, l) => LVN[k] ? LVN[k][l - 1] : LV[l - 1][k === 'b' || k === 'm' ? 1 : 0];
+const LV = [['Ambient', 'Ambient'], ['Lo-fi', 'Lo-fi'], ['Garage', 'Liquid DnB'], ['Future bass', 'Melodic DnB'], ['Hype', 'Hype']];
+const KEY = 'ez-finale-review', esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let FB = {}; try { FB = JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(FB)) } catch (e) {} };
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+document.getElementById('sections').outerHTML = SECTIONS.map(s => `<section>
+  <div class="sh"><span class="lab">${esc(s.lab)}</span><h2>${esc(s.h)}</h2><p class="lede">${esc(s.lede)}</p></div>
+  <div class="grid${s.items.length === 6 ? ' c3' : ''}">${s.items.map(it => { const f = FB[it.id] || {}, sid = slug(it.id); return `<article class="card" data-id="${esc(it.id)}">
+    <div class="screen">${it.lv ? `<video playsinline muted preload="none" poster="v/${it.v}.jpg" src="v/${it.v}.mp4" aria-label="${esc(it.name)}, tap to play"></video><button type="button" class="pp" aria-label="Play ${esc(it.name)}"><span></span></button><i class="prog"><i></i></i><audio preload="none" data-k="${it.lv}"></audio>` : it.v ? `<video controls playsinline preload="none" poster="v/${it.v}.jpg" src="v/${it.v}.mp4" aria-label="${esc(it.name)}"></video>` : `<div class="wait"><b>${esc(it.wait[0])}</b><span>${esc(it.wait[1])}</span></div>`}</div>
+    ${it.lv ? `<div class="lvl" role="group" aria-label="Music level for ${esc(it.name)}"><span class="lab">Music</span>${LV.map((n, i) => `<button type="button" data-l="${i + 1}" aria-pressed="${(f.l || 1) === i + 1}"><b>${i + 1}</b><span>${esc(lvName(it.lv, i + 1))}</span></button>`).join('')}</div>` : ''}
+    <div class="top"><h3>${esc(it.name)}</h3><span class="chip ${it.chip[0]}">${esc(it.chip[1])}</span></div>
+    <p class="idea">${esc(it.idea)}</p>
+    ${it.facts ? `<dl>${it.facts.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
+    ${it.gap ? `<p class="gap"><b>Fails:</b> ${esc(it.gap)}</p>` : ''}
+    ${it.v ? `<div class="fb"><div class="seg" role="group" aria-label="Verdict for ${esc(it.name)}">${['Post this', 'Close, fix it', 'No'].map(v => `<button type="button" data-v="${v}" aria-pressed="${f.v === v}">${v}</button>`).join('')}</div>
+      <textarea id="note-${sid}" placeholder="What to change" aria-label="Note for ${esc(it.name)}">${esc(f.n || '')}</textarea></div>` : ''}
+  </article>` }).join('')}</div></section>`).join('');
+
+const count = () => { const n = Object.values(FB).filter(f => f.v || f.l || (f.n && f.n.trim())).length; document.getElementById('count').textContent = n ? `${n} marked` : 'Nothing marked yet' };
+document.addEventListener('click', e => { const b = e.target.closest('.seg button'); if (!b) return; const id = b.closest('.card').dataset.id; FB[id] = FB[id] || {};
+  FB[id].v = FB[id].v === b.dataset.v ? null : b.dataset.v; b.parentNode.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.v === FB[id].v)); save(); count() });
+document.addEventListener('input', e => { const t = e.target.closest('.card textarea'); if (!t) return; const id = t.closest('.card').dataset.id; FB[id] = FB[id] || {}; FB[id].n = t.value; save(); count() });
+// one video at a time
+document.addEventListener('play', e => { if (e.target.tagName !== 'VIDEO') return; document.querySelectorAll('video').forEach(v => { if (v !== e.target) v.pause() }); document.querySelectorAll('audio').forEach(x => { if (!e.target.closest('.card').contains(x)) x.pause() }) }, true);
+document.getElementById('copy').addEventListener('click', async ev => { const lines = Object.entries(FB).filter(([, f]) => f.v || f.l || (f.n && f.n.trim())).map(([id, f]) => `${id}: ${f.v || 'no verdict'}${f.l ? ' · music level ' + f.l + ' (' + lvName(IDLV[id], f.l) + ')' : ''}${f.n && f.n.trim() ? ' · ' + f.n.trim() : ''}`);
+  const txt = lines.length ? 'Finale review feedback\n' + lines.join('\n') : 'Finale review feedback: nothing marked yet'; const b = ev.currentTarget;
+  try { await navigator.clipboard.writeText(txt); b.textContent = 'Copied. Paste it to Claude' } catch (e) { const o = document.getElementById('out'); o.value = txt; o.style.position = 'static'; o.removeAttribute('aria-hidden'); o.rows = Math.max(3, lines.length + 1); o.focus(); o.select(); b.textContent = 'Select all and copy' }
+  setTimeout(() => { b.textContent = 'Copy my feedback' }, 2600) });
+// music ladder: the video is the clock, the audio of the chosen level follows it; a level change swaps the audio at the same moment
+const lvSrc = (k, l) => `v/w7-${k}-l${l}.mp3`;
+document.querySelectorAll('.card .pp').forEach(pp => { const c = pp.closest('.card'), v = c.querySelector('video'), a = c.querySelector('audio'), bar = c.querySelector('.prog i');
+  const id = c.dataset.id, k = a.dataset.k; a.src = lvSrc(k, (FB[id] && FB[id].l) || 1);
+  const sync = () => { if (Math.abs(a.currentTime - v.currentTime) > .08) a.currentTime = v.currentTime };
+  const go = () => { document.querySelectorAll('video').forEach(x => { if (x !== v) x.pause() }); document.querySelectorAll('audio').forEach(x => { if (x !== a) x.pause() });
+    if (v.ended) v.currentTime = 0; a.currentTime = v.currentTime; v.play(); a.play().catch(() => {}); c.classList.add('on') };
+  const stop = () => { v.pause(); a.pause(); c.classList.remove('on') };
+  pp.addEventListener('click', () => v.paused ? go() : stop()); v.addEventListener('click', () => v.paused ? go() : stop());
+  v.addEventListener('pause', () => { a.pause(); c.classList.remove('on') }); v.addEventListener('ended', () => { a.pause(); c.classList.remove('on') });
+  v.addEventListener('waiting', () => a.pause()); v.addEventListener('playing', () => { sync(); if (a.paused) a.play().catch(() => {}) });
+  v.addEventListener('timeupdate', () => { bar.style.width = (v.currentTime / (v.duration || 34) * 100) + '%'; if (!v.paused) sync() });
+  c.querySelector('.lvl').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const l = +b.dataset.l; FB[id] = FB[id] || {}; FB[id].l = l; save(); count();
+    c.querySelectorAll('.lvl button').forEach(x => x.setAttribute('aria-pressed', x === b)); const t = v.currentTime, on = !v.paused; a.src = lvSrc(k, l); a.load();
+    a.addEventListener('canplay', () => { a.currentTime = v.currentTime; if (!v.paused) a.play().catch(() => {}) }, { once: true }); if (on) a.play().catch(() => {}); else if (t === 0) go() }) });
+count();
+</script>

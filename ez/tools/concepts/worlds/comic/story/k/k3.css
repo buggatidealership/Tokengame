@@ -1,0 +1,43 @@
+/* K3 · The tear-off pad */
+.kc-k3 .kc-pad{display:flex;align-items:stretch;cursor:pointer;touch-action:pan-y;outline-offset:4px;padding:0 15px 15px 0}
+.kc-bind{flex:none;width:24px;position:relative;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px 0;background:radial-gradient(rgba(255,255,255,.14) 1px,transparent 1.5px) 0 0/5px 5px,var(--wc-ink);border:3px solid var(--wc-ink);box-shadow:5px 5px 0 rgba(21,18,26,.35)}
+.kc-bind b{writing-mode:vertical-rl;transform:rotate(180deg);font:400 14px/1 var(--wc-pow);letter-spacing:.12em;color:var(--wc-gold)}
+.kc-bind i{width:12px;height:5px;background:#c9c3b6;border:1.5px solid #fff;border-radius:1px}
+.kc-k3 .kc-stack{position:relative;flex:1;display:grid;min-width:0}
+.kc-k3 .kc-tkt{grid-area:1/1;--d:0;z-index:calc(10 - var(--d));transform:translate(calc(var(--d)*4px),calc(var(--d)*4px));transform-origin:0 50%;
+  border:3px solid var(--wc-ink);border-left:0;box-shadow:4px 4px 0 var(--wc-ink);background:radial-gradient(rgba(21,18,26,.09) 1px,transparent 1.4px) 0 0/5px 5px,#f8f0d9;
+  -webkit-mask:radial-gradient(circle 3px at 0 6px,transparent 96%,#000) 0 0/100% 12px;mask:radial-gradient(circle 3px at 0 6px,transparent 96%,#000) 0 0/100% 12px;transition:transform .45s cubic-bezier(.3,0,.2,1)}
+.kc-k3 .kc-tkt::before{content:"";position:absolute;left:9px;top:0;bottom:0;border-left:2px dashed rgba(21,18,26,.45);z-index:3;pointer-events:none}
+.kc-k3 .kc-tkt > *{transition:opacity .3s}
+.kc-k3 .kc-tkt:not(.kc-top):not(.kc-tear) > *{opacity:0}
+.kc-k3 .kc-tkt.kc-gone{visibility:hidden}
+.kc-k3 .kc-tkt .kc-cap{padding-left:16px;margin-left:0}
+.kc-band{margin:0;display:flex;justify-content:space-between;align-items:center;padding:3px 10px 2px 16px;background:radial-gradient(rgba(255,255,255,.18) 1px,transparent 1.5px) 0 0/5px 5px,#13a35a;border-bottom:3px solid var(--wc-ink);color:#fff;font:400 13px/1 var(--wc-pow);letter-spacing:.1em}
+.kc-band span{font:800 10.5px/1 var(--wc-let);letter-spacing:.05em;text-transform:uppercase}
+.kc-k3 .kc-tkt .kc-pw{border-bottom:9px solid #e0352d;box-shadow:inset 0 -3px 0 var(--wc-ink)}
+.kc-k3 .kc-tkt .kc-pw{margin-left:12px;width:calc(100% - 12px)}
+/* the golden ticket is printed on gold foil */
+.kc-k3 .kc-tkt.kc-f3{background:linear-gradient(115deg,#c98a12,#fdbc2a 30%,#ffeaa6 45%,#fdbc2a 60%,#c98a12) 0 0/300% 100%}
+.kc-k3 .kc-f3 .kc-band{background:radial-gradient(rgba(21,18,26,.2) 1px,transparent 1.5px) 0 0/4px 4px,#c98a12;color:var(--wc-ink)}
+.kc-k3 .kc-f3 .kc-pw{border-bottom-color:#c98a12}
+.kc-k3 .kc-f3 .kc-cap{background:#ffe9a8}
+@media (prefers-reduced-motion:no-preference){
+  .kc-k3 .kc-tkt.kc-tear{animation:kc-tear .85s cubic-bezier(.5,0,.75,.4) both;z-index:30}
+  .kc-k3 .kc-tkt.kc-back{animation:kc-tear .6s cubic-bezier(.2,.6,.3,1) reverse both}
+  .kc-k3 .kc-tkt.kc-new{animation:kc-new .5s cubic-bezier(.2,.7,.3,1) both;animation-delay:calc(.45s + (3 - var(--d))*.09s)}
+  html:not(.kc-frz) .kc-k3 .kc-f3.kc-top{animation:kc-foilm 7s linear infinite}
+}
+@keyframes kc-tear{0%{transform:none;opacity:1}22%{transform:rotate(-2.5deg) translate(3px,-3px);opacity:1}100%{transform:translate(45%,70%) rotate(22deg);opacity:0}}
+@keyframes kc-new{from{transform:translate(calc(var(--d)*4px),-40px);opacity:0}to{transform:translate(calc(var(--d)*4px),calc(var(--d)*4px));opacity:1}}
+@media (min-width:1000px){
+  .kc-k3 .kc-tkt{display:grid;grid-template-columns:330px 1fr;grid-template-rows:auto 1fr}
+  .kc-k3 .kc-band{grid-column:1/3}
+  .kc-k3 .kc-tkt .kc-cap{border-bottom:0;border-right:3px solid var(--wc-ink);align-items:center}
+  .kc-k3 .kc-tkt .kc-pw{margin-left:0;width:auto;aspect-ratio:auto;height:330px}
+  .kc-k3 .kc-pic{left:50%;width:570px;margin-left:-285px}
+  .kc-bind{width:34px}.kc-bind b{font-size:18px}
+}
+/* on the golden ticket the holder is printed straight on the foil (no ticket inside the ticket) */
+.kc-k3 .kc-f3 .kc-p3 > .kc-tk-g{background:none;border:0;box-shadow:none;-webkit-mask:none;mask:none;font-size:4.4cqw;animation:none!important}
+.kc-k3 .kc-f3 .kc-p3 > .kc-tk-g .kc-foil{display:none}
+.kc-k3 .kc-f3 .kc-p3 > .kc-tk-g .kc-tk-st{border-right-color:rgba(21,18,26,.5)}

@@ -1,0 +1,69 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Luckiest+Guy&family=Anton&display=swap">
+<style>body{margin:0;background:#1b1820;padding:20px;display:flex;gap:22px;font-family:Bangers}
+.pg{width:390px;height:560px;position:relative;flex:none;box-shadow:8px 8px 0 #0d0b10;overflow:hidden}.pg>svg{position:absolute;inset:0;width:100%;height:100%}
+.l{color:#f8f0d9;font:400 19px Bangers;letter-spacing:.05em;margin-top:12px}</style></head><body>
+<script>
+let gid=0;
+function rays(cx,cy,n,c1,c2,R=700){let s='';for(let i=0;i<n;i++){const a0=i/n*6.283,a1=(i+.5)/n*6.283;s+=`<path d="M${cx} ${cy}L${cx+R*Math.cos(a0)} ${cy+R*Math.sin(a0)}L${cx+R*Math.cos(a1)} ${cy+R*Math.sin(a1)}Z" fill="${i%2?c1:c2}"/>`}return s}
+function burst(cx,cy,r1,r2,n,seed,sy=1){let s=seed,p=[];const rnd=()=>(s=(s*9301+49297)%233280)/233280;for(let i=0;i<n*2;i++){const a=i/(n*2)*6.283-1.57,r=i%2?r2*(.85+.3*rnd()):r1*(.9+.25*rnd());p.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)*sy).toFixed(1))}return p.join(' ')}
+function puff(cx,cy,rx,ry,n){let d='';for(let i=0;i<n;i++){const a=i/n*6.283,x=cx+rx*Math.cos(a),y=cy+ry*Math.sin(a);d+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(Math.min(rx,ry)*.42).toFixed(1)}"/>`}return d+`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}"/>`}
+function T(txt,x,y,sz,c1,c2,dk,rot=0,d=6,font='Luckiest Guy',sw=4){const id='g'+(gid++);let s=`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><g transform="rotate(${rot} ${x} ${y})" font-family="${font}" font-size="${sz}" text-anchor="middle">`;
+ for(let k=d;k>0;k--)s+=`<text x="${x+k}" y="${y+k}" fill="${dk}" stroke="#0d0b10" stroke-width="${k==d?sw+2:0}" stroke-linejoin="round" paint-order="stroke">${txt}</text>`;
+ return s+`<text x="${x}" y="${y}" fill="url(#${id})" stroke="#0d0b10" stroke-width="${sw}" stroke-linejoin="round" paint-order="stroke">${txt}</text><text x="${x-1.2}" y="${y-1.2}" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1">${txt}</text></g>`}
+function ht(id,col,size=8,r=1.9,cx='50%',cy='50%'){return `<defs><pattern id="p${id}" width="${size}" height="${size}" patternUnits="userSpaceOnUse"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="${col}"/></pattern><radialGradient id="r${id}" cx="${cx}" cy="${cy}"><stop offset=".3" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient><mask id="m${id}"><rect width="400" height="600" fill="url(#r${id})"/></mask></defs>`}
+function mk(m,x,y,s){const M=MODELS[m];return `<g transform="translate(${x-s/2} ${y-s/2}) scale(${s/24})"><path d="${M.d}" fill="${m==='GROK'?'#15121a':M.c}" fill-rule="${M.fr||'nonzero'}"/></g>`}
+function face(m,x,y,r){return `<circle cx="${x+5}" cy="${y+5}" r="${r}" fill="#0d0b10"/><circle cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="#0d0b10" stroke-width="4"/>${mk(m,x,y,r*1.2)}`}
+function clip(id,pts){return `<clipPath id="${id}"><polygon points="${pts}"/></clipPath>`}
+window.draw=function(D){
+ const N=k=>D.names[k];
+ // A: page of panels
+ let A=`<rect width="390" height="560" fill="#0d0b10"/><defs>${clip('a1','0,0 226,0 196,150 0,170')}${clip('a2','236,0 390,0 390,138 206,152')}${clip('a3','0,180 390,160 390,360 0,392')}${clip('a4','0,402 180,386 168,560 0,560')}${clip('a5','190,384 390,370 390,560 178,560')}</defs>`;
+ A+=ht('A','rgba(0,0,0,.28)');
+ A+=`<g clip-path="url(#a1)"><rect width="400" height="200" fill="#2b8cff"/>${rays(100,85,26,'#4aa3ff','#1d72e0',300)}<rect width="400" height="200" fill="url(#pA)" mask="url(#mA)"/>
+   <polygon points="${burst(100,85,82,58,11,4,.78)}" fill="#0d0b10" transform="translate(5 5)"/><polygon points="${burst(100,85,82,58,11,4,.78)}" fill="#fff" stroke="#0d0b10" stroke-width="3.5"/>
+   ${face(D.top[0],48,84,22)}${face(D.top[1],152,84,22)}${T('VS',100,102,46,'#7dc3ff','#1d63d6','#0b2f6e',-8,5)}</g>`;
+ A+=`<g clip-path="url(#a2)"><rect x="200" width="200" height="200" fill="#ffd21f"/>${rays(312,72,24,'#ffe25a','#ffc414',300)}
+   <polygon points="${burst(312,74,74,46,13,9,.8)}" fill="#ff3a31" stroke="#0d0b10" stroke-width="3"/><polygon points="${burst(312,74,60,38,13,9,.8)}" fill="#fff"/>
+   ${T('BOOM!',312,82,34,'#ff6b5e','#e0140c','#6a0a05',-6,5)}${T(D.big.move,312,124,20,'#fff','#ffe9a8','#6a4a00',-6,3,'Luckiest Guy',3)}</g>`;
+ A+=`<g clip-path="url(#a3)"><rect y="150" width="400" height="260" fill="#ff3a31"/>${rays(230,270,34,'#ff5a4a','#e0241c',400)}<rect y="150" width="400" height="260" fill="url(#pA)" mask="url(#mA)"/>
+   <g fill="#fff" stroke="#0d0b10" stroke-width="3">${puff(232,268,62,44,9)}</g><g fill="#fff">${puff(232,268,58,40,9)}</g>${mk(D.win,232,262,62)}
+   ${T('WINNER!',232,350,42,'#fff27a','#ffc414','#9a5a00',-5,6)}
+   <g transform="rotate(-10 74 250)"><polygon points="${burst(74,256,66,46,10,3,.7)}" fill="#0d0b10" transform="translate(4 4)"/><polygon points="${burst(74,256,66,46,10,3,.7)}" fill="#7be36b" stroke="#0d0b10" stroke-width="3"/></g>
+   ${T('ROUND '+D.last.n,74,250,19,'#fff','#e9ffe0','#1f6a12',-10,3,'Luckiest Guy',3)}${T(D.last.ticker,74,276,26,'#fff','#e9ffe0','#1f6a12',-10,4)}
+   <path d="M350 180l8 14 16 2-12 11 3 16-15-8-14 8 3-16-12-11 16-2z" fill="#ffd21f" stroke="#0d0b10" stroke-width="2.5"/><path d="M28 330l6 10 11 2-8 8 2 11-11-6-10 6 2-11-8-8 11-2z" fill="#ffd21f" stroke="#0d0b10" stroke-width="2.5"/></g>`;
+ A+=`<g clip-path="url(#a4)"><rect y="380" width="200" height="200" fill="#ff9a1f"/>${rays(88,470,22,'#ffb04a','#ff8a10',300)}
+   <polygon points="${burst(120,450,70,48,12,6,.75)}" fill="#ffd21f" stroke="#0d0b10" stroke-width="3"/>${T('CRASH!',120,458,30,'#ff6b5e','#e0140c','#6a0a05',-7,5)}${T(D.worst.txt,128,494,15,'#fff','#ffe9a8','#6a4a00',-7,2,'Luckiest Guy',2.5)}</g>`;
+ A+=`<g clip-path="url(#a5)"><rect x="170" y="360" width="230" height="220" fill="#16b45a"/>${rays(290,468,24,'#2fd06e','#0e9a48',300)}
+   <g fill="#0d0b10" transform="translate(4 4)">${puff(290,462,74,40,10)}</g><g fill="#fff" stroke="#0d0b10" stroke-width="3">${puff(290,462,74,40,10)}</g><g fill="#fff">${puff(290,462,70,36,10)}</g>
+   ${T('OOPS!',290,472,34,'#ffe25a','#ffb400','#7a4a00',-4,5)}${face(D.last4,240,520,16)}${T(D.lastpnl,316,528,17,'#ff8a80','#ff3a31','#6a0a05',-4,3,'Luckiest Guy',3)}</g>`;
+ A+=`<rect x="14" y="508" width="66" height="40" fill="#fff" stroke="#0d0b10" stroke-width="2"/><rect x="20" y="512" width="54" height="26" fill="url(#bc)"/><defs><pattern id="bc" width="9" height="26" patternUnits="userSpaceOnUse"><rect width="2" height="26" fill="#0d0b10"/><rect x="3" width="1" height="26" fill="#0d0b10"/><rect x="5" width="3" height="26" fill="#0d0b10"/></pattern></defs><text x="47" y="546" text-anchor="middle" font-family="Bangers" font-size="8">S1 · NO. ${String(D.last.n).padStart(3,'0')}</text>`;
+ // B: golden age cover
+ let B=`<rect width="390" height="560" fill="#fbf3dc"/>${rays(195,330,40,'#fbf3dc','#efe3bf',600)}
+  <rect x="0" y="0" width="390" height="560" fill="none" stroke="#0d0b10" stroke-width="6"/>
+  <rect x="14" y="14" width="64" height="74" fill="#ffd21f" stroke="#0d0b10" stroke-width="3"/><text x="46" y="38" text-anchor="middle" font-family="Bangers" font-size="15">SEASON 1</text><text x="46" y="70" text-anchor="middle" font-family="Luckiest Guy" font-size="26">${D.last.n}</text><text x="46" y="84" text-anchor="middle" font-family="Bangers" font-size="10">${D.last.date}</text>
+  <g transform="translate(340 46)"><circle r="30" fill="#fff" stroke="#0d0b10" stroke-width="3"/><circle r="24" fill="none" stroke="#0d0b10" stroke-width="1.5"/><text y="-8" text-anchor="middle" font-family="Bangers" font-size="9">APPROVED BY</text><text y="6" text-anchor="middle" font-family="Luckiest Guy" font-size="12">THE</text><text y="19" text-anchor="middle" font-family="Bangers" font-size="11">CLOSE</text></g>
+  <text x="104" y="44" font-family="Bangers" font-size="22" fill="#e0140c" font-style="italic" transform="rotate(-6 104 44)">the</text>
+  ${T('EARNINGS',198,78,50,'#ff6b5e','#e0140c','#6a0a05',-4,6)}${T('ZEASON',206,132,56,'#ff6b5e','#e0140c','#6a0a05',-4,6)}
+  <defs><clipPath id="art"><polygon points="24,160 366,150 372,440 18,448"/></clipPath></defs>
+  <polygon points="28,166 372,156 378,446 22,454" fill="#0d0b10"/><image href="${D.poster}" x="18" y="150" width="354" height="300" preserveAspectRatio="xMidYMid slice" clip-path="url(#art)"/><polygon points="24,160 366,150 372,440 18,448" fill="none" stroke="#0d0b10" stroke-width="4"/>
+  <g transform="rotate(-4 300 462)"><ellipse cx="300" cy="462" rx="70" ry="30" fill="#0d0b10" transform="translate(4 4)"/><ellipse cx="300" cy="462" rx="70" ry="30" fill="#1f6b3f" stroke="#0d0b10" stroke-width="3"/>${T('4 AI<tspan font-size="18">s</tspan>',300,458,22,'#fff','#e9ffe0','#0a3a1f',-4,3,'Luckiest Guy',3)}<text x="300" y="480" text-anchor="middle" font-family="Bangers" font-size="15" fill="#ffd21f">ONE GOLDEN TICKET</text></g>
+  
+  <rect x="0" y="492" width="390" height="68" fill="#ffd21f"/><rect x="0" y="492" width="390" height="5" fill="#0d0b10"/>
+  <text x="195" y="520" text-anchor="middle" font-family="Bangers" font-size="15" letter-spacing="1">ROUND ${D.film.n}: ${D.film.co.toUpperCase()} (${D.film.ticker})</text>
+  ${T(N(D.film.win)+' CALLS IT!',195,548,26,'#ff6b5e','#e0140c','#6a0a05',0,4,'Luckiest Guy',3.5)}`;
+ // C: magazine
+ let C=`<rect width="390" height="560" fill="#f4f4f6"/>`;for(let i=0;i<90;i++){const a=i/90*6.283,r1=120+(i*53%70),w=i%4?1.2:2.6;C+=`<line x1="${195+r1*Math.cos(a)}" y1="${300+r1*Math.sin(a)}" x2="${195+700*Math.cos(a)}" y2="${300+700*Math.sin(a)}" stroke="#7a7a86" stroke-width="${w}"/>`}
+ C+=ht('C','rgba(60,60,80,.35)',7,1.6)+`<rect width="390" height="560" fill="url(#pC)" mask="url(#mC)"/>
+  <rect x="0" y="0" width="390" height="34" fill="#ff3a31"/><text x="226" y="23" text-anchor="middle" font-family="Bangers" font-size="16" fill="#fff" letter-spacing="1">${D.graded} ROUNDS GRADED · SEASON 1</text>
+  <rect x="12" y="10" width="62" height="70" fill="#fff" stroke="#0d0b10" stroke-width="3"/><text x="43" y="40" text-anchor="middle" font-family="Luckiest Guy" font-size="24" fill="#e0140c">#${D.last.n}</text><text x="43" y="56" text-anchor="middle" font-family="Bangers" font-size="12">${D.last.date}</text><text x="43" y="72" text-anchor="middle" font-family="Bangers" font-size="11" fill="#e0140c">4 AI<tspan font-size="9">s</tspan></text>
+  ${T('EARNINGS',214,96,48,'#fff27a','#ffc414','#9a5a00',-3,6)}${T('ZEASON',214,150,54,'#fff27a','#ffc414','#9a5a00',-3,6)}
+  <polygon points="${burst(196,312,118,84,14,8)}" fill="#0d0b10" transform="translate(6 6)"/><polygon points="${burst(196,312,118,84,14,8)}" fill="#fff" stroke="#0d0b10" stroke-width="4"/>
+  ${face(D.top[0],196,288,40)}${T(D.leadPnl,196,366,30,'#7dffb8','#03c870','#04622f',-3,5)}
+  <g transform="rotate(10 312 196)"><polygon points="${burst(312,196,52,36,11,2)}" fill="#ff3a31" stroke="#0d0b10" stroke-width="3"/>${T('#1',312,206,30,'#fff27a','#ffc414','#6a0a05',0,3,'Luckiest Guy',3)}</g>
+  <polygon points="0,470 390,450 390,560 0,560" fill="#ff3a31"/><polygon points="0,470 390,450 390,456 0,476" fill="#0d0b10"/>
+  <rect x="22" y="488" width="200" height="26" fill="#fff" stroke="#0d0b10" stroke-width="2.5" transform="rotate(-3 122 501)"/><text x="122" y="507" text-anchor="middle" font-family="Bangers" font-size="15" fill="#e0140c" transform="rotate(-3 122 501)">THE GOLDEN TICKET HOLDER</text>
+  <rect x="34" y="520" width="170" height="26" fill="#fff" stroke="#0d0b10" stroke-width="2.5" transform="rotate(-3 119 533)"/><text x="119" y="539" text-anchor="middle" font-family="Bangers" font-size="15" fill="#e0140c" transform="rotate(-3 119 533)">${D.names[D.top[0]]} · SEASON P&amp;L</text>
+  <g transform="rotate(-8 318 508)"><polygon points="${burst(318,508,64,48,12,5)}" fill="#ffd21f" stroke="#0d0b10" stroke-width="3"/><text x="318" y="504" text-anchor="middle" font-family="Luckiest Guy" font-size="13">NEW CALLS</text><text x="318" y="522" text-anchor="middle" font-family="Luckiest Guy" font-size="12" fill="#e0140c">EVERY REPORT</text></g>`;
+ document.body.innerHTML=[['A · page of panels',A],['B · golden-age cover',B],['C · magazine cover',C]].map(([l,s])=>`<div><div class="pg"><svg viewBox="0 0 390 560">${s}</svg></div><div class="l">${l}</div></div>`).join('');
+};
+</script></body></html>

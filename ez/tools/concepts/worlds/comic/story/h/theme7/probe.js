@@ -1,0 +1,11 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,reducedMotion:'reduce'});const p=await ctx.newPage();await FONTS(p);
+const er=[];p.on('pageerror',e=>er.push(e.message));
+await p.goto('http://localhost:8960/v46-live-x2plus.html',{waitUntil:'load',timeout:150000});
+await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});
+await p.evaluate(async()=>{for(let y=0;y<document.documentElement.scrollHeight;y+=500){scrollTo(0,y);await new Promise(r=>setTimeout(r,80))}scrollTo(0,0)});
+await p.waitForTimeout(1500);
+const d=await p.evaluate(()=>{const out=[];const main=document.querySelector('main');
+ const walk=(el,dep)=>{for(const c of el.children){const r=c.getBoundingClientRect();if(r.height<20||getComputedStyle(c).display==='none')continue;const cs=getComputedStyle(c);out.push({dep,tag:c.tagName,id:c.id,cls:(c.className+'').slice(0,60),top:Math.round(r.top+scrollY),h:Math.round(r.height),w:Math.round(r.width),bg:cs.backgroundColor,bi:cs.backgroundImage.slice(0,60)});if(dep<1)walk(c,dep+1)}};walk(main,0);return {H:document.documentElement.scrollHeight,out}});
+console.log(JSON.stringify(d,null,0).replace(/\},\{/g,'},\n{'));console.log(er);
+await p.screenshot({path:process.argv[2]||'/tmp/now.png',fullPage:true});await b.close()})();

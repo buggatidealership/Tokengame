@@ -1,0 +1,109 @@
+<!doctype html><meta charset="utf-8"><title>1 vs 3 motion test</title>
+<!-- CoreWeave trades as a party-game "1 vs 3" round (2026-11-10/11, owner: "what would you do if you would be head of Mario or Nintendo... motions,
+     micro interactions, micro animations... highest quality bar"). Original art, the genre's game feel: squash and stretch, anticipation,
+     hit-stop on every landing (3 to 5 frames), a small screen shake, dust puffs, shadows that shrink with the jump, idle breathing on the beat
+     (118 BPM), one focal point per beat. Data: predict.json. R(t) is pure. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Geist+Mono:wght@700&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{width:1080px;height:1350px;overflow:hidden;background:#123;font-family:Fredoka,sans-serif}
+#cam{position:absolute;inset:0;transform-origin:50% 60%}
+#sky{position:absolute;inset:-40px;background:radial-gradient(120% 70% at 50% 0%,#3b7bff 0%,#1d47c9 45%,#14256e 100%)}
+#sky i{position:absolute;border-radius:50%;background:rgba(255,255,255,.07)}
+#floor{position:absolute;left:-40px;right:-40px;top:1080px;bottom:-40px;background:linear-gradient(180deg,#1b2f86,#101c55);border-top:6px solid rgba(255,255,255,.18)}
+#half{position:absolute;inset:-40px}
+#fx{position:absolute;inset:0;width:1080px;height:1350px;pointer-events:none}
+.tok{position:absolute;width:var(--s);height:var(--s);margin:calc(var(--s)/-2) 0 0 calc(var(--s)/-2);transform-origin:50% 100%}
+.tok .b{position:absolute;inset:0;border-radius:50%;background:#000 center/58% no-repeat;border:12px solid #fff;box-shadow:inset 0 -14px 0 rgba(0,0,0,.25),0 10px 0 rgba(0,0,0,.18)}
+.tok .hl{position:absolute;left:18%;top:12%;width:30%;height:16%;border-radius:50%;background:rgba(255,255,255,.55);filter:blur(1px);transform:rotate(-25deg)}
+.sh{position:absolute;height:26px;margin:-13px 0 0;border-radius:50%;background:rgba(0,0,20,.45);filter:blur(3px)}
+.nm{position:absolute;transform:translate(-50%,0);font:700 34px/1 Fredoka;color:#fff;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.25);white-space:nowrap}
+.bub{position:absolute;transform-origin:50% 100%;padding:16px 28px 18px;border-radius:32px;background:#fff;font:700 72px/1 Fredoka;white-space:nowrap;box-shadow:0 8px 0 rgba(0,0,0,.2)}
+.bub:after{content:"";position:absolute;left:50%;bottom:-20px;margin-left:-16px;border:16px solid transparent;border-top:22px solid #fff;border-bottom:0}
+.title{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.big{position:absolute;font:700 520px/1 Fredoka;color:#fff;-webkit-text-stroke:22px #0e1440;paint-order:stroke fill;text-shadow:0 26px 0 #0e1440}
+#vs{position:absolute;font:700 220px/1 Fredoka;color:#ffd23a;-webkit-text-stroke:16px #0e1440;paint-order:stroke fill;text-shadow:0 18px 0 #0e1440}
+#hd{position:absolute;left:0;right:0;top:70px;text-align:center;font:700 120px/1 Fredoka;color:#fff;-webkit-text-stroke:10px #0e1440;paint-order:stroke fill;text-shadow:0 10px 0 #0e1440}
+#hd b{color:#ffd23a}
+#tag{position:absolute;left:50%;top:225px;transform:translateX(-50%);font:700 30px/1 "Geist Mono",monospace;letter-spacing:.16em;color:#cfe0ff;white-space:nowrap}
+#coin{position:absolute;left:540px;top:550px;width:250px;height:250px;margin:-125px 0 0 -125px}
+#coin .f{position:absolute;inset:0;border-radius:50%;background:#fff center/62% no-repeat;border:14px solid #ffd23a;box-shadow:inset 0 -12px 0 rgba(0,0,0,.18),0 0 0 6px #0e1440}
+#coin .e{position:absolute;inset:0;border-radius:50%;background:#e0a800;box-shadow:0 0 0 6px #0e1440}
+#ban{position:absolute;left:50%;top:1205px;transform:translateX(-50%);padding:22px 40px 26px;border-radius:999px;background:#ffd23a;font:700 54px/1 Fredoka;color:#0e1440;white-space:nowrap;box-shadow:0 10px 0 #0e1440}
+#end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px}
+#end .q{font:700 210px/.9 Fredoka;color:#fff;-webkit-text-stroke:18px #0e1440;paint-order:stroke fill;text-shadow:0 20px 0 #0e1440;text-align:center}
+#end .lk{display:flex;align-items:center;gap:20px;font:700 66px/1 Fredoka;color:#fff}#end .lk img{width:110px;height:110px}#end .e{color:#2fe28e}#end .z{color:#ff5a4f}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+</style>
+<div id="cam"><div id="sky"></div><div id="floor"></div><svg id="half" viewBox="0 0 1160 1430" preserveAspectRatio="none"></svg>
+ <div id="stage"></div><div id="coin"><div class="e"></div><div class="f"></div></div><div id="ban"></div>
+ <div id="hd">1 <b>VS</b> 3</div><div id="tag"></div>
+ <div class="title" id="ti"><div class="big" id="n1">1</div><div id="vs">VS</div><div class="big" id="n3">3</div></div>
+ <div id="end"><div class="q">Who<br>wins?</div><div class="lk"><img src="ezlogo.svg"><span><span class="e">E</span>arnings <span class="z">Z</span>eason</span></div></div>
+</div><canvas id="fx" width="1080" height="1350"></canvas><div id="flash"></div>
+<script>
+(async()=>{
+const $=i=>document.getElementById(i),cl=x=>x<0?0:x>1?1:x,seg=(t,a,b)=>cl((t-a)/(b-a)),eo=x=>1-Math.pow(1-x,3),eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2,mix=(a,b,k)=>a+(b-a)*k;
+const back=(x,s)=>{s=s||1.9;const c3=s+1;return 1+c3*Math.pow(x-1,3)+s*Math.pow(x-1,2)};
+const wob=(u,f,d)=>u<=0?0:Math.exp(-d*u)*Math.sin(f*u);  /* a damped wobble after an impact */
+const O=await (await fetch('predict.json')).json(),M=await (await fetch('models.json')).json(),D=9.6,BEAT=60/118;
+await document.fonts.load('700 100px Fredoka');
+const NM={GPT:'ChatGPT',CLAUDE:'Claude',KIMI:'Kimi',GROK:'Grok'};
+const svg=m=>{const x=M[m];return 'url("data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="'+x.fg+'"'+(x.fr?' fill-rule="'+x.fr+'"':'')+' d="'+x.d+'"/>'+(x.dot?'<path fill="'+x.dotc+'" d="'+x.dot+'"/>':'')+'</svg>')+'")'};
+const L=O.calls.filter(c=>c.dir==='UP'),S=O.calls.filter(c=>c.dir!=='UP').sort((a,b)=>b.mag-a.mag);
+/* the cast: the lone long on the left, the shorts on the right, the boldest short in the middle of its team */
+const ord=[S[1],S[0],S[2]].filter(Boolean);
+const cast=[...L.map(c=>({c,x:250,s:340,team:'L',fy:0})),...ord.map((c,i)=>({c,x:[615,800,985][i],s:c===S[0]?250:180,team:'S',fy:c===S[0]?0:-70}))];
+const FLOOR=1080;
+cast.forEach((k,i)=>{const t=document.createElement('div');t.className='tok';t.style.setProperty('--s',k.s+'px');t.innerHTML='<div class="b"></div><div class="hl"></div>';
+ t.firstChild.style.backgroundImage=svg(k.c.m);t.firstChild.style.backgroundColor=M[k.c.m].bg;const sh=document.createElement('div');sh.className='sh';
+ const nm=document.createElement('div');nm.className='nm';nm.textContent=NM[k.c.m];const b=document.createElement('div');b.className='bub';
+ b.innerHTML='<span style="color:'+(k.team==='L'?'#14a35f':'#e2384a')+'">'+(k.team==='L'?'+':'−')+k.c.mag+'%</span>';
+ t.style.zIndex=k.fy?1:3;b.style.zIndex=4;$('stage').append(sh,t,nm,b);Object.assign(k,{t,sh,nm,b,i})});
+$('coin').querySelector('.f').style.backgroundImage='url('+O.logo+')';$('tag').textContent=O.co.toUpperCase()+' · THE TRADES ARE IN';$('ban').textContent='Settles Wednesday, 4 PM ET';
+/* impacts: each landing freezes the world for a few frames, shakes the camera, throws dust */
+const ARR=[1.62,2.18,2.36,2.54],POP=[3.05,3.6,3.82,4.04],HITS=[0.42,0.78,1.05].concat(ARR,[5.0,5.6]),HS=0.07;window.HITSR=HITS.map((h,k)=>h+k*HS);
+function warp(T){let w=T;HITSR.forEach(hr=>{if(T>hr)w-=Math.min(T-hr,HS)});return w}   /* hit-stop: local time stands still for 70 ms after each hit */
+function shake(t){let x=0,y=0;HITSR.forEach((h,i)=>{const u=t-h;if(u>0&&u<.35){const a=(i<3?18:9)*Math.exp(-11*u);x+=a*Math.sin(u*95+i);y+=a*Math.cos(u*83+i*2)}});return [x,y]}
+const X=$('fx').getContext('2d');function rnd(i){const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+function dust(t,t0,x,y,n,seed){const u=t-t0;if(u<0||u>.6)return;for(let i=0;i<n;i++){const s=i<n/2?-1:1,a=(rnd(seed+i)*.9+.1)*s,v=180+rnd(seed+i+50)*260,px=x+a*v*u*2.2,py=y-40*u-200*u*u*rnd(seed+i+9)+120*u*u,r=(14+rnd(seed+i+3)*18)*(1-u/.6)*(.6+u);
+ X.globalAlpha=.85*(1-u/.6);X.fillStyle='#fff';X.beginPath();X.arc(px,py,r,0,7);X.fill()}X.globalAlpha=1}
+function stars(t,t0,x,y,n,seed,col){const u=t-t0;if(u<0||u>.7)return;for(let i=0;i<n;i++){const a=rnd(seed+i)*6.28,v=260+rnd(seed+i+7)*360,px=x+Math.cos(a)*v*u,py=y+Math.sin(a)*v*u+500*u*u,s=(16+rnd(seed+i+2)*14)*(1-u/.7);
+ X.save();X.translate(px,py);X.rotate(u*8+i);X.fillStyle=col[i%col.length];X.globalAlpha=1-u/.7;X.beginPath();for(let k=0;k<10;k++){const r=k%2?s*.45:s,an=k*Math.PI/5;X.lineTo(Math.cos(an)*r,Math.sin(an)*r)}X.closePath();X.fill();X.restore()}X.globalAlpha=1}
+for(let i=0;i<14;i++){const c=document.createElement('i'),r=40+rnd(i)*160;c.style.cssText='left:'+(rnd(i+20)*1100)+'px;top:'+(rnd(i+40)*900)+'px;width:'+r+'px;height:'+r+'px';$('sky').appendChild(c)}
+window.R=function(T){const t=warp(T);X.clearRect(0,0,1080,1350);const [sx,sy]=shake(T);const zoom=1+.03*Math.sin(Math.PI*seg(t,1.3,8.6));
+ $('cam').style.transform='translate('+sx.toFixed(1)+'px,'+sy.toFixed(1)+'px) scale('+zoom.toFixed(4)+')';
+ /* 1. the title card: the 1 drops, the 3 drops, VS slams; then the card folds up into the header */
+ const tk=seg(t,1.25,1.5),ti=$('ti');ti.style.display=t<1.5?'flex':'none';
+ const half=$('half');half.innerHTML=t<1.5?'<polygon points="0,0 1160,0 0,1430" fill="#18c26f"/><polygon points="1160,0 1160,1430 0,1430" fill="#ff4b4b"/><polyline points="1160,0 0,1430" stroke="#fff" stroke-width="26" fill="none"/>':'';half.style.opacity=t<1.5?1-tk:0;
+ const drop=(el,t0,x,y,rot)=>{const k=seg(t,t0,t0+.2),ln=t-(t0+.2);const sq=ln>0?wob(ln,28,9)*.22:0;el.style.opacity=k>0?1-tk:0;
+  el.style.transform='translate('+x+'px,'+(y-(1-k*k)*900)+'px) rotate('+rot+'deg) scale('+(1+sq)+','+(1-sq)+')'};
+ drop($('n1'),.22,-300,-230,-6);drop($('n3'),.58,300,230,5);
+ const kv=seg(t,.85,1.05),vs=$('vs');vs.style.opacity=kv>0?1-tk:0;vs.style.transform='scale('+(kv<1?3-2*kv:1+wob(t-1.05,30,8)*.25)+') rotate('+((1-kv)*-30)+'deg)';
+ if(T>.42&&T<1.2)dust(t,.42,290,800,10,1);if(T>.78)dust(t,.78,790,900,10,30);stars(t,1.05,540,690,14,60,['#ffd23a','#fff']);
+ const hk=seg(t,1.3,1.62);$('hd').style.opacity=hk>0?1:0;$('hd').style.transform='scale('+(.4+.6*back(hk))+')';$('tag').style.opacity=eo(seg(t,1.5,1.8));
+ /* 2. the cast: hop in from off stage with anticipation, land with squash, idle breathing on the beat */
+ cast.forEach((k,i)=>{const ta=ARR[i],tp=POP[i],u=seg(t,ta-.42,ta),air=u>0&&u<1,ln=t-ta;
+  const xx=mix(k.team==='L'?-200:1300,k.x,eio(u)),hop=Math.sin(Math.PI*u)*260;
+  let sx2=1,sy2=1;if(air){sx2=.88;sy2=1.14}if(ln>0){const q=wob(ln,24,7);sx2=1+.24*q;sy2=1-.24*q}
+  const beat=t>ta+.4?Math.sin((t-ta)*Math.PI*2/BEAT*1):0;sy2*=1+.025*Math.max(0,beat);sx2*=1-.015*Math.max(0,beat);
+  const pre=seg(t,tp-.12,tp)*(1-seg(t,tp,tp+.05)),jump=Math.sin(Math.PI*seg(t,tp,tp+.34))*70;if(pre>0){sx2*=1+.12*pre;sy2*=1-.12*pre}
+  const y=FLOOR+k.fy-hop-jump;k.t.style.left=xx+'px';k.t.style.top=y+'px';k.t.style.opacity=u>0?1:0;
+  k.t.style.transform='translateY('+(-k.s/2)+'px) scale('+sx2.toFixed(3)+','+sy2.toFixed(3)+') rotate('+(air?(k.team==='L'?12:-12)*Math.sin(Math.PI*u):wob(ln,18,6)*4)+'deg)';
+  const h=hop+jump,sw=k.s*(.9-.45*cl(h/260));k.sh.style.left=(xx-sw/2)+'px';k.sh.style.top=(FLOOR+k.fy+4)+'px';k.sh.style.width=sw+'px';k.sh.style.opacity=u>0?.9-.5*cl(h/260):0;
+  k.nm.style.left=xx+'px';k.nm.style.top=(FLOOR+30)+'px';k.nm.style.opacity=eo(seg(t,ta+.1,ta+.3));
+  if(T>ta)dust(t,ta,xx,FLOOR+k.fy,8,100+i*20);
+  /* 3. the trade: a hop, then the bubble pops; the boldest short pops biggest and wobbles longest */
+  const bk=seg(t,tp+.12,tp+.32),big=k.c===S[0]||k.team==='L',sc=(big?1.12:.9)*(bk<1?back(bk,2.6):1+wob(t-tp-.32,20,big?3.5:6)*.08);
+  const b=k.b;b.style.left=(xx+(k.team==='S'&&k.c!==S[0]?(k.x<800?-12:-50):0))+'px';b.style.top=(y-k.s-(k.c===S[0]?235:95))+'px';b.style.opacity=bk>0?1:0;b.style.transform='translate(-50%,0) scale('+sc.toFixed(3)+') rotate('+(wob(t-tp-.32,14,4)*(big?6:3))+'deg)';
+  if(big&&T>tp+.3)stars(t,tp+.3,xx,y-k.s-60,10,200+i*10,k.team==='L'?['#2fe28e','#fff']:['#ff5a4f','#fff'])});
+ /* 4. the company: a coin spins in between the teams and lands, the banner rolls in */
+ const ck=seg(t,4.55,5.0),coin=$('coin'),spin=t*9;coin.style.opacity=ck>0?1:0;const cy=550-(1-ck)*(1-ck)*220+(t>5?wob(t-5,26,8)*12:0);
+ const sxc=Math.cos(spin)*(t>5?Math.exp(-3*(t-5)):1)+(t>5?1-Math.exp(-3*(t-5)):0);coin.style.transform='translateY('+(cy-550)+'px) scale('+(.3+.7*ck).toFixed(3)+') scaleX('+Math.max(.08,Math.abs(sxc)).toFixed(3)+')';
+ coin.querySelector('.f').style.opacity=sxc>0?1:0;if(T>5)stars(t,5.0,540,550,12,400,['#ffd23a','#fff']);
+ const bn=seg(t,5.35,5.6),ban=$('ban');ban.style.opacity=bn>0?1:0;ban.style.transform='translateX(-50%) scale('+(bn<1?back(bn,2.2):1+wob(t-5.6,22,6)*.06)+')';
+ /* 5. the question, then the brand */
+ const ek=seg(t,7.0,7.3),end=$('end');end.style.display=t>7?'flex':'none';end.style.opacity=ek;$('stage').style.opacity=1-ek;coin.style.opacity*=1-ek;ban.style.opacity=(+ban.style.opacity)*(1-ek);$('hd').style.opacity=(+$('hd').style.opacity)*(1-ek);$('tag').style.opacity*=1-ek;
+ end.firstChild.style.transform='scale('+(ek<1?.6+.4*back(ek):1+wob(t-7.3,20,6)*.05)+')';end.lastChild.style.opacity=eo(seg(t,7.6,7.9));
+ const fr=HITSR[2];$('flash').style.opacity=.55*Math.max(0,1-(T-fr)/.12)*(T>fr?1:0)};
+window.READY=1;window.R(0)})();
+</script>

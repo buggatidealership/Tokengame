@@ -1,0 +1,138 @@
+<!doctype html><meta charset="utf-8"><title>in 1</title>
+<!-- Animation sample in-1 (2026-11-20): the "trades are in" post x2p-post-a1.png in motion. The line alone ("Intuit reports after the close"),
+  then its two halves fly into the card: the company's name and its subline. The five trades fill the table one after the other (LONG first,
+  most confident first, as a1), each side stamped as it lands, the count of LONG against SHORT ticking with them. Then Qwen's row lights, its
+  reason rises line by line in its own words (punctuation dropped and a line per sentence, as a1; the words unchanged and checked against
+  calls.csv) and the marker sweeps "Priced for AI ruin at 13x" on the bed's drop. No P&L: nothing is graded. The camera never rests: it
+  follows the newest row, then the newest line. Bed m3-electro (124 BPM, drop at 7.77 s in the file). -->
+<style>
+:root{--pn:#161312;--pn2:#1d1917;--ln:#2a2522;--tx:#f2ede6;--mu:#8e8680;--mu2:#5f5853;--up:#55d6a2;--dn:#e8576b;--ac:#fdbc2a}
+#chrome{position:relative;z-index:27}
+#vig{opacity:.55}
+#stage{position:absolute;left:0;right:0;top:132px;bottom:0;overflow:hidden;-webkit-mask:linear-gradient(transparent 0,#000 24px);mask:linear-gradient(transparent 0,#000 24px)}
+#doc{position:absolute;left:34px;width:1012px;top:0;transform-origin:50% 0}
+.pn::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(100deg,transparent 40%,rgba(255,250,235,.16) 50%,transparent 60%);background-size:300% 100%;background-position:var(--sx,150%) 0;opacity:var(--so,0)}
+.pn{position:relative;background:var(--pn);border-radius:32px;box-shadow:inset 0 0 0 2px var(--ln),0 26px 70px rgba(0,0,0,.45);overflow:hidden}
+.pn+.pn{margin-top:26px}
+#pb .mb p{overflow:hidden}
+.hd{display:flex;align-items:center;gap:26px;padding:28px 38px;border-bottom:2px solid var(--ln);font:500 28px/1 'Geist Mono';letter-spacing:.08em;color:var(--mu);white-space:nowrap}
+.hd .r{margin-left:auto;color:var(--tx)}
+.st{display:inline-flex;align-items:center;gap:14px;padding:14px 18px;border-radius:14px;font:700 27px/1 'Geist Mono';letter-spacing:.1em;background:var(--pn2);color:var(--tx);box-shadow:inset 0 0 0 2px var(--ln)}
+.st i{width:15px;height:15px;border-radius:50%;background:#f2ede6}
+.cr{display:flex;align-items:center;gap:30px;padding:34px 38px 30px}
+.cr .cn b{display:block;font:800 66px/1 Inter;letter-spacing:-.025em}.cr .cn span{display:block;margin-top:16px;font:500 28px/1 'Geist Mono';letter-spacing:.08em;color:var(--mu);white-space:nowrap}
+.ty{margin-left:auto;display:flex;align-items:flex-start;gap:14px}
+.ty .c{display:flex;flex-direction:column;align-items:center;gap:10px}
+.ty .c b{font:700 84px/1 'Geist Mono';font-variant-numeric:tabular-nums}.ty .c small{font:700 25px/1 'Geist Mono';letter-spacing:.08em}
+.ty .v{font:500 30px/1 'Geist Mono';color:var(--mu);margin-top:34px}
+.u{color:var(--up)}.d{color:var(--dn)}
+.th,.tr{display:grid;grid-template-columns:300px 210px 1fr 200px;align-items:center;padding:0 38px}
+.th{height:72px;border-bottom:2px solid var(--ln);font:600 23px/1 Inter;letter-spacing:.09em;color:var(--mu)}
+.th span:last-child,.tr .cf{text-align:right}
+.tr{position:relative;height:96px;overflow:hidden;box-shadow:inset 0 -2px 0 var(--ln)}.tr:last-child{box-shadow:none}
+.tr .nm{display:flex;align-items:center;gap:22px;font:600 40px/1 Inter}
+.tr .n{font:500 38px/1 'Geist Mono';font-variant-numeric:tabular-nums}
+.tr .bar{position:absolute;left:0;top:0;bottom:0;width:7px;background:var(--ac);transform-origin:50% 50%}
+.tr .lit{position:absolute;inset:0;background:var(--pn2)}
+.tr>*:not(.bar):not(.lit){position:relative}
+.chip{display:inline-block;justify-self:start;font:700 30px/1 'Geist Mono';letter-spacing:.07em;padding:15px 20px 13px;border-radius:13px}
+.chip.u{background:#173328;color:var(--up)}.chip.d{background:#3a1a20;color:var(--dn)}
+.mh{display:flex;align-items:center;gap:22px;padding:30px 38px 6px;white-space:nowrap}
+.mh b{font:700 48px/1 Inter}.mh .r{margin-left:auto;font:500 25px/1 'Geist Mono';letter-spacing:.1em;color:var(--mu)}
+.mb{padding:16px 38px 36px}
+.mb p{font:400 51px/1.34 Inter;color:#e6e0d8;letter-spacing:-.01em}
+#line{position:absolute;left:0;right:0;top:0;text-align:center;z-index:30;pointer-events:none}
+#line h2{font:900 96px/1.06 Inter;letter-spacing:-.04em;white-space:nowrap}
+#line span{display:inline-block;transform-origin:0 0}
+</style>
+<div id="gnd"></div>
+<div id="chrome"></div>
+<div id="stage"><div id="doc"></div></div>
+<div id="line"><h2><span id="l1">Intuit</span><br><span id="l2">reports after the close</span></h2></div>
+<div id="vig"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script><script src="w6/an/an.js"></script>
+<script>
+const DROP = 7.77, BT = 60 / 124, DUR = 14.6;
+// Qwen's words as a1 sets them: its WHY line without punctuation, a line per sentence or clause; [ ] marks the highlighted clause
+const QL = ['[Priced for AI ruin at 13x]', 'Guide already reset', 'quarter is QuickBooks not tax', 'stock down 13% in three days', 'Relief bounce beats fear'];
+const ORDER = ['GEMINI', 'QWEN', 'GPT', 'GROK', 'CLAUDE'];   // a1's order: LONG first, then SHORT, most confident first
+const T_LINE = .12, T_DOCK = 1.0, T_HEAD = 1.55, ROW = [2.05, 2.75, 3.45, 4.15, 4.85], T_LIT = 5.55, T_MSG = 5.8, T_L1 = 6.25, T_SW = 6.7, LN = [T_L1, 9.85, 10.45, 11.05, 11.65];
+let grain, gl, rows, lines, doc, tr, cq, RH, A0, ROWS0, LH, B0, LINES0;
+const SH = 1218, GAP = 26, T_FIT = 7.4, T_FIT1 = 13.5, T_SHEEN = 13.3;
+// a ramp with eased ends (trapezoid speed): a long camera move that never crawls to a stop in its middle
+const ramp = (x, a = .12) => x <= 0 ? 0 : x >= 1 ? 1 : x < a ? x * x / (2 * a) / (1 - a) : x < 1 - a ? (x - a / 2) / (1 - a) : (1 - a - (1 - x) * (1 - x) / (2 * a)) / (1 - a);
+(async () => {
+  await AN.load();
+  L.$('#chrome').innerHTML = AN.brand();
+  const C = AN.D.cos.INTU; tr = ORDER.map(k => AN.tr(k, 'INTU')); cq = AN.tr('QWEN', 'INTU'); AN.checkLines(cq.why, QL);
+  const nL = tr.filter(x => x.side === 'LONG').length;
+  L.$('#doc').innerHTML = `<div class="pn" id="pa"><div class="hd"><span class="st"><i></i>IN PLAY</span><span>TRADE ${C.s2n}</span><span class="r">GRADED FRI AT THE CLOSE</span></div>
+    <div class="cr">${AN.co('INTU', 112, .24)}<div class="cn"><b id="cnb">${C.co}</b><span id="cns">${C.ticker} REPORTS AFTER THE CLOSE</span></div>
+      <div class="ty"><div class="c"><b class="u" id="nl">0</b><small class="u">LONG</small></div><span class="v">v</span><div class="c"><b class="d" id="ns">0</b><small class="d">SHORT</small></div></div></div>
+    <div class="th"><span>AI</span><span>SIDE</span><span>CALLED MOVE</span><span>CONFIDENCE</span></div>
+    ${tr.map(x => `<div class="tr"><i class="lit"></i><i class="bar"></i><span class="nm">${AN.mark(x.k, 62)}${x.name}</span><span class="chip ${x.side === 'LONG' ? 'u' : 'd'}">${x.side}</span>
+      <span class="n">${x.side === 'LONG' ? '+' : '−'}${AN.num(x.call)}%</span><span class="n cf">${x.conf}%</span></div>`).join('')}</div>
+    <div class="pn" id="pb"><div class="mh">${AN.mark('QWEN', 92)}<b>Qwen</b><span class="chip u">LONG</span><span class="r">IN ITS OWN WORDS</span></div><div class="mb">${AN.lines(QL, 'pg')}</div></div>`;
+  doc = L.$('#doc'); rows = L.$$('.tr'); lines = L.$$('#pb .mb p');
+  gl = AN.ground(L.$('#gnd'), 1); grain = L.grain(L.$('#grain'), .07);
+  await AN.ready();
+  // full heights, measured once: the table grows a row at a time and Qwen's card a line at a time, so no box is ever bigger than what is in it
+  const pa = L.$('#pa'), pb = L.$('#pb');
+  RH = rows.map(r => r.offsetHeight); A0 = pa.offsetHeight - RH.reduce((s, h) => s + h, 0); ROWS0 = rows[0].offsetTop;
+  LH = lines.map(p => p.offsetHeight); B0 = pb.offsetHeight - LH.reduce((s, h) => s + h, 0); LINES0 = L.$('#pb .mb').offsetTop - pb.offsetTop;
+  const hl = 1 + .08 * 'Priced for AI ruin at 13x'.length; if (LN[1] < T_SW + hl) console.error('hold short');
+  window.CUES = [[0.05, 'r11-swell', .14], [T_DOCK, 'sfx-whoosh', .12], [T_HEAD, 'r11-slide', .08]];
+  ROW.forEach((t, i) => CUES.push([t, 'r11-card', .1], [t + .2, 'sfx-stamp', .12]));
+  CUES.push([T_LIT, 'sfx-tick', .08], [T_MSG, 'sfx-whoosh', .1], [T_SW, 'r11-slide', .1], [T_SW + .05, 'r11-sparkle', .07]);
+  LN.slice(1).forEach(t => CUES.push([t, 'sfx-tick', .05]));
+  window.MUSIC = { f: 'm3-electro', at: +(DROP - T_SW).toFixed(3) }; window.DUR = DUR;
+  await AN.go();
+})();
+// heights as functions of time (the table's rows, Qwen's card and its lines), so the camera can be simulated from 0 to any t
+const rowH = (i, u) => RH[i] * L.eio(L.n(u, ROW[i] - .05, ROW[i] + .3));
+const lineH = (i, u) => LH[i] * L.eio(L.n(u, LN[i] - .05, LN[i] + .3));
+const bH = u => u < T_MSG ? 0 : B0 * L.eio(L.n(u, T_MSG, T_MSG + .35)) + LH.reduce((s, h, i) => s + lineH(i, u), 0);
+const aH = u => A0 + RH.reduce((s, h, i) => s + rowH(i, u), 0);
+const docH = u => aH(u) + (u < T_MSG ? 0 : GAP * L.n(u, T_MSG, T_MSG + .35) + bH(u));
+// the camera: centred while the card fits, then a reading point that follows the newest row and the newest line, held at 700 px;
+// a critically damped follow smooths it and a slow drift down the page keeps it alive between arrivals
+const focus = u => { let y = 300; ROW.forEach((t, i) => { if (u >= t - .1) y = ROWS0 + RH.slice(0, i).reduce((s, h) => s + h, 0) + 52 });
+  if (u >= T_MSG) y = aH(u) + GAP + 120; LN.forEach((t, i) => { if (u >= t - .1) y = aH(u) + GAP + LINES0 + LH.slice(0, i).reduce((s, h) => s + h, 0) + 40 }); return y };
+const tgt = u => { const H = docH(u); return H + 60 <= SH ? (SH - H) / 2 : Math.max(SH - H - 30, Math.min(30, 700 - focus(u))) };
+const camY = t => { let y = tgt(0), v = 0, w = 4.6, dt = 1 / 120; for (let u = 0; u < t; u += dt) { const a = w * w * (tgt(u) - y) - 2 * w * v; v += a * dt; y += v * dt } return y };
+window.R = t => {
+  grain(t); gl(t);
+  { const t0 = T_SHEEN, q = t < t0 ? 0 : ((t - t0) % 1.6) / 1.4; doc.style.setProperty('--so', t < t0 || q > 1 ? 0 : Math.pow(Math.sin(Math.PI * q), .5).toFixed(3)); doc.style.setProperty('--sx', (100 - 100 * Math.min(1, q)).toFixed(1) + '%') }
+  rows.forEach((r, i) => r.style.height = rowH(i, t).toFixed(1) + 'px'); lines.forEach((p, i) => p.style.height = lineH(i, t).toFixed(1) + 'px');
+  const pbe = L.$('#pb'); pbe.style.display = t < T_MSG ? 'none' : '';
+  // the line alone; its two halves fly into the card: the name, then the subline (crossfade into the card's own type as they land)
+  const li = L.eo(L.n(t, T_LINE, T_LINE + .85)), dk = L.eio(L.n(t, T_DOCK, T_DOCK + .6)), cy = camY(t), sc = L.lerp(1.06, 1, L.eio(L.n(t, 0, DUR)));
+  // while Qwen's words come in, the camera steps back slowly to the whole post (the card as it is posted), centred
+  const H = docH(DUR), fit = Math.min(1, (SH - 50) / H), pk = ramp(L.n(t, T_FIT, T_FIT1)), fy = (SH - H * fit) / 2;
+  doc.style.transform = `translateY(${(L.lerp(cy, fy, pk) + 260 * (1 - L.eio(L.n(t, T_DOCK - .1, T_DOCK + .6)))).toFixed(1)}px) scale(${L.lerp(sc, fit, pk).toFixed(4)})`;
+  doc.style.opacity = L.n(t, T_DOCK - .05, T_DOCK + .35).toFixed(3);
+  const l1 = L.$('#l1'), l2 = L.$('#l2'); l1.style.transform = l2.style.transform = 'none'; l1._tx = l1._ty = l2._tx = l2._ty = 0;
+  const ln = L.$('#line'), rise = 1 - Math.pow(1 - L.n(t, T_LINE, T_DOCK + .3), 2); ln.style.transform = `translateY(${(500 + 100 * (1 - rise)).toFixed(1)}px) scale(${(1 + .05 * L.n(t, T_LINE, T_DOCK)).toFixed(4)})`;
+  [[l1, L.$('#cnb')], [l2, L.$('#cns')]].forEach(([a, b]) => { const s = a.getBoundingClientRect(), d = b.getBoundingClientRect(), k = d.height / s.height;
+    a.style.transform = `translate(${(dk * (d.left - s.left)).toFixed(1)}px,${(dk * (d.top - s.top)).toFixed(1)}px) scale(${L.lerp(1, k, dk).toFixed(4)})`;
+    a.style.opacity = (li * (1 - L.n(t, T_DOCK + .45, T_DOCK + .6))).toFixed(3); b.style.opacity = L.n(t, T_DOCK + .45, T_DOCK + .6).toFixed(3) });
+  L.$('.hd').style.opacity = L.n(t, T_DOCK + .5, T_DOCK + .85); L.$('.th').style.opacity = L.n(t, T_HEAD, T_HEAD + .35); L.$('.ty').style.opacity = L.n(t, T_HEAD, T_HEAD + .35);
+  L.$('#chrome').style.opacity = L.eio(L.n(t, T_DOCK - .1, T_DOCK + .5));
+  // the rows land one after the other: the row slides in, its side stamps, its numbers count up; the count of each side ticks with it
+  let nl = 0, ns = 0;
+  rows.forEach((r, i) => { const t0 = ROW[i], x = tr[i], sp = L.spring(t - t0, 1.7, 8), k = L.n(t, t0, t0 + .3);
+    r.style.opacity = t < t0 ? 0 : L.cl(k * 2.5).toFixed(3); r.style.transform = t < t0 ? '' : `translateX(${(260 * (1 - sp)).toFixed(1)}px)`;
+    const ch = r.querySelector('.chip'), s = L.n(t, t0 + .2, t0 + .38); ch.style.opacity = s > 0 ? 1 : 0; ch.style.transform = `scale(${L.lerp(1.6, 1, L.eo5(s)).toFixed(3)})`;
+    r.querySelectorAll('.n').forEach((n, j) => { const q = L.n(t, t0 + .25 + j * .12, t0 + .5 + j * .12); n.style.opacity = q.toFixed(3); n.style.transform = `translateX(${(30 * (1 - L.eo(q))).toFixed(1)}px)` });
+    if (t >= t0 + .2) x.side === 'LONG' ? nl++ : ns++;
+    // Qwen's row lights as it is about to speak: a gold edge and a lift of its ground
+    const lt = x.k === 'QWEN' ? L.eio(L.n(t, T_LIT, T_LIT + .4)) : 0; r.querySelector('.bar').style.transform = `scaleY(${lt.toFixed(3)})`; r.querySelector('.lit').style.opacity = lt });
+  const bump = (el, v, tl) => { el.textContent = v; el.style.opacity = v ? 1 : .3; const q = L.n(t, tl, tl + .3); el.style.transform = `scale(${(1 + .3 * Math.sin(Math.PI * q)).toFixed(3)})` };
+  const lastL = ROW.filter((r, i) => tr[i].side === 'LONG' && t >= r + .2).pop() || -9, lastS = ROW.filter((r, i) => tr[i].side === 'SHORT' && t >= r + .2).pop() || -9;
+  bump(L.$('#nl'), nl, lastL + .2); bump(L.$('#ns'), ns, lastS + .2);
+  // Qwen's words: the card rises under the table, the first line, the marker on the drop, then the rest a line at a time
+  const pb = pbe, m = L.n(t, T_MSG, T_MSG + .5), sp = L.spring(t - T_MSG, 1.6, 7.5); pb.style.opacity = t < T_MSG ? 0 : L.cl(m * 2.2).toFixed(3); pb.style.transform = t < T_MSG ? '' : `translateY(${(120 * (1 - sp)).toFixed(1)}px)`;
+  lines.forEach((p, i) => { const q = L.n(t, LN[i], LN[i] + .45); p.style.opacity = q.toFixed(3); p.style.transform = `translateY(${(36 * (1 - L.eo(q))).toFixed(1)}px)` });
+  AN.sweep(L.$('#pb .hlc'), L.eio(L.n(t, T_SW, T_SW + .6)));
+};
+</script>

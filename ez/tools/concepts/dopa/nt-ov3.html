@@ -1,0 +1,134 @@
+<!doctype html><meta charset="utf-8"><title>Slips</title>
+<!-- Night studio outcome take 3, SLIPS (2026-11-20): the close told AI by AI, as the receipts a till prints. Top-down on a dark walnut desk
+  under a brass lamp (w6/nt/ov/ov3-desk.jpg, Hedra gpt-image-2 in the bet chip's recipe), a receipt printer at the top. Its first slip
+  is the close itself: the EZ. mark and EARNINGS ZEASON printed at the head (brand inside the main object, research B1), the premise, each
+  company's line-up as LONG and SHORT counts; on the drop it prints AT THE CLOSE and each company's move, and is torn and laid to the
+  side. Then one slip per AI, each line a company (its mark, the AI's side, the P&L it took, RIGHT or WRONG stamped), the AI's total at the
+  foot, torn and tossed. Last, the five slips land in a pile in Season 2 order: the leader's slip whole on top with a gold 1 stamped on it,
+  the other four showing their totals beneath it; the end card.
+  Faces: Space Mono (the printing, tabular) and Kanit black italic (the stamps and the desk line). Inks: logo black on logo cream paper,
+  green and red for sides and P&L, gold for RIGHT and the leader. Bed nt-ov3-dnb (bedx.py: w6-dnb-x [22.414, 35.862] + [28.966, 33.104],
+  174 BPM), its drop (w6-dnb-x's second, at 26.55 s in the source) at 4.14 s here, on AT THE CLOSE. Data: data/close-<date>.json
+  (nt-ov3.html?d=<YYYY-MM-DD>). Scales: each slip gets one line a company (10 companies make a slip about 560 px longer, the camera follows
+  the paper down); the close slip lists every company; the pile is always five slips.
+  Words of our own on screen: no punctuation; sides are LONG or SHORT; every money figure is a signed P&L with its label. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}
+html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#04070e;font-family:'Space Mono',monospace}
+#st{position:absolute;inset:0;overflow:hidden}
+#cam{position:absolute;inset:0;transform-origin:540px 700px}
+#g0,#g1{position:absolute;left:-50px;width:1180px;height:1573px}
+#g0{top:-80px;filter:brightness(.92)}
+#g1{top:70px;-webkit-mask:linear-gradient(transparent 0,#000 130px);mask:linear-gradient(transparent 0,#000 130px)}
+#g0 img,#g1 img{width:100%;height:100%;display:block}
+#lamp{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(40% 30% at 52% 62%,rgba(253,188,42,.16),transparent 70%)}
+.slip{position:absolute;left:0;top:0;width:440px;transform-origin:50% 0;filter:drop-shadow(0 18px 22px rgba(0,0,0,.55))}
+.slip .pp{position:relative;padding:20px 22px 18px;background:#f8f0d9;overflow:hidden;
+  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/14px 100%,linear-gradient(#000,#000) 0 0/100% calc(100% - 7px) no-repeat;
+  mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50% 100%/14px 8px repeat-x,linear-gradient(#000,#000) 0 0/100% calc(100% - 7px) no-repeat}
+.slip .pp::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(4,7,14,.025) 0 1px,transparent 1px 3px),radial-gradient(120% 60% at 50% 0%,rgba(255,255,255,.35),transparent 60%);pointer-events:none}
+.slip .ln{position:relative;display:flex;align-items:center;gap:10px;height:48px;font:700 26px/1 'Space Mono';white-space:nowrap}
+.slip .ln img.co{width:32px;height:32px;border-radius:7px;filter:grayscale(.15) contrast(1.05)}
+.slip .ln .pl{margin-left:auto}
+.slip .hd{display:flex;align-items:center;gap:12px;height:54px;font:700 32px/1 'Space Mono'}
+.slip .rule{height:14px;margin:4px 0;background:repeating-linear-gradient(90deg,#04070e 0 8px,transparent 8px 14px) 0 50%/100% 2px no-repeat}
+.slip .tot{display:flex;align-items:center;height:56px;font:700 30px/1 'Space Mono'}
+.slip .tot .pl{margin-left:auto;font-size:32px}
+.slip .ctr{text-align:center;font:700 24px/1.25 'Space Mono';letter-spacing:.04em}
+.slip .big{font:700 30px/1.15 'Space Mono';text-align:center;margin:6px 0 4px}
+.slip .stamp{position:absolute;right:-2px;top:7px;font:italic 900 24px/1 Kanit;letter-spacing:.04em;padding:4px 8px 2px;border:3px solid;border-radius:6px;transform:rotate(-7deg);mix-blend-mode:multiply;opacity:0}
+.slip .rk{position:absolute;z-index:3;left:-34px;font:italic 900 40px/1 Kanit;color:#04070e;background:#fdbc2a;width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,0,0,.5),inset 0 0 0 3px rgba(4,7,14,.25);opacity:0}
+#cap{position:absolute;left:0;right:0;top:1250px;text-align:center;font:italic 900 52px/1 Kanit;color:#f8f0d9;letter-spacing:.01em;text-shadow:0 4px 20px rgba(0,0,0,.8);opacity:0;z-index:60}
+#cap b{color:#fdbc2a}
+#led{position:absolute;width:18px;height:18px;border-radius:50%;background:#03c870;box-shadow:0 0 18px 6px rgba(3,200,112,.6)}
+</style>
+<div id="st"><div id="cam">
+  <div id="g0"><img src="w6/nt/ov/ov3-desk.jpg" alt=""></div>
+  <div id="g1"><img src="w6/nt/ov/ov3-desk.jpg" alt=""></div>
+  <div id="lamp"></div><div id="led"></div>
+  <div id="slips"></div>
+</div><div id="cap"></div></div>
+<script src="lib.js"></script><script src="nt-ov.js"></script><script src="nt-ovx.js"></script>
+<script>
+const TR = 4.138, SX = 320, SY = 497;   // the slot: the paper's left edge and its exit line on the frame
+let D, G, grain, CL, AS = [], ORD;
+const ink = v => v > 0 ? '#027a45' : v < 0 ? '#c8241c' : '#04070e';
+const sideInk = s => s === 'LONG' ? '#027a45' : '#c8241c';
+// a slip is a list of lines; each line prints at its own time (the paper grows by the line's height and the line appears)
+const mkSlip = (lines) => { const el = document.createElement('div'); el.className = 'slip'; el.innerHTML = `<div class="pp">${lines.map(l => l.h).join('')}</div>`; L.$('#slips').appendChild(el);
+  const kids = [...el.querySelector('.pp').children]; return { el, kids, at: lines.map(l => l.at) } };
+const setup = () => {
+  G = OV.grid(174, TR, TR, 'nt-ov3-dnb'); window.MUSIC = { f: 'nt-ov3-dnb', at: 0 }; const B = G.B, p = G.p;
+  OV.bug("700 30px 'Space Mono'", { subFont: "italic 900 30px Kanit" }); grain = OV.grain(.06);
+  // the close slip
+  const cl = [{ h: `<div class="ctr" style="padding-top:2px">${OV.markSvg(96, '#04070e', false, 'margin:0 auto 6px')}EARNINGS ZEASON</div>`, at: -1 },
+    { h: `<div class="big">${D.title.join(' ')}</div>`, at: -1 }, { h: `<div class="rule"></div>`, at: -1 }];
+  D.rounds.forEach((r, j) => cl.push({ h: `<div class="ln"><img class="co" src="${r.logo}" alt="">${r.ticker}<span style="margin-left:auto;color:#027a45">${r.longs.length} LONG</span><span style="color:#c8241c">${r.shorts.length} SHORT</span></div>`, at: B(-10 + 2 * j * 3 / Math.max(3, D.N)) }));
+  cl.push({ h: `<div class="rule"></div>`, at: B(-3) }, { h: `<div class="ctr" style="font-size:28px;padding:6px 0">AT THE CLOSE</div>`, at: B(-1) });
+  D.rounds.forEach((r, j) => cl.push({ h: `<div class="ln"><img class="co" src="${r.logo}" alt="">${r.co}<span class="pl" style="color:${ink(r.move)}">${OV.pct(r.move)}</span></div>`, at: B(j * .5) }));
+  CL = mkSlip(cl);
+  // one slip per AI, in the sheet's order
+  const per = 4; D.ais.forEach((a, i) => { const t0 = B(4 + per * i), dt = per * p * .78 / (D.N + 2);
+    const ls = [{ h: `<div class="hd">${OV.mark(a.k, 42)}${a.name.toUpperCase()}<span style="margin-left:auto">${OV.markSvg(62, '#04070e', false)}</span></div>`, at: t0 }, { h: `<div class="rule"></div>`, at: t0 }];
+    D.rounds.forEach((r, j) => { const c = a.calls[j]; ls.push({ h: `<div class="ln"><img class="co" src="${r.logo}" alt=""><span style="color:${sideInk(c.side)}">${c.side}</span><span class="pl" style="color:${ink(c.pnl)};margin-right:116px">${OV.money(c.pnl)}</span><span class="stamp" style="color:${c.right ? '#c99410' : '#c8241c'};border-color:${c.right ? '#d9a21a' : '#c8241c'}">${c.right ? 'RIGHT' : 'WRONG'}</span></div>`, at: t0 + dt * (1 + j) }) });
+    ls.push({ h: `<div class="rule"></div>`, at: t0 + dt * (D.N + 1) });
+    if (D.before) ls.push({ h: `<div class="tot" style="height:44px;font-size:24px">TONIGHT<span class="pl" style="font-size:26px;color:${ink(a.night)}">${OV.money(a.night)}</span></div>`, at: t0 + dt * (D.N + 1.5) });
+    ls.push({ h: `<div class="tot">${a.name.toUpperCase()} ${D.before ? 'SEASON' : 'P&amp;L'}<span class="pl" style="color:${ink(a.s1)}">${OV.money(a.s1)}</span></div>`, at: t0 + dt * (D.N + 2) });
+    const s = mkSlip(ls); s.a = a; s.t0 = t0; s.t1 = t0 + per * p; s.el.insertAdjacentHTML('afterbegin', `<div class="rk">${a.rank + 1}</div>`); AS.push(s) });
+  ORD = D.ranked.map(a => AS.find(s => s.a.k === a.k));
+  L.$('#cap').innerHTML = 'Season 2 <b>leaderboard</b>';
+  // sound
+  const C = window.CUES = [[.05, 'r11-swell', .1]]; OV.sting(C);
+  const pr = t => C.push([+t.toFixed(3), 'sfx-type', .08]);
+  CL.at.forEach(t => t > 0 && pr(t)); C.push([B(-3), 'sfx-riser', .1], [TR, 'r11-thump', .24], [TR + .02, 'sfx-bell', .2]);
+  C.push([B(3), 'r11-tape', .14], [B(3) + .1, 'sfx-whoosh', .1]);
+  AS.forEach(s => { s.at.forEach(t => pr(t)); D.rounds.forEach((r, j) => C.push([+(s.at[2 + j] + .1).toFixed(3), 'sfx-stamp', .07])); C.push([+(s.t1 - .05).toFixed(3), 'r11-tape', .12], [+s.t1.toFixed(3), 'sfx-whoosh', .08]) });
+  const tb = B(24); ORD.slice().reverse().forEach((s, q) => C.push([+(tb + q * .5 * p).toFixed(3), 'r11-card', .1]));
+  C.push([B(28), 'sfx-stamp', .2], [B(28) + .05, 'r11-kaching', .14], [B(28) + .1, 'r11-sparkle', .1], [B(32), 'sfx-whoosh', .12], [B(32) + .12, 'r11-thump', .12]);
+  window.DUR = +(B(32) + 1.95).toFixed(2);
+};
+// the length of paper out of the slot at time t: the sum of the printed lines' heights, each fed in 70 ms
+const fed = (s, t) => { let h = 20; s.kids.forEach((k, i) => { const q = s.at[i] < 0 ? 1 : L.eo(L.n(t, s.at[i], s.at[i] + .07)); h += k.offsetHeight * q + (i ? 0 : 0) }); return h + 18 };
+const drawSlip = (s, t, x, y, rot, sc, clipTop) => { const el = s.el, pp = el.querySelector('.pp'), H = fed(s, t);
+  pp.style.height = H.toFixed(1) + 'px'; s.kids.forEach((k, i) => { k.style.opacity = s.at[i] < 0 || t >= s.at[i] ? 1 : 0 });
+  el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(2)}deg) scale(${sc.toFixed(4)})`; return H };
+window.R = t => {
+  const B = G.B, p = G.p; grain(t);
+  L.$('#led').style.cssText += `left:${SX + 380}px;top:${SY - 56}px;opacity:${(.5 + .5 * (Math.sin(t * 18) > 0 ? 1 : .3)).toFixed(2)}`;
+  L.$('#lamp').style.opacity = (.8 + .2 * Math.sin(t * 2.2) + (t >= TR ? .8 * Math.exp(-(t - TR) * 3) : 0)).toFixed(3);
+  // the close slip: prints at the slot, torn on B(3) and laid on the left of the desk, angled, where its moves stay readable
+  { const tear = L.eio(L.n(t, B(3), B(3) + .45)), jit = t >= TR && t < TR + .3 ? Math.sin(t * 90) * 2 : 0;
+    const x = L.lerp(SX, 610, tear), y = L.lerp(SY, 728, tear), r = L.lerp(0, 4, tear), out = L.eio(L.n(t, B(24) - .2, B(24) + .3));
+    drawSlip(CL, t, x + jit + out * 700, y + out * 200, r, L.lerp(1, .78, tear), 0); CL.el.style.zIndex = 5; CL.el.style.opacity = 1 }
+  // the AI slips
+  const tb = B(24), lead = ORD[0];
+  AS.forEach((s, i) => { const el = s.el, a = s.a; let x, y, r, sc = 1;
+    const tear = L.eio(L.n(t, s.t1, s.t1 + .4)), dir = i % 2 ? 1 : -1;
+    // while printing: at the slot; torn: tossed off the frame to a side
+    x = L.lerp(SX, SX + dir * 900, tear); y = L.lerp(SY, SY + 260, tear); r = L.lerp(0, dir * 24, tear);
+    // the pile: rank k lands with its total row showing under the slip above it; the leader whole on top
+    const k = D.ranked.indexOf(a), land = L.eo5(L.n(t, tb + (4 - k) * .5 * p, tb + (4 - k) * .5 * p + .4));
+    if (t >= tb) { const H = fed(s, 99), topY = 360, bot0 = topY + fed(lead, 99), yk = k === 0 ? topY : bot0 + 92 * k - H;
+      x = L.lerp(SX + dir * 900, SX - 30 + (k % 2 ? 8 : -6), land); y = L.lerp(SY + 260, yk, land); r = L.lerp(dir * 24, k === 0 ? -1.2 : (k % 2 ? 1.4 : -1.6), land) }
+    el.style.zIndex = t >= tb ? 30 - k : 20 + i; el.style.opacity = t >= s.t0 && (t < s.t1 + .45 || t >= tb) ? 1 : 0;
+    drawSlip(s, t, x, y, r, sc);
+    el.querySelectorAll('.stamp').forEach((st, j) => { const q = L.n(t, s.at[2 + j] + .1, s.at[2 + j] + .22); st.style.opacity = (.9 * q).toFixed(3); st.style.transform = `rotate(-7deg) scale(${(1 + .6 * (1 - L.eo5(q))).toFixed(3)})` });
+    const rk = el.querySelector('.rk'), rq = L.n(t, k === 0 ? B(28) : tb + (4 - k) * .5 * p + .3, (k === 0 ? B(28) : tb + (4 - k) * .5 * p + .3) + .18);
+    rk.style.opacity = rq; rk.style.top = (k === 0 ? 18 : fed(s, 99) - 82) + 'px'; rk.style.transform = `scale(${(1 + .8 * (1 - L.eo5(rq))).toFixed(3)}) rotate(-8deg)`;
+    rk.style.background = k === 0 ? '#fdbc2a' : '#f8f0d9'; rk.style.boxShadow = k === 0 ? `0 0 ${(30 * rq).toFixed(1)}px rgba(253,188,42,.8),0 6px 16px rgba(0,0,0,.5)` : '0 6px 16px rgba(0,0,0,.5),inset 0 0 0 3px rgba(4,7,14,.3)' });
+  const cp = L.$('#cap'); cp.style.opacity = L.n(t, tb + .3, tb + .6); cp.style.transform = `translateY(${(20 * (1 - L.eo5(L.n(t, tb + .3, tb + .7)))).toFixed(1)}px)`;
+  // the camera: a slow drift over the desk; down the paper while it prints, a kick on the drop, a pull back for the pile
+  let fy = 700, z = 1.04; const pr = L.n(t, 0, TR);
+  if (t < tb) { const q = L.eio(L.n(t, B(3), B(3) + .5)); const mv = L.eio(L.n(t, B(-7), B(-5))); z = L.lerp(1.3 + .07 * mv, 1.18 + .04 * L.n(t, B(4), tb), q); fy = L.lerp(540, 690, mv) } else { const k = L.eio(L.n(t, tb, tb + .6)); z = L.lerp(1.4, 1.12, k) + .04 * L.n(t, tb + .6, window.DUR); fy = L.lerp(700, 760, k) }
+  const kick = t >= TR ? Math.exp(-(t - TR) * 7) * Math.sin((t - TR) * 55) * 9 : 0;
+  const sway = 6 * Math.sin(t * .6), cam = L.$('#cam'); cam.style.transformOrigin = `540px ${fy.toFixed(1)}px`;
+  cam.style.transform = `translate(${(kick + sway).toFixed(2)}px,${(kick * .5).toFixed(2)}px) scale(${z.toFixed(4)}) rotate(${(.4 * Math.sin(t * .4)).toFixed(3)}deg)`;
+  OV.endR(t, B(32));
+  OV.beat(t, G, [L.$('#g0'), L.$('#g1')], L.$('#cam'), .2, .010); OV.endFx(t, B(32), G);
+};
+(async () => {
+  D = await OV.load(); setup();
+  await OV.ready(["700 26px 'Space Mono'", "italic 900 24px Kanit"]);
+})();
+</script>

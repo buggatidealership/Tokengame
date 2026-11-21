@@ -1,0 +1,337 @@
+<!doctype html>
+<!--
+DIRECTED BRIEF (EZ liquid chrome loop, 2026-10-11)
+GOAL: a brand loop for $EZ. The pot (one liquid chrome blob) squashes, stretches and pinches into 3 drops; each drop pours
+      into its glyph of "$EZ"; a glint sweeps the word; the glyphs melt back into one wobbling blob. Seamless.
+OUTPUT: one HTML file, raw WebGL2 (no libraries), 1080x1080. window.renderAt(t) draws exactly the frame at t seconds.
+TIME: 6 s loop, 60 fps = 360 frames, 120 BPM (1 beat = 30 frames). Frame 359 flows into frame 0.
+TYPE: "$EZ" in Barlow Condensed 800 (the site's display face), baked per glyph into a signed distance field
+      (Felzenszwalb EDT at 2x, averaged down), extruded 0.28 deep with a 0.035 rounded edge. Cap height 1.5 units.
+LIQUID: one raymarched SDF: blob, 3 drops and 3 glyphs; smooth-min k 0.35 while touching, 0.1 as they part, 0.02 on hold.
+      Each drop becomes its glyph through mix(dropSDF, glyphSDF, K). Volume moves blob -> drops (cube roots).
+      Surface ripple 0.008 at frequency 3.2, slow deform 0.035 at frequency 1.0, both periodic in 1.5 s and 6 s.
+CHROME: F0 0.92, Schlick fresnel, 3 bounces. Studio: dark (0.012), black camera-side panel 86x57 deg with a soft horizon line,
+      white softboxes overhead (2.4) and upper left (3.0), EZ yellow strip behind and up, EZ yellow kicker on the right
+      (azimuth 55 to 125, elevation -16 to 10). Glints: 0.6 deg strips at intensity 3, sweeping 0.15 to 0.65 s and 2.45 to 3.25 s.
+FLOOR: glossy black at y -1, 30% fresnel mirror fading with distance, soft overhead shadow, contact darkening.
+CAMERA: 35 deg vertical fov, from (0, 0.45, 7.8) to (0, 0.1, 0), pushes to 7.5 on the hold and back by 6 s.
+FILM: 4 subframes per frame over half a frame (180 deg shutter), each with a quarter-pixel jitter, averaged in linear light.
+      Khronos PBR Neutral tone mapping, 8% vignette, 2% grain seeded per frame.
+SHOTS (s): 0 to 0.7 idle wobble and first glint; 0.7 to 1.0 anticipation squash (y 0.86, xz 1.07), 3-frame hold;
+      1.0 to 1.3 stretch to 1.18 and pinch; 1.15 to 1.97 drops arc to their glyphs, 7% overshoot; 1.75 to 2.4 drops pour
+      into glyphs ($ first, 0.08 s apart); 2.4 to 4.2 hold, glint at 2.85 s, tagline; 4.2 to 4.8 glyphs melt (Z first);
+      4.6 to 5.35 drops fall back and merge; 5.35 to 6 the blob wobbles out (damping ~0.55) and settles into frame 0.
+COPY: "EARNINGS ZEASON" eyebrow; on the hold "NOBODY SAID IT WOULD BE EZ". No numbers, no claims about returns.
+SOUND: Web Audio, synthesized, 48 kHz; every hit 1 frame after its picture. Mixed to about -14 LUFS, peak -1 dBTP in ffmpeg.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EZ Liquid Chrome</title>
+<meta name="viewport" content="width=1080">
+<style>
+@font-face{font-family:"BC";src:url(fonts/barlow-condensed-800.woff2) format("woff2");font-weight:800}
+@font-face{font-family:"B";src:url(fonts/barlow-800.woff2) format("woff2");font-weight:800}
+html,body{margin:0;background:#07080d}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#07080d}
+#gl{position:absolute;inset:0;width:1080px;height:1080px}
+.ab{position:absolute}
+#eb{left:72px;top:64px;font:800 24px/1 "B";letter-spacing:.32em;color:#ffc72c;text-transform:uppercase}
+#tag{left:0;right:0;top:902px;text-align:center;font:800 64px/1 "BC";letter-spacing:.01em;color:#f3efe6;text-transform:uppercase;text-shadow:0 2px 18px rgba(0,0,0,.6)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl" width="1080" height="1080"></canvas>
+  <div class="ab" id="eb">Earnings Zeason</div>
+  <div class="ab" id="tag">Nobody said it would be EZ</div>
+</div>
+<script>
+(function(){
+var FPS=60,N=360,LOOP=6;window.FPS=FPS;window.N=N;
+var NS=+(new URLSearchParams(location.search).get("ns")||4);   /* subframes; ?ns=1 for quick looks */
+var cv=document.getElementById("gl"),gl=cv.getContext("webgl2",{preserveDrawingBuffer:true,antialias:false});
+if(!gl)throw new Error("no webgl2");
+
+/* ---------- 1. bake "$EZ" into three signed distance fields, one glyph per channel ---------- */
+function edt1(f,n,d,v,z){var k=0;v[0]=0;z[0]=-1e20;z[1]=1e20;
+  for(var q=1;q<n;q++){var s=((f[q]+q*q)-(f[v[k]]+v[k]*v[k]))/(2*q-2*v[k]);while(s<=z[k]){k--;s=((f[q]+q*q)-(f[v[k]]+v[k]*v[k]))/(2*q-2*v[k])}k++;v[k]=q;z[k]=s;z[k+1]=1e20}
+  k=0;for(q=0;q<n;q++){while(z[k+1]<q)k++;d[q]=(q-v[k])*(q-v[k])+f[v[k]]}}
+function edt(grid,W,H){var INF=1e20,n=Math.max(W,H),f=new Float64Array(n),d=new Float64Array(n),v=new Int32Array(n),z=new Float64Array(n+1),x,y;
+  for(x=0;x<W;x++){for(y=0;y<H;y++)f[y]=grid[y*W+x];edt1(f,H,d,v,z);for(y=0;y<H;y++)grid[y*W+x]=d[y]}
+  for(y=0;y<H;y++){for(x=0;x<W;x++)f[x]=grid[y*W+x];edt1(f,W,d,v,z);for(x=0;x<W;x++)grid[y*W+x]=Math.sqrt(d[x])}return grid}
+var TW=1400,TH=760,FS=600,CAPW=1.5,TXT="$EZ",TRACK=0.035;
+var BOX,GC=[];
+function bake(){
+  /* the glyphs are drawn and distance-transformed at SSx, then averaged down, so curved bevels do not stair-step */
+  var SS=2,W2=TW*SS,H2=TH*SS;
+  var c=document.createElement("canvas");c.width=W2;c.height=H2;var x=c.getContext("2d");x.font='800 '+(FS*SS)+'px "BC"';x.textBaseline="alphabetic";
+  var capPx=x.measureText("E").actualBoundingBoxAscent/SS,s=CAPW/capPx,s2=s/SS;      /* world units per texture pixel, per fine pixel */
+  var widths=[],tot=0;for(var i=0;i<TXT.length;i++){widths.push(x.measureText(TXT[i]).width/SS);tot+=widths[i]}
+  var trackPx=TRACK/s;tot+=trackPx*(TXT.length-1);
+  var x0=(TW-tot)/2,base=TH/2+capPx/2,data=new Float32Array(TW*TH*4),ink=[1e9,-1e9,1e9,-1e9],xs=x0;
+  for(i=0;i<TXT.length;i++){x.clearRect(0,0,W2,H2);x.fillStyle="#fff";x.fillText(TXT[i],xs*SS,base*SS);xs+=widths[i]+trackPx;
+    var px=x.getImageData(0,0,W2,H2).data,inG=new Float64Array(W2*H2),outG=new Float64Array(W2*H2),bb=[1e9,-1e9,1e9,-1e9];
+    for(var p=0,q=0;q<W2*H2;q++,p+=4){var on=px[p+3]>127;inG[q]=on?1e20:0;outG[q]=on?0:1e20;
+      if(on){var qx=q%W2,qy=(q/W2)|0;if(qx<bb[0])bb[0]=qx;if(qx>bb[1])bb[1]=qx;if(qy<bb[2])bb[2]=qy;if(qy>bb[3])bb[3]=qy}}
+    edt(outG,W2,H2);edt(inG,W2,H2);                       /* outG: distance to ink, inG: distance to paper */
+    for(var ty=0;ty<TH;ty++)for(var tx=0;tx<TW;tx++){var a=0;
+      for(var sy=0;sy<SS;sy++)for(var sx=0;sx<SS;sx++){var k=(ty*SS+sy)*W2+tx*SS+sx;a+=outG[k]-inG[k]}
+      data[((TH-1-ty)*TW+tx)*4+i]=a/(SS*SS)*s2}
+    bb=bb.map(function(v){return v/SS});
+    GC.push(bb);ink=[Math.min(ink[0],bb[0]),Math.max(ink[1],bb[1]),Math.min(ink[2],bb[2]),Math.max(ink[3],bb[3])]}
+  for(q=0;q<TW*TH;q++)data[q*4+3]=1;
+  /* world placement: the ink block centred on x 0, its middle at y 0.2 */
+  var cxp=(ink[0]+ink[1])/2,cyp=(ink[2]+ink[3])/2,X0=-cxp*s,Y1=0.2+cyp*s;   /* world of pixel (0,0) is (X0, Y1) */
+  BOX=[X0,Y1-TH*s,TW*s,TH*s];
+  GC=GC.map(function(bb){return [X0+(bb[0]+bb[1])/2*s,Y1-(bb[2]+bb[3])/2*s,0]});
+  var tex=gl.createTexture();gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,tex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA16F,TW,TH,0,gl.RGBA,gl.FLOAT,data);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE)}
+
+/* ---------- 2. the shader ---------- */
+var VS="#version 300 es\nin vec2 a;void main(){gl_Position=vec4(a,0.,1.);}";
+var FSRC=`#version 300 es
+precision highp float;
+uniform sampler2D uTx;uniform vec4 uBox;uniform vec3 uG[3];uniform float uT;uniform int uNS;uniform float uFrame;
+out vec4 o;
+const float PI=3.14159265,LOOP=6.,FLOOR=-1.;
+float sat(float x){return clamp(x,0.,1.);}
+float eio(float x){x=sat(x);return x*x*(3.-2.*x);}
+float eo(float x){x=sat(x);return 1.-pow(1.-x,3.);}
+float ei(float x){x=sat(x);return x*x*x;}
+float back(float x,float s){x=sat(x)-1.;return x*x*((s+1.)*x+s)+1.;}
+float smin(float a,float b,float k){float h=max(k-abs(a-b),0.)/k;return min(a,b)-h*h*k*.25;}
+float T;                  /* time in the loop, seconds */
+vec3 bC,bS;float bR;      /* blob centre, squash/stretch, radius */
+vec3 dP[3];float dR[3],dK[3],kM,camZ,rip;
+void state(float t){
+  T=mod(t,LOOP);
+  /* volume from blob to drops and back */
+  float u=eio((T-1.0)/.45)*(1.-eio((T-4.65)/.7));
+  bR=.95*pow(max(1.-u,0.),1./3.);
+  /* anticipation squash, stretch, then the wobble after the merge */
+  float sq=eio((T-.7)/.25)*(1.-eio((T-1.0)/.3));
+  float st=eio((T-1.0)/.3)*(1.-eio((T-1.3)/.4));
+  float wt=T-5.3,wob=wt>0.?.09*exp(-wt*6.5)*sin(wt*2.*PI*2.4)*(1.-eio((T-5.75)/.25)):0.;
+  float idle=.012*sin(T*2.*PI/1.5);
+  float sy=1.-.14*sq+.18*st+wob+idle,sxz=1.+.07*sq-.07*st-.5*wob-.5*idle;
+  bS=vec3(sxz,sy,sxz);
+  bC=vec3(0.,FLOOR+bR*sy,0.);
+  /* drops: grow out of the top of the blob, arc to their glyphs with a 7% overshoot, then fall back */
+  for(int i=0;i<3;i++){float fi=float(i);
+    vec3 G=uG[i],S=vec3(.4*G.x,FLOOR+.95*1.25,0.);
+    float go=back((T-1.15-.04*fi)/.82,1.25);
+    float ret=ei((T-(4.62+.05*(2.-fi)))/.7);
+    vec3 p=mix(S,G,go)+vec3(0.,.55*sin(PI*sat((T-1.15-.04*fi)/.82)),0.);
+    p=mix(p,S+vec3(0.,-.25,0.),ret)+vec3(0.,-.22*sin(PI*sat((T-(4.62+.05*(2.-fi)))/.7)),0.);
+    /* hold: a slow bob, each glyph a beat apart */
+    p.y+=.025*sin(2.*PI*(T/3.+fi*.25))*eio((T-2.)/.4)*(1.-eio((T-4.2)/.4));
+    dP[i]=p;
+    if(i==1)bC=mix(bC,p-vec3(0.,.15,0.),eio(u*1.3-.3));   /* the last of the blob rides up into the middle drop */
+    dR[i]=.4*pow(u,1./3.);
+    dK[i]=eio((T-(1.78+.08*fi))/.35)*(1.-eio((T-(4.2+.08*(2.-fi)))/.5));
+  }
+  kM=mix(.35,.05,eio((T-1.25)/.3));kM=mix(kM,.02,eio((T-2.)/.35));kM=mix(kM,.06,eio((T-4.3)/.4));kM=mix(kM,.35,eio((T-4.9)/.45));
+  camZ=7.8-.3*eio((T-1.2)/3.)*(1.-eio((T-4.3)/1.7));
+  rip=1.;
+}
+float sdGlyph(vec3 p,int i){
+  vec2 uv=(p.xy-uBox.xy)/uBox.zw,cu=clamp(uv,0.,1.);
+  vec4 s=texture(uTx,cu);float d2=(i==0?s.r:i==1?s.g:s.b)+length((uv-cu)*uBox.zw);
+  vec2 w=vec2(d2+.035,abs(p.z)-.14+.035);
+  return min(max(w.x,w.y),0.)+length(max(w,0.))-.035;
+}
+float wav(vec3 p){
+  float w=2.*PI*T/1.5,v=2.*PI*T/LOOP;
+  return .008*sin(3.2*p.x+w)*sin(3.2*p.y-w)*sin(3.2*p.z+w*.5)
+        +.035*sin(1.0*p.x+v)*sin(1.0*p.y+2.*v)*sin(1.0*p.z-v);
+}
+float map(vec3 p){
+  vec3 q=(p-bC)/bS;float d=(length(q)-bR)*min(bS.x,bS.y);
+  d=bR>.002?d-wav(p):1e3;
+  for(int i=0;i<3;i++){
+    float ds=dR[i]>.002?length(p-dP[i])-dR[i]-wav(p+float(i))*1.:1e3;
+    float k=dK[i],o;
+    if(k<=0.)o=ds;
+    else{float dg=sdGlyph(p-(dP[i]-uG[i]),i);   /* the glyph rides its drop: overshoot, bob */
+      o=k>=1.?dg:mix(ds,dg,k);}
+    d=smin(d,o,kM);
+  }
+  return d;
+}
+vec3 nrm(vec3 p){const vec2 e=vec2(1.,-1.)*.0065;   /* wider than one glyph texel (0.0036), so bevels shade smooth, not faceted */
+  return normalize(e.xyy*map(p+e.xyy)+e.yyx*map(p+e.yyx)+e.yxy*map(p+e.yxy)+e.xxx*map(p+e.xxx));}
+/* ---------- the studio, by direction ---------- */
+const vec3 YEL=vec3(1.,.62,.05);
+float boxA(float az,float el,float a0,float a1,float e0,float e1,float soft){
+  return sat((az-a0)/soft+.5)*sat((a1-az)/soft+.5)*sat((el-e0)/soft+.5)*sat((e1-el)/soft+.5);}
+float glint(float az,float el){
+  float g=0.;
+  /* sweep 1 over the blob, sweep 2 over the word: a tilted 0.6 deg strip crossing the camera-side panel */
+  float s1=sat((T-.15)/.5),s2=sat((T-2.45)/.8);
+  float on1=step(.15,T)*step(T,.65),on2=step(2.45,T)*step(T,3.25);
+  float a1=radians(mix(140.,220.,s1)),a2=radians(mix(150.,210.,eio(s2)));
+  float az2=az<0.?az+2.*PI:az;            /* 0..2pi so the camera side (pi) is continuous */
+  g+=on1*.45*exp(-pow((az2-a1-.35*el)/radians(2.6),2.))*sat(sin(PI*s1)*3.);   /* a soft sheen over the blob, not a hairline */
+  g+=on2*exp(-pow((az2-a2-.35*el)/radians(.4),2.));
+  return 3.*g;
+}
+vec3 env(vec3 d){
+  float el=asin(clamp(d.y,-1.,1.)),az=atan(d.x,-d.z);   /* az 0 = behind the subject, +/-pi = the camera side */
+  vec3 c=vec3(.012,.013,.02);
+  float aaz=abs(az);
+  /* camera side: a black panel with a soft horizon line, the floor glow below it */
+  float cam=boxA(aaz,el,radians(137.),radians(200.),radians(-28.5),radians(28.5),.05);
+  c*=1.-.85*cam;
+  c+=vec3(1.3,1.32,1.38)*exp(-pow((el+.035)/.014,2.))*(.4+.6*cam);   /* the horizon the faces reflect */
+  c+=vec3(.16,.155,.15)*sat((-.035-el)*6.)*sat((el+.6)*3.);           /* lit floor below it */
+  /* softboxes */
+  c+=.9*vec3(1.,.99,.97)*boxA(aaz,el,radians(140.),radians(200.),radians(16.),radians(44.),.09);
+  c+=2.4*vec3(1.)*boxA(az,el,radians(-25.),radians(25.),radians(62.),radians(90.),.06);
+  c+=3.0*vec3(1.,.98,.95)*boxA(az,el,radians(-95.),radians(-45.),radians(18.),radians(52.),.08);
+  /* EZ yellow: a strip behind and up, a kicker on the right */
+  c+=1.6*YEL*boxA(az,el,radians(-35.),radians(35.),radians(34.),radians(50.),.04);
+  c+=1.1*YEL*boxA(az,el,radians(55.),radians(125.),radians(-16.),radians(10.),.12);
+  /* a cool fill low left so the shadow side still reads as metal */
+  c+=.35*vec3(.75,.85,1.)*boxA(az,el,radians(-140.),radians(-60.),radians(-12.),radians(8.),.1);
+  c+=glint(az,el)*vec3(1.);
+  return c;
+}
+vec3 backdrop(vec3 d){
+  /* what the camera sees past everything: dark navy, a soft warm pool behind the subject */
+  float y=d.y;vec3 c=mix(vec3(.010,.011,.019),vec3(.004,.004,.008),sat(y*1.5+.2));
+  c+=vec3(.016,.022,.05)*exp(-dot(d.xy,d.xy)*14.);
+  return c;
+}
+float shadow(vec3 p){float r=1.,t=.05;vec3 L=normalize(vec3(-.2,1.,.25));
+  for(int i=0;i<22;i++){float h=map(p+L*t);r=min(r,6.*h/t);t+=clamp(h,.04,.4);if(r<.01||t>4.)break;}return sat(r);}
+vec2 boxHit(vec3 ro,vec3 rd,vec3 lo,vec3 hi){vec3 ir=1./rd,a=(lo-ro)*ir,b=(hi-ro)*ir,mn=min(a,b),mx=max(a,b);
+  return vec2(max(max(mn.x,mn.y),mn.z),min(min(mx.x,mx.y),mx.z));}
+bool march(vec3 ro,vec3 rd,float tmax,int n,out float t){
+  vec2 bh=boxHit(ro,rd,vec3(-3.,-1.05,-1.),vec3(3.,2.3,1.));
+  if(bh.x>bh.y||bh.y<0.){t=1e9;return false;}
+  tmax=min(tmax,bh.y);
+  t=max(bh.x,0.);for(int i=0;i<160;i++){if(i>=n)break;float d=map(ro+rd*t);if(d<.0008*(1.+t))return t<tmax;t+=d*.82;if(t>tmax)return false;}return false;}
+vec3 trace(vec3 ro,vec3 rd){
+  vec3 col=vec3(0.),thr=vec3(1.);bool past=false;   /* past: bounced off the floor, misses show the backdrop */
+  for(int b=0;b<4;b++){
+    float tf=rd.y<-1e-4?(FLOOR-ro.y)/rd.y:1e9;
+    float t;bool hit=march(ro,rd,min(tf,22.),b==0?140:72,t);
+    if(hit){vec3 p=ro+rd*t,n=nrm(p);float c=1.-max(dot(-rd,n),0.);
+      vec3 F=vec3(.92,.92,.93)+(1.-vec3(.92,.92,.93))*pow(c,5.);
+      thr*=F;ro=p+n*.004;rd=reflect(rd,n);
+      if(b==3){col+=thr*(past?backdrop(rd):env(rd));}
+      continue;}
+    if(tf<22.&&!past){vec3 p=ro+rd*tf;
+      float dist=length(p.xz),fade=exp(-dist*.18);
+      float sh=mix(.35,1.,shadow(p)),ao=mix(.35,1.,sat(map(p+vec3(0.,.35,0.))/.35));
+      vec3 base=vec3(.010,.012,.026)*sh*ao;
+      /* a lit pool under the subject, warm, fading out */
+      base+=vec3(.16,.16,.165)*exp(-dist*dist*.2)*sh*ao;
+      /* far floor melts into the backdrop: a seamless cyc, no table edge */
+      float far=sat((length(p.xz)-2.5)/6.);base=mix(base,backdrop(rd),far);
+      float c=1.-max(-rd.y,0.);float fr=.04+.96*pow(c,5.);
+      col+=thr*base;thr*=vec3(.3*mix(fr,1.,.25)*fade)*ao*(1.-far);
+      ro=p+vec3(0.,.002,0.);rd=reflect(rd,vec3(0.,1.,0.));past=true;
+      if(max(thr.r,max(thr.g,thr.b))<.003)break;
+      continue;}
+    col+=thr*((b==0||past)?backdrop(rd):env(rd));break;
+  }
+  return col;
+}
+vec3 neutral(vec3 c){const float sc=.8-.04,dd=.15;float x=min(c.r,min(c.g,c.b));float off=x<.08?x-6.25*x*x:.04;c-=off;
+  float pk=max(c.r,max(c.g,c.b));if(pk<sc)return c;float d2=1.-sc;float np=1.-d2*d2/(pk+d2-sc);c*=np/pk;float g=1.-1./(dd*(pk-np)+1.);return mix(c,vec3(np),g);}
+float hash(vec2 p){p=fract(p*vec2(443.897,441.423));p+=dot(p,p.yx+19.19);return fract((p.x+p.y)*p.x);}
+void main(){
+  vec2 fc=gl_FragCoord.xy;vec3 acc=vec3(0.);
+  for(int s=0;s<8;s++){if(s>=uNS)break;float fs=float(s),ns=float(uNS);
+    float ts=uT+((fs+.5)/ns-.5)*(.5/60.);
+    vec2 jit=ns>1.?vec2(fract(.5+fs*.7548776662),fract(.5+fs*.5698402910))-.5:vec2(0.);
+    jit+=(vec2(fract(uFrame*.618),fract(uFrame*.382))-.5)*.25;     /* quarter-pixel jitter per frame */
+    state(ts);
+    vec2 uv=(fc+jit-540.)/540.;
+    vec3 ro=vec3(0.,.45,camZ),ta=vec3(0.,.1,0.),fw=normalize(ta-ro),rt=normalize(cross(fw,vec3(0.,1.,0.))),up=cross(rt,fw);
+    float f=1./tan(radians(35.)*.5);
+    vec3 rd=normalize(uv.x*rt+uv.y*up+f*fw);
+    acc+=trace(ro,rd);
+  }
+  vec3 c=acc/float(uNS);
+  c*=1.05;c=neutral(c);
+  vec2 q=fc/1080.;c*=1.-.08*pow(length(q-.5)*1.41,2.2);
+  c=pow(max(c,0.),vec3(1./2.2));
+  c+=(hash(fc+uFrame*17.31)-.5)*.02;
+  o=vec4(c,1.);
+}`;
+function sh(t,s){var x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x}
+var pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,VS));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FSRC));gl.linkProgram(pr);
+if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(pr));
+gl.useProgram(pr);
+var bf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+var la=gl.getAttribLocation(pr,"a");gl.enableVertexAttribArray(la);gl.vertexAttribPointer(la,2,gl.FLOAT,false,0,0);
+var U={};["uTx","uBox","uG","uT","uNS","uFrame"].forEach(function(n){U[n]=gl.getUniformLocation(pr,n)});
+
+/* ---------- 3. overlay copy, a pure function of t ---------- */
+function sat(x){return Math.max(0,Math.min(1,x))}
+function eOut(x){x=sat(x);return 1-Math.pow(2,-10*x)}
+var tag=document.getElementById("tag");
+
+window.renderAt=function(t){
+  var T=((t%LOOP)+LOOP)%LOOP,fr=Math.round(T*FPS);
+  gl.uniform1f(U.uT,T);gl.uniform1i(U.uNS,NS);gl.uniform1f(U.uFrame,fr);
+  /* draw in bands so no single call runs long on a software GPU */
+  gl.enable(gl.SCISSOR_TEST);var B=12,h=Math.ceil(1080/B),px=new Uint8Array(4);
+  for(var i=0;i<B;i++){gl.scissor(0,i*h,1080,h);gl.drawArrays(gl.TRIANGLES,0,3);gl.readPixels(0,i*h,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px)}
+  gl.disable(gl.SCISSOR_TEST);
+  /* tagline on the hold: in 2.55 to 2.9, out 4.0 to 4.25 */
+  var a=eOut((T-2.55)/.35)*(1-sat((T-4.0)/.25));
+  tag.style.opacity=a.toFixed(3);tag.style.transform="translateY("+((1-eOut((T-2.55)/.45))*18).toFixed(2)+"px)";
+};
+
+/* ---------- 4. sound: synthesized, each hit 1 frame after its picture ---------- */
+window.renderAudio=function(){var SR=48000,dur=LOOP,ctx=new OfflineAudioContext(2,SR*dur,SR),FR=1/FPS;
+  var master=ctx.createGain();master.gain.value=.8;var comp=ctx.createDynamicsCompressor();comp.threshold.value=-16;comp.ratio.value=2.5;master.connect(comp);comp.connect(ctx.destination);
+  function noise(){var b=ctx.createBuffer(1,SR,SR),d=b.getChannelData(0),s=11;for(var i=0;i<SR;i++){s=(s*16807)%2147483647;d[i]=s/1073741823.5-1}return b}var NB=noise();
+  function at(fr){return fr/FPS+FR}
+  function env(g,t,a,d,v){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(.0005,t+a+d)}
+  function pan(x){var p=ctx.createStereoPanner();p.pan.value=x;p.connect(master);return p}
+  function kick(t,g){var o=ctx.createOscillator(),a=ctx.createGain();o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(42,t+.14);env(a,t,.003,.38,g);o.connect(a);a.connect(master);o.start(t);o.stop(t+.45)}
+  function shaker(t,g){var s=ctx.createBufferSource(),hp=ctx.createBiquadFilter(),a=ctx.createGain();s.buffer=NB;hp.type="highpass";hp.frequency.value=8000;env(a,t,.004,.05,g);s.connect(hp);hp.connect(a);a.connect(master);s.start(t,(t*7.31)%.5);s.stop(t+.07)}
+  function bloop(t,f0,f1,d,g,p){var o=ctx.createOscillator(),a=ctx.createGain();o.type="sine";o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d*.6);env(a,t,.004,d,g);o.connect(a);a.connect(pan(p||0));o.start(t);o.stop(t+d+.05)}
+  function ting(t,g){[2349.3,3520,5274,7040].forEach(function(f,i){var o=ctx.createOscillator(),a=ctx.createGain();o.frequency.value=f*(1+i*.0021);env(a,t,.002,1.4-.25*i,g/(1+i*.8));o.connect(a);a.connect(pan(-.3+.2*i));o.start(t);o.stop(t+1.6)})}
+  function swell(t,d,f0,f1,g,p){var s=ctx.createBufferSource(),bp=ctx.createBiquadFilter(),a=ctx.createGain();s.buffer=NB;s.loop=true;bp.type="bandpass";bp.Q.value=2.5;bp.frequency.setValueAtTime(f0,t);bp.frequency.exponentialRampToValueAtTime(f1,t+d);
+    a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+d*.85);a.gain.linearRampToValueAtTime(0,t+d);s.connect(bp);bp.connect(a);a.connect(pan(p||0));s.start(t);s.stop(t+d+.02)}
+  function gloop(t,g){var o=ctx.createOscillator(),a=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain();o.frequency.setValueAtTime(210,t);o.frequency.exponentialRampToValueAtTime(70,t+.35);
+    lfo.frequency.value=2.4*4;lg.gain.value=14;lfo.connect(lg);lg.connect(o.frequency);env(a,t,.006,.6,g);o.connect(a);a.connect(master);o.start(t);lfo.start(t);o.stop(t+.7);lfo.stop(t+.7)}
+  function pad(t,d,fs,g){fs.forEach(function(f){[-.06,.06].forEach(function(dt){var o=ctx.createOscillator(),lp=ctx.createBiquadFilter(),a=ctx.createGain();o.type="sawtooth";o.frequency.value=f*(1+dt*.01);lp.type="lowpass";lp.frequency.value=900;
+    a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.25);a.gain.setValueAtTime(g,t+d-.3);a.gain.linearRampToValueAtTime(0,t+d);o.connect(lp);lp.connect(a);a.connect(pan(dt*6));o.start(t);o.stop(t+d+.02)})})}
+  /* bed: 120 BPM, 3 bars of 4. Kick on the downbeats, a shaker on the offbeats where no hit plays, a pad per bar */
+  [0,120,240].forEach(function(f){kick(at(f),.55)});
+  for(var b=0;b<12;b++){var f=b*30+15;if([75,105,165,285,315].indexOf(f)<0)shaker(at(f),.06)}
+  pad(0,2,[146.83,220,293.66],.018);pad(2,2,[130.81,196,261.63],.018);pad(4,2,[110,164.81,220],.018);
+  /* events */
+  swell(at(42),.18,300,1400,.10);                                   /* squash inhale, peaks at frame 53, the squash bottoms at 57 */
+  [86,88,91].forEach(function(f,i){bloop(at(f),380+i*60,1300+i*200,.12,.30,[-.5,0,.5][i])});   /* pinch: the necks snap at frames 86 to 91 */
+  [118,123,128].forEach(function(f,i){bloop(at(f),[587.33,659.25,880][i],[587.33,659.25,880][i]*1.6,.18,.26,[-.5,0,.5][i])});  /* land */
+  [111,116,121].forEach(function(f,i){bloop(at(f),300,180,.22,.16,[-.5,0,.5][i])});            /* pour */
+  ting(at(171),.20);swell(at(150),.9,2500,7000,.03,0);               /* glint: ting at the crossing, shimmer */
+  swell(at(252),.55,1200,260,.08,0);                                 /* melt */
+  [290,296,301].forEach(function(f,i){bloop(at(f),1100-i*120,520-i*60,.09,.20,[.5,0,-.5][i])});  /* drips */
+  gloop(at(321),.5);                                                 /* merge */
+  return ctx.startRendering().then(function(buf){
+    var L=buf.getChannelData(0),Rc=buf.getChannelData(1),n=buf.length,bytes=44+n*4,ab=new ArrayBuffer(bytes),v=new DataView(ab);
+    function ws(o,s){for(var i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))}
+    ws(0,"RIFF");v.setUint32(4,bytes-8,true);ws(8,"WAVE");ws(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,2,true);v.setUint32(24,SR,true);v.setUint32(28,SR*4,true);v.setUint16(32,4,true);v.setUint16(34,16,true);ws(36,"data");v.setUint32(40,n*4,true);
+    for(var i=0,o=44;i<n;i++,o+=4){v.setInt16(o,Math.max(-1,Math.min(1,L[i]))*32767,true);v.setInt16(o+2,Math.max(-1,Math.min(1,Rc[i]))*32767,true)}
+    var u=new Uint8Array(ab),s="";for(var j=0;j<u.length;j+=32768)s+=String.fromCharCode.apply(null,u.subarray(j,j+32768));return btoa(s)})};
+
+/* ready once the fonts are in and the glyphs are baked */
+document.fonts.load('800 600px "BC"').then(function(){return document.fonts.ready}).then(function(){
+  bake();gl.uniform1i(U.uTx,0);gl.uniform4f(U.uBox,BOX[0],BOX[1],BOX[2],BOX[3]);
+  gl.uniform3fv(U.uG,new Float32Array([].concat(GC[0],GC[1],GC[2])));
+  window.GLYPHS=GC;var q=location.search.match(/[?&]t=([\d.]+)/);renderAt(q?parseFloat(q[1]):0);window.__ready=true});
+})();
+</script>
+</body>
+</html>

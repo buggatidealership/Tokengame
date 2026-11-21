@@ -1,0 +1,420 @@
+<!doctype html><meta charset="utf-8"><title>Season 1 wrap-up 7, the race painted</title>
+<!-- Season 1 wrap-up, round 7, the mix painted (owner, 2026-11-19, asked whether "mix" meant the title sequence's look carried through
+  the whole video with the Race's moves: "I say so"). w7m.html's story, camera, beats, shots, drops and bed unchanged, every shot in take E's
+  painted world: the living painted light (w6/e/gl, a seamless 60-frame loop, its level per beat, green and red rim lights) in place of the dark
+  grid floor and the dust; the chart plane's ticks and rules stay faint over it so the ride still reads as motion; the race's tags and the
+  leaderboard rows are glass (a frost canvas each, drawn from the ground every frame, never backdrop-filter); the golden ticket carries
+  Season 1 in the opening gate; the four AIs stand on the painted podium; labels in Bebas Neue; no gold rays at the winner (the painting is the
+  light). Render: CRF=20 bash wrapx.sh w7p.html 34.5 x2p-s1-wrap7-painted-draft w6-dnb-x 0 .34
+  The mix itself (owner, 2026-11-19: "a mix of title sequence and the race... the race is really smooth in terms of
+  transitioning... But the ending where it says like season 2 soon, earning season at the end, like that's not great... from a feel
+  perspective... it just is the best video"). Take B "The Race" (w6b.html) unchanged up to drop 2, then take E's ending in B's world:
+  on drop 2 the other rows fall away and the painted trophy lights up behind them, Grok's name flies up to be the headline, its mark flies
+  into the trophy's plaque, its bar burns out; WINS, SEASON 1; the P&L on a glass sheet; then the camera pulls back through the EZ. logo and
+  the golden ticket "SEASON 2 SOON" (w6e.html's trophy, ticket and glass, w6/e/). Was, in take B:
+  0 s      the EZ. logo and Season 1 (the logo docks top left as the bug)
+  1.4 s    the camera flies through the premise, set as gates of type: 4 AIs, 112 earnings trades, long or short and $100K on every trade
+  5.5 s    it dives to the chart and rides with the heads of the four P&L lines (the past recedes to a vanishing point), a call and a flash
+           on every lead change; the time map slows on the lead changes and puts them on the beat
+  12.4 s   drop 1: the lines reach trade 112, the camera pulls back to the whole season, the four final P&Ls at the line ends
+  15.2 s   the four tags slide into ranked rows and the four lines straighten into bars: the P&L leaderboard
+  20.0 s   the rows re-fill one a beat: the accuracy leaderboard (hit rate bars, W L), Relegated stamped on the last
+  24.8 s   the camera pushes in
+  Now: 26.55 s drop 2 (beat 77) the trophy, GROK | 27.93 WINS (81) | 28.28 SEASON 1 (82) | 29.31 the P&L sheet (85), counted in by 29.99 (87)
+  | 31.72 (92) pull back to the logo and the golden ticket SEASON 2 SOON, held to 34.5 s.
+  Every number from data/wrap.json. Bed w6-dnb-x (174 BPM, first beat 0.0 s, drops 12.414 and 26.552 s); every beat of the story sits on
+  the bed's beat grid (window.SHOTS). Lines are drawn on a canvas sized to them (data-content); every word and number is DOM text.
+  (was w7m.html) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Kanit:ital,wght@1,700;1,800;1,900&display=swap">
+<style id="base"></style>
+<style>
+html,body{background:#04070e}
+#st{position:absolute;inset:0;overflow:hidden;background:#04070e}
+#sh{position:absolute;inset:0;transform-origin:540px 675px}
+#gnd{position:absolute;left:0;top:0;width:1080px;height:1350px}
+#ln{position:absolute;left:0;top:0;pointer-events:none}
+#ax,#ov,#gates,#rows,#win,#end{position:absolute;left:0;top:0;width:1080px;height:1350px}
+.ab{position:absolute;left:0;top:0;transform-origin:0 0;white-space:nowrap}
+.k{font-family:Kanit,sans-serif;font-style:italic;font-weight:900;line-height:1;white-space:nowrap}
+.m{font-family:'Geist Mono',monospace;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;font-weight:700}
+.gate{position:absolute;left:0;top:0;width:1080px;height:1350px;transform-origin:540px 675px}
+.gate .c{position:absolute;left:0;right:0;text-align:center}
+.gate .l{position:absolute}
+[data-fit]{display:inline-block}
+.cr{color:#f2ede6}.gn{color:#55d6a2}.rd{color:#e8576b}.au{color:#fdbc2a}
+.plate{box-sizing:border-box;overflow:hidden}
+.plate i{position:absolute;top:-20%;bottom:-20%;left:0;width:26%;background:linear-gradient(100deg,transparent,rgba(242,237,230,.13),transparent)}
+.rkb{width:56px;height:56px;border-radius:50%;color:#04070e;font-size:34px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #04070e}
+.foil{color:transparent!important;background-image:linear-gradient(100deg,#fdbc2a 38%,#fff3c8 50%,#fdbc2a 62%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text}
+.bug{left:54px;top:50px;gap:16px;color:#f2ede6;letter-spacing:.02em}
+.bug img{width:64px;height:64px}
+.bug span{font:italic 800 31px/1 Kanit,sans-serif;letter-spacing:.01em}
+.bug b{margin-left:6px;font:italic 800 31px/1 Kanit,sans-serif;color:#fdbc2a}
+.fine{bottom:40px;font-size:19px;color:#6d665f}
+.tk{position:absolute;left:0;top:0;transform-origin:0 0;font:600 24px/1 'Geist Mono',monospace;color:#8e8680;white-space:nowrap}
+#fl{position:absolute;inset:0;background:#f2ede6;opacity:0;pointer-events:none;z-index:45}
+#end svg{position:absolute;left:0;top:0;overflow:visible}
+#tro{position:absolute;left:0;top:0;width:1080px;height:1350px}
+.bb{font-family:'Bebas Neue',sans-serif;font-weight:400;line-height:1;white-space:nowrap}
+#ov :is(.k,.m,.bb):not(.foil):not(.ink):not(.rkb){text-shadow:0 4px 0 rgba(0,0,0,.42),0 0 34px rgba(4,7,14,.85)}
+.oname span span:first-child{text-shadow:-.06em 0 0 #03c870,0 .08em 0 #04070e,0 0 .25em #04070e,0 0 .5em #04070e!important}
+.oname span span:last-child{text-shadow:.06em 0 0 #ff3a31,0 .08em 0 #04070e,0 0 .25em #04070e,0 0 .5em #04070e!important}
+.beam{position:absolute;width:190px;height:560px;background:linear-gradient(0deg,rgba(255,214,120,.75),rgba(253,188,42,.2) 45%,rgba(253,188,42,0));-webkit-mask:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);mix-blend-mode:screen}
+.pm .mk{box-shadow:0 0 0 5px #fdbc2a,0 0 44px rgba(253,188,42,.55),0 18px 30px rgba(0,0,0,.6)!important}
+.pn{position:absolute;text-align:center;font-size:44px;letter-spacing:.06em}
+.plate .pf{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:inherit}
+.plate .pt{position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5),inset 1.5px 0 0 rgba(255,255,255,.16),inset 0 -1.5px 0 rgba(0,0,0,.4),inset -1px 0 0 rgba(0,0,0,.18)}
+.cc{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.sh{text-shadow:0 6px 0 rgba(0,0,0,.6),0 0 50px rgba(4,7,14,.9)}
+.fz{filter:drop-shadow(0 4px 0 rgba(120,70,0,.9)) drop-shadow(0 0 26px rgba(253,188,42,.4))}
+.ink{color:#17110a;text-shadow:0 2px 0 rgba(255,236,170,.6),0 -1px 0 rgba(90,50,0,.35)}
+.halo{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(253,188,42,.5),rgba(253,188,42,.16) 55%,rgba(253,188,42,0) 72%);mix-blend-mode:screen}
+.ob{position:absolute;left:0;top:0}
+.ob img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ob .sw{position:absolute;inset:0;background:linear-gradient(105deg,transparent 42%,rgba(255,250,225,.85) 50%,transparent 58%);background-size:320% 100%;background-repeat:no-repeat;mix-blend-mode:overlay;-webkit-mask-size:100% 100%;-webkit-mask-repeat:no-repeat}
+.tk .sw{-webkit-mask-image:url(w6/e/ticket.webp)}.tr .sw{-webkit-mask-image:url(w6/e/trophy.webp)}
+.tk .tin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gl{position:absolute;left:0;top:0;overflow:hidden;border-radius:44px;box-shadow:0 34px 90px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.35)}
+.gl>.fr{position:absolute;left:0;top:0;width:100%;height:100%}
+.gl>.gt{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(158deg,rgba(242,237,230,.15),rgba(242,237,230,.05) 42%,rgba(242,237,230,.085)),rgba(4,7,14,.64);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5),inset 1.5px 0 0 rgba(255,255,255,.16),inset 0 -1.5px 0 rgba(0,0,0,.4),inset -1px 0 0 rgba(0,0,0,.18)}
+.gl .sp{position:absolute;inset:-60%;background:linear-gradient(118deg,transparent 44%,rgba(255,255,255,.2) 48.5%,rgba(255,255,255,.05) 51.5%,transparent 56%);pointer-events:none}
+.gl .tp{position:absolute;left:0;right:0;top:0;height:40%;background:linear-gradient(180deg,rgba(255,255,255,.07),transparent);pointer-events:none}
+.rim{position:absolute;inset:0;padding:4px;border-radius:inherit;pointer-events:none;opacity:0;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+</style>
+<div id="st">
+  <div id="sh">
+    <canvas id="gnd" width="1080" height="1350" data-chrome></canvas>
+    <div id="ax" data-chrome></div>
+    <canvas id="ln" data-content></canvas>
+    <div id="ov"><div id="gates"></div><div id="tro"></div><div id="rows"></div><div id="win"></div><div id="end"></div></div>
+  </div>
+  <div class="bug" data-chrome><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>SEASON 1</b></div>
+  <div class="fine" data-chrome>$100K on every trade</div>
+  <div id="fl" data-chrome></div><div id="vig" data-chrome></div><canvas id="grain" data-chrome></canvas>
+</div>
+<script src="lib.js"></script>
+<script>
+const q = new URLSearchParams(location.search);
+const BPM = 174, BT = 60 / BPM, bt = n => n * BT, DUR = 34.5;
+const CR = '#f2ede6', GN = '#55d6a2', RD = '#e8576b', AU = '#fdbc2a', BK = '#04070e';
+const COL = { GROK: AU, CLAUDE: GN, GPT: CR, KIMI: RD }, RGB = { GROK: '253,188,42', CLAUDE: '85,214,162', GPT: '242,237,230', KIMI: '232,87,107' };
+// the story's beats, on the bed's grid
+const T = { g: [0, bt(4), bt(8), bt(11)], race: bt(16), d1: bt(36), rank: bt(40), brd: bt(44), exact: bt(48), acc: bt(58), rel: bt(66), push: bt(72), win: bt(77), wins: bt(81), ss: bt(82), pl: bt(85), pnl: bt(87), close: bt(92) };
+const KEYS = [[3, 'GPT', 17], [37, 'GROK', 21], [46, 'GROK', 25], [63, 'CLAUDE', 29], [67, 'GROK', 31]];   // lead changes (D.lead) that land on a beat
+const FL = 1500, U = 40, NEAR = 70, TAU = .2, GZ = [30000, 23000, 16000, 9000], CREEP = 98;
+const GO = [[0, 0, 0], [150, -30, -3.5], [-130, 40, 3], [110, 0, -2]];   // each gate's sideways offset and roll: the flight weaves
+const RX = 56, RW = 968, RY0 = 392, RP = 214, RH = 196, BARY = 158, BX0 = 84, BX1 = 996;
+const S = {}, C = []; let D, t = 0, grain;
+// take E's helpers: painted objects with a travelling light, the gold rim, the foil glint, a spring
+const TRR = 874 / 615, TKR = 472 / 927, TRW = 950 / TRR;
+const obj = (cls, src, w, h, inner = '') => `<div class="ob ${cls}" style="width:${w.toFixed(1)}px;height:${h.toFixed(1)}px"><img src="${src}" alt=""><div class="sw"></div>${inner}</div>`;
+const RIM = a => `conic-gradient(from ${a.toFixed(1)}deg,rgba(253,188,42,.95) 0deg,#fff6d6 16deg,rgba(253,188,42,.9) 38deg,rgba(253,188,42,.45) 170deg,#ffedb8 196deg,rgba(253,188,42,.45) 222deg,rgba(253,188,42,.95) 360deg)`;
+const glint = (el, u, per) => { const x = ((u % per) + per) % per; el.style.backgroundPosition = `${(100 - 100 * L.n(x, .1, 1.1)).toFixed(1)}% 0` };
+const sweep = (el, k) => { el.style.backgroundPosition = `${(125 - 150 * k).toFixed(1)}% 0` };
+const vis = (el, v) => { const d = v ? '' : 'none'; if (el._v !== d) { el.style.display = d; el._v = d } return v };
+const blr = (el, px) => { el.style.filter = px > .15 ? `blur(${px.toFixed(2)}px)` : '' };
+const kick = x => Math.exp(-6.5 * (((x % BT) + BT) % BT)) * (1 - L.n(x, DUR - 1.2, DUR));
+// the trophy's place and scale at time x; its plaque (where Grok's mark lands) in the same coordinates as the rows
+function trophy(x) { const k = L.eo5(L.n(x, T.win, T.win + .34)), f = L.eo5(L.n(x, T.wins, T.wins + .4)), dr = L.n(x, T.win, T.close);
+  const s = L.lerp(1.3, 1, k) * L.lerp(1, 1.34, f) * (1 + .04 * dr + .012 * kick(x)), ty = L.lerp(390, 300, f) + 70 * (1 - k);
+  return { k, f, s, ty, px: 540 + 3.25 * s, py: ty + 380 + 380.3 * s } }
+const add = (h, p) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
+const mark = (k, s) => { const m = L.models[k]; return `<svg class="mk" width="${s}" height="${s}" viewBox="-4 -4 32 32" style="border-radius:${s * .26}px;background:${m.bg};box-shadow:0 0 0 ${Math.max(1.5, s * .03)}px rgba(242,237,230,.22)"><path d="${m.d}" fill="${m.fg}"${m.fr ? ` fill-rule="${m.fr}" clip-rule="${m.fr}"` : ''}/>${m.dot ? `<path d="${m.dot}" fill="${m.dotc}"/>` : ''}</svg>` };
+const Kf = v => { const r = Math.round(Math.abs(v) / 1000); return r === 0 ? '$0' : (v < 0 ? '−' : '+') + '$' + r + 'K' };
+const sv = (a, f) => { f = L.cl(f, 0, 112); const i = Math.min(111, Math.floor(f)); return a.s[i] + (a.s[i + 1] - a.s[i]) * (f - i) };
+const put = (el, x, y, s = 1, o = 1, ex = '') => { if (!(o > .001)) { if (el._d !== 0) { el.style.display = 'none'; el._d = 0 } return 0 } if (el._d !== 1) { el.style.display = ''; el._d = 1 }
+  el.style.opacity = o >= 1 ? '' : o.toFixed(3); el.style.transform = `translate(${x.toFixed(2)}px,${y.toFixed(2)}px) scale(${s.toFixed(4)})${ex}`; return 1 };
+const clip = (el, a, r, b, l) => el.style.clipPath = a || r || b || l ? `inset(${a.toFixed(1)}px ${r.toFixed(1)}px ${b.toFixed(1)}px ${l.toFixed(1)}px)` : '';
+const slash = (y, h = 72) => `<svg class="l" style="left:50px;top:${y}px" width="980" height="${h}" viewBox="0 0 980 ${h}"><path d="M${h * .36} 0H470L${470 - h * .36} ${h}H0Z" fill="${GN}"/><path d="M${510 + h * .36} 0H980L${980 - h * .36} ${h}H510Z" fill="${RD}"/></svg>`;
+
+/* ───────── build ───────── */
+function build() {
+  const gates = L.$('#gates'), rows = L.$('#rows'), win = L.$('#win'), end = L.$('#end'), ov = L.$('#ov'), ax = L.$('#ax');
+  S.ai = D.ai.map(a => ({ k: a.k, name: a.name.toUpperCase(), col: COL[a.k], rgb: RGB[a.k], s: D.s[a.k], pnl: a.pnl, w: a.w, l: a.l, hit: Math.round(100 * a.w / (a.w + a.l)) }));
+  const acc = [...S.ai].sort((a, b) => b.hit - a.hit || b.w - a.w); S.ai.forEach(a => a.ar = acc.indexOf(a));
+  const pmax = Math.max(...S.ai.map(a => Math.abs(a.pnl))); S.ai.forEach(a => { a.Lp = 440 * a.pnl / pmax; a.La = (BX1 - BX0) * a.hit / 100 });
+  // gates of type the camera flies through
+  const PS = 1040 / 995, PX = [123, 374, 620, 872].map(x => 20 + x * PS);
+  S.g = [
+    add(`<div class="gate"><div class="halo" style="width:1200px;height:1200px;left:-60px;top:-180px"></div><div class="c k cr oname" style="top:744px;font-size:100px"><span data-fit="900"><span>EARNINGS</span> <span>ZEASON</span></span></div>
+      <div class="l" style="left:130px;top:850px">${obj('tk', 'w6/e/ticket.webp', 820, 820 * TKR, `<div class="tin"><div class="k ink" style="font-size:150px"><span data-fit="560">SEASON 1</span></div></div>`)}</div></div>`, gates),
+    add(`<div class="gate">${PX.map(x => `<div class="beam" style="left:${(x - 95).toFixed(1)}px;top:368px"></div>`).join('')}<img src="w6/e/podium.webp" alt="" style="position:absolute;left:20px;top:912px;width:1040px;height:${(325 * PS).toFixed(1)}px">
+      <div class="c bb cr" style="top:124px;font-size:430px;letter-spacing:.04em"><span data-fit="900">${S.ai.length} AI<span style="font-size:.66em">s</span></span></div>
+      ${['GPT', 'CLAUDE', 'GROK', 'KIMI'].map((k, j) => `<div class="l pm" style="left:${(PX[j] - 86).toFixed(1)}px;top:694px">${mark(k, 172)}</div><div class="l bb ink pn" style="left:${(PX[j] - 90).toFixed(1)}px;width:180px;top:${(912 + 166 * PS).toFixed(0)}px">${S.ai.find(a => a.k === k).name}</div>`).join('')}</div>`, gates),
+    add(`<div class="gate"><div class="c m au" style="top:70px;font-size:560px;font-weight:800;letter-spacing:-.04em">${D.total}</div><div class="c k cr" style="top:596px;font-size:210px"><span data-fit="980">EARNINGS</span></div><div class="c k cr" style="top:792px;font-size:285px"><span data-fit="980">TRADES</span></div>${slash(1130)}</div>`, gates),
+    add(`<div class="gate"><div class="c k gn" style="top:84px;font-size:370px;text-shadow:0 0 60px rgba(3,200,112,.6),0 6px 0 rgba(0,0,0,.4)"><span data-fit="900">LONG</span></div><div class="c k" style="top:428px;font-size:92px;color:#8e8680">OR</div><div class="c k rd" style="top:500px;font-size:310px;text-shadow:0 0 60px rgba(255,58,49,.6),0 6px 0 rgba(0,0,0,.4)"><span data-fit="960">SHORT</span></div><div class="c m au" style="top:812px;font-size:215px;font-weight:800;letter-spacing:-.03em">$100K</div><div class="c k cr" style="top:1038px;font-size:112px"><span data-fit="900">ON EVERY TRADE</span></div></div>`, gates)];
+  S.otk = L.$('.tk', S.g[0]);
+  S.lg0 = add(`<img class="ab" src="ezlogo.svg" width="620" height="620" alt="">`, ov);
+  // the chart's furniture
+  S.t1 = add(`<div class="ab k cr" style="font-size:150px">P&amp;L</div>`, ov); S.t2 = add(`<div class="ab k cr" style="font-size:150px">ACCURACY</div>`, ov);
+  S.t3 = add(`<div class="ab bb" style="font-size:68px;letter-spacing:.16em;color:#d5cdc3">LEADERBOARD</div>`, ov);
+  S.call = add(`<div class="ab k" style="font-size:112px"></div>`, ov);
+  S.cnt = add(`<div class="ab m" style="left:auto;right:56px;transform-origin:100% 0;font-size:64px;color:${CR}"><span style="font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:46px;letter-spacing:.14em;color:#d5cdc3;margin-right:18px">TRADE</span><b style="font-weight:700"></b></div>`, ov);
+  S.pg = add(`<div class="ab" style="width:968px;height:10px;border-radius:5px;background:rgba(242,237,230,.14)"><i style="position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:${CR};box-shadow:0 0 14px rgba(242,237,230,.5)"></i></div>`, ov);
+  S.tkr = []; for (let r = 0; r <= 110; r += 10) S.tkr.push({ r, el: add(`<div class="tk">${r}</div>`, ax) });
+  S.tkv = [200000, 100000, 0, -100000].map(v => ({ v, el: add(`<div class="tk">${v ? (v < 0 ? '−' : '+') + '$' + Math.abs(v) / 1000 + 'K' : '$0'}</div>`, ax) }));
+  // the four AIs: a tag at its line's head, which becomes its leaderboard row
+  S.ai.forEach((a, i) => {
+    a.plate = add(`<div class="ab plate" style="border:2px solid rgba(${a.rgb},.62)"><canvas class="pf" width="240" height="60"></canvas><b class="pt" style="background:linear-gradient(100deg,rgba(${a.rgb},.3),rgba(4,7,14,.4) 42%,rgba(4,7,14,.52))"></b><i></i></div>`, rows);
+    a.pi = a.plate.lastElementChild; a.pfx = a.plate.firstElementChild.getContext('2d');
+    a.mk = add(`<div class="ab">${mark(a.k, 96)}</div>`, rows);
+    a.nm = add(`<div class="ab k${i ? '' : ' foil'}" style="font-size:76px;color:${a.col}">${a.name}</div>`, rows);
+    a.vK = add(`<div class="ab m" style="font-size:68px"></div>`, rows);
+    a.vX = add(`<div class="ab m" style="font-size:68px;color:${i ? (a.pnl < 0 ? RD : GN) : AU}">${L.money(a.pnl)}</div>`, rows);
+    a.vA = add(`<div class="ab m" style="font-size:88px;color:${i ? CR : AU}">${a.hit}%</div>`, rows);
+    a.wl = add(`<div class="ab m" style="font-size:44px;font-weight:600;color:#b9b1a8">${a.w}–${a.l}</div>`, rows);
+    a.rk = add(`<div class="ab m rkb" style="background:${a.col}">${i + 1}</div>`, rows);
+  });
+  S.wlh = add(`<div class="ab bb" style="font-size:46px;letter-spacing:.12em;color:#d5cdc3">W–L</div>`, rows);
+  S.out = S.ai.find(a => (D.releg || []).includes(a.k));
+  S.rel = add(`<div class="ab k rd" style="transform-origin:50% 50%;font-size:58px;padding:0 22px 6px 16px;border:5px solid ${RD};border-radius:14px;background:rgba(4,7,14,.86)">RELEGATED</div>`, rows);
+  // the winner, in the title sequence's world: the painted trophy behind the rows (they fall away in front of it), the words, the P&L on glass
+  const tro = L.$('#tro'), W0 = S.ai[0];
+  S.halo = add('<div class="halo" style="width:1500px;height:1500px;left:-210px;top:130px"></div>', tro);
+  S.tr = add(obj('tr', 'w6/e/trophy.webp', TRW, 950, `<div style="position:absolute;left:21.63%;top:71.74%;width:57.72%;height:16.59%;display:flex;align-items:center;justify-content:center"><span class="trm" style="display:block;line-height:0">${mark(W0.k, 96)}</span></div>`), tro);
+  S.tr.style.transformOrigin = '50% 40%'; S.trm = L.$('.trm', S.tr);
+  S.ww = add(`<div class="cc k cr sh" style="top:424px;font-size:300px"><span data-fit="900" style="padding:0 .06em">WINS</span></div>`, win);
+  S.ws = add(`<div class="cc k cr sh" style="top:724px;font-size:200px"><span data-fit="900" style="padding:0 .06em">SEASON 1</span></div>`, win);
+  S.wp = add(`<div class="gl" style="left:50px;top:986px;width:980px;height:232px;border-radius:40px"><canvas class="fr"></canvas><div class="gt"></div><div class="tp"></div><div class="sp"></div><i class="rim"></i>
+    <div class="ab k cr" style="left:54px;top:66px;font-size:100px">P&amp;L</div><div class="ab m foil" style="left:auto;right:46px;top:52px;font-size:128px;letter-spacing:-.05em;transform-origin:100% 50%">${L.money(W0.pnl)}</div></div>`, win);
+  S.wpl = S.wp.children[5]; S.wpn = S.wp.children[6]; S.wfr = L.$('.fr', S.wp); S.wfr.width = 245; S.wfr.height = 58; S.wfx = S.wfr.getContext('2d');
+  S.stars = [[96, 960, 30, 0], [990, 968, 24, .35], [930, 1240, 28, .7], [150, 1236, 20, 1.05], [540, 962, 16, .5], [1010, 1110, 18, .9], [70, 1100, 17, .2]].map(([x, y, r, ph]) => ({ x, y, ph, el: add(`<svg class="ab" width="2" height="2" style="overflow:visible"><path d="M0 ${-r}C${r * .12} ${-r * .12} ${r * .12} ${-r * .12} ${r} 0C${r * .12} ${r * .12} ${r * .12} ${r * .12} 0 ${r}C${-r * .12} ${r * .12} ${-r * .12} ${r * .12} ${-r} 0C${-r * .12} ${-r * .12} ${-r * .12} ${-r * .12} 0 ${-r}Z" fill="#fff3c8" style="filter:drop-shadow(0 0 8px rgba(253,188,42,.9))"/></svg>`, win) }));
+  // the close: the camera pulls back through the EZ. logo; Season 2 on a golden ticket
+  S.xhalo = add('<div class="halo" style="width:1300px;height:1300px;left:-110px;top:-220px"></div>', end);
+  S.xlogo = add('<img src="ezlogo.svg" alt="" style="position:absolute;left:0;top:0;width:640px;height:640px">', end);
+  S.xtk = add(obj('tk', 'w6/e/ticket.webp', 850, 850 * TKR, `<div class="tin"><div class="k ink" style="font-size:96px"><span data-fit="620">SEASON 2 SOON</span></div></div>`), end);
+  S.gc = L.$('#gnd'); S.gx = S.gc.getContext('2d'); [['grL', '3,200,112'], ['grR', '255,58,49']].forEach(([k, cc]) => { const g = S.gx.createRadialGradient(0, 0, 0, 0, 0, 520); g.addColorStop(0, `rgba(${cc},.5)`); g.addColorStop(.7, `rgba(${cc},0)`); S[k] = g }); S.lc = L.$('#ln'); S.lx = S.lc.getContext('2d');
+  // dust: slashes in the logo's green, red and cream that stream past
+  let sd = 4242; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647; S.pt = Array.from({ length: 110 }, (_, i) => ({ x: rnd() * 5000, z: rnd() * 5000, y: rnd(), c: i % 3, w: .6 + rnd() }));
+  // the race's clock: time -> trade number, slow on the lead changes, which land on beats
+  const lead = f => { let b = 0, bv = -1e18; S.ai.forEach((a, i) => { const v = sv(a, f); if (v > bv + 1e-6) { bv = v; b = i } }); return b }; S.lead = lead;
+  const X = []; let pl = lead(0); for (let f = .005; f <= 112; f += .005) { const l = lead(f); if (l !== pl) { X.push({ f, i: l }); pl = l } }
+  const cross = (n, k) => { const e = X.filter(e => e.f > n - 1.01 && e.f <= n + .01 && S.ai[e.i].k === k).pop(); return e ? e.f : n };
+  const ks = KEYS.filter(([n, k]) => (D.lead || []).some(e => e.n === n && e.k === k)).map(([n, k, b]) => [bt(b), cross(n, k)]);
+  const xs = [T.race, ...ks.map(k => k[0]), T.d1], ys = [0, ...ks.map(k => k[1]), 112], n = xs.length, h = [], d = [], m = [];
+  for (let i = 0; i < n - 1; i++) { h[i] = xs[i + 1] - xs[i]; d[i] = (ys[i + 1] - ys[i]) / h[i] }
+  m[0] = d[0]; m[n - 1] = d[n - 2]; for (let i = 1; i < n - 1; i++) { const w1 = 2 * h[i] + h[i - 1], w2 = h[i] + 2 * h[i - 1]; m[i] = d[i - 1] * d[i] <= 0 ? 0 : (w1 + w2) / (w1 / d[i - 1] + w2 / d[i]) }
+  S.FI = t => { if (t <= xs[0]) return 0; if (t >= xs[n - 1]) return 112; let i = 0; while (t > xs[i + 1]) i++; const u = (t - xs[i]) / h[i], u2 = u * u, u3 = u2 * u;
+    return (2 * u3 - 3 * u2 + 1) * ys[i] + (u3 - 2 * u2 + u) * h[i] * m[i] + (-2 * u3 + 3 * u2) * ys[i + 1] + (u3 - u2) * h[i] * m[i + 1] };
+  const inv = f => { let a = xs[0], b = xs[n - 1]; for (let i = 0; i < 40; i++) { const c = (a + b) / 2; S.FI(c) < f ? a = c : b = c } return (a + b) / 2 };
+  S.x0 = ks.length ? ks[0][1] : 3; S.ev = X.filter(e => e.f >= S.x0 - 1e-6).map(e => ({ t: inv(e.f), i: e.i, f: e.f }));
+  // the close camera's height and zoom: the four heads always fill the middle of the frame
+  const lo = [], hi = []; for (let j = 0; j <= 448; j++) { const v = S.ai.map(a => sv(a, j / 4)); lo.push(Math.min(...v)); hi.push(Math.max(...v)) }
+  S.cv = []; S.sp = []; for (let j = 0; j <= 448; j++) { let c = 0, s = 0, w = 0; for (let e = -20; e <= 20; e++) { const i = Math.min(448, Math.max(0, j + e)), g = 21 - Math.abs(e); c += g * (lo[i] + hi[i]) / 2; s += g * (hi[i] - lo[i]); w += g } S.cv.push(c / w); S.sp.push(Math.max(s / w, (hi[j] - lo[j]) * .82)) }
+  const look = (arr, f) => { const x = L.cl(f, 0, 112) * 4, i = Math.min(447, Math.floor(x)); return arr[i] + (arr[i + 1] - arr[i]) * (x - i) };
+  S.CV = f => look(S.cv, f); S.PV = f => Math.min(520 / 45000, 520 / (look(S.sp, f) + 10000));
+  // the cruise after the boards form: trades a second, slow in the break, a kick on drop 2
+  S.cr = []; let r = 60; for (let j = 0; j <= (DUR + 1 - T.brd) * 120; j++) { const u = T.brd + j / 120, v = u < T.push ? 22 : u < T.win ? L.lerp(22, 3, L.eio(L.n(u, T.push, T.win - .2))) : 26 + 70 * Math.exp(-(u - T.win) / .7); S.cr.push(r); r += v / 120 }
+  S.g0 = Math.min(...S.ai[0].s); S.g1 = Math.max(...S.ai[0].s);
+  // sound: sparing, the bed carries it
+  [1, 2, 3].forEach(i => C.push([T.g[i] - .12, 'sfx-whoosh', .07])); C.push([0, 'r11-thump', .12], [T.race - .1, 'sfx-whoosh', .1]);
+  S.ev.filter(e => KEYS.some(k => Math.abs(bt(k[2]) - e.t) < .03)).forEach(e => C.push([e.t, 'r11-ping', .06]));
+  C.push([T.d1, 'sfx-riser', .1], [T.d1, 'sfx-boom', .2], [T.brd + .1, 'sfx-whoosh', .07], [T.acc, 'r11-card', .07], [T.acc + BT, 'r11-card', .07], [T.acc + 2 * BT, 'r11-card', .07], [T.acc + 3 * BT, 'r11-card', .07],
+    [T.rel, 'sfx-stamp', .16], [T.win, 'sfx-riser', .12], [T.win, 'sfx-boom', .22], [T.win + .12, 'r11-sparkle', .1], [T.wins, 'r11-thump', .12], [T.ss, 'r11-thump', .12],
+    [T.pl, 'sfx-whoosh', .07], [T.pnl, 'sfx-chime', .13], [T.close, 'sfx-whoosh', .08], [T.close + .12, 'r11-thump', .12]);
+  window.MUSIC = { f: q.get('bed') || 'w6-dnb-x', at: +(q.get('at') || 0) };
+}
+
+/* ───────── camera ───────── */
+// the camera is given by what it looks at: a target on the chart plane (trade camR, P&L camV) that sits at screen (hx, cy) and depth zh,
+// the yaw psi (positive: looking back along the season), pv screen px per $ at the target's depth, hF the floor's depth under the eye
+const mixS = (a, b, k) => k <= 0 ? a : k >= 1 ? b : { psi: L.lerp(a.psi, b.psi, k), zh: Math.exp(L.lerp(Math.log(a.zh), Math.log(b.zh), k)), hx: L.lerp(a.hx, b.hx, k), cy: L.lerp(a.cy, b.cy, k), camR: L.lerp(a.camR, b.camR, k), camV: L.lerp(a.camV, b.camV, k), pv: Math.exp(L.lerp(Math.log(a.pv), Math.log(b.pv), k)), hF: Math.exp(L.lerp(Math.log(a.hF), Math.log(b.hF), k)) };
+function flight(t) { t = Math.max(0, t); let i = 0; while (i < 3 && t >= T.g[i + 1] - TAU) i++;
+  if (t < T.g[i]) { const k = L.eio((t - (T.g[i] - TAU)) / TAU), a = GO[i - 1], b = GO[i]; return { zh: L.lerp(GZ[i - 1] - CREEP, GZ[i], k), x: L.lerp(a[0], b[0], k), y: L.lerp(a[1], b[1], k), r: L.lerp(a[2], b[2], k), i } }
+  const e = i < 3 ? T.g[i + 1] - TAU : T.race - .3; return { zh: GZ[i] - CREEP * (t - T.g[i]) / (e - T.g[i]), x: GO[i][0], y: GO[i][1], r: GO[i][2], i } }
+function camChart(t) { const f = flight(t), fi = S.FI(t), tw = Math.min(t, T.brd);
+  const fl = { psi: 0, zh: f.zh, hx: 540, cy: 675, camR: 56, camV: 0, pv: 470 / 45000, hF: 620 };
+  const rc = { psi: 62 + 2.5 * Math.sin((t - T.race) * 2.3), zh: 750, hx: 735, cy: 650, camR: fi, camV: S.CV(fi), pv: S.PV(fi), hF: 260 };
+  const wh = { psi: 3.5 * Math.sin((tw - T.d1) * 1.1), zh: 9600 * (1 - .01 * L.n(tw, T.d1, T.brd)), hx: 410, cy: 740, camR: 56, camV: 27500, pv: .00205, hF: 2460 };
+  return mixS(mixS(fl, rc, L.eio(L.n(t, T.race - .3, T.race + .4))), wh, L.eo5(L.n(t, T.d1, T.d1 + .9))) }
+function camGround(t) { const c = camChart(t); if (t <= T.brd) return c; const j = (t - T.brd) * 120, i = Math.min(S.cr.length - 2, Math.floor(j));
+  return mixS(c, { psi: -90, zh: 1500, hx: 240, cy: 600, camR: S.cr[i] + (S.cr[i + 1] - S.cr[i]) * (j - i), camV: 27500, pv: .001973, hF: 420 }, L.eio(L.n(t, T.brd, T.brd + 1.1))) }
+function setCam(c) { const p = c.psi * Math.PI / 180; c.sn = Math.sin(p); c.cs = Math.cos(p); c.wx = -c.sn; c.wz = c.cs; c.ux = c.cs; c.uz = c.sn;
+  const xr = (c.hx - 540) * c.zh / FL; c.Cx = c.camR * U - c.zh * c.wx - xr * c.ux; c.Cz = -c.zh * c.wz - xr * c.uz; return c }
+const cs3 = (c, X, Z, Y) => { const dx = X - c.Cx, dz = Z - c.Cz; return [dx * c.ux + dz * c.uz, Y, dx * c.wx + dz * c.wz] };
+const pj = (c, v) => [540 + FL * v[0] / v[2], c.cy - FL * v[1] / v[2], v[2]];
+const chartPt = (c, r, v) => pj(c, cs3(c, r * U, 0, (v - c.camV) * c.pv * c.zh / FL));
+function seg(c, a, b) { if (a[2] < NEAR && b[2] < NEAR) return null;
+  if (a[2] < NEAR) { const k = (NEAR - a[2]) / (b[2] - a[2]); a = [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, NEAR] } else if (b[2] < NEAR) { const k = (NEAR - b[2]) / (a[2] - b[2]); b = [b[0] + (a[0] - b[0]) * k, b[1] + (a[1] - b[1]) * k, NEAR] }
+  const p = pj(c, a), r = pj(c, b); return [p[0], p[1], r[0], r[1], (a[2] + b[2]) / 2] }
+function pump(t) { const b = Math.floor(t / BT + 1e-6), dt = t - b * BT, lvl = t < T.d1 ? .4 + .3 * L.n(t, T.race, T.d1) : t < T.push ? 1 : t < T.win ? .25 : 1.15; return lvl * (b % 2 ? .62 : 1) * Math.exp(-dt / .11) * (1 - L.n(t, DUR - 1.2, DUR)) }
+
+/* ───────── the ground: the chart plane's grid, the floor, the dust (all chrome) ───────── */
+// take E's ground: the living painted light, a 60-frame loop (20 more crossfaded into its start), its level by beat, the beat, the rim lights
+const NG = 80, GA = 20, GNL = 60; let GF = [];
+const LV = [[0, 1.05], [T.g[1], .95], [T.g[2], .9], [T.g[3], .85], [T.race, .5], [T.d1, .62], [T.brd, .48], [T.acc, .44], [T.push, .22], [T.win, 1.25], [T.wins, .8], [T.pl, .86], [T.close, 1.05]];
+function ground(c, c2, t, pm, roll, kC) { const x = S.gx; x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1; x.globalCompositeOperation = 'source-over'; x.fillStyle = BK; x.fillRect(0, 0, 1080, 1350);
+  const kk = kick(t), i = Math.floor(t * 24) % GNL, f = GF.length ? GF[GA + i] : S.gstill, gs = 1.06 + .05 * Math.sin(t * .5) + .025 * kk, gtx = 10 * Math.sin(t * .37) - .5 * c.psi;
+  x.save(); if (roll) { x.translate(540, 675); x.rotate(-roll * Math.PI / 180 * .7); x.translate(-540, -675) }
+  x.transform(2.2 * gs, 0, 0, 2.2 * gs, 540 + gs * (gtx - 594), 1099.84 - gs * 1203.84);       // E's #gv: 1188 x 1584 at (-54, -104), origin 50% 76%
+  x.drawImage(f, 0, 0, 540, 720); if (GF.length && i >= GNL - GA) { x.globalAlpha = (i - (GNL - GA) + 1) / (GA + 1); x.drawImage(GF[i - (GNL - GA)], 0, 0, 540, 720); x.globalAlpha = 1 }
+  let j = 0; while (j < LV.length - 1 && t >= LV[j + 1][0]) j++; const lv = j && t < LV[j][0] + .22 ? L.lerp(LV[j - 1][1], LV[j][1], L.eo(L.n(t, LV[j][0], LV[j][0] + .22))) : LV[j][1];
+  const tense = t >= T.push && t < T.win ? L.n(t, T.push, T.push + .4) : 0, br = lv * (1 + .25 * kk) + tense * (.5 + .5 * Math.sin(t * 46)) * .1 + (t >= T.win ? .45 * Math.exp(-9 * (t - T.win)) : 0) + (t >= T.d1 ? .25 * Math.exp(-9 * (t - T.d1)) : 0);
+  if (br > 1) { x.globalCompositeOperation = 'lighter'; x.globalAlpha = Math.min(1, br - 1); x.drawImage(f, 0, 0, 540, 720) }
+  x.restore(); x.globalCompositeOperation = 'source-over'; if (br < 1) { x.globalAlpha = L.cl(1 - br, 0, .92); x.fillStyle = BK; x.fillRect(0, 0, 1080, 1350) }
+  // the rim lights: green from the left, red from the right, on the beat (both full under long or short)
+  const ls = t >= T.g[3] && t < T.race - .3, rl = ls ? 1 : .32 + .45 * kk + tense * .25 * (.5 + .5 * Math.sin(t * 9)); x.globalCompositeOperation = 'lighter';
+  [[0, S.grL, rl], [1080, S.grR, rl * .9]].forEach(([cx, g, a]) => { x.save(); x.translate(cx, 838); x.scale(1, 1.56); x.globalAlpha = L.cl(a); x.fillStyle = g; x.fillRect(-520, -520, 1040, 1040); x.restore() });
+  x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1;
+  // the chart plane, faint over the light: a tick every tenth trade (every fifth, every one when close), a rule every $ step, $0 gold
+  const R = L.cl(1.7 * c.zh, 7000, 17000), zf = R * 1.05, fog = z => Math.pow(L.cl(1 - z / zf), 1.5), bp = .85 + .5 * pm; x.lineCap = 'butt';
+  const ln = (a, b, col, al, lw) => { const s = seg(c, a, b); if (!s) return; const f = fog(s[4]); if (f * al < .004) return; x.strokeStyle = col; x.globalAlpha = Math.min(1, al * f * bp); x.lineWidth = lw || L.cl(2.4 * FL / s[4], .7, 4); x.beginPath(); x.moveTo(s[0], s[1]); x.lineTo(s[2], s[3]); x.stroke() };
+  const hF = c.hF, CRc = 'rgb(242,237,230)';
+  const a1 = 1 - L.n(c.zh, 1400, 2600), a5 = 1 - L.n(c.zh, 3000, 6000), rA = Math.floor((c.Cx - R) / U), rB = Math.ceil((c.Cx + R) / U), top = 2.4 * hF;
+  for (let r = Math.ceil(rA / 10) * 10; r <= rB; r += 10) ln(cs3(c, r * U, 0, -hF), cs3(c, r * U, 0, top), CRc, .26);
+  if (a5 > 0) for (let r = Math.ceil(rA / 5) * 5; r <= rB; r += 5) if (r % 10) ln(cs3(c, r * U, 0, -hF), cs3(c, r * U, 0, top), CRc, .14 * a5);
+  if (a1 > 0) for (let r = Math.max(rA, Math.floor(c.camR - 90)); r <= Math.min(rB, c.camR + 90); r++) if (r % 5) ln(cs3(c, r * U, 0, -hF), cs3(c, r * U, 0, top), CRc, .08 * a1);
+  if (kC < 1) { const st = c.pv * 1e4 >= 26 ? 1e4 : c.pv * 5e4 >= 26 ? 5e4 : 1e5, v0 = c.camV - hF * FL / c.zh / c.pv, v1 = c.camV + top * FL / c.zh / c.pv, xa = (c.camR - 100) * U, xb = (c.camR + 30) * U;
+    for (let v = Math.ceil(v0 / st) * st; v <= v1; v += st) { const Y = (v - c.camV) * c.pv * c.zh / FL; for (let p = 0; p < 8; p++) ln(cs3(c, xa + (xb - xa) * p / 8, 0, Y), cs3(c, xa + (xb - xa) * (p + 1) / 8, 0, Y), v === 0 ? 'rgb(253,188,42)' : CRc, (v === 0 ? .5 : .1) * (1 - kC), v === 0 ? 2.5 : 0) } }
+  x.globalAlpha = 1; x.globalCompositeOperation = 'source-over' }
+
+/* ───────── the four lines: the race, then bars, then the winner's season ───────── */
+const KB = (i, t) => L.n(t, T.brd + i * .045, T.brd + i * .045 + .7), KA = (i, t) => L.eio(L.n(t, T.acc + i * BT, T.acc + i * BT + .3));
+const rowTop = (a, i, t) => RY0 + L.lerp(i, a.ar, KA(i, t)) * RP + (i ? 1300 * L.ei(L.n(t, T.win + (i - 1) * .03, T.win + .32 + (i - 1) * .03)) + (t >= T.close ? 3000 : 0) : 0);
+function lines(t, c, fi) { const on = t >= T.race, n = on ? Math.min(112, Math.floor(fi)) : 0, kW = L.eo5(L.n(t, T.d1, T.d1 + .9)), w0 = L.lerp(20, 8, kW);
+  return S.ai.map((a, i) => { const pts = [], w = [], kb = KB(i, t), ka = KA(i, t), kw = i ? 0 : L.eio(L.n(t, T.win, T.win + .45)), yb = rowTop(a, i, t) + BARY;
+    for (let j = 0; j <= n + (fi > n ? 1 : 0); j++) { const r = j <= n ? j : fi, p = chartPt(c, r, j <= n ? a.s[j] : sv(a, fi)); pts.push([p[0], p[1]]); w.push(w0 * L.cl(c.zh / p[2], .14, 1.5)) }
+    const head = pts[pts.length - 1].slice();
+    if (kb > 0) for (let j = 0; j <= 112; j++) { const u = j / 112, k = L.eio(L.cl(kb * 1.3 - .3 * u)); let X = L.lerp(540 + a.Lp * u, BX0 + a.La * u, ka), Y = yb, W = 26;
+      if (kw > 0) { X = L.lerp(X, 540, kw); W = L.lerp(26, 0, kw) }
+      pts[j] = [L.lerp(pts[j][0], X, k), L.lerp(pts[j][1], Y, k)]; w[j] = L.lerp(w[j], W, k) }
+    else { let s = 0; while (s < pts.length - 2 && pts[s + 1][0] < -160) s++; if (s) { pts.splice(0, s); w.splice(0, s) } }
+    if (kb > 0 && S.ga !== 1) for (let j = 0; j < pts.length; j++) { pts[j] = [540 + (pts[j][0] - 540) * S.ga, S.gy + (pts[j][1] - S.gy) * S.ga]; w[j] *= S.ga }
+    return { a, i, pts, w, head, kb, ka, kw, yb } }) }
+function ribbon(x, pts, w, f = 1) { const n = pts.length; if (n < 2) return; const A = [], B = []; let d0, d1;
+  for (let i = 0; i < n; i++) { const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)]; let dx = b[0] - a[0], dy = b[1] - a[1]; const l = Math.hypot(dx, dy) || 1, h = w[i] * f / 2; dx /= l; dy /= l; if (!i) d0 = [dx, dy]; d1 = [dx, dy]; A.push(pts[i][0] - dy * h, pts[i][1] + dx * h); B.push(pts[i][0] + dy * h, pts[i][1] - dx * h) }
+  // one outline: along one side, round the head, back along the other side, round the tail (so a see-through pass never doubles up)
+  x.beginPath(); x.moveTo(A[0], A[1]); for (let i = 1; i < n; i++) x.lineTo(A[2 * i], A[2 * i + 1]); const a1 = Math.atan2(d1[0], -d1[1]); x.arc(pts[n - 1][0], pts[n - 1][1], w[n - 1] * f / 2, a1, a1 - Math.PI, true);
+  for (let i = n - 1; i >= 0; i--) x.lineTo(B[2 * i], B[2 * i + 1]); const a0 = Math.atan2(-d0[0], d0[1]); x.arc(pts[0][0], pts[0][1], w[0] * f / 2, a0, a0 - Math.PI, true); x.closePath(); x.fill() }
+function drawLines(LN, t, fi, pm) { const cv = S.lc; if (t < T.race - .2) { if (cv._d !== 0) { cv.style.display = 'none'; cv._d = 0 } return } if (cv._d !== 1) { cv.style.display = ''; cv._d = 1 }
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; const ext = (x, y, m) => { x0 = Math.min(x0, x - m); y0 = Math.min(y0, y - m); x1 = Math.max(x1, x + m); y1 = Math.max(y1, y + m) };
+  LN.forEach(l => { l.pts.forEach((p, j) => ext(p[0], p[1], l.w[j] * 1.7 + 4 + (l.kw > 0 ? 16 : 0))); if (l.ka > 0 && l.kw < 1) { ext(BX0, l.yb, 14); ext(BX1, l.yb, 14) } });
+  const rings = S.ev.filter(e => t >= e.t && t < e.t + .45 && t < T.d1), hd = t < T.brd ? 1 : 0; if (hd) LN.forEach(l => ext(l.head[0], l.head[1], 26)); rings.forEach(e => ext(LN[e.i].head[0], LN[e.i].head[1], 150));
+  x0 = Math.max(0, Math.floor(x0)); y0 = Math.max(0, Math.floor(y0)); x1 = Math.min(1080, Math.ceil(x1)); y1 = Math.min(1350, Math.ceil(y1)); const W = Math.max(2, x1 - x0), H = Math.max(2, y1 - y0);
+  cv.width = W; cv.height = H; cv.style.width = W + 'px'; cv.style.height = H + 'px'; cv.style.transform = `translate(${x0}px,${y0}px)`; const x = S.lx; x.setTransform(1, 0, 0, 1, -x0, -y0);
+  LN.forEach(l => { if (l.ka > 0 && l.kw < 1) { x.globalAlpha = .13 * l.ka * (1 - l.kw); x.fillStyle = CR; const y = S.gy + (l.yb - S.gy) * S.ga, sx = v => 540 + (v - 540) * S.ga; ribbon(x, [[sx(BX0), y], [sx(BX1), y]], [26 * S.ga, 26 * S.ga]) } });
+  LN.forEach(l => { const o = L.eio(l.kb) * (1 - l.ka); if (o > 0 && t < T.acc + 2) { x.globalAlpha = .55 * o; x.fillStyle = CR; x.fillRect(539, l.yb - 24, 2.5, 48) } });
+  const ord = [...LN].sort((p, r) => (p.i === S.ld) - (r.i === S.ld) || r.i - p.i);
+  ord.forEach(l => { const col = l.a.col;
+    if (l.kw > 0 && 0) { const n = l.pts.length, by = Math.max(...l.pts.map(p => p[1])) + 14 * S.ga, g = x.createLinearGradient(0, by - 240 * S.ga, 0, by); g.addColorStop(0, 'rgba(253,188,42,.34)'); g.addColorStop(1, 'rgba(253,188,42,0)'); x.globalCompositeOperation = 'lighter'; x.globalAlpha = l.kw; x.fillStyle = g;
+      x.beginPath(); x.moveTo(l.pts[0][0], by); l.pts.forEach(p => x.lineTo(p[0], p[1])); x.lineTo(l.pts[n - 1][0], by); x.closePath(); x.fill(); const h = l.pts[n - 1]; x.globalAlpha = l.kw * (.5 + .4 * pm); x.fillStyle = AU; x.beginPath(); x.arc(h[0], h[1], 26 * S.ga, 0, 7); x.fill(); x.globalAlpha = l.kw; x.fillStyle = '#fff'; x.beginPath(); x.arc(h[0], h[1], 9 * S.ga, 0, 7); x.fill() } x.fillStyle = col; x.globalCompositeOperation = 'lighter'; x.globalAlpha = .07 + .05 * pm; ribbon(x, l.pts, l.w, 3.4); x.globalAlpha = .16 + .08 * pm; ribbon(x, l.pts, l.w, 1.9);
+    x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; ribbon(x, l.pts, l.w, 1); x.fillStyle = '#fff'; x.globalAlpha = .38; ribbon(x, l.pts, l.w, .3);
+    // a pulse of light that runs along the line to its head
+    const n = l.pts.length; if (n > 8) { const u = ((t * 1.25 + l.i * .23) % 1), j = Math.floor(u * (n - 5)); x.globalCompositeOperation = 'lighter'; x.globalAlpha = .75; x.fillStyle = '#fff'; ribbon(x, l.pts.slice(j, j + 5), l.w.slice(j, j + 5), .62) }
+    if (hd) { const h = l.head, r = (12 + 4 * pm) * L.cl(l.w[l.w.length - 1] / 10, .7, 1.4); x.globalCompositeOperation = 'lighter'; x.fillStyle = col; x.globalAlpha = .3; x.beginPath(); x.arc(h[0], h[1], r * 2.1, 0, 7); x.fill(); x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; x.fillStyle = '#fff'; x.beginPath(); x.arc(h[0], h[1], r * .62, 0, 7); x.fill() } });
+  rings.forEach(e => { const u = (t - e.t) / .45, h = LN[e.i].head; x.globalCompositeOperation = 'lighter'; x.strokeStyle = S.ai[e.i].col; x.globalAlpha = (1 - u) * .9; x.lineWidth = 9 * (1 - u) + 2; x.beginPath(); x.arc(h[0], h[1], 18 + 120 * L.eo(u), 0, 7); x.stroke() });
+  x.globalAlpha = 1; x.globalCompositeOperation = 'source-over' }
+// tags that sit closer than a tag's height step apart, smoothly, so two that cross slide through each other
+function fan(ys, gap) { const o = ys.map(() => 0); for (let it = 0; it < 10; it++) for (let i = 0; i < ys.length; i++) for (let j = i + 1; j < ys.length; j++) { const d = ys[i] + o[i] - ys[j] - o[j]; if (Math.abs(d) < gap) { const p = (gap - Math.abs(d)) / 2 * Math.tanh(d / 5 - .5) * .6; o[i] += p; o[j] -= p } } return o }
+
+/* ───────── a frame ───────── */
+function R(tt) { t = tt; if (grain) grain(t); const pm = pump(t), fi = S.FI(t), f = flight(t);
+  // the leaderboard group's zoom: the push before drop 2, the step back for the close
+  S.ga = 1; S.gy = 126; if (t < T.close) S.ga = 1 + .14 * L.eio(L.n(t, T.push, T.win)) * (1 - L.eo(L.n(t, T.win, T.win + .3))); else { S.ga = 1 - .6 * L.eo5(L.n(t, T.close, T.close + .3)); S.gy = 640 }
+  S.rayY = L.lerp(680, 424, L.eo(L.n(t, T.close, T.close + .4))); const xo = L.n(t, T.close, T.close + .2);
+  const cc = setCam(camChart(t)), cg = setCam(camGround(t)), cg2 = setCam(camGround(t - .04)), kR = L.eio(L.n(t, T.race - .3, T.race + .4)), kW = L.eo5(L.n(t, T.d1, T.d1 + .9)), kC = L.eio(L.n(t, T.brd, T.brd + 1.1));
+  S.ld = fi >= S.x0 ? S.lead(fi) : -1; const lastEv = S.ev.filter(e => e.t <= t + 1e-6).pop(), dEv = lastEv && t < T.d1 ? t - lastEv.t : 9;
+  ground(cg, cg2, t, pm, f.r * (1 - kR), kC);
+  // the stage: a kick on every beat, a jolt on the drops
+  const j1 = t >= T.d1 ? Math.exp(-(t - T.d1) / .16) : 0, j2 = t >= T.win ? Math.exp(-(t - T.win) / .18) : 0, jl = Math.exp(-dEv / .08), jo = j1 + j2;
+  L.$('#sh').style.transform = `translate(${(9 * jo * Math.sin(t * 71)).toFixed(2)}px,${(7 * jo * Math.cos(t * 83)).toFixed(2)}px) scale(${(1 + .012 * pm + .03 * jo + .012 * jl).toFixed(4)})`;
+  let fla = .28 * Math.exp(-t / .1) + .5 * j1 + .62 * j2 + .13 * jl + (t >= T.pnl ? .22 * Math.exp(-(t - T.pnl) / .1) : 0) + (t >= T.close ? .4 * Math.exp(-(t - T.close) / .09) : 0) + [T.wins, T.ss].reduce((s, a) => s + (t >= a ? .12 * Math.exp(-(t - a) / .07) : 0), 0); T.g.forEach((g, i) => { if (i && t >= g) fla += .1 * Math.exp(-(t - g) / .07) }); L.$('#fl').style.opacity = Math.min(.8, fla).toFixed(3);
+  // gates
+  S.g.forEach((g, i) => { const dp = cc.zh - (GZ[i] - FL), s = dp > 0 ? FL / dp : 99; if (t > T.race + .4 || s < .25 || s > 6) { if (g._d !== 0) { g.style.display = 'none'; g._d = 0 } return } if (g._d !== 1) { g.style.display = ''; g._d = 1 }
+    const pn = t >= T.g[i] ? 1 + .06 * Math.exp(-(t - T.g[i]) / .08) : 1; g.style.opacity = (L.n(s, .25, .5) * (1 - L.n(s, 2.6, 6))).toFixed(3);
+    g.style.transform = `translate(${((GO[i][0] - f.x) * s).toFixed(1)}px,${((GO[i][1] - f.y) * s).toFixed(1)}px) rotate(${(GO[i][2] - f.r).toFixed(2)}deg) scale(${(s * pn).toFixed(4)})` });
+  // the opening logo rides the first gate, then docks top left as the bug
+  { const dp = cc.zh - (GZ[0] - FL), s = dp > 0 ? Math.min(6, FL / dp) : 6, pn = 1 + .06 * Math.exp(-t / .08), kd = L.eio(L.n(t, T.g[1] - TAU, T.g[1] + .14)), sz = L.lerp(620 * Math.min(s, 1.2) * pn, 64, kd);
+    put(S.lg0, L.lerp(540 - 310 * Math.min(s, 1.2) * pn, 54, kd), L.lerp(675 + (110 - 675) * Math.min(s, 1.2) * pn, 50, kd), sz / 620, t < T.g[1] + .14 ? 1 : 0);
+    sweep(L.$('.sw', S.otk), L.eio(L.n(t, .3, T.g[1] - .1)));
+    const bug = L.$('.bug'), kb = L.eo(L.n(t, T.g[1] + .14, T.g[1] + .5)); bug.style.opacity = t >= T.g[1] + .14 ? 1 : 0; bug.style.clipPath = kb < 1 ? `inset(0 ${((1 - kb) * 86).toFixed(1)}% 0 0)` : '' }
+  // lines
+  const LN = lines(t, cc, fi); drawLines(LN, t, fi, pm); S.lc.style.zIndex = t >= T.brd ? 3 : '';
+  // title: P&L, then ACCURACY rolls in; LEADERBOARD joins when the rows form
+  { const kin = L.eo(L.n(t, T.race - .05, T.race + .32)), ky = L.eio(L.n(t, T.acc - .05, T.acc + .28)), out = 460 * L.ei(L.n(t, T.win - .05, T.win + .2)), on = t >= T.race - .05 && t < T.win + .2, kl = L.eo(L.n(t, T.brd + .15, T.brd + .6));
+    put(S.t1, 56 - 420 * (1 - kin), 126 - 150 * ky - out, 1, on && ky < 1 ? 1 : 0); clip(S.t1, 150 * ky, 0, 0, 0);
+    put(S.t2, 56, 126 + 150 * (1 - ky) - out, 1, on && ky > 0 ? 1 : 0); clip(S.t2, 0, 0, 150 * (1 - ky), 0);
+    put(S.t3, 60, 284 - out, 1, on && kl > 0 ? 1 : 0); clip(S.t3, 0, (1 - kl) * S.wT3, 0, 0) }
+  // the race's call, counter and progress
+  { const on = S.ld >= 0 && t < T.d1 + .28, a = S.ai[Math.max(0, S.ld)], sc = 1 + .32 * Math.exp(-dEv / .09), tx = a.name + ' LEADS'; if (S.call._t !== tx) { S.call.textContent = tx; S.call._t = tx; S.call.style.color = a.col }
+    put(S.call, 56 - 1100 * L.ei(L.n(t, T.d1 - .02, T.d1 + .28)), 1010 - (sc - 1) * 56, sc, on ? 1 : 0);
+    const kin = L.eo(L.n(t, T.race, T.race + .35)), ko = L.ei(L.n(t, T.brd, T.brd + .3)), on2 = t >= T.race && t < T.brd + .3, n = Math.min(D.total, Math.floor(fi) + 1), b = S.cnt.lastElementChild; if (b._t !== n) { b.textContent = n; b._t = n }
+    put(S.cnt, 500 * (1 - kin) + 600 * ko, 150, 1, on2 ? 1 : 0); put(S.pg, 56, 1222 + 180 * (1 - kin) + 200 * ko, 1, on2 ? 1 : 0); S.pg.firstElementChild.style.width = (968 * fi / 112).toFixed(1) + 'px' }
+  // axis ticks (chrome): trade numbers along the floor, $ levels once the camera has pulled back
+  { const o = kR * (1 - L.n(t, T.brd, T.brd + .3)); S.tkr.forEach(k => { const v = cs3(cc, k.r * U, 0, -cc.hF); if (v[2] < NEAR * 2 || o <= 0) return put(k.el, 0, 0, 1, 0); const p = pj(cc, v), s = L.cl(cc.zh / v[2], .3, 1.5); put(k.el, p[0] + 6 * s, p[1] + 6 * s, s, p[0] > -60 && p[0] < 1080 && p[1] < 1200 ? o * L.cl(s * 1.4) : 0) });
+    const o2 = kW * (1 - L.n(t, T.brd, T.brd + .3)); S.tkv.forEach(k => { const p = chartPt(cc, 0, k.v); put(k.el, p[0] + 8, p[1] - 30, 1, o2) }) }
+  // the four AIs
+  const hs = LN.map(l => l.head), off = fan(hs.map(h => h[1]), 92), tin = L.n(t, T.race - .16, T.race + .02), relk = L.n(t, T.rel, T.rel + .16);
+  S.ai.forEach((a, i) => { const k = L.eio(KB(i, t)), ka = KA(i, t), kx = L.eio(L.n(t, T.brd + .45 + i * .07, T.brd + .75 + i * .07)), top = rowTop(a, i, t), ax = hs[i][0], ay = hs[i][1] + off[i], gone = top > 1500 || tin <= 0;
+    const kw = i ? 0 : L.eio(L.n(t, T.win, T.win + .5)), lead = t < T.d1 ? i === S.ld : i === 0, v = t < T.d1 ? sv(a, fi) : a.pnl, tx = Kf(v), col = lead && t >= T.d1 ? AU : v < -499 ? RD : v > 499 ? GN : CR;
+    if (a.vK._t !== tx) { a.vK.textContent = tx; a.vK._t = tx } if (a.vK._c !== col) { a.vK.style.color = col; a.vK._c = col }
+    const pop = (1 + (i === S.ld && t < T.d1 ? .2 * Math.exp(-dEv / .1) : 0)) * (k > 0 ? 1 : L.eo(tin)), tw = 108 + tx.length * S.cw * .74;
+    // plate: the tag's pill opens into the row; the winner's becomes the frame round its mark
+    let px = L.lerp(ax + 18, RX, k), py = L.lerp(ay - 42 * pop, top, k), pw = L.lerp(tw * pop, RW, k), ph = L.lerp(84 * pop, RH, k), pr = L.lerp(42, 26, k);
+    if (put(a.plate, px, py, 1, gone ? 0 : i ? 1 : 1 - L.n(t, T.win, T.win + .22))) { const p = a.plate.style; p.width = pw.toFixed(1) + 'px'; p.height = ph.toFixed(1) + 'px'; p.borderRadius = pr.toFixed(1) + 'px'; const gl = lead ? .5 + .3 * pm : 0; p.borderColor = lead ? a.col : `rgba(${a.rgb},.62)`; p.borderWidth = (lead ? 3.5 : 2) + 'px'; p.boxShadow = gl ? `0 0 ${(26 + 22 * pm).toFixed(0)}px rgba(${a.rgb},${gl.toFixed(2)})` : 'none';
+      a.pi.style.transform = `translateX(${((((t * .62 + i * .17) % 1) * 5.6 - 1.2) * 100).toFixed(1)}%) skewX(-14deg)`; a.pi.style.opacity = k;
+      const fx = a.pfx, sx = 540 + (px - 540) * S.ga, sy = S.gy + (py - S.gy) * S.ga; fx.filter = 'blur(2.5px) saturate(160%) brightness(1.15)'; fx.drawImage(S.gc, sx, sy, Math.max(4, pw * S.ga), Math.max(4, ph * S.ga), 0, 0, 240, 60) }
+    // mark
+    let mx = L.lerp(ax + 27, 152, k), my = L.lerp(ay - 33 * pop, top + 20, k), ms = L.lerp(66 / 96 * pop, 1, k), km = i ? 0 : L.eio(L.n(t, T.win, T.win + .38));
+    if (km > 0) { const q = trophy(t); mx = L.lerp(mx, q.px - 48 * q.s, km); my = L.lerp(my, q.py - 48 * q.s, km); ms = L.lerp(ms, q.s, km) } put(a.mk, mx, my, ms, gone || km >= 1 ? 0 : 1);
+    // rank badge: pops on the tag when the season is over, rides into the row
+    { const tr = T.rank + i * .1, s = t >= tr ? L.spring(t - tr, 2.2, 8) : 0, ex = kw > 0 ? -500 * L.ei(kw) : 0; put(a.rk, L.lerp(ax - 6, 80, k) + ex, L.lerp(ay - 66, top + 40, k), L.lerp(.74, 1, k) * s, s > 0 && !gone && kw < 1 ? 1 : 0) }
+    // name: wiped in as the row opens; the winner's flies up to be the headline
+    { const kn = L.eo(L.n(k, .3, 1)); let x = 264, y = top + 30, s = 1; if (kw > 0) { x = L.lerp(x, S.XG, kw); y = L.lerp(y, S.YG, kw); s = L.lerp(1, S.SG, kw) } put(a.nm, x, y, s, kn > 0 && !gone ? 1 - xo : 0); clip(a.nm, 0, (1 - kn) * a.wN, 0, 0);
+      if (!i) { const cn = kw > 0 ? 'ab k foil fz' : 'ab k foil'; if (a.nm.className !== cn) a.nm.className = cn; if (kw > 0) glint(a.nm, t - T.win - .55, 2.2) } }
+    // value: the live P&L in thousands on the tag, the exact P&L on the row, then the hit rate rolls in
+    { const s = L.lerp(.74 * pop, 1, k), x = L.lerp(ax + 104, BX1 - a.wK, k), y = L.lerp(ay - 25 * pop, top + 34, k); put(a.vK, x, y - 68 * kx, s, gone || kx >= 1 ? 0 : 1); clip(a.vK, 68 * kx, 0, 0, 0);
+      const exr = kw > 0 ? 800 * L.ei(kw) : 0;
+      put(a.vX, BX1 - a.wX, top + 34 + 68 * (1 - kx) - 68 * ka, 1, kx > 0 && ka < 1 && !gone ? 1 : 0); clip(a.vX, 68 * ka, 0, 68 * (1 - kx), 0);
+      put(a.vA, BX1 - a.wA + exr, top + 24 + 88 * (1 - ka), 1, ka > 0 && !gone && kw < 1 ? 1 : 0); clip(a.vA, 0, 0, 88 * (1 - ka), 0);
+      const kl = L.eo(L.n(t, T.acc + i * BT + .1, T.acc + i * BT + .42)); put(a.wl, 800 - a.wWL + exr, top + 46 + 44 * (1 - kl), 1, kl > 0 && !gone && kw < 1 ? 1 : 0); clip(a.wl, 0, 0, 44 * (1 - kl), 0) }
+    if (a === S.out) put(S.rel, 770 - S.wRel / 2, top + BARY - 40, 1 + 1.7 * (1 - L.eo5(relk)), relk > 0 && !gone ? 1 : 0, ' rotate(-4deg)') });
+  {
+    const kh = L.eo(L.n(t, T.acc + .12, T.acc + .45)); put(S.wlh, 800 - S.wWLH, 344 + 34 * (1 - kh) - 460 * L.ei(L.n(t, T.win - .05, T.win + .2)), 1, kh > 0 && t < T.win + .2 ? 1 : 0); clip(S.wlh, 0, 0, 34 * (1 - kh), 0) }
+  const gt = `scale(${S.ga.toFixed(4)})`, go = `540px ${S.gy}px`; for (const id of ['#rows', '#win']) { const e = L.$(id); e.style.transformOrigin = go; e.style.transform = gt }
+  // the winner: the trophy lights on drop 2, steps back out of focus when WINS lands; the P&L on glass, counted in
+  { const q = trophy(t), kk = kick(t), on = t >= T.win - .02 && xo < 1, tro = L.$('#tro');
+    tro.style.transformOrigin = `540px ${S.gy}px`; tro.style.transform = `scale(${S.ga.toFixed(4)})`; tro.style.opacity = xo > 0 ? (1 - xo).toFixed(3) : '';
+    if (vis(S.tr, on)) { S.tr.style.opacity = L.n(t, T.win - .02, T.win + .06).toFixed(3); S.tr.style.transform = `translate(${(540 - TRW / 2).toFixed(1)}px,${q.ty.toFixed(1)}px) scale(${q.s.toFixed(4)})`;
+      S.tr.style.filter = `blur(${(7 * q.f).toFixed(2)}px) brightness(${(L.lerp(1.9, 1.06, q.k) * L.lerp(1, .5, q.f) + .1 * kk).toFixed(3)})`; sweep(L.$('.sw', S.tr), ((t - T.win) / 1.9) % 1);
+      S.trm.style.opacity = t >= T.win + .38 ? 1 : 0 }
+    if (vis(S.halo, on)) { S.halo.style.transform = `scale(${(1 + .12 * kk + .2 * (1 - q.k)).toFixed(3)})`; S.halo.style.opacity = ((.55 + .45 * kk) * L.n(t, T.win - .02, T.win + .1)).toFixed(3) }
+    const wn = L.$('#win'); wn.style.opacity = xo > 0 ? (1 - xo).toFixed(3) : '';
+    [[S.ww, T.wins, -1], [S.ws, T.ss, 1]].forEach(([el, s0, d]) => { if (!vis(el, t >= s0 && xo < 1)) return; const kr = L.eo5(L.n(t, s0, s0 + .28));
+      el.style.transform = `translateX(${(d * 1200 * (1 - kr)).toFixed(1)}px) scale(${(1 + .02 * L.n(t, s0, T.close)).toFixed(4)})`; blr(el, 14 * (1 - kr)) });
+    if (vis(S.wp, t >= T.pl && xo < 1)) { const kp = L.eo5(L.n(t, T.pl, T.pl + .3)), kc = L.eo5(L.n(t, T.pl + .02, T.pnl)), dy = 420 * (1 - kp);
+      S.wp.style.transform = `translateY(${dy.toFixed(1)}px) perspective(1900px) rotateX(${(50 * (1 - kp)).toFixed(2)}deg) scale(${(1 + .02 * kk).toFixed(4)})`;
+      // the frost: the ground behind the sheet, blurred into its own canvas
+      const x = S.wfx, P = 44, kx = 245 / 980, ky = 58 / 232; x.filter = 'blur(6px) saturate(160%) brightness(1.1)'; x.drawImage(S.gc, 50 - P, 986 + dy - P, 980 + 2 * P, 232 + 2 * P, -P * kx, -P * ky, (980 + 2 * P) * kx, (232 + 2 * P) * ky);
+      const tx = L.money(Math.round(S.ai[0].pnl * kc / 10) * 10); if (S.wpn._t !== tx) { S.wpn.textContent = tx; S.wpn._t = tx }
+      glint(S.wpn, t - T.pnl - .3, 1.8); S.wpn.style.transform = `scale(${(1 + (t >= T.pnl ? .12 * Math.exp(-(t - T.pnl) / .11) : 0)).toFixed(4)})`;
+      L.$('.sp', S.wp).style.transform = `translateX(${(-62 + 124 * L.eio(L.n(t, T.pl + .4, T.close))).toFixed(1)}%)`;
+      const rim = L.$('.rim', S.wp); rim.style.opacity = 1; rim.style.background = RIM((t - T.pl) * 130 % 360) }
+    S.stars.forEach(o => { const v = t - T.pnl - o.ph * .7, k = v < 0 || xo >= 1 ? 0 : Math.pow(Math.sin(Math.PI * ((v / .9) % 1)), 3); put(o.el, o.x, o.y, k, k > .02 ? k : 0) }) }
+  // the close: the logo passes the camera and settles, the golden ticket slides in under it
+  { const on = t >= T.close, k = L.eo5(L.n(t, T.close, T.close + .3)), dr = L.n(t, T.close, DUR), kk = kick(t), T7 = T.close + .14, kt = L.eo5(L.n(t, T7, T7 + .4));
+    if (vis(S.xlogo, on)) { S.xlogo.style.transform = `translate(220px,104px) scale(${(L.lerp(2.4, 1, k) * (1 + .05 * dr + .012 * kk)).toFixed(4)})`; blr(S.xlogo, 18 * (1 - k)) }
+    if (vis(S.xhalo, on)) { S.xhalo.style.transform = `scale(${(.62 + .1 * kk + .06 * dr).toFixed(3)})`; S.xhalo.style.opacity = ((.55 + .45 * kk) * k).toFixed(3) }
+    if (vis(S.xtk, t >= T7)) { S.xtk.style.transform = `translate(${(115 - 1400 * (1 - kt)).toFixed(1)}px,778px) perspective(1700px) rotateZ(${(4 - 2 * dr).toFixed(2)}deg) rotateY(${(L.lerp(70, 14, kt) - 22 * L.n(t, T7, DUR)).toFixed(2)}deg) rotateX(${(6 * dr).toFixed(2)}deg) scale(${(1 + .03 * dr).toFixed(4)})`;
+      blr(S.xtk, 14 * (1 - kt)); sweep(L.$('.sw', S.xtk), L.eio(L.n(t, T7 + .3, DUR - .3))) } }
+}
+window.R = R;
+(async () => {
+  await new Promise(res => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = (L.css.match(/@import url\('([^']+)'\)/) || [])[1]; l.onload = l.onerror = res; document.head.appendChild(l); setTimeout(res, 20000) });
+  L.$('#base').textContent = L.css; [L.models, D] = await Promise.all([fetch('models.json').then(r => r.json()), fetch('data/wrap.json').then(r => r.json())]); build();
+  const smp = L.$('#st').textContent + ' 0123456789+−–$%,KLEADSGROKCUPTIM&';
+  await Promise.all(['400 100px "Bebas Neue"', 'italic 900 150px Kanit', 'italic 800 60px Kanit', 'italic 700 60px Kanit', '700 76px "Geist Mono"', '800 200px "Geist Mono"', '600 30px "Geist Mono"'].map(f => document.fonts.load(f, smp))); await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  GF = await Promise.all(Array.from({ length: NG }, (_, i) => fetch(`w6/e/gl/g${String(i + 1).padStart(3, '0')}.jpg`).then(r => r.blob()).then(b => createImageBitmap(b)))).catch(() => []);
+  if (!GF.length) { const im = new Image(); im.src = 'w6/e/ground.jpg'; await im.decode(); S.gstill = im }
+  // fit the lines of type to their measures, then take the widths the layout needs
+  L.$$('[data-fit]').forEach(e => { const v = e.dataset.fit, mx = v.startsWith('max'), W = +v.replace('max', ''), w = e.offsetWidth, p = e.parentNode; if (!mx || w > W) p.style.fontSize = (parseFloat(getComputedStyle(p).fontSize) * W / w).toFixed(1) + 'px' });
+  const wd = e => e.getBoundingClientRect().width; S.ai.forEach(a => { a.vK.textContent = Kf(a.pnl); a.wK = wd(a.vK); a.wX = wd(a.vX); a.wA = wd(a.vA); a.wWL = wd(a.wl); a.wN = wd(a.nm) });
+  S.cw = wd(S.ai[0].vK) / S.ai[0].vK.textContent.length; S.wT3 = wd(S.t3); S.wWLH = wd(S.wlh); S.wRel = wd(S.rel);
+  S.SG = 900 / S.ai[0].wN; S.XG = 90; S.YG = 92;
+  { const room = 980 - 46 - (54 + wd(S.wpl) + 56), w = wd(S.wpn); if (w > room) S.wpn.style.fontSize = (128 * room / w).toFixed(1) + 'px' }
+  grain = L.grain(L.$('#grain'), .05); window.CUES = C; window.DUR = DUR; window.BEAT = { bpm: BPM, at: 0 }; window.DROPS = [T.d1, T.win];
+  window.SHOTS = [0, 4, 8, 11, 16, 21, 25, 29, 31, 36, 40, 44, 58, 66, 72, 77, 81, 85, 92].map(bt); window.CHART = [[T.race, T.win]];
+  R(0); window.READY = 1;
+})().catch(e => { document.title = 'ERR ' + e.message; throw e });
+</script>

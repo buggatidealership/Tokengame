@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Four AIs Trade Earnings · Who to follow</title>
+<link rel="stylesheet" href="show.css">
+<style>
+/* ===== Leaderboard: the show's own scoreboard, kept by hand at the ball field ===== */
+.set{position:relative;aspect-ratio:3/4;background:url(img/board-34.jpg) center/cover no-repeat;border-bottom:3px solid var(--ink)}
+.set .hd{position:absolute;left:0;right:0;top:1.6%;text-align:center;padding:0 var(--gut)}
+.set h1{font-size:clamp(30px,9.4vw,46px);--l1:#fff8e6;--l2:#ffd36a;--l3:#ff9a3a}
+.set .sub{margin:2px 0 0;font-family:"Lilita One";font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:#18324f;text-shadow:0 1px 0 rgba(255,255,255,.5)}
+/* the slot-in plates on the painted board face: one row per model (measured on the painting) */
+.slots{position:absolute;left:21.4%;width:60.5%;top:34.3%;height:29.1%;--pitch:26.9%;--sh:19.4%}
+.slot{position:absolute;left:0;right:0;top:calc(var(--i)*var(--pitch));height:var(--sh);display:flex;align-items:center;gap:5px;border:5px solid transparent;border-image:url(img/plate.png) 48 fill / 5px stretch;color:var(--ink);
+  font-family:"Lilita One";font-size:clamp(10px,3.3vw,22px);line-height:1;padding:0 2px;filter:drop-shadow(1px 2px 0 rgba(0,0,0,.55));transition:transform .35s}
+.slot.gold{border-image-source:url(img/plate-gold.png)}
+.slot .p{width:1.3em;text-align:center;color:#7a5a3e}
+.slot .n{flex:1;white-space:nowrap;overflow:hidden}
+.slot .v{white-space:nowrap}
+.slot .mk{--s:1.25em!important}
+.slot.flip{transform:rotateX(90deg)}
+/* the board face, close up: everything below is kept on it */
+.board{--g:#244a2c;background-color:#244a2c;background-image:radial-gradient(120% 60% at 30% 0%,rgba(255,236,190,.22),rgba(255,236,190,0) 60%),radial-gradient(150% 90% at 60% 110%,rgba(0,0,0,.45),rgba(0,0,0,0) 60%),url(img/wood.jpg);background-size:100% 100%,100% 100%,512px auto;background-blend-mode:soft-light,multiply,multiply;padding:18px 0 28px}
+.pn{margin:30px 0 0}
+.pn:first-child,.top2 .pn{margin-top:0}
+.top2 .ans{margin-top:18px}
+.pn > h2{font-size:clamp(24px,6.8vw,34px);margin:0 0 4px;--l1:#fffaf0;--l2:#f6e7c4;--l3:#e2c98f}
+.pn > .q{margin:0 0 10px;font-size:15px;color:#e6f2dc}
+/* controls: the scorekeeper's switches, a bulb lit beside the one in use */
+.ctl{display:grid;gap:8px}
+.cg{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.cg .lbl{color:#e6f2dc;width:100%}
+.sw{font-family:"Lilita One";font-size:14.5px;color:var(--ink);border:9px solid transparent;border-image:url(img/plate.png) 48 fill / 9px stretch;background:none;cursor:pointer;min-height:44px;
+  display:inline-flex;align-items:center;gap:7px;padding:0 4px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.5))}
+.sw::before{content:"";width:13px;height:13px;border-radius:50%;flex:none;border:1.8px solid var(--ink);background:radial-gradient(circle at 35% 35%,#e9e2cf,#9c9382 70%)}
+.sw[aria-pressed="true"]::before{background:radial-gradient(circle at 38% 35%,#fffbe0,#ffd23a 45%,#f08a12 100%);box-shadow:0 0 8px 3px rgba(255,200,60,.85)}
+.sw:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.sw:active{transform:translate(1px,1px)}
+/* the answer */
+.ans{display:grid;gap:12px;margin-top:16px}
+.hon{margin:0;font-size:15px;line-height:1.38;color:#e6f2dc}.hon b{color:#fff}
+.gtn{margin:0;font-size:13.5px;line-height:1.38;color:#d6e8c8}
+.ans2{display:grid;gap:10px;margin-top:12px}
+.top2 .ans2{margin-top:12px}
+.empty{border-width:14px;border-image-width:14px;font-size:16px;font-weight:600;color:var(--ink);padding:4px}
+.empty b{font-family:"Lilita One";font-weight:400;font-size:18px;display:block;margin-bottom:3px}
+/* the table of receipts */
+.tbl{display:grid;gap:8px}
+.th{display:none}
+.row{border-width:12px;border-image-width:12px;color:var(--ink);display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"p m v" "s s s";align-items:center;gap:6px 8px;padding:2px}
+.row.gold{border-image-source:url(img/plate-gold.png)}
+.row .p{grid-area:p;font-family:"Lilita One";font-size:20px;color:#7a5a3e;width:1.6em;text-align:center}
+.row .m{grid-area:m;display:flex;align-items:center;gap:7px;min-width:0}
+.row .m b{font-family:"Lilita One";font-weight:400;font-size:19px}
+.row .v{grid-area:v;text-align:right}
+.row .v .num{font-size:22px;display:block;line-height:1}
+.row .s{grid-area:s;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.85fr) minmax(0,.95fr) minmax(0,1.6fr);gap:4px 10px;border-top:2px dashed rgba(36,20,12,.28);padding-top:6px}
+.cell .lbl{display:block;font-size:9.5px;margin-bottom:2px;white-space:nowrap}
+@media (max-width:999px){.row .s{grid-template-columns:repeat(3,minmax(0,1fr))}.row .s .cell:first-child{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between}.row .s .cell:first-child .lbl{margin:0}}
+@media (max-width:379px){.cell .lbl{white-space:normal}.row .v .num{font-size:19px}.row .m b{font-size:17px}}
+.cell .num{font-size:15px}
+.l5{display:inline-flex;gap:3px;align-items:center}
+.l5 i{width:17px;height:17px;border-radius:4px;display:grid;place-items:center;font-style:normal;font-family:"Lilita One";font-size:11px;color:#fff;border:1.6px solid var(--ink)}
+.l5 i.w{background:#2f9a4c}.l5 i.l{background:#c8321f}
+.l5 i.new{box-shadow:0 0 0 2px #fffaf0,0 0 0 3.6px var(--ink)}
+.row .vl{display:block;font-family:"Lilita One";font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#6b4a33;margin-bottom:2px}
+.dash{color:#9a8a76}
+/* chart, painted on the board in sign paint */
+.chw{position:relative;border:3px solid #13261a;border-radius:6px;background:rgba(10,24,14,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);height:300px}
+.chw svg{display:block;width:100%;height:100%}
+.chw text{font-family:"Lilita One"}
+.chw .none{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;color:#f3efe2;font-size:16px}
+/* by sector: the line score */
+.ls{border-width:12px;border-image-width:12px;color:var(--ink);overflow:hidden}
+.ls table{width:100%;border-collapse:collapse;font-size:13px}
+.ls th{font-family:"Lilita One";font-weight:400;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6b4a33;padding:2px 2px 6px;text-align:center}
+.ls th:first-child{text-align:left}
+.ls td{padding:5px 2px;text-align:center;border-top:1.5px dashed rgba(36,20,12,.22);font-family:"Lilita One";font-size:14px}
+.ls td:first-child{text-align:left;font-family:"Fredoka";font-weight:600;font-size:12.5px;line-height:1.15}
+.ls td.best span{display:inline-block;padding:1px 5px;border-radius:999px;box-shadow:0 0 0 2.4px #d99a12;background:rgba(253,188,42,.25)}
+.ls .mk{--s:20px!important;vertical-align:middle}
+/* biggest W and L */
+.wl{border-width:12px;border-image-width:12px;color:var(--ink)}
+.wl table{width:100%;border-collapse:collapse}
+.wl th{font-family:"Lilita One";font-weight:400;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6b4a33;text-align:left;padding:0 4px 6px}
+.wl td{padding:6px 4px;border-top:1.5px dashed rgba(36,20,12,.22);vertical-align:middle}
+.wl .tr{display:flex;align-items:center;gap:6px}
+.wl .tr .co{--cs:26px!important}
+.wl .cn{font-size:12.5px;font-weight:700;line-height:1.15}
+.wl .num{font-size:15px;display:block}
+.nxs{display:grid;gap:12px}
+.fine{color:#d6e8c8}
+.foot{--g:#1a2a1c;padding:16px var(--gut);font-size:13px;color:#d6e8c8;border-top:3px solid var(--ink)}
+.foot .in{max-width:var(--maxw);margin:0 auto;display:flex;gap:10px;align-items:center}
+.foot img{width:28px;height:28px}
+
+@media (min-width:1000px){
+  :root{--gut:32px}
+  .set{aspect-ratio:16/9;background-image:url(img/board-169.jpg);background-size:100% 100%}
+  .set .hd{left:max(var(--gut),calc((100vw - var(--maxw))/2 + var(--gut)));right:auto;top:12%;text-align:left;width:52%;padding:0}
+  .set h1{font-size:clamp(54px,5.6vw,84px)}
+  .set .sub{font-size:15px}
+  .slots{left:62.1%;width:30.4%;top:24%;height:32%;--pitch:27.8%;--sh:18.1%}
+  .slot{font-size:clamp(14px,1.45vw,22px);border-width:6px;border-image-width:6px}
+  .board{padding:30px 0 40px}
+  .top2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-areas:"c t" "n t";gap:18px 40px;align-items:start}
+  .top2 > .pn:first-child{grid-area:c}.top2 #ans{grid-area:t}.top2 #ans2{grid-area:n}
+  .top2 .ans{margin-top:0}
+  .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:stretch}
+  .two > .pn{margin-top:22px;display:flex;flex-direction:column}
+  .two .tbl,.two .chw{flex:1}
+  .chw{height:auto;min-height:340px}
+  .nxs{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+  .two > .pn > .ls,.two > .pn > .wl{flex:1;display:flex}
+  .ls table,.wl table{height:100%}
+}
+</style>
+</head>
+<body>
+<header class="top grd"><div class="in">
+  <img class="lg" src="../../../../../tools/v22/x2p-logo.svg" alt="EZ.">
+  <span class="nm"><b>E</b>arnings <i>Z</i>eason</span>
+  <nav class="tabs" aria-label="Pages"><a class="tab" href="overview.html">Overview</a><a class="tab" href="leaderboard.html" aria-current="page">Leaderboard</a></nav>
+</div></header>
+<main id="lb"></main>
+<footer class="foot grd"><div class="in"><img src="../../../../../tools/v22/x2p-logo.svg" alt=""><span>Simulated record, $100K a trade, before fees. Not financial advice. Trading can lose money; the pool can be wiped out. Hyperliquid is not available in every country.</span></div></footer>
+
+<script src="../../../../../ez-data.js"></script>
+<script src="ezx.js"></script>
+<script src="show.js"></script>
+<script>
+EZX.loadHL("../hl-markets-2026-11-03.json").catch(function(){}).then(function(){
+var E=EZX,S=SHOW,esc=S.esc,RM=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var st={by:"pl",win:"season",co:"all"};
+var WL={season:"Season",d7:"7 days",h24:"24 hours"};
+var listed=function(r){return !!E.hlMarket(r.ticker)};
+function rounds(){var rs=E.win[st.win].rs;return st.co==="hl"?rs.filter(listed):rs}
+function seasonRounds(){return st.co==="hl"?E.R.filter(listed):E.R}
+var lastDay=E.latestDay;
+function dayLong(a){return E.fmtDay(a,true)}
+var hr=function(s){return s.n?(s.hit*100).toFixed(1)+"%":"–"};
+var mc=function(v){return v>0?"pos":v<0?"neg":""};
+
+var h='<section class="set" aria-label="The scoreboard"><div class="hd"><h1 class="let" data-let="5" data-amp=".7">Who to Follow</h1><p class="sub">Right now · kept by hand at every close</p></div><div class="slots" id="slots"></div></section>';
+h+='<section class="board"><div class="wrap">'+
+  '<div class="top2"><div class="pn"><div class="ctl" role="group" aria-label="Board settings">'+
+   '<div class="cg"><span class="lbl">Rank by</span><button class="sw" data-k="by" data-v="pl">P&amp;L</button><button class="sw" data-k="by" data-v="hit">Hit rate</button></div>'+
+   '<div class="cg"><span class="lbl">Window</span><button class="sw" data-k="win" data-v="season">Season</button><button class="sw" data-k="win" data-v="d7">7 days</button><button class="sw" data-k="win" data-v="h24">24 hours</button></div>'+
+   '<div class="cg"><span class="lbl">Companies</span><button class="sw" data-k="co" data-v="all">All</button><button class="sw" data-k="co" data-v="hl">On Hyperliquid</button></div></div></div>'+
+   '<div class="pn ans" id="ans"></div><div class="ans2" id="ans2"></div></div>'+
+  '<div class="two"><div class="pn"><h2 class="let" data-let="11" data-amp=".5">The receipts</h2><p class="q" id="tq"></p><div class="tbl" id="tbl"></div></div>'+
+   '<div class="pn"><h2 class="let" data-let="12" data-amp=".5" id="chh">P&amp;L over time</h2><p class="q" id="cq"></p><div class="chw" id="chw"></div></div></div>'+
+  '<div class="pn"><h2 class="let" data-let="13" data-amp=".5" id="nxh">Next trades</h2><p class="q">The top model&rsquo;s trade first, the field under it, and where to follow it.</p><div class="nxs" id="nxs"></div><p class="fine q" style="margin-top:8px">Markets: Hyperliquid, as of Nov 3.</p></div>'+
+  '<div class="two"><div class="pn"><h2 class="let" data-let="14" data-amp=".5">By sector</h2><p class="q" id="sq"></p><div class="ls pl" id="ls"></div></div>'+
+   '<div class="pn"><h2 class="let" data-let="15" data-amp=".5">Biggest W and L</h2><p class="q" id="wq"></p><div class="wl pl" id="wl"></div></div></div>'+
+  '</div></section>';
+document.getElementById("lb").innerHTML=h;
+S.letterAll();
+
+/* gold plate: the master plate printed in the golden ticket's gold */
+function render(){
+  var rs=rounds(),s=E.stats(rs),empty=!rs.length,ss=E.stats(seasonRounds());
+  var ord=empty?E.rank(E.season,"pl"):E.rank(s,st.by),top=ord[0];
+  var lastR=seasonRounds().filter(function(r){return E.dayKey(r.day)===E.dayKey(lastDay)}),ls=E.stats(lastR);
+  var wn=WL[st.win]+(st.co==="hl"?", Hyperliquid-listed":"");
+  document.querySelectorAll(".sw").forEach(function(b){b.setAttribute("aria-pressed",String(st[b.dataset.k]===b.dataset.v))});
+
+  /* the board face: the scorekeeper's plates */
+  var sl=document.getElementById("slots");
+  sl.innerHTML=ord.map(function(m,i){var x=s[m],v=empty?"–":(st.by==="hit"?hr(x):E.kmoney(x.pl));
+    return '<div class="slot'+(i===0&&!empty?" gold":"")+'" style="--i:'+i+'"><span class="p">'+(i+1)+'</span>'+S.badge(m,20)+'<span class="n">'+E.NAME[m]+'</span><span class="v num '+(st.by==="hit"||empty?"":mc(x.pl))+'">'+v+'</span></div>'}).join("");
+
+  /* the answer: who to follow, on this window, with its sample */
+  var A=document.getElementById("ans"),gl=E.rank(E.season,"pl")[0],B=E.BET,frz=B?new Date(B-SIM.leadHours*3600e3):null;
+  var frzT=frz?frz.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:"America/New_York"})+", "+frz.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/New_York"}).replace(":00",""):"";
+  var A2=document.getElementById("ans2");
+  if(empty){A.innerHTML='<div class="empty pl"><b>Nothing graded in the last 24 hours.</b>Last close: '+dayLong(lastDay)+'. The plates stay in season order until the next close grades a trade.</div>';
+      A2.innerHTML='<p class="gtn">'+E.NAME[gl]+' holds the golden ticket: top by season P&amp;L. The board freezes '+frzT+' New York, 24 hours before the NVIDIA bet; the top model&rsquo;s trade is the bet.</p>'}
+  else{var x=s[top],w=E.wilson(x.w,x.n);
+    A.innerHTML=S.ticket({m:top,stub:top===gl?"Golden ticket":"Top · "+WL[st.win],kicker:(st.by==="hit"?"Best hit rate":"Top P&amp;L")+" · "+esc(wn),aria:E.NAME[top]+" leads",
+      l1:"Right on "+x.w+" of "+x.n+" trades · "+hr(x),l2:'<span class="'+mc(x.pl)+'">'+E.money(x.pl)+'</span> at $100K a trade'});
+     A2.innerHTML='<p class="hon">'+(x.n>=10?'On '+x.n+' trades, the real hit rate could be anywhere from about <b>'+Math.round(w[0]*100)+'% to '+Math.round(w[1]*100)+'%</b>. A lead so far, not a proof.':'Only <b>'+x.n+' trades</b> in this window: far too few to tell skill from luck.')+'</p>'+
+     (st.co==="hl"?'<p class="gtn">Companies with a Hyperliquid market today. Most were not listed when the trade was made.</p>':'')+
+     '<p class="gtn">'+(top===gl?E.NAME[gl]+' also holds the golden ticket: ':'The golden ticket stays with '+E.NAME[gl]+': ')+'top by season P&amp;L. The board freezes '+frzT+' New York, 24 hours before the NVIDIA bet; the top model&rsquo;s trade is the bet.</p>'}
+
+  /* the receipts */
+  document.getElementById("tq").textContent=empty?"No trades in this window yet.":"Ranked by "+(st.by==="hit"?"hit rate":"P&L")+" · "+wn+" · $100K a trade";
+  document.getElementById("tbl").innerHTML=ord.map(function(m,i){var x=s[m],l5=ss[m].last5;
+    return '<div class="row pl'+(i===0&&!empty?" gold":"")+'"><span class="p">'+(i+1)+'</span><span class="m">'+S.badge(m,28)+'<b>'+E.NAME[m]+'</b>'+S.flag(m,22)+'</span>'+
+     '<span class="v"><span class="vl">P&amp;L · '+WL[st.win]+'</span><span class="num '+(empty?"dash":mc(x.pl))+'">'+(empty?"–":E.money(x.pl))+'</span></span>'+
+     '<span class="s"><span class="cell"><span class="lbl">Last 5 · old &rarr; new</span><span class="l5">'+l5.map(function(t,j){return '<i class="'+(t.w?"w":"l")+(j===l5.length-1?" new":"")+'" title="Round '+t.r.n+'">'+(t.w?"W":"L")+'</i>'}).join("")+'</span></span>'+
+     '<span class="cell"><span class="lbl">W-L</span><span class="num">'+(empty?"–":x.w+"-"+x.l)+'</span></span>'+
+     '<span class="cell"><span class="lbl">Hit rate</span><span class="num">'+(empty?"–":hr(x))+'</span></span>'+
+     '<span class="cell"><span class="lbl">Last close · '+E.fmtDay(lastDay)+'</span><span class="num '+mc(ls[m].pl)+'">'+(ls[m].n?E.money(ls[m].pl):"–")+'</span></span></span></div>'}).join("");
+
+  /* the chart: the P&L (or the hit rate) in this window, round by round */
+  document.getElementById("chh").setAttribute("aria-label",st.by==="hit"?"Hit rate over time":"P&L over time");
+  document.getElementById("chh").textContent=st.by==="hit"?"Hit rate over time":"P&L over time";S.letter(document.getElementById("chh"),12,.5);
+  document.getElementById("cq").textContent=empty?"":(st.by==="hit"?"Every line starts at 50% before its first trade":"Every line starts at $0")+" · "+wn+" · "+rs.length+" rounds";
+  chart(rs,empty);
+
+  /* the next trades, by this window's top model */
+  var NU=E.nextUp().filter(function(u){return u.in});document.getElementById("nxh").textContent=E.NAME[top]+"’s next trades";S.letter(document.getElementById("nxh"),13,.5);
+  document.getElementById("nxs").innerHTML=NU.map(function(u){return S.nextCard(u,top,ord)}).join("");
+  document.getElementById("nxs").classList.toggle("solo",NU.length===1);
+
+  /* by sector: trades won of trades made, season (or listed only) */
+  var sec=E.sectors(seasonRounds()),so=E.rank(ss,"pl");
+  document.getElementById("sq").textContent="Trades won of trades made · Season"+(st.co==="hl"?", Hyperliquid-listed":"")+" · best in each row ringed";
+  document.getElementById("ls").innerHTML='<table><thead><tr><th scope="col">Sector</th>'+so.map(function(m){return '<th scope="col">'+S.badge(m,20)+'<span class="sr">'+E.NAME[m]+'</span></th>'}).join("")+'</tr></thead><tbody>'+
+    sec.map(function(r){var rate=function(m){var c=r.c[m];return c&&c.n?c.w/c.n:-1},b=Math.max.apply(null,so.map(rate));
+      return '<tr><td>'+esc(r.sector==="Other"?"No sector in the sheet":r.sector)+'</td>'+so.map(function(m){var c=r.c[m];return '<td class="'+(c&&c.n&&rate(m)===b?"best":"")+'"><span>'+(c?c.w+"/"+c.n:"–")+'</span></td>'}).join("")+'</tr>'}).join("")+'</tbody></table>';
+
+  /* biggest W and L, each with company and ticker */
+  document.getElementById("wq").textContent="One trade each · Season"+(st.co==="hl"?", Hyperliquid-listed":"")+" · $100K a trade";
+  function tr(o){if(!o)return "–";return '<span class="tr">'+S.co(o.r.ticker,26)+'<span><span class="cn">'+esc(E.coLabel(o.r))+'</span><span class="num '+mc(o.v)+'">'+E.money(o.v)+'</span></span></span>'}
+  document.getElementById("wl").innerHTML='<table><thead><tr><th scope="col"><span class="sr">Model</span></th><th scope="col">Biggest W</th><th scope="col">Biggest L</th></tr></thead><tbody>'+
+    so.map(function(m){return '<tr><td>'+S.badge(m,24)+'<span class="sr">'+E.NAME[m]+'</span></td><td>'+tr(ss[m].best&&ss[m].best.v>0?ss[m].best:null)+'</td><td>'+tr(ss[m].worst&&ss[m].worst.v<0?ss[m].worst:null)+'</td></tr>'}).join("")+'</tbody></table>';
+}
+
+var dash={GROK:"",CLAUDE:"9 5",GPT:"2.5 4",KIMI:"10 4 2.5 4"};
+function chart(rs,empty){var box=document.getElementById("chw");if(empty){box.innerHTML='<div class="none">No round graded in the last 24 hours.<br>Last close: '+dayLong(lastDay)+'.</div>';return}
+  var W=box.clientWidth,H=box.clientHeight,fs=W<420?11:13,pad={l:st.by==="hit"?40:54,r:W<420?92:116,t:14,b:28},ink="#f3efe2",SER=E.series(rs),key=st.by==="hit"?"hit":"pl",n=rs.length;
+  var vals=[st.by==="hit"?.5:0];E.MK.forEach(function(m){vals=vals.concat(SER[m][key])});var lo,hi,ticks=[];
+  if(st.by==="hit"){lo=Math.floor(Math.min.apply(null,vals)*10)/10;hi=Math.ceil(Math.max.apply(null,vals)*10)/10;for(var t=lo;t<=hi+1e-9;t+=.1)ticks.push(+t.toFixed(2))}
+  else{var stp=Math.max.apply(null,vals.map(Math.abs))>120000?50000:25000;lo=Math.floor(Math.min.apply(null,vals)/stp)*stp;hi=Math.ceil(Math.max.apply(null,vals)/stp)*stp;for(var t2=lo;t2<=hi;t2+=stp)ticks.push(t2)}
+  var X=function(i){return pad.l+(W-pad.l-pad.r)*(i+1)/n},Y=function(v){return pad.t+(H-pad.t-pad.b)*(1-(v-lo)/(hi-lo))};
+  var g='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(st.by==="hit"?"Hit rate":"P&L")+' round by round">';
+  ticks.forEach(function(v){var b=st.by==="hit"?Math.abs(v-.5)<1e-6:v===0,y=Y(v).toFixed(1);g+='<line x1="'+pad.l+'" x2="'+(W-pad.r+6)+'" y1="'+y+'" y2="'+y+'" stroke="'+ink+'" stroke-opacity="'+(b?.7:.18)+'" stroke-width="'+(b?1.5:1)+'"'+(b?' stroke-dasharray="6 5"':'')+'/><text x="'+(pad.l-6)+'" y="'+(+y+4)+'" text-anchor="end" font-size="'+fs+'" fill="'+ink+'" fill-opacity="'+(b?1:.7)+'">'+(st.by==="hit"?Math.round(v*100)+"%":(v===0?"$0":(v>0?"+":"−")+"$"+Math.abs(v/1000)+"K"))+'</text>'});
+  [[-1,"Start"],[n-1,"Round "+rs[n-1].n]].forEach(function(a,i){g+='<text x="'+X(a[0])+'" y="'+(H-8)+'" text-anchor="'+(i?"end":"start")+'" font-size="'+fs+'" fill="'+ink+'" fill-opacity=".75">'+a[1]+'</text>'});
+  var ends=[],b0=st.by==="hit"?.5:0,S2=E.stats(rs);
+  E.MK.slice().reverse().forEach(function(m){var f0=rs.findIndex(function(r){return r.tr.some(function(t){return t.m===m})});if(f0<0)return;var s=SER[m][key],d="M"+X(f0-1).toFixed(1)+" "+Y(b0).toFixed(1);
+    for(var i=f0;i<n;i++)d+="L"+X(i).toFixed(1)+" "+Y(s[i]).toFixed(1);
+    g+='<path d="'+d+'" fill="none" stroke="#0f2014" stroke-width="4.4" stroke-linejoin="round" stroke-linecap="round" opacity=".7"'+(dash[m]?' stroke-dasharray="'+dash[m]+'"':'')+'/><path class="ln" d="'+d+'" fill="none" stroke="'+E.COL[m]+'" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"'+(dash[m]?' stroke-dasharray="'+dash[m]+'"':'')+'/>';
+    ends.push({m:m,y:Y(s[n-1]),yy:Y(s[n-1])})});
+  ends.sort(function(a,b){return a.y-b.y});for(var i=1;i<ends.length;i++)if(ends[i].y-ends[i-1].y<fs+5)ends[i].y=ends[i-1].y+fs+5;var ov=ends[ends.length-1].y-(H-pad.b);if(ov>0)ends.forEach(function(e){e.y-=ov});
+  ends.forEach(function(e){var x=S2[e.m],v=st.by==="hit"?hr(x):E.kmoney(x.pl);g+='<circle cx="'+X(n-1).toFixed(1)+'" cy="'+e.yy.toFixed(1)+'" r="3.2" fill="'+E.COL[e.m]+'" stroke="#0f2014" stroke-width="1.4"/><text x="'+(W-pad.r+10)+'" y="'+(e.y+4).toFixed(1)+'" font-size="'+fs+'" fill="'+E.COL[e.m]+'">'+E.NAME[e.m]+' <tspan fill="#f3efe2">'+v+'</tspan></text>'});
+  box.innerHTML=g+'</svg>'}
+
+document.querySelector(".ctl").addEventListener("click",function(e){var b=e.target.closest(".sw");if(!b)return;st[b.dataset.k]=b.dataset.v;
+  var sl=document.querySelectorAll(".slot");if(!RM){sl.forEach(function(x){x.classList.add("flip")});setTimeout(render,180)}else render()});
+var lw=0;function onR(){if(innerWidth!==lw){lw=innerWidth;render()}}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(onR);else onR();
+addEventListener("resize",onR);
+});
+</script>
+</body>
+</html>

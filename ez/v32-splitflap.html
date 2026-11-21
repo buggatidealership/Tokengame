@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EZ Departures</title>
+<meta name="description" content="Earnings Zeason ($EZ) as one split-flap departure board: four AIs call earnings moves, the market grades them.">
+<meta name="theme-color" content="#0d0d0f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0c0e;--wall:#121214;--frame:#18191c;--frame2:#101113;
+  --flap:#26272b;--flap2:#202124;--ink:#f3eddd;--amber:#ffb224;--dim:#aca698;
+  --up:#5bd892;--dn:#ff6d59;--gold:#f2b632;--green:#1e9a55;--red:#cf3a2b;--slate:#4a4d55;
+  --paper:#efe7d3;--paper2:#e4d9bf;--pink:#17140e;--pdim:#5d5546;
+  --cw:15px;--ch:23px;--gap:2px;--fs:17px;--plw:340px;
+  --fc:"Barlow Condensed","Roboto Condensed","Arial Narrow","Liberation Sans Narrow","Helvetica Neue",Arial,sans-serif;
+  --fb:"Barlow","Helvetica Neue",Arial,"Liberation Sans",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);background-image:radial-gradient(120% 70% at 50% 0%,#1a1b1f 0%,var(--bg) 60%);background-attachment:fixed;color:var(--ink);font-family:var(--fb);overflow-x:hidden}
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+#track{width:1px;pointer-events:none}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;overflow:hidden}
+
+/* the board housing */
+.board{position:relative;width:100%;max-width:1440px;background:linear-gradient(180deg,#1d1e22 0%,var(--frame) 30%,var(--frame2) 100%);border-radius:16px;padding:10px 8px 8px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -2px 0 rgba(0,0,0,.6),0 0 0 1px #0a0a0b,0 30px 80px rgba(0,0,0,.65),0 6px 18px rgba(0,0,0,.5)}
+.board::before,.board::after{content:"";position:absolute;top:9px;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#55575d,#1b1c1f 70%);box-shadow:0 1px 0 rgba(255,255,255,.06)}
+.board::before{left:9px}.board::after{right:9px}
+.rail{display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;min-height:calc(var(--ch) + 6px)}
+.ez{display:inline-flex;align-items:center;justify-content:center;height:calc(var(--ch) + 4px);padding:0 7px;border-radius:6px;background:#0a0a0b;border:1px solid #34353a;
+  font:700 calc(var(--ch)*.78)/1 var(--fc);letter-spacing:.02em;flex:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.ez b:nth-child(1){color:var(--gold)}.ez b:nth-child(2){color:#2fc26f}.ez b:nth-child(3){color:#ef4a39}
+.hdr,.clock{display:flex;gap:var(--gap)}
+.clock{margin-left:auto}
+.season{display:flex;gap:1px;height:5px;margin:8px 14px 8px;border-radius:2px;overflow:hidden}
+.season i{flex:1 1 0;background:#2b2c31;min-width:0}
+.season i.w{background:var(--gold)}.season i.x{background:var(--red)}
+.season i.now{background:var(--amber);animation:blink 1.6s steps(2,end) infinite}
+@keyframes blink{50%{opacity:.25}}
+.body{display:flex;flex-direction:column;gap:10px;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(var(--cols),var(--cw));gap:var(--gap);padding:8px;background:#0b0b0c;border-radius:8px;
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.9),inset 0 0 0 1px #000;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.wide .body{flex-direction:row;align-items:stretch;justify-content:center;gap:18px}
+
+/* a flap */
+.f{position:relative;width:var(--cw);height:var(--ch);perspective:calc(var(--ch)*5)}
+.f::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;margin-top:-.5px;background:rgba(0,0,0,.75);z-index:4;pointer-events:none}
+.h{position:absolute;left:0;right:0;overflow:hidden;background:var(--flap);color:var(--ink);backface-visibility:hidden}
+.t,.ft{top:0;height:50%;border-radius:2px 2px 0 0;background:linear-gradient(180deg,#2c2d32,var(--flap))}
+.b,.fb{bottom:0;height:50%;border-radius:0 0 2px 2px;background:linear-gradient(180deg,var(--flap2),#1b1c1f)}
+.ft{transform-origin:50% 100%;visibility:hidden;z-index:2}
+.fb{transform-origin:50% 0;visibility:hidden;z-index:2}
+.g{position:absolute;left:0;right:0;height:var(--ch);display:flex;align-items:center;justify-content:center;
+  font:600 var(--fs)/1 var(--fc);white-space:pre;font-variant-numeric:tabular-nums}
+.t .g,.ft .g{top:0}.b .g,.fb .g{bottom:0}
+.h.a{color:var(--amber)}.h.d{color:var(--dim)}.h.u{color:var(--up)}.h.w{color:var(--dn)}
+.h.tY{color:var(--gold)}.h.tG{color:#3fd07f}.h.tR{color:#ff5a46}
+.t.G,.ft.G{background:linear-gradient(180deg,#25ad62,var(--green))}.b.G,.fb.G{background:#1a874a}.h.G{color:#fff}
+.t.R,.ft.R{background:linear-gradient(180deg,#e04434,var(--red))}.b.R,.fb.R{background:#b63224}.h.R{color:#fff}
+.t.Y,.ft.Y{background:linear-gradient(180deg,#ffc94d,var(--gold))}.b.Y,.fb.Y{background:#dca226}.h.Y{color:#1c1405}
+.t.A,.ft.A{background:linear-gradient(180deg,#ffbf3f,var(--amber))}.b.A,.fb.A{background:#e89c16}.h.A{color:#1c1405}
+.t.S,.ft.S{background:linear-gradient(180deg,#575a63,var(--slate))}.b.S,.fb.S{background:#40434a}.h.S{color:#fff}
+.t.pY,.ft.pY{background:var(--gold)}.b.pY,.fb.pY{background:#dca226}
+.t.pG,.ft.pG{background:#25ad62}.b.pG,.fb.pG{background:#1a874a}
+.t.pR,.ft.pR{background:#e04434}.b.pR,.fb.pR{background:#b63224}
+.h.ic .g{font-size:calc(var(--cw)*.9)}
+.lg{display:inline-flex;align-items:center;justify-content:center;width:1em;height:1em;border-radius:22%;flex:none;vertical-align:middle;overflow:hidden}
+.lg svg{width:62%;height:62%;display:block}
+.co-mark{display:inline-flex;align-items:center;justify-content:center;width:1em;height:1em;border-radius:22%;background:#fff;overflow:hidden;flex:none;vertical-align:middle;
+  font:700 .32em/1 var(--fb);color:#111}
+.co-mark.dk{background:#141518}
+.co-mark img{width:80%;height:80%;object-fit:contain;display:block}
+.h.ic .co-mark,.h.ic .lg{font-size:calc(var(--cw)*.95)}
+
+/* the enamel placard */
+.plac{position:relative;background:var(--paper);color:var(--pink);border-radius:8px;overflow:auto;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.12),inset 0 -3px 0 rgba(0,0,0,.08),0 2px 0 #000;width:100%;scrollbar-width:thin}
+.wide .plac{width:var(--plw);flex:none}
+.pin{padding:14px 16px 16px;font-size:15px;line-height:1.45}
+.short .pin{padding:10px 12px 12px;font-size:14px;line-height:1.38}.short .big{font-size:18px}.short .film{width:92px}.short .tgs svg{max-width:70px;margin:0 auto}
+.pin.wipe{animation:wipe .34s cubic-bezier(.2,.7,.2,1)}
+@keyframes wipe{from{clip-path:inset(0 0 100% 0);transform:translateY(-6px)}to{clip-path:inset(0 0 0 0);transform:none}}
+.pin p{margin:0 0 .6em}.pin p:last-child{margin-bottom:0}
+.kick{font:600 12px/1.2 var(--fc);letter-spacing:.14em;text-transform:uppercase;color:var(--pdim);margin:0 0 .5em!important}
+.big{font:600 21px/1.18 var(--fc);letter-spacing:.005em;margin:0 0 .45em!important;color:#0f0d09}
+.pin h1,.pin h2{font:700 24px/1.08 var(--fc);margin:0 0 .4em;color:#0f0d09;letter-spacing:.005em}
+.fine{font-size:12.5px;color:var(--pdim)}
+.pin ol,.pin ul{margin:.2em 0 .6em;padding-left:1.25em}
+.pin li{margin:.25em 0}
+.roster{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin:.4em 0 .2em;padding:0;list-style:none}
+.roster li{display:flex;align-items:center;gap:8px;margin:0;font-size:14px;line-height:1.15}
+.roster .lg{font-size:26px}
+.roster b{display:block;font-family:var(--fc);font-size:17px}
+.stats{display:flex;flex-wrap:wrap;gap:10px 22px;margin:.3em 0 .7em}
+.stats div{display:flex;flex-direction:column}
+.stats b{font:700 30px/1 var(--fc);color:#0f0d09;font-variant-numeric:tabular-nums}
+.stats span{font-size:13px;color:var(--pdim)}
+.chips{display:flex;align-items:center;gap:8px;margin:.5em 0}
+.chips .lg,.chips .co-mark{font-size:30px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--pdim);margin-top:.4em}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-2px;margin-right:4px}
+.films{display:flex;gap:10px;flex-wrap:wrap}
+.film{position:relative;display:block;padding:0;border:0;background:#111;border-radius:6px;overflow:hidden;cursor:pointer;width:118px;aspect-ratio:1;flex:none;color:#fff}
+.film img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92}
+.film span{position:absolute;left:6px;bottom:6px;right:6px;font:600 13px/1.1 var(--fc);text-align:left;background:rgba(0,0,0,.72);padding:4px 6px;border-radius:4px;letter-spacing:.03em}
+.film.lgf{width:min(46%,170px)}
+.filmrow{display:flex;gap:14px;align-items:flex-start}
+.filmrow > div{flex:1;min-width:0}
+.pick{margin:.2em 0 .8em}
+.pick > span{display:block;font:600 12px/1.2 var(--fc);letter-spacing:.14em;text-transform:uppercase;color:var(--pdim);margin-bottom:6px}
+.pick .opts{display:flex;flex-wrap:wrap;gap:6px}
+.pick button,.btn{font:600 16px/1 var(--fc);letter-spacing:.04em;border-radius:7px;border:1.5px solid #1b1813;background:transparent;color:#1b1813;padding:9px 12px;min-height:40px;cursor:pointer}
+.pick button[aria-pressed="true"]{background:#1b1813;color:var(--gold)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;background:#1b1813;color:var(--paper);margin:0 8px 8px 0}
+.btn[disabled],.btn[aria-disabled="true"]{background:transparent;color:#6a6152;border-style:dashed;cursor:not-allowed}
+.wiped{font:700 19px/1.15 var(--fc);color:#a8291c;margin:.4em 0!important}
+.tgs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:.6em 0 .2em}
+.tgs figure{margin:0;text-align:center;min-width:0}
+.tgs figcaption{display:flex;align-items:center;justify-content:center;gap:4px;font:600 14px/1 var(--fc);margin-bottom:3px}
+.tgs figcaption .lg{font-size:16px}
+.tgs svg{width:100%;height:auto;display:block}
+.wide .tgs{grid-template-columns:repeat(2,1fr);gap:12px 16px}
+.steps{list-style:none;padding:0!important}
+.steps li{display:grid;grid-template-columns:26px 1fr;gap:2px 8px;margin:.55em 0}
+.steps li > i{grid-row:span 2;width:24px;height:24px;border-radius:5px;background:#1b1813;color:var(--gold);font:700 15px/24px var(--fc);text-align:center;font-style:normal}
+.steps b{font-family:var(--fc);font-size:17px}
+.now{display:inline-block;font:700 11px/1 var(--fc);letter-spacing:.1em;background:var(--green);color:#fff;padding:3px 5px;border-radius:3px;vertical-align:2px;margin-left:6px}
+.ezm{display:inline-flex;align-items:center;background:#0c0c0e;border-radius:5px;padding:2px 6px;font:700 1em/1 var(--fc)}
+.ezm b:nth-child(1){color:var(--gold)}.ezm b:nth-child(2){color:#2fc26f}.ezm b:nth-child(3){color:#ef4a39}
+.disc{border-top:1px solid rgba(0,0,0,.18);padding-top:.6em;font-size:13px;color:#3d372c}
+
+/* controls */
+.ctl{display:flex;align-items:center;gap:8px;padding:10px 6px 2px}
+.ctl button{font:600 15px/1 var(--fc);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:#232428;border:1px solid #3a3b41;border-radius:8px;min-height:40px;min-width:44px;padding:0 12px;cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.ctl button:hover{background:#2c2d32}
+.ctl button[aria-pressed="true"]{color:var(--amber);border-color:#6a5422}
+.ctl .where{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;font:600 13px/1.1 var(--fc);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-align:center}
+.ctl .where b{color:var(--ink);font-size:15px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.ctl .nx{color:#1c1405;background:var(--amber);border-color:#b37a12}
+.ctl .nx:hover{background:#ffc04a}
+button:focus-visible,a:focus-visible,.grid:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.plac button:focus-visible,.plac a:focus-visible{outline-color:#1b5fd1}
+.menu{position:absolute;left:8px;right:8px;bottom:58px;max-height:70%;overflow:auto;background:#141518;border:1px solid #34353a;border-radius:10px;padding:8px;z-index:20;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.menu[hidden]{display:none}
+.menu ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px}
+.menu button{width:100%;text-align:left;font:600 15px/1.1 var(--fc);letter-spacing:.05em;text-transform:uppercase;color:var(--ink);background:#1d1e22;border:1px solid #2c2d32;border-radius:6px;padding:9px 10px;cursor:pointer}
+.menu button[aria-current="true"]{color:#1c1405;background:var(--amber)}
+.menu button span{color:var(--dim);margin-right:6px}
+.menu button[aria-current="true"] span{color:#5a3d05}
+dialog{border:0;padding:0;background:#000;border-radius:12px;max-width:min(92vw,720px);width:100%;color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.82)}
+dialog video{display:block;width:100%;height:auto;max-height:80vh;background:#000}
+dialog .dh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;font:600 16px/1.2 var(--fc);letter-spacing:.04em}
+dialog .dh button{font:600 15px/1 var(--fc);letter-spacing:.06em;text-transform:uppercase;background:#232428;color:var(--ink);border:1px solid #3a3b41;border-radius:8px;min-height:38px;padding:0 12px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.pin.wipe{animation:none}.season i.now{animation:none}}
+</style>
+</head>
+<body>
+<h1 class="sr">Earnings Zeason ($EZ): We're teaching AIs to bet. The market grades them.</h1>
+<noscript><p style="padding:24px;color:#f3eddd;font-family:Arial,sans-serif">This board needs JavaScript to flip. Earnings Zeason ($EZ): four AI models call earnings moves before the print, and the market grades them.</p></noscript>
+<div id="track"></div>
+<div id="stage">
+  <div class="board" id="board">
+    <div class="rail">
+      <span class="ez" role="img" aria-label="$EZ"><b>$</b><b>E</b><b>Z</b></span>
+      <div class="hdr" id="hdr" aria-hidden="true"></div>
+      <div class="clock" id="clock" aria-hidden="true"></div>
+    </div>
+    <div class="season" id="season" role="img"></div>
+    <div class="body">
+      <div class="grid" id="grid" aria-hidden="true" title="Tap to flip to the next line"></div>
+      <section class="plac" id="plac" aria-label="Notice"><div class="pin"></div></section>
+    </div>
+    <nav class="ctl" aria-label="Board">
+      <button type="button" id="prev" aria-label="Previous">&#9664;</button>
+      <div class="where" id="where" aria-live="off"><span id="wn">01 / 01</span><b id="wl"></b></div>
+      <button type="button" id="all" aria-expanded="false" aria-controls="menu">All</button>
+      <button type="button" id="snd" aria-pressed="false" aria-label="Flap sound">Sound</button>
+      <button type="button" id="next" class="nx" aria-label="Next">&#9654;</button>
+    </nav>
+    <div class="menu" id="menu" hidden><ol id="mlist"></ol></div>
+  </div>
+</div>
+<div class="sr" id="sr" aria-live="polite"></div>
+<dialog id="film" aria-label="Round film"><div class="dh"><span id="ftitle"></span><button type="button" id="fclose">Close</button></div><video id="fvid" controls playsinline preload="metadata"></video></dialog>
+
+<script src="ez-data.js"></script>
+<script src="ez-story.js"></script>
+<script>
+(function(){
+"use strict";
+var S=EZS,esc=S.esc,nm=S.nm;
+var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+
+/* ================= layout ================= */
+var L={C:22,R:16,HN:12,mode:"narrow"},PW=22;
+function chars(s){return Array.from(String(s))}
+function ln(){var a=new Array(PW);for(var i=0;i<PW;i++)a[i]=null;return a}
+var TILE={G:1,R:1,Y:1,A:1,S:1,pY:1,pG:1,pR:1};
+function put(a,col,s,tone){chars(s).forEach(function(ch,i){var x=col+i;if(x<0||x>=a.length)return;a[x]=(ch===" "&&!TILE[tone])?null:{ch:ch,tone:tone||""}});return a}
+function rput(a,end,s,tone){return put(a,end-chars(s).length+1,s,tone)}
+function T(s,tone,col){return put(ln(),col||0,s,tone)}
+function CT(s,tone){var n=chars(s).length;return put(ln(),Math.max(0,Math.floor((PW-n)/2)),s,tone)}
+function setc(a,col,o){if(col>=0&&col<a.length)a[col]=o;return a}
+function wrap(s,w){var out=[],cur="";String(s).split(/\s+/).forEach(function(wd){if(!wd)return;
+    while(chars(wd).length>w){if(cur){out.push(cur);cur=""}out.push(chars(wd).slice(0,w).join(""));wd=chars(wd).slice(w).join("")}
+    if(!wd)return;if(!cur)cur=wd;else if(chars(cur).length+1+chars(wd).length<=w)cur+=" "+wd;else{out.push(cur);cur=wd}});
+  if(cur)out.push(cur);return out}
+function para(s,tone,o){o=o||{};var ind=o.ind||0,w=Math.min(o.w||999,PW-ind);
+  return wrap(s,w).map(function(x){var a=put(ln(),ind,x,tone);(o.hl||[]).forEach(function(h){var i=x.indexOf(h[0]);if(i>-1)put(a,ind+chars(x.slice(0,i)).length,h[0],h[1])});return a})}
+function LG(m){return {html:S.logo(m),k:"L"+m,ch:"",tone:"ic",sr:nm(m)}}
+function CM(t){return {html:coMark(t),k:"C"+t,ch:"",tone:"ic",sr:""}}
+function ezWord(a,col){put(a,col,"$","tY");put(a,col+1,"E","tG");put(a,col+2,"Z","tR");return a}
+function blanks(n){var o=[];for(var i=0;i<n;i++)o.push(ln());return o}
+
+/* data helpers (all from ez-data.js / ez-story.js) */
+function fd(d){return S.date(d)}
+function dn(c){return /^DOWN/.test(c[1])}
+function okc(r,c){return dn(c)===(r.a<0)}
+function winTxt(r){var w=S.winners(r).map(nm);return w.length>1?w.join(" & ")+" win":w.length?w[0]+" wins":"No winner"}
+function out0(r){return S.outTxt(r).replace(" ","")}
+function listAnd(a){return a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
+function xFmt(x){return x>=10?String(Math.round(x)):x.toFixed(1)}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+var P=S.live,LAST=S.last,H=S.highlights,REC=S.records;
+var calcM=S.MCAPS[2],calcL=S.lev;
+if(S.LEVS.indexOf(calcL)<0)calcL=S.LEVS[S.LEVS.length-1];
+function closeAt(){return P?S.closeAt(P.resolves,P.ticker):null}
+function hhmmUTC(d){function p(n){return (n<10?"0":"")+n}return p(d.getUTCHours())+":"+p(d.getUTCMinutes())+" UTC"}
+
+/* placard helpers */
+function filmBtn(r,big){if(!r||!r.poster)return "";
+  return '<button type="button" class="film'+(big?' lgf':'')+'" data-film="'+r.n+'"><img src="'+MEDIA+r.poster+'.jpg" alt="" loading="lazy"><span>&#9654; Round '+r.n+' film</span></button>'}
+function legendCalls(){return '<div class="legend"><span><i style="background:var(--green)"></i>Right way</span><span><i style="background:var(--red)"></i>Wrong way</span><span><i style="background:var(--gold)"></i>Winner</span><span><i style="background:var(--amber)"></i>What the stock did</span></div>'}
+function ezm(){return '<span class="ezm" aria-label="$EZ"><b>$</b><b>E</b><b>Z</b></span>'}
+
+/* ================= one graded round, as a board panel ================= */
+function roundPanel(r,labels){var o=[];
+  wrap(S.co(r),PW).forEach(function(s){o.push(T(s,"a"))});
+  var l2=T("Round "+r.n,"d");rput(l2,PW-1,"Filed "+fd(r.called),"d");o.push(l2);
+  var l3=T(out0(r),"A");rput(l3,PW-1,"Graded "+fd(r.resolves),"d");o.push(l3);
+  if(labels){var lb=T("AI","d",2);put(lb,9,"Call","d");rput(lb,PW-1,"Off","d");o.push(lb)}
+  r.calls.forEach(function(c){var a=ln(),won=S.winners(r).indexOf(c[0])>-1;setc(a,0,LG(c[0]));put(a,2,nm(c[0]),won?"Y":"");
+    put(a,9,S.callTxt(c),okc(r,c)?"u":"w");rput(a,PW-1,c[2],"");o.push(a)});
+  o.push(T(winTxt(r),r.win?"Y":"R"));
+  return o}
+
+/* ================= the scenes ================= */
+/* a scene: id, title (header flaps), label (menu), head() lines repeated on every page, panels [{half,f,meta}], plac(metas,page,pages), bind(el) */
+var PX={
+  "$":["..#..",".####","#.#..",".###.","..#.#","####.","..#.."],
+  "E":["#####","#....","#....","####.","#....","#....","#####"],
+  "Z":["#####","....#","...#.","..#..",".#...","#....","#####"]};
+var SCENES=[];
+function scene(o){SCENES.push(o)}
+
+/* 1. the mark */
+function pixel(){var o=[ln()],gl=["$","E","Z"],tn=["pY","pG","pR"],st=Math.floor((PW-17)/2);
+  for(var y=0;y<7;y++){var a=ln();gl.forEach(function(g,k){for(var x=0;x<5;x++)if(PX[g][y].charAt(x)==="#")a[st+k*6+x]={ch:" ",tone:tn[k]}});o.push(a)}return o}
+scene({id:"brand",title:"DEPARTURES",label:"$EZ",panels:[{f:function(){var o=pixel();
+    o.push(ln());o.push(CT("Earnings Zeason","a"));
+    var z=CT("Zeason one   $EZ","");var zs=Math.floor((PW-16)/2);ezWord(z,zs+13);o.push(z);o.push(ln());
+    wrap("Nobody said it would be EZ",PW-2).forEach(function(s){o.push(CT(s,"d"))});return o}}],
+  plac:function(){return '<p class="kick">Earnings Zeason, with a Z</p><p class="big">One board. Every call, every grade, every number.</p><p>Scroll, tap the board, or use the arrows. It flips to the next line.</p>'}});
+
+/* 2. the idea */
+scene({id:"idea",title:"THE IDEA",label:"The idea",panels:[{f:function(){var w=PW<30?15:PW;
+    var o=para("We're teaching AIs to bet.","a",{w:w}).concat(para("The market grades them.","",{w:w}));o.push(ln());
+    o=o.concat(para("Before a company reports earnings, "+S.word(S.models.length)+" AI models call how its stock will react: up or down, and by how much.","d"));
+    o.push(ln());var a=ln(),x=0;
+    S.models.forEach(function(m){var need=2+chars(nm(m)).length;if(x+need>PW){o.push(a);a=ln();x=0}setc(a,x,LG(m));put(a,x+2,nm(m),"");x+=need+2});o.push(a);
+    return o}}],
+  plac:function(){return '<p class="kick">The models in play</p><ul class="roster">'+S.models.map(function(m){return '<li>'+S.logo(m)+'<span><b>'+esc(nm(m))+'</b>'+esc(S.ver(m))+'</span></li>'}).join("")+
+    '</ul><p class="fine" style="margin-top:.7em">Calls filed before the print. Graded by the market. Never edited.</p>'}});
+
+/* 3. boarding: the live round */
+if(P)scene({id:"live",title:"BOARDING",label:"Live: "+P.co,
+  panels:[{half:true,f:function(){var o=[];o.push(T("Round "+P.n+" of "+S.total,"d"));
+      var nmL=wrap(S.co(P),PW-2);nmL.forEach(function(s,i){var a=T(s,"a",2);if(!i)setc(a,0,CM(P.ticker));o.push(a)});
+      o.push(T("The calls are in","G"));o.push(ln());
+      P.calls.forEach(function(c){var a=ln();setc(a,0,LG(c.m));put(a,2,nm(c.m),"");rput(a,PW-1,S.liveTxt(c),"");o.push(a)});return o}},
+    {half:true,f:function(){var o=[],t=closeAt(),left=t?S.left(t):null;
+      o=o.concat(para("Graded at the market close on "+fd(P.resolves)+".",""));
+      if(t)o.push(T(hhmmUTC(t),"d"));o.push(ln());
+      if(left){var a=T("Closes in","");rput(a,PW-1,left,"A");o.push(a)}else o.push(T("Market closed. Grade next.","a"));
+      return o}}],
+  plac:function(){var f=S.findings[0];return '<p class="kick">Round '+P.n+' · Live</p><p class="big">Calls the day before, the grade after the market answers.</p>'+
+    (f&&f.now?'<p>'+esc(f.now)+'</p>':'')+'<div class="chips">'+coMark(P.ticker)+P.calls.map(function(c){return S.logo(c.m)}).join("")+'</div>'}});
+
+/* 4. later departures */
+scene({id:"later",title:"LATER",label:"Next rounds",panels:[{f:function(){var o=[];
+    var rt="Round "+(P?P.n:S.graded+1)+" of "+S.total,h=T("Zeason one","a");if(PW>=30){rput(h,PW-1,rt,"d");o.push(h)}else{o.push(h);o.push(T(rt,"d"))}o.push(ln());
+    var lb=T("Rnd","d");put(lb,4,"Company","d");rput(lb,PW-1,"Calls","d");o.push(lb);
+    var nameW=PW-4-8;
+    S.upcoming(40).some(function(u){var nmL=wrap(PW>=40?S.co(u):u.co,nameW);if(o.length+nmL.length>L.R)return true;
+      nmL.forEach(function(s,i){var a=T(s,"",4);if(!i){rput(a,2,String(u.n),"a");rput(a,PW-1,fd(u.called),"")}o.push(a)});return false});
+    return o}}],
+  plac:function(){return '<p class="kick">The season</p><p class="big">Calls the day before, the grade after the market answers.</p><p>Zeason one runs '+S.total+' rounds. '+cap(S.word(S.graded))+' are graded. The bar under the clock shows all of them.</p>'}});
+
+/* 5. how we grade */
+scene({id:"rules",title:"HOW WE GRADE",label:"How we grade",head:function(){return [T("How we grade","a")]},
+  panels:S.rules.map(function(rl,i){return {f:function(){var o=[],tl=wrap(rl[0],PW-2);
+    tl.forEach(function(s,j){var a=T(s,"",2);if(!j)put(a,0,String(i+1),"Y");o.push(a)});
+    o=o.concat(para(rl[1],"d",{ind:2}));return o}}}),
+  plac:function(){var r=LAST,wrong=r.calls.filter(function(c){return !okc(r,c)}).map(function(c){return nm(c[0])}),right=r.calls.filter(function(c){return okc(r,c)});
+    var ex='Round '+r.n+' · '+esc(S.co(r))+' moved '+esc(S.outTxt(r))+'. '+(wrong.length?esc(listAnd(wrong))+' called the wrong way: out. ':'')+
+      (r.win?'Of the rest, '+esc(listAnd(S.winners(r).map(nm)))+' came closest: '+esc(right.filter(function(c){return S.winners(r).indexOf(c[0])>-1})[0][2])+' points off.':'Nobody was right, so nobody won.');
+    return '<p class="kick">Example</p><p class="big">'+ex+'</p>'}});
+
+/* 6. arrivals: every graded round at a glance */
+scene({id:"list",title:"ARRIVALS",label:"Every round",panels:[{f:function(){var o=para("Every prediction, on the record.","a"),rs=ROUNDS.slice().reverse(),wide=PW>=40;
+    var lab=function(r){return wide?S.co(r):r.ticker},nW=Math.max.apply(null,rs.map(function(r){return chars(lab(r)).length})),oE=3+nW+1+7-1,wC=oE+2,wW=PW-wC;
+    var lb=T("#","d");put(lb,3,wide?"Company":"Stock","d");rput(lb,oE,"Moved","d");put(lb,wC,"Winner","d");o.push(lb);
+    rs.forEach(function(r){var a=ln();rput(a,1,String(r.n),"a");put(a,3,lab(r),"");rput(a,oE,out0(r),"a");
+      var ws=S.winners(r),t=ws.map(nm).join(" & ");
+      if(!ws.length)put(a,wC,chars("No winner").length<=wW?"No winner":"None","R");
+      else if(chars(t).length<=wW)put(a,wC,t,"Y");
+      else ws.forEach(function(m,k){setc(a,wC+k*2,LG(m))});
+      o.push(a)});return o}}],
+  plac:function(){return '<p class="kick">The record</p><p class="big">Every prediction, on the record.</p><p>Graded at the first market close after earnings. The AIs get TradingView\'s closing price, so they can\'t make shit up.</p><p>'+
+    cap(S.word(S.noWinner))+' of '+S.graded+' rounds had no winner. Next, each round in full.</p>'}});
+
+/* 7. the last round */
+if(LAST)scene({id:"last",title:"LAST ROUND",label:"Last round: "+LAST.co,head:function(){return [T("The last round","d")]},
+  panels:[{half:true,f:function(){return roundPanel(LAST,true)}},
+    {half:true,f:function(){var o=[];if(L.C<40){var ws0=LAST.calls.filter(function(c){return S.winners(LAST).indexOf(c[0])>-1});return ws0.length?para("Closest: "+ws0[0][2]+" points off the real move.","d"):[]}
+      o.push(T("The stock moved","d"));o.push(T(S.outTxt(LAST),"A"));o.push(ln());
+      o=o.concat(para(LAST.win?winTxt(LAST)+" round "+LAST.n+".":"No winner in round "+LAST.n+".",LAST.win?"a":"w"));
+      var ws=LAST.calls.filter(function(c){return S.winners(LAST).indexOf(c[0])>-1});
+      if(ws.length){o.push(ln());o=o.concat(para("Closest: "+ws[0][2]+" points off the real move.",""))}
+      return o}}],
+  plac:function(){var r=LAST;return '<div class="filmrow">'+filmBtn(r,true)+'<div><p class="kick">Round '+r.n+'</p><p class="big">'+esc(S.co(r))+'</p><p>Filed '+esc(fd(r.called))+', graded at the close on '+esc(fd(r.resolves))+'. '+
+    esc(winTxt(r))+'.</p></div></div><p class="fine" style="margin-top:.6em">Right column: points off the real move. Smaller is better.</p>'+legendCalls()}});
+
+/* 8. the record, page by page */
+var older=ROUNDS.slice(0,-1).reverse();
+if(older.length)scene({id:"record",title:"THE RECORD",label:"Round by round",head:function(){return L.C>=40?[T("Earlier rounds","d")]:[]},
+  panels:older.map(function(r){return {half:true,meta:r,f:function(){return roundPanel(r)}}}),
+  plac:function(ms){return '<p class="kick">Every graded round has a film</p><div class="films">'+ms.map(function(r){return filmBtn(r)}).join("")+'</div>'+
+    '<p class="fine" style="margin-top:.7em">Under each round: what every AI called, and how many points it was off the real move.</p>'+legendCalls()}});
+
+/* 9. standings */
+scene({id:"stand",title:"STANDINGS",label:"Standings",panels:[{f:function(){var o=[],wide=PW>=40,rows=S.rows;
+    var h=T("Standings","a");rput(h,PW-1,(PW>=30?"After ":"")+S.graded+" rounds","d");o.push(h);
+    var FT={w:["W","Y"],g:["✓","G"],r:["✕","R"],n:["·",""]};
+    function form(a,col,m){S.form(m,5).forEach(function(k,i){var f=FT[k];put(a,col+i,f[0],f[1])})}
+    if(wide){var lb=T("AI","d",4);put(lb,11,"Model","d");rput(lb,25,"Hit","d");put(lb,27,"Right","d");rput(lb,36,"Miss","d");rput(lb,43,"ROI","d");o.push(lb);
+      rows.forEach(function(x,i){o.push(ln());var a=ln();rput(a,0,String(i+1),"A");setc(a,2,LG(x.m));put(a,4,nm(x.m),"a");put(a,11,x.ver,"d");
+        rput(a,25,x.hit+"%",x.hit>50?"u":x.hit<50?"w":"");put(a,27,x.right+"/"+x.n,"d");rput(a,36,x.avg,"");rput(a,43,x.roi,/^\+/.test(x.roi)?"u":"w");o.push(a);
+        var b=ln();put(b,4,x.won+(x.won===1?" win":" wins"),"");put(b,11,"Last 5","d");form(b,18,x.m);rput(b,43,S.usd(x.bal),"d");o.push(b)});
+      return o}
+    var lb2=T("Hit","d",1);rput(lb2,PW-8,"Miss","d");rput(lb2,PW-1,"ROI","d");o.push(lb2);
+    var spare=L.R-2-rows.length*3;
+    rows.forEach(function(x,i){if(i&&spare>=rows.length-1)o.push(ln());
+      var a=ln();rput(a,0,String(i+1),"A");setc(a,2,LG(x.m));put(a,4,nm(x.m),"a");rput(a,PW-1,x.won+(x.won===1?" win":" wins"),"");o.push(a);
+      var b=T(x.ver,"d",4);form(b,PW-5,x.m);o.push(b);
+      var c=ln();rput(c,4,x.hit+"%",x.hit>50?"u":x.hit<50?"w":"");put(c,6,x.right+"/"+x.n,"d");rput(c,PW-8,x.avg,"");rput(c,PW-1,x.roi,/^\+/.test(x.roi)?"u":"w");o.push(c)});
+    return o}}],
+  plac:function(){var g=S.first.GROK,gr=S.rows.filter(function(x){return x.m==="GROK"})[0];
+    return '<p class="kick">How to read it</p><p>Ranked by rounds won, then by the smaller average miss.</p><p><b>Hit rate:</b> calls right on direction. <b>Avg miss:</b> points off the real move. <b>ROI:</b> '+S.usd(S.STAKE)+' rolled through every call. Simulated, before fees.</p>'+
+      (gr&&g?'<p>Grok joined in round '+g+': '+gr.right+' of '+gr.n+' right so far.</p>':'')+
+      '<div class="legend"><span><i style="background:var(--gold)"></i>W won</span><span><i style="background:var(--green)"></i>✓ right way</span><span><i style="background:var(--red)"></i>✕ wrong way</span><span><i style="background:var(--flap)"></i>· no call</span></div>'}});
+
+/* 10. are they learning: hit rate, round by round */
+scene({id:"hit",title:"LEARNING?",label:"Are they learning?",panels:[{f:function(){var o=[],M=S.models,wide=PW>=40,cw=Math.floor((PW-4)/M.length);
+    o.push(T(wide?"Right on direction, after each round":"Right on direction","a"));
+    var lb=T("Rnd","d");M.forEach(function(m,i){var e=4+cw*(i+1)-1;if(wide){rput(lb,e,nm(m),"");setc(lb,e-chars(nm(m)).length-1,LG(m))}else setc(lb,e,LG(m))});o.push(lb);
+    ROUNDS.forEach(function(r,ri){var a=T("R"+r.n,"d");M.forEach(function(m,i){var p=S.hitPath[m][ri],e=4+cw*(i+1)-1,has=p&&callOf(r,m);
+      if(p)rput(a,e,p.pct+(wide?"%":""),p.pct>50?"u":p.pct<50?"w":"");else rput(a,e,"·","d");if(p&&!has)a[e]&&(a[e].tone="d")});o.push(a)});
+    if(cw>=6){var c=T("Right","a");M.forEach(function(m,i){var x=S.rows.filter(function(q){return q.m===m})[0],e=4+cw*(i+1)-1;rput(c,e,x.right+"/"+x.n,"")});o.push(c)}
+    return o}}],
+  plac:function(){var gr=S.rows.filter(function(x){return x.m==="GROK"})[0];return '<p class="kick">Are they learning?</p><p class="big">You don\'t have to trust us. See for yourself.</p><p><b>How often were they right about the stock\'s direction?</b> Only up or down counts here, not the size.</p><p class="fine">Each number is the share of calls right so far, after that round. '+(gr?'Grok joined later: '+gr.right+' of '+gr.n+' right.':'')+'</p><p class="fine">Right so far: '+S.rows.map(function(x){return esc(nm(x.m))+' '+x.right+' of '+x.n}).join(', ')+'.</p>'}});
+
+/* 11. how close */
+function tgSVG(m){var o='<svg viewBox="-100 -100 200 200" role="img" aria-label="'+esc(nm(m))+': each call, distance from the real move">',R=84;
+  [1,.75,.5,.25].forEach(function(k,i){o+='<circle r="'+(R*k)+'" fill="'+(i%2?"#efe7d3":"#e2d6ba")+'" stroke="#bfb293" stroke-width="1"/>'});
+  o+='<circle r="9" fill="#fff" stroke="#1b1813" stroke-width="3"/><circle r="2.5" fill="#1b1813"/>';
+  var N=ROUNDS.length;
+  S.shots[m].forEach(function(s){var an=(s.r.n-1)/N*Math.PI*2-Math.PI/2,rr=s.ok?Math.min(R,s.off/20*R):R+9,x=(rr*Math.cos(an)).toFixed(1),y=(rr*Math.sin(an)).toFixed(1);
+    o+='<circle cx="'+x+'" cy="'+y+'" r="'+(s.won?8:6.5)+'" fill="'+(s.ok?(s.won?"#e3a21a":"#1b1813"):"#cf3a2b")+'" stroke="#efe7d3" stroke-width="1.5"><title>Round '+s.r.n+', '+esc(S.co(s.r))+': '+s.off.toFixed(2)+' points off'+(s.ok?'':', wrong way')+'</title></circle>'});
+  return o+'</svg>'}
+scene({id:"close",title:"HOW CLOSE",label:"How close",head:function(){return [T("Avg miss, in points","a")]},
+  panels:S.models.map(function(m){return {half:true,f:function(){var sh=S.shots[m],x=S.rows.filter(function(q){return q.m===m})[0],o=[];
+    var a=ln();setc(a,0,LG(m));put(a,2,nm(m),"");rput(a,PW-1,x.avg,"A");o.push(a);
+    var good=sh.filter(function(s){return s.ok}).map(function(s){return s.off}),all=sh.map(function(s){return s.off});
+    var b=T("Best "+(good.length?Math.min.apply(null,good).toFixed(2):"·"),"d");rput(b,PW-1,"Worst "+Math.max.apply(null,all).toFixed(2),"d");o.push(b);
+    var wr=sh.filter(function(s){return !s.ok}).length;o.push(T("Wrong way "+wr+" of "+sh.length,wr?"w":"u"));return o}}}),
+  plac:function(){return '<p><b>How close did they get?</b> The bullseye is what the stock did. Each dot is one call. A red dot outside missed the direction. The closer to the bullseye, the better.</p><div class="tgs">'+
+    S.models.map(function(m){return '<figure><figcaption>'+S.logo(m)+esc(nm(m))+'</figcaption>'+tgSVG(m)+'</figure>'}).join("")+'</div>'+
+    '<div class="legend"><span><i style="background:#fff;border:2px solid #1b1813;border-radius:50%"></i>Bullseye: what the stock did</span><span><i style="background:#1b1813;border-radius:50%"></i>One call</span><span><i style="background:#e3a21a;border-radius:50%"></i>Won the round</span><span><i style="background:#cf3a2b;border-radius:50%"></i>Wrong direction</span></div>'}});
+
+/* 12. copying them */
+scene({id:"copy",title:S.usd(S.STAKE),label:"Copy them with "+S.usd(S.STAKE),panels:[{f:function(){var o=para("Would copying them have paid you?","a");o.push(ln());
+    o=o.concat(para("Each AI starts with "+S.usd(S.STAKE)+" and goes all in on every call.",""));o.push(ln());
+    var one=PW>=30;
+    S.follow.forEach(function(f){var a=ln(),t=/^\+/.test(S.pct(f.bal))?"u":"w";setc(a,0,LG(f.m));put(a,2,nm(f.m),"");
+      if(one){rput(a,PW-9,S.usd(f.bal),"a");rput(a,PW-1,S.pct(f.bal),t);o.push(a)}
+      else{rput(a,PW-1,S.pct(f.bal),t);o.push(a);o.push(rput(ln(),PW-1,S.usd(f.bal),"a"))}});
+    return o}}],
+  plac:function(){return '<p class="kick">If you had copied them</p><p class="big">Each AI starts with '+S.usd(S.STAKE)+' and goes all in on every call.</p><p>Simulated, before fees. Buy on an up call, short on a down call. In before the report, out at the next close.</p>'}});
+
+/* 13. findings, one per page */
+S.findings.forEach(function(f,i,all){scene({id:"find"+i,title:f.fun?"JUST FOR FUN":"FINDINGS",label:f.fun?"Just for fun: "+f.head:"Finding: "+f.k,
+  panels:[{f:function(){var o=[T(f.fun?"Just for fun":"Unusual finding "+(i+1)+" of "+all.length,"d")];
+    o=o.concat(para(f.head,"a",{w:PW<30?PW:Math.min(PW,34)}));o.push(ln());o=o.concat(para(f.expl,"",{w:PW<30?PW:Math.min(PW,40)}));return o}}],
+  plac:function(){return '<p class="kick">'+(f.fun?'Just for fun. Only a joke.':'The numbers')+'</p><div class="stats">'+f.stats.map(function(s){return '<div><b>'+esc(s[0])+'</b><span>'+esc(s[1])+'</span></div>'}).join("")+'</div>'+
+    '<p>Based on '+esc(f.base)+'.'+(f.now?' '+esc(f.now):'')+'</p><p class="fine">Small samples change with every round. Each pattern needs at least five cases to show up here. A pattern, not advice.</p>'}})});
+
+/* 14. record holders */
+scene({id:"records",title:"RECORDS",label:"Record holders",head:function(){return [T("Record holders","a")]},
+  panels:[{half:true,f:function(){var s=REC.streak,o=para("Longest winning streak","d"),a=ln();setc(a,0,LG(s.m));put(a,2,nm(s.m)+"  "+s.rs.length+" in a row","");o.push(a);
+      return o.concat(para(listAnd(s.rs.map(function(r){return r.co})),"a"))}},
+    {half:true,f:function(){var c=REC.closest,o=[T("Closest call","d")],a=ln();setc(a,0,LG(c.m));put(a,2,nm(c.m),"");o.push(a);o.push(T(c.off.toFixed(2)+" points off","Y"));return o.concat(para(S.co(c.r)+" · Round "+c.r.n,"a"))}},
+    {half:true,f:function(){var c=REC.worst,o=[T("Biggest miss","d")],a=ln();setc(a,0,LG(c.m));put(a,2,nm(c.m),"");o.push(a);o.push(T(c.off.toFixed(2)+" points off","R"));return o.concat(para(S.co(c.r)+" · Round "+c.r.n,"a"))}}],
+  plac:function(){var s=REC.streak;return '<p class="kick">The record book</p><p class="big">'+esc(nm(s.m))+' won '+esc(listAnd(s.rs.map(function(r){return r.co})))+' in a row.</p><p>Closest and biggest miss count every call, right way or wrong.</p>'}});
+
+/* 15. highlights */
+scene({id:"high",title:"HIGHLIGHTS",label:"Highlights",head:function(){return [T("Highlights","a")]},
+  panels:[{half:true,f:function(){var c=H.closest;return [T("Closest call","d")].concat(para(nm(c.m)+" on "+S.co(c.r)+": "+c.off.toFixed(2)+" pts off, about "+xFmt(H.closeX)+"x closer than the average call.","",{hl:[[c.off.toFixed(2)+" pts","a"],[xFmt(H.closeX)+"x","a"]]}))}},
+    {half:true,f:function(){return [T("Tightest race","d")].concat(para(S.co(H.tight.r)+": "+H.tight.v.toFixed(2)+" points off on average. A usual round is "+H.avgRound.toFixed(1)+".","",{hl:[[H.tight.v.toFixed(2),"a"],[H.avgRound.toFixed(1),"a"]]}))}},
+    {half:true,f:function(){var b=H.big;return [T("Biggest move","d")].concat(para(S.co(b)+" "+out0(b)+", "+H.bigX.toFixed(1)+"x the average move.","",{hl:[[out0(b),"a"],[H.bigX.toFixed(1)+"x","a"]]}))}},
+    {half:true,f:function(){var w=H.wrong;return [T("Everyone was wrong","d")].concat(para(S.co(w)+": every AI called it the wrong way. "+H.noWinner.length+" of "+S.graded+" rounds had no winner.","",{hl:[[H.noWinner.length+" of "+S.graded,"w"]]}))}}],
+  plac:function(){var c=H.closest;return '<div class="filmrow">'+filmBtn(c.r)+'<div><p class="kick">The season so far</p><p>The closest call came in round '+c.r.n+'. The biggest move came in round '+H.big.n+'.</p></div></div><div class="films" style="margin-top:10px">'+filmBtn(H.big)+filmBtn(H.wrong)+'</div>'}});
+
+/* 16. the buyback: the fee split */
+scene({id:"fee",title:"THE BUYBACK",label:"The buyback",panels:[{f:function(){var o=para("An AI with one goal: buy back $EZ","a",{hl:[["$EZ","a"]]});o.push(ln());
+    o=o.concat(para("Every $EZ trade pays a fee","",{w:PW<30?20:PW}));o.push(ln());
+    var bar=ln(),k=Math.round(PW*S.pot/100);for(var i=0;i<PW;i++)bar[i]={ch:" ",tone:i<k?"pY":"S"};o.push(bar);o.push(ln());
+    var a=T(S.pot+"%","Y");put(a,5,"The pot","a");o.push(a);var b=T(S.ops+"%","S");put(b,5,"Operations","");o.push(b);return o}}],
+  plac:function(){return '<p class="kick">'+S.pot+'% · The pot</p><p class="big">The model on top of the leaderboard takes the pot and bets it on NVIDIA\'s earnings at '+S.lev+'x leverage on Hyperliquid.</p><div class="chips">'+nvLogo()+hlLogo()+S.logo(S.rows[0].m)+'<span class="fine">On top today: '+esc(nm(S.rows[0].m))+'</span></div>'}});
+
+/* 17. the pot's route */
+scene({id:"route",title:"THE POT",label:"Where the pot goes",panels:[{f:function(){var o=[],lead=S.rows[0].m;
+    o.push(T("Where the pot goes","a"));o.push(T("Calling at","d"));
+    o.push(T("· "+S.pot+"% of every fee",""));var a=T("· Top AI on the board","");setc(a,PW-1,LG(lead));o.push(a);
+    o.push(T("· NVIDIA's earnings",""));o.push(T("· "+S.lev+"x on Hyperliquid",""));o.push(ln());
+    o.push(T("Winning trade","G"));o=o.concat(para("The profits buy back $EZ.","",{ind:1}));
+    o.push(T("Losing trade","R"));o=o.concat(para("The pot shrinks.","",{ind:1}));
+    o.push(T("Next round","A"));o=o.concat(para("The pot rides on the next call.","",{ind:1}));return o}}],
+  plac:function(){return '<p class="kick">The route</p><p><b>Winning trade:</b> The profits buy back $EZ.</p><p><b>Losing trade:</b> The pot shrinks.</p><p><b>Next round:</b> The pot rides on the next call.</p><p class="wiped">The pot can be wiped out.</p>'}});
+
+/* 18. operations */
+scene({id:"ops",title:"OPERATIONS",label:"Operations",panels:[{f:function(){var o=[],a=T(S.ops+"%","S");put(a,5,"Operations","a");o.push(a);o.push(ln());
+    o=o.concat(para("Keeps the project running, then pays for what's next:",""));o.push(ln());
+    S.steps.forEach(function(s,i){var tl=wrap(s[0],PW-2-(s[2]?4:0));tl.forEach(function(x,j){var b=T(x,"",2);if(!j){put(b,0,String(i+1),"Y");if(s[2])rput(b,PW-1,"Now","G")}o.push(b)})});return o}}],
+  plac:function(){return '<p class="kick">'+S.ops+'% · Operations</p><ol class="steps">'+S.steps.map(function(s,i){return '<li><i>'+(i+1)+'</i><b>'+esc(s[0])+(s[2]?'<span class="now">NOW</span>':'')+'</b><span>'+esc(s[1])+'</span></li>'}).join("")+'</ol>'}});
+
+/* 19. the estimator */
+scene({id:"calc",title:"ESTIMATE",label:"How big could it get?",panels:[{f:function(){var c=S.calc(calcM,calcL),o=[];
+    o=o.concat(para("How big could it get?","a"));o.push(T("Estimated","d"));o.push(ln());
+    var a=T("Market cap","");rput(a,PW-1,S.money(calcM),"Y");o.push(a);var b=T("Leverage","");rput(b,PW-1,calcL+"x","Y");o.push(b);o.push(ln());
+    var p=T("The pot","");rput(p,PW-1,S.money(c.bet),"a");o.push(p);o.push(ln());
+    var bb="~"+S.money(c.buyback);o=o.concat(para("If the AI is right, it buys back "+bb+" of $EZ","",{hl:[[bb,"A"]]}));o.push(ln());
+    o=o.concat(para("If it's wrong, the pot drains.","w"));return o}}],
+  plac:function(){return '<p class="kick">How big could it get? Estimated</p><div class="pick" role="group" aria-label="Market cap"><span>Market cap</span><div class="opts">'+
+    S.MCAPS.map(function(v){return '<button type="button" data-mc="'+v+'" aria-pressed="'+(v===calcM)+'">'+S.money(v)+'</button>'}).join("")+'</div></div>'+
+    '<div class="pick" role="group" aria-label="Leverage"><span>Leverage</span><div class="opts">'+S.LEVS.map(function(v){return '<button type="button" data-lv="'+v+'" aria-pressed="'+(v===calcL)+'">'+v+'x</button>'}).join("")+'</div></div>'+
+    '<p class="wiped">The pot can be wiped out.</p><p class="fine">'+esc(S.calcFine)+'</p>'},
+  bind:function(el){$$("[data-mc]",el).forEach(function(b){b.addEventListener("click",function(){calcM=+b.dataset.mc;$$("[data-mc]",el).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});refresh()})});
+    $$("[data-lv]",el).forEach(function(b){b.addEventListener("click",function(){calcL=+b.dataset.lv;$$("[data-lv]",el).forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});refresh()})})}});
+
+/* 20. get $EZ */
+var GET=[["Check the address",CONFIG.ca?CONFIG.ca:"Not posted yet. It appears here, and only here, at launch."],["Use this page's link","Only through the link on this page."],["Watch the next print","Calls the day before, the grade after the market answers."]];
+scene({id:"get",title:"GET $EZ",label:"Get $EZ",head:function(){return [ezWord(T("Get","a"),4)]},
+  panels:GET.map(function(g,i){return {half:true,f:function(){var o=[],tl=wrap(g[0],PW-2);tl.forEach(function(x,j){var a=T(x,"a",2);if(!j)put(a,0,String(i+1),"Y");o.push(a)});
+    return o.concat(para(g[1],"",{ind:2}))}}}),
+  plac:function(){return '<p class="kick">Get '+ezm()+'</p>'+
+    (CONFIG.buyUrl?'<a class="btn" href="'+esc(CONFIG.buyUrl)+'" rel="noopener">Get $EZ</a>':'<button type="button" class="btn" disabled>Opens at launch</button>')+
+    (S.xUrl?'<a class="btn" href="'+esc(S.xUrl)+'" rel="noopener" target="_blank">Follow on X</a>':'<button type="button" class="btn" disabled>Follow on X (link at launch)</button>')+
+    '<p class="fine">Only through the link on this page. The address is not posted yet. It appears here, and only here, at launch.</p>'}});
+
+/* 21. last stop */
+scene({id:"end",title:"LAST STOP",label:"Last stop",panels:[{f:function(){var o=pixel();o.push(ln());
+    o=o.concat(para("Earnings Zeason, with a Z","a"));o.push(ln());
+    "Calls filed before the print · Graded by the market · Never edited".split(" · ").forEach(function(s){o=o.concat(para(s,""))});o.push(ln());
+    return o}}],
+  plac:function(){return '<p class="big">Nobody said it would be EZ</p><p class="kick">'+ezm()+' · Earnings Zeason, with a Z</p><p>Calls filed before the print · Graded by the market · Never edited</p>'+
+    '<p class="disc">$EZ is a memecoin. Nothing here is financial advice or a promise of value, return or payout.</p><button type="button" class="btn" data-go="0" style="margin-top:6px">Back to the first line</button>'},
+  bind:function(el){$$("[data-go]",el).forEach(function(b){b.addEventListener("click",function(){go(+b.dataset.go)})})}});
+
+/* ================= pager: scenes into board pages ================= */
+var FR=[];
+function compose(){FR=[];var wide=L.C>=40,HW=Math.floor((L.C-2)/2);
+  SCENES.forEach(function(sc){PW=L.C;var head=sc.head?sc.head():[];
+    var items=[],pend=null;
+    sc.panels.forEach(function(p){if(p.wideOnly&&!wide)return;
+      if(wide&&p.half){PW=HW;var ls=p.f();PW=L.C;
+        if(pend){var h=Math.max(pend.ls.length,ls.length),m=[];for(var k=0;k<h;k++){var a=ln(),A=pend.ls[k],B=ls[k];for(var c=0;c<HW;c++){if(A&&A[c])a[c]=A[c];if(B&&B[c])a[c+L.C-HW]=B[c]}m.push(a)}
+          items.push({ls:m,metas:pend.metas.concat(p.meta?[p.meta]:[])});pend=null}
+        else pend={ls:ls,metas:p.meta?[p.meta]:[]}}
+      else{if(pend){items.push(padTo(pend));pend=null}PW=L.C;items.push({ls:p.f(),metas:p.meta?[p.meta]:[]})}});
+    if(pend)items.push(padTo(pend));
+    var pages=[],cur=null;
+    function start(){cur={ls:head.map(function(r){return r.slice()}),metas:[]};if(head.length)cur.ls.push(ln())}
+    start();
+    items.forEach(function(it){var gap=cur.ls.length>(head.length?head.length+1:0)?1:0;
+      if(cur.ls.length+gap+it.ls.length>L.R&&cur.ls.length>(head.length?head.length+1:0)){pages.push(cur);start();gap=0}
+      if(gap)cur.ls.push(ln());cur.ls=cur.ls.concat(it.ls);cur.metas=cur.metas.concat(it.metas)});
+    pages.push(cur);
+    pages.forEach(function(pg,i){if(pages.length>1&&head.length&&pg.ls[0]){rput(pg.ls[0],L.C-1,(i+1)+"/"+pages.length,"d")}
+      FR.push({sc:sc,page:i,pages:pages.length,ls:pg.ls.slice(0,L.R),metas:pg.metas})})});
+  function padTo(pd){PW=HW;var m=pd.ls.map(function(r){PW=L.C;var a=ln();for(var c=0;c<HW;c++)if(r[c])a[c]=r[c];return a});PW=L.C;return {ls:m,metas:pd.metas}}
+}
+
+/* ================= the flap engine ================= */
+var CHS=" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$%.,:;!?'&()+-−/·▲▼~#";
+var DUR=reduce?0:84;
+var grid=$("#grid"),cells=[],hcells=[],kcells=[];
+function key(c){return c?(c.k||c.ch)+"|"+(c.tone||""):" |"}
+var BL={ch:" ",tone:""};
+function mkCell(){var el=document.createElement("div");el.className="f";
+  var parts=["t","b","ft","fb"].map(function(p){var h=document.createElement("div");h.className="h "+p;h._p=p;var g=document.createElement("span");g.className="g";h.appendChild(g);el.appendChild(h);return h});
+  return {el:el,t:parts[0],b:parts[1],ft:parts[2],fb:parts[3],cur:BL,tgt:BL,seq:[],timer:0,start:0,an:[]}}
+function draw(h,c){c=c||BL;h.className="h "+h._p+(c.tone?" "+c.tone:"");h.firstChild.innerHTML=c.html||esc(c.ch||" ")}
+function settle(cell){cell.an.forEach(function(a){try{a.cancel()}catch(e){}});cell.an=[];cell.ft.style.visibility="hidden";cell.fb.style.visibility="hidden";draw(cell.b,cell.cur);draw(cell.t,cell.cur)}
+function instant(cell,c){clearTimeout(cell.timer);clearTimeout(cell.start);cell.seq=[];cell.cur=c;cell.tgt=c;settle(cell)}
+function seqFor(from,to){var s=[],n=2+Math.floor(Math.random()*3),i;
+  var mid=TILE[to.tone]?"":(to.tone==="ic"?"":to.tone);
+  if(to.html||to.ch===" "){for(i=0;i<n-1;i++)s.push({ch:CHS.charAt(1+Math.floor(Math.random()*(CHS.length-1))),tone:mid});s.push(to);return s}
+  var ix=CHS.indexOf(to.ch);
+  for(i=n;i>=1;i--){var ch=ix>0?CHS.charAt(((ix-i-1+CHS.length-1)%(CHS.length-1))+1):CHS.charAt(1+Math.floor(Math.random()*(CHS.length-1)));s.push({ch:ch,tone:mid})}
+  s.push(to);return s}
+function tick(cell){settle(cell);
+  if(key(cell.cur)===key(cell.tgt)){cell.seq=[];return}
+  if(!cell.seq.length)cell.seq=seqFor(cell.cur,cell.tgt);
+  var nx=cell.seq.shift(),from=cell.cur;cell.cur=nx;
+  draw(cell.t,nx);draw(cell.b,from);draw(cell.ft,from);draw(cell.fb,nx);
+  cell.ft.style.visibility="visible";cell.fb.style.visibility="visible";
+  if(cell.ft.animate){cell.an=[cell.ft.animate([{transform:"rotateX(0deg)"},{transform:"rotateX(-90deg)"}],{duration:DUR/2,easing:"ease-in",fill:"forwards"}),
+    cell.fb.animate([{transform:"rotateX(90deg)"},{transform:"rotateX(0deg)"}],{duration:DUR/2,delay:DUR/2,easing:"cubic-bezier(.3,1.5,.6,1)",fill:"both"})]}
+  clack();
+  cell.timer=setTimeout(function(){tick(cell)},DUR+4)}
+function target(cell,c,delay){c=c||BL;
+  if(key(c)===key(cell.tgt)&&(key(c)===key(cell.cur)||cell.seq.length||cell.timer))return;
+  cell.tgt=c;
+  if(reduce||DUR===0||document.hidden){instant(cell,c);return}
+  clearTimeout(cell.start);clearTimeout(cell.timer);cell.timer=0;cell.seq=[];
+  cell.start=setTimeout(function(){tick(cell)},delay||0)}
+
+function buildGrid(){grid.innerHTML="";cells=[];var fr=document.createDocumentFragment();
+  for(var r=0;r<L.R;r++){var row=[];for(var c=0;c<L.C;c++){var x=mkCell();fr.appendChild(x.el);row.push(x);settle(x)}cells.push(row)}grid.appendChild(fr);
+  var hd=$("#hdr");hd.innerHTML="";hcells=[];for(var i=0;i<L.HN;i++){var y=mkCell();hd.appendChild(y.el);hcells.push(y);settle(y)}
+  var ck=$("#clock");ck.innerHTML="";kcells=[];for(var j=0;j<5;j++){var z=mkCell();ck.appendChild(z.el);kcells.push(z);settle(z)}}
+
+/* the clack: a short filtered noise burst, only after the visitor turns sound on */
+var AC=null,snd=false,lastClk=0,noise=null;
+function clack(){if(!snd||!AC)return;var t=AC.currentTime;if(t-lastClk<.022)return;lastClk=t;
+  var s=AC.createBufferSource();s.buffer=noise;var f=AC.createBiquadFilter();f.type="bandpass";f.frequency.value=1800+Math.random()*1400;f.Q.value=1.2;
+  var g=AC.createGain();g.gain.setValueAtTime(.16,t);g.gain.exponentialRampToValueAtTime(.001,t+.03);s.connect(f);f.connect(g);g.connect(AC.destination);s.start(t);s.stop(t+.035)}
+
+/* ================= showing a page ================= */
+var cur=-1,placKey="",step=500;
+function srText(ls){return ls.map(function(r){return r.map(function(c){return c?(c.sr!=null?c.sr+" ":c.ch):" "}).join("").replace(/\s+/g," ").trim()}).filter(Boolean).join(". ")}
+function show(i,opt){opt=opt||{};i=Math.max(0,Math.min(FR.length-1,i));var f=FR[i],same=i===cur;cur=i;
+  var jit=opt.fast?0:1;
+  for(var r=0;r<L.R;r++)for(var c=0;c<L.C;c++){var v=f.ls[r]&&f.ls[r][c];target(cells[r][c],v||BL,jit*(c*11+r*16+Math.random()*30))}
+  var tt=chars(f.sc.title).slice(0,L.HN);for(var h=0;h<L.HN;h++){var ch=tt[h];target(hcells[h],ch&&ch!==" "?{ch:ch,tone:"a"}:BL,h*18)}
+  var pk=f.sc.id+":"+f.page+":"+L.C;
+  if(pk!==placKey||opt.plac){placKey=pk;var box=$("#plac"),pin=document.createElement("div");pin.className="pin"+(reduce||opt.fast?"":" wipe");
+    pin.innerHTML=f.sc.plac?f.sc.plac(f.metas,f.page,f.pages):"";box.innerHTML="";box.appendChild(pin);box.scrollTop=0;
+    if(f.sc.bind)f.sc.bind(pin);$$("[data-film]",pin).forEach(function(b){b.addEventListener("click",function(){openFilm(+b.dataset.film)})})}
+  $("#wn").textContent=pad2(i+1)+" / "+pad2(FR.length);$("#wl").textContent=f.sc.label+(f.pages>1?" ("+(f.page+1)+"/"+f.pages+")":"");
+  $("#prev").disabled=i===0;$("#next").disabled=i===FR.length-1;
+  if(!same||opt.sr)$("#sr").textContent=f.sc.label+". "+srText(f.ls);
+  $$("#mlist button").forEach(function(b){var on=FR[+b.dataset.i]&&FR[+b.dataset.i].sc===f.sc;b.setAttribute("aria-current",String(on))});
+}
+function pad2(n){return (n<10?"0":"")+n}
+function refresh(){var id=FR[cur]&&FR[cur].sc.id,pg=FR[cur]&&FR[cur].page;compose();
+  var k=FR.findIndex(function(f){return f.sc.id===id&&f.page===Math.min(pg,f.pages-1)});show(k<0?0:k,{sr:true})}
+
+/* clock + season strip */
+function clockTick(){var d=new Date(),s=pad2(d.getHours())+":"+pad2(d.getMinutes());chars(s).forEach(function(ch,i){target(kcells[i],{ch:ch,tone:"a"},i*30)})}
+function season(){var el=$("#season"),html="",won={},none={};ROUNDS.forEach(function(r){(r.win?won:none)[r.n]=1});
+  for(var n=1;n<=S.total;n++){var cl=won[n]?"w":none[n]?"x":(P&&n===P.n)?"now":"";html+='<i'+(cl?' class="'+cl+'"':'')+'></i>'}
+  el.innerHTML=html;el.setAttribute("aria-label","Zeason one: "+S.graded+" of "+S.total+" rounds graded"+(P?", round "+P.n+" live":""))}
+
+/* ================= sizing ================= */
+function size(){var W=document.documentElement.clientWidth,Hh=window.innerHeight,mode=W>=960?"wide":W>=600?"mid":"narrow";
+  var C=mode==="wide"?44:mode==="mid"?30:22,R=mode==="wide"?18:17,HN=mode==="wide"?16:mode==="mid"?14:12,gap=W<400?1:2;
+  var changed=C!==L.C||R!==L.R||!cells.length;L={C:C,R:R,HN:HN,mode:mode};
+  var board=$("#board");board.classList.toggle("wide",mode==="wide");board.classList.toggle("short",mode!=="wide"&&Hh<740);
+  var stagePad=mode==="narrow"?8:20,boardW=Math.min(W-2*stagePad,1440),bpad=16;
+  var plw=mode==="wide"?Math.max(290,Math.min(330,Math.round(boardW*.24))):0;
+  var gridW=boardW-bpad-(mode==="wide"?plw+18:0)-16;
+  var cw=Math.floor((gridW-(C-1)*gap)/C);
+  /* height: rail + strip + grid + (placard when stacked) + controls */
+  var fixed=2*stagePad+18+16+21+58+16,plMin=mode==="wide"?0:Math.max(Hh<740?120:150,Math.min(230,Math.round(Hh*.22)));
+  var chMax=Math.floor((Hh-fixed-plMin-(cw*1.5)-10)/(R+1))-gap;
+  var ch=Math.max(17,Math.min(Math.round(cw*1.7),chMax));
+  var rt=document.documentElement.style;
+  rt.setProperty("--cw",cw+"px");rt.setProperty("--ch",ch+"px");rt.setProperty("--gap",gap+"px");rt.setProperty("--cols",C);rt.setProperty("--plw",plw+"px");
+  rt.setProperty("--fs",Math.round(Math.min(ch*.72,cw*1.3))+"px");
+  $("#stage").style.padding=stagePad+"px";
+  if(changed){buildGrid();compose();cur=-1;placKey=""}
+  /* the placard takes what is left */
+  var gridH=R*(ch+gap)-gap+16,plac=$("#plac");
+  if(mode==="wide"){plac.style.height=gridH+"px"}
+  else{var used=2*stagePad+(ch+6)+21+gridH+10+52+18+8;plac.style.height=Math.max(150,Hh-used)+"px"}
+  step=Math.max(320,Math.round(Hh*.62));$("#track").style.height=((FR.length-1)*step+Hh)+"px";
+  return changed}
+
+/* ================= scroll, taps, keys ================= */
+function idxFromScroll(){return Math.max(0,Math.min(FR.length-1,Math.round(window.scrollY/step)))}
+var ticking=false;
+window.addEventListener("scroll",function(){if(ticking)return;ticking=true;requestAnimationFrame(function(){ticking=false;var i=idxFromScroll();if(i!==cur)show(i)})},{passive:true});
+function go(i){i=Math.max(0,Math.min(FR.length-1,i));window.scrollTo({top:i*step,behavior:reduce?"auto":"smooth"});if(reduce||Math.abs(i-cur)>1)show(i)}
+$("#next").addEventListener("click",function(){go(cur+1)});
+$("#prev").addEventListener("click",function(){go(cur-1)});
+grid.addEventListener("click",function(){go(cur+1)});
+document.addEventListener("keydown",function(e){if(e.target.closest&&e.target.closest("input,textarea,dialog"))return;
+  if(e.key==="ArrowRight"){e.preventDefault();go(cur+1)}else if(e.key==="ArrowLeft"){e.preventDefault();go(cur-1)}
+  else if(e.key==="Escape"&&!$("#menu").hidden)toggleMenu(false)});
+$("#snd").addEventListener("click",function(){snd=!snd;this.setAttribute("aria-pressed",String(snd));
+  if(snd&&!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();noise=AC.createBuffer(1,AC.sampleRate*.04,AC.sampleRate);var d=noise.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3)}catch(e){snd=false;this.setAttribute("aria-pressed","false")}}
+  if(AC&&AC.state==="suspended")AC.resume()});
+function buildMenu(){var seen={},h="";FR.forEach(function(f,i){if(seen[f.sc.id])return;seen[f.sc.id]=1;h+='<li><button type="button" data-i="'+i+'"><span>'+pad2(i+1)+'</span>'+esc(f.sc.label)+'</button></li>'});
+  $("#mlist").innerHTML=h;$$("#mlist button").forEach(function(b){b.addEventListener("click",function(){toggleMenu(false);go(+b.dataset.i)})})}
+function toggleMenu(on){var m=$("#menu");m.hidden=!on;$("#all").setAttribute("aria-expanded",String(on));if(on){var c=$('#mlist [aria-current="true"]')||$("#mlist button");c&&c.focus()}else $("#all").focus()}
+$("#all").addEventListener("click",function(){toggleMenu($("#menu").hidden)});
+
+/* films */
+var dlg=$("#film"),vid=$("#fvid");
+function openFilm(n){var r=ROUNDS.filter(function(x){return x.n===n})[0];if(!r||!r.film)return;
+  $("#ftitle").textContent="Round "+r.n+" · "+S.co(r);vid.setAttribute("poster",MEDIA+r.poster+".jpg");
+  vid.innerHTML='<source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4">';vid.load();
+  if(dlg.showModal)dlg.showModal();else dlg.setAttribute("open","");var p=vid.play();if(p&&p.catch)p.catch(function(){})}
+function closeFilm(){vid.pause();if(dlg.close)dlg.close();else dlg.removeAttribute("open")}
+$("#fclose").addEventListener("click",closeFilm);dlg.addEventListener("close",function(){vid.pause()});
+dlg.addEventListener("click",function(e){if(e.target===dlg)closeFilm()});
+
+
+
+/* ================= start ================= */
+season();size();buildMenu();
+window.addEventListener("resize",function(){var ch=size();if(ch){buildMenu();cur=-1}var i=idxFromScroll();show(i,{fast:true,plac:ch})});
+var started=false;function begin(){if(started)return;started=true;clockTick();show(idxFromScroll())}
+if(document.fonts&&document.fonts.ready){document.fonts.ready.then(begin);setTimeout(begin,900)}else begin();
+setInterval(function(){clockTick();if(FR[cur]&&FR[cur].sc.id==="live")refresh();else compose()},20000);
+})();
+</script>
+</body>
+</html>

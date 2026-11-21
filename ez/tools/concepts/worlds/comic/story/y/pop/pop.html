@@ -1,0 +1,67 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Luckiest+Guy&display=swap">
+<style>
+body{margin:0;background:#1b1820;display:flex;gap:24px;padding:24px;font-family:Bangers,sans-serif}
+.pg{position:relative;width:390px;height:560px;overflow:hidden;border:4px solid #0d0b10;box-shadow:8px 8px 0 #0d0b10;flex:none}
+.pg svg.bg{position:absolute;inset:0;width:100%;height:100%}
+.ht{position:absolute;inset:0;background:radial-gradient(circle,rgba(120,10,0,.55) 1.6px,transparent 2.1px) 0 0/9px 9px;
+ -webkit-mask:radial-gradient(circle at 50% 52%,transparent 28%,#000 78%);mask:radial-gradient(circle at 50% 52%,transparent 28%,#000 78%)}
+.lay{position:absolute;inset:0}
+.bub{position:absolute;left:16px;top:16px;background:#fff;border:3.5px solid #0d0b10;border-radius:50%/46%;padding:10px 20px 8px;text-align:center;line-height:.9;box-shadow:4px 4px 0 #0d0b10}
+.bub b{font:400 34px 'Luckiest Guy';color:#0d0b10;display:block}.bub i{font:400 11px Bangers;letter-spacing:.08em;font-style:normal}
+
+.tag{position:absolute;right:20px;top:184px;font:400 25px Bangers;color:#ffd21f;letter-spacing:.04em;-webkit-text-stroke:1.5px #0d0b10;paint-order:stroke fill;text-shadow:2px 2px 0 #0d0b10;transform:rotate(-4deg)}
+.bar{position:absolute;left:16px;bottom:14px;background:#fff;border:2px solid #0d0b10;padding:5px 6px 3px;font:400 9px Bangers;letter-spacing:.06em}
+.bar span{display:block;height:34px;width:70px;background:repeating-linear-gradient(90deg,#0d0b10 0 2px,#fff 2px 3px,#0d0b10 3px 4px,#fff 4px 6px,#0d0b10 6px 9px,#fff 9px 10px)}
+.foot{position:absolute;left:0;right:0;bottom:0;height:8px;background:linear-gradient(90deg,#03c870 50%,#ff3a31 50%)}
+.big{position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);text-align:center}
+.face{width:88px;height:88px;border-radius:50%;background:#fff;border:4px solid #0d0b10;display:grid;place-items:center;margin:0 auto 4px;box-shadow:4px 4px 0 #0d0b10}
+.amt{font:400 38px 'Luckiest Guy';color:#03c870;-webkit-text-stroke:2.5px #0d0b10;paint-order:stroke fill;text-shadow:3px 3px 0 #0d0b10,5px 5px 0 #0d0b10}
+.who{font:400 19px Bangers;color:#0d0b10;letter-spacing:.05em}
+.mini{position:absolute;left:0;right:0;bottom:26px;display:flex;justify-content:center;gap:10px}
+.mini div{width:46px;height:46px;border-radius:50%;background:#fff;border:3px solid #0d0b10;display:grid;place-items:center;box-shadow:3px 3px 0 #0d0b10}
+.cap{position:absolute;left:50%;top:22px;transform:translateX(-50%) rotate(-2deg);background:#ffd21f;border:3px solid #0d0b10;padding:5px 14px 3px;font:400 18px Bangers;letter-spacing:.06em;white-space:nowrap;box-shadow:3px 3px 0 #0d0b10}
+</style></head><body>
+<div class="pg" id="A"><svg class="bg" id="sbA" viewBox="0 0 390 560"></svg><div class="ht"></div><div class="lay" id="LA"></div></div>
+<div class="pg" id="B"><svg class="bg" id="sbB" viewBox="0 0 390 560"></svg><div class="ht" style="background:radial-gradient(circle,rgba(40,40,60,.35) 1.5px,transparent 2px) 0 0/8px 8px"></div><div class="lay" id="LB"></div></div>
+<script>
+const NS='http://www.w3.org/2000/svg';
+function rays(svg,cx,cy,n,c1,c2,bg){let s=`<rect width="390" height="560" fill="${bg}"/>`;for(let i=0;i<n;i++){const a0=i/n*2*Math.PI,a1=(i+.5)/n*2*Math.PI,R=900;
+ s+=`<path d="M${cx} ${cy}L${cx+R*Math.cos(a0)} ${cy+R*Math.sin(a0)}L${cx+R*Math.cos(a1)} ${cy+R*Math.sin(a1)}Z" fill="${i%2?c1:c2}"/>`}svg.innerHTML=s}
+function burst(cx,cy,r1,r2,n,seed){let s=seed,pts=[];const rnd=()=>(s=(s*9301+49297)%233280)/233280;for(let i=0;i<n*2;i++){const a=i/(n*2)*2*Math.PI-Math.PI/2,r=i%2?r2*(.85+.3*rnd()):r1*(.9+.25*rnd());pts.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)*1.0).toFixed(1))}return pts.join(' ')}
+function star(cx,cy,r){let p=[];for(let i=0;i<10;i++){const a=i/10*2*Math.PI-Math.PI/2,rr=i%2?r*.45:r;p.push((cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1))}return `<polygon points="${p.join(' ')}" fill="#ffd21f" stroke="#0d0b10" stroke-width="3" stroke-linejoin="round"/>`}
+function title(txt,x,y,size,grad,depth,rot){const id='g'+Math.random().toString(36).slice(2,7);let s=`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">${grad}</linearGradient></defs><g transform="rotate(${rot} ${x} ${y})" font-family="Luckiest Guy" font-size="${size}" text-anchor="middle">`;
+ for(let d=depth;d>0;d--)s+=`<text x="${x+d}" y="${y+d}" fill="#7a0c06" stroke="#0d0b10" stroke-width="${d==depth?7:0}" stroke-linejoin="round" paint-order="stroke">${txt}</text>`;
+ s+=`<text x="${x}" y="${y}" fill="url(#${id})" stroke="#0d0b10" stroke-width="4" stroke-linejoin="round" paint-order="stroke">${txt}</text><text x="${x}" y="${y}" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.2" transform="translate(-1.5 -1.5)">${txt}</text></g>`;return s}
+function mark(m,sz){const M=MODELS[m];const fill=m==='GROK'?'#15121a':M.c;return `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24"><path d="${M.d}" fill="${fill}" fill-rule="${M.fr||'nonzero'}"/></svg>`}
+window.draw=function(D){
+ rays(document.getElementById('sbA'),195,352,40,'#ff7a12','#ff5a0a','#ff6a10');
+ const LA=document.getElementById('LA');
+ LA.innerHTML=`<svg viewBox="0 0 390 560" style="position:absolute;inset:0;width:100%;height:100%">
+  ${title('EARNINGS',236,92,46,'<stop offset="0" stop-color="#fff27a"/><stop offset=".6" stop-color="#ffc414"/><stop offset="1" stop-color="#ff9a00"/>',5,-4)}
+  ${title('ZEASON',200,170,74,'<stop offset="0" stop-color="#ff6b5e"/><stop offset=".55" stop-color="#ff3a31"/><stop offset="1" stop-color="#c3140c"/>',8,-4)}
+  <polygon points="${burst(195,352,156,118,13,7)}" fill="#0d0b10" transform="translate(7 7)"/>
+  <polygon points="${burst(195,352,156,118,13,7)}" fill="#fff8e6" stroke="#0d0b10" stroke-width="5" stroke-linejoin="round"/>
+  <g transform="rotate(12 322 478)"><polygon points="${burst(322,478,58,42,11,3)}" fill="#ff3a31" stroke="#0d0b10" stroke-width="4" stroke-linejoin="round"/>
+  <polygon points="${burst(322,478,50,36,11,3)}" fill="#ffd21f"/>
+  <text x="322" y="466" text-anchor="middle" font-family="Bangers" font-size="17" fill="#c3140c">ROUND ${D.last.n}</text>
+  <text x="322" y="489" text-anchor="middle" font-family="Luckiest Guy" font-size="24" fill="#0d0b10">${D.last.ticker}</text>
+  <text x="322" y="505" text-anchor="middle" font-family="Bangers" font-size="15" fill="#c3140c">INSIDE!</text></g></svg>
+  <div class="bub"><b>VOL.1</b><i>SEASON 1</i></div>
+  <div class="tag">4 AIs. 1 GOLDEN TICKET.</div>
+  <div class="big" style="top:63%"><div class="who">GOLDEN TICKET</div><div class="face">${mark(D.lead,52)}</div><div class="amt">${D.leadPnl}</div><div class="who">${D.leadName}</div></div>
+  <div class="bar"><span></span>NO. ${String(D.last.n).padStart(3,'0')}</div><div class="foot"></div>`;
+ rays(document.getElementById('sbB'),195,250,44,'#ffffff','#e9e6ef','#f4f2f7');
+ const LB=document.getElementById('LB');
+ let speed='';for(let i=0;i<26;i++){const a=i/26*2*Math.PI,r1=150+(i*37%60),r2=330;speed+=`<line x1="${195+r1*Math.cos(a)}" y1="${250+r1*Math.sin(a)}" x2="${195+r2*Math.cos(a)}" y2="${250+r2*Math.sin(a)}" stroke="${i%3?'#0d0b10':'#ffd21f'}" stroke-width="${i%3?2.5:5}" stroke-linecap="round"/>`}
+ LB.innerHTML=`<svg viewBox="0 0 390 560" style="position:absolute;inset:0;width:100%;height:100%">${speed}
+  <polygon points="${burst(195,250,150,96,12,11)}" fill="#0d0b10" transform="translate(6 6)"/>
+  <polygon points="${burst(195,250,150,96,12,11)}" fill="#ffc414" stroke="#0d0b10" stroke-width="4" stroke-linejoin="round"/>
+  <polygon points="${burst(195,250,120,80,12,11)}" fill="#ffe25a"/>
+  ${title('WHO',195,238,72,'<stop offset="0" stop-color="#ff6b8a"/><stop offset="1" stop-color="#e0103f"/>',6,-6)}
+  ${title('CALLS IT?',200,300,46,'<stop offset="0" stop-color="#ff6b8a"/><stop offset="1" stop-color="#e0103f"/>',5,-6)}
+  ${star(70,110,20)}${star(330,95,14)}${star(318,400,22)}${star(62,392,13)}</svg>
+  <div class="cap">ROUND ${D.last.n}: ${D.last.co.toUpperCase()} (${D.last.ticker})</div>
+  <div class="mini">${D.order.map(m=>`<div>${mark(m,28)}</div>`).join('')}</div>`;
+};
+</script></body></html>

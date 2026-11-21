@@ -1,0 +1,12 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();const W=+(process.argv[2]||390);const ctx=await b.newContext({viewport:{width:W,height:664},deviceScaleFactor:1,reducedMotion:'reduce'});const p=await ctx.newPage();await FONTS(p);
+const er=[];p.on('pageerror',e=>er.push(e.message));
+await p.goto('http://127.0.0.1:8990/v46-live-x2plus.html',{waitUntil:'domcontentloaded',timeout:150000});
+await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur')&&window.__x2pPnl&&document.documentElement.classList.contains('m32'),null,{timeout:120000});await p.waitForTimeout(2000);
+const r=await p.evaluate(()=>{const s=document.querySelector('section.c8'),sr=s.getBoundingClientRect(),o=[];const B=e=>{const r=e.getBoundingClientRect();return [r.left,r.top-sr.top,r.width,r.height].map(v=>Math.round(v))};
+ [...s.children].forEach(c=>o.push([c.tagName+'.'+c.className.toString().slice(0,40),B(c)]));
+ const f=s.querySelector('.c8-four');[...f.children].forEach(c=>o.push(['  '+c.tagName+'.'+c.className.toString().slice(0,40),B(c)]));
+ const one=s.querySelector('.c8-one');[...one.querySelectorAll('.c7-pic>*')].forEach(c=>o.push(['    '+c.tagName+'.'+c.className.toString().slice(0,30),B(c)]));
+ const P=__x2pPnl().A;const d=Object.keys(P).map(m=>[m,Math.round(P[m].bal-1e5),P[m].W,P[m].L,Object.keys(P[m].per).length]);
+ return {sec:B(s),o,d,models:Object.keys(MODELS),mv:Object.fromEntries(Object.keys(MODELS).map(m=>[m,MODELS[m].ver])),line:[...s.querySelectorAll('.c8-bal span')].map(e=>e.textContent),sw:document.documentElement.scrollWidth}});
+console.log(JSON.stringify(r,null,0).replace(/\],\[/g,'],\n['));console.log(er);await b.close()})();

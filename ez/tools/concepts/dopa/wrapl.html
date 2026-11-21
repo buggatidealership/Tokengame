@@ -1,0 +1,153 @@
+<!doctype html><meta charset="utf-8"><title>Season conclusion, take L: one line</title>
+<!-- Take L of the Season 1 conclusion, round 4 (WRAP-BRIEF.md "Round 4", owner 2026-11-18): the fixed script of six small scenes, told
+  with ONE continuous camera over one drawing, no cuts. The drawing is the season as four lines with their marks and nothing else:
+  no axis numbers, no grid, no counter, no figures on the lines. The script's words are set large above it, one line at a time:
+  a line arrives, the one before it steps back to 35% and stays, and the whole column crawls slowly upward so a hold is never frozen.
+  1 what this is (the empty start line, the four marks)  2 one example (the lines grow to the round, time stops, then the step:
+  the losers drop and the one that was right jumps)  3 who won (the race runs to the end with no numbers, then 4th to 1st, each by
+  lighting that AI's line; 1st in gold on the bed's drop)  4 why (ten dots, one bar)  5 who is out (its line greys and drops away)
+  6 the end (only the winner's line, gold, and the one exact number).
+  Every number comes from data/wrap.json (node prep-wrap.js) and is rounded (whole per cents, whole thousands) except the last.
+  While a round is ungraded it prints DRAFT and says "After N of M reports", "is ... winning" and "leads"; ?final=1 only forces the
+  final words for a check. The bed is s1-l4: s1-l-src.mp3 (Hedra elevenlabs-music, 120 BPM, first beat at 0.016 s) cut on bar lines:
+  source 0-28 s, its break 30-32, its full section 32-54, the break again, 32-36, its end 54-58; so the breaks sit at 28-30 s and
+  52-54 s, the drop lands at 30.0 s ("1st") and the lift at 54.0 s (the last card).
+  (Round 2, a data-dense cut with a Season 2 end card, is in git history; its bed is s1-l.) window.R(t), READY, CUES, MUSIC, DUR. -->
+<style id="base"></style>
+<style>
+#world{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0}
+#wsvg{position:absolute;left:0;top:0;overflow:visible}
+#hud{position:absolute;inset:0;z-index:30}
+#scrim{position:absolute;left:0;right:0;top:0;height:128px;background:linear-gradient(#0e0c0b 0,#0e0c0b 78%,rgba(14,12,11,0));z-index:35;pointer-events:none}
+#dr{position:absolute;right:56px;top:58px;font:600 30px 'Geist Mono';letter-spacing:.12em;color:#e8576b;padding:7px 12px 6px;border-radius:8px;box-shadow:inset 0 0 0 2px rgba(232,87,107,.6);z-index:60}
+.hd{position:absolute;left:0;top:0;width:44px;height:44px;transform-origin:50% 50%}
+.hd i{position:absolute;inset:-5px;border-radius:15px;opacity:0}
+.hd .rc{box-shadow:0 0 0 4px #f2ede6}.hd .rg{box-shadow:0 0 0 4px #fdbc2a}
+/* the script, set large: one column per scene */
+.sc{position:absolute;left:56px;top:0;width:968px;display:flex;flex-direction:column;align-items:center;gap:26px;text-align:center}
+.ln{font:800 72px/1.12 Inter;letter-spacing:-.035em;color:#f2ede6;text-wrap:balance;max-width:968px}
+.ln .mk{display:inline-block;vertical-align:-.16em;margin-right:.18em}
+.ln img{display:inline-block;vertical-align:-.2em;width:76px;height:76px;border-radius:18px;background:#f2ede6;padding:9px;object-fit:contain;margin-right:.2em}
+.ln b{font-weight:800}
+.num{font:600 150px/1 'Geist Mono';letter-spacing:-.06em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sm{font:700 44px/1 Inter;letter-spacing:-.02em;color:#8e8680}
+.dots{display:flex;gap:14px}.dots i{width:52px;height:52px;border-radius:50%;background:#2a2522}
+.bar{position:relative;width:800px;height:44px;border-radius:12px;background:#2a2522;overflow:hidden}.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:12px}
+.g6 .mkw{position:relative;display:inline-block;vertical-align:-.16em;margin-right:.24em}.g6 .mkw i{position:absolute;inset:-6px;border-radius:24px;box-shadow:0 0 0 5px #fdbc2a}
+</style>
+<div id="world"></div><div id="hud"></div><div id="scrim"></div><div id="vig"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script>
+<script>
+const q = new URLSearchParams(location.search), G = '#55d6a2', Rd = '#e8576b', Au = '#fdbc2a', NS = 'http://www.w3.org/2000/svg';
+const world = L.$('#world'), hud = L.$('#hud'), add = (h, p) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
+let D, S = {}, C = [], grain, FINAL, A;
+const RX = 18, YS = .0027, X = i => i * RX, Y = v => -v * YS, V = 14, BY = 1050;                   // V: the column's crawl, px a second; BY: the drawing's middle on the frame
+const K = v => '$' + Math.round(Math.abs(v) / 1000) + 'K', money0 = v => (v < 0 ? '−' : '+') + '$' + Math.abs(Math.round(v)).toLocaleString('en-US');
+const at = (a, f) => { const i = Math.min(a.length - 2, Math.max(0, Math.floor(f))); return L.lerp(a[i], a[i + 1], L.cl(f - i)) };
+const svg = (tag, at, p) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); p.appendChild(e); return e };
+const win = (t, a, b, f = .35) => L.n(t, a, a + f) * (1 - L.n(t, b - f, b));        // 1 between a and b, eased in and out over f seconds
+// the cut, in seconds: every arrival on a beat of the bed (120 BPM); the drop at 30.0, the lift at 54.0
+const T = { s1: { t: 0, marks: 1, l2: 2.5, l3: 4.5, end: 9.2 }, s2: { t: 9.5, ride: [10.2, 12.2], l2: 12.5, l3: 14.5, l4: 16.5, end: 21.6 }, s3: { t: 21.9, race: [22.6, 24.9], p: [25, 26.5, 28, 30], end: 33.3 },
+  s4: { t: 33.5, l2: 34.5, dots: 36, l3: 37.5, bar: 39, l4: 40.5, end: 47 }, s5: { t: 47.5, l2: 48.5, l3: 50.5, end: 53.6 }, s6: { t: 54, num: 55, sm: 56.5, end: 59 } };
+T.s3.v = T.s3.p.map((t, j) => j === 3 ? t - .12 : t);   // when each place shows (the sounds stay on T.s3.p)
+function build() {
+  const n = D.rounds, ord = D.order; A = k => D.ai.find(a => a.k === k); S.n = n; FINAL = D.final || q.get('final') === '1';
+  let lo = 0, hi = 0; ord.forEach(k => D.s[k].forEach(v => { lo = Math.min(lo, v); hi = Math.max(hi, v) })); const pad = (hi - lo) * .06; S.lo = lo - pad; S.hi = hi + pad;
+  // the example: the biggest move where exactly one AI was right
+  const ex = D.big.find(x => x.right.length === 1) || D.big[0]; S.ex = ex; S.exI = L.cl(ex.n - D.open.filter(o => o.n < ex.n).length, 1, n); S.exK = ex.right[0];
+  const lead = D.ai[0], rel = D.ai.filter(a => D.releg.includes(a.k)), M = D.mkt, bear = lead.lean === 'BEAR'; S.lead = lead; S.rel = rel;
+  // what the ride frames: the heads of the last dozen rounds, smoothed
+  const env = []; for (let i = 0; i <= n; i++) { let a = 0, b = 0; for (let j = Math.max(0, i - 12); j <= Math.min(n, i + 2); j++) ord.forEach(k => { a = Math.min(a, D.s[k][j]); b = Math.max(b, D.s[k][j]) }); env.push([a, b]) }
+  const gs = arr => arr.map((_, i) => { let s = 0, w = 0; for (let j = -15; j <= 15; j++) { const x = arr[Math.min(n, Math.max(0, i + j))], ww = Math.exp(-j * j / 50); s += x * ww; w += ww } return s / w }); S.elo = gs(env.map(e => e[0])); S.ehi = gs(env.map(e => e[1]));
+  // the whole season across the frame, its middle on the drawing's line
+  const x0 = -20, x1 = n * RX + 70, zp = 968 / (x1 - x0); S.pc = { cx: (x0 + x1) / 2, cy: (Y(S.hi) + Y(S.lo)) / 2 - (BY - 20 - 675) / zp, z: zp };
+  // --- the drawing: a start line and four lines ---
+  S.svg = add(`<svg id="wsvg" width="1" height="1"></svg>`, world);
+  svg('defs', {}, S.svg).innerHTML = `<linearGradient id="sg" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="${Y(S.hi)}" y2="${Y(S.lo)}"><stop offset="0" stop-color="${G}"/><stop offset="${(0 - Y(S.hi)) / (Y(S.lo) - Y(S.hi))}" stop-color="${G}"/><stop offset="${(0 - Y(S.hi)) / (Y(S.lo) - Y(S.hi))}" stop-color="${Rd}"/><stop offset="1" stop-color="${Rd}"/></linearGradient>`;
+  S.base = svg('line', { fill: 'none', x1: -400, x2: X(D.total) + 400, y1: 0, y2: 0, stroke: '#5f5853', 'stroke-linecap': 'round' }, S.svg);
+  S.ln = ord.map(k => { const g = svg('g', {}, S.svg), mk = (st, o) => svg('path', { fill: 'none', stroke: st, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', opacity: o }, g);
+    return { k, g, u: mk('#0e0c0b', .7), p: mk('url(#sg)', 1), o: mk(k === lead.k ? Au : '#5f5853', 0), hd: add(`<div class="hd">${L.mark(k, 44)}<i class="rc"></i><i class="rg"></i></div>`, hud) } });
+  // --- the script ---
+  const mkI = (k, s = 64) => L.mark(k, s), nm = a => a.name, up = ex.move > 0, sideW = up ? 'long' : 'short', numW = ['no', 'one', 'two', 'three', 'four'][ex.wrong.length] || ex.wrong.length;
+  const ord4 = ['1st', '2nd', '3rd', '4th', '5th', '6th'], col = (v, s) => `<b style="color:${v >= 0 ? G : Rd}">${s}</b>`;
+  // a scene: its lines and pictures in order. A line steps back to 35% when the next line arrives; a picture goes with the line above it.
+  const sc = (id, t0, t1, els) => { const el = add(`<div class="sc" id="${id}">${els.map(e => `<div class="${e.c || 'ln'}">${e.h}</div>`).join('')}</div>`, hud); let nextLine = 1e9;
+    for (let i = els.length - 1; i >= 0; i--) { const e = els[i]; e.el = el.children[i]; e.dim = e.keep ? 1e9 : nextLine; if (!e.pic && !e.keep) nextLine = e.t } return { id, t0, t1, els, el } };
+  S.sc = [
+    sc('c1', T.s1.t, T.s1.end, [{ t: T.s1.t, h: `${D.ai.length} AIs bet on ${D.total} earnings reports.` }, { t: T.s1.l2, h: `Each time: ${col(1, 'long')} or ${col(-1, 'short')}?` }, { t: T.s1.l3, h: '$100K on every trade.' }]),
+    sc('c2', T.s2.t, T.s2.end, [{ t: T.s2.t, h: `${ex.logo ? `<img src="${ex.logo}"${ex.dark ? ' style="background:#2a2522"' : ''}>` : ''}One example: ${ex.co}.` }, { t: T.s2.l2, h: `After earnings, the stock ${col(ex.move, (up ? 'rose ' : 'fell ') + Math.round(Math.abs(ex.move)) + '%')}.` },
+      { t: T.s2.l3, h: `${mkI(S.exK)}Only ${nm(A(S.exK))} went ${sideW}.` }, { t: T.s2.l4, h: `${nm(A(S.exK))} ${col(1, 'made ' + K(ex.p[S.exK]))}. The other ${numW} ${col(-1, 'lost ' + K(ex.p[ex.wrong[0]] || 0))} each.` }]),
+    sc('c3', T.s3.t, T.s3.end, [{ t: T.s3.t, h: FINAL ? `After ${D.total} reports:` : `After ${n} of ${D.total} reports:` }, ...[...D.ai].reverse().map((a, j) => ({ t: T.s3.v[j] ?? T.s3.v[T.s3.v.length - 1], gold: a === lead,
+      h: `${mkI(a.k, 60)}${ord4[a.rank - 1]} · ${nm(a)} · ${a === lead ? (a.pnl >= 0 ? 'made ' : 'lost ') + K(a.pnl) : col(a.pnl, (a.pnl >= 0 ? 'made ' : 'lost ') + K(a.pnl))}` }))]),
+    sc('c4', T.s4.t, T.s4.end, [{ t: T.s4.t, h: FINAL ? `How did ${nm(lead)} win?` : `How is ${nm(lead)} winning?` }, { t: T.s4.l2, h: `It went ${bear ? 'short' : 'long'} ${col(bear ? -1 : 1, Math.round((bear ? lead.shortPct : 100 - lead.shortPct) / 10) + ' times out of 10')}.` },
+      { t: T.s4.dots, pic: 1, c: 'dots', h: Array.from({ length: 10 }, () => '<i></i>').join('') },
+      ...((bear ? M.down > M.up : M.up > M.down) ? [{ t: T.s4.l3, h: `And most stocks did ${bear ? 'fall' : 'rise'}: ${col(bear ? -1 : 1, (bear ? M.down : M.up) + ' of ' + n)}.` }, { t: T.s4.bar, pic: 1, c: 'bar', h: `<i style="background:${bear ? Rd : G}"></i>` }] : []),
+      ...(bear && M.short > lead.pnl ? [{ t: T.s4.l4, h: 'Going short every single time would have made even more.' }] : [])]),
+    sc('c5', T.s5.t, T.s5.end, rel.length ? [{ t: T.s5.t, h: rel.length > 1 ? `${['', 'One', 'Two', 'Three'][rel.length] || rel.length} AIs are out.` : 'One AI is out.' }, { t: T.s5.l2, h: `${rel.map(a => mkI(a.k)).join('')}${rel.map(nm).join(' and ')} ${rel.length > 1 ? 'were' : 'was'} wrong more often than right.` }, { t: T.s5.l3, h: `<b style="color:${Rd}">Relegated.</b>` }]
+      : [{ t: T.s5.t, h: 'No AI is out.' }, { t: T.s5.l2, h: 'All four were right more often than wrong.' }]),
+    sc('c6', T.s6.t, T.s6.end, [{ t: T.s6.t, keep: 1, c: 'ln g6', h: `<span class="mkw">${L.mark(lead.k, 72)}<i></i></span>${nm(lead)} ${FINAL ? 'wins' : 'leads'} Season 1.` }, { t: T.s6.num, keep: 1, c: 'num', h: '' }, { t: T.s6.sm, keep: 1, c: 'sm', h: 'Season 2 soon.' }])];
+  S.sc[2].els.forEach(e => { if (e.gold) e.el.style.color = Au });
+  S.dots = L.$$('.dots i'); S.nine = Math.round((bear ? lead.shortPct : 100 - lead.shortPct) / 10); S.dotC = bear ? Rd : G; S.barW = 800 * (bear ? M.down : M.up) / Math.max(1, n); S.numEl = L.$('#c6 .num'); S.numEl.style.color = Au; S.numEl.textContent = money0(lead.pnl);
+  // --- on the frame ---
+  add(`<div class="bug"><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>SEASON 1</b></div>`, document.body);
+  if (!FINAL) add(`<div id="dr">DRAFT · ${n}/${D.total} GRADED</div>`, document.body);
+  // --- sound: one soft tap a line, the picture's own moves, the drop ---
+  C.push([.05, 'r11-swell', .09]); S.sc.forEach((s, i) => s.els.forEach((e, j) => { if ((i || j) && !e.pic && !(i === 2 && j) && !(i === 5 && !j)) C.push([e.t, 'sfx-tap', .06]) }));
+  C.push([T.s1.marks, 'r11-pluck', .09], [T.s2.ride[0] + .6, 'sfx-whoosh', .05], [T.s2.l4 + .1, 'r11-thump', .16], [T.s3.race[0] + .9, 'sfx-whoosh', .06]);
+  T.s3.p.forEach((t, j) => C.push([t, j < 3 ? 'r11-card' : 'sfx-boom', j < 3 ? .12 : .26])); C.push([T.s3.p[3] - 1.5, 'sfx-riser', .12], [T.s6.t - 1.5, 'sfx-riser', .1], [T.s3.p[3] + .25, 'sfx-chime', .13], [T.s4.dots, 'r11-pluck', .07], [T.s4.bar, 'r11-pluck', .07]);
+  if (rel.length) C.push([T.s5.l3, 'sfx-stamp', .2]); C.push([T.s6.t, 'sfx-boom', .22], [T.s6.num, 'sfx-chime', .13]);
+  window.MUSIC = { f: q.get('bed') || 's1-l4', at: +(q.get('at') || 0) };
+}
+// the season's clock: the lines grow to the round before the example, stop, take the example's step, stop, then run to the end
+const fiAt = t => { const i = S.exI; return (i - 1) * L.eio(L.n(t, T.s2.ride[0], T.s2.ride[1])) + L.eio(L.n(t, T.s2.l4, T.s2.l4 + .9)) + (S.n - i) * L.eio(L.n(t, T.s3.race[0], T.s3.race[1])) };
+// the camera: the world point at the frame's centre and the zoom
+const mix = (a, b, k) => ({ cx: L.lerp(a.cx, b.cx, k), cy: L.lerp(a.cy, b.cy, k), z: Math.exp(L.lerp(Math.log(a.z), Math.log(b.z), k)) });
+function camera(t) {
+  const u = (a, b) => L.cl((t - a) / (b - a)), f = fiAt(t), lo = at(S.elo, f), hi = at(S.ehi, f), span = Math.max(hi - lo, 60000) * 1.24, zr = 400 / (span * YS);
+  const z0 = 400 / (60000 * 1.24 * YS), start = { cx: (540 - 230) / z0 + 14 * u(0, 10.2), cy: -(950 - 675) / z0, z: z0 * (1 + .03 * u(0, 10.2)) };
+  const ride = { cx: X(f) - (700 - 540) / zr, cy: Y((hi + lo) / 2) - (BY - 675) / zr, z: zr * (1 + .04 * u(T.s2.ride[1], T.s3.race[0])) };
+  const whole = { cx: S.pc.cx, cy: S.pc.cy, z: S.pc.z * (1 + .03 * u(T.s3.race[1], T.s5.end)) };
+  const gy = (Y(Math.max(...D.s[S.lead.k])) + Y(0)) / 2, last = { cx: S.pc.cx, cy: gy - (940 - 675) / (S.pc.z * 1.12), z: S.pc.z * 1.12 * (1 + .03 * u(T.s6.t, T.s6.end)) };
+  return mix(mix(mix(start, ride, L.eio(L.n(t, T.s2.ride[0], T.s2.ride[0] + 1))), whole, L.eio(L.n(t, T.s3.race[0], T.s3.race[1]))), last, L.eio(L.n(t, T.s5.end - .2, T.s6.t + .6))) }
+// what each line is doing: its light, its colour, whether it has dropped away
+function state(k, t) { const lead = k === S.lead.k, isRel = S.rel.some(a => a.k === k); let a = 1, ring = 0;
+  const s2 = win(t, T.s2.l3, T.s3.t + .3, .4); a = L.lerp(a, k === S.exK ? 1 : L.lerp(.35, .8, win(t, T.s2.l4 - .15, T.s2.l4 + 1.7, .3)), s2); if (k === S.exK) ring = Math.max(ring, s2);   // the three that lost light up while they drop
+  [...D.ai].reverse().forEach((ai, j) => { const tp = T.s3.v[j], te = j < 3 ? T.s3.v[j + 1] + .35 : T.s4.t + .3, w = win(t, tp, te, .35); a = L.lerp(a, ai.k === k ? 1 : .3, w); if (ai.k === k && !lead) ring = Math.max(ring, w) });
+  const gold = lead ? L.n(t, T.s3.v[3], T.s3.v[3] + .3) : 0, s4 = win(t, T.s4.t, T.s5.t + .3, .5); a = L.lerp(a, lead ? L.lerp(.32, .12, L.n(t, T.s4.l4 - .3, T.s4.l4 + .2)) : L.lerp(.1, .05, L.n(t, T.s4.l4 - .3, T.s4.l4 + .2)), s4);   // the drawing steps further back when the last line of words reaches it
+  const s5 = L.n(t, T.s5.l2, T.s5.l2 + .4); a = L.lerp(a, isRel ? 1 : .3, s5 * (1 - L.n(t, T.s6.t - .5, T.s6.t - .1))); if (isRel) ring = Math.max(ring, s5 * (1 - L.n(t, T.s5.l3, T.s5.l3 + .4)));
+  const grey = isRel ? L.n(t, T.s5.l3, T.s5.l3 + .5) : 0, drop = isRel ? L.eio(L.n(t, T.s5.l3 + .15, T.s5.l3 + 1.6)) : 0, s6 = L.n(t, T.s6.t - .5, T.s6.t - .05); a = L.lerp(a, lead ? 1 : 0, s6);
+  return { a: a * (1 - L.n(drop, .5, 1)), ring, gold, grey, drop } }
+function R(t) {
+  S.t = t; const n = S.n, cam = camera(t), z = cam.z, sx = wx => (wx - cam.cx) * z + 540, sy = wy => (wy - cam.cy) * z + 675;
+  world.style.transform = `translate(540px,675px) scale(${z}) translate(${-cam.cx}px,${-cam.cy}px)`;
+  S.base.setAttribute('stroke-width', 2 / z); S.base.setAttribute('stroke-dasharray', `${3 / z} ${9 / z}`); S.base.setAttribute('opacity', 1 - .7 * win(t, T.s4.t, T.s5.t + .3, .5));
+  // the drawing
+  const fi = fiAt(t), i0 = Math.min(n, Math.floor(fi)), fr = fi - i0, kw = L.eio(L.n(t, T.s3.race[0], T.s3.race[1])), hy = [];
+  S.ln.forEach((l, j) => { const s = D.s[l.k], st = state(l.k, t); let d = ''; for (let i = 0; i <= i0; i++) d += (i ? 'L' : 'M') + X(i) + ' ' + Y(s[i]).toFixed(1); const v = i0 >= n ? s[n] : L.lerp(s[i0], s[i0 + 1], fr); if (i0 < n) d += 'L' + X(fi).toFixed(2) + ' ' + Y(v).toFixed(1);
+    const sw = L.lerp(5, 4, kw) * (1 + .5 * st.gold) / z, ov = Math.max(st.gold, st.grey), dy = st.drop * 300 / z; [l.u, l.p, l.o].forEach(p => p.setAttribute('d', d)); l.u.setAttribute('stroke-width', sw * 2.2); l.p.setAttribute('stroke-width', sw); l.o.setAttribute('stroke-width', sw);
+    l.p.setAttribute('opacity', 1 - ov); l.o.setAttribute('opacity', ov); l.g.setAttribute('opacity', st.a); l.g.setAttribute('transform', `translate(0 ${dy})`); hy[j] = { st, x: sx(X(Math.min(fi, n))), y: sy(Y(v) + dy) } });
+  const big = 1 - L.eio(L.n(fi, 0, 3)), pop = t >= T.s1.marks ? .5 + .5 * L.spring(t - T.s1.marks, 2.2, 8) : 0, gap = L.lerp(52, 40, kw);
+  // the marks never sit on each other: pairs closer than the gap push apart, in a few passes, in the order of their lines
+  const off = hy.map(() => 0); for (let it = 0; it < 14; it++) { const ad = hy.map(() => 0); hy.forEach((h, j) => hy.forEach((g, m) => { if (m <= j) return; const dir = Math.tanh((h.y - g.y) / 3 + (j - m) * 1.2), sg = dir < 0 ? -1 : 1, q = (gap * Math.abs(dir) - ((h.y + off[j]) - (g.y + off[m])) * sg) / 2; if (q > 0) { ad[j] += q * sg; ad[m] -= q * sg } })); ad.forEach((v, j) => off[j] += v * .6) }
+  hy.forEach((h, j) => { h.o = off[j] * (1 - big) + (j - (hy.length - 1) / 2) * 88 * big });
+  S.ln.forEach((l, j) => { const h = hy[j], st = h.st, sc = L.lerp(1, 1.5, big) * L.lerp(1, .82, kw) * pop * (1 + .12 * Math.max(st.ring, st.gold));
+    l.hd.style.opacity = (t >= T.s1.marks ? 1 : 0) * Math.max(st.a, 0); l.hd.style.transform = `translate(${h.x - 22}px,${h.y + h.o - 22}px) scale(${sc})`; l.hd.style.filter = st.grey ? `grayscale(${st.grey})` : '';
+    l.hd.querySelector('.rc').style.opacity = st.ring * (1 - st.gold); l.hd.querySelector('.rg').style.opacity = st.gold });
+  // the script: a line arrives, the one before steps back and stays; the column crawls upward
+  S.sc.forEach(s => { const on = t >= s.t0 - .05 && t <= s.t1 + .05; s.el.style.display = on ? 'flex' : 'none'; if (!on) return; s.el.style.opacity = s.id === 'c6' ? 1 : 1 - L.n(t, s.t1 - .35, s.t1); s.el.style.transform = `translateY(${s.y0 - V * (t - s.t0)}px)`;
+    s.els.forEach(e => { const d = t - e.t, k = L.eo(L.n(d, 0, .4)); e.el.style.opacity = (d >= 0 ? L.n(d, 0, .22) : 0) * L.lerp(1, .35, L.n(t, e.dim, e.dim + .4)); if (!e.pic && e.c !== 'num') e.el.style.transform = `translateY(${(1 - k) * 18}px)` }) });
+  { const d = t - T.s4.dots; S.dots.forEach((e, i) => { const k = L.n(d, i * .05, i * .05 + .2); e.style.background = i < S.nine ? S.dotC : '#2a2522'; e.style.transform = `scale(${.4 + .6 * L.eo(k)})`; e.style.opacity = k }); const b = L.$('.bar i'); if (b) b.style.width = Math.max(0, S.barW * L.eo5(L.n(t, T.s4.bar, T.s4.bar + .6))) + 'px' }
+  { const d = t - T.s6.num; S.numEl.style.transform = `scale(${d > 0 ? 1.18 - .18 * L.spring(d, 1.8, 7.5) : 1})`; L.$('#c6 .mkw i').style.opacity = L.n(t, T.s6.t, T.s6.t + .3) }
+  grain(t);
+}
+window.R = R;
+(async () => {
+  L.$('#base').textContent = L.css; [D, L.models] = await Promise.all([fetch('data/wrap.json').then(r => r.json()), fetch('models.json').then(r => r.json())]); build();
+  await Promise.all(['800 72px Inter', '700 44px Inter', '600 150px "Geist Mono"'].map(f => document.fonts.load(f))); await document.fonts.ready; await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  // each column starts low enough that its crawl ends with its top line at y 150; the last card sits centred above the winner's line
+  S.sc.forEach(s => { s.el.style.display = 'flex'; s.H = s.el.offsetHeight; s.y0 = s.id === 'c6' ? 470 - s.H / 2 + V * (s.t1 - s.t0) / 2 : 150 + V * (s.t1 - s.t0) });
+  if (S.numEl.scrollWidth > 968) S.numEl.style.fontSize = Math.floor(150 * 968 / S.numEl.scrollWidth) + 'px';
+  window.SCENES = S.sc.map(s => ({ id: s.id, t0: s.t0, t1: s.t1, H: s.H, y0: s.y0, els: s.els.map(e => ({ t: e.t, text: e.el.textContent.trim(), pic: !!e.pic })) }));
+  grain = L.grain(L.$('#grain'), .06); window.CUES = C; window.DUR = T.s6.end; R(0); window.READY = 1;
+})();
+</script>

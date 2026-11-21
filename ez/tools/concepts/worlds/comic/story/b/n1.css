@@ -1,0 +1,28 @@
+/* N1 · In the slot */
+.sb-n1-on .wc-chipw{padding-top:70px}
+.sb-n1-on .wc-chip{overflow:visible}
+.sb-n1-t{position:absolute;z-index:1;left:50%;bottom:calc(100% - 9.5% - 3px);width:min(66%,230px);transform:translateX(-50%) rotate(-3deg);transform-origin:50% 100%}
+.sb-n1-t .sb-gt{box-shadow:none}
+.sb-n1-on .wc-chip-pkg{z-index:2}
+/* the slot: a dark slit just inside the package's top edge, the ticket's foot disappearing into it */
+.sb-n1-slot{position:absolute;left:50%;top:-1px;width:min(86%,262px);height:8px;transform:translateX(-50%);background:#05070a;border:2px solid #fff;border-top:0;border-radius:0 0 6px 6px;box-shadow:inset 0 3px 0 rgba(255,255,255,.12)}
+.sb-n1-on .wc-chip-k:not(.wc-chip-k2){margin-top:6px}
+.sb-n1-on .wc-chipw > .wc-tick{top:auto!important;bottom:6px!important;right:10px!important;left:auto!important}
+/* placing the bet: the ticket drops in hard, the slot takes it with a "clunk", and the chip lights up gold as the bet is armed
+   (the countdown dies jolt). Once, when the chip first comes into view; still under reduced motion. */
+.sb-n1-clk{position:absolute;z-index:3;left:50%;top:6px;transform:translate(-50%,0) rotate(-6deg);font-family:var(--wc-pow);font-size:20px;line-height:1;color:#fff;
+  -webkit-text-stroke:1.5px var(--wc-ink);paint-order:stroke;text-shadow:2px 2px 0 var(--wc-ink);opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:no-preference){
+  .wc-chip:not(.sb-in) .sb-n1-t{transform:translateX(-50%) translateY(-70px) rotate(-12deg);opacity:0}
+  .wc-chip.sb-in .sb-n1-t{animation:sbDrop .75s cubic-bezier(.5,0,.75,0) .15s both,sbSeat .35s cubic-bezier(.2,1.6,.4,1) .9s both}
+  @keyframes sbDrop{0%{transform:translateX(-50%) translateY(-70px) rotate(-12deg);opacity:0}25%{opacity:1}100%{transform:translateX(-50%) translateY(8px) rotate(-2deg);opacity:1}}
+  @keyframes sbSeat{0%{transform:translateX(-50%) translateY(8px) rotate(-2deg)}100%{transform:translateX(-50%) rotate(-3deg)}}
+  .wc-chip.sb-in .sb-n1-clk{animation:sbClk .9s ease-out .9s both}
+  @keyframes sbClk{0%{opacity:0;transform:translate(-50%,8px) rotate(-6deg) scale(.4)}25%{opacity:1;transform:translate(-50%,0) rotate(-6deg) scale(1.1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-8px) rotate(-6deg) scale(1)}}
+  .wc-chip.sb-in .wc-chip-pkg{animation:sbArm 1.1s ease-out .9s both}
+  @keyframes sbArm{0%{box-shadow:0 0 0 0 rgba(253,188,42,0)}20%{box-shadow:0 0 0 6px rgba(253,188,42,.95),0 0 34px 10px rgba(253,188,42,.7)}100%{box-shadow:0 0 0 0 rgba(253,188,42,0)}}
+  .wc-chip.sb-in .wc-chip-pins{animation:sbPins 1.1s ease-out .9s both}
+  @keyframes sbPins{20%{filter:brightness(1.6) drop-shadow(0 0 6px #fdbc2a)}100%{filter:none}}
+  .wc-chip.sb-in .wc-die{animation:sbJolt .4s ease-out 1s both!important}
+  @keyframes sbJolt{0%{transform:none}30%{transform:translateY(-4px) scale(1.06)}100%{transform:none}}
+}
