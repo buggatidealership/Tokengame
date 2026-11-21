@@ -35,9 +35,10 @@
 .ntf .bd{margin-top:8px;font:700 14px/1 'Geist Mono';display:flex;gap:12px}.ntf .bd span{color:#c9c2b5;font-weight:500}
 .home{position:absolute;left:50%;bottom:10px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:rgba(242,237,230,.8);z-index:3}
 #end{top:420px}#end h3{font:900 132px/1 Inter;letter-spacing:-.05em}
+#kp{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:screen;background:radial-gradient(100% 38% at 50% 0%,rgba(3,200,112,.62),transparent 72%),radial-gradient(100% 36% at 50% 100%,rgba(255,58,49,.58),transparent 72%),radial-gradient(70% 45% at 50% 50%,rgba(253,188,42,.07),transparent 70%)}
 </style>
 <div id="st">
-<div id="gnd"></div><div id="glo"></div>
+<div id="gnd"></div><div id="glo"></div><div id="kp"></div>
 <div id="cam"><div id="ph"></div></div>
 <div class="ln" id="l1"></div><div class="ln" id="l2"></div>
 <div id="lift"></div>
@@ -81,6 +82,7 @@ const buzz = (t, a) => { const d = t - a; if (d < 0 || d > .5) return 0; return 
 window.R = t => {
   grain(t);
   const BT = FV.BT, bp = t < FV.PH ? 0 : Math.exp(-((t - FV.PH) % BT) / .2), drop = t >= T.ping ? 1 : .35;
+  $('#kp').style.opacity = (bp * (drop === 1 ? .9 : .4)).toFixed(3);   // the kick light: the brand's green and red swell on every kick (fl-feed's)
   $('#glo').style.opacity = (.45 + .55 * bp * drop).toFixed(3);
   $('#gnd').style.transform = `scale(${(1.02 + .04 * n(t, 0, DUR)).toFixed(4)}) translate(${(10 * Math.sin(t * .4)).toFixed(1)}px,0)`;
   // the camera: a handheld hold on the phone, a pull back as it locks, a punch in on the alert, then into the app

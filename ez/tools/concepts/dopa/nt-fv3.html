@@ -44,9 +44,10 @@
 #end h3{font-family:'Saira Condensed';font-weight:900;text-transform:uppercase;font-size:150px}
 #pc,#pq{overflow:hidden}
 #shk{position:absolute;inset:0}
+#kp{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:screen;background:radial-gradient(100% 38% at 50% 0%,rgba(3,200,112,.62),transparent 72%),radial-gradient(100% 36% at 50% 100%,rgba(255,58,49,.58),transparent 72%),radial-gradient(70% 45% at 50% 50%,rgba(253,188,42,.07),transparent 70%)}
 </style>
 <div id="st">
-<div id="shk"><div id="gnd"></div><div id="lites"></div><div id="night"></div><div id="day"></div>
+<div id="shk"><div id="gnd"></div><div id="lites"></div><div id="night"></div><div id="day"></div><div id="kp"></div>
   <div id="ph"></div>
   <div id="clk"><div class="tm"><small class="dy">THU</small><span class="tt">4:00 PM</span></div><div class="mv"><img alt=""><span class="mvv">+0.00%</span></div><svg viewBox="0 0 848 190"></svg></div>
 </div>
@@ -112,6 +113,7 @@ window.R = t => {
   // the sky goes through the night: dusk, night, dawn, the afternoon of the close (the windows go dark at day)
   const m = t < T.c0 ? 0 : mAt(t), night = cl(n(m, 20, 120) - n(m, 780, 960)), day = n(m, 840, 1100);
   $('#night').style.opacity = (.85 * night).toFixed(3); $('#day').style.opacity = (.85 * day).toFixed(3); $('#day').style.setProperty('--sx', (20 + 60 * n(m, 840, 1440)).toFixed(1) + '%');
+  $('#kp').style.opacity = (bp * (drop === 1 ? .9 : .4)).toFixed(3);   // the kick light: the brand's green and red swell on every kick (fl-feed's)
   $('#lites').style.opacity = ((.15 + .4 * night) * (1 - .8 * day) + .25 * bp * drop).toFixed(3);
   $('#gnd').style.transform = `scale(${(1.02 + .05 * n(t, 0, DUR)).toFixed(4)}) translateY(${(-30 * n(t, T.c0, T.c1)).toFixed(1)}px)`;
   $('#gnd').style.filter = `brightness(${(.78 + .3 * day).toFixed(3)}) saturate(${(1 - .25 * day).toFixed(3)})`;

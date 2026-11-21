@@ -39,9 +39,10 @@
 .tv .mr p{margin-top:6px;font:500 12px/1.35 Inter;color:#d9d3ca}
 .tv .mr small{display:block;margin-top:5px;font:500 10.5px/1 'Geist Mono';color:var(--mu)}
 #end{top:420px}#end h3{font:italic 900 140px/1 Kanit,sans-serif;text-transform:uppercase;letter-spacing:-.01em}
+#kp{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:screen;background:radial-gradient(100% 38% at 50% 0%,rgba(3,200,112,.62),transparent 72%),radial-gradient(100% 36% at 50% 100%,rgba(255,58,49,.58),transparent 72%),radial-gradient(70% 45% at 50% 50%,rgba(253,188,42,.07),transparent 70%)}
 </style>
 <div id="st">
-<div id="gnd"><div id="gfl"></div></div>
+<div id="gnd"><div id="gfl"></div></div><div id="kp"></div>
 <div id="ph"></div>
 <div id="th"><svg id="cn"></svg></div>
 <div id="lift"></div>
@@ -107,6 +108,7 @@ let grain, G = {};
 window.R = t => {
   grain(t);
   const BT = FV.BT, bp = t < FV.PH ? 0 : Math.exp(-((t - FV.PH) % BT) / .2), drop = t >= T.rp[0] ? 1 : .35;
+  $('#kp').style.opacity = (bp * (drop === 1 ? .9 : .4)).toFixed(3);   // the kick light: the brand's green and red swell on every kick (fl-feed's)
   $('#gfl').style.opacity = (.5 * bp * drop).toFixed(3);
   // the crane: the thread's camera brings the newest card to the frame's middle, then pulls back to show it whole
   const focusY = i => i < 0 ? G.rootY + 40 : G.y[i] + G.h[i] / 2 - 500;
