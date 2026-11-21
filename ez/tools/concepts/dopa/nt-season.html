@@ -73,9 +73,9 @@ let EL = null;
 /* the camera: z = phone zoom; (fx, fy) a point on the 390x844 screen placed at (px, py) on the frame. Each move starts on a beat. */
 const CAM = [
   [0,      1.92, 150, 142, 500, 430],    // the header, Season 1: the mark and the switch big
-  [B(3),   1.45, 195, 480, 540, 900],   // down to the board: Grok on top
+  [B(3),   1.45, 195, 480, 540, 945],   // down to the board: Grok on top
   [B(6),   1.02, 195, 422, 540, 660],   // the whole phone
-  [B(7),   2.30, 160, 138, 520, 560],    // up to the switch
+  [B(7),   2.30, 160, 138, 545, 560],    // up to the switch
   [B(9),   2.38, 180, 139, 520, 565],
   [B(12),  2.50, 200, 139, 520, 570],    // the fingertip arrives
   [B(16),  2.50, 200, 139, 520, 570],    // tap, on the kick
@@ -83,7 +83,7 @@ const CAM = [
   [B(18),  1.06, 195, 422, 540, 652],   // the whole phone in Season 2
   [B(20),  .86, 195, 422, 540, 690],    // back, so the rows can lift
   [B(24),  .82, 195, 422, 545, 700],
-  [B(26),  2.30, 160, 138, 520, 560],    // the header again: same mark
+  [B(26),  2.30, 160, 138, 545, 560],    // the header again: same mark
   [B(28),  2.42, 130, 139, 560, 565],    // toward Season 1
   [B(30),  2.42, 130, 139, 560, 565],    // tap back
   [B(30) + .12, 1.45, 195, 480, 540, 925], // Season 1's board
@@ -96,7 +96,7 @@ function camAt(t) { let i = 0; while (i < CAM.length - 1 && CAM[i + 1][0] <= t) 
   const p = prev || a, d = i === 0 ? 1 : Math.min(.62, a[0] - p[0] > 0 ? a[0] - p[0] : .62), k = i === 0 ? 1 : eio(n(t, a[0], a[0] + (a[0] === B(16) + .12 || a[0] === B(30) + .12 ? .7 : d)));
   const v = j => lerp(p[j], a[j], k);
   // a slow drift so the frame never freezes (a fraction of a pixel per frame), on top of the move
-  const dz = .012 * Math.sin(t * .9), dx = 6 * Math.sin(t * .55), dy = 5 * Math.cos(t * .47);
+  const dz = .025 * Math.sin(t * 1.1), dx = 14 * Math.sin(t * .8), dy = 10 * Math.cos(t * .7);
   return { z: v(1) * (1 + dz), fx: v(2), fy: v(3), px: v(4) + dx, py: v(5) + dy } }
 function place(c) { const w = $('#phw'); w.style.transform = `translate(${(c.px - c.fx * c.z).toFixed(2)}px,${(c.py - c.fy * c.z).toFixed(2)}px)`; $('#ph').style.zoom = c.z.toFixed(4) }
 const toF = (c, sx, sy) => [c.px + (sx - c.fx) * c.z, c.py + (sy - c.fy) * c.z];
@@ -128,7 +128,8 @@ function lift(id, t, up, dn, src, tgt, c) { const o = $(id), kU = spr(n(t, up, u
   if (t < up || (t > dn + .42)) { o.style.display = 'none'; return 0 } o.style.display = 'block';
   const [sx, sy] = toF(c, src[0], src[1]), sw = src[2] * c.z, sh = src[3] * c.z, w = lerp(sw, tgt[2], k), h = w * src[3] / src[2];
   const x = lerp(sx, tgt[0] - tgt[2] / 2, k), y = lerp(sy, tgt[1], k);
-  o.style.width = w.toFixed(1) + 'px'; o.style.height = h.toFixed(1) + 'px'; o.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${(tgt[3] || 0) * k}deg)`;
+  const fl = k * Math.sin((t - up) * 2.6) * 7, fr = k * Math.sin((t - up) * 1.9) * .6;  // a lifted row floats on the glass
+  o.style.width = w.toFixed(1) + 'px'; o.style.height = h.toFixed(1) + 'px'; o.style.transform = `translate(${x.toFixed(1)}px,${(y + fl).toFixed(1)}px) rotate(${((tgt[3] || 0) * k + fr).toFixed(3)}deg)`;
   o.style.opacity = (k < .02 ? 0 : 1); return k }
 let grainF = null;
 window.R = async t => {
@@ -136,7 +137,7 @@ window.R = async t => {
   const src = screenAt(t), si = $('#si'); if (si.dataset.s !== src) { si.dataset.s = src; si.src = src; try { await si.decode() } catch (e) {} }
   // the ground drifts; the light pulses on every kick once the beat is in
   const g = $('#gnd'); g.style.transform = `scale(${(1.04 + .03 * Math.sin(t * .23)).toFixed(4)}) translate(${(8 * Math.sin(t * .31)).toFixed(1)}px,${(6 * Math.cos(t * .27)).toFixed(1)}px)`;
-  const ph = ((t - .025) / BT) % 1, kick = t >= TAP1 ? Math.exp(-ph * 5.5) : .12 * Math.exp(-ph * 6);
+  const ph = ((t - .025) / BT) % 1, kick = t >= TAP1 ? Math.exp(-ph * 5.5) : .3 * Math.exp(-ph * 5);
   $('#pulse').style.opacity = (t >= TAP1 && t < B(37) ? .18 + .5 * kick : .08 + kick).toFixed(3);
   $('#flash').style.opacity = (Math.max(0, 1 - n(t, TAP1, TAP1 + .5)) * (t >= TAP1 ? .85 : 0) + Math.max(0, 1 - n(t, TAP2, TAP2 + .4)) * (t >= TAP2 ? .45 : 0)).toFixed(3);
   // the screen behind the lifts dims and blurs
