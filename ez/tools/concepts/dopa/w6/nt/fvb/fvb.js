@@ -102,9 +102,9 @@ FB.css = `
 :root{--k:#04070e;--cr:#f8f0d9;--g:#03c870;--r:#ff3a31;--au:#fdbc2a;--mu:rgba(248,240,217,.58);--mu2:rgba(248,240,217,.36);--ln:rgba(248,240,217,.13)}
 html,body{background:#04070e}
 #st{position:absolute;inset:0;overflow:hidden;background:#04070e}
-#gnd{position:absolute;left:-60px;top:-75px;width:1200px;height:1500px;background-size:cover;background-position:50% 50%}
+#gnd{position:absolute;left:-60px;top:-75px;width:1200px;height:1500px;background-size:cover;background-position:50% 50%;will-change:transform}   /* a fixed raster that is only moved: re-rastering it every frame left white tiles under load (FV7, 21 Nov) */
 #cam{position:absolute;inset:0;perspective:2400px;perspective-origin:50% 42%}
-.phw{position:absolute;left:0;top:0;transform-origin:50% 50%}
+.phw{position:absolute;left:0;top:0;transform-origin:50% 50%;will-change:transform}
 .phn{position:absolute;left:0;top:0;width:390px;height:844px}
 .phn .body{position:absolute;inset:-14px;border-radius:66px;background:linear-gradient(145deg,#5a605c 0%,#1d201e 13%,#0b0d0c 32%,#0b0d0c 68%,#1c1f1d 87%,#4b514d 100%);box-shadow:0 60px 120px rgba(0,0,0,.7),0 -20px 60px -26px rgba(3,200,112,.4),0 22px 70px -26px rgba(255,58,49,.36),inset 0 0 0 2px rgba(255,255,255,.12),inset 0 6px 6px -4px rgba(3,200,112,.55),inset 0 -6px 6px -4px rgba(255,58,49,.5)}
 .phn .body::after{content:'';position:absolute;inset:8px;border-radius:59px;box-shadow:0 0 0 2px #020302,0 0 0 3px rgba(255,255,255,.05)}
