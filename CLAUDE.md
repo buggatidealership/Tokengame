@@ -26,7 +26,22 @@
   - Seasons keep the mark and change the world (UEFA 2024).
   - New skill lessons 209 (the brand lives in the object) and 210 (never a reason without its receipt); 207 corrected.
 - Renderer gotcha: a painted ground re-scaled every frame can be captured unpainted (white) under load. Give it and the phone wrapper `will-change:transform` (FV7).
-- After a container restart (04:30 UTC) the lost renders (PM-B walkthrough, the season switch film, FV1, FV2 and FV7 re-renders) ran again from `scratchpad/night-queue.sh`, one at a time.
+- After the container restarted (04:30 UTC), the lost renders ran again one at a time. Review page version 5 (05:40 UTC) has every film; each passes 0 frozen half-seconds:
+
+  | Film | Median motion |
+  |---|---|
+  | FV1 | 9.18 |
+  | FV2 | 17.36 |
+  | FV7 | 6.88 |
+  | FV8 | 8.61 |
+  | PM-B | 7.20 |
+  | Season switch film | 5.57 |
+
+- Three render gotchas from that run:
+  - A queue fed from a heredoc loses its next lines to the render script unless the script's stdin is `/dev/null`.
+  - A page that decodes 64 images at once in four renderers runs out of resources. Fetch them 8 at a time instead.
+  - `wrapxs.sh` takes `P`, the number of renderers (default 4). PM-B's screenshots are 7,800 px tall and only render with `P=2`.
+- The page's comment watch is not registered (this session holds the maximum of 10 webhook triggers). The owner's notes reach me by the page's Copy all notes button, pasted in chat.
 - **Video kinds, each its own format (owner, 2026-11-20, on the four animated samples):** prediction videos (a company's trades are in, before the report), outcome videos (the close), product videos (the site redesign's release video), season closing and season opening videos, and new feature launches. Picks so far:
   - **Prediction videos:** in-1's structure: the company card, rows one at a time with the LONG v SHORT count, each AI's called move and confidence. Show every AI's reason, not only one; in-2's layout is not liked, but showing each model's reasoning is. Being built as `dopa/an-in3.html`.
   - **The feed launch (a new feature launch):** in app, a phone with the real app UI, zoom ins and pop outs, a glass layer, crisp type, one thing in focus per shot, in the spirit of the release video. Feed-1's post layout is liked: the AI's words with the key clause marked, then the company row with "LONG (+4%)" (not "called +4%") and "58% confident". Being built as `dopa/fl-feed.html`.
