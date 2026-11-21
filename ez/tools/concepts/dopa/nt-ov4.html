@@ -69,7 +69,7 @@ html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#0
   <div id="cam"><div id="pages"></div></div>
   <div id="flash"></div>
 </div>
-<script src="lib.js"></script><script src="nt-ov.js"></script>
+<script src="lib.js"></script><script src="nt-ov.js"></script><script src="nt-ovx.js"></script>
 <script>
 const TR = 4.0, PER = 5;
 let D, G, grain, PG = [], SPIN = [], NP, ST;
@@ -151,6 +151,7 @@ window.R = t => {
   const kick = (t >= TR ? Math.exp(-(t - TR) * 7) * Math.sin((t - TR) * 50) * 10 : 0) + (t >= ST ? Math.exp(-(t - ST) * 7) * Math.sin((t - ST) * 50) * 8 : 0);
   const cam = L.$('#cam'); cam.style.transformOrigin = `540px ${fy.toFixed(1)}px`; cam.style.transform = `translate(${kick.toFixed(2)}px,${(kick * .5 + dy).toFixed(2)}px) scale(${z.toFixed(4)})`;
   OV.endR(t, ST + 5 * p);
+  OV.beat(t, G, [L.$('#gnd'), L.$('#rush')], L.$('#cam'), .3, .010); OV.endFx(t, ST + 5 * p, G);
 };
 (async () => {
   D = await OV.load(); setup();

@@ -9,8 +9,8 @@ const EZ=path.resolve(__dirname,'../../../..'),HERE=__dirname,KIT=(process.argv[
 const MIME={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.json':'application/json'};
 function page(){let t=fs.readFileSync(path.join(EZ,'v53-terminal.html'),'utf8');const css=['base.css','a.css','b.css','c.css'].map(f=>fs.readFileSync(path.join(HERE,f),'utf8')).join('\n'),js=fs.readFileSync(path.join(HERE,'season.js'),'utf8');
   t=t.replace('<script src="ez-data.js"></script>','<script src="tools/concepts/night/season/data.js"></script>\n<script src="ez-data.js"></script>').replace('var h0=(location.hash||"").slice(1);',js+'\nvar h0=(location.hash||"").slice(1);');
-  /* the film's screens: no scroll bar, the bottom nav where a phone has it */
-  return t+'\n<style>\n'+css+'\nhtml{scrollbar-width:none}\n</style>\n'}
+  /* the film's screens: no scroll bar, a 46px status bar above the header (the phone's island sits there), the bottom nav where a phone has it */
+  return t+'\n<style>\n'+css+'\nhtml{scrollbar-width:none}body{padding-top:46px}\n</style>\n'}
 const srv=http.createServer((q,s)=>{const u=decodeURIComponent(q.url.split('?')[0]);if(u==='/__season.html'){s.writeHead(200,{'content-type':'text/html'});return s.end(page())}
   const f=path.join(EZ,u);if(!f.startsWith(EZ)||!fs.existsSync(f)||fs.statSync(f).isDirectory()){s.writeHead(404);return s.end()}s.writeHead(200,{'content-type':MIME[path.extname(f)]||'application/octet-stream'});fs.createReadStream(f).pipe(s)});
 const N=31,STEP=1000/30;
@@ -23,7 +23,7 @@ const N=31,STEP=1000/30;
     q('mark','header.top .brand svg');q('logo','header.top .brand b');q('sw1','[data-sea="1"]');q('sw2','[data-sea="2"]');
     document.querySelectorAll('main [data-m], main tr[data-pick]').forEach(e=>{const k=(e.getAttribute('data-m')||e.getAttribute('data-pick'));if(o['row-'+k])return;const r=e.getBoundingClientRect();o['row-'+k]=[r.x,r.y,r.width,r.height].map(v=>+v.toFixed(1))});return o});
   const el={};el.s1=await boxes();await shot('s1.jpg');
-  const els=async(pre,list)=>{for(const [k,sel] of list){const e=await p.$(sel);if(!e)continue;await e.screenshot({path:path.join(OUT,'el-'+pre+k+'.png'),omitBackground:false})}};
+  const els=async(pre,list)=>{const h=await p.addStyleTag({content:'.nav{visibility:hidden!important}'});for(const [k,sel] of list){const e=await p.$(sel);if(!e)continue;await e.screenshot({path:path.join(OUT,'el-'+pre+k+'.png'),omitBackground:false})}await h.evaluate(e=>e.remove())};
   await els('s1-',[['grok','main tr[data-pick="GROK"]'],['kimi','main tr[data-pick="KIMI"]']]);
   for(const [to,tag] of [[2,'up'],[1,'bk']]){
     await p.evaluate(to=>document.querySelector('[data-sea="'+to+'"]').click(),to);await p.evaluate(async()=>{if(window.__vt)await window.__vt.ready});

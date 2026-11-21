@@ -32,7 +32,8 @@
 .row .rm{margin:7px 0 0 64px}
 .row .lit{position:absolute;inset:0;border-radius:8px;background:linear-gradient(90deg,rgba(253,188,42,.16),rgba(253,188,42,.04));box-shadow:inset 6px 0 0 #fdbc2a;opacity:0}
 .row .hl{position:absolute;top:0;height:42px;border-radius:5px;background:#fdbc2a;mix-blend-mode:normal;opacity:0}
-#st{display:flex;justify-content:center;margin-top:12px;padding-top:16px;border-top:2px solid rgba(248,240,217,.1)}
+#st{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:12px;padding-top:16px;border-top:2px solid rgba(248,240,217,.1)}
+#st .sm{opacity:0}
 #lamp{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 30% at 50% 0%,rgba(253,188,42,.22),transparent 70%);mix-blend-mode:screen}
 #vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(85% 65% at 50% 48%,transparent 50%,rgba(0,0,0,.7))}
 #end{position:absolute;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;background:radial-gradient(55% 40% at 50% 45%,rgba(253,188,42,.18),transparent 70%),rgba(4,7,14,.92);opacity:0}
@@ -68,7 +69,7 @@ const drawFlap = (F, k) => F.cells.forEach((c, i) => { const ch = F.text[i] || '
   PV.$('#bd').innerHTML = `<div class="hd">${PV.logo(54)}<span>LOCKED BEFORE THE REPORT</span></div>${line('H', 9, 'co')}${line('S', 34, 'wh')}
     <div class="lab"><span style="width:${NAME * 43}px">AI</span><span style="width:${SIDE * 43}px">SIDE</span><span style="width:${MOVE * 43}px">CALLED</span><span>CONFIDENT</span></div>
     ${rows.map(x => `<div class="row" data-k="${x.k}"><i class="lit"></i><div class="top">${PV.mark(x.k, 52)}<div class="grp">${line('L', NAME)}</div><div class="grp">${line('L', SIDE)}</div><div class="grp">${line('L', MOVE)}</div><div class="grp">${line('L', CONF)}</div></div>
-      <div class="rm">${line('M', RM)}</div></div>`).join('')}<div id="st">${line('L', 16)}</div>`;
+      <div class="rm">${line('M', RM)}</div></div>`).join('')}<div id="st"><span class="sm">${PV.logo(58)}</span>${line('L', 16)}</div>`;
   const tight = s => s.toUpperCase().replace(/’/g, "'");
   // the board head: the company and the report line
   T = {};
@@ -126,6 +127,7 @@ window.R = t => {
     x._row.style.opacity = inR && !on ? (1 - .55 * PV.n(k, T.starts[0], T.starts[0] + 1)).toFixed(3) : 1;
     const cells = PV.$$('.rm .c', x._row), n = x.clause.length, p = on ? PV.eio(PV.n(k, T.starts[i] + 1, T.starts[i] + 4)) : (inR && i < cur) || k >= T.end ? 0 : 0;
     cells.forEach((c, j) => { const lit = on && j < n && j < p * n + .5; c.style.background = lit ? 'linear-gradient(180deg,#fdbc2a 0 49%,#e7a91c 51% 100%)' : ''; c.firstChild.style.color = lit ? '#1a1300' : c.firstChild.style.color }) });
+  const sm = PV.n(k, T.count, T.count + .4); PV.$('#st .sm').style.opacity = sm.toFixed(3); PV.$('#st .sm').style.transform = `scale(${PV.lerp(1.6, 1, PV.eo5(sm)).toFixed(3)})`;
   // the end card on the bed's second drop
   const ce = PV.n(k, T.logo, T.logo + .6), en = PV.$('#end'); en.style.opacity = ce.toFixed(3);
   en.querySelector('img').style.transform = `scale(${(1.2 - .2 * PV.eo5(ce) + .02 * Math.exp(-5 * ph)).toFixed(3)})`;

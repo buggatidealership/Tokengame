@@ -19,8 +19,8 @@
 #card .co{font:400 116px/1 Anton;letter-spacing:.01em;color:#f8f0d9;text-transform:uppercase;white-space:nowrap}
 #card .wh{margin-left:auto;text-align:right;font:600 38px/1.08 'Barlow Condensed';color:#f8f0d9;font-style:italic;white-space:nowrap}
 #card .wh b{display:block;font:800 54px/1 'Barlow Condensed';font-style:normal;letter-spacing:.02em}
-.col{position:absolute;top:418px;width:486px;z-index:20}
-#cL{left:104px}#cS{right:104px}
+.col{position:absolute;top:418px;width:472px;z-index:20}
+#cL{left:116px}#cS{right:116px}
 .col h3{display:flex;align-items:center;gap:14px;height:52px;font:400 40px/1 Anton;letter-spacing:.12em;margin:0 0 14px 4px;text-shadow:0 4px 20px rgba(0,0,0,.8)}
 .col h3 .cn{display:inline-grid;place-items:center;height:52px;border-radius:6px;color:#04070e;font:400 44px/1 Anton;letter-spacing:0;text-shadow:none;overflow:hidden}
 .fc{position:relative;height:134px;margin-bottom:14px;display:grid;grid-template-columns:86px 1fr;grid-template-rows:auto auto;column-gap:18px;align-items:center;padding:14px 20px;
@@ -46,7 +46,7 @@
 #q .who em{margin-left:auto;font:600 26px/1 'Barlow Condensed';letter-spacing:.14em;color:rgba(4,7,14,.55);font-style:normal;text-transform:uppercase}
 #q .cl{margin-top:20px;font:700 76px/1.04 'Barlow Condensed';font-style:italic;color:#04070e;letter-spacing:-.005em}
 #end{position:absolute;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;background:radial-gradient(55% 40% at 50% 45%,rgba(253,188,42,.22),transparent 70%),rgba(4,7,14,.9);opacity:0}
-#end b{font:400 96px/1 Anton;letter-spacing:.04em;color:#f8f0d9}#end b i{font-style:normal}
+#end b{font:italic 800 70px/1 Kanit;letter-spacing:.01em;color:#f8f0d9}#end b i{font-style:normal}
 #end span{font:600 46px/1 'Barlow Condensed';font-style:italic;color:#f8f0d9}
 #flash{position:absolute;inset:0;background:#f8f0d9;mix-blend-mode:overlay;opacity:0;z-index:60;pointer-events:none}
 </style>
@@ -73,7 +73,7 @@ let T = {}, ord, weigh, grain, fcs = {};
   PV.$('#cL').innerHTML = col('LONG'); PV.$('#cS').innerHTML = col('SHORT');
   PV.$$('.fc').forEach(e => fcs[e.dataset.k] = e);
   PV.$('#ct').innerHTML = `<div class="bp">${PV.logo(120)}</div><div class="n"><span style="color:${PV.C.green}">${PV.nL}</span><i>v</i><span style="color:${PV.C.red}">${PV.nS}</span></div><div class="l"><span style="color:${PV.C.green}">LONG</span><span style="color:${PV.C.red}">SHORT</span></div>`;
-  PV.$('#end').innerHTML = `${PV.logo(300)}<b><i style="color:${PV.C.green}">E</i>ARNINGS <i style="color:${PV.C.red}">Z</i>EASON</b><span>${PV.graded}</span>`;
+  PV.$('#end').innerHTML = `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
   grain = PV.grain(PV.$('#grain'), .07);
   // the timeline in beats: the card, the weigh-in one a beat, the count on the hit (beat 8), the words (5 or 6 beats each), the end card
   const len = ord.map(x => PV.need(x.clause) > 2.9 ? 6 : 5), starts = []; let b = 10; len.forEach(l => { starts.push(b); b += l });
@@ -100,7 +100,7 @@ window.R = t => {
   let px = 0, sc = 1.02 + .02 * Math.sin(t * .5);
   if (k < 2) sc = 1.16 - .14 * PV.eo(PV.n(k, 0, 2));
   if (inW) { const side = sp.side === 'LONG' ? 1 : -1, prev = cur ? (ord[cur - 1].side === 'LONG' ? 1 : -1) : 0, w = PV.eio(PV.n(k, T.starts[cur], T.starts[cur] + .5));
-    px = 46 * PV.lerp(prev, side, w); const m2 = PV.eio(PV.n(k, T.starts[cur] + 3, T.starts[cur] + 3.5)); sc = 1.05 + .03 * PV.n(k, T.starts[cur], T.starts[cur] + T.len[cur]) + .06 * m2; px += 30 * side * m2 }
+    px = 22 * PV.lerp(prev, side, w); const m2 = PV.eio(PV.n(k, T.starts[cur] + 3, T.starts[cur] + 3.5)); sc = 1.03 + .02 * PV.n(k, T.starts[cur], T.starts[cur] + T.len[cur]) + .04 * m2; px += 10 * side * m2 }
   sc += punch(8) + punch(16) + punch(24) + punch(32) + punch(T.end);
   T.weigh.forEach(w => sc += .4 * punch(w));
   const shake = k >= 8 && k < 8.6 ? 10 * Math.exp(-6 * (k - 8)) * Math.sin(k * 40) : 0;

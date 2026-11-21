@@ -36,7 +36,7 @@ FB.phoneHTML = (views = '', tabs = ['LEADERBOARD', 'FEED', 'AI PROFILES', 'UPCOM
   <div class="tb"><img src="ezlogo.svg" alt=""><b><i class="e">E</i>arnings <i class="z">Z</i>eason</b><div class="ssn">SEASON 2</div></div>
   <div class="views">${views}</div>
   <div class="nav">${tabs.map(n => `<div data-n="${n}"><svg viewBox="0 0 24 24">${FB.ICON[n]}</svg>${n}</div>`).join('')}</div><div class="tab"></div>
-</div><div class="isl"></div><div class="glare"></div></div></div></div>`;
+</div><div class="dimv"></div><div class="isl"></div><div class="glare"></div></div></div></div>`;
 // place a phone: centre (cx, cy) in the frame, z its layout zoom (1 = 390 x 844), rotations in degrees, s an extra transform scale (keep it near 1)
 FB.place = (w, o) => { const z = o.z, ph = w.firstElementChild; ph.style.zoom = z.toFixed(4); w.style.width = (390 * z).toFixed(1) + 'px'; w.style.height = (844 * z).toFixed(1) + 'px';
   w.style.left = (o.cx - 195 * z).toFixed(1) + 'px'; w.style.top = (o.cy - 422 * z).toFixed(1) + 'px';
@@ -88,6 +88,8 @@ FB.lift = (id, t, up, dn, tgt, o = {}) => { const L0 = FB.lifts[id], kU = (o.spr
   return k };
 // the graded receipt (research F2.10: a reason beside its outcome; wrong as loud as right): the EZ. mark, the close, RIGHT or WRONG, the P&L
 FB.rcHTML = (x, day = 'NOV 20', s = 22) => `<div class="rc">${FB.EZ(s)}<span>${day}</span><span class="${x.right ? 'ok' : 'no'}">${x.right ? 'RIGHT' : 'WRONG'}</span><span class="pnl ${x.pnl >= 0 ? 'L' : 'S'}">P&amp;L ${FB.money(x.pnl)}</span></div>`;
+// the screen behind a lift dims (a dark layer over the app, cheap to draw; it replaced a blur filter that stalled the renderer under load)
+FB.dim = d => { document.querySelectorAll('.dimv').forEach(v => v.style.opacity = (.7 * d).toFixed(3)) };
 FB.raf = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 FB.load = async (fontsCSS, preload = []) => {
   const st = document.createElement('style'); st.textContent = `@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800;1,900&display=swap');` + (fontsCSS || '') + L.css + FB.css; document.head.prepend(st);
@@ -109,7 +111,8 @@ html,body{background:#04070e}
 .scr{position:absolute;inset:0;border-radius:52px;overflow:hidden;background:#05080a}
 .app{position:absolute;inset:0;background:radial-gradient(90% 30% at 50% 0%,rgba(3,200,112,.13),transparent 70%),#05080a;color:var(--cr)}
 .isl{position:absolute;left:50%;top:11px;width:104px;height:30px;margin-left:-52px;border-radius:18px;background:#000;z-index:5}
-.glare{position:absolute;inset:0;border-radius:52px;background:linear-gradient(115deg,transparent 0%,rgba(255,255,255,.035) 18%,rgba(255,255,255,.1) 30%,rgba(255,255,255,.02) 41%,transparent 50%,transparent 74%,rgba(255,255,255,.04) 86%,transparent 100%);background-size:230% 230%;background-repeat:no-repeat;pointer-events:none;z-index:6}
+.dimv{position:absolute;inset:0;background:#04070e;opacity:0;z-index:6;pointer-events:none}
+.glare{position:absolute;inset:0;border-radius:52px;background:linear-gradient(115deg,transparent 0%,rgba(255,255,255,.035) 18%,rgba(255,255,255,.1) 30%,rgba(255,255,255,.02) 41%,transparent 50%,transparent 74%,rgba(255,255,255,.04) 86%,transparent 100%);background-size:230% 230%;background-repeat:no-repeat;pointer-events:none;z-index:7}
 .tb{position:absolute;left:16px;right:16px;top:50px;height:46px;display:flex;align-items:center;gap:9px;z-index:3}
 .tb img{width:30px;height:30px}.tb b{font:800 18px/1 Inter;letter-spacing:-.01em;white-space:nowrap}.tb i,#bug i{font-style:normal}.e{color:#03c870}.z{color:#ff3a31}
 .ssn{margin-left:auto;height:26px;padding:0 10px;font:600 11px/26px 'Geist Mono';letter-spacing:.1em;color:var(--au);border-radius:8px;background:rgba(253,188,42,.1);box-shadow:inset 0 0 0 1.5px rgba(253,188,42,.35)}
@@ -142,7 +145,7 @@ html,body{background:#04070e}
 .rc .bm{flex:none;border-radius:50%}.rc .ok,.rc .no{font:800 15px/1 'Geist Mono';letter-spacing:.08em;padding:5px 8px;border-radius:7px}
 .rc .ok{color:#04070e;background:#03c870}.rc .no{color:#04070e;background:#ff3a31}.rc .pnl{margin-left:auto;font:700 18px/1 'Geist Mono';letter-spacing:-.01em}
 .lw{position:absolute;left:0;top:0;width:0;height:0;display:none}.lw>.lc{position:absolute;left:0;top:0}
-.lc.glass{background:linear-gradient(162deg,rgba(248,240,217,.17) 0%,rgba(248,240,217,.07) 34%,rgba(6,10,12,.76) 70%,rgba(5,8,10,.84) 100%);box-shadow:inset 0 0 0 1px rgba(248,240,217,.26),inset 0 1px 0 rgba(255,255,255,.34),0 26px 60px rgba(0,0,0,.62),0 0 0 .5px rgba(0,0,0,.7);overflow:hidden}
+.lc.glass{background:linear-gradient(162deg,rgba(248,240,217,.17) 0%,rgba(248,240,217,.07) 34%,rgba(6,10,12,.5) 70%,rgba(5,8,10,.6) 100%),rgba(6,9,11,.84);box-shadow:inset 0 0 0 1px rgba(248,240,217,.26),inset 0 1px 0 rgba(255,255,255,.34),0 26px 60px rgba(0,0,0,.62),0 0 0 .5px rgba(0,0,0,.7);overflow:hidden}
 .lc.glass::before{content:'';position:absolute;left:var(--gx,30%);top:var(--gy,0%);width:300px;height:220px;margin:-110px 0 0 -150px;border-radius:50%;background:radial-gradient(closest-side,var(--gc,rgba(3,200,112,.26)),transparent);mix-blend-mode:screen;pointer-events:none}
 .lc.glass .tc{background:rgba(3,5,7,.55)}
 .lc .post .ph small,.lc.post .ph small,.lc .tc .cn span,.lc .tc .cn small{color:rgba(248,240,217,.7)}

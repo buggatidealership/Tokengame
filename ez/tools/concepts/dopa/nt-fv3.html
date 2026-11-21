@@ -35,7 +35,7 @@
 .rc.ok .rb b{background:#03995a}.rc.no .rb b{background:#d7262e}
 .rci .rb span{margin-left:auto;font:700 22px/1 'Geist Mono';font-variant-numeric:tabular-nums;white-space:nowrap}
 .rc.ok .rb span{color:#03804b}.rc.no .rb span{color:#c41f26}
-.rci small{position:relative;display:block;margin-top:9px;font:600 12px/1 'Geist Mono';letter-spacing:.08em;color:rgba(4,7,14,.72)}
+.rci small{position:relative;display:block;margin-top:9px;font:600 13.5px/1 'Geist Mono';letter-spacing:.08em;color:rgba(4,7,14,.72)}
 .lc.glass .rc{margin:12px -16px -16px}
 .seal{position:absolute;left:0;top:0;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;z-index:35;opacity:0;display:grid;place-items:center;
   background:radial-gradient(closest-side,rgba(4,7,14,.0) 62%,rgba(253,188,42,.95) 63%,rgba(253,188,42,.95) 70%,transparent 71%,transparent 78%,rgba(253,188,42,.8) 79%,rgba(253,188,42,.8) 83%,transparent 84%)}
@@ -43,6 +43,7 @@
 #flash{position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 60%,rgba(255,240,200,.75),transparent 70%);opacity:0;z-index:28;mix-blend-mode:screen;pointer-events:none}
 #end h3{font-family:'Saira Condensed';font-weight:900;text-transform:uppercase;font-size:150px}
 #pc,#pq{overflow:hidden}
+#shk{position:absolute;inset:0}
 </style>
 <div id="st">
 <div id="shk"><div id="gnd"></div><div id="lites"></div><div id="night"></div><div id="day"></div>
@@ -114,7 +115,10 @@ window.R = t => {
   $('#lites').style.opacity = ((.15 + .4 * night) * (1 - .8 * day) + .25 * bp * drop).toFixed(3);
   $('#gnd').style.transform = `scale(${(1.02 + .05 * n(t, 0, DUR)).toFixed(4)}) translateY(${(-30 * n(t, T.c0, T.c1)).toFixed(1)}px)`;
   $('#gnd').style.filter = `brightness(${(.78 + .3 * day).toFixed(3)}) saturate(${(1 - .25 * day).toFixed(3)})`;
-  const [sx, sy] = shake(t, [T.close, T.q], 12); $('#shk').style.transform = `translate(${sx.toFixed(1)}px,${sy.toFixed(1)}px)`;
+  // the camera: pushes in on the beats while the clock runs (every move starts on a beat), the glass a little faster than the city (depth)
+  const K = FV.trk([[0, { s: 1, y: 0 }], [6, { s: 1.035, y: -10 }], [9, { s: 1, y: 6 }], [11, { s: 1.04, y: -14 }], [13, { s: 1.01, y: 0 }], [14.5, { s: 1.05, y: -16 }], [16, { s: 1, y: 0 }], [21.5, { s: 1.03, y: -8 }], [23, { s: 1, y: 0 }]], t);
+  const [sx, sy] = shake(t, [T.close, T.q], 12); $('#shk').style.transform = `translate(${sx.toFixed(1)}px,${(sy + K.y).toFixed(1)}px) scale(${K.s.toFixed(4)})`; $('#shk').style.transformOrigin = '540px 700px';
+  $('#lift').style.transform = `translate(${sx.toFixed(1)}px,${(sy + K.y * 1.6).toFixed(1)}px) scale(${(1 + (K.s - 1) * 1.6).toFixed(4)})`; $('#lift').style.transformOrigin = '540px 700px';
   // ---- the app: the feed at the start; back in it at the end, both posts with their receipts ----
   const ph = $('.phw'), inA = t < T.out + .4, inB = t >= T.back - .1, kb = spr(n(t, T.back, T.back + .9)), ko = eio(n(t, T.out, T.out + .5)), out = eio(n(t, T.end, T.end + 1.1));
   ph.style.display = inA || inB ? 'block' : 'none';

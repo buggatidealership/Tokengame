@@ -97,7 +97,7 @@ html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f
 <div id="slam" class="ab"><img class="lg" src="ezlogo.svg" alt=""><div class="w">Full time</div></div>
 <div id="clk"><div class="lv"><i></i>LIVE</div><div class="tm pn"><b></b><span></span></div></div>
 </div>
-<script src="lib.js"></script><script src="nt-ov.js"></script>
+<script src="lib.js"></script><script src="nt-ov.js"></script><script src="nt-ovx.js"></script>
 <script>
 const BPM = 174, TR = 8.276;
 let D, G, grain, FX = [], TRS = [], STRIP = [], PG, NPG, stripes = [];
@@ -209,11 +209,12 @@ window.R = t => {
     sp.style.opacity = Math.sin(Math.PI * q) * .8; sp.style.background = `linear-gradient(100deg,transparent ${xq - 12}%,rgba(248,240,217,.22) ${xq}%,transparent ${xq + 12}%)` });
   // the camera: a push while live, a close-up on the biggest move, the whistle kick, a push on the table
   const by = 282 + big * SP + FH / 2, cu = foc, cu2 = L.eio(L.n(t, B(5), B(5) + .4)) * (1 - L.eio(L.n(t, B(8.5), B(8.5) + .4)));
-  const zc = 1 + .09 * cu + .06 * cu2, push = 1 + .03 * L.n(t, B(-14), TR) + .03 * L.n(t, TB, TE);
+  const zc = 1 + .09 * cu + .1 * cu2, push = 1 + .03 * L.n(t, B(-14), TR) + .03 * L.n(t, TB, TE);
   const kick = t > TR ? Math.exp(-(t - TR) * 8) * Math.sin((t - TR) * 55) * 10 : 0;
   const cam = L.$('#cam'); cam.style.transformOrigin = `${(540).toFixed(1)}px ${(L.lerp(640, by, cu)).toFixed(1)}px`;
   cam.style.transform = `translate(${(kick).toFixed(2)}px,${(kick * .6).toFixed(2)}px) scale(${(zc * push).toFixed(4)})`;
   OV.endR(t, TE);
+  OV.beat(t, G, [L.$('#gnd'), L.$('#flood')], L.$('#cam'), .24, .012); OV.endFx(t, TE, G);
 };
 (async () => {
   D = await OV.load(); setup();
