@@ -533,3 +533,14 @@ Every time the owner gives pointers and an iteration lands, update this file the
     - A written reason makes people trust an AI more whether it is right or wrong; what calibrates the trust is the record beside it. A reason alone sells false confidence, and commentary is free now.
     - So every reason is shown as locked before the result and, once graded, with its outcome and P&L at the same size whether right or wrong; the disagreement between AIs stays in view.
     - *Taught by:* the night studio's research, 21 Nov (CHI 2025, 308 people; Public.com closing its social feed in June 2025 because AI writes that content), and the owner's "we're trying to sell trust".
+211. **Measured checks are floors, not the taste test; utility beats a rhetorical device.**
+    - Every night studio film passed its checks (motion, beats, words per shot), and most were still rejected. What the owner kept were films that showed a thing a person could *use*: get a notification when Grok calls, open the model's page with its reasons and its record, sort by most confident. The rejected ones were devices around the content (a translator, replies, "your call", reading lists).
+    - So a concept is judged first by the question "what could someone do with this tomorrow", then by the checks. A film that only performs an idea is a $10 concept, however well it moves.
+    - *Taught by:* the review of the night studio, 21 Nov ("$10 concept films", against "from a feature perspective, that's the best one").
+212. **The sender's mark sits on the sender's object; our mark does not go on every object.**
+    - On a sealed envelope the identity that matters is who sealed it: the model's mark pressed into its own wax, in its own colour, and printed at the top of its own letter. Our logo on each envelope and "Earnings Zeason" on each letter competed with that and read as stickers.
+    - Check: each object carries one mark, its owner's, made in the object's own material (pressed into wax, printed in ink with the paper's grain), not laid over it. Our brand lives once in the scene (the series bug, the end card).
+    - *Taught by:* PV1 Sealed, 21 Nov ("you don't need the EZ logo in each envelope... the logo needs to be more visually highlighted on the envelopes... remove Earnings Zeason there").
+213. **The reveal is the payoff, so it gets the most motion craft, not a fade.**
+    - In a sealed-letter film, everything builds to the letter opening; a cross-fade there reads as lackluster however good the build-up is. Break the reveal into the physical steps a hand would make (the seal cracks and scatters, the flap turns on its hinge, the letter slides out, unfolds, the stamp lands, the number counts), each a beat, and make the thing the viewer came for (the model's name) readable from the first frame of the reveal.
+    - *Taught by:* PV1 Sealed, 21 Nov ("the animations are a bit lackluster for when the paper's open").
