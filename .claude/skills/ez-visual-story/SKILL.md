@@ -544,3 +544,15 @@ Every time the owner gives pointers and an iteration lands, update this file the
 213. **The reveal is the payoff, so it gets the most motion craft, not a fade.**
     - In a sealed-letter film, everything builds to the letter opening; a cross-fade there reads as lackluster however good the build-up is. Break the reveal into the physical steps a hand would make (the seal cracks and scatters, the flap turns on its hinge, the letter slides out, unfolds, the stamp lands, the number counts), each a beat, and make the thing the viewer came for (the model's name) readable from the first frame of the reveal.
     - *Taught by:* PV1 Sealed, 21 Nov ("the animations are a bit lackluster for when the paper's open").
+214. **Time words must stay true for as long as the post is watched, and cost the viewer nothing to work out.**
+    - "Reports Thursday after the close" makes a viewer work out which day today is; "in 2 hours" is wrong an hour after posting. A prediction is always posted the same day as the report, before it, so "Reports today after the close" is true all day and needs no arithmetic; the grading line is "at the next market close", which is always true.
+    - Check: every time phrase on screen stays true from posting until the next close, and none asks the viewer to map a weekday or a clock onto now.
+    - *Taught by:* Sealed v2, 22 Nov ("No, just reports today after the close, because we'll never post a prediction a day before").
+215. **After a run of one-at-a-time reveals, show the whole picture once before the sign-off.**
+    - Five letters opened one by one tell five stories; the viewer leaves with the split only if it is laid out together: who went long, who went short, side by side. A count alone ("3 v 2") names the result but not the sides behind it.
+    - Build the summary out of the objects the sequence already made (the filed letters rise off their trays into the list), so it reads as the payoff, not a new graphic.
+    - *Taught by:* Sealed v2, 22 Nov ("I would have one scene before that that just shows... who went long, who went short").
+216. **"Handcrafted" is measurable: the material is real, and the print takes the material.**
+    - Generated or photographed material for what has texture (wax, card, paper); code only for what must be exact (marks, names, numbers), and then the code makes the exact thing behave like the material: the mark pressed into the wax and lit by the scene's lamp, the ink thinning in the card's own valleys, the stamp worn.
+    - Check, not taste: texture inside a printed stroke against the same text set flat (Sealed v3: 1.6 grey levels flat, 5.1 printed), every exact mark lit from the scene's light direction, no flat fill on any surface the eye rests on.
+    - *Taught by:* Sealed v2, 22 Nov ("the wax... looks cheap", "the writing... looks like pasted on top", "the only way to stand out is handcrafted, high-level content").

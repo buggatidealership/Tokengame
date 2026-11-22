@@ -62,7 +62,7 @@ PV.load = async (defCo = 'INTU', fonts = '') => {
   const st = document.createElement('style'); st.textContent = (fonts ? `@import url('${fonts}');` : '') + PV.css; document.head.prepend(st);
   const lk = document.createElement('link'); lk.rel = 'stylesheet'; lk.href = 'https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,800&display=swap'; document.head.appendChild(lk);
   // the film's two lines of our own (no punctuation): when it reports and when it is graded
-  PV.reports = `Reports ${PV.co.callDay} ${PV.co.when}`; PV.graded = `Graded ${PV.co.gradeDay} at the close`;
+  PV.reports = `Reports today ${PV.co.when}`; PV.graded = `Graded at the next market close`;
 };
 // the order a film reads the calls in: the majority side opens, the sides alternate while both have calls, the majority closes
 PV.alt = () => { const a = PV.calls.filter(x => x.side === PV.maj).sort((p, q) => q.conf - p.conf), b = PV.calls.filter(x => x.side !== PV.maj).sort((p, q) => q.conf - p.conf), o = [];

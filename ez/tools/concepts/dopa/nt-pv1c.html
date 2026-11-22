@@ -1,0 +1,250 @@
+<!doctype html><meta charset="utf-8"><title>pv1c sealed v3</title>
+<!-- Sealed v3 (owner, 2026-11-22, on v2: dark letters "maybe in black"; standard wording "Reports today after the close" (a prediction is
+  always posted the same day, before the close) and "Graded at the next market close"; one scene before the end that lists each AI LONG or
+  SHORT; the wax "looks cheap... better visuals... use Hedra"; the writing on the letters "looks pasted on top"). The wax is painted (Hedra
+  gpt-image-2, one blank seal per AI in its colour, w6/nt/pv1c/wax-*.webp) and the AI's mark is pressed into it here (lit by the same lamp, a
+  relief through feDiffuseLighting, overlay-blended). The letter is a sheet of real card (Hedra, black by default, ?paper=cream for the cream
+  one); its print takes the paper's grain (an ink mask), sits pressed into the sheet (a dark wall above, a pale lip below) and takes the lamp's
+  light with the paper (one multiply pass over sheet and print); the side is a worn rubber stamp; the key clause turns gold foil (on black) or
+  takes the marker (on cream). The list: on the second drop the two trays rise to the top of the frame and their filed letters spread into
+  one row each, LONG on the left and SHORT on the right, the count on each tray's plate. v2 stays as nt-pv1b.html. Built by w6/nt/pv1c/mk.py. -->
+<style>
+#cam{position:absolute;left:0;top:0;width:1080px;height:1440px;transform-origin:540px 720px}
+#desk{position:absolute;left:0;top:0;width:1080px;height:1440px}
+#lamp{position:absolute;inset:0;pointer-events:none;mix-blend-mode:soft-light}
+.env{position:absolute;width:400px;height:290px;margin:-145px 0 0 -200px}
+.env svg.body{position:absolute;inset:0;overflow:visible;filter:drop-shadow(0 18px 18px rgba(0,0,0,.55))}
+.env .from{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;align-items:center;gap:12px;font:600 30px/1 Fraunces;color:#3a2c1c;letter-spacing:-.01em}
+.env .st{position:absolute;left:0;right:0;top:238px;text-align:center;font:italic 700 40px/1 Fraunces;letter-spacing:.04em;color:#a2241b;transform:rotate(-3deg);opacity:.85;mix-blend-mode:multiply}
+.env .wax{position:absolute;left:200px;top:150px;width:156px;height:156px;margin:-78px 0 0 -78px}
+.env .wax .cr{position:absolute;left:50%;top:50%;width:12px;height:10px;margin:-5px 0 0 -6px;border-radius:45% 55% 40% 60%;opacity:0}
+#card .lh2{display:flex;align-items:center;gap:28px;padding-bottom:28px;border-bottom:4px double rgba(4,7,14,.26)}
+#card .lh2 b{font:700 86px/1 Fraunces;letter-spacing:-.025em;display:inline-block}
+.pmk{display:block;flex:none;mix-blend-mode:multiply;overflow:visible}
+#card .fold{position:absolute;left:0;right:0;height:90px;pointer-events:none;background:linear-gradient(180deg,rgba(80,58,30,0),rgba(80,58,30,.28) 80%,rgba(255,250,235,.5))}
+.env .wax .h{position:absolute;inset:0}
+#dock{position:absolute;left:44px;right:44px;top:140px;height:104px;z-index:60;display:flex;align-items:center;gap:22px;padding:0 26px;border-radius:10px;
+  background:#f8f0d9;box-shadow:0 16px 40px rgba(0,0,0,.55),inset 0 0 0 2px rgba(4,7,14,.08)}
+#dock .nm{font:700 52px/1 Fraunces;letter-spacing:-.02em;color:#04070e}
+#dock .wh{margin-left:auto;font:500 30px/1.1 Fraunces;color:#04070e;text-align:right;font-style:italic}
+.paper{background-color:#f8f0d9;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 .3  0 0 0 0 .22  0 0 0 0 .12  0 0 0 .13 0'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>")}
+#card{position:absolute;left:0;top:0;width:880px;z-index:50;transform-origin:0 0;padding:46px 54px 50px;border-radius:8px;color:#04070e;
+  box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 1px rgba(4,7,14,.12)}
+#card .lh{display:flex;justify-content:center;align-items:center;gap:14px;padding-bottom:22px;margin-bottom:28px;border-bottom:2px solid rgba(4,7,14,.14)}
+#card .lh span{font:italic 800 28px/1 Kanit,sans-serif;letter-spacing:.01em;color:#04070e}
+#card .hd{display:flex;align-items:center;gap:22px}
+#card .hd b{font:700 60px/1 Fraunces;letter-spacing:-.02em}
+#card .sd{display:inline-block;margin-top:34px;font:800 108px/1 Fraunces;letter-spacing:-.01em;padding:14px 24px 12px;border-radius:10px;color:#04070e;white-space:nowrap}
+#card .sd .nm,.mini .s .nm{font-family:'Geist Mono';font-weight:700;font-size:.8em;letter-spacing:-.02em}
+#card .cf{margin-top:22px;font:600 44px/1 'Geist Mono';font-variant-numeric:tabular-nums;color:#04070e}
+#card .rl{height:3px;background:rgba(4,7,14,.18);margin:34px 0 26px}
+#card .ow{font:600 26px/1 'Geist Mono';letter-spacing:.08em;text-transform:uppercase;color:rgba(4,7,14,.55)}
+#card .cl{margin-top:18px;font:500 70px/1.12 Fraunces;font-style:italic;letter-spacing:-.015em;color:#04070e}
+.tray{position:absolute;bottom:40px;width:470px;height:230px;z-index:40}
+#tL{left:44px}#tS{right:44px}
+.tray .lb{position:absolute;left:0;right:0;bottom:0;height:86px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;border-radius:12px;
+  background:rgba(4,7,14,.82);box-shadow:inset 0 0 0 2px rgba(248,240,217,.14),0 14px 30px rgba(0,0,0,.5)}
+.tray .lb b{font:800 46px/1 Fraunces;letter-spacing:.02em}
+.tray .lb span{font:700 64px/1 'Geist Mono';font-variant-numeric:tabular-nums;color:#f8f0d9;display:inline-block}
+.mini{position:absolute;bottom:64px;width:340px;height:150px;border-radius:6px;box-shadow:0 10px 22px rgba(0,0,0,.55);padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.mini .r{display:flex;align-items:center;gap:12px;font:700 30px/1 Fraunces;color:#04070e}
+.mini .s{display:inline-block;align-self:flex-start;font:800 28px/1 Fraunces;white-space:nowrap;padding:6px 10px 4px;border-radius:5px;color:#04070e}
+#big{position:absolute;left:0;right:0;top:440px;text-align:center;z-index:55;pointer-events:none}
+#big .ct{display:inline-flex;align-items:baseline;gap:28px;font:800 150px/1 Fraunces;letter-spacing:-.03em;text-shadow:0 10px 40px rgba(0,0,0,.6)}
+#big .ct small{font:700 54px/1 Fraunces;letter-spacing:.02em}
+#big .ct i{font-style:italic;font-weight:500;font-size:80px;color:#f8f0d9;opacity:.8}
+#big .gr{margin-top:44px;font:500 60px/1 Fraunces;font-style:italic;color:#f8f0d9;text-shadow:0 6px 30px rgba(0,0,0,.7)}
+#end{position:absolute;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:38px;background:radial-gradient(60% 45% at 50% 46%,rgba(253,188,42,.16),transparent 70%),rgba(4,7,14,.88);opacity:0}
+#end b{font:italic 800 70px/1 Kanit;letter-spacing:.01em;color:#f8f0d9}#end b i{font-style:normal}
+#end span{font:500 40px/1 Fraunces;font-style:italic;color:#f8f0d9;opacity:.85}
+#card.blk{background:#151310 url(w6/nt/pv1c/paper-black.jpg) center/cover;color:#efe5cc}
+#card.crm{background:#f1e6cc url(w6/nt/pv1c/paper-cream.jpg) center/cover}
+#card :is(.lh2 b,.cf,.ow,.cl,.pmk){-webkit-mask-image:url(w6/nt/pv1c/ink.png);mask-image:url(w6/nt/pv1c/ink.png);-webkit-mask-size:320px;mask-size:320px}
+#card.blk :is(.lh2 b,.cf,.cl){color:#efe5cc;text-shadow:0 -1px 0 rgba(0,0,0,.8),0 1.5px 0 rgba(255,244,220,.09)}
+#card.crm :is(.lh2 b,.cf,.cl){text-shadow:0 -1px 0 rgba(60,40,20,.28),0 1.5px 0 rgba(255,253,245,.75)}
+#card.blk .ow{color:rgba(239,229,204,.5)}#card.blk .rl{background:rgba(239,229,204,.16)}#card.blk .lh2{border-bottom-color:rgba(239,229,204,.2)}
+#card .sd{-webkit-mask-image:url(w6/nt/pv1c/stamp.png);mask-image:url(w6/nt/pv1c/stamp.png);-webkit-mask-size:100% 100%;mask-size:100% 100%;border-radius:4px}
+#card.blk .sd{color:#171410}
+#card.blk .hw i{background:linear-gradient(100deg,#8a5a12,#fdbc2a 30%,#fff1b8 46%,#e9a91c 60%,#8f5d14);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+#card.blk .fold{background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.55) 80%,rgba(255,240,210,.12))}
+#card .tooth{position:absolute;inset:0;pointer-events:none;border-radius:8px;mix-blend-mode:multiply;background:url(w6/nt/pv1c/tooth-black.jpg) center/cover}
+#card.crm .tooth{background-image:url(w6/nt/pv1c/tooth-cream.jpg)}
+#card .lit{position:absolute;inset:0;pointer-events:none;border-radius:8px;mix-blend-mode:multiply;background:radial-gradient(130% 115% at 6% -4%,#fff6e6 0%,#fff3df 34%,#b4a593 100%)}
+.mini.blk{background:#151310 url(w6/nt/pv1c/paper-black.jpg) center/cover}
+.mini.blk .r{color:#efe5cc;text-shadow:0 -1px 0 rgba(0,0,0,.8)}
+.mini .s{-webkit-mask-image:url(w6/nt/pv1c/stamp.png);mask-image:url(w6/nt/pv1c/stamp.png);-webkit-mask-size:100% 100%;mask-size:100% 100%}
+.mini.blk .s{color:#171410}
+#card.blk .pmk,.mini.blk .pmk{mix-blend-mode:normal;filter:drop-shadow(0 -1px 0 rgba(0,0,0,.85)) drop-shadow(0 1.5px 0 rgba(255,244,220,.08))}
+#dim{position:absolute;inset:0;pointer-events:none;background:rgba(4,7,14,.62);opacity:0;z-index:47}
+#vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(75% 62% at 50% 50%,transparent 50%,rgba(0,0,0,.6));z-index:45}
+</style>
+<div id="cam"><img id="desk" src="w6/nt/pv/pv1-desk.jpg"><div id="envs"></div></div>
+<div id="lamp"></div><div id="vig"></div><div id="dim"></div>
+<div id="dock"></div>
+<div class="tray" id="tL"></div><div class="tray" id="tS"></div>
+<div id="card" class="paper"></div><svg width="0" height="0" style="position:absolute"><filter id="press" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation=".55" result="b"/><feDiffuseLighting in="b" surfaceScale="2.6" diffuseConstant="1" lighting-color="#fff"><feDistantLight azimuth="225" elevation="30"/></feDiffuseLighting></filter><filter id="ink" x="-8%" y="-8%" width="116%" height="116%"><feTurbulence type="fractalNoise" baseFrequency="2.4" numOctaves="1" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale=".45"/></filter></svg>
+<div id="big"></div>
+<div id="end"></div>
+<div id="bugw"></div>
+<canvas id="grain"></canvas>
+<script src="w6/nt/pv/pv.js"></script>
+<script>
+const G = PV.grid(174, 0);                     // w8f-horns: 174 BPM, beats from 0 in the file
+const B = G.B;
+// the film in beats: the opener, five envelopes (the second starts on the bed's first drop), the count on the second drop, the end card
+const OPEN = 4, SLOT = [10, 11, 10, 10, 10];
+const LIST = i => { const x = ord[i], j = ord.slice(0, i).filter(y => y.side === x.side).length; return 1.4 + (x.side === 'LONG' ? 0 : .35) + .8 * j };
+let T = {}, ord, grain, envs = [], cardEls = {};
+const WAX = { GPT: ['#5d636d', '#202329', '#08090b', '#efe6cf'], GROK: ['#9399a3', '#41454d', '#15171b', '#f3ecda'], CLAUDE: ['#f3a985', '#c9643f', '#6a2812', '#fbefe2'],
+  GEMINI: ['#93c5ff', '#2f6fd6', '#113677', '#f4f8ff'], QWEN: ['#bdadff', '#6a4fd8', '#2c1d7a', '#f6f2ff'] };
+const DARK = new URLSearchParams(location.search).get('paper') !== 'cream';
+const INKD = { GPT: '#efe5cc', GROK: '#efe5cc', CLAUDE: '#e48a62', GEMINI: '#7aa8ff', QWEN: '#a898ff' };
+const INK = { GPT: '#0b0d12', GROK: '#0b0d12', CLAUDE: '#bf5b36', GEMINI: '#2a62c8', QWEN: '#5a43cf' };
+const pm = (k, s) => { const m = PV.D.marks[k]; return `<svg class="pmk" viewBox="0 0 24 24" width="${s}" height="${s}"><path filter="url(#ink)" fill="${(DARK ? INKD : INK)[k] || '#0b0d12'}"${m.fr ? ` fill-rule="${m.fr}"` : ''} d="${m.d}"/></svg>` };
+const POS = [[320, 560, -6], [762, 540, 5], [540, 770, -2], [300, 985, 4], [775, 990, -5]];   // envelope centres on the desk (world px) and turn
+const waxPath = (r, seed) => { let d = ''; for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI * 2, rr = r * (1 + .06 * Math.sin(a * 5 + seed) + .04 * Math.sin(a * 11 + seed * 2)); d += (i ? 'L' : 'M') + (rr * Math.cos(a)).toFixed(1) + ',' + (rr * Math.sin(a)).toFixed(1) } return d + 'Z' };
+(async () => {
+  await PV.load('INTU', 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,500;1,9..144,600&display=swap');
+  ord = PV.alt();
+  PV.$('#bugw').innerHTML = PV.bug();
+  PV.$('#dock').innerHTML = `${PV.coLogo(70)}<span class="nm">${PV.esc(PV.co.co)}</span><span class="wh">${PV.reports}</span>`;
+  // the envelopes: cream paper, the flap closed under a wax seal with the AI's mark
+  PV.$('#envs').innerHTML = ord.map((x, i) => { const m = PV.D.marks[x.k], [cx, cy, r] = POS[i], W = WAX[x.k] || WAX.GPT, FL = 'M0 4 Q0 0 6 0 L394 0 Q400 0 400 4 L200 150 Z';
+    const mk2 = fill => `<g transform="translate(-19.5 -20.5) scale(1.625)"><path d="${m.d}" fill="${fill}"${m.fr ? ` fill-rule="${m.fr}"` : ''}/></g>`;
+    const mk = (fill, dx, dy, op) => `<g transform="translate(${-25 + dx} ${-25 + dy}) scale(2.08)"><path d="${m.d}" fill="${fill}" opacity="${op}"${m.fr ? ` fill-rule="${m.fr}"` : ''}/></g>`;
+    return `<div class="env" data-i="${i}" style="left:${cx}px;top:${cy}px;transform:rotate(${r}deg)">
+      <svg class="body" width="400" height="290" viewBox="0 0 400 290"><defs><linearGradient id="eg${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6ecd2"/><stop offset="1" stop-color="#e7d8b6"/></linearGradient>
+        <filter id="pn${i}"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="${i + 3}"/><feColorMatrix values="0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .12 0 0 0 .12 0"/><feComposite in2="SourceGraphic" operator="in"/></filter></defs>
+        <g class="flapB" style="opacity:0"><path d="${FL}" fill="#d9c6a0" stroke="rgba(90,66,40,.3)" stroke-width="2"/><path class="sh" d="${FL}" fill="#000" opacity="0"/></g>
+        <g class="stub"><rect x="34" y="16" width="332" height="262" rx="3" fill="#f8f0d9"/><path d="M64 54H236M64 86H330M64 118H296M64 150H318" stroke="rgba(4,7,14,.14)" stroke-width="6" stroke-linecap="round"/></g>
+        <rect width="400" height="290" rx="6" fill="url(#eg${i})"/><rect width="400" height="290" rx="6" fill="#000" filter="url(#pn${i})"/>
+        <path d="M0 290 L200 130 L400 290" fill="none" stroke="rgba(90,66,40,.25)" stroke-width="2"/>
+        <g class="flap"><path d="${FL}" fill="#efe2c3" stroke="rgba(90,66,40,.3)" stroke-width="2"/><path class="sh" d="${FL}" fill="#000" opacity="0"/></g></svg>
+      <span class="st">Locked</span>
+      <div class="wax"><svg class="h hl" viewBox="-52 -52 104 104" overflow="visible"><defs><clipPath id="fc${i}"><circle cx="0" cy="-1" r="29"/></clipPath></defs>
+        <g class="L"><image href="w6/nt/pv1c/wax-${x.k.toLowerCase()}.webp" x="-52" y="-52" width="104" height="104"/>
+        <g clip-path="url(#fc${i})" style="mix-blend-mode:multiply" opacity=".28">${mk2(W[2])}</g><g clip-path="url(#fc${i})" style="mix-blend-mode:overlay"><g filter="url(#press)">${mk2('#000')}</g></g></g></svg>${[0, 1, 2, 3, 4, 5, 6].map(() => `<i class="cr" style="background:radial-gradient(circle at 35% 30%,${W[0]},${W[1]} 60%,${W[2]})"></i>`).join('')}</div></div>` }).join('');
+  envs = PV.$$('.env');
+  // the wax splits in two: two copies of the seal clipped along a jagged crack
+  envs.forEach(e => { const w = e.querySelector('.wax'), s = w.querySelector('svg'); const s2 = s.cloneNode(true); s.classList.add('a'); s2.classList.add('b'); w.appendChild(s2);
+    s.style.clipPath = 'polygon(0 0,58% 0,46% 30%,60% 52%,44% 74%,55% 100%,0 100%)'; s2.style.clipPath = 'polygon(58% 0,100% 0,100% 100%,55% 100%,44% 74%,60% 52%,46% 30%)' });
+  // the trays where the letters are filed, with the count
+  const tray = (id, side) => PV.$(id).innerHTML = `<div class="lb"><b style="color:${side === 'LONG' ? PV.C.green : PV.C.red}">${side}</b><span>0</span></div>`;
+  tray('#tL', 'LONG'); tray('#tS', 'SHORT');
+  // the mini letters on the trays (one per AI, shown once filed)
+  ord.forEach((x, i) => { const el = document.createElement('div'); el.className = DARK ? 'mini blk' : 'mini paper'; const sameBefore = ord.slice(0, i).filter(y => y.side === x.side).length;
+    el.innerHTML = `<div class="r">${pm(x.k, 40)}${x.name}</div><span class="s" style="background:${PV.side(x)}">${x.side} <span class="nm">(${PV.mv(x)})</span></span>`;
+    el.style.left = (14 + sameBefore * 40) + 'px'; el.style.transform = `rotate(${(sameBefore % 2 ? 3 : -3) + sameBefore}deg)`; el.style.opacity = 0;
+    (x.side === 'LONG' ? PV.$('#tL') : PV.$('#tS')).insertBefore(el, (x.side === 'LONG' ? PV.$('#tL') : PV.$('#tS')).querySelector('.lb')); cardEls[x.k] = el });
+  PV.$('#big').innerHTML = ''; void `<div class="ct"><span style="color:${PV.C.green}">${PV.nL}</span><small style="color:${PV.C.green}">LONG</small><i>v</i><span style="color:${PV.C.red}">${PV.nS}</span><small style="color:${PV.C.red}">SHORT</small></div><div class="gr">${PV.graded}</div>`;
+  PV.$('#end').innerHTML = `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
+  grain = PV.grain(PV.$('#grain'), .06); pulse = PV.pulse('253,188,42', '50% 26%');
+  // the timeline in beats
+  const starts = []; let b = OPEN; SLOT.forEach(s => { starts.push(b); b += s });
+  T = { starts, count: b, end: b + 12, dur: b + 12 + 5 };
+  const at = 26.55 - T.count * B;            // the bed enters so its second drop (26.55 s in the file) lands on the count
+  window.TL = { starts: starts.map(s => +(s * B).toFixed(3)), count: +(T.count * B).toFixed(3), end: +(T.end * B).toFixed(3), dur: +(T.dur * B).toFixed(3), drop1: +(12.41 - at).toFixed(3), at };
+  // the clause in focus on screen, per AI, for the report
+  window.HOLD = ord.map((x, i) => ({ k: x.k, clause: x.clause, need: +PV.need(x.clause).toFixed(2), onScreen: +((SLOT[i] - 2.4) * B).toFixed(2) }));
+  // the card's content, rebuilt when the speaker changes
+  window.CUES = [[0.04, 'r11-swell', .12]];
+  ord.forEach((x, i) => { const s = starts[i] * B; CUES.push([s, 'sfx-whoosh', .1], [s + .4 * B, 'sfx-shatter', .08], [s + 1.0 * B, 'r11-slide', .12], [(starts[i] + 2.6) * B, 'sfx-stamp', .06], [(starts[i] + SLOT[i] - 1) * B, 'r11-card', .1], [(starts[i] + SLOT[i]) * B - .01, 'sfx-stamp', .12]) });
+  CUES.push([T.count * B, 'r11-thump', .16], [(T.count + .2) * B, 'r11-slide', .12], [T.end * B, 'sfx-bell', .1]);
+  ord.forEach((x, i) => CUES.push([(T.count + LIST(i)) * B, 'r11-card', .07]));
+  window.MUSIC = { f: 'w8f-horns', at: +at.toFixed(4) }; window.DUR = +(T.dur * B).toFixed(3);
+  await PV.ready(['700 60px Fraunces', 'italic 500 70px Fraunces', '800 116px Fraunces', '600 44px "Geist Mono"']);
+  await PV.go();
+})();
+let shown = -1;
+const fillCard = i => { if (shown === i) return; shown = i; const x = ord[i];
+  PV.$('#card').className = DARK ? 'blk' : 'crm'; PV.$('#card').innerHTML = `<div class="lh2">${pm(x.k, 108)}<b>${x.name}</b></div><span class="sd" style="background:${PV.side(x)}">${x.side} <span class="nm">(${PV.mv(x)})</span></span>
+    <div class="cf">${PV.conf(x)}</div><div class="rl"></div><div class="ow">In its own words</div><div class="cl">${PV.words(x.clause)}</div><div class="fold"></div><div class="tooth"></div><div class="lit"></div>` };
+let pulse = () => {};
+window.R = t => {
+  grain(t); const k = t / B; pulse(k);
+  const cur = T.starts.filter(s => k >= s).length - 1;                    // the envelope in hand (-1 in the opener)
+  // the camera: wide over the desk in the opener and the count; pushes onto the envelope in hand; drifts all the time
+  const dr = [Math.sin(t * .7) * 34, Math.cos(t * .53) * 24], rot = Math.sin(t * .41) * 1.6;
+  let cx = 540, cy = 760, sc = 1, ro = 0;
+  if (cur >= 0 && k < T.count) { const s0 = T.starts[cur], [ex, ey, er] = POS[cur], p = PV.eio(PV.n(k, s0, s0 + 1)), q = PV.eio(PV.n(k, s0 + SLOT[cur] - 1.6, s0 + SLOT[cur] - .2));
+    const nx = cur + 1 < 5 ? POS[cur + 1] : [540, 780, 0];
+    cx = PV.lerp(PV.lerp(540, ex, p), PV.lerp(540, nx[0], .25), q); cy = PV.lerp(PV.lerp(760, ey, p), 760, q); sc = PV.lerp(PV.lerp(1, 1.55, p), 1.08, q); ro = PV.lerp(-er * .6 * p, 0, q) }
+  else if (k >= T.count) { const p = PV.eo(PV.n(k, T.count, T.count + 1.5)); sc = 1.18 - .12 * p; cy = 820 }
+  else { const p = PV.eo(PV.n(k, 0, OPEN)); sc = 1.3 - .3 * p }
+  const punch = d => { const x = k - d; return x < 0 ? 0 : .03 * Math.exp(-4 * x) };
+  sc += punch(T.starts[1]) + punch(T.count) + (cur >= 0 && k < T.count ? .5 * punch(T.starts[cur] + .4) : 0);
+  PV.$('#cam').style.transform = `translate(${(540 - cx + dr[0]).toFixed(1)}px,${(675 - cy + dr[1] - 45).toFixed(1)}px) rotate(${(ro + rot).toFixed(2)}deg) scale(${sc.toFixed(4)})`;
+  PV.$('#cam').style.transformOrigin = `${cx}px ${cy}px`;
+  // the lamp breathes on the beat
+  const ph = k % 1; PV.$('#lamp').style.background = `radial-gradient(55% 40% at ${50 + 6 * Math.sin(t * .6)}% 28%,rgba(253,188,42,${(.38 + .22 * Math.exp(-5 * ph)).toFixed(3)}),transparent 70%)`;
+  // the envelopes: dealt onto the desk in the opener, one a beat; the one in hand opens; the opened ones are gone (filed)
+  envs.forEach((e, i) => { const a = PV.n(k, i * .5 - 1, i * .5 - .1), d = PV.eo5(a); const s0 = T.starts[i];
+    const opened = k >= s0 + 1.1; e.style.opacity = k < s0 + 1.6 ? PV.cl(a * 3).toFixed(3) : (1 - PV.n(k, s0 + 1.6, s0 + 2.2)).toFixed(3);
+    e.style.transform = `translate(${(0).toFixed(1)}px,${(-520 * (1 - d)).toFixed(1)}px) rotate(${(POS[i][2] - 14 * (1 - d)).toFixed(2)}deg)`;
+    // the seal: it throbs on the beat, squeezes, cracks at s0 + .4; its halves and crumbs fly and fall
+    const w = PV.n(k, s0 + .4, s0 + 1.3), wa = e.querySelector('.a'), wb = e.querySelector('.b'), wx = e.querySelector('.wax');
+    wa.style.transform = `translate(${(-70 * PV.eo(w)).toFixed(1)}px,${(-30 * PV.eo(w) + 260 * w * w).toFixed(1)}px) rotate(${(-48 * w).toFixed(1)}deg)`;
+    wb.style.transform = `translate(${(66 * PV.eo(w)).toFixed(1)}px,${(-22 * PV.eo(w) + 280 * w * w).toFixed(1)}px) rotate(${(42 * w).toFixed(1)}deg)`;
+    e.querySelectorAll('.cr').forEach((c, j) => { const an = -Math.PI * (.08 + .84 * PV.rnd(j * 3.1 + i * 7)), v = 45 + 110 * PV.rnd(j * 5.7 + i), wj = PV.cl((w - .04 * j) / (1 - .04 * j)), sz = .6 + .7 * PV.rnd(j + 9 * i);
+      c.style.opacity = wj > 0 && wj < 1 ? (1 - wj * wj).toFixed(3) : 0;
+      c.style.transform = `translate(${(Math.cos(an) * v * PV.eo(wj)).toFixed(1)}px,${(Math.sin(an) * v * PV.eo(wj) + 330 * wj * wj).toFixed(1)}px) scale(${sz.toFixed(2)}) rotate(${(420 * wj * (j % 2 ? 1 : -1)).toFixed(0)}deg)` });
+    wx.style.opacity = (1 - PV.n(k, s0 + 1.0, s0 + 1.4)).toFixed(3);
+    const nod = k < s0 + .2 && k > s0 - 1 ? .06 * Math.exp(-6 * (k % 1)) : 0, sq = PV.n(k, s0 + .2, s0 + .4);
+    wx.style.scale = (1 + nod - .08 * Math.sin(Math.PI * sq)).toFixed(3);
+    // the flap turns on its hinge: the outer face shades as it turns, then the inner face rises behind the letter
+    const fs = 1 - 2 * PV.eio(PV.n(k, s0 + .55, s0 + 1.15)), fF = e.querySelector('.flap'), fB = e.querySelector('.flapB');
+    fF.style.transformOrigin = fB.style.transformOrigin = '200px 0px';
+    fF.style.transform = `scale(1,${Math.max(fs, .001).toFixed(3)})`; fF.style.opacity = fs > 0 ? 1 : 0; fF.querySelector('.sh').setAttribute('opacity', ((1 - fs) * .35).toFixed(3));
+    fB.style.transform = `scale(1,${Math.min(fs, -.001).toFixed(3)})`; fB.style.opacity = fs < 0 ? 1 : 0; fB.querySelector('.sh').setAttribute('opacity', ((1 + fs) * .4).toFixed(3));
+    // the letter inside slides up out of the envelope's mouth; the big letter takes over from it at s0 + 1.5
+    const su = PV.eo(PV.n(k, s0 + 1.0, s0 + 1.75)), stub = e.querySelector('.stub');
+    let lift = 250; if (su > 0 && k < s0 + 1.6) { stub.style.transform = 'translate(0px,20px)'; const r0s = stub.getBoundingClientRect(), dk = PV.$('#dock').getBoundingClientRect(), ppu = r0s.height / 262; lift = Math.max(110, Math.min(250, (r0s.top - dk.bottom - 26) / ppu)); }
+    stub.style.transform = `translate(0px,${(20 - lift * su).toFixed(1)}px)`; stub.style.opacity = k < s0 + 1.5 ? 1 : (1 - PV.n(k, s0 + 1.5, s0 + 1.58)).toFixed(3) });
+  // the letter: rises from the envelope to the lens, held, then filed on its tray (a layout zoom, so the type stays crisp)
+  const card = PV.$('#card');
+  if (cur >= 0 && k < T.count + .01) { fillCard(cur); const s0 = T.starts[cur], sl = SLOT[cur], x = ord[cur];
+    const t0 = s0 + 1.5, up = PV.spring(Math.max(0, k - t0) * B * 1.15, 1.1, 6), upc = PV.cl(up), out = PV.eio(PV.n(k, s0 + sl - 1, s0 + sl));
+    const tray = (x.side === 'LONG' ? PV.$('#tL') : PV.$('#tS')).getBoundingClientRect(), sr = envs[cur].querySelector('.stub').getBoundingClientRect();
+    const Hc = card.offsetHeight, f0 = Math.min(1, 694 / Hc), unf = PV.eio(PV.n(k, s0 + 1.62, s0 + 2.3)), vis = PV.lerp(f0, 1, unf);
+    const z = PV.lerp(PV.lerp(332 * sc / 880, 1, up), .3, out); card.style.zoom = z.toFixed(4);
+    const W = 880 * z, H = Hc * z;
+    const fx = PV.lerp(PV.lerp(sr.left + sr.width / 2, 540, up), tray.left + tray.width / 2, out);
+    const fy0 = Math.max(PV.lerp(sr.top + sr.height / 2, 690, up) - (H * vis) / 2 + H / 2, 262 + H / 2), fy = PV.lerp(fy0, tray.top + 70, out);
+    const st = T.starts[cur] + 2.6, jolt = k > st ? Math.exp(-7 * (k - st)) * Math.sin((k - st) * 26) : 0;
+    const sway = Math.sin(t * 1.3) * 2.4 * (1 - out);
+    card.style.left = ((fx - W / 2) / z).toFixed(2) + 'px'; card.style.top = ((fy - H / 2 + 14 * jolt) / z).toFixed(2) + 'px';
+    const tilt = 24 * Math.sin(Math.PI * upc) * (1 - out), r0 = POS[cur][2] + ro + rot;
+    card.style.transform = `perspective(2400px) rotateX(${tilt.toFixed(2)}deg) rotate(${(PV.lerp(r0, 0, upc) + sway + 1.2 * jolt + (x.side === 'LONG' ? -8 : 8) * out).toFixed(2)}deg)`;
+    card.style.clipPath = vis < .999 ? `inset(0 0 ${((1 - vis) * 100).toFixed(2)}% 0 round 8px)` : 'none';
+    const fd = card.querySelector('.fold'); fd.style.top = (Hc * vis - 90).toFixed(1) + 'px'; fd.style.opacity = (1 - unf).toFixed(3);
+    card.style.opacity = (PV.n(k, s0 + 1.5, s0 + 1.56) * (1 - PV.n(k, s0 + sl - .22, s0 + sl))).toFixed(3);
+    PV.sweep(card.querySelector('.hlc') || card.querySelector('.cl'), PV.eio(PV.n(k, s0 + 3, s0 + 5.5)));
+    const lh = card.querySelector('.lh2'), il = PV.n(k, s0 + 1.5, s0 + 1.95), mkv = lh.querySelector('svg'), nm = lh.querySelector('b');
+    mkv.style.opacity = 1; mkv.style.transform = `scale(${PV.lerp(1.16, 1, PV.eo5(il)).toFixed(3)})`; mkv.style.filter = 'none';
+    const nl = PV.n(k, s0 + 1.5, s0 + 1.95); nm.style.opacity = 1; nm.style.transform = `translateY(${(10 * (1 - PV.eo(nl))).toFixed(1)}px)`;
+    const sd = card.querySelector('.sd'), sp = PV.n(k, s0 + 2.1, s0 + 2.6); sd.style.transform = `scale(${PV.lerp(1.7, 1, PV.eo5(sp)).toFixed(3)}) rotate(${PV.lerp(-8, -1.5, sp).toFixed(2)}deg)`; sd.style.opacity = sp > 0 ? 1 : 0;
+    const cf = card.querySelector('.cf'), cq = PV.n(k, s0 + 2.5, s0 + 3.3); cf.style.opacity = PV.n(k, s0 + 2.4, s0 + 2.6).toFixed(3); cf.textContent = `${Math.round(x.conf * PV.eo(cq))}% confident`;
+  } else card.style.opacity = 0;
+  // the trays: each letter lands, the count steps
+  let nl = 0, ns = 0, lastL = -9, lastS = -9;
+  ord.forEach((x, i) => { const land = T.starts[i] + SLOT[i], el = cardEls[x.k], a = PV.n(k, land, land + .4);
+    el.style.opacity = a > 0 ? 1 : 0; el.style.translate = `0 ${(-30 * (1 - PV.eo(a))).toFixed(1)}px`;
+    if (k >= land) { if (x.side === 'LONG') { nl++; lastL = land } else { ns++; lastS = land } } });
+  const bump = (el, v, tl) => { el.textContent = v; const q = PV.n(k, tl, tl + .8); el.style.transform = `scale(${(1 + .45 * Math.sin(Math.PI * q)).toFixed(3)})` };
+  bump(PV.$('#tL .lb span'), nl, lastL); bump(PV.$('#tS .lb span'), ns, lastS);
+  // the count: stamped over the desk on the drop, then the grading line
+  // the list: on the second drop the trays rise to the top, their letters spread into one row each (LONG left, SHORT right)
+  const rise = PV.eo5(PV.n(k, T.count, T.count + 1.6)), ce = PV.n(k, T.end, T.end + .6);
+  PV.$('#dim').style.opacity = (rise * (1 - ce)).toFixed(3);
+  PV.$$('.tray').forEach(e => { e.style.transform = `translateY(${(-817 * rise).toFixed(1)}px)`; e.style.zIndex = rise > 0 ? 58 : 40 });
+  ord.forEach((x, i) => { const el = cardEls[x.k], j = ord.slice(0, i).filter(y => y.side === x.side).length, l0 = T.count + LIST(i);
+    const q = PV.spring(Math.max(0, k - l0) * B * 1.6, 1.2, 7), qc = PV.cl(q);
+    if (k < T.count) { el.style.left = (14 + j * 40) + 'px'; el.style.bottom = '64px'; el.style.transformOrigin = ''; el.style.transform = `rotate(${(j % 2 ? 3 : -3) + j}deg)`; return }
+    el.style.transformOrigin = 'left bottom'; el.style.left = PV.lerp(14 + j * 40, 0, qc).toFixed(1) + 'px'; el.style.bottom = PV.lerp(64, -229 - 227 * j, q).toFixed(1) + 'px';
+    el.style.transform = `rotate(${PV.lerp((j % 2 ? 3 : -3) + j, 0, qc).toFixed(2)}deg) scale(${PV.lerp(1, 1.38, qc).toFixed(3)})` });
+  // the end card
+  const en = PV.$('#end'); en.style.opacity = ce.toFixed(3); en.querySelector('img').style.transform = `scale(${(1.12 - .12 * PV.eo(ce) + .015 * Math.sin(t * 2)).toFixed(3)}) rotate(${(2 * Math.sin(t * .9)).toFixed(2)}deg)`;
+  PV.$('#dock').style.opacity = (1 - ce).toFixed(3); PV.$$('.tray').forEach(e => e.style.opacity = (1 - ce).toFixed(3));
+  PV.$('#dock').style.transform = `translateX(${(60 * (1 - PV.eo(PV.n(k, -.6, 1.4)))).toFixed(1)}px)`;
+};
+</script>
