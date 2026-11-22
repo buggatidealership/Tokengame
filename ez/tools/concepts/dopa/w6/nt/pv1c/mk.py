@@ -19,8 +19,8 @@ s = s[:i] + '''<!-- Sealed v3 (owner, 2026-11-22, on v2: dark letters "maybe in 
   relief through feDiffuseLighting, overlay-blended). The letter is a sheet of real card (Hedra, black by default, ?paper=cream for the cream
   one); its print takes the paper's grain (an ink mask), sits pressed into the sheet (a dark wall above, a pale lip below) and takes the lamp's
   light with the paper (one multiply pass over sheet and print); the side is a worn rubber stamp; the key clause turns gold foil (on black) or
-  takes the marker (on cream). The list: on the second drop the two trays rise to the top of the frame and their filed letters spread into
-  one row each, LONG on the left and SHORT on the right, the count on each tray's plate. v2 stays as nt-pv1b.html. Built by w6/nt/pv1c/mk.py. -->''' + s[j:]
+  takes the marker (on cream). The list: on the second drop the two trays rise to the top of the frame, their filed letters square up into a pile and are dealt from the top,
+  the farthest row first, into one row each, LONG on the left and SHORT on the right, the count on each tray's plate. v2 stays as nt-pv1b.html. Built by w6/nt/pv1c/mk.py. -->''' + s[j:]
 rep('<title>pv1b sealed v2</title>', '<title>pv1c sealed v3</title>')
 
 # 2. styles
@@ -76,7 +76,7 @@ rep('T = { starts, count: b, end: b + 3, dur: b + 3 + 5 };', 'T = { starts, coun
 rep("CUES.push([T.count * B, 'r11-thump', .16], [T.count * B + .02, 'sfx-stamp', .14], [T.end * B, 'sfx-bell', .1]);",
     "CUES.push([T.count * B, 'r11-thump', .16], [(T.count + .2) * B, 'r11-slide', .12], [T.end * B, 'sfx-bell', .1]);\n"
     "  ord.forEach((x, i) => CUES.push([(T.count + LIST(i)) * B, 'r11-card', .07]));")
-rep("let T = {}, ord,", "const LIST = i => { const x = ord[i], j = ord.slice(0, i).filter(y => y.side === x.side).length; return 1.4 + (x.side === 'LONG' ? 0 : .35) + .8 * j };\nlet T = {}, ord,")
+rep("let T = {}, ord,", "const LIST = i => { const x = ord[i], r = ord.slice(i + 1).filter(y => y.side === x.side).length; return 1.4 + (x.side === 'LONG' ? 0 : .35) + .8 * r };\nlet T = {}, ord,")
 a = s.index("  const big = PV.$('#big'), c = PV.n(k, T.count"); b = s.index("  // the end card", a)
 s = s[:a] + '''  // the list: on the second drop the trays rise to the top, their letters spread into one row each (LONG left, SHORT right)
   const rise = PV.eo5(PV.n(k, T.count, T.count + 1.6)), ce = PV.n(k, T.end, T.end + .6);
@@ -85,8 +85,10 @@ s = s[:a] + '''  // the list: on the second drop the trays rise to the top, thei
   ord.forEach((x, i) => { const el = cardEls[x.k], j = ord.slice(0, i).filter(y => y.side === x.side).length, l0 = T.count + LIST(i);
     const q = PV.spring(Math.max(0, k - l0) * B * 1.6, 1.2, 7), qc = PV.cl(q);
     if (k < T.count) { el.style.left = (14 + j * 40) + 'px'; el.style.bottom = '64px'; el.style.transformOrigin = ''; el.style.transform = `rotate(${(j % 2 ? 3 : -3) + j}deg)`; return }
-    el.style.transformOrigin = 'left bottom'; el.style.left = PV.lerp(14 + j * 40, 0, qc).toFixed(1) + 'px'; el.style.bottom = PV.lerp(64, -229 - 227 * j, q).toFixed(1) + 'px';
-    el.style.transform = `rotate(${PV.lerp((j % 2 ? 3 : -3) + j, 0, qc).toFixed(2)}deg) scale(${PV.lerp(1, 1.38, qc).toFixed(3)})` });
+    // as the tray rises its letters square up into one neat pile; then they are dealt from the top, the farthest row first, so no letter crosses another
+    const x0 = PV.lerp(14 + j * 40, 14, rise), a0 = PV.lerp((j % 2 ? 3 : -3) + j, 0, rise);
+    el.style.transformOrigin = 'left bottom'; el.style.left = PV.lerp(x0, 0, qc).toFixed(1) + 'px'; el.style.bottom = PV.lerp(64, -229 - 227 * j, q).toFixed(1) + 'px';
+    el.style.transform = `rotate(${PV.lerp(a0, 0, qc).toFixed(2)}deg) scale(${PV.lerp(1, 1.38, qc).toFixed(3)})` });
 ''' + s[b:]
 open(os.path.join(ROOT, 'nt-pv1c.html'), 'w').write(s)
 

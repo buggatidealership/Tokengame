@@ -54,6 +54,21 @@
     - out: "your words made measurable", FV1 (the "$10 concept films"), FV2, FV5, FV7, FV8;
     - liked: FV3 Receipts, FV4 Ping ("from a feature perspective, that's the best one", follow an AI and get its trade on the phone), FV6's motion, FV9's model page with reasons and right/wrong, FV10's most-confident sort.
   - The ping, two ways: board `ez/x2p-ping-channels.png` (`tools/concepts/ping/board.html`), A a web app alert, B a Telegram bot; my pick B first. On the review page (version 6), section "Your notes, round 2".
+- **Sealed v3 and the alert service (owner, 22 Nov; waiting for the owner):**
+  - Sealed v3 is `dopa/nt-pv1c.html`, built from v2 by `w6/nt/pv1c/mk.py` (run with `/usr/bin/python3` from dopa). The film is `ez/x2p-night-pv1c.mp4`; the board comparing black and cream letters is `ez/x2p-pv1c-paper.jpg`.
+    - **Letters:** black card by default (`?paper=cream` for cream). The owner said "dark letters maybe in black"; asked whether he meant the paper or the writing.
+    - **Wax:** painted by Hedra (`w6/nt/pv1c/wax-*.webp`), with the AI's mark pressed in as a lit relief (the `#press` filter, overlay).
+    - **Print:** takes the paper's grain (an ink mask), pressed in, lit with the sheet. Measured on the same frame: the variation inside the strokes is 1.6 grey levels flat and 5.1 printed. The clause is gold foil on black.
+    - **List scene:** a new scene before the end card. The trays rise, their letters square up into a pile, and they are dealt from the top, farthest row first, into one LONG row and one SHORT row (no letter crosses another).
+    - **Standard wording,** now in the shared `w6/nt/pv/pv.js`: "Reports today <when>" and "Graded at the next market close".
+    - Hedra cost about $1.35.
+  - The alert service is `ez/tools/alerts/`. It is built and tested (34 checks, plus a run in the local Workers runtime) and not deployed.
+    - **How it runs:** one Worker with a cron every 2 minutes that reads the sheet, diffs it and alerts followers on Telegram and web push; HTTP on `earningszn.xyz/api/*` by a zone route. One KV namespace, `EZ_ALERTS`.
+    - **When it alerts:** when an AI's trade is in and when the trade is graded (flat P&L). A value is sent once it reads the same on two polls. The first run seeds silently.
+    - **Deploy steps:** in the header of `wrangler.toml`. Deploy first with `DRY_RUN="1"`.
+    - **Waiting on the owner:** his channel pick and a Telegram bot token from @BotFather, which he sets himself with `wrangler secret put TG_TOKEN`.
+    - **VAPID private key:** only in the scratchpad (`alerts-secrets/`), never in git. A wiped scratchpad means running `vapid-keygen.mjs` again before the first follower.
+  - **Flagged:** the sheet now reads Intuit −12.77 and Elastic −2.02. The posted close video and `build.py` MOVES have −12.79 and −2.20 (TradingView agreed with −2.20). Asked which is right; nothing changed yet.
 - **Video kinds, each its own format (owner, 2026-11-20, on the four animated samples):** prediction videos (a company's trades are in, before the report), outcome videos (the close), product videos (the site redesign's release video), season closing and season opening videos, and new feature launches. Picks so far:
   - **Prediction videos:** in-1's structure: the company card, rows one at a time with the LONG v SHORT count, each AI's called move and confidence. Show every AI's reason, not only one; in-2's layout is not liked, but showing each model's reasoning is. Being built as `dopa/an-in3.html`.
   - **The feed launch (a new feature launch):** in app, a phone with the real app UI, zoom ins and pop outs, a glass layer, crisp type, one thing in focus per shot, in the spirit of the release video. Feed-1's post layout is liked: the AI's words with the key clause marked, then the company row with "LONG (+4%)" (not "called +4%") and "58% confident". Being built as `dopa/fl-feed.html`.
