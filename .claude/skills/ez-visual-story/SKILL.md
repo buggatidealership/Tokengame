@@ -556,3 +556,12 @@ Every time the owner gives pointers and an iteration lands, update this file the
     - Generated or photographed material for what has texture (wax, card, paper); code only for what must be exact (marks, names, numbers), and then the code makes the exact thing behave like the material: the mark pressed into the wax and lit by the scene's lamp, the ink thinning in the card's own valleys, the stamp worn.
     - Check, not taste: texture inside a printed stroke against the same text set flat (Sealed v3: 1.6 grey levels flat, 5.1 printed), every exact mark lit from the scene's light direction, no flat fill on any surface the eye rests on.
     - *Taught by:* Sealed v2, 22 Nov ("the wax... looks cheap", "the writing... looks like pasted on top", "the only way to stand out is handcrafted, high-level content").
+217. **Texture lives in the material, never inside small type: words stay crisp.**
+    - Lesson 216's check (speckle inside the strokes) rewarded the wrong thing: speckle, a gold gradient and a dark fold over a 70 px italic made the one line people must read the muddiest thing on the card ("looks non-crisp"). A reading line is judged by its edges and its contrast, not by its grain.
+    - Put the grain in the paper, the wax and the big stamped shapes; set reading type as solid ink, at least 7:1 against its ground, with clean strokes, and mark the key clause with the brand's marker rather than a metallic fill.
+    - Check: the clause's contrast and its in-stroke variation on a still (Sealed v3: 5.1:1 and 9.6 grey levels; v4: 9.4:1 and 0.7). Lesson 216's speckle count applies to big printed shapes only.
+    - *Taught by:* Sealed v3, 22 Nov ("the AI disruption overhang... looks non-crisp").
+218. **Reading comfort is a named colour people already know, not a guess at "cream".**
+    - "The less eye strain colour people add on their phone" is the reading-mode sepia of Apple Books and Kindle (#F8F1E3, #FBF0D9): light, warm, low contrast in the paper itself. Pick from the reference the audience uses, then measure the result against it (v4's sheet: mean #F5EDDA, texture a third of the painted cream's).
+    - Words for objects carry the speaker's frame: "the letter paper" meant the envelope and "the inside" the letter in it. When one word can name two objects in the scene, build the likelier reading and show the other beside it.
+    - *Taught by:* Sealed v3, 22 Nov ("the letter paper to be dark and black, and the inside can be sort of this beige").
