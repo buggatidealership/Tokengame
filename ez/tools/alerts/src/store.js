@@ -60,23 +60,25 @@ export function makeStore(kv) {
       await kv.delete(`${ch}:${id}`);
     },
     // every recipient of an AI's alerts: its followers and the followers of "all", each once
-    async recipients(slug) {
+    // memo: a Map shared across calls in one poll, so each prefix ("f:grok:", "f:all:") is listed once
+    async recipients(slug, memo = new Map()) {
       const out = new Map();
+      const pages = async prefix => {
+        if (memo.has(prefix)) return memo.get(prefix);
+        const keys = []; let cursor;
+        do { const page = await kv.list({ prefix, cursor }); keys.push(...page.keys); cursor = page.list_complete ? null : page.cursor } while (cursor);
+        memo.set(prefix, keys); return keys;
+      };
       for (const s of [slug, 'all']) {
-        let cursor;
-        do {
-          const page = await kv.list({ prefix: `f:${s}:`, cursor });
-          for (const k of page.keys) {
-            const [, , ch, ...rest] = k.name.split(':'), id = rest.join(':'), m = k.metadata || {};
-            if (out.has(`${ch}:${id}`)) continue;
-            if (ch === 'wp') {
-              let sub = m.e ? { endpoint: m.e, keys: { p256dh: m.p, auth: m.a } } : null;
-              if (!sub) { const r = await getJson(`wp:${id}`); sub = r && r.sub }
-              if (sub) out.set(`wp:${id}`, { ch: 'wp', id, sub });
-            } else if (ch === 'tg') out.set(`tg:${id}`, { ch: 'tg', id, chatId: id });
-          }
-          cursor = page.list_complete ? null : page.cursor;
-        } while (cursor);
+        for (const k of await pages(`f:${s}:`)) {
+          const [, , ch, ...rest] = k.name.split(':'), id = rest.join(':'), m = k.metadata || {};
+          if (out.has(`${ch}:${id}`)) continue;
+          if (ch === 'wp') {
+            let sub = m.e ? { endpoint: m.e, keys: { p256dh: m.p, auth: m.a } } : null;
+            if (!sub) { const r = await getJson(`wp:${id}`); sub = r && r.sub }
+            if (sub) out.set(`wp:${id}`, { ch: 'wp', id, sub });
+          } else if (ch === 'tg') out.set(`tg:${id}`, { ch: 'tg', id, chatId: id });
+        }
       }
       return [...out.values()];
     },

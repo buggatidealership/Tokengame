@@ -10,9 +10,10 @@ export const vapidOf = env => (env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY ? {
 export const channels = env => ({ wp: !!vapidOf(env), tg: tgEnabled(env) });
 
 export async function fanOut(events, store, env, { digestAt = 3 } = {}) {
-  const on = channels(env), byRecipient = new Map(), skipped = [];
+  const on = channels(env), byRecipient = new Map(), skipped = [], cache = new Map(), memo = new Map();
+  const recipients = async slug => { if (!cache.has(slug)) cache.set(slug, await store.recipients(slug, memo)); return cache.get(slug) }; // each prefix listed once per poll
   for (const e of events) {
-    for (const r of await store.recipients(e.slug)) {
+    for (const r of await recipients(e.slug)) {
       if (!on[r.ch]) { skipped.push(r.ch); continue }
       const k = `${r.ch}:${r.id}`; if (!byRecipient.has(k)) byRecipient.set(k, { r, evs: [] });
       byRecipient.get(k).evs.push(e);
@@ -20,7 +21,13 @@ export async function fanOut(events, store, env, { digestAt = 3 } = {}) {
   }
   const out = [];
   for (const { r, evs } of byRecipient.values()) {
-    const msgs = evs.length >= digestAt ? [{ msg: digest(evs, env), keys: evs.map(e => e.key) }] : evs.map(e => ({ msg: one(e, env), keys: [e.key] }));
+    // new trades and results are digested apart: a fresh trade is the time-sensitive alert and must never hide inside a result digest
+    const msgs = [];
+    for (const group of [evs.filter(e => e.type === 'CALL_IN' || e.type === 'CALL_EDITED'), evs.filter(e => e.type === 'GRADED' || e.type === 'GRADE_EDITED')]) {
+      if (!group.length) continue;
+      if (group.length >= digestAt) msgs.push({ msg: digest(group, env), keys: group.map(e => e.key) });
+      else for (const e of group) msgs.push({ msg: one(e, env), keys: [e.key] });
+    }
     for (const { msg, keys } of msgs) out.push({ id: `${r.ch}:${r.id}:${keys.join(',')}`.slice(0, 200), ch: r.ch, rid: r.id, to: r.ch === 'wp' ? r.sub : r.chatId, msg, tries: 0 });
   }
   return { deliveries: out, skippedChannels: [...new Set(skipped)] };

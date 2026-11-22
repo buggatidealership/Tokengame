@@ -24,11 +24,17 @@ export function emptyState(now) {
   return { v: 1, seededAt: null, updatedAt: new Date(now).toISOString(), sent: {}, pending: {}, outbox: [], held: null, log: [] };
 }
 
+// Records: S.sent["CALL_IN:INTU:GROK"] is a list of records, one per quarter the company reported in (matched by call date), so a
+// November row and next February's row of the same ticker never overwrite each other.
+const findRec = (S, k, t, cfg) => (S.sent[k] || []).find(r => sameTrade(r, t, cfg)) || null;
+const putRec = (S, k, t, cfg, rec) => { const l = (S.sent[k] || []).filter(r => !sameTrade(r, t, cfg)); l.push(rec); S.sent[k] = l; return rec };
+
 // state: the last state (null on the first run); trades: parseSeason2(...).trades; returns a new state plus what to do.
 export function diff(state, trades, opts = {}) {
   const cfg = { ...DEFAULTS, ...opts }, now = opts.now ?? Date.now(), iso = new Date(now).toISOString();
   const first = !state || !state.seededAt;
   const S = structuredClone(state && state.seededAt ? state : emptyState(now));
+  S.once = S.once || {};
   const events = [], notes = [], seen = new Set();
   const company = t => NAMES[t.ticker] || t.ticker;
 
@@ -41,36 +47,46 @@ export function diff(state, trades, opts = {}) {
     if (S.pending[key].n > cfg.settlePolls) { delete S.pending[key]; return true }
     return false;
   };
-  const record = (key, val) => { S.sent[key] = { ...val, at: iso, ...(first ? { seed: true } : {}) } };
   const emit = e => { if (!first) events.push(e) };
   const note = n => { if (!first) notes.push({ ...n, at: iso }) };
+  const noteOnce = (id, n) => { if (S.once[id]) return; S.once[id] = iso; note(n) }; // logged once, so a quiet poll stays write-free
 
-  const present = new Set();
+  // one row per trade: a second row of the same ticker within sameTradeDays (a duplicated row) is ignored, noted once
+  const rows = [], kept = [];
   for (const t of [...trades].sort((a, b) => a.round - b.round)) {
+    const dup = kept.find(k => k.ticker === t.ticker && sameTrade(k, t, cfg));
+    if (dup) { noteOnce(`DUP:${t.ticker}:${t.round}`, { type: 'DUPLICATE_ROW', round: t.round, ticker: t.ticker, keeps: dup.round }); continue }
+    kept.push(t); rows.push(t);
+  }
+
+  for (const t of rows) {
     const graded = t.move != null;
-    if (!NAMES[t.ticker]) note({ type: 'NO_NAME', round: t.round, ticker: t.ticker });
+    if (!NAMES[t.ticker]) noteOnce('NONAME:' + t.ticker, { type: 'NO_NAME', round: t.round, ticker: t.ticker });
     for (const a of AIS) {
       const c = t.calls[a.key];
       const kC = `CALL_IN:${t.ticker}:${a.key}`, kG = `GRADED:${t.ticker}:${a.key}`;
       const base = { round: t.round, ticker: t.ticker, company: company(t), ai: a.key, aiName: a.name, slug: a.slug, callDate: t.callDate, resDate: t.resDate };
-      const recC = sameTrade(S.sent[kC], t, cfg) ? S.sent[kC] : null;
-      if (c) present.add(kC);
+      const recC = findRec(S, kC, t, cfg), sig = c && `${c.side}|${c.size}|${c.conf}`;
 
       // the call
       if (c && !recC) {
-        if (graded) record(kC, { callDate: t.callDate, round: t.round, side: c.side, size: c.size, conf: c.conf, suppressed: 'graded when first seen' });
-        else if (settle(kC, `${c.side}|${c.size}|${c.conf}`)) {
-          record(kC, { callDate: t.callDate, round: t.round, side: c.side, size: c.size, conf: c.conf });
+        if (graded) putRec(S, kC, t, cfg, { callDate: t.callDate, round: t.round, side: c.side, size: c.size, conf: c.conf, at: iso, suppressed: 'graded when first seen', ...(first ? { seed: true } : {}) });
+        else if (settle(`${kC}@${t.callDate}`, sig)) {
+          putRec(S, kC, t, cfg, { callDate: t.callDate, round: t.round, side: c.side, size: c.size, conf: c.conf, at: iso, ...(first ? { seed: true } : {}) });
           emit({ type: 'CALL_IN', key: kC, ...base, side: c.side, size: c.size, conf: c.conf, deliver: true });
         }
-      } else if (c && recC && (recC.side !== c.side || recC.size !== c.size || (c.conf != null && recC.conf !== c.conf))) {
-        if (settle('EDIT:' + kC, `${c.side}|${c.size}|${c.conf}`)) {
-          const from = { side: recC.side, size: recC.size, conf: recC.conf };
-          Object.assign(recC, { side: c.side, size: c.size, conf: c.conf ?? recC.conf, edited: iso, removed: undefined });
-          // a correction only while the trade is open; once graded, GRADE_EDITED below carries the change
-          const send = from.side !== c.side && !recC.suppressed && !graded;
-          (send ? emit : note)({ type: 'CALL_EDITED', key: 'EDIT:' + kC, ...base, from, to: { side: c.side, size: c.size, conf: c.conf }, deliver: send });
-          if (send) notes.push({ type: 'CALL_EDITED', round: t.round, ticker: t.ticker, ai: a.key, from, to: c, at: iso, delivered: true });
+      } else if (c && recC) {
+        if (recC.removed) delete recC.removed; // a call cleared and typed back in
+        if (recC.callDate !== t.callDate) { recC.callDate = t.callDate; recC.round = t.round } // the date moved within the window: same trade
+        if (recC.side !== c.side || recC.size !== c.size || (c.conf != null && recC.conf !== c.conf)) {
+          if (settle(`EDIT:${kC}@${t.callDate}`, sig)) {
+            const from = { side: recC.side, size: recC.size, conf: recC.conf };
+            Object.assign(recC, { side: c.side, size: c.size, conf: c.conf ?? recC.conf, edited: iso });
+            // a correction only while the trade is open and its first alert went out; once graded, GRADE_EDITED carries the change
+            const send = from.side !== c.side && !recC.suppressed && !recC.seed && !graded;
+            (send ? emit : note)({ type: 'CALL_EDITED', key: 'EDIT:' + kC, ...base, from, to: { side: c.side, size: c.size, conf: c.conf }, deliver: send });
+            if (send) notes.push({ type: 'CALL_EDITED', round: t.round, ticker: t.ticker, ai: a.key, from, to: c, at: iso, delivered: true });
+          }
         }
       } else if (!c && recC && !recC.removed && !recC.suppressed) {
         recC.removed = iso; note({ type: 'CALL_REMOVED', round: t.round, ticker: t.ticker, ai: a.key, was: { side: recC.side, size: recC.size } });
@@ -78,21 +94,22 @@ export function diff(state, trades, opts = {}) {
 
       // the grade
       if (graded && c) {
-        const p = pnlOf(c.side, t.move), right = rightOf(p);
-        const recG = sameTrade(S.sent[kG], t, cfg) ? S.sent[kG] : null;
-        present.add(kG);
+        const p = pnlOf(c.side, t.move), right = rightOf(p), recG = findRec(S, kG, t, cfg), gsig = `${c.side}|${t.move}`;
         if (!recG) {
-          if (settle(kG, `${c.side}|${t.move}`)) {
-            record(kG, { callDate: t.callDate, round: t.round, side: c.side, move: t.move, pnl: p, right });
+          if (settle(`${kG}@${t.callDate}`, gsig)) {
+            putRec(S, kG, t, cfg, { callDate: t.callDate, round: t.round, side: c.side, move: t.move, pnl: p, right, at: iso, ...(first ? { seed: true } : {}) });
             emit({ type: 'GRADED', key: kG, ...base, side: c.side, size: c.size, move: t.move, pnl: p, right, deliver: true });
           }
-        } else if (recG.move !== t.move || recG.side !== c.side) {
-          if (settle('EDIT:' + kG, `${c.side}|${t.move}`)) {
-            const from = { side: recG.side, move: recG.move, pnl: recG.pnl, right: recG.right };
-            Object.assign(recG, { side: c.side, move: t.move, pnl: p, right, edited: iso });
-            const flip = from.right !== right;
-            (flip ? emit : note)({ type: 'GRADE_EDITED', key: 'EDIT:' + kG, ...base, side: c.side, size: c.size, from, to: { side: c.side, move: t.move, pnl: p, right }, deliver: flip });
-            if (flip) notes.push({ type: 'GRADE_EDITED', round: t.round, ticker: t.ticker, ai: a.key, from, to: { move: t.move, pnl: p, right }, at: iso, delivered: true });
+        } else {
+          if (recG.callDate !== t.callDate) { recG.callDate = t.callDate; recG.round = t.round }
+          if (recG.move !== t.move || recG.side !== c.side) {
+            if (settle(`EDIT:${kG}@${t.callDate}`, gsig)) {
+              const from = { side: recG.side, move: recG.move, pnl: recG.pnl, right: recG.right };
+              Object.assign(recG, { side: c.side, move: t.move, pnl: p, right, edited: iso });
+              const flip = from.right !== right && !recG.seed;
+              (flip ? emit : note)({ type: 'GRADE_EDITED', key: 'EDIT:' + kG, ...base, side: c.side, size: c.size, from, to: { side: c.side, move: t.move, pnl: p, right }, deliver: flip });
+              if (flip) notes.push({ type: 'GRADE_EDITED', round: t.round, ticker: t.ticker, ai: a.key, from, to: { move: t.move, pnl: p, right }, at: iso, delivered: true });
+            }
           }
         }
       }
@@ -101,10 +118,11 @@ export function diff(state, trades, opts = {}) {
   // a value that vanished before it settled is forgotten; so is the pending edit of a value that went back to what was sent
   for (const k of Object.keys(S.pending)) if (!seen.has(k)) delete S.pending[k];
   // a whole trade gone from the sheet after its call was alerted: one note, records kept (so it never re-alerts if it comes back)
-  if (!first) for (const [k, r] of Object.entries(S.sent)) {
-    if (k.startsWith('CALL_IN:') && !present.has(k) && !r.removed && !r.suppressed && !r.gone) {
-      const [, ticker, ai] = k.split(':');
-      if (!trades.some(t => t.ticker === ticker && sameTrade(r, t, cfg))) { r.gone = iso; notes.push({ type: 'TRADE_REMOVED', ticker, ai, round: r.round, at: iso }) }
+  if (!first) for (const [k, list] of Object.entries(S.sent)) {
+    if (!k.startsWith('CALL_IN:')) continue;
+    const [, ticker, ai] = k.split(':');
+    for (const r of list) if (!r.removed && !r.suppressed && !r.gone && !rows.some(t => t.ticker === ticker && sameTrade(r, t, cfg))) {
+      r.gone = iso; notes.push({ type: 'TRADE_REMOVED', ticker, ai, round: r.round, at: iso });
     }
   }
 
@@ -116,8 +134,8 @@ export function diff(state, trades, opts = {}) {
     notes.push({ type: 'FLOOD_HELD', count: deliver.length, at: iso });
   }
   if (first) S.seededAt = iso;
-  S.log = [...notes, ...(S.log || [])].slice(0, cfg.maxLog);
-  return { state: S, events: held ? [] : deliver, notes, seeded: first, held, counts: { trades: trades.length, calls: trades.reduce((n, t) => n + Object.keys(t.calls).length, 0), graded: trades.filter(t => t.move != null).length } };
+  if (notes.length) S.log = [...notes, ...(S.log || [])].slice(0, cfg.maxLog);
+  return { state: S, events: held ? [] : deliver, notes, seeded: first, held, counts: { trades: rows.length, calls: rows.reduce((n, t) => n + Object.keys(t.calls).length, 0), graded: rows.filter(t => t.move != null).length } };
 }
 
 export const aiName = k => (AI_BY_KEY[k] || {}).name || k;

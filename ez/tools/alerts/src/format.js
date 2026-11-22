@@ -40,24 +40,37 @@ export function one(e, env = {}) {
   throw new Error('no wording for ' + e.type);
 }
 
-// several events for one follower in one poll -> one message (the 20 Nov close graded 3 trades per AI at once)
+// several events of one kind for one follower in one poll -> one message (the 20 Nov close graded 15 trades at once)
+//   one AI, trades:   "Grok posted 3 trades"        one line per trade
+//   one AI, results:  "Grok's 3 trades are graded"  one line per trade, then the total P&L
+//   several AIs:      trades one line per company ("Intuit: GPT LONG +4.5%, Claude SHORT −4%, ..."),
+//                     results one line per AI with its P&L over these trades, best first ("Grok P&L +$17,660 · 2 of 3 right")
 export function digest(evs, env = {}) {
-  const ais = [...new Set(evs.map(e => e.aiName))], solo = ais.length === 1, who = e => (solo ? '' : `${e.aiName} · `);
-  const kind = evs.every(e => e.type === 'GRADED') ? 'GRADED' : evs.every(e => e.type === 'CALL_IN') ? 'CALL_IN' : 'MIXED';
-  const lines = evs.map(e => {
-    if (e.type === 'CALL_IN') return `${who(e)}${e.company} ${e.side} ${size(e.side, e.size)}${conf(e.conf)}`;
-    if (e.type === 'GRADED') return `${who(e)}${e.company} ${e.side}, ${verdict(e.right)}, ${pnl(e.pnl)}`;
-    const m = one(e, env); return `${who(e)}${m.title.replace(/^Correction: .*'s /, 'Correction: ')}: ${m.body.split('\n')[0]}`;
-  });
-  const MAX = 8, shown = lines.length > MAX ? [...lines.slice(0, MAX - 1), `+${lines.length - MAX + 1} more`] : lines;
-  if (kind === 'GRADED' && solo) shown.push(`Total ${pnl(evs.reduce((s, e) => s + e.pnl, 0))}`);
-  const n = evs.length;
-  const title = kind === 'CALL_IN' ? (solo ? `${ais[0]} posted ${n} trades` : `${n} new trades`)
-    : kind === 'GRADED' ? (solo ? `${ais[0]}'s ${n} trades are graded` : `${n} trades graded`)
-    : (solo ? `${ais[0]}: ${n} updates` : `${n} updates`);
-  const first = evs[0], u = url(first, env);
-  return { title, body: shown.join('\n'), text: `${title}\n${shown.join('\n')}`, url: u, tag: `ez-digest-${kind.toLowerCase()}-${first.round}`,
-    topic: `d-${kind.toLowerCase()}-${first.round}`.slice(0, 32), ttl: kind === 'CALL_IN' ? 6 * 3600 : 24 * 3600, urgency: 'high' };
+  const ais = [...new Set(evs.map(e => e.aiName))], solo = ais.length === 1, n = evs.length;
+  const cos = [...new Set(evs.map(e => e.company))], coList = cos.length <= 3 ? cos.join(', ') : `${cos.length} companies`;
+  const results = evs.every(e => e.type === 'GRADED' || e.type === 'GRADE_EDITED');
+  const val = e => (e.type === 'GRADE_EDITED' ? e.to : e);
+  const fix = evs.some(e => e.type.endsWith('_EDITED')) ? ' (with corrections)' : '';
+  let title, lines;
+  if (results && solo) {
+    title = `${ais[0]}'s ${n} trades are graded${fix}`;
+    lines = evs.map(e => `${e.company} ${val(e).side}, ${verdict(val(e).right)}, ${pnl(val(e).pnl)}`);
+    lines.push(`Total ${pnl(evs.reduce((s, e) => s + val(e).pnl, 0))}`);
+  } else if (results) {
+    title = `${coList} graded${fix}`;
+    const by = new Map(); for (const e of evs) { const b = by.get(e.aiName) || { p: 0, r: 0, n: 0 }; b.p += val(e).pnl; b.r += val(e).right === true ? 1 : 0; b.n++; by.set(e.aiName, b) }
+    lines = [...by].sort((a, b) => b[1].p - a[1].p).map(([k, b]) => `${k} ${pnl(b.p)} · ${b.r} of ${b.n} right`);
+  } else if (solo) {
+    title = `${ais[0]} posted ${n} trades${fix}`;
+    lines = evs.map(e => (e.type === 'CALL_EDITED' ? `${e.company} ${e.to.side} ${size(e.to.side, e.to.size)} (correction)` : `${e.company} ${e.side} ${size(e.side, e.size)}${conf(e.conf)}`));
+  } else {
+    title = `${n} new trades${fix}`;
+    lines = cos.map(c => `${c}: ` + evs.filter(e => e.company === c).map(e => (e.type === 'CALL_EDITED' ? `${e.aiName} ${e.to.side} ${size(e.to.side, e.to.size)} (correction)` : `${e.aiName} ${e.side} ${size(e.side, e.size)}`)).join(', '));
+  }
+  const MAX = 8; if (lines.length > MAX) lines = [...lines.slice(0, MAX - 1), `+${lines.length - MAX + 1} more`];
+  const first = evs[0], kind = results ? 'graded' : 'trades';
+  return { title, body: lines.join('\n'), text: `${title}\n${lines.join('\n')}`, url: url(first, env), tag: `ez-${kind}-${first.round}`,
+    topic: `d-${kind}-${first.round}`.slice(0, 32), ttl: results ? 24 * 3600 : 6 * 3600, urgency: 'high' };
 }
 
 // words an alert must never contain (checked by the tests on every message they produce)
