@@ -24,6 +24,14 @@ head=('<meta charset="utf-8"><meta name="viewport" content="width=device-width,i
 t=t.replace('<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EZ Terminal</title>',head,1)
 assert 'og:image' in t
 t=t.replace('<script src="ez-data.js"></script>','<script src="ez-data.js?v='+v+'"></script>',1)
+# Season 2 (tools/site/make_s2.py, tools/site/s2_terminal.py): its data file, versioned by its own hash, and its logos
+import hashlib,glob
+s2=open(os.path.join(EZ,'s2-data.js'),'rb').read();v2=hashlib.sha1(s2).hexdigest()[:10]
+open(os.path.join(SITE,'s2-data.js'),'wb').write(s2)
+assert t.count('<script src="s2-data.js"></script>')==1
+t=t.replace('<script src="s2-data.js"></script>','<script src="s2-data.js?v='+v2+'"></script>',1)
+os.makedirs(os.path.join(SITE,'media','logos'),exist_ok=True)
+for f in glob.glob(os.path.join(EZ,'media','logos','S2-*')):shutil.copy(f,os.path.join(SITE,'media','logos',os.path.basename(f)))
 assert 'ez-data.js?v=' in t
 if not t.lstrip().lower().startswith('<!doctype'):t='<!doctype html><html lang="en"><head>'+t.replace('</style>\n<div class="app">','</style></head><body>\n<div class="app">',1)
 open(os.path.join(SITE,'index.html'),'w').write(t)
