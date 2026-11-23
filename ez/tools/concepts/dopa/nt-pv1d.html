@@ -98,7 +98,8 @@
 const G = PV.grid(174, 0);                     // w8f-horns: 174 BPM, beats from 0 in the file
 const B = G.B;
 // the film in beats: the opener, five envelopes (the second starts on the bed's first drop), the count on the second drop, the end card
-const OPEN = 4, SLOT = [10, 11, 10, 10, 10];
+// ?slot=n (2026-11-23, Semtech: a longer film so each AI's words hold their reading time): n beats per letter instead of 10 or 11
+const OPEN = 4, SLOT = new URLSearchParams(location.search).get('slot') ? Array(5).fill(+new URLSearchParams(location.search).get('slot')) : [10, 11, 10, 10, 10];
 const LIST = i => { const x = ord[i], r = ord.slice(i + 1).filter(y => y.side === x.side).length; return 1.4 + (x.side === 'LONG' ? 0 : .35) + .8 * r };
 let T = {}, ord, grain, envs = [], cardEls = {};
 const WAX = { GPT: ['#5d636d', '#202329', '#08090b', '#efe6cf'], GROK: ['#9399a3', '#41454d', '#15171b', '#f3ecda'], CLAUDE: ['#f3a985', '#c9643f', '#6a2812', '#fbefe2'],

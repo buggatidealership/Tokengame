@@ -9,7 +9,9 @@ if J.get('music'): bed, bat = J['music']['f'], J['music']['at']
 def load(f):
     raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', H + f + '.mp3', '-ac', '2', '-ar', str(SR), '-f', 's16le', '-'], capture_output=True).stdout
     return np.frombuffer(raw, '<i2').reshape(-1, 2).astype(float) / 32768
-o = np.zeros((N, 2)); m = load(bed); s0 = int(bat * SR); seg = m[s0:s0 + N]; o[:len(seg)] += bg * seg / max(1e-6, np.abs(m).max())
+o = np.zeros((N, 2)); m = load(bed); s0 = int(bat * SR)
+# a negative bed_at (2026-11-23): the bed enters -bed_at seconds into the film
+d0 = max(0, -s0); seg = m[max(0, s0):max(0, s0) + N - d0]; o[d0:d0 + len(seg)] += bg * seg / max(1e-6, np.abs(m).max())
 for t, f, pk in J['cues']:
     s = load(f); p = np.argmax(np.abs(s).max(1)); i = int(t * SR) - p
     if i < 0: s = s[-i:]; i = 0

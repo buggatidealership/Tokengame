@@ -10,12 +10,12 @@ D = os.path.dirname(os.path.abspath(__file__))
 COLS = ['round', 'season2_trade', 'ticker', 'company', 'called', 'graded_at_close', 'model', 'app_shows', 'side', 'size_pct', 'confidence_pct',
         'why', 'take', 'thesis', 'kill', 'lessons_entry', 'other_reasoning', 'sources_shown', 'journal_receipt', 'process_notes',
         'sheet_check', 'move_pct', 'right', 'pnl_usd', 'screenshot']
-T = {'INTU': (113, 1, 'Intuit'), 'KEYS': (114, 2, 'Keysight'), 'ESTC': (115, 3, 'Elastic')}
+T = {'INTU': (113, 1, 'Intuit'), 'KEYS': (114, 2, 'Keysight'), 'ESTC': (115, 3, 'Elastic'), 'ZOOM': (116, 4, 'Zoom'), 'SMTC': (117, 5, 'Semtech'), 'SYM': (118, 6, 'Symbotic')}
 R = []
-def add(model, app, tk, side, size, conf, why, shot, **k):
+def add(model, app, tk, side, size, conf, why, shot, called='2026-11-19', graded='2026-11-20', **k):
     n, s2, co = T[tk]
-    R.append(dict(round=n, season2_trade=s2, ticker=tk, company=co, called='2026-11-19', graded_at_close='2026-11-20', model=model, app_shows=app,
-                  side=side, size_pct=size, confidence_pct=conf, why=why, screenshot='2026-11-19/' + shot, sheet_check='matches the sheet', **k))
+    R.append(dict(round=n, season2_trade=s2, ticker=tk, company=co, called=called, graded_at_close=graded, model=model, app_shows=app,
+                  side=side, size_pct=size, confidence_pct=conf, why=why, screenshot=called + '/' + shot, sheet_check='matches the sheet', **k))
 
 # Claude (the app shows the project "Earning Predictoor", mode "Freedom unrestricted"; the model name is not on screen)
 CA = 'Claude app, project "Earning Predictoor" (Freedom, unrestricted)'
@@ -107,10 +107,31 @@ add('Grok', GR, 'ESTC', 'LONG', 2.8, 58,
     other_reasoning="Search AI platform / observability / security growth story is less fully owned than mega-cap AI names. Last print was a beat with a large positive close. Incremental AI adoption or guidance that clears a better-than-feared threshold can still produce upside digestion. Options wide (~+/-15%). Lean positive on lower residual ownership plus recent positive reaction pattern.",
     sources_shown='40 pages', process_notes='Final line "ESTC: LONG, +2.8 %".')
 
+# the calls of 23 Nov (Zoom, Semtech, Symbotic; graded at the 24 Nov close): one screenshot per AI, each its three final blocks only
+# (the owner's crops; the app is not on screen). Each block also reads "MARKET: S&P 500 DOWN, n % over the same window" (in market_line).
+def d23(model, tk, side, size, conf, why, shot, mkt, **k):
+    add(model, '[not on screen]', tk, side, size, conf, why, shot, called='2026-11-23', graded='2026-11-24',
+        process_notes='Also wrote "MARKET: S&P 500 DOWN, ' + mkt + ' over the same window".' + k.pop('pn', ''), **k)
+d23('Qwen', 'ZOOM', 'SHORT', 4.0, 56, "Zoom must clear an EPS bar above its own guidance while every revenue estimate is being cut. Today it lagged the chip-led rally.", '01-qwen.png', '0.7 %', pn=' The ticker is written ZM.')
+d23('Qwen', 'SMTC', 'LONG', 5.0, 57, "Chips got their leader back and Semtech's bar sits at the low end of raised guidance, with most of next year already booked.", '01-qwen.png', '0.7 %')
+d23('Qwen', 'SYM', 'SHORT', 4.0, 54, "Symbotic already popped 16% today on flat volume, and management pre-said margins and system starts would be flat. Cash is the test.", '01-qwen.png', '0.7 %')
+d23('Gemini', 'ZOOM', 'SHORT', 5.5, 60, "Sluggish 4% sales growth with YoY EPS contraction and a broken software chart echo August's 7% post-earnings drop.", '02-gemini.png', '0.4 %')
+d23('Gemini', 'SMTC', 'SHORT', 7.5, 59, "After a Nvidia-driven sympathy rip into the print, recent analyst target cuts and a damaged chart favor a post-earnings fade.", '02-gemini.png', '0.4 %')
+d23('Gemini', 'SYM', 'SHORT', 9.5, 64, "One EPS beat in eight quarters and two straight post-earnings drops leave shares exposed to another fade off today's bounce.", '02-gemini.png', '0.4 %')
+d23('Grok', 'ZOOM', 'SHORT', 2.8, 64, "Residual owned mature AI-features story after washout; continuity print digests lower on confirmation, not incremental stabilization.", '03-grok.png', '-0.9 %', pn=' Final line "ZOOM: SHORT, -2.8 %" (a sign on the size).')
+d23('Grok', 'SMTC', 'SHORT', 3.6, 66, "Residual owned AI-connectivity cycle after sharp drop; continuity confirmation digests further lower.", '03-grok.png', '-0.9 %', pn=' Final line "SMTC: SHORT, -3.6 %" (a sign on the size).')
+d23('Grok', 'SYM', 'SHORT', 4.1, 63, "Residual owned automation growth story; known backlog does not clear better-than-feared threshold on continuity print.", '03-grok.png', '-0.9 %', pn=' Final line "SYM: SHORT, -4.1 %" (a sign on the size).')
+d23('Claude', 'ZOOM', 'SHORT', 3.0, 55, "Last guide was flat and cost Zoom 7%. Tonight\u2019s has to top $1.296 billion, the day after the market jumped 4%.", '04-claude.png', '0.5 %', pn=' The ticker is written ZM.')
+d23('Claude', 'SMTC', 'SHORT', 3.0, 54, "The quarter was told in October and the stock rose 16% today. I see it beating chip peers and still closing lower.", '04-claude.png', '0.5 %')
+d23('Claude', 'SYM', 'SHORT', 5.0, 56, "Up 16% before reporting, the Walmart order is old news, and management said the next step-up comes late in 2027.", '04-claude.png', '0.5 %', pn=' Then: "The grade is scheduled for Nov 24 after the close. I will not report any after-hours move as a result."')
+d23('GPT', 'ZOOM', 'SHORT', 4.5, 55, "Online sales barely grew and a reseller is cutting back. I expect Zoom\u2019s winter sales forecast to come in near $1.29 billion.", '05-gpt.png', '0.8 %', pn=' The ticker is written ZM.')
+d23('GPT', 'SMTC', 'LONG', 9.0, 58, "Orders for 800G chips are rising and faster copper chips are shipping. I expect Semtech to guide winter sales above $450 million.", '05-gpt.png', '0.8 %')
+d23('GPT', 'SYM', 'LONG', 7.0, 56, "Symbotic went from 46 warehouse installations underway to 77 in a year. I expect a December-quarter sales forecast above $815 million.", '05-gpt.png', '0.8 %')
+
 # outcomes (round -> close-to-close move, %; the sheet's moves, entered by the owner on 20 Nov after the close; TradingView's
 # 15-minute-delayed read at 21:15 UTC: INTU -12.79, KEYS -6.93, ESTC -2.02, all within 0.3 of the sheet, which wins)
 MOVES = {113: -12.79, 114: -7.07, 115: -2.20}
-order = {'INTU': 0, 'KEYS': 1, 'ESTC': 2}; mo = {'GPT': 0, 'Claude': 1, 'Grok': 2, 'Gemini': 3, 'Qwen': 4}
+order = {'INTU': 0, 'KEYS': 1, 'ESTC': 2, 'ZOOM': 3, 'SMTC': 4, 'SYM': 5}; mo = {'GPT': 0, 'Claude': 1, 'Grok': 2, 'Gemini': 3, 'Qwen': 4}
 R.sort(key=lambda r: (order[r['ticker']], mo[r['model']]))
 for r in R:
     m = MOVES.get(r['round'])

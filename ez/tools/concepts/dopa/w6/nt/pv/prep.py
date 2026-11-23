@@ -12,7 +12,7 @@ CO = {'INTU': {'logo': 'data/co/INTU.svg', 'col': '#236cff', 'when': 'after the 
       'ESTC': {'logo': 'data/co/ESTC.svg', 'col': '#005571', 'when': 'after the close'},
       # the week of 23 Nov (report times checked 2026-11-23: Zoom, Semtech, Medtronic, ADI, Ambarella their own notices; Dell, Workday, HP,
       # Autodesk earnings calendars; Symbotic an estimate, unconfirmed)
-      'ZM': {'logo': 'data/co/ZOOM.png', 'col': '#0b5cff', 'when': 'after the close'}, 'SMTC': {'logo': 'data/co/SMTC.png', 'col': '#6bc4ca', 'when': 'after the close'},
+      'ZOOM': {'logo': 'data/co/ZOOM.png', 'col': '#0b5cff', 'when': 'after the close'}, 'SMTC': {'logo': 'data/co/SMTC.png', 'col': '#6bc4ca', 'when': 'after the close'},
       'SYM': {'logo': 'data/co/SYM.png', 'col': '#78be20', 'when': 'after the close'}, 'MDT': {'logo': 'data/co/MDT.png', 'col': '#224a87', 'when': 'before the open'},
       'ADI': {'logo': 'data/co/ADI.png', 'col': '#0067b9', 'when': 'before the open'}, 'DELL': {'logo': 'data/co/DELL.png', 'col': '#007db8', 'when': 'after the close'},
       'WDAY': {'logo': 'data/co/WDAY.png', 'col': '#3069b5', 'when': 'after the close'}, 'AMBA': {'logo': 'data/co/AMBA.png', 'col': '#95c76b', 'when': 'after the close'},
@@ -24,7 +24,9 @@ CL = {'INTU': {'GPT': 'Higher QuickBooks renewal prices', 'Claude': 'growth slow
       'KEYS': {'GPT': 'orders ran ahead of shipments', 'Claude': 'keeps beating its own guide', 'Grok': 'washout not deep enough',
                'Gemini': "echoing August's post-earnings drop", 'Qwen': 'the bar is low tonight'},
       'ESTC': {'GPT': 'Annual cloud sales grew 27%', 'Claude': 'backlog growth has risen', 'Grok': 'better-than-feared AI adoption',
-               'Gemini': 'four straight beats', 'Qwen': 'Datadog just guided consumption flat'}}
+               'Gemini': 'four straight beats', 'Qwen': 'Datadog just guided consumption flat'},
+      'SMTC': {'GPT': 'Orders for 800G chips are rising', 'Claude': 'the stock rose 16% today', 'Grok': 'AI-connectivity cycle after sharp drop',
+               'Gemini': 'analyst target cuts and a damaged chart', 'Qwen': 'Chips got their leader back'}}
 strip = lambda s: ' ' + re.sub(r'\s+', ' ', re.sub(r'[.,;:!?"()]', ' ', s)).strip() + ' '
 day = lambda d: datetime.date.fromisoformat(d).strftime('%A')
 out = {'cos': {}, 'calls': [], 'marks': {k: marks[k] for k in ['GPT', 'CLAUDE', 'GROK', 'GEMINI', 'QWEN']}}
