@@ -16,12 +16,20 @@ const SEASON1_LAST = 112; // as in ez/tools/sync_sheet.py
 const AIS = [['GPT', 'GPT', 'GPT DIR', 'GPT MAG (%)'], ['CLAUDE', 'Claude', 'CLAUDE DIR', 'CLAUDE MAG (%)'], ['GROK', 'Grok', 'GROK DIR', 'GROK MAG (%)'],
   ['GEMINI', 'Gemini', 'GEMINI DIR', /^GEMINI? MAG/], ['QWEN', 'Qwen', 'QWEN DIR', 'QWEN MAG (%)']];
 // company names, logo files (data/co/<ticker>.*) and TradingView exchanges; a ticker missing here stops the prep
-const CO = { INTU: ['Intuit', 'co/INTU.svg', 'NASDAQ'], KEYS: ['Keysight', 'co/KEYS.png', 'NYSE'], ESTC: ['Elastic', 'co/ESTC.svg', 'NYSE'] };
+// (a fourth entry is the market's own ticker where the sheet writes another: the sheet's ZOOM is Nasdaq ZM). Logos of the week of 23 Nov:
+// Zoom, Dell, HP, Autodesk from Simple Icons (CC0) on their brand colour; Workday and Medtronic from Wikimedia Commons; Semtech, Symbotic,
+// Analog Devices, Ambarella their own site icons, each squared on a tile (scratchpad tiles.js, 2026-11-23).
+const CO = { INTU: ['Intuit', 'co/INTU.svg', 'NASDAQ'], KEYS: ['Keysight', 'co/KEYS.png', 'NYSE'], ESTC: ['Elastic', 'co/ESTC.svg', 'NYSE'],
+  ZOOM: ['Zoom', 'co/ZOOM.png', 'NASDAQ', 'ZM'], SMTC: ['Semtech', 'co/SMTC.png', 'NASDAQ'], SYM: ['Symbotic', 'co/SYM.png', 'NASDAQ'],
+  MDT: ['Medtronic', 'co/MDT.png', 'NYSE'], ADI: ['Analog Devices', 'co/ADI.png', 'NASDAQ'], DELL: ['Dell', 'co/DELL.png', 'NYSE'],
+  WDAY: ['Workday', 'co/WDAY.png', 'NASDAQ'], AMBA: ['Ambarella', 'co/AMBA.png', 'NASDAQ'], HPQ: ['HP', 'co/HPQ.png', 'NYSE'],
+  ADSK: ['Autodesk', 'co/ADSK.png', 'NASDAQ'] };
+const SYM = t => CO[t][3] || t;
 // TradingView is the source of truth for moves (owner, 2026-11-20: "TradingView is our source of truth that we all use"). When the sheet
 // has no move yet, the move is TradingView's close-to-close change for the day, read from the endpoint TradingView's own screener page
 // uses (not an official API; its data runs 15 minutes behind, so it is read only from 4:20 pm New York on the grading day).
 const tv = async t => { const r = await fetch('https://scanner.tradingview.com/america/scan', { method: 'POST', headers: { 'content-type': 'application/json' },
-  body: JSON.stringify({ symbols: { tickers: [CO[t][2] + ':' + t] }, columns: ['close', 'change', 'description'] }) }).then(x => x.json());
+  body: JSON.stringify({ symbols: { tickers: [CO[t][2] + ':' + SYM(t)] }, columns: ['close', 'change', 'description'] }) }).then(x => x.json());
   const d = r.data && r.data[0] && r.data[0].d; if (!d || !isFinite(d[1])) throw new Error('TradingView has no change for ' + t); return { close: d[0], move: +d[1].toFixed(2) } };
 const csv = t => { const rows = [[]]; let f = '', q = false; for (let i = 0; i < t.length; i++) { const c = t[i];
   if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++ } else q = false } else f += c }
@@ -53,7 +61,7 @@ const nyDate = s => { const [m, d, y] = s.split('/').map(Number); return `${2000
     let move = parseFloat(g(r, 'ACTUAL MOVE (%)')), src = 'the sheet';
     if (!isFinite(move) && !PREVIEW) { if (Date.now() < T1c + 20 * 60e3) throw new Error(`R${g(r, 'ROUND')} ${t}: no move in the sheet, and TradingView's close is final only from 4:20 pm New York`);
       const q = await tv(t); move = q.move; src = `TradingView (close ${q.close}, change ${q.move}%)` }
-    const y = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${t}?interval=5m&period1=${Math.floor(T0 / 1e3) - 3600}&period2=${Math.floor(Math.min(T1c, Date.now()) / 1e3) + 600}&includePrePost=true`, { headers: { 'user-agent': 'Mozilla/5.0' } }).then(x => x.json());
+    const y = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${SYM(t)}?interval=5m&period1=${Math.floor(T0 / 1e3) - 3600}&period2=${Math.floor(Math.min(T1c, Date.now()) / 1e3) + 600}&includePrePost=true`, { headers: { 'user-agent': 'Mozilla/5.0' } }).then(x => x.json());
     const j = y.chart.result[0], cl = j.indicators.quote[0].close, b = j.timestamp.map((x, i) => [x * 1e3, cl[i]]).filter(x => x[1] != null);
     const near = ms => b.reduce((p, x) => Math.abs(x[0] - ms) < Math.abs(p[0] - ms) ? x : p), p0 = near(T0 - 300e3);
     if (Math.abs(p0[0] - (T0 - 300e3)) > 600e3) throw new Error(t + ': no price at the close before');
@@ -67,7 +75,7 @@ const nyDate = s => { const [m, d, y] = s.split('/').map(Number); return `${2000
       pts.unshift([0, 0]); pts.push([Math.round((end + 300e3 - T0) / 60e3), move]); note = note || `move from ${src}; path Yahoo ${t} 5m with pre and post, close to close ${hm.toFixed(2)}%, scaled x${k.toFixed(4)} onto ${move}%` }
     else note = `move from ${src}; Yahoo ${t} moved ${hm.toFixed(2)}% against ${move}%: path refused, only the two closes`;
     const calls = AIS.map(a => { const s = side(r, a), p = pnl(s, move); return { k: a[0], side: s, call: mag(r, a) * (s === 'LONG' ? 1 : -1), pnl: p, right: p > 0 } });
-    rounds.push({ n: +g(r, 'ROUND'), s2n: +g(r, 'ROUND') - SEASON1_LAST, ticker: t, co: CO[t][0], logo: 'data/' + CO[t][1], move, pct: (move < 0 ? '−' : '+') + Math.abs(move).toFixed(2) + '%', path: pts, pathNote: note, calls });
+    rounds.push({ n: +g(r, 'ROUND'), s2n: +g(r, 'ROUND') - SEASON1_LAST, ticker: SYM(t), co: CO[t][0], logo: 'data/' + CO[t][1], move, pct: (move < 0 ? '−' : '+') + Math.abs(move).toFixed(2) + '%', path: pts, pathNote: note, calls });
   }
   rounds.sort((a, b) => a.n - b.n);
   const night = Object.fromEntries(AIS.map(a => [a[0], rounds.reduce((s, r) => s + r.calls.find(c => c.k === a[0]).pnl, 0)]));

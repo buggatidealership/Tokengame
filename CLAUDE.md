@@ -68,6 +68,19 @@
     - **Letters:** inside, and in the trays and the list, the letters are reading-mode sepia (`w6/nt/pv1d/paper-sepia.jpg`, mean #F5EDDA, a third of the painted cream's texture). Every word is solid ink with no speckle mask, and the clause sits on the gold marker. The clause measures 9.4:1 contrast against 5.1:1 in v3, with in-stroke speckle at 0.7 grey levels against 9.6.
     - **Bug fixed:** in v2 and v3 each letter rested 20 px low in its envelope and showed as a strip under it. It now rests at 6 px.
     - **The other reading** (`?v=b`, a black letter with a beige panel): board `ez/x2p-pv1d-paper.jpg`. I asked which one he meant.
+    - **Liked (owner, 2026-11-23: "the X2P night PV1D I like"):** Sealed v4 as built, reading A (black envelopes, the sepia letter inside), is the prediction film. Waiting for the owner: one film per company or one per report window (asked).
+    - **This week's calls (sheet rows 116 to 125; report times from each company's own notice, checked 2026-11-23):**
+
+      | Report | Companies | Graded |
+      |---|---|---|
+      | Mon 23 Nov, after the close | Zoom (sheet "ZOOM", Nasdaq ZM), Semtech, Symbotic (an estimate, unconfirmed) | Tue 24 close |
+      | Tue 24 Nov, before the open | Medtronic (about 6:45 am ET), Analog Devices (7:00 am ET) | Tue 24 close |
+      | Tue 24 Nov, after the close | Dell, Workday, Ambarella, HP, Autodesk | Wed 25 close |
+
+      The sheet dates Medtronic's and Analog Devices' calls 11/24, so they must be in before about 6:45 am ET that day (flagged).
+    - **Ready for them:** logos for all ten in `dopa/data/co/` (Zoom, Dell, HP, Autodesk from Simple Icons on their brand colour; Workday and Medtronic from Wikimedia Commons; Semtech, Symbotic, Analog Devices and Ambarella their own site icons; each a square tile). Both preps take them:
+      - `prep-close.js` CO, with a fourth entry for the market's own ticker where the sheet writes another (ZOOM to ZM, for TradingView and Yahoo); all ten checked on TradingView;
+      - `w6/nt/pv/prep.py` CO with each report time. It skips a company until its clauses are picked in CL, so a film needs the owner's screenshots (confidence and WHY) in `ez/data/s2-calls/build.py` first.
     - **Ping:** asked the owner to pick Telegram or web push. I recommended Telegram first; neither needs the site open.
   - The alert service is `ez/tools/alerts/`. It is built and tested (34 checks, plus a run in the local Workers runtime) and not deployed.
     - **How it runs:** one Worker with a cron every 2 minutes that reads the sheet, diffs it and alerts followers on Telegram and web push; HTTP on `earningszn.xyz/api/*` by a zone route. One KV namespace, `EZ_ALERTS`.
