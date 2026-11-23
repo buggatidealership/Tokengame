@@ -69,7 +69,7 @@
     - **Bug fixed:** in v2 and v3 each letter rested 20 px low in its envelope and showed as a strip under it. It now rests at 6 px.
     - **The other reading** (`?v=b`, a black letter with a beige panel): board `ez/x2p-pv1d-paper.jpg`. I asked which one he meant.
     - **Liked (owner, 2026-11-23: "the X2P night PV1D I like"):** Sealed v4 as built, reading A (black envelopes, the sepia letter inside), is the prediction film. Waiting for the owner: one film per company or one per report window (asked).
-    - **This week's calls (sheet rows 116 to 125; report times from each company's own notice, checked 2026-11-23):**
+    - **This week's calls (sheet rows 116 to 125; report times checked 2026-11-23: Zoom, Semtech, Medtronic, Analog Devices and Ambarella from their own notices; Dell, Workday, HP and Autodesk from earnings calendars; Symbotic's an estimate):**
 
       | Report | Companies | Graded |
       |---|---|---|

@@ -10,7 +10,8 @@ marks = json.load(open(D + '/../../../models5.json'))
 CO = {'INTU': {'logo': 'data/co/INTU.svg', 'col': '#236cff', 'when': 'after the close'},
       'KEYS': {'logo': 'data/co/KEYS.png', 'col': '#e90029', 'when': 'after the close'},
       'ESTC': {'logo': 'data/co/ESTC.svg', 'col': '#005571', 'when': 'after the close'},
-      # the week of 23 Nov (report times from each company's own notice, checked 2026-11-23; Symbotic's is an estimate, unconfirmed)
+      # the week of 23 Nov (report times checked 2026-11-23: Zoom, Semtech, Medtronic, ADI, Ambarella their own notices; Dell, Workday, HP,
+      # Autodesk earnings calendars; Symbotic an estimate, unconfirmed)
       'ZM': {'logo': 'data/co/ZOOM.png', 'col': '#0b5cff', 'when': 'after the close'}, 'SMTC': {'logo': 'data/co/SMTC.png', 'col': '#6bc4ca', 'when': 'after the close'},
       'SYM': {'logo': 'data/co/SYM.png', 'col': '#78be20', 'when': 'after the close'}, 'MDT': {'logo': 'data/co/MDT.png', 'col': '#224a87', 'when': 'before the open'},
       'ADI': {'logo': 'data/co/ADI.png', 'col': '#0067b9', 'when': 'before the open'}, 'DELL': {'logo': 'data/co/DELL.png', 'col': '#007db8', 'when': 'after the close'},
