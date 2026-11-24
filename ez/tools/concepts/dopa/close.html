@@ -27,6 +27,7 @@
 .co img{display:block;border-radius:24%;box-shadow:0 0 0 2px rgba(242,237,230,.16),0 18px 40px rgba(0,0,0,.45)}
 .co .nm{font:800 34px Inter;letter-spacing:-.02em;white-space:nowrap}
 .co .nm b{font:600 22px 'Geist Mono';letter-spacing:.1em;color:#8e8680;margin-left:10px;font-weight:600}
+#rig{position:absolute;left:0;top:0;width:1080px;height:1350px;transform-style:flat;will-change:transform}
 #chart{position:absolute;left:56px;top:236px;width:968px;height:500px;overflow:visible}
 #clock{position:absolute;right:56px;top:132px;text-align:right}
 #clock .d{font:600 22px 'Geist Mono';letter-spacing:.16em;color:#8e8680}
@@ -63,10 +64,9 @@
 </style>
 <div id="cam">
   <div id="glow"></div>
-  <svg id="chart" viewBox="0 0 968 500"></svg>
+  <div id="rig"><svg id="chart" viewBox="0 0 968 500"></svg><div id="heads"></div></div>
   <div id="title"><div class="h" id="th"></div><div class="s" id="ts"></div></div>
   <div id="cos"></div>
-  <div id="heads"></div>
   <div id="clock"><div class="d" id="cd"></div><div class="t" id="ct"></div><div class="c" id="cc"></div></div>
   <div id="chs"></div>
   <div id="rows"></div>
@@ -80,6 +80,7 @@
 L.$('#base').textContent = L.css;
 const Q = new URLSearchParams(location.search), DATE = Q.get('d') || '2026-11-20';
 const UP = '85,214,162', DN = '232,87,107', AU = '253,188,42', CR = '242,237,230';
+const CAM = new URLSearchParams(location.search).get('cam') === '1';
 const TR = 7.5, BEAT = 60 / 130, B = n => TR + n * BEAT;
 const T_LINE = .12, T_CO = B(-15), T_DOCK = B(-12), T_NIGHT = B(-11), T_SORT = B(2), T_FOLD = B(4), T_SSN = B(5), T_ROLL = B(6), T_LEAD = B(12) + .2;
 const CW = 968, CH = 500, SEP = ' ';
@@ -167,6 +168,12 @@ window.R = t => {
     sp.textContent = L.pct(v); sp.style.color = Math.abs(v) < .005 ? '#f2ede6' : v > 0 ? '#55d6a2' : '#e8576b';
     el.style.transform = `translate(${56 + X(m) + 20}px,${236 + hy[j] - 26 - 60 * fold}px)`; el.style.opacity = on });
   // the chart
+  // ?cam=1 (2026-11-24, owner: the Season 1 wrap-up's ride along the lines): through the night the chart is turned on its side, the camera
+  // riding with the line heads while the morning recedes; at the bell it swings back to the flat, head-on view
+  if (CAM) { const hx = 56 + X(m), ride = L.eio(L.n(t, T_DOCK + .1, T_NIGHT + .4)) * (1 - L.eio(L.n(t, TR - .05, TR + .6))), pr = L.n(t, T_NIGHT, TR);
+    const ang = ride * (46 - 14 * pr), sc = 1 + .1 * ride, tx = ride * (740 - hx);
+    L.$('#rig').style.transformOrigin = `${hx}px 486px`;
+    L.$('#rig').style.transform = `translateX(${tx.toFixed(1)}px) perspective(1300px) rotateY(${(-ang).toFixed(2)}deg) rotateX(${(5 * ride).toFixed(2)}deg) scale(${sc.toFixed(4)})` }
   const con = L.eo(L.n(t, T_DOCK + .1, T_NIGHT)) * (1 - fold), svg = L.$('#chart');
   svg.style.opacity = con; svg.style.transform = `translateY(${-60 * fold}px)`;
   const z = Y(0), ring = L.n(t, TR, TR + 1.1);
