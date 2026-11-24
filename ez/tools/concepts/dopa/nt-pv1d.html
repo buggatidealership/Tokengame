@@ -55,6 +55,14 @@
 #end{position:absolute;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:38px;background:radial-gradient(60% 45% at 50% 46%,rgba(253,188,42,.16),transparent 70%),rgba(4,7,14,.88);opacity:0}
 #end b{font:italic 800 70px/1 Kanit;letter-spacing:.01em;color:#f8f0d9}#end b i{font-style:normal}
 #end span{font:500 40px/1 Fraunces;font-style:italic;color:#f8f0d9;opacity:.85}
+/* ?hero=1 (2026-11-24, owner: the company front and center; "reports today" only at the end) */
+#hero{position:absolute;left:0;right:0;top:360px;z-index:65;display:flex;flex-direction:column;align-items:center;gap:26px;pointer-events:none;opacity:0}
+#hero .kk{font:italic 500 66px/1 Fraunces;color:#f8f0d9;text-shadow:0 6px 30px rgba(0,0,0,.8)}
+#hero .pvc{box-shadow:0 24px 60px rgba(0,0,0,.6)}
+#hero b{font:800 150px/1 Fraunces;letter-spacing:-.03em;color:#f8f0d9;text-shadow:0 10px 40px rgba(0,0,0,.7)}
+#dock.hero{justify-content:center;gap:20px}#dock.hero .kk{font:italic 500 40px/1 Fraunces;color:#04070e;opacity:.75}#dock.hero .nm{font-size:60px}
+#end.hero{gap:24px}#end.hero b.co{font:700 76px/1.05 Fraunces;letter-spacing:-.02em;text-align:center}#end.hero span{font-size:48px;opacity:.9}
+#end.hero .ez{display:flex;align-items:center;gap:18px;margin-top:40px}#end.hero .ez b{font-size:40px}
 #card.blk{background:#151310 url(w6/nt/pv1c/paper-black.jpg) center/cover;color:#efe5cc}
 #card.crm{background:#f5edda url(w6/nt/pv1d/paper-sepia.jpg) center/cover}
 #card.blk :is(.lh2 b,.cf,.ow,.cl,.pmk){-webkit-mask-image:url(w6/nt/pv1c/ink.png);mask-image:url(w6/nt/pv1c/ink.png);-webkit-mask-size:320px;mask-size:320px}
@@ -91,6 +99,7 @@
 <div id="card" class="paper"></div><svg width="0" height="0" style="position:absolute"><filter id="press" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation=".55" result="b"/><feDiffuseLighting in="b" surfaceScale="2.6" diffuseConstant="1" lighting-color="#fff"><feDistantLight azimuth="225" elevation="30"/></feDiffuseLighting></filter><filter id="ink" x="-8%" y="-8%" width="116%" height="116%"><feTurbulence type="fractalNoise" baseFrequency="2.4" numOctaves="1" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale=".45"/></filter></svg>
 <div id="big"></div>
 <div id="end"></div>
+<div id="hero"></div>
 <div id="bugw"></div>
 <canvas id="grain"></canvas>
 <script src="w6/nt/pv/pv.js"></script>
@@ -99,7 +108,10 @@ const G = PV.grid(174, 0);                     // w8f-horns: 174 BPM, beats from
 const B = G.B;
 // the film in beats: the opener, five envelopes (the second starts on the bed's first drop), the count on the second drop, the end card
 // ?slot=n (2026-11-23, Semtech: a longer film so each AI's words hold their reading time): n beats per letter instead of 10 or 11
-const OPEN = 4, SLOT = new URLSearchParams(location.search).get('slot') ? Array(5).fill(+new URLSearchParams(location.search).get('slot')) : [10, 11, 10, 10, 10];
+const QS = new URLSearchParams(location.search), HERO = QS.get('hero') === '1';
+// ?open=n beats of opener (default 4); ?slots=a,b,c,d,e beats per letter in screen order (overrides ?slot); ?in=1 hour for the end card (hero)
+const OPEN = +(QS.get('open') || 4), SLOT = QS.get('slots') ? QS.get('slots').split(',').map(Number) : QS.get('slot') ? Array(5).fill(+QS.get('slot')) : [10, 11, 10, 10, 10];
+const TAIL = HERO ? 12 : 5, WHEN_IN = QS.get('in') || '1 hour';
 const LIST = i => { const x = ord[i], r = ord.slice(i + 1).filter(y => y.side === x.side).length; return 1.4 + (x.side === 'LONG' ? 0 : .35) + .8 * r };
 let T = {}, ord, grain, envs = [], cardEls = {};
 const WAX = { GPT: ['#5d636d', '#202329', '#08090b', '#efe6cf'], GROK: ['#9399a3', '#41454d', '#15171b', '#f3ecda'], CLAUDE: ['#f3a985', '#c9643f', '#6a2812', '#fbefe2'],
@@ -118,7 +130,8 @@ const waxPath = (r, seed) => { let d = ''; for (let i = 0; i <= 40; i++) { const
   if (BARE) PV.calls.forEach(x => { if (x.conf == null) x.conf = x.call });
   ord = PV.alt();
   PV.$('#bugw').innerHTML = PV.bug();
-  PV.$('#dock').innerHTML = `${PV.coLogo(70)}<span class="nm">${PV.esc(PV.co.co)}</span><span class="wh">${PV.reports}</span>`;
+  PV.$('#dock').innerHTML = HERO ? `<span class="kk">${ord.length} AIs predict</span>${PV.coLogo(80)}<span class="nm">${PV.esc(PV.co.co)}</span>` : `${PV.coLogo(70)}<span class="nm">${PV.esc(PV.co.co)}</span><span class="wh">${PV.reports}</span>`;
+  if (HERO) { PV.$('#dock').classList.add('hero'); PV.$('#hero').innerHTML = `<span class="kk">${ord.length} AIs predict</span>${PV.coLogo(230)}<b>${PV.esc(PV.co.co)}</b>` }
   // the envelopes: cream paper, the flap closed under a wax seal with the AI's mark
   PV.$('#envs').innerHTML = ord.map((x, i) => { const m = PV.D.marks[x.k], [cx, cy, r] = POS[i], W = WAX[x.k] || WAX.GPT, FL = 'M0 4 Q0 0 6 0 L394 0 Q400 0 400 4 L200 150 Z';
     const mk2 = fill => `<g transform="translate(-19.5 -20.5) scale(1.625)"><path d="${m.d}" fill="${fill}"${m.fr ? ` fill-rule="${m.fr}"` : ''}/></g>`;
@@ -148,11 +161,12 @@ const waxPath = (r, seed) => { let d = ''; for (let i = 0; i <= 40; i++) { const
     el.style.left = (14 + sameBefore * 40) + 'px'; el.style.transform = `rotate(${(sameBefore % 2 ? 3 : -3) + sameBefore}deg)`; el.style.opacity = 0;
     (x.side === 'LONG' ? PV.$('#tL') : PV.$('#tS')).insertBefore(el, (x.side === 'LONG' ? PV.$('#tL') : PV.$('#tS')).querySelector('.lb')); cardEls[x.k] = el });
   PV.$('#big').innerHTML = ''; void `<div class="ct"><span style="color:${PV.C.green}">${PV.nL}</span><small style="color:${PV.C.green}">LONG</small><i>v</i><span style="color:${PV.C.red}">${PV.nS}</span><small style="color:${PV.C.red}">SHORT</small></div><div class="gr">${PV.graded}</div>`;
-  PV.$('#end').innerHTML = `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
+  PV.$('#end').innerHTML = HERO ? `${PV.coLogo(170)}<b class="co">${PV.esc(PV.co.co)} reports in ${PV.esc(WHEN_IN)}</b><span>Resolves ${PV.co.gradeDay === PV.co.callDay ? 'today' : 'tomorrow'} at the close</span><div class="ez">${PV.logo(90)}<b>EARNINGS ZEASON</b></div>` : `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
+  if (HERO) PV.$('#end').classList.add('hero');
   grain = PV.grain(PV.$('#grain'), .06); pulse = PV.pulse('253,188,42', '50% 26%');
   // the timeline in beats
   const starts = []; let b = OPEN; SLOT.forEach(s => { starts.push(b); b += s });
-  T = { starts, count: b, end: b + 12, dur: b + 12 + 5 };
+  T = { starts, count: b, end: b + 12, dur: b + 12 + TAIL };
   const at = 26.55 - T.count * B;            // the bed enters so its second drop (26.55 s in the file) lands on the count
   window.TL = { starts: starts.map(s => +(s * B).toFixed(3)), count: +(T.count * B).toFixed(3), end: +(T.end * B).toFixed(3), dur: +(T.dur * B).toFixed(3), drop1: +(12.41 - at).toFixed(3), at };
   // the clause in focus on screen, per AI, for the report
@@ -246,7 +260,9 @@ window.R = t => {
   // the count: stamped over the desk on the drop, then the grading line
   // the list: on the second drop the trays rise to the top, their letters spread into one row each (LONG left, SHORT right)
   const rise = PV.eo5(PV.n(k, T.count, T.count + 1.6)), ce = PV.n(k, T.end, T.end + .6);
-  PV.$('#dim').style.opacity = (rise * (1 - ce)).toFixed(3);
+  const hin = HERO ? PV.eo(PV.n(k, 0, .8)) * (1 - PV.eio(PV.n(k, OPEN - 1.4, OPEN - .2))) : 0;
+  PV.$('#dim').style.opacity = Math.max(rise * (1 - ce), .75 * hin).toFixed(3);
+  if (HERO) { const h = PV.$('#hero'); h.style.opacity = hin.toFixed(3); h.style.transform = `translateY(${(-40 * PV.n(k, OPEN - 1.4, OPEN - .2)).toFixed(1)}px) scale(${(1.04 - .04 * PV.eo(PV.n(k, 0, 1.2))).toFixed(3)})` }
   PV.$$('.tray').forEach(e => { e.style.transform = `translateY(${(-817 * rise).toFixed(1)}px)`; e.style.zIndex = rise > 0 ? 58 : 40 });
   ord.forEach((x, i) => { const el = cardEls[x.k], j = ord.slice(0, i).filter(y => y.side === x.side).length, l0 = T.count + LIST(i);
     const q = PV.spring(Math.max(0, k - l0) * B * 1.6, 1.2, 7), qc = PV.cl(q);
@@ -257,7 +273,7 @@ window.R = t => {
     el.style.transform = `rotate(${PV.lerp(a0, 0, qc).toFixed(2)}deg) scale(${PV.lerp(1, 1.38, qc).toFixed(3)})` });
   // the end card
   const en = PV.$('#end'); en.style.opacity = ce.toFixed(3); en.querySelector('img').style.transform = `scale(${(1.12 - .12 * PV.eo(ce) + .015 * Math.sin(t * 2)).toFixed(3)}) rotate(${(2 * Math.sin(t * .9)).toFixed(2)}deg)`;
-  PV.$('#dock').style.opacity = (1 - ce).toFixed(3); PV.$$('.tray').forEach(e => e.style.opacity = (1 - ce).toFixed(3));
+  PV.$('#dock').style.opacity = (HERO ? Math.min(1 - ce, PV.n(k, OPEN - 1, OPEN)) : 1 - ce).toFixed(3); PV.$$('.tray').forEach(e => e.style.opacity = (1 - ce).toFixed(3));
   PV.$('#dock').style.transform = `translateX(${(60 * (1 - PV.eo(PV.n(k, -.6, 1.4)))).toFixed(1)}px)`;
 };
 </script>
