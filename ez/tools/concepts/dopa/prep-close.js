@@ -44,10 +44,18 @@ const nyDate = s => { const [m, d, y] = s.split('/').map(Number); return `${2000
   const side = (r, a) => { const d = g(r, a[2]).toUpperCase(); return d === 'UP' ? 'LONG' : d === 'DOWN' ? 'SHORT' : null };
   const mag = (r, a) => parseFloat(g(r, a[3]).replace(/^[-−]/, ''));
   const pnl = (s, m) => s ? Math.round((s === 'LONG' ? 1 : -1) * m * 1000) : 0;
-  const resOf = r => /^\d+\/\d+\/\d+/.test(g(r, 'RESOLUTION DATE/TIME')) ? nyDate(g(r, 'RESOLUTION DATE/TIME').split(' ')[0]) : null;
+  // no resolution date in the sheet: graded at the next close after the report (CLAUDE.md rule), the report time from s2-data.js
+  // (make_s2.py REPORT: 'before the open' grades the call day's close, anything else the next weekday's)
+  const S2R = (() => { try { const c = {}; require('vm').runInNewContext(fs.readFileSync(path.join(__dirname, '../../../s2-data.js'), 'utf8'), c); return c.S2_REPORT || {} } catch (e) { return {} } })();
+  const nextClose = r => { const c = g(r, 'CALL DATE (T-1)'); if (!/^\d+\/\d+\/\d+/.test(c)) return null; const [y, m, d] = nyDate(c).split('-').map(Number);
+    let x = new Date(Date.UTC(y, m - 1, d)); const rp = S2R[g(r, 'TICKER').toUpperCase()];
+    if (!(rp && /before/.test(rp[2]))) do { x = new Date(x.getTime() + 864e5) } while ([0, 6].includes(x.getUTCDay())); return x.toISOString().slice(0, 10) };
+  const resOf = r => /^\d+\/\d+\/\d+/.test(g(r, 'RESOLUTION DATE/TIME')) ? nyDate(g(r, 'RESOLUTION DATE/TIME').split(' ')[0]) : (g(r, 'GPT DIR') ? nextClose(r) : null);
+  // the moves of the posted close video, where the sheet now differs (owner, 2026-11-23; make_s2.py MOVE)
+  const KEEP = { INTU: -12.79, ESTC: -2.20 };
   // the season before this close: every Season 2 round graded on an earlier day
   const season0 = Object.fromEntries(AIS.map(a => [a[0], 0])); let before = 0;
-  for (const r of s2) { const m = parseFloat(g(r, 'ACTUAL MOVE (%)')), d = resOf(r); if (!isFinite(m) || !d || d >= date) continue; before++; AIS.forEach(a => season0[a[0]] += pnl(side(r, a), m)) }
+  for (const r of s2) { const m = KEEP[g(r, 'TICKER').toUpperCase()] ?? parseFloat(g(r, 'ACTUAL MOVE (%)')), d = resOf(r); if (!isFinite(m) || !d || d >= date) continue; before++; AIS.forEach(a => season0[a[0]] += pnl(side(r, a), m)) }
   const tonight = s2.filter(r => resOf(r) === date); if (!tonight.length) throw new Error('no Season 2 round graded on ' + date);
   // the clock: New York, the close before the grading day to the grading close
   const [Y, M, Dd] = date.split('-').map(Number), resDay = new Date(Date.UTC(Y, M - 1, Dd));
