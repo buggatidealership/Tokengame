@@ -111,7 +111,7 @@ const B = G.B;
 const QS = new URLSearchParams(location.search), HERO = QS.get('hero') === '1';
 // ?open=n beats of opener (default 4); ?slots=a,b,c,d,e beats per letter in screen order (overrides ?slot); ?in=1 hour for the end card (hero)
 const OPEN = +(QS.get('open') || 4), SLOT = QS.get('slots') ? QS.get('slots').split(',').map(Number) : QS.get('slot') ? Array(5).fill(+QS.get('slot')) : [10, 11, 10, 10, 10];
-const TAIL = HERO ? 12 : 5, WHEN_IN = QS.get('in') || '1 hour';
+const TAIL = HERO ? 9 : 5, WHEN_IN = QS.get('in') || '1 hour';
 const LIST = i => { const x = ord[i], r = ord.slice(i + 1).filter(y => y.side === x.side).length; return 1.4 + (x.side === 'LONG' ? 0 : .35) + .8 * r };
 let T = {}, ord, grain, envs = [], cardEls = {};
 const WAX = { GPT: ['#5d636d', '#202329', '#08090b', '#efe6cf'], GROK: ['#9399a3', '#41454d', '#15171b', '#f3ecda'], CLAUDE: ['#f3a985', '#c9643f', '#6a2812', '#fbefe2'],
@@ -161,7 +161,7 @@ const waxPath = (r, seed) => { let d = ''; for (let i = 0; i <= 40; i++) { const
     el.style.left = (14 + sameBefore * 40) + 'px'; el.style.transform = `rotate(${(sameBefore % 2 ? 3 : -3) + sameBefore}deg)`; el.style.opacity = 0;
     (x.side === 'LONG' ? PV.$('#tL') : PV.$('#tS')).insertBefore(el, (x.side === 'LONG' ? PV.$('#tL') : PV.$('#tS')).querySelector('.lb')); cardEls[x.k] = el });
   PV.$('#big').innerHTML = ''; void `<div class="ct"><span style="color:${PV.C.green}">${PV.nL}</span><small style="color:${PV.C.green}">LONG</small><i>v</i><span style="color:${PV.C.red}">${PV.nS}</span><small style="color:${PV.C.red}">SHORT</small></div><div class="gr">${PV.graded}</div>`;
-  PV.$('#end').innerHTML = HERO ? `${PV.coLogo(170)}<b class="co">${PV.esc(PV.co.co)} reports in ${PV.esc(WHEN_IN)}</b><span>Resolves ${PV.co.gradeDay === PV.co.callDay ? 'today' : 'tomorrow'} at the close</span><div class="ez">${PV.logo(90)}<b>EARNINGS ZEASON</b></div>` : `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
+  PV.$('#end').innerHTML = HERO ? `${PV.coLogo(170)}<b class="co">${PV.esc(PV.co.co)} reports in ${PV.esc(WHEN_IN)}</b><div class="ez">${PV.logo(90)}<b>EARNINGS ZEASON</b></div>` : `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
   if (HERO) PV.$('#end').classList.add('hero');
   grain = PV.grain(PV.$('#grain'), .06); pulse = PV.pulse('253,188,42', '50% 26%');
   // the timeline in beats
