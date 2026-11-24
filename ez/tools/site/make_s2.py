@@ -40,6 +40,11 @@ def main():
     C = {k: col(k) for k in ['ROUND', 'TICKER', 'CALL DATE (T-1)', 'RESOLUTION DATE/TIME', 'ACTUAL MOVE (%)']}
     for m, d, g in AIS: C[m + 'D'], C[m + 'M'] = col(d), col(g)
     out, notes = [], []
+    LOG = {}  # the calls log (data/s2-calls/calls.csv, transcribed from the owner's screenshots) fills a call the sheet does not have yet
+    lp = os.path.join(EZ, 'data', 's2-calls', 'calls.csv')
+    if os.path.exists(lp):
+        for x in csv.DictReader(open(lp)):
+            LOG[(int(x['round']), x['ticker'].upper(), x['model'].upper())] = ('UP' if x['side'] == 'LONG' else 'DOWN', ('%g' % float(x['size_pct'])))
     for r in rows[1:]:
         r = r + [''] * (len(H) - len(r)); g = lambda i: r[i].strip()
         try: n = int(g(C['ROUND']))
@@ -52,6 +57,9 @@ def main():
         row = [str(n), t, g(C['CALL DATE (T-1)'])]
         for m, _, _ in AIS:
             dr, mg = g(C[m + 'D']).upper(), g(C[m + 'M']).lstrip('+-− ')
+            lg = LOG.get((n, t, m))
+            if not dr and not mg and lg: dr, mg = lg; notes.append(f'R{n} {t} {m}: the sheet is empty, the site takes the calls log ({dr} {mg})')
+            elif lg and dr and (dr, mg) != lg and float(mg or 0) != float(lg[1]): notes.append(f'R{n} {t} {m}: the sheet reads {dr} {mg}, the calls log {lg[0]} {lg[1]} (the sheet wins)')
             if (dr == '') != (mg == ''): raise SystemExit(f'PROBLEM: R{n} {t} {m}: side "{dr}" with size "{mg}"')
             if dr and dr not in ('UP', 'DOWN'): raise SystemExit(f'PROBLEM: R{n} {t} {m}: side "{dr}"')
             row += [dr, mg]
@@ -62,7 +70,7 @@ def main():
           'var S2_NAME=' + json.dumps(NAME) + ';\nvar S2_REPORT=' + json.dumps(REPORT) + ';\n')
     path = os.path.join(EZ, 's2-data.js'); old = open(path).read() if os.path.exists(path) else ''
     graded = sum(1 for r in out if r[-2]); calls = sum(1 for r in out if not r[-2] and any(r[3 + 2 * i] for i in range(len(AIS))))
-    for x in notes: print('KEEP', x)
+    for x in notes: print('KEEP' if 'keeps' in x else 'LOG', x)
     if js == old: print('Season 2: no changes (%d rounds, %d graded, %d with calls in)' % (len(out), graded, calls)); return
     print('Season 2: CHANGES (%d rounds, %d graded, %d with calls in)' % (len(out), graded, calls))
     if '--check' in sys.argv: return

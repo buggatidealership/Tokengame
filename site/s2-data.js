@@ -7,12 +7,10 @@ var S2_SHEET=[
  ["116", "ZOOM", "11/23/26", "DOWN", "4.5", "DOWN", "3", "DOWN", "2.8", "DOWN", "5.5", "DOWN", "4", "", "", "Information Technology"],
  ["117", "SMTC", "11/23/26", "UP", "9", "DOWN", "3", "DOWN", "3.6", "DOWN", "7.5", "UP", "5", "", "", "Information Technology"],
  ["118", "SYM", "11/23/26", "UP", "7", "DOWN", "5", "DOWN", "4.1", "DOWN", "9.5", "DOWN", "4", "", "", "Industrials"],
- ["119", "MDT", "11/24/26", "", "", "", "", "", "", "", "", "", "", "", "", "Health Care"],
- ["120", "ADI", "11/24/26", "", "", "", "", "", "", "", "", "", "", "", "", "Information Technology"],
- ["121", "DELL", "11/24/26", "", "", "", "", "", "", "", "", "", "", "", "", "Information Technology"],
- ["122", "WDAY", "11/24/26", "", "", "", "", "", "", "", "", "", "", "", "", "Information Technology"],
- ["123", "AMBA", "11/24/26", "", "", "", "", "", "", "", "", "", "", "", "", "Information Technology"],
- ["124", "HPQ", "11/24/26", "", "", "", "", "", "", "", "", "", "", "", "", "Information Technology"],
- ["125", "ADSK", "11/24/26", "", "", "", "", "", "", "", "", "", "", "", "", "Information Technology"]];
+ ["119", "DELL", "11/24/26", "UP", "8", "DOWN", "3", "DOWN", "3.2", "DOWN", "4.5", "DOWN", "5", "", "", "Information Technology"],
+ ["120", "WDAY", "11/24/26", "DOWN", "5", "DOWN", "3", "DOWN", "2.1", "DOWN", "3.5", "DOWN", "3", "", "", "Information Technology"],
+ ["121", "AMBA", "11/24/26", "UP", "8.5", "DOWN", "6", "DOWN", "4.4", "DOWN", "4", "DOWN", "3", "", "", "Information Technology"],
+ ["122", "HPQ", "11/24/26", "DOWN", "7", "DOWN", "3.5", "DOWN", "1.9", "DOWN", "4.5", "DOWN", "2", "", "", "Information Technology"],
+ ["123", "ADSK", "11/24/26", "UP", "5.5", "DOWN", "2.5", "DOWN", "2.3", "UP", "3.5", "UP", "0.5", "", "", "Information Technology"]];
 var S2_NAME={"INTU": "Intuit", "KEYS": "Keysight", "ESTC": "Elastic", "ZOOM": "Zoom", "SMTC": "Semtech", "SYM": "Symbotic", "MDT": "Medtronic", "ADI": "Analog Devices", "DELL": "Dell", "WDAY": "Workday", "AMBA": "Ambarella", "HPQ": "HP", "ADSK": "Autodesk"};
 var S2_REPORT={"ZOOM": ["2026-11-23T21:05:00Z", 1, "after the close"], "SMTC": ["2026-11-23T21:05:00Z", 1, "after the close"], "SYM": ["2026-11-23T21:05:00Z", 1, "after the close"], "MDT": ["2026-11-24T11:45:00Z", 0, "before the open"], "ADI": ["2026-11-24T12:00:00Z", 0, "before the open"], "DELL": ["2026-11-24T21:05:00Z", 1, "after the close"], "WDAY": ["2026-11-24T21:05:00Z", 1, "after the close"], "AMBA": ["2026-11-24T21:05:00Z", 1, "after the close"], "HPQ": ["2026-11-24T21:05:00Z", 1, "after the close"], "ADSK": ["2026-11-24T21:05:00Z", 1, "after the close"]};

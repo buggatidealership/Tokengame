@@ -10,7 +10,8 @@ D = os.path.dirname(os.path.abspath(__file__))
 COLS = ['round', 'season2_trade', 'ticker', 'company', 'called', 'graded_at_close', 'model', 'app_shows', 'side', 'size_pct', 'confidence_pct',
         'why', 'take', 'thesis', 'kill', 'lessons_entry', 'other_reasoning', 'sources_shown', 'journal_receipt', 'process_notes',
         'sheet_check', 'move_pct', 'right', 'pnl_usd', 'screenshot']
-T = {'INTU': (113, 1, 'Intuit'), 'KEYS': (114, 2, 'Keysight'), 'ESTC': (115, 3, 'Elastic'), 'ZOOM': (116, 4, 'Zoom'), 'SMTC': (117, 5, 'Semtech'), 'SYM': (118, 6, 'Symbotic')}
+T = {'INTU': (113, 1, 'Intuit'), 'KEYS': (114, 2, 'Keysight'), 'ESTC': (115, 3, 'Elastic'), 'ZOOM': (116, 4, 'Zoom'), 'SMTC': (117, 5, 'Semtech'), 'SYM': (118, 6, 'Symbotic'),
+     'DELL': (119, 7, 'Dell'), 'WDAY': (120, 8, 'Workday'), 'AMBA': (121, 9, 'Ambarella'), 'HPQ': (122, 10, 'HP'), 'ADSK': (123, 11, 'Autodesk')}
 R = []
 def add(model, app, tk, side, size, conf, why, shot, called='2026-11-19', graded='2026-11-20', **k):
     n, s2, co = T[tk]
@@ -128,10 +129,46 @@ d23('GPT', 'ZOOM', 'SHORT', 4.5, 55, "Online sales barely grew and a reseller is
 d23('GPT', 'SMTC', 'LONG', 9.0, 58, "Orders for 800G chips are rising and faster copper chips are shipping. I expect Semtech to guide winter sales above $450 million.", '05-gpt.png', '0.8 %')
 d23('GPT', 'SYM', 'LONG', 7.0, 56, "Symbotic went from 46 warehouse installations underway to 77 in a year. I expect a December-quarter sales forecast above $815 million.", '05-gpt.png', '0.8 %')
 
+# the calls of 24 Nov (Dell, Workday, Ambarella, HP, Autodesk; all report after the close, graded at the 25 Nov close): the owner's
+# screenshots (8:16 to 8:18 pm on his phone), each AI's final blocks only. Not in the sheet yet when logged (its cells were empty).
+def d24(model, app, tk, side, size, conf, why, shot, mkt, **k):
+    add(model, app, tk, side, size, conf, why, shot, called='2026-11-24', graded='2026-11-25',
+        process_notes='Also wrote "MARKET: S&P 500 ' + mkt + ' over the same window".' + k.pop('pn', ''), **k)
+GK = 'Grok app, chat "Earnings Zeason" (Expert)'
+d24('Grok', GK, 'DELL', 'SHORT', 3.2, 65, "Residual owned AI-server cycle after washout and one-day bounce; continuity confirmation digests lower.", '01-grok.jpg', 'DOWN, -0.8 %', pn=' Final line "DELL: SHORT, -3.2 %" (a sign on the size).')
+d24('Grok', GK, 'WDAY', 'SHORT', 2.1, 62, "Residual owned enterprise-software story after decline; continuity print digests as confirmation.", '01-grok.jpg', 'DOWN, -0.8 %', pn=' Final line "WDAY: SHORT, -2.1 %" (a sign on the size).')
+d24('Grok', GK, 'AMBA', 'SHORT', 4.4, 64, "Residual owned AI-connectivity exposure; continuity confirmation digests further lower.", '01-grok.jpg', 'DOWN, -0.8 %', pn=' Final line "AMBA: SHORT, -4.4 %" (a sign on the size).')
+d24('Grok', GK, 'HPQ', 'SHORT', 1.9, 60, "Residual owned mature hardware narrative; continuity print digests lower on confirmation.", '01-grok.jpg', 'DOWN, -0.8 %', pn=' Final line "HPQ: SHORT, -1.9 %" (a sign on the size).')
+d24('Grok', GK, 'ADSK', 'SHORT', 2.3, 61, "Residual owned design-software story; continuity confirmation digests lower.", '01-grok.jpg', 'DOWN, -0.8 %', pn=' Final line "ADSK: SHORT, -2.3 %" (a sign on the size).')
+d24('GPT', GA, 'DELL', 'LONG', 8.0, 59, "Dell has racks running at Nscale. I expect its January-quarter adjusted earnings forecast to top $7.10 a share.", '02-gpt.jpg', 'UP, 0.4 %', pn=' The ticker of the first block is hidden under the app\'s back button ("[hidden]: LONG, 8.0 %"); its WHY names Dell and it comes before WDAY, so it is read as DELL.')
+d24('GPT', GA, 'WDAY', 'SHORT', 5.0, 55, "More bookings came from existing customers. I expect January-quarter subscription growth to slow to 10% or less.", '02-gpt.jpg', 'UP, 0.4 %')
+d24('GPT', GA, 'AMBA', 'LONG', 8.5, 55, "Sales of Ambarella’s two newer camera chips are climbing. I expect its January-quarter sales forecast to top $115 million.", '02-gpt.jpg', 'UP, 0.4 %')
+d24('GPT', GA, 'HPQ', 'SHORT', 7.0, 62, "HP’s PC shipments fell 31% as memory costs rose. I expect its fiscal 2027 adjusted profit forecast below $3.18 a share.", '02-gpt.jpg', 'UP, 0.4 %')
+d24('GPT', GA, 'ADSK', 'LONG', 5.5, 58, "Autodesk is cutting multiyear discounts while engineering firms keep buying software. I expect it to raise its annual billings forecast.", '02-gpt.jpg', 'UP, 0.4 %')
+d24('Claude', CA, 'DELL', 'SHORT', 3.0, 52, "Likely beats and raises, but chip tape has set every AI close this month. A coin; I expect it to beat server peers by 3 points.", '03-claude.jpg', 'UP, 0.3 %', sources_shown='Dell Q3 preview, Admiral Markets [the rest cut off]')
+d24('Claude', CA, 'WDAY', 'SHORT', 3.0, 55, "Backlog growth guided down to 11-12% from 14%, year reaffirmed not raised, staff cu[cut off] last two November reports fell 6-8%.", '03-claude.jpg', 'UP, 0.3 %')
+d24('Claude', CA, 'AMBA', 'SHORT', 6.0, 64, "Closed lower after six of its last seven reports, mostly beats; chip fund is 23% under its 50-day average.", '03-claude.jpg', 'UP, 0.3 %')
+d24('Claude', CA, 'HPQ', 'SHORT', 3.5, 59, "First 2027 guide comes after HP said PC units will fall; this year’s EPS holds 19 cents of one-off refunds. I expect under $3.", '03-claude.jpg', 'UP, 0.3 %')
+d24('Claude', CA, 'ADSK', 'SHORT', 2.5, 53, "Last two raises were sold about 4% e[hidden]t is the one software name here that has not fallen yet. Close to a coin.", '03-claude.jpg', 'UP, 0.3 %')
+QW = 'chat.qwen.ai, Qwen4-Max'
+d24('Qwen', QW, 'DELL', 'SHORT', 5.0, 58, "HPE beat and raised guidance and got sold 13% today. Dell's problem is memory cost per server, not orders. Same tape, same risk.", '04-qwen-a.jpg', 'DOWN, 0.5 %')
+d24('Qwen', QW, 'HPQ', 'SHORT', 2.0, 55, "HP's bar is its own guidance midpoint and DRAM costs are rising into the FY27 margin guide. Printing margin is the test.", '04-qwen-a.jpg', 'DOWN, 0.5 %')
+d24('Qwen', QW, 'AMBA', 'SHORT', 3.0, 54, "Ambarella fell 12% today and lost a Buy rating. No data-center exposure to offset it, and the chip tape is still selling beats.", '04-qwen-a.jpg', 'DOWN, 0.5 %')
+d24('Qwen', QW, 'WDAY', 'SHORT', 3.0, 55, "Workday guides cRPO to 11-12%, no longer ahead of revenue. Last November it beat and still fell on cautious guidance.", '04-qwen-a.jpg', 'DOWN, 0.5 %')
+d24('Qwen', QW, 'ADSK', 'LONG', 0.5, 52, "Autodesk is up 20% since early October while software broke, and consensus sits inside its own guide. Small edge, near a coin flip.", '05-qwen-b.jpg', 'DOWN, 0.5 %')
+GE = 'Gemini app, Gemini Neon'
+d24('Gemini', GE, 'DELL', 'SHORT', 4.5, 57, "Pre-print target cuts from Barclays, Morgan Stanley, and Citi highlight memory cost and PC headwinds that can overshadow an AI server beat.", '06-gemini-a.jpg', 'UP, 0.3 %')
+d24('Gemini', GE, 'WDAY', 'SHORT', 3.5, 58, "Slowing 10.7% revenue growth and recent analyst target cuts leave little room for a rally on a routine software beat.", '06-gemini-a.jpg', 'UP, 0.3 %')
+d24('Gemini', GE, 'AMBA', 'SHORT', 4.0, 56, "A 10% pre-print drop and a modeled Q4 sequential slowdown leave Ambarella exposed to another fade despite high analyst targets.", '06-gemini-a.jpg', 'UP, 0.3 %')
+d24('Gemini', GE, 'HPQ', 'SHORT', 4.5, 62, "Rising memory costs and a sluggish PC market hit HPQ directly with EPS already expected to fall nearly 20% year over year.", '06-gemini-a.jpg', 'UP, 0.3 %')
+d24('Gemini', GE, 'ADSK', 'LONG', 3.5, 58, "Thirteen straight EPS beats, stable estimates, and a fresh Loop Capital upgrade make Autodesk the cleanest long in a cautious software tape.", '07-gemini-b.jpg', 'UP, 0.3 %')
+for r in R:
+    if r['called'] == '2026-11-24': r['sheet_check'] = 'not in the sheet yet (logged from the screenshots)'
+
 # outcomes (round -> close-to-close move, %; the sheet's moves, entered by the owner on 20 Nov after the close; TradingView's
 # 15-minute-delayed read at 21:15 UTC: INTU -12.79, KEYS -6.93, ESTC -2.02, all within 0.3 of the sheet, which wins)
 MOVES = {113: -12.79, 114: -7.07, 115: -2.20}
-order = {'INTU': 0, 'KEYS': 1, 'ESTC': 2, 'ZOOM': 3, 'SMTC': 4, 'SYM': 5}; mo = {'GPT': 0, 'Claude': 1, 'Grok': 2, 'Gemini': 3, 'Qwen': 4}
+order = {'INTU': 0, 'KEYS': 1, 'ESTC': 2, 'ZOOM': 3, 'SMTC': 4, 'SYM': 5, 'DELL': 6, 'WDAY': 7, 'AMBA': 8, 'HPQ': 9, 'ADSK': 10}; mo = {'GPT': 0, 'Claude': 1, 'Grok': 2, 'Gemini': 3, 'Qwen': 4}
 R.sort(key=lambda r: (order[r['ticker']], mo[r['model']]))
 for r in R:
     m = MOVES.get(r['round'])
