@@ -26,7 +26,9 @@ CL = {'INTU': {'GPT': 'Higher QuickBooks renewal prices', 'Claude': 'growth slow
       'ESTC': {'GPT': 'Annual cloud sales grew 27%', 'Claude': 'backlog growth has risen', 'Grok': 'better-than-feared AI adoption',
                'Gemini': 'four straight beats', 'Qwen': 'Datadog just guided consumption flat'},
       'SMTC': {'GPT': 'Orders for 800G chips are rising', 'Claude': 'the stock rose 16% today', 'Grok': 'AI-connectivity cycle after sharp drop',
-               'Gemini': 'analyst target cuts and a damaged chart', 'Qwen': 'Chips got their leader back'}}
+               'Gemini': 'analyst target cuts and a damaged chart', 'Qwen': 'Chips got their leader back'},
+      'DELL': {'GPT': 'Dell has racks running at Nscale', 'Claude': 'chip tape has set every AI close', 'Grok': 'AI-server cycle after washout',
+               'Gemini': 'memory cost and PC headwinds', 'Qwen': 'HPE beat and raised guidance and got sold 13% today'}}
 strip = lambda s: ' ' + re.sub(r'\s+', ' ', re.sub(r'[.,;:!?"()]', ' ', s)).strip() + ' '
 day = lambda d: datetime.date.fromisoformat(d).strftime('%A')
 out = {'cos': {}, 'calls': [], 'marks': {k: marks[k] for k in ['GPT', 'CLAUDE', 'GROK', 'GEMINI', 'QWEN']}}
