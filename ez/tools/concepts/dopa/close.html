@@ -9,8 +9,9 @@
         live as the sum of its trades, each AI's side under each company
   7.50  the bell: FINAL, every trade graded (right lit, wrong dimmed), the P&Ls land
   8.42  the rows sort by the night's P&L       9.35 the chart folds away, the rows become the Season 2 board
-  9.81  Season 2 P&L (from the second close on, the totals roll from the season before to after, with the night's P&L beside them)
-  13.2  the leader takes the gold rim; held to the end.
+  9.81  P&L tonight (the night's board), from the second close on; then 11.19 Season 2 leaderboard, the totals roll from the season
+        before to after with the night's P&L beside them
+  12.77 the leader takes the gold rim and, when the leader changed tonight, the heading becomes "<AI> takes the lead"; held to the end.
   Words on screen: no punctuation of any kind; sides are LONG or SHORT; every number carries its label; $100K on every trade. -->
 <style id="base"></style>
 <style>
@@ -58,7 +59,9 @@
 .cell.p{width:40px;margin-left:28px;letter-spacing:0;font-size:19px}
 #ssn{position:absolute;left:56px;top:0;opacity:0;white-space:nowrap}
 #ssn .h{font:900 84px/1 Inter;letter-spacing:-.035em}
-#ssn .k{font:600 24px 'Geist Mono';letter-spacing:.12em;color:#8e8680;margin-top:16px}
+#ssn .k{font:600 24px 'Geist Mono';letter-spacing:.12em;color:#8e8680}
+#ssn .hw{position:relative;height:84px}#ssn .kw{position:relative;height:30px;margin-top:16px}#ssn .hw .h,#ssn .kw .k{position:absolute;left:0;top:0;transform-origin:0 50%}
+#sh2{color:#fdbc2a}
 #pv{position:absolute;right:56px;top:66px;z-index:60;font:700 19px 'Geist Mono';letter-spacing:.12em;color:#0e0c0b;background:#fdbc2a;padding:7px 12px 5px;border-radius:7px;display:none}
 .foil{color:transparent!important;background-image:linear-gradient(100deg,#fdbc2a 38%,#fff3c8 50%,#fdbc2a 62%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 14px rgba(253,188,42,.34))}
 </style>
@@ -70,7 +73,7 @@
   <div id="clock"><div class="d" id="cd"></div><div class="t" id="ct"></div><div class="c" id="cc"></div></div>
   <div id="chs"></div>
   <div id="rows"></div>
-  <div id="ssn"><div class="h">Season 2 leaderboard</div><div class="k" id="ssk"></div></div>
+  <div id="ssn"><div class="hw"><div class="h" id="sh0">P&amp;L tonight</div><div class="h" id="sh1">Season 2 leaderboard</div><div class="h" id="sh2"></div></div><div class="kw"><div class="k" id="ssk0"></div><div class="k" id="ssk"></div></div></div>
   <div id="final">FINAL</div>
 </div>
 <div id="pv"></div>
@@ -82,9 +85,9 @@ const Q = new URLSearchParams(location.search), DATE = Q.get('d') || '2026-11-20
 const UP = '85,214,162', DN = '232,87,107', AU = '253,188,42', CR = '242,237,230';
 const CAM = new URLSearchParams(location.search).get('cam') === '1';
 const TR = 7.5, BEAT = 60 / 130, B = n => TR + n * BEAT;
-const T_LINE = .12, T_CO = B(-15), T_DOCK = B(-12), T_NIGHT = B(-11), T_SORT = B(2), T_FOLD = B(4), T_SSN = B(5), T_ROLL = B(6), T_LEAD = B(12) + .2;
+const T_LINE = .12, T_CO = B(-15), T_DOCK = B(-12), T_NIGHT = B(-11), T_SORT = B(2), T_FOLD = B(4), T_SSN = B(5), T_ROLL = B(8), T_LEAD = B(11) + .2, ROLL_D = 1.3;
 const CW = 968, CH = 500, SEP = ' ';
-let D, cam = L.$('#cam'), grain, GF = null, N, K, mAt, X, Y, grid, rows, cols, heads, cos, chs, barFull, xlabels, ROW0 = 846, RH = 82, BRD0 = 520, BRH = 126, SROLL;
+let LEADCHG = null, D, cam = L.$('#cam'), grain, GF = null, N, K, mAt, X, Y, grid, rows, cols, heads, cos, chs, barFull, xlabels, ROW0 = 846, RH = 82, BRD0 = 520, BRH = 126, SROLL;
 const DAYS3 = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 const money0 = v => v === 0 ? '$0' : L.money(v);
 const setup = () => {
@@ -123,6 +126,12 @@ const setup = () => {
     L.$('#rows').appendChild(el); return el });
   L.$('#ssk').textContent = D.before ? `P&L AFTER ${D.after} TRADES${SEP}${N} TONIGHT` : `P&L AFTER ${D.after} TRADES`;
   SROLL = D.before > 0;
+  // tonight first, then the season board; a new leader is named (owner, 2026-11-25: "show the tonight P&L first, and then the final
+  // P&L... if there's a leader change... Model X takes the lead"). ?prevlead=<K> forces the leader before tonight, for a sample.
+  L.$('#ssk0').textContent = `TRADES ${D.before + 1} TO ${D.after}${SEP}${D.day} CLOSE`;
+  if (SROLL) { const ks = Object.keys(D.season0), top = v => ks.filter(k => v[k] === Math.max(...ks.map(x => v[x])));
+    const forced = new URLSearchParams(location.search).get('prevlead'), p0 = forced ? [forced] : top(D.season0), p1 = top(D.season1);
+    if (p0.length === 1 && p1.length === 1 && p0[0] !== p1[0]) { LEADCHG = p1[0]; L.$('#sh2').textContent = D.ais.find(a => a.k === p1[0]).name + ' takes the lead' } }
   // sound
   const C = window.CUES = [[0.05, 'r11-swell', .12], [T_DOCK - .05, 'sfx-whoosh', .16], [T_NIGHT - .1, 'r11-slide', .14]];
   D.rounds.forEach((r, j) => C.push([+(T_CO + j * coGap()).toFixed(3), 'r11-card', .1]));
@@ -201,7 +210,7 @@ window.R = t => {
   const rowTop = L.lerp(ROW0, BRD0, fold), rh = L.lerp(RH, BRH, fold);
   chs.forEach((el, j) => { const on = L.n(t, T_DOCK + .3, T_NIGHT + .2); el.style.transform = `translate(${56 + cols[j] - 48}px,${rowTop - 62}px)`; el.style.opacity = on });
   // the rows: live night P&L, sorted after the bell, then the season board
-  const srt = L.eio(L.n(t, T_SORT, T_SORT + .65)), roll = SROLL ? L.eio(L.n(t, T_ROLL, T_ROLL + 1.6)) : 0;
+  const srt = L.eio(L.n(t, T_SORT, T_SORT + .65)), roll = SROLL ? L.eio(L.n(t, T_ROLL, T_ROLL + ROLL_D)) : 0;
   const ordNow = SROLL && t >= T_ROLL ? null : null;
   rows.forEach((el, i) => { const a = D.ais[i], k = a.k;
     const kk = L.eio(L.n(t, T_DOCK + .15 + i * .06, T_NIGHT + .35 + i * .06));
@@ -233,6 +242,11 @@ window.R = t => {
     const lq = t - (T_SSN + .1 + i * .08), q = lq < 0 ? 0 : L.n(lq % 2.2, 0, .9), xq = L.lerp(-18, 118, L.eio(q)), sp = el.querySelector('.sp'); sp.style.opacity = Math.sin(Math.PI * q); sp.style.background = `linear-gradient(100deg,transparent ${xq - 14}%,rgba(255,255,255,.24) ${xq}%,transparent ${xq + 14}%)` });
   // Season 2 P&L
   const sin = L.eio(L.n(t, T_SSN - .1, T_SSN + .35)), sh = L.$('#ssn'); sh.style.opacity = sin; sh.style.transform = `translateY(${200 + 24 * (1 - sin)}px)`;
+  const x1 = SROLL ? L.eio(L.n(t, T_ROLL - .3, T_ROLL + .1)) : 1, x2 = LEADCHG ? L.eio(L.n(t, T_LEAD - .1, T_LEAD + .3)) : 0;
+  const hs = (id, o, d) => { const e = L.$(id); e.style.opacity = o; e.style.transform = `translateY(${d}px)` };
+  hs('#sh0', SROLL ? 1 - x1 : 0, -30 * x1); hs('#sh1', x1 * (1 - x2), 30 * (1 - x1) - 30 * x2); hs('#ssk0', SROLL ? 1 - x1 : 0, 0); hs('#ssk', x1, 0);
+  const e2 = L.$('#sh2'); e2.style.opacity = x2; e2.style.transform = `translateY(${30 * (1 - x2)}px) scale(${L.lerp(1.15, 1, L.eo5(L.n(t, T_LEAD - .1, T_LEAD + .45)))})`;
+  if (x2 > 0) { e2.classList.add('foil'); e2.style.backgroundPosition = `${(100 - 100 * L.n((t - T_LEAD) % 2.1, .4, 1.4)).toFixed(1)}% 0` }
   // the colour of the night: the larger side's colour washes in with the move; gold at the bell
   const net = D.rounds.reduce((s, r, j) => s + vNow[j], 0) / N, w = L.cl(Math.abs(net) / 6), mc = net >= 0 ? UP : DN, oc = net >= 0 ? DN : UP, b = L.n(t, TR, TR + .6) * (1 - .6 * L.n(t, TR + .6, 9.5));
   L.$('#glow').style.background = `radial-gradient(ellipse 80% 40% at 30% 18%,rgba(${mc},${(.05 + .14 * w) * (1 - fold)}),transparent 70%),radial-gradient(ellipse 90% 35% at 50% 100%,rgba(${oc},${(.03 + .08 * w)}),transparent 70%),radial-gradient(ellipse 70% 45% at 50% 45%,rgba(253,188,42,${.16 * b}),transparent 70%)`;
