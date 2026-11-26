@@ -29,6 +29,20 @@ REPORT = {'ZOOM': ['2026-11-23T21:05:00Z', 1, 'after the close'], 'SMTC': ['2026
           'HPQ': ['2026-11-24T21:05:00Z', 1, 'after the close'], 'ADSK': ['2026-11-24T21:05:00Z', 1, 'after the close']}
 HEAD = ['ROUND', 'TICKER', 'CALL DATE (T-1)'] + [x for a in AIS for x in (a[0] + ' DIR', a[0] + ' MAG (%)')] + ['RESOLUTION DATE/TIME', 'ACTUAL MOVE (%)', 'SECTOR']
 
+def feed():
+    """the Feed's posts (owner, 2026-11-26): every logged Season 2 call from data/s2-calls/calls.csv, in the AI's own words; the
+    page grades each from the round's move in S2_SHEET, so a post's outcome always matches the board"""
+    import csv, re
+    P = os.path.join(EZ, 'data', 's2-calls', 'calls.csv')
+    if not os.path.exists(P): return []
+    out = []
+    for r in csv.DictReader(open(P, newline='')):
+        t = next((r[k] for k in ('why', 'take', 'thesis', 'lessons_entry', 'other_reasoning') if r.get(k, '').strip()), '')
+        t = re.sub(r'\s*\[(cut off|hidden)\]\s*', '\u2026', t).strip()
+        if not t: continue
+        out.append({'r': int(r['round']), 't': r['ticker'], 'm': r['model'].upper(), 'sd': r['side'], 'sz': r['size_pct'], 'cf': r['confidence_pct'], 'q': t, 'c': r['called']})
+    return out
+
 def main():
     text = urllib.request.urlopen(SHEET, timeout=60).read().decode('utf-8')
     rows = list(csv.reader(io.StringIO(text)))
@@ -67,7 +81,8 @@ def main():
         out.append(row + [g(C['RESOLUTION DATE/TIME']), mv, SECTOR.get(t, '')])
     js = ('/* Season 2, from the owner\'s sheet (rows after 112), written by tools/site/make_s2.py; never edit by hand */\n'
           'var S2_HEADER=' + json.dumps(HEAD) + ';\nvar S2_SHEET=[\n' + ',\n'.join(' ' + json.dumps(r) for r in out) + '];\n'
-          'var S2_NAME=' + json.dumps(NAME) + ';\nvar S2_REPORT=' + json.dumps(REPORT) + ';\n')
+          'var S2_NAME=' + json.dumps(NAME) + ';\nvar S2_REPORT=' + json.dumps(REPORT) + ';\n'
+          'var S2_FEED=' + json.dumps(feed()) + ';\n')
     path = os.path.join(EZ, 's2-data.js'); old = open(path).read() if os.path.exists(path) else ''
     graded = sum(1 for r in out if r[-2]); calls = sum(1 for r in out if not r[-2] and any(r[3 + 2 * i] for i in range(len(AIS))))
     for x in notes: print('KEEP' if 'keeps' in x else 'LOG', x)
