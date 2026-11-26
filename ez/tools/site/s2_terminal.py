@@ -17,7 +17,8 @@ def mdl(k, ver, app):
 # Gemini: the owner's screenshots show the picker on Gemini 4 Neon (asked which to show; Neon until he says otherwise)
 NEW = {'GEMINI': mdl('GEMINI', 'Gemini 4 Neon', 'Gemini'), 'QWEN': mdl('QWEN', 'Qwen 4 Max', 'Qwen')}
 LOGO = {'INTU': 'S2-INTU.svg', 'KEYS': 'S2-KEYS.png', 'ESTC': 'S2-ESTC.svg', 'ZOOM': 'S2-ZOOM.png', 'SMTC': 'S2-SMTC.png', 'SYM': 'S2-SYM.png',
-        'MDT': 'S2-MDT.png', 'ADI': 'S2-ADI.png', 'WDAY': 'S2-WDAY.png', 'AMBA': 'S2-AMBA.png', 'ADSK': 'S2-ADSK.png'}
+        'MDT': 'S2-MDT.png', 'ADI': 'S2-ADI.png', 'WDAY': 'S2-WDAY.png', 'AMBA': 'S2-AMBA.png', 'ADSK': 'S2-ADSK.png',
+        'RBRK': 'S2-RBRK.png', 'NIO': 'S2-NIO.png', 'CRDO': 'S2-CRDO.png', 'MDB': 'S2-MDB.png', 'NTAP': 'S2-NTAP.png', 'TCOM': 'S2-TCOM.png', 'M': 'S2-M.png', 'AEO': 'S2-AEO.png', 'NTSK': 'S2-NTSK.png', 'VEEV': 'S2-VEEV.png', 'DOCU': 'S2-DOCU.png', 'S': 'S2-S.png', 'GWRE': 'S2-GWRE.png'}
 
 BOOT = ('<script src="s2-data.js"></script><script>/*S2SEASON{*/(function(){var q=new URLSearchParams(location.search);'
         'window.__S=q.get("s")==="1"?1:2;var L=' + json.dumps({k: {'f': 'logos/' + v} for k, v in LOGO.items()}) + ';'
