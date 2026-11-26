@@ -1,0 +1,81 @@
+:root{--bg:#04070e;--gold:#fdbc2a;--green:#03c870;--red:#ff3a31;--cream:#f8f0d9;--hd:52px;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--cream)}
+body{font:400 16px/1.3 "Barlow Condensed",sans-serif;overflow-x:clip}
+.hd{position:fixed;z-index:50;top:0;left:0;right:0;height:var(--hd);display:flex;align-items:center;gap:10px;padding:0 12px;background:#04070ef2;border-bottom:1px solid #1b1f29}
+.hd .br{display:flex;align-items:center;gap:8px;font:800 14px/1 "Barlow Condensed";letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.hd .br img{width:32px;height:32px}.hd .e{color:var(--green)}.hd .z{color:var(--red)}
+.hd nav{margin-left:auto;display:flex;gap:4px}.hd nav a{font:800 11px/1 "Barlow Condensed";letter-spacing:.08em;text-transform:uppercase;padding:7px 8px;color:#b5ad9c}
+.hd nav a.on{color:#04070e;background:var(--gold);transform:skew(-8deg)}
+@media(max-width:420px){.hd .br span{display:none}}
+main{padding-top:var(--hd)}
+/* scenes */
+.cover{height:260vh;position:relative}.cinema{height:240vh;position:relative}
+.pin{position:sticky;top:var(--hd);height:calc(100vh - var(--hd));overflow:hidden;background:#000}
+.sc{position:absolute;inset:0;overflow:hidden}
+.sc::before{content:"";position:absolute;inset:-30px;background:var(--bg) center bottom/cover no-repeat;filter:blur(18px) brightness(.45);transform:scaleY(-1)}
+.plate{position:absolute}.pi{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;user-select:none}
+.it{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.02;overflow:hidden;pointer-events:none}
+.it .in{width:100%}.it small{display:block;font-size:.55em;margin-top:.15em;line-height:1.1}.it b{display:block;font-weight:inherit}
+.it i{font-style:normal}.it .u{color:var(--green)}.it .d{color:var(--red)}
+/* the cover: the clip of taking the ticket fades in over the painting, then plays by scroll */
+.tv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;pointer-events:none}
+.cover.taken .tv{opacity:calc(min(1,var(--a)*5))}
+/* the loop */
+.loop{padding:28px 16px 40px;background:#04070e}
+.steps{display:grid;gap:30px;max-width:1180px;margin:0 auto}
+@media(min-width:900px){.steps{grid-template-columns:1fr 1fr;gap:40px 36px}}
+.obj{margin:0}
+.obj figcaption{font:400 26px/1 Bangers,cursive;letter-spacing:.03em;color:#ffd21f;-webkit-text-stroke:.075em #04070e;paint-order:stroke fill;transform:rotate(-2deg);margin:0 0 12px 4px}
+.obj figcaption b{font-weight:400;color:var(--cream);margin-right:.35em}
+@media(min-width:900px){.obj figcaption{font-size:30px}}
+.plate.sq{position:relative;aspect-ratio:1;width:100%;max-width:560px;cursor:pointer;outline:none}
+.plate.sq .pb,.plate.sq .pv{opacity:0;transition:opacity .35s}
+.obj.play .pv{opacity:1}.obj.open .pb{opacity:1}.obj.open .pv{opacity:0}
+.it.b{opacity:0;transition:opacity .5s .1s}.obj.open .it.b{opacity:1}.cinema.open .it.b{opacity:1}
+.obj.open .hot,.obj.play .hot{display:none}
+/* the one motion per object that says "touch me" (lesson 86); still with reduced motion */
+.cut{position:absolute;background-repeat:no-repeat;cursor:pointer}
+.nudge{animation:nudge 2.4s ease-in-out infinite}
+@keyframes nudge{0%,62%,100%{transform:translateY(0)}72%{transform:translateY(-9%)}82%{transform:translateY(2%)}}
+.wig{animation:wig 2.8s ease-in-out infinite}@keyframes wig{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-7deg)}84%{transform:rotate(6deg)}92%{transform:rotate(-2deg)}}
+.sway{transform-origin:50% 8%;animation:sway 3s ease-in-out infinite}@keyframes sway{0%,64%,100%{transform:rotate(0)}74%{transform:rotate(4deg)}84%{transform:rotate(-3deg)}92%{transform:rotate(1deg)}}
+.tilt{animation:tilt 3.2s ease-in-out infinite}@keyframes tilt{0%,66%,100%{transform:none}78%{transform:perspective(600px) rotateY(-9deg) translateY(-1%)}90%{transform:perspective(600px) rotateY(3deg)}}
+.turn{animation:turn 3.4s ease-in-out infinite}@keyframes turn{0%,66%,100%{transform:rotate(0)}80%{transform:rotate(-16deg)}92%{transform:rotate(3deg)}}
+.bob{animation:bob 2.6s ease-in-out infinite}@keyframes bob{0%,64%,100%{transform:none}74%{transform:translateY(-14%)}84%{transform:translateY(3%)}}
+.flick{animation:flick 3s steps(1) infinite}@keyframes flick{0%,70%,100%{filter:none}74%,82%{filter:brightness(1.7) sepia(.5) saturate(2)}78%{filter:brightness(1.15)}}
+@media(prefers-reduced-motion:reduce){.cut{animation:none!important}}
+/* the cinema */
+.film{position:absolute;object-fit:cover;background:#000;opacity:0;transition:opacity .4s}
+.cinema .pb,.cinema .pv{opacity:0}.cinema.opening .pv{opacity:1}.cinema.open .pb,.cinema.open .film{opacity:1}
+.next{padding:70px 16px 120px;text-align:center;background:#04070e}
+.next .cap{font:800 13px/1 "Barlow Condensed";letter-spacing:.2em;text-transform:uppercase;color:#b5ad9c;margin:0 0 10px}
+.hb-h{font:400 46px/1 Bangers,cursive;color:#ffd21f;-webkit-text-stroke:.075em #04070e;paint-order:stroke fill;transform:rotate(-2deg);margin:0;letter-spacing:.03em}
+
+/* ===== ink style: each medium as the surface makes it ===== */
+/* lit bulb letters on the black-glass marquee */
+.bulb{font:400 1em/1 "Bebas Neue",sans-serif;letter-spacing:.07em;color:#ffdc7e;text-shadow:0 0 .12em rgba(255,190,60,.85);white-space:nowrap;text-transform:uppercase}
+.bulb.big{color:#fff1c2}.bulb.sm{font:800 1em/1 "Barlow Condensed";letter-spacing:.05em}
+.bulb.vtx,.kan.vtx{white-space:normal;line-height:1.05}.bulb.vtx b,.kan.vtx b{font-size:1.5em;margin:.15em 0}
+/* gold leaf lettered on the booth glass */
+.leaf{font:400 1em/1 Anton;text-transform:uppercase;letter-spacing:.06em;background:linear-gradient(180deg,#fff0a8,#fdbc2a 45%,#a8700a 75%,#ffd97a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.leaf small{font-family:"Barlow Condensed";font-weight:800;letter-spacing:.12em}
+/* white paint / ink on the black card and the envelope */
+.paint{font:800 1em/1 "Barlow Condensed";letter-spacing:.04em;text-transform:uppercase;color:#efe6cf;white-space:nowrap}
+.paint.sm{color:#d8b25a}.paint b{font:400 1.5em/1 Anton;color:var(--gold)}
+/* chalk on the slate */
+.chalk{font:400 1em/1 "Bebas Neue";letter-spacing:.05em;color:#f1ead6;opacity:.95;white-space:nowrap;text-shadow:0 0 1px #000}
+/* gold foil pressed on the ticket's back */
+.foil{font:400 1em/1 Anton;text-transform:uppercase;letter-spacing:.04em;background:linear-gradient(180deg,#fff0a8,#fdbc2a 45%,#a8700a 75%,#ffd97a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.foil.vert .in{writing-mode:vertical-rl;transform:rotate(180deg)}
+/* engraved in the vault's brass plate */
+.engr{font:400 1em/1 Anton;text-transform:uppercase;letter-spacing:.06em;color:#0e0802;text-shadow:0 1px 0 rgba(255,232,160,.75),0 -1px 0 rgba(0,0,0,.6)}
+.engr b{font-size:1.25em}
+/* red rubber stamp in the painted ring */
+.stamp{font:400 1em/.95 Anton;text-transform:uppercase;color:#d92a20;transform:rotate(-8deg);opacity:.9;mix-blend-mode:screen}
+.dim{font:400 1em/1 "Bebas Neue";letter-spacing:.06em;color:#8d8577;white-space:normal}.dim small{font-family:"Barlow Condensed";font-weight:800}
+/* ===== logo style: flat, slanted, hard ===== */
+.kan{font:italic 900 1em/1 Kanit,sans-serif;text-transform:uppercase;color:var(--cream);white-space:nowrap;letter-spacing:.01em}
+.kan.g{color:var(--gold)}.kan.sm{font-weight:800}.kan.ink{color:#04070e}.kan.dim{color:#8d8577}
+.kan b{color:var(--gold)}.kan.ink b{color:#04070e}.kan.dim b{color:#8d8577}
+.kan.vert .in{writing-mode:vertical-rl;transform:rotate(180deg)}
+.s-logo .stamp{font-family:Kanit;font-style:italic;font-weight:900;mix-blend-mode:normal;color:var(--red)}

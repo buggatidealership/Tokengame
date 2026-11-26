@@ -1,0 +1,8 @@
+// node dbg.js <W> <take> <css selector of a .vt-lb ancestor>: prints each label part's ink box against its label box
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../../../live-r1/_fonts.js');const fs=require('fs');
+(async()=>{const W=+process.argv[2],T=process.argv[3],Q=process.argv[4];const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:W,height:844},deviceScaleFactor:2,isMobile:W<600,hasTouch:W<600});const p=await ctx.newPage();await FONTS(p);
+ await p.route(/v46-live-x2plus\.html/,r=>r.fulfill({contentType:'text/html',body:fs.readFileSync('/tmp/claude-0/-home-user-Tokengame/49afce95-8870-516a-9c3b-e2b261d2a0d8/scratchpad/h40rounds/v46-snap.html')}));
+ await p.goto('http://127.0.0.1:8941/v46-live-x2plus.html',{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur')&&window.__x2pVit,null,{timeout:120000});
+ await p.addStyleTag({content:fs.readFileSync('_h40.css','utf8')});await p.evaluate(t=>window.__H40=t,T);await p.addScriptTag({content:fs.readFileSync('_h40.js','utf8')});await p.waitForTimeout(1500);
+ console.log(await p.evaluate(q=>{const L=document.querySelector(q+' .vt-lb'),lr=L.getBoundingClientRect();const o=[['lb',lr.left,lr.top,lr.right,lr.bottom].map(x=>typeof x=='number'?x.toFixed(1):x).join(' ')];
+  L.querySelectorAll('.vt-nm,.vt-tk,.vt-ds,.vt-gr').forEach(e=>{const r=e.getBoundingClientRect();o.push(e.className+' '+getComputedStyle(e).display+' fs'+getComputedStyle(e).fontSize+' '+[r.left,r.top,r.right,r.bottom].map(x=>x.toFixed(1)).join(' '))});return o.join('\n')},Q));await b.close()})();

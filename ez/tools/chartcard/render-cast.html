@@ -1,0 +1,142 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style></head><body>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script>
+// v3 "cast", 4:5: the live site's four characters carry the round.
+// frame 0: the chart into the report and the four faces ("Who calls it?"); each AI steps forward with its call and
+// files it onto the chart; LOCKED before earnings; 3-2-1; the report lands; the race to the close ("closest" moves
+// between the faces); the winner's portrait; the end card with the season. Every word and number is drawn live,
+// none is baked into art. make.js sets CFG, seeks the loops (seek(t)) and draws each frame (draw(t)).
+const cv=document.getElementById('c'),x=cv.getContext('2d'),W=1080,H=1350;
+const ease=t=>t<0?0:t>1?1:1-Math.pow(1-t,3),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),seg=(t,a,b)=>clamp((t-a)/(b-a),0,1),lerp=(a,b,f)=>a+(b-a)*f;
+const MC={GPT:'#b18cff',CLAUDE:'#ef8a55',KIMI:'#58b7ff',GROK:'#e4e0d6'},NM={GPT:'GPT',CLAUDE:'Claude',KIMI:'Kimi',GROK:'Grok'};
+const T={bg:'#0a0d13',grid:'#171d29',ax:'#6f7789',fg:'#f6efdc',mut:'#958f80',up:'#22d17a',dn:'#ff4a3f',gold:'#fdbc2a',panel:'#121823',edge:'#232c3c'};
+const RS=1.15,R0=1.0;// rollout: one AI every RS seconds from R0
+let tl,C,img={},V={};
+async function init(cfg){C=cfg;const k=C.calls.length,r1=R0+k*RS;
+ tl={roll:[R0,r1],lock:[r1+.1,r1+1.1],cd:[r1+1.2,r1+2.7],boom:r1+2.7,post:[r1+2.7,r1+8.6],close:[r1+8.6,r1+9.5],end:[r1+10,r1+10.8],T:r1+13.2};
+ await new Promise(r=>{if(!C.logo)return r();const i=new Image();i.onload=()=>{img.co=i;r()};i.onerror=r;i.src=C.logo});
+ await new Promise(r=>{const i=new Image();i.onload=()=>{img.ez=i;r()};i.onerror=r;i.src=C.ezLogo});
+ for(const c of C.calls){const v=document.createElement('video');v.muted=true;v.preload='auto';v.src=C.cast[c.m].src;
+  await new Promise(r=>{v.onloadeddata=r;v.onerror=r});V[c.m]=v}
+ return tl.T}
+async function seek(t){await Promise.all(Object.values(V).map(v=>new Promise(r=>{const d=v.duration||5,tt=(t%d);if(Math.abs(v.currentTime-tt)<1e-3)return r();v.onseeked=()=>r();v.currentTime=tt})))}
+function rr(X,Y,w,h,r){x.beginPath();x.roundRect(X,Y,w,h,r)}
+function face(m,X,Y,s,ring,alpha=1){const v=V[m],hb=C.cast[m].head;x.save();x.globalAlpha*=alpha;x.beginPath();x.arc(X+s/2,Y+s/2,s/2,0,7);x.closePath();x.save();x.clip();
+ x.fillStyle='#222';x.fillRect(X,Y,s,s);if(v)x.drawImage(v,hb[0],hb[1],hb[2],hb[2],X,Y,s,s);x.restore();x.lineWidth=Math.max(3,s*.05);x.strokeStyle=ring||MC[m];x.stroke();x.restore()}
+function portrait(m,X,Y,w,h,ring){const v=V[m];x.save();rr(X,Y,w,h,18);x.save();x.clip();x.fillStyle='#222';x.fillRect(X,Y,w,h);if(v)x.drawImage(v,0,0,v.videoWidth||600,v.videoHeight||800,X,Y,w,h);x.restore();
+ x.lineWidth=6;x.strokeStyle=ring||MC[m];x.stroke();x.restore()}
+function crown(cx,cy,s,col){x.save();x.translate(cx,cy);x.beginPath();x.moveTo(-s,s*.55);x.lineTo(-s,-s*.25);x.lineTo(-s*.5,s*.12);x.lineTo(0,-s*.6);x.lineTo(s*.5,s*.12);x.lineTo(s,-s*.25);x.lineTo(s,s*.55);x.closePath();x.fillStyle=col;x.fill();x.strokeStyle='#05080d';x.lineWidth=s*.12;x.stroke();x.restore()}
+function badge(cx,cy,r,ok){x.save();x.beginPath();x.arc(cx,cy,r,0,7);x.fillStyle=ok?T.up:T.dn;x.fill();x.strokeStyle='#05080d';x.lineWidth=r*.26;x.lineCap='round';x.beginPath();
+ if(ok){x.moveTo(cx-r*.45,cy);x.lineTo(cx-r*.1,cy+r*.38);x.lineTo(cx+r*.5,cy-r*.38)}else{x.moveTo(cx-r*.38,cy-r*.38);x.lineTo(cx+r*.38,cy+r*.38);x.moveTo(cx+r*.38,cy-r*.38);x.lineTo(cx-r*.38,cy+r*.38)}x.stroke();x.restore()}
+function lock(cx,cy,s,col){x.save();x.translate(cx,cy);x.strokeStyle=col;x.lineWidth=s*.16;x.beginPath();x.arc(0,-s*.2,s*.32,Math.PI,0);x.lineTo(s*.32,0);x.moveTo(-s*.32,0);x.lineTo(-s*.32,-s*.2);x.stroke();
+ rr(-s*.5,0,s,s*.72,s*.12);x.fillStyle=col;x.fill();x.fillStyle='#05080d';x.beginPath();x.arc(0,s*.3,s*.1,0,7);x.fill();x.restore()}
+const money=v=>(v<0?'−':'+')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US');
+const kmoney=v=>Math.abs(v)>=10000?(v<0?'−':'+')+'$'+(Math.abs(v)/1000).toFixed(Math.abs(v)>=100000?0:1)+'K':money(v);
+const pct=(v,d=2)=>(v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(d)+'%';
+const callTxt=c=>(c.dir>0?'LONG ':'SHORT ')+c.mag+'%';
+function nice(r){const p=Math.pow(10,Math.floor(Math.log10(r))),m=r/p;return (m<1.5?1:m<3?2:m<7?5:10)*p}
+function fmtP(v){return v>=100?v.toFixed(0):v.toFixed(1)}
+function fit(txt,font,max){x.font=font;return x.measureText(txt).width<=max}
+function postP(t){if(t<tl.boom)return 0;const s=seg(t,tl.post[0],tl.post[1]);return (C.bars.length-C.iRep)*(1-Math.pow(1-s,1.5))}
+function priceAt(t){const p=postP(t),ir=C.iRep,b=C.bars;if(p<=0)return C.prev;const i=Math.min(b.length-1,ir+Math.floor(p-1e-9)),f=p-Math.floor(p-1e-9),bar=b[i];return f>=1?bar[4]:bar[1]+(bar[4]-bar[1])*f}
+function leaderAt(t){const pr=t>=tl.close[0]?C.fin:priceAt(t);let best=null,d=1e9;for(const c of C.calls){const e=Math.abs(pr-c.lv);if(e<d){d=e;best=c.m}}return best}
+const rk=k=>R0+k*RS;// AI k steps forward at rk(k)
+function draw(t){
+ const bars=C.bars,ir=C.iRep,n=bars.length,prev=C.prev,np=n-ir,calls=C.calls;
+ const sk=t>tl.boom?Math.max(0,1-(t-tl.boom)/.45):0;
+ x.setTransform(1,0,0,1,0,0);x.fillStyle=T.bg;x.fillRect(0,0,W,H);x.translate(sk?Math.sin(t*90)*10*sk:0,sk?Math.cos(t*77)*8*sk:0);
+ // header
+ const s0=104;if(img.co){x.save();rr(48,48,s0,s0,22);x.fillStyle='#fff';x.fill();x.clip();const r=Math.min((s0-18)/img.co.width,(s0-18)/img.co.height);
+  x.drawImage(img.co,48+(s0-img.co.width*r)/2,48+(s0-img.co.height*r)/2,img.co.width*r,img.co.height*r);x.restore()}
+ x.textAlign='left';x.textBaseline='alphabetic';x.fillStyle=T.fg;let tf=100;while(!fit(C.title,'900 '+tf+'px "Inter Display"',500)&&tf>56)tf-=4;x.font='900 '+tf+'px "Inter Display"';x.fillText(C.title,176,128);
+ x.fillStyle=T.mut;x.font='600 36px "Inter"';x.fillText(C.sub,178,182);
+ const live=t>=tl.boom&&t<tl.close[0],locked=t>=tl.lock[0],st=!locked?'BEFORE EARNINGS':t<tl.cd[0]?'LOCKED':t<tl.boom?'EARNINGS IN':live?'LIVE':'AT THE CLOSE';
+ x.font='800 34px "Inter"';const sw=x.measureText(st).width+(live?74:48);rr(W-48-sw,52,sw,64,32);x.fillStyle=live?T.dn:T.panel;x.fill();if(!live){x.strokeStyle=T.edge;x.lineWidth=2;x.stroke()}
+ if(live){x.beginPath();x.arc(W-48-sw+30,84,9,0,7);x.fillStyle=(Math.floor(t*3)%2)?'#fff':'#ffc7c2';x.fill()}
+ x.fillStyle=T.fg;x.textAlign='center';x.textBaseline='middle';x.fillText(st,W-48-sw/2+(live?16:0),85);
+ if(t>=tl.boom){const mv=t>=tl.close[0]?C.a:100*(priceAt(t)/prev-1);x.font='600 36px "Inter"';const se=178+x.measureText(C.sub).width+36;let fs=110;while(fs>60&&!fit(pct(mv),'900 '+fs+'px "Inter Display"',W-48-se))fs-=4;
+  x.textAlign='right';x.textBaseline='alphabetic';x.fillStyle=mv>=0?T.up:T.dn;x.font='900 '+fs+'px "Inter Display"';x.fillText(pct(mv),W-48,236)}
+ // chart
+ const L=48,R=690,TOP=300,BOT=960,preW=(R-L)*.5,xr=L+preW,postW=R-xr;
+ const lo0=Math.min(...bars.map(b=>b[3]),...calls.map(c=>c.lv),C.fin),hi0=Math.max(...bars.map(b=>b[2]),...calls.map(c=>c.lv),C.fin),pad=(hi0-lo0)*.06,lo=lo0-pad,hi=hi0+pad;
+ const Y=v=>BOT-(BOT-TOP)*(v-lo)/(hi-lo),bwA=preW/ir,bwB=postW/np,X=i=>i<ir?L+bwA*(i+.5):xr+bwB*(i-ir+.5);
+ x.font='600 28px "JetBrains Mono"';x.textBaseline='bottom';x.textAlign='left';const step=nice((hi-lo)/4);
+ for(let v=Math.ceil(lo/step)*step;v<=hi;v+=step){x.strokeStyle=T.grid;x.lineWidth=2;x.beginPath();x.moveTo(L,Y(v));x.lineTo(R,Y(v));x.stroke();x.fillStyle=T.ax;x.fillText(fmtP(v),L+4,Y(v)-6)}
+ x.save();x.strokeStyle=T.ax;x.setLineDash([4,8]);x.lineWidth=2;x.beginPath();x.moveTo(xr,TOP-6);x.lineTo(xr,BOT);x.stroke();x.restore();
+ x.fillStyle=T.mut;x.font='700 26px "Inter"';x.textAlign='center';x.textBaseline='alphabetic';x.fillText('EARNINGS',xr,TOP-18);
+ x.save();x.strokeStyle='rgba(246,239,220,.35)';x.setLineDash([3,7]);x.lineWidth=2;x.beginPath();x.moveTo(L,Y(prev));x.lineTo(R,Y(prev));x.stroke();x.restore();
+ const verdict=t>=tl.close[0],vv=verdict?ease(seg(t,tl.close[0],tl.close[1])):0,lead=t>=tl.boom?leaderAt(t):null;
+ // lines: each one draws in as its AI files the call
+ calls.forEach((c,k)=>{const g=ease(seg(t,rk(k)+.72,rk(k)+1.05));if(g<=0)return;const win=C.win.includes(c.m),yy=Y(c.lv);x.save();x.strokeStyle=verdict&&win?T.gold:MC[c.m];
+  x.lineWidth=verdict&&win?6:(lead===c.m&&!verdict?5:3.5);x.globalAlpha=verdict&&!win?1-.6*vv:1;x.setLineDash([16,10]);x.beginPath();x.moveTo(xr,yy);x.lineTo(xr+(R-xr)*g,yy);x.stroke();x.restore()});
+ // candles
+ const p=postP(t),full=ir+Math.floor(p),cur=full,f=p-Math.floor(p),show=bars.slice(0,Math.min(n,full));
+ if(f>0&&cur<n){const b=bars[cur],c4=b[1]+(b[4]-b[1])*f;show.push([b[0],b[1],Math.max(b[1],c4)+(b[2]-Math.max(b[1],b[4]))*f,Math.min(b[1],c4)-(Math.min(b[1],b[4])-b[3])*f,c4])}
+ show.forEach((b,i)=>{const up=b[4]>=b[1],cx=X(i),bw=i<ir?bwA:bwB;x.strokeStyle=x.fillStyle=up?T.up:T.dn;x.lineWidth=Math.max(2,bw*.14);
+  x.beginPath();x.moveTo(cx,Y(b[2]));x.lineTo(cx,Y(b[3]));x.stroke();const y1=Y(Math.max(b[1],b[4])),y2=Y(Math.min(b[1],b[4]));x.fillRect(cx-bw*.36,y1,bw*.72,Math.max(3,y2-y1))});
+ // chips at their lines (face + call)
+ const CH=74,GAP=10,cx0=R+14,cw=W-48-cx0,ch=calls.map((c,k)=>({...c,k,y:Y(c.lv),ly:Y(c.lv)})).sort((a,b)=>a.y-b.y);
+ for(let k=1;k<ch.length;k++)if(ch[k].y-ch[k-1].y<CH+GAP)ch[k].y=ch[k-1].y+CH+GAP;const ov=ch[ch.length-1].y-(BOT-CH/2);if(ov>0)ch.forEach(c=>c.y-=ov);
+ if(ch[0].y<TOP+CH/2-40){const d=TOP+CH/2-40-ch[0].y;ch.forEach(c=>c.y+=d)}
+ const chipAt={};for(const c of ch){chipAt[c.m]=c;const g=ease(seg(t,rk(c.k)+.95,rk(c.k)+1.15));if(g<=0)continue;const win=C.win.includes(c.m),isL=!verdict&&lead===c.m;
+  x.save();x.globalAlpha=g*(verdict&&!win?1-.55*vv:1);x.strokeStyle=verdict&&win?T.gold:MC[c.m];x.lineWidth=3;x.beginPath();x.moveTo(R,c.ly);x.lineTo(cx0,c.y);x.stroke();
+  rr(cx0,c.y-CH/2,cw,CH,14);x.fillStyle=(verdict&&win)||isL?'#1d1a10':T.panel;x.fill();x.lineWidth=(verdict&&win)||isL?5:3;x.strokeStyle=(verdict&&win)||isL?T.gold:MC[c.m];x.stroke();
+  face(c.m,cx0+8,c.y-29,58);x.fillStyle=T.fg;x.textAlign='left';x.textBaseline='middle';x.font='800 34px "Inter"';x.fillText(NM[c.m],cx0+76,c.y+2);
+  x.textAlign='right';x.font='700 34px "JetBrains Mono"';x.fillStyle=c.dir>0?T.up:T.dn;x.fillText((c.dir>0?'▲':'▼')+c.mag+'%',cx0+cw-14,c.y+2);
+  if(verdict&&vv>.2){x.globalAlpha=ease((vv-.2)/.8);badge(cx0+cw-6,c.y-CH/2+4,17,(c.dir>0)===(C.a>0))}x.restore()}
+ // ---- the four faces: the cast row under the chart
+ const fy=1000,fs2=150,fg2=(W-96-4*fs2)/3;
+ calls.forEach((c,k)=>{const fx=48+k*(fs2+fg2),win=C.win.includes(c.m),isL=!verdict&&lead===c.m,shown=t>=rk(k)+.95,right=(c.dir>0)===(C.a>0);
+  const dim=verdict?(win?1:1-.45*vv):(t>=tl.boom&&!isL?.6:1);
+  if(isL){x.save();x.fillStyle=T.gold;x.font='800 26px "Inter"';x.textAlign='center';x.textBaseline='alphabetic';x.fillText('CLOSEST',fx+fs2/2,fy-12);x.restore()}
+  face(c.m,fx,fy,fs2,(verdict&&win)||isL?T.gold:MC[c.m],dim);if(verdict&&win)crown(fx+fs2/2,fy-14,30*vv,T.gold);
+  x.save();x.globalAlpha=dim;x.textAlign='center';x.textBaseline='alphabetic';x.fillStyle=(verdict&&win)?T.gold:T.fg;x.font='800 32px "Inter"';x.fillText(NM[c.m],fx+fs2/2,fy+fs2+40);
+  x.font='700 30px "JetBrains Mono"';if(shown){x.fillStyle=c.dir>0?T.up:T.dn;x.fillText(callTxt(c),fx+fs2/2,fy+fs2+80)}else{x.fillStyle=T.mut;x.fillText('?',fx+fs2/2,fy+fs2+80)}
+  if(verdict&&vv>.3){x.globalAlpha=ease((vv-.3)/.7);badge(fx+fs2-14,fy+16,20,right)}x.restore()});
+ // footer
+ if(img.ez)x.drawImage(img.ez,48,1268,48,48);x.fillStyle=T.mut;x.font='700 28px "Inter"';x.textAlign='left';x.textBaseline='middle';x.fillText('@earningszn',108,1293);
+ x.textAlign='right';x.fillText('earningszn.xyz/r/'+C.n,W-48,1293);
+ // ---- frame 0: the question, in the empty half where the reaction will run
+ if(t<R0+.3){x.save();x.globalAlpha=1-seg(t,R0,R0+.3);x.textAlign='center';x.textBaseline='alphabetic';x.fillStyle=T.fg;
+  let q=C.title;x.font='900 88px "Inter Display"';x.fillText('Who calls',(xr+W-48)/2,560);while(!fit(q+'?','900 88px "Inter Display"',W-48-xr-20)&&q.length)break;x.fillStyle=T.gold;x.fillText(q+'?',(xr+W-48)/2,660);
+  x.fillStyle=T.mut;x.font='700 34px "Inter"';x.fillText('4 AIs. Calls locked',(xr+W-48)/2,730);x.fillText('before the report.',(xr+W-48)/2,774);x.restore()}
+ // ---- rollout: each AI steps forward with its call, then files it onto the chart
+ calls.forEach((c,k)=>{const a=rk(k);if(t<a||t>a+1.1)return;const pin=ease(seg(t,a,a+.22)),fly=ease(seg(t,a+.72,a+1.05)),stp=seg(t,a+.25,a+.4);
+  const chip=chipAt[c.m],big={x:330,y:300,w:420,h:560},tgt={x:cx0+8,y:chip.y-29,w:58,h:58};
+  x.save();x.fillStyle='rgba(5,8,13,'+(.62*(1-fly))+')';x.fillRect(0,250,W,730);x.restore();
+  const sc=lerp(.82,1,pin),bx=lerp(big.x+big.w*(1-sc)/2,tgt.x,fly),by=lerp(big.y+big.h*(1-sc)/2,tgt.y,fly),bw2=lerp(big.w*sc,tgt.w,fly),bh=lerp(big.h*sc,tgt.h,fly);
+  x.save();x.globalAlpha=pin*(1-fly*.7);portrait(c.m,bx,by,bw2,bh);x.restore();
+  if(fly<.5){x.save();x.globalAlpha=pin*(1-fly*2);x.textAlign='center';x.textBaseline='alphabetic';
+   x.fillStyle=T.fg;x.font='900 64px "Inter Display"';x.fillText(NM[c.m],540,big.y+big.h+70);
+   if(stp>0){const s3=lerp(1.7,1,ease(stp));x.translate(540,big.y+big.h-40);x.rotate(-.07);x.scale(s3,s3);x.font='900 92px "Inter Display"';x.lineWidth=16;x.strokeStyle='#05080d';
+    x.strokeText(callTxt(c),0,0);x.fillStyle=c.dir>0?T.up:T.dn;x.fillText(callTxt(c),0,0)}x.restore()}});
+ // ---- locked
+ if(t>=tl.lock[0]&&t<tl.cd[0]+.1){const g=ease(seg(t,tl.lock[0],tl.lock[0]+.25)),o=1-seg(t,tl.cd[0]-.15,tl.cd[0]+.1);x.save();x.globalAlpha=o;x.fillStyle='rgba(5,8,13,.55)';x.fillRect(0,250,W,730);
+  x.translate(540,600);x.rotate(-.05);x.scale(lerp(1.5,1,g),lerp(1.5,1,g));lock(-262,-28,92,T.gold);x.textAlign='left';x.textBaseline='middle';x.font='900 120px "Inter Display"';x.lineWidth=16;x.strokeStyle='#05080d';
+  x.strokeText('LOCKED',-160,0);x.fillStyle=T.gold;x.fillText('LOCKED',-160,0);x.font='800 40px "Inter"';x.fillStyle=T.fg;x.textAlign='center';x.fillText('before the earnings report',0,96);x.restore()}
+ // ---- countdown
+ if(t>=tl.cd[0]&&t<tl.boom){const k=Math.floor((t-tl.cd[0])/.5),f2=((t-tl.cd[0])%.5)/.5;x.save();x.fillStyle='rgba(5,8,13,.6)';x.fillRect(0,250,W,730);x.textAlign='center';x.textBaseline='middle';
+  x.fillStyle=T.mut;x.font='800 44px "Inter"';x.fillText('EARNINGS IN',W/2,440);x.globalAlpha=1-f2*.5;x.fillStyle=T.fg;x.font='900 '+(330-80*f2)+'px "Inter Display"';x.fillText(3-k,W/2,660);x.restore()}
+ // ---- boom
+ if(t>=tl.boom&&t<tl.boom+1){const f3=t-tl.boom;x.save();x.fillStyle='rgba(255,255,255,'+Math.max(0,.55-f3*1.8)+')';x.fillRect(-20,-20,W+40,H+40);
+  x.globalAlpha=Math.max(0,1-f3*1.2);x.translate(W/2,620);x.rotate(-.06);x.scale(1+.22*(1-f3),1+.22*(1-f3));x.textAlign='center';x.textBaseline='middle';x.font='900 150px "Inter Display"';
+  x.lineWidth=18;x.strokeStyle='#05080d';x.strokeText('EARNINGS',0,0);x.fillStyle=T.gold;x.fillText('EARNINGS',0,0);x.restore()}
+ // ---- winner portrait at the close
+ if(verdict&&t<tl.end[0]+.4&&C.win.length){const g=ease(seg(t,tl.close[0]+.15,tl.close[0]+.55)),o=1-seg(t,tl.end[0]-.2,tl.end[0]+.3),m=C.win[0];x.save();x.globalAlpha=o;
+  x.fillStyle='rgba(5,8,13,'+(.55*g)+')';x.fillRect(0,250,W,730);x.globalAlpha=o*g;const w=lerp(300,380,g),h=w*4/3;portrait(m,540-w/2,300,w,h,T.gold);crown(540,292,44*g,T.gold);
+  x.textAlign='center';x.textBaseline='alphabetic';x.font='900 84px "Inter Display"';x.lineWidth=14;x.strokeStyle='#05080d';x.strokeText(C.winLine,540,300+h+80);x.fillStyle=T.gold;x.fillText(C.winLine,540,300+h+80);x.restore()}
+ if(verdict&&!C.win.length&&t<tl.end[0]+.4){x.save();x.globalAlpha=ease(seg(t,tl.close[0]+.15,tl.close[0]+.55))*(1-seg(t,tl.end[0]-.2,tl.end[0]+.3));x.textAlign='center';x.font='900 96px "Inter Display"';
+  x.lineWidth=14;x.strokeStyle='#05080d';x.strokeText(C.winLine,540,640);x.fillStyle=T.dn;x.fillText(C.winLine,540,640);x.restore()}
+ // ---- end card
+ if(t>=tl.end[0]){const g=ease(seg(t,tl.end[0],tl.end[1])),top=300+(1-g)*900;x.save();rr(28,top,W-56,1240-top,26);x.fillStyle='#0f141d';x.fill();x.strokeStyle=T.edge;x.lineWidth=2;x.stroke();
+  x.beginPath();x.rect(28,top,W-56,1240-top);x.clip();let y=top+100;x.textAlign='left';x.textBaseline='alphabetic';
+  if(C.win.length){face(C.win[0],64,y-86,104,T.gold);crown(116,y-92,24,T.gold)}x.fillStyle=C.win.length?T.gold:T.dn;x.font='900 80px "Inter Display"';x.fillText(C.winLine,C.win.length?188:64,y-10);
+  x.fillStyle=T.mut;x.font='600 32px "Inter"';x.fillText(C.winSub,C.win.length?190:66,y+36);
+  y+=140;x.font='700 24px "Inter"';x.fillStyle=T.ax;x.textAlign='right';x.fillText('THIS ROUND',760,y);x.fillText('SEASON',W-64,y);
+  C.rows.forEach((rw,k)=>{const yy=y+26+k*96,ok=(rw.dir>0)===(C.a>0);face(rw.m,64,yy,72,C.win.includes(rw.m)?T.gold:null);x.textAlign='left';x.fillStyle=C.win.includes(rw.m)?T.gold:T.fg;x.font='800 38px "Inter"';x.fillText(NM[rw.m],156,yy+50);
+   badge(400,yy+37,20,ok);x.textAlign='right';x.font='700 38px "JetBrains Mono"';x.fillStyle=rw.pl>=0?T.up:T.dn;x.fillText(kmoney(rw.pl),760,yy+50);
+   x.fillStyle=rw.season>=0?T.up:T.dn;x.fillText(kmoney(rw.season),W-64-(rw.mv?54:0),yy+50);if(rw.mv){x.fillStyle=rw.mv>0?T.up:T.dn;x.font='800 28px "Inter"';x.fillText(rw.mv>0?'▲'+rw.mv:'▼'+(-rw.mv),W-64,yy+48)}});
+  x.textAlign='center';x.fillStyle=T.fg;x.font='800 40px "Inter"';x.fillText(C.next,W/2,1205);x.restore()}
+}
+</script></body></html>

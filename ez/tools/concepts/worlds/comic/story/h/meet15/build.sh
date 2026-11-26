@@ -1,0 +1,1 @@
+cd "$(dirname "$0")"; { echo '(function(){'; cat _helpers.js _main.js _takes.js; for t in B C D E; do if [ -f _t$t.js ]; then cat _t$t.js; else grep "function t$t" _stubs.js; fi; done; cat _mount.js; } > m15.js; node -e "new Function(require('fs').readFileSync('m15.js','utf8'))" && echo built

@@ -1,0 +1,3 @@
+const {open}=require('../cover3/run.js');const {chromium}=require('/opt/node22/lib/node_modules/playwright');
+(async()=>{const b=await chromium.launch();const {ctx,p}=await open(b,'now',+process.argv[2]||390,1);
+console.log(await p.evaluate(()=>{const cv=document.querySelector('#wc-book .wc-cover');const w=(e,d)=>d>3?'':[...e.children].map(c=>'  '.repeat(d)+c.tagName+'.'+String(c.className.baseVal??c.className).slice(0,50)+' ['+Math.round(c.getBoundingClientRect().width)+'x'+Math.round(c.getBoundingClientRect().height)+']\n'+w(c,d+1)).join('');return w(cv,0)+'\nnext:'+cv.nextElementSibling.className+' '+(cv.nextElementSibling.querySelector('h2')||{}).textContent}));await b.close()})();

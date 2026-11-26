@@ -1,0 +1,68 @@
+# ez-alerts: "follow an AI" alerts for Earnings Zeason (Season 2). NOT DEPLOYED: deployment waits for the owner's channel choice.
+# One Worker: a 2-minute cron watches the sheet; the same Worker answers /api/* on earningszn.xyz through zone routes.
+# Nothing here touches the Pages project (earningszn): the site keeps deploying exactly as it does today.
+#
+# DEPLOY (from ez/tools/alerts; W = npx wrangler@4.166.0)
+#   1. KV          W kv namespace create EZ_ALERTS                      -> put the printed id in [[kv_namespaces]] below
+#   2. Secrets     W secret put ADMIN_TOKEN                             (paste: openssl rand -hex 32; guards /api/admin/*)
+#      Web Push    W secret put VAPID_PRIVATE_KEY < <secrets dir>/vapid-private.txt
+#                  (the pair from: node scripts/vapid-keygen.mjs --out <dir outside the repo>; its public half is in
+#                   vapid-public.txt and VAPID_PUBLIC_KEY below; never rotate it once people follow: it orphans them)
+#      Telegram    W secret put TG_TOKEN                                (from @BotFather, see the Telegram steps below)
+#                  W secret put TG_WEBHOOK_SECRET                       (paste: openssl rand -hex 32)
+#      A channel whose secret is missing is skipped cleanly; the watcher still runs.
+#   3. Shadow      W deploy            with DRY_RUN = "1" (as committed): the first tick seeds silently, later ticks log what they
+#                  would send (W tail, or Workers Logs) and send nothing. Watch one real round land.
+#   4. Routes      uncomment `routes` below, set DRY_RUN = "0", W deploy. Check: curl https://earningszn.xyz/api/status
+#                  (a zone route runs in front of the Pages site for those paths only; if it does not answer, use the Pages
+#                  Functions adapter in pages/ for /api/* and keep this Worker for the cron)
+#   5. Telegram    curl -X POST https://earningszn.xyz/api/admin/tg-setup -H "authorization: Bearer <ADMIN_TOKEN>"
+#                  (points the bot's webhook at /api/tg with the secret header and sets its command list), then set
+#                  TG_BOT_USERNAME below and W deploy. Follow links: https://t.me/<bot>?start=grok (gpt|claude|grok|gemini|qwen|all)
+#   6. Site        the follow buttons (another session's files): <link rel="manifest" href="/manifest.webmanifest"> in the page
+#                  head, <script src="/api/client.js" defer>, and EZAlerts.follow('grok') on a tap. /api/try is a bare test page.
+#
+# TELEGRAM BOT (owner, in the Telegram app): open @BotFather, send /newbot, a name (Earnings Zeason) and a username ending in
+# "bot"; BotFather replies with the token. Paste it only into `W secret put TG_TOKEN`, never into a chat. Optional: /setuserpic
+# with the EZ logo, /setdescription.
+#
+# LIMITS to know (Workers Free): 50 subrequests per invocation (SEND_BUDGET 40 messages a tick, the rest wait in the outbox for
+# the next tick), 10 ms CPU per invocation (Web Push encrypts each message with a fresh key pair: 0.7 to 1.8 ms CPU each, measured
+# in Node here, so more than a handful of pushes per tick wants Workers Paid, $5 a month; Telegram messages cost almost no CPU), KV 1,000 writes and 1,000 lists a day (a quiet tick writes nothing; a tick with news
+# writes the state twice and lists at most 6 prefixes).
+
+name = "ez-alerts"
+main = "src/worker.js"
+compatibility_date = "2026-11-01"
+workers_dev = false
+preview_urls = false
+
+[triggers]
+crons = ["*/2 * * * *"]
+
+[[kv_namespaces]]
+binding = "EZ_ALERTS"
+id = "REPLACE_WITH_THE_ID_FROM_kv_namespace_create"
+
+[observability]
+enabled = true
+
+# routes = [
+#   { pattern = "earningszn.xyz/api/*", zone_name = "earningszn.xyz" },
+#   { pattern = "earningszn.xyz/sw.js", zone_name = "earningszn.xyz" },
+#   { pattern = "earningszn.xyz/manifest.webmanifest", zone_name = "earningszn.xyz" },
+# ]
+
+[vars]
+DRY_RUN = "1"                      # "0" to send for real
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1HE0z8uxuGa0sAbsnm6ZkPjU5bCLwGlq4EUjeCOROlIE/export?format=csv&gid=352731177"
+SITE_ORIGIN = "https://earningszn.xyz"
+SITE_ORIGINS = "https://earningszn.xyz,https://www.earningszn.xyz"
+POST_URL = "https://earningszn.xyz/"   # where a tap goes; {round} {ticker} {ai} are filled in (e.g. the feed's post page once it exists)
+VAPID_PUBLIC_KEY = "BOHaH5qys1-cAIBoYKuNlMIiWwdt-cIC3Zh3sLyla7aJEOdHpxyDEbKO9KSNrk-Ex3fFnoZjRTRUMtYgbOZ3LaA"
+VAPID_SUBJECT = "https://earningszn.xyz"
+TG_BOT_USERNAME = ""               # set once the bot exists, without the @
+SETTLE_POLLS = "1"                 # a value alerts after it reads the same on 2 polls in a row (2 to 4 minutes)
+SEND_BUDGET = "40"                 # messages per tick (Workers Free: 50 subrequests per invocation)
+DIGEST_AT = "3"                    # 3 or more of one kind for one follower in one tick become one message
+FLOOD_EVENTS = "80"                # more alerts than this in one tick are held until /api/admin/release

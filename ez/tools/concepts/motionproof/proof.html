@@ -1,0 +1,75 @@
+<!doctype html><meta charset="utf-8"><title>EZ motion proof</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Geist+Mono:wght@600&family=Instrument+Serif:ital@1&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e}
+#gl{position:absolute;inset:0;width:1080px;height:1350px}
+.sc{position:absolute;inset:0;display:none}
+#A{background:#04070e}
+.w{position:absolute;left:64px;font:400 196px/0.92 Anton,Impact,sans-serif;color:#f8f0d9;letter-spacing:-.01em;transform-origin:0 100%;white-space:nowrap}
+#strike{position:absolute;height:26px;background:#ff3a31;transform-origin:0 50%}
+.tag{position:absolute;left:50%;transform:translateX(-50%);bottom:150px;font:600 22px/1 "Geist Mono",monospace;letter-spacing:.14em;color:#04070e;background:#f8f0d9;padding:10px 16px;border:3px solid #04070e;box-shadow:5px 5px 0 #04070e;white-space:nowrap}
+#num{position:absolute;left:0;right:0;top:150px;text-align:center;font:400 170px/1 Anton,Impact,sans-serif;color:#03c870;letter-spacing:-.01em}
+#sub{position:absolute;left:0;right:0;top:330px;text-align:center;font:italic 54px/1 "Instrument Serif",serif;color:#f8f0d9}
+#wipe{position:absolute;inset:0;display:none}
+.bar{position:absolute;left:60px;right:60px;bottom:52px;height:10px;display:flex;gap:6px}.bar i{flex:1;background:#2a2d33;border-radius:2px}
+#ph{position:absolute;left:60px;bottom:47px;width:3px;height:20px;background:#f8f0d9}
+</style>
+<canvas id="gl" width="1080" height="1350"></canvas>
+<div class="sc" id="A"><div class="w" id="w0">STOP</div><div class="w" id="w1">TAILING</div><div class="w" id="w2">AIs YOU</div><div class="w" id="w3">CAN'T <span id="tw">TRUST.</span></div><div id="strike"></div><div class="w" id="w4" style="color:#fdbc2a">TRACK.</div></div>
+<div class="sc" id="B"><div class="tag">CHROME + REFLECTIONS</div></div>
+<div class="sc" id="C"><div id="num">+$0</div><div id="sub">Grok, one cube per trade</div><div class="tag">91 TRADES, ONE WAVE</div></div>
+<div id="wipe"></div>
+<div class="bar"><i style="background:#03c870"></i><i style="background:#fdbc2a"></i><i style="background:#ff3a31"></i></div><div id="ph"></div>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+const $=i=>document.getElementById(i),cl=x=>x<0?0:x>1?1:x,seg=(t,a,b)=>cl((t-a)/(b-a)),eo=x=>x===1?1:1-Math.pow(2,-10*x),eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const back=x=>{const c=1.7,c3=c+1;return 1+c3*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const spring=x=>x>=1?1:1-Math.exp(-6*x)*Math.cos(11*x);
+const D=8.4,G=await (await fetch('grok.json')).json();
+const ren=new THREE.WebGLRenderer({canvas:$('gl'),antialias:true,preserveDrawingBuffer:true});ren.setPixelRatio(1);ren.setSize(1080,1350,false);
+ren.toneMapping=THREE.ACESFilmicToneMapping;ren.outputColorSpace=THREE.SRGBColorSpace;ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;
+const pm=new THREE.PMREMGenerator(ren);
+/* B: a chrome knot lit by an environment painted in the brand colours (green and red panels, a gold key) */
+const envS=new THREE.Scene();envS.background=new THREE.Color('#4c515c');
+const panel=(c,x,y,z,w,h,ry)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=ry||0;m.lookAt(0,0,0);envS.add(m)};
+panel(new THREE.Color(0,3.2,1.4),-6,1,2,3,9);panel(new THREE.Color(3.4,.35,.25),6,-1,2,3,9);panel(new THREE.Color(3,2.2,.6),0,7,1,10,2);panel(new THREE.Color(1.6,1.5,1.3),0,0,-8,8,4);panel(new THREE.Color(2.4,2.3,2.1),0,1,9,12,7);panel(new THREE.Color(1.1,1.05,.95),0,-7,0,14,3);
+const envB=pm.fromScene(envS,.02).texture;
+const sB=new THREE.Scene();sB.environment=envB;sB.background=new THREE.Color('#04070e');sB.environmentIntensity=1.3;
+const knot=new THREE.Mesh(new THREE.TorusKnotGeometry(1.25,.42,360,64,2,3),new THREE.MeshPhysicalMaterial({color:'#e8e8ea',metalness:1,roughness:.07,clearcoat:1,clearcoatRoughness:.05}));sB.add(knot);
+const disc=new THREE.Mesh(new THREE.CircleGeometry(2.05,96),new THREE.MeshBasicMaterial({color:'#fdbc2a'}));disc.position.set(.55,.5,-2.4);sB.add(disc);
+const camB=new THREE.PerspectiveCamera(32,1080/1350,.1,100);camB.position.set(0,0,9.5);
+/* C: Grok's 91 trades as cubes, 13 x 7, rising in date order; height = that trade's P&L on $100K (green up, red down) */
+const sC=new THREE.Scene();sC.background=new THREE.Color('#04070e');sC.fog=new THREE.Fog('#04070e',34,60);sC.environment=pm.fromScene(new RoomEnvironment(),.04).texture;
+const key=new THREE.DirectionalLight('#fff3dc',2.6);key.position.set(-6,12,8);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-10,right:10,top:10,bottom:-10});sC.add(key);
+sC.add(new THREE.HemisphereLight('#bfe9d6','#3a0c10',.6));
+const fl=new THREE.Mesh(new THREE.PlaneGeometry(40,40),new THREE.ShadowMaterial({opacity:.55}));fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;sC.add(fl);
+const geo=new THREE.BoxGeometry(.8,1,.8);geo.translate(0,.5,0);const cubes=[];const NX=7,NZ=13,mx=Math.max(...G.map(g=>Math.abs(g.p)));
+G.forEach((g,i)=>{const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:g.p>=0?'#03c870':'#ff3a31',roughness:.35,metalness:.1}));m.castShadow=true;m.receiveShadow=true;
+ const x=(i%NX)-(NX-1)/2,z=Math.floor(i/NX)-(NZ-1)/2;m.position.set(x,0,z);m.userData={h:.15+3.6*Math.abs(g.p)/mx,neg:g.p<0,i};sC.add(m);cubes.push(m)});
+const camC=new THREE.PerspectiveCamera(28,1080/1350,.1,200);
+let cum=G.map((g,i)=>G.slice(0,i+1).reduce((s,x)=>s+x.p,0));
+const fmt=v=>(v<0?'−':'+')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US');
+window.R=function(t){['A','B','C'].forEach(s=>$(s).style.display='none');$('wipe').style.display='none';$('ph').style.left=(60+960*t/D)+'px';
+ if(t<2.75){ren.setClearColor('#04070e',1);ren.clear();$('A').style.display='block';
+  const W=[['w0',.05,380],['w1',.32,600],['w2',.62,820],['w3',.92,1040]];
+  W.forEach(([id,t0,y])=>{const e=$(id),k=seg(t,t0,t0+.32);e.style.top=(y-190)+'px';e.style.opacity=k>0?1:0;const b=back(k);e.style.transform='translateY('+((1-b)*120).toFixed(1)+'px) scaleY('+(1+(1-spring(seg(t,t0,t0+.6)))*.35).toFixed(3)+')'});
+  const tw=$('tw').getBoundingClientRect(),st=$('strike'),sk=eio(seg(t,1.55,1.8));st.style.left=tw.left+'px';st.style.top=(tw.top+tw.height*.5-13)+'px';st.style.width=(tw.width*sk)+'px';st.style.opacity=sk>0?1:0;
+  $('tw').style.opacity=(1-.6*seg(t,1.8,2)).toFixed(3);
+  const k4=seg(t,1.95,2.3),e4=$('w4');e4.style.left=(tw.left)+'px';e4.style.top=(1040+30)+'px';e4.style.opacity=k4>0?1:0;e4.style.transform='translateY('+((1-back(k4))*110).toFixed(1)+'px) rotate('+((1-eo(k4))*-6).toFixed(2)+'deg)';
+  if(t>2.45){const w=$('wipe');w.style.display='block';w.style.background='#fdbc2a';const k=eio(seg(t,2.45,2.75));w.style.clipPath='circle('+(k*120)+'% at 50% 55%)'}
+  return}
+ if(t<5.15){$('B').style.display='block';const u=t-2.75;knot.rotation.set(.35+u*.55,u*.9,.2*Math.sin(u*1.3));const s=.6+.4*spring(seg(t,2.75,3.5));knot.scale.setScalar(s);
+  disc.scale.setScalar(eo(seg(t,2.9,3.4)));disc.position.x=.55+.15*Math.sin(u*1.1);camB.position.z=9.5-.6*eio(seg(t,2.75,5.15));ren.render(sB,camB);
+  if(t<2.95){const w=$('wipe');w.style.display='block';w.style.background='#fdbc2a';w.style.clipPath='circle('+((1-eio(seg(t,2.75,2.95)))*120)+'% at 50% 55%)'}
+  if(t>4.85){const w=$('wipe');w.style.display='block';w.style.background='#03c870';w.style.clipPath='inset(0 0 '+((1-eio(seg(t,4.85,5.15)))*100)+'% 0)'}
+  return}
+ $('C').style.display='block';const u=t-5.15,a=-.75+.32*eio(seg(t,5.15,D)),r=33-3*eio(seg(t,5.15,D));camC.position.set(Math.sin(a)*r,15-1.5*eio(seg(t,5.15,D)),Math.cos(a)*r);camC.lookAt(0,2.2,0);
+  let last=-1;cubes.forEach(m=>{const t0=5.35+m.userData.i*.025,k=seg(t,t0,t0+.45);if(k>0)last=m.userData.i;const b=spring(k),h=Math.max(.001,m.userData.h*b);m.scale.set(1,h,1);m.visible=k>0;
+   m.position.y=0});
+  $('num').textContent=fmt(last>=0?cum[last]:0);$('num').style.color=last>=0&&cum[last]<0?'#ff3a31':'#03c870';
+  $('num').style.transform='scale('+(1+.04*Math.sin(t*20)*seg(t,5.35,7.6)*(1-seg(t,7.55,7.7)))+')';
+  ren.render(sC,camC);
+  if(t<5.45){const w=$('wipe');w.style.display='block';w.style.background='#03c870';w.style.clipPath='inset('+(eio(seg(t,5.15,5.45))*100)+'% 0 0 0)'}};
+await document.fonts.ready;window.READY=1;window.R(0);
+</script>

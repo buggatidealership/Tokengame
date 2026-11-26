@@ -1,0 +1,350 @@
+<!doctype html><meta charset="utf-8"><title>Season 1 wrap-up, round 6 E, title sequence</title>
+<!-- W6-BRIEF.md take E: a film title sequence with painted pictures (Hedra gpt-image-2 in the site's chip style: a painted comic object,
+  one warm key light, green and red rim lights, a black void). Pictures (w6/e/): ground (light rays over a stone floor, 80 frames of a
+  living-light clip as a seamless loop), ticket, podium (four pedestals), trophy; the three objects cut from a blue key so glass and type sit
+  in front of and behind them. Words and numbers are always page text; every number from data/wrap.json.
+  Bed w6-trailer-x at 0: 140 BPM, a beat every 0.428571 s, drop 1 at beat 30 (12.857 s), drop 2 at beat 61 (26.143 s).
+  Shots (beats): 0 logo | 2 golden ticket, Season 1 | 6 4 AIs | 10 112 earnings trades | 12 long or short | 16, 20, 24 the P&L chart
+  (wide, the last 22 rounds, wide again) | 30 the chart's end on drop 1 | 34, 37, 41 P&L board | 47, 50, 54 accuracy board | 58 Grok's row and
+  the trophy in the dark | 61 the winner on drop 2 | 65 Grok wins Season 1 | 69 P&L +$169,450 | 74 logo close, Season 2 soon.
+  Glass: no backdrop-filter (under 3D transforms the renderer left stale tiles of earlier frames in the sheet); each sheet has its own frost,
+  a small canvas that paints the ground behind it, blurred, every frame (fr()). The ground, its level, the beat and the rim lights are one canvas.
+  Render: CRF=20 bash wrapx.sh w6e.html 34.29 x2p-s1-wrap6-e-draft w6-trailer-x 0 .34 -->
+<style id="base"></style>
+<style>
+html,body{background:#04070e}
+#st{position:absolute;inset:0;overflow:hidden;background:#04070e}
+#gnd{position:absolute;inset:0;overflow:hidden}
+#gv{position:absolute;left:-54px;top:-104px;width:1188px;height:1584px;transform-origin:50% 76%}
+#cam{position:absolute;inset:0;perspective:1900px;perspective-origin:50% 46%}
+.g{position:absolute;inset:0;display:none}
+.abs{position:absolute;left:0;top:0}
+.c{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.bb{font-family:'Bebas Neue',sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.1em;line-height:1}
+.kn{font-family:Kanit,sans-serif;font-weight:900;font-style:italic;text-transform:uppercase;line-height:1;letter-spacing:.005em}
+.mo{font-family:'Geist Mono',monospace;font-variant-numeric:tabular-nums;line-height:1}
+.fit{display:inline-block;white-space:nowrap}
+.cr{color:#f2ede6}.dm{color:#a39b94}.gn{color:#55d6a2}.rd{color:#e8576b}.au{color:#fdbc2a}
+.foil{color:transparent!important;background-image:linear-gradient(100deg,#fdbc2a 34%,#fff3c8 50%,#fdbc2a 66%);background-size:300% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 4px 0 rgba(120,70,0,.9)) drop-shadow(0 0 26px rgba(253,188,42,.4))}
+.ink{color:#17110a;text-shadow:0 2px 0 rgba(255,236,170,.6),0 -1px 0 rgba(90,50,0,.35)}
+.gl{position:absolute;left:0;top:0;overflow:hidden;border-radius:44px;box-shadow:0 34px 90px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.35)}
+.gl>.fr{position:absolute;left:0;top:0;width:100%;height:100%}
+.gl>.gt{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(158deg,rgba(242,237,230,.15),rgba(242,237,230,.05) 42%,rgba(242,237,230,.085));
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5),inset 1.5px 0 0 rgba(255,255,255,.16),inset 0 -1.5px 0 rgba(0,0,0,.4),inset -1px 0 0 rgba(0,0,0,.18)}
+.gl.gd>.gt{background:linear-gradient(158deg,rgba(242,237,230,.13),rgba(242,237,230,.04) 42%,rgba(242,237,230,.075)),rgba(4,7,14,.5)}
+.gl .sp{position:absolute;inset:-60%;background:linear-gradient(118deg,transparent 44%,rgba(255,255,255,.2) 48.5%,rgba(255,255,255,.05) 51.5%,transparent 56%);pointer-events:none}
+.gl .tp{position:absolute;left:0;right:0;top:0;height:40%;background:linear-gradient(180deg,rgba(255,255,255,.07),transparent);pointer-events:none}
+.rim{position:absolute;inset:0;padding:4px;border-radius:inherit;pointer-events:none;opacity:0;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+/* painted objects with a travelling light */
+.ob{position:absolute;left:0;top:0}
+.ob img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ob .sw{position:absolute;inset:0;background:linear-gradient(105deg,transparent 42%,rgba(255,250,225,.85) 50%,transparent 58%);background-size:320% 100%;background-repeat:no-repeat;mix-blend-mode:overlay;-webkit-mask-size:100% 100%;-webkit-mask-repeat:no-repeat}
+.tk .sw{-webkit-mask-image:url(w6/e/ticket.webp)}.tr .sw{-webkit-mask-image:url(w6/e/trophy.webp)}
+.tk .tin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+/* open */
+#oname span span:first-child{text-shadow:-.06em 0 0 #03c870,0 .08em 0 #04070e,0 0 .25em #04070e,0 0 .5em #04070e}#oname span span:last-child{text-shadow:.06em 0 0 #ff3a31,0 .08em 0 #04070e,0 0 .25em #04070e,0 0 .5em #04070e}
+.halo{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(253,188,42,.5),rgba(253,188,42,.16) 55%,rgba(253,188,42,0) 72%);mix-blend-mode:screen}
+/* cast */
+.beam{position:absolute;width:190px;height:560px;background:linear-gradient(0deg,rgba(255,214,120,.75),rgba(253,188,42,.2) 45%,rgba(253,188,42,0));-webkit-mask:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);mix-blend-mode:screen}
+.pm{position:absolute;left:0;top:0}.pm .mk{box-shadow:0 0 0 5px #fdbc2a,0 0 44px rgba(253,188,42,.55),0 18px 30px rgba(0,0,0,.6)!important}
+.pn{position:absolute;text-align:center;font-size:44px;letter-spacing:.06em}
+/* what */
+.slab{border-radius:40px}
+/* chart */
+#cgrid line{stroke:rgba(242,237,230,.14);stroke-width:1.5}
+#cgrid text{font:600 28px 'Geist Mono',monospace;fill:#8e8680}
+.hd{position:absolute;left:0;top:0}.hd .mk{display:block}
+.endl{position:absolute;left:0;top:0;font:700 46px/1 'Geist Mono',monospace;white-space:nowrap;transform-origin:0 50%}
+/* boards */
+.br{position:absolute;left:30px;width:920px;height:205px}
+.br .rk{position:absolute;left:0;top:4px;width:84px;text-align:center;font-size:132px;letter-spacing:0;color:#8e8680}
+.br .mw{position:absolute;left:104px;top:8px}
+.br .nm{position:absolute;left:236px;top:22px;font-size:92px;letter-spacing:.045em;color:#f2ede6}
+.br .am{position:absolute;right:0;top:26px;font-weight:700;font-size:70px;letter-spacing:-.02em}
+.br .trk{position:absolute;left:236px;top:140px;width:684px;height:30px;border-radius:15px;background:rgba(4,7,14,.38);box-shadow:inset 0 0 0 1.5px rgba(242,237,230,.1)}
+.br .bar{position:absolute;top:3px;height:24px;border-radius:12px}
+.br .zr{position:absolute;top:-8px;width:3px;height:46px;background:rgba(242,237,230,.6);border-radius:2px}
+.br .rg{position:absolute;left:-18px;right:-18px;top:-12px;bottom:14px;border-radius:30px;opacity:0;background:linear-gradient(100deg,rgba(253,188,42,.22),rgba(253,188,42,.05) 55%,rgba(253,188,42,.14));box-shadow:0 0 70px rgba(253,188,42,.3)}
+.br .rg .rim{opacity:1}
+.br:not(.last)::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:1.5px;background:rgba(242,237,230,.1)}
+.stamp{position:absolute;right:0;top:124px;padding:6px 20px 8px;border:6px solid #ff3a31;border-radius:14px;color:#ff3a31;font-size:56px;letter-spacing:.03em;background:rgba(4,7,14,.5);transform-origin:50% 50%}
+.br .wl{position:absolute;left:520px;top:50px;font-weight:600;font-size:46px;color:#cfc8c0;letter-spacing:-.02em}
+.br .pc{position:absolute;right:0;top:10px;font-weight:700;font-size:104px;letter-spacing:-.04em}
+.br .wlb{position:absolute;left:236px;top:140px;height:30px;border-radius:15px;overflow:hidden;background:rgba(4,7,14,.38)}
+.br .wlb i{position:absolute;top:0;height:100%}
+/* winner */
+.stars{position:absolute;left:0;top:0;pointer-events:none}.stars svg{position:absolute;left:0;top:0;overflow:visible}
+/* chrome */
+.bug{z-index:60}.bug b{color:#fdbc2a}.fine{z-index:60;color:#8e8680;font-size:19px;letter-spacing:.1em;bottom:40px}
+#flash{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,#fff6d8,#fdbc2a 60%,#c98a10);mix-blend-mode:screen;opacity:0;pointer-events:none;z-index:45}
+#streak{position:absolute;left:-600px;top:0;width:2280px;height:10px;border-radius:5px;background:linear-gradient(90deg,transparent,rgba(255,240,200,.95) 35%,#fff 50%,rgba(255,240,200,.95) 65%,transparent);box-shadow:0 0 60px 18px rgba(253,188,42,.55);mix-blend-mode:screen;opacity:0;z-index:44}
+#vig{z-index:49;background:radial-gradient(ellipse 78% 68% at 50% 50%,transparent 58%,rgba(0,0,0,.6))}
+</style>
+<div id="st">
+  <div id="gnd" data-chrome><canvas id="gv" width="540" height="720"></canvas></div>
+  <div id="cam"></div>
+  <div class="bug" data-chrome><img src="ezlogo.svg" alt=""><span>EARNINGS ZEASON</span><b>SEASON 1</b></div>
+  <div class="fine" data-chrome>$100K ON EVERY TRADE</div>
+  <div id="streak" data-chrome></div><div id="flash" data-chrome></div>
+  <div id="vig" data-chrome></div><canvas id="grain" data-chrome></canvas>
+</div>
+<script src="lib.js"></script>
+<script>
+const BT = 60 / 140, B = n => n * BT, r4 = x => +x.toFixed(4);
+// shot starts, in beats
+const SB = [0, 2, 6, 10, 12, 16, 20, 24, 30, 34, 37, 41, 47, 50, 54, 58, 61, 65, 69, 74], DUR = r4(B(80)), D1 = B(30), D2 = B(61);
+const Gn = '#55d6a2', Rd = '#e8576b', Au = '#fdbc2a', Cr = '#f2ede6';
+const COL = { GROK: Au, CLAUDE: Gn, GPT: Cr, KIMI: Rd };                 // one line colour per AI, the leader gold
+const E = {}, C = []; let D, grain, GF = [], t = 0;
+const NG = 80, GA = 20, GN = 60;                                         // ground loop: 80 frames, 20 of them the crossfade, 60 a turn (2.5 s)
+const add = (h, p) => { p.insertAdjacentHTML('beforeend', h); return p.lastElementChild };
+const sp = (x, f = 1.15, d = 8.5) => x <= 0 ? 0 : 1 - Math.exp(-d * x) * Math.cos(2 * Math.PI * f * x);
+const ramp = (a, d = .3) => L.eo5(L.n(t, a, a + d));                     // a fast move that settles
+const out = (b, d = .13) => L.ei(L.n(t, b - d, b));                      // leaving, accelerating into the cut
+const on = (a, b) => t >= a - 1e-6 && t < b - 1e-6;
+const show = (el, v) => { el.style.display = v ? 'block' : 'none'; return v };
+const tf = (el, s) => { el.style.transform = s };
+const blur = (el, px) => { el.style.filter = px > .15 ? `blur(${px.toFixed(2)}px)` : 'none' };
+const music = x => (x < 10 ? 1 : x < 10.3 ? 1 - (x - 10) / .3 : x < D1 ? 0 : x < 24 ? 1 : x < 24.25 ? 1 - (x - 24) / .25 : x < D2 ? 0 : 1);
+const kick = x => music(x) * Math.exp(-6.5 * (((x % BT) + BT) % BT));    // the drum on every beat
+const Kb = v => (v < 0 ? '−' : '+') + '$' + Math.round(Math.abs(v) / 1000) + 'K';
+const RIM = a => `conic-gradient(from ${a.toFixed(1)}deg,rgba(253,188,42,.95) 0deg,#fff6d6 16deg,rgba(253,188,42,.9) 38deg,rgba(253,188,42,.45) 170deg,#ffedb8 196deg,rgba(253,188,42,.45) 222deg,rgba(253,188,42,.95) 360deg)`;
+const foil = (el, u, per = 1.7) => { const x = ((u % per) + per) % per; el.style.backgroundPosition = `${(100 - 100 * L.n(x, .1, 1.05)).toFixed(1)}% 0` };
+const sweep = (el, k) => { el.style.backgroundPosition = `${(125 - 150 * k).toFixed(1)}% 0` };
+const obj = (cls, id, src, w, h, inner = '') => `<div class="ob ${cls}" id="${id}" style="width:${w}px;height:${h}px"><img src="${src}" alt=""><div class="sw"></div>${inner}</div>`;
+const TKR = 472 / 927, TRR = 874 / 615;                                  // the ticket's and the trophy's shapes
+
+// the season: round (0 to 112) at time x, in three moves that each start fast on a beat
+const RS = [[B(16), B(20), 0, 33], [B(20), B(24), 33, 67], [B(24), B(30), 67, 112]];
+const rOf = x => { if (x <= RS[0][0]) return 0; if (x >= D1) return 112; const s = RS.find(q => x < q[1]), u = (x - s[0]) / (s[1] - s[0]); return s[2] + (s[3] - s[2]) * (s === RS[2] ? .62 * u + .38 * u * u : .5 * u + .5 * L.eo(u)) };
+const tOf = r => { let a = B(16), b = D1; for (let i = 0; i < 40; i++) { const m = (a + b) / 2; rOf(m) < r ? a = m : b = m } return b };
+const val = (k, r) => { const s = D.s[k], i = Math.min(111, Math.floor(r)); return L.lerp(s[i], s[i + 1], r - i) };
+
+function build() {
+  const cam = L.$('#cam'), A = k => D.ai.find(a => a.k === k), win = D.ai[0];
+  const G = n => E['g' + n] = add(`<div class="g" id="g${n}"></div>`, cam);
+  // 0 open: the logo, then the golden ticket
+  let g = G(0);
+  E.ohalo = add('<div class="halo" style="width:1300px;height:1300px;left:-110px;top:-122px"></div>', g);
+  E.otk = add(obj('tk', 'otk', 'w6/e/ticket.webp', 1080, 1080 * TKR, `<div class="tin"><div class="kn ink" style="font-size:176px"><span class="fit" data-w="760">Season 1</span></div></div>`), g);
+  E.ologo = add('<img class="abs" src="ezlogo.svg" style="width:720px;height:720px" alt="">', g);
+  E.oname = add(`<div class="c kn cr" id="oname" style="top:1088px;font-size:104px"><span class="fit" data-w="930"><span>Earnings</span> <span>Zeason</span></span></div>`, g);
+  // 1 the four AIs on their pedestals
+  g = G(1); const cast = ['GPT', 'CLAUDE', 'GROK', 'KIMI'].map(A), PS = 1040 / 995, PX = [123, 374, 620, 872].map(x => 20 + x * PS);
+  E.cbeam = PX.map(x => add(`<div class="beam" style="left:${x - 95}px;top:368px"></div>`, g));
+  E.cpod = add(`<img class="abs" src="w6/e/podium.webp" style="left:20px;top:912px;width:1040px;height:${(325 * PS).toFixed(1)}px" alt="">`, g);
+  E.chl = add(`<div class="c bb cr" style="top:124px;font-size:430px;letter-spacing:.04em"><span class="fit" data-w="900">4 AI<span style="font-size:.66em">s</span></span></div>`, g);
+  E.cm = cast.map((a, j) => add(`<div class="pm" style="left:${PX[j] - 86}px;top:694px">${L.mark(a.k, 172)}</div>`, g));
+  E.cn = cast.map((a, j) => add(`<div class="pn bb ink" style="left:${PX[j] - 90}px;width:180px;top:${912 + 166 * PS}px">${a.name}</div>`, g));
+  // 2 what it was: 112 earnings trades, long or short
+  g = G(2);
+  E.wA = add('<div class="abs" style="width:1080px;height:1350px"></div>', g);
+  E.wnum = add(`<div class="c bb cr" style="top:96px;font-size:500px;letter-spacing:.03em">0</div>`, E.wA);
+  E.wet = add(`<div class="c bb au" style="top:520px;font-size:122px;letter-spacing:.13em"><span class="fit" data-w="930">Earnings trades</span></div>`, E.wA);
+  E.cells = L.$$('rect', add(`<svg class="abs" style="left:69px;top:676px;overflow:visible" width="942" height="534">${Array.from({ length: D.total }, (_, i) => `<rect x="${(i % 14) * 68}" y="${Math.floor(i / 14) * 68}" width="58" height="58" rx="9"/>`).join('')}</svg>`, E.wA));
+  E.wB = add('<div class="abs" style="width:1080px;height:1350px"></div>', g);
+  E.wh = add(`<div class="c bb cr" style="top:138px;font-size:110px;letter-spacing:.1em"><span class="fit" data-w="930">${D.total} earnings trades</span></div>`, E.wB);
+  E.wL = add(`<div class="gl slab" style="left:50px;top:282px;width:980px;height:420px"><canvas class="fr" data-chrome></canvas><div class="gt" style="background:linear-gradient(158deg,rgba(85,214,162,.34),rgba(85,214,162,.12) 50%,rgba(85,214,162,.22))"></div><div class="tp"></div><div class="sp"></div><div class="c bb" style="top:14px;font-size:440px;color:#55d6a2;text-shadow:0 0 60px rgba(3,200,112,.6)"><span class="fit" data-w="800">Long</span></div></div>`, E.wB);
+  E.wor = add(`<div class="c bb dm" style="top:712px;font-size:62px;letter-spacing:.4em;text-indent:.4em">or</div>`, E.wB);
+  E.wS = add(`<div class="gl slab" style="left:50px;top:786px;width:980px;height:420px"><canvas class="fr" data-chrome></canvas><div class="gt" style="background:linear-gradient(158deg,rgba(232,87,107,.34),rgba(232,87,107,.12) 50%,rgba(232,87,107,.22))"></div><div class="tp"></div><div class="sp"></div><div class="c bb" style="top:14px;font-size:440px;color:#e8576b;text-shadow:0 0 60px rgba(255,58,49,.6)"><span class="fit" data-w="860">Short</span></div></div>`, E.wB);
+  // 3 the season as one live P&L chart
+  g = G(3);
+  E.cg = add(`<div class="gl gd" style="left:40px;top:132px;width:1000px;height:1128px"><canvas class="fr" data-chrome></canvas><div class="gt"></div><div class="tp"></div><div class="sp"></div><i class="rim"></i></div>`, g);
+  add(`<div class="abs kn foil" style="left:40px;top:22px;font-size:118px">P&amp;L</div>`, E.cg);
+  add(`<div class="abs bb dm" style="left:600px;top:66px;font-size:46px;width:140px;text-align:right">Round</div>`, E.cg);
+  E.crn = add(`<div class="abs mo cr" style="left:752px;top:30px;width:208px;text-align:right;font-weight:700;font-size:104px;letter-spacing:-.04em">0</div>`, E.cg);
+  E.cst = add(`<div class="abs bb cr" style="left:44px;top:158px;font-size:50px;letter-spacing:.12em">$100K on every trade</div>`, E.cg);
+  E.cld = add(`<div class="abs" style="left:560px;top:150px;width:400px;height:60px;display:flex;justify-content:flex-end;align-items:center;gap:16px"><span class="bb dm" style="font-size:42px">Leader</span><span id="cldm"></span><span class="bb" id="cldn" style="font-size:62px;letter-spacing:.06em"></span></div>`, E.cg);
+  E.PW = 940; E.PH = 816; E.PR = 232; E.PT = 18; E.PB = 18;
+  E.csv = add(`<svg class="abs" style="left:30px;top:244px;overflow:visible" width="${E.PW}" height="${E.PH}"><g id="cgrid" data-chrome>${[-200, -150, -100, -50, 0, 50, 100, 150, 200, 250].map(v => `<g data-v="${v}"><line x1="0" x2="${E.PW}" y1="0" y2="0"${v ? '' : ' style="stroke:rgba(242,237,230,.5);stroke-dasharray:10 9;stroke-width:2"'}/><text x="8" y="-9">${v ? Kb(v * 1000) : '$0'}</text></g>`).join('')}</g>
+    ${D.order.slice().reverse().map(k => `<path data-k="${k}" data-g="1" fill="none" stroke="${COL[k]}" stroke-opacity=".3" stroke-width="18" stroke-linejoin="round" stroke-linecap="round"/><path data-k="${k}" fill="none" stroke="${COL[k]}" stroke-width="${k === win.k ? 7.5 : 5.5}" stroke-linejoin="round" stroke-linecap="round"/>`).join('')}</svg>`, E.cg);
+  E.crail = add(`<svg class="abs" style="left:30px;top:1082px;overflow:visible" width="${E.PW}" height="16"><rect x="0" y="4" width="${E.PW}" height="8" rx="4" fill="rgba(242,237,230,.16)"/><rect id="crf" x="0" y="4" width="0" height="8" rx="4" fill="${Au}"/><circle id="crk" cx="0" cy="8" r="9" fill="#fff3c8"/></svg>`, E.cg);
+  E.cgl = L.$$('#cgrid g', E.csv); E.cpa = L.$$('path', E.csv);
+  E.chd = {}; E.cel = {}; D.order.forEach(k => { E.chd[k] = add(`<div class="hd" style="left:30px;top:244px"><span style="display:block;border-radius:14px;box-shadow:0 0 0 4px ${COL[k]},0 0 22px ${COL[k]}">${L.mark(k, 50, false)}</span></div>`, E.cg);
+    E.cel[k] = add(`<div class="endl" style="left:30px;top:244px;color:${COL[k]}">${Kb(A(k).pnl)}</div>`, E.cg) });
+  E.lead = D.lead.map(l => ({ r: l.i, k: l.k, t: tOf(l.i) }));
+  // 4 the P&L board
+  g = G(4); const mxp = Math.max(...D.ai.map(a => a.pnl)), mnp = Math.min(...D.ai.map(a => a.pnl)), Z = -mnp / (mxp - mnp) * 684; E.Z = Z; E.SC = 684 / (mxp - mnp);
+  E.pg = add(`<div class="gl gd" style="left:50px;top:124px;width:980px;height:1140px"><canvas class="fr" data-chrome></canvas><div class="gt"></div><div class="tp"></div><div class="sp"></div></div>`, g);
+  E.pin = add('<div class="abs" style="width:980px;height:1150px"></div>', E.pg);
+  add(`<div class="abs kn foil" style="left:40px;top:26px;font-size:150px">P&amp;L</div>`, E.pin);
+  add(`<div class="abs bb cr" style="left:auto;right:44px;top:92px;font-size:66px;letter-spacing:.12em">${D.total} trades</div>`, E.pin);
+  E.pr = D.ai.map((a, i) => { const rel = (D.releg || []).includes(a.k), el = add(`<div class="br${i === 3 ? ' last' : ''}" style="top:${222 + i * 228}px">${i ? '' : '<i class="rg"><i class="rim"></i></i>'}<span class="rk bb"${i ? '' : ` style="color:${Au}"`}>${i + 1}</span><span class="mw">${L.mark(a.k, 112)}</span><span class="nm bb">${a.name}</span><span class="am mo" style="color:${a.pnl < 0 ? Rd : Gn}">${L.money(a.pnl)}</span>
+      <div class="trk"><i class="bar" style="background:${a.pnl < 0 ? Rd : Gn};box-shadow:0 0 22px ${a.pnl < 0 ? 'rgba(232,87,107,.6)' : 'rgba(85,214,162,.6)'}"></i><i class="zr" style="left:${(Z - 1.5).toFixed(1)}px"></i></div>${rel ? '<div class="stamp kn">Relegated</div>' : ''}</div>`, E.pin); return { a, el, am: L.$('.am', el), bar: L.$('.bar', el), st: L.$('.stamp', el), rg: L.$('.rg', el) } });
+  // 5 the accuracy board
+  g = G(5); const pc = a => Math.round(100 * a.w / (a.w + a.l)), acc = D.ai.slice().sort((x, y) => pc(y) - pc(x) || y.w - x.w);
+  E.sil = add(obj('tr', 'sil', 'w6/e/trophy.webp', 950 / TRR, 950), g);
+  E.ag = add(`<div class="gl gd" style="left:50px;top:124px;width:980px;height:1140px"><canvas class="fr" data-chrome></canvas><div class="gt"></div><div class="tp"></div><div class="sp"></div><i class="rim"></i></div>`, g);
+  E.ain = add('<div class="abs" style="width:980px;height:1150px"></div>', E.ag);
+  E.ahd = add(`<div class="abs" style="width:980px;height:220px"><div class="abs kn foil" style="left:40px;top:34px;font-size:132px"><span class="fit" data-w="640">Accuracy</span></div><div class="abs bb dm" style="left:550px;top:172px;width:150px;text-align:center;font-size:44px;letter-spacing:.1em">W–L</div></div>`, E.ain);
+  E.ar = acc.map((a, i) => { const el = add(`<div class="br${i === 3 ? ' last' : ''}" style="top:${222 + i * 228}px">${i ? '' : '<i class="rg"><i class="rim"></i></i>'}<span class="rk bb"${i ? '' : ` style="color:${Au}"`}>${i + 1}</span><span class="mw">${L.mark(a.k, 112)}</span><span class="nm bb">${a.name}</span><span class="wl mo" style="width:150px;text-align:center">${a.w}–${a.l}</span><span class="pc mo" style="color:${i ? Cr : Au}">${pc(a)}%</span>
+      <div class="wlb" style="width:${(684 * (a.w + a.l) / D.total).toFixed(1)}px"><i style="left:0;width:${(100 * a.w / (a.w + a.l)).toFixed(2)}%;background:${Gn}"></i><i style="right:0;width:${(100 * a.l / (a.w + a.l)).toFixed(2)}%;background:${Rd};opacity:.85"></i></div></div>`, E.ain); return { a, el, p: pc(a), pcEl: L.$('.pc', el), bar: L.$('.wlb', el), rg: L.$('.rg', el), w: 684 * (a.w + a.l) / D.total } });
+  // 6 the winner
+  g = G(6);
+  E.whalo = add('<div class="halo" style="width:1500px;height:1500px;left:-210px;top:130px"></div>', g);
+  E.wtr = add(obj('tr', 'wtr', 'w6/e/trophy.webp', 950 / TRR, 950, `<div class="abs" style="left:${(133 / 615 * 100).toFixed(2)}%;top:${(627 / 874 * 100).toFixed(2)}%;width:${(355 / 615 * 100).toFixed(2)}%;height:${(145 / 874 * 100).toFixed(2)}%;display:flex;align-items:center;justify-content:center;gap:16px"><span>${L.mark(win.k, 96, false)}</span></div>`), g);
+  E.wn = add(`<div class="c kn" style="top:92px;font-size:330px"><span class="fit foil" data-w="900" style="padding:0 .06em">${win.name}</span></div>`, g);
+  E.ww = add(`<div class="c kn cr" style="top:424px;font-size:300px;text-shadow:0 6px 0 rgba(0,0,0,.6),0 0 50px rgba(4,7,14,.9)"><span class="fit" data-w="900" style="padding:0 .06em">wins</span></div>`, g);
+  E.ws = add(`<div class="c kn cr" style="top:724px;font-size:200px;text-shadow:0 6px 0 rgba(0,0,0,.6),0 0 50px rgba(4,7,14,.9)"><span class="fit" data-w="900" style="padding:0 .06em">Season 1</span></div>`, g);
+  E.wp = add(`<div class="gl" style="left:50px;top:986px;width:980px;height:232px;border-radius:40px"><canvas class="fr" data-chrome></canvas><div class="gt" style="background:linear-gradient(158deg,rgba(242,237,230,.15),rgba(242,237,230,.05) 42%,rgba(242,237,230,.085)),rgba(4,7,14,.64)"></div><div class="tp"></div><div class="sp"></div><i class="rim"></i><div class="abs bb cr" style="left:52px;top:62px;font-size:124px;letter-spacing:.06em">P&amp;L</div><div class="abs mo foil" id="wpn" style="left:auto;right:46px;top:54px;font-weight:700;font-size:128px;letter-spacing:-.05em">${L.money(win.pnl)}</div></div>`, g);
+  E.wpn = L.$('#wpn', g);
+  E.stars = L.$$('svg', add(`<div class="stars">${[[96, 960, 30, 0], [990, 968, 24, .35], [930, 1240, 28, .7], [150, 1236, 20, 1.05], [540, 962, 16, .5], [1010, 1110, 18, .9], [70, 1100, 17, .2]].map(([x, y, r, ph]) => `<svg data-ph="${ph}" data-x="${x}" data-y="${y}"><path d="M0 ${-r}C${r * .12} ${-r * .12} ${r * .12} ${-r * .12} ${r} 0C${r * .12} ${r * .12} ${r * .12} ${r * .12} 0 ${r}C${-r * .12} ${r * .12} ${-r * .12} ${r * .12} ${-r} 0C${-r * .12} ${-r * .12} ${-r * .12} ${-r * .12} 0 ${-r}Z" fill="#fff3c8" style="filter:drop-shadow(0 0 8px rgba(253,188,42,.9))"/></svg>`).join('')}</div>`, g));
+  // 7 the close: the logo, and Season 2 on a golden ticket
+  g = G(7);
+  E.xhalo = add('<div class="halo" style="width:1300px;height:1300px;left:-110px;top:-220px"></div>', g);
+  E.xlogo = add('<img class="abs" src="ezlogo.svg" style="width:640px;height:640px" alt="">', g);
+  E.xtk = add(obj('tk', 'xtk', 'w6/e/ticket.webp', 850, 850 * TKR, `<div class="tin"><div class="kn ink" style="font-size:96px"><span class="fit" data-w="620">Season 2 soon</span></div></div>`), g);
+  frost('wL', 50, 282, 980, 420); frost('wS', 50, 786, 980, 420); frost('cg', 40, 132, 1000, 1128); frost('pg', 50, 124, 980, 1140); frost('ag', 50, 124, 980, 1140); frost('wp', 50, 986, 980, 232);
+  // sound: the bed carries it; hits on the drops, air on the whips
+  C.push([0, 'sfx-boom', .14], [B(2), 'sfx-whoosh', .08], [B(6), 'sfx-whoosh', .08], [B(10), 'r11-thump', .12], [B(12), 'sfx-whoosh', .07], [B(12.5), 'sfx-whoosh', .07], [B(16), 'sfx-whoosh', .08],
+    [D1 - 1.5, 'sfx-riser', .13], [D1, 'sfx-boom', .22], [B(34), 'sfx-flip', .1], [B(42), 'sfx-stamp', .16], [B(47), 'sfx-flip', .1], [B(58), 'r11-swell', .1], [D2 - 1.5, 'sfx-riser', .13], [D2, 'sfx-boom', .24], [D2 + .12, 'r11-sparkle', .1],
+    [B(65), 'r11-thump', .12], [B(66), 'r11-thump', .12], [B(69), 'sfx-chime', .13], [B(74), 'sfx-whoosh', .08], [B(74) + .12, 'r11-thump', .12]);
+}
+
+// frost: the piece of the ground behind a sheet (its home place moved by dx, dy; h its height now), blurred into the sheet's own canvas
+const FR = {}, frost = (k, x0, y0, w, h) => { const c = L.$('.fr', E[k]); c.width = Math.round(w / 4); c.height = Math.round(h / 4); FR[k] = { x0, y0, w, h, c, x: c.getContext('2d') } };
+function fr(k, dx = 0, dy = 0, h) { const o = FR[k], s = E.gs, P = 44, q = 1 / (2.2 * s), X = v => ((v - 540) / s + 540 - E.gtx + 54) / 2.2, Y = v => ((v - 1099.84) / s + 1099.84 + 104) / 2.2, x = o.x; h = h || o.h;
+  const kx = o.c.width / o.w, ky = o.c.height / h; x.filter = 'blur(6px) saturate(160%) brightness(1.1)';
+  x.drawImage(E.gv, X(o.x0 + dx - P), Y(o.y0 + dy - P), (o.w + 2 * P) * q, (h + 2 * P) * q, -P * kx, -P * ky, (o.w + 2 * P) * kx, (h + 2 * P) * ky) }
+
+// the ground: the living painted light (a seamless loop of the clip), rays turning, rim lights
+const LV = [[0, 1.05], [B(2), .95], [B(6), .9], [B(10), .62], [B(16), .46], [D1, .52], [B(34), .46], [B(47), .5], [B(54), .4], [B(58), .16], [D2, 1.25], [B(65), .8], [B(69), .9], [B(74), 1.05]];
+function ground() { const u = t * 24, i = Math.floor(u) % GN, x = E.gx, f = GF.length ? GF[GA + i] : E.gstill;
+  x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; x.drawImage(f, 0, 0, 540, 720); if (GF.length && i >= GN - GA) { x.globalAlpha = (i - (GN - GA) + 1) / (GA + 1); x.drawImage(GF[i - (GN - GA)], 0, 0) }
+  let j = 0; while (j < LV.length - 1 && t >= LV[j + 1][0]) j++; const lv = j && t < LV[j][0] + .22 ? L.lerp(LV[j - 1][1], LV[j][1], L.eo(L.n(t, LV[j][0], LV[j][0] + .22))) : LV[j][1];
+  const kk = kick(t), tense = 1 - music(t), fl = tense * (.5 + .5 * Math.sin(t * 46)) * .12, br = lv * (1 + .4 * kk) + fl + 1.2 * Math.exp(-9 * Math.max(0, t - D2)) * (t >= D2) + .5 * Math.exp(-9 * Math.max(0, t - D1)) * (t >= D1);
+  if (br > 1) { x.globalCompositeOperation = 'lighter'; x.globalAlpha = Math.min(1, br - 1); x.drawImage(f, 0, 0, 540, 720) } else { x.globalAlpha = L.cl(1 - br, 0, .92); x.fillStyle = '#04070e'; x.fillRect(0, 0, 540, 720) }
+  // the rim lights: green from the left, red from the right, on the beat (both full under "long or short")
+  const ls = on(B(12), B(16)), gl = ls ? 1 : .32 + .55 * kk + tense * .25 * (.5 + .5 * Math.sin(t * 9)); x.globalCompositeOperation = 'lighter';
+  [[24, E.grL, gl], [516, E.grR, (ls && t < B(12.5) ? .3 : 1) * gl * .9]].forEach(([cx, g, a]) => { x.save(); x.translate(cx, 428); x.scale(1, 1.56); x.globalAlpha = L.cl(a); x.fillStyle = g; x.fillRect(-240, -240, 480, 480); x.restore() });
+  x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1;
+  E.gs = 1.05 + .05 * Math.sin(t * .5) + .035 * kk; E.gtx = 10 * Math.sin(t * .37); tf(E.gv, `scale(${E.gs.toFixed(4)}) translateX(${E.gtx.toFixed(1)}px)`) }
+
+// cuts: a flash on the hard ones, a streak of light on the whips
+const FL = [[0, .28], [B(10), .4], [D1, .8], [B(37), .16], [B(50), .16], [D2, 1], [B(65), .22], [B(66), .2], [B(69), .4], [B(74), .5]], WH = [[B(2), 1, 640], [B(6), -1, 700], [B(12), 1, 470], [B(12.5), -1, 980], [B(16), -1, 700], [B(41), 1, 900], [B(74), 1, 430]];
+function fx() { let f = 0; FL.forEach(([a, v]) => { if (t >= a) f = Math.max(f, v * Math.exp(-13 * (t - a))) }); E.flash.style.opacity = f.toFixed(3); E.flash.style.display = f > .004 ? 'block' : 'none';
+  let o = 0, x = 0, y = 0; WH.forEach(([a, d, yy]) => { const k = L.n(t, a - .06, a + .22); if (k > 0 && k < 1) { o = Math.sin(Math.PI * k); x = d * (-1500 + 3000 * L.eio(k)); y = yy } }); E.streak.style.opacity = o.toFixed(3); E.streak.style.display = o > .004 ? 'block' : 'none'; tf(E.streak, `translate(${x.toFixed(0)}px,${y}px)`) }
+
+function g0() { const b = B(6); if (!show(E.g0, on(0, b))) return; const ex = out(b);
+  tf(E.g0, `translateY(${(-1500 * ex).toFixed(1)}px)`); blur(E.g0, 16 * ex);
+  const k0 = L.eo5(L.n(t, 0, .3)), k1 = ramp(B(2), .36), push = 1 + .05 * L.n(t, 0, b), s = L.lerp(L.lerp(1.34, 1.04, k0), 228 / 720, k1) * push, cy = L.lerp(528, 208, k1);
+  tf(E.ologo, `translate(${180}px,${(cy - 360).toFixed(1)}px) scale(${s.toFixed(4)})`); blur(E.ologo, 2.5 * (1 - k0));
+  tf(E.ohalo, `translateY(${(cy - 528).toFixed(1)}px) scale(${(L.lerp(1, .5, k1) * (1 + .1 * kick(t))).toFixed(3)})`); E.ohalo.style.opacity = (.5 + .5 * kick(t)).toFixed(3);
+  const kn = L.eo5(L.n(t, .1, .5)), sn = E.oname.firstElementChild; E.oname.style.opacity = L.n(t, .1, .14); sn.style.letterSpacing = (L.lerp(.5, .005, kn) + .012 * L.n(t, .5, b)).toFixed(4) + 'em'; blur(E.oname, 10 * (1 - kn));
+  tf(E.oname, `translateY(${(L.lerp(0, 18, k1)).toFixed(1)}px)`);
+  const kt = ramp(B(2), .4), dr = L.n(t, B(2), b); E.otk.style.opacity = t >= B(2) - 1e-6 ? 1 : 0;
+  tf(E.otk, `translate(${(L.lerp(1500, 0, kt)).toFixed(1)}px,${(650 - 540 * TKR).toFixed(1)}px) perspective(1700px) rotateZ(${(-7 + 2 * dr).toFixed(2)}deg) rotateY(${(L.lerp(-72, -16, kt) + 26 * dr).toFixed(2)}deg) rotateX(${(8 - 10 * dr).toFixed(2)}deg) scale(${(1 + .05 * dr).toFixed(4)})`);
+  blur(E.otk, 14 * (1 - kt)); sweep(L.$('.sw', E.otk), L.eio(L.n(t, B(2) + .25, B(5.2)))) }
+
+function g1() { const a = B(6), b = B(10); if (!show(E.g1, on(a, b))) return; const k = ramp(a, .32), dr = L.n(t, a, b);
+  tf(E.g1, `translateY(${(1400 * (1 - k)).toFixed(1)}px)`); blur(E.g1, 14 * (1 - k));
+  const kh = L.eo5(L.n(t, a + .04, a + .34)); tf(E.chl, `scale(${(L.lerp(1.5, 1, kh) * (1 + .05 * dr)).toFixed(4)})`); E.chl.firstElementChild.style.letterSpacing = (.04 + .03 * dr).toFixed(4) + 'em';
+  tf(E.cpod, `translateY(${(90 * (1 - L.eo(L.n(t, a, a + .5)))).toFixed(1)}px) scale(${(1 + .02 * dr).toFixed(4)})`);
+  E.cm.forEach((m, j) => { const s0 = a + .16 + j * BT / 2, x = sp(t - s0, 1.5, 8), v = t >= s0; m.style.opacity = L.n(t, s0, s0 + .05); tf(m, `translateY(${(-130 * (1 - Math.min(1, x)) + 7 * Math.sin((t - s0) * 3.2 + j)).toFixed(1)}px) scale(${(.7 + .3 * x).toFixed(4)})`);
+    E.cbeam[j].style.opacity = v ? (.4 + .6 * Math.exp(-5 * (t - s0)) + .25 * kick(t)).toFixed(3) : 0; E.cn[j].style.opacity = v ? 1 : 0 }) }
+
+function g2() { const a = B(10), m = B(12), b = B(16); if (!show(E.g2, on(a, b))) return; const ex = out(b);
+  tf(E.g2, `translateX(${(-1400 * ex).toFixed(1)}px)`); blur(E.g2, 16 * ex);
+  if (show(E.wA, t < m)) { const k = ramp(a, .28), ex = out(m, .12), n = Math.round(D.total * L.eo(L.n(t, a + .04, a + .62)));
+    tf(E.wA, `translateY(${(-1500 * ex).toFixed(1)}px) scale(${L.lerp(1.16, 1, k).toFixed(4)})`); blur(E.wA, 12 * (1 - k) + 14 * ex);
+    E.wnum.textContent = n; tf(E.wnum, `scale(${(1 + .04 * L.n(t, a, m)).toFixed(4)})`); E.wet.firstElementChild.style.letterSpacing = (L.lerp(.4, .13, L.eo5(L.n(t, a, a + .4))) + .02 * L.n(t, a, m)).toFixed(4) + 'em';
+    E.cells.forEach((c, i) => { const lit = i < n, wv = .5 + .5 * Math.sin(t * 9 - (i % 14) * .5 - Math.floor(i / 14) * .35); c.setAttribute('fill', lit ? (i === n - 1 && n < D.total ? '#fff' : Cr) : 'rgba(242,237,230,.13)'); c.setAttribute('fill-opacity', lit ? (.78 + .22 * wv).toFixed(3) : 1) }) }
+  if (show(E.wB, t >= m)) { const k = ramp(m, .3), dr = L.n(t, m, b); tf(E.wB, `translateY(${(1400 * (1 - k)).toFixed(1)}px)`); blur(E.wB, 12 * (1 - k));
+    E.wh.firstElementChild.style.letterSpacing = (.1 + .018 * dr).toFixed(4) + 'em';
+    const kl = ramp(m + .04, .3), ks = ramp(B(12.5), .3), vs = t >= B(12.5);
+    fr('wL', -1200 * (1 - kl) + 14 * dr + 1400 * 0, 1400 * (1 - k)); if (vs) fr('wS', 1200 * (1 - ks) - 14 * dr, 1400 * (1 - k));
+    tf(E.wL, `translateX(${(-1200 * (1 - kl) + 14 * dr).toFixed(1)}px) rotateY(${(7 - 5 * dr).toFixed(2)}deg) scale(${(1 + .03 * kick(t)).toFixed(4)})`);
+    E.wS.style.opacity = vs ? 1 : 0; E.wor.style.opacity = vs ? 1 : 0; tf(E.wS, `translateX(${(1200 * (1 - ks) - 14 * dr).toFixed(1)}px) rotateY(${(-7 + 5 * dr).toFixed(2)}deg) scale(${(1 + .03 * kick(t)).toFixed(4)})`);
+    tf(L.$('.sp', E.wL), `translateX(${(-62 + 124 * L.eio(L.n(t, m + .2, b))).toFixed(1)}%)`); tf(L.$('.sp', E.wS), `translateX(${(62 - 124 * L.eio(L.n(t, m + .4, b))).toFixed(1)}%)`) } }
+
+function g3() { const a = B(16), b = B(34); if (!show(E.g3, on(a, b))) return;
+  const k = ramp(a, .36), ex = out(b, .14), u = L.n(t, a, b), c2 = ramp(B(20), .34), c3 = ramp(B(24), .5), hit = t >= D1 ? Math.exp(-6 * (t - D1)) : 0;
+  const ry = L.lerp(-58, -7, k) + 4 * L.n(t, a, B(20)) + 9 * c2 - 6 * c3 - 2 * L.n(t, B(24), D1) + 90 * ex, rx = 3 * c2 - 3 * c3 + 2 * Math.sin(t * .8), sc = (1 + .02 * u) * (1 + .05 * hit) * (1 + .008 * kick(t));
+  fr('cg', 1300 * (1 - k), 0);
+  tf(E.cg, `translateX(${(1300 * (1 - k)).toFixed(1)}px) rotateY(${ry.toFixed(2)}deg) rotateX(${rx.toFixed(2)}deg) scale(${sc.toFixed(4)})`);
+  tf(L.$('.sp', E.cg), `translateX(${(-62 + 124 * ((t - a) / 3.4 % 1)).toFixed(1)}%)`);
+  const rim = L.$('.rim', E.cg); rim.style.opacity = t >= D1 ? L.eo(L.n(t, D1, D1 + .3)) : 0; if (t >= D1) rim.style.background = RIM((t - D1) * 150 % 360);
+  // the window: all rounds so far, or (beats 20 to 24) the last 22 of them
+  const r = rOf(t), z = L.eio(L.n(t, B(20), B(20) + .4)) * (1 - L.eio(L.n(t, B(24), B(24) + .75))), x0 = z * Math.max(0, r - 22), xr = Math.max(r, 10), PW = E.PW - L.lerp(64, E.PR, L.eio(L.n(t, B(26), D1 - .15))), PH = E.PH - E.PT - E.PB;
+  let lo = -22000, hi = 22000; D.order.forEach(kk => { const s = D.s[kk]; lo = Math.min(lo, val(kk, x0), val(kk, r)); hi = Math.max(hi, val(kk, x0), val(kk, r)); for (let i = Math.ceil(x0); i <= Math.floor(r); i++) { if (s[i] < lo) lo = s[i]; if (s[i] > hi) hi = s[i] } });
+  const pad = (hi - lo) * .09; lo -= pad; hi += pad; const X = i => (i - x0) / (xr - x0) * PW, Y = v => E.PT + (hi - v) / (hi - lo) * PH, rng = hi - lo;
+  E.cgl.forEach(gl => { const v = +gl.dataset.v * 1000, y = Y(v), o = y < 4 || y > E.PH - 2 ? 0 : (v / 1000) % 100 ? L.cl((230000 - rng) / 60000) : 1; gl.style.opacity = o.toFixed(3); gl.setAttribute('transform', `translate(0,${y.toFixed(1)})`) });
+  E.cpa.forEach(p => { const kk = p.dataset.k, s = D.s[kk]; let d = `M${X(x0).toFixed(1)} ${Y(val(kk, x0)).toFixed(1)}`; for (let i = Math.floor(x0) + 1; i <= Math.floor(r); i++) d += `L${X(i).toFixed(1)} ${Y(s[i]).toFixed(1)}`; d += `L${X(r).toFixed(1)} ${Y(val(kk, r)).toFixed(1)}`; p.setAttribute('d', d) });
+  // heads and, on the drop, each AI's final P&L at its line's end
+  const hx = X(r); D.order.forEach((kk, j) => { const y = Y(val(kk, r)), pl = t >= D1 ? sp(t - D1 - j * .07, 1.4, 7) : 0;
+    tf(E.chd[kk], `translate(${(hx - 25).toFixed(1)}px,${(y - 25).toFixed(1)}px) scale(${(1 + .25 * hit).toFixed(3)})`);
+    const el = E.cel[kk]; el.style.opacity = t >= D1 + j * .07 ? 1 : 0; tf(el, `translate(${(hx + 42).toFixed(1)}px,${(y - 23).toFixed(1)}px) scale(${(.5 + .5 * pl).toFixed(4)})`) });
+  E.crn.textContent = Math.max(0, Math.floor(r + 1e-6)); L.$('#crf', E.crail).setAttribute('width', (E.PW * r / D.total).toFixed(1)); L.$('#crk', E.crail).setAttribute('cx', (E.PW * r / D.total).toFixed(1));
+  const ld = E.lead.filter(l => l.r <= r + 1e-6).pop(), st = out(B(22), .12); E.cst.style.opacity = t < B(22) ? 1 : 0; tf(E.cst, `translateX(${(-700 * st).toFixed(1)}px)`);
+  E.cld.style.opacity = ld ? 1 : 0; if (ld) { if (E.cld.dataset.k !== ld.k) { E.cld.dataset.k = ld.k; L.$('#cldm', E.cld).innerHTML = L.mark(ld.k, 54); const n = L.$('#cldn', E.cld); n.textContent = D.ai.find(q => q.k === ld.k).name; n.style.color = COL[ld.k] }
+    tf(E.cld, `scale(${(1 + .22 * Math.exp(-9 * (t - ld.t))).toFixed(4)})`); E.cld.style.transformOrigin = '100% 50%' } }
+
+function g4() { const a = B(34), b = B(47); if (!show(E.g4, on(a, b))) return; const k = L.eo5(L.n(t, a, a + .3)), ex = out(b, .14), p2 = ramp(B(37), .34), p3 = ramp(B(41), .32), p4 = ramp(B(44), .45), kk = kick(t);
+  // the camera: on beat 37 it leans in on the top two rows, on 41 it swings to the bottom two, on 44 it is back on the whole board
+  const sc = 1 + .03 * (p2 - p4) + .01 * kk, ry = -88 * (1 - k) + 8 * p2 - 15 * p3 + 7 * p4 + 2.5 * Math.sin(t * .7), rx = 5 * p2 - 10 * p3 + 5 * p4 - 88 * ex, ty = 30 * p2 - 60 * p3 + 30 * p4;
+  fr('pg', 0, ty);
+  tf(E.pg, `translateY(${ty.toFixed(1)}px) rotateY(${ry.toFixed(2)}deg) rotateX(${rx.toFixed(2)}deg) scale(${sc.toFixed(4)})`);
+  tf(L.$('.sp', E.pg), `translateX(${(-62 + 124 * ((t - a) / 2.6 % 1)).toFixed(1)}%)`);
+  E.pr.forEach((o, i) => { const s0 = a + i * BT / 2, kr = L.eo5(L.n(t, s0, s0 + .28)), kb = sp(t - s0 - .06, 1.1, 6.5), kn = L.eo(L.n(t, s0, s0 + .36)), lit = i < 2 ? 1 - .5 * (p3 - p4) : 1 - .5 * (p2 - p3);
+    o.el.style.opacity = t >= s0 - 1e-6 ? lit.toFixed(3) : 0; tf(o.el, `translateX(${(600 * (1 - kr)).toFixed(1)}px) scale(${(1 + .03 * (lit - .5) * (p2 - p4)).toFixed(4)})`); blur(o.el, 10 * (1 - kr));
+    o.am.textContent = L.money(Math.round(o.a.pnl * kn / 10) * 10); const w = Math.abs(o.a.pnl) * E.SC * kb; o.bar.style.width = Math.max(0, w).toFixed(1) + 'px'; o.bar.style.left = (o.a.pnl < 0 ? E.Z - w : E.Z).toFixed(1) + 'px';
+    if (o.rg) { o.rg.style.opacity = (L.eo(L.n(t, B(37), B(37) + .3)) * lit).toFixed(3); o.rg.firstElementChild.style.background = RIM((t - a) * 90 % 360) }
+    if (o.st) { const s1 = B(42), x = t - s1, q = L.eo5(L.n(t, s1, s1 + .16)); o.st.style.opacity = x >= 0 ? 1 : 0; tf(o.st, `rotate(-6deg) scale(${(L.lerp(3.2, 1, q) * (1 + .04 * Math.exp(-7 * Math.max(0, x - .16)) * Math.sin(40 * x))).toFixed(4)})`) } });
+  L.$$('.foil', E.pin).forEach(e => foil(e, t - a - .4, 2.2)) }
+
+function g5() { const a = B(47), s3 = B(54), s4 = B(58), b = D2; if (!show(E.g5, on(a, b))) return; const k = L.eo5(L.n(t, a, a + .3)), a2 = ramp(B(50), .34), a3 = L.eio(L.n(t, s3, s3 + .5)), dr = L.n(t, s3, s4), m = L.eio(L.n(t, s4, s4 + .42)), kk = kick(t);
+  const sc = L.lerp(1 + .045 * a2 + .025 * dr, 1, m) * (1 + .01 * kk), ry = (-9 * a2 + 15 * a3 - 4 * dr + 2.5 * Math.sin(t * .7)) * (1 - m), rx = 88 * (1 - k) + (-4 * a2 + 8 * a3) * (1 - m);
+  // on beat 58 the sheet closes down to Grok's row, and the trophy stands in the dark behind it
+  const H = L.lerp(1140, 236, m); E.ag.style.height = H.toFixed(1) + 'px';
+  fr('ag', 0, 26 * m + 24 * a2 * (1 - a3) * (1 - m), H);
+  tf(E.ag, `translateY(${(26 * m + 24 * a2 * (1 - a3) * (1 - m)).toFixed(1)}px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) scale(${sc.toFixed(4)})`); tf(E.ain, `translateY(${(-206 * m).toFixed(1)}px)`);
+  tf(L.$('.sp', E.ag), `translateX(${(-62 + 124 * ((t - a) / 2.6 % 1)).toFixed(1)}%)`); E.ahd.style.opacity = m > .5 ? 0 : 1;
+  const rim = L.$('.rim', E.ag); rim.style.opacity = m; rim.style.background = RIM((t - s4) * 140 % 360);
+  E.ar.forEach((o, i) => { const s0 = a + i * BT / 2, kr = L.eo5(L.n(t, s0, s0 + .28)), kb = L.eo(L.n(t, s0 + .04, s0 + .5)), kn = L.eo(L.n(t, s0, s0 + .36));
+    o.el.style.opacity = t < s0 - 1e-6 ? 0 : i ? L.lerp(1, .5, a3) * (m > .6 ? 0 : 1) : 1; tf(o.el, `translateX(${(600 * (1 - kr)).toFixed(1)}px)`); blur(o.el, 10 * (1 - kr));
+    o.pcEl.textContent = Math.round(o.p * kn) + '%'; o.bar.style.clipPath = `inset(0 ${(100 * (1 - kb)).toFixed(2)}% 0 0 round 15px)`;
+    if (o.rg) { o.rg.style.opacity = (a3 * (1 - m)).toFixed(3); o.rg.firstElementChild.style.background = RIM((t - s3) * 100 % 360) } });
+  L.$$('.foil', E.ain).forEach(e => foil(e, t - a - .4, 2.2));
+  const sv = t >= s4 - 1e-6, rise = L.eo(L.n(t, s4, s4 + .7)), hb = Math.exp(-5 * (((t - s4) % BT + BT) % BT)); E.sil.style.opacity = sv ? 1 : 0;
+  tf(E.sil, `translate(${(540 - 475 / TRR).toFixed(1)}px,${(390 + 520 * (1 - rise)).toFixed(1)}px) scale(${(1 + .02 * hb + .03 * L.n(t, s4, b)).toFixed(4)})`); E.sil.style.filter = `brightness(${(.2 + .1 * hb).toFixed(3)}) saturate(1.5)`; sweep(L.$('.sw', E.sil), L.n(t, s4 + .3, b)) }
+
+function g6() { const a = D2, w2 = B(65), w3 = B(69), b = B(74); if (!show(E.g6, on(a, b))) return; const ex = out(b, .13), k = L.eo5(L.n(t, a, a + .34)), f = ramp(w2, .4), dr = L.n(t, a, b), kk = kick(t);
+  tf(E.g6, `translateX(${(-1400 * ex).toFixed(1)}px)`); blur(E.g6, 16 * ex);
+  // the trophy: lights on with the drop, then it steps back out of focus behind the words
+  const s = L.lerp(1.3, 1, k) * L.lerp(1, 1.34, f) * (1 + .04 * dr + .012 * kk), ty = L.lerp(390, 300, f);
+  E.wtr.style.transformOrigin = '50% 40%'; tf(E.wtr, `translate(${(540 - 475 / TRR).toFixed(1)}px,${ty.toFixed(1)}px) scale(${s.toFixed(4)})`); E.wtr.style.filter = `blur(${(7 * f).toFixed(2)}px) brightness(${(L.lerp(1.9, 1.06, k) * L.lerp(1, .5, f) + .1 * kk).toFixed(3)})`;
+  sweep(L.$('.sw', E.wtr), ((t - a) / 1.9) % 1); tf(E.whalo, `scale(${(1 + .12 * kk + .2 * (1 - k)).toFixed(3)})`); E.whalo.style.opacity = (.55 + .45 * kk).toFixed(3);
+  const kn = L.eo5(L.n(t, a + .04, a + .3)); tf(E.wn, `scale(${(L.lerp(1.6, 1, kn) * (1 + .03 * dr)).toFixed(4)})`); blur(E.wn, 14 * (1 - kn)); foil(E.wn.firstElementChild, t - a - .5, 2);
+  [[E.ww, w2, -1], [E.ws, B(66), 1]].forEach(([el, s0, d]) => { const kr = L.eo5(L.n(t, s0, s0 + .28)); el.style.opacity = t >= s0 ? 1 : 0; tf(el, `translateX(${(d * 1200 * (1 - kr)).toFixed(1)}px) scale(${(1 + .02 * L.n(t, s0, b)).toFixed(4)})`); blur(el, 14 * (1 - kr)) });
+  const kp = L.eo5(L.n(t, w3, w3 + .3)), kc = L.eo5(L.n(t, w3 + .02, w3 + .75)); E.wp.style.opacity = t >= w3 ? 1 : 0; if (t >= w3) fr('wp', 0, 420 * (1 - kp)); tf(E.wp, `translateY(${(420 * (1 - kp)).toFixed(1)}px) rotateX(${(50 * (1 - kp)).toFixed(2)}deg) scale(${(1 + .02 * kk).toFixed(4)})`);
+  E.wpn.textContent = L.money(Math.round(D.ai[0].pnl * kc / 10) * 10); foil(E.wpn, t - w3 - .9, 1.8); tf(L.$('.sp', E.wp), `translateX(${(-62 + 124 * L.eio(L.n(t, w3 + .5, b))).toFixed(1)}%)`);
+  const rim = L.$('.rim', E.wp); rim.style.opacity = t >= w3 ? 1 : 0; rim.style.background = RIM((t - w3) * 130 % 360);
+  E.stars.forEach(sv => { const v = t - w3 - .5 - +sv.dataset.ph * .7, q = v < 0 ? 0 : Math.pow(Math.sin(Math.PI * ((v / .9) % 1)), 3); tf(sv, `translate(${sv.dataset.x}px,${sv.dataset.y}px) scale(${q.toFixed(3)})`); sv.style.opacity = q.toFixed(3) }) }
+
+function g7() { const a = B(74), T7 = a + .14; if (!show(E.g7, t >= a - 1e-6)) return; const k = L.eo5(L.n(t, a, a + .3)), dr = L.n(t, a, DUR), kk = kick(t), kt = L.eo5(L.n(t, T7, T7 + .4));
+  tf(E.xlogo, `translate(220px,104px) scale(${(L.lerp(2.4, 1, k) * (1 + .05 * dr + .012 * kk)).toFixed(4)})`); blur(E.xlogo, 18 * (1 - k));
+  tf(E.xhalo, `scale(${(.62 + .1 * kk + .06 * dr).toFixed(3)})`); E.xhalo.style.opacity = (.55 + .45 * kk).toFixed(3);
+  E.xtk.style.opacity = t >= T7 ? 1 : 0; tf(E.xtk, `translate(${(115 - 1400 * (1 - kt)).toFixed(1)}px,${(778).toFixed(1)}px) perspective(1700px) rotateZ(${(4 - 2 * dr).toFixed(2)}deg) rotateY(${(L.lerp(70, 14, kt) - 22 * L.n(t, T7, DUR)).toFixed(2)}deg) rotateX(${(6 * dr).toFixed(2)}deg) scale(${(1 + .03 * dr).toFixed(4)})`);
+  blur(E.xtk, 14 * (1 - kt)); sweep(L.$('.sw', E.xtk), L.eio(L.n(t, T7 + .3, B(79)))) }
+
+function R(tt) { t = tt; if (grain) grain(t); ground(); fx(); E.fine.style.opacity = on(D2, B(74)) ? 0 : 1;
+  const kk = kick(t); tf(E.cam, `translate(${(5 * Math.sin(t * .9)).toFixed(2)}px,${(4 * Math.cos(t * .7)).toFixed(2)}px) scale(${(1 + .012 * kk).toFixed(4)})`);
+  g0(); g1(); g2(); g3(); g4(); g5(); g6(); g7() }
+window.R = R;
+(async () => {
+  const css = h => new Promise(res => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; l.onload = l.onerror = res; document.head.appendChild(l); setTimeout(res, 20000) });
+  await Promise.all([css((L.css.match(/@import url\('([^']+)'\)/) || [])[1]), css('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Kanit:ital,wght@1,800;1,900&display=swap')]);
+  L.$('#base').textContent = L.css; [L.models, D] = await Promise.all([fetch('models.json').then(r => r.json()), fetch('data/wrap.json').then(r => r.json())]);
+  ['cam', 'gv', 'flash', 'streak'].forEach(k => E[k] = L.$('#' + k)); E.fine = L.$('.fine'); E.gx = E.gv.getContext('2d'); [['grL', '3,200,112'], ['grR', '255,58,49']].forEach(([k, c]) => { const g = E.gx.createRadialGradient(0, 0, 0, 0, 0, 236); g.addColorStop(0, `rgba(${c},.5)`); g.addColorStop(.7, `rgba(${c},0)`); E[k] = g }); build();
+  const smp = L.$('#st').textContent + ' 0123456789+−–$%,KLONGSHORT&';
+  await Promise.all(['400 100px "Bebas Neue"', 'italic 900 100px Kanit', '600 30px "Geist Mono"', '700 96px "Geist Mono"', '600 19px "Geist Mono"'].map(f => document.fonts.load(f, smp))); await document.fonts.ready;
+  await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  GF = await Promise.all(Array.from({ length: NG }, (_, i) => fetch(`w6/e/gl/g${String(i + 1).padStart(3, '0')}.jpg`).then(r => r.blob()).then(b => createImageBitmap(b)))).catch(() => []);
+  if (!GF.length) { const im = new Image(); im.src = 'w6/e/ground.jpg'; await im.decode(); E.gstill = im }
+  // fit the lines marked data-w to their width
+  L.$$('.g').forEach(s => s.style.display = 'block'); L.$$('.fit[data-w]').forEach(f => { const p = f.parentNode, w = f.getBoundingClientRect().width, fs = parseFloat(getComputedStyle(p).fontSize); p.style.fontSize = (fs * +f.dataset.w / w).toFixed(1) + 'px' }); L.$$('.g').forEach(s => s.style.display = 'none');
+  grain = L.grain(L.$('#grain'), .05);
+  window.CUES = C; window.DUR = DUR; window.SHOTS = SB.map(n => r4(B(n))); window.BEAT = { bpm: 140, at: 0 }; window.DROPS = [r4(D1), r4(D2)]; window.CHART = [[r4(B(16)), r4(B(34))], [r4(B(34)), r4(B(58))]];
+  window.MUSIC = { f: 'w6-trailer-x', at: 0 }; R(0); window.READY = 1;
+})();
+</script>

@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EZ Teaser</title>
+<!--
+DIRECTED BRIEF (the render contract and the numbers; every frame is a pure function of t)
+GOAL: in 16 seconds a memecoin hunter gets the whole game: four AIs call earnings, the closest right-way call wins,
+      most wins is #1, #1's call decides an NVIDIA bet with the pot, right call buys back $EZ, wrong call gets rekt.
+OUTPUT: one HTML file, 1080x1080, window.renderAt(t) draws exactly frame t. Rendered by render.js, frames 0..N-1.
+TIME: 17 s at 60 fps = 1020 frames. 120 BPM: 1 beat = 30 frames, 1 bar = 120 frames. Every shot change is on a beat.
+LOOK: the site's own system. Ink 12131A, cream F4EFE6, navy slab 101A3A, yellow FFC72C, green 1FCF6B, red FF4136.
+      Barlow Condensed 800 for heads (caps), Barlow for small text. The AIs' own marks. The Blackwell chip photo.
+MOTION: enters ease-out-expo (0.16,1,0.3,1); exits ease-in-expo and 40% shorter; pops are springs at damping 0.55;
+      stagger 15 frames between the four AIs, 6 frames between bars. One hero move per shot.
+SHOTS: S1 0-120 the four AIs | S2 120-390 the last round, graded | S3 390-600 the race | S4 600-840 the NVIDIA bet |
+      S5 840-1020 the end card. Text holds at least 0.3 s per word + 0.5 s.
+BANNED: purple or blue gradients, glow, lens flares, floating particles, everything fading in at once, fade-and-slide-up
+      on every element, text that moves while it is read, return promises.
+DATA: everything from ../ez-data.js (latest graded round, wins, the NVIDIA round, leverage). Never typed by hand.
+-->
+<style>
+@font-face{font-family:"BC";src:url(fonts/barlow-condensed-800.woff2) format("woff2");font-weight:800;font-display:block}
+@font-face{font-family:"B";src:url(fonts/barlow-500.woff2) format("woff2");font-weight:500;font-display:block}
+@font-face{font-family:"B";src:url(fonts/barlow-700.woff2) format("woff2");font-weight:700;font-display:block}
+@font-face{font-family:"B";src:url(fonts/barlow-800.woff2) format("woff2");font-weight:800;font-display:block}
+:root{--ink:#12131a;--cream:#f4efe6;--slab:#101a3a;--slab2:#0b1330;--yel:#ffc72c;--grn:#1fcf6b;--red:#ff4136;--mute:#8a8c98;--card:#ffffff}
+html,body{margin:0;padding:0;background:#000}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:var(--ink);font-family:"B",sans-serif;color:var(--cream)}
+.l{position:absolute;inset:0}
+.bc{font-family:"BC",sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.005em;line-height:.9}
+.ab{position:absolute}
+.lg{display:inline-grid;place-items:center;border-radius:22%;overflow:hidden}
+.lg svg{width:62%;height:62%}
+/* S1 */
+#tape{position:absolute;left:0;top:96px;height:64px;width:100%;border-top:2px solid #2a2c38;border-bottom:2px solid #2a2c38;overflow:hidden}
+#tapeIn{position:absolute;top:0;left:0;height:64px;display:flex;align-items:center;white-space:nowrap;font:800 30px/1 "BC";letter-spacing:.06em;color:#6d7080}
+#tapeIn span{padding:0 22px}
+#tapeIn b{color:var(--yel);font-weight:800}
+#s1eb{left:84px;top:300px;font:800 30px/1 "B";letter-spacing:.32em;color:var(--yel)}
+#s1h{left:78px;top:350px;font-size:236px;color:var(--cream)}
+#s1logos{left:84px;top:640px;display:flex;gap:40px}
+.s1a{display:flex;flex-direction:column;align-items:center;gap:16px}
+.s1a .lg{width:150px;height:150px;box-shadow:0 0 0 4px var(--cream)}
+.s1a b{font:800 34px/1 "BC";letter-spacing:.04em}
+/* S2 */
+#S2{background:var(--cream);color:var(--ink)}
+#s2h{left:72px;top:70px;font-size:104px;width:940px}
+#s2card{left:72px;top:300px;width:936px;border-radius:30px;background:var(--card);box-shadow:0 0 0 5px var(--ink),12px 14px 0 0 var(--ink);overflow:hidden}
+#s2top{display:flex;justify-content:space-between;align-items:center;padding:22px 30px;background:var(--slab);color:#fff;font:800 34px/1 "BC";letter-spacing:.03em}
+#s2top small{font:700 20px/1 "B";letter-spacing:.12em;color:var(--yel)}
+#s2rows{display:grid;gap:12px;padding:22px 26px 14px}
+.cr{position:relative;display:grid;grid-template-columns:70px 1fr auto;align-items:center;gap:20px;height:74px;padding:0 22px;border-radius:16px;background:var(--cream)}
+.cr .lg{width:56px;height:56px}
+.cr b{font:800 40px/1 "BC";letter-spacing:.02em}
+.cr .cv{font:800 40px/1 "BC";font-variant-numeric:tabular-nums}
+.cr .st{position:absolute;right:170px;top:50%;padding:8px 14px 6px;border-radius:10px;font:800 26px/1 "BC";letter-spacing:.06em;transform-origin:center}
+.cr .st.out{background:var(--red);color:#fff}
+.cr .st.win{background:var(--ink);color:var(--yel)}
+.cr .st.ok{background:var(--ink);color:#fff}
+#s2out{display:flex;justify-content:space-between;align-items:center;margin:4px 26px 26px;padding:20px 26px;border-radius:16px;background:var(--slab);color:#fff;font:700 28px/1 "B"}
+#s2out b{font:800 52px/1 "BC";color:var(--grn)}
+#s2cap{left:72px;top:960px;font-size:56px}
+/* S3 */
+#s3h{left:72px;top:80px;font-size:150px}
+#s3rows{left:72px;top:330px;width:936px;display:grid;gap:26px}
+.br{display:grid;grid-template-columns:96px 170px 1fr 90px;align-items:center;gap:20px;height:110px}
+.br .lg{width:96px;height:96px;box-shadow:0 0 0 3px var(--cream)}
+.br b{font:800 46px/1 "BC";letter-spacing:.02em}
+.br .bt{position:relative;height:84px;border-radius:14px;background:#22242f;overflow:hidden}
+.br .bf{position:absolute;left:0;top:0;bottom:0;border-radius:14px;background:var(--cream)}
+.br.lead .bf{background:var(--yel)}
+.br .n{font:800 84px/1 "BC";text-align:right;font-variant-numeric:tabular-nums}
+.br .tg{position:absolute;right:18px;top:50%;transform-origin:center;padding:10px 14px 8px;border-radius:999px;background:var(--ink);color:var(--yel);font:800 28px/1 "BC";letter-spacing:.06em}
+#s3cap{left:72px;top:930px;font-size:72px;color:var(--yel)}
+/* S4 */
+#S4{background:var(--slab2)}
+#s4h{left:72px;top:58px;font-size:96px;color:#fff}
+#s4chip{left:90px;top:212px;width:900px;height:675px}
+#s4chip img{position:absolute;inset:0;width:900px;height:675px;display:block}
+#s4led{position:absolute;inset:0}
+#s4cap{left:72px;top:908px;font-size:58px;color:#fff;width:940px}
+.split{position:absolute;left:0;width:1080px;height:150px;display:flex;align-items:center;gap:28px;padding:0 72px;box-sizing:border-box;font-size:84px}
+#s4win{top:780px;background:var(--grn);color:var(--ink)}
+#s4lose{top:930px;background:var(--red);color:#fff}
+.split small{font:800 30px/1 "B";letter-spacing:.14em}
+/* S5 */
+#S5{background:var(--yel);color:var(--ink)}
+#s5badge{left:390px;top:200px;width:300px;height:300px;border-radius:64px;background:var(--slab);display:grid;place-items:center;box-shadow:12px 14px 0 0 var(--ink)}
+#s5badge span{font:800 170px/1 "BC";letter-spacing:.01em}
+#s5m{left:0;width:1080px;top:580px;text-align:center;font-size:92px}
+#s5d{left:0;width:1080px;top:700px;text-align:center;font:800 34px/1 "B";letter-spacing:.16em}
+#s5r{left:120px;width:840px;top:900px;text-align:center;font:700 32px/1.3 "B";color:#2b2d38}
+#wipe{position:absolute;inset:0;background:var(--yel)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="l" id="S1">
+    <div id="tape"><div id="tapeIn"></div></div>
+    <div class="ab" id="s1eb">EARNINGS ZEASON</div>
+    <div class="ab bc" id="s1h"></div>
+    <div class="ab" id="s1logos"></div>
+  </div>
+  <div class="l" id="S2">
+    <div class="ab bc" id="s2h">They call stocks before earnings.</div>
+    <div class="ab" id="s2card"><div id="s2top"><span id="s2t"></span><small>THE CALLS</small></div><div id="s2rows"></div><div id="s2out"></div></div>
+    <div class="ab bc" id="s2cap"></div>
+  </div>
+  <div class="l" id="S3">
+    <div class="ab bc" id="s3h">Most wins is #1.</div>
+    <div class="ab" id="s3rows"></div>
+    <div class="ab bc" id="s3cap">#1 makes the NVIDIA call.</div>
+  </div>
+  <div class="l" id="S4">
+    <div class="ab bc" id="s4h">The NVIDIA bet</div>
+    <div class="ab" id="s4chip"><img src="../media/ez-gpu2-1200.jpg" alt=""><canvas id="s4led" width="900" height="675"></canvas></div>
+    <div class="ab bc" id="s4cap"></div>
+    <div class="split bc" id="s4win"><small>RIGHT CALL</small><span>Profits buy back $EZ</span></div>
+    <div class="split bc" id="s4lose"><small>WRONG CALL</small><span>The pot gets rekt</span></div>
+  </div>
+  <div class="l" id="S5">
+    <div class="ab" id="s5badge"><span><span style="color:var(--yel)">$</span><span style="color:var(--grn)">E</span><span style="color:var(--red)">Z</span></span></div>
+    <div class="ab bc" id="s5m">Nobody said it would be EZ</div>
+    <div class="ab" id="s5d"></div>
+    <div class="ab" id="s5r">$EZ is a memecoin. Not financial advice. The pot can be wiped out.</div>
+  </div>
+  <div id="wipe"></div>
+</div>
+<script src="../ez-data.js"></script>
+<script>
+(function(){
+var FPS=60,N=1020,$=function(s){return document.querySelector(s)};
+/* ---------- data, all from ez-data.js ---------- */
+var R=ROUNDS[ROUNDS.length-1];
+var MK=["GPT","KIMI","GROK","CLAUDE"].filter(function(m){return MODELS[m]});
+function nm(m){var n=MODELS[m].name;return n.length<=3?n:n.charAt(0)+n.slice(1).toLowerCase()}
+var W={},ERR={},G={};MK.forEach(function(m){W[m]=0;ERR[m]=0;G[m]=0});
+ROUNDS.forEach(function(r){(r.win?r.win.split(" & "):[]).forEach(function(m){if(m in W)W[m]++});
+  r.calls.forEach(function(c){if(c[0] in G){G[c[0]]++;ERR[c[0]]+=parseFloat(c[2])||0}})});
+var RANK=MK.slice().sort(function(a,b){return W[b]-W[a]||(ERR[a]/G[a])-(ERR[b]/G[b])});
+var MAXW=Math.max.apply(null,RANK.map(function(m){return W[m]}))||1;
+var LEV=(typeof SIM!=="undefined"&&SIM.leverage!=null)?SIM.leverage:10;
+/* NVIDIA bet: the weekday after the NVDA round's call date, like the site's chip */
+function md(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null}
+var nvr=[].concat(UPCOMING||[],PENDING||[]).filter(function(u){return u.ticker==="NVDA"})[0],BET=null,c0=nvr&&md(nvr.called);
+if(c0){var dt=new Date(Date.UTC(c0[0],c0[1],c0[2]));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()===0||dt.getUTCDay()===6);BET=dt}
+var MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+var BM=BET?MON[BET.getUTCMonth()]:"",BD=BET?String(BET.getUTCDate()):"";
+var TAPE=[].concat(ROUNDS.slice(-6).map(function(r){return r.ticker}),(UPCOMING||[]).slice(0,10).map(function(u){return u.ticker}),["NVDA"]);
+var CALLS=R.calls.map(function(c){var up=/^UP/.test(c[1]);return {m:c[0],up:up,mag:c[1].replace(/^\w+\s*/,""),ok:(up?1:-1)*(R.a>0?1:-1)>0}});
+var WINS=R.win?R.win.split(" & "):[];
+
+/* ---------- build the static DOM once ---------- */
+function logo(m,sz){var M=MODELS[m];return '<span class="lg" style="background:'+M.bg+'"><svg viewBox="0 0 24 24"><path fill="'+M.fg+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+' d="'+M.d+'"/></svg></span>'}
+$("#s1h").innerHTML=(["No","One","Two","Three","Four","Five","Six"][MK.length]||MK.length)+' AI<span style="text-transform:none">s</span>.';
+$("#s1logos").innerHTML=MK.map(function(m){return '<div class="s1a">'+logo(m)+'<b>'+MODELS[m].name+'</b></div>'}).join("");
+var tp="";for(var k=0;k<3;k++)TAPE.forEach(function(t,i){tp+='<span>'+(t==="NVDA"?'<b>'+t+'</b>':t)+'</span>'});$("#tapeIn").innerHTML=tp;
+$("#s2t").textContent="Round "+R.n+" · "+R.co+(R.ticker?" ("+R.ticker+")":"");
+$("#s2rows").innerHTML=CALLS.map(function(c){var w=WINS.indexOf(c.m)>-1;
+  return '<div class="cr" data-m="'+c.m+'">'+logo(c.m)+'<b>'+MODELS[c.m].name+'</b><span class="cv">'+(c.up?'▲ ':'▼ ')+c.mag+'</span>'+
+    '<span class="st '+(w?'win':c.ok?'ok':'out')+'">'+(w?'👑 WINS':c.ok?'RIGHT WAY':'OUT')+'</span></div>'}).join("");
+$("#s2out").innerHTML='<span>'+R.co+' at the close after earnings</span><b style="color:'+(R.a>0?'var(--grn)':'var(--red)')+'">'+(R.a>0?'▲ ':'▼ ')+String(R.out).replace(/^[+−-]/,"")+'</b>';
+$("#s2cap").innerHTML='<span id="c1">Wrong way? Out.</span> <span id="c2" style="color:#c48a00">Closest call wins.</span>';
+$("#s3rows").innerHTML=RANK.map(function(m,i){return '<div class="br'+(i?'':' lead')+'" data-m="'+m+'">'+logo(m)+'<b>'+MODELS[m].name+'</b><span class="bt"><i class="bf"></i>'+(i?'':'<span class="tg">#1</span>')+'</span><span class="n">0</span></div>'}).join("");
+$("#s4cap").textContent="#1's call. The whole pot. "+LEV+"x leverage.";
+$("#s5d").textContent="EARNINGS ZEASON"+(BET?" · NVIDIA BET "+BM+" "+BD:"");
+
+/* ---------- motion helpers: pure functions of time ---------- */
+function cl(x,a,b){return x<a?a:x>b?b:x}
+function p(f,a,d){return cl((f-a)/d,0,1)}                                   /* progress of a span in frames */
+function eOut(x){return x>=1?1:1-Math.pow(2,-10*x)}                          /* ease-out-expo */
+function eIn(x){return x<=0?0:Math.pow(2,10*x-10)}                            /* ease-in-expo */
+function eIO(x){return x<.5?8*x*x*x*x:1-Math.pow(-2*x+2,4)/2}                 /* ease-in-out-quart */
+function spring(t,z,fq){if(t<=0)return 0;var w=2*Math.PI*fq;if(z>=1)return 1-Math.exp(-w*t)*(1+w*t);var wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*t)*(Math.cos(wd*t)+(z*w/wd)*Math.sin(wd*t))}
+function sp(f,a,z,fq){return spring((f-a)/FPS,z||.55,fq||3)}                   /* a spring that starts at frame a */
+function show(el,o){el.style.opacity=o;el.style.visibility=o<=0.001?"hidden":"visible"}
+function tf(el,s){el.style.transform=s}
+function clip(el,x){el.style.clipPath="inset(0 "+(100-x*100).toFixed(2)+"% 0 0)"}
+
+/* ---------- LED glyphs, 5 x 7, like the chip on the site ---------- */
+var GL={0:"01110100011000110001100011000101110",1:"00100011000010000100001000010001110",2:"01110100010000100010001000100011111",3:"11110000010000101110000010000111110",
+  4:"00010001100101010010111110001000010",5:"11111100001111000001000011000101110",6:"00110010001000011110100011000101110",7:"11111000010001000100010000100001000",
+  8:"01110100011000101110100011000101110",9:"01110100011000101111000010001001100",
+  A:"01110100011000111111100011000110001",B:"11110100011000111110100011000111110",C:"01110100011000010000100001000101110",D:"11110100011000110001100011000111110",
+  E:"11111100001000011110100001000011111",F:"11111100001000011110100001000010000",G:"01110100011000010111100011000101111",J:"00111000100001000010000101001001100",
+  L:"10000100001000010000100001000011111",M:"10001110111010110101100011000110001",N:"10001110011010110011100011000110001",O:"01110100011000110001100011000101110",
+  P:"11110100011000111110100001000010000",R:"11110100011000111110101001001010001",S:"01111100001000001110000010000111110",T:"11111001000010000100001000010000100",
+  U:"10001100011000110001100011000101110",V:"10001100011000110001100010101000100",Y:"10001100010101000100001000010000100"};
+var led=$("#s4led").getContext("2d"),SC=900/2000;
+/* the two dies' open middles (image coordinates of ez-gpu2, from the site's chip) */
+var PANES=[{x:478,txt:BM},{x:1078,txt:BD}],PW=446,PY=628,PH=214;
+function drawLED(f){led.clearRect(0,0,900,675);
+  PANES.forEach(function(pn,pi){var on=p(f,612+pi*24,10);if(on<=0)return;
+    var x0=pn.x*SC,y0=PY*SC,w=PW*SC,h=PH*SC;
+    led.globalAlpha=Math.min(1,on*1.4);led.fillStyle="#0d0e12";led.beginPath();led.roundRect(x0,y0,w,h,6);led.fill();
+    var chars=String(pn.txt).split(""),cols=chars.length*6-1,cell=Math.min(w/(cols+2),h/9),gx=x0+(w-cols*cell)/2,gy=y0+(h-7*cell)/2;
+    chars.forEach(function(ch,ci){var g=GL[ch];if(!g)return;var lit=p(f,612+pi*24+ci*5,8);
+      for(var r=0;r<7;r++)for(var c=0;c<5;c++){var bit=g[r*5+c]==="1";
+        led.fillStyle=bit&&lit>0?"rgba(255,65,54,"+(.25+.75*lit)+")":"rgba(255,255,255,.07)";
+        led.beginPath();led.roundRect(gx+(ci*6+c)*cell+cell*.1,gy+r*cell+cell*.1,cell*.8,cell*.8,cell*.18);led.fill()}})});
+  led.globalAlpha=1}
+
+/* ---------- the frame ---------- */
+var S1=$("#S1"),S2=$("#S2"),S3=$("#S3"),S4=$("#S4"),S5=$("#S5"),wipe=$("#wipe");
+function renderAt(t){var f=Math.round(t*FPS);
+  show(S1,f<120?1:0);show(S2,f>=120&&f<390?1:0);show(S3,f>=390&&f<600?1:0);show(S4,f>=600&&f<840?1:0);show(S5,f>=840?1:0);
+  /* wipes between shots: a yellow panel crosses in 10 frames ending on the beat, and leaves in 8 */
+  var wv=0,cuts=[120,390,600,840];cuts.forEach(function(c){var a=p(f,c-10,10),b=p(f,c,8);if(f>=c-10&&f<c)wv=eIO(a);else if(f>=c&&f<c+8)wv=2+eIO(b)});
+  if(wv<=0||wv>=3){show(wipe,0)}else{show(wipe,1);tf(wipe,wv<=1?"translateY("+(100-wv*100)+"%)":"translateY("+(-(wv-2)*100)+"%)")}
+
+  /* S1: the four AIs */
+  if(f<120){var tape=$("#tapeIn");tf(tape,"translateX("+(-f*3.2).toFixed(1)+"px)");
+    var eb=$("#s1eb");clip(eb,1);
+    var h=$("#s1h"),hs=sp(f,12,.55,2.6);show(h,f>=12?1:0);tf(h,"scale("+(1.22-.22*hs)+")");h.style.transformOrigin="left center";
+    document.querySelectorAll(".s1a").forEach(function(a,i){var s0=30+i*15,s=sp(f,s0,.55,3);show(a,f>=s0?1:0);tf(a,"scale("+(.4+.6*s)+")")});}
+
+  /* S2: the last round, graded on screen */
+  if(f>=120&&f<390){var hh=$("#s2h");clip(hh,eOut(p(f,124,16)));
+    var card=$("#s2card"),cs=eOut(p(f,136,22));show(card,cs>0?1:0);tf(card,"translateY("+(70*(1-cs))+"px)");
+    document.querySelectorAll("#s2rows .cr").forEach(function(row,i){var a=160+i*15,e=eOut(p(f,a,14));row.style.opacity=f>=a?(1):0;tf(row,"translateX("+(-40*(1-e))+"px)");
+      var st=row.querySelector(".st"),win=st.classList.contains("win"),s0=win?255:240+i*3,ss=sp(f,s0,.5,3.2);
+      show(st,f>=s0?1:0);tf(st,"translateY(-50%) scale("+(1.6-.6*ss)+") rotate("+(win?-2:3)+"deg)");
+      row.style.background=win&&f>=255?"var(--yel)":"var(--cream)";row.style.opacity=f>=a?(st.classList.contains("out")&&f>=246?.42:1):0});
+    var out=$("#s2out"),os=sp(f,225,.6,3);show(out,f>=225?1:0);tf(out,"scale("+(.85+.15*os)+")");
+    var c1=$("#c1"),c2=$("#c2");c1.style.opacity=f>=255?1:0;c2.style.opacity=f>=285?1:0;
+    clip($("#s2cap"),f>=285?1:eOut(p(f,255,16))*.5)}
+
+  /* S3: the race */
+  if(f>=390&&f<600){var h3=$("#s3h"),h3s=sp(f,394,.55,2.6);show(h3,f>=394?1:0);tf(h3,"scale("+(1.18-.18*h3s)+")");h3.style.transformOrigin="left center";
+    document.querySelectorAll("#s3rows .br").forEach(function(row,i){var m=row.getAttribute("data-m"),a=420+i*6,e=eOut(p(f,a,48));
+      show(row,f>=a-6?1:0);row.querySelector(".bf").style.width=(e*W[m]/MAXW*100).toFixed(2)+"%";
+      row.querySelector(".n").textContent=String(Math.round(e*W[m]));
+      var tg=row.querySelector(".tg");if(tg){var ts=sp(f,480,.5,3.2);show(tg,f>=480?1:0);tf(tg,"translateY(-50%) scale("+(1.5-.5*ts)+")")}});
+    clip($("#s3cap"),eOut(p(f,495,18)))}
+
+  /* S4: the NVIDIA bet */
+  if(f>=600&&f<840){var ch=$("#s4chip"),k=eIO(p(f,600,240));tf(ch,"scale("+(1.08-.08*k)+")");
+    clip($("#s4h"),eOut(p(f,604,16)));drawLED(f);
+    var cap=$("#s4cap"),cpv=eOut(p(f,660,16));clip(cap,cpv);show(cap,f<735?1:0);
+    var wn=$("#s4win"),ls=$("#s4lose"),we=eOut(p(f,735,18)),le=eOut(p(f,750,18));
+    show(wn,f>=735?1:0);show(ls,f>=750?1:0);tf(wn,"translateX("+(-1080*(1-we))+"px)");tf(ls,"translateX("+(1080*(1-le))+"px)")}
+
+  /* S5: the end card */
+  if(f>=840){var b=$("#s5badge"),bs=sp(f,842,.5,2.4);tf(b,"scale("+(1.45-.45*bs)+") rotate("+(-6*(1-bs))+"deg)");
+    clip($("#s5m"),eOut(p(f,870,18)));show($("#s5d"),f>=888?eOut(p(f,888,12)):0);show($("#s5r"),f>=906?1:0)}
+}
+window.renderAt=renderAt;window.N=N;window.FPS=FPS;
+
+/* ---------- the sound: synthesized in code, every hit 1 frame after its picture ---------- */
+window.renderAudio=function(){var SR=48000,dur=N/FPS+.6,ctx=new OfflineAudioContext(2,Math.ceil(SR*dur),SR),FR=1/FPS;
+  var master=ctx.createGain();master.gain.value=.8;var comp=ctx.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=3;master.connect(comp);comp.connect(ctx.destination);
+  function noise(){var b=ctx.createBuffer(1,SR,SR),d=b.getChannelData(0),s=7;for(var i=0;i<SR;i++){s=(s*16807)%2147483647;d[i]=s/1073741823.5-1}return b}var NB=noise();
+  function kick(t,g){var o=ctx.createOscillator(),a=ctx.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(45,t+.12);
+    a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.004);a.gain.exponentialRampToValueAtTime(.001,t+.32);o.connect(a);a.connect(master);o.start(t);o.stop(t+.35)}
+  function hat(t,g){var s=ctx.createBufferSource(),hp=ctx.createBiquadFilter(),a=ctx.createGain();s.buffer=NB;hp.type="highpass";hp.frequency.value=7000;
+    a.gain.setValueAtTime(g,t);a.gain.exponentialRampToValueAtTime(.001,t+.05);s.connect(hp);hp.connect(a);a.connect(master);s.start(t,(t*7.31)%.5);s.stop(t+.06)}
+  function tone(t,fq,d,g,type){var o=ctx.createOscillator(),a=ctx.createGain(),lp=ctx.createBiquadFilter();o.type=type||"triangle";o.frequency.value=fq;lp.type="lowpass";lp.frequency.value=2400;
+    a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.006);a.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(lp);lp.connect(a);a.connect(master);o.start(t);o.stop(t+d+.05)}
+  function thump(t,g){kick(t,g);var s=ctx.createBufferSource(),bp=ctx.createBiquadFilter(),a=ctx.createGain();s.buffer=NB;bp.type="bandpass";bp.frequency.value=900;bp.Q.value=.8;
+    a.gain.setValueAtTime(g*.5,t);a.gain.exponentialRampToValueAtTime(.001,t+.18);s.connect(bp);bp.connect(a);a.connect(master);s.start(t);s.stop(t+.2)}
+  function whoosh(t,d,g){var s=ctx.createBufferSource(),bp=ctx.createBiquadFilter(),a=ctx.createGain();s.buffer=NB;bp.type="bandpass";bp.Q.value=1.2;
+    bp.frequency.setValueAtTime(400,t);bp.frequency.exponentialRampToValueAtTime(4000,t+d);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+d*.8);a.gain.linearRampToValueAtTime(0,t+d);
+    s.connect(bp);bp.connect(a);a.connect(master);s.start(t);s.stop(t+d+.02)}
+  function bass(t,fq,d,g){var o=ctx.createOscillator(),a=ctx.createGain(),lp=ctx.createBiquadFilter();o.type="sawtooth";o.frequency.value=fq;lp.type="lowpass";lp.frequency.value=420;
+    a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.02);a.gain.setValueAtTime(g,t+d-.05);a.gain.linearRampToValueAtTime(0,t+d);o.connect(lp);lp.connect(a);a.connect(master);o.start(t);o.stop(t+d+.02)}
+  function at(fr){return fr/FPS+FR}
+  /* bed: 120 BPM, kick on every beat until the end card, offbeat hats, a bass note per bar (C minor, A flat, E flat, B flat) */
+  var BASS=[65.41,51.91,77.78,58.27];
+  for(var b=0;b<28;b++){var fb=b*30;kick(at(fb),b%4===0?.9:.65);hat(at(fb+15),.12)}
+  for(var bar=0;bar<7;bar++)bass(at(bar*120),BASS[bar%4],2,.16);
+  /* hits */
+  thump(at(12),.9);                                                   /* FOUR AIs */
+  [30,45,60,75].forEach(function(fr,i){tone(at(fr),[523.25,622.25,783.99,932.33][i],.28,.22)});   /* the four marks */
+  [120,390,600,840].forEach(function(fr){whoosh(at(fr-10),.17,.22)});  /* wipes */
+  [160,175,190,205].forEach(function(fr){tone(at(fr),880,.06,.12,"square")});  /* the calls land */
+  thump(at(225),.75);                                                  /* the outcome */
+  [240,243,246].forEach(function(fr){tone(at(fr),110,.18,.2,"sawtooth")});  /* OUT x3 */
+  tone(at(255),1046.5,.5,.25);tone(at(255),1318.5,.5,.18);            /* the winner */
+  thump(at(394),.85);                                                  /* MOST WINS IS #1 */
+  tone(at(480),1567.98,.35,.2);                                        /* #1 tag */
+  [612,617,622,636,641].forEach(function(fr){tone(at(fr),2093,.04,.1,"square")});  /* LED pixels */
+  thump(at(735),.8);tone(at(735),659.25,.4,.18);                       /* RIGHT CALL */
+  tone(at(750),98,.5,.22,"sawtooth");                                  /* WRONG CALL */
+  thump(at(842),1);tone(at(842),261.63,1.6,.22);tone(at(842),392,1.6,.16);tone(at(842),523.25,1.6,.12);  /* end card */
+  return ctx.startRendering().then(function(buf){
+    var L=buf.getChannelData(0),Rc=buf.getChannelData(1),n=buf.length,bytes=44+n*4,ab=new ArrayBuffer(bytes),v=new DataView(ab);
+    function ws(o,s){for(var i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))}
+    ws(0,"RIFF");v.setUint32(4,bytes-8,true);ws(8,"WAVE");ws(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,2,true);v.setUint32(24,SR,true);v.setUint32(28,SR*4,true);v.setUint16(32,4,true);v.setUint16(34,16,true);ws(36,"data");v.setUint32(40,n*4,true);
+    for(var i=0,o=44;i<n;i++,o+=4){v.setInt16(o,Math.max(-1,Math.min(1,L[i]))*32767,true);v.setInt16(o+2,Math.max(-1,Math.min(1,Rc[i]))*32767,true)}
+    var u=new Uint8Array(ab),s="";for(var j=0;j<u.length;j+=32768)s+=String.fromCharCode.apply(null,u.subarray(j,j+32768));return btoa(s)})};
+
+/* ready once fonts and the chip image are in */
+var img=document.querySelector("#s4chip img");
+Promise.all([document.fonts.ready,img.complete?Promise.resolve():new Promise(function(r){img.onload=r;img.onerror=r})]).then(function(){
+  var q=location.search.match(/[?&]t=([\d.]+)/);renderAt(q?parseFloat(q[1]):0);window.__ready=true});
+})();
+</script>
+</body>
+</html>

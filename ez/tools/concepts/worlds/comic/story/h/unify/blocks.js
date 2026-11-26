@@ -1,0 +1,5 @@
+const {open}=require('./lib');const fs=require('fs');(async()=>{const [W,tag,...ov]=process.argv.slice(2);const {b,p,errs}=await open(+W,844,{css:ov.filter(f=>f.endsWith('.css')),js:ov.filter(f=>f.endsWith('.js'))});
+const r=await p.evaluate(()=>{const q=['header.top','.t4-b1','.t4-h1','.t5-bg','.t4-b2','.t4-h2','.t4-frs','.t4-b3','.f4-cx','.ch','.ch-h','.ch-sub','.ch-beats','#record','.r6-hw','.r6-cap','.r6-key','#learn','#learn .p5-ln','#learn .p5-h','#x2pSt','.hb-h','.hb5-c','#get','#get .p5-h','#get .p5-ln','footer','.motto'];const o={};
+ for(const s of q){const e=document.querySelector(s);if(!e)continue;const r=e.getBoundingClientRect();const cs=getComputedStyle(e);o[s]=[Math.round(r.height*10)/10,Math.round((r.top+scrollY)*10)/10,cs.marginTop,cs.marginBottom,cs.lineHeight]}
+ o.sh=document.documentElement.scrollHeight;o.sw=document.documentElement.scrollWidth;return o});
+fs.writeFileSync(`out/blocks-${tag}-${W}.json`,JSON.stringify({r,errs}));console.log(JSON.stringify(r).replace(/\],"/g,'],\n"'),errs);await b.close()})();

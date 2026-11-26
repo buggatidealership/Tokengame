@@ -1,0 +1,124 @@
+<!doctype html><meta charset="utf-8"><title>feed 1</title>
+<!-- Animation sample feed-1 (2026-11-20): the FEED tab announcement in the F3 "posts" style (x2p-feed-F3.png). The line alone, then it docks
+  into the FEED tab of the terminal (the tab bar's light slides from LEADERBOARD to the new FEED tab); three AI posts arrive one by one as the
+  feed scrolls like a real feed: each is announced by its card loading at the foot of the feed (the AI's mark and name, grey lines), then
+  becomes the post as the feed flicks up to it; the marker sweeps the key clause (feed/words.json, verbatim) and the trade card attaches;
+  the clause holds at least 1 s + 0.08 s a letter from the sweep's start. A fourth card is loading as the feed steps back and the line
+  returns with "Coming soon" (the feed is not live). Bed i4-house (118.4 BPM, beat 0.5068 s, first beat 0.025 s; the owner's release-video
+  bed); the arrivals on beats. No P&L: nothing is graded. -->
+<style>
+:root{--pn:rgba(14,19,17,.95);--pn2:#151c19;--ln:#24302b;--tx:#f2ede6;--mu:#8e9a93;--mu2:#5d6963;--up:#55d6a2;--dn:#ff5a6e;--ac:#fdbc2a}
+#cam{position:absolute;inset:0;transform-origin:50% 50%}
+#chrome{position:relative;z-index:27}
+#vp{position:absolute;left:0;right:0;top:140px;bottom:150px;overflow:hidden;-webkit-mask:linear-gradient(transparent 0,#000 30px,#000 calc(100% - 36px),transparent);mask:linear-gradient(transparent 0,#000 30px,#000 calc(100% - 36px),transparent)}
+#list{position:absolute;left:44px;width:992px;top:0}
+.kk{padding:34px 4px 36px}
+.kk small{display:block;font:700 26px/1 'Geist Mono';letter-spacing:.16em;color:var(--ac);margin-bottom:18px}
+.kk h1{display:inline-block;font:900 50px/1.04 Inter;letter-spacing:-.04em;transform-origin:0 0;white-space:nowrap}
+.post{position:relative;margin-bottom:28px;padding:40px 44px 44px;border-radius:32px;background:var(--pn);box-shadow:inset 0 0 0 2px var(--ln),0 24px 60px rgba(0,0,0,.45)}
+.ph{display:flex;align-items:center;gap:24px}
+.ph b{display:block;font:700 44px/1 Inter}.ph small{display:flex;align-items:center;gap:12px;margin-top:13px;font:500 28px/1 'Geist Mono';color:var(--mu)}
+.ph small .d{margin-left:16px}
+.pw{position:relative;margin-top:28px}
+.pq{font:500 51px/1.4 Inter;color:#e7e1d9;letter-spacing:-.01em}
+.sk{position:absolute;left:0;right:0;top:12px;display:grid;gap:30px}
+.sk i{display:block;height:42px;border-radius:12px;background:linear-gradient(90deg,#1b2420 0%,#1b2420 35%,#2c3833 50%,#1b2420 65%,#1b2420 100%);background-size:300% 100%}
+.att{overflow:hidden}
+.tc{display:flex;align-items:center;gap:26px;margin-top:34px;padding:26px 30px;border-radius:26px;background:#0f1412;box-shadow:inset 0 0 0 2px var(--ln)}
+.tc .cn b{font:700 40px/1 Inter}.tc .cn span{font:500 29px/1 'Geist Mono';color:var(--mu);margin-left:14px;letter-spacing:.04em}
+.tc .cn small{display:block;margin-top:15px;font:500 28px/1 'Geist Mono';color:var(--mu)}
+.tc .sd{margin-left:auto;text-align:right}.tc .sd b{display:block;font:700 46px/1 'Geist Mono';letter-spacing:.06em;transform-origin:100% 50%}.tc .sd small{display:block;margin-top:13px;font:600 28px/1 'Geist Mono'}
+.L{color:var(--up)}.S{color:var(--dn)}
+#nav{position:absolute;left:0;right:0;bottom:0;height:150px;display:grid;grid-template-columns:repeat(4,1fr);background:linear-gradient(180deg,rgba(6,9,8,.96),#060908);box-shadow:inset 0 2px 0 var(--ln);z-index:20}
+#nav div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font:600 22px/1 'Geist Mono';letter-spacing:.08em;color:var(--mu2)}
+#nav svg{width:40px;height:40px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#nav .on{color:var(--tx)}
+#tab{position:absolute;bottom:144px;height:6px;border-radius:0 0 6px 6px;background:var(--ac);box-shadow:0 0 24px rgba(253,188,42,.6);z-index:21}
+#big{position:absolute;left:0;right:0;top:0;text-align:center;z-index:30;opacity:0}
+#big h2{font:900 113px/1.04 Inter;letter-spacing:-.04em}
+#big p{margin-top:44px;font:800 52px/1 'Geist Mono';letter-spacing:.12em;color:var(--ac)}
+#veil{position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% 48%,rgba(6,9,8,.9),rgba(6,9,8,.62));opacity:0;z-index:25}
+</style>
+<div id="gnd"></div>
+<div id="cam">
+  <div id="chrome"></div>
+  <div id="vp"><div id="list"></div></div>
+  <div id="nav"></div><div id="tab"></div>
+  <div id="veil"></div>
+</div>
+<div id="big"><h2>Every trade<br>with its reason</h2><p>COMING SOON</p></div>
+<div id="vig"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script><script src="w6/an/an.js"></script>
+<script>
+const BT = .5068, B = n => .025 + n * BT;
+// three posts (one LONG, two SHORT: Intuit's split, then Keysight) and a fourth still loading at the end
+const POSTS = [['QWEN', 'INTU'], ['CLAUDE', 'INTU'], ['GEMINI', 'KEYS'], ['GROK', 'ESTC']];
+const T_LINE = .12, T_DOCK = B(2), T_TAB = B(3), ARR = [B(4), B(11), B(20)], T_OUT = B(31), DUR = 18.0, ARRD = .62, V0 = 74, Y_READ = 190;
+const SKEL = [B(3) + .1];   // when each card starts loading at the foot of the feed: the first under the headline, each next one as the card before it attaches
+let grain, gl, posts, stops = [];
+const ICON = { LEADERBOARD: '<path d="M5 20V10M12 20V4M19 20v-7"/>', FEED: '<path d="M4 5.5h16v10.5H10l-4.5 3.5V16H4z"/><path d="M8 9.5h8M8 12.5h5"/>', 'AI PROFILES': '<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.8 14.2c2.4.1 4.1 1.6 4.7 4.8"/>', UPCOMING: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>' };
+(async () => {
+  await AN.load();
+  L.$('#chrome').innerHTML = AN.brand();
+  L.$('#nav').innerHTML = Object.keys(ICON).map(n => `<div><svg viewBox="0 0 24 24">${ICON[n]}</svg>${n}</div>`).join('');
+  posts = POSTS.map(([k, t]) => AN.tr(k, t));
+  L.$('#list').innerHTML = `<div class="kk"><small>FEED</small><br><h1 id="kh">Every trade<br>with its reason</h1></div>` + posts.map((x, i) => { const c = AN.D.cos[x.t];
+    return `<div class="post" id="p${i}"><div class="ph">${AN.mark(x.k, 104)}<div><b>${x.name}</b><small>${AN.flag(x.flag, 40)}${x.lab}<span class="d">Nov 19</span></small></div></div>
+      <div class="pw"><div class="pq">${AN.quote(x.keep, x.hl)}</div><div class="sk"><i style="width:94%"></i><i style="width:100%"></i><i style="width:82%"></i><i style="width:58%"></i></div></div>
+      <div class="att"><div class="tc">${AN.co(x.t, 92, .5)}<div class="cn"><b>${c.co}</b><span>${c.ticker}</span><small>${x.conf}% confident</small></div>
+        <div class="sd ${x.side[0]}"><b>${x.side}</b><small>called ${x.side === 'LONG' ? '+' : '−'}${AN.num(x.call)}%</small></div></div></div></div>` }).join('');
+  gl = AN.ground(L.$('#gnd'), 1); grain = L.grain(L.$('#grain'), .07);
+  await AN.ready();
+  posts.forEach((x, i) => { x.el = L.$('#p' + i); x.attH = x.el.querySelector('.att').offsetHeight; x.top = x.el.offsetTop; x.sk = x.el.querySelector('.sk'); x.pq = x.el.querySelector('.pq') });
+  stops = posts.map((x, i) => i === 0 ? 0 : x.top - Y_READ);
+  window.CUES = [[0.05, 'r11-swell', .14], [T_DOCK, 'sfx-whoosh', .12], [T_TAB, 'r11-slide', .1]];
+  posts.slice(0, 3).forEach((x, i) => { const a = ARR[i], s = a + ARRD - .12, sw = Math.min(1.1, Math.max(.55, x.hl.length * .022)); Object.assign(x, { a, s, sw, att: s + sw + .1 });
+    if (i) CUES.push([a, 'sfx-whoosh', .1]); CUES.push([a + .3, 'r11-card', .1], [s + .05, 'r11-slide', .07], [x.att + .15, 'r11-card', .07]);
+    SKEL[i + 1] = x.att + .6;
+    const hd = 1 + .08 * x.hl.length, nx = i < 2 ? ARR[i + 1] : T_OUT; if (nx < s + hd - .1) console.error('hold too short', x.k, x.t, (nx - s).toFixed(2), hd.toFixed(2)) });
+  CUES.push([T_OUT, 'sfx-whoosh', .12], [T_OUT + .5, 'sfx-chime', .14], [T_OUT + .55, 'r11-sparkle', .08]);
+  window.MUSIC = { f: 'i4-house', at: 0 }; window.DUR = DUR;
+  await AN.go();
+})();
+// the feed's scroll: still until the first post, then a slow constant drift while a post is read (V0, eased in over 1 s), and a quick flick
+// to the next post (a Hermite step that leaves and lands at the drift's speed, so the motion never stops or jerks)
+const f0 = x => x <= 0 ? 0 : x < 1 ? x * x / 2 : x - .5;
+const holdAt = (i, t) => i === 0 ? V0 * f0(t - ARR[0] - .2) : stops[i] + V0 * (t - ARR[i] - ARRD);
+const scroll = t => { let i = 0; while (i + 1 < ARR.length && t >= ARR[i + 1]) i++;
+  if (i > 0 && t < ARR[i] + ARRD) return AN.herm(holdAt(i - 1, ARR[i]), V0, stops[i], V0, ARRD, t - ARR[i]);
+  return holdAt(i, t) };
+window.R = t => {
+  grain(t); gl(t);
+  const S = scroll(t);
+  // the line alone, then it docks into the FEED tab's headline
+  const kh = L.$('#kh'), dk = L.eio(L.n(t, T_DOCK, T_DOCK + .62)), tin = L.eo(L.n(t, T_LINE, T_LINE + .85)), rise = 1 - Math.pow(1 - L.n(t, T_LINE, T_DOCK + .3), 2), sc = 113 / 50 * (1 + .05 * L.n(t, T_LINE, T_DOCK) * (1 - dk));
+  const kx = 44 + kh.offsetLeft, ky = 140 + kh.offsetTop - S, bx = 540 - kh.offsetWidth * sc / 2, by = 470 + 100 * (1 - rise);   // the line keeps rising slowly while it is alone, so the first second is never still
+  kh.style.transform = `translate(${L.lerp(bx - kx, 0, dk).toFixed(1)}px,${L.lerp(by - ky, 0, dk).toFixed(1)}px) scale(${L.lerp(sc, 1, dk).toFixed(4)})`; kh.style.opacity = L.cl(tin * 1.6).toFixed(3);
+  L.$('.kk small').style.opacity = L.n(t, T_DOCK + .4, T_DOCK + .8);
+  // the terminal assembles round the line: the brand bar from the top, the tab bar from the bottom; the tab light slides to the new FEED tab
+  const ch = L.eio(L.n(t, T_DOCK - .1, T_DOCK + .55)); L.$('#chrome').style.opacity = ch; L.$('#chrome').style.transform = `translateY(${(-40 * (1 - ch)).toFixed(1)}px)`;
+  L.$('#nav').style.opacity = ch; L.$('#nav').style.transform = `translateY(${(60 * (1 - ch)).toFixed(1)}px)`;
+  const tab = L.$('#tab'), tw = 270, tg = L.eio(L.n(t, T_TAB, T_TAB + .5)); tab.style.left = (tw * tg + 45) + 'px'; tab.style.width = (tw - 90) + 'px'; tab.style.opacity = ch;
+  L.$$('#nav div').forEach((d, i) => d.classList.toggle('on', i === (tg > .5 ? 1 : 0)));
+  L.$('#gnd').style.opacity = (.4 + .6 * ch).toFixed(3);
+  // the feed: a card loads at the foot (mark, name, grey lines), becomes the post as the feed flicks to it; the marker sweeps the key
+  // clause, the trade card attaches with its side
+  L.$('#list').style.transform = `translateY(${(-S).toFixed(1)}px)`;
+  posts.forEach((x, i) => { const k0 = L.n(t, SKEL[i], SKEL[i] + .45), sp = L.spring(t - SKEL[i], 1.6, 7);
+    x.el.style.opacity = t < SKEL[i] ? 0 : L.cl(k0 * 2.2).toFixed(3); x.el.style.transform = t < SKEL[i] ? '' : `translateY(${(90 * (1 - sp)).toFixed(1)}px)`;
+    const tx = x.a != null ? L.n(t, x.a + .05, x.a + .45) : 0; x.pq.style.opacity = tx; x.sk.style.opacity = 1 - tx;
+    x.sk.querySelectorAll('i').forEach((b, j) => b.style.backgroundPosition = `${(100 - ((t * .9 + j * .07) % 1) * 150).toFixed(1)}% 0`);
+    const a = x.el.querySelector('.att');
+    if (x.a == null) { a.style.height = '0px'; return }
+    AN.sweep(x.el.querySelector('.hlc'), L.eio(L.n(t, x.s, x.s + x.sw)));
+    const at = L.n(t, x.att, x.att + .5); a.style.height = (x.attH * L.eio(at)).toFixed(1) + 'px';
+    const tc = a.firstChild; tc.style.transform = `translateY(${(-60 * (1 - L.eo(at))).toFixed(1)}px)`; tc.style.opacity = L.cl(at * 1.8).toFixed(3);
+    const pq = L.n(t, x.att + .35, x.att + .75); tc.querySelector('.sd b').style.transform = `scale(${(1 + .16 * Math.sin(Math.PI * pq)).toFixed(3)})` });
+  // the end: the feed steps back (still loading the next card), the line returns with what is next
+  const o = L.eio(L.n(t, T_OUT, T_OUT + .6)), bg = L.$('#big');
+  L.$('#veil').style.opacity = o; L.$('#vp').style.filter = o > 0 ? `blur(${(8 * o).toFixed(2)}px)` : '';
+  bg.style.opacity = o; bg.style.transform = `translateY(${(450 + 40 * (1 - o)).toFixed(1)}px)`;
+  const cs = L.n(t, T_OUT + .45, T_OUT + .85), p = bg.querySelector('p'); p.style.opacity = cs; p.style.transform = `scale(${L.lerp(1.25, 1, L.eo5(cs)).toFixed(4)})`;
+  L.$('#cam').style.transform = `scale(${(1 + .03 * L.n(t, 0, DUR) - .02 * o).toFixed(4)})`;
+};
+</script>

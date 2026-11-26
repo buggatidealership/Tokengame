@@ -1,0 +1,30 @@
+# Round H3, area `thumbs`: Golden Age thumbnails of each round's own film, and the rack R6 re-render (2026-10-31)
+
+Boards: `ez/x2p-x3p-h3-thumbs.png` (all 80 graded rounds, each thumbnail beside its film's poster), `ez/x2p-x3p-h3-rack.png` (rack close-ups beside the site's logo files).
+Files: `img/t2-r<n>.jpg` (80, JPG q85, 450x600, 3:4), `img/rack-r6b.jpg` (2048x1152, q88). Rejected first renders in `first/`.
+Code: `hd.py` (Hedra v3 client, logs to `jobs.jsonl`), `prompt.py` (the prompts), `worlds.json` (no-film rounds), `board.py` (contact sheet; `/usr/bin/python3 board.py <out.png> [rounds]`).
+Spend: **$2.69** of $15 (87 jobs; the estimate endpoint's price per job).
+
+## Job 1: every graded round a Golden Age thumbnail of its own film
+- **Method.** For each of the 73 rounds with a film (FILMS in ez-data.js), the frame at 1.0 s of `media/<f>.mp4` (768 px) went to gpt-image-2 (1K, low, 3:4, $0.029 a tile) with a second reference image for the style (round H's T2 Amazon tile), asking to repaint the same subject, setting, angle and colours as a 1940s Golden Age cover on aged newsprint, every board, screen, sign and label blank. 1 s is the establishing shot: the calls and the market are not on screen yet, so no numbers to remove, and opening the film starts on the same picture.
+- **Seven rounds without a film** (67 Caterpillar, 71 Starbucks, 75 Coinbase, 76 Strategy, 77 Chevron, 79 AstraZeneca, 80 Exxon Mobil) are painted from the company's world (headquarters, history, culture; `worlds.json`): Peoria bulldozers, a Puget Sound siren holding a coffee cup, a blue coin over the Golden Gate, a man stacking a mountain of gold coins, a storm-lashed oil platform, a Cambridge college with a lab and a DNA helix, a Texas refinery with a red winged horse.
+- **Checked by eye** at tile size and zoomed (4x) against each film's 1 s frame: 75 read as their film on the first try with no text or numbers.
+- **Re-rendered (5), and why:** the style reference leaked its cardboard-box hero into rounds whose frame is a single object or all text:
+  - R5 BlackBerry and R31 Interactive Brokers: the phone grew arms and legs and ran. Re-rendered from the frame alone, the style described in words, "no faces, arms or legs added to objects": now the phone on its stand, as in the film.
+  - R61 Microsoft: the Windows 95 window became a running character; the second try kept the four AI marks and the Windows flag; the third has four plain squares. A tiny Windows flag and IE icon stay on the taskbar, in the bottom 15% that T2's name strip covers.
+  - R62 ServiceNow: its frame is a green terminal of text only, so the model drew the box hero. Painted from its world instead: a 1940s control tower at night, operators at green radar consoles (the film's "AI control tower").
+  - R77 Chevron (no film): the box hero again, as a "Chevron" box. Re-rendered with no reference: the oil platform in a lightning storm.
+- **How they can fail.**
+  - The early films (R2 to R29) open on an empty board in a dark hall, so their tiles are an empty board too: true to the film, but a row of them looks alike. A later frame (6 to 8 s) carries the calls; repainting it means trusting the model to blank the numbers.
+  - Some scenes are themselves a logo shape and keep it, since it is the film's subject: the Pepsi globe (R17), the Chase octagon (R19), the HSBC hexagon wall (R53), Reddit's Snoo on the banner (R72), the Carnival funnel (R8). With T2's logo masthead above the art the brand shows twice there. Asked as a question, not changed: one re-render each (about $0.02) if the owner wants them gone.
+  - R74 Amazon's film is black and white; the tile is in the warm Golden Age palette, so it reads warmer than the film.
+  - New rounds need a tile each (about $0.03, under a minute): extract the 1 s frame and run `hd.py t2-r<n> gpt-image-2 "$(python3 prompt.py film)" ref/f<n>.png ref/style.jpg` (no-film: `prompt.py world0 "<world>"`). Check for the box hero.
+  - The tile cut (t2.css: art from 19% to 85% of the height) crops the top and bottom of every painting; subjects are centred, so nothing important is lost.
+
+## Job 2: rack R6 re-rendered (`img/rack-r6b.jpg`)
+- **Why SAMSUNG read "SAMSUN":** in rack-B3hi the model painted SAMSUNG all seven letters, but the word runs to x≈1397 while the cover's measured corner is at 1377, so the page's clip to that quad cut the G. The re-render asks for every logo inside its cover with a clear margin (no wider than two thirds), and also spells out Google's G (light inside, it was filled black), TSMC's red underline bar (dropped before) and SpaceX's swoosh.
+- gpt-image-2, 2K high, the opener + the 9 logo files as references, $0.345, 108 s, one render.
+- **Checked letter by letter** against `media/logos/` (close-up board): Microsoft's four squares in the right colours and order; Google's G red, yellow, green, blue with a light inside; Amazon's "a" and smile arrow; "tsmc" over the wafer grid with its red bar; SPΛCEX with the crossbar-less A and the swoosh, as in the file; Meta's infinity; Tesla's T; Lilly's script L; SAMSUNG all seven letters, the A without a crossbar as in the file, about 30 px clear of the cover's right edge.
+- **Not exact:** painted covers, so the Google G is a touch heavier than the file and Microsoft's squares are not perfectly square.
+- **For whoever wires it in:** the covers moved, so r6.js's quads must be measured again for this image. By eye (2048x1152 pixels, clockwise from top left, ±8 px): MSFT [705,140]-[905,135]-[905,400]-[700,405]; GOOGL [940,110]-[1165,110]-[1165,395]-[940,395]; AMZN [1180,120]-[1400,125]-[1395,400]-[1185,400]; TSMC [660,450]-[885,455]-[885,710]-[660,710]; SPCX [920,450]-[1165,450]-[1165,710]-[920,710]; META [1180,450]-[1425,450]-[1425,715]-[1180,715]; TSLA [655,750]-[900,750]-[900,1025]-[655,1025]; LLY [910,750]-[1160,750]-[1160,1025]-[910,1025]; 005930.KS [1170,750]-[1430,750]-[1430,1025]-[1170,1025]. Check them on the image before use.
+- Baked as before: frozen to today's nine biggest graded companies.

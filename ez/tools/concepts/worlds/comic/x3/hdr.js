@@ -1,0 +1,4 @@
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../../live-r1/_fonts.js');
+(async()=>{const b=await chromium.launch();for(const pg of ['v46-live-x2plus.html','v47-live-x3plus.html'])for(const w of [320,360,390,430,600,700,768,900,1000]){const p=await b.newPage({viewport:{width:w,height:844}});await FONTS(p);
+ await p.goto('http://localhost:8897/'+pg,{waitUntil:'load'});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:60000});await p.waitForTimeout(500);
+ console.log(pg.slice(0,12),w,await p.evaluate(()=>Math.round(document.querySelector('header.top').getBoundingClientRect().height)+' tabs:'+[...document.querySelectorAll('.nav a')].filter(a=>a.offsetParent).map(a=>Math.round(a.getBoundingClientRect().top)).join(',')));await p.close()}await b.close()})();

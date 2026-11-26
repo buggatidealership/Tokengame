@@ -1,0 +1,2 @@
+const {open}=require('./lib');(async()=>{const sels=process.argv.slice(2);const {b,p}=await open(390,844);
+for(const s of sels){const h=await p.evaluate(s=>[...document.querySelectorAll(s)].slice(0,2).map(e=>{const c=e.cloneNode(true);c.querySelectorAll('path').forEach(x=>x.removeAttribute('d'));c.querySelectorAll('.m10-col,defs,style').forEach(x=>x.innerHTML='..');return c.outerHTML.replace(/url\(data:[^)]{50,}\)/g,'url(data..)').replace(/\s+/g,' ').slice(0,3000)}).join('\n---\n'),s);console.log('#### '+s+'\n'+h+'\n')}await b.close()})();

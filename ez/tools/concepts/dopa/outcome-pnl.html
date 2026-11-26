@@ -1,0 +1,338 @@
+<!doctype html><meta charset="utf-8"><title>Round outcome P&amp;L</title>
+<!-- P&L-chart takes (owner, 2026-11-13: "instead of having these stock price in a chart format, show in chart format the P&Ls
+  of each individual model"). ?m=1 one chart, a line per side with the AIs on it riding its head; ?m=2 one lane per AI, its own
+  P&L line under its name (the rows and the chart become one). Same scale for every line; flat $100K, so same-side AIs share a line.
+  Everything else is cut 7.
+  The round outcome video for any graded round (owner, 2026-11-13: "keep this format... the one that you did for Core Weave... for
+  every single round that gets resolved"). outcome.html?r=<round> reads data/r<round>.json, written by prep.js from ez-data.js only.
+  Cut 7's design and timing (15.5 s, m2-phonk with its drop on the bell at 7.5 s):
+  0.0  the stakes (company, the split, the four AIs and their sides)   1.5 the title docks, the AIs fly into their P&L rows
+  2.3  the real path (Hyperliquid, scaled onto the sheet's move), every P&L a live glow bar; without a market the clock runs and
+       only the two real closes are drawn (no invented intraday prices), the P&Ls land at the bell
+  7.5  the bell: FINAL, the right-side AIs take gold light (WINNER), the others dim at the same type size
+  8.45 the winners' screen ("<AI> made +$X", counted up from $0)   11.4 the season board, before the round -> after it, rows swap
+       if a rank changes. -->
+<style id="base"></style>
+<style>
+#cam{position:absolute;inset:0;transform-origin:50% 45%}
+#glow{position:absolute;inset:0}
+.title{position:absolute;left:0;top:0;display:flex;align-items:center;gap:26px;transform-origin:0 50%;white-space:nowrap}
+.title img{width:120px;height:120px;border-radius:26px;background:#f2ede6;padding:14px;object-fit:contain}
+.title .co{font:900 128px/1 Inter;letter-spacing:-.045em}
+.title .sub{font:600 30px 'Geist Mono';letter-spacing:.12em;color:#8e8680;margin-top:10px}
+.vs{position:absolute;left:0;right:0;top:440px;text-align:center;font:900 118px/1 Inter;letter-spacing:-.04em;white-space:nowrap}
+.vs i{font-style:normal;color:#5f5853;font-size:76px;vertical-align:28px;margin:0 22px;font-weight:800}
+.row{position:absolute;left:56px;width:968px;height:86px;display:flex;align-items:center;gap:22px;border-radius:18px;padding:0 22px 0 14px;transform-origin:50% 50%}
+.row .nm{font:800 40px Inter;letter-spacing:-.02em;width:150px}
+.row .sd{font:800 26px Inter;letter-spacing:.08em;padding:9px 16px 8px;border-radius:10px;min-width:122px;text-align:center;white-space:nowrap}
+.row .win{font:900 22px Inter;letter-spacing:.14em;color:#0e0c0b;background:linear-gradient(180deg,#ffd56b,#fdbc2a);padding:8px 13px 6px;border-radius:9px;box-shadow:0 0 24px rgba(253,188,42,.55);opacity:0;white-space:nowrap}
+.sd.L{background:rgba(85,214,162,.16);color:#55d6a2;box-shadow:inset 0 0 0 2px rgba(85,214,162,.5)}
+.sd.S{background:rgba(232,87,107,.14);color:#e8576b;box-shadow:inset 0 0 0 2px rgba(232,87,107,.45)}
+.sd.N{background:rgba(142,134,128,.12);color:#8e8680;box-shadow:inset 0 0 0 2px rgba(142,134,128,.4)}
+.row .pl{margin-left:auto;font:600 52px 'Geist Mono';letter-spacing:-.02em;font-variant-numeric:tabular-nums;position:relative}
+.row .bg{position:absolute;inset:0;border-radius:18px;background:linear-gradient(90deg,rgba(29,25,23,.85),rgba(22,19,18,.55));z-index:-2}
+.row .bar{position:absolute;left:0;top:0;bottom:0;border-radius:18px;z-index:-1;overflow:hidden}
+.row .tip{position:absolute;top:10px;bottom:10px;width:4px;border-radius:3px;z-index:-1}
+.row .gl{position:absolute;inset:-4px;border-radius:22px;box-shadow:0 0 0 3px #fdbc2a,0 0 70px rgba(253,188,42,.55),inset 0 0 40px rgba(253,188,42,.18);opacity:0;z-index:-1}
+.row .sh{position:absolute;inset:0;border-radius:18px;background:linear-gradient(100deg,transparent 30%,rgba(255,230,160,.35) 50%,transparent 70%);mix-blend-mode:screen;z-index:3;opacity:0;pointer-events:none}
+#chart{position:absolute;left:56px;top:300px;width:968px;height:540px}
+#clock{position:absolute;right:56px;top:150px;text-align:right}
+#clock .d{font:600 22px 'Geist Mono';letter-spacing:.16em;color:#8e8680}
+#clock .t{font:600 58px 'Geist Mono';letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+#clock .c{font:700 22px 'Geist Mono';letter-spacing:.12em;color:#fdbc2a;height:28px}
+#now{position:absolute;font:600 74px 'Geist Mono';letter-spacing:-.03em;white-space:nowrap}
+#final{position:absolute;left:540px;top:610px;font:900 150px/1 Inter;letter-spacing:.02em;color:#fdbc2a;border:10px solid #fdbc2a;border-radius:22px;padding:14px 34px 10px;transform-origin:50% 50%;opacity:0;white-space:nowrap}
+#made{position:absolute;left:0;right:0;top:440px;display:flex;flex-direction:column;align-items:center;opacity:0}
+#made .who{display:flex;align-items:center;gap:26px;font:900 84px Inter;letter-spacing:-.03em;white-space:nowrap}
+#made .who.long{font-size:64px}
+#made .mks{display:flex;gap:10px}
+#made .amt{font:700 196px/1 'Geist Mono';letter-spacing:-.07em;color:transparent;background-size:300% 100%;-webkit-background-clip:text;background-clip:text;margin-top:36px;font-variant-numeric:tabular-nums;white-space:nowrap}
+#made .amt small{font-size:60px;letter-spacing:.04em}
+#made .sub{font:600 30px 'Geist Mono';letter-spacing:.12em;color:#fdbc2a;margin-top:30px;text-align:center;line-height:1.6;white-space:nowrap}
+#ssn{position:absolute;left:56px;right:56px;top:150px;opacity:0}
+#ssn .h{font:900 82px Inter;letter-spacing:-.035em}
+#ssn .k{font:600 24px 'Geist Mono';letter-spacing:.12em;color:#8e8680;margin-top:12px}
+.srow{position:absolute;left:56px;width:968px;height:178px;border-radius:22px;padding:24px 26px 0 22px}
+.srow .bg{position:absolute;inset:0;border-radius:22px;background:linear-gradient(90deg,rgba(29,25,23,.9),rgba(22,19,18,.55));z-index:-2}
+.srow .a{display:flex;align-items:center;gap:20px}
+.srow .rk{font:600 32px 'Geist Mono';color:#8e8680;width:34px}
+.srow .nm{font:800 46px Inter;letter-spacing:-.02em}
+.srow .ch{font:700 22px 'Geist Mono';letter-spacing:.02em;padding:7px 12px 5px;border-radius:9px;white-space:nowrap}
+.srow .v{margin-left:auto;font:600 54px 'Geist Mono';letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.srow svg.sbar{position:absolute;left:22px;bottom:22px;overflow:visible}
+.srow .gl{position:absolute;inset:-4px;border-radius:26px;box-shadow:0 0 0 3px #fdbc2a,0 0 60px rgba(253,188,42,.45);opacity:0;z-index:-1}
+.fine{bottom:30px}
+#clock .k{font:600 26px 'Geist Mono';letter-spacing:.04em;margin-top:2px;font-variant-numeric:tabular-nums}
+#clock{top:146px}#clock .c{position:absolute;right:0;top:0;white-space:nowrap}
+.hd{position:absolute;display:flex;align-items:center;gap:12px;white-space:nowrap}
+.hd .mks{display:flex}.hd .mks .mk{margin-left:-12px}.hd .mks .mk:first-child{margin-left:0}
+.hd .v{font:600 52px 'Geist Mono';letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.row svg.lane{position:absolute;left:14px;top:70px;overflow:visible}
+
+</style>
+<div id="cam">
+  <div id="glow"></div>
+  <svg id="chart" viewBox="0 0 968 540"></svg>
+  <div class="title" id="title"><img id="clogo" alt=""><div><div class="co" id="cname"></div><div class="sub">EARNINGS · 4 AIs · $100K EACH</div></div></div>
+  <div class="vs" id="vs"></div>
+  <div id="clock"><div class="d" id="cd"></div><div class="t" id="ct"></div><div class="c" id="cc"></div><div class="k" id="ck"></div></div>
+  <div id="now"></div><div id="hds"></div>
+  <div id="rows"></div>
+  <div id="final">FINAL</div>
+  <div id="made"><div class="who" id="mwho"></div><div class="amt" id="mamt"></div><div class="sub"><span id="ms1"></span><br><span id="ms2"></span></div></div>
+  <div id="ssn"><div class="h">Season P&amp;L</div><div class="k" id="ssk"></div></div>
+  <div id="srows"></div>
+</div>
+<div id="vig"></div><canvas id="grain"></canvas>
+<script src="lib.js"></script>
+<script>
+L.$('#base').textContent = L.css;
+const QS = new URLSearchParams(location.search), RN = +(QS.get('r') || 106), M = +(QS.get('m') || 1);
+let D, R, cam = L.$('#cam'), TS0 = 1, TS1 = .58; // the title's two scales; a long company name is fitted, never clipped
+const UP = '85,214,162', DN = '232,87,107', AU = '253,188,42';
+const TR = 7.5, BEAT = 60 / 130, B = n => TR + n * BEAT;
+const A0 = 8.45, A1 = B(4), C0 = B(9) - .3, C1 = B(10), S0 = C1, S1 = B(12) + .2, END = 15.5;
+const CW = 968, CH = 540;
+let P0, P1, YP, pgrid, groups, LK, LH = 138, LW = 940, hds, rows, srows, K, mAt, X, Y, y0, y1, grid, PATH, pxAt, barFull, xlabels;
+const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+const setup = () => {
+  R = D; R.stake = 100000; L.R = { ...L.R, n: D.n }; L.chrome(document.body);
+  const T = D.total, o = D.open, rp = D.report == null ? 0 : D.report;
+  // the time map: the first hour after the close (or after the report), the night, the session, the last hour slow
+  const k1 = Math.min(Math.max(60, rp + 45), o - 30);
+  K = [[2.3, 0], [3.3, k1], [4.1, o], [5.6, T - 60], [TR, T]];
+  mAt = t => { if (t <= K[0][0]) return 0; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) { const x = (t - K[i - 1][0]) / (K[i][0] - K[i - 1][0]); return L.lerp(K[i - 1][1], K[i][1], i === K.length - 1 ? 1 - Math.pow(1 - x, 1.6) : L.eio(x) * .3 + x * .7) } return T };
+  PATH = D.path;
+  pxAt = m => { if (!PATH) return 0; if (m <= 0) return 0; if (m >= T) return D.move; let i = 1; while (i < PATH.length && PATH[i][0] < m) i++; const a = PATH[i - 1], b = PATH[i] || PATH[i - 1]; return L.lerp(a[1], b[1], (m - a[0]) / Math.max(1, b[0] - a[0])) };
+  // the chart's scale follows the move: gridlines at a round step, the 0% line always in
+  const vals = PATH ? PATH.map(p => p[1]) : [0, D.move, ...D.ai.filter(a => a.call != null).map(a => a.call)]; let lo = Math.min(0, ...vals), hi = Math.max(0, ...vals); const r = hi - lo;
+  const step = r > 24 ? 10 : r > 10 ? 5 : r > 4 ? 2 : r > 2 ? 1 : .5; y0 = Math.floor((lo - r * .08) / step) * step; y1 = Math.ceil((hi + r * .12) / step) * step;
+  grid = []; for (let v = y0; v <= y1 + 1e-9; v += step) grid.push(+v.toFixed(2));
+  X = m => 20 + m / T * (CW - 40); Y = v => CH - 30 - (v - y0) / (y1 - y0) * (CH - 60);
+  barFull = Math.max(Math.abs(D.move), ...vals.map(Math.abs)) * 1000 * 1.08;
+  const hr = h => { const H = Math.floor(h); return (H > 12 ? H - 12 : H) + (h % 1 ? ':30' : '') + (H >= 12 ? ' PM' : ' AM') };
+  const rep = D.report != null && D.report > 0 && D.report < T;
+  xlabels = [[0, `${D.day0} ${hr(D.closeH).replace(':00', '')}${rep && D.report < 30 ? ' · REPORT' : ''}`, 'start'], [o, `${D.day1} OPEN`, 'middle'], [T, 'CLOSE', 'end']];
+  if (rep && D.report >= 30 && Math.abs(D.report - o) > 90) xlabels.push([D.report, 'REPORT', 'middle']);
+  // the P&L scale: every line on one scale, the $0 line always in, gridlines at a round dollar step
+  groups = ['LONG', 'SHORT'].map(sd => ({ sd, g: sd === 'LONG' ? 1 : -1, ai: D.ai.filter(a => a.side === sd) })).filter(q => q.ai.length);
+  const pv = (PATH ? PATH.map(p => p[1]) : [0, D.move]).map(x => x * 1000);
+  const dv = groups.flatMap(q => pv.map(x => q.g * x)); let plo = Math.min(0, ...dv), phi = Math.max(0, ...dv); const pr = phi - plo || 1;
+  const pst = [500, 1000, 2000, 2500, 5000, 10000, 20000, 25000, 50000].find(x => pr / x <= 10) || 100000;
+  P0 = Math.floor((plo - pr * .04) / pst) * pst; P1 = Math.ceil((phi + pr * .04) / pst) * pst;
+  // lanes: one dollars-per-pixel for all four, each lane's $0 line placed so its own path fills the lane
+  groups.forEach(q => { const w = pv.map(x => q.g * x); q.lo = Math.min(0, ...w); q.hi = Math.max(0, ...w) }); LK = (LH - 20) / Math.max(1, ...groups.map(q => q.hi - q.lo));
+  pgrid = []; for (let v = P0; v <= P1 + 1e-9; v += pst) pgrid.push(v);
+  YP = v => CH - 30 - (v - P0) / (P1 - P0) * (CH - 60);
+  L.$('#ck').style.color = D.move >= 0 ? '#55d6a2' : '#e8576b';
+  if (M === 1) hds = groups.map(q => { const el = document.createElement('div'); el.className = 'hd';
+    el.innerHTML = `<span class="mks">${q.ai.map(a => L.mark(a.k, 52)).join('')}</span><span class="v"></span>`; L.$('#hds').appendChild(el); return el });
+  // the static words
+  L.$('#cname').textContent = D.co; L.$('#clogo').src = D.logo || 'ezlogo.svg';
+  const sp = D.split.match(/^(\d+) LONG vs (\d+) SHORT$/);
+  L.$('#vs').innerHTML = sp ? `<span class="up">${sp[1]} LONG</span><i>vs</i><span class="dn">${sp[2]} SHORT</span>` : `<span class="${/LONG/.test(D.split) ? 'up' : 'dn'}">${D.split}</span>`;
+  L.$('#ssk').textContent = `$100K A TRADE · AFTER ROUND ${D.n}`;
+  L.$('#ms1').textContent = `THIS ROUND · ${D.co.toUpperCase()} ${D.pct}`; L.$('#ms2').textContent = D.line3;
+  const who = D.line1.replace(/ [+−]\$[\d,]+( each)?$/, ''), each = / each$/.test(D.line1), W = D.ai.filter(a => a.right);
+  const marks = (W.length ? W : D.ai).map(a => L.mark(a.k, W.length === 1 ? 120 : 76)).join('');
+  L.$('#mwho').innerHTML = `<span class="mks">${marks}</span><span>${who}</span>`; if (who.length > 14) L.$('#mwho').classList.add('long');
+  const won = D.kind !== 'all-wrong', col = won ? '#55d6a2' : '#e8576b', hl = won ? '#e8fff4' : '#ffe8ec';
+  const amt = L.$('#mamt'); amt.style.backgroundImage = `linear-gradient(100deg,${col} 42%,${hl} 50%,${col} 58%)`; amt.style.filter = `drop-shadow(0 0 28px rgba(${won ? UP : DN},.45))`;
+  amt.dataset.each = each ? '1' : '';
+  L.$('#now').style.color = D.move >= 0 ? '#55d6a2' : '#e8576b'; L.$('#now').style.textShadow = `0 0 30px rgba(${D.move >= 0 ? UP : DN},.35)`;
+  rows = D.ai.map((a, i) => { const el = document.createElement('div'); el.className = 'row';
+    el.innerHTML = `<div class="bg"></div><div class="bar"></div><div class="tip"></div><div class="gl"></div><span class="mkw"></span><span class="nm">${a.name}</span><span class="sd ${a.side === 'NO CALL' ? 'N' : a.side[0]}">${a.side}</span>${a.right ? '<span class="win">WINNER</span>' : ''}<span class="pl mono"></span><div class="sh"></div>${M === 2 ? `<svg class="lane" width="${LW}" height="${LH}"></svg>` : ''}`;
+    L.$('#rows').appendChild(el); return el });
+  srows = D.order.map(k => { const a = D.ai.find(x => x.k === k); const el = document.createElement('div'); el.className = 'srow'; el.dataset.k = k;
+    el.innerHTML = `<div class="bg"></div><div class="gl"></div><div class="a"><span class="rk"></span>${L.mark(k, 64)}<span class="nm">${a.name}</span>
+      <span class="ch" style="color:${a.pnl > 0 ? '#55d6a2' : a.pnl < 0 ? '#e8576b' : '#8e8680'};background:rgba(${a.pnl > 0 ? UP : a.pnl < 0 ? DN : '142,134,128'},.13)">${a.pnl ? L.money(a.pnl) : '$0'} THIS ROUND</span><span class="v"></span></div><svg class="sbar" width="924" height="40"></svg>`;
+    L.$('#srows').appendChild(el); return el });
+  // sound: an hour tick on the clock before the last hour, the last hour counted in tens of minutes, the hits
+  const C = window.CUES = [[0.05, 'r11-swell', .12], [1.45, 'sfx-whoosh', .16], [2.25, 'r11-slide', .14]];
+  let last = -1; for (let t = 2.3; t < TR; t += 1 / 120) { const m = mAt(t); const h = Math.floor((m + 0.001) / 60); if (h !== last && m < T - 60 && h > 0) { if (C.filter(c => c[1] === 'sfx-tick' && t - c[0] < .12).length === 0) C.push([+t.toFixed(3), 'sfx-tick', .1]); last = h } }
+  for (let k = 50; k >= 0; k -= 10) { let t = 5.6; while (t < TR && mAt(t) < T - k) t += 1 / 240; C.push([+t.toFixed(3), 'sfx-clock', .18]) }
+  C.push([5.6, 'sfx-riser', .12], [TR, 'sfx-bell', .3], [TR + .12, 'sfx-stamp', .26], [TR + .5, won ? 'r11-kaching' : 'r11-thump', .24], [TR + .6, 'r11-sparkle', won ? .12 : 0],
+    [A0, 'sfx-whoosh', .14], [A1, 'r11-thump', .16], [A1 + .75, 'r11-pluck', .12], [C0, 'sfx-whoosh', .12], [C1, 'r11-thump', .14], [S0 + .1, 'r11-card', .1], [S0 + .25, 'r11-card', .1], [S0 + .4, 'r11-card', .1], [S1, 'sfx-chime', .14]);
+  for (let q = 0; q < 6; q++) C.push([+(A0 + .3 + q * .09).toFixed(3), 'sfx-tick', .06]);
+  window.MUSIC = { f: 'm2-phonk', at: 14.79 - TR };
+};
+// the clock: local exchange time from the earlier close
+const clock = m => { const tot = D.closeH * 60 + Math.round(m); const d = Math.floor(tot / 1440), mm = tot % 1440; let h = Math.floor(mm / 60); const mi = mm % 60;
+  const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return { day: DAYS[(DAYS.indexOf(D.day0) + d) % 7], t: h + ':' + String(mi).padStart(2, '0') + ' ' + ap } };
+const barCss = (rgb, a) => `linear-gradient(90deg,rgba(${rgb},0) 0%,rgba(${rgb},${.16 * a}) 55%,rgba(${rgb},${.42 * a}) 100%)`;
+let grain;
+const kfmt = v => (v > 0 ? '+' : v < 0 ? '−' : '') + '$' + (Math.abs(v) >= 1000 ? +(Math.abs(v) / 1000).toFixed(1) + 'K' : Math.abs(v));
+// the colour of a P&L line is its sign: green above $0, red below (one gradient, a hard stop at the $0 line)
+const signGrad = (id, y0, h, a1, a0) => `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${h}">
+  <stop offset="0" stop-color="#55d6a2" stop-opacity="${a1}"/><stop offset="${y0 / h}" stop-color="#55d6a2" stop-opacity="${a0}"/>
+  <stop offset="${y0 / h}" stop-color="#e8576b" stop-opacity="${a0}"/><stop offset="1" stop-color="#e8576b" stop-opacity="${a1}"/></linearGradient>`;
+// one side's P&L path up to minute m, in a box of width w, x0 and a value->y map
+const ppath = (g, m, mv, xf, yf) => { let pts;
+  if (PATH) { pts = PATH.filter(p => p[0] <= m).map(p => [xf(p[0]), yf(g * p[1] * 1000)]); pts.push([xf(m), yf(g * mv * 1000)]) }
+  else pts = [[xf(0), yf(0)], [xf(L.lerp(0, D.total, L.cl(Math.abs(mv) / Math.max(1e-9, Math.abs(D.move))))), yf(g * mv * 1000)]];
+  return pts };
+const dpath = pts => pts.length > 1 ? 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L') : '';
+function pchart(t, m, mv, ring) {
+  const T = D.total, z = YP(0), win = groups.find(q => q.ai.some(a => a.right));
+  let body = '';
+  groups.forEach((q, gi) => { const pts = ppath(q.g, m, mv, X, YP); const d = dpath(pts); if (!d) return; const h = pts[pts.length - 1];
+    const isW = q === win, gk = isW ? L.eo(L.n(t, TR + .15, TR + .7)) : 0, dim = !isW && t > TR ? 1 - .55 * L.n(t, TR + .15, TR + .6) : 1;
+    const area = d + `L${h[0].toFixed(1)} ${z}L${pts[0][0]} ${z}Z`;
+    body += `<g opacity="${dim}"><path d="${area}" fill="url(#pa)"/><path d="${d}" fill="none" stroke="url(#pl)" stroke-width="12" opacity=".3" filter="url(#gw)"/>
+      <path d="${d}" fill="none" stroke="url(#pl)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" ${PATH ? '' : 'stroke-dasharray="14 10"'}/>
+      ${gk > 0 ? `<path d="${d}" fill="none" stroke="#fdbc2a" stroke-width="12" opacity="${.45 * gk}" filter="url(#gw)"/><path d="${d}" fill="none" stroke="#ffd56b" stroke-width="5.5" stroke-linejoin="round" opacity="${gk}"/>` : ''}
+      <circle cx="${h[0]}" cy="${h[1]}" r="10" fill="#f2ede6"/></g>`;
+    // the AIs on this line ride its head, with the live P&L (averaged over 0.2 s so it never snaps)
+    const el = hds[gi]; let hx = 0, hy = 0; for (let k = 0; k < 8; k++) { const tq = Math.max(0, t - k * .025), mq = mAt(tq), vq = PATH ? pxAt(mq) : mv, pq = ppath(q.g, mq, vq, X, YP), e = pq[pq.length - 1]; hx += e[0]; hy += e[1] }
+    hx /= 8; hy /= 8; const v = t >= TR + .4 ? q.g * D.move * 1000 : Math.round(q.g * mv * 1000);
+    el.querySelector('.v').textContent = v === 0 ? '$0' : L.money(v); el.querySelector('.v').style.color = gk > .5 ? '#ffd56b' : v > 0 ? '#55d6a2' : v < 0 ? '#e8576b' : '#f2ede6';
+    const side = L.eio(L.cl(.5 + (P0 === 0 || P1 === 0 || groups.length < 2 ? (q.g * D.move >= 0 ? 1 : -1) : (YP(0) - hy) / 36))), w = el.offsetWidth || 300;
+    el.style.left = Math.min(56 + hx + 22, 1024 - w) + 'px'; el.style.top = Math.max(304, Math.min(300 + CH - 104, 300 + hy + L.lerp(22, -86, side))) + 'px';
+    el.style.opacity = L.eo(L.n(t, 2.3, 2.6)) * (1 - L.eio(L.n(t, A0, A0 + .45))) * dim; });
+  return `<defs>${signGrad('pl', z, CH, 1, 1)}${signGrad('pa', z, CH, .34, 0)}<filter id="gw"><feGaussianBlur stdDeviation="6"/></filter></defs>
+   ${pgrid.map(v => `<line x1="20" x2="${CW - 20}" y1="${YP(v)}" y2="${YP(v)}" stroke="${v ? '#2a2522' : '#5f5853'}" stroke-width="2" ${v ? '' : 'stroke-dasharray="8 8"'}/>${v < P1 ? `<text x="${CW - 20}" y="${YP(v) - 10}" text-anchor="end" fill="#5f5853" font-family="Geist Mono" font-size="20">${v ? kfmt(v) : '$0'}</text>` : ''}`).join('')}
+   ${xlabels.map(([mm, s, an]) => `<text x="${X(mm)}" y="${CH - 2}" text-anchor="${an}" fill="#5f5853" font-family="Geist Mono" font-size="19" letter-spacing="1.5">${s}</text>`).join('')}
+   <text x="28" y="40" fill="#8e8680" font-family="Geist Mono" font-size="20" letter-spacing="2">P&amp;L · $100K A TRADE</text>
+   <rect x="${X(T - 60)}" y="16" width="${X(T) - X(T - 60)}" height="${CH - 60}" fill="#fdbc2a" opacity="${.07 * L.n(t, 5.4, 5.7)}"/>
+   ${!PATH && t > 2.3 && t < TR + .3 ? `<line x1="${X(m)}" x2="${X(m)}" y1="16" y2="${CH - 30}" stroke="#f2ede6" stroke-width="2" opacity="${.35 * (1 - L.n(t, TR, TR + .3))}"/>` : ''}
+   ${body}
+   ${ring > 0 && ring < 1 && win ? [0, .18, .36].map(o => { const r = L.n(ring, o, o + .64); return r > 0 && r < 1 ? `<circle cx="${X(T)}" cy="${YP(win.g * D.move * 1000)}" r="${14 + 300 * L.eo(r)}" fill="none" stroke="#fdbc2a" stroke-width="${6 * (1 - r)}" opacity="${1 - r}"/>` : '' }).join('') : ''}`;
+}
+// one AI's lane: its own P&L line on the shared scale, $0 dashed, the last hour lit
+function lane(a, s, t, m, mv, gk, i) {
+  const T = D.total, xf = mm => 6 + mm / T * (LW - 12), q = groups.find(x => x.g === s) || groups[0], off = 10 + ((LH - 20) - (q.hi - q.lo) * LK) / 2, yf = v => off + (q.hi - v) * LK, z = yf(0);
+  if (!s) return `<line x1="0" x2="${LW}" y1="${z}" y2="${z}" stroke="#5f5853" stroke-width="2" stroke-dasharray="6 8"/><text x="${LW / 2}" y="${z - 12}" text-anchor="middle" fill="#5f5853" font-family="Geist Mono" font-size="20" letter-spacing="2">NO CALL</text>`;
+  const pts = ppath(s, m, mv, xf, yf), d = dpath(pts), h = pts[pts.length - 1];
+  const id = 'l' + i, dim = 1;
+  const area = d ? d + `L${h[0].toFixed(1)} ${z}L${pts[0][0]} ${z}Z` : '';
+  return `<defs>${signGrad(id + 'p', z, LH, 1, 1)}${signGrad(id + 'a', z, LH, .38, 0)}<filter id="${id}g"><feGaussianBlur stdDeviation="5"/></filter></defs>
+    <rect x="${xf(T - 60)}" y="0" width="${xf(T) - xf(T - 60)}" height="${LH}" fill="#fdbc2a" opacity="${.07 * L.n(t, 5.4, 5.7)}"/>
+    <line x1="0" x2="${LW}" y1="${z}" y2="${z}" stroke="#5f5853" stroke-width="2" stroke-dasharray="6 8"/><text x="4" y="${z < LH / 2 ? z + 26 : z - 10}" fill="#5f5853" font-family="Geist Mono" font-size="18">$0</text>
+    <g opacity="${dim}">${d ? `<path d="${area}" fill="url(#${id}a)"/><path d="${d}" fill="none" stroke="url(#${id}p)" stroke-width="10" opacity=".3" filter="url(#${id}g)"/>
+    <path d="${d}" fill="none" stroke="url(#${id}p)" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" ${PATH ? '' : 'stroke-dasharray="12 9"'}/>
+    ${gk > 0 ? `<path d="${d}" fill="none" stroke="#fdbc2a" stroke-width="10" opacity="${.45 * gk}" filter="url(#${id}g)"/><path d="${d}" fill="none" stroke="#ffd56b" stroke-width="4.5" stroke-linejoin="round" opacity="${gk}"/>` : ''}
+    <circle cx="${h[0]}" cy="${h[1]}" r="7" fill="#f2ede6"/>` : ''}</g>`;
+}
+window.R = t => {
+  grain(t);
+  const T = D.total, k = L.eio(L.n(t, 1.45, 2.25));
+  const ti = L.$('#title'); ti.style.transform = `translate(${L.lerp(84, 56, k)}px,${L.lerp(150, 136, k)}px) scale(${L.lerp(TS0, TS1, k)})`;
+  const outA = L.eio(L.n(t, A0, A1)), outC = L.eio(L.n(t, A0, A0 + .45)), outL = L.eio(L.n(t, A0 + .1, A1));
+  ti.style.opacity = 1 - outA;
+  const vs = L.$('#vs'); vs.style.opacity = 1 - L.eio(L.n(t, 1.45, 1.85)); vs.style.transform = `translateY(${-60 * L.eo(L.n(t, 1.45, 1.9))}px)`;
+  const m = mAt(t);
+  // with a path the move is live; without one it lands at the bell (0 until then)
+  const mv = PATH ? pxAt(m) : D.move * L.eio(L.n(t, TR, TR + .4));
+  rows.forEach((el, i) => { const a = D.ai[i], win = a.right, s = a.side === 'LONG' ? 1 : a.side === 'SHORT' ? -1 : 0;
+    const hx = 56 + i * 242, hy = 660, ry = M === 2 ? 304 + i * 234 : 880 + i * 96;
+    const kk = L.eio(L.n(t, 1.5 + i * .06, 2.45 + i * .06));
+    el.style.left = '0px'; el.style.top = '0px';
+    el.style.width = L.lerp(232, 968, kk) + 'px'; el.style.height = L.lerp(440, M === 2 ? 216 : 86, kk) + 'px'; el.style.alignItems = M === 2 && kk >= .5 ? 'flex-start' : 'center'; el.style.paddingTop = M === 2 && kk >= .5 ? '14px' : '';
+    el.style.flexDirection = kk < .5 ? 'column' : 'row'; el.style.justifyContent = kk < .5 ? 'center' : 'flex-start';
+    el.style.gap = (kk < .5 ? 16 : 22) + 'px'; el.style.padding = kk < .5 ? '0' : '0 22px 0 14px';
+    const ms = Math.round(L.lerp(140, 58, kk)); const mw = el.querySelector('.mkw'); if (mw.dataset.s != ms) { mw.innerHTML = L.mark(a.k, ms); mw.dataset.s = ms }
+    el.querySelector('.nm').style.cssText = kk < .5 ? 'width:auto;font-size:36px;text-align:center' : '';
+    const pl = el.querySelector('.pl'); pl.style.display = kk < .5 ? 'none' : '';
+    const v = t >= TR + .4 ? a.pnl : Math.round(s * mv * 1000);
+    pl.textContent = t < 2.3 || v === 0 ? '$0' : L.money(v); pl.className = 'pl mono ' + (t < 2.35 || v === 0 ? '' : v > 0 ? 'up' : 'dn');
+    const on = L.n(t, 2.2, 2.5), wv = L.cl(Math.abs(v) / barFull) * 968 * on;
+    const goldK = win ? L.eo(L.n(t, TR + .15, TR + .7)) : 0;
+    const rgb = v >= 0 ? UP : DN; const bar = el.querySelector('.bar'), tip = el.querySelector('.tip');
+    bar.style.width = wv + 'px'; bar.style.background = goldK > 0 ? `${barCss(AU, goldK)},${barCss(UP, 1 - goldK)}` : barCss(rgb, 1);
+    bar.style.display = kk < .95 || M === 2 ? 'none' : ''; tip.style.display = bar.style.display;
+    if (M === 2) { const sv = el.querySelector('svg.lane'); sv.style.opacity = L.eio(L.n(t, 2.2, 2.6)); sv.innerHTML = kk < .95 ? '' : lane(a, s, t, m, mv, goldK, i) }
+    tip.style.left = Math.max(0, wv - 4) + 'px'; const tc = goldK > .5 ? AU : rgb;
+    tip.style.background = `rgb(${tc})`; tip.style.boxShadow = `0 0 18px 4px rgba(${tc},.6)`; tip.style.opacity = on * (wv > 6 ? 1 : 0);
+    el.querySelector('.gl').style.opacity = goldK;
+    // closes-only rounds: as an AI's call draws in on the chart, its row lights in its side's colour
+    if (!PATH && a.call != null) { const ci = D.ai.filter(c => c.call != null).indexOf(a), t0 = 2.6 + ci * .85, pu = t > t0 ? Math.exp(-(t - t0) * 2.2) * L.eio(L.n(t, t0, t0 + .15)) : 0, cc = a.side === 'LONG' ? UP : DN;
+      el.querySelector('.bg').style.background = `linear-gradient(90deg,rgba(${cc},${.3 * pu}),rgba(${cc},${.08 * pu})),linear-gradient(90deg,rgba(29,25,23,.85),rgba(22,19,18,.55))` }
+    if (win) { const w = el.querySelector('.win'); const wk = L.n(t, TR + .35, TR + .65); w.style.opacity = wk; w.style.transform = `scale(${L.lerp(1.6, 1, L.eo5(wk))})`;
+      const sh = el.querySelector('.sh'); const sk = L.n(t, TR + .3, TR + 1.2); sh.style.opacity = Math.sin(Math.PI * sk); sh.style.transform = `translateX(${L.lerp(-700, 700, sk)}px)`; pl.style.color = goldK > .5 ? '#ffd56b' : '' }
+    const grow = win ? 1 + .06 * L.eio(L.n(t, TR + .1, TR + .7)) : 1;
+    // the winners' rows travel to the centre and open; the others sink and fade (all sink when nobody won)
+    let tx = L.lerp(hx, 56, kk), ty = L.lerp(hy, ry, kk), sc = grow, op = 1;
+    if (win) { tx = L.lerp(tx, 56, outA); ty = L.lerp(ty, 470, outA); sc = L.lerp(grow, 1.03, outA); op = 1 - L.n(t, A0 + .2, A1) }
+    else { ty += 120 * outL; op = 1 - outL }
+    el.style.transform = `translate(${tx}px,${ty}px) scale(${sc})`; el.style.opacity = op;
+    el.style.filter = !win && t > TR ? `brightness(${1 - .42 * L.n(t, TR + .15, TR + .6)}) saturate(${1 - .45 * L.n(t, TR + .15, TR + .6)})` : '';
+  });
+  // the chart
+  const on = L.eo(L.n(t, 1.9, 2.4)) * (1 - outC) * (M === 2 ? 0 : 1), svg = L.$('#chart');
+  svg.style.opacity = on; svg.style.transform = `translateY(${-60 * outC}px)`;
+  const lc = D.move >= 0 ? '#55d6a2' : '#e8576b';
+  let d = '', area = '', head = [X(m), Y(mv)];
+  if (PATH) { const pts = PATH.filter(p => p[0] <= m).map(p => [X(p[0]), Y(p[1])]); pts.push(head);
+    if (pts.length > 1) { d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L'); area = d + `L${head[0].toFixed(1)} ${Y(0)}L${X(0)} ${Y(0)}Z` } }
+  else { const c = L.eio(L.n(t, TR, TR + .45)); head = [L.lerp(X(0), X(T), c), L.lerp(Y(0), Y(D.move), c)]; d = c > 0 ? `M${X(0)} ${Y(0)}L${head[0].toFixed(1)} ${head[1].toFixed(1)}` : '' }
+  const ring = L.n(t, TR, TR + 1.1);
+  svg.innerHTML = `<defs><linearGradient id="ga" x1="0" y1="${D.move >= 0 ? 0 : 1}" x2="0" y2="${D.move >= 0 ? 1 : 0}"><stop offset="0" stop-color="${lc}" stop-opacity=".34"/><stop offset="1" stop-color="${lc}" stop-opacity="0"/></linearGradient>
+   <filter id="gw"><feGaussianBlur stdDeviation="6"/></filter></defs>
+   ${grid.map(v => `<line x1="20" x2="${CW - 20}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v ? '#2a2522' : '#5f5853'}" stroke-width="2" ${v ? '' : 'stroke-dasharray="8 8"'}/><text x="${CW - 20}" y="${Y(v) - 10}" text-anchor="end" fill="#5f5853" font-family="Geist Mono" font-size="20">${v ? (v > 0 ? '+' : '−') + Math.abs(v) + '%' : '0%'}</text>`).join('')}
+   ${xlabels.map(([mm, s, an]) => `<text x="${X(mm)}" y="${CH - 2}" text-anchor="${an}" fill="#5f5853" font-family="Geist Mono" font-size="19" letter-spacing="1.5">${s}</text>`).join('')}
+   ${!PATH ? `<text x="${X(0) + 8}" y="40" fill="#8e8680" font-family="Geist Mono" font-size="20" letter-spacing="2">CLOSE TO CLOSE</text>` : ''}
+   <rect x="${X(T - 60)}" y="16" width="${X(T) - X(T - 60)}" height="${CH - 60}" fill="#fdbc2a" opacity="${.07 * L.n(t, 5.4, 5.7)}"/>
+   ${!PATH ? D.ai.filter(a => a.call != null).map((a, i) => { const c = L.eio(L.n(t, 2.6 + i * .85, 3.3 + i * .85)); if (c <= 0) return ''; const y = Y(a.call), col = a.call > 0 ? '#55d6a2' : '#e8576b', x1 = L.lerp(X(T), X(0), c);
+      return `<line x1="${x1}" x2="${X(T)}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="2" stroke-dasharray="6 8" opacity="${.55 * c}"/><text x="${X(T) - 90}" y="${y - 10}" text-anchor="end" fill="${col}" opacity="${c}" font-family="Geist Mono" font-size="22" font-weight="600">${a.name.toUpperCase()} ${a.call > 0 ? '+' : '−'}${Math.abs(a.call)}%</text>` }).join('') : ''}
+   ${!PATH && t > 2.3 && t < TR + .3 ? `<line x1="${X(m)}" x2="${X(m)}" y1="16" y2="${CH - 30}" stroke="#f2ede6" stroke-width="2" opacity="${.35 * (1 - L.n(t, TR, TR + .3))}"/>` : ''}
+   ${PATH ? `<path d="${area}" fill="url(#ga)"/>` : ''}<path d="${d}" fill="none" stroke="${lc}" stroke-width="10" opacity=".35" filter="url(#gw)"/>
+   <path d="${d}" fill="none" stroke="${lc}" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round" ${PATH ? '' : 'stroke-dasharray="14 10"'}/>
+   <circle cx="${X(0)}" cy="${Y(0)}" r="${PATH ? 0 : 9}" fill="#8e8680"/>${!PATH && t < TR ? `<circle cx="${X(0)}" cy="${Y(0)}" r="${9 + 22 * (0.5 + 0.5 * Math.sin(t * 6))}" fill="none" stroke="#8e8680" stroke-width="2" opacity=".4"/>` : ''}
+   <circle cx="${head[0]}" cy="${head[1]}" r="11" fill="#f2ede6"/><circle cx="${head[0]}" cy="${head[1]}" r="${11 + 26 * (0.5 + 0.5 * Math.sin(t * 9))}" fill="none" stroke="${lc}" stroke-width="2" opacity="${t < TR && PATH ? .5 : 0}"/>
+   ${ring > 0 && ring < 1 ? [0, .18, .36].map(o => { const r = L.n(ring, o, o + .64); return r > 0 && r < 1 ? `<circle cx="${X(T)}" cy="${Y(D.move)}" r="${14 + 300 * L.eo(r)}" fill="none" stroke="#fdbc2a" stroke-width="${6 * (1 - r)}" opacity="${1 - r}"/>` : '' }).join('') : ''}`;
+  if (M === 1) svg.innerHTML = pchart(t, m, mv, ring);
+  // the live number rides the head (averaged over the last 0.2 s so it never snaps)
+  const nw = L.$('#now'); nw.textContent = L.pct(mv); nw.style.display = 'none'; nw.style.opacity = on * (PATH ? 1 : L.n(t, TR, TR + .2)) * (1 - L.eio(L.n(t, TR + .25, TR + .7)));
+  let nx = 0, ny = 0; for (let q = 0; q < 8; q++) { const tq = Math.max(0, t - q * .025), mq = mAt(tq), vq = PATH ? pxAt(mq) : mv; nx += Math.min(56 + (PATH ? X(mq) : head[0]) + 24, 1024 - 330); ny += Math.min(Math.max(300, 300 + (PATH ? Y(vq) : head[1]) - 100), 760) } nw.style.left = nx / 8 + 'px'; nw.style.top = ny / 8 + 'px';
+  const c = clock(m); L.$('#cd').textContent = t < 2.3 ? D.tz : c.day + ' · ' + D.tz; L.$('#ct').textContent = t < 2.3 ? '' : (t >= TR ? D.closeLabel : c.t);
+  const left = T - m; L.$('#cc').textContent = m >= T - 60 && t < TR ? 'CLOSE IN ' + Math.floor(left) + ':' + String(Math.floor((left % 1) * 60)).padStart(2, '0') : t >= TR ? 'THE CLOSE' : '';
+  L.$('#clock').style.opacity = L.n(t, 2.0, 2.4) * (1 - outC); L.$('#cd').style.opacity = L.$('#cc').textContent ? 0 : 1;
+  L.$('#ck').textContent = t < 2.3 ? '' : '$' + D.ticker.replace(/\..*$/, '') + ' ' + L.pct(mv);
+  const f = L.n(t, TR + .08, TR + .45), fo = 1 - L.eio(L.n(t, 8.25, 8.8)); const fe = L.$('#final');
+  fe.style.opacity = (f > 0 ? 1 : 0) * fo; fe.style.transform = `translate(-50%,-50%) rotate(-8deg) scale(${L.lerp(2.2, 1, L.eo5(f))})`;
+  // the winners' screen: the amount counts up from $0 as it opens
+  const ma = L.$('#made'), ain2 = L.eio(L.n(t, A0 + .25, A1 + .25)), aout = L.eio(L.n(t, C0, C1));
+  ma.style.opacity = ain2 * (1 - L.eio(L.n(t, C0, C0 + .35))); ma.style.transform = `translateY(${30 * (1 - ain2)}px) scale(${L.lerp(.9, 1, ain2) * (1 + .02 * L.eio(L.n(t, A1, C0 + .3)))})`;
+  const cnt = Math.round(D.amt * L.eo(L.n(t, A0 + .3, A0 + .9)));
+  L.$('#mamt').innerHTML = `${D.kind === 'all-wrong' ? '−' : '+'}$${cnt.toLocaleString('en-US')}${L.$('#mamt').dataset.each ? '<small> EACH</small>' : ''}`;
+  L.$('#ms1').style.opacity = L.n(t, A1 + .1, A1 + .4); L.$('#ms2').style.opacity = L.n(t, A1 + .75, A1 + 1.05);
+  L.$('#mamt').style.backgroundPosition = `${L.lerp(100, 0, L.eio(L.n(t, A1 + .3, A1 + 1.5)))}% 0`;
+  const first = D.winners.length ? D.order.indexOf(D.winners[0]) : 1;
+  L.$('#mamt').style.transform = aout > 0 ? `translate(${L.lerp(0, 300, aout)}px,${L.lerp(0, (420 + first * 196 + 52) - 650, aout)}px) scale(${L.lerp(1, .3, aout)})` : '';
+  // the season: before the round -> after it; a changed rank swaps places while the totals roll
+  const sin = L.eio(L.n(t, C0 + .05, C1 + .3)); const sh = L.$('#ssn'); sh.style.opacity = sin; sh.style.transform = `translateY(${24 * (1 - sin)}px)`;
+  const run = L.eio(L.n(t, S0 + .15, S1));
+  srows.forEach((el, i) => { const kk = D.order[i], a = D.ai.find(x => x.k === kk), win = a.right;
+    const kx = L.n(t, C0 + .05 + i * .08, C0 + .75 + i * .08), kin = kx < .7 ? 1.04 * L.eio(kx / .7) : 1.04 - .04 * L.eio((kx - .7) / .3);
+    const p0 = D.order0.indexOf(kk), p1 = i, pos = L.lerp(p0, p1, run);
+    el.style.top = (420 + pos * 196) + 'px'; el.style.zIndex = win ? 2 : 1;
+    el.querySelector('.rk').textContent = Math.round(pos) + 1;
+    el.style.opacity = L.eio(L.n(t, C0 + .05 + i * .08, C0 + .45 + i * .08)); el.style.transform = `translateY(${(1 - kin) * 60}px)`;
+    const v = Math.round(L.lerp(D.season0[kk], D.season1[kk], run)); const ve = el.querySelector('.v'); ve.textContent = v === 0 ? '$0' : L.money(v);
+    ve.style.color = Math.abs(v) < 500 ? '#f2ede6' : v >= 0 ? '#55d6a2' : '#e8576b';
+    el.querySelector('.ch').style.opacity = L.n(t, S0 + .1 + i * .05, S0 + .4 + i * .05);
+    el.querySelector('.gl').style.opacity = win ? L.eo(L.n(t, S1 - .2, S1 + .3)) : 0;
+    el.style.filter = !win ? `brightness(${1 - .25 * L.n(t, S1 - .2, S1 + .3)})` : '';
+    const smax = Math.max(...D.order.map(q => Math.max(Math.abs(D.season0[q]), Math.abs(D.season1[q])))) * 1.05;
+    const Z = 462, w = v / smax * 440, rgb = Math.abs(v) < 500 ? '242,237,230' : v >= 0 ? UP : DN;
+    const x0 = w >= 0 ? Z : Z + w, ww = Math.max(4, Math.abs(w));
+    el.querySelector('svg.sbar').innerHTML = `<defs><linearGradient id="sg${i}" x1="${w >= 0 ? 0 : 1}" y1="0" x2="${w >= 0 ? 1 : 0}" y2="0"><stop offset="0" stop-color="rgb(${rgb})" stop-opacity=".08"/><stop offset="1" stop-color="rgb(${rgb})" stop-opacity=".75"/></linearGradient>
+      <filter id="sb${i}"><feGaussianBlur stdDeviation="6"/></filter></defs>
+      <rect x="0" y="14" width="924" height="12" rx="6" fill="#1d1917"/>
+      <rect x="${x0}" y="8" width="${ww}" height="24" rx="12" fill="url(#sg${i})"/>
+      <rect x="${w >= 0 ? x0 + ww - 5 : x0}" y="6" width="5" height="28" rx="2.5" fill="rgb(${rgb})" filter="url(#sb${i})" opacity=".9"/>
+      <rect x="${w >= 0 ? x0 + ww - 3 : x0}" y="8" width="3" height="24" rx="1.5" fill="rgb(${rgb})"/>
+      <line x1="${Z}" x2="${Z}" y1="0" y2="40" stroke="#8e8680" stroke-width="2"/>`;
+  });
+  // colour script: the move's own colour washes in as it grows; gold at the bell
+  const w = L.cl(Math.abs(mv) / Math.max(4, Math.abs(D.move))), b = L.n(t, TR, TR + .6) * (1 - .5 * L.n(t, TR + .6, 9.5)), ga = ain2 * (1 - aout);
+  const mc = D.move >= 0 ? UP : DN, oc = D.move >= 0 ? DN : UP;
+  L.$('#glow').style.background = `radial-gradient(ellipse 80% 45% at 30% 20%,rgba(${mc},${(.05 + .16 * w) * (1 - outA) + .2 * ga}),transparent 70%),radial-gradient(ellipse 90% 40% at 50% 100%,rgba(${oc},${(.03 + .11 * w) * (1 - outA)}),transparent 70%),radial-gradient(ellipse 70% 50% at 50% 70%,rgba(253,188,42,${.18 * b * (1 - outA) + .1 * ga}),transparent 70%),radial-gradient(ellipse 70% 40% at 50% 60%,rgba(253,188,42,${.07 * sin}),transparent 70%)`;
+  const push = 1 + .015 * L.n(t, 0, 2.3) + .03 * L.eio(L.n(t, 5.6, TR)) - .03 * L.eio(L.n(t, TR + .3, 8.6)) + .045 * L.n(t, A1, C0) - .045 * L.eio(L.n(t, C0, C1)) + .02 * L.n(t, C1, END);
+  const kick = t > TR ? Math.exp(-(t - TR) * 9) * Math.sin((t - TR) * 60) * 4 : 0;
+  cam.style.transform = `translate(${kick}px,${kick * .6}px) scale(${push})`;
+};
+L.boot(async () => { D = await fetch('data/r' + RN + '.json').then(r => r.json()); setup(); grain = L.grain(L.$('#grain'), .08);
+  await Promise.all(L.$$('img').map(i => i.decode().catch(() => 0)));
+  await document.fonts.load('900 128px Inter'); await document.fonts.ready; const tw = L.$('#title').offsetWidth; TS0 = Math.min(1, 912 / tw); TS1 = Math.min(.58, 600 / tw) });
+</script>

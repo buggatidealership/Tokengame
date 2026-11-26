@@ -1,0 +1,37 @@
+/* A · Turn the page. Every section is a printed page of one issue, lying on the painted night (ground3's tile, the desk).
+   Each page is tucked under the one before; as you finish a page its corner curls up and shows the next page beneath. */
+html.fl-a{background:#0b1022 url(@G3@g-night-tile.jpg) 0 0/520px!important}
+html.fl-a body,html.fl-a main,html.fl-a #wc-book{background:transparent!important}
+html.fl-a body::before{display:none!important}
+html.fl-a #wc-book{position:relative}
+html.fl-a #wc-book > section{position:relative}
+html.fl-a #wc-book > section:not(.wc-cover){margin-top:72px!important}
+html.fl-a #wc-book > p.wc-beat{position:relative;z-index:2;margin-top:52px!important;margin-bottom:-40px!important}
+html.fl-a #wc-book > p.wc-beat + section{margin-top:52px!important}
+html.fl-a .wc-splash{margin-left:14px!important;margin-right:14px!important;border-radius:0}
+/* the sheet: printed stock, a pile of page edges at its foot, a hard ink shadow on the desk */
+.fla-sheet{position:absolute;left:var(--x);width:var(--w);top:var(--y);height:var(--h);z-index:var(--z);pointer-events:none;
+ background:#f3e6c4 url(@B@img/web/f-stock.jpg) 0 0/360px;
+ box-shadow:0 1px 0 #d2c19a,0 2px 0 #efe1bd,0 3px 0 #b8a782,0 4px 0 #e9dab4,0 5px 0 #9e8e6c,6px 9px 0 rgba(3,5,14,.55)}
+.fla-sheet::before{content:"";position:absolute;inset:0;border:1.6px solid #1b1620;border-radius:1px 2px 1px 2px;opacity:.85}
+.fla-sheet::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(80,56,20,.16),rgba(80,56,20,0) 4%,rgba(80,56,20,0) 96%,rgba(80,56,20,.12))}
+/* the folio: the issue and the page, printed in the foot margin like a real comic */
+.fla-folio{position:absolute;left:calc(var(--x) + 14px);top:calc(var(--y) + var(--h) - 22px);z-index:3;pointer-events:none;
+ font:800 10px/1 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#2a2230;opacity:.82}
+.fla-folio b{color:#c0261d;font-weight:900}
+/* the curl: the page's own corner, folded back (its back shows the next page's ink through the paper), the next page beneath */
+.fla-curl{position:absolute;z-index:4;pointer-events:none;width:var(--cs);height:var(--cs);left:calc(var(--x) + var(--w) - var(--cs));top:calc(var(--y) + var(--h) - var(--cs));transform-origin:100% 100%;scale:.16}
+.fla-curl svg{display:block;width:100%;height:100%;overflow:visible}
+html.fl-a{--cs:92px}
+@media (min-width:1000px){html.fl-a{--cs:150px}html.fl-a #wc-book > section:not(.wc-cover){margin-top:80px!important}}
+@media (prefers-reduced-motion:no-preference){
+ html.fl-sda .fla-curl{animation:fla-curl linear both;animation-timeline:view();animation-range:entry 0% cover 60%}
+ html.fl-io .fla-curl{transition:scale .7s cubic-bezier(.2,.9,.3,1)}html.fl-io .fla-curl.fl-up{scale:1}
+ /* a page that arrives drops flat onto the pile */
+ html.fl-sda.fl-a #wc-book > section:not(.wc-cover){animation:fla-land linear both;animation-timeline:view();animation-range:entry 0% entry 55%}
+}
+html.fl-rm .fla-curl,html.fl-still .fla-curl{scale:.62}
+@keyframes fla-curl{0%{scale:.16}100%{scale:1}}
+@keyframes fla-land{0%{rotate:-.9deg;translate:0 18px}100%{rotate:0deg;translate:0 0}}
+/* ink-in: beats arrive like ink taking on the page (a slight lift, no bounce) */
+@media (prefers-reduced-motion:no-preference){html.fl-a .fl-b{transition:opacity .5s ease,translate .6s cubic-bezier(.2,.8,.3,1)}}

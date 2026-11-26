@@ -1,0 +1,1 @@
+(function(){var d=document;function go(){if(d.querySelector('.bgv-haze'))return;var h=d.createElement('div');h.className='bgv-haze';d.body.prepend(h)}if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',go);else go()})();

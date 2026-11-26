@@ -1,0 +1,166 @@
+<!doctype html><meta charset="utf-8"><title>pv3 forecast</title>
+<!-- Night prediction film 3, "The forecast" (2026-11-20). One line: five AIs forecast tonight's move, and they do not agree.
+  A night weather map made for the film (isobars drawn live from a drifting pressure field, a radar sweep, a green front from the left and a red
+  front from the right pressing on the company's pin). The headline comes first: the forecast card with the EZ. mark, then on the bed's drop the
+  five forecast tiles land at once with the count. Then each tile opens into its outlook: the AI, its side and called move, its confidence,
+  its own words with the key clause marked. The strip comes back with the grading line, then the logo.
+  Archivo (two widths, everything) and Geist Mono (numbers). Bed m3-electro (124 BPM), entered on its beat 9 so its drop lands on the count.
+  ?co=INTU|KEYS|ESTC. window.R(t), READY, DUR, MUSIC, CUES. No outcome anywhere. -->
+<style>
+#map{position:absolute;left:-60px;top:-60px;width:1200px;height:1470px;transform-origin:600px 620px}
+#iso{position:absolute;inset:0;width:1200px;height:1470px}
+#pin{position:absolute;left:600px;top:620px;width:0;height:0}
+#pin .rg{position:absolute;left:-150px;top:-150px;width:300px;height:300px;border-radius:50%;border:3px solid rgba(253,188,42,.55)}
+#pin .bd{position:absolute;left:-62px;top:-62px;width:124px;height:124px;border-radius:30px;overflow:hidden;box-shadow:0 0 0 5px #f8f0d9,0 18px 40px rgba(0,0,0,.6)}
+#pin .bd img{width:124px;height:124px}
+#sweep{position:absolute;left:600px;top:620px;width:1400px;height:1400px;margin:-700px 0 0 -700px;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(253,188,42,.0) 0deg,rgba(253,188,42,.0) 300deg,rgba(253,188,42,.16) 356deg,rgba(253,188,42,.32) 360deg);mix-blend-mode:screen}
+#vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(80% 62% at 50% 44%,transparent 40%,rgba(4,7,14,.82));z-index:4}
+.glass{background:linear-gradient(160deg,rgba(248,240,217,.16),rgba(248,240,217,.05) 50%,rgba(248,240,217,.09));border-radius:22px;
+  box-shadow:inset 0 1px 0 rgba(248,240,217,.5),inset 0 0 0 1.5px rgba(248,240,217,.22),0 30px 70px rgba(0,0,0,.55);backdrop-filter:blur(14px) saturate(1.2)}
+#fc{position:absolute;left:0;top:0;width:900px;z-index:20;padding:30px 40px 34px;transform-origin:0 0}
+#fc .tp{display:flex;align-items:center;justify-content:center;gap:16px;font:800 40px/1 Archivo;font-stretch:125%;letter-spacing:.16em;color:#fdbc2a}
+#fc .tp img{display:block}
+#fc .co{display:flex;align-items:center;gap:24px;margin-top:22px}
+#fc .co b{font:800 112px/1 Archivo;font-stretch:62%;letter-spacing:-.01em;color:#f8f0d9;text-transform:uppercase}
+#fc .wh{margin-top:14px;font:600 42px/1.1 Archivo;font-stretch:75%;color:#f8f0d9}
+#fc .ct{display:flex;gap:18px;align-items:center;overflow:hidden;font:800 64px/1 Archivo;font-stretch:62%;letter-spacing:.02em}
+#fc .ct .pill{display:inline-flex;align-items:baseline;gap:12px;padding:10px 20px 8px;border-radius:14px;color:#04070e}
+#fc .ct .pill b{font:700 64px/1 'Geist Mono';letter-spacing:-.03em}
+#fc .ct .pill span{font:800 40px/1 Archivo;font-stretch:100%;letter-spacing:.08em}
+#fc .ct i{font-style:normal;color:#f8f0d9;font:600 44px/1 Archivo}
+#strip{position:absolute;left:44px;right:44px;top:930px;height:340px;z-index:15;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.tl{position:relative;padding:20px 12px 18px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.tl .nm{font:700 32px/1 Archivo;font-stretch:75%;color:#f8f0d9}
+.tl .sd{font:800 30px/1 Archivo;font-stretch:100%;letter-spacing:.1em;padding:7px 10px 5px;border-radius:8px;color:#04070e}
+.tl .mv{font:700 56px/1 'Geist Mono';letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.tl .gg{position:relative;width:132px;height:12px;border-radius:6px;background:rgba(248,240,217,.16);overflow:hidden}
+.tl .gg i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:#fdbc2a}
+.tl .cf{display:flex;flex-direction:column;align-items:center;gap:6px;font:600 24px/1 Archivo;font-stretch:80%;color:rgba(248,240,217,.8)}.tl .cf b{font:700 34px/1 "Geist Mono";color:#f8f0d9}
+.tl .lit{position:absolute;inset:-3px;border-radius:24px;box-shadow:0 0 0 4px #fdbc2a,0 0 40px rgba(253,188,42,.5);opacity:0;pointer-events:none}
+#ol{position:absolute;left:44px;width:992px;top:330px;z-index:30;padding:36px 44px 42px}
+#ol .tp{display:flex;align-items:center;justify-content:center;gap:14px;font:800 28px/1 Archivo;font-stretch:125%;letter-spacing:.18em;color:#fdbc2a;margin-bottom:26px}
+#ol .hd{display:flex;align-items:center;gap:22px}
+#ol .hd b{font:800 72px/1 Archivo;font-stretch:75%;color:#f8f0d9}
+#ol .hd .sd{margin-left:auto;font:800 56px/1 Archivo;font-stretch:90%;letter-spacing:.04em;padding:12px 20px 10px;border-radius:12px;color:#04070e;white-space:nowrap}
+#ol .hd .sd span{font:700 48px/1 'Geist Mono';letter-spacing:-.03em}
+#ol .cf{display:flex;align-items:center;gap:20px;margin-top:26px;font:600 40px/1 'Geist Mono';color:#f8f0d9}
+#ol .cf .gg{flex:1;height:16px;border-radius:8px;background:rgba(248,240,217,.16);overflow:hidden;position:relative}
+#ol .cf .gg i{position:absolute;left:0;top:0;bottom:0;border-radius:8px;background:#fdbc2a}
+#ol .ow{margin-top:34px;font:700 26px/1 Archivo;font-stretch:125%;letter-spacing:.16em;color:rgba(248,240,217,.7);text-transform:uppercase}
+#ol .cl{margin-top:16px;font:700 74px/1.1 Archivo;font-stretch:80%;color:#f8f0d9;letter-spacing:-.005em}
+#gr{position:absolute;left:0;right:0;top:740px;text-align:center;z-index:25;font:700 58px/1 Archivo;font-stretch:80%;color:#f8f0d9;text-shadow:0 6px 30px rgba(0,0,0,.8)}
+#end{position:absolute;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;background:radial-gradient(55% 40% at 50% 45%,rgba(3,200,112,.16),transparent 70%),rgba(4,7,14,.9);opacity:0}
+#end b{font:italic 800 70px/1 Kanit;color:#f8f0d9;letter-spacing:.01em}
+#end span{font:600 44px/1 Archivo;font-stretch:80%;color:#f8f0d9}
+</style>
+<div id="map"><canvas id="iso" width="600" height="735"></canvas><div id="sweep"></div><div id="pin"><i class="rg"></i><i class="rg"></i><i class="rg"></i><div class="bd"></div></div></div>
+<div id="vig"></div>
+<div id="fc" class="glass"></div>
+<div id="strip"></div>
+<div id="ol" class="glass"></div>
+<div id="gr"></div>
+<div id="end"></div>
+<div id="bugw"></div><canvas id="grain"></canvas>
+<script src="w6/nt/pv/pv.js"></script>
+<script>
+const B = 60 / 124, AT = .025 + 11 * B;           // m3-electro: 124 BPM, first beat 0.025 s; entered on its beat 11, so the drop (beat 16) is film beat 5
+const G = { B, at: n => n * B, beat: t => t / B };
+let T = {}, tiles, grain, tl = [], iso, ictx;
+// the pressure field: a few highs and lows drifting; isobars are its level lines (marching squares on a coarse grid)
+const CEN = [[.2, .25, 1, .07, .05], [.75, .3, -1, -.06, .04], [.5, .62, .8, .03, -.06], [.15, .8, -.7, .05, -.03], [.88, .75, .9, -.04, -.05], [.45, .1, -.6, .02, .07]];
+const field = (x, y, t) => { let v = 0; CEN.forEach(([cx, cy, a, vx, vy], i) => { const X = cx + vx * Math.sin(t * .23 + i), Y = cy + vy * Math.cos(t * .19 + i * 2); v += a * Math.exp(-((x - X) ** 2 + (y - Y) ** 2) / .05) }); return v };
+const drawIso = t => { const W = 600, H = 735, N = 60, M = 74, c = ictx; c.clearRect(0, 0, W, H);
+  // the land: a dark ground with a faint warm wash where the field is high, cool where low
+  const g = []; for (let j = 0; j <= M; j++) { g.push([]); for (let i = 0; i <= N; i++) g[j].push(field(i / N, j / M * 1.225, t)) }
+  c.fillStyle = '#06100c'; c.fillRect(0, 0, W, H);
+  for (let j = 0; j < M; j++) for (let i = 0; i < N; i++) { const v = g[j][i]; if (Math.abs(v) < .08) continue; c.fillStyle = v > 0 ? `rgba(3,200,112,${Math.min(.22, v * .2).toFixed(3)})` : `rgba(255,58,49,${Math.min(.2, -v * .2).toFixed(3)})`; c.fillRect(i * W / N, j * H / M, W / N + 1, H / M + 1) }
+  c.lineWidth = 1.6; c.lineCap = 'round';
+  for (let L = -1.1; L <= 1.11; L += .14) { if (Math.abs(L) < .05) continue; c.strokeStyle = L > 0 ? 'rgba(248,240,217,.34)' : 'rgba(248,240,217,.22)'; c.beginPath();
+    for (let j = 0; j < M; j++) for (let i = 0; i < N; i++) { const a = g[j][i], b = g[j][i + 1], d = g[j + 1][i], e = g[j + 1][i + 1], pts = [];
+      const x0 = i * W / N, y0 = j * H / M, dx = W / N, dy = H / M, it = (p, q) => (L - p) / (q - p);
+      if ((a - L) * (b - L) < 0) pts.push([x0 + dx * it(a, b), y0]); if ((b - L) * (e - L) < 0) pts.push([x0 + dx, y0 + dy * it(b, e)]);
+      if ((d - L) * (e - L) < 0) pts.push([x0 + dx * it(d, e), y0 + dy]); if ((a - L) * (d - L) < 0) pts.push([x0, y0 + dy * it(a, d)]);
+      if (pts.length >= 2) { c.moveTo(...pts[0]); c.lineTo(...pts[1]) } if (pts.length === 4) { c.moveTo(...pts[2]); c.lineTo(...pts[3]) } }
+    c.stroke() }
+  // the two fronts: green from the left (LONG), red from the right (SHORT), each a curve with its weather marks, pressing on the pin
+  const front = (col, side, push) => { c.strokeStyle = col; c.fillStyle = col; c.lineWidth = 5; c.beginPath(); const pts = [];
+    for (let s = 0; s <= 1.0001; s += .02) { const y = s * H, x = W / 2 + side * (W * (.42 - .16 * push) - 40 * Math.sin(s * 3.2 + t * .5) - 60 * Math.exp(-((s - .5) ** 2) / .02)); pts.push([x, y]) }
+    pts.forEach((p, i) => i ? c.lineTo(...p) : c.moveTo(...p)); c.stroke();
+    for (let i = 3; i < pts.length - 2; i += 5) { const [x, y] = pts[i], [x2, y2] = pts[i + 1], a = Math.atan2(y2 - y, x2 - x); c.save(); c.translate(x, y); c.rotate(a);
+      if (side < 0) { c.beginPath(); c.moveTo(-9, 0); c.lineTo(9, 0); c.lineTo(0, 15); c.closePath(); c.fill() } else { c.beginPath(); c.arc(0, 0, 9, 0, Math.PI, false); c.fill() } c.restore() } };
+  front('rgba(3,200,112,.85)', -1, T.push || 0); front('rgba(255,58,49,.85)', 1, T.push || 0) };
+(async () => {
+  await PV.load('INTU', 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&display=swap');
+  PV.$('#bugw').innerHTML = PV.bug();
+  // the strip, ordered by side (the bigger side first), then by confidence; the outlooks open in strip order
+  tiles = [...PV.calls.filter(x => x.side === PV.maj).sort((a, b) => b.conf - a.conf), ...PV.calls.filter(x => x.side !== PV.maj).sort((a, b) => b.conf - a.conf)];
+  PV.$('#pin .bd').innerHTML = `<img src="${PV.co.logo}">`;
+  const pill = (n, side) => `<span class="pill" style="background:${side === 'LONG' ? PV.C.green : PV.C.red}"><b>${n}</b><span>${side}</span></span>`;
+  PV.$('#fc').innerHTML = `<div class="tp">${PV.logo(60)}<span>FORECAST</span></div><div class="co">${PV.coLogo(96)}<b>${PV.esc(PV.co.co)}</b></div><div class="wh">${PV.reports}</div>
+    <div class="ct">${pill(PV.nL, 'LONG')}<i>v</i>${pill(PV.nS, 'SHORT')}</div>`;
+  PV.$('#strip').innerHTML = tiles.map(x => `<div class="tl glass" data-k="${x.k}">${PV.mark(x.k, 70)}<span class="nm">${x.name}</span><span class="sd" style="background:${PV.side(x)}">${x.side}</span>
+    <span class="mv" style="color:${PV.side(x)}">${PV.mv(x)}</span><span class="gg"><i style="width:${x.conf}%"></i></span><span class="cf"><b>${x.conf}%</b>confident</span><i class="lit"></i></div>`).join('');
+  // the tiles say "conf" for space; every outlook card says "confident" in full
+  tl = PV.$$('.tl');
+  PV.$('#gr').textContent = PV.graded;
+  PV.$('#end').innerHTML = `${PV.logo(300)}<b>EARNINGS ZEASON</b><span>${PV.graded}</span>`;
+  iso = PV.$('#iso'); ictx = iso.getContext('2d'); grain = PV.grain(PV.$('#grain'), .06); pulse = PV.pulse('248,240,217', '50% 42%', '80% 60%', .04, .15);
+  // the timeline in beats: the forecast card (0 to 7), the strip and the count on the drop (7), one outlook a tile (6 beats; 7 for a long clause), the end
+  const len = tiles.map(x => PV.need(x.clause) > 3.4 ? 7 : 6), starts = []; let b = 8; len.forEach(l => { starts.push(b); b += l });
+  T = { drop: 5, starts, len, end: b, logo: b + 2, dur: b + 6 };
+  window.TL = { drop: +G.at(5).toFixed(3), starts: starts.map(s => +G.at(s).toFixed(3)), end: +G.at(b).toFixed(3), dur: +G.at(T.dur).toFixed(3) };
+  window.HOLD = tiles.map((x, i) => ({ k: x.k, clause: x.clause, need: +PV.need(x.clause).toFixed(2), onScreen: +((len[i] - 1.2) * B).toFixed(2) }));
+  window.CUES = [[.04, 'r11-swell', .1], [G.at(2), 'sfx-whoosh', .08], [G.at(5), 'r11-thump', .16], [G.at(5) + .01, 'sfx-chime', .1], [G.at(6), 'r11-card', .08]];
+  starts.forEach(s => CUES.push([G.at(s), 'sfx-whoosh', .1], [G.at(s + .5), 'r11-pluck', .09]));
+  CUES.push([G.at(b), 'r11-card', .1], [G.at(T.logo), 'sfx-chime', .1]);
+  window.MUSIC = { f: 'm3-electro', at: +AT.toFixed(4) }; window.DUR = +G.at(T.dur).toFixed(3);
+  await PV.ready(['800 112px Archivo', '700 74px Archivo', '600 40px "Geist Mono"']);
+  await PV.go();
+})();
+let ok = '';
+const fillOl = x => { if (ok === x.k) return; ok = x.k;
+  PV.$('#ol').innerHTML = `<div class="tp">${PV.logo(44)}<span>OUTLOOK</span></div><div class="hd">${PV.mark(x.k, 96)}<b>${x.name}</b><span class="sd" style="background:${PV.side(x)}">${x.side} <span>(${PV.mv(x)})</span></span></div>
+    <div class="cf"><span>${PV.conf(x)}</span><span class="gg"><i style="width:${x.conf}%"></i></span></div><div class="ow">In its own words</div><div class="cl">${PV.words(x.clause)}</div>` };
+let pulse = () => {};
+window.R = t => {
+  grain(t); const k = G.beat(t); pulse(k);
+  T.push = .5 + .5 * Math.sin(t * .45);
+  const cur = T.starts.filter(s => k >= s).length - 1, inO = cur >= 0 && k < T.end, sp = inO ? tiles[cur] : null;
+  // the camera over the map: a slow fly-in to the pin during the forecast card, a drift after, a dip on each outlook, a punch on the drop
+  const punch = d => { const x = k - d; return x < 0 ? 0 : .04 * Math.exp(-3.5 * x) };
+  let sc = PV.lerp(1.5, 1.05, PV.eio(PV.n(k, 0, 5))) + punch(5) + .03 * Math.sin(t * .4), rx = 30 * Math.sin(t * .31), ry = 20 * Math.cos(t * .27);
+  if (inO) { const p = PV.n(k, T.starts[cur], T.starts[cur] + T.len[cur]), m2 = PV.eio(PV.n(k, T.starts[cur] + 3, T.starts[cur] + 3.5)); sc += .06 * PV.eio(p) + .08 * m2; ry -= 60 * m2; rx += (tl.length ? (cur - 2) * -40 : 0) * PV.eio(PV.n(k, T.starts[cur], T.starts[cur] + 1)) }
+  PV.$('#map').style.transform = `translate(${rx.toFixed(1)}px,${ry.toFixed(1)}px) scale(${sc.toFixed(4)}) rotate(${(1.5 * Math.sin(t * .2)).toFixed(2)}deg)`;
+  drawIso(t);
+  PV.$('#sweep').style.transform = `rotate(${(t * 90) % 360}deg)`;
+  PV.$$('#pin .rg').forEach((r, i) => { const q = ((k / 2 + i / 3) % 1 + 1) % 1; r.style.transform = `scale(${(.3 + .9 * q).toFixed(3)})`; r.style.opacity = (1 - q).toFixed(3) });
+  // the forecast card: centred over the map, then up into the top band on the drop (a layout zoom, so the type stays crisp)
+  const fc = PV.$('#fc'), up = PV.eio(PV.n(k, 5.6, 6.6)), fin = PV.eo5(PV.n(k, -.3, 1)), z = PV.lerp(1, .62, up);
+  fc.style.zoom = z.toFixed(4); const H = fc.offsetHeight;
+  fc.style.left = (PV.lerp(90, 44, up) / z).toFixed(1) + 'px'; fc.style.top = (PV.lerp(640 - 30 * (1 - fin), 136, up) / z).toFixed(1) + 'px';
+  fc.style.opacity = (PV.cl(fin * 1.5) * (1 - PV.n(k, T.end + 2.5, T.end + 3))).toFixed(3);
+  const ctw = PV.$('#fc .ct'); const cq = PV.n(k, 5, 5.4); ctw.style.height = (78 * PV.eo5(cq)).toFixed(1) + 'px'; ctw.style.marginTop = (26 * PV.eo5(cq)).toFixed(1) + 'px';
+  ctw.style.transform = `scale(${PV.lerp(1.4, 1, PV.eo5(cq)).toFixed(3)})`; ctw.style.transformOrigin = '0 50%';
+  // the strip: the five tiles drop in on the drop, one a sixteenth apart; the open tile lights
+  tl.forEach((e, i) => { const a = PV.n(k, 6 + i * .12, 6.6 + i * .12), s = PV.spring(Math.max(0, t - G.at(6 + i * .12)), 1.6, 7);
+    e.style.opacity = a > 0 ? PV.cl(a * 2).toFixed(3) : 0; e.style.transform = `translateY(${(260 * (1 - s)).toFixed(1)}px)`;
+    const on = inO && cur === i, li = on ? PV.eo(PV.n(k, T.starts[cur], T.starts[cur] + .5)) : 0;
+    e.querySelector('.lit').style.opacity = li.toFixed(3); e.style.filter = inO && !on ? 'brightness(.6)' : '';
+    e.querySelector('.gg i').style.transform = `scaleX(${PV.eo(PV.n(k, 6.4 + i * .12, 7.6 + i * .12)).toFixed(3)})`; e.querySelector('.gg i').style.transformOrigin = '0 50%' });
+  PV.$('#strip').style.opacity = (1 - PV.n(k, T.logo, T.logo + .6)).toFixed(3);
+  // the outlook: opens out of its tile, held, folds back
+  const ol = PV.$('#ol');
+  if (inO) { fillOl(sp); const s0 = T.starts[cur], l = T.len[cur], a = PV.eo5(PV.n(k, s0, s0 + .55)), o = PV.ei(PV.n(k, s0 + l - .45, s0 + l));
+    const r = tl[cur].getBoundingClientRect(), q = Math.min(a, 1 - o);
+    ol.style.opacity = PV.cl(q * 2).toFixed(3);
+    const m2 = PV.eio(PV.n(k, s0 + 3, s0 + 3.5)); ol.style.transform = `translate(${((r.left + r.width / 2 - 540) * (1 - q)).toFixed(1)}px,${((r.top - 330) * (1 - q) + 40 * m2).toFixed(1)}px) scale(${PV.lerp(.25, 1, q).toFixed(3)})`; ol.style.transformOrigin = '50% 0';
+    PV.sweep(ol.querySelector('.cl'), PV.eio(PV.n(k, s0 + 1.2, s0 + 3)));
+    ol.querySelector('.cf .gg i').style.width = (sp.conf * PV.eo(PV.n(k, s0 + .4, s0 + 1.4))).toFixed(1) + '%' }
+  else ol.style.opacity = 0;
+  // the grading line over the map, then the end card
+  const g = PV.n(k, T.end, T.end + .5); PV.$('#gr').style.opacity = (g * (1 - PV.n(k, T.logo, T.logo + .4))).toFixed(3); PV.$('#gr').style.transform = `translateY(${(30 * (1 - PV.eo(g))).toFixed(1)}px)`;
+  const ce = PV.n(k, T.logo, T.logo + .6), en = PV.$('#end'); en.style.opacity = ce.toFixed(3);
+  en.querySelector('img').style.transform = `scale(${(1.15 - .15 * PV.eo5(ce) + .015 * Math.sin(t * 2.2)).toFixed(3)}) rotate(${(2 * Math.sin(t * .8)).toFixed(2)}deg)`;
+};
+</script>

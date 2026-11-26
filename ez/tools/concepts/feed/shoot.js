@@ -1,0 +1,2 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1300,height:960},deviceScaleFactor:2});const e=[];p.on('pageerror',x=>e.push(x.message));
+await p.goto('http://localhost:8996/tools/concepts/feed/feed.html');await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(1200);await p.screenshot({path:process.argv[2],fullPage:true});console.log('errs',e.join('|')||'none');await b.close()})();

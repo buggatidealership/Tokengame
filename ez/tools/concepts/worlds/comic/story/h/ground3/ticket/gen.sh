@@ -1,0 +1,10 @@
+STY='Rendered 3D first and finished as an American pop comic: modelled forms and materials lit by hard coloured light, a confident black ink contour over every edge, Ben-Day halftone dots and cross-hatching only inside the shadows, slight print misregistration, saturated colours, deep navy night. Same look as a painted pop-comic newsstand at night. No text, no letters, no numbers, no logos, no signs, no people, no hands, no watermark.'
+gen(){ /usr/bin/python3 hd.py "$1" gpt-image-2 "$(python3 -c "import json,sys;print(json.dumps({'prompt':sys.argv[1]+' '+sys.argv[2],'aspect_ratio':sys.argv[3],'quality':'high','resolution':'2K','output_format':'png','num_outputs':1}))" "$2" "$STY" "$3")"; }
+LAMP='A dark polished wooden desk at night seen from above at a steep three-quarter angle. One old enamel factory lamp hangs at the very top of the picture and throws a warm golden pool of light onto the desk. The middle of the desk, inside the pool of light, is EMPTY flat wood with nothing on it, about two thirds of the width. Around the edges, half in shadow: a brass hotel desk bell, a small stack of old paper ticket stubs, a pencil, a coffee ring, a magnifying glass, a few gold coins.'
+BOOTH='A vintage bookmaker betting window at night seen straight on: polished brass grille and bars across the top, a small arched opening, a worn marble counter in front of it lit by a warm lamp. The counter in the middle, under the opening, is EMPTY flat marble with nothing on it, about two thirds of the width. Red and green glass lamps on each side, a brass bell on the counter edge, a betting-slip spike with blank slips.'
+STAND='The wooden sales counter of an old street magazine kiosk at night seen from above at a steep angle, under a warm bulb: worn green-painted wooden counter top, stacks of comic books and rolled newspapers at the edges, a cash tin, a few coins, a red and yellow starburst sticker on the counter. The middle of the counter is EMPTY flat painted wood with nothing on it, about two thirds of the width, lit by the bulb.'
+
+
+
+
+gen tk-stand-phone "$STAND" 9:16 & gen tk-stand-desk "$STAND" 16:9 & wait

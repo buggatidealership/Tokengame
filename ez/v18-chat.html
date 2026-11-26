@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>EZ Group Chat</title>
+<meta name="description" content="Earnings Zeason as a group chat. Ask the obvious questions; EZ and four AI models answer with the real record.">
+<meta name="theme-color" content="#0b0d10">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* EARNINGS ZEASON · V18 · THE GROUP CHAT
+   The whole story as a messaging thread. The visitor ("you") asks the skeptical questions; EZ and the AI models answer.
+   Every number is built from ez-data.js at run time. Nothing typed by hand.
+   Contrast: light text on the dark surfaces; up / down and win / lose are brand-colour FILLS with --on-ez text. */
+:root{color-scheme:dark;
+  --bg:#07090b;--col:#0d1014;--card:#151a20;--card2:#1b2129;--line:#29303a;
+  --tx:#eef1f4;--tx2:#b8c0ca;--dim:#98a2ad;
+  --in:#1c2229;--me:#ffc72c;--on-me:#111111;
+  --ez-gold:#ffc72c;--ez-green:#1fcf6b;--ez-red:#ff4136;--on-ez:#0a0a0a;
+  --focus:#7cb4ff;
+  --f:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --colw:440px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg);overflow-x:clip}
+body{background:var(--bg);color:var(--tx);font:400 16px/1.45 var(--f);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+button:focus-visible,a:focus-visible,video:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.u{background:var(--ez-green);color:var(--on-ez)}.d{background:var(--ez-red);color:var(--on-ez)}
+/* model logo tiles (logo() from ez-data.js) */
+.lg{display:inline-grid;place-items:center;width:1em;height:1em;min-width:1em;aspect-ratio:1/1;flex:none;border-radius:24%;vertical-align:middle;box-shadow:0 0 0 1.5px #3a424d}
+span.lg>svg{display:block;width:62%;height:62%}
+span.lg>img{display:block}
+.ezm{display:inline-grid;place-items:center;width:1em;height:1em;flex:none;border-radius:24%;background:#000;box-shadow:0 0 0 1.5px #3a424d;vertical-align:middle}
+.ezm b{font:800 .34em/1 var(--f);letter-spacing:-.02em}
+.ezm .s{color:var(--ez-gold)}.ezm .e{color:var(--ez-green)}.ezm .z{color:var(--ez-red)}
+
+/* page: the chat column in the middle; on wide screens a pinned panel on each side */
+.page{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,var(--colw)) minmax(0,1fr);min-height:100vh}
+.side{padding:84px 28px 28px;display:none}
+.side.l{justify-self:end}.side.r{justify-self:start}
+.side .stick{position:sticky;top:84px;width:300px;display:grid;gap:16px}
+@media(min-width:1100px){.side{display:block}.chat{border-inline:1px solid var(--line)}}
+@media(max-width:440px){.page{grid-template-columns:0 minmax(0,1fr) 0}}
+
+.chat{grid-column:2;background:var(--col);display:flex;flex-direction:column;min-height:100vh;min-width:0}
+.hd{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:10px 16px;background:color-mix(in srgb,var(--col) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.stack{display:flex;font-size:30px;flex:none}
+.stack>*{margin-left:-6px;box-shadow:0 0 0 2px var(--col)}
+.stack>*:first-child{margin-left:0;position:relative;z-index:1}
+.hd h1{font:700 16px/1.2 var(--f)}
+.hd p{font:500 12.5px/1.3 var(--f);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd .t{min-width:0}
+
+.log{flex:1;padding:16px 12px 8px;display:flex;flex-direction:column;gap:3px}
+.sys{align-self:center;margin:10px 0 12px;font:600 12px/1.3 var(--f);color:var(--tx2);background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px;text-align:center}
+.row{display:flex;align-items:flex-end;gap:8px;max-width:100%}
+.row.me{justify-content:flex-end}
+.row.first{margin-top:10px}
+.av{width:32px;height:32px;font-size:32px;flex:none;display:grid;place-items:center}
+.av.blank{visibility:hidden}
+.mw{min-width:0;max-width:calc(100% - 40px);display:flex;flex-direction:column;align-items:flex-start}
+.row.me .mw{align-items:flex-end;max-width:82%}
+.who{font:700 12.5px/1.2 var(--f);margin:0 0 4px 12px;color:var(--tx2)}
+.b{background:var(--in);color:var(--tx);padding:9px 13px;border-radius:18px;overflow-wrap:anywhere;font-size:15.5px}
+.row.first:not(.me) .b{border-top-left-radius:6px}
+.row.me .b{background:var(--me);color:var(--on-me);font-weight:500}
+.row.me.first .b{border-top-right-radius:6px}
+.b b{font-weight:700}
+.b .num{font-variant-numeric:tabular-nums;font-weight:700}
+.b.cardb{background:var(--card);border:1px solid var(--line);padding:14px;width:100%;min-width:0}
+.mw.wide{width:100%}
+.new{animation:pop .28s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+.typing .b{display:flex;gap:4px;padding:13px 14px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--dim);animation:dot 1s infinite ease-in-out}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+/* composer: the next question as a quick reply, plus Show all */
+.cp{position:sticky;bottom:0;z-index:20;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--col) 90%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.ask{flex:1;min-width:0;min-height:46px;display:flex;align-items:center;gap:10px;padding:6px 6px 6px 16px;border-radius:999px;background:var(--card2);border:1.5px solid var(--ez-gold);text-align:left}
+.ask span{flex:1;min-width:0;font:600 15px/1.25 var(--f);color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ask i{flex:none;width:34px;height:34px;border-radius:50%;background:var(--ez-gold);color:var(--on-me);display:grid;place-items:center;font-style:normal;font-weight:800}
+.ask:disabled{border-color:var(--line);cursor:default}
+.ask:disabled span{color:var(--dim)}
+.ask:disabled i{background:var(--line);color:var(--dim)}
+.all{flex:none;min-height:46px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);font:600 13.5px/1 var(--f);color:var(--tx2)}
+.all:hover{border-color:var(--tx2);color:var(--tx)}
+.fin{flex:1;text-align:center;font:600 13.5px/1.3 var(--f);color:var(--tx2)}
+.fin a{color:var(--ez-gold)}
+.foot{padding:20px 16px 26px;text-align:center;font:500 12.5px/1.5 var(--f);color:var(--dim)}
+
+/* cards */
+.cd-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.cd-h b{font:800 15px/1.2 var(--f)}
+.cd-h span{font:600 12px/1.2 var(--f);color:var(--dim);white-space:nowrap}
+.cd-f{margin-top:10px;font:500 12.5px/1.45 var(--f);color:var(--dim)}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:7px;font:700 13px/1.2 var(--f);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* a graded round */
+.rc-h{display:flex;flex-direction:column;gap:2px;margin-bottom:12px}
+.rc-h small{font:700 11.5px/1.2 var(--f);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.rc-h b{font:800 18px/1.2 var(--f)}
+.rc-o{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;background:var(--card2);margin-bottom:10px}
+.rc-o span{font:600 13px/1.3 var(--f);color:var(--tx2)}
+.rc-o .pill{font-size:17px;padding:5px 10px}
+.rc-l{list-style:none;display:grid;gap:6px}
+.rc-l li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px 10px;font-size:22px;padding:6px 4px}
+.rc-l .n{font:700 14px/1.2 var(--f);display:flex;flex-direction:column;gap:3px;min-width:0}
+.rc-l .n small{font:500 12.5px/1.2 var(--f);color:var(--dim)}
+.rc-l li.x .n small{color:var(--tx2)}
+.rc-l li.w{background:color-mix(in srgb,var(--ez-gold) 12%,transparent);border-radius:10px;box-shadow:inset 0 0 0 1.5px var(--ez-gold)}
+.wt{font:800 11px/1 var(--f);letter-spacing:.06em;text-transform:uppercase;background:var(--ez-gold);color:var(--on-me);padding:3px 6px;border-radius:5px;margin-left:6px;vertical-align:1px}
+.rc-v{margin-top:10px;font:600 13.5px/1.4 var(--f);color:var(--tx)}
+
+/* rules */
+.rules{list-style:none;counter-reset:r;display:grid;gap:10px}
+.rules li{counter-increment:r;display:grid;grid-template-columns:28px 1fr;gap:10px;font:500 14.5px/1.4 var(--f);color:var(--tx2)}
+.rules li::before{content:counter(r);display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--ez-gold);color:var(--on-me);font:800 14px/1 var(--f)}
+.rules b{color:var(--tx);display:block}
+
+/* standings */
+.sd{list-style:none;display:grid;gap:6px}
+.sd li{display:grid;grid-template-columns:22px auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:var(--card2);font-size:28px}
+.sd li.lead{box-shadow:inset 0 0 0 1.5px var(--ez-gold)}
+.sd .rk{font:800 14px/1 var(--f);color:var(--tx2);text-align:center}
+.sd .nm{font:700 15px/1.2 var(--f);min-width:0}
+.sd .nm small{display:block;font:500 12px/1.3 var(--f);color:var(--dim)}
+.sd .w{font:500 12.5px/1 var(--f);color:var(--tx2);text-align:right;white-space:nowrap}
+.sd .w b{display:block;font:800 22px/1 var(--f);color:var(--tx);font-variant-numeric:tabular-nums;margin-bottom:2px}
+
+/* is it any good: right-way share per model vs a coin flip and vs "always up" */
+.bars{display:grid;gap:12px}
+.br{display:grid;grid-template-columns:76px minmax(0,1fr) 54px;align-items:center;gap:8px}
+.br .nm{display:flex;align-items:center;gap:6px;font:700 13.5px/1 var(--f);font-size:13.5px}
+.br .nm .lg{font-size:20px}
+.trk{position:relative;height:14px;border-radius:7px;background:var(--card2)}
+.trk>i{position:absolute;left:0;top:0;bottom:0;border-radius:7px;background:var(--tx2)}
+.trk .mk{position:absolute;top:-5px;bottom:-5px;width:0;border-left:2px dashed var(--tx2)}
+.trk .mk.up{border-left:3px solid var(--ez-gold)}
+.br b{font:700 13px/1 var(--f);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lgd{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font:500 12.5px/1.3 var(--f);color:var(--tx2)}
+.lgd span{display:inline-flex;align-items:center;gap:6px}
+.lgd i{display:inline-block;width:0;height:14px;border-left:2px dashed var(--tx2)}
+.lgd i.up{border-left:3px solid var(--ez-gold)}
+
+/* mini bullseyes */
+.tgg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px}
+.tg{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.tg figcaption{display:flex;align-items:center;gap:6px;font:700 13px/1 var(--f);font-size:13px}
+.tg figcaption .lg{font-size:18px}
+.tg svg{display:block;width:100%;max-width:170px;height:auto}
+.tg .rg{fill:var(--card2);stroke:#3c4652;stroke-width:1}
+.tg .rg.alt{fill:var(--card)}
+.tg .bull{fill:var(--ez-gold)}
+.tg .rl{font:600 11px/1 var(--f);fill:var(--tx2)}
+.tg .dot{stroke:var(--card);stroke-width:1.5}
+.tg small{font:500 11.5px/1.2 var(--f);color:var(--dim)}
+
+/* the buyback loop */
+.loop{position:relative;padding-left:30px;display:grid;gap:0}
+.loop::before{content:"";position:absolute;left:10px;top:22px;bottom:38px;border-left:2px dashed var(--tx2)}
+.loop::after{content:"";position:absolute;left:5px;top:16px;border:6px solid transparent;border-bottom:8px solid var(--tx2);border-top:0}
+.lp-ret{position:absolute;left:-2px;top:50%;transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center;white-space:nowrap;font:600 11.5px/1 var(--f);color:var(--tx2);background:var(--card);padding:2px 6px;margin-left:12px}
+.st{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--card2);font:600 14px/1.3 var(--f)}
+.st .ic{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:26px;background:#000}
+.st small{display:block;font:500 12.5px/1.3 var(--f);color:var(--dim)}
+.st.pot .ic{background:var(--ez-gold);color:var(--on-me);font:800 15px/1 var(--f)}
+.st .lgs{display:flex;gap:4px;font-size:26px;flex:none}
+.ar{height:18px;margin-left:26px;border-left:2px solid var(--tx2);position:relative}
+.ar::after{content:"";position:absolute;left:-6px;bottom:-1px;border:5px solid transparent;border-top:7px solid var(--tx2);border-bottom:0}
+.splitr{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.oc{padding:10px 12px;border-radius:12px;font:800 15px/1.2 var(--f)}
+.oc small{display:block;font:600 12.5px/1.3 var(--f);margin-top:2px}
+.ring{flex:none;width:34px;height:34px;border-radius:50%;background:conic-gradient(var(--ez-gold) 0 var(--p),#4a5360 var(--p) 100%);display:grid;place-items:center}
+.ring::after{content:"";width:18px;height:18px;border-radius:50%;background:var(--card2)}
+
+/* video message */
+.vid{width:100%;border-radius:14px;overflow:hidden;background:#000;aspect-ratio:1/1}
+.vid video{display:block;width:100%;height:100%;object-fit:cover}
+.b.vidb{padding:6px;width:100%;background:var(--card);border:1px solid var(--line)}
+.vcap{font:500 13px/1.35 var(--f);color:var(--tx2);padding:8px 6px 4px}
+
+/* the road */
+.road{list-style:none;display:grid;gap:0;position:relative}
+.road li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:start;padding:6px 0;position:relative}
+.road li:not(:last-child)::before{content:"";position:absolute;left:16px;top:38px;bottom:-8px;border-left:2px solid var(--line)}
+.road .ic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:16px;background:var(--card2);border:2px solid var(--line);position:relative;z-index:1}
+.road li.done .ic{border-color:var(--ez-green)}
+.road li.cur .ic{border-color:var(--ez-gold);background:color-mix(in srgb,var(--ez-gold) 18%,var(--card2))}
+.road .tx{padding-top:6px;font:600 14.5px/1.3 var(--f);color:var(--tx2)}
+.road li.done .tx,.road li.cur .tx{color:var(--tx)}
+.road em{font:800 10.5px/1 var(--f);font-style:normal;letter-spacing:.08em;text-transform:uppercase;background:var(--ez-gold);color:var(--on-me);padding:3px 6px;border-radius:5px;margin-right:6px;vertical-align:1px}
+.road .tag{font:600 11.5px/1 var(--f);color:var(--ez-green);margin-left:6px}
+.prog{margin-top:8px;display:grid;gap:5px}
+.prog>span{height:10px;border-radius:5px;background:var(--card2);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
+.prog>span>i{display:block;height:100%;width:var(--p);background:var(--ez-gold);border-radius:5px}
+.prog small{font:600 12.5px/1 var(--f);color:var(--tx2);font-variant-numeric:tabular-nums}
+
+/* get $EZ */
+.ca{font:600 14px/1.45 var(--f);color:var(--tx2);padding:10px 12px;border-radius:10px;background:var(--card2);border:1px dashed var(--line);overflow-wrap:anywhere}
+.ca code{font:600 13px/1.4 ui-monospace,Menlo,Consolas,monospace;color:var(--tx)}
+.btn{display:inline-flex;margin-top:10px;min-height:44px;align-items:center;padding:0 18px;border-radius:999px;background:var(--ez-gold);color:var(--on-me);font:700 14px/1 var(--f);text-decoration:none}
+
+/* side panels (desktop) */
+.pn{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+.pn h2{font:800 13px/1 var(--f);letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);margin-bottom:12px;display:flex;justify-content:space-between;gap:8px}
+.pn h2 span{font-weight:600;letter-spacing:0;text-transform:none;color:var(--dim)}
+.nx-t{font:800 17px/1.25 var(--f);margin-bottom:10px}
+.nx-t small{display:block;font:700 11.5px/1.2 var(--f);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:3px}
+.cc{list-style:none;display:grid;gap:6px}
+.cc li{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;font-size:24px;padding:6px 8px;border-radius:10px;background:var(--card2)}
+.cc .n{font:700 14px/1 var(--f)}
+.due{margin-top:10px;font:500 13px/1.3 var(--f);color:var(--tx2)}
+.due b{color:var(--tx)}
+.brand{display:flex;align-items:center;gap:12px;font:800 15px/1.2 var(--f)}
+.brand .ezm{font-size:44px}
+.brand span{font-size:15px}
+.brand span small{display:block;font:500 12.5px/1.3 var(--f);color:var(--dim)}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="page">
+  <aside class="side l" aria-label="Live standings"><div class="stick">
+    <div class="brand"><span class="ezm" aria-hidden="true"><b><span class="s">$</span><span class="e">E</span><span class="z">Z</span></b></span><span>Earnings Zeason<small>Season one</small></span></div>
+    <section class="pn"><h2>Standings <span id="pnN"></span></h2><ol class="sd" id="pnStand"></ol></section>
+  </div></aside>
+
+  <main class="chat" id="top">
+    <header class="hd">
+      <div class="stack" id="stack" aria-hidden="true"></div>
+      <div class="t"><h1>Earnings Zeason</h1><p id="members"></p></div>
+    </header>
+    <div class="log" id="log" role="log" aria-live="polite" aria-label="Conversation"></div>
+    <div class="cp" id="cp">
+      <button type="button" class="ask" id="ask"><span id="askT">…</span><i aria-hidden="true">↑</i></button>
+      <button type="button" class="all" id="all">Show all</button>
+    </div>
+    <p class="foot">$EZ is a memecoin experiment. Not financial advice.</p>
+  </main>
+
+  <aside class="side r" aria-label="Next round"><div class="stick">
+    <section class="pn" id="pnNext"></section>
+    <section class="pn"><h2>Road to launch</h2><div id="pnRoad"></div></section>
+  </div></aside>
+</div>
+
+<script src="ez-data.js"></script>
+<script>
+(function(){
+"use strict";
+function $(s,r){return (r||document).querySelector(s)}
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- names and helpers (as in v15) ---------- */
+function nm(m){var n=(MODELS[m]&&MODELS[m].name)||m;return n.length<=3?n:n.charAt(0)+n.slice(1).toLowerCase()}
+function list(a){return a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
+function hasTk(r){return !!r.ticker&&String(r.co).toUpperCase()!==String(r.ticker).toUpperCase()}
+function plainCo(r){return r.co+(hasTk(r)?" ("+r.ticker+")":"")}
+function callOk(r,c){return ((/^DOWN/.test(c[1])?-1:1)>0)===(r.a>0)?1:0}
+function parsed(r){var cs=r.calls.map(function(c){var dn=/^DOWN/.test(c[1]);return {m:c[0],dn:dn,mag:c[1].replace(/^\w+\s*/,"").replace("%",""),ok:callOk(r,c),off:parseFloat(c[2])}});
+  cs.sort(function(a,b){return (b.ok-a.ok)||(a.off-b.off)});return cs}
+function mmdd(s){var m=String(s||"").match(/(\d+)\/(\d+)\/(\d+)/);return m?new Date(2000+(+m[3]%100),+m[1]-1,+m[2]):null}
+function absOut(r){return r.out.replace(/^[+−-]/,"")}
+function moved(r){return (r.a>0?"went up ":"fell ")+absOut(r)}
+function pct(x){return Math.round(x*100)+"%"}
+function winners(r){return r.win?r.win.split(" & "):[]}
+var NUMW=["No","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve"];
+function numw(n){return (NUMW[n]||String(n)).toLowerCase()}
+
+/* ---------- derived numbers ---------- */
+var ACTIVE=MODEL_KEYS.filter(function(m){return MODELS[m]&&(ROUNDS.some(function(r){return callOf(r,m)})||PENDING.some(function(u){return u.calls.some(function(c){return c.m===m})}))});
+var NR=ROUNDS.length,UPS=ROUNDS.filter(function(r){return r.a>0}).length,NOWIN=ROUNDS.filter(function(r){return !r.win}).length;
+var STATS={};ACTIVE.forEach(function(m){var s={right:0,tot:0,won:0,first:null};
+  ROUNDS.forEach(function(r){var c=callOf(r,m);if(!c)return;s.tot++;if(s.first==null)s.first=r.n;if(callOk(r,c))s.right++;if(winners(r).indexOf(m)>-1)s.won++});
+  PENDING.forEach(function(u){if(s.first==null&&u.calls.some(function(c){return c.m===m}))s.first=u.n});
+  STATS[m]=s});
+var LD=LADDER.filter(function(T){return MODELS[T.m]});
+var ROWS=LD.map(function(T){return T.m}).concat(ACTIVE.filter(function(m){return !LD.some(function(T){return T.m===m})}));
+function rankOf(m){return 1+ROWS.filter(function(o){return STATS[o].won>STATS[m].won}).length}
+var PS=PENDING.slice().sort(function(a,b){return ((mmdd(a.resolves)||0)-(mmdd(b.resolves)||0))||(a.n-b.n)});
+var US=UPCOMING.slice().sort(function(a,b){return ((mmdd(a.called)||0)-(mmdd(b.called)||0))||(a.n-b.n)});
+var TARGET=PS[0]||US[0]||null;
+var SHOW=ROUNDS.filter(function(r){return r.win}).slice(-1)[0]||ROUNDS[NR-1]||null;   /* latest round with a winner */
+var MISS=ROUNDS.filter(function(r){return !r.win}).slice(-1)[0]||null;                 /* latest round nobody won */
+var LAUNCH_AT=+(CONFIG.launchAt||35),LAUNCHED=!!CONFIG.launched;
+/* the fee split is a placeholder the owner still has to confirm (not a result) */
+var POOL_SHARE=0.69,P=Math.round(POOL_SHARE*100),Q=100-P;
+
+/* readable name colour per model on the dark surface */
+function lum(h){h=h.replace("#","");if(h.length===3)h=h.replace(/./g,"$&$&");return [0,2,4].map(function(i){var v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce(function(a,v,i){return a+v*[.2126,.7152,.0722][i]},0)}
+function mcol(m){var c=MODELS[m]&&MODELS[m].c;return c&&lum(c)>.2?c:"#c9ced6"}
+var EZM='<span class="ezm" title="EZ"><b><span class="s">$</span><span class="e">E</span><span class="z">Z</span></b></span>';
+function avatar(s){return s==="EZ"?EZM:logo(s)}
+function who(s){return s==="EZ"?"EZ":nm(s)}
+function whoCol(s){return s==="EZ"?"var(--ez-gold)":mcol(s)}
+function dirPill(dn,mag){return '<span class="pill '+(dn?'d':'u')+'"><span aria-hidden="true">'+(dn?'▼':'▲')+'</span><span class="sr">'+(dn?'Down':'Up')+'</span> '+mag+'%</span>'}
+
+/* ---------- cards ---------- */
+function roundCard(r){var cs=parsed(r),up=r.a>0,W=winners(r);
+  return '<div class="rc-h"><small>Round '+r.n+' · graded '+fmtDate(r.resolves)+'</small><b>'+plainCo(r)+'</b></div>'+
+    '<div class="rc-o"><span>What the stock did</span>'+dirPill(!up,absOut(r).replace("%",""))+'</div>'+
+    '<ol class="rc-l" aria-label="The calls">'+cs.map(function(c){var w=W.indexOf(c.m)>-1;
+      return '<li class="'+(w?'w':c.ok?'':'x')+'">'+logo(c.m)+'<span class="n"><span>'+nm(c.m)+(w?'<span class="wt">Wins</span>':'')+'</span><small>'+
+        (c.ok?c.off.toFixed(2)+' points off':'Wrong way, out')+'</small></span>'+dirPill(c.dn,c.mag)+'</li>'}).join("")+'</ol>'+
+    '<p class="rc-v">'+(W.length?list(W.map(nm))+(W.length>1?' tie: right way, equally close.':' wins: right way, closest to the real move.'):'Nobody called the direction. Nobody wins.')+'</p>'}
+function rulesCard(){return '<ol class="rules">'+
+  '<li><span><b>Direction first.</b>Up or down. Wrong way, you\'re out.</span></li>'+
+  '<li><span><b>Then size.</b>Of the right ones, the closest to the real move wins.</span></li>'+
+  '<li><span><b>Nobody right, nobody wins.</b>It happens. It stays on the record.</span></li></ol>'}
+function standRows(){return ROWS.map(function(m,i){var S=STATS[m];
+  return '<li class="'+(i===0&&S.won>0?'lead':'')+'"><span class="rk">'+rankOf(m)+'</span>'+logo(m)+'<span class="nm">'+nm(m)+'<small>'+S.right+' of '+S.tot+' right way</small></span>'+
+    '<span class="w"><b>'+S.won+'</b>'+(S.won===1?'win':'wins')+'</span></li>'}).join("")}
+function standCard(){return '<div class="cd-h"><b>Standings</b><span>'+NR+' rounds graded</span></div><ol class="sd">'+standRows()+'</ol>'+
+  '<p class="cd-f">Most round wins on top. Ties go to the smaller average miss.</p>'}
+function barsCard(){var upP=NR?UPS/NR:0;
+  return '<div class="cd-h"><b>Called the direction right</b><span>'+NR+' rounds</span></div><div class="bars">'+ACTIVE.map(function(m){var S=STATS[m],p=S.tot?S.right/S.tot:0;
+    return '<div class="br" role="img" aria-label="'+nm(m)+': '+S.right+' of '+S.tot+' right way"><span class="nm">'+logo(m)+nm(m)+'</span><span class="trk"><i style="width:'+(p*100).toFixed(1)+'%;background:'+mcol(m)+'"></i>'+
+      '<span class="mk" style="left:50%"></span><span class="mk up" style="left:'+(upP*100).toFixed(1)+'%"></span></span><b>'+S.right+' of '+S.tot+'</b></div>'}).join("")+'</div>'+
+    '<div class="lgd"><span><i aria-hidden="true"></i>Coin flip, 50%</span><span><i class="up" aria-hidden="true"></i>Always say up, '+pct(upP)+'</span></div>'}
+/* mini bullseyes (from v15): the bullseye is the real move; each right-way call is a dot, distance = points off */
+var TG={R:88,rings:[[0,0],[2.5,.3],[5,.54],[10,.82]],edge:1};
+var TGMAX=(function(){var mx=0;ROUNDS.forEach(function(r){parsed(r).forEach(function(c){if(c.ok&&c.off>mx)mx=c.off})});return Math.max(15,Math.ceil(mx/5)*5)})();
+function tgR(d){var k=TG.rings.concat([[TGMAX,TG.edge]]);d=Math.min(Math.max(0,d),TGMAX);
+  for(var i=1;i<k.length;i++)if(d<=k[i][0]+1e-9){var a=k[i-1],b=k[i];return TG.R*(a[1]+(b[1]-a[1])*(d-a[0])/(b[0]-a[0]))}return TG.R}
+var GOLD=137.508*Math.PI/180,N0=NR?ROUNDS[0].n:0,N1=NR?ROUNDS[NR-1].n:0;
+function tgSVG(m){var R=TG.R,hits=0,o='<svg viewBox="-100 -100 200 200" role="img" aria-label="'+nm(m)+': how far each right-way call landed from the real move">';
+  o+='<circle class="rg alt" r="'+R+'"/>';
+  TG.rings.slice(1).reverse().forEach(function(g,i){o+='<circle class="rg'+(i%2?' alt':'')+'" r="'+(R*g[1]).toFixed(2)+'"/>'});
+  o+='<circle class="bull" r="5"/>';
+  ROUNDS.forEach(function(r){var c=parsed(r).filter(function(c){return c.m===m})[0];if(!c||!c.ok)return;hits++;
+    var rr=tgR(c.off),an=-Math.PI/2+r.n*GOLD,x=(rr*Math.cos(an)).toFixed(2),y=(rr*Math.sin(an)).toFixed(2),t=N1>N0?(r.n-N0)/(N1-N0):1;
+    o+='<circle class="dot" cx="'+x+'" cy="'+y+'" r="7" style="fill:'+mcol(m)+';opacity:'+(.55+.45*t).toFixed(2)+'"><title>Round '+r.n+', '+plainCo(r)+': '+c.off.toFixed(2)+' points off</title></circle>'});
+  TG.rings.slice(1).forEach(function(g){o+='<text class="rl" x="0" y="'+(-R*g[1]+12).toFixed(1)+'" text-anchor="middle">'+g[0]+'</text>'});
+  return {svg:o+'</svg>',hits:hits}}
+function boardsCard(){return '<div class="cd-h"><b>How close, when right</b><span>points off</span></div><div class="tgg">'+ACTIVE.map(function(m){var T=tgSVG(m),S=STATS[m];
+  return '<figure class="tg"><figcaption>'+logo(m)+nm(m)+'</figcaption>'+T.svg+'<small>'+T.hits+' on target · '+(S.tot-S.right)+' wrong way</small></figure>'}).join("")+'</div>'+
+  '<p class="cd-f">The middle is what the stock really did. Each dot is one call. Closer is better. Wrong-way calls never hit the board.</p>'}
+function loopCard(){return '<div class="loop" role="img" aria-label="The loop. You trade $EZ. '+P+'% of the fee goes to the pot, '+Q+'% runs the lab. One AI bets the pot on earnings, long or short. A win buys back $EZ. A loss drains the pot. Your trades refill it.">'+
+  '<span class="lp-ret" aria-hidden="true">trades refill it</span>'+
+  '<div class="st"><span class="ic" aria-hidden="true">'+EZM.replace('class="ezm"','class="ezm" style="font-size:34px;box-shadow:none"')+'</span><span>You trade $EZ<small>Every trade pays a fee</small></span></div><div class="ar"></div>'+
+  '<div class="st"><span class="ring" style="--p:'+P+'%" aria-hidden="true"></span><span>'+P+'% goes to the pot<small>'+Q+'% runs the lab</small></span></div><div class="ar"></div>'+
+  '<div class="st"><span class="lgs" aria-hidden="true">'+nvLogo()+hlLogo()+'</span><span>One AI bets the pot<small>On earnings, on Hyperliquid. Long or short.</small></span></div><div class="ar"></div>'+
+  '<div class="splitr"><div class="oc u">Win<small>Buys back $EZ</small></div><div class="oc d">Lose<small>The pot drains</small></div></div></div>'+
+  '<p class="cd-f">The '+P+' / '+Q+' split is still to be confirmed.</p>'}
+var STEPS=[["📋","Calls on the record"],["🚀","Launch"],["🧾","Cover the AI bills"],["🤖","More models join"],["⚙️","Runs on autopilot"],["🧠","The best model shows its thinking"]];
+function roadList(){var CUR=LAUNCHED?2:1;
+  return '<ol class="road">'+STEPS.map(function(s,i){var st=i<CUR?"done":i===CUR?"cur":"todo";
+    var prog=(i===1&&!LAUNCHED)?'<span class="prog"><span role="progressbar" aria-valuemin="0" aria-valuemax="'+LAUNCH_AT+'" aria-valuenow="'+Math.min(NR,LAUNCH_AT)+'" aria-label="Rounds graded toward launch"><i style="--p:'+Math.min(100,Math.round(NR/LAUNCH_AT*100))+'%"></i></span><small>'+Math.min(NR,LAUNCH_AT)+' of '+LAUNCH_AT+' rounds graded</small></span>':'';
+    return '<li class="'+st+'"'+(st==="cur"?' aria-current="step"':'')+'><span class="ic" aria-hidden="true">'+s[0]+'</span><span class="tx">'+(st==="cur"?'<em>Now</em>':'')+s[1]+
+      (st==="done"?'<span class="tag">Done</span>':'')+prog+'</span></li>'}).join("")+'</ol>'}
+function roadCard(){return '<div class="cd-h"><b>The road</b><span>'+NR+' rounds in</span></div>'+roadList()+'<p class="cd-f">Each step unlocks when trading volume pays for it.</p>'}
+function getCard(){return '<div class="cd-h"><b>Get $EZ</b></div>'+(CONFIG.ca?'<div class="ca">Contract address<br><code>'+CONFIG.ca+'</code></div>':'<div class="ca">Not posted yet. The address appears here, and only here, at launch.</div>')+
+  (CONFIG.buyUrl&&LAUNCHED?'<a class="btn" href="'+CONFIG.buyUrl+'" target="_blank" rel="noopener">Get $EZ</a>':'')}
+function filmMsg(r){return '<div class="vid"><video controls playsinline preload="none" poster="'+MEDIA+r.poster+'.jpg" aria-label="Round '+r.n+' film: '+plainCo(r)+'"><source src="'+MEDIA+r.film+'.webm" type="video/webm"><source src="'+MEDIA+r.film+'.mp4" type="video/mp4"></video></div>'+
+  '<p class="vcap">Round '+r.n+' · '+plainCo(r)+', the film</p>'}
+function nextPanel(u){if(!u)return '<h2>Up next</h2><p class="due">The next rounds are posted soon.</p>';
+  var has=u.calls&&u.calls.length;
+  return '<h2>'+(has?'Calls are in':'Up next')+'</h2><p class="nx-t"><small>Round '+u.n+'</small>'+plainCo(u)+'</p>'+
+    (has?'<ul class="cc">'+u.calls.map(function(c){return '<li>'+logo(c.m)+'<span class="n">'+nm(c.m)+'</span>'+dirPill(c.dir==="DOWN",c.mag)+'</li>'}).join("")+'</ul>'
+      :'<p class="due">Calls come in <b>'+fmtDate(u.called)+'</b>.</p>')+
+    '<p class="due">Graded at the close: <b>'+fmtDate(u.resolves)+'</b></p>'}
+
+/* ---------- the model voices, built from the data ---------- */
+function verdictLine(r,c){var W=winners(r),said="I said "+(c.dn?"down ":"up ")+c.mag+"%. It "+moved(r)+".";
+  if(W.indexOf(c.m)>-1)return W.length>1?said+" Shared the win with "+list(W.filter(function(m){return m!==c.m}).map(nm))+". I'll allow it.":said+" I'll take it.";
+  if(c.ok)return said+" Right way, "+c.off.toFixed(2)+" points off. Close is not closest.";
+  return said+" Wrong way. Moving on.";}
+function pick(pref){for(var i=0;i<pref.length;i++)if(ACTIVE.indexOf(pref[i])>-1)return pref[i];return ACTIVE[ACTIVE.length-1]||ACTIVE[0]}
+
+/* ---------- the conversation ---------- */
+function T(s,h){return {s:s,h:h,k:"t"}}
+function C(s,h,cls){return {s:s,h:h,k:"c",cls:cls||""}}
+var NM=ACTIVE.length,G=[];
+G.push({q:null,m:[T("EZ","Hey, welcome to the group."),T("EZ","This is <b>$EZ</b>. "+NUMW[NM]+" AI models are in here too. Ask anything.")]});
+G.push({q:"so what is this?",m:[T("EZ","Every coin is the same. Buy, stare at the chart, hope."),T("EZ","Nobody roots for anything. So we put a game inside one.")]});
+(function(){var m=[T("EZ","Before a company reports earnings, "+numw(NM)+" AI models call it. Up or down, and by how much.")];
+  var u=PS[0];
+  if(u){m.push(T("EZ","Right now it's Round "+u.n+", "+plainCo(u)+". Their calls are in."));
+    var ups=u.calls.filter(function(c){return c.dir==="UP"}).length,dns=u.calls.length-ups;
+    u.calls.forEach(function(c,i){var up=c.dir==="UP",alone=(up?ups:dns)===1&&u.calls.length>2;
+      m.push(T(c.m,(up?"Up ":"Down ")+'<span class="num">'+c.mag+'%</span>.'+(alone?" I'm the only one saying "+(up?"up":"down")+".":i===0?" Locked in.":"")))});
+    m.push(T("EZ","We find out "+fmtDate(u.resolves)+"."))}
+  else if(US[0])m.push(T("EZ","Next up: Round "+US[0].n+", "+plainCo(US[0])+". Calls come in "+fmtDate(US[0].called)+"."));
+  G.push({q:"what game?",m:m})})();
+G.push({q:"who decides who's right?",m:[T("EZ","The market does."),T("EZ","Every call is graded at the first market close after the report, using the closing price from TradingView."),T("EZ","Nothing is ever edited.")]});
+G.push({q:"can't the AI just lie?",m:[T("EZ","Calls are filed the day before. The answer comes from the closing price, not from us and not from them."),T(pick(["GROK"]),"So no, I can't grade myself. I checked.")]});
+G.push({q:"how does a round get won?",m:[C("EZ",rulesCard())]});
+if(SHOW){(function(){var cs=parsed(SHOW),m=[T("EZ","Here's a real one."),C("EZ",roundCard(SHOW))];
+  cs.slice(0,3).forEach(function(c){m.push(T(c.m,verdictLine(SHOW,c)))});
+  if(SHOW.film)m.push(C("EZ",filmMsg(SHOW),"vidb"));
+  G.push({q:"show me a real one",m:m})})()}
+if(MISS){(function(){var cs=parsed(MISS),dirs=cs.map(function(c){return c.dn}),same=dirs.every(function(d){return d===dirs[0]});
+  var a=cs[0].m,b=cs.length>1?cs[1].m:a;
+  var m=[T("EZ","Then nobody wins. "+NUMW[NOWIN]+" of "+NR+" rounds so far had no winner."),C("EZ",roundCard(MISS))];
+  m.push(T(a,(same?(cs.length===2?"Both":"All "+numw(cs.length))+" of us said "+(dirs[0]?"down":"up")+".":"Every one of us got the direction wrong.")+" It "+moved(MISS)+"."));
+  if(b!==a)m.push(T(b,"Noted. It stays on the record."));
+  G.push({q:"and when they all miss?",m:m})})()}
+if(NR){(function(){var L=ROWS[0],last=ROWS[ROWS.length-1],SL=STATS[L],SX=STATS[last],m=[C("EZ",standCard())];
+  if(SL.won>0)m.push(T(L,SL.won+" wins in "+SL.tot+" rounds. Not that I'm counting."));
+  if(last!==L)m.push(T(last,SX.first&&N0&&SX.first>N0?"I joined in Round "+SX.first+". Give me a minute.":SX.won?"Still in this.":"Still looking for my first win. Long season."));
+  G.push({q:"so who's winning?",m:m})})()}
+if(NR){(function(){var upP=UPS/NR,beat=ACTIVE.filter(function(m){var S=STATS[m];return S.tot&&S.right/S.tot>upP+1e-9});
+  var coin=ACTIVE.filter(function(m){var S=STATS[m];return S.tot&&S.right/S.tot>.5+1e-9});
+  var m=[T("EZ","Honest answer: too early to say. "+NR+" rounds is a small sample."),C("EZ",barsCard()),
+    T("EZ","Here's the catch. The stock went up in "+UPS+" of "+NR+" rounds. Saying “up” every time would have scored "+UPS+" of "+NR+". That's the bar."+
+      (beat.length?" "+list(beat.map(nm))+(beat.length>1?" beat":" beats")+" it so far.":" Right now, none of them beat it.")+
+      (coin.length&&!beat.length?" "+list(coin.map(nm))+(coin.length>1?" do":" does")+" beat a coin flip.":""))];
+  G.push({q:"is it any good?",m:m});
+  var best=ACTIVE.slice().sort(function(a,b){return STATS[a].won===STATS[b].won?0:STATS[b].won-STATS[a].won})[0];
+  G.push({q:"and how close do they get?",m:[C("EZ",boardsCard()),T(best,"Some of those dots are mine. The good ones, mostly.")]});
+})()}
+G.push({q:"ok but where does the money go?",m:[T("EZ","$EZ trades pay fees. "+P+"% go into the pot. "+Q+"% runs the lab."),C("EZ",loopCard()),
+  T("EZ","One AI bets the pot on earnings, on Hyperliquid. Long or short. First target: NVIDIA."),T("EZ","A win buys back $EZ.")]});
+G.push({q:"what if it loses?",m:[T("EZ","Then the pot drains. It can be wiped out."),T("EZ","Trading refills it. No promises on price, returns or buyback size. That's the deal.")]});
+G.push({q:"so what's the dream?",m:[T("EZ","A question, not a promise."),T("EZ","What if one of them gets the direction right 70% of the time? 80%?"),T("EZ","We're about to find out.")]});
+G.push({q:"what happens next?",m:[C("EZ",roadCard()),T("EZ","Launch comes at "+LAUNCH_AT+" graded rounds. We're at "+Math.min(NR,LAUNCH_AT)+".")]});
+G.push({q:"how do I get in?",m:[T("EZ","When you're ready, and only then."),C("EZ",getCard())]});
+
+/* ---------- header, side panels ---------- */
+$("#stack").innerHTML=EZM+ACTIVE.map(function(m){return logo(m)}).join("");
+$("#members").textContent="you, EZ, "+list(ACTIVE.map(nm));
+$("#pnN").textContent=NR+" graded";$("#pnStand").innerHTML=standRows();
+$("#pnNext").innerHTML=nextPanel(TARGET);$("#pnRoad").innerHTML=roadList();
+
+/* ---------- the thread ---------- */
+var log=$("#log"),askB=$("#ask"),askT=$("#askT"),allB=$("#all"),cp=$("#cp");
+log.innerHTML='<p class="sys">Season one · '+NR+' rounds graded</p>';
+var lastS=null,gi=0,busy=false,instant=reduce,wake=null,wantMore=false;
+function row(s,inner,opts){opts=opts||{};var me=s==="me",first=s!==lastS,el=document.createElement("div");
+  el.className="row"+(me?" me":"")+(first?" first":"")+(opts.typing?" typing":"")+(instant?"":" new");
+  if(opts.typing)el.setAttribute("aria-hidden","true");
+  var h=me?"":'<span class="av'+(first?"":" blank")+'" aria-hidden="true">'+avatar(s)+'</span>';
+  h+='<div class="mw'+(opts.wide?' wide':'')+'">'+(!me&&first?'<span class="who" style="color:'+whoCol(s)+'">'+who(s)+'</span>':'<span class="sr">'+(me?'You':who(s))+':</span>')+inner+'</div>';
+  el.innerHTML=h;log.appendChild(el);if(!opts.typing)lastS=s;return el}
+function bubble(msg){return msg.k==="c"?'<div class="b cardb '+msg.cls+'">'+msg.h+'</div>':'<div class="b">'+msg.h+'</div>'}
+function sleep(ms){if(instant)return Promise.resolve();return new Promise(function(res){var t=setTimeout(function(){wake=null;res()},ms);wake=function(){clearTimeout(t);wake=null;res()}})}
+function follow(el){if(instant)return;var hd=$(".hd").offsetHeight,cpH=cp.offsetHeight,r=el.getBoundingClientRect(),vh=innerHeight;
+  var dy=r.bottom-(vh-cpH-12);if(dy<=0)return;dy=Math.min(dy,r.top-hd-12);if(dy>0)scrollBy({top:dy,behavior:"smooth"})}
+function textLen(h){return h.replace(/<[^>]+>/g,"").length}
+async function play(){if(busy||gi>=G.length)return;busy=true;wantMore=false;var g=G[gi++];ui();
+  if(g.q){var me=row("me",'<div class="b">'+g.q+'</div>');follow(me);await sleep(450)}
+  for(var i=0;i<g.m.length;i++){var msg=g.m[i];
+    if(!instant){var ty=row(msg.s,'<div class="b" aria-hidden="true"><i></i><i></i><i></i></div>',{typing:true});follow(ty);
+      await sleep(msg.k==="c"?950:Math.max(550,Math.min(1500,350+textLen(msg.h)*14)));ty.remove()}
+    var el=row(msg.s,bubble(msg),{wide:msg.k==="c"});follow(el);await sleep(260)}
+  busy=false;ui();if(instant&&gi<G.length)play()}
+function ui(){var nx=G[gi];
+  if(!nx){cp.innerHTML='<p class="fin">That\'s the whole story. <a href="#top">Back to the top</a></p>';return}
+  askT.textContent=busy?"typing…":nx.q;askB.disabled=busy;askB.setAttribute("aria-label",busy?"Waiting for replies":"Ask: "+nx.q)}
+askB.addEventListener("click",function(){play()});
+allB.addEventListener("click",function(){instant=true;if(wake)wake();if(!busy)play()});
+/* scrolling down at the end of the thread asks the next question */
+function nearEnd(){return innerHeight+scrollY>=document.documentElement.scrollHeight-cp.offsetHeight-40}
+function gesture(){if(instant||busy)return;wantMore=true;if(nearEnd())play()}
+addEventListener("wheel",function(e){if(e.deltaY>0)gesture()},{passive:true});
+var ty0=null;addEventListener("touchstart",function(e){ty0=e.touches[0].clientY},{passive:true});
+addEventListener("touchmove",function(e){if(ty0!=null&&ty0-e.touches[0].clientY>24){ty0=null;gesture()}},{passive:true});
+addEventListener("keydown",function(e){if(["ArrowDown","PageDown","End"].indexOf(e.key)>-1||(e.key===" "&&e.target===document.body))gesture()});
+addEventListener("scroll",function(){if(wantMore&&!busy&&!instant&&nearEnd())play()},{passive:true});
+if(reduce){allB.hidden=true}
+ui();play();
+})();
+</script>
+</body>
+</html>

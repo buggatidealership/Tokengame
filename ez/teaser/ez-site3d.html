@@ -1,0 +1,699 @@
+<!doctype html>
+<!--
+EZ SITE3D, "THE MACHINE ON THE PAGE" (30 s, 60 fps, 1080 x 1080; treatment and critique of 2026-10-12).
+The website's own components, built as one physical set on the page itself (cream and sand bands, low key):
+the pot gauge (#/buyback .g-tank), the Blackwell chip with its LED countdown (#gpu, #gpuCore), the standings cards
+(#roster > li, captured from the live page by site3d-capture.js) and the $EZ badge (footer .badge) as a tray of tiles
+and a "bought back" bay that mirrors the pot.
+PASSES (URL params):
+  ?pass=plate    WebGL only. Frames are named p<key>.png, the key hashing this page's source, the capture manifest and the
+                 frame's whole state (camera, every light, every LED cell, every object), so frames that look the same share one
+                 plate and a stale plate can never be used. render.js names / SKIP_EXISTING=1 render each unique plate once.
+  ?pass=type     the type layer only, on a transparent page (render.js ALPHA=1): rail, legal line, stamp, heads, labels, scrim,
+                 vignette, the uk band, the end card. Named t<key>.png; there are about 30 unique states. site3d-render.sh
+                 composites them over the plates with ffmpeg (overlay, then seeded grain).
+  ?pass=both     plate and type in one page (stills and previews).
+  &variant=std|uk   uk: the FCA band (exactly as ez-hype.html) on every frame.   &mica=1  the MiCA top band (only if counsel says so)
+  &asof=ISO      REQUIRED: the stated render date. The LEDs show the true remaining time to the bet at that moment.
+  &res=960       plates at 960 (the upscale fallback).   &ns=N  subframes override.   &lo=1  blocking quality (no MSAA, shadows, bloom)
+DATA: everything from ../ez-data.js at render time (window.SITE3D_STRINGS lists every on-screen string and its source).
+  Refuses to render if SIM.stopLoss is set (the film shows no stop loss), if SIM.leverage, SIM.leadHours or SIM.poolShare is null,
+  if a model has no LABS entry, if a round before the latest graded one is ungraded, if the launch round is missing (before
+  launch), or if the captured standings differ from LADDER ("stale textures").
+SOUND: ez-site3d-audio.js, driven by window.SITE3D_PIC (the frame table below), so a re-time moves the sound with the picture.
+-->
+<html lang="en"><head><meta charset="utf-8"><title>EZ Site3D Film</title><meta name="viewport" content="width=1080">
+<style>
+@font-face{font-family:"BC";src:url(fonts/barlow-condensed-800.woff2) format("woff2");font-weight:800}
+@font-face{font-family:"IS";src:url(fonts/instrument-sans-latin-wdth-normal.woff2) format("woff2");font-weight:400 700;font-stretch:75% 100%}
+:root{--cream:#f4efe6;--yel:#ffc72c;--up:#1fcf6b;--dn:#ff4136;--ink:#07080d}
+html,body{margin:0;background:#07080d}
+html.tp,html.tp body{background:transparent}
+#stage{position:relative;width:1080px;height:1080px;overflow:hidden;background:#07080d}
+.tp #stage{background:transparent}
+#gl,#acc{position:absolute;left:0;top:0;width:1080px;height:1080px}
+#acc{display:none}
+#ov{position:absolute;inset:0;pointer-events:none;font-family:"BC";font-weight:800;text-transform:uppercase;color:var(--cream)}
+.ab{position:absolute}
+.hd{left:48px;font-size:72px;line-height:.93;letter-spacing:.005em;white-space:nowrap}
+.hd .lc{text-transform:none}
+.y{color:var(--yel)}
+.ez .s{color:var(--yel)}.ez .e{color:var(--up)}.ez .z{color:var(--dn)}
+#rail{left:48px;top:28px;display:flex;align-items:center;gap:18px}
+#ad{font-size:30px;line-height:1;border:2px solid var(--cream);border-radius:4px;padding:5px 10px 3px}
+#brand{font-size:28px;letter-spacing:.04em}
+#legal{left:48px;top:86px;font-size:26px;letter-spacing:.02em;color:rgba(244,239,230,.9);white-space:nowrap}
+#stamp{right:48px;top:36px;font-size:28px;letter-spacing:.04em;color:rgba(244,239,230,.9);text-align:right;white-space:nowrap}
+.lbl{font-size:30px;letter-spacing:.03em;white-space:nowrap;padding:6px 12px 4px;border-radius:4px;background:rgba(7,8,13,.78);border:1.5px solid rgba(244,239,230,.55)}
+#band{left:24px;right:24px;bottom:96px;height:160px;background:#fff;border-radius:4px;box-sizing:border-box}
+#band::before{content:"";position:absolute;inset:4px;border:2px solid #000;border-radius:2px}
+#band p{position:absolute;left:20px;right:20px;top:50%;transform:translateY(-50%);margin:0;font-family:"IS";font-weight:700;font-stretch:100%;font-size:36px;line-height:1.18;color:#000;text-transform:none}
+#card{left:48px;right:48px;border:1.5px solid rgba(244,239,230,.5);border-radius:4px;background:rgba(7,8,13,.86);font-family:"IS";font-weight:600;font-stretch:100%;
+  font-size:34px;line-height:1.22;color:var(--cream);padding:12px 18px 13px;text-transform:none;text-wrap:balance}
+#follow{left:48px;font-size:28px;letter-spacing:.04em}
+#mica{left:24px;right:24px;top:12px;height:140px;box-sizing:border-box;border:2px solid var(--cream);border-radius:4px;background:#07080d}
+#mica p{position:absolute;left:16px;right:16px;top:50%;transform:translateY(-50%);margin:0;font-family:"IS";font-weight:600;font-stretch:100%;font-size:26px;line-height:1.2;color:var(--cream);text-transform:none}
+.mi #rail{top:178px}.mi #legal{top:236px}.mi #stamp{top:186px}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head><body>
+<div id="stage"><canvas id="gl" width="1080" height="1080"></canvas><canvas id="acc" width="1080" height="1080"></canvas><div id="ov"></div></div>
+<script src="../ez-data.js"></script>
+<script type="module">
+try{
+const Q=new URLSearchParams(location.search);
+const PASS=Q.get('pass')||'both',VAR=Q.get('variant')||'std',UK=VAR==='uk',MICA=Q.get('mica')==='1',RES=+(Q.get('res')||1080),LO=Q.get('lo')==='1',NSQ=Q.get('ns');
+const FPS=60,N=1800;window.FPS=FPS;window.N=N;
+if(PASS==='type')document.documentElement.classList.add('tp');
+/* ============================================================================================================
+   0. HASHES: a stale plate or type state can never be reused (every name carries a key of what it is drawn from)
+   ============================================================================================================ */
+function h32(s,seed){let h=(2166136261^seed)>>>0;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return ('0000000'+h.toString(16)).slice(-8)}
+const hash=s=>h32(s,0)+h32(s,0x9e3779b9).slice(0,4);
+const SRC=hash(await (await fetch(location.pathname,{cache:'no-store'})).text());
+
+/* ============================================================================================================
+   1. DATA (ez-data.js). STRINGS records every on-screen string and the field that produced it.
+   ============================================================================================================ */
+const STRINGS=[];const S=(text,src)=>{STRINGS.push({text:String(text).replace(/<[^>]+>/g,''),src});return text};
+const fail=m=>{throw new Error('EZ site3d: '+m)};
+if(SIM.stopLoss!=null)fail('SIM.stopLoss is set ('+SIM.stopLoss+'); this film shows no stop loss (owner, 2026-10-12). Re-plan scenario B before rendering.');
+['leverage','leadHours','poolShare'].forEach(k=>{if(SIM[k]==null||!isFinite(SIM[k]))fail('SIM.'+k+' is null; refusing to print it')});
+const LEV=SIM.leverage,LEAD=SIM.leadHours,POOL=SIM.poolShare,POOLPCT=Math.round(POOL*100);
+const LABS={GPT:'OPENAI',KIMI:'MOONSHOT AI',CLAUDE:'ANTHROPIC',GROK:'XAI'};   /* names only, never marks; a new model fails the build */
+MODEL_KEYS.forEach(m=>{if(!LABS[m])fail('no lab name for model '+m+' (add it to LABS in ez-site3d.html)')});
+if(!ROUNDS.length)fail('no graded round');
+const RS=ROUNDS.slice().sort((a,b)=>a.n-b.n),LAST=RS[RS.length-1];
+{const gap=[].concat(PENDING,UPCOMING).filter(u=>u.n<LAST.n).map(u=>u.n);if(gap.length)fail('round(s) '+gap.join(',')+' ungraded but round '+LAST.n+' is graded; the board stamp would be wrong')}
+const NL=LADDER.length;if(NL<2||NL>6)fail('the set is built for 2 to 6 models on the board, LADDER has '+NL);
+const MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const md=s=>{const m=String(s||'').match(/(\d+)\/(\d+)\/(\d+)/);return m?[2000+(+m[3]%100),+m[1]-1,+m[2]]:null};
+/* the site's nyClose: 16:00 New York on that day (20:00 UTC in daylight time, 21:00 UTC otherwise) */
+function nyClose(y,m,d){const f=new Date(Date.UTC(y,2,1)).getUTCDay(),a=Date.UTC(y,2,8+(7-f)%7),g=new Date(Date.UTC(y,10,1)).getUTCDay(),b=Date.UTC(y,10,1+(7-g)%7),t=Date.UTC(y,m,d);return Date.UTC(y,m,d,t>=a&&t<b?20:21)}
+let BET=null,betSrc='',betSet=false;
+{const b=md(SIM.betDate||CONFIG.betDate);if(b){BET=nyClose(...b);betSrc='SIM.betDate || CONFIG.betDate';betSet=true}
+ else{const r=[].concat(UPCOMING,PENDING).filter(u=>u.ticker==='NVDA')[0],c=r&&md(r.called);
+   if(c){let dt=new Date(Date.UTC(...c));do{dt=new Date(dt.getTime()+864e5)}while(dt.getUTCDay()%6===0);BET=nyClose(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate());
+     betSrc='NVDA row (round '+r.n+') CALL DATE '+r.called+' + 1 weekday, 16:00 New York (fallback; the render script needs BET_OK=1)'}}}
+if(BET==null)fail('no bet date: set SIM.betDate or add the NVDA row');
+const AS_OF=Date.parse(Q.get('asof')||'');if(!isFinite(AS_OF))fail('&asof=ISO date is required (the stated render date, normally the posting day)');
+if(AS_OF>=BET)fail('asof is after the bet');
+const R0=Math.floor((BET-AS_OF)/1000);
+const betNY=new Date(BET-5*3600e3),BETTXT=MON[betNY.getUTCMonth()]+' '+betNY.getUTCDate();
+const asofNY=new Date(AS_OF-4*3600e3),ASOFTXT=MON[asofNY.getUTCMonth()]+' '+asofNY.getUTCDate();
+/* LAUNCH (critique must-fix 12): the pot starts empty; the fee channel opens when the fast-forward reaches the day round
+   CONFIG.launchAt resolves (the site: "launch comes after launchAt graded rounds"). Once CONFIG.launched, fees run from the start. */
+let LAUNCH_REM=null,launchSrc='CONFIG.launched (fees run from the start)';
+if(!CONFIG.launched){const r=[].concat(RS,PENDING,UPCOMING).filter(u=>u.n===CONFIG.launchAt)[0];if(!r||!md(r.resolves))fail('launch round '+CONFIG.launchAt+' (CONFIG.launchAt) not found with a resolve date');
+  const L=nyClose(...md(r.resolves));LAUNCH_REM=Math.max(0,Math.floor((BET-L)/1000));launchSrc='round '+r.n+' (CONFIG.launchAt) resolves '+r.resolves+', 16:00 New York'}
+const LH=LEAD*3600;if(R0<=LH+60)fail('asof is inside the last '+LEAD+' hours; the freeze would be in the past');
+const labsTxt=(()=>{const a=MODEL_KEYS.map(m=>LABS[m]);return a.length>1?a.slice(0,-1).join(', ')+' OR '+a[a.length-1]:a[0]})();
+const sitOut=NL===2?'#2 SITS OUT.':NL===3?'#2 AND #3 SIT OUT.':NL===4?'#2, #3 AND #4 SIT OUT.':'#2 TO #'+NL+' SIT OUT.';
+const EZB='<span class="ez"><span class="s">$</span><span class="e">E</span><span class="z">Z</span></span>',EZ2='<span class="ez"><span class="e">E</span><span class="z">Z</span></span>';
+const C={
+  ad:S('AD','fixed (compliance: AD label on every frame)'),
+  brand:S(EZB+' · EARNINGS ZEASON','fixed; $ #ffc72c, E #1fcf6b, Z #ff4136 (owner)'),
+  legal:S('NOT AFFILIATED WITH NVIDIA, '+labsTxt+'.','NVIDIA + LABS[MODEL_KEYS] (names only)'),
+  stHook:S('NVIDIA BET · '+BETTXT+' · AS OF '+ASOFTXT,betSrc+'; AS OF = &asof (stated render date)'),
+  stFF:S('FAST-FORWARD','fixed'),
+  stBoard:S("TODAY'S BOARD · ROUND "+LAST.n+' · #1 CAN CHANGE','ROUNDS (latest graded).n (critique must-fix 4)'),
+  stA:S('ILLUSTRATIVE, NOT A FORECAST','fixed (scenario A)'),
+  stB:S('ILLUSTRATIVE · THE NEXT BET','fixed (scenario B, critique must-fix 15)'),
+  stEnd:S('NVIDIA BET · '+BETTXT,betSrc),
+  hook:[S('WE’RE PUTTING BUYBACKS','owner copy (EZ Season hero)'),S('<span class="y">IN THE HANDS OF AN AI.</span>','owner copy, line 2 in #ffc72c (the hero highlight)')],
+  clock:[S('THE CLOCK RUNS TO ONE BET:','fixed'),S('NVIDIA EARNINGS.','fixed')],
+  ais:[S(NL+' AI<span class="lc">s</span> CALL STOCKS','LADDER.length ('+NL+') (critique must-fix 3)'),S('BEFORE EARNINGS.','fixed')],
+  fees:S((CONFIG.launched?'':'AT LAUNCH, ')+POOLPCT+'% OF '+EZB+' FEES',(CONFIG.launched?'':'CONFIG.launched=false; ')+'SIM.poolShare ('+POOL+'); shown when the fast-forward reaches '+launchSrc),
+  freeze:[S(LEAD+' HOURS BEFORE NVIDIA REPORTS,','SIM.leadHours ('+LEAD+')'),S('THE LEADERBOARD FREEZES.','fixed')],
+  sit:S(sitOut,'LADDER.length ('+NL+')'),
+  one:S('#1 MAKES THE CALL.','fixed'),
+  zero:[S('ZERO: THE WHOLE FEE POT','fixed (the site: "fee pool"; critique must-fix 3)'),S('GOES IN ON #1’S CALL.','fixed (the site: a human clicks the button for now)')],
+  lev:[S('AT LEAST '+LEV+'X LEVERAGE.','SIM.leverage ('+LEV+', a minimum; owner 2026-10-12)'),S('THE POT CAN BE WIPED OUT.','fixed; always with the leverage line')],
+  A:[S('SCENARIO: RIGHT CALL.','fixed'),S('PROFITS BUY BACK '+EZB+'.','fixed (the site: "The profits buy back $EZ.")')],
+  B:[S('SCENARIO: WRONG CALL.','fixed'),S('THE POT TAKES THE HIT.','fixed (owner 2026-10-12)'),S('IT CAN BE WIPED OUT.','fixed (owner 2026-10-12; no stop loss)')],
+  end:[S('NOBODY SAID IT WOULD BE '+EZ2+'.','the site footer head')],
+  card:S('$EZ is a memecoin. Not financial advice. The pot can be wiped out.','fixed (end disclaimer, both variants; held 3.5 s)'),
+  follow:String(CONFIG.x||'').trim()?S('FOLLOW THE RACE · '+(String(CONFIG.x).trim().charAt(0)==='@'?String(CONFIG.x).trim():'@'+String(CONFIG.x).trim().replace(/^https?:\/\/(x|twitter)\.com\//,'')),'CONFIG.x'):null,
+  fca:UK?S('Don’t invest unless you’re prepared to lose all the money you invest. This is a high-risk investment and you should not expect to be protected if something goes wrong.','fixed: COBS 4.12A.11R(1)(d), exact (uk only)'):null,
+  mica:MICA?S('This crypto-asset marketing communication has not been reviewed or approved by any competent authority in any Member State of the European Union. The offeror of the crypto-asset is solely responsible for the content of this crypto-asset marketing communication.','fixed: MiCA Article 7 (only with &mica=1)'):null};
+/* strings baked into the 3D plates (LED dies, labels on the set) */
+S('LED dies: the remaining time to the bet at AS OF ('+R0+' s), racing to '+LEAD+':00:00 left, frozen, then to zero',betSrc+'; SIM.leadHours');
+S('DAYS · HRS · MIN · SEC (die labels, as the site\'s #gpuCore)','fixed (site)');
+S('↑ UP + "ILLUSTRATIVE CALL" (left die), ↑ UP / ↓ DN + "ILLUSTRATIVE MOVE" (right die)','not data: illustrative, labelled');
+S('THE POT (gauge base) · BOUGHT BACK (bay base)','the site\'s #gLbl and "Bought back so far" labels');
+LADDER.forEach((l,k)=>S('#'+(k+1)+' '+MODELS[l.m].name+' '+l.won+(l.won===1?' WIN':' WINS')+' (card face, captured from the live page)','LADDER['+k+'] via v24-live-x2.html #roster'));
+window.SITE3D_STRINGS=STRINGS;
+
+/* ============================================================================================================
+   2. TIMELINE (master frames; 120 BPM: 1 beat = 30 f, 1 bar = 120 f). Cuts only on hits.
+   ============================================================================================================ */
+const T={ffStart:120,brake:375,settle:400,lock:420,rise0:300,cuts:[180,300,408,450,570,600,630,660,690,720,780,810,840,960,990,1080,1110,1140,1200,1230,1320,1350,1380,1440,1470,1560],
+  elim:Array.from({length:NL-1},(_,j)=>570+Math.round(j*180/(NL-1))),one0:750,one1:780,last0:840,zero:938,out:945,seat:960,reflow:962,pot0:992,pot1:1040,levOn:1020,
+  aMove:1110,aGold:1140,aTile0:1170,aTileStep:15,aSeat:45,bBet:1320,bMove:1350,bBack:1380,bBack1:1400,bCool0:1410,bCool1:1500,end:1560,card:1590,relight0:1650,relight1:1700};
+const cl=(x,a=0,b=1)=>x<a?a:x>b?b:x,lin=(f,a,b)=>cl((f-a)/(b-a)),ss=x=>x*x*(3-2*x),eo=x=>1-Math.pow(1-x,3),
+  cd=x=>{x=cl(x);return (1-(1+6*x)*Math.exp(-6*x))/(1-7*Math.exp(-6))};     /* critically damped, normalised, no overshoot */
+/* remaining seconds on the dies at frame f */
+function remAt(f){
+  if(f<T.ffStart)return R0-f/FPS;                                            /* real time */
+  if(f<T.lock){/* a long acceleration (cubic) to 97% of the way, then a hard brake: the distance to the 24 hour mark falls
+     exponentially (about a day to 5 s in 25 frames), then the last seconds tick out slowly (clacks at f402, 405, 408, 414, 417) */
+    const R1=R0-T.ffStart/FPS,D=R1-LH;
+    if(f<T.brake)return R1-D*0.97*Math.pow(lin(f,T.ffStart,T.brake),3);
+    if(f<T.settle){const u=lin(f,T.brake,T.settle);return LH+Math.pow(10,Math.log10(D*0.03)*(1-u)+Math.log10(5)*u)}
+    return LH+5*Math.pow(1-lin(f,T.settle,T.lock),1.3)}
+  if(f<T.last0)return LH;                                                    /* frozen at the 24 hour mark */
+  if(f<T.zero){const x=lin(f,T.last0,T.zero);return (LH-1)*(1-Math.pow(x,2.2))}
+  return 0}
+/* the frame the fast-forward passes the launch date (fees start); before launch only */
+const F_LAUNCH=(()=>{if(LAUNCH_REM==null)return null;for(let f=T.ffStart;f<T.lock;f++)if(remAt(f)<=LAUNCH_REM)return f;return T.ffStart})();
+if(F_LAUNCH!=null&&(F_LAUNCH<180||F_LAUNCH>290))fail('the launch date falls at frame '+F_LAUNCH+', outside the pot shot (180..290): re-time the shot');
+const P_LOSS=0.61,POT_FULL=0.88,POT_B=+(POT_FULL-P_LOSS).toFixed(2);       /* illustrative levels; A's profit = B's loss (critique must-fix 7) */
+const NT=12,TILES_LIFT=Math.round(P_LOSS*10);if(TILES_LIFT*15+1170+45>1319)fail('the buyback runs past scenario A');                             /* bay: 10 slots = the gauge's 10 ticks; 0.61 -> 6 tiles */
+
+/* ============================================================================================================
+   3. TYPE LAYER: static states (about 30), composited over the plates by ffmpeg in production
+   ============================================================================================================ */
+const ov=document.getElementById('ov');
+const FCA_TOP=824,WIN0=300,WIN1=800;
+const CH_LABEL={x:48,y:668};            /* the fee label, under the channel (y 617..627) where it meets the pot, in the locked pot shot (measured, shot P) */
+function head(lines){return '<div class="ab hd" style="top:'+(MICA?284:134)+'px">'+lines.join('<br>')+'</div>'}
+function typeHTML(i){let h='',stamp='',scrim=.72;
+  h+='<div class="ab" id="rail"><span id="ad">'+C.ad+'</span><span id="brand">'+C.brand+'</span></div><div class="ab" id="legal">'+C.legal+'</div>';
+  if(i<180){stamp=C.stHook;h+=head(C.hook);if(i<60)scrim=.9}
+  else if(i<300){stamp=C.stFF;h+=head(C.clock);if(F_LAUNCH==null||i>=F_LAUNCH)h+='<div class="ab lbl" style="left:'+CH_LABEL.x+'px;top:'+CH_LABEL.y+'px">'+C.fees+'</div>'}
+  else if(i<T.lock){stamp=C.stFF;h+=head(C.ais)}
+  else if(i<T.elim[0]){stamp=C.stBoard;h+=head(C.freeze)}
+  else if(i<T.one0){stamp=C.stBoard;h+=head([C.sit])}
+  else if(i<T.last0){stamp=C.stBoard;h+=head([C.sit,C.one])}
+  else if(i<T.seat){stamp=C.stBoard}
+  else if(i<T.levOn){stamp=C.stBoard;h+=head(C.zero)}
+  else if(i<1080){stamp=C.stBoard;h+=head(C.lev)}
+  else if(i<1320){stamp=C.stA;h+=head(C.A)}
+  else if(i<1560){stamp=C.stB;h+=head(C.B)}
+  else{stamp=C.stEnd;h+=head(C.end);
+    if(i>=T.card){const top=UK?664:858;h+='<div class="ab" id="card" style="top:'+top+'px">'+C.card.split(/(?<=\.) /).map(t=>'<span style="white-space:nowrap">'+t+'</span>').join(' ')+'</div>';
+      if(C.follow)h+='<div class="ab" id="follow" style="top:'+(top-44)+'px">'+C.follow+'</div>'}}
+  if(stamp)h+='<div class="ab" id="stamp">'+stamp+'</div>';
+  if(UK)h+='<div class="ab" id="band"><p>'+C.fca+'</p></div>';
+  if(MICA)h+='<div class="ab" id="mica"><p>'+C.mica+'</p></div>';
+  /* scrim (critique must-fix 5: mandatory, rgba(7,8,13) 0.72 to 0 over y 0..330) and a light vignette, both in the type state */
+  const sc='<div class="ab" style="left:0;right:0;top:0;height:'+(MICA?480:330)+'px;background:linear-gradient(rgba(7,8,13,'+scrim+'),rgba(7,8,13,'+(scrim*.55).toFixed(2)+') 55%,rgba(7,8,13,0))"></div>'+
+    '<div class="ab" style="inset:0;background:radial-gradient(circle at 50% 52%,rgba(7,8,13,0) 58%,rgba(7,8,13,.30) 100%)"></div>';
+  return sc+h}
+let typeKey='';const fitCache={};
+function typeFrame(i){const html=typeHTML(i);if(html===typeKey)return;typeKey=html;ov.className=MICA?'mi':'';ov.innerHTML=html;fitStamp()}
+/* the stamp never touches the rail: shrink from 28 px one px at a time; below 22 px the render stops (ez-hype's fitStamp) */
+function fitStamp(){const st=document.getElementById('stamp');if(!st)return;const rr=document.getElementById('rail').getBoundingClientRect().right;
+  for(let fs=28;fs>=22;fs--){st.style.fontSize=fs+'px';if(st.getBoundingClientRect().left>=rr+16)return fs}
+  throw new Error('EZ site3d: the stamp "'+st.textContent+'" overlaps the rail even at 22 px')}
+/* the legal line must fit the frame (a new lab makes it longer): shrink to 22 px, then fail */
+function fitLegal(){const e=document.getElementById('legal');if(!e)return;for(let fs=26;fs>=22;fs--){e.style.fontSize=fs+'px';if(e.getBoundingClientRect().right<=1080-48)return}fail('the non-affiliation line does not fit at 22 px')}
+const TYPE_STATES=[...new Set(Array.from({length:N},(_,i)=>typeHTML(i)))].length;
+
+/* ============================================================================================================
+   4. SOUND EVENTS (picture frames; ez-site3d-audio.js adds the one-frame lag)
+   ============================================================================================================ */
+function digitsAt(f){const r=Math.max(0,Math.floor(remAt(f)));return [Math.floor(r/86400),Math.floor(r%86400/3600),Math.floor(r%3600/60),r%60]}
+window.SITE3D_PIC={N,FPS,T,F_LAUNCH,tiles:TILES_LIFT,NL,
+  ticks:(()=>{const a=[];let prev=digitsAt(0);for(let f=1;f<T.lock+1;f++){const d=digitsAt(f);const u=d.findIndex((v,k)=>v!==prev[k]);if(u>=0)a.push([f,u]);prev=d}
+    prev=digitsAt(T.last0-1);for(let f=T.last0;f<=T.zero;f++){const d=digitsAt(f);const u=d.findIndex((v,k)=>v!==prev[k]);if(u>=0)a.push([f,u]);prev=d}return a})(),
+  tileSeat:Array.from({length:TILES_LIFT},(_,k)=>T.aTile0+T.aTileStep*k+T.aSeat),tileLift:Array.from({length:TILES_LIFT},(_,k)=>T.aTile0+T.aTileStep*k)};
+window.SITE3D_INFO={betSrc,bet:new Date(BET).toISOString(),betSet,R0,asof:new Date(AS_OF).toISOString(),LEV,LEAD,POOL,F_LAUNCH,launchSrc,typeStates:TYPE_STATES,NL,ladder:LADDER.map(l=>l.m+' '+l.won)};
+
+await document.fonts.load('800 72px BC');await document.fonts.load('700 36px IS');await document.fonts.load('600 34px IS');
+
+if(PASS==='type'){
+  window.frameName=i=>'t'+hash(SRC+'|'+VAR+'|'+MICA+'|'+typeHTML(i));
+  window.renderAt=t=>{const i=Math.min(N-1,Math.max(0,Math.round(t*FPS)));typeFrame(i);fitLegal()};
+  document.getElementById('gl').style.display='none';window.renderAt(0);window.__ready=true;
+}else{
+/* ============================================================================================================
+   5. THE SET (three.js r170). 1 world unit = 1000 px of the site's chip image. +x right, +z toward the lens, the page at y = -0.03.
+   ============================================================================================================ */
+const THREE=await import('three');
+const {RoundedBoxGeometry}=await import('three/addons/geometries/RoundedBoxGeometry.js');
+const {EffectComposer}=await import('three/addons/postprocessing/EffectComposer.js');
+const {RenderPass}=await import('three/addons/postprocessing/RenderPass.js');
+const {UnrealBloomPass}=await import('three/addons/postprocessing/UnrealBloomPass.js');
+const {OutputPass}=await import('three/addons/postprocessing/OutputPass.js');
+const {BokehPass}=await import('three/addons/postprocessing/BokehPass.js');
+const {SVGLoader}=await import('three/addons/loaders/SVGLoader.js');
+const TEX='/__site3d/';
+const MAN=await (await fetch(TEX+'manifest.json',{cache:'no-store'})).json();
+if(MAN.data.ladder.map(l=>l.m+':'+l.won).join()!==LADDER.map(l=>l.m+':'+l.won).join())fail('stale textures: the captured standings ('+MAN.data.ladder.map(l=>l.m+' '+l.won).join(', ')+') differ from ez-data.js LADDER; run site3d-capture.js');
+const MARKS=!!MAN.marks;
+const MANKEY=hash(JSON.stringify({d:MAN.dataHash,l:MAN.data.ladder,m:MARKS,c:MAN.colors}));
+const W=RES,FLOOR=-0.03;
+const canvas=document.getElementById('gl');canvas.style.width=canvas.style.height='1080px';
+const renderer=new THREE.WebGLRenderer({canvas,antialias:false,preserveDrawingBuffer:true});
+renderer.setPixelRatio(1);renderer.setSize(W,W,false);canvas.style.width=canvas.style.height='1080px';
+renderer.toneMapping=THREE.NeutralToneMapping;renderer.toneMappingExposure=1.0;renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.shadowMap.enabled=!LO;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x07080d);scene.fog=new THREE.FogExp2(0x07080d,0.105);
+const loadImg=u=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('missing '+u));i.src=u});
+const texOf=async u=>{const t=new THREE.Texture(await loadImg(u));t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;t.needsUpdate=true;return t};
+const cvTex=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),c);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t};
+const col=s=>new THREE.Color(s);
+
+/* studio environment: a black room, an overhead softbox, a cool strip left, a warm strip back right (reflections only) */
+{const s=new THREE.Scene();s.background=new THREE.Color(0);
+  const box=(w,h,c,i,p)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:new THREE.Color(c).multiplyScalar(i),side:THREE.DoubleSide}));m.position.set(...p);m.lookAt(0,0,0);s.add(m)};
+  box(10,3.2,0xfff4e6,1.5,[0,4.2,-5.5]);box(3.2,2,0xffffff,2.2,[-0.8,7,1]);box(0.8,6,0xd6e2ff,1.3,[-6,2.4,1.5]);box(0.6,5,0xffd9a0,1.0,[5.5,2.0,-1]);
+  const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(s,0.04).texture;pm.dispose()}
+
+/* ---- THE PAGE: X2's body background, 180 px bands of --field and --field2 (the chip image is 900 CSS px wide, so a band is
+   0.367 units), as two warm stone finishes, lit low key so the far page falls to black ---- */
+const BAND=0.367;
+{const f1=col(MAN.colors.field),f2=col(MAN.colors.field2);
+  const alb=cvTex(8,512,(g)=>{for(let i=0;i<512;i++){const b=Math.floor(i/32)%2;g.fillStyle='#'+(b?f2:f1).getHexString();g.fillRect(0,i,8,1)}});
+  /* stone: --field polished, --field2 honed, with a fine seeded grain, so the bands read as two finishes of one stone */
+  const rgh=cvTex(64,512,(g)=>{const im=g.createImageData(64,512);let s=20261012;for(let y=0;y<512;y++)for(let x=0;x<64;x++){const i=y*64+x;s=(s*1664525+1013904223)>>>0;const b=Math.floor(y/32)%2;const v=(b?190:92)+((s>>>24)%28);im.data[i*4]=v;im.data[i*4+1]=v;im.data[i*4+2]=v;im.data[i*4+3]=255}g.putImageData(im,0,0)});
+  rgh.colorSpace=THREE.NoColorSpace;
+  alb.wrapS=alb.wrapT=rgh.wrapS=rgh.wrapT=THREE.RepeatWrapping;alb.magFilter=THREE.NearestFilter;
+  const SZ=30;alb.repeat.set(1,SZ/(BAND*2*16));rgh.repeat.set(SZ/0.5,SZ/(BAND*2*16));
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(SZ,SZ),new THREE.MeshStandardMaterial({map:alb,color:0x77726a,roughness:1,roughnessMap:rgh,metalness:0,envMapIntensity:0.10}));
+  floor.rotation.x=-Math.PI/2;floor.position.y=FLOOR;floor.receiveShadow=true;scene.add(floor);
+  /* the band phase: a band edge on the chip's top edge, as on the page */
+  alb.offset.y=((0.681+SZ/2)/(BAND*2*16))%1;rgh.offset.y=alb.offset.y}
+
+/* ---- 1. THE CHIP: #gpu (media/ez-gpu2.jpg, cropped as .gpu-img crops it: x 82..1916, y 63..1425) in relief ---- */
+const CW=1834,CH=1362,CX0=82,CY0=63;const PX=x=>(x-CX0-CW/2)/1000,PZ=y=>(y-CY0-CH/2)/1000;
+const photo=await loadImg('../media/ez-gpu2.jpg');
+const M=(()=>{const cv=document.createElement('canvas');cv.width=CW;cv.height=CH;const g=cv.getContext('2d',{willReadFrequently:true});g.drawImage(photo,-CX0,-CY0);
+  const im=g.getImageData(0,0,CW,CH),d=im.data,n=CW*CH;const lum=new Float32Array(n),mr=new Uint8ClampedArray(n*4),nrm=new Uint8ClampedArray(n*4);
+  for(let i=0;i<n;i++){const r=d[i*4],gg=d[i*4+1],b=d[i*4+2];lum[i]=(0.2126*r+0.7152*gg+0.0722*b)/255;
+    const mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),sat=mx?(mx-mn)/mx:0,gold=(r>gg&&gg>b&&sat>0.28&&mx>70)?1:0;
+    mr[i*4+1]=Math.round((gold?0.30:0.55)*255);mr[i*4+2]=gold?255:20;mr[i*4+3]=255;
+    if(!gold){d[i*4]*=0.62;d[i*4+1]*=0.62;d[i*4+2]*=0.66}}
+  g.putImageData(im,0,0);
+  for(let y=0;y<CH;y++)for(let x=0;x<CW;x++){const i=y*CW+x,L=lum[y*CW+Math.max(0,x-1)],R=lum[y*CW+Math.min(CW-1,x+1)],U=lum[Math.max(0,y-1)*CW+x],D=lum[Math.min(CH-1,y+1)*CW+x];
+    const nx=(L-R)*1.6,ny=(U-D)*1.6,k=1/Math.hypot(nx,ny,1);nrm[i*4]=(nx*k*0.5+0.5)*255;nrm[i*4+1]=(ny*k*0.5+0.5)*255;nrm[i*4+2]=(k*0.5+0.5)*255;nrm[i*4+3]=255}
+  const mk=a=>{const t=new THREE.DataTexture(a,CW,CH);t.flipY=true;t.needsUpdate=true;t.anisotropy=4;t.generateMipmaps=true;t.minFilter=THREE.LinearMipmapLinearFilter;t.magFilter=THREE.LinearFilter;return t};
+  const alb=new THREE.CanvasTexture(cv);alb.colorSpace=THREE.SRGBColorSpace;alb.anisotropy=4;return {alb,mr:mk(mr),nrm:mk(nrm)}})();
+const chipMat=new THREE.MeshPhysicalMaterial({map:M.alb,metalnessMap:M.mr,roughnessMap:M.mr,normalMap:M.nrm,normalScale:new THREE.Vector2(0.5,0.5),metalness:1,roughness:1});
+const dieMat=new THREE.MeshPhysicalMaterial({map:M.alb,metalnessMap:M.mr,roughnessMap:M.mr,normalMap:M.nrm,normalScale:new THREE.Vector2(0.3,0.3),metalness:1,roughness:1,clearcoat:0.7,clearcoatRoughness:0.1});
+const edgeMat=new THREE.MeshStandardMaterial({color:0x0c0d10,metalness:0.3,roughness:0.55});
+const goldEdge=new THREE.MeshPhysicalMaterial({color:0xd6a640,metalness:1,roughness:0.28});
+const chip=new THREE.Group();scene.add(chip);
+function block(x0,y0,x1,y1,h,topMat,sideMat,y=0){const w=(x1-x0)/1000,dpt=(y1-y0)/1000,g=new THREE.BoxGeometry(w,h,dpt);const uv=g.attributes.uv;
+  const u0=(x0-CX0)/CW,u1=(x1-CX0)/CW,v0=1-(y0-CY0)/CH,v1=1-(y1-CY0)/CH;uv.setXY(8,u0,v0);uv.setXY(9,u1,v0);uv.setXY(10,u0,v1);uv.setXY(11,u1,v1);uv.needsUpdate=true;
+  const m=new THREE.Mesh(g,[sideMat,sideMat,topMat,sideMat,sideMat,sideMat]);m.position.set((PX(x0)+PX(x1))/2,y+h/2,(PZ(y0)+PZ(y1))/2);m.castShadow=m.receiveShadow=true;chip.add(m);return m}
+block(CX0,CY0,CX0+CW,CY0+CH,0.030,chipMat,edgeMat,-0.030);
+[[CX0,CY0,CX0+CW,CY0+64],[CX0,CY0+CH-82,CX0+CW,CY0+CH],[CX0,CY0+64,CX0+86,CY0+CH-82],[CX0+CW-86,CY0+64,CX0+CW,CY0+CH-82]].forEach(r=>block(...r,0.010,chipMat,goldEdge,0));
+[[413,397,985,1037],[1015,397,1588,1037]].forEach(r=>block(...r,0.012,dieMat,edgeMat,0));
+[[444,186,690,393],[697,186,962,393],[1043,186,1305,393],[1311,186,1561,393],[444,1043,690,1247],[697,1043,962,1247],[1043,1043,1305,1247],[1311,1043,1561,1247]].forEach(r=>block(...r,0.016,chipMat,goldEdge,0));
+/* the engraving on the bottom gold bar (.gc-eng .gc-nm): a mark, so only with MARKS (critique must-fix 14) */
+if(MARKS){const t=cvTex(1024,64,g=>{g.font='800 44px BC';g.textAlign='right';g.textBaseline='middle';g.letterSpacing='7px';g.fillStyle='#3a2a08';g.fillText('NVIDIA BLACKWELL',1010,34)});
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(0.6,0.0375),new THREE.MeshStandardMaterial({map:t,transparent:true,metalness:0.6,roughness:0.6}));m.rotation.x=-Math.PI/2;m.position.set(PX(1872)-0.3,0.0102,PZ(1384));chip.add(m)}
+/* the socket #1 seats into: milled across the package between the upper memory row and the dies, over the seam */
+const SOCK_Z=PZ(395),SOCK_W=1.06;
+{const g=new THREE.Group();chip.add(g);
+  const slot=new THREE.Mesh(new THREE.BoxGeometry(SOCK_W,0.004,0.036),new THREE.MeshStandardMaterial({color:0x020203,roughness:0.9}));slot.position.set(0,0.0165,SOCK_Z);g.add(slot);
+  const pins=new THREE.Mesh(new THREE.BoxGeometry(SOCK_W-0.04,0.001,0.012),new THREE.MeshPhysicalMaterial({color:0xb8913a,metalness:1,roughness:0.35}));pins.position.set(0,0.0172,SOCK_Z);g.add(pins)}
+
+/* ---- the LED countdown (#gpuCore): 4 blocks of 11 x 7 instanced cells, the site's geometry, 5 x 7 font and colon dots ---- */
+const F5={0:"01110100011000110001100011000101110",1:"00100011000010000100001000010001110",2:"01110100010000100010001000100011111",3:"11110000010000101110000010000111110",4:"00010001100101010010111110001000010",5:"11111100001111000001000011000101110",6:"00110010001000011110100011000101110",7:"11111000010001000100010000100001000",8:"01110100011000101110100011000101110",9:"01110100011000101111000010001001100",
+  U:"10001100011000110001100011000101110",P:"11110100011000111110100001000010000",D:"11100100101000110001100011001011100",N:"10001110011010110011100011000110001",' ':"00000000000000000000000000000000000"};
+const ARROW={up:["00000100000","00001110000","00011111000","00111111100","00001110000","00001110000","00001110000"]};ARROW.dn=ARROW.up.slice().reverse();
+const PANELS=[{x:478},{x:1078}],PY=628,P=17.2,CS=13.6,DIE_TOP=0.012;
+const blkMat=new THREE.MeshPhysicalMaterial({color:0x141518,metalness:0.1,roughness:0.4,clearcoat:0.9,clearcoatRoughness:0.06});
+const cellGeo=new RoundedBoxGeometry(CS/1000,0.0022,CS/1000,2,0.0018);
+const CELLS=[];   /* {x,z,blk,r,c,gap,die,d} */
+PANELS.forEach((pn,pi)=>{for(let q=0;q<2;q++){const gx=pn.x+19+q*(12*P+30);
+  const bw=10*P+CS+14,bh=6*P+CS+14;const b=new THREE.Mesh(new RoundedBoxGeometry(bw/1000,0.004,bh/1000,2,0.0015),blkMat);b.position.set(PX(gx-7+bw/2),DIE_TOP+0.002,PZ(PY+14+bh/2));b.receiveShadow=true;chip.add(b);
+  for(let r=0;r<7;r++)for(let c=0;c<11;c++)CELLS.push({x:PX(gx+c*P+CS/2),z:PZ(PY+21+r*P+CS/2),blk:pi*2+q,r,c,gap:c===5,die:pi})}});
+/* the colons (DAYS:HRS, MIN:SEC): two round cells between each panel's blocks, as the site draws them */
+const COLONS=[];PANELS.forEach((pn,pi)=>{const cx=pn.x+19+(10*P+CS+12*P+30)/2;[2,4].forEach(rr=>COLONS.push({x:PX(cx),z:PZ(PY+21+rr*P+CS/2),die:pi}))});
+{const dmin=[1e9,1e9],dmax=[0,0];CELLS.concat(COLONS).forEach(c=>{const d=Math.abs(c.x);dmin[c.die]=Math.min(dmin[c.die],d);dmax[c.die]=Math.max(dmax[c.die],d)});
+  CELLS.concat(COLONS).forEach(c=>{c.d=(Math.abs(c.x)-dmin[c.die])/(dmax[c.die]-dmin[c.die])})}   /* 0 at the seam (the socket), 1 at the die's outer edge */
+const NC=CELLS.length+COLONS.length;
+const colonGeo=new THREE.CylinderGeometry(0.0052,0.0052,0.0024,20);
+const onMat=new THREE.MeshBasicMaterial({color:0xffffff}),offMat=new THREE.MeshStandardMaterial({color:0x24262b,roughness:0.5});
+const onI=new THREE.InstancedMesh(cellGeo,onMat,CELLS.length),offI=new THREE.InstancedMesh(cellGeo,offMat,CELLS.length);onI.instanceColor=new THREE.InstancedBufferAttribute(new Float32Array(CELLS.length*3),3);
+const conI=new THREE.InstancedMesh(colonGeo,onMat.clone(),4),coffI=new THREE.InstancedMesh(colonGeo,offMat,4);conI.instanceColor=new THREE.InstancedBufferAttribute(new Float32Array(12),3);
+chip.add(onI,offI,conI,coffI);
+/* up and down at equal luminance (A/B balance, critique must-fix 7): the green is about 1.5x brighter than the red at equal drive */
+const LEDC={cd:col(0xff3b2f),up:col(0x1fcf6b).multiplyScalar(0.82),dn:col(0xff4136).multiplyScalar(1.3)};const LEDK=Object.keys(LEDC);
+const dmy=new THREE.Object3D(),tmpC=new THREE.Color();
+/* the die labels (.gc-u), a canvas strip under the blocks */
+const labCv=document.createElement('canvas');labCv.width=2048;labCv.height=64;const labT=new THREE.CanvasTexture(labCv);labT.colorSpace=THREE.SRGBColorSpace;labT.anisotropy=8;
+const labMat=new THREE.MeshStandardMaterial({map:labT,transparent:true,roughness:0.6,emissive:0xffffff,emissiveMap:labT,emissiveIntensity:0.3,depthWrite:false});
+{const m=new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.032),labMat);m.rotation.x=-Math.PI/2;m.position.set(PX(1050),DIE_TOP+0.0005,PZ(PY+172));chip.add(m)}
+const blkCx=[];PANELS.forEach(pn=>{for(let q=0;q<2;q++)blkCx.push(pn.x+19+q*(12*P+30)+5*P+CS/2)});const dieCx=PANELS.map(pn=>pn.x+19+(10*P+CS+12*P+30)/2);
+let labKey='';
+function setLabels(L){const k=JSON.stringify(L);if(k===labKey)return;labKey=k;const g=labCv.getContext('2d');g.clearRect(0,0,2048,64);g.font='800 46px BC';g.textAlign='center';g.textBaseline='middle';g.fillStyle='#f2efe6';
+  const X=x=>(x-400)/(1700-400)*2048;
+  if(L.units){['DAYS','HRS','MIN','SEC'].forEach((u,i)=>{g.letterSpacing='14px';g.fillText(u,X(blkCx[i]),32)})}
+  [L.left,L.right].forEach((t,i)=>{if(!t)return;g.letterSpacing='9px';g.fillText(t,X(dieCx[i]),32)});labT.needsUpdate=true}
+/* LED spill on the die (additive glow decal), coloured by the lit cells */
+const glowT=cvTex(256,128,g=>{const gr=g.createRadialGradient(128,64,8,128,64,128);gr.addColorStop(0,'rgba(255,255,255,0.55)');gr.addColorStop(0.45,'rgba(255,255,255,0.16)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,256,128)});
+const spill=PANELS.map(pn=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(0.80,0.42),new THREE.MeshBasicMaterial({map:glowT,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,color:0}));
+  m.rotation.x=-Math.PI/2;m.position.set(PX(pn.x+223),DIE_TOP+0.0009,PZ(PY+107));chip.add(m);return m});
+
+/* LED state at frame f: per-cell brightness 0..1 and colour, with phosphor afterglow (on in 1 frame, decay over 3) */
+function glyphOn(spec,cell){if(!spec)return false;if(spec.arrow)return ARROW[spec.arrow][cell.r][cell.c]==='1';if(cell.gap)return false;
+  const gi=cell.c<5?0:1,cc=cell.c<5?cell.c:cell.c-6;return (F5[spec.g[gi]]||F5[' '])[cell.r*5+cc]==='1'}
+function digitSpecs(rem){const r=Math.max(0,Math.floor(rem)),p=n=>String(Math.min(n,99)).padStart(2,'0');return [p(Math.floor(r/86400)),p(Math.floor(r%86400/3600)),p(Math.floor(r%3600/60)),p(r%60)].map(g=>({g,c:'cd'}))}
+const CALL=[{arrow:'up',c:'up'},{g:'UP',c:'up'}],MOVE_UP=[{arrow:'up',c:'up'},{g:'UP',c:'up'}],MOVE_DN=[{arrow:'dn',c:'dn'},{g:'DN',c:'dn'}];
+/* the display program: what the four blocks show at frame f, the level, the colons, the labels, the reflow window per die */
+function ledProg(f){
+  if(f<T.out){const frozen=f>=T.lock&&f<T.last0;return {blocks:digitSpecs(remAt(f)),level:frozen?0.55:1,colon:true,lab:{units:true},glow:true}}
+  if(f<T.reflow)return {blocks:[null,null,null,null],level:0,colon:false,lab:{},glow:false};
+  if(f>=T.end){if(f<T.relight0)return {blocks:[null,null,null,null],level:0,colon:false,lab:{}};
+    return {blocks:digitSpecs(R0),level:1,colon:true,lab:{units:true},rf:[[T.relight0,T.relight1],[T.relight0,T.relight1]],glow:false}}
+  /* left die: the call (blanked and re-shown for the next bet in B); right die: dark until the move (critique must-fix 1: no leverage on the dies) */
+  let left=CALL,rfL=[T.reflow,T.reflow+12],right=[null,null],rfR=null,labR='';
+  if(f>=T.bBet){if(f===T.bBet)left=[null,null];rfL=[T.bBet+1,T.bBet+13]}
+  if(f>=T.aMove&&f<T.bBet){right=MOVE_UP;rfR=[T.aMove,T.aMove+12];labR='ILLUSTRATIVE MOVE'}
+  if(f>=T.bMove){right=MOVE_DN;rfR=[T.bMove,T.bMove+12];labR='ILLUSTRATIVE MOVE'}
+  return {blocks:left.concat(right),level:1,colon:false,lab:{left:left[0]?'ILLUSTRATIVE CALL':'',right:labR},rf:[rfL,rfR],glow:false}}
+function ledRaw(f){const pr=ledProg(f),b=new Float32Array(NC),c=new Uint8Array(NC);
+  CELLS.forEach((cell,i)=>{const sp=pr.blocks[cell.blk];let on=glyphOn(sp,cell)?pr.level:0;
+    if(on&&pr.rf&&pr.rf[cell.die]){const [a,z]=pr.rf[cell.die];const r=lin(f,a,z);if(cell.d>r*1.08)on=0}
+    b[i]=on;c[i]=sp?LEDK.indexOf(sp.c):0});
+  COLONS.forEach((cn,j)=>{let on=pr.colon?pr.level:0;if(on&&pr.rf&&pr.rf[cn.die]){const [a,z]=pr.rf[cn.die];if(cn.d>lin(f,a,z)*1.08)on=0}b[CELLS.length+j]=on;c[CELLS.length+j]=0});
+  return {b,c,pr}}
+function ledAt(f){const now=ledRaw(f);if(!now.pr.glow)return now;
+  const k=[0.5,0.25,0.12];for(let j=1;j<=3;j++){const pf=f-j;if(pf<0)break;const p=ledRaw(pf);if(!p.pr.glow)break;for(let i=0;i<NC;i++){const v=p.b[i]*k[j-1];if(v>now.b[i]){now.b[i]=v;now.c[i]=p.c[i]}}}
+  return now}
+function applyLED(L){let a=0,o=0,sum=[0,0,0],n=0;
+  CELLS.forEach((cell,i)=>{dmy.position.set(cell.x,DIE_TOP+0.0051,cell.z);dmy.updateMatrix();const v=L.b[i];
+    if(v>0.004){onI.setMatrixAt(a,dmy.matrix);tmpC.copy(LEDC[LEDK[L.c[i]]]).multiplyScalar(5.0*v);onI.setColorAt(a,tmpC);a++;sum[0]+=tmpC.r;sum[1]+=tmpC.g;sum[2]+=tmpC.b;n++}
+    else if(!cell.gap||L.pr.blocks[cell.blk]&&L.pr.blocks[cell.blk].arrow){offI.setMatrixAt(o++,dmy.matrix)}});
+  onI.count=a;offI.count=o;onI.instanceMatrix.needsUpdate=offI.instanceMatrix.needsUpdate=true;onI.instanceColor.needsUpdate=true;
+  let ca=0,co=0;COLONS.forEach((cn,j)=>{dmy.position.set(cn.x,DIE_TOP+0.0051,cn.z);dmy.updateMatrix();const v=L.b[CELLS.length+j];
+    if(v>0.004){conI.setMatrixAt(ca,dmy.matrix);tmpC.copy(LEDC.cd).multiplyScalar(5*v);conI.setColorAt(ca,tmpC);ca++}else coffI.setMatrixAt(co++,dmy.matrix)});
+  conI.count=ca;coffI.count=co;conI.instanceMatrix.needsUpdate=coffI.instanceMatrix.needsUpdate=true;conI.instanceColor.needsUpdate=true;
+  setLabels(L.pr.lab);return n?[sum[0]/n,sum[1]/n,sum[2]/n,n]:[0,0,0,0]}
+
+/* ---- 2. THE STANDINGS: X2's #roster > li cards (faces captured by site3d-capture.js: the site's own ink) as navy anodised
+   slabs with a chamfer, #1 in the site's foil as a laminate that shifts with the view. They press up out of the page on
+   risers, #1 highest (the list's order, read top to bottom). No frame. ---- */
+const CARD_W=1.0,CARD_H=CARD_W*(MAN.items['face-0.png'].h/MAN.items['face-0.png'].w),CARD_T=0.035,PITCH=0.27,LIST_Z=-0.75,PHI_LIST=12*Math.PI/180;
+const anodNavy=()=>new THREE.MeshPhysicalMaterial({color:col(MAN.colors.slab||'#101a3a'),metalness:0.85,roughness:0.34,clearcoat:0.5,clearcoatRoughness:0.18});
+const FOIL=MAN.colors.foil.map(col);
+const cards=[];
+for(let k=0;k<NL;k++){const tex=await texOf(TEX+'face-'+k+'.png');const pivot=new THREE.Group();scene.add(pivot);
+  const foil=k===0&&/foil/.test(MAN.colors.cards[0].bgImage||'');
+  const body=new THREE.Mesh(new RoundedBoxGeometry(CARD_W,CARD_H,CARD_T,3,0.008),anodNavy());body.position.set(0,CARD_H/2,-CARD_T/2-0.0005);body.castShadow=body.receiveShadow=true;pivot.add(body);
+  let face;
+  if(foil){/* the foil laminate: the site's four stops (--foil-1..4, the 100deg gradient), phase shifted by the view direction */
+    face=new THREE.MeshPhysicalMaterial({color:0xffffff,map:tex,roughness:0.6,metalness:0.05,clearcoat:0.25,clearcoatRoughness:0.35,specularIntensity:0.25,envMapIntensity:0.4,emissive:0xffffff,emissiveIntensity:0.0});
+    face.userData.u={uF:{value:FOIL},uShift:{value:0},uGlow:{value:0}};
+    face.onBeforeCompile=sh=>{Object.assign(sh.uniforms,face.userData.u);
+      sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uF[4];uniform float uShift,uGlow;\nvec3 foilAt(float t){t=fract(t)*4.0;vec3 a=t<1.?uF[0]:t<2.?uF[2]:t<3.?uF[3]:uF[1];vec3 b=t<1.?uF[2]:t<2.?uF[3]:t<3.?uF[1]:uF[0];return mix(a,b,smoothstep(0.,1.,fract(t)));}')
+        .replace('#include <map_fragment>',`vec4 ink=texture2D(map,vMapUv);vec3 vd=normalize(vViewPosition);
+          float ph=vMapUv.x*1.15+vMapUv.y*0.18+uShift+dot(vd.xy,vec2(0.8,0.45));vec3 fo=foilAt(ph);fo=mix(fo,fo*fo,0.45);
+          diffuseColor.rgb=mix(fo,ink.rgb,ink.a);`)
+        .replace('#include <emissivemap_fragment>','totalEmissiveRadiance=mix(fo,vec3(0.),ink.a)*uGlow;')}}
+  else{face=new THREE.MeshPhysicalMaterial({color:0xffffff,map:tex,transparent:true,roughness:0.4,metalness:0,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:1,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2});
+    face.userData.u={uScan:{value:-1}};
+    face.onBeforeCompile=sh=>{Object.assign(sh.uniforms,face.userData.u);sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uScan;')
+      .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\nif(uScan>-0.5)totalEmissiveRadiance*=1.0+0.9*exp(-pow((vEmissiveMapUv.x-uScan)*7.0,2.0));')}}
+  const fm=new THREE.Mesh(new THREE.PlaneGeometry(CARD_W-0.012,CARD_H-0.012),face);fm.position.set(0,CARD_H/2,0.0012);pivot.add(fm);
+  const led=new THREE.Mesh(new THREE.CylinderGeometry(0.0085,0.0085,0.004,20),new THREE.MeshBasicMaterial({color:0x1fcf6b}));led.rotation.x=Math.PI/2;led.position.set(CARD_W/2-0.032,CARD_H-0.03,0.003);pivot.add(led);
+  const z0=LIST_Z-(NL-1-k)*PITCH,hTop=0.03+(NL-1-k)*0.05;
+  const riser=new THREE.Mesh(new RoundedBoxGeometry(CARD_W-0.04,1,CARD_H*0.9,2,0.006),anodNavy());riser.castShadow=riser.receiveShadow=true;scene.add(riser);
+  cards.push({pivot,body,face,fm,led,riser,z0,hTop,foil})}
+
+/* ---- 3. THE POT: #/buyback .gauge .g-tank (92 x 230 px, radius 10/10/20/20, fill #ffc72c over --field2) as a gauge column
+   with a sight glass, engraved tenths and "THE POT" on its base. Mirrored on the right by THE BAY (bought back). ---- */
+const GX=1.36,GZ=-0.05,G_W=0.36,G_H=0.84,G_D=0.22,WIN_W=0.29,WIN_H=0.62,WIN_Y=0.13,GFZ=GZ+G_D/2;
+const yel=col(MAN.items['g-tank.png'].fill.replace(/rgb\((\d+), (\d+), (\d+)\)/,(m,r,g,b)=>'#'+[r,g,b].map(v=>(+v).toString(16).padStart(2,'0')).join('')));
+const empty=col(MAN.colors.field2);
+function casing(x,label,BD){const grp=new THREE.Group();grp.position.set(x,FLOOR,GZ);scene.add(grp);
+  const body=new THREE.Mesh(new RoundedBoxGeometry(G_W,G_H,G_D,4,0.03),anodNavy());body.position.y=G_H/2;body.castShadow=body.receiveShadow=true;grp.add(body);
+  const T2=0.014,bz=(w,h,bx,by)=>{const m=new THREE.Mesh(new RoundedBoxGeometry(w,h,BD,2,0.004),anodNavy());m.position.set(bx,by,G_D/2+BD/2);m.castShadow=true;grp.add(m)};
+  bz(WIN_W+2*T2,T2,0,WIN_Y-T2/2);bz(WIN_W+2*T2,T2,0,WIN_Y+WIN_H+T2/2);bz(T2,WIN_H,-WIN_W/2-T2/2,WIN_Y+WIN_H/2);bz(T2,WIN_H,WIN_W/2+T2/2,WIN_Y+WIN_H/2);
+  const L2=label.split(' ');const lt=cvTex(512,160,g=>{g.textAlign='center';g.textBaseline='alphabetic';g.fillStyle='#f4efe6';
+    if(L2.length===2&&label.length>8){g.font='800 66px BC';g.letterSpacing='8px';g.fillText(L2[0],256,72);g.fillText(L2[1],256,140)}else{g.font='800 112px BC';g.letterSpacing='6px';g.fillText(label,256,122)}});
+  const lab=new THREE.Mesh(new THREE.PlaneGeometry(0.34,0.106),new THREE.MeshStandardMaterial({map:lt,transparent:true,roughness:0.5,emissive:0xffffff,emissiveMap:lt,emissiveIntensity:0.3}));lab.position.set(0,0.064,G_D/2+0.001);grp.add(lab);
+  return grp}
+const POT=casing(-GX,'THE POT',0.02);
+const potBack=new THREE.Mesh(new THREE.PlaneGeometry(WIN_W,WIN_H),new THREE.MeshStandardMaterial({color:empty.clone().multiplyScalar(0.72),roughness:0.62,emissive:empty,emissiveIntensity:0.03}));potBack.position.set(0,WIN_Y+WIN_H/2,G_D/2+0.001);POT.add(potBack);
+const liqMat=new THREE.MeshPhysicalMaterial({color:yel,roughness:0.18,metalness:0.25,emissive:yel,emissiveIntensity:0.42,clearcoat:1,clearcoatRoughness:0.05});
+const liq=new THREE.Mesh(new THREE.BoxGeometry(WIN_W-0.004,1,0.010),liqMat);liq.position.z=G_D/2+0.0065;POT.add(liq);
+const men=new THREE.Mesh(new THREE.PlaneGeometry(WIN_W-0.004,0.006),new THREE.MeshBasicMaterial({color:new THREE.Color(0xfff2c4).multiplyScalar(2.0)}));men.position.z=G_D/2+0.0118;POT.add(men);
+const scorch=new THREE.Mesh(new THREE.PlaneGeometry(WIN_W-0.002,1),new THREE.MeshBasicMaterial({color:0x0a0806,transparent:true,opacity:0,depthWrite:false}));scorch.position.z=G_D/2+0.0016;POT.add(scorch);
+const ghost=new THREE.Mesh(new THREE.PlaneGeometry(WIN_W+0.05,0.006),new THREE.MeshBasicMaterial({color:new THREE.Color(0xff4136).multiplyScalar(2.2)}));ghost.position.z=G_D/2+0.0205;POT.add(ghost);
+{const pane=new THREE.Mesh(new THREE.PlaneGeometry(WIN_W,WIN_H),new THREE.MeshPhysicalMaterial({color:0xffffff,metalness:0,roughness:0.03,transparent:true,opacity:0.06,clearcoat:1,depthWrite:false,envMapIntensity:0.8}));
+  pane.position.set(0,WIN_Y+WIN_H/2,G_D/2+0.016);POT.add(pane)}
+const tickMat=new THREE.MeshStandardMaterial({color:0x8a90a0,roughness:0.5,emissive:0x8a90a0,emissiveIntensity:0.15}),zeroMat=new THREE.MeshBasicMaterial({color:0x8a90a0});
+for(let i=0;i<=10;i++){const t=new THREE.Mesh(new THREE.BoxGeometry(i%5?0.016:0.03,0.0028,0.003),i===0?zeroMat:tickMat);t.position.set(WIN_W/2+0.036+(i%5?0:0.007),WIN_Y+i*WIN_H/10,G_D/2+0.001);POT.add(t)}
+function setPot(level,gh,dark,red){/* dark: 0..1 of the lost span (level..gh) gone black, from gh downward */const h=Math.max(0.0005,level*WIN_H);liq.scale.y=h;liq.position.y=WIN_Y+h/2;liq.visible=level>0.002;men.visible=level>0.008;men.position.y=WIN_Y+h;
+  ghost.visible=gh!=null;if(gh!=null){ghost.position.y=WIN_Y+gh*WIN_H}
+  scorch.visible=dark>0.002&&gh!=null;if(scorch.visible){const b=gh,a=gh-(gh-level)*dark;scorch.scale.y=Math.max(0.001,(b-a)*WIN_H);scorch.position.y=WIN_Y+(a+b)/2*WIN_H;scorch.material.opacity=0.94}
+  zeroMat.color.set(red?0xff4136:0x8a90a0).multiplyScalar(red?2:1)}
+
+/* THE BAY: the $EZ bought back, a gold-lined case of 10 slots (2 x 5), the mirror of the gauge's 10 tenths */
+const BAY=casing(GX,'BOUGHT BACK',0.034);
+{const gold=new THREE.MeshPhysicalMaterial({color:0xffcf4a,metalness:1,roughness:0.24});
+  const back=new THREE.Mesh(new THREE.PlaneGeometry(WIN_W,WIN_H),gold);back.position.set(0,WIN_Y+WIN_H/2,G_D/2+0.001);BAY.add(back);
+  for(let r=1;r<5;r++){const s=new THREE.Mesh(new THREE.BoxGeometry(WIN_W,0.003,0.03),gold);s.position.set(0,WIN_Y+r*WIN_H/5,G_D/2+0.016);BAY.add(s)}
+  const v=new THREE.Mesh(new THREE.BoxGeometry(0.003,WIN_H,0.03),gold);v.position.set(0,WIN_Y+WIN_H/2,G_D/2+0.016);BAY.add(v)}
+const baySlot=s=>{const r=Math.floor(s/2),c=s%2;return new THREE.Vector3(GX+(c?1:-1)*WIN_W/4,FLOOR+WIN_Y+(r+0.5)*WIN_H/5,GZ+G_D/2+0.016)};
+
+/* ---- 4. THE $EZ TILES: footer .badge (66.8 x 59.6 px, radius 12 px, navy), glyphs in Barlow Condensed 800 (the site's face).
+   Cloisonne: gold wire around enamel cells, $ gold, E #1fcf6b, Z #ff4136 (owner). A tray of identical tiles, unlit: the market. ---- */
+const GLY={"upm":1000,"glyphs":{"$":{"d":"M288 -2Q283 -4 283 -8L285 -60Q285 -65 281.5 -68.5Q278 -72 273 -72H174Q169 -72 165.5 -68.5Q162 -65 162 -60L163 -4Q163 0 159 1Q97 19 61.5 66.5Q26 114 26 178V209Q26 214 29.5 217.5Q33 221 38 221H178Q183 221 186.5 217.5Q190 214 190 209V186Q190 162 201.5 148.0Q213 134 231 134Q249 134 260.5 147.5Q272 161 272 182Q272 205 254.0 223.5Q236 242 182 281Q132 317 100.0 345.5Q68 374 45.0 416.5Q22 459 22 515Q22 584 59.0 633.5Q96 683 160 700Q164 701 164 705L163 769Q163 774 166.5 777.5Q170 781 175 781H272Q277 781 280.5 777.5Q284 774 284 769L283 707Q283 702 287 701Q354 684 392.5 634.0Q431 584 431 512V488Q431 483 427.5 479.5Q424 476 419 476H280Q275 476 271.5 479.5Q268 483 268 488V516Q268 538 256.0 552.0Q244 566 226 566Q208 566 197.0 552.0Q186 538 186 515Q186 490 203.0 470.0Q220 450 272 412Q335 365 367.0 336.0Q399 307 417.0 271.5Q435 236 435 188Q435 114 395.5 63.5Q356 13 288 -2Z","adv":454},"E":{"d":"M407 558H206Q201 558 201 553V427Q201 422 206 422H316Q321 422 324.5 418.5Q328 415 328 410V291Q328 286 324.5 282.5Q321 279 316 279H206Q201 279 201 274V147Q201 142 206 142H407Q412 142 415.5 138.5Q419 135 419 130V12Q419 7 415.5 3.5Q412 0 407 0H47Q42 0 38.5 3.5Q35 7 35 12V688Q35 693 38.5 696.5Q42 700 47 700H407Q412 700 415.5 696.5Q419 693 419 688V570Q419 565 415.5 561.5Q412 558 407 558Z","adv":441},"Z":{"d":"M16 12V134Q16 139 20 149L222 552Q223 555 222.0 556.5Q221 558 218 558H28Q23 558 19.5 561.5Q16 565 16 570V688Q16 693 19.5 696.5Q23 700 28 700H388Q393 700 396.5 696.5Q400 693 400 688V566Q400 561 396 551L192 148Q191 145 192.0 143.5Q193 142 196 142H388Q393 142 396.5 138.5Q400 135 400 130V12Q400 7 396.5 3.5Q393 0 388 0H28Q23 0 19.5 3.5Q16 7 16 12Z","adv":419}}};
+/* (Barlow Condensed 800 outlines of $, E, Z from teaser/fonts/barlow-condensed-800.woff2, extracted with fontTools) */
+const TW=0.13,TH=TW*59.6/66.8,TT=0.022;
+const glyphGeo={};{const adv=GLY.glyphs['$'].adv+GLY.glyphs.E.adv+GLY.glyphs.Z.adv,sc=TW*0.66/adv;let x=-adv/2;
+  for(const ch of '$EZ'){const G=GLY.glyphs[ch];const svg=new SVGLoader().parse('<svg xmlns="http://www.w3.org/2000/svg"><path d="'+G.d+'"/></svg>');
+    const shapes=[];svg.paths.forEach(p=>SVGLoader.createShapes(p).forEach(s=>shapes.push(s)));
+    const geo=new THREE.ExtrudeGeometry(shapes,{depth:10,bevelEnabled:true,bevelThickness:9,bevelSize:16,bevelSegments:2,curveSegments:8});
+    geo.translate(x,-350,0);geo.scale(sc,sc,sc);glyphGeo[ch]=geo;x+=G.adv}}
+const wireMat=new THREE.MeshPhysicalMaterial({color:0xffcf4a,metalness:1,roughness:0.2});
+const ENAMEL={'$':{c:col(0xffc72c),metal:1,rough:0.2},E:{c:col(0x1fcf6b),metal:0,rough:0.08},Z:{c:col(0xff4136),metal:0,rough:0.08}};
+const tileBodyGeo=new RoundedBoxGeometry(TW,TT,TH,3,0.012);
+const TRAY={x:GX,z:0.40,cols:4,rows:3,px:0.152,pz:0.136};
+const traySock=i=>{const r=Math.floor(i/TRAY.cols),c=i%TRAY.cols;return new THREE.Vector3(TRAY.x+(c-(TRAY.cols-1)/2)*TRAY.px,FLOOR+0.0005,TRAY.z+(r-(TRAY.rows-1)/2)*TRAY.pz)};
+{const tr=new THREE.Mesh(new RoundedBoxGeometry(TRAY.cols*TRAY.px+0.05,0.012,TRAY.rows*TRAY.pz+0.05,2,0.006),anodNavy());tr.position.set(TRAY.x,FLOOR+0.004,TRAY.z);tr.receiveShadow=true;scene.add(tr);
+  for(let i=0;i<TRAY.cols*TRAY.rows;i++){const s=new THREE.Mesh(new THREE.PlaneGeometry(TW+0.012,TH+0.012),new THREE.MeshStandardMaterial({color:0x020204,roughness:0.9}));s.rotation.x=-Math.PI/2;const p=traySock(i);s.position.set(p.x,FLOOR+0.0105,p.z);scene.add(s)}}
+const tiles=[];
+for(let i=0;i<NT;i++){const g=new THREE.Group();scene.add(g);const body=new THREE.Mesh(tileBodyGeo,anodNavy());body.castShadow=body.receiveShadow=true;g.add(body);
+  const mats={};for(const ch of '$EZ'){const m=new THREE.MeshPhysicalMaterial({color:0x000000,metalness:0.5,roughness:0.5,clearcoat:1,clearcoatRoughness:0.05,emissive:0x000000});mats[ch]=m;
+    const gm=new THREE.Mesh(glyphGeo[ch],[m,wireMat]);gm.rotation.x=-Math.PI/2;gm.position.y=TT/2;gm.castShadow=true;g.add(gm)}
+  tiles.push({g,mats})}
+/* which tray sockets the buyback lifts (the market thins from the back), and in which bay slot each lands (bottom up) */
+const LIFT_ORDER=[1,2,5,6,0,3,9,10,4,7,8,11].slice(0,TILES_LIFT);
+const heatC=col(0xff6a1a);
+function setTile(i,lit,heat){const t=tiles[i];for(const ch of '$EZ'){const m=t.mats[ch],E=ENAMEL[ch];
+  /* unlit: the brand colour, dim and matte; lit: bright vitreous enamel / polished gold, glowing while it fires */
+  m.color.copy(E.c).multiplyScalar(0.10+0.90*lit);m.metalness=E.metal*(0.2+0.8*lit);m.roughness=0.7+(E.rough-0.7)*lit;m.clearcoat=0.05+0.95*lit;
+  m.emissive.copy(heatC).multiplyScalar(2.2*heat).add(tmpC.copy(E.c).multiplyScalar(0.25*lit))}}
+
+/* ---- 5. CHANNELS milled into the page: fees -> pot (with the operations branch, widths from SIM.poolShare), pot -> chip
+   (the bet), chip -> tray (the buyback). Each is a groove with walls; liquid gold runs inside, below the lip. ---- */
+const goldLiq=new THREE.MeshPhysicalMaterial({color:yel,metalness:0.55,roughness:0.16,emissive:yel,emissiveIntensity:0.32,clearcoat:1,clearcoatRoughness:0.04});
+const grooveMat=new THREE.MeshStandardMaterial({color:0x060608,roughness:0.85}),wallMat=new THREE.MeshPhysicalMaterial({color:0x101a3a,metalness:0.8,roughness:0.35,clearcoat:0.4});
+function channel(a,b,w){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ang=Math.atan2(dz,dx);
+  const grp=new THREE.Group();grp.position.set(a[0],FLOOR,a[1]);grp.rotation.y=-ang;scene.add(grp);
+  const bottom=new THREE.Mesh(new THREE.BoxGeometry(L,0.001,w),grooveMat);bottom.position.set(L/2,0.0006,0);grp.add(bottom);
+  [-1,1].forEach(s=>{const wl=new THREE.Mesh(new THREE.BoxGeometry(L,0.012,0.008),wallMat);wl.position.set(L/2,0.006,s*(w/2+0.004));wl.castShadow=true;wl.receiveShadow=true;grp.add(wl)});
+  const mat=goldLiq.clone();const fill=new THREE.Mesh(new RoundedBoxGeometry(1,0.007,w-0.002,2,0.003),mat);grp.add(fill);
+  return {L,mat,set(f0,f1,cool){const a0=cl(f0)*L,a1=cl(f1)*L;fill.visible=a1-a0>0.002;fill.scale.x=Math.max(0.001,a1-a0);fill.position.set((a0+a1)/2,0.0045,0);
+    /* cool: 0 molten gold .. 1 oxidised black (scenario B, the gold that does not come back) */
+    const k=cool||0;mat.color.copy(yel).lerp(tmpC.set(0x17120c),k);mat.emissiveIntensity=0.32*(1-k)+(k>0&&k<0.25?0.6*(0.25-k)/0.25:0);mat.metalness=0.55*(1-k)+0.2*k;mat.roughness=0.16+0.5*k}}}
+const W_FEE=0.075,SPLIT_X=-2.2;
+const chIn=channel([-4.6,GZ],[SPLIT_X,GZ],W_FEE),chFee=channel([SPLIT_X,GZ],[-GX-G_W/2,GZ],W_FEE*POOL),chOps=channel([SPLIT_X,GZ],[-3.1,-0.9],W_FEE*(1-POOL));
+const chBet=channel([-GX+G_W/2,GZ],[PX(82),GZ],0.045),chBuy=channel([PX(1916),TRAY.z],[TRAY.x-TRAY.cols*TRAY.px/2-0.025,TRAY.z],0.045);
+
+/* ---- lights: one key (shadowed), one rim, an overhead "page" light for the flat opening, the environment for reflections ---- */
+const key=new THREE.SpotLight(0xfff0d8,0,0,0.42,1.0,2);key.position.set(-1.7,5.0,2.3);key.target.position.set(0,0,-0.3);key.castShadow=!LO;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-0.0004;key.shadow.radius=3;scene.add(key,key.target);
+const rim=new THREE.DirectionalLight(0xc8d6ff,0);rim.position.set(2.8,2.0,-3.4);scene.add(rim);
+const top=new THREE.DirectionalLight(0xffffff,0);top.position.set(0.3,6,0.8);scene.add(top);
+
+/* ---- camera and post ---- */
+const cam=new THREE.PerspectiveCamera(34,1,0.02,60);
+const rt=new THREE.WebGLRenderTarget(W,W,{type:THREE.HalfFloatType,samples:LO?0:4});
+const composer=new EffectComposer(renderer,rt);composer.setPixelRatio(1);composer.setSize(W,W);
+composer.addPass(new RenderPass(scene,cam));
+const bokeh=new BokehPass(scene,cam,{focus:3,aperture:0.0,maxblur:0.006});bokeh.enabled=false;composer.addPass(bokeh);
+const bloom=new UnrealBloomPass(new THREE.Vector2(W/4,W/4),0.40,0.4,0.97);bloom.enabled=!LO;composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+/* ============================================================================================================
+   6. SHOTS: cameras per shot, hard cuts on hits. p = position, t = target, fov vertical (square gate).
+   ============================================================================================================ */
+const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+const orbit=(t,az,el,d)=>[t[0]+d*Math.sin(az*Math.PI/180)*Math.cos(el*Math.PI/180),t[1]+d*Math.sin(el*Math.PI/180),t[2]+d*Math.cos(az*Math.PI/180)*Math.cos(el*Math.PI/180)];
+const cm=(p,t,fov)=>({p,t,fov});
+const mixc=(A,B,x)=>({p:A.p.map((v,i)=>v+(B.p[i]-v)*x),t:A.t.map((v,i)=>v+(B.t[i]-v)*x),fov:A.fov+(B.fov-A.fov)*x});
+const push=(A,k)=>({p:A.p.map((v,i)=>A.t[i]+(v-A.t[i])*k),t:A.t,fov:A.fov});
+const cardFront=k=>LIST_Z-(NL-1-k)*PITCH;
+const DIE_C=[PX(dieCx[0]),PZ(PY+107)],DIE_R=[PX(dieCx[1]),PZ(PY+107)];
+const CAMS={
+  top:cm([0,6.3,0.03],[0,0,0.03],18.6),
+  macro:cm(orbit([0.13,0,-0.03],12,60,1.95),[0.13,0,-0.03],30),
+  pot:cm(orbit([-1.05,0.30,-0.05],2,34,3.8),[-1.05,0.30,-0.05],36),
+  wide:cm(orbit([0,0.12,-0.58],0,36,5.7),[0,0.12,-0.58],38),
+  sec:cm(orbit([DIE_R[0],0,DIE_R[1]],6,72,2.35),[DIE_R[0],0,DIE_R[1]],12),
+  freeze:cm(orbit([0,0.1,-0.8],0,30,4.6),[0,0.1,-0.8],36),
+  days:cm(orbit([PX(591),0,PZ(709)],4,72,2.1),[PX(591),0,PZ(709)],12),
+  drop:cm(orbit([-0.42,0.15,-0.55],-8,30,4.7),[-0.42,0.15,-0.55],38),
+  topdown:cm([0,6.0,0.95],[0,0,-0.08],19),
+  bet:cm(orbit([-0.62,0.18,-0.18],-6,33,3.6),[-0.62,0.18,-0.18],38),
+  scenA:cm(orbit([0.55,0.22,-0.02],8,30,3.9),[0.55,0.22,-0.02],38),
+  moveA:cm(orbit([DIE_R[0],0,DIE_R[1]],6,70,2.5),[DIE_R[0],0,DIE_R[1]],14),
+  end:cm(orbit([0,0.12,-0.25],0,37,5.6),[0,0.12,-0.25],40)};
+CAMS.scenB=cm([-CAMS.scenA.p[0],CAMS.scenA.p[1],CAMS.scenA.p[2]],[-CAMS.scenA.t[0],CAMS.scenA.t[1],CAMS.scenA.t[2]],CAMS.scenA.fov);
+CAMS.moveB=CAMS.moveA;
+/* inserts on each card's status LED and name (S4) */
+const insertCam=k=>{const t=V3(0.04,FLOOR+cards[k].hTop+0.03,cardFront(k)-0.11);return aim(V3(...orbit(t.toArray(),22,30,1.45)),t,30,[0.08,1-650/540])};
+const INS={};const insertCamC=k=>INS[k]||(INS[k]=insertCam(k));
+/* the tray tile macro (A) and the meniscus macro (B), mirrored framings */
+const tileMac=(()=>{const p=traySock(LIFT_ORDER[3]);const t=[p.x,FLOOR+0.10,p.z];return cm(orbit(t,30,34,0.95),t,20)})();
+const menMac=(()=>{const t=[-GX+0.04,FLOOR+WIN_Y+0.60*WIN_H,GFZ+0.02];return cm(orbit(t,-8,10,1.75),t,32)})();
+function shotAt(f){
+  if(f<180){if(f<24)return {id:'H1',c:CAMS.top};const x=cd(lin(f,24,90));const c=mixc(CAMS.top,CAMS.macro,x);return {id:'H1',c:f<90?c:push(CAMS.macro,1-0.07*ss(lin(f,90,180))),dof:f>=40}}
+  if(f<300)return {id:'P',c:CAMS.pot};
+  if(f<408)return {id:'W',c:push(CAMS.wide,1-0.04*ss(lin(f,300,408)))};
+  if(f<450)return {id:'M1',c:push(CAMS.sec,1-0.04*ss(lin(f,408,450)))};
+  if(f<780){const sp=T.elim.length>1?T.elim[1]-T.elim[0]:60,ins=T.elim.map((te,j)=>[te,te+Math.round(sp/2),NL-1-j]).find(r=>f>=r[0]&&f<r[1]);
+    if(ins){const c=insertCamC(ins[2]);return {id:'I'+(ins[2]+1),c:push(c,1-0.05*lin(f,ins[0],ins[1]))}}
+    return {id:'F',c:push(CAMS.freeze,1-0.04*ss(lin(f,450,780)))}}
+  if(f<810)return {id:'M2',c:push(daysCam(),1-0.03*lin(f,780,810))};
+  if(f<840){return {id:'ONE',c:oneCam(f)}}
+  if(f<960)return {id:'D',c:push(CAMS.drop,1-0.03*ss(lin(f,840,960))),ns:f>=T.out&&f<T.seat?4:1};
+  if(f<990)return {id:'TD',c:push(CAMS.topdown,1-0.02*lin(f,960,990))};
+  if(f<1080)return {id:'BET',c:push(CAMS.bet,1-0.04*ss(lin(f,990,1080)))};
+  if(f<1110)return {id:'A1',c:CAMS.scenA};
+  if(f<1140)return {id:'AM',c:push(CAMS.moveA,1-0.03*lin(f,1110,1140))};
+  if(f<1200)return {id:'A2',c:CAMS.scenA};
+  if(f<1230)return {id:'AT',c:tileMac};
+  if(f<1320)return {id:'A3',c:CAMS.scenA};
+  if(f<1350)return {id:'B1',c:CAMS.scenB};
+  if(f<1380)return {id:'BM',c:push(CAMS.moveB,1-0.03*lin(f,1350,1380))};
+  if(f<1440)return {id:'B2',c:CAMS.scenB};
+  if(f<1470)return {id:'BG',c:menMac};
+  if(f<1560)return {id:'B3',c:CAMS.scenB};
+  return {id:'E',c:push(CAMS.end,1-0.06*ss(lin(f,1560,1700)))}}
+/* the match cut (f780 -> f810): the DAYS block's "01" sits left of centre in the M2 macro; at the cut #1's rank "#1" lands on
+   the same screen point. aim() solves a camera's target so a world point projects to a given screen point. */
+function aim(pos,pt,fov,ndc){let t=pt.clone();for(let it=0;it<60;it++){camSet({p:pos.toArray(),t:t.toArray(),fov});const v=pt.clone().project(cam);const ex=v.x-ndc[0],ey=v.y-ndc[1];
+    if(Math.hypot(ex,ey)<2e-5)break;const right=V3(1,0,0).applyQuaternion(cam.quaternion),up=V3(0,1,0).applyQuaternion(cam.quaternion),d=pos.distanceTo(t)*Math.tan(fov/2*Math.PI/180);
+    t.add(right.multiplyScalar(ex*d)).add(up.multiplyScalar(ey*d))}return {p:pos.toArray(),t:t.toArray(),fov}}
+const MATCH_NDC=[330/540-1,1-560/540];
+let DAYS_CAM=null,ONE_CAM=null;
+const daysPt=()=>V3(PX(591),DIE_TOP+0.005,PZ(709));
+function daysCam(){if(!DAYS_CAM){const t=daysPt();DAYS_CAM=aim(V3(...orbit(t.toArray(),4,72,2.1)),t,12,MATCH_NDC)}return DAYS_CAM}
+function oneCam(f){if(!ONE_CAM){const st=cardState(cards[0],0,800),e=new THREE.Euler(st.rx,0,0);
+    const rk=V3(-CARD_W/2+0.075,CARD_H*0.52,0.002).applyEuler(e).add(st.pos),n=V3(0,0,1).applyEuler(e);
+    const pos=rk.clone().add(n.multiplyScalar(1.0)).add(V3(0.30,0.0,0.0));ONE_CAM=aim(pos,rk,24,MATCH_NDC)}
+  return push(ONE_CAM,1-0.04*lin(f,810,840))}
+function camSet(c){cam.position.set(...c.p);cam.lookAt(...c.t);cam.fov=c.fov;cam.updateProjectionMatrix();cam.updateMatrixWorld()}
+
+/* ============================================================================================================
+   7. STATE: every object at frame f, as plain numbers (the plate key hashes this)
+   ============================================================================================================ */
+/* card k: pivot (front edge) position, tilt (rx), lit 0..1, status LED 0..1, scan */
+function cardState(c,k,f){const up=lin(f,T.rise0+k*6,T.rise0+k*6+40),r=eo(up);let h=FLOOR-0.07+(c.hTop+0.07)*r,phi=PHI_LIST*r,lit=r,ledv=r,z=c.z0,y=h,scan=-1;
+  if(f>=T.rise0&&f<T.lock){ledv=r*(0.55+0.45*(Math.cos((f-T.rise0)/FPS*2*Math.PI)*0.5+0.5));scan=((f-T.rise0)/FPS+k*0.13)%1}   /* live: pulsing at 1 Hz, a faint scan */
+  let rh=y-FLOOR;
+  if(k>0){const te=T.elim[NL-1-k];if(f>=te){const d=lin(f,te,te+4);ledv*=1-d;lit*=1-d;const s=ss(lin(f,te+6,te+30));y=FLOOR+0.0006+(c.hTop-0.0006)*(1-s);phi=PHI_LIST*(1-s)}rh=y-FLOOR}
+  else{/* #1: rises and tilts toward the lens (looming), then at lights-out glides forward over the board into the socket on the chip */
+    const lift=cd(lin(f,T.one0,T.one1));y=h+0.08*lift;phi=PHI_LIST*r+(45*Math.PI/180-PHI_LIST*r)*lift;rh=y-FLOOR;
+    if(f>=T.out){const x=(f-T.out)/(T.seat-T.out),g=cd(Math.min(1,x));const yA=y,zA=z;const zB=SOCK_Z,yB=0.0175;
+      z=zA+(zB-zA)*g;y=yA+(yB+0.05-yA)*g;if(x>0.78)y=yB+0.05*(1-ss((x-0.78)/0.22));phi=phi+(50*Math.PI/180-phi)*g;if(x>=1){z=zB;y=yB;phi=50*Math.PI/180}}
+    lit=Math.max(lit,0)}
+  return {pos:V3(0,y,z),rx:-Math.PI/2+phi,lit,ledv,scan,rise:r,rh}}
+function stateAt(f){const st={f};
+  st.cam=shotAt(f);
+  /* light: the flat page light for the opening second, then low key; F1 lights out at T.out, back on the seat */
+  const flat=1-ss(lin(f,24,84));const dark=f>=T.out&&f<T.seat;
+  st.L={dark:dark?1:0,key:dark?0.4:(36+54*(1-flat)),rim:dark?0.04:2.4*(1-flat*0.7),top:flat*0.8,env:dark?0.03:0.32+0.45*flat,fog:0.15*(1-flat)+0.02*flat,glow:dark?0.1:1,bloom:0.40-0.30*flat,
+    mirror:f>=1080&&f<1320?1:0};   /* A is B mirrored: camera AND light (the key and the rim swap sides for A), so neither scenario is lit better */
+  st.led=ledAt(f);
+  st.cards=cards.map((c,k)=>cardState(c,k,f));
+  if(dark)st.cards.forEach((c,k)=>{if(k>0){c.lit=0;c.ledv=0}});
+  /* the pot: empty until launch; fees fill it to 0.88 by the freeze; the whole pot goes in at zero; A: the stake returns (off
+     screen; the next bet starts from 0.88); B: the next bet goes in, 0.27 comes back, the rest is lost */
+  const fl=F_LAUNCH==null?180:F_LAUNCH;let lvl=f<fl?(F_LAUNCH==null?0.3:0):POT_FULL*(1-Math.pow(1-lin(f,fl,T.lock),2));
+  if(f>=T.pot0)lvl=POT_FULL*(1-ss(lin(f,T.pot0,T.pot1)));
+  if(f>=1080)lvl=POT_FULL;
+  let gh=null,scorchV=0,red=false;
+  /* B: the lost span of the sight glass goes dark one tenth at a time, from the old level down, in the same count and cadence
+     as A's tiles (6 tenths lost, 6 tiles bought: equal size, equal animated time; critique must-fix 7) */
+  if(f>=T.bBet){lvl=POT_FULL*(1-ss(lin(f,T.bBet+2,T.bBet+28)));if(f>=T.bBack){lvl=POT_B*ss(lin(f,T.bBack,T.bBack1));gh=POT_FULL;red=true;
+    for(let j=0;j<TILES_LIFT;j++)scorchV+=ss(lin(f,T.bCool0+T.aTileStep*j,T.bCool0+T.aTileStep*j+14))/TILES_LIFT}}
+  if(f>=T.end){lvl=POT_B;gh=POT_FULL;scorchV=1;red=true;if(f>=1640)gh=null}
+  st.pot={lvl,gh,dark:scorchV,red};
+  /* channels */
+  const feeOn=f>=fl&&f<T.lock+12;
+  st.ch={in:[0,feeOn?Math.min(1,lin(f,fl,fl+10)*1.0):0],fee:[0,feeOn?lin(f,fl+6,fl+16):0],ops:[0,feeOn?lin(f,fl+6,fl+20):0],
+    bet:[0,0,0],buy:[0,0,0]};
+  if(f>=T.pot0&&f<T.pot1+12)st.ch.bet=[0,lin(f,T.pot0,T.pot0+8),0];
+  if(f>=T.bBet&&f<T.bBet+40)st.ch.bet=[0,lin(f,T.bBet+2,T.bBet+10),0];
+  if(f>=T.bBack&&f<T.bBack1+6)st.ch.bet=[0,1,0];
+  if(f>=T.bBack1&&f<T.end){st.ch.bet=[0.55,1,lin(f,T.bCool0,T.bCool0+T.aTileStep*TILES_LIFT)]}      /* the slug that never comes back, cooling to black */
+  if(f>=T.aGold&&f<1320){const spent=cl((f-T.aTile0)/(T.aTileStep*TILES_LIFT));st.ch.buy=[spent,lin(f,T.aGold,T.aGold+16),0]}
+  /* tiles: in the tray, unlit; A lifts TILES_LIFT of them, each lights as it leaves and seats in the bay */
+  st.tiles=tiles.map((t,i)=>{const s=traySock(i);let p=s.clone().setY(FLOOR+0.0105+TT/2),rx=0,lit=0,heat=0;const j=LIFT_ORDER.indexOf(i);
+    if(j>=0&&f>=T.aTile0+T.aTileStep*j){const t0=T.aTile0+T.aTileStep*j,a=lin(f,t0,t0+12),b=cd(lin(f,t0+12,t0+T.aSeat)),dst=baySlot(j);
+      lit=ss(lin(f,t0,t0+14));heat=Math.max(0,lin(f,t0+2,t0+12)-lin(f,t0+20,t0+58));
+      const lifted=p.clone().setY(p.y+0.12*ss(a));p=lifted.clone().lerp(dst,b);p.y+=0.10*Math.sin(Math.PI*b);rx=Math.PI/2*cd(lin(f,t0+8,t0+T.aSeat-4))}
+    if(f<T.aTile0&&f>=0)lit=0;
+    return {p,rx,lit,heat}});
+  st.bokeh=st.cam.dof?1:0;
+  return st}
+/* the plate key: everything a plate is drawn from, as text */
+const q=v=>typeof v==='number'?Math.round(v*1e5)/1e5:v;
+function stateKey(st){const o={c:st.cam.c,id:st.cam.id,ns:st.cam.ns||1,L:st.L,led:Array.from(st.led.b,v=>Math.round(v*200)).join('.')+'|'+Array.from(st.led.c).join('')+'|'+JSON.stringify(st.led.pr.lab),
+  cards:st.cards.map(c=>[c.pos.toArray(),c.rx,c.lit,c.ledv,c.scan,c.rise,c.rh]),pot:st.pot,ch:st.ch,tiles:st.tiles.map(t=>[t.p.toArray(),t.rx,t.lit,t.heat]),bk:st.bokeh};
+  return JSON.stringify(o,(k,v)=>typeof v==='number'?q(v):v)}
+
+function apply(st){camSet(st.cam.c);
+  const L=st.L;bloom.strength=L.bloom;key.intensity=L.key;const mx=L.mirror?-1:1;key.position.set(-1.7*mx,5.0,2.3);rim.position.set(2.8*mx,2.0,-3.4);rim.intensity=L.rim;top.intensity=L.top;scene.environmentIntensity=L.env;scene.fog.density=L.fog;
+  liqMat.emissiveIntensity=0.42*L.glow;goldLiq.emissiveIntensity=0.32*L.glow;
+  const avg=applyLED(st.led);spill.forEach(s=>{const mx=Math.max(avg[0],avg[1],avg[2],1e-6),k=avg[3]?0.28*Math.min(1,avg[3]/60):0;s.material.color.setRGB(avg[0]/mx*k,avg[1]/mx*k,avg[2]/mx*k)});
+  cards.forEach((c,k)=>{const s=st.cards[k];c.pivot.position.copy(s.pos);c.pivot.rotation.set(s.rx,0,0);
+    if(c.foil){c.face.userData.u.uGlow.value=st.L.dark?0.5:0.03;c.face.color.setScalar(0.34)}
+    else{c.face.emissiveIntensity=0.16+0.79*s.lit;c.face.color.setScalar(0.32+0.36*s.lit);c.face.userData.u.uScan.value=s.scan}
+    c.led.material.color.setRGB(0.12*s.ledv*2.2,0.81*s.ledv*2.2,0.42*s.ledv*2.2).addScalar(0.02);
+    const hb=Math.max(0.001,s.rh-0.002);c.riser.visible=hb>0.003;c.riser.scale.y=hb;c.riser.position.set(0,FLOOR+hb/2,c.z0-CARD_H*0.47)});
+  const P=st.pot;setPot(P.lvl,P.gh,P.dark,P.red);
+  chIn.set(...st.ch.in);chFee.set(...st.ch.fee);chOps.set(...st.ch.ops);chBet.set(...st.ch.bet);chBuy.set(...st.ch.buy);
+  tiles.forEach((t,i)=>{const s=st.tiles[i];t.g.position.copy(s.p);t.g.rotation.set(s.rx,0,0);setTile(i,s.lit,s.heat)});
+  bokeh.enabled=!!st.bokeh&&!LO;if(bokeh.enabled){const fp=V3(PX(1250),0.012,PZ(735));bokeh.uniforms.focus.value=cam.position.distanceTo(fp);bokeh.uniforms.aperture.value=0.0022;bokeh.uniforms.maxblur.value=0.006}}
+
+/* ============================================================================================================
+   8. RENDER: renderAt(t) is a pure function of the frame (subframes average into #acc for motion blur)
+   ============================================================================================================ */
+const acc=document.getElementById('acc'),ax=acc.getContext('2d');
+let shadowKey='';
+function drawState(st){apply(st);
+  const sk=JSON.stringify([st.cards.map(c=>[c.pos.toArray(),c.rx]),st.tiles.map(t=>[t.p.toArray(),t.rx])],(k,v)=>typeof v==='number'?q(v):v);if(sk!==shadowKey){shadowKey=sk;renderer.shadowMap.needsUpdate=true}
+  composer.render()}
+function renderPlate(f){const st=stateAt(f),ns=NSQ?+NSQ:(st.cam.ns||1);
+  if(ns<=1){acc.style.display='none';drawState(st);return}
+  acc.style.display='block';ax.clearRect(0,0,1080,1080);
+  for(let s=0;s<ns;s++){const fs=f-0.5+(s+0.5)/ns;const ss2=stateAt(fs);ss2.cam=st.cam;drawState(ss2);ax.globalAlpha=1/(s+1);ax.drawImage(canvas,0,0,1080,1080)}ax.globalAlpha=1}
+const nameOf=f=>'p'+hash(SRC+'|'+MANKEY+'|'+(NSQ||'')+'|'+stateKey(stateAt(f)));
+window.frameName=PASS==='plate'?(i=>nameOf(i)):null;
+window.plateName=nameOf;window.stateAt=f=>JSON.parse(stateKey(stateAt(f)));
+window.renderAt=function(t){const f=Math.min(N-1,Math.max(0,Math.round(t*FPS)));renderPlate(f);if(PASS==='both'){typeFrame(f);fitLegal()}};
+/* QA: the screen boxes of the set's key objects at frame f (uk: nothing important below y 800) */
+const KEYS={dies:()=>[V3(PX(478),0.012,PZ(642)),V3(PX(1524),0.012,PZ(642)),V3(PX(478),0.012,PZ(770)),V3(PX(1524),0.012,PZ(770))],
+  pot:()=>[V3(-GX-G_W/2,FLOOR,GZ+G_D/2),V3(-GX+G_W/2,FLOOR+G_H,GZ+G_D/2),V3(-GX-G_W/2,FLOOR+G_H,GZ-G_D/2)],
+  bay:()=>[V3(GX-G_W/2,FLOOR,GZ+G_D/2),V3(GX+G_W/2,FLOOR+G_H,GZ+G_D/2),V3(GX-G_W/2,FLOOR+G_H,GZ-G_D/2)],
+  list:()=>cards.flatMap(c=>{const b=new THREE.Box3().setFromObject(c.pivot);return [b.min,b.max]}),
+  one:()=>{const b=new THREE.Box3().setFromObject(cards[0].pivot);return [b.min,b.max,V3(b.min.x,b.max.y,b.min.z),V3(b.max.x,b.min.y,b.max.z)]}};
+window.__dbg={CAMS,orbit,cm,cards,T,proj:(f,pts)=>{const st=stateAt(f);apply(st);return pts.map(p=>{const v=V3(...p).project(cam);return [Math.round((v.x+1)/2*1080),Math.round((1-v.y)/2*1080)]})}};
+window.keyBounds=(f,camOverride)=>{const st=stateAt(f);if(camOverride)st.cam.c=camOverride;apply(st);const o={shot:st.cam.id};for(const k in KEYS){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;KEYS[k]().forEach(p=>{const v=p.clone().project(cam);const x=(v.x+1)/2*1080,y=(1-v.y)/2*1080;x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)});o[k]=[x0,y0,x1,y1].map(Math.round)}return o};
+/* QA (site3d-qa.js): the uk window (critique must-fix 5: what each shot is about stays above y 800, the FCA band's top is 824;
+   #1 stays below y 300 wherever it shows on the board), and the loop seam (frame 1799's dies spell frame 0's). */
+const SHOT_KEYS={H1:['dies'],P:['pot'],W:['list','dies'],F:['list','dies'],D:['one','dies','pot'],TD:['one','dies'],BET:['pot','dies','one'],
+  A1:['bay','dies'],A2:['bay','dies'],A3:['bay','dies'],B1:['pot','dies'],B2:['pot','dies'],B3:['pot','dies'],E:['pot','bay','dies','list','one']};
+window.SITE3D_QA=()=>{const bad=[],seen={};for(let f=0;f<N;f+=5){const b=window.keyBounds(f),ks=SHOT_KEYS[b.shot]||[];seen[b.shot]=(seen[b.shot]||0)+1;
+    ks.forEach(k=>{const r=b[k];const inFrame=r[2]>0&&r[0]<1080&&r[3]>0&&r[1]<1080;if(inFrame&&r[3]>WIN1+4)bad.push([f,b.shot,k,'bottom '+r[3]+' > '+WIN1])});
+    if(['W','F','D'].includes(b.shot)&&b.one[1]<WIN0-2)bad.push([f,b.shot,'one','#1 top '+b.one[1]+' < '+WIN0])}
+  const l0=Array.from(ledRaw(0).b).map(v=>v>0?1:0).join(''),l1=Array.from(ledRaw(N-1).b).map(v=>v>0?1:0).join('');
+  return {window:bad,shots:seen,seam:{same:l0===l1,f0:digitSpecs(R0).map(x=>x.g).join(' '),f1799:digitSpecs(remAt(N-1)>0?remAt(N-1):R0).map(x=>x.g).join(' ')},strings:STRINGS,info:window.SITE3D_INFO}};
+if(PASS==='plate'){document.getElementById('ov').style.display='none'}
+window.renderAt(0);window.__ready=true;
+}
+}catch(e){window.__err=String(e&&e.stack||e);console.error(e)}
+</script>
+<script src="ez-site3d-audio.js"></script>
+</body></html>

@@ -1,0 +1,5 @@
+// node secs.js <page>: lists the Overview's visible sections at 390x844 (top, height, id/class).
+const {chromium}=require('/opt/node22/lib/node_modules/playwright');const FONTS=require('../../live-r1/_fonts.js');
+(async()=>{const pg=process.argv[2];const b=await chromium.launch();const p=await (await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2.75,isMobile:true,hasTouch:true})).newPage();await FONTS(p);
+await p.goto('http://127.0.0.1:8971/'+pg,{waitUntil:'load',timeout:180000});await p.waitForFunction(()=>!document.documentElement.classList.contains('x2p-cur'),null,{timeout:120000});await p.waitForTimeout(2000);
+console.log(JSON.stringify(await p.evaluate(()=>[...document.querySelectorAll('main section, main > *, section.t4 > *, section.ch > *')].filter(e=>e.offsetHeight>40&&getComputedStyle(e).display!='none').map(e=>{const r=e.getBoundingClientRect();return [Math.round(r.top+scrollY),Math.round(r.height),e.tagName,e.id,(e.className||'').toString().slice(0,60)]})),null,0).replace(/\],/g,'],\n'));await b.close()})();

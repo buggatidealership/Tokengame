@@ -1,0 +1,105 @@
+<!doctype html><meta charset="utf-8"><title>EZ trades locked</title>
+<!-- Trades-locked video (2026-11-10): the four AIs' trades on one company, before its report. Data in predict.json.
+     Beats: the company and when it reports; four cards dealt face down, flipped one by one (side and size); a gold padlock snaps shut;
+     the split (n long v n short); the hook (who's right, graded at the close). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Geist+Mono:wght@600;700&family=Instrument+Serif:ital@1&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}html,body{width:1080px;height:1350px;overflow:hidden;background:#04070e;color:#f8f0d9}
+#gl{position:absolute;inset:0;width:1080px;height:1350px}
+.sc{position:absolute;inset:0;display:none}
+.k{position:absolute;left:0;right:0;text-align:center;font:700 28px/1 "Geist Mono",monospace;letter-spacing:.2em;color:#9fb0a6}
+#lg{position:absolute;left:50%;top:330px;width:250px;height:250px;margin-left:-125px;border-radius:56px;background:#fff center/72% no-repeat;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 6px rgba(248,240,217,.08)}
+#co{position:absolute;left:0;right:0;top:640px;text-align:center;font:400 150px/1 Anton,Impact,sans-serif}
+#wh{top:830px;color:#fdbc2a}
+#tl{position:absolute;left:0;right:0;top:96px;text-align:center;font:400 74px/1 Anton,Impact,sans-serif;letter-spacing:.01em}
+#lk{position:absolute;left:0;right:0;top:1252px;text-align:center;font:700 30px/1 "Geist Mono",monospace;letter-spacing:.24em;color:#fdbc2a}
+#split{position:absolute;left:90px;right:90px;top:700px;height:120px;display:flex;gap:10px}
+#split i{display:flex;align-items:center;justify-content:center;font:400 64px/1 Anton,Impact,sans-serif;color:#04070e;border-radius:18px;overflow:hidden;white-space:nowrap}
+#sh{position:absolute;left:0;right:0;top:330px;text-align:center;font:400 170px/0.95 Anton,Impact,sans-serif}
+#gr{position:absolute;left:0;right:0;top:880px;text-align:center;font:italic 58px/1.2 "Instrument Serif",serif;color:#cfc9ba}
+#q{position:absolute;left:0;right:0;top:420px;text-align:center;font:400 190px/0.95 Anton,Impact,sans-serif}
+#q2{position:absolute;left:0;right:0;top:820px;text-align:center;font:italic 58px/1.25 "Instrument Serif",serif;color:#cfc9ba}
+#url{position:absolute;left:0;right:0;top:1110px;text-align:center;font:700 34px/1 "Geist Mono",monospace;letter-spacing:.1em;color:#fdbc2a}
+#wipe{position:absolute;inset:0;display:none}
+#sample{position:absolute;right:28px;top:28px;font:700 22px/1 "Geist Mono",monospace;color:#ff3a31;letter-spacing:.18em;border:2px solid #ff3a31;padding:7px 10px;display:none;z-index:9}
+.bar{position:absolute;left:60px;right:60px;bottom:52px;height:10px;display:flex;gap:6px}.bar i{flex:1;border-radius:2px}
+#ph{position:absolute;left:60px;bottom:47px;width:3px;height:20px;background:#f8f0d9}
+</style>
+<canvas id="gl" width="1080" height="1350"></canvas>
+<div class="sc" id="A"><div class="k" style="top:200px">TONIGHT ON EARNINGS ZEASON</div><div id="lg"></div><div id="co"></div><div class="k" id="wh"></div></div>
+<div class="sc" id="B"><div id="tl">THE TRADES ARE IN</div><div id="lk">LOCKED BEFORE THE REPORT</div></div>
+<div class="sc" id="C"><div class="k" style="top:250px">THE SPLIT</div><div id="sh"></div><div id="split"></div><div id="gr"></div></div>
+<div class="sc" id="D"><div id="q">WHO'S<br>RIGHT?</div><div id="q2"></div><div id="url">EARNINGSZN.XYZ</div></div>
+<div id="wipe"></div><div id="sample">SAMPLE NUMBERS</div>
+<div class="bar"><i style="background:#03c870"></i><i style="background:#fdbc2a"></i><i style="background:#ff3a31"></i></div><div id="ph"></div>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
+const $=i=>document.getElementById(i),cl=x=>x<0?0:x>1?1:x,seg=(t,a,b)=>cl((t-a)/(b-a)),eo=x=>x===1?1:1-Math.pow(2,-10*x),eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const back=x=>{const c=1.7,c3=c+1;return 1+c3*Math.pow(x-1,3)+c*Math.pow(x-1,2)},spring=x=>x>=1?1:1-Math.exp(-6*x)*Math.cos(11*x);
+const O=await (await fetch('predict.json')).json(),D=O.dur||12;if(O.sample)$('sample').style.display='block';
+await Promise.all(['400 100px Anton','700 40px "Geist Mono"','italic 40px "Instrument Serif"'].map(f=>document.fonts.load(f)));
+const COL={GPT:'#b18cff',CLAUDE:'#ef8a55',KIMI:'#58b7ff',GROK:'#e4e0d6'},NM={GPT:'ChatGPT',CLAUDE:'Claude',KIMI:'Kimi',GROK:'Grok'};
+$('lg').style.backgroundImage='url('+O.logo+')';$('co').textContent=O.co.toUpperCase();$('wh').textContent=O.when;
+const nL=O.calls.filter(c=>c.dir==='UP').length,nS=O.calls.length-nL;$('sh').innerHTML='<span style="color:#03c870">'+nL+' LONG</span><br><span style="color:#ff3a31">'+nS+' SHORT</span>';
+$('split').innerHTML='<i style="background:#03c870;flex:'+nL+'">LONG</i><i style="background:#ff3a31;flex:'+nS+'">SHORT</i>';$('gr').textContent=O.grade+'.';$('q2').innerHTML=O.grade+'.<br>Results drop right after.';
+/* cards: a canvas face per AI (name, side, size, company), one shared back with the EZ. mark */
+const PR=+(new URLSearchParams(location.search).get('pr')||2);
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function face(c){const W=900,H=1260,cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d'),up=c.dir==='UP',sc=up?'#03c870':'#ff3a31';
+ rr(g,0,0,W,H,70);g.fillStyle='#0b0f14';g.fill();g.save();g.clip();g.fillStyle=sc;g.fillRect(0,430,W,400);
+ g.fillStyle='rgba(4,7,14,.14)';for(let i=-20;i<40;i++){g.fillRect(i*46,430,18,400)}g.restore();
+ rr(g,10,10,W-20,H-20,62);g.lineWidth=8;g.strokeStyle=COL[c.m];g.stroke();
+ g.fillStyle=COL[c.m];g.font='400 150px Anton';g.textBaseline='alphabetic';g.fillText(NM[c.m],70,220);
+ g.fillStyle='rgba(248,240,217,.62)';g.font='700 40px "Geist Mono"';g.fillText(O.co.toUpperCase()+' · '+O.ticker,74,300);
+ g.fillStyle='#04070e';g.font='400 300px Anton';g.textAlign='center';g.fillText(up?'LONG':'SHORT',W/2,760);
+ g.fillStyle='#f8f0d9';g.font='400 210px Anton';g.fillText((up?'▲ ':'▼ ')+c.mag+'%',W/2,1060);
+ g.fillStyle='rgba(248,240,217,.5)';g.font='700 34px "Geist Mono"';g.fillText('LOCKED BEFORE THE REPORT',W/2,1180);
+ const t=new THREE.CanvasTexture(cv);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t}
+function backT(){const W=900,H=1260,cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');rr(g,0,0,W,H,70);g.fillStyle='#0b0f14';g.fill();g.save();g.clip();
+ for(let i=-30;i<60;i++){g.fillStyle=i%2?'rgba(3,200,112,.10)':'rgba(255,58,49,.10)';g.save();g.translate(i*60,0);g.rotate(-.5);g.fillRect(0,-200,26,2000);g.restore()}g.restore();
+ rr(g,26,26,W-52,H-52,52);g.lineWidth=6;g.strokeStyle='rgba(253,188,42,.75)';g.stroke();
+ g.textAlign='center';g.fillStyle='#fdbc2a';g.font='400 300px Anton';g.fillText('EZ.',W/2,H/2+100);
+ const t=new THREE.CanvasTexture(cv);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t}
+const ren=new THREE.WebGLRenderer({canvas:$('gl'),antialias:true,preserveDrawingBuffer:true});ren.setPixelRatio(PR);ren.setSize(1080,1350,false);ren.toneMapping=THREE.ACESFilmicToneMapping;ren.outputColorSpace=THREE.SRGBColorSpace;ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;
+const pm=new THREE.PMREMGenerator(ren),sc=new THREE.Scene();sc.background=new THREE.Color('#04070e');sc.environment=pm.fromScene(new RoomEnvironment(),.03).texture;sc.environmentIntensity=.75;
+const key=new THREE.DirectionalLight('#fff3dc',2.0);key.position.set(-4,6,9);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-6,right:6,top:6,bottom:-6});sc.add(key);
+const rim=new THREE.DirectionalLight('#fdbc2a',1.4);rim.position.set(5,4,-6);sc.add(rim);
+const wall=new THREE.Mesh(new THREE.PlaneGeometry(30,30),new THREE.ShadowMaterial({opacity:.5}));wall.position.z=-.6;wall.receiveShadow=true;sc.add(wall);
+const CW=1.62,CH=2.27,BK=backT(),cards=O.calls.map((c,i)=>{const g=new THREE.Group(),fm=new THREE.MeshPhysicalMaterial({map:face(c),transparent:true,alphaTest:.5,roughness:.32,clearcoat:.8,clearcoatRoughness:.15}),bm=new THREE.MeshPhysicalMaterial({map:BK,transparent:true,alphaTest:.5,roughness:.35,clearcoat:.8});
+ const f=new THREE.Mesh(new THREE.PlaneGeometry(CW,CH),fm);f.position.z=.012;const b=new THREE.Mesh(new THREE.PlaneGeometry(CW,CH),bm);b.rotation.y=Math.PI;b.position.z=-.012;
+ const e=new THREE.Mesh(new RoundedBoxGeometry(CW-.02,CH-.02,.02,4,.009),new THREE.MeshStandardMaterial({color:'#1b2028',roughness:.6}));e.castShadow=true;f.castShadow=true;g.add(e,f,b);
+ g.userData={x:(i%2?1:-1)*(CW/2+.17),y:(i<2?1:-1)*(CH/2+.17)};sc.add(g);return g});
+/* the padlock: a gold body with a keyhole and a shackle that drops shut */
+const gold=new THREE.MeshPhysicalMaterial({color:'#f6b81f',metalness:1,roughness:.17,clearcoat:1,clearcoatRoughness:.08,emissive:'#7a5000',emissiveIntensity:.6});
+const lock=new THREE.Group(),body=new THREE.Mesh(new RoundedBoxGeometry(1.15,.95,.42,6,.14),gold);body.castShadow=true;lock.add(body);
+const shk=new THREE.Mesh(new THREE.TorusGeometry(.36,.085,24,64,Math.PI),gold);shk.position.y=.47;lock.add(shk);const legs=[-.36,.36].map(x=>{const l=new THREE.Mesh(new THREE.CylinderGeometry(.085,.085,.4,24),gold);l.position.set(x,.33,0);shk.add(l);l.position.y=-.14;return l});
+const kh=new THREE.Mesh(new THREE.CircleGeometry(.09,32),new THREE.MeshBasicMaterial({color:'#2a1a00'}));kh.position.set(0,.06,.212);lock.add(kh);const ks=new THREE.Mesh(new THREE.PlaneGeometry(.06,.2),new THREE.MeshBasicMaterial({color:'#2a1a00'}));ks.position.set(0,-.07,.212);lock.add(ks);
+sc.add(lock);
+const cam=new THREE.PerspectiveCamera(30,1080/1350,.1,100);
+const comp=new EffectComposer(ren);comp.setPixelRatio(PR);comp.setSize(1080,1350);comp.addPass(new RenderPass(sc,cam));comp.addPass(new UnrealBloomPass(new THREE.Vector2(1080*PR,1350*PR),.24,.45,.92));comp.addPass(new OutputPass());
+const FL=[3.0,3.75,4.5,5.25],LK=6.4;
+window.R=function(t){['A','B','C','D'].forEach(s=>$(s).style.display='none');$('wipe').style.display='none';$('ph').style.left=(60+960*t/D)+'px';ren.setClearColor('#04070e',1);ren.clear();
+ const wipe=(c,k,how)=>{const w=$('wipe');w.style.display='block';w.style.background=c;w.style.clipPath=how(k)};
+ if(t<2.4){$('A').style.display='block';const k=seg(t,.1,.55);$('lg').style.transform='scale('+(.4+.6*back(k))+') rotate('+((1-eo(k))*-12)+'deg)';$('lg').style.opacity=k>0?1:0;
+  const k2=seg(t,.45,.8);$('co').style.opacity=k2>0?1:0;$('co').style.transform='translateY('+((1-back(k2))*90)+'px)';$('wh').style.opacity=eo(seg(t,.85,1.15));
+  if(t>2.1)wipe('#fdbc2a',eio(seg(t,2.1,2.4)),k=>'circle('+(k*120)+'% at 50% 34%)');return}
+ if(t<8.1){$('B').style.display='block';const u=t-2.4;
+  $('tl').style.opacity=eo(seg(t,2.55,2.85));$('tl').style.transform='translateY('+((1-eo(seg(t,2.55,2.85)))*30)+'px)';
+  cards.forEach((g,i)=>{const d=seg(t,2.45+i*.09,2.95+i*.09),f=seg(t,FL[i],FL[i]+.5),lift=Math.sin(Math.PI*seg(t,FL[i]-.05,FL[i]+.55));
+   g.position.set(g.userData.x*(.6+.4*eo(d)),g.userData.y*(.6+.4*eo(d))-.1+(1-eo(d))*-4,lift*.9);g.rotation.set(-.06*lift,Math.PI*(1-back(f)),(1-eo(d))*.4*(i%2?1:-1));g.visible=d>0;
+   g.children.forEach(m=>{if(m.material.opacity!=null)m.material.opacity=1});
+   const dim=1-.35*seg(t,LK+.2,LK+.6);g.children[1].material.color.setScalar(dim)});
+  const kd=seg(t,LK-.5,LK),ks2=seg(t,LK+.05,LK+.3);lock.visible=t>LK-.5;lock.position.set(0,-3.42+(1-spring(kd))*6,.6);lock.scale.setScalar(.82);lock.rotation.set(.1,.25*Math.sin((t-LK)*3)*Math.exp(-2*Math.max(0,t-LK)),0);
+  shk.position.y=.47+.22*(1-eo(ks2));$('lk').style.opacity=eo(seg(t,LK+.25,LK+.55));
+  const z=16.2-1.0*eio(seg(t,2.4,8.1));cam.position.set(.35*Math.sin(u*.6),-.1,z);cam.lookAt(0,-.45,0);cam.updateMatrixWorld();comp.render();
+  if(t<2.7)wipe('#fdbc2a',eio(seg(t,2.4,2.7)),k=>'circle('+((1-k)*120)+'% at 50% 34%)');
+  if(t>7.8)wipe('#04070e',eio(seg(t,7.8,8.1)),k=>'inset(0 0 '+((1-k)*100)+'% 0)');return}
+ if(t<10.4){$('C').style.display='block';const k=seg(t,8.15,8.5);$('sh').style.opacity=k>0?1:0;$('sh').style.transform='scale('+(1.3-.3*back(k))+')';
+  const ks=eio(seg(t,8.6,9.2));$('split').style.clipPath='inset(0 '+((1-ks)*100)+'% 0 0 round 18px)';$('gr').style.opacity=eo(seg(t,9.2,9.5));
+  if(t>10.1)wipe('#fdbc2a',eio(seg(t,10.1,10.4)),k=>'inset('+((1-k)*100)+'% 0 0 0)');return}
+ $('D').style.display='block';const k=seg(t,10.5,10.85);$('q').style.opacity=k>0?1:0;$('q').style.transform='translateY('+((1-back(k))*80)+'px)';$('q2').style.opacity=eo(seg(t,10.95,11.25));$('url').style.opacity=eo(seg(t,11.2,11.5));
+ if(t<10.7)wipe('#fdbc2a',eio(seg(t,10.4,10.7)),k=>'inset(0 0 '+(k*100)+'% 0)')};
+window.READY=1;window.R(0);
+</script>

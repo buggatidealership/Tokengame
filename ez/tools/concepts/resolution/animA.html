@@ -1,0 +1,131 @@
+<!doctype html><meta charset="utf-8"><title>Resolution A: face-off to race</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500;600;700;800&display=swap">
+<style>
+/* Resolution animation A (2026-11-08): face-off, then the P&L race, then the verdict, then the end card. R72 Reddit, real calls,
+   flat $100K, long/short only. Pure window.R(t), 1080x1350, ~12 s. Built on cards.html's look (stage-2k Hedra backdrop). */
+:root{--tx:#f5f1ea;--mu:#aab5ae;--up:#3ee09a;--dn:#ff4d63;--ac:#fdbc2a;--sans:Inter,system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0}body{width:1080px;height:1350px;overflow:hidden;font-family:var(--sans);color:var(--tx);background:#050806;position:relative}
+#ch{position:absolute;left:56px;right:56px;top:262px;height:280px;z-index:6}
+.ax{position:absolute;left:56px;right:56px;top:548px;display:flex;justify-content:space-between;font:600 20px/1 var(--mono);letter-spacing:.12em;color:var(--mu);text-transform:uppercase;z-index:6}
+#bg{position:absolute;inset:0;background:radial-gradient(70% 22% at 50% 0%,rgba(46,190,122,.28),transparent 70%),url(../launchvid/hedra/img/stage-2k.jpg) center 60%/cover}
+#bg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,90,58,.25) 0%,rgba(5,8,6,0) 30%,rgba(5,8,6,.25) 60%,rgba(40,8,8,.15) 100%)}
+.brand{position:absolute;left:56px;top:52px;display:flex;align-items:center;gap:14px;font:800 30px/1 var(--sans);letter-spacing:-.02em;z-index:9}.brand .e{color:#03c870}.brand .z{color:#ff3a31}
+.hd{position:absolute;left:56px;right:56px;top:128px;z-index:9;display:flex;align-items:flex-end;justify-content:space-between}
+.hd .co{display:flex;align-items:center;gap:16px;font:800 46px/1 var(--sans);letter-spacing:-.02em}
+.lg{width:66px;height:66px;border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden}.lg img{width:76%;height:76%;object-fit:contain}
+.hd .sub{margin-top:18px;font:600 24px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mu)}
+.mv{font:900 112px/0.9 var(--mono);letter-spacing:-.06em;text-align:right}
+.stage{position:absolute;left:0;right:0;top:660px;height:560px;perspective:1700px;perspective-origin:50% 30%;z-index:5}
+.card{position:absolute;bottom:0;width:230px;height:372px;transform-style:preserve-3d;transform-origin:50% 100%}
+.face{position:absolute;inset:0;border-radius:24px;padding:26px 14px 22px;display:flex;flex-direction:column;align-items:center;
+ background:linear-gradient(180deg,#121a16 0%,#0b0f0d 55%,#120b0b 100%);
+ box-shadow:inset 0 2px 0 rgba(140,255,200,.35),inset 0 26px 40px -20px rgba(46,190,122,.35),inset 0 -24px 40px -22px rgba(255,58,49,.28),0 0 0 1.5px rgba(255,255,255,.07)}
+.face:after{content:"";position:absolute;inset:0;border-radius:24px;background:linear-gradient(115deg,rgba(255,255,255,.10),transparent 32%,transparent 70%,rgba(255,255,255,.04));pointer-events:none}
+.refl{position:absolute;left:0;right:0;top:100%;height:372px;border-radius:24px;transform:scaleY(-1);transform-origin:50% 0;opacity:.3;filter:blur(2px);
+ -webkit-mask-image:linear-gradient(0deg,transparent 55%,#000);mask-image:linear-gradient(0deg,transparent 55%,#000);background:inherit}
+.cs{position:absolute;left:-10%;right:-10%;bottom:-18px;height:36px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.75),transparent)}
+.med{position:relative;width:126px;height:126px;border-radius:50%;display:grid;place-items:center}
+.med:before{content:"";position:absolute;inset:-8px;border-radius:50%;background:conic-gradient(from 200deg,#5d6661,#e8ece9,#6f7873,#2f3532,#cfd5d1,#5d6661);box-shadow:0 14px 30px rgba(0,0,0,.6)}
+.med .disc{position:absolute;inset:0;border-radius:50%}.med svg{position:relative;width:52%;height:52%}.med i{position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 6px 14px rgba(255,255,255,.18),inset 0 -10px 20px rgba(0,0,0,.45)}
+.nm{margin-top:20px;font:800 30px/1 var(--sans)}
+.stamp{margin-top:auto;font:900 32px/1 var(--mono);letter-spacing:.1em;padding:12px 16px;border-radius:12px;border:3.5px solid currentColor;transform:rotate(-6deg)}
+.pl{margin-top:16px;font:800 27px/1 var(--mono);letter-spacing:-.02em}
+.u{color:var(--up)}.d{color:var(--dn)}
+.card.win .face{background:linear-gradient(170deg,#3d2c07 0%,#171006 55%,#2a1d05 100%);box-shadow:inset 0 2px 0 rgba(255,224,138,.7),0 0 0 2.5px #fdbc2a,0 0 90px rgba(253,188,42,.45)}
+.card.win .med:before{background:conic-gradient(from 200deg,#8a5a10,#ffe08a,#c98a1a,#5e3b08,#ffd55a,#8a5a10)}
+.card.lost .face{filter:grayscale(.75) brightness(.55)}
+.foot{position:absolute;left:56px;right:56px;top:590px;text-align:left;text-align:center;z-index:9}.foot .l1{font:800 50px/1.05 var(--sans);letter-spacing:-.03em}.foot .l2{margin-top:16px;font:600 25px/1 var(--mono);letter-spacing:.12em;color:var(--mu);text-transform:uppercase}
+
+#bg{transform-origin:50% 40%}
+.card .back{position:absolute;inset:0;border-radius:24px;display:grid;place-items:center;background:linear-gradient(180deg,#101814,#07090a 60%,#140909);
+ box-shadow:inset 0 2px 0 rgba(140,255,200,.3),0 0 0 1.5px rgba(255,255,255,.08);backface-visibility:hidden;transform:rotateY(180deg)}
+.card .back:before{content:"";position:absolute;inset:14px;border-radius:16px;border:1.5px solid rgba(255,255,255,.08)}
+.card .face{backface-visibility:hidden}
+.card .gold{position:absolute;inset:0;border-radius:24px;pointer-events:none;background:linear-gradient(170deg,rgba(253,188,42,.28),rgba(253,188,42,.05) 55%,rgba(253,188,42,.18));box-shadow:inset 0 2px 0 rgba(255,224,138,.8),0 0 0 2.5px #fdbc2a,0 0 90px rgba(253,188,42,.45);opacity:0}
+.flip{position:absolute;inset:0;transform-style:preserve-3d}
+#q{position:absolute;left:56px;right:56px;top:350px;text-align:center;z-index:9}
+#q .l1{font:800 92px/1.05 var(--sans);letter-spacing:-.04em}#q .l2{margin-top:22px;font:600 25px/1 var(--mono);letter-spacing:.12em;color:var(--mu);text-transform:uppercase}
+.end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:20}
+.lab{position:absolute;z-index:8;display:flex;align-items:center;gap:12px;white-space:nowrap}
+.lab .lm{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;box-shadow:0 0 0 3px rgba(255,255,255,.75),0 8px 20px rgba(0,0,0,.6)}
+.lab .v{font:800 34px/1 var(--mono);letter-spacing:-.03em;text-shadow:0 4px 18px rgba(0,0,0,.7)}
+</style>
+<div id="st" style="position:absolute;inset:0;overflow:hidden"><div id="bg"></div><div id="w"></div></div>
+<script src="../../../ez-data.js"></script><script src="paths.js"></script>
+<script>
+var EZL='<circle cx="198.7" cy="199.4" r="198.2" fill="#04070e"/><path fill="#f8f0d9" d="M116.8,88.0 L86.2,152.0 L102.1,152.0 L55.0,274.5 L154.2,274.5 L188.5,225.8 L128.7,225.8 L137.5,204.0 L170.2,203.5 L193.2,162.0 L149.1,162.0 L154.8,145.0 L143.4,138.5 L217.9,138.2 L192.2,182.0 L234.9,182.0 L181.5,250.8 L136.0,315.8 L272.5,315.8 L292.5,265.0 L230.4,265.0 L328.2,130.8 L225.1,130.8 L253.0,87.8 Z"/><path fill="#03c870" d="M146.2,287.0 L133.0,287.0 L106.5,327.2 L119.0,326.5 Z M86.8,169.5 L74.8,169.5 L29.5,282.2 L43.7,282.2 Z M105.8,92.5 L89.5,95.8 L55.5,169.2 L69.0,169.2 Z"/><path fill="#ff3a31" d="M304.5,259.0 L300.5,269.5 L313.0,268.2 L317.0,258.8 Z M361.5,126.0 L344.0,126.5 L269.5,235.8 L256.0,257.5 L276.2,257.0 Z M279.0,87.8 L266.7,87.5 L251.5,117.2 L262.2,119.0 Z"/><path fill="#fdbc2a" d="M334.2,281.2 L302.0,281.2 L288.2,315.8 L321.0,315.5 Z"/>';
+function $(i){return document.getElementById(i)}
+function cl(x){return x<0?0:x>1?1:x}function seg(t,a,b){return cl((t-a)/(b-a))}function eo(x){return x===1?1:1-Math.pow(2,-10*x)}
+function eio(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}function back(x){var c=1.4,c3=c+1;return 1+c3*Math.pow(x-1,3)+c*Math.pow(x-1,2)}function mix(a,b,k){return a+(b-a)*k}
+var RN=72,RD=ROUNDS.filter(function(r){return r.n===RN})[0],L=CO_LOGOS[RD.ticker];
+var C=RD.calls.map(function(c){var s=c[1].indexOf('DOWN')===0?-1:1;return {m:c[0],s:s,ok:s*RD.a>0}});
+var right=C.filter(function(c){return c.ok}),P=Math.round(Math.abs(RD.a)*1000);
+var names=right.map(function(c){return MODELS[c.m].app}),WT=right.length===0?'The market beat all four.':right.length===1?names[0]+', alone.':right.length===4?'All four called it.':(names.length>2?names.slice(0,-1).join(', ')+' & '+names[names.length-1]:names.join(' & '))+'.';
+function svgM(m,px){var M=MODELS[m];return '<svg viewBox="0 0 24 24" width="'+px+'" height="'+px+'"><path fill="'+M.fg+'"'+(M.fr?' fill-rule="'+M.fr+'"':'')+' d="'+M.d+'"/>'+(M.dot?'<path fill="'+M.dotc+'" d="'+M.dot+'"/>':'')+'</svg>'}
+function med(m){var M=MODELS[m];return '<span class="med"><span class="disc" style="background:'+M.bg+'"></span>'+svgM(m,66)+'<i></i></span>'}
+/* race data */
+var PT=PATHS[RN],p0=PT.p0,pp=PT.path,last=pp[pp.length-1],kk=(RD.a/100)/((last/p0)-1),VS=pp.map(function(v){return (v/p0-1)*kk*100}),NP=VS.length,
+ LIM=Math.max.apply(null,VS.map(Math.abs))*1000,W=968,H=300,CW=W-330;
+function X2(i){return i/(NP-1)*CW}function Y2(v){return H/2-v/LIM*(H/2-20)}
+var SIDES=[{s:1,ms:C.filter(function(c){return c.s>0})},{s:-1,ms:C.filter(function(c){return c.s<0})}].filter(function(x){return x.ms.length});
+SIDES.forEach(function(sd){sd.win=sd.s*RD.a>0});
+/* build */
+var h='<div class="brand"><svg width="44" height="44" viewBox="0 0 400 400">'+EZL+'</svg><span><span class="e">E</span>arnings <span class="z">Z</span>eason</span></div>';
+h+='<div class="hd" id="hd"><div><div class="co"><span class="lg">'+(L?'<img src="../../../media/'+L.f+'">':'')+'</span>'+RD.co+'</div><div class="sub" id="sub" style="margin-top:14px">Earnings · locked before the report</div></div><div class="mv" id="mv"></div></div>';
+h+='<svg id="ch" viewBox="0 0 '+W+' '+H+'"><defs><filter id="gl"><feGaussianBlur stdDeviation="7"/></filter></defs><line x1="0" x2="'+CW+'" y1="'+Y2(0)+'" y2="'+Y2(0)+'" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-dasharray="8 10"/><text id="z0" x="0" y="'+(Y2(0)-12)+'" fill="rgba(255,255,255,.55)" font-family="Geist Mono" font-size="20" letter-spacing="2">$0</text>'+
+ SIDES.map(function(sd,i){return '<path id="g'+i+'" fill="none" stroke-width="14" filter="url(#gl)"/><path id="p'+i+'" fill="none" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>'}).join('')+'</svg>';
+h+=SIDES.map(function(sd,i){return '<div class="lab" id="lb'+i+'"><div style="display:flex">'+sd.ms.map(function(c,j){return '<span class="lm" id="lm'+i+'_'+j+'" style="margin-left:'+(j?-18:0)+'px;background:'+MODELS[c.m].bg+'">'+svgM(c.m,32)+'</span>'}).join('')+'</div><div class="v" id="lv'+i+'"></div></div>'}).join('');
+h+='<div class="ax" id="ax"><span>Report</span><span id="hrs"></span><span id="nc">Next close</span></div>';
+h+='<div id="q"><div class="l1">Who called it?</div><div class="l2">4 AIs · long or short · graded at the next close</div></div>';
+h+='<div class="foot" id="ft"><div class="l1">'+WT+'</div><div class="l2">'+(right.length?'+$'+P.toLocaleString('en-US')+' on the call · $100K trade':'')+'</div></div>';
+var XS=[40,294,556,810],RY=[16,6,-6,-16],ZS=[-60,0,0,-60];
+h+='<div class="stage">'+C.map(function(c,i){return '<div class="card" id="c'+i+'" style="left:0"><div class="cs"></div><div class="flip" id="f'+i+'"><div class="face" id="fc'+i+'">'+med(c.m)+'<div class="nm">'+MODELS[c.m].app+'</div><div class="stamp '+(c.s>0?'u':'d')+'">'+(c.s>0?'LONG':'SHORT')+'</div><div class="pl" id="pl'+i+'" style="color:var(--mu);font-size:21px">locked</div><div class="gold" id="gd'+i+'"></div></div><div class="back"><svg width="110" height="110" viewBox="0 0 400 400">'+EZL+'</svg></div></div></div>'}).join('')+'</div>';
+var hE='<div class="end" id="end"><svg id="el" width="170" height="170" viewBox="0 0 400 400">'+EZL+'</svg><div id="e1" style="margin-top:50px;font:800 80px/1.05 var(--sans);letter-spacing:-.04em">Follow the next calls</div><div id="e2" style="margin-top:28px;font:800 68px/1 var(--mono);letter-spacing:-.03em;color:var(--ac)">earningszn.xyz</div><div id="e3" style="margin-top:34px;font:600 26px/1 var(--mono);letter-spacing:.12em;color:var(--mu)">@EARNINGSZN</div></div>';
+$('w').innerHTML=h;$('st').insertAdjacentHTML('beforeend',hE);
+function money(v){return (v<0?'−':'+')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US')}
+function rv(e,p,dy){p=eo(p);e.style.opacity=p;e.style.transform='translateY('+((1-p)*(dy||30)).toFixed(1)+'px)';e.style.filter=p<1?'blur('+((1-p)*10).toFixed(1)+'px)':''}
+window.R=function(t){
+ /* backdrop: slow push-in and drift */
+ $('bg').style.transform='scale('+(1.08-.06*cl(t/12))+') translateY('+(-10*cl(t/12)).toFixed(1)+'px)';$('bg').style.opacity=eo(seg(t,0,.4));
+ var endK=seg(t,9.4,9.9);
+ $('w').style.opacity=1-endK;$('w').style.filter=endK>0?'blur('+(endK*14).toFixed(1)+'px)':'';
+ rv($('hd'),seg(t,.1,.6));
+ /* question */
+ var qv=t<2.5?eo(seg(t,.6,1.1)):1-seg(t,2.5,2.85);$('q').style.opacity=qv;$('q').style.transform='translateY('+((1-eo(seg(t,.6,1.1)))*24).toFixed(1)+'px)';
+ /* race */
+ var rq=eio(seg(t,2.75,6.9)),m=rq*(NP-1),i0=Math.floor(m),fr=m-i0,on=t>=2.75;
+ $('ch').style.opacity=eo(seg(t,2.5,2.9));$('ax').style.opacity=eo(seg(t,2.5,2.9));$('z0').style.opacity=on?1:0;
+ var hrs=Math.round(rq*24);$('nc').style.opacity=1-seg(t,6.2,6.6);$('hrs').textContent=on&&t<7?'+'+hrs+':00 since the report':'';
+ var mvNow=on?(VS[i0]+(VS[Math.min(NP-1,i0+1)]-VS[i0])*fr):0;
+ var gk=eo(seg(t,7.0,7.5)); /* gold */
+ var fore=seg(t,5.6,6.9); /* foreshadowing: the eventual winner's line warms early */
+ SIDES.forEach(function(sd,i){var d='',j;for(j=0;j<=i0;j++)d+=(j?'L':'M')+X2(j).toFixed(1)+','+Y2(sd.s*VS[j]*1000).toFixed(1);
+  var cur=sd.s*mvNow*1000;d+='L'+X2(m).toFixed(1)+','+Y2(cur).toFixed(1);
+  var col=cur>=0?'#3ee09a':'#ff4d63';if(sd.win)col=gk>0?'#fdbc2a':col;
+  ['p','g'].forEach(function(k){var e=$(k+i);e.setAttribute('d',on?d:'');e.setAttribute('stroke',col)});
+  $('g'+i).setAttribute('opacity',(sd.win?.45+.45*Math.max(fore,gk):(.45*(1-.6*gk))).toFixed(2));$('p'+i).setAttribute('opacity',sd.win?1:(1-.5*gk).toFixed(2));
+  var lb=$('lb'+i),ex=56+X2(m),ey=262+Y2(cur);lb.style.left=(ex-20)+'px';lb.style.top=(ey-30)+'px';lb.style.opacity=on?eo(seg(t,2.8,3.1))*(sd.win?1:1-.5*gk):0;
+  var v=$('lv'+i);v.textContent=money(cur);v.style.color=sd.win&&gk>0?'#fdbc2a':col;
+  sd.ms.forEach(function(c,j){$('lm'+i+'_'+j).style.boxShadow='0 0 0 3px '+(sd.win&&gk>0?'#fdbc2a':'rgba(255,255,255,.75)')+',0 8px 20px rgba(0,0,0,.6)'+(sd.win?',0 0 '+(40*Math.max(fore,gk)).toFixed(0)+'px rgba(253,188,42,.6)':'')})});
+ /* header move */
+ var mv=$('mv');if(t>=6.9){var mk=eo(seg(t,6.9,7.5));mv.textContent=(RD.a<0?'−':'+')+(Math.abs(RD.a)*mk).toFixed(2)+'%';mv.className='mv '+(RD.a<0?'d':'u');mv.style.opacity=eo(seg(t,6.9,7.1))}else{mv.textContent='';}
+ $('sub').textContent=t<2.75?'Earnings · locked before the report':t<6.9?'P&L race · $100K each':'Earnings · at the close';
+ /* verdict line */
+ var fk=seg(t,7.6,8.1);rv($('ft'),fk);$('ft').style.display=fk>0?'block':'none';
+ /* cards: dealt face down, flip, verdict */
+ C.forEach(function(c,i){var dk=seg(t,.2+i*.12,1.0+i*.12),fk2=eio(seg(t,1.35+i*.13,2.0+i*.13)),w=c.ok,vk=eo(seg(t,7.2+(w?0:.1),7.9));
+  var z=ZS[i]+(w?160:-80)*vk,ty=mix(520,0,back(dk))+(w?-30:0)*vk;
+  $('c'+i).style.transform='translateX('+XS[i]+'px) translateZ('+z+'px) translateY('+ty.toFixed(1)+'px) rotateY('+RY[i]+'deg) rotateX('+((w?0:8)*vk)+'deg)';
+  $('c'+i).style.opacity=eo(dk);
+  $('f'+i).style.transform='rotateY('+(180-180*fk2).toFixed(1)+'deg)';
+  $('gd'+i).style.opacity=w?vk:0;
+  $('fc'+i).style.filter=w?'':'grayscale('+(.75*vk).toFixed(2)+') brightness('+(1-.45*vk).toFixed(2)+')';
+  var pl=$('pl'+i);if(vk>0){pl.textContent=(c.ok?'+':'−')+'$'+(P/1000).toFixed(1)+'K';pl.style.color=c.ok?'var(--up)':'var(--dn)';pl.style.fontSize='27px'}else{pl.textContent='locked';pl.style.color='var(--mu)';pl.style.fontSize='21px'}
+  /* warm glow on the eventual winners' cards just before the verdict (foreshadowing) */
+  if(w)$('fc'+i).style.boxShadow=fore>0&&vk<1?'0 0 '+(50*fore).toFixed(0)+'px rgba(253,188,42,'+(.35*fore).toFixed(2)+')':''});
+ /* end card */
+ $('end').style.opacity=t<9.6?0:1;var lp=seg(t,9.6,10.3);$('el').style.opacity=eo(seg(t,9.6,9.85));$('el').style.transform='scale('+mix(.6,1,back(lp))+')';
+ rv($('e1'),seg(t,9.95,10.35));rv($('e2'),seg(t,10.2,10.6));rv($('e3'),seg(t,10.45,10.85));
+};
+window.R(0);
+</script>

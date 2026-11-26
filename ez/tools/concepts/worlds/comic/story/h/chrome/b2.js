@@ -1,0 +1,2 @@
+/* B2 after the fight: the empty ring, confetti and stubs on the canvas; the motto in a caption box over the dark stands; Follow on X hangs as a fight tag on the rope */
+(()=>{const s=CH.back('bk-ring.jpg','50% 60%');const m=CH.$('.wc-motto',s);CH.inkBox(m,{fill:'#fdbc2a',seed:27,amp:1.6});const f=CH.$('.wc-follow',s);CH.inkBox(f,{fill:'#f8f0d9',seed:29,amp:1.4});f.insertAdjacentHTML('afterbegin','<i class="b2-clip" aria-hidden="true"></i>')})();

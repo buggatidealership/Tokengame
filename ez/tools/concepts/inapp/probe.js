@@ -1,0 +1,4 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,timezoneId:'America/New_York'});const p=await c.newPage();await p.clock.setFixedTime(new Date('2026-11-11T19:20:00Z'));
+await p.goto('http://localhost:8997/#next');await p.waitForTimeout(2500);
+console.log(await p.evaluate(()=>{const w=[...document.querySelectorAll('*')].filter(e=>e.children.length<40&&/Round 106/.test(e.innerText||'')&&/1\s*v\s*3/.test(e.innerText||'')).sort((a,b)=>a.innerText.length-b.innerText.length)[0];
+ const d=(e,dep)=>{const r=e.getBoundingClientRect();return '  '.repeat(dep)+e.tagName.toLowerCase()+'.'+[...e.classList].join('.')+' ['+[r.left,r.top,r.width,r.height].map(Math.round)+'] '+(e.children.length?'':JSON.stringify((e.innerText||'').slice(0,20)))+'\n'+(dep<4?[...e.children].map(x=>d(x,dep+1)).join(''):'')};return d(w,0)}));await b.close()})();

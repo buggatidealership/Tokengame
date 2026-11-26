@@ -1,0 +1,2 @@
+/* H1 the masthead: a painted dusk skyline of exchange towers behind an extruded "Earnings Zeason"; tabs are paper tags cut along a newsprint foot strip */
+(()=>{const h=CH.$('header.top');h.insertAdjacentHTML('afterbegin','<i class="h1-sky" aria-hidden="true"></i><i class="h1-foot" aria-hidden="true"></i>');CH.name({rot:5,y:2.5,sc:.1,seed:4});CH.tabs({fill:'#f8f0d9',on:'#fdbc2a'});const l=CH.$('#liveChip');if(l&&!l.__ib)CH.inkBox(l,{fill:'#15121a',shade:'rgba(255,255,255,.07)',seed:8,amp:1.3,inner:0})})();
