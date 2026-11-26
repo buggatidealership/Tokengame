@@ -11,7 +11,9 @@ function money(v){return (v<0?"\u2212":"+")+"$"+Math.abs(v).toLocaleString("en-U
 function post(p){var M=MV[p.r]||{},L=p.sd==="LONG",nm=NM[p.m]||p.m,co=(window.S2_NAME&&S2_NAME[p.t])||p.t,f="";
   /* the owner, 2026-11-26: "data simplicity... add less than more": no model version, no dates, no "before the report" (said once in How it works) */
   if(M.mv!=null){var s=L?1:-1,ok=s*M.mv>0,pl=Math.round(s*M.mv*1000);f='<footer class="fp-r '+(ok?"ok":"no")+'"><span class="mv">Closed '+(M.mv<0?"\u2212":"+")+Math.abs(M.mv).toFixed(2)+'%</span><b>'+(ok?"Right":"Wrong")+'</b><b>P&amp;L '+money(pl)+'</b></footer>'}
-  return '<article class="fp"><header class="fp-h">'+(MODELS[p.m]?aiIcon(p.m,40):"")+'<div class="fp-w"><b>'+nm+'</b><span class="fp-co">'+coIcon(p.t)+x(co)+'</span></div><div class="fp-p"><span class="fp-sd '+(L?"L":"S")+'">'+p.sd+' ('+(L?"+":"\u2212")+x(p.sz)+'%)</span><small>'+x(p.cf)+'% confident</small></div></header><p class="fp-t">'+mark(p.q)+'</p>'+f+'</article>'}
+  /* the owner, 2026-11-26: the logo and the name on one line with the AI's place on the board now (how much to trust it), the company and the side on the right, the confidence after the words */
+  var R=rank("ALL").indexOf(p.m)+1,rk=R?'<span class="fp-rk'+(R===1?' g':'')+'" title="Season 2 leaderboard, by P&amp;L">#'+R+'</span>':"";
+  return '<article class="fp"><header class="fp-h">'+(MODELS[p.m]?aiIcon(p.m,32):"")+'<b class="fp-n">'+nm+'</b>'+rk+'<div class="fp-p"><span class="fp-co">'+coIcon(p.t)+x(co)+'</span><span class="fp-sd '+(L?"L":"S")+'">'+p.sd+' ('+(L?"+":"\u2212")+x(p.sz)+'%)</span></div></header><p class="fp-t">'+mark(p.q)+' <small class="fp-cf">'+x(p.cf)+'% confident</small></p>'+f+'</article>'}
 st.fs=st.fs||"new";st.fn=st.fn||15;
 function feed(){var F=(window.S2_FEED||[]).slice(),o=MK.slice();F.sort(st.fs==="conf"?function(a,b){return b.cf-a.cf||b.r-a.r}:function(a,b){return b.r-a.r||o.indexOf(a.m)-o.indexOf(b.m)});
   if(!F.length)return '<section class="pn fd"><div class="empty">The first posts appear when the AIs file their next trades.</div></section>';
