@@ -167,7 +167,7 @@ for r in R:
 
 # outcomes (round -> close-to-close move, %; the sheet's moves, entered by the owner on 20 Nov after the close; TradingView's
 # 15-minute-delayed read at 21:15 UTC: INTU -12.79, KEYS -6.93, ESTC -2.02, all within 0.3 of the sheet, which wins)
-MOVES = {113: -12.79, 114: -7.07, 115: -2.20}
+MOVES = {113: -12.79, 114: -7.07, 115: -2.20, 116: 2.75, 117: -16.97, 118: 6.92, 119: 0.6, 120: 0.68, 121: -19.77, 122: 11.49, 123: -3.49}
 order = {'INTU': 0, 'KEYS': 1, 'ESTC': 2, 'ZOOM': 3, 'SMTC': 4, 'SYM': 5, 'DELL': 6, 'WDAY': 7, 'AMBA': 8, 'HPQ': 9, 'ADSK': 10}; mo = {'GPT': 0, 'Claude': 1, 'Grok': 2, 'Gemini': 3, 'Qwen': 4}
 R.sort(key=lambda r: (order[r['ticker']], mo[r['model']]))
 for r in R:

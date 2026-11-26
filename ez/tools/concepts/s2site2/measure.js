@@ -1,7 +1,8 @@
 // node measure.js <take|now> <route> <width>: the goal's checks, measured on the rendered page
 const {chromium}=require('playwright'),fs=require('fs'),path=require('path');
-(async()=>{const [take,route,w]=process.argv.slice(2);const b=await chromium.launch();const p=await b.newPage({viewport:{width:+w,height:844}});
+(async()=>{let [take,route,w]=process.argv.slice(2);const FEED=route==='#/feed';if(FEED)route='#/leaderboard';const b=await chromium.launch();const p=await b.newPage({viewport:{width:+w,height:844}});
 await p.goto('http://localhost:8811/'+route,{waitUntil:'networkidle'});await p.waitForTimeout(1500);
+if(FEED){await p.evaluate(fs.readFileSync(path.join(__dirname,'feed-data.js'),'utf8'));await p.evaluate(fs.readFileSync(path.join(__dirname,'feed.js'),'utf8'));await p.addStyleTag({content:fs.readFileSync(path.join(__dirname,'feed.css'),'utf8')})}
 if(take!=='now'){await p.addStyleTag({content:fs.readFileSync(path.join(__dirname,'common.css'),'utf8')+fs.readFileSync(path.join(__dirname,take+'.css'),'utf8')});
  await p.evaluate(fs.readFileSync(path.join(__dirname,'fix.js'),'utf8'));const js=path.join(__dirname,take+'.js');if(fs.existsSync(js))await p.evaluate(fs.readFileSync(js,'utf8'))}
 await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(1200);
